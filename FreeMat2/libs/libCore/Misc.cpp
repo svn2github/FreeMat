@@ -480,7 +480,24 @@ namespace FreeMat {
       Array kval(arg[1]);
       k = kval.getContentsAsIntegerScalar();
     }
-    return SparseEigDecompose(nargout,A,k);
+    if (arg.size() < 3)
+      return SparseEigDecompose(nargout,A,k);
+    else {
+      double sigma[2];
+      Array S(arg[2]);
+      if (!S.isScalar())
+	throw Exception("shift parameter sigma must be a scalar");
+      if (S.isComplex()) {
+	S.promoteType(FM_DCOMPLEX);
+	double *cp = (double*) S.getDataPointer();
+	sigma[0] = cp[0];
+	sigma[1] = cp[1];
+      } else {
+	sigma[0] = S.getContentsAsDoubleScalar();
+	sigma[1] = 0;
+      }
+      return SparseEigDecomposeShifted(nargout,A,k,sigma);
+    }
   }
 
   

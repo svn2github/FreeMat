@@ -1,8 +1,10 @@
 #include "RGBImageGC.hpp"
 #include <math.h>
 
-RGBImageGC::RGBImageGC(RGBImage& surface) : canvas(surface), c_font("swiss",12) , c_bg(255,255,255), 
-					    c_fg(0,0,0), c_linestyle(LINE_SOLID)
+RGBImageGC::RGBImageGC(RGBImage& surface) : c_font("swiss",12) ,
+					    c_bg(255,255,255), c_fg(0,0,0), 
+					    c_linestyle(LINE_SOLID), 
+					    canvas(surface)
 {
 }
 
@@ -37,11 +39,8 @@ Point2D RGBImageGC::GetTextExtent(std::string text) {
 
 bool RGBImageGC::InsideClippingRegion(int x, int y) {
   bool pixclipped = false;
-  int i;
-
-  i = 0;
-  while (!pixclipped && i<clipregions.size()) 
-    pixclipped = clipregions[i++].TestOutside(Point2D(x,y));
+  if (clipregions.size()>0)
+    pixclipped = clipregions.back().TestOutside(Point2D(x,y));
   return !pixclipped;
 }
 
@@ -51,8 +50,11 @@ void RGBImageGC::SetClippedPixel(int x, int y, Color col) {
 }
 
 void RGBImageGC::BlendPixel(int x, int y, int level) {
-  Color toWrite(Color::Blend8(c_fg,c_bg,level));
-  SetClippedPixel(x,y,toWrite);
+  if (InsideClippingRegion(x,y)) {
+    Color bpix(canvas.GetPixel(x,y));
+    Color toWrite(Color::Blend8(c_fg,bpix,level));
+    canvas.SetPixel(x,y,toWrite);
+  }
 }
 
 bool RGBImageGC::PenDraws() {
@@ -66,8 +68,8 @@ bool RGBImageGC::PenDraws() {
   case LINE_DOTTED:
     return (qstate & 2);
   case LINE_DASH_DOT:
-    qstate = qstate & 7;
-    return (qstate == 0 || qstate == 1 || qstate == 2 || qstate == 5);
+    qstate = qstate % 16;
+    return ((qstate >=0 && qstate < 6) || (qstate >=10 && qstate < 12));
   }  
   return false;
 }
@@ -148,8 +150,8 @@ void RGBImageGC::DrawAALineStyle(int X0, int Y0, int X1, int Y1, bool endPt)
    if ((DeltaY = Y1 - Y0) >= 0) {
       YDir = 1;
    } else {
-      YDir = -1;
-      DeltaY = -DeltaY; /* make DeltaY positive */
+      YDir = -1; 
+     DeltaY = -DeltaY; /* make DeltaY positive */
    }
   /* Special-case horizontal, vertical, and diagonal lines, which
      require no weighting because they go right through the center of
@@ -354,6 +356,7 @@ void RGBImageGC::BlitRGBImage(Point2D pos, RGBImage &img) {
   byte *data;
   width = img.GetWidth();
   height = img.GetHeight();
+
   data = img.GetPixelData();
   for (y=0;y<height;y++)
     for (x=0;x<width;x++)

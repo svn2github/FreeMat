@@ -10,6 +10,7 @@ class Rect2D {
   int width;
   int height;
   Rect2D(int ax1, int ay1, int awidth, int aheight);
+  Rect2D();
   bool TestOutside(Point2D a);
 };
 

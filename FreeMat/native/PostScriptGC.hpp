@@ -14,6 +14,12 @@ class PostScriptGC : public GraphicsContext {
   Color m_fg;
   LineStyleType m_lst;
   std::vector<Rect2D> clips;
+  std::string m_fontname;
+  int m_fontsize;
+
+  Point2D ToPS(Point2D p);
+  void DoRect(Rect2D p);
+  void RefreshGS();
 public:
   PostScriptGC(std::string filename, int width, int height);
   virtual ~PostScriptGC();

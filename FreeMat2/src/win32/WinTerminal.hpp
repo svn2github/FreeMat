@@ -25,6 +25,8 @@ namespace FreeMat {
     std::vector<std::string> flist;
     std::list<std::string> enteredLines;
     OPENFILENAME ofn;
+    CHOOSEFONT cft;
+    LOGFONT lfont;
   public:
     WinTerminal(HINSTANCE hInstance, int iCmdShow);
     ~WinTerminal() {};
@@ -65,6 +67,7 @@ namespace FreeMat {
     void Copy();
     void Paste();
     void Save();
+	void Font();
   };
 
   void SetupWinTerminalClass(HINSTANCE hInstance);

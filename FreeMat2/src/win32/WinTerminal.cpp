@@ -14,8 +14,6 @@
 #define MAXCOLS 256
 namespace FreeMat {
 
-  static OPENFILENAME ofn;
-  
   void WinTerminal::UpdateLineCount() {
     RECT winsze;
     GetClientRect(hwnd, &winsze);
@@ -29,11 +27,11 @@ namespace FreeMat {
     si.nPage = winsze.bottom / charHeight;
     si.nPos = si.nMax;
     SetScrollInfo(hwnd,SB_VERT,&si,TRUE);
-	GetScrollInfo(hwnd,SB_VERT,&si);
-	if (cpos != si.nPos) {
-		InvalidateRect(hwnd,NULL,TRUE);
-		UpdateWindow(hwnd);
-	}
+    GetScrollInfo(hwnd,SB_VERT,&si);
+    if (cpos != si.nPos) {
+      InvalidateRect(hwnd,NULL,TRUE);
+      UpdateWindow(hwnd);
+    }
   }
   
   char& WinTerminal::CharAt(int row, int column) {
@@ -139,6 +137,12 @@ namespace FreeMat {
     ofn.lCustData = 0L;
     ofn.lpfnHook = NULL;
     ofn.lpTemplateName = NULL;
+    cft.lStructSize = sizeof(CHOOSEFONT);
+    cft.hwndOwner = hwnd;
+    cft.lpLogFont = &lfont;
+    cft.Flags = CF_FIXEDPITCHONLY | CF_FORCEFONTEXIST | 
+      CF_SCREENFONTS;
+    cft.iPointSize = 12;
     selstart_col = 0;
     selstart_row = 0;
     selstop_col = 0;
@@ -200,7 +204,7 @@ namespace FreeMat {
     refresh.right = ncolumn * charWidth;
     refresh.top = (caret_y+1-si.nPos)*charHeight;
     refresh.bottom = (nlinecount-si.nPos)*charHeight;
-    InvalidateRect(hwnd,NULL,TRUE);
+    //    InvalidateRect(hwnd,NULL,TRUE);
     UpdateWindow(hwnd);
   }
 
@@ -688,6 +692,26 @@ namespace FreeMat {
       free(ptext);
     }
   }
+
+  void WinTerminal::Font() {
+    if (ChooseFont(&cft)) {
+      hfnt = CreateFontIndirect(&lfont);
+      HDC hdc;
+      hdc = GetDC(hwnd);
+      SelectObject(hdc, hfnt);
+      TEXTMETRIC tm;
+      GetTextMetrics(hdc, &tm);
+      ReleaseDC(hwnd,hdc);
+      charWidth = tm.tmAveCharWidth;
+      charHeight = tm.tmHeight;
+      RECT t;
+      GetClientRect(hwnd, &t);
+      Resize(t.right-t.left, t.bottom-t.top);
+      InvalidateRect(hwnd,NULL,TRUE);
+      UpdateWindow(hwnd);
+      cft.Flags |= CF_INITTOLOGFONTSTRUCT;
+    }
+  }
   
   /*.......................................................................
    * Search backwards for the potential start of a filename. This
@@ -841,18 +865,24 @@ namespace FreeMat {
 	wptr->OnScroll(LOWORD(wParam));
 	break;
       }
-	  case WM_COMMAND:
-		  switch (LOWORD(wParam)) {
-		  case IDM_EDIT_COPY:
-			  wptr->Copy();
-			  break;
-		  case IDM_EDIT_PASTE:
-			  wptr->Paste();
-			  break;
-		  case IDM_FILE_SAVE:
-			  wptr->Save();
-			  break;
-		  }
+      case WM_COMMAND:
+	switch (LOWORD(wParam)) {
+	case IDM_EDIT_COPY:
+	  wptr->Copy();
+	  break;
+	case IDM_EDIT_PASTE:
+	  wptr->Paste();
+	  break;
+	case IDM_EDIT_FONT:
+	  wptr->Font();
+	  break;
+	case IDM_FILE_SAVE:
+	  wptr->Save();
+	  break;
+	case IDM_FILE_EXIT:
+	  PostQuitMessage(0);
+	  break;
+	}
       case WM_KEYDOWN:{
 	switch (wParam) {
 	case VK_LEFT:

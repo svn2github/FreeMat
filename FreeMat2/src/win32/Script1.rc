@@ -31,13 +31,13 @@ BEGIN
     POPUP "File"
     BEGIN
         MENUITEM "Save",                        IDM_FILE_SAVE
-        MENUITEM "Exit",                        ID_FILE_EXIT
+        MENUITEM "Exit",                        IDM_FILE_EXIT
     END
     POPUP "Edit"
     BEGIN
         MENUITEM "Copy",                        IDM_EDIT_COPY
         MENUITEM "Paste",                       IDM_EDIT_PASTE
-        MENUITEM "Font",                        ID_EDIT_FONT
+        MENUITEM "Font",                        IDM_EDIT_FONT
     END
     POPUP "Help", HELP
     BEGIN

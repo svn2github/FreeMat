@@ -4,7 +4,9 @@
 //
 #define IDR_MENU1                       101
 #define ID_EDIT_FONT                    40003
+#define IDM_EDIT_FONT                   40003
 #define ID_FILE_EXIT                    40005
+#define IDM_FILE_EXIT                   40005
 #define ID_HELP_CONTENTS                40006
 #define ID_HELP_ABOUTFREEMAT            40007
 #define IDM_EDIT_COPY                   40008

@@ -129,6 +129,10 @@ namespace FreeMat {
      */
     void resetState();
     /**
+     * Clear the context stacks.
+     */
+    void clearStacks();
+    /**
      * Get the state of the tree walker.
      */
     State getState();

@@ -70,8 +70,11 @@ namespace FreeMat {
     return(printLimit);
   }
  
- void WalkTree::resetState() {
+  void WalkTree::resetState() {
     state = FM_STATE_OK;
+  }
+  
+  void WalkTree::clearStacks() {
     cname = "base";
     IDnums.clear();
     cnameStack.clear();

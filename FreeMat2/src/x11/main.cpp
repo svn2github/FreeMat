@@ -393,6 +393,8 @@ int main(int argc, char *argv[]) {
     win->term()->outputMessage("\n");
     win->term()->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
     while (twalk->getState() != FM_STATE_QUIT) {
+      if (twalk->getState() == FM_STATE_RETALL)
+	twalk->clearStacks();
       twalk->resetState();
       twalk->evalCLI();
     }

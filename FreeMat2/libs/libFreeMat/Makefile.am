@@ -1,4 +1,4 @@
-EXTRA_DIST = libFreeMat.dsp f2c/VectorOps_assist.c
+EXTRA_DIST = Lexer.cpp Parser.cpp libFreeMat.dsp f2c/VectorOps_assist.c
 
 noinst_LIBRARIES = libFreeMat.a
 
@@ -9,10 +9,8 @@ INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I
 libFreeMat_a_SOURCES = Parser.yy \
 Parser.h \
 Parser.cc \
-Parser.cpp \
 Lexer.cc \
 Lexer.ll \
-Lexer.cpp \
 Array.cpp \
 Array.hpp \
 AST.cpp \

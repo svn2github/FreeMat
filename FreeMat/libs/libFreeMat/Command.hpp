@@ -71,7 +71,8 @@ namespace FreeMat {
     CMD_GUIGetWidthAcq,
     CMD_Quit,
     CMD_SystemCapture,
-    CMD_SystemCaptureAcq
+    CMD_SystemCaptureAcq,
+    CMD_GUIFunctionList
   };
 
   /** A GUI command class

@@ -45,7 +45,7 @@ namespace FreeMat {
     void initialize(std::string path, Context *contxt);
     virtual void rescanPath();
     virtual void scanDirectory(std::string scdir);
-    virtual void procFile(char *fname, std::string fullname);
+    virtual void procFile(std::string fname, std::string fullname);
     virtual int getTerminalWidth();
     virtual void outputMessage(const char* msg);
     virtual void errorMessage(const char* msg);

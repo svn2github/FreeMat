@@ -609,6 +609,7 @@ Rect2D XWindow::PopClippingRegion() {
   clipwin.width = rect.width;
   clipwin.height = rect.height;
   XSetClipRectangles(m_display, m_gc, 0, 0, &clipwin, 1, Unsorted);  
+  return rect;
 }
 
 void XWindow::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {

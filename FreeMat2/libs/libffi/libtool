@@ -41,13 +41,13 @@ available_tags=
 #
 # AR="" AR_FLAGS="" LTCC="gcc" CC="gcc" \
 # CFLAGS="-g -O2" CPPFLAGS="" \
-# MAGIC_CMD="" LD="c:/mingw/mingw32/bin/ld.exe" LDFLAGS="" LIBS="" \
-# LN_S="ln" NM="/mingw/bin/nm" RANLIB="ranlib" STRIP="strip" \
+# MAGIC_CMD="" LD="/usr/i686-pc-cygwin/bin/ld.exe" LDFLAGS="" LIBS="" \
+# LN_S="ln -s" NM="/usr/bin/nm -B" RANLIB="ranlib" STRIP="strip" \
 # AS="" DLLTOOL="" OBJDUMP="" \
 # objext="" exeext="" reload_flag=" -r" \
 # deplibs_check_method="file_magic file format pei*-i386(.*architecture: i386)?" \
 # file_magic_cmd="\$OBJDUMP -f" \
-#   /home/build/FreeMat2/libs/libffi//ltconfig --cache-file=/dev/null --with-gcc --with-gnu-ld --no-verify --build=i686-pc-mingw32 /home/build/FreeMat2/libs/libffi//ltmain.sh i686-pc-mingw32
+#   /cygdrive/c/FreeMat2/libs/libffi//ltconfig --cache-file=./config.cache --with-gcc --with-gnu-ld --no-verify --build=i686-pc-cygwin /cygdrive/c/FreeMat2/libs/libffi//ltmain.sh i686-pc-cygwin
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -71,8 +71,8 @@ build_old_libs=yes
 fast_install=needless
 
 # The host system.
-host_alias=i686-pc-mingw32
-host=i686-pc-mingw32
+host_alias=i686-pc-cygwin
+host=i686-pc-cygwin
 
 # An echo program that does not interpret backslashes.
 echo="echo"
@@ -91,13 +91,13 @@ CC="gcc"
 with_gcc=yes
 
 # The linker used to build libraries.
-LD="c:/mingw/mingw32/bin/ld.exe"
+LD="/usr/i686-pc-cygwin/bin/ld.exe"
 
 # Whether we need hard or soft links.
-LN_S="ln"
+LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/mingw/bin/nm"
+NM="/usr/bin/nm -B"
 
 # A symbol stripping program
 STRIP=strip
@@ -138,7 +138,7 @@ pic_flag=" -DDLL_EXPORT -DPIC"
 pic_mode=default
 
 # What is the maximum length of a command?
-max_cmd_len=393217
+max_cmd_len=12289
 
 # Does compiler simultaneously support -c and -o options?
 compiler_c_o="yes"
@@ -165,7 +165,7 @@ dlopen_self_static=unknown
 link_static_flag="-static"
 
 # Compiler flag to turn off builtin functions.
-no_builtin_flag=" -fno-builtin -fno-rtti -fno-exceptions"
+no_builtin_flag=" -fno-builtin"
 
 # Compiler flag to allow reflexive dlopens.
 export_dynamic_flag_spec="\${wl}--export-dynamic"
@@ -184,10 +184,10 @@ libname_spec="lib\$name"
 
 # List of archive names.  First name is the real one, the rest are links.
 # The last name is the one that the linker finds with -lNAME.
-library_names_spec="\${libname}\`echo \${release} | sed -e s/[.]/-/g\`\${versuffix}.dll"
+library_names_spec="\$libname.dll.a"
 
 # The coded name of the library, if different from the real name.
-soname_spec=""
+soname_spec="\`echo \${libname} | sed -e s/^lib/cyg/\`\`echo \${release} | [sed -e s/[.]/-/g]\`\${versuffix}.dll"
 
 # Commands used to build and install an old-style archive.
 RANLIB="ranlib"
@@ -218,13 +218,17 @@ archive_expsym_cmds="if test \\\"x\\\`head -1 \$export_symbols\\\`\\\" = xEXPORT
         done;
       fi~
       
-      \$CC -Wl,--base-file,\$output_objdir/\$soname-base  -Wl,-e,_DllMainCRTStartup@12 -o \$output_objdir/\$soname \$libobjs \$deplibs \$compiler_flags~
+      \$CC -Wl,--base-file,\$output_objdir/\$soname-base  -Wl,-e,__cygwin_dll_entry@12 -o \$output_objdir/\$soname \$libobjs \$deplibs \$compiler_flags~
       \$DLLTOOL --as=\$AS --dllname \$soname --exclude-symbols DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12,DllMainCRTStartup@12,DllEntryPoint@12 --def \$output_objdir/\$soname-def --base-file \$output_objdir/\$soname-base --output-exp \$output_objdir/\$soname-exp~
-      \$CC -Wl,--base-file,\$output_objdir/\$soname-base \$output_objdir/\$soname-exp  -Wl,-e,_DllMainCRTStartup@12 -o \$output_objdir/\$soname \$libobjs \$deplibs \$compiler_flags~
+      \$CC -Wl,--base-file,\$output_objdir/\$soname-base \$output_objdir/\$soname-exp  -Wl,-e,__cygwin_dll_entry@12 -o \$output_objdir/\$soname \$libobjs \$deplibs \$compiler_flags~
       \$DLLTOOL --as=\$AS --dllname \$soname --exclude-symbols DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12,DllMainCRTStartup@12,DllEntryPoint@12 --def \$output_objdir/\$soname-def --base-file \$output_objdir/\$soname-base --output-exp \$output_objdir/\$soname-exp --output-lib \$output_objdir/\$libname.dll.a~
-      \$CC \$output_objdir/\$soname-exp  -Wl,-e,_DllMainCRTStartup@12 -o \$output_objdir/\$soname \$libobjs \$deplibs \$compiler_flags"
-postinstall_cmds=""
-postuninstall_cmds=""
+      \$CC \$output_objdir/\$soname-exp  -Wl,-e,__cygwin_dll_entry@12 -o \$output_objdir/\$soname \$libobjs \$deplibs \$compiler_flags"
+postinstall_cmds="dlpath=\\\`bash 2>&1 -c '. \$dir/\${file}i; echo \\\$dlname'\\\`~
+      dldir=\$destdir/\\\`dirname \\\$dlpath\\\`~
+      test -d \\\$dldir || mkdir -p \\\$dldir~
+      \$install_prog .libs/\$dlname \\\$dldir/\$dlname"
+postuninstall_cmds="dldll=\\\`bash 2>&1 -c '. \$file; echo \\\$dlname'\\\`~
+      dlpath=\$dir/\\\$dldll; \$rm \\\$dlpath"
 
 # Commands to strip libraries.
 old_striplib="strip --strip-debug"
@@ -269,8 +273,7 @@ finish_cmds=""
 finish_eval=""
 
 # Take the output of nm and produce a listing of raw symbols and C names.
-global_symbol_pipe="sed -n -e 's/^.*[ 	]\\([ABCDGISTW][ABCDGISTW]*\\)[ 	][ 	]*\\(_\\)\\([_A-Za-z][_A-Za-z0-9]*\\)
-\\{0,1\\}\$/\\1 \\2\\3 \\3/p'"
+global_symbol_pipe="sed -n -e 's/^.*[ 	]\\([ABCDGISTW][ABCDGISTW]*\\)[ 	][ 	]*\\(_\\)\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 \\2\\3 \\3/p'"
 
 # Transform the output of nm in a proper C declaration
 global_symbol_to_cdecl="sed -n -e 's/^. .* \\(.*\\)\$/extern char \\1;/p'"
@@ -317,7 +320,7 @@ variables_saved_for_relink="PATH PATH LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH 
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" =c:/mingw/bin/../lib/gcc-lib/mingw32/3.2.3/ c:/mingw/bin/../lib/gcc-lib/ /mingw/lib/gcc-lib/mingw32/3.2.3/ /usr/lib/gcc/mingw32/3.2.3/ c:/mingw/bin/../lib/gcc-lib/mingw32/3.2.3/../../../../mingw32/lib/mingw32/3.2.3/ c:/mingw/bin/../lib/gcc-lib/mingw32/3.2.3/../../../../mingw32/lib/ /mingw/lib/gcc-lib/mingw32/3.2.3/../../../../mingw32/lib/mingw32/3.2.3/ /mingw/lib/gcc-lib/mingw32/3.2.3/../../../../mingw32/lib/ c:/mingw/bin/../lib/gcc-lib/mingw32/3.2.3/../../../mingw32/3.2.3/ c:/mingw/bin/../lib/gcc-lib/mingw32/3.2.3/../../../ /mingw/lib/gcc-lib/mingw32/3.2.3/../../../mingw32/3.2.3/ /mingw/lib/gcc-lib/mingw32/3.2.3/../../../ /lib/mingw32/3.2.3/ /lib/ /usr/lib/mingw32/3.2.3/ /usr/lib/"
+sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
 
 # Run-time system search path for libraries
 sys_lib_dlsearch_path_spec="/lib /usr/lib"

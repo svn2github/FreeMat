@@ -1,3 +1,12 @@
+More stuff:
+0.  System commands!
+1.  Point and Rect don't work under Windows anymore (X?)
+2.  Add DrawPoint to XWindow
+3.  First long text output that causes scrollbars 
+    to appear has weird redraw
+4.  Flashing on backspace... (clear EOD --> refresh?)
+5.  Menu? File, Edit, Help?
+
 General Issues:
 1. Empty plot windows are black - why? - Done
 2. filename expansion needs to be fixed - Done

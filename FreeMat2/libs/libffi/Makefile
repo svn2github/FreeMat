@@ -14,8 +14,8 @@
 
 SHELL = /bin/sh
 
-srcdir = /home/build/FreeMat2/libs/libffi
-top_srcdir = /home/build/FreeMat2/libs/libffi
+srcdir = /cygdrive/c/FreeMat2/libs/libffi
+top_srcdir = /cygdrive/c/FreeMat2/libs/libffi
 prefix = /usr/local
 exec_prefix = ${prefix}
 
@@ -40,12 +40,12 @@ pkgincludedir = $(includedir)/libffi
 
 top_builddir = .
 
-ACLOCAL = /home/build/FreeMat2/libs/libffi/missing aclocal
-AUTOCONF = /home/build/FreeMat2/libs/libffi/missing autoconf
-AUTOMAKE = /home/build/FreeMat2/libs/libffi/missing automake
-AUTOHEADER = /home/build/FreeMat2/libs/libffi/missing autoheader
+ACLOCAL = aclocal
+AUTOCONF = autoconf
+AUTOMAKE = automake
+AUTOHEADER = autoheader
 
-INSTALL = /bin/install -c
+INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_SCRIPT = ${INSTALL_PROGRAM}
@@ -57,8 +57,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = i686-pc-mingw32
-host_triplet = i686-pc-mingw32
+host_alias = i686-pc-cygwin
+host_triplet = i686-pc-cygwin
 AS = @AS@
 CC = gcc
 CXX = @CXX@
@@ -68,7 +68,7 @@ EXEEXT = .exe
 GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LN_S = ln
+LN_S = ln -s
 MAINT = #
 MAKEINFO = makeinfo
 OBJDUMP = @OBJDUMP@
@@ -80,7 +80,7 @@ STRIP = strip
 TARGET = X86_WIN32
 TARGETDIR = x86
 VERSION = 2.00-beta
-libffi_basedir = /home/build/FreeMat2/libs/libffi
+libffi_basedir = /cygdrive/c/FreeMat2/libs/libffi
 
 AUTOMAKE_OPTIONS = cygnus
 
@@ -103,7 +103,7 @@ EXTRA_DIST = LICENSE ChangeLog.v1 src/mips/ffi.c src/mips/n32.S \
 		src/sh/ffi.c src/sh/sysv.S
 
 
-VPATH = /home/build/FreeMat2/libs/libffi:/home/build/FreeMat2/libs/libffi/src:/home/build/FreeMat2/libs/libffi/src/x86
+VPATH = /cygdrive/c/FreeMat2/libs/libffi:/cygdrive/c/FreeMat2/libs/libffi/src:/cygdrive/c/FreeMat2/libs/libffi/src/x86
 
 # Work around what appears to be a GNU make bug handling MAKEFLAGS
 # values defined in terms of make variables, as is the case for CC and

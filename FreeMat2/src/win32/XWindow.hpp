@@ -67,8 +67,10 @@ class XWindow : public GraphicsContext {
   int m_state;
   int m_clickx, m_clicky;
   int m_box_x1, m_box_x2, m_box_y1, m_box_y2;
+  std::vector<Rect2D> clipstack;
   HFONT m_hfont;
   HFONT m_vfont;
+  HRGN clipwin;
   Color bgcol, fgcol;
   LineStyleType m_style;
 };

@@ -337,9 +337,11 @@ HPEN GetWinPen(LineStyleType style, Color col) {
 	hpen = CreatePen(penStyle,1,RGB(col.red,col.green,col.blue));
 	return hpen;
 }
+
 void XWindow::DrawLine(Point2D pos1, Point2D pos2) {
   HDC hdc;
   hdc = GetDC(m_window);
+  SelectClipRgn(hdc,clipwin);
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
   MoveToEx(hdc, pos1.x, pos1.y, NULL);
@@ -354,6 +356,7 @@ void XWindow::DrawPoint(Point2D pos) {
 void XWindow::DrawCircle(Point2D pos, int radius) {
   HDC hdc;
   hdc = GetDC(m_window);
+  SelectClipRgn(hdc,clipwin);
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
   SelectObject(hdc, GetStockObject(NULL_BRUSH));
@@ -366,6 +369,7 @@ void XWindow::DrawCircle(Point2D pos, int radius) {
 void XWindow::DrawRectangle(Rect2D rect) {
   HDC hdc;
   hdc = GetDC(m_window);
+  SelectClipRgn(hdc,clipwin);
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
   Rectangle(hdc, rect.x1, rect.y1, 
@@ -384,6 +388,7 @@ void XWindow::FillRectangle(Rect2D rect) {
   rt.bottom = rect.y1+rect.height;
   HDC hdc;
   hdc = GetDC(m_window);
+  SelectClipRgn(hdc,clipwin);
   FillRect(hdc, &rt, hbrush);
   ReleaseDC(m_window, hdc);  
   DeleteObject(hbrush);
@@ -399,6 +404,7 @@ void XWindow::DrawLines(std::vector<Point2D> pts) {
   }
   HDC hdc;
   hdc = GetDC(m_window);
+  SelectClipRgn(hdc,clipwin);
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
   Polyline(hdc, pt, pts.size());
@@ -407,11 +413,25 @@ void XWindow::DrawLines(std::vector<Point2D> pts) {
 }
 
 void XWindow::PushClippingRegion(Rect2D rect) {
+  clipwin = CreateRectRgn(rect.x1, rect.y1, 
+			  rect.x1+rect.width, rect.y1+rect.height);
+  clipstack.push_back(rect);
 }
 
 Rect2D XWindow::PopClippingRegion() {
-  Rect2D h;
-  return h;
+  clipstack.pop_back();
+  Rect2D rect;
+  if (clipstack.empty()) {
+    rect.x1 = 0;
+    rect.y1 = 0;
+    rect.width = m_width;
+    rect.height = m_height;
+  } else {
+    rect = clipstack.back();
+  }
+  clipwin = CreateRectRgn(rect.x1, rect.y1, 
+			  rect.x1+rect.width, rect.y1+rect.height);
+  return rect;
 }
 
 void XWindow::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {

@@ -303,36 +303,41 @@ namespace FreeMat {
     scanDirectory(std::string(cwd));
   }
 
-  void WinTerminal::scanDirectory(std::string scdir) {
-#if 0
-    // Open the directory
-    DIR *dir;
-
-    dir = opendir(scdir.c_str());
-    if (dir == NULL) return;
-    // Scan through the directory..
-    struct dirent *fspec;
-    char *fname;
-    std::string fullname;
-    while (fspec = readdir(dir)) {
-      // Get the name of the entry
-      fname = fspec->d_name;
-      // Check for '.' and '..'
-      if ((strcmp(fname,".") == 0) || (strcmp(fname,"..") == 0)) 
-	continue;
-      // Stat the file...
-      fullname = std::string(scdir + std::string(DELIM) + fname);
-      procFile(fname,fullname);
-    }
-    closedir(dir);
-#endif
+  std::string getFileNameOnly(char* fullname) {
+	  char *fcopy, *cp;
+	  std::string retval;
+	  fcopy = strdup(fullname);
+	  cp = fcopy + strlen(fcopy);
+	  while (*cp != '\\')
+		  cp--;
+	  retval = std::string(cp+1);
+	  free(fcopy);
+	  return retval;
   }
 
-  void WinTerminal::procFile(char *fname, 
+  void WinTerminal::scanDirectory(std::string scdir) {
+     HANDLE hSearch;
+	 WIN32_FIND_DATA FileData;
+	 std::string searchpat(scdir + "\\*.m");
+	 hSearch = FindFirstFile(searchpat.c_str(), &FileData);
+	 if (hSearch != INVALID_HANDLE_VALUE) {
+		 procFile(std::string(FileData.cFileName),
+			scdir + "\\" + std::string(FileData.cFileName));
+		while (FindNextFile(hSearch, &FileData)) {
+			procFile(std::string(FileData.cFileName),
+				scdir + "\\" + std::string(FileData.cFileName));
+		}
+		FindClose(hSearch);
+	 }
+  }
+
+  void WinTerminal::procFile(std::string sfname, 
 			     std::string fullname) {
     struct stat filestat;
     char buffer[1024];
+	char *fname;
   
+	fname = strdup(sfname.c_str());
     stat(fullname.c_str(),&filestat);
     if (S_ISREG(filestat.st_mode)) {
       int namelen;
@@ -353,6 +358,7 @@ namespace FreeMat {
 	}
       }
     }
+	free(fname);
   }
 
   int WinTerminal::getTerminalWidth() {

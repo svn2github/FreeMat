@@ -9,10 +9,10 @@
 /* #undef CRAY_STACKSEG_END */
 
 /* Define if you have alloca, as a function or macro.  */
-#define HAVE_ALLOCA 1
+#define HAVE_ALLOCA 0
 
 /* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
-#define HAVE_ALLOCA_H 1
+#define HAVE_ALLOCA_H 0
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be

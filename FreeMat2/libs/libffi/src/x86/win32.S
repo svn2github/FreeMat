@@ -30,8 +30,12 @@
 #include <ffi.h>
  
 .text
- 
+
+#ifndef WIN32
 .globl ffi_prep_args
+#else
+.globl _ffi_prep_args
+#endif	
  
         # This assumes we are using gas.
         .balign 16

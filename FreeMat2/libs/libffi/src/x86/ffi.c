@@ -33,6 +33,13 @@
 
 #include <stdlib.h>
 
+#ifdef WIN32
+char* _alloca() {
+  return NULL;
+}
+#define alloca _alloca
+#endif
+
 /* ffi_prep_args is called by the assembly routine once stack space
    has been allocated for the function's arguments */
 
@@ -125,7 +132,9 @@ ffi_status ffi_prep_cif_machdep(ffi_cif *cif)
     case FFI_TYPE_SINT64:
     case FFI_TYPE_FLOAT:
     case FFI_TYPE_DOUBLE:
+#if SIZEOF_LONG_DOUBLE != SIZEOF_DOUBLE
     case FFI_TYPE_LONGDOUBLE:
+#endif
       cif->flags = (unsigned) cif->rtype->type;
       break;
 

@@ -2224,10 +2224,8 @@ break;
    *  2. Check that data is either scalar or the right size.
    */
   void Array::setVectorSubset(Array& index, Array& data) throw(Exception){
-    if (index.isEmpty()) {
-      if (data.isEmpty()) return;
-      throw Exception("Size mismatch in assignment A(I) = B.\n");
-    }
+    if (index.isEmpty())
+      return;
     // Check the right-hand-side - if it is empty, then
     // we have a delete command in disguise.
     if (data.isEmpty()) {

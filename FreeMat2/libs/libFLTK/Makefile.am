@@ -289,4 +289,14 @@ src/fl_font_xft.cxx \
 src/fl_set_fonts_mac.cxx \
 src/fl_set_fonts_win32.cxx \
 src/fl_set_fonts_x.cxx \
-src/fl_set_fonts_xft.cxx 
+src/fl_set_fonts_xft.cxx \
+src/Fl_get_key_mac.cxx \
+src/Fl_mac.cxx \
+src/fl_color_mac.cxx \
+src/fl_draw_image_mac.cxx \
+src/fl_read_image_mac.cxx \
+src/fl_color_win32.cxx \
+src/Fl_get_key_win32.cxx \
+src/fl_read_image_win32.cxx \
+src/fl_set_fonts_win32.cxx \
+src/Fl_win32.cxx

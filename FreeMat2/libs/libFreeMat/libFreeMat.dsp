@@ -25,7 +25,7 @@ CFG=libFreeMat - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "libFreeMat - Win32 Release"
@@ -47,7 +47,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 
@@ -64,13 +64,13 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "\FreeMat2\libs\libffi\include" /I "\FreeMat2\libs\libXP" /I "\FreeMat2\libs\libf2c" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "X86_WIN32" /D "YY_NEVER_INTERACTIVE" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "\FreeMat2\libs\libffi\msvc_build" /I "\FreeMat2\libs\libXP" /I "\FreeMat2\libs\libf2c" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "X86_WIN32" /D "YY_NEVER_INTERACTIVE" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 

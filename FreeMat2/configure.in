@@ -4,7 +4,7 @@ AC_INIT(src/x11/main.cpp)
 dnl sets build, host, target variables and the same with _alias
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 1.04)
+AM_INIT_AUTOMAKE(FreeMat, 1.05)
 
 dnl Checks for programs.
 AC_PROG_CXX
@@ -14,27 +14,25 @@ AM_PROG_LEX
 AC_PROG_YACC
 AC_PROG_RANLIB
 
-case $host in
-*-*-linux-* | *-*-cygwin*)
-  FLIBS=`echo $FLIBS | sed -e 's/-lfrtbegin//g'` ;;
-esac
+dnl **** Configure Options ****
 
-case $host in
-*-*-darwin*)
-  LDFLAGS="$LDFLAGS -L/sw/lib";
-  CXXFLAGS="$CXXFLAGS -I/sw/include";
-  FLIBS="-lg2c";;
-esac
+AC_ARG_WITH(builtin-png,
+	[AC_HELP_STRING([--with-builtin-png],
+		[Force use of built-in PNG library [default=no]])],
+		builtinpng="yes",
+		builtinpng="no")
 
-use_mpi="no";
+AC_ARG_WITH(builtin-tiff,
+	[AC_HELP_STRING([--with-builtin-tiff],
+		[Force use of built-in TIFF library [default=no]])],
+		builtintiff="yes",
+		builtintiff="no")
 
-AC_PATH_XTRA
-
-AC_ARG_WITH(debug,
-	[AC_HELP_STRING([--with-debug],
-		[Include debug options [default=no]])],
-		debug_flag="-O0 -g3",
-		debug_flag="-O3")
+AC_ARG_WITH(builtin-jpg,
+	[AC_HELP_STRING([--with-builtin-jpg],
+		[Force use of built-in JPEG library [default=no]])],
+		builtinjpg="yes",
+		builtinjpg="no")
 
 AC_ARG_WITH(miniblas,
 	[AC_HELP_STRING([--with-miniblas],
@@ -48,67 +46,115 @@ AC_ARG_WITH(mpi,
 		usempi="yes",
 		usempi="no")
 
-MP_WITH_CURSES([],[])
+
+dnl **** Check for X11 ****
+
+AC_PATH_XTRA
+if test "$no_x" = "yes" ; then
+   AC_MSG_ERROR([cannot build X11 programs - try installing X11 and/or the X11-development package, and make sure you do not specify '--without-x' as a configuration option]);
+fi
+
+dnl **** Check for BLAS ****
+
+if test "$forceminiblas" != "yes" ; then
+   ACX_BLAS([], forceminiblas=yes)
+fi
+
+if test "$forceminiblas" = "yes" ; then
+  BLAS_LIBS="-L\${top_builddir}/libs/libMiniBLAS -lMiniBLAS"
+  miniblasdir="libMiniBLAS"
+  AC_MSG_WARN([using included (reference implementation) BLAS - this may result in poor matrix algebra performance - consider installing ATLAS (http://math-atlas.sourceforge.net) and then rebuilding])
+fi
+
+AM_CONDITIONAL([NEED_BLAS], [test "$forceminiblas" = yes])
+
+dnl **** Check for curses ****
+
+MP_WITH_CURSES
+
+if test ! "$CURSES_LIB"; then
+   AC_MSG_ERROR([could not find curses or ncurses libraries - one of these must be available for FreeMat to be built])
+fi
+
+dnl **** Check for MPI ****
+
+AC_LANG_CPLUSPLUS
+if test "$usempi" = "yes"; then
+  ACX_MPI( ,usempi="no")
+fi
+
+if test "$usempi" = "yes" ; then
+  CXX="$MPICXX"
+  AC_DEFINE([USE_MPI])
+fi
+
+dnl **** Check for PNG ****
+
+if test "$builtinpng" != "yes" ; then
+   AC_CHECK_LIB(png, png_check_sig, LIBS="-lpng -lz -lm $LIBS", builtinpng=yes , [-lz -lm])
+fi
+
+AM_CONDITIONAL([NEED_PNG], [test "$builtinpng" = "yes"])
+
+dnl **** Check for TIFF ****
+
+if test "$builtintiff" != "yes" ; then
+   AC_CHECK_LIB(tiff, TIFFError, LIBS="-ltiff -lm $LIBS", builtintiff=yes , [-lm])
+fi
+
+if test "$builtintiff" = "yes" ; then
+   AC_CONFIG_SUBDIRS(libs/libtiff361)
+fi
+
+AM_CONDITIONAL([NEED_TIFF], [test "$builtintiff" = "yes"])
+
+dnl **** Check for JPEG ****
+
+if test "$builtinjpg" != "yes" ; then
+   AC_CHECK_LIB(jpeg, jpeg_read_header, LIBS="-ljpeg $LIBS", builtinjpg=yes)
+fi
+
+if test "$builtinjpg" = "yes" ; then
+   AC_CONFIG_SUBDIRS(libs/libjpeg6b)
+fi
+
+AM_CONDITIONAL([NEED_JPEG], [test "$builtinjpg" = "yes"])
+
+dnl **** Configure libffi ****
+
+AC_CONFIG_SUBDIRS(libs/libffi)
+
+
+
+case $host in
+*-*-linux-* | *-*-cygwin*)
+  FLIBS=`echo $FLIBS | sed -e 's/-lfrtbegin//g'` ;;
+esac
+
+case $host in
+*-*-darwin*)
+  LDFLAGS="$LDFLAGS -L/sw/lib";
+  CXXFLAGS="$CXXFLAGS -I/sw/include";
+  FLIBS="-lg2c";;
+esac
 
 case $host in
 *-*-cygwin*)
   CURSES_LIB=""
 esac
 
-LIBS="$debug_flag $prof_flag $LIBS"
-CXXFLAGS="$CXXFLAGS $debug_flag $prof_flag"
+dnl **** Dink with some of the flags ****
 YFLAGS="$YFLAGS -d"
-LFLAGS="$LFLAGS"
-
 AC_SUBST(YFLAGS)
-AC_SUBST(LFLAGS)
 
-AC_LANG_CPLUSPLUS
-
-ACX_MPI( ,usempi="no")
-
-AC_CHECK_LIB(png, png_check_sig, LIBS="-lpng -lz -lm $LIBS"; AC_DEFINE(HAVE_PNG,1,[Define if you have PNG library.]), , [-lz -lm])
-AC_CHECK_LIB(jpeg, jpeg_read_header, LIBS="-ljpeg $LIBS"; AC_DEFINE(HAVE_JPEG,1,[Define if you have JPEG library.]))
-AC_CHECK_LIB(tiff, TIFFError, LIBS="-ltiff -lm $LIBS";AC_DEFINE(HAVE_TIFF,1,[Define if you have TIFF library.]),  , [-lm])
-
-if test "$forceminiblas" = "yes" ; then
-  BLAS_LIBS="-L\${top_builddir}/libs/libMiniBLAS -lMiniBLAS"
-  miniblasdir="libMiniBLAS"
-fi
 
 LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
-minilapackdir="libMiniLAPACK"
 
-if test "$usempi" = "yes" ; then
-  CXX="$MPICXX"
-  CXXFLAGS="$CXXFLAGS -DUSE_MPI=1"
-fi
-
-dnl if test "$usempi" = "yes" ; then
-dnl   mpidir="mpi"
-dnl fi
-
-AC_SUBST(minilapackdir)
-AC_SUBST(miniblasdir)
-dnl AC_SUBST(mpidir)
-dnl AC_SUBST(MPICXX)
-AC_SUBST(maindir)
-
-if test "$forceminiblas" != "yes" ; then
-   ACX_BLAS([], forceminiblas=yes)
-fi
-
-AM_CONDITIONAL([NEED_BLAS], [test "$forceminiblas" = yes])
-
-AC_OUTPUT(libs/libMiniLAPACK/Makefile)
-AC_OUTPUT(libs/libMiniBLAS/Makefile)
 
 LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB $MPILIBS"
 
-#ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
-AC_CONFIG_SUBDIRS(libs/libffi)
 
-AC_OUTPUT(Makefile src/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile src/win32/Makefile libs/libf2c/Makefile libs/libjpeg6b/Makefile libs/libtiff361/Makefile libs/libz/Makefile libs/lpng125/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile src/win32/Makefile libs/libf2c/Makefile libs/libz/Makefile libs/lpng125/Makefile libs/libMiniLAPACK/Makefile libs/libMiniBLAS/Makefile)
 
 echo \
 "------------------------------------------------------------------------

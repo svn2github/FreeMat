@@ -16,6 +16,7 @@ class FLTKGC : public GraphicsContext {
   Color m_fg;
   LineStyleType m_ls;
   std::vector<Rect2D> clips;
+  int m_size;
 public:
   FLTKGC(int width, int height);
   virtual ~FLTKGC();

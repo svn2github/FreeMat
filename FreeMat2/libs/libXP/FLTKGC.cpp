@@ -30,10 +30,12 @@ void FLTKGC::DrawTextString(std::string label, Point2D pos,
   else if (orient == ORIENT_90) {
     int w, h;
     unsigned char *data;
-    fl_measure(label.c_str(),w,h);
+    w = fl_width(label.c_str());
+    h = fl_height();
     Fl_Offscreen id;
     id = fl_create_offscreen(w,h);
     fl_begin_offscreen((Fl_Offscreen) id);
+    fl_font(FL_HELVETICA,m_size);
     fl_color(m_bg.red,m_bg.green,m_bg.blue);;
     fl_rectf(0,0,w,h);
     fl_color(FL_BLACK);
@@ -64,6 +66,7 @@ void FLTKGC::DrawTextString(std::string label, Point2D pos,
 
 void FLTKGC::SetFont(int fontsize) {
   fl_font(FL_HELVETICA,fontsize);
+  m_size = fontsize;
 }
 
 Color FLTKGC::SetBackGroundColor(Color col) {

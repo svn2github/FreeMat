@@ -29,10 +29,6 @@ namespace FreeMat {
 
   int exceptionCount = 0;
 
-  void printExceptionCount() {
-    std::cout << "Exception count " << exceptionCount << "\n";
-  }
-
   Exception::Exception(const char*msg_in) { 
     msg = strdup(msg_in); 
     exceptionCount++;

@@ -110,6 +110,7 @@ namespace FreeMat {
      context->addFunction("int8",Int8Function,1,1,args);
      context->addFunction("int16",Int16Function,1,1,args);
      context->addFunction("int32",Int32Function,1,1,args);  
+     context->addFunction("logical",LogicalFunction,1,1,args);  
      args.push_back("flag");
      context->addFunction("svd",SVDFunction,2,3,args);
      args.clear();
@@ -186,6 +187,8 @@ namespace FreeMat {
 //      context->addSpecialFunction("fdump",FdumpFunction,1,0,args);
      args.clear();
      context->addSpecialFunction("eval",EvalFunction,-1,-1,args);
+     args.clear();
+     context->addSpecialFunction("evalin",EvalInFunction,-1,-1,args);
      args.clear();
      args.push_back("filename");
      context->addSpecialFunction("source",SourceFunction,1,0,args);

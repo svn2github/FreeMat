@@ -22,6 +22,37 @@
 
 namespace FreeMat {
   //!
+  //@Module LOGICAL Convert to Logical
+  //@@Section TYPECAST
+  //@@Usage
+  //Converts the argument to a logical array.  The syntax
+  //for its use is
+  //@[
+  //   y = logical(x)
+  //@]
+  //where @|x| is an @|n|-dimensional numerical array.  Any nonzero 
+  //element maps to a logical 1.
+  //@@Example
+  //Here we convert an integer array to @|logical|:
+  //@<
+  //logical([1,2,3,0,0,0,5,2,2])
+  //@>
+  //The sampe example with double precision values:
+  //@<
+  //logical([pi,pi,0,e,0,-1])
+  //@>
+  //!
+  ArrayVector LogicalFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1) 
+      throw Exception("type conversion function requires one argument");
+    Array A(arg[0]);
+    A.promoteType(FM_LOGICAL);
+    ArrayVector retval;
+    retval.push_back(A);
+    return retval;
+  }
+
+  //!
   //@Module UINT8 Convert to Unsigned 8-bit Integer
   //@@Section TYPECAST
   //@@Usage

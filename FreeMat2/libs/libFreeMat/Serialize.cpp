@@ -141,11 +141,11 @@ namespace FreeMat {
   void Serialize::putString(const char *ptr) {
     unsigned int len;
     sendSignature('x',0);
-    if (ptr == NULL) {
+    if ((ptr == NULL)) {
       len = 0;
       putInts((int*)&len,1);
     } else {
-      len = strlen(ptr);
+      len = strlen(ptr)+1;
       putInts((int*)&len,1);
       putBytes(ptr,len);
     }
@@ -265,9 +265,8 @@ namespace FreeMat {
     unsigned int len;
     getInts((int*) &len,1);
     if (len == 0) return NULL;
-    char *cp = (char*) malloc((len+1)*sizeof(char));
+    char *cp = (char*) malloc(len*sizeof(char));
     getBytes(cp,len);
-    cp[len] = 0;
     return cp;
   }
 

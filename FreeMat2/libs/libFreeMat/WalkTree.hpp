@@ -461,7 +461,7 @@ namespace FreeMat {
      * the special variable "ans".
      * Throws an Exception if the statement type is not recognized.
      */
-    void statementType(ASTPtr t, bool printIt) throw (Exception);
+    void statementType(ASTPtr t, bool printIt);
     /**
      * The statement method simply screens out the need for the
      * printIt flag.  It also retrieves the statement context

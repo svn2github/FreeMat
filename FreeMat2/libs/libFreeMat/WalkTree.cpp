@@ -71,7 +71,7 @@ namespace FreeMat {
     return state;
   }
 
-  ArrayVector WalkTree::rowDefinition(ASTPtr t) throw(Exception) {
+  ArrayVector WalkTree::rowDefinition(ASTPtr t) {
     if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
     return expressionList(s,NULL);
@@ -136,7 +136,7 @@ namespace FreeMat {
   //F = ['hello';'there']
   //@>
   //!
-  Array WalkTree::matrixDefinition(ASTPtr t) throw(Exception) {
+  Array WalkTree::matrixDefinition(ASTPtr t) {
     ArrayMatrix m;
     if (t->opNum != OP_BRACKETS) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
@@ -188,7 +188,7 @@ namespace FreeMat {
   //C = {A,B}
   //@>
   //!
-  Array WalkTree::cellDefinition(ASTPtr t) throw(Exception) {
+  Array WalkTree::cellDefinition(ASTPtr t) {
     ArrayMatrix m;
     if (t->opNum != OP_BRACES) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
@@ -200,7 +200,7 @@ namespace FreeMat {
     return Array::cellConstructor(m);
   }
 
-  Array WalkTree::expression(ASTPtr t) throw(Exception) {
+  Array WalkTree::expression(ASTPtr t) {
     if (t->type == const_int_node) {
       int iv;
       double fv;
@@ -338,7 +338,7 @@ namespace FreeMat {
    * through rhsExpression, which can return
    * a vector of variables.
    */
-  ArrayVector WalkTree::expressionList(ASTPtr t, Dimensions* dim) throw(Exception) {
+  ArrayVector WalkTree::expressionList(ASTPtr t, Dimensions* dim) {
     ArrayVector m;
     ArrayVector n;
     ASTPtr root;
@@ -397,7 +397,7 @@ namespace FreeMat {
     return m;
   }
 
-  bool WalkTree::conditionedStatement(ASTPtr t) throw(Exception){
+  bool WalkTree::conditionedStatement(ASTPtr t) {
     bool conditionState;
     if (t->opNum != OP_CSTAT)
       throw Exception("AST - syntax error!");
@@ -421,7 +421,7 @@ namespace FreeMat {
    * any matches.  If x is a string and we are a cell-array, then
    * this is applied on an element-by-element basis also.
    */
-  bool WalkTree::testCaseStatement(ASTPtr t, Array s) throw(Exception){
+  bool WalkTree::testCaseStatement(ASTPtr t, Array s) {
     bool caseMatched;
     Array r;
     if (t->type != reserved_node || t->tokenNumber != FM_CASE) 
@@ -532,7 +532,7 @@ namespace FreeMat {
   //switch_test('carpet')
   //@>
   //!
-  void WalkTree::switchStatement(ASTPtr t) throw(Exception){
+  void WalkTree::switchStatement(ASTPtr t) {
     Array switchVal;
 
     // First, extract the value to perform the switch on.
@@ -1082,7 +1082,7 @@ namespace FreeMat {
   //return
   //@>
   //!
-  void WalkTree::statementType(ASTPtr t, bool printIt) throw(Exception){
+  void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
     Fl::flush();
@@ -1234,7 +1234,7 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::block(ASTPtr t) throw(Exception){
+  void WalkTree::block(ASTPtr t) {
     try {
       ASTPtr s;
       s = t->down;
@@ -1437,7 +1437,7 @@ namespace FreeMat {
     return 1;
   }
 
-  Array WalkTree::assignExpression(ASTPtr t, Array& val) throw(Exception) {
+  Array WalkTree::assignExpression(ASTPtr t, Array& val) {
     ArrayVector vec;
 
     vec.push_back(val);
@@ -1445,7 +1445,7 @@ namespace FreeMat {
   }
   
   // If we got this far, we must have at least one subindex
-  Array WalkTree::assignExpression(ASTPtr t, ArrayVector& value) throw(Exception) {
+  Array WalkTree::assignExpression(ASTPtr t, ArrayVector& value) {
     if (t->down == NULL) {
       Array retval(value[0]);
       value.erase(value.begin());
@@ -1495,7 +1495,7 @@ namespace FreeMat {
     return lhs;
   }
 
-  void WalkTree::specialFunctionCall(ASTPtr t, bool printIt) throw(Exception){
+  void WalkTree::specialFunctionCall(ASTPtr t, bool printIt) {
     FunctionDef *fptr;
     ASTPtr fAST;
     ArrayVector m;
@@ -1505,7 +1505,7 @@ namespace FreeMat {
     m = functionExpression(fptr,t,0,false);
   }
 
-  void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) throw(Exception){
+  void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) {
     ArrayVector m;
     ASTPtr s, fAST, saveLHS;
     Array c;
@@ -1993,7 +1993,7 @@ namespace FreeMat {
   //!
   ArrayVector WalkTree::functionExpression(FunctionDef *funcDef,
 					   ASTPtr t, int narg_out, 
-					   bool outputOptional) throw(Exception) {
+					   bool outputOptional) {
     ArrayVector m, n;
     ASTPtr s, q, p;
     stringVector keywords;
@@ -2194,7 +2194,7 @@ namespace FreeMat {
     return isFun;
   }
 
-  Array WalkTree::rhsExpressionSimple(ASTPtr t) throw(Exception) {
+  Array WalkTree::rhsExpressionSimple(ASTPtr t) {
     Array r;
     ArrayVector m;
     bool isVar;
@@ -2381,7 +2381,7 @@ namespace FreeMat {
   //'foo' with two double elements, the second of which is assigned
   //a value of pi.
   //!
-  ArrayVector WalkTree::rhsExpression(ASTPtr t) throw(Exception){
+  ArrayVector WalkTree::rhsExpression(ASTPtr t) {
     ASTPtr s;
     Array r, q;
     Array n, p;

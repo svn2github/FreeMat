@@ -200,7 +200,7 @@ namespace FreeMat {
   }
 
 
-  bool* Array::getBinaryMap(uint32 maxD) throw(Exception){
+  bool* Array::getBinaryMap(uint32 maxD) {
     bool* map = (bool*) Malloc(maxD*sizeof(bool));
     int N = getLength();
     constIndexPtr rp = (constIndexPtr) dp->getData();
@@ -215,7 +215,7 @@ namespace FreeMat {
     return map;
   }
 
-  uint32 Array::getMaxAsIndex() throw(Exception) {
+  uint32 Array::getMaxAsIndex()  {
     indexType maxval;
     int k;
     constIndexPtr rp = (constIndexPtr) dp->getData();
@@ -227,7 +227,7 @@ namespace FreeMat {
     return maxval;
   }
 
-  void Array::toOrdinalType() throw(Exception) {
+  void Array::toOrdinalType()  {
     switch(dp->dataClass) {
     case FM_LOGICAL:
       {
@@ -652,7 +652,7 @@ namespace FreeMat {
    * Reshape an array.  This is only legal if the number of 
    * elements remains the same after reshaping.
    */
-  void Array::reshape(Dimensions& a) throw(Exception) {
+  void Array::reshape(Dimensions& a)  {
     if (a.getElementCount() != getLength())
       throw Exception("Reshape operation cannot change the number of elements in array.");
     ensureSingleOwner();
@@ -664,7 +664,7 @@ namespace FreeMat {
    * operation.  The distinction is made in complex classed by overriding
    * this method.
    */
-  void Array::hermitian() throw(Exception) {
+  void Array::hermitian()  {
     if (!is2D())
       throw Exception("Cannot apply Hermitian transpose operation to multi-dimensional array.");
     if (isEmpty())
@@ -727,7 +727,7 @@ namespace FreeMat {
   /**
    * Transpose our array.
    */
-  void Array::transpose() throw(Exception) {
+  void Array::transpose()  {
     if (!is2D())
       throw Exception("Cannot apply transpose operation to multi-dimensional array.");
     if (isEmpty())
@@ -890,7 +890,7 @@ namespace FreeMat {
   }
 #undef caseMacro
 
-  const bool Array::isRealAllZeros() const throw(Exception) {
+  const bool Array::isRealAllZeros() const  {
     bool allZeros;
     int len = getLength();
     int i;
@@ -984,7 +984,7 @@ namespace FreeMat {
 #undef caseMacroReal
 #undef caseMacroComplex
 
-  const bool Array::testForCaseMatch(Array x) const throw(Exception) {
+  const bool Array::testForCaseMatch(Array x) const  {
     // We had better be a scalar
     if (!(isScalar() || isString()))
       throw Exception("Switch argument must be a scalar or a string");
@@ -1443,7 +1443,7 @@ break;
     copyObject(copy);
   }
 
-  Array Array::diagonalConstructor(Array src, int diagonalOrder) throw(Exception) {
+  Array Array::diagonalConstructor(Array src, int diagonalOrder)  {
     Array retval;
     if (!src.isVector())
       throw Exception("Argument to diagonal constructor must by a vector!\n");
@@ -1657,7 +1657,7 @@ break;
     return Array(FM_DOUBLE,dim,rp);
   }
 
-  Array Array::matrixConstructor(ArrayMatrix& m) throw(Exception){
+  Array Array::matrixConstructor(ArrayMatrix& m) {
     Dimensions mat_dims;
     Dimensions row_dims;
     Class maxType, minType;
@@ -1852,7 +1852,7 @@ break;
     }
   }
 
-  Array Array::cellConstructor(ArrayMatrix& m) throw(Exception){
+  Array Array::cellConstructor(ArrayMatrix& m) {
     int columnCount, rowCount;
     Array* qp = NULL;
 
@@ -1913,7 +1913,7 @@ break;
     }
   }
 
-  Array Array::structConstructor(stringVector fNames, ArrayVector& values) throw(Exception) {
+  Array Array::structConstructor(stringVector fNames, ArrayVector& values)  {
     const Array* rptr;
     Dimensions dims;
     bool nonSingularFound;
@@ -2001,7 +2001,7 @@ break;
    * the elements in source indexed by the index argument.  Indexing
    * is done using vector ordinals.
    */
-  Array Array::getVectorSubset(Array& index) throw(Exception) {
+  Array Array::getVectorSubset(Array& index)  {
     void *qp = NULL;
     try {
       if (index.isEmpty()) {
@@ -2040,7 +2040,7 @@ break;
    * the elements in source indexed by the index argument.  Indexing
    * is done using ndimensional indices.
    */
-  Array Array::getNDimSubset(ArrayVector& index) throw(Exception) {
+  Array Array::getNDimSubset(ArrayVector& index)  {
     constIndexPtr* indx = NULL;  
     void *qp = NULL;
     int i;
@@ -2090,7 +2090,7 @@ break;
   /**
    * Return the contents of a cell array - must be a scalar...
    */
-  Array Array::getVectorContents(Array& indexing) throw(Exception) {
+  Array Array::getVectorContents(Array& indexing)  {
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non-cell array object.");
     if (indexing.isEmpty())
@@ -2117,7 +2117,7 @@ break;
   /**
    * Return the contents of a cell array - indexed via a multi-dim index.
    */
-  Array Array::getNDimContents(ArrayVector& indexing) throw(Exception) {
+  Array Array::getNDimContents(ArrayVector& indexing)  {
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non-cell array object.");
     int L = indexing.size();
@@ -2140,7 +2140,7 @@ break;
     return qp[j];
   }
 
-  Array Array::getField(std::string fieldName) throw(Exception) {
+  Array Array::getField(std::string fieldName)  {
     // First make sure that we are a scalar value.
     if (!isScalar())
       throw Exception("Cannot dereference a field of a multi-element structure array.");
@@ -2154,7 +2154,7 @@ break;
     return qp[ndx];
   }
 
-  Array Array::getDiagonal(int diagonalOrder) throw(Exception) {
+  Array Array::getDiagonal(int diagonalOrder)  {
     if (!is2D()) 
       throw Exception("Cannot take diagonal of N-dimensional array.");
     int rows = dp->dimensions.getRows();
@@ -2190,7 +2190,7 @@ break;
     }
   }
 
-  ArrayVector Array::getFieldAsList(std::string fieldName) throw(Exception) {
+  ArrayVector Array::getFieldAsList(std::string fieldName)  {
     if (dp->dataClass != FM_STRUCT_ARRAY)
       throw Exception("Attempt to apply field-indexing to non structure-array object.");
     ArrayVector m;
@@ -2209,7 +2209,7 @@ break;
   /**
    * Return a subset of a cell array as a list.
    */
-  ArrayVector Array::getVectorContentsAsList(Array& index) throw(Exception) {
+  ArrayVector Array::getVectorContentsAsList(Array& index)  {
     ArrayVector m;
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non cell-array object.");
@@ -2235,7 +2235,7 @@ break;
   /**
    * Return the contents of an cell array as a list.
    */
-  ArrayVector Array::getNDimContentsAsList(ArrayVector& index) throw(Exception) {
+  ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non cell-array object.");
     // Store the return value here
@@ -2279,7 +2279,7 @@ break;
    *  1. Compute the maximum along each dimension
    *  2. Check that data is either scalar or the right size.
    */
-  void Array::setVectorSubset(Array& index, Array& data) throw(Exception){
+  void Array::setVectorSubset(Array& index, Array& data) {
     if (index.isEmpty())
       return;
     // Check the right-hand-side - if it is empty, then
@@ -2357,7 +2357,7 @@ break;
    * Logical indices need to be converted into integer lists
    * before they can be used.
    */
-  void Array::setNDimSubset(ArrayVector& index, Array& data) throw(Exception){
+  void Array::setNDimSubset(ArrayVector& index, Array& data) {
     constIndexPtr* indx = NULL;
     // If the RHS is empty, then we really want to do a delete...
     if (data.isEmpty()) {
@@ -2455,7 +2455,7 @@ break;
    *      length.
    *   2. Deletions do not occur.
    */
-  void Array::setVectorContents(Array& index, Array& data) throw(Exception){
+  void Array::setVectorContents(Array& index, Array& data) {
     promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
     index.toOrdinalType();
     if (index.getLength() == 0)
@@ -2477,7 +2477,7 @@ break;
    * This is the multidimensional cell-replacement function.
    * This is for content-based indexing (curly brackets).
    */
-  void Array::setNDimContents(ArrayVector& index, Array& data) throw(Exception){
+  void Array::setNDimContents(ArrayVector& index, Array& data) {
     promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
     int L = index.size();
     Dimensions outPos(L);
@@ -2502,7 +2502,7 @@ break;
   /**
    * Set the contents of a field in a structure.
    */
-  void Array::setField(std::string fieldName, Array& data) throw(Exception) {
+  void Array::setField(std::string fieldName, Array& data)  {
     if (isEmpty()) {
       stringVector newNames(dp->fieldNames);
       newNames.push_back(fieldName);
@@ -2532,7 +2532,7 @@ break;
    *      length.
    *   2. Deletions do not occur.
    */
-  void Array::setVectorContentsAsList(Array& index, ArrayVector& data) throw(Exception){
+  void Array::setVectorContentsAsList(Array& index, ArrayVector& data) {
     promoteType(FM_CELL_ARRAY);
     index.toOrdinalType();
     if (data.size() < index.getLength())
@@ -2561,7 +2561,7 @@ break;
    * This is the multidimensional cell-replacement function.
    * This is for content-based indexing (curly brackets).
    */
-  void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& data) throw(Exception){
+  void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& data) {
     promoteType(FM_CELL_ARRAY);
     int L = index.size();
     // Convert the indexing variables into an ordinal type.
@@ -2618,7 +2618,7 @@ break;
   /**
    * Set the contents of a field in a structure.
    */
-  void Array::setFieldAsList(std::string fieldName, ArrayVector& data) throw(Exception) {
+  void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
     Array *rp = NULL;
     if (isEmpty()) {
       stringVector names(dp->fieldNames);
@@ -2722,7 +2722,7 @@ break;
   /**
    * Delete a subset of a variable.  
    */
-  void Array::deleteNDimSubset(ArrayVector& args) throw(Exception) {
+  void Array::deleteNDimSubset(ArrayVector& args)  {
     int singletonReferences = 0;
     int singletonDimension = 0;
     int i;
@@ -3329,7 +3329,7 @@ break;
     }
   }
 
-  char* Array::getContentsAsCString() const throw(Exception) {
+  char* Array::getContentsAsCString() const  {
     char *buffer;
     const char*qp;
     if (dp->dataClass != FM_STRING)
@@ -3342,7 +3342,7 @@ break;
     return buffer;
   }
 
-  int32 Array::getContentsAsIntegerScalar() throw(Exception) {
+  int32 Array::getContentsAsIntegerScalar()  {
     int32 *qp;
     if ((dp->dataClass <= FM_STRUCT_ARRAY) ||
 	(dp->dataClass >= FM_FLOAT))
@@ -3354,7 +3354,7 @@ break;
     return (*qp);
   }
 
-  double Array::getContentsAsDoubleScalar() throw(Exception) {
+  double Array::getContentsAsDoubleScalar()  {
     double *qp;
     if (isComplex() || isReferenceType() || isString())
       throw Exception("Expected a real valued scalar");

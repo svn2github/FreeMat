@@ -72,8 +72,8 @@ namespace FreeMat {
     Interface *io;
     io = eval->getInterface();
     outcolumns = io->getTerminalWidth()/maxlen;
-    int colwidth = io->getTerminalWidth()/outcolumns + 1;
     if (outcolumns < 1) outcolumns = 1;
+    int colwidth = io->getTerminalWidth()/outcolumns + 1;
     int entryCount = 0;
     while (entryCount < qp.getLength()) {
       char buffer[4096];

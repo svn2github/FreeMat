@@ -307,6 +307,12 @@ namespace FreeMat {
      args.clear();
      args.push_back("prompt");
      context->addSpecialFunction("getline",GetLineFunction,1,1,args);
+     args.clear();
+     args.push_back("x");
+     context->addFunction("sparse",SparseFunction,1,1,args);
+     args.clear();
+     args.push_back("x");
+     context->addFunction("full",FullFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

@@ -69,6 +69,32 @@ namespace FreeMat {
     return retval;
   } 
 
+  ArrayVector SparseFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw("Need one argument to sparse function");
+    Array r(arg[0]);
+    r.ensureSingleOwner();
+    r.makeSparse();
+    return singleArrayVector(r);
+  }
+
+  ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw("Need one argument to full function");
+    Array r(arg[0]);
+    r.ensureSingleOwner();
+    r.makeDense();
+    return singleArrayVector(r);
+  }
+
+  //!
+  //@Module GETLINE Get a Line of Input from User
+  //@@Usage
+  //Reads a line (as a string).
+  //@[
+  //  a = getline
+  //@]
+  //!
   ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     char *prompt, *text;
     if (arg.size() < 1)
@@ -1480,7 +1506,7 @@ namespace FreeMat {
       copySelect.incrementModulo(repcount,0);
     }
     ArrayVector retval;
-    retval.push_back(Array(x.getDataClass(),outdims,dp,x.getFieldNames()));
+    retval.push_back(Array(x.getDataClass(),outdims,dp,false,x.getFieldNames()));
     return retval;
   }
 

@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
+EXTRA_DIST = mac.r Info.plist appIcon.icns
 
 if NEED_PNG
   PNGLIB = @top_builddir@/libs/lpng125/libpng.a @top_builddir@/libs/libz/libz.a
@@ -20,3 +21,16 @@ FreeMat_SOURCES = main.cpp
 
 FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB) @top_builddir@/libs/libFLTK/libFLTK.a
 FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFLTK/libFLTK.a @top_builddir@/libs/libffi/libffi.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB)  -lg2c 
+
+bundle:
+	/Developer/Tools/Rez @top_srcdir@/src/mac/mac.r -o @top_builddir@/src/mac/FreeMat
+	mkdir -p @top_builddir@/src/mac/FreeMat.app
+	mkdir -p @top_builddir@/src/mac/FreeMat.app/Contents
+	cp @top_srcdir@/src/mac/Info.plist @top_builddir@/src/mac/FreeMat.app/Contents/.
+	mkdir -p @top_builddir@/src/mac/FreeMat.app/Contents/MacOS
+	mkdir -p @top_builddir@/src/mac/FreeMat.app/Contents/Resources
+	cp @top_builddir@/src/mac/FreeMat @top_builddir@/src/mac/FreeMat.app/Contents/MacOS/.
+	ln -s @top_builddir@/src/mac/FreeMat.app/Contents/MacOS/FreeMat @top_builddir@/src/mac/FreeMat.app/FreeMat
+	cp @top_srcdir@/src/mac/appIcon.icns @top_builddir@/src/mac/FreeMat.app/Contents/Resources/.
+	cp -R $(prefix)/share/FreeMat/html @top_builddir@/src/mac/FreeMat.app/Contents/Resources/.
+	cp -R $(prefix)/share/FreeMat/MFiles @top_builddir@/src/mac/FreeMat.app/Contents/Resources/.

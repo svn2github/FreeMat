@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>appIcon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.platypus.app</string>
+	<string>freemat.sf.net.app</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSMainNibFile</key>

@@ -23,7 +23,6 @@
 #include <iostream>
 #include "Malloc.hpp"
 #include "GraphicsCore.hpp"
-#include "RGBImageGC.hpp"
 
 namespace FreeMat {
 

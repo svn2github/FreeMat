@@ -1,4 +1,3 @@
-m4trace:aclocal.m4:283: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
 m4trace:configure.in:2: -1- AC_INIT([src/x11/main.cpp])
 m4trace:configure.in:2: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.in:2: -1- m4_pattern_forbid([_AC_])
@@ -53,6 +52,9 @@ m4trace:configure.in:2: -1- AC_SUBST([ECHO_N])
 m4trace:configure.in:2: -1- AC_SUBST([ECHO_T])
 m4trace:configure.in:2: -1- AC_SUBST([LIBS])
 m4trace:configure.in:5: -1- AC_CANONICAL_SYSTEM
+m4trace:configure.in:5: -1- _m4_warn([obsolete], [The macro `AC_CANONICAL_SYSTEM' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:1660: AC_CANONICAL_SYSTEM is expanded from...
+configure.in:5: the top level])
 m4trace:configure.in:5: -1- AC_CANONICAL_HOST
 m4trace:configure.in:5: -1- AC_SUBST([build], [$ac_cv_build])
 m4trace:configure.in:5: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
@@ -67,33 +69,64 @@ m4trace:configure.in:5: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's
 m4trace:configure.in:5: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
 m4trace:configure.in:5: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
 m4trace:configure.in:7: -1- AM_INIT_AUTOMAKE([FreeMat], [1.0])
-m4trace:configure.in:7: -1- AM_AUTOMAKE_VERSION([1.6.3])
+m4trace:configure.in:7: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
+m4trace:configure.in:7: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
+m4trace:configure.in:7: -1- AM_AUTOMAKE_VERSION([1.8.3])
 m4trace:configure.in:7: -1- AC_PROG_INSTALL
 m4trace:configure.in:7: -1- AC_SUBST([INSTALL_PROGRAM])
 m4trace:configure.in:7: -1- AC_SUBST([INSTALL_SCRIPT])
 m4trace:configure.in:7: -1- AC_SUBST([INSTALL_DATA])
+m4trace:configure.in:7: -1- AC_SUBST([CYGPATH_W])
 m4trace:configure.in:7: -1- AC_SUBST([PACKAGE], [FreeMat])
 m4trace:configure.in:7: -1- AC_SUBST([VERSION], [1.0])
+m4trace:configure.in:7: -1- _AM_IF_OPTION([no-define], [], [AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Name of package])
+ AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Version number of package])])
+m4trace:configure.in:7: -2- _AM_MANGLE_OPTION([no-define])
 m4trace:configure.in:7: -1- AC_DEFINE_TRACE_LITERAL([PACKAGE])
 m4trace:configure.in:7: -1- AH_OUTPUT([PACKAGE], [/* Name of package */
 #undef PACKAGE])
 m4trace:configure.in:7: -1- AC_DEFINE_TRACE_LITERAL([VERSION])
 m4trace:configure.in:7: -1- AH_OUTPUT([VERSION], [/* Version number of package */
 #undef VERSION])
+m4trace:configure.in:7: -1- AM_SANITY_CHECK
+m4trace:configure.in:7: -1- AM_MISSING_PROG([ACLOCAL], [aclocal-${am__api_version}])
+m4trace:configure.in:7: -1- AM_MISSING_HAS_RUN
+m4trace:configure.in:7: -1- AM_AUX_DIR_EXPAND
 m4trace:configure.in:7: -1- AC_SUBST([ACLOCAL])
+m4trace:configure.in:7: -1- AM_MISSING_PROG([AUTOCONF], [autoconf])
 m4trace:configure.in:7: -1- AC_SUBST([AUTOCONF])
+m4trace:configure.in:7: -1- AM_MISSING_PROG([AUTOMAKE], [automake-${am__api_version}])
 m4trace:configure.in:7: -1- AC_SUBST([AUTOMAKE])
+m4trace:configure.in:7: -1- AM_MISSING_PROG([AUTOHEADER], [autoheader])
 m4trace:configure.in:7: -1- AC_SUBST([AUTOHEADER])
+m4trace:configure.in:7: -1- AM_MISSING_PROG([MAKEINFO], [makeinfo])
 m4trace:configure.in:7: -1- AC_SUBST([MAKEINFO])
+m4trace:configure.in:7: -1- AM_MISSING_PROG([AMTAR], [tar])
 m4trace:configure.in:7: -1- AC_SUBST([AMTAR])
+m4trace:configure.in:7: -1- AM_PROG_INSTALL_SH
 m4trace:configure.in:7: -1- AC_SUBST([install_sh])
+m4trace:configure.in:7: -1- AM_PROG_INSTALL_STRIP
 m4trace:configure.in:7: -1- AC_SUBST([STRIP])
 m4trace:configure.in:7: -1- AC_SUBST([ac_ct_STRIP])
 m4trace:configure.in:7: -1- AC_SUBST([INSTALL_STRIP_PROGRAM])
+m4trace:configure.in:7: -1- AM_PROG_MKDIR_P
+m4trace:configure.in:7: -1- AC_SUBST([mkdir_p])
 m4trace:configure.in:7: -1- AC_PROG_AWK
 m4trace:configure.in:7: -1- AC_SUBST([AWK])
 m4trace:configure.in:7: -1- AC_PROG_MAKE_SET
 m4trace:configure.in:7: -1- AC_SUBST([SET_MAKE])
+m4trace:configure.in:7: -1- AM_SET_LEADING_DOT
+m4trace:configure.in:7: -1- AC_SUBST([am__leading_dot])
+m4trace:configure.in:7: -1- _AM_IF_OPTION([no-dependencies], [], [AC_PROVIDE_IFELSE([AC_PROG_CC],
+                  [_AM_DEPENDENCIES(CC)],
+                  [define([AC_PROG_CC],
+                          defn([AC_PROG_CC])[_AM_DEPENDENCIES(CC)])])dnl
+AC_PROVIDE_IFELSE([AC_PROG_CXX],
+                  [_AM_DEPENDENCIES(CXX)],
+                  [define([AC_PROG_CXX],
+                          defn([AC_PROG_CXX])[_AM_DEPENDENCIES(CXX)])])dnl
+])
+m4trace:configure.in:7: -2- _AM_MANGLE_OPTION([no-dependencies])
 m4trace:configure.in:10: -1- AC_PROG_CXX
 m4trace:configure.in:10: -1- AC_SUBST([CXX])
 m4trace:configure.in:10: -1- AC_SUBST([CXXFLAGS])
@@ -103,14 +136,24 @@ m4trace:configure.in:10: -1- AC_SUBST([CXX])
 m4trace:configure.in:10: -1- AC_SUBST([ac_ct_CXX])
 m4trace:configure.in:10: -1- AC_SUBST([EXEEXT], [$ac_cv_exeext])
 m4trace:configure.in:10: -1- AC_SUBST([OBJEXT], [$ac_cv_objext])
-m4trace:configure.in:10: -1- AC_SUBST([DEPDIR])
+m4trace:configure.in:10: -1- _AM_DEPENDENCIES([CXX])
+m4trace:configure.in:10: -1- AM_SET_DEPDIR
+m4trace:configure.in:10: -1- AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])
+m4trace:configure.in:10: -1- AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.in:10: -1- AM_MAKE_INCLUDE
 m4trace:configure.in:10: -1- AC_SUBST([am__include])
 m4trace:configure.in:10: -1- AC_SUBST([am__quote])
+m4trace:configure.in:10: -1- AM_DEP_TRACK
 m4trace:configure.in:10: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
 m4trace:configure.in:10: -1- AC_SUBST([AMDEP_TRUE])
 m4trace:configure.in:10: -1- AC_SUBST([AMDEP_FALSE])
 m4trace:configure.in:10: -1- AC_SUBST([AMDEPBACKSLASH])
 m4trace:configure.in:10: -1- AC_SUBST([CXXDEPMODE], [depmode=$am_cv_CXX_dependencies_compiler_type])
+m4trace:configure.in:10: -1- AM_CONDITIONAL([am__fastdepCXX], [
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CXX_dependencies_compiler_type" = gcc3])
+m4trace:configure.in:10: -1- AC_SUBST([am__fastdepCXX_TRUE])
+m4trace:configure.in:10: -1- AC_SUBST([am__fastdepCXX_FALSE])
 m4trace:configure.in:11: -1- AC_PROG_CC
 m4trace:configure.in:11: -1- AC_SUBST([CC])
 m4trace:configure.in:11: -1- AC_SUBST([CFLAGS])
@@ -123,12 +166,19 @@ m4trace:configure.in:11: -1- AC_SUBST([ac_ct_CC])
 m4trace:configure.in:11: -1- AC_SUBST([CC])
 m4trace:configure.in:11: -1- AC_SUBST([CC])
 m4trace:configure.in:11: -1- AC_SUBST([ac_ct_CC])
+m4trace:configure.in:11: -1- _AM_DEPENDENCIES([CC])
 m4trace:configure.in:11: -1- AC_SUBST([CCDEPMODE], [depmode=$am_cv_CC_dependencies_compiler_type])
+m4trace:configure.in:11: -1- AM_CONDITIONAL([am__fastdepCC], [
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CC_dependencies_compiler_type" = gcc3])
+m4trace:configure.in:11: -1- AC_SUBST([am__fastdepCC_TRUE])
+m4trace:configure.in:11: -1- AC_SUBST([am__fastdepCC_FALSE])
 m4trace:configure.in:12: -1- AC_SUBST([F77])
 m4trace:configure.in:12: -1- AC_SUBST([FFLAGS])
 m4trace:configure.in:12: -1- AC_SUBST([LDFLAGS])
 m4trace:configure.in:12: -1- AC_SUBST([F77])
 m4trace:configure.in:12: -1- AC_SUBST([ac_ct_F77])
+m4trace:configure.in:13: -1- AM_PROG_LEX
 m4trace:configure.in:13: -1- AC_PROG_LEX
 m4trace:configure.in:13: -1- AC_SUBST([LEX])
 m4trace:configure.in:13: -1- AC_CHECK_LIB([fl], [yywrap], [LEXLIB="-lfl"], [AC_CHECK_LIB(l, yywrap, LEXLIB="-ll")])
@@ -144,122 +194,155 @@ m4trace:configure.in:14: -1- AC_SUBST([YACC])
 m4trace:configure.in:15: -1- AC_PROG_RANLIB
 m4trace:configure.in:15: -1- AC_SUBST([RANLIB])
 m4trace:configure.in:15: -1- AC_SUBST([ac_ct_RANLIB])
-m4trace:configure.in:32: -1- AC_PATH_X
-m4trace:configure.in:32: -1- AC_PROG_CPP
-m4trace:configure.in:32: -1- AC_SUBST([CPP])
-m4trace:configure.in:32: -1- AC_SUBST([CPPFLAGS])
-m4trace:configure.in:32: -1- AC_SUBST([CPP])
-m4trace:configure.in:32: -1- AC_DEFINE_TRACE_LITERAL([X_DISPLAY_MISSING])
-m4trace:configure.in:32: -1- AH_OUTPUT([X_DISPLAY_MISSING], [/* Define to 1 if the X Window System is missing or not being used. */
+m4trace:configure.in:29: -1- AC_PATH_X
+m4trace:configure.in:29: -1- AC_PROG_CPP
+m4trace:configure.in:29: -1- AC_SUBST([CPP])
+m4trace:configure.in:29: -1- AC_SUBST([CPPFLAGS])
+m4trace:configure.in:29: -1- AC_SUBST([CPP])
+m4trace:configure.in:29: -1- AC_DEFINE_TRACE_LITERAL([X_DISPLAY_MISSING])
+m4trace:configure.in:29: -1- AH_OUTPUT([X_DISPLAY_MISSING], [/* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([dnet], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet"])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([dnet_stub], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet_stub"])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([nsl], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl"])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([bsd], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lbsd"])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([socket], [connect], [X_EXTRA_LIBS="-lsocket $X_EXTRA_LIBS"], [], [$X_EXTRA_LIBS])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([posix], [remove], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lposix"])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([ipc], [shmat], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lipc"])
-m4trace:configure.in:32: -1- AC_CHECK_LIB([ICE], [IceConnectionNumber], [X_PRE_LIBS="$X_PRE_LIBS -lSM -lICE"], [], [$X_EXTRA_LIBS])
-m4trace:configure.in:32: -1- AC_SUBST([X_CFLAGS])
-m4trace:configure.in:32: -1- AC_SUBST([X_PRE_LIBS])
-m4trace:configure.in:32: -1- AC_SUBST([X_LIBS])
-m4trace:configure.in:32: -1- AC_SUBST([X_EXTRA_LIBS])
-m4trace:configure.in:52: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CURSES_H])
-m4trace:configure.in:52: -1- AC_DEFINE_TRACE_LITERAL([HAVE_NCURSES_H])
-m4trace:configure.in:64: -1- AC_SUBST([YFLAGS])
-m4trace:configure.in:65: -1- AC_SUBST([LFLAGS])
-m4trace:configure.in:68: -1- AC_SUBST([MPICXX])
-m4trace:configure.in:68: -1- AC_SUBST([MPICXX])
-m4trace:configure.in:68: -1- AC_SUBST([MPICXX])
-m4trace:configure.in:68: -1- AC_CHECK_LIB([mpi], [MPI_Init], [MPILIBS="-lmpi"])
-m4trace:configure.in:68: -1- AC_CHECK_LIB([mpich], [MPI_Init], [MPILIBS="-lmpich"])
-m4trace:configure.in:68: -1- AC_SUBST([MPILIBS])
-m4trace:configure.in:68: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MPI])
-m4trace:configure.in:68: -1- AH_OUTPUT([HAVE_MPI], [/* Define if you have the MPI library. */
-#undef HAVE_MPI])
-m4trace:configure.in:69: -2- AC_DEFINE_TRACE_LITERAL([HAVE_PNG])
-m4trace:configure.in:69: -2- AH_OUTPUT([HAVE_PNG], [/* Define if you have PNG library. */
+m4trace:configure.in:29: -1- AC_CHECK_LIB([dnet], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet"])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([dnet_stub], [dnet_ntoa], [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldnet_stub"])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([nsl], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lnsl"])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([bsd], [gethostbyname], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lbsd"])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([socket], [connect], [X_EXTRA_LIBS="-lsocket $X_EXTRA_LIBS"], [], [$X_EXTRA_LIBS])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([posix], [remove], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lposix"])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([ipc], [shmat], [X_EXTRA_LIBS="$X_EXTRA_LIBS -lipc"])
+m4trace:configure.in:29: -1- AC_CHECK_LIB([ICE], [IceConnectionNumber], [X_PRE_LIBS="$X_PRE_LIBS -lSM -lICE"], [], [$X_EXTRA_LIBS])
+m4trace:configure.in:29: -1- AC_SUBST([X_CFLAGS])
+m4trace:configure.in:29: -1- AC_SUBST([X_PRE_LIBS])
+m4trace:configure.in:29: -1- AC_SUBST([X_LIBS])
+m4trace:configure.in:29: -1- AC_SUBST([X_EXTRA_LIBS])
+m4trace:configure.in:35: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+configure.in:35: the top level])
+m4trace:configure.in:41: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+configure.in:41: the top level])
+m4trace:configure.in:49: -1- MP_WITH_CURSES([], [])
+m4trace:configure.in:49: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:2223: AC_TRY_LINK is expanded from...
+autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
+autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
+acinclude.m4:160: MP_WITH_CURSES is expanded from...
+configure.in:49: the top level])
+m4trace:configure.in:49: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CURSES_H])
+m4trace:configure.in:49: -1- _m4_warn([obsolete], [The macro `AC_TRY_LINK' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:2223: AC_TRY_LINK is expanded from...
+autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
+autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
+acinclude.m4:160: MP_WITH_CURSES is expanded from...
+configure.in:49: the top level])
+m4trace:configure.in:49: -1- AC_DEFINE_TRACE_LITERAL([HAVE_NCURSES_H])
+m4trace:configure.in:61: -1- AC_SUBST([YFLAGS])
+m4trace:configure.in:62: -1- AC_SUBST([LFLAGS])
+m4trace:configure.in:64: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
+You should run autoupdate.], [autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
+configure.in:64: the top level])
+m4trace:configure.in:66: -2- AC_DEFINE_TRACE_LITERAL([HAVE_PNG])
+m4trace:configure.in:66: -2- AH_OUTPUT([HAVE_PNG], [/* Define if you have PNG library. */
 #undef HAVE_PNG])
-m4trace:configure.in:69: -1- AC_CHECK_LIB([png], [png_check_sig], [LIBS="-lpng -lz -lm $LIBS"; 
+m4trace:configure.in:66: -1- AC_CHECK_LIB([png], [png_check_sig], [LIBS="-lpng -lz -lm $LIBS"; 
 cat >>confdefs.h <<\_ACEOF
 @%:@define HAVE_PNG 1
 _ACEOF
 ], [], [-lz -lm])
-m4trace:configure.in:70: -2- AC_DEFINE_TRACE_LITERAL([HAVE_JPEG])
-m4trace:configure.in:70: -2- AH_OUTPUT([HAVE_JPEG], [/* Define if you have JPEG library. */
+m4trace:configure.in:67: -2- AC_DEFINE_TRACE_LITERAL([HAVE_JPEG])
+m4trace:configure.in:67: -2- AH_OUTPUT([HAVE_JPEG], [/* Define if you have JPEG library. */
 #undef HAVE_JPEG])
-m4trace:configure.in:70: -1- AC_CHECK_LIB([jpeg], [jpeg_read_header], [LIBS="-ljpeg $LIBS"; 
+m4trace:configure.in:67: -1- AC_CHECK_LIB([jpeg], [jpeg_read_header], [LIBS="-ljpeg $LIBS"; 
 cat >>confdefs.h <<\_ACEOF
 @%:@define HAVE_JPEG 1
 _ACEOF
 ])
-m4trace:configure.in:71: -2- AC_DEFINE_TRACE_LITERAL([HAVE_TIFF])
-m4trace:configure.in:71: -2- AH_OUTPUT([HAVE_TIFF], [/* Define if you have TIFF library. */
+m4trace:configure.in:68: -2- AC_DEFINE_TRACE_LITERAL([HAVE_TIFF])
+m4trace:configure.in:68: -2- AH_OUTPUT([HAVE_TIFF], [/* Define if you have TIFF library. */
 #undef HAVE_TIFF])
-m4trace:configure.in:71: -1- AC_CHECK_LIB([tiff], [TIFFError], [LIBS="-ltiff -lm $LIBS";
+m4trace:configure.in:68: -1- AC_CHECK_LIB([tiff], [TIFFError], [LIBS="-ltiff -lm $LIBS";
 cat >>confdefs.h <<\_ACEOF
 @%:@define HAVE_TIFF 1
 _ACEOF
 ], [], [-lm])
-m4trace:configure.in:85: -1- AC_SUBST([minilapackdir])
-m4trace:configure.in:86: -1- AC_SUBST([miniblasdir])
-m4trace:configure.in:87: -1- AC_SUBST([mpidir])
-m4trace:configure.in:88: -1- AC_SUBST([MPICXX])
-m4trace:configure.in:89: -1- AC_SUBST([maindir])
-m4trace:configure.in:92: -1- AC_CONFIG_FILES([libs/libMiniBLAS/Makefile])
-m4trace:configure.in:92: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.in:92: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
-m4trace:configure.in:94: -1- AC_SUBST([FLIBS])
-m4trace:configure.in:94: -1- AC_DEFINE_TRACE_LITERAL([F77_DUMMY_MAIN])
-m4trace:configure.in:94: -1- AH_OUTPUT([F77_DUMMY_MAIN], [/* Define to dummy `main\' function (if any) required to link to the Fortran 77
+m4trace:configure.in:82: -1- AC_SUBST([minilapackdir])
+m4trace:configure.in:83: -1- AC_SUBST([miniblasdir])
+m4trace:configure.in:86: -1- AC_SUBST([maindir])
+m4trace:configure.in:89: -1- AC_CONFIG_FILES([libs/libMiniBLAS/Makefile])
+m4trace:configure.in:89: -1- _m4_warn([obsolete], [AC_OUTPUT should be used without arguments.
+You should run autoupdate.], [])
+m4trace:configure.in:89: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.in:89: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.in:89: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.in:91: -1- ACX_BLAS([], [{ { echo "$as_me:$LINENO: error: Could not find BLAS. Try using --with-blas or --with-miniblas." >&5
+echo "$as_me: error: Could not find BLAS. Try using --with-blas or --with-miniblas." >&2;}
+   { (exit 1); exit 1; }; }])
+m4trace:configure.in:91: -1- AC_SUBST([FLIBS])
+m4trace:configure.in:91: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+acinclude.m4:125: ACX_BLAS is expanded from...
+configure.in:91: the top level])
+m4trace:configure.in:91: -1- AC_DEFINE_TRACE_LITERAL([F77_DUMMY_MAIN])
+m4trace:configure.in:91: -1- AH_OUTPUT([F77_DUMMY_MAIN], [/* Define to dummy `main\' function (if any) required to link to the Fortran
    libraries. */
 #undef F77_DUMMY_MAIN])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([atlas], [ATL_xerbla], [AC_CHECK_LIB(f77blas, $sgemm,
+m4trace:configure.in:91: -1- AC_DEFINE_TRACE_LITERAL([FC_DUMMY_MAIN_EQ_F77])
+m4trace:configure.in:91: -1- AH_OUTPUT([FC_DUMMY_MAIN_EQ_F77], [/* Define if F77 and FC dummy `main\' functions are identical. */
+#undef FC_DUMMY_MAIN_EQ_F77])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([atlas], [ATL_xerbla], [AC_CHECK_LIB(f77blas, $sgemm,
 		[AC_CHECK_LIB(cblas, cblas_dgemm,
 			[acx_blas_ok=yes
 			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
 			[], [-lf77blas -latlas])],
 			[], [-latlas])])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([f77blas], [$sgemm], [AC_CHECK_LIB(cblas, cblas_dgemm,
+m4trace:configure.in:91: -1- AC_CHECK_LIB([f77blas], [$sgemm], [AC_CHECK_LIB(cblas, cblas_dgemm,
 			[acx_blas_ok=yes
 			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
 			[], [-lf77blas -latlas])], [], [-latlas])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([cblas], [cblas_dgemm], [acx_blas_ok=yes
+m4trace:configure.in:91: -1- AC_CHECK_LIB([cblas], [cblas_dgemm], [acx_blas_ok=yes
 			 BLAS_LIBS="-lcblas -lf77blas -latlas"], [], [-lf77blas -latlas])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([blas], [$sgemm], [AC_CHECK_LIB(dgemm, $dgemm,
+m4trace:configure.in:91: -1- AC_CHECK_LIB([blas], [$sgemm], [AC_CHECK_LIB(dgemm, $dgemm,
 		[AC_CHECK_LIB(sgemm, $sgemm,
 			[acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
 			[], [-lblas])],
 			[], [-lblas])])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([dgemm], [$dgemm], [AC_CHECK_LIB(sgemm, $sgemm,
+m4trace:configure.in:91: -1- AC_CHECK_LIB([dgemm], [$dgemm], [AC_CHECK_LIB(sgemm, $sgemm,
 			[acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
 			[], [-lblas])], [], [-lblas])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([sgemm], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"], [], [-lblas])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([cxml], [$sgemm], [acx_blas_ok=yes;BLAS_LIBS="-lcxml"])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([dxml], [$sgemm], [acx_blas_ok=yes;BLAS_LIBS="-ldxml"])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([sunmath], [acosp], [AC_CHECK_LIB(sunperf, $sgemm,
+m4trace:configure.in:91: -1- AC_CHECK_LIB([sgemm], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"], [], [-lblas])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([cxml], [$sgemm], [acx_blas_ok=yes;BLAS_LIBS="-lcxml"])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([dxml], [$sgemm], [acx_blas_ok=yes;BLAS_LIBS="-ldxml"])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([sunmath], [acosp], [AC_CHECK_LIB(sunperf, $sgemm,
         			[BLAS_LIBS="-xlic_lib=sunperf -lsunmath"
                                  acx_blas_ok=yes],[],[-lsunmath])])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([sunperf], [$sgemm], [BLAS_LIBS="-xlic_lib=sunperf -lsunmath"
+m4trace:configure.in:91: -1- AC_CHECK_LIB([sunperf], [$sgemm], [BLAS_LIBS="-xlic_lib=sunperf -lsunmath"
                                  acx_blas_ok=yes], [], [-lsunmath])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([scs], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lscs"])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([complib.sgimath], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lcomplib.sgimath"])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([blas], [$sgemm], [AC_CHECK_LIB(essl, $sgemm,
+m4trace:configure.in:91: -1- AC_CHECK_LIB([scs], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lscs"])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([complib.sgimath], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lcomplib.sgimath"])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([blas], [$sgemm], [AC_CHECK_LIB(essl, $sgemm,
 			[acx_blas_ok=yes; BLAS_LIBS="-lessl -lblas"],
 			[], [-lblas $FLIBS])])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([essl], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lessl -lblas"], [], [-lblas $FLIBS])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([m], [$sgemm], [acx_blas_ok=yes
+m4trace:configure.in:91: -1- AC_CHECK_LIB([essl], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lessl -lblas"], [], [-lblas $FLIBS])
+m4trace:configure.in:91: -1- AC_CHECK_LIB([m], [$sgemm], [acx_blas_ok=yes
 			  BLAS_LIBS="-framework vecLib"])
-m4trace:configure.in:94: -1- AC_CHECK_LIB([blas], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lblas"])
-m4trace:configure.in:94: -1- AC_SUBST([BLAS_LIBS])
-m4trace:configure.in:94: -2- AC_DEFINE_TRACE_LITERAL([HAVE_BLAS])
-m4trace:configure.in:94: -2- AH_OUTPUT([HAVE_BLAS], [/* Define if you have a BLAS library. */
+m4trace:configure.in:91: -1- AC_CHECK_LIB([blas], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lblas"])
+m4trace:configure.in:91: -1- AC_SUBST([BLAS_LIBS])
+m4trace:configure.in:91: -2- AC_DEFINE_TRACE_LITERAL([HAVE_BLAS])
+m4trace:configure.in:91: -2- AH_OUTPUT([HAVE_BLAS], [/* Define if you have a BLAS library. */
 #undef HAVE_BLAS])
-m4trace:configure.in:97: -1- AC_CONFIG_FILES([libs/libMiniLAPACK/Makefile])
-m4trace:configure.in:97: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.in:97: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
-m4trace:configure.in:102: -1- AC_CONFIG_SUBDIRS([libs/libffi])
-m4trace:configure.in:102: -1- AC_SUBST([subdirs], ["$subdirs libs/libffi"])
-m4trace:configure.in:104: -1- AC_CONFIG_FILES([Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile])
-m4trace:configure.in:104: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.in:104: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.in:94: -1- AC_CONFIG_FILES([libs/libMiniLAPACK/Makefile])
+m4trace:configure.in:94: -1- _m4_warn([obsolete], [AC_OUTPUT should be used without arguments.
+You should run autoupdate.], [])
+m4trace:configure.in:94: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.in:94: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.in:94: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.in:99: -1- AC_CONFIG_SUBDIRS([libs/libffi])
+m4trace:configure.in:99: -1- AC_SUBST([subdirs], ["$subdirs libs/libffi"])
+m4trace:configure.in:101: -1- AC_CONFIG_FILES([Makefile src/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile])
+m4trace:configure.in:101: -1- _m4_warn([obsolete], [AC_OUTPUT should be used without arguments.
+You should run autoupdate.], [])
+m4trace:configure.in:101: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.in:101: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.in:101: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS

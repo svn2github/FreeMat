@@ -19,10 +19,7 @@ case $host in
   FLIBS=`echo $FLIBS | sed -e 's/-lfrtbegin//g'` ;;
 esac
 
-maindir="src/x11"
 case $host in
-*-*-cygwin*)
-  maindir="src/win32";;
 *-*-darwin*)
   LDFLAGS="$LDFLAGS -L/sw/lib";
   CXXFLAGS="$CXXFLAGS -I/sw/include";
@@ -43,11 +40,11 @@ AC_ARG_WITH(miniblas,
 		forceminiblas="yes",
 		forceminiblas="no")
 
-AC_ARG_WITH(mpi,
-	[AC_HELP_STRING([--with-mpi],
-	        [Build the MPI executables [default=no]])],
-		usempi="yes",
-		usempi="no")
+dnl AC_ARG_WITH(mpi,
+dnl	[AC_HELP_STRING([--with-mpi],
+dnl	        [Build the MPI executables [default=no]])],
+dnl		usempi="yes",
+dnl		usempi="no")
 
 MP_WITH_CURSES([],[])
 
@@ -65,7 +62,7 @@ AC_SUBST(YFLAGS)
 AC_SUBST(LFLAGS)
 
 AC_LANG_CPLUSPLUS
-ACX_MPI([], usempi="no")
+dnl ACX_MPI([], usempi="no")
 AC_CHECK_LIB(png, png_check_sig, LIBS="-lpng -lz -lm $LIBS"; AC_DEFINE(HAVE_PNG,1,[Define if you have PNG library.]), , [-lz -lm])
 AC_CHECK_LIB(jpeg, jpeg_read_header, LIBS="-ljpeg $LIBS"; AC_DEFINE(HAVE_JPEG,1,[Define if you have JPEG library.]))
 AC_CHECK_LIB(tiff, TIFFError, LIBS="-ltiff -lm $LIBS";AC_DEFINE(HAVE_TIFF,1,[Define if you have TIFF library.]),  , [-lm])
@@ -78,14 +75,14 @@ fi
 LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
 minilapackdir="libMiniLAPACK"
 
-if test "$usempi" = "yes" ; then
-  mpidir="mpi"
-fi
+dnl if test "$usempi" = "yes" ; then
+dnl   mpidir="mpi"
+dnl fi
 
 AC_SUBST(minilapackdir)
 AC_SUBST(miniblasdir)
-AC_SUBST(mpidir)
-AC_SUBST(MPICXX)
+dnl AC_SUBST(mpidir)
+dnl AC_SUBST(MPICXX)
 AC_SUBST(maindir)
 
 if test "$forceminiblas" = "yes" ; then
@@ -101,7 +98,7 @@ LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB"
 #ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
 AC_CONFIG_SUBDIRS(libs/libffi)
 
-AC_OUTPUT(Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile)
 
 echo \
 "------------------------------------------------------------------------
@@ -116,7 +113,6 @@ Configuration:
   Host System Type:           ${host}
   Install path:		      ${prefix}
   Libs:			      ${LIBS}
-  Force Mini-LAPACK:	      ${forceminilapack}
   Force Mini-BLAS:	      ${forceminiblas}
 
 ------------------------------------------------------------------------"

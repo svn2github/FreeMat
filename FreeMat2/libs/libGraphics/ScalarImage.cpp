@@ -162,7 +162,6 @@ namespace FreeMat {
     if (rawData == NULL) return;
     //    RGBImage src(zoomColumns, zoomRows, picData);
     //    gc.BlitRGBImage(Point2D(0,0),src);
-    printf("\r\nOn draw called!\n\r");
     SetImage(picData, zoomColumns, zoomRows);
   }
 

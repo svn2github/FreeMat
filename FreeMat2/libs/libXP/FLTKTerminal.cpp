@@ -33,7 +33,6 @@ const char *g_helppath;
 // CTRL+C 
 // CTRL+V 
 // \r handling
-// \t handling
 
 void FLTKTerminalWidget::blinkCB(void* data) {
   ((FLTKTerminalWidget*) data)->blink();

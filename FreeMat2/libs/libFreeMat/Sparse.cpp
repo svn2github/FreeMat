@@ -7,21 +7,6 @@ extern "C" {
 }
 #include "LAPACK.hpp"
 
-  void tstop() {
-    int a;
-    a = 3 + 5;
-  }
-
-template <class T>
-void RawPrintString(T* src) {
-  int j;
-  printf("%d <",(int)src[0]);
-  for (j=0;j<(int)src[0];j++) {
-    std::cout << " " << src[j+1];
-  }
-  std::cout << ">\r\n";
-}
-
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
@@ -195,15 +180,6 @@ bool RLEDecoder<T>::more() {
 }
 
 template <class T>
-void RLEDecoder<T>::print() {
-  update();
-  while(m < len) {
-    std::cout << "row " << row() << " value = " << value() << "\r\n";
-    advance();
-  }
-}
-
-template <class T>
 RLEDecoder<T>::RLEDecoder(const T* str, int alen) {
   data = str;
   m = 0;
@@ -229,7 +205,6 @@ void RLEDecoder<T>::update() {
     m += (int) data[n+1];
     n += 2;
     if ((m < len) && (n>data[0])) {
-      RawPrintString<T>((T*)data);
       throw FreeMat::Exception("Invalid data string!\n");
     }
   }
@@ -389,16 +364,6 @@ bool RLEDecoderComplex<T>::more() {
 }
 
 template <class T>
-void RLEDecoderComplex<T>::print() {
-  update();
-  while(m < len) {
-    std::cout << "row " << row() << " value = " << value_real();
-    std::cout << " + i" << value_imag() << "\r\n";
-    advance();
-  }
-}
-
-template <class T>
 RLEDecoderComplex<T>::RLEDecoderComplex(const T* str, int alen) {
   data = str;
   m = 0;
@@ -450,19 +415,6 @@ void RLEDecoderComplex<T>::advance() {
 
 
 namespace FreeMat {
-
-  template <class T>
-  void RawPrint(T** src, int rows, int cols) {
-    int i, j;
-    for (i=0;i<cols;i++) {
-      printf("%d <",(int)src[i][0]);
-      for (j=0;j<(int)src[i][0];j++) {
-	std::cout << " " << src[i][j+1];
-      }
-      std::cout << "\r\n";
-    }
-  }
-  
   template <class T>
   void DeleteSparse(T** src, int rows, int cols) {
     int i;
@@ -599,16 +551,6 @@ namespace FreeMat {
   template <class T>
   bool operator==(const IJVEntry<T>& a, const IJVEntry<T>& b) {
     return ((a.I == b.I) && (a.J == b.J) && (a.Vreal == b.Vreal) && (a.Vimag == b.Vimag));
-  }
-
-  template <class T>
-  void printIJV(IJVEntry<T>* a, int len) {
-    int i;
-    for (i=0;i<len;i++) {
-      std::cout << "ijv[" << i << "] I = " << a[i].I;
-      std::cout << "  J = " << a[i].J << "  Vr = " << a[i].Vreal;
-      std::cout << "  Vi = " << a[i].Vimag << "\r\n";
-    }    
   }
 
   template <class T>

@@ -588,7 +588,9 @@ symbRefList:
 	
 symbRef:
 	REFLPAREN indexList REFRPAREN {$$ = new AST(OP_PARENS,$2); }
+	| REFLPAREN indexList error {yyxpt("matching right parenthesis");}
         | REFLBRACE indexList REFRBRACE {$$ = new AST(OP_BRACES,$2); }
+	| REFLBRACE indexList error {yyxpt("matching right brace");}
         | FIELD {$$ = new AST(OP_DOT,$1); }
         ;
 
@@ -596,7 +598,9 @@ indexElement:
 	expr
 	| ':' {$$ = new AST(OP_ALL,NULL);}
 	| '/' IDENT '=' expr {$$ = new AST(OP_KEYWORD,$2,$4);}
+	| '/' IDENT '=' error {yyxpt("expecting expression after '=' in keyword assignment");}
 	| '/' IDENT {$$ = new AST(OP_KEYWORD,$2);}
+	| '/' error {yyxpt("expecting keyword identifier after '/' in keyword assignment");}
         ;
 
 indexList:
@@ -658,7 +662,6 @@ namespace FreeMat {
 /*     yydebug = 1; 	*/
     resetParser();
     interactiveMode = true;
-    yyexpect("a valid list of statements");
     setLexBuffer(txt);
     yyparse();
     return parseState();
@@ -669,7 +672,6 @@ namespace FreeMat {
     interactiveMode = false;
     filename = fname;
     setLexFile(fp);
-    yyexpect("a valid function definition or script");
     yyparse();
     return parseState();
   }

@@ -86,9 +86,9 @@ namespace FreeMat {
     } 
       *op = '\0';
 	  for (char *line=strtok(output,"\n");line;line=strtok(NULL,"\n")) {
+		  if (line[strlen(line)-1] == '\r')
+			line[strlen(line)-1] = 0;
 		  std::string toadd(line);
-		  if (toadd[toadd.size()-1] == '\r')
-			  toadd.erase(toadd.end());
           retval.push_back(toadd);
 	  }
     free(output);

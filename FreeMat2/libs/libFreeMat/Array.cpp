@@ -3181,10 +3181,9 @@ break;
 	  const char *ap =(const char*) dp->getData();
 	  if (dp->dimensions.getRows() == 1) {
 	    int columns(dp->dimensions.getColumns());
-	    for (int i=0;i<columns;i++) {
-	      snprintf(msgBuffer,MSGBUFLEN,"%c",ap[i]);
-	      io->outputMessage(msgBuffer);
-	    }
+		memcpy(msgBuffer,ap,columns);
+		msgBuffer[columns] = 0;
+	    io->outputMessage(msgBuffer);
 	  } else {
 	    io->outputMessage("[");
 	    dp->dimensions.printMe(io);
@@ -3384,7 +3383,7 @@ break;
     case FM_STRING: {
       const char *ap;
       ap = (const char*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%c",ap[num]);
+      snprintf(msgBuffer,MSGBUFLEN,"%c\0",ap[num]);
       io->outputMessage(msgBuffer);
       break;
     }

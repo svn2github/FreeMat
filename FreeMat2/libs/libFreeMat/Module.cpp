@@ -27,6 +27,10 @@
 #include "ParserInterface.hpp"
 #include "PathSearch.hpp"
 
+#ifdef WIN32
+#include <direct.h>
+#endif
+
 namespace FreeMat {
   SymbolTable<DynLib*> libPointers;
 
@@ -361,13 +365,14 @@ namespace FreeMat {
     libfile = arg[0].getContentsAsCString();
     libfullpath = psearch.ResolvePath(libfile);
     char buffer[1000];
-    getcwd(buffer,sizeof(buffer));
     // Prepend the current working directory... ugly, but necessary
 #ifdef WIN32
+    _getcwd(buffer,sizeof(buffer));
     if (!((libfullpath[0] == '\\') || ((libfullpath[1] == ':') && 
 				       (libfullpath[2] == '\\'))))
     libfullpath = std::string(buffer) + "\\" + libfullpath;
 #else
+    getcwd(buffer,sizeof(buffer));
     if (libfullpath[0] != '/')
       libfullpath = std::string(buffer) + "/" + libfullpath;
 #endif

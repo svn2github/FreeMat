@@ -1,0 +1,125 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpSetVoxelSize 3 "" VolPack
+.SH NAME
+vpSetVoxelSize \- define the size of a voxel
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpSetVoxelSize(\fIvpc, bytes_per_voxel, num_voxel_fields,
+num_shade_fields, num_classify_fields\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fIbytes_per_voxel;\fR
+.FA
+int \fInum_voxel_fields;\fR
+.FA
+int \fInum_shade_fields;\fR
+.FA
+int \fInum_classify_fields;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIbytes_per_voxel\fR
+Size of one voxel in bytes.
+.IP \fInum_voxel_fields\fR
+Number of fields in a voxel.
+.IP \fInum_shade_fields\fR
+Number of voxel fields that are arguments to the shading function.
+.IP \fInum_classify_fields\fR
+Number of voxel fields that are arguments to the opacity transfer
+function.
+.SH DESCRIPTION
+\fBvpSetVoxelSize\fR is used to define the size in bytes and the
+number of fields in a voxel.  Each voxel field is analogous to a field
+in a C structure and the contents of each field is user-defined.  See
+the \fBvpSetVoxelField\fR function (vpSetVoxelField(3)) for setting the
+size and offset of each field.  \fBvpSetVoxelSize\fR should be called
+before \fBvpSetVoxelField\fR and before any functions that access the
+contents of a voxel.
+.PP
+Typically, some of the voxel fields are used as arguments to a
+shading function and some (possibly the same) fields are used as
+arguments to an opacity transfer function (for classification).  The
+fields that are used for shading should come first, i.e.\ they should
+have the smallest offsets, followed by any fields that are only used
+for classification.  The classification fields can then be stripped
+off to save space during the precomputation stage for the fast
+rendering algorithm.  The parameter \fInum_shade_fields\fR indicates
+the number of fields (starting from the first) that must not be
+stripped off.
+.PP
+The parameter \fInum_clsfy_fields\fR indicates the total number of
+fields that are used as parameters to the opacity transfer function.
+These fields do not necessarily have to be contiguous, although any
+fields that are not also used for shading should be the last fields in
+the voxel.
+.PP
+If the call to \fBvpSetVoxelSize\fR succeeds, any existing precomputed
+volume data structures in the context are destroyed.
+.SH "STATE VARIABLES"
+The current voxel size parameters can be retrieved with the following
+state variable codes (see vpGeti(3)): VP_BYTES_PER_VOXEL,
+VP_VOXEL_FIELD_COUNT, VP_SHADE_FIELD_COUNT, VP_CLASSIFY_FIELD_COUNT.
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_LIMIT_EXCEEDED
+The number of voxel fields exceeds the implementation limit.  This
+limit can be increased by editing volpack.h and recompiling the
+library.
+.IP VPERROR_BAD_VALUE
+Either \fInum_clsfy_fields\fR or \fInum_shade_fields\fR is out of range.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpSetVoxelField(3)

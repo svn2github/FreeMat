@@ -1,0 +1,137 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpSetLight 3 "" VolPack
+.SH NAME
+vpSetLight \- set lighting properties
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpSetLight(\fIvpc, light_num, property, n0, n1, n2\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fIlight_num;\fR
+.FA
+int \fIproperty;\fR
+.FA
+double \fIn0, n1, n2;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIlight_num\fR
+A constant specifying a particular light source (VP_LIGHT0, VP_LIGHT1, ...,
+VP_LIGHT5).
+.IP \fIproperty\fR
+A constant specifying one lighting property (VP_COLOR or VP_DIRECTION).
+.IP "\fIn0, n1, n2\fR"
+Components of an RGB color (for VP_COLOR) or a direction vector
+(for VP_DIRECTION).
+.SH DESCRIPTION
+\fBvpSetLight\fR is used to set the properties of a light source.
+VolPack currently only supports directional light sources: each light
+is infinitely distant, so it can be fully characterized by a direction
+vector and a color.  The lighting properties are used by
+\fBvpShadeTable\fR to compute the shading lookup table, which is then
+used to compute a color for each voxel.
+.PP
+To initialize the lighting environment, call \fBvpSetLight\fR twice
+for each light source which will be enabled.  One call should set the
+RGB components of the light color (by using the VP_COLOR code for the
+\fIproperty\fR parameter), and one call should set the XYZ components
+of the light direction vector (by using the VP_DIRECTION code for the
+\fIproperty\fR parameter).  The particular light source is specified
+with one of the light source codes defined in volpack.h: VP_LIGHT0,
+VP_LIGHT1, ..., VP_LIGHT5.  In the current implementation, at most six
+light sources may be specified.
+.PP
+The RGB components of a light color should be numbers in the range 0.0
+(zero intensity) to 1.0 (full intensity).  For grayscale renderings
+only the first (red) component is used and the other components may be
+set to any legal value.  The default is white light (1.0, 1.0, 1.0).
+.PP
+The light direction vector points from the light source towards the
+lit object.  It is transformed by the current contents of
+the modeling matrix (see \fBvpCurrentMatrix\fR).  This allows the
+direction vector to be specified in an arbitrary coordinate system,
+provided the current modeling matrix properly transforms the vector
+into world coordinates.  The default is the vector (1,1,1).
+.PP
+Each light source contributes to the shading computation only if it is
+enabled by calling \fBvpEnable.\fR  By default, VP_LIGHT0 is enabled
+and all other lights are disabled.  The more light sources that are
+enabled, the longer it takes to precompute the contents of the shading
+lookup table.
+.PP
+One additional property of the light sources can be set with
+\fBvpEnable\fR: VP_LIGHT_BOTH_SIDES.  With this option enabled each
+light source shines in two opposing directions, as if there were two
+light sources facing each other with opposite direction vectors.  No
+additional computation is required when this option is enabled.
+.SH "STATE VARIABLES"
+Information about the current lighting properties can be retrieved
+with the following state variable codes (see vpGeti(3)):
+VP_LIGHT_BOTH_SIDES.
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_LIMIT_EXCEEDED
+The light number is invalid or exceeds an implementation limit.
+.IP VPERROR_SINGULAR
+The light direction vector is a zero vector.
+.IP VPERROR_BAD_VALUE
+The RGB color components are out of range.
+.IP VPERROR_BAD_OPTION
+The \fIproperty\fR argument is invalid.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpSetLookupShader(3), vpShadeTable(3),
+vpGetLight(3)

@@ -1,0 +1,714 @@
+%!PS-Adobe-2.0
+%%Title: 
+%%Creator: wxWindows PostScript renderer
+%%CreationDate: Wed Sep 10 23:07:47 2003
+%%Orientation: Portrait
+%%BoundingBox: 0 641 250 841
+%%EndComments
+
+%%BeginProlog
+/conicto {
+    /to_y exch def
+    /to_x exch def
+    /conic_cntrl_y exch def
+    /conic_cntrl_x exch def
+    currentpoint
+    /p0_y exch def
+    /p0_x exch def
+    /p1_x p0_x conic_cntrl_x p0_x sub 2 3 div mul add def
+    /p1_y p0_y conic_cntrl_y p0_y sub 2 3 div mul add def
+    /p2_x p1_x to_x p0_x sub 1 3 div mul add def
+    /p2_y p1_y to_y p0_y sub 1 3 div mul add def
+    p1_x p1_y p2_x p2_y to_x to_y curveto
+}  bind def
+/ellipsedict 8 dict def
+ellipsedict /mtrx matrix put
+/ellipse {
+    ellipsedict begin
+    /endangle exch def
+    /startangle exch def
+    /yrad exch def
+    /xrad exch def
+    /y exch def
+    /x exch def
+    /savematrix mtrx currentmatrix def
+    x y translate
+    xrad yrad scale
+    0 0 1 startangle endangle arc
+    savematrix setmatrix
+    end
+    } def
+/ellipticarcdict 8 dict def
+ellipticarcdict /mtrx matrix put
+/ellipticarc
+{ ellipticarcdict begin
+  /do_fill exch def
+  /endangle exch def
+  /startangle exch def
+  /yrad exch def
+  /xrad exch def 
+  /y exch def
+  /x exch def
+  /savematrix mtrx currentmatrix def
+  x y translate
+  xrad yrad scale
+  do_fill { 0 0 moveto } if
+  0 0 1 startangle endangle arc
+  savematrix setmatrix
+  do_fill { fill }{ stroke } ifelse
+  end
+} def
+% define 'colorimage' if it isn't defined
+%   ('colortogray' and 'mergeprocs' come from xwd2ps
+%     via xgrab)
+/colorimage where   % do we know about 'colorimage'?
+  { pop }           % yes: pop off the 'dict' returned
+  {                 % no:  define one
+    /colortogray {  % define an RGB->I function
+      /rgbdata exch store    % call input 'rgbdata'
+      rgbdata length 3 idiv
+      /npixls exch store
+      /rgbindx 0 store
+      0 1 npixls 1 sub {
+        grays exch
+        rgbdata rgbindx       get 20 mul    % Red
+        rgbdata rgbindx 1 add get 32 mul    % Green
+        rgbdata rgbindx 2 add get 12 mul    % Blue
+        add add 64 idiv      % I = .5G + .31R + .18B
+        put
+        /rgbindx rgbindx 3 add store
+      } for
+      grays 0 npixls getinterval
+    } bind def
+
+    % Utility procedure for colorimage operator.
+    % This procedure takes two procedures off the
+    % stack and merges them into a single procedure.
+
+    /mergeprocs { % def
+      dup length
+      3 -1 roll
+      dup
+      length
+      dup
+      5 1 roll
+      3 -1 roll
+      add
+      array cvx
+      dup
+      3 -1 roll
+      0 exch
+      putinterval
+      dup
+      4 2 roll
+      putinterval
+    } bind def
+
+    /colorimage { % def
+      pop pop     % remove 'false 3' operands
+      {colortogray} mergeprocs
+      image
+    } bind def
+  } ifelse          % end of 'false' case
+
+/reencodeISO {
+dup dup findfont dup length dict begin
+{ 1 index /FID ne { def }{ pop pop } ifelse } forall
+/Encoding ISOLatin1Encoding def
+currentdict end definefont
+} def
+/ISOLatin1Encoding [
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/space/exclam/quotedbl/numbersign/dollar/percent/ampersand/quoteright
+/parenleft/parenright/asterisk/plus/comma/minus/period/slash
+/zero/one/two/three/four/five/six/seven/eight/nine/colon/semicolon
+/less/equal/greater/question/at/A/B/C/D/E/F/G/H/I/J/K/L/M/N
+/O/P/Q/R/S/T/U/V/W/X/Y/Z/bracketleft/backslash/bracketright
+/asciicircum/underscore/quoteleft/a/b/c/d/e/f/g/h/i/j/k/l/m
+/n/o/p/q/r/s/t/u/v/w/x/y/z/braceleft/bar/braceright/asciitilde
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/dotlessi/grave/acute/circumflex/tilde/macron/breve
+/dotaccent/dieresis/.notdef/ring/cedilla/.notdef/hungarumlaut
+/ogonek/caron/space/exclamdown/cent/sterling/currency/yen/brokenbar
+/section/dieresis/copyright/ordfeminine/guillemotleft/logicalnot
+/hyphen/registered/macron/degree/plusminus/twosuperior/threesuperior
+/acute/mu/paragraph/periodcentered/cedilla/onesuperior/ordmasculine
+/guillemotright/onequarter/onehalf/threequarters/questiondown
+/Agrave/Aacute/Acircumflex/Atilde/Adieresis/Aring/AE/Ccedilla
+/Egrave/Eacute/Ecircumflex/Edieresis/Igrave/Iacute/Icircumflex
+/Idieresis/Eth/Ntilde/Ograve/Oacute/Ocircumflex/Otilde/Odieresis
+/multiply/Oslash/Ugrave/Uacute/Ucircumflex/Udieresis/Yacute
+/Thorn/germandbls/agrave/aacute/acircumflex/atilde/adieresis
+/aring/ae/ccedilla/egrave/eacute/ecircumflex/edieresis/igrave
+/iacute/icircumflex/idieresis/eth/ntilde/ograve/oacute/ocircumflex
+/otilde/odieresis/divide/oslash/ugrave/uacute/ucircumflex/udieresis
+/yacute/thorn/ydieresis
+] def
+
+/DrawSplineSection {
+    /y3 exch def
+    /x3 exch def
+    /y2 exch def
+    /x2 exch def
+    /y1 exch def
+    /x1 exch def
+    /xa x1 x2 x1 sub 0.666667 mul add def
+    /ya y1 y2 y1 sub 0.666667 mul add def
+    /xb x3 x2 x3 sub 0.666667 mul add def
+    /yb y3 y2 y3 sub 0.666667 mul add def
+    x1 y1 lineto
+    xa ya xb yb x3 y3 curveto
+    } def
+%%EndProlog
+1.000000 setlinewidth
+%%Page: 1
+0.50000000 0.50000000 scale
+0 0 translate
+/Helvetica reencodeISO def
+/Helvetica findfont
+12.000000 scalefont setfont
+270 1678 moveto
+() show
+1.00000000 1.00000000 1.00000000 setrgbcolor
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.00000000 1.00000000 1.00000000 setrgbcolor
+newpath
+60 1662 moveto
+481 1662 lineto
+481 1333 lineto
+60 1333 lineto
+closepath
+fill
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+270 808465722 moveto
+() show
+1.000000 setlinewidth
+newpath
+60 1334 moveto
+481 1334 lineto
+stroke
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1334 moveto
+60 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1334 moveto
+60 1339 lineto
+stroke
+48 1313 moveto
+(-4.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+112 1334 moveto
+112 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+112 1334 moveto
+112 1339 lineto
+stroke
+100 1313 moveto
+(-3.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+165 1334 moveto
+165 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+165 1334 moveto
+165 1339 lineto
+stroke
+153 1313 moveto
+(-2.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+217 1334 moveto
+217 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+217 1334 moveto
+217 1339 lineto
+stroke
+205 1313 moveto
+(-1.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+270 1334 moveto
+270 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+270 1334 moveto
+270 1339 lineto
+stroke
+261 1313 moveto
+(0.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+322 1334 moveto
+322 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+322 1334 moveto
+322 1339 lineto
+stroke
+313 1313 moveto
+(1.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+375 1334 moveto
+375 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+375 1334 moveto
+375 1339 lineto
+stroke
+366 1313 moveto
+(2.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+427 1334 moveto
+427 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+427 1334 moveto
+427 1339 lineto
+stroke
+418 1313 moveto
+(3.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+480 1334 moveto
+480 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+480 1334 moveto
+480 1339 lineto
+stroke
+471 1313 moveto
+(4.0) show
+1.000000 setlinewidth
+1.000000 setlinewidth
+newpath
+60 1662 moveto
+60 1333 lineto
+stroke
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1334 moveto
+480 1334 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1334 moveto
+65 1334 lineto
+stroke
+26 1329 moveto
+(-1.5) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1362 moveto
+480 1362 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1362 moveto
+65 1362 lineto
+stroke
+20 1357 moveto
+(-1.25) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1389 moveto
+480 1389 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1389 moveto
+65 1389 lineto
+stroke
+26 1384 moveto
+(-1.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1416 moveto
+480 1416 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1416 moveto
+65 1416 lineto
+stroke
+20 1411 moveto
+(-0.75) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1444 moveto
+480 1444 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1444 moveto
+65 1444 lineto
+stroke
+26 1439 moveto
+(-0.5) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1471 moveto
+480 1471 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1471 moveto
+65 1471 lineto
+stroke
+20 1466 moveto
+(-0.25) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1498 moveto
+480 1498 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1498 moveto
+65 1498 lineto
+stroke
+32 1493 moveto
+(0.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1526 moveto
+480 1526 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1526 moveto
+65 1526 lineto
+stroke
+26 1521 moveto
+(0.25) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1553 moveto
+480 1553 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1553 moveto
+65 1553 lineto
+stroke
+32 1548 moveto
+(0.5) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1580 moveto
+480 1580 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1580 moveto
+65 1580 lineto
+stroke
+26 1575 moveto
+(0.75) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1608 moveto
+480 1608 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1608 moveto
+65 1608 lineto
+stroke
+32 1603 moveto
+(1.0) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1635 moveto
+480 1635 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1635 moveto
+65 1635 lineto
+stroke
+26 1630 moveto
+(1.25) show
+1.000000 setlinewidth
+[2 5] 2 setdash
+0.82745098 0.82745098 0.82745098 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1662 moveto
+480 1662 lineto
+stroke
+1.000000 setlinewidth
+[] 0 setdash
+0.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+newpath
+60 1662 moveto
+65 1662 lineto
+stroke
+32 1657 moveto
+(1.5) show
+gsave
+ newpath
+60 1662 moveto
+481 1662 lineto
+481 1333 lineto
+60 1333 lineto
+closepath clip newpath
+1.000000 setlinewidth
+1.00000000 0.00000000 0.00000000 setrgbcolor
+1.000000 setlinewidth
+1.000000 setlinewidth
+newpath
+105 1498 moveto
+108 1469 lineto
+111 1441 lineto
+115 1415 lineto
+118 1392 lineto
+121 1373 lineto
+125 1358 lineto
+128 1348 lineto
+131 1344 lineto
+135 1345 lineto
+138 1352 lineto
+141 1365 lineto
+145 1382 lineto
+148 1403 lineto
+151 1428 lineto
+155 1455 lineto
+158 1484 lineto
+161 1513 lineto
+165 1542 lineto
+168 1569 lineto
+171 1594 lineto
+175 1615 lineto
+178 1632 lineto
+181 1645 lineto
+185 1652 lineto
+188 1653 lineto
+191 1649 lineto
+195 1639 lineto
+198 1624 lineto
+201 1605 lineto
+205 1582 lineto
+208 1556 lineto
+211 1528 lineto
+215 1499 lineto
+218 1469 lineto
+221 1441 lineto
+225 1415 lineto
+228 1392 lineto
+231 1373 lineto
+235 1358 lineto
+238 1348 lineto
+241 1344 lineto
+245 1345 lineto
+248 1352 lineto
+251 1365 lineto
+255 1382 lineto
+258 1403 lineto
+261 1428 lineto
+265 1455 lineto
+268 1484 lineto
+271 1513 lineto
+274 1542 lineto
+278 1569 lineto
+281 1594 lineto
+284 1615 lineto
+288 1632 lineto
+291 1645 lineto
+294 1652 lineto
+298 1653 lineto
+301 1649 lineto
+304 1639 lineto
+308 1624 lineto
+311 1605 lineto
+314 1582 lineto
+318 1556 lineto
+321 1528 lineto
+324 1499 lineto
+328 1469 lineto
+331 1441 lineto
+334 1415 lineto
+338 1392 lineto
+341 1373 lineto
+344 1358 lineto
+348 1348 lineto
+351 1344 lineto
+354 1345 lineto
+358 1352 lineto
+361 1365 lineto
+364 1382 lineto
+368 1403 lineto
+371 1428 lineto
+374 1455 lineto
+378 1484 lineto
+381 1513 lineto
+384 1542 lineto
+388 1569 lineto
+391 1594 lineto
+394 1615 lineto
+398 1632 lineto
+401 1645 lineto
+404 1652 lineto
+408 1653 lineto
+411 1649 lineto
+414 1639 lineto
+418 1624 lineto
+421 1605 lineto
+424 1582 lineto
+428 1556 lineto
+431 1528 lineto
+434 1499 lineto
+stroke
+grestore
+showpage

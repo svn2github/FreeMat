@@ -1,0 +1,100 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpGetMaterial 3 "" VolPack
+.SH NAME
+vpGetMaterial \- get material properties
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpGetMaterial(\fIvpc, material, property, surface_side, r_ptr,
+g_ptr, b_ptr\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fImaterial;\fR
+.FA
+int \fIproperty;\fR
+.FA
+int \fIsurface_side;\fR
+.FA
+double *\fIr_ptr,\fR *\fIg_ptr,\fR *\fIb_ptr;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fImaterial\fR
+A constant specifying a particular material number (VP_MATERIAL0,
+VP_MATERIAL1, ..., VP_MATERIAL5).
+.IP \fIproperty\fR
+A constant specifying one material property (VP_AMBIENT, VP_DIFFUSE,
+VP_SPECULAR or VP_SHINYNESS).
+.IP \fIsurface_side\fR
+A constant specifying one side of the material surface (VP_EXTERIOR or
+VP_INTERIOR).
+.IP "\fIr_ptr, g_ptr, b_ptr\fR"
+Locations to store the RGB components of the color associated with the
+property.  For VP_SHINYNESS, \fIg_ptr\fR and \fIb_ptr\fR are not used.
+.SH DESCRIPTION
+\fBvpGetMaterial\fR is used to get the properties of a material type.
+The arguments are exactly analogous to \fBvpSetMaterial\fR except that
+the \fIsurface_side\fR argument may not be VP_BOTH_SIDES, and the final
+three arguments are pointers to locations for storing the material
+properties.
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_BAD_VALUE
+The material number is invalid.
+.IP VPERROR_BAD_OPTION
+Either the \fIsurface_side\fR or \fIproperty\fR arguments are invalid.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpSetMaterial(3)

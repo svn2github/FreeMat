@@ -1,0 +1,171 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpCreateMinMaxOctree 3 "" VolPack
+.SH NAME
+vpCreateMinMaxOctree, vpMinMaxOctreeThreshold, vpDestroyMinMaxOctree
+\- create/destroy a min-max octree for optimized rendering
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpCreateMinMaxOctree(\fIvpc, root_node_size, base_node_size\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fIroot_node_size, base_node_size;\fR
+.FE
+.sp
+.FS vpResult
+\fBvpMinMaxOctreeThreshold(\fIvpc, param_num, range\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fIparam_num, range;\fR
+.FE
+.sp
+.FS vpResult
+\fBvpDestroyMinMaxOctree(\fIvpc\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIroot_node_size\fR
+Number of voxels per side in the top level (largest nodes) of the octree.
+Not currently used.
+.IP \fIbase_node_size\fR
+Number of voxels per side in the bottom level (smallest nodes) of the
+octree.  Must be a power of 2.
+.IP \fIparam_num\fR
+Identifying number of one parameter of the opacity transfer function.
+.IP \fIrange\fR
+Range threshold for one parameter of the opacity transfer function.
+If an octree node spans a larger range then it is subdivided.
+.SH DESCRIPTION
+These routines are used to create and destroy a min-max octree, an
+internal data structure that is used to accelerate classifying and
+rendering volume data in a 3D voxel array.  The octree is a
+hierarchical data structure that contains minimum and maximum values
+for each voxel field.  It does not duplicate the data in the voxel
+array.  The octree is not used with preclassified volumes (see
+vpClassifyVolume(3)).
+.PP
+Before creating an octree, declare a 3D voxel array using
+\fBvpSetVolumeSize, vpSetVoxelSize, vpSetVoxelField\fR and
+\fBvpSetRawVoxels,\fR and initialize parameters for the opacity
+transfer function by calling \fBvpSetClassifierTable\fR.  Then initialize the
+voxel data in the array.  The lookup tables for the opacity transfer
+function do not need to be initialized.
+.PP
+Now call \fBvpMinMaxOctreeThreshold\fR once for each parameter to the
+opacity transfer function.  The parameter number is the same number as
+the parameter number you would pass to \fBvpClassifierTable.\fR  The
+\fIrange\fR argument specifies a "small" range of
+values for the corresponding parameter.  The opacity of a voxel should
+not vary much for voxels within this range of parameter space.
+Choosing a value which is too small or too large may result in a
+reduced performance benefit during rendering.  The function
+\fBvpOctreeMask\fR can be used to visualize the effectiveness of
+various parameter ranges.  Note that you must choose the voxel field
+associated with each opacity transfer function parameter in advance of
+creating the octree (by calling \fBvpSetClassiferTable\fR), but the
+opacity transfer function itself does not need to be known since the
+lookup tables do not need to be initialized.  In the current
+implementation all of the parameters must be one or two-byte voxel
+fields; four-byte fields are not allowed.
+.PP
+Finally, call \fBvpCreateMinMaxOctree\fR to actually compute the
+octree.  The arguments specify the largest and smallest node size.
+These values can be used to trade off storage size of the octree for
+increased resolution.  The octree is stored in the rendering context
+and is used automatically in subsequent calls to
+\fBvpClassifyVolume\fR and \fBvpRenderRawVolume.\fR  Only one octree
+may be stored in a context at a time.  If an octree already exists
+when \fBvpCreateMinMaxOctree\fR is called then the old octree is
+destroyed.
+.PP
+If the data in the voxel array changes then the min-max octree must be
+explicitly recomputed by calling \fBvpCreateMinMaxOctree\fR again
+before the next call to \fBvpClassifyVolume\fR or \fBvpRenderRawVolume.\fR
+.PP
+\fBvpDestroyMinMaxOctree\fR destroys the current min-max octree and
+frees the associated storage.
+.SH "STATE VARIABLES"
+The current octree parameters can be retrieved with the following
+state variable codes (see vpGeti(3)): VP_CLASSIFY_FIELD_COUNT,
+VP_CLASSIFY_FIELDS, VP_MMOCTREE_THRESHOLDS, VP_MMOCTREE_SIZE.
+.SH ERRORS
+The normal return value for all three functions is VP_OK.
+\fBvpMinMaxOctreeThreshold\fR can return the following error value:
+.IP VPERROR_BAD_VALUE
+The parameter number is invalid.
+.PP
+\fBvpCreateMinMaxOctree\fR can return the following error values:
+.IP VPERROR_BAD_VALUE
+The node size arguments are not a power of two.
+.IP VPERROR_BAD_VOXEL
+The voxel size or the voxel fields have not been specified or have
+been incorrectly specified, or the number of parameters to the opacity
+transfer function has been incorrectly specified.
+.IP VPERROR_BAD_VOLUME
+The volume array or volume dimensions have not been specified, or the
+size of the volume array does not match the volume dimensions.
+.IP VPERROR_BAD_CLASSIFIER
+The fields specified as parameters to the opacity transfer function
+are invalid or do not have valid sizes.
+.IP VPERROR_LIMIT_EXCEEDED
+The volume is too large, so the maximum size of the octree has been
+exceeded.  Change the constant VP_MAX_OCTREE_LEVELS in volpack.h and
+recompile the VolPack library.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpClassifyVolume(3), vpOctreeMask(3),
+vpRenderRawVolume(3)

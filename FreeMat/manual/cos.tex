@@ -1,0 +1,50 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{COS Trigonometric Cosine Function}
+\subsubsection{Usage}
+Computes the \verb|cos| function for its argument.  The general
+syntax for its use is
+\begin{verbatim}
+  y = cos(x)
+\end{verbatim}
+where $x$ is an $n$-dimensional array of numerical type.
+Integer types are promoted to the \verb|double| type prior to
+calculation of the $\cos$ function.  Output $y$ is of the
+same size and type as the input $x$, (unless $x$ is an
+integer, in which case $y$ is a \verb|double| type).  
+\subsubsection{Function Internals}
+Mathematically, the $\cos$ function is defined for all real
+valued arguments $x$ by the infinite summation
+\[
+  \cos x \equiv \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!}.
+\]
+For complex valued arguments $z$, the cosine is computed via
+\[
+  \cos z \equiv \cos \Re z \cosh \Im z - \sin \Re z
+  \sinh \Im z.
+\]
+\subsubsection{Example}
+The following piece of code plots the real-valued $\cos(2\pi x)$
+function over one period of $[0,1]$:
+\begin{verbatim}
+--> x = linspace(0,1);
+--> plot(x,cos(2*pi*x))
+\end{verbatim}
+\doplot{width=8cm}{cosplot}

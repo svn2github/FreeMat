@@ -1,0 +1,218 @@
+diff -Naur original/libtecla/CHANGES patched/libtecla/CHANGES
+--- original/libtecla/CHANGES	2002-12-28 23:14:37.000000000 -0800
++++ patched/libtecla/CHANGES	2002-12-28 23:09:16.000000000 -0800
+@@ -2,6 +2,29 @@
+ convention in which the day comes before the month (ie. DD/MM/YYYY).
+ The most recent modifications are listed first.
+ 
++28/12/2002 mcs@astro.caltech.edu
++           getline.c
++             Unfortunately it turns out that the terminfo/termcap
++             control sequence, which is defined to delete everything
++             from the current position to the end of the terminal, is
++             only defined to work when at the start of a terminal
++             line. In gnome terminals in RedHat 8.0, if it is used
++             within a terminal line, it erases the whole terminal
++             line, rather than just what follows the cursor. Thus to
++             portably truncate the displayed input line it is
++             necessary to first use the control sequence which deletes
++             from the cursor position to the end of the line, then if
++             there are more terminal lines, move to the start of the
++             next line, and use the delete to end-of-terminal control
++             sequence, then restore the cursor position. This requires
++             that one know how many physical terminal lines are used
++             by the current input line, so I now keep a record of the
++             number of characters so far displayed to the terminal
++             following the start of the prompt, and the new
++             gl_truncate_display() function uses this information to
++             truncate the displayed input line from the current cursor
++             position.
++
+ 25/11/2002 mcs@astro.caltech.edu  (patch requested by Pankaj Kr Rathore)
+            getline.c
+              The gl->linelen variable sets the maximum number of
+diff -Naur original/libtecla/getline.c patched/libtecla/getline.c
+--- original/libtecla/getline.c	2002-12-28 23:14:37.000000000 -0800
++++ patched/libtecla/getline.c	2002-12-28 23:10:42.000000000 -0800
+@@ -303,6 +303,8 @@
+   int ntotal;                /* The number of characters in gl->line[] */
+   int buff_curpos;           /* The cursor position within gl->line[] */
+   int term_curpos;           /* The cursor position on the terminal */
++  int term_len;              /* The number of terminal characters used to */
++                             /*  display the current input line. */
+   int buff_mark;             /* A marker location in the buffer */
+   int insert_curpos;         /* The cursor position at start of insert */
+   int insert;                /* True in insert mode */ 
+@@ -602,6 +604,12 @@
+ static int gl_add_string_to_line(GetLine *gl, const char *s);
+ 
+ /*
++ * Delete the displayed part of the input line that follows the current
++ * terminal cursor position.
++ */
++static int gl_truncate_display(GetLine *gl);
++
++/*
+  * Read a single character from the terminal.
+  */
+ static int gl_read_character(GetLine *gl, char *c);
+@@ -1357,6 +1365,7 @@
+   gl->ntotal = 0;
+   gl->buff_curpos = 0;
+   gl->term_curpos = 0;
++  gl->term_len = 0;
+   gl->buff_mark = 0;
+   gl->insert_curpos = 0;
+   gl->insert = 1;
+@@ -1972,6 +1981,7 @@
+   gl->ntotal = 0;
+   gl->buff_curpos = 0;
+   gl->term_curpos = 0;
++  gl->term_len = 0;
+   gl->insert_curpos = 0;
+   gl->number = -1;
+   gl->endline = 0;
+@@ -2167,7 +2177,7 @@
+ /*
+  * Clear to the end of the terminal.
+  */
+-      if(gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
++      if(gl_truncate_display(gl))
+ 	return 1;
+ /*
+  * Move the cursor to the end of the new character.
+@@ -3025,6 +3035,12 @@
+  */
+   gl->term_curpos += nchar;
+ /*
++ * Keep a record of the number of characters in the terminal version
++ * of the input line.
++ */
++  if(gl->term_curpos > gl->term_len)
++    gl->term_len = gl->term_curpos;
++/*
+  * If the new character ended exactly at the end of a line,
+  * most terminals won't move the cursor onto the next line until we
+  * have written a character on the next line, so append an extra
+@@ -3178,7 +3194,7 @@
+ /*
+  * Clear from the end of the prompt to the end of the terminal.
+  */
+-  if(gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
++  if(gl_truncate_display(gl))
+     return 1;
+   return 0;
+ }
+@@ -3206,7 +3222,7 @@
+ /*
+  * Clear the part of the line that follows the cursor.
+  */
+-  if(gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
++  if(gl_truncate_display(gl))
+     return 1;
+ /*
+  * Explicitly reset the cursor position to allow vi command mode
+@@ -3343,7 +3359,7 @@
+ /*
+  * Clear to the end of the terminal.
+  */
+-  if(gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
++  if(gl_truncate_display(gl))
+     return 1;
+ /*
+  * Place the cursor at the start of where the deletion was performed.
+@@ -3740,6 +3756,10 @@
+      gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
+     return 1;
+ /*
++ * Nothing is displayed yet.
++ */
++  gl->term_len = 0;
++/*
+  * Display the current prompt.
+  */
+   if(gl_display_prompt(gl))
+@@ -3846,7 +3866,7 @@
+  */
+   } else {
+     if(gl_output_string(gl, gl->line + gl->buff_curpos, '\0') ||
+-       gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
++       gl_truncate_display(gl))
+       return 1;
+   };
+ /*
+@@ -4444,7 +4464,7 @@
+  * the cursor at the end of the completion.
+  */
+ 	if(!redisplay) {
+-	  if(gl_output_control_sequence(gl, gl->nline, gl->clear_eod) ||
++	  if(gl_truncate_display(gl) ||
+ 	     gl_output_string(gl, gl->line + buff_pos, '\0') ||
+ 	     gl_place_cursor(gl, gl->buff_curpos))
+ 	    return 1;
+@@ -4609,7 +4629,7 @@
+  * the original filename.
+  */
+   if(gl_set_term_curpos(gl, gl_buff_curpos_to_term_curpos(gl, start_path - gl->line)) ||
+-     gl_output_control_sequence(gl, gl->nline, gl->clear_eod) ||
++     gl_truncate_display(gl) ||
+      gl_output_string(gl, start_path, gl->line[gl->buff_curpos]))
+     return 1;
+ /*
+@@ -8344,3 +8364,56 @@
+ {
+   return gl ? gl->last_signal : -1;
+ }
++
++/*.......................................................................
++ * Truncate the displayed input line starting from the current
++ * terminal cursor position, and leave the cursor at the end of the
++ * truncated line. The input-line buffer is not affected.
++ *
++ * Input:
++ *  gl     GetLine *   The resource object of gl_get_line().
++ * Output:
++ *  return     int     0 - OK.
++ *                     1 - Error.
++ */
++static int gl_truncate_display(GetLine *gl)
++{
++/*
++ * Keep a record of the current terminal cursor position.
++ */
++  int term_curpos = gl->term_curpos;
++/*
++ * First clear from the cursor to the end of the current input line.
++ */
++  if(gl_output_control_sequence(gl, 1, gl->clear_eol))
++    return 1;
++/*
++ * If there is more than one line displayed, go to the start of the
++ * next line and clear from there to the end of the display. Note that
++ * we can't use clear_eod to do the whole job of clearing from the
++ * current cursor position to the end of the terminal because
++ * clear_eod is only defined when used at the start of a terminal line
++ * (eg. with gnome terminals, clear_eod clears from the start of the
++ * current terminal line, rather than from the current cursor
++ * position).
++ */
++  if(gl->term_len / gl->ncolumn > gl->term_curpos / gl->ncolumn) {
++    if(gl_output_control_sequence(gl, 1, gl->down) ||
++       gl_output_control_sequence(gl, 1, gl->bol) ||
++       gl_output_control_sequence(gl, gl->nline, gl->clear_eod))
++      return 1;
++/*
++ * Where is the cursor now?
++ */
++    gl->term_curpos = gl->ncolumn * (term_curpos / gl->ncolumn + 1);
++/*
++ * Restore the cursor position.
++ */
++    gl_set_term_curpos(gl, term_curpos);
++  };
++/*
++ * Update the recorded position of the final character.
++ */
++  gl->term_len = gl->term_curpos;
++  return 0;
++}

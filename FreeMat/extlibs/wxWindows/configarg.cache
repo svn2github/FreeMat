@@ -1,0 +1,6 @@
+wxUSE_LIBPNG=yes
+wxUSE_LIBJPEG=yes
+wxUSE_LIBTIFF=yes
+wxUSE_SHARED=no
+wxUSE_DEBUG=yes
+wxUSE_POSTSCRIPT=yes

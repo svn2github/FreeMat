@@ -1,0 +1,105 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpShadeTable 3 "" VolPack
+.SH NAME
+vpShadeTable \- compute the contents of the shading lookup table
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpShadeTable(\fIvpc\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.SH DESCRIPTION
+\fBvpShadeTable\fR computes the contents of the shading lookup table
+previously specified with \fBvpLookupShader\fR.  For each entry in the
+table, the Phong shading equation is evaluated using the current
+lighting properties (as specified with \fBvpSetLight\fR), material
+properties (as specified with \fBvpSetMaterial\fR), and viewing
+parameters (as specified with the view transformation commands).  See
+vpSetMaterial(3) for a description of the shading calculation.
+.PP
+This function should be called before rendering a volume if any of the
+lighting or material properties have changed or if the viewpoint has
+changed since the last call to \fBvpShadeTable\fR.  It should not be
+called if shading is performed using a callback function or if the
+shading lookup tables are initialized by a user-defined routine.
+.PP
+There is one state variable that affects the operation of
+\fBvpShadeTable\fR.  If VP_CLAMP_SHADE_TABLE is enabled (see
+vpEnable(3)), then values are clamped to the range 0.0-255.0 before
+they are stored in the table.  If this option is not enabled then no
+clamping is performed.  Clamping is enabled by default, but can be
+turned off to achieve special effects.  For example, if all of the
+voxels in a data set have very low opacity then the rendered image may
+be very dark.  To brighten it, multiply all of the material parameter
+coefficients by a constant, possibly making the values exceed 1.0, and
+turn off clamping.
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_SINGULAR
+One of the current view transformation matrices is singular.
+.IP VPERROR_BAD_SHADER
+The shading lookup tables are sized incorrectly, or one of the voxel
+fields used to index the tables is invalid, or the number of material
+types is invalid.
+.IP VPERROR_BAD_SHADOW
+The angle between the shadow light vector and the viewing direction is
+too large (must be less than 45 degrees).  Either change the light
+direction or disable shadows (see vpSetShadowLookupShader).
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpCurrentMatrix(3),
+vpSetLookupShader(3), vpSetLight(3), vpSetMaterial(3)

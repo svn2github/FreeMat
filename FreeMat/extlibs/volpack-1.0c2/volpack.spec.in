@@ -1,0 +1,58 @@
+%define name volpack
+%define prefix /usr
+%define version @VERSION@
+%define release 1
+
+Summary: portable library for fast volume rendering
+Group: Applications/Engineering
+Packager: Andy Loening <loening@alum.mit.edu>
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Prefix: %{prefix}
+Copyright: Non-GPL
+URL: http://amide.sourceforge.net
+Source: %{name}-%{version}.tgz
+Buildroot: /tmp/%{name}-%{version}
+
+%description 
+VolPack is a portable library of fast volume rendering algorithms that
+produce high-quality images.  It was written by Phil Lacroute.
+
+%prep
+%setup -n %{name}-%{version}
+%build
+./configure --prefix=%{prefix}
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/%{prefix}/lib
+mkdir -p $RPM_BUILD_ROOT/%{prefix}/include
+mkdir -p $RPM_BUILD_ROOT/%{prefix}/man
+
+make install prefix=$RPM_BUILD_ROOT/%{prefix}
+chmod a+x $RPM_BUILD_ROOT/%{prefix}/lib/*
+
+%post 
+if ! grep %{prefix}/lib /etc/ld.so.conf > /dev/null ; then
+    echo "%{prefix}/lib" >> /etc/ld.so.conf
+fi
+/sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%clean
+if [ -d $RPM_BUILD_ROOT ] ; then rm -rf $RPM_BUILD_ROOT; fi
+
+%files
+%defattr(-, root, root)
+%{prefix}/lib/libvolpack.*
+%{prefix}/include/volpack.h
+%{prefix}/man/*/*
+
+
+
+%changelog
+* Sun Mar 18 2001 Andy Loening <loening@alum.mit.edu>
+- wrote this fool thing

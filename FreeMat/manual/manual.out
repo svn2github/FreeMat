@@ -1,0 +1,138 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}
+\BOOKMARK [0][-]{chapter.2}{Basic Language}{}
+\BOOKMARK [1][-]{section.2.1}{Elementary Types}{chapter.2}
+\BOOKMARK [1][-]{section.2.2}{Data Structures}{chapter.2}
+\BOOKMARK [1][-]{section.2.3}{Expressions}{chapter.2}
+\BOOKMARK [1][-]{section.2.4}{Mathematical Operators}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.4.1}{PLUS Addition Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.2}{MINUS Subtraction Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.3}{DOTTIMES Element-wise Multiplication Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.4}{DOTRIGHTDIVIDE Element-wise Right-Division Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.5}{DOTLEFTDIVIDE Element-wise Left-Division Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.6}{DOTPOWER Element-wise Power Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.7}{TRANSPOSE Matrix Transpose Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.8}{TIMES Matrix Multiply Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.9}{LEFTDIVIDE Matrix Equation Solver/Divide Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.10}{RIGHTDIVIDE Matrix Equation Solver/Divide Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.11}{POWER Matrix Power Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.12}{HERMITIAN Matrix Hermitian \(Conjugate Transpose\) Operator}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.13}{COMPARISON OPERATORS Array Comparison Operators}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.14}{LOGICAL OPERATORS Logical Array Operators}{section.2.4}
+\BOOKMARK [2][-]{subsection.2.4.15}{COLON Index Generation Operator}{section.2.4}
+\BOOKMARK [1][-]{section.2.5}{Flow Control}{chapter.2}
+\BOOKMARK [1][-]{section.2.6}{External Interfacing}{chapter.2}
+\BOOKMARK [2][-]{subsection.2.6.1}{IMPORT Foreign Function Import}{section.2.6}
+\BOOKMARK [0][-]{chapter.3}{Built In Functions}{}
+\BOOKMARK [1][-]{section.3.1}{Transcendental Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.1.1}{LOG Natural Logarithm Function}{section.3.1}
+\BOOKMARK [2][-]{subsection.3.1.2}{EXP Exponential Function}{section.3.1}
+\BOOKMARK [1][-]{section.3.2}{Trigonometric Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.2.1}{COS Trigonometric Cosine Function}{section.3.2}
+\BOOKMARK [2][-]{subsection.3.2.2}{SIN Trigonometric Sine Function}{section.3.2}
+\BOOKMARK [2][-]{subsection.3.2.3}{TAN Trigonometric Tangent Function}{section.3.2}
+\BOOKMARK [2][-]{subsection.3.2.4}{CSC Trigonometric Cosecant Function}{section.3.2}
+\BOOKMARK [2][-]{subsection.3.2.5}{SEC Trigonometric Secant Function}{section.3.2}
+\BOOKMARK [2][-]{subsection.3.2.6}{COT Trigonometric Cotangent Function}{section.3.2}
+\BOOKMARK [1][-]{section.3.3}{Inverse Trigonometric Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.3.1}{ACOS Inverse Trigonometric Arccosine Function}{section.3.3}
+\BOOKMARK [2][-]{subsection.3.3.2}{ASIN Inverse Trigonometric Arcsine Function}{section.3.3}
+\BOOKMARK [2][-]{subsection.3.3.3}{ATAN Inverse Trigonometric Arctangent Function}{section.3.3}
+\BOOKMARK [2][-]{subsection.3.3.4}{ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function}{section.3.3}
+\BOOKMARK [1][-]{section.3.4}{Base Constants}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.4.1}{INF Infinity Constant}{section.3.4}
+\BOOKMARK [2][-]{subsection.3.4.2}{NAN Not-a-Number Constant}{section.3.4}
+\BOOKMARK [2][-]{subsection.3.4.3}{I-J Square Root of Negative One}{section.3.4}
+\BOOKMARK [2][-]{subsection.3.4.4}{E Euler Constant \(Base of Natural Logarithm\)}{section.3.4}
+\BOOKMARK [2][-]{subsection.3.4.5}{PI Constant }{section.3.4}
+\BOOKMARK [1][-]{section.3.5}{Inspection Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.5.1}{CLEAR Clear or Delete a Variable}{section.3.5}
+\BOOKMARK [2][-]{subsection.3.5.2}{WHO Describe Currently Defined Variables}{section.3.5}
+\BOOKMARK [2][-]{subsection.3.5.3}{SIZE Size of a Variable}{section.3.5}
+\BOOKMARK [2][-]{subsection.3.5.4}{LENGTH Length of a Variable}{section.3.5}
+\BOOKMARK [2][-]{subsection.3.5.5}{FIND Find Non-zero Elements of An Array}{section.3.5}
+\BOOKMARK [1][-]{section.3.6}{Statistical Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.6.1}{MEAN Mean Function}{section.3.6}
+\BOOKMARK [2][-]{subsection.3.6.2}{VAR Variance Function}{section.3.6}
+\BOOKMARK [1][-]{section.3.7}{Type Cast Function}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.7.1}{UINT8 Convert to Unsigned 8-bit Integer}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.2}{UINT16 Convert to Unsigned 16-bit Integer}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.3}{UINT32 Convert to Unsigned 32-bit Integer}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.4}{INT8 Convert to Signed 8-bit Integer}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.5}{INT16 Convert to Signed 16-bit Integer}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.6}{INT32 Convert to Signed 32-bit Integer}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.7}{FLOAT Convert to 32-bit Floating Point}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.8}{DOUBLE Convert to 64-bit Floating Point}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.9}{COMPLEX Convert to 32-bit Complex Floating Point}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.10}{DCOMPLEX Convert to 32-bit Complex Floating Point}{section.3.7}
+\BOOKMARK [2][-]{subsection.3.7.11}{TYPEOF Determine the Type of an Argument}{section.3.7}
+\BOOKMARK [1][-]{section.3.8}{Elementary Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.8.1}{MAX Maximum Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.2}{MIN Minimum Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.3}{SUM Sum Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.4}{PROD Product Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.5}{CONJ Conjugate Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.6}{REAL Real Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.7}{IMAG Imaginary Function}{section.3.8}
+\BOOKMARK [2][-]{subsection.3.8.8}{ABS Absolute Value Function}{section.3.8}
+\BOOKMARK [1][-]{section.3.9}{Array Manipulations}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.9.1}{RESHAPE Reshape An Array}{section.3.9}
+\BOOKMARK [2][-]{subsection.3.9.2}{ZEROS Array of Zeros}{section.3.9}
+\BOOKMARK [2][-]{subsection.3.9.3}{ONES Array of Ones}{section.3.9}
+\BOOKMARK [2][-]{subsection.3.9.4}{STRUCT Structure Array Constructor}{section.3.9}
+\BOOKMARK [1][-]{section.3.10}{Random Number Generation}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.10.1}{Random Number Generator Details}{section.3.10}
+\BOOKMARK [2][-]{subsection.3.10.2}{SEED Seed the Random Number Generator}{section.3.10}
+\BOOKMARK [2][-]{subsection.3.10.3}{RAND Uniform Random Number Generator}{section.3.10}
+\BOOKMARK [2][-]{subsection.3.10.4}{RANDN Gaussian \(Normal\) Random Number Generator}{section.3.10}
+\BOOKMARK [1][-]{section.3.11}{Input/Output Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.11.1}{PRINTF Formated Output Function \(C-Style\)}{section.3.11}
+\BOOKMARK [2][-]{subsection.3.11.2}{SAVE Save Variables To A File}{section.3.11}
+\BOOKMARK [2][-]{subsection.3.11.3}{LOAD Load Variables From A File}{section.3.11}
+\BOOKMARK [2][-]{subsection.3.11.4}{SETPRINTLIMIT Set Limit For Printing Of Arrays}{section.3.11}
+\BOOKMARK [2][-]{subsection.3.11.5}{GETPRINTLIMIT Get Limit For Printing Of Arrays}{section.3.11}
+\BOOKMARK [1][-]{section.3.12}{File Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.12.1}{FOPEN File Open Function}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.2}{FCLOSE File Close Function}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.3}{FREAD File Read Function}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.4}{FWRITE File Write Function}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.5}{FTELL File Position Function}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.6}{FEOF End Of File Function}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.7}{FSEEK Seek File To A Given Position}{section.3.12}
+\BOOKMARK [2][-]{subsection.3.12.8}{FPRINTF Formated File Output Function \(C-Style\)}{section.3.12}
+\BOOKMARK [1][-]{section.3.13}{String Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.13.1}{STRCMP String Compare Function}{section.3.13}
+\BOOKMARK [2][-]{subsection.3.13.2}{SPRINTF Formated String Output Function \(C-Style\)}{section.3.13}
+\BOOKMARK [1][-]{section.3.14}{Socket Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.14.1}{SEND Send An Array Over A Socket Link}{section.3.14}
+\BOOKMARK [2][-]{subsection.3.14.2}{RECEIVE Receive An Array Over A Socket Link}{section.3.14}
+\BOOKMARK [2][-]{subsection.3.14.3}{CONNECT Connect To A Server}{section.3.14}
+\BOOKMARK [2][-]{subsection.3.14.4}{ACCEPT Accept A Connection From A Server Socket}{section.3.14}
+\BOOKMARK [2][-]{subsection.3.14.5}{SERVER Open A Server Socket}{section.3.14}
+\BOOKMARK [1][-]{section.3.15}{Transforms}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.15.1}{FFT \(Inverse\) Fast Fourier Transform Function}{section.3.15}
+\BOOKMARK [1][-]{section.3.16}{Directory Functions}{chapter.3}
+\BOOKMARK [2][-]{subsection.3.16.1}{CD Change Working Directory Function}{section.3.16}
+\BOOKMARK [2][-]{subsection.3.16.2}{LS/DIR List Files Function}{section.3.16}
+\BOOKMARK [2][-]{subsection.3.16.3}{PWD Print Working Directory Function}{section.3.16}
+\BOOKMARK [0][-]{chapter.4}{Graphing Functions}{}
+\BOOKMARK [1][-]{section.4.1}{Image Display Functions}{chapter.4}
+\BOOKMARK [2][-]{subsection.4.1.1}{NEWIMAGE New Image Window Function}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.2}{USEIMAGE Use Image Window Function}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.3}{IMAGE Image Display Function}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.4}{COLORMAP Image Colormap Function}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.5}{PRINTIMAGE Print an Image To A File}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.6}{ZOOM Image Zoom Function}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.7}{CLOSEIMAGE Close Image Window}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.8}{POINT Image Point Information Function}{section.4.1}
+\BOOKMARK [1][-]{section.4.2}{Plot Functions}{chapter.4}
+\BOOKMARK [2][-]{subsection.4.2.1}{NEWPLOT New Plot Window Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.2}{USEPLOT Use Plot Window Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.3}{PLOT Plot Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.4}{XLABEL Plot X-axis Label Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.5}{YLABEL Plot Y-axis Label Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.6}{TITLE Plot Title Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.7}{PRINTPLOT Print an Plot To A File}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.8}{GRID Plot Grid Toggle Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.9}{HOLD Plot Hold Toggle Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.10}{AXIS Plot Axis Set/Get Function}{section.4.2}
+\BOOKMARK [2][-]{subsection.4.2.11}{CLOSEPLOT Close Plot Window}{section.4.2}

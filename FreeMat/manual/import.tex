@@ -1,0 +1,174 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{IMPORT Foreign Function Import}
+\subsubsection{Usage}
+The import function allows you to call functions that are compiled into
+shared libraries, as if they were FreeMat functions. The usage is
+\begin{verbatim}
+  import(libraryname,symbol,function,return,arguments)
+\end{verbatim}
+The argument \verb|libraryname| is the name of the library (as a string)
+to import the function from.  The second argument \verb|symbol| (also
+a string), is the name of the symbol to import from the library.  The
+third argument \verb|function| is the the name of the function after its
+been imported into Freemat.  The fourth argument is a string that
+specifies the return type of the function. It can take on one of the 
+following types:
+\begin{itemize}
+\item 'uint8' for an unsigned, 8-bit integer.
+\item 'int8' for a signed, 8-bit integer.
+\item 'uint16' an unsigned, 16-bit  integer.
+\item 'int16' a signed, 16-bit integer.
+\item 'uint32' for an unsigned, 32-bit integer.
+\item 'int32' for a signed, 32-bit integer.
+\item 'single' for a 32-bit floating point.
+\item 'double' for a 64-bit floating point.
+\item 'void' for no return type.
+\end{itemize}
+The fourth argument is more complicated.  It encodes the arguments of the
+imported function using a special syntax.  In general, the argument list
+is a string consisting of entries of the form:
+
+\begin{verbatim}
+  type[optional bounds check] {optional &}name
+\end{verbatim}
+
+Here is a list of various scenarios (expressed in 'C'), and the corresponding
+entries, along with snippets of code.
+
+\emph{Scalar variable passed by value:}
+Suppose a function is defined in the library as
+\begin{verbatim}
+  int fooFunction(float t),
+\end{verbatim}
+i.e., it takes a scalar value (or a string) that is passed by value.  Then
+the corresponding argument string would be
+\begin{verbatim}
+  'float t'
+\end{verbatim}
+For a C-string, which corresponds to a function prototype of
+\begin{verbatim}
+  int fooFunction(const char *t),
+\end{verbatim}
+the corresponding argument string would be
+\begin{verbatim}
+  'string t'
+\end{verbatim}
+Other types are as listed above.  Note that FreeMat will automatically
+promote the type of scalar variables to the type expected by the \verb|C|
+function.  For example, if we call a function expecting a \verb|float|
+with a \verb|double| or \verb|int16| argument, then FreeMat will automatically
+apply type promotion rules prior to calling the function.
+
+\emph{Scalar variable passed by reference:}
+Suppose a function is defined in the library as
+\begin{verbatim}
+  int fooFunction(float *t),
+\end{verbatim}
+i.e., it takes a scalar value (or a string) that is passed as a pointer.  Then
+the corresponding argument string would be
+\begin{verbatim}
+  'float &t'
+\end{verbatim}
+If the function \verb|fooFunction| modifies \verb|t|, then the argument
+passed in FreeMat will also be modified.
+
+\emph{Array variable passed by value:}
+In \verb|C|, it is impossible to distinguish an array being passed from
+a simple pointer being passed.  More often than not, another argument
+indicates the length of the array.  FreeMat has the ability to perform
+bounds-checking on array values.  For example, suppose we have a function
+of the form
+\begin{verbatim}
+  int sum_onehundred_ints(int *t),
+\end{verbatim}
+where \verb|sum_onehundred_ints| assumes that \verb|t| is a length $100$. 
+Then the corresponding FreeMat argument is
+\begin{verbatim}
+  'float32[100] t'.
+\end{verbatim}
+Note that because the argument is marked as not being passed by reference,
+that if \verb|sub_onehundred_ints| modifies the array \verb|t|, this
+will not affect the FreeMat argument.  Note that the bounds-check expression
+can be any legal scalar expression that evaluates to an integer, and can be
+a function of the arguments.  For example to pass a square $N \times N$ 
+matrix to the following function:
+\begin{verbatim}
+  float determinantmatrix(int N, float *A),
+\end{verbatim}
+we can use the following argument to \verb|import|:
+\begin{verbatim}
+  'int32 N, float[N*N] t'.
+\end{verbatim}
+
+\emph{Array variable passed by reference:}
+If the function in \verb|C| modifies an array, and we wish this to be
+reflected in the FreeMat side, we must pass that argument by reference.
+Hence, consider the following hypothetical function that squares the
+elements of an array (functionally equivalent to $x.^2$):
+\begin{verbatim}
+  void squarearray(int N, float *A)
+\end{verbatim}
+we can use the following argument to \verb|import|:
+\begin{verbatim}
+  'int32 N, float[N] &A'.
+\end{verbatim}
+Note that to avoid problems with memory allocation, external functions
+are not allowed to return pointers.  As a result, as a general operating
+mechanism, the FreeMat code must allocate the proper arrays, and then
+pass them by reference to the external function.
+
+\subsubsection{Example}
+Here is a complete example.  We have a \verb|C| function that adds
+two float vectors of the same length, and stores the result in a third array 
+that is modified by the function.  First, the \verb|C| code:
+\begin{verbatim}
+void addArrays(int N, float *a, float *b, float *c) {
+  int i;
+ 
+  for (i=0;i<N;i++)
+   c[i] = a[i] + b[i];
+}
+\end{verbatim}
+We then compile this into a library, say, \verb|add.so|.  The import 
+command would then be:
+\begin{verbatim}
+  import('add.so','addArrays','addArrays','void', ...
+         'int32 N, float[N] a, float[N] b, float[N] &c');
+\end{verbatim}
+We could then exercise the function exactly as if it had been written
+in FreeMat:
+\begin{verbatim}
+--> a = [3,2,3,1];
+--> b = [5,6,0,2];
+\end{verbatim}
+Calling the imported function then results in:
+\begin{verbatim}
+--> addArrays(length(a),a,b,c)
+--> c
+ans =
+  <float>  - size: [1 4]
+  
+Columns 1 to 3
+    8.0000000          8.0000000          3.0000000
+  
+Columns 4 to 4
+    3.0000000
+\end{verbatim}

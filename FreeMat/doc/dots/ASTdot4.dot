@@ -1,0 +1,11 @@
+digraph G {
+  node [shape=record];
+  this [label = "this | <down> down | <right> right"];
+  child1 [label = "child1 | <down> down | <right> right"];
+  child2 [label = "child2 | <down> down | <right> right"];
+  arg [label = "arg | <down> down | <right> right"];
+  child1:right -> child2;
+  child2:right -> arg;
+  this:down -> child1;
+}
+  

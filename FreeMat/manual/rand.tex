@@ -1,0 +1,86 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{RAND Uniform Random Number Generator}
+\subsubsection{Usage}
+Creates an array of pseudo-random numbers of the specified size.
+The numbers are uniformly distributed on $[0,1)$.  
+Two seperate syntaxes are possible.  The first syntax specifies the array 
+dimensions as a sequence of scalar dimensions:
+\begin{verbatim}
+  y = rand(d1,d2,...,dn).
+\end{verbatim}
+The resulting array has the given dimensions, and is filled with
+random numbers.  The type of $y$ is \verb|double|, a 64-bit floating
+point array.  To get arrays of other types, use the typecast 
+functions.
+    
+The second syntax specifies the array dimensions as a vector,
+where each element in the vector specifies a dimension length:
+\begin{verbatim}
+  y = rand([d1,d2,...,dn]).
+\end{verbatim}
+This syntax is more convenient for calling \verb|rand| using a 
+variable for the argument.
+\subsubsection{Example}
+The following example demonstrates an example of using the first form of the \verb|rand| function.
+\begin{verbatim}
+--> rand(2,2,2)
+ans =
+  <double>  - size: [2 2 2]
+(:,:,1) =
+  
+Columns 1 to 2
+    0.816205139112481         0.928488070407937
+    0.101086560308625         0.609109168991309
+(:,:,2) =
+  
+Columns 1 to 2
+    0.596553436123275         0.345186243305358
+    0.0917841347962021        0.662752523185588
+\end{verbatim}
+The second example demonstrates the second form of the \verb|rand| function.
+\begin{verbatim}
+--> rand([2,2,2])
+ans =
+  <double>  - size: [2 2 2]
+(:,:,1) =
+  
+Columns 1 to 2
+    0.441713488461236         0.703712491427084
+    0.551487786393961         0.589401231301516
+(:,:,2) =
+  
+Columns 1 to 2
+    0.0499327594155466        0.766358472374211
+    0.561791839934797         0.910908329667760
+\end{verbatim}
+The third example computes the mean and variance of a large number of uniform random numbers.  Recall that the mean should be $1/2$, and the variance should be $1/12 \sim 0.083$.
+\begin{verbatim}
+--> x = rand(1,10000);
+--> mean(x)
+ans =
+  <double>  - size: [1 1]
+    0.501955631704274
+--> var(x)
+ans =
+  <double>  - size: [1 1]
+    0.0816622288902852
+\end{verbatim}
+

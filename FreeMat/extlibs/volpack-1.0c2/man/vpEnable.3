@@ -1,0 +1,118 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpEnable 3 "" VolPack
+.SH NAME
+vpEnable \- enable or disable options
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpEnable(\fIvpc, option, value\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fIoption;\fR
+.FA
+int \fIvalue;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIoption\fR
+Constant that specifies the option to be adjusted.
+.IP \fIvalue\fR
+New value for the option (boolean: 0 or 1).
+.SH DESCRIPTION
+\fBvpEnable\fR is used to enable or disable boolean options in a rendering
+context.  If the \fIvalue\fR option is 0 then the option is disabled;
+otherwise it is enabled.  The following list summarizes all available
+options:
+.IP VP_LIGHT0
+.PD 0
+.IP VP_LIGHT1
+.IP VP_LIGHT2
+.IP VP_LIGHT3
+.IP VP_LIGHT4
+.IP VP_LIGHT5
+Enable the corresponding light source (see vpSetLight(3)).
+Default: VP_LIGHT0 is enabled, and all others are disabled.
+.PD
+.IP VP_LIGHT_BOTH_SIDES
+Enable two-sided lighting (see vpSetLight(3)).
+Default: disabled
+.IP VP_REVERSE_SURFACE_SIDES
+Reverse the definition of interior and exterior surfaces (see
+vpSetMaterial(3)).
+Default: disabled
+.IP VP_DEPTH_CUE
+Enable depth cueing (see vpSetDepthCueing(3)).
+Default: disabled
+.IP VP_VIEW_X_AXIS
+.PD 0
+.IP VP_VIEW_Y_AXIS
+.IP VP_VIEW_Z_AXIS
+Enable computing a preclassified volume for the corresponding major
+viewing axis (see vpClassifyVolume(3)).
+Default: enabled
+.PD
+.IP VP_SHADOW
+Enable rendering shadows (see vpSetShadowLookupShader(3)).
+Default: disabled
+.IP VP_CLAMP_SHADE_TABLE
+Enable clamping the color components in a shade table to the range
+0.0-255.0.  This option affects vpShadeTable().  Default: enabled
+.SH ERRORS
+The normal return value is VP_OK.  The following error return value is
+possible:
+.IP VPERROR_BAD_VALUE
+The \fIoption\fR argument is invalid.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3)

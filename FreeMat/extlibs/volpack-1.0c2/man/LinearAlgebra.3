@@ -1,0 +1,176 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH LinearAlgebra 3 "" VolPack
+.SH NAME
+vpIdentity3, vpIdentity4, vpNormalize3, vpMatrixVectorMult4,
+vpMatrixMult4, vpCrossProduct, vpSolveSystem4, vpSetVector3,
+vpSetVector4 \- linear algebra routines
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS void
+\fBvpIdentity3(\fIm_dst\fB)\fR
+.FA
+vpMatrix3 \fIm_dst;\fR
+.FE
+.sp
+.FS void
+\fBvpIdentity4(\fIm_dst\fB)\fR
+.FA
+vpMatrix4 \fIm_dst;\fR
+.FE
+.sp
+.FS vpResult
+\fBvpNormalize3(\fIv_src1\fB)\fR
+.FA
+vpVector3 \fIv_src1;\fR
+.FE
+.sp
+.FS void
+\fBvpMatrixVectorMult4(\fIv_dst, m_src1, v_src1\fB)\fR
+.FA
+vpVector4 \fIv_dst;\fR
+.FA
+vpMatrix4 \fIm_src1;\fR
+.FA
+vpVector4 \fIv_src1;\fR
+.FE
+.sp
+.FS void
+\fBvpMatrixMult4(\fIm_dst, m_src1, m_src2\fB)\fR
+.FA
+vpVector4 \fIm_dst, m_src1, m_src2;\fR
+.FE
+.sp
+.FS void
+\fBvpCrossProduct(\fIv_dst, v_src1, v_src2\fB)\fR
+.FA
+vpVector3 \fIv_dst, v_src1, v_src2;\fR
+.FE
+.sp
+.FS vpResult
+\fBvpSolveSystem4(\fIm_src1, b, count\fB)\fR
+.FA
+vpMatrix4 \fIm_src1;\fR
+.FA
+vpVector4 \fIb[];\fR
+.FA
+int \fIcount;\fR
+.FE
+.sp
+.FS void
+\fBvpSetVector3(\fIv_dst, x, y, z\fB)\fR
+.FA
+vpVector3 \fIv_dst;\fR
+.FA
+double \fIx, y, z;\fR
+.FE
+.sp
+.FS void
+\fBvpSetVector4(\fIv_dst, x, y, z, w\fB)\fR
+.FA
+vpVector4 \fIv_dst;\fR
+.FA
+double \fIx, y, z, w;\fR
+.FE
+.SH ARGUMENTS
+.IP "\fIm_src1, m_src2, m_dst\fR"
+Source and destination matrices.
+.IP "\fIv_src1, v_src2, v_dst\fR"
+Source and destination vectors.
+.IP \fIb\fR
+Array of right-hand-side vectors.
+.IP \fIcount\fR
+Number of right-hand-side vectors.
+.IP "\fIx, y, z, w\fR"
+Vector components.
+.SH DESCRIPTION
+These routines form a simple linear algebra package used internally by
+VolPack.  The routines are also available as utility routines for use
+by the application.
+.PP
+\fBvpIdentity3\fR assigns the identity matrix to a 3-by-3 matrix.
+.PP
+\fBvpIdentity4\fR assigns the identity matrix to a 4-by-4 matrix.
+.PP
+\fBvpNormalize3\fR normalizes a 3-element vector (so the magnitude is
+1.0).  The result overwrites the source vector.
+.PP
+\fBvpMatrixVectorMult4\fR multiplies a 4-by-4 matrix by a 4-element
+column vector and stores the result in the destination vector
+\fI(v_dst = m . v_src)\fR.
+.PP
+\fBvpMatrixMult4\fR multiplies two 4-by-4 matrices and stores the
+result in the destination matrix \fI(m_dst = m_src1 . m_src2)\fR.
+.PP
+\fBvpCrossProduct\fR computes the cross product of two 3-element
+vectors and stores the result in the destination vector \fI(v_dst =
+v_src1 x v_src2)\fR.
+.PP
+\fBvpSolveSystem4\fR solves the linear system \fIm . x = b\fR for each
+right-hand-side vector in the \fIb\fR array.  The solution vectors
+overwrite the vectors in the \fIb\fR array.  The solution is computed
+using Gauss-Jordan elimination with partial pivoting and implicit
+scaling.
+.PP
+\fBvpSetVector3\fR initializes the components of a 3-element vector
+\fI(v_dst = [x, y, z]).\fR  It is a macro.
+.PP
+\fBvpSetVector4\fR initializes the components of a 4-element vector
+\fI(v_dst = [x, y, z, w]).\fR  It is a macro.
+.SH ERRORS
+\fBvpNormalize3\fR and \fBvpSolveSystem4\fR normally return VP_OK.
+The following error return value is possible:
+.IP VPERROR_SINGULAR
+The vector is a 0 vector (\fBvpNormalize3\fR only), or the matrix is
+singular (\fBvpSolveSystem4\fR only).
+.SH SEE ALSO
+VolPack(3)

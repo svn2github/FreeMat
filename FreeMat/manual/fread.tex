@@ -1,0 +1,76 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{FREAD File Read Function}
+\subsubsection{Usage}
+Reads a block of binary data from the given file handle into a variable
+of a given shape and precision.  The general use of the function is
+\begin{verbatim}
+  A = fread(handle,size,precision)
+\end{verbatim}
+The \verb|handle| argument must be a valid value returned by the fopen 
+function, and accessable for reading.  The \verb|size| argument determines
+the number of values read from the file.  The \verb|size| argument is simply
+a vector indicating the size of the array \verb|A|.  The \verb|size| argument
+can also contain a single \verb|inf| dimension, indicating that FreeMat should
+calculate the size of the array along that dimension so as to read as
+much data as possible from the file (see the examples listed below for
+more details).  The data is stored as \emph{columns} in the file, not 
+\emph{rows}.
+    
+The third argument determines the type of the data.  Legal values for this
+argument are listed below:
+\begin{itemize}
+\item 'uint8','uchar','unsigned char' for an unsigned, 8-bit integer.
+\item 'int8','char','integer*1' for a signed, 8-bit integer.
+\item 'uint16','unsigned short' for an unsigned, 16-bit  integer.
+\item 'int16','short','integer*2' for a signed, 16-bit integer.
+\item 'uint32','unsigned int' for an unsigned, 32-bit integer.
+\item 'int32','int','integer*4' for a signed, 32-bit integer.
+\item 'single','float32','float','real*4' for a 32-bit floating point.
+\item 'double','float64','real*8' for a 64-bit floating point.
+\item 'complex','complex*8' for a 64-bit complex floating point (32 bits 
+for the real and imaginary part).
+\item 'dcomplex','complex*16' for a 128-bit complex floating point (64
+bits for the real and imaginary part).
+\end{itemize}
+\subsubsection{Example}
+First, we create an array of $512 \times 512$ Gaussian-distributed \verb|float| random variables, and then writing them to a file called \verb|test.dat|.
+\begin{verbatim}
+--> A = float(randn(512));
+--> fp = fopen('test.dat','wb');
+--> fwrite(fp,A);
+--> fclose(fp);
+\end{verbatim}
+Read as many floats as possible into a row vector
+\begin{verbatim}
+--> fp = fopen('test.dat','rb');
+--> x = fread(fp,[1,inf],'float');
+--> who x
+  Variable Name      Type   Flags   Size
+              x     float           [1 262144]
+\end{verbatim}
+Read the same floats into a float array (we use \verb|fseek| to reset the file pointer).
+\begin{verbatim}
+--> fseek(fp,0,-1);
+--> x = fread(fp,[512,inf],'float');
+--> who x
+  Variable Name      Type   Flags   Size
+              x     float           [512 512]
+\end{verbatim}

@@ -1,0 +1,567 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:1025: checking host system type
+configure:1046: checking target system type
+configure:1064: checking build system type
+configure:1795: checking for --enable-gui
+configure:1838: checking for --enable-universal
+configure:1932: checking for --enable-nanox
+configure:1973: checking for --enable-gtk2
+configure:2013: checking for --with-libpng
+configure:2064: checking for --with-libjpeg
+configure:2115: checking for --with-libtiff
+configure:2166: checking for --with-opengl
+configure:2208: checking for --with-dmalloc
+configure:2247: checking for --with-regex
+configure:2298: checking for --with-zlib
+configure:2349: checking for --with-odbc
+configure:2391: checking for --enable-shared
+configure:2431: checking for --enable-soname
+configure:2471: checking for --enable-optimise
+configure:2511: checking for --enable-debug
+configure:2552: checking for --enable-precomp
+configure:2601: checking for --enable-debug_flag
+configure:2641: checking for --enable-debug_info
+configure:2681: checking for --enable-debug_gdb
+configure:2721: checking for --enable-debug_cntxt
+configure:2761: checking for --enable-mem_tracing
+configure:2801: checking for --enable-profile
+configure:2841: checking for --enable-no_rtti
+configure:2881: checking for --enable-no_exceptions
+configure:2921: checking for --enable-permissive
+configure:2961: checking for --enable-no_deps
+configure:3002: checking for --enable-compat20
+configure:3042: checking for --disable-compat22
+configure:3096: checking for --enable-intl
+configure:3136: checking for --enable-config
+configure:3177: checking for --enable-protocols
+configure:3217: checking for --enable-ftp
+configure:3257: checking for --enable-http
+configure:3297: checking for --enable-fileproto
+configure:3337: checking for --enable-sockets
+configure:3377: checking for --enable-ole
+configure:3417: checking for --enable-dataobj
+configure:3458: checking for --enable-ipc
+configure:3499: checking for --enable-cmdline
+configure:3539: checking for --enable-datetime
+configure:3579: checking for --enable-timedate
+configure:3619: checking for --enable-stopwatch
+configure:3659: checking for --enable-dialupman
+configure:3699: checking for --enable-apple_ieee
+configure:3739: checking for --enable-timer
+configure:3779: checking for --enable-wave
+configure:3819: checking for --enable-fraction
+configure:3859: checking for --enable-dynlib
+configure:3899: checking for --enable-dynamicloader
+configure:3939: checking for --enable-longlong
+configure:3979: checking for --enable-geometry
+configure:4019: checking for --enable-log
+configure:4059: checking for --enable-streams
+configure:4099: checking for --enable-file
+configure:4139: checking for --enable-ffile
+configure:4179: checking for --enable-textbuf
+configure:4219: checking for --enable-textfile
+configure:4259: checking for --enable-fontmap
+configure:4299: checking for --enable-unicode
+configure:4339: checking for --enable-mslu
+configure:4379: checking for --enable-wxprintfv
+configure:4419: checking for --enable-std_iostreams
+configure:4459: checking for --enable-filesystem
+configure:4499: checking for --enable-fs_inet
+configure:4539: checking for --enable-fs_zip
+configure:4579: checking for --enable-zipstream
+configure:4620: checking for --enable-catch_segvs
+configure:4660: checking for --enable-snglinst
+configure:4701: checking for --enable-mimetype
+configure:4741: checking for --enable-system_options
+configure:4782: checking for --enable-url
+configure:4822: checking for --enable-protocol
+configure:4862: checking for --enable-protocol_http
+configure:4902: checking for --enable-protocol_ftp
+configure:4942: checking for --enable-protocol_file
+configure:4985: checking for --enable-threads
+configure:5029: checking for --enable-docview
+configure:5069: checking for --enable-help
+configure:5109: checking for --enable-mshtmlhelp
+configure:5149: checking for --enable-html
+configure:5189: checking for --enable-htmlhelp
+configure:5229: checking for --enable-constraints
+configure:5269: checking for --enable-printarch
+configure:5309: checking for --enable-mdi
+configure:5349: checking for --enable-loggui
+configure:5389: checking for --enable-logwin
+configure:5429: checking for --enable-logdialog
+configure:5470: checking for --enable-postscript
+configure:5513: checking for --enable-prologio
+configure:5553: checking for --enable-resources
+configure:5594: checking for --enable-xresources
+configure:5636: checking for --enable-clipboard
+configure:5676: checking for --enable-dnd
+configure:5716: checking for --enable-metafile
+configure:5757: checking for --enable-treelayout
+configure:5799: checking for --enable-controls
+configure:5920: checking for --enable-accel
+configure:5960: checking for --enable-button
+configure:6000: checking for --enable-bmpbutton
+configure:6040: checking for --enable-calendar
+configure:6080: checking for --enable-caret
+configure:6120: checking for --enable-checkbox
+configure:6160: checking for --enable-checklst
+configure:6200: checking for --enable-choice
+configure:6240: checking for --enable-combobox
+configure:6280: checking for --enable-gauge
+configure:6320: checking for --enable-grid
+configure:6360: checking for --enable-newgrid
+configure:6400: checking for --enable-imaglist
+configure:6440: checking for --enable-listbox
+configure:6480: checking for --enable-listctrl
+configure:6520: checking for --enable-notebook
+configure:6560: checking for --enable-propsheet
+configure:6600: checking for --enable-radiobox
+configure:6640: checking for --enable-radiobtn
+configure:6680: checking for --enable-sash
+configure:6720: checking for --enable-scrollbar
+configure:6760: checking for --enable-slider
+configure:6800: checking for --enable-spinbtn
+configure:6840: checking for --enable-spinctrl
+configure:6880: checking for --enable-splitter
+configure:6920: checking for --enable-statbmp
+configure:6960: checking for --enable-statbox
+configure:7000: checking for --enable-statline
+configure:7040: checking for --enable-stattext
+configure:7080: checking for --enable-statusbar
+configure:7120: checking for --enable-tabdialog
+configure:7160: checking for --enable-textctrl
+configure:7200: checking for --enable-togglebtn
+configure:7240: checking for --enable-toolbar
+configure:7280: checking for --enable-tbarnative
+configure:7320: checking for --enable-tbarsmpl
+configure:7360: checking for --enable-treectrl
+configure:7400: checking for --enable-tipwindow
+configure:7440: checking for --enable-popupwin
+configure:7482: checking for --enable-commondlg
+configure:7522: checking for --enable-choicedlg
+configure:7562: checking for --enable-coldlg
+configure:7602: checking for --enable-filedlg
+configure:7642: checking for --enable-finddlg
+configure:7682: checking for --enable-fontdlg
+configure:7722: checking for --enable-dirdlg
+configure:7762: checking for --enable-msgdlg
+configure:7802: checking for --enable-numberdlg
+configure:7842: checking for --enable-splash
+configure:7882: checking for --enable-textdlg
+configure:7922: checking for --enable-tipdlg
+configure:7962: checking for --enable-progressdlg
+configure:8002: checking for --enable-wizarddlg
+configure:8044: checking for --enable-menus
+configure:8084: checking for --enable-miniframe
+configure:8124: checking for --enable-tooltips
+configure:8164: checking for --enable-splines
+configure:8204: checking for --enable-validators
+configure:8244: checking for --enable-busyinfo
+configure:8284: checking for --enable-joystick
+configure:8324: checking for --enable-metafile
+configure:8364: checking for --enable-dragimage
+configure:8406: checking for --enable-palette
+configure:8446: checking for --enable-image
+configure:8486: checking for --enable-gif
+configure:8526: checking for --enable-pcx
+configure:8566: checking for --enable-iff
+configure:8606: checking for --enable-pnm
+configure:8646: checking for --enable-xpm
+configure:8686: checking for --enable-ico_cur
+configure:8726: checking for --disable-dynamic_dib
+configure:8766: checking for --disable-dynamic_ico_cur
+configure:8825: checking for toolkit
+configure:9012: checking for gcc
+configure:9125: checking whether the C compiler (gcc  ) works
+configure:9141: gcc -o conftest    conftest.c  1>&5
+configure:9167: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:9172: checking whether we are using GNU C
+configure:9181: gcc -E conftest.c
+configure:9200: checking whether gcc accepts -g
+configure:9233: checking how to run the C preprocessor
+configure:9254: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:9314: checking whether gcc needs -traditional
+configure:9375: checking for c++
+configure:9407: checking whether the C++ compiler (c++  ) works
+configure:9423: c++ -o conftest    conftest.C  1>&5
+configure:9449: checking whether the C++ compiler (c++  ) is a cross-compiler
+configure:9454: checking whether we are using GNU C++
+configure:9463: c++ -E conftest.C
+configure:9482: checking whether c++ accepts -g
+configure:9525: checking for ranlib
+configure:9556: checking for ar
+configure:9596: checking for a BSD compatible install
+configure:9672: checking for strip
+configure:9701: checking if make is GNU make
+configure:9774: checking for bison
+configure:9808: checking for flex
+configure:9842: checking for yywrap in -lfl
+configure:9861: gcc -o conftest    conftest.c -lfl   1>&5
+configure:9885: checking whether ln -s works
+configure:10004: checking for strings.h
+configure:10014: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10046: checking for stdlib.h
+configure:10056: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10086: checking for malloc.h
+configure:10096: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10126: checking for unistd.h
+configure:10136: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10166: checking for wchar.h
+configure:10176: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10250: checking for fnmatch.h
+configure:10260: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10291: checking for fnmatch
+configure:10319: gcc -o conftest    conftest.c  1>&5
+configure:10349: checking for langinfo.h
+configure:10359: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10400: checking for X11/XKBlib.h
+configure:10410: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:10441: checking for working const
+configure:10495: gcc -c   conftest.c 1>&5
+configure:10516: checking for inline
+configure:10530: gcc -c   conftest.c 1>&5
+configure:10557: checking size of char
+configure:10577: gcc -o conftest    conftest.c  1>&5
+configure:10597: checking size of short
+configure:10617: gcc -o conftest    conftest.c  1>&5
+configure:10637: checking size of void *
+configure:10657: gcc -o conftest    conftest.c  1>&5
+configure:10677: checking size of int
+configure:10697: gcc -o conftest    conftest.c  1>&5
+configure:10717: checking size of long
+configure:10737: gcc -o conftest    conftest.c  1>&5
+configure:10847: checking size of long long
+configure:10867: gcc -o conftest    conftest.c  1>&5
+configure:10889: checking size of wchar_t
+configure:10934: gcc -o conftest    conftest.c  1>&5
+configure:10966: checking for _FILE_OFFSET_BITS value needed for large files
+configure:10983: gcc -c   conftest.c 1>&5
+configure:11054: checking if large file support is available
+configure:11075: checking whether byte ordering is bigendian
+configure:11093: gcc -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:11108: gcc -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure: In function `main':
+configure:11103: `not' undeclared (first use in this function)
+configure:11103: (Each undeclared identifier is reported only once
+configure:11103: for each function it appears in.)
+configure:11103: parse error before "big"
+configure: failed program was:
+#line 11097 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+#include <sys/param.h>
+int main() {
+
+#if BYTE_ORDER != BIG_ENDIAN
+ not big endian
+#endif
+; return 0; }
+configure:11169: checking how to run the C++ preprocessor
+configure:11187: c++ -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C >/dev/null 2>conftest.out
+configure:11231: checking for iostream
+configure:11241: c++ -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C >/dev/null 2>conftest.out
+configure:11289: checking if C++ compiler supports bool
+configure:11316: c++ -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:11354: checking if C++ compiler supports the explicit keyword
+configure:11380: c++ -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:11397: c++ -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure: In function `int main()':
+configure:11391: could not convert `17' to `const Foo&'
+configure:11387: in passing argument 1 of `void TakeFoo(const Foo&)'
+configure: failed program was:
+#line 11384 "configure"
+#include "confdefs.h"
+
+                class Foo { public: explicit Foo(int) {} };
+                static void TakeFoo(const Foo& foo) { }
+            
+int main() {
+
+                TakeFoo(17);
+                return 0;
+            
+; return 0; }
+configure:11557: checking for glibc 2.1 or later
+configure:11574: gcc -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:11622: checking for regex.h
+configure:11632: gcc -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c >/dev/null 2>conftest.out
+configure:11651: checking for regcomp
+configure:11679: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:11739: checking for zlib.h >= 1.1.4
+configure:11799: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:11821: checking for deflate in -lz
+configure:11840: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c -lz   1>&5
+configure:11901: checking for png.h > 0.90
+configure:11958: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:11977: checking for png_check_sig in -lpng
+configure:11996: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c -lpng -lz -lm  1>&5
+configure:12055: checking for jpeglib.h
+configure:12072: gcc -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:12090: checking for jpeg_read_header in -ljpeg
+configure:12109: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c -ljpeg   1>&5
+configure:12168: checking for tiffio.h
+configure:12178: gcc -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c >/dev/null 2>conftest.out
+configure:12196: checking for TIFFError in -ltiff
+configure:12215: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c -ltiff -lm  -ljpeg  -lz  1>&5
+configure:12437: checking for GTK+ version
+configure:12762: checking for gtk-config
+configure:12797: checking for GTK - version >= 1.2.7
+configure:12898: gcc -o conftest  -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -D_REENTRANT -I/usr/X11R6/include  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lgthread -lglib -lpthread -ldl -lXi -lXext -lX11 -lm  1>&5
+configure:13396: checking for poll
+configure:13424: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:13458: checking for gdk_im_open in -lgdk
+configure:13477: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c -lgdk   1>&5
+configure:16456: checking for ANSI C header files
+configure:16469: gcc -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c >/dev/null 2>conftest.out
+configure:16536: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:16560: checking for mode_t
+configure:16593: checking for off_t
+configure:16626: checking for pid_t
+configure:16659: checking for size_t
+configure:16692: checking for uid_t in sys/types.h
+configure:16735: checking if size_t is unsigned int
+configure:16754: c++ -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:16747: `void Foo::foo(unsigned int)' and `void Foo::foo(unsigned int)
+   ' cannot be overloaded
+configure: failed program was:
+#line 16741 "configure"
+#include "confdefs.h"
+#include <stddef.h>
+int main() {
+
+            return 0; }
+
+            struct Foo { void foo(size_t); void foo(unsigned int); };
+
+            int bar() {
+        
+; return 0; }
+configure:16830: checking for pw_gecos in struct passwd
+configure:16847: gcc -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:16887: checking for wcslen
+configure:16915: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:17039: checking for wcsrtombs
+configure:17067: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c  1>&5
+configure:17107: checking for vsnprintf
+configure:17138: c++ -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.C  1>&5
+configure:17284: checking for iconv
+configure:17302: c++ -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.C  1>&5
+configure:17345: checking if iconv needs const
+configure:17369: c++ -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:17414: checking for sigaction
+configure:17442: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:17483: checking for sa_handler type
+configure:17501: c++ -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:17538: checking for mkstemp
+configure:17566: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:17592: checking for statfs
+configure:17618: gcc -c   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:17798: checking for fcntl
+configure:17826: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:17860: checking for timegm
+configure:17888: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:17916: checking for putenv
+configure:17944: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:17991: checking for nanosleep
+configure:18019: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:18162: checking for uname
+configure:18190: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:18227: checking for strtok_r
+configure:18258: c++ -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.C   1>&5
+configure:18295: checking for inet_addr
+configure:18323: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:18483: checking for inet_aton
+configure:18511: gcc -o conftest   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c   1>&5
+configure:18695: checking whether pthreads work with -pthread
+configure:18719: gcc -o conftest -pthread   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES  conftest.c    1>&5
+configure:18748: checking if more special flags are required for pthreads
+configure:18781: checking for thr_setconcurrency
+configure:18809: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+/tmp/ccevv0Q5.o(.text+0x11): In function `main':
+: undefined reference to `thr_setconcurrency'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 18786 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char thr_setconcurrency(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char thr_setconcurrency();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_thr_setconcurrency) || defined (__stub___thr_setconcurrency)
+choke me
+#else
+thr_setconcurrency();
+#endif
+
+; return 0; }
+configure:18838: checking for sched.h
+configure:18848: gcc -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c >/dev/null 2>conftest.out
+configure:18876: checking for sched_yield
+configure:18904: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:18978: checking for pthread_attr_getschedpolicy
+configure:19006: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:19021: checking for pthread_attr_setschedparam
+configure:19049: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:19064: checking for sched_get_priority_max
+configure:19092: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:19176: checking for pthread_cancel
+configure:19204: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:19229: checking for pthread_cleanup_push/pop
+configure:19245: gcc -c  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:19273: checking for pthread_mutexattr_t
+configure:19289: gcc -c  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:19813: checking for strptime
+configure:19841: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:19867: checking for timezone variable in <time.h>
+configure:19885: gcc -c  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:19972: checking for localtime
+configure:20000: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:20027: checking for tm_gmtoff in struct tm
+configure:20045: gcc -c  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c 1>&5
+configure:20074: checking for gettimeofday
+configure:20102: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:20129: checking whether gettimeofday takes two arguments
+configure:20157: c++ -c  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:20233: checking for socket
+configure:20261: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+configure:20336: checking what is the type of the third argument of getsockname
+configure:20364: c++ -c  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.C 1>&5
+configure:20478: checking for linux/joystick.h
+configure:20488: gcc -E  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES conftest.c >/dev/null 2>conftest.out
+configure:20542: checking for dlopen
+configure:20570: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+/tmp/ccca7sfA.o(.text+0x11): In function `main':
+: undefined reference to `dlopen'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 20547 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char dlopen(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dlopen();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_dlopen) || defined (__stub___dlopen)
+choke me
+#else
+dlopen();
+#endif
+
+; return 0; }
+configure:20598: checking for dlopen in -ldl
+configure:20617: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c -ldl     1>&5
+configure:20760: checking for dlerror
+configure:20788: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c    1>&5
+/tmp/ccKwJirE.o(.text+0x11): In function `main':
+: undefined reference to `dlerror'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 20765 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char dlerror(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dlerror();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_dlerror) || defined (__stub___dlerror)
+choke me
+#else
+dlerror();
+#endif
+
+; return 0; }
+configure:20813: checking for dlerror in -ldl
+configure:20832: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c -ldl     1>&5
+configure:22150: checking for cos
+configure:22178: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c  -lz     -ldl    1>&5
+configure:22162: warning: conflicting types for built-in function `cos'
+/tmp/cc419YBp.o(.text+0x11): In function `main':
+: undefined reference to `cos'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 22155 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char cos(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char cos();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_cos) || defined (__stub___cos)
+choke me
+#else
+cos();
+#endif
+
+; return 0; }
+configure:22205: checking for floor
+configure:22233: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c  -lz     -ldl    1>&5
+/tmp/ccUfg04H.o(.text+0x11): In function `main':
+: undefined reference to `floor'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 22210 "configure"
+#include "confdefs.h"
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char floor(); below.  */
+#include <assert.h>
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char floor();
+
+int main() {
+
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_floor) || defined (__stub___floor)
+choke me
+#else
+floor();
+#endif
+
+; return 0; }
+configure:22258: checking if floating point functions link without -lm
+configure:22270: checking for sin
+configure:22298: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c  -lz     -ldl    -lm 1>&5
+configure:22282: warning: conflicting types for built-in function `sin'
+configure:22325: checking for ceil
+configure:22353: gcc -o conftest  -pthread  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -pthread  conftest.c  -lz     -ldl    -lm 1>&5
+configure:22378: checking if floating point functions link with -lm
+configure:22531: checking whether make sets ${MAKE}

@@ -1,0 +1,185 @@
+#!/bin/sh
+
+prefix=/usr/local
+exec_prefix=${prefix}
+exec_prefix_set=no
+CC="gcc"
+GCC="yes"
+CXX="c++"
+LD=""
+cross_compiling=no
+target=i686-pc-cygwin
+static_flag=yes
+inplace_flag=no
+
+usage()
+{
+    cat <<EOF
+Usage: wx-config [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--release]
+                 [--basename] [--static] [--libs] [--gl-libs]
+                 [--cppflags] [--cflags] [--cxxflags] [--ldflags] [--rezflags]
+                 [--cc] [--cxx] [--ld]
+                 [--inplace]
+
+wx-config returns configuration information about the installed
+version of wxWindows. It may be used to query its version and
+installation directories and also retrieve the C and C++ compilers
+and linker which were used for its building and the corresponding
+flags.
+
+The --inplace flag allows wx-config to be used from the wxWindows
+build directory and output flags to use the uninstalled version of
+the headers and libs in the build directory.  (Currently configure
+must be invoked via a full path name for this to work correctly.)
+EOF
+
+    exit $1
+}
+
+cppflags()
+{
+    # we should never specify -I/usr/include on the compiler command line: this
+    # is at best useless and at worst breaks compilation on the systems where
+    # the system headers are non-ANSI because gcc works around this by storing
+    # the ANSI-fied versions of them in its private directory which is searched
+    # after all the directories on the cmd line.
+    #
+    # the situation is a bit more complicated with -I/usr/local/include: again,
+    # it shouldn't be specified with gcc which looks there by default anyhow
+    # and gives warnings (at least 3.1 does) if it is specified explicitly --
+    # but this -I switch *is* needed for the other compilers
+    #
+    # note that we assume that if we use GNU cc we also use GNU c++ and vice
+    # versa, i.e. this won't work (either for --cflags or --cxxflags) if GNU C
+    # compiler and non-GNU C++ compiler are used or vice versa -- we'll fix
+    # this when/if anybody complains about it
+    if test "${prefix}/include" != "/usr/include" \
+            -a "${prefix}/include" != "/usr/include/c++" \
+            -a \( "${GCC}" != "yes" \
+                  -o "${prefix}/include" != "/usr/local/include" \) \
+            -a \( "${cross_compiling}" != "yes" \
+                  -o "${prefix}/include" != "/usr/${target}/include" \) ;
+    then
+        includes=" -I${prefix}/include"
+    fi
+
+    if test $inplace_flag = yes ; then
+	includes="-I$inplace_builddir/lib/wx/include/msw-2.4 -I$inplace_include"
+    else
+	includes="-I${exec_prefix}/lib/wx/include/msw-2.4$includes"
+    fi
+
+    if test $static_flag = yes ; then
+        echo $includes   -D__WIN95__ -D__WXMSW__  -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
+    else
+        echo $includes   -D__WIN95__ -D__WXMSW__   -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
+    fi
+}
+
+if test $# -eq 0; then
+    usage 1 1>&2
+fi
+
+while test $# -gt 0; do
+  case "$1" in
+  -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+  *) optarg= ;;
+  esac
+
+  case $1 in
+    --prefix=*)
+      prefix=$optarg
+      if test $exec_prefix_set = no ; then
+        exec_prefix=$optarg
+      fi
+      ;;
+    --prefix)
+      echo $prefix
+      ;;
+    --exec-prefix=*)
+      exec_prefix=$optarg
+      exec_prefix_set=yes
+      ;;
+    --exec-prefix)
+      echo $exec_prefix
+      ;;
+    --version)
+      echo 2.4.2
+      ;;
+    --release)
+      # Should echo @WX_RELEASE@ instead, but that doesn't seem to be replaced after 
+      # configure has run on this file.
+      echo 2.4
+      ;;
+    --basename)
+      echo wx_msw
+      ;;
+    --static)
+      static_flag=yes
+      ;;
+    --cppflags)
+      cppflags
+      ;;
+    --cflags)
+      echo `cppflags`  -fno-pcc-struct-return
+      ;;
+    --cxxflags)
+      echo `cppflags`  -fno-pcc-struct-return 
+      ;;
+    --ldflags)
+      echo 
+      ;;
+    --rezflags)
+      echo 
+      ;;
+    --libs)
+      if test "${exec_prefix}/lib" != "/usr/lib" \
+              -a \( "${cross_compiling}" != "yes" \
+                    -o "${exec_prefix}/lib" != "/usr/${target}/lib" \) ;
+      then
+          libs="-L${exec_prefix}/lib"
+      fi
+
+      if test $inplace_flag = yes ; then
+	  libs="-L$inplace_builddir/lib"
+      fi
+
+      if test $static_flag = yes ; then
+          echo "$libs    ${exec_prefix}/lib/libwxmsw242.a -ljpeg -ltiff -lz -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lctl3d32 -ladvapi32 -lwsock32 -lkernel32 -luser32 -lgdi32 -lcomdlg32 "
+      else
+          echo $libs    -lwxmsw242 
+      fi
+
+      ;;
+    --gl-libs)
+      if test $static_flag = yes -a "x" != "x" ; then
+          gllibs="${exec_prefix}/lib/"
+      else
+          gllibs=""
+      fi
+      if test $inplace_flag = yes ; then
+	  libdir="-L$inplace_builddir/lib"
+      fi
+      echo  $libdir $gllibs
+      ;;
+    --cc)
+      echo $CC
+      ;;
+    --cxx)
+      echo $CXX
+      ;;
+    --ld)
+      echo $LD
+      ;;
+    --inplace)
+      inplace_flag=yes
+      inplace_builddir=`dirname $0`
+      inplace_include=./include
+      ;;
+    *)
+      usage 1 1>&2
+      ;;
+  esac
+  shift
+done
+

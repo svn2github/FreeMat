@@ -1,0 +1,153 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpWindowPHIGS 3 "" VolPack
+.SH NAME
+vpWindowPHIGS \- multiply the projection matrix by a PHIGS viewing matrix
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpWindowPHIGS(\fIvpc, vrp, vpn, vup, prp, umin, umax, vmin, vmax,
+front, back, projection_type\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+vpVector3 \fIvrp, vpn, vup;\fR
+.FA
+vpVector3 \fIprp;\fR
+.FA
+double \fIumin, umax, vmin, vmax, front, back;\fR
+.FA
+int \fIprojection_type;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIvrp\fR
+Point specifying the view reference point.
+.IP \fIvpn\fR
+Vector specifying the view plane normal.
+.IP \fIvup\fR
+Vector specifying the view up vector.
+.IP \fIprp\fR
+Point specifying the projection reference point (in view reference
+coordinates).
+.IP \fIumin\fR
+Left coordinate of clipping window (in view reference coordinates).
+.IP \fIumax\fR
+Right coordinate of clipping window (in view reference coordinates).
+.IP \fIvmin\fR
+Bottom coordinate of clipping window (in view reference coordinates).
+.IP \fIvmax\fR
+Top coordinate of clipping window (in view reference coordinates).
+.IP \fIfront\fR
+Coordinate of the near depth clipping plane (in view reference coordinates).
+.IP \fIback\fR
+Coordinate of the far depth clipping plane (in view reference coordinates).
+.IP \fIprojection_type\fR
+Projection type code.  Currently, must be VP_PARALLEL.
+.SH DESCRIPTION
+\fBvpWindowPHIGS\fR is used to multiply the current projection matrix
+by a viewing and projection matrix specified by means of the PHIGS
+viewing model.  This model combines specification of the viewpoint,
+projection and clipping parameters.  The resulting matrix is stored in
+the projection transformation matrix.  Since both the view and the
+projection are specified in this one matrix, normally the view
+transformation matrix is not used in conjunction with
+\fBvpWindowPHIGS\fR (it should be set to the identity).  Currently,
+only parallel projections may be specified.  For an alternative view
+specification model, see vpWindow(3).
+.PP
+Assuming that the view transformation matrix is the identity, the
+matrix produced by \fBvpWindowPHIGS\fR should transform world
+coordinates into clip coordinates.  This transformation is specified
+as follows.  First, the projection plane (called the view plane) is
+defined by a point on the plane (the view reference point, \fIvrp\fR)
+and a vector normal to the plane (the view plane normal, \fIvpn\fR).
+Next, a coordinate system called the view reference coordinate (VRC)
+system is specified by means of the view plane normal and the view up
+vector, \fIvup.\fR  The origin of VRC coordinates is the view
+reference point.  The basis vectors of VRC coordinates are:
+.DS
+\fBu\fR = v cross n
+.br
+\fBv\fR = the projection of \fIvup\fR parallel to \fIvpn\fR onto the
+view plane
+.br
+\fBn\fR = \fIvpn\fR
+.DE
+This coordinate system is used to specify the direction of projection
+and the clipping window.  The clipping window bounds in the projection
+plane are given by \fIumin, umax, vmin\fR and \fIvmax.\fR  The 
+direction of projection is the vector from the center of the clipping
+window to the projection reference point \fI(prp),\fR which is also
+specified in VRC coordinates.  Finally, the front and back clipping
+planes are given by n=\fIfront\fR and n=\fIback\fR in VRC coordinates.
+.PP
+For a more detailed explanation of this view specification model, see
+\fIComputer Graphics: Principles and Practice\fR by Foley, vanDam,
+Feiner and Hughes.
+.SH "STATE VARIABLES"
+The current matrix concatenation parameters can be retrieved with the
+following state variable codes (see vpGeti(3)): VP_CONCAT_MODE.
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_BAD_VALUE
+The clipping plane coordinates are invalid (\fIumin >= umax\fR,
+etc.).
+.IP VPERROR_BAD_OPTION
+The \fItype\fR argument is invalid.
+.IP VPERROR_SINGULAR
+The vectors defining view reference coordinates are not mutually
+orthogonal, or the projection reference point lies in the view plane.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpCurrentMatrix(3), vpWindow(3)

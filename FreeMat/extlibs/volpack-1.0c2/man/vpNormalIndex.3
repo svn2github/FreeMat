@@ -1,0 +1,115 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpNormalIndex 3 "" VolPack
+.SH NAME
+vpNormalIndex, vpNormal \- encode/decode a surface normal vector
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS int
+\fBvpNormalIndex(\fInx, ny, nz\fB)\fR
+.FA
+double \fInx, ny, nz;\fR
+.FE
+.sp
+.FS vpResult
+\fBvpNormal(\fIn, nx_ptr, ny_ptr, nz_ptr\fB)\fR
+.FA
+int \fIn;\fR
+.FA
+double *\fInx_ptr,\fR *\fIny_ptr,\fR *\fInz_ptr;\fR
+.FE
+.SH ARGUMENTS
+.IP \fInx\fR
+X component of surface normal vector.
+.IP \fIny\fR
+Y component of surface normal vector.
+.IP \fInz\fR
+Z component of surface normal vector.
+.IP \fIn\fR
+Encoded surface normal vector.
+.IP \fInx_ptr\fR
+Pointer to storage for returning X component of surface normal vector.
+.IP \fIny_ptr\fR
+Pointer to storage for returning Y component of surface normal vector.
+.IP \fInz_ptr\fR
+Pointer to storage for returning Z component of surface normal vector.
+.SH DESCRIPTION
+These two routines are used to convert surface normal vectors between
+encoded and unencoded forms.  An unencoded vector is described by its
+three components (stored as double-precision floating point numbers)
+in an orthogonal coordinate system.  An encoded vector is described by
+a single integer that is suitable for use as an index in a shading
+lookup table.  VolPack's built-in shading routines require the use of
+surface normal vectors encoded using \fBvpNormalIndex\fR (or one of
+the higher-level normal vector computation routines,
+\fBvpVolumeNormals\fR or \fBvpScanlineNormals\fR).  User-defined
+shading routines or lookup tables are not required to use encoded
+normal vectors.
+.PP
+\fBvpNormalIndex\fR computes an encoded vector from the components of
+an unencoded vector.  The vector must be normalized (\fInx*nx + ny*ny
++ nz*nz = 1\fR).  The maximum possible value of an encoded normal is
+given by the constant VP_NORM_MAX.
+.PP
+\fBvpNormal\fR computes the components of a vector from the encoded
+integer form.  The encoded normal has less resolution than the
+unencoded form, so the vector computed by \fBvpNormal\fR may not be
+equal to the original vector passed to \fBvpNormalIndex\fR.
+.SH ERRORS
+\fBvpNormalIndex\fR always returns a valid encoded normal vector.
+.PP
+\fBvpNormal\fR normally returns the value VP_OK.  The following return
+value is possible:
+.IP VPERROR_BAD_VALUE
+The encoded normal vector is invalid.
+.SH SEE ALSO
+VolPack(3), vpVolumeNormals(3), vpScanlineNormals(3)

@@ -1,0 +1,259 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH VolPack 3 "" VolPack
+.SH NAME
+VolPack \- introduction to VolPack, a library for volume rendering
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+cc file.c -lvolpack -lm
+.SH DESCRIPTION
+VolPack is a portable software library for volume rendering.  It is
+based on a new family of fast volume rendering algorithms (see
+Philippe Lacroute and Marc Levoy, Fast Volume Rendering Using a
+Shear-Warp Factorization of the Viewing Transformation,
+Proc.\ SIGGRAPH '94, in \fIComputer Graphics\fR, Annual Conference
+Series, 1994, pp. 451-458).  For a tutorial introduction to the
+library see the \fIVolPack User's Guide.\fR
+.PP
+The following list includes all of the functions in the library
+grouped by general function, along with the corresponding man pages.
+.ta 30
+.SS "Rendering Contexts"
+vpCreateContext	vpCreateContext(3)
+.br
+vpDestroyContext	vpCreateContext(3)
+.br
+.SS Volumes
+vpSetVolumeSize	vpSetVolumeSize(3)
+.br
+vpSetVoxelSize	vpSetVoxelSize(3)
+.br
+vpSetVoxelField	vpSetVoxelField(3)
+.br
+vpFieldOffset	vpSetVoxelField(3)
+.br
+vpSetRawVoxels	vpSetRawVoxels(3)
+.br
+vpVolumeNormals	vpVolumeNormals(3)
+.br
+vpScanlineNormals	vpScanlineNormals(3)
+.br
+vpNormalIndex	vpNormalIndex(3)
+.br
+vpNormal	vpNormalIndex(3)
+.SS "Classified Volumes"
+vpSetClassifierTable	vpSetClassifierTable(3)
+.br
+vpClassifyVolume	vpClassifyVolume(3)
+.br
+vpDestroyClassifiedVolume	vpClassifyVolume(3)
+.br
+vpClassifyScalars	vpClassifyScalars(3)
+.br
+vpClassifyScanline	vpClassifyScanline(3)
+.SS "Min-Max Octrees"
+vpCreateMinMaxOctree	vpCreateMinMaxOctree(3)
+.br
+vpMinMaxOctreeThreshold	vpCreateMinMaxOctree(3)
+.br
+vpDestroyMinMaxOctree	vpCreateMinMaxOctree(3)
+.br
+vpOctreeMask	vpOctreeMask(3)
+.SS "View Transformations"
+vpCurrentMatrix	vpCurrentMatrix(3)
+.br
+vpIdentityMatrix	vpIdentityMatrix(3)
+.br
+vpTranslate	vpTranslate(3)
+.br
+vpRotate	vpRotate(3)
+.br
+vpScale	vpScale(3)
+.br
+vpMultMatrix	vpMultMatrix(3)
+.br
+vpSetMatrix	vpSetMatrix(3)
+.br
+vpWindow	vpWindow(3)
+.br
+vpWindowPHIGS	vpWindowPHIGS(3)
+.SS "Shading and Lighting"
+vpSetLookupShader	vpSetLookupShader(3)
+.br
+vpSetShadowLookupShader	vpSetShadowLookupShader(3)
+.br
+vpSetLight	vpSetLight(3)
+.br
+vpSetMaterial	vpSetMaterial(3)
+.br
+vpShadeTable	vpShadeTable(3)
+.br
+vpSetDepthCueing	vpSetDepthCueing(3)
+.SS Rendering
+vpSetImage	vpSetImage(3)
+.br
+vpRenderClassifiedVolume	vpRenderRawVolume(3)
+.br
+vpRenderRawVolume	vpRenderRawVolume(3)
+.SS "State Variables"
+vpEnable	vpEnable(3)
+.br
+vpSeti	vpSeti(3)
+.br
+vpSetd	vpSeti(3)
+.br
+vpGeti	vpGeti(3)
+.br
+vpGetd	vpGeti(3)
+.br
+vpGetp	vpGeti(3)
+.br
+vpGetMatrix	vpGetMatrix(3)
+.br
+vpGetMaterial	vpGetvpSetMaterial(3)
+.br
+vpGetLight	vpGetvpSetLight(3)
+.br
+vpSetCallback	vpSetCallback(3)
+.br
+vpSetClientData	vpSetClientData(3)
+.SS "File I/O"
+vpLoadClassifiedVolume	vpLoadRawVolume(3)
+.br
+vpLoadMinMaxOctree	vpLoadRawVolume(3)
+.br
+vpLoadRawVolume	vpLoadRawVolume(3)
+.br
+vpLoadContext	vpLoadRawVolume(3)
+.br
+vpStoreClassifiedVolume	vpStoreRawVolume(3)
+.br
+vpStoreMinMaxOctree	vpStoreRawVolume(3)
+.br
+vpStoreRawVolume	vpStoreRawVolume(3)
+.br
+vpStoreContext	vpStoreRawVolume(3)
+.SS "Utility Functions"
+vpRamp	vpRamp(3)
+.br
+vpExtract	vpExtract(3)
+.br
+vpTranspose	vpTranspose(3)
+.br
+vpResample	vpResample(3)
+.br
+vpSetFilter	vpSetFilter(3)
+.br
+vpBoxFilter	vpBoxFilter(3)
+.br
+vpLinearFilter	vpBoxFilter(3)
+.br
+vpBicubicFilter	vpBoxFilter(3)
+.br
+vpGaussianFilter	vpBoxFilter(3)
+.br
+vpIdentity3	LinearAlgebra(3)
+.br
+vpIdentity4	LinearAlgebra(3)
+.br
+vpSetVector3	LinearAlgebra(3)
+.br
+vpSetVector4	LinearAlgebra(3)
+.br
+vpNormalize3	LinearAlgebra(3)
+.br
+vpMatrixVectorMult4	LinearAlgebra(3)
+.br
+vpMatrixMult4	LinearAlgebra(3)
+.br
+vpCrossProduct	LinearAlgebra(3)
+.br
+vpSolveSystem4	LinearAlgebra(3)
+.SS "Error Handling"
+vpGetError	vpGetError(3)
+.br
+vpGetErrorString	vpGetError(3)
+.SS Debugging
+vpSetDebug	vpSetDebug(3)
+.br
+vpTracePixel	vpTracePixel(3)
+.br
+vpGetImage	vpGetvpSetImage(3)
+.br
+vpBruteForceRender	vpBruteForceRender(3)
+.SH "DATA TYPES"
+The following data types are declared in the VolPack header file
+(volpack.h):
+.IP vpContext
+An opaque handle for a rendering context.  A context contains all of
+the information required to render a volume, including classification
+and shading parameters, the view transformation, a description of the
+format of the volume data, and private data structures used by the
+rendering routines.
+.IP vpResult
+A result code.  Most of the library routines return the code VP_OK
+upon successful completion, or an error code if the library call
+fails.
+.IP vpVector3
+A three-element linear array of double-precision elements (double[3]).
+.IP vpVector4
+A four-element linear array of double-precisions elements (double[4]).
+.IP vpMatrix3
+A three-by-three array of double-precision elements (double[3][3]).
+.IP vpMatrix4
+A four-by-four array of double-precision elements (double[4][4]).
+.SH AVAILABILITY
+Source code and documentation for VolPack are available free via the
+World Wide Web (http://www-graphics.stanford.edu/software/volpack) or
+by anonymous ftp (ftp://graphics.stanford.edu/pub/volpack).
+.SH SEE ALSO
+\fIVolPack User's Guide\fR

@@ -1,0 +1,221 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpSetShadowLookupShader 3 "" VolPack
+.SH NAME
+vpSetShadowLookupShader \- specify shading lookup tables for rendering
+shadows
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpSetShadowLookupShader(\fIvpc, color_channels, num_materials,
+color_field, color_table, color_table_size, weight_field,
+weight_table, weight_table_size, shadow_table, shadow_table_size\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fIcolor_channels, num_materials;\fR
+.FA
+int \fIcolor_field;\fR
+.FA
+float *\fIcolor_table;\fR
+.FA
+int \fIcolor_table_size;\fR
+.FA
+int \fIweight_field;\fR
+.FA
+float *\fIweight_table;\fR
+.FA
+int \fIweight_table_size;\fR
+.FA
+float *\fIshadow_table;\fR
+.FA
+int \fIshadow_table_size;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIcolor_channels\fR
+The number of color channels per pixel (1 or 3).
+.IP \fInum_materials\fR
+The number of material types.
+.IP \fIcolor_field\fR
+Field number for voxel field containing color lookup table index.
+.IP \fIcolor_table\fR
+Color lookup table.
+.IP \fIcolor_table_size\fR
+Size of color lookup table in bytes.
+.IP \fIweight_field\fR
+Field number for voxel field containing material weight lookup table
+index.
+.IP \fIweight_table\fR
+Material weight lookup table.
+.IP \fIweight_table_size\fR
+Size of material weight lookup table in bytes.
+.IP \fIshadow_table\fR
+Shadow color lookup table.
+.IP \fIshadow_table_size\fR
+Size of shadow color lookup table in bytes.
+.SH DESCRIPTION
+\fBvpSetShadowLookupShader\fR is used to specify lookup tables that
+define a shading function for rendering a volume with shadows.  It
+should be used instead of \fBvpSetLookupShader\fR when shadows are
+enabled.
+.PP
+VolPack supports a fast, one-pass shadow algorithm.  The algorithm
+computes the fraction of light from a given light source that reaches
+each voxel.  The fraction is then used to attenuate the diffuse and
+specular shading terms associated with that light source, producing a
+dark shadow in areas that are hidden from the light source.  The
+implementation uses lookup tables so that most of the shading
+calculation can be precomputed.
+.PP
+In order to compute the shadows in a single pass the algorithm places
+a restriction on the direction of the light source: the light casting
+the shadows must not be more than 45 degrees from the viewing
+direction.  The quality of the shadows may degrade if the angle
+approaches 45 degrees.  The current implementation allows shadows
+to be cast only from one light source.  Additional lights may be
+enabled, but they will not cast shadows.
+.PP
+To make a rendering with shadows, the following steps must be performed:
+.IP
+Call \fBvpSetShadowLookupShader\fR to define the lookup tables (see
+discussion below).
+.IP
+Call \fBvpSeti\fR with the VP_SHADOW_LIGHT option to specify which
+light will cast shadows.  The current implementation only allows one
+light to be specified.
+.IP
+Call \fBvpSeti\fR with the VP_SHADOW_BIAS option to set the shadow
+bias value (see discussion below).
+.IP
+Call \fBvpEnable\fR with the VP_SHADOW option to enable shadows.
+.IP
+Call \fBvpShadeTable\fR as usual to initialize the lookup tables.
+.IP
+Call one of the rendering routines.
+.PP
+\fBvpSetShadowLookupShader\fR defines the lookup tables required for
+the shading and shadowing algorithm.  The first nine arguments are
+identical to the arguments for \fBvpSetLookupShader\fR (see the
+corresponding man page).  The remaining two arguments specify an
+additional color lookup table, \fIshadow_table,\fR with the same
+dimensions as \fIcolor_table\fR.  The contents of the table will be
+initialized by \fBvpShadeTable\fR.
+.PP
+The call to \fBvpSeti\fR with the VP_SHADOW_BIAS option specifies an
+offset to eliminate self-shadowing.  Self-shadowing is an intrinsic
+problem when implementing shadow algorithms for volume rendering.
+Consider a single voxelized object consisting of an opaque core
+surrounded by a "halo" of lower-opacity voxels (necessary for the scene
+to be band-limited).  As a light ray pierces the halo its strength is
+attenuated.  By the time the light reaches the high-opacity region a
+significant fraction of the light may be obscured, resulting in a
+general darkening of the image even if no shadows should be
+present.  The problem can be corrected by moving the shadow a small
+distance along the direction of the light rays.  VP_SHADOW_BIAS
+specifies the distance of the bias in units of voxels.  The optimal
+value depends on the data set.  Increase the bias until it has no more
+effect on overall image brightness, but do not increase it too far or
+small features in the data will no longer produce correct shadows.
+.PP
+\fBvpShadeTable\fR initializes the shading lookup tables.  It operates
+differently when shadows are enabled.  Instead of computing one color
+for each
+surface normal vector and storing the results in \fIcolor_table,\fR
+the routine computes two colors terms.  The first term is the portion
+of the voxel color due to the diffuse and specular components of the
+shadow light.  This value is stored in \fIshadow_table\fR.  The second
+term contains the contribution of all other light source and the
+ambient light term, and is stored in \fIcolor_table.\fR  During
+rendering the color of a voxel is computed by extracting a surface
+normal from the voxel, using the surface normal to index both
+\fIcolor_table\fR and \fIshadow_table,\fR attenuating the value
+from \fIshadow_table\fR by the local strength of the shadow light, and
+then adding the two terms together.  The local strength of the shadow
+light is found by extracting a value from the shadow buffer, an
+internal data structure that is updated during rendering.
+.PP
+The values in the shading lookup tables may be initialized before or
+after calling \fBvpSetShadowLookupShader.\fR  Typically
+\fBvpSetShadowLookupShader\fR is called once at the beginning of a rendering
+session, and then \fBvpShadeTable\fR is called whenever the
+user changes the lighting and shading parameters or the viewing
+direction.
+.PP
+The shadow buffer is an internal 2D array used to maintain state
+during rendering.  There are several state variables that can be used
+to query its current size in pixels (VP_SHADOW_WIDTH and
+VP_SHADOW_HEIGHT) and to suggest a size (VP_SHADOW_WIDTH_HINT and
+VP_SHADOW_HEIGHT_HINT).  The required size depends on the volume size
+and the shadow light's direction.  Normally the buffer is
+automatically resized when necessary.
+.SH "STATE VARIABLES"
+Information about the current shading table parameters can be
+retrieved with the following state variable codes (see vpGeti(3)):
+VP_COLOR_CHANNELS, VP_SHADE_COLOR_TABLE, VP_SHADE_COLOR_SIZE,
+VP_SHADE_WEIGHT_TABLE, VP_SHADE_WEIGHT_SIZE, VP_SHADE_COLOR_FIELD,
+VP_SHADE_WEIGHT_FIELD, VP_MATERIAL_COUNT, VP_SHADOW, VP_SHADOW_LIGHT,
+VP_SHADOW_WIDTH_HINT, VP_SHADOW_HEIGHT_HINT, VP_SHADOW_WIDTH,
+VP_SHADOW_HEIGHT, VP_SHADOW_COLOR_TABLE, VP_SHADOW_COLOR_SIZE,
+VP_SHADOW_BIAS
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_BAD_VALUE
+One or more of the arguments has an invalid value or is out of range.
+.IP VPERROR_LIMIT_EXCEEDED
+The \fInum_materials\fR argument has exceeded an internal limit.
+Change the value of VP_MAX_MATERIAL in volpack.h and recompile the
+VolPack library.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpShadeTable(3), vpSetLookupShader(3)

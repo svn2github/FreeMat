@@ -1,0 +1,53 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{NAN Not-a-Number Constant}
+\subsubsection{Usage}
+Returns a value that represents ``not-a-number'' for both 32 and 64-bit 
+floating point values.  This constant is meant to represent the result of
+arithmetic operations whose output cannot be meaningfully defined (like 
+$\frac{0}{0}$).
+\begin{verbatim}
+   y = nan
+\end{verbatim}
+The returned type is a 32-bit float, but promotion to 64 bits preserves the not-a-number.  The not-a-number constant has one simple property.  In particular, any arithmetic operation with a \verb|NaN| results in a \verb|NaN|. \emph{These calculations run significantly slower than calculations involving finite quantities!}  Make sure that you use \verb|NaN|s in extreme circumstances only.  Note that \verb|NaN| is not preserved under type conversion to integer types (see the examples below).
+\subsubsection{Example}
+The following examples demonstrate a few calculations with the not-a-number constant.
+\begin{verbatim}
+--> nan*0
+ans =
+  <float>  - size: [1 1]
+    nan
+--> nan-nan
+ans =
+  <float>  - size: [1 1]
+    nan
+\end{verbatim}
+Note that \verb|NaN|s are preserved under type conversion to floating point types (i.e., \verb|float|, \verb|double|, \verb|complex| and \verb|dcomplex| types), but not integer  types.
+\begin{verbatim}
+--> uint32(nan)
+ans =
+  <uint32>  - size: [1 1]
+            0
+--> complex(nan)
+ans =
+  <complex>  - size: [1 1]
+    nan               0.00000000    i
+\end{verbatim}
+

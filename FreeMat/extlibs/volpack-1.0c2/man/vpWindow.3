@@ -1,0 +1,143 @@
+'\" Copyright (c) 1994 The Board of Trustees of The Leland Stanford
+'\" Junior University.  All rights reserved.
+'\" 
+'\" Permission to use, copy, modify and distribute this software and its
+'\" documentation for any purpose is hereby granted without fee, provided
+'\" that the above copyright notice and this permission notice appear in
+'\" all copies of this software and that you do not sell the software.
+'\" Commercial licensing is available by contacting the author.
+'\" 
+'\" THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+'\" EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+'\" WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+'\" 
+'\" Author:
+'\"    Phil Lacroute
+'\"    Computer Systems Laboratory
+'\"    Electrical Engineering Dept.
+'\"    Stanford University
+'\" 
+'\" $Date$
+'\" $Revision$
+'\"
+'\" Macros
+'\" .FS <type>  --  function start
+'\"     <type> is return type of function
+'\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+'\" .FA  --  function arguments
+'\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+'\" .FE  --  function end
+'\"     end of function declaration
+.de FE
+.PD
+..
+'\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+'\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpWindow 3 "" VolPack
+.SH NAME
+vpWindow \- multiply the projection matrix by a perspective or
+orthographic matrix
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpWindow(\fIvpc, type, left, right, bottom, top, near, far\fB)\fR
+.FA
+vpContext *\fIvpc;\fR
+.FA
+int \fItype;\fR
+.FA
+double \fIleft, right;\fR
+.FA
+double \fIbottom, top;\fR
+.FA
+double \fInear, far;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fItype\fR
+Projection type code.  Currently, must be VP_PARALLEL.
+.IP \fIleft\fR
+Coordinate of the left vertical clipping plane.
+.IP \fIright\fR
+Coordinate of the right vertical clipping plane.
+.IP \fIbottom\fR
+Coordinate of the bottom horizontal clipping plane.
+.IP \fItop\fR
+Coordinate of the top horizontal clipping plane.
+.IP \fInear\fR
+Coordinate of the near depth clipping plane.
+.IP \fIfar\fR
+Coordinate of the far depth clipping plane.
+.SH DESCRIPTION
+\fBvpWindow\fR is used to multiply the current projection matrix by a
+perspective or orthographic projection matrix.  The new projection
+matrix is defined by the coordinates of six clipping planes in the eye
+coordinate system (see vpCurrentMatrix(3)).  The matrix maps the points
+\fI(left, bottom, near)\fR and \fI(right, top, near)\fR to the lower
+left and upper right corners of the clipping window.  For an alternative
+means of specifying the projection matrix, see vpWindowPHIGS(3).
+.PP
+Currently, only orthographic projections are supported.  Perspective
+projections will be added in a future release.
+.PP
+The matrix for parallel projections is:
+.DS
+.ta 2C 6C 10C 14C
+	A	0	0	D
+.br
+	0	B	0	E
+.br
+	0	0	C	F
+.br
+	0	0	0	1
+.sp
+A = 2 / \fI(right \- left)\fR
+.br
+B = 2 / \fI(top \- bottom)\fR
+.br
+C = 2 / \fI(far \- near)\fR
+.br
+D = \fI(left + right) / (left \- right)\fR
+.br
+E = \fI(bottom + top) / (bottom \- top)\fR
+.br
+F = \fI(near + far) / (near \- far)\fR
+.DE
+The matrix is multiplied into the projection matrix, even if the
+projection matrix is not the current matrix.    By
+default, the matrix is post-multiplied (N = N*\fIm\fR where N is
+the current matrix and \fIm\fR is the argument to \fBvpMultMatrix\fR).  The
+VP_CONCAT_MODE option to \fBvpSeti\fR can be used to select
+pre-multiplication.
+The default window is a parallel projection with left = bottom = near
+= -0.5, and right = top = far = 0.5.
+.SH "STATE VARIABLES"
+The current matrix concatenation parameters can be retrieved with the
+following state variable codes (see vpGeti(3)): VP_CONCAT_MODE.
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values
+are possible:
+.IP VPERROR_BAD_VALUE
+The clipping plane coordinates are invalid (\fIleft >= right\fR,
+etc.).
+.IP VPERROR_BAD_OPTION
+The \fItype\fR argument is invalid.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpCurrentMatrix(3), vpWindowPHIGS(3)

@@ -73,6 +73,8 @@ namespace FreeMat {
   void WalkTree::popID() {
     if (!cstack.empty())
       cstack.pop_back();
+    else
+      io->outputMessage("IDERROR\n");
   }
 
   void WalkTree::setPrintLimit(int lim) {
@@ -1035,12 +1037,14 @@ namespace FreeMat {
   //!
   void WalkTree::globalStatement(ASTPtr t) {
     if (t) {
+      pushID(t->context());
       context->addGlobalVariable(t->text);
       t = t->down;
       while (t) {
 	context->addGlobalVariable(t->text);
 	t = t->right;
       }
+      popID();
     }
   }
 
@@ -1073,12 +1077,14 @@ namespace FreeMat {
   //!
   void WalkTree::persistentStatement(ASTPtr t) {
     if (t) {
+      pushID(t->context());
       context->addPersistentVariable(t->text);
       t = t->down;
       while (t) {
 	context->addPersistentVariable(t->text);
 	t = t->right;
       }
+      popID();
     }
   }
 
@@ -1453,14 +1459,10 @@ namespace FreeMat {
 	state = FM_STATE_RETURN;
 	break;
       case FM_SWITCH:
-	pushID(t->context());
 	switchStatement(t->down);
-	popID();
 	break;
       case FM_TRY:
-	pushID(t->context());
 	tryStatement(t->down);
-	popID();
 	break;
       case FM_QUIT:
 	state = FM_STATE_QUIT;
@@ -1469,24 +1471,18 @@ namespace FreeMat {
 	state = FM_STATE_RETALL;
 	break;
       case FM_KEYBOARD:
-	pushID(t->context());
 	depth++;
 	evalCLI();
 	if (state != FM_STATE_QUIT &&
 	    state != FM_STATE_RETALL)
 	  state = FM_STATE_OK;
 	depth--;
- 	popID();
 	break;
       case FM_GLOBAL:
-	pushID(t->context());
 	globalStatement(t->down);
- 	popID();
 	break;
       case FM_PERSISTENT:
-	pushID(t->context());
 	persistentStatement(t->down);
- 	popID();
 	break;
       default:
 	throw Exception("Unrecognized statement type");
@@ -1536,8 +1532,10 @@ namespace FreeMat {
 	} 
       }
       if (state == FM_STATE_QUIT || 
-	  state == FM_STATE_RETALL)
+	  state == FM_STATE_RETALL) {
+	popID();
 	return;
+      }
       context->insertVariable("ans",b);
     }
     popID();
@@ -1713,6 +1711,7 @@ namespace FreeMat {
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	r.setVectorSubset(m[0],value[0]);
+	popID();
 	return;
       } else {
 	r.setNDimSubset(m,value[0]);
@@ -2738,7 +2737,9 @@ namespace FreeMat {
   void WalkTree::popDebug() {
     if (!cstack.empty())
       cstack.pop_back();
-  }
+    else
+      io->outputMessage("IDERROR\n");
+ }
 
   Interface* WalkTree::getInterface() {
     return io;
@@ -3094,49 +3095,43 @@ namespace FreeMat {
     InterruptPending = false;
     try{
       parserState = parseString(line);
-      switch (parserState) {
-      case ScriptBlock:
-	{
-	  tree = getParsedScriptBlock();
-	  //	printAST(tree);
-	  try {
-	    char buffer1[2048];
-	    char buffer2[2048];
-	    strcpy(buffer1,line);
-	    if (buffer1[strlen(buffer1)-1] == '\n')
-	      buffer1[strlen(buffer1)-1] = 0;
-	    if (buffer1[strlen(buffer1)-1] == '\r')
-	      buffer1[strlen(buffer1)-1] = 0;
-	    sprintf(buffer2,"%s",buffer1);
-	    pushDebug("Eval",buffer2);
-	    block(tree);
-	    if (state == FM_STATE_RETURN) {
-	      if (depth > 0) {
-		popDebug();
-		return true;
-	      }
-	    }
-	    if (state == FM_STATE_QUIT || state == FM_STATE_RETALL) {
-	      popDebug();
-	      return true;
-	    }
-	  } catch(Exception &e) {
-	    e.printMe(io);
-	  }
+    } catch(Exception &e) {
+      e.printMe(io);
+      return false;
+    }
+
+    if (parserState != ScriptBlock)
+      return false;
+
+    tree = getParsedScriptBlock();
+    char buffer1[2048];
+    char buffer2[2048];
+    strcpy(buffer1,line);
+    if (buffer1[strlen(buffer1)-1] == '\n')
+      buffer1[strlen(buffer1)-1] = 0;
+    if (buffer1[strlen(buffer1)-1] == '\r')
+      buffer1[strlen(buffer1)-1] = 0;
+    sprintf(buffer2,"%s",buffer1);
+    try {
+      pushDebug("Eval",buffer2);
+      block(tree);
+      if (state == FM_STATE_RETURN) {
+	if (depth > 0) {
+	  popDebug();
+	  return true;
 	}
-	break;
-      case FuncDef:
-      case ParseError:
-	break;
+      }
+      if (state == FM_STATE_QUIT || state == FM_STATE_RETALL) {
+	popDebug();
+	return true;
       }
     } catch(Exception &e) {
       e.printMe(io);
     }
-    if (parserState == ScriptBlock)
-      popDebug();
+    popDebug();
     return false;
   }
-
+  
   char* WalkTree::getLastErrorString() {
     return lasterr;
   }

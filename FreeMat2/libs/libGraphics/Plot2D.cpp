@@ -182,10 +182,10 @@ namespace FreeMat {
       yMax = (yMax > tyMax) ? yMax : tyMax;
     }
     if (xAxis == NULL)
-      xAxis = new Axis(xMin, xMax, false);
+      xAxis = new Axis(xMin, xMax, false, Axis_X);
     xAxis->ManualSetAxis(xMin, xMax);
     if (yAxis == NULL)
-      yAxis = new Axis(yMin, yMax, false);
+      yAxis = new Axis(yMin, yMax, false, Axis_Y);
     yAxis->ManualSetAxis(yMin, yMax);
     Refresh(bounds);
   }
@@ -206,11 +206,11 @@ namespace FreeMat {
       yMax = (yMax > tyMax) ? yMax : tyMax;
     }
     if (xAxis == NULL)
-      xAxis = new Axis(xMin, xMax, false);
+      xAxis = new Axis(xMin, xMax, false, Axis_X);
     else
       xAxis->SetExtent(xMin, xMax);
     if (yAxis == NULL)
-      yAxis = new Axis(yMin, yMax, false);
+      yAxis = new Axis(yMin, yMax, false, Axis_Y);
     else
       yAxis->SetExtent(yMin, yMax);
     Refresh(bounds);
@@ -263,12 +263,8 @@ namespace FreeMat {
     int plotWidth;
     int plotHeight;
 
-    plotWidth = width;
-    plotHeight = height;
-#if 0
     plotWidth = width - space - yAxis->getWidth();
     plotHeight = height - 2*space - titleHeight - xAxis->getHeight();
-#endif
 
     int plotX;
     int plotY;
@@ -276,8 +272,8 @@ namespace FreeMat {
     plotX = yAxis->getWidth();
     plotY = 2*space + titleHeight;
 
-    xAxis->Place(plotX, plotY + plotHeight, plotWidth, 1.0, 0.0, 0.0, -1.0);
-    yAxis->Place(plotX, plotY + plotHeight, plotHeight, 0.0, -1.0, -1.0, 0.0);
+    xAxis->Place(plotX, plotY + plotHeight, plotWidth, plotHeight);
+    yAxis->Place(plotX, plotY, plotHeight, plotWidth);
 
     gc.SetForeGroundColor(Color("black"));
     gc.DrawTextString(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));

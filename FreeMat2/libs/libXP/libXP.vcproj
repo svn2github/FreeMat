@@ -430,6 +430,9 @@
 				RelativePath="Reducer.hpp">
 			</File>
 			<File
+				RelativePath=".\resource.h">
+			</File>
+			<File
 				RelativePath="RGBImage.hpp">
 			</File>
 			<File

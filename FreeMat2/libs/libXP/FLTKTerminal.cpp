@@ -147,8 +147,9 @@ char* FLTKTerminalWidget::getLine(const char*prompt) {
     buffer()->append(prompt);
     insert_position(buffer()->length());
     history_ptr = -1;
-    while(enteredLines.empty())
-      Fl::wait(1);
+	enteredLinesChanged = false;
+    while(!enteredLinesChanged)
+      Fl::wait();
   }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();
@@ -473,6 +474,7 @@ int FLTKTerminalWidget::enter() {
     history.push_back(" ");
   }
   promptlen = 0;
+  enteredLinesChanged = true;
   return 1;
 }
 

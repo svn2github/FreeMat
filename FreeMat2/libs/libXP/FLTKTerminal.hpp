@@ -23,6 +23,7 @@ class FLTKTerminalWidget : public Fl_Text_Display, public Interface {
   Context *m_context; 
   std::vector<std::string> dirTab;
   std::list<std::string> enteredLines;
+  bool enteredLinesChanged;
   std::string m_path;
   int linecount;
   int m_width, m_height;

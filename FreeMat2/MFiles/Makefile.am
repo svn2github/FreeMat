@@ -31,3 +31,9 @@ install-data-local:
 	  echo "Installing M File $$scriptname"; \
 	  $(INSTALL) $(srcdir)/$$scriptname $(prefix)/share/FreeMat/MFiles;\
 	done;
+uninstall-local:
+	for scriptname in $(EXTRA_DIST); do \
+	  echo "Uninstalling M File $$scriptname"; \
+	  rm -f $(prefix)/share/FreeMat/MFiles/$$scriptname;\
+	done;
+

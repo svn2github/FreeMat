@@ -3,7 +3,7 @@ EXTRA_DIST = libFreeMat.dsp f2c/VectorOps_assist.c
 noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS=@CFLAGS@ 
-CXXFLAGS=@CXXFLAGS@ 
+CXXFLAGS=@CXXFLAGS@ -DYY_NEVER_INTERACTIVE
 INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/src/x11
 
 libFreeMat_a_SOURCES = Parser.yxx \
@@ -67,5 +67,9 @@ Interface.hpp \
 Interface.cpp \
 SymbolTable.hpp 
 
+dist-hook:
+	sed 's/#include <unistd.h>//g' Lexer.cxx > Lpatch.cxx
+	rm Lexer.cxx
+	mv Lpatch.cxx Lexer.cxx
 
 AUTOMAKE_OPTIONS 	= foreign

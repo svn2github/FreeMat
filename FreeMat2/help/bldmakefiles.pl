@@ -12,6 +12,12 @@ print OUTPUT "\tfor fname in \$(EXTRA_DIST); do \\\n";
 print OUTPUT "\t  echo \"Installing manual html file \$\$fname\"; \\\n";
 print OUTPUT "\t  \$(INSTALL) \$(srcdir)/\$\$fname \$(prefix)/share/FreeMat/html;\\\n";
 print OUTPUT "\tdone;\n";
+print OUTPUT "uninstall-local:\n";
+print OUTPUT "\tfor fname in \$(EXTRA_DIST); do \\\n";
+print OUTPUT "\t  echo \"Uninstalling manual html file \$\$fname\"; \\\n";
+print OUTPUT "\t  rm -f \$(prefix)/share/FreeMat/html/\$\$fname;\\\n";
+print OUTPUT "\tdone;\n";
+
 close OUTPUT;
 
 $filelist = `cd mdc && ls *.mdc`;
@@ -27,6 +33,11 @@ print OUTPUT "\tmkdir -p \$(prefix)/share/FreeMat/MFiles\n";
 print OUTPUT "\tfor fname in \$(EXTRA_DIST); do \\\n";
 print OUTPUT "\t  echo \"Installing text help file \$\$fname\"; \\\n";
 print OUTPUT "\t  \$(INSTALL) \$(srcdir)/\$\$fname \$(prefix)/share/FreeMat/MFiles;\\\n";
+print OUTPUT "\tdone;\n";
+print OUTPUT "uninstall-local:\n";
+print OUTPUT "\tfor fname in \$(EXTRA_DIST); do \\\n";
+print OUTPUT "\t  echo \"Uninstalling text help file \$\$fname\"; \\\n";
+print OUTPUT "\t  rm -f \$(prefix)/share/FreeMat/MFiles/\$\$fname;\\\n";
 print OUTPUT "\tdone;\n";
 close OUTPUT;
 

@@ -2500,7 +2500,7 @@ namespace FreeMat {
       }
     } catch(Exception &e) {
       e.printMe(io);
-      io->clearMessageContextStackToDepth(depth);
+      io->clearMessageContextStackToDepth(cdepth);
     }
     return false;
   }

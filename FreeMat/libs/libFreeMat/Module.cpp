@@ -31,6 +31,7 @@
 #endif
 
 #include "wx/dynlib.h"
+#include "wx/filefn.h"
 
 namespace FreeMat {
 
@@ -182,29 +183,33 @@ namespace FreeMat {
     char *funcname;
     char *rettype;
     char *arglist;
+    wxPathList plist;
+    wxString libfullpath;
 
     if (arg.size() < 5)
       throw Exception(std::string("import requires 5 arguments:") + 
 		      "library name, symbol name, imported function name" +
 		      "return type, argument list");
+    plist.AddEnvList("FREEMAT_PATH");
     libfile = arg[0].getContentsAsCString();
+    libfullpath = plist.FindValidPath(libfile);
     symbolname = arg[1].getContentsAsCString();
     funcname = arg[2].getContentsAsCString();
     rettype = arg[3].getContentsAsCString();
     arglist = arg[4].getContentsAsCString();
     wxDynamicLibrary *lib;
-    if (!libPointers.findSymbol(libfile,lib)) {
+    if (!libPointers.findSymbol(libfullpath.c_str(),lib)) {
       std::cout << "loading " << libfile << "\n";
-      lib = new wxDynamicLibrary(libfile);    
+      lib = new wxDynamicLibrary(libfullpath);    
       if (!lib->IsLoaded())
 	throw Exception(std::string("Unable to open library ") + 
-			libfile);
-      libPointers.insertSymbol(libfile,lib);
+			libfullpath.c_str());
+      libPointers.insertSymbol(libfullpath.c_str(),lib);
     }
     void* func = lib->GetSymbol(symbolname);
     if (func == NULL)
       throw Exception(std::string("Unable to find symbol ") + 
-		      symbolname + " in library " + libfile);
+		      symbolname + " in library " + libfullpath.c_str());
     stringVector types;
     stringVector arguments;
     ASTPtrVector checks;

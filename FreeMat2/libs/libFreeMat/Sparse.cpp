@@ -1,5 +1,7 @@
 #include "Sparse.hpp"
 #include "Malloc.hpp"
+#include <algorithm>
+
 namespace FreeMat {
 
   template <class T>
@@ -210,6 +212,86 @@ namespace FreeMat {
       throw Exception("Unsupported type in makeSparseArray");
     }
   }
+
+  template <class T>
+  class IJVEntry {
+  public:
+    uint32 I;
+    uint32 J;
+    T V;
+  };
+  
+  template <class T>
+  bool operator<(const IJVEntry<T>& a, const IJVEntry<T>& b) {
+    return ((a.J < b.J) || ((a.J == b.J) && (a.I <= b.I)));
+  }
+
+  template <class T>
+  T* CompressRealIJV(const T* src, int count) {
+    int i, j;
+    int zlen;
+    int outlen = 0;
+    i = 0;
+    while (i<count) {
+      if (src[i] != 0) {
+	i++;
+	outlen++;
+      } else {
+	outlen+=2;
+	while ((i<count) && (src[i] == 0)) i++;
+      }
+    }
+    T* dp = new T[outlen+1];
+    dp[0] = outlen;
+    j = 0;
+    i = 0;
+    outlen = 1;
+    while (i<count) {
+      if (src[i] != 0) {
+	dp[outlen] = src[i];
+	i++;
+	outlen++;
+      } else {
+	zlen = 0;
+	while ((i<count) && (src[i] == 0)) {
+	  i++;
+	  zlen++;
+	}
+	dp[outlen++] = 0;
+	dp[outlen++] = zlen;
+      }
+    }
+    return dp;
+  }
+
+
+  template <class T>
+  void* makeSparseFromIJVReal(int rows, int cols, int nnz,
+			      uint32* I, int istride, uint32 *J, int jstride,
+			      T* cp, int cpstride) {
+    // build an IJV master list
+    IJVEntry<T> *mlist = new IJVEntry<T>(nnz);
+    int i;
+    for (i=0;i<nnz;i++) {
+      mlist[i].I = I[istride*i];
+      mlist[i].J = J[jstride*i];
+      mlist[i].V = cp[cpstride*i];
+    }
+    std::sort(mlist,mlist+nnz);
+    T** op;
+    // Allocate the output (sparse) array
+    op = new T*[cols];
+    // Get an integer pointer into the IJV list
+    int ptr = 0;
+    // Stringify...
+    for (int col=0;col<cols;col++)
+      op[col] = CompressRealIJV<T>(mlist,ptr,col,rows);
+    // Free the space
+    delete[] mlist;
+    // Return the array
+    return op;
+  }
+
 
   void* makeSparseFromIJV(Class dclass, int rows, int cols, int nnz, 
 			  uint32* I, int istride, uint32 *J, int jstride,

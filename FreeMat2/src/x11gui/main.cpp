@@ -15,6 +15,7 @@
 #include <signal.h>
 #include "FLTKTerminal.hpp"
 #include "WalkTree.hpp"
+#include "config.h"
 
 using namespace FreeMat;
 

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "Plot3D.hpp"
+#include "config.h"
 
 using namespace FreeMat;
 

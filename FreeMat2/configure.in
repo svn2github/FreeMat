@@ -62,6 +62,10 @@ AC_C_BIGENDIAN(AC_DEFINE([WORDS_BIGENDIAN],1,[System is big endian]),AC_DEFINE([
 
 dnl **** Check for BLAS ****
 
+if test "$G77" = "yes"; then
+  FFLAGS="$FFLAGS -ffloat-store"
+fi
+
 if test "$forceminiblas" != "yes" ; then
    ACX_BLAS([], forceminiblas=yes)
 fi
@@ -1069,6 +1073,7 @@ Configuration:
   Libs:			      ${LIBS}
   Force Mini-BLAS:	      ${forceminiblas}
   Build MPI:		      ${usempi}
+  G77 flag:                   ${G77}
 
 ------------------------------------------------------------------------"
 

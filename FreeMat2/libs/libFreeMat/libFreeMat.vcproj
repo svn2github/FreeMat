@@ -422,6 +422,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\LUDecompose.cpp">
+			</File>
+			<File
 				RelativePath="Malloc.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">

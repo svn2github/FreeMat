@@ -5,6 +5,7 @@
 extern "C" {
 #include "umfpack.h"
 }
+#include <windows.h>
 
 // The following ops are O(N^2) instead of O(nnz^2):
 //
@@ -814,7 +815,56 @@ namespace FreeMat {
     }
     delete CColumn;
   }
-
+  
+  // Multiply a sparse matrix by a sparse matrix (result is sparse)
+  // Here we use the following order for the loops:
+  // A normal multiply is
+  // for j=1:Ccols
+  //   for k=1:Acols
+  //     for i=1:Arows
+  //       c[i][j] += a[i][k]*b[k][j]
+  template <class T>
+  void SparseSparseComplexMultiply(T** A, int A_rows, int A_cols,
+				   T** B, int B_cols,
+				   T** C) {
+    T* CColumn;
+    int i, j, k, m, n;
+    
+    CColumn = new T[2*A_rows];
+    for (j=0;j<B_cols;j++) {
+      memset(CColumn,0,2*A_rows*sizeof(T));
+      k=0;
+      m=1;
+      while (k<A_cols) {
+	if ((B[j][m] != 0) || (B[j][m+1] != 0)){
+	  T Bval_real = B[j][m];
+	  T Bval_imag = B[j][m+1];
+	  T* Acol = A[k];
+	  i=0;
+	  n=1;
+	  while (i<A_rows) {
+	    if ((Acol[n] != 0) || (Acol[n+1] != 0)) {
+	      CColumn[2*i] += Acol[n]*Bval_real - Acol[n+1]*Bval_imag;
+	      CColumn[2*i+1] += Acol[n]*Bval_imag + Acol[n+1]*Bval_real;
+	      n+=2;
+	      i++;
+	    } else {
+	      i += (int) Acol[n+2];
+	      n += 3;
+	    }
+	  }
+	  k++;
+	  m += 2;
+	} else {
+	  k += (int) B[j][m+2];
+	  m += 3;
+	}
+      }
+	  C[j] = CompressComplexVector(CColumn, A_rows);
+    }
+    delete CColumn;
+  }
+  
   // Multiply a sparse matrix by a dense matrix (result is dense)
   // A normal muliply is
   // for i=1:Arows
@@ -866,6 +916,39 @@ namespace FreeMat {
     }
   }
   
+  template <class T>
+  void SparseDenseComplexMultiply(T**A, int A_rows, int A_cols,
+				  T*B, int B_cols,
+				  T*C) {
+    int i, j, k, n;
+    T* Acol;
+    T Bval_real;
+    T Bval_imag;
+    memset(C,0,2*A_rows*B_cols*sizeof(T));
+    for (k=0;k<A_cols;k++) {
+      Acol = A[k];
+      for (j=0;j<B_cols;j++) {
+	Bval_real = B[2*(k+j*A_cols)];
+	Bval_imag = B[2*(k+j*A_cols)+1];
+	if ((Bval_real != 0) || (Bval_imag != 0)) {
+	  i=0;
+	  n=1;
+	  while (i<A_rows) {
+	    if ((Acol[n] != 0) || (Acol[n+1] != 0)){
+	      C[2*(i+j*A_rows)] += Acol[n]*Bval_real - Acol[n+1]*Bval_imag;
+	      C[2*(i+j*A_rows)+1] += Acol[n]*Bval_imag + Acol[n+1]*Bval_real;
+	      n+=2;
+	      i++;
+	    } else {
+	      i += (int) Acol[n+2];
+	      n += 3;
+	    }
+	  }
+	}
+      }
+    }
+  }
+  
   // for i=1:Arows
   //   for j=1:Ccols
   //     for k = 1:Acols
@@ -903,6 +986,37 @@ namespace FreeMat {
       }
     }
   }
+
+  template <class T>
+  void DenseSparseComplexMultiply(T* A, int A_rows, int A_cols,
+				  T** B, int B_cols, T* C) {
+    int i, j, k, n;
+    int B_rows;
+    T* str;
+    T accum;
+    memset(C,0,2*sizeof(T)*A_rows*B_cols);
+    B_rows = A_cols;
+    for (j=0;j<B_cols;j++) {
+      str = B[j];
+      k = 1;
+      n = 0;
+      while (n<B_rows) {
+	if ((str[k] != 0) || (str[k+1] != 0)) {
+	  for (i=0;i<A_rows;i++) {
+	    C[2*(i+j*A_rows)] += A[2*(i+n*A_rows)]*str[k] - 
+	      A[2*(i+n*A_rows)+1]*str[k+1];
+	    C[2*(i+j*A_rows)+1] += A[2*(i+n*A_rows)+1]*str[k] + 
+	      A[2*(i+n*A_rows)]*str[k+1];
+	  }
+	  n++;
+	  k+=2;
+	} else {
+	  n += (int) (str[k+2]);
+	  k += 3;
+	}
+      }
+    }
+  }
   
 
   void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
@@ -922,8 +1036,20 @@ namespace FreeMat {
 					(double*)bp,bcols,C);
 	return C;
       }
-    otherwise:
-    throw Exception("Complex multiplies with sparse matrices not handled.");
+    case FM_COMPLEX: 
+      {
+	float *C = (float*) Malloc(2*rows*bcols*sizeof(float));
+	SparseDenseComplexMultiply<float>((float**)ap,rows,cols,
+					  (float*)bp,bcols,C);
+	return C;
+      }
+    case FM_DCOMPLEX: 
+      {
+	double *C = (double*) Malloc(2*rows*bcols*sizeof(double));
+	SparseDenseComplexMultiply<double>((double**)ap,rows,cols,
+					   (double*)bp,bcols,C);
+	return C;
+      }
     }
   }
   
@@ -944,8 +1070,20 @@ namespace FreeMat {
 					(double**)bp,bcols,C);
 	return C;
       }
-    otherwise:
-    throw Exception("Complex multiplies with sparse matrices not handled.");
+    case FM_COMPLEX: 
+      {
+	float *C = (float*) Malloc(2*rows*bcols*sizeof(float));
+	DenseSparseComplexMultiply<float>((float*)ap,rows,cols,
+				       (float**)bp,bcols,C);
+	return C;
+      }
+    case FM_DCOMPLEX: 
+      {
+	double *C = (double*) Malloc(2*rows*bcols*sizeof(double));
+	DenseSparseComplexMultiply<double>((double*)ap,rows,cols,
+					(double**)bp,bcols,C);
+	return C;
+      }
     }
   }
 
@@ -966,8 +1104,20 @@ namespace FreeMat {
 					 (double**)bp,bcols,C);
 	return C;
       }
-    otherwise:
-    throw Exception("Complex multiplies with sparse matrices not handled.");
+    case FM_COMPLEX: 
+      {
+	float **C = new float*[bcols];
+	SparseSparseComplexMultiply<float>((float**)ap,rows,cols,
+					   (float**)bp,bcols,C);
+	return C;
+      }
+    case FM_DCOMPLEX: 
+      {
+	double **C = new double*[bcols];
+	SparseSparseComplexMultiply<double>((double**)ap,rows,cols,
+					    (double**)bp,bcols,C);
+	return C;
+      }
     }
   }
 
@@ -2338,6 +2488,16 @@ namespace FreeMat {
     return B;
   }
 
+  template <class T>
+  void* ConvertIJVtoRLEComplex(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
+    T** B;
+    B = new T*[cols];
+    int ptr = 0;
+    for (int col=0;col<cols;col++)
+      B[col] = CompressComplexIJV<T>(mlist,nnz,ptr,col,rows);
+    return B;
+  }
+
 
   void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp) {
     switch(dclass) {
@@ -3400,6 +3560,23 @@ namespace FreeMat {
     return T;
   }
 
+  IJVEntry<double>* ConvertCCSToIJVListComplex(int *Ap, int *Ai, double *Ax, double *Ay,
+					       int Acols, int Anz) {
+    IJVEntry<double>* T = new IJVEntry<double>[Anz];
+    int i, j, p, q;
+    p = 0;
+    for (i=0;i<Acols;i++) {
+      for (j=0;j<(Ap[i+1] - Ap[i]);j++) {
+	T[p].I = Ai[p];
+	T[p].J = i;
+	T[p].Vreal = Ax[p];
+	T[p].Vimag = Ay[p];
+	p++;
+      }
+    }
+    return T;
+  }
+
   void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
 			 int Brows, int Bcols, const void *Bp) {
     if (dclass == FM_DOUBLE)
@@ -3492,6 +3669,106 @@ namespace FreeMat {
     delete[] Ux;
     delete[] Ui;
     delete[] Up;
+    delete[] Lx;
+    delete[] Lj;
+    delete[] Lp;
+    delete[] Acolstart;
+    delete[] Arowindx;
+    delete[] Adata;
+    return retval;
+  }
+
+  ArrayVector SparseLUDecomposeComplex(int Arows, int Acols, const void *Ap) {
+    // Convert A into CCS form
+    int *Acolstart;
+    int *Arowindx;
+    double *Adata;
+    double *Aimag;
+    int nnz;
+    nnz = ConvertSparseCCSComplex(Arows, Acols, (const double**) Ap, 
+				  Acolstart, Arowindx, Adata, Aimag);
+    double *null = (double *) NULL ;
+    void *Symbolic, *Numeric ;
+    (void) umfpack_zi_symbolic (Acols, Acols, Acolstart, Arowindx, Adata, 
+				Aimag, &Symbolic, null, null);
+    (void) umfpack_zi_numeric (Acolstart, Arowindx, Adata, Aimag, Symbolic, 
+			       &Numeric, null, null);
+    // Set up the output arrays for the LU Decomposition.
+    // The first matrix is L, which is stored in comprssed row form.
+    int lnz;
+    int unz;
+    int n_row;
+    int n_col;
+    int nz_udiag;
+
+    (void) umfpack_zi_get_lunz(&lnz,&unz,&n_row,&n_col,&nz_udiag,Numeric);
+
+    int *Lp = new int[Arows+1];
+    int *Lj = new int[lnz];
+    double *Lx = new double[lnz];
+    double *Ly = new double[lnz];
+
+    int *Up = new int[Acols+1];
+    int *Ui = new int[unz];
+    double *Ux = new double[unz];
+    double *Uy = new double[unz];
+
+    int32 *P = (int32*) Malloc(sizeof(int32)*Arows);
+    int32 *Q = (int32*) Malloc(sizeof(int32)*Acols);
+
+    double *Rs = new double[Arows];
+    
+    int do_recip;
+    umfpack_zi_get_numeric(Lp, Lj, Lx, Ly, Up, Ui, Ux, Uy,
+			   P, Q, NULL, NULL, &do_recip, Rs, Numeric);
+
+    for (int i=0;i<Arows;i++)
+      P[i]++;
+
+    for (int i=0;i<Acols;i++)
+      Q[i]++;
+
+    IJVEntry<double>* llist = ConvertCCSToIJVListComplex(Lp,Lj,Lx,Ly,Arows,lnz);
+    for (int j=0;j<lnz;j++) {
+      int tmp;
+      tmp = llist[j].I;
+      llist[j].I = llist[j].J;
+      llist[j].J = tmp;
+    }
+    IJVEntry<double>* ulist = ConvertCCSToIJVListComplex(Up,Ui,Ux,Uy,Acols,unz);
+    IJVEntry<double>* rlist = new IJVEntry<double>[Arows];
+    std::sort(llist,llist+lnz);
+    for (int i=0;i<Arows;i++) {
+      rlist[i].I = i;
+      rlist[i].J = i;
+      if (do_recip)
+	rlist[i].Vreal = Rs[i];
+      else
+	rlist[i].Vreal = 1.0/Rs[i];
+    }
+    ArrayVector retval;
+    // Push L, U, P, Q, R
+    int Amid;
+    Amid = (Arows < Acols) ? Arows : Acols;
+    retval.push_back(Array(FM_DCOMPLEX,Dimensions(Arows,Amid),
+			   ConvertIJVtoRLEComplex<double>(llist,lnz,Arows,Amid),true));
+    retval.push_back(Array(FM_DCOMPLEX,Dimensions(Amid,Acols),
+			   ConvertIJVtoRLEComplex<double>(ulist,unz,Amid,Acols),true));
+    retval.push_back(Array(FM_INT32,Dimensions(1,Arows),P,false));
+    retval.push_back(Array(FM_INT32,Dimensions(1,Acols),Q,false));
+    retval.push_back(Array(FM_DOUBLE,Dimensions(Arows,Arows),
+			   ConvertIJVtoRLEReal<double>(rlist,Arows,Arows,Arows),true));
+    umfpack_di_free_symbolic(&Symbolic);
+    umfpack_di_free_numeric(&Numeric);
+    delete[] rlist;
+    delete[] ulist;
+    delete[] llist;
+    delete[] Rs;
+    delete[] Uy;
+    delete[] Ux;
+    delete[] Ui;
+    delete[] Up;
+    delete[] Ly;
     delete[] Lx;
     delete[] Lj;
     delete[] Lp;

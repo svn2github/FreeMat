@@ -30,13 +30,18 @@ namespace FreeMat {
   void* Malloc(int count) {
     void* ptr;
     void* dp;
-  
-    ptr = malloc(count+sizeof(int));
-    *((int *) ptr) = count;
-    memoryBalance += count;
-    dp = (void*) ((char*) ptr + sizeof(int));
-    memset(dp,0,count);
-    return dp;
+
+    try {
+      ptr = malloc(count+sizeof(int));
+      if (!ptr) throw Exception("Memory allocation error... You may have run out of memory!");
+      *((int *) ptr) = count;
+      memoryBalance += count;
+      dp = (void*) ((char*) ptr + sizeof(int));
+      memset(dp,0,count);
+      return dp;
+    } catch (...) {
+      throw Exception("Memory allocation error... You may have run out of memory!");
+    }
   }
 
   void Free(void *dp) {

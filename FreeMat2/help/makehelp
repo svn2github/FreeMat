@@ -3,4 +3,7 @@ mkdir mtex
 cd mtex
 perl ../dcptrans.pl ../../libs/lib*/*.cpp
 cp ../main.tex .
+latex main
+dvips -o main.ps main.dvi
 pdflatex main
+latex2html --split 5 main.tex

@@ -905,7 +905,9 @@ namespace FreeMat {
 	DestroyCaret(); 
 	break; 
       case WM_CHAR: {
-	wptr->OnChar(wParam);
+		HideCaret(hwnd);
+		wptr->OnChar(wParam);
+		ShowCaret(hwnd);
 	break;
       }
       case WM_VSCROLL: {
@@ -939,25 +941,39 @@ namespace FreeMat {
       case WM_KEYDOWN:{
 	switch (wParam) {
 	case VK_LEFT:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_LEFT);
+		ShowCaret(hwnd);
 	  break;
 	case VK_RIGHT:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_RIGHT);
+		ShowCaret(hwnd);
 	  break;
 	case VK_UP:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_UP);
+		ShowCaret(hwnd);
 	  break;
 	case VK_DOWN:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_DOWN);
+		ShowCaret(hwnd);
 	  break;
 	case VK_INSERT:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_INSERT);
+		ShowCaret(hwnd);
 	  break;
 	case VK_HOME:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_HOME);
+		ShowCaret(hwnd);
 	  break;
 	case VK_END:
+		HideCaret(hwnd);
 	  wptr->OnChar(KM_END);
+		ShowCaret(hwnd);
 	  break;
 	}
       }

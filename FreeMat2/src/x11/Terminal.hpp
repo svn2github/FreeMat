@@ -69,6 +69,7 @@ namespace FreeMat {
     virtual void SetEvalEngine(WalkTree* a_eval);
     virtual void pushMessageContext();
     virtual void popMessageContext();
+    virtual void clearMessageContextStack();
     virtual std::vector<std::string> getMessageContextStack();
     virtual void ExecuteLine(const char* line);
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 

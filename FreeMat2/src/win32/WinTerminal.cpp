@@ -75,7 +75,7 @@ namespace FreeMat {
     wndclass.cbClsExtra = 0;
     wndclass.cbWndExtra = 4;
     wndclass.hInstance = hInstance;
-    wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wndclass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
     wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
     wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
     wndclass.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);

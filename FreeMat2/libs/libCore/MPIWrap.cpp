@@ -329,7 +329,7 @@ namespace FreeMat {
       dp = new Array[fieldcnt*outDim.getElementCount()];
       for (int i=0;i<fieldcnt*outDim.getElementCount();i++)
 	dp[i] = unpackArrayMPI(buffer,bufsize,packpos,comm);
-      return Array(FM_STRUCT_ARRAY,outDim,dp,fieldnames);
+      return Array(FM_STRUCT_ARRAY,outDim,dp,false,fieldnames);
     }
     void *cp;
     switch(dataClass) {

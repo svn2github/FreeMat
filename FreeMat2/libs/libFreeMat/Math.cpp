@@ -1795,7 +1795,7 @@ namespace FreeMat {
 	  i = 0;
 	  while (i<N) {
 	    // Is this eigenvalue complex?
-	    if (eigenvals[2*i+1] != 0) {
+	    if ((i<N-1) && (eigenvals[2*i+1] != 0)) {
 	      // Yes - Vpc[:,i] = V[:,i] + I*V[:,i+1]
 	      //       Vpc[:,i+1] = V[:,i] - I*V[:,i+1]
 	      for (j=0;j<N;j++) {
@@ -1858,7 +1858,7 @@ namespace FreeMat {
 	  i = 0;
 	  while (i<N) {
 	    // Is this eigenvalue complex?
-	    if (eigenvals[2*i+1] != 0) {
+	    if ((i<N-1) && (eigenvals[2*i+1] != 0)) {
 	      // Yes - Vpc[:,i] = V[:,i] + I*V[:,i+1]
 	      //       Vpc[:,i+1] = V[:,i] - I*V[:,i+1]
 	      for (j=0;j<N;j++) {
@@ -2087,6 +2087,7 @@ namespace FreeMat {
 					     (float*)A.getReadWriteDataPointer(),
 					     (float*)B.getReadWriteDataPointer(),
 					     false)) {
+	  fflush(stdout);
 	  Free(eigenvals);
 	  return false;
 	}
@@ -2343,7 +2344,7 @@ namespace FreeMat {
 	  i = 0;
 	  while (i<N) {
 	    // Is this eigenvalue complex?
-	    if (eigenvals[2*i+1] != 0) {
+	    if ((i<N-1) && (eigenvals[2*i+1] != 0)) {
 	      // Yes - Vpc[:,i] = V[:,i] + I*V[:,i+1]
 	      //       Vpc[:,i+1] = V[:,i] - I*V[:,i+1]
 	      for (j=0;j<N;j++) {
@@ -2406,7 +2407,7 @@ namespace FreeMat {
 	  i = 0;
 	  while (i<N) {
 	    // Is this eigenvalue complex?
-	    if (eigenvals[2*i+1] != 0) {
+	    if ((i<N-1) && (eigenvals[2*i+1] != 0)) {
 	      // Yes - Vpc[:,i] = V[:,i] + I*V[:,i+1]
 	      //       Vpc[:,i+1] = V[:,i] - I*V[:,i+1]
 	      for (j=0;j<N;j++) {

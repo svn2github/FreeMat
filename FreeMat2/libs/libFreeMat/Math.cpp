@@ -2157,6 +2157,26 @@ namespace FreeMat {
   //\item AND (@|\&|) - output @|y| is true only if both the corresponding elements of @|a| and @|b| are both true.
   //\end{itemize}
   //The binary operators AND and OR can take scalar arguments as well as vector arguments, in which case, the scalar is operated on with each element of the vector.
+  //As of version 1.10, FreeMat supports @|shortcut| evaluation.  This means that
+  //if we have two expressions
+  //@[
+  //  if (expr1 & expr2)
+  //@]
+  //then if @|expr1| evaluates to @|false|, then @|expr2| is not evaluated at all.
+  //Similarly, for the expression
+  //@[
+  //  if (expr1 | expr2)
+  //@]
+  //then if @|expr1| evaluates to @|true|, then @|expr2| is not evaluated at all.
+  //Shortcut evaluation is useful for doing a sequence of tests, each of which is
+  //not valid unless the prior test is successful.  For example,
+  //@[
+  //  if isa(p,'string') & strcmp(p,'fro')
+  //@]
+  //is not valid without shortcut evaluation (if @|p| is an integer, for example,
+  //the first test returns false, and an attempt to evaluate the second expression
+  //would lead to an error).  Note that shortcut evaluation only works with scalar
+  //expressions.
   //@@Examples
   //Some simple examples of logical operators.  Suppose we want to calculate the exclusive-or (XOR) of two vectors of logical variables.  First, we create a pair of vectors to perform the XOR operation on:
   //@<

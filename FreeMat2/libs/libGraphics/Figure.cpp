@@ -1,6 +1,8 @@
 #include "FL/Fl.H"
 #include "FL/x.H"
 #include "FL/Fl_Button.H"
+#include "FL/Fl_Input.H"
+#include "FL/Fl_Slider.H"
 #include "Figure.hpp"
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
@@ -13,7 +15,12 @@
 #define MAX_FIGS 100
 
 namespace FreeMat {
-  HandleList<Fl_Widget*> guiHandles;
+  typedef struct {
+    int type;
+    Fl_Widget* w;
+  } widget;
+
+  HandleList<widget*> guiHandles;
 
   Figure* figs[MAX_FIGS];
   int currentFig;
@@ -239,11 +246,120 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+#if 0
   void CheckBoxArgument(Array t) {
     if ((t.isReferenceType() || t.isComplex()) || (t.getLength() != 4))
       throw Exception("box argument invalid (must be real, numeric and of length 4)");
   }
+
+  widget* GetWidgetFromHandle(Array arg) {
+    static widget p;
+    int32 handle = arg.getContentsAsIntegerScalar();
+    if (handle < MAX_FIGS) {
+      SelectFig(handle);
+      Fl_Group *ptr;
+      ptr = figs[handle];
+      p.w = (Fl_Widget*) ptr;
+      p.type = WIDGET_GROUP;
+      return (&p);
+    } else 
+      return guiHandles.lookupHandle(handle-MAX_FIGS);
+  }
   
+  // value = wigdetvalue(handle)
+  ArrayVector WidgetValueFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("widgetvalue requires at least a handle argument");
+    widget* p = GetWidgetFromHandle(arg[0]);
+    switch (p->type) {
+    case WIDGET_GROUP:
+      return singleArrayVector(Array::emptyConstructor());
+    case WIDGET_INPUT:
+      return singleArrayVector(Array::stringConstructor(((Fl_Input*) p->w)->value()));
+    case WIDGET_SCROLL:
+      return singleArrayVector(Array::doubleConstructor(((Fl_Valuator*) p->w)->value()));
+    }
+    return singleArrayVector(Array::emptyConstructor());
+  }
+  
+  // handle = slider(parent,box,type)
+  ArrayVector SliderFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 2)
+      throw Exception("slider requires two arguments: handle, box");
+    widget* p = GetWidgetFromHandle(arg[0]);
+    CheckBoxArgument(arg[1]);
+    Array box(arg[1]);
+    int fl_input_type;
+    fl_input_type = FL_VERTICAL;
+    if ((arg.size() > 2) && arg[2].isString()) {
+      char *sp = arg[2].getContentsAsCString();
+      if (strcmp(sp,"vertical")==0)
+	fl_input_type = FL_VERTICAL;
+      if (strcmp(sp,"horizontal")==0)
+	fl_input_type = FL_HORIZONTAL;
+      if (strcmp(sp,"vert_fill")==0)
+	fl_input_type = FL_VERT_FILL_SLIDER;
+      if (strcmp(sp,"horiz_fill")==0)
+	fl_input_type = FL_HOR_FILL_SLIDER;
+      if (strcmp(sp,"vert_nice_slider")==0)
+	fl_input_type = FL_VERT_NICE_SLIDER;
+      if (strcmp(sp,"horiz_nice_slider")==0)
+	fl_input_type = FL_HOR_NICE_SLIDER;
+    }
+    box.promoteType(FM_INT32);
+    int32 *dp = (int32*)box.getDataPointer();
+    ptr->begin();
+    Fl_Slider *nput = new Fl_Slider(dp[0],dp[1],dp[2],dp[3]);
+    nput->type(fl_input_type);
+    printf("Slider type = %d\r\n",nput->type());
+    int newhandle = guiHandles.assignHandle(nput) + MAX_FIGS;
+    ptr->end();
+    ptr->redraw();
+    return singleArrayVector(Array::int32Constructor(newhandle));    
+  }
+
+
+  // type = 'normal', 'float', 'int', 'multiline'
+  // handle = inputfield(parent,box,type)
+  ArrayVector InputFieldFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 2)
+      throw Exception("input field requires two arguments: handle, box");
+    Array hnd(arg[0]);
+    Fl_Group *ptr;
+    int32 handle = hnd.getContentsAsIntegerScalar();
+    CheckBoxArgument(arg[1]);
+    if (handle < MAX_FIGS) {
+      SelectFig(handle);
+      ptr = figs[handle];
+    } else {
+      ptr = (Fl_Group*)guiHandles.lookupHandle(handle-MAX_FIGS);
+    }
+    Array box(arg[1]);
+    int fl_input_type;
+    fl_input_type = FL_NORMAL_INPUT;
+    if ((arg.size() > 2) && arg[2].isString()) {
+      char *sp = arg[2].getContentsAsCString();
+      if (strcmp(sp,"normal")==0)
+	fl_input_type = FL_NORMAL_INPUT;
+      if (strcmp(sp,"float")==0)
+	fl_input_type = FL_FLOAT_INPUT;
+      if (strcmp(sp,"int")==0)
+	fl_input_type = FL_INT_INPUT;
+      if (strcmp(sp,"multiline")==0)
+	fl_input_type = FL_MULTILINE_INPUT;
+    }
+    box.promoteType(FM_INT32);
+    int32 *dp = (int32*)box.getDataPointer();
+    ptr->begin();
+    Fl_Input *nput = new Fl_Input(dp[0],dp[1],dp[2],dp[3]);
+    nput->type(fl_input_type);
+    printf("Input type = %d\r\n",nput->type());
+    int newhandle = guiHandles.assignHandle(nput) + MAX_FIGS;
+    ptr->end();
+    ptr->redraw();
+    return singleArrayVector(Array::int32Constructor(newhandle));
+  }
+
   // how does the button work?  we can just add a button to the
   // current figure.  something like:
   // handle = button(parent,box,label,callback,data)
@@ -278,8 +394,8 @@ namespace FreeMat {
       throw Exception(std::string("function ") + callback + " undefined!");
     funcDef->updateCode();
     ptr->begin();
-    Fl_Button *ok = new Fl_Button(dp[0],dp[1],dp[2],dp[3],
-				  label);
+    Fl_Button *ok = new Fl_Button(dp[0],dp[1],dp[2],dp[3],label);
+    printf("button type = %d\r\n",ok->type());
     int newhandle = guiHandles.assignHandle(ok) + MAX_FIGS;
     cbstruct *cb = new cbstruct;
     cb->eval = eval;
@@ -294,6 +410,7 @@ namespace FreeMat {
     ptr->redraw();
     return singleArrayVector(Array::int32Constructor(newhandle));
   }
+#endif
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();

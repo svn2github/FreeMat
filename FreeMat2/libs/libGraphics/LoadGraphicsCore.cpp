@@ -70,7 +70,25 @@ namespace FreeMat {
     context->addFunction("point",PointFunction,0,1,args);
     context->addFunction("legend",LegendFunction,-1,0,args);
     context->addFunction("demo",DemoFunction,0,0,args);
+    args.clear();
     context->addFunction("copy",CopyFunction,0,0,args);
+#if 0
+    args.push_back("parent");
+    args.push_back("box");
+    args.push_back("label");
+    args.push_back("callback");
+    args.push_back("data");
+    context->addSpecialFunction("button",ButtonFunction,5,1,args);
     //    context->addFunction("helpwin",HelpwinFunction,0,0,args);
+    args.clear();
+    args.push_back("parent");
+    args.push_back("box");
+    args.push_back("type");
+    context->addFunction("inputfield",InputFieldFunction,3,1,args);
+    context->addFunction("slider",SliderFunction,3,1,args);
+    args.clear();
+    args.push_back("handle");
+    context->addFunction("widgetvalue",WidgetValueFunction,1,1,args);
+#endif
   }
 }

@@ -50,6 +50,10 @@ namespace FreeMat {
   ArrayVector WinLevFunction(int,const ArrayVector& arg);
   ArrayVector LegendFunction(int, const ArrayVector& arg);
   ArrayVector DemoFunction(int, const ArrayVector& arg);
+  ArrayVector ButtonFunction(int, const ArrayVector& arg,WalkTree* eval);
+  ArrayVector InputFieldFunction(int, const ArrayVector& arg);
+  ArrayVector WidgetValueFunction(int, const ArrayVector& arg);
+  ArrayVector SliderFunction(int, const ArrayVector& arg);
   ArrayVector CopyFunction(int, const ArrayVector&);
   void LoadGraphicsCoreFunctions(Context* context);
   void InitializeFigureSubsystem();

@@ -36,8 +36,6 @@ static Fl_File_Chooser* fc = NULL;
 
 //The scrollback buffer length - later to be put in the prefs file
 #define SCROLLBACK 5000
-// CTRL+C 
-// CTRL+V 
 // \r handling
 
 void FLTKTerminalWidget::blinkCB(void* data) {
@@ -980,7 +978,6 @@ FLTKTerminalWindow::FLTKTerminalWindow(int w, int h, const char* t, const char *
   m_term = new FLTKTerminalWidget(0,30,w,h-30);
   end();
   resizable(m_term);
-  show();
 }
 
 FLTKTerminalWindow::~FLTKTerminalWindow() {

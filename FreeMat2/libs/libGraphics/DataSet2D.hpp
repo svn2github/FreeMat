@@ -109,5 +109,31 @@ namespace FreeMat {
      */
     void GetDataRange(double& xMin, double& xMax, double& yMin, double& yMax);
   };
+
+  /**
+   * This class encapsulates a single line in a 3D plot, including
+   * the number of points in the plot, the x, y, z coordinates, the
+   * color of the line, the symbol of the line, and the line-style.
+   */
+  class DataSet3D : public DataSet2D
+  {
+    Array x;
+    Array y;
+    Array z;
+    char color;
+    char symbol;
+    char line;  
+    int symbolLength;
+    void SetPenColor(GraphicsContext&, bool);
+  public:
+    DataSet3D(Array xarg, Array yarg, Array zarg, 
+	      char a_color, char a_symbol, char a_line);
+    ~DataSet3D();
+    void DrawMe(GraphicsContext& dc, Axis* xAxis, Axis* yAxis, 
+		Axis *zAxis, double[2][4] xform);
+    void GetDataRange(double& xMin, double& xMax, 
+		      double& yMin, double& yMax,
+		      double& zMin, double& zMax);
+  };
 }
 #endif

@@ -34,6 +34,7 @@
 #include "SingularValueDecompose.hpp"
 #include "QRDecompose.hpp"
 #include "System.hpp"
+#include "Sparse.hpp"
 
 namespace FreeMat {
   //!
@@ -69,13 +70,152 @@ namespace FreeMat {
     return retval;
   } 
 
+  //!
+  //@Module SPARSE Construct a Sparse Matrix
+  //@@Usage
+  //Creates a sparse matrix using one of several formats.  The 
+  //first creates a sparse matrix from a full matrix
+  //@[
+  //   y = sparse(x).
+  //@]
+  //The second form creates a sparse matrix containing all zeros
+  //that is of the specified size (the sparse equivalent of
+  //@|zeros|).
+  //@[
+  //   y = sparse(m,n)
+  //@]
+  //where @|m| and @|n| are integers.  Just like the @|zeros| function,
+  //the sparse matrix returned is of type @|float|.  The third form 
+  //constructs a sparse matrix from the IJV syntax.  It has two forms.  The
+  //first version autosizes the sparse matrix 
+  //@[
+  //   y = sparse(i,j,v)
+  //@]
+  //while the second version uses an explicit size specification
+  //@[
+  //   y = sparse(i,j,v,m,n)
+  //@]
+  //!
   ArrayVector SparseFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw("Need one argument to sparse function");
-    Array r(arg[0]);
-    r.ensureSingleOwner();
-    r.makeSparse();
-    return singleArrayVector(r);
+    if (arg.size() == 1) {
+      Array r(arg[0]);
+      r.makeSparse();
+      return singleArrayVector(r);
+    } else if (arg.size() == 2) {
+      Array m_arg(arg[0]);
+      Array n_arg(arg[1]);
+      int m, n;
+      m = m_arg.getContentsAsIntegerScalar();
+      n = n_arg.getContentsAsIntegerScalar();
+      Dimensions dim;
+      dim[0] = m;
+      dim[1] = n;
+      return singleArrayVector(Array(FM_FLOAT,dim,SparseFloatZeros(m,n),true));
+    } else if (arg.size() == 3) {
+      Array i_arg(arg[0]);
+      Array j_arg(arg[1]);
+      Array v_arg(arg[2]);
+      i_arg.promoteType(FM_UINT32);
+      j_arg.promoteType(FM_UINT32);
+      int ilen, jlen, vlen;
+      ilen = i_arg.getLength();
+      jlen = j_arg.getLength();
+      vlen = v_arg.getLength();
+      int olen;
+      olen = ilen > jlen ? ilen : jlen;
+      olen = vlen > olen ? vlen : olen;
+      int istride, jstride, vstride;
+      if (olen > 1) {
+	if (ilen == 1)
+	  istride = 0;
+	else if (ilen == olen)
+	  istride = 1;
+	else
+	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	if (jlen == 1)
+	  jstride = 0;
+	else if (jlen == olen)
+	  jstride = 1;
+	else
+	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	if (vlen == 1)
+	  vstride = 0;
+	else if (vlen == olen)
+	  vstride = 1;
+	else
+	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+      }
+      // Calculate the number of rows in the matrix
+      uint32 *ip = (uint32*) i_arg.getDataPointer();
+      int rows = 0;
+      for (int i=0;i<ilen;i++)
+	rows = (ip[i] > rows) ? ip[i] : rows;
+      uint32 *jp = (uint32*) j_arg.getDataPointer();
+      int cols = 0;
+      for (int j=0;j<jlen;j++)
+	cols = (jp[j] > cols) ? jp[j] : cols;
+      Dimensions dim;
+      dim[0] = rows;
+      dim[1] = cols;
+      return singleArrayVector(Array(v_arg.getDataClass(),dim,
+				     makeSparseFromIJV(v_arg.getDataClass(),
+						       rows,cols,olen,
+						       ip,istride,jp,jstride,
+						       v_arg.getDataPointer(),
+						       vstride),
+				     true));
+    } else if (arg.size() == 5) {
+      Array i_arg(arg[0]);
+      Array j_arg(arg[1]);
+      Array v_arg(arg[2]);
+      i_arg.promoteType(FM_UINT32);
+      j_arg.promoteType(FM_UINT32);
+      int ilen, jlen, vlen;
+      ilen = i_arg.getLength();
+      jlen = j_arg.getLength();
+      vlen = v_arg.getLength();
+      int olen;
+      olen = ilen > jlen ? ilen : jlen;
+      olen = vlen > olen ? vlen : olen;
+      int istride, jstride, vstride;
+      if (olen > 1) {
+	if (ilen == 1)
+	  istride = 0;
+	else if (ilen == olen)
+	  istride = 1;
+	else
+	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	if (jlen == 1)
+	  jstride = 0;
+	else if (jlen == olen)
+	  jstride = 1;
+	else
+	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	if (vlen == 1)
+	  vstride = 0;
+	else if (vlen == olen)
+	  vstride = 1;
+	else
+	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+      }
+      Array m_arg(arg[3]);
+      Array n_arg(arg[4]);
+      int rows = m_arg.getContentsAsIntegerScalar();
+      int cols = n_arg.getContentsAsIntegerScalar();
+      Dimensions dim;
+      dim[0] = rows;
+      dim[1] = cols; 
+      uint32 *ip = (uint32*) i_arg.getDataPointer();
+      uint32 *jp = (uint32*) j_arg.getDataPointer();
+      return singleArrayVector(Array(v_arg.getDataClass(),dim,
+				     makeSparseFromIJV(v_arg.getDataClass(),
+						       rows,cols,olen,
+						       ip,istride,jp,jstride,
+						       v_arg.getDataPointer(),
+						       vstride),
+				     true));
+    }
+    throw Exception("unrecognized form of sparse - see help for the allowed forms of sparse");
   }
 
   ArrayVector FullFunction(int nargout, const ArrayVector& arg) {

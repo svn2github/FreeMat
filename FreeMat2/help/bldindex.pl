@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 
 open(INPUT,"<html/index.html") || die "Can't open html/index.html for processing...\n";
-open(OUTPUT,">toc_body.hhc") || die "Can't open output file >toc_body.hhc...\n";
+open(OUTPUT,">toc_body.hhc") || die "Can't open output toc_body.hhc...\n";
+open(OUTPUT2,">index_body.hhk") || die "Can't open output index_body.hhc...\n";
 
 # Skip the prefix
 while (defined($data=<INPUT>)  && !($data =~ /Table of Child-Links/g)) {};
@@ -30,6 +31,13 @@ while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
 	    print OUTPUT "       <param name=\"Name\" value=\"$name\"\>\n";
 	    print OUTPUT "       <param name=\"Local\" value=\"html/$file\"\>\n";
 	    print OUTPUT "     </OBJECT>\n";
+	    ($name =~ /^(\w*)/g);
+	    $keyword = lc($1);
+	    print OUTPUT2 "<LI> <OBJECT type=\"text/sitemape\">\n";
+	    print OUTPUT2 "       <param name=\"Name\" value=\"$keyword\">\n";
+	    print OUTPUT2 "       <param name=\"Name\" value=\"$name\"\>\n";
+	    print OUTPUT2 "       <param name=\"Local\" value=\"html/$file\"\>\n";
+	    print OUTPUT2 "     </OBJECT>\n";
 	}
     } else {
 	print OUTPUT $data;
@@ -38,6 +46,8 @@ while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
 print OUTPUT "</BODY></HTML>\n";
 close(INPUT);
 close(OUTPUT);
+print OUTPUT2 "</UL>\n</BODY></HTML>\n";
+
 #$linkstart = "<!--Table of Child-Links-->";
 #$linkend = "<!--End of Table of Child-Links-->";
 #$data =~ s/$linkstart([^$linkend]*)$linkend/($1)/gm;

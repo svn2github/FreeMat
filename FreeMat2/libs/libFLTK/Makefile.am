@@ -299,4 +299,11 @@ src/fl_color_win32.cxx \
 src/Fl_get_key_win32.cxx \
 src/fl_read_image_win32.cxx \
 src/fl_set_fonts_win32.cxx \
-src/Fl_win32.cxx
+src/Fl_win32.cxx \
+src/fl_call_main.c \
+src/scandir.c \
+src/scandir_win32.c \
+src/vsnprintf.c \
+vcnet/config.h \
+libfltk.vcproj
+

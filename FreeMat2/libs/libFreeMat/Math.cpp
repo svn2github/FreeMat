@@ -1543,7 +1543,6 @@ namespace FreeMat {
    */
   void EigenDecomposeCompactSymmetric(Array A, Array& D) {
     Class Aclass;
-    printf("ED-CS\r\n");
 
     // Test for numeric
     if (A.isReferenceType())
@@ -1626,7 +1625,6 @@ namespace FreeMat {
     int i;
     Class Aclass;
 
-    printf("ED-FS\r\n");
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -1730,7 +1728,6 @@ namespace FreeMat {
     int i, j;
     Class Aclass;
 
-    printf("ED-FG - balance = %d\r\n",balanceFlag);
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -1930,7 +1927,6 @@ namespace FreeMat {
     int i, j;
     Class Aclass;
 
-    printf("ED-CG : balance = %d\r\n",balanceFlag);
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -2045,7 +2041,6 @@ namespace FreeMat {
   bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D) {
     Class Aclass, Bclass;
 
-    printf("GD-CS\r\n");
     // Test for numeric
     if (A.isReferenceType() || B.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -2153,7 +2148,6 @@ namespace FreeMat {
     int i;
     Class Aclass, Bclass;
 
-    printf("GD-FS\r\n");
     // Test for numeric
     if (A.isReferenceType() || B.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -2221,6 +2215,7 @@ namespace FreeMat {
 					      true)) {
 	  Free(eigenvals);
 	  Free(Vp);	  
+	  return false;
 	}
 	// Copy the eigenvalues into a diagonal (double) matrix
 	D = Array(FM_DOUBLE,Vdims,NULL);
@@ -2288,7 +2283,6 @@ namespace FreeMat {
     Class Aclass;
 
     // Test for numeric
-    printf("GD-FG\r\n");
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
     if (!A.is2D())
@@ -2481,7 +2475,6 @@ namespace FreeMat {
     int i, j;
     Class Aclass;
 
-    printf("GD-CG\r\n");
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");

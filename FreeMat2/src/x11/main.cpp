@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "config.h"
+#include "freemat.xpm"
 
 using namespace FreeMat;
 
@@ -266,6 +267,10 @@ int main(int argc, char *argv[]) {
     win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,
 				 helppath.c_str());
     win->term()->setContext(context);
+    Pixmap p, mask;
+    XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display),
+			    freemat, &p, &mask, NULL);
+    win->icon((char*) p)
     if (envPtr)
       win->term()->setPath(std::string(envPtr));
     else 

@@ -52,7 +52,8 @@ namespace FreeMat {
     fflush(stdout);
     printf("%s",prompt);
     fflush(stdout);
-    if (feof(stdin)) return NULL;
+    if (feof(stdin)) 
+      exit(0);
     fgets(buffer,sizeof(buffer),stdin);
     printf("%s",buffer);
     fflush(stdout);

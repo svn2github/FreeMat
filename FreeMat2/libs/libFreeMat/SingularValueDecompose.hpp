@@ -22,10 +22,14 @@
 #define __SingularValueDecompose_hpp__
 
 namespace FreeMat {
-  void floatSVD(const int nrows, const int ncols, float *u, float *vt, float *s, float *a);
-  void doubleSVD(const int nrows, const int ncols, double *u, double *vt, double *s, double *a);
-  void complexSVD(const int nrows, const int ncols, float *u, float *vt, float *s, float *a);
-  void dcomplexSVD(const int nrows, const int ncols, double *u, double *vt, double *s, double *a);
+  void floatSVD(const int nrows, const int ncols, float *u, float *vt, 
+		float *s, float *a, bool compact, bool vectors);
+  void doubleSVD(const int nrows, const int ncols, double *u, double *vt, 
+		 double *s, double *a, bool compact, bool vectors);
+  void complexSVD(const int nrows, const int ncols, float *u, float *vt, 
+		  float *s, float *a, bool compact, bool vectors);
+  void dcomplexSVD(const int nrows, const int ncols, double *u, double *vt, 
+		   double *s, double *a, bool compact, bool vectors);
 }
 
 #endif

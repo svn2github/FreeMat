@@ -37,7 +37,7 @@ namespace FreeMat {
 				    bool eigenvectors);
   void floatGenEigenDecompose(const int n, float *v, float *d, float *a,
 			      float *b, bool eigenvectors);
-  void floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
 				       float *a, float *b, bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, complex valued
@@ -52,7 +52,7 @@ namespace FreeMat {
 				      float *a, bool eigenvectors);
   void complexGenEigenDecompose(const int n, float *v, float *d, float *a,
 			      float *b, bool eigenvectors);
-  void complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
 					 float *a, float *b, 
 					 bool eigenvectors);
   /**
@@ -69,7 +69,7 @@ namespace FreeMat {
 				     double *a, bool eigenvectors);
   void doubleGenEigenDecompose(const int n, double *v, double *d, double *a,
 			      double *b, bool eigenvectors);
-  void doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
 				       double *a, double *b, 
 					bool eigenvectors);
   /**
@@ -85,7 +85,7 @@ namespace FreeMat {
 				       double *a, bool eigenvectors);
   void dcomplexGenEigenDecompose(const int n, double *v, double *d, double *a,
 				 double *b, bool eigenvectors);
-  void dcomplexGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool dcomplexGenEigenDecomposeSymmetric(const int n, double *v, double *d,
 					  double *a, double *b, 
 					  bool eigenvectors);
 }

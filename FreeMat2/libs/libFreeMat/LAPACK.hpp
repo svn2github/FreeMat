@@ -163,9 +163,42 @@ extern "C" {
   void zheev_(char *JOBZ, char *UPLO, int *N, double *A, int *LDA, 
 	      double *W, double *WORK, int *LWORK, double *RWORK, int *INFO);
 
+  void sggev_(char *JOBVL, char *JOBVR, int *N, float *A, int *LDA, 
+	      float *B, int *LDB, float *ALPHAR, float *ALPHAI,
+	      float *BETA, float *VL, int *LDVL, float *VR, 
+	      int *LDVR, float *WORK, int *LWORK, int *INFO );
 
-//   void sgecon_(char* NORM, int* N, double *A, int *LDA, double *ANORM,
-// 	       double *RCOND, double *WORK, int* IWORK, int *INFO);
+  void ssygv_(int *ITYPE, char *JOBZ, char *UPLO, int *N, float *A, 
+	      int *LDA, float *B, int *LDB, float *W, float *WORK,
+	      int *LWORK, int *INFO );
+
+  void dggev_(char *JOBVL, char *JOBVR, int *N, double *A, int *LDA, 
+	      double *B, int *LDB, double *ALPHAR, double *ALPHAI,
+	      double *BETA, double *VL, int *LDVL, double *VR, 
+	      int *LDVR, double *WORK, int *LWORK, int *INFO );
+
+  void dsygv_(int *ITYPE, char *JOBZ, char *UPLO, int *N, double *A, 
+	      int *LDA, double *B, int *LDB, double *W, double *WORK,
+	      int *LWORK, int *INFO );
+
+  void cggev_(char *JOBVL, char *JOBVR, int *N, float *A, int *LDA, 
+	      float *B, int *LDB, float *ALPHA, float *BETA, 
+	      float *VL, int *LDVL, float *VR, int *LDVR, 
+	      float *WORK, int *LWORK, float *RWORK, int *INFO );
+
+  void chegv_(int *ITYPE, char *JOBZ, char *UPLO, int *N, float *A, 
+	      int *LDA, float *B, int *LDB, float *W, float *WORK,
+	      int *LWORK, float *RWORK, int *INFO );
+
+  void zggev_(char *JOBVL, char *JOBVR, int *N, double *A, int *LDA, 
+	      double *B, int *LDB, double *ALPHA, double *BETA, 
+	      double *VL, int *LDVL, double *VR, int *LDVR, 
+	      double *WORK, int *LWORK, double *RWORK, int *INFO );
+
+  void zhegv_(int *ITYPE, char *JOBZ, char *UPLO, int *N, double *A, 
+	      int *LDA, double *B, int *LDB, double *W, double *WORK,
+	      int *LWORK, double *RWORK, int *INFO );
+
 }
 
 namespace FreeMat {

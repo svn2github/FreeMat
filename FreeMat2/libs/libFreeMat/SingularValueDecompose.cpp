@@ -26,7 +26,8 @@
 
 namespace FreeMat {
 
-  void floatSVD(const int nrows, const int ncols, float *u, float *vt, float *s, float *a) {
+  void floatSVD(const int nrows, const int ncols, float *u, float *vt, 
+		float *s, float *a, bool compact, bool vectors) {
     //      SUBROUTINE SGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
     //     $                   LWORK, IWORK, INFO )
     //*
@@ -91,7 +92,15 @@ namespace FreeMat {
     //*                  in the array VT;
     //*          = 'N':  no columns of U or rows of V**T are computed.
     //*
-    char JOBZ = 'A';
+    char JOBZ;
+    if (!vectors)
+      JOBZ = 'N';
+    else {
+      if (!compact)
+	JOBZ = 'A';
+      else
+	JOBZ = 'S';
+    }
     //*  M       (input) INTEGER
     //*          The number of rows of the input matrix A.  M >= 0.
     //*
@@ -152,7 +161,11 @@ namespace FreeMat {
     //*          JOBZ = 'A' or JOBZ = 'O' and M >= N, LDVT >= N;
     //*          if JOBZ = 'S', LDVT >= min(M,N).
     //*
-    int LDVT = ncols;
+    int LDVT;
+    if (!compact)
+      LDVT = ncols;
+    else
+      LDVT = (ncols < nrows) ? ncols : nrows;
     //*  WORK    (workspace/output) REAL array, dimension (LWORK)
     //*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK;
     //*
@@ -196,8 +209,17 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void doubleSVD(const int nrows, const int ncols, double *u, double *vt, double *s, double *a) {
-    char JOBZ = 'A';
+  void doubleSVD(const int nrows, const int ncols, double *u, double *vt,
+		 double *s, double *a, bool compact, bool vectors) {
+    char JOBZ;
+    if (!vectors)
+      JOBZ = 'N';
+    else {
+      if (!compact)
+	JOBZ = 'A';
+      else
+	JOBZ = 'S';
+    }
     int M = nrows;
     int N = ncols;
     double *A;
@@ -210,7 +232,11 @@ namespace FreeMat {
     int LDU = nrows;
     double *VT;
     VT = vt;
-    int LDVT = ncols;
+    int LDVT;
+    if (!compact)
+      LDVT = ncols;
+    else
+      LDVT = (ncols < nrows) ? ncols : nrows;
     double *WORK;
     int LWORK;
     int *IWORK;
@@ -230,7 +256,8 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void complexSVD(const int nrows, const int ncols, float *u, float *vt, float *s, float *a) {
+  void complexSVD(const int nrows, const int ncols, float *u, float *vt, 
+		  float *s, float *a, bool compact, bool vectors) {
     //       SUBROUTINE CGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
     //      $                   LWORK, RWORK, IWORK, INFO )
     // *
@@ -293,7 +320,15 @@ namespace FreeMat {
     // *                  in the array VT;
     // *          = 'N':  no columns of U or rows of V**H are computed.
     // *
-    char JOBZ = 'A';    
+    char JOBZ;
+    if (!vectors)
+      JOBZ = 'N';
+    else {
+      if (!compact)
+	JOBZ = 'A';
+      else
+	JOBZ = 'S';
+    }
     // *  M       (input) INTEGER
     // *          The number of rows of the input matrix A.  M >= 0.
     // *
@@ -354,7 +389,11 @@ namespace FreeMat {
     // *          JOBZ = 'A' or JOBZ = 'O' and M >= N, LDVT >= N;
     // *          if JOBZ = 'S', LDVT >= min(M,N).
     // *
-    int LDVT = ncols;
+    int LDVT;
+    if (!compact)
+      LDVT = ncols;
+    else
+      LDVT = (ncols < nrows) ? ncols : nrows;
     // *  WORK    (workspace/output) COMPLEX array, dimension (LWORK)
     // *          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
     // *
@@ -401,8 +440,17 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void dcomplexSVD(const int nrows, const int ncols, double *u, double *vt, double *s, double *a) {
-    char JOBZ = 'A';    
+  void dcomplexSVD(const int nrows, const int ncols, double *u, double *vt, 
+		   double *s, double *a, bool compact, bool vectors) {
+    char JOBZ;
+    if (!vectors)
+      JOBZ = 'N';
+    else {
+      if (!compact)
+	JOBZ = 'A';
+      else
+	JOBZ = 'S';
+    }
     int M = nrows;
     int N = ncols;
     double *A;
@@ -414,8 +462,12 @@ namespace FreeMat {
     U = u;    
     int LDU = nrows;    
     double *VT;
-    VT = vt;
-    int LDVT = ncols;
+    VT = vt; 
+    int LDVT;
+    if (!compact)
+      LDVT = ncols;
+    else
+      LDVT = (ncols < nrows) ? ncols : nrows;
     double *WORK;
     int LWORK;
     int minMN;

@@ -150,6 +150,10 @@ namespace FreeMat {
   void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D);
   void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag);
   void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag);
+  bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D);
+  bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D);
+  void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D);
+  void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D);
   /**
    * For scalars $$A$$ and $$B$$, the output is the row vector
    * $$[A,A+1,\ldots,A+n]$$, where $$n$$ is the largest integer

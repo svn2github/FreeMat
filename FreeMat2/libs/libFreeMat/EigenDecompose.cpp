@@ -460,9 +460,9 @@ namespace FreeMat {
     //*          (j+1)-st eigenvalues are a complex conjugate pair, with
     //*          ALPHAI(j+1) negative.
     //*
-    float *alphar = (float*) Malloc(n*sizeof(float));
-    float *alphai = (float*) Malloc(n*sizeof(float));
-    float *beta = (float*) Malloc(n*sizeof(float));
+    float *ALPHAR = (float*) Malloc(n*sizeof(float));
+    float *ALPHAI = (float*) Malloc(n*sizeof(float));
+    float *BETA = (float*) Malloc(n*sizeof(float));
     //*          Note: the quotients ALPHAR(j)/BETA(j) and ALPHAI(j)/BETA(j)
     //*          may easily over- or underflow, and BETA(j) may even be zero.
     //*          Thus, the user should avoid naively computing the ratio
@@ -546,7 +546,7 @@ namespace FreeMat {
     Free(WORK);
   }
   
-  void floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
 				       float *a, float *b, bool eigenvectors) {
     //          SUBROUTINE SSYGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK,
     //     $                  LWORK, INFO )
@@ -659,11 +659,13 @@ namespace FreeMat {
 	    &LWORK, &INFO );
     LWORK = (int) WORKSIZE;
     float *WORK = (float*) Malloc(LWORK*sizeof(float));
-    ssygv_( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORKSIZE, 
+    ssygv_( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, WORK, 
 	    &LWORK, &INFO );
     Free(WORK);
+    if (INFO>N) return false;
     if (eigenvectors)
-      memcpy(b,a,n*n*sizeof(float));
+      memcpy(v,a,n*n*sizeof(float));
+    return true;
   }
 
   void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, 
@@ -1033,9 +1035,9 @@ namespace FreeMat {
     int LDA = n;
     double *B = b;
     int LDB = n;
-    double *alphar = (double*) Malloc(n*sizeof(double));
-    double *alphai = (double*) Malloc(n*sizeof(double));
-    double *beta = (double*) Malloc(n*sizeof(double));
+    double *ALPHAR = (double*) Malloc(n*sizeof(double));
+    double *ALPHAI = (double*) Malloc(n*sizeof(double));
+    double *BETA = (double*) Malloc(n*sizeof(double));
     double *VL = NULL;
     int LDVL = 1;
     double *VR = v;
@@ -1043,12 +1045,12 @@ namespace FreeMat {
     double WORKSZE;
     int LWORK = -1;
     int INFO;
-    sggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHAR, ALPHAI,
-	    BETA, VL, &LDVL, VR, &LDVR, &WORKSZE, &LWORK, &INFO );
+    dggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHAR, ALPHAI,
+    	    BETA, VL, &LDVL, VR, &LDVR, &WORKSZE, &LWORK, &INFO );
     LWORK = (int) WORKSZE;
     double *WORK = (double*) Malloc(LWORK*sizeof(double));
-    sggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHAR, ALPHAI,
-	    BETA, VL, &LDVL, VR, &LDVR, WORK, &LWORK, &INFO );
+    dggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHAR, ALPHAI,
+    	    BETA, VL, &LDVL, VR, &LDVR, WORK, &LWORK, &INFO );
     int i;
     for (i=0;i<n;i++) {
       d[2*i] = ALPHAR[i]/BETA[i];
@@ -1060,7 +1062,7 @@ namespace FreeMat {
     Free(WORK);
   }
   
-  void doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
 				       double *a, double *b, bool eigenvectors) {
     int ITYPE = 1;
     char JOBZ;
@@ -1078,18 +1080,18 @@ namespace FreeMat {
     double WORKSIZE;
     int LWORK = -1;
     int INFO;
-    ssygv_( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORKSIZE, 
+    dsygv_( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORKSIZE, 
 	    &LWORK, &INFO );
     LWORK = (int) WORKSIZE;
     double *WORK = (double*) Malloc(LWORK*sizeof(double));
-    ssygv_( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORKSIZE, 
+    dsygv_( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, WORK, 
 	    &LWORK, &INFO );
     Free(WORK);
+    if (INFO>N) return false;
     if (eigenvectors)
-      memcpy(b,a,n*n*sizeof(double));
+      memcpy(v,a,n*n*sizeof(double));
+    return true;
   }
-
-
 
   void complexEigenDecomposeSymmetric(const int n, float *v, float *d,
 				      float *a, bool eigenvectors) {
@@ -1183,6 +1185,7 @@ namespace FreeMat {
     float *WORK = (float*) Malloc(2*LWORK*sizeof(float));
     cheev_(&JOBZ,&UPLO,&N,a,&LDA,d,WORK,&LWORK,RWORK,&INFO);
     Free(WORK);
+    Free(RWORK);
     if (eigenvectors)
       memcpy(v,a,2*n*n*sizeof(float));
   }
@@ -1423,6 +1426,36 @@ namespace FreeMat {
     Free(RWORK);
   }
 
+  void local_c_div(float *c, float *a, float *b) {
+    double ratio, den;
+    double abr, abi, cr;
+
+    if( (abr = b[0]) < 0.)
+      abr = - abr;
+    if( (abi = b[1]) < 0.)
+      abi = - abi;
+    if( abr <= abi ) {
+      if(abi == 0) {
+	float af, bf;
+	af = bf = abr;
+	if (a[1] != 0 || a[0] != 0)
+	  af = 1.;
+	c[1] = c[0] = af / bf;
+	return;
+      }
+      ratio = (double)b[0] / b[1] ;
+      den = b[1] * (1 + ratio*ratio);
+      cr = (a[0]*ratio + a[1]) / den;
+      c[1] = (a[1]*ratio - a[0]) / den;
+    } else {
+      ratio = (double)b[1] / b[0] ;
+      den = b[0] * (1 + ratio*ratio);
+      cr = (a[0] + a[1]*ratio) / den;
+      c[1] = (a[1] - a[0]*ratio) / den;
+    }
+    c[0] = cr;
+  }
+
   void complexGenEigenDecompose(const int n, float *v, float *d, float *a,
 				float *b, bool eigenvectors) {
     //      SUBROUTINE CGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHA, BETA,
@@ -1566,15 +1599,17 @@ namespace FreeMat {
     LWORK = (int) WORKSIZE[0];
     float *WORK = (float*) Malloc(LWORK*2*sizeof(float));
     cggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHA, BETA,
-	    VL, &LDVL, VR, &LDVR, &WORKSIZE[0], &LWORK, RWORK, &INFO );
-    for (i=0;i<n;i++) {
-      d[2*i] = ALPHA[i];
-      d[2*i+1] = BETA[i];
-    }
-    //FIXME
+	    VL, &LDVL, VR, &LDVR, WORK, &LWORK, RWORK, &INFO );
+    int i;
+    for (i=0;i<n;i++)
+      local_c_div(d+2*i,ALPHA+2*i,BETA+2*i);
+    Free(ALPHA);
+    Free(BETA);
+    Free(RWORK);
+    Free(WORK);
   }
 
-  void complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
 					 float *a, float *b, 
 					 bool eigenvectors) {
     //      SUBROUTINE CHEGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK,
@@ -1671,6 +1706,7 @@ namespace FreeMat {
     //*          message related to LWORK is issued by XERBLA.
     //*
     //*  RWORK   (workspace) REAL array, dimension (max(1, 3*N-2))
+    float *RWORK = (float*) Malloc(MAX(1,3*N-2)*sizeof(float));
     //*
     //*  INFO    (output) INTEGER
     //*          = 0:  successful exit
@@ -1683,6 +1719,20 @@ namespace FreeMat {
     //*                    minor of order i of B is not positive definite.
     //*                    The factorization of B could not be completed and
     //*                    no eigenvalues or eigenvectors were computed.
+    int INFO;
+    int LWORK;
+    float WORKSZE[2];
+    LWORK = -1;
+    chegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORKSZE,
+	   &LWORK, RWORK, &INFO );
+    LWORK = (int) WORKSZE[0];
+    float *WORK = (float*) Malloc(2*LWORK*sizeof(float));
+    chegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORK,
+	   &LWORK, RWORK, &INFO );    
+    if (INFO>N) return false;
+    if (eigenvectors)
+      memcpy(v,a,2*n*n*sizeof(float));
+    return true;
   }
 
   void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d,
@@ -1777,6 +1827,7 @@ namespace FreeMat {
     double *WORK = (double*) Malloc(2*LWORK*sizeof(double));
     zheev_(&JOBZ,&UPLO,&N,a,&LDA,d,WORK,&LWORK,RWORK,&INFO);
     Free(WORK);
+    Free(RWORK);
     if (eigenvectors)
       memcpy(v,a,2*n*n*sizeof(double));
   }
@@ -2015,5 +2066,107 @@ namespace FreeMat {
     Free(RCONDE);
     Free(RCONDV);
     Free(RWORK);
+  }
+
+  void local_z_div(double *c, double *a, double *b) {
+    double ratio, den;
+    double abr, abi, cr;
+
+    if( (abr = b[0]) < 0.)
+      abr = - abr;
+    if( (abi = b[1]) < 0.)
+      abi = - abi;
+    if( abr <= abi ) {
+      if(abi == 0) {
+	if (a[1] != 0 || a[0] != 0)
+	  abi = 1.;
+	c[1] = c[0] = abi / abr;
+	return;
+      }
+      ratio = b[0] / b[1] ;
+      den = b[1] * (1 + ratio*ratio);
+      cr = (a[0]*ratio + a[1]) / den;
+      c[1] = (a[1]*ratio - a[0]) / den;
+    } else {
+      ratio = b[1] / b[0] ;
+      den = b[0] * (1 + ratio*ratio);
+      cr = (a[0] + a[1]*ratio) / den;
+      c[1] = (a[1] - a[0]*ratio) / den;
+    }
+    c[0] = cr;
+  }
+
+  bool dcomplexGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+					  double *a, double *b, 
+					  bool eigenvectors) {
+    int ITYPE = 1;
+    char JOBZ;
+    if (eigenvectors)
+      JOBZ = 'V';
+    else
+      JOBZ = 'N';
+    char UPLO = 'U';
+    int N = n;
+    double *A = a;
+    int LDA = n;
+    double *B = b;
+    int LDB = n;
+    double *W = d;
+    double *RWORK = (double*) Malloc(MAX(1,3*N-2)*sizeof(double));
+    int INFO;
+    int LWORK;
+    double WORKSZE[2];
+    LWORK = -1;
+    zhegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORKSZE,
+	   &LWORK, RWORK, &INFO );
+    LWORK = (int) WORKSZE[0];
+    double *WORK = (double*) Malloc(LWORK*sizeof(double)*2);
+    zhegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORK,
+	   &LWORK, RWORK, &INFO );    
+    Free(WORK);
+    Free(RWORK);
+    if (INFO>N) return false;
+    if (eigenvectors)
+      memcpy(v,a,2*n*n*sizeof(double));
+    return true;
+  }
+
+  void dcomplexGenEigenDecompose(const int n, double *v, double *d,
+				 double *a, double *b, 
+				 bool eigenvectors) {
+    char JOBVL = 'N';
+    char JOBVR;
+    if (eigenvectors)
+      JOBVR = 'V';
+    else
+      JOBVR = 'N';
+    int N = n;
+    double *A = a;
+    int LDA = n;
+    double *B = b;
+    int LDB = N;
+    double *ALPHA = (double*) Malloc(2*n*sizeof(double));
+    double *BETA = (double*) Malloc(2*n*sizeof(double));
+    double *VL = NULL;
+    int LDVL = n;
+    double *VR = v;
+    int LDVR = n;
+    double *RWORK = (double*) Malloc(8*n*sizeof(double));
+    double WORKSIZE[2];
+    int LWORK = -1;
+    int INFO;
+    zggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHA, BETA,
+	    VL, &LDVL, VR, &LDVR, &WORKSIZE[0], &LWORK, RWORK, &INFO );
+    LWORK = (int) WORKSIZE[0];
+    double *WORK = (double*) Malloc(LWORK*2*sizeof(double));
+    zggev_( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, ALPHA, BETA,
+	    VL, &LDVL, VR, &LDVR, WORK, &LWORK, RWORK, &INFO );
+    int i;
+    for (i=0;i<n;i++)
+      local_z_div(d+2*i,ALPHA+2*i,BETA+2*i);
+    Free(ALPHA);
+    Free(BETA);
+    Free(RWORK);
+    Free(WORK);
   }
 }

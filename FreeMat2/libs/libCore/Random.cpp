@@ -197,6 +197,26 @@ double genrand_res53(void)
 namespace FreeMat { 
   static bool initialized = false;
 
+  //!
+  //@Module SEED Seed the Random Number Generator
+  //@@Usage
+  //Seeds the random number generator using the given integer seed.  
+  //Changing the seed allows you to choose which pseudo-random
+  //sequence is generated.  The seed takes a single @|uint32| value:
+  //@[
+  //  seed(s)
+  //@]
+  //where @|s| is the seed value.
+  //@@Example
+  //Here's an example of how the seed value can be used to reproduce
+  //a specific random number sequence.
+  //@<
+  //seed(32);
+  //rand(1,5)
+  //seed(32);
+  //rand(1,5)
+  //@>
+  //!
   ArrayVector SeedFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Seed function requires a single integer argument");
@@ -208,6 +228,52 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module RANDN Gaussian (Normal) Random Number Generator
+  //@@Usage
+  //Creates an array of pseudo-random numbers of the specified size.
+  //The numbers are normally distributed with zero mean and a unit
+  //standard deviation (i.e., @|mu = 0, sigma = 1|). 
+  // Two seperate syntaxes are possible.  The first syntax specifies the array 
+  //dimensions as a sequence of scalar dimensions:
+  //@[
+  //  y = randn(d1,d2,...,dn).
+  //@]
+  //The resulting array has the given dimensions, and is filled with
+  //random numbers.  The type of @|y| is @|double|, a 64-bit floating
+  //point array.  To get arrays of other types, use the typecast 
+  //functions.
+  //    
+  //The second syntax specifies the array dimensions as a vector,
+  //where each element in the vector specifies a dimension length:
+  //@[
+  //  y = randn([d1,d2,...,dn]).
+  //@]
+  //This syntax is more convenient for calling @|randn| using a 
+  //variable for the argument.
+  //@@Function Internals
+  //Recall that the
+  //probability density function (PDF) of a normal random variable is
+  //\[
+  //f(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}.
+  //\]
+  //The Gaussian random numbers are generated from pairs of uniform random numbers using a transformation technique. 
+  //@@Example
+  //The following example demonstrates an example of using the first form of the @|randn| function.
+  //@<
+  //randn(2,2,2)
+  //@>
+  //The second example demonstrates the second form of the @|randn| function.
+  //@<
+  //randn([2,2,2])
+  //@>
+  //In the next example, we create a large array of 10000  normally distributed pseudo-random numbers.  We then shift the mean to 10, and the variance to 5.  We then numerically calculate the mean and variance using @|mean| and @|var|, respectively.
+  //@<
+  //x = 10+sqrt(5)*randn(1,10000);
+  //mean(x)
+  //var(x)
+  //@>
+  //!
   ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
 	  int i;
     unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
@@ -279,7 +345,45 @@ namespace FreeMat {
     retval.push_back(s);
     return retval;
   }
-  
+
+  //!
+  //@Module RAND Uniform Random Number Generator
+  //@@Usage
+  //Creates an array of pseudo-random numbers of the specified size.
+  //The numbers are uniformly distributed on @|[0,1)|.  
+  //Two seperate syntaxes are possible.  The first syntax specifies the array 
+  //dimensions as a sequence of scalar dimensions:
+  //@[
+  //  y = rand(d1,d2,...,dn).
+  //@]
+  //The resulting array has the given dimensions, and is filled with
+  //random numbers.  The type of @|y| is @|double|, a 64-bit floating
+  //point array.  To get arrays of other types, use the typecast 
+  //functions.
+  //    
+  //The second syntax specifies the array dimensions as a vector,
+  //where each element in the vector specifies a dimension length:
+  //@[
+  //  y = rand([d1,d2,...,dn]).
+  //@]
+  //This syntax is more convenient for calling @|rand| using a 
+  //variable for the argument.
+  //@@Example
+  //The following example demonstrates an example of using the first form of the @|rand| function.
+  //@<
+  //rand(2,2,2)
+  //@>
+  //The second example demonstrates the second form of the @|rand| function.
+  //@<
+  //rand([2,2,2])
+  //@>
+  //The third example computes the mean and variance of a large number of uniform random numbers.  Recall that the mean should be @|1/2|, and the variance should be @|1/12 ~ 0.083|.
+  //@<
+  //x = rand(1,10000);
+  //mean(x)
+  //var(x)
+  //@>
+  //!
   ArrayVector RandFunction(int nargout, const ArrayVector& arg) {
 	  int i;
     unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;

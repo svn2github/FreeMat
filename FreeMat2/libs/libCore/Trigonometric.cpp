@@ -27,6 +27,40 @@
 #include "IEEEFP.hpp"
 
 namespace FreeMat {
+  //!
+  //@Module COS Trigonometric Cosine Function
+  //@@Usage
+  //Computes the @|cos| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = cos(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|cos| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the $\cos$ function is defined for all real
+  //valued arguments $x$ by the infinite summation
+  //\[
+  //  \cos x \equiv \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!}.
+  //\]
+  //For complex valued arguments $z$, the cosine is computed via
+  //\[
+  //  \cos z \equiv \cos \Re z \cosh \Im z - \sin \Re z
+  //  \sinh \Im z.
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|cos(2 pi x)|
+  //function over one period of @|[0,1]|:
+  //@<
+  //x = linspace(0,1);
+  //plot(x,cos(2*pi*x))
+  //mprintplot('cosplot');
+  //@>
+  //@figure cosplot
+  //!
   ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Cosine Function takes exactly one argument");
@@ -91,6 +125,40 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module SIN Trigonometric Sine Function
+  //@@Usage
+  //Computes the @|sin| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = sin(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|sin| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the $\sin$ function is defined for all real
+  //valued arguments $x$ by the infinite summation
+  //\[
+  //  \sin x \equiv \sum_{n=1}^{\infty} \frac{(-1)^{n-1} x^{2n-1}}{(2n-1)!}.
+  //\]
+  //For complex valued arguments $z$, the sine is computed via
+  //\[
+  //  \sin z \equiv \sin \Re z \cosh \Im z - i \cos \Re z
+  //  \sinh \Im z.
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|sin(2 pi x)|
+  //function over one period of @|[0,1]|:
+  //@<
+  //x = linspace(0,1);
+  //plot(x,sin(2*pi*x))
+  //mprintplot('sinplot')
+  //@>
+  //@figure sinplot
+  //!
   ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Sin Function takes exactly one argument");
@@ -155,6 +223,44 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module TAN Trigonometric Tangent Function
+  //@@Usage
+  //Computes the @|tan| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = tan(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|tan| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the $\tan$ function is defined for all real
+  //valued arguments $x$ by the infinite summation
+  //\[
+  //  \tan x \equiv x + \frac{x^3}{3} + \frac{2x^5}{15} + \cdots,
+  //\]
+  //or alternately by the ratio
+  //\[
+  //  \tan x \equiv \frac{\sin x}{\cos x}
+  //\]
+  //For complex valued arguments $z$, the tangent is computed via
+  //\[
+  //  \tan z \equiv \frac{\sin 2 \Re z + i \sinh 2 \Im z}
+  //                     {\cos 2 \Re z + \cosh 2 \Im z}.
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|tan(x)|
+  //function over the interval @|[-1,1]|:
+  //@<
+  //t = linspace(-1,1);
+  //plot(t,tan(t))
+  //mprintplot('tanplot');
+  //@>
+  //@figure tanplot
+  //!
   ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Tangent Function takes exactly one argument");
@@ -223,6 +329,36 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module CSC Trigonometric Cosecant Function
+  //@@Usage
+  //Computes the @|csc| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = csc(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|csc| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the $\csc$ function is defined for all arguments
+  //as
+  //\[
+  //   \csc x \equiv \frac{1}{\sin x}.
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|csc(2 pi x)|
+  //function over the interval of @|[-1,1]|:
+  //@<
+  //t = linspace(-1,1,1000);
+  //plot(t,csc(2*pi*t))
+  //axis([-1,1,-10,10])
+  //mprintplot('cscplot');
+  //@>
+  //@figure cscplot
+  //!
   ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Cosecant Function takes exactly one argument");
@@ -293,6 +429,36 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module SEC Trigonometric Secant Function
+  //@@Usage
+  //Computes the @|sec| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = sec(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|sec| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the $\sec$ function is defined for all arguments
+  //as
+  //\[
+  //   \sec x \equiv \frac{1}{\cos x}.
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|sec(2 pi x)|
+  //function over the interval of @|[-1,1]|:
+  //@<
+  //t = linspace(-1,1,1000);
+  //plot(t,sec(2*pi*t))
+  //axis([-1,1,-10,10])
+  //mprintplot('secplot');
+  //@>
+  //@figure secplot
+  //!
   ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Secant Function takes exactly one argument");
@@ -363,6 +529,40 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module COT Trigonometric Cotangent Function
+  //@@Usage
+  //Computes the @|cot| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = cot(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|cot| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the $\cot$ function is defined for all 
+  //arguments $x$ as
+  //\[
+  //  \cot x \equiv \frac{\cos x}{\sin x}
+  //\]
+  //For complex valued arguments $z$, the cotangent is computed via
+  //\[
+  //  \cot z \equiv \frac{\cos 2 \Re z + \cosh 2 \Im z}{\sin 2 \Re z + 
+  //  i \sinh 2 \Im z}.
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|cot(x)|
+  //function over the interval @|[-1,1]|:
+  //@<
+  //t = linspace(-1,1);
+  //plot(t,cot(t))
+  //mprintplot('cotplot');
+  //@>
+  //@figure cotplot
+  //!
   ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Cotangent Function takes exactly one argument");
@@ -431,6 +631,40 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module ACOS Inverse Trigonometric Arccosine Function
+  //@@Usage
+  //Computes the @|acos| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = acos(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|\acos| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the @|\acos| function is defined for all 
+  //arguments $x$ as
+  //\[
+  // \mathrm{acos} x \equiv \frac{pi}{2} + i \log \left(i x + 
+  //  \sqrt{1-x^2}\right).
+  //\]
+  //For real valued variables $x$ in the range $[-1,1]$, the function is
+  //computed directly using the standard C library's numerical @|acos|
+  //function. For both real and complex arguments $x$, note that generally
+  //$\mathrm{acos}(\cos(x)) \neq x$, due to the periodicity of $\cos(x)$.
+  //@@Example
+  //The following code demonstates the @|acos| function over the range 
+  //@|[-1,1]|.
+  //@<
+  //t = linspace(-1,1);
+  //plot(t,acos(t))
+  //mprintplot('acosplot');
+  //@>
+  //@figure acosplot
+  //!
   ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Arccosine Function takes exactly one argument");
@@ -589,6 +823,40 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module ASIN Inverse Trigonometric Arcsine Function
+  //@@Usage
+  //Computes the @|asin| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = asin(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|asin| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the @|asin| function is defined for all 
+  //arguments $x$ as
+  //\[ 
+  //   \mathrm{asin} x \equiv - i \log \left(i x + 
+  //   \sqrt{1-x^2}\right).
+  //\]
+  //For real valued variables $x$ in the range $[-1,1]$, the function is
+  //computed directly using the standard C library's numerical @|asin|
+  //function. For both real and complex arguments $x$, note that generally
+  //$\mathrm{asin}(\sin(x)) \neq x$, due to the periodicity of $\sin(x)$.
+  //@@Example
+  //The following code demonstates the @|asin| function over the range 
+  //@|[-1,1]|.
+  //@<
+  //t = linspace(-1,1);
+  //plot(t,asin(t))
+  //mprintplot('asinplot');
+  //@>
+  //@figure asinplot
+  //!
   ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Arcsine Function takes exactly one argument");
@@ -746,6 +1014,39 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module ATAN Inverse Trigonometric Arctangent Function
+  //@@Usage
+  //Computes the @|atan| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = atan(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|atan| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).  
+  //@@Function Internals
+  //Mathematically, the @|atan| function is defined for all 
+  //arguments $x$ as
+  //\[ 
+  //   \mathrm{atan} x \equiv \frac{i}{2}\left(\log(1-i x) - \log(i x + 1)\right).
+  //\]
+  //For real valued variables $x$, the function is computed directly using 
+  //the standard C library's numerical @|atan| function. For both 
+  //real and complex arguments $x$, note that generally
+  //$\mathrm{atan}(\tan(x)) \neq x$, due to the periodicity of $\tan(x)$.
+  //@@Example
+  //The following code demonstates the @|atan| function over the range 
+  //@|[-1,1]|.
+  //@<
+  //t = linspace(-1,1);
+  //plot(t,atan(t))
+  //mprintplot('atanplot');
+  //@>
+  //@figure atanplot
+  //!
   ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Arctan Function takes exactly one argument");
@@ -841,6 +1142,48 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function
+  //@@Usage
+  //Computes the @|atan2| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = atan2(y,x)
+  //@]
+  //where @|x| and @|y| are @|n|-dimensional arrays of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|atan2| function. The size of the output depends
+  //on the size of @|x| and @|y|.  If @|x| is a scalar, then @|z|
+  //is the same size as @|y|, and if @|y| is a scalar, then @|z|
+  //is the same size as @|x|.  The type of the output is equal to the type of
+  //|y/x|.  
+  //@@Function Internals
+  //The function is defined (for real values) to return an 
+  //angle between $-\pi$ and $\pi$.  The signs of $x$ and $y$
+  //are used to find the correct quadrant for the solution.  For complex
+  //arguments, the two-argument arctangent is computed via
+  //\[
+  //  \mathrm{atan2}(y,x) \equiv -i \log\left(\frac{x+i y}{\sqrt{x^2+y^2}} \right)
+  //\]
+  //For real valued arguments $x,y$, the function is computed directly using 
+  //the standard C library's numerical @|atan2| function. For both 
+  //real and complex arguments $x$, note that generally
+  //$\mathrm{atan2}(\sin(x),\cos(x)) \neq x$, due to the periodicities of 
+  //$\cos(x)$ and $\sin(x)$.
+  //@@Example
+  //The following code demonstates the difference between the @|atan2| 
+  //function and the @|atan| function over the range @|[-\pi,\pi]|.
+  //@<
+  //x = linspace(-pi,pi);
+  //sx = sin(x); cx = cos(x);
+  //plot(x,atan(sx./cx),x,atan2(sx,cx))
+  //mprintplot('atan2plot');
+  //@>
+  //@figure atan2plot;
+  //Note how the two-argument @|atan2| function (green line) 
+  //correctly ``unwraps'' the phase of the angle, while the @|atan| 
+  //function (red line) wraps the angle to the interval @|[-\pi/2,\pi/2]|.
+  //!
   ArrayVector Arctan2Function(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("Arctan2 Function takes exactly two arguments");

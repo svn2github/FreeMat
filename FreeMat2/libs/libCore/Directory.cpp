@@ -36,6 +36,42 @@
 
 namespace FreeMat {
 
+  //!
+  //@Module CD Change Working Directory Function
+  //@@Usage
+  //Changes the current working directory to the one specified as the argument.  The general syntax for its use is
+  //@[
+  //  cd('dirname')
+  //@]
+  //but this can also be expressed as
+  //@[
+  //  cd 'dirname'
+  //@]
+  //or 
+  //@[
+  //  cd dirname
+  //@]
+  //Examples of all three usages are given below.
+  //Generally speaking, @|dirname| is any string that would be accepted by the underlying OS as a valid directory name.  For example, on most systems, @|'.'| refers to the current directory, and @|'..'| refers to the parent directory.  Also, depending on the OS, it may be necessary to ``escape'' the directory seperators.  In particular, if directories are seperated with the backwards-slash character @|'\\'|, then the path specification must use double-slashes @|'\\\\'|. Note: to get file-name completion to work at this time, you must use one of the first two forms of the command.
+  //@@Example
+  //The @|pwd| command returns the current directory location.  First, we use the simplest form of the @|cd| command, in which the directory name argument is given unquoted.
+  //@<
+  //pwd
+  //cd ..
+  //pwd
+  //@>
+  //Next, we use the ``traditional'' form of the function call, using both the parenthesis and a variable to store the quoted string.
+  //@<
+  //a = pwd;
+  //cd(a)
+  //pwd
+  //@>
+  //In the third version, we use only the quoted string argument without parenthesis.
+  //@<
+  //cd '..'
+  //pwd
+  //@>
+  //!
   ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() != 1)
       throw Exception("cd function requires exactly one argument");
@@ -47,6 +83,41 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module LS/DIR List Files Function
+  //@@Usage
+  //Lists the files in a directory or directories.  The general syntax for its use is
+  //@[
+  //  ls('dirname1','dirname2',...,'dirnameN')
+  //@]
+  //but this can also be expressed as
+  //@[
+  //  ls 'dirname1' 'dirname2' ... 'dirnameN'
+  //@]
+  //or 
+  //@[
+  //  ls dirname1 dirname2 ... dirnameN
+  //@]
+  //For compatibility with some environments, the function @|dir| can also be used instead of @|ls|.  Generally speaking, @|dirname| is any string that would be accepted by the underlying OS as a valid directory name.  For example, on most systems, @|'.'| refers to the current directory, and @|'..'| refers to the parent directory.  Also, depending on the OS, it may be necessary to ``escape'' the directory seperators.  In particular, if directories are seperated with the backwards-slash character @|'\\'|, then the path specification must use double-slashes @|'\\\\'|. Two points worth mentioning about the @|ls| function:
+  //\begin{itemize}
+  //  \item To get file-name completion to work at this time, you must use one of the first two forms of the command.
+  //  \item If you want to capture the output of the @|ls| command, use the @|system| function instead.
+  //\end{itemize}
+  //
+  //@@Example
+  //First, we use the simplest form of the @|ls| command, in which the directory name argument is given unquoted.
+  //@<
+  //ls . ..
+  //@>
+  //Next, we use the ``traditional'' form of the function call, using both the parenthesis and the quoted string.
+  //@<
+  //ls('..')
+  //@>
+  //In the third version, we use only the quoted string argument without parenthesis.  
+  //@<
+  //ls '../../'
+  //@>
+  //!
   ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     stringVector sysresult;
     char buffer[4096];
@@ -110,6 +181,20 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module PWD Print Working Directory Function
+  //@@Usage
+  //Returns a @|string| describing the current working directory.  The general syntax for its use is
+  //@[
+  //  y = pwd
+  //@]
+  //
+  //@@Example
+  //The @|pwd| function is fairly straightforward.
+  //@<
+  //pwd
+  //@>
+  //!
   ArrayVector PrintWorkingDirectoryFunction(int nargout, const ArrayVector& arg) {
     char buffer[1000];
     getcwd(buffer,sizeof(buffer));

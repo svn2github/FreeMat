@@ -66,6 +66,7 @@ namespace FreeMat {
   ArrayVector PrintWorkingDirectoryFunction(int, const ArrayVector& arg);
   ArrayVector SizeFunction(int, const ArrayVector& arg);
   ArrayVector TestFunction(int, const ArrayVector& arg);
+  ArrayVector ErrorFunction(int, const ArrayVector& arg);
   ArrayVector TypeOfFunction(int, const ArrayVector& arg);
   ArrayVector StructFunction(int, const ArrayVector& arg);
   ArrayVector RInitFunction(int, const ArrayVector& arg);
@@ -122,7 +123,6 @@ namespace FreeMat {
   ArrayVector FindFunction(int, const ArrayVector& arg);
   ArrayVector HelpFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SleepFunction(int, const ArrayVector& arg);
-  ArrayVector SpinFunction(int, const ArrayVector& arg);
   ArrayVector SetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector GetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
   void InitializeFileSubsystem();

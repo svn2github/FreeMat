@@ -108,6 +108,8 @@ namespace FreeMat {
      args.clear();
      args.push_back("x");     
      context->addFunction("test",TestFunction,1,1,args);
+     context->addFunction("error",ErrorFunction,1,0,args);
+     context->addSpecialFunction("lasterr",LasterrFunction,1,1,args);
      context->addFunction("typeof",TypeOfFunction,1,1,args);
      args.clear();
      args.push_back("x");
@@ -231,16 +233,11 @@ namespace FreeMat {
      args.clear();
      args.push_back("n");
      context->addFunction("sleep",SleepFunction,1,0,args);
-     //     context->addFunction("stats",PrintStats,0,0,args);
-     //     context->addFunction("arrays",PrintArrays,0,0,args);
      //     context->addFunction("clock",ClockFunction,0,1,args);
      //      context->addSpecialFunction("whoglobals",WhoGlobalsFunction,0,0,args);
      args.clear();
      args.push_back("function");
      context->addSpecialFunction("help",HelpFunction,1,0,args);
-     args.clear();
-     args.push_back("spin");
-     context->addFunction("spin",SpinFunction,0,0,args);
      InitializeFileSubsystem();
    }
 }

@@ -27,9 +27,47 @@
 #include "IEEEFP.hpp"
 
 namespace FreeMat {
-   ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
-     if (arg.size() != 1)
-       throw Exception("Log function takes exactly one argument");
+  //!
+  //@Module LOG Natural Logarithm Function
+  //@@Usage
+  //Computes the @|log| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //  y = log(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|log| function.  Output @|y| is of the
+  //same size as the input @|x|. For strictly positive, real inputs, 
+  //the output type is the same as the input.
+  //For negative and complex arguments, the output is complex.
+  //@@Function Internals
+  //Mathematically, the $\log$ function is defined for all real
+  //valued arguments $x$ by the integral
+  //\[
+  //  \log x \equiv \int_1^{x} \frac{d\,t}{t}.
+  //\]
+  //For complex-valued arguments, $z$, the complex logarithm is
+  //defined as
+  //\[
+  //  \log z \equiv \log |z| + i \arg z,
+  //\]
+  //where $\arg$ is the complex argument of $z$.
+  //@@Example
+  //The following piece of code plots the real-valued @|log|
+  //function over the interval @|[1,100]|:
+  //@<
+  //x = linspace(1,100);
+  //plot(x,log(x))
+  //xlabel('x');
+  //ylabel('log(x)');
+  //mprintplot('logplot');
+  //@>
+  //@figure logplot
+  //!
+  ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("Log function takes exactly one argument");
      Array input(arg[0]);
      Array output;
      Class argType(input.getDataClass());
@@ -114,6 +152,54 @@ namespace FreeMat {
      return retval;
    }
 
+  //!
+  //@Module EXP Exponential Function
+  //@@Usage
+  //Computes the @|exp| function for its argument.  The general
+  //syntax for its use is
+  //@[
+  //   y = exp(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.
+  //Integer types are promoted to the @|double| type prior to
+  //calculation of the @|exp| function.  Output @|y| is of the
+  //same size and type as the input @|x|, (unless @|x| is an
+  //integer, in which case @|y| is a @|double| type).
+  //@@Function Internals
+  //Mathematically, the $\exp$ function is defined for all real
+  //valued arguments $x$ as
+  //\[
+  //  \exp x \equiv e^{x},
+  //\]
+  //where
+  //\[
+  //  e = \sum_{0}^{\infty} \frac{1}{k!}
+  //\]
+  //and is approximately $2.718281828459045$ (returned by the function 
+  //@|e|).  For complex values
+  //$z$, the famous Euler formula is used to calculate the 
+  //exponential
+  //\[
+  //  e^{z} = e^{|z|} \left[ \cos \Re z + i \sin \Re z \right]
+  //\]
+  //@@Example
+  //The following piece of code plots the real-valued @|exp|
+  //function over the interval @|[-1,1]|:
+  //@<
+  //x = linspace(-1,1);
+  //plot(x,exp(x))
+  //mprintplot('expplot1');
+  //@>
+  //@figure expplot1
+  //In the second example, we plot the unit circle in the 
+  //complex plane @|e^{i 2 pi x}| for @|x in [-1,1]|.
+  //@<
+  //x = linspace(-1,1);
+  //plot(exp(-i*x*2*pi))
+  //mprintplot('expplot2');
+  //@>
+  //@figure expplot2
+  //!
    ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
      if (arg.size() != 1)
        throw Exception("Exp function takes exactly one argument");

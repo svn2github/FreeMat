@@ -28,6 +28,51 @@
 
 
 namespace FreeMat {
+  //!
+  //@Module RESHAPE Reshape An Array
+  //@@Usage
+  //Reshapes an array from one size to another. Two seperate 
+  //syntaxes are possible.  The first syntax specifies the array 
+  //dimensions as a sequence of scalar dimensions:
+  //@[
+  //   y = reshape(x,d1,d2,...,dn).
+  //@]
+  //The resulting array has the given dimensions, and is filled with
+  //the contents of @|x|.  The type of @|y| is the same as @|x|.  
+  //The second syntax specifies the array dimensions as a vector,
+  //where each element in the vector specifies a dimension length:
+  //@[
+  //   y = reshape(x,[d1,d2,...,dn]).
+  //@]
+  //This syntax is more convenient for calling @|reshape| using a 
+  //variable for the argument. The
+  //@|reshape| function requires that the length of @|x| equal the product
+  //of the @|di| values.
+  //Note that arrays are stored in column format, 
+  //which means that elements in @|x| are transferred to the new array
+  //@|y| starting with the first column first element, then proceeding to 
+  //the last element of the first column, then the first element of the
+  //second column, etc.
+  //@@Example
+  //Here are several examples of the use of @|reshape| applied to
+  //various arrays.  The first example reshapes a row vector into a 
+  //matrix.
+  //@<
+  //a = uint8(1:6)
+  //reshape(a,2,3)
+  //@>
+  //The second example reshapes a longer row vector into a volume with 
+  //two planes.
+  //@<
+  //a = uint8(1:12)
+  //reshape(a,[2,3,2])
+  //@>
+  //The third example reshapes a matrix into another matrix.
+  //@<
+  //a = [1,6,7;3,4,2]
+  //reshape(a,3,2)
+  //@>  
+  //!
   ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
     Array t, s;
     Dimensions dims;
@@ -80,7 +125,46 @@ namespace FreeMat {
     retval.push_back(x);
     return retval;
   }
-
+  
+  //!
+  //@Module ZEROS Array of Zeros
+  //@@Usage
+  //Creates an array of zeros of the specified size.  Two seperate 
+  //syntaxes are possible.  The first syntax specifies the array 
+  //dimensions as a sequence of scalar dimensions:
+  //@[
+  //   y = zeros(d1,d2,...,dn).
+  //@]
+  //The resulting array has the given dimensions, and is filled with
+  //all zeros.  The type of @|y| is @|float|, a 32-bit floating
+  //point array.  To get arrays of other types, use the typecast 
+  //functions (e.g., @|uint8|, @|int8|, etc.).
+  //    
+  //The second syntax specifies the array dimensions as a vector,
+  //where each element in the vector specifies a dimension length:
+  //@[
+  //   y = zeros([d1,d2,...,dn]).
+  //@]
+  //This syntax is more convenient for calling @|zeros| using a 
+  //variable for the argument.  In both cases, specifying only one
+  //dimension results in a square matrix output.
+  //@@Example
+  //The following examples demonstrate generation of some zero arrays 
+  //using the first form.
+  //@<
+  //zeros(2,3,2)
+  //zeros(1,3)
+  //@>
+  //The same expressions, using the second form.
+  //@<
+  //zeros([2,6])
+  //zeros([1,3])
+  //@>
+  //Finally, an example of using the type casting function @|uint16| to generate an array of 16-bit unsigned integers with zero values.
+  //@<
+  //uint16(zeros(3))
+  //@>
+  //!
   ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
     Array t, s;
     Dimensions dims;
@@ -130,6 +214,45 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module ONES Array of Ones
+  //@@Usage
+  //Creates an array of ones of the specified size.  Two seperate 
+  //syntaxes are possible.  The first syntax specifies the array 
+  //dimensions as a sequence of scalar dimensions:
+  //@[
+  //   y = ones(d1,d2,...,dn).
+  //@]
+  //The resulting array has the given dimensions, and is filled with
+  //all ones.  The type of @|y| is @|float|, a 32-bit floating
+  //point array.  To get arrays of other types, use the typecast 
+  //functions (e.g., @|uint8|, @|int8|, etc.).
+  //    
+  //The second syntax specifies the array dimensions as a vector,
+  //where each element in the vector specifies a dimension length:
+  //@[
+  //   y = ones([d1,d2,...,dn]).
+  //@]
+  //This syntax is more convenient for calling @|ones| using a 
+  //variable for the argument.  In both cases, specifying only one
+  //dimension results in a square matrix output.
+  //@@Example
+  //The following examples demonstrate generation of some arrays of ones
+  //using the first form.
+  //@<
+  //ones(2,3,2)
+  //ones(1,3)
+  //@>
+  //The same expressions, using the second form.
+  //@<
+  //ones([2,6])
+  //ones([1,3])
+  //@>
+  //Finally, an example of using the type casting function @|uint16| to generate an array of 16-bit unsigned integers with a value of 1.
+  //@<
+  //uint16(ones(3))
+  //@>
+  //!
   ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
     Array t, s;
     Dimensions dims;
@@ -185,6 +308,33 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module STRUCT Structure Array Constructor
+  //@@Usage
+  //Creates an array of structures from a set of field, value pairs.
+  //The syntax is
+  //@[
+  //   y = struct(n1,v1,n2,v2,...)
+  //@]
+  //where @|ni| are the names of the fields in the structure array, and
+  //@|vi| are the values.  The values @|v_i| must either all be
+  //scalars, or be cell-arrays of all the same dimensions.  In the latter case, the
+  //output structure array will have dimensions dictated by this common
+  //size.  Scalar entries for the @|v_i| are replicated to fill out
+  //their dimensions. An error is raised if the inputs are not properly matched (i.e., are
+  //not pairs of field names and values), or if the size of any two non-scalar
+  //values cell-arrays are different.
+  //@@Example
+  //This example creates a 3-element structure array with two fields, @|foo|
+  //and @|bar|, where the contents of @|foo| are provided explicitly, and
+  //the contents of @|bar| are replicated from a scalar.
+  //@<
+  //y = struct('foo',{1,3,4},'bar',{'cheese','cola','beer'},'key',508)
+  //y(1)
+  //y(2)
+  //y(3)
+  //@>
+  //!
   ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 2)
       throw Exception("struct function requires at least two arguments");

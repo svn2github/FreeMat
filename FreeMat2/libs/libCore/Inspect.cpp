@@ -24,6 +24,19 @@
 #include <stdio.h>
 
 namespace FreeMat {
+  //!
+  //@Module HELP Help
+  //@@Usage
+  //Displays help on a function available in FreeMat.  The help function
+  //takes one argument:
+  //@[
+  //  help topic
+  //@]
+  //where @|topic| is the topic to look for help on.  For scripts, the 
+  //result of running @|help| is the contents of the comments at the top
+  //of the file.  If FreeMat finds no comments, then it simply displays
+  //the function declaration.
+  //!
   ArrayVector HelpFunction(int nargout, const ArrayVector& arg, WalkTree* eval)
   {
     if (arg.size() != 1)
@@ -48,6 +61,33 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module CLEAR Clear or Delete a Variable
+  //@@Usage
+  //Clears a set of variables from the current context, or alternately, 
+  //delete all variables defined in the current context.  There are
+  //two formats for the function call.  The first is the explicit form
+  //in which a list of variables are provided:
+  //@[
+  //   clear a1 a2 ...
+  //@]
+  //The variables can be persistent or global, and they will be deleted.
+  //The second form
+  //@[
+  //   clear 'all'
+  //@]
+  //clears all variables from the current context.
+  //@@Example
+  //Here is a simple example of using @|clear| to delete a variable.  First, we create a variable called @|a|:
+  //@<
+  //a = 53
+  //@>
+  //Next, we clear @|a| using the @|clear| function, and verify that it is deleted.
+  //@<
+  //clear a
+  //a
+  //@>
+  //!
   ArrayVector ClearFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     int i;
     stringVector names;
@@ -73,6 +113,46 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module WHO Describe Currently Defined Variables
+  //@@Usage
+  //Reports information on either all variables in the current context
+  //or on a specified set of variables.  For each variable, the @|who|
+  //function indicates the size and type of the variable as well as 
+  //if it is a global or persistent.  There are two formats for the 
+  //function call.  The first is the explicit form, in which a list
+  //of variables are provided:
+  //@[
+  //  who a1 a2 ...
+  //@]
+  //In the second form
+  //@[
+  //  who
+  //@]
+  //the @|who| function lists all variables defined in the current 
+  //context (as well as global and persistent variables). Note that
+  //there are two alternate forms for calling the @|who| function:
+  //@[
+  //  who 'a1' 'a2' ...
+  //@]
+  //and
+  //@[
+  //  who('a1','a2',...)
+  //@]
+  //@@Example
+  //Here is an example of the general use of @|who|, which lists all of the variables defined.
+  //@<
+  //c = [1,2,3];
+  //f = 'hello';
+  //p = randn(1,256);
+  //who
+  //@>
+  //In the second case, we examine only a specific variable:
+  //@<
+  //who c
+  //who('c')
+  //@>
+  //!
   ArrayVector WhoFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     int i;
     stringVector names;
@@ -160,6 +240,31 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module SIZE Size of a Variable
+  //@@Usage
+  //Returns the size of a variable.  There are two syntaxes for its
+  //use.  The first syntax returns the size of the array as a vector
+  //of integers, one integer for each dimension
+  //@[
+  //  [d1,d2,...,dn] = size(x)
+  //@]
+  //The other format returns the size of @|x| along a particular
+  //dimension:
+  //@[
+  //  d = size(x,n)
+  //@]
+  //where @|n| is the dimension along which to return the size.
+  //@@Example
+  //@<
+  //a = randn(23,12,5);
+  //size(a)
+  //@>
+  //Here is an example of the second form of @|size|.
+  //@<
+  //size(a,2)
+  //@>
+  //!
   ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
     ArrayVector retval;
     if (arg.size() == 1) {
@@ -193,13 +298,45 @@ namespace FreeMat {
     throw Exception("size function requires either one or two arguments");
   }
 
-  ArrayVector LengthFunction(int nargout, const ArrayVector& arg) {
-    Array A(Array::int32Constructor(arg[0].getDimensions().getMax()));
-    ArrayVector retval;
-    retval.push_back(A);
-    return retval;
-  }
+  //   ArrayVector LengthFunction(int nargout, const ArrayVector& arg) {
+  //     Array A(Array::int32Constructor(arg[0].getDimensions().getMax()));
+  //     ArrayVector retval;
+  //     retval.push_back(A);
+  //     return retval;
+  //   }
 
+  //!
+  //@Module EXIST Text Existence of a Variable
+  //@@Usage
+  //Tests for the existence of a variable.  The general syntax for
+  //its use is
+  //@[
+  //  y = exist('varname')
+  //@]
+  //The return is @|1| if a variable with the name @|varname| exists in
+  //the current workspace and is not empty.  This function is primarily
+  //useful when keywords are used in function arguments.
+  //@@Example
+  //Some examples of the @|exist| function.  Note that generally @|exist|
+  //is used in functions to test for keywords.  For example,
+  //@[
+  //  function y = testfunc(a, b, c)
+  //  if (~exist('c'))
+  //    % c was not defined, so establish a default
+  //    c = 13;
+  //  end
+  //  y = a + b + c;
+  //@]
+  //An example of @|exist| in action.
+  //@<
+  //a = randn(3,5,2)
+  //b = []
+  //who
+  //exist('a')
+  //exist('b')
+  //exist('c')
+  //@>
+  //!
   ArrayVector ExistFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() != 1)
       throw Exception("exist function takes one argument - the name of the variable to check for");
@@ -219,7 +356,40 @@ namespace FreeMat {
     retval.push_back(A);
     return retval;	    
   }
-  
+
+  //!
+  //@Module FIND Find Non-zero Elements of An Array
+  //@@Usage
+  //Returns a vector that contains the indicies of all non-zero elements 
+  //in an array.  The usage is
+  //@[
+  //   y = find(x)
+  //@]
+  //The indices returned are generalized column indices, meaning that if 
+  //the array @|x| is of size @|[d1,d2,...,dn]|, and the
+  //element @|x(i1,i2,...,in)| is nonzero, then @|y|
+  //will contain the integer
+  //\[
+  //   i_1 + (i_2-1) d_1 + (i_3-1) d_1 d_2 + \dots
+  //\]
+  //@@Example
+  //Some simple examples of its usage, and some common uses of @|find| in FreeMat programs.
+  //@<
+  //a = [1,2,5,2,4];
+  //find(a==2)
+  //@>
+  //Here is an example of using find to replace elements of @|A| that are $0$ with the number $5$.
+  //@<
+  //A = [1,0,3;0,2,1;3,0,0]
+  //n = find(A==0)
+  //A(n) = 5
+  //@>
+  //Incidentally, a better way to achieve the same concept is:
+  //@<
+  //A = [1,0,3;0,2,1;3,0,0]
+  //A(A==0) = 5
+  //@>
+  //!  
   ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("find function takes one argument");

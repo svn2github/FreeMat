@@ -646,6 +646,95 @@ namespace FreeMat {
     return retvec;
   }
 
+
+  //!
+  //@Module MIN Minimum Function
+  //@@Usage
+  //Computes the minimum of an array along a given dimension, or alternately, 
+  //computes two arrays (entry-wise) and keeps the smaller value for each array.
+  //As a result, the @|min| function has a number of syntaxes.  The first
+  //one computes the minimum of an array along a given dimension.
+  //The first general syntax for its use is either
+  //@[
+  //   [y,n] = min(x,[],d)
+  //@]
+  //where @|x| is a multidimensional array of numerical type, in which case the
+  //output @|y| is the minimum of @|x| along dimension @|d|.  
+  //The second argument @|n| is the index that results in the minimum.
+  //In the event that multiple minima are present with the same value,
+  //the index of the first minimum is used. 
+  //The second general syntax for the use of the @|min| function is
+  //@[
+  //   [y,n] = min(x)
+  //@] 
+  //In this case, the minimum is taken along the first non-singleton 
+  //dimension of @|x|.  For complex data types,
+  //the minimum is based on the magnitude of the numbers.  NaNs are
+  //ignored in the calculations.
+  //The third general syntax for the use of the @|min| function is as 
+  //a comparison function for pairs of arrays.  Here, the general syntax is
+  //@[
+  //   y = min(x,z)
+  //@]
+  //where @|x| and @|z| are either both numerical arrays of the same dimensions,
+  //or one of the two is a scalar.  In the first case, the output is the 
+  //same size as both arrays, and is defined elementwise by the smaller of the
+  //two arrays.  In the second case, the output is defined elementwise by the 
+  //smaller of the array entries and the scalar.
+  //@@Function Internals
+  //In the general version of the @|min| function which is applied to
+  //a single array (using the @|min(x,[],d)| or @|min(x)| syntaxes),
+  //The output is computed via
+  //\[
+  //y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //\min_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}),
+  //\]
+  //and the output array @|n| of indices is calculated via
+  //\[
+  //n(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \arg
+  //\min_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //In the two-array version (@|min(x,z)|), the single output is computed as
+  //\[
+  //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //\begin{cases}
+  //  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \	\
+  //  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
+  //\end{cases}
+  //\]
+  //@@Example
+  //The following piece of code demonstrates various uses of the minimum
+  //function.  We start with the one-array version.
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //@>
+  //We first take the minimum along the columns, resulting in a row vector.
+  //@<
+  //min(A)
+  //@>
+  //Next, we take the minimum along the rows, resulting in a column vector.
+  //@<
+  //min(A,[],2)
+  //@>
+  //When the dimension argument is not supplied, @|min| acts along the first 
+  //non-singular dimension.  For a row vector, this is the column direction:
+  //@<
+  //min([5,3,2,9])
+  //@>
+  //
+  //For the two-argument version, we can compute the smaller of two arrays,
+  //as in this example:
+  //@<
+  //a = int8(100*randn(4))
+  //b = int8(100*randn(4))
+  //min(a,b)
+  //@>
+  //Or alternately, we can compare an array with a scalar
+  //@<
+  //a = randn(2)
+  //min(a,0)
+  //@>
+  //!
   ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1 || arg.size() > 3)
@@ -941,6 +1030,93 @@ namespace FreeMat {
     return retvec;
   }
 
+  //!
+  //@Module MAX Maximum Function
+  //@@Usage
+  //Computes the maximum of an array along a given dimension, or alternately, 
+  //computes two arrays (entry-wise) and keeps the smaller value for each array.
+  //As a result, the @|max| function has a number of syntaxes.  The first
+  //one computes the maximum of an array along a given dimension.
+  //The first general syntax for its use is either
+  //@[
+  //   [y,n] = max(x,[],d)
+  //@]
+  //where @|x| is a multidimensional array of numerical type, in which case the
+  //output @|y| is the maximum of @|x| along dimension @|d|.  
+  //The second argument @|n| is the index that results in the maximum.
+  //In the event that multiple maxima are present with the same value,
+  //the index of the first maximum is used. 
+  //The second general syntax for the use of the @|max| function is
+  //@[
+  //   [y,n] = max(x)
+  //@] 
+  //In this case, the maximum is taken along the first non-singleton 
+  //dimension of @|x|.  For complex data types,
+  //the maximum is based on the magnitude of the numbers.  NaNs are
+  //ignored in the calculations.
+  //The third general syntax for the use of the @|max| function is as 
+  //a comparison function for pairs of arrays.  Here, the general syntax is
+  //@[
+  //   y = max(x,z)
+  //@]
+  //where @|x| and @|z| are either both numerical arrays of the same dimensions,
+  //or one of the two is a scalar.  In the first case, the output is the 
+  //same size as both arrays, and is defined elementwise by the smaller of the
+  //two arrays.  In the second case, the output is defined elementwise by the 
+  //smaller of the array entries and the scalar.
+  //@@Function Internals
+  //In the general version of the @|max| function which is applied to
+  //a single array (using the @|max(x,[],d)| or @|max(x)| syntaxes),
+  //The output is computed via
+  //\[
+  //y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}),
+  //\]
+  //and the output array @|n| of indices is calculated via
+  //\[
+  //n(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \arg
+  //\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //In the two-array version (@|max(x,z)|), the single output is computed as
+  //\[
+  //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //\begin{cases}
+  //  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \	\
+  //  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
+  //\end{cases}
+  //\]
+  //@@Example
+  //The following piece of code demonstrates various uses of the maximum
+  //function.  We start with the one-array version.
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //@>
+  //We first take the maximum along the columns, resulting in a row vector.
+  //@<
+  //max(A)
+  //@>
+  //Next, we take the maximum along the rows, resulting in a column vector.
+  //@<
+  //max(A,[],2)
+  //@>
+  //When the dimension argument is not supplied, @|max| acts along the first non-singular dimension.  For a row vector, this is the column direction:
+  //@<
+  //max([5,3,2,9])
+  //@>
+  //
+  //For the two-argument version, we can compute the smaller of two arrays,
+  //as in this example:
+  //@<
+  //a = int8(100*randn(4))
+  //b = int8(100*randn(4))
+  //max(a,b)
+  //@>
+  //Or alternately, we can compare an array with a scalar
+  //@<
+  //a = randn(2)
+  //max(a,0)
+  //@>
+  //!
   ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1 || arg.size() > 3)
@@ -1082,6 +1258,41 @@ namespace FreeMat {
     return retArray;
   }
 
+  //!
+  //@Module CEIL Ceiling Function
+  //@@Usage
+  //Computes the ceiling of an n-dimensional array elementwise.  The
+  //ceiling of a number is defined as the smallest integer that is
+  //larger than or equal to that number. The general syntax for its use
+  //is
+  //@[
+  //   y = ceil(x)
+  //@]
+  //where @|x| is a multidimensional array of numerical type.  The @|ceil| 
+  //function preserves the type of the argument.  So integer arguments 
+  //are not modified, and @|float| arrays return @|float| arrays as 
+  //outputs, and similarly for @|double| arrays.  The @|ceil| function 
+  //is not defined for @|complex| or @|dcomplex| types.
+  //@@Example
+  //The following demonstrates the @|ceil| function applied to various
+  //(numerical) arguments.  For integer arguments, the ceil function has
+  //no effect:
+  //@<
+  //ceil(3)
+  //ceil(-3)
+  //@>
+  //Next, we take the @|ceil| of a floating point value:
+  //@<
+  //ceil(3.023f)
+  //ceil(-2.341f)
+  //@>
+  //Note that the return type is a @|float| also.  Finally, for a @|double|
+  //type:
+  //@<
+  //ceil(4.312)
+  //ceil(-5.32)
+  //@>
+  //!
   ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 1)
       throw Exception("ceil requires one argument");
@@ -1129,6 +1340,41 @@ namespace FreeMat {
     return retArray;
   }
 
+  //!
+  //@Module FLOOR Floor Function
+  //@@Usage
+  //Computes the floor of an n-dimensional array elementwise.  The
+  //floor of a number is defined as the smallest integer that is
+  //less than or equal to that number. The general syntax for its use
+  //is
+  //@[
+  //   y = floor(x)
+  //@]
+  //where @|x| is a multidimensional array of numerical type.  The @|floor| 
+  //function preserves the type of the argument.  So integer arguments 
+  //are not modified, and @|float| arrays return @|float| arrays as 
+  //outputs, and similarly for @|double| arrays.  The @|floor| function 
+  //is not defined for @|complex| or @|dcomplex| types.
+  //@@Example
+  //The following demonstrates the @|floor| function applied to various
+  //(numerical) arguments.  For integer arguments, the floor function has
+  //no effect:
+  //@<
+  //floor(3)
+  //floor(-3)
+  //@>
+  //Next, we take the @|floor| of a floating point value:
+  //@<
+  //floor(3.023f)
+  //floor(-2.341f)
+  //@>
+  //Note that the return type is a @|float| also.  Finally, for a @|double|
+  //type:
+  //@<
+  //floor(4.312)
+  //floor(-5.32)
+  //@>
+ //!
   ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 1)
       throw Exception("floor requires one argument");
@@ -1175,7 +1421,44 @@ namespace FreeMat {
     retArray.push_back(retval);
     return retArray;    
   }
-  
+
+  //!
+  //@Module CUMSUM Cumulative Summation Function
+  //@@Usage
+  //Computes the cumulative sum of an n-dimensional array along a given
+  //dimension.  The general syntax for its use is
+  //@[
+  //  y = cumsum(x,d)
+  //@]
+  //where @|x| is a multidimensional array of numerical type, and @|d|
+  //is the dimension along which to perform the cumulative sum.  The
+  //output @|y| is the same size of @|x|.  Integer types are promoted
+  //to @|int32|. If the dimension @|d| is not specified, then the
+  //cumulative sum is applied along the first non-singular dimension.
+  //@@Function Internals
+  //The output is computed via
+  //\[
+  //  y(m_1,\ldots,m_{d-1},j,m_{d+1},\ldots,m_{p}) = 
+  //  \sum_{k=1}^{j} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}).
+  //\]
+  //@@Example
+  //The default action is to perform the cumulative sum along the
+  //first non-singular dimension.
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //cumsum(A)
+  //@>
+  //To compute the cumulative sum along the columns:
+  //@<
+  //cumsum(A,2)
+  //@>
+  //The cumulative sum also works along arbitrary dimensions
+  //@<
+  //B(:,:,1) = [5,2;8,9];
+  //B(:,:,2) = [1,0;3,0]
+  //cumsum(B,3)
+  //@>
+  //!  
   ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1)
@@ -1268,6 +1551,46 @@ namespace FreeMat {
     return retArray;
   }
 
+  //!
+  //@Module SUM Sum Function
+  //@@Usage
+  //Computes the summation of an array along a given dimension.  The general
+  //syntax for its use is
+  //@[
+  //  y = sum(x,d)
+  //@]
+  //where @|x| is an @|n|-dimensions array of numerical type.
+  //The output is of the same numerical type as the input.  The argument
+  //@|d| is optional, and denotes the dimension along which to take
+  //the summation.  The output @|y| is the same size as @|x|, except
+  //that it is singular along the summation direction.  So, for example,
+  //if @|x| is a @|3 x 3 x 4| array, and we compute the summation along
+  //dimension @|d=2|, then the output is of size @|3 x 1 x 4|.
+  //@@Function Internals
+  //The output is computed via
+  //\[
+  //y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //\sum_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //If @|d| is omitted, then the summation is taken along the 
+  //first non-singleton dimension of @|x|. 
+  //@@Example
+  //The following piece of code demonstrates various uses of the summation
+  //function
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //@>
+  //We start by calling @|sum| without a dimension argument, in which 
+  //case it defaults to the first nonsingular dimension (in this case, 
+  //along the columns or @|d = 1|).
+  //@<
+  //sum(A)
+  //@>
+  //Next, we take the sum along the rows.
+  //@<
+  //sum(A,2)
+  //@>
+  //!
   ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1)
@@ -1361,6 +1684,46 @@ namespace FreeMat {
     return retArray;
   }
 
+  //!
+  //@Module MEAN Mean Function
+  //@@Usage
+  //Computes the mean of an array along a given dimension.  The general
+  //syntax for its use is
+  //@[
+  //  y = mean(x,d)
+  //@]
+  //where @|x| is an @|n|-dimensions array of numerical type.
+  //The output is of the same numerical type as the input.  The argument
+  //@|d| is optional, and denotes the dimension along which to take
+  //the mean.  The output @|y| is the same size as @|x|, except
+  //that it is singular along the mean direction.  So, for example,
+  //if @|x| is a @|3 x 3 x 4| array, and we compute the mean along
+  //dimension @|d=2|, then the output is of size @|3 x 1 x 4|.
+  //@@Function Internals
+  //The output is computed via
+  //\[
+  //y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \frac{1}{N}
+  //\sum_{k=1}^{N} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //If @|d| is omitted, then the mean is taken along the 
+  //first non-singleton dimension of @|x|. 
+  //@@Example
+  //The following piece of code demonstrates various uses of the mean
+  //function
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //@>
+  //We start by calling @|mean| without a dimension argument, in which 
+  //case it defaults to the first nonsingular dimension (in this case, 
+  //along the columns or @|d = 1|).
+  //@<
+  //mean(A)
+  //@>
+  //Next, we take the mean along the rows.
+  //@<
+  //mean(A,2)
+  //@>
+  //!
   ArrayVector MeanFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1)
@@ -1447,6 +1810,52 @@ namespace FreeMat {
     return retArray;
   }
 
+  //!
+  //@Module VAR Variance Function
+  //@@Usage
+  //Computes the variance of an array along a given dimension.  The general
+  //syntax for its use is
+  //@[
+  //  y = var(x,d)
+  //@]
+  //where @|x| is an @|n|-dimensions array of numerical type.
+  //The output is of the same numerical type as the input.  The argument
+  //@|d| is optional, and denotes the dimension along which to take
+  //the variance.  The output @|y| is the same size as @|x|, except
+  //that it is singular along the mean direction.  So, for example,
+  //if @|x| is a @|3 x 3 x 4| array, and we compute the mean along
+  //dimension @|d=2|, then the output is of size @|3 x 1 x 4|.
+  //@@Function Internals
+  //The output is computed via
+  //\[
+  //y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \frac{1}{N-1}
+  //\sum_{k=1}^{N} \left(x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) 
+  // - \bar{x}\right)^2,
+  //\]
+  //where 
+  //\[
+  //\bar{x}  = \frac{1}{N}
+  //\sum_{k=1}^{N} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //If @|d| is omitted, then the mean is taken along the 
+  //first non-singleton dimension of @|x|. 
+  //@@Example
+  //The following piece of code demonstrates various uses of the var
+  //function
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //@>
+  //We start by calling @|var| without a dimension argument, in which 
+  //case it defaults to the first nonsingular dimension (in this case, 
+  //along the columns or @|d = 1|).
+  //@<
+  //var(A)
+  //@>
+  //Next, we take the variance along the rows.
+  //@<
+  //var(A,2)
+  //@>
+  //!
   ArrayVector VarFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1)
@@ -1533,6 +1942,31 @@ namespace FreeMat {
     return retArray;
   }
 
+  //!
+  //@Module CONJ Conjugate Function
+  //@@Usage
+  //Returns the complex conjugate of the input array for all elements.  The 
+  //general syntax for its use is
+  //@[
+  //   y = conj(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.  The output 
+  //is the same numerical type as the input.  The @|conj| function does
+  //nothing to real and integer types.
+  //@@Example
+  //The following demonstrates the complex conjugate applied to a complex scalar.
+  //@<
+  //conj(3+4*i)
+  //@>
+  //The @|conj| function has no effect on real arguments:
+  //@<
+  //conj([2,3,4])
+  //@>
+  //For a double-precision complex array,
+  //@<
+  //conj([2.0+3.0*i,i])
+  //@>
+  //!
   ArrayVector ConjFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("conj function requires 1 argument");
@@ -1569,6 +2003,35 @@ namespace FreeMat {
     return out;
   }
 
+  //!
+  //@Module REAL Real Function
+  //@@Usage
+  //Returns the real part of the input array for all elements.  The 
+  //general syntax for its use is
+  //@[
+  //   y = real(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.  The output 
+  //is the same numerical type as the input, unless the input is @|complex|
+  //or @|dcomplex|.  For @|complex| inputs, the real part is a floating
+  //point array, so that the return type is @|float|.  For @|dcomplex|
+  //inputs, the real part is a double precision floating point array, so that
+  //the return type is @|double|.  The @|real| function does
+  //nothing to real and integer types.
+  //@@Example
+  //The following demonstrates the @|real| applied to a complex scalar.
+  //@<
+  //real(3+4*i)
+  //@>
+  //The @|real| function has no effect on real arguments:
+  //@<
+  //real([2,3,4])
+  //@>
+  //For a double-precision complex array,
+  //@<
+  //real([2.0+3.0*i,i])
+  //@>
+  //!
   ArrayVector RealFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("real function requires 1 argument");
@@ -1600,6 +2063,36 @@ namespace FreeMat {
     return out;
   }
 
+  //!
+  //@Module IMAG Imaginary Function
+  //@@Usage
+  //Returns the imaginary part of the input array for all elements.  The 
+  //general syntax for its use is
+  //@[
+  //   y = imag(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.  The output 
+  //is the same numerical type as the input, unless the input is @|complex|
+  //or @|dcomplex|.  For @|complex| inputs, the imaginary part is a floating
+  //point array, so that the return type is @|float|.  For @|dcomplex|
+  //inputs, the imaginary part is a double precision floating point array, so that
+  //the return type is @|double|.  The @|imag| function returns zeros for 
+  //real and integer types.
+  //@@Example
+  //The following demonstrates @|imag| applied to a complex scalar.
+  //@<
+  //imag(3+4*i)
+  //@>
+  //The imaginary part of real and integer arguments is a vector of zeros, the
+  //same type and size of the argument.
+  //@<
+  //imag([2,4,5,6])
+  //@>
+  //For a double-precision complex array,
+  //@<
+  //imag([2.0+3.0*i,i])
+  //@>
+  //!
   ArrayVector ImagFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("imag function requires 1 argument");
@@ -1637,6 +2130,34 @@ namespace FreeMat {
     return out;
   }
 
+  //!
+  //@Module ABS Absolute Value Function
+  //@@Usage
+  //Returns the absolute value of the input array for all elements.  The 
+  //general syntax for its use is
+  //@[
+  //   y = abs(x)
+  //@]
+  //where @|x| is an @|n|-dimensional array of numerical type.  The output 
+  //is the same numerical type as the input, unless the input is @|complex|
+  //or @|dcomplex|.  For @|complex| inputs, the absolute value is a floating
+  //point array, so that the return type is @|float|.  For @|dcomplex|
+  //inputs, the absolute value is a double precision floating point array, so that
+  //the return type is @|double|.
+  //@@Example
+  //The following demonstrates the @|abs| applied to a complex scalar.
+  //@<
+  //abs(3+4*i)
+  //@>
+  //The @|abs| function applied to integer and real values:
+  //@<
+  //abs([-2,3,-4,5])
+  //@>
+  //For a double-precision complex array,
+  //@<
+  //abs([2.0+3.0*i,i])
+  //@>
+  //!
   ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("abs function requires 1 argument");
@@ -1729,7 +2250,40 @@ namespace FreeMat {
     return out;
   }
 
-
+  //!
+  //@Module PROD Product Function
+  //@@Usage
+  //Computes the product of an array along a given dimension.  The general
+  //syntax for its use is
+  //@[
+  //   y = prod(x,d)
+  //@]
+  //where @|x| is an @|n|-dimensions array of numerical type.
+  //The output is of the same numerical type as the input, except 
+  //for integer types, which are automatically promoted to @|int32|.
+  // The argument @|d| is optional, and denotes the dimension along which to take
+  //the product.  The output is computed via
+  //\[
+  //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //    \prod_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //If @|d| is omitted, then the product is taken along the 
+  //first non-singleton dimension of @|x|. 
+  //@@Example
+  //The following piece of code demonstrates various uses of the product
+  //function
+  //@<
+  //A = [5,1,3;3,2,1;0,3,1]
+  //@>
+  //We start by calling @|prod| without a dimension argument, in which case it defaults to the first nonsingular dimension (in this case, along the columns or @|d = 1|).
+  //@<
+  //prod(A)
+  //@>
+  //Next, we take the product along the rows.
+  //@<
+  //prod(A,2)
+  //@>
+  //!
   ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1)

@@ -273,6 +273,9 @@ namespace FreeMat {
     Array B(arg[1]);
     if (!A.is2D() || !B.is2D())
       throw Exception("cannot apply matrix operations to N-dimensional arrays.");
+    if (A.isSparse() || B.isSparse())
+      throw Exception("eig only defined for full matrices.");
+
     if (A.anyNotFinite() || B.anyNotFinite())
       throw Exception("eig only defined for matrices with finite entries.");
 

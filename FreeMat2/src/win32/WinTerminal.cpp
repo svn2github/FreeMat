@@ -549,42 +549,8 @@ namespace FreeMat {
       OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
   }
 
-  void WinTerminal::setMessageContext(const char* msg) {
-    if (messageContext != NULL)
-      free(messageContext);
-    if (msg != NULL) 
-      messageContext = strdup(msg);
-    else
-      messageContext = NULL;
-  }
-
   void WinTerminal::SetEvalEngine(WalkTree* a_eval) {
     eval = a_eval;
-  }
-  
-  void WinTerminal::pushMessageContext() {
-    if (messageContext != NULL)
-      messageStack.push_back(messageContext);
-    else
-      messageStack.push_back("<Interactive>");
-  }
-
-  void WinTerminal::popMessageContext() {
-    messageStack.pop_back();
-  }
-  
-  void WinTerminal::clearMessageContextStack() {
-    messageStack.clear();
-  }
-
-  std::vector<std::string> WinTerminal::getMessageContextStack() {
-    // Add the current context to the stack
-    std::vector<std::string> ret;
-    if (messageContext != NULL)
-      ret.push_back(messageContext);
-    else
-      ret.push_back("<Interactive>");
-    return messageStack;
   }
 
   void WinTerminal::ExecuteLine(const char * line) {

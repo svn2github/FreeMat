@@ -66,6 +66,7 @@ namespace FreeMat {
     virtual void pushMessageContext();
     virtual void popMessageContext();
     virtual void clearMessageContextStack();
+    virtual void clearMessageContextStackToNULL();
     virtual std::vector<std::string> getMessageContextStack();
     virtual void ExecuteLine(const char* line);
     virtual void RegisterInterrupt();

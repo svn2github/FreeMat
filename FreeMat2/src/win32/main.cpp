@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
 
-  FLTKTerminalWindow *win = new FLTKTerminalWindow(400,300,"FreeMat v " VERSION,help_path);
+  FLTKTerminalWindow *win = new FLTKTerminalWindow(700,500,"FreeMat v " VERSION,help_path);
   HICON g = LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON1));
   win->icon((char*) g);
   win->term()->setContext(context);

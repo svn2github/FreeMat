@@ -858,7 +858,7 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname, bool 
       // if it is not already defined.
       FunctionDef *fdef;
       bool lookup;
-      lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
+      lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
       // If the function was not found, add it.  If it _was_ found,
       // and is a script and has the same filename as ours, we
       // do nothing
@@ -880,7 +880,7 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname, bool 
       // if it is not already defined.
       FunctionDef *fdef;
       bool lookup;
-      lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
+      lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
       // If the function was not found, add it.  If it _was_ found,
       // and is a script and has the same filename as ours, we
       // do nothing

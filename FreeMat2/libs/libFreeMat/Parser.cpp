@@ -133,16 +133,16 @@ namespace FreeMat {
     }	
     if (expectString)
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  %s",
+        sprintf(msgBuffer,"Expecting %s at line %d of file %s.  %s",
 	expectString,lineNumber,filename,tokdesc);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  %s",expectString, tokdesc);
+        sprintf(msgBuffer,"Expecting %s.  %s",expectString, tokdesc);
     else
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s.  %s",
+        sprintf(msgBuffer,"Syntax error at line %d of file %s.  %s",
 	lineNumber,filename,tokdesc);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input.  %s",tokdesc);
+        sprintf(msgBuffer,"Syntax error at input.  %s",tokdesc);
     throw Exception(msgBuffer);
     return 0;
   }
@@ -1503,7 +1503,7 @@ case 27:
 {
   	    yyval = new AST(OP_QSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,filename);
+	      sprintf(msgBuffer,"line %d of file %s",lineNumber,filename);
 	      yyval->down = new AST(context_node, strdup(msgBuffer));
 	      yyval->down->down = yyvsp[-1];
 	    } else
@@ -1515,7 +1515,7 @@ case 28:
 {
 	    yyval = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,filename);
+	      sprintf(msgBuffer,"line %d of file %s",lineNumber,filename);
 	      yyval->down = new AST(context_node, strdup(msgBuffer));
 	      yyval->down->down = yyvsp[-1];
 	    } else
@@ -1527,7 +1527,7 @@ case 29:
 {
 	    yyval = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,filename);
+	      sprintf(msgBuffer,"line %d of file %s",lineNumber,filename);
 	      yyval->down = new AST(context_node, strdup(msgBuffer));
 	      yyval->down->down = yyvsp[-1];
 	    } else

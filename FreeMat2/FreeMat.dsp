@@ -143,6 +143,14 @@ SOURCE=.\src\win32\freemat.ico
 
 SOURCE=.\src\win32\icon1.ico
 # End Source File
+# Begin Source File
+
+SOURCE=.\src\win32\icon2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\win32\phi_logo_bmp.bmp
+# End Source File
 # End Group
 # Begin Source File
 

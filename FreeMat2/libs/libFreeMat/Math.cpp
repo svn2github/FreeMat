@@ -21,7 +21,6 @@
 #include "Array.hpp"
 #include "Exception.hpp"
 #include "Math.hpp"
-#include "VectorOps.hpp"
 #include "MatrixMultiply.hpp"
 #include "LinearEqSolver.hpp"
 #include "LeastSquaresSolver.hpp"
@@ -30,6 +29,41 @@
 #include "Sparse.hpp"
 
 namespace FreeMat {
+  void boolean_and(int N, logical* C, const logical *A, int Astride, 
+		   const logical *B, int Bstride) {
+    int m,p;
+    m = 0;
+    p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = A[m] && B[p];
+      m += Astride;
+      p += Bstride;
+    }
+  }
+
+  void boolean_or(int N, logical* C, const logical *A, int Astride, 
+		  const logical *B, int Bstride) {
+    int m,p;
+    m = 0;
+    p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = A[m] || B[p];
+      m += Astride;
+      p += Bstride;
+    }
+  }
+
+  void boolean_not(int N, logical* C, const logical *A) {
+    for (int i=0;i<N;i++)
+      C[i] = !A[i];
+  }
+
+  template <class T>
+  void negate(int N, T* C, const T*A) {
+    for (int i=0;i<N;i++)
+      C[i] = - A[i];
+  }
+
 
   template <class T>
   void addfullreal(int N, T*C, const T*A, int stride1, 
@@ -175,6 +209,26 @@ namespace FreeMat {
       p += stride2;
     }
   }
+
+  template <class T>
+  T complex_abs(T real, T imag) {
+    double temp;
+    if(real < 0)
+      real = -real;
+    if(imag < 0)
+      imag = -imag;
+    if(imag > real){
+      temp = real;
+      real = imag;
+      imag = temp;
+    }
+    if((real+imag) == real)
+      return(real);
+    temp = imag/real;
+    temp = real*sqrt(1.0 + temp*temp);  /*overflow!!*/
+    return(temp);
+  }
+
 
   template <class T>
   void lessthanfunccomplex(int N, logical* C, const T*A, int stride1, 
@@ -339,100 +393,6 @@ namespace FreeMat {
     vvfun dcomplexfunc;
   } packVectorVector;
 
-  static packVectorVector addFuncs = {false,
-				      (vvfun) int32Add,
-				      (vvfun) floatAdd,
-				      (vvfun) doubleAdd,
-				      (vvfun) complexAdd,
-				      (vvfun) dcomplexAdd};
-
-  static packVectorVector subtractFuncs = {false,
-					   (vvfun) int32Subtract,
-					   (vvfun) floatSubtract,
-					   (vvfun) doubleSubtract,
-					   (vvfun) complexSubtract,
-					   (vvfun) dcomplexSubtract};
-
-  static packVectorVector dotMultiplyFuncs = {false,
-					      (vvfun) int32DotMultiply,
-					      (vvfun) floatDotMultiply,
-					      (vvfun) doubleDotMultiply,
-					      (vvfun) complexDotMultiply,
-					      (vvfun) dcomplexDotMultiply};
-
-  static packVectorVector dotRightDivideFuncs = {true,
-						 (vvfun) int32DotRightDivide,
-						 (vvfun) floatDotRightDivide,
-						 (vvfun) doubleDotRightDivide,
-						 (vvfun) complexDotRightDivide,
-						 (vvfun) dcomplexDotRightDivide};
-
-  static packVectorVector dotLeftDivideFuncs = {true,
-						(vvfun) int32DotLeftDivide,
-						(vvfun) floatDotLeftDivide,
-						(vvfun) doubleDotLeftDivide,
-						(vvfun) complexDotLeftDivide,
-						(vvfun) dcomplexDotLeftDivide};
-
-  static packVectorVector lessThanFuncs = {false,
-					   (vvfun) int32LessThan,
-					   (vvfun) floatLessThan,
-					   (vvfun) doubleLessThan,
-					   (vvfun) complexLessThan,
-					   (vvfun) dcomplexLessThan};
-
-  static packVectorVector lessEqualsFuncs = {false,
-					     (vvfun) int32LessEquals,
-					     (vvfun) floatLessEquals,
-					     (vvfun) doubleLessEquals,
-					     (vvfun) complexLessEquals,
-					     (vvfun) dcomplexLessEquals};
-
-  static packVectorVector greaterThanFuncs = {false,
-					      (vvfun) int32GreaterThan,
-					      (vvfun) floatGreaterThan,
-					      (vvfun) doubleGreaterThan,
-					      (vvfun) complexGreaterThan,
-					      (vvfun) dcomplexGreaterThan};
-
-  static packVectorVector greaterEqualsFuncs = {false,
-						(vvfun) int32GreaterEquals,
-						(vvfun) floatGreaterEquals,
-						(vvfun) doubleGreaterEquals,
-						(vvfun) complexGreaterEquals,
-						(vvfun) dcomplexGreaterEquals};
-
-  static packVectorVector equalsFuncs = {false,
-					 (vvfun) int32Equals,
-					 (vvfun) floatEquals,
-					 (vvfun) doubleEquals,
-					 (vvfun) complexEquals,
-					 (vvfun) dcomplexEquals};
-
-  static packVectorVector notEqualsFuncs = {false,
-					    (vvfun) int32NotEquals,
-					    (vvfun) floatNotEquals,
-					    (vvfun) doubleNotEquals,
-					    (vvfun) complexNotEquals,
-					    (vvfun) dcomplexNotEquals};
-
-  inline vvfun mapTypeToFunction(packVectorVector F, Class clss) {
-    switch (clss) {
-    case FM_INT32:
-      return F.int32func;
-    case FM_FLOAT:
-      return F.floatfunc;
-    case FM_DOUBLE:
-      return F.doublefunc;
-    case FM_COMPLEX:
-      return F.complexfunc;
-    case FM_DCOMPLEX:
-      return F.dcomplexfunc;
-    default:
-      throw Exception("Illegal type mapped to function type.");
-    }
-  }
-
   /**
    * Check that both of the argument objects are numeric.
    */
@@ -568,36 +528,6 @@ namespace FreeMat {
 
     if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
       throw Exception("Size mismatch on arguments.");
-  }
-
-  /**
-   * This is for vector-vector operations that are closed under their type.
-   */
-  inline Array DoGenericTwoArgFunction(Array A, Array B, 
-				packVectorVector F) {
-    vvfun exec;
-  
-    // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,F.promoteInt32ToDouble);
-    // Get a pointer to the function we ultimately need to execute
-    exec = mapTypeToFunction(F,A.getDataClass());
-    if (A.isScalar()) {
-      int Blen(B.getLength());
-      void *Cp = Malloc(Blen*B.getElementSize());
-      exec(Blen,Cp,A.getDataPointer(),0,B.getDataPointer(),1);
-      return Array(B.getDataClass(),B.getDimensions(),Cp);
-    } else if (B.isScalar()) {
-      int Alen(A.getLength());
-      void *Cp = Malloc(Alen*A.getElementSize());
-      exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),0);
-      return Array(B.getDataClass(),A.getDimensions(),Cp);
-    } else {
-      int Alen(A.getLength());
-      void *Cp = Malloc(Alen*A.getElementSize());
-      exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),1);
-      return Array(A.getDataClass(),A.getDimensions(),Cp);
-    }
-    throw Exception("Fatal error: fell through DoGenericTwoArgFunction cases");
   }
 
 
@@ -779,46 +709,6 @@ namespace FreeMat {
     }
   }
 
-  /**
-   * For all of the Vector-Vector operations that have vector and scalar versions,
-   * the general behavior is the same.  We require 6 functions to handle the 6
-   * cases that generally arise:
-   *   real    vector vector
-   *   real    vector scalar
-   *   real    scalar vector
-   *   complex vector vector
-   *   complex vector scalar
-   *   complex scalar vector
-   */
-  inline Array DoComparativeTwoArgFunction(Array A, Array B, packVectorVector F) {
-    Array C;
-    vvfun exec;
-
-    // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,F.promoteInt32ToDouble);
-    // Get a pointer to the function we ultimately need to execute
-    exec = mapTypeToFunction(F,A.getDataClass());
-    if (A.isScalar()) {
-      int Blen(B.getLength());
-      C = Array(FM_LOGICAL,B.getDimensions(),NULL);
-      void *Cp = Malloc(Blen*C.getElementSize());
-      exec(Blen,Cp,A.getDataPointer(),0,B.getDataPointer(),1);
-      C.setDataPointer(Cp);
-    } else if (B.isScalar()) {
-      int Alen(A.getLength());
-      C = Array(FM_LOGICAL,A.getDimensions(),NULL);
-      void *Cp = Malloc(Alen*C.getElementSize());
-      exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),0);
-      C.setDataPointer(Cp);
-    } else {
-      int Alen(A.getLength());
-      C = Array(FM_LOGICAL,A.getDimensions(),NULL);
-      void *Cp = Malloc(Alen*C.getElementSize());
-      exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),1);
-      C.setDataPointer(Cp);
-    }
-    return C;
-  }
 
   /**
    * For all of the Vector-Vector operations that have vector and scalar versions,
@@ -942,8 +832,58 @@ namespace FreeMat {
   //c = 1 + b
   //@>
   //!
-  Array Add(const Array& A, const Array& B) {
-    return(DoGenericTwoArgFunction(A,B,addFuncs));
+  Array Add(Array A, Array B) {
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    // Get a pointer to the function we ultimately need to execute
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*B.getElementSize());
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      addfullreal<int32>(Clen,(int32*) Cp, 
+			 (int32*) A.getDataPointer(), Astride,
+			 (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      addfullreal<float>(Clen,(float*) Cp, 
+			 (float*) A.getDataPointer(), Astride,
+			 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      addfullreal<double>(Clen,(double*) Cp, 
+			  (double*) A.getDataPointer(), Astride,
+			  (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      addfullcomplex<float>(Clen,(float*) Cp, 
+			    (float*) A.getDataPointer(), Astride,
+			    (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      addfullcomplex<double>(Clen,(double*) Cp, 
+			     (double*) A.getDataPointer(), Astride,
+			     (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(B.getDataClass(),Cdim,Cp);
   }
 
   /**
@@ -1033,8 +973,58 @@ namespace FreeMat {
   //c = 1 - b
   //@>
   //!
-  Array Subtract(const Array& A, const Array& B) {
-    return(DoGenericTwoArgFunction(A,B,subtractFuncs));
+  Array Subtract(Array A, Array B) {
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    // Get a pointer to the function we ultimately need to execute
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*B.getElementSize());
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      subtractfullreal<int32>(Clen,(int32*) Cp, 
+			 (int32*) A.getDataPointer(), Astride,
+			 (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      subtractfullreal<float>(Clen,(float*) Cp, 
+			 (float*) A.getDataPointer(), Astride,
+			 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      subtractfullreal<double>(Clen,(double*) Cp, 
+			  (double*) A.getDataPointer(), Astride,
+			  (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      subtractfullcomplex<float>(Clen,(float*) Cp, 
+			    (float*) A.getDataPointer(), Astride,
+			    (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      subtractfullcomplex<double>(Clen,(double*) Cp, 
+			     (double*) A.getDataPointer(), Astride,
+			     (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(B.getDataClass(),Cdim,Cp);
   }
 
   /**
@@ -1119,7 +1109,57 @@ namespace FreeMat {
   //@>
   //!
   Array DotMultiply(Array A, Array B) {
-    return(DoGenericTwoArgFunction(A,B,dotMultiplyFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    // Get a pointer to the function we ultimately need to execute
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*B.getElementSize());
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      multiplyfullreal<int32>(Clen,(int32*) Cp, 
+			 (int32*) A.getDataPointer(), Astride,
+			 (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      multiplyfullreal<float>(Clen,(float*) Cp, 
+			 (float*) A.getDataPointer(), Astride,
+			 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      multiplyfullreal<double>(Clen,(double*) Cp, 
+			  (double*) A.getDataPointer(), Astride,
+			  (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      multiplyfullcomplex<float>(Clen,(float*) Cp, 
+			    (float*) A.getDataPointer(), Astride,
+			    (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      multiplyfullcomplex<double>(Clen,(double*) Cp, 
+			     (double*) A.getDataPointer(), Astride,
+			     (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(B.getDataClass(),Cdim,Cp);
   }
 
   /**
@@ -1193,7 +1233,57 @@ namespace FreeMat {
   //@>
   //!
   Array DotRightDivide(Array A, Array B) {
-    return(DoGenericTwoArgFunction(A,B,dotRightDivideFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,true);
+    // Get a pointer to the function we ultimately need to execute
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*B.getElementSize());
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      dividefullreal<int32>(Clen,(int32*) Cp, 
+			 (int32*) A.getDataPointer(), Astride,
+			 (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      dividefullreal<float>(Clen,(float*) Cp, 
+			 (float*) A.getDataPointer(), Astride,
+			 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      dividefullreal<double>(Clen,(double*) Cp, 
+			  (double*) A.getDataPointer(), Astride,
+			  (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      dividefullcomplex<float>(Clen,(float*) Cp, 
+			    (float*) A.getDataPointer(), Astride,
+			    (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      dividefullcomplex<double>(Clen,(double*) Cp, 
+			     (double*) A.getDataPointer(), Astride,
+			     (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(B.getDataClass(),Cdim,Cp);
   }
 
   /**
@@ -1268,7 +1358,7 @@ namespace FreeMat {
   //@>
   //!
   Array DotLeftDivide(Array A, Array B) {
-    return(DoGenericTwoArgFunction(A,B,dotLeftDivideFuncs));
+    return DotRightDivide(B,A);
   }
 
   /**
@@ -1359,42 +1449,336 @@ namespace FreeMat {
   //@>
   //!
   Array LessThan(Array A, Array B) {
-    return(DoComparativeTwoArgFunction(A,B,lessThanFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*sizeof(logical));
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      lessthanfuncreal<int32>(Clen,(logical*) Cp, 
+			      (int32*) A.getDataPointer(), Astride,
+			      (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      lessthanfuncreal<float>(Clen,(logical*) Cp, 
+			      (float*) A.getDataPointer(), Astride,
+			      (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      lessthanfuncreal<double>(Clen,(logical*) Cp, 
+			       (double*) A.getDataPointer(), Astride,
+			       (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      lessthanfunccomplex<float>(Clen,(logical*) Cp, 
+				 (float*) A.getDataPointer(), Astride,
+				 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      lessthanfunccomplex<double>(Clen,(logical*) Cp, 
+				  (double*) A.getDataPointer(), Astride,
+				  (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
    * Element-wise less equals.
    */
   Array LessEquals(Array A, Array B) {
-    return(DoComparativeTwoArgFunction(A,B,lessEqualsFuncs));
-  }
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
 
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*sizeof(logical));
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      lessequalsfuncreal<int32>(Clen,(logical*) Cp, 
+				(int32*) A.getDataPointer(), Astride,
+				(int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      lessequalsfuncreal<float>(Clen,(logical*) Cp, 
+				(float*) A.getDataPointer(), Astride,
+				(float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      lessequalsfuncreal<double>(Clen,(logical*) Cp, 
+				 (double*) A.getDataPointer(), Astride,
+				 (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      lessequalsfunccomplex<float>(Clen,(logical*) Cp, 
+				   (float*) A.getDataPointer(), Astride,
+				   (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      lessequalsfunccomplex<double>(Clen,(logical*) Cp, 
+				    (double*) A.getDataPointer(), Astride,
+				    (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(FM_LOGICAL,Cdim,Cp);
+  }
+  
   /**
    * Element-wise greater than.
    */
   Array GreaterThan(Array A, Array B) {
-    return(DoComparativeTwoArgFunction(A,B,greaterThanFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*sizeof(logical));
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      greaterthanfuncreal<int32>(Clen,(logical*) Cp, 
+			      (int32*) A.getDataPointer(), Astride,
+			      (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      greaterthanfuncreal<float>(Clen,(logical*) Cp, 
+			      (float*) A.getDataPointer(), Astride,
+			      (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      greaterthanfuncreal<double>(Clen,(logical*) Cp, 
+			       (double*) A.getDataPointer(), Astride,
+			       (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      greaterthanfunccomplex<float>(Clen,(logical*) Cp, 
+				 (float*) A.getDataPointer(), Astride,
+				 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      greaterthanfunccomplex<double>(Clen,(logical*) Cp, 
+				  (double*) A.getDataPointer(), Astride,
+				  (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
    * Element-wise greater equals.
    */
   Array GreaterEquals(Array A, Array B) {
-    return(DoComparativeTwoArgFunction(A,B,greaterEqualsFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*sizeof(logical));
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      greaterequalsfuncreal<int32>(Clen,(logical*) Cp, 
+			      (int32*) A.getDataPointer(), Astride,
+			      (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      greaterequalsfuncreal<float>(Clen,(logical*) Cp, 
+			      (float*) A.getDataPointer(), Astride,
+			      (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      greaterequalsfuncreal<double>(Clen,(logical*) Cp, 
+			       (double*) A.getDataPointer(), Astride,
+			       (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      greaterequalsfunccomplex<float>(Clen,(logical*) Cp, 
+				 (float*) A.getDataPointer(), Astride,
+				 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      greaterequalsfunccomplex<double>(Clen,(logical*) Cp, 
+				  (double*) A.getDataPointer(), Astride,
+				  (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
    * Element-wise equals.
    */
   Array Equals(Array A, Array B) {
-    return(DoComparativeTwoArgFunction(A,B,equalsFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*sizeof(logical));
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      equalsfuncreal<int32>(Clen,(logical*) Cp, 
+			      (int32*) A.getDataPointer(), Astride,
+			      (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      equalsfuncreal<float>(Clen,(logical*) Cp, 
+			      (float*) A.getDataPointer(), Astride,
+			      (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      equalsfuncreal<double>(Clen,(logical*) Cp, 
+			       (double*) A.getDataPointer(), Astride,
+			       (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      equalsfunccomplex<float>(Clen,(logical*) Cp, 
+				 (float*) A.getDataPointer(), Astride,
+				 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      equalsfunccomplex<double>(Clen,(logical*) Cp, 
+				  (double*) A.getDataPointer(), Astride,
+				  (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
    * Element-wise notEquals.
    */
   Array NotEquals(Array A, Array B) {
-    return(DoComparativeTwoArgFunction(A,B,notEqualsFuncs));
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,false);
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*sizeof(logical));
+    switch(B.getDataClass()) {
+    case FM_INT32:
+      notequalsfuncreal<int32>(Clen,(logical*) Cp, 
+			      (int32*) A.getDataPointer(), Astride,
+			      (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_FLOAT:
+      notequalsfuncreal<float>(Clen,(logical*) Cp, 
+			      (float*) A.getDataPointer(), Astride,
+			      (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DOUBLE:
+      notequalsfuncreal<double>(Clen,(logical*) Cp, 
+			       (double*) A.getDataPointer(), Astride,
+			       (double*) B.getDataPointer(), Bstride);
+      break;
+    case FM_COMPLEX:
+      notequalsfunccomplex<float>(Clen,(logical*) Cp, 
+				 (float*) A.getDataPointer(), Astride,
+				 (float*) B.getDataPointer(), Bstride);
+      break;
+    case FM_DCOMPLEX:
+      notequalsfunccomplex<double>(Clen,(logical*) Cp, 
+				  (double*) A.getDataPointer(), Astride,
+				  (double*) B.getDataPointer(), Bstride);
+      break;			 
+    }
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
@@ -1440,14 +1824,62 @@ namespace FreeMat {
   //@>
   //!
   Array And(Array A, Array B) {
-    return(DoBoolTwoArgFunction(A,B,(vvfun)boolAnd));
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    BoolVectorCheck(A,B);
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*B.getElementSize());
+    boolean_and(Clen, (logical*) Cp, (const logical*) A.getDataPointer(), Astride, 
+		(const logical*) B.getDataPointer(), Bstride);
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
    * Element-wise or
    */
   Array Or(Array A, Array B) {
-    return(DoBoolTwoArgFunction(A,B,(vvfun)boolOr));
+    int Astride, Bstride;
+    void *Cp = NULL;
+    int Clen;
+    Dimensions Cdim;
+
+    BoolVectorCheck(A,B);
+
+    if (A.isScalar()) {
+      Astride = 0;
+      Bstride = 1;
+      Cdim = B.getDimensions();
+    } else if (B.isScalar()) {
+      Astride = 1;
+      Bstride = 0;
+      Cdim = A.getDimensions();
+    } else {
+      Astride = 1;
+      Bstride = 1;
+      Cdim = A.getDimensions();
+    }
+    Clen = Cdim.getElementCount();
+    Cp = Malloc(Clen*B.getElementSize());
+    boolean_or(Clen, (logical*) Cp, (const logical*) A.getDataPointer(), Astride, 
+	       (const logical*) B.getDataPointer(), Bstride);
+    return Array(FM_LOGICAL,Cdim,Cp);
   }
 
   /**
@@ -1459,7 +1891,7 @@ namespace FreeMat {
     A.promoteType(FM_LOGICAL);
     C = Array(FM_LOGICAL,A.getDimensions(),NULL);
     void *Cp = Malloc(A.getLength()*C.getElementSize());
-    boolNot(A.getLength(),(logical*)Cp,(const logical*) A.getDataPointer());
+    boolean_not(A.getLength(),(logical*)Cp,(const logical*) A.getDataPointer());
     C.setDataPointer(Cp);
     return C;
   }
@@ -1487,19 +1919,19 @@ namespace FreeMat {
     void *Cp = Malloc(A.getLength()*C.getElementSize());
     switch (Aclass) {
     case FM_INT32:
-      int32Negate(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
+      negate<int32>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
       break;
     case FM_FLOAT:
-      floatNegate(A.getLength(),(float*)Cp,(float*)A.getDataPointer());
+      negate<float>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
       break;
     case FM_DOUBLE:
-      doubleNegate(A.getLength(),(double*)Cp,(double*)A.getDataPointer());
+      negate<double>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
       break;
     case FM_COMPLEX:
-      complexNegate(A.getLength(),(float*)Cp,(float*)A.getDataPointer());
+      negate<float>(2*A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
       break;
     case FM_DCOMPLEX:
-      dcomplexNegate(A.getLength(),(double*)Cp,(double*)A.getDataPointer());
+      negate<double>(2*A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
       break;
     }
     C.setDataPointer(Cp);

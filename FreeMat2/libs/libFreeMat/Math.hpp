@@ -27,11 +27,11 @@ namespace FreeMat {
   /**
    * Add the two argument arrays together: $$C_n = A_n + B_n$$.
    */
-  Array Add(const Array& A, const Array& B);
+  Array Add(Array A, Array B);
   /**
    * Subtract the second array from the first: $$C_n = A_n - B_n$$.
    */
-  Array Subtract(const Array& A, const Array& B);
+  Array Subtract(Array A, Array B);
   /**
    * Element-wise multiply of two arrays: $$C_n = A_n B_n$$.
    */

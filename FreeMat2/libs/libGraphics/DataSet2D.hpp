@@ -115,7 +115,7 @@ namespace FreeMat {
    * the number of points in the plot, the x, y, z coordinates, the
    * color of the line, the symbol of the line, and the line-style.
    */
-  class DataSet3D : public DataSet2D
+  class DataSet3D
   {
     Array x;
     Array y;
@@ -130,7 +130,7 @@ namespace FreeMat {
 	      char a_color, char a_symbol, char a_line);
     ~DataSet3D();
     void DrawMe(GraphicsContext& dc, Axis* xAxis, Axis* yAxis, 
-		Axis *zAxis, double[2][4] xform);
+		Axis *zAxis, double xform[2][4]);
     void GetDataRange(double& xMin, double& xMax, 
 		      double& yMin, double& yMax,
 		      double& zMin, double& zMax);

@@ -283,7 +283,7 @@ namespace FreeMat {
 
   void DataSet3D::DrawMe(GraphicsContext &dc, Axis *xAxis, 
 			 Axis *yAxis, Axis *zAxis,
-			 double[2][4] xform) {
+			 double xform[2][4]) {
     const double *xVals;
     const double *yVals;
     const double *zVals;

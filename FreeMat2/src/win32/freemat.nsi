@@ -209,7 +209,6 @@ SectionEnd
 
 Section "M Files" SEC02
   SetOutPath "$INSTDIR\MFiles"
-  File "..\..\MFiles\winlev.m"
   File "..\..\MFiles\std.m"
   File "..\..\MFiles\sqrt.m"
   File "..\..\MFiles\rserver.m"
@@ -613,7 +612,6 @@ Section Uninstall
   Delete "$INSTDIR\MFiles\rserver.m"
   Delete "$INSTDIR\MFiles\sqrt.m"
   Delete "$INSTDIR\MFiles\std.m"
-  Delete "$INSTDIR\MFiles\winlev.m"
   Delete "$INSTDIR\freemat.chm"
   Delete "$INSTDIR\FreeMat.exe"
 

@@ -2,6 +2,7 @@
  * A lexical analyzer... my apologies for this, but I couldn't get 
  * FLEX to do what I wanted.
  */
+#include <windows.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/stat.h>
@@ -53,7 +54,10 @@ ParseRHS tokenValue;
 reservedWordStruct ts, *p;
 
 int ContextInt() {
-  return ((datap-linestart+1) << 16) | (lineNumber+1);
+  if (datap==linestart)
+    return (1 << 16 | (lineNumber+2));
+  else
+    return ((datap-linestart+1) << 16) | (lineNumber+1);
 }
 
 void NextLine() {

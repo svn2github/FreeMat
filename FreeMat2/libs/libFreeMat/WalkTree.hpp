@@ -42,6 +42,11 @@ namespace FreeMat {
     FM_STATE_RETALL
   } State;
 
+  typedef struct {
+	  std::string cname;
+	  int line;
+  } breakpoint;
+
   /**
    * This is the class that implements the interpreter - it generally
    * operates on abstract syntax trees (ASTs).
@@ -86,8 +91,13 @@ namespace FreeMat {
     std::vector<int> IDnums;
     std::vector<std::string> contextStack;
     std::vector<std::string> cnameStack;
+	// track the current statement/line number
+	std::string cp_name;
+	int cp_line;
   public:
-    void pushDebug(std::string fname);
+	std::vector<breakpoint> bpStack;
+	bool debugActive;
+	void pushDebug(std::string fname, std::string detail);
 
     void popDebug();
     

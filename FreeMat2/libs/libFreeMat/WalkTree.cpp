@@ -18,6 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+#include <windows.h>
+
 #include "WalkTree.hpp"
 #include <iostream>
 #include <stack>
@@ -38,7 +40,9 @@
 #include <FL/Fl.H>
 #include <errno.h>
 
+
 namespace FreeMat {
+
   /**
    * Pending control-C
    */
@@ -55,10 +59,16 @@ namespace FreeMat {
   }
 
   void WalkTree::pushID(int a) {
+    char buffer[4096];
+    sprintf(buffer,"Push ID %x InCLI = %d\n",a,InCLI);
+    OutputDebugString(buffer);
     IDnums.push_back(a);
   }
 
   void WalkTree::popID() {
+    char buffer[4096];
+    sprintf(buffer,"Pop ID %x InCLI = %d\n",IDnums.back(),InCLI);
+    OutputDebugString(buffer);
     IDnums.pop_back();
   }
 
@@ -679,7 +689,7 @@ namespace FreeMat {
     try {
       block(t);
     } catch (Exception &e) {
-      std::string cname = cname_store;
+      cname = cname_store;
       // Clear the stacks
       while (IDnums.size() > iddepth) IDnums.pop_back();
       while (contextStack.size() > cntxtdepth) contextStack.pop_back();
@@ -1485,9 +1495,39 @@ namespace FreeMat {
   //end
   //this is represented in the parse tree as a single construct...
   //
+
+  // 
   void WalkTree::statement(ASTPtr t) {
+    // check the debug flag
+    int linenumber;
+    linenumber = t->context() & 0xffff;
     try {
       pushID(t->context());
+      if (debugActive) {
+	// check to see if the statement has advanced
+	if ((cname != cp_name) || (linenumber != cp_line)) {
+	  // check the breakpoint list
+	  bool found = false;
+	  int j=0;
+	  while ((j<bpStack.size()) && !found) {
+	    if ((bpStack[j].cname == cname) && (bpStack[j].line == linenumber)) {
+	      found = true;
+	    } else {
+	      found = false;
+	      j++;
+	    }
+	  }
+	  if (found) {
+	    depth++;
+	    evalCLI();
+	    if (state == FM_STATE_RETURN) state = FM_STATE_OK;
+					depth--;
+	  }
+	}
+      }
+      cp_name = cname;
+      cp_line = linenumber;
+
       if (t->opNum ==(OP_QSTATEMENT)) 
 	statementType(t->down,false);
       else if (t->opNum ==(OP_RSTATEMENT))
@@ -1496,7 +1536,7 @@ namespace FreeMat {
 	statementType(t->down,true);
       popID();
     } catch (Exception& e) {
-      if (autostop & !InCLI) {
+      if (autostop && !InCLI) {
 	char buffer[4096];
 	e.printMe(io);
 	stackTrace(true);
@@ -1506,8 +1546,10 @@ namespace FreeMat {
 	if (state != FM_STATE_QUIT &&
 	    state != FM_STATE_RETALL)
 	  state = FM_STATE_OK;
-      } else throw;
-    }
+	  } else  {
+		  throw;
+	  }
+	}
   }
 
   void WalkTree::block(ASTPtr t) {
@@ -1639,7 +1681,6 @@ namespace FreeMat {
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	r.setVectorSubset(m[0],value[0]);
-	popID();
 	return;
       } else {
 	r.setNDimSubset(m,value[0]);
@@ -2362,7 +2403,7 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
 	CLIFlagsave = InCLI;
 	InCLI = false;
-	pushDebug(((MFunctionDef*)funcDef)->fileName);
+	pushDebug(((MFunctionDef*)funcDef)->fileName,std::string("(script)"));
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
@@ -2556,16 +2597,19 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::pushDebug(std::string fname) {
+  void WalkTree::pushDebug(std::string fname, std::string detail) {
     char buffer[1024];
-    sprintf(buffer,"In %s, line %d, position %d\n",
-	    cname.c_str(), IDnums.back() & 0x0000FFFF, IDnums.back() >> 16);
+    sprintf(buffer,"In %s%s, line %d, position %d\n",
+	    cname.c_str(), detail.c_str(),
+		IDnums.back() & 0x0000FFFF, IDnums.back() >> 16);
+    OutputDebugString(buffer);
     contextStack.push_back(buffer);
     cnameStack.push_back(cname);
     cname = fname;
   }
 
   void WalkTree::popDebug() {
+    OutputDebugString("Pop");
     contextStack.pop_back();
     cname = cnameStack.back();
     cnameStack.pop_back();
@@ -2825,16 +2869,16 @@ namespace FreeMat {
       popID();
       return m;
     }
-    if (!isVar && !isFun)
-      throw Exception(std::string("Undefined function or variable ") + t->text);
+	if (!isVar && !isFun) 
+	  throw Exception(std::string("Undefined function or variable ") + t->text);
     t = t->down;
     while (t != NULL) {
       rhsDimensions = r.getDimensions();
-      if (!rv.empty())
-	throw Exception("Cannot reindex an expression that returns multiple values.");
+	  if (!rv.empty()) 
+	    throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
 	m = expressionList(t->down,&rhsDimensions);
-	if (m.size() == 0)
+	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
 	  q = r.getVectorSubset(m[0]);
@@ -2846,7 +2890,7 @@ namespace FreeMat {
       }
       if (t->opNum ==(OP_BRACES)) {
 	m = expressionList(t->down,&rhsDimensions);
-	if (m.size() == 0)
+	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)
 	  rv = r.getVectorContentsAsList(m[0]);
@@ -2905,6 +2949,7 @@ namespace FreeMat {
     InCLI = false;
     cname = "base";
     IDnums.push_back(0);
+	debugActive = false;
   }
 
   bool WalkTree::evaluateString(char *line) {
@@ -2920,7 +2965,33 @@ namespace FreeMat {
 	  tree = getParsedScriptBlock();
 	  //	printAST(tree);
 	  try {
-	    block(tree);
+	    char buffer1[2048];
+	    char buffer2[2048];
+	    strcpy(buffer1,line);
+	    if (buffer1[strlen(buffer1)-1] == '\n')
+	      buffer1[strlen(buffer1)-1] = 0;
+	    if (buffer1[strlen(buffer1)-1] == '\r')
+	      buffer1[strlen(buffer1)-1] = 0;
+	    sprintf(buffer2,"(%s)",buffer1);
+    // Get the state of the IDnum stack and the
+    // contextStack and the cnameStack
+    int iddepth, cntxtdepth, cnamedepth;
+    iddepth = IDnums.size();
+    cntxtdepth = contextStack.size();
+    cnamedepth = cnameStack.size();
+    std::string cname_store = cname;
+    //	    pushDebug("Eval",buffer2);
+    try {
+      block(tree);
+    } catch (Exception &e) {
+      e.printMe(io);
+      cname = cname_store;
+      // Clear the stacks
+      while (IDnums.size() > iddepth) IDnums.pop_back();
+      while (contextStack.size() > cntxtdepth) contextStack.pop_back();
+      while (cnameStack.size() > cnamedepth) cnameStack.pop_back();
+    }
+	    //	    popDebug();
 	    if (state == FM_STATE_RETURN) {
 	      if (depth > 0) 
 		return true;
@@ -2929,6 +3000,7 @@ namespace FreeMat {
 	      return true;
 	  } catch(Exception &e) {
 	    e.printMe(io);
+	    //	    popDebug();
 	  }
 	}
 	break;
@@ -2937,6 +3009,7 @@ namespace FreeMat {
 	break;
       }
     } catch(Exception &e) {
+      //      popDebug();
       e.printMe(io);
     }
     return false;
@@ -2961,7 +3034,8 @@ namespace FreeMat {
       sprintf(prompt,"--> ");
     else
       sprintf(prompt,"[%s,%d] --> ",context->getCurrentScope()->getName().c_str(),depth);
-
+//      sprintf(prompt,"[%s,%d] --> ",contextStack.front().c_str(),depth);
+//contextStack[i].c_str()
     while(1) {
       line = io->getLine(prompt);
       if (!line)
@@ -3004,12 +3078,19 @@ namespace FreeMat {
       }
       InCLI = true;
       if (line) {
-	pushDebug("interactive");
-	bool tresult =  evaluateString(line);
-	popDebug();
-	if (tresult) {
-	  InCLI = false;
-	  return;
+	//	pushDebug("interactive"," ");
+	try {
+  	  bool tresult =  evaluateString(line);
+	  //	  popDebug();
+	  if (tresult) {
+	    InCLI = false;
+	    return;
+	  }
+	} catch(Exception &e) {
+		e.printMe(io);;
+		//		popDebug();
+		InCLI = true;
+		return;
 	}
       }
       InCLI = false;

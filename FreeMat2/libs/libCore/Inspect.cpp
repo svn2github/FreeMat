@@ -903,7 +903,8 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector WhereFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    eval->stackTrace(false);
+//    eval->stackTrace(false);
+    eval->stackTrace(true);
     return ArrayVector();
   }
 

@@ -127,7 +127,7 @@ namespace FreeMat {
 
     context = walker->getContext();
     context->pushScope(name);
-    walker->pushDebug(fileName+"("+name+")");
+    walker->pushDebug(fileName,"("+name+")");
     // Push our local functions onto the function scope
     MFunctionDef *cp;
     cp = nextFunction;
@@ -381,7 +381,7 @@ namespace FreeMat {
 						   int nargout) {
     ArrayVector outputs;
     int i;
-    walker->pushDebug(name+"(built in)");
+    walker->pushDebug(name,"(built in)");
     try {
       outputs = fptr(nargout,inputs);
       walker->popDebug();
@@ -401,7 +401,7 @@ namespace FreeMat {
   ArrayVector SpecialFunctionDef::evaluateFunction(WalkTree *walker, 
 						   ArrayVector& inputs, int nargout) {
     ArrayVector outputs;
-    walker->pushDebug(name+"(built in)");
+    walker->pushDebug(name,"(built in)");
     try {
       outputs = fptr(nargout,inputs,walker);
       walker->popDebug();
@@ -497,7 +497,7 @@ namespace FreeMat {
   ArrayVector ImportedFunctionDef::evaluateFunction(WalkTree *walker,
 						    ArrayVector& inputs,
 						    int nargout) {
-    walker->pushDebug(name+"(imported)");
+    walker->pushDebug(name,"(imported)");
     /**
      * To actually evaluate the function, we have to process each of
      * the arguments and get them into the right form.
@@ -531,7 +531,7 @@ namespace FreeMat {
       Context* context;
       context = walker->getContext();
       context->pushScope("temp");
-      walker->pushDebug(name + "(bounds check)");
+      walker->pushDebug(name,"(bounds check)");
       try {
 	for (i=0;i<inputs.size();i++)
 	  context->insertVariableLocally(arguments[i],inputs[i]);

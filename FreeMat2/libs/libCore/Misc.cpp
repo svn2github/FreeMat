@@ -1736,6 +1736,38 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  ArrayVector BreakFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+	  if (arg.size() < 2)
+		  throw Exception("break function requires at least two arguments");
+	  if (!(arg[0].isString()))
+		  throw Exception("first argument to break must be the name of routine where to stop");
+	  char *cname = arg[0].getContentsAsCString();
+    bool isFun;
+    FuncPtr val;
+    isFun = eval->getContext()->lookupFunction(cname,val);
+    Interface *io = eval->getInterface();
+    char buffer[1000];
+    if (!isFun)
+		throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
+	std::string resolved_name;
+    if (val->type() == FM_M_FUNCTION) {
+	  MFunctionDef *mptr;
+	  mptr = (MFunctionDef *) val;
+	  mptr->updateCode();
+	  resolved_name = mptr->fileName;
+    } else {
+	  throw Exception("Cannot set breakpoints in built-in or imported functions");
+    }
+	Array tmp(arg[1]);
+	int line = tmp.getContentsAsIntegerScalar();
+	breakpoint bp;
+	bp.cname = resolved_name;
+	bp.line = line;
+	eval->bpStack.push_back(bp);
+	eval->debugActive = true;
+	return ArrayVector();
+  }
+
 //   ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
 //     if (arg.size() == 0)
 //       throw Exception("fdump function requires at least one argument");

@@ -80,6 +80,10 @@ namespace FreeMat {
      args.clear();
      args.push_back("x");
      context->addSpecialFunction("disp",DispFunction,-1,0,args);
+	 args.clear();
+	 args.push_back("file");
+	 args.push_back("line");
+	 context->addSpecialFunction("setbreak",BreakFunction,2,0,args);
      args.clear();
      context->addFunction("i",IFunction,0,1,args);
      context->addFunction("j",IFunction,0,1,args);

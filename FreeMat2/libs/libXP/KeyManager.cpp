@@ -61,6 +61,7 @@ KeyManager::KeyManager() {
   insert = true;
   ReplacePrompt("");
   ResetLineBuffer();
+  history.push_back("");
 }
 
 
@@ -759,10 +760,14 @@ void KeyManager::HistoryFindForwards() {
   i = startsearch+1;
   found = false;
   while (i<history.size() && !found) {
-    found = (history[i].compare(0,prefix_len,prefix) == 0);
+    found = (prefix_len == 0) || 
+      (history[i].compare(0,prefix_len,prefix) == 0);
     if (!found) i++;
   }
-  if (!found) return;
+  if (!found && (i == history.size())) {
+    line[0] = 0;
+    return;
+  }
   strcpy(line,history[i].c_str());
   line[strlen(line)-1] = 0;
   startsearch = i;

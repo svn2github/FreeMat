@@ -24,6 +24,31 @@
 #include <stdio.h>
 
 namespace FreeMat {
+
+  static std::string helppath;
+  
+  void Tokenize(const std::string& str, std::vector<std::string>& tokens,
+		const std::string& delimiters = " \n") {
+    // Skip delimiters at beginning.
+    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    // Find first "non-delimiter".
+    std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
+    
+    while (std::string::npos != pos || std::string::npos != lastPos)
+      {
+        // Found a token, add it to the vector.
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        // Skip delimiters.  Note the "not_of"
+        lastPos = str.find_first_not_of(delimiters, pos);
+        // Find next "non-delimiter"
+        pos = str.find_first_of(delimiters, lastPos);
+      }
+  }
+  
+  void InitializeHelpDirectory(std::string path) {
+    helppath = path;
+  }
+
   //!
   //@Module HELP Help
   //@@Usage
@@ -47,18 +72,78 @@ namespace FreeMat {
     bool isFun;
     FuncPtr val;
     isFun = eval->getContext()->lookupFunction(fname,val);
-    if (!isFun)
-      throw Exception("unable to find a definition for '" + std::string(fname) + "'");
-    if (val->type() != FM_M_FUNCTION) 
-      throw Exception("no inline help for built-in functions");
-    MFunctionDef *mptr;
-    Interface *io;
-    mptr = (MFunctionDef *) val;
-    mptr->updateCode();
-    io = eval->getInterface();
-    for (int i=0;i<mptr->helpText.size();i++)
-      io->outputMessage(mptr->helpText[i].c_str());
-    return ArrayVector();
+    Interface *io = eval->getInterface();
+    if (isFun && (val->type() == FM_M_FUNCTION)) {
+      MFunctionDef *mptr;
+      mptr = (MFunctionDef *) val;
+      mptr->updateCode();
+      for (int i=0;i<mptr->helpText.size();i++)
+	io->outputMessage(mptr->helpText[i].c_str());
+      return ArrayVector();
+    } else {
+      // Check for a mdc file with the given name
+      std::string mdcname;
+      mdcname = helppath + "/help/" + fname + ".mdc";
+      FILE *fp;
+      fp = fopen(mdcname.c_str(),"r");
+      if (fp) {
+	//Found it... relay to the output
+	std::vector<std::string> helplines;
+	std::string workingline;
+	char buffer[4096];
+	bool verbatimMode = false;
+	while (!feof(fp)) {
+	  fgets(buffer,sizeof(buffer),fp);
+	  //is this line only a $ sign?
+	  if ((buffer[0] == '$') && strlen(buffer)<3)
+	    verbatimMode = !verbatimMode;
+	  else {
+	    if (verbatimMode) {
+	      helplines.push_back(buffer);
+	      workingline.clear();
+	    } else {
+	      //is this line empty? if so, push
+	      //workingline to helplines and clear it.
+	      if (strlen(buffer)<2) {
+		helplines.push_back(workingline);
+		helplines.push_back("\n");
+		workingline.clear();
+	      } else {
+		buffer[strlen(buffer)-1] = 0;
+		workingline = workingline + " " + buffer;
+	      }
+	    }
+	  }
+	}
+	// Write the lines out...
+	// Get the output width (in characters)
+	int outputWidth = io->getTerminalWidth() - 20;
+	for (int p=0;p<helplines.size();p++) {
+	  std::vector<std::string> tokens;
+	  // Tokenize the help line
+	  Tokenize(helplines[p],tokens);
+	  // Output words..
+	  int outlen = 0;
+	  int tokencount = 0;
+	  io->outputMessage("\n          ");
+	  while (tokencount < tokens.size()) {
+	    // Can the next token be output without wrapping?
+	    if (outlen + tokens[tokencount].size() < outputWidth) {
+	      // Yes... send it and move on
+	      io->outputMessage(tokens[tokencount].c_str());
+	      io->outputMessage(" ");
+	      outlen += tokens[tokencount++].size();
+	    } else {
+	      io->outputMessage("\n          ");
+	      outlen = 0;
+	    }
+	  }
+	}
+	fclose(fp);
+      }
+      return ArrayVector();
+    }
+    throw Exception("no help for that topic");
   }
 
   //!

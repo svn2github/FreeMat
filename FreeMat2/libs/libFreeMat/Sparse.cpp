@@ -12,7 +12,7 @@ namespace FreeMat {
   template <class T>
   void DecompressComplexString(const T* src, T* dst, int count) {
     int i=0;
-    int n=0;
+    int n=1;
     int j;
     while (i<2*count) {
       if ((src[n] != 0) || (src[n+1] != 0)) {
@@ -46,10 +46,11 @@ namespace FreeMat {
 	while ((i<count) && (src[2*i] == 0) && (src[2*i+1] == 0)) i++;
       }
     }
-    T* dp = new T[outlen];
+    T* dp = new T[outlen+1];
+    dp[0] = outlen;
     j = 0;
     i = 0;
-    outlen = 0;
+    outlen = 1;
     while (i<count) {
       if ((src[2*i] != 0) || (src[2*i+1] != 0)) {
 	dp[outlen] = src[2*i];
@@ -74,7 +75,7 @@ namespace FreeMat {
   template <class T>
   void DecompressRealString(const T* src, T* dst, int count) {
     int i=0;
-    int n=0;
+    int n=1;
     int j;
     while (i<count) {
       if (src[n] != 0) {
@@ -105,10 +106,11 @@ namespace FreeMat {
 	while ((i<count) && (src[i] == 0)) i++;
       }
     }
-    T* dp = new T[outlen];
+    T* dp = new T[outlen+1];
+    dp[0] = outlen;
     j = 0;
     i = 0;
-    outlen = 0;
+    outlen = 1;
     while (i<count) {
       if (src[i] != 0) {
 	dp[outlen] = src[i];
@@ -298,18 +300,31 @@ namespace FreeMat {
     return dp;
   }
 
+  template <class T>
+  void* CopySparseMatrix(T** src, int rows, int cols) {
+    T** dp;
+    dp = new T*[cols];
+    int i;
+    for (i=0;i<cols;i++) {
+      dp[i] = new T[(int)(src[i][0]+1)];
+      memcpy(dp[i],src[i],sizeof(T)*((int)(src[i][0]+1)));
+    }
+    return dp;
+  }
+
+
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
     switch (dclass) {
     case FM_INT32:
-      return CopySparseMatrixReal<int32>((int32**)cp,rows,cols);
+      return CopySparseMatrix<int32>((int32**)cp,rows,cols);
     case FM_FLOAT:
-      return CopySparseMatrixReal<float>((float**)cp,rows,cols);
+      return CopySparseMatrix<float>((float**)cp,rows,cols);
     case FM_DOUBLE:
-      return CopySparseMatrixReal<double>((double**)cp,rows,cols);
+      return CopySparseMatrix<double>((double**)cp,rows,cols);
     case FM_COMPLEX:
-      return CopySparseMatrixComplex<float>((float**)cp,rows,cols);
+      return CopySparseMatrix<float>((float**)cp,rows,cols);
     case FM_DCOMPLEX:
-      return CopySparseMatrixComplex<double>((double**)cp,rows,cols);
+      return CopySparseMatrix<double>((double**)cp,rows,cols);
     }
   }
 

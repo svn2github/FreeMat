@@ -574,7 +574,7 @@ namespace FreeMat {
 			 dp->sparse,dp->fieldNames);
       } else {
 	dp = dp->putData(dp->dataClass,dp->dimensions,
-			 copySparseMatrix(dp->dataClass,
+			 CopySparseMatrix(dp->dataClass,
 					  dp->dimensions[0],
 					  dp->dimensions[1],
 					  dp->getData()),
@@ -2117,8 +2117,10 @@ break;
       // Convert the indexing variables into an ordinal type.
       // We don't catch any exceptions - let them propogate up the
       // call chain.
-      for (i=0;i<L;i++)
+      for (i=0;i<L;i++) {
+	if (index[i].isEmpty()) return Array::emptyConstructor();
 	index[i].toOrdinalType();
+      }
       // Set up data pointers
       indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
       // Calculate the size of the output.
@@ -2448,8 +2450,10 @@ break;
       int L = index.size();
       int i;
       // Convert the indexing variables into an ordinal type.
-      for (i=0;i<L;i++)
+      for (i=0;i<L;i++){
+	if (index[i].isEmpty()) return;
 	index[i].toOrdinalType();
+      }
       // Check to see if any of the index variables are empty - 
       bool anyEmpty = false;
       for (i=0;i<L;i++)
@@ -2836,8 +2840,10 @@ break;
   void Array::makeDense() {
     if (!isSparse())
       return;
-    if (isEmpty())
+    if (isEmpty()) {
       dp->sparse = false;
+      return;
+    }
     dp = dp->putData(dp->dataClass,dp->dimensions,
 		     makeDenseArray(dp->dataClass,
 				    dp->dimensions[0],

@@ -65,6 +65,7 @@ namespace FreeMat {
 
   //!
   //@Module SETPRINTLIMIT Set Limit For Printing Of Arrays
+  //@@Section IO
   //@@Usage
   //Changes the limit on how many elements of an array are printed
   //using either the @|disp| function or using expressions on the
@@ -93,6 +94,7 @@ namespace FreeMat {
 
   //!
   //@Module GETPRINTLIMIT Get Limit For Printing Of Arrays
+  //@@Section IO
   //@@Usage
   //Returns the limit on how many elements of an array are printed
   //using either the @|disp| function or using expressions on the
@@ -200,6 +202,7 @@ namespace FreeMat {
 
   //!
   //@Module FOPEN File Open Function
+  //@@Section IO
   //@@Usage
   //Opens a file and returns a handle which can be used for subsequent
   //file manipulations.  The general syntax for its use is
@@ -341,6 +344,7 @@ namespace FreeMat {
 
   //!
   //@Module FCLOSE File Close Function
+  //@@Section IO
   //@@Usage
   //Closes a file handle, or all open file handles.  The general syntax
   //for its use is either
@@ -387,6 +391,7 @@ namespace FreeMat {
 
   //!
   //@Module FREAD File Read Function
+  //@@Section IO
   //@@Usage
   //Reads a block of binary data from the given file handle into a variable
   //of a given shape and precision.  The general use of the function is
@@ -508,6 +513,7 @@ namespace FreeMat {
 
   //!
   //@Module FWRITE File Write Function
+  //@@Section IO
   //@@Usage
   //Writes an array to a given file handle as a block of binary (raw) data.
   //The general use of the function is
@@ -557,6 +563,7 @@ namespace FreeMat {
 
   //!
   //@Module FTELL File Position Function
+  //@@Section IO
   //@@Usage
   //Returns the current file position for a valid file handle.
   //The general use of this function is
@@ -594,6 +601,7 @@ namespace FreeMat {
 
   //!
   //@Module FEOF End Of File Function
+  //@@Section IO
   //@@Usage
   //Check to see if we are at the end of the file.  The usage is
   //@[
@@ -635,6 +643,7 @@ namespace FreeMat {
   
   //!
   //@Module FSEEK Seek File To A Given Position
+  //@@Section IO
   //@@Usage
   //Moves the file pointer associated with the given file handle to 
   //the specified offset (in bytes).  The usage is
@@ -756,6 +765,7 @@ namespace FreeMat {
     
   //!
   //@Module SPRINTF Formated String Output Function (C-Style)
+  //@@Section IO
   //@@Usage
   //Prints values to a string.  The general syntax for its use is
   //@[
@@ -874,6 +884,7 @@ namespace FreeMat {
   
   //!
   //@Module PRINTF Formated Output Function (C-Style)
+  //@@Section IO
   //@@Usage
   //Prints values to the output.  The general syntax for its use is
   //@[
@@ -1037,6 +1048,7 @@ namespace FreeMat {
 
   //!
   //@Module FGETLINE Read a String from a File
+  //@@Section IO
   //@@Usage
   //Reads a string from a file.  The general syntax for its use
   //is
@@ -1080,6 +1092,7 @@ namespace FreeMat {
 
   //!
   //@Module STR2NUM Convert a String to a Number
+  //@@Section IO
   //@@Usage
   //Converts a string to a number.  The general syntax for its use
   //is
@@ -1105,6 +1118,7 @@ namespace FreeMat {
 
   //!
   //@Module FSCANF Formatted File Input Function (C-Style)
+  //@@Section IO
   //@@Usage
   //Reads values from a file.  The general syntax for its use is
   //@[
@@ -1254,6 +1268,7 @@ namespace FreeMat {
 
   //!
   //@Module FPRINTF Formated File Output Function (C-Style)
+  //@@Section IO
   //@@Usage
   //Prints values to a file.  The general syntax for its use is
   //@[
@@ -1347,6 +1362,7 @@ namespace FreeMat {
 
   //!
   //@Module SAVE Save Variables To A File
+  //@@Section IO
   //@@Usage
   //Saves a set of variables to a file in a machine independent format.
   //There are two formats for the function call.  The first is the explicit
@@ -1425,6 +1441,7 @@ namespace FreeMat {
 
   //!
   //@Module LOAD Load Variables From A File
+  //@@Section IO
   //@@Usage
   //Loads a set of variables from a file in a machine independent format.
   //The @|load| function takes one argument:

@@ -3139,6 +3139,61 @@ namespace FreeMat {
     return Cmat;
   }
 
+  template <class T>
+  float** SparseOnesFuncReal(int rows, int cols, const T** Amat) {
+    float** Cmat;
+    Cmat = new float*[cols];
+    float* buffer = new float[rows*2];
+    for (int i=0;i<cols;i++) {
+      RLEDecoder<T> A(Amat[i],rows);
+      RLEEncoder<float> C(buffer,rows);
+      A.update();
+      while (A.more()) {
+	C.set(A.row());
+	C.push(1.0f);
+	A.advance();
+      }
+      C.end();
+      Cmat[i] = C.copyout();
+    }
+    return Cmat;
+  }
+
+  template <class T>
+  float** SparseOnesFuncComplex(int rows, int cols, const T** Amat) {
+    float** Cmat;
+    Cmat = new float*[cols];
+    float* buffer = new float[rows*2];
+    for (int i=0;i<cols;i++) {
+      RLEDecoderComplex<T> A(Amat[i],rows);
+      RLEEncoder<float> C(buffer,rows);
+      A.update();
+      while (A.more()) {
+	C.set(A.row());
+	C.push(1.0f);
+	A.advance();
+      }
+      C.end();
+      Cmat[i] = C.copyout();
+    }
+    return Cmat;
+  }
+
+
+  void* SparseOnesFunc(Class dclass, int Arows, int Acols, const void *Ap) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseOnesFuncReal<int32>(Arows,Acols,(const int32**)Ap);
+    case FM_FLOAT:
+      return SparseOnesFuncReal<float>(Arows,Acols,(const float**)Ap);
+    case FM_DOUBLE:
+      return SparseOnesFuncReal<double>(Arows,Acols,(const double**)Ap);
+    case FM_COMPLEX:
+      return SparseOnesFuncComplex<float>(Arows,Acols,(const float**)Ap);
+    case FM_DCOMPLEX:
+      return SparseOnesFuncComplex<double>(Arows,Acols,(const double**)Ap);
+    }
+  }
 
   void* SparseScalarMultiply(Class dclass, const void *ap, int rows, int cols,
 			     const void *bp) {
@@ -3533,6 +3588,8 @@ namespace FreeMat {
   ArrayVector SparseLUDecompose(int nargout, Array A) {
     if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
       throw Exception("FreeMat currently only supports the LU decomposition for double and dcomplex matrices");
+    if (A.getDataClass() < FM_FLOAT)
+      A.promoteType(FM_DOUBLE);
     int Arows;
     int Acols;
     Arows = A.getDimensionLength(0);

@@ -29,6 +29,7 @@
 namespace FreeMat {
   //!
   //@Module COS Trigonometric Cosine Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|cos| function for its argument.  The general
   //syntax for its use is
@@ -127,6 +128,7 @@ namespace FreeMat {
 
   //!
   //@Module SIN Trigonometric Sine Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|sin| function for its argument.  The general
   //syntax for its use is
@@ -225,6 +227,7 @@ namespace FreeMat {
 
   //!
   //@Module TAN Trigonometric Tangent Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|tan| function for its argument.  The general
   //syntax for its use is
@@ -331,6 +334,7 @@ namespace FreeMat {
 
   //!
   //@Module CSC Trigonometric Cosecant Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|csc| function for its argument.  The general
   //syntax for its use is
@@ -431,6 +435,7 @@ namespace FreeMat {
 
   //!
   //@Module SEC Trigonometric Secant Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|sec| function for its argument.  The general
   //syntax for its use is
@@ -531,6 +536,7 @@ namespace FreeMat {
 
   //!
   //@Module COT Trigonometric Cotangent Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|cot| function for its argument.  The general
   //syntax for its use is
@@ -633,6 +639,7 @@ namespace FreeMat {
 
   //!
   //@Module ACOS Inverse Trigonometric Arccosine Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|acos| function for its argument.  The general
   //syntax for its use is
@@ -827,6 +834,7 @@ namespace FreeMat {
 
   //!
   //@Module ASIN Inverse Trigonometric Arcsine Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|asin| function for its argument.  The general
   //syntax for its use is
@@ -1021,6 +1029,7 @@ namespace FreeMat {
 
   //!
   //@Module ATAN Inverse Trigonometric Arctangent Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|atan| function for its argument.  The general
   //syntax for its use is
@@ -1153,6 +1162,7 @@ namespace FreeMat {
 
   //!
   //@Module ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|atan2| function for its argument.  The general
   //syntax for its use is

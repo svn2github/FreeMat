@@ -40,6 +40,7 @@
 namespace FreeMat {
   //!
   //@Module DISP Display a Variable or Expression
+  //@@Section IO
   //@@Usage
   //Displays the result of a set of expressions.  The @|disp| function
   //takes a variable number of arguments, each of which is an expression
@@ -73,6 +74,7 @@ namespace FreeMat {
 
   //!
   //@Module SPARSE Construct a Sparse Matrix
+  //@@Section SPARSE
   //@@Usage
   //Creates a sparse matrix using one of several formats.  The 
   //first creates a sparse matrix from a full matrix
@@ -219,6 +221,27 @@ namespace FreeMat {
     throw Exception("unrecognized form of sparse - see help for the allowed forms of sparse");
   }
 
+  //!
+  //@Module FULL Convert Sparse Matrix to Full Matrix
+  //@@Section SPARSE
+  //@@Usage
+  //Converts a sparse matrix to a full matrix.  The syntax for
+  //its use is
+  //@[
+  //   y = full(x)
+  //@]
+  //The type of @|x| is preserved.  Be careful with the function.
+  //As a general rule of thumb, if you can work with the @|full|
+  //representation of a function, you probably do not need the
+  //sparse representation.
+  //@@Example
+  //Here we convert a full matrix to a sparse one, and back again.
+  //@<
+  //a = [1,0,4,2,0;0,0,0,0,0;0,1,0,0,2]
+  //A = sparse(a)
+  //full(A)
+  //@>
+  //!
   ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw("Need one argument to full function");
@@ -228,6 +251,51 @@ namespace FreeMat {
     return singleArrayVector(r);
   }
 
+  //!
+  //@Module LU LU Decomposition for Matrices
+  //@@Section TRANSFORMS
+  //@@Usage
+  //Computes the LU decomposition for a matrix.  The form of the
+  //command depends on the type of the argument.  For full (non-sparse)
+  //matrices, the primary form for @|lu| is
+  //@[
+  //   [L,U,P] = lu(A),
+  //@]
+  //where @|L| is lower triangular, @|U| is upper triangular, and
+  //@|P| is a permutation matrix such that @|L*U = P*A|.  The second form is
+  //@[
+  //   [V,U] = lu(A),
+  //@]
+  //where @|V| is @|P'*L| (a row-permuted lower triangular matrix), 
+  //and @|U| is upper triangular.  For sparse, square matrices,
+  //the LU decomposition has the following form:
+  //@[
+  //   [L,U,P,Q,R] = lu(A),
+  //@]
+  //where @|A| is a sparse matrix of either @|double| or @|dcomplex| type.
+  //The matrices are such that @|L*U=P*R*A*Q|, where @|L| is a lower triangular
+  //matrix, @|U| is upper triangular, @|P| and @|Q| are permutation vectors
+  //and @|R| is a diagonal matrix of row scaling factors.  The decomposition
+  // is computed using UMFPACK for sparse matrices, and LAPACK for dense
+  // matrices.
+  //@@Example
+  //First, we compute the LU decomposition of a dense matrix.
+  //@<
+  //a = float([1,2,3;4,5,8;10,12,3])
+  //[l,u,p] = lu(a)
+  //l*u
+  //p*a
+  //@>
+  //Now we repeat the exercise with a sparse matrix, and demonstrate
+  //the use of the permutation vectors.
+  //@<
+  //a = sparse([1,0,0,4;3,2,0,0;0,0,0,1;4,3,2,4])
+  //[l,u,p,q,r] = lu(a)
+  //full(l*a)
+  //b = R*a
+  //full(b(P,Q))
+  //@>
+  //!
   ArrayVector LUFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 1)
       throw Exception("lu function requires at least one argument - the matrix to decompose.");
@@ -248,11 +316,24 @@ namespace FreeMat {
 
   //!
   //@Module GETLINE Get a Line of Input from User
+  //@@Section IO
   //@@Usage
-  //Reads a line (as a string).
+  //Reads a line (as a string) from the user.  This function has
+  //two syntaxes.  The first is 
+  //@[
+  //  a = getline(prompt)
+  //@]
+  //where @|prompt| is a prompt supplied to the user for the query.
+  //The second syntax omits the @|prompt| argument:
   //@[
   //  a = getline
   //@]
+  //Note that this function requires command line input, i.e., it 
+  //will only operate correctly for programs or scripts written
+  //to run inside the FreeMat GUI environment or from the X11 terminal.
+  //If you build a stand-alone application and expect it to operate 
+  //cross-platform, do not use this function (unless you include
+  //the FreeMat console in the final application).
   //!
   ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     char *prompt, *text;
@@ -302,6 +383,7 @@ namespace FreeMat {
   }
   //!
   //@Module EIG Eigendecomposition of a Matrix
+  //@@Section TRANFORMS
   //@@Usage
   //Computes the eigendecomposition of a square matrix.  The @|eig| function
   //has several forms.  The first returns only the eigenvalues of the matrix:
@@ -470,6 +552,69 @@ namespace FreeMat {
   }
 
 
+  //!
+  //@Module EIGS Sparse Matrix Eigendecomposition
+  //@@Section SPARSE
+  //@@Usage
+  //Computes the eigendecomsition of a sparse square matrix.  The
+  //@|eigs| function has several forms.  The most general form is
+  //@[
+  //  [V,D] = eigs(A,k,sigma)
+  //@]
+  //where @|A| is the matrix to analyze, @|k| is the number of
+  //eigenvalues to compute and @|sigma| determines which eigenvallues
+  //to solve for.  Valid values for @|sigma| are
+  //   'lm' - largest magnitude 
+  //   'sm' - smallest magnitude
+  //   'la' - largest algebraic (for real symmetric problems)
+  //   'sa' - smallest algebraic (for real symmetric problems)
+  //   'be' - both ends (for real symmetric problems)
+  //   'lr' - largest real part 
+  //   'sr' - smallest real part
+  //   'li' - largest imaginary part
+  //   'si' - smallest imaginary part
+  // scalar - find the eigenvalues closest to @|sigma|.
+  //The returned matrix @|V| contains the eigenvectors, and @|D|
+  //stores the eigenvalues.  The related form
+  //@[
+  //   d = eigs(A,k,sigma)
+  //@]
+  //computes only the eigenvalues and not the eigenvectors.  If @|sigma|
+  //is omitted, as in the forms
+  //@[
+  //  [V,D] = eigs(A,k)
+  //@]
+  //and
+  //@[
+  //  d = eigs(A,k)
+  //@]
+  //then @|eigs| returns the largest magnitude eigenvalues (and optionally
+  //the associated eigenvectors).  As an even simpler form, the forms
+  //@[
+  //  [V,D] = eigs(A)
+  //@]
+  //and
+  //@[
+  //  d = eigs(A)
+  //@]
+  //then @|eigs| returns the six largest magnitude eigenvalues of @|A| and
+  //optionally the eigenvectors.  The @|eigs| function uses ARPACK to
+  //compute the eigenvectors and/or eigenvalues.
+  //@@Example
+  //Here is an example of using @|eigs| to calculate eigenvalues
+  //of a matrix, and a comparison of the results with @|eig|
+  //@<
+  //a = sparse(rand(9))
+  //eigs(a)
+  //eig(full(a))
+  //@>
+  //Next, we exercise some of the variants of @|eigs|:
+  //@<
+  //eigs(a,4,'sm')
+  //eigs(a,4,'lr')
+  //eigs(a,4,'sr')
+  //@>
+  //!
   ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() == 0)
       throw Exception("eigs function requires at least one argument");
@@ -865,6 +1010,7 @@ namespace FreeMat {
 
   //!
   //@Module QR QR Decomposition of a Matrix
+  //@@Section TRANSFORMS
   //@@Usage
   //Computes the QR factorization of a matrix.  The @|qr| function has
   //multiple forms, with and without pivoting.  The non-pivot version
@@ -942,6 +1088,7 @@ namespace FreeMat {
 
   //!
   //@Module SVD Singular Value Decomposition of a Matrix
+  //@@Section TRANSFORMS
   //@@Usage
   //Computes the singular value decomposition (SVD) of a matrix.  The 
   //@|svd| function has three forms.  The first returns only the singular
@@ -1260,6 +1407,7 @@ namespace FreeMat {
 
   //!
   //@Module LASTERR Retrieve Last Error Message
+  //@@Section FLOW
   //@@Usage
   //Either returns or sets the last error message.  The
   //general syntax for its use is either
@@ -1300,6 +1448,7 @@ namespace FreeMat {
 
   //!
   //@Module SLEEP Sleep For Specified Number of Seconds
+  //@@Section FREEMAT
   //@@Usage
   //Suspends execution of FreeMat for the specified number
   //of seconds.  The general syntax for its use is
@@ -1324,6 +1473,7 @@ namespace FreeMat {
 
   //!
   //@Module DIAG Diagonal Matrix Construction/Extraction
+  //@@Section ARRAY
   //@@Usage
   //The @|diag| function is used to either construct a 
   //diagonal matrix from a vector, or return the diagonal
@@ -1387,6 +1537,7 @@ namespace FreeMat {
 
   //!
   //@Module ISEMPTY Test For Variable Empty
+  //@@Section INSPECTION
   //@@Usage
   //The @|isempty| function returns a boolean that indicates
   //if the argument variable is empty or not.  The general
@@ -1417,7 +1568,42 @@ namespace FreeMat {
   }
 
   //!
+  //@Module SPONES Sparse Ones Function
+  //@@Section SPARSE
+  //@@Usage
+  //Returns a sparse @|float| matrix with ones where the argument
+  //matrix has nonzero values.  The general syntax for it is
+  //@[
+  //  y = spones(x)
+  //@]
+  //where @|x| is a matrix (it may be full or sparse).  The output
+  //matrix @|y| is the same size as @|x|, has type @|float|, and contains
+  //ones in the nonzero positions of @|x|.
+  //@@Examples
+  //Here are some examples of the @|spones| function
+  //@<
+  //a = [1,0,3,0,5;0,0,2,3,0;1,0,0,0,1]
+  //b = spones(a)
+  //full(b)
+  //@>
+  //!
+  ArrayVector SponesFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 1)
+      throw Exception("spones function requires a sparse matrix template argument");
+    Array tmp(arg[0]);
+    if (tmp.isEmpty())
+      return singleArrayVector(Array::emptyConstructor());
+    if(tmp.isReferenceType())
+      throw Exception("spones function requires a numeric sparse matrix argument");
+    tmp.makeSparse();
+    if (!tmp.isSparse())
+      throw Exception("spones function requires a sparse matrix template argument");
+    return singleArrayVector(Array::Array(FM_FLOAT,Dimensions(tmp.getDimensionLength(0),tmp.getDimensionLength(1)),SparseOnesFunc(tmp.getDataClass(),tmp.getDimensionLength(0),tmp.getDimensionLength(1),tmp.getSparseDataPointer()),true));
+  }
+
+  //!
   //@Module ERROR Causes an Error Condition Raised
+  //@@Section FLOW
   //@@Usage
   //The @|error| function causes an error condition (exception
   //to be raised).  The general syntax for its use is
@@ -1460,54 +1646,9 @@ namespace FreeMat {
     throw Exception(arg[0].getContentsAsCString());
   }
 
-
-//   ArrayVector PrintStats(int nargout, const ArrayVector& arg) {
-//     printObjectBalance();
-//     printExceptionCount();
-//     ArrayVector retval;
-//     return retval;
-//   }
-
-//   ArrayVector PrintArrays(int nargout, const ArrayVector& arg) {
-//     dumpAllArrays();
-//     ArrayVector retval;
-//     return retval;
-//   }
-
-//   ArrayVector TestFunction(int nargout, const ArrayVector& arg) {
-//     if (arg.size() != 1)
-//       throw Exception("test function requires exactly one argument");
-//     ArrayVector retval;
-//     Array A(arg[0]);
-//     bool alltrue = true;
-//     if (A.isEmpty())
-//       alltrue = false;
-//     else {
-//       A.promoteType(FM_LOGICAL);
-//       const logical* dp = (const logical *) A.getDataPointer();
-//       int length = A.getLength();
-//       int i = 0;
-//       while (alltrue && (i<length)) {
-// 	alltrue &= (dp[i]);
-// 	i++;
-//       }
-//     }
-//     retval.push_back(Array::logicalConstructor(alltrue));
-//     return retval;
-//   }
-
-//   ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
-//     ArrayVector retval;
-// #ifndef WIN32
-//     retval.push_back(Array::uint32Constructor(clock()));
-// #else
-// 	throw Exception("Clock function not available under win32");
-// #endif
-//     return retval;
-//   }
-
   //!
   //@Module EVAL Evaluate a String
+  //@@Section FREEMAT
   //@@Usage
   //The @|eval| function evaluates a string.  The general syntax
   //for its use is
@@ -1540,6 +1681,7 @@ namespace FreeMat {
   
   //!
   //@Module SOURCE Execute an Arbitrary File
+  //@@Section FREEMAT
   //@@Usage
   //The @|source| function executes the contents of the given
   //filename one line at a time (as if it had been typed at
@@ -1600,6 +1742,7 @@ namespace FreeMat {
 
   //!
   //@Module FEVAL Evaluate a Function
+  //@@Section FREEMAT
   //@@Usage
   //The @|feval| function executes a function using its name.
   //The syntax of @|feval| is
@@ -1637,6 +1780,7 @@ namespace FreeMat {
 
   //!
   //@Module REPMAT Array Replication Function
+  //@@Section ARRAY
   //@@Usage
   //The @|repmat| function replicates an array the specified
   //number of times.  The source and destination arrays may
@@ -1761,6 +1905,7 @@ namespace FreeMat {
 
   //!
   //@Module SYSTEM Call an External Program
+  //@@Section OS
   //@@Usage
   //The @|system| function allows you to call an external
   //program from within FreeMat, and capture the output.

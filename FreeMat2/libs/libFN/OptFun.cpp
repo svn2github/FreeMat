@@ -47,6 +47,7 @@ void lmdif1_(fcnptr, int*m, int*n, double*x, double*fvec, double*tol,
 namespace FreeMat {
   //!
   //@Module FITFUN Fit a Function
+  //@@Section CURVEFIT
   //@@Usage
   //Fits @|n| (non-linear) functions of @|m| variables using least squares
   //and the Levenberg-Marquardt algorithm.  The general syntax for its usage

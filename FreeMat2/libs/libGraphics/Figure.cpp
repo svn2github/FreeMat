@@ -191,6 +191,7 @@ namespace FreeMat {
 
   //!
   //@Module PRINT Print a Figure To A File
+  //@@Section FIGURE
   //@@Usage
   //This function ``prints'' the currently active fig to a file.  The 
   //generic syntax for its use is
@@ -435,6 +436,7 @@ namespace FreeMat {
 
   //!
   //@Module SIZEFIG Set Size of an Fig Window
+  //@@Section FIGURE
   //@@Usage
   //The @|sizefig| function changes the size of the currently
   //selected fig window.  The general syntax for its use is
@@ -470,6 +472,7 @@ namespace FreeMat {
 
   //!
   //@Module FIGURE Figure Window Select and Create Function
+  //@@Section FIGURE
   //@@Usage
   //Changes the active figure window to the specified handle 
   //(or figure number).  The general syntax for its use is 
@@ -497,6 +500,7 @@ namespace FreeMat {
   
   //!
   //@Module COPY Copy Figure Window
+  //@@Section FIGURE
   //@@Usage
   //Copies the currently active figure window to the clipboard on 
   //Windows systems.  The syntax for its use is:
@@ -515,6 +519,7 @@ namespace FreeMat {
 
   //!
   //@Module CLOSE Close Figure Window
+  //@@Section FIGURE
   //@@Usage
   //Closes a figure window, either the currently active window, a 
   //window with a specific handle, or all figure windows.  The general

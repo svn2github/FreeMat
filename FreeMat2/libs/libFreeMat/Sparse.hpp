@@ -97,5 +97,7 @@ namespace FreeMat {
   ArrayVector SparseLUDecompose(int nargout, Array A);
   ArrayVector SparseEigDecompose(int nargout, Array A, int k, char* whichFlag);
   ArrayVector SparseEigDecomposeShifted(int nargout, Array A, int k, double shift[2]);
+  // Test 81
+  void* SparseOnesFunc(Class dclass, int Arows, int Acols, const void *Ap);
 }
 #endif

@@ -49,6 +49,7 @@ extern "C" {
 namespace FreeMat {
   //!
   //@Module EXPEI Exponential Weighted Integral Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the exponential weighted integral function for real arguments.  The @|expei|
   //function takes only a single argument
@@ -105,6 +106,7 @@ namespace FreeMat {
 
   //!
   //@Module EONE Exponential Integral Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the exponential integral function for real arguments.  The @|eone|
   //function takes only a single argument
@@ -161,6 +163,7 @@ namespace FreeMat {
 
   //!
   //@Module EI Exponential Integral Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the exponential integral function for real arguments.  The @|ei|
   //function takes only a single argument
@@ -217,6 +220,7 @@ namespace FreeMat {
 
   //!
   //@Module ERFCX Complimentary Weighted Error Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the complimentary error function for real arguments.  The @|erfcx|
   //function takes only a single argument
@@ -274,6 +278,7 @@ namespace FreeMat {
 
   //!
   //@Module ERFC Complimentary Error Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the complimentary error function for real arguments.  The @|erfc|
   //function takes only a single argument
@@ -331,6 +336,7 @@ namespace FreeMat {
 
   //!
   //@Module ERF Error Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the error function for real arguments.  The @|erf|
   //function takes only a single argument
@@ -388,6 +394,7 @@ namespace FreeMat {
 
   //!
   //@Module DAWSON Dawson Integral Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the dawson function for real arguments.  The @|dawson|
   //function takes only a single argument
@@ -444,6 +451,7 @@ namespace FreeMat {
   
   //!
   //@Module PSI Psi Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the psi function for real arguments.  The @|psi|
   //function takes only a single argument
@@ -511,6 +519,7 @@ namespace FreeMat {
   
   //!
   //@Module GAMMA Gamma Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the gamma function for real arguments.  The @|gamma|
   //function takes only a single argument
@@ -583,6 +592,7 @@ namespace FreeMat {
 
   //!
   //@Module GAMMALN Log Gamma Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the natural log of the gamma function for real arguments.  The @|gammaln|
   //function takes only a single argument

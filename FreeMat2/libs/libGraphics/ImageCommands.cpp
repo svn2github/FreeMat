@@ -42,6 +42,7 @@ namespace FreeMat {
 
   //!
   //@Module COLORMAP Image Colormap Function
+  //@@Section IMAGE
   //@@Usage
   //Changes the colormap used for the display of the indexed (scalar) images in
   //the currently active image window.  The generic syntax for its use is
@@ -159,6 +160,7 @@ namespace FreeMat {
 
   //!
   //@Module WINLEV Image Window-Level Function
+  //@@Section IMAGE
   //@@Usage
   //Adjusts the data range used to map the current image to the current
   //colormap.  The general syntax for its use is
@@ -254,6 +256,7 @@ namespace FreeMat {
 
   //!
   //@Module IMAGE Image Display Function
+  //@@Section IMAGE
   //@@Usage
   //Displays a scalar (grayscale or colormapped) image on the 
   //currently active image window.  The general syntax for its use is
@@ -313,6 +316,7 @@ namespace FreeMat {
 
   //!
   //@Module ZOOM Image Zoom Function
+  //@@Section IMAGE
   //@@Usage
   //This function changes the zoom factor associated with the currently active
   //image.  The generic syntax for its use is
@@ -404,6 +408,7 @@ namespace FreeMat {
   
   //!
   //@Module POINT Image Point Information Function
+  //@@Section IMAGE
   //@@Usage
   //Returns information about the currently displayed image based on a use
   //supplied mouse-click.  The general syntax for its use is

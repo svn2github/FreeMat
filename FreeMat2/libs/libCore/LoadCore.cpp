@@ -143,6 +143,9 @@ namespace FreeMat {
      args.push_back("x");
      context->addFunction("IsNaN",IsNaNFunction,1,1,args);
      context->addFunction("isnan",IsNaNFunction,1,1,args);
+     context->addFunction("issparse",IsSparseFunction,1,1,args);
+     context->addFunction("nnz",NNZFunction,1,1,args);
+     context->addFunction("spones",SponesFunction,1,1,args);
      args.clear();
      args.push_back("x");
      context->addFunction("IsInf",IsInfFunction,1,1,args);

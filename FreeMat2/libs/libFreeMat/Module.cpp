@@ -33,6 +33,7 @@ namespace FreeMat {
 
   //!
   //@Module LOADLIB Load Library Function
+  //@@Section FREEMAT
   //@@Usage
   //The @|loadlib| function allows a function in an external library
   //to be added to FreeMat dynamically.  This interface is generally
@@ -190,6 +191,7 @@ namespace FreeMat {
 
   //!
   //@Module IMPORT Foreign Function Import
+  //@@Section FREEMAT
   //@@Usage
   //The import function allows you to call functions that are compiled into
   //shared libraries, as if they were FreeMat functions. The usage is

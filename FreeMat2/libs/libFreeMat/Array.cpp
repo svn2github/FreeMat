@@ -3684,6 +3684,63 @@ break;
     return (cls == FM_CELL_ARRAY || cls == FM_STRUCT_ARRAY);
   }
 
+  template <class T>
+  int32 DoCountNNZReal(const void* dp, int len) {
+    int32 accum = 0;
+    const T* cp = (const T*) dp;
+    for (int i=0;i<len;i++)
+      if (cp[i]) accum++;
+    return accum;
+  }
+
+  template <class T>
+  int32 DoCountNNZComplex(const void* dp, int len) {
+    int32 accum = 0;
+    const T* cp = (const T*) dp;
+    for (int i=0;i<len;i++)
+      if (cp[2*i] || cp[2*i+1]) accum++;
+    return accum;
+  }
+
+  int32 Array::nnz() {
+    if (isEmpty()) return 0;
+    if (isSparse())
+      return CountNonzeros(dp->dataClass,
+			   getDimensionLength(0),
+			   getDimensionLength(1),
+			   dp->getData());
+    // OK - its not sparse... now what?
+    switch (dp->dataClass) {
+    case FM_LOGICAL:
+      return DoCountNNZReal<logical>(dp->getData(),getLength());
+    case FM_INT8:
+      return DoCountNNZReal<int8>(dp->getData(),getLength());
+    case FM_UINT8:
+    case FM_STRING:
+      return DoCountNNZReal<uint8>(dp->getData(),getLength());
+    case FM_INT16:
+      return DoCountNNZReal<int16>(dp->getData(),getLength());
+    case FM_UINT16:
+      return DoCountNNZReal<uint16>(dp->getData(),getLength());
+    case FM_INT32:
+      return DoCountNNZReal<int32>(dp->getData(),getLength());
+    case FM_UINT32:
+      return DoCountNNZReal<uint32>(dp->getData(),getLength());
+    case FM_FLOAT:
+      return DoCountNNZReal<float>(dp->getData(),getLength());
+    case FM_DOUBLE:
+      return DoCountNNZReal<double>(dp->getData(),getLength());
+    case FM_COMPLEX:
+      return DoCountNNZComplex<float>(dp->getData(),getLength());
+    case FM_DCOMPLEX:
+      return DoCountNNZComplex<double>(dp->getData(),getLength());
+    case FM_CELL_ARRAY:
+      return DoCountNNZReal<void*>(dp->getData(),getLength());
+    case FM_STRUCT_ARRAY:
+      return DoCountNNZReal<void*>(dp->getData(),getLength()*dp->fieldNames.size());
+    }
+  }
+
   bool Array::anyNotFinite() {
     if (isSparse())
       return SparseAnyNotFinite(dp->dataClass,

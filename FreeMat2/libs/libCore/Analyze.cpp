@@ -698,6 +698,7 @@ namespace FreeMat {
 
   //!
   //@Module MIN Minimum Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the minimum of an array along a given dimension, or alternately, 
   //computes two arrays (entry-wise) and keeps the smaller value for each array.
@@ -1079,6 +1080,7 @@ namespace FreeMat {
 
   //!
   //@Module MAX Maximum Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the maximum of an array along a given dimension, or alternately, 
   //computes two arrays (entry-wise) and keeps the smaller value for each array.
@@ -1305,6 +1307,7 @@ namespace FreeMat {
 
   //!
   //@Module CEIL Ceiling Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the ceiling of an n-dimensional array elementwise.  The
   //ceiling of a number is defined as the smallest integer that is
@@ -1387,6 +1390,7 @@ namespace FreeMat {
 
   //!
   //@Module FLOOR Floor Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the floor of an n-dimensional array elementwise.  The
   //floor of a number is defined as the smallest integer that is
@@ -1469,6 +1473,7 @@ namespace FreeMat {
 
   //!
   //@Module CUMSUM Cumulative Summation Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the cumulative sum of an n-dimensional array along a given
   //dimension.  The general syntax for its use is
@@ -1596,6 +1601,7 @@ namespace FreeMat {
 
   //!
   //@Module SUM Sum Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the summation of an array along a given dimension.  The general
   //syntax for its use is
@@ -1727,6 +1733,7 @@ namespace FreeMat {
 
   //!
   //@Module MEAN Mean Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the mean of an array along a given dimension.  The general
   //syntax for its use is
@@ -1851,6 +1858,7 @@ namespace FreeMat {
 
   //!
   //@Module VAR Variance Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the variance of an array along a given dimension.  The general
   //syntax for its use is
@@ -1979,6 +1987,7 @@ namespace FreeMat {
 
   //!
   //@Module CONJ Conjugate Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Returns the complex conjugate of the input array for all elements.  The 
   //general syntax for its use is
@@ -2040,6 +2049,7 @@ namespace FreeMat {
 
   //!
   //@Module REAL Real Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Returns the real part of the input array for all elements.  The 
   //general syntax for its use is
@@ -2100,6 +2110,7 @@ namespace FreeMat {
 
   //!
   //@Module IMAG Imaginary Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Returns the imaginary part of the input array for all elements.  The 
   //general syntax for its use is
@@ -2167,6 +2178,7 @@ namespace FreeMat {
 
   //!
   //@Module ABS Absolute Value Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Returns the absolute value of the input array for all elements.  The 
   //general syntax for its use is
@@ -2287,6 +2299,7 @@ namespace FreeMat {
 
   //!
   //@Module PROD Product Function
+  //@@Section ELEMENTARY
   //@@Usage
   //Computes the product of an array along a given dimension.  The general
   //syntax for its use is
@@ -2412,6 +2425,7 @@ namespace FreeMat {
 
   //!
   //@Module INT2BIN Convert Integer Arrays to Binary
+  //@@Section ARRAY
   //@@Usage
   //Computes the binary decomposition of an integer array to the specified
   //number of bits.  The general syntax for its use is
@@ -2469,6 +2483,7 @@ namespace FreeMat {
 
   //!
   //@Module BIN2INT Convert Binary Arrays to Integer
+  //@@Section ARRAY
   //@@Usage
   //Converts the binary decomposition of an integer array back
   //to an integer array.  The general syntax for its use is
@@ -2533,6 +2548,7 @@ namespace FreeMat {
 
   //!
   //@Module PCODE Convert a Script or Function to P-Code
+  //@@Section FREEMAT
   //@@Usage
   //Writes out a script or function as a P-code function.
   //The general syntax for its use is:

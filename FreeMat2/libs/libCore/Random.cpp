@@ -30,6 +30,7 @@ namespace FreeMat {
 
   //!
   //@Module SEED Seed the Random Number Generator
+  //@@Section RANDOM
   //@@Usage
   //Seeds the random number generator using the given integer seeds.  
   //Changing the seed allows you to choose which pseudo-random
@@ -65,6 +66,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDBETA Beta Deviate Random Number Generator
+  //@@Section RANDOM
   //@@Usage
   //Creates an array of beta random deviates based on the supplied
   //two parameters. The general syntax for @|randbeta| is 
@@ -140,6 +142,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDI Uniformly Distributed Integer
+  //@@Section RANDOM
   //@@Usage
   //Generates an array of uniformly distributed integers between
   //the two supplied limits.  The general syntax for @|randi| is
@@ -192,6 +195,7 @@ namespace FreeMat {
   
   //!
   //@Module RANDCHI Generate Chi-Square Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates a vector of chi-square random variables with the
   //given number of degrees of freedom.  The general syntax for
@@ -250,6 +254,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDEXP Generate Exponential Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates a vector of exponential random variables with
   //the specified parameter.  The general syntax for its use is
@@ -291,6 +296,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDP Generate Poisson Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates a vector Poisson random variables with the given
   //parameters.  The general syntax for its use is
@@ -336,6 +342,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDBIN Generate Binomial Random Variables
+  //@@Section RANDOM
   //@@Usage
   //Generates random variables with a binomial distribution.
   //The general syntax for its use is
@@ -398,6 +405,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDNBIN Generate Negative Binomial Random Variables
+  //@@Section RANDOM
   //@@Usage
   //Generates random variables with a negative binomial distribution.
   //The general syntax for its use is
@@ -456,6 +464,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDF Generate F-Distributed Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates random variables with an F-distribution.  The general
   //syntax for its use is
@@ -522,6 +531,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDGAMMA Generate Gamma-Distributed Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates random variables with a gamma distribution.  The general
   //syntax for its use is
@@ -589,6 +599,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDMULTI Generate Multinomial-distributed Random Variables
+  //@@Section RANDOM
   //@@Usage
   //This function generates samples from a multinomial distribution
   //given the probability of each outcome.  The general syntax for
@@ -651,6 +662,7 @@ namespace FreeMat {
   
   //!
   //@Module RANDNCHI Generate Noncentral Chi-Square Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates a vector of non-central chi-square random variables
   //with the given number of degrees of freedom and the given
@@ -711,6 +723,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDNF Generate Noncentral F-Distribution Random Variable
+  //@@Section RANDOM
   //@@Usage
   //Generates a vector of non-central F-distributed random variables
   //with the specified parameters.  The general syntax for its use is
@@ -786,6 +799,7 @@ namespace FreeMat {
 
   //!
   //@Module RANDN Gaussian (Normal) Random Number Generator
+  //@@Section RANDOM
   //@@Usage
   //Creates an array of pseudo-random numbers of the specified size.
   //The numbers are normally distributed with zero mean and a unit
@@ -901,6 +915,7 @@ namespace FreeMat {
 
   //!
   //@Module RAND Uniform Random Number Generator
+  //@@Section RANDOM
   //@@Usage
   //Creates an array of pseudo-random numbers of the specified size.
   //The numbers are uniformly distributed on @|[0,1)|.  

@@ -29,6 +29,7 @@
 namespace FreeMat {
   //!
   //@Module LOG Natural Logarithm Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|log| function for its argument.  The general
   //syntax for its use is
@@ -154,6 +155,7 @@ namespace FreeMat {
 
   //!
   //@Module EXP Exponential Function
+  //@@Section MATHFUNCTIONS
   //@@Usage
   //Computes the @|exp| function for its argument.  The general
   //syntax for its use is

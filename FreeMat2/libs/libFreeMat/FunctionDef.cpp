@@ -383,9 +383,14 @@ namespace FreeMat {
     sprintf(buffer,"built-in function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
-    outputs = fptr(nargout,inputs);
-    walker->getInterface()->popMessageContext();
-    return outputs;
+    try {
+      outputs = fptr(nargout,inputs);
+      walker->getInterface()->popMessageContext();
+      return outputs;
+    } catch(Exception& e) {
+      walker->getInterface()->popMessageContext();
+      throw;
+    }
   }
 
   SpecialFunctionDef::SpecialFunctionDef() {
@@ -401,9 +406,14 @@ namespace FreeMat {
     sprintf(buffer,"special function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
-    outputs = fptr(nargout,inputs,walker);
-    walker->getInterface()->popMessageContext();
-    return outputs;
+    try {
+      outputs = fptr(nargout,inputs,walker);
+      walker->getInterface()->popMessageContext();
+      return outputs;
+    } catch(Exception& e) {
+      walker->getInterface()->popMessageContext();
+      throw;
+    }
   }
 
   void SpecialFunctionDef::printMe(Interface *io) {

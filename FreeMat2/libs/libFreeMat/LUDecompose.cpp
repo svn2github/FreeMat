@@ -72,32 +72,27 @@ namespace FreeMat {
 	fullpivot[i] = fullpivot[piv[i]-1];
 	fullpivot[piv[i]-1] = tmp;
       }
-    // Create the inverse pivot vector
-    int *invpivot = (int*) malloc(sizeof(int)*nrows);
-    for (i=0;i<nrows;i++) 
-      invpivot[fullpivot[i]] = i;
     free(piv);
-    free(fullpivot);
     if (nrows > ncols) {
       for (i=0;i<ncols;i++)
-	l[invpivot[i]+i*nrows] = 1.0;
+	l[fullpivot[i]+i*nrows] = 1.0;
       for (i=1;i<nrows;i++)
 	for (j=0;j<min(i,ncols);j++)
-	  l[invpivot[i]+j*nrows] = a[i+j*nrows];
+	  l[fullpivot[i]+j*nrows] = a[i+j*nrows];
       for (i=0;i<ncols;i++)
 	for (j=i;j<ncols;j++)
 	  u[i+j*nrows] = a[i+j*nrows];
     } else {
       for (i=0;i<nrows;i++)
-	l[invpivot[i]+i*nrows] = 1.0;
+	l[fullpivot[i]+i*nrows] = 1.0;
       for (i=1;i<nrows;i++)
 	for (j=0;j<i;j++)
-	  l[invpivot[i]+j*nrows] = a[i+j*nrows];
+	  l[fullpivot[i]+j*nrows] = a[i+j*nrows];
       for (i=0;i<nrows;i++)
 	for (j=i;j<ncols;j++)
 	  u[i+j*ncols] = a[i+j*nrows];
     }
-    free(invpivot);
+    free(fullpivot);
   }
 
   void doubleLUP(int nrows, int ncols, double *l, double *u,
@@ -163,32 +158,27 @@ namespace FreeMat {
 	fullpivot[i] = fullpivot[piv[i]-1];
 	fullpivot[piv[i]-1] = tmp;
       }
-    // Create the inverse pivot vector
-    int *invpivot = (int*) malloc(sizeof(int)*nrows);
-    for (i=0;i<nrows;i++) 
-      invpivot[fullpivot[i]] = i;
     free(piv);
-    free(fullpivot);
     if (nrows > ncols) {
       for (i=0;i<ncols;i++)
-	l[invpivot[i]+i*nrows] = 1.0;
+	l[fullpivot[i]+i*nrows] = 1.0;
       for (i=1;i<nrows;i++)
 	for (j=0;j<min(i,ncols);j++)
-	  l[invpivot[i]+j*nrows] = a[i+j*nrows];
+	  l[fullpivot[i]+j*nrows] = a[i+j*nrows];
       for (i=0;i<ncols;i++)
 	for (j=i;j<ncols;j++)
 	  u[i+j*nrows] = a[i+j*nrows];
     } else {
       for (i=0;i<nrows;i++)
-	l[invpivot[i]+i*nrows] = 1.0;
+	l[fullpivot[i]+i*nrows] = 1.0;
       for (i=1;i<nrows;i++)
 	for (j=0;j<i;j++)
-	  l[invpivot[i]+j*nrows] = a[i+j*nrows];
+	  l[fullpivot[i]+j*nrows] = a[i+j*nrows];
       for (i=0;i<nrows;i++)
 	for (j=i;j<ncols;j++)
 	  u[i+j*ncols] = a[i+j*nrows];
     }
-    free(invpivot);
+    free(fullpivot);
   }
 
   void complexLUP(int nrows, int ncols, float *l, float *u,
@@ -267,20 +257,16 @@ namespace FreeMat {
 	fullpivot[piv[i]-1] = tmp;
       }
     // Create the inverse pivot vector
-    int *invpivot = (int*) malloc(sizeof(int)*nrows);
-    for (i=0;i<nrows;i++) 
-      invpivot[fullpivot[i]] = i;
     free(piv);
-    free(fullpivot);
     if (nrows > ncols) {
       for (i=0;i<ncols;i++) {
-	l[2*(invpivot[i]+i*nrows)] = 1.0;
-	l[2*(invpivot[i]+i*nrows)+1] = 0.0;
+	l[2*(fullpivot[i]+i*nrows)] = 1.0;
+	l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
       }
       for (i=1;i<nrows;i++)
 	for (j=0;j<min(i,ncols);j++) {
-	  l[2*(invpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	  l[2*(invpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
+	  l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
+	  l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
 	}
       for (i=0;i<ncols;i++)
 	for (j=i;j<ncols;j++){
@@ -289,13 +275,13 @@ namespace FreeMat {
 	}
     } else {
       for (i=0;i<nrows;i++) {
-	l[2*(invpivot[i]+i*nrows)] = 1.0;
-	l[2*(invpivot[i]+i*nrows)+1] = 0.0;
+	l[2*(fullpivot[i]+i*nrows)] = 1.0;
+	l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
       }
       for (i=1;i<nrows;i++)
 	for (j=0;j<i;j++) {
-	  l[2*(invpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	  l[2*(invpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
+	  l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
+	  l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
 	}
       for (i=0;i<nrows;i++)
 	for (j=i;j<ncols;j++) {
@@ -303,7 +289,7 @@ namespace FreeMat {
 	  u[2*(i+j*ncols)+1] = a[2*(i+j*nrows)+1];
 	}
     }
-    free(invpivot);
+    free(fullpivot);
   }
 
   void dcomplexLUP(int nrows, int ncols, double *l, double *u,
@@ -381,21 +367,16 @@ namespace FreeMat {
 	fullpivot[i] = fullpivot[piv[i]-1];
 	fullpivot[piv[i]-1] = tmp;
       }
-    // Create the inverse pivot vector
-    int *invpivot = (int*) malloc(sizeof(int)*nrows);
-    for (i=0;i<nrows;i++) 
-      invpivot[fullpivot[i]] = i;
     free(piv);
-    free(fullpivot);
     if (nrows > ncols) {
       for (i=0;i<ncols;i++) {
-	l[2*(invpivot[i]+i*nrows)] = 1.0;
-	l[2*(invpivot[i]+i*nrows)+1] = 0.0;
+	l[2*(fullpivot[i]+i*nrows)] = 1.0;
+	l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
       }
       for (i=1;i<nrows;i++)
 	for (j=0;j<min(i,ncols);j++) {
-	  l[2*(invpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	  l[2*(invpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
+	  l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
+	  l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
 	}
       for (i=0;i<ncols;i++)
 	for (j=i;j<ncols;j++){
@@ -404,13 +385,13 @@ namespace FreeMat {
 	}
     } else {
       for (i=0;i<nrows;i++) {
-	l[2*(invpivot[i]+i*nrows)] = 1.0;
-	l[2*(invpivot[i]+i*nrows)+1] = 0.0;
+	l[2*(fullpivot[i]+i*nrows)] = 1.0;
+	l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
       }
       for (i=1;i<nrows;i++)
 	for (j=0;j<i;j++) {
-	  l[2*(invpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	  l[2*(invpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
+	  l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
+	  l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
 	}
       for (i=0;i<nrows;i++)
 	for (j=i;j<ncols;j++) {
@@ -418,7 +399,6 @@ namespace FreeMat {
 	  u[2*(i+j*ncols)+1] = a[2*(i+j*nrows)+1];
 	}
     }
-    free(invpivot);
   }
 
 
@@ -429,6 +409,8 @@ namespace FreeMat {
     int ncols = A.getDimensionLength(1);
     int p = max(nrows,ncols);
     int q = min(nrows,ncols);
+    if (A.getDataClass() == FM_INT32)
+      A.promoteType(FM_DOUBLE);
     ArrayVector retval;
     switch (A.getDataClass()) {
     case FM_FLOAT: {

@@ -23,6 +23,7 @@
 namespace FreeMat {
   //!
   //@Module UINT8 Convert to Unsigned 8-bit Integer
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to an unsigned 8-bit Integer.  The syntax
   //for its use is
@@ -76,6 +77,7 @@ namespace FreeMat {
 
   //!
   //@Module UINT16 Convert to Unsigned 16-bit Integer
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to an unsigned 16-bit Integer.  The syntax
   //for its use is
@@ -129,6 +131,7 @@ namespace FreeMat {
 
   //!
   //@Module UINT32 Convert to Unsigned 32-bit Integer
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to an unsigned 32-bit Integer.  The syntax
   //for its use is
@@ -182,6 +185,7 @@ namespace FreeMat {
 
   //!
   //@Module INT8 Convert to Signed 8-bit Integer
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to an signed 8-bit Integer.  The syntax
   //for its use is
@@ -232,6 +236,7 @@ namespace FreeMat {
 
   //!
   //@Module INT16 Convert to Signed 16-bit Integer
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to an signed 16-bit Integer.  The syntax
   //for its use is
@@ -282,6 +287,7 @@ namespace FreeMat {
 
   //!
   //@Module INT32 Convert to Signed 32-bit Integer
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to an signed 32-bit Integer.  The syntax
   //for its use is
@@ -332,6 +338,7 @@ namespace FreeMat {
 
   //!
   //@Module FLOAT Convert to 32-bit Floating Point
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to a 32-bit floating point number.  The syntax
   //for its use is
@@ -373,6 +380,7 @@ namespace FreeMat {
 
   //!
   //@Module DOUBLE Convert to 64-bit Floating Point
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to a 64-bit floating point number.  The syntax
   //for its use is
@@ -414,6 +422,7 @@ namespace FreeMat {
 
   //!
   //@Module COMPLEX Convert to 32-bit Complex Floating Point
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to a 32-bit complex floating point number.  The syntax
   //for its use is
@@ -459,6 +468,7 @@ namespace FreeMat {
 
   //!
   //@Module DCOMPLEX Convert to 32-bit Complex Floating Point
+  //@@Section TYPECAST
   //@@Usage
   //Converts the argument to a 32-bit complex floating point number.  The syntax
   //for its use is
@@ -504,6 +514,7 @@ namespace FreeMat {
 
   //!
   //@Module TYPEOF Determine the Type of an Argument
+  //@@Section TYPECAST
   //@@Usage
   //Returns a string describing the type of an array.  The syntax for its use is
   //@[

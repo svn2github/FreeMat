@@ -146,6 +146,9 @@ namespace FreeMat {
   ArrayVector SetPathFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector WhichFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector WhereFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector IsSparseFunction(int, const ArrayVector& arg);
+  ArrayVector SponesFunction(int, const ArrayVector& arg);
+  ArrayVector NNZFunction(int, const ArrayVector& arg);
   ArrayVector IsNaNFunction(int, const ArrayVector& arg);
   ArrayVector IsInfFunction(int, const ArrayVector& arg);
   ArrayVector RepMatFunction(int, const ArrayVector& arg);

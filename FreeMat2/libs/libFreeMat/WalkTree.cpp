@@ -79,6 +79,7 @@ namespace FreeMat {
 
   //!
   //@Module MATRIX Matrix Definitions
+  //@@Section VARIABLES
   //@@Usage
   //The matrix is the basic datatype of FreeMat.  Matrices can be
   //defined using the following syntax
@@ -150,6 +151,7 @@ namespace FreeMat {
 
   //!
   //@Module CELL Cell Array Definitions
+  //@@Section VARIABLES
   //@@Usage
   //The cell array is a fairly powerful array type that is available
   //in FreeMat.  Generally speaking, a cell array is a heterogenous
@@ -278,6 +280,7 @@ namespace FreeMat {
 
   //!
   //@Module COLON Index Generation Operator
+  //@@Section OPERATORS
   //@@Usage
   //There are two distinct syntaxes for the colon @|:| operator - the two argument form
   //@[
@@ -436,6 +439,7 @@ namespace FreeMat {
 
   //!
   //@Module TRY-CATCH Try and Catch Statement
+  //@@Section FLOW
   //@@Usage
   //The @|try| and @|catch| statements are used for error handling
   //and control.  A concept present in @|C++|, the @|try| and @|catch|
@@ -503,6 +507,7 @@ namespace FreeMat {
 
   //!
   //@Module SWITCH Switch statement
+  //@@Section FLOW
   //@@Usage
   //The @|switch| statement is used to selective execute code
   //based on the value of either scalar value or a string.
@@ -577,6 +582,7 @@ namespace FreeMat {
 
   //!
   //@Module IF-ELSEIF-ELSE Conditional Statements
+  //@@Section FLOW
   //@@Usage
   //The @|if| and @|else| statements form a control structure for
   //conditional execution.  The general syntax involves an @|if|
@@ -642,6 +648,7 @@ namespace FreeMat {
 
   //!
   //@Module WHILE While Loop
+  //@@Section FLOW
   //@@Usage
   //The @|while| loop executes a set of statements as long as
   //a the test condition remains @|true|.  The syntax of a 
@@ -697,6 +704,7 @@ namespace FreeMat {
 
   //!
   //@Module FOR For Loop
+  //@@Section FLOW
   //@@Usage
   //The @|for| loop executes a set of statements with an 
   //index variable looping through each element in a vector.
@@ -780,6 +788,7 @@ namespace FreeMat {
 
   //!
   //@Module GLOBAL Global Variables
+  //@@Section VARIABLES
   //@@Usage
   //Global variables are shared variables that can be
   //seen and modified from any function or script that 
@@ -821,6 +830,7 @@ namespace FreeMat {
 
   //!
   //@Module PERSISTENT Persistent Variables
+  //@@Section VARIABLES
   //@@Usage
   //Persistent variables are variables whose value persists between
   //calls to a function or script.  The general syntax for its
@@ -854,6 +864,7 @@ namespace FreeMat {
 
   //!
   //@Module CONTINUE Continue Execution In Loop
+  //@@Section FLOW
   //@@Usage
   //The @|continue| statement is used to change the order of
   //execution within a loop.  The @|continue| statement can
@@ -890,6 +901,7 @@ namespace FreeMat {
 
   //!
   //@Module BREAK Exit Execution In Loop
+  //@@Section FLOW
   //@@Usage
   //The @|break| statement is used to exit a loop prematurely.
   //It can be used inside a @|for| loop or a @|while| loop.  The
@@ -925,6 +937,7 @@ namespace FreeMat {
 
   //!
   //@Module RETURN Return From Function
+  //@@Section FLOW
   //@@Usage
   //The @|return| statement is used to immediately return from
   //a function, or to return from a @|keyboard| session.  The 
@@ -983,6 +996,7 @@ namespace FreeMat {
 
   //!
   //@Module QUIT Quit Program
+  //@@Section FREEMAT
   //@@Usage
   //The @|quit| statement is used to immediately exit the FreeMat
   //application.  The syntax for its use is
@@ -993,6 +1007,7 @@ namespace FreeMat {
 
   //!
   //@Module RETALL Return From All Keyboard Sessions
+  //@@Section FLOW
   //@@Usage
   //The @|retall| statement is used to return to the base workspace
   //from a nested @|keyboard| session.  It is equivalent to forcing
@@ -1038,6 +1053,7 @@ namespace FreeMat {
 
   //!
   //@Module KEYBOARD Initiate Interactive Debug Session
+  //@@Section FLOW
   //@@Usage
   //The @|keyboard| statement is used to initiate an
   //interactive session at a specific point in a function.
@@ -1608,6 +1624,7 @@ namespace FreeMat {
 
   //!
   //@Module FUNCTION Function Declarations
+  //@@Section FUNCTIONS
   //@@Usage
   //There are several forms for function declarations in FreeMat.
   //The most general syntax for a function declaration is the 
@@ -1761,6 +1778,7 @@ namespace FreeMat {
 
   //!
   //@Module KEYWORDS Function Keywords
+  //@@Section FUNCTIONS
   //@@Usage
   //A feature of IDL that FreeMat has adopted is a modified
   //form of @|keywords|.  The purpose of @|keywords| is to 
@@ -1829,6 +1847,7 @@ namespace FreeMat {
 
   //!
   //@Module VARARGIN Variable Input Arguments
+  //@@Section FUNCTIONS
   //@@Usage
   //FreeMat functions can take a variable number of input arguments
   //by setting the last argument in the argument list to @|varargin|.
@@ -1863,6 +1882,7 @@ namespace FreeMat {
 
   //!
   //@Module VARARGOUT Variable Output Arguments
+  //@@Section FUNCTIONS
   //@@Usage
   //FreeMat functions can return a variable number of output arguments
   //by setting the last argument in the argument list to @|varargout|.
@@ -1900,6 +1920,7 @@ namespace FreeMat {
 
   //!
   //@Module SCRIPT Script Files
+  //@@Section FUNCTIONS
   //@@Usage
   //A script is a sequence of FreeMat commands contained in a
   //@|.m| file.  When the script is called (via the name of the
@@ -1928,6 +1949,7 @@ namespace FreeMat {
 
   //!
   //@Module NARGIN Number of Input Arguments
+  //@@Section FUNCTIONS
   //@@Usage
   //The special variable @|nargin| is defined inside of all
   //functions.  It indicates how many arguments were passed
@@ -1955,6 +1977,7 @@ namespace FreeMat {
 
   //!
   //@Module NARGOUT Number of Output Arguments
+  //@@Section FUNCTIONS
   //@@Usage
   //The special variable @|nargout| is defined inside of all
   //functions.  It indicates how many return values were requested from
@@ -1983,6 +2006,7 @@ namespace FreeMat {
   
   //!
   //@Module SPECIAL Special Calling Syntax
+  //@@Section FUNCTIONS
   //@@Usage
   //To reduce the effort to call certain functions, FreeMat supports
   //a special calling syntax for functions that take string arguments.
@@ -2038,185 +2062,190 @@ namespace FreeMat {
 
     funcDef->updateCode();
     io->pushMessageContext();
-    if (funcDef->scriptFlag) {
-      if (t->down != NULL)
-	throw Exception(std::string("Cannot use arguments in a call to a script."));
-      if ((narg_out > 0) && !outputOptional)
-	throw Exception(std::string("Cannot assign outputs in a call to a script."));
-      bool CLIFlagsave = InCLI;
-      InCLI = false;
-      block(((MFunctionDef*)funcDef)->code);
-      InCLI = CLIFlagsave;
-    } else {
-      // Look for arguments
-      if (t->down != NULL) {
-	s = t->down;
-	if (s->opNum ==(OP_PARENS)) {
-	  s = s->down;
-	  // Search for the keyword uses - 
-	  // To handle keywords, we make one pass through the arguments,
-	  // recording a list of keywords used and using ::expression to
-	  // evaluate their values. 
-	  q = s;
-	  while (q != NULL) {
-	    if (q->opNum == OP_KEYWORD) {
-	      keywords.push_back(q->down->text);
-	      if (q->down->right != NULL)
-		keyvals.push_back(expression(q->down->right));
-	      else
-		keyvals.push_back(Array::logicalConstructor(true));
-	      keyexpr.push_back(q->down->right);
-	    }
-	    q = q->right;
-	  }
- 	  // If any keywords were found, make another pass through the
- 	  // arguments and remove them.
-#if 0
-	  if (keywords.size() > 0) {
-// 	    if (funcDef->type() != FM_M_FUNCTION)
-// 	      throw Exception("out of order argument passing only supported for M files");
-	    while (s != NULL && s->opNum == OP_KEYWORD)
-	      s = s->right;
-	    if (s != NULL) {
-	      q = s;
-	      while (q->right != NULL) {
-		if (q->right->opNum == OP_KEYWORD)
-		  q->right = q->right->right;
+    try {
+      if (funcDef->scriptFlag) {
+	if (t->down != NULL)
+	  throw Exception(std::string("Cannot use arguments in a call to a script."));
+	if ((narg_out > 0) && !outputOptional)
+	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
+	bool CLIFlagsave = InCLI;
+	InCLI = false;
+	block(((MFunctionDef*)funcDef)->code);
+	InCLI = CLIFlagsave;
+      } else {
+	// Look for arguments
+	if (t->down != NULL) {
+	  s = t->down;
+	  if (s->opNum ==(OP_PARENS)) {
+	    s = s->down;
+	    // Search for the keyword uses - 
+	    // To handle keywords, we make one pass through the arguments,
+	    // recording a list of keywords used and using ::expression to
+	    // evaluate their values. 
+	    q = s;
+	    while (q != NULL) {
+	      if (q->opNum == OP_KEYWORD) {
+		keywords.push_back(q->down->text);
+		if (q->down->right != NULL)
+		  keyvals.push_back(expression(q->down->right));
 		else
-		  q = q->right;
+		  keyvals.push_back(Array::logicalConstructor(true));
+		keyexpr.push_back(q->down->right);
+	      }
+	      q = q->right;
+	    }
+	    // If any keywords were found, make another pass through the
+	    // arguments and remove them.
+#if 0
+	    if (keywords.size() > 0) {
+	      // 	    if (funcDef->type() != FM_M_FUNCTION)
+	      // 	      throw Exception("out of order argument passing only supported for M files");
+	      while (s != NULL && s->opNum == OP_KEYWORD)
+		s = s->right;
+	      if (s != NULL) {
+		q = s;
+		while (q->right != NULL) {
+		  if (q->right->opNum == OP_KEYWORD)
+		    q->right = q->right->right;
+		  else
+		    q = q->right;
+		}
 	      }
 	    }
-	  }
 #endif
-	  m = expressionList(s,NULL);
-	  // Check for keywords
-	  if (keywords.size() > 0) {
-	    // If keywords were used, we have to permute the
-	    // entries of the arrayvector to the correct order.
-	    stringVector arguments;
-	    // Get the arguments from the MFunction pointer.
-	    arguments = funcDef->arguments;
-	    keywordNdx = new int[keywords.size()];
-	    int maxndx;
-	    maxndx = 0;
-	    // Map each keyword to an argument number
-	    for (i=0;i<keywords.size();i++) {
-	      int ndx;
-	      ndx = getArgumentIndex(arguments,keywords[i]);
-	      if (ndx == -1)
-		throw Exception("out-of-order argument /" + keywords[i] + " is not defined in the called function!");
-	      keywordNdx[i] = ndx;
-	      if (ndx > maxndx) maxndx = ndx;
+	    m = expressionList(s,NULL);
+	    // Check for keywords
+	    if (keywords.size() > 0) {
+	      // If keywords were used, we have to permute the
+	      // entries of the arrayvector to the correct order.
+	      stringVector arguments;
+	      // Get the arguments from the MFunction pointer.
+	      arguments = funcDef->arguments;
+	      keywordNdx = new int[keywords.size()];
+	      int maxndx;
+	      maxndx = 0;
+	      // Map each keyword to an argument number
+	      for (i=0;i<keywords.size();i++) {
+		int ndx;
+		ndx = getArgumentIndex(arguments,keywords[i]);
+		if (ndx == -1)
+		  throw Exception("out-of-order argument /" + keywords[i] + " is not defined in the called function!");
+		keywordNdx[i] = ndx;
+		if (ndx > maxndx) maxndx = ndx;
+	      }
+	      // Next, we have to determine how many "holes" there are
+	      // in the argument list - we get the maximum list
+	      int holes;
+	      holes = maxndx + 1 - keywords.size();
+	      // At this point, holes is the number of missing arguments
+	      // If holes > m.size(), then the total number of arguments
+	      // is just maxndx+1.  Otherwise, its 
+	      // maxndx+1+(m.size() - holes)
+	      int totalCount;
+	      if (holes > m.size())
+		totalCount = maxndx+1;
+	      else
+		totalCount = maxndx+1+(m.size() - holes);
+	      // Next, we allocate a vector to hold the values
+	      ArrayVector toFill(totalCount);
+	      bool *filled;
+	      filled = new bool[totalCount];
+	      argTypeMap = new int[totalCount];
+	      for (i=0;i<totalCount;i++) {
+		filled[i] = false;
+		argTypeMap[i] = -1;
+	      }
+	      // Finally...
+	      // Copy the keyword values in
+	      for (i=0;i<keywords.size();i++) {
+		toFill[keywordNdx[i]] = keyvals[i];
+		filled[keywordNdx[i]] = true;
+		argTypeMap[keywordNdx[i]] = i;
+	      }
+	      // Fill out the rest of the values from m
+	      int n = 0;
+	      int p = 0;
+	      while (n < m.size()) {
+		if (!filled[p]) {
+		  toFill[p] = m[n];
+		  filled[p] = true;
+		  argTypeMap[p] = -2;
+		  n++;
+		} 
+		p++;
+	      }
+	      // Finally, fill in empty matrices for the
+	      // remaining arguments
+	      for (i=0;i<totalCount;i++)
+		if (!filled[i])
+		  toFill[i] = Array::emptyConstructor();
+	      // Clean up
+	      delete[] filled;
+	      // delete[] keywordNdx;
+	      // Reassign
+	      m = toFill;
 	    }
-	    // Next, we have to determine how many "holes" there are
-	    // in the argument list - we get the maximum list
-	    int holes;
-	    holes = maxndx + 1 - keywords.size();
-	    // At this point, holes is the number of missing arguments
-	    // If holes > m.size(), then the total number of arguments
-	    // is just maxndx+1.  Otherwise, its 
-	    // maxndx+1+(m.size() - holes)
-	    int totalCount;
-	    if (holes > m.size())
-	      totalCount = maxndx+1;
-	    else
-	      totalCount = maxndx+1+(m.size() - holes);
-	    // Next, we allocate a vector to hold the values
-	    ArrayVector toFill(totalCount);
-	    bool *filled;
-	    filled = new bool[totalCount];
-	    argTypeMap = new int[totalCount];
-	    for (i=0;i<totalCount;i++) {
-	      filled[i] = false;
-	      argTypeMap[i] = -1;
-	    }
-	    // Finally...
-	    // Copy the keyword values in
-	    for (i=0;i<keywords.size();i++) {
-	      toFill[keywordNdx[i]] = keyvals[i];
-	      filled[keywordNdx[i]] = true;
-	      argTypeMap[keywordNdx[i]] = i;
-	    }
-	    // Fill out the rest of the values from m
-	    int n = 0;
-	    int p = 0;
-	    while (n < m.size()) {
-	      if (!filled[p]) {
-		toFill[p] = m[n];
-		filled[p] = true;
-		argTypeMap[p] = -2;
-		n++;
-	      } 
-	      p++;
-	    }
-	    // Finally, fill in empty matrices for the
-	    // remaining arguments
-	    for (i=0;i<totalCount;i++)
-	      if (!filled[i])
-		toFill[i] = Array::emptyConstructor();
-	    // Clean up
-	    delete[] filled;
-	    // delete[] keywordNdx;
-	    // Reassign
-	    m = toFill;
-	  }
+	  } else
+	    throw Exception("Illegal expression in function expression");
 	} else
-	  throw Exception("Illegal expression in function expression");
-      } else
-	m = ArrayVector();
-      if ((funcDef->inputArgCount() >= 0) && 
-	  (m.size() > funcDef->inputArgCount()))
-	throw Exception(std::string("Too many inputs to function ")+t->text);
-      if ((funcDef->outputArgCount() >= 0) && 
-	  (narg_out > funcDef->outputArgCount() && !outputOptional))
-	throw Exception(std::string("Too many outputs to function ")+t->text);
-      bool CLIFlagsave = InCLI;
-      InCLI = false;
-      n = funcDef->evaluateFunction(this,m,narg_out);
-      InCLI = CLIFlagsave;
-      // Check for any pass by reference
-      if (funcDef->arguments.size() > 0) {
-	// Get the argument list
-	stringVector arguments;
-	arguments = funcDef->arguments;
-	// M functions can modify their arguments
-	q = s;
-	int maxsearch;
-	maxsearch = m.size(); 
-	if (maxsearch > arguments.size()) maxsearch = arguments.size();
-	for (i=0;i<maxsearch;i++) {
-	  // Was this argument passed out of order?
-	  if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
-	  if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
-	    p = keyexpr[argTypeMap[i]];
-	  } else {
-	    p = q;
-	    if (q != NULL)
-	      q = q->right;
-	  }
-	  std::string args(arguments[i]);
-	  if (args[0] == '&') {
-	    args.erase(0,1);
-	    // This argument was passed by reference
-	    if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
-	      throw Exception("Must have lvalue in argument passed by reference");
-	    if (p->down->down == NULL && p->down->type == id_node) {
-	      context->insertVariable(p->down->text,m[i]);
+	  m = ArrayVector();
+	if ((funcDef->inputArgCount() >= 0) && 
+	    (m.size() > funcDef->inputArgCount()))
+	  throw Exception(std::string("Too many inputs to function ")+t->text);
+	if ((funcDef->outputArgCount() >= 0) && 
+	    (narg_out > funcDef->outputArgCount() && !outputOptional))
+	  throw Exception(std::string("Too many outputs to function ")+t->text);
+	bool CLIFlagsave = InCLI;
+	InCLI = false;
+	n = funcDef->evaluateFunction(this,m,narg_out);
+	InCLI = CLIFlagsave;
+	// Check for any pass by reference
+	if (funcDef->arguments.size() > 0) {
+	  // Get the argument list
+	  stringVector arguments;
+	  arguments = funcDef->arguments;
+	  // M functions can modify their arguments
+	  q = s;
+	  int maxsearch;
+	  maxsearch = m.size(); 
+	  if (maxsearch > arguments.size()) maxsearch = arguments.size();
+	  for (i=0;i<maxsearch;i++) {
+	    // Was this argument passed out of order?
+	    if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
+	    if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
+	      p = keyexpr[argTypeMap[i]];
 	    } else {
-	      Array c(assignExpression(p->down,m[i]));
-	      context->insertVariable(p->down->text,c);
+	      p = q;
+	      if (q != NULL)
+		q = q->right;
+	    }
+	    std::string args(arguments[i]);
+	    if (args[0] == '&') {
+	      args.erase(0,1);
+	      // This argument was passed by reference
+	      if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
+		throw Exception("Must have lvalue in argument passed by reference");
+	      if (p->down->down == NULL && p->down->type == id_node) {
+		context->insertVariable(p->down->text,m[i]);
+	      } else {
+		Array c(assignExpression(p->down,m[i]));
+		context->insertVariable(p->down->text,c);
+	      }
 	    }
 	  }
 	}
       }
+      // Some routines (e.g., min and max) will return more outputs
+      // than were actually requested... so here we have to trim 
+      // any elements received that we didn't ask for.
+      while (n.size() > narg_out)
+	n.pop_back();
+      io->popMessageContext();
+      return n;
+    } catch (Exception& e) {
+      io->popMessageContext();
+      throw;
     }
-    // Some routines (e.g., min and max) will return more outputs
-    // than were actually requested... so here we have to trim 
-    // any elements received that we didn't ask for.
-    while (n.size() > narg_out)
-      n.pop_back();
-    io->popMessageContext();
-    return n;
   }
 
   Interface* WalkTree::getInterface() {
@@ -2261,6 +2290,7 @@ namespace FreeMat {
 
   //!
   //@Module INDEXING Indexing Expressions
+  //@@Section VARIABLES
   //@@Usage
   //There are three classes of indexing expressions available 
   //in FreeMat: @|()|, @|{}|, and @|.|  Each is explained below

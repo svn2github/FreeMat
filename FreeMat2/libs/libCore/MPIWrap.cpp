@@ -44,7 +44,7 @@ namespace FreeMat {
    *
    *  Suppose A is an array (homogenous) - 
    *     Part 1 - type
-v   *     Part 2 - dimension data
+   *     Part 2 - dimension data
    *     Part 3 - array contents
    *
    *  Suppose A is an array (structure)
@@ -387,6 +387,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPISEND MPI Send Array
+  //@@Section MPI
   //@@Usage
   //This function sends an array to a destination node on a 
   //given communicator with a specific message tag.  Note that
@@ -452,6 +453,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPIBARRIER MPI Barrier
+  //@@Section MPI
   //@@Usage
   //This function is used as a synchronization point for all
   //processes in a group.  All processes are blocked until
@@ -482,6 +484,7 @@ v   *     Part 2 - dimension data
    */
   //!
   //@Module MPIBCAST MPI Broadcast
+  //@@Section MPI
   //@@Usage
   //This function is used to broadcast an array to all group
   //members.  The syntax for its use 
@@ -557,6 +560,7 @@ v   *     Part 2 - dimension data
    */
   //!
   //@Module MPIRECV MPI Receive Array
+  //@@Section MPI
   //@@Usage
   //This function receives an array from a source node on
   //a given communicator with the specified tag.  The 
@@ -615,6 +619,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPICOMMRANK MPI Communicator Rank
+  //@@Section MPI
   //@@Usage
   //This function returns the rank of a process within
   //the specified communicator.  The general syntax for 
@@ -652,6 +657,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPICOMMSIZE MPI Communicator Size
+  //@@Section MPI
   //@@Usage
   //This function returns the size of the group using the
   //given communicator.  The general syntax for its use is
@@ -688,6 +694,7 @@ v   *     Part 2 - dimension data
    */
   //!
   //@Module MPIALLREDUCE MPI All Reduce Operation
+  //@@Section MPI
   //@@Usage
   //This function implements the all-reduce operation using MPI.
   //The general syntax for its use is
@@ -775,6 +782,7 @@ v   *     Part 2 - dimension data
    */
   //!
   //@Module MPIREDUCE MPI Reduce Operation
+  //@@Section MPI
   //@@Usage
   //This function implements the reduction operation using MPI.
   //The general syntax for its use is
@@ -872,6 +880,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPIINITIALIZED MPI Initialized Test
+  //@@Section MPI
   //@@Usage
   //This function tests to see if MPI is already initialized.
   //The general syntax for its use is
@@ -899,6 +908,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPIINIT MPI Initialize
+  //@@Section MPI
   //@@Usage
   //This function initializes the MPI subsystem and joins
   //the current FreeMat process to the MPI environment.
@@ -923,6 +933,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPICOMMSPAWN MPI Communicator Spawn
+  //@@Section MPI
   //@@Usage
   //This function uses MPI to spawn a process on a members of a group.
   //The full power of the underlying routine, @|MPI_Comm_spawn| is not
@@ -1009,6 +1020,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPIINTERCOMMMERGE MPI Intercommunicator Merge
+  //@@Section MPI
   //@@Usage
   //This routine merges the current process with an existing group.
   //The general syntax for its use is 
@@ -1040,6 +1052,7 @@ v   *     Part 2 - dimension data
   
   //!
   //@Module MPICOMMGETPARENT MPI Get Parent Communicator
+  //@@Section MPI
   //@@Usage
   //This routine returns the communicator for the group that
   //spawned the current process.  Calling this routine for a 
@@ -1075,6 +1088,7 @@ v   *     Part 2 - dimension data
 
   //!
   //@Module MPIFINALIZE MPI Finalize
+  //@@Section MPI
   //This routine will shut down the MPI interface.  Once called,
   //no more MPI calls can be made (except for @|mpiinitialized|).
   //The syntax for its use is

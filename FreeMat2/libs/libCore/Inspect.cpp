@@ -50,6 +50,7 @@ namespace FreeMat {
 
   //!
   //@Module AUTOSTOP Control Autostop Functionality
+  //@@Section FLOW
   //@@Usage
   //The autostop functionality in FreeMat allows you to debug your
   //FreeMat programs.  When @|autostop| is @|on|, then any error
@@ -108,6 +109,7 @@ namespace FreeMat {
 
   //!
   //@Module HELP Help
+  //@@Section FREEMAT
   //@@Usage
   //Displays help on a function available in FreeMat.  The help function
   //takes one argument:
@@ -215,6 +217,7 @@ namespace FreeMat {
 
   //!
   //@Module CLEAR Clear or Delete a Variable
+  //@@Section INSPECTION
   //@@Usage
   //Clears a set of variables from the current context, or alternately, 
   //delete all variables defined in the current context.  There are
@@ -267,6 +270,7 @@ namespace FreeMat {
 
   //!
   //@Module WHO Describe Currently Defined Variables
+  //@@Section INSPECTION
   //@@Usage
   //Reports information on either all variables in the current context
   //or on a specified set of variables.  For each variable, the @|who|
@@ -398,6 +402,7 @@ namespace FreeMat {
 
   //!
   //@Module SIZE Size of a Variable
+  //@@Section INSPECTION
   //@@Usage
   //Returns the size of a variable.  There are two syntaxes for its
   //use.  The first syntax returns the size of the array as a vector
@@ -463,6 +468,7 @@ namespace FreeMat {
 
   //!
   //@Module EXIST Text Existence of a Variable
+  //@@Section INSPECTION
   //@@Usage
   //Tests for the existence of a variable.  The general syntax for
   //its use is
@@ -514,7 +520,62 @@ namespace FreeMat {
   }
 
   //!
+  //@Module NNZ Number of Nonzeros
+  //@@Section SPARSE
+  //@@Usage
+  //Returns the number of nonzero elements in a matrix.
+  //The general format for its use is
+  //@[
+  //   y = nnz(x)
+  //@]
+  //This function returns the number of nonzero elements
+  //in a matrix or array.  This function works for both
+  //sparse and non-sparse arrays.  For 
+  //@@Example
+  //@<
+  //a = [1,0,0,5;0,3,2,0]
+  //nnz(a)
+  //A = sparse(a)
+  //nnz(A)
+  //@>
+  //!
+  ArrayVector NNZFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("nnz function takes one argument - the array");
+    Array tmp(arg[0]);
+    return singleArrayVector(Array::int32Constructor(tmp.nnz()));
+  }
+
+  //!
+  //@Module ISSPARSE Test for Sparse Matrix
+  //@@Section INSPECTION
+  //@@Usage
+  //Test a matrix to see if it is sparse or not.  The general
+  //format for its use is 
+  //@[
+  //   y = issparse(x)
+  //@]
+  //This function returns true if @|x| is encoded as a sparse
+  //matrix, and false otherwise.
+  //@@Example
+  //Here is an example of using @|issparse|:
+  //@<
+  //a = [1,0,0,5;0,3,2,0]
+  //issparse(a)
+  //A = sparse(a)
+  //issparse(A)
+  //@>
+  //!
+  ArrayVector IsSparseFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("issparse function takes one argument - the array to test");
+    Array tmp(arg[0]);
+    return singleArrayVector(Array::logicalConstructor(tmp.isSparse()));
+  }
+
+  //!
   //@Module ISNAN Test for Not-a-Numbers
+  //@@Section INSPECTION
   //@@Usage
   //Returns true for entries of an array that are NaN's (i.e.,
   //Not-a-Numbers).  The usage is
@@ -584,6 +645,7 @@ namespace FreeMat {
 
   //!
   //@Module ISINF Test for infinities
+  //@@Section INSPECTION
   //@@Usage
   //Returns true for entries of an array that are infs (i.e.,
   //infinities).  The usage is
@@ -654,6 +716,7 @@ namespace FreeMat {
 
   //!
   //@Module WHERE Get Information on Program Stack
+  //@@Section INSPECTION
   //@@Usage
   //Returns information on the current stack.  The usage is
   //@[
@@ -704,6 +767,7 @@ namespace FreeMat {
 
   //!
   //@Module WHICH Get Information on Function
+  //@@Section INSPECTION
   //@@Usage
   //Returns information on a function (if defined).  The usage is
   //@[
@@ -975,6 +1039,7 @@ namespace FreeMat {
   
   //!
   //@Module FIND Find Non-zero Elements of An Array
+  //@@Section ARRAY
   //@@Usage
   //Returns a vector that contains the indicies of all non-zero elements 
   //in an array.  The usage is

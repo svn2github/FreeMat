@@ -95,6 +95,7 @@ namespace FreeMat {
 
   //!
   //@Module XLABEL Plot X-axis Label Function
+  //@@Section PLOT
   //@@Usage
   //This command adds a label to the x-axis of the plot.  The general syntax
   //for its use is
@@ -136,6 +137,7 @@ namespace FreeMat {
 
   //!
   //@Module YLABEL Plot Y-axis Label Function
+  //@@Section PLOT
   //@@Usage
   //This command adds a label to the y-axis of the plot.  The general syntax
   //for its use is
@@ -177,6 +179,7 @@ namespace FreeMat {
 
   //!
   //@Module LEGEND Add Legend to Plot
+  //@@Section PLOT
   //@@Usage
   //This command adds a legent to the current plot.  The general
   //syntax for its use is
@@ -245,6 +248,7 @@ namespace FreeMat {
 
   //!
   //@Module TITLE Plot Title Function
+  //@@Section PLOT
   //@@Usage
   //This command adds a title to the plot.  The general syntax
   //for its use is
@@ -286,6 +290,7 @@ namespace FreeMat {
 
   //!
   //@Module GRID Plot Grid Toggle Function
+  //@@Section PLOT
   //@@Usage
   //Toggles the drawing of grid lines on the currently active plot.  The
   //general syntax for its use is
@@ -339,6 +344,7 @@ namespace FreeMat {
 
   //!
   //@Module HOLD Plot Hold Toggle Function
+  //@@Section PLOT
   //@@Usage
   //Toggles the hold state on the currently active plot.  The
   //general syntax for its use is
@@ -428,6 +434,7 @@ namespace FreeMat {
 
   //!
   //@Module PLOT Plot Function
+  //@@Section PLOT
   //@@Usage
   //This is the basic plot command for FreeMat.  The general syntax for its
   //use is
@@ -703,6 +710,7 @@ namespace FreeMat {
 
   //!
   //@Module AXIS Plot Axis Set/Get Function
+  //@@Section PLOT
   //@@Usage
   //Changes the axis configuration for the currently active plot,
   //or returns the currently active limits for the axis,  The

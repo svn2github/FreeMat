@@ -1029,6 +1029,7 @@ namespace FreeMat {
    */
   //!
   //@Module PLUS Addition Operator
+  //@@Section OPERATORS
   //@@Usage
   //Adds two numerical arrays (elementwise) together.  There are two forms
   //for its use, both with the same general syntax:
@@ -1188,6 +1189,7 @@ namespace FreeMat {
    */
   //!
   //@Module MINUS Subtraction Operator
+  //@@Section OPERATORS
   //@@Usage
   //Subtracts two numerical arrays (elementwise).  There are two forms
   //for its use, both with the same general syntax:
@@ -1348,6 +1350,7 @@ namespace FreeMat {
    */
   //!
   //@Module DOTTIMES Element-wise Multiplication Operator
+  //@@Section OPERATORS
   //@@Usage
   //Multiplies two numerical arrays (elementwise).  There are two forms
   //for its use, both with the same general syntax:
@@ -1516,6 +1519,7 @@ namespace FreeMat {
    */
   //!
   //@Module DOTRIGHTDIVIDE Element-wise Right-Division Operator
+  //@@Section OPERATORS
   //@@Usage
   //Divides two numerical arrays (elementwise).  There are two forms
   //for its use, both with the same general syntax:
@@ -1640,6 +1644,7 @@ namespace FreeMat {
    */
   //!
   //@Module DOTLEFTDIVIDE Element-wise Left-Division Operator
+  //@@Section OPERATORS
   //@@Usage
   //Divides two numerical arrays (elementwise) - gets its name from the 
   //fact that the divisor is on the left.  There are two forms
@@ -1715,6 +1720,7 @@ namespace FreeMat {
    */
   //!
   //@Module DOTPOWER Element-wise Power Operator
+  //@@Section OPERATORS
   //@@Usage
   //Raises one numerical array to another array (elementwise).  There are three operators all with the same general syntax:
   //@[
@@ -1767,6 +1773,7 @@ namespace FreeMat {
    */
   //!
   //@Module COMPARISONOPS Array Comparison Operators
+  //@@Section OPERATORS
   //@@Usage
   //There are a total of six comparison operators available in FreeMat, all of which are binary operators with the following syntax
   //@[
@@ -2135,6 +2142,7 @@ namespace FreeMat {
    */
   //!
   //@Module LOGICALOPS Logical Array Operators
+  //@@Section OPERATORS
   //@@Usage
   //There are three Boolean operators available in FreeMat.  The syntax for their use is:
   //@[
@@ -2293,6 +2301,7 @@ namespace FreeMat {
    */
   //!
   //@Module TIMES Matrix Multiply Operator
+  //@@Section OPERATORS
   //@@Usage
   //Multiplies two numerical arrays.  This operator is really a combination
   //of three operators, all of which have the same general syntax:
@@ -2415,6 +2424,7 @@ namespace FreeMat {
    */
   //!
   //@Module LEFTDIVIDE Matrix Equation Solver/Divide Operator
+  //@@Section OPERATORS
   //@@Usage
   //The divide operator @|\| is really a combination of three
   //operators, all of which have the same general syntax:
@@ -2599,6 +2609,7 @@ namespace FreeMat {
    */
   //!
   //@Module RIGHTDIVIDE Matrix Equation Solver/Divide Operator
+  //@@Section OPERATORS
   //@@Usage
   //The divide operator @|/| is really a combination of three
   //operators, all of which have the same general syntax:
@@ -3705,6 +3716,7 @@ namespace FreeMat {
 
   //!
   //@Module HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator
+  //@@Section OPERATORS
   //@@Usage
   //Computes the Hermitian of the argument (a 2D matrix).  The syntax for its use is
   //@[
@@ -3739,6 +3751,7 @@ namespace FreeMat {
 
   //!
   //@Module TRANSPOSE Matrix Transpose Operator
+  //@@Section OPERATORS
   //@@Usage
   //Performs a transpose of the argument (a 2D matrix).  The syntax for its use is
   //@[
@@ -3827,6 +3840,7 @@ namespace FreeMat {
    */
   //!
   //@Module POWER Matrix Power Operator
+  //@@Section OPERATORS
   //@@Usage
   //The power operator for scalars and square matrices.  This operator is really a 
   //combination of two operators, both of which have the same general syntax:

@@ -713,6 +713,11 @@ namespace FreeMat {
      * (always false for reference and integer types)
      */
     bool anyNotFinite();
+    /**
+     * Returns the number of nonzero elements in the array.  For reference
+     * types, this is a best-guess.
+     */
+    int32 nnz();
   };
 
   void printObjectBalance();

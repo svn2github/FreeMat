@@ -38,6 +38,7 @@ namespace FreeMat {
 
   //!
   //@Module CD Change Working Directory Function
+  //@@Section OS
   //@@Usage
   //Changes the current working directory to the one specified as the argument.  The general syntax for its use is
   //@[
@@ -85,6 +86,7 @@ namespace FreeMat {
 
   //!
   //@Module LS/DIR List Files Function
+  //@@Section OS
   //@@Usage
   //Lists the files in a directory or directories.  The general syntax for its use is
   //@[
@@ -183,6 +185,7 @@ namespace FreeMat {
 
   //!
   //@Module PWD Print Working Directory Function
+  //@@Section OS
   //@@Usage
   //Returns a @|string| describing the current working directory.  The general syntax for its use is
   //@[
@@ -205,6 +208,7 @@ namespace FreeMat {
 
   //!
   //@Module GETPATH Get Current Search Path
+  //@@Section OS
   //@@Usage
   //Returns a @|string| containing the current FreeMat search path.  The general syntax for
   //its use is
@@ -230,6 +234,7 @@ namespace FreeMat {
 
   //!
   //@Module SETPATH Set Current Search Path
+  //@@Section OS
   //@@Usage
   //Changes the current FreeMat search path.  The general syntax for
   //its use is

@@ -25,6 +25,7 @@
 namespace FreeMat {
   //!
   //@Module INF Infinity Constant
+  //@@Section CONSTANTS
   //@@Usage
   //Returns a value that represents positive infinity 
   //for both 32 and 64-bit floating point values.
@@ -76,6 +77,7 @@ namespace FreeMat {
 
   //!
   //@Module NAN Not-a-Number Constant
+  //@@Section CONSTANTS
   //@@Usage
   //Returns a value that represents ``not-a-number'' for both 32 and 64-bit 
   //floating point values.  This constant is meant to represent the result of
@@ -111,6 +113,7 @@ namespace FreeMat {
   
   //!
   //@Module I-J Square Root of Negative One
+  //@@Section CONSTANTS
   //@@Usage
   //Returns a @|complex| value that represents the square root of -1.  There are two
   //functions that return the same value:
@@ -150,6 +153,7 @@ namespace FreeMat {
 
   //!
   //@Module PI Constant Pi
+  //@@Section CONSTANTS
   //@@Usage
   //Returns a @|double| (64-bit floating point number) value that represents pi (ratio between the circumference and diameter of a circle...).  Typical usage 
   //@[
@@ -172,6 +176,7 @@ namespace FreeMat {
 
   //!
   //@Module E Euler Constant (Base of Natural Logarithm)
+  //@@Section CONSTANTS
   //@@Usage
   //Returns a @|double| (64-bit floating point number) value that represents Euler's constant, the base of the natural logarithm.  Typical usage 
   //@[
@@ -194,6 +199,7 @@ namespace FreeMat {
 
   //!
   //@Module EPS Double Precision Floating Point Relative Machine Precision Epsilon
+  //@@Section CONSTANTS
   //@@Usage
   //Returns @|eps|, which quantifies the relative machine precision
   //of floating point numbers (a machine specific quantity).  The syntax
@@ -221,6 +227,7 @@ namespace FreeMat {
 
   //!
   //@Module FEPS Single Precision Floating Point Relative Machine Precision Epsilon
+  //@@Section CONSTANTS
   //@@Usage
   //Returns @|feps|, which quantifies the relative machine precision
   //of floating point numbers (a machine specific quantity).  The syntax

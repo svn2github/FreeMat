@@ -30,6 +30,7 @@
 namespace FreeMat {
   //!
   //@Module RESHAPE Reshape An Array
+  //@@Section ARRAY
   //@@Usage
   //Reshapes an array from one size to another. Two seperate 
   //syntaxes are possible.  The first syntax specifies the array 
@@ -128,6 +129,7 @@ namespace FreeMat {
   
   //!
   //@Module ZEROS Array of Zeros
+  //@@Section ARRAY
   //@@Usage
   //Creates an array of zeros of the specified size.  Two seperate 
   //syntaxes are possible.  The first syntax specifies the array 
@@ -216,6 +218,7 @@ namespace FreeMat {
 
   //!
   //@Module ONES Array of Ones
+  //@@Section ARRAY
   //@@Usage
   //Creates an array of ones of the specified size.  Two seperate 
   //syntaxes are possible.  The first syntax specifies the array 
@@ -310,6 +313,7 @@ namespace FreeMat {
 
   //!
   //@Module STRUCT Structure Array Constructor
+  //@@Section VARIABLES
   //@@Usage
   //Creates an array of structures from a set of field, value pairs.
   //The syntax is

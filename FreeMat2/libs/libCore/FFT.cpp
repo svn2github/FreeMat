@@ -221,6 +221,7 @@ namespace FreeMat {
 
   //!
   //@Module FFT (Inverse) Fast Fourier Transform Function
+  //@@Section TRANSFORMS
   //@@Usage
   //Computes the Discrete Fourier Transform (DFT) of a vector using the
   //Fast Fourier Transform technique.  The general syntax for its use is

@@ -26,6 +26,7 @@
 namespace FreeMat {
   //!
   //@Module STRCMP String Compare Function
+  //@@Section STRING
   //@@Usage
   //Compares two strings for equality.  The general
   //syntax for its use is

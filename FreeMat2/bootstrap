@@ -20,3 +20,7 @@ set -x
 aclocal
 automake --add-missing --copy
 autoconf
+cd libs/libffi
+aclocal
+automake --add-missing --copy
+autoconf

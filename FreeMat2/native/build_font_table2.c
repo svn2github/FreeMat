@@ -22,7 +22,11 @@ int main(int argc, char* argv[]) {
   int s_penx, s_peny;
   unsigned char *image;
   int kerningCount;
+  char buffer[1000];
   FILE *fp;
+  if (argc != 5) {
+    printf("Usage %s pfbfile size outputfile afmfile\n");
+      }
   if (FT_Init_FreeType(&library)) 
     ERROR("Unable to initialize FreeType library!");
   if (FT_New_Face(library,argv[1],0,&face))

@@ -14,8 +14,8 @@
 
 SHELL = /bin/sh
 
-srcdir = /cygdrive/c/FreeMat2/libs/libffi
-top_srcdir = /cygdrive/c/FreeMat2/libs/libffi
+srcdir = /Users/basu/FreeMat2/libs/libffi
+top_srcdir = /Users/basu/FreeMat2/libs/libffi
 prefix = /usr/local
 exec_prefix = ${prefix}
 
@@ -57,14 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = i686-pc-cygwin
-host_triplet = i686-pc-cygwin
+host_alias = powerpc-apple-darwin7.0.0
+host_triplet = powerpc-apple-darwin7.0.0
 AS = @AS@
 CC = gcc
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 DLLTOOL = @DLLTOOL@
-EXEEXT = .exe
+EXEEXT = 
 GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -77,10 +77,10 @@ PACKAGE = libffi
 RANLIB = ranlib
 SHELL = /bin/sh
 STRIP = strip
-TARGET = X86_WIN32
-TARGETDIR = x86
+TARGET = POWERPC_DARWIN
+TARGETDIR = powerpc
 VERSION = 2.00-beta
-libffi_basedir = /cygdrive/c/FreeMat2/libs/libffi
+libffi_basedir = /Users/basu/FreeMat2/libs/libffi
 
 AUTOMAKE_OPTIONS = cygnus
 
@@ -103,7 +103,7 @@ EXTRA_DIST = LICENSE ChangeLog.v1 src/mips/ffi.c src/mips/n32.S \
 		src/sh/ffi.c src/sh/sysv.S
 
 
-VPATH = /cygdrive/c/FreeMat2/libs/libffi:/cygdrive/c/FreeMat2/libs/libffi/src:/cygdrive/c/FreeMat2/libs/libffi/src/x86
+VPATH = /Users/basu/FreeMat2/libs/libffi:/Users/basu/FreeMat2/libs/libffi/src:/Users/basu/FreeMat2/libs/libffi/src/powerpc
 
 # Work around what appears to be a GNU make bug handling MAKEFLAGS
 # values defined in terms of make variables, as is the case for CC and
@@ -190,14 +190,14 @@ libffi_la_common_SOURCES = src/debug.c src/prep_cif.c src/types.c \
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_MIPS_LINUX)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_MIPS_SGI)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_X86)
-libffi_la_SOURCES = $(libffi_la_common_SOURCES) $(TARGET_SRC_X86_WIN32)
+#libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_X86_WIN32)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_SPARC)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_ALPHA)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_IA64)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_M68K)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC_AIX)
-#libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC_DARWIN)
+libffi_la_SOURCES = $(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC_DARWIN)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_ARM)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_S390)
 #libffi_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_X86_64)
@@ -206,14 +206,14 @@ libffi_la_SOURCES = $(libffi_la_common_SOURCES) $(TARGET_SRC_X86_WIN32)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_MIPS_LINUX)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_MIPS_SGI)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_X86)
-libffi_convenience_la_SOURCES = $(libffi_la_common_SOURCES) $(TARGET_SRC_X86_WIN32)
+#libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_X86_WIN32)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_SPARC)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_ALPHA)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_IA64)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_M68K)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC_AIX)
-#libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC_DARWIN)
+libffi_convenience_la_SOURCES = $(libffi_la_common_SOURCES) $(TARGET_SRC_POWERPC_DARWIN)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_ARM)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_S390)
 #libffi_convenience_la_SOURCES = #$(libffi_la_common_SOURCES) $(TARGET_SRC_X86_64)
@@ -251,11 +251,11 @@ libffi_convenience_la_LIBADD =
 #libffi_convenience_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
 #src/types.lo src/raw_api.lo src/java_raw_api.lo \
 #src/ia64/ffi.lo src/ia64/unix.lo
-#libffi_convenience_la_OBJECTS =  src/debug.lo \
-#src/prep_cif.lo src/types.lo src/raw_api.lo \
-#src/java_raw_api.lo src/powerpc/ffi_darwin.lo \
-#src/powerpc/darwin.lo \
-#src/powerpc/darwin_closure.lo
+libffi_convenience_la_OBJECTS =  src/debug.lo \
+src/prep_cif.lo src/types.lo src/raw_api.lo \
+src/java_raw_api.lo src/powerpc/ffi_darwin.lo \
+src/powerpc/darwin.lo \
+src/powerpc/darwin_closure.lo
 #libffi_convenience_la_OBJECTS =  src/debug.lo \
 #src/prep_cif.lo src/types.lo src/raw_api.lo \
 #src/java_raw_api.lo src/mips/ffi.lo src/mips/o32.lo \
@@ -272,9 +272,9 @@ libffi_convenience_la_LIBADD =
 #libffi_convenience_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
 #src/types.lo src/raw_api.lo src/java_raw_api.lo \
 #src/x86/ffi.lo src/x86/sysv.lo
-libffi_convenience_la_OBJECTS =  src/debug.lo \
-src/prep_cif.lo src/types.lo src/raw_api.lo \
-src/java_raw_api.lo src/x86/ffi.lo src/x86/win32.lo
+#libffi_convenience_la_OBJECTS =  src/debug.lo \
+#src/prep_cif.lo src/types.lo src/raw_api.lo \
+#src/java_raw_api.lo src/x86/ffi.lo src/x86/win32.lo
 #libffi_convenience_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
 #src/types.lo src/raw_api.lo src/java_raw_api.lo \
 #src/arm/sysv.lo src/arm/ffi.lo
@@ -303,10 +303,10 @@ libffi_la_LIBADD =
 #libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
 #src/types.lo src/raw_api.lo src/java_raw_api.lo \
 #src/ia64/ffi.lo src/ia64/unix.lo
-#libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
-#src/types.lo src/raw_api.lo src/java_raw_api.lo \
-#src/powerpc/ffi_darwin.lo src/powerpc/darwin.lo \
-#src/powerpc/darwin_closure.lo
+libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
+src/types.lo src/raw_api.lo src/java_raw_api.lo \
+src/powerpc/ffi_darwin.lo src/powerpc/darwin.lo \
+src/powerpc/darwin_closure.lo
 #libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
 #src/types.lo src/raw_api.lo src/java_raw_api.lo \
 #src/mips/ffi.lo src/mips/o32.lo src/mips/n32.lo
@@ -324,9 +324,9 @@ libffi_la_LIBADD =
 #libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo src/types.lo \
 #src/raw_api.lo src/java_raw_api.lo src/x86/ffi.lo \
 #src/x86/sysv.lo
-libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
-src/types.lo src/raw_api.lo src/java_raw_api.lo \
-src/x86/ffi.lo src/x86/win32.lo
+#libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo \
+#src/types.lo src/raw_api.lo src/java_raw_api.lo \
+#src/x86/ffi.lo src/x86/win32.lo
 #libffi_la_OBJECTS =  src/debug.lo src/prep_cif.lo src/types.lo \
 #src/raw_api.lo src/java_raw_api.lo src/arm/sysv.lo \
 #src/arm/ffi.lo

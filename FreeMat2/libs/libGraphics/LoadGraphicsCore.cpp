@@ -34,6 +34,10 @@ namespace FreeMat {
     args.clear();
     context->addFunction("plot",PlotFunction,-1,0,args);
     args.clear();
+    args.push_back("height");
+    args.push_back("width");
+    context->addFunction("sizeplot",SizePlotFunction,2,0,args);
+    args.clear();
     args.push_back("label");    
     context->addFunction("xlabel",XLabelFunction,1,0,args);
     context->addFunction("ylabel",YLabelFunction,1,0,args);
@@ -54,6 +58,10 @@ namespace FreeMat {
     args.clear();
     args.push_back("x");        
     context->addFunction("image",ImageFunction,1,0,args);
+    args.clear();
+    args.push_back("height");
+    args.push_back("width");
+    context->addFunction("sizeimage",SizeImageFunction,2,0,args);
     //     args.clear();
     //     args.push_back("x");        
     //     context->addFunction("volume",VolumeFunction,1,0,args);

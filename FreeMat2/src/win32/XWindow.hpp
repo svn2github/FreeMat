@@ -37,7 +37,6 @@ class XWindow {
   void SetSize(int w, int h);
   int GetState();
   void Refresh();
-  void UpdateContents(unsigned char *data, int width, int height);
   WindowType GetWindowType() {return m_type;}
   void SetTheCursor();
   virtual void OnSize() {};

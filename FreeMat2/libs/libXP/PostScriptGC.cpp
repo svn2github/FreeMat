@@ -1,4 +1,5 @@
 #include "PostScriptGC.hpp"
+#include "helv_table.c"
 
 Point2D PostScriptGC::ToPS(Point2D p) {
   return Point2D(p.x,m_height-1-p.y);
@@ -14,17 +15,16 @@ void PostScriptGC::DoRect(Rect2D p) {
 
 void PostScriptGC::RefreshGS() {
   SetForeGroundColor(m_fg);
-  SetFont(m_fontname,m_fontsize);
+  SetFont(m_fontsize);
   SetLineStyle(m_lst);
 }
 
-PostScriptGC::PostScriptGC(std::string filename, int width, int height) :
-  c_font("swiss",12) {
+PostScriptGC::PostScriptGC(std::string filename, int width, int height) {
+  InitializeFontTable();
   m_width = width;
   m_height = height;
   m_bg = Color(255,255,25);
   m_fg = Color(0,0,0);
-  m_fontname = "swiss";
   m_fontsize = 12;
   fp = fopen(filename.c_str(),"w");
   if (!fp) {
@@ -52,26 +52,35 @@ Point2D PostScriptGC::GetCanvasSize() {
   return Point2D(m_width,m_height);
 }
 
+int GetKerningData(int glyph1, int glyph2) {
+  int i;
+  i = 0;
+  while (i<KERNCOUNT) {
+    if ((kernglyph1[i] == glyph1) && (kernglyph2[i] == glyph2))
+      return kerndelta[i];
+    i++;
+  }
+  return 0;
+}
+
 Point2D PostScriptGC::GetTextExtent(std::string text) {
-  FM_Glyph *currentFont;
   int penx;
   int stringheight, charheight;
   int len, i, g1, g2;
+  int scalefact;
   
-  currentFont = c_font.GetGlyphPointer();
   penx = 0;
   len = text.size();
   stringheight = 0;
+  scalefact = 64*12;
   for (i=0;i<len-1;i++) {
     g1 = text[i];
     g2 = text[i+1];
-    penx += (currentFont[g1].advance_x + currentFont[g1].kerning_x[g2]) >> 6;
-    charheight = currentFont[g1].offset_top;
-    stringheight = (stringheight > charheight) ? stringheight : charheight;
+    penx += (glyph_x[g1] + GetKerningData(g1,g2));
   }
   g1 = text[len-1];
-  penx += currentFont[g1].offset_left + currentFont[g1].width;
-  return Point2D(penx,stringheight);
+  penx += glyph_x[g1];
+  return Point2D(penx*m_fontsize/scalefact,m_fontsize);
 }
 
 void PostScriptGC::DrawTextString(std::string text, Point2D pos, OrientationType orient) {
@@ -95,18 +104,9 @@ void PostScriptGC::DrawTextString(std::string text, Point2D pos, OrientationType
   fprintf(fp,"grestore\n");
 }
 
-void PostScriptGC::SetFont(std::string fontname, int fontsize) {
-  if (fontname == "swiss") {
-    fprintf(fp,"/Helvetica findfont\n%d scalefont\nsetfont\n",fontsize);
-  } else {
-    fprintf(stderr,"Unrecognized font name %s\n",fontname.c_str());
-    exit(1);
-  }
-  if ((fontname != m_fontname) || (fontsize != m_fontsize)) {
-    c_font = BitmapFont(fontname,fontsize);
-    m_fontname = fontname;
-    m_fontsize = fontsize;
-  }
+void PostScriptGC::SetFont(int fontsize) {
+  fprintf(fp,"/Helvetica findfont\n%d scalefont\nsetfont\n",fontsize);
+  m_fontsize = fontsize;
 }
 
 Color PostScriptGC::SetBackGroundColor(Color col) {
@@ -204,70 +204,3 @@ Rect2D PostScriptGC::PopClippingRegion() {
   return ret;
 }
 
-void PostScriptGC::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
-  int width;
-  int height;
-  int linelen;
-  int outcount;
-  int remaining;
-  int n;
-  byte *data;
-  width = img.GetWidth();
-  height = img.GetHeight();
-  data = img.GetPixelData();
-  pos = ToPS(pos);
-  fprintf(fp,"/picstr %d string def\n",width);
-  fprintf(fp,"gsave\n");
-  fprintf(fp,"%d %d translate\n",pos.x,pos.y-height+1);
-  fprintf(fp,"%d %d scale\n",width,height);
-  fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
-  fprintf(fp,"{currentfile picstr readhexstring pop} \n");
-  fprintf(fp,"image\n");
-  outcount = 0;
-  remaining = width*height;
-  while (remaining>0) {
-    linelen = 30;
-    if (linelen>remaining)
-      linelen = remaining;
-    remaining -= linelen;
-    for (n=outcount;n<outcount+linelen;n++) 
-      fprintf(fp,"%02x",data[n]);
-    outcount += linelen;
-    fprintf(fp,"\n");
-  }
-  fprintf(fp,"grestore\n");
-}
-
-void PostScriptGC::BlitRGBImage(Point2D pos, RGBImage &img) {
-  int width;
-  int height;
-  int linelen;
-  int outcount;
-  int remaining;
-  int n;
-  byte *data;
-  width = img.GetWidth();
-  height = img.GetHeight();
-  data = img.GetPixelData();
-  pos = ToPS(pos);
-  fprintf(fp,"/picstr %d string def\n",3*width);
-  fprintf(fp,"gsave\n");
-  fprintf(fp,"%d %d translate\n",pos.x,pos.y-height);
-  fprintf(fp,"%d %d scale\n",width,height);
-  fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
-  fprintf(fp,"{currentfile picstr readhexstring pop} \n",width);
-  fprintf(fp,"false 3 colorimage\n");
-  outcount = 0;
-  remaining = width*height;
-  while (remaining>0) {
-    linelen = 10;
-    if (linelen>remaining)
-      linelen = remaining;
-    remaining -= linelen;
-    for (n=outcount;n<outcount+linelen;n++) 
-      fprintf(fp,"%02x%02x%02x",data[3*n],data[3*n+1],data[3*n+2]);
-    outcount += linelen;
-    fprintf(fp,"\n");
-  }
-  fprintf(fp,"grestore\n");
-}

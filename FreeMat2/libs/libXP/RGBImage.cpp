@@ -1,20 +1,12 @@
 #include "RGBImage.hpp"
 
-#ifdef HAVE_PNG
 #include <png.h>
-#endif
-
-#ifdef HAVE_JPEG
 extern "C" {
 #include <jpeglib.h>
 }
-#endif
-
-#ifdef HAVE_TIFF
 extern "C" {
 #include <tiffio.h>
 }
-#endif
 
 #include <stdio.h>
 #include "Exception.hpp"
@@ -201,9 +193,6 @@ void RGBImage::WriteJPEG(std::string filename) {
 }
 
 void WritePNGFile(std::string filename, byte *data, int width, int height) {
-#ifndef HAVE_PNG
-  throw FreeMat::Exception("PNG support not available.");
-#else
   png_structp png_ptr;
   png_infop info_ptr;
   int number_of_passes;
@@ -238,13 +227,9 @@ void WritePNGFile(std::string filename, byte *data, int width, int height) {
     throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   png_write_end(png_ptr, NULL);
   fclose(fp);
-#endif
 }
 
 void WriteJPEGFile(std::string filename, byte *data, int width, int height) {
-#ifndef HAVE_JPEG
-  throw FreeMat::Exception("JPEG support not available.");
-#else
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
   /* More stuff */
@@ -271,13 +256,9 @@ void WriteJPEGFile(std::string filename, byte *data, int width, int height) {
   jpeg_finish_compress(&cinfo);
   fclose(outfile);
   jpeg_destroy_compress(&cinfo);
-#endif
 }
 
 void WriteTIFFFile(std::string filename, byte *data, int width, int height) {
-#ifndef HAVE_TIFF
-  throw FreeMat::Exception("TIFF support not available.");
-#else
   TIFF *output;
   // Open the output image
   if((output = TIFFOpen(filename.c_str(), "w")) == NULL)
@@ -294,6 +275,47 @@ void WriteTIFFFile(std::string filename, byte *data, int width, int height) {
   if(TIFFWriteEncodedStrip(output, 0, data, width * height * 3) == 0)
     throw FreeMat::Exception(std::string("Could not write image ") + filename);
   TIFFClose(output);
-#endif
+}
+
+void WriteEPSFile(std::string filename, byte *data, int width, int height) {
+  int linelen;
+  int outcount;
+  int remaining;
+  int n;
+  FILE *fp = fopen(filename.c_str(),"w");
+  if (!fp)
+    throw FreeMat::Exception(std::string("Error: unable to open file ") + filename + "for writing");
+  // Emit standard header stuff
+  fprintf(fp,"%%!PS-Adobe-3.0 EPSF-3.0\n");
+  fprintf(fp,"%%%%Creator: FreeMat\n");
+  fprintf(fp,"%%%%Title: %s\n",filename.c_str());
+  fprintf(fp,"%%%%DocumentData: Clean7Bit\n");
+  fprintf(fp,"%%%%Origin 0 0\n");
+  fprintf(fp,"%%%%BoundingBox: 0 0 %d %d\n",width,height);
+  fprintf(fp,"%%%%LanguageLevel: 2\n");
+  fprintf(fp,"%%%%Pages: 1\n");
+  fprintf(fp,"%%%%Page: 1 1\n");
+  fprintf(fp,"/picstr %d string def\n",3*width);
+  fprintf(fp,"gsave\n");
+  fprintf(fp,"0 0 translate\n");
+  fprintf(fp,"%d %d scale\n",width,height);
+  fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
+  fprintf(fp,"{currentfile picstr readhexstring pop} \n");
+  fprintf(fp,"false 3 colorimage\n");
+  outcount = 0;
+  remaining = width*height;
+  while (remaining>0) {
+    linelen = 10;
+    if (linelen>remaining)
+      linelen = remaining;
+    remaining -= linelen;
+    for (n=outcount;n<outcount+linelen;n++) 
+      fprintf(fp,"%02x%02x%02x",data[3*n],data[3*n+1],data[3*n+2]);
+    outcount += linelen;
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"grestore\n");  
+  fprintf(fp,"%%%%EOF\n");
+  fclose(fp);  
 }
 

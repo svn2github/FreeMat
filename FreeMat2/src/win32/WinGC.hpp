@@ -23,8 +23,6 @@ public:
   virtual void DrawLines(std::vector<Point2D> pts);
   virtual void PushClippingRegion(Rect2D rect);
   virtual Rect2D PopClippingRegion();
-  virtual void BlitGrayscaleImage(Point2D pos, GrayscaleImage &img);
-  virtual void BlitRGBImage(Point2D pos, RGBImage &img);
 private:
   HDC hdc;
   int m_width;

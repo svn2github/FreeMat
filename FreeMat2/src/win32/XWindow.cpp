@@ -157,14 +157,6 @@ void XWindow::SetTitle(std::string title) {
 void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
 }
 
-void XWindow::UpdateContents(unsigned char *data, int width, int height) {
-   HDC hdc = GetDC(m_window);
-   WinGC wgc(hdc, m_width, m_height);
-   OnDraw(wgc);
-   ReleaseDC(m_window, hdc);
-}
-
-
 void XWindow::SetImage(unsigned char *data, int width, int height) {
   // Check for PseudoColor visual
   //  if ((m_visual->c_class != TrueColor) &&
@@ -389,4 +381,5 @@ void FlushWindowEvents() {
       DispatchMessage(&msg);
   }
 }
+
 

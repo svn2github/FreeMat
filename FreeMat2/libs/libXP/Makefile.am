@@ -12,8 +12,6 @@ RGBImage.cpp \
 RGBImage.hpp \
 Rect2D.cpp \
 Rect2D.hpp \
-RGBImageGC.cpp \
-RGBImageGC.hpp \
 PostScriptGC.cpp \
 PostScriptGC.hpp \
 Point2D.cpp \
@@ -21,8 +19,6 @@ Point2D.hpp \
 GraphicsContext.hpp \
 Color.cpp \
 Color.hpp \
-BitmapFont.cpp \
-BitmapFont.hpp \
 Reducer.hpp \
 Reducer.cpp \
 KeyManager.cpp \

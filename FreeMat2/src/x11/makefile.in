@@ -105,7 +105,8 @@ miniblasdir = @miniblasdir@
 minilapackdir = @minilapackdir@
 mpidir = @mpidir@
 CFLAGS = @CFLAGS@ 
-CXXFLAGS = @CXXFLAGS@   -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP
+CXXFLAGS = @CXXFLAGS@ 
+INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP
 
 bin_PROGRAMS = FreeMat
 
@@ -113,7 +114,9 @@ FreeMat_SOURCES = main.cpp \
 Terminal.cpp \
 Terminal.hpp \
 XWindow.cpp \
-XWindow.hpp
+XWindow.hpp \
+XGC.hpp \
+XGC.cpp
 
 
 FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/.libs/libffi_convenience.a @top_builddir@/libs/libXP/libXP.a
@@ -124,7 +127,8 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = FreeMat$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_FreeMat_OBJECTS = main.$(OBJEXT) Terminal.$(OBJEXT) XWindow.$(OBJEXT)
+am_FreeMat_OBJECTS = main.$(OBJEXT) Terminal.$(OBJEXT) XWindow.$(OBJEXT) \
+	XGC.$(OBJEXT)
 FreeMat_OBJECTS = $(am_FreeMat_OBJECTS)
 FreeMat_LDFLAGS =
 
@@ -135,8 +139,8 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Terminal.Po ./$(DEPDIR)/XWindow.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/main.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Terminal.Po ./$(DEPDIR)/XGC.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/XWindow.Po ./$(DEPDIR)/main.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -194,6 +198,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Terminal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XGC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XWindow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 

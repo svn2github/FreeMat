@@ -202,7 +202,7 @@ namespace FreeMat {
     int width = getWidth();
     int height = getHeight();
 
-    gc.SetFont("swiss",12);
+    gc.SetFont(12);
 
     int client_y_offset = 0;
     int client_x_offset = 0;

@@ -178,9 +178,3 @@ Rect2D WinGC::PopClippingRegion() {
   return rect;
 }
 
-void WinGC::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
-}
-
-void WinGC::BlitRGBImage(Point2D pos, RGBImage &img) {
-}
-

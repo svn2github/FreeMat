@@ -152,6 +152,21 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  ArrayVector SizeImageFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 2)
+      throw Exception("sizeimage function takes two arguments: height and width");
+    Array w(arg[1]);
+    Array h(arg[0]);
+    int width;
+    int height;
+    width = w.getContentsAsIntegerScalar();
+    height = h.getContentsAsIntegerScalar();
+    ScalarImage *f;
+    f = GetCurrentImage();
+    f->SetSize(width,height);
+    return ArrayVector();
+  }
+
   ArrayVector ImageFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("image function takes a single argument");

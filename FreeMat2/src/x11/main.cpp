@@ -1,7 +1,6 @@
 #include <X11/Xlib.h>
 #include <unistd.h>
 #include "XWindow.hpp"
-#include "BitmapFont.hpp"
 #include "Terminal.hpp"
 #include <stdio.h>
 #include "Module.hpp"
@@ -70,7 +69,6 @@ int main(int argc, char *argv[]) {
   std::string paths;
 
   paths = GetApplicationPath(argv[0]);
-  XPSetFontPath(paths);
   
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);

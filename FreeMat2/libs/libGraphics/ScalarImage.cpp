@@ -42,7 +42,6 @@ namespace FreeMat {
     SetTitle(buffer);  
     zoomImage = NULL;
     picData = NULL;
-	PrintMe("Hello.eps");
   }
   
   ScalarImage::~ScalarImage() {

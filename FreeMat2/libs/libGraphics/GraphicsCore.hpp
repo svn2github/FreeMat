@@ -35,6 +35,8 @@ namespace FreeMat {
   ArrayVector UseImageFunction(int,const ArrayVector& arg);
   ArrayVector CloseImageFunction(int,const ArrayVector& arg);
   ArrayVector ImageFunction(int,const ArrayVector& arg);
+  ArrayVector SizeImageFunction(int,const ArrayVector& arg);
+  ArrayVector SizePlotFunction(int,const ArrayVector& arg);
   ArrayVector NewVolumeFunction(int,const ArrayVector& arg);
   ArrayVector UseVolumeFunction(int,const ArrayVector& arg);
   ArrayVector CloseVolumeFunction(int,const ArrayVector& arg);

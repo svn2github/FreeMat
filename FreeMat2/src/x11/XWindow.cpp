@@ -5,9 +5,10 @@
 #include <iostream>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
-#include "RGBImageGC.hpp"
+//#include "RGBImageGC.hpp"
 #include "PostScriptGC.hpp"
 #include "Exception.hpp"
+#include "XGC.hpp"
 
 static bool firstWindow = true;
 Atom proto_atom, delete_atom;
@@ -63,9 +64,8 @@ XWindow::XWindow(WindowType wtype) {
   if ((proto_atom != None) && (delete_atom != None))
     XChangeProperty(m_display, m_window, proto_atom, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *)&delete_atom, 1);
-  current_fontname = "none";
-  current_fontsize = 0;
   bitmapActive = false;
+  m_bitmap_contents = NULL;
 }
 
 void XWindow::Raise() {
@@ -103,8 +103,10 @@ void XWindow::OnExpose(int x, int y, int w, int h) {
   if ((m_type == BitmapWindow)  && bitmapActive)
     XCopyArea(m_display, m_pixmap, m_window, m_gc,
   	      x, y, w, h, x, y);
-  else
-    OnDraw(*this);
+  else {
+    XGC xgc(m_display,m_window,m_gc,m_width, m_height);
+    OnDraw(xgc);
+  }
 }
 
 void XWindow::Refresh() {
@@ -195,14 +197,10 @@ void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;
   m_width = w;
   m_height = h;
-  if (m_type == BitmapWindow)
-    OnDraw(*this);
-//   // Update the contents.
-//   unsigned char *data;
-//   data = (unsigned char *) malloc(3*sizeof(char)*w*h);
-//   UpdateContents(data,w,h);
-//   SetImage(data,w,h);
-//   free(data);
+  if (m_type == BitmapWindow) {
+    XGC xgc(m_display, m_window, m_gc, m_width, m_height);
+    OnDraw(xgc);
+  }
   OnSize();
   XClearArea(m_display, m_window, 0, 0, w, h, True);
   XFlush(m_display);
@@ -281,50 +279,106 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
   bitmapActive = true;
 }
 
-void XWindow::UpdateContents(unsigned char *data, int width, int height) {
-  OnDraw(*this);
-//   RGBImage img(width, height, data);
-//   RGBImageGC gc(img);
-//   img.SetAllPixels(Color("light grey"));
-//   OnDraw(gc);
+int GetShiftFromMask(int mask) {
+  if (mask == 0) return 0;
+  int shift = 0;
+  while (!(mask & 1)) {
+    shift++;
+    mask >>= 1;
+  }
+  return shift;
 }
 
 void XWindow::PrintMe(std::string filename) {
   XSync(m_display, False);  
+  if (m_type == BitmapWindow && m_bitmap_contents == NULL)
+    throw FreeMat::Exception("Cannot print empty image window!\n");
   // Logic to detect print mode..
   int np;
+  unsigned char *data;
   np = filename.find_last_of(".");
   if (np > 0) {
     std::string extension(filename.substr(np));
     transform (extension.begin(), extension.end(), 
 	       extension.begin(), tolower);
     if (extension == ".eps" || extension == ".ps") {
-      PostScriptGC gc(filename, m_width, m_height);
-      OnDraw(gc);
+      if (m_type == VectorWindow) {
+	PostScriptGC gc(filename, m_width, m_height);
+	OnDraw(gc);
+      } else
+	WriteEPSFile(filename, m_bitmap_contents, m_width, m_height);
     } else {
-      unsigned char *data;
-      data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
-      RGBImage img(m_width, m_height, data);
-      RGBImageGC gc(img);
-      img.SetAllPixels(Color("light grey"));
-      OnDraw(gc);
-      if (extension == ".jpeg" || extension == ".jpg") {
-	img.WriteJPEG(filename);
-	// JPEG
-      } else if (extension == ".png") {
-	img.WritePNG(filename);
-	// PNG
-      } else if (extension == ".tiff" || extension == ".tif") {
-	img.WriteTIFF(filename);
-	// TIFF
-      } else if (extension == ".ppm" || extension == ".pnm") {
-	img.WritePPM(filename);
-	// PPM
+      if (m_type == VectorWindow) {
+	Pixmap pmap;
+	pmap = XCreatePixmap(m_display, m_window, m_width, m_height, 
+			     DefaultDepth(m_display, 0));
+	GC gc;
+	XGCValues gcv;
+	gcv.function = GXcopy;
+	gc = XCreateGC(m_display, pmap, GCFunction, &gcv);
+	XGC xgc(m_display, pmap, gc, m_width, m_height);
+	OnDraw(xgc);
+	// Ask the server to capture the contents of the pixmap into
+	// an XImage and send it back to us...
+	XImage *img = XGetImage(m_display, pmap, 0, 0, m_width, m_height,
+				~0, ZPixmap);
+	data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
+	// What we do now depends on the visual type.  For pseudocolor
+	// visuals, we retrieve the current colormap
+	if (m_visual->c_class == PseudoColor) {
+	  XColor *cvals = (XColor*) malloc(sizeof(XColor)*m_visual->map_entries);
+	  for (int m=0;m<m_visual->map_entries;m++)
+	    cvals[m].pixel = m;
+	  XQueryColors(m_display, DefaultColormap(m_display, 0), cvals, 
+		       m_visual->map_entries);
+	  // Then we directly convert the image data...	
+	  for (int y=0;y<m_height;y++)
+	    for (int x=0;x<m_width;x++) {
+	      unsigned long pixel = XGetPixel(img, x, y);
+	      data[3*(y*m_width+x)] = cvals[pixel].red >> 8;
+	      data[3*(y*m_width+x)+1] = cvals[pixel].green >> 8;
+	      data[3*(y*m_width+x)+2] = cvals[pixel].blue >> 8;
+	    }
+	  free(cvals);
+	} else {
+	  // For TrueColor and DirectColor, we do the pixel conversion
+	  // manually - we assume that there are no more than 8 bits
+	  // per primary...
+	  unsigned int red_mask, green_mask, blue_mask;
+	  unsigned int red_shift, green_shift, blue_shift;
+	  float red_scale, green_scale, blue_scale;
+	  red_mask = m_visual->red_mask;
+	  green_mask = m_visual->green_mask;
+	  blue_mask = m_visual->blue_mask;
+	  red_shift = GetShiftFromMask(red_mask);
+	  green_shift = GetShiftFromMask(green_mask);
+	  blue_shift = GetShiftFromMask(blue_mask);
+	  red_scale = 255.0/(red_mask >> red_shift);
+	  green_scale = 255.0/(green_mask >> green_shift);
+	  blue_scale = 255.0/(blue_mask >> blue_shift);
+	  for (int y=0;y<m_height;y++)
+	    for (int x=0;x<m_width;x++) {
+	      unsigned long pixel = XGetPixel(img, x, y);
+	      data[3*(y*m_width+x)] = red_scale*((pixel & red_mask) >> red_shift);
+	      data[3*(y*m_width+x)+1] = green_scale*((pixel & green_mask) >> 
+						     green_shift);
+	      data[3*(y*m_width+x)+2] = blue_scale*((pixel & blue_mask) >>
+						    blue_shift);
+	    }
+	}
+	XDestroyImage(img);
+	XFreeGC(m_display, gc);
       } else {
-	free(data);
-	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
+	data = m_bitmap_contents;
       }
-      free(data);
+      if (extension == ".jpeg" || extension == ".jpg") 
+	WriteJPEGFile(filename, data, m_width, m_height);
+      else if (extension == ".png")
+	WritePNGFile(filename, data, m_width, m_height);
+      else if (extension == ".tiff" || extension == ".tif")
+	WriteTIFFFile(filename, data, m_width, m_height);      
+      if (m_type == VectorWindow)
+	free(data);
     }
   } else
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
@@ -334,6 +388,7 @@ void XWindow::PrintMe(std::string filename) {
 // Depending on the visual, this image is converted into an XImage
 // and a colormap is set for the window.
 void XWindow::SetImage(unsigned char *data, int width, int height) {
+  m_bitmap_contents = data;
   // Check for PseudoColor visual
   if ((m_visual->c_class != TrueColor) &&
       (m_visual->c_class != DirectColor)) {
@@ -346,10 +401,18 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
   char *ddata = (char*) malloc(width*height*dpixlen);
   XImage *m_image = XCreateImage(m_display, m_visual, ddepth, ZPixmap, 0, 
 				 ddata, width, height, 8, 0);
-  float rratio, gratio, bratio;
-  rratio = m_image->red_mask/255.0;
-  gratio = m_image->green_mask/255.0;
-  bratio = m_image->blue_mask/255.0;
+  int red_mask, green_mask, blue_mask;
+  unsigned int red_shift, green_shift, blue_shift;
+  float red_scale, green_scale, blue_scale;
+  red_mask = m_image->red_mask;
+  green_mask = m_image->green_mask;
+  blue_mask = m_image->blue_mask;
+  red_shift = GetShiftFromMask(red_mask);
+  green_shift = GetShiftFromMask(green_mask);
+  blue_shift = GetShiftFromMask(blue_mask);
+  red_scale = (red_mask >> red_shift)/255.0;
+  green_scale = (green_mask >> green_shift)/255.0;
+  blue_scale = (blue_mask >> blue_shift)/255.0;
   unsigned long pixval;
   unsigned char red, green, blue;
   unsigned char *source_data;
@@ -359,9 +422,9 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
       red = *source_data++;
       green = *source_data++;
       blue = *source_data++;
-      pixval = ((unsigned long) (red * rratio)) & m_image->red_mask |
-	((unsigned long) (green * gratio)) & m_image->green_mask |
-	((unsigned long) (blue * bratio)) & m_image->blue_mask;
+      pixval = ((((unsigned long) (red * red_scale)) << red_shift) & red_mask) |
+	((((unsigned long) (green * green_scale)) << green_shift) & green_mask) |
+	((((unsigned long) (blue * blue_scale)) << blue_shift) & blue_mask);
       XPutPixel(m_image,x,y,pixval);
     }
   // Convert the image to a pixmap
@@ -412,213 +475,6 @@ void XWindow::GetBox(int &x1, int &y1, int &x2, int &y2) {
   y1 = m_box_y1;
   y2 = m_box_y2;
   XUndefineCursor(m_display, m_window);
-}
-
-Point2D XWindow::GetCanvasSize() {
-  return Point2D(m_width,m_height);
-}
-
-Point2D XWindow::GetTextExtent(std::string label) {
-  return Point2D(XTextWidth(font_info, label.c_str(), label.size()),
-		 font_info->ascent + font_info->descent);
-}
-
-void XWindow::DrawTextString(std::string label, Point2D pos, OrientationType orient) {
-  if (orient == ORIENT_0) {
-    XDrawString(m_display, m_window, m_gc, pos.x, pos.y, 
-		label.c_str(), label.size());
-    return;
-  }
-  if (orient == ORIENT_90) {
-    // Get the size of the string
-    Point2D stringSize(GetTextExtent(label));
-    // Create a bitmap of this size
-    Pixmap bitmap, rotbitmap;
-    bitmap = XCreatePixmap(m_display, m_window, stringSize.x, 
-			   stringSize.y, 1);
-    rotbitmap = XCreatePixmap(m_display, m_window, stringSize.y, 
-			   stringSize.x, 1);
-    if (!bitmap) throw 
-      FreeMat::Exception("Unable to create bitmap for rotated text!\n");
-    GC fontgc;
-    fontgc = XCreateGC(m_display, bitmap, 0, NULL);
-    XSetForeground(m_display, fontgc, WhitePixel(m_display, 0));
-    XFillRectangle(m_display, bitmap, fontgc, 0, 0, 
-		   stringSize.x, stringSize.y);
-    XSetForeground(m_display, fontgc, BlackPixel(m_display, 0));
-    XDrawString(m_display, bitmap, fontgc, font_info->max_bounds.lbearing, 
-		font_info->ascent, label.c_str(), label.size());
-    XImage *I1;
-    I1 = XGetImage(m_display, bitmap, 0, 0, stringSize.x, 
-		   stringSize.y, 1, XYPixmap);
-    I1->format = XYBitmap;
-    int rotw, roth;
-    rotw = stringSize.y;
-    roth = stringSize.x;
-    int bytew;
-    bytew = (rotw-1)/8 + 1;
-    unsigned char *bitdata2;
-    bitdata2=(unsigned char *) malloc((unsigned)(bytew * roth));
-    XImage *I2;
-    I2 = XCreateImage(m_display, DefaultVisual(m_display, 0),
-		      1, XYBitmap, 0, (char*) bitdata2, rotw, roth, 8, 0);
-    memset(bitdata2, 255, bytew*roth);
-    for (int j=0;j<rotw;j++)
-      for (int i=0;i<roth;i++) 
-	XPutPixel(I2, j, roth-i-1, XGetPixel(I1, i, j));
-    XSetForeground(m_display, fontgc, WhitePixel(m_display, 0));
-    XFillRectangle(m_display, rotbitmap, fontgc, 0, 0, roth, rotw);
-    XSetForeground(m_display, fontgc, BlackPixel(m_display, 0));
-    XPutImage(m_display, rotbitmap, fontgc, I2, 0, 0, 0, 0, rotw, roth);
-    XSetStipple(m_display, m_gc, rotbitmap);
-    XSetFillStyle(m_display, m_gc, FillStippled);
-    int newx, newy;
-    newx = pos.x - rotw;
-    newy = pos.y - roth;
-    XSetTSOrigin(m_display, m_gc, newx, newy);
-    XFillRectangle(m_display, m_window, m_gc, newx, newy, rotw, roth);
-    XSetFillStyle(m_display, m_gc, FillSolid);
-    XDestroyImage(I1);
-    XDestroyImage(I2);
-    XFreePixmap(m_display,bitmap);
-    XFreePixmap(m_display,rotbitmap);
-    XFreeGC(m_display,fontgc);
-  }
-}
-
-void XWindow::SetFont(std::string fontname, int fontsize) {
-  if ((fontname == current_fontname) && (fontsize == current_fontsize))
-    return;
-  char buffer[1000];
-  sprintf(buffer,"-adobe-helvetica-medium-r-normal--%d-*",fontsize);
-  //   sprintf(buffer,"-adobe-helvetica-medium-r-normal--[%f %f %f %f]-*",
-  // 	  0,fontsize/10.0,fontsize/10.0,0);
-  //sprintf(buffer,"-*-helvetica-*-%d-*",fontsize);
-  int cnt;
-  char **flist = XListFonts(m_display, buffer, 1000, &cnt);
-  if (cnt == 0) {
-    printf("No match on font name\r\n");
-    return;
-  }
-  font_info = XLoadQueryFont(m_display, flist[0]);
-  XSetFont(m_display, m_gc, font_info->fid);
-  XFreeFontNames(flist);
-}
-
-Color XWindow::SetBackGroundColor(Color col) {
-  Color retsave(bg);
-  bg = col;
-  XColor t;
-  t.red = col.red * 257;
-  t.green = col.green * 257;
-  t.blue = col.blue * 257;
-  XAllocColor(m_display, DefaultColormap(m_display, 0), &t);
-  XSetBackground(m_display, m_gc, t.pixel);
-  return retsave;
-}
-
-Color XWindow::SetForeGroundColor(Color col) {
-  Color retsave(fg);
-  fg = col;
-  XColor t;
-  t.red = col.red * 257;
-  t.green = col.green * 257;
-  t.blue = col.blue * 257;
-  XAllocColor(m_display, DefaultColormap(m_display, 0), &t);
-  XSetForeground(m_display, m_gc, t.pixel);
-  return retsave;
-}
-
-LineStyleType XWindow::SetLineStyle(LineStyleType style) {
-  unsigned char line_dashed_list[2] = {4, 4};
-  unsigned char line_dotted_list[2] = {3, 1};
-  unsigned char line_dash_dot_list[4] = {3, 4, 3, 1};
-  LineStyleType retsav(ls);
-  ls = style;
-  switch (ls) {
-  case LINE_SOLID:
-    XSetLineAttributes(m_display, m_gc, 1, LineSolid, CapButt, JoinMiter);
-    break;
-  case LINE_DASHED:
-    XSetDashes(m_display, m_gc, 0, (const char*) line_dashed_list, 2);
-    break;
-  case LINE_DOTTED:
-    XSetDashes(m_display, m_gc, 0, (const char*) line_dotted_list, 2);
-    break;
-  case LINE_DASH_DOT:
-    XSetDashes(m_display, m_gc, 0, (const char*) line_dash_dot_list, 4);
-    break;
-  }
-  return retsav;
-}
-
-void XWindow::DrawLine(Point2D pos1, Point2D pos2) {
-  XDrawLine(m_display, m_window, m_gc, pos1.x, pos1.y, pos2.x, pos2.y);
-}
-
-void XWindow::DrawPoint(Point2D pos) {
-  XDrawPoint(m_display, m_window, m_gc, pos.x, pos.y);
-}
-
-void XWindow::DrawCircle(Point2D pos, int radius) {
-  XDrawArc(m_display, m_window, m_gc, pos.x - radius, pos.y - radius, radius*2, 
-	   radius*2 , 0, 64*360);
-}
-
-void XWindow::DrawRectangle(Rect2D rect) {
-  XDrawRectangle(m_display, m_window, m_gc, rect.x1, rect.y1, rect.width, rect.height);
-}
-
-void XWindow::FillRectangle(Rect2D rect) {
-  XFillRectangle(m_display, m_window, m_gc, rect.x1, rect.y1, rect.width, rect.height);
-}
-
-void XWindow::DrawLines(std::vector<Point2D> pts) {
-  XPoint *t;
-  t = (XPoint*) malloc(sizeof(XPoint)*pts.size());
-  int i;
-  for (i=0;i<pts.size();i++) {
-    t[i].x = pts[i].x;
-    t[i].y = pts[i].y;
-  }
-  XDrawLines(m_display, m_window, m_gc, t, pts.size(), CoordModeOrigin);
-  free(t);
-}
-
-void XWindow::PushClippingRegion(Rect2D rect) {
-  XRectangle clipwin;
-  clipwin.x = rect.x1;
-  clipwin.y = rect.y1;
-  clipwin.width = rect.width;
-  clipwin.height = rect.height;
-  XSetClipRectangles(m_display, m_gc, 0, 0, &clipwin, 1, Unsorted);
-  clipstack.push_back(rect);
-}
-
-Rect2D XWindow::PopClippingRegion() {
-  clipstack.pop_back();
-  Rect2D rect;
-  if (clipstack.empty()) {
-    rect.x1 = 0;
-    rect.y1 = 0;
-    rect.width = m_width;
-    rect.height = m_height;
-  } else {
-    rect = clipstack.back();
-  }
-  XRectangle clipwin;
-  clipwin.x = rect.x1;
-  clipwin.y = rect.y1;
-  clipwin.width = rect.width;
-  clipwin.height = rect.height;
-  XSetClipRectangles(m_display, m_gc, 0, 0, &clipwin, 1, Unsorted);  
-  return rect;
-}
-
-void XWindow::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
-}
-
-void XWindow::BlitRGBImage(Point2D pos, RGBImage &img) {
 }
 
 void CheckDeleteQ() {

@@ -5,7 +5,6 @@
 #include "GraphicsContext.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-#include "BitmapFont.hpp"
 
 class PostScriptGC : public GraphicsContext {  
   FILE *fp;
@@ -15,9 +14,7 @@ class PostScriptGC : public GraphicsContext {
   Color m_fg;
   LineStyleType m_lst;
   std::vector<Rect2D> clips;
-  std::string m_fontname;
   int m_fontsize;
-  BitmapFont c_font;
   
   Point2D ToPS(Point2D p);
   void DoRect(Rect2D p);
@@ -28,7 +25,7 @@ public:
   virtual Point2D GetCanvasSize();
   virtual Point2D GetTextExtent(std::string label);
   virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient);
-  virtual void SetFont(std::string fontname, int fontsize);
+  virtual void SetFont(int fontsize);
   virtual Color SetBackGroundColor(Color col);
   virtual Color SetForeGroundColor(Color col);
   virtual LineStyleType SetLineStyle(LineStyleType style);
@@ -40,8 +37,6 @@ public:
   virtual void DrawLines(std::vector<Point2D> pts);
   virtual void PushClippingRegion(Rect2D rect);
   virtual Rect2D PopClippingRegion();
-  virtual void BlitGrayscaleImage(Point2D pos, GrayscaleImage &img);
-  virtual void BlitRGBImage(Point2D pos, RGBImage &img);
 };
 
 #endif

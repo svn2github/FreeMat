@@ -1,8 +1,7 @@
 More stuff:
 2.  Add DrawPoint to XWindow
 5.  Menu? File, Edit, Help?
-6.  Colormap doesn't work
-7.  Printing (both Win32 and X11)
+7.  Printing (Win32)
 6.  Copy/Paste?
 7.  Filename completions still not quite right on Win32...
 8.  OpenGL?

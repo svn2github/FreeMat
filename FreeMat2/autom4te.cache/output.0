@@ -270,9 +270,9 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="src/App.cpp"
+ac_unique_file="src/x11/main.cpp"
 ac_subdirs_all="$ac_subdirs_all libs/libffi"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE CC CFLAGS ac_ct_CC CCDEPMODE F77 FFLAGS ac_ct_F77 LEX LEXLIB LEX_OUTPUT_ROOT YACC RANLIB ac_ct_RANLIB CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS YFLAGS LFLAGS MPICXX MPILIBS minilapackdir miniblasdir mpidir LIB@&t@OBJS LTLIBOBJS FLIBS BLAS_LIBS LAPACK_LIBS subdirs'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE CC CFLAGS ac_ct_CC CCDEPMODE F77 FFLAGS ac_ct_F77 LEX LEXLIB LEX_OUTPUT_ROOT YACC RANLIB ac_ct_RANLIB CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS YFLAGS LFLAGS MPICXX MPILIBS minilapackdir miniblasdir mpidir maindir LIB@&t@OBJS LTLIBOBJS FLIBS BLAS_LIBS LAPACK_LIBS subdirs'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -839,13 +839,11 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking Speeds up one-time builds
   --enable-dependency-tracking  Do not reject slow dependency extractors
---enable-postscript	 enable postscript output (needed on Windows)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
-  --with-profile          Include profiling options [default=no]
   --with-debug            Include debug options [default=no]
   --with-miniblas         Force use of built-in BLAS library [default=no]
   --with-minilapack       Force use of built-in LAPACK library [default=no]
@@ -3726,6 +3724,12 @@ case $host in
   FLIBS=`echo $FLIBS | sed -e 's/-lfrtbegin//g'` ;;
 esac
 
+maindir="src/x11"
+case $host in
+*-*-cygwin*)
+  maindir="src/win32"
+esac
+
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5158,26 +5162,11 @@ fi
 fi
 
 
-# Check whether --enable-postscript or --disable-postscript was given.
-if test "${enable_postscript+set}" = set; then
-  enableval="$enable_postscript"
-  
-fi; 
-
-
-# Check whether --with-profile or --without-profile was given.
-if test "${with_profile+set}" = set; then
-  withval="$with_profile"
-  prof_flag="-pg"
-else
-  prof_flag=""
-fi; 
-
 
 # Check whether --with-debug or --without-debug was given.
 if test "${with_debug+set}" = set; then
   withval="$with_debug"
-  debug_flag="-g"
+  debug_flag="-O0 -g3"
 else
   debug_flag="-O3"
 fi; 
@@ -5338,7 +5327,7 @@ case $host in
 esac
 
 LIBS="$debug_flag $prof_flag $LIBS"
-CXXFLAGS="$debug_flag $prof_flag $CXXFLAGS"
+CXXFLAGS="$debug_flag $prof_flag"
 YFLAGS="$YFLAGS -d"
 LFLAGS="$LFLAGS"
 
@@ -5864,6 +5853,7 @@ fi
 if test "$usempi" = "yes" ; then
   mpidir="mpi"
 fi
+
 
 
 
@@ -6593,6 +6583,7 @@ s,@MPILIBS@,$MPILIBS,;t t
 s,@minilapackdir@,$minilapackdir,;t t
 s,@miniblasdir@,$miniblasdir,;t t
 s,@mpidir@,$mpidir,;t t
+s,@maindir@,$maindir,;t t
 s,@LIB@&t@OBJS@,$LIB@&t@OBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
@@ -9557,6 +9548,7 @@ s,@MPILIBS@,$MPILIBS,;t t
 s,@minilapackdir@,$minilapackdir,;t t
 s,@miniblasdir@,$miniblasdir,;t t
 s,@mpidir@,$mpidir,;t t
+s,@maindir@,$maindir,;t t
 s,@LIB@&t@OBJS@,$LIB@&t@OBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 s,@FLIBS@,$FLIBS,;t t
@@ -10231,7 +10223,7 @@ ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
 subdirs="$subdirs libs/libffi"
 
 
-                                                                                                    ac_config_files="$ac_config_files Makefile src2/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile"
+                                                                                                              ac_config_files="$ac_config_files Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -10802,7 +10794,8 @@ do
   "libs/libMiniBLAS/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/libMiniBLAS/Makefile" ;;
   "libs/libMiniLAPACK/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/libMiniLAPACK/Makefile" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "src2/Makefile" ) CONFIG_FILES="$CONFIG_FILES src2/Makefile" ;;
+  "src/win32/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/win32/Makefile" ;;
+  "src/x11/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/x11/Makefile" ;;
   "doc/Doxyfile" ) CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
   "libs/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/Makefile" ;;
   "libs/libFFTPack/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/libFFTPack/Makefile" ;;
@@ -10964,6 +10957,7 @@ s,@MPILIBS@,$MPILIBS,;t t
 s,@minilapackdir@,$minilapackdir,;t t
 s,@miniblasdir@,$miniblasdir,;t t
 s,@mpidir@,$mpidir,;t t
+s,@maindir@,$maindir,;t t
 s,@LIB@&t@OBJS@,$LIB@&t@OBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 s,@FLIBS@,$FLIBS,;t t
@@ -11505,6 +11499,7 @@ echo \
 Configuration:
 
   Source code location:       ${srcdir}
+  Main location:              ${maindir}
   C Compiler:	              ${CC}
   C Compiler flags:           ${CFLAGS}
   C++ Compiler:		      ${CXX}

@@ -118,8 +118,6 @@ RGBImage.cpp \
 RGBImage.hpp \
 Rect2D.cpp \
 Rect2D.hpp \
-RGBImageGC.cpp \
-RGBImageGC.hpp \
 PostScriptGC.cpp \
 PostScriptGC.hpp \
 Point2D.cpp \
@@ -127,8 +125,6 @@ Point2D.hpp \
 GraphicsContext.hpp \
 Color.cpp \
 Color.hpp \
-BitmapFont.cpp \
-BitmapFont.hpp \
 Reducer.hpp \
 Reducer.cpp \
 KeyManager.cpp \
@@ -148,9 +144,9 @@ libXP_a_AR = $(AR) cru
 libXP_a_LIBADD =
 am_libXP_a_OBJECTS = DynLib.$(OBJEXT) System.$(OBJEXT) \
 	PathSearch.$(OBJEXT) GrayscaleImage.$(OBJEXT) \
-	RGBImage.$(OBJEXT) Rect2D.$(OBJEXT) RGBImageGC.$(OBJEXT) \
-	PostScriptGC.$(OBJEXT) Point2D.$(OBJEXT) Color.$(OBJEXT) \
-	BitmapFont.$(OBJEXT) Reducer.$(OBJEXT) KeyManager.$(OBJEXT)
+	RGBImage.$(OBJEXT) Rect2D.$(OBJEXT) PostScriptGC.$(OBJEXT) \
+	Point2D.$(OBJEXT) Color.$(OBJEXT) Reducer.$(OBJEXT) \
+	KeyManager.$(OBJEXT)
 libXP_a_OBJECTS = $(am_libXP_a_OBJECTS)
 
 DEFS = @DEFS@
@@ -160,13 +156,12 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/BitmapFont.Po ./$(DEPDIR)/Color.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/DynLib.Po ./$(DEPDIR)/GrayscaleImage.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Color.Po ./$(DEPDIR)/DynLib.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/GrayscaleImage.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/KeyManager.Po ./$(DEPDIR)/PathSearch.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Point2D.Po ./$(DEPDIR)/PostScriptGC.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/RGBImage.Po ./$(DEPDIR)/RGBImageGC.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/Rect2D.Po ./$(DEPDIR)/Reducer.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/System.Po
+@AMDEP_TRUE@	./$(DEPDIR)/RGBImage.Po ./$(DEPDIR)/Rect2D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Reducer.Po ./$(DEPDIR)/System.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -207,7 +202,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BitmapFont.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Color.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DynLib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrayscaleImage.Po@am__quote@
@@ -216,7 +210,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Point2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PostScriptGC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RGBImage.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RGBImageGC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rect2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Reducer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/System.Po@am__quote@

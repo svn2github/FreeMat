@@ -32,7 +32,7 @@ public:
   virtual Point2D GetCanvasSize() = 0;
   virtual Point2D GetTextExtent(std::string label) = 0;
   virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient = ORIENT_0) = 0;
-  virtual void SetFont(std::string fontname, int fontsize) = 0;
+  virtual void SetFont(int fontsize) = 0;
   virtual Color SetBackGroundColor(Color col) = 0;
   virtual Color SetForeGroundColor(Color col) = 0;
   virtual LineStyleType SetLineStyle(LineStyleType style) = 0;
@@ -44,8 +44,6 @@ public:
   virtual void DrawLines(std::vector<Point2D> pts) = 0;
   virtual void PushClippingRegion(Rect2D rect) = 0;
   virtual Rect2D PopClippingRegion() = 0;
-  virtual void BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) = 0;
-  virtual void BlitRGBImage(Point2D pos, RGBImage &img) = 0;
 };
 
 #endif

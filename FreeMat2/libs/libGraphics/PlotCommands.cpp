@@ -76,6 +76,21 @@ namespace FreeMat {
     return plots[currentPlot];
   }
 
+  ArrayVector SizePlotFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 2)
+      throw Exception("sizeplot function takes two arguments: height and width");
+    Array w(arg[1]);
+    Array h(arg[0]);
+    int width;
+    int height;
+    width = w.getContentsAsIntegerScalar();
+    height = h.getContentsAsIntegerScalar();
+    Plot2D *f;
+    f = GetCurrentPlot();
+    f->SetSize(width,height);
+    return ArrayVector();
+  }
+
   void ClosePlotHelper(int fig) {
     if (fig == -1) return;
     if (plots[fig] == NULL) return;

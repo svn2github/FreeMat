@@ -41,6 +41,27 @@ print OUTPUT "\t  rm -f \$(prefix)/share/FreeMat/MFiles/\$\$fname;\\\n";
 print OUTPUT "\tdone;\n";
 close OUTPUT;
 
+$filelist = `cd ../MFiles && ls *.m`;
+chop $filelist;
+$filelist =~ s/\n/\\\n/gm;
+open(OUTPUT,">../MFiles/Makefile.amc") || die "Can't open Makefile.am for writing in MFiles...\n";
+print OUTPUT "EXTRA_DIST = ";
+print OUTPUT $filelist;
+print OUTPUT "\n";
+print OUTPUT "\nAUTOMAKE_OPTIONS = foreign\n\n";
+print OUTPUT "install-data-local:\n";
+print OUTPUT "\tmkdir -p \$(prefix)/share/FreeMat/MFiles\n";
+print OUTPUT "\tfor scriptname in \$(EXTRA_DIST); do \\\n";
+print OUTPUT "\t  echo \"Installing M file \$\$scriptname\"; \\\n";
+print OUTPUT "\t  \$(INSTALL) \$(srcdir)/\$\$scriptname \$(prefix)/share/FreeMat/MFiles;\\\n";
+print OUTPUT "\tdone;\n";
+print OUTPUT "uninstall-local:\n";
+print OUTPUT "\tfor scriptname in \$(EXTRA_DIST); do \\\n";
+print OUTPUT "\t  echo \"Uninstalling M file \$\$scriptname\"; \\\n";
+print OUTPUT "\t  rm -f \$(prefix)/share/FreeMat/MFiles/\$\$scriptname;\\\n";
+print OUTPUT "\tdone;\n";
+close OUTPUT;
+
 $filelist = `ls html/*.html`;
 open(OUTPUT,">freemat.hhp") || die "Can't open freemat.hhp for writing...\n";
 print OUTPUT "[OPTIONS]\n";

@@ -130,10 +130,8 @@ namespace FreeMat {
   }
 
   void Context::flushTemporaryGlobalFunctions() {
-    for (int i=0;i<tempFunctions.size();i++) {
-      printf("flushing routine %s\r\n",tempFunctions[i].c_str());
+    for (int i=0;i<tempFunctions.size();i++)
       head->data->deleteFunction(tempFunctions[i]);
-    }
     tempFunctions.clear();
   }
 

@@ -312,7 +312,6 @@ namespace FreeMat {
   void Terminal::scanDirectory(std::string scdir, bool tempfunc) {
     // Open the directory
     DIR *dir;
-    printf("Scanning directory %s\r\n",scdir.c_str());
     dir = opendir(scdir.c_str());
     if (dir == NULL) return;
     // Scan through the directory..

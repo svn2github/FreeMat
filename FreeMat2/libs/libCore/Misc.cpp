@@ -32,6 +32,7 @@
 #include "Malloc.hpp"
 #include "Command.hpp"
 #include "SingularValueDecompose.hpp"
+#include "QRDecompose.hpp"
 #include "System.hpp"
 
 namespace FreeMat {
@@ -141,6 +142,168 @@ namespace FreeMat {
       retval.push_back(V);
     } else {
       retval.push_back(D.getDiagonal(0));
+    }
+    return retval;
+  }
+
+
+  //!
+  //@Module QR QR Decomposition of a Matrix
+  //@@Usage
+  //Computes the QR factorization of a matrix.  The @|qr| function has
+  //two forms.  The first returns only the matrix @|R|.
+  //!
+  ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 1)
+      throw Exception("qr function requires at least one argument - the matrix to decompose.");
+    Array A(arg[0]);
+    // Test for numeric
+    if (A.isReferenceType())
+      throw Exception("Cannot apply qr decomposition to reference types.");
+    if (!A.is2D())
+      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+    if (A.anyNotFinite())
+      throw Exception("QR Decomposition only defined for matrices with finite entries.");
+    int nrows = A.getDimensionLength(0);
+    int ncols = A.getDimensionLength(1);
+    bool compactDecomposition = false;
+    if (arg.size() == 2) {
+      Array cflag(arg[1]);
+      int cflag_int = cflag.getContentsAsIntegerScalar();
+      if (cflag_int == 0) compactDecomposition = true;
+    }
+    int orows = nrows;
+    int ocols = ncols;
+    if ((!compactDecomposition) && (nrows > ncols)) {
+      Dimensions newDim(2);
+      newDim[0] = nrows;
+      newDim[1] = nrows;
+      A.resize(newDim);
+      ncols = nrows;
+    } else 
+      compactDecomposition = true;
+    Class Aclass(A.getDataClass());
+    if (Aclass < FM_FLOAT) {
+      A.promoteType(FM_DOUBLE);
+      Aclass = FM_DOUBLE;
+    }
+    int minmn = (nrows < ncols) ? nrows : ncols;
+    ArrayVector retval;
+    Array rmat, qmat;
+    Dimensions dim;
+    switch (Aclass) {
+    case FM_FLOAT:
+      {
+	float *q = (float*) Malloc(nrows*minmn*sizeof(float));
+	float *r = (float*) Malloc(ncols*minmn*sizeof(float));
+	floatQRD(nrows,ncols,q,r,(float*) A.getReadWriteDataPointer());
+	if (!compactDecomposition) {
+	  float *r2 = (float*) Malloc(orows*ocols*sizeof(float));
+	  memcpy(r2,r,orows*ocols*sizeof(float));
+	  dim[0] = orows;
+	  dim[1] = ocols;
+	  rmat = Array(FM_FLOAT,dim,r2);
+	  Free(r);
+	} else {	  
+	  dim[0] = minmn;
+	  dim[1] = ncols;
+	  rmat = Array(FM_FLOAT,dim,r);
+	}
+	dim[0] = nrows;
+	dim[1] = minmn;
+	qmat = Array(FM_FLOAT,dim,q);
+	if (nargout == 1) {
+	  retval.push_back(rmat);
+	} else {
+	  retval.push_back(qmat);
+	  retval.push_back(rmat);
+	}
+	break;
+      }
+    case FM_DOUBLE:
+      {
+	double *q = (double*) Malloc(nrows*minmn*sizeof(double));
+	double *r = (double*) Malloc(ncols*minmn*sizeof(double));
+	doubleQRD(nrows,ncols,q,r,(double*) A.getReadWriteDataPointer());
+	if (!compactDecomposition) {
+	  double *r2 = (double*) Malloc(orows*ocols*sizeof(double));
+	  memcpy(r2,r,orows*ocols*sizeof(double));
+	  dim[0] = orows;
+	  dim[1] = ocols;
+	  rmat = Array(FM_DOUBLE,dim,r2);
+	  Free(r);
+	} else {	  
+	  dim[0] = minmn;
+	  dim[1] = ncols;
+	  rmat = Array(FM_DOUBLE,dim,r);
+	}
+	dim[0] = nrows;
+	dim[1] = minmn;
+	qmat = Array(FM_DOUBLE,dim,q);
+	if (nargout == 1) {
+	  retval.push_back(rmat);
+	} else {
+	  retval.push_back(qmat);
+	  retval.push_back(rmat);
+	}
+	break;
+      }
+    case FM_COMPLEX:
+      {
+	float *q = (float*) Malloc(2*nrows*minmn*sizeof(float));
+	float *r = (float*) Malloc(2*ncols*minmn*sizeof(float));
+	complexQRD(nrows,ncols,q,r,(float*) A.getReadWriteDataPointer());
+	if (!compactDecomposition) {
+	  float *r2 = (float*) Malloc(2*orows*ocols*sizeof(float));
+	  memcpy(r2,r,2*orows*ocols*sizeof(float));
+	  dim[0] = orows;
+	  dim[1] = ocols;
+	  rmat = Array(FM_COMPLEX,dim,r2);
+	  Free(r);
+	} else {	  
+	  dim[0] = minmn;
+	  dim[1] = ncols;
+	  rmat = Array(FM_COMPLEX,dim,r);
+	}
+	dim[0] = nrows;
+	dim[1] = minmn;
+	qmat = Array(FM_COMPLEX,dim,q);
+	if (nargout == 1) {
+	  retval.push_back(rmat);
+	} else {
+	  retval.push_back(qmat);
+	  retval.push_back(rmat);
+	}
+	break;
+      }
+    case FM_DCOMPLEX:
+      {
+	double *q = (double*) Malloc(2*nrows*minmn*sizeof(double));
+	double *r = (double*) Malloc(2*ncols*minmn*sizeof(double));
+	dcomplexQRD(nrows,ncols,q,r,(double*) A.getReadWriteDataPointer());
+	if (!compactDecomposition) {
+	  double *r2 = (double*) Malloc(2*orows*ocols*sizeof(double));
+	  memcpy(r2,r,2*orows*ocols*sizeof(double));
+	  dim[0] = orows;
+	  dim[1] = ocols;
+	  rmat = Array(FM_DCOMPLEX,dim,r2);
+	  Free(r);
+	} else {	  
+	  dim[0] = minmn;
+	  dim[1] = ncols;
+	  rmat = Array(FM_DCOMPLEX,dim,r);
+	}
+	dim[0] = nrows;
+	dim[1] = minmn;
+	qmat = Array(FM_DCOMPLEX,dim,q);
+	if (nargout == 1) {
+	  retval.push_back(rmat);
+	} else {
+	  retval.push_back(qmat);
+	  retval.push_back(rmat);
+	}
+	break;
+      }
     }
     return retval;
   }

@@ -4,6 +4,8 @@
  */
 #include <stdio.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define WS 999
 
@@ -62,6 +64,8 @@ inline void pushBracket(char t) {
 }
 
 inline void popBracket(char t) {
+	if (bracketStackSize <= 0)
+		LexerException("underflow!");
   if (bracketStack[--bracketStackSize] != t)
     LexerException("mismatched parenthesis");
 }
@@ -624,20 +628,19 @@ namespace FreeMat {
   }
 
   void setLexFile(FILE *fp) {
+	  struct stat st;
+	  clearerr(fp);
+	  fstat(fileno(fp),&st);
     bracketStackSize = 0;
     lexState = Initial;
     vcStackSize = 0;
     lineNumber = 0;
-    long cpos = ftell(fp);
-    fseek(fp,0,SEEK_END);
-    cpos -= ftell(fp);
-    fseek(fp,0,SEEK_SET);
-    cpos = -cpos;
+	long cpos = st.st_size;
     if (buffer)
       free(buffer);
     buffer = (char*) calloc(cpos+1,sizeof(char));
     datap = buffer;
-    fread(buffer,sizeof(char),cpos,fp);
+    int n = fread(buffer,sizeof(char),cpos,fp);
   }
 
   bool lexCheckForMoreInput(int ccount) {

@@ -12,11 +12,19 @@
 \newcommand{\doplot}[2]{\begin{center}\htmladdimg[center]{#2.png}\end{center}}
 \end{htmlonly}
 %\newcommand{\doplot}[2]{\begin{minipage}{\linewidth}\centering\includegraphics[#1]{#2}\end{minipage}}
-\title{FreeMat Help\\Version 1.07}
+\title{FreeMat Help\\Version 1.08}
 \author{Samit Basu}
 \begin{document}
 \maketitle
 \tableofcontents
+\chapter{Introduction}
+\section{Changes from 1.07 to 1.08}
+Unlike previous versions of FreeMat, which were all backwards compatible, there are some changes in 1.08 that are \emph{not} compatible with 1.07.  Here is a list of the changes:
+\begin{itemize}
+\item \verb|newfig|, \verb|newplot|, \verb|usefig|, \verb|useplot| have all been replaced with \verb|figure| (akin to Matlab).
+\item \verb|printplot|, \verb|printimage| have been replaced with the \verb|print| command.
+\item There is no longer a \verb|copy| or \verb|save| menu option from the figure window on Win32.  The replacement for the \verb|copy| menu option is the \verb|copy| command (which only works on Win32).  The replacement for the \verb|save| menu option  is the \verb|print| command.
+\end{itemize}
 \chapter{Basic Language}
 \section{Variables and Arrays}
 \input{cell}
@@ -205,26 +213,23 @@
 \section{Optimization and Curve Fitting}
 \input{fitfun}
 \chapter{Graphing Functions}
+\section{Figure Functions}
+\input{figure}
+\input{copy}
+\input{print}
+\input{close}
 \section{Image Display Functions}
 \input{image}
 \input{colormap}
-\input{closeimage}
-\input{newimage}
-\input{useimage}
 \input{point}
-\input{printimage}
 \input{sizeimage}
 \input{zoom}
 \input{winlev}
 \section{Plot Functions}
 \input{axis}
-\input{closeplot}
 \input{grid}
 \input{hold}
-\input{newplot}
-\input{useplot}
 \input{plot}
-\input{printplot}
 \input{sizeplot}
 \input{xlabel}
 \input{ylabel}

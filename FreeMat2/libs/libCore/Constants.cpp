@@ -35,13 +35,13 @@ namespace FreeMat {
   //@@Function Internals
   //The infinity constant has
   //several interesting properties.  In particular:
-  //\begin{itemize}
-  //\item $\infty \times 0 = \mathrm{NaN}$
-  //\item $\infty \times a = \infty$ for all $a > 0$
-  //\item $\infty \times a = -\infty$ for all $a < 0$
-  //\item $\infty / \infty = \mathrm{NaN}$
-  //\item $\infty / 0 = \infty$
-  //\end{itemize}
+  //\begin{eqnarray}
+  //   \infty \times 0 & = \mathrm{NaN} \\
+  //   \infty \times a & = \infty \, \mathrm{for all} \, a > 0 \\
+  //   \infty \times a & = -\infty \, \mathrm{for all} \, a < 0 \\
+  //   \infty / \infty & = \mathrm{NaN} \\
+  //   \infty / 0 & = \infty 
+  //\end{eqnarray}
   //Note that infinities are not preserved under type conversion to integer types (see the examples below).
   //@@Example
   //The following examples demonstrate the various properties of the infinity constant.
@@ -136,7 +136,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module PI Constant $\pi$
+  //@Module PI Constant Pi
   //@@Usage
   //Returns a @|double| (64-bit floating point number) value that represents pi (ratio between the circumference and diameter of a circle...).  Typical usage 
   //@[

@@ -264,7 +264,7 @@ namespace FreeMat {
   //\]
   //The FFT is computed using the FFTPack library, available from 
   //netlib at \href{http://www.netlib.org}.  Generally speaking, the 
-  //computational cost for a FFT is (in worst case) $O(n^2)$.
+  //computational cost for a FFT is (in worst case) @|O(n^2)|.
   //However, if @|n| is composite, and can be factored as
   //\[
   //n = \prod_{k=1}^{p} m_k,
@@ -274,7 +274,7 @@ namespace FreeMat {
   //O(n \sum_{k=1}^{p} m_k)
   //\]
   //operations.  If @|n| is a power of 2, then the FFT can be
-  //calculated in $O(n \log_2 n)$.  The calculations for the
+  //calculated in @|O(n log_2 n)|.  The calculations for the
   //inverse FFT are identical.
   //@@Example
   //The following piece of code plots the FFT for a sinusoidal signal:

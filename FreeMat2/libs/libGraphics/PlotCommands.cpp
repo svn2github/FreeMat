@@ -381,6 +381,7 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
   //@Module TITLE Plot Title Function
   //@@Usage
   //This command adds a title to the plot.  The general syntax
@@ -408,6 +409,7 @@ namespace FreeMat {
   //@>
   //which results in the following plot.
   //@figure title1
+  //!
   ArrayVector TitleFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("title function takes only a single, string argument");
@@ -632,8 +634,8 @@ namespace FreeMat {
   //    column of @|y| is plotted sequentially against the common vector @|x|.
   //  \item \emph{Unpaired Matrix Case} -- In this case the argument data is a 
   //    single numeric matrix @|y| that constitutes the @|y|-values
-  //    of the plot.  An @|x| vector is synthesized as $x = 1:\mathrm{length}(y)$,
-  //    and each column of $y$ is plotted sequentially against this common @|x|
+  //    of the plot.  An @|x| vector is synthesized as @|x = 1:length(y)|,
+  //    and each column of @|y| is plotted sequentially against this common @|x|
   //    axis.
   //  \item \emph{Complex Matrix Case} -- Here the argument data is a complex
   //    matrix, in which case, the real part of each column is plotted against
@@ -660,9 +662,9 @@ namespace FreeMat {
   //\begin{itemize}
   //  \item @|'.'| - Dot symbol
   //  \item @|'o'| - Circle symbol
-  //  \item @|'x'| - $\times$ (times or x) symbol
-  //  \item @|'+'| - $+$ (plus) symbol
-  //  \item @|'*'| - $*$ (times) symbol
+  //  \item @|'x'| - Times symbol
+  //  \item @|'+'| - Plus symbol
+  //  \item @|'*'| - Asterisk symbol
   //  \item @|'s'| - Square symbol
   //  \item @|'d'| - Diamond symbol
   //  \item @|'v'| - Downward-pointing triangle symbol
@@ -709,10 +711,11 @@ namespace FreeMat {
   //@|linespec|s to each line, we use a sequence of arguments in a single plot
   //command, which has the effect of plotting all of the data sets on a common 
   //axis, but which allows us to control the @|linespec| of each plot. In 
-  //the following example, the first line (harmonic) has red, solid lines with $\times$ symbols
+  //the following example, the first line (harmonic) has red, solid lines with 
+  //times symbols
   //marking the data points, the second line (third harmonic) has blue, solid lines
   //with right-pointing triangle symbols, and the third line (fifth harmonic) has
-  //green, dotted lines with $*$ symbols.
+  //green, dotted lines with asterisk symbols.
   //@<
   //plot(x,y(:,1),'rx-',x,y(:,2),'b>-',x,y(:,3),'g*:');
   //mprintplot plot3
@@ -905,14 +908,14 @@ namespace FreeMat {
   //Another option is to choose the axes so that they tightly fit the
   //domain and range of the current datasets.  This is accomplished
   //using the @|'tight'| argument to the axis command.  It will
-  //set the axes to $[x_{\min},x_{\max},y_{\min},y_{\max}]$, where
-  //$x_{\min}$ is the minimum $x$ value over all datasets in the current
+  //set the axes to @|[x_min,x_max,y_min,y_max]|, where
+  //@|x_min| is the minimum @|x| value over all datasets in the current
   //plot series, etc.
   //
   //You can also retrieve the current ranges of the plot axes by issuing
   //an @|axis| command with no arguments.
   //@@Example
-  //We start by plotting a sinusoid of amplitude @|sqrt(2)$ over the 
+  //We start by plotting a sinusoid of amplitude @|sqrt(2)| over the 
   //range @|-pi,pi|, which is not a ``nice'' range, and thus the
   //auto axis heuristic shrinks the plot to make the range nicer.
   //@<
@@ -935,7 +938,7 @@ namespace FreeMat {
   //@figure axis2
   //
   //We can now use the @|axis| command to retrieve the current axis values.  By
-  //modifying only the first two entries ($x_{\min}$ and $x_{\max}$), we can
+  //modifying only the first two entries (@|x_min| and @|x_max|), we can
   //zoom in on one period of the sinusoid.
   //@<
   //plot(x,y,'r-');

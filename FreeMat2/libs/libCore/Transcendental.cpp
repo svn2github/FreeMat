@@ -42,17 +42,17 @@ namespace FreeMat {
   //the output type is the same as the input.
   //For negative and complex arguments, the output is complex.
   //@@Function Internals
-  //Mathematically, the $\log$ function is defined for all real
-  //valued arguments $x$ by the integral
+  //Mathematically, the @|log| function is defined for all real
+  //valued arguments @|x| by the integral
   //\[
   //  \log x \equiv \int_1^{x} \frac{d\,t}{t}.
   //\]
-  //For complex-valued arguments, $z$, the complex logarithm is
+  //For complex-valued arguments, @|z|, the complex logarithm is
   //defined as
   //\[
   //  \log z \equiv \log |z| + i \arg z,
   //\]
-  //where $\arg$ is the complex argument of $z$.
+  //where @|arg| is the complex argument of @|z|.
   //@@Example
   //The following piece of code plots the real-valued @|log|
   //function over the interval @|[1,100]|:
@@ -166,8 +166,8 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).
   //@@Function Internals
-  //Mathematically, the $\exp$ function is defined for all real
-  //valued arguments $x$ as
+  //Mathematically, the @|exp| function is defined for all real
+  //valued arguments @|x| as
   //\[
   //  \exp x \equiv e^{x},
   //\]
@@ -175,9 +175,9 @@ namespace FreeMat {
   //\[
   //  e = \sum_{0}^{\infty} \frac{1}{k!}
   //\]
-  //and is approximately $2.718281828459045$ (returned by the function 
+  //and is approximately @|2.718281828459045| (returned by the function 
   //@|e|).  For complex values
-  //$z$, the famous Euler formula is used to calculate the 
+  //@|z|, the famous Euler formula is used to calculate the 
   //exponential
   //\[
   //  e^{z} = e^{|z|} \left[ \cos \Re z + i \sin \Re z \right]

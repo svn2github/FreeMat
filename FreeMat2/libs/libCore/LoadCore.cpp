@@ -72,7 +72,7 @@ namespace FreeMat {
      context->addFunction("ifft",IFFTFunction,3,1,args);
      args.clear();
      args.push_back("x");
-     context->addSpecialFunction("disp",DispFunction,1,0,args);
+     context->addSpecialFunction("disp",DispFunction,-1,0,args);
      args.clear();
      context->addFunction("i",IFunction,0,1,args);
      context->addFunction("j",IFunction,0,1,args);
@@ -107,7 +107,7 @@ namespace FreeMat {
      context->addFunction("pwd",PrintWorkingDirectoryFunction,0,1,args);
      args.clear();
      args.push_back("x");     
-     context->addFunction("test",TestFunction,1,1,args);
+     //     context->addFunction("test",TestFunction,1,1,args);
      context->addFunction("error",ErrorFunction,1,0,args);
      context->addSpecialFunction("lasterr",LasterrFunction,1,1,args);
      context->addFunction("typeof",TypeOfFunction,1,1,args);
@@ -137,9 +137,9 @@ namespace FreeMat {
 //      context->addFunction("rret",RRetFunction,1,-1,args);
      args.clear();
      context->addSpecialFunction("feval",FevalFunction,-1,-1,args);
-     args.clear();
-     args.push_back("function");
-     context->addSpecialFunction("fdump",FdumpFunction,1,0,args);
+//      args.clear();
+//      args.push_back("function");
+//      context->addSpecialFunction("fdump",FdumpFunction,1,0,args);
      args.clear();
      context->addSpecialFunction("eval",EvalFunction,-1,-1,args);
      args.clear();

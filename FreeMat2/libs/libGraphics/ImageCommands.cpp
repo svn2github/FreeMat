@@ -193,6 +193,7 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
   //@Module COLORMAP Image Colormap Function
   //@@Usage
   //Changes the colormap used for the display of the indexed (scalar) images in

@@ -69,6 +69,10 @@ namespace FreeMat {
      * stops).
      */
     int printLimit;
+    /**
+     * The last error that occured.
+     */
+    char *lasterr;
   public:
     /**
      * Construct a WalkTree object with the given context to operate
@@ -499,6 +503,14 @@ namespace FreeMat {
      * and execute it.
      */
     bool evaluateString(char *line);
+    /**
+     * Get the last error that occurred.
+     */
+    char* getLastErrorString();
+    /**
+     * Set the text for the last error.
+     */
+    void setLastErrorString(char* txt);
   };
   void sigInterrupt(int arg);
 }

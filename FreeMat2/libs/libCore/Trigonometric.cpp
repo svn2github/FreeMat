@@ -41,12 +41,12 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the $\cos$ function is defined for all real
-  //valued arguments $x$ by the infinite summation
+  //Mathematically, the @|cos| function is defined for all real
+  //valued arguments @|x| by the infinite summation
   //\[
   //  \cos x \equiv \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!}.
   //\]
-  //For complex valued arguments $z$, the cosine is computed via
+  //For complex valued arguments @|z|, the cosine is computed via
   //\[
   //  \cos z \equiv \cos \Re z \cosh \Im z - \sin \Re z
   //  \sinh \Im z.
@@ -139,12 +139,12 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the $\sin$ function is defined for all real
-  //valued arguments $x$ by the infinite summation
+  //Mathematically, the @|sin| function is defined for all real
+  //valued arguments @|x| by the infinite summation
   //\[
   //  \sin x \equiv \sum_{n=1}^{\infty} \frac{(-1)^{n-1} x^{2n-1}}{(2n-1)!}.
   //\]
-  //For complex valued arguments $z$, the sine is computed via
+  //For complex valued arguments @|z|, the sine is computed via
   //\[
   //  \sin z \equiv \sin \Re z \cosh \Im z - i \cos \Re z
   //  \sinh \Im z.
@@ -237,8 +237,8 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the $\tan$ function is defined for all real
-  //valued arguments $x$ by the infinite summation
+  //Mathematically, the @|tan| function is defined for all real
+  //valued arguments @|x| by the infinite summation
   //\[
   //  \tan x \equiv x + \frac{x^3}{3} + \frac{2x^5}{15} + \cdots,
   //\]
@@ -246,7 +246,7 @@ namespace FreeMat {
   //\[
   //  \tan x \equiv \frac{\sin x}{\cos x}
   //\]
-  //For complex valued arguments $z$, the tangent is computed via
+  //For complex valued arguments @|z|, the tangent is computed via
   //\[
   //  \tan z \equiv \frac{\sin 2 \Re z + i \sinh 2 \Im z}
   //                     {\cos 2 \Re z + \cosh 2 \Im z}.
@@ -343,7 +343,7 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the $\csc$ function is defined for all arguments
+  //Mathematically, the @|csc| function is defined for all arguments
   //as
   //\[
   //   \csc x \equiv \frac{1}{\sin x}.
@@ -443,7 +443,7 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the $\sec$ function is defined for all arguments
+  //Mathematically, the @|sec| function is defined for all arguments
   //as
   //\[
   //   \sec x \equiv \frac{1}{\cos x}.
@@ -543,12 +543,12 @@ namespace FreeMat {
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the $\cot$ function is defined for all 
-  //arguments $x$ as
+  //Mathematically, the @|cot| function is defined for all 
+  //arguments @|x| as
   //\[
   //  \cot x \equiv \frac{\cos x}{\sin x}
   //\]
-  //For complex valued arguments $z$, the cotangent is computed via
+  //For complex valued arguments @|z|, the cotangent is computed via
   //\[
   //  \cot z \equiv \frac{\cos 2 \Re z + \cosh 2 \Im z}{\sin 2 \Re z + 
   //  i \sinh 2 \Im z}.
@@ -641,20 +641,22 @@ namespace FreeMat {
   //@]
   //where @|x| is an @|n|-dimensional array of numerical type.
   //Integer types are promoted to the @|double| type prior to
-  //calculation of the @|\acos| function.  Output @|y| is of the
+  //calculation of the @|acos| function.  Output @|y| is of the
   //same size and type as the input @|x|, (unless @|x| is an
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
-  //Mathematically, the @|\acos| function is defined for all 
-  //arguments $x$ as
+  //Mathematically, the @|acos| function is defined for all 
+  //arguments @|x| as
   //\[
   // \mathrm{acos} x \equiv \frac{pi}{2} + i \log \left(i x + 
   //  \sqrt{1-x^2}\right).
   //\]
-  //For real valued variables $x$ in the range $[-1,1]$, the function is
+  //For real valued variables @|x| in the range @|[-1,1]|, the function is
   //computed directly using the standard C library's numerical @|acos|
-  //function. For both real and complex arguments $x$, note that generally
-  //$\mathrm{acos}(\cos(x)) \neq x$, due to the periodicity of $\cos(x)$.
+  //function. For both real and complex arguments @|x|, note that generally
+  //\[
+  //  \mathrm{acos}(\cos(x)) \neq x,
+  //\] due to the periodicity of @|cos(x)|.
   //@@Example
   //The following code demonstates the @|acos| function over the range 
   //@|[-1,1]|.
@@ -838,15 +840,18 @@ namespace FreeMat {
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
   //Mathematically, the @|asin| function is defined for all 
-  //arguments $x$ as
+  //arguments @|x| as
   //\[ 
   //   \mathrm{asin} x \equiv - i \log \left(i x + 
   //   \sqrt{1-x^2}\right).
   //\]
-  //For real valued variables $x$ in the range $[-1,1]$, the function is
+  //For real valued variables @|x| in the range @|[-1,1]|, the function is
   //computed directly using the standard C library's numerical @|asin|
-  //function. For both real and complex arguments $x$, note that generally
-  //$\mathrm{asin}(\sin(x)) \neq x$, due to the periodicity of $\sin(x)$.
+  //function. For both real and complex arguments @|x|, note that generally
+  //\[
+  //   \mathrm{asin}(\sin(x)) \neq x,
+  //\] 
+  //due to the periodicity of @|sin(x)|.
   //@@Example
   //The following code demonstates the @|asin| function over the range 
   //@|[-1,1]|.
@@ -1029,14 +1034,18 @@ namespace FreeMat {
   //integer, in which case @|y| is a @|double| type).  
   //@@Function Internals
   //Mathematically, the @|atan| function is defined for all 
-  //arguments $x$ as
+  //arguments @|x| as
   //\[ 
   //   \mathrm{atan} x \equiv \frac{i}{2}\left(\log(1-i x) - \log(i x + 1)\right).
   //\]
-  //For real valued variables $x$, the function is computed directly using 
+  //For real valued variables @|x|, the function is computed directly using 
   //the standard C library's numerical @|atan| function. For both 
-  //real and complex arguments $x$, note that generally
-  //$\mathrm{atan}(\tan(x)) \neq x$, due to the periodicity of $\tan(x)$.
+  //real and complex arguments @|x|, note that generally
+  //
+  //\[
+  //    \mathrm{atan}(\tan(x)) \neq x,
+  //\]
+  // due to the periodicity of @|tan(x)|.
   //@@Example
   //The following code demonstates the @|atan| function over the range 
   //@|[-1,1]|.
@@ -1159,27 +1168,29 @@ namespace FreeMat {
   //|y/x|.  
   //@@Function Internals
   //The function is defined (for real values) to return an 
-  //angle between $-\pi$ and $\pi$.  The signs of $x$ and $y$
+  //angle between @|-pi| and @|pi|.  The signs of @|x| and @|y|
   //are used to find the correct quadrant for the solution.  For complex
   //arguments, the two-argument arctangent is computed via
   //\[
   //  \mathrm{atan2}(y,x) \equiv -i \log\left(\frac{x+i y}{\sqrt{x^2+y^2}} \right)
   //\]
-  //For real valued arguments $x,y$, the function is computed directly using 
+  //For real valued arguments @|x,y|, the function is computed directly using 
   //the standard C library's numerical @|atan2| function. For both 
-  //real and complex arguments $x$, note that generally
-  //$\mathrm{atan2}(\sin(x),\cos(x)) \neq x$, due to the periodicities of 
-  //$\cos(x)$ and $\sin(x)$.
+  //real and complex arguments @|x|, note that generally
+  //\[
+  //  \mathrm{atan2}(\sin(x),\cos(x)) \neq x,
+  //\]
+  //due to the periodicities of  @|cos(x)| and @|sin(x)|.
   //@@Example
   //The following code demonstates the difference between the @|atan2| 
-  //function and the @|atan| function over the range @|[-\pi,\pi]|.
+  //function and the @|atan| function over the range @|[-pi,pi]|.
   //@<
   //x = linspace(-pi,pi);
   //sx = sin(x); cx = cos(x);
   //plot(x,atan(sx./cx),x,atan2(sx,cx))
   //mprintplot('atan2plot');
   //@>
-  //@figure atan2plot;
+  //@figure atan2plot
   //Note how the two-argument @|atan2| function (green line) 
   //correctly ``unwraps'' the phase of the angle, while the @|atan| 
   //function (red line) wraps the angle to the interval @|[-\pi/2,\pi/2]|.

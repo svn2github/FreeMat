@@ -378,7 +378,7 @@ namespace FreeMat {
   //a = [1,2,5,2,4];
   //find(a==2)
   //@>
-  //Here is an example of using find to replace elements of @|A| that are $0$ with the number $5$.
+  //Here is an example of using find to replace elements of @|A| that are @|0| with the number @|5|.
   //@<
   //A = [1,0,3;0,2,1;3,0,0]
   //n = find(A==0)

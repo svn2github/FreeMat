@@ -108,6 +108,7 @@ namespace FreeMat {
   //@@Example
   //Here is an example of using @|getprintlimit| along with @|setprintlimit| to temporarily change the output behavior of FreeMat.
   //@<
+  //A = randn(100,1);
   //n = getprintlimit
   //setprintlimit(5);
   //A
@@ -253,7 +254,7 @@ namespace FreeMat {
   //   \item Handle 1 - is assigned to standard output
   //   \item Handle 2 - is assigned to standard error
   //\end{itemize}
-  //These handles cannot be closed, so that user created file handles start at $3$.
+  //These handles cannot be closed, so that user created file handles start at @|3|.
   //
   //@@Examples
   //Here are some examples of how to use @|fopen|.  First, we create a new 
@@ -430,9 +431,9 @@ namespace FreeMat {
   //x = fread(fp,[1,inf],'float');
   //who x
   //@>
-  //Read the same floats into a float array (we use @|fseek| to reset the file pointer).
+  //Read the same floats into a 2-D float array.
   //@<
-  //fseek(fp,0,-1);
+  //fp = fopen('test.dat','rb');
   //x = fread(fp,[512,inf],'float');
   //who x
   //@>
@@ -606,14 +607,12 @@ namespace FreeMat {
   //At first pass, we force a read of the contents of the file by specifying
   //@|inf| for the dimension of the array to read.  We then test the
   //end of file, and somewhat counter-intuitively, the answer is @|false|.
+  //We then attempt to read past the end of the file, which causes an
+  //error.  An @|feof| test now returns the expected value of @|true|.
   //@<
   //fp = fopen('test.dat','rb');
   //x = fread(fp,[512,inf],'float');
   //feof(fp)
-  //@>
-  //We then attempt to read past the end of the file, which causes an
-  //error.  An @|feof| test now returns the expected value of @|true|.
-  //@<
   //x = fread(fp,[1,1],'float');
   //feof(fp)
   //@>
@@ -658,15 +657,13 @@ namespace FreeMat {
   //The offset can be positive or negative.
   //@@Example
   //The first example reads a file and then ``rewinds'' the file pointer by seeking to the beginning.
+  //The next example seeks forward by 2048 bytes from the files current position, and then reads a line of 512 floats.
   //@<
   //fp = fopen('test.dat','rb');
   //x = fread(fp,[1,inf],'float');
   //fseek(fp,0,'bof');
   //y = fread(fp,[1,inf],'float');
   //who x y
-  //@>
-  //The next example seeks forward by 2048 bytes from the files current position, and then reads a line of 512 floats.
-  //@<
   //fseek(fp,2048,'cof');
   //x = fread(fp,[512,1],'float');
   //@>
@@ -763,7 +760,7 @@ namespace FreeMat {
   //@]
   //Here @|format| is the format string, which is a string that
   //controls the format of the output.  The values of the variables
-  //$a_i$ are substituted into the output as required.  It is
+  //@|a_i| are substituted into the output as required.  It is
   //an error if there are not enough variables to satisfy the format
   //string.  Note that this @|sprintf| command is not vectorized!  Each
   //variable must be a scalar.  The returned value @|y| contains the
@@ -825,34 +822,39 @@ namespace FreeMat {
 	    if (arg.size() <= nextArg)
 	      throw Exception("not enough arguments to satisfy format specification");
 	    Array nextVal(arg[nextArg++]);
-	    switch (*(np-1)) {
-	    case 'd':
-	    case 'i':
-	    case 'o':
-	    case 'u':
-	    case 'x':
-	    case 'X':
-	    case 'c':
-	      nextVal.promoteType(FM_INT32);
-	      sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
-	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
-	      strcat(op,nbuff);
-	      break;
-	    case 'e':
-	    case 'E':
-	    case 'f':
-	    case 'F':
-	    case 'g':
-	    case 'G':
-	      nextVal.promoteType(FM_DOUBLE);
-	      sprintf(nbuff,dp,*((double*)nextVal.getDataPointer()));
-	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
-	      strcat(op,nbuff);
-	      break;
-	    case 's':
-	      sprintf(nbuff,dp,nextVal.getContentsAsCString());
-	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
-	      strcat(op,nbuff);
+	    if (nextVal.isEmpty()) {
+	      op = (char*) realloc(op,strlen(op)+strlen("[]")+1);
+	      strcat(op,"[]");
+	    } else {
+	      switch (*(np-1)) {
+	      case 'd':
+	      case 'i':
+	      case 'o':
+	      case 'u':
+	      case 'x':
+	      case 'X':
+	      case 'c':
+		nextVal.promoteType(FM_INT32);
+		sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
+		op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
+		strcat(op,nbuff);
+		break;
+	      case 'e':
+	      case 'E':
+	      case 'f':
+	      case 'F':
+	      case 'g':
+	      case 'G':
+		nextVal.promoteType(FM_DOUBLE);
+		sprintf(nbuff,dp,*((double*)nextVal.getDataPointer()));
+		op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
+		strcat(op,nbuff);
+		break;
+	      case 's':
+		sprintf(nbuff,dp,nextVal.getContentsAsCString());
+		op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
+		strcat(op,nbuff);
+	      }
 	    }
 	    *np = sv;
 	    dp = np;
@@ -931,6 +933,7 @@ namespace FreeMat {
   //\item @|c| The int argument is  converted  to  an  unsigned  char, and  the resulting character is written.
   //\item @|s| The string argument is printed.
   //\item @|%|   A @|'%'| is written. No argument is converted. The complete conversion specification is @|'%%'|.
+  //\end{itemize}
   //@@Example
   //Here are some examples of the use of @|printf| with various arguments.  First we print out an integer and double value.
   //@<
@@ -990,31 +993,35 @@ namespace FreeMat {
 	    if (arg.size() <= nextArg)
 	      throw Exception("not enough arguments to satisfy format specification");
 	    Array nextVal(arg[nextArg++]);
-	    switch (*(np-1)) {
-	    case 'd':
-	    case 'i':
-	    case 'o':
-	    case 'u':
-	    case 'x':
-	    case 'X':
-	    case 'c':
-	      nextVal.promoteType(FM_INT32);
-	      sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
-	      io->outputMessage(nbuff);
-	      break;
-	    case 'e':
-	    case 'E':
-	    case 'f':
-	    case 'F':
-	    case 'g':
-	    case 'G':
+	    if (nextVal.isEmpty()) {
+	      io->outputMessage("[]");
+	    } else {
+	      switch (*(np-1)) {
+	      case 'd':
+	      case 'i':
+	      case 'o':
+	      case 'u':
+	      case 'x':
+	      case 'X':
+	      case 'c':
+		nextVal.promoteType(FM_INT32);
+		sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
+		io->outputMessage(nbuff);
+		break;
+	      case 'e':
+	      case 'E':
+	      case 'f':
+	      case 'F':
+	      case 'g':
+	      case 'G':
 	      nextVal.promoteType(FM_DOUBLE);
 	      sprintf(nbuff,dp,*((double*)nextVal.getDataPointer()));
 	      io->outputMessage(nbuff);
 	      break;
-	    case 's':
-	      sprintf(nbuff,dp,nextVal.getContentsAsCString());
-	      io->outputMessage(nbuff);
+	      case 's':
+		sprintf(nbuff,dp,nextVal.getContentsAsCString());
+		io->outputMessage(nbuff);
+	      }
 	    }
 	    *np = sv;
 	    dp = np;
@@ -1249,28 +1256,30 @@ namespace FreeMat {
 	    if (arg.size() <= nextArg)
 	      throw Exception("not enough arguments to satisfy format specification");
 	    Array nextVal(arg[nextArg++]);
-	    switch (*(np-1)) {
-	    case 'd':
-	    case 'i':
-	    case 'o':
-	    case 'u':
-	    case 'x':
-	    case 'X':
-	    case 'c':
-	      nextVal.promoteType(FM_INT32);
-	      fprintf(fptr->fp,dp,*((int32*)nextVal.getDataPointer()));
-	      break;
-	    case 'e':
-	    case 'E':
-	    case 'f':
-	    case 'F':
-	    case 'g':
-	    case 'G':
-	      nextVal.promoteType(FM_DOUBLE);
-	      fprintf(fptr->fp,dp,*((double*)nextVal.getDataPointer()));
-	      break;
-	    case 's':
-	      fprintf(fptr->fp,dp,nextVal.getContentsAsCString());
+	    if (!nextVal.isEmpty()) {
+	      switch (*(np-1)) {
+	      case 'd':
+	      case 'i':
+	      case 'o':
+	      case 'u':
+	      case 'x':
+	      case 'X':
+	      case 'c':
+		nextVal.promoteType(FM_INT32);
+		fprintf(fptr->fp,dp,*((int32*)nextVal.getDataPointer()));
+		break;
+	      case 'e':
+	      case 'E':
+	      case 'f':
+	      case 'F':
+	      case 'g':
+	      case 'G':
+		nextVal.promoteType(FM_DOUBLE);
+		fprintf(fptr->fp,dp,*((double*)nextVal.getDataPointer()));
+		break;
+	      case 's':
+		fprintf(fptr->fp,dp,nextVal.getContentsAsCString());
+	      }
 	    }
 	    *np = sv;
 	    dp = np;

@@ -107,15 +107,15 @@ namespace FreeMat {
   //@@Example
   //First, we use the simplest form of the @|ls| command, in which the directory name argument is given unquoted.
   //@<
-  //ls . ..
+  //ls a*.m
   //@>
   //Next, we use the ``traditional'' form of the function call, using both the parenthesis and the quoted string.
   //@<
-  //ls('..')
+  //ls('a*.m')
   //@>
   //In the third version, we use only the quoted string argument without parenthesis.  
   //@<
-  //ls '../../'
+  //ls 'a*.m'
   //@>
   //!
   ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {

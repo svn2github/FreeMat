@@ -30,6 +30,29 @@
 namespace FreeMat {
   SymbolTable<DynLib*> libPointers;
 
+
+  //!
+  //@Module LOADLIB Load Library Function
+  //@@Usage
+  //The @|loadlib| function allows a function in an external library
+  //to be added to FreeMat dynamically.  This interface is generally
+  //to be used as last resort, as the form of the function being called
+  //is assumed to match the internal implementation.  In short, this
+  //is not the interface mechanism of choice.  For all but very complicated
+  //functions, the @|import| function is the preferred approach. Thus,
+  //only a very brief summary of it is presented here.  The syntax
+  //for @|loadlib| is
+  //@[
+  //  loadlib(libfile, symbolname, functionname, nargin, nargout)
+  //@]
+  //where @|libfile| is the complete path to the library to use, @|symbolname|
+  //is the name of the symbol in the library, @|functionname| is the name
+  //of the function after it is imported into FreeMat (this is optional, it
+  //defaults to the @|symbolname|), @|nargin| is the number of input arguments
+  //(defaults to 0), and @|nargout| is the number of output arguments (defaults
+  //to 0).  If the number of (input or output) arguments is variable then
+  //set the corresponding argument to @|-1|.
+  //!
   ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
 	  WalkTree* eval) throw(Exception){
     char *libfile;
@@ -165,6 +188,155 @@ namespace FreeMat {
     return op;
   }
 
+  //!
+  //@Module IMPORT Foreign Function Import
+  //@@Usage
+  //The import function allows you to call functions that are compiled into
+  //shared libraries, as if they were FreeMat functions. The usage is
+  //@[
+  //  import(libraryname,symbol,function,return,arguments)
+  //@]
+  //The argument @|libraryname| is the name of the library (as a string)
+  //to import the function from.  The second argument @|symbol| (also
+  //a string), is the name of the symbol to import from the library.  The
+  //third argument @|function| is the the name of the function after its
+  //been imported into Freemat.  The fourth argument is a string that
+  //specifies the return type of the function. It can take on one of the 
+  //following types:
+  //\begin{itemize}
+  //\item 'uint8' for an unsigned, 8-bit integer.
+  //\item 'int8' for a signed, 8-bit integer.
+  //\item 'uint16' an unsigned, 16-bit  integer.
+  //\item 'int16' a signed, 16-bit integer.
+  //\item 'uint32' for an unsigned, 32-bit integer.
+  //\item 'int32' for a signed, 32-bit integer.
+  //\item 'single' for a 32-bit floating point.
+  //\item 'double' for a 64-bit floating point.
+  //\item 'void' for no return type.
+  //\end{itemize}
+  //The fourth argument is more complicated.  It encodes the arguments of the
+  //imported function using a special syntax.  In general, the argument list
+  //is a string consisting of entries of the form:
+  //
+  //@[
+  //  type[optional bounds check] {optional &}name
+  //@]
+  //
+  //Here is a list of various scenarios (expressed in 'C'), and the corresponding
+  //entries, along with snippets of code.
+  //
+  //\emph{Scalar variable passed by value:}
+  //Suppose a function is defined in the library as
+  //@[
+  //  int fooFunction(float t),
+  //@]
+  //i.e., it takes a scalar value (or a string) that is passed by value.  Then
+  //the corresponding argument string would be
+  //@[
+  //  'float t'
+  //@]
+  //For a C-string, which corresponds to a function prototype of
+  //@[
+  //  int fooFunction(const char *t),
+  //@]
+  //the corresponding argument string would be
+  //@[
+  //  'string t'
+  //@]
+  //Other types are as listed above.  Note that FreeMat will automatically
+  //promote the type of scalar variables to the type expected by the @|C|
+  //function.  For example, if we call a function expecting a @|float|
+  //with a @|double| or @|int16| argument, then FreeMat will automatically
+  //apply type promotion rules prior to calling the function.
+  //
+  //\emph{Scalar variable passed by reference:}
+  //Suppose a function is defined in the library as
+  //@[
+  //  int fooFunction(float *t),
+  //@]
+  //i.e., it takes a scalar value (or a string) that is passed as a pointer.  Then
+  //the corresponding argument string would be
+  //@[
+  //  'float &t'
+  //@]
+  //If the function @|fooFunction| modifies @|t|, then the argument
+  //passed in FreeMat will also be modified.
+  //
+  //\emph{Array variable passed by value:}
+  //In @|C|, it is impossible to distinguish an array being passed from
+  //a simple pointer being passed.  More often than not, another argument
+  //indicates the length of the array.  FreeMat has the ability to perform
+  //bounds-checking on array values.  For example, suppose we have a function
+  //of the form
+  //@[
+  //  int sum_onehundred_ints(int *t),
+  //@]
+  //where @|sum_onehundred_ints| assumes that @|t| is a length @|100| vector. 
+  //Then the corresponding FreeMat argument is
+  //@[
+  //  'float32[100] t'.
+  //@]
+  //Note that because the argument is marked as not being passed by reference,
+  //that if @|sub_onehundred_ints| modifies the array @|t|, this
+  //will not affect the FreeMat argument.  Note that the bounds-check expression
+  //can be any legal scalar expression that evaluates to an integer, and can be
+  //a function of the arguments.  For example to pass a square $N \times N$ 
+  //matrix to the following function:
+  //@[
+  //  float determinantmatrix(int N, float *A),
+  //@]
+  //we can use the following argument to @|import|:
+  //@[
+  //  'int32 N, float[N*N] t'.
+  //@]
+  //
+  //\emph{Array variable passed by reference:}
+  //If the function in @|C| modifies an array, and we wish this to be
+  //reflected in the FreeMat side, we must pass that argument by reference.
+  //Hence, consider the following hypothetical function that squares the
+  //elements of an array (functionally equivalent to $x.^2$):
+  //@[
+  //  void squarearray(int N, float *A)
+  //@]
+  //we can use the following argument to @|import|:
+  //@[
+  //  'int32 N, float[N] &A'.
+  //@]
+  //Note that to avoid problems with memory allocation, external functions
+  //are not allowed to return pointers.  As a result, as a general operating
+  //mechanism, the FreeMat code must allocate the proper arrays, and then
+  //pass them by reference to the external function.
+  //
+  //@@Example
+  //Here is a complete example.  We have a @|C| function that adds
+  //two float vectors of the same length, and stores the result in a third array 
+  //that is modified by the function.  First, the @|C| code:
+  //@{ addArrays.c
+  //void addArrays(int N, float *a, float *b, float *c) {
+  //  int i;
+  // 
+  //  for (i=0;i<N;i++)
+  //   c[i] = a[i] + b[i];
+  //}
+  //@}
+  //We then compile this into a dynamic library, say, @|add.so|.  The import 
+  //command would then be:
+  //@[
+  //  import('add.so','addArrays','addArrays','void', ...
+  //         'int32 N, float[N] a, float[N] b, float[N] &c');
+  //@]
+  //We could then exercise the function exactly as if it had been written
+  //in FreeMat.  The following only works on systems using the GNU
+  //C Compiler:
+  //@<
+  //system('gcc -shared -fPIC -o add.so addArrays.c');
+  //import('add.so','addArrays','addArrays','void','int32 N, float[N] a, float[N] b, float[N] &c');
+  //a = [3,2,3,1];
+  //b = [5,6,0,2]; 
+  //addArrays(length(a),a,b,c)
+  //c
+  //@>
+  //!
   ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
 			     WalkTree* eval) throw(Exception) {
     char *libfile;

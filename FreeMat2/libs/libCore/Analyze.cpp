@@ -698,7 +698,7 @@ namespace FreeMat {
   //\[
   //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
   //\begin{cases}
-  //  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \	\
+  //  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\
   //  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
   //\end{cases}
   //\]
@@ -1081,7 +1081,7 @@ namespace FreeMat {
   //\[
   //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
   //\begin{cases}
-  //  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \	\
+  //  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\
   //  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
   //\end{cases}
   //\]

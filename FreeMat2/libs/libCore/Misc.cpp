@@ -84,8 +84,8 @@ namespace FreeMat {
   //where @|D| is the diagonal matrix of eigenvalues, and @|V| is the
   //matrix of eigenvectors.
   //@@Function Internals
-  //Recall that $v$ is an eigenvector $A$ with associated eigenvalue
-  //$d$ if
+  //Recall that @|v| is an eigenvector of @|A| with associated eigenvalue
+  //@|d| if
   //\[
   //  A v = d v.
   //\]
@@ -103,13 +103,13 @@ namespace FreeMat {
   //Some examples of eigenvalue decompositions.  First, for a diagonal
   //matrix, the eigenvalues are the diagonal elements of the matrix.
   //@<
-  //A = diag(1.02f,3.04f,1.53f)
+  //A = diag([1.02f,3.04f,1.53f])
   //eig(A)
   //@>
   //Next, we compute the eigenvalues of an upper triangular matrix, 
   //where the eigenvalues are again the diagonal elements.
   //@<
-  //A = [1.0f,3.0f,4.0f;0,2.0f;6.7f;0.0f,0.0f,1.0f]
+  //A = [1.0f,3.0f,4.0f;0,2.0f,6.7f;0.0f,0.0f,1.0f]
   //eig(A)
   //@>
   //Next, we compute the complete eigenvalue decomposition of
@@ -152,9 +152,9 @@ namespace FreeMat {
   //  [U,S,V] = svd(A)
   //@]
   //@@Function Internals
-  //Recall that $\sigma_i$ is a singular value of an $M \times N$
-  //matrix $A$ if there exists two vectors $u_i, v_i$ where $u_i$ is
-  //of length $M$, and $v_i$ is of length $u_i$ and
+  //Recall that @|sigma_i| is a singular value of an @|M x N|
+  //matrix @|A| if there exists two vectors @|u_i, v_i| where @|u_i| is
+  //of length @|M|, and @|v_i| is of length @|u_i| and
   //\[
   //  A v_i = \sigma_i u_i
   //\]
@@ -162,12 +162,12 @@ namespace FreeMat {
   //\[
   //  A = \sum_{i=1}^{K} \sigma_i u_i*v_i',
   //\]
-  //where $K$ is the rank of $A$.  In matrix form, the left singular
-  //vectors $u_i$ are stored in the matrix $U$ as
+  //where @|K| is the rank of @|A|.  In matrix form, the left singular
+  //vectors @|u_i| are stored in the matrix @|U| as
   //\[
   //  U = [u_1,\ldots,u_m], V = [v_1,\ldots,v_n]
   //\]
-  //The matrix $S$ is then of size $M \times N$ with the singular
+  //The matrix @|S| is then of size @|M x N| with the singular
   //values along the diagonal.  The SVD is computed using the 
   //@|LAPACK| call of functions @|GESDD|.
   //@@Examples
@@ -380,7 +380,7 @@ namespace FreeMat {
   ArrayVector LasterrFunction(int nargout, const ArrayVector& arg,
 			      WalkTree* eval) {
      ArrayVector retval;
-     if (arg->size() == 0) {
+     if (arg.size() == 0) {
        Array A = Array::stringConstructor(eval->getLastErrorString());
        retval.push_back(A);
      } else {
@@ -520,10 +520,28 @@ namespace FreeMat {
   //@|error| function is usually used in conjunction with @|try|
   //and @|catch| to provide error handling.
   //@@Example
-  //Here is a simple example of an @|error| being issued inside
-  //a @|try|/@|catch| clause.
+  //Here is a simple example of an @|error| being issued by a function
+  //@|evenoddtest|:
+  //@{ evenoddtest.m
+  //function evenoddtest(n)
+  //  if (n==0)
+  //    error('zero is neither even nor odd');
+  //  elseif (typeof(n) ~= 'int32')
+  //    error('expecting integer argument');
+  //  end;
+  //  if (n==int32(n/2)*2)
+  //    printf('%d is even\n',n);
+  //  else
+  //    printf('%d is odd\n',n);
+  //  end
+  //@}
+  //The normal command line prompt @|-->| simply prints the error
+  //that occured.
   //@<
-  //try; error('Error occurred'); catch; 
+  //evenoddtest(4)
+  //evenoddtest(5)
+  //evenoddtest(0)
+  //evenoddtest(pi)
   //@>
   //!
   ArrayVector ErrorFunction(int nargout, const ArrayVector& arg) {
@@ -724,7 +742,7 @@ namespace FreeMat {
   //Here is an example of calling the @|ls| function (the
   //list files function under Un*x-like operating system).
   //@<
-  //y = system('ls')
+  //y = system('ls a*.m')
   //y{1}
   //@>
   //!

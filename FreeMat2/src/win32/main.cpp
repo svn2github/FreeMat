@@ -35,20 +35,7 @@ void SetupHelpPath() {
 int main(int argc, char *argv[]) {
   Context *context = new Context;
   SetupHelpPath();
-  SpecialFunctionDef *sfdef = new SpecialFunctionDef;
-  sfdef->retCount = 0;
-  sfdef->argCount = 5;
-  sfdef->name = "loadlib";
-  sfdef->fptr = LoadLibFunction;
-  context->insertFunctionGlobally(sfdef);
-  
-  sfdef = new SpecialFunctionDef;
-  sfdef->retCount = 0;
-  sfdef->argCount = 5;
-  sfdef->name = "import";
-  sfdef->fptr = ImportFunction;
-  context->insertFunctionGlobally(sfdef);
-
+  LoadModulefunctions(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  

@@ -25,6 +25,17 @@
 #include <math.h>
 
 namespace FreeMat {
+
+#ifdef WIN32
+  extern "C" {
+    int cffti_(int*,float*);
+    int cfftf_(int*,float*,float*);
+    int cfftb_(int*,float*,float*);
+    int zffti_(int*,double*);
+    int zfftf_(int*,double*,double*);
+    int zfftb_(int*,double*,double*);
+  };
+#else
   extern "C" {
     void cffti_(int*,float*);
     void cfftf_(int*,float*,float*);
@@ -33,6 +44,7 @@ namespace FreeMat {
     void zfftf_(int*,double*,double*);
     void zfftb_(int*,double*,double*);
   };
+#endif
 
   static float *cwp = NULL;
   static int cN = 0;

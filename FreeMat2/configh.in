@@ -166,6 +166,9 @@
 /* Use MPI */
 #undef USE_MPI
 
+/* Disable polling */
+#undef USE_POLL
+
 /* Use XFT (X-Freetype) */
 #undef USE_XFT
 

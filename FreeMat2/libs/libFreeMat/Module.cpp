@@ -28,10 +28,10 @@
 #include "PathSearch.hpp"
 
 namespace FreeMat {
-  extern Context *context;
   SymbolTable<DynLib*> libPointers;
 
-  ArrayVector LoadFunction(int c_nargout,const ArrayVector& narg) throw(Exception){
+  ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
+	  WalkTree* eval) throw(Exception){
     char *libfile;
     char *symbolName;
     char *funcName;
@@ -63,7 +63,7 @@ namespace FreeMat {
     fdef->argCount = nargin;
     fdef->name = strdup((const char*) funcName);
     fdef->fptr = (BuiltInFuncPtr) func;
-    context->insertFunctionGlobally(fdef);
+    eval->getContext()->insertFunctionGlobally(fdef);
     return ArrayVector();
   }
   

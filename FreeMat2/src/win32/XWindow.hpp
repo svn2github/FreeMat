@@ -76,6 +76,7 @@ class XWindow : public GraphicsContext {
 };
 
 void InitializeXWindowSystem(HINSTANCE hInstance);
+void FlushWindowEvents();
 void DoEvents();
 void Run();
 #endif

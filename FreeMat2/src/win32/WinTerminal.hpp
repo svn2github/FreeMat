@@ -53,6 +53,7 @@ namespace FreeMat {
     virtual void setMessageContext(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
     virtual void ExecuteLine(const char* line);
+	virtual void RegisterInterrupt();
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 
 						    std::string &matchString);
     virtual char* getLine(const char* prompt);

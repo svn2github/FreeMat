@@ -1041,6 +1041,9 @@ void KeyManager::OnChar( int c ) {
   case KM_CTRLA:
     BeginningOfLine();
     break;
+  case KM_CTRLC:
+	RegisterInterrupt();
+	break;
   case KM_CTRLE:
     EndOfLine();
     break;

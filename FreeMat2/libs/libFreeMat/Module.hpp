@@ -30,7 +30,8 @@ namespace FreeMat {
    * if the file could not be found, or if the requested
    * symbol is not present.
    */
-  ArrayVector LoadFunction(int nargout,const ArrayVector& arg) throw(Exception);
+  ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg,
+	  WalkTree* eval) throw(Exception);
   /**
    * Make a CCall - this is a special call into a library
    * that allows us to bypass the need to compile against 

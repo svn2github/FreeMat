@@ -10,24 +10,20 @@
 #include <signal.h>
 
 using namespace FreeMat;
-namespace FreeMat {
-	Context *context;
-};
-
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
   SetupWinTerminalClass(hInstance);
   WinTerminal term(hInstance, iCmdShow);
 
-  context = new Context;
-  BuiltInFunctionDef *f2def = new BuiltInFunctionDef;
-  f2def->retCount = 0;
-  f2def->argCount = 5;
-  f2def->name = "loadFunction";
-  f2def->fptr = LoadFunction;
-  context->insertFunctionGlobally(f2def);
-  
+  Context *context = new Context;
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
+  sfdef->retCount = 0;
+  sfdef->argCount = 5;
+  sfdef->name = "loadFunction";
+  sfdef->fptr = LoadLibFunction;
+  context->insertFunctionGlobally(sfdef);
+
+  sfdef = new SpecialFunctionDef;
   sfdef->retCount = 0;
   sfdef->argCount = 5;
   sfdef->name = "import";

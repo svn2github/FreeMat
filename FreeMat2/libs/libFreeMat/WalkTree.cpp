@@ -18,6 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+#include "XWindow.hpp"
 #include "WalkTree.hpp"
 #include <iostream>
 #include <stack>
@@ -418,6 +419,8 @@ namespace FreeMat {
     ArrayVector m;
     FunctionDef *fdef;
 
+	/* Flush the window events */
+	FlushWindowEvents();
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {

@@ -18,10 +18,8 @@ namespace FreeMat {
     GetClientRect(hwnd, &winsze);
     si.cbSize = sizeof(si);
     si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
-    //  si.nMin = 0;
-    //  si.nMax = nlinecount - 1;
     si.nMin = max(0, nlinecount - scrollback);
-    si.nMax = nlinecount - 1;
+    si.nMax = nlinecount-1;
     si.nPage = winsze.bottom / charHeight;
     si.nPos = si.nMax;
     SetScrollInfo(hwnd,SB_VERT,&si,TRUE);
@@ -137,7 +135,15 @@ namespace FreeMat {
     for (i=caret_x;i<MAXCOLS;i++)
       CharAt(caret_y,i) = ' ';
     CharAt(caret_y,caret_x) = 0;
-    InvalidateRect(hwnd,NULL,TRUE);
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_POS;
+    GetScrollInfo(hwnd, SB_VERT, &si);
+    RECT refresh;
+    refresh.left = caret_x * charWidth;
+    refresh.right = ncolumn * charWidth;
+    refresh.top = (caret_y-si.nPos)*charHeight;
+    refresh.bottom = (caret_y+1-si.nPos)*charHeight;
+    InvalidateRect(hwnd,&refresh,TRUE);
     UpdateWindow(hwnd);
   }
 
@@ -159,15 +165,17 @@ namespace FreeMat {
 
   void WinTerminal::OutputRawString(std::string txt) {
     int startRow, startCol;
-
+	bool redrawall;
     const char *cp;
     cp = txt.c_str();
     startRow = caret_y;
+	redrawall=false;
     while (*cp) {
       if (*cp == '\n') {
 	caret_y++;
 	caret_x = 0;
 	cp++;
+	  redrawall = true;
       } else if (*cp == '\r') {
 	caret_x = 0;
 	cp++;
@@ -181,22 +189,6 @@ namespace FreeMat {
       }
     }
     UpdateLineCount();
-    //   // Set the scroll
-    //   int scrollstart;
-    //   scrollstart = (nlinecount < scrollback) ? nlineccount : scrollback;
-    //   scrollstart -= nline;
-    //   if (scrollstart < 0) scrollstart = 0;
-    //   Scroll(0,scrollstart);
-    //   DoMoveCaret();
-    //   // Setup a refresh region that starts at startRow,startCol --> caretRow, caretCol
-    //   int rectx1, recty1, rectx2, recty2, adjrow;
-    //   // First map the start row to screen coordinates
-    //   adjrow = startRow;
-    //   if (adjrow >= scrollback)
-    //     adjrow = scrollback-1;
-    //   CalcScrolledPosition(0,adjrow*charHeight,&rectx1,&recty1);
-    //   wxRect rect(rectx1, recty1, ncolumn*charWidth, (caretRow - startRow + 1)*charHeight);
-    //   RefreshRect(rect);
     si.cbSize = sizeof(si);
     si.fMask = SIF_POS;
     GetScrollInfo(hwnd, SB_VERT, &si);
@@ -205,7 +197,10 @@ namespace FreeMat {
     refresh.right = ncolumn*charWidth;
     refresh.top = (startRow-si.nPos)*charHeight;
     refresh.bottom = (caret_y+1-si.nPos)*charHeight;
-    InvalidateRect(hwnd,&refresh,TRUE);
+	if (!redrawall)
+      InvalidateRect(hwnd,&refresh,TRUE);
+	else
+      InvalidateRect(hwnd,NULL,TRUE);
     UpdateWindow(hwnd);
     DoMoveCaret();
   }
@@ -260,6 +255,9 @@ namespace FreeMat {
     int paintBeg = max(0, iVertpos + ps.rcPaint.top/charHeight);
     int paintEnd = min(nlinecount-1,
 		       iVertpos + ps.rcPaint.bottom/charHeight);
+	char buffer[1000];
+//	sprintf(buffer,"repaint %d through %d\n",paintBeg,paintEnd);
+//	OutputDebugString(buffer);
     for (int y=paintBeg; y <= paintEnd; y++) {
       char buffer[1000];
       int x;
@@ -415,9 +413,15 @@ namespace FreeMat {
   
   void WinTerminal::ExecuteLine(const char * line) {
     enteredLines.push_back(line);
+	OutputRawString("\r\n");
     ReplacePrompt("");
   }
   
+  void WinTerminal::RegisterInterrupt() {
+	sigInterrupt(0);
+  }
+
+
   char* WinTerminal::getLine(const char* prompt) {
     fflush(stdout);
     ReplacePrompt(prompt);

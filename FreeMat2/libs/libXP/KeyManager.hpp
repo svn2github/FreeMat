@@ -25,6 +25,7 @@
 #include <vector>
 
 #define KM_CTRLA     0x01
+#define KM_CTRLC     0x03
 #define KM_CTRLD     0x04
 #define KM_CTRLE     0x05
 #define KM_TAB       0x09
@@ -120,6 +121,7 @@ public:
 	  std::string &matchString) {std::vector<std::string> t; return t;};
   void CompleteWord();
   virtual void ExecuteLine(const char * line) {};
+  virtual void RegisterInterrupt() {};
 protected:
   // move the caret to m_xCaret, m_yCaret
   void DoResizeBuffer(int xsize, int ysize);

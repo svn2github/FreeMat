@@ -1,3 +1,4 @@
+#include "XWindow.hpp"
 #include "WinTerminal.hpp"
 #include <stdio.h>
 #include "Module.hpp"
@@ -35,6 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
   LoadCoreFunctions(context);
   LoadGraphicsCoreFunctions(context);  
+  InitializeXWindowSystem(hInstance);
   InitializePlotSubsystem();
   InitializeImageSubsystem();
   const char *envPtr;

@@ -26,6 +26,8 @@ XWindow::XWindow(WindowType wtype) {
 			  AppInstance,
 			  NULL);
   SetWindowLong(m_window,GWL_USERDATA,(LONG) this);
+  m_width = 500;
+  m_height = 400;
 }
 
 XWindow::~XWindow() {
@@ -41,18 +43,23 @@ void XWindow::Hide() {
 }
 
 void XWindow::Raise() {
+  ShowWindow(m_window, SW_SHOWNORMAL);
+  UpdateWindow(m_window);  
 }
 
 void XWindow::Close() {
 }
 
 void XWindow::OnExpose(int x, int y, int w, int h) {
-  HDC hdc = GetDC(m_window);
-  HDC hdcMem = CreateCompatibleDC(hdc);
-  SelectObject (hdcMem, hBitmap);
-  BitBlt(hdc, x, y, w, h, hdcMem, x, y, SRCCOPY);
-  DeleteDC(hdcMem);
-  ReleaseDC(m_window, hdc);
+  if (m_type == BitmapWindow) {
+    HDC hdc = GetDC(m_window);
+    HDC hdcMem = CreateCompatibleDC(hdc);
+    SelectObject (hdcMem, hBitmap);
+    BitBlt(hdc, x, y, w, h, hdcMem, x, y, SRCCOPY);
+    DeleteDC(hdcMem);
+    ReleaseDC(m_window, hdc);
+  } else
+    OnDraw((GraphicsContext&) *this);
 }
 
 void XWindow::Refresh() {
@@ -66,6 +73,7 @@ void XWindow::EraseRectangle(int cx, int cy, int cwidth, int cheight) {
 }
 
 void XWindow::SetSize(int w, int h) {
+  SetWindowPos(m_window, 0, 0, 0, w, h, SWP_NOZORDER | SWP_NOMOVE);
 }
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -116,19 +124,17 @@ void XWindow::OnMouseDown(int x, int y) {
 }
 
 void XWindow::OnClose() {
-}
-
+}  
+ 
 void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;
   m_width = w;
   m_height = h;
-  // Update the contents.
-  unsigned char *data;
-  data = (unsigned char *) malloc(3*sizeof(char)*w*h);
-  UpdateContents(data,w,h);
-  SetImage(data,w,h);
-  free(data);
+  if (m_type == BitmapWindow)
+    OnDraw((GraphicsContext&) *this);
   OnSize();
+  InvalidateRect(m_window,NULL,TRUE);
+  UpdateWindow(m_window);
 }
 
 void XWindow::SetTitle(std::string title) {
@@ -139,10 +145,11 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
 }
 
 void XWindow::UpdateContents(unsigned char *data, int width, int height) {
-  RGBImage img(width, height, data);
-  RGBImageGC gc(img);
-  img.SetAllPixels(Color("light grey"));
-  OnDraw(gc);
+  OnDraw((GraphicsContext&) *this);
+//   RGBImage img(width, height, data);
+//   RGBImageGC gc(img);
+//   img.SetAllPixels(Color("light grey"));
+//   OnDraw(gc);
 }
 
 void XWindow::Print(std::string filename) {
@@ -242,9 +249,22 @@ Point2D XWindow::GetTextExtent(std::string label) {
 }
 
 void XWindow::DrawTextString(std::string label, Point2D pos, OrientationType orient) {
+  HDC hdc;
+  hdc = GetDC(m_window);
+  TextOut(hdc,pos.x, pos.y, label.c_str(), label.size());
+  ReleaseDC(m_window, hdc);
 }
 
 void XWindow::SetFont(std::string fontname, int fontsize) {
+  int nHeight;
+  HDC hdc;
+  hdc = GetDC(m_window);
+  nHeight = -MulDiv(fontsize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+  m_hfont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PREC,
+		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS, "Arial");
+  m_vfont = CreateFont(nHeight, 0, 900, 900, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PREC,
+		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS, "Arial");
+  ReleaseDC(m_window, hdc);
 }
 
 Color XWindow::SetBackGroundColor(Color col) {

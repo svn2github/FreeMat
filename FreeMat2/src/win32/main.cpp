@@ -7,7 +7,7 @@
 #include "LoadFN.hpp"
 #include "GraphicsCore.hpp"
 #include "System.hpp"
-#include "../../resource1.h"
+#include "resource.h"
 
 char help_path[1024];
 

@@ -1,6 +1,7 @@
 #include "Sparse.hpp"
 #include "Malloc.hpp"
 #include <algorithm>
+#include "IEEEFP.hpp"
 
 // The following ops are O(N^2) instead of O(nnz^2):
 //
@@ -1905,7 +1906,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  void* DeleteSparseMatrixRowReal(int &rows, int &cols, const T** src,
+  void* DeleteSparseMatrixVectorReal(int &rows, int &cols, const T** src,
 				  const indexType* ndx, int delete_len) {
     // Get the source matrix as an IJV array
     int nnz;
@@ -1963,7 +1964,6 @@ namespace FreeMat {
 	dptr++;
       }
     }
-    printIJV(mlist,nnz);
     int qptr = 0;
     T** dst;
     dst = new T*[1];
@@ -1974,28 +1974,176 @@ namespace FreeMat {
     return dst;
   }
 
+  template <class T>
+  void* DeleteSparseMatrixVectorComplex(int &rows, int &cols, const T** src,
+					const indexType* ndx, int delete_len) {
+    // Get the source matrix as an IJV array
+    int nnz;
+    IJVEntry<T>* mlist = ConvertSparseToIJVListComplex<T>(src,rows,cols,nnz);
+    // reshape the IJV list into a vector
+    int i;
+    for (i=0;i<nnz;i++) {
+      mlist[i].I += rows*mlist[i].J;
+      mlist[i].J = 0;
+    }
+    rows = rows*cols;
+    cols = 1;
+    int* ilist = new int[delete_len];
+    // Copy the index info in
+    for (i=0;i<delete_len;i++)
+      ilist[i] = ndx[i]-1;
+    // Sort the list
+    std::sort(ilist,ilist+delete_len);
+    // eliminate duplicates
+    i=0;
+    int j=0;
+    tstop();
+    while (i<delete_len) {
+      j = i+1;
+      while ((j<delete_len) && 
+	     (ilist[j] == ilist[i])) j++;
+      if (j>i+1) {
+	for (int k=j;k<delete_len;k++)
+	  ilist[i+1+k-j] = ilist[k];
+	delete_len -= (j-i-1);
+      }
+      i++;
+    }
+    // Now, we have to determine how many elements are present in the
+    // output 
+    int newnnz;
+    // to do this, we loop through the IJV list
+    int dptr;
+    dptr = 0;
+    int iptr;
+    iptr = 0;
+    while (dptr < nnz) {
+      // Check the index pointer.  If it is smaller than our 
+      // current index, skip forward.
+      while ((iptr < delete_len) && 
+	     (ilist[iptr] < mlist[dptr].I)) iptr++;
+      // Is this element deleted?
+      if ((iptr < delete_len) && (ilist[iptr] == mlist[dptr].I)) {
+	// yes, so copy and adjust
+	for (int j=dptr+1;j<nnz;j++)
+	  mlist[j-1] = mlist[j];
+	nnz--;
+      } else {
+	mlist[dptr].I -= iptr;
+	dptr++;
+      }
+    }
+    int qptr = 0;
+    T** dst;
+    dst = new T*[1];
+    rows -= delete_len;
+    dst[0]= CompressComplexIJV(mlist,nnz,qptr,0,rows); 
+    delete mlist;
+    delete ilist;
+    return dst;
+  }
+
   void* DeleteSparseMatrixVectorSubset(Class dclass, int &rows, int &cols,
 				       const void* cp, const indexType* ndx,
 				       int delete_len) {
     switch(dclass) {
     case FM_INT32:
-      return DeleteSparseMatrixRowReal<int32>(rows, cols, (const int32**) cp,
+      return DeleteSparseMatrixVectorReal<int32>(rows, cols, (const int32**) cp,
 					       ndx, delete_len);
     case FM_FLOAT:
-      return DeleteSparseMatrixRowReal<float>(rows, cols, (const float**) cp,
+      return DeleteSparseMatrixVectorReal<float>(rows, cols, (const float**) cp,
 					       ndx, delete_len);
     case FM_DOUBLE:
-      return DeleteSparseMatrixRowReal<double>(rows, cols, 
+      return DeleteSparseMatrixVectorReal<double>(rows, cols, 
 						(const double**) cp,
 						ndx, delete_len);
-//     case FM_COMPLEX:
-//       return DeleteSparseMatrixRowsComplex<float>(rows, cols, 
-// 						  (const float**) cp,
-// 						  ndx, delete_len);
-//     case FM_DCOMPLEX:
-//       return DeleteSparseMatrixRowsComplex<double>(rows, cols, 
-// 						   (const double**) cp,
-// 						   ndx, delete_len);
+    case FM_COMPLEX:
+      return DeleteSparseMatrixVectorComplex<float>(rows, cols, 
+						    (const float**) cp,
+						    ndx, delete_len);
+    case FM_DCOMPLEX:
+      return DeleteSparseMatrixVectorComplex<double>(rows, cols, 
+						     (const double**) cp,
+						     ndx, delete_len);
     }
+  }
+
+  template <class T>
+  void* GetSparseDiagonalReal(int rows, int cols, const T** src, int diagonalOrder) {
+    T** dst;
+    dst = new T*[1];
+    int outLen;
+    if (diagonalOrder < 0) {
+      outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
+      T* buffer = new T[outLen];
+      for (int j=0;j<outLen;j++) 
+	RealStringExtract(src[j],j-diagonalOrder,buffer+j);
+      dst[0] = CompressRealVector(buffer,outLen);
+    } else {
+      outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
+      T* buffer = new T[outLen];
+      for (int j=0;j<outLen;j++) 
+	RealStringExtract(src[diagonalOrder+j],j,buffer+j);
+      dst[0] = CompressRealVector(buffer,outLen);
+    }      
+    return dst;
+  }
+
+  template <class T>
+  void* GetSparseDiagonalComplex(int rows, int cols, const T** src, int diagonalOrder) {
+    T** dst;
+    dst = new T*[1];
+    int outLen;
+    if (diagonalOrder < 0) {
+      outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
+      T* buffer = new T[2*outLen];
+      for (int j=0;j<outLen;j++) 
+	ComplexStringExtract(src[j],j-diagonalOrder,buffer+2*j);
+      dst[0] = CompressComplexVector(buffer,outLen);
+    } else {
+      outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
+      T* buffer = new T[2*outLen];
+      for (int j=0;j<outLen;j++) 
+	ComplexStringExtract(src[diagonalOrder+j],j,buffer+2*j);
+      dst[0] = CompressComplexVector(buffer,outLen);
+    }      
+    return dst;    
+  }
+
+  void* GetSparseDiagonal(Class dclass, int rows, int cols, const void* cp, int diag_order) {
+    switch(dclass) {
+    case FM_INT32:
+      return GetSparseDiagonalReal<int32>(rows, cols, (const int32**) cp, diag_order);
+    case FM_FLOAT:
+      return GetSparseDiagonalReal<float>(rows, cols, (const float**) cp, diag_order);
+    case FM_DOUBLE:
+      return GetSparseDiagonalReal<double>(rows, cols, (const double**) cp, diag_order);
+    case FM_COMPLEX:
+      return GetSparseDiagonalComplex<float>(rows, cols, (const float**) cp, diag_order);
+    case FM_DCOMPLEX:
+      return GetSparseDiagonalComplex<double>(rows, cols, (const double**) cp, diag_order);
+    }    
+  }
+
+  template <class T>
+  bool TestSparseNotFinite(int rows, int cols, const T** src) {
+    for (int i=0;i<cols;i++)
+      for (int j=0;j<(int)src[i][0];j++) 
+	if (!IsFinite(src[i][j])) return true;
+  }
+    
+  bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp) {
+    switch(dclass) {
+    case FM_INT32:
+      return true;
+    case FM_FLOAT:
+      return TestSparseNotFinite<float>(rows, cols, (const float**) cp);
+    case FM_DOUBLE:
+      return TestSparseNotFinite<double>(rows, cols, (const double**) cp);
+    case FM_COMPLEX:
+      return TestSparseNotFinite<float>(rows, cols, (const float**) cp);
+    case FM_DCOMPLEX:
+      return TestSparseNotFinite<double>(rows, cols, (const double**) cp);
+    }        
   }
 }

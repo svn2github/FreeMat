@@ -2293,12 +2293,9 @@ break;
     return qp[ndx];
   }
 
-  // NEEDSPARSE
   Array Array::getDiagonal(int diagonalOrder)  {
     if (!is2D()) 
       throw Exception("Cannot take diagonal of N-dimensional array.");
-    if (isSparse())
-      throw Exception("getDiagonal not supported for sparse arrays.");
     int rows = dp->dimensions.getRows();
     int cols = dp->dimensions.getColumns();
     int outLen;
@@ -2308,25 +2305,39 @@ break;
     if (diagonalOrder < 0) {
       outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
       outLen = (outLen  < 0) ? 0 : outLen;
+      if (outLen == 0)
+	return Array::emptyConstructor();
       outDims[0] = outLen;
       outDims[1] = 1;
       void *qp;
-      qp = allocateArray(dp->dataClass,outLen,dp->fieldNames);
-      for (i=0;i<outLen;i++) {
-	srcIndex = -diagonalOrder + i*(rows+1);
-	copyElements(srcIndex,qp,i,1);
+      if (isSparse()) {
+	qp = GetSparseDiagonal(dp->dataClass, rows, cols, dp->getData(), diagonalOrder);
+	return Array(dp->dataClass,outDims,qp,true);
+      } else {
+	qp = allocateArray(dp->dataClass,outLen,dp->fieldNames);
+	for (i=0;i<outLen;i++) {
+	  srcIndex = -diagonalOrder + i*(rows+1);
+	  copyElements(srcIndex,qp,i,1);
+	}
+	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
       }
-      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
       outLen = (outLen  < 0) ? 0 : outLen;
+      if (outLen == 0)
+	return Array::emptyConstructor();
       outDims[0] = outLen;
       outDims[1] = 1;
       void *qp;
-      qp = allocateArray(dp->dataClass,outLen,dp->fieldNames);
-      for (i=0;i<outLen;i++) {
-	srcIndex = diagonalOrder*rows + i*(rows+1);
-	copyElements(srcIndex,qp,i,1);
+      if (isSparse()) {
+	qp = GetSparseDiagonal(dp->dataClass, rows, cols, dp->getData(), diagonalOrder);
+	return Array(dp->dataClass,outDims,qp,true);
+      } else {
+	qp = allocateArray(dp->dataClass,outLen,dp->fieldNames);
+	for (i=0;i<outLen;i++) {
+	  srcIndex = diagonalOrder*rows + i*(rows+1);
+	  copyElements(srcIndex,qp,i,1);
+	}
       }
       return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
     }
@@ -3134,10 +3145,7 @@ break;
    * Print this object when it is an element of a cell array.  This is
    * generally a shorthand summary of the description of the object.
    */
-  // NEEDSPARSE
   void Array::summarizeCellEntry() const {
-    if (isSparse())
-      throw Exception("summarizeCellEntry not supported for sparse arrays.");
     if (isEmpty()) 
       io->outputMessage("[]");
     else {
@@ -3236,7 +3244,7 @@ break;
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
 	  if (isSparse())
-	    io->outputMessage(" sparse ");
+	    io->outputMessage(" sparse");
 	  io->outputMessage(" int32]");
 	}
 	break;
@@ -3248,7 +3256,7 @@ break;
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
 	  if (isSparse())
-	    io->outputMessage(" sparse ");
+	    io->outputMessage(" sparse");
 	  io->outputMessage(" double]");
 	}
 	break;
@@ -3261,7 +3269,7 @@ break;
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
 	  if (isSparse())
-	    io->outputMessage(" sparse ");
+	    io->outputMessage(" sparse");
 	  io->outputMessage(" dcomplex]");
 	}
 	break;
@@ -3273,7 +3281,7 @@ break;
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
 	  if (isSparse())
-	    io->outputMessage(" sparse ");
+	    io->outputMessage(" sparse");
 	  io->outputMessage(" float]");
 	}
 	break;
@@ -3286,7 +3294,7 @@ break;
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
 	  if (isSparse())
-	    io->outputMessage(" sparse ");
+	    io->outputMessage(" sparse");
 	  io->outputMessage(" complex]");
 	}
 	break;
@@ -3660,10 +3668,12 @@ break;
     return (cls == FM_CELL_ARRAY || cls == FM_STRUCT_ARRAY);
   }
 
-  //NEEDSPARSE
   bool Array::anyNotFinite() {
     if (isSparse())
-      throw Exception("anyNotFinite not supported for sparse arrays.");
+      return SparseAnyNotFinite(dp->dataClass,
+				getDimensionLength(0),
+				getDimensionLength(1),
+				dp->getData());
     switch(dp->dataClass) {
     case FM_FLOAT: 
       {

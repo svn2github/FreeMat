@@ -51,6 +51,8 @@ namespace FreeMat {
   void* DeleteSparseMatrixVectorSubset(Class dclass, int &rows, int &cols, 
 				       const void *cp,
 				       const indexType *todel, int delete_len);
+  void* GetSparseDiagonal(Class dclass, int rows, int cols, const void* cp, int diag_order);
+  bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp);
 }
 
 #endif

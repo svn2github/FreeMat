@@ -4,7 +4,6 @@ libMiniBLAS_a_SOURCES = sgemv.f \
 sger.f \
 strmv.f \
 strsv.f \
-lsame.f \
 caxpy.f \
 ccopy.f \
 cdotc.f \
@@ -74,5 +73,4 @@ ztrmv.f \
 ztrsm.f \
 ztrsv.f 
 
-EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

@@ -32,6 +32,9 @@
 #include <direct.h>
 #define getcwd _getcwd
 #define S_ISREG(x) (x & _S_IFREG)
+#define P_DELIM ";"
+#else
+#define P_DELIM ":"
 #endif
 
 namespace FreeMat {
@@ -72,7 +75,7 @@ std::string GetApplicationPath(char *argv0) {
   std::string tpath;
   while (!found && !path.empty()) {
     int ndx;
-    ndx = path.find(":");
+    ndx = path.find(P_DELIM);
     tpath = path.substr(0,ndx);
     found = FileExists(CheckEndSlash(tpath) + std::string(argv0));
     path.erase(0,ndx+1);
@@ -86,11 +89,11 @@ std::string GetApplicationPath(char *argv0) {
 }
 
   PathSearcher::PathSearcher(std::string mpath) {
-    path = mpath + ":";
+    path = mpath + P_DELIM;
     std::string tpath;
     while (!path.empty()) {
       int ndx;
-      ndx = path.find(":");
+      ndx = path.find(P_DELIM);
       tpath = path.substr(0,ndx);
       path.erase(0,ndx+1);
       pathList.push_back(tpath);

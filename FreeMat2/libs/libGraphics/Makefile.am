@@ -16,6 +16,4 @@ PlotCommands.cpp \
 ImageCommands.cpp \
 ScalarImage.cpp \
 ScalarImage.hpp 
-
-
 AUTOMAKE_OPTIONS 	= foreign

@@ -141,8 +141,6 @@ endif
 
 AM_CFLAGS = -Wall -g -fexceptions
 
-libffi_a_LDFLAGS = -release $(VERSION)
-
 INCLUDES = -I. -I$(top_srcdir)/include -Iinclude -I$(top_srcdir)/src
 
 AM_CCASFLAGS = $(INCLUDES)

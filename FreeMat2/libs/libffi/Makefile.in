@@ -365,7 +365,6 @@ nodist_libffi_a_SOURCES = src/debug.c src/prep_cif.c src/types.c \
 			src/raw_api.c src/java_raw_api.c\
 $(am__append_1) $(am__append_2) $(am__append_3) $(am__append_4) $(am__append_5) $(am__append_6) $(am__append_7) $(am__append_8) $(am__append_9) $(am__append_10) $(am__append_11) $(am__append_12) $(am__append_13) $(am__append_14) $(am__append_15) $(am__append_16) $(am__append_17)
 AM_CFLAGS = -Wall -g -fexceptions
-libffi_a_LDFLAGS = -release $(VERSION)
 INCLUDES = -I. -I$(top_srcdir)/include -Iinclude -I$(top_srcdir)/src
 AM_CCASFLAGS = $(INCLUDES)
 all: fficonfig.h

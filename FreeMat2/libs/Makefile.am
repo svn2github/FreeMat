@@ -1,4 +1,8 @@
+if NEED_BLAS
+  BLAS_DIR = libMiniBLAS
+endif
+
 SUBDIRS = libFreeMat libFFTPack libCore libGraphics libXP \
-	 @miniblasdir@ @minilapackdir@ libffi
+	 $(BLAS_DIR) libMiniLAPACK libffi
 AUTOMAKE_OPTIONS = foreign
 

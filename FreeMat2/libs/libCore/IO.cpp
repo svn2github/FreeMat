@@ -498,6 +498,8 @@ namespace FreeMat {
     Dimensions dims(dimCount);
     for (int j=0;j<dimCount;j++)
       dims[j] = (int) dp[j];
+    if (dimCount == 1)
+      dims[1] = 1;
     ArrayVector retval;
     retval.push_back(Array::Array(dataClass,dims,qp));
     return retval;

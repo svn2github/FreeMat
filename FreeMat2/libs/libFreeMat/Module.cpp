@@ -333,6 +333,7 @@ namespace FreeMat {
   //import('add.so','addArrays','addArrays','void','int32 N, float[N] a, float[N] b, float[N] &c');
   //a = [3,2,3,1];
   //b = [5,6,0,2]; 
+  //c = [0,0,0,0];
   //addArrays(length(a),a,b,c)
   //c
   //@>
@@ -346,7 +347,13 @@ namespace FreeMat {
     char *arglist;
     Interface *io;
     io = eval->getInterface();
-    PathSearcher psearch(io->getPath());
+
+#ifdef WIN32
+    PathSearcher psearch(io->getPath() + ";.");
+#else
+    PathSearcher psearch(io->getPath() + ":.");
+#endif
+
     std::string libfullpath;
 
     if (arg.size() < 5)

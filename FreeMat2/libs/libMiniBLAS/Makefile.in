@@ -54,15 +54,15 @@ LIBRARIES = $(noinst_LIBRARIES)
 libMiniBLAS_a_AR = $(AR) $(ARFLAGS)
 libMiniBLAS_a_LIBADD =
 am_libMiniBLAS_a_OBJECTS = sgemv.$(OBJEXT) sger.$(OBJEXT) \
-	strmv.$(OBJEXT) strsv.$(OBJEXT) lsame.$(OBJEXT) \
-	caxpy.$(OBJEXT) ccopy.$(OBJEXT) cdotc.$(OBJEXT) \
-	cdotu.$(OBJEXT) cgemm.$(OBJEXT) cgemv.$(OBJEXT) \
-	cgerc.$(OBJEXT) cgeru.$(OBJEXT) cscal.$(OBJEXT) \
-	csscal.$(OBJEXT) cswap.$(OBJEXT) ctrmm.$(OBJEXT) \
-	ctrmv.$(OBJEXT) ctrsm.$(OBJEXT) ctrsv.$(OBJEXT) \
-	dasum.$(OBJEXT) daxpy.$(OBJEXT) dcabs1.$(OBJEXT) \
-	dcopy.$(OBJEXT) ddot.$(OBJEXT) dgemm.$(OBJEXT) dgemv.$(OBJEXT) \
-	dger.$(OBJEXT) dlamch.$(OBJEXT) dnrm2.$(OBJEXT) drot.$(OBJEXT) \
+	strmv.$(OBJEXT) strsv.$(OBJEXT) caxpy.$(OBJEXT) \
+	ccopy.$(OBJEXT) cdotc.$(OBJEXT) cdotu.$(OBJEXT) \
+	cgemm.$(OBJEXT) cgemv.$(OBJEXT) cgerc.$(OBJEXT) \
+	cgeru.$(OBJEXT) cscal.$(OBJEXT) csscal.$(OBJEXT) \
+	cswap.$(OBJEXT) ctrmm.$(OBJEXT) ctrmv.$(OBJEXT) \
+	ctrsm.$(OBJEXT) ctrsv.$(OBJEXT) dasum.$(OBJEXT) \
+	daxpy.$(OBJEXT) dcabs1.$(OBJEXT) dcopy.$(OBJEXT) \
+	ddot.$(OBJEXT) dgemm.$(OBJEXT) dgemv.$(OBJEXT) dger.$(OBJEXT) \
+	dlamch.$(OBJEXT) dnrm2.$(OBJEXT) drot.$(OBJEXT) \
 	dscal.$(OBJEXT) dswap.$(OBJEXT) dtrmm.$(OBJEXT) \
 	dtrmv.$(OBJEXT) dtrsm.$(OBJEXT) dtrsv.$(OBJEXT) \
 	dzasum.$(OBJEXT) dznrm2.$(OBJEXT) icamax.$(OBJEXT) \
@@ -128,6 +128,8 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+NEED_BLAS_FALSE = @NEED_BLAS_FALSE@
+NEED_BLAS_TRUE = @NEED_BLAS_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -200,7 +202,6 @@ libMiniBLAS_a_SOURCES = sgemv.f \
 sger.f \
 strmv.f \
 strsv.f \
-lsame.f \
 caxpy.f \
 ccopy.f \
 cdotc.f \
@@ -270,7 +271,6 @@ ztrmv.f \
 ztrsm.f \
 ztrsv.f 
 
-EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 all: all-am
 

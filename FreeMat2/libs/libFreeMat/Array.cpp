@@ -618,7 +618,7 @@ namespace FreeMat {
   void Array::vectorResize(int max_index) {
     if (max_index > getLength()) {
       Dimensions newDim;
-      if (dp->dimensions.isScalar()) {
+      if (isEmpty() || dp->dimensions.isScalar()) {
 	newDim.reset();
 	newDim[0] = 1;
 	newDim[1] = max_index;

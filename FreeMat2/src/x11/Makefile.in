@@ -115,6 +115,8 @@ LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+NEED_BLAS_FALSE = @NEED_BLAS_FALSE@
+NEED_BLAS_TRUE = @NEED_BLAS_TRUE@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -208,9 +210,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/x11/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/x11/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/x11/Makefile
+	  $(AUTOMAKE) --foreign  src/x11/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -129,6 +129,8 @@ namespace FreeMat {
 
   char StringMatch(char* options, char* choices) {
     char *cp, *rp;
+    if (!options)
+      return 0;
     cp = options;
     while (*cp != 0) {
       rp = strchr(choices,*cp);
@@ -147,7 +149,7 @@ namespace FreeMat {
     style = StringMatch(arg,styles);
     symbol = StringMatch(arg,symbols);
 
-    if ((color != 0) && (style == 0) && (symbol == 0))
+    if ((style == 0) && (symbol == 0))
       style = '-';
     if (color == 0) {
       color = colors[colornumber];

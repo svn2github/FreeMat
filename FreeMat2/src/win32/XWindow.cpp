@@ -230,6 +230,16 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
 }
 
 void XWindow::GetClick(int &x, int &y) {
+  HCURSOR cursor;
+  cursor = LoadCursor(AppInstance, IDC_CROSS);
+  HCURSOR oldcursor;
+  oldcursor = SetCursor(cursor);
+  m_state = state_click_waiting;
+  while (m_state != state_normal)
+    DoEvents();
+  x = m_clickx;
+  y = m_clicky;
+  SetCursor(oldcursor);
 }
 
 int XWindow::GetState() {
@@ -487,6 +497,7 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
   wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
   wndclass.lpszMenuName = NULL;
   wndclass.lpszClassName = "Freemat Window";
+  AppInstance = hInstance;
   if (!RegisterClass(&wndclass)) {
     MessageBox(NULL, TEXT("This program requires Windows NT!"),
 	       "FreeMat",MB_ICONERROR);

@@ -18,10 +18,6 @@ using namespace FreeMat;
 Display *d;
 int screen_num = 0;
 
-namespace FreeMat {
-  Context *context;
-}
-
 Terminal term;
 
 sig_t signal_suspend_default;
@@ -88,15 +84,15 @@ int main(int argc, char *argv[]) {
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   SetActiveDisplay(d);
   RegisterSTDINCallback(stdincb);
-  context = new Context;
-  BuiltInFunctionDef *f2def = new BuiltInFunctionDef;
-  f2def->retCount = 0;
-  f2def->argCount = 5;
-  f2def->name = "loadFunction";
-  f2def->fptr = LoadFunction;
-  context->insertFunctionGlobally(f2def);
-  
+  Context *context = new Context;
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
+  sfdef->retCount = 0;
+  sfdef->argCount = 5;
+  sfdef->name = "loadFunction";
+  sfdef->fptr = LoadLibFunction;
+  context->insertFunctionGlobally(sfdef);
+  
+  sfdef = new SpecialFunctionDef;
   sfdef->retCount = 0;
   sfdef->argCount = 5;
   sfdef->name = "import";

@@ -88,4 +88,5 @@ void RegisterSTDINCallback(fdcallback cb);
 void SetActiveDisplay(Display* d);
 void DoEvents();
 void Run();
+void FlushWindowEvents();
 #endif

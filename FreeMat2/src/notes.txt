@@ -2,9 +2,10 @@ More stuff:
 1.  Point and Rect don't work under Windows anymore (X?)
 2.  Add DrawPoint to XWindow
 5.  Menu? File, Edit, Help?
+6.  Colormap doesn't work
+7.  Printing (both Win32 and X11)
 6.  Copy/Paste?
-7.  Printing! (W/X)
-8.  256 color support
+7.  Filename completions still not quite right on Win32...
 
 General Issues:
 1. Empty plot windows are black - why? - Done

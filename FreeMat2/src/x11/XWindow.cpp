@@ -725,3 +725,7 @@ void Run() {
     DoEvents();
   }
 }
+
+void FlushWindowEvents() {
+  Run();
+}

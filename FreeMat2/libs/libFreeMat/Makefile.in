@@ -108,7 +108,7 @@ noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS = @CFLAGS@ 
 CXXFLAGS = @CXXFLAGS@ 
-INCLUDES = -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP
+INCLUDES = -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/@maindir@
 
 libFreeMat_a_SOURCES = Parser.yy \
 Lexer.ll \

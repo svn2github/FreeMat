@@ -37,12 +37,12 @@ void FLTKGC::DrawTextString(std::string label, Point2D pos,
     fl_rectf(0,0,w,h);
     fl_color(FL_BLACK);
     fl_draw(label.c_str(),0,11);
-    data = new (unsigned char)[w*h*3];
+    data = new unsigned char[w*h*3];
     fl_read_image(data,0,0,w,h);
     fl_end_offscreen();
     fl_delete_offscreen(id);
     unsigned char *rotdata;
-    rotdata = new (unsigned char)[w*h*3];
+    rotdata = new unsigned char[w*h*3];
     // The (i,j)th pixel of the original bitmap
     // is data[i*w+j]
     // The (i,j)th pixel of the transposed bitmap
@@ -144,6 +144,7 @@ Rect2D FLTKGC::PopClippingRegion() {
   ret = clips.back();
   clips.pop_back();
   fl_pop_clip();
+  return ret;
 }
 
 void FLTKGC::BlitImage(unsigned char *data, int width, 

@@ -1,5 +1,5 @@
 //!
-//@Module SQRT Sqaure Root of an Array
+//@Module SQRT Square Root of an Array
 //@@Section MATHFUNCTIONS
 //@@Usage
 //Computes the square root of the argument matrix.  The general

@@ -83,7 +83,10 @@ UTIL/second.f \
 UTIL/smout.f \
 UTIL/svout.f \
 UTIL/zmout.f \
-UTIL/zvout.f 
+UTIL/zvout.f \
+SRC/debug.h \
+SRC/stat.h \
+SRC/version.h
 
 
 AUTOMAKE_OPTIONS 	= foreign

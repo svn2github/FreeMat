@@ -120,7 +120,7 @@ Float7		{Digit}+{ExponentPart}{DblSuffix}?
 Float8		{Digit}+{DblSuffix}
 FloatingPoint	({Float1}|{Float2}|{Float3}|{Float4})
 DoubleFloatingPoint	({Float5}|{Float6}|{Float7}|{Float8})
-Whitespace      [ \t\xFF]
+Whitespace      [ \t]
 Commentline     "%".*
 Newline         ("\r\n"|\n)
 String          [\'][^\'\n\r]*[\']
@@ -151,14 +151,6 @@ SpecialArgument ({Argument}|{String})
 }
 
 {Whitespace}+ {
-}
-
-^{Whitespace}*"+" {
- return POS;
-}
-
-^{Whitespace}*"-" {
- return NEG;
 }
 
 ";" {
@@ -225,80 +217,6 @@ SpecialArgument ({Argument}|{String})
   lineNumber++;
   BEGIN(INITIAL);
   return ENDSTMNT;
-}
-
-<Scanning>{Word}"(""-" {
-  unput(0xFA);
-/*  yyless(1); */
-  int i;
-  char *yycopy = strdup(yytext);
-  for (i=yyleng-2;i>=0;--i)
-    unput(yycopy[i]);
-  free(yycopy);
-}
-
-<Scanning>{Word}"(""+" {
-  unput(0xFB);
-/*  yyless(1); */
-  int i;
-  char *yycopy = strdup(yytext);
-  for (i=yyleng-2;i>=0;--i)
-    unput(yycopy[i]);
-  free(yycopy);
-}
-
-<Scanning>^[ \t\f]*"-" {
-  return NEG;
-}
-
-<Scanning>^[ \t\f]*"+" {
-  return POS;
-}
-
-<Scanning>[({[,+\-*/\\|&<>~^\xFA\xFB;=:][ \f\t]*"-" {
-  // Replace the - with a NEG
-  int i; 
-  char *yycopy = strdup(yytext);
-  unput(0xFA);
-  for (i=yyleng-2;i>=0;--i)
-    unput(yycopy[i]);
-  free(yycopy);
-}
-
-<Scanning>[ \f\t]+"-"[a-zA-Z0-9"(""[""{""'"] {
-  int i;
-  char *yycopy = strdup(yytext);
-  yycopy[yyleng-2] = 0xFA;
-  for (i=yyleng-1;i>=0;--i)
-    unput(yycopy[i]);
-  free(yycopy);
-}
-
-<Scanning>[({[,+\-*/\\|&<>~^\xFA\xFB;=:][ \f\t]*"+" {
-  // Replace the - with a NEG
-  int i;
-  char *yycopy = strdup(yytext);
-  unput(0xFB);
-  for (i=yyleng-2;i>=0;--i)
-    unput(yycopy[i]);
-  free(yycopy);
-}
-
-<Scanning>[ \f\t]+"+"[a-zA-Z0-9"(""[""{""'"] {
-  int i;
-  char *yycopy = strdup(yytext);
-  yycopy[yyleng-2] = 0xFB;
-  for (i=yyleng-1;i>=0;--i)
-    unput(yycopy[i]);
-  free(yycopy);
-}
-
-<Scanning>\xFA {
-  return NEG;
-}
-
-<Scanning>\xFB {
-  return POS;
 }
 
 <Scanning>"==" {
@@ -586,10 +504,7 @@ namespace FreeMat {
     YY_FLUSH_BUFFER;
     BEGIN(INITIAL);
     firstToken = true;
-    char qbuffer[1000];
-    sprintf(qbuffer,"      %s",buffer);
-    for (int i=0;i<5;i++) qbuffer[i] = 0xFF;
-    yy_scan_string(qbuffer);
+    yy_scan_string(buffer);
   }
   
   void setLexFile(FILE *fp) {

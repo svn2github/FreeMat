@@ -126,8 +126,8 @@ using namespace FreeMat;
 %left '<' LE '>' GE EQ NE
 %left '+' '-'
 %left '*' '/' '\\' DOTTIMES DOTRDIV DOTLDIV
-%right POS NEG NOT
-%left '^' DOTPOWER
+%left POS NEG NOT
+%right '^' DOTPOWER
 %nonassoc '\'' DOTTRANSPOSE
 
 %%
@@ -386,7 +386,7 @@ switchStatement:
         ;
 
 optionalEndStatement:
-	',' | ENDSTMNT | ENDQSTMNT |
+	',' | ENDSTMNT | ENDQSTMNT | ';'
 	;
 
 caseBlock:
@@ -404,8 +404,8 @@ caseList:
 ;
 
 caseStatement:
-	CASE expr statementList {
-	  $$ = $1; $$->addChild($2); $$->addChild($3);
+	CASE expr optionalEndStatement statementList {
+	  $$ = $1; $$->addChild($2); $$->addChild($4);
 	}
 ;
 
@@ -419,8 +419,8 @@ otherwiseClause:
 ;
 
 forStatement:
-	FOR forIndexExpression statementList ENDFOR {
-	  $$ = $1; $$->addChild($2); $$->addChild($3);
+	FOR forIndexExpression optionalEndStatement statementList ENDFOR {
+	  $$ = $1; $$->addChild($2); $$->addChild($4);
 	}
 ;
 
@@ -437,8 +437,8 @@ forIndexExpression:
 ;
 
 whileStatement:
-	WHILE expr statementList ENDWHILE {
-	  $$ = $1; $$->addChild($2); $$->addChild($3);
+	WHILE expr optionalEndStatement statementList ENDWHILE {
+	  $$ = $1; $$->addChild($2); $$->addChild($4);
 	}  |
 	WHILE error {yyxpt("test expression after 'while'");} 
 ;
@@ -452,8 +452,8 @@ ifStatement:
 ;
 
 conditionedStatement:
-	expr statementList {
-	  $$ = new AST(OP_CSTAT,$1,$2);
+	expr optionalEndStatement statementList {
+	  $$ = new AST(OP_CSTAT,$1,$3);
 	}
 ;
 
@@ -545,10 +545,8 @@ expr:
 	| expr DOTRDIV  error {yyxpt("an expression after './'");}
 	| expr DOTLDIV expr {$$ = new AST(OP_DOT_LDIV,$1,$3);}
 	| expr DOTLDIV error {yyxpt("an expression after '.\\'");}
-	| NEG  expr %prec NEG {$$ = new AST(OP_NEG,$2);}
-	| NEG  error %prec NEG {yyxpt("an expression after negation");}
-	| POS  expr %prec POS {$$ = $2;}
-	| POS  error %prec POS {yyxpt("an expression after positive sign");}
+	| '-'  expr %prec NEG {$$ = new AST(OP_NEG,$2);}
+	| '+'  expr %prec POS {$$ = $2;}
 	| '~' expr %prec NOT {$$ = new AST(OP_NOT,$2);}
 	| '~' error %prec NOT {yyxpt("an expression after logical not");}
 	| expr '^' expr  {$$ = new AST(OP_POWER,$1,$3);}

@@ -400,40 +400,6 @@ namespace FreeMat {
       OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
   }
 
-  void Terminal::setMessageContext(const char* msg) {
-    if (messageContext != NULL)
-      free(messageContext);
-    if (msg != NULL) 
-      messageContext = strdup(msg);
-    else
-      messageContext = NULL;
-  }
-
-  void Terminal::pushMessageContext() {
-    if (messageContext != NULL)
-      messageStack.push_back(messageContext);
-    else
-      messageStack.push_back("<Interactive>");
-  }
-
-  void Terminal::popMessageContext() {
-    messageStack.pop_back();
-  }
-
-  void Terminal::clearMessageContextStack() {
-    messageStack.clear();
-  }
-
-  std::vector<std::string> Terminal::getMessageContextStack() {
-    // Add the current context to the stack
-    std::vector<std::string> ret;
-    if (messageContext != NULL)
-      ret.push_back(messageContext);
-    else
-      ret.push_back("<Interactive>");
-    return messageStack;
-  }
-
   void Terminal::SetEvalEngine(WalkTree* a_eval) {
     eval = a_eval;
   }

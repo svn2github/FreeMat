@@ -31,8 +31,6 @@ namespace FreeMat {
     WalkTree *eval;
     std::vector<std::string> dirTab;
     Context *context;
-    char *messageContext;
-    std::vector<std::string> messageStack;
     std::vector<std::string> flist;
     std::list<std::string> enteredLines;
     std::string m_path;
@@ -65,12 +63,7 @@ namespace FreeMat {
     virtual void outputMessage(const char* msg);
     virtual void errorMessage(const char* msg);
     virtual void warningMessage(const char* msg);
-    virtual void setMessageContext(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
-    virtual void pushMessageContext();
-    virtual void popMessageContext();
-    virtual void clearMessageContextStack();
-    virtual std::vector<std::string> getMessageContextStack();
     virtual void ExecuteLine(const char* line);
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 
 						    std::string &matchString);

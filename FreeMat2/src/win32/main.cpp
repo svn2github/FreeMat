@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "Module.hpp"
 #include "LoadCore.hpp"
+#include "LoadFN.hpp"
 #include "GraphicsCore.hpp"
 #include "System.hpp"
 #include "PathSearch.hpp"
@@ -45,6 +46,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   context->insertFunctionGlobally(sfdef);
 
   LoadCoreFunctions(context);
+  LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
   InitializeXWindowSystem(hInstance);
   InitializePlotSubsystem();

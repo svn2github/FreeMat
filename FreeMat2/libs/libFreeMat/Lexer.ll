@@ -64,7 +64,7 @@ reservedWordStruct ts, *p;
   
   int popState() {
     if (stackCount < 1)
-	return INITIAL;
+	return 0;
     stackCount--;
     return stateStack[stackCount];
   }
@@ -138,7 +138,7 @@ SpecialArgument ({Argument}|{String})
 %x SpecialSyntaxStart
 %x SpecialSyntaxArgs
 %x str
-%s CommaScan
+%x Mscan
 %%
 
 	char string_buf[4095];
@@ -220,75 +220,77 @@ SpecialArgument ({Argument}|{String})
   return ENDSTMNT;
 }
 
-<Scanning>"==" {
+<Scanning,Mscan>"==" {
   return EQ;
 }
 
-<Scanning>".*" {			
+<Scanning,Mscan>".*" {			
   return DOTTIMES;
 }
 
-<Scanning>"./" {
+<Scanning,Mscan>"./" {
   return DOTRDIV;
 }
 
-<Scanning>".\\" {
+<Scanning,Mscan>".\\" {
   return DOTLDIV;
 }
 
-<Scanning>"<=" {			
+<Scanning,Mscan>"<=" {			
   return LE;
 }
 
-<Scanning>">=" {
+<Scanning,Mscan>">=" {
   return GE;
 }
 
-<Scanning>"~=" {
+<Scanning,Mscan>"~=" {
   return NE;
 }
 
-<Scanning>".^" {
+<Scanning,Mscan>".^" {
   return DOTPOWER;
 }
 
-<Scanning>".\'" {
+<Scanning,Mscan>".\'" {
   return DOTTRANSPOSE;
 }
 
-<Scanning>";\n"  {
+<Scanning,Mscan>";\n"  {
   lineNumber++;
   firstToken = true;
   BEGIN(INITIAL);
   return ENDQSTMNT;
 }
 
-<Scanning>";"  {
+<Scanning,Mscan>";"  {
   firstToken = true;
   BEGIN(INITIAL);
   return ENDQSTMNT;
 }
 
-<Scanning>"\r\n"|\n {
+<Scanning,Mscan>"\r\n"|\n {
   lineNumber++;
   firstToken = true;
   BEGIN(INITIAL);
   return ENDSTMNT;
 }
 
-<Scanning>"(" {
+<Scanning,Mscan>"(" {
   pushState(Scanning);
   pushContext(context_index);
+  BEGIN(Scanning);
   return '(';
 }
 
-<Scanning>"{" {
+<Scanning,Mscan>"{" {
   pushState(Scanning);
   pushContext(context_cell);
+  BEGIN(Mscan);
   return '{';
 }
 
-<Scanning>")" {
+<Scanning,Mscan>")" {
   popContext(')');
   if (topState() == Scanning) {
     BEGIN(TransposeCheck);
@@ -299,7 +301,7 @@ SpecialArgument ({Argument}|{String})
   }
 }
 
-<Scanning>"}" {
+<Scanning,Mscan>"}" {
   popContext('}');
   if (topState() == Scanning) {
     BEGIN(TransposeCheck);
@@ -310,49 +312,46 @@ SpecialArgument ({Argument}|{String})
   }
 }
 
-<Scanning>"[" {
+<Scanning,Mscan>"[" {
   pushContext(context_matrix);
+  BEGIN(Mscan);
   return '[';
 }
 
-<Scanning>"]" {
+<Scanning,Mscan>"]" {
   popContext(']');
   pushState(Scanning);
   BEGIN(TransposeCheck);
   return ']';
 }
 
-<Scanning>[a-zA-Z0-9)]{Whitespace}+[+-][a-zA-Z0-9(+-] {
-  if ((contextStack[contextCount-1] == context_matrix) ||
-	(contextStack[contextCount-1] == context_cell)) {
-    int i;
-    char *yycopy = strdup(yytext);
-    for (i=yyleng-1;i>=0;--i) 
-      if (i != 1)
-        unput(yycopy[i]);
-      else
-        unput(',');
-    free(yycopy);
-  } else
-    REJECT;
+<Mscan>[a-zA-Z0-9)]{Whitespace}+[+-][a-zA-Z0-9(+-] {
+  int i;
+  char *yycopy = strdup(yytext);
+  for (i=yyleng-1;i>=0;--i) 
+    if (i != 1)
+      unput(yycopy[i]);
+    else
+      unput(',');
+  free(yycopy);
 }
 
-<Scanning>[ \f\t] {
+<Scanning,Mscan>[ \f\t] {
   /* skip */
 }
 
-<Scanning>"..."{Whitespace}*{Newline} {
+<Scanning,Mscan>"..."{Whitespace}*{Newline} {
   lineNumber++;
   continuationCount++;
   firstToken = false;
   BEGIN(Scanning);
 }
 
-<Scanning>{Commentline} {
+<Scanning,Mscan>{Commentline} {
   /* skip */
 }
 
-<Scanning>\'  string_buf_ptr = string_buf; BEGIN(str);
+<Scanning,Mscan>\'  string_buf_ptr = string_buf; BEGIN(str);
 
 <str>\' {
 	BEGIN(Scanning); 
@@ -374,7 +373,7 @@ SpecialArgument ({Argument}|{String})
                            *string_buf_ptr++ = *yptr++;
                  }
 
-<Scanning>{Word} {
+<Scanning,Mscan>{Word} {
   /* Search for the identifier in the keyword table */
   ts.word = yytext;
   p = (reservedWordStruct*) 
@@ -468,28 +467,28 @@ SpecialArgument ({Argument}|{String})
   BEGIN(Scanning);
 }
 
-<Scanning>{FloatingPoint} {
+<Scanning,Mscan>{FloatingPoint} {
   pushState(YY_START);
   BEGIN(TransposeCheck);
   yylval = new AST(const_float_node,yytext);
   return NUMERIC;
 }
 
-<Scanning>{DoubleFloatingPoint} {
+<Scanning,Mscan>{DoubleFloatingPoint} {
   pushState(YY_START);
   BEGIN(TransposeCheck);
   yylval = new AST(const_double_node,yytext);
   return NUMERIC;
 }
 
-<Scanning>{Integer} {
+<Scanning,Mscan>{Integer} {
   pushState(YY_START);
   BEGIN(TransposeCheck);
   yylval = new AST(const_int_node,yytext);
   return NUMERIC;
 }
 
-<Scanning>. {
+<Scanning,Mscan>. {
   return *yytext;
 }
 
@@ -517,8 +516,9 @@ namespace FreeMat {
     contextCount = 0;
     lineNumber = 0;
     continuationCount = 0;;
-    YY_FLUSH_BUFFER;
-    BEGIN(INITIAL);
+//    YY_FLUSH_BUFFER;
+//    BEGIN(INITIAL);
+    BEGIN(0);
     firstToken = true;
     yy_scan_string(buffer);
   }
@@ -528,9 +528,10 @@ namespace FreeMat {
     stateStack[0] = 0;
     contextCount = 0;
     lineNumber = 0;
-    YY_FLUSH_BUFFER;
+//    YY_FLUSH_BUFFER;
     firstToken = true;
-    BEGIN(INITIAL);
+//    BEGIN(INITIAL);
+    BEGIN(0);
     yyrestart(fp);
   }
   

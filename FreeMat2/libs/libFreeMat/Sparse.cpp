@@ -766,6 +766,58 @@ namespace FreeMat {
       *dst = 0;
   }
 
+  template <class T>
+  void ComplexStringExtract(const T* src, int ndx, T* dst) {
+    int i=0;
+    int n=1;
+    int j;
+    while (i<2*ndx) {
+      if ((src[n] != 0) || (src[n+1] != 0)) {
+	i+=2;
+	n+=2;
+      } else {
+	j = (int) src[n+2];
+	i += j*2;
+	n += 3;
+      }
+    }
+    if (i==2*ndx) {
+      dst[0] = src[n];
+      dst[1] = src[n+1];
+    } else {
+      dst[0] = 0;
+      dst[1] = 0;
+    }
+  }
+  
+
+  // This implementation is poor because for a linear access of the elements
+  // of A, it requires significant time.
+  template <class T>
+  void* GetSparseVectorSubsetsComplex(int rows, int cols, const T** A,
+				      const indexType* indx, int irows, int icols) {
+    int i, j, n;
+    int nrow, ncol;
+    T* Acol = new T[2*irows];
+    T** dp = new T*[icols];
+    for (i=0;i<icols;i++) {
+      for (j=0;j<irows;j++) {
+	// Get the vector index
+	n = indx[i*irows+j] - 1;
+	// Decompose this into a row and column
+	ncol = n / rows;
+	if (ncol > cols)
+	  throw Exception("Index exceeds variable dimensions");
+	nrow = n % rows;
+	// Extract this value from the source matrix
+	ComplexStringExtract<T>(A[ncol],nrow,Acol+2*j);
+      }
+      dp[i] = CompressComplexVector(Acol,irows);
+    }
+    delete Acol;
+    return dp;
+  }
+
   // This implementation is poor because for a linear access of the elements
   // of A, it requires significant time.
   template <class T>
@@ -808,12 +860,149 @@ namespace FreeMat {
     case FM_DOUBLE:
       return GetSparseVectorSubsetsReal<double>(rows, cols, (const double**) src,
 						indx, irows, icols);
-      //    case FM_COMPLEX:
-      //      return GetSparseVectorSubsetsComplex<float>(rows, cols, (float**) src,
-      //						  indx, irows, icols);
-      //    case FM_DCOMPLEX:
-      //      return GetSparseVectorSubsetsComplex<double>(rows, cols, (double**) src,
-      //						   indx, irows, icols);
+    case FM_COMPLEX:
+      return GetSparseVectorSubsetsComplex<float>(rows, cols, (const float**) src,
+      						  indx, irows, icols);
+    case FM_DCOMPLEX:
+      return GetSparseVectorSubsetsComplex<double>(rows, cols, (const double**) src,
+      						   indx, irows, icols);
     }
   }
+
+  template <class T>
+  void* GetSparseNDimSubsetsReal(int rows, int cols, const T** A,
+				 const indexType* rindx, int irows, 
+				 const indexType* cindx, int icols) {
+    int i, j, n, m;
+    int nrow, ncol;
+    T* Acol = new T[rows];
+    T* Bcol = new T[irows];
+    T** dp = new T*[icols];
+    for (i=0;i<icols;i++) {
+      // Get the column index
+      m = cindx[i] - 1;
+      if ((m<0) || (m>=cols))
+	throw Exception("column index exceeds variable bounds in expression of type A(n,m)");
+      DecompressRealString<T>(A[m],Acol,rows);
+      memset(Bcol,0,irows*sizeof(T));
+      for (j=0;j<irows;j++) {
+	// Get the row index
+	n = rindx[j] - 1;
+	if ((n<0) || (n>=rows))
+	  throw Exception("row index exceeds variable bounds in expression of type A(n,m)");
+	Bcol[j] = Acol[n];
+      }
+      dp[i] = CompressRealVector<T>(Bcol,irows);
+    }
+    delete Acol;
+    delete Bcol;
+    return dp;
+  }
+
+
+  template <class T>
+  void* GetSparseNDimSubsetsComplex(int rows, int cols, const T** A,
+				    const indexType* rindx, int irows, 
+				    const indexType* cindx, int icols) {
+    int i, j, n, m;
+    int nrow, ncol;
+    T* Acol = new T[2*rows];
+    T* Bcol = new T[2*irows];
+    T** dp = new T*[icols];
+    for (i=0;i<icols;i++) {
+      // Get the column index
+      m = cindx[i] - 1;
+      if ((m<0) || (m>=cols))
+	throw Exception("column index exceeds variable bounds in expression of type A(n,m)");
+      DecompressComplexString<T>(A[m],Acol,rows);
+      memset(Bcol,0,2*irows*sizeof(T));
+      for (j=0;j<irows;j++) {
+	// Get the row index
+	n = rindx[j] - 1;
+	if ((n<0) || (n>=rows))
+	  throw Exception("row index exceeds variable bounds in expression of type A(n,m)");
+	Bcol[2*j] = Acol[2*n];
+	Bcol[2*j+1] = Acol[2*n+1];
+      }
+      dp[i] = CompressComplexVector<T>(Bcol,irows);
+    }
+    delete Acol;
+    delete Bcol;
+    return dp;
+  }
+
+  // GetSparseNDimSubsets
+  void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
+			     const indexType* rindx, int irows,
+			     const indexType* cindx, int icols) {
+    switch(dclass) {
+    case FM_INT32:
+      return GetSparseNDimSubsetsReal<int32>(rows, cols, (const int32**) src,
+					     rindx, irows, cindx, icols);
+    case FM_FLOAT:
+      return GetSparseNDimSubsetsReal<float>(rows, cols, (const float**) src,
+					     rindx, irows, cindx, icols);
+    case FM_DOUBLE:
+      return GetSparseNDimSubsetsReal<double>(rows, cols, (const double**) src,
+					      rindx, irows, cindx, icols);
+    case FM_COMPLEX:
+      return GetSparseNDimSubsetsComplex<float>(rows, cols, (const float**) src,
+						rindx, irows, cindx, icols);
+    case FM_DCOMPLEX:
+      return GetSparseNDimSubsetsComplex<double>(rows, cols, (const double**) src,
+						 rindx, irows, cindx, icols);
+    }
+  }
+
+  template <class T>
+  void* GetSparseScalarReal(int rows, int cols, const T** src,
+			    int rindx, int cindx) {
+    T* ret = (T*) Malloc(sizeof(T)*1);
+    rindx -= 1;
+    cindx -= 1;
+    if ((rindx<0) || (rindx >= rows))
+      throw Exception("out of range row index in sparse scalar indexing expression A(m,n)");
+    if ((cindx<0) || (cindx >= cols))
+      throw Exception("out of range col index in sparse scalar indexing expression A(m,n)");
+    RealStringExtract(src[cindx],rindx,ret);
+    return ret;
+  }
+
+  template <class T>
+  void* GetSparseScalarComplex(int rows, int cols, const T** src,
+			       int rindx, int cindx) {
+    T* ret = (T*) Malloc(sizeof(T)*2);
+    rindx -= 1;
+    cindx -= 1;
+    if ((rindx<0) || (rindx >= rows))
+      throw Exception("out of range row index in sparse scalar indexing expression A(m,n)");
+    if ((cindx<0) || (cindx >= cols))
+      throw Exception("out of range col index in sparse scalar indexing expression A(m,n)");
+    ComplexStringExtract(src[cindx],rindx,ret);
+    return ret;
+  }
+
+  // GetSparseNDimSubsets
+  void* GetSparseScalarElement(Class dclass, int rows, int cols, 
+			       const void* src, indexType rindx, 
+			       indexType cindx) {
+    switch(dclass) {
+    case FM_INT32:
+      return GetSparseScalarReal<int32>(rows, cols, (const int32**) src,
+					rindx, cindx);
+    case FM_FLOAT:
+      return GetSparseScalarReal<float>(rows, cols, (const float**) src,
+					rindx, cindx);
+    case FM_DOUBLE:
+      return GetSparseScalarReal<double>(rows, cols, (const double**) src,
+					 rindx, cindx);
+    case FM_COMPLEX:
+      return GetSparseScalarComplex<float>(rows, cols, (const float**) src,
+					   rindx, cindx);
+    case FM_DCOMPLEX:
+      return GetSparseScalarComplex<double>(rows, cols, (const double**) src,
+					    rindx, cindx);
+    }
+  }
+
 }

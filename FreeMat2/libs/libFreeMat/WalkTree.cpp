@@ -3130,7 +3130,8 @@ namespace FreeMat {
     } catch(Exception &e) {
       e.printMe(io);
     }
-    popDebug();
+    if (parserState == ScriptBlock)
+      popDebug();
     return false;
   }
 

@@ -1,6 +1,8 @@
 #include "Figure.hpp"
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
+#include "FL/x.H"
+#include "FLTKGC.hpp"
 
 #define MAX_FIGS 100
 
@@ -38,6 +40,16 @@ namespace FreeMat {
     add(widget);
     resizable(widget);
     m_wid = widget;
+  }
+
+  void Figure::Print(std::string filename) {
+    if (m_type == fignone) return;
+    int width(m_wid->w());
+    int height(m_wid->h());
+    unsigned char *data = new (unsigned char)[width*height*3];
+    CaptureWidget(m_wid, data, width, height);
+    WriteJPEGFile(filename, data, width, height);
+    delete data;
   }
   
   void InitializeFigureSubsystem() {
@@ -125,7 +137,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
-    //    f->Print(outname);
+    f->Print(outname);
     return ArrayVector();
   }
 

@@ -228,7 +228,7 @@ namespace FreeMat {
   //@@Function Internals
   //The erfcx function is defined by the integral:
   //\[
-  //  \erfcx(x) = \frac{2e^{x^2}}{\sqrt{\pi}}\int_{x}^{\infty} e^{-t^2} \, dt,
+  //  \mathrm{erfcx}(x) = \frac{2e^{x^2}}{\sqrt{\pi}}\int_{x}^{\infty} e^{-t^2} \, dt,
   //\]
   //and is an exponentially weighted integral of the normal distribution.
   //@@Example
@@ -285,7 +285,7 @@ namespace FreeMat {
   //@@Function Internals
   //The erfc function is defined by the integral:
   //\[
-  //  \erfc(x) = \frac{2}{\sqrt{\pi}}\int_{x}^{\infty} e^{-t^2} \, dt,
+  //  \mathrm{erfc}(x) = \frac{2}{\sqrt{\pi}}\int_{x}^{\infty} e^{-t^2} \, dt,
   //\]
   //and is the integral of the normal distribution.
   //@@Example
@@ -342,7 +342,7 @@ namespace FreeMat {
   //@@Function Internals
   //The erf function is defined by the integral:
   //\[
-  //  \erf(x) = \frac{2}{\sqrt{\pi}}\int_{0}^{x} e^{-t^2} \, dt,
+  //  \mathrm{erf}(x) = \frac{2}{\sqrt{\pi}}\int_{0}^{x} e^{-t^2} \, dt,
   //\]
   //and is the integral of the normal distribution.
   //@@Example

@@ -24,7 +24,8 @@ Reducer.cpp \
 KeyManager.cpp \
 KeyManager.hpp \
 BitmapPrinterGC.cpp \
-BitmapPrinterGC.hpp
+BitmapPrinterGC.hpp \
+helv_table.h
 
 AUTOMAKE_OPTIONS 	= foreign
 

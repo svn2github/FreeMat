@@ -1,5 +1,5 @@
 #include "PostScriptGC.hpp"
-#include "helv_table.c"
+#include "helv_table.h"
 
 Point2D PostScriptGC::ToPS(Point2D p) {
   return Point2D(p.x,m_height-1-p.y);

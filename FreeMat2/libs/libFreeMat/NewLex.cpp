@@ -9,9 +9,11 @@
 
 #define WS 999
 
-#define YYSTYPE FreeMat::ASTPtr
 
 #include "AST.hpp"
+
+#define YYSTYPE FreeMat::ParseRHS
+
 #include "Reserved.hpp"
 #include "Parser.h"
 #include "Exception.hpp"
@@ -46,12 +48,12 @@ int vcFlag;
  */
 int tokenActive;
 int tokenType;
-ASTPtr tokenValue;
+ParseRHS tokenValue;
 
 reservedWordStruct ts, *p;
 
 int ContextInt() {
-  return ((datap-linestart) << 16) | lineNumber;
+  return ((datap-linestart+1) << 16) | (lineNumber+1);
 }
 
 void NextLine() {
@@ -62,11 +64,11 @@ void NextLine() {
 void LexerException(const char *msg) {
   char buffer[256];
   if (!interactiveMode && parsing_filename && msg) {
-    sprintf(buffer,"Lexical error '%s'\n\tat line %d of file %s\n\t>>",
-	    msg,lineNumber,parsing_filename);
+    sprintf(buffer,"Lexical error '%s'\n\tat line %d of file %s",
+	    msg,lineNumber+1,parsing_filename);
     throw Exception(buffer);
   } else {
-    sprintf(buffer,"Lexical error '%s'\n\t>>",msg);
+    sprintf(buffer,"Lexical error '%s'",msg);
     throw Exception(buffer);
   }
 }
@@ -93,7 +95,8 @@ inline void popVCState() {
 inline void setTokenType(int type) {
   tokenType = type;
   tokenActive = 1;
-  tokenValue = NULL;
+  tokenValue.isToken = true;
+  tokenValue.v.p = NULL;
 }
 
 inline int match(char *str) {
@@ -178,7 +181,8 @@ void lexString() {
   discardChar();
   *strptr++ = '\0';
   setTokenType(STRING);
-  tokenValue = new AST(string_const_node,stringval,ContextInt());
+  tokenValue.isToken = false;
+  tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
   return;
 }
 
@@ -212,7 +216,8 @@ void lexSpecialCall() {
     }
     *strptr++ = '\0';
     setTokenType(STRING);
-    tokenValue = new AST(string_const_node,stringval,ContextInt());
+    tokenValue.isToken = false;
+    tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
   }
   if ((datap[0] == ';') || (datap[0] == '\r') ||
       (datap[0] == '\n'))
@@ -261,7 +266,8 @@ int lexTestSpecialSyntax() {
   datap += n;
   lexState = SpecialCall;
   setTokenType(SPECIALCALL);
-  tokenValue = new AST(id_node,ident_candidate,ContextInt());
+  tokenValue.isToken = false;
+  tokenValue.v.p = new AST(id_node,ident_candidate,ContextInt());
   return 1;
 }
 
@@ -292,7 +298,8 @@ void lexIdentifier() {
     // The lexer no longer _has_ to keep track of the "end" keywords
     // to match them up.  But we need this information to determine
     // if more text is needed...
-    tokenValue = new AST(reserved_node,p->ordinal,ContextInt());
+    tokenValue.isToken = false;
+    tokenValue.v.p = new AST(reserved_node,p->ordinal,ContextInt());
     if ((p->token == FOR) || (p->token == WHILE) || 
 	(p->token == IF) || (p->token == ELSEIF) || 
 	(p->token == CASE)) {
@@ -302,7 +309,8 @@ void lexIdentifier() {
     return;
   } else {
     setTokenType(IDENT);
-    tokenValue = new AST(id_node,ident,ContextInt());
+    tokenValue.isToken = false;
+    tokenValue.v.p = new AST(id_node,ident,ContextInt());
   }
 }
 
@@ -417,13 +425,16 @@ int lexNumber() {
   setTokenType(NUMERIC);
   switch (vtype) {
   case 1:
-    tokenValue = new AST(const_float_node,buffer,ContextInt());
+    tokenValue.isToken = false;
+    tokenValue.v.p = new AST(const_float_node,buffer,ContextInt());
     break;
   case 2:
-    tokenValue = new AST(const_double_node,buffer,ContextInt());
+    tokenValue.isToken = false;
+    tokenValue.v.p = new AST(const_double_node,buffer,ContextInt());
     break;
   case 3:
-    tokenValue = new AST(const_int_node,buffer,ContextInt());
+    tokenValue.isToken = false;
+    tokenValue.v.p = new AST(const_int_node,buffer,ContextInt());
     break;
   }
   return 1;
@@ -596,7 +607,6 @@ void yylexDoLex() {
   }
 }
 
-
 int yylexScreen() {
   static int previousToken = 0;
   tokenActive = 0;
@@ -637,12 +647,14 @@ int yylexScreen() {
 
 int yylex() {
   int retval;
-  yylval = (YYSTYPE) 0;
+  yylval.v.i = 0;
   retval = yylexScreen();
   while (retval == WS)
     retval = yylexScreen();
-  if (!yylval)
-    yylval = (YYSTYPE) ContextInt();
+  if (!yylval.v.i) {
+    yylval.isToken = true;
+    yylval.v.i = ContextInt();
+  }
   return retval;
 }
 

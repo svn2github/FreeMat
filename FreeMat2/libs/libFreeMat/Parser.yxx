@@ -35,7 +35,7 @@
 #include "ParserInterface.hpp"
 #include "Exception.hpp"
 
-#define YYSTYPE FreeMat::ASTPtr
+#define YYSTYPE ParseRHS
 
 #define MSGBUFLEN 2048
 static char msgBuffer[MSGBUFLEN];
@@ -45,7 +45,6 @@ static char msgBuffer[MSGBUFLEN];
 //extern char* yytext;
 extern int yylex(void);
 
-extern int lineNumber;
 extern int yydebug;
 extern const char *parsing_filename;
 
@@ -58,43 +57,44 @@ bool interactiveMode;
 namespace FreeMat {
   static ASTPtr mainAST;
   static MFunctionDef *mainMDef;
+
+  void yyerror(const char *s) {
+     return;
+  }
+
+  std::string decodeline(ParseRHS val) {
+    int tokenID;
+    int linenumber, colnumber;
+    if (val.isToken) 
+      tokenID = val.v.i;
+    else
+      tokenID = val.v.p->context();
+    linenumber = tokenID & 0xFFFF;
+    char buffer[256];
+    sprintf(buffer,"%d",linenumber);
+    return(std::string(buffer));
+  }
   
-  bool errorOccured;
-  static char *expectString = NULL;
-
-  void yyexpect(char *s) {
-	expectString = s;
-  }
-
-  void yyerror(char *t) {
-    t = NULL;
-  }
-
-  int yyreport(char *xStr) {
+  int yyxpt(std::string xStr, ParseRHS val) {
     char buffer[256];
     int addone = 1;
-    if (xStr)
-      if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,
-	"Expecting %s\n\tat line %d of file %s",
-	xStr,lineNumber+addone,parsing_filename);
-      else
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s",xStr);
+    int tokenID;
+    int linenumber, colnumber;
+    if (val.isToken) 
+      tokenID = val.v.i;
     else
-      if (!interactiveMode)	
-        snprintf(msgBuffer,MSGBUFLEN,
-	"Syntax error at line %d of file %s",
-	lineNumber+addone,parsing_filename);
-      else
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input");
+      tokenID = val.v.p->context();
+    linenumber = tokenID & 0xFFFF;
+    colnumber = tokenID >> 16;
+    if (!interactiveMode)
+      snprintf(msgBuffer,MSGBUFLEN,
+      "Expecting %s\n\tat line %d, column %d of file %s",
+       xStr.c_str(),linenumber,colnumber,parsing_filename);
+    else
+      snprintf(msgBuffer,MSGBUFLEN,"Expecting %s",xStr.c_str());
     throw Exception(msgBuffer);
     return 0;
   }
-
-  void yyxpt(char *t) {
-   yyreport(t);
-  }
-
 }
 
 using namespace FreeMat;
@@ -130,18 +130,19 @@ using namespace FreeMat;
 %%
 
 program:
-  statementList {mainAST = $1;} |
+  statementList {mainAST = $1.v.p;} |
   functionDefList |
+  | error {yyxpt("statement list or function definition",$1);}
 ;
 
 functionDef:
    FUNCTION  returnDeclaration IDENT '(' argumentList ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->returnVals = $2->toStringList();
-     r->name = $3->text;
-     r->arguments = $5->toStringList();
-     r->code = $8;
+     r->returnVals = $2.v.p->toStringList();
+     r->name = $3.v.p->text;
+     r->arguments = $5.v.p->toStringList();
+     r->code = $8.v.p;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -154,9 +155,9 @@ functionDef:
    FUNCTION  IDENT '(' argumentList ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->name = $2->text;
-     r->arguments = $4->toStringList();
-     r->code = $7;
+     r->name = $2.v.p->text;
+     r->arguments = $4.v.p->toStringList();
+     r->code = $7.v.p;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -169,9 +170,9 @@ functionDef:
    FUNCTION  returnDeclaration IDENT newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->returnVals = $2->toStringList();
-     r->name = $3->text;
-     r->code = $5;
+     r->returnVals = $2.v.p->toStringList();
+     r->name = $3.v.p->text;
+     r->code = $5.v.p;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -184,8 +185,8 @@ functionDef:
    FUNCTION  IDENT newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->name = $2->text;
-     r->code = $4;
+     r->name = $2.v.p->text;
+     r->code = $4.v.p;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -198,9 +199,9 @@ functionDef:
    FUNCTION  returnDeclaration IDENT '(' ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->returnVals = $2->toStringList();
-     r->name = $3->text;
-     r->code = $7;
+     r->returnVals = $2.v.p->toStringList();
+     r->name = $3.v.p->text;
+     r->code = $7.v.p;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -213,8 +214,8 @@ functionDef:
    FUNCTION  IDENT '(' ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->name = $2->text;
-     r->code = $6;
+     r->name = $2.v.p->text;
+     r->code = $6.v.p;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -224,14 +225,16 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  error {yyxpt("function name or return declaration");} |
-   FUNCTION  IDENT error {yyxpt("argument list or statement list");} |
-   FUNCTION  IDENT '('  error {yyxpt("(possibly empty) argument list");}  |
-   FUNCTION  IDENT '(' argumentList ')' error {yyxpt("statement list");} |
-   FUNCTION  returnDeclaration  error {yyxpt("function name");} |
-   FUNCTION  returnDeclaration IDENT error {yyxpt("argument list or statement list");} |
-   FUNCTION  returnDeclaration IDENT '('  error {yyxpt("(possibly empty) argument list");} |
-   FUNCTION  returnDeclaration IDENT '(' argumentList ')' error {yyxpt("statement list");}
+   FUNCTION  error {yyxpt("legal function name or return declaration after 'function'",$1);} |
+   FUNCTION  IDENT error {yyxpt(std::string("argument list or statement list after identifier '") + 
+	$2.v.p->text + "'",$2);} |
+   FUNCTION  IDENT '('  error {yyxpt("(possibly empty) argument list after '('",$3);}  |
+   FUNCTION  IDENT '(' argumentList ')' error {yyxpt("statement list after ')'",$5);} |
+   FUNCTION  returnDeclaration  error {yyxpt("function name for function declared",$1);} |
+   FUNCTION  returnDeclaration IDENT error {yyxpt(std::string("argument list or statement list following function name :") + 
+	$3.v.p->text,$3);} |
+   FUNCTION  returnDeclaration IDENT '('  error {yyxpt("(possibly empty) argument list after '('",$4);} |
+   FUNCTION  returnDeclaration IDENT '(' argumentList ')' error {yyxpt("statement list after ')'",$6);}
   ;
 
 functionDefList:
@@ -240,57 +243,55 @@ functionDefList:
   ;
 
 returnDeclaration:
-  VARARGOUT '=' {$$ = $1;} |
-  IDENT '=' {$$ = $1;} | 
-  '[' argumentList ']' '=' {$$ = $2;} |
-  error {yyxpt("either 'varargout', a single returned variable, or a list of return variables in return declaration");} |
-  VARARGOUT error {yyxpt("an '=' symbol after 'varargout' in return declaration");} |
-  IDENT error {yyxpt("an '=' symbol after identifier in return declaration");} |
-  '[' error {yyxpt("a valid list of return arguments in return declaration");} | 
-  '[' argumentList error {yyxpt("matching ']' in return declaration");} |
-  '[' argumentList ']' error {yyxpt("an '=' symbol after return declaration");}
+  VARARGOUT '=' {$$.v.p = $1.v.p;} |
+  IDENT '=' {$$.v.p = $1.v.p;} | 
+  '[' argumentList ']' '=' {$$.v.p = $2.v.p;} |
+  IDENT error {yyxpt("an '=' symbol after identifier in return declaration",$1);} |
+  '[' error {yyxpt("a valid list of return arguments in return declaration",$1);} | 
+  '[' argumentList error {yyxpt("matching ']' in return declaration for '['",$1);} |
+  '[' argumentList ']' error {yyxpt("an '=' symbol after return declaration",$3);}
   ;
 
 argumentList:
-  argument {$$ = $1;}
-  | argumentList ',' argument {$$ = $1; $$->addChild($3);}
+  argument {$$.v.p = $1.v.p;}
+  | argumentList ',' argument {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);}
   ;
 
 argument:
   IDENT | '&' IDENT {
-	$$ = $2;
-	char *b = (char*) malloc(strlen($2->text)+2);
+	$$.v.p = $2.v.p;
+	char *b = (char*) malloc(strlen($2.v.p->text)+2);
 	b[0] = '&';
-	strcpy(b+1,$2->text);
-	$$->text = b;
+	strcpy(b+1,$2.v.p->text);
+	$$.v.p->text = b;
   }
   ;
   
 
 statementList:
-   statement {$$ = new AST(OP_BLOCK,$1,$1->context());} | 
-   statementList statement {$$ = $1; $$->addChild($2);}
+   statement {$$.v.p = new AST(OP_BLOCK,$1.v.p,$1.v.p->context());} | 
+   statementList statement {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);}
    ;
 
 statement:
 	 statementType ENDQSTMNT {
-  	    $$ = new AST(OP_QSTATEMENT,NULL,(int)$2);
-	    $$->down = $1;
+  	    $$.v.p = new AST(OP_QSTATEMENT,NULL,$2.v.i);
+	    $$.v.p->down = $1.v.p;
 	 }
 	 | statementType ENDSTMNT {
-	    $$ = new AST(OP_RSTATEMENT,NULL,(int)$2);
-            $$->down = $1;
+	    $$.v.p = new AST(OP_RSTATEMENT,NULL,$2.v.i);
+            $$.v.p->down = $1.v.p;
 	 }
 	 | statementType ',' {
-	    $$ = new AST(OP_RSTATEMENT,NULL,(int)$2);
-	    $$->down = $1;
+	    $$.v.p = new AST(OP_RSTATEMENT,NULL,$2.v.i);
+	    $$.v.p->down = $1.v.p;
 	 } 
 	 ;
 
 statementType:
 	 assignmentStatement
 	 | expr
-	 | {$$ = new AST(null_node,"",-1);} 
+	 | {$$.v.p = new AST(null_node,"",-1);} 
          | multiFunctionCall
          | forStatement
          | breakStatement
@@ -304,34 +305,40 @@ statementType:
 	 | globalStatement
 	 | persistentStatement
 	 | specialSyntaxStatement
-	 | QUIT | RETALL |
-	error {yyxpt("recognizable statement type (assignment, expression, function call, etc...)");}
+	 | QUIT | RETALL 
+//  |
+//         error {
+//	  if (!$1.isToken && $1.v.p->tokenNumber == 6)
+//	    yyxpt("a valid statement - found an unmatched 'end'",$1);
+//	  else
+//	    yyxpt("recognizable statement type (assignment, expression, function call, etc...)",$1);
+//         }
          ;
 
 specialSyntaxStatement:
-	SPECIALCALL stringList {$1->addChild($2); 
-				$$ = new AST(OP_SCALL,$1,$1->context());}
+	SPECIALCALL stringList {$1.v.p->addChild($2.v.p); 
+				$$.v.p = new AST(OP_SCALL,$1.v.p,$1.v.p->context());}
 	;
 
 stringList:
-	STRING {$$ = new AST(OP_PARENS,$1,$1->context());} |
-	stringList STRING {$$ = $1; $$->addChild($2);}
+	STRING {$$.v.p = new AST(OP_PARENS,$1.v.p,$1.v.p->context());} |
+	stringList STRING {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);}
 	;
 
 persistentStatement:
-	PERSISTENT identList {$$ = $1; $$->addChild($2); } |
-	PERSISTENT error {yyxpt("list of variables to be tagged as persistent");}
+	PERSISTENT identList {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); } |
+	PERSISTENT error {yyxpt("list of variables to be tagged as persistent",$1);}
  	;
 
 globalStatement:
-	GLOBAL identList {$$ = $1; $$->addChild($2);} |
-	GLOBAL error {yyxpt("list of variables to be tagged as global");}
+	GLOBAL identList {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);} |
+	GLOBAL error {yyxpt("list of variables to be tagged as global",$1);}
 	;
 
 identList:
 	IDENT | 
-	identList IDENT {$$ = $1; $$->addChild($2);} |
-	identList error {yyxpt("list of valid identifiers");}
+	identList IDENT {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);} |
+	identList error {yyxpt("list of valid identifiers",$2);}
 	;
 
 returnStatement:
@@ -350,21 +357,26 @@ breakStatement:
 	 ;
 
 tryStatement:
-	TRY statementList optionalCatch END 
-	{ $$ = $1; $$->addChild($2); if ($3 != NULL) $$->addChild($3);} 
+	TRY  statementList optionalCatch END 
+	{ $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); if ($3.v.p != NULL) $$.v.p->addChild($3.v.p);} 
+	| TRY statementList optionalCatch error 
+	{yyxpt(std::string("matching 'end' to 'try' clause from line ") + decodeline($1),$4);}
         ;
 
 optionalCatch:
-	CATCH statementList {$$ = $2;}
-	| {$$ = NULL;}
+	CATCH statementList {$$.v.p = $2.v.p;}
+	| {$$.v.p = NULL;}
 	;
 
 switchStatement:
 	SWITCH 	expr optionalEndStatement caseBlock otherwiseClause END {
-	  $$ = $1; $$->addChild($2); 
-	  if ($4 != NULL) $$->addChild($4); 
-	  if ($5 != NULL) $$->addChild($5);
-	}
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); 
+	  if ($4.v.p != NULL) $$.v.p->addChild($4.v.p); 
+	  if ($5.v.p != NULL) $$.v.p->addChild($5.v.p);
+	} |
+	SWITCH 	expr optionalEndStatement caseBlock otherwiseClause error {
+          yyxpt(std::string("matching 'end' to 'switch' clause from line ") + decodeline($1),$6);
+        } 
         ;
 
 optionalEndStatement:
@@ -377,231 +389,236 @@ newLine:
 
 
 caseBlock:
-	/* empty */ {$$ = NULL;} |
+	/* empty */ {$$.v.p = NULL;} |
 	caseList
 	;
 
 caseList:
 	caseStatement {
-	  $$ = new AST(OP_CASEBLOCK,$1,$1->context());
+	  $$.v.p = new AST(OP_CASEBLOCK,$1.v.p,$1.v.p->context());
 	} |
 	caseList caseStatement {
-	  $$ = $1; $$->addChild($2);
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);
 	}
 ;
 
 caseStatement:
 	CASE expr optionalEndStatement statementList {
-	  $$ = $1; $$->addChild($2); $$->addChild($4);
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); $$.v.p->addChild($4.v.p);
 	}
 ;
 
 otherwiseClause:
 	OTHERWISE statementList {
-	  $$ = $2;
+	  $$.v.p = $2.v.p;
 	} |
 	/* empty */ {
-	  $$ = NULL;
+	  $$.v.p = NULL;
 	}
 ;
 
 forStatement:
 	FOR forIndexExpression optionalEndStatement statementList END {
-	  $$ = $1; $$->addChild($2); $$->addChild($4);
-	}
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); $$.v.p->addChild($4.v.p);
+	} |
+	FOR forIndexExpression optionalEndStatement statementList error 
+           {yyxpt(std::string("'end' to match 'for' statement from line ") + decodeline($1),$5);}
 ;
 
 forIndexExpression:
-	'(' IDENT '=' expr ')' {$$ = $2; $$->addChild($4);} |
-	IDENT '=' expr {$$ = $1; $$->addChild($3);} |
-	IDENT {$$ = $1; 
-	      $$->addChild(new AST(OP_RHS,new AST(id_node,$1->text,$1->context()),$1->context())); } |
-	'(' IDENT '=' expr error {yyxpt("matching right parenthesis");} |
-	'(' IDENT '=' error {yyxpt("indexing expression");} |
-	'(' IDENT error {yyxpt("equals operator after loop index");} |
-	'(' error {yyxpt("identifier that is the loop variable");} |
-	IDENT '=' error {yyxpt("indexing expression");} |
-	error {yyxpt("identifier or assignment (id = expr) after 'for' ");}
+	'(' IDENT '=' expr ')' {$$.v.p = $2.v.p; $$.v.p->addChild($4.v.p);} |
+	IDENT '=' expr {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);} |
+	IDENT {$$.v.p = $1.v.p; 
+	      $$.v.p->addChild(new AST(OP_RHS,new AST(id_node,$1.v.p->text,$1.v.p->context()),$1.v.p->context())); } |
+	'(' IDENT '=' expr error {yyxpt("matching right parenthesis",$1);} |
+	'(' IDENT '=' error {yyxpt("indexing expression",$3);} |
+	'(' IDENT error {yyxpt("equals operator after loop index",$2);} |
+	'(' error {yyxpt("identifier that is the loop variable",$1);} |
+	IDENT '=' error {yyxpt("indexing expression",$2);} |
+	error {yyxpt("identifier or assignment (id = expr) after 'for' ",$1);} 
 ;
 
 whileStatement:
 	WHILE expr optionalEndStatement statementList END {
-	  $$ = $1; $$->addChild($2); $$->addChild($4);
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); $$.v.p->addChild($4.v.p);
 	}  |
-	WHILE error {yyxpt("test expression after 'while'");} 
+	WHILE error {yyxpt("test expression after 'while'",$1);} |
+	WHILE expr optionalEndStatement statementList error 
+	{yyxpt(std::string("'end' to match 'while' statement from line ") + decodeline($1),$5);}
 ;
 
 ifStatement:
 	IF conditionedStatement elseIfBlock elseStatement END {
-	  $$ = $1; $$->addChild($2); if ($3 != NULL) $$->addChild($3); 
-	  if ($4 != NULL) $$->addChild($4);
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); if ($3.v.p != NULL) $$.v.p->addChild($3.v.p); 
+	  if ($4.v.p != NULL) $$.v.p->addChild($4.v.p);
 	} |
-	IF error {yyxpt("condition expression for 'if'");}
+	IF error {yyxpt("condition expression for 'if'",$1);} |
+	IF conditionedStatement elseIfBlock elseStatement error {yyxpt(std::string("'end' to match 'if' statement from line ") + decodeline($1),$5);}
 ;
 
 conditionedStatement:
 	expr optionalEndStatement statementList {
-	  $$ = new AST(OP_CSTAT,$1,$3,$1->context());
+	  $$.v.p = new AST(OP_CSTAT,$1.v.p,$3.v.p,$1.v.p->context());
 	}
 ;
 
 elseIfBlock:
-	/* empty */ {$$ = NULL;} |
+	/* empty */ {$$.v.p = NULL;} |
 	elseIfStatementList
 	;
 
 elseIfStatementList:
 	elseIfStatement {
-	  $$ = new AST(OP_ELSEIFBLOCK,$1,$1->context());
+	  $$.v.p = new AST(OP_ELSEIFBLOCK,$1.v.p,$1.v.p->context());
 	} |
 	elseIfStatementList elseIfStatement {
-	  $$ = $1; $$->addChild($2);
+	  $$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);
 	}
 ;
 
 elseIfStatement:
 	ELSEIF conditionedStatement {
-	  $$ = $2;
+	  $$.v.p = $2.v.p;
 	} |
-	ELSEIF error {yyxpt("test condition for 'elseif' clause");};
+	ELSEIF error {yyxpt("test condition for 'elseif' clause",$1);};
 
 elseStatement:
 	ELSE statementList {
-	  $$ = $2;
+	  $$.v.p = $2.v.p;
 	} |
-	/* empty */ {$$ = NULL;} |
-	ELSE error {yyxpt("statement list for 'else' clause");}
+	/* empty */ {$$.v.p = NULL;} |
+	ELSE error {yyxpt("statement list for 'else' clause",$1);}
 ;
 
 assignmentStatement:
-	symbRefList '=' expr {$$ = new AST(OP_ASSIGN,$1,$3,(int)$2);} |
-	symbRefList '=' error {yyxpt("expression in assignment");}
+	symbRefList '=' expr {$$.v.p = new AST(OP_ASSIGN,$1.v.p,$3.v.p,$2.v.i);} |
+	symbRefList '=' error {yyxpt("expression in assignment",$2);}
         ;
 
 multiFunctionCall:
 	'[' matrixDef ']' '='  IDENT '('  indexList ')' {
-	  $5->addChild(new AST(OP_PARENS,$7,(int)$6));
-	  $$ = new AST(OP_MULTICALL,$2,$5,(int)$1);
+	  $5.v.p->addChild(new AST(OP_PARENS,$7.v.p,$6.v.i));
+	  $$.v.p = new AST(OP_MULTICALL,$2.v.p,$5.v.p,$1.v.i);
 	} |
 	'[' matrixDef ']' '=' IDENT  {
-	  $5->addChild(new AST(OP_PARENS,NULL,-1));
-	  $$ = new AST(OP_MULTICALL,$2,$5,(int)$1);
+	  $5.v.p->addChild(new AST(OP_PARENS,NULL,-1));
+	  $$.v.p = new AST(OP_MULTICALL,$2.v.p,$5.v.p,$1.v.i);
 	} |
 	'[' matrixDef ']' '='  IDENT '('  indexList error 
-	{yyxpt("matching right parenthesis");} |
+	{yyxpt("matching right parenthesis",$6);} |
 	'[' matrixDef ']' '='  IDENT '('  error 
-	{yyxpt("indexing list");} |
+	{yyxpt("indexing list",$6);} |
 	'[' matrixDef ']' '='  IDENT error 
-	{yyxpt("left parenthesis");} |	
+	{yyxpt("left parenthesis",$5);} |	
 	'[' matrixDef ']' '=' error 
-	{yyxpt("identifier");}
+	{yyxpt("identifier",$4);}
         ; 
 
 expr:
-	expr ':' expr {$$ = new AST(OP_COLON,$1,$3,(int)$2);} 
-	| expr ':' error {yyxpt("an expression after ':'");}
+	expr ':' expr {$$.v.p = new AST(OP_COLON,$1.v.p,$3.v.p,$2.v.i);} 
+	| expr ':' error {yyxpt("an expression after ':'",$2);}
 	| terminal
-	| expr '+' expr {$$ = new AST(OP_PLUS,$1,$3,(int)$2);}
-	| expr '+' error {yyxpt("an expression after '+'");}
-	| expr '-' expr {$$ = new AST(OP_SUBTRACT,$1,$3,(int)$2);}
-	| expr '-' error {yyxpt("an expression after '-'");}
-	| expr '*' expr {$$ = new AST(OP_TIMES,$1,$3,(int)$2);}
-	| expr '*' error {yyxpt("an expression after '*'");}
-	| expr '/' expr {$$ = new AST(OP_RDIV,$1,$3,(int)$2);}
-	| expr '/' error {yyxpt("an expression after '/'");}
-	| expr '\\' expr {$$ = new AST(OP_LDIV,$1,$3,(int)$2);}
-	| expr '\\' error {yyxpt("an expression after '\\'");}
-	| expr '|' expr {$$ = new AST(OP_OR,$1,$3,(int)$2);}
-	| expr '|' error {yyxpt("an expression after '|'");}
-	| expr '&' expr {$$ = new AST(OP_AND,$1,$3,(int)$2);}
-	| expr '&' error {yyxpt("an expression after '&'");}
-	| expr '<' expr {$$ = new AST(OP_LT,$1,$3,(int)$2);}
-	| expr '<' error {yyxpt("an expression after '<'");}
-	| expr LE  expr {$$ = new AST(OP_LEQ,$1,$3,(int)$2);}
-	| expr LE  error {yyxpt("an expression after '<='");}
-	| expr '>' expr {$$ = new AST(OP_GT,$1,$3,(int)$2);}
-	| expr '>' error {yyxpt("an expression after '>'");}
-	| expr GE  expr {$$ = new AST(OP_GEQ,$1,$3,(int)$2);}
-	| expr GE  error {yyxpt("an expression after '>='");}
-	| expr EQ  expr {$$ = new AST(OP_EQ,$1,$3,(int)$2);}
-	| expr EQ  error {yyxpt("an expression after '=='");}
-	| expr NE  expr {$$ = new AST(OP_NEQ,$1,$3,(int)$2);}
-	| expr NE  error {yyxpt("an expression after '~='");}
-	| expr DOTTIMES expr {$$ = new AST(OP_DOT_TIMES,$1,$3,(int)$2);}
-	| expr DOTTIMES error {yyxpt("an expression after '.*'");}
-	| expr DOTRDIV  expr {$$ = new AST(OP_DOT_RDIV,$1,$3,(int)$2);}
-	| expr DOTRDIV  error {yyxpt("an expression after './'");}
-	| expr DOTLDIV expr {$$ = new AST(OP_DOT_LDIV,$1,$3,(int)$2);}
-	| expr DOTLDIV error {yyxpt("an expression after '.\\'");}
-	| '-'  expr %prec NEG {$$ = new AST(OP_NEG,$2,(int)$1);}
-	| '+'  expr %prec POS {$$ = $2;}
-	| '~' expr %prec NOT {$$ = new AST(OP_NOT,$2,(int)$1);}
-	| '~' error %prec NOT {yyxpt("an expression after logical not");}
-	| expr '^' expr  {$$ = new AST(OP_POWER,$1,$3,(int)$2);}
-	| expr '^' error  {yyxpt("an expression after '^'");}
-	| expr DOTPOWER expr {$$ = new AST(OP_DOT_POWER,$1,$3,(int)$2);}
-	| expr DOTPOWER error {yyxpt("an expression after '.^'");}
-	| expr '\''          {$$ = new AST(OP_TRANSPOSE,$1,(int)$2);}
-	| expr DOTTRANSPOSE  {$$ = new AST(OP_DOT_TRANSPOSE,$1,(int)$2);}
-	| '(' expr ')'  {$$ = $2;}
-	| '(' expr error  {yyxpt("a right parenthesis after expression");}
-	| '(' error  {yyxpt("an expression after left parenthesis");}
+	| expr '+' expr {$$.v.p = new AST(OP_PLUS,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '+' error {yyxpt("an expression after '+'",$2);}
+	| expr '-' expr {$$.v.p = new AST(OP_SUBTRACT,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '-' error {yyxpt("an expression after '-'",$2);}
+	| expr '*' expr {$$.v.p = new AST(OP_TIMES,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '*' error {yyxpt("an expression after '*'",$2);}
+	| expr '/' expr {$$.v.p = new AST(OP_RDIV,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '/' error {yyxpt("an expression after '/'",$2);}
+	| expr '\\' expr {$$.v.p = new AST(OP_LDIV,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '\\' error {yyxpt("an expression after '\\'",$2);}
+	| expr '|' expr {$$.v.p = new AST(OP_OR,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '|' error {yyxpt("an expression after '|'",$2);}
+	| expr '&' expr {$$.v.p = new AST(OP_AND,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '&' error {yyxpt("an expression after '&'",$2);}
+	| expr '<' expr {$$.v.p = new AST(OP_LT,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '<' error {yyxpt("an expression after '<'",$2);}
+	| expr LE  expr {$$.v.p = new AST(OP_LEQ,$1.v.p,$3.v.p,$2.v.i);}
+	| expr LE  error {yyxpt("an expression after '<='",$2);}
+	| expr '>' expr {$$.v.p = new AST(OP_GT,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '>' error {yyxpt("an expression after '>'",$2);}
+	| expr GE  expr {$$.v.p = new AST(OP_GEQ,$1.v.p,$3.v.p,$2.v.i);}
+	| expr GE  error {yyxpt("an expression after '>='",$2);}
+	| expr EQ  expr {$$.v.p = new AST(OP_EQ,$1.v.p,$3.v.p,$2.v.i);}
+	| expr EQ  error {yyxpt("an expression after '=='",$2);}
+	| expr NE  expr {$$.v.p = new AST(OP_NEQ,$1.v.p,$3.v.p,$2.v.i);}
+	| expr NE  error {yyxpt("an expression after '~='",$2);}
+	| expr DOTTIMES expr {$$.v.p = new AST(OP_DOT_TIMES,$1.v.p,$3.v.p,$2.v.i);}
+	| expr DOTTIMES error {yyxpt("an expression after '.*'",$2);}
+	| expr DOTRDIV  expr {$$.v.p = new AST(OP_DOT_RDIV,$1.v.p,$3.v.p,$2.v.i);}
+	| expr DOTRDIV  error {yyxpt("an expression after './'",$2);}
+	| expr DOTLDIV expr {$$.v.p = new AST(OP_DOT_LDIV,$1.v.p,$3.v.p,$2.v.i);}
+	| expr DOTLDIV error {yyxpt("an expression after '.\\'",$2);}
+	| '-'  expr %prec NEG {$$.v.p = new AST(OP_NEG,$2.v.p,$1.v.i);}
+	| '+'  expr %prec POS {$$.v.p = $2.v.p;}
+	| '~' expr %prec NOT {$$.v.p = new AST(OP_NOT,$2.v.p,$1.v.i);}
+	| '~' error %prec NOT {yyxpt("an expression after logical not",$2);}
+	| expr '^' expr  {$$.v.p = new AST(OP_POWER,$1.v.p,$3.v.p,$2.v.i);}
+	| expr '^' error  {yyxpt("an expression after '^'",$2);}
+	| expr DOTPOWER expr {$$.v.p = new AST(OP_DOT_POWER,$1.v.p,$3.v.p,$2.v.i);}
+	| expr DOTPOWER error {yyxpt("an expression after '.^'",$2);}
+	| expr '\''          {$$.v.p = new AST(OP_TRANSPOSE,$1.v.p,$2.v.i);}
+	| expr DOTTRANSPOSE  {$$.v.p = new AST(OP_DOT_TRANSPOSE,$1.v.p,$2.v.i);}
+	| '(' expr ')'  {$$.v.p = $2.v.p;}
+	| '(' expr error  {yyxpt("a right parenthesis after expression to match this one",$1);}
+	| '(' error  {yyxpt("an expression after left parenthesis",$1);}
 	;
 
 terminal:
         NUMERIC
 	| STRING
 	| MAGICEND
-	| symbRefList {$$ = new AST(OP_RHS,$1,$1->context());}
-        | '[' matrixDef ']' {$$ = $2;}
-        | '[' error {yyxpt("a matrix definition followed by a right bracket");}
-        | '[' rowSeperator matrixDef ']' {$$ = $3;}
-        | '[' matrixDef rowSeperator ']' {$$ = $2;}
-        | '[' rowSeperator matrixDef rowSeperator ']' {$$ = $3;}
-	| '[' ']' {$$ = new AST(OP_EMPTY,NULL,(int)$1);}
-        | '{' cellDef '}' {$$ = $2;}
-        | '{' rowSeperator cellDef '}' {$$ = $3;}
-        | '{' cellDef rowSeperator '}' {$$ = $2;}
-        | '{' rowSeperator cellDef rowSeperator '}' {$$ = $3;}
-	| '{' '}' {$$ = new AST(OP_EMPTY_CELL,NULL,(int)$1);}
-	| '{' error {yyxpt("a cell-array definition followed by a right brace");}
+	| symbRefList {$$.v.p = new AST(OP_RHS,$1.v.p,$1.v.p->context());}
+        | '[' matrixDef ']' {$$.v.p = $2.v.p;}
+        | '[' error {yyxpt("a matrix definition followed by a right bracket",$1);}
+        | '[' rowSeperator matrixDef ']' {$$.v.p = $3.v.p;}
+        | '[' matrixDef rowSeperator ']' {$$.v.p = $2.v.p;}
+        | '[' rowSeperator matrixDef rowSeperator ']' {$$.v.p = $3.v.p;}
+	| '[' ']' {$$.v.p = new AST(OP_EMPTY,NULL,$1.v.i);}
+        | '{' cellDef '}' {$$.v.p = $2.v.p;}
+        | '{' rowSeperator cellDef '}' {$$.v.p = $3.v.p;}
+        | '{' cellDef rowSeperator '}' {$$.v.p = $2.v.p;}
+        | '{' rowSeperator cellDef rowSeperator '}' {$$.v.p = $3.v.p;}
+	| '{' '}' {$$.v.p = new AST(OP_EMPTY_CELL,NULL,$1.v.i);}
+	| '{' error {yyxpt("a cell-array definition followed by a right brace",$1);}
         ;
 symbRefList:
 	IDENT 
-        | symbRefList symbRef {$$ = $1; $$->addChild($2);}
+        | symbRefList symbRef {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);}
         ;
 	
 symbRef:
-	'(' indexList ')' {$$ = new AST(OP_PARENS,$2,(int)$1); }
-	| '(' indexList error {yyxpt("matching right parenthesis");}
-        | '{' indexList '}' {$$ = new AST(OP_BRACES,$2,(int)$1); }
-	| '{' indexList error {yyxpt("matching right brace");}
-        | '.' IDENT {$$ = new AST(OP_DOT,$2,(int)$1); }
-	| '.' '(' expr ')' {$$ = new AST(OP_DOTDYN,$3,(int)$1);}
+	'(' indexList ')' {$$.v.p = new AST(OP_PARENS,$2.v.p,$1.v.i); }
+	| '(' indexList error {yyxpt("matching right parenthesis",$1);}
+        | '{' indexList '}' {$$.v.p = new AST(OP_BRACES,$2.v.p,$1.v.i); }
+	| '{' indexList error {yyxpt("matching right brace",$1);}
+        | '.' IDENT {$$.v.p = new AST(OP_DOT,$2.v.p,$1.v.i); }
+	| '.' '(' expr ')' {$$.v.p = new AST(OP_DOTDYN,$3.v.p,$1.v.i);}
         ;
 
 indexElement:
 	expr
-	| ':' {$$ = new AST(OP_ALL,NULL,(int)$1);}
-	| '/' IDENT '=' expr {$$ = new AST(OP_KEYWORD,$2,$4,(int)$1);}
-	| '/' IDENT '=' error {yyxpt("expecting expression after '=' in keyword assignment");}
-	| '/' IDENT {$$ = new AST(OP_KEYWORD,$2,(int)$1);}
-	| '/' error {yyxpt("expecting keyword identifier after '/' in keyword assignment");}
+	| ':' {$$.v.p = new AST(OP_ALL,NULL,$1.v.i);}
+	| '/' IDENT '=' expr {$$.v.p = new AST(OP_KEYWORD,$2.v.p,$4.v.p,$1.v.i);}
+	| '/' IDENT '=' error {yyxpt("expecting expression after '=' in keyword assignment",$3);}
+	| '/' IDENT {$$.v.p = new AST(OP_KEYWORD,$2.v.p,$1.v.i);}
+	| '/' error {yyxpt("expecting keyword identifier after '/' in keyword assignment",$1);}
         ;
 
 indexList:
 	indexElement | 
-        indexList ',' indexElement {$$ = $1; $$->addPeer($3);}
+        indexList ',' indexElement {$$.v.p = $1.v.p; $$.v.p->addPeer($3.v.p);}
         ;
 
 cellDef:
-       rowDef {$$ = new AST(OP_BRACES,$1,$1->context());}|
-       cellDef rowSeperator rowDef {$$ = $1; $$->addChild($3);}
+       rowDef {$$.v.p = new AST(OP_BRACES,$1.v.p,$1.v.p->context());}|
+       cellDef rowSeperator rowDef {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);}
        ;
 
 matrixDef:
-       rowDef {$$ = new AST(OP_BRACKETS,$1,$1->context());}|
-       matrixDef rowSeperator rowDef {$$ = $1; $$->addChild($3);} 
+       rowDef {$$.v.p = new AST(OP_BRACKETS,$1.v.p,$1.v.p->context());}|
+       matrixDef rowSeperator rowDef {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);} 
        ;
 
 rowSeperator:
@@ -613,8 +630,8 @@ columnSep:
        ;
 
 rowDef:
-       expr {$$ = new AST(OP_SEMICOLON,$1,$1->context());} |
-       rowDef  columnSep expr {$$ = $1; $$->addChild($3);}
+       expr {$$.v.p = new AST(OP_SEMICOLON,$1.v.p,$1.v.p->context());} |
+       rowDef  columnSep expr {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);}
        ;
 
 %%
@@ -624,7 +641,6 @@ namespace FreeMat {
   void resetParser() {
     mainAST = NULL;
     mainMDef = NULL;
-    errorOccured = false;
   }
   
   ASTPtr getParsedScriptBlock() {
@@ -636,8 +652,6 @@ namespace FreeMat {
   }
   
   ParserState parseState() {
-    if (errorOccured)
-      return ParseError;
     if (mainAST != NULL) 
       return ScriptBlock;
     else

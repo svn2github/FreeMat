@@ -209,6 +209,19 @@ namespace FreeMat {
    * from the serialized stream and returns a pointer to the resulting AST.
    */
   ASTPtr ThawAST(Serialize *s);
+
+  /**
+   * The Parser value stack contains either a raw token's context or an AST pointer
+   */
+  typedef union {
+    int i;
+    ASTPtr p;
+  } contextOrPointer;
+
+  typedef struct {
+    bool isToken;
+    contextOrPointer v;
+  } ParseRHS;
 }
 
 #endif

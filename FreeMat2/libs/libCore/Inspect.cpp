@@ -23,6 +23,7 @@
 #include "Malloc.hpp"
 #include "PathSearch.hpp"
 #include "IEEEFP.hpp"
+#include "Sparse.hpp"
 #include <stdio.h>
 
 namespace FreeMat {
@@ -763,6 +764,210 @@ namespace FreeMat {
     }
     return ArrayVector();
   }
+
+  ArrayVector SingleFindModeFull(Array x) {
+    x.promoteType(FM_LOGICAL);
+    const logical *dp;
+    dp = (const logical*) x.getDataPointer();
+    int len;
+    len = x.getLength();
+    // Count the number of non-zero entries
+    int nonZero;
+    nonZero = 0;
+    int i;
+    for (i=0;i<len;i++)
+      if (dp[i]) nonZero++;
+    // Setup the output array
+    uint32 *op;
+    op = (uint32*) Malloc(nonZero*sizeof(uint32));
+    int ndx;
+    ndx = 0;
+    for (i=0;i<len;i++)
+      if (dp[i])
+	op[ndx++] = i + 1;
+    Dimensions retDim(2);
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+    return singleArrayVector(Array(FM_UINT32,retDim,op));
+  }
+  
+  ArrayVector RCFindModeFull(Array x) {
+    x.promoteType(FM_LOGICAL);
+    const logical *dp;
+    dp = (const logical*) x.getDataPointer();
+    int len;
+    len = x.getLength();
+    // Count the number of non-zero entries
+    int nonZero;
+    nonZero = 0;
+    int i;
+    for (i=0;i<len;i++)
+      if (dp[i]) nonZero++;
+    // Setup the output array
+    uint32 *op_row;
+    op_row = (uint32*) Malloc(nonZero*sizeof(uint32));
+    uint32 *op_col;
+    op_col = (uint32*) Malloc(nonZero*sizeof(uint32));
+    int ndx;
+    int rows = x.getDimensionLength(0);
+    int cols = x.getDimensionLength(1);
+    ndx = 0;
+    for (i=0;i<len;i++)
+      if (dp[i]) {
+	op_row[ndx] = (i % rows) + 1;
+	op_col[ndx++] = (i / rows) + 1;
+      }
+    Dimensions retDim(2);
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+    ArrayVector retval;
+    retval.push_back(Array(FM_UINT32,retDim,op_row));
+    retval.push_back(Array(FM_UINT32,retDim,op_col));
+    return retval;
+  }
+
+  template <class T>
+  ArrayVector RCVFindModeFullReal(Array x) {
+    const T* dp;
+    dp = (const T*) x.getDataPointer();
+    int len;
+    len = x.getLength();
+    // Count the number of non-zero entries
+    int nonZero;
+    nonZero = 0;
+    int i;
+    for (i=0;i<len;i++)
+      if (dp[i]) nonZero++;
+    // Setup the output array
+    uint32 *op_row;
+    op_row = (uint32*) Malloc(nonZero*sizeof(uint32));
+    uint32 *op_col;
+    op_col = (uint32*) Malloc(nonZero*sizeof(uint32));
+    T* op_val;
+    op_val = (T*) Malloc(nonZero*sizeof(T));
+    int ndx;
+    int rows = x.getDimensionLength(0);
+    int cols = x.getDimensionLength(1);
+    ndx = 0;
+    for (i=0;i<len;i++)
+      if (dp[i]) {
+	op_row[ndx] = (i % rows) + 1;
+	op_col[ndx] = (i / rows) + 1;
+	op_val[ndx++] = dp[i];
+      }
+    Dimensions retDim(2);
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+    ArrayVector retval;
+    retval.push_back(Array(FM_UINT32,retDim,op_row));
+    retval.push_back(Array(FM_UINT32,retDim,op_col));
+    retval.push_back(Array(x.getDataClass(),retDim,op_val));
+    return retval;
+  }
+
+  template <class T>
+  ArrayVector RCVFindModeFullComplex(Array x) {
+    const T* dp;
+    dp = (const T*) x.getDataPointer();
+    int len;
+    len = x.getLength();
+    // Count the number of non-zero entries
+    int nonZero;
+    nonZero = 0;
+    int i;
+    for (i=0;i<len;i++)
+      if (dp[2*i] || dp[2*i+1]) nonZero++;
+    // Setup the output array
+    uint32 *op_row;
+    op_row = (uint32*) Malloc(nonZero*sizeof(uint32));
+    uint32 *op_col;
+    op_col = (uint32*) Malloc(nonZero*sizeof(uint32));
+    T* op_val;
+    op_val = (T*) Malloc(2*nonZero*sizeof(T));
+    int ndx;
+    int rows = x.getDimensionLength(0);
+    int cols = x.getDimensionLength(1);
+    ndx = 0;
+    for (i=0;i<len;i++)
+      if (dp[2*i] || dp[2*i+1]) {
+	op_row[ndx] = (i % rows) + 1;
+	op_col[ndx] = (i / rows) + 1;
+	op_val[2*ndx] = dp[2*i];
+	op_val[2*ndx+1] = dp[2*i+1];
+	ndx++;
+      }
+    Dimensions retDim(2);
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+    ArrayVector retval;
+    retval.push_back(Array(FM_UINT32,retDim,op_row));
+    retval.push_back(Array(FM_UINT32,retDim,op_col));
+    retval.push_back(Array(x.getDataClass(),retDim,op_val));
+    return retval;
+  }
+
+  ArrayVector RCVFindModeFull(Array x) {
+    switch (x.getDataClass()) {
+    case FM_LOGICAL:
+      return RCVFindModeFullReal<logical>(x);
+    case FM_UINT8:
+      return RCVFindModeFullReal<uint8>(x);
+    case FM_INT8:
+      return RCVFindModeFullReal<int8>(x);
+    case FM_UINT16:
+      return RCVFindModeFullReal<uint16>(x);
+    case FM_INT16:
+      return RCVFindModeFullReal<int16>(x);
+    case FM_UINT32:
+      return RCVFindModeFullReal<uint32>(x);
+    case FM_INT32:
+      return RCVFindModeFullReal<int32>(x);
+    case FM_FLOAT:
+      return RCVFindModeFullReal<float>(x);
+    case FM_DOUBLE:
+      return RCVFindModeFullReal<double>(x);
+    case FM_COMPLEX:
+      return RCVFindModeFullComplex<float>(x);
+    case FM_DCOMPLEX:
+      return RCVFindModeFullComplex<double>(x);
+    case FM_STRING:
+      return RCVFindModeFullReal<char>(x);
+    }
+  }
+
+  ArrayVector FindModeSparse(Array x, int nargout) {
+    // Convert the sparse matrix to RCV mode
+    void *dp;
+    uint32 *rows;
+    uint32 *cols;
+    int nnz;
+    dp = SparseToIJV(x.getDataClass(), x.getDimensionLength(0),
+		     x.getDimensionLength(1), x.getSparseDataPointer(),
+		     rows, cols, nnz);
+    Dimensions retDim(2);
+    retDim[0] = nnz;
+    retDim[1] = 1;
+    ArrayVector retval;
+    // Decide how to combine the arrays depending on nargout
+    if (nargout == 3) {
+      retval.push_back(Array(FM_UINT32,retDim,rows));
+      retval.push_back(Array(FM_UINT32,retDim,cols));
+      retval.push_back(Array(x.getDataClass(),retDim,dp));
+    } else if (nargout == 2) {
+      retval.push_back(Array(FM_UINT32,retDim,rows));
+      retval.push_back(Array(FM_UINT32,retDim,cols));
+      Free(dp);
+    } else {
+      int numrows;
+      numrows = x.getDimensionLength(0);
+      for (int i=0;i<nnz;i++)
+	rows[i] = rows[i] + cols[i]*numrows;
+      Free(cols);
+      Free(dp);
+      retval.push_back(Array(FM_UINT32,retDim,rows));      
+    }
+    return retval;
+  }
   
   //!
   //@Module FIND Find Non-zero Elements of An Array
@@ -779,6 +984,17 @@ namespace FreeMat {
   //\[
   //   i_1 + (i_2-1) d_1 + (i_3-1) d_1 d_2 + \dots
   //\]
+  //The second syntax for the @|find| command is
+  //@[
+  //   [r,c] = find(x)
+  //@]
+  //which returns the row and column index of the nonzero entries of @|x|.
+  //The third syntax for the @|find| command also returns the values
+  //@[
+  //   [r,c,v] = find(x).
+  //@]
+  //This form is particularly useful for converting sparse matrices
+  //into IJV form.
   //@@Example
   //Some simple examples of its usage, and some common uses of @|find| in FreeMat programs.
   //@<
@@ -796,37 +1012,33 @@ namespace FreeMat {
   //A = [1,0,3;0,2,1;3,0,0]
   //A(A==0) = 5
   //@>
+  //Now, we can also return the indices as row and column indices using the two argument
+  //form of @|find|:
+  //@<
+  //A = [1,0,3;0,2,1;3,0,0]
+  //[r,c] = find(A)
+  //@>
+  //Or the three argument form of @|find|, which returns the value also:
+  //@<
+  //[r,c,v] = find(A)
+  //@>
   //!  
   ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
+    // Detect the Find mode...
     if (arg.size() != 1)
       throw Exception("find function takes one argument");
     Array tmp(arg[0]);
     if (tmp.isReferenceType())
       throw Exception("find does not work on reference types (cell-arrays or structure arrays)");
-    tmp.promoteType(FM_LOGICAL);
-    const logical *dp;
-    dp = (const logical*) tmp.getDataPointer();
-    int len;
-    len = tmp.getLength();
-    // Count the number of non-zero entries
-    int nonZero;
-    nonZero = 0;
-    int i;
-    for (i=0;i<len;i++)
-      if (dp[i]) nonZero++;
-    // Setup the output array
-    uint32 *op;
-    op = (uint32*) Malloc(nonZero*sizeof(uint32));
-    int ndx;
-    ndx = 0;
-    for (i=0;i<len;i++)
-      if (dp[i])
-	op[ndx++] = i + 1;
-    ArrayVector retval;
-    Dimensions retDim(2);
-    retDim[0] = nonZero;
-    retDim[1] = 1;
-    retval.push_back(Array(FM_UINT32,retDim,op));
-    return retval;
+    if ((nargout == 1) && !tmp.isSparse())
+      return SingleFindModeFull(tmp);
+    if ((nargout == 2) && !tmp.isSparse())
+      return RCFindModeFull(tmp);
+     if ((nargout == 3) && !tmp.isSparse())
+       return RCVFindModeFull(tmp);
+     if (nargout > 3)
+       throw Exception("Do not understand syntax of find call (too many output arguments).");
+     return FindModeSparse(tmp,nargout);
+    return ArrayVector();
   }
 }

@@ -72,7 +72,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\libFreeMat,..\libXP,..\libffi\msvc_build,..\..\src\win32,..\libCore"
+				AdditionalIncludeDirectories="..\libfltk;..\libFreeMat;..\libXP;..\libffi\msvc_build;..\..\src\win32;..\libCore"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"

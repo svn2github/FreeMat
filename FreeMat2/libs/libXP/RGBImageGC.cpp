@@ -207,11 +207,11 @@ void RGBImageGC::DrawAALineStyle(int X0, int Y0, int X1, int Y1, bool endPt)
   }
   if (DeltaX == 0) {
     /* Vertical line */
-    do {
+    while (DeltaY-- > 0) {
       Y0 += YDir;
       if (PenDraws())
 	BlendPixel(X0, Y0, 256);
-    } while (--DeltaY > 0); 
+    }  
     if (endPt && PenDraws())
       BlendPixel(X1, Y1, 256);   
     return;
@@ -296,7 +296,7 @@ void RGBImageGC::DrawAALineStyle(int X0, int Y0, int X1, int Y1, bool endPt)
 }
 
 void RGBImageGC::DrawLine(Point2D pos1, Point2D pos2) {
-  DrawAALineStyle(pos1.x,pos1.y,pos2.x,pos2.y,true);
+  DrawAALineStyle(pos1.x,pos1.y,pos2.x,pos2.y,false);
 }
 
 void RGBImageGC::DrawPoint(Point2D pos) {

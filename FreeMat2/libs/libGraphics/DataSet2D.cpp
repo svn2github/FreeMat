@@ -114,6 +114,12 @@ namespace FreeMat {
       yMin = (yVals[i] < yMin) ? yVals[i] : yMin;
       yMax = (yVals[i] > yMax) ? yVals[i] : yMax;
     }
+    // If the y values are less than eps apart, set the y range to eps
+    if (fabs(yMax - yMin) < 1e-5) {
+      yMin = (yMax+yMin)/2 - 1e-5;
+      yMax = (yMax+yMin)/2 + 1e-5;
+    }
+      
   }
 
   void DataSet2D::PutSymbol(GraphicsContext &dc, int xp, int yp, 

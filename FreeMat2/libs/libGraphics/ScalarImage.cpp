@@ -154,7 +154,7 @@ namespace FreeMat {
   }
 
   void ScalarImage::OnClose() {
-    //    NotifyImageClose(myFigureNumber);
+    NotifyImageClose(myFigureNumber);
   }
 
   void ScalarImage::OnDraw(GraphicsContext &gc) {

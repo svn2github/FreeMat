@@ -134,6 +134,8 @@ void XWindow::EraseRectangle(int cx, int cy, int cwidth, int cheight) {
 }
 
 void XWindow::SetSize(int w, int h) {
+  m_width = w;
+  m_height = h;
   XResizeWindow(m_display, m_window, w, h);
 }
 
@@ -187,6 +189,7 @@ void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;
   m_width = w;
   m_height = h;
+  printf("\r\n size set %d %d\r\n",w,h);
   // Update the contents.
   unsigned char *data;
   data = (unsigned char *) malloc(3*sizeof(char)*w*h);
@@ -278,6 +281,7 @@ void XWindow::UpdateContents(unsigned char *data, int width, int height) {
 }
 
 void XWindow::Print(std::string filename) {
+  XSync(m_display, False);  
   // Logic to detect print mode..
   int np;
   np = filename.find_last_of(".");

@@ -190,7 +190,7 @@ namespace FreeMat {
   }
 
    void Plot2D::OnClose() {
-     //     NotifyPlotClose(myFigureNumber);
+     NotifyPlotClose(myFigureNumber);
    }
 
   void Plot2D::OnDraw(GraphicsContext &gc) {

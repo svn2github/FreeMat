@@ -276,18 +276,6 @@
 				RelativePath=".\src\Fl_GIF_Image.cxx">
 			</File>
 			<File
-				RelativePath=".\src\Fl_Gl_Choice.cxx">
-			</File>
-			<File
-				RelativePath=".\src\Fl_Gl_Choice.H">
-			</File>
-			<File
-				RelativePath=".\src\Fl_Gl_Overlay.cxx">
-			</File>
-			<File
-				RelativePath=".\src\Fl_Gl_Window.cxx">
-			</File>
-			<File
 				RelativePath=".\src\Fl_grab.cxx">
 			</File>
 			<File
@@ -529,36 +517,6 @@
 			</File>
 			<File
 				RelativePath=".\src\flstring.h">
-			</File>
-			<File
-				RelativePath=".\src\forms_bitmap.cxx">
-			</File>
-			<File
-				RelativePath=".\src\forms_compatability.cxx">
-			</File>
-			<File
-				RelativePath=".\src\forms_free.cxx">
-			</File>
-			<File
-				RelativePath=".\src\forms_fselect.cxx">
-			</File>
-			<File
-				RelativePath=".\src\forms_pixmap.cxx">
-			</File>
-			<File
-				RelativePath=".\src\forms_timer.cxx">
-			</File>
-			<File
-				RelativePath=".\src\gl_draw.cxx">
-			</File>
-			<File
-				RelativePath=".\src\gl_start.cxx">
-			</File>
-			<File
-				RelativePath=".\src\glut_compatability.cxx">
-			</File>
-			<File
-				RelativePath=".\src\glut_font.cxx">
 			</File>
 			<File
 				RelativePath=".\src\mediumarrow.h">

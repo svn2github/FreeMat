@@ -28,6 +28,7 @@
 #include "Array.hpp"
 #include "App.hpp"
 #include <iostream>
+#include <algorithm>
 
 #define TAB_WIDTH 8
 /*
@@ -1077,7 +1078,8 @@ wxChar& wxCLI::CharAt(int row, int column) {
   return m_text[(row%scrollback)*MAXCOLS+column];
 }
 
-std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end) {
+std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end, 
+					       std::string &matchString) {
   /*
    * Find the start of the filename prefix to be completed, searching
    * backwards for the first unescaped space, or the start of the line.
@@ -1099,8 +1101,14 @@ std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end) {
 #endif
     return std::vector<std::string>();
   } else {
+    char *tmp;
+    int mtchlen;
+    mtchlen = word_end - (start-line);
+    tmp = (char*) malloc(mtchlen+1);
+    memcpy(tmp,start,mtchlen);
+    tmp[mtchlen] = 0;
     std::vector<std::string> retval;
-    wxString pattern(start);
+    wxString pattern(tmp);
     wxString f = wxFindFirstFile(pattern+"*",0);
     while (!f.IsEmpty()) {
       while(!f.IsEmpty() && !f.StartsWith(start))
@@ -1110,6 +1118,9 @@ std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end) {
 	f = wxFindNextFile();
       }
     }
+    matchString = std::string(tmp);
+    free(tmp);
+    sort(retval.begin(),retval.end());
     return retval;
   }
 }
@@ -1166,7 +1177,7 @@ void wxCLI::ListCompletions(std::vector<std::string> completions) {
 	char buffer[4096];
 	sprintf(buffer, "%s%-*s%s", completions[m].c_str(),
 		(int) (ncol > 1 ? maxlen - completions[m].length():0),
-		"", col<ncol-1 ? "  " : "\r\n");
+		"", col<ncol-1 ? "  " : "\n");
 	PutMessage(buffer);
       } else {
 	PutMessage("\n");
@@ -1176,7 +1187,8 @@ void wxCLI::ListCompletions(std::vector<std::string> completions) {
   };
 }
 
-std::string GetCommonPrefix(std::vector<std::string> matches) {
+std::string GetCommonPrefix(std::vector<std::string> matches,
+			    std::string tempstring) {
   int minlength;
   int prefixlength;
   bool allmatch;
@@ -1199,7 +1211,7 @@ std::string GetCommonPrefix(std::vector<std::string> matches) {
     }
     prefixlength = (j < prefixlength) ? j : prefixlength;
   }
-  return(templ.substr(0,prefixlength));
+  return(templ.substr(tempstring.length(),prefixlength-tempstring.length()));
 }
 
 void wxCLI::CompleteWord() {
@@ -1218,9 +1230,10 @@ void wxCLI::CompleteWord() {
   /*
    * Perform the completion.
    */
-  matches = GetCompletions(line, buff_curpos);
-  PutMessage("\n");
+  std::string tempstring;
+  matches = GetCompletions(line, buff_curpos, tempstring);
   if(matches.size() == 0) {
+    PutMessage("\n");
     term_curpos = 0;
     redisplay = 1;
     /*
@@ -1239,7 +1252,7 @@ void wxCLI::CompleteWord() {
      * Find the common prefix
      */
     std::string prefix;
-    prefix = GetCommonPrefix(matches);
+    prefix = GetCommonPrefix(matches, tempstring);
     /*
      * Get the length of the suffix and any continuation suffix to add to it.
      */
@@ -1262,6 +1275,10 @@ void wxCLI::CompleteWord() {
 	 */
 	memmove(line + buff_curpos + nextra, line + buff_curpos,
 		ntotal - buff_curpos);
+	/*
+	 * Insert the filename extension.
+	 */
+	memcpy(line + buff_curpos, prefix.c_str(), suffix_len);
 	/*
 	 * Record the increased length of the line.
 	 */

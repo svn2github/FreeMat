@@ -120,7 +120,8 @@ public:
   void KillLine();
   void Yank();
   wxChar& CharAt(int row, int column);
-  std::vector<std::string> GetCompletions(const char *line, int word_end);
+  std::vector<std::string> GetCompletions(const char *line, int word_end,
+					  std::string &matchString);
   void CompleteWord();
   int ScrollRowAdjust(int row);
 private:

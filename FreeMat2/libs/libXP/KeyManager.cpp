@@ -640,8 +640,8 @@ void KeyManager::DoResizeBuffer(int xsize, int ysize) {
   /*
    * Update the recorded window size.
    */
-  ncolumn = xsize;
-  nline = ysize;
+  ncolumn = (xsize>20) ? xsize : 20;
+  nline = (ysize>5) ? ysize : 5;
   /*
    * Redisplay the line?
    */

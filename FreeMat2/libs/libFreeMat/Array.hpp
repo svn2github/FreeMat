@@ -34,10 +34,8 @@ namespace FreeMat {
 
   class Array;
 
-  //  typedef std::deque<Array> ArrayVector;
-
-  //  typedef std::list<Array> ArrayVector;
   typedef std::vector<Array> ArrayVector;
+  ArrayVector singleArrayVector(Array);
 
   typedef std::vector<ArrayVector> ArrayMatrix;
 

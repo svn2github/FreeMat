@@ -41,6 +41,12 @@ namespace FreeMat {
   typedef std::set<uint32, std::less<uint32> > intSet;
   intSet addresses;
 
+  ArrayVector singleArrayVector(Array a) {
+    ArrayVector retval;
+    retval.push_back(a);
+    return retval;
+  }
+
   void Array::setArrayIOInterface(Interface *a_io) {
     io = a_io;
   }

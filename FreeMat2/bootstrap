@@ -20,6 +20,11 @@ set -x
 aclocal
 automake --add-missing --copy
 autoconf
+autoheader
+sed -e 's/crt\[01\]/crt\[012\]/g' configure > configure.mac
+rm configure
+mv configure.mac configure
+chmod +x configure
 cd libs/libffi
 aclocal
 automake --add-missing --copy

@@ -2246,6 +2246,7 @@ namespace FreeMat {
       m = cindx[i] - 1;
       if (m<0)
 	throw Exception("negative column index encountered in sparse matrix assigment of type A(n,m) = B");
+      memset(Acol,0,rows*sizeof(T));
       DecompressRealString<T>(dp[m],Acol,rows);
       for (j=0;j<irows;j++) {
 	// Get the row index
@@ -2297,6 +2298,7 @@ namespace FreeMat {
       m = cindx[i] - 1;
       if (m<0)
 	throw Exception("negative column index encountered in sparse matrix assigment of type A(n,m) = B");
+      memset(Acol,0,2*rows*sizeof(T));
       DecompressComplexString<T>(dp[m],Acol,rows);
       for (j=0;j<irows;j++) {
 	// Get the row index
@@ -2366,6 +2368,7 @@ namespace FreeMat {
     int ptr = 0;
     for (i=0;i<cols;i++) {
       // Decompress this column
+      memset(OBuf,0,rows*sizeof(T));
       DecompressComplexString<T>(src[i],OBuf,rows);
       // Copy it
       int ptr = 0;
@@ -2399,6 +2402,7 @@ namespace FreeMat {
     int ptr = 0;
     for (i=0;i<cols;i++) {
       // Decompress this column
+      memset(OBuf,0,rows*sizeof(T));
       DecompressRealString<T>(src[i],OBuf,rows);
       // Copy it
       int ptr = 0;

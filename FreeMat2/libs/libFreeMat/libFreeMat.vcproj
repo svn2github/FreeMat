@@ -402,26 +402,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Lexer.cxx">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="LinearEqSolver.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -522,6 +502,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\NewLex.cpp">
+			</File>
+			<File
 				RelativePath="Parser.cxx">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -540,6 +523,9 @@
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\QRDecompose.cpp">
 			</File>
 			<File
 				RelativePath="Reserved.cpp">

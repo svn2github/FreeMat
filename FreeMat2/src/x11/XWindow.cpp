@@ -65,6 +65,7 @@ XWindow::XWindow(WindowType wtype) {
 		    PropModeReplace, (unsigned char *)&delete_atom, 1);
   current_fontname = "none";
   current_fontsize = 0;
+  bitmapActive = false;
 }
 
 void XWindow::Raise() {
@@ -99,7 +100,7 @@ XWindow::~XWindow() {
 }
 
 void XWindow::OnExpose(int x, int y, int w, int h) {
-  if (m_type == BitmapWindow) 
+  if ((m_type == BitmapWindow)  && bitmapActive)
     XCopyArea(m_display, m_pixmap, m_window, m_gc,
   	      x, y, w, h, x, y);
   else
@@ -277,6 +278,7 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
   XFreeGC(m_display, gc);
   XDestroyImage(m_image);
   XSetWindowColormap(m_display, m_window, m_cmap);
+  bitmapActive = true;
 }
 
 void XWindow::UpdateContents(unsigned char *data, int width, int height) {
@@ -287,7 +289,7 @@ void XWindow::UpdateContents(unsigned char *data, int width, int height) {
 //   OnDraw(gc);
 }
 
-void XWindow::Print(std::string filename) {
+void XWindow::PrintMe(std::string filename) {
   XSync(m_display, False);  
   // Logic to detect print mode..
   int np;
@@ -376,6 +378,7 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
   XPutImage(m_display, m_pixmap, gc, m_image, 0, 0, 0, 0, width, height);
   XFreeGC(m_display, gc);
   XDestroyImage(m_image);  
+  bitmapActive = true;
 }
 
 void XWindow::GetClick(int &x, int &y) {

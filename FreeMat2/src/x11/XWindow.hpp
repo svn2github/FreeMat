@@ -34,7 +34,7 @@ class XWindow : public GraphicsContext {
   virtual void OnSize() {};
   virtual void OnClose();
   virtual void OnDraw(GraphicsContext &gc) = 0;
-  void Print(std::string filename);
+  void PrintMe(std::string filename);
   void SetTitle(std::string title);
   void GetClick(int &x, int &y);
   void GetBox(int &x1, int &y1, int &x2, int &y2);
@@ -81,6 +81,7 @@ class XWindow : public GraphicsContext {
   std::string current_fontname;
   int current_fontsize;
   XFontStruct *font_info;
+  bool bitmapActive;
 };
 
 typedef void (*fdcallback) (void);

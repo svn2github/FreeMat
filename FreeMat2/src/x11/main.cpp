@@ -62,7 +62,6 @@ std::string GetApplicationPath(char *argv0) {
   // This file should exist
   if (FileExists(retpath))
     return GetPathOnly(std::string(retpath));
-  printf("Searching PATH...\n");
   PathSearcher psearch("PATH");
   return GetPathOnly(psearch.ResolvePath(argv0));
 }

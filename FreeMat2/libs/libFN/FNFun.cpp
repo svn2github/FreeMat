@@ -18,10 +18,33 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#include "Core.hpp"
+#include "FN.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"
 #include "Malloc.hpp"
+
+extern "C" {
+  double dexpei_(double*);
+  double deone_(double*);
+  double dei_(double*);
+  double derfcx_(double*);
+  double derfc_(double*);
+  double derf_(double*);
+  double ddaw_(double*);
+  double dpsi_(double*);
+  double dgamma_(double*);
+  double dlgama_(double*);
+  float expei_(float*);
+  float eone_(float*);
+  float ei_(float*);
+  float erfcx_(float*);
+  float erfc_(float*);
+  float erf_(float*);
+  float daw_(float*);
+  float psi_(float*);
+  float gamma_(float*);
+  float algama_(float*);
+}
 
 namespace FreeMat {
   //!
@@ -63,7 +86,7 @@ namespace FreeMat {
       throw Exception("expei function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -71,7 +94,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -120,7 +143,7 @@ namespace FreeMat {
       throw Exception("eone function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -128,7 +151,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -177,7 +200,7 @@ namespace FreeMat {
       throw Exception("ei function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -185,7 +208,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -235,7 +258,7 @@ namespace FreeMat {
       throw Exception("erfcx function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -243,7 +266,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -293,7 +316,7 @@ namespace FreeMat {
       throw Exception("erfc function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -301,7 +324,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -351,7 +374,7 @@ namespace FreeMat {
       throw Exception("erf function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -359,7 +382,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -408,7 +431,7 @@ namespace FreeMat {
       throw Exception("dawson function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -416,7 +439,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -466,7 +489,7 @@ namespace FreeMat {
       throw Exception("psi function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -474,7 +497,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -528,7 +551,7 @@ namespace FreeMat {
       throw Exception("gamma function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -536,7 +559,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)
@@ -580,7 +603,7 @@ namespace FreeMat {
       throw Exception("gammaln function requires numerical arguments");
     if (tmp.getDataClass() == FM_FLOAT) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
       for (int i=0;i<olen;i++)
@@ -588,7 +611,7 @@ namespace FreeMat {
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
-      int olen(odimst.getLength());
+      int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
       for (int i=0;i<olen;i++)

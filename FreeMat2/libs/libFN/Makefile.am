@@ -11,4 +11,17 @@ qrfac.f \
 dpmpar.f \
 enorm.f \
 qrsolv.f \
-fdjac2.f
+fdjac2.f \
+FNFun.cpp \
+erf.f \
+derf.f \
+ei.f \
+dei.f \
+daw.f \
+ddaw.f \
+psi.f \
+dpsi.f \
+gamma.f \
+dgamma.f \
+algama.f \
+dlgama.f 

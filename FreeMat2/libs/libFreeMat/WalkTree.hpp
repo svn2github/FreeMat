@@ -42,10 +42,16 @@ namespace FreeMat {
     FM_STATE_RETALL
   } State;
 
-  typedef struct {
-	  std::string cname;
-	  int line;
-  } breakpoint;
+  class stackentry {
+  public:
+    std::string cname;
+    std::string detail;
+    int tokid;
+    
+    stackentry(std::string cntxt, std::string detail, int id);
+    stackentry();
+    ~stackentry();
+  };
 
   /**
    * This is the class that implements the interpreter - it generally
@@ -86,21 +92,29 @@ namespace FreeMat {
      * When this flag is active, autostop does nothing.
      */
     bool InCLI;
-    
-    std::string cname;
-    std::vector<int> IDnums;
-    std::vector<std::string> contextStack;
-    std::vector<std::string> cnameStack;
-	// track the current statement/line number
-	std::string cp_name;
-	int cp_line;
-  public:
-	std::vector<breakpoint> bpStack;
-	bool debugActive;
-	void pushDebug(std::string fname, std::string detail);
 
+    // The debug stack - this stack tracks our current location
+    // in each file, as well as the files themselves.
+    std::vector<stackentry> cstack;
+    std::vector<stackentry> bpStack;
+    bool inStepMode;
+    int lineNumber;
+    stackentry stepTrap;
+    bool bpActive;
+  public:
+    bool debugActive;
+
+    void dbstep(int linecount);
+    void handleDebug(int fullcontext);
+    void debugCLI();
+    void pushDebug(std::string fname, std::string detail);
     void popDebug();
     
+    void addBreakpoint(stackentry bp);
+    void adjustBreakpoint(stackentry &bp, bool dbstep);
+    void adjustBreakpoints();
+    void listBreakpoints();
+    void deleteBreakpoint(int number);
     void stackTrace(bool includeCurrent);
 
     /**
@@ -269,8 +283,6 @@ namespace FreeMat {
      * applied to it.  Throws an Exception if the indexing expressions
      * are empty.
      */
-//     LeftHandSide lhsExpression(ASTPtr t);
-    
     Array simpleSubindexExpression(Array& r, ASTPtr t);
 
     int countLeftHandSides(ASTPtr t);

@@ -55,7 +55,7 @@ reservedWordStruct ts, *p;
 
 int ContextInt() {
   if (datap==linestart)
-    return (1 << 16 | (lineNumber+2));
+    return (1 << 16 | lineNumber);
   else
     return ((datap-linestart+1) << 16) | (lineNumber+1);
 }

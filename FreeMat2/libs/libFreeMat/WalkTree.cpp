@@ -43,6 +43,16 @@
 
 namespace FreeMat {
 
+  stackentry::stackentry(std::string cntxt, std::string det, int id) :
+    cname(cntxt), detail(det), tokid(id) {
+  }
+
+  stackentry::stackentry() {
+  }
+
+  stackentry::~stackentry() {
+  }
+
   /**
    * Pending control-C
    */
@@ -59,17 +69,11 @@ namespace FreeMat {
   }
 
   void WalkTree::pushID(int a) {
-    char buffer[4096];
-    sprintf(buffer,"Push ID %x InCLI = %d\n",a,InCLI);
-    OutputDebugString(buffer);
-    IDnums.push_back(a);
+    cstack.push_back(stackentry(cstack.back().cname,cstack.back().detail,a));
   }
 
   void WalkTree::popID() {
-    char buffer[4096];
-    sprintf(buffer,"Pop ID %x InCLI = %d\n",IDnums.back(),InCLI);
-    OutputDebugString(buffer);
-    IDnums.pop_back();
+    cstack.pop_back();
   }
 
   void WalkTree::setPrintLimit(int lim) {
@@ -85,11 +89,9 @@ namespace FreeMat {
   }
   
   void WalkTree::clearStacks() {
-    cname = "base";
-    IDnums.clear();
-    cnameStack.clear();
-    contextStack.clear();
-    IDnums.push_back(0);
+    //    cname = "base";
+    cstack.clear();
+    //    gstack.push_back(cname);
   }
 
   State WalkTree::getState() {
@@ -681,19 +683,13 @@ namespace FreeMat {
     autostop = false;
     // Get the state of the IDnum stack and the
     // contextStack and the cnameStack
-    int iddepth, cntxtdepth, cnamedepth;
-    iddepth = IDnums.size();
-    cntxtdepth = contextStack.size();
-    cnamedepth = cnameStack.size();
-    std::string cname_store = cname;
+    int stackdepth;
+    stackdepth = cstack.size();
     try {
       block(t);
     } catch (Exception &e) {
-      cname = cname_store;
-      // Clear the stacks
-      while (IDnums.size() > iddepth) IDnums.pop_back();
-      while (contextStack.size() > cntxtdepth) contextStack.pop_back();
-      while (cnameStack.size() > cnamedepth) cnameStack.pop_back();
+      while (cstack.size() > stackdepth) cstack.pop_back();
+      //      cname = cstack.back().cname;
       t = t->right;
       if (t != NULL) {
 	autostop = autostop_save;
@@ -1339,11 +1335,79 @@ namespace FreeMat {
   //return
   //@>
   //!
+
+  void WalkTree::debugCLI() {
+    depth++;
+    bpActive = true;
+    evalCLI();
+    bpActive = false;
+    if (state == FM_STATE_RETURN) state = FM_STATE_OK;
+    depth--;
+  }
+
+  void WalkTree::handleDebug(int fullcontext) {
+    int linenumber;
+    linenumber = fullcontext & 0xffff;
+    if (debugActive) {
+      if (inStepMode) {
+	if ((stepTrap.cname == cstack.back().cname) &&
+	    (stepTrap.tokid == linenumber)) {
+	  // Finished stepping...
+	  inStepMode = false;
+	  char buffer[2048];
+	  sprintf(buffer,"Finished stepping to %s, line %d\n",
+		  stepTrap.cname.c_str(),
+		  linenumber);
+	  io->outputMessage(buffer);
+	  debugCLI();
+	}
+      } else {
+	// check the breakpoint list
+	bool found = false;
+	int j=0;
+	while ((j<bpStack.size()) && !found) {
+	  // Is this a resolved breakpoint?
+	  if ((bpStack[j].tokid >> 16) != 0) {
+	    if ((bpStack[j].cname == cstack.back().cname) && 
+		(bpStack[j].tokid == fullcontext)) {
+	      found = true;
+	    } else {
+	      found = false;
+	      j++;
+	    }
+	  } else {
+	    if ((bpStack[j].cname == cstack.back().cname) && 
+		(bpStack[j].tokid == linenumber)) {
+	      found = true;
+	      bpStack[j].tokid = fullcontext;
+	    } else {
+	      found = false;
+	      j++;
+	    }
+	  }
+	}
+	if (found) {
+	  stepTrap = bpStack[j];
+	  char buffer[2048];
+	  sprintf(buffer,"Encountered breakpoint at %s, line %d\n",
+		  bpStack[j].cname.c_str(),
+		  linenumber);
+	  io->outputMessage(buffer);
+	  debugCLI();
+	}
+      }
+    }
+  }
+
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
     Fl::wait(0);
     pushID(t->context());
+
+    // check the debug flag
+    int fullcontext = t->context();
+    handleDebug(fullcontext);
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {
@@ -1498,36 +1562,8 @@ namespace FreeMat {
 
   // 
   void WalkTree::statement(ASTPtr t) {
-    // check the debug flag
-    int linenumber;
-    linenumber = t->context() & 0xffff;
     try {
       pushID(t->context());
-      if (debugActive) {
-	// check to see if the statement has advanced
-	if ((cname != cp_name) || (linenumber != cp_line)) {
-	  // check the breakpoint list
-	  bool found = false;
-	  int j=0;
-	  while ((j<bpStack.size()) && !found) {
-	    if ((bpStack[j].cname == cname) && (bpStack[j].line == linenumber)) {
-	      found = true;
-	    } else {
-	      found = false;
-	      j++;
-	    }
-	  }
-	  if (found) {
-	    depth++;
-	    evalCLI();
-	    if (state == FM_STATE_RETURN) state = FM_STATE_OK;
-					depth--;
-	  }
-	}
-      }
-      cp_name = cname;
-      cp_line = linenumber;
-
       if (t->opNum ==(OP_QSTATEMENT)) 
 	statementType(t->down,false);
       else if (t->opNum ==(OP_RSTATEMENT))
@@ -1540,16 +1576,16 @@ namespace FreeMat {
 	char buffer[4096];
 	e.printMe(io);
 	stackTrace(true);
-	depth++;
-	evalCLI();
-	depth--;
+	debugCLI();
 	if (state != FM_STATE_QUIT &&
 	    state != FM_STATE_RETALL)
 	  state = FM_STATE_OK;
-	  } else  {
-		  throw;
-	  }
-	}
+	popID();
+      } else  {
+	popID();
+	throw;
+      }
+    }
   }
 
   void WalkTree::block(ASTPtr t) {
@@ -1562,13 +1598,10 @@ namespace FreeMat {
 	     state != FM_STATE_QUIT && 
 	     s != NULL) {
 	if (InterruptPending) {
-	  depth++;
+	  io->outputMessage("Interrupt (ctrl-c) encountered\n");
+	  stackTrace(true);
 	  InterruptPending = false;
-	  evalCLI();
-	  if (state != FM_STATE_QUIT &&
-	      state != FM_STATE_RETALL)
-	    state = FM_STATE_OK;
-	  depth--;
+	  debugCLI();
 	} else {
 	  statement(s);
 	  if (state == FM_STATE_BREAK || 
@@ -1876,6 +1909,12 @@ namespace FreeMat {
     InCLI = CLIFlagsave;
     popID();
 
+  }
+
+  void WalkTree::addBreakpoint(stackentry bp) {
+    bpStack.push_back(bp);
+    adjustBreakpoints();
+    debugActive = true;
   }
 
   void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) {
@@ -2392,7 +2431,6 @@ namespace FreeMat {
     bool CLIFlagsave;
     
     CLIFlagsave = InCLI;
-    
     try {
       if (funcDef->scriptFlag) {
 	if (t->down != NULL)
@@ -2401,7 +2439,7 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
 	CLIFlagsave = InCLI;
 	InCLI = false;
-	pushDebug(((MFunctionDef*)funcDef)->fileName,std::string("(script)"));
+	pushDebug(((MFunctionDef*)funcDef)->fileName,std::string("script"));
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
@@ -2532,8 +2570,10 @@ namespace FreeMat {
 	InCLI = false;
 	n = funcDef->evaluateFunction(this,m,narg_out);
 	InCLI = CLIFlagsave;
+	if (state == FM_STATE_RETALL)
+		return n;
 	// Check for any pass by reference
-	if (funcDef->arguments.size() > 0) {
+	if ((t->down != NULL) && (funcDef->arguments.size() > 0)) {
 	  // Get the argument list
 	  stringVector arguments;
 	  arguments = funcDef->arguments;
@@ -2582,35 +2622,110 @@ namespace FreeMat {
     popID();
   }
 
-  void WalkTree::stackTrace(bool includeCurrent) {
-    char buffer[4096];
-    if (includeCurrent) {
-      sprintf(buffer,"In %s, line %d, position %d\n",
-	      cname.c_str(), IDnums.back() & 0x0000FFFF,
-	      IDnums.back() >> 16);
+  int COST(int a, int b) {
+	return (((a) >= (b)) ? ((a)-(b)) : 10000);
+  }
+
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+
+  int GetClosestLineNumber(ASTPtr t, int lineno) {
+    if (t == NULL) return 10000;
+    int linedwn = GetClosestLineNumber(t->down,lineno);
+    int linerght = GetClosestLineNumber(t->right,lineno);
+    int retval = (t->context() & 0xffff);;
+    int costthis = COST(retval,lineno);
+    return(MIN(linedwn,MIN(linerght,costthis)));
+  }
+
+  void WalkTree::listBreakpoints() {
+    for (int i=0;i<bpStack.size();i++) {
+      char buffer[2048];
+      sprintf(buffer,"%d   %s line %d\n",i+1,bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
       io->outputMessage(buffer);
     }
-    for (int i=contextStack.size()-1;i>0;i--) {
-      io->outputMessage(contextStack[i].c_str());
+  }
+
+  void WalkTree::deleteBreakpoint(int number) {
+    char buffer[2048];
+    if ((number >= 1) && (number <= bpStack.size())) {
+      bpStack.erase(bpStack.begin() + number - 1);
+    } else {
+      sprintf(buffer,"Unable to delete breakpoint %d\n",number);
+      throw Exception(buffer);
     }
+  }
+
+  void WalkTree::adjustBreakpoint(stackentry& bp, bool dbstep) {
+    char *cname = strdup(bp.detail.c_str());
+    bool isFun;
+    FuncPtr val;
+    isFun = context->lookupFunction(cname,val);
+    char buffer[1000];
+    if (!isFun)
+      throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
+    if (val->type() == FM_M_FUNCTION) {
+      MFunctionDef *mptr;
+      mptr = (MFunctionDef *) val;
+      mptr->updateCode();
+      ASTPtr code = mptr->code;
+      int clinenum = GetClosestLineNumber(code,bp.tokid & 0xffff);
+      if (clinenum == 10000) {
+	char buffer[2048];
+	if (dbstep) {
+	  sprintf(buffer,"Unable to step the specified number of lines, execution will continue\n");
+	  inStepMode = false;
+	} else 
+	  sprintf(buffer,"Failed to set breakpoint in %s at line %d - breakpoint is disabled\n",
+		  cname, bp.tokid & 0xffff);
+	io->warningMessage(buffer);
+      } else 
+	if (clinenum != 0)
+	  bp.tokid = (bp.tokid & 0xffff) + clinenum;
+    } else {
+      throw Exception("Cannot set breakpoints in built-in or imported functions");
+    }
+  }
+  
+  void WalkTree::adjustBreakpoints() {
+    for (int i=0;i<bpStack.size();i++)
+      adjustBreakpoint(bpStack[i],false);
+    if (inStepMode)
+      adjustBreakpoint(stepTrap,true);
+  }
+
+  void WalkTree::stackTrace(bool includeCurrent) {
+    stringVector outstack;
+    char buffer[4096];
+    int i=0;
+    while (i<cstack.size()) {
+      if (cstack[i].tokid == 0) {
+	// This is a new line in the stack trace - we search forward
+	// until we get the last line in the current function.  This
+	// is the "branch point" for that function.
+	int j = i+1;
+	while ((j < cstack.size()) && (cstack[j].cname == cstack[i].cname)
+	       && (cstack[j].detail == cstack[i].detail) 
+	       && (cstack[j].tokid != 0)) j++;
+	sprintf(buffer,"In %s(%s), line %d, position %d\n",
+		cstack[j-1].cname.c_str(),
+		cstack[j-1].detail.c_str(),
+		cstack[j-1].tokid & 0x0000FFFF,
+		cstack[j-1].tokid >> 16);
+	outstack.push_back(buffer);
+	i = j;
+      } else
+	i++;
+    }
+    for (i=outstack.size()-1;i>=0;i--)
+      io->outputMessage(outstack[i].c_str());
   }
 
   void WalkTree::pushDebug(std::string fname, std::string detail) {
-    char buffer[1024];
-    sprintf(buffer,"In %s%s, line %d, position %d\n",
-	    cname.c_str(), detail.c_str(),
-		IDnums.back() & 0x0000FFFF, IDnums.back() >> 16);
-    OutputDebugString(buffer);
-    contextStack.push_back(buffer);
-    cnameStack.push_back(cname);
-    cname = fname;
+    cstack.push_back(stackentry(fname,detail,0));
   }
 
   void WalkTree::popDebug() {
-    OutputDebugString("Pop");
-    contextStack.pop_back();
-    cname = cnameStack.back();
-    cnameStack.pop_back();
+    cstack.pop_back();
   }
 
   Interface* WalkTree::getInterface() {
@@ -2945,15 +3060,25 @@ namespace FreeMat {
     printLimit = 1000;
     autostop = true;
     InCLI = false;
-    cname = "base";
-    IDnums.push_back(0);
-	debugActive = false;
+    debugActive = false;
+    inStepMode = false;
+    bpActive = false;
+    clearStacks();
+  }
+
+  void WalkTree::dbstep(int linecount) {
+    if (bpActive) {
+      stepTrap.tokid = (stepTrap.tokid & 0xffff) + linecount;
+      inStepMode = true;
+      adjustBreakpoints();
+      state = FM_STATE_RETURN;
+    }
   }
 
   bool WalkTree::evaluateString(char *line) {
     ASTPtr tree;
     ParserState parserState;
-
+    
     InterruptPending = false;
     try{
       parserState = parseString(line);
@@ -2970,35 +3095,21 @@ namespace FreeMat {
 	      buffer1[strlen(buffer1)-1] = 0;
 	    if (buffer1[strlen(buffer1)-1] == '\r')
 	      buffer1[strlen(buffer1)-1] = 0;
-	    sprintf(buffer2,"(%s)",buffer1);
-    // Get the state of the IDnum stack and the
-    // contextStack and the cnameStack
-    int iddepth, cntxtdepth, cnamedepth;
-    iddepth = IDnums.size();
-    cntxtdepth = contextStack.size();
-    cnamedepth = cnameStack.size();
-    std::string cname_store = cname;
-    //	    pushDebug("Eval",buffer2);
-    try {
-      block(tree);
-    } catch (Exception &e) {
-      e.printMe(io);
-      cname = cname_store;
-      // Clear the stacks
-      while (IDnums.size() > iddepth) IDnums.pop_back();
-      while (contextStack.size() > cntxtdepth) contextStack.pop_back();
-      while (cnameStack.size() > cnamedepth) cnameStack.pop_back();
-    }
-	    //	    popDebug();
+	    sprintf(buffer2,"%s",buffer1);
+	    pushDebug("Eval",buffer2);
+	    block(tree);
 	    if (state == FM_STATE_RETURN) {
-	      if (depth > 0) 
+	      if (depth > 0) {
+		popDebug();
 		return true;
+	      }
 	    }
-	    if (state == FM_STATE_QUIT || state == FM_STATE_RETALL)
+	    if (state == FM_STATE_QUIT || state == FM_STATE_RETALL) {
+	      popDebug();
 	      return true;
+	    }
 	  } catch(Exception &e) {
 	    e.printMe(io);
-	    //	    popDebug();
 	  }
 	}
 	break;
@@ -3007,9 +3118,9 @@ namespace FreeMat {
 	break;
       }
     } catch(Exception &e) {
-      //      popDebug();
       e.printMe(io);
     }
+    popDebug();
     return false;
   }
 
@@ -3029,11 +3140,15 @@ namespace FreeMat {
     int lastCount;
 
     if (depth == 0)
-      sprintf(prompt,"--> ");
+      if (bpActive)
+	sprintf(prompt,"D-> ");
+      else
+	sprintf(prompt,"--> ");
     else
-      sprintf(prompt,"[%s,%d] --> ",context->getCurrentScope()->getName().c_str(),depth);
-//      sprintf(prompt,"[%s,%d] --> ",contextStack.front().c_str(),depth);
-//contextStack[i].c_str()
+      if (bpActive)
+	sprintf(prompt,"[%s,%d] D-> ",context->getCurrentScope()->getName().c_str(),depth);
+      else
+	sprintf(prompt,"[%s,%d] --> ",context->getCurrentScope()->getName().c_str(),depth);
     while(1) {
       line = io->getLine(prompt);
       if (!line)
@@ -3076,22 +3191,16 @@ namespace FreeMat {
       }
       InCLI = true;
       if (line) {
-	//	pushDebug("interactive"," ");
-	try {
-  	  bool tresult =  evaluateString(line);
-	  //	  popDebug();
-	  if (tresult) {
-	    InCLI = false;
-	    return;
-	  }
-	} catch(Exception &e) {
-		e.printMe(io);;
-		//		popDebug();
-		InCLI = true;
-		return;
+	int stackdepth;
+	stackdepth = cstack.size();
+	bool tresult =  evaluateString(line);
+	while (cstack.size() > stackdepth) cstack.pop_back();
+	if (tresult) {
+	  InCLI = false;
+	  return;
 	}
       }
-      InCLI = false;
     }
   }
 }
+

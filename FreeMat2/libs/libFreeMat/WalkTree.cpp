@@ -36,6 +36,7 @@
 #include "Serialize.hpp"
 #include <signal.h>
 #include <FL/Fl.H>
+#include <errno.h>
 
 namespace FreeMat {
   /**

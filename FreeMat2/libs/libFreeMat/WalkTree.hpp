@@ -102,7 +102,7 @@ namespace FreeMat {
     /**
      * Convert an expression list into a vector of Array variables.
      */
-    ArrayVector rowDefinition(ASTPtr t) throw(Exception);
+    ArrayVector rowDefinition(ASTPtr t);
     /**
      * Convert a matrix definition of the form: [expr1,expr2;expr3;expr4] into
      * a vector of row definitions.  The first row is the vector [expr1,expr2], and
@@ -114,7 +114,7 @@ namespace FreeMat {
      *   |   rowDef
      *   rowDef
      */
-    Array matrixDefinition(ASTPtr t) throw(Exception);
+    Array matrixDefinition(ASTPtr t);
     /**
      * Convert a cell defintion of the form: {expr1,expr2;expr3;expr4} into
      * a vector of row definitions.  The first row is the vector {expr1,expr2}, and
@@ -126,11 +126,11 @@ namespace FreeMat {
      *   |   rowDef
      *   rowDef
      */
-    Array cellDefinition(ASTPtr t) throw(Exception);
+    Array cellDefinition(ASTPtr t);
     /**
      * Evaluate the expression pointed to by the AST t into a variable.
      */
-    Array expression(ASTPtr t) throw(Exception);
+    Array expression(ASTPtr t);
     /**
      * Evaluate a unit colon expression.  The AST input should look like:
      *   :
@@ -168,7 +168,7 @@ namespace FreeMat {
      * valid if we are a subindexing expression list (i.e., 
      * VAR(exprssionlist)), in which case dim != NULL.
      */
-    ArrayVector expressionList(ASTPtr t, Dimensions* dim) throw(Exception);
+    ArrayVector expressionList(ASTPtr t, Dimensions* dim);
     /**
      * The RHS expression is used to represent an rvalue in an
      * assignment statement (or an implicit assignment such as 
@@ -195,7 +195,7 @@ namespace FreeMat {
      *      either a variable or function.  
      *    - 
      */
-    ArrayVector rhsExpression(ASTPtr t) throw(Exception);
+    ArrayVector rhsExpression(ASTPtr t);
     /**
      * Look up an identifier as a potential function name, using a
      * rescan if the identifier is not found on the first pass.
@@ -204,9 +204,9 @@ namespace FreeMat {
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */
-    inline Array rhsExpressionSimple(ASTPtr t) throw(Exception);
+    inline Array rhsExpressionSimple(ASTPtr t);
     Interface* getInterface();
-    void ccallStatement(ASTPtr t) throw(Exception);
+    void ccallStatement(ASTPtr t);
     /**
      * Process an AST to form an lvalue in an assignment statement.
      * The AST looks like:
@@ -222,7 +222,7 @@ namespace FreeMat {
      * applied to it.  Throws an Exception if the indexing expressions
      * are empty.
      */
-//     LeftHandSide lhsExpression(ASTPtr t) throw(Exception);
+//     LeftHandSide lhsExpression(ASTPtr t);
     
     Array simpleSubindexExpression(Array& r, ASTPtr t);
 
@@ -232,9 +232,9 @@ namespace FreeMat {
 
     void simpleAssign(Array& r, ASTPtr t, ArrayVector& value);
 
-    Array assignExpression(ASTPtr t, Array& value) throw(Exception);
+    Array assignExpression(ASTPtr t, Array& value);
 
-    Array assignExpression(ASTPtr t, ArrayVector& value) throw(Exception);
+    Array assignExpression(ASTPtr t, ArrayVector& value);
 
     /**
      * Evaluate a function and return the results of the function as
@@ -257,7 +257,7 @@ namespace FreeMat {
      */
     ArrayVector functionExpression(FunctionDef *funcDef,
 				   ASTPtr t, int narg_out, 
-				   bool outputOptional) throw(Exception);
+				   bool outputOptional);
     /**
      * A multifunction call is an expression of the sort
      * [expr1,expr2,...,exprn] = func(args).  The AST is
@@ -278,7 +278,7 @@ namespace FreeMat {
      * Throws an exception if the AST is malformed (i.e., the '[]' is
      * missing, or there are multiple rows in the left hand side.).
      */
-    void multiFunctionCall(ASTPtr t, bool printIt) throw(Exception);
+    void multiFunctionCall(ASTPtr t, bool printIt);
     /**
      * A special function call is an expression of the form
      * >> func arg1 arg2 arg3
@@ -287,7 +287,7 @@ namespace FreeMat {
      *       |
      *       fname->arg
      */
-    void specialFunctionCall(ASTPtr t, bool printIt) throw(Exception);
+    void specialFunctionCall(ASTPtr t, bool printIt);
     /**
      * Test a conditional expression, and if its true, evaluate
      * the associated block of code.  Used by a number of control
@@ -299,7 +299,7 @@ namespace FreeMat {
      * is all zeros.  Throws an Exception if the head of the 
      * AST is not a cstat.
      */
-    bool conditionedStatement(ASTPtr t) throw(Exception);
+    bool conditionedStatement(ASTPtr t);
     /**
      * Handles an if statement, corresponding to an if, a number
      * of elseif blocks and an optional else statement.  The AST looks
@@ -331,7 +331,7 @@ namespace FreeMat {
      * Throws an Exception if the switch expression is not
      * either a scalar or a string.
      */
-    void switchStatement(ASTPtr t) throw(Exception);
+    void switchStatement(ASTPtr t);
     /**
      * Implements the for control statement.  The AST looks like
      *     ident->codeBlock
@@ -398,7 +398,7 @@ namespace FreeMat {
      * the test is returned.  Throws an exception if the AST is
      * malformed.
      */
-    bool testCaseStatement(ASTPtr t, Array x) throw(Exception);
+    bool testCaseStatement(ASTPtr t, Array x);
     /**
      * Execute the statement described by the AST - the printIt flag
      * determines if the result of the statement should be printed to
@@ -491,7 +491,7 @@ namespace FreeMat {
      * lasterr string is also set to the contents of the exception.
      *
      */
-    void block(ASTPtr t) throw(Exception);
+    void block(ASTPtr t);
     /**
      * Start a command line interface.  Statements are retrieved
      * from the console, and executed sequentially until a "return"

@@ -90,7 +90,7 @@ namespace FreeMat {
      * array.  Throws an exception if $$a(i)$$ is outside the range
      * $$1,\ldots,\mathrm{maxD}$.
      */
-    bool* getBinaryMap(uint32) throw(Exception);
+    bool* getBinaryMap(uint32);
     /** Compute the maximum index.
      * This computes the maximum value of the array as an index (meaning
      * that it must be greater than 0.  Because this is an internal function, it
@@ -98,7 +98,7 @@ namespace FreeMat {
      * successfully.  Throws an exception if the maximum value is zero or
      * negative.
      */
-    uint32 getMaxAsIndex() throw(Exception);
+    uint32 getMaxAsIndex();
     /** Get the internal index corresponding to a given field name.
      * Get the internal index corresponding to a given field name.  This
      * is the index into the fieldname array of the argument.  If the
@@ -133,7 +133,7 @@ namespace FreeMat {
      * Throws an exception for string, cell, structure types, or if a zero or 
      * negative index is encountered.
      */
-    void toOrdinalType() throw(Exception);
+    void toOrdinalType();
     /**
      * Ensure we have at most one owner for our data - allows us to modify the
      * data without affecting other arrays.
@@ -243,18 +243,18 @@ namespace FreeMat {
      * Throws an exception if the new dimension has a different number of elements
      * than we currently have.
      */
-    void reshape(Dimensions& a) throw(Exception);
+    void reshape(Dimensions& a);
     /**
      * Take the hermitian transpose of the array.  For non-complex data types,
      * this is equivalent to a transpose operation.
      * Throws an exception if we are not a 2D array.
      */
-    void hermitian() throw(Exception);
+    void hermitian();
     /**
      * Transposes the array (provided the array is 2-Dimensional).
      * Throws an exception if we are not a 2D array.
      */
-    void transpose() throw(Exception);
+    void transpose();
     /**
      * Get our data class (of type Class).
      */
@@ -283,7 +283,7 @@ namespace FreeMat {
      * element-wise test.  For complex types, we check only the real part.
      * Throws an exception if we are a string, cell-array or struct-array type.
      */
-    const bool isRealAllZeros() const throw(Exception);
+    const bool isRealAllZeros() const;
     /**
      * Returns true if we match the scalar value in x.  For strings, this is done by
      * doing a string compare.  For numerical values, we promote to a common type
@@ -298,7 +298,7 @@ namespace FreeMat {
      * Also throws an exception if the argument is not either a scalar or a cell
      * array.
      */
-    const bool testForCaseMatch(Array x) const throw(Exception);
+    const bool testForCaseMatch(Array x) const;
     /**
      * Returns TRUE if we are empty (we have no elements).
      */
@@ -372,7 +372,7 @@ namespace FreeMat {
      * matrix.
      * Throwsn an exception if the argument is not a vector.
      */
-    static Array diagonalConstructor(Array src, int diagonalOrder) throw(Exception);
+    static Array diagonalConstructor(Array src, int diagonalOrder);
 
     /**
      * Empty constructor
@@ -480,7 +480,7 @@ namespace FreeMat {
      *    - the types are incompatible (e.g., cell and struct arrays are
      *      being combined).
      */
-    static Array matrixConstructor(ArrayMatrix& m) throw(Exception);
+    static Array matrixConstructor(ArrayMatrix& m);
     /**
      * The constructor for a cell array is significantly simpler than
      * the matrix constructor.  The argument is a list of rowdefs.  Each
@@ -489,7 +489,7 @@ namespace FreeMat {
      * each row has the same number of elements in it.
      * Throws an exception if the geometry of the argumens is incompatible.
      */
-    static Array cellConstructor(ArrayMatrix& m) throw(Exception);
+    static Array cellConstructor(ArrayMatrix& m);
     /**
      * Structure constructor - this is equivalent to the built in struct command.
      * First, we have to make sure that each entry of "values" have 
@@ -505,7 +505,7 @@ namespace FreeMat {
      *    the number of entries in the values vector
      *  - the non-scalar values do not agree in dimension
      */
-    static Array structConstructor(stringVector fNames, ArrayVector& values) throw(Exception);
+    static Array structConstructor(stringVector fNames, ArrayVector& values);
     /**
      * Get a subset of an Array.  This is for vector-indexing, meaning that
      * the argument is assumed to refer to the elements in their order as a vector.
@@ -514,13 +514,13 @@ namespace FreeMat {
      *  - the variable is empty
      *  - the argument subset exceeds our valid domain
      */
-    Array getVectorSubset(Array& index) throw(Exception);
+    Array getVectorSubset(Array& index);
     /**
      * Get a subset of an Array.  This if for n-Dimensional-indexing, meaning
      * that x(10) is really x(10,1).
      * Throws an exception if the variable is empty.
      */
-    Array getNDimSubset(ArrayVector& index) throw(Exception);
+    Array getNDimSubset(ArrayVector& index);
     /**
      * Get a subset of an Array using contents-addressing.  This is for vector-
      * indexing, meaning that the argument is assumed to refer to the elements in
@@ -533,7 +533,7 @@ namespace FreeMat {
      *  - the argument defines more than a single value
      *  - the index exceeds the bounds of the array.
      */
-    Array getVectorContents(Array& index) throw(Exception);
+    Array getVectorContents(Array& index);
     /**
      * Get a subset of an Array using contents-addressing.  This is for NDim-
      * indexing, meaning that the argument is assumed to refer to the elements in
@@ -543,14 +543,14 @@ namespace FreeMat {
      *  - we are not a cell array
      *  - the indices do not define a single value
      */  
-    Array getNDimContents(ArrayVector& index) throw(Exception);
+    Array getNDimContents(ArrayVector& index);
     /**
      * Get the contents of a field from its field name.  Again, like getVectorContents
      * and getNDimContents, this function is meant for assignments only, and the
      * argument must be a scalar structure.
      * Throws an exection if we are a vector, or if the supplied field do not exist.
      */
-    Array getField(std::string fieldName) throw(Exception);
+    Array getField(std::string fieldName);
     /**
      * Get the diagonal elements of an array.  Only applicable to 2-dimensional arrays.
      * The diagonal part of a rectangular matrix
@@ -560,7 +560,7 @@ namespace FreeMat {
      *    K = min(M+L,N) for L < 0
      * Throws an exception for multi-dimensional arrays.
      */
-    Array getDiagonal(int diagonalOrder) throw(Exception);
+    Array getDiagonal(int diagonalOrder);
     /**
      * Get the contents of a field as an array from its field name.  This is used 
      * when a structure array is used to supply a list of expressions.
@@ -568,7 +568,7 @@ namespace FreeMat {
      *   - we are not a structure array
      *   - the field does not exist
      */
-    ArrayVector getFieldAsList(std::string fieldName) throw(Exception);
+    ArrayVector getFieldAsList(std::string fieldName);
     /**
      * Get a subset of a (cell) Array using contents-addressing.  This is used when a 
      * cell array is used to supply a list of expressions.
@@ -576,26 +576,26 @@ namespace FreeMat {
      *   - we are not a cell-array
      *   - the indices exceed the array bounds
      */
-    ArrayVector getVectorContentsAsList(Array& index) throw(Exception);
+    ArrayVector getVectorContentsAsList(Array& index);
     /**
      * Get a subset of an Array using contents-addressing.  This is used when a cell array
      * is used to supply a list of expressions.
      * Throws an exception if we are not a cell-array.
      */  
-    ArrayVector getNDimContentsAsList(ArrayVector& index) throw(Exception);
+    ArrayVector getNDimContentsAsList(ArrayVector& index);
     /**
      * Set a subset of an Array.  Uses vector-indexing, meaning that the
      * argument is assumed to refer to the elements in their order as a vector.
      * So, x(10) is equivalent to x(:)(10), even if, say, x is 3 x 4.
      * Throws an exception if there is a size mismatch between the index and the data.
      */
-    void setVectorSubset(Array& index, Array& data) throw(Exception);
+    void setVectorSubset(Array& index, Array& data);
     /**
      * Set a subset of an Array.   This if for n-Dimensional-indexing, meaning
      * that x(10) is really x(10,1).
      * Throws an exception if there is a size mismatch between the index and the data.
      */
-    void setNDimSubset(ArrayVector& index, Array& data) throw(Exception);
+    void setNDimSubset(ArrayVector& index, Array& data);
     /**
      * Set a subset of an Array using contents-indexing, meaning that the
      * argument is assumed to refer to the elements in their order as a vector.
@@ -604,20 +604,20 @@ namespace FreeMat {
      *   - the index has more than one element in it
      *   - the index is less than 1
      */
-    void setVectorContents(Array& index, Array& data) throw(Exception);
+    void setVectorContents(Array& index, Array& data);
     /**
      * Set a subset of an Array.   This if for n-Dimensional-indexing, meaning
      * that x{10} is really x{10,1}.
      * Throws an exception if the index is not a scalar
      */
-    void setNDimContents(ArrayVector& index, Array& data) throw(Exception);
+    void setNDimContents(ArrayVector& index, Array& data);
     /**
      * Replace the contents of a field with the supplied array.  Only valid for
      * scalar structures.
      * Throws an exception if we are not a structure array or we are a multi-element
      * structure-array.
      */
-    void setField(std::string fieldName, Array& data) throw(Exception);
+    void setField(std::string fieldName, Array& data);
     /**
      * Set a subset of an Array using contents-indexing, meaning that the
      * argument is assumed to refer to the elements in their order as a vector.
@@ -627,7 +627,7 @@ namespace FreeMat {
      * Throws an exception if the number of elements in data do not match
      * the number of indices in index.
      */
-    void setVectorContentsAsList(Array& index, ArrayVector& data) throw(Exception);
+    void setVectorContentsAsList(Array& index, ArrayVector& data);
     /**
      * Set a subset of an Array.   This if for n-Dimensional-indexing, meaning
      * that x{10} is really x{10,1}.  This is used when a cell-array is used
@@ -636,7 +636,7 @@ namespace FreeMat {
      * the number of indices covered by index (which is the product of the
      * number of elements in each dimension of index).
      */
-    void setNDimContentsAsList(ArrayVector& index, ArrayVector& data) throw(Exception);
+    void setNDimContentsAsList(ArrayVector& index, ArrayVector& data);
     /**
      * Replace the contents of a field with the supplied array.  This is used
      * when a structure array is used to hold the return of a multi-function
@@ -646,7 +646,7 @@ namespace FreeMat {
      *   - the number of elements in data is not equal to the number of elements in 
      *     our array.
      */
-    void setFieldAsList(std::string fieldName, ArrayVector& data) throw(Exception);
+    void setFieldAsList(std::string fieldName, ArrayVector& data);
     /**
      * Delete a subset of this array using the argument for vector indexing.
      * This is _much_ simpler than the planar case.  Here, we simply:
@@ -664,7 +664,7 @@ namespace FreeMat {
      * It cannot be used to create "holes" in an array.
      * Throws an exception if the argument contains more than one non-colon index
      */
-    void deleteNDimSubset(ArrayVector& args) throw(Exception);
+    void deleteNDimSubset(ArrayVector& args);
     /**
      * Summarize this array when it appears in a Cell array.
      */
@@ -678,18 +678,18 @@ namespace FreeMat {
      * Get our contents as a C-string.  Only works for _STRING types.
      * Throws an exception for non-string types.
      */
-    char* getContentsAsCString() const throw(Exception);
+    char* getContentsAsCString() const;
     /**
      * Get our contents as an integer scalar.
      * Throws an exception if we are not a scalar integer type.
      */
-    int32 getContentsAsIntegerScalar() throw(Exception);
+    int32 getContentsAsIntegerScalar();
     /**
      * Get our contents as a double scalar.
      * Throws an exception if we are not scalar or cannot meaningfully
      * be converted to a double precision value.
      */
-    double getContentsAsDoubleScalar() throw(Exception);
+    double getContentsAsDoubleScalar();
     /**
      * Returns true if the given Class is either FM_CELL_ARRAY or
      * FM_STRUCT_ARRAY.

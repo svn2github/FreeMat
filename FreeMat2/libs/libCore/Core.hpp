@@ -150,6 +150,8 @@ namespace FreeMat {
   ArrayVector RepMatFunction(int, const ArrayVector& arg);
   ArrayVector EpsFunction(int, const ArrayVector& arg);
   ArrayVector FepsFunction(int, const ArrayVector& arg);
+  ArrayVector Int2BinFunction(int, const ArrayVector& arg);
+  ArrayVector Bin2IntFunction(int, const ArrayVector& arg);
 }
 
 #endif

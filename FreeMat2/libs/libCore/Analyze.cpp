@@ -2261,8 +2261,8 @@ namespace FreeMat {
   //where @|x| is an @|n|-dimensions array of numerical type.
   //The output is of the same numerical type as the input, except 
   //for integer types, which are automatically promoted to @|int32|.
-  // The argument @|d| is optional, and denotes the dimension along which to take
-  //the product.  The output is computed via
+  // The argument @|d| is optional, and denotes the dimension along 
+  //which to take the product.  The output is computed via
   //\[
   //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
   //    \prod_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
@@ -2374,5 +2374,126 @@ namespace FreeMat {
     ArrayVector retArray;
     retArray.push_back(retval);
     return retArray;
+  }
+
+  //!
+  //@Module INT2BIN Convert Integer Arrays to Binary
+  //@@Usage
+  //Computes the binary decomposition of an integer array to the specified
+  //number of bits.  The general syntax for its use is
+  //@[
+  //   y = int2bin(x,n)
+  //@]
+  //where @|x| is a multi-dimensional integer array, and @|n| is the number
+  //of bits to expand it to.  The output array @|y| has one extra dimension
+  //to it than the input.  The bits are expanded along this extra dimension.
+  //@@Example
+  //The following piece of code demonstrates various uses of the int2bin
+  //function.  First the simplest example:
+  //@<
+  //A = [2;5;6;2]
+  //int2bin(A,8)
+  //A = [1,2;-5;2]
+  //int2bin(A,8)
+  //@>
+  //!
+  ArrayVector Int2BinFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 2)
+      throw Exception("int2bin requires at least two arguments");
+    Array x(arg[0]);
+    x.promoteType(FM_UINT32);
+    Array n(arg[1]);
+    int numbits;
+    numbits = n.getContentsAsIntegerScalar();
+    if (numbits<1)
+      numbits = 1;
+    Dimensions xdim(x.getDimensions());
+    int slicesize;
+    slicesize = xdim.getElementCount();
+    xdim.simplify();
+    if (xdim[xdim.getLength()-1] == 1)
+      xdim[xdim.getLength()-1] = numbits;
+    else
+      xdim[xdim.getLength()] = numbits;
+    logical *dp;
+    dp = (logical *) Malloc(sizeof(logical)*xdim.getElementCount());
+    int32 *sp;
+    sp = (int32 *) x.getDataPointer();
+    int i, j;
+    for (i=0;i<slicesize;i++) {
+      int32 v;
+      v = sp[i];
+      for (j=0;j<numbits;j++) {
+	dp[(numbits-1-j)*slicesize+i] = v & 1;
+	v >>= 1;
+      }
+    }
+    ArrayVector retval;
+    retval.push_back(Array(FM_LOGICAL,xdim,dp));
+    return retval;
+  }
+
+  //!
+  //@Module BIN2INT Convert Binary Arrays to Integer
+  //@@Usage
+  //Converts the binary decomposition of an integer array back
+  //to an integer array.  The general syntax for its use is
+  //@[
+  //   y = bin2int(x)
+  //@]
+  //where @|x| is a multi-dimensional logical array, where the last
+  //dimension indexes the bit planes (see @|int2bin| for an example).
+  //By default, the output of @|bin2int| is unsigned @|uint32|.  To
+  //get a signed integer, it must be typecast correctly.
+  //@@Example
+  //The following piece of code demonstrates various uses of the int2bin
+  //function.  First the simplest example:
+  //@<
+  //A = [2;5;6;2]
+  //B = int2bin(A,8)
+  //bin2int(B)
+  //A = [1,2;-5;2]
+  //B = int2bin(A,8)
+  //bin2int(B)
+  //int32(bin2int(B))
+  //@>
+  //!
+  ArrayVector Bin2IntFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 1)
+      throw Exception("bin2int requires at least one arguments");
+    Array x(arg[0]);
+    x.promoteType(FM_LOGICAL);
+    bool signflag;
+    signflag = false;
+    if (arg.size() > 1) {
+      Array flag(arg[1]);
+      char *flag_value = flag.getContentsAsCString();
+      if (strcmp(flag_value,"signed") == 0)
+	signflag = true;
+    }
+    Dimensions xdim(x.getDimensions());
+    int numbits;
+    numbits = xdim[xdim.getLength()-1];
+    int slicesize;
+    slicesize = xdim.getElementCount()/numbits;
+    xdim[xdim.getLength()-1] = 1;
+    xdim.simplify();
+    ArrayVector retval;
+    uint32 *dp;
+    dp = (uint32*) Malloc(sizeof(uint32)*xdim.getElementCount());
+    logical *sp;
+    sp = (logical*) x.getDataPointer();
+    int i, j;
+    for (i=0;i<slicesize;i++) {
+      uint32 v;
+      v = sp[i];
+      for (j=1;j<numbits;j++) {
+	v <<= 1;
+	v |= sp[j*slicesize+i];
+      }
+      dp[i] = v;
+    }
+    retval.push_back(Array(FM_UINT32,xdim,dp));
+    return retval;
   }
 }

@@ -102,6 +102,8 @@ namespace FreeMat {
      args.push_back("n");
      context->addFunction("diag",DiagFunction,2,1,args);
      context->addFunction("qr",QRDFunction,2,-1,args);
+     context->addFunction("int2bin",Int2BinFunction,2,1,args);
+     context->addFunction("bin2int",Bin2IntFunction,1,1,args);
      args.clear();
      args.push_back("A");
      args.push_back("balanceflag");

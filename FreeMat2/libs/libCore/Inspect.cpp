@@ -428,8 +428,14 @@ namespace FreeMat {
   //!
   ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
     ArrayVector retval;
+    if (arg.size() < 1)
+      throw Exception("size function requires either one or two arguments");
+    Dimensions sze;
+    if (arg[0].isEmpty())
+      sze = Dimensions(0,0);
+    else
+      sze = arg[0].getDimensions();
     if (arg.size() == 1) {
-      Dimensions sze(arg[0].getDimensions());
       if (nargout > 1) {
 	ArrayVector retval(nargout);
 	for (int i=0;i<nargout;i++)
@@ -452,11 +458,9 @@ namespace FreeMat {
       int dimval = tmp.getContentsAsIntegerScalar();
       if (dimval<1)
 	throw Exception("illegal value for dimension argument in call to size function");
-      Dimensions sze(arg[0].getDimensions());
       retval.push_back(Array::uint32Constructor(sze[dimval-1]));
       return retval;
     }
-    throw Exception("size function requires either one or two arguments");
   }
 
   //   ArrayVector LengthFunction(int nargout, const ArrayVector& arg) {
@@ -507,7 +511,7 @@ namespace FreeMat {
     fname = tmp.getContentsAsCString();
     bool isDefed;
     Array d;
-    isDefed = eval->getContext()->lookupVariableLocally(fname, d);
+    isDefed = eval->getContext()->lookupVariable(fname, d);
     bool existCheck;
     if (isDefed && !d.isEmpty())
       existCheck = true;

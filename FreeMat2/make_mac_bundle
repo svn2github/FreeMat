@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# build a macbundle once a make is completed
+mkdir FreeMat.app
+mkdir FreeMat.app/Contents
+cp src/mac/Info.plist FreeMat.app/Contents/.
+mkdir FreeMat.app/Contents/MacOS
+cp src/mac/FreeMat FreeMat.app/Contents/MacOS
+mkdir FreeMat.app/Contents/Resources
+cp -R $1/bin FreeMat.app/Contents/Resources/.
+cp -R $1/share FreeMat.app/Contents/Resources/.
+cp src/mac/script FreeMat.app/Contents/Resources/.
+cp src/mac/auth FreeMat.app/Contents/Resources/.
+cp src/mac/droppable FreeMat.app/Contents/Resources/.
+cp src/mac/interpreter FreeMat.app/Contents/Resources/.
+cp src/mac/outputType FreeMat.app/Contents/Resources/.
+cp src/mac/appIcon.icns FreeMat.app/Contents/Resources/.
+cp -R src/mac/MainMenu.nib FreeMat.app/Contents/Resources/.
+

@@ -22,7 +22,9 @@ rescan.m\
 reshape.m\
 rserver.m\
 sqrt.m\
-std.m
+std.m \
+gausfit.m \
+gfitfun.m
 
 install-data-local:
 	mkdir -p $(prefix)/share/FreeMat/MFiles

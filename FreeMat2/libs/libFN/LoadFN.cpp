@@ -10,6 +10,12 @@ namespace FreeMat {
     args.push_back("params");
     context->addSpecialFunction("fitfun",FitFunFunction,-1,2,args);
     args.clear();
+    args.push_back("x1");
+    args.push_back("y1");
+    args.push_back("xi");
+    args.push_back("extrap");
+    context->addFunction("interplin1",Interplin1Function,4,1,args);
+    args.clear();
     args.push_back("x");
     context->addFunction("expei",ExpeiFunction,1,1,args);
     context->addFunction("eone",EoneFunction,1,1,args);

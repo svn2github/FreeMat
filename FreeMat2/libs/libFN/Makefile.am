@@ -45,6 +45,7 @@ INCLUDES= -I@top_srcdir@/libs/libFreeMat -I@top_builddir@/libs/libffi/include -I
 libFN_a_SOURCES = OptFun.cpp \
 LoadFN.hpp \
 LoadFN.cpp \
+Interp1D.cpp \
 FN.hpp \
 lmdif1.f \
 lmdif.f \

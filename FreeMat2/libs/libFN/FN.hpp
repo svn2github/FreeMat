@@ -16,6 +16,7 @@ namespace FreeMat {
   ArrayVector PsiFunction(int nargout, const ArrayVector& arg);
   ArrayVector GammaFunction(int nargout, const ArrayVector& arg);
   ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg);
+  ArrayVector Interplin1Function(int nargout, const ArrayVector& arg);
 }
 
 #endif

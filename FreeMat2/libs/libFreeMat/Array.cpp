@@ -3561,9 +3561,6 @@ break;
 
   int32 Array::getContentsAsIntegerScalar()  {
     int32 *qp;
-    if ((dp->dataClass <= FM_STRUCT_ARRAY) ||
-	(dp->dataClass >= FM_FLOAT))
-      throw Exception("Expected an integer!\n");
     if (getLength() != 1)
       throw Exception("Expected a scalar!\n");
     promoteType(FM_INT32);

@@ -37,13 +37,13 @@ namespace FreeMat {
     m_height = height;
     trackball(quat,0.0,0.0,0.0,0.0);
     int i, j, n, P;
-    P = 50;
-    xvals = (double*) malloc(sizeof(double)*50);
-    yvals = (double*) malloc(sizeof(double)*50);
-    zvals = (double*) malloc(sizeof(double)*50*50);
+    P = 21;
+    xvals = (double*) malloc(sizeof(double)*P);
+    yvals = (double*) malloc(sizeof(double)*P);
+    zvals = (double*) malloc(sizeof(double)*P*P);
     for (n=0;n<P;n++) {
-      xvals[n] = (n-(P-1.0)/2)/4.0;
-      yvals[n] = (n-(P-1.0)/2)/4.0;
+      xvals[n] = (n-(P-1.0)/2)/2.0;
+      yvals[n] = (n-(P-1.0)/2)/2.0;
     }
     for (i=0;i<P;i++) 
       for (j=0;j<P;j++) {
@@ -129,6 +129,7 @@ namespace FreeMat {
 
     gc.SetBackGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("light grey"));
+    gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(0, 0, m_width, m_height));
     build_rotmatrix(m, quat);
     std::vector<quad3d> tquads;
@@ -146,16 +147,16 @@ namespace FreeMat {
     std::sort(tquads.begin(),tquads.end());
     // Draw them to the screen...
     for (i=0;i<tquads.size();i++) {
-      gc.SetForeGroundColor(Color("green"));
-      gc.FillQuad(Point2D(tquads[i].pts[0].x*10+300,tquads[i].pts[0].y*10+300),
-		  Point2D(tquads[i].pts[1].x*10+300,tquads[i].pts[1].y*10+300),
-		  Point2D(tquads[i].pts[2].x*10+300,tquads[i].pts[2].y*10+300),
-		  Point2D(tquads[i].pts[3].x*10+300,tquads[i].pts[3].y*10+300));
+      gc.SetForeGroundColor(Color("white"));
+      gc.FillQuad(Point2D(tquads[i].pts[0].x*20+300,tquads[i].pts[0].y*20+300),
+		  Point2D(tquads[i].pts[1].x*20+300,tquads[i].pts[1].y*20+300),
+		  Point2D(tquads[i].pts[2].x*20+300,tquads[i].pts[2].y*20+300),
+		  Point2D(tquads[i].pts[3].x*20+300,tquads[i].pts[3].y*20+300));
       gc.SetForeGroundColor(Color("black"));
-      gc.DrawQuad(Point2D(tquads[i].pts[0].x*10+300,tquads[i].pts[0].y*10+300),
-		  Point2D(tquads[i].pts[1].x*10+300,tquads[i].pts[1].y*10+300),
-		  Point2D(tquads[i].pts[2].x*10+300,tquads[i].pts[2].y*10+300),
-		  Point2D(tquads[i].pts[3].x*10+300,tquads[i].pts[3].y*10+300));
+      gc.DrawQuad(Point2D(tquads[i].pts[0].x*20+300,tquads[i].pts[0].y*20+300),
+		  Point2D(tquads[i].pts[1].x*20+300,tquads[i].pts[1].y*20+300),
+		  Point2D(tquads[i].pts[2].x*20+300,tquads[i].pts[2].y*20+300),
+		  Point2D(tquads[i].pts[3].x*20+300,tquads[i].pts[3].y*20+300));
     }
 //     for (i=0;i<2;i++) 
 //       for (j=0;j<4;j++) 

@@ -329,9 +329,9 @@ namespace FreeMat {
 	zp = zAxis->MapPoint(zVals[i]);
 	int xxp, yyp;
 	xxp = (int)(xform[0][0]*xp + xform[0][1]*yp + 
-		    xform[0][2]*zp + xform[0][3]);
+		    xform[0][2]*zp + xform[0][3]) + 200;
 	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
-		    xform[1][2]*zp + xform[1][3]);
+		    xform[1][2]*zp + xform[1][3]) + 200;
 	pts.push_back(Point2D(xxp,yyp));
       }
       else {

@@ -7,7 +7,7 @@
 
 namespace FreeMat {
   
-  typedef enum {fignone, figplot, figscimg, figgui} figType;
+  typedef enum {fignone, figplot, figscimg, figgui, fig3plot} figType;
   
   class Figure : public Fl_Double_Window {
   public:

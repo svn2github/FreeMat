@@ -21,5 +21,7 @@ ScalarImage.hpp \
 trackball.c \
 trackball.h \
 Figure.cpp \
-Figure.hpp
+Figure.hpp \
+Plot3D.cpp \
+Plot3D.hpp
 AUTOMAKE_OPTIONS 	= foreign

@@ -12,6 +12,7 @@
 #include "BitmapPrinterGC.hpp"
 #include "HandleList.hpp"
 #include "WalkTree.hpp"
+#include "Plot3D.hpp"
 #define MAX_FIGS 100
 
 namespace FreeMat {
@@ -428,9 +429,8 @@ namespace FreeMat {
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
-    f->begin();
-    Fl_Button *ok = new Fl_Button(80,40,100,40,"OK");
-    f->end();
+    Plot3D* t = new Plot3D(f->w(),f->h());
+    f->SetFigureChild(t,fig3plot);
     f->redraw();
 #if 0
     XPContainer *c = new XPContainer(f, f->GetBoundingRect());

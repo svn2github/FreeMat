@@ -100,6 +100,7 @@ YFLAGS = @YFLAGS@
 am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
+maindir = @maindir@
 miniblasdir = @miniblasdir@
 minilapackdir = @minilapackdir@
 mpidir = @mpidir@
@@ -128,8 +129,6 @@ Color.cpp \
 Color.hpp \
 BitmapFont.cpp \
 BitmapFont.hpp \
-XWindow.hpp \
-XWindow.cpp \
 Reducer.hpp \
 Reducer.cpp \
 KeyManager.cpp \
@@ -151,8 +150,7 @@ am_libXP_a_OBJECTS = DynLib.$(OBJEXT) System.$(OBJEXT) \
 	PathSearch.$(OBJEXT) GrayscaleImage.$(OBJEXT) \
 	RGBImage.$(OBJEXT) Rect2D.$(OBJEXT) RGBImageGC.$(OBJEXT) \
 	PostScriptGC.$(OBJEXT) Point2D.$(OBJEXT) Color.$(OBJEXT) \
-	BitmapFont.$(OBJEXT) XWindow.$(OBJEXT) Reducer.$(OBJEXT) \
-	KeyManager.$(OBJEXT)
+	BitmapFont.$(OBJEXT) Reducer.$(OBJEXT) KeyManager.$(OBJEXT)
 libXP_a_OBJECTS = $(am_libXP_a_OBJECTS)
 
 DEFS = @DEFS@
@@ -168,7 +166,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/Point2D.Po ./$(DEPDIR)/PostScriptGC.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/RGBImage.Po ./$(DEPDIR)/RGBImageGC.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Rect2D.Po ./$(DEPDIR)/Reducer.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/System.Po ./$(DEPDIR)/XWindow.Po
+@AMDEP_TRUE@	./$(DEPDIR)/System.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -222,7 +220,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Rect2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Reducer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/System.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XWindow.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

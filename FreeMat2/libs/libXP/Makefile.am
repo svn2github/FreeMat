@@ -23,8 +23,6 @@ Color.cpp \
 Color.hpp \
 BitmapFont.cpp \
 BitmapFont.hpp \
-XWindow.hpp \
-XWindow.cpp \
 Reducer.hpp \
 Reducer.cpp \
 KeyManager.cpp \

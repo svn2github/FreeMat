@@ -48,4 +48,5 @@ int main() {
       ffi_call(&cif, testFunction, &ret2, values);
       printf("call2 = %f\n",ret2);
     }
+  return 0;
 }

@@ -2724,6 +2724,10 @@ namespace FreeMat {
       return (strcmp(b.x,a.x) < 0);
   }
 
+  bool operator==(const XSEntry& a, const XSEntry& b) {
+    return (strcmp(a.x,b.x) == 0);
+  }
+
   void StringSort(const Array* sp, Array* dp, int32 *ip, 
 		  int planes, int planesize, int linesize) {
     XSEntry *buf = new XSEntry[linesize];
@@ -2752,6 +2756,7 @@ namespace FreeMat {
   public:
     uint32 n;
     uint32 len;
+    uint32 stride;
     const T* data;
   };
 
@@ -2760,7 +2765,10 @@ namespace FreeMat {
     int i;
     i = 0;
     while (i<a.len) {
-      if (a.data[i] < b.data[i]) return true;
+      if (a.data[i*a.stride] < b.data[i*b.stride]) 
+	return true; 
+      else if (a.data[i*a.stride] > b.data[i*b.stride]) 
+	return false; 
       i++;
     }
     return false;
@@ -2771,7 +2779,45 @@ namespace FreeMat {
     int i;
     i = 0;
     while (i<a.len) {
-      if (a.data[i] != b.data[i]) return false;
+      if (a.data[i*a.stride] != b.data[i*b.stride]) return false;
+      i++;
+    }
+    return true;
+  }
+  
+  template <class T>
+  class UniqueEntryComplex {
+  public:
+    uint32 n;
+    uint32 len;
+    uint32 stride;
+    const T* data;
+  };
+
+  template <class T>
+  bool operator<(const UniqueEntryComplex<T>& a, const UniqueEntryComplex<T>& b) {
+    int i;
+    T a_abs, b_abs;
+    i = 0;
+    while (i<a.len) {
+      a_abs = complex_abs(a.data[2*i*a.stride],a.data[2*i*a.stride+1]);
+      b_abs = complex_abs(b.data[2*i*b.stride],b.data[2*i*b.stride+1]);
+      if (a_abs < b_abs) 
+	return true;
+      else if (a_abs > b_abs)
+	return false;
+      i++;
+    }
+    return false;
+  }
+  
+  template <class T>
+  bool operator==(const UniqueEntryComplex<T>& a, const UniqueEntryComplex<T>& b) {
+    int i;
+    i = 0;
+    while (i<a.len) {
+      if ((a.data[2*i*a.stride] != b.data[2*i*b.stride]) || 
+	  (a.data[2*i*a.stride+1] != b.data[2*i*b.stride+1])) return false;
       i++;
     }
     return true;
@@ -2804,74 +2850,94 @@ namespace FreeMat {
   //   [y, m, n] = unique(x,'rows')
   //@]
   //@@Example
+  //Here is an example in row mode
   //@<
-  //A = randi(zeros(1,9),5*ones(1,9))
+  //A = randi(1,3*ones(15,3))
+  //unique(A,'rows')
+  //[b,m,n] = unique(A,'rows');
+  //b
+  //A(m,:)
+  //b(n,:)
+  //@>
+  //Here is an example in vector mode
+  //@<
+  //A = randi(1,5*ones(10,1))
   //unique(A)
-  //[b,m,n] = unique(A)
+  //[b,m,n] = unique(A,'rows');
+  //b
   //A(m)
   //b(n)
   //@>
+  //For cell arrays of strings.
+  //@<
+  //A = {'hi','bye','good','tell','hi','bye'}
+  //unique(A)
+  //@>
   //!
 
-
   template <class T>
-  ArrayVector UniqueFunctionVecModeReal(int nargout, Array input) {
+  ArrayVector UniqueFunctionRowModeComplex(int nargout, Array& input) {
     const T* dp = (const T*) input.getDataPointer();
-    int len = input.getLength();
+    int rows = input.getDimensionLength(0);
+    int cols = input.getDimensionLength(1); 
+    int len = rows;
     Class cls(input.getDataClass());
-    int i;
+    int i, j;
     int cnt;
-    UniqueEntryReal<T> *sp = new UniqueEntryReal<T>[len];
+    UniqueEntryComplex<T> *sp = new UniqueEntryComplex<T>[len];
     for (i=0;i<len;i++) {
       sp[i].n = i;
-      sp[i].len = 1;
-      sp[i].data = dp + i;
+      sp[i].len = cols;
+      sp[i].stride = rows;
+      sp[i].data = dp + 2*i;
     }
     std::sort(sp,sp+len);
-    // Make one pass through the array to determine how many
-    // output elements there are
     i = 1;
     cnt = 1;
-    // 0 0 0 1 2 3 3 4 4 5 6 7
-    // 1 1 1 2
     while (i < len) {
       if (!(sp[i] == sp[i-1]))
 	cnt++;
       i++;
     }
+    int tcnt = cnt;
     if (nargout <= 1) {
-      // Second pass through the array - build the output vector
-      T* op = (T*) Malloc(sizeof(T)*cnt);
-      op[0] = sp[0].data[0];
+      T* op = (T*) Malloc(sizeof(T)*cnt*2*cols);
+      for (j=0;j<cols;j++) {
+	op[0+j*2*tcnt] = sp[0].data[0+j*2*rows];
+	op[1+j*2*tcnt] = sp[0].data[1+j*2*rows];
+      }
       i = 1;
       cnt = 1;
       while (i < len) {
 	if (!(sp[i] == sp[i-1])) {
-	  op[cnt] = sp[i].data[0];
+	  for (j=0;j<cols;j++) {
+	    op[2*cnt+j*2*tcnt] = sp[i].data[0+j*2*rows];
+	    op[2*cnt+j*2*tcnt+1] = sp[i].data[1+j*2*rows];
+	  }
 	  cnt++;
 	}
 	i++;
       }
       delete[] sp;
-      return singleArrayVector(Array(cls,Dimensions(cnt,1),op));
+      return singleArrayVector(Array(cls,Dimensions(cnt,cols),op));
     } else {
-      // Second pass through the array - build the output vector
-      // Also build the two indexing arrays
       uint32* np = (uint32*) Malloc(sizeof(int32)*len);
       uint32* mp = (uint32*) Malloc(sizeof(int32)*cnt);
-      T* op = (T*) Malloc(sizeof(T)*cnt);
-      op[0] = sp[0].data[0];
+      T* op = (T*) Malloc(sizeof(T)*cnt*2*cols);
+      for (j=0;j<cols;j++) {
+	op[0+j*2*tcnt] = sp[0].data[0+j*2*rows];
+	op[1+j*2*tcnt] = sp[0].data[1+j*2*rows];
+      }
       i = 1;
       cnt = 1;
-      // np[0] is supposed to have the index into 
-      // the output vector - when cnt == 0, 
-      // the corresponding entry from x is sp[0]
-      // which belongs to A[sp[0].n]
       np[sp[0].n] = 1;
       mp[0] = sp[0].n + 1;
       while (i < len) {
 	if (!(sp[i] == sp[i-1])) {
-	  op[cnt] = sp[i].data[0];
+	  for (j=0;j<cols;j++) {
+	    op[2*cnt+j*2*tcnt] = sp[i].data[0+j*2*rows];
+	    op[2*cnt+j*2*tcnt+1] = sp[i].data[1+j*2*rows];
+	  }
 	  mp[cnt] = sp[i].n + 1;
 	  cnt++;
 	}
@@ -2880,38 +2946,182 @@ namespace FreeMat {
       }
       delete[] sp;
       ArrayVector retval;
-      retval.push_back(Array(cls,Dimensions(cnt,1),op));
+      retval.push_back(Array(cls,Dimensions(cnt,cols),op));
+      retval.push_back(Array(FM_UINT32,Dimensions(cnt,1),mp));
+      retval.push_back(Array(FM_UINT32,Dimensions(len,1),np));
+      return retval;
+    }
+  }
+
+  template <class T>
+  ArrayVector UniqueFunctionRowModeReal(int nargout, Array& input) {
+    const T* dp = (const T*) input.getDataPointer();
+    int rows = input.getDimensionLength(0);
+    int cols = input.getDimensionLength(1); 
+    int len = rows;
+    Class cls(input.getDataClass());
+    int i, j;
+    int cnt;
+    UniqueEntryReal<T> *sp = new UniqueEntryReal<T>[len];
+    for (i=0;i<len;i++) {
+      sp[i].n = i;
+      sp[i].len = cols;
+      sp[i].stride = rows;
+      sp[i].data = dp + i;
+    }
+    std::sort(sp,sp+len);
+    i = 1;
+    cnt = 1;
+    while (i < len) {
+      if (!(sp[i] == sp[i-1]))
+	cnt++;
+      i++;
+    }
+    int tcnt = cnt;
+    if (nargout <= 1) {
+      T* op = (T*) Malloc(sizeof(T)*cnt*cols);
+      for (j=0;j<cols;j++)
+	op[0+j*tcnt] = sp[0].data[0+j*rows];
+      i = 1;
+      cnt = 1;
+      while (i < len) {
+	if (!(sp[i] == sp[i-1])) {
+	  for (j=0;j<cols;j++)
+	    op[cnt+j*tcnt] = sp[i].data[0+j*rows];
+	  cnt++;
+	}
+	i++;
+      }
+      delete[] sp;
+      return singleArrayVector(Array(cls,Dimensions(cnt,cols),op));
+    } else {
+      uint32* np = (uint32*) Malloc(sizeof(int32)*len);
+      uint32* mp = (uint32*) Malloc(sizeof(int32)*cnt);
+      T* op = (T*) Malloc(sizeof(T)*cnt*cols); 
+      for (j=0;j<cols;j++)
+	op[0+j*tcnt] = sp[0].data[0+j*rows];
+      i = 1;
+      cnt = 1;
+      np[sp[0].n] = 1;
+      mp[0] = sp[0].n + 1;
+      while (i < len) {
+	if (!(sp[i] == sp[i-1])) {
+	  for (j=0;j<cols;j++)
+	    op[cnt+j*tcnt] = sp[i].data[0+j*rows];
+	  mp[cnt] = sp[i].n + 1;
+	  cnt++;
+	}
+	np[sp[i].n] = cnt;
+	i++;
+      }
+      delete[] sp;
+      ArrayVector retval;
+      retval.push_back(Array(cls,Dimensions(cnt,cols),op));
+      retval.push_back(Array(FM_UINT32,Dimensions(cnt,1),mp));
+      retval.push_back(Array(FM_UINT32,Dimensions(len,1),np));
+      return retval;
+    }
+  }
+
+  ArrayVector UniqueFunctionString(int nargout, Array& input) {
+    int len(input.getLength());
+    if (!VerifyAllStrings(input.getDataPointer(),len))
+      throw Exception("when 'unique' is applied to cell arrays, each cell must contain a string");
+    XSEntry *buf = new XSEntry[len];
+    Array *sp = (Array*) input.getDataPointer();
+    int i;
+    for (i=0;i<len;i++) {
+      buf[i].x = sp[i].getContentsAsCString();
+      buf[i].n = i;
+    }
+    sortreverse = false;
+    std::sort(buf,buf+len);
+    i = 1;
+    cnt = 1;
+    while (i < len) {
+      if (!(buf[i] == buf[i-1]))
+	cnt++;
+      i++;
+    }
+    int tcnt = cnt;
+    if (nargout <= 1) {
+      // FINISHME
+      T* op = (T*) Malloc(sizeof(T)*cnt*cols);
+      for (j=0;j<cols;j++)
+	op[0+j*tcnt] = sp[0].data[0+j*rows];
+      i = 1;
+      cnt = 1;
+      while (i < len) {
+	if (!(sp[i] == sp[i-1])) {
+	  for (j=0;j<cols;j++)
+	    op[cnt+j*tcnt] = sp[i].data[0+j*rows];
+	  cnt++;
+	}
+	i++;
+      }
+      delete[] sp;
+      return singleArrayVector(Array(cls,Dimensions(cnt,cols),op));
+    } else {
+      uint32* np = (uint32*) Malloc(sizeof(int32)*len);
+      uint32* mp = (uint32*) Malloc(sizeof(int32)*cnt);
+      T* op = (T*) Malloc(sizeof(T)*cnt*cols); 
+      for (j=0;j<cols;j++)
+	op[0+j*tcnt] = sp[0].data[0+j*rows];
+      i = 1;
+      cnt = 1;
+      np[sp[0].n] = 1;
+      mp[0] = sp[0].n + 1;
+      while (i < len) {
+	if (!(sp[i] == sp[i-1])) {
+	  for (j=0;j<cols;j++)
+	    op[cnt+j*tcnt] = sp[i].data[0+j*rows];
+	  mp[cnt] = sp[i].n + 1;
+	  cnt++;
+	}
+	np[sp[i].n] = cnt;
+	i++;
+      }
+      delete[] sp;
+      ArrayVector retval;
+      retval.push_back(Array(cls,Dimensions(cnt,cols),op));
       retval.push_back(Array(FM_UINT32,Dimensions(cnt,1),mp));
       retval.push_back(Array(FM_UINT32,Dimensions(len,1),np));
       return retval;
     }
   }
   
-  ArrayVector UniqueFunctionRowMode(int nargout, Array input) {
-    return ArrayVector();
-  }
-
-  ArrayVector UniqueFunctionVecMode(int nargout, Array input) {
+  ArrayVector UniqueFunctionAux(int nargout, Array input, bool rowmode) {
+    if (!rowmode) {
+      Dimensions newdim(input.getLength(),1);
+      input.reshape(newdim);
+    }
     Class argType(input.getDataClass());
     switch (argType) {
     case FM_INT8: 
-      return UniqueFunctionVecModeReal<int8>(nargout, input);
+      return UniqueFunctionRowModeReal<int8>(nargout, input);
     case FM_UINT8:
-      return UniqueFunctionVecModeReal<uint8>(nargout, input);
+      return UniqueFunctionRowModeReal<uint8>(nargout, input);
     case FM_INT16: 
-      return UniqueFunctionVecModeReal<int16>(nargout, input);
+      return UniqueFunctionRowModeReal<int16>(nargout, input);
     case FM_UINT16:
-      return UniqueFunctionVecModeReal<uint16>(nargout, input);
+      return UniqueFunctionRowModeReal<uint16>(nargout, input);
     case FM_INT32: 
-      return UniqueFunctionVecModeReal<int32>(nargout, input);
+      return UniqueFunctionRowModeReal<int32>(nargout, input);
     case FM_UINT32:
-      return UniqueFunctionVecModeReal<uint32>(nargout, input);
+      return UniqueFunctionRowModeReal<uint32>(nargout, input);
     case FM_FLOAT: 
-      return UniqueFunctionVecModeReal<float>(nargout, input);
+      return UniqueFunctionRowModeReal<float>(nargout, input);
     case FM_DOUBLE:
-      return UniqueFunctionVecModeReal<double>(nargout, input);
+      return UniqueFunctionRowModeReal<double>(nargout, input);
+    case FM_COMPLEX: 
+      return UniqueFunctionRowModeComplex<float>(nargout, input);
+    case FM_DCOMPLEX:
+      return UniqueFunctionRowModeComplex<double>(nargout, input);
+    case FM_CELL_ARRAY:
+      return UniqueFunctionStrings(nargout, input);
     }
     throw Exception("Unsupported type in call to unique");
+    return ArrayVector();
   }
 
   ArrayVector UniqueFunction(int nargout, const ArrayVector& arg) {
@@ -2934,11 +3144,7 @@ namespace FreeMat {
     Dimensions inDim(input.getDimensions());
     if (rowmode && (inDim.getLength() != 2))
       throw Exception("'rows' mode only works for matrix (2D) arguments");
-    // What happens next depends on the rowmode
-    if (rowmode)
-      return UniqueFunctionRowMode(nargout, input);
-    else
-      return UniqueFunctionVecMode(nargout, input);
+    return UniqueFunctionAux(nargout, input, rowmode);
   }
 
   //!

@@ -1,3 +1,4 @@
+#include "FL/Fl.H"
 #include "FL/x.H"
 #include "Figure.hpp"
 #include "Exception.hpp"
@@ -209,6 +210,9 @@ namespace FreeMat {
     Array t(arg[0]);
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
+    // Hack needed to avoid XLib core dump
+    while (!fl_gc)
+      Fl::wait(0);
     f->Print(outname);
     return ArrayVector();
   }

@@ -201,6 +201,9 @@ namespace FreeMat {
      args.push_back("handle");
      args.push_back("format");
      context->addFunction("fscanf",FscanfFunction,2,-1,args);
+     args.clear();
+     args.push_back("string");
+     context->addFunction("str2num",Str2NumFunction,1,1,args);
 //      args.clear();
 //      args.push_back("address");
 //      args.push_back("portnumber");

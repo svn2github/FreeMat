@@ -21,17 +21,19 @@
 #include "DynLib.hpp"
 #include "Exception.hpp"
 #include <string>
+#include <iostream>
 
 namespace FreeMat {
-  DynLib::DynLib(const char* filename) {
+  DynLib::DynLib(std::string filename) {
 #ifdef WIN32
-    lib = LoadLibrary(filename);
+    lib = LoadLibrary(filename.c_str());
     if (!lib)
-      throw FreeMat::Exception(std::string("Unable to open module: ") + ((const char *)filename));
+      throw FreeMat::Exception(std::string("Unable to open module: ") + filename);
 #else
-    lib = dlopen(filename,RTLD_LAZY);
+    std::cout << "opening lib " << filename << "\n";
+    lib = dlopen(filename.c_str(),RTLD_LAZY);
     if (!lib)
-      throw FreeMat::Exception(std::string("Unable to open module: ") + ((const char *)filename));
+      throw FreeMat::Exception(std::string("Unable to open module: ") + filename + ", operating system reported error: " + dlerror());
 #endif
   }
   void* DynLib::GetSymbol(const char*symbolName) {

@@ -2350,6 +2350,9 @@ namespace FreeMat {
 
     pushID(t->context());
     funcDef->updateCode();
+    bool CLIFlagsave;
+    
+    CLIFlagsave = InCLI;
     
     try {
       if (funcDef->scriptFlag) {
@@ -2357,7 +2360,7 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot use arguments in a call to a script."));
 	if ((narg_out > 0) && !outputOptional)
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
-	bool CLIFlagsave = InCLI;
+	CLIFlagsave = InCLI;
 	InCLI = false;
 	pushDebug(((MFunctionDef*)funcDef)->fileName);
 	block(((MFunctionDef*)funcDef)->code);
@@ -2486,7 +2489,7 @@ namespace FreeMat {
 	if ((funcDef->outputArgCount() >= 0) && 
 	    (narg_out > funcDef->outputArgCount() && !outputOptional))
 	  throw Exception(std::string("Too many outputs to function ")+t->text);
-	bool CLIFlagsave = InCLI;
+	CLIFlagsave = InCLI;
 	InCLI = false;
 	n = funcDef->evaluateFunction(this,m,narg_out);
 	InCLI = CLIFlagsave;
@@ -2534,6 +2537,7 @@ namespace FreeMat {
       popID();
       return n;
     } catch (Exception& e) {
+      InCLI = CLIFlagsave;
       throw;
     }
     popID();

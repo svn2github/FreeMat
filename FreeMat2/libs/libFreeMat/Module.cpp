@@ -350,11 +350,7 @@ namespace FreeMat {
     Interface *io;
     io = eval->getInterface();
 
-#ifdef WIN32
-    PathSearcher psearch(io->getPath() + ";.");
-#else
-    PathSearcher psearch(io->getPath() + ":.");
-#endif
+    PathSearcher psearch(io->getPath());
 
     std::string libfullpath;
 
@@ -364,15 +360,26 @@ namespace FreeMat {
 		      "return type, argument list");
     libfile = arg[0].getContentsAsCString();
     libfullpath = psearch.ResolvePath(libfile);
+    char buffer[1000];
+    getcwd(buffer,sizeof(buffer));
+    // Prepend the current working directory... ugly, but necessary
+#ifdef WIN32
+    if (!((libfullpath[0] == '\\') || ((libfullpath[1] == ':') && 
+				       (libfullpath[2] == '\\'))))
+    libfullpath = std::string(buffer) + "\\" + libfullpath;
+#else
+    if (libfullpath[0] != '/')
+      libfullpath = std::string(buffer) + "/" + libfullpath;
+#endif
     symbolname = arg[1].getContentsAsCString();
     funcname = arg[2].getContentsAsCString();
     rettype = arg[3].getContentsAsCString();
     arglist = arg[4].getContentsAsCString();
     void *func;
     DynLib *lib;
-    if (!libPointers.findSymbol(libfullpath.c_str(),lib)) {
-      lib = new DynLib(libfullpath.c_str());
-      libPointers.insertSymbol(libfullpath.c_str(),lib);
+    if (!libPointers.findSymbol(libfullpath,lib)) {
+      lib = new DynLib(libfullpath);
+      libPointers.insertSymbol(libfullpath,lib);
     }
     func = lib->GetSymbol(symbolname);
     stringVector types;

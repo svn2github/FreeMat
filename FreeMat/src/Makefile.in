@@ -99,9 +99,12 @@ minilapackdir = @minilapackdir@
 CFLAGS = @CFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cflags`
 CXXFLAGS = @CXXFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cxxflags`  -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/extlibs/libtecla -I@top_srcdir@/libs/libGraphics  -I@top_srcdir@/extlibs/libffi-2.00-beta/include  -I@top_srcdir@/extlibs/volpack-1.0c2/src
 
-bin_PROGRAMS = FreeMatGUI FreeMat test
+bin_PROGRAMS = FreeMatGUI FreeMat FMKernel
 
-test_SOURCES = test.cpp
+FMKernel_SOURCES = KernelMain.cpp \
+TeclaInterface.hpp \
+TeclaInterface.cpp 
+
 
 FreeMat_SOURCES = AppNoGUI.cpp \
 AppNoGUI.hpp \
@@ -131,17 +134,20 @@ FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGra
 FreeMatGUI_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 FreeMatGUI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs`  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 
-test_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
-test_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs`  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+FMKernel_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a
+FMKernel_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @top_builddir@/extlibs/libtecla/libtecla.a
 
 EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
-bin_PROGRAMS = FreeMatGUI$(EXEEXT) FreeMat$(EXEEXT) test$(EXEEXT)
+bin_PROGRAMS = FreeMatGUI$(EXEEXT) FreeMat$(EXEEXT) FMKernel$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
+am_FMKernel_OBJECTS = KernelMain.$(OBJEXT) TeclaInterface.$(OBJEXT)
+FMKernel_OBJECTS = $(am_FMKernel_OBJECTS)
+FMKernel_LDFLAGS =
 am_FreeMat_OBJECTS = AppNoGUI.$(OBJEXT) TeclaInterface.$(OBJEXT) \
 	CLIThread.$(OBJEXT)
 FreeMat_OBJECTS = $(am_FreeMat_OBJECTS)
@@ -151,9 +157,6 @@ am_FreeMatGUI_OBJECTS = App.$(OBJEXT) GUIInterface.$(OBJEXT) \
 	wxCLI2.$(OBJEXT)
 FreeMatGUI_OBJECTS = $(am_FreeMatGUI_OBJECTS)
 FreeMatGUI_LDFLAGS =
-am_test_OBJECTS = test.$(OBJEXT)
-test_OBJECTS = $(am_test_OBJECTS)
-test_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
@@ -165,9 +168,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/App.Po ./$(DEPDIR)/AppNoGUI.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/CLIBuffer.Po ./$(DEPDIR)/CLIThread.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GUIInterface.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/KernelMain.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SessionFrame.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/TeclaInterface.Po ./$(DEPDIR)/test.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/wxCLI2.Po
+@AMDEP_TRUE@	./$(DEPDIR)/TeclaInterface.Po ./$(DEPDIR)/wxCLI2.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -177,9 +180,10 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(FreeMat_SOURCES) $(FreeMatGUI_SOURCES) $(test_SOURCES)
+DIST_SOURCES = $(FMKernel_SOURCES) $(FreeMat_SOURCES) \
+	$(FreeMatGUI_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(FreeMat_SOURCES) $(FreeMatGUI_SOURCES) $(test_SOURCES)
+SOURCES = $(FMKernel_SOURCES) $(FreeMat_SOURCES) $(FreeMatGUI_SOURCES)
 
 all: all-am
 
@@ -214,15 +218,15 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+FMKernel$(EXEEXT): $(FMKernel_OBJECTS) $(FMKernel_DEPENDENCIES) 
+	@rm -f FMKernel$(EXEEXT)
+	$(CXXLINK) $(FMKernel_LDFLAGS) $(FMKernel_OBJECTS) $(FMKernel_LDADD) $(LIBS)
 FreeMat$(EXEEXT): $(FreeMat_OBJECTS) $(FreeMat_DEPENDENCIES) 
 	@rm -f FreeMat$(EXEEXT)
 	$(CXXLINK) $(FreeMat_LDFLAGS) $(FreeMat_OBJECTS) $(FreeMat_LDADD) $(LIBS)
 FreeMatGUI$(EXEEXT): $(FreeMatGUI_OBJECTS) $(FreeMatGUI_DEPENDENCIES) 
 	@rm -f FreeMatGUI$(EXEEXT)
 	$(CXXLINK) $(FreeMatGUI_LDFLAGS) $(FreeMatGUI_OBJECTS) $(FreeMatGUI_LDADD) $(LIBS)
-test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) 
-	@rm -f test$(EXEEXT)
-	$(CXXLINK) $(test_LDFLAGS) $(test_OBJECTS) $(test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -235,9 +239,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CLIBuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CLIThread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GUIInterface.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KernelMain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SessionFrame.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TeclaInterface.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wxCLI2.Po@am__quote@
 
 distclean-depend:

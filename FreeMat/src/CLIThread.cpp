@@ -83,7 +83,6 @@ namespace FreeMat {
   }
 
   void* CLIThread::Entry() {
-    ASTPtr code;
     context = new Context();
     BuiltInFunctionDef *f2def = new BuiltInFunctionDef;
     f2def->retCount = 0;

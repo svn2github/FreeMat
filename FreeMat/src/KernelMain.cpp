@@ -26,6 +26,11 @@
 #include "Serialize.hpp"
 #include "LoadCore.hpp"
 #include "Module.hpp"
+#include "TeclaInterface.hpp"
+#include "Command.hpp"
+#include <wx/string.h>
+#include <wx/utils.h>
+
  
 #ifdef F77_DUMMY_MAIN
 #  ifdef __cplusplus
@@ -41,52 +46,81 @@ namespace FreeMat {
 
 using namespace FreeMat;
 
+namespace FreeMat {
+
+  Command *resp;
+
+  // These are surrogate functions that handle commands that would normally be handled 
+  // by the GraphicsServer.  I have tried to minimize the dependancy on these, but a
+  // few commands (notably the "systemfunction") still remain.
+  void SendGUICommand(Command *cp) {
+    switch(cp->cmdNum) {
+    CMD_SystemCapture:
+      {
+	wxString command(cp->data.getContentsAsCString());
+	wxArrayString output;
+	wxExecute(command,output);
+	Array *dp = new Array[output.GetCount()];
+	for (int k=0;k<output.GetCount();k++) {
+	  const char *wp = output[k].c_str();
+	  dp[k] = Array::stringConstructor(std::string(wp));
+	}
+	Dimensions dim(2);
+	dim[0] = output.GetCount();
+	dim[1] = 1;
+	Array res(Array::Array(FM_CELL_ARRAY,dim,dp));
+	Command *rp;
+	resp = new Command(CMD_SystemCaptureAcq,res);
+	delete cp;
+      }
+      break;
+    default:
+      std::cerr << "Panic - unrecognized GUI message " << cp->cmdNum << "\n";
+    }
+  }
+  
+  Command* GetGUIResponse() {
+    return resp;
+  }
+}
+
+
 int main() {
   try {
-    Socket *sck;
-    Serialize *ser;
     context = new Context();
     BuiltInFunctionDef *f2def = new BuiltInFunctionDef;
-    f2def = new BuiltInFunctionDef;
     f2def->retCount = 0;
     f2def->argCount = 5;
     f2def->name = "loadFunction";
     f2def->fptr = LoadFunction;
     context->insertFunctionGlobally(f2def);
+
+    SpecialFunctionDef *sfdef = new SpecialFunctionDef;
+    sfdef->retCount = 0;
+    sfdef->argCount = 5;
+    sfdef->name = "import";
+    sfdef->fptr = ImportFunction;
+    context->insertFunctionGlobally(sfdef);
+
     LoadCoreFunctions(context);
-    Shell *aShell = new Shell(getenv("FREEMAT_PATH"),context);
-    twalk = new WalkTree(context,aShell);
-    sck = new Socket("localhost",5098);
-    ser = new Serialize(sck);
-    ser->handshakeClient();
-    while(1) {
-      // Get the name of the function
-      char *fname = ser->getString();
-      std::cout << "Got function name: " << fname << "\n";
-      // Get the number of outputs
-      int nargout = ser->getInt();
-      std::cout << "Got number of outputs: " << nargout << "\n";
-      // Get the number of inputs
-      int nargin = ser->getInt();
-      std::cout << "Got number of inputs: " << nargin << "\n";
-      // The input arguments
-      ArrayVector args;
-      for (int i=0;i<nargin;i++) {
-	Array vec;
-	ser->getArray(vec);
-	args.push_back(vec);
-	std::cout << "Got argument: " << i << "\n";
-      }
-      FunctionDef *funcDef;
-      if (!context->lookupFunction(fname,funcDef))
-	throw Exception(std::string("function ") + fname + " undefined!");
-      funcDef->updateCode();
-      ArrayVector outputs(funcDef->evaluateFunction(twalk,args,nargout));
-      ser->putInt(outputs.size());
-      for (int i=0;i<outputs.size();i++)
-	ser->putArray(outputs[i]);
+    const char *envPtr;
+    envPtr = getenv("FREEMAT_PATH");
+
+    Interface *io = new TeclaInterface;
+    if (envPtr)
+      io->initialize(std::string(envPtr),context);
+    else
+      io->initialize(std::string(""),context);
+    twalk = new WalkTree(context,io);
+    io->outputMessage(" Freemat - build ");
+    io->outputMessage(__DATE__);
+    io->outputMessage("\n");
+    io->outputMessage(" Copyright (c) 2002,2003 by Samit Basu\n");
+    try{
+      twalk->evalCLI();
+    } catch (...) {
+      io->errorMessage(" Fatal error!  Unhandled exception...\n");
     }
   } catch (Exception &e) {
-    e.printMe();
   }
 }

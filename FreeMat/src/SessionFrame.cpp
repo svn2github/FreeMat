@@ -59,21 +59,6 @@ SessionFrame::SessionFrame(App* tMain, const wxChar *title,
   m_pMenuBar->Append(m_pMenu, "&Info");
 
   SetMenuBar(m_pMenuBar);
-
-  wxTheClipboard->UsePrimarySelection();
-  std::cout << "checking clipboard\n";
-  if (wxTheClipboard->Open()) {
-    std::cout << "opened clipboard\n";
-    if (wxTheClipboard->IsSupported(wxDF_TEXT))  { 
-      wxTextDataObject data;
-      if (wxTheClipboard->GetData( data ))  {
-	std::cout << data.GetText();
-      }
-    }
-    wxTheClipboard->Close();
-  }
-
-
 }
 
 SessionFrame::~SessionFrame()

@@ -1,0 +1,8 @@
+#!/bin/sh
+CPATH="`dirname \"$0\"`"
+export CPATH
+declare -x "FREEMAT_PATH=$CPATH/share/FreeMat/MFiles"
+export "DISPLAY=localhost:0.0"
+exec /usr/X11R6/bin/xterm -e "$CPATH/bin/FreeMat"
+
+

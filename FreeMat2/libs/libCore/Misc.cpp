@@ -1837,6 +1837,7 @@ namespace FreeMat {
     if (arg.size() < 2)
       throw Exception("repmat function requires at least two arguments");
     Array x(arg[0]);
+    if (x.isEmpty()) return singleArrayVector(Array::emptyConstructor());
     Dimensions repcount;
     // Case 1, look for a scalar second argument
     if ((arg.size() == 2) && (arg[1].isScalar())) {

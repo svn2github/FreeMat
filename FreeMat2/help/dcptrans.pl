@@ -94,7 +94,7 @@ foreach $file (@ARGV) {
 	    }
 	    $dir = `pwd`;
 	    chop($dir);
-	    print OUTPUT "mkhsetpath('$dir/../../MFiles');\n";
+	    print OUTPUT "mkhsetpath('$dir/../../MFiles'); autostop('off');\n";
 	    if ($count != 1) {
 		print OUTPUT "load env.dat\n";
 	    }

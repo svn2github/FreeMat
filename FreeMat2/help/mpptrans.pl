@@ -62,6 +62,7 @@ foreach $file (@ARGV) {
     @modules = ($data =~  (/\/\/\!(.*?)\/\/\!/gsm));
     $data =~  s/\/\/\!(.*?)\/\/\!//gsm;
     # write out the initial .m file
+    print "Writing file $file\n";
     if (!open(OUTPUT,">$file")) {
 	die "Can't open $file for output...\n";
     }
@@ -106,7 +107,7 @@ foreach $file (@ARGV) {
 	    }
 	    $dir = `pwd`;
 	    chop($dir);
-	    print OUTPUT "mkhsetpath('$dir/../../MFiles');\n";
+	    print OUTPUT "mkhsetpath('$dir/../../MFiles'); autostop('off');\n";
 	    if ($count != 1) {
 		print OUTPUT "load env.dat\n";
 	    }

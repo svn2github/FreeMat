@@ -1,30 +1,32 @@
-EXTRA_DIST = clusterboot.m\
-copper.m\
-exit.m\
-eye.m\
-fliplr.m\
-flipud.m\
-gray.m\
-imagez.m\
-length.m\
-linspace.m\
-log2.m\
-mpispawn.m\
-mpiserver.m\
-mpirun.m\
-mprintimage.m\
-mprintplot.m\
-popdir.m\
-pushdir.m\
-rawread.m\
-rcall.m\
-rescan.m\
-reshape.m\
-rserver.m\
-sqrt.m\
+EXTRA_DIST = gfitfun.m \
 std.m \
-gausfit.m \
-gfitfun.m
+sqrt.m \
+rserver.m \
+reshape.m \
+rescan.m \
+rcall.m \
+rawread.m \
+pushdir.m \
+popdir.m \
+log2.m \
+linspace.m \
+length.m \
+imagez.m \
+gray.m \
+flipud.m \
+fliplr.m \
+eye.m \
+exit.m \
+copper.m \
+clusterboot.m \
+mprintplot.m \
+mprintimage.m \
+mpispawn.m \
+mpiserver.m \
+mpirun.m \
+bind.m \
+gfitfun.m \
+gausfit.m
 
 install-data-local:
 	mkdir -p $(prefix)/share/FreeMat/MFiles

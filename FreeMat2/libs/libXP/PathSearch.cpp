@@ -48,7 +48,8 @@ namespace FreeMat {
     // Strip off application name
     int ndx;
     ndx = a.rfind("/");
-    a.erase(0,ndx);
+    if (ndx>=0)
+      a.erase(0,ndx);
     return a;
   }
 

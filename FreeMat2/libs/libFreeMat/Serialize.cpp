@@ -300,9 +300,11 @@ namespace FreeMat {
     return t;
   }
 
-  Class Serialize::getDataClass() {
+  Class Serialize::getDataClass(bool& sparseflag) {
     checkSignature('a',1);
     char a = getByte();
+    sparseflag = (a & 16) > 0;
+    a = a & 15;
     switch (a) {
     case 1:
       return FM_CELL_ARRAY;
@@ -337,7 +339,9 @@ namespace FreeMat {
     }
   }
 
-  void Serialize::putDataClass(Class cls) {
+  void Serialize::putDataClass(Class cls, bool issparse) {
+    char sparseval;
+    sparseval = issparse ? 16 : 0;
     sendSignature('a',1);
     switch (cls) {
     case FM_CELL_ARRAY:
@@ -365,19 +369,19 @@ namespace FreeMat {
       putByte(8);
       return;
     case FM_INT32:
-      putByte(9);
+      putByte(9 | sparseval);
       return;
     case FM_FLOAT:
-      putByte(10);
+      putByte(10 | sparseval);
       return;
     case FM_DOUBLE:
-      putByte(11);
+      putByte(11 | sparseval);
       return;
     case FM_COMPLEX:
-      putByte(12);
+      putByte(12 | sparseval);
       return;
     case FM_DCOMPLEX:
-      putByte(13);
+      putByte(13 | sparseval);
       return;
     case FM_STRING:
       putByte(14);
@@ -405,7 +409,7 @@ namespace FreeMat {
   void Serialize::putArray(const Array& dat) {
     sendSignature('A',1);
     Class dclass(dat.getDataClass());
-    putDataClass(dclass);
+    putDataClass(dclass,dat.isSparse());
     putDimensions(dat.getDimensions());
     int elCount(dat.getLength());
     if (dat.isEmpty()) return;
@@ -460,28 +464,68 @@ namespace FreeMat {
       return;
     }
     case FM_INT32: {
-      const int32 *dp=((const int32 *)dat.getDataPointer());
-      putInts((const int*) dp,elCount);
+      if (!dat.isSparse()) {
+	const int32 *dp=((const int32 *)dat.getDataPointer());
+	putInts((const int*) dp,elCount);
+      } else {
+	const int32 **dp = ((const int32 **) dat.getSparseDataPointer());
+	for (int i=0;i<dat.getDimensionLength(1);i++) {
+	  putInt(1+dp[i][0]);
+	  putInts((const int*) dp[i],1+dp[i][0]);
+	}
+      }
       return;
     }
-    case FM_FLOAT: {
-      const float *dp=((const float *)dat.getDataPointer());
-      putFloats(dp,elCount);
+    case FM_FLOAT: {      
+      if (!dat.isSparse()) {
+	const float *dp=((const float *)dat.getDataPointer());
+	putFloats(dp,elCount);
+      } else {
+	const float **dp = ((const float **) dat.getSparseDataPointer());
+	for (int i=0;i<dat.getDimensionLength(1);i++) {
+	  putFloat(1+dp[i][0]);
+	  putFloats((const float*) dp[i],1+dp[i][0]);
+	}
+      }
       return;
     }
     case FM_DOUBLE: {
-      const double *dp=((const double *)dat.getDataPointer());
-      putDoubles(dp,elCount);
+      if (!dat.isSparse()) {
+	const double *dp=((const double *)dat.getDataPointer());
+	putDoubles(dp,elCount);
+      } else {
+	const double **dp = ((const double **) dat.getSparseDataPointer());
+	for (int i=0;i<dat.getDimensionLength(1);i++) {
+	  putDouble(1+dp[i][0]);
+	  putDoubles((const double*) dp[i],1+dp[i][0]);
+	}
+      }
       return;
     }
     case FM_COMPLEX: {
-      const float *dp=((const float *)dat.getDataPointer());
-      putFloats(dp,elCount*2);
+      if (!dat.isSparse()) {
+	const float *dp=((const float *)dat.getDataPointer());
+	putFloats(dp,elCount*2);
+      } else {
+	const float **dp = ((const float **) dat.getSparseDataPointer());
+	for (int i=0;i<dat.getDimensionLength(1);i++) {
+	  putFloat(1+dp[i][0]);
+	  putFloats((const float*) dp[i],1+dp[i][0]);
+	}
+      }
       return;
     }
     case FM_DCOMPLEX: {
-      const double *dp=((const double *)dat.getDataPointer());
-      putDoubles(dp,elCount*2);
+      if (!dat.isSparse()) {
+	const double *dp=((const double *)dat.getDataPointer());
+	putDoubles(dp,elCount*2);
+      } else {
+	const double **dp = ((const double **) dat.getSparseDataPointer());
+	for (int i=0;i<dat.getDimensionLength(1);i++) {
+	  putDouble(1+dp[i][0]);
+	  putDoubles((const double*) dp[i],1+dp[i][0]);
+	}
+      }
       return;
     }
     }
@@ -489,7 +533,8 @@ namespace FreeMat {
 
   void Serialize::getArray(Array& dat) {
     checkSignature('A',1);
-    Class dclass(getDataClass());
+    bool sparseflag;
+    Class dclass(getDataClass(sparseflag));
     Dimensions dims(getDimensions());
     int elCount(dims.getElementCount());
     if (elCount == 0) {
@@ -557,33 +602,83 @@ namespace FreeMat {
       return;
     }
     case FM_INT32: {
-      int32 *dp = (int32*) Malloc(sizeof(int32)*elCount);
-      getInts((int*) dp,elCount);
-      dat = Array(dclass,dims,dp);
+      if (!sparseflag) {
+	int32 *dp = (int32*) Malloc(sizeof(int32)*elCount);
+	getInts((int*) dp,elCount);
+	dat = Array(dclass,dims,dp);
+      } else {
+	int32 **dp = new int32*[dims.getColumns()];
+	for (int i=0;i<dims.getColumns();i++) {
+	  int len = getInt();
+	  dp[i] = new int32[len];
+	  getInts(dp[i],len);
+	}
+	dat = Array(dclass,dims,dp,true);
+      }
       return;
     }
     case FM_FLOAT: {
-      float *dp =  (float*) Malloc(sizeof(float)*elCount);
-      getFloats(dp,elCount);
-      dat = Array(dclass,dims,dp);
+      if (!sparseflag) {
+	float *dp =  (float*) Malloc(sizeof(float)*elCount);
+	getFloats(dp,elCount);
+	dat = Array(dclass,dims,dp);
+      } else {
+	float **dp = new float*[dims.getColumns()];
+	for (int i=0;i<dims.getColumns();i++) {
+	  int len = (int) getFloat();
+	  dp[i] = new float[len];
+	  getFloats(dp[i],len);
+	}
+	dat = Array(dclass,dims,dp,true);
+      }
       return;
     }
     case FM_DOUBLE: {
-      double *dp = (double*) Malloc(sizeof(double)*elCount);
-      getDoubles(dp,elCount);
-      dat = Array(dclass,dims,dp);
+      if (!sparseflag) {
+	double *dp = (double*) Malloc(sizeof(double)*elCount);
+	getDoubles(dp,elCount);
+	dat = Array(dclass,dims,dp);
+      } else {
+	double **dp = new double*[dims.getColumns()];
+	for (int i=0;i<dims.getColumns();i++) {
+	  int len = (int) getDouble();
+	  dp[i] = new double[len];
+	  getDoubles(dp[i],len);
+	}
+	dat = Array(dclass,dims,dp,true);
+      }
       return;
     }
     case FM_COMPLEX: {
-      float *dp = (float*) Malloc(sizeof(float)*elCount*2);
-      getFloats(dp,elCount*2);
-      dat = Array(dclass,dims,dp);
+      if (!sparseflag) {
+	float *dp = (float*) Malloc(sizeof(float)*elCount*2);
+	getFloats(dp,elCount*2);
+	dat = Array(dclass,dims,dp);
+      } else {
+	float **dp = new float*[dims.getColumns()];
+	for (int i=0;i<dims.getColumns();i++) {
+	  int len = (int) getFloat();
+	  dp[i] = new float[len];
+	  getFloats(dp[i],len);
+	}
+	dat = Array(dclass,dims,dp,true);
+      }
       return;
     }
     case FM_DCOMPLEX: {
-      double *dp = (double*) Malloc(sizeof(double)*elCount*2);
-      getDoubles(dp,elCount*2);
-      dat = Array(dclass,dims,dp);
+      if (!sparseflag) {
+	double *dp = (double*) Malloc(sizeof(double)*elCount*2);
+	getDoubles(dp,elCount*2);
+	dat = Array(dclass,dims,dp);
+      } else {
+	double **dp = new double*[dims.getColumns()];
+	for (int i=0;i<dims.getColumns();i++) {
+	  int len = (int) getDouble();
+	  dp[i] = new double[len];
+	  getDoubles(dp[i],len);
+	}
+	dat = Array(dclass,dims,dp,true);
+      }
       return;
     }
     }

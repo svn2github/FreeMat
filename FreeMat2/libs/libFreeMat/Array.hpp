@@ -184,7 +184,7 @@ namespace FreeMat {
     /**
      * Get our length along the given dimension.
      */
-    const int getDimensionLength(int);
+    const int getDimensionLength(int) const;
     /** Get the contents of our data block as a (read-only) void* pointer.
      * Get the contents of our data block as a void* pointer.  The
      * resulting pointer is read only, so that no modifications can

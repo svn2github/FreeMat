@@ -549,7 +549,7 @@ namespace FreeMat {
       return stringVector();
   }
 
-  const int Array::getDimensionLength(int t) {
+  const int Array::getDimensionLength(int t) const {
     if (dp)
       return dp->dimensions[t];
     else

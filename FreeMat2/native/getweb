@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "Retrieving web site..."
+mkdir -p website
+scp "samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs/*" website/.

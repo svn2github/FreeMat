@@ -77,6 +77,10 @@ namespace FreeMat {
      * autostop storage flag
      */
     bool autostop;
+    /**
+     * When this flag is active, autostop does nothing.
+     */
+    bool InCLI;
   public:
     /**
      * Construct a WalkTree object with the given context to operate

@@ -1251,7 +1251,7 @@ namespace FreeMat {
 	}
       }
     } catch (Exception& e) {
-      if (autostop) {
+      if (autostop & !InCLI) {
 	e.printMe(io);
 	io->clearMessageContextStackToDepth(sdepth);
 	depth++;
@@ -2043,7 +2043,10 @@ namespace FreeMat {
 	throw Exception(std::string("Cannot use arguments in a call to a script."));
       if ((narg_out > 0) && !outputOptional)
 	throw Exception(std::string("Cannot assign outputs in a call to a script."));
+      bool CLIFlagsave = InCLI;
+      InCLI = false;
       block(((MFunctionDef*)funcDef)->code);
+      InCLI = CLIFlagsave;
     } else {
       // Look for arguments
       if (t->down != NULL) {
@@ -2167,7 +2170,10 @@ namespace FreeMat {
       if ((funcDef->outputArgCount() >= 0) && 
 	  (narg_out > funcDef->outputArgCount() && !outputOptional))
 	throw Exception(std::string("Too many outputs to function ")+t->text);
+      bool CLIFlagsave = InCLI;
+      InCLI = false;
       n = funcDef->evaluateFunction(this,m,narg_out);
+      InCLI = CLIFlagsave;
       // Check for any pass by reference
       if (funcDef->arguments.size() > 0) {
 	// Get the argument list
@@ -2503,6 +2509,7 @@ namespace FreeMat {
     signal(SIGINT,sigInterrupt);
     printLimit = 1000;
     autostop = true;
+    InCLI = false;
   }
 
   bool WalkTree::evaluateString(char *line) {
@@ -2604,7 +2611,12 @@ namespace FreeMat {
 	e.printMe(io);
 	line = NULL;
       }
-      if (line && evaluateString(line)) return;
+      InCLI = true;
+      if (line && evaluateString(line)) {
+	InCLI = false;
+	return;
+      }
+      InCLI = false;
     }
   }
 }

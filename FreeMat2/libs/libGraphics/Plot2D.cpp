@@ -37,6 +37,7 @@ namespace FreeMat {
     SetTitle(buffer);  
     myFigureNumber = fignum;
     updating = false;
+    legendActive = false;
   }
 
   Plot2D::~Plot2D() {
@@ -46,6 +47,7 @@ namespace FreeMat {
   }
 
   void Plot2D::DrawLegend(GraphicsContext &gc) {
+    printf("Drawing legend...\r\n");
     double xc, yc;
     xc = xAxis->MapPoint(legend_xc);
     yc = yAxis->MapPoint(legend_yc);
@@ -87,6 +89,7 @@ namespace FreeMat {
     holdSave = holdflag;
     holdflag = true;
     updating = true;
+    legendActive = false;
   }
 
   void Plot2D::StopSequence() {

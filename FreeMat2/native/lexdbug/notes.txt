@@ -1,0 +1,21 @@
+OK - I need to get the lexer straightened out.  The whole idea of MSCAN appears to work.  But the switching in and out of MScan is broken.  Consider the following simple expression:
+[(3) -4], which should lex as [(3),-4] with the comma inserted by MSCAN.  
+We start in the scanning state.
+Now an '[' is encountered.  We push the scanning state onto the stack,
+and switch to MScan.
+STACK : Scanning <MScan>
+Next, we see a '(', and push the current state onto the stack (Mscan),
+and switch to Scanning.
+STACK : Scanning MScan <Scanning>
+Next, we encounter the "3", and push the current state (Scanning) and
+switch to TransposeCheck.
+STACK : Scanning MScan Scanning <TransposeCheck>
+In state TransposeCheck we see that the next token is ')' (and not
+a transpose), so we pop the state stack (which puts us back in Scanning
+mode), and push back the ')'.
+STACK : Scanning MScan <Scanning>
+In state Scanning, we see that the next token is ')'.
+The top state is not Scanning, so we move to MScan.
+STACK : Scanning <MScan>
+
+

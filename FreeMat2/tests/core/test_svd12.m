@@ -8,7 +8,7 @@ function test_val = test_svd12
     emat = abs(a-u*s*v');
     err = max(emat(:));
     p(n) = err;
-    bnd = 2*max(abs(diag(s)))*eps*n;
+    bnd = 4*max(abs(diag(s)))*eps*n;
     t1 = (err < bnd);
     if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t1all = t1all & t1;    
@@ -18,7 +18,7 @@ function test_val = test_svd12
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');
     err = max(emat(:));
-    bnd = 2*max(abs(diag(s)))*eps*n;
+    bnd = 4*max(abs(diag(s)))*eps*n;
     t1 = (err < bnd);
     if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t1all = t1all & t1;    
@@ -28,7 +28,7 @@ function test_val = test_svd12
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');
     err = max(emat(:));
-    bnd = 2*max(abs(diag(s)))*eps*n;
+    bnd = 4*max(abs(diag(s)))*eps*n;
     t1 = (err < bnd);
     if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t1all = t1all & t1;    

@@ -3,7 +3,6 @@ function test_val = test_svd9
   t1all = 1;
   p = [];
   for n=2:100
-  printf('n = %d\n',n);
     a = float(rand(n,2*n));
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');
@@ -15,7 +14,6 @@ function test_val = test_svd9
     t1all = t1all & t1;    
   end
   for n=2:100
-  printf('n = %d\n',n);
     a = float(rand(2*n,n));
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');
@@ -26,7 +24,6 @@ function test_val = test_svd9
     t1all = t1all & t1;    
   end
   for n=2:100
-  printf('n = %d\n',n);
     a = float(rand(n,n));
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');

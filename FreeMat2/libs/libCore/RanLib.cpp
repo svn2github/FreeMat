@@ -635,7 +635,7 @@ S40:
 S50:
     w = a*exp(v);
 S60:
-    z = pow(u1,2.0)*u2;
+    z = pow(u1,2.0f)*u2;
     r = gamma*v-1.3862944;
     s = a+r-w;
 /*
@@ -694,7 +694,7 @@ S130:
 /*
      Step 3
 */
-    z = pow(u1,2.0)*u2;
+    z = pow(u1,2.0f)*u2;
     if(!(z <= 0.25)) goto S160;
     v = beta*log(u1/(1.0-u1));
     if(!(v > expmax)) goto S140;
@@ -999,7 +999,7 @@ static float gennch;
     if(!(df <= 1.0 || xnonc < 0.0)) goto S10;
     throw FreeMat::Exception("RANLIB Error:DF <= 1 or XNONC < 0 in GENNCH - ABORT");
 S10:
-    gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
+    gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0f);
     return gennch;
 }
 float gennf(float dfn,float dfd,float xnonc)
@@ -1408,7 +1408,7 @@ S140:
 /*
      INVERSE CDF LOGIC FOR MEAN LESS THAN 30
 */
-    qn = pow(q,(double)n);
+    qn = pow((double)q,(double)n);
     r = p/q;
     g = r*(n+1);
 S150:
@@ -1638,7 +1638,7 @@ S70:
 */
     if(ignpoi >= 10) goto S80;
     px = -mu;
-    py = pow(mu,(double)ignpoi)/ *(fact+ignpoi);
+    py = pow((double)mu,(double)ignpoi)/ *(fact+ignpoi);
     goto S110;
 S80:
 /*

@@ -5,7 +5,6 @@ KNOWNBUG \
 libpng.3 \
 libpngpf.3 \
 LICENSE \
-lpng125.dsp \
 lpng125.vcproj \
 png.5 \
 README \

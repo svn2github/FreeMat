@@ -1,4 +1,4 @@
-EXTRA_DIST = libFreeMat.dsp libFreeMat.vcproj  
+EXTRA_DIST = libFreeMat.vcproj  
 
 noinst_LIBRARIES = libFreeMat.a
 

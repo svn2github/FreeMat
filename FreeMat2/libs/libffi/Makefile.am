@@ -42,7 +42,6 @@ EXTRA_DIST = LICENSE ChangeLog.v1 \
 	msvc_build/types.c \
 	msvc_build/win32c.c \
 	msvc_build/win32.S \
-	libffi.dsp \
 	libffi.vcproj
 
 ## ################################################################

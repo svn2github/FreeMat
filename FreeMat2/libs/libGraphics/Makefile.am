@@ -1,4 +1,4 @@
-EXTRA_DIST = libGraphics.dsp libGraphics.vcproj
+EXTRA_DIST = libGraphics.vcproj
 
 noinst_LIBRARIES = libGraphics.a
 

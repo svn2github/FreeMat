@@ -92,7 +92,6 @@ lbitbits.c \
 lbitshft.c \
 l_ge.c \
 l_gt.c \
-libf2c.dsp \
 libf2c.vcproj \
 libf2c.lbc \
 libf2c.sy \

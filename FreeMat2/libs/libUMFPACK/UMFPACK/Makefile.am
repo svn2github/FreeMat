@@ -1,3 +1,4 @@
+EXTRA_DIST = libUMFPACK/libUMFPACK.vcproj libUMFPACK_zi/libUMFPACK_zi.vcproj
 
 noinst_LIBRARIES = libUMFPACKdi.a libUMFPACKzi.a
 

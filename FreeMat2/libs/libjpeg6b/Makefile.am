@@ -94,7 +94,6 @@ EXTRA_DIST =  ansi2knr.1 \
  jquant2.c \
  jutils.c \
  jversion.h \
- libjpeg6b.dsp \
  libjpeg6b.vcproj \
  libjpeg6b.plg \
  libjpeg.doc \

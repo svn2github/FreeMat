@@ -1,5 +1,4 @@
-EXTRA_DIST = libMiniBLAS.dsp \
-libMiniBLAS.vcproj \
+EXTRA_DIST = libMiniBLAS.vcproj \
 f2c/caxpy.c \
 f2c/ccopy.c \
 f2c/cdotc.c \

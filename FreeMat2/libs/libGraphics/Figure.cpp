@@ -1,5 +1,6 @@
 #include "FL/Fl.H"
 #include "FL/x.H"
+#include "FL/Fl_Button.H"
 #include "Figure.hpp"
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
@@ -221,6 +222,10 @@ namespace FreeMat {
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
+    f->begin();
+    Fl_Button *ok = new Fl_Button(80,40,100,40,"OK");
+    f->end();
+    f->redraw();
 #if 0
     XPContainer *c = new XPContainer(f, f->GetBoundingRect());
     XPLabel *l = new XPLabel(NULL, Rect2D(75,75,50,75), "Label!");

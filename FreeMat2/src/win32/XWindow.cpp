@@ -16,7 +16,6 @@ HINSTANCE AppInstance;
 
 XWindow::XWindow(WindowType wtype) {
   m_type = wtype;
-#if 0
   m_window = CreateWindow("FreeMat Window",
 			  "Figure Window",
 			  WS_OVERLAPPEDWINDOW,
@@ -28,14 +27,11 @@ XWindow::XWindow(WindowType wtype) {
 			  NULL,
 			  AppInstance,
 			  NULL);
-#endif
   m_width = 500;
   m_height = 400;
-#if 0
   SetWindowLong(m_window,GWL_USERDATA,(LONG) this);
   defcursor = (HCURSOR) LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
   clickcursor = (HCURSOR) LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
-#endif
 }
 
 XWindow::~XWindow() {
@@ -246,29 +242,56 @@ void XWindow::PrintMe(std::string filename) {
       PostScriptGC gc(filename, m_width, m_height);
       OnDraw(gc);
     } else {
-      unsigned char *data;
-      data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
-      RGBImage img(m_width, m_height, data);
-      RGBImageGC gc(img);
-      img.SetAllPixels(Color("light grey"));
-      OnDraw(gc);
-      if (extension == ".jpeg" || extension == ".jpg") {
-	img.WriteJPEG(filename);
-	// JPEG
-      } else if (extension == ".png") {
-	img.WritePNG(filename);
-	// PNG
-      } else if (extension == ".tiff" || extension == ".tif") {
-	img.WriteTIFF(filename);
-	// TIFF
-      } else if (extension == ".ppm" || extension == ".pnm") {
-	img.WritePPM(filename);
-	// PPM
-      } else {
-	free(data);
-	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
-      }
-      free(data);
+      static PBITMAPINFO		pBitmapInfo;
+      pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
+      pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+      pBitmapInfo->bmiHeader.biWidth = m_width;
+      pBitmapInfo->bmiHeader.biHeight = m_height;
+      pBitmapInfo->bmiHeader.biPlanes = 1;
+      pBitmapInfo->bmiHeader.biBitCount = 24;
+      pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+      pBitmapInfo->bmiHeader.biSizeImage = 0;
+      pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+      pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+      pBitmapInfo->bmiHeader.biClrUsed = 0;
+      pBitmapInfo->bmiHeader.biClrImportant = 0;
+      static unsigned char* pixelVals;
+      int nwidth;
+      nwidth = (3*width+3)&~3; // Width of the scanline in bytes
+      pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
+      memset(pixelVals,255,height*nwidth);
+      HDC hdc = GetDC(m_window);
+      HDC hdcMem = CreateCompatible(hdc);
+      HANDLE hBmp = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
+      SelectObject(hdcMem, hBmp);
+      WinGC wgc(hdcMem, m_width, m_height);
+      OnDraw(wgc);
+      ReleaseDC(m_window, hdc);
+      DeleteDC(hdcMem);
+      
+//       unsigned char *data;
+//       data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
+//       RGBImage img(m_width, m_height, data);
+//      RGBImageGC gc(img);
+//      img.SetAllPixels(Color("light grey"));
+//      OnDraw(gc);
+//       if (extension == ".jpeg" || extension == ".jpg") {
+// 	img.WriteJPEG(filename);
+// 	// JPEG
+//       } else if (extension == ".png") {
+// 	img.WritePNG(filename);
+// 	// PNG
+//       } else if (extension == ".tiff" || extension == ".tif") {
+// 	img.WriteTIFF(filename);
+// 	// TIFF
+//       } else if (extension == ".ppm" || extension == ".pnm") {
+// 	img.WritePPM(filename);
+// 	// PPM
+//       } else {
+// 	free(data);
+// 	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
+//       }
+//       free(data);
     }
   } else
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
@@ -356,3 +379,4 @@ void FlushWindowEvents() {
       DispatchMessage(&msg);
   }
 }
+

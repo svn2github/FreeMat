@@ -12,7 +12,7 @@ typedef enum {
 
 class XWindow {
  public:
-	 XWindow() {};
+  XWindow() {};
   XWindow(WindowType wtype);
   virtual ~XWindow();
   HWND getWindow() {return m_window;}
@@ -52,8 +52,8 @@ class XWindow {
   int m_state;
   int m_clickx, m_clicky;
   int m_box_x1, m_box_x2, m_box_y1, m_box_y2;
-//  HCURSOR defcursor;
-//  HCURSOR clickcursor;
+  HCURSOR defcursor;
+  HCURSOR clickcursor;
 };
 
 void InitializeXWindowSystem(HINSTANCE hInstance);

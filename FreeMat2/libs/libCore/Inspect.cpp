@@ -130,9 +130,11 @@ namespace FreeMat {
 	  int outlen = 0;
 	  int tokencount = 0;
 	  io->outputMessage("\n          ");
-	  while (tokencount < tokens.size()) {
+	  while ((tokens.size() > 0) && (tokencount < tokens.size())) {
 	    // Can the next token be output without wrapping?
-	    if (outlen + tokens[tokencount].size() < outputWidth) {
+		int tsize;
+		tsize = tokens[tokencount].size();
+	    if ((outlen == 0) || ((outlen + tsize) < outputWidth)) {
 	      // Yes... send it and move on
 	      io->outputMessage(tokens[tokencount].c_str());
 	      io->outputMessage(" ");

@@ -62,8 +62,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   term.outputMessage("\n");
   term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
   while (twalk->getState() != FM_STATE_QUIT) {
-	  twalk->resetState();
-	  twalk->evalCLI();
+    if (twalk->getState() == FM_STATE_RETALL) 
+      term->clearMessageContextStack();
+    twalk->resetState();
+    twalk->evalCLI();
   }
   return 0;
 }

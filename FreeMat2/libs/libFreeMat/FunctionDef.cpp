@@ -355,7 +355,7 @@ namespace FreeMat {
     int i;
     save_sig = signal(SIGINT,sigFP);
     char buffer[1000];
-    sprintf(buffer,"Inside built-in function %s",name.c_str());
+    sprintf(buffer,"built-in function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
     i = setjmp(env);
@@ -384,7 +384,7 @@ namespace FreeMat {
     save_sig = signal(SIGINT,sigFP);
     i = setjmp(env);
     char buffer[1000];
-    sprintf(buffer,"Inside special function %s",name.c_str());
+    sprintf(buffer,"special function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
     if (i == 0)
@@ -484,7 +484,7 @@ namespace FreeMat {
 						    ArrayVector& inputs,
 						    int nargout) {
     char buffer[1000];
-    sprintf(buffer,"Inside special function %s",name.c_str());
+    sprintf(buffer,"special function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
     /**

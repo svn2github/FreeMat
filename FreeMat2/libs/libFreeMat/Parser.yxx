@@ -270,7 +270,7 @@ argument:
 	b[0] = '&';
 	strcpy(b+1,$2->text);
 	$$->text = b;
-  } |
+  }
   ;
   
 

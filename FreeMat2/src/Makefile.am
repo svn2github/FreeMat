@@ -1,3 +1,3 @@
-SUBDIRS = x11
+SUBDIRS = x11 win32
 AUTOMAKE_OPTIONS = foreign
 

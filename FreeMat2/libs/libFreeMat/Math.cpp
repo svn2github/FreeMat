@@ -1238,7 +1238,7 @@ namespace FreeMat {
   //\begin{enumerate}
   //  \item @|a| is a scalar, @|b| is an arbitrary @|n|-dimensional numerical array, in which case the output is the element-wise product of @|b| with the scalar @|a|.
   //  \item @|b| is a scalar, @|a| is an arbitrary @|n|-dimensional numerical array, in which case the output is the element-wise product of @|a| with the scalar @|b|.
-  //  \item @|a,b| are conformant matrices, i.e., @|a| is of size @|M \times K|, and @|b| is of size @|K \times N|, in which case the output is of size @|M \times N| and is the matrix product of @|a|, and @|b|.
+  //  \item @|a,b| are conformant matrices, i.e., @|a| is of size @|M x K|, and @|b| is of size @|K x N|, in which case the output is of size @|M x N| and is the matrix product of @|a|, and @|b|.
   //\end{enumerate}
   //The output follows the standard type promotion rules, although in the first two cases, if @|a| and @|b| are integers, the output is an integer also, while in the third case if @|a| and @|b| are integers, ,the output is of type @|double|.
   //@@Function Internals
@@ -1331,7 +1331,7 @@ namespace FreeMat {
   //\begin{enumerate}
   //  \item @|A| is a scalar, @|B| is an arbitrary @|n|-dimensional numerical array, in which case the output is each element of @|B| divided by the scalar @|A|.
   //  \item @|B| is a scalar, @|A| is an arbitrary @|n|-dimensional numerical array, in which case the output is the scalar @|B| divided by each element of @|A|.
-  //  \item @|A,B| are matrices with the same number of rows, i.e., @|A| is of size @|M \times K|, and @|B| is of size @|M \times L|, in which case the output is of size @|K \times L|.
+  //  \item @|A,B| are matrices with the same number of rows, i.e., @|A| is of size @|M x K|, and @|B| is of size @|M x L|, in which case the output is of size @|K x L|.
   //\end{enumerate}
   //The output follows the standard type promotion rules, although in the first two cases, if @|A| and @|B| are integers, the output is an integer also, while in the third case if @|A| and @|B| are integers, the output is of type @|double|.
   //
@@ -1739,8 +1739,8 @@ namespace FreeMat {
   //@[
   //  y = a';
   //@]
-  //where @|a| is a @|M \times N| numerical matrix.  The output @|y| is a numerical matrix
-  //of the same type of size @|N \times M|.  This operator is the conjugating transpose,
+  //where @|a| is a @|M x N| numerical matrix.  The output @|y| is a numerical matrix
+  //of the same type of size @|N x M|.  This operator is the conjugating transpose,
   //which is different from the transpose operator @|.'| (which does not 
   //conjugate complex values).
   //@@Function Internals
@@ -1773,8 +1773,8 @@ namespace FreeMat {
   //@[
   //  y = a.';
   //@]
-  //where @|a| is a @|M \times N| numerical matrix.  The output @|y| is a numerical matrix
-  //of the same type of size @|N \times M|.  This operator is the non-conjugating transpose,
+  //where @|a| is a @|M x N| numerical matrix.  The output @|y| is a numerical matrix
+  //of the same type of size @|N x M|.  This operator is the non-conjugating transpose,
   //which is different from the Hermitian operator @|'| (which conjugates complex values).
   //@@Function Internals
   //The transpose operator is defined simply as

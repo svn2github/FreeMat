@@ -5,4 +5,3 @@ To do before release:
 8.  Roll RPM
 9.  Roll Mac OS X Installer
 10. Icons for X11?
-13.  Bug: what about fread...1?

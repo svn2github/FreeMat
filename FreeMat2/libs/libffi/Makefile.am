@@ -25,7 +25,24 @@ EXTRA_DIST = LICENSE ChangeLog.v1 \
 	src/x86/ffi64.c src/x86/unix64.S src/x86/ffitarget.h \
 	src/pa/ffi.c src/pa/linux.S \
 	src/debug.c src/prep_cif.c src/types.c src/raw_api.c \
-	src/java_raw_api.c
+	src/java_raw_api.c \
+	msvc_build/debug.c \
+	msvc_build/ffi64.c \
+	msvc_build/ffi.c \
+	msvc_build/ffi_common.h \
+	msvc_build/fficonfig.h \
+	msvc_build/ffi.h \
+	msvc_build/ffi_mips.h \
+	msvc_build/ffitest_2.c \
+	msvc_build/ffitest.c \
+	msvc_build/java_raw_api.c \
+	msvc_build/prep_cif.c \
+	msvc_build/raw_api.c \
+	msvc_build/stest.c \
+	msvc_build/types.c \
+	msvc_build/win32c.c \
+	msvc_build/win32.S \
+	libffi.dsp
 
 ## ################################################################
 

@@ -796,16 +796,16 @@ namespace FreeMat {
   //calls to a function or script.  The general syntax for its
   //use is
   //@[
-  //   persist variable1 variable2 ... variableN
+  //   persistent variable1 variable2 ... variableN
   //@]
-  //The @|persist| statement must occur before the variable
+  //The @|persistent| statement must occur before the variable
   //is the tagged as persistent.
   //@@Example
   //Here is an example of a function that counts how many
   //times it has been called.
   //@{ count_calls.m
   //function count_calls
-  //  persist ccount
+  //  persistent ccount
   //  ccount = ccount + 1;
   //  printf('Function has been called %d times\n',ccount);
   //@}

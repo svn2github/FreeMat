@@ -35,13 +35,15 @@ namespace FreeMat {
   //@@Function Internals
   //The infinity constant has
   //several interesting properties.  In particular:
-  //\begin{eqnarray}
+  //\[
+  //\begin{array}{ll}
   //   \infty \times 0 & = \mathrm{NaN} \\
   //   \infty \times a & = \infty \, \mathrm{for all} \, a > 0 \\
   //   \infty \times a & = -\infty \, \mathrm{for all} \, a < 0 \\
   //   \infty / \infty & = \mathrm{NaN} \\
   //   \infty / 0 & = \infty 
-  //\end{eqnarray}
+  //\end{array}
+  //\]
   //Note that infinities are not preserved under type conversion to integer types (see the examples below).
   //@@Example
   //The following examples demonstrate the various properties of the infinity constant.

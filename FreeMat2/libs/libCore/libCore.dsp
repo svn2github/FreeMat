@@ -129,10 +129,6 @@ SOURCE=.\Random.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Remote.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\StringOps.cpp
 # End Source File
 # Begin Source File

@@ -16,6 +16,22 @@
 #define MAXCOLS 256
 namespace FreeMat {
 
+  char filepath[1024];
+  
+  int GetAppPath(LPTSTR pstr,int length){
+    int ret,i;
+    ret=GetModuleFileName(NULL,pstr,length); // this gets the name of the running app
+    if(!ret)return 0;
+    i=lstrlen(pstr)-1;
+    for(;i>=0;i--){ // replace backslash with terminating null
+      if(pstr[i]==TEXT('\\')){
+	pstr[i]=TEXT('\0');
+	break;
+      }
+    }
+    return lstrlen(pstr); //return length of final string
+  }
+
   void WinTerminal::UpdateLineCount() {
     RECT winsze;
     GetClientRect(hwnd, &winsze);
@@ -69,6 +85,9 @@ namespace FreeMat {
 
   void SetupWinTerminalClass(HINSTANCE hInstance) {
     WNDCLASS wndclass;
+    char apppath[1024];
+    GetAppPath(apppath, sizeof(apppath));
+    sprintf(filepath,"%s/freemat.chm",apppath);
 
     wndclass.style = CS_HREDRAW | CS_VREDRAW;
     wndclass.lpfnWndProc = WndProc;
@@ -940,16 +959,12 @@ namespace FreeMat {
 	case IDM_FILE_EXIT:
 	  PostQuitMessage(0);
 	  break;
-	case ID_HELP_CONTENTS: {
-		std::string app_path(GetHelpDirectory());
-		app_path = app_path + "//freemat.chm";
-	  HtmlHelp(GetDesktopWindow(),app_path.c_str(),HH_DISPLAY_TOC,NULL);
-						   }
+	case ID_HELP_CONTENTS: 
+	  HtmlHelp(GetDesktopWindow(),filepath,HH_DISPLAY_TOC,NULL);
 	  break;
 	case ID_HELP_ABOUTFREEMAT:
-		DialogBox(NULL,MAKEINTRESOURCE(IDD_DIALOG1),hwnd,DlgProc);
-		break;
-
+	  DialogBox(NULL,MAKEINTRESOURCE(IDD_DIALOG1),hwnd,DlgProc);
+	  break;
 	}
       case WM_KEYDOWN:{
 	switch (wParam) {

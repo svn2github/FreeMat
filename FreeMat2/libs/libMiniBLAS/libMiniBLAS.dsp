@@ -237,10 +237,6 @@ SOURCE=.\f2c\izamax.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\f2c\lsame.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\f2c\sasum.c
 # End Source File
 # Begin Source File

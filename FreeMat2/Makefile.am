@@ -1,3 +1,4 @@
+EXTRA_DIST = FreeMat.dsp FreeMat.dsw
 SUBDIRS = libs src help MFiles
 AUTOMAKE_OPTIONS = foreign
 

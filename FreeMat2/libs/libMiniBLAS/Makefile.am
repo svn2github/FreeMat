@@ -1,3 +1,76 @@
+EXTRA_DIST = f2c/caxpy.c \
+f2c/ccopy.c \
+f2c/cdotc.c \
+f2c/cdotu.c \
+f2c/cgemm.c \
+f2c/cgemv.c \
+f2c/cgerc.c \
+f2c/cgeru.c \
+f2c/cscal.c \
+f2c/csscal.c \
+f2c/cswap.c \
+f2c/ctrmm.c \
+f2c/ctrmv.c \
+f2c/ctrsm.c \
+f2c/ctrsv.c \
+f2c/dasum.c \
+f2c/daxpy.c \
+f2c/dcabs1.c \
+f2c/dcopy.c \
+f2c/ddot.c \
+f2c/dgemm.c \
+f2c/dgemv.c \
+f2c/dger.c \
+f2c/dlamch.c \
+f2c/dnrm2.c \
+f2c/drot.c \
+f2c/dscal.c \
+f2c/dswap.c \
+f2c/dtrmm.c \
+f2c/dtrmv.c \
+f2c/dtrsm.c \
+f2c/dtrsv.c \
+f2c/dzasum.c \
+f2c/dznrm2.c \
+f2c/icamax.c \
+f2c/idamax.c \
+f2c/isamax.c \
+f2c/izamax.c \
+f2c/sasum.c \
+f2c/saxpy.c \
+f2c/scasum.c \
+f2c/scnrm2.c \
+f2c/scopy.c \
+f2c/sdot.c \
+f2c/sgemm.c \
+f2c/sgemv.c \
+f2c/sger.c \
+f2c/slamch.c \
+f2c/snrm2.c \
+f2c/srot.c \
+f2c/sscal.c \
+f2c/sswap.c \
+f2c/strmm.c \
+f2c/strmv.c \
+f2c/strsm.c \
+f2c/strsv.c \
+f2c/xerbla.c \
+f2c/zaxpy.c \
+f2c/zcopy.c \
+f2c/zdotc.c \
+f2c/zdotu.c \
+f2c/zdscal.c \
+f2c/zgemm.c \
+f2c/zgemv.c \
+f2c/zgerc.c \
+f2c/zgeru.c \
+f2c/zscal.c \
+f2c/zswap.c \
+f2c/ztrmm.c \
+f2c/ztrmv.c \
+f2c/ztrsm.c \
+f2c/ztrsv.c
+
 noinst_LIBRARIES = libMiniBLAS.a
 
 libMiniBLAS_a_SOURCES = sgemv.f \

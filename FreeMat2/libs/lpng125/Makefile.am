@@ -1,0 +1,36 @@
+EXTRA_DIST = ANNOUNCE \
+CHANGES \
+CVS \
+Debug \
+example.c \
+INSTALL \
+KNOWNBUG \
+libpng.3 \
+libpngpf.3 \
+LICENSE \
+lpng125.dsp \
+png.5 \
+pngasmrd.h \
+png.c \
+pngconf.h \
+pngerror.c \
+pnggccrd.c \
+pngget.c \
+png.h \
+pngmem.c \
+pngpread.c \
+pngread.c \
+pngrio.c \
+pngrtran.c \
+pngrutil.c \
+pngset.c \
+pngtest.c \
+pngtrans.c \
+pngvcrd.c \
+pngwio.c \
+pngwrite.c \
+pngwtran.c \
+pngwutil.c \
+README \
+TODO \
+Y2KINFO 

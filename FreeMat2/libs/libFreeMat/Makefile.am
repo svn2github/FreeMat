@@ -1,3 +1,5 @@
+EXTRA_DIST = f2c/VectorOps_assist.c
+
 noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS=@CFLAGS@ 

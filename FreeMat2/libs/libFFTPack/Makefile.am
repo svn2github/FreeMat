@@ -1,3 +1,36 @@
+EXTRA_DIST = f2c/cfftb1.c \
+f2c/cfftb.c \
+f2c/cfftf1.c \
+f2c/cfftf.c \
+f2c/cffti1.c \
+f2c/cffti.c \
+f2c/cpassb2.c \
+f2c/cpassb3.c \
+f2c/cpassb4.c \
+f2c/cpassb5.c \
+f2c/cpassb.c \
+f2c/cpassf2.c \
+f2c/cpassf3.c \
+f2c/cpassf4.c \
+f2c/cpassf5.c \
+f2c/cpassf.c \
+f2c/zfftb1.c \
+f2c/zfftb.c \
+f2c/zfftf1.c \
+f2c/zfftf.c \
+f2c/zffti1.c \
+f2c/zffti.c \
+f2c/zpassb2.c \
+f2c/zpassb3.c \
+f2c/zpassb4.c \
+f2c/zpassb5.c \
+f2c/zpassb.c \
+f2c/zpassf2.c \
+f2c/zpassf3.c \
+f2c/zpassf4.c \
+f2c/zpassf5.c \
+f2c/zpassf.c 
+
 noinst_LIBRARIES = libFFTPack.a
 
 libFFTPack_a_SOURCES = cfftb1.f \

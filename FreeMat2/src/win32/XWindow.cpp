@@ -2,7 +2,6 @@
 #include "Reducer.hpp"
 #include "WinGC.hpp"
 #include "resource.h"
-#include "RGBImageGC.hpp"
 #include "PostScriptGC.hpp"
 #include "BitmapPrinterGC.hpp"
 #include "Exception.hpp"

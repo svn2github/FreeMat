@@ -115,11 +115,11 @@ namespace FreeMat {
      * Delete our contents.
      */
     void deleteContents(void);
+  public:
     /**
      * Allocate an array.
      */
     static void* allocateArray(Class, uint32 length,const stringVector& names = stringVector());
-  public:
     /** Convert us to an index type
      * Convert the current object to an ordinal one.  This has different
      * meanings for different data types.  

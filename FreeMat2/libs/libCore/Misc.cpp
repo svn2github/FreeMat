@@ -73,7 +73,7 @@ namespace FreeMat {
   //@Module EIG Eigendecomposition of a Matrix
   //@@Usage
   //Computes the eigendecomposition of a square matrix.  The @|eig| function
-  //has two forms.  The first returns only the eigenvalues of the matrix:
+  //has several forms.  The first returns only the eigenvalues of the matrix:
   //@[
   //  s = eig(A)
   //@]
@@ -84,6 +84,23 @@ namespace FreeMat {
   //@]
   //where @|D| is the diagonal matrix of eigenvalues, and @|V| is the
   //matrix of eigenvectors.
+  //
+  //Eigenvalues and eigenvectors for asymmetric matrices @|A| normally
+  //are computed with balancing applied.  Balancing is a scaling step
+  //that normaly improves the quality of the eigenvalues and eigenvectors.
+  //In some instances (see the Function Internals section for more details)
+  //it is necessary to disable balancing.  For these cases, two additional
+  //forms of @|eig| are available:
+  //@[
+  //  s = eig(A,'nobalance'),
+  //@]
+  //which computes the eigenvalues of @|A| only, and does not balance
+  //the matrix prior to computation.  Similarly,
+  //@[
+  //  [V,D] = eig(A,'nobalance')
+  //@]
+  //recovers both the eigenvectors and eigenvalues of @|A| without balancing.
+  //Note that the 'nobalance' option has no affect on symmetric matrices.
   //@@Function Internals
   //Recall that @|v| is an eigenvector of @|A| with associated eigenvalue
   //@|d| if
@@ -100,6 +117,12 @@ namespace FreeMat {
   //\]
   //The @|eig| function uses the @|LAPACK| class of functions @|GEEVX|
   //to compute the eigenvalue decomposition.
+  //
+  //For some matrices, the process of balancing (in which the rows and
+  //columns of the matrix are pre-scaled to facilitate the search for
+  //eigenvalues) is detrimental to the quality of the final solution.
+  //This is particularly true if the matrix contains some elements on
+  //the order of round off error, somachine precision, and other elements that are 
   //@@Example
   //Some examples of eigenvalue decompositions.  First, for a diagonal
   //matrix, the eigenvalues are the diagonal elements of the matrix.
@@ -114,16 +137,41 @@ namespace FreeMat {
   //eig(A)
   //@>
   //Next, we compute the complete eigenvalue decomposition of
-  //a random matrix, and then resynthesize the matrix.
+  //a random matrix, and then demonstrate the accuracy of the solution
   //@<
   //A = float(randn(2))
   //[V,D] = eig(A)
-  //(V * D) / V
+  //A*V - V*D
+  //@>
+  //Now, we consider a matrix that requires the nobalance option
+  //to compute the eigenvalues and eigenvectors properly.  I could not
+  //find an example that worked better than the one from MATLAB's
+  //manual.
+  //@<
+  //eps = 2^-52
+  //B = [3,-2,-.9,2*eps;-2,4,1,-eps;-eps/4,eps/2,-1,0;-.5,-.5,.1,1]
+  //[VB,DB] = eig(B)
+  //B*VB - VB*DB
+  //[VN,DN] = eig(B,'nobalance')
+  //B*VN - VN*DN
   //@>
   //!
   ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("eig function takes exactly one argument - the matrix to decompose");
+    bool balance;
+    if (arg.size() == 1)
+      balance = true;
+    else {
+      Array b(arg[1]);
+      if (b.isString()) {
+	char *b2 = b.getContentsAsCString();
+	if ((strcmp(b2,"nobalance") == 0) ||
+	    (strcmp(b2,"NoBalance") == 0) ||
+	    (strcmp(b2,"NOBALANCE") == 0))
+	  balance = false;
+      }
+    }
+    //    if (arg.size() != 1)
+    //      throw Exception("eig function takes exactly one argument - the matrix to decompose");
 
     Array A(arg[0]);
 
@@ -141,14 +189,14 @@ namespace FreeMat {
       if (A.isSymmetric())
 	EigenDecomposeFullSymmetric(A,V,D);
       else
-	EigenDecomposeFullGeneral(A,V,D,true);
+	EigenDecomposeFullGeneral(A,V,D,balance);
       retval.push_back(V);
       retval.push_back(D);
     } else {
       if (A.isSymmetric())
 	EigenDecomposeCompactSymmetric(A,D);
       else
-	EigenDecomposeCompactGeneral(A,D,true);
+	EigenDecomposeCompactGeneral(A,D,balance);
       retval.push_back(D);
     }
     return retval;
@@ -1175,6 +1223,23 @@ namespace FreeMat {
   //!
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
   ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
+#if 0
+    Dimensions outdm(2);
+    outdm[0] = 2;
+    outdm[1] = 6;
+    void *dp;
+    dp = Malloc(48);
+    ArrayVector retval;
+    Array t(FM_CELL_ARRAY,outdm, dp);
+    dp = Malloc(48);
+    t = Array(FM_CELL_ARRAY,outdm, dp);
+    Array s = t;
+    s = Array::int32Constructor(534);
+    s = t;
+    s = Array::int32Constructor(534);
+    retval.push_back(t);
+    return retval;
+#endif
     int i, j, k;
     if (arg.size() < 2)
       throw Exception("repmat function requires at least two arguments");
@@ -1214,8 +1279,9 @@ namespace FreeMat {
     for (i=0;i<outdim;i++)
       outdims[i] = originalSize[i]*repcount[i];
     outdims.simplify();
-    void *dp;
-    dp = Malloc(outdims.getElementCount()*x.getElementSize());
+    void *dp = Array::allocateArray(x.getDataClass(),
+				    outdims.getElementCount(),
+				    x.getFieldNames());
     // Copy can work by pushing or by pulling.  I have opted for
     // pushing, because we can push a column at a time, which might
     // be slightly more efficient.

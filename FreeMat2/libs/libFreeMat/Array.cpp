@@ -3332,7 +3332,7 @@ break;
 
   double Array::getContentsAsDoubleScalar() throw(Exception) {
     double *qp;
-    if (isComplex()) 
+    if (isComplex() || isReferenceType() || isString())
       throw Exception("Expected a real valued scalar");
     promoteType(FM_DOUBLE);
     qp = (double*) dp->getData();

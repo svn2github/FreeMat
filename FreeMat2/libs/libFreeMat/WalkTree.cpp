@@ -71,7 +71,8 @@ namespace FreeMat {
   }
 
   void WalkTree::popID() {
-    cstack.pop_back();
+    if (!cstack.empty())
+      cstack.pop_back();
   }
 
   void WalkTree::setPrintLimit(int lim) {
@@ -2735,7 +2736,8 @@ namespace FreeMat {
   }
 
   void WalkTree::popDebug() {
-    cstack.pop_back();
+    if (!cstack.empty())
+      cstack.pop_back();
   }
 
   Interface* WalkTree::getInterface() {
@@ -3203,7 +3205,7 @@ namespace FreeMat {
 	line = NULL;
       }
       InCLI = true;
-      if (line) {
+      if (line && (strlen(line) > 0)) {
 	int stackdepth;
 	stackdepth = cstack.size();
 	bool tresult =  evaluateString(line);

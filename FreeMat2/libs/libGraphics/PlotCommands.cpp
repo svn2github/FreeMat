@@ -19,6 +19,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Plot2D.hpp"
+#include "Plot3D.hpp"
 #include "GraphicsCore.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"

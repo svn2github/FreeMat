@@ -301,15 +301,20 @@ namespace FreeMat {
       // Map the data point to a coordinate
       if (IsFinite(xVals[i]) && IsFinite(yVals[i]) && IsFinite(zVals[i])) {
 	int xp, yp, zp;
+#if 0
 	xp = xAxis->MapPoint(xVals[i]);
 	yp = yAxis->MapPoint(yVals[i]);
 	zp = zAxis->MapPoint(zVals[i]);
+#endif
+	xp = xVals[i];
+	yp = yVals[i];
+	zp = zVals[i];
 	int xxp, yyp;
 	xxp = (int)(xform[0][0]*xp + xform[0][1]*yp + 
-		    xform[0][2]*zp + xform[0][3]);
+		    xform[0][2]*zp + xform[0][3]) + 200;
 	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
-		    xform[1][2]*zp + xform[1][3]);
-	PutSymbol(dc, xp, yp, symbol, symbolLength);
+		    xform[1][2]*zp + xform[1][3]) + 200;
+	PutSymbol(dc, xxp, yyp, symbol, symbolLength);
       }
     }
     // Plot the lines

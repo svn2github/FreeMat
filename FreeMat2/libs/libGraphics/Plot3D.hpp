@@ -18,8 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef __Plot2D_hpp__
-#define __Plot2D_hpp__
+#ifndef __Plot3D_hpp__
+#define __Plot3D_hpp__
 
 #include "DataSet2D.hpp"
 #include "Axis.hpp"
@@ -35,7 +35,7 @@ namespace FreeMat {
     /**
      * Default constructor.
      */
-    Plot3D() : XWindow(VectorWindow) {}
+    Plot3D();
     /**
      * Default destructor.
      */
@@ -45,11 +45,17 @@ namespace FreeMat {
     void OnDrag(int x, int y);
     void OnDraw(GraphicsContext &gc);
   private:
-    DataSet3D data;
+    DataSet3DVector data;
     /**
      * A characteristic length in the construction of the plot.
      */
     int space;
+    float quat[4];
+    int beginx;
+    int beginy;
+    Axis *xAxis;
+    Axis *yAxis;
+    Axis *zAxis;
   };
 }
 

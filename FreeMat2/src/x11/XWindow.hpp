@@ -26,10 +26,10 @@ class XWindow {
 //   void SetImagePseudoColor(unsigned char *data, int width, int height);
 //   void SetImage(unsigned char *data, int width, int height);
   void OnExpose(int x, int y, int w, int h);
-  void OnMouseDown(int x, int y);
-  void OnMouseUp(int x, int y);
-  void OnDrag(int x, int y);
-  void OnResize(int w, int h);
+  virtual void OnMouseDown(int x, int y);
+  virtual void OnMouseUp(int x, int y);
+  virtual void OnDrag(int x, int y);
+  virtual void OnResize(int w, int h);
   virtual void OnSize() {};
   virtual void OnDraw(GraphicsContext &gc) = 0;
   void PrintMe(std::string filename);

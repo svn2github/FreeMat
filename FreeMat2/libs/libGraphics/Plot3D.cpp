@@ -18,20 +18,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#include "Plot2D.hpp"
+#include "Plot3D.hpp"
 #include "RGBImage.hpp"
 #include "GraphicsCore.hpp"
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
+extern "C" {
+#include "trackball.h"
+}
 
 namespace FreeMat {
 
   Plot3D::Plot3D() : XWindow(VectorWindow){
     trackball(quat,0.0,0.0,0.0,0.0);
-    double *xp = Array::allocateArray(FM_DOUBLE, 200);
-    double *yp = Array::allocateArray(FM_DOUBLE, 200);
-    double *zp = Array::allocateArray(FM_DOUBLE, 200);
+    double *xp = (double*) Array::allocateArray(FM_DOUBLE, 200);
+    double *yp = (double*) Array::allocateArray(FM_DOUBLE, 200);
+    double *zp = (double*) Array::allocateArray(FM_DOUBLE, 200);
     int i;
     for (i=0;i<200;i++) {
       double theta;
@@ -40,11 +43,16 @@ namespace FreeMat {
       xp[i] = 100*cos(theta);
       yp[i] = 100*sin(theta);
     }
-    Dimensions dims[2];
-    data = DataSet3D(Array::Array(FM_DOUBLE,dims,xp),
-		     Array::Array(FM_DOUBLE,dims,yp),
-		     Array::Array(FM_DOUBLE,dims,zp),
-		     'b','o','-');
+    Dimensions dims(2);
+    dims[0] = 200;
+    dims[1] = 1;
+    data.push_back(DataSet3D(Array::Array(FM_DOUBLE,dims,xp),
+			     Array::Array(FM_DOUBLE,dims,yp),
+			     Array::Array(FM_DOUBLE,dims,zp),
+			     'b','o','-'));
+    xAxis = new Axis(-100,100,false,Axis_X);
+    yAxis = new Axis(-100,100,false,Axis_Y);
+    zAxis = new Axis(-100,100,false,Axis_X);
   }
 
   Plot3D::~Plot3D() {
@@ -53,6 +61,7 @@ namespace FreeMat {
   void Plot3D::OnMouseDown(int x, int y) {
     beginx = x;
     beginy = y;
+    printf("mark %d %d\r\n",x,y);
   }
 
   void Plot3D::OnMouseUp(int x, int y) {
@@ -63,26 +72,33 @@ namespace FreeMat {
     int szx, szy;
     szx = getWidth();
     szy = getHeight();
+    printf("drag %d %d\r\n",x,y);
     trackball(spin_quat,
-	      -(2.0*beginx - szx) / szx,
-	      (szy - 2.0*beginy) / szy,
-	      -(2.0*x - szx) / szx,
-	      (szy - 2.0*y) / sz.y);
+	      -(2.0*beginx - szx) / szx / 10,
+	      (szy - 2.0*beginy) / szy / 10,
+	      -(2.0*x - szx) / szx / 10,
+	      (szy - 2.0*y) / szy / 10);
     add_quats( spin_quat, quat, quat );
-    dirty = true;
-    Refresh(FALSE);
+    Refresh();
   }
 
   void Plot3D::OnDraw(GraphicsContext &gc) {
-    double m[4][4];
+    float m[4][4];
     double frm[2][4];
     int i, j;
 
+    gc.SetBackGroundColor(Color("light grey"));
+    gc.SetForeGroundColor(Color("light grey"));
+    gc.FillRectangle(Rect2D(0, 0, getWidth(), getHeight()));
     build_rotmatrix(m, quat);
-    for (i=0;i<2;i++)
-      for (j=0;j<4;j++)
-	frm[i][j] = m[i][j];
-    data.DrawMe(gc,xAxis,yAxis,zAxis,xform);
+    for (i=0;i<2;i++) {
+      for (j=0;j<4;j++) {
+	frm[i][j] = m[j][i];
+	printf("%f ",frm[i][j]);
+      }
+      printf("\r\n");
+    }
+    data[0].DrawMe(gc,xAxis,yAxis,zAxis,frm);
   }
 }
 

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/main.cpp)
+AC_INIT(src/x11/main.cpp)
 
 dnl sets build, host, target variables and the same with _alias
 AC_CANONICAL_SYSTEM
@@ -19,16 +19,13 @@ case $host in
   FLIBS=`echo $FLIBS | sed -e 's/-lfrtbegin//g'` ;;
 esac
 
+maindir="src/x11"
+case $host in
+*-*-cygwin*)
+  maindir="src/win32"
+esac
+
 AC_PATH_XTRA
-
-AC_ARG_ENABLE(postscript,
-	[--enable-postscript	 enable postscript output (needed on Windows)])
-
-AC_ARG_WITH(profile,
-	[AC_HELP_STRING([--with-profile],
-		[Include profiling options [default=no]])],
-		prof_flag="-pg",
-		prof_flag="")
 
 AC_ARG_WITH(debug,
 	[AC_HELP_STRING([--with-debug],
@@ -94,6 +91,7 @@ AC_SUBST(minilapackdir)
 AC_SUBST(miniblasdir)
 AC_SUBST(mpidir)
 AC_SUBST(MPICXX)
+AC_SUBST(maindir)
 
 if test "$forceminiblas" = "yes" ; then
    AC_OUTPUT(libs/libMiniBLAS/Makefile)
@@ -112,13 +110,14 @@ LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB"
 ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
 AC_CONFIG_SUBDIRS(libs/libffi)
 
-AC_OUTPUT(Makefile src/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile)
+AC_OUTPUT(Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile)
 
 echo \
 "------------------------------------------------------------------------
 Configuration:
 
   Source code location:       ${srcdir}
+  Main location:              ${maindir}
   C Compiler:	              ${CC}
   C Compiler flags:           ${CFLAGS}
   C++ Compiler:		      ${CXX}

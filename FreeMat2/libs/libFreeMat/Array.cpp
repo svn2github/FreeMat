@@ -3292,4 +3292,47 @@ break;
   bool Array::isDataClassReferenceType(Class cls) {
     return (cls == FM_CELL_ARRAY || cls == FM_STRUCT_ARRAY);
   }
+
+  bool Array::anyNotFinite() {
+    switch(dp->dataClass) {
+    case FM_FLOAT: 
+      {
+	const float *sp = (const float *) dp->getData();
+	int len = getLength();
+	int i=0;
+	while (i<len)
+	  if (!IsFinite(sp[i++])) return true;
+	return false;
+      }
+    case FM_DOUBLE:
+      {
+	const double *sp = (const double *) dp->getData();
+	int len = getLength();
+	int i=0;
+	while (i<len)
+	  if (!IsFinite(sp[i++])) return true;
+	return false;
+      }
+    case FM_COMPLEX:
+      {
+	const float *sp = (const float *) dp->getData();
+	int len = getLength();
+	int i=0;
+	while (i<2*len)
+	  if (!IsFinite(sp[i++])) return true;
+	return false;
+      }
+    case FM_DCOMPLEX:
+      {
+	const double *sp = (const double *) dp->getData();
+	int len = getLength();
+	int i=0;
+	while (i<2*len)
+	  if (!IsFinite(sp[i++])) return true;
+	return false;
+      }
+    default:
+      return false;
+    }
+  }
 }

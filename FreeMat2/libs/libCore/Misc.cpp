@@ -123,9 +123,17 @@ namespace FreeMat {
   ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("eig function takes exactly one argument - the matrix to decompose");
+
+    Array A(arg[0]);
+
+    if (!A.is2D())
+      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+
+    if (A.anyNotFinite())
+      throw Exception("SVD only defined for matrices with finite entries.");
+
     ArrayVector retval;
     stringVector dummy;
-    Array A(arg[0]);
     Array V, D;
     EigenDecompose(A,V,D);
     if (nargout > 1) {
@@ -192,6 +200,9 @@ namespace FreeMat {
   
     if (!A.is2D())
       throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+
+    if (A.anyNotFinite())
+      throw Exception("SVD only defined for matrices with finite entries.");
 
     int nrows = A.getDimensionLength(0);
     int ncols = A.getDimensionLength(1);

@@ -701,6 +701,11 @@ namespace FreeMat {
      * Returns the IO interface being used by instances of the Array class.
      */
     static Interface* getArrayIOInterface();
+    /**
+     * Returns true if any of the entries in the array are not finite
+     * (always false for reference and integer types)
+     */
+    bool anyNotFinite();
   };
 
   void printObjectBalance();

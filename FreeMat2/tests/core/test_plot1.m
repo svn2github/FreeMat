@@ -6,5 +6,6 @@ try
   plot(a,a);
 catch
 end
+closeplot all;
 test_val = 1;
 

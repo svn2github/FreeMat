@@ -6,5 +6,6 @@ try
   image(a);
 catch
 end
+closeimage all;
 test_val = 1;
 

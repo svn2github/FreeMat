@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 
+
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
 #ifdef c_plusplus
 #ifndef __cplusplus
@@ -764,7 +765,7 @@ reservedWordStruct ts, *p;
 
 #define Mscan 8
 
-#line 769 "../../../libs/libFreeMat/Lexer.cxx"
+#line 769 "Lexer.cxx"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -921,7 +922,7 @@ YY_DECL
 	char string_buf[4095];
 	char *string_buf_ptr;
 
-#line 926 "../../../libs/libFreeMat/Lexer.cxx"
+#line 926 "Lexer.cxx"
 
 	if ( yy_init )
 		{
@@ -1546,7 +1547,7 @@ YY_RULE_SETUP
 #line 505 "../../../libs/libFreeMat/Lexer.lxx"
 ECHO;
 	YY_BREAK
-#line 1551 "../../../libs/libFreeMat/Lexer.cxx"
+#line 1551 "Lexer.cxx"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IdentDereference):
 case YY_STATE_EOF(TransposeCheck):
@@ -1936,7 +1937,6 @@ register char *yy_bp;
 #endif	/* ifndef YY_NO_UNPUT */
 
 
-#ifndef YY_NO_INPUT
 #ifdef __cplusplus
 static int yyinput()
 #else
@@ -2008,7 +2008,7 @@ static int input()
 
 	return c;
 	}
-#endif /* YY_NO_INPUT */
+
 
 #ifdef YY_USE_PROTOS
 void yyrestart( FILE *input_file )

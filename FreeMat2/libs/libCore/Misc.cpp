@@ -1403,23 +1403,6 @@ namespace FreeMat {
   //!
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
   ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
-#if 0
-    Dimensions outdm(2);
-    outdm[0] = 2;
-    outdm[1] = 6;
-    void *dp;
-    dp = Malloc(48);
-    ArrayVector retval;
-    Array t(FM_CELL_ARRAY,outdm, dp);
-    dp = Malloc(48);
-    t = Array(FM_CELL_ARRAY,outdm, dp);
-    Array s = t;
-    s = Array::int32Constructor(534);
-    s = t;
-    s = Array::int32Constructor(534);
-    retval.push_back(t);
-    return retval;
-#endif
     int i, j, k;
     if (arg.size() < 2)
       throw Exception("repmat function requires at least two arguments");

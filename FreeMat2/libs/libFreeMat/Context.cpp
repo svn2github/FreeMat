@@ -24,67 +24,53 @@
 namespace FreeMat {
 
   Context::Context() {
-    head = new ScopeStack();
-    head->data = new Scope("global");
-    head->next = NULL;
-    tail = head;
+    pushScope("global");
     pushScope("base");
   }
 
   Context::~Context() {
-    while (head != NULL) {
-      delete head->data;
-      tail = head->next;
-      delete head;
-      head = tail;
+    while (!scopestack.empty()) {
+      delete scopestack.back();
+      scopestack.pop_back();
     }
   }
 
   Scope* Context::getCurrentScope() {
-    return tail->data;
+    return scopestack.back();
   }
 
   Scope* Context::getGlobalScope() {
-    return head->data;
+    return scopestack.front();
   }
 
   void Context::pushScope(std::string name) {
-    tail->next = new ScopeStack();
-    tail->next->data = new Scope(name);
-    tail->next->next = NULL;
-    tail = tail->next;
+    scopestack.push_back(new Scope(name));
   }
 
   void Context::popScope() throw(Exception) {
-    ScopeStack *p = head;
-    if (p->next == NULL)
+    if (scopestack.size() == 1)
       throw Exception("Attempt to pop global scope off of context stack!");
-    while (p->next != tail) p = p->next;
-    delete(tail->data);
-    delete(tail);
-    p->next = NULL;
-    tail = p;
+    delete scopestack.back();
+    scopestack.pop_back();
   }
 
   void Context::insertVariableLocally(std::string varName, const Array& var) {
-    tail->data->insertVariable(varName,var);
+    scopestack.back()->insertVariable(varName,var);
   }
 
   void Context::insertVariable(const std::string& varName, const Array& var) {
     Scope* active;
     std::string mapName;
 
-    if (tail->data->isVariablePersistent(varName)) {
-      mapName = tail->data->getMangledName(varName);
-      active = head->data;
-    } else if (tail->data->isVariableGlobal(varName)) {
+    if (scopestack.back()->isVariablePersistent(varName)) {
+      mapName = scopestack.back()->getMangledName(varName);
+      active = scopestack.front();
+    } else if (scopestack.back()->isVariableGlobal(varName)) {
       mapName = varName;
-      active = head->data;
+      active = scopestack.front();
     } else {
-      tail->data->insertVariable(varName,var);
+      scopestack.back()->insertVariable(varName,var);
       return;
-//       mapName = varName;
-//       active = tail->data;
     }
     active->insertVariable(mapName,var);
   }
@@ -93,45 +79,43 @@ namespace FreeMat {
     Scope* active;
     std::string mapName;
     
-    if (tail->data->isVariablePersistent(varName)) {
-      mapName = tail->data->getMangledName(varName);
-      active = head->data;
-    } else if (tail->data->isVariableGlobal(varName)) {
+    if (scopestack.back()->isVariablePersistent(varName)) {
+      mapName = scopestack.back()->getMangledName(varName);
+      active = scopestack.front();
+    } else if (scopestack.back()->isVariableGlobal(varName)) {
       mapName = varName;
-      active = head->data;
+      active = scopestack.front();
     } else {
-      return (tail->data->lookupVariable(varName,var));
-//       mapName = varName;
-//       active = tail->data;
+      return (scopestack.back()->lookupVariable(varName,var));
     }
     return (active->lookupVariable(mapName,var));
   }
 
   bool Context::isVariableGlobal(const std::string& varName) {
-    return tail->data->isVariableGlobal(varName);
+    return scopestack.back()->isVariableGlobal(varName);
   }
 
   bool Context::isVariablePersistent(const std::string& varName) {
-    return tail->data->isVariablePersistent(varName);
+    return scopestack.back()->isVariablePersistent(varName);
   }
 
   bool Context::lookupVariableLocally(std::string varName, Array &var) {
-    return tail->data->lookupVariable(varName,var);
+    return scopestack.back()->lookupVariable(varName,var);
   }
 
   void Context::insertFunctionLocally(FuncPtr f) {
-    tail->data->insertFunction(f);
+    scopestack.back()->insertFunction(f);
   }
 
   void Context::insertFunctionGlobally(FuncPtr f, bool temporary) {
-    head->data->insertFunction(f);
+    scopestack.front()->insertFunction(f);
     if (temporary)
       tempFunctions.push_back(f->name);
   }
 
   void Context::flushTemporaryGlobalFunctions() {
     for (int i=0;i<tempFunctions.size();i++)
-      head->data->deleteFunction(tempFunctions[i]);
+      scopestack.front()->deleteFunction(tempFunctions[i]);
     tempFunctions.clear();
   }
 
@@ -146,7 +130,7 @@ namespace FreeMat {
     f2def->name = strdup(name);
     f2def->fptr = fptr;
     f2def->arguments = args;
-    head->data->insertFunction(f2def);
+    scopestack.front()->insertFunction(f2def);
   }
 
   void Context::addFunction(char*name, 
@@ -160,22 +144,22 @@ namespace FreeMat {
     f2def->name = strdup(name);
     f2def->fptr = fptr;
     f2def->arguments = args;
-    head->data->insertFunction(f2def);  
+    scopestack.front()->insertFunction(f2def);  
   }
 
   bool Context::lookupFunction(std::string funcName, FuncPtr& val) {
     bool localFunction;
-    if (tail->data->lookupFunction(funcName,val))
+    if (scopestack.back()->lookupFunction(funcName,val))
       return true;
-    return head->data->lookupFunction(funcName,val);
+    return scopestack.front()->lookupFunction(funcName,val);
   }
 
   bool Context::lookupFunctionGlobally(std::string funcName, FuncPtr& val) {
-    return head->data->lookupFunction(funcName,val);
+    return scopestack.front()->lookupFunction(funcName,val);
   }
 
   void Context::deleteFunctionGlobally(std::string funcName) {
-    head->data->deleteFunction(funcName);
+    scopestack.front()->deleteFunction(funcName);
   }
 
   void Context::printMe() {
@@ -191,53 +175,70 @@ namespace FreeMat {
   }
 
   void Context::enterLoop() {
-    tail->data->enterLoop();
+    scopestack.back()->enterLoop();
   }
 
   void Context::exitLoop() {
-    tail->data->exitLoop();
+    scopestack.back()->exitLoop();
   }
 
   bool Context::inLoop() {
-    return tail->data->inLoop();
+    return scopestack.back()->inLoop();
     //  return false;
   }
 
   void Context::addPersistentVariable(std::string var) {
     Array dummy;
     // Delete local variables with this name
-    tail->data->deleteVariable(var);
+    scopestack.back()->deleteVariable(var);
     // Delete global variables with this name
-    head->data->deleteVariable(var);
-    tail->data->addPersistentVariablePointer(var);
-    if (!head->data->lookupVariable(tail->data->getMangledName(var),dummy))
-      head->data->insertVariable(tail->data->getMangledName(var), Array::emptyConstructor());
+    scopestack.front()->deleteVariable(var);
+    scopestack.back()->addPersistentVariablePointer(var);
+    if (!scopestack.front()->lookupVariable(scopestack.back()->getMangledName(var),dummy))
+      scopestack.front()->insertVariable(scopestack.back()->getMangledName(var), Array::emptyConstructor());
   }
 
   void Context::addGlobalVariable(std::string var) {
     Array dummy;
     // Delete local variables with this name
-    tail->data->deleteVariable(var);
+    scopestack.back()->deleteVariable(var);
     // Delete global persistent variables with this name
-    head->data->deleteVariable(tail->data->getMangledName(var));
+    scopestack.front()->deleteVariable(scopestack.back()->getMangledName(var));
     // Add a point in the local scope to the global variable
-    tail->data->addGlobalVariablePointer(var);
+    scopestack.back()->addGlobalVariablePointer(var);
     // Make sure the variable exists
-    if (!head->data->lookupVariable(var,dummy))
-      head->data->insertVariable(var, Array::emptyConstructor());
+    if (!scopestack.front()->lookupVariable(var,dummy))
+      scopestack.front()->insertVariable(var, Array::emptyConstructor());
   }
 
   void Context::deleteVariable(std::string var) {
     if (isVariableGlobal(var)) {
-      head->data->deleteVariable(var);
-      tail->data->deleteGlobalVariablePointer(var);
+      scopestack.front()->deleteVariable(var);
+      scopestack.back()->deleteGlobalVariablePointer(var);
       return;
     }
     if (isVariablePersistent(var)) {
-      head->data->deleteVariable(tail->data->getMangledName(var));
-      tail->data->deletePersistentVariablePointer(var);
+      scopestack.front()->deleteVariable(scopestack.back()->getMangledName(var));
+      scopestack.back()->deletePersistentVariablePointer(var);
       return;
     }
-    tail->data->deleteVariable(var);
+    scopestack.back()->deleteVariable(var);
   }
+
+  void Context::bypassScope(int count) {
+    if (count < 0)
+      count = scopestack.size();
+    while ((count > 0) && (scopestack.back()->getName() != "base")) {
+      bypassstack.push_back(scopestack.back());
+      scopestack.pop_back();
+      count--;
+    }
+  }
+
+  void Context::restoreBypassedScopes() {
+    for (int i=0;i<bypassstack.size();i++)
+      scopestack.push_back(bypassstack[i]);
+    bypassstack.clear();
+  }
+
 }

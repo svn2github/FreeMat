@@ -160,9 +160,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\com.c">
-			</File>
-			<File
 				RelativePath="Constants.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -343,10 +340,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\ranlib.c">
-			</File>
-			<File
-				RelativePath=".\ranlib.h">
+				RelativePath=".\RanLib.cpp">
 			</File>
 			<File
 				RelativePath="StringOps.cpp">

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <algorithm>
 #include "resource.h"
+#include "htmlhelp.h"
 
 #include <direct.h>
 #define getcwd _getcwd
@@ -919,6 +920,8 @@ namespace FreeMat {
 	case IDM_FILE_EXIT:
 	  PostQuitMessage(0);
 	  break;
+	case ID_HELP_CONTENTS:
+	  HtmlHelp(GetDesktopWindow(),"freemat.chm",HH_DISPLAY_TOC,NULL);
 	}
       case WM_KEYDOWN:{
 	switch (wParam) {

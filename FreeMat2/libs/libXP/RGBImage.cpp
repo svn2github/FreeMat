@@ -4,12 +4,16 @@
 #include <png.h>
 #endif
 
-#ifdef HAVE_TIFF
-#include <tiffio.h>
+#ifdef HAVE_JPEG
+extern "C" {
+#include <jpeglib.h>
+}
 #endif
 
-#ifdef HAVE_JPEG
-#include <jpeglib.h>
+#ifdef HAVE_TIFF
+extern "C" {
+#include <tiffio.h>
+}
 #endif
 
 #include <stdio.h>
@@ -141,7 +145,7 @@ void RGBImage::WritePNG(std::string filename) {
 }
 
 void RGBImage::WriteTIFF(std::string filename) {
-#ifndef HAVE_TIFF
+#ifndef HAVE_TIFFLIB
   throw FreeMat::Exception("TIFF support not available.");
 #else
   TIFF *output;
@@ -164,7 +168,7 @@ void RGBImage::WriteTIFF(std::string filename) {
 }
 
 void RGBImage::WriteJPEG(std::string filename) {
-#ifndef HAVE_JPEG
+#ifndef HAVE_JPEGLIB
   throw FreeMat::Exception("JPEG support not available.");
 #else
   struct jpeg_compress_struct cinfo;
@@ -236,3 +240,60 @@ void WritePNGFile(std::string filename, byte *data, int width, int height) {
   fclose(fp);
 #endif
 }
+
+void WriteJPEGFile(std::string filename, byte *data, int width, int height) {
+#ifndef HAVE_JPEG
+  throw FreeMat::Exception("JPEG support not available.");
+#else
+  struct jpeg_compress_struct cinfo;
+  struct jpeg_error_mgr jerr;
+  /* More stuff */
+  FILE * outfile;               /* target file */
+  JSAMPROW row_pointer[1];      /* pointer to JSAMPLE row[s] */
+  int row_stride;               /* physical row width in image buffer */
+  cinfo.err = jpeg_std_error(&jerr);
+  jpeg_create_compress(&cinfo);
+  if ((outfile = fopen(filename.c_str(), "wb")) == NULL) 
+    throw FreeMat::Exception(std::string("Can not open file ") + filename);
+  jpeg_stdio_dest(&cinfo, outfile);
+  cinfo.image_width = width;      /* image width and height, in pixels */
+  cinfo.image_height = height;
+  cinfo.input_components = 3;           /* # of color components per pixel */
+  cinfo.in_color_space = JCS_RGB;       /* colorspace of input image */
+  jpeg_set_defaults(&cinfo);
+  jpeg_set_quality(&cinfo, 90, TRUE /* limit to baseline-JPEG values */);
+  jpeg_start_compress(&cinfo, TRUE);
+  row_stride = width * 3; /* JSAMPLEs per row in image_buffer */
+  while (cinfo.next_scanline < cinfo.image_height) {
+    row_pointer[0] = data + cinfo.next_scanline * row_stride;
+    (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
+  }
+  jpeg_finish_compress(&cinfo);
+  fclose(outfile);
+  jpeg_destroy_compress(&cinfo);
+#endif
+}
+
+void WriteTIFFFile(std::string filename, byte *data, int width, int height) {
+#ifndef HAVE_TIFF
+  throw FreeMat::Exception("TIFF support not available.");
+#else
+  TIFF *output;
+  // Open the output image
+  if((output = TIFFOpen(filename.c_str(), "w")) == NULL)
+    throw FreeMat::Exception(std::string("Cound not open file") + filename + "for writing");
+  // Write the tiff tags to the file
+  TIFFSetField(output, TIFFTAG_IMAGEWIDTH, width);
+  TIFFSetField(output, TIFFTAG_IMAGELENGTH, height);
+  TIFFSetField(output, TIFFTAG_COMPRESSION, COMPRESSION_PACKBITS);
+  TIFFSetField(output, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+  TIFFSetField(output, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+  TIFFSetField(output, TIFFTAG_BITSPERSAMPLE, 8);
+  TIFFSetField(output, TIFFTAG_SAMPLESPERPIXEL, 3);
+  // Actually write the image
+  if(TIFFWriteEncodedStrip(output, 0, data, width * height * 3) == 0)
+    throw FreeMat::Exception(std::string("Could not write image ") + filename);
+  TIFFClose(output);
+#endif
+}
+

@@ -158,7 +158,11 @@ typedef short INT16;
 /* INT32 must hold at least signed 32-bit values. */
 
 #ifndef XMD_H			/* X11/xmd.h correctly defines INT32 */
+#ifndef WIN32
 typedef long INT32;
+#else
+typedef int INT32;
+#endif
 #endif
 
 /* Datatype used for image dimensions.  The JPEG standard only supports
@@ -224,7 +228,11 @@ typedef unsigned int JDIMENSION;
  */
 
 #ifndef HAVE_BOOLEAN
+#ifndef WIN32
 typedef int boolean;
+#else
+typedef unsigned char boolean;
+#endif
 #endif
 #ifndef FALSE			/* in case these macros already exist */
 #define FALSE	0		/* values of boolean */

@@ -21,7 +21,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\libFreeMat,..\libXP,..\libffi\msvc_build,..\..\src\win32,..\libCore"
+				AdditionalIncludeDirectories="..\libfltk;..\libFreeMat;..\libXP;..\libffi\msvc_build;..\..\src\win32;..\libCore"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"

@@ -73,7 +73,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\libffi\msvc_build,..\libXP,..\libf2c,..\..\src\win32"
+				AdditionalIncludeDirectories="..\libfltk;..\libffi\msvc_build;..\libXP;..\libf2c;..\..\src\win32"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;YY_NEVER_INTERACTIVE"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"

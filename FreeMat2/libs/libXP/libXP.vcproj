@@ -71,7 +71,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\libFreeMat,..\lpng125,..\libz,..\libjpeg6b,..\libtiff361\libtiff"
+				AdditionalIncludeDirectories="..\libffi\msvc_build;..\libfltk;..\libFreeMat;..\lpng125;..\libz;..\libjpeg6b;..\libtiff361\libtiff"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;HAVE_PNG;HAVE_JPEG;HAVE_TIFF"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"

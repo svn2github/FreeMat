@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>SVD Singular Value Decomposition of a Matrix</TITLE>
+<META NAME="description" CONTENT="SVD Singular Value Decomposition of a Matrix">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="previous" HREF="node143.html">
+<LINK REL="up" HREF="node141.html">
+<LINK REL="next" HREF="node145.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html3509"
+  HREF="node145.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3505"
+  HREF="node141.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3501"
+  HREF="node143.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3507"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3510"
+  HREF="node145.html">Operating System Functions</A>
+<B> Up:</B> <A NAME="tex2html3506"
+  HREF="node141.html">Transforms/Decompositions</A>
+<B> Previous:</B> <A NAME="tex2html3502"
+  HREF="node143.html">FFT (Inverse) Fast Fourier</A>
+ &nbsp <B>  <A NAME="tex2html3508"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html3511"
+  HREF="node144.html#SECTION003123100000000000000">Usage</A>
+<LI><A NAME="tex2html3512"
+  HREF="node144.html#SECTION003123200000000000000">Function Internals</A>
+<LI><A NAME="tex2html3513"
+  HREF="node144.html#SECTION003123300000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION003123000000000000000">
+SVD Singular Value Decomposition of a Matrix</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION003123100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the singular value decomposition (SVD) of a matrix.  The 
+<code>svd</code> function has two forms.  The first returns only the singular
+values of the matrix:
+<PRE>
+  s = svd(A)
+</PRE>
+The second form returns both the singular values in a diagonal
+matrix <code>S</code>, as well as the left and right eigenvectors.
+<PRE>
+  [U,S,V] = svd(A)
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION003123200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+Recall that <code>sigma_i</code> is a singular value of an <code>M x N</code>
+matrix <code>A</code> if there exists two vectors <code>u_i, v_i</code> where <code>u_i</code> is
+of length <code>M</code>, and <code>v_i</code> is of length <code>u_i</code> and
+<!-- MATH
+ \begin{displaymath}
+A v_i = \sigma_i u_i
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="87" HEIGHT="61" ALIGN="MIDDLE" BORDER="0"
+ SRC="img94.png"
+ ALT="$\displaystyle A v_i = \sigma_i u_i
+$">
+</DIV><P></P>
+and generally
+<!-- MATH
+ \begin{displaymath}
+A = \sum_{i=1}^{K} \sigma_i u_i*v_i',
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="89" HEIGHT="61" ALIGN="MIDDLE" BORDER="0"
+ SRC="img95.png"
+ ALT="$\displaystyle A = \sum_{i=1}^{K} \sigma_i u_i*v_i',
+$">
+</DIV><P></P>
+where <code>K</code> is the rank of <code>A</code>.  In matrix form, the left singular
+vectors <code>u_i</code> are stored in the matrix <code>U</code> as
+<!-- MATH
+ \begin{displaymath}
+U = [u_1,\ldots,u_m], V = [v_1,\ldots,v_n]
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="79" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img96.png"
+ ALT="$\displaystyle U = [u_1,\ldots,u_m], V = [v_1,\ldots,v_n]
+$">
+</DIV><P></P>
+The matrix <code>S</code> is then of size <code>M x N</code> with the singular
+values along the diagonal.  The SVD is computed using the 
+<code>LAPACK</code> call of functions <code>GESDD</code>.
+
+<P>
+
+<H3><A NAME="SECTION003123300000000000000">
+Examples</A>
+</H3>
+
+<P>
+Here is an example of a partial and complete singular value
+decomposition.
+<PRE>
+--&gt; A = float(randn(2,3))
+A = 
+  &lt;float&gt;  - size: [2 3]
+ 
+Columns 1 to 3
+   -0.036163993        0.69338953         0.59975541      
+   -0.14041515        -0.23818725         0.70864934      
+--&gt; [U,S,V] = svd(A)
+U = 
+  &lt;float&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+   -0.84994751        -0.52686727      
+   -0.52686727         0.84994757      
+S = 
+  &lt;float&gt;  - size: [2 3]
+ 
+Columns 1 to 3
+    1.0030123          0.00000000         0.00000000      
+    0.00000000         0.64374173         0.00000000      
+V = 
+  &lt;float&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+    0.10440307        -0.15579510         0.98225647      
+   -0.46245861        -0.88198572        -0.090736881     
+   -0.88047248         0.44477975         0.16413097      
+--&gt; U*S*V'
+ans = 
+  &lt;float&gt;  - size: [2 3]
+ 
+Columns 1 to 3
+   -0.036163967        0.69338953         0.59975535      
+   -0.14041504        -0.23818734         0.70864934      
+--&gt; svd(A)
+ans = 
+  &lt;float&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+    1.0030123       
+    0.64374173
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html3509"
+  HREF="node145.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3505"
+  HREF="node141.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3501"
+  HREF="node143.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3507"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3510"
+  HREF="node145.html">Operating System Functions</A>
+<B> Up:</B> <A NAME="tex2html3506"
+  HREF="node141.html">Transforms/Decompositions</A>
+<B> Previous:</B> <A NAME="tex2html3502"
+  HREF="node143.html">FFT (Inverse) Fast Fourier</A>
+ &nbsp <B>  <A NAME="tex2html3508"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

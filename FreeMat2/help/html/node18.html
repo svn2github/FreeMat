@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>VARARGOUT Variable Output Arguments</TITLE>
+<META NAME="description" CONTENT="VARARGOUT Variable Output Arguments">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="previous" HREF="node17.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node19.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1128"
+  HREF="node19.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1124"
+  HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1120"
+  HREF="node17.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1126"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1129"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Up:</B> <A NAME="tex2html1125"
+  HREF="node10.html">Functions and Scripts</A>
+<B> Previous:</B> <A NAME="tex2html1121"
+  HREF="node17.html">VARARGIN Variable Input Arguments</A>
+ &nbsp <B>  <A NAME="tex2html1127"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1130"
+  HREF="node18.html#SECTION00228100000000000000">Usage</A>
+<LI><A NAME="tex2html1131"
+  HREF="node18.html#SECTION00228200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00228000000000000000">
+VARARGOUT Variable Output Arguments</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00228100000000000000">
+Usage</A>
+</H3>
+
+<P>
+FreeMat functions can return a variable number of output arguments
+by setting the last argument in the argument list to <code>varargout</code>.
+This special keyword indicates that the number of return values
+is variable.  The general syntax for a function that returns
+a variable number of outputs is
+<PRE>
+  function [out_1,...,out_M,varargout] = fname(in_1,...,in_M)
+</PRE>
+The function is responsible for ensuring that <code>varargout</code> is
+a cell array that contains the values to assign to the outputs
+beyond <code>out_M</code>.  Generally, variable output functions use
+<code>nargout</code> to figure out how many outputs have been requested.
+
+<P>
+
+<H3><A NAME="SECTION00228200000000000000">
+Example</A>
+</H3>
+
+<P>
+This is a function that returns a varying number of values
+depending on the value of the argument.
+<PRE> varoutfunc.m
+function [varargout] = varoutfunc
+  switch(nargout)
+    case 1
+      varargout = {'one of one'};
+    case 2
+      varargout = {'one of two','two of two'};
+    case 3
+      varargout = {'one of three','two of three','three of three'};
+  end
+</PRE>
+Here are some examples of exercising <code>varoutfunc</code>:
+<PRE>
+--&gt; [c1] = varoutfunc
+c1 = 
+  &lt;string&gt;  - size: [1 10]
+ one of one
+--&gt; [c1,c2] = varoutfunc
+c1 = 
+  &lt;string&gt;  - size: [1 10]
+ one of two
+c2 = 
+  &lt;string&gt;  - size: [1 10]
+ two of two
+--&gt; [c1,c2,c3] = varoutfunc
+c1 = 
+  &lt;string&gt;  - size: [1 12]
+ one of three
+c2 = 
+  &lt;string&gt;  - size: [1 12]
+ two of three
+c3 = 
+  &lt;string&gt;  - size: [1 14]
+ three of three
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

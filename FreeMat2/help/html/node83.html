@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>GETPRINTLIMIT Get Limit For Printing Of Arrays</TITLE>
+<META NAME="description" CONTENT="GETPRINTLIMIT Get Limit For Printing Of Arrays">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node84.html">
+<LINK REL="previous" HREF="node82.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node84.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2521"
+  HREF="node84.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2517"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2511"
+  HREF="node82.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2519"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2522"
+  HREF="node84.html">ISEMPTY Test For Variable</A>
+<B> Up:</B> <A NAME="tex2html2518"
+  HREF="node80.html">Inspection Functions</A>
+<B> Previous:</B> <A NAME="tex2html2512"
+  HREF="node82.html">EXIST Text Existence of</A>
+ &nbsp <B>  <A NAME="tex2html2520"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2523"
+  HREF="node83.html#SECTION00353100000000000000">Usage</A>
+<LI><A NAME="tex2html2524"
+  HREF="node83.html#SECTION00353200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00353000000000000000">
+GETPRINTLIMIT Get Limit For Printing Of Arrays</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00353100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns the limit on how many elements of an array are printed
+using either the <code>disp</code> function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling <code>setprintlimit</code>.  This function is provided
+primarily so that you can temporarily change the output truncation
+and then restore it to the previous value (see the examples).
+<PRE>
+   n=getprintlimit
+</PRE>
+where <code>n</code> is the current limit in use.
+
+<P>
+
+<H3><A NAME="SECTION00353200000000000000">
+Example</A>
+</H3>
+
+<P>
+Here is an example of using <code>getprintlimit</code> along with <code>setprintlimit</code> to temporarily change the output behavior of FreeMat.
+<PRE>
+--&gt; A = randn(100,1);
+--&gt; n = getprintlimit
+n = 
+  &lt;uint32&gt;  - size: [1 1]
+         1000  
+--&gt; setprintlimit(5);
+--&gt; A
+ans = 
+  &lt;double&gt;  - size: [100 1]
+ 
+Columns 1 to 1
+   -0.0361639933961680     
+   -0.140415140955028      
+    0.693389551907565      
+   -0.238187257168569      
+    0.599755385896831      
+
+... Output truncated - use setprintlimit function to see more of the output ...
+--&gt; setprintlimit(n)
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

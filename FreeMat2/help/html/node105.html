@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>CUMSUM Cumulative Summation Function</TITLE>
+<META NAME="description" CONTENT="CUMSUM Cumulative Summation Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node106.html">
+<LINK REL="previous" HREF="node104.html">
+<LINK REL="up" HREF="node101.html">
+<LINK REL="next" HREF="node106.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2885"
+  HREF="node106.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2881"
+  HREF="node101.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2875"
+  HREF="node104.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2883"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2886"
+  HREF="node106.html">FLOOR Floor Function</A>
+<B> Up:</B> <A NAME="tex2html2882"
+  HREF="node101.html">Elementary Functions</A>
+<B> Previous:</B> <A NAME="tex2html2876"
+  HREF="node104.html">CONJ Conjugate Function</A>
+ &nbsp <B>  <A NAME="tex2html2884"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2887"
+  HREF="node105.html#SECTION00374100000000000000">Usage</A>
+<LI><A NAME="tex2html2888"
+  HREF="node105.html#SECTION00374200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2889"
+  HREF="node105.html#SECTION00374300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00374000000000000000">
+CUMSUM Cumulative Summation Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00374100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the cumulative sum of an n-dimensional array along a given
+dimension.  The general syntax for its use is
+<PRE>
+  y = cumsum(x,d)
+</PRE>
+where <code>x</code> is a multidimensional array of numerical type, and <code>d</code>
+is the dimension along which to perform the cumulative sum.  The
+output <code>y</code> is the same size of <code>x</code>.  Integer types are promoted
+to <code>int32</code>. If the dimension <code>d</code> is not specified, then the
+cumulative sum is applied along the first non-singular dimension.
+
+<P>
+
+<H3><A NAME="SECTION00374200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The output is computed via
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_{d-1},j,m_{d+1},\ldots,m_{p}) =
+  \sum_{k=1}^{j} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}).
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00374300000000000000">
+Example</A>
+</H3>
+
+<P>
+The default action is to perform the cumulative sum along the
+first non-singular dimension.
+<PRE>
+--&gt; A = [5,1,3;3,2,1;0,3,1]
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             5              1              3  
+             3              2              1  
+             0              3              1  
+--&gt; cumsum(A)
+ans = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             5              1              3  
+             8              3              4  
+             8              6              5
+</PRE>
+To compute the cumulative sum along the columns:
+<PRE>
+--&gt; cumsum(A,2)
+ans = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             5              6              9  
+             3              5              6  
+             0              3              4
+</PRE>
+The cumulative sum also works along arbitrary dimensions
+<PRE>
+--&gt; B(:,:,1) = [5,2;8,9];
+--&gt; B(:,:,2) = [1,0;3,0]
+B = 
+  &lt;int32&gt;  - size: [2 2 2]
+(:,:,1) = 
+ 
+Columns 1 to 2
+             5              2  
+             8              9  
+(:,:,2) = 
+ 
+Columns 1 to 2
+             1              0  
+             3              0  
+--&gt; cumsum(B,3)
+ans = 
+  &lt;int32&gt;  - size: [2 2 2]
+(:,:,1) = 
+ 
+Columns 1 to 2
+             5              2  
+             8              9  
+(:,:,2) = 
+ 
+Columns 1 to 2
+             6              2  
+            11              9
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

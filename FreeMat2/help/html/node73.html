@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>I-J Square Root of Negative One</TITLE>
+<META NAME="description" CONTENT="I-J Square Root of Negative One">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node74.html">
+<LINK REL="previous" HREF="node72.html">
+<LINK REL="up" HREF="node71.html">
+<LINK REL="next" HREF="node74.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2348"
+  HREF="node74.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2344"
+  HREF="node71.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2338"
+  HREF="node72.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2346"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2349"
+  HREF="node74.html">INF Infinity Constant</A>
+<B> Up:</B> <A NAME="tex2html2345"
+  HREF="node71.html">Base Constants</A>
+<B> Previous:</B> <A NAME="tex2html2339"
+  HREF="node72.html">E Euler Constant (Base</A>
+ &nbsp <B>  <A NAME="tex2html2347"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2350"
+  HREF="node73.html#SECTION00332100000000000000">Usage</A>
+<LI><A NAME="tex2html2351"
+  HREF="node73.html#SECTION00332200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00332000000000000000">
+I-J Square Root of Negative One</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00332100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns a <code>complex</code> value that represents the square root of -1.  There are two
+functions that return the same value:
+<PRE>
+   y = i
+</PRE>
+and 
+<PRE>
+   y = j.
+</PRE>
+This allows either <code>i</code> or <code>j</code> to be used as loop indices.  The returned value is a 32-bit complex value.
+
+<P>
+
+<H3><A NAME="SECTION00332200000000000000">
+Example</A>
+</H3>
+
+<P>
+The following examples demonstrate a few calculations with <code>i</code>.
+<PRE>
+--&gt; i
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    0.00000000        1.0000000     i  
+--&gt; i^2
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+   -1.0000000         0.00000000    i
+</PRE>
+The same calculations with <code>j</code>:
+<PRE>
+--&gt; j
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    0.00000000        1.0000000     i  
+--&gt; j^2
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+   -1.0000000         0.00000000    i
+</PRE>
+Here is an example of how <code>i</code> can be used as a loop index and then recovered as the square root of -1.
+<PRE>
+--&gt; accum = 0; for i=1:100; accum = accum + i; end; accum
+ans = 
+  &lt;int32&gt;  - size: [1 1]
+          5050  
+--&gt; i
+ans = 
+  &lt;int32&gt;  - size: [1 1]
+           100  
+--&gt; clear i
+--&gt; i
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    0.00000000        1.0000000     i
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

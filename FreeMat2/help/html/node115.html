@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>FIND Find Non-zero Elements of An Array</TITLE>
+<META NAME="description" CONTENT="FIND Find Non-zero Elements of An Array">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node116.html">
+<LINK REL="previous" HREF="node114.html">
+<LINK REL="up" HREF="node113.html">
+<LINK REL="next" HREF="node116.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html3040"
+  HREF="node116.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3036"
+  HREF="node113.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3030"
+  HREF="node114.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3038"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3041"
+  HREF="node116.html">ONES Array of Ones</A>
+<B> Up:</B> <A NAME="tex2html3037"
+  HREF="node113.html">Array Generation and Manipulations</A>
+<B> Previous:</B> <A NAME="tex2html3031"
+  HREF="node114.html">DIAG Diagonal Matrix Construction/Extraction</A>
+ &nbsp <B>  <A NAME="tex2html3039"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html3042"
+  HREF="node115.html#SECTION00382100000000000000">Usage</A>
+<LI><A NAME="tex2html3043"
+  HREF="node115.html#SECTION00382200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00382000000000000000">
+FIND Find Non-zero Elements of An Array</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00382100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns a vector that contains the indicies of all non-zero elements 
+in an array.  The usage is
+<PRE>
+   y = find(x)
+</PRE>
+The indices returned are generalized column indices, meaning that if 
+the array <code>x</code> is of size <code>[d1,d2,...,dn]</code>, and the
+element <code>x(i1,i2,...,in)</code> is nonzero, then <code>y</code>
+will contain the integer
+<!-- MATH
+ \begin{displaymath}
+i_1 + (i_2-1) d_1 + (i_3-1) d_1 d_2 + \dots
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="512" HEIGHT="49" ALIGN="MIDDLE" BORDER="0"
+ SRC="img85.png"
+ ALT="$\displaystyle i_1 + (i_2-1) d_1 + (i_3-1) d_1 d_2 + \dots
+$">
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00382200000000000000">
+Example</A>
+</H3>
+
+<P>
+Some simple examples of its usage, and some common uses of <code>find</code> in FreeMat programs.
+<PRE>
+--&gt; a = [1,2,5,2,4];
+--&gt; find(a==2)
+ans = 
+  &lt;uint32&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+            2  
+            4
+</PRE>
+Here is an example of using find to replace elements of <code>A</code> that are <code>0</code> with the number <code>5</code>.
+<PRE>
+--&gt; A = [1,0,3;0,2,1;3,0,0]
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             1              0              3  
+             0              2              1  
+             3              0              0  
+--&gt; n = find(A==0)
+n = 
+  &lt;uint32&gt;  - size: [4 1]
+ 
+Columns 1 to 1
+            2  
+            4  
+            6  
+            9  
+--&gt; A(n) = 5
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             1              5              3  
+             5              2              1  
+             3              5              5
+</PRE>
+Incidentally, a better way to achieve the same concept is:
+<PRE>
+--&gt; A = [1,0,3;0,2,1;3,0,0]
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             1              0              3  
+             0              2              1  
+             3              0              0  
+--&gt; A(A==0) = 5
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             1              5              3  
+             5              2              1  
+             3              5              5
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

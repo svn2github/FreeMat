@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>MINUS Subtraction Operator</TITLE>
+<META NAME="description" CONTENT="MINUS Subtraction Operator">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node30.html">
+<LINK REL="previous" HREF="node28.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node30.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1339"
+  HREF="node30.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1335"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1329"
+  HREF="node28.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1337"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1340"
+  HREF="node30.html">PLUS Addition Operator</A>
+<B> Up:</B> <A NAME="tex2html1336"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1330"
+  HREF="node28.html">LOGICALOPS Logical Array Operators</A>
+ &nbsp <B>  <A NAME="tex2html1338"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1341"
+  HREF="node29.html#SECTION002310100000000000000">Usage</A>
+<LI><A NAME="tex2html1342"
+  HREF="node29.html#SECTION002310200000000000000">Function Internals</A>
+<LI><A NAME="tex2html1343"
+  HREF="node29.html#SECTION002310300000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION002310000000000000000">
+MINUS Subtraction Operator</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION002310100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Subtracts two numerical arrays (elementwise).  There are two forms
+for its use, both with the same general syntax:
+<PRE>
+  y = a - b
+</PRE>
+where <code>a</code> and <code>b</code> are <code>n</code>-dimensional arrays of numerical type.  In the
+first case, the two arguments are the same size, in which case, the 
+output <code>y</code> is the same size as the inputs, and is the element-wise
+difference of <code>a</code> and <code>b</code>.  In the second case, either <code>a</code> or <code>b</code> is a scalar, 
+in which case <code>y</code> is the same size as the larger argument,
+and is the difference of the scalar to each element of the other argument.
+
+<P>
+The type of <code>y</code> depends on the types of <code>a</code> and <code>b</code> using the type 
+promotion rules.  The types are ordered as:
+
+<OL>
+<LI><code>uint8</code> - unsigned, 8-bit integers range <code>[0,255]</code>
+</LI>
+<LI><code>int8</code> - signed, 8-bit integers <code>[-127,128]</code>
+</LI>
+<LI><code>uint16</code> - unsigned, 16-bit integers <code>[0,65535]</code>
+</LI>
+<LI><code>int16</code> - signed, 16-bit integers <code>[-32768,32767]</code>
+</LI>
+<LI><code>uint32</code> - unsigned, 32-bit integers <code>[0,4294967295]</code>
+</LI>
+<LI><code>int32</code> - signed, 32-bit integers <code>[-2147483648,2147483647]</code>
+</LI>
+<LI><code>float</code> - 32-bit floating point
+</LI>
+<LI><code>double</code> - 64-bit floating point
+</LI>
+<LI><code>complex</code> - 32-bit complex floating point
+</LI>
+<LI><code>dcomplex</code> - 64-bit complex floating point
+</LI>
+</OL>
+Note that the type promotion and combination rules work similar to 
+<code>C</code>.  Numerical overflow rules are also the same as <code>C</code>.
+
+<P>
+
+<H3><A NAME="SECTION002310200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+There are three formulae for the subtraction operator, depending on the
+sizes of the three arguments.  In the most general case, in which 
+the two arguments are the same size, the output is computed via:
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d) - b(m_1,\ldots,m_d)
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="339" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img24.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d) - b(m_1,\ldots,m_d)
+$">
+</DIV><P></P>
+If <code>a</code> is a scalar, then the output is computed via
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_d) = a - b(m_1,\ldots,m_d).
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="253" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img25.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_d) = a - b(m_1,\ldots,m_d).
+$">
+</DIV><P></P>
+On the other hand, if <code>b</code> is a scalar, then the output is computed via
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d) - b.
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="253" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img26.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d) - b.
+$">
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION002310300000000000000">
+Examples</A>
+</H3>
+
+<P>
+Here are some examples of using the subtraction operator.  First, a 
+straight-forward usage of the minus operator.  The first example
+is straightforward - the <code>int32</code> is the default type used for
+integer constants (same as in <code>C</code>), hence the output is the
+same type:
+<PRE>
+--&gt; 3 - 8
+ans = 
+  &lt;int32&gt;  - size: [1 1]
+            -5
+</PRE>
+Next, we use the floating point syntax to force one of the arguments
+to be a <code>double</code>, which results in the output being <code>double</code>:
+<PRE>
+--&gt; 3.1 - 2
+ans = 
+  &lt;double&gt;  - size: [1 1]
+    1.100000000000000
+</PRE>
+Note that if one of the arguments is complex-valued, the output will be
+complex also.
+<PRE>
+--&gt; a = 3 + 4*i
+a = 
+  &lt;complex&gt;  - size: [1 1]
+    3.0000000         4.0000000     i  
+--&gt; b = a - 2.0f
+b = 
+  &lt;complex&gt;  - size: [1 1]
+    1.0000000         4.0000000     i
+</PRE>
+If a <code>double</code> value is subtracted from a <code>complex</code>, the result is 
+promoted to <code>dcomplex</code>.
+<PRE>
+--&gt; b = a - 2.0
+b = 
+  &lt;dcomplex&gt;  - size: [1 1]
+    1.000000000000000        4.000000000000000    i
+</PRE>
+We can also demonstrate the three forms of the subtraction operator.  First
+the element-wise version:
+<PRE>
+--&gt; a = [1,2;3,4]
+a = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+             1              2  
+             3              4  
+--&gt; b = [2,3;6,7]
+b = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+             2              3  
+             6              7  
+--&gt; c = a - b
+c = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+            -1             -1  
+            -3             -3
+</PRE>
+Then the scalar versions
+<PRE>
+--&gt; c = a - 1
+c = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+             0              1  
+             2              3  
+--&gt; c = 1 - b
+c = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+            -1             -2  
+            -5             -6
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1339"
+  HREF="node30.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1335"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1329"
+  HREF="node28.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1337"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1340"
+  HREF="node30.html">PLUS Addition Operator</A>
+<B> Up:</B> <A NAME="tex2html1336"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1330"
+  HREF="node28.html">LOGICALOPS Logical Array Operators</A>
+ &nbsp <B>  <A NAME="tex2html1338"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

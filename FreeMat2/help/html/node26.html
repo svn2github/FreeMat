@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator</TITLE>
+<META NAME="description" CONTENT="HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node27.html">
+<LINK REL="previous" HREF="node25.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node27.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1295"
+  HREF="node27.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1291"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1285"
+  HREF="node25.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1293"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1296"
+  HREF="node27.html">LEFTDIVIDE Matrix Equation Solver/Divide</A>
+<B> Up:</B> <A NAME="tex2html1292"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1286"
+  HREF="node25.html">DOTTIMES Element-wise Multiplication Operator</A>
+ &nbsp <B>  <A NAME="tex2html1294"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1297"
+  HREF="node26.html#SECTION00237100000000000000">Usage</A>
+<LI><A NAME="tex2html1298"
+  HREF="node26.html#SECTION00237200000000000000">Function Internals</A>
+<LI><A NAME="tex2html1299"
+  HREF="node26.html#SECTION00237300000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00237000000000000000">
+HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00237100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the Hermitian of the argument (a 2D matrix).  The syntax for its use is
+<PRE>
+  y = a';
+</PRE>
+where <code>a</code> is a <code>M \times N</code> numerical matrix.  The output <code>y</code> is a numerical matrix
+of the same type of size <code>N \times M</code>.  This operator is the conjugating transpose,
+which is different from the transpose operator <code>.'</code> (which does not 
+conjugate complex values).
+
+<P>
+
+<H3><A NAME="SECTION00237200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The Hermitian operator is defined simply as
+<!-- MATH
+ \begin{displaymath}
+y_{i,j} = \overline{a_{j,i}}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="71" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img14.png"
+ ALT="$\displaystyle y_{i,j} = \overline{a_{j,i}}
+$">
+</DIV><P></P>
+where <code>y_ij</code> is the element in the <code>i</code>th row and <code>j</code>th column of the output matrix <code>y</code>.
+
+<P>
+
+<H3><A NAME="SECTION00237300000000000000">
+Examples</A>
+</H3>
+
+<P>
+A simple transpose example:
+<PRE>
+--&gt; A = [1,2,0;4,1,-1]
+A = 
+  &lt;int32&gt;  - size: [2 3]
+ 
+Columns 1 to 3
+             1              2              0  
+             4              1             -1  
+--&gt; A'
+ans = 
+  &lt;int32&gt;  - size: [3 2]
+ 
+Columns 1 to 2
+             1              4  
+             2              1  
+             0             -1
+</PRE>
+Here, we use a complex matrix to demonstrate how the Hermitian operator conjugates the entries.
+<PRE>
+--&gt; A = [1+i,2-i]
+A = 
+  &lt;complex&gt;  - size: [1 2]
+ 
+Columns 1 to 2
+    1.0000000         1.0000000     i     2.0000000        -1.0000000     i  
+--&gt; A.'
+ans = 
+  &lt;complex&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+    1.0000000         1.0000000     i  
+    2.0000000        -1.0000000     i
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>WHO Describe Currently Defined Variables</TITLE>
+<META NAME="description" CONTENT="WHO Describe Currently Defined Variables">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node89.html">
+<LINK REL="previous" HREF="node87.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node89.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2591"
+  HREF="node89.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2587"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2581"
+  HREF="node87.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2589"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2592"
+  HREF="node89.html">WHICH Get Information on</A>
+<B> Up:</B> <A NAME="tex2html2588"
+  HREF="node80.html">Inspection Functions</A>
+<B> Previous:</B> <A NAME="tex2html2582"
+  HREF="node87.html">TYPEOF Determine the Type</A>
+ &nbsp <B>  <A NAME="tex2html2590"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2593"
+  HREF="node88.html#SECTION00358100000000000000">Usage</A>
+<LI><A NAME="tex2html2594"
+  HREF="node88.html#SECTION00358200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00358000000000000000">
+WHO Describe Currently Defined Variables</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00358100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Reports information on either all variables in the current context
+or on a specified set of variables.  For each variable, the <code>who</code>
+function indicates the size and type of the variable as well as 
+if it is a global or persistent.  There are two formats for the 
+function call.  The first is the explicit form, in which a list
+of variables are provided:
+<PRE>
+  who a1 a2 ...
+</PRE>
+In the second form
+<PRE>
+  who
+</PRE>
+the <code>who</code> function lists all variables defined in the current 
+context (as well as global and persistent variables). Note that
+there are two alternate forms for calling the <code>who</code> function:
+<PRE>
+  who 'a1' 'a2' ...
+</PRE>
+and
+<PRE>
+  who('a1','a2',...)
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00358200000000000000">
+Example</A>
+</H3>
+
+<P>
+Here is an example of the general use of <code>who</code>, which lists all of the variables defined.
+<PRE>
+--&gt; c = [1,2,3];
+--&gt; f = 'hello';
+--&gt; p = randn(1,256);
+--&gt; who
+  Variable Name      Type   Flags   Size
+              c     int32           [1 3]
+              f    string           [1 5]
+              p    double           [1 256]
+</PRE>
+In the second case, we examine only a specific variable:
+<PRE>
+--&gt; who c
+  Variable Name      Type   Flags   Size
+              c     int32           [1 3]
+--&gt; who('c')
+  Variable Name      Type   Flags   Size
+              c     int32           [1 3]
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

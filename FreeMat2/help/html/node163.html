@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Plot Functions</TITLE>
+<META NAME="description" CONTENT="Plot Functions">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="previous" HREF="node153.html">
+<LINK REL="up" HREF="node152.html">
+<LINK REL="next" HREF="node164.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html3856"
+  HREF="node164.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3852"
+  HREF="node152.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3848"
+  HREF="node162.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3854"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3857"
+  HREF="node164.html">AXIS Plot Axis Set/Get</A>
+<B> Up:</B> <A NAME="tex2html3853"
+  HREF="node152.html">Graphing Functions</A>
+<B> Previous:</B> <A NAME="tex2html3849"
+  HREF="node162.html">ZOOM Image Zoom Function</A>
+ &nbsp <B>  <A NAME="tex2html3855"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00420000000000000000">
+Plot Functions</A>
+</H1>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html3858"
+  HREF="node164.html">AXIS Plot Axis Set/Get Function</A>
+<UL>
+<LI><A NAME="tex2html3859"
+  HREF="node164.html#SECTION00421100000000000000">Usage</A>
+<LI><A NAME="tex2html3860"
+  HREF="node164.html#SECTION00421200000000000000">Function Internals</A>
+<LI><A NAME="tex2html3861"
+  HREF="node164.html#SECTION00421300000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3862"
+  HREF="node165.html">CLOSEPLOT Close Plot Window</A>
+<UL>
+<LI><A NAME="tex2html3863"
+  HREF="node165.html#SECTION00422100000000000000">Usage</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3864"
+  HREF="node166.html">GRID Plot Grid Toggle Function</A>
+<UL>
+<LI><A NAME="tex2html3865"
+  HREF="node166.html#SECTION00423100000000000000">Usage</A>
+<LI><A NAME="tex2html3866"
+  HREF="node166.html#SECTION00423200000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3867"
+  HREF="node167.html">HOLD Plot Hold Toggle Function</A>
+<UL>
+<LI><A NAME="tex2html3868"
+  HREF="node167.html#SECTION00424100000000000000">Usage</A>
+<LI><A NAME="tex2html3869"
+  HREF="node167.html#SECTION00424200000000000000">Function Internals</A>
+<LI><A NAME="tex2html3870"
+  HREF="node167.html#SECTION00424300000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3871"
+  HREF="node168.html">NEWPLOT New Plot Window Function</A>
+<UL>
+<LI><A NAME="tex2html3872"
+  HREF="node168.html#SECTION00425100000000000000">Usage</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3873"
+  HREF="node169.html">USEPLOT Use Plot Window Function</A>
+<UL>
+<LI><A NAME="tex2html3874"
+  HREF="node169.html#SECTION00426100000000000000">Usage</A>
+<LI><A NAME="tex2html3875"
+  HREF="node169.html#SECTION00426200000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3876"
+  HREF="node170.html">PLOT Plot Function</A>
+<UL>
+<LI><A NAME="tex2html3877"
+  HREF="node170.html#SECTION00427100000000000000">Usage</A>
+<LI><A NAME="tex2html3878"
+  HREF="node170.html#SECTION00427200000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3879"
+  HREF="node171.html">PRINTPLOT Print an Plot To A File</A>
+<UL>
+<LI><A NAME="tex2html3880"
+  HREF="node171.html#SECTION00428100000000000000">Usage</A>
+<LI><A NAME="tex2html3881"
+  HREF="node171.html#SECTION00428200000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3882"
+  HREF="node172.html">SIZEPLOT Set Size of an Plot Window</A>
+<UL>
+<LI><A NAME="tex2html3883"
+  HREF="node172.html#SECTION00429100000000000000">Usage</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3884"
+  HREF="node173.html">XLABEL Plot X-axis Label Function</A>
+<UL>
+<LI><A NAME="tex2html3885"
+  HREF="node173.html#SECTION004210100000000000000">Usage</A>
+<LI><A NAME="tex2html3886"
+  HREF="node173.html#SECTION004210200000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3887"
+  HREF="node174.html">YLABEL Plot Y-axis Label Function</A>
+<UL>
+<LI><A NAME="tex2html3888"
+  HREF="node174.html#SECTION004211100000000000000">Usage</A>
+<LI><A NAME="tex2html3889"
+  HREF="node174.html#SECTION004211200000000000000">Example</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html3890"
+  HREF="node175.html">TITLE Plot Title Function</A>
+<UL>
+<LI><A NAME="tex2html3891"
+  HREF="node175.html#SECTION004212100000000000000">Usage</A>
+<LI><A NAME="tex2html3892"
+  HREF="node175.html#SECTION004212200000000000000">Example</A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

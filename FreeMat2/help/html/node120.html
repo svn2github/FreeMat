@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>RAND Uniform Random Number Generator</TITLE>
+<META NAME="description" CONTENT="RAND Uniform Random Number Generator">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node121.html">
+<LINK REL="previous" HREF="node119.html">
+<LINK REL="up" HREF="node119.html">
+<LINK REL="next" HREF="node121.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html3116"
+  HREF="node121.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3112"
+  HREF="node119.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3106"
+  HREF="node119.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3114"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3117"
+  HREF="node121.html">RANDN Gaussian (Normal) Random</A>
+<B> Up:</B> <A NAME="tex2html3113"
+  HREF="node119.html">Random Number Generation</A>
+<B> Previous:</B> <A NAME="tex2html3107"
+  HREF="node119.html">Random Number Generation</A>
+ &nbsp <B>  <A NAME="tex2html3115"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html3118"
+  HREF="node120.html#SECTION00391100000000000000">Usage</A>
+<LI><A NAME="tex2html3119"
+  HREF="node120.html#SECTION00391200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00391000000000000000">
+RAND Uniform Random Number Generator</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00391100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Creates an array of pseudo-random numbers of the specified size.
+The numbers are uniformly distributed on <code>[0,1)</code>.  
+Two seperate syntaxes are possible.  The first syntax specifies the array 
+dimensions as a sequence of scalar dimensions:
+<PRE>
+  y = rand(d1,d2,...,dn).
+</PRE>
+The resulting array has the given dimensions, and is filled with
+random numbers.  The type of <code>y</code> is <code>double</code>, a 64-bit floating
+point array.  To get arrays of other types, use the typecast 
+functions.
+
+<P>
+The second syntax specifies the array dimensions as a vector,
+where each element in the vector specifies a dimension length:
+<PRE>
+  y = rand([d1,d2,...,dn]).
+</PRE>
+This syntax is more convenient for calling <code>rand</code> using a 
+variable for the argument.
+
+<P>
+
+<H3><A NAME="SECTION00391200000000000000">
+Example</A>
+</H3>
+
+<P>
+The following example demonstrates an example of using the first form of the <code>rand</code> function.
+<PRE>
+--&gt; rand(2,2,2)
+ans = 
+  &lt;double&gt;  - size: [2 2 2]
+(:,:,1) = 
+ 
+Columns 1 to 2
+    0.375948080123701         0.913417011246359      
+    0.0183394813633033        0.357986518970905      
+(:,:,2) = 
+ 
+Columns 1 to 2
+    0.760399153957109         0.0990034711998352     
+    0.807678256521475         0.497230491069930
+</PRE>
+The second example demonstrates the second form of the <code>rand</code> function.
+<PRE>
+--&gt; rand([2,2,2])
+ans = 
+  &lt;double&gt;  - size: [2 2 2]
+(:,:,1) = 
+ 
+Columns 1 to 2
+    0.375948080123701         0.913417011246359      
+    0.0183394813633033        0.357986518970905      
+(:,:,2) = 
+ 
+Columns 1 to 2
+    0.760399153957109         0.0990034711998352     
+    0.807678256521475         0.497230491069930
+</PRE>
+The third example computes the mean and variance of a large number of uniform random numbers.  Recall that the mean should be <code>1/2</code>, and the variance should be <code>1/12 ~ 0.083</code>.
+<PRE>
+--&gt; x = rand(1,10000);
+--&gt; mean(x)
+ans = 
+  &lt;double&gt;  - size: [1 1]
+    0.502257369100108      
+--&gt; var(x)
+ans = 
+  &lt;double&gt;  - size: [1 1]
+    0.0839441072350084
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html3116"
+  HREF="node121.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3112"
+  HREF="node119.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3106"
+  HREF="node119.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3114"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3117"
+  HREF="node121.html">RANDN Gaussian (Normal) Random</A>
+<B> Up:</B> <A NAME="tex2html3113"
+  HREF="node119.html">Random Number Generation</A>
+<B> Previous:</B> <A NAME="tex2html3107"
+  HREF="node119.html">Random Number Generation</A>
+ &nbsp <B>  <A NAME="tex2html3115"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,303 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>MAX Maximum Function</TITLE>
+<META NAME="description" CONTENT="MAX Maximum Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node109.html">
+<LINK REL="previous" HREF="node107.html">
+<LINK REL="up" HREF="node101.html">
+<LINK REL="next" HREF="node109.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2928"
+  HREF="node109.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2924"
+  HREF="node101.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2918"
+  HREF="node107.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2926"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2929"
+  HREF="node109.html">MIN Minimum Function</A>
+<B> Up:</B> <A NAME="tex2html2925"
+  HREF="node101.html">Elementary Functions</A>
+<B> Previous:</B> <A NAME="tex2html2919"
+  HREF="node107.html">IMAG Imaginary Function</A>
+ &nbsp <B>  <A NAME="tex2html2927"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2930"
+  HREF="node108.html#SECTION00377100000000000000">Usage</A>
+<LI><A NAME="tex2html2931"
+  HREF="node108.html#SECTION00377200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2932"
+  HREF="node108.html#SECTION00377300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00377000000000000000">
+MAX Maximum Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00377100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the maximum of an array along a given dimension, or alternately, 
+computes two arrays (entry-wise) and keeps the smaller value for each array.
+As a result, the <code>max</code> function has a number of syntaxes.  The first
+one computes the maximum of an array along a given dimension.
+The first general syntax for its use is either
+<PRE>
+   [y,n] = max(x,[],d)
+</PRE>
+where <code>x</code> is a multidimensional array of numerical type, in which case the
+output <code>y</code> is the maximum of <code>x</code> along dimension <code>d</code>.  
+The second argument <code>n</code> is the index that results in the maximum.
+In the event that multiple maxima are present with the same value,
+the index of the first maximum is used. 
+The second general syntax for the use of the <code>max</code> function is
+<PRE>
+   [y,n] = max(x)
+</PRE> 
+In this case, the maximum is taken along the first non-singleton 
+dimension of <code>x</code>.  For complex data types,
+the maximum is based on the magnitude of the numbers.  NaNs are
+ignored in the calculations.
+The third general syntax for the use of the <code>max</code> function is as 
+a comparison function for pairs of arrays.  Here, the general syntax is
+<PRE>
+   y = max(x,z)
+</PRE>
+where <code>x</code> and <code>z</code> are either both numerical arrays of the same dimensions,
+or one of the two is a scalar.  In the first case, the output is the 
+same size as both arrays, and is defined elementwise by the smaller of the
+two arrays.  In the second case, the output is defined elementwise by the 
+smaller of the array entries and the scalar.
+
+<P>
+
+<H3><A NAME="SECTION00377200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+In the general version of the <code>max</code> function which is applied to
+a single array (using the <code>max(x,[],d)</code> or <code>max(x)</code> syntaxes),
+The output is computed via
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) =
+\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}),
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="552" HEIGHT="1033" ALIGN="MIDDLE" BORDER="0"
+ SRC="img78.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) =
+\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}),
+$">
+</DIV><P></P>
+and the output array <code>n</code> of indices is calculated via
+<!-- MATH
+ \begin{displaymath}
+n(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \arg
+\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="518" HEIGHT="67" ALIGN="MIDDLE" BORDER="0"
+ SRC="img79.png"
+ ALT="$\displaystyle n(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \arg
+\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+$">
+</DIV><P></P>
+In the two-array version (<code>max(x,z)</code>), the single output is computed as
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) =
+\begin{cases}
+  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\
+  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
+\end{cases}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="521" HEIGHT="31" BORDER="0"
+ SRC="img80.png"
+ ALT="\begin{displaymath}
+y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) =
+\begin{case...
+...1},k,m_{d+1},\ldots,m_{p}) &amp; z(\cdots) &lt; x(\cdots).
+\end{cases}\end{displaymath}">
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00377300000000000000">
+Example</A>
+</H3>
+
+<P>
+The following piece of code demonstrates various uses of the maximum
+function.  We start with the one-array version.
+<PRE>
+--&gt; A = [5,1,3;3,2,1;0,3,1]
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             5              1              3  
+             3              2              1  
+             0              3              1
+</PRE>
+We first take the maximum along the columns, resulting in a row vector.
+<PRE>
+--&gt; max(A)
+ans = 
+  &lt;int32&gt;  - size: [1 3]
+ 
+Columns 1 to 3
+             5              3              3
+</PRE>
+Next, we take the maximum along the rows, resulting in a column vector.
+<PRE>
+--&gt; max(A,[],2)
+ans = 
+  &lt;int32&gt;  - size: [3 1]
+ 
+Columns 1 to 1
+             5  
+             3  
+             3
+</PRE>
+When the dimension argument is not supplied, <code>max</code> acts along the first non-singular dimension.  For a row vector, this is the column direction:
+<PRE>
+--&gt; max([5,3,2,9])
+ans = 
+  &lt;int32&gt;  - size: [1 1]
+             9
+</PRE>
+
+<P>
+For the two-argument version, we can compute the smaller of two arrays,
+as in this example:
+<PRE>
+--&gt; a = int8(100*randn(4))
+a = 
+  &lt;int8&gt;  - size: [4 4]
+ 
+Columns 1 to 4
+   -3    59    -5   110  
+  -14    70   -16    -3  
+   69   -93     1   118  
+  -23     0    16   -74  
+--&gt; b = int8(100*randn(4))
+b = 
+  &lt;int8&gt;  - size: [4 4]
+ 
+Columns 1 to 4
+   64   -51    74    84  
+  -40   -62   -84  -126  
+ -102   -12    43   -54  
+   69    50   -56    29  
+--&gt; max(a,b)
+ans = 
+  &lt;int8&gt;  - size: [4 4]
+ 
+Columns 1 to 4
+   64    59    74   110  
+  -14    70   -16    -3  
+   69   -12    43   118  
+   69    50    16    29
+</PRE>
+Or alternately, we can compare an array with a scalar
+<PRE>
+--&gt; a = randn(2)
+a = 
+  &lt;double&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+   -0.0361639933961680        0.693389551907565      
+   -0.140415140955028        -0.238187257168569      
+--&gt; max(a,0)
+ans = 
+  &lt;double&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+    0.000000000000000         0.693389551907565      
+    0.000000000000000         0.000000000000000
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2928"
+  HREF="node109.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2924"
+  HREF="node101.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2918"
+  HREF="node107.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2926"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2929"
+  HREF="node109.html">MIN Minimum Function</A>
+<B> Up:</B> <A NAME="tex2html2925"
+  HREF="node101.html">Elementary Functions</A>
+<B> Previous:</B> <A NAME="tex2html2919"
+  HREF="node107.html">IMAG Imaginary Function</A>
+ &nbsp <B>  <A NAME="tex2html2927"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function</TITLE>
+<META NAME="description" CONTENT="ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node65.html">
+<LINK REL="previous" HREF="node63.html">
+<LINK REL="up" HREF="node60.html">
+<LINK REL="next" HREF="node65.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2203"
+  HREF="node65.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2199"
+  HREF="node60.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2193"
+  HREF="node63.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2201"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2204"
+  HREF="node65.html">COS Trigonometric Cosine Function</A>
+<B> Up:</B> <A NAME="tex2html2200"
+  HREF="node60.html">Trigonometric/Inverse Trig Functions</A>
+<B> Previous:</B> <A NAME="tex2html2194"
+  HREF="node63.html">ATAN Inverse Trigonometric Arctangent</A>
+ &nbsp <B>  <A NAME="tex2html2202"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2205"
+  HREF="node64.html#SECTION00324100000000000000">Usage</A>
+<LI><A NAME="tex2html2206"
+  HREF="node64.html#SECTION00324200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2207"
+  HREF="node64.html#SECTION00324300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00324000000000000000">
+ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00324100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the <code>atan2</code> function for its argument.  The general
+syntax for its use is
+<PRE>
+  y = atan2(y,x)
+</PRE>
+where <code>x</code> and <code>y</code> are <code>n</code>-dimensional arrays of numerical type.
+Integer types are promoted to the <code>double</code> type prior to
+calculation of the <code>atan2</code> function. The size of the output depends
+on the size of <code>x</code> and <code>y</code>.  If <code>x</code> is a scalar, then <code>z</code>
+is the same size as <code>y</code>, and if <code>y</code> is a scalar, then <code>z</code>
+is the same size as <code>x</code>.  The type of the output is equal to the type of
+|y/x|.  
+
+<P>
+
+<H3><A NAME="SECTION00324200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The function is defined (for real values) to return an 
+angle between <code>-pi</code> and <code>pi</code>.  The signs of <code>x</code> and <code>y</code>
+are used to find the correct quadrant for the solution.  For complex
+arguments, the two-argument arctangent is computed via
+<!-- MATH
+ \begin{displaymath}
+\mathrm{atan2}(y,x) \equiv -i \log\left(\frac{x+i y}{\sqrt{x^2+y^2}} \right)
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="127" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img52.png"
+ ALT="$\displaystyle \mathrm{atan2}(y,x) \equiv -i \log\left(\frac{x+i y}{\sqrt{x^2+y^2}} \right)
+$">
+</DIV><P></P>
+For real valued arguments <code>x,y</code>, the function is computed directly using 
+the standard C library's numerical <code>atan2</code> function. For both 
+real and complex arguments <code>x</code>, note that generally
+<!-- MATH
+ \begin{displaymath}
+\mathrm{atan2}(\sin(x),\cos(x)) \neq x,
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="241" HEIGHT="63" ALIGN="MIDDLE" BORDER="0"
+ SRC="img53.png"
+ ALT="$\displaystyle \mathrm{atan2}(\sin(x),\cos(x)) \neq x,
+$">
+</DIV><P></P>
+due to the periodicities of  <code>cos(x)</code> and <code>sin(x)</code>.
+
+<P>
+
+<H3><A NAME="SECTION00324300000000000000">
+Example</A>
+</H3>
+
+<P>
+The following code demonstates the difference between the <code>atan2</code> 
+function and the <code>atan</code> function over the range <code>[-pi,pi]</code>.
+<PRE>
+--&gt; x = linspace(-pi,pi);
+--&gt; sx = sin(x); cx = cos(x);
+--&gt; plot(x,atan(sx./cx),x,atan2(sx,cx))
+</PRE>
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="atan2plot.png"
+ ALT="1571">
+</DIV>
+
+<P>
+Note how the two-argument <code>atan2</code> function (green line) 
+correctly ``unwraps'' the phase of the angle, while the <code>atan</code> 
+function (red line) wraps the angle to the interval <code>[-\pi/2,\pi/2]</code>.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2203"
+  HREF="node65.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2199"
+  HREF="node60.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2193"
+  HREF="node63.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2201"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2204"
+  HREF="node65.html">COS Trigonometric Cosine Function</A>
+<B> Up:</B> <A NAME="tex2html2200"
+  HREF="node60.html">Trigonometric/Inverse Trig Functions</A>
+<B> Previous:</B> <A NAME="tex2html2194"
+  HREF="node63.html">ATAN Inverse Trigonometric Arctangent</A>
+ &nbsp <B>  <A NAME="tex2html2202"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

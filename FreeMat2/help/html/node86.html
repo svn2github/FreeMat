@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>SIZE Size of a Variable</TITLE>
+<META NAME="description" CONTENT="SIZE Size of a Variable">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node87.html">
+<LINK REL="previous" HREF="node85.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node87.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2563"
+  HREF="node87.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2559"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2553"
+  HREF="node85.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2561"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2564"
+  HREF="node87.html">TYPEOF Determine the Type</A>
+<B> Up:</B> <A NAME="tex2html2560"
+  HREF="node80.html">Inspection Functions</A>
+<B> Previous:</B> <A NAME="tex2html2554"
+  HREF="node85.html">SETPRINTLIMIT Set Limit For</A>
+ &nbsp <B>  <A NAME="tex2html2562"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2565"
+  HREF="node86.html#SECTION00356100000000000000">Usage</A>
+<LI><A NAME="tex2html2566"
+  HREF="node86.html#SECTION00356200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00356000000000000000">
+SIZE Size of a Variable</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00356100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns the size of a variable.  There are two syntaxes for its
+use.  The first syntax returns the size of the array as a vector
+of integers, one integer for each dimension
+<PRE>
+  [d1,d2,...,dn] = size(x)
+</PRE>
+The other format returns the size of <code>x</code> along a particular
+dimension:
+<PRE>
+  d = size(x,n)
+</PRE>
+where <code>n</code> is the dimension along which to return the size.
+
+<P>
+
+<H3><A NAME="SECTION00356200000000000000">
+Example</A>
+</H3>
+
+<P>
+<PRE>
+--&gt; a = randn(23,12,5);
+--&gt; size(a)
+ans = 
+  &lt;uint32&gt;  - size: [1 3]
+ 
+Columns 1 to 3
+           23            12             5
+</PRE>
+Here is an example of the second form of <code>size</code>.
+<PRE>
+--&gt; size(a,2)
+ans = 
+  &lt;uint32&gt;  - size: [1 1]
+           12
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

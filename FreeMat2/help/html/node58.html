@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>EXP Exponential Function</TITLE>
+<META NAME="description" CONTENT="EXP Exponential Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node59.html">
+<LINK REL="previous" HREF="node57.html">
+<LINK REL="up" HREF="node57.html">
+<LINK REL="next" HREF="node59.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2078"
+  HREF="node59.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2074"
+  HREF="node57.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2068"
+  HREF="node57.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2076"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2079"
+  HREF="node59.html">LOG Natural Logarithm Function</A>
+<B> Up:</B> <A NAME="tex2html2075"
+  HREF="node57.html">Transcendental Functions</A>
+<B> Previous:</B> <A NAME="tex2html2069"
+  HREF="node57.html">Transcendental Functions</A>
+ &nbsp <B>  <A NAME="tex2html2077"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2080"
+  HREF="node58.html#SECTION00311100000000000000">Usage</A>
+<LI><A NAME="tex2html2081"
+  HREF="node58.html#SECTION00311200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2082"
+  HREF="node58.html#SECTION00311300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00311000000000000000">
+EXP Exponential Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00311100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the <code>exp</code> function for its argument.  The general
+syntax for its use is
+<PRE>
+   y = exp(x)
+</PRE>
+where <code>x</code> is an <code>n</code>-dimensional array of numerical type.
+Integer types are promoted to the <code>double</code> type prior to
+calculation of the <code>exp</code> function.  Output <code>y</code> is of the
+same size and type as the input <code>x</code>, (unless <code>x</code> is an
+integer, in which case <code>y</code> is a <code>double</code> type).
+
+<P>
+
+<H3><A NAME="SECTION00311200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+Mathematically, the <code>exp</code> function is defined for all real
+valued arguments <code>x</code> as
+<!-- MATH
+ \begin{displaymath}
+\exp x \equiv e^{x},
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="25" HEIGHT="17" ALIGN="MIDDLE" BORDER="0"
+ SRC="img41.png"
+ ALT="$\displaystyle \exp x \equiv e^{x},
+$">
+</DIV><P></P>
+where
+<!-- MATH
+ \begin{displaymath}
+e = \sum_{0}^{\infty} \frac{1}{k!}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="81" HEIGHT="30" ALIGN="MIDDLE" BORDER="0"
+ SRC="img42.png"
+ ALT="$\displaystyle e = \sum_{0}^{\infty} \frac{1}{k!}
+$">
+</DIV><P></P>
+and is approximately <code>2.718281828459045</code> (returned by the function 
+<code>e</code>).  For complex values
+<code>z</code>, the famous Euler formula is used to calculate the 
+exponential
+<!-- MATH
+ \begin{displaymath}
+e^{z} = e^{|z|} \left[ \cos \Re z + i \sin \Re z \right]
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="75" HEIGHT="60" ALIGN="MIDDLE" BORDER="0"
+ SRC="img43.png"
+ ALT="$\displaystyle e^{z} = e^{\vert z\vert} \left[ \cos \Re z + i \sin \Re z \right]
+$">
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00311300000000000000">
+Example</A>
+</H3>
+
+<P>
+The following piece of code plots the real-valued <code>exp</code>
+function over the interval <code>[-1,1]</code>:
+<PRE>
+--&gt; x = linspace(-1,1);
+--&gt; plot(x,exp(x))
+</PRE>
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="expplot1.png"
+ ALT="1374">
+</DIV>
+
+<P>
+In the second example, we plot the unit circle in the 
+complex plane <code>e^{i 2 pi x}</code> for <code>x in [-1,1]</code>.
+<PRE>
+--&gt; x = linspace(-1,1);
+--&gt; plot(exp(-i*x*2*pi))
+</PRE>
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="expplot2.png"
+ ALT="1377">
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2078"
+  HREF="node59.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2074"
+  HREF="node57.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2068"
+  HREF="node57.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2076"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2079"
+  HREF="node59.html">LOG Natural Logarithm Function</A>
+<B> Up:</B> <A NAME="tex2html2075"
+  HREF="node57.html">Transcendental Functions</A>
+<B> Previous:</B> <A NAME="tex2html2069"
+  HREF="node57.html">Transcendental Functions</A>
+ &nbsp <B>  <A NAME="tex2html2077"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

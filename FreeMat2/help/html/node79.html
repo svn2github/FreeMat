@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>VAR Variance Function</TITLE>
+<META NAME="description" CONTENT="VAR Variance Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="previous" HREF="node78.html">
+<LINK REL="up" HREF="node77.html">
+<LINK REL="next" HREF="node80.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2436"
+  HREF="node80.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2432"
+  HREF="node77.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2428"
+  HREF="node78.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2434"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2437"
+  HREF="node80.html">Inspection Functions</A>
+<B> Up:</B> <A NAME="tex2html2433"
+  HREF="node77.html">Statistical Functions</A>
+<B> Previous:</B> <A NAME="tex2html2429"
+  HREF="node78.html">MEAN Mean Function</A>
+ &nbsp <B>  <A NAME="tex2html2435"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2438"
+  HREF="node79.html#SECTION00342100000000000000">Usage</A>
+<LI><A NAME="tex2html2439"
+  HREF="node79.html#SECTION00342200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2440"
+  HREF="node79.html#SECTION00342300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00342000000000000000">
+VAR Variance Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00342100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the variance of an array along a given dimension.  The general
+syntax for its use is
+<PRE>
+  y = var(x,d)
+</PRE>
+where <code>x</code> is an <code>n</code>-dimensions array of numerical type.
+The output is of the same numerical type as the input.  The argument
+<code>d</code> is optional, and denotes the dimension along which to take
+the variance.  The output <code>y</code> is the same size as <code>x</code>, except
+that it is singular along the mean direction.  So, for example,
+if <code>x</code> is a <code>3 x 3 x 4</code> array, and we compute the mean along
+dimension <code>d=2</code>, then the output is of size <code>3 x 1 x 4</code>.
+
+<P>
+
+<H3><A NAME="SECTION00342200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The output is computed via
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \frac{1}{N-1}
+\sum_{k=1}^{N} \left(x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+ - \bar{x}\right)^2,
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="536" HEIGHT="65" ALIGN="MIDDLE" BORDER="0"
+ SRC="img74.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \frac{1}{N-1}
+\sum...
+...1}^{N} \left(x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+- \bar{x}\right)^2,
+$">
+</DIV><P></P>
+where 
+<!-- MATH
+ \begin{displaymath}
+\bar{x}  = \frac{1}{N}
+\sum_{k=1}^{N} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="616" HEIGHT="66" ALIGN="MIDDLE" BORDER="0"
+ SRC="img75.png"
+ ALT="$\displaystyle \bar{x} = \frac{1}{N}
+\sum_{k=1}^{N} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+$">
+</DIV><P></P>
+If <code>d</code> is omitted, then the mean is taken along the 
+first non-singleton dimension of <code>x</code>. 
+
+<P>
+
+<H3><A NAME="SECTION00342300000000000000">
+Example</A>
+</H3>
+
+<P>
+The following piece of code demonstrates various uses of the var
+function
+<PRE>
+--&gt; A = [5,1,3;3,2,1;0,3,1]
+A = 
+  &lt;int32&gt;  - size: [3 3]
+ 
+Columns 1 to 3
+             5              1              3  
+             3              2              1  
+             0              3              1
+</PRE>
+We start by calling <code>var</code> without a dimension argument, in which 
+case it defaults to the first nonsingular dimension (in this case, 
+along the columns or <code>d = 1</code>).
+<PRE>
+--&gt; var(A)
+ans = 
+  &lt;double&gt;  - size: [1 3]
+ 
+Columns 1 to 2
+    6.333333333333333         1.000000000000000      
+ 
+Columns 3 to 3
+    1.333333333333333
+</PRE>
+Next, we take the variance along the rows.
+<PRE>
+--&gt; var(A,2)
+ans = 
+  &lt;double&gt;  - size: [3 1]
+ 
+Columns 1 to 1
+    4.000000000000000      
+    1.000000000000000      
+    2.333333333333333
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2436"
+  HREF="node80.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2432"
+  HREF="node77.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2428"
+  HREF="node78.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2434"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2437"
+  HREF="node80.html">Inspection Functions</A>
+<B> Up:</B> <A NAME="tex2html2433"
+  HREF="node77.html">Statistical Functions</A>
+<B> Previous:</B> <A NAME="tex2html2429"
+  HREF="node78.html">MEAN Mean Function</A>
+ &nbsp <B>  <A NAME="tex2html2435"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

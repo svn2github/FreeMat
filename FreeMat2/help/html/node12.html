@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>KEYWORDS Function Keywords</TITLE>
+<META NAME="description" CONTENT="KEYWORDS Function Keywords">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node13.html">
+<LINK REL="previous" HREF="node11.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node13.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1046"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1042"
+  HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1036"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1044"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1047"
+  HREF="node13.html">NARGIN Number of Input</A>
+<B> Up:</B> <A NAME="tex2html1043"
+  HREF="node10.html">Functions and Scripts</A>
+<B> Previous:</B> <A NAME="tex2html1037"
+  HREF="node11.html">FUNCTION Function Declarations</A>
+ &nbsp <B>  <A NAME="tex2html1045"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1048"
+  HREF="node12.html#SECTION00222100000000000000">Usage</A>
+<LI><A NAME="tex2html1049"
+  HREF="node12.html#SECTION00222200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00222000000000000000">
+KEYWORDS Function Keywords</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00222100000000000000">
+Usage</A>
+</H3>
+
+<P>
+A feature of IDL that FreeMat has adopted is a modified
+form of <code>keywords</code>.  The purpose of <code>keywords</code> is to 
+allow you to call a function with the arguments to the
+function specified in an arbitrary order.  To specify
+the syntax of <code>keywords</code>, suppose there is a function 
+with prototype
+<PRE>
+  function [out_1,...,out_M] = foo(in_1,...,in_N)
+</PRE>
+Then the general syntax for calling function <code>foo</code> using keywords
+is
+<PRE>
+  foo(val_1, val_2, /in_k=3)
+</PRE>
+which is exactly equivalent to
+<PRE>
+  foo(val_1, val_2, [], [], ..., [], 3),
+</PRE>
+where the 3 is passed as the k-th argument, or alternately,
+<PRE>
+  foo(val_1, val_2, /in_k)
+</PRE>
+which is exactly equivalent to
+<PRE>
+  foo(val_1, val_2, [], [], ..., [], logical(1)),
+</PRE>
+Note that you can even pass reference arguments using keywords.
+
+<P>
+
+<H3><A NAME="SECTION00222200000000000000">
+Example</A>
+</H3>
+
+<P>
+The most common use of keywords is in controlling options for
+functions.  For example, the following function takes a number
+of binary options that control its behavior.  For example,
+consider the following function with two arguments and two
+options.  The function has been written to properly use and
+handle keywords.  The result is much cleaner than the MATLAB
+approach involving testing all possible values of <code>nargin</code>,
+and forcing explicit empty brackets for don't care parameters.
+<PRE> keyfunc.m
+function c = keyfunc(a,b,operation,printit)
+  if (~exist('a') | ~exist('b')) 
+    error('keyfunc requires at least the first two 2 arguments'); 
+  end;
+  if (~exist('operation'))
+    % user did not define the operation, default to '+'
+    operation = '+';
+  end
+  if (~exist('printit'))
+    % user did not specify the printit flag, default is false
+    printit = 0;
+  end
+  % simple operation...
+  eval(['c = a ' operation ' b;']);
+  if (printit) 
+    printf('%f %s %f = %f',a,operation,b,c);
+  end
+</PRE>
+Now some examples of how this function can be called using
+<code>keywords</code>.
+<PRE>
+--&gt; keyfunc(1,3)                % specify a and b, defaults for the others
+ans = 
+  &lt;int32&gt;  - size: [1 1]
+             4  
+--&gt; keyfunc(1,3,/printit)       % specify printit is true
+1.000000 + 3.000000 = 4.000000ans = 
+  &lt;int32&gt;  - size: [1 1]
+             4  
+--&gt; keyfunc(/operation='-',2,3) % assigns a=2, b=3
+ans = 
+  &lt;int32&gt;  - size: [1 1]
+            -1  
+--&gt; keyfunc(4,/operation='*',/printit) % error as b is unspecified
+Error: keyfunc requires at least the first two 2 arguments
+   at line 3 of file /home/basu/FreeMat2/help/mtex/keyfunc.m
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1046"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1042"
+  HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1036"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1044"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1047"
+  HREF="node13.html">NARGIN Number of Input</A>
+<B> Up:</B> <A NAME="tex2html1043"
+  HREF="node10.html">Functions and Scripts</A>
+<B> Previous:</B> <A NAME="tex2html1037"
+  HREF="node11.html">FUNCTION Function Declarations</A>
+ &nbsp <B>  <A NAME="tex2html1045"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

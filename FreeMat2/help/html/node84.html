@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>ISEMPTY Test For Variable Empty</TITLE>
+<META NAME="description" CONTENT="ISEMPTY Test For Variable Empty">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node85.html">
+<LINK REL="previous" HREF="node83.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node85.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2535"
+  HREF="node85.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2531"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2525"
+  HREF="node83.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2533"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2536"
+  HREF="node85.html">SETPRINTLIMIT Set Limit For</A>
+<B> Up:</B> <A NAME="tex2html2532"
+  HREF="node80.html">Inspection Functions</A>
+<B> Previous:</B> <A NAME="tex2html2526"
+  HREF="node83.html">GETPRINTLIMIT Get Limit For</A>
+ &nbsp <B>  <A NAME="tex2html2534"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2537"
+  HREF="node84.html#SECTION00354100000000000000">Usage</A>
+<LI><A NAME="tex2html2538"
+  HREF="node84.html#SECTION00354200000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00354000000000000000">
+ISEMPTY Test For Variable Empty</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00354100000000000000">
+Usage</A>
+</H3>
+
+<P>
+The <code>isempty</code> function returns a boolean that indicates
+if the argument variable is empty or not.  The general
+syntax for its use is
+<PRE>
+  y = isempty(x).
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00354200000000000000">
+Examples</A>
+</H3>
+
+<P>
+Here are some examples of the <code>isempty</code> function
+<PRE>
+--&gt; a = []
+a = 
+  &lt;double&gt;  - size: []
+  []
+--&gt; isempty(a)
+ans = 
+  &lt;logical&gt;  - size: [1 1]
+ 1  
+--&gt; b = 1:3
+b = 
+  &lt;int32&gt;  - size: [1 3]
+ 
+Columns 1 to 3
+             1              2              3  
+--&gt; isempty(b)
+ans = 
+  &lt;logical&gt;  - size: [1 1]
+ 0
+</PRE>
+Note that if the variable is not defined, <code>isempty</code> 
+does not return true.
+<PRE>
+--&gt; isempty(x)
+Error: Undefined function or variable x
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

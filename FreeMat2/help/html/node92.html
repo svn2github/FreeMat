@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>COMPLEX Convert to 32-bit Complex Floating Point</TITLE>
+<META NAME="description" CONTENT="COMPLEX Convert to 32-bit Complex Floating Point">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node93.html">
+<LINK REL="previous" HREF="node91.html">
+<LINK REL="up" HREF="node91.html">
+<LINK REL="next" HREF="node93.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2670"
+  HREF="node93.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2666"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2660"
+  HREF="node91.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2668"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2671"
+  HREF="node93.html">DCOMPLEX Convert to 32-bit</A>
+<B> Up:</B> <A NAME="tex2html2667"
+  HREF="node91.html">Type Cast Functions</A>
+<B> Previous:</B> <A NAME="tex2html2661"
+  HREF="node91.html">Type Cast Functions</A>
+ &nbsp <B>  <A NAME="tex2html2669"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2672"
+  HREF="node92.html#SECTION00361100000000000000">Usage</A>
+<LI><A NAME="tex2html2673"
+  HREF="node92.html#SECTION00361200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00361000000000000000">
+COMPLEX Convert to 32-bit Complex Floating Point</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00361100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Converts the argument to a 32-bit complex floating point number.  The syntax
+for its use is
+<PRE>
+   y = complex(x)
+</PRE>
+where <code>x</code> is an <code>n</code>-dimensional numerical array.  Conversion follows the general C rules.  Note that both <code>NaN</code> and <code>Inf</code> in the real and imaginary parts are both preserved under type conversion.
+
+<P>
+
+<H3><A NAME="SECTION00361200000000000000">
+Example</A>
+</H3>
+
+<P>
+The following piece of code demonstrates several uses of <code>complex</code>.  First, we convert from an integer (the argument is an integer because no decimal is present):
+<PRE>
+--&gt; complex(200)
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+  200.00000           0.00000000    i
+</PRE>
+In the next example, a double precision argument is passed in (the presence of a decimal without the <code>f</code> suffix implies double precision).
+<PRE>
+--&gt; complex(400.0)
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+  400.00000           0.00000000    i
+</PRE>
+In the next example, a dcomplex argument is passed in. 
+<PRE>
+--&gt; complex(3.0+4.0*i)
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    3.0000000         4.0000000     i
+</PRE>
+In the next example, a string argument is passed in.  The string argument is converted into an integer array corresponding to the ASCII values of each character.
+<PRE>
+--&gt; complex('he')
+ans = 
+  &lt;complex&gt;  - size: [1 2]
+ 
+Columns 1 to 2
+  104.00000           0.00000000    i   101.00000           0.00000000    i
+</PRE>
+In the next example, the <code>NaN</code> argument is converted.
+<PRE>
+--&gt; complex(nan)
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    nan               0.00000000    i
+</PRE>
+In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
+<PRE>
+--&gt; complex({4})
+Error: Cannot convert cell-arrays to any other type.
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2670"
+  HREF="node93.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2666"
+  HREF="node91.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2660"
+  HREF="node91.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2668"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2671"
+  HREF="node93.html">DCOMPLEX Convert to 32-bit</A>
+<B> Up:</B> <A NAME="tex2html2667"
+  HREF="node91.html">Type Cast Functions</A>
+<B> Previous:</B> <A NAME="tex2html2661"
+  HREF="node91.html">Type Cast Functions</A>
+ &nbsp <B>  <A NAME="tex2html2669"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>LEFTDIVIDE Matrix Equation Solver/Divide Operator</TITLE>
+<META NAME="description" CONTENT="LEFTDIVIDE Matrix Equation Solver/Divide Operator">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node28.html">
+<LINK REL="previous" HREF="node26.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node28.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1310"
+  HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1306"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1300"
+  HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1308"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1311"
+  HREF="node28.html">LOGICALOPS Logical Array Operators</A>
+<B> Up:</B> <A NAME="tex2html1307"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1301"
+  HREF="node26.html">HERMITIAN Matrix Hermitian (Conjugate</A>
+ &nbsp <B>  <A NAME="tex2html1309"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1312"
+  HREF="node27.html#SECTION00238100000000000000">Usage</A>
+<LI><A NAME="tex2html1313"
+  HREF="node27.html#SECTION00238200000000000000">Function Internals</A>
+<LI><A NAME="tex2html1314"
+  HREF="node27.html#SECTION00238300000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00238000000000000000">
+LEFTDIVIDE Matrix Equation Solver/Divide Operator</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00238100000000000000">
+Usage</A>
+</H3>
+
+<P>
+The divide operator <code>\</code> is really a combination of three
+operators, all of which have the same general syntax:
+<PRE>
+  Y = A \ B
+</PRE>
+where <code>A</code> and <code>B</code> are arrays of numerical type.  The result <code>Y</code> depends
+on which of the following three situations applies to the arguments
+<code>A</code> and <code>B</code>:
+
+<OL>
+<LI><code>A</code> is a scalar, <code>B</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is each element of <code>B</code> divided by the scalar <code>A</code>.
+</LI>
+<LI><code>B</code> is a scalar, <code>A</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is the scalar <code>B</code> divided by each element of <code>A</code>.
+</LI>
+<LI><code>A,B</code> are matrices with the same number of rows, i.e., <code>A</code> is of size <code>M \times K</code>, and <code>B</code> is of size <code>M \times L</code>, in which case the output is of size <code>K \times L</code>.
+</LI>
+</OL>
+The output follows the standard type promotion rules, although in the first two cases, if <code>A</code> and <code>B</code> are integers, the output is an integer also, while in the third case if <code>A</code> and <code>B</code> are integers, the output is of type <code>double</code>.
+
+<P>
+A few additional words about the third version, in which <code>A</code> and <code>B</code> are matrices.  Very loosely speaking, <code>Y</code> is the matrix that satisfies <code>A * Y = B</code>.  In cases where such a matrix exists.  If such a matrix does not exist, then a matrix <code>Y</code> is returned that approximates <code>A * Y \approx B</code>.
+
+<P>
+
+<H3><A NAME="SECTION00238200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+There are three formulae for the times operator.  For the first form
+<!-- MATH
+ \begin{displaymath}
+Y(m_1,\ldots,m_d) = \frac{B(m_1,\ldots,m_d)}{A},
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="240" HEIGHT="53" ALIGN="MIDDLE" BORDER="0"
+ SRC="img15.png"
+ ALT="$\displaystyle Y(m_1,\ldots,m_d) = \frac{B(m_1,\ldots,m_d)}{A},
+$">
+</DIV><P></P>
+and the second form
+<!-- MATH
+ \begin{displaymath}
+Y(m_1,\ldots,m_d) = \frac{B}{A(m_1,\ldots,m_d)}.
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="239" HEIGHT="51" ALIGN="MIDDLE" BORDER="0"
+ SRC="img16.png"
+ ALT="$\displaystyle Y(m_1,\ldots,m_d) = \frac{B}{A(m_1,\ldots,m_d)}.
+$">
+</DIV><P></P>
+In the third form, the calculation of the output depends on the size of <code>A</code>. Because each column of <code>B</code> is treated independantly, we can rewrite the equation <code>A Y = B</code> as
+<!-- MATH
+ \begin{displaymath}
+A [y_1, y_2,\ldots, y_l] = [b_1, b_2, \ldots, b_l]
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="222" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img17.png"
+ ALT="$\displaystyle A [y_1, y_2,\ldots, y_l] = [b_1, b_2, \ldots, b_l]
+$">
+</DIV><P></P>
+where <code>y_i</code> are the columns of <code>Y</code>, and <code>b_i</code> are the columns of the matrix <code>B</code>. If <code>A</code> is a square matrix, then the LAPACK routine <code>*gesvx</code> (where the <code>*</code> is replaced with <code>sdcz</code> depending on the type of the arguments) is used, which uses an LU decomposition of <code>A</code> to solve the sequence of equations sequentially.  If <code>A</code> is singular, then a warning is emitted. 
+
+<P>
+On the other hand, if <code>A</code> is rectangular, then the LAPACK routine <code>*gelsy</code> is used.  Note that these routines are designed to work with matrices <code>A</code> that are full rank - either full column rank or full row rank.  If <code>A</code> fails to satisfy this assumption, a warning is emitted.  If <code>A</code> has full column rank (and thus necessarily has more rows than columns), then theoretically, this operator finds the columns <code>y_i</code> that satisfy:
+<!-- MATH
+ \begin{displaymath}
+y_i = \arg \min_y \| A y - b_i \|_2
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="168" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
+ SRC="img18.png"
+ ALT="$\displaystyle y_i = \arg \min_y \Vert A y - b_i \Vert _2
+$">
+</DIV><P></P>
+and each column is thus the Least Squares solution of <code>A y = b_i</code>.  On the other hand, if <code>A</code> has full row rank (and thus necessarily has more columns than rows), then theoretically, this operator finds the columns <code>y_i</code> that satisfy
+<!-- MATH
+ \begin{displaymath}
+y_i = \arg \min_{A y = b_i} \| y \|_2
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="134" HEIGHT="36" ALIGN="MIDDLE" BORDER="0"
+ SRC="img19.png"
+ ALT="$\displaystyle y_i = \arg \min_{A y = b_i} \Vert y \Vert _2
+$">
+</DIV><P></P>
+and each column is thus the Minimum Norm vector <code>y_i</code> that satisfies <code>A y_i = b_i</code>.  
+In the event that the matrix <code>A</code> is neither full row rank nor full column rank, a solution is returned, that is the minimum norm least squares solution.  The solution is computed using an orthogonal factorization technique that is documented in the LAPACK User's Guide (see the References section for details).
+
+<P>
+
+<H3><A NAME="SECTION00238300000000000000">
+Examples</A>
+</H3>
+
+<P>
+Here are some simple examples of the divide operator.  We start with a simple example of a full rank, square matrix:
+<PRE>
+--&gt; A = [1,1;0,1]
+A = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+             1              1  
+             0              1
+</PRE>
+Suppose we wish to solve
+<!-- MATH
+ \begin{displaymath}
+\begin{bmatrix} 1 & 1 \\0 & 1 \end{bmatrix}
+  \begin{bmatrix} y_1 \\y_2 \end{bmatrix}
+ =
+  \begin{bmatrix} 3 \\2 \end{bmatrix}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="133" HEIGHT="54" ALIGN="MIDDLE" BORDER="0"
+ SRC="img20.png"
+ ALT="$\displaystyle \begin{bmatrix}1 &amp; 1 \\ 0 &amp; 1 \end{bmatrix}\begin{bmatrix}y_1 \\ y_2 \end{bmatrix}=
+\begin{bmatrix}3 \\ 2 \end{bmatrix}$">
+</DIV><P></P>
+(which by inspection has the solution <code>y_1 = 1</code>, <code>y_2 = 2</code>).  Thus we compute:
+<PRE>
+--&gt; B = [3;2]
+B = 
+  &lt;int32&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+             3  
+             2  
+--&gt; Y = A\B
+Y = 
+  &lt;double&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+    1.000000000000000      
+    2.000000000000000
+</PRE>
+
+<P>
+Suppose we wish to solve a trivial Least Squares (LS) problem.  We want to find a simple scaling of the vector <code>[1;1]</code> that is closest to the point <code>[2,1]</code>.  This is equivalent to solving
+<!-- MATH
+ \begin{displaymath}
+\begin{bmatrix} 1 \\1 \end{bmatrix} y = \begin{bmatrix} 2 \\1 \end{bmatrix}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="86" HEIGHT="54" ALIGN="MIDDLE" BORDER="0"
+ SRC="img21.png"
+ ALT="$\displaystyle \begin{bmatrix}1 \\ 1 \end{bmatrix} y = \begin{bmatrix}2 \\ 1 \end{bmatrix}$">
+</DIV><P></P>
+in a least squares sense.  For fun, we can calculate the solution using calculus by hand.  The error we wish to minimize is
+<!-- MATH
+ \begin{displaymath}
+\varepsilon(y) = (y - 2)^2 + (y-1)^2.
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="188" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img22.png"
+ ALT="$\displaystyle \varepsilon(y) = (y - 2)^2 + (y-1)^2.
+$">
+</DIV><P></P>
+Taking a derivative with respect to <code>y</code>, and setting to zero (which we must have for an extrema when <code>y</code> is unconstrained)
+<!-- MATH
+ \begin{displaymath}
+2 (y-2) + 2 (y-1) = 0
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="165" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img23.png"
+ ALT="$\displaystyle 2 (y-2) + 2 (y-1) = 0
+$">
+</DIV><P></P>
+which we can simplify to <code>4y = 6</code> or <code>y = 3/2</code> (we must, technically, check to make sure this is a minimum, and not a maximum or an inflection point).  Here is the same calculation performed using FreeMat:
+<PRE>
+--&gt; A = [1;1]
+A = 
+  &lt;int32&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+             1  
+             1  
+--&gt; B = [2;1]
+B = 
+  &lt;int32&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+             2  
+             1  
+--&gt; A\B
+ans = 
+  &lt;double&gt;  - size: [1 1]
+    1.500000000000000
+</PRE>
+which is the same solution.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1310"
+  HREF="node28.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1306"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1300"
+  HREF="node26.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1308"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1311"
+  HREF="node28.html">LOGICALOPS Logical Array Operators</A>
+<B> Up:</B> <A NAME="tex2html1307"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1301"
+  HREF="node26.html">HERMITIAN Matrix Hermitian (Conjugate</A>
+ &nbsp <B>  <A NAME="tex2html1309"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

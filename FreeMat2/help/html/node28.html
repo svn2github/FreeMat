@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>LOGICALOPS Logical Array Operators</TITLE>
+<META NAME="description" CONTENT="LOGICALOPS Logical Array Operators">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node29.html">
+<LINK REL="previous" HREF="node27.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node29.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1325"
+  HREF="node29.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1321"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1315"
+  HREF="node27.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1323"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1326"
+  HREF="node29.html">MINUS Subtraction Operator</A>
+<B> Up:</B> <A NAME="tex2html1322"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1316"
+  HREF="node27.html">LEFTDIVIDE Matrix Equation Solver/Divide</A>
+ &nbsp <B>  <A NAME="tex2html1324"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1327"
+  HREF="node28.html#SECTION00239100000000000000">Usage</A>
+<LI><A NAME="tex2html1328"
+  HREF="node28.html#SECTION00239200000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00239000000000000000">
+LOGICALOPS Logical Array Operators</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00239100000000000000">
+Usage</A>
+</H3>
+
+<P>
+There are three Boolean operators available in FreeMat.  The syntax for their use is:
+<PRE>
+  y = ~x
+  y = a &amp; b
+  y = a | b
+</PRE>
+where <code>x</code>, <code>a</code> and <code>b</code> are <code>logical</code> arrays.  The operators are
+
+<UL>
+<LI>NOT (<code>~</code>) - output <code>y</code> is true if the corresponding element of <code>x</code> is false, and ouput <code>y</code> is false if the corresponding element of <code>x</code> is true.
+</LI>
+<LI>OR (<code></code>|) - output <code>y</code> is true if corresponding element of <code>a</code> is true or if corresponding element of <code>b</code> is true (or if both are true).
+</LI>
+<LI>AND (<code>\&</code>) - output <code>y</code> is true only if both the corresponding elements of <code>a</code> and <code>b</code> are both true.
+</LI>
+</UL>
+The binary operators AND and OR can take scalar arguments as well as vector arguments, in which case, the scalar is operated on with each element of the vector.
+
+<P>
+
+<H3><A NAME="SECTION00239200000000000000">
+Examples</A>
+</H3>
+
+<P>
+Some simple examples of logical operators.  Suppose we want to calculate the exclusive-or (XOR) of two vectors of logical variables.  First, we create a pair of vectors to perform the XOR operation on:
+<PRE>
+--&gt; a = (randn(1,6)&gt;0)
+a = 
+  &lt;logical&gt;  - size: [1 6]
+ 
+Columns 1 to 6
+ 0  0  1  0  1  1  
+--&gt; b = (randn(1,6)&gt;0)
+b = 
+  &lt;logical&gt;  - size: [1 6]
+ 
+Columns 1 to 6
+ 0  0  0  0  1  1
+</PRE>
+Next, we can compute the OR of <code>a</code> and <code>b</code>:
+<PRE>
+--&gt; c = a | b
+c = 
+  &lt;logical&gt;  - size: [1 6]
+ 
+Columns 1 to 6
+ 0  0  1  0  1  1
+</PRE>
+However, the XOR and OR operations differ on the fifth entry - the XOR would be false, since it is true if and only if exactly one of the two inputs is true.  To isolate this case, we can AND the two vectors, to find exactly those entries that appear as true in both <code>a</code> and <code>b</code>:
+<PRE>
+--&gt; d = a &amp; b
+d = 
+  &lt;logical&gt;  - size: [1 6]
+ 
+Columns 1 to 6
+ 0  0  0  0  1  1
+</PRE>
+At this point, we can modify the contents of <code>c</code> in two ways - the Boolean way is to AND <code>\sim d</code> with <code>c</code>, like so
+<PRE>
+--&gt; xor = c &amp; (~d)
+xor = 
+  &lt;logical&gt;  - size: [1 6]
+ 
+Columns 1 to 6
+ 0  0  1  0  0  0
+</PRE>
+The other way to do this is simply force <code>c(d) = 0</code>, which uses the logical indexing mode of FreeMat (see the chapter on indexing for more details).  This, however, will cause <code>c</code> to become an <code>int32</code> type, as opposed to a logical type.
+<PRE>
+--&gt; c(d) = 0
+c = 
+  &lt;int32&gt;  - size: [1 6]
+ 
+Columns 1 to 5
+             0              0              1              0              0  
+ 
+Columns 6 to 6
+             0
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1325"
+  HREF="node29.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1321"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1315"
+  HREF="node27.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1323"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1326"
+  HREF="node29.html">MINUS Subtraction Operator</A>
+<B> Up:</B> <A NAME="tex2html1322"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1316"
+  HREF="node27.html">LEFTDIVIDE Matrix Equation Solver/Divide</A>
+ &nbsp <B>  <A NAME="tex2html1324"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>TRY-CATCH Try and Catch Statement</TITLE>
+<META NAME="description" CONTENT="TRY-CATCH Try and Catch Statement">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node46.html">
+<LINK REL="previous" HREF="node44.html">
+<LINK REL="up" HREF="node34.html">
+<LINK REL="next" HREF="node46.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1600"
+  HREF="node46.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1596"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1590"
+  HREF="node44.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1598"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1601"
+  HREF="node46.html">WHILE While Loop</A>
+<B> Up:</B> <A NAME="tex2html1597"
+  HREF="node34.html">Flow Control</A>
+<B> Previous:</B> <A NAME="tex2html1591"
+  HREF="node44.html">SWITCH Switch statement</A>
+ &nbsp <B>  <A NAME="tex2html1599"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1602"
+  HREF="node45.html#SECTION002411100000000000000">Usage</A>
+<LI><A NAME="tex2html1603"
+  HREF="node45.html#SECTION002411200000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION002411000000000000000">
+TRY-CATCH Try and Catch Statement</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION002411100000000000000">
+Usage</A>
+</H3>
+
+<P>
+The <code>try</code> and <code>catch</code> statements are used for error handling
+and control.  A concept present in <code>C++</code>, the <code>try</code> and <code>catch</code>
+statements are used with two statement blocks as follows
+<PRE>
+   try
+     statements_1
+   catch
+     statements_2
+   end
+</PRE>
+The meaning of this construction is: try to execute <code>statements_1</code>,
+and if any errors occur during the execution, then execute the
+code in <code>statements_2</code>.  An error can either be a FreeMat generated
+error (such as a syntax error in the use of a built in function), or
+an error raised with the <code>error</code> command.
+
+<P>
+
+<H3><A NAME="SECTION002411200000000000000">
+Examples</A>
+</H3>
+
+<P>
+Here is an example of a function that uses error control via <code>try</code>
+and <code>catch</code> to check for failures in <code>fopen</code>.
+<PRE> read_file.m
+function c = read_file(filename)
+try
+   fp = fopen(filename,'r');
+   c = fgetline(fp);
+   fclose(fp);
+catch
+   c = ['could not open file because of error :' lasterr]
+end
+</PRE>
+Now we try it on an example file - first one that does not exist,
+and then on one that we create (so that we know it exists).
+<PRE>
+--&gt; read_file('this_filename_is_invalid')
+c = 
+  &lt;string&gt;  - size: [1 63]
+ could not open file because of error :No such file or directory
+ans = 
+  &lt;string&gt;  - size: [1 63]
+ could not open file because of error :No such file or directory
+--&gt; fp = fopen('test_text.txt','w');
+--&gt; fprintf(fp,'a line of text\n');
+--&gt; fclose(fp);
+--&gt; read_file('test_text.txt')
+ans = 
+  &lt;string&gt;  - size: [1 15]
+ a line of text
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1600"
+  HREF="node46.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1596"
+  HREF="node34.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1590"
+  HREF="node44.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1598"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1601"
+  HREF="node46.html">WHILE While Loop</A>
+<B> Up:</B> <A NAME="tex2html1597"
+  HREF="node34.html">Flow Control</A>
+<B> Previous:</B> <A NAME="tex2html1591"
+  HREF="node44.html">SWITCH Switch statement</A>
+ &nbsp <B>  <A NAME="tex2html1599"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

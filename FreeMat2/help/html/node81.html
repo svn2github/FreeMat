@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>CLEAR Clear or Delete a Variable</TITLE>
+<META NAME="description" CONTENT="CLEAR Clear or Delete a Variable">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node82.html">
+<LINK REL="previous" HREF="node80.html">
+<LINK REL="up" HREF="node80.html">
+<LINK REL="next" HREF="node82.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2493"
+  HREF="node82.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2489"
+  HREF="node80.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2483"
+  HREF="node80.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2491"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2494"
+  HREF="node82.html">EXIST Text Existence of</A>
+<B> Up:</B> <A NAME="tex2html2490"
+  HREF="node80.html">Inspection Functions</A>
+<B> Previous:</B> <A NAME="tex2html2484"
+  HREF="node80.html">Inspection Functions</A>
+ &nbsp <B>  <A NAME="tex2html2492"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2495"
+  HREF="node81.html#SECTION00351100000000000000">Usage</A>
+<LI><A NAME="tex2html2496"
+  HREF="node81.html#SECTION00351200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00351000000000000000">
+CLEAR Clear or Delete a Variable</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00351100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Clears a set of variables from the current context, or alternately, 
+delete all variables defined in the current context.  There are
+two formats for the function call.  The first is the explicit form
+in which a list of variables are provided:
+<PRE>
+   clear a1 a2 ...
+</PRE>
+The variables can be persistent or global, and they will be deleted.
+The second form
+<PRE>
+   clear 'all'
+</PRE>
+clears all variables from the current context.
+
+<P>
+
+<H3><A NAME="SECTION00351200000000000000">
+Example</A>
+</H3>
+
+<P>
+Here is a simple example of using <code>clear</code> to delete a variable.  First, we create a variable called <code>a</code>:
+<PRE>
+--&gt; a = 53
+a = 
+  &lt;int32&gt;  - size: [1 1]
+            53
+</PRE>
+Next, we clear <code>a</code> using the <code>clear</code> function, and verify that it is deleted.
+<PRE>
+--&gt; clear a
+--&gt; a
+Error: Undefined function or variable a
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

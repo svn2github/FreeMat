@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>EVAL Evaluate a String</TITLE>
+<META NAME="description" CONTENT="EVAL Evaluate a String">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node49.html">
+<LINK REL="previous" HREF="node47.html">
+<LINK REL="up" HREF="node47.html">
+<LINK REL="next" HREF="node49.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1656"
+  HREF="node49.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1652"
+  HREF="node47.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1646"
+  HREF="node47.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1654"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1657"
+  HREF="node49.html">FEVAL Evaluate a Function</A>
+<B> Up:</B> <A NAME="tex2html1653"
+  HREF="node47.html">Special Functions</A>
+<B> Previous:</B> <A NAME="tex2html1647"
+  HREF="node47.html">Special Functions</A>
+ &nbsp <B>  <A NAME="tex2html1655"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1658"
+  HREF="node48.html#SECTION00251100000000000000">Usage</A>
+<LI><A NAME="tex2html1659"
+  HREF="node48.html#SECTION00251200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00251000000000000000">
+EVAL Evaluate a String</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00251100000000000000">
+Usage</A>
+</H3>
+
+<P>
+The <code>eval</code> function evaluates a string.  The general syntax
+for its use is
+<PRE>
+   eval(s)
+</PRE>
+where <code>s</code> is the string to evaluate.
+
+<P>
+
+<H3><A NAME="SECTION00251200000000000000">
+Example</A>
+</H3>
+
+<P>
+Here are some examples of <code>eval</code> being used.
+<PRE>
+--&gt; eval('a = 32')
+a = 
+  &lt;int32&gt;  - size: [1 1]
+            32  
+ans = 
+  &lt;double&gt;  - size: []
+  []
+</PRE>
+The primary use of the <code>eval</code> statement is to enable construction
+of expressions at run time.
+<PRE>
+--&gt; s = ['b = a' ' + 2']
+s = 
+  &lt;string&gt;  - size: [1 9]
+ b = a + 2
+--&gt; eval(s)
+b = 
+  &lt;int32&gt;  - size: [1 1]
+            34  
+ans = 
+  &lt;double&gt;  - size: []
+  []
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

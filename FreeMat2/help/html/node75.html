@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>NAN Not-a-Number Constant</TITLE>
+<META NAME="description" CONTENT="NAN Not-a-Number Constant">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node76.html">
+<LINK REL="previous" HREF="node74.html">
+<LINK REL="up" HREF="node71.html">
+<LINK REL="next" HREF="node76.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2377"
+  HREF="node76.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2373"
+  HREF="node71.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2367"
+  HREF="node74.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2375"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2378"
+  HREF="node76.html">PI Constant Pi</A>
+<B> Up:</B> <A NAME="tex2html2374"
+  HREF="node71.html">Base Constants</A>
+<B> Previous:</B> <A NAME="tex2html2368"
+  HREF="node74.html">INF Infinity Constant</A>
+ &nbsp <B>  <A NAME="tex2html2376"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2379"
+  HREF="node75.html#SECTION00334100000000000000">Usage</A>
+<LI><A NAME="tex2html2380"
+  HREF="node75.html#SECTION00334200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00334000000000000000">
+NAN Not-a-Number Constant</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00334100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns a value that represents ``not-a-number'' for both 32 and 64-bit 
+floating point values.  This constant is meant to represent the result of
+arithmetic operations whose output cannot be meaningfully defined (like 
+zero divided by zero).
+<PRE>
+   y = nan
+</PRE>
+The returned type is a 32-bit float, but promotion to 64 bits preserves the not-a-number.  The not-a-number constant has one simple property.  In particular, any arithmetic operation with a <code>NaN</code> results in a <code>NaN</code>. These calculations run significantly slower than calculations involving finite quantities!  Make sure that you use <code>NaN</code>s in extreme circumstances only.  Note that <code>NaN</code> is not preserved under type conversion to integer types (see the examples below).
+
+<P>
+
+<H3><A NAME="SECTION00334200000000000000">
+Example</A>
+</H3>
+
+<P>
+The following examples demonstrate a few calculations with the not-a-number constant.
+<PRE>
+--&gt; nan*0
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    nan             
+--&gt; nan-nan
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    nan
+</PRE>
+Note that <code>NaN</code>s are preserved under type conversion to floating point types (i.e., <code>float</code>, <code>double</code>, <code>complex</code> and <code>dcomplex</code> types), but not integer  types.
+<PRE>
+--&gt; uint32(nan)
+ans = 
+  &lt;uint32&gt;  - size: [1 1]
+            0  
+--&gt; complex(nan)
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    nan               0.00000000    i
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2377"
+  HREF="node76.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2373"
+  HREF="node71.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2367"
+  HREF="node74.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2375"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2378"
+  HREF="node76.html">PI Constant Pi</A>
+<B> Up:</B> <A NAME="tex2html2374"
+  HREF="node71.html">Base Constants</A>
+<B> Previous:</B> <A NAME="tex2html2368"
+  HREF="node74.html">INF Infinity Constant</A>
+ &nbsp <B>  <A NAME="tex2html2376"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

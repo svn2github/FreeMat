@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>TRANSPOSE Matrix Transpose Operator</TITLE>
+<META NAME="description" CONTENT="TRANSPOSE Matrix Transpose Operator">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="previous" HREF="node32.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node34.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1397"
+  HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1393"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1389"
+  HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1395"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1398"
+  HREF="node34.html">Flow Control</A>
+<B> Up:</B> <A NAME="tex2html1394"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1390"
+  HREF="node32.html">RIGHTDIVIDE Matrix Equation Solver/Divide</A>
+ &nbsp <B>  <A NAME="tex2html1396"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1399"
+  HREF="node33.html#SECTION002314100000000000000">Usage</A>
+<LI><A NAME="tex2html1400"
+  HREF="node33.html#SECTION002314200000000000000">Function Internals</A>
+<LI><A NAME="tex2html1401"
+  HREF="node33.html#SECTION002314300000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION002314000000000000000">
+TRANSPOSE Matrix Transpose Operator</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION002314100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Performs a transpose of the argument (a 2D matrix).  The syntax for its use is
+<PRE>
+  y = a.';
+</PRE>
+where <code>a</code> is a <code>M \times N</code> numerical matrix.  The output <code>y</code> is a numerical matrix
+of the same type of size <code>N \times M</code>.  This operator is the non-conjugating transpose,
+which is different from the Hermitian operator <code>'</code> (which conjugates complex values).
+
+<P>
+
+<H3><A NAME="SECTION002314200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The transpose operator is defined simply as
+<!-- MATH
+ \begin{displaymath}
+y_{i,j} = a_{j,i}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="555" HEIGHT="1501" ALIGN="MIDDLE" BORDER="0"
+ SRC="img38.png"
+ ALT="$\displaystyle y_{i,j} = a_{j,i}
+$">
+</DIV><P></P>
+where <code>y_ij</code> is the element in the <code>i</code>th row and <code>j</code>th column of the output matrix <code>y</code>.
+
+<P>
+
+<H3><A NAME="SECTION002314300000000000000">
+Examples</A>
+</H3>
+
+<P>
+A simple transpose example:
+<PRE>
+--&gt; A = [1,2,0;4,1,-1]
+A = 
+  &lt;int32&gt;  - size: [2 3]
+ 
+Columns 1 to 3
+             1              2              0  
+             4              1             -1  
+--&gt; A.'
+ans = 
+  &lt;int32&gt;  - size: [3 2]
+ 
+Columns 1 to 2
+             1              4  
+             2              1  
+             0             -1
+</PRE>
+Here, we use a complex matrix to demonstrate how the transpose does <I>not</I> conjugate the entries.
+<PRE>
+--&gt; A = [1+i,2-i]
+A = 
+  &lt;complex&gt;  - size: [1 2]
+ 
+Columns 1 to 2
+    1.0000000         1.0000000     i     2.0000000        -1.0000000     i  
+--&gt; A.'
+ans = 
+  &lt;complex&gt;  - size: [2 1]
+ 
+Columns 1 to 1
+    1.0000000         1.0000000     i  
+    2.0000000        -1.0000000     i
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

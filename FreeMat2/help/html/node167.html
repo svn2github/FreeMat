@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>HOLD Plot Hold Toggle Function</TITLE>
+<META NAME="description" CONTENT="HOLD Plot Hold Toggle Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node168.html">
+<LINK REL="previous" HREF="node166.html">
+<LINK REL="up" HREF="node163.html">
+<LINK REL="next" HREF="node168.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html3945"
+  HREF="node168.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3941"
+  HREF="node163.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3935"
+  HREF="node166.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3943"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3946"
+  HREF="node168.html">NEWPLOT New Plot Window</A>
+<B> Up:</B> <A NAME="tex2html3942"
+  HREF="node163.html">Plot Functions</A>
+<B> Previous:</B> <A NAME="tex2html3936"
+  HREF="node166.html">GRID Plot Grid Toggle</A>
+ &nbsp <B>  <A NAME="tex2html3944"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html3947"
+  HREF="node167.html#SECTION00424100000000000000">Usage</A>
+<LI><A NAME="tex2html3948"
+  HREF="node167.html#SECTION00424200000000000000">Function Internals</A>
+<LI><A NAME="tex2html3949"
+  HREF="node167.html#SECTION00424300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00424000000000000000">
+HOLD Plot Hold Toggle Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00424100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Toggles the hold state on the currently active plot.  The
+general syntax for its use is
+<PRE>
+   grid(state)
+</PRE>
+where <code>state</code> is either
+<PRE>
+   hold('on')
+</PRE>
+to turn hold on, or
+<PRE>
+   hold('off')
+</PRE>
+to turn hold off.
+
+<P>
+
+<H3><A NAME="SECTION00424200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The <code>hold</code> function allows one to construct a plot sequence
+incrementally, instead of issuing all of the plots simultaneously
+using the <code>plot</code> command.
+
+<P>
+
+<H3><A NAME="SECTION00424300000000000000">
+Example</A>
+</H3>
+
+<P>
+Here is an example of using both the <code>hold</code> command and the
+multiple-argument <code>plot</code> command to construct a plot composed
+of three sets of data.  The first is a plot of a modulated Gaussian.
+<PRE>
+--&gt; x = linspace(-5,5,500);
+--&gt; t = exp(-x.^2);
+--&gt; y = t.*cos(2*pi*x*3);
+--&gt; plot(x,y);
+</PRE>
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="hold1.png"
+ ALT="4092">
+</DIV>
+
+<P>
+We now turn the hold state to <code>'on'</code>, and add another plot
+sequence, this time composed of the top and bottom envelopes of
+the modulated Gaussian.  We add the two envelopes simultaneously
+using a single <code>plot</code> command.  The fact that <code>hold</code> is
+<code>'on'</code> means that these two envelopes are added to (instead of
+replace) the current contents of the plot.
+<PRE>
+--&gt; plot(x,y);
+--&gt; hold on
+--&gt; plot(x,t,'g-',x,-t,'b-')
+</PRE>
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="hold2.png"
+ ALT="4095">
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html3945"
+  HREF="node168.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3941"
+  HREF="node163.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3935"
+  HREF="node166.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3943"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3946"
+  HREF="node168.html">NEWPLOT New Plot Window</A>
+<B> Up:</B> <A NAME="tex2html3942"
+  HREF="node163.html">Plot Functions</A>
+<B> Previous:</B> <A NAME="tex2html3936"
+  HREF="node166.html">GRID Plot Grid Toggle</A>
+ &nbsp <B>  <A NAME="tex2html3944"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>INF Infinity Constant</TITLE>
+<META NAME="description" CONTENT="INF Infinity Constant">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node75.html">
+<LINK REL="previous" HREF="node73.html">
+<LINK REL="up" HREF="node71.html">
+<LINK REL="next" HREF="node75.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2362"
+  HREF="node75.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2358"
+  HREF="node71.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2352"
+  HREF="node73.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2360"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2363"
+  HREF="node75.html">NAN Not-a-Number Constant</A>
+<B> Up:</B> <A NAME="tex2html2359"
+  HREF="node71.html">Base Constants</A>
+<B> Previous:</B> <A NAME="tex2html2353"
+  HREF="node73.html">I-J Square Root of</A>
+ &nbsp <B>  <A NAME="tex2html2361"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2364"
+  HREF="node74.html#SECTION00333100000000000000">Usage</A>
+<LI><A NAME="tex2html2365"
+  HREF="node74.html#SECTION00333200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2366"
+  HREF="node74.html#SECTION00333300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00333000000000000000">
+INF Infinity Constant</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00333100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns a value that represents positive infinity 
+for both 32 and 64-bit floating point values.
+<PRE>
+   y = inf
+</PRE>
+The returned type is a 32-bit float, but promotion to
+64 bits preserves the infinity.
+
+<P>
+
+<H3><A NAME="SECTION00333200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+The infinity constant has
+several interesting properties.  In particular:
+<BR>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{eqnarray}
+\infty \times 0 & = \mathrm{NaN} \\
+   \infty \times a & = \infty \, \mathrm{for all} \, a > 0 \\
+   \infty \times a & = -\infty \, \mathrm{for all} \, a < 0 \\
+   \infty / \infty & = \mathrm{NaN} \\
+   \infty / 0 & = \infty
+\end{eqnarray}
+ -->
+<TABLE CELLPADDING="0" ALIGN="CENTER" WIDTH="100%">
+<TR VALIGN="MIDDLE"><TD NOWRAP ALIGN="RIGHT"><IMG
+ WIDTH="203" HEIGHT="51" ALIGN="MIDDLE" BORDER="0"
+ SRC="img65.png"
+ ALT="$\displaystyle \infty \times 0$"></TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="LEFT" NOWRAP><IMG
+ WIDTH="47" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img66.png"
+ ALT="$\displaystyle = \mathrm{NaN}$"></TD>
+<TD WIDTH=10 ALIGN="RIGHT">
+(2.1)</TD></TR>
+<TR VALIGN="MIDDLE"><TD NOWRAP ALIGN="RIGHT"><IMG
+ WIDTH="53" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img67.png"
+ ALT="$\displaystyle \infty \times a$"></TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="LEFT" NOWRAP><IMG
+ WIDTH="48" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img68.png"
+ ALT="$\displaystyle = \infty \, \mathrm{for all} \, a &gt; 0$"></TD>
+<TD WIDTH=10 ALIGN="RIGHT">
+(2.2)</TD></TR>
+<TR VALIGN="MIDDLE"><TD NOWRAP ALIGN="RIGHT"><IMG
+ WIDTH="53" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img67.png"
+ ALT="$\displaystyle \infty \times a$"></TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="LEFT" NOWRAP><IMG
+ WIDTH="116" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img69.png"
+ ALT="$\displaystyle = -\infty \, \mathrm{for all} \, a &lt; 0$"></TD>
+<TD WIDTH=10 ALIGN="RIGHT">
+(2.3)</TD></TR>
+<TR VALIGN="MIDDLE"><TD NOWRAP ALIGN="RIGHT"><IMG
+ WIDTH="128" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img70.png"
+ ALT="$\displaystyle \infty / \infty$"></TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="LEFT" NOWRAP><IMG
+ WIDTH="47" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
+ SRC="img66.png"
+ ALT="$\displaystyle = \mathrm{NaN}$"></TD>
+<TD WIDTH=10 ALIGN="RIGHT">
+(2.4)</TD></TR>
+<TR VALIGN="MIDDLE"><TD NOWRAP ALIGN="RIGHT"><IMG
+ WIDTH="44" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img71.png"
+ ALT="$\displaystyle \infty / 0$"></TD>
+<TD>&nbsp;</TD>
+<TD ALIGN="LEFT" NOWRAP><IMG
+ WIDTH="36" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img72.png"
+ ALT="$\displaystyle = \infty$"></TD>
+<TD WIDTH=10 ALIGN="RIGHT">
+(2.5)</TD></TR>
+</TABLE></DIV>
+<BR CLEAR="ALL"><P></P>
+Note that infinities are not preserved under type conversion to integer types (see the examples below).
+
+<P>
+
+<H3><A NAME="SECTION00333300000000000000">
+Example</A>
+</H3>
+
+<P>
+The following examples demonstrate the various properties of the infinity constant.
+<PRE>
+--&gt; inf*0
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    nan             
+--&gt; inf*2
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    inf             
+--&gt; inf*-2
+ans = 
+  &lt;float&gt;  - size: [1 1]
+   -inf             
+--&gt; inf/inf
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    nan             
+--&gt; inf/0
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    inf             
+--&gt; inf/nan
+ans = 
+  &lt;float&gt;  - size: [1 1]
+    nan
+</PRE>
+Note that infinities are preserved under type conversion to floating point types (i.e., <code>float</code>, <code>double</code>, <code>complex</code> and <code>dcomplex</code> types), but not integer  types.
+<PRE>
+--&gt; uint32(inf)
+ans = 
+  &lt;uint32&gt;  - size: [1 1]
+            0  
+--&gt; complex(inf)
+ans = 
+  &lt;complex&gt;  - size: [1 1]
+    inf               0.00000000    i
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2362"
+  HREF="node75.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2358"
+  HREF="node71.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2352"
+  HREF="node73.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2360"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2363"
+  HREF="node75.html">NAN Not-a-Number Constant</A>
+<B> Up:</B> <A NAME="tex2html2359"
+  HREF="node71.html">Base Constants</A>
+<B> Previous:</B> <A NAME="tex2html2353"
+  HREF="node73.html">I-J Square Root of</A>
+ &nbsp <B>  <A NAME="tex2html2361"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

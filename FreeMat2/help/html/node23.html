@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>DOTPOWER Element-wise Power Operator</TITLE>
+<META NAME="description" CONTENT="DOTPOWER Element-wise Power Operator">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node24.html">
+<LINK REL="previous" HREF="node22.html">
+<LINK REL="up" HREF="node19.html">
+<LINK REL="next" HREF="node24.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1250"
+  HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1246"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1240"
+  HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1248"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1251"
+  HREF="node24.html">DOTRIGHTDIVIDE Element-wise Right-Division Operator</A>
+<B> Up:</B> <A NAME="tex2html1247"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1241"
+  HREF="node22.html">DOTLEFTDIVIDE Element-wise Left-Division Operator</A>
+ &nbsp <B>  <A NAME="tex2html1249"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1252"
+  HREF="node23.html#SECTION00234100000000000000">Usage</A>
+<LI><A NAME="tex2html1253"
+  HREF="node23.html#SECTION00234200000000000000">Function Internals</A>
+<LI><A NAME="tex2html1254"
+  HREF="node23.html#SECTION00234300000000000000">Examples</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00234000000000000000">
+DOTPOWER Element-wise Power Operator</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00234100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Raises one numerical array to another array (elementwise).  There are three operators all with the same general syntax:
+<PRE>
+  y = a .^ b
+</PRE>
+The result <code>y</code> depends on which of the following three situations applies to the arguments <code>a</code> and <code>b</code>:
+
+<OL>
+<LI><code>a</code> is a scalar, <code>b</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is <code>a</code> raised to the power of each element of <code>b</code>, and the output is the same size as <code>b</code>.
+</LI>
+<LI><code>a</code> is an <code>n</code>-dimensional numerical array, and <code>b</code> is a scalar, then the output is the same size as <code>a</code>, and is defined by each element of <code>a</code> raised to the power <code>b</code>.
+</LI>
+<LI><code>a</code> and <code>b</code> are both <code>n</code>-dimensional numerical arrays of <I>the same size</I>.  In this case, each element of the output is the corresponding element of <code>a</code> raised to the power defined by the corresponding element of <code>b</code>.
+</LI>
+</OL>
+The output follows the standard type promotion rules, although types are not generally preserved under the power operation.  In particular, integers are automatically converted to <code>double</code> type, and negative numbers raised to fractional powers can return complex values.
+
+<P>
+
+<H3><A NAME="SECTION00234200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+There are three formulae for this operator.  For the first form
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_d) = a^{b(m_1,\ldots,m_d)},
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="207" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_d) = a^{b(m_1,\ldots,m_d)},
+$">
+</DIV><P></P>
+and the second form
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d)^b,
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="233" HEIGHT="36" ALIGN="MIDDLE" BORDER="0"
+ SRC="img6.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d)^b,
+$">
+</DIV><P></P>
+and in the third form
+<!-- MATH
+ \begin{displaymath}
+y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d)^{b(m_1,\ldots,m_d)}.
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="298" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img7.png"
+ ALT="$\displaystyle y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d)^{b(m_1,\ldots,m_d)}.
+$">
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00234300000000000000">
+Examples</A>
+</H3>
+
+<P>
+We demonstrate the three forms of the dot-power operator using some simple examples.  First, the case of a scalar raised to a series of values.
+<PRE>
+--&gt; a = 2
+a = 
+  &lt;int32&gt;  - size: [1 1]
+             2  
+--&gt; b = 1:4
+b = 
+  &lt;int32&gt;  - size: [1 4]
+ 
+Columns 1 to 4
+             1              2              3              4  
+--&gt; c = a.^b
+c = 
+  &lt;double&gt;  - size: [1 4]
+ 
+Columns 1 to 2
+    2.000000000000000         4.000000000000000      
+ 
+Columns 3 to 4
+    8.000000000000000        16.0000000000000
+</PRE>
+The second case shows a vector raised to a scalar.
+<PRE>
+--&gt; c = b.^a
+c = 
+  &lt;double&gt;  - size: [1 4]
+ 
+Columns 1 to 2
+    1.000000000000000         4.000000000000000      
+ 
+Columns 3 to 4
+    9.000000000000000        16.0000000000000
+</PRE>
+The third case shows the most general use of the dot-power operator.
+<PRE>
+--&gt; A = [1,2;3,2]
+A = 
+  &lt;int32&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+             1              2  
+             3              2  
+--&gt; B = [2,1.5;0.5,0.6]
+B = 
+  &lt;double&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+    2.000000000000000         1.500000000000000      
+    0.500000000000000         0.600000000000000      
+--&gt; C = A.^B
+C = 
+  &lt;double&gt;  - size: [2 2]
+ 
+Columns 1 to 2
+    1.000000000000000         2.828427124746190      
+    1.732050807568877         1.515716566510398
+</PRE>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html1250"
+  HREF="node24.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1246"
+  HREF="node19.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1240"
+  HREF="node22.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1248"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1251"
+  HREF="node24.html">DOTRIGHTDIVIDE Element-wise Right-Division Operator</A>
+<B> Up:</B> <A NAME="tex2html1247"
+  HREF="node19.html">Mathematical Operators</A>
+<B> Previous:</B> <A NAME="tex2html1241"
+  HREF="node22.html">DOTLEFTDIVIDE Element-wise Left-Division Operator</A>
+ &nbsp <B>  <A NAME="tex2html1249"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>LOG Natural Logarithm Function</TITLE>
+<META NAME="description" CONTENT="LOG Natural Logarithm Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="previous" HREF="node58.html">
+<LINK REL="up" HREF="node57.html">
+<LINK REL="next" HREF="node60.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html2091"
+  HREF="node60.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2087"
+  HREF="node57.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2083"
+  HREF="node58.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2089"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2092"
+  HREF="node60.html">Trigonometric/Inverse Trig Functions</A>
+<B> Up:</B> <A NAME="tex2html2088"
+  HREF="node57.html">Transcendental Functions</A>
+<B> Previous:</B> <A NAME="tex2html2084"
+  HREF="node58.html">EXP Exponential Function</A>
+ &nbsp <B>  <A NAME="tex2html2090"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html2093"
+  HREF="node59.html#SECTION00312100000000000000">Usage</A>
+<LI><A NAME="tex2html2094"
+  HREF="node59.html#SECTION00312200000000000000">Function Internals</A>
+<LI><A NAME="tex2html2095"
+  HREF="node59.html#SECTION00312300000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00312000000000000000">
+LOG Natural Logarithm Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00312100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Computes the <code>log</code> function for its argument.  The general
+syntax for its use is
+<PRE>
+  y = log(x)
+</PRE>
+where <code>x</code> is an <code>n</code>-dimensional array of numerical type.
+Integer types are promoted to the <code>double</code> type prior to
+calculation of the <code>log</code> function.  Output <code>y</code> is of the
+same size as the input <code>x</code>. For strictly positive, real inputs, 
+the output type is the same as the input.
+For negative and complex arguments, the output is complex.
+
+<P>
+
+<H3><A NAME="SECTION00312200000000000000">
+Function Internals</A>
+</H3>
+
+<P>
+Mathematically, the <code>log</code> function is defined for all real
+valued arguments <code>x</code> by the integral
+<!-- MATH
+ \begin{displaymath}
+\log x \equiv \int_1^{x} \frac{d\,t}{t}.
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="187" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\displaystyle \log x \equiv \int_1^{x} \frac{d\,t}{t}.
+$">
+</DIV><P></P>
+For complex-valued arguments, <code>z</code>, the complex logarithm is
+defined as
+<!-- MATH
+ \begin{displaymath}
+\log z \equiv \log |z| + i \arg z,
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="109" HEIGHT="52" ALIGN="MIDDLE" BORDER="0"
+ SRC="img45.png"
+ ALT="$\displaystyle \log z \equiv \log \vert z\vert + i \arg z,
+$">
+</DIV><P></P>
+where <code>arg</code> is the complex argument of <code>z</code>.
+
+<P>
+
+<H3><A NAME="SECTION00312300000000000000">
+Example</A>
+</H3>
+
+<P>
+The following piece of code plots the real-valued <code>log</code>
+function over the interval <code>[1,100]</code>:
+<PRE>
+--&gt; x = linspace(1,100);
+--&gt; plot(x,log(x))
+--&gt; xlabel('x');
+--&gt; ylabel('log(x)');
+</PRE>
+
+<P>
+<DIV ALIGN="CENTER">
+<IMG
+ ALIGN="BOTTOM" BORDER="0" SRC="logplot.png"
+ ALT="1420">
+</DIV>
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2091"
+  HREF="node60.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html2087"
+  HREF="node57.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html2083"
+  HREF="node58.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html2089"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html2092"
+  HREF="node60.html">Trigonometric/Inverse Trig Functions</A>
+<B> Up:</B> <A NAME="tex2html2088"
+  HREF="node57.html">Transcendental Functions</A>
+<B> Previous:</B> <A NAME="tex2html2084"
+  HREF="node58.html">EXP Exponential Function</A>
+ &nbsp <B>  <A NAME="tex2html2090"
+  HREF="node1.html">Contents</A></B> 
+<!--End of Navigation Panel-->
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

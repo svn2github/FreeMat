@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>FTELL File Position Function</TITLE>
+<META NAME="description" CONTENT="FTELL File Position Function">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node134.html">
+<LINK REL="previous" HREF="node132.html">
+<LINK REL="up" HREF="node123.html">
+<LINK REL="next" HREF="node134.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html3343"
+  HREF="node134.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html3339"
+  HREF="node123.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html3333"
+  HREF="node132.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html3341"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html3344"
+  HREF="node134.html">FWRITE File Write Function</A>
+<B> Up:</B> <A NAME="tex2html3340"
+  HREF="node123.html">Input/Ouput Functions</A>
+<B> Previous:</B> <A NAME="tex2html3334"
+  HREF="node132.html">FSEEK Seek File To</A>
+ &nbsp <B>  <A NAME="tex2html3342"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html3345"
+  HREF="node133.html#SECTION0031010100000000000000">Usage</A>
+<LI><A NAME="tex2html3346"
+  HREF="node133.html#SECTION0031010200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION0031010000000000000000">
+FTELL File Position Function</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION0031010100000000000000">
+Usage</A>
+</H3>
+
+<P>
+Returns the current file position for a valid file handle.
+The general use of this function is
+<PRE>
+  n = ftell(handle)
+</PRE>
+The <code>handle</code> argument must be a valid and active file handle.  The
+return is the offset into the file relative to the start of the
+file (in bytes).
+
+<P>
+
+<H3><A NAME="SECTION0031010200000000000000">
+Example</A>
+</H3>
+
+<P>
+Here is an example of using <code>ftell</code> to determine the current file 
+position.  We read 512 4-byte floats, which results in the file 
+pointer being at position 512*4 = 2048.
+<PRE>
+--&gt; fp = fopen('test.dat','wb');
+--&gt; fwrite(fp,randn(512,1));
+--&gt; fclose(fp);
+--&gt; fp = fopen('test.dat','rb');
+--&gt; x = fread(fp,[512,1],'float');
+--&gt; ftell(fp)
+ans = 
+  &lt;uint32&gt;  - size: [1 1]
+         2048
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

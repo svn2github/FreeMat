@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with jLaTeX2HTML 2002 (1.62) JA patch-1.4
+patched version by:  Kenshi Muto, Debian Project.
+LaTeX2HTML 2002 (1.62),
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>NARGIN Number of Input Arguments</TITLE>
+<META NAME="description" CONTENT="NARGIN Number of Input Arguments">
+<META NAME="keywords" CONTENT="main">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="jLaTeX2HTML v2002 JA patch-1.4">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="main.css">
+
+<LINK REL="next" HREF="node14.html">
+<LINK REL="previous" HREF="node12.html">
+<LINK REL="up" HREF="node10.html">
+<LINK REL="next" HREF="node14.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html1060"
+  HREF="node14.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html1056"
+  HREF="node10.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html1050"
+  HREF="node12.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html1058"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html1061"
+  HREF="node14.html">NARGOUT Number of Output</A>
+<B> Up:</B> <A NAME="tex2html1057"
+  HREF="node10.html">Functions and Scripts</A>
+<B> Previous:</B> <A NAME="tex2html1051"
+  HREF="node12.html">KEYWORDS Function Keywords</A>
+ &nbsp <B>  <A NAME="tex2html1059"
+  HREF="node1.html">Contents</A></B> 
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL>
+<LI><A NAME="tex2html1062"
+  HREF="node13.html#SECTION00223100000000000000">Usage</A>
+<LI><A NAME="tex2html1063"
+  HREF="node13.html#SECTION00223200000000000000">Example</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00223000000000000000">
+NARGIN Number of Input Arguments</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00223100000000000000">
+Usage</A>
+</H3>
+
+<P>
+The special variable <code>nargin</code> is defined inside of all
+functions.  It indicates how many arguments were passed
+to the function when it was called.  FreeMat allows for
+fewer arguments to be passed to a function than were declared,
+and <code>nargin</code>, along with <code>exist</code> can be used to determine
+exactly what subset of the arguments were defined.
+There is no syntax for the use of <code>nargin</code> - it is 
+automatically defined inside the function body.
+
+<P>
+
+<H3><A NAME="SECTION00223200000000000000">
+Example</A>
+</H3>
+
+<P>
+Here is a function that is declared to take five 
+arguments, and that simply prints the value of <code>nargin</code>
+each time it is called.
+<PRE> nargintest.m
+function nargintest(a1,a2,a3,a4,a5)
+  printf('nargin = %d\n',nargin);
+</PRE>
+<PRE>
+--&gt; nargintest(3);
+nargin = 1
+--&gt; nargintest(3,'h');
+nargin = 2
+--&gt; nargintest(3,'h',1.34);
+nargin = 3
+--&gt; nargintest(3,'h',1.34,pi,e);
+nargin = 5
+</PRE>
+
+<P>
+<BR><HR>
+<ADDRESS>
+Samit Basu
+2004-03-10
+</ADDRESS>
+</BODY>
+</HTML>

@@ -32,6 +32,46 @@
 
 namespace FreeMat {
 
+  ArrayVector HandleEmpty(Array arg) {
+    ArrayVector retArray;
+    switch (arg.getDataClass()) {
+    case FM_LOGICAL:
+      retArray.push_back(Array::logicalConstructor(false));
+      break;
+    case FM_UINT8:
+      retArray.push_back(Array::uint8Constructor(0));
+      break;
+    case FM_INT8:
+      retArray.push_back(Array::int8Constructor(0));
+      break;
+    case FM_UINT16:
+      retArray.push_back(Array::uint16Constructor(0));
+      break;
+    case FM_INT16:
+      retArray.push_back(Array::int16Constructor(0));
+      break;
+    case FM_UINT32:
+      retArray.push_back(Array::uint32Constructor(0));
+      break;
+    case FM_INT32:
+      retArray.push_back(Array::int32Constructor(0));
+      break;
+    case FM_FLOAT:
+      retArray.push_back(Array::floatConstructor(0));
+      break;
+    case FM_DOUBLE:
+      retArray.push_back(Array::doubleConstructor(0));
+      break;
+    case FM_COMPLEX:
+      retArray.push_back(Array::complexConstructor(0,0));
+      break;
+    case FM_DCOMPLEX:
+      retArray.push_back(Array::dcomplexConstructor(0,0));
+      break;
+    }
+    return retArray;
+  }
+
   template <class T>
   void TRealLess(const T* spx, const T* spy, T* dp, int count, 
 	     int stridex, int stridey) {
@@ -766,11 +806,10 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to min should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isScalar())
+      return singleArrayVector(input);
+    if (input.isEmpty())
+      return HandleEmpty(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {
@@ -1147,11 +1186,10 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to max should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isScalar())
+      return singleArrayVector(input);
+    if (input.isEmpty())
+      return HandleEmpty(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {
@@ -1486,11 +1524,10 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to cumsum should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isEmpty()) 
+      return HandleEmpty(input);
+    if (input.isScalar())
+      return singleArrayVector(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {
@@ -1617,11 +1654,10 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to sum should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isEmpty()) 
+      return HandleEmpty(input);
+    if (input.isScalar())
+      return singleArrayVector(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {
@@ -1749,11 +1785,10 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to mean should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isEmpty()) 
+      return HandleEmpty(input);
+    if (input.isScalar())
+      return singleArrayVector(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {
@@ -1880,11 +1915,8 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to var should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isScalar() || input.isEmpty()) 
+      return HandleEmpty(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {
@@ -2307,11 +2339,10 @@ namespace FreeMat {
       if (workDim < 0)
 	throw Exception("Dimension argument to prod should be positive");
     }
-    if (input.isScalar() || input.isEmpty()) {
-      ArrayVector retArray;
-      retArray.push_back(arg[0]);
-      return retArray;
-    }    
+    if (input.isEmpty())
+      return HandleEmpty(input);
+    if (input.isScalar())
+      return singleArrayVector(input);
     // No dimension supplied, look for a non-singular dimension
     Dimensions inDim(input.getDimensions());
     if (workDim == -1) {

@@ -2104,7 +2104,7 @@ break;
     try {
       if (index.isEmpty()) {
 	return Array(dp->dataClass,index.dp->dimensions,
-		     NULL,dp->sparse,dp->fieldNames);
+		     NULL,false,dp->fieldNames);
       }
       if (isEmpty()) 
 	throw Exception("Cannot index into empty variable.");

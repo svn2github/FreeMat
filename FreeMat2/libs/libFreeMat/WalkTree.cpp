@@ -476,13 +476,29 @@ namespace FreeMat {
   //@>
   //!
   void WalkTree::tryStatement(ASTPtr t) {
+    // Turn off autostop for this statement block
+    bool autostop_save = autostop;
+    autostop = false;
     try {
       block(t);
     } catch (Exception &e) {
       t = t->right;
-      if (t != NULL)
+      if (t != NULL) {
+	autostop = autostop_save;
 	block(t);
+      }
     } 
+    autostop = autostop_save;
+  }
+
+
+  bool WalkTree::AutoStop() {
+    return autostop;
+  }
+  
+
+  void WalkTree::AutoStop(bool a) {
+    autostop = a;
   }
 
   //!
@@ -1215,22 +1231,38 @@ namespace FreeMat {
 
 
   void WalkTree::statement(ASTPtr t) {
-    if (t->opNum ==(OP_QSTATEMENT)) {
-      if (t->down->type == context_node) {
-	io->setMessageContext(t->down->text);
-	statementType(t->down->down,false);
-      } else {
-	io->setMessageContext(NULL);
-	statementType(t->down,false);
+    int sdepth = io->getMessageContextStackDepth();
+    try {
+      if (t->opNum ==(OP_QSTATEMENT)) {
+	if (t->down->type == context_node) {
+	  io->setMessageContext(t->down->text);
+	  statementType(t->down->down,false);
+	} else {
+	  io->setMessageContext(NULL);
+	  statementType(t->down,false);
+	}
+      } else if (t->opNum ==(OP_RSTATEMENT)) {
+	if (t->down->type == context_node) {
+	  io->setMessageContext(t->down->text);
+	  statementType(t->down->down,true);
+	} else {
+	  io->setMessageContext(NULL);
+	  statementType(t->down,true);
+	}
       }
-    } else if (t->opNum ==(OP_RSTATEMENT)) {
-      if (t->down->type == context_node) {
-	io->setMessageContext(t->down->text);
-	statementType(t->down->down,true);
-      } else {
-	io->setMessageContext(NULL);
-	statementType(t->down,true);
-      }
+    } catch (Exception& e) {
+      if (autostop) {
+	e.printMe(io);
+	io->clearMessageContextStackToDepth(sdepth);
+	depth++;
+	io->pushMessageContext();
+	evalCLI();
+	io->popMessageContext();
+	depth--;
+	if (state != FM_STATE_QUIT &&
+	    state != FM_STATE_RETALL)
+	  state = FM_STATE_OK;
+      } else throw;
     }
   }
 
@@ -2470,6 +2502,7 @@ namespace FreeMat {
     InterruptPending = false;
     signal(SIGINT,sigInterrupt);
     printLimit = 1000;
+    autostop = true;
   }
 
   bool WalkTree::evaluateString(char *line) {

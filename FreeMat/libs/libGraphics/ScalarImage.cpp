@@ -244,7 +244,7 @@ END_EVENT_TABLE()
       }
     }
     gmp = new wxBitmap(*img);  
-    Refresh();
+    Refresh(false);
     Update();
   }
 

@@ -46,7 +46,64 @@ namespace FreeMat {
         pos = str.find_first_of(delimiters, lastPos);
       }
   }
-  
+
+  //!
+  //@Module AUTOSTOP Control Autostop Functionality
+  //@@Usage
+  //The autostop functionality in FreeMat allows you to debug your
+  //FreeMat programs.  When @|autostop| is @|on|, then any error
+  //that occurs while the program is running causes FreeMat to 
+  //stop execution at that point and return you to the command line
+  //(just as if you had placed a @|keyboard| command there).  You can
+  //then examine variables, modify them, and resume execution using
+  //@|return|.  Alternately, you can exit out of all running routines
+  //via a @|retall| statement.  Note that errors that occur inside of
+  //@|try|/@|catch| blocks do not (by design) cause autostops.  The
+  //@|autostop| function toggles the autostop state of FreeMat.  The
+  //syntax for its use is
+  //@[
+  //   autostop(state)
+  //@]
+  //where @|state| is either
+  //@[
+  //   autostop('on')
+  //@]
+  //to activate autostop, or
+  //@[
+  //   autostop('off')
+  //@]
+  //to deactivate autostop.  Alternately, you can use FreeMat's string-syntax
+  //equivalence and enter
+  //@[
+  //   autostop on
+  //@]
+  //or 
+  //@[
+  //   autostop off
+  //@]
+  //to turn autostop on or off (respectively).  Entering @|autostop| with no arguments
+  //returns the current state (either 'on' or 'off').
+  //!
+  ArrayVector AutoStopFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 1) {
+      if (eval->AutoStop()) 
+	return singleArrayVector(Array::stringConstructor("on"));
+      else 
+	return singleArrayVector(Array::stringConstructor("off"));
+    } else {
+      if (!arg[0].isString())
+	throw Exception("autostop function takes only a single, string argument");
+      char *txt;
+      txt = arg[0].getContentsAsCString();
+      if (strcmp(txt,"on") == 0)
+	eval->AutoStop(true);
+      else if (strcmp(txt,"off") == 0)
+	eval->AutoStop(false);
+      else
+	throw Exception("Grid function argument needs to be 'on/off'");
+    }
+    return ArrayVector();
+  }
 
   //!
   //@Module HELP Help

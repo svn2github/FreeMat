@@ -53,6 +53,8 @@ namespace FreeMat {
 				       const indexType *todel, int delete_len);
   void* GetSparseDiagonal(Class dclass, int rows, int cols, const void* cp, int diag_order);
   bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp);
+  void* SparseArrayHermitian(Class dclass, int rows, int cols, const void* cp);
+  void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp);
 }
 
 #endif

@@ -2146,4 +2146,88 @@ namespace FreeMat {
       return TestSparseNotFinite<double>(rows, cols, (const double**) cp);
     }        
   }
+
+  template <class T>
+  void* SparseArrayTransposeReal(int rows, int cols, const T** src) {
+    int nnz;
+    IJVEntry<T>* mlist = ConvertSparseToIJVListReal<T>(src, rows, cols, nnz);
+    for (int i=0;i<nnz;i++) {
+      int tmp = mlist[i].I;
+      mlist[i].I = mlist[i].J;
+      mlist[i].J = tmp;
+    }
+    std::sort(mlist,mlist+nnz);
+    T** B;
+    B = new T*[rows];
+    int ptr = 0;
+    for (int row=0;row<rows;row++)
+      B[row] = CompressRealIJV<T>(mlist,nnz,ptr,row,cols);
+    delete mlist;
+    return B;
+  }
+
+  template <class T>
+  void* SparseArrayTransposeComplex(int rows, int cols, const T** src) {
+    int nnz;
+    IJVEntry<T>* mlist = ConvertSparseToIJVListComplex<T>(src, rows, cols, nnz);
+    for (int i=0;i<nnz;i++) {
+      int tmp = mlist[i].I;
+      mlist[i].I = mlist[i].J;
+      mlist[i].J = tmp;
+    }
+    std::sort(mlist,mlist+nnz);
+    T** B;
+    B = new T*[rows];
+    int ptr = 0;
+    for (int row=0;row<rows;row++)
+      B[row] = CompressComplexIJV<T>(mlist,nnz,ptr,row,cols);
+    delete mlist;
+    return B;
+  }
+
+  template <class T>
+  void* SparseArrayHermitianComplex(int rows, int cols, const T** src) {
+    int nnz;
+    IJVEntry<T>* mlist = ConvertSparseToIJVListComplex<T>(src, rows, cols, nnz);
+    for (int i=0;i<nnz;i++) {
+      int tmp = mlist[i].I;
+      mlist[i].I = mlist[i].J;
+      mlist[i].J = tmp;
+      mlist[i].Vimag = -mlist[i].Vimag;
+    }
+    std::sort(mlist,mlist+nnz);
+    T** B;
+    B = new T*[rows];
+    int ptr = 0;
+    for (int row=0;row<rows;row++)
+      B[row] = CompressComplexIJV<T>(mlist,nnz,ptr,row,cols);
+    delete mlist;
+    return B;
+  }
+
+
+  void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseArrayTransposeReal<int32>(rows, cols, (const int32**) cp);
+    case FM_FLOAT:
+      return SparseArrayTransposeReal<float>(rows, cols, (const float**) cp);
+    case FM_DOUBLE:
+      return SparseArrayTransposeReal<double>(rows, cols, (const double**) cp);
+    case FM_COMPLEX:
+      return SparseArrayTransposeComplex<float>(rows, cols, (const float**) cp);
+    case FM_DCOMPLEX:
+      return SparseArrayTransposeComplex<double>(rows, cols, (const double**) cp);
+    }        
+  }
+
+  void* SparseArrayHermitian(Class dclass, int rows, int cols, const void* cp) {
+    switch(dclass) {
+    case FM_COMPLEX:
+      return SparseArrayHermitianComplex<float>(rows, cols, (const float**) cp);
+    case FM_DCOMPLEX:
+      return SparseArrayHermitianComplex<double>(rows, cols, (const double**) cp);
+    }
+  }
+
 }

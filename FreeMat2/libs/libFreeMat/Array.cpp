@@ -695,16 +695,25 @@ namespace FreeMat {
    * operation.  The distinction is made in complex classed by overriding
    * this method.
    */
+  // NEED SPARSE
   void Array::hermitian()  {
     if (!is2D())
       throw Exception("Cannot apply Hermitian transpose operation to multi-dimensional array.");
     if (isEmpty())
       return;
-    if (isSparse())
-      throw Exception("Hermitian not supported for sparse arrays.");
     if (!isComplex())
       transpose();
     else {
+      if (isSparse()) {
+	int rows = getDimensionLength(0);
+	int cols = getDimensionLength(1);
+	void *qp = SparseArrayHermitian(dp->dataClass, rows, cols, dp->getData());
+	Dimensions newDim(2);
+	newDim[0] = cols;
+	newDim[1] = rows;
+	dp = dp->putData(dp->dataClass,newDim,qp,true);
+	return;	
+      }
       if (dp->dataClass == FM_COMPLEX) {
 	// Allocate space for our transposed array
 	void *dstPtr = allocateArray(dp->dataClass,getLength());
@@ -760,13 +769,22 @@ namespace FreeMat {
   /**
    * Transpose our array.
    */
+  //NEEDSPARSE
   void Array::transpose()  {
     if (!is2D())
       throw Exception("Cannot apply transpose operation to multi-dimensional array.");
     if (isEmpty())
+      return; 
+    if (isSparse()) {
+      int rows = getDimensionLength(0);
+      int cols = getDimensionLength(1);
+      void *qp = SparseArrayTranspose(dp->dataClass, rows, cols, dp->getData());
+      Dimensions newDim(2);
+      newDim[0] = cols;
+      newDim[1] = rows;
+      dp = dp->putData(dp->dataClass,newDim,qp,true);
       return;
-    if (isSparse())
-      throw Exception("Transpose not supported for sparse arrays.");
+    }
     // Allocate space for our transposed array
     void *dstPtr = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
     int i, j;

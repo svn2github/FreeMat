@@ -152,7 +152,8 @@ namespace FreeMat {
     ScalarImage *f;
     f = GetCurrentImage();
     f->SetColormap(t);
-    ForceRefresh();
+    Figure *fig = GetCurrentFig();
+    fig->redraw();
     return ArrayVector();
   }
 
@@ -246,7 +247,8 @@ namespace FreeMat {
     level = lev.getContentsAsDoubleScalar();
     f = GetCurrentImage();
     f->WindowLevel(window,level);
-    ForceRefresh();
+    Figure *fig = GetCurrentFig();
+    fig->redraw();
     return ArrayVector();
   }
 
@@ -304,8 +306,8 @@ namespace FreeMat {
     }
     f->SetImageArray(img,zoomfact);
     Figure *t = GetCurrentFig();
-    t->OnResize(Point2D(f->getZoomRows(),f->getZoomColumns()));
-    ForceRefresh();
+    t->resize(0,0,f->getZoomColumns(),f->getZoomRows());
+    t->redraw();
     return ArrayVector();
   }
 
@@ -395,8 +397,8 @@ namespace FreeMat {
     f = GetCurrentImage();
     f->Zoom(fact.getContentsAsDoubleScalar());
     Figure *t = GetCurrentFig();
-    t->OnResize(Point2D(f->getZoomRows(),f->getZoomColumns()));
-    ForceRefresh();
+    t->resize(0,0,f->getZoomColumns(),f->getZoomRows());
+    t->redraw();
     return ArrayVector();
   }
   
@@ -423,7 +425,6 @@ namespace FreeMat {
     f = GetCurrentImage();
     ArrayVector retval;
     retval.push_back(f->GetPoint());
-    ForceRefresh();
     return retval;
   }
 }

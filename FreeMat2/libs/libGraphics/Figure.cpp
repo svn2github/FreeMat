@@ -1,12 +1,6 @@
 #include "Figure.hpp"
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
-#include "XPContainer.hpp"
-#include "XPButton.hpp"
-#include "XPWidget.hpp"
-#include "XPLabel.hpp"
-#include "XPVSlider.hpp"
-#include "XPEditLine.hpp"
 
 #define MAX_FIGS 100
 
@@ -21,22 +15,24 @@ namespace FreeMat {
   }
   
   Figure::Figure(int fignum) :
-    XWindow(Rect2D(0,0,400,500)) {
+    Fl_Double_Window(500,400) {
     m_num = fignum;
     m_type = fignone;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
-    SetTitle(buffer);
+    label(buffer);
   }
   
   Figure::~Figure() {
     NotifyFigClose(m_num);
   }
   
+#if 0
   void Figure::SetFigureChild(XPWidget *xp, figType typ) {
     SetChildWidget(xp);
     m_type = typ;
   }
+#endif
   
   void InitializeFigureSubsystem() {
     currentFig = -1;
@@ -56,8 +52,7 @@ namespace FreeMat {
       throw Exception("No more fig handles available!  Close some figs...");
     }
     figs[figNum] = new Figure(figNum);
-    figs[figNum]->Show();
-    figs[figNum]->Raise();
+    figs[figNum]->show();
     currentFig = figNum;
   }
   
@@ -65,15 +60,14 @@ namespace FreeMat {
     if (figs[fignum] == NULL) {
       figs[fignum] = new Figure(fignum);
     }
-    figs[fignum]->Show();
-    figs[fignum]->Raise();
+    figs[fignum]->show();
     currentFig = fignum;
   } 
 
   Figure* GetCurrentFig() {
     if (currentFig == -1)
       NewFig();
-    figs[currentFig]->Raise();
+    figs[currentFig]->show();
     return figs[currentFig];
   }
 
@@ -131,6 +125,7 @@ namespace FreeMat {
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
+#if 0
     XPContainer *c = new XPContainer(f, f->GetBoundingRect());
     XPLabel *l = new XPLabel(NULL, Rect2D(75,75,50,75), "Label!");
     XPButton *b = new XPButton(NULL, Rect2D(50,50,150,100), l);
@@ -141,6 +136,7 @@ namespace FreeMat {
     c->AddChild(e);
     f->SetFigureChild(c, figgui);
     f->Refresh(f->GetBoundingRect());
+#endif
     return ArrayVector();
   }
 
@@ -165,14 +161,15 @@ namespace FreeMat {
     width = w.getContentsAsIntegerScalar();
     height = h.getContentsAsIntegerScalar();
     Figure *f = GetCurrentFig();
-    f->OnResize(Point2D(width,height));
+    f->resize(0,0,width,height);
     return ArrayVector();
   }
 
   void CloseHelper(int fig) {
     if (fig == -1) return;
     if (figs[fig] == NULL) return;
-    CloseXWindow(figs[fig]);
+    figs[fig]->hide();
+    delete figs[fig];
     figs[fig] = NULL;
     if (currentFig == fig)
       currentFig = -1;
@@ -264,12 +261,11 @@ namespace FreeMat {
       if ((action < MAX_FIGS) && (action >= 1))
 	CloseHelper(action-1);
     }
-    FlushWindowEvents();
     return ArrayVector();
   }
 
   void ForceRefresh() {
     Figure* fig = GetCurrentFig();
-    fig->Refresh(fig->GetBoundingRect());
+    fig->redraw();
   }
 }

@@ -3,6 +3,9 @@
 #include "GraphicsCore.hpp"
 #include "FL/x.H"
 #include "FLTKGC.hpp"
+#include <algorithm>
+#include "PostScriptGC.hpp"
+#include "BitmapPrinterGC.hpp"
 
 #define MAX_FIGS 100
 
@@ -30,11 +33,11 @@ namespace FreeMat {
     NotifyFigClose(m_num);
   }
   
-  Fl_Widget* Figure::GetChildWidget() {
+  PrintableWidget* Figure::GetChildWidget() {
     return m_wid;
   }
 
-  void Figure::SetFigureChild(Fl_Widget *widget, figType typ) {
+  void Figure::SetFigureChild(PrintableWidget *widget, figType typ) {
     m_type = typ;
     clear();
     add(widget);
@@ -46,10 +49,28 @@ namespace FreeMat {
     if (m_type == fignone) return;
     int width(m_wid->w());
     int height(m_wid->h());
-    unsigned char *data = new (unsigned char)[width*height*3];
-    CaptureWidget(m_wid, data, width, height);
-    WriteJPEGFile(filename, data, width, height);
-    delete data;
+    int np = filename.find_last_of(".");
+    if (np <= 0)
+      throw FreeMat::Exception("Unable to determine format of output from filename");
+    std::string extension(filename.substr(np));
+    std::transform(extension.begin(), extension.end(),
+		   extension.begin(), tolower);
+    if (extension == ".eps" || extension == ".ps") {
+      PostScriptGC gc(filename, width, height);
+      m_wid->OnDraw(gc);
+    } else {
+      unsigned char *data = new (unsigned char)[width*height*3];
+      Fl_Offscreen id;
+      id = fl_create_offscreen(width,height);
+      fl_begin_offscreen((Fl_Offscreen) id);
+      m_wid->draw();
+      fl_read_image(data,0,0,width,height);
+      fl_end_offscreen();
+      fl_delete_offscreen(id);
+      BitmapPrinterGC gc(filename);
+      gc.BlitImage(data, width, height, 0, 0);
+      delete data;
+    }      
   }
   
   void InitializeFigureSubsystem() {

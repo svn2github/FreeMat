@@ -26,7 +26,7 @@
 
 namespace FreeMat {
 
-  ScalarImage::ScalarImage(int width, int height) : Fl_Widget(0,0,width,height) {
+  ScalarImage::ScalarImage(int width, int height) : PrintableWidget(0,0,width,height) {
     rawData = NULL;
     for (int i=0;i<256;i++) {
       colormap[0][i] = i;

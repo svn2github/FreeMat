@@ -2,7 +2,7 @@
 #define __Figure_hpp__
 
 #include <FL/Fl_Double_Window.H>
-#include "XPWidget.hpp"
+#include "PrintableWidget.hpp"
 #include <string>
 
 namespace FreeMat {
@@ -14,13 +14,13 @@ namespace FreeMat {
     Figure(int fignum);
     ~Figure();
     figType getType() {return m_type;};
-    void SetFigureChild(Fl_Widget *widget, figType w_type);
-    Fl_Widget* GetChildWidget();
+    void SetFigureChild(PrintableWidget *widget, figType w_type);
+    PrintableWidget* GetChildWidget();
     void Print(std::string filename);
   private:
     int m_num;
     figType m_type;
-    Fl_Widget *m_wid;
+    PrintableWidget *m_wid;
   };
   Figure* GetCurrentFig();
 }

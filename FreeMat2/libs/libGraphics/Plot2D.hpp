@@ -23,8 +23,8 @@
 
 #include "DataSet2D.hpp"
 #include "Axis.hpp"
-#include <FL/Fl_Widget.H>
 #include "FLTKGC.hpp"
+#include "PrintableWidget.hpp"
 
 namespace FreeMat {
 
@@ -36,7 +36,7 @@ namespace FreeMat {
    * number of 2D data sets.  It is responsible 
    * for drawing the data sets and managing them.
    */
-  class Plot2D : public Fl_Widget {
+  class Plot2D : public PrintableWidget {
   public:
     /**
      * Construct a 2D plot frame with the given

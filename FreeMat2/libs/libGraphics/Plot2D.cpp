@@ -27,7 +27,7 @@
 
 namespace FreeMat {
 
-  Plot2D::Plot2D(int width, int height) : Fl_Widget(0,0,width,height) {
+  Plot2D::Plot2D(int width, int height) : PrintableWidget(0,0,width,height) {
     space = 10;
     xAxis = NULL;
     yAxis = NULL;

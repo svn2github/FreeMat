@@ -23,7 +23,7 @@
 
 #include "Array.hpp"
 #include "GraphicsContext.hpp"
-#include <FL/Fl_Widget.H>
+#include "PrintableWidget.hpp"
 #include "FLTKGC.hpp"
 
 namespace FreeMat {
@@ -32,7 +32,7 @@ namespace FreeMat {
    * This is a window for viewing a scalar image with
    * a color map.
    */
-  class ScalarImage : public Fl_Widget {
+  class ScalarImage : public PrintableWidget {
   public:
     /**
      * Create a new scalar image window with the given

@@ -1,6 +1,7 @@
 #!/bin/sh
 mkdir mtex
 cp ../MFiles/mprint*.m mtex/.
+cp mkhsetpath.m mtex/.
 cd mtex
 perl ../dcptrans.pl ../../libs/lib*/*.cpp
 cp ../main.tex .

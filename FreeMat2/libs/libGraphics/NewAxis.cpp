@@ -48,6 +48,45 @@ namespace FreeMat {
     AutoSetAxis();
   }
 
+  // To calculate the step size, we have a step size of
+  // the order 10^n*2^p = (t2-t1)/m
+  // Ultimately, we calculate a delta.  We know that
+  // m*delta > (t2-t1).  Then we set
+  // tstart = floor(t1/delta)*delta
+  // tstop = ceil(t2/delta)*delta
+  // tstart + n*edelt >= tstop
+  //  n >= ceil((tstop-tstart)/edelt)
+  //
+  //function calcstep(t1,t2,m,autoset)
+  //delt = (t2-t1)/m;
+  //log(delt)/log(10);
+  //n = floor(log(delt)/log(10));
+  //rdelt = delt/(10^n);
+  //p = ceil(log(rdelt)/log(2));
+  //edelt = 10^n*2^p
+  //if (autoset)
+  //  tstart = floor(t1/edelt)*edelt;
+  //  tstop = ceil(t2/edelt)*edelt;
+  //  tbegin = tstart;
+  //  tend = tstop;
+  //else
+  //  tstart = t1;
+  //  tstop = t2;
+  //  tbegin = ceil(t1/edelt)*edelt;
+  //  tend = floor(t2/edelt)*edelt;
+  //end
+  //mprime = ceil((tend-tbegin)/edelt)
+  //tbegin+(mprime-1)*edelt
+  //if (autoset)
+  //  if ((tbegin+(mprime-1)*edelt) >= t2)
+  //    mprime = mprime-1
+  //  end
+  //else
+  //  if ((tbegin+mprime*edelt) > t2)
+  //    mprime = mprime-1
+  //  end
+  //end
+  //tbegin + (0:mprime)*edelt
   void NewAxis::UpdateIntervals(double t1, double t2) {
     // Map the axes ranges to a start, stop and delta
     double range;

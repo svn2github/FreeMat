@@ -36,17 +36,17 @@ namespace FreeMat {
      */
     double tMin, tMax;
     /**
-     * The start, stop and step size for the tick marks
+     * the tik marks
      */
-    double tStart, tStop, tStep;
+    double tStart, tStep, tCount;
+    /**
+     * the axis range
+     */
+    double tBegin, tEnd;
     /**
      * True if we are a log-axis
      */
     bool isLogarithmic;
-    /**
-     * The number of ticks to draw.
-     */
-    int tCount;
     /**
      * The contents of the labels along the axis.
      */
@@ -119,11 +119,6 @@ namespace FreeMat {
      * Empty constructor.
      */
     NewAxis() {}
-    /**
-     * Construct an axis object that covers the given range of values,
-     * with the specified logarithmic flag and axis type.
-     */
-    NewAxis(double minVal, double maxVal, bool logarithmic);
     /**
      * Update our estimate of maxLabelExtent and the title dimensions
      * using the given device context.

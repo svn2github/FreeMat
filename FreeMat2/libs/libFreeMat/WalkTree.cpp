@@ -1496,18 +1496,17 @@ namespace FreeMat {
       // that the function have an output.
       Array b;
       if (t->opNum ==(OP_RHS) && 
-	  !context->lookupVariable(t->down->text,b) &&
-	  lookupFunctionWithRescan(t->down->text,fdef)) {
-	m = functionExpression(fdef,t->down,0,true);
+	  !context->lookupVariable(t->down->text,b)) {
+	m = functionExpression(t->down,0,true);
 	if (m.size() == 0) 
 	  b = Array::emptyConstructor();
 	else 
 	  b = m[0];
-	if (printIt && (fdef->outputArgCount() != 0) && (!b.isEmpty())
+	if (printIt && !b.isEmpty()
 	    && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	  io->outputMessage("ans = \n");
 	  b.printMe(printLimit,io->getTerminalWidth());
-	} 
+	}
       }
       else if (t->opNum == OP_RHS) {
 	m = rhsExpression(t->down);
@@ -1892,17 +1891,14 @@ namespace FreeMat {
   }
 
   void WalkTree::specialFunctionCall(ASTPtr t, bool printIt) {
-    FunctionDef *fptr;
     ASTPtr fAST;
     ArrayVector m;
     pushID(t->context());
 
-    if (!lookupFunctionWithRescan(t->text,fptr))
-      throw Exception(std::string("Undefined function ") + t->text);
     bool CLIFlagsave = InCLI;
     InCLI = false;
     try {
-      m = functionExpression(fptr,t,0,false);
+      m = functionExpression(t,0,false);
     } catch(Exception& e) {
       InCLI = CLIFlagsave;
       throw;
@@ -1924,13 +1920,10 @@ namespace FreeMat {
     Array c;
     int lhsSize;
     int lhsCounter;
-    FunctionDef *fptr;
 
     fAST = t->right;
     pushID(fAST->context());
 
-    if (!lookupFunctionWithRescan(fAST->text,fptr))
-      throw Exception(std::string("Undefined function ") + fAST->text);
     if (t->opNum != OP_BRACKETS)
       throw Exception("Illegal left hand side in multifunction expression");
     s = t->down;
@@ -1953,7 +1946,7 @@ namespace FreeMat {
       lhsCount += dmp;
       mptr = mptr->right;
     }
-    m = functionExpression(fptr,fAST,lhsCount,false);
+    m = functionExpression(fAST,lhsCount,false);
     s = saveLHS;
     while ((s != NULL) && (m.size() > 0)) {
       Array c(assignExpression(s->down,m));
@@ -2414,8 +2407,8 @@ namespace FreeMat {
   //strcattest hi ho
   //@>
   //!
-  ArrayVector WalkTree::functionExpression(FunctionDef *funcDef,
-					   ASTPtr t, int narg_out, 
+  ArrayVector WalkTree::functionExpression(ASTPtr t, 
+					   int narg_out, 
 					   bool outputOptional) {
     ArrayVector m, n;
     ASTPtr s, q, p;
@@ -2426,8 +2419,12 @@ namespace FreeMat {
     int *argTypeMap;
     int i;
     char buffer[2048];
+    FuncPtr funcDef;
 
     pushID(t->context());
+    if (!lookupFunctionWithRescan(t->text,funcDef))
+      throw Exception(std::string("Undefined function or variable ") + 
+		      t->text);
     funcDef->updateCode();
     bool CLIFlagsave;
     
@@ -2749,6 +2746,14 @@ namespace FreeMat {
   
   bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val) {
     bool isFun;
+    // Check for a constructor with this name
+    isFun = context->lookupFunction(std::string("@") + funcName + 
+				    std::string("_") + funcName, val);
+    if (isFun) return true;
+    io->rescanPath();
+    isFun = context->lookupFunction(std::string("@") + funcName + 
+				    std::string("_") + funcName, val);
+    if (isFun) return true;
     isFun = context->lookupFunction(funcName,val);
     if (!isFun) {
       io->rescanPath();
@@ -2762,7 +2767,6 @@ namespace FreeMat {
     ArrayVector m;
     bool isVar;
     bool isFun;
-    FunctionDef *funcDef;
     pushID(t->context());
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
@@ -2771,10 +2775,8 @@ namespace FreeMat {
       popID();
       return r;
     }
-    if (!isVar)
-      isFun = lookupFunctionWithRescan(t->text,funcDef);
-    if (!isVar && isFun) {
-      m = functionExpression(funcDef,t,1,false);
+    if (!isVar) {
+      m = functionExpression(t,1,false);
       if (m.empty()) {
 	popID();
 	return Array::emptyConstructor();
@@ -2783,9 +2785,8 @@ namespace FreeMat {
 	return m[0];
       }
     }
-    if (!isVar && !isFun)
-      throw Exception(std::string("Undefined function or variable ") + t->text);
     popID();
+    return Array::emptyConstructor();
   }
 
   //!
@@ -2979,7 +2980,6 @@ namespace FreeMat {
     bool isVar;
     bool isFun;
     Dimensions rhsDimensions;
-    FunctionDef *funcDef;
     pushID(t->context());
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
@@ -2990,15 +2990,11 @@ namespace FreeMat {
       popID();
       return rv;
     }
-    if (!isVar)
-      isFun = lookupFunctionWithRescan(t->text,funcDef);
-    if (!isVar && isFun) {
-      m = functionExpression(funcDef,t,1,false);
+    if (!isVar) {
+      m = functionExpression(t,1,false);
       popID();
       return m;
     }
-	if (!isVar && !isFun) 
-	  throw Exception(std::string("Undefined function or variable ") + t->text);
     t = t->down;
     while (t != NULL) {
       rhsDimensions = r.getDimensions();

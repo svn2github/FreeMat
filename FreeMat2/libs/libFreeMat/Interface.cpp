@@ -60,11 +60,11 @@ namespace FreeMat {
     m_context->flushTemporaryGlobalFunctions();
     int i;
     for (i=0;i<dirTab.size();i++)
-      scanDirectory(dirTab[i],false);
+      scanDirectory(dirTab[i],false,"");
     // Scan the current working directory.
     char cwd[1024];
     getcwd(cwd,1024);
-    scanDirectory(std::string(cwd),true);
+    scanDirectory(std::string(cwd),true,"");
   }
   
   /*.......................................................................
@@ -189,18 +189,38 @@ namespace FreeMat {
     }
   }
 
-  void Interface::scanDirectory(std::string scdir, bool tempfunc) {
+  void Interface::scanDirectory(std::string scdir, bool tempfunc,
+				std::string prefix) {
 #ifdef WIN32
     HANDLE hSearch;
     WIN32_FIND_DATA FileData;
     std::string searchpat(scdir + "\\*.m");
     hSearch = FindFirstFile(searchpat.c_str(), &FileData);
     if (hSearch != INVALID_HANDLE_VALUE) {
-      procFile(std::string(FileData.cFileName),
-	       scdir + "\\" + std::string(FileData.cFileName),tempfunc);
-      while (FindNextFile(hSearch, &FileData)) {
+      if (prefix.empty())
 	procFile(std::string(FileData.cFileName),
 		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+      else
+	procFile(prefix + "_" + std::string(FileData.cFileName),
+		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+      while (FindNextFile(hSearch, &FileData)) {
+	if (prefix.empty())
+	  procFile(std::string(FileData.cFileName),
+		   scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+	else
+	  procFile(prefix + "_" + std::string(FileData.cFileName),
+		   scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+      }
+      FindClose(hSearch);
+    }    
+    searchpat = std::string("@*");
+    hSearch = FindFirstFile(searchpat.c_str(), &FileData);
+    if (hSearch != INVALID_HANDLE_VALUE) {
+      scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,
+		    std::string(FileData.cFileName));
+      while (FindNextFile(hSearch, &FileData)) {
+	scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,
+		      std::string(FileData.cFileName));
       }
       FindClose(hSearch);
     }
@@ -222,7 +242,12 @@ namespace FreeMat {
 	continue;
       // Stat the file...
       fullname = std::string(scdir + std::string(DELIM) + fname);
-      procFile(fname,fullname,tempfunc);
+      if (fname[0] == '@')
+	scanDirectory(fullname,tempfunc,fname);
+      if (prefix.empty())
+	procFile(fname,fullname,tempfunc);
+      else
+	procFile(prefix + "_" + fname,fullname,tempfunc);
     }
     closedir(dir);
 #endif
@@ -261,9 +286,9 @@ namespace FreeMat {
 	  adef->fileName = fullname;
 	  m_context->insertFunctionGlobally(adef, tempfunc);
 	}
-      }else if (fnamec[namelen-2] == '.' && 
-		(fnamec[namelen-1] == 'p' ||
-		 fnamec[namelen-1] == 'P')) {
+      } else if (fnamec[namelen-2] == '.' && 
+		 (fnamec[namelen-1] == 'p' ||
+		  fnamec[namelen-1] == 'P')) {
 	fnamec[namelen-2] = 0;
 	// Look for the function in the context - only insert it
 	// if it is not already defined.

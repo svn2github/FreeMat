@@ -321,9 +321,7 @@ namespace FreeMat {
      *    - if too many arguments are passed to the function.
      *    - too many outputs are requested from the function.
      */
-    ArrayVector functionExpression(FunctionDef *funcDef,
-				   ASTPtr t, int narg_out, 
-				   bool outputOptional);
+    ArrayVector functionExpression(ASTPtr t, int narg_out, bool outputOptional);
     /**
      * A multifunction call is an expression of the sort
      * [expr1,expr2,...,exprn] = func(args).  The AST is

@@ -31,7 +31,7 @@ namespace FreeMat {
     Context *m_context;
     std::string m_path;
     std::vector<std::string> dirTab;    
-    void scanDirectory(std::string scdir, bool);
+    void scanDirectory(std::string scdir, bool, std::string prefixo);
     void procFile(std::string fname, std::string fullname, bool);
   public:
     Interface();

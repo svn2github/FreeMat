@@ -1301,7 +1301,8 @@ namespace FreeMat {
     while (!feof(fp)) {
       char buffer[4096];
       fgets(buffer,sizeof(buffer),fp);
-      eval->evaluateString(buffer);
+      if (!feof(fp))
+	eval->evaluateString(buffer);
     }
     fclose(fp);
     return ArrayVector();

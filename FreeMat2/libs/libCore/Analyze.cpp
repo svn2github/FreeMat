@@ -372,7 +372,7 @@ namespace FreeMat {
 
   template <class T>
   void TRealMean(const T* sp, T* dp, int planes, int planesize, int linesize) {
-    T accum;
+    double accum;
     int i, j, k;
 
     for (i=0;i<planes;i++) {
@@ -387,8 +387,8 @@ namespace FreeMat {
 
   template <class T>
   void TComplexMean(const T* sp, T* dp, int planes, int planesize, int linesize) {
-    T accum_r;
-    T accum_i;
+    double accum_r;
+    double accum_i;
     int i, j, k;
     
     for (i=0;i<planes;i++) {
@@ -407,47 +407,53 @@ namespace FreeMat {
 
   template <class T>
   void TRealVariance(const T* sp, T* dp, int planes, int planesize, int linesize) {
-    T accum_first;
-    T accum_second;
+    double accum_first;
+    double accum_second;
     int i, j, k;
 
     for (i=0;i<planes;i++) {
       for (j=0;j<planesize;j++) {
+	// Calculate the mean
 	accum_first = 0;
+	for (k=0;k<linesize;k++)
+	  accum_first += sp[i*planesize*linesize + j + k*planesize]/linesize;
+	// The variance is 1/(linesize-1)
 	accum_second = 0;
 	for (k=0;k<linesize;k++) {
-	  accum_first += sp[i*planesize*linesize + j + k*planesize];
-	  accum_second += sp[i*planesize*linesize + j + k*planesize]*
-	    sp[i*planesize*linesize + j + k*planesize];	    
+	  double tmp;
+	  tmp = sp[i*planesize*linesize + j + k*planesize]-accum_first;
+	  accum_second += tmp*tmp/(linesize-1.0);
 	}
-	dp[i*planesize + j] = accum_second/(linesize-1) - 
-	  (accum_first/linesize)*(accum_first/(linesize-1));
+	dp[i*planesize + j] = accum_second;
       }
     }
   }
   
   template <class T>
   void TComplexVariance(const T* sp, T* dp, int planes, int planesize, int linesize) {
-    T accum_r_first;
-    T accum_i_first;
-    T accum_second;
+    double accum_r_first;
+    double accum_i_first;
+    double accum_second;
     int i, j, k;
     
     for (i=0;i<planes;i++) {
       for (j=0;j<planesize;j++) {
 	accum_r_first = 0;
 	accum_i_first = 0;
+	for (k=0;k<linesize;k++) {
+	  accum_r_first += sp[2*(i*planesize*linesize + j + k*planesize)]/linesize;
+	  accum_i_first += sp[2*(i*planesize*linesize + j + k*planesize)+1]/linesize;
+	}
 	accum_second = 0;
 	for (k=0;k<linesize;k++) {
-	  accum_r_first += sp[2*(i*planesize*linesize + j + k*planesize)];
-	  accum_i_first += sp[2*(i*planesize*linesize + j + k*planesize)+1];
-	  accum_second += sp[2*(i*planesize*linesize + j + k*planesize)]*
-	    sp[2*(i*planesize*linesize + j + k*planesize)] + 
-	    sp[2*(i*planesize*linesize + j + k*planesize)+1]*
-	    sp[2*(i*planesize*linesize + j + k*planesize)+1]; 
+	  double tmp_r;
+	  double tmp_i;
+
+	  tmp_r = sp[2*(i*planesize*linesize + j + k*planesize)]-accum_r_first;
+	  tmp_i = sp[2*(i*planesize*linesize + j + k*planesize)]-accum_r_first;
+	  accum_second += (tmp_r*tmp_r + tmp_i*tmp_i)/(linesize-1.0);
 	}
-	dp[i*planesize + j] = accum_second/(linesize-1) - 
-	  (accum_r_first*accum_r_first + accum_i_first*accum_i_first)/(linesize*(linesize-1));
+	dp[i*planesize + j] = accum_second;
       }
     }
   }

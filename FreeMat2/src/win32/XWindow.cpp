@@ -107,7 +107,13 @@ void XWindow::EraseRectangle(int cx, int cy, int cwidth, int cheight) {
 }
 
 void XWindow::SetSize(int w, int h) {
-  SetWindowPos(m_window, 0, 0, 0, w, h, SWP_NOZORDER | SWP_NOMOVE);
+  RECT sze;
+  sze.left = 0;
+  sze.top = 0;
+  sze.right = w;
+  sze.bottom = h;
+  AdjustWindowRect(&sze,WS_OVERLAPPEDWINDOW,TRUE);
+  SetWindowPos(m_window, 0, 0, 0, sze.right-sze.left, sze.bottom-sze.top, SWP_NOZORDER | SWP_NOMOVE);
 }
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

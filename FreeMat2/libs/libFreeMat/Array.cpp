@@ -32,6 +32,8 @@
 #define snprintf _snprintf
 #endif
 
+#include "FunctionDef.hpp"
+
 namespace FreeMat {
 
   static int objectBalance;
@@ -160,6 +162,10 @@ namespace FreeMat {
   
   void* Array::allocateArray(Class type, uint32 length, const stringVector& names) {
     switch(type) {
+    case FM_FUNCPTR_ARRAY: {
+      FunctionDef **dp = new FunctionDef*[length];
+      return dp;
+    }
     case FM_CELL_ARRAY: {
       Array *dp = new Array[length];
       for (int i=0;i<length;i++)
@@ -446,6 +452,11 @@ namespace FreeMat {
     case FM_STRUCT_ARRAY:
       {
 	throw Exception("Cannot convert structure arrays to indices.");
+      }
+      break;
+    case FM_FUNCPTR_ARRAY:
+      {
+	throw Exception("Cannot convert function pointer arrays to indices.");
       }
       break;
     }
@@ -841,6 +852,8 @@ namespace FreeMat {
    */
   int Array::getElementSize() const {
     switch(dp->dataClass) {
+    case FM_FUNCPTR_ARRAY:
+      return sizeof(FunctionDef*);
     case FM_CELL_ARRAY:
       return sizeof(Array);
     case FM_STRUCT_ARRAY:
@@ -1128,7 +1141,8 @@ namespace FreeMat {
    */
   const bool Array::isReferenceType() const {
     return ((dp->dataClass == FM_CELL_ARRAY) ||
-	    (dp->dataClass == FM_STRUCT_ARRAY));
+	    (dp->dataClass == FM_STRUCT_ARRAY) ||
+	    (dp->dataClass == FM_FUNCPTR_ARRAY));
   }
 
   /**
@@ -1231,6 +1245,11 @@ namespace FreeMat {
     }
     // Handle the reference types.
     // Cell arrays can be promoted with no effort to cell arrays.
+    if (dp->dataClass = FM_FUNCPTR_ARRAY)
+      if (dstClass == FM_FUNCPTR_ARRAY)
+	return;
+      else
+	throw Exception("Cannot convert function pointer arrays to any other type.");
     if (dp->dataClass == FM_CELL_ARRAY) 
       if (dstClass == FM_CELL_ARRAY)
 	return;
@@ -1280,7 +1299,8 @@ namespace FreeMat {
       else
 	throw Exception("Cannot convert struct-arrays to any other type.");
     // Catch attempts to convert data types to reference types.
-    if ((dstClass == FM_CELL_ARRAY) || (dstClass == FM_STRUCT_ARRAY)) 
+    if ((dstClass == FM_CELL_ARRAY) || (dstClass == FM_STRUCT_ARRAY)
+	|| (dstClass == FM_FUNCPTR_ARRAY)) 
       throw Exception("Cannot convert base types to reference types.");
     // Do nothing for promoting to same class (no-op).
     if (dstClass == dp->dataClass) return;
@@ -1674,6 +1694,12 @@ break;
   Array Array::emptyConstructor() {
     Dimensions dim;
     return Array(FM_DOUBLE,dim,NULL);
+  }
+
+  Array Array::funcPtrConstructor(FunctionDef *fptr) {
+    FunctionDef **data = (FunctionDef**) allocateArray(FM_FUNCPTR_ARRAY,1);
+    data[0] = fptr;
+    return Array(FM_FUNCPTR_ARRAY, Dimensions(1,1), data);
   }
 
   //!
@@ -3271,6 +3297,11 @@ break;
       io->outputMessage("[]");
     else {
       switch(dp->dataClass) {
+      case FM_FUNCPTR_ARRAY:
+	io->outputMessage("{");
+	dp->dimensions.printMe(io);
+	io->outputMessage(" function pointer array }");
+	break;
       case FM_CELL_ARRAY:
 	io->outputMessage("{");
 	dp->dimensions.printMe(io);
@@ -3556,6 +3587,11 @@ break;
 	ap[num].summarizeCellEntry();
       io->outputMessage("  ");
     }
+    case FM_FUNCPTR_ARRAY: {
+      const FunctionDef** ap;
+      ap = (const FunctionDef**) dp;
+      io->outputMessage(ap[num]->name);
+    }
     }
   }
 
@@ -3627,6 +3663,9 @@ break;
 	  io->outputMessage("  <structure array> ");
       nominalWidth = 10;
       break;
+    case FM_FUNCPTR_ARRAY:
+      io->outputMessage("  <function ptr array>  ");
+      nominalWidth = 20;
     }
     io->outputMessage("- size: ");
     dp->dimensions.printMe(io);
@@ -3797,7 +3836,8 @@ break;
   }
 
   bool Array::isDataClassReferenceType(Class cls) {
-    return (cls == FM_CELL_ARRAY || cls == FM_STRUCT_ARRAY);
+    return (cls == FM_CELL_ARRAY || cls == FM_STRUCT_ARRAY || 
+	    cls == FM_FUNCPTR_ARRAY);
   }
 
   template <class T>
@@ -3854,6 +3894,8 @@ break;
       return DoCountNNZReal<void*>(dp->getData(),getLength());
     case FM_STRUCT_ARRAY:
       return DoCountNNZReal<void*>(dp->getData(),getLength()*dp->fieldNames.size());
+    case FM_FUNCPTR_ARRAY:
+      return DoCountNNZReal<void*>(dp->getData(),getLength());
     }
   }
 

@@ -17,6 +17,19 @@
 // To Do:
 //   change grepping code to look for classes
 //   change function eval code to handle classes
+//
+// These are both done.  Next is the issue of parent classes.
+// What does it mean when we have one or more parent classes?
+// The structure is simple enough (simply add a new field with
+// the name of the parent class).  But what about methods?
+// When we call a method of the parent class on the current class
+// what does it get passed?
+//
+// Class related issues
+//    rhs subscripting
+//    assignment
+//
+// What about function pointers?  
 
 namespace FreeMat {
   UserClass::UserClass() {
@@ -118,4 +131,49 @@ namespace FreeMat {
     sfdef->fptr = ClassFunction;
     context->insertFunctionGlobally(sfdef,false);
   }
+
+  Array ClassUnaryOperator(Array a, std::string funcname,
+			   WalkTree* eval) {
+    FuncPtr val;
+    ArrayVector m, n;
+    if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName() + "_" + funcname,val)) {
+      val->updateCode();
+      m.push_back(a);
+      n = val->evaluateFunction(eval,m,1);
+      if (!n.empty())
+	return n[0];
+      else
+	return Array::emptyConstructor();
+    }
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName());
+  }
+
+  Array ClassBinaryOperator(Array a, Array b, std::string funcname,
+			    WalkTree* eval) {
+    FuncPtr val;
+    ArrayVector m, n;
+    if (a.isUserClass()) {
+      if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName() + "_" + funcname,val)) {
+	val->updateCode();
+	m.push_back(a); m.push_back(b);
+	n = val->evaluateFunction(eval,m,1);
+	if (!n.empty())
+	  return n[0];
+	else
+	  return Array::emptyConstructor();
+      }
+    } else if (b.isUserClass()) {
+      if (eval->getContext()->lookupFunction(std::string("@") + b.getClassName() + "_" + funcname,val)) {
+	val->updateCode();
+	m.push_back(a); m.push_back(b);
+	n = val->evaluateFunction(eval,m,1);
+	if (!n.empty())
+	  return n[0];
+	else
+	  return Array::emptyConstructor();
+      }
+    }
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName() + " and " + b.getClassName());
+  }
+
 }

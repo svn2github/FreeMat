@@ -237,6 +237,7 @@ namespace FreeMat {
 	cnum(OP_SCALL,"special call");
 	cnum(OP_KEYWORD,"keyword");
 	cnum(OP_DOTDYN,".()");
+	cnum(OP_ADDRESS,"@");
       }
       printf("\r\n");
     } else if (t->type == id_node) {

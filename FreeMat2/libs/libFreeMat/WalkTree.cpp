@@ -59,11 +59,25 @@ namespace FreeMat {
   int endValStackLength;
   int endValStack[1000];
 
-#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right));retval = func(a,b);}
-#define DoUnaryOp(func) {Array a(expression(t->down)); retval = func(a);}
-
   void sigInterrupt(int arg) {
     InterruptPending = true;
+  }
+
+  Array WalkTree::DoBinaryOperator(ASTPtr t, BinaryFunc fnc, 
+				   std::string funcname) {
+    Array a(expression(t->down));
+    Array b(expression(t->down->right));
+    if (!(a.isUserClass() || b.isUserClass())) 
+       return fnc(a,b);
+    return ClassBinaryOperator(a,b,funcname,this);
+  }
+
+  Array WalkTree::DoUnaryOperator(ASTPtr t, UnaryFunc fnc, 
+				  std::string funcname) {
+    Array a(expression(t->down));
+    if (!a.isUserClass())
+       return fnc(a);
+    return ClassUnaryOperator(a,funcname,this);
   }
 
   void WalkTree::pushID(int a) {
@@ -339,27 +353,27 @@ namespace FreeMat {
 	break;
       case OP_PLUS: 
 	{  
-	  DoBinaryOp(Add); 
+	  retval = DoBinaryOperator(t,Add,"plus"); 
 	}
 	break;
       case OP_SUBTRACT: 
 	{  
-	  DoBinaryOp(Subtract); 
+	  retval = DoBinaryOperator(t,Subtract,"minus"); 
 	}
 	break;
       case OP_TIMES: 
 	{  
-	  DoBinaryOp(Multiply); 
+	  retval = DoBinaryOperator(t,Multiply,"mtimes"); 
 	}
 	break;
       case OP_RDIV: 
 	{  
-	  DoBinaryOp(RightDivide); 
+	  retval = DoBinaryOperator(t,RightDivide,"rdiv");
 	}
 	break;
       case OP_LDIV: 
 	{  
-	  DoBinaryOp(LeftDivide); 
+	  retval = DoBinaryOperator(t,LeftDivide,"ldiv"); 
 	}
 	break;
       case OP_OR: 
@@ -374,79 +388,87 @@ namespace FreeMat {
 	break;
       case OP_LT: 
 	{  
-	  DoBinaryOp(LessThan); 
+	  retval = DoBinaryOperator(t,LessThan,"lt"); 
 	}
 	break;
       case OP_LEQ: 
 	{ 
-	  DoBinaryOp(LessEquals); 
+	  retval = DoBinaryOperator(t,LessEquals,"le"); 
 	}
 	break;
       case OP_GT: 
 	{  
-	  DoBinaryOp(GreaterThan); 
+	  retval = DoBinaryOperator(t,GreaterThan,"gt"); 
 	}
 	break;
       case OP_GEQ: 
 	{ 
-	  DoBinaryOp(GreaterEquals); 
+	  retval = DoBinaryOperator(t,GreaterEquals,"ge"); 
 	}
 	break;
       case OP_EQ: 
 	{ 
-	  DoBinaryOp(Equals); 
+	  retval = DoBinaryOperator(t,Equals,"eq"); 
 	}
 	break;
       case OP_NEQ: 
 	{ 
-	  DoBinaryOp(NotEquals); 
+	  retval = DoBinaryOperator(t,NotEquals,"ne"); 
 	}
 	break;
       case OP_DOT_TIMES: 
 	{ 
-	  DoBinaryOp(DotMultiply); 
+	  retval = DoBinaryOperator(t,DotMultiply,"times"); 
 	}
 	break;
       case OP_DOT_RDIV: 
 	{ 
-	  DoBinaryOp(DotRightDivide); 
+	  retval = DoBinaryOperator(t,DotRightDivide,"rdiv"); 
 	}
 	break;
       case OP_DOT_LDIV: 
 	{ 
-	  DoBinaryOp(DotLeftDivide); 
+	  retval = DoBinaryOperator(t,DotLeftDivide,"ldiv"); 
 	}
 	break;
       case OP_NEG: 
 	{ 
-	  DoUnaryOp(Negate); 
+	  retval = DoUnaryOperator(t,Negate,"negate"); 
 	}
 	break;
       case OP_NOT: 
 	{ 
-	  DoUnaryOp(Not); 
+	  retval = DoUnaryOperator(t,Not,"not"); 
 	}
 	break;
       case OP_POWER: 
 	{ 
-	  DoBinaryOp(Power); 
+	  retval = DoBinaryOperator(t,Power,"mpower"); 
 	}
 	break;
       case OP_DOT_POWER: 
 	{ 
-	  DoBinaryOp(DotPower); 
+	  retval = DoBinaryOperator(t,DotPower,"power"); 
 	}
 	break;
       case OP_TRANSPOSE: 
 	{ 
-	  DoUnaryOp(Transpose); 
+	  retval = DoUnaryOperator(t,Transpose,"transpose"); 
 	}
 	break;
       case OP_DOT_TRANSPOSE: 
 	{ 
-	  DoUnaryOp(DotTranspose); 
+	  retval = DoUnaryOperator(t,DotTranspose,"dottranspose"); 
 	}
 	break;
+      case OP_ADDRESS:
+	{
+	  FuncPtr& val;
+	  if (!lookupFunctionWithRescan(t->down->text,val))
+	    throw Exception("unable to resolve" + std::string(t->down->text) + 
+			    " to a function call");
+	  retval = Array::funcPtrConstructor(val);
+	}
       case OP_RHS: 
 	{
 	  // Test for simple variable lookup
@@ -2791,8 +2813,8 @@ namespace FreeMat {
       if (!anyClasses) i++;
     }
     if (anyClasses) {
-      if (lookupFunctionMangled(std::string("@") + args[i].getClassName() + std::string("_") + 
-				funcName, val))
+      if (lookupFunctionMangled(std::string("@") + args[i].getClassName() + 
+				std::string("_") + funcName, val))
 	return true;
     }
     // Just check for the plain old function
@@ -3034,6 +3056,10 @@ namespace FreeMat {
       popID();
       return m;
     }
+    // If r is a user defined object, we have to divert to the
+    // class function...
+//     if (r.isUserClass()) 
+//       return ClassRHSExpression(r,t->down,this);
     t = t->down;
     while (t != NULL) {
       rhsDimensions = r.getDimensions();

@@ -53,6 +53,9 @@ namespace FreeMat {
     ~stackentry();
   };
 
+  typedef Array (*BinaryFunc)(Array, Array);
+  typedef Array (*UnaryFunc)(Array);
+
   class UserClass;
 
   /**
@@ -114,6 +117,8 @@ namespace FreeMat {
 			       ASTPtrVector keyexpr, int* argTypeMap);
     bool lookupFunctionMangled(std::string funcName, FuncPtr& val);
     bool lookupFunctionWithRescanMangled(std::string funcName, FuncPtr& val);
+    Array DoBinaryOperator(ASTPtr t, BinaryFunc fnc, std::string fname);
+    Array DoUnaryOperator(ASTPtr t, UnaryFunc fnc, std::string fname);
   public:
     bool debugActive;
     void dbstep(int linecount);

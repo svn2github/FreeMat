@@ -40,6 +40,7 @@ namespace FreeMat {
   typedef std::vector<ArrayVector> ArrayMatrix;
 
   class Data;
+  class FunctionDef;
 
   /** Ordered data array, the base FreeMat data type.
    * The Array class is the base class of all data types.  It represents
@@ -395,6 +396,7 @@ namespace FreeMat {
      * Empty constructor
      */
     static Array emptyConstructor();
+    static Array funcPtrConstructor(FunctionDef *fptr);
     /**
      * Scalar constructor - Construct an FM_LOGICAL object with a scalar
      * value.

@@ -34,7 +34,9 @@ namespace FreeMat {
   typedef unsigned int   uint32;
   typedef unsigned int   indexType;
   typedef const indexType * constIndexPtr;
+
   typedef enum {
+    FM_FUNCPTR_ARRAY,
     FM_CELL_ARRAY,
     FM_STRUCT_ARRAY,
     FM_LOGICAL,

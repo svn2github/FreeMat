@@ -543,6 +543,7 @@ terminal:
         NUMERIC
 	| STRING
 	| MAGICEND
+	| '@' IDENT {$$.v.p = new AST(OP_ADDRESS,$2.v.p);}
 	| symbRefList {$$.v.p = new AST(OP_RHS,$1.v.p,$1.v.p->context());}
         | '[' matrixDef ']' {$$.v.p = $2.v.p;}
         | '[' error {yyxpt("a matrix definition followed by a right bracket",$1);}

@@ -283,11 +283,11 @@ namespace FreeMat {
   void WinTerminal::initialize(std::string path, Context *contxt) {
     char* pathdata = strdup(path.c_str());
     char* token;
-    token = strtok(pathdata,":");
+    token = strtok(pathdata,";");
     while (token != NULL) {
       if (strcmp(token,".") != 0)
 		dirTab.push_back(std::string(token));
-      token = strtok(NULL,":");
+      token = strtok(NULL,";");
     }
     context = contxt;
     rescanPath();

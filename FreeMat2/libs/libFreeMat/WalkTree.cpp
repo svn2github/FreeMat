@@ -202,6 +202,38 @@ namespace FreeMat {
     return Array::cellConstructor(m);
   }
 
+  Array WalkTree::ShortCutOr(ASTPtr t) {
+    Array a(expression(t->down));
+    if (!a.isScalar()) {
+      io->setMessageContext("built-in binary operator Or (|)"); 
+      return Or(a,expression(t->down->right));
+    }
+    // A is a scalar - is it true?
+    a.promoteType(FM_LOGICAL);
+    if (*((const logical*)a.getDataPointer()))
+      return a;
+    else {
+      io->setMessageContext("built-in binary operator Or (|)"); 
+      return Or(a,expression(t->down->right));
+    }
+  }
+
+  Array WalkTree::ShortCutAnd(ASTPtr t) {
+    Array a(expression(t->down));
+    if (!a.isScalar()) {
+      io->setMessageContext("built-in binary operator And (&)"); 
+      return And(a,expression(t->down->right));
+    }
+    // A is a scalar - is it false?
+    a.promoteType(FM_LOGICAL);
+    if (!*((const logical*)a.getDataPointer()))
+      return a;
+    else {
+      io->setMessageContext("built-in binary operator And (&)"); 
+      return And(a,expression(t->down->right));
+    }
+  }
+
   Array WalkTree::expression(ASTPtr t) {
     if (t->type == const_int_node) {
       int iv;
@@ -244,8 +276,8 @@ namespace FreeMat {
     case OP_TIMES: {  DoBinaryOp(Multiply); }
     case OP_RDIV: {  DoBinaryOp(RightDivide); }
     case OP_LDIV: {  DoBinaryOp(LeftDivide); }
-    case OP_OR: {  DoBinaryOp(Or); }
-    case OP_AND: {  DoBinaryOp(And); }
+    case OP_OR: {  return ShortCutOr(t); }
+    case OP_AND: {  return ShortCutAnd(t); }
     case OP_LT: {  DoBinaryOp(LessThan); }
     case OP_LEQ: { DoBinaryOp(LessEquals); }
     case OP_GT: {  DoBinaryOp(GreaterThan); }

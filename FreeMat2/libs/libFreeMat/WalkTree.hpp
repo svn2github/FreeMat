@@ -529,6 +529,11 @@ namespace FreeMat {
      * Set the text for the last error.
      */
     void setLastErrorString(char* txt);
+    /**
+     * Handles the logistics of shortcut evaluation
+     */
+    Array ShortCutOr(ASTPtr t);
+    Array ShortCutAnd(ASTPtr t);
   };
   void sigInterrupt(int arg);
 }

@@ -49,6 +49,7 @@ namespace FreeMat {
   ArrayVector HelpwinFunction(int,const ArrayVector& arg);
   ArrayVector WinLevFunction(int,const ArrayVector& arg);
   ArrayVector LegendFunction(int, const ArrayVector& arg);
+  ArrayVector DemoFunction(int, const ArrayVector& arg);
   void LoadGraphicsCoreFunctions(Context* context);
   void InitializeFigureSubsystem();
 }

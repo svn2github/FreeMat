@@ -7,7 +7,7 @@
 
 namespace FreeMat {
 
-  typedef enum {fignone, figplot, figscimg} figType;
+  typedef enum {fignone, figplot, figscimg, figgui} figType;
 
   class Figure : public XWindow {
   public:
@@ -18,6 +18,8 @@ namespace FreeMat {
     virtual void Print(std::string fname);
     virtual void OnDraw(GraphicsContext& dc);
     figType getType() {return m_type;};
+    virtual void OnMouseDown(int x, int y);
+    virtual void OnMouseUp(int x, int y);
   private:
     int m_num;
     figType m_type;

@@ -130,7 +130,6 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetXLabel(t.getContentsAsCString());
-    ForceRefresh();
     return ArrayVector();
   }
 
@@ -171,7 +170,6 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetYLabel(t.getContentsAsCString());
-    ForceRefresh();
     return ArrayVector();
   }
 
@@ -239,7 +237,6 @@ namespace FreeMat {
     xcorner = x.getContentsAsDoubleScalar();
     ycorner = y.getContentsAsDoubleScalar();
     t->SetLegend(xcorner, ycorner, legendLS, legendData);
-    ForceRefresh();
     return ArrayVector();
   }
 
@@ -280,7 +277,6 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetTitleText(t.getContentsAsCString());
-    ForceRefresh();
     return ArrayVector();
   }
 
@@ -333,7 +329,6 @@ namespace FreeMat {
       f->SetGrid(false);
     else
       throw Exception("Grid function argument needs to be 'on/off'");
-    ForceRefresh();
     return ArrayVector();
   }
 
@@ -399,7 +394,6 @@ namespace FreeMat {
       f->SetHoldFlag(false);
     else
       throw Exception("Hold function argument needs to be 'on/off'");
-    ForceRefresh();
     return ArrayVector();  
   }
 
@@ -680,7 +674,6 @@ namespace FreeMat {
       throw e;
     }
     // Stop the plot 
-    ForceRefresh();
     return ArrayVector();
   }
 
@@ -795,7 +788,6 @@ namespace FreeMat {
 	f->SetAxes(dp[0],dp[1],dp[2],dp[3]);
       }
       ArrayVector retval;
-      ForceRefresh();
       return retval;
     } else {
       Array retArr;
@@ -806,7 +798,6 @@ namespace FreeMat {
       f->GetAxes(dp[0],dp[1],dp[2],dp[3]);
       ArrayVector retval;
       retval.push_back(retArr);
-      ForceRefresh();
       return retval;
     }
   }

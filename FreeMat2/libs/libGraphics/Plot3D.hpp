@@ -23,14 +23,13 @@
 
 #include "DataSet2D.hpp"
 #include "Axis.hpp"
-#include "XWindow.hpp"
+#include "XPWidget.hpp"
 
 namespace FreeMat {
 
   typedef std::vector<DataSet3D> DataSet3DVector;
   
-  class Plot3D: public XWindow
-  {
+  class Plot3D: public XPWidget {
   public:
     /**
      * Default constructor.

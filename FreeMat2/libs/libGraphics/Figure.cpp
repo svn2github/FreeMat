@@ -1,6 +1,8 @@
 #include "Figure.hpp"
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
+#include "XPContainer.hpp"
+#include "XPButton.hpp"
 
 #define MAX_FIGS 100
 
@@ -32,6 +34,7 @@ namespace FreeMat {
     if (m_payload) delete(m_payload);
     m_payload = xp;
     m_type = typ;
+    xp->SetParent(this);
   }
 
   XPWidget* Figure::GetWidget() {
@@ -44,6 +47,16 @@ namespace FreeMat {
   }
 
   void Figure::Print(std::string fname) {
+  }
+  
+  void Figure::OnMouseDown(int x, int y) {
+    if (m_payload)
+      m_payload->OnMouseDown(x,y);
+  }
+
+  void Figure::OnMouseUp(int x, int y) {
+    if (m_payload)
+      m_payload->OnMouseUp(x,y);
   }
 
   void InitializeFigureSubsystem() {
@@ -134,6 +147,18 @@ namespace FreeMat {
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
     f->Print(outname);
+    return ArrayVector();
+  }
+
+  ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
+    Figure* f = GetCurrentFig();
+    XPContainer *c = new XPContainer;
+    c->SetParent(f);
+    c->OnResize(f->getWidth(),f->getHeight());
+    XPButton *b = new XPButton(50,50,150,100,"Press Me!");
+    c->AddChild(b);
+    f->SetWidget(c, figgui);
+    f->Refresh();
     return ArrayVector();
   }
 

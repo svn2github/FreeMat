@@ -242,6 +242,14 @@ namespace FreeMat {
     return true;
   }
  
+  /*
+   * Check to see if two dimensions (when treated as vectors) are equivalent in size.
+   */
+  bool SameSizeCheck(Dimensions Adim, Dimensions Bdim) {
+    Adim.simplify();
+    Bdim.simplify();
+    return (Adim.equals(Bdim));
+  }
 
   /**
    * We want to perform a vector operation between two data objects.
@@ -256,7 +264,7 @@ namespace FreeMat {
     // Check for numeric types
     CheckNumeric(A,B);
   
-    if (!((A.getDimensions().equals(B.getDimensions())) || A.isScalar() || B.isScalar()))
+    if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
       throw Exception("Size mismatch on arguments to arithmetic operator.");
   
     // Test the types.
@@ -274,7 +282,7 @@ namespace FreeMat {
     A.promoteType(FM_LOGICAL);
     B.promoteType(FM_LOGICAL);
 
-    if (!((A.getDimensions().equals(B.getDimensions())) || A.isScalar() || B.isScalar()))
+    if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
       throw Exception("Size mismatch on arguments.");
   }
 
@@ -410,7 +418,7 @@ namespace FreeMat {
     int opType;
 
     CheckNumeric(A,B);
-    if (!((A.getDimensions().equals(B.getDimensions())) || A.isScalar() || B.isScalar()))
+    if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
       throw Exception("Size mismatch on arguments to arithmetic operator.");
     // If A is not at least a float type, promote it to double
     AClass = A.getDataClass();

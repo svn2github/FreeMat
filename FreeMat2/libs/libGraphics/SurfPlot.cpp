@@ -189,8 +189,7 @@ namespace FreeMat {
       x_max = std::max(x_max,xvals[i]);
     }
     x_center = (x_min+x_max)/2.0;
-    XAxis.UpdateIntervals(x_min,x_max);
-    XAxis.AutoSetAxis();
+    XAxis.SetExtent(x_min,x_max);
 
     y_min = yvals[0];
     y_max = yvals[0];
@@ -199,8 +198,7 @@ namespace FreeMat {
       y_max = std::max(y_max,yvals[i]);
     }
     y_center = (y_min+y_max)/2.0;
-    YAxis.UpdateIntervals(y_min,y_max);
-    YAxis.AutoSetAxis();
+    YAxis.SetExtent(x_min,x_max);
 
     z_min = zvals[0];
     z_max = zvals[0];
@@ -209,8 +207,7 @@ namespace FreeMat {
       z_max = std::max(z_max,zvals[i]);
     }
     z_center = (z_min+z_max)/2.0;
-    ZAxis.UpdateIntervals(z_min,z_max);
-    ZAxis.AutoSetAxis();
+    ZAxis.SetExtent(x_min,x_max);
     
     // Now, we also need the maximum radius.
     max_radius = 0;
@@ -281,8 +278,8 @@ namespace FreeMat {
   void transformPoint(pt3d& src, pt3d& dst, float m[4][4]) {
     dst.x = m[0][0]*src.x + m[1][0]*src.y + m[2][0]*src.z + m[3][0];
     dst.y = m[0][1]*src.x + m[1][1]*src.y + m[2][1]*src.z + m[3][1];
-    dst.z = m[0][2]*src.x + m[1][2]*src.y + m[2][2]*src.z + m[3][2];
-  }
+    dst.z = m[0][2]*src.x + m[1][2]*src.y + m[2][2]*src.z + m[3][2]; 
+ }
 
   Point2D SurfPlot::MapPoint(pt3d a) {
     Point2D ret;
@@ -318,153 +315,98 @@ namespace FreeMat {
     throw Exception("Unexpected error processing convex hull!");
   }
 
-  static void DrawAxis(GraphicsContext &gc, const char *label,
-		       int hull_count, Point* chull,
-		       int startndx, int stopndx,
-		       NewAxis& ref) {
-    Point start, stop;
-    start = FindCHullPoint(hull_count,chull,startndx);
-    stop = FindCHullPoint(hull_count,chull,stopndx);
+  void SurfPlot::DrawAxis(GraphicsContext &gc, const char *label,
+			  pt3d a_start, pt3d a_stop,
+			  NewAxis& ref, pt3d unit) {
     gc.SetForeGroundColor(Color("black"));
-    gc.DrawLine(Point2D((int)start.x,(int)start.y),
-		Point2D((int)stop.x,(int)stop.y));
-    // Compute the unit vector for this axis
-    double delta_x, delta_y;
-    delta_x = stop.x - start.x;
-    delta_y = stop.y - start.y;
-    double delta_mag;
-    delta_mag = sqrt(delta_x*delta_x+delta_y*delta_y);
-    delta_x /= delta_mag;
-    delta_y /= delta_mag;
-    // Now, compute the normal vector - there are
-    // two choices (-dy,dx) and (dy,-dx)
-    double norm1_x, norm1_y;
-    norm1_x = -delta_y;
-    norm1_y = delta_x;
-    double norm2_x, norm2_y;
-    norm2_x = delta_y;
-    norm2_y = -delta_x;
-    // We have to determine which normal vector to use...
-    // To do this, we use the convex hull test again.  
-    Point pts[10];
-    for (int i=0;i<hull_count;i++)
-      pts[i] = chull[i];
-    // Add the two extreme points
-    pts[hull_count].x = (start.x+stop.x)/2 + 10*norm1_x;
-    pts[hull_count].y = (start.y+stop.y)/2 + 10*norm1_y;
-    pts[hull_count].ptnum = -1;
-    pts[hull_count+1].x = (start.x+stop.x)/2 + 10*norm2_x;
-    pts[hull_count+1].y = (start.y+stop.y)/2 + 10*norm2_y;
-    pts[hull_count+1].ptnum = -2;
-    // Sort and build the convex hull
-    std::sort(pts,pts+hull_count+2);
-    int new_hull_count;
-    Point new_chull[12];
-    new_hull_count = chainHull_2D(pts,hull_count+2,new_chull);
-    // Whichever normal survives on the C-Hull is the
-    // one we are going to keep
-    double norm_x, norm_y;
-    if (OnHull(new_hull_count,new_chull,-1)) {
-      norm_x = norm1_x;
-      norm_y = norm1_y;
-    } else {
-      norm_x = norm2_x;
-      norm_y = norm2_y;
-    }
+    gc.DrawLine(MapPoint(a_start),MapPoint(a_stop));
     gc.SetFont(12);
-    double tmin, tdelta;
-    int tcount;
-    ref.GetIntervals(tmin,tdelta,tcount);
-    for (int i=0;i<tcount;i++) {
-      Point2D t(start.x + i/((double) tcount)*(stop.x-start.x),
-		start.y + i/((double) tcount)*(stop.y-start.y));
-      gc.DrawLine(t,Point2D(t.x+10*norm_x,t.y+10*norm_y));
-    }
-//    
-//    if (fabs(norm_y) < fabs(norm_x))
-//      gc.DrawTextString(label,Point2D((int)(start.x+stop.x)/2 + 10*norm_x,
-//				      (int)(start.y+stop.y)/2 + 10*norm_y),
-//			ORIENT_90);
-//    else
-//      gc.DrawTextString(label,Point2D((int)(start.x+stop.x)/2 + 10*norm_x,
-//				      (int)(start.y+stop.y)/2 + 10*norm_y),
-//			ORIENT_0);
+     double tmin, tdelta;
+     int tcount;
+     ref.GetIntervals(tmin,tdelta,tcount);
+     for (int i=0;i<tcount;i++) {
+       Point2D h_start, h_stop;
+       pt3d tmp;
+       tmp.x = a_start.x + i/((double) tcount-1)*(a_stop.x-a_start.x);
+       tmp.y = a_start.y + i/((double) tcount-1)*(a_stop.y-a_start.y);
+       h_start = MapPoint(tmp);
+       float deltx, delty;
+       deltx = unit.x*scalex;
+       delty = unit.y*scaley;
+       if ((deltx != 0) || (delty != 0)) {
+	 h_stop.x = h_start.x + deltx*10.0/sqrt(deltx*deltx+delty*delty);
+	 h_stop.y = h_start.y + delty*10.0/sqrt(deltx*deltx+delty*delty);
+	 gc.DrawLine(h_start,h_stop);
+       }
+     }
   }
 
-  static void DrawAxisTest(GraphicsContext &gc, const char *label,
-			   int hull_count, Point* chull, 
-			   int a1, int a2, int a3, int a4,
-			   int a5, int a6, int a7, int a8,
-			   int m_height, NewAxis& ref) {
+  void SurfPlot::DrawAxisTest(GraphicsContext &gc, const char *label,
+			      pt3d q[8], int a_start[4], int a_stop[4],
+			      int m_height, NewAxis& ref, pt3d units[4],
+			      bool Zaxis) {
     float centers_x[4];
     float centers_y[4];
-    int axis_index[4];
-    int active_count;
-    Point start, stop;
-
-    // To draw an axis, we test the four possibilities against
-    // the convex hull, and label (and draw) those axes that
-    // are on the hull
-    active_count = 0;
-    if (OnHull(hull_count,chull,a1) && OnHull(hull_count,chull,a2)) {
-      start = FindCHullPoint(hull_count,chull,a1);
-      stop = FindCHullPoint(hull_count,chull,a2);
-      centers_x[active_count] = (start.x + stop.x)/2;
-      centers_y[active_count] = (start.y + stop.y)/2;
-      axis_index[active_count++] = 1;
+    
+    // Calculate the axis centers
+    for (int i=0;i<4;i++) {
+      centers_x[i] = (q[a_start[i]].x+q[a_stop[i]].x)/2;
+      centers_y[i] = (q[a_start[i]].y+q[a_stop[i]].y)/2;
     }
-    if (OnHull(hull_count,chull,a3) && OnHull(hull_count,chull,a4)) {
-      start = FindCHullPoint(hull_count,chull,a3);
-      stop = FindCHullPoint(hull_count,chull,a4);
-      centers_x[active_count] = (start.x + stop.x)/2;
-      centers_y[active_count] = (start.y + stop.y)/2;
-      axis_index[active_count++] = 2;
-    }
-    if (OnHull(hull_count,chull,a5) && OnHull(hull_count,chull,a6))  {
-      start = FindCHullPoint(hull_count,chull,a5);
-      stop = FindCHullPoint(hull_count,chull,a6);
-      centers_x[active_count] = (start.x + stop.x)/2;
-      centers_y[active_count] = (start.y + stop.y)/2;
-      axis_index[active_count++] = 3;
-    }
-    if (OnHull(hull_count,chull,a7) && OnHull(hull_count,chull,a8))  {
-      start = FindCHullPoint(hull_count,chull,a7);
-      stop = FindCHullPoint(hull_count,chull,a8);
-      centers_x[active_count] = (start.x + stop.x)/2;
-      centers_y[active_count] = (start.y + stop.y)/2;
-      axis_index[active_count++] = 4;
-    }
-    // Find the axis projection with the smallest radius to the
-    // lower left corner;
-    if (!active_count) return;
-    double best_radius = 1e100;
-    int best_ndx = 0;
-    for (int i=0;i<active_count;i++) {
-      double radius;
-      radius = (m_height-centers_y[i])*1000 + centers_x[i];
-      if (radius < best_radius) {
-	best_radius = radius;
-	best_ndx = i;
-      }
-    }
-    switch (axis_index[best_ndx]) {
-    case 1:
-      DrawAxis(gc,label,hull_count,chull,a1,a2,ref);
-      break;
-    case 2:
-      DrawAxis(gc,label,hull_count,chull,a3,a4,ref);
-      break;
-    case 3:
-      DrawAxis(gc,label,hull_count,chull,a5,a6,ref);
-      break;
-    case 4:
-      DrawAxis(gc,label,hull_count,chull,a7,a8,ref);
-      break;
+    if (Zaxis) {
+      // The Z axis should be leftmost
+      float cost = 1e100;
+      int optindex = 0;
+      for (int i=0;i<4;i++)
+	if (cost > centers_x[i]) {
+	  cost = centers_x[i];
+	  optindex = i;
+	}
+      DrawAxis(gc,label,q[a_start[optindex]],q[a_stop[optindex]],
+	       ref,units[optindex]);
+    } else {
+      // Other axes should be bottom most
+      float cost = -1e100;
+      int optindex = 0;
+      for (int i=0;i<4;i++)
+	if (cost < centers_y[i]) {
+	  cost = centers_y[i];
+	  optindex = i;
+	}
+      DrawAxis(gc,label,q[a_start[optindex]],q[a_stop[optindex]],
+	       ref,units[optindex]);
     }
   }
 
   void SurfPlot::DrawAxes(GraphicsContext &gc, float m[4][4]) {
     // The 8 corners of the cube
+    int a_start_x[4] = {0,2,6,4};
+    int a_stop_x[4] = {1,3,7,5};
+    pt3d tmp;
+    pt3d units_x[4];
+    tmp.z = 0; tmp.x = 0; tmp.y = -1;
+    transformPoint(tmp,units_x[0],m);
+    transformPoint(tmp,units_x[2],m);
+    tmp.z = 0; tmp.x = 0; tmp.y = 1;
+    transformPoint(tmp,units_x[1],m);
+    transformPoint(tmp,units_x[3],m);
+    int a_start_y[4] = {1,5,0,4};
+    int a_stop_y[4] = {2,6,3,7};
+    pt3d units_y[4];
+    tmp.z = 0; tmp.x = 1; tmp.y = 0;
+    transformPoint(tmp,units_y[0],m);
+    transformPoint(tmp,units_y[1],m);
+    tmp.z = 0; tmp.x = -1; tmp.y = 0;
+    transformPoint(tmp,units_y[2],m);
+    transformPoint(tmp,units_y[3],m);
+    int a_start_z[4] = {0,1,2,3};
+    int a_stop_z[4] = {7,6,5,4};
+    pt3d units_z[4];
+    units_z[0].x = -1; units_z[0].y = 0; units_z[0].z = 0;
+    units_z[1].x = -1; units_z[1].y = 0; units_z[1].z = 0;
+    units_z[2].x = -1; units_z[2].y = 0; units_z[2].z = 0;
+    units_z[3].x = -1; units_z[3].y = 0; units_z[3].z = 0;
+
     pt3d p[8], q[8];
     p[0].x = x_min-x_center; p[0].y = y_min-y_center; p[0].z = z_min-z_center;
     p[1].x = x_max-x_center; p[1].y = y_min-y_center; p[1].z = z_min-z_center;
@@ -480,38 +422,24 @@ namespace FreeMat {
 
     // Draw the box behind the data
     gc.SetForeGroundColor(Color("black"));
-    if ((q[0].z+q[1].z) < 0) gc.DrawLine(MapPoint(q[0]),MapPoint(q[1]));
-    if ((q[1].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[2]));
-    if ((q[2].z+q[3].z) < 0) gc.DrawLine(MapPoint(q[2]),MapPoint(q[3]));
-    if ((q[3].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[0]));
-    if ((q[3].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[4]));
-    if ((q[4].z+q[5].z) < 0) gc.DrawLine(MapPoint(q[4]),MapPoint(q[5]));
-    if ((q[5].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[6]));
-    if ((q[6].z+q[7].z) < 0) gc.DrawLine(MapPoint(q[6]),MapPoint(q[7]));
-    if ((q[7].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[4]));
-    if ((q[7].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[0]));
-    if ((q[1].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[6]));
-    if ((q[5].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[2]));
-
-    // Map the corners to the screen
-    Point corners[8];
-    for (int i=0;i<8;i++) {
-      corners[i].x = q[i].x*scalex+offsetx;
-      corners[i].y = q[i].y*scaley+offsety;
-      corners[i].ptnum = i;
+    if (0) {
+      if ((q[0].z+q[1].z) < 0) gc.DrawLine(MapPoint(q[0]),MapPoint(q[1]));
+      if ((q[1].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[2]));
+      if ((q[2].z+q[3].z) < 0) gc.DrawLine(MapPoint(q[2]),MapPoint(q[3]));
+      if ((q[3].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[0]));
+      if ((q[3].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[4]));
+      if ((q[4].z+q[5].z) < 0) gc.DrawLine(MapPoint(q[4]),MapPoint(q[5]));
+      if ((q[5].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[6]));
+      if ((q[6].z+q[7].z) < 0) gc.DrawLine(MapPoint(q[6]),MapPoint(q[7]));
+      if ((q[7].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[4]));
+      if ((q[7].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[0]));
+      if ((q[1].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[6]));
+      if ((q[5].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[2]));
     }
-    // Sort the points (required by the convex hull code)
-    std::sort(corners,corners+8);
-    // Compute the convex hull...
-    Point chull[8];
-    int hull_count;
-    hull_count = chainHull_2D(corners,8,chull);
-    // Now, we have to draw the axes in...
     // To do this, we test each axis case,
-    // and find all cases that are on the convex hull
-    DrawAxisTest(gc,"xaxis",hull_count,chull,0,1,2,3,6,7,4,5,m_height,XAxis);
-    DrawAxisTest(gc,"yaxis",hull_count,chull,1,2,5,6,0,3,4,7,m_height,YAxis);
-    DrawAxisTest(gc,"zaxis",hull_count,chull,0,7,1,6,2,5,3,4,m_height,ZAxis);
+    DrawAxisTest(gc,"xaxis",q,a_start_x,a_stop_x,m_height,XAxis,units_x,false);
+    DrawAxisTest(gc,"yaxis",q,a_start_y,a_stop_y,m_height,YAxis,units_y,false);
+    DrawAxisTest(gc,"zaxis",q,a_start_z,a_stop_z,m_height,ZAxis,units_z,true);
   }
   
   void SurfPlot::OnDraw(GraphicsContext &gc) {
@@ -576,7 +504,6 @@ namespace FreeMat {
     offsety = m_height/2;
 
     DrawAxes(gc,m);
-
 
     // Draw them to the screen...
     for (i=0;i<tquads.size();i++) {

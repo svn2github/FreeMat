@@ -73,6 +73,13 @@ namespace FreeMat {
     Point2D MapPoint(pt3d a);
     // Draw the axes
     void DrawAxes(GraphicsContext &gc, float m[4][4]);
+    void DrawAxisTest(GraphicsContext &gc, const char *label,
+		      pt3d q[8], int a_start[4], int a_stop[4],
+		      int m_height, NewAxis& ref, pt3d units[4],
+		      bool Zaxis);
+    void DrawAxis(GraphicsContext &gc, const char *label,
+		  pt3d a_start, pt3d a_stop,
+		  NewAxis& ref, pt3d unit);
   private:
     /*
      * The data for the surf model.

@@ -5,6 +5,9 @@
 \usepackage{html}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.9}
+\oddsidemargin 0.0in
+\evensidemargin 1.0in
+\textwidth 6.0in
 %begin{latexonly}
 \newcommand{\doplot}[2]{\centerline{\includegraphics[#1]{#2}}}
 %end{latexonly}
@@ -18,6 +21,69 @@
 \maketitle
 \tableofcontents
 \chapter{Introduction}
+\section{Getting Started}
+\subsection{Installing FreeMat from Source}
+For Linux and other Unix-like systems, installation of FreeMat should be pretty straightforward.  Assuming that you have a reasonable system setup, the following build instructions should work.  First unpack the source tar file:
+\begin{verbatim}
+   tar xvfz FreeMat-1.10.tar.gz
+\end{verbatim}
+or using
+\begin{verbatim}
+   gunzip FreeMat-1.10.tar.gz
+   tar -xvf FreeMat-1.10.tar
+\end{verbatim}
+This will create a new directory FreeMat-1.10 containing all the FreeMat files.  Next we configure the source code (this step customizes the code for your environment).  From the \verb|FreeMat-1.10| directory, run \verb|configure|:
+\begin{verbatim}
+  ./configure --prefix=<mydir>
+\end{verbatim}
+where \verb|<mydir>| is the directory under which FreeMat will be installed. The default installation directory is \verb|/usr/local| but this requires administrator priviledges. The simplest solution is to use your own home directory, such as:
+\begin{verbatim}
+   ./configure --prefix=/home/username
+\end{verbatim}
+In this case, FreeMat will be installed in \verb|/home/username|.
+Then, again from the \verb|FreeMat-1.10| directory, perform a make and a make install:
+\begin{verbatim}
+   make
+   make install
+\end{verbatim}
+Once installation is complete you must set up your FreeMat path (see Subsection~\ref{sec:path}).
+
+\subsection{Setting up the FreeMat Path} \label{sec:path}
+FreeMat uses an environment variable to determine directories it should search for \verb|.m| files.  This environment variable is called \verb|FREEMAT_PATH|.  The exact way in which you set this environment variable is OS dependent.  The following instructions should be roughly correct, but you may need to modify them depending on the shell you use, etc.
+
+For Unix-type environments, if you use \verb|tcsh| or \verb|csh|, you need to modify \verb|.cshrc|, and add a line such as the following:
+\begin{verbatim}
+setenv FREEMAT_PATH /home/username/share/FreeMat/MFiles:/home/username/myMFiles
+\end{verbatim}
+assuming you installed FreeMat in \verb|/home/username|,and you have your own \verb|.m| files in the directory \verb|/home/username/myMFiles|.  If you installed in the default location, then the command is
+\begin{verbatim}
+setenv FREEMAT_PATH /usr/local/share/FreeMat/MFiles:/home/username/myMFiles
+\end{verbatim}
+If you use \verb|bash|, add the following line to \verb|.bashrc| or \verb|.bash_profile|
+\begin{verbatim}
+declare -x "FREEMAT_PATH=/home/username/share/FreeMat/MFiles:/home/username/myMFiles"
+\end{verbatim}
+
+For Mac OS X users, use the \verb|bash| instruction, but note that FreeMat will automatically add the path for its own \verb|.m| files to \verb|FREEMAT_PATH| at start up.  So, for Mac OS X users only, you would add the following line to \verb|.bashrc| or \verb|.bash_profile|
+\begin{verbatim}
+declare -x "FREEMAT_PATH=/home/username/myMFiles"
+\end{verbatim}
+
+For Windows NT/2000/XP users, you should be able to set the environment variable by:
+\begin{enumerate}
+\item Open \emph{Control Panel}
+\item Double click the \emph{System icon}
+\item Go the the \emph{Advnced} pane
+\item Click the \emph{Environment Variables} button.
+\item Click the \emph{New} button in the top half of the window (for User variables)
+\item The name of the new variable is \verb|FREEMAT_PATH|, and the value should be ``C:\\FreeMat\\share\\MFiles;C:\\myMFiles'', if you installed FreeMat into ``C:\\FreeMat''.
+\end{enumerate}
+
+It is not necessary to add the "." directory to the search path, as it is automatically searched by FreeMat. Also note that after installation, an HTML version of the manual is available by pointing a web browser to \verb|/home/username/share/FreeMat/html/index.html|.  For the GUI, this same help is available through the \verb|help| menu.
+
+\subsection{Note on BLAS - Basic Linear Algebra System}
+Note also that FreeMat uses BLAS as part of its matrix manipulation routines.  During the configure process, FreeMat will attempt to find an optimized BLAS.  If it fails, you can either specify a location using the --with-blas option to configure, or use the provided BLAS using the --with-miniblas option.  This should be used as a last resort.  It is an unoptimized version that will generally result in less than ideal performance of FreeMat.  I recommend the ATLAS project (math-atlas.sourceforge.net) to generate an automatically tuned set of BLAS routines for your specific machine.
+
 \section{Changes from 1.07 to 1.08}
 Unlike previous versions of FreeMat, which were all backwards compatible, there are some changes in 1.08 that are \emph{not} compatible with 1.07.  Here is a list of the changes:
 \begin{itemize}

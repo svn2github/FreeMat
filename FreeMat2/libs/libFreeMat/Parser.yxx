@@ -55,10 +55,9 @@ bool interactiveMode;
 #define snprintf _snprintf
 #endif
 
-char buffer[4096];
-void SetTextString(char *c) {
-  strcpy(buffer,c);
-}
+char prevline_context_buffer[4096];
+char currline_context_buffer[4096];
+
 
 namespace FreeMat {
   static ASTPtr mainAST;
@@ -80,14 +79,16 @@ namespace FreeMat {
     int addone = 1;
     if (xStr)
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s",
-	xStr,lineNumber+addone,parsing_filename);
+        snprintf(msgBuffer,MSGBUFLEN,
+	"Expecting %s\n\tat line %d of file %s\n\t>>%s",
+	xStr,lineNumber+addone,parsing_filename,currline_context_buffer);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s",xStr);
     else
-      if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s",
-	lineNumber+addone,parsing_filename);
+      if (!interactiveMode)	
+        snprintf(msgBuffer,MSGBUFLEN,
+	"Syntax error at line %d of file %s\n\t%s",
+	lineNumber+addone,parsing_filename,currline_context_buffer);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input");
     throw Exception(msgBuffer);
@@ -279,7 +280,9 @@ statement:
 	 statementType ENDQSTMNT {
   	    $$ = new AST(OP_QSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
+	      snprintf(msgBuffer,MSGBUFLEN,
+	               "line %d of file %s\n\t>>%s",
+                       lineNumber,parsing_filename,prevline_context_buffer);
 	      $$->down = new AST(context_node, strdup(msgBuffer));
 	      $$->down->down = $1;
 	    } else
@@ -288,7 +291,9 @@ statement:
 	 | statementType ENDSTMNT {
 	    $$ = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
+	      snprintf(msgBuffer,MSGBUFLEN,
+	               "line %d of file %s\n\t>>%s",
+			lineNumber,parsing_filename,prevline_context_buffer);
 	      $$->down = new AST(context_node, strdup(msgBuffer));
 	      $$->down->down = $1;
 	    } else
@@ -297,7 +302,9 @@ statement:
 	 | statementType ',' {
 	    $$ = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
+	      snprintf(msgBuffer,MSGBUFLEN,
+			"line %d of file %s\n\t>>%s",
+			lineNumber,parsing_filename,currline_context_buffer);
 	      $$->down = new AST(context_node, strdup(msgBuffer));
 	      $$->down->down = $1;
 	    } else

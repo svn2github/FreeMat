@@ -206,6 +206,10 @@ bool interactiveMode;
 #define snprintf _snprintf
 #endif
 
+char prevline_context_buffer[4096];
+char currline_context_buffer[4096];
+
+
 namespace FreeMat {
   static ASTPtr mainAST;
   static MFunctionDef *mainMDef;
@@ -226,14 +230,16 @@ namespace FreeMat {
     int addone = 1;
     if (xStr)
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s",
-	xStr,lineNumber+addone,parsing_filename);
+        snprintf(msgBuffer,MSGBUFLEN,
+	"Expecting %s\n\tat line %d of file %s\n\t>>%s",
+	xStr,lineNumber+addone,parsing_filename,currline_context_buffer);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s",xStr);
     else
-      if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s",
-	lineNumber+addone,parsing_filename);
+      if (!interactiveMode)	
+        snprintf(msgBuffer,MSGBUFLEN,
+	"Syntax error at line %d of file %s\n\t%s",
+	lineNumber+addone,parsing_filename,currline_context_buffer);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input");
     throw Exception(msgBuffer);
@@ -276,7 +282,7 @@ typedef int YYSTYPE;
 
 
 /* Line 214 of yacc.c.  */
-#line 280 "../../../libs/libFreeMat/Parser.cxx"
+#line 286 "../../../libs/libFreeMat/Parser.cxx"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
@@ -547,28 +553,28 @@ static const yysigned_char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short yyrline[] =
 {
-       0,   131,   131,   132,   132,   136,   152,   167,   182,   196,
-     211,   225,   226,   227,   228,   229,   230,   231,   232,   236,
-     237,   241,   242,   243,   244,   245,   246,   247,   248,   249,
-     253,   254,   258,   258,   269,   270,   274,   283,   292,   304,
-     305,   306,   307,   308,   309,   310,   311,   312,   313,   314,
-     315,   316,   317,   318,   319,   320,   320,   321,   325,   329,
-     330,   334,   335,   339,   340,   344,   345,   346,   350,   354,
-     358,   361,   365,   370,   371,   375,   383,   383,   383,   383,
-     383,   387,   387,   392,   393,   397,   400,   406,   412,   415,
-     421,   427,   428,   429,   430,   431,   432,   433,   434,   435,
-     439,   442,   446,   450,   454,   460,   461,   465,   468,   474,
-     477,   480,   483,   484,   488,   489,   493,   497,   501,   503,
-     505,   507,   512,   513,   514,   515,   516,   517,   518,   519,
-     520,   521,   522,   523,   524,   525,   526,   527,   528,   529,
-     530,   531,   532,   533,   534,   535,   536,   537,   538,   539,
-     540,   541,   542,   543,   544,   545,   546,   547,   548,   549,
-     550,   551,   552,   553,   554,   555,   556,   557,   558,   559,
-     563,   564,   565,   566,   567,   568,   569,   570,   571,   572,
-     573,   574,   575,   576,   577,   578,   581,   582,   586,   587,
-     588,   589,   590,   591,   595,   596,   597,   598,   599,   600,
-     604,   605,   609,   610,   614,   615,   619,   619,   623,   623,
-     627,   628
+       0,   137,   137,   138,   138,   142,   158,   173,   188,   202,
+     217,   231,   232,   233,   234,   235,   236,   237,   238,   242,
+     243,   247,   248,   249,   250,   251,   252,   253,   254,   255,
+     259,   260,   264,   264,   275,   276,   280,   291,   302,   316,
+     317,   318,   319,   320,   321,   322,   323,   324,   325,   326,
+     327,   328,   329,   330,   331,   332,   332,   333,   337,   341,
+     342,   346,   347,   351,   352,   356,   357,   358,   362,   366,
+     370,   373,   377,   382,   383,   387,   395,   395,   395,   395,
+     395,   399,   399,   404,   405,   409,   412,   418,   424,   427,
+     433,   439,   440,   441,   442,   443,   444,   445,   446,   447,
+     451,   454,   458,   462,   466,   472,   473,   477,   480,   486,
+     489,   492,   495,   496,   500,   501,   505,   509,   513,   515,
+     517,   519,   524,   525,   526,   527,   528,   529,   530,   531,
+     532,   533,   534,   535,   536,   537,   538,   539,   540,   541,
+     542,   543,   544,   545,   546,   547,   548,   549,   550,   551,
+     552,   553,   554,   555,   556,   557,   558,   559,   560,   561,
+     562,   563,   564,   565,   566,   567,   568,   569,   570,   571,
+     575,   576,   577,   578,   579,   580,   581,   582,   583,   584,
+     585,   586,   587,   588,   589,   590,   593,   594,   598,   599,
+     600,   601,   602,   603,   607,   608,   609,   610,   611,   612,
+     616,   617,   621,   622,   626,   627,   631,   631,   635,   635,
+     639,   640
 };
 #endif
 
@@ -1946,12 +1952,12 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 131 "../../../libs/libFreeMat/Parser.yxx"
+#line 137 "../../../libs/libFreeMat/Parser.yxx"
     {mainAST = yyvsp[0];}
     break;
 
   case 5:
-#line 136 "../../../libs/libFreeMat/Parser.yxx"
+#line 142 "../../../libs/libFreeMat/Parser.yxx"
     {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1971,7 +1977,7 @@ yyreduce:
     break;
 
   case 6:
-#line 152 "../../../libs/libFreeMat/Parser.yxx"
+#line 158 "../../../libs/libFreeMat/Parser.yxx"
     {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1990,7 +1996,7 @@ yyreduce:
     break;
 
   case 7:
-#line 167 "../../../libs/libFreeMat/Parser.yxx"
+#line 173 "../../../libs/libFreeMat/Parser.yxx"
     {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -2009,7 +2015,7 @@ yyreduce:
     break;
 
   case 8:
-#line 182 "../../../libs/libFreeMat/Parser.yxx"
+#line 188 "../../../libs/libFreeMat/Parser.yxx"
     {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -2027,7 +2033,7 @@ yyreduce:
     break;
 
   case 9:
-#line 196 "../../../libs/libFreeMat/Parser.yxx"
+#line 202 "../../../libs/libFreeMat/Parser.yxx"
     {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -2046,7 +2052,7 @@ yyreduce:
     break;
 
   case 10:
-#line 211 "../../../libs/libFreeMat/Parser.yxx"
+#line 217 "../../../libs/libFreeMat/Parser.yxx"
     {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -2064,102 +2070,102 @@ yyreduce:
     break;
 
   case 11:
-#line 225 "../../../libs/libFreeMat/Parser.yxx"
+#line 231 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("function name or return declaration");}
     break;
 
   case 12:
-#line 226 "../../../libs/libFreeMat/Parser.yxx"
+#line 232 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("argument list or statement list");}
     break;
 
   case 13:
-#line 227 "../../../libs/libFreeMat/Parser.yxx"
+#line 233 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("(possibly empty) argument list");}
     break;
 
   case 14:
-#line 228 "../../../libs/libFreeMat/Parser.yxx"
+#line 234 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("statement list");}
     break;
 
   case 15:
-#line 229 "../../../libs/libFreeMat/Parser.yxx"
+#line 235 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("function name");}
     break;
 
   case 16:
-#line 230 "../../../libs/libFreeMat/Parser.yxx"
+#line 236 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("argument list or statement list");}
     break;
 
   case 17:
-#line 231 "../../../libs/libFreeMat/Parser.yxx"
+#line 237 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("(possibly empty) argument list");}
     break;
 
   case 18:
-#line 232 "../../../libs/libFreeMat/Parser.yxx"
+#line 238 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("statement list");}
     break;
 
   case 21:
-#line 241 "../../../libs/libFreeMat/Parser.yxx"
+#line 247 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1];}
     break;
 
   case 22:
-#line 242 "../../../libs/libFreeMat/Parser.yxx"
+#line 248 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1];}
     break;
 
   case 23:
-#line 243 "../../../libs/libFreeMat/Parser.yxx"
+#line 249 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2];}
     break;
 
   case 24:
-#line 244 "../../../libs/libFreeMat/Parser.yxx"
+#line 250 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("either 'varargout', a single returned variable, or a list of return variables in return declaration");}
     break;
 
   case 25:
-#line 245 "../../../libs/libFreeMat/Parser.yxx"
+#line 251 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an '=' symbol after 'varargout' in return declaration");}
     break;
 
   case 26:
-#line 246 "../../../libs/libFreeMat/Parser.yxx"
+#line 252 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an '=' symbol after identifier in return declaration");}
     break;
 
   case 27:
-#line 247 "../../../libs/libFreeMat/Parser.yxx"
+#line 253 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("a valid list of return arguments in return declaration");}
     break;
 
   case 28:
-#line 248 "../../../libs/libFreeMat/Parser.yxx"
+#line 254 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching ']' in return declaration");}
     break;
 
   case 29:
-#line 249 "../../../libs/libFreeMat/Parser.yxx"
+#line 255 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an '=' symbol after return declaration");}
     break;
 
   case 30:
-#line 253 "../../../libs/libFreeMat/Parser.yxx"
+#line 259 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[0];}
     break;
 
   case 31:
-#line 254 "../../../libs/libFreeMat/Parser.yxx"
+#line 260 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 33:
-#line 258 "../../../libs/libFreeMat/Parser.yxx"
+#line 264 "../../../libs/libFreeMat/Parser.yxx"
     {
 	yyval = yyvsp[0];
 	char *b = (char*) malloc(strlen(yyvsp[0]->text)+2);
@@ -2170,21 +2176,23 @@ yyreduce:
     break;
 
   case 34:
-#line 269 "../../../libs/libFreeMat/Parser.yxx"
+#line 275 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_BLOCK,yyvsp[0]);}
     break;
 
   case 35:
-#line 270 "../../../libs/libFreeMat/Parser.yxx"
+#line 276 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 36:
-#line 274 "../../../libs/libFreeMat/Parser.yxx"
+#line 280 "../../../libs/libFreeMat/Parser.yxx"
     {
   	    yyval = new AST(OP_QSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
+	      snprintf(msgBuffer,MSGBUFLEN,
+	               "line %d of file %s\n\t>>%s",
+                       lineNumber,parsing_filename,prevline_context_buffer);
 	      yyval->down = new AST(context_node, strdup(msgBuffer));
 	      yyval->down->down = yyvsp[-1];
 	    } else
@@ -2193,11 +2201,13 @@ yyreduce:
     break;
 
   case 37:
-#line 283 "../../../libs/libFreeMat/Parser.yxx"
+#line 291 "../../../libs/libFreeMat/Parser.yxx"
     {
 	    yyval = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
+	      snprintf(msgBuffer,MSGBUFLEN,
+	               "line %d of file %s\n\t>>%s",
+			lineNumber,parsing_filename,prevline_context_buffer);
 	      yyval->down = new AST(context_node, strdup(msgBuffer));
 	      yyval->down->down = yyvsp[-1];
 	    } else
@@ -2206,11 +2216,13 @@ yyreduce:
     break;
 
   case 38:
-#line 292 "../../../libs/libFreeMat/Parser.yxx"
+#line 302 "../../../libs/libFreeMat/Parser.yxx"
     {
 	    yyval = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
+	      snprintf(msgBuffer,MSGBUFLEN,
+			"line %d of file %s\n\t>>%s",
+			lineNumber,parsing_filename,currline_context_buffer);
 	      yyval->down = new AST(context_node, strdup(msgBuffer));
 	      yyval->down->down = yyvsp[-1];
 	    } else
@@ -2219,77 +2231,77 @@ yyreduce:
     break;
 
   case 41:
-#line 306 "../../../libs/libFreeMat/Parser.yxx"
+#line 318 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(null_node,"");}
     break;
 
   case 57:
-#line 321 "../../../libs/libFreeMat/Parser.yxx"
+#line 333 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("recognizable statement type (assignment, expression, function call, etc...)");}
     break;
 
   case 58:
-#line 325 "../../../libs/libFreeMat/Parser.yxx"
+#line 337 "../../../libs/libFreeMat/Parser.yxx"
     {yyvsp[-1]->addChild(yyvsp[0]); yyval = new AST(OP_SCALL,yyvsp[-1]);}
     break;
 
   case 59:
-#line 329 "../../../libs/libFreeMat/Parser.yxx"
+#line 341 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_PARENS,yyvsp[0]);}
     break;
 
   case 60:
-#line 330 "../../../libs/libFreeMat/Parser.yxx"
+#line 342 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 61:
-#line 334 "../../../libs/libFreeMat/Parser.yxx"
+#line 346 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]); }
     break;
 
   case 62:
-#line 335 "../../../libs/libFreeMat/Parser.yxx"
+#line 347 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("list of variables to be tagged as persistent");}
     break;
 
   case 63:
-#line 339 "../../../libs/libFreeMat/Parser.yxx"
+#line 351 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 64:
-#line 340 "../../../libs/libFreeMat/Parser.yxx"
+#line 352 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("list of variables to be tagged as global");}
     break;
 
   case 66:
-#line 345 "../../../libs/libFreeMat/Parser.yxx"
+#line 357 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 67:
-#line 346 "../../../libs/libFreeMat/Parser.yxx"
+#line 358 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("list of valid identifiers");}
     break;
 
   case 72:
-#line 366 "../../../libs/libFreeMat/Parser.yxx"
+#line 378 "../../../libs/libFreeMat/Parser.yxx"
     { yyval = yyvsp[-3]; yyval->addChild(yyvsp[-2]); if (yyvsp[-1] != NULL) yyval->addChild(yyvsp[-1]);}
     break;
 
   case 73:
-#line 370 "../../../libs/libFreeMat/Parser.yxx"
+#line 382 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[0];}
     break;
 
   case 74:
-#line 371 "../../../libs/libFreeMat/Parser.yxx"
+#line 383 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = NULL;}
     break;
 
   case 75:
-#line 375 "../../../libs/libFreeMat/Parser.yxx"
+#line 387 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-5]; yyval->addChild(yyvsp[-4]); 
 	  if (yyvsp[-2] != NULL) yyval->addChild(yyvsp[-2]); 
@@ -2298,111 +2310,111 @@ yyreduce:
     break;
 
   case 83:
-#line 392 "../../../libs/libFreeMat/Parser.yxx"
+#line 404 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = NULL;}
     break;
 
   case 85:
-#line 397 "../../../libs/libFreeMat/Parser.yxx"
+#line 409 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = new AST(OP_CASEBLOCK,yyvsp[0]);
 	}
     break;
 
   case 86:
-#line 400 "../../../libs/libFreeMat/Parser.yxx"
+#line 412 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);
 	}
     break;
 
   case 87:
-#line 406 "../../../libs/libFreeMat/Parser.yxx"
+#line 418 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-3]; yyval->addChild(yyvsp[-2]); yyval->addChild(yyvsp[0]);
 	}
     break;
 
   case 88:
-#line 412 "../../../libs/libFreeMat/Parser.yxx"
+#line 424 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[0];
 	}
     break;
 
   case 89:
-#line 415 "../../../libs/libFreeMat/Parser.yxx"
+#line 427 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = NULL;
 	}
     break;
 
   case 90:
-#line 421 "../../../libs/libFreeMat/Parser.yxx"
+#line 433 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-4]; yyval->addChild(yyvsp[-3]); yyval->addChild(yyvsp[-1]);
 	}
     break;
 
   case 91:
-#line 427 "../../../libs/libFreeMat/Parser.yxx"
+#line 439 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-3]; yyval->addChild(yyvsp[-1]);}
     break;
 
   case 92:
-#line 428 "../../../libs/libFreeMat/Parser.yxx"
+#line 440 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 93:
-#line 429 "../../../libs/libFreeMat/Parser.yxx"
+#line 441 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[0]; yyval->addChild(new AST(OP_RHS, new AST(id_node,yyvsp[0]->text))); }
     break;
 
   case 94:
-#line 430 "../../../libs/libFreeMat/Parser.yxx"
+#line 442 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right parenthesis");}
     break;
 
   case 95:
-#line 431 "../../../libs/libFreeMat/Parser.yxx"
+#line 443 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("indexing expression");}
     break;
 
   case 96:
-#line 432 "../../../libs/libFreeMat/Parser.yxx"
+#line 444 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("equals operator after loop index");}
     break;
 
   case 97:
-#line 433 "../../../libs/libFreeMat/Parser.yxx"
+#line 445 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("identifier that is the loop variable");}
     break;
 
   case 98:
-#line 434 "../../../libs/libFreeMat/Parser.yxx"
+#line 446 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("indexing expression");}
     break;
 
   case 99:
-#line 435 "../../../libs/libFreeMat/Parser.yxx"
+#line 447 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("identifier or assignment (id = expr) after 'for' ");}
     break;
 
   case 100:
-#line 439 "../../../libs/libFreeMat/Parser.yxx"
+#line 451 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-4]; yyval->addChild(yyvsp[-3]); yyval->addChild(yyvsp[-1]);
 	}
     break;
 
   case 101:
-#line 442 "../../../libs/libFreeMat/Parser.yxx"
+#line 454 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("test expression after 'while'");}
     break;
 
   case 102:
-#line 446 "../../../libs/libFreeMat/Parser.yxx"
+#line 458 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-4]; yyval->addChild(yyvsp[-3]); if (yyvsp[-2] != NULL) yyval->addChild(yyvsp[-2]); 
 	  if (yyvsp[-1] != NULL) yyval->addChild(yyvsp[-1]);
@@ -2410,77 +2422,77 @@ yyreduce:
     break;
 
   case 103:
-#line 450 "../../../libs/libFreeMat/Parser.yxx"
+#line 462 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("condition expression for 'if'");}
     break;
 
   case 104:
-#line 454 "../../../libs/libFreeMat/Parser.yxx"
+#line 466 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = new AST(OP_CSTAT,yyvsp[-2],yyvsp[0]);
 	}
     break;
 
   case 105:
-#line 460 "../../../libs/libFreeMat/Parser.yxx"
+#line 472 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = NULL;}
     break;
 
   case 107:
-#line 465 "../../../libs/libFreeMat/Parser.yxx"
+#line 477 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = new AST(OP_ELSEIFBLOCK,yyvsp[0]);
 	}
     break;
 
   case 108:
-#line 468 "../../../libs/libFreeMat/Parser.yxx"
+#line 480 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);
 	}
     break;
 
   case 109:
-#line 474 "../../../libs/libFreeMat/Parser.yxx"
+#line 486 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[0];
 	}
     break;
 
   case 110:
-#line 477 "../../../libs/libFreeMat/Parser.yxx"
+#line 489 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("test condition for 'elseif' clause");}
     break;
 
   case 111:
-#line 480 "../../../libs/libFreeMat/Parser.yxx"
+#line 492 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval = yyvsp[0];
 	}
     break;
 
   case 112:
-#line 483 "../../../libs/libFreeMat/Parser.yxx"
+#line 495 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = NULL;}
     break;
 
   case 113:
-#line 484 "../../../libs/libFreeMat/Parser.yxx"
+#line 496 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("statement list for 'else' clause");}
     break;
 
   case 114:
-#line 488 "../../../libs/libFreeMat/Parser.yxx"
+#line 500 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_ASSIGN,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 115:
-#line 489 "../../../libs/libFreeMat/Parser.yxx"
+#line 501 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("expression in assignment");}
     break;
 
   case 116:
-#line 493 "../../../libs/libFreeMat/Parser.yxx"
+#line 505 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyvsp[-3]->addChild(new AST(OP_PARENS,yyvsp[-1]));
 	  yyval = new AST(OP_MULTICALL,yyvsp[-6],yyvsp[-3]);
@@ -2488,7 +2500,7 @@ yyreduce:
     break;
 
   case 117:
-#line 497 "../../../libs/libFreeMat/Parser.yxx"
+#line 509 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyvsp[0]->addChild(new AST(OP_PARENS,NULL));
 	  yyval = new AST(OP_MULTICALL,yyvsp[-3],yyvsp[0]);
@@ -2496,417 +2508,417 @@ yyreduce:
     break;
 
   case 118:
-#line 502 "../../../libs/libFreeMat/Parser.yxx"
+#line 514 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right parenthesis");}
     break;
 
   case 119:
-#line 504 "../../../libs/libFreeMat/Parser.yxx"
+#line 516 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("indexing list");}
     break;
 
   case 120:
-#line 506 "../../../libs/libFreeMat/Parser.yxx"
+#line 518 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("left parenthesis");}
     break;
 
   case 121:
-#line 508 "../../../libs/libFreeMat/Parser.yxx"
+#line 520 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("identifier");}
     break;
 
   case 122:
-#line 512 "../../../libs/libFreeMat/Parser.yxx"
+#line 524 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_COLON,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 123:
-#line 513 "../../../libs/libFreeMat/Parser.yxx"
+#line 525 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after ':'");}
     break;
 
   case 125:
-#line 515 "../../../libs/libFreeMat/Parser.yxx"
+#line 527 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_PLUS,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 126:
-#line 516 "../../../libs/libFreeMat/Parser.yxx"
+#line 528 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '+'");}
     break;
 
   case 127:
-#line 517 "../../../libs/libFreeMat/Parser.yxx"
+#line 529 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_SUBTRACT,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 128:
-#line 518 "../../../libs/libFreeMat/Parser.yxx"
+#line 530 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '-'");}
     break;
 
   case 129:
-#line 519 "../../../libs/libFreeMat/Parser.yxx"
+#line 531 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_TIMES,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 130:
-#line 520 "../../../libs/libFreeMat/Parser.yxx"
+#line 532 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '*'");}
     break;
 
   case 131:
-#line 521 "../../../libs/libFreeMat/Parser.yxx"
+#line 533 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_RDIV,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 132:
-#line 522 "../../../libs/libFreeMat/Parser.yxx"
+#line 534 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '/'");}
     break;
 
   case 133:
-#line 523 "../../../libs/libFreeMat/Parser.yxx"
+#line 535 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_LDIV,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 134:
-#line 524 "../../../libs/libFreeMat/Parser.yxx"
+#line 536 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '\\'");}
     break;
 
   case 135:
-#line 525 "../../../libs/libFreeMat/Parser.yxx"
+#line 537 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_OR,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 136:
-#line 526 "../../../libs/libFreeMat/Parser.yxx"
+#line 538 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '|'");}
     break;
 
   case 137:
-#line 527 "../../../libs/libFreeMat/Parser.yxx"
+#line 539 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_AND,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 138:
-#line 528 "../../../libs/libFreeMat/Parser.yxx"
+#line 540 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '&'");}
     break;
 
   case 139:
-#line 529 "../../../libs/libFreeMat/Parser.yxx"
+#line 541 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_LT,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 140:
-#line 530 "../../../libs/libFreeMat/Parser.yxx"
+#line 542 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '<'");}
     break;
 
   case 141:
-#line 531 "../../../libs/libFreeMat/Parser.yxx"
+#line 543 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_LEQ,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 142:
-#line 532 "../../../libs/libFreeMat/Parser.yxx"
+#line 544 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '<='");}
     break;
 
   case 143:
-#line 533 "../../../libs/libFreeMat/Parser.yxx"
+#line 545 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_GT,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 144:
-#line 534 "../../../libs/libFreeMat/Parser.yxx"
+#line 546 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '>'");}
     break;
 
   case 145:
-#line 535 "../../../libs/libFreeMat/Parser.yxx"
+#line 547 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_GEQ,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 146:
-#line 536 "../../../libs/libFreeMat/Parser.yxx"
+#line 548 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '>='");}
     break;
 
   case 147:
-#line 537 "../../../libs/libFreeMat/Parser.yxx"
+#line 549 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_EQ,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 148:
-#line 538 "../../../libs/libFreeMat/Parser.yxx"
+#line 550 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '=='");}
     break;
 
   case 149:
-#line 539 "../../../libs/libFreeMat/Parser.yxx"
+#line 551 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_NEQ,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 150:
-#line 540 "../../../libs/libFreeMat/Parser.yxx"
+#line 552 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '~='");}
     break;
 
   case 151:
-#line 541 "../../../libs/libFreeMat/Parser.yxx"
+#line 553 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOT_TIMES,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 152:
-#line 542 "../../../libs/libFreeMat/Parser.yxx"
+#line 554 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '.*'");}
     break;
 
   case 153:
-#line 543 "../../../libs/libFreeMat/Parser.yxx"
+#line 555 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOT_RDIV,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 154:
-#line 544 "../../../libs/libFreeMat/Parser.yxx"
+#line 556 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after './'");}
     break;
 
   case 155:
-#line 545 "../../../libs/libFreeMat/Parser.yxx"
+#line 557 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOT_LDIV,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 156:
-#line 546 "../../../libs/libFreeMat/Parser.yxx"
+#line 558 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '.\\'");}
     break;
 
   case 157:
-#line 547 "../../../libs/libFreeMat/Parser.yxx"
+#line 559 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_NEG,yyvsp[0]);}
     break;
 
   case 158:
-#line 548 "../../../libs/libFreeMat/Parser.yxx"
+#line 560 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[0];}
     break;
 
   case 159:
-#line 549 "../../../libs/libFreeMat/Parser.yxx"
+#line 561 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_NOT,yyvsp[0]);}
     break;
 
   case 160:
-#line 550 "../../../libs/libFreeMat/Parser.yxx"
+#line 562 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after logical not");}
     break;
 
   case 161:
-#line 551 "../../../libs/libFreeMat/Parser.yxx"
+#line 563 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_POWER,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 162:
-#line 552 "../../../libs/libFreeMat/Parser.yxx"
+#line 564 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '^'");}
     break;
 
   case 163:
-#line 553 "../../../libs/libFreeMat/Parser.yxx"
+#line 565 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOT_POWER,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 164:
-#line 554 "../../../libs/libFreeMat/Parser.yxx"
+#line 566 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '.^'");}
     break;
 
   case 165:
-#line 555 "../../../libs/libFreeMat/Parser.yxx"
+#line 567 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_TRANSPOSE,yyvsp[-1]);}
     break;
 
   case 166:
-#line 556 "../../../libs/libFreeMat/Parser.yxx"
+#line 568 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOT_TRANSPOSE,yyvsp[-1]);}
     break;
 
   case 167:
-#line 557 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval = yyvsp[-1];}
-    break;
-
-  case 168:
-#line 558 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("a right parenthesis after expression");}
-    break;
-
-  case 169:
-#line 559 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("an expression after left parenthesis");}
-    break;
-
-  case 173:
-#line 566 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval = new AST(OP_RHS,yyvsp[0]);}
-    break;
-
-  case 174:
-#line 567 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval = yyvsp[-1];}
-    break;
-
-  case 175:
-#line 568 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("a matrix definition followed by a right bracket");}
-    break;
-
-  case 176:
 #line 569 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1];}
     break;
 
-  case 177:
+  case 168:
 #line 570 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("a right parenthesis after expression");}
+    break;
+
+  case 169:
+#line 571 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("an expression after left parenthesis");}
+    break;
+
+  case 173:
+#line 578 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval = new AST(OP_RHS,yyvsp[0]);}
+    break;
+
+  case 174:
+#line 579 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval = yyvsp[-1];}
+    break;
+
+  case 175:
+#line 580 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("a matrix definition followed by a right bracket");}
+    break;
+
+  case 176:
+#line 581 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval = yyvsp[-1];}
+    break;
+
+  case 177:
+#line 582 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2];}
     break;
 
   case 178:
-#line 571 "../../../libs/libFreeMat/Parser.yxx"
+#line 583 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2];}
     break;
 
   case 179:
-#line 572 "../../../libs/libFreeMat/Parser.yxx"
+#line 584 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_EMPTY,NULL);}
     break;
 
   case 180:
-#line 573 "../../../libs/libFreeMat/Parser.yxx"
+#line 585 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1];}
     break;
 
   case 181:
-#line 574 "../../../libs/libFreeMat/Parser.yxx"
+#line 586 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1];}
     break;
 
   case 182:
-#line 575 "../../../libs/libFreeMat/Parser.yxx"
+#line 587 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2];}
     break;
 
   case 183:
-#line 576 "../../../libs/libFreeMat/Parser.yxx"
+#line 588 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2];}
     break;
 
   case 184:
-#line 577 "../../../libs/libFreeMat/Parser.yxx"
+#line 589 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_EMPTY_CELL,NULL);}
     break;
 
   case 185:
-#line 578 "../../../libs/libFreeMat/Parser.yxx"
+#line 590 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("a cell-array definition followed by a right brace");}
     break;
 
   case 187:
-#line 582 "../../../libs/libFreeMat/Parser.yxx"
+#line 594 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-1]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 188:
-#line 586 "../../../libs/libFreeMat/Parser.yxx"
+#line 598 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_PARENS,yyvsp[-1]); }
     break;
 
   case 189:
-#line 587 "../../../libs/libFreeMat/Parser.yxx"
+#line 599 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right parenthesis");}
     break;
 
   case 190:
-#line 588 "../../../libs/libFreeMat/Parser.yxx"
+#line 600 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_BRACES,yyvsp[-1]); }
     break;
 
   case 191:
-#line 589 "../../../libs/libFreeMat/Parser.yxx"
+#line 601 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right brace");}
     break;
 
   case 192:
-#line 590 "../../../libs/libFreeMat/Parser.yxx"
+#line 602 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOT,yyvsp[0]); }
     break;
 
   case 193:
-#line 591 "../../../libs/libFreeMat/Parser.yxx"
+#line 603 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_DOTDYN,yyvsp[-1]);}
     break;
 
   case 195:
-#line 596 "../../../libs/libFreeMat/Parser.yxx"
+#line 608 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_ALL,NULL);}
     break;
 
   case 196:
-#line 597 "../../../libs/libFreeMat/Parser.yxx"
+#line 609 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_KEYWORD,yyvsp[-2],yyvsp[0]);}
     break;
 
   case 197:
-#line 598 "../../../libs/libFreeMat/Parser.yxx"
+#line 610 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("expecting expression after '=' in keyword assignment");}
     break;
 
   case 198:
-#line 599 "../../../libs/libFreeMat/Parser.yxx"
+#line 611 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_KEYWORD,yyvsp[0]);}
     break;
 
   case 199:
-#line 600 "../../../libs/libFreeMat/Parser.yxx"
+#line 612 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("expecting keyword identifier after '/' in keyword assignment");}
     break;
 
   case 201:
-#line 605 "../../../libs/libFreeMat/Parser.yxx"
+#line 617 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2]; yyval->addPeer(yyvsp[0]);}
     break;
 
   case 202:
-#line 609 "../../../libs/libFreeMat/Parser.yxx"
+#line 621 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_BRACES,yyvsp[0]);}
     break;
 
   case 203:
-#line 610 "../../../libs/libFreeMat/Parser.yxx"
+#line 622 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 204:
-#line 614 "../../../libs/libFreeMat/Parser.yxx"
+#line 626 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_BRACKETS,yyvsp[0]);}
     break;
 
   case 205:
-#line 615 "../../../libs/libFreeMat/Parser.yxx"
+#line 627 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2]; yyval->addChild(yyvsp[0]);}
     break;
 
   case 210:
-#line 627 "../../../libs/libFreeMat/Parser.yxx"
+#line 639 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = new AST(OP_SEMICOLON,yyvsp[0]);}
     break;
 
   case 211:
-#line 628 "../../../libs/libFreeMat/Parser.yxx"
+#line 640 "../../../libs/libFreeMat/Parser.yxx"
     {yyval = yyvsp[-2]; yyval->addChild(yyvsp[0]);}
     break;
 
@@ -2914,7 +2926,7 @@ yyreduce:
     }
 
 /* Line 1000 of yacc.c.  */
-#line 2918 "../../../libs/libFreeMat/Parser.cxx"
+#line 2930 "../../../libs/libFreeMat/Parser.cxx"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3139,7 +3151,7 @@ yyreturn:
 }
 
 
-#line 631 "../../../libs/libFreeMat/Parser.yxx"
+#line 643 "../../../libs/libFreeMat/Parser.yxx"
 
 
 namespace FreeMat {

@@ -22,6 +22,7 @@ extern YYSTYPE yylval;
 extern bool interactiveMode;
 char *buffer = NULL;
 char *datap;
+char *linestart;
 int lineNumber;
 const char *parsing_filename;
 int continuationCount;
@@ -39,7 +40,23 @@ int vcStack[256];
 int vcStackSize;
 int vcFlag;
 
-extern void SetTextString(char *c);
+extern char prevline_context_buffer[4096];
+extern char currline_context_buffer[4096];
+
+void NextLine() {
+  if (linestart) {
+    memcpy(prevline_context_buffer,linestart,datap-linestart);
+    prevline_context_buffer[datap-linestart] = 0;
+  } else
+    prevline_context_buffer[0] = 0;
+  lineNumber++;
+  linestart = datap;
+  // Copy the current line into the other buffer
+  char *tp = linestart;
+  while ((*tp) && (*tp != '\n')) tp++;
+  memcpy(currline_context_buffer,linestart,tp-linestart);
+  currline_context_buffer[tp-linestart] = 0;
+}
 
 /*
  * These variables capture the token information
@@ -53,11 +70,11 @@ reservedWordStruct ts, *p;
 void LexerException(const char *msg) {
   char buffer[256];
   if (!interactiveMode && parsing_filename && msg) {
-    sprintf(buffer,"Lexical error '%s' at line %d of file %s",
-	    msg,lineNumber,parsing_filename);
+    sprintf(buffer,"Lexical error '%s'\n\tat line %d of file %s\n\t>>%s",
+	    msg,lineNumber,parsing_filename,currline_context_buffer);
     throw Exception(buffer);
   } else {
-    sprintf(buffer,"Lexical error '%s'",msg);
+    sprintf(buffer,"Lexical error '%s'\n\t%s",msg,currline_context_buffer);
     throw Exception(buffer);
   }
 }
@@ -184,7 +201,7 @@ void lexSpecialCall() {
   if (match("...")) {
     while (!isNewline())
       discardChar();
-    lineNumber++;
+    NextLine();
     continuationCount++;
     while ((datap[0] == ' ') || (datap[0] == '\t'))
       discardChar();
@@ -431,14 +448,14 @@ void lexScanningState() {
   if (match("...")) {
     while (!isNewline())
       discardChar();
-    lineNumber++;
+    NextLine();
     continuationCount++;
   }
   if (match("%")) {
     while (!isNewline())
       discardChar();
     setTokenType(ENDSTMNT);
-    lineNumber++;
+    NextLine();
     return;
   }
   if (currentChar() == '\'') 
@@ -460,7 +477,7 @@ void lexScanningState() {
     return;
   }
   if (match(";\n") || match(";\r\n")) {
-    lineNumber++;
+    NextLine();
     setTokenType(ENDQSTMNT);
     lexState = Initial;
     if (bracketStackSize == 0)
@@ -475,7 +492,7 @@ void lexScanningState() {
     return;
   }
   if (match("\r\n") || match("\n")) {
-    lineNumber++;
+    NextLine();
     setTokenType(ENDSTMNT);
     lexState = Initial;
     if (bracketStackSize == 0)
@@ -558,13 +575,13 @@ void lexScanningState() {
 
 void lexInitialState() {
   if (isNewline()) {
-    lineNumber++;
+    NextLine();
   } else if (isWhitespace()) {
   } else if (match(";")) {
   } else if (match("%")) {
     while (!isNewline())
       discardChar();
-    lineNumber++;
+    NextLine();
   } else if (testAlphaChar()) {
     if (!lexTestSpecialSyntax())
       lexState = Scanning;
@@ -646,6 +663,7 @@ namespace FreeMat {
     buffer = (char*) calloc(strlen(buf)+1,sizeof(char));
     datap = buffer;
     strcpy(buffer,buf);
+    linestart = datap;
   }
 
   void setLexFile(FILE *fp) {
@@ -666,6 +684,7 @@ namespace FreeMat {
     int n = fread(buffer,sizeof(char),cpos,fp);
     buffer[n]='\n';
     buffer[n+1]=0;
+    linestart = datap;
   }
 
   bool lexCheckForMoreInput(int ccount) {

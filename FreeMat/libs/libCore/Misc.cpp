@@ -118,6 +118,7 @@ namespace FreeMat {
 	  retval.push_back(Utrans);
 	  Free(svals);
 	}
+	break;
       }
     case FM_DOUBLE:
       {
@@ -153,6 +154,7 @@ namespace FreeMat {
 	  retval.push_back(Utrans);
 	  Free(svals);
 	}
+	break;
       }
     case FM_COMPLEX:
       {
@@ -188,6 +190,7 @@ namespace FreeMat {
 	  retval.push_back(Utrans);
 	  Free(svals);
 	}
+	break;
       }
     case FM_DCOMPLEX:
       {
@@ -224,6 +227,7 @@ namespace FreeMat {
 	  Free(svals);
 	}
       }
+      break;
     }
     return retval;
   }

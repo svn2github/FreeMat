@@ -110,10 +110,10 @@ extern "C" {
 	       int *LWORK, int *IWORK, int *INFO);
   void cgesdd_(char* JOBS, int* M, int *N, float* A, int *LDA, float *S, 
 	       float *U, int *LDU, float *VT, int *LDVT, float *WORK,
-	       int *LWORK, int *IWORK, int *INFO);
+	       int *LWORK, float *RWORK, int *IWORK, int *INFO);
   void zgesdd_(char* JOBS, int* M, int *N, double* A, int *LDA, double *S, 
 	       double *U, int *LDU, double *VT, int *LDVT, double *WORK,
-	       int *LWORK, int *IWORK, int *INFO);
+	       int *LWORK, double *RWORK, int *IWORK, int *INFO);
 
 //   void sgecon_(char* NORM, int* N, double *A, int *LDA, double *ANORM,
 // 	       double *RCOND, double *WORK, int* IWORK, int *INFO);

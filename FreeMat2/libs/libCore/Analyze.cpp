@@ -3200,6 +3200,25 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module TOC Start Stopwatch Timer
+  //@@Section FREEMAT
+  //@@Usage
+  //Starts the stopwatch timer, which can be used to time tasks in FreeMat.
+  //The @|tic| takes no arguments, and returns no outputs.  You must use
+  //@|toc| to get the elapsed time.  The usage is
+  //@[
+  //  tic
+  //@]
+  //@@Example
+  //Here is an example of timing the solution of a large matrix equation.
+  //@<
+  //A = rand(100);
+  //b = rand(100,1);
+  //tic; c = A\b; toc
+  //@>
+  //!
+  
   ArrayVector TocFunction(int nargout, const ArrayVector& arg) {
     double outtime = (getcurrenttime() - ticvalue)/1e6;
     return singleArrayVector(Array::doubleConstructor(outtime));

@@ -64,44 +64,44 @@ namespace FreeMat {
   }
 
   //!
-  //@Module AUTOSTOP Control Autostop Functionality
-  //@@Section FLOW
+  //@Module DBAUTO Control Dbauto Functionality
+  //@@Section DEBUG
   //@@Usage
-  //The autostop functionality in FreeMat allows you to debug your
-  //FreeMat programs.  When @|autostop| is @|on|, then any error
+  //The dbauto functionality in FreeMat allows you to debug your
+  //FreeMat programs.  When @|dbauto| is @|on|, then any error
   //that occurs while the program is running causes FreeMat to 
   //stop execution at that point and return you to the command line
   //(just as if you had placed a @|keyboard| command there).  You can
   //then examine variables, modify them, and resume execution using
   //@|return|.  Alternately, you can exit out of all running routines
   //via a @|retall| statement.  Note that errors that occur inside of
-  //@|try|/@|catch| blocks do not (by design) cause autostops.  The
-  //@|autostop| function toggles the autostop state of FreeMat.  The
+  //@|try|/@|catch| blocks do not (by design) cause auto breakpoints.  The
+  //@|dbauto| function toggles the dbauto state of FreeMat.  The
   //syntax for its use is
   //@[
-  //   autostop(state)
+  //   dbauto(state)
   //@]
   //where @|state| is either
   //@[
-  //   autostop('on')
+  //   dbauto('on')
   //@]
-  //to activate autostop, or
+  //to activate dbauto, or
   //@[
-  //   autostop('off')
+  //   dbauto('off')
   //@]
-  //to deactivate autostop.  Alternately, you can use FreeMat's string-syntax
+  //to deactivate dbauto.  Alternately, you can use FreeMat's string-syntax
   //equivalence and enter
   //@[
-  //   autostop on
+  //   dbauto on
   //@]
   //or 
   //@[
-  //   autostop off
+  //   dbauto off
   //@]
-  //to turn autostop on or off (respectively).  Entering @|autostop| with no arguments
+  //to turn dbauto on or off (respectively).  Entering @|dbauto| with no arguments
   //returns the current state (either 'on' or 'off').
   //!
-  ArrayVector AutoStopFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DbAutoFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() < 1) {
       if (eval->AutoStop()) 
 	return singleArrayVector(Array::stringConstructor("on"));
@@ -109,7 +109,7 @@ namespace FreeMat {
 	return singleArrayVector(Array::stringConstructor("off"));
     } else {
       if (!arg[0].isString())
-	throw Exception("autostop function takes only a single, string argument");
+	throw Exception("dbauto function takes only a single, string argument");
       char *txt;
       txt = arg[0].getContentsAsCString();
       if (strcmp(txt,"on") == 0)
@@ -117,7 +117,7 @@ namespace FreeMat {
       else if (strcmp(txt,"off") == 0)
 	eval->AutoStop(false);
       else
-	throw Exception("Grid function argument needs to be 'on/off'");
+	throw Exception("dbauto function argument needs to be 'on/off'");
     }
     return ArrayVector();
   }

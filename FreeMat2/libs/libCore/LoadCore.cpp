@@ -352,7 +352,7 @@ namespace FreeMat {
      context->addFunction("unique",UniqueFunction,2,3,args);
      args.clear();
      args.push_back("x");
-     context->addSpecialFunction("dbauto",AutoStopFunction,1,1,args);
+     context->addSpecialFunction("dbauto",DbAutoFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

@@ -32,6 +32,7 @@ class FLTKTerminalWidget : public Fl_Text_Display, public Interface {
   std::string cutbuff;
   bool blinkon;
   bool blinkactive;
+  bool crflag;
 public:
   FLTKTerminalWidget(int x, int y, int w, int h, const char *label = 0);
   virtual ~FLTKTerminalWidget();

@@ -32,8 +32,10 @@
 namespace FreeMat {
 
   template <class T>
-  void addfullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void addfullreal(int N, T*C, const T*A, int stride1, 
+		   const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[i] = A[m] + B[p];
       m += stride1;
@@ -42,8 +44,10 @@ namespace FreeMat {
   }
 
   template <class T>
-  void addfullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void addfullcomplex(int N, T*C, const T*A, int stride1, 
+		      const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[2*i] = A[2*m] + B[2*p];
       C[2*i+1] = A[2*m+1] + B[2*p+1];
@@ -53,8 +57,10 @@ namespace FreeMat {
   }
 
   template <class T>
-  void subtractfullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void subtractfullreal(int N, T*C, const T*A, int stride1, 
+			const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[i] = A[m] - B[p];
       m += stride1;
@@ -63,8 +69,10 @@ namespace FreeMat {
   }
 
   template <class T>
-  void subtractfullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void subtractfullcomplex(int N, T*C, const T*A, int stride1, 
+			   const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[2*i] = A[2*m] - B[2*p];
       C[2*i+1] = A[2*m+1] - B[2*p+1];
@@ -75,8 +83,10 @@ namespace FreeMat {
 
 
   template <class T>
-  void multiplyfullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void multiplyfullreal(int N, T*C, const T*A, int stride1, 
+			const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[i] = A[m] * B[p];
       m += stride1;
@@ -85,8 +95,10 @@ namespace FreeMat {
   }
 
   template <class T>
-  void multiplyfullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void multiplyfullcomplex(int N, T*C, const T*A, int stride1, 
+			   const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[2*i] = A[2*m] * B[2*p] - A[2*m+1] * B[2*p+1];
       C[2*i+1] = A[2*m] * B[2*p+1] + A[2*m+1] * B[2*p];
@@ -97,8 +109,10 @@ namespace FreeMat {
 
 
   template <class T>
-  void dividefullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void dividefullreal(int N, T*C, const T*A, int stride1, 
+		      const T*B, int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       C[i] = A[m] / B[p];
       m += stride1;
@@ -137,13 +151,12 @@ namespace FreeMat {
       }
     c[0] = cr;
   }
-}
-    
-  }
 
   template <class T>
-  void dividefullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  void dividefullcomplex(int N, T*C, const T*A, int stride1, const T*B, 
+			 int stride2) {
     int m, p;
+    m = 0; p = 0;
     for (int i=0;i<N;i++) {
       complex_divide<T>(C+2*i,A+2*m,B+2*p);
       m += stride1;
@@ -151,7 +164,156 @@ namespace FreeMat {
     }
   }
   
+  template <class T>
+  void lessthanfuncreal(int N, logical* C, const T*A, int stride1, const T*B, 
+			int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (A[m] < B[p]) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
 
+  template <class T>
+  void lessthanfunccomplex(int N, logical* C, const T*A, int stride1, 
+			   const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (complex_abs<T>(A[2*m],A[2*m+1]) < 
+	      complex_abs<T>(B[2*p],B[2*p+1])) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void lessequalsfuncreal(int N, logical* C, const T*A, int stride1, const T*B, 
+			int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (A[m] <= B[p]) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void lessequalsfunccomplex(int N, logical* C, const T*A, int stride1, 
+			   const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (complex_abs<T>(A[2*m],A[2*m+1]) <= 
+	      complex_abs<T>(B[2*p],B[2*p+1])) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void equalsfuncreal(int N, logical* C, const T*A, int stride1, const T*B, 
+			int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (A[m] == B[p]) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void equalsfunccomplex(int N, logical* C, const T*A, int stride1, 
+			   const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = ((A[2*m] == B[2*p]) && 
+	      (A[2*m+1] == B[2*p+1])) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void notequalsfuncreal(int N, logical* C, const T*A, int stride1, const T*B, 
+			int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (A[m] != B[p]) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void notequalsfunccomplex(int N, logical* C, const T*A, int stride1, 
+			   const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = ((A[2*m] != B[2*p]) ||
+	      (A[2*m+1] != B[2*p+1])) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void greaterthanfuncreal(int N, logical* C, const T*A, int stride1, const T*B, 
+			int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (A[m] > B[p]) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void greaterthanfunccomplex(int N, logical* C, const T*A, int stride1, 
+			   const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (complex_abs<T>(A[2*m],A[2*m+1]) >
+	      complex_abs<T>(B[2*p],B[2*p+1])) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void greaterequalsfuncreal(int N, logical* C, const T*A, int stride1, 
+			     const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (A[m] >= B[p]) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void greaterequalsfunccomplex(int N, logical* C, const T*A, int stride1, 
+			   const T*B, int stride2) {
+    int m, p;
+    m = 0; p = 0;
+    for (int i=0;i<N;i++) {
+      C[i] = (complex_abs<T>(A[2*m],A[2*m+1]) >= 
+	      complex_abs<T>(B[2*p],B[2*p+1])) ? 1 : 0;
+      m += stride1;
+      p += stride2;
+    }
+  }
+  
   /**
    * This is the generic function interface into calculations
    * that can be performed on some type.

@@ -622,7 +622,7 @@ namespace FreeMat {
       return buf;
     }
     RLEEncoder<T> A(buffer, row);
-    while (mlist[ptr].J == col) {
+    while (ptr < len && mlist[ptr].J == col) {
       int n;
       n = mlist[ptr].I;
       T accum = 0;
@@ -648,7 +648,7 @@ namespace FreeMat {
       return buf;
     }
     RLEEncoderComplex<T> A(buffer, row);
-    while (mlist[ptr].J == col) {
+    while (ptr < len && mlist[ptr].J == col) {
       int n;
       n = mlist[ptr].I;
       T accum_real = 0;
@@ -2382,11 +2382,11 @@ namespace FreeMat {
 
   template <class T>
   void* DeleteSparseMatrixRowsComplex(int rows, int cols, const T** src, bool *dmap) {
-    // Count the number of undeleted columns
+    // Count the number of undeleted rows
     int newrow;
     int i;
     newrow = 0;
-    for (i=0;i<cols;i++) if (!dmap[i]) newrow++;
+    for (i=0;i<rows;i++) if (!dmap[i]) newrow++;
     // Allocate an output array 
     T** dest;
     dest = new T*[cols];

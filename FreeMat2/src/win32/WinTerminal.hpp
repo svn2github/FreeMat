@@ -22,8 +22,10 @@ namespace FreeMat {
     std::vector<std::string> dirTab;
     Context *context;
     char *messageContext;
+    std::vector<std::string> messageStack;
     std::vector<std::string> flist;
     std::list<std::string> enteredLines;
+	std::string m_path;
     OPENFILENAME ofn;
     CHOOSEFONT cft;
     LOGFONT lfont;
@@ -47,9 +49,11 @@ namespace FreeMat {
     void UpdateLineCount();
     void Resize(int w, int h);
     void OnScroll(int scrollType);
-    void initialize(std::string path, Context *contxt);
     void OnMouseDown(int x, int y);
     void OnDrag(int x, int y);
+    virtual void setContext(Context *ctxt);
+    virtual std::string getPath();
+    virtual void setPath(std::string path);
     virtual void rescanPath();
     virtual void scanDirectory(std::string scdir);
     virtual void procFile(std::string fname, std::string fullname);
@@ -59,6 +63,9 @@ namespace FreeMat {
     virtual void warningMessage(const char* msg);
     virtual void setMessageContext(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
+    virtual void pushMessageContext();
+    virtual void popMessageContext();
+    virtual std::vector<std::string> getMessageContextStack();
     virtual void ExecuteLine(const char* line);
     virtual void RegisterInterrupt();
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 

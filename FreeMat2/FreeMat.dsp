@@ -100,10 +100,6 @@ SOURCE=.\src\win32\Script1.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\libs\libXP\System.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\src\win32\WinGC.cpp
 # End Source File
 # Begin Source File

@@ -52,17 +52,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
+  term.setContext(context);
   if (envPtr)
-    term.initialize(std::string(envPtr),context);
+    term.setPath(std::string(envPtr));
   else
-    term.initialize(std::string(""),context);
+    term.setPath(std::string(""));
   WalkTree *twalk = new WalkTree(context,&term);
   term.SetEvalEngine(twalk);
   term.outputMessage(" Freemat - build ");
   term.outputMessage(__DATE__);
   term.outputMessage("\n");
   term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
-  twalk->evalCLI();
+  while (twalk->getState() != FM_STATE_QUIT) {
+	  twalk->resetState();
+	  twalk->evalCLI();
+  }
   return 0;
 }
 

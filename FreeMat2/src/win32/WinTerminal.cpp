@@ -394,17 +394,26 @@ namespace FreeMat {
     DoResizeBuffer(xdim/charWidth,ydim/charHeight);
   }
 
-  void WinTerminal::initialize(std::string path, Context *contxt) {
+  void WinTerminal::setContext(Context *contxt) {
+    context = contxt;
+  }
+
+  void WinTerminal::setPath(std::string path) {
     char* pathdata = strdup(path.c_str());
+    // Search through the path
     char* token;
     token = strtok(pathdata,";");
     while (token != NULL) {
       if (strcmp(token,".") != 0)
-		dirTab.push_back(std::string(token));
+	    dirTab.push_back(std::string(token));
       token = strtok(NULL,";");
     }
-    context = contxt;
+    m_path = path;
     rescanPath();
+  }
+
+  std::string WinTerminal::getPath() {
+    return m_path;
   }
 
   void WinTerminal::rescanPath() {
@@ -527,6 +536,27 @@ namespace FreeMat {
     eval = a_eval;
   }
   
+  void WinTerminal::pushMessageContext() {
+    if (messageContext != NULL)
+      messageStack.push_back(messageContext);
+    else
+      messageStack.push_back("??");
+  }
+
+  void WinTerminal::popMessageContext() {
+    messageStack.pop_back();
+  }
+
+  std::vector<std::string> WinTerminal::getMessageContextStack() {
+    // Add the current context to the stack
+    std::vector<std::string> ret;
+    if (messageContext != NULL)
+      ret.push_back(messageContext);
+    else
+      ret.push_back("??");
+    return messageStack;
+  }
+
   void WinTerminal::ExecuteLine(const char * line) {
     enteredLines.push_back(line);
 //	OutputRawString("\r\n");

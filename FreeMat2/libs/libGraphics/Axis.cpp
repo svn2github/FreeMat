@@ -24,10 +24,11 @@
 
 namespace FreeMat {
 
-  Axis::Axis(double minVal, double maxVal, bool logarithmic) {
+  Axis::Axis(double minVal, double maxVal, bool logarithmic, AxisType type) {
     tMin = minVal;
     tMax = maxVal;
     isLogarithmic = logarithmic;
+    axisType = type;
     space = 10;
     tickLength = 5;
     AutoSetAxis();
@@ -250,54 +251,63 @@ namespace FreeMat {
       labelHeight = (labelHeight > h) ? labelHeight : h;
       labelWidth = (labelWidth > w ) ? labelWidth : w;
     }
-    //    if (axisType == Axis_X)
-    //      maxLabelExtent = labelHeight;
-    //    else
-    //      maxLabelExtent = labelWidth;
-    maxLabelExtent = labelWidth;
+    if (axisType == Axis_X)
+      maxLabelExtent = labelHeight;
+    else
+      maxLabelExtent = labelWidth;
     Point2D titleSize(dc.GetTextExtent(title));
     titleWidth = titleSize.x;
     titleHeight = titleSize.y;
   }
 
-  void Axis::Place(int a_xOffset, int a_yOffset, int a_length, 
-		   float a_delX, float a_delY, float a_ticDX,
-		   float a_ticDY) {
+  void Axis::Place(int a_xOffset, int a_yOffset, 
+		   int a_length, int a_grid_length) {
     xOffset = a_xOffset;
     yOffset = a_yOffset;
     length = a_length;
-    delX = a_delX;
-    delY = a_delY;
-    ticDX = a_ticDX;
-    ticDY = a_ticDY;
-    //    grid_length = a_grid_length;
+    grid_length = a_grid_length;
   }
 
   int Axis::MapPoint(double t) {
     if (!isLogarithmic) {
-      double u = (t - tStart)/(tStop - tStart) * length;
-      return ((int)0.5+u);
+      if (axisType == Axis_X) {
+	double u;
+	u = (xOffset + (t - tStart)/(tStop - tStart) * length);
+// 	if (u < xOffset-100) u = xOffset-100;
+// 	if (u > (xOffset+length+100)) u = xOffset+length+100;
+	return ((int)0.5+u);
+      }
+      if (axisType == Axis_Y) {
+	double u;
+	u = (yOffset + (tStop - t)/(tStop - tStart) * length);
+// 	if (u < yOffset-100) u = yOffset-100;
+// 	if (u > (yOffset+length+100)) u = yOffset+length+1;
+	return ((int)0.5+u);
+      }
     } else {
-      double s = log10(t);
-      double u = (s - tStart)/(tStop - tStart) * length;
-      return ((int)0.5+u);
-    }      
+      if (axisType == Axis_X) {
+	double s, u;
+	s = log10(t);
+	u = (xOffset + (s - tStart)/(tStop - tStart) * length);
+// 	if (u < xOffset-1) u = xOffset-1;
+// 	if (u > (xOffset+length+1)) u = xOffset+length+1;
+	return ((int)0.5+u);
+      }
+      if (axisType == Axis_Y) {
+	double s;
+	s = log10(t);
+	double u;
+	u = (yOffset + (tStop - s)/(tStop - tStart) * length);
+// 	if (u < yOffset-1) u = yOffset-1;
+// 	if (u > (yOffset+length+1)) u = yOffset+length+1;
+	return ((int)0.5+u);
+      }      
+    }
     return 0;
   }
 
   void Axis::DrawMe(GraphicsContext &dc) {
     dc.SetForeGroundColor(Color("black"));
-      dc.SetLineStyle(LINE_SOLID);
-      dc.DrawLine(Point2D(xOffset, yOffset), 
-		  Point2D(xOffset + length*delX, yOffset + length*delY));
-      for (int i=0;i<tCount;i++) {
-	int tp;
-	tp = MapPoint(tickLocations[i]);
-	dc.DrawLine(Point2D(xOffset + tp*delX, yOffset + tp*delY),
-		    Point2D(xOffset + tp*delX + tickLength*ticDX, 
-			    yOffset + tp*delY + tickLength*ticDY));
-      }
-#if 0
     if (axisType == Axis_X) {
       // The x title is centered on the axis, and is 2 spaces
       // below the axis line.
@@ -342,23 +352,22 @@ namespace FreeMat {
 	VCenterLabel(dc, tlabels[i], xOffset - space, tp);
       }
     }
-#endif
   }
 
   int Axis::getWidth() {
-    //    if (axisType == Axis_X) {
+    if (axisType == Axis_X) {
       return length;
-      //    } else {
-      //      return (maxLabelExtent + 3*space + titleHeight);
-      //    }
+    } else {
+      return (maxLabelExtent + 3*space + titleHeight);
+    }
   }
 
   int Axis::getHeight() {
-    //    if (axisType == Axis_X) {
-    //      return (maxLabelExtent + 3*space + titleHeight);
-    //    } else {
+    if (axisType == Axis_X) {
+      return (maxLabelExtent + 3*space + titleHeight);
+    } else {
       return length;
-      //    }
+    }
   }
 
   void Axis::SetGrid(bool gridArg) {

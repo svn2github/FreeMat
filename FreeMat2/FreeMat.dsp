@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib libs\lpng125\Debug\lpng125.lib libs\libz\Debug\libz.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -96,6 +96,10 @@ SOURCE=.\src\win32\main.cpp
 # Begin Source File
 
 SOURCE=.\libs\libXP\System.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\win32\WinGC.cpp
 # End Source File
 # Begin Source File
 

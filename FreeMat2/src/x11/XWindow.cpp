@@ -189,7 +189,6 @@ void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;
   m_width = w;
   m_height = h;
-  printf("\r\n size set %d %d\r\n",w,h);
   // Update the contents.
   unsigned char *data;
   data = (unsigned char *) malloc(3*sizeof(char)*w*h);

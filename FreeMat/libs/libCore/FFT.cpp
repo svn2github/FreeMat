@@ -193,7 +193,7 @@ namespace FreeMat {
 	memset(buffer,0,sizeof(double)*FFTLen*2);
 	// Copy the data
 	int k;
-	for (k=0;j<copyIn;j++) {
+	for (k=0;k<copyIn;k++) {
 	  buffer[2*k] = dp[2*(i*planesize*linesize + j + k*planesize)];
 	  buffer[2*k+1] = dp[2*(i*planesize*linesize + j + k*planesize)+1];
 	}
@@ -210,7 +210,7 @@ namespace FreeMat {
       }
     }
     Free(buffer);
-    return Array(FM_COMPLEX,outDim,ob);
+    return Array(FM_DCOMPLEX,outDim,ob);
   }
 
   ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {

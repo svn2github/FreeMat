@@ -419,7 +419,9 @@ void lexScanningState() {
   if (match("%")) {
     while (!isNewline())
       discardChar();
+    setTokenType(ENDSTMNT);
     lineNumber++;
+    return;
   }
   if (currentChar() == '\'') 
     if ((previousChar() == ')')  ||
@@ -628,14 +630,14 @@ namespace FreeMat {
   }
 
   void setLexFile(FILE *fp) {
-	  struct stat st;
-	  clearerr(fp);
-	  fstat(fileno(fp),&st);
+    struct stat st;
+    clearerr(fp);
+    fstat(fileno(fp),&st);
     bracketStackSize = 0;
     lexState = Initial;
     vcStackSize = 0;
     lineNumber = 0;
-	long cpos = st.st_size;
+    long cpos = st.st_size;
     if (buffer)
       free(buffer);
     buffer = (char*) calloc(cpos+1,sizeof(char));

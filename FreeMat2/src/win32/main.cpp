@@ -1,17 +1,3 @@
-#if 0
-#include "XWindow.hpp"
-#include "WinTerminal.hpp"
-#include <stdio.h>
-#include "Module.hpp"
-#include "LoadCore.hpp"
-#include "LoadFN.hpp"
-#include "GraphicsCore.hpp"
-#include "System.hpp"
-#include "PathSearch.hpp"
-#include <stdlib.h>
-#include <signal.h>
-#endif
-
 #include <windows.h>
 #include "FLTKTerminal.hpp"
 #include "WalkTree.hpp"

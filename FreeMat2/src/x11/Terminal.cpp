@@ -481,7 +481,7 @@ namespace FreeMat {
     ReplacePrompt(prompt);
     DisplayPrompt();
     while(enteredLines.empty())
-      Fl::wait(0);
+      Fl::wait(1);
     std::string theline(enteredLines.front());
     enteredLines.pop_front();
     char *cp;

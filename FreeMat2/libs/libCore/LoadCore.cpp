@@ -126,6 +126,10 @@ namespace FreeMat {
      args.push_back("dirname");     
      context->addSpecialFunction("cd",ChangeDirFunction,1,0,args);
      args.clear();
+     args.push_back("pathlist");
+     context->addSpecialFunction("setpath",SetPathFunction,1,0,args);
+     args.clear();
+     context->addSpecialFunction("getpath",GetPathFunction,0,1,args);
      context->addSpecialFunction("ls",ListFilesFunction,-1,0,args);
      context->addSpecialFunction("dir",ListFilesFunction,-1,0,args);
      args.clear();
@@ -149,6 +153,11 @@ namespace FreeMat {
      context->addSpecialFunction("who",WhoFunction,-1,0,args);
      args.push_back("varname");
      context->addSpecialFunction("exist",ExistFunction,1,1,args);
+     args.clear();
+     args.push_back("fname");
+     context->addSpecialFunction("which",WhichFunction,1,0,args);
+     args.clear();
+     context->addSpecialFunction("where",WhereFunction,0,0,args);
      args.clear();
      args.push_back("fname");
      args.push_back("mode");

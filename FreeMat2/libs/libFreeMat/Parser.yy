@@ -60,28 +60,31 @@ namespace FreeMat {
   void yyexpect(char *s) {
 	expectString = s;
   }
+
   int yyerror(char *s) {
     char *tokdesc;
     char *tokbuffer = "unprintable";
     char buffer[256];
     if (*yytext < 33) {
 	tokdesc = tokbuffer;
-	sprintf(buffer,"unprintable char '%d'",*yytext);
+	sprintf(buffer,"Ran out of input on this line.");
 	tokdesc = buffer;
-    } else
-	tokdesc = yytext;
+    } else {
+        sprintf(buffer,"Current token is '%s'",yytext);
+	tokdesc = buffer;
+    }	
     if (expectString)
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  Current token is '%s'",
+        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  %s",
 	expectString,lineNumber,filename,tokdesc);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  Current token is '%s'",expectString, tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  %s",expectString, tokdesc);
     else
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s.  Current token is '%s'",
+        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s.  %s",
 	lineNumber,filename,tokdesc);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input.  Current token is '%s'",tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input.  %s",tokdesc);
     throw Exception(msgBuffer);
     return 0;
   }
@@ -609,7 +612,11 @@ namespace FreeMat {
     interactiveMode = true;
     yyexpect("a valid list of statements");
     setLexBuffer(txt);
-    yyparse();
+    try {
+      yyparse();
+    } catch (Exception& e) {
+      yyerror(e.getMessageCopy());
+    }
     return parseState();
   }
   
@@ -619,7 +626,11 @@ namespace FreeMat {
     filename = fname;
     setLexFile(fp);
     yyexpect("a valid function definition or script");
-    yyparse();
+    try {
+      yyparse();
+    } catch (Exception& e) {
+      yyerror(e.getMessageCopy());
+    }
     return parseState();
   }
   

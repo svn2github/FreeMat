@@ -79,9 +79,8 @@ reservedWordStruct ts, *p;
   }
 
   end_context popContext() {
-    if (contextCount < 1) {
-	return context_error;
-    }
+    if (contextCount < 1) 
+      throw Exception("unexpected 'end' encountered");
     contextCount--;
     return contextStack[contextCount];
   }

@@ -6151,9 +6151,8 @@ reservedWordStruct ts, *p;
   }
 
   end_context popContext() {
-    if (contextCount < 1) {
-	return context_error;
-    }
+    if (contextCount < 1) 
+      throw Exception("unexpected 'end' encountered");
     contextCount--;
     return contextStack[contextCount];
   }
@@ -6176,7 +6175,7 @@ reservedWordStruct ts, *p;
 
 #define str 7
 
-#line 6180 "Lexer.cc"
+#line 6179 "Lexer.cc"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -6330,13 +6329,13 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 132 "Lexer.ll"
+#line 131 "Lexer.ll"
 
 
 	char string_buf[4095];
 	char *string_buf_ptr;
 
-#line 6340 "Lexer.cc"
+#line 6339 "Lexer.cc"
 
 	if ( yy_init )
 		{
@@ -6422,46 +6421,46 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 137 "Lexer.ll"
+#line 136 "Lexer.ll"
 {
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 140 "Lexer.ll"
+#line 139 "Lexer.ll"
 {
   lineNumber++;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 144 "Lexer.ll"
+#line 143 "Lexer.ll"
 {
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 147 "Lexer.ll"
+#line 146 "Lexer.ll"
 {
  return POS;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 151 "Lexer.ll"
+#line 150 "Lexer.ll"
 {
  return NEG;
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 155 "Lexer.ll"
+#line 154 "Lexer.ll"
 {
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 158 "Lexer.ll"
+#line 157 "Lexer.ll"
 {
   yyless(0);
   BEGIN(SpecialSyntax);
@@ -6469,7 +6468,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 163 "Lexer.ll"
+#line 162 "Lexer.ll"
 {
   yyless(0);
   BEGIN(SpecialSyntaxStart);
@@ -6477,7 +6476,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 168 "Lexer.ll"
+#line 167 "Lexer.ll"
 {
   yyless(0);
   BEGIN(Scanning);
@@ -6485,7 +6484,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 173 "Lexer.ll"
+#line 172 "Lexer.ll"
 {
   /* Check for a reserved word... */
   ts.word = yytext;
@@ -6505,13 +6504,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 190 "Lexer.ll"
+#line 189 "Lexer.ll"
 {
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 193 "Lexer.ll"
+#line 192 "Lexer.ll"
 {
   yylval = new AST(string_const_node,yytext);
   return STRING;
@@ -6519,7 +6518,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 198 "Lexer.ll"
+#line 197 "Lexer.ll"
 {
   yytext[yyleng-1] = 0;
   yylval = new AST(string_const_node,yytext+1);
@@ -6528,7 +6527,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 204 "Lexer.ll"
+#line 203 "Lexer.ll"
 {
   lineNumber++;
   BEGIN(INITIAL);
@@ -6537,7 +6536,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 210 "Lexer.ll"
+#line 209 "Lexer.ll"
 {
   BEGIN(INITIAL);
   return ENDQSTMNT;
@@ -6545,7 +6544,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 215 "Lexer.ll"
+#line 214 "Lexer.ll"
 {
   lineNumber++;
   BEGIN(INITIAL);
@@ -6554,7 +6553,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 221 "Lexer.ll"
+#line 220 "Lexer.ll"
 {
   unput(0xFA);
 /*  yyless(1); */
@@ -6567,7 +6566,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 231 "Lexer.ll"
+#line 230 "Lexer.ll"
 {
   unput(0xFB);
 /*  yyless(1); */
@@ -6580,21 +6579,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 241 "Lexer.ll"
+#line 240 "Lexer.ll"
 {
   return NEG;
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 245 "Lexer.ll"
+#line 244 "Lexer.ll"
 {
   return POS;
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 249 "Lexer.ll"
+#line 248 "Lexer.ll"
 {
   // Replace the - with a NEG
   int i; 
@@ -6607,7 +6606,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 259 "Lexer.ll"
+#line 258 "Lexer.ll"
 {
   int i;
   char *yycopy = strdup(yytext);
@@ -6619,7 +6618,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 268 "Lexer.ll"
+#line 267 "Lexer.ll"
 {
   // Replace the - with a NEG
   int i;
@@ -6632,7 +6631,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 278 "Lexer.ll"
+#line 277 "Lexer.ll"
 {
   int i;
   char *yycopy = strdup(yytext);
@@ -6644,84 +6643,84 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 287 "Lexer.ll"
+#line 286 "Lexer.ll"
 {
   return NEG;
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 291 "Lexer.ll"
+#line 290 "Lexer.ll"
 {
   return POS;
 }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 295 "Lexer.ll"
+#line 294 "Lexer.ll"
 {
   return EQ;
 }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 299 "Lexer.ll"
+#line 298 "Lexer.ll"
 {			
   return DOTTIMES;
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 303 "Lexer.ll"
+#line 302 "Lexer.ll"
 {
   return DOTRDIV;
 }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 307 "Lexer.ll"
+#line 306 "Lexer.ll"
 {
   return DOTLDIV;
 }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 311 "Lexer.ll"
+#line 310 "Lexer.ll"
 {			
   return LE;
 }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 315 "Lexer.ll"
+#line 314 "Lexer.ll"
 {
   return GE;
 }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 319 "Lexer.ll"
+#line 318 "Lexer.ll"
 {
   return NE;
 }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 323 "Lexer.ll"
+#line 322 "Lexer.ll"
 {
   return DOTPOWER;
 }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 327 "Lexer.ll"
+#line 326 "Lexer.ll"
 {
   return DOTTRANSPOSE;
 }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 331 "Lexer.ll"
+#line 330 "Lexer.ll"
 {
   lineNumber++;
   firstToken = true;
@@ -6731,7 +6730,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 338 "Lexer.ll"
+#line 337 "Lexer.ll"
 {
   firstToken = true;
   BEGIN(INITIAL);
@@ -6740,7 +6739,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 344 "Lexer.ll"
+#line 343 "Lexer.ll"
 {
   lineNumber++;
   firstToken = true;
@@ -6750,7 +6749,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 351 "Lexer.ll"
+#line 350 "Lexer.ll"
 {
   pushState(Scanning);
   pushContext(context_index);
@@ -6759,7 +6758,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 357 "Lexer.ll"
+#line 356 "Lexer.ll"
 {
   pushState(Scanning);
   pushContext(context_index);
@@ -6768,7 +6767,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 363 "Lexer.ll"
+#line 362 "Lexer.ll"
 {
   popContext();
   if (topState() == Scanning) {
@@ -6782,7 +6781,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 374 "Lexer.ll"
+#line 373 "Lexer.ll"
 {
   popContext();
   if (topState() == Scanning) {
@@ -6796,7 +6795,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 385 "Lexer.ll"
+#line 384 "Lexer.ll"
 {
   pushContext(context_matrix);
   return '[';
@@ -6804,7 +6803,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 390 "Lexer.ll"
+#line 389 "Lexer.ll"
 {
   popContext();
   pushState(Scanning);
@@ -6814,14 +6813,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 397 "Lexer.ll"
+#line 396 "Lexer.ll"
 {
   /* skip */
 }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 401 "Lexer.ll"
+#line 400 "Lexer.ll"
 {
   lineNumber++;
   continuationCount++;
@@ -6831,19 +6830,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 408 "Lexer.ll"
+#line 407 "Lexer.ll"
 {
   /* skip */
 }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 412 "Lexer.ll"
+#line 411 "Lexer.ll"
 string_buf_ptr = string_buf; BEGIN(str);
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 414 "Lexer.ll"
+#line 413 "Lexer.ll"
 {
 	BEGIN(Scanning); 
 	*string_buf_ptr = '\0';
@@ -6853,37 +6852,37 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 421 "Lexer.ll"
+#line 420 "Lexer.ll"
 *string_buf_ptr++ = 10;
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 422 "Lexer.ll"
+#line 421 "Lexer.ll"
 *string_buf_ptr++ = 9;
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 423 "Lexer.ll"
+#line 422 "Lexer.ll"
 *string_buf_ptr++ = 13;
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 424 "Lexer.ll"
+#line 423 "Lexer.ll"
 *string_buf_ptr++ = 8;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 425 "Lexer.ll"
+#line 424 "Lexer.ll"
 *string_buf_ptr++ = 12;
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 426 "Lexer.ll"
+#line 425 "Lexer.ll"
 *string_buf_ptr++ = yytext[1];
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 428 "Lexer.ll"
+#line 427 "Lexer.ll"
 {
                    char *yptr = yytext;
                    while ( *yptr )
@@ -6892,7 +6891,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 434 "Lexer.ll"
+#line 433 "Lexer.ll"
 {
   /* Search for the identifier in the keyword table */
   ts.word = yytext;
@@ -6953,7 +6952,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 492 "Lexer.ll"
+#line 491 "Lexer.ll"
 {
   yylval = new AST(id_node,yytext+1);
   return FIELD;
@@ -6961,7 +6960,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 497 "Lexer.ll"
+#line 496 "Lexer.ll"
 {
   pushState(IdentDereference);
   pushContext(context_index);
@@ -6971,7 +6970,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 504 "Lexer.ll"
+#line 503 "Lexer.ll"
 {
   pushState(IdentDereference);
   pushContext(context_index);
@@ -6981,7 +6980,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 511 "Lexer.ll"
+#line 510 "Lexer.ll"
 {
   BEGIN(Scanning);
   return *yytext;
@@ -6989,7 +6988,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 516 "Lexer.ll"
+#line 515 "Lexer.ll"
 {
   unput(yytext[0]);
   BEGIN(Scanning);
@@ -6997,7 +6996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 521 "Lexer.ll"
+#line 520 "Lexer.ll"
 {
   pushState(YY_START);
   BEGIN(TransposeCheck);
@@ -7007,7 +7006,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 528 "Lexer.ll"
+#line 527 "Lexer.ll"
 {
   pushState(YY_START);
   BEGIN(TransposeCheck);
@@ -7017,7 +7016,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 535 "Lexer.ll"
+#line 534 "Lexer.ll"
 {
   pushState(YY_START);
   BEGIN(TransposeCheck);
@@ -7027,14 +7026,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 542 "Lexer.ll"
+#line 541 "Lexer.ll"
 {
   return *yytext;
 }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 546 "Lexer.ll"
+#line 545 "Lexer.ll"
 {
   BEGIN(popState());
   return *yytext;
@@ -7042,7 +7041,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 551 "Lexer.ll"
+#line 550 "Lexer.ll"
 {
   BEGIN(popState());
   unput(yytext[0]);
@@ -7050,10 +7049,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 556 "Lexer.ll"
+#line 555 "Lexer.ll"
 ECHO;
 	YY_BREAK
-#line 7057 "Lexer.cc"
+#line 7056 "Lexer.cc"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IdentDereference):
 case YY_STATE_EOF(TransposeCheck):
@@ -7948,7 +7947,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 556 "Lexer.ll"
+#line 555 "Lexer.ll"
 
 
 int yywrap() {

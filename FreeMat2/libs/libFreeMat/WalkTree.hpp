@@ -96,6 +96,10 @@ namespace FreeMat {
      */
     void resetState();
     /**
+     * Get the state of the tree walker.
+     */
+    State getState();
+    /**
      * Convert an expression list into a vector of Array variables.
      */
     ArrayVector rowDefinition(ASTPtr t) throw(Exception);

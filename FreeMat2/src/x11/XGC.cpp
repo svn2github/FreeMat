@@ -145,9 +145,9 @@ Color XGC::SetForeGroundColor(Color col) {
 }
 
 LineStyleType XGC::SetLineStyle(LineStyleType style) {
-  unsigned char line_dashed_list[2] = {4, 4};
-  unsigned char line_dotted_list[2] = {3, 1};
-  unsigned char line_dash_dot_list[4] = {3, 4, 3, 1};
+  static unsigned char line_dashed_list[2] = {4, 4};
+  static unsigned char line_dotted_list[2] = {3, 1};
+  static unsigned char line_dash_dot_list[4] = {3, 4, 3, 1};
   LineStyleType retsav(ls);
   ls = style;
   switch (ls) {
@@ -155,12 +155,15 @@ LineStyleType XGC::SetLineStyle(LineStyleType style) {
     XSetLineAttributes(m_display, m_gc, 1, LineSolid, CapButt, JoinMiter);
     break;
   case LINE_DASHED:
+    XSetLineAttributes(m_display, m_gc, 1, LineOnOffDash, CapButt, JoinMiter);
     XSetDashes(m_display, m_gc, 0, (const char*) line_dashed_list, 2);
     break;
   case LINE_DOTTED:
+    XSetLineAttributes(m_display, m_gc, 1, LineOnOffDash, CapButt, JoinMiter);
     XSetDashes(m_display, m_gc, 0, (const char*) line_dotted_list, 2);
     break;
   case LINE_DASH_DOT:
+    XSetLineAttributes(m_display, m_gc, 1, LineOnOffDash, CapButt, JoinMiter);
     XSetDashes(m_display, m_gc, 0, (const char*) line_dash_dot_list, 4);
     break;
   }

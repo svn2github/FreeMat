@@ -131,9 +131,9 @@ namespace FreeMat {
   void Axis::AutoSetAxis() {
 	  int i;
     UpdateIntervals(tMin, tMax);
-    double acnt;
-    acnt = (tStop - tStart)/tStep + 1.0;
-    tCount = (int) ceil(acnt);
+    tCount = 0;
+    while ((tStart + tCount*tStep) <= tStop) 
+      tCount++;
     tlabels.clear();
     tickLocations = new double[tCount];
     for (i=0;i<tCount;i++)
@@ -144,13 +144,16 @@ namespace FreeMat {
     bool exponentialForm;
     exponentialForm = false;
     for (i=0;i<tCount;i++)
-      if (tickLocations[i] != 0.0)
-	exponentialForm |= fabs(log10(fabs(tickLocations[i]))) >= 4.0;
-    for (i=0;i<tCount;i++)
+      if (tickLocations[i] != 0.0) {
+	if (fabs(tickLocations[i]) > 1e-15)
+	  exponentialForm |= fabs(log10(fabs(tickLocations[i]))) >= 4.0;
+      }
+    for (i=0;i<tCount;i++) {
       if (!isLogarithmic)
 	tlabels.push_back( TrimPrint( tStart + i * tStep, exponentialForm) );
       else
 	tlabels.push_back( TrimPrint( tStart + i * tStep, false ));
+    }
   }
 
   std::string Axis::TrimPrint(double val, bool scientificNotation) {
@@ -310,7 +313,8 @@ namespace FreeMat {
       // below the axis line.
       dc.DrawTextString(title, Point2D(xOffset + (length - titleWidth)/2,
 				 yOffset + 2*space + 2*maxLabelExtent));
-      dc.DrawLine(Point2D(xOffset, yOffset), Point2D(xOffset + length + 1, yOffset));
+      dc.SetLineStyle(LINE_SOLID);
+      dc.DrawLine(Point2D(xOffset, yOffset), Point2D(xOffset + length, yOffset));
       for (int i=0;i<tCount;i++) {
 	int tp;
 	tp = MapPoint(tickLocations[i]);
@@ -331,12 +335,13 @@ namespace FreeMat {
       if (titleWidth != 0)
 	dc.DrawTextString(title, Point2D(xOffset - 2*space - maxLabelExtent,
 				   yOffset + (length + titleWidth)/2), ORIENT_90);
-      dc.DrawLine(Point2D(xOffset, yOffset), Point2D(xOffset, yOffset + length + 1));
+      dc.SetLineStyle(LINE_SOLID);
+      dc.DrawLine(Point2D(xOffset, yOffset), Point2D(xOffset, yOffset + length));
       for (int i=0;i<tCount;i++) {
 	int tp;
 	tp = MapPoint(tickLocations[i]);
 	// Draw the grid line
-	if (gridOn) {     
+	if (gridOn && (i>0)) {     
 	  dc.SetForeGroundColor(Color("light grey"));
 	  dc.SetLineStyle(LINE_DOTTED);
 	  dc.DrawLine(Point2D(xOffset, tp), Point2D(xOffset + grid_length, tp));

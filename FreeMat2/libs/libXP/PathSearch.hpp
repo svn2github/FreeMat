@@ -29,7 +29,7 @@ namespace FreeMat {
     std::string path;
     std::vector<std::string> pathList;
   public:
-    PathSearcher(const char* envvarname);
+    PathSearcher(std::string mpath);
     std::string ResolvePath(std::string fname);
   };
   bool FileExists(std::string filename);

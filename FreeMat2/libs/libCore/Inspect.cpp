@@ -443,6 +443,89 @@ namespace FreeMat {
   }
 
   //!
+  //@Module WHERE Get Information on Program Stack
+  //@@Usage
+  //Returns information on the current stack.  The usage is
+  //@[
+  //   where
+  //@]
+  //The result is a kind of stack trace that indicates the state
+  //of the current call stack, and where you are relative to the
+  //stack.
+  //@@Example
+  //!
+  ArrayVector WhereFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    Interface *io = eval->getInterface();
+    std::vector<std::string> stacktrace;
+    stacktrace = io->getMessageContextStack();
+    int i;
+    char buffer[100];
+    for (i=0;i<stacktrace.size();i++) {
+      sprintf(buffer,"[%d]  -- ",i);
+      io->outputMessage(buffer);
+      io->outputMessage(stacktrace[i].c_str());
+      io->outputMessage("\r\n");
+    }
+    return ArrayVector();
+  }
+
+  //!
+  //@Module WHICH Get Information on Function
+  //@@Usage
+  //Returns information on a function (if defined).  The usage is
+  //@[
+  //   which(fname)
+  //@]
+  //where @|fname| is a @|string| argument that contains the name of the 
+  //function.  For functions and scripts defined
+  //via @|.m| files, the @|which| command returns the location of the source
+  //file.  
+  //@@Example
+  //First, we apply the @|which| command to a built in function.
+  //@<
+  //which fft
+  //@>
+  //Next, we apply it to a function defined via a @|.m| file.
+  //@<
+  //which fliplr
+  //@>
+  //!
+  ArrayVector WhichFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() != 1)
+      throw Exception("which function takes one string argument (the name of the function to look up)");
+    char *fname;
+    fname = arg[0].getContentsAsCString();
+    bool isFun;
+    FuncPtr val;
+    isFun = eval->getContext()->lookupFunction(fname,val);
+    Interface *io = eval->getInterface();
+    char buffer[1000];
+    if (isFun && (val->type() == FM_M_FUNCTION)) {
+      MFunctionDef *mptr;
+      mptr = (MFunctionDef *) val;
+      mptr->updateCode();
+      if (mptr->scriptFlag) {
+	sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
+	io->outputMessage(buffer);
+      } else {
+	sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
+	io->outputMessage(buffer);
+      }
+    } else if (isFun && (val->type() == FM_BUILT_IN_FUNCTION) || 
+	       (val->type() == FM_SPECIAL_FUNCTION) ) {
+      sprintf(buffer,"Function %s is a built in function\n",fname);
+      io->outputMessage(buffer);
+    } else if (isFun) {
+      sprintf(buffer,"Function %s is an imported function\n",fname);
+      io->outputMessage(buffer);
+    } else {
+      sprintf(buffer,"Function %s is unknown!\n",fname);
+      io->outputMessage(buffer);
+    }
+    return ArrayVector();
+  }
+  
+  //!
   //@Module FIND Find Non-zero Elements of An Array
   //@@Usage
   //Returns a vector that contains the indicies of all non-zero elements 

@@ -344,7 +344,9 @@ namespace FreeMat {
     char *funcname;
     char *rettype;
     char *arglist;
-    PathSearcher psearch("FREEMAT_PATH");
+    Interface *io;
+    io = eval->getInterface();
+    PathSearcher psearch(io->getPath());
     std::string libfullpath;
 
     if (arg.size() < 5)

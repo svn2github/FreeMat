@@ -85,8 +85,8 @@ std::string GetApplicationPath(char *argv0) {
   }
 }
 
-  PathSearcher::PathSearcher(const char* envvarname) {
-    path = std::string(getenv(envvarname)) + ":";
+  PathSearcher::PathSearcher(std::string mpath) {
+    path = mpath + ":";
     std::string tpath;
     while (!path.empty()) {
       int ndx;

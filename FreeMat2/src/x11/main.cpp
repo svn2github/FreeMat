@@ -61,7 +61,8 @@ std::string GetApplicationPath(char *argv0) {
   // This file should exist
   if (FileExists(retpath))
     return GetPathOnly(std::string(retpath));
-  PathSearcher psearch("PATH");
+  std::string path(getenv("PATH"));
+  PathSearcher psearch(path);
   return GetPathOnly(psearch.ResolvePath(argv0));
 }
 
@@ -117,10 +118,11 @@ int main(int argc, char *argv[]) {
 
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
+  term->setContext(context);
   if (envPtr)
-    term->initialize(std::string(envPtr),context);
+    term->setPath(std::string(envPtr));
   else 
-    term->initialize(std::string(""),context);
+    term->setPath(std::string(""));
   WalkTree *twalk = new WalkTree(context,term);
   term->SetEvalEngine(twalk);
   term->Initialize();
@@ -128,7 +130,10 @@ int main(int argc, char *argv[]) {
   term->outputMessage(__DATE__);
   term->outputMessage("\n");
   term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
-  twalk->evalCLI();
+  while (twalk->getState() != FM_STATE_QUIT) {
+    twalk->resetState();
+    twalk->evalCLI();
+  }
   term->RestoreOriginalMode();
   return 0;
 }

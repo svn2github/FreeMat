@@ -66,6 +66,10 @@ namespace FreeMat {
     state = FM_STATE_OK;
   }
 
+  State WalkTree::getState() {
+    return state;
+  }
+
   ArrayVector WalkTree::rowDefinition(ASTPtr t) throw(Exception) {
     if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!\n");
     ASTPtr s = t->down;
@@ -358,19 +362,20 @@ namespace FreeMat {
 	}
       } else {
 	// Set up the value of the "end" token
-	if (dim == NULL)
-	  endVal = -1;
-	else if (root->right == NULL) 
-	  endVal = dim->getElementCount();
-	else
-	  endVal = dim->getDimensionLength(index);
-	// Push it onto the stack
-	endValStack[endValStackLength] = endVal;
-	endValStackLength++;
+	if (dim != NULL) {
+	  if (root->right == NULL) 
+	    endVal = dim->getElementCount();
+	  else
+	    endVal = dim->getDimensionLength(index);
+	  // Push it onto the stack
+	  endValStack[endValStackLength] = endVal;
+	  endValStackLength++;
+	}
 	// Call the expression
 	m.push_back(expression(t));
-	// Pop the endVal stack
-	endValStackLength--;
+	if (dim != NULL)
+	  // Pop the endVal stack
+	  endValStackLength--;
       }
       index++;
       t = t->right;
@@ -1126,7 +1131,9 @@ namespace FreeMat {
 	break;
       case FM_KEYBOARD:
 	depth++;
+	io->pushMessageContext();
 	evalCLI();
+	io->popMessageContext();
 	if (state != FM_STATE_QUIT &&
 	    state != FM_STATE_RETALL)
 	  state = FM_STATE_OK;
@@ -1154,7 +1161,8 @@ namespace FreeMat {
 	  b = Array::emptyConstructor();
 	else 
 	  b = m[0];
-	if (printIt && (fdef->outputArgCount() != 0)) {
+	if (printIt && (fdef->outputArgCount() != 0)
+	    && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	  io->outputMessage("ans = \n");
 	  b.printMe(printLimit,io->getTerminalWidth());
 	} 
@@ -1165,7 +1173,7 @@ namespace FreeMat {
 	  b = Array::emptyConstructor();
 	else {
 	  b = m[0];
-	  if (printIt) {
+	  if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	    io->outputMessage("ans = \n");
 	    for (int j=0;j<m.size();j++) {
 	      char buffer[1000];
@@ -1179,7 +1187,7 @@ namespace FreeMat {
 	}
       } else {
 	b = expression(t);
-	if (printIt) {
+	if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	  io->outputMessage("ans = \n");
 	  b.printMe(printLimit,io->getTerminalWidth());
 	} 
@@ -1982,6 +1990,7 @@ namespace FreeMat {
 	int i;
 
     funcDef->updateCode();
+    io->pushMessageContext();
     if (funcDef->scriptFlag) {
       if (t->down != NULL)
 	throw Exception(std::string("Cannot use arguments in a call to a script."));
@@ -2146,6 +2155,7 @@ namespace FreeMat {
 	}
       }
     }
+    io->popMessageContext();
     return n;
   }
 
@@ -2457,15 +2467,8 @@ namespace FreeMat {
 	    if (depth > 0) 
 	      return true;
 	  }
-	  if (state == FM_STATE_QUIT)
+	  if (state == FM_STATE_QUIT || state == FM_STATE_RETALL)
 	    return true;
-	  if (state == FM_STATE_RETALL) {
-	    if (depth > 0)
-	      return true;
-	    else {
-	      state = FM_STATE_OK;
-	    }
-	  }
 	} catch(Exception &e) {
 	  e.printMe(io);
 	}
@@ -2506,35 +2509,40 @@ namespace FreeMat {
 	continue;
       // scan the line and tokenize it
       setLexBuffer(line);
-      if (lexCheckForMoreInput(0)) {
-	lastCount = getContinuationCount();
-	// Need multiple lines..  This code is _really_ bad - I need
-	// a better interface...
-	strcpy(dataline,line);
-	bool enoughInput = false;
-	// Loop until we have enough input
-	while (!enoughInput) {
-	  // Get more text
-	  line = io->getLine("");
-	  // User pressed ctrl-D (or equivalent) - stop looking for
-	  // input
-	  if (!line) 
-	    enoughInput = true;
-	  else {
-	    // User didn't press ctrl-D - 
-	    // tack the new text onto the dataline
-	    strcat(dataline,line);
-	    setLexBuffer(dataline);
-	    // Update the check
-	    enoughInput = !lexCheckForMoreInput(lastCount);
-	    lastCount = getContinuationCount();
-	    //	    strcat(dataline,line);
-	    if (enoughInput) strcat(dataline,"\n");
+      try {
+	if (lexCheckForMoreInput(0)) {
+	  lastCount = getContinuationCount();
+	  // Need multiple lines..  This code is _really_ bad - I need
+	  // a better interface...
+	  strcpy(dataline,line);
+	  bool enoughInput = false;
+	  // Loop until we have enough input
+	  while (!enoughInput) {
+	    // Get more text
+	    line = io->getLine("");
+	    // User pressed ctrl-D (or equivalent) - stop looking for
+	    // input
+	    if (!line) 
+	      enoughInput = true;
+	    else {
+	      // User didn't press ctrl-D - 
+	      // tack the new text onto the dataline
+	      strcat(dataline,line);
+	      setLexBuffer(dataline);
+	      // Update the check
+	      enoughInput = !lexCheckForMoreInput(lastCount);
+	      lastCount = getContinuationCount();
+	      //	    strcat(dataline,line);
+	      if (enoughInput) strcat(dataline,"\n");
+	    }
 	  }
+	  line = dataline;
 	}
-	line = dataline;
+      } catch (Exception &e) {
+	e.printMe(io);
+	line = NULL;
       }
-      if (evaluateString(line)) return;
+      if (line && evaluateString(line)) return;
     }
   }
 }

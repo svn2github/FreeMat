@@ -22,6 +22,7 @@
 #define __Interface_hpp__
 
 #include <string>
+#include <vector>
 namespace FreeMat {
   class Context;
 
@@ -30,10 +31,17 @@ namespace FreeMat {
     Interface() {};
     virtual ~Interface() {};
     /**
-     *  Set the search path for the interface and also
-     *  set the context to be handled by this interface
+     *  Set the context to be handled by this interface
      */
-    virtual void initialize(std::string path, Context *ctxt) = 0;
+    virtual void setContext(Context *ctxt) = 0;
+    /**
+     *  Get the current path set for the interface.
+     */
+    virtual std::string getPath() = 0;
+    /**
+     *  Set the path for the interface.
+     */
+    virtual void setPath(std::string) = 0;
     /**
      *  Force a rescan of the current path to look for 
      *  new function files.
@@ -66,6 +74,18 @@ namespace FreeMat {
      * following string.
      */
     virtual void setMessageContext(const char* msg) = 0;
+    /**
+     * Push the current message context onto the stack.
+     */
+    virtual void pushMessageContext() = 0;
+    /**
+     * Pop the current message context from the stack.
+     */ 
+    virtual void popMessageContext() = 0;
+    /**
+     * Get a copy of the message context stack.
+     */
+    virtual std::vector<std::string> getMessageContextStack() = 0;
   };
 }
 

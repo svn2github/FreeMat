@@ -127,6 +127,10 @@ namespace FreeMat {
   ArrayVector SetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector GetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
   void InitializeFileSubsystem();
+  ArrayVector GetPathFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector SetPathFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector WhichFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector WhereFunction(int, const ArrayVector& arg, WalkTree* eval);
 }
 
 #endif

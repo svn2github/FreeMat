@@ -120,6 +120,14 @@ namespace FreeMat {
       yMin = (yMax+yMin)/2 - 1e-5;
       yMax = (yMax+yMin)/2 + 1e-5;
     }
+    if (ptCount == 1) {
+      xMin = xMin - 1;
+      xMax = xMax + 1;
+    }
+    if (fabs(xMax - xMin) < 1e-5) {
+      xMin = (xMax+xMin)/2 - 1e-5;
+      xMax = (xMax+xMin)/2 + 1e-5;
+    }
       
   }
 

@@ -202,4 +202,61 @@ namespace FreeMat {
     retval.push_back(Array::stringConstructor(buffer));
     return retval;
   }
+
+  //!
+  //@Module GETPATH Get Current Search Path
+  //@@Usage
+  //Returns a @|string| containing the current FreeMat search path.  The general syntax for
+  //its use is
+  //@[
+  //  y = getpath
+  //@]
+  //The delimiter between the paths depends on the system being used.  For Win32, the
+  //delimiter is a semicolon.  For all other systems, the delimiter is a colon.
+  //
+  //@Example
+  //The @|getpath| function is straightforward.
+  //@<
+  //getpath
+  //@>
+  //!
+  ArrayVector GetPathFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    Interface *io;
+    io = eval->getInterface();
+    ArrayVector retval;
+    retval.push_back(Array::stringConstructor(io->getPath()));
+    return retval;
+  }
+
+  //!
+  //@Module SETPATH Set Current Search Path
+  //@@Usage
+  //Changes the current FreeMat search path.  The general syntax for
+  //its use is
+  //@[
+  //  setpath(y)
+  //@]
+  //where @|y| is a @|string| containing a delimited list of directories
+  //to be searched for M files and libraries.  
+  //The delimiter between the paths depends on the system being used.  For Win32, the
+  //delimiter is a semicolon.  For all other systems, the delimiter is a colon.
+  //
+  //@Example
+  //The @|setpath| function is straightforward.
+  //@<
+  //getpath
+  //setpath('/usr/local/FreeMat/MFiles:/localhome/basu/MFiles')
+  //getpath
+  //@>
+  //!
+  ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() != 1)
+      throw Exception("setpath function requires exactly one string argument");
+    char *cdir = arg[0].getContentsAsCString();
+    Interface *io;
+    io = eval->getInterface();
+    io->setPath(cdir);
+    return ArrayVector();
+  }
+
 }

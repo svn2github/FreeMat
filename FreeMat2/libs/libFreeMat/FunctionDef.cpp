@@ -181,7 +181,9 @@ namespace FreeMat {
 				   Array::int32Constructor(nargout));
     try {
       walker->block(code);
-      walker->resetState();
+      State state(walker->getState());
+      if ((state != FM_STATE_RETALL) && (state != FM_STATE_QUIT))
+	walker->resetState(); 
       warningIssued = false;
       if (outputArgCount() != -1) {
 	outputs = ArrayVector(returnVals.size());

@@ -273,7 +273,11 @@ namespace FreeMat {
     //    fflush(stdout);
   }
 
-  void Terminal::initialize(std::string path, Context *contxt) {
+  void Terminal::setContext(Context *contxt) {
+    context = contxt;
+  }
+
+  void Terminal::setPath(std::string path) {
     char* pathdata = strdup(path.c_str());
     // Search through the path
     char *saveptr = (char*) malloc(sizeof(char)*1024);
@@ -284,8 +288,12 @@ namespace FreeMat {
 	dirTab.push_back(std::string(token));
       token = strtok_r(NULL,":",&saveptr);
     }
-    context = contxt;
+    m_path = path;
     rescanPath();
+  }
+
+  std::string Terminal::getPath() {
+    return m_path;
   }
 
   void Terminal::rescanPath() {
@@ -398,6 +406,27 @@ namespace FreeMat {
       messageContext = strdup(msg);
     else
       messageContext = NULL;
+  }
+
+  void Terminal::pushMessageContext() {
+    if (messageContext != NULL)
+      messageStack.push_back(messageContext);
+    else
+      messageStack.push_back("??");
+  }
+
+  void Terminal::popMessageContext() {
+    messageStack.pop_back();
+  }
+
+  std::vector<std::string> Terminal::getMessageContextStack() {
+    // Add the current context to the stack
+    std::vector<std::string> ret;
+    if (messageContext != NULL)
+      ret.push_back(messageContext);
+    else
+      ret.push_back("??");
+    return messageStack;
   }
 
   void Terminal::SetEvalEngine(WalkTree* a_eval) {

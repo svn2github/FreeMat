@@ -88,3 +88,27 @@ Here is what is left...
 2. Continuation of lines
 3. Special calls
 
+How do special calls work?  We are looking for
+
+ident WS other,
+
+where <other> cannot be any token that would result in a (possible) valid
+expression.  These are the tokens that are ruled out
+
+other cannot be
+
+.*
++
+-
+/
+\
+./
+.\
+.^
+^
+>
+=
+<
+~
+.'
+

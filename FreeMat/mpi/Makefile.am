@@ -19,13 +19,28 @@ CXX=@MPICXX@
 CFLAGS=@CFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cflags`
 CXXFLAGS=@CXXFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cxxflags`  -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/extlibs/libtecla -I@top_srcdir@/libs/libGraphics  -I@top_srcdir@/extlibs/libffi-2.00-beta/include  -I@top_srcdir@/extlibs/volpack-1.0c2/src
 
-bin_PROGRAMS = FMKernelMPI
+bin_PROGRAMS = FMKernelMPI FreeMatMPI
 
 FMKernelMPI_SOURCES = KernelMainMPI.cpp \
 TeclaInterface.cpp \
-TeclaInterface.hpp
+TeclaInterface.hpp \
+MPIWrap.cpp \
+MPIWrap.hpp
+
+FreeMatMPI_SOURCES = AppNoGUI.cpp \
+AppNoGUI.hpp \
+TeclaInterface.cpp \
+TeclaInterface.hpp \
+CLIThread.cpp \
+CLIThread.hpp \
+MPIWrap.cpp \
+MPIWrap.hpp
 
 LIBS = `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @LIBS@ 
+
+FreeMatMPI_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libtecla/libtecla.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+
+FreeMatMPI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 
 FMKernelMPI_DEPENDENCIES =  @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a
 FMKernelMPI_LDADD =  @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a 

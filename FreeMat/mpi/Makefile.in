@@ -104,14 +104,30 @@ mpidir = @mpidir@
 CFLAGS = @CFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cflags`
 CXXFLAGS = @CXXFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cxxflags`  -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/extlibs/libtecla -I@top_srcdir@/libs/libGraphics  -I@top_srcdir@/extlibs/libffi-2.00-beta/include  -I@top_srcdir@/extlibs/volpack-1.0c2/src
 
-bin_PROGRAMS = FMKernelMPI
+bin_PROGRAMS = FMKernelMPI FreeMatMPI
 
 FMKernelMPI_SOURCES = KernelMainMPI.cpp \
 TeclaInterface.cpp \
-TeclaInterface.hpp
+TeclaInterface.hpp \
+MPIWrap.cpp \
+MPIWrap.hpp
+
+
+FreeMatMPI_SOURCES = AppNoGUI.cpp \
+AppNoGUI.hpp \
+TeclaInterface.cpp \
+TeclaInterface.hpp \
+CLIThread.cpp \
+CLIThread.hpp \
+MPIWrap.cpp \
+MPIWrap.hpp
 
 
 LIBS = `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @LIBS@ 
+
+FreeMatMPI_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libtecla/libtecla.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+
+FreeMatMPI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 
 FMKernelMPI_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a
 FMKernelMPI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a 
@@ -121,13 +137,17 @@ AUTOMAKE_OPTIONS = foreign
 subdir = mpi
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
-bin_PROGRAMS = FMKernelMPI$(EXEEXT)
+bin_PROGRAMS = FMKernelMPI$(EXEEXT) FreeMatMPI$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_FMKernelMPI_OBJECTS = KernelMainMPI.$(OBJEXT) \
-	TeclaInterface.$(OBJEXT)
+	TeclaInterface.$(OBJEXT) MPIWrap.$(OBJEXT)
 FMKernelMPI_OBJECTS = $(am_FMKernelMPI_OBJECTS)
 FMKernelMPI_LDFLAGS =
+am_FreeMatMPI_OBJECTS = AppNoGUI.$(OBJEXT) TeclaInterface.$(OBJEXT) \
+	CLIThread.$(OBJEXT) MPIWrap.$(OBJEXT)
+FreeMatMPI_OBJECTS = $(am_FreeMatMPI_OBJECTS)
+FreeMatMPI_LDFLAGS =
 
 DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
@@ -135,7 +155,8 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/KernelMainMPI.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/AppNoGUI.Po ./$(DEPDIR)/CLIThread.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/KernelMainMPI.Po ./$(DEPDIR)/MPIWrap.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/TeclaInterface.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -146,9 +167,9 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(FMKernelMPI_SOURCES)
+DIST_SOURCES = $(FMKernelMPI_SOURCES) $(FreeMatMPI_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(FMKernelMPI_SOURCES)
+SOURCES = $(FMKernelMPI_SOURCES) $(FreeMatMPI_SOURCES)
 
 all: all-am
 
@@ -186,6 +207,9 @@ clean-binPROGRAMS:
 FMKernelMPI$(EXEEXT): $(FMKernelMPI_OBJECTS) $(FMKernelMPI_DEPENDENCIES) 
 	@rm -f FMKernelMPI$(EXEEXT)
 	$(CXXLINK) $(FMKernelMPI_LDFLAGS) $(FMKernelMPI_OBJECTS) $(FMKernelMPI_LDADD) $(LIBS)
+FreeMatMPI$(EXEEXT): $(FreeMatMPI_OBJECTS) $(FreeMatMPI_DEPENDENCIES) 
+	@rm -f FreeMatMPI$(EXEEXT)
+	$(CXXLINK) $(FreeMatMPI_LDFLAGS) $(FreeMatMPI_OBJECTS) $(FreeMatMPI_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -193,7 +217,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AppNoGUI.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CLIThread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KernelMainMPI.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MPIWrap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TeclaInterface.Po@am__quote@
 
 distclean-depend:

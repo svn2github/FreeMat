@@ -20,76 +20,70 @@
 
 #include "WalkTree.hpp"
 #include "Context.hpp"
-#include "Scope.hpp"
-#include "ServerSocket.hpp"
-#include "Socket.hpp"
-#include "Serialize.hpp"
-#include "LoadCore.hpp"
+#include "Exception.hpp"
+#include "ParserInterface.hpp"
+#include "Math.hpp"
+#include "Malloc.hpp"
 #include "Module.hpp"
-#include "TeclaInterface.hpp"
+#include <stdio.h>
+#include <math.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include "LoadCore.hpp"
+#include "GraphicsCore.hpp"
+#include "GraphicsServer.hpp"
+#include "CLIThread.hpp"
+#include <locale.h>
 #include "Command.hpp"
+#include <iostream>
+#include "Interface.hpp"
+#include <signal.h>
+#include "VolView.hpp"
 #include "MPIWrap.hpp"
-#include <wx/string.h>
-#include <wx/utils.h>
-#include "mpi.h"
 
- 
-#ifdef F77_DUMMY_MAIN
-#  ifdef __cplusplus
-     extern "C"
-#  endif
-   int F77_DUMMY_MAIN() { return 1; }
-#endif
+#include "wx/dynlib.h"
 
 namespace FreeMat {
-  Context *context;
+  ::wxSemaphore cmd_semaphore;
+  Command *reply;
+  Context *context;  
   static WalkTree *twalk;
-}
+  static ::wxApp *g_serv;
+  char dummy[1000];
 
-using namespace FreeMat;
-
-namespace FreeMat {
-
-  Command *resp;
-
-  // These are surrogate functions that handle commands that would normally be handled 
-  // by the GraphicsServer.  I have tried to minimize the dependancy on these, but a
-  // few commands (notably the "systemfunction") still remain.
-  void SendGUICommand(Command *cp) {
-    switch(cp->cmdNum) {
-    CMD_SystemCapture:
-      {
-	wxString command(cp->data.getContentsAsCString());
-	wxArrayString output;
-	wxExecute(command,output);
-	Array *dp = new Array[output.GetCount()];
-	for (int k=0;k<output.GetCount();k++) {
-	  const char *wp = output[k].c_str();
-	  dp[k] = Array::stringConstructor(std::string(wp));
-	}
-	Dimensions dim(2);
-	dim[0] = output.GetCount();
-	dim[1] = 1;
-	Array res(Array::Array(FM_CELL_ARRAY,dim,dp));
-	Command *rp;
-	resp = new Command(CMD_SystemCaptureAcq,res);
-	delete cp;
-      }
-      break;
-    default:
-      std::cerr << "Panic - unrecognized GUI message " << cp->cmdNum << "\n";
-    }
+  void PostGUIReply(Command *a_reply) {
+    reply = a_reply;
+    cmd_semaphore.Post();
   }
-  
+
+  void SendGUICommand(Command *cmd) {
+    wxCommandEvent eventCustom(wxEVT_GUI_COMMAND);
+    Array a(cmd->data);
+    eventCustom.SetClientData(cmd);
+    wxPostEvent(g_serv,eventCustom);
+  }
+
   Command* GetGUIResponse() {
-    return resp;
+    // Wait for the semaphore to tick
+    cmd_semaphore.Wait();
+    return reply;
   }
-}
 
+  CLIThread::CLIThread(::wxApp* serv, Interface* a_io) : 
+    wxThread(wxTHREAD_JOINABLE) {
+    m_serv = serv;
+    g_serv = serv;
+    io = a_io;
+  }
 
-int main(int argc, char *argv[]) {
-  try {
-    MPI_Init(&argc, &argv);
+  CLIThread::~CLIThread() {
+  }
+
+  void CLIThread::OnExit() {
+  }
+
+  void* CLIThread::Entry() {
     context = new Context();
     BuiltInFunctionDef *f2def = new BuiltInFunctionDef;
     f2def->retCount = 0;
@@ -105,7 +99,7 @@ int main(int argc, char *argv[]) {
     sfdef->fptr = ImportFunction;
     context->insertFunctionGlobally(sfdef);
 
-    f2def = new BuiltInFunctionDef;
+        f2def = new BuiltInFunctionDef;
     f2def->retCount = 0;
     f2def->argCount = 4;
     f2def->name = "mpisend";
@@ -118,7 +112,7 @@ int main(int argc, char *argv[]) {
     f2def->name = "mpirecv";
     f2def->fptr = MPIRecv;
     context->insertFunctionGlobally(f2def);
-    
+
     f2def = new BuiltInFunctionDef;
     f2def->retCount = 1;
     f2def->argCount = 1;
@@ -142,54 +136,24 @@ int main(int argc, char *argv[]) {
     
     InitializeMPIWrap();
     LoadCoreFunctions(context);
+    LoadGraphicsCoreFunctions(context);
     const char *envPtr;
     envPtr = getenv("FREEMAT_PATH");
-
-    Interface *io = new TeclaInterface;
     if (envPtr)
       io->initialize(std::string(envPtr),context);
     else
       io->initialize(std::string(""),context);
     twalk = new WalkTree(context,io);
-
-    bool keepRunning;
-    keepRunning = true;
-    while (keepRunning) {
-//       Array source(Array::int32Constructor(0));
-//       Array tag(Array::int32Constructor(0));
-//       Array comm(Array::int32Constructor(1));
-//       ArrayVector args;
-//       args.push_back(source);
-//       args.push_back(tag);
-//       args.push_back(comm);
-//       // Get an array...
-//       ArrayVector A(MPIRecv(1,args));
-//       Array retrievedVal(A[0]);
-//       // Send it back
-//       ArrayVector args2;
-//       args2.push_back(retrievedVal);
-//       args2.push_back(source);
-//       args2.push_back(Array::int32Constructor(1));
-//       args2.push_back(comm);
-//       MPISend(0,args2);
-//--> mpicommsize
-//ans =
-//  <int32>  - size: [1 1]
-//             4
-//--> mpi
-//mpicommrank  mpicommsize  mpieval      mpirecv      mpisend
-//--> mpieval('a = randn(32)',1:3,1)
-//--> mpieval('mpisend(a,0,32,1)',1:3,1)
-//--> a1 = mpirecv(1,32,1)
-//
-// //       std::cout << "Waiting for input...\n";
-      char cmdBuffer[4096];
-      MPI_Status status;
-      MPI_Recv(cmdBuffer,4096,MPI_CHAR,0,0,MPI_COMM_WORLD,&status);
-      std::cout << "Got command: " << cmdBuffer << "\n";
-      keepRunning = !(twalk->evaluateString(cmdBuffer));
+    io->outputMessage(" Freemat - build ");
+    io->outputMessage(__DATE__);
+    io->outputMessage("\n");
+    io->outputMessage(" Copyright (c) 2002,2003 by Samit Basu\n");
+    try{
+      twalk->evalCLI();
+    } catch (...) {
+      io->errorMessage(" Fatal error!  Unhandled exception...\n");
     }
-  } catch (Exception &e) {
+    SendGUICommand(new Command(CMD_Quit));
+    return NULL;
   }
-  MPI_Finalize();
 }

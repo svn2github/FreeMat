@@ -13,8 +13,13 @@ sub outputMFile {
     $line =~ s/\@\}/***/gi;
     $line =~ s/\@\|([^\|]*)\|/$1/gi;
     $line =~ s/\@figure\s*(.*)/<<Figure $1 omitted>>/g;
+    $line =~ s/\\begin\{itemize\}//g;
+    $line =~ s/\\end\{itemize\}//g;
+    $line =~ s/\\item/\n\*/g;
+    $line =~ s/\\\[/\n\$/g;
+    $line =~ s/\\\]/\$\n/g;
     foreach $resulttext (@$clickres) {
-	$line =~ s/\@<(.*?)\@>/\n$resulttext\n/sm;
+	$line =~ s/\@<(.*?)\@>/\n\$\n$resulttext\$\n/sm;
     }
     return $line;
 }

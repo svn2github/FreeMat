@@ -50,12 +50,15 @@ namespace FreeMat {
       throw Exception("eig function takes exactly one argument - the matrix to decompose");
     ArrayVector retval;
     stringVector dummy;
-    retval.resize(2);
     Array A(arg[0]);
     Array V, D;
     EigenDecompose(A,V,D);
-    retval[0] = D;
-    retval[1] = V;
+    if (nargout > 1) {
+      retval.push_back(D);
+      retval.push_back(V);
+    } else {
+      retval.push_back(D.getDiagonal(0));
+    }
     return retval;
   }
 

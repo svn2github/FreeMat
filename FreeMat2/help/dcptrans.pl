@@ -78,6 +78,9 @@ foreach $file (@ARGV) {
 	    if (!open(OUTPUT,">tmpFMinput")) {
 		die "Can't open tmpFMinput file...\n";
 	    }
+	    $dir = `pwd`;
+	    chop($dir);
+	    print OUTPUT "mkhsetpath('$dir/../../MFiles');\n";
 	    if ($count != 1) {
 		print OUTPUT "load env.dat\n";
 	    }
@@ -87,6 +90,7 @@ foreach $file (@ARGV) {
 	    $resulttext = `../../build/src/x11/FreeMat -e <tmpFMinput`;
 	    $resulttext =~ s/^ Free.*\n//g;
 	    $resulttext =~ s/^ Copy.*\n//g;
+	    $resulttext =~ s/(--> mkhsetpath*\n)//g;
 	    $resulttext =~ s/(--> save env.dat\s*\n)//g;
 	    $resulttext =~ s/(--> load env.dat\s*\n)//g;
 	    $resulttext =~ s/(--> quit\n)//g;

@@ -519,6 +519,7 @@ namespace FreeMat {
     ASTPtr root;
     int index, tmp;
     int endVal;
+    if (t == NULL) return m;
     pushID(t->context());
     root = t;
     index = 0;
@@ -1673,11 +1674,10 @@ namespace FreeMat {
     if (!context->lookupVariable(t->text,lhs))
       lhs = Array::emptyConstructor();
     ASTPtr s = t->down;
-    pushID(s->context());
     if (s == NULL) {
-      popID();
       return 1;
     }
+    pushID(s->context());
     while (s->right != NULL) {
       if (!lhs.isEmpty())
 	lhs = simpleSubindexExpression(lhs,s);

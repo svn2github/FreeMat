@@ -304,6 +304,7 @@ namespace FreeMat {
 	  throw Exception(std::string("Syntax error parsing file:") + fileName + ", expecting a script or function definition");
       } catch (Exception &e) {
 	if (fp) fclose(fp);
+	functionCompiled = false;
 	throw;
       }
     }

@@ -3146,7 +3146,7 @@ namespace FreeMat {
       throw Exception("unique function requires at least one argument");
     Array input(arg[0]);
     if (input.isEmpty()) {
-      if (nargout == 1)
+      if (nargout <= 1)
 	return singleArrayVector(Array::emptyConstructor());
       else {
 	ArrayVector retval;

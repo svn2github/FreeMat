@@ -60,6 +60,7 @@ class XWindow {
 };
 
 typedef void (*fdcallback) (void);
+void CloseXWindow(XWindow*);
 void RegisterSTDINCallback(fdcallback cb);
 void SetActiveDisplay(Display* d);
 void DoEvents();

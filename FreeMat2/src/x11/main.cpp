@@ -108,9 +108,38 @@ int main(int argc, char *argv[]) {
     term.initialize(std::string(""),context);
   WalkTree *twalk = new WalkTree(context,&term);
   term.SetEvalEngine(twalk);
-  term.outputMessage(" Freemat - build ");
-  term.outputMessage(__DATE__);
-  term.outputMessage("\n");
-  term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
-  twalk->evalCLI();
+  // Check for scripting mode
+  bool scriptMode = false;
+  int scriptSpec = 1;
+  while (!scriptMode && scriptSpec < argc) {
+    scriptMode = scriptMode | strcmp(argv[scriptSpec],"-e") == 0;
+    scriptSpec++;
+  }
+  if (scriptSpec >= argc) scriptMode = false;
+  if (!scriptMode) {
+    term.Initialize();
+    term.outputMessage(" Freemat - build ");
+    term.outputMessage(__DATE__);
+    term.outputMessage("\n");
+    term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+    twalk->evalCLI();
+    term.RestoreOriginalMode();
+  } else {
+    FILE *fp;
+    fp = fopen(argv[scriptSpec],"r");
+    if (!fp) {
+      fprintf(stderr,"Unable to open script file %s for reading\n",
+	      argv[scriptSpec]);
+      exit(1);
+    }
+    while (!feof(fp)) {
+      char buffer[4096];
+      fgets(buffer,sizeof(buffer),fp);
+      printf("--> %s",buffer);
+      fflush(stdout);
+      twalk->evaluateString(buffer);
+    }
+    fclose(fp);
+  }
+  return 0;
 }

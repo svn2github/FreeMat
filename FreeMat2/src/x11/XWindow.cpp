@@ -582,3 +582,7 @@ void Run() {
 void FlushWindowEvents() {
   Run();
 }
+
+void CloseXWindow(XWindow *p) {
+  delete p;
+}

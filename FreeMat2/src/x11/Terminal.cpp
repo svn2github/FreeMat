@@ -28,7 +28,6 @@ namespace FreeMat {
   // Set up the terminal in raw mode, and initialize the control
   // strings.
   Terminal::Terminal() {
-    Initialize();
   }
 
   void Terminal::Initialize() {
@@ -39,7 +38,6 @@ namespace FreeMat {
   }
 
   Terminal::~Terminal() {
-    RestoreOriginalMode();
   }
 
   void Terminal::SetRawMode() {

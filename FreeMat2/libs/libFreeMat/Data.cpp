@@ -20,11 +20,13 @@
 
 #include "Data.hpp"
 #include "Malloc.hpp"
+#include "Sparse.hpp"
 
 namespace FreeMat {
 
-  Data::Data(Class aClass, const Dimensions& dims, void *s, const stringVector& fields): 
+  Data::Data(Class aClass, const Dimensions& dims, void *s, const stringVector& fields, bool sparseflag): 
     cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass) {
+      sparse = sparseflag;
   } 
 
   Data::~Data() { 
@@ -36,18 +38,19 @@ namespace FreeMat {
     return this; 
   }
 
-  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, const stringVector& fields) {
+  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, const stringVector& fields, bool sparseflag) {
     if ((owners <= 1)) {
       freeDataBlock();
       cp = s;
       dataClass = aClass;
       dimensions = dims;
       fieldNames = fields;
+      sparse = sparseflag;
       owners = 1;
       return this;
     } else {
       owners--;
-      return new Data(aClass,dims,s,fields);
+      return new Data(aClass,dims,s,fields,sparseflag);
     }
   }
 
@@ -88,8 +91,14 @@ namespace FreeMat {
       if (Array::isDataClassReferenceType(dataClass)) {
 	Array* rp = (Array*) cp;
 	delete [] rp;
+      } else if (sparse) {
+	DeleteSparseMatrix(dataClass,dim[0],dim[1],cp);
       } else 
 	Free(cp);
     }
+  }
+  
+  bool Data::isSparse() {
+    return sparse;
   }
 }

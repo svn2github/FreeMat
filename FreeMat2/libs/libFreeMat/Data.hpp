@@ -42,6 +42,10 @@ namespace FreeMat {
      */
     Class dataClass;
     /**
+     * Sparsity flag - true if we are a sparse array.
+     */
+    bool sparse;
+    /**
      * Pointer to the data block.
      */
     void *cp;
@@ -125,6 +129,10 @@ namespace FreeMat {
      *     simply freed.
      */
     void freeDataBlock();
+    /**
+     * Check sparsity.
+     */
+    bool isSparse();
   };
 }
 

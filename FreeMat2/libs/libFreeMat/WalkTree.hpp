@@ -569,6 +569,12 @@ namespace FreeMat {
      */
     Context* getContext();
     /**
+     * "evaluate" the contents of a string
+     * and execute it, with a provisional clause that is executed when 
+     * an exception occurs.
+     */
+    bool evaluateStringTryCatch(char *try_line, char* catch_line, int popSpec);
+    /**
      * The workhorse routine - "evaluate" the contents of a string
      * and execute it.
      */

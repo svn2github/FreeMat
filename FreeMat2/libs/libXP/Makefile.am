@@ -5,7 +5,7 @@ if NEED_PNG
 endif
 
 if NEED_TIFF
-  TIFF_INCLUDES = -I@top_srcdir@/libs/libtiff361
+  TIFF_INCLUDES = -I@top_srcdir@/libs/libtiff361/libtiff
 endif
 
 if NEED_JPEG

@@ -43,8 +43,13 @@ string
 numeric
 ident
 
-Thus, if we we see an expression terminator followed by an expression 
+Thus, if we see an expression terminator followed by an expression 
 beginner, we can deduce that there must be a comma between the two 
 elements.  Of course, when the beginning term is a '+' we have to make
 the same special case checks that were done before...
+
+Now that the floating point number pseudo-parser is working, we turn to
+the next stage.  That is the problem of generating an actual token stream.
+We can either tokenize the entire stream in one pass, or we can generate tokens
+as needed.  The second approach is more efficient.
 

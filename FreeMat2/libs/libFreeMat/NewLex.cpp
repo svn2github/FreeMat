@@ -658,10 +658,12 @@ namespace FreeMat {
     long cpos = st.st_size;
     if (buffer)
       free(buffer);
-    buffer = (char*) calloc(cpos+1,sizeof(char));
+    // Allocate enough for the text, an extra newline, and null
+    buffer = (char*) calloc(cpos+2,sizeof(char));
     datap = buffer;
     int n = fread(buffer,sizeof(char),cpos,fp);
-    buffer[n]=0;
+    buffer[n]='\n';
+    buffer[n+1]=0;
   }
 
   bool lexCheckForMoreInput(int ccount) {

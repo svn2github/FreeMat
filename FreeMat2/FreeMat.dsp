@@ -95,6 +95,10 @@ SOURCE=.\src\win32\main.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\libs\libXP\System.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\src\win32\WinTerminal.cpp
 # End Source File
 # Begin Source File

@@ -52,7 +52,16 @@ namespace FreeMat {
     // Set up members of the STARTUPINFO structure. 
     ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
     siStartInfo.cb = sizeof(STARTUPINFO); 
-    if (!CreateProcess(NULL, "cmd.exe /c dir", NULL, NULL, TRUE, 
+	siStartInfo.dwFlags      = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+	siStartInfo.wShowWindow  = SW_HIDE;
+    siStartInfo.hStdOutput = hChildStdoutWr;
+    siStartInfo.hStdError = hChildStdoutWr;
+	char shellCmd[_MAX_PATH];
+	if( !GetEnvironmentVariable("ComSpec", shellCmd, _MAX_PATH) )
+		throw Exception("Unable to find command shell!");
+	char cmdbuf[4096];
+	sprintf(cmdbuf,"%s /a /c %s",shellCmd,cmd.c_str());
+    if (!CreateProcess(NULL, cmdbuf, NULL, NULL, TRUE, 
 		       0, NULL, NULL, &siStartInfo, &piProcInfo))
       throw Exception("Create process failed");
     // After process creation, restore the saved STDIN and STDOUT. 
@@ -68,16 +77,20 @@ namespace FreeMat {
     op = output;
     while (moreOutput) {
 		BOOL bres = ReadFile( hChildStdoutRdDup, op, BUFSIZE-1, &dwRead, NULL);
-      moreOutput = !(bres && (dwRead == 0));
+      moreOutput = bres || (dwRead != 0);
       if (moreOutput) {
 	readSoFar += dwRead;
 	output = (char*) realloc(output, readSoFar+BUFSIZE);
 	op = output + readSoFar;
       }
-      *op = '\0';
     } 
-    for (char *line=strtok(output,"\n");line;line=strtok(NULL,"\n"))
-      retval.push_back(std::string(line));
+      *op = '\0';
+	  for (char *line=strtok(output,"\n");line;line=strtok(NULL,"\n")) {
+		  std::string toadd(line);
+		  if (toadd[toadd.size()-1] == '\r')
+			  toadd.erase(toadd.end());
+          retval.push_back(toadd);
+	  }
     free(output);
     return retval;
   }

@@ -55,9 +55,21 @@ namespace FreeMat {
 
 #ifdef WIN32
     sprintf(buffer,"dir ");
+    bp = buffer + strlen(buffer);
+    for (i=0;i<arg.size();i++) {
+      char *target = arg[i].getContentsAsCString();
+      sprintf(bp,"%s ",target);
+      bp = buffer + strlen(buffer);
+    }
+    sysresult = DoSystemCallCaptured(buffer);
+	Interface *io;
+	io = eval->getInterface();
+	for (i=0;i<sysresult.size();i++) {
+		io->outputMessage(sysresult[i].c_str());
+		io->outputMessage("\n");
+	}
 #else
     sprintf(buffer,"ls ");
-#endif
     bp = buffer + strlen(buffer);
     for (i=0;i<arg.size();i++) {
       char *target = arg[i].getContentsAsCString();
@@ -94,6 +106,7 @@ namespace FreeMat {
 	io->outputMessage("\n");
     }
     io->outputMessage("\n");
+#endif
     return ArrayVector();
   }
 

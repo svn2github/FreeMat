@@ -112,6 +112,8 @@ namespace FreeMat {
       throw Exception("randbeta requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randbeta requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -165,6 +167,8 @@ namespace FreeMat {
       throw Exception("randi requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randbeta requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -236,6 +240,8 @@ namespace FreeMat {
     if (arg.size() != 1)
       throw Exception("randchi requires exactly one parameter (the vector of degrees of freedom)");
     Array arg1(arg[0]);
+    if (arg1.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     arg1.promoteType(FM_FLOAT);
     // Output dimension is the larger of the two
     Dimensions outDims(arg1.getDimensions());
@@ -281,6 +287,8 @@ namespace FreeMat {
     if (arg.size() != 1)
       throw Exception("randexp requires exactly one parameter (the vector of means)");
     Array arg1(arg[0]);
+    if (arg1.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     arg1.promoteType(FM_FLOAT);
     // Output dimension is the larger of the two
     Dimensions outDims(arg1.getDimensions());
@@ -327,6 +335,8 @@ namespace FreeMat {
     if (arg.size() != 1)
       throw Exception("randp requires exactly one parameter (the vector of means)");
     Array arg1(arg[0]);
+    if (arg1.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     arg1.promoteType(FM_FLOAT);
     // Output dimension is the larger of the two
     Dimensions outDims(arg1.getDimensions());
@@ -374,6 +384,8 @@ namespace FreeMat {
       throw Exception("randbin requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randbin requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -433,6 +445,8 @@ namespace FreeMat {
       throw Exception("randnbin requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randnbin requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -498,6 +512,8 @@ namespace FreeMat {
       throw Exception("randf requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randf requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -568,6 +584,8 @@ namespace FreeMat {
       throw Exception("randgamma requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randgamma requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -637,6 +655,8 @@ namespace FreeMat {
       throw Exception("randmulti requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     int N = arg1.getContentsAsIntegerScalar();
     if (N<0) 
       throw Exception("number of events to generate for randmulti must be a nonnegative integer");
@@ -688,6 +708,8 @@ namespace FreeMat {
       throw Exception("randnchi requires two parameter arguments");
     Array arg1(arg[0]);
     Array arg2(arg[1]);
+    if (arg1.isEmpty() || arg2.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randnchi requires either one of the two arguments to be a scalar, or both arguments to be the same size");
@@ -753,6 +775,8 @@ namespace FreeMat {
     Array arg1(arg[0]);
     Array arg2(arg[1]);
     Array arg3(arg[2]);
+    if (arg1.isEmpty() || arg2.isEmpty() || arg3.isEmpty()) 
+      return singleArrayVector(Array::emptyConstructor());
     int arg1_advance;
     int arg2_advance;
     int arg3_advance;

@@ -3076,7 +3076,7 @@ namespace FreeMat {
 	np[buf[i].n] = cnt;
 	i++;
       }
-      delete[] sp;
+      delete[] buf;
       ArrayVector retval;
       retval.push_back(Array(FM_CELL_ARRAY,Dimensions(cnt,1),op));
       retval.push_back(Array(FM_UINT32,Dimensions(cnt,1),mp));
@@ -3124,6 +3124,17 @@ namespace FreeMat {
     if (arg.size() < 1)
       throw Exception("unique function requires at least one argument");
     Array input(arg[0]);
+    if (input.isEmpty()) {
+      if (nargout == 1)
+	return singleArrayVector(Array::emptyConstructor());
+      else {
+	ArrayVector retval;
+	retval.push_back(Array::emptyConstructor());
+	retval.push_back(Array::emptyConstructor());
+	retval.push_back(Array::emptyConstructor());
+	return retval;
+      }
+    }
     bool rowmode = false;
     if (arg.size() == 2) {
       Array Sdir(arg[1]);

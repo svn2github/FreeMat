@@ -1,10 +1,13 @@
-EXTRA_DIST = adler32.c \
+EXTRA_DIST = libz.dsp
+
+noinst_LIBRARIES = libz.a
+
+libz_a_SOURCES = adler32.c \
 compress.c \
 crc32.c \
 crc32.h \
 deflate.c \
 deflate.h \
-example.c \
 gzio.c \
 infback.c \
 inffast.c \
@@ -14,8 +17,6 @@ inflate.c \
 inflate.h \
 inftrees.c \
 inftrees.h \
-libz.dsp \
-minigzip.c \
 trees.c \
 trees.h \
 uncompr.c \
@@ -25,3 +26,5 @@ zlib.3 \
 zlib.h \
 zutil.c \
 zutil.h 
+
+AUTOMAKE_OPTIONS	= foreign

@@ -1,11 +1,12 @@
-#ifndef __PostScriptGC_hpp__
-#define __PostScriptGC_hpp__
+#ifndef __FLTKGC_hpp__
+#define __FLTKGC_hpp__
 
 #include <string>
 #include "GraphicsContext.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <FL/fl_draw.H>
+#include <FL/Fl_Widget.H>
 
 class FLTKGC : public GraphicsContext {  
   int m_width;
@@ -34,5 +35,7 @@ public:
   virtual Rect2D PopClippingRegion();
   virtual void BlitImage(unsigned char *data, int width, int height, int x0, int y0);
 };
+
+void CaptureWidget(Fl_Widget *a, unsigned char *data, int width, int height);
 
 #endif

@@ -13,7 +13,7 @@ using namespace FreeMat;
 
 int GetAppPath(LPTSTR pstr,int length){
  int ret,i;
- ret=GetModuleHandle(NULL,pstr,length); // this gets the name of the running app
+ ret=GetModuleFileName(NULL,pstr,length); // this gets the name of the running app
  if(!ret)return 0;
  i=lstrlen(pstr)-1;
  for(;i>=0;i--){ // replace backslash with terminating null

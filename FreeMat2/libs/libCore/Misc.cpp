@@ -18,15 +18,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#include "Core.hpp"
-#include "Exception.hpp"
-#include "Array.hpp"
-#include "Math.hpp"
 #ifndef WIN32
 #include <unistd.h>
 #else
 #include <windows.h>
 #endif
+#include "Core.hpp"
+#include "Exception.hpp"
+#include "Array.hpp"
+#include "Math.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include "Malloc.hpp"

@@ -89,6 +89,10 @@ SOURCE=.\BitmapFont.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\BitmapPrinterGC.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Color.cpp
 # End Source File
 # Begin Source File

@@ -2,7 +2,6 @@
 #define __BitmapPrinterGC_hpp__
 
 #include "GraphicsContext.hpp"
-#include <X11/Xlib.h>
 #include <string>
 
 class BitmapPrinterGC : public GraphicsContext {

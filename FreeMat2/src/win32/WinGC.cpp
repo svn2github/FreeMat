@@ -186,3 +186,51 @@ Rect2D WinGC::PopClippingRegion() {
   return rect;
 }
 
+void WinGC::BlitImage(unsigned char *data, int width, int height, int x0, int y0) {
+  if (RC_PALETTE & GetDeviceCaps(hdc, RASTERCAPS)) {
+    BlitImagePseudoColor(data, width, height, x0, y0);
+    return;
+  }
+  static PBITMAPINFO		pBitmapInfo;
+  pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
+  pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  pBitmapInfo->bmiHeader.biWidth = width;
+  pBitmapInfo->bmiHeader.biHeight = height;
+  pBitmapInfo->bmiHeader.biPlanes = 1;
+  pBitmapInfo->bmiHeader.biBitCount = 24;
+  pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+  pBitmapInfo->bmiHeader.biSizeImage = 0;
+  pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+  pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+  pBitmapInfo->bmiHeader.biClrUsed = 0;
+  pBitmapInfo->bmiHeader.biClrImportant = 0;
+  static unsigned char* pixelVals;
+  int nwidth;
+  nwidth = (3*width+3)&~3; // Width of the scanline in bytes
+  pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
+  int i, j;
+  for (i=0;i<height;i++)
+    for (j=0;j<width;j++) {
+      pixelVals[nwidth*(height-1-i)+3*j] = (unsigned char) data[3*(i*width+j)+2];
+      pixelVals[nwidth*(height-1-i)+3*j+1] = (unsigned char) data[3*(i*width+j)+1];
+      pixelVals[nwidth*(height-1-i)+3*j+2] = (unsigned char) data[3*(i*width+j)];
+    }
+  HBITMAP hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
+  HDC hdcMem = CreateCompatibleDC(hdc);
+  SelectObject (hdcMem, hBitmap);
+  BitBlt(hdc, x0, y0, m_width, m_height, hdcMem, 0, 0, SRCCOPY);
+  DeleteDC(hdcMem);
+  DeleteObject(hBitmap);
+}
+
+bool WinGC::IsColormapActive() {
+	return FALSE;
+}
+
+HPALETTE WinGC::GetColormap() {
+	return m_colormap;
+}
+
+void WinGC::BlitImagePseudoColor(unsigned char *data, int width, int height, int x0, int y0) {
+}
+

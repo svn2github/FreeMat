@@ -35,6 +35,7 @@ XWindow::XWindow(WindowType wtype) {
   defcursor = (HCURSOR) LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
   clickcursor = (HCURSOR) LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
   m_bitmap_contents = NULL;
+  bitmap_active = false;
   palette_active = false;
   static TCHAR szFilter[] = "JPEG Files (*.JPG)\0*.jpg\0TIFF Files (*.TIF)\0*.tif\0PNG Files (*.PNG)\0*.png\0EPS Files (*.EPS)\0*.eps\0\0";
   ofn.lStructSize = sizeof(OPENFILENAME);
@@ -80,25 +81,20 @@ void XWindow::Close() {
 }
 
 void XWindow::OnExpose(int x, int y, int w, int h) {
-  if (m_type == BitmapWindow) {
-    HDC hdc = GetDC(m_window);
-    HDC hdcMem = CreateCompatibleDC(hdc);
-    SelectObject (hdcMem, hBitmap);
-    if (palette_active) {
-      SelectPalette(hdcMem, hPalette, FALSE);
-      RealizePalette(hdcMem);
-      SelectPalette(hdc, hPalette, FALSE);
-      RealizePalette(hdc);
-    }
-    BitBlt(hdc, x, y, w, h, hdcMem, x, y, SRCCOPY);
-    DeleteDC(hdcMem);
-    ReleaseDC(m_window, hdc);
-  } else {
-    HDC hdc = GetDC(m_window);
-    WinGC wgc(hdc, m_width, m_height);
-    OnDraw(wgc);
-    ReleaseDC(m_window, hdc);
+  if (!bitmap_active) return;
+  OnResize(m_width, m_height);
+  HDC hdc = GetDC(m_window);
+  HDC hdcMem = CreateCompatibleDC(hdc);
+  SelectObject (hdcMem, hBitmap);
+  if (palette_active) {
+    SelectPalette(hdcMem, hPalette, FALSE);
+    RealizePalette(hdcMem);
+    SelectPalette(hdc, hPalette, FALSE);
+    RealizePalette(hdc);
   }
+  BitBlt(hdc, x, y, w, h, hdcMem, x, y, SRCCOPY);
+  ReleaseDC(m_window, hdc);
+  DeleteDC(hdcMem);
 }
 
 void XWindow::Refresh() {
@@ -169,16 +165,27 @@ void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;
   m_width = w;
   m_height = h;
-  if (m_type == BitmapWindow) {
-	  // SKB - this is stupid... must be a cleaner way.
-    HDC hdc = GetDC(m_window);
-    WinGC wgc(hdc, m_width, m_height);
-       OnDraw(wgc);
- 	  ReleaseDC(m_window, hdc);
-  }
-  OnSize();
-  InvalidateRect(m_window,NULL,TRUE);
-  UpdateWindow(m_window);
+  HDC hdc = GetDC(m_window);
+  HDC hdcMem = CreateCompatibleDC(hdc);
+  if (bitmap_active)
+    DeleteObject(hBitmap);
+  hBitmap = CreateCompatibleBitmap(hdc, m_width, m_height);
+  SelectObject(hdcMem, hBitmap);
+  HBRUSH redbrush;
+  RECT rect;
+  rect.bottom = 150;
+  rect.top = 10;
+  rect.left = 10;
+  rect.right = 150;
+  redbrush = (HBRUSH) GetStockObject(GRAY_BRUSH);
+  FillRect(hdcMem,&rect,redbrush);
+//  WinGC wgc(hdcMem, m_width, m_height);
+//  OnDraw(wgc);
+//  OnSize();
+//  InvalidateRect(m_window,NULL,TRUE);
+//  UpdateWindow(m_window);
+  bitmap_active = true;
+//  ReleaseDC(m_window, hdc);
 }
 
 void XWindow::SetTitle(std::string title) {
@@ -186,6 +193,7 @@ void XWindow::SetTitle(std::string title) {
 }
 
 void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
+#if 0
   HDC hdc;
   hdc = GetDC(m_window);
   int pal_size;
@@ -251,9 +259,11 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
 	  (unsigned char*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
   ReleaseDC(m_window, hdc);
   m_bitmap_contents = data;
+#endif
 }
 
 void XWindow::SetImage(unsigned char *data, int width, int height) {
+#if 0
   HDC hdc;
   hdc = GetDC(m_window);
   if (RC_PALETTE & GetDeviceCaps(hdc, RASTERCAPS)) {
@@ -287,6 +297,7 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
   hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
   ReleaseDC(m_window, hdc);
   m_bitmap_contents = data;
+#endif
 }
 
 void XWindow::GetClick(int &x, int &y) {
@@ -361,17 +372,10 @@ void XWindow::Copy() {
   
   // Create the metafile device context. 
   HDC hdcMeta = CreateEnhMetaFile(hdcRef, NULL, &rect, NULL); 
-  if (m_type == VectorWindow) {
-    WinGC wgc(hdcMeta, m_width, m_height);
-    OnDraw(wgc);
-  } else {
-    HDC hdcMem = CreateCompatibleDC(hdcRef);
-    SelectObject (hdcMem, hBitmap);
-    BitBlt(hdcMeta, 0, 0, m_width, m_height, hdcMem, 0, 0, SRCCOPY);
-    DeleteDC(hdcMem);
-  }
+  WinGC wgc(hdcMeta, m_width, m_height);
+  OnDraw(wgc);
   HENHMETAFILE hMeta = CloseEnhMetaFile(hdcMeta);
-// Release the reference device context. 
+  // Release the reference device context. 
   ReleaseDC(m_window, hdcRef); 
   OpenClipboard(m_window);
   EmptyClipboard();
@@ -398,6 +402,7 @@ void XWindow::Save() {
 }
 
 void XWindow::PrintMe(std::string filename) {
+#if 0
   if (m_type == BitmapWindow && m_bitmap_contents == NULL)
     throw FreeMat::Exception("Cannot print empty image window!\n");
   // Logic to detect print mode..
@@ -468,6 +473,7 @@ void XWindow::PrintMe(std::string filename) {
     }
   } else
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
+#endif
 }
 
 void CloseXWindow(XWindow* ptr) {

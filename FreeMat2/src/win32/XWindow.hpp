@@ -48,7 +48,7 @@ class XWindow {
  private:
   WindowType m_type;
   HWND m_window;
-  HANDLE hBitmap;
+  HBITMAP hBitmap;
   int m_width;
   int m_height;
   int m_state;
@@ -60,6 +60,7 @@ class XWindow {
   HPALETTE hPalette;
   bool palette_active;
   OPENFILENAME ofn;
+  bool bitmap_active;
 };
 
 void CloseXWindow(XWindow*);

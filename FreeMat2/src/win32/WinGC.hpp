@@ -23,7 +23,11 @@ public:
   virtual void DrawLines(std::vector<Point2D> pts);
   virtual void PushClippingRegion(Rect2D rect);
   virtual Rect2D PopClippingRegion();
-private:
+  virtual void BlitImage(unsigned char *data, int width, int height, int x0, int y0);
+  virtual bool IsColormapActive();
+  virtual HPALETTE GetColormap();
+	private:	
+  virtual void BlitImagePseudoColor(unsigned char *data, int width, int height, int x0, int y0);
   HDC hdc;
   int m_width;
   int m_height;
@@ -36,6 +40,8 @@ private:
   HRGN clipwin;
   Color bgcol, fgcol;
   LineStyleType m_style;
+  bool colormapActive;
+  HPALETTE m_colormap;
 };
 
 #endif

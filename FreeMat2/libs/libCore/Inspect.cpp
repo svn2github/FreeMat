@@ -100,14 +100,14 @@ namespace FreeMat {
 	  else {
 	    if (verbatimMode) {
 	      helplines.push_back(buffer);
-	      workingline.clear();
+	      workingline.erase();
 	    } else {
 	      //is this line empty? if so, push
 	      //workingline to helplines and clear it.
 	      if (strlen(buffer)<2) {
 		helplines.push_back(workingline);
 		helplines.push_back("\n");
-		workingline.clear();
+		workingline.erase();
 	      } else {
 		buffer[strlen(buffer)-1] = 0;
 		workingline = workingline + " " + buffer;

@@ -354,7 +354,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1,1000);
   //plot(t,csc(2*pi*t))
-  //axis([-1,1,-10,10])
+  //axis([-1,1,-10,10]);
   //mprintplot('cscplot');
   //@>
   //@figure cscplot
@@ -454,7 +454,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1,1000);
   //plot(t,sec(2*pi*t))
-  //axis([-1,1,-10,10])
+  //axis([-1,1,-10,10]);
   //mprintplot('secplot');
   //@>
   //@figure secplot

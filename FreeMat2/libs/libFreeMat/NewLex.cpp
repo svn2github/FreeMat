@@ -398,11 +398,11 @@ int lexNumber() {
       (datap[cp] == 'F')) {
     cp++;
     vtype = 1;
-  } else if (!intonly) {
-    vtype = 2;
   } else if ((datap[cp] == 'd') ||
 	     (datap[cp] == 'D')) {
     cp++;
+    vtype = 2;
+  } else if (!intonly) {
     vtype = 2;
   } else 
     vtype = 3;

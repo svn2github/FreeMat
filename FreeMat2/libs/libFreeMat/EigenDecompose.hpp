@@ -35,6 +35,10 @@ namespace FreeMat {
 			   bool eigenvectors, bool balance);
   void floatEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
 				    bool eigenvectors);
+  void floatGenEigenDecompose(const int n, float *v, float *d, float *a,
+			      float *b, bool eigenvectors);
+  void floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+				       float *a, float *b, bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, complex valued
    * matrix of size $$n \times n$$.  The $$n \times n$$ matrix of
@@ -44,8 +48,13 @@ namespace FreeMat {
    */
   void complexEigenDecompose(const int n, float *v, float *d, float *a,
 			     bool eigenvectors, bool balance);
-  void complexEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
-				      bool eigenvectors);
+  void complexEigenDecomposeSymmetric(const int n, float *v, float *d, 
+				      float *a, bool eigenvectors);
+  void complexGenEigenDecompose(const int n, float *v, float *d, float *a,
+			      float *b, bool eigenvectors);
+  void complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+					 float *a, float *b, 
+					 bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, double valued
    * matrix of size $$n \times n$$.  The $$n \times n$$ matrix of
@@ -56,8 +65,13 @@ namespace FreeMat {
    */
   void doubleEigenDecompose(const int n, double *v, double *d, double *a,
 			    bool eigenvectors, bool balance);
-  void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, double *a,
-				     bool eigenvectors);
+  void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, 
+				     double *a, bool eigenvectors);
+  void doubleGenEigenDecompose(const int n, double *v, double *d, double *a,
+			      double *b, bool eigenvectors);
+  void doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+				       double *a, double *b, 
+					bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, dcomplex valued
    * matrix of size $$n \times n$$.  The $$n \times n$$ matrix of
@@ -67,8 +81,13 @@ namespace FreeMat {
    */
   void dcomplexEigenDecompose(const int n, double *v, double *d, double *a,
 			   bool eigenvectors, bool balance);
-  void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d, double *a,
-				       bool eigenvectors);
+  void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d, 
+				       double *a, bool eigenvectors);
+  void dcomplexGenEigenDecompose(const int n, double *v, double *d, double *a,
+				 double *b, bool eigenvectors);
+  void dcomplexGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+					  double *a, double *b, 
+					  bool eigenvectors);
 }
 
 #endif

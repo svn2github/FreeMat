@@ -430,12 +430,17 @@ complex16/zgesvx.f \
 complex16/zgetf2.f \
 complex16/zgetrf.f \
 complex16/zgetrs.f \
+complex16/zggbak.f \
+complex16/zggbal.f \
+complex16/zggev.f \
+complex16/zgghrd.f \
 complex16/zheev.f \
 complex16/zhegs2.f \
 complex16/zhegst.f \
 complex16/zhegv.f \
 complex16/zhetd2.f \
 complex16/zhetrd.f \
+complex16/zhgeqz.f \
 complex16/zhseqr.f \
 complex16/zlabrd.f \
 complex16/zlacgv.f \
@@ -476,6 +481,7 @@ complex16/zpotf2.f \
 complex16/zpotrf.f \
 complex16/zrot.f \
 complex16/zsteqr.f \
+complex16/ztgevc.f \
 complex16/ztrevc.f \
 complex16/ztrexc.f \
 complex16/ztrsna.f \
@@ -517,12 +523,17 @@ complex/cgesvx.f \
 complex/cgetf2.f \
 complex/cgetrf.f \
 complex/cgetrs.f \
+complex/cggbak.f \
+complex/cggbal.f \
+complex/cggev.f \
+complex/cgghrd.f \
 complex/cheev.f \
 complex/chegs2.f \
 complex/chegst.f \
 complex/chegv.f \
 complex/chetd2.f \
 complex/chetrd.f \
+complex/chgeqz.f \
 complex/chseqr.f \
 complex/clabrd.f \
 complex/clacgv.f \
@@ -564,6 +575,7 @@ complex/cpotrf.f \
 complex/crot.f \
 complex/csrscl.f \
 complex/csteqr.f \
+complex/ctgevc.f \
 complex/ctrevc.f \
 complex/ctrexc.f \
 complex/ctrsna.f \
@@ -835,11 +847,14 @@ single/strevc.f \
 single/strexc.f \
 single/strsna.f \
 single/stzrzf.f \
+util/dlamch.f \
 util/icmax1.f \
 util/ieeeck.f \
 util/ilaenv.f \
 util/izmax1.f \
-util/lsame.f 
+util/lsame.f \
+util/slamch.f \
+util/xerbla.f 
 
 
 AUTOMAKE_OPTIONS 	= foreign

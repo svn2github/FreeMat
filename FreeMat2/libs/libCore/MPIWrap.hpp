@@ -13,6 +13,7 @@ namespace FreeMat {
   ArrayVector MPIBcast(int nargout, const ArrayVector& args);
   ArrayVector MPIBarrier(int nargout, const ArrayVector& args);
   ArrayVector MPIReduce(int nargout, const ArrayVector& args);
+  ArrayVector MPIAllReduce(int nargout, const ArrayVector& args);
   ArrayVector MPIInitialized(int nargout, const ArrayVector& args);
   ArrayVector MPIInit(int nargout, const ArrayVector& args);
   void LoadMPIFunctions(Context*ctxt);

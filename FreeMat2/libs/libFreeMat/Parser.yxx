@@ -270,8 +270,7 @@ argument:
 	b[0] = '&';
 	strcpy(b+1,$2->text);
 	$$->text = b;
-  } 
-  error {yyxpt("either an identifier or an ampersand '&' (indicating pass by reference) followed by an identifier in argument list");}
+  } |
   ;
   
 

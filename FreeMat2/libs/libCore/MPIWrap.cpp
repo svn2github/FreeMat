@@ -464,7 +464,7 @@ v   *     Part 2 - dimension data
   //!
   ArrayVector MPIBarrier(int nargout, const ArrayVector& args) {
     int comhandle;
-    if (args.size() == 1) {
+    if (args.size() > 0) {
       Array tmp(args[0]);
       comhandle = tmp.getContentsAsIntegerScalar();
     } else {
@@ -681,6 +681,92 @@ v   *     Part 2 - dimension data
     retval.push_back(Array::int32Constructor(size));
     return retval;
   }
+
+  /*
+   * syntax: x = mpiallreduce(y,operation,root,comm)
+   */
+  //!
+  //@Module MPIALLREDUCE MPI All Reduce Operation
+  //@@Usage
+  //This function implements the all-reduce operation using MPI.
+  //The general syntax for its use is
+  //@[
+  //   x = mpiallreduce(y,operation,comm)
+  //@]
+    ArrayVector MPIAllReduce(int nargout, const ArrayVector& args) {
+    int comhandle;
+    if (args.size() < 3)
+      comhandle = 1;
+    else 
+      comhandle = ArrayToInt(args[2]);
+    MPI_Comm comm(comms.lookupHandle(comhandle));
+    if (args.size() < 2)
+      throw Exception("mpiallreduce requires an array, an operation");
+    char *op;
+    Array oper(args[1]);
+    op = oper.getContentsAsCString();
+    MPI_Op mpiop;
+    switch (*op) {
+    case '+':
+      mpiop = MPI_SUM;
+      break;
+    case '*':
+      mpiop = MPI_PROD;
+      break;
+    case '<':
+      mpiop = MPI_MIN;
+      break;
+    case '>':
+      mpiop = MPI_MAX;
+      break;
+    default:
+      throw Exception(std::string("unrecognized mpiop type:") + op + ": supported types are '+','*','>' and '<'");
+    }
+    Array source(args[0]);
+    Array dest(source);
+    Class dataClass(source.getDataClass());
+    switch (dataClass) {
+    case FM_LOGICAL:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED_CHAR,mpiop,comm);
+      break;
+    case FM_UINT8:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED_CHAR,mpiop,comm);
+      break;
+    case FM_INT8:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_CHAR,mpiop,comm);
+      break;
+    case FM_UINT16:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED_SHORT,mpiop,comm);
+      break;
+    case FM_INT16:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_SHORT,mpiop,comm);
+      break;
+    case FM_UINT32:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED,mpiop,comm);
+      break;
+    case FM_INT32:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_INT,mpiop,comm);
+      break;
+    case FM_FLOAT:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_FLOAT,mpiop,comm);
+      break;
+    case FM_DOUBLE:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_DOUBLE,mpiop,comm);
+      break;
+    case FM_COMPLEX:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),2*source.getLength(),MPI_FLOAT,mpiop,comm);
+      break;
+    case FM_DCOMPLEX:
+      MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),2*source.getLength(),MPI_DOUBLE,mpiop,comm);
+      break;
+    default:
+      throw Exception("unsupported array type in argument to allreduce - must be a numerical type");
+    }
+    ArrayVector retval;
+    retval.push_back(dest);
+    return retval;
+  }
+
 
   /*
    * syntax: x = mpireduce(y,operation,root,comm)
@@ -1030,6 +1116,11 @@ v   *     Part 2 - dimension data
     args.push_back("root");
     args.push_back("comm");
     context->addFunction("mpireduce",MPIReduce,4,1,args);
+    args.clear();
+    args.push_back("y");
+    args.push_back("operation");
+    args.push_back("root");
+    context->addFunction("mpiallreduce",MPIAllReduce,3,1,args);
     args.clear();
     context->addFunction("mpiinitialized",MPIInitialized,0,1,args);
     context->addFunction("mpiinit",MPIInit,0,0,args);

@@ -53,7 +53,9 @@ XPLabel.cpp \
 XPVSlider.hpp \
 XPVSlider.cpp \
 FLTKGC.hpp \
-FLTKGC.cpp
+FLTKGC.cpp \
+PrintableWidget.hpp \
+PrintableWidget.cpp
 
 AUTOMAKE_OPTIONS 	= foreign
 

@@ -214,3 +214,29 @@ Rect2D PostScriptGC::PopClippingRegion() {
   return ret;
 }
 
+void PostScriptGC::BlitImage(unsigned char *data, int width, int height, int x0, int y0) {
+  int linelen;
+  int outcount;
+  int remaining;
+  int n;
+  fprintf(fp,"/picstr %d string def\n",3*width);
+  fprintf(fp,"gsave\n");
+  fprintf(fp,"%d %d translate\n",x0,y0);
+  fprintf(fp,"%d %d scale\n",width,height);
+  fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
+  fprintf(fp,"{currentfile picstr readhexstring pop} \n");
+  fprintf(fp,"false 3 colorimage\n");
+  outcount = 0;
+  remaining = width*height;
+  while (remaining>0) {
+    linelen = 10;
+    if (linelen>remaining)
+      linelen = remaining;
+    remaining -= linelen;
+    for (n=outcount;n<outcount+linelen;n++) 
+      fprintf(fp,"%02x%02x%02x",data[3*n],data[3*n+1],data[3*n+2]);
+    outcount += linelen;
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"grestore\n");  
+}

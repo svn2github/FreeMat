@@ -1,5 +1,6 @@
 #include "FLTKGC.hpp"
 #include "FL/x.H"
+#include "FL/Fl.H"
 
 
 FLTKGC::FLTKGC(int width, int height) {
@@ -23,7 +24,41 @@ Point2D FLTKGC::GetTextExtent(std::string label) {
 
 void FLTKGC::DrawTextString(std::string label, Point2D pos, 
 			    OrientationType orient) {
-  fl_draw(label.c_str(),pos.x,pos.y);
+  if (orient == ORIENT_0) 
+    fl_draw(label.c_str(),pos.x,pos.y);
+  else if (orient == ORIENT_90) {
+    int w, h;
+    unsigned char *data;
+    fl_measure(label.c_str(),w,h);
+    Fl_Offscreen id;
+    id = fl_create_offscreen(w,h);
+    fl_begin_offscreen((Fl_Offscreen) id);
+    fl_color(m_bg.red,m_bg.green,m_bg.blue);;
+    fl_rectf(0,0,w,h);
+    fl_color(FL_BLACK);
+    fl_draw(label.c_str(),0,11);
+    data = new (unsigned char)[w*h*3];
+    fl_read_image(data,0,0,w,h);
+    fl_end_offscreen();
+    fl_delete_offscreen(id);
+    unsigned char *rotdata;
+    rotdata = new (unsigned char)[w*h*3];
+    // The (i,j)th pixel of the original bitmap
+    // is data[i*w+j]
+    // The (i,j)th pixel of the transposed bitmap
+    // is rotdata[i*h+j]
+    // rotdata[i,j] = data[j,i]
+    int i, j;
+    for (i=0;i<h;i++)
+      for (j=0;j<w;j++) {
+	rotdata[3*((w-1-j)*h+i)] = data[3*(i*w+j)];
+	rotdata[3*((w-1-j)*h+i)+1] = data[3*(i*w+j)+1];
+	rotdata[3*((w-1-j)*h+i)+2] = data[3*(i*w+j)+2];
+      }
+    fl_draw_image(rotdata,pos.x-h,pos.y-w,h,w);
+    delete rotdata;
+    delete data;
+  }
 }
 
 void FLTKGC::SetFont(int fontsize) {
@@ -116,61 +151,3 @@ void FLTKGC::BlitImage(unsigned char *data, int width,
   fl_draw_image(data,x0,y0,width,height);
 }
 
-void CaptureWidget(Fl_Widget *a, unsigned char *data, int width, int height) {
-#if defined(__APPLE__) || defined(WIN32)
-  void *id; 
-#else
-  unsigned id; 
-#endif // __APPLE__ || WIN32
-  id = fl_create_offscreen(width, height);
-  fl_begin_offscreen((Fl_Offscreen)id);
-  a->draw();
-  fl_end_offscreen();
-  // Ask the server to capture the contents of the pixmap into
-  // an XImage and send it back to us...
-  XImage *img = XGetImage(fl_display, id, 0, 0, width, height,
-			  ~0, ZPixmap);
-  // What we do now depends on the visual type.  For pseudocolor
-  // visuals, we retrieve the current colormap
-  if (fl_visual->c_class == PseudoColor) {
-    XColor *cvals = (XColor*) malloc(sizeof(XColor)*fl_visual->colormap_size);
-    for (int m=0;m<fl_visual->colormap_size;m++)
-      cvals[m].pixel = m;
-    XQueryColors(fl_display, DefaultColormap(fl_display, 0), cvals, 
-		 fl_visual->colormap_size);
-    // Then we directly convert the image data...	
-    for (int y=0;y<height;y++)
-      for (int x=0;x<width;x++) {
-	unsigned long pixel = XGetPixel(img, x, y);
-	data[3*(y*width+x)] = cvals[pixel].red >> 8;
-	data[3*(y*width+x)+1] = cvals[pixel].green >> 8;
-	data[3*(y*width+x)+2] = cvals[pixel].blue >> 8;
-      }
-    free(cvals);
-  } else {
-    // For TrueColor and DirectColor, we do the pixel conversion
-    // manually - we assume that there are no more than 8 bits
-    // per primary...
-    unsigned int red_mask, green_mask, blue_mask;
-    unsigned int red_shift, green_shift, blue_shift;
-    float red_scale, green_scale, blue_scale;
-    red_mask = fl_visual->red_mask;
-    green_mask = fl_visual->green_mask;
-    blue_mask = fl_visual->blue_mask;
-    red_shift = GetShiftFromMask(red_mask);
-    green_shift = GetShiftFromMask(green_mask);
-    blue_shift = GetShiftFromMask(blue_mask);
-    red_scale = 255.0/(red_mask >> red_shift);
-    green_scale = 255.0/(green_mask >> green_shift);
-    blue_scale = 255.0/(blue_mask >> blue_shift);
-    for (int y=0;y<height;y++)
-      for (int x=0;x<width;x++) {
-	unsigned long pixel = XGetPixel(img, x, y);
-	data[3*(y*width+x)] = red_scale*((pixel & red_mask) >> red_shift);
-	data[3*(y*width+x)+1] = green_scale*((pixel & green_mask) >> 
-					       green_shift);
-	data[3*(y*width+x)+2] = blue_scale*((pixel & blue_mask) >>
-					      blue_shift);
-      }
-  }
-}

@@ -39,7 +39,6 @@ class XGC : public GraphicsContext {
   virtual void BlitImage(unsigned char *data, int width, int height, int x0, int y0);
   virtual bool IsColormapActive();
   virtual Colormap GetColormap();
-  void foofoo();
  private:
   virtual void BlitImagePseudoColor(unsigned char *data, int width, int height, int x0, int y0);
 };

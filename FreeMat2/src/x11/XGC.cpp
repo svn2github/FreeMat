@@ -276,12 +276,9 @@ void XGC::BlitImagePseudoColor(unsigned char *data, int width, int height, int x
       XPutPixel(m_image,x,y,*source_data++);
   colormapActive = true;
   XPutImage(m_display, drawable, m_gc, m_image, 0, 0, 0, 0, m_width, m_height);
-  //  XDestroyImage(m_image);
+  XDestroyImage(m_image);
 }
 
-void XGC::foofoo() {
-  //  XPutImage(m_display, drawable, m_gc, m_image, 0, 0, 0, 0, m_width, m_height);
-}
 
 void XGC::BlitImage(unsigned char *data, int width, int height, int x0, int y0) {
   // Check for PseudoColor visual

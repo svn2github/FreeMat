@@ -1,5 +1,5 @@
 function mprintimage(namebase)
 epsname = sprintf('%s.eps',namebase);
-printimage(epsname);
+print(epsname);
 pngname = sprintf('%s.png',namebase);
-printimage(pngname);
+print(pngname);

@@ -268,22 +268,15 @@ namespace FreeMat {
   //!
   //@Module FIGURE Figure Window Select and Create Function
   //@@Usage
-  //Changes the active plot window to the specified handle (or plot number).  
-  //The general syntax for its use is 
+  //Changes the active figure window to the specified handle 
+  //(or figure number).  The general syntax for its use is 
   //@[
-  //  useplot(handle)
+  //  figure(handle)
   //@]
-  //where @|handle| is the handle to use.  If the plot window corresponding to
-  //@|x| does not already exist, a new window with this handle number is 
-  //created.
-  //@@Example
-  //In this example, we create two plot windows, and then use the @|useplot|
-  //command to activate the first window.
-  //@<
-  //newplot
-  //newplot
-  //useplot(1)
-  //@>  
+  //where @|handle| is the handle to use. If the figure window 
+  //corresponding to @|handle| does not already exist, a new 
+  //window with this handle number is created.  If it does exist
+  //then it is brought to the forefront and made active.
   //!  
   ArrayVector FigureFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() == 0) {
@@ -303,10 +296,14 @@ namespace FreeMat {
   //@Module COPY Copy Figure Window
   //@@Usage
   //Copies the currently active figure window to the clipboard on 
-  //Windows systems.  The syntax for its use is
+  //Windows systems.  The syntax for its use is:
   //@[
   //   copy
   //@]
+  //The resulting figure is copied as an Enhanced MetaFile (EMF)
+  //to the clipboard, and can then be pasted into any suitable
+  //application.
+  //!
   ArrayVector CopyFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
     f->Copy();

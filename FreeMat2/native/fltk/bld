@@ -1,1 +1,1 @@
-g++ -o twin twin.cpp -I/home/basu/fltk-1.1.5rc2 /home/basu/fltk-1.1.5rc2/lib/libfltk.a -L/usr/X11R6/lib -lX11
+g++ -o twin twin.cpp -g -I/home/basu/fltk-1.1.5rc2 /home/basu/fltk-1.1.5rc2/lib/libfltk.a -L/usr/X11R6/lib -lX11

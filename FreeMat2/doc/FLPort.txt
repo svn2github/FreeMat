@@ -28,3 +28,19 @@ What do I need to make this work? For the Non-GUI version, what I need is to wri
 application that starts from the command line, and that can open windows.  For the GUI version, 
 its more complicated...
 
+The methods that still need implementation in the GUI class are:
+
+
+OK - status update.  These are the features that require porting to FLTK before I can release it.
+
+1.  Help for Mac - done
+2.  Point function - do	ne
+3.  Ctrl+C + Ctrl+V support - don't need.
+4.  Save support - done
+5.  Interrupt support (Ctrl+break)? - done
+6.  Help for X11? - done
+7.  GUI for X11 - done
+8.  Font selection
+9.  \r handling
+10. Close main window ends program.
+

@@ -177,3 +177,47 @@ It also means no linking in libraries...  Whew - a few less libraries would make
 What about images?  This is always the sticky point, right (under X)?
 
 If I can images to work reasonably well with X, I'll be done...
+
+08-28-2004
+
+I need to refactor the graphics subsystem to make it extendable.  The classes I need are:
+
+1. XWindow
+2. GraphicsContext
+3. Bitmap
+
+
+OK - the XWindow class needs only minimal modifications, right?  I can get rid of the distinction between vector and bitmap windows, which leaves me with a pretty solid base class.  Can we shoe-horn both the plot and image classes into a single figure window?  If I want to put a widget-based system together later, I'll need to seperate a plot from the window that contains it.  Instead, a plot should be an object that can draw onto a figure window.  I guess I'm suggesting something like:
+
+Renderer
+  |
+  |---> Plot2D
+  |
+  |---> ScalarImage
+  |
+  |---> ColorImage
+  |
+  |---> GUI
+  | 
+  \---> Movie,
+
+Etc.  The main figure window then doesn't care what renderer it carries.
+
+8-30-04
+
+For 3D plots, can I reuse the code to draw/manipulate axes in 2D?  
+
+Maroon 5 - BEP
+Nickelback
+Live
+Audioslave (Exclusive)
+Edie Brickell
+
+
+What still needs to be done:
+1. Menu on the main window
+2. Font selection
+3. Copy/paste/etc
+4. Bundle in libFLTK
+
+

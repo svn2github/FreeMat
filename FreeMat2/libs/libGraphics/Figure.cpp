@@ -220,6 +220,11 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  // how does the button work?  we can just add a button to the
+  // current figure.  something like:
+  // handle = button(box,label,callback,data)
+  // where callback is the function to execute, and data
+  // contains any data needed by the callback.
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
     f->begin();

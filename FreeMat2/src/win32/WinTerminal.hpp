@@ -21,7 +21,6 @@ namespace FreeMat {
     WalkTree *eval;
     std::vector<std::string> dirTab;
     Context *context;
-    char *messageContext;
     std::vector<std::string> messageStack;
     std::vector<std::string> flist;
     std::list<std::string> enteredLines;

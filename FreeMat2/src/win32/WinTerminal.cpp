@@ -5,6 +5,7 @@
 #include "resource.h"
 #include "htmlhelp.h"
 #include "LoadCore.hpp"
+#include "File.hpp"
 
 #include <direct.h>
 #define getcwd _getcwd
@@ -138,7 +139,6 @@ namespace FreeMat {
     UpdateLineCount();
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
-    messageContext = NULL;
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.hwndOwner = hwnd;
     ofn.hInstance = NULL;

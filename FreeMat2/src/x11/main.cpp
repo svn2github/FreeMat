@@ -192,11 +192,12 @@ int main(int argc, char *argv[]) {
     term = new DumbTerminal;
   }
 
-  signal_suspend_default = signal(SIGTSTP,signal_suspend);
-  signal_resume_default = signal(SIGCONT,signal_resume);
-  signal(SIGWINCH, signal_resize);
-
-  Fl::add_fd(STDIN_FILENO,FL_READ,stdincb);
+  if (!guimode) {
+    signal_suspend_default = signal(SIGTSTP,signal_suspend);
+    signal_resume_default = signal(SIGCONT,signal_resume);
+    signal(SIGWINCH, signal_resize);
+    Fl::add_fd(STDIN_FILENO,FL_READ,stdincb);
+  }
   Context *context = new Context;
   LoadModuleFunctions(context);
   LoadCoreFunctions(context);
@@ -232,11 +233,17 @@ int main(int argc, char *argv[]) {
       char buffer[1024];
       if (funcMode) 
 	sprintf(buffer,"%s\n",argv[funcMode+1]);
-      else
-	sprintf(buffer,"%s\n",bundlefunc);
+      else {
+	sprintf(buffer,"%s",bundlefunc);
+	for (int i=1;i<argc;i++) {
+	  strcat(buffer," ");
+	  strcat(buffer,argv[i]);
+	}
+	strcat(buffer,"\n");
+      }
       ParserState parserState = parseString(buffer);
       if (parserState != ScriptBlock) {
-	printf("Error: syntax error on argument to -f\r\n");
+	printf("Error: syntax error in command line arguments to FreeMat\r\n");
 	term->RestoreOriginalMode();
 	return 1;
       }
@@ -267,10 +274,11 @@ int main(int argc, char *argv[]) {
     win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,
 				 helppath.c_str());
     win->term()->setContext(context);
-    Pixmap p, mask;
-    XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display),
-			    freemat, &p, &mask, NULL);
-    win->icon((char*) p)
+//     Pixmap p, mask;
+//     XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display),
+// 			    freemat, &p, &mask, NULL);
+//     win->icon((char*) p)
+    win->show();
     if (envPtr)
       win->term()->setPath(std::string(envPtr));
     else 

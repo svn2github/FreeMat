@@ -2,6 +2,7 @@
 #include <FL/x.H>
 #include <unistd.h>
 #include <stdio.h>
+#include "Class.hpp"
 #include "Module.hpp"
 #include "LoadCore.hpp"
 #include "LoadFN.hpp"
@@ -52,6 +53,7 @@ int main(int argc, char *argv[]) {
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
 
   LoadModuleFunctions(context);
+  LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  

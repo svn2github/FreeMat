@@ -35,7 +35,11 @@ static Fl_File_Chooser* fc = NULL;
 #endif
 
 //The scrollback buffer length - later to be put in the prefs file
+#ifdef __APPLE__
+#define SCROLLBACK 500
+#else
 #define SCROLLBACK 5000
+#endif
 // \r handling
 
 void FLTKTerminalWidget::blinkCB(void* data) {
@@ -65,9 +69,10 @@ FLTKTerminalWidget::FLTKTerminalWidget(int x, int y, int w, int h, const char *l
   linecount = 0;
   m_width = 80;
   m_height = 25;
-  Fl::add_timeout(1, FLTKTerminalWidget::blinkCB, this);
+  //  Fl::add_timeout(1, FLTKTerminalWidget::blinkCB, this);
   blinkon = true;
   blinkactive = false;
+  crflag = false;
 }
 
 #define LEFT_MARGIN 3
@@ -133,15 +138,18 @@ void FLTKTerminalWidget::rescanPath() {
 }
 
 char* FLTKTerminalWidget::getLine(const char*prompt) {
-	if (enteredLines.empty()) {
-  m_prompt = prompt;
-  promptlen = strlen(prompt);
-  buffer()->append(prompt);
-  insert_position(buffer()->length());
-  history_ptr = -1;
-  while(enteredLines.empty())
-    Fl::wait(0);
-	}
+  if (enteredLines.empty()) {
+    m_prompt = prompt;
+    promptlen = strlen(prompt);
+    int line, col;
+    position_to_linecol(buffer()->length(),&line,&col);
+    if (col != 0) buffer()->append("\n");
+    buffer()->append(prompt);
+    insert_position(buffer()->length());
+    history_ptr = -1;
+    while(enteredLines.empty())
+      Fl::wait(0);
+  }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();
   char *cp = strdup(theline.c_str());
@@ -211,17 +219,83 @@ void FLTKTerminalWidget::docopy() {
 #endif
 }
 
+// The output logic works like this...  We start copying
+// text to the temporary buffer.  If we encounter a 
+// bare new line or run out of characters, we write the
+// temporary buffer to the output.  If we encounter a
+// \r, we don't output it, and set the crflag.  If
+// So the logic is:
+//
+//   crflag = true
+//      character == '\n'? clear crflag
+//      character == '\r'? crflag = true
+//      character == other: delete current line, crflag = false
+//   crflag = false
+//      character == '\n'? flush buffer
+//      character == '\r'? flush buffer, crflag = true
+//      character == other: add char to buffer, continue
 void FLTKTerminalWidget::outputText(const char *txt) {
+  char *buf;
   bool linecount_changed;
-  
+  buf = (char*) malloc(strlen(txt)+1);
+  memset(buf,0,strlen(txt)+1);
   linecount_changed = false;
   const char *cp = txt;
-  while (*cp)
+  char *dp = buf;
+  while (*cp) {
+    if (crflag) {
+      if (*cp == '\n') {
+	buffer()->append("\n");
+	crflag = false;
+	linecount++;
+	linecount_changed = true;
+      } else if (*cp == '\r')
+	crflag = true;
+      else {
+	crflag = false;
+	buffer()->replace(buffer()->line_start(buffer()->length()),
+			  buffer()->line_end(buffer()->length()),"");
+	memset(buf,0,strlen(txt)+1);
+	dp = buf;
+	*dp++ = *cp;
+      }
+    } else {
+      if (*cp == '\n') {
+	*dp = '\n';
+	buffer()->append(buf);
+	memset(buf,0,strlen(txt)+1);
+	dp = buf;
+	linecount++;
+	linecount_changed = true;
+      } else if (*cp == '\r') {
+	buffer()->append(buf);
+	memset(buf,0,strlen(txt)+1);
+	dp = buf;
+	crflag = true;
+      } else {
+	*dp++ = *cp;
+      }
+    }
+    cp++;
+  }
+  buffer()->append(buf);
+#if 0
+	*dp = '\n';
+	buffer()->append(buf);	
+      }
+    } else {
+    }
+    if (*cp == '\r') {
+      crflag = true;
+    } else {
+      *dp++ = *cp++;
+    }
     if (*cp++ == '\n') {
       linecount++;
       linecount_changed = true;
     }
   buffer()->append(txt);
+#endif
   //  insert_position(buffer()->length());
   if (linecount_changed) 
     adjustScrollPosition();

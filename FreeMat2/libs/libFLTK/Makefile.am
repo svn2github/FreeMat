@@ -304,6 +304,9 @@ src/fl_call_main.c \
 src/scandir.c \
 src/scandir_win32.c \
 src/vsnprintf.c \
+src/fl_set_gray.cxx \
+src/cmap.cxx \
+src/fl_draw_image_win32.cxx \
 vcnet/config.h \
 libfltk.vcproj
 

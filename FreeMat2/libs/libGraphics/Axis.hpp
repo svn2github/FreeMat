@@ -26,11 +26,6 @@
 #include <string>
 
 namespace FreeMat {
-  typedef enum {
-    Axis_X,
-    Axis_Y
-  } AxisType;
-
   /** An axis class
    * This class stores information about an axis in a plot.  An axis
    * is characterized by the following information:
@@ -43,10 +38,6 @@ namespace FreeMat {
   class Axis
   {
   private:
-    /**
-     * The type of the axis (either X or Y).
-     */
-    AxisType axisType;
     /**
      * The min and max values for the data represented with this axis.
      */
@@ -96,6 +87,14 @@ namespace FreeMat {
      * from its upper left corner.
      */
     int xOffset, yOffset;
+    /**
+     * The directional cosine and sine of the axis
+     */
+    float delX, delY;
+    /**
+     * The tick directional cosine and sine
+     */
+    float ticDX, ticDY;
     /**
      * The length of the axis box.
      */
@@ -163,7 +162,7 @@ namespace FreeMat {
      * Construct an axis object that covers the given range of values,
      * with the specified logarithmic flag and axis type.
      */
-    Axis(double minVal, double maxVal, bool logarithmic, AxisType);
+    Axis(double minVal, double maxVal, bool logarithmic);
     /**
      * Update our estimate of maxLabelExtent and the title dimensions
      * using the given device context.
@@ -179,7 +178,9 @@ namespace FreeMat {
      * with the given length (a_length) and the given grid length
      * (a_grid_length).
      */
-    void Place(int a_xOffset, int a_yOffset, int a_length, int a_grid_length);
+    void Place(int a_xOffset, int a_yOffset, int a_length,
+	       float a_delX, float a_delY, float a_ticDX, 
+	       float a_ticDY);
     /**
      * Draw the axis to the given device context.
      */

@@ -28,6 +28,8 @@
 #endif
 
 #include "wx/caret.h"
+#include <vector>
+#include <string>
 
 class App;
 class wxCLI : public wxScrolledWindow
@@ -54,8 +56,8 @@ public:
   
   // caret movement
   void Backspace();
-  void Home() { m_xCaret = 0; }
-  void End() { m_xCaret = strlen(m_text+m_yCaret*m_xChars); }
+  void Home() { m_xCaret = promptLength; typeAheadPtr = 0;}
+  void End() { m_xCaret = strlen(m_text+m_yCaret*m_xChars); typeAheadPtr = typeAheadTail;}
   void FirstLine() { m_yCaret = 0; }
   void LastLine() { m_yCaret = m_nLines - 1; }
   void PrevChar() { m_xCaret--;}
@@ -70,6 +72,7 @@ public:
   void PutMessage(const char *);
   virtual void OnDraw(wxDC& dc);
   void SetFont(wxFont aFont);
+  void SetCommandText(std::string txt);
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
@@ -109,6 +112,8 @@ private:
   int typeAheadTail;
   int typeAheadPtr;
   int promptLength;
+  std::vector<std::string> history;
+  int historyPointer;
   
   DECLARE_DYNAMIC_CLASS(wxCLI)
   DECLARE_EVENT_TABLE()

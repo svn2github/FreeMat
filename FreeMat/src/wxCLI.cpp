@@ -68,6 +68,7 @@ END_EVENT_TABLE()
   linepos = 0;
   typeAheadTail = 0;
   typeAheadPtr = 0;
+  historyPointer = -1;
 }
 
 void wxCLI::warningMessage(const char * msg) {
@@ -86,6 +87,17 @@ void wxCLI::outputMessage(const char * msg) {
 
 wxScrollWinEvent gScroll(wxEVT_SCROLLWIN_BOTTOM);
 
+void wxCLI::SetCommandText(std::string txt) {
+  strcpy(typeAhead,txt.c_str());
+  typeAheadTail = strlen(typeAhead);
+  typeAheadPtr = typeAheadTail;
+  for (int i=0;i<strlen(typeAhead);i++)
+    CharAt(i+promptLength,m_yCaret) = txt[i];
+  CharAt(strlen(typeAhead)+promptLength,m_yCaret) = 0;
+  m_xCaret = promptLength+strlen(typeAhead);
+  Refresh();
+}
+
 // Add a message to the output
 void wxCLI::PutMessage(const char * msg) {
   const char *cp;
@@ -97,9 +109,15 @@ void wxCLI::PutMessage(const char * msg) {
     if (*cp == '\n') {
       m_tail++;
       linepos = 0;
-    }
-    else
+    } else if (*cp == '\r') {
+      linepos = 0;
+    } else {
       CharAt(linepos++,m_tail) = wxChar(*cp);
+      if (linepos == m_xChars) {
+	linepos = 0;
+	m_tail++;
+      }
+    }
     cp++;
   }
   SetLineCount(m_tail+1);
@@ -179,9 +197,9 @@ void wxCLI::OnSize( wxSizeEvent &event ) {
 
   int m_xChars_new = (event.GetSize().x - 2*m_xMargin) / m_widthChar;
   int m_yChars_new = (event.GetSize().y - 2*m_yMargin) / m_heightChar;
-  if ( !m_xChars_new )
+  if ( m_xChars_new<=0 )
     m_xChars_new = 1;
-  if ( !m_yChars_new )
+  if ( m_yChars_new<=0 )
     m_yChars_new = 1;
 
   DoResizeBuffer(m_xChars_new,m_yChars_new);
@@ -232,6 +250,10 @@ void wxCLI::OnDraw(wxDC& dc) {
 }
 
 void wxCLI::NewLine() {
+  typeAhead[typeAheadTail] = 0;
+  if ((history.size() == 0) || (history[history.size()-1] != std::string(typeAhead)))
+    history.push_back(typeAhead);
+  historyPointer = history.size();
   typeAhead[typeAheadTail++] = '\n';
   typeAhead[typeAheadTail] = 0;
   linepos = 0;
@@ -323,10 +345,16 @@ void wxCLI::OnChar( wxKeyEvent &event ) {
       }
       break;
     case WXK_UP:
-      PrevLine();
+      if ((historyPointer > 0) && (historyPointer <= history.size())) {
+	historyPointer--;
+	SetCommandText(history[historyPointer]);
+      }
       break;
     case WXK_DOWN:
-      NextLine();
+      if ((historyPointer >= 0) && (historyPointer < history.size()-1)) {
+	historyPointer++;
+	SetCommandText(history[historyPointer]);
+      }
       break;
     case WXK_HOME:
       Home();

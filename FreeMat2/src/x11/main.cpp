@@ -177,7 +177,7 @@ void LoadBundleFunctions(char* argv0, WalkTree *twalk) {
       s->checkSignature('p',1);
       MFunctionDef *adef = ThawMFunction(s);
       adef->pcodeFunction = true;
-      twalk->getContext()->insertFunctionGlobally(adef);
+      twalk->getContext()->insertFunctionGlobally(adef,false);
     }
     delete(f);
   } 
@@ -330,10 +330,8 @@ int main(int argc, char *argv[]) {
       term->outputMessage(" Freemat v");
       term->outputMessage(VERSION);
       term->outputMessage("\n");
-      term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+      term->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
       while (twalk->getState() != FM_STATE_QUIT) {
-	if (twalk->getState() == FM_STATE_RETALL) 
-	  term->clearMessageContextStack();
 	twalk->resetState();
 	twalk->evalCLI();
       }
@@ -393,10 +391,8 @@ int main(int argc, char *argv[]) {
     win->term()->outputMessage(" Freemat v");
     win->term()->outputMessage(VERSION);
     win->term()->outputMessage("\n");
-    win->term()->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+    win->term()->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
     while (twalk->getState() != FM_STATE_QUIT) {
-      if (twalk->getState() == FM_STATE_RETALL) 
-	win->term()->clearMessageContextStack();
       twalk->resetState();
       twalk->evalCLI();
     }

@@ -160,4 +160,5 @@ namespace FreeMat {
   void Scope::deleteVariable(std::string var) {
     symTab.deleteSymbol(var);
   }
+
 }

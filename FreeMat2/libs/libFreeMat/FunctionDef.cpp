@@ -127,7 +127,7 @@ namespace FreeMat {
 
     context = walker->getContext();
     context->pushScope(name);
-    walker->pushDebug(name);
+    walker->pushDebug(fileName+"("+name+")");
     // Push our local functions onto the function scope
     MFunctionDef *cp;
     cp = nextFunction;
@@ -381,19 +381,13 @@ namespace FreeMat {
 						   int nargout) {
     ArrayVector outputs;
     int i;
-    char buffer[1000];
-    sprintf(buffer,"built-in function %s",name.c_str());
-    walker->getInterface()->setMessageContext(buffer);
-    walker->getInterface()->pushMessageContext();
-    walker->pushDebug(name);
+    walker->pushDebug(name+"(built in)");
     try {
       outputs = fptr(nargout,inputs);
       walker->popDebug();
-      walker->getInterface()->popMessageContext();
       return outputs;
     } catch(Exception& e) {
       walker->popDebug();
-      walker->getInterface()->popMessageContext();
       throw;
     }
   }
@@ -407,19 +401,13 @@ namespace FreeMat {
   ArrayVector SpecialFunctionDef::evaluateFunction(WalkTree *walker, 
 						   ArrayVector& inputs, int nargout) {
     ArrayVector outputs;
-    char buffer[1000];
-    sprintf(buffer,"special function %s",name.c_str());
-    walker->getInterface()->setMessageContext(buffer);
-    walker->getInterface()->pushMessageContext();
-    walker->pushDebug(name);
+    walker->pushDebug(name+"(built in)");
     try {
       outputs = fptr(nargout,inputs,walker);
       walker->popDebug();
-      walker->getInterface()->popMessageContext();
       return outputs;
     } catch(Exception& e) {
       walker->popDebug();
-      walker->getInterface()->popMessageContext();
       throw;
     }
   }
@@ -509,11 +497,7 @@ namespace FreeMat {
   ArrayVector ImportedFunctionDef::evaluateFunction(WalkTree *walker,
 						    ArrayVector& inputs,
 						    int nargout) {
-    char buffer[1000];
-    sprintf(buffer,"imported function %s",name.c_str());
-    walker->getInterface()->setMessageContext(buffer);
-    walker->getInterface()->pushMessageContext();
-    walker->pushDebug(name);
+    walker->pushDebug(name+"(imported)");
     /**
      * To actually evaluate the function, we have to process each of
      * the arguments and get them into the right form.
@@ -547,7 +531,7 @@ namespace FreeMat {
       Context* context;
       context = walker->getContext();
       context->pushScope("temp");
-      walker->pushDebug("bounds check");
+      walker->pushDebug(name + "(bounds check)");
       try {
 	for (i=0;i<inputs.size();i++)
 	  context->insertVariableLocally(arguments[i],inputs[i]);
@@ -569,11 +553,9 @@ namespace FreeMat {
 	  }
 	}
       } catch (Exception& e) {
-	walker->getInterface()->popMessageContext();
 	context->popScope();
 	throw;
       }
-      walker->getInterface()->popMessageContext();
       context->popScope();
       walker->popDebug();
     }

@@ -47,8 +47,8 @@ namespace FreeMat {
   int endValStackLength;
   int endValStack[1000];
 
-#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right)); io->setMessageContext("built-in binary operator"); retval = func(a,b);}
-#define DoUnaryOp(func) {Array a(expression(t->down)); io->setMessageContext("built-in unary operator"); retval = func(a);}
+#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right));retval = func(a,b);}
+#define DoUnaryOp(func) {Array a(expression(t->down)); retval = func(a);}
 
   void sigInterrupt(int arg) {
     InterruptPending = true;
@@ -1382,9 +1382,7 @@ namespace FreeMat {
       case FM_KEYBOARD:
 	pushID(t->context());
 	depth++;
-	io->pushMessageContext();
 	evalCLI();
-	io->popMessageContext();
 	if (state != FM_STATE_QUIT &&
 	    state != FM_STATE_RETALL)
 	  state = FM_STATE_OK;
@@ -1487,9 +1485,7 @@ namespace FreeMat {
 	e.printMe(io);
 	stackTrace(true);
 	depth++;
-	io->pushMessageContext();
 	evalCLI();
-	io->popMessageContext();
 	depth--;
 	if (state != FM_STATE_QUIT &&
 	    state != FM_STATE_RETALL)
@@ -2330,8 +2326,6 @@ namespace FreeMat {
     pushID(t->context());
     funcDef->updateCode();
     
-    io->pushMessageContext();
-
     try {
       if (funcDef->scriptFlag) {
 	if (t->down != NULL)
@@ -2340,7 +2334,7 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
 	bool CLIFlagsave = InCLI;
 	InCLI = false;
-	pushDebug(funcDef->name);
+	pushDebug(((MFunctionDef*)funcDef)->fileName);
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
@@ -2512,11 +2506,9 @@ namespace FreeMat {
       // any elements received that we didn't ask for.
       while (n.size() > narg_out)
 	n.pop_back();
-      io->popMessageContext();
       popID();
       return n;
     } catch (Exception& e) {
-      io->popMessageContext();
       throw;
     }
     popID();
@@ -2891,7 +2883,6 @@ namespace FreeMat {
     ParserState parserState;
 
     InterruptPending = false;
-    int cdepth = io->getMessageContextStackDepth();
     try{
       parserState = parseString(line);
       switch (parserState) {
@@ -2899,7 +2890,6 @@ namespace FreeMat {
 	{
 	  tree = getParsedScriptBlock();
 	  //	printAST(tree);
-	  int depth = io->getMessageContextStackDepth();
 	  try {
 	    block(tree);
 	    if (state == FM_STATE_RETURN) {
@@ -2910,7 +2900,6 @@ namespace FreeMat {
 	      return true;
 	  } catch(Exception &e) {
 	    e.printMe(io);
-	    io->clearMessageContextStackToDepth(depth);
 	  }
 	}
 	break;
@@ -2920,7 +2909,6 @@ namespace FreeMat {
       }
     } catch(Exception &e) {
       e.printMe(io);
-      io->clearMessageContextStackToDepth(cdepth);
     }
     return false;
   }

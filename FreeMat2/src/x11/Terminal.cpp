@@ -300,18 +300,19 @@ namespace FreeMat {
 
   void Terminal::rescanPath() {
     int i;
+    context->flushTemporaryGlobalFunctions();
     for (i=0;i<dirTab.size();i++)
-      scanDirectory(dirTab[i]);
+      scanDirectory(dirTab[i],false);
     // Scan the current working directory.
     char cwd[1024];
     getcwd(cwd,1024);
-    scanDirectory(std::string(cwd));
+    scanDirectory(std::string(cwd),true);
   }
 
-  void Terminal::scanDirectory(std::string scdir) {
+  void Terminal::scanDirectory(std::string scdir, bool tempfunc) {
     // Open the directory
     DIR *dir;
-
+    printf("Scanning directory %s\r\n",scdir.c_str());
     dir = opendir(scdir.c_str());
     if (dir == NULL) return;
     // Scan through the directory..
@@ -326,13 +327,14 @@ namespace FreeMat {
 	continue;
       // Stat the file...
       fullname = std::string(scdir + std::string(DELIM) + fname);
-      procFile(fname,fullname);
+      procFile(fname,fullname,tempfunc);
     }
     closedir(dir);
   }
 
   void Terminal::procFile(char *fname, 
-			  std::string fullname) {
+			  std::string fullname,
+			  bool tempfunc) {
     struct stat filestat;
     char buffer[1024];
   
@@ -347,12 +349,20 @@ namespace FreeMat {
 	// Look for the function in the context - only insert it
 	// if it is not already defined.
 	FunctionDef *fdef;
-	if (!context->lookupFunctionGlobally(std::string(fname),fdef)) {
+	bool lookup;
+	lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
+	// If the function was not found, add it.  If it _was_ found,
+	// and is a script and has the same filename as ours, we
+	// do nothing
+	if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	    && ((MFunctionDef*)fdef)->fileName == fullname) {
+	  // Skipping this one
+	} else {
 	  MFunctionDef *adef;
 	  adef = new MFunctionDef();
 	  adef->name = std::string(fname);
 	  adef->fileName = fullname;
-	  context->insertFunctionGlobally(adef);
+	  context->insertFunctionGlobally(adef,tempfunc);
 	}
       } else if (fname[namelen-2] == '.' && 
 		 (fname[namelen-1] == 'p' ||
@@ -361,7 +371,15 @@ namespace FreeMat {
 	// Look for the function in the context - only insert it
 	// if it is not already defined.
 	FunctionDef *fdef;
-	if (!context->lookupFunctionGlobally(std::string(fname),fdef)) {
+	bool lookup;
+	lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
+	// If the function was not found, add it.  If it _was_ found,
+	// and is a script and has the same filename as ours, we
+	// do nothing
+	if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	    && ((MFunctionDef*)fdef)->fileName == fullname) {
+	  // Skipping this one
+	} else {
 	  MFunctionDef *adef;
 	  // Open the file
 	  File *f = new File(fullname.c_str(),"rb");
@@ -370,13 +388,13 @@ namespace FreeMat {
 	  s->checkSignature('p',1);
 	  adef = ThawMFunction(s);
 	  adef->pcodeFunction = true;
-	  context->insertFunctionGlobally(adef);
+	  context->insertFunctionGlobally(adef,tempfunc);
 	}
       }
     } else if (S_ISLNK(filestat.st_mode)) {
       int lncnt = readlink(fullname.c_str(),buffer,1024);
       buffer[lncnt] = 0;
-      procFile(fname, std::string(buffer));
+      procFile(fname, std::string(buffer),tempfunc);
     }
   }
 
@@ -408,13 +426,11 @@ namespace FreeMat {
   void Terminal::errorMessage(const char* msg) {
     std::string msg2(TranslateString(msg));
     OutputRawString("Error: " + msg2 + "\r\n");
-    OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
   }
 
   void Terminal::warningMessage(const char* msg) {
     std::string msg2(TranslateString(msg));
     OutputRawString("Warning: " + msg2 + "\r\n");
-    OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
   }
 
   void Terminal::SetEvalEngine(WalkTree* a_eval) {

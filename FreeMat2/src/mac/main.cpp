@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   win->term()->outputMessage(" Freemat v");
   win->term()->outputMessage(VERSION);
   win->term()->outputMessage("\n");
-  win->term()->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+  win->term()->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
   while (twalk->getState() != FM_STATE_QUIT) {
     if (twalk->getState() == FM_STATE_RETALL) 
       win->term()->clearMessageContextStack();

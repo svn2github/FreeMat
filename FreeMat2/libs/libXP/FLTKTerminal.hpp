@@ -67,8 +67,8 @@ public:
   int handleascii(int key);
   void adjustInsertPosition();
   void adjustScrollPosition();
-  void scanDirectory(std::string scdir);
-  void procFile(std::string fname, std::string fullname);
+  void scanDirectory(std::string scdir, bool);
+  void procFile(std::string fname, std::string fullname, bool);
   void resize(int X, int Y, int W, int H);
   void RegisterInterrupt();
   std::vector<std::string> GetCompletions(const char *line, int word_end, 

@@ -57,6 +57,10 @@ namespace FreeMat {
      * Pointer to the tail of the scope stack.
      */
     ScopeStack* tail;
+    /**
+     * List of functions that are "temporary" and should be flushed
+     */
+    stringVector tempFunctions;
   public:
     /**
      * Create a context and initialize it with a global scope and a 
@@ -116,7 +120,11 @@ namespace FreeMat {
      * Insert a function definition into the global scope (top of the
      * scope stack).
      */
-    void insertFunctionGlobally(FuncPtr);
+    void insertFunctionGlobally(FuncPtr, bool temporary);
+    /**
+     * Flush temporary function definitions from the global context
+     */
+    void flushTemporaryGlobalFunctions();
     /**
      * Add a built in function to the global scope with the given name.
      */

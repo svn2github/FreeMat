@@ -123,8 +123,18 @@ namespace FreeMat {
     tail->data->insertFunction(f);
   }
 
-  void Context::insertFunctionGlobally(FuncPtr f) {
+  void Context::insertFunctionGlobally(FuncPtr f, bool temporary) {
     head->data->insertFunction(f);
+    if (temporary)
+      tempFunctions.push_back(f->name);
+  }
+
+  void Context::flushTemporaryGlobalFunctions() {
+    for (int i=0;i<tempFunctions.size();i++) {
+      printf("flushing routine %s\r\n",tempFunctions[i].c_str());
+      head->data->deleteFunction(tempFunctions[i]);
+    }
+    tempFunctions.clear();
   }
 
   void Context::addSpecialFunction(char*name,

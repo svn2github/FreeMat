@@ -87,7 +87,7 @@ namespace FreeMat {
     fdef->argCount = nargin;
     fdef->name = strdup((const char*) funcName);
     fdef->fptr = (BuiltInFuncPtr) func;
-    eval->getContext()->insertFunctionGlobally(fdef);
+    eval->getContext()->insertFunctionGlobally(fdef,false);
     return ArrayVector();
   }
   
@@ -416,7 +416,7 @@ namespace FreeMat {
 							checks,
 							rettype);
     fptr->name = funcname;
-    eval->getContext()->insertFunctionGlobally(fptr);
+    eval->getContext()->insertFunctionGlobally(fptr,false);
     return ArrayVector();
   }
   
@@ -426,13 +426,13 @@ namespace FreeMat {
     sfdef->argCount = 5;
     sfdef->name = "loadlib";
     sfdef->fptr = LoadLibFunction;
-    context->insertFunctionGlobally(sfdef);
+    context->insertFunctionGlobally(sfdef,false);
     
     sfdef = new SpecialFunctionDef;
     sfdef->retCount = 0;
     sfdef->argCount = 5;
     sfdef->name = "import";
     sfdef->fptr = ImportFunction;
-    context->insertFunctionGlobally(sfdef);
+    context->insertFunctionGlobally(sfdef,false);
   }
 }

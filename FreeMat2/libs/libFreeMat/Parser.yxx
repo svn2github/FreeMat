@@ -143,6 +143,7 @@ functionDef:
      r->name = $3.v.p->text;
      r->arguments = $5.v.p->toStringList();
      r->code = $8.v.p;
+     r->fileName = parsing_filename;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -158,6 +159,7 @@ functionDef:
      r->name = $2.v.p->text;
      r->arguments = $4.v.p->toStringList();
      r->code = $7.v.p;
+     r->fileName = parsing_filename;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -173,6 +175,7 @@ functionDef:
      r->returnVals = $2.v.p->toStringList();
      r->name = $3.v.p->text;
      r->code = $5.v.p;
+     r->fileName = parsing_filename;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -187,6 +190,7 @@ functionDef:
      r = new MFunctionDef();
      r->name = $2.v.p->text;
      r->code = $4.v.p;
+     r->fileName = parsing_filename;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -202,6 +206,7 @@ functionDef:
      r->returnVals = $2.v.p->toStringList();
      r->name = $3.v.p->text;
      r->code = $7.v.p;
+     r->fileName = parsing_filename;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -216,6 +221,7 @@ functionDef:
      r = new MFunctionDef();
      r->name = $2.v.p->text;
      r->code = $6.v.p;
+     r->fileName = parsing_filename;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -306,13 +312,6 @@ statementType:
 	 | persistentStatement
 	 | specialSyntaxStatement
 	 | QUIT | RETALL 
-//  |
-//         error {
-//	  if (!$1.isToken && $1.v.p->tokenNumber == 6)
-//	    yyxpt("a valid statement - found an unmatched 'end'",$1);
-//	  else
-//	    yyxpt("recognizable statement type (assignment, expression, function call, etc...)",$1);
-//         }
          ;
 
 specialSyntaxStatement:

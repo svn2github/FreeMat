@@ -130,13 +130,14 @@ std::string FLTKTerminalWidget::getPath() {
 }
 
 void FLTKTerminalWidget::rescanPath() {
+  m_context->flushTemporaryGlobalFunctions();
   int i;
   for (i=0;i<dirTab.size();i++)
-    scanDirectory(dirTab[i]);
+    scanDirectory(dirTab[i],false);
   // Scan the current working directory.
   char cwd[1024];
   getcwd(cwd,1024);
-  scanDirectory(std::string(cwd));
+  scanDirectory(std::string(cwd),true);
 }
 
 char* FLTKTerminalWidget::getLine(const char*prompt) {
@@ -306,17 +307,11 @@ void FLTKTerminalWidget::errorMessage(const char*msg) {
   outputText("Error: ");
   outputText(msg);
   outputText("\n");
-  outputText("  at ");
-  outputText(messageContext.c_str());
-outputText("\n");
 }
 
 void FLTKTerminalWidget::warningMessage(const char*msg) {
   outputText("Warning: ");
   outputText(msg);
-  outputText("\n");
-  outputText("  at ");
-  outputText(messageContext.c_str());
   outputText("\n");
 }
 
@@ -805,7 +800,7 @@ void FLTKTerminalWidget::CompleteWord() {
 }
 
 
-void FLTKTerminalWidget::scanDirectory(std::string scdir) {
+void FLTKTerminalWidget::scanDirectory(std::string scdir, bool tempfunc) {
 #ifdef WIN32
   HANDLE hSearch;
   WIN32_FIND_DATA FileData;
@@ -813,10 +808,10 @@ void FLTKTerminalWidget::scanDirectory(std::string scdir) {
   hSearch = FindFirstFile(searchpat.c_str(), &FileData);
   if (hSearch != INVALID_HANDLE_VALUE) {
     procFile(std::string(FileData.cFileName),
-	     scdir + "\\" + std::string(FileData.cFileName));
+	     scdir + "\\" + std::string(FileData.cFileName),tempfunc);
     while (FindNextFile(hSearch, &FileData)) {
       procFile(std::string(FileData.cFileName),
-	       scdir + "\\" + std::string(FileData.cFileName));
+	       scdir + "\\" + std::string(FileData.cFileName),tempfunc);
     }
     FindClose(hSearch);
   }
@@ -838,13 +833,13 @@ void FLTKTerminalWidget::scanDirectory(std::string scdir) {
       continue;
     // Stat the file...
     fullname = std::string(scdir + std::string(DELIM) + fname);
-    procFile(fname,fullname);
+    procFile(fname,fullname,tempfunc);
   }
   closedir(dir);
 #endif
 }
 
-void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
+void FLTKTerminalWidget::procFile(std::string fname, std::string fullname, bool tempfunc) {
 #ifdef WIN32
   struct stat filestat;
   char buffer[1024];
@@ -862,12 +857,20 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
       // Look for the function in the context - only insert it
       // if it is not already defined.
       FunctionDef *fdef;
-      if (!m_context->lookupFunctionGlobally(std::string(fnamec),fdef)) {
+      bool lookup;
+      lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
+      // If the function was not found, add it.  If it _was_ found,
+      // and is a script and has the same filename as ours, we
+      // do nothing
+      if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	  && ((MFunctionDef*)fdef)->fileName == fullname) {
+	// Skipping this one
+      } else {
 	MFunctionDef *adef;
 	adef = new MFunctionDef();
 	adef->name = std::string(fnamec);
 	adef->fileName = fullname;
-	m_context->insertFunctionGlobally(adef);
+	m_context->insertFunctionGlobally(adef, tempfunc);
       }
     }else if (fnamec[namelen-2] == '.' && 
 	      (fnamec[namelen-1] == 'p' ||
@@ -876,7 +879,15 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
       // Look for the function in the context - only insert it
       // if it is not already defined.
       FunctionDef *fdef;
-      if (!m_context->lookupFunctionGlobally(std::string(fnamec),fdef)) {
+      bool lookup;
+      lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
+      // If the function was not found, add it.  If it _was_ found,
+      // and is a script and has the same filename as ours, we
+      // do nothing
+      if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	  && ((MFunctionDef*)fdef)->fileName == fullname) {
+	// Skipping this one
+      } else {
 	MFunctionDef *adef;
 	// Open the file
 	File *f = new File(fullname.c_str(),"rb");
@@ -885,7 +896,7 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
 	s->checkSignature('p',1);
 	adef = ThawMFunction(s);
 	adef->pcodeFunction = true;
-	m_context->insertFunctionGlobally(adef);
+	m_context->insertFunctionGlobally(adef, tempfunc);
       }
     }
   }
@@ -906,12 +917,20 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
       // Look for the function in the context - only insert it
       // if it is not already defined.
       FunctionDef *fdef;
-      if (!m_context->lookupFunctionGlobally(std::string(fnamec),fdef)) {
+      bool lookup;
+      lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
+      // If the function was not found, add it.  If it _was_ found,
+      // and is a script and has the same filename as ours, we
+      // do nothing
+      if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	  && ((MFunctionDef*)fdef)->fileName == fullname) {
+	// Skipping this one
+      } else {
 	MFunctionDef *adef;
 	adef = new MFunctionDef();
 	adef->name = std::string(fnamec);
 	adef->fileName = fullname;
-	m_context->insertFunctionGlobally(adef);
+	m_context->insertFunctionGlobally(adef, tempfunc);
       }
     } else if (fnamec[namelen-2] == '.' && 
 	       (fnamec[namelen-1] == 'p' ||
@@ -920,7 +939,15 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
       // Look for the function in the context - only insert it
       // if it is not already defined.
       FunctionDef *fdef;
-      if (!m_context->lookupFunctionGlobally(std::string(fnamec),fdef)) {
+      bool lookup;
+      lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
+      // If the function was not found, add it.  If it _was_ found,
+      // and is a script and has the same filename as ours, we
+      // do nothing
+      if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	  && ((MFunctionDef*)fdef)->fileName == fullname) {
+	// Skipping this one
+      } else {
 	MFunctionDef *adef;
 	// Open the file
 	File *f = new File(fullname.c_str(),"rb");
@@ -929,13 +956,13 @@ void FLTKTerminalWidget::procFile(std::string fname, std::string fullname) {
 	s->checkSignature('p',1);
 	adef = ThawMFunction(s);
 	adef->pcodeFunction = true;
-	m_context->insertFunctionGlobally(adef);
+	m_context->insertFunctionGlobally(adef, tempfunc);
       }
     }
   } else if (S_ISLNK(filestat.st_mode)) {
     int lncnt = readlink(fullname.c_str(),buffer,1024);
     buffer[lncnt] = 0;
-    procFile(fnamec, std::string(buffer));
+    procFile(fnamec, std::string(buffer),tempfunc);
   }
 #endif
 }

@@ -368,22 +368,20 @@ breakStatement:
 	 ;
 
 tryStatement:
-	TRY {yyexpect("list of statements");} statementList optionalCatch ENDTRY {
-	  $$ = $1; $$->addChild($3); if ($4 != NULL) $$->addChild($4);
-	}
+	TRY statementList optionalCatch ENDTRY 
+	{ $$ = $1; $$->addChild($2); if ($3 != NULL) $$->addChild($3);} 
         ;
 
 optionalCatch:
-	CATCH {yyexpect("list of statements");} statementList {$$ = $3;}
+	CATCH statementList {$$ = $2;}
 	| {$$ = NULL;}
 	;
 
 switchStatement:
-	SWITCH {yyexpect("test expression for switch");}
-	expr optionalEndStatement caseBlock otherwiseClause ENDSWITCH {
-	  $$ = $1; $$->addChild($3); 
-	  if ($5 != NULL) $$->addChild($5); 
-	  if ($6 != NULL) $$->addChild($6);
+	SWITCH 	expr optionalEndStatement caseBlock otherwiseClause ENDSWITCH {
+	  $$ = $1; $$->addChild($2); 
+	  if ($4 != NULL) $$->addChild($4); 
+	  if ($5 != NULL) $$->addChild($5);
 	}
         ;
 
@@ -406,17 +404,14 @@ caseList:
 ;
 
 caseStatement:
-	CASE {yyexpect("case test expression");}
-	expr {yyexpect("list of statements");}
-	statementList {
-	  $$ = $1; $$->addChild($3); $$->addChild($5);
+	CASE expr statementList {
+	  $$ = $1; $$->addChild($2); $$->addChild($3);
 	}
 ;
 
 otherwiseClause:
-	OTHERWISE {yyexpect("list of statements");}
-	statementList {
-	  $$ = $3;
+	OTHERWISE statementList {
+	  $$ = $2;
 	} |
 	/* empty */ {
 	  $$ = NULL;
@@ -424,47 +419,41 @@ otherwiseClause:
 ;
 
 forStatement:
-	FOR {yyexpect("for index expression id=expr or (id=expr) or id");} 
-	forIndexExpression {yyexpect("list of statements");}
-	statementList {yyexpect("matching 'end' statement to 'for'");}
-        ENDFOR {
-	  $$ = $1; $$->addChild($3); $$->addChild($5);
+	FOR forIndexExpression statementList ENDFOR {
+	  $$ = $1; $$->addChild($2); $$->addChild($3);
 	}
 ;
 
 forIndexExpression:
-	'(' {yyexpect("identifier (the loop control variable)");}
-	IDENT {yyexpect("'=' followed by an expression");}
-        '=' {yyexpect("expression");}
-	expr {yyexpect("matching ')'");}
-        ')' {$$ = $3; $$->addChild($7);} |
-	IDENT {yyexpect("'=' followed by an expression");}
-	'=' {yyexpect("expression");}
-	expr {$$ = $1; $$->addChild($5);} |
-	IDENT {$$ = $1; $$->addChild(new AST(OP_RHS, new AST(id_node,$1->text))); }
+	'(' IDENT '=' expr ')' {$$ = $2; $$->addChild($4);} |
+	IDENT '=' expr {$$ = $1; $$->addChild($3);} |
+	IDENT {$$ = $1; $$->addChild(new AST(OP_RHS, new AST(id_node,$1->text))); } |
+	'(' IDENT '=' expr error {yyxpt("matching right parenthesis");} |
+	'(' IDENT '=' error {yyxpt("indexing expression");} |
+	'(' IDENT error {yyxpt("equals operator after loop index");} |
+	'(' error {yyxpt("identifier that is the loop variable");} |
+	IDENT '=' error {yyxpt("indexing expression");} |
+	error {yyxpt("identifier or assignment (id = expr) after 'for' ");}
 ;
 
 whileStatement:
-	WHILE {yyexpect("while test expression");}
-	expr {yyexpect("list of statements");}
-	statementList {yyexpect("matching 'end' statement to 'while'");}
-	ENDWHILE {
-	  $$ = $1; $$->addChild($3); $$->addChild($5);
-	}
+	WHILE expr statementList ENDWHILE {
+	  $$ = $1; $$->addChild($2); $$->addChild($3);
+	}  |
+	WHILE error {yyxpt("test expression after 'while'");} 
 ;
 
 ifStatement:
-	IF {yyexpect("test condition");} conditionedStatement 
-	elseIfBlock elseStatement ENDIF {
-	  $$ = $1; $$->addChild($3); if ($4 != NULL) $$->addChild($4); 
-	  if ($5 != NULL) $$->addChild($5);
-	} 
+	IF conditionedStatement elseIfBlock elseStatement ENDIF {
+	  $$ = $1; $$->addChild($2); if ($3 != NULL) $$->addChild($3); 
+	  if ($4 != NULL) $$->addChild($4);
+	} |
+	IF error {yyxpt("condition expression for 'if'");}
 ;
 
 conditionedStatement:
-	expr {yyexpect("list of statements");}
-	statementList {
-	  $$ = new AST(OP_CSTAT,$1,$3);
+	expr statementList {
+	  $$ = new AST(OP_CSTAT,$1,$2);
 	}
 ;
 
@@ -483,22 +472,22 @@ elseIfStatementList:
 ;
 
 elseIfStatement:
-	ELSEIF {yyexpect("test condition");}
-	conditionedStatement {
-	  $$ = $3;
-	} ;
+	ELSEIF conditionedStatement {
+	  $$ = $2;
+	} |
+	ELSEIF error {yyxpt("test condition for 'elseif' clause");};
 
 elseStatement:
-	ELSE {yyexpect("list of statements");}
-	statementList {
-	  $$ = $3;
+	ELSE statementList {
+	  $$ = $2;
 	} |
-	/* empty */ {$$ = NULL;}
+	/* empty */ {$$ = NULL;} |
+	ELSE error {yyxpt("statement list for 'else' clause");}
 ;
 
 assignmentStatement:
-	symbRefList '=' {yyexpect("expression after '='");}
-	expr       {$$ = new AST(OP_ASSIGN,$1,$4);}
+	symbRefList '=' expr {$$ = new AST(OP_ASSIGN,$1,$3);} |
+	symbRefList '=' error {yyxpt("expression in assignment");}
         ;
 
 multiFunctionCall:
@@ -509,37 +498,68 @@ multiFunctionCall:
 	'[' matrixDef ']' '=' IDENT  {
 	  $5->addChild(new AST(OP_PARENS,NULL));
 	  $$ = new AST(OP_MULTICALL,$2,$5);
-	}
+	} |
+	'[' matrixDef ']' '='  IDENT REFLPAREN  indexList error 
+	{yyxpt("matching right parenthesis");} |
+	'[' matrixDef ']' '='  IDENT REFLPAREN  error 
+	{yyxpt("indexing list");} |
+	'[' matrixDef ']' '='  IDENT error 
+	{yyxpt("left parenthesis");} |	
+	'[' matrixDef ']' '=' error 
+	{yyxpt("identifier");}
         ; 
 
 expr:
-	expr ':' {yyexpect("an expression after ':'");} expr {$$ = new AST(OP_COLON,$1,$4);}
+	expr ':' expr {$$ = new AST(OP_COLON,$1,$3);} 
+	| expr ':' error {yyxpt("an expression after ':'");}
 	| terminal
-	| expr '+' {yyexpect("an expression after '+'");} expr {$$ = new AST(OP_PLUS,$1,$4);}
-	| expr '-' {yyexpect("an expression after '-'");} expr {$$ = new AST(OP_SUBTRACT,$1,$4);}
-	| expr '*' {yyexpect("an expression after '*'");} expr {$$ = new AST(OP_TIMES,$1,$4);}
-	| expr '/' {yyexpect("an expression after '/'");} expr {$$ = new AST(OP_RDIV,$1,$4);}
-	| expr '\\' {yyexpect("an expression after '\\'");} expr {$$ = new AST(OP_LDIV,$1,$4);}
-	| expr '|' {yyexpect("an expression after '|'");} expr {$$ = new AST(OP_OR,$1,$4);}
-	| expr '&' {yyexpect("an expression after '&'");} expr {$$ = new AST(OP_AND,$1,$4);}
-	| expr '<' {yyexpect("an expression after '<'");} expr {$$ = new AST(OP_LT,$1,$4);}
-	| expr LE  {yyexpect("an expression after '<='");} expr {$$ = new AST(OP_LEQ,$1,$4);}
-	| expr '>' {yyexpect("an expression after '>'");} expr {$$ = new AST(OP_GT,$1,$4);}
-	| expr GE  {yyexpect("an expression after '>='");} expr {$$ = new AST(OP_GEQ,$1,$4);}
-	| expr EQ  {yyexpect("an expression after '=='");} expr {$$ = new AST(OP_EQ,$1,$4);}
-	| expr NE  {yyexpect("an expression after '~='");} expr {$$ = new AST(OP_NEQ,$1,$4);}
-	| expr DOTTIMES {yyexpect("an expression after '.*'");} expr {$$ = new AST(OP_DOT_TIMES,$1,$4);}
-	| expr DOTRDIV {yyexpect("an expression after './'");} expr {$$ = new AST(OP_DOT_RDIV,$1,$4);}
-	| expr DOTLDIV {yyexpect("an expression after '.\\'");} expr {$$ = new AST(OP_DOT_LDIV,$1,$4);}
-	| NEG {yyexpect("an expression after '-'");} expr %prec NEG {$$ = new AST(OP_NEG,$3);}
-	| POS {yyexpect("an expression after '+'");} expr %prec POS {$$ = $3;}
-	| '~' {yyexpect("an expression after '~'");} expr %prec NOT {$$ = new AST(OP_NOT,$3);}
-	| expr '^' {yyexpect("an expression after '^'");} expr  {$$ = new AST(OP_POWER,$1,$4);}
-	| expr DOTPOWER {yyexpect("an expression after '.^'");} expr {$$ = new AST(OP_DOT_POWER,$1,$4);}
+	| expr '+' expr {$$ = new AST(OP_PLUS,$1,$3);}
+	| expr '+' error {yyxpt("an expression after '+'");}
+	| expr '-' expr {$$ = new AST(OP_SUBTRACT,$1,$3);}
+	| expr '-' error {yyxpt("an expression after '-'");}
+	| expr '*' expr {$$ = new AST(OP_TIMES,$1,$3);}
+	| expr '*' error {yyxpt("an expression after '*'");}
+	| expr '/' expr {$$ = new AST(OP_RDIV,$1,$3);}
+	| expr '/' error {yyxpt("an expression after '/'");}
+	| expr '\\' expr {$$ = new AST(OP_LDIV,$1,$3);}
+	| expr '\\' error {yyxpt("an expression after '\\'");}
+	| expr '|' expr {$$ = new AST(OP_OR,$1,$3);}
+	| expr '|' error {yyxpt("an expression after '|'");}
+	| expr '&' expr {$$ = new AST(OP_AND,$1,$3);}
+	| expr '&' error {yyxpt("an expression after '&'");}
+	| expr '<' expr {$$ = new AST(OP_LT,$1,$3);}
+	| expr '<' error {yyxpt("an expression after '<'");}
+	| expr LE  expr {$$ = new AST(OP_LEQ,$1,$3);}
+	| expr LE  error {yyxpt("an expression after '<='");}
+	| expr '>' expr {$$ = new AST(OP_GT,$1,$3);}
+	| expr '>' error {yyxpt("an expression after '>'");}
+	| expr GE  expr {$$ = new AST(OP_GEQ,$1,$3);}
+	| expr GE  error {yyxpt("an expression after '>='");}
+	| expr EQ  expr {$$ = new AST(OP_EQ,$1,$3);}
+	| expr EQ  error {yyxpt("an expression after '=='");}
+	| expr NE  expr {$$ = new AST(OP_NEQ,$1,$3);}
+	| expr NE  error {yyxpt("an expression after '~='");}
+	| expr DOTTIMES expr {$$ = new AST(OP_DOT_TIMES,$1,$3);}
+	| expr DOTTIMES error {yyxpt("an expression after '.*'");}
+	| expr DOTRDIV  expr {$$ = new AST(OP_DOT_RDIV,$1,$3);}
+	| expr DOTRDIV  error {yyxpt("an expression after './'");}
+	| expr DOTLDIV expr {$$ = new AST(OP_DOT_LDIV,$1,$3);}
+	| expr DOTLDIV error {yyxpt("an expression after '.\\'");}
+	| NEG  expr %prec NEG {$$ = new AST(OP_NEG,$2);}
+	| NEG  error %prec NEG {yyxpt("an expression after negation");}
+	| POS  expr %prec POS {$$ = $2;}
+	| POS  error %prec POS {yyxpt("an expression after positive sign");}
+	| '~' expr %prec NOT {$$ = new AST(OP_NOT,$2);}
+	| '~' error %prec NOT {yyxpt("an expression after logical not");}
+	| expr '^' expr  {$$ = new AST(OP_POWER,$1,$3);}
+	| expr '^' error  {yyxpt("an expression after '^'");}
+	| expr DOTPOWER expr {$$ = new AST(OP_DOT_POWER,$1,$3);}
+	| expr DOTPOWER error {yyxpt("an expression after '.^'");}
 	| expr '\''          {$$ = new AST(OP_TRANSPOSE,$1);}
 	| expr DOTTRANSPOSE  {$$ = new AST(OP_DOT_TRANSPOSE,$1);}
-	| '(' {yyexpect("an expression after '('");} expr {yyexpect("right parenthesis ')'");} ')'  
-		{$$ = $3;}
+	| '(' expr ')'  {$$ = $2;}
+	| '(' expr error  {yyxpt("a right parenthesis after expression");}
+	| '(' error  {yyxpt("an expression after left parenthesis");}
 	;
 
 terminal:
@@ -548,6 +568,7 @@ terminal:
 	| END
 	| symbRefList {$$ = new AST(OP_RHS,$1);}
         | '[' matrixDef ']' {$$ = $2;}
+        | '[' error {yyxpt("a matrix definition followed by a right bracket");}
         | '[' rowSeperator matrixDef ']' {$$ = $3;}
         | '[' matrixDef rowSeperator ']' {$$ = $2;}
         | '[' rowSeperator matrixDef rowSeperator ']' {$$ = $3;}
@@ -557,6 +578,7 @@ terminal:
         | '{' cellDef rowSeperator '}' {$$ = $2;}
         | '{' rowSeperator cellDef rowSeperator '}' {$$ = $3;}
 	| '{' '}' {$$ = new AST(OP_EMPTY_CELL,NULL);}
+	| '{' error {yyxpt("a cell-array definition followed by a right brace");}
         ;
 
 symbRefList:

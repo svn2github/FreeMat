@@ -218,7 +218,8 @@ namespace FreeMat {
   public:
     uint32 I;
     uint32 J;
-    T V;
+    T Vreal;
+    T Vimag;
   };
   
   template <class T>
@@ -227,41 +228,60 @@ namespace FreeMat {
   }
 
   template <class T>
-  T* CompressRealIJV(const T* src, int count) {
-    int i, j;
-    int zlen;
-    int outlen = 0;
-    i = 0;
-    while (i<count) {
-      if (src[i] != 0) {
-	i++;
-	outlen++;
-      } else {
-	outlen+=2;
-	while ((i<count) && (src[i] == 0)) i++;
-      }
+  void printIJV(IJVEntry<T>* a, int len) {
+    int i;
+    for (i=0;i<len;i++) {
+      std::cout << "ijv[" << i << "] I = " << a[i].I;
+      std::cout << "  J = " << a[i].J << "  Vr = " << a[i].Vreal;
+      std::cout << "  Vi = " << a[i].Vimag << "\r\n";
+    }    
+  }
+
+  void tstop() {
+    int i;
+    i = 423;
+  }
+
+  template <class T>
+  T* CompressRealIJV(IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
+    if ((ptr >= len) || (mlist[ptr].J > col)) {
+      T* buffer = new T[3];
+      buffer[0] = 2;
+      buffer[1] = 0;
+      buffer[2] = row;
+      return buffer;
     }
-    T* dp = new T[outlen+1];
-    dp[0] = outlen;
-    j = 0;
-    i = 0;
-    outlen = 1;
-    while (i<count) {
-      if (src[i] != 0) {
-	dp[outlen] = src[i];
-	i++;
-	outlen++;
-      } else {
-	zlen = 0;
-	while ((i<count) && (src[i] == 0)) {
-	  i++;
-	  zlen++;
-	}
-	dp[outlen++] = 0;
-	dp[outlen++] = zlen;
-      }
+    T* buffer = new T[row];
+    memset(buffer,0,row*sizeof(T));
+    while ((ptr < len) && (mlist[ptr].J == col)) {
+      buffer[mlist[ptr].I] += mlist[ptr].Vreal;
+      ptr++;
     }
-    return dp;
+    T* ret = CompressRealVector<T>(buffer,row);
+    delete buffer;
+    return ret;
+  }
+
+  template <class T>
+  T* CompressComplexIJV(IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
+    if ((ptr >= len) || (mlist[ptr].J > col)) {
+      T* buffer = new T[4];
+      buffer[0] = 3;
+      buffer[1] = 0;
+      buffer[2] = 0;
+      buffer[3] = row;
+      return buffer;
+    }
+    T* buffer = new T[2*row];
+    memset(buffer,0,2*row*sizeof(T));
+    while ((ptr < len) && (mlist[ptr].J == col)) {
+      buffer[2*mlist[ptr].I] += mlist[ptr].Vreal;
+      buffer[2*mlist[ptr].I+1] += mlist[ptr].Vimag;
+      ptr++;
+    }
+    T* ret = CompressComplexVector<T>(buffer,row);
+    delete buffer;
+    return ret;
   }
 
 
@@ -270,12 +290,16 @@ namespace FreeMat {
 			      uint32* I, int istride, uint32 *J, int jstride,
 			      T* cp, int cpstride) {
     // build an IJV master list
-    IJVEntry<T> *mlist = new IJVEntry<T>(nnz);
+    IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
     int i;
     for (i=0;i<nnz;i++) {
-      mlist[i].I = I[istride*i];
-      mlist[i].J = J[jstride*i];
-      mlist[i].V = cp[cpstride*i];
+      mlist[i].I = I[istride*i]-1;
+      if ((mlist[i].I < 0) || (mlist[i].I >= rows))
+	throw Exception("an element of the I vector in the I,J,V exceeds the size of the output matrix");
+      mlist[i].J = J[jstride*i]-1;
+      if ((mlist[i].J < 0) || (mlist[i].J >= cols))
+	throw Exception("an element of the J vector in the I,J,V exceeds the size of the output matrix");
+      mlist[i].Vreal = cp[cpstride*i];
     }
     std::sort(mlist,mlist+nnz);
     T** op;
@@ -285,7 +309,39 @@ namespace FreeMat {
     int ptr = 0;
     // Stringify...
     for (int col=0;col<cols;col++)
-      op[col] = CompressRealIJV<T>(mlist,ptr,col,rows);
+      op[col] = CompressRealIJV<T>(mlist,nnz,ptr,col,rows);
+    // Free the space
+    delete[] mlist;
+    // Return the array
+    return op;
+  }
+
+  template <class T>
+  void* makeSparseFromIJVComplex(int rows, int cols, int nnz,
+			      uint32* I, int istride, uint32 *J, int jstride,
+			      T* cp, int cpstride) {
+    // build an IJV master list
+    IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
+    int i;
+    for (i=0;i<nnz;i++) {
+      mlist[i].I = I[istride*i]-1;
+      if ((mlist[i].I < 0) || (mlist[i].I >= rows))
+	throw Exception("an element of the I vector in the I,J,V exceeds the size of the output matrix");
+      mlist[i].J = J[jstride*i]-1;
+      if ((mlist[i].J < 0) || (mlist[i].J >= cols))
+	throw Exception("an element of the J vector in the I,J,V exceeds the size of the output matrix");
+      mlist[i].Vreal = cp[2*cpstride*i];
+      mlist[i].Vimag = cp[2*cpstride*i+1];
+    }
+    std::sort(mlist,mlist+nnz);
+    T** op;
+    // Allocate the output (sparse) array
+    op = new T*[cols];
+    // Get an integer pointer into the IJV list
+    int ptr = 0;
+    // Stringify...
+    for (int col=0;col<cols;col++)
+      op[col] = CompressComplexIJV<T>(mlist,nnz,ptr,col,rows);
     // Free the space
     delete[] mlist;
     // Return the array
@@ -295,23 +351,23 @@ namespace FreeMat {
 
   void* makeSparseFromIJV(Class dclass, int rows, int cols, int nnz, 
 			  uint32* I, int istride, uint32 *J, int jstride,
-			  void* cp, int cpstride) {
+			  const void* cp, int cpstride) {
     switch(dclass) {
     case FM_INT32:
       return makeSparseFromIJVReal<int32>(rows,cols,nnz,I,istride,
-					  J,jstride,cp,cpstride);
+					  J,jstride,(int32*)cp,cpstride);
     case FM_FLOAT:
       return makeSparseFromIJVReal<float>(rows,cols,nnz,I,istride,
-					  J,jstride,cp,cpstride);
+					  J,jstride,(float*)cp,cpstride);
     case FM_DOUBLE:
       return makeSparseFromIJVReal<double>(rows,cols,nnz,I,istride,
-					   J,jstride,cp,cpstride);
+					   J,jstride,(double*)cp,cpstride);
     case FM_COMPLEX:
       return makeSparseFromIJVComplex<float>(rows,cols,nnz,I,istride,
-					     J,jstride,cp,cpstride);
+					     J,jstride,(float*)cp,cpstride);
     case FM_DCOMPLEX:
       return makeSparseFromIJVComplex<double>(rows,cols,nnz,I,istride,
-					      J,jstride,cp,cpstride);
+					      J,jstride,(double*)cp,cpstride);
     }
   }
 			  
@@ -420,7 +476,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  void* CopySparseMatrix(T** src, int rows, int cols) {
+  void* CopySparseMatrix(const T** src, int rows, int cols) {
     T** dp;
     dp = new T*[cols];
     int i;
@@ -433,7 +489,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  int CountNonzerosComplex(T** src, int rows, int cols) {
+  int CountNonzerosComplex(const T** src, int rows, int cols) {
     int nnz = 0;
     int i, j, n;
     for (i=0;i<cols;i++) {
@@ -454,7 +510,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  int CountNonzerosReal(T** src, int rows, int cols) {
+  int CountNonzerosReal(const T** src, int rows, int cols) {
     int nnz = 0;
     int i, j, n;
     for (i=0;i<cols;i++) {
@@ -475,7 +531,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  T* SparseToIJVComplex(T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
+  T* SparseToIJVComplex(const T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
     nnz = CountNonzerosComplex<T>(src,rows,cols);
     I = (uint32*) Malloc(sizeof(uint32)*nnz);
     J = (uint32*) Malloc(sizeof(uint32)*nnz);
@@ -504,7 +560,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  T* SparseToIJVReal(T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
+  T* SparseToIJVReal(const T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
     nnz = CountNonzerosReal<T>(src,rows,cols);
     I = (uint32*) Malloc(sizeof(uint32)*nnz);
     J = (uint32*) Malloc(sizeof(uint32)*nnz);
@@ -536,45 +592,45 @@ namespace FreeMat {
 		    uint32* &I, uint32* &J, int &nnz) {
     switch (dclass) {
     case FM_INT32:
-      return SparseToIJVReal<int32>((int32**)cp,rows,cols,I,J,nnz);
+      return SparseToIJVReal<int32>((const int32**)cp,rows,cols,I,J,nnz);
     case FM_FLOAT:
-      return SparseToIJVReal<float>((float**)cp,rows,cols,I,J,nnz);
+      return SparseToIJVReal<float>((const float**)cp,rows,cols,I,J,nnz);
     case FM_DOUBLE:
-      return SparseToIJVReal<double>((double**)cp,rows,cols,I,J,nnz);
+      return SparseToIJVReal<double>((const double**)cp,rows,cols,I,J,nnz);
     case FM_COMPLEX:
-      return SparseToIJVComplex<float>((float**)cp,rows,cols,I,J,nnz);
+      return SparseToIJVComplex<float>((const float**)cp,rows,cols,I,J,nnz);
     case FM_DCOMPLEX:
-      return SparseToIJVComplex<double>((double**)cp,rows,cols,I,J,nnz);
+      return SparseToIJVComplex<double>((const double**)cp,rows,cols,I,J,nnz);
     }
   }
 
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
     switch (dclass) {
     case FM_INT32:
-      return CopySparseMatrix<int32>((int32**)cp,rows,cols);
+      return CopySparseMatrix<int32>((const int32**)cp,rows,cols);
     case FM_FLOAT:
-      return CopySparseMatrix<float>((float**)cp,rows,cols);
+      return CopySparseMatrix<float>((const float**)cp,rows,cols);
     case FM_DOUBLE:
-      return CopySparseMatrix<double>((double**)cp,rows,cols);
+      return CopySparseMatrix<double>((const double**)cp,rows,cols);
     case FM_COMPLEX:
-      return CopySparseMatrix<float>((float**)cp,rows,cols);
+      return CopySparseMatrix<float>((const float**)cp,rows,cols);
     case FM_DCOMPLEX:
-      return CopySparseMatrix<double>((double**)cp,rows,cols);
+      return CopySparseMatrix<double>((const double**)cp,rows,cols);
     }
   }
 
   int CountNonzeros(Class dclass, int rows, int cols, const void *cp) {
     switch (dclass) {
     case FM_INT32:
-      return CountNonzerosReal<int32>((int32**)cp,rows,cols);
+      return CountNonzerosReal<int32>((const int32**)cp,rows,cols);
     case FM_FLOAT:
-      return CountNonzerosReal<float>((float**)cp,rows,cols);
+      return CountNonzerosReal<float>((const float**)cp,rows,cols);
     case FM_DOUBLE:
-      return CountNonzerosReal<double>((double**)cp,rows,cols);
+      return CountNonzerosReal<double>((const double**)cp,rows,cols);
     case FM_COMPLEX:
-      return CountNonzerosComplex<float>((float**)cp,rows,cols);
+      return CountNonzerosComplex<float>((const float**)cp,rows,cols);
     case FM_DCOMPLEX:
-      return CountNonzerosComplex<double>((double**)cp,rows,cols);
+      return CountNonzerosComplex<double>((const double**)cp,rows,cols);
     }
   }
 
@@ -923,6 +979,19 @@ namespace FreeMat {
     }    
   }
 
+  void *SparseFloatZeros(int rows, int cols) {
+    float **src;
+    src = new float*[cols];
+    int i;
+    for (i=0;i<cols;i++) {
+      src[i] = new float[3];
+      src[i][0] = 2;
+      src[i][1] = 0;
+      src[i][2] = rows;
+    }
+    return src;
+  }
+
 
   template <class T>
   void RealStringExtract(const T* src, int ndx, T* dst) {
@@ -969,32 +1038,57 @@ namespace FreeMat {
     }
   }
   
-
-  // This implementation is poor because for a linear access of the elements
-  // of A, it requires significant time.
   template <class T>
-  void* GetSparseVectorSubsetsComplex(int rows, int cols, const T** A,
-				      const indexType* indx, int irows, int icols) {
+  IJVEntry<T>* ConvertSparseToIJVListReal(const T** src, int rows, int cols, int &nnz) {
+    nnz = CountNonzerosReal<T>(src,rows,cols);
+    IJVEntry<T>* mlist = new IJVEntry<T>[nnz];
+    int ptr = 0;
     int i, j, n;
-    int nrow, ncol;
-    T* Acol = new T[2*irows];
-    T** dp = new T*[icols];
-    for (i=0;i<icols;i++) {
-      for (j=0;j<irows;j++) {
-	// Get the vector index
-	n = indx[i*irows+j] - 1;
-	// Decompose this into a row and column
-	ncol = n / rows;
-	if (ncol > cols)
-	  throw Exception("Index exceeds variable dimensions");
-	nrow = n % rows;
-	// Extract this value from the source matrix
-	ComplexStringExtract<T>(A[ncol],nrow,Acol+2*j);
+    for (i=0;i<cols;i++) {
+      n = 1;
+      j = 0;
+      while (j<rows) {
+	if (src[i][n] != 0) {
+	  mlist[ptr].I = j;
+	  mlist[ptr].J = i;
+	  mlist[ptr].Vreal = src[i][n];
+	  ptr++;
+	  j++;
+	  n++;
+	} else {
+	  j += (int) src[i][n+1];
+	  n+=2;
+	}
       }
-      dp[i] = CompressComplexVector(Acol,irows);
+    }    
+    return mlist;
+  }
+
+  template <class T>
+  IJVEntry<T>* ConvertSparseToIJVListComplex(const T** src, int rows, int cols, int &nnz) { 
+    nnz = CountNonzerosComplex<T>(src,rows,cols);
+    IJVEntry<T>* mlist = new IJVEntry<T>[nnz];
+    int ptr = 0;
+    int i, j, n;
+    for (i=0;i<cols;i++) {
+      n = 1;
+      j = 0;
+      while (j<rows) {
+	if ((src[i][n] != 0) || (src[i][n+1] != 0)) {
+	  mlist[ptr].I = j;
+	  mlist[ptr].J = i;
+	  mlist[ptr].Vreal = src[i][n];
+	  mlist[ptr].Vimag = src[i][n+1];
+	  ptr++;
+	  j++;
+	  n+=2;
+	} else {
+	  j += (int) src[i][n+2];
+	  n+=3;
+	}
+      }
     }
-    delete Acol;
-    return dp;
+    return mlist;
   }
 
   // The original implementation is poor because for a linear access of the elements
@@ -1008,41 +1102,285 @@ namespace FreeMat {
   //
   // The problem is that the output needs to be resorted by ord to build the 
   // sparse output matrix.  I think the IJV notation is in order here...
-  
-  class Update {
-  public:
-    int ord;
-    int row;
-    int col;
-  };
-  
-  bool operator<(const Update& a, const Update& b) {
-    return a.col < b.col;
-  }
-
+  //
+  // So the process is:
+  //  1. Expand the sparse matrix into IJV format
+  //  2. Sort the get array by linear index
+  //  3. Do a sorted list compare/extract --> IJV format
+  //  4. Recode IJV --> sparse output
+  // Now the get array has 4 pieces of information - source row & col,
+  // and dest row & col.  All of this information can be packed into
+  // an IJVEntry...
   template <class T>
   void* GetSparseVectorSubsetsReal(int rows, int cols, const T** A,
 				   const indexType* indx, int irows, int icols) {
-    int i, j, n;
-    int nrow, ncol;
-    T* Acol = new T[irows];
-    T** dp = new T*[icols];
-    for (i=0;i<icols;i++) {
-      for (j=0;j<irows;j++) {
-	// Get the vector index
-	n = indx[i*irows+j] - 1;
-	// Decompose this into a row and column
-	ncol = n / rows;
-	if (ncol > cols)
-	  throw Exception("Index exceeds variable dimensions");
-	nrow = n % rows;
-	// Extract this value from the source matrix
-	RealStringExtract<T>(A[ncol],nrow,Acol+j);
-      }
-      dp[i] = CompressRealVector(Acol,irows);
+    // Convert the sparse matrix into IJV format
+    IJVEntry<T>* mlist;
+    int nnz;
+    mlist = ConvertSparseToIJVListReal<T>(A,rows,cols,nnz);
+    // Unpack the indexing array into IJV format
+    IJVEntry<T>* ilist;
+    int icount;
+    icount = irows*icols;
+    ilist = new IJVEntry<T>[icount];
+    int i, j;
+    for (i=0;i<icount;i++) {
+      ilist[i].I = (indx[i]-1) % rows;
+      ilist[i].J = (indx[i]-1) / rows;
+      ilist[i].Vreal = (int) (i % irows);
+      ilist[i].Vimag = (int) (i / irows);
     }
-    delete Acol;
-    return dp;
+    // Sort the indexing array.
+    std::sort(ilist,ilist+icount);
+    // Now do a merge operation between the
+    // indexing array and the source array.
+    int iptr;
+    int jptr;
+    jptr = 0;
+    for (iptr=0;iptr<icount;iptr++) {
+      while ((jptr < nnz) && ((mlist[jptr].J < ilist[iptr].J) ||
+			      ((mlist[jptr].J == ilist[iptr].J) &&
+			       (mlist[jptr].I < ilist[iptr].I))))
+	jptr++;
+      if ((jptr < nnz) && (mlist[jptr].I == ilist[iptr].I)
+	  && (mlist[jptr].J == ilist[iptr].J)) {
+	ilist[iptr].I = (int) ilist[iptr].Vreal;
+	ilist[iptr].J = (int) ilist[iptr].Vimag;
+	ilist[iptr].Vreal = mlist[jptr].Vreal;
+      } else {
+	ilist[iptr].I = (int) ilist[iptr].Vreal;
+	ilist[iptr].J = (int) ilist[iptr].Vimag;
+	ilist[iptr].Vreal = 0;
+      }
+    }
+    // Now resort the list
+    std::sort(ilist,ilist+icount);
+    // Build a sparse matrix out of this
+    T** B;
+    B = new T*[icols];
+    int ptr = 0;
+    for (int col=0;col<icols;col++)
+      B[col] = CompressRealIJV<T>(ilist,icount,ptr,col,irows);
+    delete[] mlist;
+    delete[] ilist;
+    return B;
+  }
+
+  template <class T>
+  void* SetSparseVectorSubsetsReal(int &rows, int &cols, const T** A,
+				   const indexType* indx, int irows, int icols,
+				   const T* data, int advance) {
+    // Convert the sparse matrix into IJV format
+    IJVEntry<T>* mlist;
+    int nnz;
+    mlist = ConvertSparseToIJVListReal<T>(A,rows,cols,nnz);
+    // Unpack the indexing array into IJV format
+    IJVEntry<T>* ilist;
+    int icount;
+    icount = irows*icols;
+    // check to see if a resize is necessary...
+    int maxindx = indx[0];
+    int i, j;
+    for (i=0;i<icount;i++)
+      maxindx = (maxindx > indx[i]) ? maxindx : indx[i];
+    // if maxindx is larger than rows*cols, we have to
+    // vector resize
+    if (maxindx > rows*cols) {
+      // To vector resize, we set rows = maxindx, cols = 1, but
+      // we also adjust the row & column index of each IJVentry
+      // first
+      for (i=0;i<nnz;i++) {
+	mlist[i].I += rows*mlist[i].J;
+	mlist[i].J = 0;
+      }
+      rows = maxindx; 
+      cols = 1;
+    }
+    ilist = new IJVEntry<T>[icount];
+    for (i=0;i<icount;i++) {
+      ilist[i].I = (indx[i]-1) % rows;
+      ilist[i].J = (indx[i]-1) / rows;
+      ilist[i].Vreal = data[advance*i];
+    }
+    
+    // Sort the indexing array.
+    std::sort(ilist,ilist+icount);
+    // Create the destination array
+    IJVEntry<T>* dlist;
+    dlist = new IJVEntry<T>[icount+nnz];
+    // Now do a merge operation between the
+    // indexing array and the source array.
+    int iptr;
+    int jptr;
+    int optr;
+    jptr = 0;
+    optr = 0;
+    for (iptr=0;iptr<icount;iptr++) {
+      while ((jptr < nnz) && ((mlist[jptr].J < ilist[iptr].J) ||
+			      ((mlist[jptr].J == ilist[iptr].J) &&
+			       (mlist[jptr].I < ilist[iptr].I)))) {
+	dlist[optr++] = mlist[jptr];
+	jptr++;
+      }
+      dlist[optr++] = ilist[iptr];
+      if ((jptr < nnz) && (mlist[jptr].I == ilist[iptr].I)
+	  && (mlist[jptr].J == ilist[iptr].J)) 
+	jptr++;
+    }
+    while (jptr < nnz)
+      dlist[optr++] = mlist[jptr++];
+    // Now resort the list
+    std::sort(dlist,dlist+optr);
+    printIJV(dlist,optr);
+    // Build a sparse matrix out of this
+    T** B;
+    B = new T*[cols];
+    int ptr = 0;
+    for (int col=0;col<cols;col++)
+      B[col] = CompressRealIJV<T>(dlist,optr,ptr,col,rows);
+    delete[] mlist;
+    delete[] ilist;
+    delete[] dlist;
+    return B;
+  }
+
+  template <class T>
+  void* SetSparseVectorSubsetsComplex(int &rows, int &cols, const T** A,
+				      const indexType* indx, int irows, 
+				      int icols, const T* data, int advance) {
+    // Convert the sparse matrix into IJV format
+    IJVEntry<T>* mlist;
+    int nnz;
+    mlist = ConvertSparseToIJVListComplex<T>(A,rows,cols,nnz);
+    // Unpack the indexing array into IJV format
+    IJVEntry<T>* ilist;
+    int icount;
+    icount = irows*icols;
+    // check to see if a resize is necessary...
+    int maxindx = indx[0];
+    int i, j;
+    for (i=0;i<icount;i++)
+      maxindx = (maxindx > indx[i]) ? maxindx : indx[i];
+    // if maxindx is larger than rows*cols, we have to
+    // vector resize
+    if (maxindx > rows*cols) {
+      // To vector resize, we set rows = maxindx, cols = 1, but
+      // we also adjust the row & column index of each IJVentry
+      // first
+      for (i=0;i<nnz;i++) {
+	mlist[i].I += rows*mlist[i].J;
+	mlist[i].J = 0;
+      }
+      rows = maxindx; 
+      cols = 1;
+    }
+    ilist = new IJVEntry<T>[icount];
+    for (i=0;i<icount;i++) {
+      ilist[i].I = (indx[i]-1) % rows;
+      ilist[i].J = (indx[i]-1) / rows;
+      ilist[i].Vreal = data[2*advance*i];
+      ilist[i].Vimag = data[2*advance*i+1];
+    }
+    
+    // Sort the indexing array.
+    std::sort(ilist,ilist+icount);
+    // Create the destination array
+    IJVEntry<T>* dlist;
+    dlist = new IJVEntry<T>[icount+nnz];
+    // Now do a merge operation between the
+    // indexing array and the source array.
+    int iptr;
+    int jptr;
+    int optr;
+    jptr = 0;
+    optr = 0;
+    for (iptr=0;iptr<icount;iptr++) {
+      while ((jptr < nnz) && ((mlist[jptr].J < ilist[iptr].J) ||
+			      ((mlist[jptr].J == ilist[iptr].J) &&
+			       (mlist[jptr].I < ilist[iptr].I)))) {
+	dlist[optr++] = mlist[jptr];
+	jptr++;
+      }
+      dlist[optr++] = ilist[iptr];
+      if ((jptr < nnz) && (mlist[jptr].I == ilist[iptr].I)
+	  && (mlist[jptr].J == ilist[iptr].J)) 
+	jptr++;
+    }
+    while (jptr < nnz)
+      dlist[optr++] = mlist[jptr++];
+    // Now resort the list
+    std::sort(dlist,dlist+optr);
+    printIJV(dlist,optr);
+    // Build a sparse matrix out of this
+    T** B;
+    B = new T*[cols];
+    int ptr = 0;
+    for (int col=0;col<cols;col++)
+      B[col] = CompressComplexIJV<T>(dlist,optr,ptr,col,rows);
+    delete[] mlist;
+    delete[] ilist;
+    delete[] dlist;
+    return B;
+  }
+
+  // This implementation is poor because for a linear access of the elements
+  // of A, it requires significant time.
+  template <class T>
+  void* GetSparseVectorSubsetsComplex(int &rows, int &cols, const T** A,
+				      const indexType* indx, int irows, 
+				      int icols) {
+    // Convert the sparse matrix into IJV format
+    IJVEntry<T>* mlist;
+    int nnz;
+    mlist = ConvertSparseToIJVListComplex<T>(A,rows,cols,nnz);
+    // Unpack the indexing array into IJV format
+    IJVEntry<T>* ilist;
+    int icount;
+    icount = irows*icols;
+    ilist = new IJVEntry<T>[icount];
+    int i, j;
+    for (i=0;i<icount;i++) {
+      ilist[i].I = (indx[i]-1) % rows;
+      ilist[i].J = (indx[i]-1) / rows;
+      ilist[i].Vreal = (int) (i % irows);
+      ilist[i].Vimag = (int) (i / irows);
+    }
+    // Sort the indexing array.
+    std::sort(ilist,ilist+icount);
+    // Now do a merge operation between the
+    // indexing array and the source array.
+    int iptr;
+    int jptr;
+    jptr = 0;
+    for (iptr=0;iptr<icount;iptr++) {
+      while ((jptr < nnz) && ((mlist[jptr].J < ilist[iptr].J) ||
+			      ((mlist[jptr].J == ilist[iptr].J) &&
+			       (mlist[jptr].I < ilist[iptr].I))))
+	jptr++;
+      if ((jptr < nnz) && (mlist[jptr].I == ilist[iptr].I)
+	  && (mlist[jptr].J == ilist[iptr].J)) {
+	ilist[iptr].I = (int) ilist[iptr].Vreal;
+	ilist[iptr].J = (int) ilist[iptr].Vimag;
+	ilist[iptr].Vreal = mlist[jptr].Vreal;
+	ilist[iptr].Vimag = mlist[jptr].Vimag;
+      } else {
+	ilist[iptr].I = (int) ilist[iptr].Vreal;
+	ilist[iptr].J = (int) ilist[iptr].Vimag;
+	ilist[iptr].Vreal = 0;
+	ilist[iptr].Vimag = 0;
+      }
+    }
+    // Now resort the list
+    std::sort(ilist,ilist+icount);
+    // Build a sparse matrix out of this
+    T** B;
+    B = new T*[icols];
+    int ptr = 0;
+    for (int col=0;col<icols;col++)
+      B[col] = CompressComplexIJV<T>(ilist,icount,ptr,col,irows);
+    delete[] mlist;
+    delete[] ilist;
+    return B;
   }
 
   // GetSparseVectorSubsets - This one is a bit difficult to do efficiently.
@@ -1066,6 +1404,43 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return GetSparseVectorSubsetsComplex<double>(rows, cols, (const double**) src,
       						   indx, irows, icols);
+    }
+  }
+
+  // SetSparseVectorSubsets - This one is a bit difficult to do efficiently.
+  // For each column in the output, we have to extract potentially random
+  // elements from the source array.
+  void* SetSparseVectorSubsets(Class dclass, int &rows, int &cols, 
+			       const void* src,
+			       const indexType* indx, int irows, int icols,
+			       const void* data, int advance) {
+    switch (dclass) {
+    case FM_INT32:
+      return SetSparseVectorSubsetsReal<int32>(rows, cols, (const int32**) src,
+					       indx, irows, icols, 
+					       (const int32*) data, advance);
+    case FM_FLOAT:
+      return SetSparseVectorSubsetsReal<float>(rows, cols, (const float**) src,
+					       indx, irows, icols, 
+					       (const float*) data, advance);
+    case FM_DOUBLE:
+      return SetSparseVectorSubsetsReal<double>(rows, cols, 
+						(const double**) src,
+						indx, irows, icols, 
+						(const double*) data, 
+						advance);
+    case FM_COMPLEX:
+      return SetSparseVectorSubsetsComplex<float>(rows, cols, 
+ 						  (const float**) src,
+       						  indx, irows, icols, 
+ 						  (const float*) data, 
+ 						  advance);
+    case FM_DCOMPLEX:
+      return SetSparseVectorSubsetsComplex<double>(rows, cols, 
+ 						   (const double**) src,
+       						   indx, irows, icols, 
+						   (const double*) data, 
+ 						   advance);
     }
   }
 
@@ -1205,4 +1580,191 @@ namespace FreeMat {
     }
   }
 
+  template <class T>
+  void* CopyResizeSparseMatrixComplex(const T** src, int rows, int cols,
+				      int maxrow, int maxcol) {
+    T** dp;
+    dp = new T*[maxcol];
+    int i;
+    for (i=0;i<cols;i++) {
+      int blen = (int)(src[i][0]+1);
+      if (maxrow == rows) {
+	dp[i] = new T[blen];
+	memcpy(dp[i],src[i],sizeof(T)*blen);
+      } else {
+	dp[i] = new T[blen+3];
+	memcpy(dp[i],src[i],sizeof(T)*blen);
+	dp[i][0] = blen+3;
+	dp[i][blen] = 0;
+	dp[i][blen+1] = 0;
+	dp[i][blen+2] = (maxrow-rows);	
+      }
+    }
+    for (i=cols;i<maxcol;i++) {
+      dp[i] = new T[4];
+      dp[i][0] = 3;
+      dp[i][1] = 0;
+      dp[i][2] = 0;
+      dp[i][3] = maxrow;
+    }
+    return dp;
+  }
+
+  template <class T>
+  void* CopyResizeSparseMatrixReal(const T** src, int rows, int cols,
+				   int maxrow, int maxcol) {
+    T** dp;
+    dp = new T*[maxcol];
+    int i;
+    for (i=0;i<cols;i++) {
+      int blen = (int)(src[i][0]+1);
+      if (maxrow == rows) {
+	dp[i] = new T[blen];
+	memcpy(dp[i],src[i],sizeof(T)*blen);
+      } else {
+	dp[i] = new T[blen+2];
+	memcpy(dp[i],src[i],sizeof(T)*blen);
+	dp[i][0] = blen+2;
+	dp[i][blen] = 0;
+	dp[i][blen+1] = (maxrow-rows);
+      }
+    }
+    for (i=cols;i<maxcol;i++) {
+      dp[i] = new T[3];
+      dp[i][0] = 2;
+      dp[i][1] = 0;
+      dp[i][2] = maxrow;
+    }
+    return dp;
+  }
+
+  template <class T>
+  void* SetSparseNDimSubsetsReal(int &rows, int &cols, const T** A,
+				 const indexType* rindx, int irows, 
+				 const indexType* cindx, int icols,
+				 const T* data, int advance) {
+    int i, j, n, m;
+    int nrow, ncol;
+
+    T**dp;
+    // Check for a resize...
+    int maxrow, maxcol;
+    maxrow = rindx[0];
+    for (i=0;i<irows;i++)
+      maxrow = (maxrow > rindx[i]) ? maxrow : rindx[i];
+    maxcol = cindx[0];
+    for (i=0;i<icols;i++)
+      maxcol = (maxcol > cindx[i]) ? maxcol : cindx[i];
+    if ((maxrow > rows) || (maxcol > cols)) {
+      maxrow = maxrow > rows ? maxrow : rows;
+      maxcol = maxcol > cols ? maxcol : cols;
+      dp = (T**) CopyResizeSparseMatrixReal<T>(A,rows,cols,maxrow,maxcol);
+      rows = maxrow;
+      cols = maxcol;
+    } else 
+      dp = (T**) CopySparseMatrix<T>(A,rows,cols);
+
+    T* Acol = new T[rows];
+    for (i=0;i<icols;i++) {
+      // Get the column index
+      m = cindx[i] - 1;
+      if (m<0)
+	throw Exception("negative column index encountered in sparse matrix assigment of type A(n,m) = B");
+      DecompressRealString<T>(dp[m],Acol,rows);
+      for (j=0;j<irows;j++) {
+	// Get the row index
+	n = rindx[j] - 1;
+	if (m<0)
+	  throw Exception("negative row index encountered in sparse matrix assigment of type A(n,m) = B");
+	Acol[n] = *data;
+	data += advance;
+      }
+      delete dp[m];
+      dp[m] = CompressRealVector<T>(Acol,rows);
+    }
+    delete Acol;
+    return dp;
+  }
+
+
+  template <class T>
+  void* SetSparseNDimSubsetsComplex(int &rows, int &cols, const T** A,
+				    const indexType* rindx, int irows, 
+				    const indexType* cindx, int icols,
+				    const T* data, int advance) {
+    int i, j, n, m;
+    int nrow, ncol;
+
+    T**dp;
+    // Check for a resize...
+    int maxrow, maxcol;
+    maxrow = rindx[0];
+    for (i=0;i<irows;i++)
+      maxrow = (maxrow > rindx[i]) ? maxrow : rindx[i];
+    maxcol = cindx[0];
+    for (i=0;i<icols;i++)
+      maxcol = (maxcol > cindx[i]) ? maxcol : cindx[i];
+    if ((maxrow > rows) || (maxcol > cols)) {
+      maxrow = maxrow > rows ? maxrow : rows;
+      maxcol = maxcol > cols ? maxcol : cols;
+      dp = (T**) CopyResizeSparseMatrixComplex<T>(A,rows,cols,maxrow,maxcol);
+      rows = maxrow;
+      cols = maxcol;
+    } else 
+      dp = (T**) CopySparseMatrix<T>(A,rows,cols);
+
+    T* Acol = new T[2*rows];
+    for (i=0;i<icols;i++) {
+      // Get the column index
+      m = cindx[i] - 1;
+      if (m<0)
+	throw Exception("negative column index encountered in sparse matrix assigment of type A(n,m) = B");
+      DecompressComplexString<T>(dp[m],Acol,rows);
+      for (j=0;j<irows;j++) {
+	// Get the row index
+	n = rindx[j] - 1;
+	if (m<0)
+	  throw Exception("negative row index encountered in sparse matrix assigment of type A(n,m) = B");
+	Acol[2*n] = *data;
+	Acol[2*n+1] = *(data+1);
+	data += 2*advance;
+      }
+      delete dp[m];
+      dp[m] = CompressComplexVector<T>(Acol,rows);
+    }
+    delete Acol;
+    return dp;
+  }
+
+  void* SetSparseNDimSubsets(Class dclass, int &rows, int &cols, 
+			     const void* src,
+			     const indexType* rindx, int irows,
+			     const indexType* cindx, int icols,
+			     const void *data, int advance) {
+    switch(dclass) {
+    case FM_INT32:
+      return SetSparseNDimSubsetsReal<int32>(rows, cols, (const int32**) src,
+					     rindx, irows, cindx, icols,
+					     (const int32*) data, advance);
+    case FM_FLOAT:
+      return SetSparseNDimSubsetsReal<float>(rows, cols, (const float**) src,
+					     rindx, irows, cindx, icols,
+					     (const float*) data, advance);
+    case FM_DOUBLE:
+      return SetSparseNDimSubsetsReal<double>(rows, cols, (const double**) src,
+					      rindx, irows, cindx, icols,
+					      (const double*) data, advance);
+    case FM_COMPLEX:
+      return SetSparseNDimSubsetsComplex<float>(rows, cols, 
+						(const float**) src,
+						rindx, irows, cindx, icols,
+						(const float*) data, advance);
+    case FM_DCOMPLEX:
+      return SetSparseNDimSubsetsComplex<double>(rows, cols, 
+						 (const double**) src,
+						 rindx, irows, cindx, icols,
+						 (const double*) data, 
+						 advance);
+    }
+  }
 }

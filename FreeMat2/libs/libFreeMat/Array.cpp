@@ -2095,16 +2095,31 @@ break;
       index.toOrdinalType();
       Dimensions retdims(index.dp->dimensions);
       retdims.simplify();
-      if (isSparse())
-	return Array(dp->dataClass,retdims,
-		     GetSparseVectorSubsets(dp->dataClass,
-					    getDimensionLength(0),
-					    getDimensionLength(1),
-					    dp->getData(),
-					    (const indexType*) index.dp->getData(),
-					    index.getDimensionLength(0),
-					    index.getDimensionLength(1)),
+      if (isSparse()) {
+	if (index.getLength() == 1) {
+	  int indx;
+	  indx = index.getContentsAsIntegerScalar()-1;
+	  int row = indx % getDimensionLength(0);
+	  int col = indx / getDimensionLength(0);
+	  return Array(dp->dataClass,retdims,
+		       GetSparseScalarElement(dp->dataClass,
+					      getDimensionLength(0),
+					      getDimensionLength(1),
+					      dp->getData(),
+					      row+1, col+1),
+		       false);
+	} else
+	  return Array(dp->dataClass,retdims,
+		       GetSparseVectorSubsets(dp->dataClass,
+					      getDimensionLength(0),
+					      getDimensionLength(1),
+					      dp->getData(),
+					      (const indexType*) 
+					      index.dp->getData(),
+					      index.getDimensionLength(0),
+					      index.getDimensionLength(1)),
 		     true);
+      }
       //
       // The output is the same size as the _index_, not the
       // source variable (neat, huh?).  But it inherits the
@@ -2420,8 +2435,6 @@ break;
       deleteVectorSubset(index);
       return;
     }
-    if (isSparse())
-      throw Exception("setVectorSubset not supported for sparse arrays.");
     // Make sure the index is an ordinal type
     index.toOrdinalType();
     int index_length = index.getLength();
@@ -2432,6 +2445,8 @@ break;
     // Set the right hand side advance pointer to 
     //  - 0 if the rhs is a scalar
     //  - 1 else
+    if (data.isSparse())
+      data.makeDense();
     if (data.isScalar())
       advance = 0;
     else if (data.getLength() == index_length)
@@ -2440,7 +2455,6 @@ break;
       throw Exception("Size mismatch in assignment A(I) = B.\n");
     // Compute the maximum index
     indexType max_index = index.getMaxAsIndex();
-
     // If the RHS type is superior to ours, we 
     // force our type to agree with the inserted data.
     // Also, if we are empty, we promote ourselves (regardless of
@@ -2459,6 +2473,21 @@ break;
       // the RHS to our type
       else if (data.getDataClass() <= dp->dataClass)
       data.promoteType(dp->dataClass,dp->fieldNames);
+    }
+    if (isSparse()) {
+      int rows = getDimensionLength(0);
+      int cols = getDimensionLength(1);
+      void *qp = SetSparseVectorSubsets(dp->dataClass,rows,cols,dp->getData(),
+					(const indexType*) index.dp->getData(),
+					index.getDimensionLength(0),
+					index.getDimensionLength(1),
+					data.getDataPointer(),
+					advance);
+      Dimensions newdim;
+      newdim[0] = rows;
+      newdim[1] = cols;
+      dp = dp->putData(dp->dataClass,newdim,qp,true);
+      return;
     }
     // If the max index is larger than our current length, then
     // we have to resize ourselves - but this is only legal if we are
@@ -2532,6 +2561,8 @@ break;
       }
       // Next, we compute the dimensions of the right hand side
       indexType advance;
+      if (data.isSparse())
+	data.makeDense();
       if (data.isScalar()) {
 	advance = 0;
       } else if (!isEmpty() && (data.getLength() == dataCount)) {
@@ -2557,6 +2588,24 @@ break;
 	// the RHS to our type
 	else if (data.dp->dataClass <= dp->dataClass)
 	  data.promoteType(dp->dataClass,dp->fieldNames);
+      }
+      if (isSparse()) {
+	if (L > 2)
+	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays in assignment A(I1,I2,...,IN) = B");
+	int rows = getDimensionLength(0);
+	int cols = getDimensionLength(1);
+	void *qp = SetSparseNDimSubsets(dp->dataClass, rows, cols, 
+					dp->getData(), 
+					(const indexType*) indx[0], 
+					argLengths[0],
+					(const indexType*) indx[1], 
+					argLengths[1],
+					data.getDataPointer(),advance);
+	Dimensions newdim;
+	newdim[0] = rows;
+	newdim[1] = cols;
+	dp = dp->putData(dp->dataClass,newdim,qp,true);
+	return;
       }
       // Now, resize us to fit this data
       resize(a);

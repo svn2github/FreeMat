@@ -33,106 +33,6 @@ extern "C" {
 
 namespace FreeMat {
 
-  typedef struct {
-    float x;
-    float y;
-    int ptnum;
-  } Point;
-
-  bool operator<(const Point& a, const Point& b) {
-    return ((a.x < b.x) || ((a.x == b.x) && (a.y < b.y)));
-  }
-  
-  // Copyright 2001, softSurfer (www.softsurfer.com)
-  // This code may be freely used and modified for any purpose
-  // providing that this copyright notice is included with it.
-  // SoftSurfer makes no warranty for this code, and cannot be held
-  // liable for any real or imagined damage resulting from its use.
-  // Users of this code must verify correctness for their application.
-  // Assume that a class is already given for the object:
-  // Point with coordinates {float x, y;}
-  //===================================================================
-  // isLeft(): tests if a point is Left|On|Right of an infinite line.
-  // Input: three points P0, P1, and P2
-  // Return: >0 for P2 left of the line through P0 and P1
-  // =0 for P2 on the line
-  // <0 for P2 right of the line
-  // See: the January 2001 Algorithm on Area of Triangles
-  inline float isLeft(Point P0, Point P1, Point P2 ) {
-    return (P1.x - P0.x)*(P2.y - P0.y) - (P2.x - P0.x)*(P1.y - P0.y);
-  }
-  //===================================================================
-  // chainHull_2D(): Andrew's monotone chain 2D convex hull algorithm
-  // Input: P[] = an array of 2D points 
-  // presorted by increasing x- and y-coordinates
-  // n = the number of points in P[]
-  // Output: H[] = an array of the convex hull vertices (max is n)
-  // Return: the number of points in H[]
-  int chainHull_2D( Point* P, int n, Point* H ) {
-    // the output array H[] will be used as the stack
-    int bot=0, top=(-1); // indices for bottom and top of the stack
-    int i; // array scan index
-    
-    // Get the indices of points with min x-coord and min|max y-coord
-    int minmin = 0, minmax;
-    float xmin = P[0].x;
-    for (i=1; i<n; i++)
-      if (P[i].x != xmin) break;
-    minmax = i-1;
-    if (minmax == n-1) { // degenerate case: all x-coords == xmin
-      H[++top] = P[minmin];
-      if (P[minmax].y != P[minmin].y) // a nontrivial segment
-	H[++top] = P[minmax];
-      H[++top] = P[minmin]; // add polygon endpoint
-      return top+1;
-    }
-
-    // Get the indices of points with max x-coord and min|max y-coord
-    int maxmin, maxmax = n-1;
-    float xmax = P[n-1].x;
-    for (i=n-2; i>=0; i--)
-      if (P[i].x != xmax) break;
-    maxmin = i+1;
-    
-    // Compute the lower hull on the stack H
-    H[++top] = P[minmin]; // push minmin point onto stack
-    i = minmax;
-    while (++i <= maxmin) {
-      // the lower line joins P[minmin] with P[maxmin]
-      if (isLeft( P[minmin], P[maxmin], P[i]) >= 0 && i < maxmin)
-	continue; // ignore P[i] above or on the lower line
-      while (top > 0) { // there are at least 2 points on the stack
-	// test if P[i] is left of the line at the stack top
-	if (isLeft( H[top-1], H[top], P[i]) > 0)
-	  break; // P[i] is a new hull vertex
-	else
-	  top--; // pop top point off stack
-      }
-      H[++top] = P[i]; // push P[i] onto stack
-    }
-    // Next, compute the upper hull on the stack H above the bottom hull
-    if (maxmax != maxmin) // if distinct xmax points
-      H[++top] = P[maxmax]; // push maxmax point onto stack
-    bot = top; // the bottom point of the upper hull stack
-    i = maxmin;
-    while (--i >= minmax) {
-      // the upper line joins P[maxmax] with P[minmax]
-      if (isLeft( P[maxmax], P[minmax], P[i]) >= 0 && i > minmax)
-	continue; // ignore P[i] below or on the upper line
-      while (top > bot) { // at least 2 points on the upper stack
-	// test if P[i] is left of the line at the stack top
-	if (isLeft( H[top-1], H[top], P[i]) > 0)
-	  break; // P[i] is a new hull vertex
-	else
-	  top--; // pop top point off stack
-      }
-      H[++top] = P[i]; // push P[i] onto stack
-    }
-    if (minmax != minmin)
-      H[++top] = P[minmin]; // push joining endpoint onto stack
-    return top+1;
-  }
-
   void SurfPlot::SetData(const double*x, const double*y, const double*z, int nx, int ny) {
     xcount = nx;
     ycount = ny;
@@ -163,19 +63,20 @@ namespace FreeMat {
     for (int i=0;i<(xcount-1);i++)
       for (int j=0;j<(ycount-1);j++) {
 	quad3d t;
-	t.pts[0].x = xvals[i]-x_center;
-	t.pts[0].y = yvals[j]-y_center;
-	t.pts[0].z = zvals[j+i*ycount]-z_center;
-	t.pts[1].x = xvals[i+1]-x_center;
-	t.pts[1].y = yvals[j]-y_center;
-	t.pts[1].z = zvals[j+(i+1)*ycount]-z_center;
-	t.pts[2].x = xvals[i+1]-x_center;
-	t.pts[2].y = yvals[j+1]-y_center;
-	t.pts[2].z = zvals[j+1+(i+1)*ycount]-z_center;
-	t.pts[3].x = xvals[i]-x_center;
-	t.pts[3].y = yvals[j+1]-y_center;
-	t.pts[3].z = zvals[j+1+i*ycount]-z_center;
-	t.meanz = (zvals[j+i*ycount]+zvals[j+(i+1)*ycount]+zvals[j+1+(i+1)*ycount]+zvals[j+1+i*ycount])/4.0;
+	t.pts[0].x = XAxis.Normalize(xvals[i])-0.5;
+	t.pts[0].y = YAxis.Normalize(yvals[j])-0.5;
+	t.pts[0].z = ZAxis.Normalize(zvals[j+i*ycount])-0.5;
+	t.pts[1].x = XAxis.Normalize(xvals[i+1])-0.5;
+	t.pts[1].y = YAxis.Normalize(yvals[j])-0.5;
+	t.pts[1].z = ZAxis.Normalize(zvals[j+(i+1)*ycount])-0.5;
+	t.pts[2].x = XAxis.Normalize(xvals[i+1])-0.5;
+	t.pts[2].y = YAxis.Normalize(yvals[j+1])-0.5;
+	t.pts[2].z = ZAxis.Normalize(zvals[j+1+(i+1)*ycount])-0.5;
+	t.pts[3].x = XAxis.Normalize(xvals[i])-0.5;
+	t.pts[3].y = YAxis.Normalize(yvals[j+1])-0.5;
+	t.pts[3].z = ZAxis.Normalize(zvals[j+1+i*ycount])-0.5;
+	t.meanz = ZAxis.Normalize((zvals[j+i*ycount]+zvals[j+(i+1)*ycount]+
+				   zvals[j+1+(i+1)*ycount]+zvals[j+1+i*ycount])/4.0) - 0.5;
 	t.color = (t.meanz-z_min)/(z_max-z_min)*255;
 	quads.push_back(t);
       }
@@ -198,7 +99,7 @@ namespace FreeMat {
       y_max = std::max(y_max,yvals[i]);
     }
     y_center = (y_min+y_max)/2.0;
-    YAxis.SetDataRange(x_min,x_max);
+    YAxis.SetDataRange(y_min,y_max);
 
     z_min = zvals[0];
     z_max = zvals[0];
@@ -207,7 +108,7 @@ namespace FreeMat {
       z_max = std::max(z_max,zvals[i]);
     }
     z_center = (z_min+z_max)/2.0;
-    ZAxis.SetDataRange(x_min,x_max);
+    ZAxis.SetDataRange(z_min,z_max);
     
     // Now, we also need the maximum radius.
     max_radius = 0;
@@ -219,6 +120,11 @@ namespace FreeMat {
 	double diff_r = sqrt(diff_x*diff_x + diff_y*diff_y + diff_z*diff_z);
 	max_radius = std::max(max_radius,diff_r);
       }
+
+    max_radius = sqrt(3.0)/2.0;
+    x_min = y_min = z_min = -0.5;
+    x_max = y_max = z_max = 0.5;
+    x_center = y_center = z_center = 0.0;
   }
 
   SurfPlot::SurfPlot(int width, int height) : PrintableWidget(0,0,width,height){
@@ -228,8 +134,13 @@ namespace FreeMat {
     xvals = NULL;
     yvals = NULL;
     zvals = NULL;
-    azim = 0;
-    elev = 0;
+    azim = 35;
+    elev = -20;
+    xlabel = "x-axis";
+    ylabel = "y-axis";
+    zlabel = "z-axis";
+    dragging = false;
+    grid = true;
   }
 
   SurfPlot::~SurfPlot() {
@@ -238,24 +149,21 @@ namespace FreeMat {
   void SurfPlot::OnMouseDown(int x, int y) {
     beginx = x;
     beginy = y;
+    dragging = true;
   }
 
   void SurfPlot::OnMouseUp(int x, int y) {
+    dragging = false;
+    redraw();
   }
 
   void SurfPlot::OnDrag(int x, int y) {
-//     float spin_quat[4];
-//     int szx, szy;
-//     szx = m_width;
-//     szy = m_height;
-//     trackball(spin_quat,
-// 	      (2.0*beginx - szx) / szx / 10,
-// 	      -(szy - 2.0*beginy) / szy / 10,
-// 	      (2.0*x - szx) / szx / 10,
-// 	      -(szy - 2.0*y) / szy / 10);
-//     add_quats( spin_quat, quat, quat );
-    elev += (y - beginy)/10;
-    azim += (x - beginx)/10;
+    elev -= (y - beginy);
+    azim += (x - beginx);
+    elev = (elev + 360) % 360;
+    azim = (azim + 360) % 360;
+    beginx = x;
+    beginy = y;    
     redraw();
   }
 
@@ -271,6 +179,8 @@ namespace FreeMat {
     } else if (event == FL_DRAG) {
       OnDrag(Fl::event_x(),Fl::event_y());
       return 1;
+    } else if (event == FL_RELEASE) {
+      OnMouseUp(Fl::event_x(),Fl::event_y());
     }
     return 0;
   }
@@ -296,56 +206,87 @@ namespace FreeMat {
     memcpy(colormap,cmap,sizeof(double)*256*3);
   }
 
-  bool OnHull(int hull_count, Point* chull, int ndx) {
-    bool found;
-    int i;
-    i = 0;
-    found = false;
-    while (!found && i < hull_count) {
-      found = chull[i].ptnum == ndx;
-      i++;
-    }
-    return found;
-  }
-  
-  Point FindCHullPoint(int hull_count, Point* chull, int ndx) {
-    for (int i=0;i<hull_count;i++)
-      if (chull[i].ptnum == ndx)
-	return chull[i];
-    throw Exception("Unexpected error processing convex hull!");
-  }
 
-  void SurfPlot::DrawAxis(GraphicsContext &gc, const char *label,
+  void SurfPlot::DrawAxis(GraphicsContext &gc, std::string label,
 			  pt3d a_start, pt3d a_stop,
-			  NewAxis& ref, pt3d unit) {
+			  NewAxis& ref, pt3d unit,
+			  bool isZ) {
     gc.SetForeGroundColor(Color("black"));
     gc.DrawLine(MapPoint(a_start),MapPoint(a_stop));
-    gc.SetFont(12);
     double tmin, tdelta;
     int tcount;
     int axlen;
     axlen = sqrt(pow(scaley*(a_stop.y-a_start.y),2.0) + 
 		 pow(scalex*(a_stop.x-a_start.x),2.0));
     ref.SetAxisLength(axlen); 
-    ref.GetIntervals(tmin,tdelta,tcount);
-    for (int i=0;i<tcount;i++) {
-      Point2D h_start, h_stop;
+    std::vector<double> tics = ref.GetTickLocations();
+    std::vector<std::string> labs = ref.GetTickLabels();
+    float deltx, delty;
+    deltx = unit.x*scalex;
+    delty = unit.y*scaley;
+    float rad;
+    rad = std::max(1e-6,sqrt(deltx*deltx+delty*delty));
+    deltx /= rad;
+    delty /= rad;
+    int maxlabellength = 0;
+    for (int i=0;i<tics.size();i++) {
+      double t;
+      t = ref.Normalize(tics[i]);
+      Point2D ex = gc.GetTextExtent(labs[i]);
+      maxlabellength = std::max(maxlabellength,ex.x);
       pt3d tmp;
-      tmp.x = a_start.x + i/((double) tcount-1)*(a_stop.x-a_start.x);
-      tmp.y = a_start.y + i/((double) tcount-1)*(a_stop.y-a_start.y);
-      h_start = MapPoint(tmp);
-      float deltx, delty;
-      deltx = unit.x*scalex;
-      delty = unit.y*scaley;
+      tmp.x = a_start.x + t*(a_stop.x-a_start.x);
+      tmp.y = a_start.y + t*(a_stop.y-a_start.y);
+      Point2D h_start = MapPoint(tmp);
+      Point2D h_stop, h_text;
       if ((deltx != 0) || (delty != 0)) {
-	h_stop.x = h_start.x + deltx*10.0/sqrt(deltx*deltx+delty*delty);
-	h_stop.y = h_start.y + delty*10.0/sqrt(deltx*deltx+delty*delty);
+	h_stop.x = h_start.x + deltx*10.0;
+	h_stop.y = h_start.y + delty*10.0;
 	gc.DrawLine(h_start,h_stop);
+	h_text.x = h_start.x + deltx*13.0;
+	h_text.y = h_start.y + delty*13.0;
+	if (delty == 0) {
+	  gc.DrawTextStringAligned(labs[i],h_text,
+				   LR_RIGHT,
+				   TB_BOTTOM);
+	} else {
+	  if (deltx>0)
+	    gc.DrawTextStringAligned(labs[i],h_text,
+				     LR_LEFT,
+				     TB_CENTER);
+	  else
+	    gc.DrawTextStringAligned(labs[i],h_text,
+				     LR_RIGHT,
+				     TB_CENTER);
+	}
+      }
+    }
+    if (!label.empty()) {
+      pt3d lab;
+      lab.x = (a_start.x + a_stop.x)/2;
+      lab.y = (a_start.y + a_stop.y)/2;
+      Point2D h_mid = MapPoint(lab);
+      h_mid.x += deltx*(maxlabellength+25);
+      h_mid.y += delty*(maxlabellength+25);
+      if (isZ)
+	gc.DrawTextStringAligned(label,h_mid,
+				 LR_CENTER,
+				 TB_CENTER,
+				 ORIENT_90);
+      else {
+	if (deltx>0)
+	  gc.DrawTextStringAligned(label,h_mid,
+				   LR_LEFT,
+				   TB_CENTER);
+	else
+	  gc.DrawTextStringAligned(label,h_mid,
+				   LR_RIGHT,
+				   TB_CENTER);
       }
     }
   }
 
-  void SurfPlot::DrawAxisTest(GraphicsContext &gc, const char *label,
+  void SurfPlot::DrawAxisTest(GraphicsContext &gc, std::string label,
 			      pt3d q[8], int a_start[4], int a_stop[4],
 			      int m_height, NewAxis& ref, pt3d units[4],
 			      bool Zaxis) {
@@ -367,7 +308,7 @@ namespace FreeMat {
 	  optindex = i;
 	}
       DrawAxis(gc,label,q[a_start[optindex]],q[a_stop[optindex]],
-	       ref,units[optindex]);
+	       ref,units[optindex],true);
     } else {
       // Other axes should be bottom most
       float cost = -1e100;
@@ -378,8 +319,111 @@ namespace FreeMat {
 	  optindex = i;
 	}
       DrawAxis(gc,label,q[a_start[optindex]],q[a_stop[optindex]],
-	       ref,units[optindex]);
+	       ref,units[optindex],false);
     }
+  }
+
+  static pt3d crossprod(pt3d v1, pt3d v2) {
+    pt3d temp;
+    temp.x = (v1.y * v2.z) - (v1.z * v2.y);
+    temp.y = (v1.z * v2.x) - (v1.x * v2.z);
+    temp.z = (v1.x * v2.y) - (v1.y * v2.x);
+    return temp;
+  }
+  
+  void SurfPlot::DrawGridLines(GraphicsContext &gc, float m[4][4],
+			       pt3d delta, pt3d start, pt3d stop,
+			       NewAxis &ref) {
+    std::vector<double> tics = ref.GetTickLocations();
+    gc.SetForeGroundColor(Color("light grey"));
+    gc.SetLineStyle(LINE_DOTTED);
+    for (int i=0;i<tics.size();i++) {
+      pt3d tstart, tstop;
+      double tloc;
+      tloc = ref.Normalize(tics[i])-0.5;
+      tstart = start;
+      tstop = stop;
+      tstart.x += delta.x*tloc; tstop.x += delta.x*tloc;
+      tstart.y += delta.y*tloc; tstop.y += delta.y*tloc;
+      tstart.z += delta.z*tloc; tstop.z += delta.z*tloc;
+      gc.DrawLine(XformPoint(tstart,m),XformPoint(tstop,m));
+    }
+  }
+
+  void SurfPlot::DrawGrid(GraphicsContext &gc, float m[4][4]) {
+    pt3d delta, start, stop;
+    // XY plane, Zneg - x
+    delta.x = 1; delta.y = 0; delta.z = 0;
+    start.x = 0; start.y = -0.5; start.z = -0.5;
+    stop.x = 0; stop.y = 0.5; stop.z = -0.5;
+    if (m[2][2] > 0)
+      DrawGridLines(gc,m,delta,start,stop,XAxis);
+    // XY plane, Zpos - x
+    delta.x = 1; delta.y = 0; delta.z = 0;
+    start.x = 0; start.y = -0.5; start.z = 0.5;
+    stop.x = 0; stop.y = 0.5; stop.z = 0.5;
+    if (m[2][2] < 0)
+        DrawGridLines(gc,m,delta,start,stop,XAxis);
+    // XZ plane, Yneg - x
+    delta.x = 1; delta.y = 0; delta.z = 0;
+    start.x = 0; start.y = -0.5; start.z = -0.5;
+    stop.x = 0; stop.y = -0.5; stop.z = 0.5;
+    if (m[1][2] > 0)
+      DrawGridLines(gc,m,delta,start,stop,XAxis);
+    // XZ plane, Ypos - x
+    delta.x = 1; delta.y = 0; delta.z = 0;
+    start.x = 0; start.y = 0.5; start.z = -0.5;
+    stop.x = 0; stop.y = 0.5; stop.z = 0.5;
+    if (m[1][2] < 0)
+      DrawGridLines(gc,m,delta,start,stop,XAxis);
+    // YZ plane, Xneg - y
+    delta.x = 0; delta.y = 1; delta.z = 0;
+    start.x = -0.5; start.y = 0; start.z = -0.5;
+    stop.x = -0.5; stop.y = 0; stop.z = 0.5;
+    if (m[0][2] > 0)
+      DrawGridLines(gc,m,delta,start,stop,YAxis);
+    // YZ plane, Xpos - y
+    delta.x = 0; delta.y = 1; delta.z = 0;
+    start.x = 0.5; start.y = 0; start.z = -0.5;
+    stop.x = 0.5; stop.y = 0; stop.z = 0.5;
+    if (m[0][2] < 0)
+      DrawGridLines(gc,m,delta,start,stop,YAxis);
+    // YX plane, Zneg - y
+    delta.x = 0; delta.y = 1; delta.z = 0;
+    start.x = -0.5; start.y = 0; start.z = -0.5;
+    stop.x = 0.5; stop.y = 0; stop.z = -0.5;
+    if (m[2][2] > 0)
+      DrawGridLines(gc,m,delta,start,stop,YAxis);
+    // YX plane, Zpos - y
+    delta.x = 0; delta.y = 1; delta.z = 0;
+    start.x = -0.5; start.y = 0; start.z = 0.5;
+    stop.x = 0.5; stop.y = 0; stop.z = 0.5;
+    if (m[2][2] < 0)
+      DrawGridLines(gc,m,delta,start,stop,YAxis);
+    // ZX plane, Yneg - z
+    delta.x = 0; delta.y = 0; delta.z = 1;
+    start.x = -0.5; start.y = -0.5; start.z = 0;
+    stop.x = 0.5; stop.y = -0.5; stop.z = 0;
+    if (m[1][2] > 0)
+      DrawGridLines(gc,m,delta,start,stop,ZAxis);
+    // XZ plane, Ypos - x
+    delta.x = 0; delta.y = 0; delta.z = 1;
+    start.x = -0.5; start.y = 0.5; start.z = 0;
+    stop.x = 0.5; stop.y = 0.5; stop.z = 0;
+    if (m[1][2] < 0)
+      DrawGridLines(gc,m,delta,start,stop,ZAxis);
+    // YZ plane, Xneg - y
+    delta.x = 0; delta.y = 0; delta.z = 1;
+    start.x = -0.5; start.y = -0.5; start.z = 0;
+    stop.x = -0.5; stop.y = 0.5; stop.z = 0;
+    if (m[0][2] > 0)
+      DrawGridLines(gc,m,delta,start,stop,ZAxis);
+    // YZ plane, Xpos - y
+    delta.x = 0; delta.y = 0; delta.z = 1;
+    start.x = 0.5; start.y = -0.5; start.z = 0;
+    stop.x = 0.5; stop.y = 0.5; stop.z = 0;
+    if (m[0][2] < 0)
+      DrawGridLines(gc,m,delta,start,stop,ZAxis);
   }
 
   void SurfPlot::DrawAxes(GraphicsContext &gc, float m[4][4]) {
@@ -426,24 +470,72 @@ namespace FreeMat {
 
     // Draw the box behind the data
     gc.SetForeGroundColor(Color("black"));
-    if (0) {
-      if ((q[0].z+q[1].z) < 0) gc.DrawLine(MapPoint(q[0]),MapPoint(q[1]));
-      if ((q[1].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[2]));
-      if ((q[2].z+q[3].z) < 0) gc.DrawLine(MapPoint(q[2]),MapPoint(q[3]));
-      if ((q[3].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[0]));
-      if ((q[3].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[4]));
-      if ((q[4].z+q[5].z) < 0) gc.DrawLine(MapPoint(q[4]),MapPoint(q[5]));
-      if ((q[5].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[6]));
-      if ((q[6].z+q[7].z) < 0) gc.DrawLine(MapPoint(q[6]),MapPoint(q[7]));
-      if ((q[7].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[4]));
-      if ((q[7].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[0]));
-      if ((q[1].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[6]));
-      if ((q[5].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[2]));
-    }
+    gc.SetLineStyle(LINE_SOLID);
+
     // To do this, we test each axis case,
-    DrawAxisTest(gc,"xaxis",q,a_start_x,a_stop_x,m_height,XAxis,units_x,false);
-    DrawAxisTest(gc,"yaxis",q,a_start_y,a_stop_y,m_height,YAxis,units_y,false);
-    DrawAxisTest(gc,"zaxis",q,a_start_z,a_stop_z,m_height,ZAxis,units_z,true);
+    DrawAxisTest(gc,xlabel,q,a_start_x,a_stop_x,m_height,XAxis,units_x,false);
+    DrawAxisTest(gc,ylabel,q,a_start_y,a_stop_y,m_height,YAxis,units_y,false);
+    DrawAxisTest(gc,zlabel,q,a_start_z,a_stop_z,m_height,ZAxis,units_z,true);
+  }
+
+  void SurfPlot::DrawPanel(GraphicsContext &gc, pt3d p[4], float m[4][4], bool fill) {
+    Point2D x[4];
+    for (int i=0;i<4;i++) 
+      x[i] = XformPoint(p[i],m);
+    if (fill)
+      gc.FillQuad(x[0],x[1],x[2],x[3]);
+    else
+      gc.DrawQuad(x[0],x[1],x[2],x[3]);
+  }
+
+  void SurfPlot::DrawCube(GraphicsContext &gc, float m[4][4], bool fill) {
+    pt3d p[4];
+    if (fill)
+      gc.SetForeGroundColor(Color("white"));
+    else
+      gc.SetForeGroundColor(Color("black"));
+    // zmin panel
+    p[0].x = -0.5; p[0].y = -0.5; p[0].z = -0.5;
+    p[1].x = -0.5; p[1].y = 0.5;  p[1].z = -0.5;
+    p[2].x = 0.5;  p[2].y = 0.5;  p[2].z = -0.5;
+    p[3].x = 0.5;  p[3].y = -0.5; p[3].z = -0.5;
+    DrawPanel(gc,p,m,fill);
+    // zmax panel
+    p[0].x = -0.5; p[0].y = -0.5; p[0].z = 0.5;
+    p[1].x = -0.5; p[1].y = 0.5;  p[1].z = 0.5;
+    p[2].x = 0.5;  p[2].y = 0.5;  p[2].z = 0.5;
+    p[3].x = 0.5;  p[3].y = -0.5; p[3].z = 0.5;
+    DrawPanel(gc,p,m,fill);
+    // xmin panel
+    p[0].x = -0.5; p[0].y = -0.5; p[0].z = -0.5;
+    p[1].x = -0.5; p[1].y = 0.5;  p[1].z = -0.5;
+    p[2].x = -0.5; p[2].y = 0.5;  p[2].z = 0.5;
+    p[3].x = -0.5; p[3].y = -0.5;  p[3].z = 0.5;
+    DrawPanel(gc,p,m,fill);
+    // xmax panel
+    p[0].x = 0.5; p[0].y = -0.5; p[0].z = -0.5;
+    p[1].x = 0.5; p[1].y = 0.5;  p[1].z = -0.5;
+    p[2].x = 0.5; p[2].y = 0.5;  p[2].z = 0.5;
+    p[3].x = 0.5; p[3].y = -0.5;  p[3].z = 0.5;
+    DrawPanel(gc,p,m,fill);
+    // ymin panel
+    p[0].x = -0.5; p[0].y = -0.5; p[0].z = -0.5;
+    p[1].x = 0.5;  p[1].y = -0.5; p[1].z = -0.5;
+    p[2].x = 0.5;  p[2].y = -0.5; p[2].z = 0.5;
+    p[3].x = -0.5; p[3].y = -0.5; p[3].z = 0.5;
+    DrawPanel(gc,p,m,fill);
+    // ymax panel
+    p[0].x = -0.5; p[0].y = 0.5; p[0].z = -0.5;
+    p[1].x = 0.5;  p[1].y = 0.5; p[1].z = -0.5;
+    p[2].x = 0.5;  p[2].y = 0.5; p[2].z = 0.5;
+    p[3].x = -0.5; p[3].y = 0.5; p[3].z = 0.5;
+    DrawPanel(gc,p,m,fill);
+  }
+  
+  Point2D SurfPlot::XformPoint(pt3d x, float m[4][4]) {
+    pt3d y;
+    transformPoint(x,y,m);
+    return MapPoint(y);
   }
   
   void SurfPlot::OnDraw(GraphicsContext &gc) {
@@ -451,17 +543,17 @@ namespace FreeMat {
     double frm[4][4];
     int i, j;
 
+    gc.SetFont(12);
     gc.SetBackGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("light grey"));
-    gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(0, 0, m_width, m_height));
 
     double cosaz, sinaz;
     double cosel, sinel;
-    cosaz = cos(azim*M_PI/180.0);
-    sinaz = sin(azim*M_PI/180.0);
-    cosel = cos(elev*M_PI/180.0);
-    sinel = sin(elev*M_PI/180.0);
+    cosaz = cos((90+azim)*M_PI/180.0);
+    sinaz = sin((90+azim)*M_PI/180.0);
+    cosel = cos((elev-180)*M_PI/180.0);
+    sinel = sin((elev-180)*M_PI/180.0);
     m[0][0] = cosaz;
     m[0][1] = sinaz;
     m[0][2] = 0;
@@ -484,7 +576,6 @@ namespace FreeMat {
     for (i=0;i<4;i++)
       for (j=0;j<4;j++)
 	m[i][j] = frm[i][j];
-    //    build_rotmatrix(m, quat);
 
     std::vector<quad3d> tquads;
     // Transform the quads
@@ -502,13 +593,28 @@ namespace FreeMat {
     // Sort the transformed quads...
     std::sort(tquads.begin(),tquads.end());
     // Calculate the scale and translate parameters
-    scalex = (m_width-20)/(2*max_radius);
-    scaley = (m_height-20)/(2*max_radius);
+    // Calculate the largest axis label (x & y)
+    Point2D ex, ey;
+    ex = gc.GetTextExtent(xlabel);
+    ey = gc.GetTextExtent(ylabel);
+    int maxlen = std::max(ex.x,ey.x);
+    scalex = (m_width-50-maxlen)/(2*max_radius);
+    scaley = (m_height-50-maxlen)/(2*max_radius);
     offsetx = m_width/2;
     offsety = m_height/2;
 
+    // White out the box
+    if (dragging) {
+      DrawCube(gc,m,true);
+      DrawCube(gc,m,false);
+      return;
+    } else {
+      DrawCube(gc,m,true);
+    }
+    
+    DrawGrid(gc,m);
     DrawAxes(gc,m);
-
+    
     // Draw them to the screen...
     for (i=0;i<tquads.size();i++) {
       gc.SetForeGroundColor(Color("white"));
@@ -526,38 +632,6 @@ namespace FreeMat {
  		  MapPoint(tquads[i].pts[3]));
     }
 
-    // Draw the box in front of the data
-    #if 0
-    gc.SetForeGroundColor(Color("black"));
-    if ((q1.z+q2.z) > 0) gc.DrawLine(MapPoint(q1),MapPoint(q2));
-    if ((q2.z+q3.z) > 0) gc.DrawLine(MapPoint(q2),MapPoint(q3));
-    if ((q3.z+q4.z) > 0) gc.DrawLine(MapPoint(q3),MapPoint(q4));
-    if ((q4.z+q1.z) > 0) gc.DrawLine(MapPoint(q4),MapPoint(q1));
-    if ((q4.z+q5.z) > 0) gc.DrawLine(MapPoint(q4),MapPoint(q5));
-    if ((q5.z+q6.z) > 0) gc.DrawLine(MapPoint(q5),MapPoint(q6));
-    if ((q6.z+q7.z) > 0) gc.DrawLine(MapPoint(q6),MapPoint(q7));
-    if ((q7.z+q8.z) > 0) gc.DrawLine(MapPoint(q7),MapPoint(q8));
-    if ((q8.z+q5.z) > 0) gc.DrawLine(MapPoint(q8),MapPoint(q5));
-    if ((q8.z+q1.z) > 0) gc.DrawLine(MapPoint(q8),MapPoint(q1));
-    if ((q2.z+q7.z) > 0) gc.DrawLine(MapPoint(q2),MapPoint(q7));
-    if ((q6.z+q3.z) > 0) gc.DrawLine(MapPoint(q6),MapPoint(q3));
-
-    // Check the x-axis options - there are 4 of these
-    // p1-p2 p3-p4 p7-p8 p5-p6
-    // We want the ones in front
-    gc.SetForeGroundColor(Color("black"));
-    
-    if ((q1.z+q2.z) > 0) gc.DrawLine(MapPoint(q1),MapPoint(q2));
-    if ((q3.z+q4.z) > 0) gc.DrawLine(MapPoint(q3),MapPoint(q4));
-    if ((q7.z+q8.z) > 0) gc.DrawLine(MapPoint(q7),MapPoint(q8));
-    if ((q5.z+q6.z) > 0) gc.DrawLine(MapPoint(q5),MapPoint(q6));
-    
-    // Check the y-axis options - there are 4 of these
-    // p2-p3 p6-p7 p1-p4 p5-p8
-    // Check the z-axis options - there are 4 of these
-    // p1-p8 p2-p7 p3-p6 p4-p5
-    #endif
-    
   }
 }
 

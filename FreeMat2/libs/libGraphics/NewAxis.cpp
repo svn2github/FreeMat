@@ -72,14 +72,12 @@ namespace FreeMat {
     tBegin = 0;
     tEnd = 1;
     isLogarithmic = false;
-    space = 10;
-    tickLength = 5;
     axisLength = 200;
     manualmode = false;
   }
 
   int NewAxis::GetNominalTickCount() {
-    return std::max(2,(int)(axisLength/50));
+    return std::max(3,(int)(axisLength/75));
   }
 
   void NewAxis::SetAxisLength(int npix) {
@@ -96,29 +94,40 @@ namespace FreeMat {
     AutoSetAxis();
   }
 
+  void NewAxis::SetTicks() {
+    tickLocations.clear();
+    tlabels.clear();
+    bool exponentialForm;
+    exponentialForm = false;
+    for (int i=0;i<tCount;i++) {
+      double tloc = tBegin+i*tDelt;
+      tickLocations.push_back(tloc);
+      if (tloc != 0.0)
+	exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
+    }
+    for (int i=0;i<tCount;i++) {
+      tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
+    }
+  }
+
   void NewAxis::ManualSetAxis(double t1, double t2) {
     manualmode = true;
     int m = GetNominalTickCount();
     double delt = (t2-t1)/m;
-    int n = floor(log10(delt));
+    int n = ceil(log10(delt));
     double rdelt = delt/pow(10.0,(double)n);
-    int p = ceil(log2(rdelt));
-    double edelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+    int p = floor(log2(rdelt));
+    tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
     tStart = t1;
     tStop = t2;
-    tBegin = edelt*ceil(t1/edelt);
-    tEnd = floor(t2/edelt)*edelt;
+    tBegin = tDelt*ceil(t1/tDelt);
+    tEnd = floor(t2/tDelt)*tDelt;
     int mprime;
-    mprime = ceil((tEnd-tBegin)/edelt);
-    if ((tBegin+mprime*edelt) > t2)
+    mprime = ceil((tEnd-tBegin)/tDelt);
+    if ((tBegin+mprime*tDelt) > t2)
       mprime--;
-    tCount = mprime;
-    tickLocations.clear();
-    tlabels.clear();
-    for (int i=0;i<mprime;i++) {
-      tickLocations.push_back(tBegin+i*edelt);
-      tlabels.push_back(TrimPrint(tBegin+i*edelt,false));
-    }
+    tCount = mprime+1;
+    SetTicks();
   }
 
   void NewAxis::GetIntervals(double &t1, double &t2, int &tn) {
@@ -131,25 +140,20 @@ namespace FreeMat {
     manualmode = false;
     int m = GetNominalTickCount();
     double delt = (tMax-tMin)/m;
-    int n = floor(log10(delt));
+    int n = ceil(log10(delt));
     double rdelt = delt/pow(10.0,(double)n);
-    int p = ceil(log2(rdelt));
-    double edelt = pow(10.0,(double) n)*pow(2.0,(double) p);
-    tStart = floor(tMin/edelt)*edelt;
-    tStop = ceil(tMax/edelt)*edelt;
+    int p = floor(log2(rdelt));
+    tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+    tStart = floor(tMin/tDelt)*tDelt;
+    tStop = ceil(tMax/tDelt)*tDelt;
     tBegin = tStart;
     tEnd = tStop;
     int mprime;
-    mprime = ceil((tEnd-tBegin)/edelt);
-    if ((tBegin+(mprime-1)*edelt) > tMax)
+    mprime = ceil((tEnd-tBegin)/tDelt);
+    if ((tBegin+(mprime-1)*tDelt) > tMax)
       mprime--;
-    tCount = mprime;
-    tickLocations.clear();
-    tlabels.clear();
-    for (int i=0;i<mprime;i++) {
-      tickLocations.push_back(tBegin+i*edelt);
-      tlabels.push_back(TrimPrint(tBegin+i*edelt,false));
-    }
+    tCount = mprime+1;
+    SetTicks();
   }
 
   void NewAxis::SetLogarithmic(bool logarithmic) {
@@ -159,10 +163,18 @@ namespace FreeMat {
 
   void NewAxis::GetAxisExtents(double&t1, double& t2) {
     t1 = tStart;
-    t2 = tEnd;
+    t2 = tStop;
   }
 
   double NewAxis::Normalize(double t) {
-    return (t-tStart)/(tEnd-tStart);
+    return (t-tStart)/(tStop-tStart);
+  }
+
+  std::vector<double> NewAxis::GetTickLocations() {
+    return tickLocations;
+  }
+
+  std::vector<std::string> NewAxis::GetTickLabels() {
+    return tlabels;
   }
 }

@@ -192,7 +192,74 @@ namespace FreeMat {
     redraw();
   }
 
-  void Plot2D::DrawAxes(GraphicsContext &gc, Rect2D viewport) {
+  void Plot2D::DrawAxes(GraphicsContext &gc) {
+    double xmin, xmax, ymin, ymax;
+    int xc_min, xc_max, yc_min, yc_max;
+    xAxis.GetAxisExtents(xmin,xmax);
+    yAxis.GetAxisExtents(ymin,ymax);
+    MapPoint(xmin,ymin,xc_min,yc_min);
+    MapPoint(xmax,ymax,xc_max,yc_max);
+    gc.SetForeGroundColor(Color("black"));
+    gc.SetLineStyle(LINE_SOLID);
+    gc.DrawLine(Point2D(xc_min,yc_min),Point2D(xc_max,yc_min));
+    gc.DrawLine(Point2D(xc_min,yc_min),Point2D(xc_min,yc_max));
+    if (!xlabel.empty()) {
+      gc.DrawTextStringAligned(xlabel,
+			       Point2D((xc_min+xc_max)/2,
+				       yc_min+space+sze_textheight+space),
+			       LR_CENTER, TB_TOP);
+    }
+    if (!ylabel.empty()) {
+      gc.DrawTextStringAligned(ylabel,
+			       Point2D(space+sze_textheight,
+				       (yc_min+yc_max)/2),
+			       LR_CENTER, TB_TOP,
+			       ORIENT_90);
+    }
+    std::vector<double> xtics;
+    xtics = xAxis.GetTickLocations();
+    std::vector<std::string> xlabels;
+    xlabels = xAxis.GetTickLabels();
+    for (int i=0;i<xtics.size();i++) {
+      double xp, yp;
+      int xn, yn;
+      xp = xtics[i]; yp = ymin;
+      MapPoint(xp,yp,xn,yn);
+      gc.DrawTextStringAligned(xlabels[i],Point2D(xn,yn+ticlen),
+			       LR_CENTER, TB_TOP);
+      int xn2, yn2;
+      MapPoint(xp,ymax,xn2,yn2);
+      if (gridflag && (xn != xc_min) && (xn != xc_max)) {
+	gc.SetForeGroundColor(Color("light grey"));
+	gc.SetLineStyle(LINE_DOTTED);
+	gc.DrawLine(Point2D(xn,yn),Point2D(xn,yn2));
+      }
+      gc.SetForeGroundColor(Color("black"));
+      gc.SetLineStyle(LINE_SOLID);
+      gc.DrawLine(Point2D(xn,yn),Point2D(xn,yn-ticlen));
+    }
+    std::vector<double> ytics;
+    ytics = yAxis.GetTickLocations();
+    std::vector<std::string> ylabels;
+    ylabels = yAxis.GetTickLabels();
+    for (int i=0;i<ytics.size();i++) {
+      double xp, yp;
+      int xn, yn;
+      xp = xmin; yp = ytics[i];
+      MapPoint(xp,yp,xn,yn);
+      gc.DrawTextStringAligned(ylabels[i],Point2D(xn-5,yn),
+			       LR_RIGHT, TB_CENTER);
+      int xn2, yn2;
+      MapPoint(xmax,yp,xn2,yn2);
+      if (gridflag && (yn != yc_min) && (yn != yc_max)) {
+	gc.SetForeGroundColor(Color("light grey"));
+	gc.SetLineStyle(LINE_DOTTED);
+	gc.DrawLine(Point2D(xn,yn),Point2D(xn2,yn));
+      }
+      gc.SetForeGroundColor(Color("black"));
+      gc.SetLineStyle(LINE_SOLID);
+      gc.DrawLine(Point2D(xn,yn),Point2D(xn+ticlen,yn));
+    }
   }
 
   void Plot2D::MapPoint(double x, double y, int &xc, int &yc) {
@@ -200,7 +267,7 @@ namespace FreeMat {
     double yn = yAxis.Normalize(y);
     double u, v;
     u = viewport.x1 + xn*viewport.width;
-    v = viewport.y1 + yn*viewport.height;
+    v = viewport.y1 + (1-yn)*viewport.height;
     u = std::min(4096.0,std::max(-4096.0,u));
     v = std::min(4096.0,std::max(-4096.0,v));
     xc = (int) u;
@@ -227,10 +294,11 @@ namespace FreeMat {
     width -= 10;
     height -= 10;
 
-    int space = 10;
+    space = 10;
+    ticlen = 5;
     // A generic length for text
     Point2D t(gc.GetTextExtent("|"));
-    int sze_textheight = t.y;
+    sze_textheight = t.y;
 
     // The title is located space pixels down from the
     // top, and with the left corner at the center of
@@ -241,37 +309,57 @@ namespace FreeMat {
     int plotX;
     int plotY;
 
-    // Need space for the tic, text, and a spacer
-    plotWidth = width - 2*space - sze_textheight;
-    plotX = 2*space+sze_textheight;
+    std::vector<std::string> xlabels = xAxis.GetTickLabels();
+    std::vector<std::string> ylabels = xAxis.GetTickLabels();
+
+    // Need space for the text, and a spacer
+    plotWidth = width - space - sze_textheight;
+    plotX = space+sze_textheight;
     // If the label is active, subtract another text and spacer
     if (!ylabel.empty()) {
       plotWidth -= (space+sze_textheight);
       plotX += space+sze_textheight;
     }
 
+    // Adjust the width to handle the length of the last x-label
+    t = gc.GetTextExtent(xlabels.back());
+    plotWidth -= t.x/2;
+
+    // Adjust the plotX for the width of the labels on the y-axis
+    int maxwidth;
+    maxwidth = 0;
+    for (int i=0;i<ylabels.size();i++){ 
+      t = gc.GetTextExtent(ylabels[i]);
+      maxwidth = std::max(maxwidth,t.x);
+    }
+    plotX += maxwidth+space/2;
+    plotWidth -= (maxwidth+space/2);
+
     // Need space for the tic, text and a spacer
     plotHeight = height-2*space-sze_textheight;
-    plotY = 2*space+sze_textheight;
+    plotY = space;
     // If the label is active, subtract another text and spacer
     if (!xlabel.empty()) 
       plotHeight -= (space+sze_textheight);
 
-    // If the title is active, subtract another text and spacer
+    // If the title is active, subtract another text and 2 spacers
     if (!title.empty()) {
       plotHeight -= (space+sze_textheight);
       plotY += (space+sze_textheight);
     }
 
     gc.SetForeGroundColor(Color("black"));
-    gc.DrawTextStringAligned(title, Point2D(plotX + plotWidth/2,space),
-			     LR_CENTER, TB_TOP);
+    if (!title.empty())
+      gc.DrawTextStringAligned(title, Point2D(plotX + plotWidth/2,space),
+			       LR_CENTER, TB_TOP);
     gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));
     
 
     viewport = Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1);
-    DrawAxes(gc,viewport);
+    xAxis.SetAxisLength(plotWidth);
+    yAxis.SetAxisLength(plotHeight);
+    DrawAxes(gc);
     gc.PushClippingRegion(viewport);
 
     for (int i=0;i<data.size();i++)

@@ -41,6 +41,7 @@ namespace FreeMat {
      */
     double tBegin, tEnd;
     double tStart, tStop;
+    double tDelt;
     int tCount;
     /**
      * True if we are a log-axis
@@ -54,21 +55,9 @@ namespace FreeMat {
      * The locations of the ticks along the axis (in t-coordinates)
      */
     std::vector<double> tickLocations;
-    /**
-     * The title associated with the axis.
-     */
-    std::string title;
-    /**
-     * A parameter that controls the length of various spaces
-     * when the axis is rendered.
-     */
-    int space;
-    /**
-     * The length of the tick marks (in pixels).
-     */
-    int tickLength;
-    int axisLength;
     bool manualmode;
+    void SetTicks();
+    int axisLength;
   public:
     /**
      * Default constructor.
@@ -95,6 +84,8 @@ namespace FreeMat {
     void SetLogarithmic(bool);
     void GetAxisExtents(double& t1, double & t2);
     double Normalize(double);
+    std::vector<double> GetTickLocations();
+    std::vector<std::string> GetTickLabels();
   };
 }
 

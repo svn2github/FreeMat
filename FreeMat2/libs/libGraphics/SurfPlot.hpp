@@ -71,15 +71,22 @@ namespace FreeMat {
     void SurfaceToQuads();
     // Map a point to the viewport
     Point2D MapPoint(pt3d a);
+    Point2D XformPoint(pt3d a, float m[4][4]);
     // Draw the axes
     void DrawAxes(GraphicsContext &gc, float m[4][4]);
-    void DrawAxisTest(GraphicsContext &gc, const char *label,
+    void DrawAxisTest(GraphicsContext &gc, std::string label,
 		      pt3d q[8], int a_start[4], int a_stop[4],
 		      int m_height, NewAxis& ref, pt3d units[4],
 		      bool Zaxis);
-    void DrawAxis(GraphicsContext &gc, const char *label,
+    void DrawAxis(GraphicsContext &gc, std::string label,
 		  pt3d a_start, pt3d a_stop,
-		  NewAxis& ref, pt3d unit);
+		  NewAxis& ref, pt3d unit, bool isZ);
+    void DrawPanel(GraphicsContext &gc, pt3d p[4], float m[4][4], bool fill);
+    void DrawCube(GraphicsContext &gc, float m[4][4], bool fill);
+    void DrawGrid(GraphicsContext &gc, float m[4][4]);
+    void DrawGridLines(GraphicsContext &gc, float m[4][4],
+		       pt3d delta, pt3d start, pt3d stop, 
+		       NewAxis &ref);
   private:
     /*
      * The data for the surf model.
@@ -111,16 +118,20 @@ namespace FreeMat {
 
     double *colormap;
 
-    double azim;
-    double elev;
+    int azim;
+    int elev;
     //    float quat[4];
     int beginx;
     int beginy;
-    Axis *xAxis;
-    Axis *yAxis;
-    Axis *zAxis;
     int m_width;
     int m_height;
+    bool dragging;
+    bool grid;
+
+    std::string xlabel;
+    std::string ylabel;
+    std::string zlabel;
+    std::string title;
   };
 }
 

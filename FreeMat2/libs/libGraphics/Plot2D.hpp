@@ -127,7 +127,7 @@ namespace FreeMat {
     void draw();
     void resize(int, int, int, int);
     void MapPoint(double, double, int&, int&);
-    void DrawAxes(GraphicsContext& gc, Rect2D);
+    void DrawAxes(GraphicsContext& gc);
   private:
     /**
      * The vector of datasets.
@@ -160,6 +160,7 @@ namespace FreeMat {
      * A characteristic length in the construction of the plot.
      */
     int space;
+    int ticlen;
     /**
      * The hold flag for this plot.
      */

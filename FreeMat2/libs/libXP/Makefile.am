@@ -51,8 +51,10 @@ XPEditLine.cpp \
 XPLabel.hpp \
 XPLabel.cpp \
 XPVSlider.hpp \
-XPVSlider.cpp
+XPVSlider.cpp \
+FLTKGC.hpp \
+FLTKGC.cpp
 
 AUTOMAKE_OPTIONS 	= foreign
 
-INCLUDES= -I@top_srcdir@/libs/libFreeMat $(PNG_INCLUDES) $(TIFF_INCLUDES) $(JPEG_INCLUDES)
+INCLUDES= -I@top_srcdir@/libs/libFreeMat $(PNG_INCLUDES) $(TIFF_INCLUDES) $(JPEG_INCLUDES)  -I@top_srcdir@/libs/libFLTK

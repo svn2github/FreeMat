@@ -53,27 +53,22 @@ all default:
 	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} -${MAKEFLAGS}
 
 install:
-	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} install
-	@${ECHO} "= "tools; cd tools; ${MAKE} install
-	@${ECHO} "= "man; cd man; ${MAKE} install
-	@if [ "@HTML@" = yes ]; then \
-	    ${ECHO} "= "html; cd html; ${MAKE} install; \
-	else \
-	    true; \
-	fi
+#	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} install
+#	@${ECHO} "= "tools; cd tools; ${MAKE} install
+#	@${ECHO} "= "man; cd man; ${MAKE} install
+#	@if [ "@HTML@" = yes ]; then \
+#	    ${ECHO} "= "html; cd html; ${MAKE} install; \
+#	else \
+#	    true; \
+#	fi
 
 install-private: install
 	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} -${MAKEFLAGS} installPrivateHdrs
 
 clean:
-	@if [ "@PORT@" = yes ]; then \
-	    ${ECHO} "= "port; cd port; ${MAKE} -${MAKEFLAGS} clean; \
-	else \
-	    true; \
-	fi
 	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} -${MAKEFLAGS} clean
-	@${ECHO} "= "tools; cd tools; ${MAKE} -${MAKEFLAGS} clean
-	@${ECHO} "= "man; cd man; ${MAKE} -${MAKEFLAGS} clean
+#	@${ECHO} "= "tools; cd tools; ${MAKE} -${MAKEFLAGS} clean
+#	@${ECHO} "= "man; cd man; ${MAKE} -${MAKEFLAGS} clean
 #	-cd contrib/dbs; ${MAKE} -${MAKEFLAGS} clean
 #	-cd contrib/dbs/xtiff; ${MAKE} -${MAKEFLAGS} clean
 

@@ -1,6 +1,12 @@
 #include "WinTerminal.hpp"
+#include "XWindow.hpp"
 #include <string.h>
-#include <unistd.h>
+#include <algorithm>
+
+#include <direct.h>
+#define getcwd _getcwd
+#define S_ISREG(x) (x & _S_IFREG)
+
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
@@ -99,6 +105,7 @@ namespace FreeMat {
     UpdateLineCount();
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
+	messageContext = NULL;
   }
 
   void WinTerminal::MoveDown() {
@@ -274,14 +281,12 @@ namespace FreeMat {
 
   void WinTerminal::initialize(std::string path, Context *contxt) {
     char* pathdata = strdup(path.c_str());
-    // Search through the path
-    char *saveptr = (char*) malloc(sizeof(char)*1024);
     char* token;
-    token = strtok_r(pathdata,":",&saveptr);
+    token = strtok(pathdata,":");
     while (token != NULL) {
       if (strcmp(token,".") != 0)
-	dirTab.push_back(std::string(token));
-      token = strtok_r(NULL,":",&saveptr);
+		dirTab.push_back(std::string(token));
+      token = strtok(NULL,":");
     }
     context = contxt;
     rescanPath();
@@ -298,6 +303,7 @@ namespace FreeMat {
   }
 
   void WinTerminal::scanDirectory(std::string scdir) {
+#if 0
     // Open the directory
     DIR *dir;
 
@@ -318,6 +324,7 @@ namespace FreeMat {
       procFile(fname,fullname);
     }
     closedir(dir);
+#endif
   }
 
   void WinTerminal::procFile(char *fname, 
@@ -344,10 +351,6 @@ namespace FreeMat {
 	  context->insertFunctionGlobally(adef);
 	}
       }
-    } else if (S_ISLNK(filestat.st_mode)) {
-      int lncnt = readlink(fullname.c_str(),buffer,1024);
-      buffer[lncnt] = 0;
-      procFile(fname, std::string(buffer));
     }
   }
 
@@ -421,6 +424,55 @@ namespace FreeMat {
     return cp;
   }
   
+  /*.......................................................................
+   * Search backwards for the potential start of a filename. This
+   * looks backwards from the specified index in a given string,
+   * stopping at the first unescaped space or the start of the line.
+   *
+   * Input:
+   *  string  const char *  The string to search backwards in.
+   *  back_from      int    The index of the first character in string[]
+   *                        that follows the pathname.
+   * Output:
+   *  return        char *  The pointer to the first character of
+   *                        the potential pathname, or NULL on error.
+   */
+  static char *start_of_path(const char *string, int back_from)
+  {
+    int i, j;
+    /*
+     * Search backwards from the specified index.
+     */
+    for(i=back_from-1; i>=0; i--) {
+      int c = string[i];
+      /*
+       * Stop on unescaped spaces.
+       */
+      if(isspace((int)(unsigned char)c)) {
+	/*
+	 * The space can't be escaped if we are at the start of the line.
+	 */
+	if(i==0)
+	  break;
+	/*
+	 * Find the extent of the escape characters which precedes the space.
+	 */
+	for(j=i-1; j>=0 && string[j]=='\\'; j--)
+	  ;
+	/*
+	 * If there isn't an odd number of escape characters before the space,
+	 * then the space isn't escaped.
+	 */
+	if((i - 1 - j) % 2 == 0)
+	  break;
+      } 
+      else if (!isalpha(c) && !isdigit(c) && (c != '_') && (c != '.') && (c != '\\') && (c != '/'))
+	break;
+    };
+    return (char *)string + i + 1;
+  }
+
+
     std::vector<std::string> 
     WinTerminal::GetCompletions(const char *line, int word_end, 
 				std::string &matchString) {
@@ -455,6 +507,7 @@ namespace FreeMat {
       std::sort(completions.begin(),completions.end());
       return completions;
     } else {
+#if 0
       glob_t names;
       std::string pattern(tmp);
       pattern.append("*");
@@ -464,6 +517,7 @@ namespace FreeMat {
 	completions.push_back(names.gl_pathv[i]);
       globfree(&names);
       free(tmp);
+#endif
       return completions;
     }
   }

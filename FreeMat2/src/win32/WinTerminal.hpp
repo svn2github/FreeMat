@@ -42,7 +42,6 @@ namespace FreeMat {
     void UpdateLineCount();
     void Resize(int w, int h);
     void OnScroll(int scrollType);
-    virtual void ExecuteLine(const char* line);
     void initialize(std::string path, Context *contxt);
     virtual void rescanPath();
     virtual void scanDirectory(std::string scdir);
@@ -53,6 +52,9 @@ namespace FreeMat {
     virtual void warningMessage(const char* msg);
     virtual void setMessageContext(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
+    virtual void ExecuteLine(const char* line);
+    virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 
+						    std::string &matchString);
     virtual char* getLine(const char* prompt);
   };
 

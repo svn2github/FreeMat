@@ -12,7 +12,8 @@ enum {state_normal, state_click_waiting, state_box_start, state_box_anchored};
 
 HINSTANCE AppInstance;
 
-XWindow::XWindow() {
+XWindow::XWindow(WindowType wtype) {
+  m_type = wtype;
   m_window = CreateWindow("FreeMat Window",
 			  "Figure Window",
 			  WS_OVERLAPPEDWINDOW,
@@ -231,6 +232,66 @@ int XWindow::GetState() {
 void XWindow::GetBox(int &x1, int &y1, int &x2, int &y2) {
 }
 
+Point2D XWindow::GetCanvasSize() {
+  return Point2D(m_width,m_height);
+}
+
+Point2D XWindow::GetTextExtent(std::string label) {
+  Point2D a;
+  return a;
+}
+
+void XWindow::DrawTextString(std::string label, Point2D pos, OrientationType orient) {
+}
+
+void XWindow::SetFont(std::string fontname, int fontsize) {
+}
+
+Color XWindow::SetBackGroundColor(Color col) {
+  return col;
+}
+
+Color XWindow::SetForeGroundColor(Color col) {
+  return col;
+}
+
+LineStyleType XWindow::SetLineStyle(LineStyleType style) {
+  return style;
+}
+
+void XWindow::DrawLine(Point2D pos1, Point2D pos2) {
+}
+
+void XWindow::DrawPoint(Point2D pos) {
+}
+
+void XWindow::DrawCircle(Point2D pos, int radius) {
+}
+
+void XWindow::DrawRectangle(Rect2D rect) {
+}
+
+void XWindow::FillRectangle(Rect2D rect) {
+}
+
+void XWindow::DrawLines(std::vector<Point2D> pts) {
+}
+
+void XWindow::PushClippingRegion(Rect2D rect) {
+}
+
+Rect2D XWindow::PopClippingRegion() {
+  Rect2D h;
+  return h;
+}
+
+void XWindow::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
+}
+
+void XWindow::BlitRGBImage(Point2D pos, RGBImage &img) {
+}
+
+
 LRESULT CALLBACK XWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   XWindow *xptr;
 
@@ -281,6 +342,14 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
     MessageBox(NULL, TEXT("This program requires Windows NT!"),
 	       "FreeMat",MB_ICONERROR);
     return;
+  }
+}
+
+void DoEvents() {
+  MSG msg;
+  if (GetMessage(&msg, NULL, 0, 0)) {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
   }
 }
 

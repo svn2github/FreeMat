@@ -9,8 +9,10 @@
 #include <signal.h>
 
 using namespace FreeMat;
+namespace FreeMat {
+	Context *context;
+};
 
-Context *context;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
   SetupWinTerminalClass(hInstance);

@@ -70,5 +70,6 @@ class XWindow {
 };
 
 void InitializeXWindowSystem(HINSTANCE hInstance);
+void DoEvents();
 void Run();
 #endif

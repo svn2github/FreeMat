@@ -25,6 +25,7 @@ char *datap;
 int lineNumber;
 const char *parsing_filename;
 int continuationCount;
+int inBlock;
 typedef enum {
   Initial,
   Scanning,
@@ -263,15 +264,21 @@ void lexIdentifier() {
     if (strcmp(ident,"end") == 0) {
       if (bracketStackSize==0) {
 	setTokenType(END);
+	inBlock--;
       } else {
 	setTokenType(MAGICEND);
       }
     }
+    // The lexer no longer _has_ to keep track of the "end" keywords
+    // to match them up.  But we need this information to determine
+    // if more text is needed...
     tokenValue = new AST(reserved_node,p->ordinal);
     if ((p->token == FOR) || (p->token == WHILE) || 
 	(p->token == IF) || (p->token == ELSEIF) || 
-	(p->token == CASE))
+	(p->token == CASE)) {
       vcFlag = 1;
+      inBlock++;
+    }
     return;
   } else {
     setTokenType(IDENT);
@@ -620,6 +627,7 @@ namespace FreeMat {
   void setLexBuffer(char *buf) {
     continuationCount = 0;
     bracketStackSize = 0;
+    inBlock = 0;
     lexState = Initial;
     vcStackSize = 0;
     if (buffer)
@@ -630,6 +638,7 @@ namespace FreeMat {
   }
 
   void setLexFile(FILE *fp) {
+    inBlock = 0;
     struct stat st;
     clearerr(fp);
     fstat(fileno(fp),&st);
@@ -648,7 +657,10 @@ namespace FreeMat {
   bool lexCheckForMoreInput(int ccount) {
     try {
       while (yylex() > 0);
-      return ((continuationCount>ccount) || (bracketStackSize>0));
+      return ((continuationCount>ccount) || 
+	      ((bracketStackSize>0) && 
+	       (bracketStack[bracketStackSize-1] == '[')) || 
+	      inBlock);
     } catch (Exception &E) {
       continuationCount = 0;
       return false;

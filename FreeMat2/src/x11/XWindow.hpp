@@ -11,40 +11,31 @@
 
 class XWindow : public XPWidget {
  public:
-  XWindow();
+  XWindow(Rect2D sze);
   virtual ~XWindow();
   Window getWindow() {return m_window;}
   void Raise();
   void Show();
   void Hide();
-//   void SetImagePseudoColor(unsigned char *data, int width, int height);
-//   void SetImage(unsigned char *data, int width, int height);
-  void OnExpose(int x, int y, int w, int h);
-  virtual void OnMouseDown(int x, int y);
-  virtual void OnMouseUp(int x, int y);
-  virtual void OnDrag(int x, int y);
-  virtual void OnResize(int w, int h);  
-  void PrintMe(std::string filename, bool capture);
+  void Close();
   void SetTitle(std::string title);
-  void GetClick(int &x, int &y);
-  void GetBox(int &x1, int &y1, int &x2, int &y2);
-  void EraseRectangle(int cx, int cy, int cwidth, int cheight);
-  void SetSize(int w, int h);
-  int GetState();
-  void Refresh();
+  void SetChildWidget(XPWidget* child) {m_child = child;};
+  XPWidget* GetChildWidget() {return m_child;};
+  virtual void OnMouseDown(Point2D pt);
+  virtual void OnMouseUp(Point2D pt);
+  virtual void OnMouseDrag(Point2D pt);
+  virtual void OnResize(Point2D pt);
+  virtual void OnChar(char key);
+  virtual void OnDraw(GraphicsContext& gc, Rect2D rect);
+  virtual void OnExpose(int x1, int y1, int width, int height);
+  virtual void Refresh(Rect2D rect);
  private:
   Window m_window;
   Display *m_display;
   Visual *m_visual;
-  //  Colormap m_cmap;
-  Pixmap m_pixmap;
   GC m_gc;
   XTextProperty m_window_title;
-  int m_state;
-  int m_clickx, m_clicky;
-  int m_box_x1, m_box_x2, m_box_y1, m_box_y2;
-  bool bitmapActive;
-  unsigned char *m_bitmap_contents;
+  XPWidget* m_child;
 };
 
 typedef void (*fdcallback) (void);

@@ -273,7 +273,6 @@ namespace FreeMat {
  	throw Exception("stop");
       }
     }
-    //    fflush(stdout);
   }
 
   void Terminal::setContext(Context *contxt) {

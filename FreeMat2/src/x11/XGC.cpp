@@ -28,6 +28,7 @@ XGC::XGC(Display* disp, Visual* vis, Drawable surf, GC gc, int width, int height
   m_width = width;
   m_height = height;
   current_fontsize = 0;
+  SetFont(12);
   colormapActive = false;
 }
 

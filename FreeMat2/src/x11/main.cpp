@@ -1,3 +1,5 @@
+#include <FL/Fl.H>
+#include <FL/x.H>
 #include <X11/Xlib.h>
 #include <unistd.h>
 #include "XWindow.hpp"
@@ -45,7 +47,7 @@ void signal_resize(int a) {
   term->ResizeEvent();
 }
 
-void stdincb() {
+void stdincb(int fd, void *data) {
   char c;
   while (read(STDIN_FILENO, &c, 1) == 1) {
     term->ProcessChar(c);
@@ -182,14 +184,18 @@ int main(int argc, char *argv[]) {
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
   if (!withoutX) {
-    d = XOpenDisplay(0);
+    fl_open_display();
+    /*
+   d = XOpenDisplay(0);
     if (!d) {
       fprintf(stderr,"Error - unable to open X display.  Please check the environment variable DISPLAY.\n");
       exit(1);
     }
     SetActiveDisplay(d);
+    */
   }
-  RegisterSTDINCallback(stdincb);
+  //   RegisterSTDINCallback(stdincb);stst
+  Fl::add_fd(STDIN_FILENO,FL_READ,stdincb);
   Context *context = new Context;
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
   sfdef->retCount = 0;

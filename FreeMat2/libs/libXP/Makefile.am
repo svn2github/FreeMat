@@ -39,7 +39,8 @@ KeyManager.cpp \
 KeyManager.hpp \
 BitmapPrinterGC.cpp \
 BitmapPrinterGC.hpp \
-helv_table.h
+helv_table.h \
+XPWidget.hpp
 
 AUTOMAKE_OPTIONS 	= foreign
 

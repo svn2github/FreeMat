@@ -2,29 +2,24 @@
 
 namespace FreeMat {
   Interface::Interface() {
-	  messageContext = NULL;
   }
 
   Interface::~Interface() {
   }
 
   void Interface::setMessageContext(const char* msg) {
-    if (messageContext != NULL)
-      free(messageContext);
-    if (msg != NULL) 
-      messageContext = strdup(msg);
+    if (msg != NULL)
+      messageContext = std::string(msg);
     else
-      messageContext = NULL;
+      messageContext = std::string("<Interactive>");;
   }
 
   void Interface::pushMessageContext() {
-    if (messageContext != NULL)
-      messageStack.push_back(messageContext);
-    else
-      messageStack.push_back("<Interactive>");
+    messageStack.push_back(messageContext);
   }
 
   void Interface::popMessageContext() {
+    messageContext = messageStack.back();
     messageStack.pop_back();
   }
 
@@ -43,11 +38,6 @@ namespace FreeMat {
 
   std::vector<std::string> Interface::getMessageContextStack() {
     // Add the current context to the stack
-    std::vector<std::string> ret;
-    if (messageContext != NULL)
-      ret.push_back(messageContext);
-    else
-      ret.push_back("<Interactive>");
     return messageStack;
   }
 }

@@ -71,7 +71,7 @@ namespace FreeMat {
   }
 
   ArrayVector WalkTree::rowDefinition(ASTPtr t) throw(Exception) {
-    if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!\n");
+    if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
     return expressionList(s,NULL);
   }
@@ -137,7 +137,7 @@ namespace FreeMat {
   //!
   Array WalkTree::matrixDefinition(ASTPtr t) throw(Exception) {
     ArrayMatrix m;
-    if (t->opNum != OP_BRACKETS) throw Exception("AST - syntax error!\n");
+    if (t->opNum != OP_BRACKETS) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
   
     while (s != NULL) {
@@ -189,7 +189,7 @@ namespace FreeMat {
   //!
   Array WalkTree::cellDefinition(ASTPtr t) throw(Exception) {
     ArrayMatrix m;
-    if (t->opNum != OP_BRACES) throw Exception("AST - syntax error!\n");
+    if (t->opNum != OP_BRACES) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
 
     while (s != NULL) {
@@ -219,7 +219,7 @@ namespace FreeMat {
       return Array::stringConstructor(std::string(t->text));
     if (t->type == reserved_node)
       if (t->tokenNumber == FM_END) {
-	if (endValStackLength == 0) throw Exception("END keyword illegal!\n");
+	if (endValStackLength == 0) throw Exception("END keyword illegal!");
 	return Array::int32Constructor(endValStack[endValStackLength-1]);
       }
     switch (t->opNum) {
@@ -399,7 +399,7 @@ namespace FreeMat {
   bool WalkTree::conditionedStatement(ASTPtr t) throw(Exception){
     bool conditionState;
     if (t->opNum != OP_CSTAT)
-      throw Exception("AST - syntax error!\n");
+      throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
     bool conditionTrue;
     Array condVar;
@@ -424,7 +424,7 @@ namespace FreeMat {
     bool caseMatched;
     Array r;
     if (t->type != reserved_node || t->tokenNumber != FM_CASE) 
-      throw Exception("AST- syntax error!\n");
+      throw Exception("AST- syntax error!");
     t = t->down;
     r = expression(t);
     caseMatched = s.testForCaseMatch(r);
@@ -539,7 +539,7 @@ namespace FreeMat {
     // Assess its type to determine if this is a scalar switch
     // or a string switch.
     if (!switchVal.isScalar() && !switchVal.isString())
-      throw Exception("Switch statements support scalar and string arguments only.\n");
+      throw Exception("Switch statements support scalar and string arguments only.");
     // Move to the next node in the AST
     t = t->right;
     // Check for additional conditions
@@ -1160,7 +1160,7 @@ namespace FreeMat {
 	persistentStatement(t->down);
 	break;
       default:
-	throw Exception("Unrecognized statement type\n");
+	throw Exception("Unrecognized statement type");
       }
     } else {
       // There is a special case to consider here - when a 
@@ -1280,7 +1280,7 @@ namespace FreeMat {
     if (t->opNum ==(OP_PARENS)) {
       m = expressionList(t->down,&rhsDimensions);
       if (m.size() == 0)
-	throw Exception("Expected indexing expression!\n");
+	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	try {
 	  return(r.getVectorSubset(m[0]));
@@ -1299,7 +1299,7 @@ namespace FreeMat {
     if (t->opNum ==(OP_BRACES)) {
       m = expressionList(t->down,&rhsDimensions);
       if (m.size() == 0)
-	throw Exception("Expected indexing expression!\n");
+	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	try {
 	  return(r.getVectorContents(m[0]));
@@ -1346,7 +1346,7 @@ namespace FreeMat {
     if (t->opNum ==(OP_PARENS)) {
       m = expressionList(t->down,&rhsDimensions);
       if (m.size() == 0)
-	throw Exception("Expected indexing expression!\n");
+	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	r.setVectorSubset(m[0],value[0]);
 	return;
@@ -1358,7 +1358,7 @@ namespace FreeMat {
     if (t->opNum ==(OP_BRACES)) {
       m = expressionList(t->down,&rhsDimensions);
       if (m.size() == 0)
-	throw Exception("Expected indexing expression!\n");
+	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	r.setVectorContentsAsList(m[0],value);
 	return;
@@ -1391,7 +1391,7 @@ namespace FreeMat {
     if (s->opNum == (OP_PARENS)) {
 	m = expressionList(s->down,&rhsDimensions);
 	if (m.size() == 0)
-	  throw Exception("Expected indexing expression!\n");
+	  throw Exception("Expected indexing expression!");
 	if (m.size() == 1) {
 	  // m[0] should have only one element...
 	  m[0].toOrdinalType();
@@ -1415,7 +1415,7 @@ namespace FreeMat {
     if (s->opNum ==(OP_BRACES)) {
       m = expressionList(s->down,&rhsDimensions);
       if (m.size() == 0)
-	throw Exception("Expected indexing expression!\n");
+	throw Exception("Expected indexing expression!");
       if (m.size() == 1) {
 	// m[0] should have only one element...
 	m[0].toOrdinalType();
@@ -1553,7 +1553,7 @@ namespace FreeMat {
       s = s->right;
     }
     if (s != NULL)
-      io->warningMessage("Warning! one or more outputs not assigned in call.\r\n");
+      io->warningMessage("Warning! one or more outputs not assigned in call.");
   }
 
   int getArgumentIndex(stringVector list, std::string t) {
@@ -2418,7 +2418,7 @@ namespace FreeMat {
       if (t->opNum ==(OP_PARENS)) {
 	m = expressionList(t->down,&rhsDimensions);
 	if (m.size() == 0)
-	  throw Exception("Expected indexing expression!\n");
+	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
 	  q = r.getVectorSubset(m[0]);
 	  r = q;
@@ -2430,7 +2430,7 @@ namespace FreeMat {
       if (t->opNum ==(OP_BRACES)) {
 	m = expressionList(t->down,&rhsDimensions);
 	if (m.size() == 0)
-	  throw Exception("Expected indexing expression!\n");
+	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)
 	  rv = r.getVectorContentsAsList(m[0]);
 	else

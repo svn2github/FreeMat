@@ -28,7 +28,7 @@ namespace FreeMat {
 
   class Interface {
   protected:
-    char *messageContext;
+    std::string messageContext;
     std::vector<std::string> messageStack;    
   public:
     Interface();

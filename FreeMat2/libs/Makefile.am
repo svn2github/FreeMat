@@ -16,7 +16,7 @@ endif
 
 SUBDIRS = libFreeMat libFFTPack libCore libGraphics libXP \
 	 $(BLAS_DIR) libMiniLAPACK  libffi libf2c $(JPEG_DIR) \
-	$(TIFF_DIR) $(PNG_DIR) libFN libFLTK libUMFPACK
+	$(TIFF_DIR) $(PNG_DIR) libFN libFLTK libUMFPACK libARPACK
 
 AUTOMAKE_OPTIONS = foreign
 

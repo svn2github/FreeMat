@@ -212,16 +212,16 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
   pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
   pBitmapInfo->bmiHeader.biClrUsed = 0;
   pBitmapInfo->bmiHeader.biClrImportant = 0;
-  static char* pixelVals;
+  static unsigned char* pixelVals;
   int nwidth;
   nwidth = (3*width+3)&~3; // Width of the scanline in bytes
-  pixelVals = (char*) malloc(height*nwidth*sizeof(char));
+  pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
   int i, j;
   for (i=0;i<height;i++)
     for (j=0;j<width;j++) {
-      pixelVals[nwidth*(height-1-i)+3*j] = (char) data[3*(i*width+j)];
-      pixelVals[nwidth*(height-1-i)+3*j+1] = (char) data[3*(i*width+j)+1];
-      pixelVals[nwidth*(height-1-i)+3*j+2] = (char) data[3*(i*width+j)+2];
+      pixelVals[nwidth*(height-1-i)+3*j] = (unsigned char) data[3*(i*width+j)+2];
+      pixelVals[nwidth*(height-1-i)+3*j+1] = (unsigned char) data[3*(i*width+j)+1];
+      pixelVals[nwidth*(height-1-i)+3*j+2] = (unsigned char) data[3*(i*width+j)];
     }
   HDC hdc;
   hdc = GetDC(m_window);

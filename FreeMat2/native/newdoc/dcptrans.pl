@@ -9,6 +9,8 @@ sub outputMFile {
     $line =~ s/\@\@(.*)/\n${\uc($1)}\n/gi;
     $line =~ s/\@\[//gi;
     $line =~ s/\@\]//gi;
+    $line =~ s/\@\{/***/gi;
+    $line =~ s/\@\}/***/gi;
     $line =~ s/\@\|([^\|]*)\|/$1/gi;
     $line =~ s/\@figure\s*(.*)/<<Figure $1 omitted>>/g;
     foreach $resulttext (@$clickres) {
@@ -21,9 +23,11 @@ sub outputLaTeX {
     my ($line, $clickres) = @_;
     my $result;
     $line =~ s/\@Module\s*(.*)/\\subsection{$1}/gi;
-    $line =~ s/\@\@(.*)/\n\\emph{$1}\n/gi;
+    $line =~ s/\@\@(.*)/\n\\subsubsection{$1}\n/gi;
     $line =~ s/\@\[/\\begin{verbatim}/gi;
     $line =~ s/\@\]/\\end{verbatim}/gi; 
+    $line =~ s/\@\{/\\begin{verbatim}/gi;
+    $line =~ s/\@\}/\\end{verbatim}/gi;
     $line =~ s/\@\|([^\|]*)\|/\\verb|$1|/gi;
     $line =~ s/\@figure\s*(.*)/\\doplot{width=8cm}{$1}/g;
     foreach $resulttext (@$clickres) {
@@ -41,12 +45,26 @@ foreach $file (@ARGV) {
     # Read input file as one long record 
     $data=<INPUT>; 
     close INPUT; 
-    @modules = ($data =~  (/\/\/\*\*\s*(.*?)\*\*\/\//gsm));
+#    @modules = ($data =~  (/\/\/\!\s*([^\/\/\!]*?)\/\/\!/gsm));
+    @modules = ($data =~  (/\/\/\!(.*?)\/\/\!/gsm));
     foreach $module (@modules) {
 	($module =~ /\@Module\s*(\w*)/gi);
-	$modulename = lc($1);
+        $modulename = lc($1);
 	print "Module $modulename\n";
-	$line = $module;
+        $line = $module;
+        $line =~ s/^\s*\/\///gsm;
+        @functs=($line =~ m/\@\{(.*?)\@\}/gsm);
+        foreach $funct (@functs) {
+	    $funct =~ /^\s*([\w.]*)/g;
+            $funcname = $1;
+	    $funct =~ s/^\s*([\w.]*)//g;
+            print "Writing function $funcname\n";
+            if (!open(OUTPUT,">$funcname")) {
+               die "Can't open $funcname for output...\n";
+            }
+            print OUTPUT $funct;
+            close OUTPUT;
+	}
 	@clicks=($line =~ m/\@<(.*?)\@>/gsm);
 	$count = 1;
 	@clickres = ();
@@ -59,11 +77,14 @@ foreach $file (@ARGV) {
 		print OUTPUT "load env.dat\n";
 	    }
 	    print OUTPUT $click;
-	    print OUTPUT "save env.dat\n";
+	    print OUTPUT "save env.dat\nquit\n";
 	    close OUTPUT;
-	    $resulttext = `./FreeMat -e tmpFMinput`;
+	    $resulttext = `./FreeMat -e <tmpFMinput`;
+	    $resulttext =~ s/^ Free.*\n//g;
+	    $resulttext =~ s/^ Copy.*\n//g;
 	    $resulttext =~ s/(--> save env.dat\s*\n)//g;
 	    $resulttext =~ s/(--> load env.dat\s*\n)//g;
+	    $resulttext =~ s/(--> quit\n)//g;
 	    $resulttext =~ s/(-->\s*\n)//g;
 	    $resulttext =~ s/(--> mprint).*\n//g;
 	    @clickres = (@clickres,$resulttext);

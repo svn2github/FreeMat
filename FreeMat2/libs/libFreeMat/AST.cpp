@@ -219,7 +219,7 @@ namespace FreeMat {
     if (t->isEmpty()) return;
     outTabs();
     if (t->type == reserved_node)
-      printf("<%d,%s>\n",t->tokenNumber,reservedWord[t->tokenNumber].word);
+      printf("<%d,%s>\r\n",t->tokenNumber,reservedWord[t->tokenNumber].word);
     else if (t->type == non_terminal) {
       switch (t->opNum) {
 	cnum(OP_BLOCK,"block");
@@ -268,20 +268,20 @@ namespace FreeMat {
 	cnum(OP_SCALL,"special call");
 	cnum(OP_KEYWORD,"keyword");
       }
-      printf("\n");
+      printf("\r\n");
     } else if (t->type == id_node) {
-      printf("ident: %s\n",t->text);
+      printf("ident: %s\r\n",t->text);
     } else if (t->type == const_int_node) {
-      printf("int: %s\n",t->text);
+      printf("int: %s\r\n",t->text);
     } else if (t->type == const_double_node) {
-      printf("double: %s\n",t->text);
+      printf("double: %s\r\n",t->text);
     } else if (t->type == const_float_node) {
-      printf("float: %s\n",t->text);
+      printf("float: %s\r\n",t->text);
     } else if (t->type == string_const_node) {
-      printf("string: '%s'\n",t->text);
+      printf("string: '%s'\r\n",t->text);
     } else if (t->type == null_node) {
     } else {
-      printf("context: %s\n",t->text);
+      printf("context: %s\r\n",t->text);
     }
     tabLevel++;
     printAST(t->down);

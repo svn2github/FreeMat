@@ -661,6 +661,8 @@ namespace FreeMat {
   void Array::hermitian() throw(Exception) {
     if (!is2D())
       throw Exception("Cannot apply Hermitian transpose operation to multi-dimensional array.");
+    if (isEmpty())
+      return;
     if (!isComplex())
       transpose();
     else {
@@ -722,6 +724,8 @@ namespace FreeMat {
   void Array::transpose() throw(Exception) {
     if (!is2D())
       throw Exception("Cannot apply transpose operation to multi-dimensional array.");
+    if (isEmpty())
+      return;
     // Allocate space for our transposed array
     void *dstPtr = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
     int i, j;
@@ -2812,6 +2816,64 @@ break;
 	}
 	break;
       case FM_LOGICAL:
+	if (dp->dimensions.isScalar()) {
+	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const logical*) dp->getData()));
+	  io->outputMessage(msgBuffer);
+	} else {
+	  io->outputMessage("[");
+	  dp->dimensions.printMe(io);
+	  io->outputMessage(" logical]");	  
+	}
+	break;
+      case FM_UINT8:
+	if (dp->dimensions.isScalar()) {
+	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint8*) dp->getData()));
+	  io->outputMessage(msgBuffer);
+	} else {
+	  io->outputMessage("[");
+	  dp->dimensions.printMe(io);
+	  io->outputMessage(" uint8]");
+	}
+	break;
+      case FM_INT8:
+	if (dp->dimensions.isScalar()) {
+	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int8*) dp->getData()));
+	  io->outputMessage(msgBuffer);
+	} else {
+	  io->outputMessage("[");
+	  dp->dimensions.printMe(io);
+	  io->outputMessage(" int8]");
+	}
+	break;
+      case FM_UINT16:
+	if (dp->dimensions.isScalar()) {
+	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint16*) dp->getData()));
+	  io->outputMessage(msgBuffer);
+	} else {
+	  io->outputMessage("[");
+	  dp->dimensions.printMe(io);
+	  io->outputMessage(" uint16]");
+	}
+	break;
+      case FM_INT16:
+	if (dp->dimensions.isScalar()) {
+	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int16*) dp->getData()));
+	  io->outputMessage(msgBuffer);
+	} else {
+	  io->outputMessage("[");
+	  dp->dimensions.printMe(io);
+	  io->outputMessage(" int16]");
+	}
+	break;
+      case FM_UINT32:
+	if (dp->dimensions.isScalar()) {
+	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint32*) dp->getData()));
+	  io->outputMessage(msgBuffer);
+	} else {
+	  io->outputMessage("[");
+	  dp->dimensions.printMe(io);
+	  io->outputMessage(" uint32]");
+	}
 	break;
       case FM_INT32:
 	if (dp->dimensions.isScalar()) {

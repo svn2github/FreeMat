@@ -30,7 +30,6 @@ namespace FreeMat {
     if (!lib)
       throw FreeMat::Exception(std::string("Unable to open module: ") + filename);
 #else
-    std::cout << "opening lib " << filename << "\n";
     lib = dlopen(filename.c_str(),RTLD_LAZY);
     if (!lib)
       throw FreeMat::Exception(std::string("Unable to open module: ") + filename + ", operating system reported error: " + dlerror());

@@ -12,7 +12,7 @@
 char help_path[1024];
 
 using namespace FreeMat;
-#define VERSION "1.08"
+#define VERSION "1.09"
 
 int GetAppPath(LPTSTR pstr,int length){
  int ret,i;

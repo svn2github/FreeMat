@@ -23,5 +23,7 @@ trackball.h \
 Figure.cpp \
 Figure.hpp \
 Plot3D.cpp \
-Plot3D.hpp
+Plot3D.hpp \
+SurfPlot.cpp \
+SurfPlot.hpp
 AUTOMAKE_OPTIONS 	= foreign

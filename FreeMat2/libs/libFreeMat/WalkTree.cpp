@@ -200,8 +200,17 @@ namespace FreeMat {
   }
 
   Array WalkTree::expression(ASTPtr t) throw(Exception) {
-    if (t->type == const_int_node)
-      return Array::int32Constructor(atoi(t->text));
+    if (t->type == const_int_node) {
+      int iv;
+      double fv;
+      iv = strtol(t->text,NULL,0);
+      if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
+	fv = strtod(t->text,NULL);
+	return Array::doubleConstructor(fv);
+      } else {
+	return Array::int32Constructor(iv);
+      }
+    }
     if (t->type == const_float_node)
       return Array::floatConstructor(atof(t->text));
     if (t->type == const_double_node)
@@ -2478,6 +2487,7 @@ namespace FreeMat {
 	    return true;
 	} catch(Exception &e) {
 	  e.printMe(io);
+	  io->clearMessageContextStack();
 	}
 	break;
       case FuncDef:
@@ -2486,6 +2496,7 @@ namespace FreeMat {
       }
     } catch(Exception &e) {
       e.printMe(io);
+      io->clearMessageContextStack();
     }
     return false;
   }

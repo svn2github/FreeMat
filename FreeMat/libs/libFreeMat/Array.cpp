@@ -1637,12 +1637,12 @@ break;
 	       */
 	      if ((d.dp->dimensions.getLength() != row_dims.getLength()) && 
 		  (d.dp->dimensions.getLength()>1))
-		throw "Number of dimensions must match for each element in a row definition";
+		throw Exception("Number of dimensions must match for each element in a row definition");
 	      if (d.dp->dimensions[0] != row_dims[0])
-		throw "Mismatch in first dimension for elements in row definition";
+		throw Exception("Mismatch in first dimension for elements in row definition");
 	      for (int k=2;k<row_dims.getLength();k++)
 		if (d.dp->dimensions[k] != row_dims[k]) 
-		  throw "Mismatch in dimension for elements in row definition";
+		  throw Exception("Mismatch in dimension for elements in row definition");
 	      row_dims[1] += d.dp->dimensions[1];
 	    }
 	  }
@@ -1657,7 +1657,7 @@ break;
 	    firstNonzeroRow = false;
 	  } else {
 	    if (mat_dims.getLength() != row_dims.getLength())	    
-	      throw "Number of dimensions must match for each row in a matrix definition";
+	      throw Exception("Number of dimensions must match for each row in a matrix definition");
 	    for (int k=1;k<row_dims.getLength();k++)
 	      if (row_dims[k] != mat_dims[k]) 
 		throw Exception("Mismatch in dimension for rows in matrix definition");

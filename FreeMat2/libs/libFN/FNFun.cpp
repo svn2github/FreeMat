@@ -68,7 +68,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = expei(x);
   //plot(x,y); xlabel('x'); ylabel('expei(x)');
-  //axis([-2,3,-10,15]);
   //mprintplot expei1
   //@>
   //which results in the following plot.
@@ -125,7 +124,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = eone(x);
   //plot(x,y); xlabel('x'); ylabel('eone(x)');
-  //axis([-2,3,-10,15]);
   //mprintplot eone1
   //@>
   //which results in the following plot.
@@ -182,7 +180,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = ei(x);
   //plot(x,y); xlabel('x'); ylabel('ei(x)');
-  //axis([-2,3,-15,10]);
   //mprintplot ei1
   //@>
   //which results in the following plot.
@@ -237,10 +234,9 @@ namespace FreeMat {
   //@@Example
   //Here is a plot of the @|erfcx| function over the range @|[-5,5]|.
   //@<
-  //x = linspace(-5,5);
+  //x = linspace(0,5);
   //y = erfcx(x);
   //plot(x,y); xlabel('x'); ylabel('erfcx(x)');
-  //axis([-5,5,-1,1]);
   //mprintplot erfcx1
   //@>
   //which results in the following plot.
@@ -298,7 +294,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = erfc(x);
   //plot(x,y); xlabel('x'); ylabel('erfc(x)');
-  //axis([-5,5,-1,1]);
   //mprintplot erfc1
   //@>
   //which results in the following plot.
@@ -356,7 +351,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = erf(x);
   //plot(x,y); xlabel('x'); ylabel('erf(x)');
-  //axis([-5,5,-1,1]);
   //mprintplot erf1
   //@>
   //which results in the following plot.
@@ -413,7 +407,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = dawson(x);
   //plot(x,y); xlabel('x'); ylabel('dawson(x)');
-  //axis([-5,5,-5,5]);
   //mprintplot dawson1
   //@>
   //which results in the following plot.
@@ -471,7 +464,6 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = psi(x);
   //plot(x,y); xlabel('x'); ylabel('psi(x)');
-  //axis([-5,5,-5,5]);
   //mprintplot psi1
   //@>
   //which results in the following plot.
@@ -492,16 +484,26 @@ namespace FreeMat {
       int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-      for (int i=0;i<olen;i++)
-	dp[i] = psi_(sp+i);
+      for (int i=0;i<olen;i++) {
+	float t;
+	t = psi_(sp+i);
+	if (t == 1.70e38)
+	  t = 1.0f/0.0f;
+	dp[i] = t;
+      }
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
       int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-      for (int i=0;i<olen;i++)
-	dp[i] = dpsi_(sp+i);
+      for (int i=0;i<olen;i++) {
+	double t;
+	t = dpsi_(sp+i);
+	if (t == 1.70E38)
+	  t = 1.0/0.0;	
+	dp[i] = t;
+      }
       return singleArrayVector(Array(FM_DOUBLE,odims,dp));
     }
     return ArrayVector();
@@ -554,16 +556,26 @@ namespace FreeMat {
       int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-      for (int i=0;i<olen;i++)
-	dp[i] = gamma_(sp+i);
+      for (int i=0;i<olen;i++) {
+	float t;
+	t = gamma_(sp+i);
+	if (t == 3.4e38)
+	  t = 1.0f/0.0f;
+	dp[i] = t;
+      }
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
       int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-      for (int i=0;i<olen;i++)
-	dp[i] = dgamma_(sp+i);
+      for (int i=0;i<olen;i++) {
+	double t;
+	t = dgamma_(sp+i);
+	if (t == 1.79E308)
+	  t = 1.0/0.0;
+	dp[i] = t;
+      }
       return singleArrayVector(Array(FM_DOUBLE,odims,dp));
     }
     return ArrayVector();
@@ -582,10 +594,9 @@ namespace FreeMat {
   //@@Example
   //Here is a plot of the @|gammaln| function over the range @|[-5,5]|.
   //@<
-  //x = linspace(-5,5);
+  //x = linspace(0,10);
   //y = gammaln(x);
   //plot(x,y); xlabel('x'); ylabel('gammaln(x)');
-  //axis([-5,5,-5,5]);
   //mprintplot gammaln1
   //@>
   //which results in the following plot.
@@ -606,16 +617,26 @@ namespace FreeMat {
       int olen(odims.getElementCount());
       float *sp = (float*) tmp.getDataPointer();
       float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-      for (int i=0;i<olen;i++)
-	dp[i] = algama_(sp+i);
+      for (int i=0;i<olen;i++) {
+	float t;
+	t = algama_(sp+i);
+	if (t == 3.4e38)
+	  t = 1.0f/0.0f;
+	dp[i] = t;
+      }
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
     } else if (tmp.getDataClass() == FM_DOUBLE) {
       Dimensions odims(tmp.getDimensions());
       int olen(odims.getElementCount());
       double *sp = (double*) tmp.getDataPointer();
       double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-      for (int i=0;i<olen;i++)
-	dp[i] = dlgama_(sp+i);
+      for (int i=0;i<olen;i++) {
+	double t;
+	t = dlgama_(sp+i);
+	if (t == 1.79E308)
+	  t = 1.0/0.0;
+	dp[i] = t;
+      }
       return singleArrayVector(Array(FM_DOUBLE,odims,dp));
     }
     return ArrayVector();

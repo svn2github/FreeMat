@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include "Malloc.hpp"
 #include "Command.hpp"
+#include "SingularValueDecompose.hpp"
 #include <wx/utils.h>
 
 namespace FreeMat {
@@ -45,6 +46,8 @@ namespace FreeMat {
   } 
 
   ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("eig function takes exactly one argument - the matrix to decompose");
     ArrayVector retval;
     stringVector dummy;
     retval.resize(2);
@@ -53,6 +56,175 @@ namespace FreeMat {
     EigenDecompose(A,V,D);
     retval[0] = D;
     retval[1] = V;
+    return retval;
+  }
+
+  /**
+   * Perform a singular value decomposition of the matrix A
+   */
+  ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("svd function takes exactly one argument - the matrix to decompose");
+
+    Array A(arg[0]);
+
+    // Test for numeric
+    if (A.isReferenceType())
+      throw Exception("Cannot apply eigendecomposition to reference types.");
+  
+    if (!A.is2D())
+      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+
+    int nrows = A.getDimensionLength(0);
+    int ncols = A.getDimensionLength(1);
+    Class Aclass(A.getDataClass());
+    if (Aclass < FM_FLOAT) {
+      A.promoteType(FM_DOUBLE);
+      Aclass = FM_DOUBLE;
+    }
+    ArrayVector retval;
+    switch (Aclass) {
+    case FM_FLOAT:
+      {
+	int mindim;
+	int maxdim;
+	mindim = (nrows < ncols) ? nrows : ncols;
+	maxdim = (nrows < ncols) ? ncols : nrows;
+	// A temporary vector to store the singular values
+	float *svals = (float*) Malloc(mindim*sizeof(float));
+	// A temporary vector to store the left singular vectors
+	float *umat = (float*) Malloc(nrows*nrows*sizeof(float));
+	// A temporary vector to store the right singular vectors
+	float *vtmat = (float*) Malloc(ncols*ncols*sizeof(float));
+	floatSVD(nrows,ncols,umat,vtmat,svals,(float*) A.getReadWriteDataPointer());
+	// Always transfer the singular values into an Array
+	Dimensions dim;
+	if (nargout == 1) {
+	  dim[0] = mindim; dim[1] = 1;
+	  retval.push_back(Array(FM_FLOAT,dim,svals));
+	  Free(umat);
+	  Free(vtmat);
+	} else {
+	  dim[0] = nrows; dim[1] = nrows;
+	  retval.push_back(Array(FM_FLOAT,dim,umat));
+	  dim[0] = nrows; dim[1] = ncols;
+	  float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
+	  for (int i=0;i<mindim;i++)
+	    smat[i+i*nrows] = svals[i];
+	  retval.push_back(Array(FM_FLOAT,dim,smat));
+	  dim[0] = ncols; dim[1] = ncols;
+	  Array Utrans(FM_FLOAT,dim,vtmat);
+	  Utrans.transpose();
+	  retval.push_back(Utrans);
+	  Free(svals);
+	}
+      }
+    case FM_DOUBLE:
+      {
+	int mindim;
+	int maxdim;
+	mindim = (nrows < ncols) ? nrows : ncols;
+	maxdim = (nrows < ncols) ? ncols : nrows;
+	// A temporary vector to store the singular values
+	double *svals = (double*) Malloc(mindim*sizeof(double));
+	// A temporary vector to store the left singular vectors
+	double *umat = (double*) Malloc(nrows*nrows*sizeof(double));
+	// A temporary vector to store the right singular vectors
+	double *vtmat = (double*) Malloc(ncols*ncols*sizeof(double));
+	doubleSVD(nrows,ncols,umat,vtmat,svals,(double*) A.getReadWriteDataPointer());
+	// Always transfer the singular values into an Array
+	Dimensions dim;
+	if (nargout == 1) {
+	  dim[0] = mindim; dim[1] = 1;
+	  retval.push_back(Array(FM_DOUBLE,dim,svals));
+	  Free(umat);
+	  Free(vtmat);
+	} else {
+	  dim[0] = nrows; dim[1] = nrows;
+	  retval.push_back(Array(FM_DOUBLE,dim,umat));
+	  dim[0] = nrows; dim[1] = ncols;
+	  double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
+	  for (int i=0;i<mindim;i++)
+	    smat[i+i*nrows] = svals[i];
+	  retval.push_back(Array(FM_DOUBLE,dim,smat));
+	  dim[0] = ncols; dim[1] = ncols;
+	  Array Utrans(FM_DOUBLE,dim,vtmat);
+	  Utrans.transpose();
+	  retval.push_back(Utrans);
+	  Free(svals);
+	}
+      }
+    case FM_COMPLEX:
+      {
+	int mindim;
+	int maxdim;
+	mindim = (nrows < ncols) ? nrows : ncols;
+	maxdim = (nrows < ncols) ? ncols : nrows;
+	// A temporary vector to store the singular values
+	float *svals = (float*) Malloc(mindim*sizeof(float));
+	// A temporary vector to store the left singular vectors
+	float *umat = (float*) Malloc(2*nrows*nrows*sizeof(float));
+	// A temporary vector to store the right singular vectors
+	float *vtmat = (float*) Malloc(2*ncols*ncols*sizeof(float));
+	complexSVD(nrows,ncols,umat,vtmat,svals,(float*) A.getReadWriteDataPointer());
+	// Always transfer the singular values into an Array
+	Dimensions dim;
+	if (nargout == 1) {
+	  dim[0] = mindim; dim[1] = 1;
+	  retval.push_back(Array(FM_FLOAT,dim,svals));
+	  Free(umat);
+	  Free(vtmat);
+	} else {
+	  dim[0] = nrows; dim[1] = nrows;
+	  retval.push_back(Array(FM_COMPLEX,dim,umat));
+	  dim[0] = nrows; dim[1] = ncols;
+	  float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
+	  for (int i=0;i<mindim;i++)
+	    smat[i+i*nrows] = svals[i];
+	  retval.push_back(Array(FM_FLOAT,dim,smat));
+	  dim[0] = ncols; dim[1] = ncols;
+	  Array Utrans(FM_COMPLEX,dim,vtmat);
+	  Utrans.hermitian();
+	  retval.push_back(Utrans);
+	  Free(svals);
+	}
+      }
+    case FM_DCOMPLEX:
+      {
+	int mindim;
+	int maxdim;
+	mindim = (nrows < ncols) ? nrows : ncols;
+	maxdim = (nrows < ncols) ? ncols : nrows;
+	// A temporary vector to store the singular values
+	double *svals = (double*) Malloc(mindim*sizeof(double));
+	// A temporary vector to store the left singular vectors
+	double *umat = (double*) Malloc(2*nrows*nrows*sizeof(double));
+	// A temporary vector to store the right singular vectors
+	double *vtmat = (double*) Malloc(2*ncols*ncols*sizeof(double));
+	dcomplexSVD(nrows,ncols,umat,vtmat,svals,(double*) A.getReadWriteDataPointer());
+	// Always transfer the singular values into an Array
+	Dimensions dim;
+	if (nargout == 1) {
+	  dim[0] = mindim; dim[1] = 1;
+	  retval.push_back(Array(FM_DOUBLE,dim,svals));
+	  Free(umat);
+	  Free(vtmat);
+	} else {
+	  dim[0] = nrows; dim[1] = nrows;
+	  retval.push_back(Array(FM_DCOMPLEX,dim,umat));
+	  dim[0] = nrows; dim[1] = ncols;
+	  double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
+	  for (int i=0;i<mindim;i++)
+	    smat[i+i*nrows] = svals[i];
+	  retval.push_back(Array(FM_DOUBLE,dim,smat));
+	  dim[0] = ncols; dim[1] = ncols;
+	  Array Utrans(FM_DCOMPLEX,dim,vtmat);
+	  Utrans.hermitian();
+	  retval.push_back(Utrans);
+	  Free(svals);
+	}
+      }
+    }
     return retval;
   }
 

@@ -54,6 +54,7 @@ namespace FreeMat {
   ArrayVector DispFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector LengthFunction(int, const ArrayVector& arg);
   ArrayVector EigFunction(int, const ArrayVector& arg);
+  ArrayVector SVDFunction(int, const ArrayVector& arg);
   ArrayVector DiagFunction(int, const ArrayVector& arg);
   ArrayVector IsEmptyFunction(int, const ArrayVector& arg);
   ArrayVector ErrorFunction(int, const ArrayVector& arg);

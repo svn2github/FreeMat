@@ -92,6 +92,7 @@ namespace FreeMat {
      context->addFunction("int16",Int16Function,1,1,args);
      context->addFunction("int32",Int32Function,1,1,args);  
      context->addFunction("eig",EigFunction,1,2,args);
+     context->addFunction("svd",SVDFunction,1,3,args);
      args.clear();
      args.push_back("x");
      args.push_back("n");

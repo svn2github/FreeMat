@@ -117,6 +117,18 @@ namespace FreeMat {
   ArrayVector RandFunction(int, const ArrayVector& arg);
   ArrayVector RandnFunction(int, const ArrayVector& arg);
   ArrayVector SeedFunction(int, const ArrayVector& arg);
+  ArrayVector RandBetaFunction(int, const ArrayVector& arg);
+  ArrayVector RandBinFunction(int, const ArrayVector& arg);
+  ArrayVector RandNBinFunction(int, const ArrayVector& arg);
+  ArrayVector RandPoissonFunction(int, const ArrayVector& arg);
+  ArrayVector RandIFunction(int, const ArrayVector& arg);
+  ArrayVector RandChiFunction(int, const ArrayVector& arg);
+  ArrayVector RandNChiFunction(int, const ArrayVector& arg);
+  ArrayVector RandExpFunction(int, const ArrayVector& arg);
+  ArrayVector RandFFunction(int, const ArrayVector& arg);
+  ArrayVector RandNFFunction(int, const ArrayVector& arg);
+  ArrayVector RandGammaFunction(int, const ArrayVector& arg);
+  ArrayVector RandMultiFunction(int, const ArrayVector& arg);
   ArrayVector ConjFunction(int, const ArrayVector& arg);
   ArrayVector RealFunction(int, const ArrayVector& arg);
   ArrayVector ImagFunction(int, const ArrayVector& arg);

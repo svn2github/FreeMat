@@ -1,5 +1,4 @@
 /* Prototypes for all user accessible RANLIB routines */
-
 extern void advnst(long k);
 extern float genbet(float aa,float bb);
 extern float genchi(float df);

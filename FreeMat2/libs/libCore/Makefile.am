@@ -23,6 +23,9 @@ LoadCore.cpp \
 LoadCore.hpp \
 Core.hpp \
 MPIWrap.hpp \
-MPIWrap.cpp
+MPIWrap.cpp \
+ranlib.h \
+ranlib.c \
+com.c
 
 AUTOMAKE_OPTIONS 	= foreign

@@ -22,8 +22,10 @@
 #include "Exception.hpp"
 #include "Malloc.hpp"
 #include <math.h>
-#include "ranlib.h"
 #include <stdio.h>
+extern "C" {
+#include "ranlib.h"
+}
 
 namespace FreeMat { 
   static bool initialized = false;
@@ -42,20 +44,22 @@ namespace FreeMat {
   //Here's an example of how the seed value can be used to reproduce
   //a specific random number sequence.
   //@<
-  //seed(32);
+  //seed(32,41);
   //rand(1,5)
-  //seed(32);
+  //seed(32,41);
   //rand(1,5)
   //@>
   //!
   ArrayVector SeedFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
+    if (arg.size() != 2)
       throw Exception("Seed function requires a single integer argument");
-    Array tmp(arg[0]);
-    uint32 seedval;
-    seedval = tmp.getContentsAsIntegerScalar();
-    init_genrand(seedval);
-    initialized = true;
+    Array tmp1(arg[0]);
+    uint32 seedval1;
+    Array tmp2(arg[1]);
+    uint32 seedval2;
+    seedval1 = tmp1.getContentsAsIntegerScalar();
+    seedval2 = tmp2.getContentsAsIntegerScalar();
+    setall(seedval1,seedval2);
     return ArrayVector();
   }
 
@@ -67,7 +71,7 @@ namespace FreeMat {
   //A beta distribution is characterized by 
   //a density function 
   //!
-  ArrayVector RandBeta(int nargout, const ArrayVector& arg) {
+  ArrayVector RandBetaFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("randbeta requires two parameter arguments");
     Array arg1(arg[0]);
@@ -78,7 +82,7 @@ namespace FreeMat {
     int arg1_advance;
     int arg2_advance;
     arg1_advance = (arg1.isScalar()) ? 0 : 1;
-    arg2_advance = (arg2.isscalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
     // Output dimension is the larger of the two
     Dimensions outDims;
     if (arg1.getLength() > arg2.getLength()) {
@@ -86,36 +90,74 @@ namespace FreeMat {
     } else {
       outDims = arg2.getDimensions();
     }
-    arg1.promoteType(FM_FLOAT_ARRAY);
-    arg2.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
+    arg2.promoteType(FM_FLOAT);
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     float *p2;
-    p2 = arg2.getDataPointer();
+    p2 = (float*) arg2.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) 
       dp[i] = genbet(p1[i*arg1_advance],p2[i*arg2_advance]);
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
+    return retval;
+  }
+
+  //!
+  //@Module RANDI Beta Deviate Random Number Generator
+  //!
+  ArrayVector RandIFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 2)
+      throw Exception("randi requires two parameter arguments");
+    Array arg1(arg[0]);
+    Array arg2(arg[1]);
+    // Check the logic to see if one or both are scalar values
+    if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+      throw Exception("randbeta requires either one of the two arguments to be a scalar, or both arguments to be the same size");
+    int arg1_advance;
+    int arg2_advance;
+    arg1_advance = (arg1.isScalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
+    // Output dimension is the larger of the two
+    Dimensions outDims;
+    if (arg1.getLength() > arg2.getLength()) {
+      outDims = arg1.getDimensions();
+    } else {
+      outDims = arg2.getDimensions();
+    }
+    arg1.promoteType(FM_INT32);
+    arg2.promoteType(FM_INT32);
+    int32 *dp;
+    dp = (int32 *) Malloc(sizeof(int32)*outDims.getElementCount());
+    int32 *p1;
+    p1 = (int32*) arg1.getDataPointer();
+    int32 *p2;
+    p2 = (int32*) arg2.getDataPointer();
+    int i;
+    for (i=0;i<outDims.getElementCount();i++) 
+      dp[i] = ignuin(p1[i*arg1_advance],p2[i*arg2_advance]);
+    ArrayVector retval;
+    retval.push_back(Array(FM_INT32,outDims,dp));
     return retval;
   }
   
   //!
   //@Module Generate Chi-Square Random Variable
   //!
-  ArrayVector RandChi(int nargout, const ArrayVector& arg) {
+  ArrayVector RandChiFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("randchi requires exactly one parameter (the vector of degrees of freedom)");
     Array arg1(arg[0]);
-    arg1.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
     // Output dimension is the larger of the two
     Dimensions outDims(arg1.getDimensions());
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) {
       if (p1[i] <= 0)
@@ -123,36 +165,136 @@ namespace FreeMat {
       dp[i] = genchi(p1[i]);
     }
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
     return retval;
   }
 
   //!
   //@Module Generate Exponential Random Variable
   //!
-  ArrayVector RandExp(int nargout, const ArrayVector& arg) {
+  ArrayVector RandExpFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("randexp requires exactly one parameter (the vector of means)");
     Array arg1(arg[0]);
-    arg1.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
     // Output dimension is the larger of the two
     Dimensions outDims(arg1.getDimensions());
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) 
       dp[i] = genexp(p1[i]);
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
+    return retval;
+  }
+
+  //!
+  //@Module Generate Poisson Random Variable
+  //!
+  ArrayVector RandPoissonFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("randp requires exactly one parameter (the vector of means)");
+    Array arg1(arg[0]);
+    arg1.promoteType(FM_FLOAT);
+    // Output dimension is the larger of the two
+    Dimensions outDims(arg1.getDimensions());
+    int32 *dp;
+    dp = (int32 *) Malloc(sizeof(int32)*outDims.getElementCount());
+    float *p1;
+    p1 = (float*) arg1.getDataPointer();
+    int i;
+    for (i=0;i<outDims.getElementCount();i++) 
+      dp[i] = ignpoi(p1[i]);
+    ArrayVector retval;
+    retval.push_back(Array(FM_INT32,outDims,dp));
+    return retval;
+  }
+
+  //!
+  //@Module Generate Binomial Random Variables
+  //!
+  ArrayVector RandBinFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 2)
+      throw Exception("randbin requires two parameter arguments");
+    Array arg1(arg[0]);
+    Array arg2(arg[1]);
+    // Check the logic to see if one or both are scalar values
+    if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+      throw Exception("randbin requires either one of the two arguments to be a scalar, or both arguments to be the same size");
+    int arg1_advance;
+    int arg2_advance;
+    arg1_advance = (arg1.isScalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
+    // Output dimension is the larger of the two
+    Dimensions outDims;
+    if (arg1.getLength() > arg2.getLength()) {
+      outDims = arg1.getDimensions();
+    } else {
+      outDims = arg2.getDimensions();
+    }
+    arg1.promoteType(FM_UINT32);
+    arg2.promoteType(FM_FLOAT);
+    uint32 *dp;
+    dp = (uint32 *) Malloc(sizeof(uint32)*outDims.getElementCount());
+    uint32 *p1;
+    p1 = (uint32*) arg1.getDataPointer();
+    float *p2;
+    p2 = (float*) arg2.getDataPointer();
+    int i;
+    for (i=0;i<outDims.getElementCount();i++) {
+      dp[i] = ignbin(p1[i*arg1_advance],p2[i*arg2_advance]);
+    }
+    ArrayVector retval;
+    retval.push_back(Array(FM_UINT32,outDims,dp));
+    return retval;
+  }
+
+  //!
+  //@Module Generate Negative Binomial Random Variables
+  //!
+  ArrayVector RandNBinFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 2)
+      throw Exception("randnbin requires two parameter arguments");
+    Array arg1(arg[0]);
+    Array arg2(arg[1]);
+    // Check the logic to see if one or both are scalar values
+    if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+      throw Exception("randnbin requires either one of the two arguments to be a scalar, or both arguments to be the same size");
+    int arg1_advance;
+    int arg2_advance;
+    arg1_advance = (arg1.isScalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
+    // Output dimension is the larger of the two
+    Dimensions outDims;
+    if (arg1.getLength() > arg2.getLength()) {
+      outDims = arg1.getDimensions();
+    } else {
+      outDims = arg2.getDimensions();
+    }
+    arg1.promoteType(FM_UINT32);
+    arg2.promoteType(FM_FLOAT);
+    uint32 *dp;
+    dp = (uint32 *) Malloc(sizeof(uint32)*outDims.getElementCount());
+    uint32 *p1;
+    p1 = (uint32*) arg1.getDataPointer();
+    float *p2;
+    p2 = (float*) arg2.getDataPointer();
+    int i;
+    for (i=0;i<outDims.getElementCount();i++) {
+      dp[i] = ignnbn(p1[i*arg1_advance],p2[i*arg2_advance]);
+    }
+    ArrayVector retval;
+    retval.push_back(Array(FM_UINT32,outDims,dp));
     return retval;
   }
 
   //!
   //@Module Generate F-Distributed Random Variable
   //!
-  ArrayVector RandF(int nargout, const ArrayVector& arg) {
+  ArrayVector RandFFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("randf requires two parameter arguments");
     Array arg1(arg[0]);
@@ -163,7 +305,7 @@ namespace FreeMat {
     int arg1_advance;
     int arg2_advance;
     arg1_advance = (arg1.isScalar()) ? 0 : 1;
-    arg2_advance = (arg2.isscalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
     // Output dimension is the larger of the two
     Dimensions outDims;
     if (arg1.getLength() > arg2.getLength()) {
@@ -171,14 +313,14 @@ namespace FreeMat {
     } else {
       outDims = arg2.getDimensions();
     }
-    arg1.promoteType(FM_FLOAT_ARRAY);
-    arg2.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
+    arg2.promoteType(FM_FLOAT);
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     float *p2;
-    p2 = arg2.getDataPointer();
+    p2 = (float*) arg2.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) {
       if ((p1[i*arg1_advance] <= 0) || (p2[i*arg2_advance]) <= 0)
@@ -186,14 +328,14 @@ namespace FreeMat {
       dp[i] = genf(p1[i*arg1_advance],p2[i*arg2_advance]);
     }
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
     return retval;
   }
 
   //!
   //@Module Generate Gamma-Distributed Random Variable
   //!
-  ArrayVector RandGamma(int nargout, const ArrayVector& arg) {
+  ArrayVector RandGammaFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("randgamma requires two parameter arguments");
     Array arg1(arg[0]);
@@ -204,7 +346,7 @@ namespace FreeMat {
     int arg1_advance;
     int arg2_advance;
     arg1_advance = (arg1.isScalar()) ? 0 : 1;
-    arg2_advance = (arg2.isscalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
     // Output dimension is the larger of the two
     Dimensions outDims;
     if (arg1.getLength() > arg2.getLength()) {
@@ -212,26 +354,26 @@ namespace FreeMat {
     } else {
       outDims = arg2.getDimensions();
     }
-    arg1.promoteType(FM_FLOAT_ARRAY);
-    arg2.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
+    arg2.promoteType(FM_FLOAT);
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     float *p2;
-    p2 = arg2.getDataPointer();
+    p2 = (float*) arg2.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) {
       dp[i] = gengam(p1[i*arg1_advance],p2[i*arg2_advance]);
     }
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
     return retval;
   }
 
   //!
   //!
-  ArrayVector RandMulti(int nargout, const ArrayVector& arg) {
+  ArrayVector RandMultiFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("randmulti requires two parameter arguments");
     Array arg1(arg[0]);
@@ -239,10 +381,10 @@ namespace FreeMat {
     int N = arg1.getContentsAsIntegerScalar();
     if (N<0) 
       throw Exception("number of events to generate for randmulti must be a nonnegative integer");
-    arg2.promoteType(FM_FLOAT_ARRAY);
+    arg2.promoteType(FM_FLOAT);
     // Verify the correctness of the probability argument
     float *dp;
-    dp = arg2.getDataPointer();
+    dp = (float*) arg2.getDataPointer();
     float Psum = 0.0;
     int i;
     for (i=0;i<arg2.getLength();i++) {
@@ -250,21 +392,21 @@ namespace FreeMat {
 	throw Exception("probabiliy vector argument to randmulti must have all elements between 0 and 1");
       Psum += dp[i];
     }
-    if (Psum > 0.99999F)
+    if (Psum > 1.00000F)
       throw Exception("sum of probabilities (effectively) greater than 1");
     Dimensions outDims;
     outDims = arg2.getDimensions();
     int32 *ip = (int32*) Malloc(sizeof(int32)*arg2.getLength());
-    genmul(N,dp,ip);
+    genmul(N,dp,arg2.getLength(),(long int*) ip);
     ArrayVector retval;
-    retval.push_back(Array(FM_INT32_ARRAY,outDims,ip));
+    retval.push_back(Array(FM_INT32,outDims,ip));
     return retval;
   }
   
   //!
   //@Module Generate Noncentral Chi-Square Random Variable
   //!
-  ArrayVector RandNChi(int nargout, const ArrayVector& arg) {
+  ArrayVector RandNChiFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("randnchi requires two parameter arguments");
     Array arg1(arg[0]);
@@ -275,7 +417,7 @@ namespace FreeMat {
     int arg1_advance;
     int arg2_advance;
     arg1_advance = (arg1.isScalar()) ? 0 : 1;
-    arg2_advance = (arg2.isscalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
     // Output dimension is the larger of the two
     Dimensions outDims;
     if (arg1.getLength() > arg2.getLength()) {
@@ -283,14 +425,14 @@ namespace FreeMat {
     } else {
       outDims = arg2.getDimensions();
     }
-    arg1.promoteType(FM_FLOAT_ARRAY);
-    arg2.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
+    arg2.promoteType(FM_FLOAT);
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     float *p2;
-    p2 = arg2.getDataPointer();
+    p2 = (float*) arg2.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) {
       if (p1[i*arg1_advance] <= 1.0)
@@ -300,14 +442,14 @@ namespace FreeMat {
       dp[i] = gennch(p1[i*arg1_advance],p2[i*arg2_advance]);
     }
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
     return retval;
   }
 
   //!
   //@Module Generate Noncentral F-Distribution Random Variable
   //!
-  ArrayVector RandNf(int nargout, const ArrayVector& arg) {
+  ArrayVector RandNFFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 3)
       throw Exception("randnf requires three parameter arguments");
     Array arg1(arg[0]);
@@ -320,7 +462,7 @@ namespace FreeMat {
     int arg1_advance;
     int arg2_advance;
     arg1_advance = (arg1.isScalar()) ? 0 : 1;
-    arg2_advance = (arg2.isscalar()) ? 0 : 1;
+    arg2_advance = (arg2.isScalar()) ? 0 : 1;
     // Output dimension is the larger of the two
     Dimensions outDims;
     if (arg1.getLength() > arg2.getLength()) {
@@ -328,14 +470,14 @@ namespace FreeMat {
     } else {
       outDims = arg2.getDimensions();
     }
-    arg1.promoteType(FM_FLOAT_ARRAY);
-    arg2.promoteType(FM_FLOAT_ARRAY);
+    arg1.promoteType(FM_FLOAT);
+    arg2.promoteType(FM_FLOAT);
     float *dp;
     dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
     float *p1;
-    p1 = arg1.getDataPointer();
+    p1 = (float*) arg1.getDataPointer();
     float *p2;
-    p2 = arg2.getDataPointer();
+    p2 = (float*) arg2.getDataPointer();
     int i;
     for (i=0;i<outDims.getElementCount();i++) {
       if (p1[i*arg1_advance] <= 1.0)
@@ -345,7 +487,7 @@ namespace FreeMat {
       dp[i] = gennch(p1[i*arg1_advance],p2[i*arg2_advance]);
     }
     ArrayVector retval;
-    retval.push_back(Array(FM_FLOAT_ARRAY,outDims,dp));
+    retval.push_back(Array(FM_FLOAT,outDims,dp));
     return retval;
   }
 
@@ -396,12 +538,7 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
-	  int i;
-    unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
-    if (!initialized) {
-      init_by_array(init, length);
-      initialized = true;
-    }
+    int i;
     Array t, s;
     Dimensions dims;
     int32 *dp;
@@ -442,26 +579,14 @@ namespace FreeMat {
       if (!allPositive)
 	throw Exception("Randn function requires positive arguments");
     }
-    double *qp;
-    qp = (double*) Malloc(sizeof(double)*dims.getElementCount());
+    float *qp;
+    qp = (float*) Malloc(sizeof(float)*dims.getElementCount());
     int len;
     int j;
     len = dims.getElementCount();
-    for (j=0;j<len;j+=2) {
-      double x1, x2, w, y1, y2;
-      do {
-	x1 = 2.0*genrand_res53()-1.0;
-	x2 = 2.0*genrand_res53()-1.0;
-	w = x1 * x1 + x2 * x2;
-      } while ( w >= 1.0 );
-      w = sqrt( (-2.0 * log( w ) ) / w );
-      y1 = x1 * w;
-      y2 = x2 * w;
-      qp[j] = y1;
-      if (j<len-1)
-	qp[j+1] = y2;
-    }
-    s = Array(FM_DOUBLE,dims,qp);
+    for (j=0;j<len;j++) 
+      qp[j] = snorm();
+    s = Array(FM_FLOAT,dims,qp);
     ArrayVector retval;
     retval.push_back(s);
     return retval;
@@ -506,12 +631,7 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector RandFunction(int nargout, const ArrayVector& arg) {
-	  int i;
-    unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
-    if (!initialized) {
-      init_by_array(init, length);
-      initialized = true;
-    }
+    int i;
     Array t, s;
     Dimensions dims;
     int32 *dp;
@@ -550,16 +670,16 @@ namespace FreeMat {
       for (i=0;i<dims.getLength();i++)
 	allPositive &= (dims[i] >= 0);
       if (!allPositive)
-	throw Exception("Rand function requires positive arguments");
+	throw Exception("Rand function requires posItive arguments");
     }
-    double *qp;
-    qp = (double*) Malloc(sizeof(double)*dims.getElementCount());
+    float *qp;
+    qp = (float*) Malloc(sizeof(float)*dims.getElementCount());
     int len;
     int j;
     len = dims.getElementCount();
     for (j=0;j<len;j++)
-      qp[j] = genrand_res53();
-    s = Array(FM_DOUBLE,dims,qp);
+      qp[j] = ranf();
+    s = Array(FM_FLOAT,dims,qp);
     ArrayVector retval;
     retval.push_back(s);
     return retval;

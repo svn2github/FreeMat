@@ -1,0 +1,39 @@
+KeyManager::KeyManager() {
+void KeyManager::EndOfLine() {
+void KeyManager::OutputChar(char c, char pad) {
+void KeyManager::OutputString(std::string st, char pad) {
+void KeyManager::ReplacePrompt(std::string aprompt) {
+void KeyManager::DeleteChars(int nc, int cut) {
+void KeyManager::AddCharToLine(char c) {
+void KeyManager::AddStringToLine(std::string s) {
+void KeyManager::TruncateDisplay() {
+void KeyManager::TerminalMoveCursor(int n) {
+void KeyManager::SetTermCurpos(int aterm_curpos) {
+void KeyManager::PlaceCursor(int abuff_curpos) {
+int KeyManager::BuffCurposToTermCurpos(int abuff_curpos) {
+int KeyManager::DisplayedCharWidth(char c, int aterm_curpos) {
+int KeyManager::DisplayedStringWidth(std::string s, int nc, int aterm_curpos) {
+int KeyManager::IsWordChar(int c) {
+int KeyManager::DisplayPrompt() {
+int KeyManager::DisplayedPromptWidth() {
+KeyManager::~KeyManager() {
+void KeyManager::DoResizeBuffer(int xsize, int ysize) {
+void KeyManager::ResetLineBuffer() {
+void KeyManager::NewLine() {
+void KeyManager::BeginningOfLine() {
+void KeyManager::BackwardDeleteChar() {
+void KeyManager::ForwardDeleteChar() {
+void KeyManager::AddHistory(std::string line) {
+void KeyManager::Redisplay() {
+void KeyManager::HistoryFindBackwards() {
+void KeyManager::HistoryFindForwards() {
+void KeyManager::SearchPrefix(const char* aline, int aprefix_len) {
+void KeyManager::HistorySearchBackward() {
+void KeyManager::HistorySearchForward() {
+void KeyManager::KillLine() {
+void KeyManager::Yank() {
+void KeyManager::SetFunctionList(std::vector<std::string> ifnames) {
+std::vector<std::string> KeyManager::GetCompletions(const char *line, int word_end, 
+void KeyManager::ListCompletions(std::vector<std::string> completions) {
+void KeyManager::CompleteWord() {
+void KeyManager::OnChar( int c ) {

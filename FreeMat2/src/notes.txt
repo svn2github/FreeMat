@@ -1,0 +1,28 @@
+General Issues:
+1. Empty plot windows are black - why? - Done
+2. filename expansion needs to be fixed - Done
+3. System calls don't work any more
+4. LS?
+5. Images
+6. Print to EPS, TIFF, JPEG
+7. keyboard command, CTRL-C
+8. Output size adjustment (text) is not perfect yet.
+9. Help?
+10. "X"s symbols are not centered/symmetric?
+11. Close notification on 2D plots. - Done
+12. Re-enable point, implement 2D zoom.
+13. output does not get flushed...
+14. Close on command... - Done
+
+By priority:
+
+7. keyboard command, CTRL-C - working, but the scope printed is not always accurate. 
+  Need to install a CTRL-C handler.  Also, under some conditions (rescanning?), I get a core dump??
+  Also need a CTRL-Z handler
+  Problems with ls output being truncated (the non-blocking nature of stdio again?)
+14. Font file?
+8. Output size adjustment (text) is not perfect yet.
+9. Help?
+10. "X"s symbols are not centered/symmetric?
+12. Re-enable point, implement 2D zoom.
+13. Exceptions! Make sure that 'throw' clauses in XWindow are correct.

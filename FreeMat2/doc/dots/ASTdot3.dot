@@ -1,0 +1,7 @@
+digraph G {
+  node [shape=record];
+  newnode [label = "new node | <down> down | <right> right"];
+  arg [label = "arg | <down> down | <right> right"];
+  newnode:down -> arg;
+}
+  

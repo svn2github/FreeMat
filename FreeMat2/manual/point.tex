@@ -1,0 +1,59 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{POINT Image Point Information Function}
+\subsubsection{Usage}
+Returns information about the currently displayed image based on a use
+supplied mouse-click.  The general syntax for its use is
+\begin{verbatim}
+   y = point
+\end{verbatim}
+The returned vector $y$ has three elements: 
+\[
+  y= [r,c,v]
+\]
+where $r,c$ are the row and column coordinates of the scalar image selected
+by the user, and $v$ is the value of the scalar image at that point.  Image
+zoom is automatically compensated for, so that $r,c$ are the corrdinates into
+the original matrix.  They will generally be fractional to account for the
+exact location of the mouse click.
+\subsubsection{Example}
+Let us suppose that the following image represents some function of interest
+\begin{verbatim}
+--> t = linspace(-1,1,400); x = cos(pi*t)'*cos(pi*t);
+--> image(x)
+--> zoom(1)
+\end{verbatim}
+ Which results in the following window appearing.
+
+\doplot{width=5cm}{point1}
+
+We then issue the \verb|point| command, and click on a point, which results
+in the following output:
+\begin{verbatim}
+--> point
+ans = 
+  <double>  - size: [1 3]
+ 
+Columns 1 to 2
+  187.000000000000          190.000000000000         
+ 
+Columns 3 to 3
+    0.964156278324225
+\end{verbatim}

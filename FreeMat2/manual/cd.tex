@@ -1,0 +1,68 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{CD Change Working Directory Function}
+\subsubsection{Usage}
+Changes the current working directory to the one specified as the argument.  The general syntax for its use is
+\begin{verbatim}
+  cd('dirname')
+\end{verbatim}
+but this can also be expressed as
+\begin{verbatim}
+  cd 'dirname'
+\end{verbatim}
+or 
+\begin{verbatim}
+  cd dirname
+\end{verbatim}
+Examples of all three usages are given below.
+Generally speaking, \verb|dirname| is any string that would be accepted by the underlying OS as a valid directory name.  For example, on most systems, \verb|'.'| refers to the current directory, and \verb|'..'| refers to the parent directory.  Also, depending on the OS, it may be necessary to ``escape'' the directory seperators.  In particular, if directories are seperated with the backwards-slash character \verb|'\\'|, then the path specification must use double-slashes \verb|'\\\\'|. \emph{Note: to get file-name completion to work at this time, you must use one of the first two forms of the command.}
+\subsubsection{Example}
+The \verb|pwd| command returns the current directory location.  First, we use the simplest form of the \verb|cd| command, in which the directory name argument is given unquoted.
+\begin{verbatim}
+--> pwd
+ans =
+  <string>  - size: [1 28]
+ /home/basu/FreeMat/build/src
+--> cd ..
+--> pwd
+ans =
+  <string>  - size: [1 24]
+ /home/basu/FreeMat/build
+\end{verbatim}
+Next, we use the ``traditional'' form of the function call, using both the parenthesis and the quoted string.
+\begin{verbatim}
+--> cd('/home/basu/FreeMat')
+--> pwd
+ans =
+  <string>  - size: [1 18]
+ /home/basu/FreeMat
+\end{verbatim}
+In the third version, we use only the quoted string argument without parenthesis.  We also use the filename-completion feature (usually by pressing the \verb|TAB| key) to get a list of possible completions.
+\begin{verbatim}
+--> cd 'build/
+Makefile          doc/              libtecla/         wxBase-2.4.0/
+config.log        libCore/          manual/           wxWindows-2.4.0/
+config.status     libFFTPack/       src/
+--> cd 'build/src'
+--> pwd
+ans =
+  <string>  - size: [1 28]
+ /home/basu/FreeMat/build/src
+\end{verbatim}

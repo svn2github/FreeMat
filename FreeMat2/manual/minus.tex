@@ -1,0 +1,146 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{MINUS Subtraction Operator}
+\subsubsection{Usage}
+Subtracts two numerical arrays (elementwise).  There are two forms
+for its use, both with the same general syntax:
+\begin{verbatim}
+  y = a - b
+\end{verbatim}
+where $a$ and $b$ are $n$-dimensional arrays of numerical type.  In the
+first case, the two arguments are the same size, in which case, the 
+output $y$ is the same size as the inputs, and is the element-wise
+difference of $a$ and $b$.  In the second case, either $a$ or $b$ is a scalar, 
+in which case $y$ is the same size as the larger argument,
+and is the difference of the scalar to each element of the other argument.
+
+The type of $y$ depends on the types of $a$ and $b$ using the type 
+promotion rules.  The types are ordered as:
+\begin{enumerate}
+\item \verb|uint8| - unsigned, 8-bit integers range $[0,255]$
+\item \verb|int8| - signed, 8-bit integers $[-127,128]$
+\item \verb|uint16| - unsigned, 16-bit integers $[0,65535]$
+\item \verb|int16| - signed, 16-bit integers $[-32768,32767]$
+\item \verb|uint32| - unsigned, 32-bit integers $[0,4294967295]$
+\item \verb|int32| - signed, 32-bit integers $[-2147483648,2147483647]$
+\item \verb|float| - 32-bit floating point
+\item \verb|double| - 64-bit floating point
+\item \verb|complex| - 32-bit complex floating point
+\item \verb|dcomplex| - 64-bit complex floating point
+\end{enumerate}
+Note that the type promotion and combination rules work similar to 
+\verb|C|.  Numerical overflow rules are also the same as \verb|C|.
+\subsubsection{Function Internals}
+There are three formulae for the subtraction operator, depending on the
+sizes of the three arguments.  In the most general case, in which 
+the two arguments are the same size, the output is computed via:
+\[
+y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d) - b(m_1,\ldots,m_d)
+\]
+If $a$ is a scalar, then the output is computed via
+\[
+y(m_1,\ldots,m_d) = a - b(m_1,\ldots,m_d).
+\]
+On the other hand, if $b$ is a scalar, then the output is computed via
+\[
+y(m_1,\ldots,m_d) = a(m_1,\ldots,m_d) - b.
+\]
+\subsubsection{Examples}
+Here are some examples of using the subtraction operator.  First, a 
+straight-forward usage of the minus operator.  The first example
+is straightforward - the \verb|int32| is the default type used for
+integer constants (same as in \verb|C|), hence the output is the
+same type:
+\begin{verbatim}
+--> 3 - 8
+ans =
+  <int32>  - size: [1 1]
+            -5
+\end{verbatim}
+Next, we use the floating point syntax to force one of the arguments
+to be a \verb|double|, which results in the output being \verb|double|:
+\begin{verbatim}
+--> 3.1 - 2
+ans =
+  <double>  - size: [1 1]
+    1.100000000000000
+\end{verbatim}
+Note that if one of the arguments is complex-valued, the output will be
+complex also.
+\begin{verbatim}
+--> a = 3 + 4*i
+a =
+  <complex>  - size: [1 1]
+    3.0000000         4.0000000     i
+--> b = a - 2.0f
+b =
+  <complex>  - size: [1 1]
+    1.0000000         4.0000000     i
+\end{verbatim}
+If a \verb|double| value is subtracted from a \verb|complex|, the result is 
+promoted to \verb|dcomplex|.
+\begin{verbatim}
+--> b = a - 2.0
+b =
+  <dcomplex>  - size: [1 1]
+    1.000000000000000        4.000000000000000    i
+\end{verbatim}
+We can also demonstrate the three forms of the subtraction operator.  First
+the element-wise version:
+\begin{verbatim}
+--> a = [1,2;3,4]
+a =
+  <int32>  - size: [2 2]
+  
+Columns 1 to 2
+             1              2
+             3              4
+--> b = [2,3;6,7]
+b =
+  <int32>  - size: [2 2]
+  
+Columns 1 to 2
+             2              3
+             6              7
+--> c = a - b
+c =
+  <int32>  - size: [2 2]
+  
+Columns 1 to 2
+            -1             -1
+            -3             -3
+\end{verbatim}
+Then the scalar versions
+\begin{verbatim}
+--> c = a - 1
+c =
+  <int32>  - size: [2 2]
+  
+Columns 1 to 2
+             0              1
+             2              3
+--> c = 1 - b
+c =
+  <int32>  - size: [2 2]
+  
+Columns 1 to 2
+            -1             -2
+            -5             -6
+\end{verbatim}

@@ -1,0 +1,48 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{SETPRINTLIMIT Set Limit For Printing Of Arrays}
+\subsubsection{Usage}
+Changes the limit on how many elements of an array are printed
+using either the \verb|disp| function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling
+\begin{verbatim}
+  setprintlimit(n)
+\end{verbatim}
+where $n$ is the new limit to use.
+\subsubsection{Example}
+Setting a smaller print limit avoids pages of output when you forget the semicolon on an expression.
+\begin{verbatim}
+--> A = randn(512);
+--> setprintlimit(10)
+--> A
+ans =
+  <double>  - size: [512 512]
+  
+Columns 1 to 2
+   -0.496297986481338        -0.692245304946869
+   -0.276042423147714        -1.692222693378866
+    0.453899406407093         1.229459086775574
+   -1.026577886959641        -0.234325262213086
+    0.821542419027907         1.188372492270378
+ 
+... Output truncated - use setprintlimit function to see more of the output ...
+\end{verbatim}

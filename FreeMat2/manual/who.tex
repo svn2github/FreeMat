@@ -1,0 +1,65 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{WHO Describe Currently Defined Variables}
+\subsubsection{Usage}
+Reports information on either all variables in the current context
+or on a specified set of variables.  For each variable, the \verb|who|
+function indicates the size and type of the variable as well as 
+if it is a global or persistent.  There are two formats for the 
+function call.  The first is the explicit form, in which a list
+of variables are provided:
+\begin{verbatim}
+  who a1 a2 ...
+\end{verbatim}
+In the second form
+\begin{verbatim}
+  who
+\end{verbatim}
+the \verb|who| function lists all variables defined in the current 
+context (as well as global and persistent variables). Note that
+there are two alternate forms for calling the \verb|who| function:
+\begin{verbatim}
+  who 'a1' 'a2' ...
+\end{verbatim}
+and
+\begin{verbatim}
+  who('a1','a2',...)
+\end{verbatim}
+\subsubsection{Example}
+Here is an example of the general use of \verb|who|, which lists all of the variables defined.
+\begin{verbatim}
+--> who
+  Variable Name      Type   Flags   Size
+              a    double           [3 3]
+              c      cell           [1 1]
+            ans    double           []
+              d     int32  global   [1 5]
+              m     int32 persist   [1 1]
+\end{verbatim}
+In the second case, we examine only a specific variable:
+\begin{verbatim}
+--> who c
+  Variable Name      Type   Flags   Size
+              c      cell           [1 1]
+--> who('c')
+  Variable Name      Type   Flags   Size
+              c      cell           [1 1]
+\end{verbatim}
+

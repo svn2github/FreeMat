@@ -1,0 +1,68 @@
+% Copyright (c) 2002, 2003 Samit Basu
+%
+% Permission is hereby granted, free of charge, to any person obtaining a 
+% copy of this software and associated documentation files (the "Software"), 
+% to deal in the Software without restriction, including without limitation 
+% the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+% and/or sell copies of the Software, and to permit persons to whom the 
+% Software is furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included 
+% in all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+% OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+% THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+% DEALINGS IN THE SOFTWARE.
+\subsection{RECEIVE Receive An Array Over A Socket Link}
+\subsubsection{Usage}
+Receive an array across a connected socket link (returned
+either by \verb|accept| of \verb|connect|).  The call syntax is
+\begin{verbatim}
+  x = receive(handle)
+\end{verbatim}
+If there is no array to be read, the call will 'block', meaning
+that it will wait until an array is sent using a \verb|send| command
+by the other end of the socket link.
+\subsubsection{Example}
+Here is an example of how an array is sent over a socket link on two sessions of FreeMat.  On session one, we execute the following:
+\begin{verbatim}
+--> a = server(36230)
+a =
+  <uint32>  - size: [1 1]
+            1
+--> b = accept(a)
+\end{verbatim}
+At this point the first session will suspend.  In a second session, we execute the following:
+\begin{verbatim}
+--> c = connect('127.0.0.1',36230)
+c =
+  <uint32>  - size: [1 1]
+            1
+\end{verbatim}
+In the first session, we get a return from \verb|accept|:
+\begin{verbatim}
+--> a = server(36230)
+a =
+  <uint32>  - size: [1 1]
+            1
+--> b = accept(a)
+b =
+  <uint32>  - size: [1 1]
+            1
+\end{verbatim}
+At this point a link is set up between the two sessions.  If we execute a \verb|send| in session two:
+\begin{verbatim}
+--> send(c,'Hello world!')
+\end{verbatim}
+Then a \verb|receive| in session one results in
+\begin{verbatim}
+--> y = receive(b)
+y =
+  <string>  - size: [1 12]
+ Hello world!
+\end{verbatim}
+

@@ -1,0 +1,36 @@
+noinst_LIBRARIES = libXP.a
+
+libXP_a_SOURCES = DynLib.hpp \
+DynLib.cpp \
+System.hpp \
+System.cpp \
+PathSearch.cpp \
+PathSearch.hpp \
+GrayscaleImage.cpp \
+GrayscaleImage.hpp \
+RGBImage.cpp \
+RGBImage.hpp \
+Rect2D.cpp \
+Rect2D.hpp \
+RGBImageGC.cpp \
+RGBImageGC.hpp \
+PostScriptGC.cpp \
+PostScriptGC.hpp \
+Point2D.cpp \
+Point2D.hpp \
+GraphicsContext.hpp \
+Color.cpp \
+Color.hpp \
+BitmapFont.cpp \
+BitmapFont.hpp \
+XWindow.hpp \
+XWindow.cpp \
+Reducer.hpp \
+Reducer.cpp \
+KeyManager.cpp \
+KeyManager.hpp
+
+EXTRA_DIST		= bootstrap
+AUTOMAKE_OPTIONS 	= foreign
+
+INCLUDES= -I@top_srcdir@/libs/libFreeMat 

@@ -1,0 +1,30 @@
+What would it take to eliminate wxWindows from FreeMat??  
+There are several key areas where wxWindows provides support that 
+FLTK (example) does not:
+
+1.  Library support
+   ->  dlopen is standard and easy.  Under win32, a loadlibrary command works just as easily.
+2.  Postscript support
+   ->  This isn't too bad - although it was nice to have 
+3.  Image support
+   ->  Link directly to libjpeg, libtiff, etc.
+4.  System support
+   ->  Must implement wxExecute, etc
+5.  Help support
+   ->  Need HTML support
+6.  Drawing support
+   ->  Direct drawing support...
+7.  Path support
+   ->  Not such a biggie - this might exist in fltk also...
+8.  Dialogs
+   ->  These exist in FLTK - in fact, support for fonts is much better in FLTK
+
+
+Another idea would be to not use any library - just direct programming....  I _do_ like this idea.
+Especially since if I fix problems 1-8, I won't be using much of the toolkit capabilities anyway.
+I get the built-in dialogs, fast performance, etc...  Most importantly, it would be fun.
+
+What do I need to make this work? For the Non-GUI version, what I need is to write a little 
+application that starts from the command line, and that can open windows.  For the GUI version, 
+its more complicated...
+

@@ -1,0 +1,18 @@
+This is a snapshot of libffi from the GCC CVS tree at 2002-01-19. This is
+*NOT* an official release of libffi, but is provided as a convenience for those
+who'd like to test a libffi-enabled version of PyObjC.
+
+To install:
+
+* mkdir build
+* cd build
+* ../configure --prefix=${SOME_CONVENIENT_PLACE} 
+* make
+* ./ffitest
+* make install
+
+The ${SOME_CONVENIENT_PLACE} need not be the usual place for installing software
+(/usr/local). After building PyObjC you can even remove this again, as the
+bridge does not have a runtime dependency on the installed libffi.
+
+Ronald Oussoren <oussoren@cistron.nl>

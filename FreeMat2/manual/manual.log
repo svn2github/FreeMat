@@ -1,0 +1,1073 @@
+This is pdfTeX, Version 3.14159-14h-released-20010417 (Web2C 7.3.3.1) (format=pdflatex 2003.2.18)  4 OCT 2003 13:31
+**manual.tex
+(./manual.tex{/usr/share/texmf/pdftex/config/pdftex.cfg}
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, i
+talian, nohyphenation, loaded.
+(/usr/share/texmf/tex/latex/base/book.cls
+Document Class: book 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/bk10.clo
+File: bk10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texmf/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2002/08/04 v6.72v Hypertext links for LaTeX
+
+(/usr/share/texmf/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+\@linkdim=\dimen103
+\Hy@linkcounter=\count88
+\Hy@pagecounter=\count89
+
+(/usr/share/texmf/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2002/08/04 v6.72v Hyperref: PDFDocEncoding definition (HO)
+)
+Package hyperref Info: Bookmarks ON on input line 1797.
+Package hyperref Info: Hyper figures OFF on input line 1816.
+Package hyperref Info: Link nesting OFF on input line 1821.
+Package hyperref Info: Hyper index ON on input line 1824.
+Package hyperref Info: Plain pages ON on input line 1829.
+Package hyperref Info: Backreferencing OFF on input line 1836.
+
+Implicit mode ON; LaTeX internals redefined
+(/usr/share/texmf/tex/latex/html/url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+)
+LaTeX Info: Redefining \url on input line 2048.
+\Fld@menulength=\count90
+\Field@Width=\dimen104
+\Fld@charsize=\dimen105
+\Choice@toks=\toks15
+\Field@toks=\toks16
+Package hyperref Info: Hyper figures OFF on input line 2506.
+Package hyperref Info: Link nesting OFF on input line 2511.
+Package hyperref Info: Hyper index ON on input line 2514.
+Package hyperref Info: backreferencing OFF on input line 2521.
+Package hyperref Info: Link coloring OFF on input line 2526.
+\c@Item=\count91
+\c@Hfootnote=\count92
+)
+*hyperref using default driver hpdftex*
+(/usr/share/texmf/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2002/08/04 v6.72v Hyperref driver for pdfTeX
+
+(/usr/share/texmf/tex/latex/psnfss/pifont.sty
+Package: pifont 2001/06/04 PSNFSS-v8.2 Pi font support (SPQR) 
+LaTeX Font Info:    Try loading font information for U+pzd on input line 62.
+
+(/usr/share/texmf/tex/latex/psnfss/upzd.fd
+File: upzd.fd 2001/06/04 font definitions for U/pzd.
+)
+LaTeX Font Info:    Try loading font information for U+psy on input line 63.
+
+(/usr/share/texmf/tex/latex/psnfss/upsy.fd
+File: upsy.fd 2001/06/04 font definitions for U/psy.
+))
+\Fld@listcount=\count93
+\@outlinefile=\write3
+)
+(/usr/share/texmf/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texmf/tex/latex/config/graphics.cfg)
+Package graphics Info: Driver file: pdftex.def on input line 80.
+
+(/usr/share/texmf/tex/latex/graphics/pdftex.def
+File: pdftex.def 2001/11/29 v0.03i graphics/color for pdftex
+\Gread@gobject=\count94
+))
+\Gin@req@height=\dimen106
+\Gin@req@width=\dimen107
+)
+(/usr/share/texmf/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip43
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texmf/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01
+
+(/usr/share/texmf/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks17
+\ex@=\dimen108
+))
+(/usr/share/texmf/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen109
+)
+(/usr/share/texmf/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count95
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count96
+\leftroot@=\count97
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count98
+\DOTSCASE@=\count99
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen110
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count100
+\c@MaxMatrixCols=\count101
+\dotsspace@=\muskip10
+\c@parentequation=\count102
+\dspbrk@lvl=\count103
+\tag@help=\toks18
+\row@=\count104
+\column@=\count105
+\maxfields@=\count106
+\andhelp@=\toks19
+\eqnshift@=\dimen111
+\alignsep@=\dimen112
+\tagshift@=\dimen113
+\tagwidth@=\dimen114
+\totwidth@=\dimen115
+\lineht@=\dimen116
+\@envbody=\toks20
+\multlinegap=\skip44
+\multlinetaggap=\skip45
+\mathdisplay@stack=\toks21
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+) (./manual.aux)
+\openout1 = `manual.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+Package hyperref Info: Link coloring OFF on input line 30.
+
+(/usr/share/texmf/tex/latex/hyperref/nameref.sty
+Package: nameref 2001/01/27 v2.19 Cross-referencing by name of section
+\c@section@level=\count107
+)
+LaTeX Info: Redefining \ref on input line 30.
+LaTeX Info: Redefining \pageref on input line 30.
+ (./manual.out) (./manual.out)
+\openout3 = `manual.out'.
+
+(/usr/share/texmf/tex/context/base/supp-pdf.tex
+(/usr/share/texmf/tex/context/base/supp-mis.tex
+loading : Context Support Macros / Missing
+\protectiondepth=\count108
+\scratchcounter=\count109
+\scratchtoks=\toks22
+\scratchdimen=\dimen117
+\scratchskip=\skip46
+\scratchmuskip=\muskip11
+\scratchbox=\box28
+\scratchread=\read1
+\scratchwrite=\write4
+\zeropoint=\dimen118
+\nextbox=\box29
+\nextdepth=\dimen119
+\everyline=\toks23
+\!!counta=\count110
+\!!countb=\count111
+\recursecounter=\count112
+)
+loading : Context Support Macros / PDF
+\nofMPsegments=\count113
+\nofMParguments=\count114
+\everyMPtoPDFconversion=\toks24
+) [1
+
+
+{/usr/share/texmf/dvips/config/pdftex.map}] [2
+
+] (./manual.toc [3]
+Overfull \hbox (10.55612pt too wide) in paragraph at lines 117--117
+ [][] [][]/cmr10/ATAN2 In-verse Trigono-met-ric 4-Quadrant Arc-t-an-gent Func- 
+
+ []
+
+[4] [5])
+\tf@toc=\write5
+\openout5 = `manual.toc'.
+
+ [6]
+Chapter 1.
+[7
+
+] [8
+
+]
+Chapter 2.
+(./plus.tex [9] [10] [11]) (./minus.tex [12] [13]) (./dottimes.tex [14]
+[15] [16]) (./dotrightdivide.tex [17] [18]) (./dotleftdivide.tex [19] [20]
+[21]) (./dotpower.tex [22] [23]) (./transpose.tex [24]
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 69--69
+[]    /cmtt10/1.0000000         1.0000000     i     2.0000000        -1.0000000
+     i[] 
+ []
+
+) (./matmultiply.tex [25] [26]) (./matleftdivide.tex [27] [28] [29])
+(./matrightdivide.tex
+Overfull \hbox (8.7069pt too wide) in paragraph at lines 20--20
+[]/cmbx12/RIGHTDIVIDE Ma-trix Equa-tion Solver/Divide Op-
+ []
+
+[30]) (./matpower.tex [31] [32]) (./hermitian.tex
+Overfull \hbox (2.04584pt too wide) in paragraph at lines 20--20
+[]/cmbx12/HERMITIAN Ma-trix Her-mi-tian (Con-ju-gate Trans-
+ []
+
+[33]
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 70--70
+[]    /cmtt10/1.0000000         1.0000000     i     2.0000000        -1.0000000
+     i[] 
+ []
+
+) (./comparisonops.tex [34]
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 80--80
+[]             /cmtt10/1              2              5              7          
+    3[] 
+ []
+
+[35]
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 80--80
+[]             /cmtt10/2              2              5              9          
+    4[] 
+ []
+
+) (./logicalops.tex
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 30.
+ (/usr/share/texmf/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 30.
+ [36]
+Overfull \hbox (43.49661pt too wide) in paragraph at lines 89--89
+[]             /cmtt10/0              0              1              0          
+    0[] 
+ []
+
+[37]) (./colon.tex [38]) (./import.tex [39] [40] [41]) [42]
+Chapter 3.
+(./log.tex <logplot.jpg, id=619, 501.875pt x 401.5pt>
+File: logplot.jpg Graphic file (type jpg)
+ <use logplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 52--105
+
+ []
+
+(./exp.tex [43
+
+] <expplot1.jpg, id=628, 501.875pt x 401.5pt>
+File: expplot1.jpg Graphic file (type jpg)
+ <use expplot1.jpg>
+[44 <./logplot.jpg>] <expplot2.jpg, id=636, 501.875pt x 401.5pt>
+File: expplot2.jpg Graphic file (type jpg)
+
+<use expplot2.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 62--107
+
+ []
+
+(./cos.tex [45 <./expplot1.jpg> <./expplot2.jpg>]
+<cosplot.jpg, id=642, 501.875pt x 401.5pt>
+File: cosplot.jpg Graphic file (type jpg)
+ <use cosplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 50--110
+
+ []
+
+(./sin.tex [46 <./cosplot.jpg>] <sinplot.jpg, id=650, 501.875pt x 401.5pt>
+File: sinplot.jpg Graphic file (type jpg)
+
+<use sinplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 50--112
+
+ []
+
+(./tan.tex [47 <./sinplot.jpg>] <tanplot.jpg, id=658, 501.875pt x 401.5pt>
+File: tanplot.jpg Graphic file (type jpg)
+
+<use tanplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 54--114
+
+ []
+
+(./csc.tex [48 <./tanplot.jpg>] <cscplot.jpg, id=666, 501.875pt x 401.5pt>
+File: cscplot.jpg Graphic file (type jpg)
+
+<use cscplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 46--116
+
+ []
+
+(./sec.tex [49 <./cscplot.jpg>] <secplot.jpg, id=675, 501.875pt x 401.5pt>
+File: secplot.jpg Graphic file (type jpg)
+
+<use secplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 46--118
+
+ []
+
+(./cot.tex [50 <./secplot.jpg>] <cotplot.jpg, id=684, 501.875pt x 401.5pt>
+File: cotplot.jpg Graphic file (type jpg)
+
+<use cotplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 50--120
+
+ []
+
+(./acos.tex [51 <./cotplot.jpg>] <acosplot.jpg, id=692, 501.875pt x 401.5pt>
+File: acosplot.jpg Graphic file (type jpg)
+
+<use acosplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 50--123
+
+ []
+
+(./asin.tex [52 <./acosplot.jpg>] <asinplot.jpg, id=700, 501.875pt x 401.5pt>
+File: asinplot.jpg Graphic file (type jpg)
+
+<use asinplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 50--125
+
+ []
+
+(./atan.tex [53 <./asinplot.jpg>] <atanplot.jpg, id=708, 501.875pt x 401.5pt>
+File: atanplot.jpg Graphic file (type jpg)
+
+<use atanplot.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 49--127
+
+ []
+
+(./atan2.tex [54 <./atanplot.jpg>]
+<atan2plot.jpg, id=716, 501.875pt x 401.5pt>
+File: atan2plot.jpg Graphic file (type jpg)
+ <use atan2plot.jpg>) (./inf.tex
+[55 <./atan2plot.jpg>] [56]) (./nan.tex) (./ij.tex [57] [58]) (./e.tex)
+(./pi.tex
+
+Package hyperref Warning: Token not allowed in a PDFDocEncoded string,
+(hyperref)                removing `math shift' on input line 20.
+
+
+Package hyperref Warning: Token not allowed in a PDFDocEncoded string,
+(hyperref)                removing `\pi' on input line 20.
+
+
+Package hyperref Warning: Token not allowed in a PDFDocEncoded string,
+(hyperref)                removing `math shift' on input line 20.
+
+[59]) (./clear.tex) (./who.tex [60]) (./size.tex [61]) (./length.tex)
+(./find.tex [62] [63]) (./mean.tex [64]) (./var.tex
+Overfull \hbox (75.14877pt too wide) detected at line 35
+/cmmi10/y/cmr10/(/cmmi10/m[]; [] ; m[]; /cmr10/1/cmmi10/; m[]; [] ; m[]/cmr10/)
+ = [] [] [][]
+ []
+
+[65]) (./uint8.tex [66] [67]) (./uint16.tex [68]) (./uint32.tex [69] [70])
+(./int8.tex [71]) (./int16.tex [72]) (./int32.tex [73] [74]) (./float.tex
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 58--58
+[]  /cmtt10/104.00000          101.00000          108.00000          111.00000[
+] 
+ []
+
+[75]) (./double.tex [76]
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 61--61
+[]  /cmtt10/104.000000000000          101.000000000000          108.00000000000
+0[] 
+ []
+
+) (./complex.tex
+Overfull \hbox (9.93602pt too wide) in paragraph at lines 20--20
+[]/cmbx12/COMPLEX Con-vert to 32-bit Com-plex Float-ing Point 
+ []
+
+[77]
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 58--58
+[]  /cmtt10/104.00000           0.00000000    i   101.00000           0.0000000
+0    i[] 
+ []
+
+) (./dcomplex.tex [78]) (./typeof.tex [79] [80] [81]) (./max.tex [82]
+Overfull \hbox (48.27861pt too wide) detected at line 74
+/cmmi10/y/cmr10/(/cmmi10/m[]; [] ; m[]; /cmr10/1/cmmi10/; m[]; [] ; m[]/cmr10/)
+ = []
+ []
+
+[83] [84]) (./min.tex
+Overfull \hbox (48.27861pt too wide) detected at line 74
+/cmmi10/y/cmr10/(/cmmi10/m[]; [] ; m[]; /cmr10/1/cmmi10/; m[]; [] ; m[]/cmr10/)
+ = []
+ []
+
+[85] [86]) (./sum.tex [87]) (./prod.tex [88]) (./conj.tex [89]) (./real.tex
+[90]) (./imag.tex [91]) (./abs.tex [92]) (./reshape.tex
+<reshape.jpg, id=943, 391.4625pt x 326.21875pt>
+File: reshape.jpg Graphic file (type jpg)
+ <use reshape.jpg>
+Overfull \hbox (152.49327pt too wide) in paragraph at lines 40--44
+/cmr10/in $/cmmi10/x$ /cmr10/are read in the fol-low-ing or-der: $[]$ 
+ []
+
+[93] [94 <./reshape.jpg>]) (./zeros.tex [95] [96]) (./ones.tex [97])
+(./struct.tex [98]
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 66--66
+[]/cmtt10/--> y = struct('foo',{1,3,4},'bar',{'cheese','cola','beer'},'key',508
+)[] 
+ []
+
+) (./randlicense.tex [99]
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 63--63
+[]/cmtt10/Redistribution and use in source and binary forms, with or without[] 
+
+ []
+
+
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 63--63
+[]/cmtt10/modification, are permitted provided that the following conditions[] 
+
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 63--63
+[]/cmtt10/2. Redistributions in binary form must reproduce the above copyright[
+] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 63--63
+[]/cmtt10/notice, this list of conditions and the following disclaimer in the[]
+ 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 63--63
+[]/cmtt10/documentation and/or other materials provided with the distribution.[
+] 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 63--63
+[]/cmtt10/3. The names of its contributors may not be used to endorse or promot
+e[] 
+ []
+
+
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 63--63
+[]/cmtt10/products derived from this software without specific prior written[] 
+
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 63--63
+[]/cmtt10/THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS[]
+ 
+ []
+
+
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 63--63
+[]/cmtt10/LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+[] 
+ []
+
+
+Overfull \hbox (64.49643pt too wide) in paragraph at lines 63--63
+[]/cmtt10/A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT
+ OWNER OR[] 
+ []
+
+
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 63--63
+[]/cmtt10/CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 63--63
+[]/cmtt10/EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,[]
+ 
+ []
+
+
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 63--63
+[]/cmtt10/PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR[] 
+
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 63--63
+[]/cmtt10/PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY O
+F[] 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 63--63
+[]/cmtt10/LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING[
+] 
+ []
+
+
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 63--63
+[]/cmtt10/NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS[] 
+
+ []
+
+) (./seed.tex
+Underfull \vbox (badness 2426) has occurred while \output is active []
+
+ [100])
+(./rand.tex [101] [102]) (./randn.tex
+Overfull \hbox (4.62083pt too wide) in paragraph at lines 20--20
+[]/cmbx12/RANDN Gaus-sian (Nor-mal) Ran-dom Num-ber Gen-
+ []
+
+<gaus1.jpg, id=998, 501.875pt x 401.5pt>
+File: gaus1.jpg Graphic file (type jpg)
+ <use gaus1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 50--51
+[]$[]$ 
+ []
+
+[103] [104 <./gaus1.jpg>]) (./printf.tex [105] [106]
+Missing character: There is no ^^c2 in font cmtt10!
+Missing character: There is no ^^b1 in font cmtt10!
+
+Overfull \hbox (8.13757pt too wide) in paragraph at lines 73--74
+[]/cmtt10/e,E /cmr10/The dou-ble ar-gu-ment is rounded and con-verted in the st
+yle /cmtt10/[-]d.dddedd
+ []
+
+[107]) (./save.tex [108]) (./load.tex [109]) (./setprintlimit.tex [110]
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 48--48
+[]/cmtt10/... Output truncated - use setprintlimit function to see more of the 
+output ...[] 
+ []
+
+) (./getprintlimit.tex
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 52--52
+[]/cmtt10/... Output truncated - use setprintlimit function to see more of the 
+output ...[] 
+ []
+
+) (./fopen.tex [111] [112]) (./fclose.tex) (./fread.tex [113] [114])
+(./fwrite.tex) (./ftell.tex [115]) (./feof.tex
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 54--54
+[]/cmtt10/Error: Insufficient data remaining in file to fill out requested size
+[] 
+ []
+
+) (./fseek.tex [116]) (./fprintf.tex
+Overfull \hbox (6.6374pt too wide) in paragraph at lines 20--20
+[]/cmbx12/FPRINTF For-mated File Out-put Func-tion (C-Style) 
+ []
+
+[117]) (./strcmp.tex) (./sprintf.tex [118]
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 45--45
+[]/cmtt10/--> l = {}; for i = 1:5; s = sprintf('file_%d.dat',i); l(i) = {s}; en
+d;[] 
+ []
+
+) (./send.tex [119]) (./receive.tex [120]) (./connect.tex [121]) (./accept.tex
+[122]) (./server.tex [123] [124]) (./fft.tex
+Overfull \hbox (19.10825pt too wide) detected at line 40
+/cmmi10/y/cmr10/(/cmmi10/m[]; [] ; m[]; l; m[]; [] ; m[]/cmr10/) = [] /cmmi10/x
+/cmr10/(/cmmi10/m[]; [] ; m[]; k; m[]; [] ; m[]/cmr10/)/cmmi10/e[]:
+ []
+
+
+Overfull \hbox (22.9272pt too wide) detected at line 52
+/cmmi10/y/cmr10/(/cmmi10/m[]; [] ; m[]; l; m[]; [] ; m[]/cmr10/) = [] [] /cmmi1
+0/x/cmr10/(/cmmi10/m[]; [] ; m[]; k; m[]; [] ; m[]/cmr10/)/cmmi10/e[]:
+ []
+
+[125] <fft1.jpg, id=1147, 501.875pt x 401.5pt>
+File: fft1.jpg Graphic file (type jpg)
+ <use fft1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 78--79
+[]$[]$ 
+ []
+
+[126 <./fft1.jpg>] <fft2.jpg, id=1155, 501.875pt x 401.5pt>
+File: fft2.jpg Graphic file (type jpg)
+ <use fft2.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 119--265
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 119--265
+
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [127]
+(./cd.tex [128 <./fft2.jpg>]
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 68--68
+[]/cmtt10/Makefile          doc/              libtecla/         wxBase-2.4.0/[]
+ 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 68--68
+[]/cmtt10/config.log        libCore/          manual/           wxWindows-2.4.0
+/[] 
+ []
+
+) (./ls.tex [129]
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 53--53
+[]/cmtt10/App.o             Exception.o            LoadCore.o        Serialize.
+o[] 
+ []
+
+
+Overfull \hbox (38.24666pt too wide) in paragraph at lines 53--53
+[]/cmtt10/Array.o           File.o                 Makefile          ServerSock
+et.o[] 
+ []
+
+
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 53--53
+[]/cmtt10/AST.o             foo.dat                Makefile~         Shell.o[] 
+
+ []
+
+
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 53--53
+[]/cmtt10/config.log     doc      libFFTPack  Makefile  src           wxWindows
+-2.4.0[] 
+ []
+
+
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 59--59
+[]/cmtt10/config.log     doc      libFFTPack  Makefile  src           wxWindows
+-2.4.0[] 
+ []
+
+) (./pwd.tex [130]) [131] [132
+
+]
+Chapter 4.
+(./newimage.tex <newimage1.jpg, id=1187, 354.32375pt x 179.67125pt>
+File: newimage1.jpg Graphic file (type jpg)
+
+<use newimage1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 41--279
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--279
+
+ []
+
+(./useimage.tex [133 <./newimage1.jpg>]) (./image.tex [134]
+<image1.jpg, id=1203, 153.57375pt x 153.57375pt>
+File: image1.jpg Graphic file (type jpg)
+ <use image1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 48--283
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--283
+
+ []
+
+(./colormap.tex [135 <./image1.jpg>]
+<colormap1.jpg, id=1210, 153.57375pt x 153.57375pt>
+File: colormap1.jpg Graphic file (type jpg)
+ <use colormap1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 61--62
+[]$[]$ 
+ []
+
+<colormap2.jpg, id=1211, 153.57375pt x 153.57375pt>
+File: colormap2.jpg Graphic file (type jpg)
+ <use colormap2.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 70--71
+[]$[]$ 
+ []
+
+[136 <./colormap1.jpg> <./colormap2.jpg>]
+<colormap3.jpg, id=1217, 501.875pt x 401.5pt>
+File: colormap3.jpg Graphic file (type jpg)
+ <use colormap3.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 79--80
+[]$[]$ 
+ []
+
+
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 91--91
+[]/cmtt10/--> A = [exp(-(t-1.0).^2/0.1);exp(-(t-0.5).^2/0.1);exp(-t.^2/0.1)]';[
+] 
+ []
+
+<colormap4.jpg, id=1218, 501.875pt x 401.5pt>
+File: colormap4.jpg Graphic file (type jpg)
+ <use colormap4.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 93--94
+[]$[]$ 
+ []
+
+<colormap5.jpg, id=1219, 153.57375pt x 153.57375pt>
+File: colormap5.jpg Graphic file (type jpg)
+ <use colormap5.jpg>
+Underfull \vbox (badness 2762) has occurred while \output is active []
+
+ [137 <./colormap3.jpg> <./colormap4.jpg>] <colormap6.jpg, id=1224, 501.875pt x
+ 401.5pt>
+File: colormap6.jpg Graphic file (type jpg)
+
+<use colormap6.jpg> <colormap7.jpg, id=1225, 153.57375pt x 153.57375pt>
+File: colormap7.jpg Graphic file (type jpg)
+
+<use colormap7.jpg>)
+Underfull \hbox (badness 10000) in paragraph at lines 114--285
+
+ []
+
+(./printimage.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [138 <./colormap5.jpg> <./colormap6.jpg>] [139 <./colormap7.jpg>]
+Overfull \hbox (2.13857pt too wide) in paragraph at lines 55--57
+/cmr10/which cre-ates two im-ages []/cmtt10/printimage1.eps/cmr10/, which is an
+ En-cap-su-lated Postscript
+ []
+
+<printimage1.jpg, id=1237, 153.57375pt x 153.57375pt>
+File: printimage1.jpg Graphic file (type jpg)
+ <use printimage1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 58--287
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 58--287
+
+ []
+
+(./zoom.tex [140 <./printimage1.jpg>]
+<zoom1.jpg, id=1244, 614.295pt x 327.2225pt>
+File: zoom1.jpg Graphic file (type jpg)
+ <use zoom1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 52--53
+[]$[]$ 
+ []
+
+<zoom2.jpg, id=1245, 696.6025pt x 378.41376pt>
+File: zoom2.jpg Graphic file (type jpg)
+ <use zoom2.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 57--58
+[]$[]$ 
+ []
+
+<zoom3.jpg, id=1246, 373.395pt x 206.7725pt>
+File: zoom3.jpg Graphic file (type jpg)
+ <use zoom3.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 66--67
+[]$[]$ 
+ []
+
+<zoom4.jpg, id=1247, 793.96625pt x 416.55624pt>
+File: zoom4.jpg Graphic file (type jpg)
+ <use zoom4.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 73--74
+[]$[]$ 
+ []
+
+[141 <./zoom1.jpg> <./zoom2.jpg> <./zoom3.jpg> <./zoom4.jpg>]
+<zoom5.jpg, id=1252, 569.12625pt x 243.91125pt>
+File: zoom5.jpg Graphic file (type jpg)
+ <use zoom5.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 82--83
+[]$[]$ 
+ []
+
+<zoom6.jpg, id=1253, 373.395pt x 348.30125pt>
+File: zoom6.jpg Graphic file (type jpg)
+ <use zoom6.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 90--289
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 90--289
+
+ []
+
+(./closeimage.tex) (./point.tex [142 <./zoom5.jpg> <./zoom6.jpg>]
+<point1.jpg, id=1259, 413.545pt x 427.5975pt>
+File: point1.jpg Graphic file (type jpg)
+ <use point1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 45--46
+[]$[]$ 
+ []
+
+[143 <./point1.jpg>]) (./newplot.tex
+<newplot1.jpg, id=1266, 513.92pt x 427.5975pt>
+File: newplot1.jpg Graphic file (type jpg)
+ <use newplot1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 41--296
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--296
+
+ []
+
+(./useplot.tex [144 <./newplot1.jpg>]) (./plot.tex [145] [146]
+<plot1.jpg, id=1285, 501.875pt x 401.5pt>
+File: plot1.jpg Graphic file (type jpg)
+ <use plot1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 97--98
+[]$[]$ 
+ []
+
+<plot2.jpg, id=1286, 501.875pt x 401.5pt>
+File: plot2.jpg Graphic file (type jpg)
+ <use plot2.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 110--111
+[]$[]$ 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [147 <./plot1.jpg>] <plot3.jpg, id=1292, 501.875pt x 401.5pt>
+File: plot3.jpg Graphic file (type jpg)
+ <use plot3.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 124--125
+[]$[]$ 
+ []
+
+[148 <./plot2.jpg> <./plot3.jpg>] <plot4.jpg, id=1297, 501.875pt x 401.5pt>
+File: plot4.jpg Graphic file (type jpg)
+
+<use plot4.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 136--137
+[]$[]$ 
+ []
+
+<plot5.jpg, id=1298, 501.875pt x 401.5pt>
+File: plot5.jpg Graphic file (type jpg)
+ <use plot5.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 146--147
+[]$[]$ 
+ []
+
+) (./xlabel.tex [149 <./plot4.jpg> <./plot5.jpg>]
+<xlabel1.jpg, id=1304, 501.875pt x 401.5pt>
+File: xlabel1.jpg Graphic file (type jpg)
+ <use xlabel1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 46--302
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--302
+
+ []
+
+(./ylabel.tex [150 <./xlabel1.jpg>]
+<ylabel1.jpg, id=1311, 501.875pt x 401.5pt>
+File: ylabel1.jpg Graphic file (type jpg)
+ <use ylabel1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 46--304
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--304
+
+ []
+
+(./title.tex [151 <./ylabel1.jpg>] <title1.jpg, id=1319, 501.875pt x 401.5pt>
+File: title1.jpg Graphic file (type jpg)
+
+<use title1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 46--306
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 46--306
+
+ []
+
+(./printplot.tex [152 <./title1.jpg>]
+<printplot1.jpg, id=1326, 501.875pt x 401.5pt>
+File: printplot1.jpg Graphic file (type jpg)
+ <use printplot1.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 57--308
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--308
+
+ []
+
+(./grid.tex <grid1.jpg, id=1327, 501.875pt x 401.5pt>
+File: grid1.jpg Graphic file (type jpg)
+ <use grid1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 44--45
+[]$[]$ 
+ []
+
+[153 <./printplot1.jpg>] <grid2.jpg, id=1335, 501.875pt x 401.5pt>
+File: grid2.jpg Graphic file (type jpg)
+
+<use grid2.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 51--310
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 51--310
+
+ []
+
+(./hold.tex [154 <./grid1.jpg> <./grid2.jpg>]
+<hold1.jpg, id=1341, 501.875pt x 401.5pt>
+File: hold1.jpg Graphic file (type jpg)
+ <use hold1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 51--52
+[]$[]$ 
+ []
+
+<hold2.jpg, id=1342, 501.875pt x 401.5pt>
+File: hold2.jpg Graphic file (type jpg)
+ <use hold2.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 63--312
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 63--312
+
+ []
+
+(./axis.tex
+Underfull \vbox (badness 1348) has occurred while \output is active []
+
+ [155 <./hold1.jpg>] [156 <./hold2.jpg>] <axis1.jpg, id=1355, 501.875pt x 401.5
+pt>
+File: axis1.jpg Graphic file (type jpg)
+
+<use axis1.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 73--74
+[]$[]$ 
+ []
+
+<axis2.jpg, id=1356, 501.875pt x 401.5pt>
+File: axis2.jpg Graphic file (type jpg)
+ <use axis2.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 81--82
+[]$[]$ 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [157 <./axis1.jpg>] <axis3.jpg, id=1363, 501.875pt x 401.5pt>
+File: axis3.jpg Graphic file (type jpg)
+ <use axis3.jpg>
+Overfull \hbox (15.0pt too wide) in paragraph at lines 100--101
+[]$[]$ 
+ []
+
+[158 <./axis2.jpg> <./axis3.jpg>] <axis4.jpg, id=1368, 501.875pt x 401.5pt>
+File: axis4.jpg Graphic file (type jpg)
+
+<use axis4.jpg>)
+Overfull \hbox (15.0pt too wide) in paragraph at lines 108--314
+[]$[]$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 108--314
+
+ []
+
+(./closeplot.tex) [159 <./axis4.jpg>] (./manual.aux) ) 
+Here is how much of TeX's memory you used:
+ 4243 strings out of 50453
+ 52739 string characters out of 688420
+ 98548 words of memory out of 1500001
+ 6270 multiletter control sequences out of 10000+25000
+ 11792 words of font info for 42 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 10000
+ 27i,9n,39p,834b,354s stack positions out of 3000i,500n,3000p,50000b,5000s
+
+! pdfTeX warning (dest): name{subsection.1.2.3} has been referenced but does no
+t exist, replaced by a fixed one
+
+! pdfTeX warning (dest): name{subsection.1.2.2} has been referenced but does no
+t exist, replaced by a fixed one
+
+! pdfTeX warning (dest): name{subsection.1.2.1} has been referenced but does no
+t exist, replaced by a fixed one
+
+! pdfTeX warning (dest): name{section.1.2} has been referenced but does not exi
+st, replaced by a fixed one
+
+! pdfTeX warning (dest): name{section.1.1} has been referenced but does not exi
+st, replaced by a fixed one
+
+! pdfTeX warning (dest): name{section.0.1} has been referenced but does not exi
+st, replaced by a fixed one
+
+</usr/share/texmf/fonts/type1/bluesky/cm/cmsy5.pfb></usr/share/texmf/fonts/type
+1/bluesky/cm/cmmi12.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmsy7.pfb></us
+r/share/texmf/fonts/type1/bluesky/cm/cmex10.pfb></usr/share/texmf/fonts/type1/b
+luesky/cm/cmmi5.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr5.pfb></usr/sha
+re/texmf/fonts/type1/bluesky/cm/cmti10.pfb></usr/share/texmf/fonts/type1/bluesk
+y/cm/cmmi7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr7.pfb></usr/share/te
+xmf/fonts/type1/bluesky/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/
+cmtt10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi10.pfb></usr/share/texm
+f/fonts/type1/bluesky/cm/cmsl10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cm
+bx10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx12.pfb></usr/share/texmf/
+fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr12
+.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr17.pfb>
+Output written on manual.pdf (159 pages, 1624063 bytes).

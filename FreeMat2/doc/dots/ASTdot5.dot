@@ -1,0 +1,10 @@
+digraph G {
+  node [shape=record];
+  this [label = "this | <down> down | <right> right"];
+  peer1 [label = "peer1 | <down> down | <right> right"];
+  peer2 [label = "peer2 | <down> down | <right> right"];
+  arg [label = "arg | <down> down | <right> right"];
+  peer1:right -> peer2;
+  peer2:right -> arg;
+  this:right -> peer1;
+}

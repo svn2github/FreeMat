@@ -35,6 +35,7 @@
 #include "ParserInterface.hpp"
 #include "Exception.hpp"
 
+#define YYDEBUG 1
 #define YYSTYPE ParseRHS
 
 #define MSGBUFLEN 2048
@@ -668,6 +669,7 @@ namespace FreeMat {
   }
   
   ParserState parseFile(FILE *fp, const char* fname) {
+//    yydebug = 1; 
     resetParser();
     interactiveMode = false;
     parsing_filename = fname;

@@ -608,7 +608,7 @@ int yylexScreen() {
 	(previousToken == IDENT)) {
       /* Test if next character indicates the start of an expression */
       if ((currentChar() == '(') || (currentChar() == '+') || (currentChar() == '-') ||
-	  (currentChar() == '~') || (currentChar() == '[') || (currentChar() == '{') ||
+	  ((currentChar() == '~')  && (datap[1] != '=')) || (currentChar() == '[') || (currentChar() == '{') ||
 	  (currentChar() == '\'') || (isalnum(currentChar())) || ((currentChar() == '.') && (isdigit(datap[1])))) {
 	/* 
 	   OK - now we have to decide if the "+/-" are infix or prefix operators...
@@ -644,6 +644,16 @@ int yylex() {
     yylval.isToken = true;
     yylval.v.i = ContextInt();
   }
+  if (tokenType == STRING)
+    printf("token string %s\r\n",tokenValue.v.p->text);
+  else if (tokenType == IDENT)
+    printf("token ident %s\r\n",tokenValue.v.p->text);
+  else if (tokenType == NUMERIC)
+    printf("token number %s\r\n",tokenValue.v.p->text);
+  else if (tokenType == SPECIALCALL)
+    printf("token specialcall %s\r\n",tokenValue.v.p->text);
+  else
+    printf("token %c %d\r\n",retval,retval);
   return retval;
 }
 

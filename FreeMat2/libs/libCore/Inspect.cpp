@@ -26,6 +26,21 @@
 #include "Sparse.hpp"
 #include <stdio.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
+#ifdef WIN32
+#include <direct.h>
+#define getcwd _getcwd
+#define S_ISDIR(x) (x & _S_IFDIR)
+#define P_DELIM ";"
+#else
+#define P_DELIM ":"
+#endif
+
 namespace FreeMat {
 
   static std::string helppath;
@@ -470,18 +485,96 @@ namespace FreeMat {
   //     return retval;
   //   }
 
+  int ExistBuiltinFunction(char* fname, WalkTree* eval) {    
+    bool isDefed;
+    FuncPtr d;
+    isDefed = eval->getContext()->lookupFunction(fname,d);
+    if (isDefed && ((d->type() == FM_BUILT_IN_FUNCTION) ||
+		    (d->type() == FM_SPECIAL_FUNCTION)))
+      return 5;
+    else
+      return 0;
+    return 0;
+  }
+
+  int ExistDirFunction(char* fname, WalkTree* eval) {
+    struct stat filestat;
+    if (stat(fname,&filestat)==-1) return 0;
+    if (S_ISDIR(filestat.st_mode)) return 7;
+    return 0;
+  }
+
+  int ExistFileFunction(char* fname, WalkTree* eval) {
+    PathSearcher src(eval->getInterface()->getPath());
+    try {
+      src.ResolvePath(fname);
+      return 2;
+    } catch (Exception &e) {
+    }
+    bool isDefed;
+    FuncPtr d;
+    isDefed = eval->getContext()->lookupFunction(fname,d);
+    if (isDefed && (d->type() == FM_M_FUNCTION))
+      return 2;
+    return 0;
+  }
+
+  int ExistVariableFunction(char* fname, WalkTree* eval) {
+    bool isDefed;
+    Array d;
+    isDefed = eval->getContext()->lookupVariable(fname, d);
+    if (isDefed)
+      return 1;
+    else
+      return 0;
+  }
+
+  int ExistAllFunction(char* fname, WalkTree* eval) {
+    int ret;
+    ret = ExistVariableFunction(fname,eval);
+    if (ret) return ret;
+    ret = ExistFileFunction(fname,eval);
+    if (ret) return ret;
+    ret = ExistDirFunction(fname,eval);
+    if (ret) return ret;
+    ret = ExistBuiltinFunction(fname,eval);
+    if (ret) return ret;
+    return 0;
+  }
+
   //!
-  //@Module EXIST Text Existence of a Variable
+  //@Module EXIST Text for Existence
   //@@Section INSPECTION
   //@@Usage
-  //Tests for the existence of a variable.  The general syntax for
-  //its use is
+  //Tests for the existence of a variable, function, directory or
+  //file.  The general syntax for its use is
   //@[
-  //  y = exist('varname')
+  //  y = exist(item,kind)
   //@]
-  //The return is @|1| if a variable with the name @|varname| exists in
-  //the current workspace and is not empty.  This function is primarily
-  //useful when keywords are used in function arguments.
+  //where @|item| is a string containing the name of the item
+  //to look for, and @|kind| is a string indicating the type 
+  //of the search.  The @|kind| must be one of 
+  //\begin{itemize}
+  //\item @|'builtin'| checks for built-in functions
+  //\item @|'dir'| checks for directories
+  //\item @|'file'| checks for files
+  //\item @|'var'| checks for variables
+  //\item @|'all'| checks all possibilities (same as leaving out @|kind|)
+  //\end{itemize}
+  //You can also leave the @|kind| specification out, in which case
+  //the calling syntax is
+  //@[
+  //  y = exist(item)
+  //@]
+  //The return code is one of the following:
+  //\begin{itemize}
+  //\item 0 - if @|item| does not exist
+  //\item 1 - if @|item| is a variable in the workspace
+  //\item 2 - if @|item| is an M file on the search path, a full pathname
+  // to a file, or an ordinary file on your search path
+  //\item 5 - if @|item| is a built-in FreeMat function
+  //\item 7 - if @|item| is a directory
+  //\end{itemize}
   //@@Example
   //Some examples of the @|exist| function.  Note that generally @|exist|
   //is used in functions to test for keywords.  For example,
@@ -504,23 +597,31 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector ExistFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    if (arg.size() != 1)
+    if (arg.size() < 1)
       throw Exception("exist function takes one argument - the name of the variable to check for");
     Array tmp(arg[0]);
     char *fname;
     fname = tmp.getContentsAsCString();
-    bool isDefed;
-    Array d;
-    isDefed = eval->getContext()->lookupVariable(fname, d);
-    bool existCheck;
-    if (isDefed && !d.isEmpty())
-      existCheck = true;
-    else
-      existCheck = false;
-    Array A(Array::logicalConstructor(existCheck));
-    ArrayVector retval;
-    retval.push_back(A);
-    return retval;	    
+    char *stype;
+    if (arg.size() > 1) {
+      Array tmp2(arg[1]);
+      stype = tmp2.getContentsAsCString();
+    } else {
+      stype = "all";
+    }
+    int retval;
+    if (strcmp(stype,"all")==0)
+      retval = ExistAllFunction(fname,eval);
+    else if (strcmp(stype,"builtin")==0)
+      retval = ExistBuiltinFunction(fname,eval);
+    else if (strcmp(stype,"dir")==0)
+      retval = ExistDirFunction(fname,eval);
+    else if (strcmp(stype,"file")==0)
+      retval = ExistFileFunction(fname,eval);
+    else if (strcmp(stype,"var")==0)
+      retval = ExistVariableFunction(fname,eval);
+    else throw Exception("Unrecognized search type for function 'exist'");
+    return singleArrayVector(Array::int32Constructor(retval));
   }
 
   //!

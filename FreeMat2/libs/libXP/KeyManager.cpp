@@ -705,14 +705,18 @@ void KeyManager::ForwardDeleteChar() {
 void KeyManager::AddHistory(std::string line) {
   prefix = "";
   prefix_len = 0;
+  //  history.push_back(line);
+  //  return;
   if (line.size() <= 1) return;
-  history.pop_back();
+  if (history.size() >= 1)
+    history.pop_back();
   if ((history.size() > 0) && (history.back() == line)) {
     history.push_back("");    
     return;
   }
-  history.push_back(line);
+  history.push_back(line);    
   history.push_back("");
+  return;
 }
 
 void KeyManager::Redisplay() {
@@ -756,7 +760,8 @@ void KeyManager::HistoryFindBackwards() {
   }
   if (!found) return;
   strcpy(line,history[i].c_str());
-  line[strlen(line)-1] = 0;
+  if (strlen(line)>=1)
+    line[strlen(line)-1] = 0;
   startsearch = i;
 }
 
@@ -776,7 +781,8 @@ void KeyManager::HistoryFindForwards() {
     return;
   }
   strcpy(line,history[i].c_str());
-  line[strlen(line)-1] = 0;
+  if (strlen(line)>=1)
+    line[strlen(line)-1] = 0;
   startsearch = i;
 }
 

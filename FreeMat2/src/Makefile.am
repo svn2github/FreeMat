@@ -1,0 +1,3 @@
+SUBDIRS = x11
+AUTOMAKE_OPTIONS = foreign
+

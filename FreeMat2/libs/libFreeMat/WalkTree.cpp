@@ -1981,8 +1981,9 @@ namespace FreeMat {
   //Here is a function that takes two string arguments and
   //returns the concatenation of them.
   //@{ strcattest.m
-  //function out = strcattest(str1,str2)
-  //  out = [str1,str2];
+  //function strcattest(str1,str2)
+  //  str3 = [str1,str2];
+  //  printf('str1 = %s, str2 = %s, str3 = %s\n',str1,str2,str3);
   //@}
   //We call @|strcattest| using all three syntaxes.
   //@<

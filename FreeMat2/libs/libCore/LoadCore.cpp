@@ -127,6 +127,14 @@ namespace FreeMat {
      context->addFunction("inf",InfFunction,0,1,args);
      context->addFunction("Inf",InfFunction,0,1,args);
      args.clear();
+     args.push_back("x");
+     context->addFunction("IsNaN",IsNaNFunction,1,1,args);
+     context->addFunction("isnan",IsNaNFunction,1,1,args);
+     args.clear();
+     args.push_back("x");
+     context->addFunction("IsInf",IsInfFunction,1,1,args);
+     context->addFunction("isinf",IsInfFunction,1,1,args);
+     args.clear();
      args.push_back("dirname");     
      context->addSpecialFunction("cd",ChangeDirFunction,1,0,args);
      args.clear();

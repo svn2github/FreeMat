@@ -25,6 +25,8 @@ Exception.cpp \
 Exception.hpp \
 FunctionDef.cpp \
 FunctionDef.hpp \
+IEEEFP.cpp \
+IEEEFP.hpp \
 LAPACK.cpp \
 LAPACK.hpp \
 LeastSquaresSolver.cpp \

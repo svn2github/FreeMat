@@ -121,6 +121,8 @@ Exception.cpp \
 Exception.hpp \
 FunctionDef.cpp \
 FunctionDef.hpp \
+IEEEFP.cpp \
+IEEEFP.hpp \
 LAPACK.cpp \
 LAPACK.hpp \
 LeastSquaresSolver.cpp \
@@ -171,7 +173,7 @@ am_libFreeMat_a_OBJECTS = Parser.$(OBJEXT) Lexer.$(OBJEXT) \
 	Array.$(OBJEXT) AST.$(OBJEXT) Math.$(OBJEXT) Command.$(OBJEXT) \
 	Context.$(OBJEXT) Data.$(OBJEXT) Dimensions.$(OBJEXT) \
 	EigenDecompose.$(OBJEXT) Exception.$(OBJEXT) \
-	FunctionDef.$(OBJEXT) LAPACK.$(OBJEXT) \
+	FunctionDef.$(OBJEXT) IEEEFP.$(OBJEXT) LAPACK.$(OBJEXT) \
 	LeastSquaresSolver.$(OBJEXT) LinearEqSolver.$(OBJEXT) \
 	Malloc.$(OBJEXT) MatrixMultiply.$(OBJEXT) Module.$(OBJEXT) \
 	Reserved.$(OBJEXT) Scope.$(OBJEXT) Serialize.$(OBJEXT) \
@@ -192,7 +194,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/Data.Po ./$(DEPDIR)/Dimensions.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/EigenDecompose.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Exception.Po ./$(DEPDIR)/File.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/FunctionDef.Po ./$(DEPDIR)/LAPACK.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/FunctionDef.Po ./$(DEPDIR)/IEEEFP.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/LAPACK.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/LeastSquaresSolver.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Lexer.Po ./$(DEPDIR)/LinearEqSolver.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Malloc.Po ./$(DEPDIR)/Math.Po \
@@ -255,6 +258,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exception.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/File.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionDef.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IEEEFP.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LAPACK.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LeastSquaresSolver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Lexer.Po@am__quote@

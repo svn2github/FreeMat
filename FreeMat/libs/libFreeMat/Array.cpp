@@ -22,6 +22,7 @@
 #include "Exception.hpp"
 #include "Data.hpp"
 #include "Malloc.hpp"
+#include "IEEEFP.hpp"
 #include <math.h>
 #include <stdio.h>
 #include <set>
@@ -55,7 +56,7 @@ namespace FreeMat {
       sprintf(tbuf," ");
       tbuf++;
     }
-    if (isnan(num))
+    if (IsNaN(num))
       sprintf(tbuf,"   nan");
     else if (fabs(num)>=0.1f && fabs(num)<1.0f || num == 0.0f)
       sprintf(tbuf,"  %0.15f",num);
@@ -88,7 +89,7 @@ namespace FreeMat {
       sprintf(tbuf," ");
       tbuf++;
     }
-    if (isnan(num))
+    if (IsNaN(num))
       sprintf(tbuf,"   nan");
     else if (fabs(num)>=0.1f && fabs(num)<1.0f || num == 0.0f)
       sprintf(tbuf,"  %0.8f",num);

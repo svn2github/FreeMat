@@ -84,7 +84,7 @@ foreach $file (@ARGV) {
 	    print OUTPUT $click;
 	    print OUTPUT "save env.dat\nquit\n";
 	    close OUTPUT;
-	    $resulttext = `FreeMat -e <tmpFMinput`;
+	    $resulttext = `../../build/src/x11/FreeMat -e <tmpFMinput`;
 	    $resulttext =~ s/^ Free.*\n//g;
 	    $resulttext =~ s/^ Copy.*\n//g;
 	    $resulttext =~ s/(--> save env.dat\s*\n)//g;

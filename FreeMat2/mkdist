@@ -5,5 +5,8 @@
 # mkdir build
 # cd build
 # configure and make
+# make install
+# cd help
+# makehelp
 # make dist
 

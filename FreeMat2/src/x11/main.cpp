@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
   term->SetEvalEngine(twalk);
   term->Initialize();
   if (!funcMode) {
-    term->outputMessage(" Freemat v1.04 ");
+    term->outputMessage(" Freemat v1.05 ");
     term->outputMessage("\n");
     term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
     while (twalk->getState() != FM_STATE_QUIT) {

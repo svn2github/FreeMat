@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "FreeMat"
-!define PRODUCT_VERSION "1.03"
+!define PRODUCT_VERSION "1.05"
 !define PRODUCT_PUBLISHER "Samit Basu"
 !define PRODUCT_WEB_SITE "http://freemat.sf.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\FreeMat.exe"

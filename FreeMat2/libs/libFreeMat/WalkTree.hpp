@@ -111,7 +111,7 @@ namespace FreeMat {
     void popDebug();
     
     void addBreakpoint(stackentry bp);
-    void adjustBreakpoint(stackentry &bp, bool dbstep);
+    bool adjustBreakpoint(stackentry &bp, bool dbstep);
     void adjustBreakpoints();
     void listBreakpoints();
     void deleteBreakpoint(int number);

@@ -2655,20 +2655,25 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::adjustBreakpoint(stackentry& bp, bool dbstep) {
+  bool WalkTree::adjustBreakpoint(stackentry& bp, bool dbstep) {
     char *cname = strdup(bp.detail.c_str());
     bool isFun;
     FuncPtr val;
     isFun = context->lookupFunction(cname,val);
     char buffer[1000];
-    if (!isFun)
-      throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
+    if (!isFun) return false;
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr;
       mptr = (MFunctionDef *) val;
       mptr->updateCode();
-      ASTPtr code = mptr->code;
-      int clinenum = GetClosestLineNumber(code,bp.tokid & 0xffff);
+      int clinenum = 10000;
+      int nxt;
+      while (mptr) {
+	ASTPtr code = mptr->code;
+	nxt = GetClosestLineNumber(code,bp.tokid & 0xffff);
+	clinenum = MIN(clinenum,nxt);
+	mptr = mptr->nextFunction;
+      }
       if (clinenum == 10000) {
 	char buffer[2048];
 	if (dbstep) {
@@ -2678,17 +2683,24 @@ namespace FreeMat {
 	  sprintf(buffer,"Failed to set breakpoint in %s at line %d - breakpoint is disabled\n",
 		  cname, bp.tokid & 0xffff);
 	io->warningMessage(buffer);
+	return false;
       } else 
 	if (clinenum != 0)
 	  bp.tokid = (bp.tokid & 0xffff) + clinenum;
     } else {
-      throw Exception("Cannot set breakpoints in built-in or imported functions");
+      return false;
     }
+    return true;
   }
   
   void WalkTree::adjustBreakpoints() {
-    for (int i=0;i<bpStack.size();i++)
-      adjustBreakpoint(bpStack[i],false);
+    std::vector<stackentry>::iterator i=bpStack.begin();
+    while (i!=bpStack.end()) {
+      if (!adjustBreakpoint(*i,false))
+	bpStack.erase(i);
+      else
+	i++;
+    }
     if (inStepMode)
       adjustBreakpoint(stepTrap,true);
   }

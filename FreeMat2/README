@@ -1,34 +1,42 @@
 ***********************************************************************
-*   Linux/GNU/Un$x/cygwin install
+*   Linux/GNU/Un$x/Mac OS X+X11 install
 ***********************************************************************
 
-Installation should (hopefully) be as simple as a 
+Installation is pretty basic.  Assuming you have a reasonable system
+setup, the following should work..
 
-./configure
-make
+First unpack the source tar file
 
-The current build does not install itself.  To install the resulting
-code, copy the binary and the manual to somewhere on your path:
+   tar xvfz FreeMat-1.0.tar.gz
 
-cp src/FreeMat /usr/local/FreeMat/bin
-cp manual/manual/manual.zip /usr/local/FreeMat/bin
+Next, we make a build directory under the FreeMat-1.0 source directory.
 
-You may also want to put the contents of MFiles somewhere:
+   cd FreeMat-1.0
+   mkdir build
+   cd build
 
-mkdir /usr/local/FreeMat
-cp -R MFiles /usr/local/FreeMat/.
+Now, we run configure.  Remember to use configure -help for more options.
 
-The final step is to add an environment variable FREEMAT_PATH to
-that includes a colon-delimited list of paths for FreeMat to search.
+   ../configure
+
+Then a make and a make install.
+
+   make
+   make install
+
+Note that if you do not change the --prefix directory when running 
+configure, that installation takes place in /usr/local. There are 
+two post-build steps you must still (manually) perform.
+   1. Add /usr/local/FreeMat to the PATH
+   2. Add a FREEMAT_PATH environment variable to your startup 
+         files that includes /usr/local/FreeMat/MFiles
+
 For example, with .csh, the following line would be added to the .cshrc
 
 setenv FREEMAT_PATH /usr/local/FreeMat/MFiles:/home/user/myMFiles
 
 It is not necessary to add the "." directory to the search path, as it
-is automatically searched by FreeMat.  Note that you currently must 
-execute "./configure make" in the top source directory for the compile to 
-succeed.  Although the FreeMat code can
-be built in a seperate directory, many of the included libraries cannot.
+is automatically searched by FreeMat. 
 
 Note also that FreeMat uses LAPACK and BLAS as part of its matrix
 manipulation routines.  During the configure process, FreeMat will
@@ -40,4 +48,3 @@ They are unoptimized versions that will generally result in less than
 ideal performance of FreeMat.  I recommend the ATLAS project 
 (math-atlas.sourceforge.net) to generate an automatically tuned
 set of BLAS routines for your specific machine.
-

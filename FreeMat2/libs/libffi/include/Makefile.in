@@ -114,23 +114,23 @@ ffi.h: $(top_builddir)/config.status ffi.h.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 install-hackDATA: $(hack_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(hackdir)
-	@list='$(hack_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(hackdir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(hackdir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(hackdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(hackdir)/$$p; \
-	  fi; fi; \
-	done
+#	@$(NORMAL_INSTALL)
+#	$(mkinstalldirs) $(DESTDIR)$(hackdir)
+#	@list='$(hack_DATA)'; for p in $$list; do \
+#	  if test -f $(srcdir)/$$p; then \
+#	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(hackdir)/$$p"; \
+#	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(hackdir)/$$p; \
+#	  else if test -f $$p; then \
+#	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(hackdir)/$$p"; \
+#	    $(INSTALL_DATA) $$p $(DESTDIR)$(hackdir)/$$p; \
+#	  fi; fi; \
+#	done
 
 uninstall-hackDATA:
-	@$(NORMAL_UNINSTALL)
-	list='$(hack_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(hackdir)/$$p; \
-	done
+#	@$(NORMAL_UNINSTALL)
+#	list='$(hack_DATA)'; for p in $$list; do \
+#	  rm -f $(DESTDIR)$(hackdir)/$$p; \
+#	done
 tags: TAGS
 TAGS:
 

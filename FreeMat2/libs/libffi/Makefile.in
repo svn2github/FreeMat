@@ -428,14 +428,14 @@ distclean-toolexeclibLTLIBRARIES:
 maintainer-clean-toolexeclibLTLIBRARIES:
 
 install-toolexeclibLTLIBRARIES: $(toolexeclib_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(toolexeclibdir)
-	@list='$(toolexeclib_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(toolexeclibdir)/$$p"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(toolexeclibdir)/$$p; \
-	  else :; fi; \
-	done
+#	@$(NORMAL_INSTALL)
+#	$(mkinstalldirs) $(DESTDIR)$(toolexeclibdir)
+#	@list='$(toolexeclib_LTLIBRARIES)'; for p in $$list; do \
+#	  if test -f $$p; then \
+#	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(toolexeclibdir)/$$p"; \
+#	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(toolexeclibdir)/$$p; \
+#	  else :; fi; \
+#	done
 
 uninstall-toolexeclibLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)

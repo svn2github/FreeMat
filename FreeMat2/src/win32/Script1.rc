@@ -106,7 +106,7 @@ CAPTION "Dialog"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,82,65,50,14
-    LTEXT           "FreeMat version 1.09",IDC_STATIC,57,20,71,11
+    LTEXT           "FreeMat version 1.10",IDC_STATIC,57,20,71,11
     LTEXT           "Copyright 2002-2004 by Samit Basu",IDC_STATIC,57,34,120,
                     11
     LTEXT           "http://freemat.sf.net",IDC_STATIC,57,48,141,9

@@ -10,6 +10,7 @@
 
 #include "FLTKTerminal.hpp"
 #include "FL/Fl.H"
+#include "FL/x.H"
 #include "FL/Enumerations.H"
 #include "FL/Fl_Widget.H"
 #include "WalkTree.hpp"
@@ -882,9 +883,14 @@ void save_cb(Fl_Widget*, void*) {
 }
 
 void help_cb(Fl_Widget*, void*) {
-#ifdef WIN32
-	HtmlHelp(NULL,g_helppath,HH_DISPLAY_TOC,NULL);
-#else
+#if defined(WIN32)
+  HtmlHelp(NULL,g_helppath,HH_DISPLAY_TOC,NULL);
+#elif defined(__APPLE__)
+  // Help is an HTML file 
+  AHGotoPage(NULL,
+	     CFStringCreateWithBytes(NULL,g_helppath,
+				     strlen(g_helppath),0,false),
+	     NULL);
 #endif
 }
 

@@ -1,4 +1,26 @@
-
+%  BIND Bind Standalone Executable
+%  
+%  
+%  USAGE
+%  
+%  The bind function allows you to build a stand alone
+%  executable on Linux.  The syntax for its use is
+%  
+%     bind(output,mainexe,startcommand,varargin)
+%  
+%  where output is the name of the output binary, 
+%  mainexe is the location of the FreeMat intepreter to be
+%  used (e.g., '/usr/local/bin/FreeMat').  The next argument
+%  is the start command, i.e., the command to execute once the
+%  interpreter is started.  Generally speaking, it should be
+%  -f main where main is the name of the routine to start
+%  up.  The last argument is the list of 
+%  M-files to bind into the executable as p-code.  Note that
+%  the resulting binary executable will pass arguments to your main
+%  function automatically, see the example for example.  Bound
+%  executables can use graphics, MPI, and any other FreeMat 
+%  capabilities.
+%  
 function bind(output,mainexe,startcommand,varargin)
 % Open up the output stream
 fpo = fopen(output,'wb');

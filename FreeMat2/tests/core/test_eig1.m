@@ -3,6 +3,7 @@ function t = test_eig1
 % First the float version
 t1all = 1;
 for i=2:4:100
+i
   a = float(randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
@@ -19,6 +20,7 @@ end
 % Now the double version
 t2all = 1;
 for i=2:4:100
+i
   a = double(randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
@@ -35,6 +37,7 @@ end
 % Now the complex version
 t3all = 1;
 for i=2:4:100
+i
   a = complex(randn(i)+j*randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
@@ -51,6 +54,7 @@ end
 % Now the double version
 t4all = 1;
 for i=2:4:100
+i
   a = dcomplex(randn(i)+j*randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;

@@ -1039,9 +1039,9 @@ void close_about_cb(Fl_Widget*, void *w) {
 
 void about_cb(Fl_Widget*, void*) {
   Fl_Window *about_dlg = new Fl_Window(240,115,"About FreeMat");
-  Fl_Box *box1 = new Fl_Box(57,20,120,14,"FreeMat Version 1.08");
+  Fl_Box *box1 = new Fl_Box(57,20,120,14,"FreeMat Version 1.10");
   box1->align(FL_ALIGN_CENTER);
-  Fl_Box *box2 = new Fl_Box(57,38,120,14,"Copyright 2002-2004 by Samit Basu");
+  Fl_Box *box2 = new Fl_Box(57,38,120,14,"Copyright 2002-2005 by Samit Basu");
   box2->align(FL_ALIGN_CENTER);
   Fl_Box *box3 = new Fl_Box(57,56,120,14,"http://freemat.sf.net");
   box3->align(FL_ALIGN_CENTER);

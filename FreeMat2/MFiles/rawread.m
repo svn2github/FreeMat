@@ -36,7 +36,7 @@
 //\end{itemize}
 function x = rawread(fname,size,precision,byteorder)
   try 
-    if (exist('byteorder'))
+    if (isset('byteorder'))
       fp = fopen(fname,'rb',byteorder);
     else
       fp = fopen(fname,'rb');

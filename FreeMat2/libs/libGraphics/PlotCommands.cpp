@@ -127,20 +127,15 @@ namespace FreeMat {
     colornumber = 0;
   }
 
-  char SearchString(char*options, char val) {
-    if (val == 0)
-      return 0;
-    char tstr[2];
-    tstr[0] = val;
-    tstr[1] = 0;
-    char *dp;
-    if (options == NULL)
-      return 0;
-    dp = strstr(options,tstr);
-    if (dp == NULL)
-      return 0;
-    else
-      return *dp;
+  char StringMatch(char* options, char* choices) {
+    char *cp, *rp;
+    cp = options;
+    while (*cp != 0) {
+      rp = strchr(choices,*cp);
+      if (rp) return *rp;
+      cp++;
+    }
+    return 0;
   }
 
   char* GetLineStyle(char* arg) {
@@ -148,39 +143,12 @@ namespace FreeMat {
     char color = 0;
     char style = 0;
     char symbol = 0;
-    char match;
+    color = StringMatch(arg,colors);
+    style = StringMatch(arg,styles);
+    symbol = StringMatch(arg,symbols);
 
-    while ((arg != NULL) && (arg[0] != 0)) {
-      match = SearchString(colors,*arg);
-      if (match != 0) {
-	if (color != 0)
-	  throw Exception("Too many color arguments in linestyle <" + std::string(arg) + ">");
-	else
-	  color = match;
-	arg++;
-      }
-      match = SearchString(styles,*arg);
-      if (match != 0) {
-	if (style != 0)
-	  throw Exception("Too many style arguments in linestyle <" + std::string(arg) + ">");
-	else
-	  style = match;
-	arg++;
-      }
-      match = SearchString(symbols,*arg);
-      if (match != 0) {
-	if (symbol != 0)
-	  throw Exception("Too many symbol-type arguments in linestyle <" + std::string(arg) + ">");
-	else
-	  symbol = match;
-	arg++;
-      }
-    }
-    if (style == 0) 
-      if ((color != 0) || (symbol != 0))
-	style = ' ';
-      else
-	style = '-';
+    if ((color != 0) && (style == 0) && (symbol == 0))
+      style = '-';
     if (color == 0) {
       color = colors[colornumber];
       colornumber++;
@@ -188,6 +156,9 @@ namespace FreeMat {
     }
     if (symbol == 0)
       symbol = ' ';
+    if (style == 0)
+      style = ' ';
+
     outStyle[0] = color;
     outStyle[1] = symbol;
     outStyle[2] = style;

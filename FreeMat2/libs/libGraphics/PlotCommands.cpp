@@ -813,6 +813,8 @@ namespace FreeMat {
 	      linestyle_arg = arg[argptr].getContentsAsCString();
 	      argptr++;
 	    } 
+	  if (y.isEmpty())
+	    throw Exception("Plotting of empty vectors is not defined.");
 	  if (y.isVector()) {
 	    if (y.getLength() != x.getLength())
 	      throw Exception("Plotting argument pair x,y requires y to be the same length as x.");

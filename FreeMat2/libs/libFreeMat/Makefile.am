@@ -1,4 +1,4 @@
-EXTRA_DIST = libFreeMat.dsp f2c/VectorOps_assist.c
+EXTRA_DIST = libFreeMat.dsp libFreeMat.vcproj  f2c/VectorOps_assist.c
 
 noinst_LIBRARIES = libFreeMat.a
 

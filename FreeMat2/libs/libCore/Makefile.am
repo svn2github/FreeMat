@@ -1,4 +1,4 @@
-EXTRA_DIST = libCore.dsp
+EXTRA_DIST = libCore.dsp libCore.vcproj
 
 noinst_LIBRARIES = libCore.a
 

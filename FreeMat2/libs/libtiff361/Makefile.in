@@ -192,6 +192,7 @@ DISTFILES=\
 	${OTHERFILES}				\
 	${CONTRIBFILES}				\
 	libtiff361.dsp				\
+	libtiff361.vcproj			\
 	${NULL}
 
 CONFIG=\

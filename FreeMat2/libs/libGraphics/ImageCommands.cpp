@@ -335,6 +335,99 @@ namespace FreeMat {
   }
 
   //!
+  //@Module WINLEV Image Window-Level Function
+  //@@Usage
+  //Adjusts the data range used to map the current image to the current
+  //colormap.  The general syntax for its use is
+  //@[
+  //  winlev(window,level)
+  //@]
+  //where @|window| is the new window, and @|level| is the new level, or
+  //@[
+  //  winlev
+  //@]
+  //in which case it returns a vector containing the current window
+  //and level for the active image.
+  //@@Function Internals
+  //FreeMat deals with scalar images on the range of @|[0,1]|, and must
+  //therefor map an arbitrary image @|x| to this range before it can
+  //be displayed.  By default, the @|image| command chooses 
+  //\[
+  //  \mathrm{window} = \max x - \min x,
+  //\]
+  //and
+  //\[
+  //  \mathrm{level} = \frac{\mathrm{window}}{2}
+  //\]
+  //This ensures that the entire range of image values in @|x| are 
+  //mapped to the screen.  With the @|winlev| function, you can change
+  //the range of values mapped.  In general, before display, a pixel @|x|
+  //is mapped to @|[0,1]| via:
+  //\[
+  //   \max\left(0,\min\left(1,\frac{x - \mathrm{level}}{\mathrm{window}}
+  //   \right)\right)
+  //\]
+  //@@Examples
+  //The window level function is fairly easy to demonstrate.  Consider
+  //the following image, which is a Gaussian pulse image that is very 
+  //narrow:
+  //@<
+  //t = linspace(-1,1,256);
+  //xmat = ones(256,1)*t; ymat = xmat';
+  //A = exp(-(xmat.^2 + ymat.^2)*100);
+  //image(A);
+  //mprintimage('winlev1');
+  //@>
+  //The data range of @|A| is @|[0,1]|, as we can verify numerically:
+  //@<
+  //min(A(:))
+  //max(A(:))
+  //@>
+  //To see the tail behavior, we use the @|winlev| command to force FreeMat
+  //to map a smaller range of @|A| to the colormap.
+  //@<
+  //image(A);
+  //winlev(1e-4,0.5e-4)
+  //mprintimage('winlev2');
+  //@>
+  //The result is a look at more of the tail behavior of @|A|.
+  //We can also use the winlev function to find out what the
+  //window and level are once set, as in the following example.
+  //@<
+  //image(A);
+  //winlev(1e-4,0.5e-4)
+  //winlev
+  //@>
+  //!
+  ArrayVector WinLevFunction(int nargout, const ArrayVector& arg) {
+    ScalarImage *f;
+    if (arg.size() == 0) {
+      f = GetCurrentImage();
+      double *dp = (double*) Malloc(sizeof(double)*2);
+      dp[0] = f->GetCurrentWindow();
+      dp[1] = f->GetCurrentLevel();
+      Dimensions dim(2);
+      dim[0] = 1;
+      dim[1] = 2;
+      Array ret(FM_DOUBLE,dim, dp);
+      ArrayVector retvec;
+      retvec.push_back(ret);
+      return retvec;
+    } else if (arg.size() != 2)
+      throw Exception("Winlev function takes two, real arguments.");
+    Array win(arg[0]);
+    Array lev(arg[1]);
+    double window, level;
+    window = win.getContentsAsDoubleScalar();
+    if (window == 0)
+      throw Exception("zero is not a valid choice for the window");
+    level = lev.getContentsAsDoubleScalar();
+    f = GetCurrentImage();
+    f->WindowLevel(window,level);
+    return ArrayVector();
+  }
+
+  //!
   //@Module IMAGE Image Display Function
   //@@Usage
   //Displays a scalar (grayscale or colormapped) image on the 
@@ -370,6 +463,8 @@ namespace FreeMat {
       throw Exception("image function takes at most two arguments (image and zoom factor)");
     Array img;
     img = arg[0];
+    if (img.isEmpty())
+      throw Exception("argument image is empty");
     if (!img.is2D())
       throw Exception("argument to image function must be 2D");
     if (img.isReferenceType())

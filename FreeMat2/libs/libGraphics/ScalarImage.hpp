@@ -68,6 +68,12 @@ namespace FreeMat {
      * Routine that draws the contents of the window.
      */
     void OnDraw(GraphicsContext &gc);
+    /**
+     * Routine to change the window level
+     */
+    void WindowLevel(double awindow, double alevel);
+    double GetCurrentWindow();
+    double GetCurrentLevel();
     virtual void OnSize();
   private:
     /**

@@ -1,4 +1,5 @@
 EXTRA_DIST = libFFTPack.dsp \
+libFFTPack.vcproj \
 f2c/cfftb1.c \
 f2c/cfftb.c \
 f2c/cfftf1.c \

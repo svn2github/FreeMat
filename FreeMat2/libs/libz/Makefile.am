@@ -1,4 +1,4 @@
-EXTRA_DIST = libz.dsp
+EXTRA_DIST = libz.dsp libz.vcproj
 
 noinst_LIBRARIES = libz.a
 

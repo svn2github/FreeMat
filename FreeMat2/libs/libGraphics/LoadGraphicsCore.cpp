@@ -60,6 +60,10 @@ namespace FreeMat {
     args.push_back("zoom");        
     context->addFunction("image",ImageFunction,2,0,args);
     args.clear();
+    args.push_back("window");
+    args.push_back("level");
+    context->addFunction("winlev",WinLevFunction,2,-1,args);
+    args.clear();
     args.push_back("height");
     args.push_back("width");
     context->addFunction("sizeimage",SizeImageFunction,2,0,args);

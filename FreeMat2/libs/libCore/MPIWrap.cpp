@@ -464,7 +464,7 @@ v   *     Part 2 - dimension data
   //!
   ArrayVector MPIBarrier(int nargout, const ArrayVector& args) {
     int comhandle;
-    if (args.size() == 0) {
+    if (args.size() == 1) {
       Array tmp(args[0]);
       comhandle = tmp.getContentsAsIntegerScalar();
     } else {

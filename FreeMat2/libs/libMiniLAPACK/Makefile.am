@@ -1,4 +1,5 @@
 EXTRA_DIST = libMiniLAPACK.dsp \
+libMiniLAPACK.vcproj \
 f2c/cgebak.c \
 f2c/cgebal.c \
 f2c/cgebd2.c \

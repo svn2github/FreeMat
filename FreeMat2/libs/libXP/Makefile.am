@@ -1,4 +1,4 @@
-EXTRA_DIST = libXP.dsp
+EXTRA_DIST = libXP.dsp libXP.vcproj
 
 if NEED_PNG
   PNG_INCLUDES = -I@top_srcdir@/libs/lpng125 -I@top_srcdir@/libs/libz

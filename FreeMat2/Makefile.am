@@ -1,4 +1,4 @@
-EXTRA_DIST = FreeMat.dsp FreeMat.dsw make_mac_bundle
+EXTRA_DIST = FreeMat.dsp FreeMat.dsw FreeMat.sln FreeMat.vcproj make_mac_bundle
 SUBDIRS = libs src help MFiles
 AUTOMAKE_OPTIONS = foreign
 

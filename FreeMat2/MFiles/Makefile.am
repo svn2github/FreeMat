@@ -22,8 +22,7 @@ rescan.m\
 reshape.m\
 rserver.m\
 sqrt.m\
-std.m\
-winlev.m
+std.m
 
 install-data-local:
 	mkdir -p $(prefix)/share/FreeMat/MFiles

@@ -182,6 +182,20 @@ namespace FreeMat {
     Zoom(zoom);
   }
 
+  void ScalarImage::WindowLevel(double awindow, double alevel) {
+    window = awindow;
+    level = alevel;
+    UpdateImage();
+  }
+
+  double ScalarImage::GetCurrentWindow() {
+    return window;
+  }
+
+  double ScalarImage::GetCurrentLevel() {
+    return level;
+  }
+
   void ScalarImage::UpdateImage() {
     if (rawData == NULL) return;
     if (picData != NULL)

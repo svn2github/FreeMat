@@ -25,6 +25,7 @@ errors = {};
 [succeeded,failed,errors] = runtest('test_diag3',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_diag4',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_equals1',succeeded,failed,errors);
+[succeeded,failed,errors] = runtest('test_fcall1',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_for1',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_for2',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_for3',succeeded,failed,errors);

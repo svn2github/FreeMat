@@ -3,6 +3,7 @@
  * FLEX to do what I wanted.
  */
 #include <stdio.h>
+#include <ctype.h>
 
 #define WS 999
 

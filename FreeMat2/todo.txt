@@ -1,5 +1,4 @@
 To do before release:
 2.  Add MPI capability.
 4.  Replace/fix build system
-5.  Remove dependence on ASM for libffi/win32
 6.  Make FreeMat web site.

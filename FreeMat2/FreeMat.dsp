@@ -134,6 +134,14 @@ SOURCE=.\src\win32\XWindow.hpp
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\src\win32\freemat.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\win32\icon1.ico
+# End Source File
 # End Group
 # Begin Source File
 

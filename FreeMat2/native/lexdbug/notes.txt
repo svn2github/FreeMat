@@ -112,3 +112,4 @@ other cannot be
 ~
 .'
 
+The string escape translation and continuation code now works.  What is left is the same issue as before - the problem with special calls.  The trigger will have to be a WS following an identifier.  If the next token doesn't match any of the above tokens, then it must 

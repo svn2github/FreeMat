@@ -113,7 +113,7 @@ namespace FreeMat {
     ReleaseDC(hwnd,hdc);
     charWidth = tm.tmAveCharWidth;
     charHeight = tm.tmHeight;
-    scrollback = 1000;
+    scrollback = 5000;
     textbuf = (char*) calloc(MAXCOLS*scrollback,sizeof(char));
     UpdateLineCount();
     ShowWindow(hwnd, iCmdShow);
@@ -217,6 +217,7 @@ namespace FreeMat {
 
   void WinTerminal::OutputRawString(std::string txt) {
     int startRow, startCol;
+	int i;
 	bool redrawall;
     const char *cp;
     cp = txt.c_str();
@@ -226,7 +227,9 @@ namespace FreeMat {
       if (*cp == '\n') {
 	caret_y++;
 	caret_x = 0;
-	cp++;
+    for (i=0;i<MAXCOLS;i++)
+      CharAt(caret_y,i) = 0;
+	  cp++;
 	  redrawall = true;
       } else if (*cp == '\r') {
 	caret_x = 0;

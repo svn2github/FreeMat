@@ -566,11 +566,15 @@ namespace FreeMat {
     if (messageContext != NULL)
       messageStack.push_back(messageContext);
     else
-      messageStack.push_back("??");
+      messageStack.push_back("<Interactive>");
   }
 
   void WinTerminal::popMessageContext() {
     messageStack.pop_back();
+  }
+  
+  void WinTerminal::clearMessageContextStack() {
+    messageStack.clear();
   }
 
   std::vector<std::string> WinTerminal::getMessageContextStack() {
@@ -579,7 +583,7 @@ namespace FreeMat {
     if (messageContext != NULL)
       ret.push_back(messageContext);
     else
-      ret.push_back("??");
+      ret.push_back("<Interactive>");
     return messageStack;
   }
 

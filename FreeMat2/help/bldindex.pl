@@ -2,7 +2,7 @@
 
 open(INPUT,"<html/index.html") || die "Can't open html/index.html for processing...\n";
 
-open(OUTPUT,">toc.hhc") || die "Can't open output toc_body.hhc...\n";
+open(OUTPUT,">toc.hhc") || die "Can't open output toc.hhc...\n";
 print OUTPUT "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
 print OUTPUT "<HTML>\n";
 print OUTPUT "<HEAD>\n";
@@ -13,7 +13,7 @@ print OUTPUT "<OBJECT type=\"text/site properties\">\n";
 print OUTPUT "	<param name=\"ImageType\" value=\"Folder\">\n";
 print OUTPUT "</OBJECT>\n";
 
-open(OUTPUT2,">index.hhk") || die "Can't open output index_body.hhc...\n";
+open(OUTPUT2,">freemat.hhk") || die "Can't open output freemat.hhk...\n";
 print OUTPUT2 "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
 print OUTPUT2 "<HTML>\n";
 print OUTPUT2 "<HEAD>\n";

@@ -6,7 +6,6 @@
 // The following ops are O(N^2) instead of O(nnz^2):
 //
 //  GetSparseNDimSubsets - If the rowindex is sorted into an IJV type list, it can be done without the Decompress step.  Although it is really not too bad, since the vector being recompressed is of the subset size.
-//  CompressRealIJV - This should be O(nnz) instead of O(N).
 //  SetSparseNDimSubsets - same story, only this time the vector being recompressed is of size (N) instead of size (M).  So the cost is higher.  The right way to do this is with a list merge.
 //  DeleteSparseMatrixRowsReal
 
@@ -253,6 +252,7 @@ namespace FreeMat {
 
   template <class T>
   T* CompressRealIJV(IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
+    // Special case an all zeros column
     if ((ptr >= len) || (mlist[ptr].J > col)) {
       T* buffer = new T[3];
       buffer[0] = 2;
@@ -260,15 +260,61 @@ namespace FreeMat {
       buffer[2] = row;
       return buffer;
     }
-    T* buffer = new T[row];
-    memset(buffer,0,row*sizeof(T));
-    while ((ptr < len) && (mlist[ptr].J == col)) {
-      buffer[mlist[ptr].I] += mlist[ptr].Vreal;
-      ptr++;
+    // m is the pointer to the output cell, n is the effective
+    // row number
+    int m = 0;
+    int n = 0;
+    int sptr = ptr;
+    // First pass, calculate how many entries in the output
+    while (mlist[sptr].J == col) {
+      if (mlist[sptr].I == n) {
+	T accum = 0;
+	while ((mlist[sptr].I == n) && (mlist[sptr].J == col)) {
+	  accum += mlist[sptr].Vreal;
+	  sptr++;
+	}
+	n++;
+	if (accum == 0)
+	  m += 2;
+	else
+	  m++;
+      } else {
+	m += 2;
+	n = mlist[sptr].I;
+      }
     }
-    T* ret = CompressRealVector<T>(buffer,row);
-    delete buffer;
-    return ret;
+    if (n<row)
+      m += 2;
+    // Allocate the output buffer
+    T* buffer = new T[m+1];
+    buffer[0] = m;
+    m = 1;
+    n = 0;
+    // Second pass...
+    while (mlist[ptr].J == col) {
+      if (mlist[ptr].I == n) {
+	T accum = 0;
+	while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
+	  accum += mlist[ptr].Vreal;
+	  ptr++;
+	}
+	n++;
+	if (accum == 0) {
+	  buffer[m++] = 0;
+	  buffer[m++] = 1;
+	} else
+	  buffer[m++] = accum;
+      } else {
+	buffer[m++] = 0;
+	buffer[m++] = mlist[ptr].I - n;
+	n = mlist[ptr].I;
+      }
+    }
+    if (n<row) {
+      buffer[m++] = 0;
+      buffer[m++] = row - n;
+    }
+    return buffer;
   }
 
   template <class T>
@@ -281,16 +327,70 @@ namespace FreeMat {
       buffer[3] = row;
       return buffer;
     }
-    T* buffer = new T[2*row];
-    memset(buffer,0,2*row*sizeof(T));
-    while ((ptr < len) && (mlist[ptr].J == col)) {
-      buffer[2*mlist[ptr].I] += mlist[ptr].Vreal;
-      buffer[2*mlist[ptr].I+1] += mlist[ptr].Vimag;
-      ptr++;
+    // m is the pointer to the output cell, n is the effective
+    // row number
+    int m = 0;
+    int n = 0;
+    int sptr = ptr;
+    // First pass, calculate how many entries in the output
+    while (mlist[sptr].J == col) {
+      if (mlist[sptr].I == n) {
+	T accum_real = 0;
+	T accum_imag = 0;
+	while ((mlist[sptr].I == n) && (mlist[sptr].J == col)) {
+	  accum_real += mlist[sptr].Vreal;
+	  accum_imag += mlist[sptr].Vimag;
+	  sptr++;
+	}
+	n++;
+	if ((accum_real == 0) && (accum_imag == 0)) 
+	  m += 3;
+	else
+	  m += 2;
+      } else {
+	m += 3;
+	n = mlist[sptr].I;
+      }
     }
-    T* ret = CompressComplexVector<T>(buffer,row);
-    delete buffer;
-    return ret;
+    if (n<row)
+      m += 3;
+    // Allocate the output buffer
+    T* buffer = new T[m+1];
+    buffer[0] = m;
+    m = 1;
+    n = 0;
+    // Second pass...
+    while (mlist[ptr].J == col) {
+      if (mlist[ptr].I == n) {
+	T accum_real = 0;
+	T accum_imag = 0;
+	while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
+	  accum_real += mlist[ptr].Vreal;
+	  accum_imag += mlist[ptr].Vimag;
+	  ptr++;
+	}
+	n++;
+	if (accum == 0) {
+	  buffer[m++] = 0;
+	  buffer[m++] = 0;
+	  buffer[m++] = 1;
+	} else {
+	  buffer[m++] = accum_real;
+	  buffer[m++] = accum_imag;
+	}
+      } else {
+	buffer[m++] = 0;
+	buffer[m++] = 0;
+	buffer[m++] = mlist[ptr].I - n;
+	n = mlist[ptr].I;
+      }
+    }
+    if (n<row) {
+      buffer[m++] = 0;
+      buffer[m++] = 0;
+      buffer[m++] = row - n;
+    }
+    return buffer;
   }
 
 

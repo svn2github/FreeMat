@@ -236,6 +236,7 @@ namespace FreeMat {
   }
 
   void WinTerminal::OutputRawString(std::string txt) {
+    HideCaret(hwnd);
     int startRow, startCol;
 	int i;
 	bool redrawall;
@@ -278,6 +279,7 @@ namespace FreeMat {
       InvalidateRect(hwnd,NULL,TRUE);
     UpdateWindow(hwnd);
     DoMoveCaret();
+	ShowCaret(hwnd);
   }
 
   void WinTerminal::OnScroll(int scrollType) {

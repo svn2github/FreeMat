@@ -355,12 +355,14 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
   }
 }
 
-void DoEvents() {
+bool DoEvents() {
   MSG msg;
   if (GetMessage(&msg, NULL, 0, 0)) {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
+	  return true;
   }
+  return false; // Quit messsage posted.
 }
 
 void Run() {

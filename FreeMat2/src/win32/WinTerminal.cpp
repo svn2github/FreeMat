@@ -13,6 +13,8 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define MAXCOLS 256
 namespace FreeMat {
+
+  static OPENFILENAME ofn;
   
   void WinTerminal::UpdateLineCount() {
     RECT winsze;
@@ -87,6 +89,7 @@ namespace FreeMat {
   }
 
   WinTerminal::WinTerminal(HINSTANCE hInstance, int iCmdShow) {
+    static TCHAR szFilter[] = "Text Files (*.TXT)\0*.txt\0\0";
     hwnd = CreateWindow("WinTerminal",
 			TEXT("FreeMat"),
 			WS_OVERLAPPEDWINDOW | WS_VSCROLL,
@@ -115,11 +118,31 @@ namespace FreeMat {
     UpdateLineCount();
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
-	messageContext = NULL;
-	selstart_col = 0;
-	selstart_row = 0;
-	selstop_col = 0;
-	selstop_row = 0;
+    messageContext = NULL;
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = hwnd;
+    ofn.hInstance = NULL;
+    ofn.lpstrFilter = szFilter;
+    ofn.lpstrCustomFilter = NULL;
+    ofn.nMaxCustFilter = 0;
+    ofn.nFilterIndex = 0;
+    ofn.lpstrFile = NULL;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = MAX_PATH;
+    ofn.lpstrInitialDir = NULL;
+    ofn.lpstrTitle = NULL;
+    ofn.Flags = 0;
+    ofn.nFileOffset = 0;
+    ofn.nFileExtension = 0;
+    ofn.lpstrDefExt = "txt";
+    ofn.lCustData = 0L;
+    ofn.lpfnHook = NULL;
+    ofn.lpTemplateName = NULL;
+    selstart_col = 0;
+    selstart_row = 0;
+    selstop_col = 0;
+    selstop_row = 0;
   }
 
   void WinTerminal::MoveDown() {
@@ -541,13 +564,50 @@ namespace FreeMat {
     fflush(stdout);
     ReplacePrompt(prompt);
     DisplayPrompt();
-    while(enteredLines.empty())
-      DoEvents();
-    std::string theline(enteredLines.front());
-    enteredLines.pop_front();
     char *cp;
-    cp = strdup(theline.c_str());
+	bool quitflag = false;
+    while(enteredLines.empty()) {
+		if (!DoEvents()) {
+		  quitflag = true;
+		  break;
+		}
+	}
+	if (!quitflag) {
+	    std::string theline(enteredLines.front());
+		enteredLines.pop_front();
+		cp = strdup(theline.c_str());
+	} else {
+		cp = strdup("quit\n");
+	}
     return cp;
+  }
+
+  void WinTerminal::Save() {
+    char fname[MAX_PATH];
+	char ftitle[MAX_PATH];
+    ofn.Flags = OFN_OVERWRITEPROMPT;
+	fname[0] = 0;
+	ftitle[0] = 0;
+    ofn.lpstrFile = fname;
+	ofn.lpstrFileTitle = ftitle;
+    if (!GetSaveFileName(&ofn)) {
+		DWORD tmp;
+		tmp = CommDlgExtendedError();
+		return;
+	}
+    FILE *fp;
+    fp = fopen(fname,"w");
+    if (!fp) {
+      char buffer[1000];
+      sprintf(buffer,"Unable to open file %s for writing.",ofn.lpstrFile);
+      MessageBox(hwnd, buffer, "Error on save", MB_OK);
+    }	
+    // Write the output
+	int i;
+    for (i=max(0,nlinecount-scrollback);i<nlinecount;i++) {
+      fprintf(fp,"%s\n",&textbuf[(i%scrollback)*MAXCOLS]);
+    }
+    fclose(fp);
   }
 
   void WinTerminal::Copy() {
@@ -788,6 +848,9 @@ namespace FreeMat {
 			  break;
 		  case IDM_EDIT_PASTE:
 			  wptr->Paste();
+			  break;
+		  case IDM_FILE_SAVE:
+			  wptr->Save();
 			  break;
 		  }
       case WM_KEYDOWN:{

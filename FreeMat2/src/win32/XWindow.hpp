@@ -58,6 +58,6 @@ class XWindow {
 
 void InitializeXWindowSystem(HINSTANCE hInstance);
 void FlushWindowEvents();
-void DoEvents();
+bool DoEvents();
 void Run();
 #endif

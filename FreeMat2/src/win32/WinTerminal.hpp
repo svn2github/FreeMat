@@ -24,6 +24,7 @@ namespace FreeMat {
     char *messageContext;
     std::vector<std::string> flist;
     std::list<std::string> enteredLines;
+    OPENFILENAME ofn;
   public:
     WinTerminal(HINSTANCE hInstance, int iCmdShow);
     ~WinTerminal() {};
@@ -61,8 +62,9 @@ namespace FreeMat {
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 
 						    std::string &matchString);
     virtual char* getLine(const char* prompt);
-	void Copy();
-	void Paste();
+    void Copy();
+    void Paste();
+    void Save();
   };
 
   void SetupWinTerminalClass(HINSTANCE hInstance);

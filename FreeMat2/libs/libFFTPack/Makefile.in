@@ -139,7 +139,6 @@ zpassf5.f \
 zpassf.f
 
 
-EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 subdir = libs/libFFTPack
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

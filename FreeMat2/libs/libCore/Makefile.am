@@ -22,5 +22,4 @@ LoadCore.cpp \
 LoadCore.hpp \
 Core.hpp 
 
-EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

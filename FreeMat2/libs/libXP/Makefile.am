@@ -26,7 +26,6 @@ KeyManager.hpp \
 BitmapPrinterGC.cpp \
 BitmapPrinterGC.hpp
 
-EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign
 
 INCLUDES= -I@top_srcdir@/libs/libFreeMat 

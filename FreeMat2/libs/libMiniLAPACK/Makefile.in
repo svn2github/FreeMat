@@ -468,7 +468,6 @@ util/izmax1.f \
 util/lsame.f
 
 
-EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 subdir = libs/libMiniLAPACK
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

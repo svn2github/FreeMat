@@ -123,7 +123,6 @@ ScalarImage.cpp \
 ScalarImage.hpp
 
 
-EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 subdir = libs/libGraphics
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

@@ -168,7 +168,6 @@ Interface.hpp \
 SymbolTable.hpp 
 
 
-EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 subdir = libs/libFreeMat
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

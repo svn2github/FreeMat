@@ -128,7 +128,6 @@ LoadCore.hpp \
 Core.hpp 
 
 
-EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
 subdir = libs/libCore
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

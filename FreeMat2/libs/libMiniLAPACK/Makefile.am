@@ -362,5 +362,4 @@ util/ilaenv.f \
 util/izmax1.f \
 util/lsame.f
 
-EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

@@ -33,5 +33,4 @@ zpassf4.f \
 zpassf5.f \
 zpassf.f
 
-EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

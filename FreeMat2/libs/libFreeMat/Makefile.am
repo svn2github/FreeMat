@@ -62,5 +62,4 @@ Stream.hpp \
 Interface.hpp \
 SymbolTable.hpp 
 
-EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

@@ -99,6 +99,7 @@ AC_OUTPUT(libs/libMiniLAPACK/Makefile)
 LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB"
 
 #ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
+AC_CONFIG_SUBDIRS(libs/libffi)
 
 AC_OUTPUT(Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile)
 

@@ -51,3 +51,7 @@ set of BLAS routines for your specific machine.
 
 After installation, an HTML version of the manual is available by pointing
 a web browser to /usr/local/FreeMat/manual/index.html.
+
+Note: On Mac OS X, you will need to install g77 and libjpeg, libpng and libtif.  
+I suggest using fink (fink.sourceforge.net).  Perhaps at some point in the future
+a fink package will be available for the Mac (volunteers?).

@@ -2,6 +2,7 @@
 
 namespace FreeMat {
   Interface::Interface() {
+	  messageContext = NULL;
   }
 
   Interface::~Interface() {

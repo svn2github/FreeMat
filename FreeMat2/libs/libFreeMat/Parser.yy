@@ -48,6 +48,10 @@ extern int yylex(void);
 extern int lineNumber;
 extern int yydebug;
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 namespace FreeMat {
   static ASTPtr mainAST;
   static MFunctionDef *mainMDef;

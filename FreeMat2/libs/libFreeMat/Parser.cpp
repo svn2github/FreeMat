@@ -92,7 +92,7 @@
 #include "ParserInterface.hpp"
 #include "Exception.hpp"
 
-#define sprintf _sprintf
+#define snprintf _snprintf
 #define YYSTYPE FreeMat::ASTPtr
 
 #define MSGBUFLEN 2048

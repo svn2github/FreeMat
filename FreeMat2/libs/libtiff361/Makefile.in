@@ -1,0 +1,313 @@
+#! smake
+# $Header$
+#
+# @WARNING@
+#
+# Tag Image File Format Library
+#
+# Copyright (c) 1988-1997 Sam Leffler
+# Copyright (c) 1991-1997 Silicon Graphics, Inc.
+# 
+# Permission to use, copy, modify, distribute, and sell this software and 
+# its documentation for any purpose is hereby granted without fee, provided
+# that (i) the above copyright notices and this permission notice appear in
+# all copies of the software and related documentation, and (ii) the names of
+# Sam Leffler and Silicon Graphics may not be used in any advertising or
+# publicity relating to the software without the specific, prior written
+# permission of Sam Leffler and Silicon Graphics.
+# 
+# THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
+# EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
+# WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
+# 
+# IN NO EVENT SHALL SAM LEFFLER OR SILICON GRAPHICS BE LIABLE FOR
+# ANY SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND,
+# OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+# WHETHER OR NOT ADVISED OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF 
+# LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 
+# OF THIS SOFTWARE.
+#
+
+SRCDIR	= @SRCDIR@
+top_srcdir = @top_srcdir@
+#
+# VERSION:	@VERSION@
+# DATE:		@DATE@
+# TARGET:	@TARGET@
+# CCOMPILER:	@CCOMPILER@
+#
+@SETMAKE@
+SHELL	= @SCRIPT_SH@
+SCRIPT_SH = @SCRIPT_SH@
+NULL	=
+ECHO	= echo
+GENDIST	= ${TOOLROOT}/usr/sbin/gendist
+INSTALL	= @INSTALL@
+
+all default:
+	@if [ "@PORT@" = yes ]; then \
+	    ${ECHO} "= "port; cd port; ${MAKE} -${MAKEFLAGS}; \
+	else \
+	    true; \
+	fi
+	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} -${MAKEFLAGS}
+
+install:
+	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} install
+	@${ECHO} "= "tools; cd tools; ${MAKE} install
+	@${ECHO} "= "man; cd man; ${MAKE} install
+	@if [ "@HTML@" = yes ]; then \
+	    ${ECHO} "= "html; cd html; ${MAKE} install; \
+	else \
+	    true; \
+	fi
+
+install-private: install
+	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} -${MAKEFLAGS} installPrivateHdrs
+
+clean:
+	@if [ "@PORT@" = yes ]; then \
+	    ${ECHO} "= "port; cd port; ${MAKE} -${MAKEFLAGS} clean; \
+	else \
+	    true; \
+	fi
+	@${ECHO} "= "libtiff; cd libtiff; ${MAKE} -${MAKEFLAGS} clean
+	@${ECHO} "= "tools; cd tools; ${MAKE} -${MAKEFLAGS} clean
+	@${ECHO} "= "man; cd man; ${MAKE} -${MAKEFLAGS} clean
+#	-cd contrib/dbs; ${MAKE} -${MAKEFLAGS} clean
+#	-cd contrib/dbs/xtiff; ${MAKE} -${MAKEFLAGS} clean
+
+clobber distclean: clean
+	rm -f Makefile libtiff/port.h config.log
+	rm -f libtiff/Makefile
+	rm -f tools/Makefile
+	rm -f man/Makefile
+	rm -f port/Makefile port/install.sh
+	rm -f html/Makefile
+
+#
+# The folllowing rule creates a binary distribution for IRIX.
+#
+installLink::
+	if [ @DIR_LIB@ != /usr/lib ]; then				\
+	    ${INSTALL} -idb tiff.sw.tools -F /usr/lib			\
+		-lns @DIR_LIB@/libtiff.@DSOSUF@ -O libtiff.@DSOSUF@;	\
+	else								\
+	    true;							\
+	fi
+product::
+	test -d dist || mkdir dist
+	rm -f dist/rawidb
+	SRC=`pwd` RAWIDB=`pwd`/dist/rawidb ${MAKE} -${MAKEFLAGS} install installLink
+	rm -f dist/idb
+	sort -u +4 dist/rawidb > dist/idb
+	${GENDIST} -v -dist dist -idb dist/idb \
+	    -sbase `pwd` -spec ${SRCDIR}/dist/tiff.spec
+
+#
+# These rules are used to create the source distribution images
+#
+
+HOST	= sgi
+COMPRESS= gzip
+ZIPSUF	= gz
+
+TIFFFILES=\
+	configure				\
+	config.guess				\
+	config.sub				\
+	config.site				\
+	Makefile.in				\
+	README					\
+	VERSION					\
+	RELEASE-DATE				\
+	COPYRIGHT				\
+	TODO					\
+	test_pics.sh				\
+	libtiff/Makefile.in			\
+	    libtiff/Makefile.lcc		\
+	    libtiff/makefile.vc			\
+	    libtiff/libtiff.def			\
+	    libtiff/t4.h			\
+	    libtiff/tiff.h			\
+	    libtiff/tiffcomp.h			\
+	    libtiff/tiffconf.h			\
+	    libtiff/tiffio.h			\
+	    libtiff/tiffiop.h			\
+	    libtiff/uvcode.h			\
+	    libtiff/mkg3states.c		\
+	    libtiff/mkspans.c			\
+	    libtiff/mkversion.c			\
+	    libtiff/tif_acorn.c			\
+	    libtiff/tif_apple.c			\
+	    libtiff/tif_atari.c			\
+	    libtiff/tif_aux.c			\
+	    libtiff/tif_close.c			\
+	    libtiff/tif_codec.c			\
+	    libtiff/tif_compress.c		\
+	    libtiff/tif_color.c			\
+	    libtiff/tif_dir.h			\
+	    libtiff/tif_dir.c			\
+	    libtiff/tif_dirinfo.c		\
+	    libtiff/tif_dirread.c		\
+	    libtiff/tif_dirwrite.c		\
+	    libtiff/tif_dumpmode.c		\
+	    libtiff/tif_error.c			\
+	    libtiff/tif_extension.c		\
+	    libtiff/tif_fax3.c			\
+	    libtiff/fax3sm_winnt.c		\
+	    libtiff/tif_fax3.h			\
+	    libtiff/tif_flush.c			\
+	    libtiff/tif_getimage.c		\
+	    libtiff/tif_jpeg.c			\
+	    libtiff/tif_ojpeg.c			\
+	    libtiff/tif_luv.c			\
+	    libtiff/tif_lzw.c			\
+	    libtiff/tif_msdos.c			\
+	    libtiff/tif_next.c			\
+	    libtiff/tif_open.c			\
+	    libtiff/tif_packbits.c		\
+	    libtiff/tif_pixarlog.c		\
+	    libtiff/tif_predict.h		\
+	    libtiff/tif_predict.c		\
+	    libtiff/tif_print.c			\
+	    libtiff/tif_read.c			\
+	    libtiff/tif_strip.c			\
+	    libtiff/tif_swab.c			\
+	    libtiff/tif_thunder.c		\
+	    libtiff/tif_tile.c			\
+	    libtiff/tif_unix.c			\
+	    libtiff/tif_version.c		\
+	    libtiff/tiffvers.h			\
+	    libtiff/tif_vms.c			\
+	    libtiff/tif_warning.c		\
+	    libtiff/tif_win3.c			\
+	    libtiff/tif_win32.c			\
+	    libtiff/tif_write.c			\
+	    libtiff/tif_zip.c			\
+	    ${NULL}
+OTHERFILES=\
+	${NULL}
+CONTRIBFILES=\
+	${NULL}
+
+
+DISTFILES=\
+	${TIFFFILES}				\
+	${OTHERFILES}				\
+	${CONTRIBFILES}				\
+	libtiff361.dsp				\
+	${NULL}
+
+CONFIG=\
+	-with-CC=cc \
+	-with-GCOPTS=" " \
+	-with-JPEG=yes \
+	-with-DIR_JPEG=../src/jpeg-5a \
+	-with-ZIP=yes \
+	-with-DIR_LIBGZ=../src/zlib \
+	${NULL}
+
+distdir:
+	mkdir -p $(distdir)/libtiff
+	@srcdirstrip=`echo "$(SRCDIR)" | sed 's|.|.|g'`; \
+	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
+	list='$(DISTFILES)'; for file in $$list; do \
+	  case $$file in \
+	    $(SRCDIR)/*) file=`echo "$$file" | sed "s|^$$srcdirstrip/||"`;; \
+	    $(top_srcdir)/*) file=`echo "$$file" | sed "s|^$$topsrcdirstrip/|$(top_builddir)/|"`;; \
+	  esac; \
+	  if test -f $$file || test -d $$file; then d=.; else d=$(SRCDIR); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    dir="/$$dir"; \
+	    mkdir -p "$(distdir)$$dir"; \
+	  else \
+	    dir=''; \
+	  fi; \
+	  if test -d $$d/$$file; then \
+	    if test -d $(SRCDIR)/$$file && test $$d != $(SRCDIR); then \
+	      cp -pR $(SRCDIR)/$$file $(distdir)$$dir || exit 1; \
+	    fi; \
+	    cp -pR $$d/$$file $(distdir)$$dir || exit 1; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || cp -p $$d/$$file $(distdir)/$$file \
+	    || exit 1; \
+	  fi; \
+	done
+
+rcsclean:
+	rcsclean ${TIFFFILES} && co ${TIFFFILES}
+
+release:
+	(cd ${SRCDIR}/dist; sh newversion)
+	${MAKE}  -${MAKEFLAGS} release.stamp
+	(cd ${SRCDIR}/libtiff; ${MAKE} -${MAKEFLAGS} tiffvers.h)
+#	${SRCDIR}/configure ${CONFIG}
+#	${MAKE} -${MAKEFLAGS} product
+	${MAKE} -${MAKEFLAGS} release.tar.zip
+
+
+# stamp relevant files according to current alpha
+release.stamp:
+	date "+%m/%d/%Y" > RELEASE-DATE
+
+#diffs since last release
+releasediff:
+	-@for i in ${TIFFFILES}; do					\
+	    cvs diff -D`cat RELEASE-DATE` ${SRCDIR}/$$i;				\
+	done
+
+# create release or beta distribution archive
+release.tar.zip:
+	if test "@RELEASE@" = "" ; then					\
+	  VERSIONREL="@VERSION@";					\
+	else								\
+	  VERSIONREL="@VERSION@-@RELEASE@";				\
+	fi;								\
+	rm -f ../tiff-$$VERSIONREL $$VERSIONREL $$VERSIONREL-tar;			\
+	ln -s ${SRCDIR} tiff-$$VERSIONREL;					\
+	(for i in ${DISTFILES}; do					\
+	   echo $$i;							\
+	done) | sed "s;.*;tiff-$$VERSIONREL/&;" >$$VERSIONREL;		\
+	tar cvf $$VERSIONREL-tar `cat $$VERSIONREL`;				\
+	zip ../tiff-$$VERSIONREL.zip `cat $$VERSIONREL`; 				\
+	cat $$VERSIONREL-tar | ${COMPRESS} >../tiff-$$VERSIONREL.tar.${ZIPSUF};	\
+	rm -f tiff-$$VERSIONREL $$VERSIONREL $$VERSIONREL-tar;
+#
+#	Simple rule to run test suite assuming that pics directory is 
+#	just below this one, and that .rpt files are available. 
+#
+test:
+	${SRCDIR}/test_pics.sh pics/*.tif
+
+#
+# Create a package of the test images.
+#
+
+PICS=\
+	pics/README		 \
+	pics/cramps.tif		 \
+	pics/cramps-tile.tif	\
+	pics/fax2d.tif		\
+	pics/g3test.tif		\
+	pics/jello.tif		\
+	pics/jim___cg.tif	\
+	pics/jim___dg.tif	\
+	pics/jim___gg.tif	\
+	pics/jim___ah.tif	\
+	pics/strike.tif		\
+	pics/oxford.tif		\
+	pics/quad-lzw.tif	\
+	pics/quad-tile.tif	\
+	pics/text.tif		\
+	pics/ycbcr-cat.tif	\
+	pics/smallliz.tif	\
+	pics/zackthecat.tif	\
+	pics/fax2d.g3		\
+	pics/g3test.g3		\
+	${NULL}
+
+pics.tar:
+	tar cvf - ${PICS} | ${COMPRESS} > tiffpics.tar.${ZIPSUF}

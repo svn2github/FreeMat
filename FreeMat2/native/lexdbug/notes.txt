@@ -19,3 +19,32 @@ The top state is not Scanning, so we move to MScan.
 STACK : Scanning <MScan>
 
 
+On to rewriting the lexer from scratch...  The most important issue remaining is the separation of multiple expressions. This occurs in the case of expressions seperated by a white space inside a row definition, and in one-line if statements, while statements, etc.
+
+So how can we tell if a comma needs to be inserted for an expression to make sense? Lets see...
+
+An expression can terminate with either:
+')'
+transpose
+numeric
+string
+']'
+'}'
+ident
+
+An expression can begin with either:
+'('
+'+'
+'-'
+'~'
+'['
+'{'
+string
+numeric
+ident
+
+Thus, if we we see an expression terminator followed by an expression 
+beginner, we can deduce that there must be a comma between the two 
+elements.  Of course, when the beginning term is a '+' we have to make
+the same special case checks that were done before...
+

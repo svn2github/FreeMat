@@ -1,7 +1,14 @@
 #!/bin/sh
 CPATH="`dirname \"$0\"`"
+
+if [ "$?" != "0" -a ! -f "$HOME/.xinitrc" ]; then
+    echo "rm -f \"$HOME/.xinitrc\"" > "$HOME/.xinitrc"
+    sed 's/xterm/# xterm/' /usr/X11R6/lib/X11/xinit/xinitrc >> "$HOME/.xinitrc"
+fi
+
 export CPATH
 declare -x "FREEMAT_PATH=$CPATH/share/FreeMat/MFiles"
+open-x11 "$CPATH/bin/donothing.sh" || ([ -d /Applications/XDarwin.app ] && open -a /Applications/XDarwin.app "$CPATH/bin/donothing.sh")
 export "DISPLAY=localhost:0.0"
 exec /usr/X11R6/bin/xterm -e "$CPATH/bin/FreeMat"
 

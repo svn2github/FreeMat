@@ -1,11 +1,9 @@
 #include "RGBImage.hpp"
 
 #include <png.h>
-#if 0
 extern "C" {
 #include <jpeglib.h>
 }
-#endif
 extern "C" {
 #include <tiffio.h>
 }
@@ -232,7 +230,6 @@ void WritePNGFile(std::string filename, byte *data, int width, int height) {
 }
 
 void WriteJPEGFile(std::string filename, byte *data, int width, int height) {
-#if 0
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
   /* More stuff */
@@ -259,7 +256,6 @@ void WriteJPEGFile(std::string filename, byte *data, int width, int height) {
   jpeg_finish_compress(&cinfo);
   fclose(outfile);
   jpeg_destroy_compress(&cinfo);
-#endif
 }
 
 void WriteTIFFFile(std::string filename, byte *data, int width, int height) {

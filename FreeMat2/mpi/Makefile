@@ -15,9 +15,9 @@
 
 SHELL = /bin/sh
 
-srcdir = /Users/basu/FreeMat2/mpi
-top_srcdir = /Users/basu/FreeMat2
-VPATH = /Users/basu/FreeMat2/mpi
+srcdir = /localhome/basu/FreeMat2/mpi
+top_srcdir = /localhome/basu/FreeMat2
+VPATH = /localhome/basu/FreeMat2/mpi
 prefix = /usr/local
 exec_prefix = ${prefix}
 
@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/FreeMat
 pkgincludedir = $(includedir)/FreeMat
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /Users/basu/FreeMat2/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /Users/basu/FreeMat2/missing --run autoconf
-AUTOMAKE = ${SHELL} /Users/basu/FreeMat2/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /Users/basu/FreeMat2/missing --run autoheader
+ACLOCAL = ${SHELL} /localhome/basu/FreeMat2/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /localhome/basu/FreeMat2/missing --run autoconf
+AUTOMAKE = ${SHELL} /localhome/basu/FreeMat2/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /localhome/basu/FreeMat2/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -60,35 +60,35 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_alias = 
-build_triplet = powerpc-apple-darwin7.0.0
+build_triplet = i686-pc-linux-gnu
 host_alias = 
-host_triplet = powerpc-apple-darwin7.0.0
+host_triplet = i686-pc-linux-gnu
 target_alias = 
-target_triplet = powerpc-apple-darwin7.0.0
+target_triplet = i686-pc-linux-gnu
 
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /Users/basu/FreeMat2/missing --run tar
-AWK = awk
-BLAS_LIBS = -L${top_builddir}/libs/libMiniBLAS -lMiniBLAS
+AMTAR = ${SHELL} /localhome/basu/FreeMat2/missing --run tar
+AWK = gawk
+BLAS_LIBS = -lblas
 CC = gcc
 
-CXX = g++
+CXX = mpiCC
 DEPDIR = .deps
 F77 = g77
-FLIBS = 
+FLIBS =  -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../.. -ltiff -lfrtbegin -lg2c -lm -ljpeg -lpng -lz -lgcc_s
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LAPACK_LIBS = -L${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK
+LAPACK_LIBS = -llapack
 LEX = flex
 LEXLIB = -lfl
 LEX_OUTPUT_ROOT = lex.yy
 
 LFLAGS = 
 MPICC = @MPICC@
-MPICXX = g++
+MPICXX = mpiCC
 MPIF77 = @MPIF77@
-MPILIBS = 
+MPILIBS =  
 PACKAGE = FreeMat
 RANLIB = ranlib
 STRIP = 
@@ -101,13 +101,13 @@ YACC = bison -y
 YFLAGS =  -d
 am__include = include
 am__quote = 
-install_sh = /Users/basu/FreeMat2/install-sh
+install_sh = /localhome/basu/FreeMat2/install-sh
 maindir = src/x11
-miniblasdir = libMiniBLAS
-minilapackdir = libMiniLAPACK
+miniblasdir = 
+minilapackdir = 
 mpidir = 
-CFLAGS = -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/Users/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cflags`
-CXXFLAGS = -O3  `..//extlibs/wxWindows/wx-config --prefix=/Users/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cxxflags`  -I/Users/basu/FreeMat2/libs/libFreeMat -I/Users/basu/FreeMat2/libs/libCore -I/Users/basu/FreeMat2/extlibs/libtecla -I/Users/basu/FreeMat2/libs/libGraphics  -I/Users/basu/FreeMat2/extlibs/libffi-2.00-beta/include  -I/Users/basu/FreeMat2/extlibs/volpack-1.0c2/src
+CFLAGS = -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cflags`
+CXXFLAGS = -O3  `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cxxflags`  -I/localhome/basu/FreeMat2/libs/libFreeMat -I/localhome/basu/FreeMat2/libs/libCore -I/localhome/basu/FreeMat2/extlibs/libtecla -I/localhome/basu/FreeMat2/libs/libGraphics  -I/localhome/basu/FreeMat2/extlibs/libffi-2.00-beta/include  -I/localhome/basu/FreeMat2/extlibs/volpack-1.0c2/src
 
 bin_PROGRAMS = FMKernelMPI FreeMatMPI
 
@@ -128,7 +128,7 @@ MPIWrap.cpp \
 MPIWrap.hpp
 
 
-LIBS = `..//extlibs/wxWindows/wx-config --prefix=/Users/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --libs` -L${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK -L${top_builddir}/libs/libMiniBLAS -lMiniBLAS -O3    -lcurses 
+LIBS = `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --libs` -llapack -lblas -ltiff -lm -ljpeg -lpng -lz -lm -O3    -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../.. -ltiff -lfrtbegin -lg2c -lm -ljpeg -lpng -lz -lgcc_s -lcurses 
 
 FreeMatMPI_DEPENDENCIES = ..//libs/libCore/libCore.a ..//libs/libGraphics/libGraphics.a ..//libs/libFreeMat/libFreeMat.a ..//libs/libFFTPack/libFFTPack.a ..//extlibs/libtecla/libtecla.a  ..//extlibs/libffi-2.00-beta/libffi.a ..//extlibs/volpack-1.0c2/src/libvolpack.a
 
@@ -154,7 +154,7 @@ am_FreeMatMPI_OBJECTS = AppNoGUI.$(OBJEXT) TeclaInterface.$(OBJEXT) \
 FreeMatMPI_OBJECTS = $(am_FreeMatMPI_OBJECTS)
 FreeMatMPI_LDFLAGS =
 
-DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"FreeMat\" -DVERSION=\"1.0\" -DYYTEXT_POINTER=1 -DHAVE_CURSES_H=1 
+DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"FreeMat\" -DVERSION=\"1.0\" -DYYTEXT_POINTER=1 -DHAVE_CURSES_H=1 -DHAVE_MPI=1 -DHAVE_PNG=1 -DHAVE_JPEG=1 -DHAVE_TIFF=1 -DHAVE_BLAS=1 -DHAVE_LAPACK=1 
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 CPPFLAGS = 
 LDFLAGS = 

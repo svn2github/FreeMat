@@ -199,6 +199,26 @@ namespace FreeMat {
     retval.push_back(A);
     return retval;
   }
+
+  ArrayVector ExistFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() != 1)
+      throw Exception("exist function takes one argument - the name of the variable to check for");
+    Array tmp(arg[0]);
+    char *fname;
+    fname = tmp.getContentsAsCString();
+    bool isDefed;
+    Array d;
+    isDefed = eval->getContext()->lookupVariableLocally(fname, d);
+    bool existCheck;
+    if (isDefed && !d.isEmpty())
+      existCheck = true;
+    else
+      existCheck = false;
+    Array A(Array::logicalConstructor(existCheck));
+    ArrayVector retval;
+    retval.push_back(A);
+    return retval;	    
+  }
   
   ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)

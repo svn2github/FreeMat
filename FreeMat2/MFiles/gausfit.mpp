@@ -59,8 +59,8 @@ if (~isset('dcg'))
 end
 ycor = y - dcg;
 if (~isset('gaing')) 
-  gaing = max(ycor); e
-nd
+  gaing = max(ycor); 
+end
 ycor = ycor/gaing;
 if (~isset('mug')) 
   mug = sum(ycor.*t)/sum(ycor); 

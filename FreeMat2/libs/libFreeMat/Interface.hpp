@@ -27,9 +27,12 @@ namespace FreeMat {
   class Context;
 
   class Interface {
+  protected:
+    char *messageContext;
+    std::vector<std::string> messageStack;    
   public:
-    Interface() {};
-    virtual ~Interface() {};
+    Interface();
+    virtual ~Interface();
     /**
      *  Set the context to be handled by this interface
      */
@@ -73,23 +76,31 @@ namespace FreeMat {
      * Set the context for an error message to the
      * following string.
      */
-    virtual void setMessageContext(const char* msg) = 0;
+    virtual void setMessageContext(const char* msg);
     /**
      * Push the current message context onto the stack.
      */
-    virtual void pushMessageContext() = 0;
+    virtual void pushMessageContext();
     /**
      * Pop the current message context from the stack.
      */ 
-    virtual void popMessageContext() = 0;
+    virtual void popMessageContext();
     /**
      * Get a copy of the message context stack.
      */
-    virtual std::vector<std::string> getMessageContextStack() = 0;
+    virtual std::vector<std::string> getMessageContextStack();
     /**
      * Clear the message context stack.
      */
-    virtual void clearMessageContextStack() = 0;
+    virtual void clearMessageContextStack();
+    /**
+     * Clear the message context stack to a NULL entry
+     */
+    virtual void clearMessageContextStackToDepth(int depth);
+    /**
+     * Get the current depth of the context stack
+     */
+    virtual int getMessageContextStackDepth();
   };
 }
 

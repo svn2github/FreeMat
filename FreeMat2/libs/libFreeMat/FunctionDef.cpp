@@ -190,7 +190,7 @@ namespace FreeMat {
 	for (int i=0;i<returnVals.size();i++) {
 	  if (!context->lookupVariableLocally(returnVals[i],a)) {
 	    if (!warningIssued) {
-	      std::cout << "Warning - one or more outputs not assigned in call\n";
+	      walker->getInterface()->warningMessage("one or more outputs not assigned in call\n");
 	      warningIssued = true;
 	    }
 	    a = Array::emptyConstructor();
@@ -205,7 +205,7 @@ namespace FreeMat {
 	for (int i=0;i<explicitCount;i++) {
 	  if (!context->lookupVariableLocally(returnVals[i],a)) {
 	    if (!warningIssued) {
-	      std::cout << "Warning - one or more outputs not assigned in call\n";
+	      walker->getInterface()->warningMessage("one or more outputs not assigned in call\n");
 	      warningIssued = true;
 	    }
 	    a = Array::emptyConstructor();

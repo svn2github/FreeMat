@@ -64,6 +64,7 @@ File.cpp \
 File.hpp \
 Stream.hpp \
 Interface.hpp \
+Interface.cpp \
 SymbolTable.hpp 
 
 AUTOMAKE_OPTIONS 	= foreign

@@ -1553,7 +1553,7 @@ namespace FreeMat {
       s = s->right;
     }
     if (s != NULL)
-      io->warningMessage("Warning! one or more outputs not assigned in call.");
+      io->warningMessage("Warning! one or more outputs not assigned in call.\n");
   }
 
   int getArgumentIndex(stringVector list, std::string t) {
@@ -2251,7 +2251,7 @@ namespace FreeMat {
   //C = A(2:3,1:end)
   //@>
   //Note that we used the @|end| keyword to avoid having to know
-  //that @|A| has 4 columns.  Of course, we could also use the
+  //that @|A| has 4 columns.  Of course, we could also use the 
   //@|:| token instead:
   //@<
   //C = A(2:3,:)
@@ -2471,23 +2471,27 @@ namespace FreeMat {
     ParserState parserState;
 
     InterruptPending = false;
+    int cdepth = io->getMessageContextStackDepth();
     try{
       parserState = parseString(line);
       switch (parserState) {
       case ScriptBlock:
-	tree = getParsedScriptBlock();
-	//	printAST(tree);
-	try {
-	  block(tree);
-	  if (state == FM_STATE_RETURN) {
-	    if (depth > 0) 
+	{
+	  tree = getParsedScriptBlock();
+	  //	printAST(tree);
+	  int depth = io->getMessageContextStackDepth();
+	  try {
+	    block(tree);
+	    if (state == FM_STATE_RETURN) {
+	      if (depth > 0) 
+		return true;
+	    }
+	    if (state == FM_STATE_QUIT || state == FM_STATE_RETALL)
 	      return true;
+	  } catch(Exception &e) {
+	    e.printMe(io);
+	    io->clearMessageContextStackToDepth(depth);
 	  }
-	  if (state == FM_STATE_QUIT || state == FM_STATE_RETALL)
-	    return true;
-	} catch(Exception &e) {
-	  e.printMe(io);
-	  io->clearMessageContextStack();
 	}
 	break;
       case FuncDef:
@@ -2496,7 +2500,7 @@ namespace FreeMat {
       }
     } catch(Exception &e) {
       e.printMe(io);
-      io->clearMessageContextStack();
+      io->clearMessageContextStackToDepth(depth);
     }
     return false;
   }

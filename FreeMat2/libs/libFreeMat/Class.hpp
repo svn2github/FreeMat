@@ -13,6 +13,7 @@ namespace FreeMat {
     UserClass();
     UserClass(stringVector fields, stringVector parents);
     bool matchClass(UserClass test);
+    stringVector getParentClasses();
     ~UserClass();
   };
 
@@ -26,6 +27,9 @@ namespace FreeMat {
 			    WalkTree* eval);
 
   ArrayVector ClassRHSExpression(Array a, ASTPtr t, WalkTree* eval);
+
+  bool ClassResolveFunction(WalkTree* eval, std::string classname,
+			    std::string funcName, FuncPtr& val);
 
   void LoadClassFunction(Context* context);
 }

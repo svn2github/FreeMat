@@ -2802,6 +2802,10 @@ namespace FreeMat {
     return isFun;
   }
 
+  void WalkTree::setClassPrefix(std::string prefix) {
+    classPrefix = prefix;
+  }
+
   bool WalkTree::lookupFunctionMangled(std::string funcName, FuncPtr& val) {
     return context->lookupFunction(funcName,val);
   }
@@ -2820,11 +2824,11 @@ namespace FreeMat {
       anyClasses = args[i].isUserClass();
       if (!anyClasses) i++;
     }
-    if (anyClasses) {
-      if (lookupFunctionMangled(std::string("@") + args[i].getClassName() + 
-				std::string("_") + funcName, val))
+    if (anyClasses)
+      // Try to resolve this to a method for the class or one of its parent
+      // classes.
+      if (ClassResolveFunction(this,args[i].getClassName(),funcName,val))
 	return true;
-    }
     // Just check for the plain old function
     if (lookupFunctionMangled(funcName, val))
       return true;

@@ -63,6 +63,7 @@ namespace FreeMat {
    * operates on abstract syntax trees (ASTs).
    */
   class WalkTree {
+    std::string classPrefix;
     /**
      * The context that the intepreter operates in.
      */
@@ -121,6 +122,7 @@ namespace FreeMat {
     Array DoUnaryOperator(ASTPtr t, UnaryFunc fnc, std::string fname);
     ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
   public:
+    void setClassPrefix(std::string prefix);
     bool debugActive;
     void dbstep(int linecount);
     void handleDebug(int fullcontext);

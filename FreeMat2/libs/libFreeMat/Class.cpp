@@ -51,7 +51,11 @@
 //   [a b] - horzcat
 //   [a; b] - vertcat
 //   Colon
-
+//   end (!)
+//
+// More ideas on overloading classes...
+//
+// What happens when the parent classes are different sizes
 namespace FreeMat {
   UserClass::UserClass() {
   }
@@ -68,8 +72,13 @@ namespace FreeMat {
   UserClass::~UserClass() {
   }
 
-  Array ClassAux(Array s, std::string classname, stringVector parents, WalkTree* eval) {
-    UserClass newclass(s.getFieldNames(),parents);
+  stringVector UserClass::getParentClasses() {
+    return parentClasses;
+  }
+
+  Array ClassAux(Array s, std::string classname, stringVector parentNames, 
+		 ArrayVector parents, WalkTree* eval) {
+    UserClass newclass(s.getFieldNames(),parentNames);
     if (s.getDataClass() != FM_STRUCT_ARRAY) 
       throw Exception("first argument to 'class' function must be a structure");
     // Check to see if this class has already been registered
@@ -85,8 +94,39 @@ namespace FreeMat {
       if (!eclass.matchClass(newclass))
 	throw Exception("fieldnames, and parent objects must match registered class.  Use 'clear classes' to reset this information.");
     }
-    s.setClassName(classname);
-    return s;
+    // Set up the new structure array.  We do this by constructing a set of fieldnames
+    // that includes fields for the parent classes...  To resolve - what happens
+    // if the parent arrays are different sizes than the current class.
+    stringVector newfields(s.getFieldNames());
+    // We should check for duplicates!
+    for (int i=0;i<parentNames.size();i++)
+      newfields.push_back(parentNames[i]);
+    // Now check to make sure all of the parent objects are the same size
+    // as the source object
+    for (int i=0;i<parents.size();i++) 
+      if (!s.getDimensions().equals(parents[i].getDimensions()))
+	throw Exception("parent object much match dimensions of the structure used to make the object");
+    // Finally, we can construct the new structure object.
+    Array* dp = (Array *) Array::allocateArray(FM_STRUCT_ARRAY,s.getLength(),newfields);
+    const Array* sp = (const Array*) s.getDataPointer();
+    // Now we copy in the data from the original structure
+    int oldFieldCount(s.getFieldNames().size());
+    int newFieldCount(newfields.size());
+    int arrayLength(s.getLength());
+    for (int i=0;i<arrayLength;i++)
+      for (int j=0;j<oldFieldCount;j++) {
+	dp[i*newFieldCount+j] = sp[i*oldFieldCount+j];
+      }
+    // Now we copy in the data from the parent objects
+    for (int j=0;j<parents.size();j++) 
+      for (int i=0;i<arrayLength;i++) {
+	Array ndx(Array::int32Constructor(i+1));
+	dp[i*newFieldCount+oldFieldCount+j] = parents[j].getVectorSubset(ndx);
+      }
+    // return a new object with the specified properties
+    Array retval(FM_STRUCT_ARRAY,s.getDimensions(),dp,false,newfields);
+    retval.setClassName(classname);
+    return retval;
   }
 
   Array ClassOneArgFunction(Array x) {
@@ -132,16 +172,19 @@ namespace FreeMat {
       throw Exception("class function requires at least one argument");
     if (arg.size() == 1)
       return singleArrayVector(ClassOneArgFunction(arg[0]));
+    ArrayVector parents;
     stringVector parentNames;
     for (int i=2;i<arg.size();i++) {
       Array parent(arg[i]);
       if (!parent.isUserClass())
 	throw Exception("parent objects must be user defined classes");
+      parents.push_back(parent);
       parentNames.push_back(parent.getClassName());
     }
     Array sval(arg[0]);
     Array classname(arg[1]);
-    return singleArrayVector(ClassAux(sval,classname.getContentsAsCString(),parentNames,eval));
+    return singleArrayVector(ClassAux(sval,classname.getContentsAsCString(),
+				      parentNames,parents,eval));
   }
 
   void LoadClassFunction(Context* context) {
@@ -167,6 +210,27 @@ namespace FreeMat {
 	return Array::emptyConstructor();
     }
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName());
+  }
+
+  bool ClassResolveFunction(WalkTree* eval, std::string classname,
+			    std::string funcName, FuncPtr& val) {
+    Context *context = eval->getContext();
+    // First try to resolve to a method of the base class
+    if (context->lookupFunction("@" + classname + "_" + funcName,val)) {
+      eval->setClassPrefix("");
+      return true;
+    } 
+    UserClass eclass(eval->lookupUserClass(classname));
+    stringVector parentClasses(eclass.getParentClasses());
+    // Now check the parent classes
+    for (int i=0;i<parentClasses.size();i++) {
+      if (context->lookupFunction("@" + parentClasses[i] + "_" + funcName,val)) {
+	eval->setClassPrefix(parentClasses[i]);
+	return true;
+      }
+    }
+    // Nothing matched, return
+    return false;
   }
 
   Array ClassBinaryOperator(Array a, Array b, std::string funcname,

@@ -497,8 +497,9 @@ namespace FreeMat {
   /**
    * Create a variable with the specified contents.
    */
-  Array::Array(Class type, const Dimensions& dims, void* data, bool sparse, const stringVector& fnames) {
-    dp = new Data(type, dims, data, sparse, fnames);
+  Array::Array(Class type, const Dimensions& dims, void* data, bool sparse, 
+	       const stringVector& fnames, const std::string classname) {
+    dp = new Data(type, dims, data, sparse, fnames, classname);
   }
 
   Array::Array(Class type) {
@@ -1592,7 +1593,7 @@ break;
 	src.copyElements(i,rp,dstIndex,1);
       }
     }
-    return Array(src.dp->dataClass,dims,rp,false,src.dp->fieldNames);
+    return Array(src.dp->dataClass,dims,rp,false,src.dp->fieldNames,src.dp->className);
   }
 
   Array Array::logicalConstructor(bool aval) {
@@ -2233,7 +2234,7 @@ break;
     try {
       if (index.isEmpty()) {
 	return Array(dp->dataClass,index.dp->dimensions,
-		     NULL,false,dp->fieldNames);
+		     NULL,false,dp->fieldNames,dp->className);
       }
       if (isEmpty()) 
 	throw Exception("Cannot index into empty variable.");
@@ -2281,7 +2282,7 @@ break;
 	  throw Exception("Index exceeds variable dimensions");
 	copyElements(ndx,qp,i,1);
       }
-      return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames);
+      return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames,dp->className);
     } catch (Exception &e) {
       Free(qp);
       throw;
@@ -2357,7 +2358,7 @@ break;
       }
       Free(indx);
       outDims.simplify();
-      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,dp->className);
     } catch (Exception &e) {
       Free(indx);
       Free(qp);
@@ -2464,7 +2465,7 @@ break;
 	  srcIndex = -diagonalOrder + i*(rows+1);
 	  copyElements(srcIndex,qp,i,1);
 	}
-	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
+	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,dp->className);
       }
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
@@ -2484,7 +2485,7 @@ break;
 	  copyElements(srcIndex,qp,i,1);
 	}
       }
-      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,dp->className);
     }
   }
 

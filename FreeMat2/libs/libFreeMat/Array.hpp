@@ -155,7 +155,8 @@ namespace FreeMat {
     /**
      * Create an Array with the specified contents.
      */
-    Array(Class,const Dimensions& ,void*,bool sparse = false, const stringVector& = stringVector());
+    Array(Class,const Dimensions& ,void*,bool sparse = false, 
+	  const stringVector& = stringVector(), const std::string classname = std::string());
     /**
      * Destructor - free the data object.
      */

@@ -9,6 +9,7 @@ cp src/mac/FreeMat FreeMat.app/Contents/MacOS
 mkdir FreeMat.app/Contents/Resources
 cp -R $1/bin FreeMat.app/Contents/Resources/.
 cp -R $1/share FreeMat.app/Contents/Resources/.
+cp src/mac/donothing.sh FreeMat.app/Contents/Resources/bin/.
 cp src/mac/script FreeMat.app/Contents/Resources/.
 cp src/mac/auth FreeMat.app/Contents/Resources/.
 cp src/mac/droppable FreeMat.app/Contents/Resources/.

@@ -48,13 +48,6 @@ AC_ARG_WITH(mpi,
 
 AC_C_BIGENDIAN(AC_DEFINE([WORDS_BIGENDIAN],1,[System is big endian]),AC_DEFINE([WORDS_BIGENDIAN],0,[System is not big endian]),AC_MSG_ERROR([cannot determine if system is big endian or little endian... what kind of system is this??]))
 
-dnl **** Check for X11 ****
-
-AC_PATH_XTRA
-if test "$no_x" = "yes" ; then
-   AC_MSG_ERROR([cannot build X11 programs - try installing X11 and/or the X11-development package, and make sure you do not specify '--without-x' as a configuration option]);
-fi
-
 dnl **** Check for BLAS ****
 
 if test "$forceminiblas" != "yes" ; then
@@ -597,6 +590,7 @@ AC_ARG_WITH(links, [  --with-links            make header links for common missp
 
 case $uname in
     CYGWIN* | MINGW*)
+        use_win32_main="yes"
 	dnl Cygwin environment...
 	CFLAGS="-mwindows -DWIN32 $CFLAGS"
 	CXXFLAGS="-mwindows -DWIN32 $CXXFLAGS"
@@ -630,6 +624,7 @@ case $uname in
 	;;
 
     Darwin*)
+        use_mac_main="yes"
         # MacOS X uses Carbon for graphics...
         LIBS="$LIBS -framework Carbon -framework ApplicationServices"
 
@@ -659,6 +654,7 @@ case $uname in
 	;;
 
     *)
+        use_x11_main="yes"
 	# All others are UNIX/X11...
 	if test x$have_pthread = xyes; then
 	    AC_DEFINE(HAVE_PTHREAD)
@@ -762,6 +758,10 @@ case $uname in
 	fi
 	;;
 esac
+
+AM_CONDITIONAL([X11_MAIN], [test "$use_x11_main" = "yes"])
+AM_CONDITIONAL([MAC_MAIN], [test "$use_mac_main" = "yes"])
+AM_CONDITIONAL([WIN32_MAIN], [test "$use_win32_main" = "yes"])
 
 AC_SUBST(GLDEMOS)
 AC_SUBST(GLLIB)
@@ -1040,7 +1040,7 @@ LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
 LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB $MPILIBS"
 
 
-AC_OUTPUT(Makefile src/Makefile src/x11/Makefile src/x11gui/Makefile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libFN/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile src/win32/Makefile libs/libf2c/Makefile libs/libz/Makefile libs/lpng125/Makefile libs/libMiniLAPACK/Makefile libs/libMiniBLAS/Makefile src/mac/Makefile src/mac/MainMenu.nib/Makefile libs/libFLTK/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/x11/Makefile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libFN/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile src/win32/Makefile libs/libf2c/Makefile libs/libz/Makefile libs/lpng125/Makefile libs/libMiniLAPACK/Makefile libs/libMiniBLAS/Makefile src/mac/Makefile libs/libFLTK/Makefile)
 
 echo \
 "------------------------------------------------------------------------

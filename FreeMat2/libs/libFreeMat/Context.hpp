@@ -27,18 +27,9 @@
 #include "FunctionDef.hpp"
 #include "Exception.hpp"
 #include "Types.hpp"
+#include <vector>
 
 namespace FreeMat {
-
-  /**
-   * This structure implements a linked list of Scope pointers.
-   */
-  struct ScopeStack {
-  public:
-    Scope* data;
-    ScopeStack* next;
-  };
-
 
   /**
    * A Context is a stack of scopes with the (peculiar) property that
@@ -50,13 +41,13 @@ namespace FreeMat {
    */
   class Context {
     /**
-     * Pointer to the top of the scope stack.
+     * The normal stack of scopes.
      */
-    ScopeStack* head;
+    std::vector<Scope*> scopestack;
     /**
-     * Pointer to the tail of the scope stack.
+     * The stack of scopes that have been "bypassed"
      */
-    ScopeStack* tail;
+    std::vector<Scope*> bypassstack;
     /**
      * List of functions that are "temporary" and should be flushed
      */
@@ -71,6 +62,18 @@ namespace FreeMat {
      * Delete the context
      */
     ~Context();
+    /**
+     * Bypass the prescribed number of scopes.  These scopes are
+     * placed on the bypassstack.  This effectively makes a different
+     * scope active, and then allows us to restore the bypass scopes.
+     * a count of -1 means all scopes are bypassed (except the base scope)
+     */
+    void bypassScope(int count);
+    /**
+     * Every call to bypassScope should be matched by a call to 
+     * restoreBypassedScopes, or memory leaks will occur.
+     */
+    void restoreBypassedScopes();
     /**
      * Push the given scope onto the bottom of the scope stack.
      */

@@ -43,10 +43,18 @@ namespace FreeMat {
     stat(filename.c_str(),&filestat);
     return (S_ISREG(filestat.st_mode));
   }
-  
-  std::string GetPathOnly(std::string a) {
+
+  std::string GetFilenameOnly(std::string a) {
     // Strip off application name
     int ndx;
+    ndx = a.rfind("/");
+    a.erase(0,ndx);
+    return a;
+  }
+
+  std::string GetPathOnly(std::string a) {
+    // Strip off application name
+     int ndx;
     ndx = a.rfind("/");
     a.erase(ndx+1,a.size());
     return a;
@@ -57,6 +65,7 @@ namespace FreeMat {
       a.append("/");
     return a;
   }
+
 std::string GetApplicationPath(char *argv0) {
   std::string retpath;
   // Case 1 - absolute path

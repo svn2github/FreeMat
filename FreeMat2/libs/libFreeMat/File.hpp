@@ -25,10 +25,12 @@
 
 namespace FreeMat {
   class File : public Stream{
+    bool autoclose;
     FILE *fp;
   public:
     // Create a file with the given access code
     File(const char *filename, const char *accessmode);
+    File(FILE*afp);
     // Close the file
     ~File();
     // Write a sequence of bytes to the file

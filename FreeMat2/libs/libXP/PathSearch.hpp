@@ -34,6 +34,7 @@ namespace FreeMat {
   };
   bool FileExists(std::string filename);
   std::string GetPathOnly(std::string a);
+  std::string GetFilenameOnly(std::string a);
   std::string CheckEndSlash(std::string a);
 }
 

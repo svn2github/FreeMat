@@ -27,10 +27,17 @@ namespace FreeMat {
     if (fp == NULL)
       throw Exception(std::string("unable to open file ") + filename + 
 		      std::string(" with file mode ") + accessmode);
+    autoclose = true;
+  }
+
+  File::File(FILE*afp) {
+    fp = afp;
+    autoclose = false;
   }
 
   File::~File() {
-    fclose(fp);
+    if (autoclose)
+      fclose(fp);
   }
 
   void File::writeBytes(const void* data, int len) {

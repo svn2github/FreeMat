@@ -480,7 +480,7 @@ namespace FreeMat {
       long fcpos;
       fcpos = ftell(fptr->fp);
       fseek(fptr->fp,0L,SEEK_END);
-      fsize = ftell(fptr->fp) - fcpos + 1;
+      fsize = ftell(fptr->fp) - fcpos;
       fseek(fptr->fp,fcpos,SEEK_SET);
       dp[infiniteDim] = ceil((float)(fsize/elementSize/elementCount));
       elementCount *= (int) dp[infiniteDim];
@@ -488,7 +488,8 @@ namespace FreeMat {
     // Next, we allocate space for the result
     void *qp = Malloc(elementCount*elementSize);
     // Read in the requested number of data points...
-    if (fread(qp,elementSize,elementCount,fptr->fp) != elementCount)
+    size_t g = fread(qp,elementSize,elementCount,fptr->fp);
+    if (g != elementCount)
       throw Exception("Insufficient data remaining in file to fill out requested size");
     if (ferror(fptr->fp)) 
       throw Exception(strerror(errno));

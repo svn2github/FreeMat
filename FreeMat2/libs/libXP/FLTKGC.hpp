@@ -32,6 +32,8 @@ public:
   virtual void DrawCircle(Point2D pos, int radius);
   virtual void DrawRectangle(Rect2D rect);
   virtual void FillRectangle(Rect2D rect);
+  virtual void FillQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4);
+  virtual void DrawQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4);
   virtual void DrawLines(std::vector<Point2D> pts);
   virtual void PushClippingRegion(Rect2D rect);
   virtual Rect2D PopClippingRegion();

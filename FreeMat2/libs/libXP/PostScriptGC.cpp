@@ -183,6 +183,24 @@ void PostScriptGC::FillRectangle(Rect2D rect) {
   fprintf(fp,"closepath\n1 setlinewidth\nfill\n");
 }
 
+void PostScriptGC::FillQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+  fprintf(fp,"newpath\n");
+  fprintf(fp,"%d %d moveto\n",p1.x,p1.y);
+  fprintf(fp,"%d %d lineto\n",p2.x,p2.y);
+  fprintf(fp,"%d %d lineto\n",p3.x,p3.y);
+  fprintf(fp,"%d %d lineto\n",p4.x,p4.y);
+  fprintf(fp,"closepath\n1 setlinewidth\nfill\n");
+}
+
+void PostScriptGC::DrawQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+  fprintf(fp,"newpath\n");
+  fprintf(fp,"%d %d moveto\n",p1.x,p1.y);
+  fprintf(fp,"%d %d lineto\n",p2.x,p2.y);
+  fprintf(fp,"%d %d lineto\n",p3.x,p3.y);
+  fprintf(fp,"%d %d lineto\n",p4.x,p4.y);
+  fprintf(fp,"closepath\n1 setlinewidth\nstroke\n");
+}
+
 void PostScriptGC::DrawLines(std::vector<Point2D> pts) {
   if (m_lst != LINE_NONE) {
     if (pts.size() >= 2) {

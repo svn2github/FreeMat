@@ -129,6 +129,14 @@ void FLTKGC::FillRectangle(Rect2D rect) {
     fl_rectf(rect.x1,rect.y1,rect.width,rect.height);
 }
 
+void FLTKGC::FillQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+  fl_polygon(p1.x,p1.y,p2.x,p2.y,p3.x,p3.y,p4.x,p4.y);
+}
+
+void FLTKGC::DrawQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+  fl_loop(p1.x,p1.y,p2.x,p2.y,p3.x,p3.y,p4.x,p4.y);
+}
+
 void FLTKGC::DrawLines(std::vector<Point2D> pts) {
   if (m_ls == LINE_NONE) 
     return;

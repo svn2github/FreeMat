@@ -1537,7 +1537,7 @@ break;
     Dimensions dim;
     int32 *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = (int) floor((maxval-minval)/stepsize) + 1;
+    int scount = (int) floor((float)((maxval-minval)/stepsize)) + 1;
     if (scount<=0) 
       dim.reset();
     else {

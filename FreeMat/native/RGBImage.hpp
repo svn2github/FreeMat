@@ -1,13 +1,16 @@
 #ifndef __RGBImage_hpp__
 #define __RGBImage_hpp__
 
+#include "Color.hpp"
+#include <string>
 typedef unsigned char byte;
+
 class RGBImage {
   int width;
   int height;
   byte *data;
  public:
-  RGBImage(int awidth, int aheight, const uint8 *adata);
+  RGBImage(int awidth, int aheight, const byte *adata = NULL);
   RGBImage(const RGBImage &copy);
   RGBImage();
   ~RGBImage();
@@ -21,5 +24,4 @@ class RGBImage {
   Color GetPixel(int x, int y);
   void SetAllPixels(Color col);
 };
-
 #endif

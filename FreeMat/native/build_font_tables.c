@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     for (m=0;m<256;m++) {
       FT_Get_Kerning(face, FT_Get_Char_Index(face, n), 
 		     FT_Get_Char_Index(face, m), 
-		     FT_KERNING_DEFAULT, &kerning);
+		     ft_kerning_default, &kerning);
       if (kerning.x != 0 || kerning.y != 0)
 	kerningCount++;
     }
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     for (m=0;m<256;m++) {
       FT_Get_Kerning(face, FT_Get_Char_Index(face, n), 
 		     FT_Get_Char_Index(face, m), 
-		     FT_KERNING_DEFAULT, &kerning);
+		     ft_kerning_default, &kerning);
       if (kerning.x != 0 || kerning.y != 0) {
 	fprintf(fp,"kern %d %d %d\n",m,kerning.x,kerning.y);
       }

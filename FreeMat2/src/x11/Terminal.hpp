@@ -29,11 +29,8 @@ namespace FreeMat {
     mapping *esc_seq_array;
     int esc_seq_count;
     WalkTree *eval;
-    std::vector<std::string> dirTab;
-    Context *context;
     std::vector<std::string> flist;
     std::list<std::string> enteredLines;
-    std::string m_path;
   public:
     Terminal();
     ~Terminal();
@@ -53,20 +50,12 @@ namespace FreeMat {
     virtual void ClearEOD();
     virtual void MoveBOL();
     virtual void OutputRawString(std::string txt);
-    virtual void setContext(Context *ctxt);
-    virtual std::string getPath();
-    virtual void setPath(std::string path);
-    virtual void rescanPath();
-    virtual void scanDirectory(std::string scdir, bool tempfunc);
-    virtual void procFile(char *fname, std::string fullname, bool tempfunc);
     virtual int getTerminalWidth();
     virtual void outputMessage(const char* msg);
     virtual void errorMessage(const char* msg);
     virtual void warningMessage(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
     virtual void ExecuteLine(const char* line);
-    virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 
-						    std::string &matchString);
     virtual char* getLine(const char* prompt);
   };
 }

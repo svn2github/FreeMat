@@ -37,6 +37,7 @@ namespace FreeMat {
     SetRawMode();
     SetupControlStrings();
     ResizeEvent();
+    SetInterface(this);
     state = 0;
   }
 
@@ -275,128 +276,6 @@ namespace FreeMat {
     }
   }
 
-  void Terminal::setContext(Context *contxt) {
-    context = contxt;
-  }
-
-  void Terminal::setPath(std::string path) {
-    char* pathdata = strdup(path.c_str());
-    // Search through the path
-    char *saveptr = (char*) malloc(sizeof(char)*1024);
-    char* token;
-    token = strtok_r(pathdata,":",&saveptr);
-    while (token != NULL) {
-      if (strcmp(token,".") != 0)
-	dirTab.push_back(std::string(token));
-      token = strtok_r(NULL,":",&saveptr);
-    }
-    m_path = path;
-    rescanPath();
-  }
-
-  std::string Terminal::getPath() {
-    return m_path;
-  }
-
-  void Terminal::rescanPath() {
-    int i;
-    context->flushTemporaryGlobalFunctions();
-    for (i=0;i<dirTab.size();i++)
-      scanDirectory(dirTab[i],false);
-    // Scan the current working directory.
-    char cwd[1024];
-    getcwd(cwd,1024);
-    scanDirectory(std::string(cwd),true);
-  }
-
-  void Terminal::scanDirectory(std::string scdir, bool tempfunc) {
-    // Open the directory
-    DIR *dir;
-    dir = opendir(scdir.c_str());
-    if (dir == NULL) return;
-    // Scan through the directory..
-    struct dirent *fspec;
-    char *fname;
-    std::string fullname;
-    while (fspec = readdir(dir)) {
-      // Get the name of the entry
-      fname = fspec->d_name;
-      // Check for '.' and '..'
-      if ((strcmp(fname,".") == 0) || (strcmp(fname,"..") == 0)) 
-	continue;
-      // Stat the file...
-      fullname = std::string(scdir + std::string(DELIM) + fname);
-      procFile(fname,fullname,tempfunc);
-    }
-    closedir(dir);
-  }
-
-  void Terminal::procFile(char *fname, 
-			  std::string fullname,
-			  bool tempfunc) {
-    struct stat filestat;
-    char buffer[1024];
-  
-    stat(fullname.c_str(),&filestat);
-    if (S_ISREG(filestat.st_mode)) {
-      int namelen;
-      namelen = strlen(fname);
-      if (fname[namelen-2] == '.' && 
-	  (fname[namelen-1] == 'm' ||
-	   fname[namelen-1] == 'M')) {
-	fname[namelen-2] = 0;
-	// Look for the function in the context - only insert it
-	// if it is not already defined.
-	FunctionDef *fdef;
-	bool lookup;
-	lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
-	// If the function was not found, add it.  If it _was_ found,
-	// and is a script and has the same filename as ours, we
-	// do nothing
-	if (lookup && (fdef->type() == FM_M_FUNCTION) 
-	    && ((MFunctionDef*)fdef)->fileName == fullname) {
-	  // Skipping this one
-	} else {
-	  MFunctionDef *adef;
-	  adef = new MFunctionDef();
-	  adef->name = std::string(fname);
-	  adef->fileName = fullname;
-	  context->insertFunctionGlobally(adef,tempfunc);
-	}
-      } else if (fname[namelen-2] == '.' && 
-		 (fname[namelen-1] == 'p' ||
-		  fname[namelen-1] == 'P')) {
-	fname[namelen-2] = 0;
-	// Look for the function in the context - only insert it
-	// if it is not already defined.
-	FunctionDef *fdef;
-	bool lookup;
-	lookup = context->lookupFunctionGlobally(std::string(fname),fdef);
-	// If the function was not found, add it.  If it _was_ found,
-	// and is a script and has the same filename as ours, we
-	// do nothing
-	if (lookup && (fdef->type() == FM_M_FUNCTION) 
-	    && ((MFunctionDef*)fdef)->fileName == fullname) {
-	  // Skipping this one
-	} else {
-	  MFunctionDef *adef;
-	  // Open the file
-	  File *f = new File(fullname.c_str(),"rb");
-	  Serialize *s = new Serialize(f);
-	  s->handshakeClient();
-	  s->checkSignature('p',1);
-	  adef = ThawMFunction(s);
-	  adef->pcodeFunction = true;
-	  context->insertFunctionGlobally(adef,tempfunc);
-	}
-      }
-    } else if (S_ISLNK(filestat.st_mode)) {
-      int lncnt = readlink(fullname.c_str(),buffer,1024);
-      buffer[lncnt] = 0;
-      procFile(fname, std::string(buffer),tempfunc);
-    }
-  }
-
   int Terminal::getTerminalWidth() {
     return ncolumn;
   }
@@ -443,54 +322,6 @@ namespace FreeMat {
     ReplacePrompt("");
   }
 
-  /*.......................................................................
-   * Search backwards for the potential start of a filename. This
-   * looks backwards from the specified index in a given string,
-   * stopping at the first unescaped space or the start of the line.
-   *
-   * Input:
-   *  string  const char *  The string to search backwards in.
-   *  back_from      int    The index of the first character in string[]
-   *                        that follows the pathname.
-   * Output:
-   *  return        char *  The pointer to the first character of
-   *                        the potential pathname, or NULL on error.
-   */
-  static char *start_of_path(const char *string, int back_from)
-  {
-    int i, j;
-    /*
-     * Search backwards from the specified index.
-     */
-    for(i=back_from-1; i>=0; i--) {
-      int c = string[i];
-      /*
-       * Stop on unescaped spaces.
-       */
-      if(isspace((int)(unsigned char)c)) {
-	/*
-	 * The space can't be escaped if we are at the start of the line.
-	 */
-	if(i==0)
-	  break;
-	/*
-	 * Find the extent of the escape characters which precedes the space.
-	 */
-	for(j=i-1; j>=0 && string[j]=='\\'; j--)
-	  ;
-	/*
-	 * If there isn't an odd number of escape characters before the space,
-	 * then the space isn't escaped.
-	 */
-	if((i - 1 - j) % 2 == 0)
-	  break;
-      } 
-      else if (!isalpha(c) && !isdigit(c) && (c != '_') && (c != '.') && (c != '\\') && (c != '/'))
-	break;
-    };
-    return (char *)string + i + 1;
-  }
-
   char* Terminal::getLine(const char* prompt) {
     fflush(stdout);
     ReplacePrompt(prompt);
@@ -502,52 +333,6 @@ namespace FreeMat {
     char *cp;
     cp = strdup(theline.c_str());
     return cp;
-  }
-
-  std::vector<std::string> Terminal::GetCompletions(const char *line, int word_end, 
-						    std::string &matchString) {
-    std::vector<std::string> completions;
-    /*
-     * Find the start of the filename prefix to be completed, searching
-     * backwards for the first unescaped space, or the start of the line.
-     */
-    char *start = start_of_path(line, word_end);
-    char *tmp;
-    int mtchlen;
-    mtchlen = word_end - (start-line);
-    tmp = (char*) malloc(mtchlen+1);
-    memcpy(tmp,start,mtchlen);
-    tmp[mtchlen] = 0;
-    matchString = std::string(tmp);
-    
-    /*
-     *  the preceeding character was not a ' (quote), then
-     * do a command expansion, otherwise, do a filename expansion.
-     */
-    if (start[-1] != '\'') {
-      std::vector<std::string> local_completions;
-      std::vector<std::string> global_completions;
-      int i;
-      local_completions = context->getCurrentScope()->getCompletions(std::string(start));
-      global_completions = context->getGlobalScope()->getCompletions(std::string(start));
-      for (i=0;i<local_completions.size();i++)
-	completions.push_back(local_completions[i]);
-      for (i=0;i<global_completions.size();i++)
-	completions.push_back(global_completions[i]);
-      std::sort(completions.begin(),completions.end());
-      return completions;
-    } else {
-      glob_t names;
-      std::string pattern(tmp);
-      pattern.append("*");
-      glob(pattern.c_str(), GLOB_MARK, NULL, &names);
-      int i;
-      for (i=0;i<names.gl_pathc;i++) 
-	completions.push_back(names.gl_pathv[i]);
-      globfree(&names);
-      free(tmp);
-      return completions;
-    }
   }
 
 }

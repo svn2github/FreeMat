@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "Module.hpp"
 #include "LoadCore.hpp"
+#include "LoadFN.hpp"
 #include "GraphicsCore.hpp"
 #include "System.hpp"
 #include "PathSearch.hpp"
@@ -205,6 +206,7 @@ int main(int argc, char *argv[]) {
   context->insertFunctionGlobally(sfdef);
 
   LoadCoreFunctions(context);
+  LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
   InitializePlotSubsystem();
   InitializeImageSubsystem();

@@ -375,7 +375,7 @@ namespace FreeMat {
     if (dat.isEmpty()) return;
     switch(dclass) {
     case FM_CELL_ARRAY: {
-      const Array *dp((const Array *) dat.getDataPointer());
+      const Array *dp=((const Array *) dat.getDataPointer());
       for (int i=0;i<elCount;i++)
 	putArray(dp[i]);
       return;
@@ -386,13 +386,13 @@ namespace FreeMat {
       putInt(ncount);
       for (int i=0;i<ncount;i++)
 	putString(fnames[i].c_str());
-      const Array *dp((const Array *) dat.getDataPointer());
+      const Array *dp=((const Array *) dat.getDataPointer());
       for (int i=0;i<elCount*ncount;i++)
 	putArray(dp[i]);
       return;
     }
     case FM_LOGICAL: {
-      const logical *dp((const logical *)dat.getDataPointer());
+      const logical *dp=((const logical *)dat.getDataPointer());
       putBytes((const char*) dp,elCount);
       return;
     }

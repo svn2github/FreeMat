@@ -112,7 +112,7 @@ namespace FreeMat {
   }
 
   void printObjectBalance() {
-    snprintf(msgBuffer,MSGBUFLEN,"Object balance is : %d\n",objectBalance);
+    sprintf(msgBuffer,"Object balance is : %d\n",objectBalance);
     io->outputMessage(msgBuffer);
   }
   
@@ -1097,7 +1097,8 @@ namespace FreeMat {
 	int extraCount = 0;
 	int matchCount = 0;
 	int ndx;
-	for (int i=0;i<fNames.size();i++) {
+	int i;
+	for (i=0;i<fNames.size();i++) {
 	  ndx = getFieldIndex(fNames[i]);
 	  if (ndx == -1)
 	    extraCount++;
@@ -1114,7 +1115,7 @@ namespace FreeMat {
 	int fieldCount(dp->fieldNames.size());
 	int newFieldCount(fNames.size());;
 	// Now we have to copy our existing fields into the new order...
-	for (int i=0;i<fieldCount;i++) {
+	for (i=0;i<fieldCount;i++) {
 	  int newNdx = getFieldIndexFromList(dp->fieldNames[i],fNames);
 	  for (int j=0;j<elCount;j++)
 	    dst_rp[j*newFieldCount + newNdx] = src_rp[j*fieldCount + i];
@@ -2294,12 +2295,13 @@ break;
     }
     try {
       int L = index.size();
+	  int i;
       // Convert the indexing variables into an ordinal type.
-      for (int i=0;i<L;i++)
+      for (i=0;i<L;i++)
 	index[i].toOrdinalType();
       // Check to see if any of the index variables are empty - 
       bool anyEmpty = false;
-      for (int i=0;i<L;i++)
+      for (i=0;i<L;i++)
 	anyEmpty = anyEmpty | (index[i].isEmpty());
       // If any of the dimensions are empty, this entire method
       // is a NOP.  The reason we don't just return is because
@@ -2309,7 +2311,7 @@ break;
       indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr)*L);
       Dimensions a(L);
       // First, we compute the maximum along each dimension.
-      for (int i=0;i<L;i++) {
+      for (i=0;i<L;i++) {
 	a[i] = index[i].getMaxAsIndex();
 	indx[i] = (constIndexPtr) index[i].dp->getData();
       }
@@ -2317,7 +2319,7 @@ break;
       Dimensions argLengths(L);
       Dimensions argPointer(L);
       int dataCount = 1;
-      for (int i=0;i<L;i++) {
+      for (i=0;i<L;i++) {
 	argLengths[i] = index[i].getLength();
 	dataCount *= argLengths[i];
       }
@@ -2399,7 +2401,8 @@ break;
     promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
     int L = index.size();
     Dimensions outPos(L);
-    for (int i=0;i<L;i++) {
+	int i;
+    for (i=0;i<L;i++) {
       index[i].toOrdinalType();
       if (!index[i].isScalar()) 
 	throw Exception("In expression A{I1,I2,...,IN} = B, (I1,...,IN) must reference a single element of cell-array A.");
@@ -2407,7 +2410,7 @@ break;
       outPos[i] = *sp;
     }
     resize(outPos);
-    for (int i=0;i<L;i++)
+    for (i=0;i<L;i++)
       outPos[i] = outPos[i] - 1;
     int j;
     j = dp->dimensions.mapPoint(outPos);

@@ -534,24 +534,25 @@ namespace FreeMat {
     isFun = eval->getContext()->lookupFunction(fname,val);
     Interface *io = eval->getInterface();
     char buffer[1000];
-    if (isFun && (val->type() == FM_M_FUNCTION)) {
-      MFunctionDef *mptr;
-      mptr = (MFunctionDef *) val;
-      mptr->updateCode();
-      if (mptr->scriptFlag) {
-	sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
+    if (isFun) {
+      if (val->type() == FM_M_FUNCTION) {
+	MFunctionDef *mptr;
+	mptr = (MFunctionDef *) val;
+	mptr->updateCode();
+	if (mptr->scriptFlag) {
+	  sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
+	  io->outputMessage(buffer);
+	} else {
+	  sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
+	  io->outputMessage(buffer);
+	}
+      } else if ((val->type() == FM_BUILT_IN_FUNCTION) || (val->type() == FM_SPECIAL_FUNCTION) ) {
+	sprintf(buffer,"Function %s is a built in function\n",fname);
 	io->outputMessage(buffer);
       } else {
-	sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
+	sprintf(buffer,"Function %s is an imported function\n",fname);
 	io->outputMessage(buffer);
       }
-    } else if (isFun && (val->type() == FM_BUILT_IN_FUNCTION) || 
-	       (val->type() == FM_SPECIAL_FUNCTION) ) {
-      sprintf(buffer,"Function %s is a built in function\n",fname);
-      io->outputMessage(buffer);
-    } else if (isFun) {
-      sprintf(buffer,"Function %s is an imported function\n",fname);
-      io->outputMessage(buffer);
     } else {
       sprintf(buffer,"Function %s is unknown!\n",fname);
       io->outputMessage(buffer);

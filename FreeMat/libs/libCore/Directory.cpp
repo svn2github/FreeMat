@@ -21,10 +21,12 @@
 #include "Array.hpp"
 #include "WalkTree.hpp"
 #include "Utils.hpp"
+#include "Command.hpp"
 #include <unistd.h>
 #include <stdio.h>
 
 namespace FreeMat {
+
   ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() != 1)
       throw Exception("cd function requires exactly one argument");
@@ -36,7 +38,8 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg) {
+  ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    Command *cp;
     char buffer[4096];
     char *bp;
 
@@ -45,14 +48,50 @@ namespace FreeMat {
 #else
     sprintf(buffer,"ls ");
 #endif
-
     bp = buffer + strlen(buffer);
     for (int i=0;i<arg.size();i++) {
       char *target = arg[i].getContentsAsCString();
       sprintf(bp,"%s ",target);
       bp = buffer + strlen(buffer);
     }
-    system(buffer);
+    cp = new Command(CMD_SystemCapture,
+		     Array::stringConstructor(buffer));
+    SendGUICommand(cp);
+    cp = GetGUIResponse();
+    Array qp = cp->data;
+    Array *dp = (Array*) (qp.getDataPointer());
+    int maxlen = 0;
+    // Find the maximal length
+    for (int i=0;i<qp.getLength();i++) {
+      Array el(dp[i]);
+      int ellen(el.getLength());
+      maxlen = (maxlen < ellen) ? ellen : maxlen;
+    }
+    // Calculate the number of columns that fit..
+    int outcolumns;
+    Interface *io;
+    io = eval->getInterface();
+    outcolumns = io->getTerminalWidth()/maxlen;
+    int colwidth = io->getTerminalWidth()/outcolumns + 1;
+    if (outcolumns < 1) outcolumns = 1;
+    int entryCount = 0;
+    while (entryCount < qp.getLength()) {
+      char buffer[4096];
+      char *wp;
+      wp = dp[entryCount].getContentsAsCString();
+      sprintf(buffer,"%s",wp);
+      int wlen;
+      wlen = strlen(wp);
+      for (int j=wlen;j<colwidth;j++)
+	buffer[j] = ' ';
+      buffer[colwidth] = 0;
+      io->outputMessage(buffer);
+      entryCount++;
+      if (entryCount % outcolumns == 0)
+	io->outputMessage("\n");
+    }
+    io->outputMessage("\n");
+    //    eval->getInterface()->outputMessage(cp->data.getContentsAsCString());
     return ArrayVector();
   }
 

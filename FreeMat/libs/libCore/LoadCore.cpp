@@ -122,11 +122,11 @@ namespace FreeMat {
      args.push_back("dirname");     
      context->addSpecialFunction("cd",ChangeDirFunction,1,0,args);
      args.clear();
-     context->addFunction("ls",ListFilesFunction,-1,0,args);
-     context->addFunction("dir",ListFilesFunction,-1,0,args);
+     context->addSpecialFunction("ls",ListFilesFunction,-1,0,args);
+     context->addSpecialFunction("dir",ListFilesFunction,-1,0,args);
      args.clear();
      args.push_back("command");
-     context->addFunction("system",SystemFunction,1,0,args);
+     context->addFunction("system",SystemFunction,1,1,args);
 //      context->addFunction("rinit",RInitFunction,0,0,args);
 //      context->addFunction("rstart",RStartFunction,1,1,args);
 //      context->addFunction("rcall",RCallFunction,-1,1,args);
@@ -173,7 +173,7 @@ namespace FreeMat {
      args.push_back("handle");     
      context->addFunction("feof",FeofFunction,1,1,args);
      args.clear();
-     context->addFunction("printf",PrintfFunction,-1,0,args);
+     context->addSpecialFunction("printf",PrintfFunction,-1,0,args);
      args.clear();
      context->addFunction("sprintf",SprintfFunction,-1,1,args);
      args.clear();

@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Malloc.hpp"
+#include "Command.hpp"
+#include <wx/utils.h>
 
 namespace FreeMat {
   ArrayVector DispFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
@@ -73,7 +75,7 @@ namespace FreeMat {
     int sleeptime;
     Array a(arg[0]);
     sleeptime = a.getContentsAsIntegerScalar();
-    sleep(sleeptime);
+    wxSleep(sleeptime);
     return ArrayVector();
   }
 
@@ -253,9 +255,15 @@ namespace FreeMat {
     if (arg.size() != 1) 
       throw Exception("System function takes one string argument");
     char *systemArg = arg[0].getContentsAsCString();
-    int status = system(systemArg);
     ArrayVector retval;
-    retval.push_back(Array::int32Constructor(status));    
+    if (strlen(systemArg) == 0) 
+      return retval;
+    Command *cp;
+    cp = new Command(CMD_SystemCapture,
+		     Array::stringConstructor(systemArg));
+    SendGUICommand(cp);
+    cp = GetGUIResponse();
+    retval.push_back(cp->data);
     return retval;
   }
 }

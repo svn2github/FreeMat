@@ -519,7 +519,7 @@ namespace FreeMat {
     return retval;
   }
 
-  ArrayVector PrintfFunction(int nargout, const ArrayVector& arg) {
+  ArrayVector PrintfFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() == 0)
       throw Exception("printf requires at least one (string) argument");
     Array format(arg[0]);
@@ -533,6 +533,8 @@ namespace FreeMat {
     char *np;
     char sv;
     int nextArg = 1;
+    Interface *io;
+    io = eval->getInterface();
     // Scan the string
     while (*dp) {
       np = dp;
@@ -540,8 +542,9 @@ namespace FreeMat {
       // Print out the formatless segment
       sv = *dp;
       *dp = 0;
-      printf(np);
+      io->outputMessage(np);
       *dp = sv;
+      char nbuff[4096];
       // Process the format spec
       if (*dp) {
 	np = validateFormatSpec(dp+1);
@@ -549,7 +552,7 @@ namespace FreeMat {
 	  throw Exception("erroneous format specification " + std::string(dp));
 	else {
 	  if (*(np-1) == '%') {
-	    printf("%%");
+	    io->outputMessage("%");
 	    dp+=2;
 	  } else {
 	    sv = *np;
@@ -566,7 +569,8 @@ namespace FreeMat {
 	    case 'X':
 	    case 'c':
 	      nextVal.promoteType(FM_INT32);
-	      printf(dp,*((int32*)nextVal.getDataPointer()));
+	      sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
+	      io->outputMessage(nbuff);
 	      break;
 	    case 'e':
 	    case 'E':
@@ -575,10 +579,12 @@ namespace FreeMat {
 	    case 'g':
 	    case 'G':
 	      nextVal.promoteType(FM_DOUBLE);
-	      printf(dp,*((double*)nextVal.getDataPointer()));
+	      sprintf(nbuff,dp,*((double*)nextVal.getDataPointer()));
+	      io->outputMessage(nbuff);
 	      break;
 	    case 's':
-	      printf(dp,nextVal.getContentsAsCString());
+	      sprintf(nbuff,dp,nextVal.getContentsAsCString());
+	      io->outputMessage(nbuff);
 	    }
 	    *np = sv;
 	    dp = np;
@@ -586,7 +592,6 @@ namespace FreeMat {
 	}
       }
     }
-    fflush(stdout);
     return ArrayVector();
   }
 

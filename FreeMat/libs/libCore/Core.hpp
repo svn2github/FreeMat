@@ -60,7 +60,7 @@ namespace FreeMat {
   ArrayVector SaveFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector LoadFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector ChangeDirFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector ListFilesFunction(int, const ArrayVector& arg);
+  ArrayVector ListFilesFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SystemFunction(int, const ArrayVector& arg);
   ArrayVector PrintWorkingDirectoryFunction(int, const ArrayVector& arg);
   ArrayVector SizeFunction(int, const ArrayVector& arg);
@@ -86,7 +86,7 @@ namespace FreeMat {
   ArrayVector VarFunction(int, const ArrayVector& arg);
   ArrayVector ProdFunction(int, const ArrayVector& arg);
   ArrayVector ReshapeFunction(int, const ArrayVector& arg);
-  ArrayVector PrintfFunction(int, const ArrayVector& arg);
+  ArrayVector PrintfFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SprintfFunction(int, const ArrayVector& arg);
   ArrayVector FprintfFunction(int, const ArrayVector& arg);
   ArrayVector FscanfFunction(int, const ArrayVector& arg);

@@ -836,6 +836,7 @@ namespace FreeMat {
       }
       f->StopSequence();
     } catch(Exception &e) {
+      f->StopSequence();
       throw e;
     }
     // Stop the plot 

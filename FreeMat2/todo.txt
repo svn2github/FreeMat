@@ -1,0 +1,7 @@
+To do before release:
+1.  Update win32 main/etc. to re-enable operation.
+2.  Add MPI capability.
+3.  Build CHM file from help text
+4.  Replace/fix build system
+5.  Remove dependence on ASM for libffi/win32
+6.  Make FreeMat web site.

@@ -46,6 +46,10 @@ namespace FreeMat {
    * Retrieve the contents of the continuationCount.
    */
   int getContinuationCount();
+  /**
+   * Get an error message that describes the current token
+   */
+  void GetLexTokenDescription(char *buffer);
 }
 
 #endif

@@ -2531,6 +2531,7 @@ namespace FreeMat {
 	continue;
       // scan the line and tokenize it
       setLexBuffer(line);
+      lastCount = 0;
       try {
 	if (lexCheckForMoreInput(0)) {
 	  lastCount = getContinuationCount();

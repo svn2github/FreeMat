@@ -47,6 +47,9 @@ extern int yylex(void);
 
 extern int lineNumber;
 extern int yydebug;
+extern const char *parsing_filename;
+
+bool interactiveMode;
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -57,9 +60,7 @@ namespace FreeMat {
   static MFunctionDef *mainMDef;
   
   bool errorOccured;
-  bool interactiveMode;
   static char *expectString = NULL;
-  static const char *filename;
 
   void yyexpect(char *s) {
 	expectString = s;
@@ -70,33 +71,20 @@ namespace FreeMat {
   }
 
   int yyreport(char *xStr) {
-    char *tokdesc;
-    char *tokbuffer = "unprintable";
     char buffer[256];
     int addone = 1;
-#if 0
-    if (*yytext < 33) {
-	tokdesc = tokbuffer;
-	sprintf(buffer,"Ran out of input on this line.");
-	tokdesc = buffer;
-	addone = 0;
-    } else {
-        sprintf(buffer,"Current token is '%s'",yytext);
-	tokdesc = buffer;
-    }
-#endif	
     if (xStr)
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  %s",
-	xStr,lineNumber+addone,filename,tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s",
+	xStr,lineNumber+addone,parsing_filename);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  %s",xStr, tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s",xStr);
     else
       if (!interactiveMode)
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s.  %s",
-	lineNumber+addone,filename,tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s",
+	lineNumber+addone,parsing_filename);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input.  %s",tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input");
     throw Exception(msgBuffer);
     return 0;
   }
@@ -286,7 +274,7 @@ statement:
 	 statementType ENDQSTMNT {
   	    $$ = new AST(OP_QSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,filename);
+	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
 	      $$->down = new AST(context_node, strdup(msgBuffer));
 	      $$->down->down = $1;
 	    } else
@@ -295,7 +283,7 @@ statement:
 	 | statementType ENDSTMNT {
 	    $$ = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,filename);
+	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
 	      $$->down = new AST(context_node, strdup(msgBuffer));
 	      $$->down->down = $1;
 	    } else
@@ -304,7 +292,7 @@ statement:
 	 | statementType ',' {
 	    $$ = new AST(OP_RSTATEMENT,NULL);
 	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,filename);
+	      snprintf(msgBuffer,MSGBUFLEN,"line %d of file %s",lineNumber,parsing_filename);
 	      $$->down = new AST(context_node, strdup(msgBuffer));
 	      $$->down->down = $1;
 	    } else
@@ -678,7 +666,7 @@ namespace FreeMat {
   ParserState parseFile(FILE *fp, const char* fname) {
     resetParser();
     interactiveMode = false;
-    filename = fname;
+    parsing_filename = fname;
     setLexFile(fp);
     yyparse();
     return parseState();

@@ -11,14 +11,16 @@
 #include "AST.hpp"
 #include "Reserved.hpp"
 #include "Parser.h"
+#include "Exception.hpp"
 
 using namespace FreeMat;
 
 extern YYSTYPE yylval;
-
+extern bool interactiveMode;
 char *buffer = NULL;
 char *datap;
 int lineNumber;
+const char *parsing_filename;
 int continuationCount;
 typedef enum {
   Initial,
@@ -42,15 +44,25 @@ ASTPtr tokenValue;
 
 reservedWordStruct ts, *p;
 
+void LexerException(const char *msg) {
+  char buffer[256];
+  if (!interactiveMode && parsing_filename && msg) {
+    sprintf(buffer,"Lexical error '%s' at line %d of file %s",
+	    msg,lineNumber,parsing_filename);
+    throw Exception(buffer);
+  } else {
+    sprintf(buffer,"Lexical error '%s'",msg);
+    throw Exception(buffer);
+  }
+}
+
 inline void pushBracket(char t) {
   bracketStack[bracketStackSize++] = t;
 }
 
 inline void popBracket(char t) {
-  if (bracketStack[--bracketStackSize] != t) {
-    printf("mismatched parenthesis\n");
-    exit(1);
-  }
+  if (bracketStack[--bracketStackSize] != t)
+    LexerException("mismatched parenthesis");
 }
 
 inline void pushVCState() {
@@ -145,10 +157,7 @@ void lexString() {
       *strptr++ = currentChar();
     discardChar();
   }
-  if (testNewline()) {
-    printf("Error - unterminated string...\n");
-    exit(1);
-  }
+  if (testNewline()) LexerException("unterminated string");
   discardChar();
   *strptr++ = '\0';
   setTokenType(STRING);
@@ -312,10 +321,8 @@ int lexNumber() {
 	state = 6;
       } else if (isdigit(datap[cp])) {
 	state = 6;
-      } else {
-	fprintf(stderr,"malformed float\n");
-	exit(1);
-      }
+      } else 
+	LexerException("malformed floating point constant");
       break;
     case 3:
       if (isdigit(datap[cp])) {
@@ -354,10 +361,8 @@ int lexNumber() {
 	while (isdigit(datap[cp]))
 	  cp++;
 	state = 7;
-      } else {
-	fprintf(stderr,"malformed float\n");
-	exit(1);	
-      }
+      } else
+	LexerException("malformed floating point constant");
     }
   }
   if ((datap[cp] == 'f') ||
@@ -635,9 +640,15 @@ namespace FreeMat {
   }
 
   bool lexCheckForMoreInput(int ccount) {
-    while (yylex() > 0);
-    return ((continuationCount>ccount) || (bracketStackSize>0));
+    try {
+      while (yylex() > 0);
+      return ((continuationCount>ccount) || (bracketStackSize>0));
+    } catch (Exception &E) {
+      continuationCount = 0;
+      return false;
+    }
   }
+
   int getContinuationCount() {
     return continuationCount;
   }

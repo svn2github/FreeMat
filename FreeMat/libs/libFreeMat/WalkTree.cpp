@@ -1092,17 +1092,15 @@ namespace FreeMat {
 	arguments = funcDef->arguments;
 	// M functions can modify their arguments
 	q = s;
-	// 	std::cout << "q tree...\n";
-	// 	printAST(q);
 	int maxsearch;
 	maxsearch = m.size(); 
 	if (maxsearch > arguments.size()) maxsearch = arguments.size();
 	for (int i=0;i<maxsearch;i++) {
 	  // Was this argument passed out of order?
-	  if (argTypeMap[i] == -1) continue;
-	  if ((keywords.size() > 0) && (argTypeMap[i] >=0))
+	  if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
+	  if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
 	    p = keyexpr[argTypeMap[i]];
-	  else {
+	  } else {
 	    p = q;
 	    if (q != NULL)
 	      q = q->right;

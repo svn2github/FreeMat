@@ -1,0 +1,100 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: libFreeMat - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\SAMITB~1\LOCALS~1\Temp\RSP2E.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /Fp"Debug/libFreeMat.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ  /c 
+"C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\SAMITB~1\LOCALS~1\Temp\RSP2E.tmp" 
+<h3>Output Window</h3>
+Compiling...
+Serialize.cpp
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(61) : warning C4101: 'e' : unreferenced local variable
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(89) : warning C4101: 'e' : unreferenced local variable
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(390) : error C2374: 'i' : redefinition; multiple initialization
+        C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(387) : see declaration of 'i'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(432) : error C2664: 'putFloats' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const float *'
+        There is no context in which this conversion is possible
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(437) : error C2664: 'putDoubles' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const double *'
+        There is no context in which this conversion is possible
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(442) : error C2664: 'putFloats' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const float *'
+        There is no context in which this conversion is possible
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2059: syntax error : '('
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2146: syntax error : missing ',' before identifier 'dat'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2501: 'dp' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2143: syntax error : missing ',' before '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2501: 'dat' : missing storage-class or type specifiers
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2059: syntax error : '.'
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(447) : error C2664: 'putDoubles' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const double *'
+        There is no context in which this conversion is possible
+C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(479) : error C2374: 'i' : redefinition; multiple initialization
+        C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(473) : see declaration of 'i'
+Error executing cl.exe.
+
+
+
+<h3>Results</h3>
+Serialize.obj - 66 error(s), 2 warning(s)
+</pre>
+</body>
+</html>

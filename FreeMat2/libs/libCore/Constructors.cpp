@@ -328,6 +328,11 @@ namespace FreeMat {
   //their dimensions. An error is raised if the inputs are not properly matched (i.e., are
   //not pairs of field names and values), or if the size of any two non-scalar
   //values cell-arrays are different.
+  //
+  //Another use of the @|struct| function is to convert a class into a 
+  //structure.  This allows you to access the members of the class, directly 
+  //but removes the class information from the object.
+  //
   //@@Example
   //This example creates a 3-element structure array with two fields, @|foo|
   //and @|bar|, where the contents of @|foo| are provided explicitly, and
@@ -340,8 +345,15 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() < 2)
-      throw Exception("struct function requires at least two arguments");
+    if (arg.size() == 1) {
+      Array t(arg[0]);
+      if (!t.isUserClass() && t.getDataClass() == FM_STRUCT_ARRAY)
+	return singleArrayVector(t);
+      if (!t.isUserClass())
+	throw Exception("can only convert objects (user-defined types) into structs");
+      t.setClassName(std::string());
+      return singleArrayVector(t);
+    }
     if (arg.size() % 2)
       throw Exception("struct function requires pairs of field names and values");
     int pairCount = arg.size() / 2;

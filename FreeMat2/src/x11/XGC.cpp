@@ -171,7 +171,8 @@ LineStyleType XGC::SetLineStyle(LineStyleType style) {
 }
 
 void XGC::DrawLine(Point2D pos1, Point2D pos2) {
-  XDrawLine(m_display, drawable, m_gc, pos1.x, pos1.y, pos2.x, pos2.y);
+  if (ls != LINE_NONE)
+    XDrawLine(m_display, drawable, m_gc, pos1.x, pos1.y, pos2.x, pos2.y);
 }
 
 void XGC::DrawPoint(Point2D pos) {
@@ -179,12 +180,14 @@ void XGC::DrawPoint(Point2D pos) {
 }
 
 void XGC::DrawCircle(Point2D pos, int radius) {
-  XDrawArc(m_display, drawable, m_gc, pos.x - radius, pos.y - radius, radius*2, 
-	   radius*2 , 0, 64*360);
+  if (ls != LINE_NONE)
+    XDrawArc(m_display, drawable, m_gc, pos.x - radius, pos.y - radius, radius*2, 
+	     radius*2 , 0, 64*360);
 }
 
 void XGC::DrawRectangle(Rect2D rect) {
-  XDrawRectangle(m_display, drawable, m_gc, rect.x1, rect.y1, rect.width, rect.height);
+  if (ls != LINE_NONE)
+    XDrawRectangle(m_display, drawable, m_gc, rect.x1, rect.y1, rect.width, rect.height);
 }
 
 void XGC::FillRectangle(Rect2D rect) {
@@ -192,15 +195,17 @@ void XGC::FillRectangle(Rect2D rect) {
 }
 
 void XGC::DrawLines(std::vector<Point2D> pts) {
-  XPoint *t;
-  t = (XPoint*) malloc(sizeof(XPoint)*pts.size());
-  int i;
-  for (i=0;i<pts.size();i++) {
-    t[i].x = pts[i].x;
-    t[i].y = pts[i].y;
+  if (ls != LINE_NONE) {
+    XPoint *t;
+    t = (XPoint*) malloc(sizeof(XPoint)*pts.size());
+    int i;
+    for (i=0;i<pts.size();i++) {
+      t[i].x = pts[i].x;
+      t[i].y = pts[i].y;
+    }
+    XDrawLines(m_display, drawable, m_gc, t, pts.size(), CoordModeOrigin);
+    free(t);
   }
-  XDrawLines(m_display, drawable, m_gc, t, pts.size(), CoordModeOrigin);
-  free(t);
 }
 
 void XGC::PushClippingRegion(Rect2D rect) {

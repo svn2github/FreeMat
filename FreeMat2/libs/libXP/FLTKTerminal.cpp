@@ -13,11 +13,15 @@
 #include "FL/x.H"
 #include "FL/Enumerations.H"
 #include "FL/Fl_Widget.H"
+#include "FL/Fl_Help_Dialog.H"
+#include "FL/Fl_File_Chooser.H"
 #include "WalkTree.hpp"
 #include "File.hpp"
 #include <algorithm>
 
 const char *g_helppath;
+static Fl_Help_Dialog* hlpd = NULL;
+static Fl_File_Chooser* fc = NULL;
 
 #ifdef WIN32
 #define DELIM "\\"
@@ -281,6 +285,12 @@ int FLTKTerminalWidget::rightkey() {
   return 1;
 }
 
+int FLTKTerminalWidget::ctrlc() {
+  printf("CTRL-C received!!\r\n");
+  sigInterrupt(1);
+  return 1;
+}
+
 int FLTKTerminalWidget::ctrla() {
   adjustInsertPosition();
   insert_position(buffer()->line_start(insert_position()) + promptlen);
@@ -417,6 +427,8 @@ int FLTKTerminalWidget::handle_key() {
     return ctrlk();
   if ((key == 'y') && (Fl::event_state() & FL_CTRL))
     return ctrly();
+  if ((key == 'c') && (Fl::event_state() & FL_CTRL))
+    return ctrlc();
   switch(key) {
   case FL_Tab:
     return tab();
@@ -875,11 +887,21 @@ int FLTKTerminalWidget::handle(int event) {
 }
 
 void quit_cb(Fl_Widget*, void*) {
-	exit(0);
+  exit(0);
 }
 
-void save_cb(Fl_Widget*, void*) {
-//	exit(0);
+void save_cb(Fl_Widget*, void* w) {
+  char *newfile;
+  newfile = fl_file_chooser("Save To Text File", "*", NULL);
+  if (newfile) {
+    FILE *fp = fopen(newfile,"w");
+    if (fp) {
+      FLTKTerminalWindow *win = (FLTKTerminalWindow*) w;
+      const char *txt = win->term()->buffer()->text();
+      fwrite(txt,sizeof(char),strlen(txt),fp);
+      fclose(fp);
+    }
+  }
 }
 
 void help_cb(Fl_Widget*, void*) {
@@ -891,11 +913,34 @@ void help_cb(Fl_Widget*, void*) {
 	     CFStringCreateWithBytes(NULL,g_helppath,
 				     strlen(g_helppath),0,false),
 	     NULL);
+#else
+  if (hlpd)
+    hlpd->show();
+  else {
+    hlpd = new Fl_Help_Dialog;
+    hlpd->load(g_helppath);
+    hlpd->show();
+  }
 #endif
 }
 
+void close_about_cb(Fl_Widget*, void *w) {
+  Fl_Window *win = (Fl_Window*) w;
+  win->hide();
+}
+
 void about_cb(Fl_Widget*, void*) {
-//	exit(0);
+  Fl_Window *about_dlg = new Fl_Window(240,115,"About FreeMat");
+  Fl_Box *box1 = new Fl_Box(57,20,120,14,"FreeMat Version 1.08");
+  box1->align(FL_ALIGN_CENTER);
+  Fl_Box *box2 = new Fl_Box(57,38,120,14,"Copyright 2002-2004 by Samit Basu");
+  box2->align(FL_ALIGN_CENTER);
+  Fl_Box *box3 = new Fl_Box(57,56,120,14,"http://freemat.sf.net");
+  box3->align(FL_ALIGN_CENTER);
+  Fl_Button *ok_button = new Fl_Button(82, 78, 50, 20, "OK");
+  ok_button->callback(close_about_cb,about_dlg);
+  about_dlg->end();
+  about_dlg->show();
 }
 
 void copy_cb(Fl_Widget*, void* w) {
@@ -908,22 +953,17 @@ void paste_cb(Fl_Widget*, void*w) {
   win->term()->dopaste();
 }
 
-void prefs_cb(Fl_Widget*, void*) {
-//	exit(0);
-}
-
 Fl_Menu_Item menuitems[] = {
-  { "&File",              0, 0, 0, FL_SUBMENU },
-    { "&Save Transcript",       FL_CTRL + 's', (Fl_Callback *)save_cb },
-    { "&Preferences",       FL_CTRL + 'p', (Fl_Callback *)prefs_cb },
-    { "E&xit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
+  { "&File", 0, 0, 0, FL_SUBMENU },
+    { "&Save Transcript", 0, (Fl_Callback *)save_cb },
+    { "E&xit", 0, (Fl_Callback *)quit_cb, 0 },
     { 0 },
   { "&Edit", 0, 0, 0, FL_SUBMENU },
-    { "&Copy",       FL_CTRL + 'c', (Fl_Callback *)copy_cb },
-    { "&Paste",      FL_CTRL + 'v', (Fl_Callback *)paste_cb },
+    { "&Copy",  0, (Fl_Callback *)copy_cb },
+    { "&Paste",  0 , (Fl_Callback *)paste_cb },
     { 0 },
   { "&Help", 0, 0, 0, FL_SUBMENU },
-    { "&Online Help",  FL_CTRL + 'h', (Fl_Callback *)help_cb },
+    { "&Online Help",  0, (Fl_Callback *)help_cb },
     { "&About FreeMat", 0, (Fl_Callback *)about_cb },
     { 0 },
   { 0 }

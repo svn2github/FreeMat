@@ -54,6 +54,7 @@ public:
   int upkey();
   int downkey();
   int ctrla();
+  int ctrlc();
   int ctrld();
   int ctrle();
   int ctrlk();

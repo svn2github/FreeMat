@@ -30,20 +30,20 @@ print OUTPUT "\t  \$(INSTALL) \$(srcdir)/\$\$fname \$(prefix)/share/FreeMat/MFil
 print OUTPUT "\tdone;\n";
 close OUTPUT;
 
-$filelist = `ls html\*.html`;
+$filelist = `ls html/*.html`;
 open(OUTPUT,">freemat.hhp") || die "Can't open freemat.hhp for writing...\n";
 print OUTPUT "[OPTIONS]\n";
 print OUTPUT "Compatibility=1.1 or later\n";
 print OUTPUT "Compiled file=freemat.chm\n";
 print OUTPUT "Contents file=toc.hhc\n";
 print OUTPUT "Default Window=Search\n";
-print OUTPUT "Default topic=html\index.html\n";
+print OUTPUT "Default topic=html\\index.html\n";
 print OUTPUT "Display compile progress=No\n";
 print OUTPUT "Full-text search=Yes\n";
 print OUTPUT "Index file=freemat.hhk\n";
 print OUTPUT "Language=0x409 English (United States)\n\n";
 print OUTPUT "[WINDOWS]\n";
-print OUTPUT "Search=,\"toc.hhc\",\"freemat.hhk\",\"html\index.html\",,,,,,0x22520,,0x3006,,,,,,,,0\n\n";
+print OUTPUT "Search=,\"toc.hhc\",\"freemat.hhk\",\"html\\index.html\",,,,,,0x22520,,0x3006,,,,,,,,0\n\n";
 print OUTPUT "[FILES]\n";
 print OUTPUT $filelist;
 print OUTPUT "\n[INFOTYPES]\n";

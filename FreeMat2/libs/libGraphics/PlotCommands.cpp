@@ -377,8 +377,7 @@ namespace FreeMat {
   // 'r','g','b','k','c','m','y','r','g','b',etc...
   //@<
   //x = linspace(-1,1);
-  //plot(x,cos(x*2*pi),'rx-');
-  //plot(x,sin(x*4*pi),'go');
+  //plot(x,cos(x*2*pi),'rx-',x,sin(x*4*pi),'go');
   //legend(0.25,0.60,'b-','rx-','First Harmonic','go','Second Harmonic');
   //mprintplot legend1
   //@>

@@ -47,7 +47,6 @@ namespace FreeMat {
   }
 
   void Plot2D::DrawLegend(GraphicsContext &gc) {
-    printf("Drawing legend...\r\n");
     double xc, yc;
     xc = xAxis->MapPoint(legend_xc);
     yc = yAxis->MapPoint(legend_yc);

@@ -40,11 +40,10 @@ void UnregisterXWindow(XWindow *p) {
   winlist.erase(p->getWindow());
 }
 
-XWindow::XWindow(WindowType wtype) {
+XWindow::XWindow() : XPWidget() { 
   if (!theDisplay)
     throw FreeMat::Exception("Graphics not available!");
   m_display = theDisplay;
-  m_type = wtype;
   m_window = XCreateSimpleWindow(m_display, RootWindow(m_display, 0),
 				 0, 0, 500, 400, 0, 
 				 BlackPixel(m_display, 0),
@@ -189,7 +188,6 @@ void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;  
   m_width = w;
   m_height = h;
-  OnSize();
   if (bitmapActive) 
     XFreePixmap(m_display, m_pixmap);
   m_pixmap = XCreatePixmap(m_display, m_window, m_width, m_height, 
@@ -217,14 +215,14 @@ void XWindow::SetTitle(std::string title) {
 
 
 
-void XWindow::PrintMe(std::string filename) {
+void XWindow::PrintMe(std::string filename, bool capture) {
   int np = filename.find_last_of(".");
   if (np <= 0) 
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
   std::string extension(filename.substr(np));
   std::transform (extension.begin(), extension.end(), 
 		  extension.begin(), tolower);
-  if (m_type == VectorWindow) {
+  if (capture) {
     if (extension == ".eps" || extension == ".ps") {
       PostScriptGC gc(filename, m_width, m_height);
       OnDraw(gc);

@@ -7,19 +7,13 @@
 #include <X11/Xos.h>
 #include <string>
 #include "GraphicsContext.hpp"
+#include "XPWidget.hpp"
 
-typedef enum {
-  VectorWindow,
-  BitmapWindow
-} WindowType;
-
-class XWindow {
+class XWindow : public XPWidget {
  public:
-  XWindow(WindowType wtype);
+  XWindow();
   virtual ~XWindow();
   Window getWindow() {return m_window;}
-  int getWidth() {return m_width;}
-  int getHeight() {return m_height;}
   void Raise();
   void Show();
   void Hide();
@@ -29,10 +23,8 @@ class XWindow {
   virtual void OnMouseDown(int x, int y);
   virtual void OnMouseUp(int x, int y);
   virtual void OnDrag(int x, int y);
-  virtual void OnResize(int w, int h);
-  virtual void OnSize() {};
-  virtual void OnDraw(GraphicsContext &gc) = 0;
-  void PrintMe(std::string filename);
+  virtual void OnResize(int w, int h);  
+  void PrintMe(std::string filename, bool capture);
   void SetTitle(std::string title);
   void GetClick(int &x, int &y);
   void GetBox(int &x1, int &y1, int &x2, int &y2);
@@ -40,9 +32,7 @@ class XWindow {
   void SetSize(int w, int h);
   int GetState();
   void Refresh();
-  WindowType GetWindowType() {return m_type;}
  private:
-  WindowType m_type;
   Window m_window;
   Display *m_display;
   Visual *m_visual;
@@ -50,8 +40,6 @@ class XWindow {
   Pixmap m_pixmap;
   GC m_gc;
   XTextProperty m_window_title;
-  int m_width;
-  int m_height;
   int m_state;
   int m_clickx, m_clicky;
   int m_box_x1, m_box_x2, m_box_y1, m_box_y2;

@@ -14,7 +14,7 @@
 #include "File.hpp"
 #include <stdlib.h>
 #include <signal.h>
-
+#include "Plot3D.hpp"
 
 using namespace FreeMat;
 
@@ -208,9 +208,7 @@ int main(int argc, char *argv[]) {
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
-  InitializePlotSubsystem();
-  InitializeImageSubsystem();
-
+  InitializeFigureSubsystem();
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
   term->setContext(context);

@@ -19,7 +19,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Plot2D.hpp"
-#include "RGBImageGC.hpp"
 #include "RGBImage.hpp"
 #include "GraphicsCore.hpp"
 #include <math.h>

@@ -11,7 +11,6 @@ Trigonometric.cpp \
 Misc.cpp \
 Constants.cpp \
 Directory.cpp \
-Remote.cpp \
 Analyze.cpp \
 Utils.cpp \
 Utils.hpp \

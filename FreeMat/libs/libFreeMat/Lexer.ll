@@ -405,6 +405,10 @@ SpecialArgument ({Argument}|{String})
   BEGIN(Scanning);
 }
 
+<Scanning>{Commentline} {
+  /* skip */
+}
+
 <Scanning>\'  string_buf_ptr = string_buf; BEGIN(str);
 
 <str>\' {
@@ -414,11 +418,11 @@ SpecialArgument ({Argument}|{String})
 	return STRING;
 	}
 
-<str>\\n *string_buf_ptr++ = 13;
-<str>\\t *string_buf_ptr++ = 19;
-<str>\\r *string_buf_ptr++ = 17;
-<str>\\b *string_buf_ptr++ = 1;
-<str>\\f *string_buf_ptr++ = 5;
+<str>\\n *string_buf_ptr++ = 10;
+<str>\\t *string_buf_ptr++ = 9;
+<str>\\r *string_buf_ptr++ = 13;
+<str>\\b *string_buf_ptr++ = 8;
+<str>\\f *string_buf_ptr++ = 12;
 <str>\\(.|\n)  *string_buf_ptr++ = yytext[1];
 
 <str>[^\\\n\']+  {

@@ -67,9 +67,43 @@ namespace FreeMat {
   //@Module RANDBETA Beta Deviate Random Number Generator
   //@@Usage
   //Creates an array of beta random deviates based on the supplied
-  //two parameters.
-  //A beta distribution is characterized by 
-  //a density function 
+  //two parameters. The general syntax for @|randbeta| is 
+  //@[
+  //   y = randbeta(alpha, beta)
+  //@]
+  //where @|alpha| and @|beta| are the two parameters of the 
+  //random deviate.  There are three forms for calling @|randbeta|.
+  //The first uses two vectors @|alpha| and @|beta| of the same
+  //size, in which case the output @|y| is the same size as both
+  //inputs, and each deviate uses the corresponding values of @|alpha|
+  //and @|beta| from the arguments.  In the other forms, either
+  //@|alpha| or @|beta| are scalars.
+  //@@Function Internals
+  //The probability density function (PDF) of a beta random variable
+  //is
+  //\[
+  //f(x) = x^(a-1) * (1-x)^(b-1) / B(a,b)
+  //\]
+  //for @|x| between 0 and 1.  The function @|B(a,b)| is defined so
+  //that the integral of @|f(x)| is 1.
+  //@@Example
+  //Here is a plot of the PDF of a beta random variable with @|a=3|,
+  //@|b=7|.
+  //@<
+  //a = 3; b = 7;
+  //x = (0:100)/100; t = x.^(a-1).*(1-x).^(b-1); 
+  //t = t/(sum(t)*.01);
+  //plot(x,t);
+  //mprintplot betapdf
+  //@>
+  //which is plotted as
+  //@figure betapdf
+  //If we generate a few random deviates with these values,
+  //we see they are distributed around the peak of roughly
+  //@|0.25|.
+  //@<
+  //randbeta(3*ones(1,5),7*ones(1,5))
+  //@>
   //!
   ArrayVector RandBetaFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -107,7 +141,23 @@ namespace FreeMat {
   }
 
   //!
-  //@Module RANDI Beta Deviate Random Number Generator
+  //@Module RANDI Uniformly Distributed Integer
+  //@@Usage
+  //Generates an array of uniformly distributed integers between
+  //the two supplied limits.  The general syntax for @|randi| is
+  //@[
+  //   y = randi(low,high)
+  //@]
+  //where @|low| and @|high| are arrays of integers.  Scalars
+  //can be used for one of the arguments.  The output @|y| is
+  //a uniformly distributed pseudo-random number between @|low|
+  //and @|high| (inclusive).
+  //@@Example
+  //Here is an example of a set of random integers between 
+  //zero and 5:
+  //@<
+  //randi(zeros(1,6),5*ones(1,6))
+  //@>
   //!
   ArrayVector RandIFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -146,6 +196,41 @@ namespace FreeMat {
   
   //!
   //@Module Generate Chi-Square Random Variable
+  //@@Usage
+  //Generates a vector of chi-square random variables with the
+  //given number of degrees of freedom.  The general syntax for
+  //its use is 
+  //@[
+  //   y = randchi(n)
+  //@]
+  //where @|n| is an array containing the degrees of freedom for
+  //each generated random variable.
+  //@@Function Internals
+  //A chi-square random variable is essentially distributed as
+  //the squared Euclidean norm of a vector of standard Gaussian random 
+  //variables.  The number of degrees of freedom is generally the
+  //number of elements in the vector.  In general, the PDF of
+  //a chi-square random variable is
+  //\[
+  // f(x) = \frac{x^{r/2-1}e^{-x/2}}{\Gamma(r/2)2^{r/2}}
+  //\]
+  //@@Example
+  //First, a plot of the PDF for a family of chi-square random variables
+  //@<
+  //f = [];
+  //x = (1:100)/10;
+  //for n=1:7;t=x.^(n/2-1).*exp(-x/2);f(n,:)=10*t/sum(t);;end
+  //plot(x,f');
+  //mprintplot chipdf
+  //@>
+  //The PDF is below:
+  //@figure chipdf
+  //Here is an example of using @|randchi| and @|randn| to compute
+  //some chi-square random variables with four degrees of freedom.
+  //@<
+  //randchi(4*ones(1,6))
+  //sum(randn(4,6).^2)
+  //@>
   //!
   ArrayVector RandChiFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
@@ -171,6 +256,27 @@ namespace FreeMat {
 
   //!
   //@Module Generate Exponential Random Variable
+  //@@Usage
+  //Generates a vector of exponential random variables with
+  //the specified parameter.  The general syntax for its use is
+  //@[
+  //   y = randexp(lambda)
+  //@]
+  //where @|lambda| is a vector containing the parameters for
+  //the generated random variables.
+  //@@Function Internals
+  //The exponential random variable is usually associated with
+  //the waiting time between events in a Poisson random process.
+  //The PDF of an exponential random variable is:
+  //\[
+  //   f(x) = \lambda e^{-\lambda x}
+  //\]
+  //@@Example
+  //Here is an example of using the @|randexp| function to generate
+  //some exponentially distributed random variables
+  //@<
+  //randexp(ones(1,6))
+  //@>
   //!
   ArrayVector RandExpFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
@@ -193,6 +299,31 @@ namespace FreeMat {
 
   //!
   //@Module Generate Poisson Random Variable
+  //@@Usage
+  //Generates a vector Poisson random variables with the given
+  //parameters.  The general syntax for its use is
+  //@[
+  //   y = randp(nu),
+  //@]
+  //where @|nu| is an array containing the rate parameters
+  //for the generated random variables.  
+  //@@Function Internals
+  //A Poisson random variable is generally defined by taking the
+  //limit of a binomial distribution as the sample size becomes
+  //large, with the expected number of successes being fixed (so
+  //that the probability of success decreases as @|1/N|).  
+  //The Poisson distribution is given by
+  //\[
+  //  P_{\nu}(n) = \frac{\nu^n e^{-nu}}{n!}.
+  //\]
+  //@@Example
+  //Here is an exmaple of using @|randp| to generate some Poisson
+  //random variables, and also using @|randbin| to do the same
+  //using @|N=1000| trials to approximate the Poisson result.
+  //@<
+  //randp(33*ones(1,10))
+  //randbin(1000*ones(1,10),33/1000*ones(1,10))
+  //@>
   //!
   ArrayVector RandPoissonFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
@@ -215,6 +346,31 @@ namespace FreeMat {
 
   //!
   //@Module Generate Binomial Random Variables
+  //@@Usage
+  //Generates random variables with a binomial distribution.
+  //The general syntax for its use is
+  //@[
+  //   y = randbin(N,p)
+  //@]
+  //where @|N| is a vector representing the number of Bernoulli
+  //trials, and @|p| is the success probability associated with each
+  //trial.
+  //@@Function Internals
+  //A Binomial random variable describes the number of successful
+  //outcomes from @|N| Bernoulli trials, with the probability of
+  //success in each trial being @|p|.  The probability distribution
+  //is
+  //\[
+  //   P(n) = \frac{N!}{n!(N-n)!}p^n(1-p)^{N-n}
+  //\]
+  //@@Example
+  //Here we generate @|10| binomial random variables, corresponding
+  //to @|N=100| trials, each with probability @|p=0.1|, using
+  //both @|randbin| and then again using @|rand| (to simulate the trials):
+  //@<
+  //randbin(100,.1*ones(1,10))
+  //sum(rand(100,10)<0.1)
+  //@>
   //!
   ArrayVector RandBinFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -254,6 +410,27 @@ namespace FreeMat {
 
   //!
   //@Module Generate Negative Binomial Random Variables
+  //@@Usage
+  //Generates random variables with a negative binomial distribution.
+  //The general syntax for its use is
+  //@[
+  //   y = randnbin(r,p)
+  //@]
+  //where @|r| is a vector of integers representing the number of
+  //successes, and @|p| is the probability of success.
+  //@@Function Internals
+  //A negative binomial random variable describes the number of failures
+  //@|x| that occur in @|x+r| bernoulli trials, with a success on the 
+  //@|x+r| trial.  The pdf is given by
+  //\[
+  //  P_{r,p}(x)=\left\(\begin{matrix}x+r-1\\r-1\end{matrix}\right\)p^r(1-p)^x.
+  //\]
+  //@@Example
+  //Here we generate some negative binomial random variables:
+  //@<
+  //randnbin(3*ones(1,4),.01)
+  //randnbin(6*ones(1,4),.01)
+  //@>
   //!
   ArrayVector RandNBinFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -293,6 +470,33 @@ namespace FreeMat {
 
   //!
   //@Module Generate F-Distributed Random Variable
+  //@@Usage
+  //Generates random variables with an F-distribution.  The general
+  //syntax for its is
+  //@[
+  //   y = randf(n,m)
+  //@]
+  //where @|n| and @|m| are vectors of the number of degrees of freedom
+  //in the numerator and denominator of the chi-square random variables
+  //whose ratio defines the statistic.
+  //@@Function Internals
+  //The statistic @|F_{n,m}| is defined as the ratio of two chi-square
+  //random variables:
+  //\[
+  //  F_{n,m} = \frac{\chi_n^2/n}{\chi_m^2/m}
+  //\]
+  //The PDF is given by
+  //\[
+  //  f_{n,m} = \frac{m^{m/2}n^{n/2}x^{n/2-1}}{(m+nx)^{(n+m)/2}B(n/2,m/2)},
+  //\]
+  //where @|B(a,b)| is the beta function.
+  //@@Example
+  //Here we use @|randf| to generate some F-distributed random variables,
+  //and then again using the @|randchi| function:
+  //@<
+  //randf(5*ones(1,9),7)
+  //randchi(5*ones(1,9))./randchi(7*ones(1,9))
+  //@>
   //!
   ArrayVector RandFFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -334,6 +538,36 @@ namespace FreeMat {
 
   //!
   //@Module Generate Gamma-Distributed Random Variable
+  //@@Usage
+  //Generates random variables with a gamma distribution.  The general
+  //syntax for its use is
+  //@[
+  //   y = randgamma(a,r),
+  //@]
+  //where @|a| and @|r| are vectors describing the parameters of the
+  //gamma distribution.  Roughly speaking, if @|a| is the mean time between
+  //changes of a Poisson random process, and we wait for the @|r| change,
+  //the resulting wait time is Gamma distributed with parameters @|a| 
+  //and @|r|.
+  //@@Function Internals
+  //The Gamma distribution arises in Poisson random processes.  It represents
+  //the waiting time to the occurance of the @|r|-th event in a process with
+  //mean time @|a| between events.  The probability distribution of a Gamma
+  //random variable is
+  //\[
+  //   P(x) = \frac{a^r x^{r-1} e^{-ax}}{\Gamma(r)}.
+  //\]
+  //Note also that for integer values of @|r| that a Gamma random variable
+  //is effectively the sum of @|r| exponential random variables with parameter
+  //@|a|.
+  //@@Example
+  //Here we use the @|randgamma| function to generate Gamma-distributed
+  //random variables, and then generate them again using the @|randexp|
+  //function.
+  //@<
+  //randgamma(1,15*ones(1,9))
+  //sum(randexp(ones(15,9)))
+  //@>
   //!
   ArrayVector RandGammaFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -372,6 +606,38 @@ namespace FreeMat {
   }
 
   //!
+  //@Module Generate Multinomial-distributed Random Variables
+  //@@Usage
+  //This function generates samples from a multinomial distribution
+  //given the probability of each outcome.  The general syntax for
+  //its use is
+  //@[
+  //   y = randmulti(N,pvec)
+  //@]
+  //where @|N| is the number of experiments to perform, and @|pvec|
+  //is the vector of probabilities describing the distribution of
+  //outcomes.
+  //@@Function Internals
+  //A multinomial distribution describes the number of times each
+  //of @|m| possible outcomes occurs out of @|N| trials, where each
+  //outcome has a probability @|p_i|.  More generally, suppose that
+  //the probability of a Bernoulli random variable @|X_i| is @|p_i|,
+  //and that 
+  //\[
+  //   \sum_{i=1}^{m} p_i = 1.
+  //\]
+  //Then the probability that @|X_i| occurs @|x_i| times is
+  //\[
+  //   P_N(x_1,x_2,\ldots,x_n) = \frac{N!}{x_1!\cdots x_n!} p_1^{x_1}\cdots p_n^{x_n}.
+  //\]
+  //@@Example
+  //Suppose an experiment has three possible outcomes, say heads,
+  //tails and edge, with probabilities @|0.4999|, @|0.4999| and
+  //@|0.0002|, respectively.  Then if we perform ten thousand coin
+  //flips we get
+  //@<
+  //randmulti(10000,[0.4999,0.4999,0.0002])
+  //@>
   //!
   ArrayVector RandMultiFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -405,6 +671,25 @@ namespace FreeMat {
   
   //!
   //@Module Generate Noncentral Chi-Square Random Variable
+  //@@Usage
+  //Generates a vector of non-central chi-square random variables
+  //with the given number of degrees of freedom and the given
+  //non-centrality parameters.  The general syntax for its use is
+  //@[
+  //   y = randnchi(n,mu)
+  //@]
+  //where @|n| is an array containing the degrees of freedom for
+  //each generated random variable (with each element of @|n| >= 1),
+  //and @|mu| is the non-centrality shift (must be positive).
+  //@@Function Internals
+  //A non-central chi-square random variable is the sum of a chisquare
+  //deviate with @|n-1| degrees of freedom plus the square of a normal
+  //deviate with mean @|mu| and standard deviation 1.
+  //@@Examples
+  //Here is an example of a non-central chi-square random variable:
+  //@<
+  //randnchi(5*ones(1,9),0.3)
+  //@>
   //!
   ArrayVector RandNChiFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -448,6 +733,9 @@ namespace FreeMat {
 
   //!
   //@Module Generate Noncentral F-Distribution Random Variable
+  //@@Usage
+  //Generates a vector of non-central F-distributed random variables
+  //with the 
   //!
   ArrayVector RandNFFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 3)
@@ -455,7 +743,7 @@ namespace FreeMat {
     Array arg1(arg[0]);
     Array arg2(arg[1]);
     Array arg3(arg[2]);
-    // 
+    // FIXME
     // Check the logic to see if one or both are scalar values
     if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
       throw Exception("randnf requires either one of the two arguments to be a scalar, or both arguments to be the same size");

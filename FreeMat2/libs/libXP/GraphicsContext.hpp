@@ -45,7 +45,8 @@ public:
   virtual Point2D GetTextExtent(std::string label) {return Point2D();};
   virtual void DrawTextStringAligned(std::string text, Point2D pos, 
 				     XALIGNTYPE xalign, 
-				     YALIGNTYPE yalign);
+				     YALIGNTYPE yalign,
+				     OrientationType orient = ORIENT_0);
   virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient = ORIENT_0) {};
   virtual void SetFont(int fontsize) {};
   virtual Color SetBackGroundColor(Color col) {return col;};

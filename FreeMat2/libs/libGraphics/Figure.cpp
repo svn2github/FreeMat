@@ -328,7 +328,6 @@ namespace FreeMat {
     ptr->begin();
     Fl_Slider *nput = new Fl_Slider(dp[0],dp[1],dp[2],dp[3]);
     nput->type(fl_input_type);
-    printf("Slider type = %d\r\n",nput->type());
     int newhandle = guiHandles.assignHandle(nput) + MAX_FIGS;
     ptr->end();
     ptr->redraw();
@@ -370,7 +369,6 @@ namespace FreeMat {
     ptr->begin();
     Fl_Input *nput = new Fl_Input(dp[0],dp[1],dp[2],dp[3]);
     nput->type(fl_input_type);
-    printf("Input type = %d\r\n",nput->type());
     int newhandle = guiHandles.assignHandle(nput) + MAX_FIGS;
     ptr->end();
     ptr->redraw();
@@ -412,7 +410,6 @@ namespace FreeMat {
     funcDef->updateCode();
     ptr->begin();
     Fl_Button *ok = new Fl_Button(dp[0],dp[1],dp[2],dp[3],label);
-    printf("button type = %d\r\n",ok->type());
     int newhandle = guiHandles.assignHandle(ok) + MAX_FIGS;
     cbstruct *cb = new cbstruct;
     cb->eval = eval;

@@ -15,7 +15,7 @@ void lmdif1_(fcnptr, int*m, int*n, double*x, double*fvec, double*tol,
 //@Module FITFUN Fit a Function
 //@@Usage
 //Fits @|n| (non-linear) functions of @|m| variables using least squares
-//and Levenberg-Marquardt algorithm.  The general syntax for its usage
+//and the Levenberg-Marquardt algorithm.  The general syntax for its usage
 //is
 //@[
 //  [xopt,yopt] = fitfun(fcn,xinit,y,tol,params...)

@@ -1,9 +1,9 @@
 Summary:	FreeMat is an environment for rapid engineering and scientific processing.
 Name:		FreeMat
-Version:	1.06
+Version:	1.08
 Release:	1
 URL:		http://sourceforge.net/projects/freemat/
-Source0:	http://prdownloads.sourceforge.net/freemat/FreeMat-1.06.tar.gz
+Source0:	http://prdownloads.sourceforge.net/freemat/FreeMat-1.08.tar.gz
 License:	MIT
 Group:		Applications/Engineering
 BuildRoot:	%{_tmppath}/%{name}-%(id -un)
@@ -40,10 +40,12 @@ make prefix=$RPM_BUILD_ROOT%{_prefix} bindir=$RPM_BUILD_ROOT%{_bindir} \
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS COPYING COPYRIGHT.GPL INSTALL PORTS README 
+%doc COPYING INSTALL README 
 %{_bindir}/FreeMat
 %{_datadir}/FreeMat
 
 %changelog
 * Thu Jul 8 2004 <jeremy.gill@med.ge.com>
 - Initial Redhat 8.0 build.
+* Sun Oct 10 2004 <sbasu@nycap.rr.com>
+- Changed doc info for 1.08 release on fc2.

@@ -1670,8 +1670,32 @@ namespace FreeMat {
   //(instead of a set of statements), you can assign the output
   //of the @|eval| call to one or more variables, via
   //@[
+  //   x = eval(s)
   //   [x,y,z] = eval(s)
   //@]
+  //
+  //Another form of @|eval| allows you to specify an expression or
+  //set of statements to execute if an error occurs.  In this 
+  //form, the syntax for @|eval| is
+  //@[
+  //   eval(try_clause,catch_clause),
+  //@]
+  //or with return values,
+  //@[
+  //   x = eval(try_clause,catch_clause)
+  //   [x,y,z] = eval(try_clause,catch_clause)
+  //@]
+  //These later forms are useful for specifying defaults.  Note that
+  //both the @|try_clause| and @|catch_clause| must be expressions,
+  //as the equivalent code is
+  //@[
+  //  try
+  //    [x,y,z] = try_clause
+  //  catch
+  //    [x,y,z] = catch_clause
+  //  end
+  //@]
+  //so that the assignment must make sense in both cases.
   //@@Example
   //Here are some examples of @|eval| being used.
   //@<
@@ -1684,59 +1708,143 @@ namespace FreeMat {
   //s = ['b = a' ' + 2']
   //eval(s)
   //@>
+  //Here we demonstrate the use of the catch-clause to provide a 
+  //default value
+  //@<
+  //a = 32
+  //b = eval('a','1')
+  //b = eval('z','a+1')
+  //@>
+  //Note that in the second case, @|b| takes the value of 33, indicating
+  //that the evaluation of the first expression failed (because @|z| is
+  //not defined).
   //!
+  static  char* PrePendCallVars(char *line, int nargout) {
+    char *buf = (char*) malloc(strlen(line)+4096);
+    char *gp = buf;
+    if (nargout > 1)
+      *gp++ = '[';
+    for (int i=0;i<nargout-1;i++) {
+      sprintf(gp,"_t%d,",i);
+      gp += strlen(gp);
+    }
+    sprintf(gp,"_t%d",nargout-1);
+    gp += strlen(gp);
+    if (nargout > 1)
+      sprintf(gp,"] = %s;\n",line);
+    else
+      sprintf(gp," = %s;\n",line);
+    return buf;
+  }
 
-  // Implementation details:
-  //  If we truely have outputs (nargout > 0), then we must have an expression.
-  // One approach is to do something like map
-  //    [a,b,c] = eval('foobar')
-  // to
-  //   [_t1,_t2,_t3] = foobar
-  // and then retrieve '_t1', '_t2'... from the context.  The second approach
-  // is to parse it to an expression...  
-  ArrayVector EvalFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
-    if (arg.size() != 1)
-      throw Exception("eval function takes exactly one argument - the string to execute");
+  static ArrayVector RetrieveCallVars(WalkTree *eval, int nargout) {
+    ArrayVector retval;
+    for (int i=0;i<nargout;i++) {
+      char tname[4096];
+      Array tval;
+      sprintf(tname,"_t%d",i);
+      eval->getContext()->lookupVariable(tname,tval);
+      eval->getContext()->deleteVariable(tname);
+      retval.push_back(tval);
+    }
+    return retval;
+  }
+
+  ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, WalkTree* eval, int popSpec) {
+    if (nargout > 0) {
+      char *try_line = arg[0].getContentsAsCString();
+      char *try_buf = PrePendCallVars(try_line,nargout);
+      char *catch_line = arg[1].getContentsAsCString();
+      char *catch_buf = PrePendCallVars(catch_line,nargout);
+      eval->evaluateStringTryCatch(try_buf,catch_buf,popSpec);
+      // Retrieve the temp vars from the context
+      free(try_buf);
+      free(catch_buf);
+      return RetrieveCallVars(eval,nargout);
+    } else {
+      char *try_line = arg[0].getContentsAsCString();
+      char *catch_line = arg[1].getContentsAsCString();
+      char *try_buf = (char*) malloc(strlen(try_line)+2);
+      char *catch_buf = (char*) malloc(strlen(catch_line)+2);
+      sprintf(try_buf,"%s\n",try_line);
+      sprintf(catch_buf,"%s\n",catch_line);
+      eval->evaluateStringTryCatch(try_buf,catch_buf,popSpec);
+      free(try_buf);
+      free(catch_buf);
+      return ArrayVector();
+    }
+  }
+
+  ArrayVector EvalNoTryFunction(int nargout, const ArrayVector& arg, WalkTree* eval, int popSpec) {
     if (nargout > 0) {
       char *line = arg[0].getContentsAsCString();
-      char *buf = (char*) malloc(strlen(line)+4096);
-      char *gp = buf;
-      if (nargout > 1)
-	*gp++ = '[';
-      for (int i=0;i<nargout-1;i++) {
-	sprintf(gp,"_t%d,",i);
-	gp += strlen(gp);
-      }
-      sprintf(gp,"_t%d",nargout-1);
-      gp += strlen(gp);
-      if (nargout > 1)
-	sprintf(gp,"] = %s;\n",line);
-      else
-	sprintf(gp," = %s;\n",line);
+      char *buf = PrePendCallVars(line,nargout);
+      eval->getContext()->bypassScope(popSpec);
       eval->evaluateString(buf);
-      // Retrieve the temp vars from the context
-      ArrayVector retval;
-      for (int i=0;i<nargout;i++) {
-	char tname[4096];
-	Array tval;
-	sprintf(tname,"_t%d",i);
-	eval->getContext()->lookupVariable(tname,tval);
-	eval->getContext()->deleteVariable(tname);
-	retval.push_back(tval);
-      }
+      eval->getContext()->restoreBypassedScopes();
       free(buf);
-      return retval;
+      return RetrieveCallVars(eval,nargout);
     } else {
       char *line = arg[0].getContentsAsCString();
       char *buf = (char*) malloc(strlen(line)+2);
       sprintf(buf,"%s\n",line);
+      eval->getContext()->bypassScope(popSpec);
       eval->evaluateString(buf);
+      eval->getContext()->restoreBypassedScopes();
       free(buf);
       return ArrayVector();
     }
   }
-  
-  
+
+  ArrayVector EvalFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+    if (arg.size() == 0)
+      throw Exception("eval function takes at least one argument - the string to execute");
+    if (arg.size() == 2)
+      return EvalTryFunction(nargout, arg, eval, 0);
+    return EvalNoTryFunction(nargout, arg, eval, 0);
+  }
+
+  //!
+  //@Module EVALIN Evaluate a String in Workspace
+  //@@Section FREEMAT
+  //@@Usage
+  //The @|evalin| function is similar to the @|eval| function, with an additional
+  //argument up front that indicates the workspace that the expressions are to 
+  //be evaluated in.  The various syntaxes for @|evalin| are:
+  //@[
+  //   evalin(workspace,expression)
+  //   x = evalin(workspace,expression)
+  //   [x,y,z] = evalin(workspace,expression)
+  //   evalin(workspace,try_clause,catch_clause)
+  //   x = evalin(workspace,try_clause,catch_clause)
+  //   [x,y,z] = evalin(workspace,try_clause,catch_clause)
+  //@]
+  //The argument @|workspace| must be either 'caller' or 'base'.  If it is
+  //'caller', then the expression is evaluated in the caller's work space.
+  //That does not mean the caller of @|evalin|, but the caller of the current
+  //function or script.  On the other hand if the argument is 'base', then
+  //the expression is evaluated in the base work space.   See @|eval| for
+  //details on the use of each variation.
+  //!
+  ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 2)
+      throw Exception("evalin function requires a workspace (scope) specifier (either 'caller' or 'base') and an expression to evaluate");
+    Array spec(arg[0]);
+    char *spec_str = spec.getContentsAsCString();
+    int popspec = 0;
+    if (strcmp(spec_str,"base")==0) 
+      popspec = -1;
+    else if (strcmp(spec_str,"caller")==0) 
+      popspec = 1;
+    else
+      throw Exception("evalin function requires the first argument to be either 'caller' or 'base'");
+    ArrayVector argcopy(arg);
+    argcopy.erase(argcopy.begin());
+    if (arg.size() == 3)
+      return EvalTryFunction(nargout,argcopy,eval,popspec);
+    else
+      return EvalNoTryFunction(nargout,argcopy,eval,popspec);
+  }
 
   //!
   //@Module SOURCE Execute an Arbitrary File

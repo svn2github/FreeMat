@@ -21,7 +21,7 @@ bool IsInfinite(double t) {
     unsigned int i[2];
   } u;
   u.d = t;
-#ifndef WORDS_BIGENDIAN
+#if (WORDS_BIGENDIAN!=1)
   if( ((u.i[1] & 0x7ff00000) == 0x7ff00000)
       && (((u.i[1] & 0x000fffff) == 0) && (u.i[0] == 0)))
     return true;
@@ -61,12 +61,12 @@ bool IsNaN(double t) {
   } u;
   u.d = t;
 
-#ifndef WORDS_BIGENDIAN
+#if (WORDS_BIGENDIAN!=1)
   if( ((u.i[1] & 0x7ff00000) == 0x7ff00000)
       && (((u.i[1] & 0x000fffff) != 0) || (u.i[0] != 0)))
     return true;
 #else
-  if( ((u.i[0] & 0x7ff00000) == 0x7ff00000)
+ if( ((u.i[0] & 0x7ff00000) == 0x7ff00000)
       && (((u.i[0] & 0x000fffff) != 0) || (u.i[1] != 0)))
     return true;
 #endif

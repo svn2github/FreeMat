@@ -285,7 +285,7 @@ void XWindow::Save() {
   ftitle[0] = 0;
   ofn.lpstrFile = fname;
   ofn.lpstrFileTitle = ftitle;
-  if (m_type == BitmapWindow && m_bitmap_contents == NULL)
+  if (m_type == BitmapWindow && !bitmap_active)
     throw FreeMat::Exception("Cannot save empty image window!\n");
   if (!GetSaveFileName(&ofn)) {
     DWORD tmp;

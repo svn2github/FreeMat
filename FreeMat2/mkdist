@@ -1,0 +1,9 @@
+# These are the steps to building a new distribution
+# Set the version number in configure.in, src/x11/main.cpp, 
+# src/win32/main.cpp, Script1.rc, freemat.nsi
+# Run bootstrap
+# mkdir build
+# cd build
+# configure and make
+# make dist
+

@@ -40,31 +40,27 @@ int main(int argc, char* argv[]) {
   int pen_x, pen_y;
   int s_penx, s_peny;
   unsigned char *image;
+  FILE *fp;
   if (FT_Init_FreeType(&library)) 
     ERROR("Unable to initialize FreeType library!");
   if (FT_New_Face(library,argv[1],0,&face))
     ERROR("Unsupported file format");
   // 16 x 16 bitmap size
-  if (FT_Set_Pixel_Sizes(face, 0, atoi(argv[3])))
+  if (FT_Set_Pixel_Sizes(face, 0, atoi(argv[2])))
     ERROR("Unable to set character size");
-  num_chars = strlen(argv[2]);
-  image = (unsigned char *) malloc(512*512);
-  memset(image,255,512*512);
-  pen_x = 100; pen_y = 100;
-  s_penx = pen_x << 6;
-  s_peny = pen_y << 6;
+  fp = fopen(argv[3],"wb");
+  if (!fp)
+    ERROR("Unable to open output file");
   slot = face->glyph;
-  for (n=0;n<num_chars;n++) {
-    FT_Load_Char(face, argv[2][n] , FT_LOAD_RENDER);
-    for (i=0;i<slot->bitmap.rows;i++)
-      for (j=0;j<slot->bitmap.width;j++)
-	image[512*(pen_y-slot->bitmap_top+i)+(pen_x+slot->bitmap_left+j)] = 
-	  255 - slot->bitmap.buffer[i*slot->bitmap.width+j];
-    s_penx += slot->advance.x;
-    s_peny += slot->advance.y;
-    pen_x = s_penx >> 6;
-    pen_y = s_peny >> 6;
+  for (n=0;n<256;n++) {
+    FT_Load_Char(face, n, FT_LOAD_RENDER);
+    fwrite(&slot->bitmap.rows,sizeof(int),1,fp);
+    fwrite(&slot->bitmap.width,sizeof(int),1,fp);
+    fwrite(&slot->bitmap_top,sizeof(int),1,fp);
+    fwrite(&slot->bitmap_left,sizeof(int),1,fp);
+    fwrite(&slot->advance.x,sizeof(int),1,fp);
+    fwrite(&slot->advance.y,sizeof(int),1,fp);
+    fwrite(slot->bitmap.buffer,sizeof(char),slot->bitmap.rows*slot->bitmap.width,fp);
   }
-  writePPM(512,512,image);
-/*   writePPM(slot->bitmap.rows,slot->bitmap.width,slot->bitmap.buffer); */
+  fclose(fp);
 }

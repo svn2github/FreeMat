@@ -139,4 +139,8 @@ work right yet.
 Dummy-stupid.  The answer is to pre-discretize the fonts and not have any 
 font library dependance at all...  Simple solution.  Which prog to use
 for the fonts?  small fonts render best with TrueType... So I'll use a TTF
-rendering of the fonts...  
+rendering of the fonts...  (although Helvetica would work also...);
+
+Furthermore, I can pre-parse the AFM data to get metrics for the Helvetica font.  
+The result can be stored as a binary file...  This avoids the problem of parsing 
+AFM files in the final code.

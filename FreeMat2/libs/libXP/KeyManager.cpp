@@ -62,7 +62,6 @@ KeyManager::KeyManager() {
   ReplacePrompt("");
   ResetLineBuffer();
   history.push_back("");
-  history.push_back("");
 }
 
 
@@ -705,18 +704,18 @@ void KeyManager::ForwardDeleteChar() {
 void KeyManager::AddHistory(std::string line) {
   prefix = "";
   prefix_len = 0;
-  //  history.push_back(line);
-  //  return;
-  if (line.size() <= 1) return;
-  if (history.size() >= 1)
-    history.pop_back();
-  if ((history.size() > 0) && (history.back() == line)) {
-    history.push_back("");    
-    return;
-  }
-  history.push_back(line);    
-  history.push_back("");
+  history.push_back(line);
   return;
+//  if (line.size() <= 1) return;
+//  if (history.size() >= 1)
+//    history.pop_back();
+//  if ((history.size() > 0) && (history.back() == line)) {
+//    history.push_back("");    
+//    return;
+//  }
+//  history.push_back(line);    
+//  history.push_back("");
+//  return;
 }
 
 void KeyManager::Redisplay() {

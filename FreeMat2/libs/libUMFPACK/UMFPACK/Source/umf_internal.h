@@ -20,6 +20,9 @@
 /* ANSI standard include files */
 /* -------------------------------------------------------------------------- */
 
+#ifndef UMF_INTERNAL
+#define UMF_INTERNAL
+
 /* from float.h:  DBL_EPSILON */
 #include <float.h>
 
@@ -753,4 +756,5 @@ GLOBAL extern Int umf_realloc_fail, umf_realloc_lo, umf_realloc_hi ;
 /* for testing malloc count: */
 #define UMF_MALLOC_COUNT
 
+#endif
 #endif

@@ -1,5 +1,0 @@
-#!/bin/sh
-latex2html --split 5 manual
-cd manual
-rm manual.zip *~
-zip manual.zip *

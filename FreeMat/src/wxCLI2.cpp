@@ -19,7 +19,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 /*
- * To-add: Completions, copy/paste/select
+ * To-add: copy/paste/select - typeahead
  */
 
 #include "wxCLI2.hpp"
@@ -64,7 +64,7 @@ END_EVENT_TABLE()
 			wxVSCROLL ) {
   mainApp = tMain;
   SetBackgroundColour(*wxWHITE);
-  m_font = wxFont(10, wxMODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+  m_font = wxFont(12, wxMODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
   caretCol = caretRow = 0;
   CreateCaret();
   cutbuf[0] = '\0';
@@ -74,7 +74,7 @@ END_EVENT_TABLE()
   term_curpos = 0;
   keyseq_count = 0;
   last_search = -1;
-  scrollback = 10000;
+  scrollback = 100;
   ncolumn = 80;
   nline = 24;
   scrolltail = 0;
@@ -82,6 +82,8 @@ END_EVENT_TABLE()
   insert = true;
   m_text = (wxChar*) calloc(MAXCOLS*scrollback,sizeof(wxChar));
   UpdateLineCount();
+  ReplacePrompt("");
+  ResetLineBuffer();
 }
 
 /*.......................................................................
@@ -755,17 +757,19 @@ void wxCLI::outputMessage(const char * msg) {
   PutMessage(msg);
 }
 
-wxScrollWinEvent gScroll(wxEVT_SCROLLWIN_BOTTOM);
-
 // Add a message to the output
 void wxCLI::PutMessage(const char * msg) {
+  int startRow, startCol;
+
   const char *cp;
   cp = msg;
+  startRow = caretRow;
   while (*cp) {
     if (*cp == '\n') {
       CharAt(caretRow,caretCol) = 0;
       caretRow++;
       caretCol = 0;
+      CharAt(caretRow,caretCol) = 0;
       cp++;
     } else if (*cp == '\r') {
       CharAt(caretRow,caretCol) = 0;
@@ -780,11 +784,24 @@ void wxCLI::PutMessage(const char * msg) {
       cp++;
     }
   }
-  CharAt(caretRow,caretCol) = 0;
+  //  Charat(caretRow,caretCol) = 0;
   UpdateLineCount();
-  wxPostEvent(this,gScroll);
+  // Set the scroll
+  int scrollstart;
+  scrollstart = (nlinecount < scrollback) ? nlinecount : scrollback;
+  scrollstart -= nline;
+  if (scrollstart < 0) scrollstart = 0;
+  Scroll(0,scrollstart);
   DoMoveCaret();
-  Refresh();
+  // Setup a refresh region that starts at startRow,startCol --> caretRow, caretCol
+  int rectx1, recty1, rectx2, recty2, adjrow;
+  // First map the start row to screen coordinates
+  adjrow = startRow;
+  if (adjrow >= scrollback)
+    adjrow = scrollback-1;
+  CalcScrolledPosition(0,adjrow*charHeight,&rectx1,&recty1);
+  wxRect rect(rectx1, recty1, ncolumn*charWidth, (caretRow - startRow + 1)*charHeight);
+  RefreshRect(rect);
 }
 
 wxCLI::~wxCLI() {
@@ -888,6 +905,7 @@ void wxCLI::OnSize( wxSizeEvent &event ) {
 void wxCLI::SetFont(wxFont aFont) {
   m_font = aFont;
   CreateCaret();
+  UpdateLineCount();
 }
 
 void wxCLI::OnDraw(wxDC& dc) {
@@ -906,9 +924,6 @@ void wxCLI::OnDraw(wxDC& dc) {
   
   wxCoord y = lineFrom*charHeight;
   for ( size_t line = lineFrom; line <= lineTo; line++ )  {
-    wxCoord yPhys;
-    CalcScrolledPosition(0, y, NULL, &yPhys);
-
     wxString oline;
     for (int x=0; x < ncolumn; x++) {
       wxChar ch = CharAt(ScrollRowAdjust(line),x);
@@ -921,6 +936,47 @@ void wxCLI::OnDraw(wxDC& dc) {
   DoMoveCaret();
 }
 
+void wxCLI::ResetLineBuffer() {
+  memset(line,0,1002);
+  ntotal = 0;
+  buff_curpos = 0;
+  term_curpos = 0;
+  term_len = 0;
+  insert_curpos = 0;
+}
+
+void wxCLI::Paste(const char *str) {
+  // Process the characters in str...
+  std::cout << "Pasting :" << str << "\n";
+  const char *cp;
+  cp = str;
+  while (*cp) {
+    if (*cp == '\n')
+      NewLine();
+    else
+      AddCharToLine(*cp);
+    cp++;
+  }
+}
+
+void wxCLI::NewLine() {
+  line[ntotal++] = '\n';
+  line[ntotal] = 0;
+  if (waitingForInput) {
+    FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
+					       FreeMat::Array::stringConstructor(line)));
+    waitingForInput = false;
+  } else {
+    pendinglines.push_back(line);
+  }
+  EndOfLine();
+  OutputRawString("\n");
+  AddHistory(line);
+  ResetLineBuffer();
+  ReplacePrompt("");
+  DisplayPrompt();
+}
+
 void wxCLI::IssueGetWidthRequest() {
   FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetWidth,
 					     FreeMat::Array::
@@ -928,14 +984,16 @@ void wxCLI::IssueGetWidthRequest() {
 }
 
 void wxCLI::IssueGetLineRequest(const char *aprompt) {
-  memset(line,0,1002);
-  ntotal = 0;
-  buff_curpos = 0;
-  term_curpos = 0;
-  term_len = 0;
-  insert_curpos = 0;
-  ReplacePrompt(aprompt);
-  DisplayPrompt();
+  if (pendinglines.size() > 0) {
+    FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
+					       FreeMat::Array::stringConstructor(pendinglines[0]))); 
+    pendinglines.erase(pendinglines.begin());
+  } else {
+    ReplacePrompt(aprompt);
+    DisplayPrompt();
+    Redisplay();
+    waitingForInput = true;
+  }
 }
 
 
@@ -996,7 +1054,7 @@ void wxCLI::Redisplay() {
    * Restore the cursor position.
    */
   PlaceCursor(sbuff_curpos);
-  Refresh();
+  //  Refresh();
 }
 
 void wxCLI::HistoryFindBackwards() {
@@ -1063,7 +1121,6 @@ void wxCLI::HistorySearchForward() {
 
 void wxCLI::KillLine() {
   strcpy(cutbuf,line+buff_curpos);
-  std::cout << "cutbuf has " << cutbuf << "\n";
   ntotal = buff_curpos;
   line[ntotal] = '\0';
   TruncateDisplay();
@@ -1356,7 +1413,6 @@ void wxCLI::OnChar( wxKeyEvent &event ) {
     break;
   case WXK_INSERT:
     insert = !insert;
-    std::cout << "Toggling insert to " << insert << "\n";
     break;
   case WXK_HOME:
     BeginningOfLine();
@@ -1371,14 +1427,7 @@ void wxCLI::OnChar( wxKeyEvent &event ) {
     HistorySearchForward();
     break;
   case WXK_RETURN:
-    line[ntotal++] = '\n';
-    line[ntotal] = 0;
-    FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
-					       FreeMat::Array::stringConstructor(line)));
-    
-    EndOfLine();
-    OutputRawString("\n");
-    AddHistory(line);
+    NewLine();
     break;
   case 1:
     if (event.ControlDown()) {

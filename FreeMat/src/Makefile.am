@@ -18,8 +18,10 @@
 CFLAGS=@CFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cflags`
 CXXFLAGS=@CXXFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cxxflags`  -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/extlibs/libtecla -I@top_srcdir@/libs/libGraphics  -I@top_srcdir@/extlibs/libffi-2.00-beta/include  -I@top_srcdir@/extlibs/volpack-1.0c2/src
 
-bin_PROGRAMS = FreeMatGUI FreeMat
+bin_PROGRAMS = FreeMatGUI FreeMat test
 ##bin_PROGRAMS = FreeMat
+
+test_SOURCES = test.cpp
 
 FreeMat_SOURCES =  AppNoGUI.cpp \
 AppNoGUI.hpp \
@@ -46,6 +48,9 @@ FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGra
 
 FreeMatGUI_DEPENDENCIES =  @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 FreeMatGUI_LDADD =  @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs`  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+
+test_DEPENDENCIES =  @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+test_LDADD =  @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs`  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 
 EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

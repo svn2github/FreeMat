@@ -125,12 +125,15 @@ public:
   void CompleteWord();
   int ScrollRowAdjust(int row);
   void SetFunctionList(std::vector<std::string> ifnames);
+  void Paste(const char *str);
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
   void DoResizeBuffer(int xsize, int ysize);
   void UpdateLineCount();
   void ListCompletions(std::vector<std::string> completions);
+  void NewLine();
+  void ResetLineBuffer();
   App *mainApp;
   wxFont   m_font;
   // size (in pixels) of one character
@@ -140,10 +143,13 @@ private:
   // the size (in text coords) of the window
   int nline;
   int ncolumn;
+  bool waitingForInput;
   // the text
   std::vector<std::string> history;
   // Names of functions (for use in completions)
   std::vector<std::string> fnames;
+  // The buffer of pending command lines
+  std::vector<std::string> pendinglines;
   // The line buffer
   char line[1002];
   // The maximum allowed line length

@@ -39,6 +39,7 @@
 #include <wx/splash.h>
 #include <wx/wxhtml.h>
 #include <wx/fs_zip.h>
+#include <wx/clipbrd.h>
 
 using namespace FreeMat;
 
@@ -104,9 +105,8 @@ wxString wxFindAppPath(const wxString& argv0, const wxString& cwd, const wxStrin
 
 bool App::OnInit()
 {
-#ifdef __WXMOTIF__
-    delete wxLog::SetActiveTarget(new wxLogStderr); // So dialog boxes aren't used
-#endif
+  delete wxLog::SetActiveTarget(new wxLogStderr); // So dialog boxes aren't used
+  wxLog::AddTraceMask("clipboard");
 
   SetExitOnFrameDelete(false);
   // Initialize the plots array...
@@ -115,6 +115,7 @@ bool App::OnInit()
     images[i] = NULL;
     volumes[i] = NULL;
   }
+
   currentPlot = -1;
   currentImage = -1;
   currentVolume = -1;
@@ -127,24 +128,16 @@ bool App::OnInit()
   wxString path(wxFindAppPath(argv[0],wxGetCwd(),wxString("FREEMAT_HOME")));
   path += "/manual.zip";
   help->AddBook(wxFileName(path));
-  wxBitmap bitmap;
   sf = new SessionFrame(this,"FreeMat",100,100,400,400);
   sf->Show(TRUE);
   SetTopWindow(sf);
 
+
   Interface *io;
   io = (Interface*) new GUIInterface;
   t = new CLIThread(this,io);
-
   t->Create();
   t->Run();
-  // Need to disable signals...
-#ifndef WIN32
-  sigset_t st;
-  sigfillset(&st);
-  sigdelset(&st,SIGINT);
-  pthread_sigmask(SIG_SETMASK,&st,NULL);
-#endif
   return TRUE;
 }
 

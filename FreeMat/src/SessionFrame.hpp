@@ -52,6 +52,8 @@ class SessionFrame : public wxFrame
   void OnSave(wxCommandEvent &event);
   void OnQuit(wxCommandEvent &event);
   void OnFont(wxCommandEvent &event);
+  void OnCopy(wxCommandEvent &event);
+  void OnPaste(wxCommandEvent &event);
   void OnAbout(wxCommandEvent &event);
   
   wxCLI *getTextControl();
@@ -74,6 +76,8 @@ class SessionFrame : public wxFrame
       MENU_FILE_OPEN = 1000,
       MENU_FILE_SAVE,
       MENU_FILE_QUIT,
+      MENU_EDIT_COPY,
+      MENU_EDIT_PASTE,
       MENU_EDIT_FONT,
       MENU_INFO_ABOUT
     };

@@ -21,6 +21,8 @@
 #include "SessionFrame.hpp"
 #include "Command.hpp"
 #include <wx/fontdlg.h>
+#include <wx/dataobj.h>
+#include <wx/clipbrd.h>
 #include <iostream>
 #include "App.hpp"
 
@@ -47,6 +49,8 @@ SessionFrame::SessionFrame(App* tMain, const wxChar *title,
   m_pMenuBar->Append(m_pMenu,"&File");
   // Edit Menu
   m_pMenu = new wxMenu();
+  m_pMenu->Append(MENU_EDIT_COPY, "&Copy", "Copy text");
+  m_pMenu->Append(MENU_EDIT_PASTE, "&Paste", "Paste text");
   m_pMenu->Append(MENU_EDIT_FONT, "&Font", "Change the font used for display");
   m_pMenuBar->Append(m_pMenu,"&Edit");
   // About Menu
@@ -55,6 +59,21 @@ SessionFrame::SessionFrame(App* tMain, const wxChar *title,
   m_pMenuBar->Append(m_pMenu, "&Info");
 
   SetMenuBar(m_pMenuBar);
+
+  wxTheClipboard->UsePrimarySelection();
+  std::cout << "checking clipboard\n";
+  if (wxTheClipboard->Open()) {
+    std::cout << "opened clipboard\n";
+    if (wxTheClipboard->IsSupported(wxDF_TEXT))  { 
+      wxTextDataObject data;
+      if (wxTheClipboard->GetData( data ))  {
+	std::cout << data.GetText();
+      }
+    }
+    wxTheClipboard->Close();
+  }
+
+
 }
 
 SessionFrame::~SessionFrame()
@@ -67,8 +86,10 @@ BEGIN_EVENT_TABLE(SessionFrame, wxFrame)
   EVT_MENU(MENU_FILE_OPEN, SessionFrame::OnOpen)
   EVT_MENU(MENU_FILE_SAVE, SessionFrame::OnSave)
   EVT_MENU(MENU_FILE_QUIT, SessionFrame::OnQuit)
+  EVT_MENU(MENU_EDIT_COPY, SessionFrame::OnCopy)
+  EVT_MENU(MENU_EDIT_PASTE,SessionFrame::OnPaste)
   EVT_MENU(MENU_EDIT_FONT, SessionFrame::OnFont)
-  EVT_MENU(MENU_INFO_ABOUT, SessionFrame::OnAbout)
+  EVT_MENU(MENU_INFO_ABOUT,SessionFrame::OnAbout)
 END_EVENT_TABLE()
 
 void SessionFrame::OnOpen(wxCommandEvent &event)
@@ -90,15 +111,30 @@ void SessionFrame::OnSave(wxCommandEvent &event)
   dlg->Destroy();
 }
 
-void SessionFrame::OnFont(wxCommandEvent &event)
-{
+void SessionFrame::OnCopy(wxCommandEvent &event) {
+}
+
+void SessionFrame::OnPaste(wxCommandEvent &event) {
+  wxTheClipboard->UsePrimarySelection();
+  if (!wxTheClipboard->Open())
+    return;
+  if (wxTheClipboard->IsSupported(wxDF_TEXT))  { 
+    wxTextDataObject data;
+    if (wxTheClipboard->GetData( data ))  {
+      m_pTextCtrl->Paste(data.GetText().c_str());
+    }
+  }
+  wxTheClipboard->Close();
+}
+
+void SessionFrame::OnFont(wxCommandEvent &event) {
   wxFontData fontData;
-  wxFont font;
+  wxFont font(12, wxMODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
   wxColour colour;
   //  font = m_pTextCtrl->GetFont();
   fontData.SetInitialFont(font);
   //  colour = m_pTextCtrl->GetForegroundColour();
-  fontData.SetColour(colour);
+  //  fontData.SetColour(colour);
   fontData.SetShowHelp(true);
   wxFontDialog *dlg = new wxFontDialog(this, &fontData);
   if ( dlg->ShowModal() == wxID_OK )

@@ -21,7 +21,7 @@
 #ifndef __Reserved_hpp__
 #define __Reserved_hpp__
 
-#include "Parser.h"
+#include "Parser.hpp"
 
 namespace FreeMat {
 

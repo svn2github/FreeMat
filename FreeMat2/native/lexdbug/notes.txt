@@ -53,3 +53,38 @@ the next stage.  That is the problem of generating an actual token stream.
 We can either tokenize the entire stream in one pass, or we can generate tokens
 as needed.  The second approach is more efficient.
 
+The lex-on-demand now works correctly.  The next step could be to either: integrage the lexer into FreeMat (probably too early), fix the "virtual comma" issue, or make the lexer robust enough to handle files, etc.
+
+The last one is easy, because I'm going to assume that the size of a program file to be lexed is small relative to the available memory.
+
+1. String translation.
+2. Virtual commas
+3. Parenthesis matching
+
+On to "virtual commas"... To process a virtual comma, we first need to track when virtual commas can occur.  There are several instances:
+
+1.  Inside square brackets []
+2.  Inside curly brackets {}
+3.  After a "for"
+4.  After a "while"
+5.  After an "if"
+6.  After an "elseif"
+7.  After a "case" statement
+8.  NOT inside regular parenthesis ()
+
+We need a stack, because the regular parenthesis (which can be nested) preserve the state of the virtual comma processing flag.  
+
+Remaining for the new lexer.
+
+1. String escape-sequence translation
+2. Continuation of lines
+3. Special calls
+4. two-char operator matches
+5. Virtual commas in multi-line bracket expressions...
+
+Here is what is left...
+
+1. String escape-sequence translation
+2. Continuation of lines
+3. Special calls
+

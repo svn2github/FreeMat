@@ -75,40 +75,15 @@ bool RGBImageGC::PenDraws() {
   return false;
 }
 
-void RGBImageGC::DrawText(std::string text, Point2D pos,
-			  LRAlignType lralign, TBAlignType tbalign,
-			  OrientationType orient) {
+void RGBImageGC::DrawText(std::string text, Point2D pos, OrientationType orient) {
   FM_Glyph *currentFont;
   int penx, peny;
   int length, m, g1, g2;
   int i, j;
   
-  // To calculate the point at which to start the text drawing,
-  // we have to calculate the extent of the text
-  Point2D extents(GetTextExtent(text));
   currentFont = c_font.GetGlyphPointer();
   penx = pos.x;
   peny = pos.y;
-  switch (lralign) {
-  case LRALIGN_LEFT:
-    break;
-  case LRALIGN_RIGHT:
-    penx -= extents.x;
-    break;
-  case LRALIGN_CENTER:
-    penx -= extents.x/2;
-    break;
-  }
-  switch (tbalign) {
-  case TBALIGN_BOTTOM:
-    break;
-  case TBALIGN_TOP:
-    peny += extents.y;
-    break;
-  case TBALIGN_CENTER:
-    peny += extents.y/2;
-    break;
-  }
   length = text.size();
   for (m=0;m<length;m++) {
     g1 = text[m];

@@ -20,16 +20,14 @@ class RGBImageGC : public GraphicsContext {
   bool PenDraws();
   void DrawAALineStyle(int X0, int Y0, int X1, int Y1, bool endPt);
   void Plot8CirclePoints(int cx, int cy, int x, int y, int c);
-  Point2D GetTextExtent(std::string label);
 public:
   // Methods specific to RGBImageGC
   RGBImageGC(RGBImage& surface);
   virtual ~RGBImageGC();
   // Methods for generic GCs
   virtual Point2D GetCanvasSize();
-  virtual void DrawText(std::string label, Point2D pos,
-			LRAlignType lralign, TBAlignType tbalign,
-			OrientationType orient);
+  Point2D GetTextExtent(std::string label);
+  virtual void DrawText(std::string label, Point2D pos, OrientationType orient);
   virtual void SetFont(std::string fontname, int fontsize);
   virtual Color SetBackGroundColor(Color col);
   virtual Color SetForeGroundColor(Color col);

@@ -23,11 +23,9 @@ class PostScriptGC : public GraphicsContext {
 public:
   PostScriptGC(std::string filename, int width, int height);
   virtual ~PostScriptGC();
-
   virtual Point2D GetCanvasSize();
-  virtual void DrawText(std::string label, Point2D pos,
-			LRAlignType lralign, TBAlignType tbalign,
-			OrientationType orient);
+  virtual Point2D GetTextExtent(std::string label);
+  virtual void DrawText(std::string label, Point2D pos, OrientationType orient);
   virtual void SetFont(std::string fontname, int fontsize);
   virtual Color SetBackGroundColor(Color col);
   virtual Color SetForeGroundColor(Color col);

@@ -66,7 +66,7 @@ namespace FreeMat {
   void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
 						 int Brows, int Bcols, const void *Bp);
   ArrayVector SparseLUDecompose(int nargout, Array A);
-  ArrayVector SparseEigDecompose(int nargout, Array A, int k);
+  ArrayVector SparseEigDecompose(int nargout, Array A, int k, char* whichFlag);
   ArrayVector SparseEigDecomposeShifted(int nargout, Array A, int k, double shift[2]);
 }
 #endif

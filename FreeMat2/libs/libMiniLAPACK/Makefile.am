@@ -512,6 +512,7 @@ complex16/zlarf.f \
 complex16/zlarfg.f \
 complex16/zlarft.f \
 complex16/zlarfx.f \
+complex16/zlarnv.f \
 complex16/zlartg.f \
 complex16/zlarzb.f \
 complex16/zlarz.f \
@@ -531,7 +532,9 @@ complex16/zsteqr.f \
 complex16/ztgevc.f \
 complex16/ztrevc.f \
 complex16/ztrexc.f \
+complex16/ztrsen.f \
 complex16/ztrsna.f \
+complex16/ztrsyl.f \
 complex16/ztzrzf.f \
 complex16/zung2l.f \
 complex16/zung2r.f \

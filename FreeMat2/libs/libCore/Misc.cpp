@@ -480,24 +480,74 @@ namespace FreeMat {
       Array kval(arg[1]);
       k = kval.getContentsAsIntegerScalar();
     }
-    if (arg.size() < 3)
-      return SparseEigDecompose(nargout,A,k);
-    else {
-      double sigma[2];
+    bool shiftFlag;
+    char *whichflag;
+    double sigma[2];
+    if (arg.size() < 3) {
+      shiftFlag = false;
+      whichflag = "LM";
+    } else {
       Array S(arg[2]);
-      if (!S.isScalar())
-	throw Exception("shift parameter sigma must be a scalar");
-      if (S.isComplex()) {
-	S.promoteType(FM_DCOMPLEX);
-	double *cp = (double*) S.getDataPointer();
-	sigma[0] = cp[0];
-	sigma[1] = cp[1];
+      if (S.isString()) {
+	shiftFlag = false;
+	char *stxt = S.getContentsAsCString();
+	if ((strcmp(stxt,"LM")==0) ||
+	    (strcmp(stxt,"lm")==0) ||
+	    (strcmp(stxt,"Lm")==0) ||
+	    (strcmp(stxt,"lM")==0)) whichflag = "LM";
+	else if ((strcmp(stxt,"SM")==0) ||
+		 (strcmp(stxt,"sm")==0) ||
+		 (strcmp(stxt,"Sm")==0) ||
+		 (strcmp(stxt,"sm")==0)) whichflag = "SM";
+	else if ((strcmp(stxt,"LA")==0) ||
+		 (strcmp(stxt,"la")==0) ||
+		 (strcmp(stxt,"La")==0) ||
+		 (strcmp(stxt,"la")==0)) whichflag = "LA";
+	else if ((strcmp(stxt,"SA")==0) ||
+		 (strcmp(stxt,"sa")==0) ||
+		 (strcmp(stxt,"Sa")==0) ||
+		 (strcmp(stxt,"sa")==0)) whichflag = "SA";
+	else if ((strcmp(stxt,"BE")==0) ||
+		 (strcmp(stxt,"be")==0) ||
+		 (strcmp(stxt,"Be")==0) ||
+		 (strcmp(stxt,"be")==0)) whichflag = "BE";
+	else if ((strcmp(stxt,"LR")==0) ||
+		 (strcmp(stxt,"lr")==0) ||
+		 (strcmp(stxt,"Lr")==0) ||
+		 (strcmp(stxt,"lr")==0)) whichflag = "LR";
+	else if ((strcmp(stxt,"SR")==0) ||
+		 (strcmp(stxt,"sr")==0) ||
+		 (strcmp(stxt,"Sr")==0) ||
+		 (strcmp(stxt,"sr")==0)) whichflag = "SR";
+	else if ((strcmp(stxt,"LI")==0) ||
+		 (strcmp(stxt,"li")==0) ||
+		 (strcmp(stxt,"Li")==0) ||
+		 (strcmp(stxt,"li")==0)) whichflag = "LI";
+	else if ((strcmp(stxt,"SI")==0) ||
+		 (strcmp(stxt,"si")==0) ||
+		 (strcmp(stxt,"Si")==0) ||
+		 (strcmp(stxt,"si")==0)) whichflag = "SI";
+	else
+	  throw Exception("Unrecognized option for sigma - it must be either 'lm', 'sm', 'la', 'sa', 'be', 'lr', 'sr', 'li', or 'si'");
       } else {
-	sigma[0] = S.getContentsAsDoubleScalar();
-	sigma[1] = 0;
+	if (!S.isScalar())
+	  throw Exception("shift parameter sigma must be a scalar");
+	if (S.isComplex()) {
+	  S.promoteType(FM_DCOMPLEX);
+	  double *cp = (double*) S.getDataPointer();
+	  sigma[0] = cp[0];
+	  sigma[1] = cp[1];
+	} else {
+	  sigma[0] = S.getContentsAsDoubleScalar();
+	  sigma[1] = 0;
+	}
+	shiftFlag = true;
       }
-      return SparseEigDecomposeShifted(nargout,A,k,sigma);
     }
+    if (!shiftFlag)
+      return SparseEigDecompose(nargout,A,k,whichflag);
+    else 
+      return SparseEigDecomposeShifted(nargout,A,k,sigma);
   }
 
   

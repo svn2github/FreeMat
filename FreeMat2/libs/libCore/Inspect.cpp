@@ -624,9 +624,6 @@ namespace FreeMat {
   //chain1
   //where
   //@>
-  //The double question marks mean that the context is not fully defined
-  //for these cases.  They usually mean that execution is in a keyboard
-  //session or started from the @|-->| prompt.
   //!
   ArrayVector WhereFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     Interface *io = eval->getInterface();

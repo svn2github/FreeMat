@@ -18,6 +18,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+/*
+ * To-add: Completions, copy/paste/select, resize logic, first char not deleted with kill, scroll!
+ */
+
 #include "wxCLI2.hpp"
 #include "Command.hpp"
 #include "CLIThread.hpp"
@@ -42,13 +46,6 @@
 // ----------------------------------------------------------------------------
 // wxCLI
 // ----------------------------------------------------------------------------
-/**
- * OK - here goes - how does this work?  For a given size, we can allocate
- * a buffer that contains a given number of scroll-back lines.  We make
- * this a circular buffer with a start and end pointer for the line number.
- * 
- */
-
 IMPLEMENT_DYNAMIC_CLASS(wxCLI, wxScrolledWindow)
 
 BEGIN_EVENT_TABLE(wxCLI, wxScrolledWindow)
@@ -68,8 +65,12 @@ END_EVENT_TABLE()
   cutbuf[0] = '\0';
   linelen = 1000;
   ntotal = 0;
+  m_text = NULL;
   buff_curpos = 0;
   term_curpos = 0;
+  keyseq_count = 0;
+  last_search = -1;
+  insert = true;
 }
 
 // Predefined control sequence
@@ -101,8 +102,27 @@ void wxCLI::MoveBOL() {
   DoMoveCaret();
 }
 
+void wxCLI::EndOfLine() {
+  PlaceCursor(ntotal);
+}
+
 void wxCLI::OutputRawString(std::string txt) {
-  
+  PutMessage(txt.c_str());
+}
+
+void wxCLI::ClearEOL() {
+  int i;
+  for (i=caretCol;i<ncolumn;i++)
+    m_text[i+caretRow*ncolumn] = ' ';
+  m_text[ncolumn-1+caretRow*ncolumn] = 0;
+  Refresh();
+}
+
+void wxCLI::ClearEOD() {
+  int i;
+  for (i=caretCol+caretRow*ncolumn;i<nline*ncolumn;i++)
+    m_text[i] = 0;
+  Refresh();
 }
 
 /*.......................................................................
@@ -182,9 +202,9 @@ void wxCLI::OutputChar(char c, char pad) {
    * space then move the cursor back.
    */
   if(term_curpos % ncolumn == 0) {
-    int term_curpos = term_curpos;
+    int sterm_curpos = term_curpos;
     OutputChar(pad ? pad : ' ', ' ');
-    SetTermCurpos(term_curpos);
+    SetTermCurpos(sterm_curpos);
   };
 }
 
@@ -211,9 +231,15 @@ void wxCLI::OutputChar(char c, char pad) {
  *  return    int     0 - OK.
  */
 void wxCLI::OutputString(std::string st, char pad) {
+  if (st.size() == 0) return;
   for(int i=0;i<st.size()-1;i++)
     OutputChar(st[i],st[i+1]);
   OutputChar(st[st.size()-1],pad);
+}
+
+void wxCLI::ReplacePrompt(std::string aprompt) {
+  prompt = aprompt;
+  prompt_len = DisplayedPromptWidth();
 }
 
   // Delete nc characters starting from the one under the cursor.
@@ -273,35 +299,35 @@ void wxCLI::AddCharToLine(char c) {
   /*
    * Keep a record of the current cursor position.
    */
-  int buff_curpos = buff_curpos;
-  int term_curpos = term_curpos;
+  int sbuff_curpos = buff_curpos;
+  int sterm_curpos = term_curpos;
   /*
    * Work out the displayed width of the new character.
    */
-  int width = DisplayedCharWidth(c, term_curpos);
+  int width = DisplayedCharWidth(c, sterm_curpos);
   /*
    * If we are in insert mode, or at the end of the line,
    * check that we can accomodate a new character in the buffer.
    * If not, simply return, leaving it up to the calling program
    * to check for the absence of a newline character.
    */
-  if((insert || buff_curpos >= ntotal) && ntotal >= linelen)
+  if((insert || sbuff_curpos >= ntotal) && ntotal >= linelen)
     return;
   /*
    * Are we adding characters to the line (ie. inserting or appending)?
    */
-  if(insert || buff_curpos >= ntotal) {
+  if(insert || sbuff_curpos >= ntotal) {
     /*
      * If inserting, make room for the new character.
      */
-    if(buff_curpos < ntotal) {
-      memmove(line + buff_curpos + 1, line + buff_curpos,
-	      ntotal - buff_curpos);
+    if(sbuff_curpos < ntotal) {
+      memmove(line + sbuff_curpos + 1, line + sbuff_curpos,
+	      ntotal - sbuff_curpos);
     };
     /*
      * Copy the character into the buffer.
      */
-    line[buff_curpos] = c;
+    line[sbuff_curpos] = c;
     buff_curpos++;
     /*
      * If the line was extended, update the record of the string length
@@ -313,8 +339,8 @@ void wxCLI::AddCharToLine(char c) {
      * Redraw the line from the cursor position to the end of the line,
      * and move the cursor to just after the added character.
      */
-    OutputString(line + buff_curpos, '\0');
-    SetTermCurpos(term_curpos + width);
+    OutputString(line + sbuff_curpos, '\0');
+    SetTermCurpos(sterm_curpos + width);
     /*
      * Are we overwriting an existing character?
      */
@@ -323,12 +349,12 @@ void wxCLI::AddCharToLine(char c) {
      * Get the widths of the character to be overwritten and the character
      * that is going to replace it.
      */
-    int old_width = DisplayedCharWidth(line[buff_curpos],
-				       term_curpos);
+    int old_width = DisplayedCharWidth(line[sbuff_curpos],
+				       sterm_curpos);
     /*
      * Overwrite the character in the buffer.
      */
-    line[buff_curpos] = c;
+    line[sbuff_curpos] = c;
     /*
      * If we are replacing with a narrower character, we need to
      * redraw the terminal string to the end of the line, then
@@ -336,7 +362,7 @@ void wxCLI::AddCharToLine(char c) {
      * with spaces.
      */
     if(old_width > width) {
-      OutputString(line + buff_curpos, '\0');
+      OutputString(line + sbuff_curpos, '\0');
       /*
        * Clear to the end of the terminal.
        */
@@ -344,7 +370,7 @@ void wxCLI::AddCharToLine(char c) {
       /*
        * Move the cursor to the end of the new character.
        */
-      SetTermCurpos(term_curpos + width);
+      SetTermCurpos(sterm_curpos + width);
       buff_curpos++;
       /*
        * If we are replacing with a wider character, then we will be
@@ -355,8 +381,8 @@ void wxCLI::AddCharToLine(char c) {
        * Redraw the line from the cursor position to the end of the line,
        * and move the cursor to just after the added character.
        */
-      OutputString(line + buff_curpos, '\0');
-      SetTermCurpos(term_curpos + width);
+      OutputString(line + sbuff_curpos, '\0');
+      SetTermCurpos(sterm_curpos + width);
       buff_curpos++;
       /*
        * The original and replacement characters have the same width,
@@ -366,7 +392,7 @@ void wxCLI::AddCharToLine(char c) {
       /*
        * Copy the character into the buffer.
        */
-      line[buff_curpos] = c;
+      line[sbuff_curpos] = c;
       buff_curpos++;
       /*
        * Overwrite the original character.
@@ -390,18 +416,18 @@ void wxCLI::AddCharToLine(char c) {
 void wxCLI::AddStringToLine(std::string s) {
   int buff_slen;   /* The length of the string being added to line[] */
   int term_slen;   /* The length of the string being written to the terminal */
-  int buff_curpos; /* The original value of gl->buff_curpos */
-  int term_curpos; /* The original value of gl->term_curpos */
+  int sbuff_curpos; /* The original value of gl->buff_curpos */
+  int sterm_curpos; /* The original value of gl->term_curpos */
   /*
  * Keep a record of the current cursor position.
  */
-  buff_curpos = buff_curpos;
-  term_curpos = term_curpos;
+  sbuff_curpos = buff_curpos;
+  sterm_curpos = term_curpos;
   /*
    * How long is the string to be added?
    */
   buff_slen = s.length();
-  term_slen = DisplayedStringWidth(s, buff_slen, term_curpos);
+  term_slen = DisplayedStringWidth(s, buff_slen, sterm_curpos);
   /*
    * Check that we can accomodate the string in the buffer.
    * If not, simply return, leaving it up to the calling program
@@ -431,8 +457,8 @@ void wxCLI::AddStringToLine(std::string s) {
    * Write the modified part of the line to the terminal, then move
    * the terminal cursor to the end of the displayed input string.
    */
-  OutputString(line + buff_curpos, '\0');
-  SetTermCurpos(term_curpos + term_slen);
+  OutputString(line + sbuff_curpos, '\0');
+  SetTermCurpos(sterm_curpos + term_slen);
 }
 
 /*.......................................................................
@@ -450,7 +476,7 @@ void wxCLI::TruncateDisplay() {
   /*
    * Keep a record of the current terminal cursor position.
    */
-  int term_curpos = term_curpos;
+  int aterm_curpos = term_curpos;
   /*
    * First clear from the cursor to the end of the current input line.
    */
@@ -472,11 +498,11 @@ void wxCLI::TruncateDisplay() {
     /*
      * Where is the cursor now?
      */
-    term_curpos = ncolumn * (term_curpos / ncolumn + 1);
+    term_curpos = ncolumn * (aterm_curpos / ncolumn + 1);
     /*
      * Restore the cursor position.
      */
-    SetTermCurpos(term_curpos);
+    SetTermCurpos(aterm_curpos);
   };
   /*
    * Update the recorded position of the final character.
@@ -546,7 +572,7 @@ void wxCLI::TerminalMoveCursor(int n) {
 
 // Move the terminal cursor to a given position.
 void wxCLI::SetTermCurpos(int aterm_curpos) {
-  TerminalMoveCursor(term_curpos - aterm_curpos);
+  TerminalMoveCursor(aterm_curpos - term_curpos);
 }
 
 // Set the position of the cursor both in the line input buffer and on the
@@ -567,7 +593,8 @@ void wxCLI::PlaceCursor(int abuff_curpos) {
   /*
    * Move the terminal cursor to the corresponding character.
    */
-  SetTermCurpos(BuffCurposToTermCurpos(abuff_curpos));
+  int tmpi = BuffCurposToTermCurpos(abuff_curpos);
+  SetTermCurpos(tmpi);
 }
 
 // Return the terminal cursor position that corresponds to a given
@@ -661,34 +688,28 @@ wxScrollWinEvent gScroll(wxEVT_SCROLLWIN_BOTTOM);
 // Add a message to the output
 void wxCLI::PutMessage(const char * msg) {
   const char *cp;
-
-//   std::cout << "Got putmessage:" << msg << "\n";
-//   std::cout.flush();
   cp = msg;
   while (*cp) {
     if (*cp == '\n') {
-      m_tail++;
-      linepos = 0;
+      caretRow++;
+      caretCol = 0;
+      cp++;
+    } else if (caretCol == ncolumn) {
+      caretRow++;
+      caretCol = 0;
+    } else {
+      m_text[caretRow*ncolumn+(caretCol++)] = *cp;
+      cp++;
     }
-    else
-      CharAt(linepos++,m_tail) = wxChar(*cp);
-    cp++;
   }
-  SetLineCount(m_tail+1);
-  LastLine(); End();
-  wxPostEvent(this,gScroll);
+  DoMoveCaret();
   Refresh();
-  //  DoMoveCaret();
 }
 
 wxCLI::~wxCLI() {
+#if 0
   free(m_text);
-}
-
-void wxCLI::SetLineCount(int lineCount) {
-  m_nLines = lineCount;
-  SetScrollRate(0, m_hLine);
-  SetVirtualSize(-1, (m_nLines + 1) * m_hLine);
+#endif
 }
 
 void wxCLI::CreateCaret() {
@@ -696,7 +717,6 @@ void wxCLI::CreateCaret() {
   dc.SetFont(m_font);
   charHeight = dc.GetCharHeight();
   charWidth = dc.GetCharWidth();
-  m_hLine = charHeight;
 
   wxCaret *caret = new wxCaret(this, charWidth, charHeight);
   SetCaret(caret);
@@ -715,48 +735,48 @@ void wxCLI::MoveCaret(int x, int y) {
 void wxCLI::DoMoveCaret() {
   int screen_x, screen_y;
   
-  CalcScrolledPosition(m_xMargin + caretCol * charWidth,
-		       m_yMargin + caretRow * charHeight,
+  CalcScrolledPosition(caretCol * charWidth,
+		       caretRow * charHeight,
 		       &screen_x, &screen_y);
   GetCaret()->Move(screen_x, screen_y);
 }
 
 void wxCLI::DoResizeBuffer(int xsize, int ysize) {
   if (m_text == NULL) {
-    m_text = (wxChar *) calloc(xsize*ysize*m_scrollback,sizeof(wxChar));
+    m_text = (wxChar *) calloc(xsize*ysize,sizeof(wxChar));
     ncolumn = xsize;
-    m_yChars = ysize;
+    nline = ysize;
     return;
   }
 //   std::cout << "Got size event " << xsize << " x " << ysize << "\n";
 //   std::cout.flush();
-  if ((ncolumn == xsize) && (m_yChars == ysize)) return;
+  if ((ncolumn == xsize) && (nline == ysize)) return;
   wxChar *newBuf;
 
-  newBuf = (wxChar *) calloc(xsize*ysize*m_scrollback,sizeof(wxChar));
+  newBuf = (wxChar *) calloc(xsize*ysize,sizeof(wxChar));
   int copyx;
   copyx = xsize;
   if (copyx > ncolumn) copyx = ncolumn;
-  for (int k=0;k<m_nLines;k++) {
+  for (int k=0;k<nline;k++) {
     for (int l=0;l<copyx;l++)
       newBuf[k*xsize+l] = m_text[k*ncolumn+l];
   }
   free(m_text);
   m_text = newBuf;
   ncolumn = xsize;
-  m_yChars = ysize;
+  nline = ysize;
 }
 
 void wxCLI::OnSize( wxSizeEvent &event ) {
 
-  int ncolumn_new = (event.GetSize().x - 2*m_xMargin) / charWidth;
-  int m_yChars_new = (event.GetSize().y - 2*m_yMargin) / charHeight;
+  int ncolumn_new = (event.GetSize().x) / charWidth;
+  int nline_new = (event.GetSize().y) / charHeight;
   if ( !ncolumn_new )
     ncolumn_new = 1;
-  if ( !m_yChars_new )
-    m_yChars_new = 1;
+  if ( !nline_new )
+    nline_new = 1;
 
-  DoResizeBuffer(ncolumn_new,m_yChars_new);
+  DoResizeBuffer(ncolumn_new,nline_new);
 
   //    PutMessage("Ready\n");
   //     for (int k=0;k<50;k++)
@@ -778,42 +798,29 @@ void wxCLI::OnDraw(wxDC& dc) {
   CalcUnscrolledPosition(rectUpdate.x, rectUpdate.y,
 			 &rectUpdate.x, &rectUpdate.y);
   
-  size_t lineFrom = rectUpdate.y / m_hLine,
-    lineTo = rectUpdate.GetBottom() / m_hLine;
+  size_t lineFrom = rectUpdate.y / charHeight,
+    lineTo = rectUpdate.GetBottom() / charHeight;
   
-  if ( lineTo > m_nLines - 1)
-    lineTo = m_nLines - 1;
+  if ( lineTo > nline - 1)
+    lineTo = nline - 1;
   
-  wxCoord y = lineFrom*m_hLine;
+  wxCoord y = lineFrom*charHeight;
   for ( size_t line = lineFrom; line <= lineTo; line++ )  {
     wxCoord yPhys;
     CalcScrolledPosition(0, y, NULL, &yPhys);
 
     wxString oline;
     for (int x=0; x < ncolumn; x++) {
-      wxChar ch = CharAt(x,line);
+      wxChar ch = m_text[x + line*ncolumn];
       if (!ch) break;
       oline += ch;
     }
     dc.DrawText(oline,0,y);
     //    dc.DrawText(wxString::Format(_T("Line %u (logical %d, physical %d)"),
     //				 line, y, yPhys), 0, y);
-    y += m_hLine;
+    y += charHeight;
   }
   DoMoveCaret();
-}
-
-void wxCLI::NewLine() {
-  typeAhead[typeAheadTail++] = '\n';
-  typeAhead[typeAheadTail] = 0;
-  linepos = 0;
-  m_tail++;
-//   std::cout << "Posting command :" << typeAhead << ":\n";
-  FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
-					     FreeMat::Array::
-					     stringConstructor(typeAhead)));
-  typeAheadTail = 0;
-  typeAheadPtr = 0;
 }
 
 void wxCLI::IssueGetWidthRequest() {
@@ -822,106 +829,228 @@ void wxCLI::IssueGetWidthRequest() {
 					     int32Constructor(ncolumn)));
 }
 
-void wxCLI::IssueGetLineRequest(const char *prompt) {
-  PutMessage(prompt);
-  promptLength = strlen(prompt);
+void wxCLI::IssueGetLineRequest(const char *aprompt) {
+  ntotal = 0;
+  buff_curpos = 0;
+  term_curpos = 0;
+  term_len = 0;
+  insert_curpos = 0;
+  ReplacePrompt(aprompt);
+  DisplayPrompt();
 }
 
-void wxCLI::Backspace() {
-  int i;
-  if (caretCol <= promptLength) return;
-  /* Delete the character pointed to by the type-ahead buffer*/
-  for (i=typeAheadPtr;i<typeAheadTail;i++) {
-    typeAhead[i-1] = typeAhead[i];
-  }
-  typeAheadTail--;
-  typeAheadPtr--;
-  /* Change the contents of the screen buffer also */
-  for (i=caretCol;i<ncolumn;i++)
-    CharAt(i-1,caretRow) = CharAt(i,caretRow);
-  CharAt(ncolumn-1,caretRow) = 0;
-  caretCol--;
-  /* Force a refresh */
+
+void wxCLI::CursorLeft() {
+  PlaceCursor(buff_curpos-1);
+}
+
+void wxCLI::CursorRight() {
+  PlaceCursor(buff_curpos+1);
+}
+
+void wxCLI::BeginningOfLine() {
+  PlaceCursor(0);
+}
+
+void wxCLI::BackwardDeleteChar() {
+  if (1 > buff_curpos - insert_curpos)
+    return;
+  CursorLeft();
+  DeleteChars(1,0);
+}
+
+void wxCLI::ForwardDeleteChar() {
+  DeleteChars(1,0);
+}
+
+void wxCLI::AddHistory(std::string line) {
+  prefix = "";
+  prefix_len = 0;
+  if ((history.size() > 0) && (history.back() == line)) return;
+  history.push_back(line);
+}
+
+void wxCLI::Redisplay() {
+  /*
+   * Keep a record of the current cursor position.
+   */
+  int sbuff_curpos = buff_curpos;
+  /*
+   * Move the cursor to the start of the terminal line, and clear from there
+   * to the end of the display.
+   */
+  SetTermCurpos(0);
+  ClearEOD();
+  /*
+   * Nothing is displayed yet.
+   */
+  term_len = 0;
+  /*
+   * Display the current prompt.
+   */
+  DisplayPrompt();
+  /*
+   * Render the part of the line that the user has typed in so far.
+   */
+  OutputString(line,'\0');
+  /*
+   * Restore the cursor position.
+   */
+  PlaceCursor(sbuff_curpos);
   Refresh();
 }
 
-void wxCLI::DoKeyPress(wxChar ch) {
-  LastLine();// End();
-  if (typeAheadPtr < typeAheadTail) {
-    int i;
-    for (i=typeAheadTail;i>=typeAheadPtr;i--)
-      typeAhead[i+1] = typeAhead[i];
-    // Adjust the contents of the screen buffer
-    for (i=ncolumn-1;i>=caretCol;i--)
-      CharAt(i+1,caretRow) = CharAt(i,caretRow);
-    typeAheadTail++;
-    Refresh();
+void wxCLI::HistoryFindBackwards() {
+  int i;
+  bool found;
+  if (startsearch == 0) return;
+  i = startsearch-1;
+  found = false;
+  while (i>=0 && !found) {
+    found = (history[i].compare(0,prefix_len,prefix) == 0);
+    if (!found) i--;
   }
-  typeAhead[typeAheadPtr++] = (char) ch;
-  if (typeAheadPtr > typeAheadTail)
-    typeAheadTail = typeAheadPtr;
-  CharAt(caretCol, caretRow) = ch;
-  
-  wxCaretSuspend cs(this);
-  wxClientDC dc(this);
-  dc.SetFont(m_font);
-  dc.SetBackgroundMode(wxSOLID); // overwrite old value
-  int scroll_x, scroll_y;
-  CalcScrolledPosition(caretCol * charWidth,
-		       caretRow * charHeight,
-		       &scroll_x,&scroll_y);
-  dc.DrawText(ch, scroll_x, scroll_y );
-  NextChar();
+  if (!found) return;
+  strcpy(line,history[i].c_str());
+  line[strlen(line)-1] = 0;
+  startsearch = i;
+}
+
+void wxCLI::HistoryFindForwards() {
+  int i;
+  bool found;
+  if (startsearch == 0) return;
+  i = startsearch+1;
+  found = false;
+  while (i<history.size() && !found) {
+    found = (history[i].compare(0,prefix_len,prefix) == 0);
+    if (!found) i++;
+  }
+  if (!found) return;
+  strcpy(line,history[i].c_str());
+  line[strlen(line)-1] = 0;
+  startsearch = i;
+}
+
+void wxCLI::SearchPrefix(const char* aline, int aprefix_len) {
+  char tbuf[linelen+2];
+  // Set the prefix string
+  memcpy(tbuf,aline,aprefix_len);
+  tbuf[aprefix_len] = 0;
+  prefix_len = aprefix_len;
+  prefix = std::string(tbuf);
+  startsearch = history.size();
+}
+
+void wxCLI::HistorySearchBackward() {
+  if (last_search != keyseq_count-1)
+    SearchPrefix(line,buff_curpos);
+  last_search = keyseq_count;
+  HistoryFindBackwards();
+  ntotal = strlen(line);
+  buff_curpos = strlen(line);
+  Redisplay();
+}
+
+void wxCLI::HistorySearchForward() {
+  if (last_search != keyseq_count-1)
+    SearchPrefix(line,buff_curpos);
+  last_search = keyseq_count;
+  HistoryFindForwards();
+  ntotal = strlen(line);
+  buff_curpos = strlen(line);
+  Redisplay();
+}
+
+void wxCLI::KillLine() {
+  strcpy(cutbuf,line+buff_curpos);
+  std::cout << "cutbuf has " << cutbuf << "\n";
+  ntotal = buff_curpos;
+  line[ntotal] = '\0';
+  TruncateDisplay();
+  PlaceCursor(buff_curpos);
+}
+
+void wxCLI::Yank() {
+  buff_mark = buff_curpos;
+  if (cutbuf[0] == '\0')
+    return;
+  AddStringToLine(cutbuf);
 }
 
 void wxCLI::OnChar( wxKeyEvent &event ) {
-  bool ctrlDown = event.ControlDown();
-
-  switch ( event.KeyCode() )
-    {
-    case WXK_BACK:
-      Backspace();
+  keyseq_count++;
+  switch( event.KeyCode()) {
+  case WXK_LEFT:
+    CursorLeft();
+    break;
+  case WXK_RIGHT:
+    CursorRight();
+    break;
+  case WXK_BACK:
+    BackwardDeleteChar();
+    break;
+  case WXK_DELETE:
+    ForwardDeleteChar();
+    break;
+  case WXK_INSERT:
+    insert = !insert;
+    std::cout << "Toggling insert to " << insert << "\n";
+    break;
+  case WXK_HOME:
+    BeginningOfLine();
+    break;
+  case WXK_END:
+    EndOfLine();
+    break;
+  case WXK_UP:
+    HistorySearchBackward();
+    break;
+  case WXK_DOWN:
+    HistorySearchForward();
+    break;
+  case WXK_RETURN:
+    line[ntotal++] = '\n';
+    line[ntotal] = 0;
+    FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
+					       FreeMat::Array::stringConstructor(line)));
+    
+    EndOfLine();
+    OutputRawString("\n");
+    AddHistory(line);
+    break;
+  case 1:
+    if (event.ControlDown()) {
+      BeginningOfLine();
       break;
-    case WXK_LEFT:
-      if (caretCol > promptLength) {
-	PrevChar();
-	typeAheadPtr--;
-      }
-      break;
-    case WXK_RIGHT:
-      if (caretCol  < ncolumn) {
-	NextChar();
-	typeAheadPtr++;
-      }
-      break;
-    case WXK_UP:
-      PrevLine();
-      break;
-    case WXK_DOWN:
-      NextLine();
-      break;
-    case WXK_HOME:
-      Home();
-      break;
-    case WXK_END:
-      End();
-      break;
-    case WXK_RETURN:
-      Home();
-      //            NextLine();
-      NewLine();
-      break;
-    default:
-      if ( !event.AltDown() && wxIsprint(event.KeyCode()) )
-	{
-	  wxChar ch = (wxChar)event.KeyCode();
-	  DoKeyPress(ch);
-	}
-      else
-	{
-	  event.Skip();
-	}
     }
-  DoMoveCaret();
+  case 5:
+    if (event.ControlDown()) {
+      EndOfLine();
+      break;
+    }    
+  case 4:
+    if (event.ControlDown()) {
+      ForwardDeleteChar();
+      break;
+    }
+  case 11:
+    if (event.ControlDown()) {
+      KillLine();
+      break;
+    }
+  case 25:
+    if (event.ControlDown()) {
+      Yank();
+      break;
+    }
+  default:
+    if (!event.ControlDown())
+      AddCharToLine(event.KeyCode());
+    else {
+      std::cout << "keycode = " << event.KeyCode() << " Ctrl = " << event.ControlDown() << "\n";
+      event.Skip();
+    }
+  }
 }
 

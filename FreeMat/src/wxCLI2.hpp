@@ -89,6 +89,8 @@ public:
   int DisplayPrompt();
   // Return the number of characters used by the prompt on the terminal.
   int DisplayedPromptWidth();
+  void EndOfLine();
+  void ReplacePrompt(std::string prmpt);
   // operations
   void CreateCaret();
   void MoveCaret(int x, int y);
@@ -97,16 +99,30 @@ public:
   void errorMessage(const char *);
   void IssueGetLineRequest(const char*);
   void IssueGetWidthRequest();
-  void DoKeyPress(wxChar ch);
   // event handlers
   void OnSize( wxSizeEvent &event );
   void OnChar( wxKeyEvent &event );
   void PutMessage(const char *);
   virtual void OnDraw(wxDC& dc);
   void SetFont(wxFont aFont);
+  void CursorLeft();
+  void CursorRight();
+  void BeginningOfLine();
+  void BackwardDeleteChar();
+  void ForwardDeleteChar();
+  void HistoryFindBackwards();
+  void HistoryFindForwards();
+  void SearchPrefix(const char*, int);
+  void HistorySearchBackward();
+  void HistorySearchForward();
+  void Redisplay();
+  void AddHistory(std::string);
+  void KillLine();
+  void Yank();
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
+  void DoResizeBuffer(int xsize, int ysize);
   App *mainApp;
   wxFont   m_font;
   // size (in pixels) of one character
@@ -117,7 +133,7 @@ private:
   int nline;
   int ncolumn;
   // the text
-  std::vector<std::string> buffer;
+  std::vector<std::string> history;
   // The line buffer
   char line[1002];
   // The maximum allowed line length
@@ -140,8 +156,14 @@ private:
   int buff_mark;
   // Cursor position at start of insert
   int insert_curpos;
+  int keyseq_count;
+  int last_search;
+  std::string prefix;
+  int prefix_len;
   // True in insert mode
   bool insert;
+  int startsearch;
+  wxChar *m_text;
   DECLARE_DYNAMIC_CLASS(wxCLI)
   DECLARE_EVENT_TABLE()
 };

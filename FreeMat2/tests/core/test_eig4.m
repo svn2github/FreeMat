@@ -1,17 +1,18 @@
-% Test eigenvalue function - general matrices
-function t = test_eig1
+% Test generalized eigenvalue function - general matrices 
+function t = test_eig4
 % First the float version
 t1all = 1;
 printf('Float version\n');
 for i=2:100
   a = float(randn(i)); 
-  [v,d] = eig(a);
-  emat = a*v - v*d;
+  b = float(randn(i)); 
+  [v,d] = eig(a,b);
+  emat = a*v - b*v*d;
   er = max(abs(emat(:)));
   bnd = 2*max(diag(abs(d)))*feps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
-  g = eig(a);
+  g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
   if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
@@ -22,13 +23,14 @@ t2all = 1;
 printf('Double version\n');
 for i=2:100
   a = double(randn(i)); 
-  [v,d] = eig(a);
-  emat = a*v - v*d;
+  b = double(randn(i)); 
+  [v,d] = eig(a,b);
+  emat = a*v - b*v*d;
   er = max(abs(emat(:)));
   bnd = 2*max(diag(abs(d)))*eps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
-  g = eig(a);
+  g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
   if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
@@ -39,13 +41,14 @@ printf('Complex version\n');
 t3all = 1;
 for i=2:100
   a = complex(randn(i)+j*randn(i)); 
-  [v,d] = eig(a);
-  emat = a*v - v*d;
+  b = complex(randn(i)+j*randn(i)); 
+  [v,d] = eig(a,b);
+  emat = a*v - b*v*d;
   er = max(abs(emat(:)));
   bnd = 2*max(diag(abs(d)))*feps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
-  g = eig(a);
+  g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
   if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
@@ -56,13 +59,14 @@ printf('DComplex version\n');
 t4all = 1;
 for i=2:100
   a = dcomplex(randn(i)+j*randn(i)); 
-  [v,d] = eig(a);
-  emat = a*v - v*d;
+  b = dcomplex(randn(i)+j*randn(i)); 
+  [v,d] = eig(a,b);
+  emat = a*v - b*v*d;
   er = max(abs(emat(:)));
   bnd = 2*max(diag(abs(d)))*eps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
-  g = eig(a);
+  g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
   if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end

@@ -14,16 +14,7 @@ FT_Face face;
 FT_Error error;
 FT_UInt glyph_index;
 FT_GlyphSlot slot;
-
-typedef struct {
-  int width;
-  int height;
-  int offset_top;
-  int offset_left;
-  int advance_x;
-  int advance_y;
-  unsigned char* glyphdat;
-} FM_Glyph;
+FT_Vector kerning;
 
 void writePPM(int width, int height, char*image) {
   FILE *fp;
@@ -36,10 +27,11 @@ void writePPM(int width, int height, char*image) {
 }
 
 int main(int argc, char* argv[]) {
-  int i, j, num_chars, n;
+  int i, j, num_chars, n, m;
   int pen_x, pen_y;
   int s_penx, s_peny;
   unsigned char *image;
+  int kerningCount;
   FILE *fp;
   if (FT_Init_FreeType(&library)) 
     ERROR("Unable to initialize FreeType library!");
@@ -48,19 +40,53 @@ int main(int argc, char* argv[]) {
   // 16 x 16 bitmap size
   if (FT_Set_Pixel_Sizes(face, 0, atoi(argv[2])))
     ERROR("Unable to set character size");
+  if (argc > 4) {
+    if (error = FT_Attach_File(face, argv[4]))
+      ERROR("Unable to load afm data");
+    printf("Attached file %s\n",argv[4]);
+    if (FT_HAS_KERNING(face)) 
+      printf("Kerning found\n");
+  }
   fp = fopen(argv[3],"wb");
   if (!fp)
     ERROR("Unable to open output file");
   slot = face->glyph;
   for (n=0;n<256;n++) {
     FT_Load_Char(face, n, FT_LOAD_RENDER);
-    fwrite(&slot->bitmap.rows,sizeof(int),1,fp);
-    fwrite(&slot->bitmap.width,sizeof(int),1,fp);
-    fwrite(&slot->bitmap_top,sizeof(int),1,fp);
-    fwrite(&slot->bitmap_left,sizeof(int),1,fp);
-    fwrite(&slot->advance.x,sizeof(int),1,fp);
-    fwrite(&slot->advance.y,sizeof(int),1,fp);
-    fwrite(slot->bitmap.buffer,sizeof(char),slot->bitmap.rows*slot->bitmap.width,fp);
+    fprintf(fp,"glyph %d\n",n);
+    fprintf(fp,"rows %d\n",slot->bitmap.rows);
+    fprintf(fp,"width %d\n",slot->bitmap.width);
+    fprintf(fp,"top %d\n",slot->bitmap_top);
+    fprintf(fp,"left %d\n",slot->bitmap_left);
+    fprintf(fp,"advancex %d\n",slot->advance.x);
+    fprintf(fp,"advancey %d\n",slot->advance.y);
+    /*
+     * Count the kerning data
+     */
+    kerningCount = 0;
+    for (m=0;m<256;m++) {
+      FT_Get_Kerning(face, FT_Get_Char_Index(face, n), 
+		     FT_Get_Char_Index(face, m), 
+		     FT_KERNING_DEFAULT, &kerning);
+      if (kerning.x != 0 || kerning.y != 0)
+	kerningCount++;
+    }
+    fprintf(fp,"kerningCount %d\n",kerningCount);
+    /*
+     * Write the kerning data
+     */
+    for (m=0;m<256;m++) {
+      FT_Get_Kerning(face, FT_Get_Char_Index(face, n), 
+		     FT_Get_Char_Index(face, m), 
+		     FT_KERNING_DEFAULT, &kerning);
+      if (kerning.x != 0 || kerning.y != 0) {
+	fprintf(fp,"kern %d %d %d\n",m,kerning.x,kerning.y);
+      }
+    }
+    for (m=0;m<slot->bitmap.rows*slot->bitmap.width;m++) 
+      fprintf(fp,"%x ",slot->bitmap.buffer[m]);
+    if (slot->bitmap.rows*slot->bitmap.width != 0)
+      fprintf(fp,"\n");
   }
   fclose(fp);
 }

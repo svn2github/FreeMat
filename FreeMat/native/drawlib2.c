@@ -233,7 +233,7 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1)
  * IntensityBits = log base 2 of NumLevels; the # of bits used to describe
  *          the intensity of the drawing color. 2**IntensityBits==NumLevels
  */
-void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
+void DrawWuLineStyle(int X0, int Y0, int X1, int Y1, int endPt)
 {
   unsigned int IntensityShift, ErrorAdj, ErrorAcc;
   unsigned int ErrorAccTemp, Weighting, WeightingComplementMask;
@@ -266,11 +266,13 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
      every pixel */
   if (DeltaY == 0) {
     /* Horizontal line */
-    while (DeltaX-- != 0) {
+    while (DeltaX-- > 0) {
       X0 += XDir; 
       if (penDraws())
 	blendPixel(X0, Y0, 256);
     }
+    if (endPt && penDraws())
+      blendPixel(X1, Y1, 256);
     return;
   }
   if (DeltaX == 0) {
@@ -279,7 +281,9 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
       Y0 += YDir;
       if (penDraws())
 	blendPixel(X0, Y0, 256);
-    } while (--DeltaY != 0);
+    } while (--DeltaY > 0); 
+    if (endPt && penDraws())
+      blendPixel(X1, Y1, 256);   
     return;
   }
   if (DeltaX == DeltaY) {
@@ -289,7 +293,9 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
       Y0 += YDir;
       if (penDraws())
 	blendPixel(X0, Y0, 256);
-    } while (--DeltaY != 0);
+    } while (--DeltaY > 0);
+    if (endPt && penDraws())
+      blendPixel(X1, Y1, 256);       
     return;
   }
   /* Line is not horizontal, diagonal, or vertical */
@@ -326,8 +332,8 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
     }
     /* Draw the final pixel, which is always exactly intersected by the line
        and so needs no weighting */
-    if (penDraws())
-      blendPixel(X1, Y1, 256);
+    if (endPt && penDraws())
+      blendPixel(X1, Y1, 256);   
     return;
   }
   /* It's an X-major line; calculate 16-bit fixed-point fractional part of a
@@ -355,8 +361,8 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
    }
   /* Draw the final pixel, which is always exactly intersected by the line
      and so needs no weighting */
-  if (penDraws())
-    blendPixel(X1, Y1, 256);
+  if (endPt && penDraws())
+    blendPixel(X1, Y1, 256);   
 }
 
 /* Problem  with current design - if a line goes left to right, and then right to left, the pattern is not properly conserved.  Might be better to rewrite the Wu anti-aliasing renderer so that lines are traced from start to stop */
@@ -371,13 +377,13 @@ int main() {
 /*   DrawWuLine(52,37,129,307); */
   pen_state = 0;
   pen_style = PEN_DASHED;
-  DrawWuLineStyle(52,37,129,307);
+/*   DrawWuLineStyle(52,37,129,307); */
   pen_state = 0;
   pen_style = PEN_DOTTED;
-  DrawWuLineStyle(72,37,149,307);
+/*   DrawWuLineStyle(72,37,149,307); */
   pen_state = 0;
   pen_style = PEN_DASH_DOT;
-  DrawWuLineStyle(92,37,169,307);
+/*   DrawWuLineStyle(92,37,169,307); */
   pen_state = 0;
   pen_style = PEN_DASHED;
   lastx = 100;
@@ -385,14 +391,14 @@ int main() {
   for (t=100;t < 400;t++) {
     float rad = (t-100.0)/400*2*M_PI*3;
     float y = sin(rad)*50 + 250;
-    DrawWuLineStyle(lastx,lasty,t,(int)y);
+    DrawWuLineStyle(lastx,lasty,t,(int)y,0);
     lastx = t; lasty = y;
   }
 /*   pen_style = PEN_DASH_DOT; */
   for (t=0;t<360;t+=10) {
     float delx = 100*cos(t*M_PI/180);
     float dely = 100*sin(t*M_PI/180);
-    DrawWuLineStyle(256,256,256+delx,256+dely);
+    DrawWuLineStyle(256,256,256+delx,256+dely,0);
   }
   writePPM();
 }

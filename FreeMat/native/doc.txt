@@ -89,6 +89,7 @@ class GraphContext {
    Point2D GetTextExtent(string label);
    void DrawText(string label, Point2D pos);
    void DrawRotatedText(string label, Point2D pos, float rotationAngle);
+   Rect2D GetTextExtent(string label);
    void SetColor(string colorName);
    void SetLineStyle(lineStyle style);
    void DrawLine(Point2D pos1, Point2D pos2);
@@ -144,3 +145,11 @@ rendering of the fonts...  (although Helvetica would work also...);
 Furthermore, I can pre-parse the AFM data to get metrics for the Helvetica font.  
 The result can be stored as a binary file...  This avoids the problem of parsing 
 AFM files in the final code.
+
+Another option (still thinking...) is to use freetype.  It has a nice license,
+works well, and can process Type-1 fonts.  I can use it to do the text extent
+calculations, etc.  A problem with this is that I would need to distribute 
+text metrics _and_ a font with the program.   Can a GPL'ed font be included
+with a non-GPL'ed program?  
+
+ 

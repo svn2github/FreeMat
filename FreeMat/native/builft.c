@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define ERROR(x) {fprintf(stderr,x); exit(1);}
+#define ERROR(x) {fprintf(stderr,"%s  %x\n",x,error); exit(1);}
 
 FT_Library library;
 FT_Face face;
@@ -55,7 +55,10 @@ int main(int argc, char* argv[]) {
   s_peny = pen_y << 6;
   slot = face->glyph;
   for (n=0;n<num_chars;n++) {
-    FT_Load_Char(face, argv[2][n] , FT_LOAD_RENDER);
+    printf("Rendering character %c %d\n",argv[2][n],n);
+    if (error = FT_Load_Char(face, argv[2][n] , FT_LOAD_RENDER))
+      ERROR("Unable to render character");
+    printf("bitmap size %d %d\n",slot->bitmap.rows,slot->bitmap.width);
     for (i=0;i<slot->bitmap.rows;i++)
       for (j=0;j<slot->bitmap.width;j++)
 	image[512*(pen_y-slot->bitmap_top+i)+(pen_x+slot->bitmap_left+j)] = 

@@ -2194,6 +2194,7 @@ namespace FreeMat {
 					     true)) {
 	  Free(eigenvals);
 	  Free(Vp);
+	  printf("Sym failed\r\n");
 	  return false;
 	}
 	// Copy the eigenvalues into a diagonal (float) matrix

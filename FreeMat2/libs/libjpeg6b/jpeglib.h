@@ -21,7 +21,11 @@
  */
 
 #ifndef JCONFIG_INCLUDED	/* in case jinclude.h already did */
+#ifdef WIN32
+#include "jconfig.vc"
+#else
 #include "jconfig.h"		/* widely used configuration options */
+#endif
 #endif
 #include "jmorecfg.h"		/* seldom changed options */
 

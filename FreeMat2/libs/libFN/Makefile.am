@@ -35,14 +35,17 @@ f2c/qrsolv.c \
 f2c/ribesl.c \
 f2c/rjbesl.c \
 f2c/rkbesl.c \
-f2c/rybesl.c
+f2c/rybesl.c \
+libFN.vcproj
 
 noinst_LIBRARIES = libFN.a
 
 INCLUDES= -I@top_srcdir@/libs/libFreeMat -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP
 
 libFN_a_SOURCES = OptFun.cpp \
+LoadFN.hpp \
 LoadFN.cpp \
+FN.hpp \
 lmdif1.f \
 lmdif.f \
 lmpar.f \

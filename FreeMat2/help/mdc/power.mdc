@@ -1,0 +1,104 @@
+POWER Matrix Power Operator
+
+USAGE
+
+The power operator for scalars and square matrices.  This operator is really a 
+combination of two operators, both of which have the same general syntax:
+
+  y = a ^ b
+
+The exact action taken by this operator, and the size and type of the output, 
+depends on which of the two configurations of a and b is present:
+\begin{enumerate}
+  
+* a is a scalar, b is a square matrix
+  
+* a is a square matrix, b is a scalar
+\end{enumerate}
+
+FUNCTION INTERNALS
+
+In the first case that a is a scalar, and b is a square matrix, the matrix power is defined in terms of the eigenvalue decomposition of b.  Let b have the following eigen-decomposition (problems arise with non-symmetric matrices b, so let us assume that b is symmetric):
+
+$
+  b = E \begin{bmatrix} \lambda_1 & 0          & \cdots  & 0 \\
+                              0   & \lambda_2  &  \ddots & \vdots \\
+                              \vdots & \ddots & \ddots & 0 \\
+                              0   & \hdots & 0 & \lambda_n \end{bmatrix}
+      E^{-1}
+$
+
+Then a raised to the power b is defined as
+
+$
+  a^{b} = E \begin{bmatrix} a^{\lambda_1} & 0          & \cdots  & 0 \\
+                              0   & a^{\lambda_2}  &  \ddots & \vdots \\
+                              \vdots & \ddots & \ddots & 0 \\
+                              0   & \hdots & 0 & a^{\lambda_n} \end{bmatrix}
+      E^{-1}
+$
+
+Similarly, if a is a square matrix, then a has the following eigen-decomposition (again, suppose a is symmetric):
+
+$
+  a = E \begin{bmatrix} \lambda_1 & 0          & \cdots  & 0 \\
+                              0   & \lambda_2  &  \ddots & \vdots \\
+                              \vdots & \ddots & \ddots & 0 \\
+                              0   & \hdots & 0 & \lambda_n \end{bmatrix}
+      E^{-1}
+$
+
+Then a raised to the power b is defined as
+
+$
+  a^{b} = E \begin{bmatrix} \lambda_1^b & 0          & \cdots  & 0 \\
+                              0   & \lambda_2^b  &  \ddots & \vdots \\
+                              \vdots & \ddots & \ddots & 0 \\
+                              0   & \hdots & 0 & \lambda_n^b \end{bmatrix}
+      E^{-1}
+$
+
+
+EXAMPLES
+
+We first define a simple 2 x 2 symmetric matrix
+
+$
+--> A = 1.5
+A = 
+  <double>  - size: [1 1]
+    1.500000000000000      
+--> B = [1,.2;.2,1]
+B = 
+  <double>  - size: [2 2]
+ 
+Columns 1 to 2
+    1.000000000000000         0.200000000000000      
+    0.200000000000000         1.000000000000000      
+$
+
+First, we raise B to the (scalar power) A:
+
+$
+--> C = B^A
+C = 
+  <double>  - size: [2 2]
+ 
+Columns 1 to 2
+    1.015037945406166         0.299496192606233      
+    0.299496192606233         1.015037945406166      
+$
+
+Next, we raise A to the matrix power B:
+
+$
+--> C = A^B
+C = 
+  <double>  - size: [2 2]
+ 
+Columns 1 to 2
+    1.504934762009570         0.121772894786978      
+    0.121772894786978         1.504934762009570      
+$
+
+  

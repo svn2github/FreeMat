@@ -1,0 +1,47 @@
+SEED Seed the Random Number Generator
+
+USAGE
+
+Seeds the random number generator using the given integer seed.  
+Changing the seed allows you to choose which pseudo-random
+sequence is generated.  The seed takes a single uint32 value:
+
+  seed(s)
+
+where s is the seed value.
+
+EXAMPLE
+
+Here's an example of how the seed value can be used to reproduce
+a specific random number sequence.
+
+$
+--> seed(32);
+--> rand(1,5)
+ans = 
+  <double>  - size: [1 5]
+ 
+Columns 1 to 2
+    0.858889267293040         0.372711154975280      
+ 
+Columns 3 to 4
+    0.555128777998597         0.955656548991768      
+ 
+Columns 5 to 5
+    0.736669598011224      
+--> seed(32);
+--> rand(1,5)
+ans = 
+  <double>  - size: [1 5]
+ 
+Columns 1 to 2
+    0.858889267293040         0.372711154975280      
+ 
+Columns 3 to 4
+    0.555128777998597         0.955656548991768      
+ 
+Columns 5 to 5
+    0.736669598011224      
+$
+
+  

@@ -1,0 +1,30 @@
+WHICH Get Information on Function
+
+USAGE
+
+Returns information on a function (if defined).  The usage is
+
+   which(fname)
+
+where fname is a string argument that contains the name of the 
+function.  For functions and scripts defined
+via .m files, the which command returns the location of the source
+file.  
+
+EXAMPLE
+
+First, we apply the which command to a built in function.
+
+$
+--> which fft
+Function fft is a built in function
+$
+
+Next, we apply it to a function defined via a .m file.
+
+$
+--> which fliplr
+Function fliplr, M-File function in file '/Users/basu/FreeMat2/MFiles/fliplr.m'
+$
+
+  

@@ -1,0 +1,211 @@
+FUNCTION Function Declarations
+
+USAGE
+
+There are several forms for function declarations in FreeMat.
+The most general syntax for a function declaration is the 
+following:
+
+  function [out_1,...,out_M,varargout] = fname(in_1,...,in_N,varargin)
+
+where out_i are the output parameters, in_i are the input
+parameters, and varargout and varargin are special keywords
+used for functions that have variable inputs or outputs.  For 
+functions with a fixed number of input or output parameters, the 
+syntax is somewhat simpler:
+
+  function [out_1,...,out_M] = fname(in_1,...,in_N)
+
+Note that functions that have no return arguments can omit
+the return argument list (of out_i) and the equals sign:
+
+  function fname(in_1,...,in_N)
+
+Likewise, a function with no arguments can eliminate the list
+of parameters in the declaration:
+
+  function [out_1,...,out_M] = fname
+
+Functions that return only a single value can omit the brackets
+
+  function out_1 = fname(in_1,...,in_N)
+
+
+In the body of the function in_i are initialized with the
+values passed when the function is called.  Also, the function
+must assign values for out_i to pass values to the caller.
+Note that by default, FreeMat passes arguments by value, meaning
+that if we modify the contents of in_i inside the function,
+it has no effect on any variables used by the caller.  Arguments
+can be passed by reference by prepending an ampersand &
+before the name of the input, e.g.
+
+  function [out1,...,out_M] = fname(in_1,&in_2,in_3,...,in_N)
+
+in which case in_2 is passed by reference and not by value.
+Also, FreeMat works like C in that the caller does not have
+to supply the full list of arguments.  Also, when keywords
+(see help keywords) are used, an arbitrary subset of the 
+parameters may be unspecified. To assist in deciphering 
+the exact parameters that were passed,
+FreeMat also defines two variables inside the function context:
+nargin and nargout, which provide the number of input
+and output parameters of the caller, respectively. See help for 
+nargin and nargout for more details.  In some 
+circumstances, it is necessary to have functions that
+take a variable number of arguments, or that return a variable
+number of results.  In these cases, the last argument to the 
+parameter list is the special argument varargin.  Inside
+the function, varargin is a cell-array that contains
+all arguments passed to the function that have not already
+been accounted for.  Similarly, the function can create a
+cell array named varargout for variable length output lists.
+See help varargin and varargout for more details.
+
+The function name fname can be any legal FreeMat identifier.
+Functions are stored in files with the .m extension.  Note
+that the name of the file (and not the function name fname 
+used in the declaration) is how the function appears in FreeMat.
+So, for example, if the file is named foo.m, but the declaration
+uses bar for the name of the function, in FreeMat, it will 
+still appear as function foo.  Note that this is only true
+for the first function that appears in a .m file.  Additional
+functions that appear after the first function are known as
+helper functions or local functions.  These are functions that
+can only be called by other functions in the same .m file.  Furthermore
+the names of these helper functions are determined by their declaration
+and not by the name of the .m file.  An example of using
+helper functions is included in the examples.
+
+Another important feature of functions, as opposed to, say scripts,
+is that they have their own scope.  That means that variables
+defined or modified inside a function do not affect the scope of the
+caller.  That means that a function can freely define and use variables
+without unintentionally using a variable name reserved elsewhere.  The
+flip side of this fact is that functions are harder to debug than
+scripts without using the keyboard function, because the intermediate
+calculations used in the function are not available once the function
+exits.
+
+EXAMPLES
+
+Here is an example of a trivial function that adds its
+first argument to twice its second argument:
+
+$
+ *** addtest.m
+function c = addtest(a,b)
+  c = a + 2*b;
+$
+
+
+$
+--> addtest(1,3)
+ans = 
+  <int32>  - size: [1 1]
+             7  
+--> addtest(3,0)
+ans = 
+  <int32>  - size: [1 1]
+             3  
+$
+
+Suppose, however, we want to replace the value of the first 
+argument by the computed sum.  A first attempt at doing so
+has no effect:
+
+$
+ *** addtest2.m
+function addtest2(a,b)
+  a = a + 2*b;
+$
+
+
+$
+--> arg1 = 1
+arg1 = 
+  <int32>  - size: [1 1]
+             1  
+--> arg2 = 3
+arg2 = 
+  <int32>  - size: [1 1]
+             3  
+--> addtest2(arg1,arg2)
+--> arg1
+ans = 
+  <int32>  - size: [1 1]
+             1  
+--> arg2
+ans = 
+  <int32>  - size: [1 1]
+             3  
+$
+
+The values of arg1 and arg2 are unchanged, because they are
+passed by value, so that any changes to a and b inside 
+the function do not affect arg1 and arg2.  We can change
+that by passing the first argument by reference:
+
+$
+ *** addtest3.m
+function addtest3(&a,b)
+  a = a + 2*b
+$
+
+Note that it is now illegal to pass a literal value for a when
+calling addtest3:
+
+$
+--> addtest(3,4)
+ans = 
+  <int32>  - size: [1 1]
+            11  
+--> addtest(arg1,arg2)
+ans = 
+  <int32>  - size: [1 1]
+             7  
+--> arg1
+ans = 
+  <int32>  - size: [1 1]
+             1  
+--> arg2
+ans = 
+  <int32>  - size: [1 1]
+             3  
+$
+
+The first example fails because we cannot pass a literal like the
+number 3 by reference.  However, the second call succeeds, and
+note that arg1 has now changed.  Note: please be careful when
+passing by reference - this feature is not available in MATLAB
+and you must be clear that you are using it.
+
+As variable argument and return functions are covered elsewhere,
+as are keywords, we include one final example that demonstrates
+the use of helper functions, or local functions, where
+multiple function declarations occur in the same file.
+
+$
+ *** euclidlength.m
+function y = foo(x,y)
+  square_me(x);
+  square_me(y);
+  y = sqrt(x+y);
+
+function square_me(&t)
+  t = t^2;
+$
+
+
+$
+--> euclidlength(3,4)
+ans = 
+  <double>  - size: [1 1]
+    5.000000000000000      
+--> euclidlength(2,0)
+ans = 
+  <double>  - size: [1 1]
+    2.000000000000000      
+$
+
+  

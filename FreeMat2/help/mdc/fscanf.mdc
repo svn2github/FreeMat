@@ -1,0 +1,13 @@
+FSCANF Formatted File Input Function (C-Style)
+
+USAGE
+
+Reads values from a file.  The general syntax for its use is
+
+  [a1,...,an] = fscanf(handle,format)
+
+Here format is the format string, which is a string that
+controls the format of the input.  Each value that is parsed from
+the file described by handle occupies one output slot.
+See printf for a description of the format.
+  

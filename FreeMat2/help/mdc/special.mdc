@@ -1,0 +1,53 @@
+SPECIAL Special Calling Syntax
+
+USAGE
+
+To reduce the effort to call certain functions, FreeMat supports
+a special calling syntax for functions that take string arguments.
+In particular, the three following syntaxes are equivalent, with
+one caveat:
+
+   functionname('arg1','arg2',...,'argn')
+
+or the parenthesis and commas can be removed
+
+   functionname 'arg1' 'arg2' ... 'argn'
+
+The quotes are also optional (providing, of course, that the
+argument strings have no spaces in them)
+
+   functionname arg1 arg2 ... argn
+
+This special syntax enables you to type hold on instead of
+the more cumbersome hold('on').  The caveat is that FreeMat
+currently only recognizes the special calling syntax as the
+first statement on a line of input.  Thus, the following construction
+
+  for i=1:10; plot(vec(i)); hold on; end
+
+would not work.  This limitation may be removed in a future
+version.
+
+EXAMPLE
+
+Here is a function that takes two string arguments and
+returns the concatenation of them.
+
+$
+ *** strcattest.m
+function out = strcattest(str1,str2)
+  out = [str1,str2];
+$
+
+We call strcattest using all three syntaxes.
+
+$
+--> strcattest('hi','ho')
+ans = 
+  <string>  - size: [1 4]
+ hiho
+--> strcattest 'hi' 'ho'
+--> strcattest hi ho
+$
+
+  

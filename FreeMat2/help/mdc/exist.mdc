@@ -1,0 +1,86 @@
+EXIST Text Existence of a Variable
+
+USAGE
+
+Tests for the existence of a variable.  The general syntax for
+its use is
+
+  y = exist('varname')
+
+The return is 1 if a variable with the name varname exists in
+the current workspace and is not empty.  This function is primarily
+useful when keywords are used in function arguments.
+
+EXAMPLE
+
+Some examples of the exist function.  Note that generally exist
+is used in functions to test for keywords.  For example,
+
+  function y = testfunc(a, b, c)
+  if (~exist('c'))
+    % c was not defined, so establish a default
+    c = 13;
+  end
+  y = a + b + c;
+
+An example of exist in action.
+
+$
+--> a = randn(3,5,2)
+a = 
+  <double>  - size: [3 5 2]
+(:,:,1) = 
+ 
+Columns 1 to 2
+   -0.0361639933961680       -0.238187257168569      
+   -0.140415140955028         0.599755385896831      
+    0.693389551907565         0.708649351074680      
+ 
+Columns 3 to 4
+   -0.939406097470966        -0.164794584325194      
+   -0.00648807006806828       0.0101167556598398     
+   -0.0530953547548948        0.160105749424486      
+ 
+Columns 5 to 5
+   -1.465385481298682      
+   -0.0395884566172688     
+    1.182465366442761      
+(:,:,2) = 
+ 
+Columns 1 to 2
+   -0.744595958059576        -1.029772319457510      
+    0.647296600570314         0.691289627813676      
+   -0.403233868578614        -0.513911033581514      
+ 
+Columns 3 to 4
+   -0.625280812142897         0.747620555277489      
+   -0.121927486686842        -0.844868680099879      
+    0.502771253977369         0.438758894856345      
+ 
+Columns 5 to 5
+   -0.567515585636787      
+    0.840068850555420      
+   -1.266240568477841      
+--> b = []
+b = 
+  <double>  - size: []
+  []
+--> who
+  Variable Name      Type   Flags   Size
+              a    double           [3 5 2]
+              b    double           []
+--> exist('a')
+ans = 
+  <logical>  - size: [1 1]
+ 1  
+--> exist('b')
+ans = 
+  <logical>  - size: [1 1]
+ 0  
+--> exist('c')
+ans = 
+  <logical>  - size: [1 1]
+ 0  
+$
+
+  

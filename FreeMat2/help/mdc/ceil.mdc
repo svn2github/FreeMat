@@ -1,0 +1,62 @@
+CEIL Ceiling Function
+
+USAGE
+
+Computes the ceiling of an n-dimensional array elementwise.  The
+ceiling of a number is defined as the smallest integer that is
+larger than or equal to that number. The general syntax for its use
+is
+
+   y = ceil(x)
+
+where x is a multidimensional array of numerical type.  The ceil 
+function preserves the type of the argument.  So integer arguments 
+are not modified, and float arrays return float arrays as 
+outputs, and similarly for double arrays.  The ceil function 
+is not defined for complex or dcomplex types.
+
+EXAMPLE
+
+The following demonstrates the ceil function applied to various
+(numerical) arguments.  For integer arguments, the ceil function has
+no effect:
+
+$
+--> ceil(3)
+ans = 
+  <int32>  - size: [1 1]
+             3  
+--> ceil(-3)
+ans = 
+  <int32>  - size: [1 1]
+            -3  
+$
+
+Next, we take the ceil of a floating point value:
+
+$
+--> ceil(3.023f)
+ans = 
+  <float>  - size: [1 1]
+    4.0000000       
+--> ceil(-2.341f)
+ans = 
+  <float>  - size: [1 1]
+   -2.0000000       
+$
+
+Note that the return type is a float also.  Finally, for a double
+type:
+
+$
+--> ceil(4.312)
+ans = 
+  <double>  - size: [1 1]
+    5.000000000000000      
+--> ceil(-5.32)
+ans = 
+  <double>  - size: [1 1]
+   -5.000000000000000      
+$
+
+  

@@ -1,0 +1,70 @@
+INF Infinity Constant
+
+USAGE
+
+Returns a value that represents positive infinity 
+for both 32 and 64-bit floating point values.
+
+   y = inf
+
+The returned type is a 32-bit float, but promotion to
+64 bits preserves the infinity.
+
+FUNCTION INTERNALS
+
+The infinity constant has
+several interesting properties.  In particular:
+\begin{eqnarray}
+   \infty \times 0 & = \mathrm{NaN} \\
+   \infty \times a & = \infty \, \mathrm{for all} \, a > 0 \\
+   \infty \times a & = -\infty \, \mathrm{for all} \, a < 0 \\
+   \infty / \infty & = \mathrm{NaN} \\
+   \infty / 0 & = \infty 
+\end{eqnarray}
+Note that infinities are not preserved under type conversion to integer types (see the examples below).
+
+EXAMPLE
+
+The following examples demonstrate the various properties of the infinity constant.
+
+$
+--> inf*0
+ans = 
+  <float>  - size: [1 1]
+    nan             
+--> inf*2
+ans = 
+  <float>  - size: [1 1]
+    inf             
+--> inf*-2
+ans = 
+  <float>  - size: [1 1]
+   -inf             
+--> inf/inf
+ans = 
+  <float>  - size: [1 1]
+    nan             
+--> inf/0
+ans = 
+  <float>  - size: [1 1]
+    inf             
+--> inf/nan
+ans = 
+  <float>  - size: [1 1]
+    nan             
+$
+
+Note that infinities are preserved under type conversion to floating point types (i.e., float, double, complex and dcomplex types), but not integer  types.
+
+$
+--> uint32(inf)
+ans = 
+  <uint32>  - size: [1 1]
+   4294967295  
+--> complex(inf)
+ans = 
+  <complex>  - size: [1 1]
+    inf               0.00000000    i  
+$
+
+  

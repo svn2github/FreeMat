@@ -1,0 +1,13 @@
+NEWIMAGE New Image Window Function
+
+USAGE
+
+Creates a new window for the display of images using the image commands.
+The general syntax for its use is
+
+   y = newimage
+
+where y is the handle (or image number) of the newly created window.  
+Image handles are sequential, starting with 1, unless one is closed, in 
+which case the smallest unused handle is returned.
+  

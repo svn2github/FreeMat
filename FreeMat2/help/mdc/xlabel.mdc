@@ -1,0 +1,33 @@
+XLABEL Plot X-axis Label Function
+
+USAGE
+
+This command adds a label to the x-axis of the plot.  The general syntax
+for its use is
+
+  xlabel('label')
+
+or in the alternate form
+
+  xlabel 'label'
+
+or simply
+
+  xlabel label
+
+Here label is a string variable.
+
+EXAMPLE
+
+Here is an example of a simple plot with a label on the x-axis.
+
+$
+--> x = linspace(-1,1);
+--> y = cos(2*pi*x);
+--> plot(x,y,'r-');
+--> xlabel('time');
+$
+
+which results in the following plot.
+<<Figure xlabel1 omitted>>
+  

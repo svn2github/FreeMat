@@ -1,0 +1,48 @@
+LOG Natural Logarithm Function
+
+USAGE
+
+Computes the log function for its argument.  The general
+syntax for its use is
+
+  y = log(x)
+
+where x is an n-dimensional array of numerical type.
+Integer types are promoted to the double type prior to
+calculation of the log function.  Output y is of the
+same size as the input x. For strictly positive, real inputs, 
+the output type is the same as the input.
+For negative and complex arguments, the output is complex.
+
+FUNCTION INTERNALS
+
+Mathematically, the log function is defined for all real
+valued arguments x by the integral
+
+$
+  \log x \equiv \int_1^{x} \frac{d\,t}{t}.
+$
+
+For complex-valued arguments, z, the complex logarithm is
+defined as
+
+$
+  \log z \equiv \log |z| + i \arg z,
+$
+
+where arg is the complex argument of z.
+
+EXAMPLE
+
+The following piece of code plots the real-valued log
+function over the interval [1,100]:
+
+$
+--> x = linspace(1,100);
+--> plot(x,log(x))
+--> xlabel('x');
+--> ylabel('log(x)');
+$
+
+<<Figure logplot omitted>>
+  

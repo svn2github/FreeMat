@@ -1,0 +1,64 @@
+HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator
+
+USAGE
+
+Computes the Hermitian of the argument (a 2D matrix).  The syntax for its use is
+
+  y = a';
+
+where a is a M \times N numerical matrix.  The output y is a numerical matrix
+of the same type of size N \times M.  This operator is the conjugating transpose,
+which is different from the transpose operator .' (which does not 
+conjugate complex values).
+
+FUNCTION INTERNALS
+
+The Hermitian operator is defined simply as
+
+$
+  y_{i,j} = \overline{a_{j,i}}
+$
+
+where y_ij is the element in the ith row and jth column of the output matrix y.
+
+EXAMPLES
+
+A simple transpose example:
+
+$
+--> A = [1,2,0;4,1,-1]
+A = 
+  <int32>  - size: [2 3]
+ 
+Columns 1 to 3
+             1              2              0  
+             4              1             -1  
+--> A'
+ans = 
+  <int32>  - size: [3 2]
+ 
+Columns 1 to 2
+             1              4  
+             2              1  
+             0             -1  
+$
+
+Here, we use a complex matrix to demonstrate how the Hermitian operator conjugates the entries.
+
+$
+--> A = [1+i,2-i]
+A = 
+  <complex>  - size: [1 2]
+ 
+Columns 1 to 2
+    1.0000000         1.0000000     i     2.0000000        -1.0000000     i  
+--> A.'
+ans = 
+  <complex>  - size: [2 1]
+ 
+Columns 1 to 1
+    1.0000000         1.0000000     i  
+    2.0000000        -1.0000000     i  
+$
+
+  

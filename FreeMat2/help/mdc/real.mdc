@@ -1,0 +1,51 @@
+REAL Real Function
+
+USAGE
+
+Returns the real part of the input array for all elements.  The 
+general syntax for its use is
+
+   y = real(x)
+
+where x is an n-dimensional array of numerical type.  The output 
+is the same numerical type as the input, unless the input is complex
+or dcomplex.  For complex inputs, the real part is a floating
+point array, so that the return type is float.  For dcomplex
+inputs, the real part is a double precision floating point array, so that
+the return type is double.  The real function does
+nothing to real and integer types.
+
+EXAMPLE
+
+The following demonstrates the real applied to a complex scalar.
+
+$
+--> real(3+4*i)
+ans = 
+  <float>  - size: [1 1]
+    3.0000000       
+$
+
+The real function has no effect on real arguments:
+
+$
+--> real([2,3,4])
+ans = 
+  <int32>  - size: [1 3]
+ 
+Columns 1 to 3
+             2              3              4  
+$
+
+For a double-precision complex array,
+
+$
+--> real([2.0+3.0*i,i])
+ans = 
+  <double>  - size: [1 2]
+ 
+Columns 1 to 2
+    2.000000000000000         0.000000000000000      
+$
+
+  

@@ -1,0 +1,43 @@
+GETPRINTLIMIT Get Limit For Printing Of Arrays
+
+USAGE
+
+Returns the limit on how many elements of an array are printed
+using either the disp function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling setprintlimit.  This function is provided
+primarily so that you can temporarily change the output truncation
+and then restore it to the previous value (see the examples).
+
+   n=getprintlimit
+
+where n is the current limit in use.
+
+EXAMPLE
+
+Here is an example of using getprintlimit along with setprintlimit to temporarily change the output behavior of FreeMat.
+
+$
+--> A = randn(100,1);
+--> n = getprintlimit
+n = 
+  <uint32>  - size: [1 1]
+         1000  
+--> setprintlimit(5);
+--> A
+ans = 
+  <double>  - size: [100 1]
+ 
+Columns 1 to 1
+   -0.0361639933961680     
+   -0.140415140955028      
+    0.693389551907565      
+   -0.238187257168569      
+    0.599755385896831      
+
+... Output truncated - use setprintlimit function to see more of the output ...
+--> setprintlimit(n)
+$
+
+  

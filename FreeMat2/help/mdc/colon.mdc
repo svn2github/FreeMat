@@ -1,0 +1,93 @@
+COLON Index Generation Operator
+
+USAGE
+
+There are two distinct syntaxes for the colon : operator - the two argument form
+
+  y = a : c
+
+and the three argument form
+
+  y = a : b : c
+
+The two argument form is exactly equivalent to a:1:c.  The output y is the vector
+
+$
+  y = [a,a+b,a+2b,\ldots,a+nb]
+$
+
+where a+nb <= c.  There is a third form of the colon operator, the 
+no-argument form used in indexing (see indexing for more details).
+
+EXAMPLES
+
+Some simple examples of index generation.
+
+$
+--> y = 1:4
+y = 
+  <int32>  - size: [1 4]
+ 
+Columns 1 to 4
+             1              2              3              4  
+$
+
+Now by half-steps:
+
+$
+--> y = 1:.5:4
+y = 
+  <double>  - size: [1 7]
+ 
+Columns 1 to 2
+    1.000000000000000         1.500000000000000      
+ 
+Columns 3 to 4
+    2.000000000000000         2.500000000000000      
+ 
+Columns 5 to 6
+    3.000000000000000         3.500000000000000      
+ 
+Columns 7 to 7
+    4.000000000000000      
+$
+
+Now going backwards (negative steps)
+
+$
+--> y = 4:-.5:1
+y = 
+  <double>  - size: [1 7]
+ 
+Columns 1 to 2
+    4.000000000000000         3.500000000000000      
+ 
+Columns 3 to 4
+    3.000000000000000         2.500000000000000      
+ 
+Columns 5 to 6
+    2.000000000000000         1.500000000000000      
+ 
+Columns 7 to 7
+    1.000000000000000      
+$
+
+If the endpoints are the same, one point is generated, regardless of the step size (middle argument)
+
+$
+--> y = 4:1:4
+y = 
+  <int32>  - size: [1 1]
+             4  
+$
+
+If the endpoints define an empty interval, the output is an empty matrix:
+
+$
+--> y = 5:4
+y = 
+  <int32>  - size: []
+  []
+$
+
+  

@@ -1,0 +1,27 @@
+SPRINTF Formated String Output Function (C-Style)
+
+USAGE
+
+Prints values to a string.  The general syntax for its use is
+
+  y = sprintf(format,a1,a2,...).
+
+Here format is the format string, which is a string that
+controls the format of the output.  The values of the variables
+a_i are substituted into the output as required.  It is
+an error if there are not enough variables to satisfy the format
+string.  Note that this sprintf command is not vectorized!  Each
+variable must be a scalar.  The returned value y contains the
+string that would normally have been printed. For
+more details on the format string, see printf.  
+
+EXAMPLES
+
+Here is an example of a loop that generates a sequence of files based on
+a template name, and stores them in a cell array.
+
+$
+--> l = {}; for i = 1:5; s = sprintf('file_%d.dat',i); l(i) = {s}; end;
+$
+
+  

@@ -1,0 +1,30 @@
+FCLOSE File Close Function
+
+USAGE
+
+Closes a file handle, or all open file handles.  The general syntax
+for its use is either
+
+  fclose(handle)
+
+or
+
+  fclose('all')
+
+In the first case a specific file is closed,  In the second, all open
+files are closed.  Note that until a file is closed the file buffers
+are not flushed.
+
+EXAMPLE
+
+A simple example of a file being opened with fopen and then closed with fclose.
+
+$
+--> fp = fopen('test.dat','wb','ieee-le')
+fp = 
+  <uint32>  - size: [1 1]
+            3  
+--> fclose(fp)
+$
+
+  

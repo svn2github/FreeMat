@@ -1,0 +1,22 @@
+PWD Print Working Directory Function
+
+USAGE
+
+Returns a string describing the current working directory.  The general syntax for its use is
+
+  y = pwd
+
+
+
+EXAMPLE
+
+The pwd function is fairly straightforward.
+
+$
+--> pwd
+ans = 
+  <string>  - size: [1 30]
+ /Users/basu/FreeMat2/help/mtex
+$
+
+  

@@ -1,0 +1,33 @@
+WHILE While Loop
+
+USAGE
+
+The while loop executes a set of statements as long as
+a the test condition remains true.  The syntax of a 
+while loop is
+
+  while test_expression
+     statements
+  end
+
+Note that a conditional expression is considered true if 
+the real part of the result of the expression contains
+any non-zero elements (this strange convention is adopted
+for compatibility with MATLAB).
+
+EXAMPLES
+
+Here is a while loop that adds the integers from 1
+to 100:
+
+$
+--> accum = 0;
+--> k=1;
+--> while (k<100), accum = accum + k; k = k + 1; end
+--> accum
+ans = 
+  <int32>  - size: [1 1]
+          4950  
+$
+
+  

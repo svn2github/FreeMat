@@ -1,0 +1,40 @@
+GRID Plot Grid Toggle Function
+
+USAGE
+
+Toggles the drawing of grid lines on the currently active plot.  The
+general syntax for its use is
+
+   grid(state)
+
+where state is either
+
+   grid('on')
+
+to activate the grid lines, or
+
+   grid('off')
+
+to deactivate the grid lines.
+
+EXAMPLE
+
+Here is a simple plot without grid lines.
+
+$
+--> x = linspace(-1,1);
+--> y = cos(3*pi*x);
+--> plot(x,y,'r-');
+$
+
+<<Figure grid1 omitted>>
+
+Next, we activate the grid lines.
+
+$
+--> plot(x,y,'r-');
+--> grid on
+$
+
+<<Figure grid2 omitted>>
+  

@@ -1,0 +1,36 @@
+SETPRINTLIMIT Set Limit For Printing Of Arrays
+
+USAGE
+
+Changes the limit on how many elements of an array are printed
+using either the disp function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling
+
+  setprintlimit(n)
+
+where n is the new limit to use.
+
+EXAMPLE
+
+Setting a smaller print limit avoids pages of output when you forget the semicolon on an expression.
+
+$
+--> A = randn(512);
+--> setprintlimit(10)
+--> A
+ans = 
+  <double>  - size: [512 512]
+ 
+Columns 1 to 2
+   -0.0361639933961680       -1.669595914704926      
+   -0.140415140955028        -1.111115091112366      
+    0.693389551907565         0.953971220399901      
+   -0.238187257168569         1.344841715946304      
+    0.599755385896831        -0.637721987247686      
+
+... Output truncated - use setprintlimit function to see more of the output ...
+$
+
+  

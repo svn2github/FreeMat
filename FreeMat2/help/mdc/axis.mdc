@@ -1,0 +1,105 @@
+AXIS Plot Axis Set/Get Function
+
+USAGE
+
+Changes the axis configuration for the currently active plot,
+or returns the currently active limits for the axis,  The
+general syntax for its use is either
+
+   [x1,x2,y1,y2] = axis
+
+to get the current axis limits, or
+
+   axis([x1,x2,y1,y2])
+
+to set the axis limits.  There are also two additional axis
+commands:
+
+   axis('tight')
+
+which sets the axis boundaries to be tight as possible, and
+
+   axis('auto')
+
+which uses a heuristic algorithm to choose a ``reasonable'' set of
+axis limits.
+
+FUNCTION INTERNALS
+
+The axis command is used to change the ranges of the x
+and y axes on the current plot.  This permits ``zooming'' of
+plots.  By default, when a plot command is issued, a heuristic
+algorithm adjusts the ranges on the x and y axes so that
+the increments on the axes are ``reasonable'' values.  It also adjusts
+the start and stop values on each axis (by enlarging the range and
+domain of the plot).  You can reset a plot to this state using the 
+'auto' argument to the axis.  
+
+Another option is to choose the axes so that they tightly fit the
+domain and range of the current datasets.  This is accomplished
+using the 'tight' argument to the axis command.  It will
+set the axes to [x_min,x_max,y_min,y_max], where
+x_min is the minimum x value over all datasets in the current
+plot series, etc.
+
+You can also retrieve the current ranges of the plot axes by issuing
+an axis command with no arguments.
+
+EXAMPLE
+
+We start by plotting a sinusoid of amplitude sqrt(2) over the 
+range -pi,pi, which is not a ``nice'' range, and thus the
+auto axis heuristic shrinks the plot to make the range nicer.
+
+$
+--> x = linspace(-pi,pi);
+--> y = sqrt(2)*sin(3*x);
+--> plot(x,y,'r-');
+--> grid on
+$
+
+<<Figure axis1 omitted>>
+
+Suppose we now want to make the axis fit the plot exactly.  We can issue an
+axis('tight') command, which results in the following plot.
+
+$
+--> plot(x,y,'r-');
+--> grid on
+--> axis tight
+$
+
+<<Figure axis2 omitted>>
+
+We can now use the axis command to retrieve the current axis values.  By
+modifying only the first two entries (x_min and x_max), we can
+zoom in on one period of the sinusoid.
+
+$
+--> plot(x,y,'r-');
+--> grid on;
+--> a = axis
+a = 
+  <double>  - size: [1 4]
+ 
+Columns 1 to 2
+   -4.000000000000000         4.000000000000000      
+ 
+Columns 3 to 4
+   -1.500000000000000         1.500000000000000      
+--> a(1) = -pi/3; a(2) = pi/3;
+--> axis(a);
+$
+
+<<Figure axis3 omitted>>
+
+Finally, we can restore the original plot by issuing an axis('auto')
+command.
+
+$
+--> plot(x,y,'r-');
+--> axis auto
+$
+
+<<Figure axis4 omitted>>
+  

@@ -1,0 +1,11 @@
+SLEEP Sleep For Specified Number of Seconds
+
+USAGE
+
+Suspends execution of FreeMat for the specified number
+of seconds.  The general syntax for its use is
+
+  sleep(n),
+
+where n is the number of seconds to wait.
+  

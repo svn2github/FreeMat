@@ -1,0 +1,21 @@
+POINT Image Point Information Function
+
+USAGE
+
+Returns information about the currently displayed image based on a use
+supplied mouse-click.  The general syntax for its use is
+
+   y = point
+
+The returned vector y has three elements: 
+
+$
+  y= [r,c,v]
+$
+
+where r,c are the row and column coordinates of the scalar image selected
+by the user, and v is the value of the scalar image at that point.  Image
+zoom is automatically compensated for, so that r,c are the coordinates into
+the original matrix.  They will generally be fractional to account for the
+exact location of the mouse click.
+  

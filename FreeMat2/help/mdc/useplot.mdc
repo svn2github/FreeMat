@@ -1,0 +1,31 @@
+USEPLOT Use Plot Window Function
+
+USAGE
+
+Changes the active plot window to the specified handle (or plot number).  
+The general syntax for its use is 
+
+  useplot(handle)
+
+where handle is the handle to use.  If the plot window corresponding to
+x does not already exist, a new window with this handle number is 
+created.
+
+EXAMPLE
+
+In this example, we create two plot windows, and then use the useplot
+command to activate the first window.
+
+$
+--> newplot
+ans = 
+  <int32>  - size: [1 1]
+             1  
+--> newplot
+ans = 
+  <int32>  - size: [1 1]
+             2  
+--> useplot(1)
+$
+  
+  

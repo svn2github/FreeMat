@@ -1,0 +1,30 @@
+SETPATH Set Current Search Path
+
+USAGE
+
+Changes the current FreeMat search path.  The general syntax for
+its use is
+
+  setpath(y)
+
+where y is a string containing a delimited list of directories
+to be searched for M files and libraries.  
+The delimiter between the paths depends on the system being used.  For Win32, the
+delimiter is a semicolon.  For all other systems, the delimiter is a colon.
+
+@Example
+The setpath function is straightforward.
+
+$
+--> getpath
+ans = 
+  <string>  - size: [1 27]
+ /Users/basu/FreeMat2/MFiles
+--> setpath('/usr/local/FreeMat/MFiles:/localhome/basu/MFiles')
+--> getpath
+ans = 
+  <string>  - size: [1 48]
+ /usr/local/FreeMat/MFiles:/localhome/basu/MFiles
+$
+
+  

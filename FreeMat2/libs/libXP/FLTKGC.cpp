@@ -18,7 +18,8 @@ Point2D FLTKGC::GetCanvasSize() {
 
 Point2D FLTKGC::GetTextExtent(std::string label) {
   int w, h;
-  fl_measure(label.c_str(),w,h);
+  w = fl_width(label.c_str());
+  h = fl_height();
   return Point2D(w,h);
 }
 

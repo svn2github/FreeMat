@@ -138,7 +138,7 @@ AC_DEFUN([MP_WITH_CURSES],
           mp_cv_curses=yes, mp_cv_curses=no)])
      if test "$mp_cv_curses" = yes
      then
-       AC_DEFINE(HAVE_CURSES_H)
+       AC_DEFINE(HAVE_CURSES_H,[],[Defined if we have curses.h])
        CURSES_LIB="-lcurses"
      fi
    fi
@@ -152,7 +152,7 @@ AC_DEFUN([MP_WITH_CURSES],
           mp_cv_ncurses=yes, mp_cv_ncurses=no)])
      if test "$mp_cv_ncurses" = yes
      then
-       AC_DEFINE(HAVE_NCURSES_H)
+       AC_DEFINE(HAVE_NCURSES_H,[],[Defined if we have ncurses.h])
        CURSES_LIB="-lncurses"
      fi
    fi

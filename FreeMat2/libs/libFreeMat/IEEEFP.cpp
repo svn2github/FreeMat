@@ -1,3 +1,4 @@
+#include "config.h"
 #include "IEEEFP.hpp"
 
 bool IsInfinite(float t) {

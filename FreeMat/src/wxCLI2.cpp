@@ -1103,8 +1103,12 @@ std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end) {
     wxString pattern(start);
     wxString f = wxFindFirstFile(pattern+"*",0);
     while (!f.IsEmpty()) {
-      retval.push_back(std::string(f.c_str()));
-      f = wxFindNextFile();
+      while(!f.IsEmpty() && !f.StartsWith(start))
+	f = f.Remove(0,1);
+      if (!f.IsEmpty()) {
+	retval.push_back(std::string(f.c_str()));
+	f = wxFindNextFile();
+      }
     }
     return retval;
   }
@@ -1172,6 +1176,32 @@ void wxCLI::ListCompletions(std::vector<std::string> completions) {
   };
 }
 
+std::string GetCommonPrefix(std::vector<std::string> matches) {
+  int minlength;
+  int prefixlength;
+  bool allmatch;
+  std::string templ;
+  int i, j;
+
+  minlength = matches[0].size();
+  for (i=0;i<matches.size();i++)
+    minlength = (minlength < matches[i].size()) ? 
+      minlength : matches[i].size();
+  prefixlength = minlength;
+  templ = matches[0];
+  for (i=0;i<matches.size();i++) {
+    j = 0;
+    allmatch = true;
+    while (allmatch && (j<prefixlength)) {
+      std::string mtch(matches[i]);
+      allmatch = (mtch[j] == templ[j]);
+      if (allmatch) j++;
+    }
+    prefixlength = (j < prefixlength) ? j : prefixlength;
+  }
+  return(templ.substr(0,prefixlength));
+}
+
 void wxCLI::CompleteWord() {
   int redisplay=0;        /* True if the whole line needs to be redrawn */
   int suffix_len;         /* The length of the completion extension */
@@ -1206,9 +1236,14 @@ void wxCLI::CompleteWord() {
       redisplay = 1;
     };
     /*
+     * Find the common prefix
+     */
+    std::string prefix;
+    prefix = GetCommonPrefix(matches);
+    /*
      * Get the length of the suffix and any continuation suffix to add to it.
      */
-    suffix_len = 0; // This is supposed to be the length of the filename extension...
+    suffix_len = prefix.length(); // This is supposed to be the length of the filename extension...
     cont_len = 0;
     /*
      * Work out the number of characters that are to be added.
@@ -1227,47 +1262,44 @@ void wxCLI::CompleteWord() {
 	 */
 	memmove(line + buff_curpos + nextra, line + buff_curpos,
 		ntotal - buff_curpos);
-/*
- * Record the increased length of the line.
- */
-	gl->ntotal += nextra;
-/*
- * Place the cursor position at the end of the completion.
- */
-	gl->buff_curpos += nextra;
-/*
- * Terminate the extended line.
- */
-	gl->line[gl->ntotal] = '\0';
-/*
- * If we don't have to redisplay the whole line, redisplay the part
- * of the line which follows the original cursor position, and place
- * the cursor at the end of the completion.
- */
+	/*
+	 * Record the increased length of the line.
+	 */
+	ntotal += nextra;
+	/*
+	 * Place the cursor position at the end of the completion.
+	 */
+	buff_curpos += nextra;
+	/*
+	 * Terminate the extended line.
+	 */
+	line[ntotal] = '\0';
+	/*
+	 * If we don't have to redisplay the whole line, redisplay the part
+	 * of the line which follows the original cursor position, and place
+	 * the cursor at the end of the completion.
+	 */
 	if(!redisplay) {
-	  if(gl_truncate_display(gl) ||
-	     gl_output_string(gl, gl->line + buff_pos, '\0') ||
-	     gl_place_cursor(gl, gl->buff_curpos))
-	    return 1;
+	  TruncateDisplay();
+	  OutputString(line + buff_pos, '\0');
+	  PlaceCursor(buff_curpos);
+	  return;
 	};
       } else {
-	fprintf(stderr,
-		"\r\nInsufficient room in line for file completion.\r\n");
 	redisplay = 1;
       };
     };
   };
-/*
- * Redisplay the whole line?
- */
+  /*
+   * Redisplay the whole line?
+   */
   if(redisplay) {
-    gl->term_curpos = 0;
-    if(gl_redisplay(gl,1))
-      return 1;
+    term_curpos = 0;
+    Redisplay();
+    return;
   };
-  return 0;
+  return;
 }
-#endif
 
 
 void wxCLI::OnChar( wxKeyEvent &event ) {

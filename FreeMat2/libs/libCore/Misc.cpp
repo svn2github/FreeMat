@@ -599,7 +599,10 @@ namespace FreeMat {
   //@]
   //then @|eigs| returns the six largest magnitude eigenvalues of @|A| and
   //optionally the eigenvectors.  The @|eigs| function uses ARPACK to
-  //compute the eigenvectors and/or eigenvalues.
+  //compute the eigenvectors and/or eigenvalues.  Note that due to a 
+  //limitation in the interface into ARPACK from FreeMat, the number of
+  //eigenvalues that are to be computed must be strictly smaller than the
+  //number of columns (or rows) in the matrix.
   //@@Example
   //Here is an example of using @|eigs| to calculate eigenvalues
   //of a matrix, and a comparison of the results with @|eig|
@@ -622,12 +625,20 @@ namespace FreeMat {
     if (!A.isSparse())
       throw Exception("eigs only applies to sparse matrix arguments");
     int k;
-    if (arg.size() < 2)
+    if (A.getDimensionLength(0) != A.getDimensionLength(1))
+      throw Exception("eigs can only be applied to square matrices.");
+    if (arg.size() < 2) {
       k = 6;
-    else {
+      if (k >= A.getDimensionLength(0))
+	k = A.getDimensionLength(0) - 1;
+    } else {
       Array kval(arg[1]);
       k = kval.getContentsAsIntegerScalar();
     }
+    if (A.isComplex())
+      A.promoteType(FM_DCOMPLEX);
+    else
+      A.promoteType(FM_DOUBLE);
     bool shiftFlag;
     char *whichflag;
     double sigma[2];

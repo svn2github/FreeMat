@@ -55,7 +55,7 @@ namespace FreeMat {
     virtual void outputMessage(const char* msg);
     virtual void errorMessage(const char* msg);
     virtual void warningMessage(const char* msg);
-    virtual void setMessageContext(const char* msg);  
+    virtual void setMessageContext(const char* msg);
   };
 }
 

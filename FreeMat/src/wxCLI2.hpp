@@ -120,12 +120,15 @@ public:
   void KillLine();
   void Yank();
   wxChar& CharAt(int row, int column);
+  std::vector<std::string> GetCompletions(const char *line, int word_end);
+  void CompleteWord();
   int ScrollRowAdjust(int row);
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
   void DoResizeBuffer(int xsize, int ysize);
   void UpdateLineCount();
+  void ListCompletions(std::vector<std::string> completions);
   App *mainApp;
   wxFont   m_font;
   // size (in pixels) of one character

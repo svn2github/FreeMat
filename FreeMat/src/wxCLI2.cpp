@@ -46,6 +46,7 @@
 // Maximum allowed number of columns in the text window
 #define MAXCOLS 256
 
+
 // ----------------------------------------------------------------------------
 // wxCLI
 // ----------------------------------------------------------------------------
@@ -80,6 +81,54 @@ END_EVENT_TABLE()
   insert = true;
   m_text = (wxChar*) calloc(MAXCOLS*scrollback,sizeof(wxChar));
   UpdateLineCount();
+}
+
+/*.......................................................................
+ * Search backwards for the potential start of a filename. This
+ * looks backwards from the specified index in a given string,
+ * stopping at the first unescaped space or the start of the line.
+ *
+ * Input:
+ *  string  const char *  The string to search backwards in.
+ *  back_from      int    The index of the first character in string[]
+ *                        that follows the pathname.
+ * Output:
+ *  return        char *  The pointer to the first character of
+ *                        the potential pathname, or NULL on error.
+ */
+static char *start_of_path(const char *string, int back_from)
+{
+  int i, j;
+  /*
+   * Search backwards from the specified index.
+   */
+  for(i=back_from-1; i>=0; i--) {
+    int c = string[i];
+    /*
+     * Stop on unescaped spaces.
+     */
+    if(isspace((int)(unsigned char)c)) {
+      /*
+       * The space can't be escaped if we are at the start of the line.
+       */
+      if(i==0)
+	break;
+      /*
+       * Find the extent of the escape characters which precedes the space.
+       */
+      for(j=i-1; j>=0 && string[j]=='\\'; j--)
+	;
+      /*
+       * If there isn't an odd number of escape characters before the space,
+       * then the space isn't escaped.
+       */
+      if((i - 1 - j) % 2 == 0)
+	break;
+    } 
+    else if (!isalpha(c) && !isdigit(c) && (c != '_') && (c != '.') && (c != '\\') && (c != '/'))
+      break;
+  };
+  return (char *)string + i + 1;
 }
 
 void wxCLI::UpdateLineCount() {
@@ -1028,9 +1077,205 @@ wxChar& wxCLI::CharAt(int row, int column) {
   return m_text[(row%scrollback)*MAXCOLS+column];
 }
 
+std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end) {
+  /*
+   * Find the start of the filename prefix to be completed, searching
+   * backwards for the first unescaped space, or the start of the line.
+   */
+  char *start = start_of_path(line, word_end);
+  /*
+   * If the preceeding character was not a ' (quote), then
+   * do a command expansion, otherwise, do a filename expansion.
+   */
+  if (start[-1] != '\'') {
+#if 0
+    std::vector<std::string> local_completions;
+    local_completions = context->getCurrentScope()->getCompletions(std::string(start));
+    std::vector<std::string> global_completions;
+    global_completions = context->getGlobalScope()->getCompletions(std::string(start)); 
+    for (int i=0;i<global_completions.size();i++)
+      local_completions.push_back(global_completions[i]);
+    return local_completions;
+#endif
+    return std::vector<std::string>();
+  } else {
+    std::vector<std::string> retval;
+    wxString pattern(start);
+    wxString f = wxFindFirstFile(pattern+"*",0);
+    while (!f.IsEmpty()) {
+      retval.push_back(std::string(f.c_str()));
+      f = wxFindNextFile();
+    }
+    return retval;
+  }
+}
+
+void wxCLI::ListCompletions(std::vector<std::string> completions) {
+  int maxlen;    /* The length of the longest matching string */
+  int width;     /* The width of a column */
+  int ncol;      /* The number of columns to list */
+  int nrow;      /* The number of rows needed to list all of the matches */
+  int row,col;   /* The row and column being written to */
+  int i;
+  /*
+   * Not enough space to list anything?
+   */
+  if(ncolumn < 1)
+    return;
+  /*
+   * Work out the maximum length of the matching strings.
+   */
+  maxlen = 0;
+  for(i=0; i<completions.size(); i++) {
+    int len = completions[i].length();
+    if(len > maxlen)
+      maxlen = len;
+  };
+  /*
+   * Nothing to list?
+   */
+  if(maxlen == 0)
+    return;
+  /*
+   * Split the available terminal width into columns of maxlen + 2 characters.
+   */
+  width = maxlen + 2;
+  ncol = ncolumn / width;
+  /*
+   * If the column width is greater than the terminal width, the matches will
+   * just have to overlap onto the next line.
+   */
+  if(ncol < 1)
+    ncol = 1;
+  /*
+   * How many rows will be needed?
+   */
+  nrow = (completions.size() + ncol - 1) / ncol;
+  /*
+   * Print the matches out in ncol columns, sorted in row order within each
+   * column.
+   */
+  for(row=0; row < nrow; row++) {
+    for(col=0; col < ncol; col++) {
+      int m = col*nrow + row;
+      if(m < completions.size()) {
+	char buffer[4096];
+	sprintf(buffer, "%s%-*s%s", completions[m].c_str(),
+		(int) (ncol > 1 ? maxlen - completions[m].length():0),
+		"", col<ncol-1 ? "  " : "\r\n");
+	PutMessage(buffer);
+      } else {
+	PutMessage("\n");
+	break;
+      };
+    };
+  };
+}
+
+void wxCLI::CompleteWord() {
+  int redisplay=0;        /* True if the whole line needs to be redrawn */
+  int suffix_len;         /* The length of the completion extension */
+  int cont_len;           /* The length of any continuation suffix */
+  int nextra;             /* The number of characters being added to the */
+                          /*  total length of the line. */
+  int buff_pos;           /* The buffer index at which the completion is */
+                          /*  to be inserted. */
+  std::vector<std::string> matches;
+  /*
+   * Get the cursor position at which the completion is to be inserted.
+   */
+  buff_pos = buff_curpos;
+  /*
+   * Perform the completion.
+   */
+  matches = GetCompletions(line, buff_curpos);
+  PutMessage("\n");
+  if(matches.size() == 0) {
+    term_curpos = 0;
+    redisplay = 1;
+    /*
+     * Are there any completions?
+     */
+  } else if(matches.size() >= 1) {
+    /*
+     * If there any ambiguous matches, report them, starting on a new line.
+     */
+    if(matches.size() > 1) {
+      PutMessage("\n");
+      ListCompletions(matches);
+      redisplay = 1;
+    };
+    /*
+     * Get the length of the suffix and any continuation suffix to add to it.
+     */
+    suffix_len = 0; // This is supposed to be the length of the filename extension...
+    cont_len = 0;
+    /*
+     * Work out the number of characters that are to be added.
+     */
+    nextra = suffix_len + cont_len;
+    /*
+     * Is there anything to be added?
+     */
+    if(nextra) {
+      /*
+       * Will there be space for the expansion in the line buffer?
+       */
+      if(ntotal + nextra < linelen) {
+	/*
+	 * Make room to insert the filename extension.
+	 */
+	memmove(line + buff_curpos + nextra, line + buff_curpos,
+		ntotal - buff_curpos);
+/*
+ * Record the increased length of the line.
+ */
+	gl->ntotal += nextra;
+/*
+ * Place the cursor position at the end of the completion.
+ */
+	gl->buff_curpos += nextra;
+/*
+ * Terminate the extended line.
+ */
+	gl->line[gl->ntotal] = '\0';
+/*
+ * If we don't have to redisplay the whole line, redisplay the part
+ * of the line which follows the original cursor position, and place
+ * the cursor at the end of the completion.
+ */
+	if(!redisplay) {
+	  if(gl_truncate_display(gl) ||
+	     gl_output_string(gl, gl->line + buff_pos, '\0') ||
+	     gl_place_cursor(gl, gl->buff_curpos))
+	    return 1;
+	};
+      } else {
+	fprintf(stderr,
+		"\r\nInsufficient room in line for file completion.\r\n");
+	redisplay = 1;
+      };
+    };
+  };
+/*
+ * Redisplay the whole line?
+ */
+  if(redisplay) {
+    gl->term_curpos = 0;
+    if(gl_redisplay(gl,1))
+      return 1;
+  };
+  return 0;
+}
+#endif
+
+
 void wxCLI::OnChar( wxKeyEvent &event ) {
   keyseq_count++;
   switch( event.KeyCode()) {
+  case WXK_TAB:
+    CompleteWord();
+    break;
   case WXK_LEFT:
     CursorLeft();
     break;

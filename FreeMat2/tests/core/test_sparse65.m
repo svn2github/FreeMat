@@ -16,4 +16,18 @@ yf1(ndx) = gf; zf1(ndx) = gf;
 yd1(ndx) = gd; zd1(ndx) = gd;
 yc1(ndx) = gc; zc1(ndx) = gc;
 yz1(ndx) = gz; zz1(ndx) = gz;
-x = testeq(yi1,zi1) & testeq(yf1,zf1) & testeq(yd1,zd1) & testeq(yc1,zc1) & testeq(yz1,zz1);
+% Cannot use testeq because if we set the same element to two
+% different values, the result is different for full versus sparse
+% matrices
+x = testeq2(yi1,zi1,ndx) & testeq2(yf1,zf1,ndx) & testeq2(yd1,zd1,ndx) & testeq2(yc1,zc1,ndx) & testeq2(yz1,zz1,ndx);
+
+function n = length(x)
+n = prod(size(x));
+
+function x = testeq2(a,b,ndx)
+k = find(a-b);
+x = 1;
+for i = 1:length(k)
+  x = x & length(find(ndx == k(i)));
+end
+

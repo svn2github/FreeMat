@@ -16,5 +16,5 @@ zf1(ndxr) = [];
 zd1(ndxr) = [];
 zc1(ndxr) = [];
 zz1(ndxr) = [];
-x = testeq(yi1,zi1') & testeq(yf1,zf1') & testeq(yd1,zd1') & testeq(yc1,zc1') & testeq(yz1,zz1');
+x = testeq(yi1,zi1.') & testeq(yf1,zf1.') & testeq(yd1,zd1.') & testeq(yc1,zc1.') & testeq(yz1,zz1.');
 

@@ -1,10 +1,8 @@
-[yi,zi] = test_sparse_mat('int32',400);
-[yf,zf] = test_sparse_mat('float',400);
-[yd,zd] = test_sparse_mat('double',400);
-[yc,zc] = test_sparse_mat('complex',400);
-[yz,zz] = test_sparse_mat('dcomplex',400);
-testeq(int32(yc),sparse(int32(zc)))
-testeq(float(yc),sparse(float(zc)))
-testeq(double(yc),sparse(double(zc)))
-testeq(complex(yc),sparse(complex(zc)))
-testeq(dcomplex(yc),sparse(dcomplex(zc)))
+[yd1,zd1] = test_sparse_mat('double',100,100);
+[yz1,zz1] = test_sparse_mat('dcomplex',100,100);
+[yd2,zd2] = test_sparse_mat('double',100,60);
+[yz2,zz2] = test_sparse_mat('dcomplex',100,60);
+s1 = yd1\yd2;
+s2 = zd1\zd2;
+s3 = yz1\yz2;
+s4 = zz1\zz2;

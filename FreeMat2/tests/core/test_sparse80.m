@@ -10,6 +10,6 @@ function x = test_sparse80
 [yd2,zd2] = test_sparse_mat('double',400,600);
 [yc2,zc2] = test_sparse_mat('complex',400,600);
 [yz2,zz2] = test_sparse_mat('dcomplex',400,600);
-x = testeq(yi1*yi2,zi1*zi2) & testeq(yf1*yf2,zf1*zf2) & testeq(yd1*yd1,zd1*zd2) & testeq(yc1*yc2,zc1*zc2) & testeq(yz1*yz2,zz1*zz2);
+x = testeq(yi1*yi2,zi1*zi2) & testeq(yf1*yf2,zf1*zf2) & testeq(yd1*yd2,zd1*zd2) & testeq(yc1*yc2,zc1*zc2) & testeq(yz1*yz2,zz1*zz2);
 
 

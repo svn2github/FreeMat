@@ -494,7 +494,7 @@ namespace FreeMat {
     stacktrace = io->getMessageContextStack();
     int i;
     char buffer[100];
-    for (i=0;i<stacktrace.size();i++) {
+    for (i=0;i<stacktrace.size()-1;i++) {
       sprintf(buffer,"[%d]  -- ",i);
       io->outputMessage(buffer);
       io->outputMessage(stacktrace[i].c_str());

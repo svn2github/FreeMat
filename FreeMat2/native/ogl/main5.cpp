@@ -137,15 +137,16 @@ void RenderScene(void) {
 	// Save matrix state and do the rotation...
 //	glPushMatrix();
 
-//	glBegin(GL_POINTS);
-//	z = -50.0f;
-//	for (angle=0.0f; angle <= (2.0f*GL_PI)*3.0f; angle += 0.1f) {
-//		x = 50.0f*sin(angle);
-//		y = 50.0f*cos(angle);
-//		glVertex3f(x, y, z);
-//		z += 0.5f;
-//	}
+	glBegin(GL_POINTS);
+	z = -50.0f;
+	for (angle=0.0f; angle <= (2.0f*GL_PI)*3.0f; angle += 0.1f) {
+		x = 50.0f*sin(angle);
+		y = 50.0f*cos(angle);
+		glVertex3f(x, y, z);
+		z += 0.5f;
+	}
 
+#if 0
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex3f(0.0f, 0.0f, 75.0f);
 	int iPivot = 0;
@@ -172,7 +173,7 @@ void RenderScene(void) {
 		iPivot++;
 		glVertex2f(x, y);
 	}
-
+#endif
 	glEnd();
 //	glPopMatrix();
 //	glFlush();

@@ -148,7 +148,7 @@ char* FLTKTerminalWidget::getLine(const char*prompt) {
     insert_position(buffer()->length());
     history_ptr = -1;
     while(enteredLines.empty())
-      Fl::wait(0);
+      Fl::wait(1);
   }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();
@@ -1042,6 +1042,11 @@ Fl_Menu_Item menuitems[] = {
   { 0 }
 };
 
+void quit_check_cb(Fl_Widget*, void*) {
+  if (!fl_ask("Are you sure you want to quit?")) return;
+  exit(0);
+}
+
 FLTKTerminalWindow::FLTKTerminalWindow(int w, int h, const char* t, const char *help_path) :
   Fl_Double_Window(w,h,t) {
   g_helppath = help_path;
@@ -1052,6 +1057,7 @@ FLTKTerminalWindow::FLTKTerminalWindow(int w, int h, const char* t, const char *
   m_term = new FLTKTerminalWidget(0,30,w,h-30);
   end();
   resizable(m_term);
+  callback(quit_check_cb);
 }
 
 FLTKTerminalWindow::~FLTKTerminalWindow() {

@@ -273,15 +273,15 @@ namespace FreeMat {
       if (axisType == Axis_X) {
 	double u;
 	u = (xOffset + (t - tStart)/(tStop - tStart) * length);
-	if (u < xOffset-1) u = xOffset-1;
-	if (u > (xOffset+length+1)) u = xOffset+length+1;
+// 	if (u < xOffset-100) u = xOffset-100;
+// 	if (u > (xOffset+length+100)) u = xOffset+length+100;
 	return ((int)0.5+u);
       }
       if (axisType == Axis_Y) {
 	double u;
 	u = (yOffset + (tStop - t)/(tStop - tStart) * length);
-	if (u < yOffset-1) u = yOffset-1;
-	if (u > (yOffset+length+1)) u = yOffset+length+1;
+// 	if (u < yOffset-100) u = yOffset-100;
+// 	if (u > (yOffset+length+100)) u = yOffset+length+1;
 	return ((int)0.5+u);
       }
     } else {
@@ -289,8 +289,8 @@ namespace FreeMat {
 	double s, u;
 	s = log10(t);
 	u = (xOffset + (s - tStart)/(tStop - tStart) * length);
-	if (u < xOffset-1) u = xOffset-1;
-	if (u > (xOffset+length+1)) u = xOffset+length+1;
+// 	if (u < xOffset-1) u = xOffset-1;
+// 	if (u > (xOffset+length+1)) u = xOffset+length+1;
 	return ((int)0.5+u);
       }
       if (axisType == Axis_Y) {
@@ -298,8 +298,8 @@ namespace FreeMat {
 	s = log10(t);
 	double u;
 	u = (yOffset + (tStop - s)/(tStop - tStart) * length);
-	if (u < yOffset-1) u = yOffset-1;
-	if (u > (yOffset+length+1)) u = yOffset+length+1;
+// 	if (u < yOffset-1) u = yOffset-1;
+// 	if (u > (yOffset+length+1)) u = yOffset+length+1;
 	return ((int)0.5+u);
       }      
     }

@@ -86,6 +86,10 @@ namespace FreeMat {
      * Get a copy of the message context stack.
      */
     virtual std::vector<std::string> getMessageContextStack() = 0;
+    /**
+     * Clear the message context stack.
+     */
+    virtual void clearMessageContextStack() = 0;
   };
 }
 

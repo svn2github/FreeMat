@@ -53,7 +53,7 @@ void FLTKTerminalWidget::blink() {
 FLTKTerminalWidget::FLTKTerminalWidget(int x, int y, int w, int h, const char *label) : textInitialized(false),
   Fl_Text_Display(x,y,w,h,label) {
   textfont(FL_COURIER);
-  textsize(14);
+  textsize(12);
   textbuf = new Fl_Text_Buffer;
   buffer(textbuf);
   cursor_style(Fl_Text_Display::CARET_CURSOR);
@@ -73,8 +73,6 @@ FLTKTerminalWidget::FLTKTerminalWidget(int x, int y, int w, int h, const char *l
 void FLTKTerminalWidget::draw() {
   int X, Y;
   position_to_xy(mCursorPos, &X, &Y);
-  //textfont(FL_SCREEN);
-  //textsize(12);
   Fl_Text_Display::draw();
   fl_push_clip(text_area.x-LEFT_MARGIN,
 	       text_area.y,
@@ -221,7 +219,7 @@ void FLTKTerminalWidget::outputText(const char *txt) {
       linecount_changed = true;
     }
   buffer()->append(txt);
-  insert_position(buffer()->length());
+  //  insert_position(buffer()->length());
   if (linecount_changed) 
     adjustScrollPosition();
   textInitialized = true;

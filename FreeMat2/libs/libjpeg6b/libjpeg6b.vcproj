@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="libjpeg6b"
+	RootNamespace="libjpeg6b"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -44,7 +45,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="copy $(InputDir)\jconfig.vc $(InputDir)\jconfig.h"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -115,24 +117,6 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
-			<File
-				RelativePath="ansi2knr.c">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
 			<File
 				RelativePath="cdjpeg.c">
 				<FileConfiguration

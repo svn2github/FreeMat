@@ -157,6 +157,25 @@ int AppNoGUI::OnExit() {
 void AppNoGUI::OnProcessCustom(wxCommandEvent& event) {
   ProcessGraphicsServerCommands(event);
   Command *cp = (Command *) event.GetClientData();
+  switch(cp->cmdNum) {
+  case CMD_SystemCapture: {
+    wxString command(cp->data.getContentsAsCString());
+    wxArrayString output;
+    wxExecute(command,output);
+    Array *dp = new Array[output.GetCount()];
+    for (int k=0;k<output.GetCount();k++) {
+      const char *wp = output[k].c_str();
+      dp[k] = Array::stringConstructor(std::string(wp));
+    }
+    Dimensions dim(2);
+    dim[0] = output.GetCount();
+    dim[1] = 1;
+    Array res(Array::Array(FM_CELL_ARRAY,dim,dp));
+    Command *rp;
+    rp = new Command(CMD_SystemCaptureAcq,res);
+    PostGUIReply(rp);
+  }
+  }
   delete cp;
 }
 

@@ -37,7 +37,8 @@ class SessionFrame : public wxFrame
    * Constructor.  Creates a new SessionFrame.
    */
   SessionFrame() {};
-  SessionFrame(const wxChar* title, int xpos, int ypos, int width, int height);
+  SessionFrame(App *tMain, const wxChar* title, 
+	       int xpos, int ypos, int width, int height);
 
   /**
    * Destructor
@@ -59,6 +60,7 @@ class SessionFrame : public wxFrame
   DECLARE_CLASS(SessionFrame)
   DECLARE_EVENT_TABLE()
  private:
+  App *mainApp;
   /**
    * Member controls.
    */

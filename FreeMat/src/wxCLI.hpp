@@ -29,11 +29,12 @@
 
 #include "wx/caret.h"
 
+class App;
 class wxCLI : public wxScrolledWindow
 {
 public:
   wxCLI() {}
-  wxCLI(wxWindow *parent);
+  wxCLI(App *tMain, wxWindow *parent);
   ~wxCLI();
   wxChar& CharAt(int x, int y) { return *(m_text + x + m_xChars * y); }
   
@@ -68,11 +69,13 @@ public:
 
   void PutMessage(const char *);
   virtual void OnDraw(wxDC& dc);
+  void SetFont(wxFont aFont);
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
   void DoResizeBuffer(int xsize, int ysize);
   
+  App *mainApp;
   wxFont   m_font;
   
   // the margin around the text (looks nicer)

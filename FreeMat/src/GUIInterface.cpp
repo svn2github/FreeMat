@@ -21,6 +21,8 @@
 #include "GUIInterface.hpp"
 #include "Command.hpp"
 #include <string.h>
+#include <wx/tokenzr.h>
+#include <wx/filename.h>
 
 namespace FreeMat {
 
@@ -54,9 +56,46 @@ namespace FreeMat {
   }
 
   void GUIInterface::initialize(std::string path, Context *ctxt) {
+    pathList = wxString(path.c_str());
+    context = ctxt;
+    rescanPath();
+  }
+
+  void GUIInterface::processFilename(wxString filename) {
+    wxString path, name, ext;
+    ::wxFileName::SplitPath(filename,&path,&name,&ext);
+    FunctionDef *fdef;
+    if (!context->lookupFunctionGlobally(std::string(name.c_str()),fdef)) {
+      MFunctionDef *adef;
+      adef = new MFunctionDef();
+      adef->name = std::string(name.c_str());
+      adef->fileName = std::string(filename.c_str());
+      context->insertFunctionGlobally(adef);
+      if (transientScan)
+	transientFuncs.push_back(std::string(name.c_str()));
+    }
   }
 
   void GUIInterface::rescanPath() {
+    for (int i=0;i<transientFuncs.size();i++)
+      context->deleteFunctionGlobally(transientFuncs[i]);
+    // Scan the current directory...
+    transientScan = false;
+    wxStringTokenizer tkz(pathList,":");
+    while (tkz.HasMoreTokens()) {
+      wxString token = tkz.GetNextToken();
+      wxString fname = wxFindFirstFile(token + "/*.m",wxFILE);
+      while (!fname.IsEmpty()) {
+	processFilename(fname);
+	fname = wxFindNextFile();
+      }
+    }
+    wxString fname = wxFindFirstFile("*.m",wxFILE);
+    transientScan = true;
+    while (!fname.IsEmpty()) {
+      processFilename(fname);
+      fname = wxFindNextFile();
+    }
   }
 
   GUIInterface::~GUIInterface() {

@@ -22,6 +22,7 @@
 #include "Command.hpp"
 #include "CLIThread.hpp"
 #include "Array.hpp"
+#include "App.hpp"
 #include <iostream>
 
 // ----------------------------------------------------------------------------
@@ -41,10 +42,11 @@ BEGIN_EVENT_TABLE(wxCLI, wxScrolledWindow)
     EVT_CHAR(wxCLI::OnChar)
 END_EVENT_TABLE()
 
-  wxCLI::wxCLI( wxWindow *parent )
+  wxCLI::wxCLI( App* tMain, wxWindow *parent )
     : wxScrolledWindow( parent, -1,
 			wxDefaultPosition, wxDefaultSize,
 			wxSUNKEN_BORDER ) {
+  mainApp = tMain;
   m_text = (wxChar *)NULL;
     
   m_head = 0;
@@ -88,8 +90,8 @@ wxScrollWinEvent gScroll(wxEVT_SCROLLWIN_BOTTOM);
 void wxCLI::PutMessage(const char * msg) {
   const char *cp;
 
-  std::cout << "Got putmessage:" << msg << "\n";
-  std::cout.flush();
+//   std::cout << "Got putmessage:" << msg << "\n";
+//   std::cout.flush();
   cp = msg;
   while (*cp) {
     if (*cp == '\n') {
@@ -154,8 +156,8 @@ void wxCLI::DoResizeBuffer(int xsize, int ysize) {
     m_yChars = ysize;
     return;
   }
-  std::cout << "Got size event " << xsize << " x " << ysize << "\n";
-  std::cout.flush();
+//   std::cout << "Got size event " << xsize << " x " << ysize << "\n";
+//   std::cout.flush();
   if ((m_xChars == xsize) && (m_yChars == ysize)) return;
   wxChar *newBuf;
 
@@ -189,6 +191,11 @@ void wxCLI::OnSize( wxSizeEvent &event ) {
   //       PutMessage("Hello!\n  Welcome to Grace Brothers!\n-->");
 
   event.Skip();
+}
+
+void wxCLI::SetFont(wxFont aFont) {
+  m_font = aFont;
+  CreateCaret();
 }
 
 void wxCLI::OnDraw(wxDC& dc) {
@@ -229,7 +236,7 @@ void wxCLI::NewLine() {
   typeAhead[typeAheadTail] = 0;
   linepos = 0;
   m_tail++;
-  std::cout << "Posting command :" << typeAhead << ":\n";
+//   std::cout << "Posting command :" << typeAhead << ":\n";
   FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
 					     FreeMat::Array::
 					     stringConstructor(typeAhead)));
@@ -303,36 +310,30 @@ void wxCLI::OnChar( wxKeyEvent &event ) {
     case WXK_BACK:
       Backspace();
       break;
-      
     case WXK_LEFT:
       if (m_xCaret > promptLength) {
 	PrevChar();
 	typeAheadPtr--;
       }
       break;
-
     case WXK_RIGHT:
       if (m_xCaret < m_xChars) {
 	NextChar();
 	typeAheadPtr++;
       }
       break;
-
     case WXK_UP:
       PrevLine();
       break;
     case WXK_DOWN:
       NextLine();
       break;
-
     case WXK_HOME:
       Home();
       break;
-
     case WXK_END:
       End();
       break;
-
     case WXK_RETURN:
       Home();
       //            NextLine();

@@ -22,29 +22,12 @@
 #define __CLIThread_hpp__
 
 #include "wx/thread.h"
+#include "Command.hpp"
 
 #include "Interface.hpp"
 class wxApp;
 
 namespace FreeMat {
-  
-  class Command;
-
-  /**
-   * Send the given command object to the GUI as an event,
-   * so that it is processed by App::OnProcessCustom.
-   */
-  void SendGUICommand(Command *cmd);
-
-  /**
-   * Send the given command object as a reply to a GUI command.
-   */
-  void PostGUIReply(Command *reply);
-
-  /**
-   * Retrieve the reply for a GUI command.
-   */
-  Command* GetGUIResponse();
   
   /** Worker thread that handles the command line interface.
    * This is a simple worker thread that handles the command

@@ -128,7 +128,7 @@ bool App::OnInit()
   path += "/manual.zip";
   help->AddBook(wxFileName(path));
   wxBitmap bitmap;
-  sf = new SessionFrame("FreeMat",100,100,400,400);
+  sf = new SessionFrame(this,"FreeMat",100,100,400,400);
   sf->Show(TRUE);
   SetTopWindow(sf);
 
@@ -150,6 +150,7 @@ bool App::OnInit()
 
 void App::Shutdown() {
   ExitMainLoop();  
+  t->Kill();
 }
 
 int App::OnExit() {
@@ -190,6 +191,23 @@ void App::OnProcessCustom(wxCommandEvent& event) {
     case CMD_GUIGetWidth: {
       sf->getTextControl()->IssueGetWidthRequest();
       break;
+    }
+    case CMD_SystemCapture: {
+      wxString command(cp->data.getContentsAsCString());
+      wxArrayString output;
+      wxExecute(command,output);
+      Array *dp = new Array[output.GetCount()];
+      for (int k=0;k<output.GetCount();k++) {
+	const char *wp = output[k].c_str();
+	dp[k] = Array::stringConstructor(std::string(wp));
+      }
+      Dimensions dim(2);
+      dim[0] = output.GetCount();
+      dim[1] = 1;
+      Array res(Array::Array(FM_CELL_ARRAY,dim,dp));
+      Command *rp;
+      rp = new Command(CMD_SystemCaptureAcq,res);
+      PostGUIReply(rp);
     }
     }
     delete cp;

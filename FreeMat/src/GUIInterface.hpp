@@ -26,6 +26,13 @@
 #include "Types.hpp"
 #include "CLIThread.hpp"
 
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
+
 namespace FreeMat {
   /**
    * This is the class that abstracts the libGUI library - it
@@ -33,11 +40,11 @@ namespace FreeMat {
    * line editing, file searching, etc...).
    */
   class GUIInterface : public Interface {
-    /**
-     * The libtecla object that provides the input string from the command
-     * line.
-     */
-  public:
+    wxString pathList;
+    Context *context;
+    stringVector transientFuncs;
+    bool transientScan;
+    void processFilename(wxString);
   public:
     GUIInterface();
     ~GUIInterface();

@@ -19,15 +19,19 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "SessionFrame.hpp"
-//#include "CLITextCtrl.hpp"
+#include "Command.hpp"
 #include "wxCLI.hpp"
 #include <wx/fontdlg.h>
 #include <iostream>
+#include "App.hpp"
 
-SessionFrame::SessionFrame(const wxChar *title, int xpos, int ypos, int width, int height)
+SessionFrame::SessionFrame(App* tMain, const wxChar *title, 
+			   int xpos, int ypos, int width, int height)
   : wxFrame((wxFrame *)NULL,-1,title,wxPoint(xpos,ypos),wxSize(width,height))
 {
-  m_pTextCtrl = new wxCLI(this);
+  mainApp = tMain;
+  m_pTextCtrl = new wxCLI(tMain, this);
+  m_pTextCtrl->SetFocus();
   //  m_pTextCtrl = new CLITextCtrl(this,-1);
   //  m_pTextCtrl = new wxTextCtrl(this,-1,"",wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
   //  m_pTextCtrl = new CLITrick(this);
@@ -102,16 +106,18 @@ void SessionFrame::OnFont(wxCommandEvent &event)
     {
       fontData = dlg->GetFontData();
       font = fontData.GetChosenFont();
+      m_pTextCtrl->SetFont(font);
+      m_pTextCtrl->Refresh();
       //      m_pTextCtrl->SetFont(font);
       //      m_pTextCtrl->SetForegroundColour(fontData.GetColour());
-      //      m_pTextCtrl->Refresh();
     }
   dlg->Destroy();
 }
 
 void SessionFrame::OnQuit(wxCommandEvent &event)
 {
-  Close(TRUE);
+  Close();
+  mainApp->Shutdown();
 }
 
 void SessionFrame::OnAbout(wxCommandEvent &event) {

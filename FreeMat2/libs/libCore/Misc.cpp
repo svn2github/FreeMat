@@ -69,6 +69,20 @@ namespace FreeMat {
     return retval;
   } 
 
+  ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    char *prompt, *text;
+    if (arg.size() < 1)
+      prompt = "";
+    else {
+      Array A(arg[0]);
+      if (!A.isString())
+	throw Exception("getline requires a string prompt");
+      prompt = A.getContentsAsCString();
+    }
+    text = eval->getInterface()->getLine(prompt);
+    return singleArrayVector(Array::stringConstructor(text));
+  }
+
   ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
     Array A(arg[0]);
     Array B(arg[1]);

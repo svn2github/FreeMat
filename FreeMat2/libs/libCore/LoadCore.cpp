@@ -301,6 +301,9 @@ namespace FreeMat {
      context->addSpecialFunction("help",HelpFunction,1,0,args);
      args.clear();
      context->addSpecialFunction("pcode",PCodeFunction,-1,0,args);
+     args.clear();
+     args.push_back("prompt");
+     context->addSpecialFunction("getline",GetLineFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

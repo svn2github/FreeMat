@@ -13,8 +13,7 @@
 #endif
 
 #include <stdio.h>
-
-#define Exception(x) x
+#include "Exception.hpp"
 
 RGBImage::RGBImage(int awidth, int aheight, byte *adata) {
   width = awidth;
@@ -103,7 +102,7 @@ void RGBImage::SetAllPixels(Color col) {
 
 void RGBImage::WritePNG(std::string filename) {
 #ifndef HAVE_PNG
-  throw Exception("PNG support not available.");
+  throw FreeMat::Exception("PNG support not available.");
 #else
   png_structp png_ptr;
   png_infop info_ptr;
@@ -111,44 +110,44 @@ void RGBImage::WritePNG(std::string filename) {
   FILE *fp = fopen(filename.c_str(), "wb");
   
   if (!fp) 
-    throw Exception(std::string("Unable to open file ") + filename + " for writing");
+    throw FreeMat::Exception(std::string("Unable to open file ") + filename + " for writing");
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   if (!png_ptr)
-    throw Exception(std::string("Internal error in PNG write codes..."));
+    throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr)
-    throw Exception(std::string("Internal error in PNG write codes..."));
+    throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   if (setjmp(png_jmpbuf(png_ptr)))
-    throw Exception(std::string("Internal error in PNG write codes..."));
+    throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   png_init_io(png_ptr, fp);
   /* write header */
   if (setjmp(png_jmpbuf(png_ptr)))
-    throw Exception(std::string("Internal error in PNG write codes..."));
+    throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   png_set_IHDR(png_ptr, info_ptr, width, height,
 	       8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
 	       PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
   png_write_info(png_ptr, info_ptr);
   if (setjmp(png_jmpbuf(png_ptr)))
-    throw Exception(std::string("Internal error in PNG write codes..."));
+    throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   png_bytep* row_pointers = (png_bytep*) malloc(sizeof(png_bytep)*height);
   for (int y=0;y<height;y++)
     row_pointers[y] = (png_byte*) (data+3*y*width);
   png_write_image(png_ptr, row_pointers);
   free(row_pointers);
   if (setjmp(png_jmpbuf(png_ptr)))
-    throw Exception(std::string("Internal error in PNG write codes..."));
+    throw FreeMat::Exception(std::string("Internal error in PNG write codes..."));
   png_write_end(png_ptr, NULL);
 #endif
 }
 
 void RGBImage::WriteTIFF(std::string filename) {
 #ifndef HAVE_TIFF
-  throw Exception("TIFF support not available.");
+  throw FreeMat::Exception("TIFF support not available.");
 #else
   TIFF *output;
   // Open the output image
   if((output = TIFFOpen(filename.c_str(), "w")) == NULL)
-    throw Exception(std::string("Cound not open file") + filename + "for writing");
+    throw FreeMat::Exception(std::string("Cound not open file") + filename + "for writing");
   // Write the tiff tags to the file
   TIFFSetField(output, TIFFTAG_IMAGEWIDTH, width);
   TIFFSetField(output, TIFFTAG_IMAGELENGTH, height);
@@ -159,14 +158,14 @@ void RGBImage::WriteTIFF(std::string filename) {
   TIFFSetField(output, TIFFTAG_SAMPLESPERPIXEL, 3);
   // Actually write the image
   if(TIFFWriteEncodedStrip(output, 0, data, width * height * 3) == 0)
-    throw Exception(std::string("Could not write image ") + filename);
+    throw FreeMat::Exception(std::string("Could not write image ") + filename);
   TIFFClose(output);
 #endif
 }
 
 void RGBImage::WriteJPEG(std::string filename) {
 #ifndef HAVE_JPEG
-  throw Exception("JPEG support not available.");
+  throw FreeMat::Exception("JPEG support not available.");
 #else
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -177,7 +176,7 @@ void RGBImage::WriteJPEG(std::string filename) {
   cinfo.err = jpeg_std_error(&jerr);
   jpeg_create_compress(&cinfo);
   if ((outfile = fopen(filename.c_str(), "wb")) == NULL) 
-    throw Exception(std::string("Can not open file ") + filename);
+    throw FreeMat::Exception(std::string("Can not open file ") + filename);
   jpeg_stdio_dest(&cinfo, outfile);
   cinfo.image_width = width;      /* image width and height, in pixels */
   cinfo.image_height = height;

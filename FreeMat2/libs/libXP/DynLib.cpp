@@ -27,23 +27,23 @@ namespace FreeMat {
 #ifdef WIN32
     lib = LoadLibrary(filename);
     if (!lib)
-      throw Exception(std::string("Unable to open module: ") + ((const char *)filename));
+      throw FreeMat::Exception(std::string("Unable to open module: ") + ((const char *)filename));
 #else
     lib = dlopen(filename,RTLD_LAZY);
     if (!lib)
-      throw Exception(std::string("Unable to open module: ") + ((const char *)filename));
+      throw FreeMat::Exception(std::string("Unable to open module: ") + ((const char *)filename));
 #endif
   }
   void* DynLib::GetSymbol(const char*symbolName) {
 #ifdef WIN32
     void *func = GetProcAddress(lib,symbolName);
     if (func == NULL)
-      throw Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
+      throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
     return func;
 #else
     void *func = dlsym(lib,symbolName);
     if (func == NULL)
-      throw Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
+      throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
     return func;
 #endif
   }

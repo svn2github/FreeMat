@@ -7,8 +7,7 @@
 #include <X11/Xatom.h>
 #include "RGBImageGC.hpp"
 #include "PostScriptGC.hpp"
-
-#define Exception(x) x
+#include "Exception.hpp"
 
 static bool firstWindow = true;
 Atom proto_atom, delete_atom;
@@ -203,7 +202,7 @@ void XWindow::SetTitle(std::string title) {
   char *tmp;
   tmp = (char*) title.c_str();
   if (XStringListToTextProperty(&tmp,1,&m_window_title) == 0)
-    throw "Unable to set window-title!\n";
+    throw FreeMat::Exception("Unable to set window-title!\n");
   XSetWMName(m_display, m_window, &m_window_title);
   XSetWMIconName(m_display, m_window, &m_window_title);
 }
@@ -272,8 +271,6 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
 }
 
 void XWindow::UpdateContents(unsigned char *data, int width, int height) {
-  printf("UpdateContents called \n\r");
-  fflush(stdout);
   RGBImage img(width, height, data);
   RGBImageGC gc(img);
   img.SetAllPixels(Color("light grey"));
@@ -312,20 +309,18 @@ void XWindow::Print(std::string filename) {
 	// PPM
       } else {
 	free(data);
-	throw Exception(std::string("Unrecognized extension ") + extension);
+	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
       }
       free(data);
     }
   } else
-    throw Exception(std::string("Unable to determine format of output from filename"));
+    throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
 }
 
 // Set the image contents of the window - source is an RGB image
 // Depending on the visual, this image is converted into an XImage
 // and a colormap is set for the window.
 void XWindow::SetImage(unsigned char *data, int width, int height) {
-  printf("\r\nSetImage Called %x %x %x\r\n",data[0],data[3],data[6]);
-  fflush(stdout);
   // Check for PseudoColor visual
   if ((m_visual->c_class != TrueColor) &&
       (m_visual->c_class != DirectColor)) {
@@ -427,18 +422,33 @@ bool XNextEventStdInCallback(Display *d, XEvent *r) {
     // Do a select on the X connection and stdin
     bool XEventCaught = false;
     int xfd;
-    fd_set rmask;
+    fd_set rmask, emask;
     FD_ZERO(&rmask);
     xfd = ConnectionNumber(d);
     FD_SET(xfd, &rmask);
     FD_SET(STDIN_FILENO, &rmask);
-    if ((select(xfd+1, &rmask, NULL, NULL, NULL) == -1) && (errno != EINTR))
-      perror("select");
-    if (FD_ISSET(STDIN_FILENO, &rmask))
-      stdin_cb();
-    if (FD_ISSET(xfd, &rmask)) {
-      XNextEvent(d,r);
-      XEventCaught = true;
+    FD_ZERO(&emask);
+    FD_SET(STDIN_FILENO, &emask);
+    int ret;
+    ret = select(xfd+1, &rmask, NULL, &emask, NULL);
+    if (ret == -1) {
+      if (errno != EINTR)
+	perror("select");
+      else
+	/* Do nothing */
+	;
+    } else {
+      if (FD_ISSET(STDIN_FILENO, &emask)) {
+	perror("stdin");
+	printf("\r\nException!\r\n");
+	fflush(stdout);
+      }
+      if (FD_ISSET(STDIN_FILENO, &rmask))
+	stdin_cb();
+      if (FD_ISSET(xfd, &rmask)) {
+	XNextEvent(d,r);
+	XEventCaught = true;
+      }
     }
     return XEventCaught;
   }

@@ -22,14 +22,19 @@
 #define __PathSearch_hpp__
 
 #include <string>
+#include <vector>
 
 namespace FreeMat {
   class PathSearcher{
-    char *pathlist;
+    std::string path;
+    std::vector<std::string> pathList;
   public:
     PathSearcher(const char* envvarname);
     std::string ResolvePath(std::string fname);
   };
+  bool FileExists(std::string filename);
+  std::string GetPathOnly(std::string a);
+  std::string CheckEndSlash(std::string a);
 }
 
 #endif  

@@ -267,10 +267,10 @@ std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
   std::vector<std::string > ret;
   
   if(pipe(fd) < 0) 
-    throw Exception("Internal error - unable to set up pipe for system call!!");
+    throw FreeMat::Exception("Internal error - unable to set up pipe for system call!!");
   switch(fork()) {
   case -1:
-    throw Exception("Internal error - unable to fork system call!!");
+    throw FreeMat::Exception("Internal error - unable to fork system call!!");
   case 0:                 /* child */
     close(fd[0]);
     dup2(fd[1], fileno(stdout));
@@ -280,10 +280,16 @@ std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
     output = (char*) malloc(MAX);
     op = output;
     readSoFar = 0;
-    while (n = read(fd[0], op, MAX - 1)) {
-      readSoFar += n;
-      output = (char*) realloc(output,readSoFar+MAX);
-      op += n;
+    bool moreOutput = true;
+    while (moreOutput) {
+      n = read(fd[0], op, MAX - 1);
+      if ((n == 0) && (errno != EINTR))
+	moreOutput = false;
+      else {
+	readSoFar += n;
+	output = (char*) realloc(output,readSoFar+MAX);
+	op = output + readSoFar;
+      }
     }
     *op = '\0';
     close(fd[0]);

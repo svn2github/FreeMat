@@ -34,6 +34,7 @@
 //   \item @|'le','ieee-le','little-endian','littleEndian','little'|
 //   \item @|'be','ieee-be','big-endian','bigEndian','big'|
 //\end{itemize}
+//!
 function x = rawread(fname,size,precision,byteorder)
   try 
     if (isset('byteorder'))

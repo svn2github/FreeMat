@@ -1767,4 +1767,132 @@ namespace FreeMat {
 						 advance);
     }
   }
+
+
+  template <class T>
+  void* DeleteSparseMatrixRowsComplex(int rows, int cols, const T** src, bool *dmap) {
+    // Count the number of undeleted columns
+    int newrow;
+    int i;
+    newrow = 0;
+    for (i=0;i<cols;i++) if (!dmap[i]) newrow++;
+    // Allocate an output array 
+    T** dest;
+    dest = new T*[cols];
+    // Allocate a buffer array
+    T* NBuf = new T[newrow*2];
+    T* OBuf = new T[rows*2];
+    // Allocate the output array
+    int ptr = 0;
+    for (i=0;i<cols;i++) {
+      // Decompress this column
+      DecompressComplexString<T>(src[i],OBuf,rows);
+      // Copy it
+      int ptr = 0;
+      for (int j=0;j<rows;j++)
+	if (!dmap[j]) {
+	  NBuf[ptr++] = OBuf[2*j];
+	  NBuf[ptr++] = OBuf[2*j+1];
+	}
+      // Recompress it
+      dest[i] = CompressComplexVector<T>(NBuf,newrow);
+    }
+    return dest;
+  }
+
+  template <class T>
+  void* DeleteSparseMatrixRowsReal(int rows, int cols, const T** src, bool *dmap) {
+    tstop();
+    // Count the number of undeleted columns
+    int newrow;
+    int i;
+    newrow = 0;
+    for (i=0;i<rows;i++) if (!dmap[i]) newrow++;
+    // Allocate an output array 
+    T** dest;
+    dest = new T*[cols];
+    // Allocate a buffer array
+    T* NBuf = new T[newrow];
+    T* OBuf = new T[rows];
+    // Allocate the output array
+    int ptr = 0;
+    for (i=0;i<cols;i++) {
+      // Decompress this column
+      DecompressRealString<T>(src[i],OBuf,rows);
+      // Copy it
+      int ptr = 0;
+      for (int j=0;j<rows;j++)
+	if (!dmap[j]) NBuf[ptr++] = OBuf[j];
+      // Recompress it
+      dest[i] = CompressRealVector<T>(NBuf,newrow);
+    }
+    delete NBuf;
+    delete OBuf;
+    return dest;
+  }
+
+  template <class T>
+  void* DeleteSparseMatrixCols(int rows, int cols, const T** src, bool *dmap) {
+    // Count the number of undeleted columns
+    int newcol;
+    int i;
+    newcol = 0;
+    for (i=0;i<cols;i++) if (!dmap[i]) newcol++;
+    // Allocate an output array 
+    T** dest;
+    dest = new T*[newcol];
+    int ptr = 0;
+    for (i=0;i<cols;i++) {
+      if (!dmap[i]) {
+	int blen = (int) src[i][0]+1;
+	dest[ptr] = new T[blen];
+	memcpy(dest[ptr],src[i],sizeof(T)*blen);
+	ptr++;
+      }
+    }
+    return dest;
+  }
+
+  void* DeleteSparseMatrixCols(Class dclass, int rows, int cols, const void* cp,
+			       bool *dmap) {
+    switch(dclass) {
+    case FM_INT32:
+      return DeleteSparseMatrixCols<int32>(rows, cols, (const int32**) cp,
+					   dmap);
+    case FM_FLOAT:
+      return DeleteSparseMatrixCols<float>(rows, cols, (const float**) cp,
+					   dmap);
+    case FM_DOUBLE:
+      return DeleteSparseMatrixCols<double>(rows, cols, (const double**) cp,
+					    dmap);
+    case FM_COMPLEX:
+      return DeleteSparseMatrixCols<float>(rows, cols, (const float**) cp,
+					   dmap);
+    case FM_DCOMPLEX:
+      return DeleteSparseMatrixCols<double>(rows, cols, (const double**) cp,
+					    dmap);
+    }    
+  }
+
+  void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
+			       bool *dmap) {
+    switch(dclass) {
+    case FM_INT32:
+      return DeleteSparseMatrixRowsReal<int32>(rows, cols, (const int32**) cp,
+					       dmap);
+    case FM_FLOAT:
+      return DeleteSparseMatrixRowsReal<float>(rows, cols, (const float**) cp,
+					       dmap);
+    case FM_DOUBLE:
+      return DeleteSparseMatrixRowsReal<double>(rows, cols, (const double**) cp,
+						dmap);
+    case FM_COMPLEX:
+      return DeleteSparseMatrixRowsComplex<float>(rows, cols, (const float**) cp,
+						 dmap);
+    case FM_DCOMPLEX:
+      return DeleteSparseMatrixRowsComplex<double>(rows, cols, (const double**) cp,
+						  dmap);
+    }
+  }
+
 }

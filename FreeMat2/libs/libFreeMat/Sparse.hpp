@@ -44,6 +44,12 @@ namespace FreeMat {
   void* makeSparseFromIJV(Class dclass, int rows, int cols, int nnz, 
 			  uint32* I, int istride, uint32 *J, int jstride,
 			  const void* cp, int cpstride);
+  void* DeleteSparseMatrixCols(Class dclass, int rows, int cols, const void* cp,
+			       bool *dmap);
+  void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
+			       bool *dmap);
+  void* DeleteSparseMatrixVectorSubset(Class dclass, int &rows, int &cols, const void *cp,
+				       const indexType *todel, int delete_len);
 }
 
 #endif

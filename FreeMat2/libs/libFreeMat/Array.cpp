@@ -2873,11 +2873,21 @@ break;
   void Array::deleteVectorSubset(Array& arg) {
     void *qp = NULL;
     bool *deletionMap = NULL;
-    if (isSparse())
-      throw Exception("deleteVectorSubset not supported for sparse arrays.");
     try {
       // First convert arg to an ordinal type.
       arg.toOrdinalType();
+      if (isSparse()) {
+	int rows = getDimensionLength(0);
+	int cols = getDimensionLength(1);
+	void *dp = DeleteSparseMatrixVectorSubset(dp->dataClass,rows,cols,
+						  dp->getData(),arg.getDataPointer(),
+						  arg.getLength());
+	Dimensions newdim;
+	newdim[0] = rows;
+	newdim[1] = cols;
+	dp = dp->putData(dp->dataClass,newdim,dp,true);
+	return;
+      }
       // Next, build a deletion map.
       int N = getLength();
       int i;
@@ -2977,8 +2987,6 @@ break;
     bool *indxCovered = NULL;
     bool *deletionMap = NULL;
     void *cp = NULL;
-    if (isSparse())
-      throw Exception("deleteNDimSubset not supported for sparse arrays.");
     try {
       // Our strategy is as follows.  To make the deletion, we need
       // one piece of information: the dimension to delete.
@@ -3057,6 +3065,24 @@ break;
 	retDims = dp->dimensions;
 	// Update the singleton dimension to the new size.
 	retDims[singletonDimension] = newSize;
+	// For sparse matrices, we branch here to call the sparse matrix deletion code
+	if (isSparse()) {
+	  int rows = getDimensionLength(0);
+	  int cols = getDimensionLength(1);
+	  if (singletonDimension == 0)
+	    dp = dp->putData(dp->dataClass,retDims,
+			     DeleteSparseMatrixRows(dp->dataClass,rows,cols,
+						    dp->getData(),deletionMap),true);
+	  else if (singletonDimension == 1)
+	    dp = dp->putData(dp->dataClass,retDims,
+			     DeleteSparseMatrixCols(dp->dataClass,rows,cols,
+						    dp->getData(),deletionMap),true);
+	  else
+	    throw Exception("sparse matrices do not support deleting n-dimensional planes - they are only 2-D");
+	  Free(deletionMap);
+	  Free(indxCovered);
+	  return;
+	}
 	// Allocate space for the return objects data
 	cp = allocateArray(dp->dataClass,retDims.getElementCount(),dp->fieldNames);
 	// Track our offset into the original data & our offset into
@@ -3087,7 +3113,7 @@ break;
 	dp = dp->putData(dp->dataClass,retDims,cp,dp->sparse,dp->fieldNames);
       } else {
 	Dimensions newDims;
-	dp = dp->putData(dp->dataClass,newDims,NULL,dp->sparse,dp->fieldNames);
+	dp = dp->putData(dp->dataClass,newDims,NULL,false,dp->fieldNames);
       }
     } catch (Exception &e) {
       Free(deletionMap);

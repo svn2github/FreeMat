@@ -2600,4 +2600,389 @@ namespace FreeMat {
     }
     return ArrayVector();
   }
+
+  bool sortreverse;
+  
+  template <class T>
+  class XNEntry {
+  public:
+    uint32 n;
+    T x;
+  };
+  
+  template <class T>
+  bool operator<(const XNEntry<T>& a, const XNEntry<T>& b) {
+    if (!sortreverse) {
+      if (IsNaN(b.x) & !IsNaN(a.x)) return true;
+      return (a.x < b.x);
+    } else {
+      if (IsNaN(a.x) & !IsNaN(b.x)) return true;
+      return (b.x < a.x);
+    }
+  }
+
+  template <class T>
+  void TRealSort(const T* sp, T* dp, int32 *ip, int planes, int planesize, int linesize) {
+    XNEntry<T> *buf = new XNEntry<T>[linesize];
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	for (k=0;k<linesize;k++) {
+	  buf[k].x = sp[i*planesize*linesize + j + k*planesize];
+	  buf[k].n = k+1;
+	}
+	std::sort(buf,buf+linesize);
+	for (k=0;k<linesize;k++) {
+	  dp[i*planesize*linesize + j + k*planesize] = buf[k].x;
+	  ip[i*planesize*linesize + j + k*planesize] = buf[k].n;
+	}
+      }    
+    }
+    delete[] buf;
+  }
+  
+  template <class T>
+  class XNComplexEntry {
+  public:
+    uint32 n;
+    T xr;
+    T xi;
+  };
+  
+  template <class T>
+  bool operator<(const XNComplexEntry<T>& a, const XNComplexEntry<T>& b) {
+    T a_abs, b_abs;
+    if (!sortreverse) {
+      a_abs = complex_abs(a.xr,a.xi);
+      b_abs = complex_abs(b.xr,b.xi);
+      if (IsNaN(b_abs) & !IsNaN(a_abs)) return true;
+      if (a_abs < b_abs)
+	return true;
+      else if (a_abs == b_abs)
+	return atan2(a.xi,a.xr) < atan2(b.xi,b.xr);
+      else
+	return false;
+    } else {
+      a_abs = complex_abs(b.xr,b.xi);
+      b_abs = complex_abs(a.xr,a.xi);
+      if (IsNaN(b_abs) & !IsNaN(a_abs)) return true;
+      if (a_abs < b_abs)
+	return true;
+      else if (a_abs == b_abs)
+	return atan2(b.xi,b.xr) < atan2(a.xi,a.xr);
+      else
+	return false;
+    }
+  }
+  
+  template <class T>
+  void TComplexSort(const T* sp, T* dp, int32 *ip, int planes, int planesize, int linesize) {
+    XNComplexEntry<T> *buf = new XNComplexEntry<T>[linesize];
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	for (k=0;k<linesize;k++) {
+	  buf[k].xr = sp[2*(i*planesize*linesize + j + k*planesize)];
+	  buf[k].xi = sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	  buf[k].n = k+1;
+	}
+	std::sort(buf,buf+linesize);
+	for (k=0;k<linesize;k++) {
+	  dp[2*(i*planesize*linesize + j + k*planesize)] = buf[k].xr;
+	  dp[2*(i*planesize*linesize + j + k*planesize)+1] = buf[k].xi;
+	  ip[i*planesize*linesize + j + k*planesize] = buf[k].n;
+	}
+      }    
+    }
+    delete[] buf;
+  }
+
+  bool VerifyAllStrings(Array *ptr, int count) {
+    bool allStrings;
+    int i;
+    i = 0;
+    allStrings = true;
+    while (allStrings && (i < count)) {
+      allStrings = allStrings && (ptr[i].isString() || ptr[i].isEmpty());
+      i++;
+    }
+    return(allStrings);
+  }
+
+  class XSEntry {
+  public:
+    uint32 n;
+    char* x;
+  };
+  
+  bool operator<(const XSEntry& a, const XSEntry& b) {
+    if (!sortreverse) 
+      return (strcmp(a.x,b.x) < 0);
+    else
+      return (strcmp(b.x,a.x) < 0);
+  }
+
+  void StringSort(const Array* sp, Array* dp, int32 *ip, 
+		  int planes, int planesize, int linesize) {
+    XSEntry *buf = new XSEntry[linesize];
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	for (k=0;k<linesize;k++) {
+	  buf[k].x = sp[i*planesize*linesize + j + k*planesize].getContentsAsCString();
+	  buf[k].n = k+1;
+	}
+	std::sort(buf,buf+linesize);
+	for (k=0;k<linesize;k++) {
+	  dp[i*planesize*linesize + j + k*planesize] = 
+	    sp[i*planesize*linesize + j + (buf[k].n-1)*planesize];
+	  ip[i*planesize*linesize + j + k*planesize] = buf[k].n;
+	  Free(buf[k].x);
+	}
+      }    
+    }
+    delete[] buf;
+  }
+  
+  //!
+  //@Module SORT Sort 
+  //@@Section ARRAY
+  //@@Usage
+  //Sorts an n-dimensional array along the specified dimensional.  The first
+  //form sorts the array along the first non-singular dimension.
+  //@[
+  //  B = sort(A)
+  //@]
+  //Alternately, the dimension along which to sort can be explicitly specified
+  //@[
+  //  B = sort(A,dim)
+  //@]
+  //FreeMat does not support vector arguments for @|dim| - if you need @|A| to be
+  //sorted along multiple dimensions (i.e., row first, then columns), make multiple
+  //calls to @|sort|.  Also, the direction of the sort can be specified using the 
+  //@|mode| argument
+  //@[
+  //  B = sort(A,dim,mode)
+  //@]
+  //where @|mode = 'ascend'| means to sort the data in ascending order (the default),
+  //and @|mode = 'descend'| means to sort the data into descending order.  
+  //
+  //When two outputs are requested from @|sort|, the indexes are also returned.
+  //Thus, for 
+  //@[
+  //  [B,IX] = sort(A)
+  //  [B,IX] = sort(A,dim)
+  //  [B,IX] = sort(A,dim,mode)
+  //@]
+  //an array @|IX| of the same size as @|A|, where @|IX| records the indices of @|A|
+  //(along the sorting dimension) corresponding to the output array @|B|. 
+  //
+  //Two additional issues worth noting.  First, a cell array can be sorted if each 
+  //cell contains a @|string|, in which case the strings are sorted by lexical order.
+  //The second issue is that FreeMat uses the same method as MATLAB to sort complex
+  //numbers.  In particular, a complex number @|a| is less than another complex
+  //number @|b| if @|abs(a) < abs(b)|.  If the magnitudes are the same then we 
+  //test the angle of @|a|, i.e. @|angle(a) < angle(b)|, where @|angle(a)| is the
+  //phase of @|a| between @|-pi,pi|.
+  //@@Example
+  //Here are some examples of sorting on numerical arrays.
+  //@<
+  //A = int32(10*rand(4,3))
+  //[B,IX] = sort(A)
+  //[B,IX] = sort(A,2)
+  //[B,IX] = sort(A,1,'descend')
+  //@>
+  //Here we sort a cell array of strings.
+  //@<
+  //a = {'hello','abba','goodbye','jockey','cake'}
+  //b = sort(a)
+  //@>
+  //!
+  ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
+    // Get the data argument
+    if (arg.size() < 1)
+      throw Exception("sort requires at least one argument");
+    Array input(arg[0]);
+    Class argType(input.getDataClass());
+    // Get the dimension argument (if supplied)
+    int workDim = -1;
+    if (arg.size() > 1) {
+      Array WDim(arg[1]);
+      workDim = WDim.getContentsAsIntegerScalar() - 1;
+      if (workDim < 0)
+	throw Exception("Dimension argument to sort should be positive");
+    }
+    // Get the sort direction (if supplied)
+    int sortdir = 1;
+    if (arg.size() > 2) {
+      Array Sdir(arg[2]);
+      if (!Sdir.isString())
+	throw Exception("Sort direction must be either the string 'ascend' or 'descend'");
+      const char *dp = (const char*) Sdir.getDataPointer();
+      if ((dp[0] == 'd') || (dp[0] == 'D'))
+	sortdir = -1;
+      else if ((dp[0] == 'a') || (dp[0] == 'A'))
+	sortdir = 1;
+      else
+	throw Exception("Sort direction must be either the string 'ascend' or 'descend'");
+    }
+    sortreverse = (sortdir == -1);
+    // Determine the type of the sort
+    if (input.isEmpty()) {
+      ArrayVector ret;
+      ret.push_back(Array::emptyConstructor());
+      for (int n=1;n<nargout;n++)
+	ret.push_back(Array::emptyConstructor());
+      return ret;
+    }
+    // No dimension supplied, look for a non-singular dimension
+    Dimensions inDim(input.getDimensions());
+    if (workDim == -1) {
+      int d = 0;
+      while (inDim[d] == 1) 
+	d++;
+      workDim = d;      
+    }
+    // Calculate the output size
+    Dimensions outDim(inDim);
+    // Calculate the stride...
+    int d;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
+    for (d=0;d<workDim;d++)
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
+    // Allocate the values output, and call the appropriate helper func.
+    Array retval, ndxval;
+    // Sort with index information
+    switch (argType) {
+    case FM_INT8: {
+      char* ptr = (char *) Malloc(sizeof(int8)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<int8>((const int8 *) input.getDataPointer(),
+			 (int8 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_INT8,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_UINT8: {
+      char* ptr = (char *) Malloc(sizeof(uint8)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<uint8>((const uint8 *) input.getDataPointer(),
+			 (uint8 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_UINT8,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_STRING: {
+      char* ptr = (char *) Malloc(sizeof(uint8)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<uint8>((const uint8 *) input.getDataPointer(),
+			 (uint8 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_STRING,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_INT16: {
+      char* ptr = (char *) Malloc(sizeof(int16)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<int16>((const int16 *) input.getDataPointer(),
+			 (int16 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_INT16,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_UINT16: {
+      char* ptr = (char *) Malloc(sizeof(uint16)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<uint16>((const uint16 *) input.getDataPointer(),
+			 (uint16 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_UINT16,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_INT32: {
+      char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<int32>((const int32 *) input.getDataPointer(),
+			 (int32 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_INT32,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_UINT32: {
+      char* ptr = (char *) Malloc(sizeof(uint32)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<uint32>((const uint32 *) input.getDataPointer(),
+			 (uint32 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_UINT32,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_FLOAT: {
+      char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<float>((const float *) input.getDataPointer(),
+			 (float *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_FLOAT,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_DOUBLE: {
+      char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealSort<double>((const double *) input.getDataPointer(),
+			  (double *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_DOUBLE,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_COMPLEX: {
+      char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TComplexSort<float>((const float *) input.getDataPointer(),
+			    (float *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_COMPLEX,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_DCOMPLEX: {
+      char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
+      char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TComplexSort<double>((const double *) input.getDataPointer(),
+			     (double *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_DCOMPLEX,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_CELL_ARRAY: {
+      // Make sure the source array is all strings
+      if (!VerifyAllStrings((Array*) input.getDataPointer(),outDim.getElementCount()))
+	throw Exception("Cannot sort a cell array if all the entries are not strings");
+      Array* ptr = new Array[outDim.getElementCount()];
+      char *iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      StringSort((const Array*) input.getDataPointer(),
+		 (Array*) ptr, (int32 *) iptr, planecount, planesize, linesize);
+      retval = Array(FM_CELL_ARRAY,outDim,ptr);
+      ndxval = Array(FM_INT32,outDim,iptr);
+      break;
+    }
+    case FM_STRUCT_ARRAY:
+      throw Exception("Cannot sort a structure array");
+    }
+    ArrayVector retArray;
+    retArray.push_back(retval);
+    if (nargout == 2)
+      retArray.push_back(ndxval);
+    return retArray;
+  }
+
 }

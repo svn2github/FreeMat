@@ -27,31 +27,35 @@ Then a make and a make install.
 Note that if you do not change the --prefix directory when running 
 configure, that installation takes place in /usr/local. There are 
 two post-build steps you must still (manually) perform.
-   1. Add /usr/local/FreeMat to the PATH
-   2. Add a FREEMAT_PATH environment variable to your startup 
-         files that includes /usr/local/FreeMat/MFiles
+      Add a FREEMAT_PATH environment variable to your startup 
+      files that includes /usr/local/share/FreeMat/MFiles
 
-For example, with .csh, the following line would be added to the .cshrc
+For example, with tcsh/csh, the following line would be added to the .cshrc
 
-setenv FREEMAT_PATH /usr/local/FreeMat/MFiles:/home/user/myMFiles
+setenv FREEMAT_PATH /usr/local/share/FreeMat/MFiles:/home/user/myMFiles
+
+or in bashrc for bash:
+
+declare -x "FREEMAT_PATH=/usr/local/share/FreeMat/MFiles:/home/user/myMFiles"
 
 It is not necessary to add the "." directory to the search path, as it
 is automatically searched by FreeMat. 
 
-Note also that FreeMat uses LAPACK and BLAS as part of its matrix
+Note also that FreeMat uses BLAS as part of its matrix
 manipulation routines.  During the configure process, FreeMat will
-attempt to find an optimized BLAS/LAPACK.  If it fails, you can either
-specify a location using the --with-blas and --with-lapack options to
-configure, or use the provided blas and lapack using the --with-miniblas
-and --with-minilapack options.  These should be used as a last resort.
-They are unoptimized versions that will generally result in less than
+attempt to find an optimized BLAS.  If it fails, you can either
+specify a location using the --with-blas option to
+configure, or use the provided blas using the --with-miniblas
+option.  This should be used as a last resort.
+It is an unoptimized version that will generally result in less than
 ideal performance of FreeMat.  I recommend the ATLAS project 
 (math-atlas.sourceforge.net) to generate an automatically tuned
 set of BLAS routines for your specific machine.
 
 After installation, an HTML version of the manual is available by pointing
-a web browser to /usr/local/FreeMat/manual/index.html.
+a web browser to /usr/local/share/FreeMat/html/index.html.
 
-Note: On Mac OS X, you will need to install g77 and libjpeg, libpng and libtif.  
-I suggest using fink (fink.sourceforge.net).  Perhaps at some point in the future
-a fink package will be available for the Mac (volunteers?).
+Note: On Mac OS X, you will need to install g77 and libjpeg, libpng and 
+libtif.  I suggest using fink (fink.sourceforge.net).  Perhaps at some 
+point in the future a fink package will be available for the 
+Mac (volunteers?).

@@ -69,7 +69,9 @@ namespace FreeMat {
     CMD_GUIGetLineAcq,
     CMD_GUIGetWidth,
     CMD_GUIGetWidthAcq,
-    CMD_Quit
+    CMD_Quit,
+    CMD_SystemCapture,
+    CMD_SystemCaptureAcq
   };
 
   /** A GUI command class
@@ -106,6 +108,22 @@ namespace FreeMat {
      */
     virtual ~Command();
   };
+
+  /**
+   * Send the given command object to the GUI as an event,
+   * so that it is processed by App::OnProcessCustom.
+   */
+  void SendGUICommand(Command *cmd);
+
+  /**
+   * Send the given command object as a reply to a GUI command.
+   */
+  void PostGUIReply(Command *reply);
+  
+  /**
+   * Retrieve the reply for a GUI command.
+   */
+  Command* GetGUIResponse();
 
 }
 

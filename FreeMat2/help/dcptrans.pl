@@ -29,14 +29,14 @@ sub outputLaTeX {
     my $result;
     $line =~ s/\@Module\s*(.*)/\\subsection{$1}/gi;
     $line =~ s/\@\@(.*)/\n\\subsubsection{$1}\n/gi;
-    $line =~ s/\@\[/\\begin{verbatim}/gi;
-    $line =~ s/\@\]/\\end{verbatim}/gi; 
-    $line =~ s/\@\{/\\begin{verbatim}/gi;
-    $line =~ s/\@\}/\\end{verbatim}/gi;
+    $line =~ s/\@\[/\n\\begin{verbatim}/gi;
+    $line =~ s/\@\]/\\end{verbatim}\n/gi; 
+    $line =~ s/\@\{/\n\\begin{verbatim}/gi;
+    $line =~ s/\@\}/\\end{verbatim}\n/gi;
     $line =~ s/\@\|([^\|]*)\|/\\verb|$1|/gi;
     $line =~ s/\@figure\s*(.*)/\n\n\\doplot{width=8cm}{$1}\n/g;
     foreach $resulttext (@$clickres) {
-	$line =~ s/\@<(.*?)\@>/\\begin{verbatim}\n$resulttext\\end{verbatim}/sm;
+	$line =~ s/\@<(.*?)\@>/\n\\begin{verbatim}\n$resulttext\\end{verbatim}\n/sm;
     }
     return $line;
 }
@@ -72,8 +72,9 @@ foreach $file (@ARGV) {
 	@clicks=($line =~ m/\@<(.*?)\@>/gsm);
 	$count = 1;
 	@clickres = ();
+	print "Collecting clicks ";
 	foreach $click (@clicks) {
-	    print "Collecting click $count\n";
+	    print "...$count";
 	    if (!open(OUTPUT,">tmpFMinput")) {
 		die "Can't open tmpFMinput file...\n";
 	    }
@@ -83,7 +84,7 @@ foreach $file (@ARGV) {
 	    print OUTPUT $click;
 	    print OUTPUT "save env.dat\nquit\n";
 	    close OUTPUT;
-	    $resulttext = `../../src/x11/FreeMat -e <tmpFMinput`;
+	    $resulttext = `FreeMat -e <tmpFMinput`;
 	    $resulttext =~ s/^ Free.*\n//g;
 	    $resulttext =~ s/^ Copy.*\n//g;
 	    $resulttext =~ s/(--> save env.dat\s*\n)//g;
@@ -94,6 +95,7 @@ foreach $file (@ARGV) {
 	    @clickres = (@clickres,$resulttext);
 	    $count++;
 	}
+	print "\n";
 	$outfile = $modulename . ".tex";
 	if (!open(OUTPUT,">$outfile")) {
 	    die "Can't open output file $file\n";

@@ -4,6 +4,8 @@ cp ../MFiles/mprint*.m mtex/.
 cd mtex
 perl ../dcptrans.pl ../../libs/lib*/*.cpp
 cp ../main.tex .
+cp float.tex hfloat.tex
+cp times.tex htimes.tex
 latex main
 latex main
 dvips -o main.ps main.dvi
@@ -15,3 +17,4 @@ perl bldindex.pl
 cat toc_template.hhc toc_body.hhc > toc.hhc
 cat Index_template.hhk index_body.hhk > index.hhk
 mv mtex/*.mdc mdc/.
+perl bldmakefiles.pl

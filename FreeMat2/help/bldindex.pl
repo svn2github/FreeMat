@@ -1,8 +1,27 @@
 #!/usr/bin/perl -w
 
 open(INPUT,"<html/index.html") || die "Can't open html/index.html for processing...\n";
-open(OUTPUT,">toc_body.hhc") || die "Can't open output toc_body.hhc...\n";
-open(OUTPUT2,">index_body.hhk") || die "Can't open output index_body.hhc...\n";
+
+open(OUTPUT,">toc.hhc") || die "Can't open output toc_body.hhc...\n";
+print OUTPUT "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
+print OUTPUT "<HTML>\n";
+print OUTPUT "<HEAD>\n";
+print OUTPUT "<meta name=\"GENERATOR\" content=\"Microsoft&reg; HTML Help Workshop 4.1\">\n";
+print OUTPUT "<!-- Sitemap 1.0 -->\n";
+print OUTPUT "</HEAD><BODY>\n";
+print OUTPUT "<OBJECT type=\"text/site properties\">\n";
+print OUTPUT "	<param name=\"ImageType\" value=\"Folder\">\n";
+print OUTPUT "</OBJECT>\n";
+
+open(OUTPUT2,">index.hhk") || die "Can't open output index_body.hhc...\n";
+print OUTPUT2 "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
+print OUTPUT2 "<HTML>\n";
+print OUTPUT2 "<HEAD>\n";
+print OUTPUT2 "<meta name=\"GENERATOR\" content=\"Microsoft&reg; HTML Help Workshop 4.1\">\n";
+print OUTPUT2 "<!-- Sitemap 1.0 -->\n";
+print OUTPUT2 "</HEAD><BODY>\n";
+print OUTPUT2 "<UL>\n";
+
 
 # Skip the prefix
 while (defined($data=<INPUT>)  && !($data =~ /Table of Child-Links/g)) {};

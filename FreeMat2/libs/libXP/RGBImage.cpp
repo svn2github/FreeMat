@@ -319,3 +319,12 @@ void WriteEPSFile(std::string filename, byte *data, int width, int height) {
   fclose(fp);  
 }
 
+int GetShiftFromMask(int mask) {
+  if (mask == 0) return 0;
+  int shift = 0;
+  while (!(mask & 1)) {
+    shift++;
+    mask >>= 1;
+  }
+  return shift;
+}

@@ -128,7 +128,9 @@ Color.hpp \
 Reducer.hpp \
 Reducer.cpp \
 KeyManager.cpp \
-KeyManager.hpp
+KeyManager.hpp \
+BitmapPrinterGC.cpp \
+BitmapPrinterGC.hpp
 
 
 EXTRA_DIST = bootstrap
@@ -146,7 +148,7 @@ am_libXP_a_OBJECTS = DynLib.$(OBJEXT) System.$(OBJEXT) \
 	PathSearch.$(OBJEXT) GrayscaleImage.$(OBJEXT) \
 	RGBImage.$(OBJEXT) Rect2D.$(OBJEXT) PostScriptGC.$(OBJEXT) \
 	Point2D.$(OBJEXT) Color.$(OBJEXT) Reducer.$(OBJEXT) \
-	KeyManager.$(OBJEXT)
+	KeyManager.$(OBJEXT) BitmapPrinterGC.$(OBJEXT)
 libXP_a_OBJECTS = $(am_libXP_a_OBJECTS)
 
 DEFS = @DEFS@
@@ -156,7 +158,8 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Color.Po ./$(DEPDIR)/DynLib.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/BitmapPrinterGC.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Color.Po ./$(DEPDIR)/DynLib.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GrayscaleImage.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/KeyManager.Po ./$(DEPDIR)/PathSearch.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Point2D.Po ./$(DEPDIR)/PostScriptGC.Po \
@@ -202,6 +205,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BitmapPrinterGC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Color.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DynLib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GrayscaleImage.Po@am__quote@

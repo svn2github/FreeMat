@@ -37,6 +37,7 @@ public:
   virtual void DrawLines(std::vector<Point2D> pts);
   virtual void PushClippingRegion(Rect2D rect);
   virtual Rect2D PopClippingRegion();
+  virtual void BlitImage(unsigned char *data, int width, int height, int x0, int y0) {};
 };
 
 #endif

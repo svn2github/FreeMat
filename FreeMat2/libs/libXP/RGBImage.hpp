@@ -32,4 +32,5 @@ void WritePNGFile(std::string filename, byte *data, int width, int height);
 void WriteJPEGFile(std::string filename, byte *data, int width, int height);
 void WriteTIFFFile(std::string filename, byte *data, int width, int height);
 void WriteEPSFile(std::string filename, byte *data, int width, int height);
+int GetShiftFromMask(int mask);
 #endif

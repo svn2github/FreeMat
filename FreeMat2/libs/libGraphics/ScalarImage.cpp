@@ -157,9 +157,7 @@ namespace FreeMat {
 
   void ScalarImage::OnDraw(GraphicsContext &gc) {
     if (rawData == NULL) return;
-    //    RGBImage src(zoomColumns, zoomRows, picData);
-    //    gc.BlitRGBImage(Point2D(0,0),src);
-    SetImage(picData, zoomColumns, zoomRows);
+    gc.BlitImage(picData, zoomColumns, zoomRows, 0, 0);
   }
 
   void ScalarImage::SetImageArray(Array &dp, double zoomf) {

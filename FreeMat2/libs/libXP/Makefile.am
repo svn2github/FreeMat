@@ -22,7 +22,9 @@ Color.hpp \
 Reducer.hpp \
 Reducer.cpp \
 KeyManager.cpp \
-KeyManager.hpp
+KeyManager.hpp \
+BitmapPrinterGC.cpp \
+BitmapPrinterGC.hpp
 
 EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

@@ -1,15 +1,30 @@
 #include "XGC.hpp"
 #include "Exception.hpp"
+#include "Reducer.hpp"
 #include <X11/X.h>
 #include <X11/Xutil.h>
 
-XGC::XGC(Display* disp, Drawable surf, GC gc, int width, int height) {
+static unsigned int bitsPerPixelAtDepth(Display *disp, int scrn, unsigned int depth) {
+  XPixmapFormatValues *xf;
+  unsigned int nxf, a;
+
+  xf = XListPixmapFormats(disp, (int *)&nxf);
+  for (a = 0; a < nxf; a++)
+    if (xf[a].depth == depth)
+      return(xf[a].bits_per_pixel);
+  fprintf(stderr, "bitsPerPixelAtDepth: Can't find pixmap depth info!\n");
+  exit(1);
+}
+
+XGC::XGC(Display* disp, Visual* vis, Drawable surf, GC gc, int width, int height) {
   m_display = disp;
+  m_visual = vis;
   drawable = surf;
   m_gc = gc;
   m_width = width;
   m_height = height;
   current_fontsize = 0;
+  colormapActive = false;
 }
 
 XGC::~XGC() {
@@ -213,4 +228,98 @@ Rect2D XGC::PopClippingRegion() {
   clipwin.height = rect.height;
   XSetClipRectangles(m_display, m_gc, 0, 0, &clipwin, 1, Unsorted);  
   return rect;
+}
+
+bool XGC::IsColormapActive() {
+  return colormapActive;
+}
+
+Colormap XGC::GetColormap() {
+  return m_cmap;
+}
+
+void XGC::BlitImagePseudoColor(unsigned char *data, int width, int height, int x0, int y0) {
+  // Get the number of colors in the visual...
+  int ddepth = DefaultDepth(m_display, 0);
+  int dbits = bitsPerPixelAtDepth(m_display,0,ddepth);
+  int dpixlen = (dbits + 7)/8;
+  int colorCount = 1 << m_visual->bits_per_rgb;
+  colorCount = (colorCount > 32768) ? 32768 : colorCount;
+  // OK, now we use the color reducer to get a colormapped image
+  unsigned short *outimg = (unsigned short*) 
+    malloc(width*height*sizeof(short));
+  unsigned short *outcolors = (unsigned short*)
+    malloc(colorCount*3*sizeof(short));
+  int colorsUsed;
+  colorsUsed = ColorReduce(data, width, height, colorCount, outcolors, outimg);
+  // Allocate a colormap
+  m_cmap = XCreateColormap(m_display, RootWindow(m_display, 0),  m_visual, AllocAll);
+  XColor xcolor;
+  xcolor.flags = DoRed | DoGreen | DoBlue;
+  for (int b=0;b<colorsUsed;b++) {
+    xcolor.pixel = b;
+    xcolor.red = outcolors[3*b];
+    xcolor.green = outcolors[3*b+1];
+    xcolor.blue = outcolors[3*b+2];
+    XStoreColor(m_display, m_cmap, &xcolor);
+  }
+  unsigned short *source_data;
+  source_data = outimg;
+  char *ddata = (char*) malloc(width*height*dpixlen);
+  m_image = XCreateImage(m_display, m_visual, ddepth, ZPixmap, 0,
+				 ddata, width, height, 8, 0);
+  for (int y=0; y<height; y++)
+    for (int x=0; x<width; x++)
+      XPutPixel(m_image,x,y,*source_data++);
+  colormapActive = true;
+  XPutImage(m_display, drawable, m_gc, m_image, 0, 0, 0, 0, m_width, m_height);
+  //  XDestroyImage(m_image);
+}
+
+void XGC::foofoo() {
+  //  XPutImage(m_display, drawable, m_gc, m_image, 0, 0, 0, 0, m_width, m_height);
+}
+
+void XGC::BlitImage(unsigned char *data, int width, int height, int x0, int y0) {
+  // Check for PseudoColor visual
+  if ((m_visual->c_class != TrueColor) &&
+      (m_visual->c_class != DirectColor)) {
+    BlitImagePseudoColor(data,width,height,x0,y0);
+    return;
+  }
+  int ddepth = DefaultDepth(m_display, 0);
+  int dbits = bitsPerPixelAtDepth(m_display,0,ddepth);
+  int dpixlen = (dbits + 7)/8;
+  char *ddata = (char*) malloc(width*height*dpixlen);
+  // Put the contents of the image into an XImage
+  XImage *m_image = XCreateImage(m_display, m_visual, ddepth, ZPixmap, 0, 
+				 ddata, width, height, 8, 0);
+  int red_mask, green_mask, blue_mask;
+  unsigned int red_shift, green_shift, blue_shift;
+  float red_scale, green_scale, blue_scale;
+  red_mask = m_image->red_mask;
+  green_mask = m_image->green_mask;
+  blue_mask = m_image->blue_mask;
+  red_shift = GetShiftFromMask(red_mask);
+  green_shift = GetShiftFromMask(green_mask);
+  blue_shift = GetShiftFromMask(blue_mask);
+  red_scale = (red_mask >> red_shift)/255.0;
+  green_scale = (green_mask >> green_shift)/255.0;
+  blue_scale = (blue_mask >> blue_shift)/255.0;
+  unsigned long pixval;
+  unsigned char red, green, blue;
+  unsigned char *source_data;
+  source_data = data;
+  for (int y=0;y<height;y++)
+    for (int x=0;x<width;x++) {
+      red = *source_data++;
+      green = *source_data++;
+      blue = *source_data++;
+      pixval = ((((unsigned long) (red * red_scale)) << red_shift) & red_mask) |
+	((((unsigned long) (green * green_scale)) << green_shift) & green_mask) |
+	((((unsigned long) (blue * blue_scale)) << blue_shift) & blue_mask);
+      XPutPixel(m_image,x,y,pixval);
+    }
+  XPutImage(m_display, drawable, m_gc, m_image, 0, 0, x0, y0, width, height);
+  XDestroyImage(m_image);  
 }

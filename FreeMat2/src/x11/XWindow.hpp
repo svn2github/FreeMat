@@ -23,8 +23,8 @@ class XWindow {
   void Raise();
   void Show();
   void Hide();
-  void SetImagePseudoColor(unsigned char *data, int width, int height);
-  void SetImage(unsigned char *data, int width, int height);
+//   void SetImagePseudoColor(unsigned char *data, int width, int height);
+//   void SetImage(unsigned char *data, int width, int height);
   void OnExpose(int x, int y, int w, int h);
   void OnMouseDown(int x, int y);
   void OnMouseUp(int x, int y);
@@ -46,7 +46,7 @@ class XWindow {
   Window m_window;
   Display *m_display;
   Visual *m_visual;
-  Colormap m_cmap;
+  //  Colormap m_cmap;
   Pixmap m_pixmap;
   GC m_gc;
   XTextProperty m_window_title;

@@ -46,6 +46,7 @@ namespace FreeMat {
   }
 
   void Figure::Copy() {
+#ifdef WIN32
 	  make_current();
 	  redraw();
   // Obtain a handle to a reference device context. 
@@ -92,6 +93,7 @@ namespace FreeMat {
   SetClipboardData(CF_ENHMETAFILE, hMeta);
   CloseClipboard();
   fl_gc = gcsave;
+#endif
   }
 
   void Figure::Print(std::string filename) {

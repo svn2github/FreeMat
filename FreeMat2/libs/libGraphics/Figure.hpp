@@ -14,11 +14,12 @@ namespace FreeMat {
     Figure(int fignum);
     ~Figure();
     figType getType() {return m_type;};
-    void SetFigureChild(XPWidget *widget, figType w_type) {m_type=w_type;}
-    XPWidget *GetChildWidget() {return NULL;}
+    void SetFigureChild(Fl_Widget *widget, figType w_type);
+    Fl_Widget* GetChildWidget();
   private:
     int m_num;
     figType m_type;
+    Fl_Widget *m_wid;
   };
   Figure* GetCurrentFig();
 }

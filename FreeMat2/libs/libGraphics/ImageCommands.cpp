@@ -33,7 +33,7 @@ namespace FreeMat {
     if (fig->getType() == figscimg) {
 		return ((ScalarImage*) fig->GetChildWidget());
     } else {
-      ScalarImage* t = new ScalarImage;
+      ScalarImage* t = new ScalarImage(fig->w(),fig->h());
       fig->SetFigureChild(t,figscimg);
       return t;
     }
@@ -306,7 +306,7 @@ namespace FreeMat {
     }
     f->SetImageArray(img,zoomfact);
     Figure *t = GetCurrentFig();
-    t->resize(0,0,f->getZoomColumns(),f->getZoomRows());
+    t->resize(t->x(),t->y(),f->getZoomColumns(),f->getZoomRows());
     t->redraw();
     return ArrayVector();
   }
@@ -397,7 +397,7 @@ namespace FreeMat {
     f = GetCurrentImage();
     f->Zoom(fact.getContentsAsDoubleScalar());
     Figure *t = GetCurrentFig();
-    t->resize(0,0,f->getZoomColumns(),f->getZoomRows());
+    t->resize(t->x(),t->y(),f->getZoomColumns(),f->getZoomRows());
     t->redraw();
     return ArrayVector();
   }

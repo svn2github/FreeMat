@@ -23,8 +23,8 @@
 
 #include "DataSet2D.hpp"
 #include "Axis.hpp"
-#include "XWindow.hpp"
-#include "XPWidget.hpp"
+#include <FL/Fl_Widget.H>
+#include "FLTKGC.hpp"
 
 namespace FreeMat {
 
@@ -36,13 +36,13 @@ namespace FreeMat {
    * number of 2D data sets.  It is responsible 
    * for drawing the data sets and managing them.
    */
-  class Plot2D : public XPWidget {
+  class Plot2D : public Fl_Widget {
   public:
     /**
      * Construct a 2D plot frame with the given
      * figure number.
      */
-    Plot2D();
+    Plot2D(int width, int height);
     /**
      * Default destructor.
      */
@@ -124,6 +124,8 @@ namespace FreeMat {
      * buffering added so as to make the labels come out nicely.
      */
     void SetAxesAuto();
+    void draw();
+    void resize(int, int, int, int);
   private:
     /**
      * Update our text bounds (title width and height),

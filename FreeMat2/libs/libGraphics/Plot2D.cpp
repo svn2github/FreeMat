@@ -27,7 +27,7 @@
 
 namespace FreeMat {
 
-  Plot2D::Plot2D() {
+  Plot2D::Plot2D(int width, int height) : Fl_Widget(0,0,width,height) {
     space = 10;
     xAxis = NULL;
     yAxis = NULL;
@@ -220,6 +220,16 @@ namespace FreeMat {
       xAxis->ComputeTextBounds(dc);
     if (yAxis != NULL)
       yAxis->ComputeTextBounds(dc);
+  }
+
+  void Plot2D::draw() {
+    FLTKGC gc(w(),h());
+    OnDraw(gc);
+  }
+
+  void Plot2D::resize(int x, int y, int w, int h) {
+    Fl_Widget::resize(x,y,w,h);
+    redraw();
   }
 
   void Plot2D::OnDraw(GraphicsContext &gc) {

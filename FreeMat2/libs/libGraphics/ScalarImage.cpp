@@ -26,7 +26,7 @@
 
 namespace FreeMat {
 
-  ScalarImage::ScalarImage() : XPWidget() {
+  ScalarImage::ScalarImage(int width, int height) : Fl_Widget(0,0,width,height) {
     rawData = NULL;
     for (int i=0;i<256;i++) {
       colormap[0][i] = i;
@@ -98,8 +98,8 @@ namespace FreeMat {
     } else if (zoom == 0) {
       int client_width;
       int client_height;
-      client_width = bounds.width;
-      client_height = bounds.height;
+      client_width = w();
+      client_height = h();
       double zoomColFactor;
       zoomColFactor = ((double) client_width)/columns;
       double zoomRowFactor;
@@ -112,8 +112,8 @@ namespace FreeMat {
     } else {
       int client_width;
       int client_height;
-      client_width = bounds.width;
-      client_height = bounds.height;
+      client_width = w();
+      client_height = h();
       newZoomColumns = (int) (client_width);
       newZoomRows = (int) (client_height);
     }
@@ -146,9 +146,16 @@ namespace FreeMat {
     UpdateImage();
   }
 
-  void ScalarImage::OnSize() {
+  void ScalarImage::draw() {
+    FLTKGC gc(w(),h());
+    OnDraw(gc);
+  }
+
+  void ScalarImage::resize(int x, int y, int w, int h) {
+    Fl_Widget::resize(x,y,w,h);
     if (zoom <= 0) 
       UpdateZoom(false);
+    redraw();
   }
 
   void ScalarImage::OnDraw(GraphicsContext &gc) {

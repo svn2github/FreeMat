@@ -21,18 +21,24 @@ namespace FreeMat {
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
     label(buffer);
+    resizable(this);
   }
   
   Figure::~Figure() {
     NotifyFigClose(m_num);
   }
   
-#if 0
-  void Figure::SetFigureChild(XPWidget *xp, figType typ) {
-    SetChildWidget(xp);
-    m_type = typ;
+  Fl_Widget* Figure::GetChildWidget() {
+    return m_wid;
   }
-#endif
+
+  void Figure::SetFigureChild(Fl_Widget *widget, figType typ) {
+    m_type = typ;
+    clear();
+    add(widget);
+    resizable(widget);
+    m_wid = widget;
+  }
   
   void InitializeFigureSubsystem() {
     currentFig = -1;

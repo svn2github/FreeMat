@@ -21,10 +21,10 @@
 #ifndef __ScalarImage_h__
 #define __ScalarImage_h__
 
-#include "XWindow.hpp"
 #include "Array.hpp"
 #include "GraphicsContext.hpp"
-#include "XPWidget.hpp"
+#include <FL/Fl_Widget.H>
+#include "FLTKGC.hpp"
 
 namespace FreeMat {
 
@@ -32,14 +32,13 @@ namespace FreeMat {
    * This is a window for viewing a scalar image with
    * a color map.
    */
-  class ScalarImage : public XPWidget
-  {
+  class ScalarImage : public Fl_Widget {
   public:
     /**
      * Create a new scalar image window with the given
      * figure number.
      */
-    ScalarImage();
+    ScalarImage(int width, int height);
     /**
      * Destructor.
      */
@@ -71,9 +70,10 @@ namespace FreeMat {
     void WindowLevel(double awindow, double alevel);
     double GetCurrentWindow();
     double GetCurrentLevel();
-    virtual void OnSize();
     int getZoomColumns() {return zoomColumns;}
     int getZoomRows() {return zoomRows;}
+    void draw();
+    void resize(int, int, int, int);
   private:
     /**
      * Our pointer to the raw data.  We own this data, and

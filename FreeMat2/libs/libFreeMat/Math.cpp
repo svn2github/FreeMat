@@ -2522,10 +2522,10 @@ namespace FreeMat {
 		B.makeDense();
 		// Make sure A is square
 		if (Arows != Acols)
-			throw Exception("FreeMat currently only supports A\b for square matrices A");
+			throw Exception("FreeMat currently only supports A\\b for square matrices A");
 		// Make sure A is either double or dcomplex
 		if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
-			throw Exception("FreeMat currently only supports A\b for double and dcomplex matrices A");
+			throw Exception("FreeMat currently only supports A\\b for double and dcomplex matrices A");
 		Dimensions outDim;
 		outDim[0] = Arows;
 		outDim[1] = Bcols;

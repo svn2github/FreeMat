@@ -85,7 +85,7 @@ namespace FreeMat {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
   try {
     context = new Context();
     BuiltInFunctionDef *f2def = new BuiltInFunctionDef;

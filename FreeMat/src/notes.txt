@@ -1,0 +1,31 @@
+First pass - we want to run FreeMat on a cluster, and use rserver...
+
+1.  In principle, we need:
+    A. An option that allows the kernel to run the rserver,
+       so that we can issue something like:
+
+ssh gn0 'FMKernel -e rserver'
+ssh gn1 'FMKernel -e rserver'
+ssh gn2 'FMKernel -e rserver'
+...
+ssh gnM 'FMKernel -e rserver'
+
+    B. A select mechanism that allows you to wait for 
+       computations to complete
+
+Second pass - a virtual file system would be nice - but its not
+critical...
+
+Back to the first pass.  One issue is that we need to determine 
+a port number that can be used.  If the spawning is under FreeMat
+control, we can do something like:
+
+ssh gn0 'FMKernel -e rserver 44067'
+
+That means we need FreeMat strings with embeddable quotes.
+
+That's done.
+
+We also need an argument that allows you to execute a command from the cmd
+line.
+ 

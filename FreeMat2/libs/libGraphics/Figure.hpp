@@ -17,6 +17,7 @@ namespace FreeMat {
     void SetFigureChild(PrintableWidget *widget, figType w_type);
     PrintableWidget* GetChildWidget();
     void Print(std::string filename);
+	void Copy();
   private:
     int m_num;
     figType m_type;

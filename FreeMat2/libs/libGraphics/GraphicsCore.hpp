@@ -50,6 +50,7 @@ namespace FreeMat {
   ArrayVector WinLevFunction(int,const ArrayVector& arg);
   ArrayVector LegendFunction(int, const ArrayVector& arg);
   ArrayVector DemoFunction(int, const ArrayVector& arg);
+  ArrayVector CopyFunction(int, const ArrayVector&);
   void LoadGraphicsCoreFunctions(Context* context);
   void InitializeFigureSubsystem();
 }

@@ -70,6 +70,7 @@ namespace FreeMat {
     context->addFunction("point",PointFunction,0,1,args);
     context->addFunction("legend",LegendFunction,-1,0,args);
     context->addFunction("demo",DemoFunction,0,0,args);
+    context->addFunction("copy",CopyFunction,0,0,args);
     //    context->addFunction("helpwin",HelpwinFunction,0,0,args);
   }
 }

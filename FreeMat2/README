@@ -48,3 +48,6 @@ They are unoptimized versions that will generally result in less than
 ideal performance of FreeMat.  I recommend the ATLAS project 
 (math-atlas.sourceforge.net) to generate an automatically tuned
 set of BLAS routines for your specific machine.
+
+After installation, an HTML version of the manual is available by pointing
+a web browser to /usr/local/FreeMat/manual/index.html.

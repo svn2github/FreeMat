@@ -25,5 +25,7 @@ Figure.hpp \
 Plot3D.cpp \
 Plot3D.hpp \
 SurfPlot.cpp \
-SurfPlot.hpp
+SurfPlot.hpp \
+NewAxis.cpp \
+NewAxis.hpp
 AUTOMAKE_OPTIONS 	= foreign

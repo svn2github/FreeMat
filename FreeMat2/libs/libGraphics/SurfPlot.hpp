@@ -25,7 +25,7 @@
 #include "Axis.hpp"
 #include "FLTKGC.hpp"
 #include "PrintableWidget.hpp"
-
+#include "NewAxis.hpp"
 
 namespace FreeMat {
 
@@ -40,7 +40,9 @@ namespace FreeMat {
   typedef struct {
     pt3d pts[4];
     double meanz;
+    int color;
   } quad3d;
+
 
   class SurfPlot: public PrintableWidget {
   public:
@@ -57,7 +59,20 @@ namespace FreeMat {
     void OnDrag(int x, int y);
     void OnDraw(GraphicsContext &gc);
     void draw();
+    void resize(int x, int y, int w, int h);
     int handle(int event);
+    // Set the colormap
+    void SetColormap(double *cmap);
+    // Set the data to render
+    void SetData(const double*x, const double*y, const double*z, int nx, int ny);
+    // Calculate the mapping factors
+    void UpdateBounds();
+    // Convert the surface into quads
+    void SurfaceToQuads();
+    // Map a point to the viewport
+    Point2D MapPoint(pt3d a);
+    // Draw the axes
+    void DrawAxes(GraphicsContext &gc, float m[4][4]);
   private:
     /*
      * The data for the surf model.
@@ -67,7 +82,27 @@ namespace FreeMat {
     double *zvals;
     int xcount;
     int ycount;
+    NewAxis XAxis;
+    NewAxis YAxis;
+    NewAxis ZAxis;
+    // Describe the transformation for the data.
+    double x_center;
+    double y_center;
+    double z_center;
+    double max_radius;
+    double x_min;
+    double x_max;
+    double y_min;
+    double y_max;
+    double z_min;
+    double z_max;
+    double scalex;
+    double scaley;
+    double offsetx;
+    double offsety;
     std::vector<quad3d> quads;
+
+    double *colormap;
 
     float quat[4];
     int beginx;

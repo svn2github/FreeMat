@@ -431,6 +431,22 @@ namespace FreeMat {
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
     SurfPlot* t = new SurfPlot(f->w(),f->h());
+    Array s(arg[0]);
+    s.promoteType(FM_DOUBLE);
+    if (s.getLength() != 256*3)
+      throw Exception("demo function argument must have exactly 768 elements");
+    t->SetColormap((double*) s.getDataPointer());
+    Array x(arg[1]);
+    x.promoteType(FM_DOUBLE);
+    Array y(arg[2]);
+    y.promoteType(FM_DOUBLE);
+    Array z(arg[3]);
+    z.promoteType(FM_DOUBLE);
+    t->SetData((const double*) x.getDataPointer(),
+	       (const double*) y.getDataPointer(),
+	       (const double*) z.getDataPointer(),
+	       x.getLength(),
+	       y.getLength());
     f->SetFigureChild(t,fig3plot);
     f->redraw();
 #if 0

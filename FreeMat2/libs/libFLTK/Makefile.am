@@ -39,6 +39,7 @@ libFLTK_a_SOURCES = 	src/Fl.cxx \
 	src/Fl_File_Input.cxx \
 	src/Fl_Group.cxx \
 	src/Fl_Help_View.cxx \
+	src/Fl_Help_Dialog.cxx \
 	src/Fl_Image.cxx \
 	src/Fl_Input.cxx \
 	src/Fl_Input_.cxx \
@@ -138,4 +139,14 @@ libFLTK_a_SOURCES = 	src/Fl.cxx \
 	src/fl_show_colormap.cxx \
 	src/fl_symbols.cxx \
 	src/fl_vertex.cxx \
-	src/flstring.c
+	src/flstring.c \
+	src/numericsort.c \
+	src/fl_images_core.cxx \
+	src/Fl_BMP_Image.cxx \
+	src/Fl_File_Icon2.cxx \
+	src/Fl_GIF_Image.cxx \
+	src/Fl_Help_Dialog.cxx \
+	src/Fl_JPEG_Image.cxx \
+	src/Fl_PNG_Image.cxx \
+	src/Fl_PNM_Image.cxx
+

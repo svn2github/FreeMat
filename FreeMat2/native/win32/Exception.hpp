@@ -1,0 +1,1 @@
+#define Exception(x) (x)

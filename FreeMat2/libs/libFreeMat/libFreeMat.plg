@@ -6,95 +6,78 @@
 --------------------Configuration: libFreeMat - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\SAMITB~1\LOCALS~1\Temp\RSP2E.tmp" with contents
+Creating temporary file "C:\DOCUME~1\basu\LOCALS~1\Temp\RSP74.tmp" with contents
 [
-/nologo /MLd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /Fp"Debug/libFreeMat.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ  /c 
-"C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp"
+/nologo /MLd /W3 /Gm /GX /ZI /Od /I "\FreeMat2\libs\libffi\include" /I "\FreeMat2\libs\libXP" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "X86_WIN32" /Fp"Debug/libFreeMat.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"I:\FreeMat2\libs\libFreeMat\WalkTree.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\SAMITB~1\LOCALS~1\Temp\RSP2E.tmp" 
+Creating command line "xicl6.exe @C:\DOCUME~1\basu\LOCALS~1\Temp\RSP74.tmp" 
+Creating temporary file "C:\DOCUME~1\basu\LOCALS~1\Temp\RSP75.tmp" with contents
+[
+/nologo /out:"Debug\libFreeMat.lib" 
+.\Debug\Array.obj
+.\Debug\AST.obj
+.\Debug\Command.obj
+.\Debug\Context.obj
+.\Debug\Data.obj
+.\Debug\Dimensions.obj
+.\Debug\EigenDecompose.obj
+.\Debug\Exception.obj
+.\Debug\File.obj
+.\Debug\FunctionDef.obj
+.\Debug\IEEEFP.obj
+.\Debug\LAPACK.obj
+.\Debug\LeastSquaresSolver.obj
+.\Debug\LinearEqSolver.obj
+.\Debug\Malloc.obj
+.\Debug\Math.obj
+.\Debug\MatrixMultiply.obj
+.\Debug\Module.obj
+.\Debug\Reserved.obj
+.\Debug\Scope.obj
+.\Debug\Serialize.obj
+.\Debug\SingularValueDecompose.obj
+.\Debug\VectorOps.obj
+.\Debug\WalkTree.obj
+]
+Creating command line "xilink6.exe -lib @C:\DOCUME~1\basu\LOCALS~1\Temp\RSP75.tmp"
 <h3>Output Window</h3>
 Compiling...
-Serialize.cpp
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(61) : warning C4101: 'e' : unreferenced local variable
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(89) : warning C4101: 'e' : unreferenced local variable
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(390) : error C2374: 'i' : redefinition; multiple initialization
-        C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(387) : see declaration of 'i'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(401) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(406) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(411) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(416) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(421) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(426) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(431) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(432) : error C2664: 'putFloats' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const float *'
-        There is no context in which this conversion is possible
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(436) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(437) : error C2664: 'putDoubles' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const double *'
-        There is no context in which this conversion is possible
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(441) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(442) : error C2664: 'putFloats' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const float *'
-        There is no context in which this conversion is possible
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2059: syntax error : '('
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2146: syntax error : missing ',' before identifier 'dat'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2501: 'dp' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2143: syntax error : missing ',' before '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2501: 'dat' : missing storage-class or type specifiers
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(446) : error C2059: syntax error : '.'
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(447) : error C2664: 'putDoubles' : cannot convert parameter 1 from 'int *(__cdecl *)(void)' to 'const double *'
-        There is no context in which this conversion is possible
-C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(479) : error C2374: 'i' : redefinition; multiple initialization
-        C:\msys\1.0\home\build\FreeMat2\libs\libFreeMat\Serialize.cpp(473) : see declaration of 'i'
-Error executing cl.exe.
+WalkTree.cpp
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(85) : warning C4786: 'std::reverse_iterator<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > const *,std::vector<FreeMat::Array,std::allocator<FreeMat::Array> >,std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > const &,std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > const *,int>' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(85) : warning C4786: 'std::reverse_iterator<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > *,std::vector<FreeMat::Array,std::allocator<FreeMat::Array> >,std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > &,std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > *,int>' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(248) : warning C4101: 'conditionTrue' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(283) : warning C4101: 'e' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(616) : warning C4101: 'e' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(623) : warning C4101: 'e' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(635) : warning C4101: 'e' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(642) : warning C4101: 'e' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(650) : warning C4101: 'e' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(873) : warning C4101: 'fAST' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(886) : warning C4101: 'lhsCounter' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(948) : warning C4786: 'std::reverse_iterator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > const *,std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::basic_string<char,std::char_traits<char>,std::allocator<char> > const &,std::basic_string<char,std::char_traits<char>,std::allocator<char> > const *,int>' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(948) : warning C4786: 'std::reverse_iterator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > *,std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::basic_string<char,std::char_traits<char>,std::allocator<char> > &,std::basic_string<char,std::char_traits<char>,std::allocator<char> > *,int>' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(1168) : warning C4101: 's' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(1173) : warning C4101: 'peerCnt' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(1174) : warning C4101: 'dims' : unreferenced local variable
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(654) : warning C4715: 'FreeMat::WalkTree::simpleSubindexExpression' : not all control paths return a value
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(948) : warning C4786: '__ehhandler$?getArgumentIndex@FreeMat@@YAHV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(948) : warning C4786: '__unwindfunclet$?getArgumentIndex@FreeMat@@YAHV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z$2' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(948) : warning C4786: '__unwindfunclet$?getArgumentIndex@FreeMat@@YAHV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z$1' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(948) : warning C4786: '__unwindfunclet$?getArgumentIndex@FreeMat@@YAHV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@std@@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z$0' : identifier was truncated to '255' characters in the debug information
+I:\FreeMat2\libs\libFreeMat\WalkTree.cpp(1165) : warning C4715: 'FreeMat::WalkTree::rhsExpressionSimple' : not all control paths return a value
+c:\program files\microsoft visual studio\vc98\include\vector(39) : warning C4786: 'std::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >' : identifier was truncated to '255' characters in the debug information
+c:\program files\microsoft visual studio\vc98\include\vector(52) : warning C4786: 'std::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >' : identifier was truncated to '255' characters in the debug information
+c:\program files\microsoft visual studio\vc98\include\vector(60) : warning C4786: 'std::vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >::~vector<std::basic_string<char,std::char_traits<char>,std::allocator<char> >,std::allocator<std::basic_string<char,std::char_traits<char>,std::allocator<char> > > >' : identifier was truncated to '255' characters in the debug information
+c:\program files\microsoft visual studio\vc98\include\vector(39) : warning C4786: 'std::vector<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> >,std::allocator<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > > >::vector<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> >,std::allocator<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > > >' : identifier was truncated to '255' characters in the debug information
+c:\program files\microsoft visual studio\vc98\include\vector(60) : warning C4786: 'std::vector<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> >,std::allocator<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > > >::~vector<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> >,std::allocator<std::vector<FreeMat::Array,std::allocator<FreeMat::Array> > > >' : identifier was truncated to '255' characters in the debug information
+Creating library...
+xilib: executing 'C:\PROGRA~1\MICROS~3\VC98\Bin\lib.exe'
 
 
 
 <h3>Results</h3>
-Serialize.obj - 66 error(s), 2 warning(s)
+libFreeMat.lib - 0 error(s), 27 warning(s)
 </pre>
 </body>
 </html>

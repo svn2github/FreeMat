@@ -102,49 +102,51 @@ namespace FreeMat {
   }
 
   void Axis::ManualSetAxis(double t1, double t2) {
+	  int i;
     UpdateIntervals(t1, t2);
     double acnt;
     acnt = (tStop - tStart)/tStep + 1.0;
     // Count the number of ticks inside the desired range
     tCount = 0;
-    for (int i=0;i<acnt;i++)
+    for (i=0;i<acnt;i++)
       if (((tStart + i * tStep) >= t1) && ((tStart + i * tStep) <= t2))
 	tCount++;
     tlabels.clear();
     tickLocations = new double[tCount];
     int tNum = 0;
-    for (int i=0;i<acnt;i++)
+    for (i=0;i<acnt;i++)
       if (((tStart + i * tStep) >= t1) && ((tStart + i * tStep) <= t2))
 	tickLocations[tNum++] = tStart + i * tStep;
     bool exponentialForm;
     exponentialForm = false;
-    for (int i=0;i<tCount;i++)
+    for (i=0;i<tCount;i++)
       if (tickLocations[i] != 0.0)
-	exponentialForm |= fabs(log10(fabs(tickLocations[i]))) >= 4.0;
-    for (int i=0;i<tCount;i++)
+	exponentialForm |= (fabs(log10(fabs(tickLocations[i]))) >= 4.0);
+    for (i=0;i<tCount;i++)
       tlabels.push_back( TrimPrint( tickLocations[i], exponentialForm) );  
     tStart = t1;
     tStop = t2;
   }
 
   void Axis::AutoSetAxis() {
+	  int i;
     UpdateIntervals(tMin, tMax);
     double acnt;
     acnt = (tStop - tStart)/tStep + 1.0;
     tCount = (int) ceil(acnt);
     tlabels.clear();
     tickLocations = new double[tCount];
-    for (int i=0;i<tCount;i++)
+    for (i=0;i<tCount;i++)
       if (!isLogarithmic)
 	tickLocations[i] = tStart + i * tStep;
       else
 	tickLocations[i] = pow(10.0, tStart + i * tStep);
     bool exponentialForm;
     exponentialForm = false;
-    for (int i=0;i<tCount;i++)
+    for (i=0;i<tCount;i++)
       if (tickLocations[i] != 0.0)
 	exponentialForm |= fabs(log10(fabs(tickLocations[i]))) >= 4.0;
-    for (int i=0;i<tCount;i++)
+    for (i=0;i<tCount;i++)
       if (!isLogarithmic)
 	tlabels.push_back( TrimPrint( tStart + i * tStep, exponentialForm) );
       else

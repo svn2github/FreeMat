@@ -24,7 +24,9 @@
 #include "Exception.hpp"
 #include <stdio.h>
 #include <sys/stat.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <sys/types.h>
 #include <iostream>
 #include <signal.h>
@@ -32,6 +34,11 @@
 #include "SymbolTable.hpp"
 #include <setjmp.h>
 #include "Types.hpp"
+
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 
 namespace FreeMat {
 
@@ -93,14 +100,15 @@ namespace FreeMat {
     io->outputMessage("Function class: Compiled M function\n");
     io->outputMessage("returnVals: ");
     tmp = returnVals;
-    for (int i=0;i<tmp.size();i++) {
+	int i;
+    for (i=0;i<tmp.size();i++) {
       snprintf(msgBuffer,MSGBUFLEN,"%s ",tmp[i].c_str());
       io->outputMessage(msgBuffer);
     }
     io->outputMessage("\n");
     io->outputMessage("arguments: ");
     tmp = arguments;
-    for (int i=0;i<tmp.size();i++) {
+    for (i=0;i<tmp.size();i++) {
       snprintf(msgBuffer,MSGBUFLEN,"%s ",tmp[i].c_str());
       io->outputMessage(msgBuffer);
     }
@@ -153,7 +161,8 @@ namespace FreeMat {
       // For each explicit argument (that we have an input for),
       // insert it into the scope.
       minCount = (explicitCount < inputCount) ? explicitCount : inputCount;
-      for (int i=0;i<minCount;i++) {
+	  int i;
+      for (i=0;i<minCount;i++) {
 	std::string arg(arguments[i]);
 	if (arg[0] == '&')
 	  arg.erase(0,1);
@@ -164,7 +173,7 @@ namespace FreeMat {
       Array varg(FM_CELL_ARRAY);
       varg.vectorResize(inputCount);
       Array* dp = (Array *) varg.getReadWriteDataPointer();
-      for (int i=0;i<inputCount;i++)
+      for (i=0;i<inputCount;i++)
 	dp[i] = inputs[i+minCount];
       context->insertVariableLocally("varargin",varg);
     }
@@ -210,7 +219,7 @@ namespace FreeMat {
 	  if (varargout.getDataClass() != FM_CELL_ARRAY)
 	    throw Exception("The special variable 'varargout' was not defined as a cell-array");
 	  // Get the data pointer
-	  const Array *dp ((const Array*) varargout.getDataPointer());
+	  const Array *dp = ((const Array*) varargout.getDataPointer());
 	  // Get the length
 	  int varlen = varargout.getLength();
 	  int toFill = nargout - explicitCount;

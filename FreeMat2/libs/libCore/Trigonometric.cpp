@@ -46,7 +46,7 @@ namespace FreeMat {
       throw Exception("argument to cosine must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -55,7 +55,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -64,7 +64,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -75,7 +75,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -110,7 +110,7 @@ namespace FreeMat {
       throw Exception("argument to sine must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -119,7 +119,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -128,7 +128,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -139,7 +139,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -174,7 +174,7 @@ namespace FreeMat {
       throw Exception("argument to tangent must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -183,7 +183,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -192,7 +192,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       float den;
@@ -205,7 +205,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       double den;
@@ -242,7 +242,7 @@ namespace FreeMat {
       throw Exception("argument to cosecant must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -251,7 +251,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -260,7 +260,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       float re, im;
@@ -274,7 +274,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       double re, im;
@@ -312,7 +312,7 @@ namespace FreeMat {
       throw Exception("argument to secant must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -321,7 +321,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -330,7 +330,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       float re, im;
@@ -344,7 +344,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       double re, im;
@@ -382,7 +382,7 @@ namespace FreeMat {
       throw Exception("argument to cotangent must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -391,7 +391,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -400,7 +400,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       float den;
@@ -413,7 +413,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       double den;
@@ -506,7 +506,7 @@ namespace FreeMat {
       throw Exception("argument to arccosine must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -515,7 +515,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -524,7 +524,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -554,7 +554,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -664,7 +664,7 @@ namespace FreeMat {
       throw Exception("argument to arcsine must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -673,7 +673,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -682,7 +682,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -711,7 +711,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -770,7 +770,7 @@ namespace FreeMat {
       throw Exception("argument to arctan must be numeric");
     switch (argType) {
     case FM_FLOAT: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -779,7 +779,7 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -788,7 +788,7 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)input.getDataPointer());
+      const float *dp = ((const float *)input.getDataPointer());
       int len(input.getLength());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -812,7 +812,7 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)input.getDataPointer());
+      const double *dp = ((const double *)input.getDataPointer());
       int len(input.getLength());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -908,8 +908,8 @@ namespace FreeMat {
     
     switch (argType) {
     case FM_FLOAT: {
-      const float *dpx((const float *)x.getDataPointer());
-      const float *dpy((const float *)y.getDataPointer());
+      const float *dpx = ((const float *)x.getDataPointer());
+      const float *dpy = ((const float *)y.getDataPointer());
       int len(outputSize.getElementCount());
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
@@ -918,8 +918,8 @@ namespace FreeMat {
       break;
     }
     case FM_DOUBLE: {
-      const double *dpx((const double *)x.getDataPointer());
-      const double *dpy((const double *)y.getDataPointer());
+      const double *dpx = ((const double *)x.getDataPointer());
+      const double *dpy = ((const double *)y.getDataPointer());
       int len(outputSize.getElementCount());
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
@@ -928,8 +928,8 @@ namespace FreeMat {
       break;
     }
     case FM_COMPLEX: {
-      const float *dpx((const float *)x.getDataPointer());
-      const float *dpy((const float *)y.getDataPointer());
+      const float *dpx = ((const float *)x.getDataPointer());
+      const float *dpy = ((const float *)y.getDataPointer());
       int len(outputSize.getElementCount());
       float *op = (float *)Malloc(len*sizeof(float)*2);
       for (int i=0;i<2*len;i+=2) {
@@ -970,8 +970,8 @@ namespace FreeMat {
       break;      
     }
     case FM_DCOMPLEX: {
-      const double *dpx((const double *)x.getDataPointer());
-      const double *dpy((const double *)y.getDataPointer());
+      const double *dpx = ((const double *)x.getDataPointer());
+      const double *dpy = ((const double *)y.getDataPointer());
       int len(outputSize.getElementCount());
       double *op = (double *)Malloc(len*sizeof(double)*2);
       for (int i=0;i<2*len;i+=2) {

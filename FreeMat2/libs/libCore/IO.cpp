@@ -222,7 +222,7 @@ namespace FreeMat {
       int handle = tmp.getContentsAsIntegerScalar();
       if (handle <= 2)
 	throw Exception("Cannot close handles 0-2, the standard in/out/error file handles");
-      FilePtr* fptr(fileHandles.lookupHandle(handle+1));
+      FilePtr* fptr = (fileHandles.lookupHandle(handle+1));
       if (fclose(fptr->fp))
 	throw Exception(strerror(errno));
       fileHandles.deleteHandle(handle+1);
@@ -236,7 +236,7 @@ namespace FreeMat {
       throw Exception("fread requires three arguments, the file handle, size, and precision");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     if (!arg[2].isString())
       throw Exception("second argument to fread must be a precision");
     char *prec = arg[2].getContentsAsCString();
@@ -246,7 +246,7 @@ namespace FreeMat {
     sze.promoteType(FM_FLOAT);
     // Check for a single infinity
     int dimCount(sze.getLength());
-    float *dp((float *) sze.getReadWriteDataPointer());
+    float *dp = ((float *) sze.getReadWriteDataPointer());
     bool infinityFound = false;
     int elementCount = 1;
     int infiniteDim = 0;
@@ -301,7 +301,7 @@ namespace FreeMat {
       throw Exception("fwrite requires two arguments, the file handle, and the variable to be written");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     if (arg[1].isReferenceType())
       throw Exception("cannot write reference data types with fwrite");
     Array toWrite(arg[1]);
@@ -309,10 +309,10 @@ namespace FreeMat {
     unsigned int count(toWrite.getLength());
     unsigned int elsize(toWrite.getElementSize());
     if (!fptr->swapflag || (elsize == 1)) {
-      const void *dp(toWrite.getDataPointer());
+      const void *dp=(toWrite.getDataPointer());
       written = fwrite(dp,elsize,count,fptr->fp);      
     } else {
-      void *dp(toWrite.getReadWriteDataPointer());
+      void *dp=(toWrite.getReadWriteDataPointer());
       SwapBuffer((char*) dp, count, elsize);
       written = fwrite(dp,elsize,count,fptr->fp);
     }
@@ -326,7 +326,7 @@ namespace FreeMat {
       throw Exception("ftell requires an argument, the file handle.");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     unsigned int fpos;
     fpos = ftell(fptr->fp);
     ArrayVector retval;
@@ -339,7 +339,7 @@ namespace FreeMat {
       throw Exception("feof requires an argument, the file handle.");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     int ateof;
     ateof = feof(fptr->fp);
     ArrayVector retval;
@@ -352,7 +352,7 @@ namespace FreeMat {
       throw Exception("fseek requires three arguments, the file handle, the offset, and style");
     Array tmp1(arg[0]);
     int handle = tmp1.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     Array tmp2(arg[1]);
     int offset = tmp2.getContentsAsIntegerScalar();
     Array tmp3(arg[2]);
@@ -601,7 +601,7 @@ namespace FreeMat {
       throw Exception("fgetline takes one argume, the file handle");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     char buffer[4096];
     fgets(buffer,sizeof(buffer),fptr->fp);
     Array retval(Array::stringConstructor(buffer));
@@ -615,7 +615,7 @@ namespace FreeMat {
       throw Exception("fscanf takes two arguments, the file handle and the format string");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     Array format(arg[1]);
     if (!format.isString())
       throw Exception("fscanf format argument must be a string");
@@ -726,7 +726,7 @@ namespace FreeMat {
       throw Exception("fprintf requires at least two arguments, the file handle and theformat string");
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr(fileHandles.lookupHandle(handle+1));
+    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     Array format(arg[1]);
     if (!format.isString())
       throw Exception("fprintf format argument must be a string");

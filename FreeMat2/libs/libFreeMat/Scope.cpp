@@ -88,7 +88,7 @@ namespace FreeMat {
   }
 
   void Scope::deleteGlobalVariablePointer(std::string varName) {
-    stringVector::iterator i = find(globalVars.begin(),
+	  stringVector::iterator i = std::find(globalVars.begin(),
 				    globalVars.end(),
 				    varName);
     if (*i == varName)
@@ -113,7 +113,7 @@ namespace FreeMat {
   }
 
   void Scope::deletePersistentVariablePointer(std::string varName) {
-    stringVector::iterator i = find(persistentVars.begin(),
+	  stringVector::iterator i = std::find(persistentVars.begin(),
 				    persistentVars.end(),
 				    varName);
     if (*i == varName)

@@ -1,5 +1,10 @@
 #include "RGBImageGC.hpp"
 #include <math.h>
+#ifndef WIN32
+typedef unsigned long long u_int_64;
+#else
+typedef unsigned __int64 u_int_64;
+#endif
 
 RGBImageGC::RGBImageGC(RGBImage& surface) : c_font("swiss",12) ,
 					    c_bg(255,255,255), c_fg(0,0,0), 
@@ -240,7 +245,7 @@ void RGBImageGC::DrawAALineStyle(int X0, int Y0, int X1, int Y1, bool endPt)
     /* Y-major line; calculate 16-bit fixed-point fractional part of a
        pixel that X advances each time Y advances 1 pixel, truncating the
        result so that we won't overrun the endpoint along the X axis */
-    ErrorAdj = ((unsigned long long) DeltaX << 32) / (unsigned long long) DeltaY;
+    ErrorAdj = ((u_int_64) DeltaX << 32) / (u_int_64) DeltaY;
     /* Draw all pixels other than the first and last */
     while (--DeltaY) {
       ErrorAccTemp = ErrorAcc;   /* remember currrent accumulated error */
@@ -269,7 +274,7 @@ void RGBImageGC::DrawAALineStyle(int X0, int Y0, int X1, int Y1, bool endPt)
   /* It's an X-major line; calculate 16-bit fixed-point fractional part of a
      pixel that Y advances each time X advances 1 pixel, truncating the
      result to avoid overrunning the endpoint along the X axis */
-  ErrorAdj = ((unsigned long long) DeltaY << 32) / (unsigned long long) DeltaX;
+  ErrorAdj = ((u_int_64) DeltaY << 32) / (u_int_64) DeltaX;
   /* Draw all pixels other than the first and last */
   while (--DeltaX) {
     ErrorAccTemp = ErrorAcc;   /* remember currrent accumulated error */

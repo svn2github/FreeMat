@@ -24,6 +24,7 @@
 #include "Malloc.hpp"
 #include "Utils.hpp"
 #include <math.h>
+#include "IEEEFP.hpp"
 
 namespace FreeMat {
    ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
@@ -41,14 +42,14 @@ namespace FreeMat {
      switch (argType) {
      case FM_FLOAT: {
        if (input.isPositive()) {
-	 const float *dp((const float *)input.getDataPointer());
+	 const float *dp=((const float *)input.getDataPointer());
 	 int len(input.getLength());
 	 float *op = (float *)Malloc(len*sizeof(float));
 	 for (int i=0;i<len;i++)
 	   op[i] = log(dp[i]);
 	 output = Array(FM_FLOAT,input.getDimensions(),op);
        } else {
-	 const float *dp((const float *)input.getDataPointer());
+	 const float *dp=((const float *)input.getDataPointer());
 	 int len(input.getLength());
 	 float *op = (float *)Malloc(2*len*sizeof(float));
 	 for (int i=0;i<len;i++)
@@ -64,14 +65,14 @@ namespace FreeMat {
      }
      case FM_DOUBLE: {
        if (input.isPositive()) {
-	 const double *dp((const double *)input.getDataPointer());
+	 const double *dp=((const double *)input.getDataPointer());
 	 int len(input.getLength());
 	 double *op = (double *)Malloc(len*sizeof(double));
 	 for (int i=0;i<len;i++)
 	   op[i] = log(dp[i]);
 	 output = Array(FM_DOUBLE,input.getDimensions(),op);
        } else {
-	 const double *dp((const double *)input.getDataPointer());
+	 const double *dp=((const double *)input.getDataPointer());
 	 int len(input.getLength());
 	 double *op = (double *)Malloc(2*len*sizeof(double));
 	 for (int i=0;i<len;i++)
@@ -86,7 +87,7 @@ namespace FreeMat {
        break;
      }
      case FM_COMPLEX: {
-       const float *dp((const float *)input.getDataPointer());
+       const float *dp=((const float *)input.getDataPointer());
        int len(input.getLength());
        float *op = (float *)Malloc(len*sizeof(float)*2);
        for (int i=0;i<2*len;i+=2) {
@@ -97,7 +98,7 @@ namespace FreeMat {
        break;      
      }
      case FM_DCOMPLEX: {
-       const double *dp((const double *)input.getDataPointer());
+       const double *dp=((const double *)input.getDataPointer());
        int len(input.getLength());
        double *op = (double *)Malloc(len*sizeof(double)*2);
        for (int i=0;i<2*len;i+=2) {
@@ -127,7 +128,7 @@ namespace FreeMat {
        throw Exception("argument to exp must be numeric");
      switch (argType) {
      case FM_FLOAT: {
-       const float *dp((const float *)input.getDataPointer());
+       const float *dp=((const float *)input.getDataPointer());
        int len(input.getLength());
        float *op = (float *)Malloc(len*sizeof(float));
        for (int i=0;i<len;i++)
@@ -136,7 +137,7 @@ namespace FreeMat {
        break;
      }
      case FM_DOUBLE: {
-       const double *dp((const double *)input.getDataPointer());
+       const double *dp=((const double *)input.getDataPointer());
        int len(input.getLength());
        double *op = (double *)Malloc(len*sizeof(double));
        for (int i=0;i<len;i++)
@@ -145,7 +146,7 @@ namespace FreeMat {
        break;
      }
      case FM_COMPLEX: {
-       const float *dp((const float *)input.getDataPointer());
+       const float *dp=((const float *)input.getDataPointer());
        int len(input.getLength());
        float *op = (float *)Malloc(len*sizeof(float)*2);
        for (int i=0;i<2*len;i+=2) {
@@ -157,7 +158,7 @@ namespace FreeMat {
        break;      
      }
      case FM_DCOMPLEX: {
-       const double *dp((const double *)input.getDataPointer());
+       const double *dp=((const double *)input.getDataPointer());
        int len(input.getLength());
        double *op = (double *)Malloc(len*sizeof(double)*2);
        for (int i=0;i<2*len;i+=2) {

@@ -22,7 +22,9 @@
 #include "Exception.hpp"
 #include "Array.hpp"
 #include "Math.hpp"
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include "Malloc.hpp"
@@ -357,7 +359,11 @@ namespace FreeMat {
 
   ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
     ArrayVector retval;
+#ifndef WIN32
     retval.push_back(Array::uint32Constructor(clock()));
+#else
+	throw Exception("Clock function not available under win32");
+#endif
     return retval;
   }
 #if 0

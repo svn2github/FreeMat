@@ -25,6 +25,11 @@
 #include <stdio.h>
 #include "Malloc.hpp"
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
+
 namespace FreeMat {
 
 #define MSGBUFLEN 2048

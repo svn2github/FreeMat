@@ -67,14 +67,14 @@ namespace FreeMat {
   }
 
   ArrayVector WalkTree::rowDefinition(ASTPtr t) throw(Exception) {
-    if (!t->opNum ==(OP_SEMICOLON)) throw Exception("AST - syntax error!\n");
+    if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!\n");
     ASTPtr s = t->down;
     return expressionList(s,NULL);
   }
 
   Array WalkTree::matrixDefinition(ASTPtr t) throw(Exception) {
     ArrayMatrix m;
-    if (!t->opNum ==(OP_BRACKETS)) throw Exception("AST - syntax error!\n");
+    if (t->opNum != OP_BRACKETS) throw Exception("AST - syntax error!\n");
     ASTPtr s = t->down;
   
     while (s != NULL) {
@@ -86,7 +86,7 @@ namespace FreeMat {
 
   Array WalkTree::cellDefinition(ASTPtr t) throw(Exception) {
     ArrayMatrix m;
-    if (!t->opNum ==(OP_BRACES)) throw Exception("AST - syntax error!\n");
+    if (t->opNum != OP_BRACES) throw Exception("AST - syntax error!\n");
     ASTPtr s = t->down;
 
     while (s != NULL) {
@@ -242,7 +242,7 @@ namespace FreeMat {
 
   bool WalkTree::conditionedStatement(ASTPtr t) throw(Exception){
     bool conditionState;
-    if (!t->opNum ==(OP_CSTAT)) 
+    if (t->opNum != OP_CSTAT)
       throw Exception("AST - syntax error!\n");
     ASTPtr s = t->down;
     bool conditionTrue;
@@ -331,7 +331,7 @@ namespace FreeMat {
       t = t->right;
     }
     if (elseifMatched || t == NULL) return;
-    return block(t);
+    block(t);
   }
 
   void WalkTree::whileStatement(ASTPtr t) {
@@ -889,10 +889,10 @@ namespace FreeMat {
     fAST = t->right;
     if (!lookupFunctionWithRescan(fAST->text,fptr))
       throw Exception(std::string("Undefined function ") + fAST->text);
-    if (!t->opNum ==(OP_BRACKETS)) 
+    if (t->opNum != OP_BRACKETS)
       throw Exception("Illegal left hand side in multifunction expression");
     s = t->down;
-    if (!s->opNum ==(OP_SEMICOLON))
+    if (s->opNum != OP_SEMICOLON)
       throw Exception("Illegal left hand side in multifunction expression");
     if (s->right != NULL)
       throw Exception("Multiple rows not allowed in left hand side of multifunction expression");
@@ -957,6 +957,7 @@ namespace FreeMat {
     ASTPtrVector keyexpr;
     int *keywordNdx;
     int *argTypeMap;
+	int i;
 
     funcDef->updateCode();
     if (funcDef->scriptFlag) {
@@ -1013,7 +1014,7 @@ namespace FreeMat {
 	    int maxndx;
 	    maxndx = 0;
 	    // Map each keyword to an argument number
-	    for (int i=0;i<keywords.size();i++) {
+	    for (i=0;i<keywords.size();i++) {
 	      int ndx;
 	      ndx = getArgumentIndex(arguments,keywords[i]);
 	      if (ndx == -1)
@@ -1039,13 +1040,13 @@ namespace FreeMat {
 	    bool *filled;
 	    filled = new bool[totalCount];
 	    argTypeMap = new int[totalCount];
-	    for (int i=0;i<totalCount;i++) {
+	    for (i=0;i<totalCount;i++) {
 	      filled[i] = false;
 	      argTypeMap[i] = -1;
 	    }
 	    // Finally...
 	    // Copy the keyword values in
-	    for (int i=0;i<keywords.size();i++) {
+	    for (i=0;i<keywords.size();i++) {
 	      toFill[keywordNdx[i]] = keyvals[i];
 	      filled[keywordNdx[i]] = true;
 	      argTypeMap[keywordNdx[i]] = i;
@@ -1064,7 +1065,7 @@ namespace FreeMat {
 	    }
 	    // Finally, fill in empty matrices for the
 	    // remaining arguments
-	    for (int i=0;i<totalCount;i++)
+	    for (i=0;i<totalCount;i++)
 	      if (!filled[i])
 		toFill[i] = Array::emptyConstructor();
 	    // Clean up
@@ -1094,7 +1095,7 @@ namespace FreeMat {
 	int maxsearch;
 	maxsearch = m.size(); 
 	if (maxsearch > arguments.size()) maxsearch = arguments.size();
-	for (int i=0;i<maxsearch;i++) {
+	for (i=0;i<maxsearch;i++) {
 	  // Was this argument passed out of order?
 	  if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
 	  if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {

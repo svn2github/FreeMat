@@ -27,6 +27,10 @@
 #include <stdio.h>
 #include <set>
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 namespace FreeMat {
 
   static int objectBalance;

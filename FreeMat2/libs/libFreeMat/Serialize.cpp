@@ -384,10 +384,11 @@ namespace FreeMat {
       stringVector fnames(dat.getFieldNames());
       int ncount(fnames.size());
       putInt(ncount);
-      for (int i=0;i<ncount;i++)
+	  int i;
+      for (i=0;i<ncount;i++)
 	putString(fnames[i].c_str());
       const Array *dp=((const Array *) dat.getDataPointer());
-      for (int i=0;i<elCount*ncount;i++)
+      for (i=0;i<elCount*ncount;i++)
 	putArray(dp[i]);
       return;
     }
@@ -398,52 +399,52 @@ namespace FreeMat {
     }
     case FM_STRING:
     case FM_UINT8: {
-      const uint8 *dp((const uint8 *)dat.getDataPointer());
+      const uint8 *dp=((const uint8 *)dat.getDataPointer());
       putBytes((const char*) dp,elCount);
       return;
     }
     case FM_UINT16: {
-      const uint16 *dp((const uint16 *)dat.getDataPointer());
+      const uint16 *dp=((const uint16 *)dat.getDataPointer());
       putShorts((const short*) dp,elCount);
       return;
     }
     case FM_UINT32: {
-      const uint32 *dp((const uint32 *)dat.getDataPointer());
+      const uint32 *dp=((const uint32 *)dat.getDataPointer());
       putInts((const int*) dp,elCount);
       return;
     }
     case FM_INT8: {
-      const int8 *dp((const int8 *)dat.getDataPointer());
+      const int8 *dp=((const int8 *)dat.getDataPointer());
       putBytes((const char*) dp,elCount);
       return;
     }
     case FM_INT16: {
-      const int16 *dp((const int16 *)dat.getDataPointer());
+      const int16 *dp=((const int16 *)dat.getDataPointer());
       putShorts((const short*) dp,elCount);
       return;
     }
     case FM_INT32: {
-      const int32 *dp((const int32 *)dat.getDataPointer());
+      const int32 *dp=((const int32 *)dat.getDataPointer());
       putInts((const int*) dp,elCount);
       return;
     }
     case FM_FLOAT: {
-      const float *dp((const float *)dat.getDataPointer());
+      const float *dp=((const float *)dat.getDataPointer());
       putFloats(dp,elCount);
       return;
     }
     case FM_DOUBLE: {
-      const double *dp((const double *)dat.getDataPointer());
+      const double *dp=((const double *)dat.getDataPointer());
       putDoubles(dp,elCount);
       return;
     }
     case FM_COMPLEX: {
-      const float *dp((const float *)dat.getDataPointer());
+      const float *dp=((const float *)dat.getDataPointer());
       putFloats(dp,elCount*2);
       return;
     }
     case FM_DCOMPLEX: {
-      const double *dp((const double *)dat.getDataPointer());
+      const double *dp=((const double *)dat.getDataPointer());
       putDoubles(dp,elCount*2);
       return;
     }
@@ -470,13 +471,14 @@ namespace FreeMat {
     case FM_STRUCT_ARRAY: {
       stringVector fnames;
       int ncount(getInt());
-      for (int i=0;i<ncount;i++) {
+	  int i;
+      for (i=0;i<ncount;i++) {
 	char *dp = getString();
 	fnames.push_back(dp);
 	free(dp);
       }
       Array *dp = new Array[elCount*ncount];
-      for (int i=0;i<elCount*ncount;i++)
+      for (i=0;i<elCount*ncount;i++)
 	getArray(dp[i]);
       dat = Array(dclass,dims,dp,fnames);
       return;

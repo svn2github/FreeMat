@@ -22,9 +22,17 @@
 #include "WalkTree.hpp"
 #include "Utils.hpp"
 #include "Command.hpp"
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include <stdio.h>
 #include "System.hpp"
+
+#ifdef WIN32
+#include <direct.h>
+#define getcwd _getcwd
+#define chdir _chdir
+#endif
 
 namespace FreeMat {
 
@@ -43,6 +51,7 @@ namespace FreeMat {
     stringVector sysresult;
     char buffer[4096];
     char *bp;
+	int i;
 
 #ifdef WIN32
     sprintf(buffer,"dir ");
@@ -50,7 +59,7 @@ namespace FreeMat {
     sprintf(buffer,"ls ");
 #endif
     bp = buffer + strlen(buffer);
-    for (int i=0;i<arg.size();i++) {
+    for (i=0;i<arg.size();i++) {
       char *target = arg[i].getContentsAsCString();
       sprintf(bp,"%s ",target);
       bp = buffer + strlen(buffer);
@@ -58,7 +67,7 @@ namespace FreeMat {
     sysresult = DoSystemCallCaptured(buffer);
     int maxlen = 0;
     // Find the maximal length
-    for (int i=0;i<sysresult.size();i++) {
+    for (i=0;i<sysresult.size();i++) {
       int ellen(sysresult[i].size());
       maxlen = (maxlen < ellen) ? ellen : maxlen;
     }

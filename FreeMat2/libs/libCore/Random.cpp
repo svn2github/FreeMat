@@ -209,6 +209,7 @@ namespace FreeMat {
   }
 
   ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
+	  int i;
     unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
     if (!initialized) {
       init_by_array(init, length);
@@ -223,7 +224,7 @@ namespace FreeMat {
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;
-      for (int i=0;i<arg.size();i++)
+      for (i=0;i<arg.size();i++)
 	allScalars &= arg[i].isScalar();
       if (allScalars) {
 	t = arg[0];
@@ -233,7 +234,7 @@ namespace FreeMat {
 	  dims[1] = dims[0];
 	} else {
 	  // If all scalars and and multiple arguments, we count dimensions
-	  for (int i=0;i<arg.size();i++) {
+	  for (i=0;i<arg.size();i++) {
 	    t = arg[i];
 	    dims[i] = t.getContentsAsIntegerScalar();
 	  }
@@ -244,12 +245,12 @@ namespace FreeMat {
 	t = arg[0];
 	t.promoteType(FM_UINT32);
 	dp = (int*) t.getDataPointer();
-	for (int i=0;i<t.getLength();i++)
+	for (i=0;i<t.getLength();i++)
 	  dims[i] = dp[i];
       }
       bool allPositive;
       allPositive = true;
-      for (int i=0;i<dims.getLength();i++)
+      for (i=0;i<dims.getLength();i++)
 	allPositive &= (dims[i] >= 0);
       if (!allPositive)
 	throw Exception("Randn function requires positive arguments");
@@ -280,6 +281,7 @@ namespace FreeMat {
   }
   
   ArrayVector RandFunction(int nargout, const ArrayVector& arg) {
+	  int i;
     unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
     if (!initialized) {
       init_by_array(init, length);
@@ -294,7 +296,7 @@ namespace FreeMat {
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;
-      for (int i=0;i<arg.size();i++)
+      for (i=0;i<arg.size();i++)
 	allScalars &= arg[i].isScalar();
       if (allScalars) {
 	t = arg[0];
@@ -304,7 +306,7 @@ namespace FreeMat {
 	  dims[1] = dims[0];
 	} else {
 	  // If all scalars and and multiple arguments, we count dimensions
-	  for (int i=0;i<arg.size();i++) {
+	  for (i=0;i<arg.size();i++) {
 	    t = arg[i];
 	    dims[i] = t.getContentsAsIntegerScalar();
 	  }	  
@@ -315,12 +317,12 @@ namespace FreeMat {
 	t = arg[0];
 	t.promoteType(FM_UINT32);
 	dp = (int*) t.getDataPointer();
-	for (int i=0;i<t.getLength();i++)
+	for (i=0;i<t.getLength();i++)
 	  dims[i] = dp[i];
       }
       bool allPositive;
       allPositive = true;
-      for (int i=0;i<dims.getLength();i++)
+      for (i=0;i<dims.getLength();i++)
 	allPositive &= (dims[i] >= 0);
       if (!allPositive)
 	throw Exception("Rand function requires positive arguments");

@@ -95,6 +95,7 @@ namespace FreeMat {
     const double *xVals;
     const double *yVals;
     int ptCount;
+	int i;
 
     xVals = (const double *) x.getDataPointer();
     yVals = (const double *) y.getDataPointer();
@@ -103,14 +104,14 @@ namespace FreeMat {
     // Calculate the min and max values in x
     xMin = xVals[0];  
     xMax = xMin;
-    for (int i=0;i<ptCount;i++) {
+    for (i=0;i<ptCount;i++) {
       xMin = (xVals[i] < xMin) ? xVals[i] : xMin;
       xMax = (xVals[i] > xMax) ? xVals[i] : xMax;
     }
     // Calculate the min and max values in y
     yMin = yVals[0];
     yMax = yMin;
-    for (int i=0;i<ptCount;i++) {
+    for (i=0;i<ptCount;i++) {
       yMin = (yVals[i] < yMin) ? yVals[i] : yMin;
       yMax = (yVals[i] > yMax) ? yVals[i] : yMax;
     }
@@ -202,6 +203,7 @@ namespace FreeMat {
     const double *xVals;
     const double *yVals;
     int ptCount;
+	int i;
 
     xVals = (const double *) x.getDataPointer();
     yVals = (const double *) y.getDataPointer();
@@ -209,7 +211,7 @@ namespace FreeMat {
 
     SetPenColor(dc, false);
     // Draw the symbols
-    for (int i=0;i<ptCount;i++) {
+    for (i=0;i<ptCount;i++) {
       // Map the data point to a coordinate
       int xp, yp;
       xp = xAxis->MapPoint(xVals[i]);
@@ -219,7 +221,7 @@ namespace FreeMat {
     // Plot the lines
     SetPenColor(dc, true);
     std::vector<Point2D> pts;
-    for (int i=0;i<ptCount;i++)
+    for (i=0;i<ptCount;i++)
       pts.push_back(Point2D(xAxis->MapPoint(xVals[i]),
 			    yAxis->MapPoint(yVals[i])));
     dc.DrawLines(pts);

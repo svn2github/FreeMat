@@ -23,7 +23,15 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
+
+#ifdef WIN32
+#include <direct.h>
+#define getcwd _getcwd
+#define S_ISREG(x) (x & _S_IFREG)
+#endif
 
 namespace FreeMat {
   bool FileExists(std::string filename) {

@@ -95,6 +95,7 @@ namespace FreeMat {
 
   void ScalarImage::UpdateZoom(bool forceUpdate) {
     int newZoomRows, newZoomColumns;
+	int i;
     if (rawData == NULL) return;
     if (zoom>0) {
       newZoomColumns = (int) (zoom*columns);
@@ -134,11 +135,11 @@ namespace FreeMat {
     zoomImage = new double[zoomColumns*zoomRows];
     double *tmpImage = new double[zoomRows*columns];
     // First zoom the columns
-    for (int i=0;i<columns;i++)
+    for (i=0;i<columns;i++)
       Zoom1D(rawData + i*rows,tmpImage + i*zoomRows,
 	     1,1,rows,zoomRows);
     // Then zoom the rows 
-    for (int i=0;i<zoomRows;i++)
+    for (i=0;i<zoomRows;i++)
       Zoom1D(tmpImage + i, zoomImage + i,
 	     zoomRows, zoomRows,
 	     columns, zoomColumns);

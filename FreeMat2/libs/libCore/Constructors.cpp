@@ -32,6 +32,7 @@ namespace FreeMat {
     Array t, s;
     Dimensions dims;
     int32 *dp;
+	int i;
     if (arg.size() == 0)
       throw Exception("reshape function requires at least one argument");
     Array x(arg[0]);
@@ -43,7 +44,7 @@ namespace FreeMat {
     // Case 1 - all of the entries are scalar
     bool allScalars;
     allScalars = true;
-    for (int i=1;i<arg.size();i++)
+    for (i=1;i<arg.size();i++)
       allScalars &= arg[i].isScalar();
     if (allScalars) {
       t = arg[1];
@@ -53,7 +54,7 @@ namespace FreeMat {
 	dims[1] = dims[0];
       } else {
 	// If all scalars and and multiple arguments, we count dimensions
-	for (int i=1;i<arg.size();i++) {
+	for (i=1;i<arg.size();i++) {
 	  t = arg[i];
 	  dims[i-1] = t.getContentsAsIntegerScalar();
 	}
@@ -65,12 +66,12 @@ namespace FreeMat {
       t = arg[1];
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
-      for (int i=0;i<t.getLength();i++)
+      for (i=0;i<t.getLength();i++)
 	dims[i] = dp[i];
     }
     bool allPositive;
     allPositive = true;
-    for (int i=0;i<dims.getLength();i++)
+    for (i=0;i<dims.getLength();i++)
       allPositive &= (dims[i] >= 0);
     if (!allPositive)
       throw Exception("reshape function requires positive arguments");
@@ -84,13 +85,14 @@ namespace FreeMat {
     Array t, s;
     Dimensions dims;
     int32 *dp;
+	int i;
     if (arg.size() == 0)
       dims.makeScalar();
     else {
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;
-      for (int i=0;i<arg.size();i++)
+      for (i=0;i<arg.size();i++)
 	allScalars &= arg[i].isScalar();
       if (allScalars) {
 	t = arg[0];
@@ -100,7 +102,7 @@ namespace FreeMat {
 	  dims[1] = dims[0];
 	} else {
 	  // If all scalars and and multiple arguments, we count dimensions
-	  for (int i=0;i<arg.size();i++) {
+	  for (i=0;i<arg.size();i++) {
 	    t = arg[i];
 	    dims[i] = t.getContentsAsIntegerScalar();
 	  }
@@ -112,12 +114,12 @@ namespace FreeMat {
 	t = arg[0];
 	t.promoteType(FM_UINT32);
 	dp = (int*) t.getDataPointer();
-	for (int i=0;i<t.getLength();i++)
+	for (i=0;i<t.getLength();i++)
 	  dims[i] = dp[i];
       }
       bool allPositive;
       allPositive = true;
-      for (int i=0;i<dims.getLength();i++)
+      for (i=0;i<dims.getLength();i++)
 	allPositive &= (dims[i] >= 0);
       if (!allPositive)
 	throw Exception("Zeros function requires positive arguments");
@@ -132,13 +134,14 @@ namespace FreeMat {
     Array t, s;
     Dimensions dims;
     int32 *dp;
+	int i;
     if (arg.size() == 0)
       dims.makeScalar();
     else {
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;
-      for (int i=0;i<arg.size();i++)
+      for (i=0;i<arg.size();i++)
 	allScalars &= arg[i].isScalar();
       if (allScalars) {
 	t = arg[0];
@@ -148,7 +151,7 @@ namespace FreeMat {
 	  dims[1] = dims[0];
 	} else {
 	  // If all scalars and and multiple arguments, we count dimensions
-	  for (int i=0;i<arg.size();i++) {
+	  for (i=0;i<arg.size();i++) {
 	    t = arg[i];
 	    dims[i] = t.getContentsAsIntegerScalar();
 	  }
@@ -160,12 +163,12 @@ namespace FreeMat {
 	t = arg[0];
 	t.promoteType(FM_UINT32);
 	dp = (int*) t.getDataPointer();
-	for (int i=0;i<t.getLength();i++)
+	for (i=0;i<t.getLength();i++)
 	  dims[i] = dp[i];
       }
       bool allPositive;
       allPositive = true;
-      for (int i=0;i<dims.getLength();i++)
+      for (i=0;i<dims.getLength();i++)
 	allPositive &= (dims[i] >= 0);
       if (!allPositive)
 	throw Exception("Ones function requires positive arguments");
@@ -174,7 +177,7 @@ namespace FreeMat {
     len = dims.getElementCount();
     float *qp;
     qp = (float*) Malloc(sizeof(float)*len);
-    for (int i=0;i<len;i++)
+    for (i=0;i<len;i++)
       qp[i] = 1.0f;
     s = Array(FM_FLOAT,dims,qp);
     ArrayVector retval;

@@ -68,11 +68,6 @@ namespace FreeMat {
      * Routine that draws the contents of the window.
      */
     void OnDraw(GraphicsContext &gc);
-    /**
-     * Sends a close notification to the main application
-     * when the window is closed.
-     */
-    virtual void OnClose();
     virtual void OnSize();
   private:
     /**

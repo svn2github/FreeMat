@@ -36,7 +36,7 @@ namespace FreeMat {
   void CloseImageHelper(int fig) {
     if (fig == -1) return;
     if (images[fig] == NULL) return;
-    images[fig]->Close();
+    delete images[fig];
     images[fig] = NULL;
     if (currentImage == fig)
       currentImage = -1;

@@ -46,6 +46,7 @@ namespace FreeMat {
   
   ScalarImage::~ScalarImage() {
     if (rawData) Free(rawData);
+    NotifyImageClose(myFigureNumber);
   }
 
   Array ScalarImage::GetPoint() {
@@ -152,10 +153,6 @@ namespace FreeMat {
   void ScalarImage::OnSize() {
     if (zoom <= 0) 
       UpdateZoom(false);
-  }
-
-  void ScalarImage::OnClose() {
-    NotifyImageClose(myFigureNumber);
   }
 
   void ScalarImage::OnDraw(GraphicsContext &gc) {

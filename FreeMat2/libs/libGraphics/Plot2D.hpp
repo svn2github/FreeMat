@@ -56,11 +56,6 @@ namespace FreeMat {
      */
     void AddPlot(DataSet2D dp);
     /**
-     * Send a notification to the parent App if we 
-     * get a close event.
-     */
-    virtual void OnClose();
-    /**
      * Set the grid flag.
      */
     void SetGrid(bool);

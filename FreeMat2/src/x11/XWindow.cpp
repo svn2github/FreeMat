@@ -87,10 +87,6 @@ void XWindow::Hide() {
   XFlush( m_display );
 }
 
-void XWindow::Close() {
-  deleteQ.push_back(this);
-}
-
 XWindow::~XWindow() {
   Hide();
   XSelectInput ( m_display, m_window, NoEventMask );
@@ -188,9 +184,6 @@ void XWindow::OnMouseDown(int x, int y) {
   default:
     break;
   }
-}
-
-void XWindow::OnClose() {
 }
 
 void XWindow::OnResize(int w, int h) {
@@ -478,12 +471,14 @@ void XWindow::GetBox(int &x1, int &y1, int &x2, int &y2) {
 }
 
 void CheckDeleteQ() {
+#if 0
   // Check for windows to delete...
   for (int i=0;i<deleteQ.size();i++) {
     deleteQ[i]->OnClose();
     delete deleteQ[i];
   }
   deleteQ.clear();
+#endif
 }
 
 bool XNextEventStdInCallback(Display *d, XEvent *r) {
@@ -570,7 +565,6 @@ void DoEvents() {
     case ClientMessage:
       if (report.xclient.data.l[0] == delete_atom) {
 	if (p->GetState() == state_normal) {
-	  p->OnClose();
 	  delete p;
 	}
       }

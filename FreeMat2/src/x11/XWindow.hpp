@@ -23,7 +23,6 @@ class XWindow {
   void Raise();
   void Show();
   void Hide();
-  void Close();
   void SetImagePseudoColor(unsigned char *data, int width, int height);
   void SetImage(unsigned char *data, int width, int height);
   void OnExpose(int x, int y, int w, int h);
@@ -32,7 +31,6 @@ class XWindow {
   void OnDrag(int x, int y);
   void OnResize(int w, int h);
   virtual void OnSize() {};
-  virtual void OnClose();
   virtual void OnDraw(GraphicsContext &gc) = 0;
   void PrintMe(std::string filename);
   void SetTitle(std::string title);

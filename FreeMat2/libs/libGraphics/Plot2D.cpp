@@ -43,6 +43,7 @@ namespace FreeMat {
   Plot2D::~Plot2D() {
     if (xAxis != NULL) delete xAxis;
     if (yAxis != NULL) delete yAxis;
+    NotifyPlotClose(myFigureNumber);
   }
 
   void Plot2D::StartSequence() {
@@ -189,10 +190,6 @@ namespace FreeMat {
     if (yAxis != NULL)
       yAxis->ComputeTextBounds(dc);
   }
-
-   void Plot2D::OnClose() {
-     NotifyPlotClose(myFigureNumber);
-   }
 
   void Plot2D::OnDraw(GraphicsContext &gc) {
     if (updating || (data.size() == 0))

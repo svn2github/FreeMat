@@ -94,10 +94,10 @@ namespace FreeMat {
   void ClosePlotHelper(int fig) {
     if (fig == -1) return;
     if (plots[fig] == NULL) return;
-    plots[fig]->Close();
+    delete plots[fig];
     plots[fig] = NULL;
     if (currentPlot == fig)
-      currentPlot = -1;
+    currentPlot = -1;
   }
   
   void NotifyPlotClose(int fig) {

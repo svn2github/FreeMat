@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
   WalkTree *twalk = new WalkTree(context,term);
   term->SetEvalEngine(twalk);
   term->Initialize();
-  term->outputMessage(" Freemat v1.02 ");
+  term->outputMessage(" Freemat v1.03 ");
   term->outputMessage("\n");
   term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
   while (twalk->getState() != FM_STATE_QUIT) {

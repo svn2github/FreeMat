@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <glob.h>
+#include <unistd.h>
 #endif
 
 #include "FLTKTerminal.hpp"

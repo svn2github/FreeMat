@@ -41,6 +41,15 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name libz
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name lpng125
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libjpeg6b
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libtiff361
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -142,6 +151,30 @@ Package=<4>
 ###############################################################################
 
 Project: "libffi"=.\libs\libffi\libffi.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libjpeg6b"=.\libs\libjpeg6b\libjpeg6b.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libtiff361"=.\libs\libtiff361\libtiff361.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

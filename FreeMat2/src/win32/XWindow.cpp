@@ -275,7 +275,12 @@ void XWindow::PrintMe(std::string filename) {
 			  rgbdata2[3*((m_height-1-i)*m_width+j)+2] = rgbdata[3*(i*m_width+j)];
 		  }
 	  free(rgbdata);
-	  WritePNGFile(filename, rgbdata2, m_width, m_height);
+	  if (extension == ".jpeg" || extension == ".jpg") 
+		  WriteJPEGFile(filename, rgbdata2, m_width, m_height);
+	  else if (extension == ".png")
+		  WritePNGFile(filename, rgbdata2, m_width, m_height);
+	  else if (extension == ".tiff" || extension == ".tif")
+		  WriteTIFFFile(filename, rgbdata2, m_width, m_height);
 	  free(rgbdata2);
       ReleaseDC(m_window, hdc);
       DeleteDC(hdcMem);

@@ -1,19 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Copyright (c) 2002, 2003 Samit Basu
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a 
@@ -160,9 +144,6 @@ void wxCLI::DoMoveCaret() {
   CalcScrolledPosition(m_xMargin + m_xCaret * m_widthChar,
 		       m_yMargin + m_yCaret * m_heightChar,
 		       &screen_x, &screen_y);
-  std::cout << "Caret is at (" << m_xCaret << "," << m_yCaret << ") - ";
-  std::cout << "(" << screen_x << "," << screen_y << ") \n";
-  
   GetCaret()->Move(screen_x, screen_y);
 }
 

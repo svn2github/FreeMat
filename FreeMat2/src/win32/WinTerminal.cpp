@@ -17,12 +17,20 @@ namespace FreeMat {
     RECT winsze;
     GetClientRect(hwnd, &winsze);
     si.cbSize = sizeof(si);
+	si.fMask = SIF_POS;
+	GetScrollInfo(hwnd,SB_VERT,&si);
+	int cpos = si.nPos;
     si.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
     si.nMin = max(0, nlinecount - scrollback);
     si.nMax = nlinecount-1;
     si.nPage = winsze.bottom / charHeight;
     si.nPos = si.nMax;
     SetScrollInfo(hwnd,SB_VERT,&si,TRUE);
+	GetScrollInfo(hwnd,SB_VERT,&si);
+	if (cpos != si.nPos) {
+		InvalidateRect(hwnd,NULL,TRUE);
+		UpdateWindow(hwnd);
+	}
   }
   
   char& WinTerminal::CharAt(int row, int column) {
@@ -35,14 +43,16 @@ namespace FreeMat {
   }
   
   void WinTerminal::DoMoveCaret() {
-    if (caret_y >= nlinecount) {
-      nlinecount = caret_y+1;
-    }
-    si.cbSize = sizeof(si);
+//    if (caret_y >= nlinecount) {
+//      nlinecount = caret_y+1;
+//     nlinecount = caret_y+1;
+//    }
+	nlinecount = max(nlinecount,caret_y + 1);
+	si.cbSize = sizeof(si);
     si.fMask = SIF_POS;
     GetScrollInfo(hwnd, SB_VERT, &si);
     UpdateLineCount();
-    int scrtop = (int)si.nPos - si.nPage + 1;
+    int scrtop = si.nPos;
     if (scrtop < 0) scrtop = 0;
     int screen_x = caret_x * charWidth;
     int screen_y = (caret_y - scrtop) * charHeight;
@@ -154,6 +164,14 @@ namespace FreeMat {
       for (j=0;j<MAXCOLS;j++)
 	CharAt(i,j) = 0;
     }
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_POS;
+    GetScrollInfo(hwnd, SB_VERT, &si);
+    RECT refresh;
+    refresh.left = 0;
+    refresh.right = ncolumn * charWidth;
+    refresh.top = (caret_y+1-si.nPos)*charHeight;
+    refresh.bottom = (nlinecount-si.nPos)*charHeight;
     InvalidateRect(hwnd,NULL,TRUE);
     UpdateWindow(hwnd);
   }
@@ -255,10 +273,7 @@ namespace FreeMat {
     int paintBeg = max(0, iVertpos + ps.rcPaint.top/charHeight);
     int paintEnd = min(nlinecount-1,
 		       iVertpos + ps.rcPaint.bottom/charHeight);
-	char buffer[1000];
-//	sprintf(buffer,"repaint %d through %d\n",paintBeg,paintEnd);
-//	OutputDebugString(buffer);
-    for (int y=paintBeg; y <= paintEnd; y++) {
+	for (int y=paintBeg; y <= paintEnd; y++) {
       char buffer[1000];
       int x;
       for (x=0;x<ncolumn;x++) {
@@ -413,7 +428,7 @@ namespace FreeMat {
   
   void WinTerminal::ExecuteLine(const char * line) {
     enteredLines.push_back(line);
-	OutputRawString("\r\n");
+//	OutputRawString("\r\n");
     ReplacePrompt("");
   }
   
@@ -521,12 +536,18 @@ namespace FreeMat {
       HANDLE hSearch;
       WIN32_FIND_DATA FileData;
       std::string pattern(tmp);
-      pattern.append("*.*");
+      pattern.append("*");
+	  OutputDebugString("Searching ");
+	  OutputDebugString(pattern.c_str());
+	  OutputDebugString("\n");
       hSearch = FindFirstFile(pattern.c_str(),&FileData);
       if (hSearch != INVALID_HANDLE_VALUE) {
 	completions.push_back(FileData.cFileName);
 	while (FindNextFile(hSearch, &FileData))
 	  completions.push_back(FileData.cFileName);
+	OutputDebugString("completion :");
+	OutputDebugString(FileData.cFileName);
+	OutputDebugString("\n");
       }
       FindClose(hSearch);
       return completions;

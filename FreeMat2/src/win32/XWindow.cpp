@@ -3,6 +3,7 @@
 #include "PostScriptGC.hpp"
 #include "Exception.hpp"
 #include <windows.h>
+#include <winuser.h>
 #include <map>
 #include <vector>
 #include <iostream>
@@ -25,6 +26,10 @@ XWindow::XWindow(WindowType wtype) {
 			  NULL,
 			  AppInstance,
 			  NULL);
+//  defcursor = LoadCursor(NULL, IDC_ARROW);
+//  clickcursor = LoadCursor(NULL, IDC_CROSS);
+  defcursor = LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
+  clickcursor = LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
   SetWindowLong(m_window,GWL_USERDATA,(LONG) this);
   m_width = 500;
   m_height = 400;
@@ -450,6 +455,13 @@ void XWindow::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
 void XWindow::BlitRGBImage(Point2D pos, RGBImage &img) {
 }
 
+void XWindow::SetTheCursor() {
+	if (m_state == state_click_waiting)
+		SetCursor(clickcursor);
+	else
+		SetCursor(defcursor);
+}
+
 
 LRESULT CALLBACK XWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   XWindow *xptr;
@@ -479,6 +491,9 @@ LRESULT CALLBACK XWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
   case WM_SIZE:
 	  xptr->OnResize(LOWORD(lParam),HIWORD(lParam));
 	  return 0;
+  case WM_SETCURSOR:
+	  xptr->SetTheCursor();
+	  return 0;
   }
   return DefWindowProc(hwnd, message, wParam, lParam);
 }
@@ -493,7 +508,7 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
   wndclass.cbWndExtra = 4;
   wndclass.hInstance = hInstance;
   wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wndclass.hCursor = NULL;
   wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
   wndclass.lpszMenuName = NULL;
   wndclass.lpszClassName = "Freemat Window";

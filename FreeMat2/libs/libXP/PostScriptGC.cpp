@@ -221,7 +221,7 @@ void PostScriptGC::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
   fprintf(fp,"%d %d translate\n",pos.x,pos.y-height+1);
   fprintf(fp,"%d %d scale\n",width,height);
   fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
-  fprintf(fp,"{currentfile picstr readhexstring pop} \n",width);
+  fprintf(fp,"{currentfile picstr readhexstring pop} \n");
   fprintf(fp,"image\n");
   outcount = 0;
   remaining = width*height;

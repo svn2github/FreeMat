@@ -654,6 +654,7 @@ namespace FreeMat {
 	return(Array::emptyConstructor());
       }
     }
+	return(Array::emptyConstructor());
   }
 
   void WalkTree::simpleAssign(Array& r, ASTPtr t, Array& value) {

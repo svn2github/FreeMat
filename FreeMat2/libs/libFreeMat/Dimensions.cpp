@@ -55,8 +55,6 @@ namespace FreeMat {
   }
 
   int& Dimensions::operator[](unsigned i) throw (Exception){
-    if (i < 0)
-      throw Exception("Negative argument to [] operator of Dimensions class.");
     if (i >= maxDims )
       throw Exception("Too many dimensions! Current limit is 6.");
     if (i >= length) {

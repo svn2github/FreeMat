@@ -58,6 +58,7 @@ class XWindow : public GraphicsContext {
   virtual void BlitGrayscaleImage(Point2D pos, GrayscaleImage &img);
   virtual void BlitRGBImage(Point2D pos, RGBImage &img);
   WindowType GetWindowType() {return m_type;}
+  void SetTheCursor();
  private:
   WindowType m_type;
   HWND m_window;
@@ -71,6 +72,8 @@ class XWindow : public GraphicsContext {
   HFONT m_hfont;
   HFONT m_vfont;
   HRGN clipwin;
+  HCURSOR defcursor;
+  HCURSOR clickcursor;
   Color bgcol, fgcol;
   LineStyleType m_style;
 };

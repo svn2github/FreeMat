@@ -1,11 +1,13 @@
 More stuff:
-1.  Point and Rect don't work under Windows anymore (X?)
 2.  Add DrawPoint to XWindow
 5.  Menu? File, Edit, Help?
 6.  Colormap doesn't work
 7.  Printing (both Win32 and X11)
 6.  Copy/Paste?
 7.  Filename completions still not quite right on Win32...
+8.  OpenGL?
+9.  Resize of plot doesn't fill in background...
+10. Robustify plot-style handler
 
 General Issues:
 1. Empty plot windows are black - why? - Done
@@ -29,135 +31,3 @@ By priority:
 9. Help?
 10. "X"s symbols are not centered/symmetric?
 
-#include "stdafx.h"
-
-DWORD main( int argc, char *argv[ ] )
-{
-   HANDLE   hSTDOUT = INVALID_HANDLE_VALUE;
-   HANDLE   hFile = INVALID_HANDLE_VALUE;
-
-   HANDLE   hChildSTDOUTRead = INVALID_HANDLE_VALUE;
-   HANDLE   hChildSTDOUTWrite = INVALID_HANDLE_VALUE;
-   HANDLE   hChildSTDOUTReadDuplicate = INVALID_HANDLE_VALUE;
-
-   /*
-      Step 1.  Save the handle to the current STDOUT
-      We'll need it again later.
-   */
-   hSTDOUT = ::GetStdHandle( STD_OUTPUT_HANDLE );
-
-   /*
-      Step 2.  Create a pipe that gets the child process' STDOUT
-   */
-
-   // Set the bInheritHandle flag so pipe handles are inherited
-   // if the pipe handles aren't inherited they can't be used
-   SECURITY_ATTRIBUTES SecurityAttributes;
-   SecurityAttributes.nLength = sizeof( SECURITY_ATTRIBUTES );
-   SecurityAttributes.bInheritHandle = TRUE;
-   SecurityAttributes.lpSecurityDescriptor = NULL;
-
-   if( !::CreatePipe( &hChildSTDOUTRead, &hChildSTDOUTWrite, &SecurityAttributes, 0 ) )
-      return 0;
-
-   /*
-      Step 3.  Set a write handle to the pipe to be STDOUT.
-      now if we do ::printf( ) or any other output to STDOUT
-      it will get re-directed to the pipe instead of the console.
-      Any child process we create gets this "new" STDOUT.
-   */
-   if( !::SetStdHandle( STD_OUTPUT_HANDLE, hChildSTDOUTWrite ) )
-   {
-      ::CloseHandle( hChildSTDOUTRead );
-      ::CloseHandle( hChildSTDOUTWrite );
-      return 0;
-   }
-
-   /*
-      Step 4.  Since the child process doesn't need our pipe read handle,
-      because it won't read from it's STDOUT, we create noninheritable
-      read handle and close the inheritable read handle.
-      Also, the child process will close the STDOUT read/write handles
-      on it's own, so after we call ::CreateProcess( ) successfully we
-      can't use them again, thus the duplication.
-   */
-
-   if( !::DuplicateHandle( ::GetCurrentProcess( ), hChildSTDOUTRead, ::GetCurrentProcess( ), &hChildSTDOUTReadDuplicate, 0, FALSE, DUPLICATE_SAME_ACCESS ) )
-   {
-      ::CloseHandle( hChildSTDOUTRead );
-      ::CloseHandle( hChildSTDOUTWrite );
-      return 0;
-   }
-   ::CloseHandle( hChildSTDOUTRead );
-
-   /*
-      Step 5.  Start the child process
-   */
-   PROCESS_INFORMATION piProcInfo;
-   STARTUPINFO siStartInfo;
-
-   ::memset( &siStartInfo, 0, sizeof( STARTUPINFO ) );
-   siStartInfo.cb = sizeof( STARTUPINFO );
-
-   if( !::CreateProcess( NULL, "c:\\batch\\GetNameAndAddress.exe www.BeginThread.com", NULL, NULL, TRUE, 0, NULL, NULL, &siStartInfo, &piProcInfo ) )
-   {
-      ::CloseHandle( hChildSTDOUTRead );
-      ::CloseHandle( hChildSTDOUTWrite );
-      ::CloseHandle( hChildSTDOUTReadDuplicate );
-      return 0;
-   }
-
-   /*
-      Step 6.  Restore our STDOUT
-   */
-   if( !::SetStdHandle( STD_OUTPUT_HANDLE, hSTDOUT ) )
-   {
-      ::CloseHandle( hChildSTDOUTRead );
-      ::CloseHandle( hChildSTDOUTWrite );
-      ::CloseHandle( hChildSTDOUTReadDuplicate );
-      return 0;
-   }
-
-   /*
-      Step 7.  Open our file for saving the STDOUT of the child process
-   */
-   if( argc  1 )
-      hFile = ::CreateFile( argv[ 1 ], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-
-   if( hFile == INVALID_HANDLE_VALUE )
-   {
-      ::CloseHandle( hChildSTDOUTWrite );
-      ::CloseHandle( hChildSTDOUTReadDuplicate );
-      return 0;
-   }
-
-   /* Step 8.  Close the write end of the pipe before reading from the
-      read end of the pipe.
-   */
-   if( !::CloseHandle( hChildSTDOUTWrite ) )
-   {
-      ::CloseHandle( hChildSTDOUTReadDuplicate );
-      ::CloseHandle( hFile );
-      return 0;
-   }
-   hChildSTDOUTWrite = INVALID_HANDLE_VALUE;
-
-   /*
-      Step 9.  Read from pipe that is the standard output for child process.
-      Save the output to the file
-   */
-   DWORD dwRead;
-   DWORD dwWritten;
-   CHAR Buf[ 0x00001000 ];
-
-   while( ::ReadFile( hChildSTDOUTReadDuplicate, Buf, sizeof( Buf ), &dwRead, NULL ) && dwRead && ::WriteFile( hFile, Buf, dwRead, &dwWritten, NULL ) );
-
-   /*
-      Step 10.  Clean everything up
-   */
-   ::CloseHandle( hFile );
-   ::CloseHandle( hChildSTDOUTReadDuplicate );
-
-   return 1;
-
-}

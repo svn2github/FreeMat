@@ -29,8 +29,11 @@ bundle:
 	cp @top_srcdir@/src/mac/Info.plist @top_builddir@/src/mac/FreeMat.app/Contents/.
 	mkdir -p @top_builddir@/src/mac/FreeMat.app/Contents/MacOS
 	mkdir -p @top_builddir@/src/mac/FreeMat.app/Contents/Resources
+	rm -f @top_builddir@/src/mac/FreeMat.app/FreeMat
 	cp @top_builddir@/src/mac/FreeMat @top_builddir@/src/mac/FreeMat.app/Contents/MacOS/.
 	ln -s @top_builddir@/src/mac/FreeMat.app/Contents/MacOS/FreeMat @top_builddir@/src/mac/FreeMat.app/FreeMat
 	cp @top_srcdir@/src/mac/appIcon.icns @top_builddir@/src/mac/FreeMat.app/Contents/Resources/.
 	cp -R $(prefix)/share/FreeMat/html @top_builddir@/src/mac/FreeMat.app/Contents/Resources/.
 	cp -R $(prefix)/share/FreeMat/MFiles @top_builddir@/src/mac/FreeMat.app/Contents/Resources/.
+	hdiutil create -fs HFS+ -srcfolder @top_builddir@/src/mac/FreeMat.app @top_builddir@/src/mac/FreeMat.dmg
+	echo "Rename .dmg with version number!"

@@ -1666,11 +1666,17 @@ namespace FreeMat {
   //@[
   //   eval(s)
   //@]
-  //where @|s| is the string to evaluate.
+  //where @|s| is the string to evaluate.  If @|s| is an expression
+  //(instead of a set of statements), you can assign the output
+  //of the @|eval| call to one or more variables, via
+  //@[
+  //   [x,y,z] = eval(s)
+  //@]
   //@@Example
   //Here are some examples of @|eval| being used.
   //@<
   //eval('a = 32')
+  //b = eval('a')
   //@>
   //The primary use of the @|eval| statement is to enable construction
   //of expressions at run time.
@@ -1679,17 +1685,59 @@ namespace FreeMat {
   //eval(s)
   //@>
   //!
+
+  // Implementation details:
+  //  If we truely have outputs (nargout > 0), then we must have an expression.
+  // One approach is to do something like map
+  //    [a,b,c] = eval('foobar')
+  // to
+  //   [_t1,_t2,_t3] = foobar
+  // and then retrieve '_t1', '_t2'... from the context.  The second approach
+  // is to parse it to an expression...  
   ArrayVector EvalFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
     if (arg.size() != 1)
       throw Exception("eval function takes exactly one argument - the string to execute");
-    char *line = arg[0].getContentsAsCString();
-    char *buf = (char*) malloc(strlen(line)+2);
-    sprintf(buf,"%s\n",line);
-    eval->evaluateString(buf);
-    free(buf);
-    return ArrayVector();
+    if (nargout > 0) {
+      char *line = arg[0].getContentsAsCString();
+      char *buf = (char*) malloc(strlen(line)+4096);
+      char *gp = buf;
+      if (nargout > 1)
+	*gp++ = '[';
+      for (int i=0;i<nargout-1;i++) {
+	sprintf(gp,"_t%d,",i);
+	gp += strlen(gp);
+      }
+      sprintf(gp,"_t%d",nargout-1);
+      gp += strlen(gp);
+      if (nargout > 1)
+	sprintf(gp,"] = %s;\n",line);
+      else
+	sprintf(gp," = %s;\n",line);
+      eval->evaluateString(buf);
+      // Retrieve the temp vars from the context
+      ArrayVector retval;
+      for (int i=0;i<nargout;i++) {
+	char tname[4096];
+	Array tval;
+	sprintf(tname,"_t%d",i);
+	eval->getContext()->lookupVariable(tname,tval);
+	eval->getContext()->deleteVariable(tname);
+	retval.push_back(tval);
+      }
+      free(buf);
+      return retval;
+    } else {
+      char *line = arg[0].getContentsAsCString();
+      char *buf = (char*) malloc(strlen(line)+2);
+      sprintf(buf,"%s\n",line);
+      eval->evaluateString(buf);
+      free(buf);
+      return ArrayVector();
+    }
   }
   
+  
+
   //!
   //@Module SOURCE Execute an Arbitrary File
   //@@Section FREEMAT

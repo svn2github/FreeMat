@@ -63,7 +63,7 @@
 \input{switch}
 \input{try}
 \input{while}
-\section{Special Functions}
+\section{FreeMat Functions}
 \input{eval}
 \input{feval}
 \input{help}
@@ -72,6 +72,7 @@
 \input{quit}
 \input{sleep}
 \input{source}
+\input{pcode}
 \chapter{Built In Functions}
 \section{Transcendental Functions}
 \input{exp}
@@ -87,12 +88,25 @@
 \input{sec}
 \input{sin}
 \input{tan}
+\section{Special Functions}
+\input{ei}
+\input{eone}
+\input{dawson}
+\input{erfc}
+\input{erfcx}
+\input{erf}
+\input{expei}
+\input{gammaln}
+\input{gamma}
+\input{psi}
 \section{Base Constants}
 \input{e}
 \input{i}
 \input{inf}
 \input{nan}
 \input{pi}
+\input{eps}
+\input{feps}
 \section{Statistical Functions}
 \input{mean}
 \input{var}
@@ -138,10 +152,25 @@
 \input{ones}
 \input{reshape}
 \input{zeros}
+\input{bin2int}
+\input{int2bin}
+\input{repmat}
 \section{Random Number Generation}
 \input{rand}
 \input{randn}
 \input{seed}
+\input{randbeta}
+\input{randbin}
+\input{randchi}
+\input{randexp}
+\input{randf}
+\input{randgamma}
+\input{randi}
+\input{randmulti}
+\input{randnbin}
+\input{randnchi}
+\input{randnf}
+\input{randp}
 \section{Input/Ouput Functions}
 \input{disp}
 \input{fclose}
@@ -160,9 +189,11 @@
 \input{sprintf}
 \section{String Functions}
 \input{strcmp}
+\input{str2num}
 \section{Transforms/Decompositions}
 \input{eig}
 \input{fft}
+\input{qr}
 \input{svd}
 \section{Operating System Functions}
 \input{cd}
@@ -171,6 +202,8 @@
 \input{system}
 \input{getpath}
 \input{setpath}
+\section{Optimization and Curve Fitting}
+\input{fitfun}
 \chapter{Graphing Functions}
 \section{Image Display Functions}
 \input{image}
@@ -196,6 +229,7 @@
 \input{xlabel}
 \input{ylabel}
 \input{title}
+\input{legend}
 \section{MPI Functions}
 \input{mpiinit}
 \input{mpiinitialized}
@@ -210,4 +244,5 @@
 \input{mpirecv}
 \input{mpireduce}
 \input{mpifinalize}
+\input{mpiallreduce}
 \end{document}

@@ -2933,7 +2933,7 @@ namespace FreeMat {
   void WalkTree::evalCLI() {
     char *line;
     char dataline[4096];
-    char prompt[20];
+    char prompt[150];
     int lastCount;
 
     if (depth == 0)

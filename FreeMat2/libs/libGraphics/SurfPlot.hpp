@@ -104,7 +104,9 @@ namespace FreeMat {
 
     double *colormap;
 
-    float quat[4];
+    double azim;
+    double elev;
+    //    float quat[4];
     int beginx;
     int beginy;
     Axis *xAxis;

@@ -227,10 +227,12 @@ namespace FreeMat {
   SurfPlot::SurfPlot(int width, int height) : PrintableWidget(0,0,width,height){
     m_width = width;
     m_height = height;
-    trackball(quat,0.0,0.0,0.0,0.0);
+    //    trackball(quat,0.0,0.0,0.0,0.0);
     xvals = NULL;
     yvals = NULL;
     zvals = NULL;
+    azim = 0;
+    elev = 0;
   }
 
   SurfPlot::~SurfPlot() {
@@ -245,16 +247,18 @@ namespace FreeMat {
   }
 
   void SurfPlot::OnDrag(int x, int y) {
-    float spin_quat[4];
-    int szx, szy;
-    szx = m_width;
-    szy = m_height;
-    trackball(spin_quat,
-	      (2.0*beginx - szx) / szx / 10,
-	      -(szy - 2.0*beginy) / szy / 10,
-	      (2.0*x - szx) / szx / 10,
-	      -(szy - 2.0*y) / szy / 10);
-    add_quats( spin_quat, quat, quat );
+//     float spin_quat[4];
+//     int szx, szy;
+//     szx = m_width;
+//     szy = m_height;
+//     trackball(spin_quat,
+// 	      (2.0*beginx - szx) / szx / 10,
+// 	      -(szy - 2.0*beginy) / szy / 10,
+// 	      (2.0*x - szx) / szx / 10,
+// 	      -(szy - 2.0*y) / szy / 10);
+//     add_quats( spin_quat, quat, quat );
+    elev += (y - beginy)/10;
+    azim += (x - beginx)/10;
     redraw();
   }
 
@@ -473,6 +477,22 @@ namespace FreeMat {
     // Transform the corners by the rotation matrix
     for (int i=0;i<8;i++)
       transformPoint(p[i],q[i],m);
+
+    // Draw the box behind the data
+    gc.SetForeGroundColor(Color("black"));
+    if ((q[0].z+q[1].z) < 0) gc.DrawLine(MapPoint(q[0]),MapPoint(q[1]));
+    if ((q[1].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[2]));
+    if ((q[2].z+q[3].z) < 0) gc.DrawLine(MapPoint(q[2]),MapPoint(q[3]));
+    if ((q[3].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[0]));
+    if ((q[3].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[3]),MapPoint(q[4]));
+    if ((q[4].z+q[5].z) < 0) gc.DrawLine(MapPoint(q[4]),MapPoint(q[5]));
+    if ((q[5].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[6]));
+    if ((q[6].z+q[7].z) < 0) gc.DrawLine(MapPoint(q[6]),MapPoint(q[7]));
+    if ((q[7].z+q[4].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[4]));
+    if ((q[7].z+q[0].z) < 0) gc.DrawLine(MapPoint(q[7]),MapPoint(q[0]));
+    if ((q[1].z+q[6].z) < 0) gc.DrawLine(MapPoint(q[1]),MapPoint(q[6]));
+    if ((q[5].z+q[2].z) < 0) gc.DrawLine(MapPoint(q[5]),MapPoint(q[2]));
+
     // Map the corners to the screen
     Point corners[8];
     for (int i=0;i<8;i++) {
@@ -496,14 +516,43 @@ namespace FreeMat {
   
   void SurfPlot::OnDraw(GraphicsContext &gc) {
     float m[4][4];
-    double frm[2][4];
+    double frm[4][4];
     int i, j;
 
     gc.SetBackGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(0, 0, m_width, m_height));
-    build_rotmatrix(m, quat);
+
+    double cosaz, sinaz;
+    double cosel, sinel;
+    cosaz = cos(azim*M_PI/180.0);
+    sinaz = sin(azim*M_PI/180.0);
+    cosel = cos(elev*M_PI/180.0);
+    sinel = sin(elev*M_PI/180.0);
+    m[0][0] = cosaz;
+    m[0][1] = sinaz;
+    m[0][2] = 0;
+    m[1][0] = -sinel*sinaz;
+    m[1][1] = sinel*cosaz;
+    m[1][2] = cosel;
+    m[2][0] = cosel*sinaz;
+    m[2][1] = -cosel*cosaz;
+    m[2][2] = sinel;
+    for (i=0;i<4;i++) {
+      m[i][3] = 0;
+      m[3][i] = 0;
+    }
+    m[3][3] = 1;
+
+    for (i=0;i<4;i++)
+      for (j=0;j<4;j++)
+	frm[i][j] = m[j][i];
+
+    for (i=0;i<4;i++)
+      for (j=0;j<4;j++)
+	m[i][j] = frm[i][j];
+    //    build_rotmatrix(m, quat);
 
     std::vector<quad3d> tquads;
     // Transform the quads
@@ -528,22 +577,6 @@ namespace FreeMat {
 
     DrawAxes(gc,m);
 
-    // Draw the box behind the data
-#if 0
-    gc.SetForeGroundColor(Color("black"));
-    if ((q1.z+q2.z) < 0) gc.DrawLine(MapPoint(q1),MapPoint(q2));
-    if ((q2.z+q3.z) < 0) gc.DrawLine(MapPoint(q2),MapPoint(q3));
-    if ((q3.z+q4.z) < 0) gc.DrawLine(MapPoint(q3),MapPoint(q4));
-    if ((q4.z+q1.z) < 0) gc.DrawLine(MapPoint(q4),MapPoint(q1));
-    if ((q4.z+q5.z) < 0) gc.DrawLine(MapPoint(q4),MapPoint(q5));
-    if ((q5.z+q6.z) < 0) gc.DrawLine(MapPoint(q5),MapPoint(q6));
-    if ((q6.z+q7.z) < 0) gc.DrawLine(MapPoint(q6),MapPoint(q7));
-    if ((q7.z+q8.z) < 0) gc.DrawLine(MapPoint(q7),MapPoint(q8));
-    if ((q8.z+q5.z) < 0) gc.DrawLine(MapPoint(q8),MapPoint(q5));
-    if ((q8.z+q1.z) < 0) gc.DrawLine(MapPoint(q8),MapPoint(q1));
-    if ((q2.z+q7.z) < 0) gc.DrawLine(MapPoint(q2),MapPoint(q7));
-    if ((q6.z+q3.z) < 0) gc.DrawLine(MapPoint(q6),MapPoint(q3));
-#endif
 
     // Draw them to the screen...
     for (i=0;i<tquads.size();i++) {

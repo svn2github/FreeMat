@@ -61,7 +61,11 @@ namespace FreeMat {
 	expectString = s;
   }
 
-  int yyerror(char *s) {
+  void yyerror(char *t) {
+    t = NULL;
+  }
+
+  int yyreport(char *xStr) {
     char *tokdesc;
     char *tokbuffer = "unprintable";
     char buffer[256];
@@ -75,12 +79,12 @@ namespace FreeMat {
         sprintf(buffer,"Current token is '%s'",yytext);
 	tokdesc = buffer;
     }	
-    if (expectString)
+    if (xStr)
       if (!interactiveMode)
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  %s",
-	expectString,lineNumber+addone,filename,tokdesc);
+	xStr,lineNumber+addone,filename,tokdesc);
       else
-        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  %s",expectString, tokdesc);
+        snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  %s",xStr, tokdesc);
     else
       if (!interactiveMode)
         snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s.  %s",
@@ -90,10 +94,14 @@ namespace FreeMat {
     throw Exception(msgBuffer);
     return 0;
   }
+
+  void yyxpt(char *t) {
+   yyreport(t);
+  }
+
 }
 
 using namespace FreeMat;
-#define yyerror yyerror
 
 %}
 
@@ -130,28 +138,12 @@ program:
 ;
 
 functionDef:
-   FUNCTION  returnDeclaration IDENT REFLPAREN argumentList REFRPAREN {yyexpect("list of statements");}
-   statementList {
+   FUNCTION  returnDeclaration IDENT REFLPAREN argumentList REFRPAREN statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
      r->returnVals = $2->toStringList();
      r->name = $3->text;
      r->arguments = $5->toStringList();
-     r->code = $8;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
-   } |
-   FUNCTION  IDENT REFLPAREN argumentList REFRPAREN {yyexpect("list of statements");} statementList {
-     MFunctionDef *r;
-     r = new MFunctionDef();
-     r->name = $2->text;
-     r->arguments = $4->toStringList();
      r->code = $7;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
@@ -162,12 +154,12 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  returnDeclaration IDENT {yyexpect("list of statements");} statementList {
+   FUNCTION  IDENT REFLPAREN argumentList REFRPAREN statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->returnVals = $2->toStringList();
-     r->name = $3->text;
-     r->code = $5;
+     r->name = $2->text;
+     r->arguments = $4->toStringList();
+     r->code = $6;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -177,7 +169,51 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  IDENT {yyexpect("list of statements");} statementList {
+   FUNCTION  returnDeclaration IDENT statementList {
+     MFunctionDef *r;
+     r = new MFunctionDef();
+     r->returnVals = $2->toStringList();
+     r->name = $3->text;
+     r->code = $4;
+     r->nextFunction = NULL;
+     if (mainMDef == NULL)
+	mainMDef = r;
+     else {
+	r->localFunction = true;
+        r->nextFunction = mainMDef->nextFunction;
+	mainMDef->nextFunction = r;
+     }
+   } |
+   FUNCTION  IDENT statementList {
+     MFunctionDef *r;
+     r = new MFunctionDef();
+     r->name = $2->text;
+     r->code = $3;
+     r->nextFunction = NULL;
+     if (mainMDef == NULL)
+	mainMDef = r;
+     else {
+	r->localFunction = true;
+        r->nextFunction = mainMDef->nextFunction;
+	mainMDef->nextFunction = r;
+     }
+   } |
+   FUNCTION  returnDeclaration IDENT REFLPAREN REFRPAREN statementList {
+     MFunctionDef *r;
+     r = new MFunctionDef();
+     r->returnVals = $2->toStringList();
+     r->name = $3->text;
+     r->code = $6;
+     r->nextFunction = NULL;
+     if (mainMDef == NULL)
+	mainMDef = r;
+     else {
+	r->localFunction = true;
+        r->nextFunction = mainMDef->nextFunction;
+	mainMDef->nextFunction = r;
+     }
+   } |
+   FUNCTION  IDENT REFLPAREN REFRPAREN statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
      r->name = $2->text;
@@ -191,36 +227,15 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  returnDeclaration IDENT REFLPAREN REFRPAREN {yyexpect("list of statements");} statementList {
-     MFunctionDef *r;
-     r = new MFunctionDef();
-     r->returnVals = $2->toStringList();
-     r->name = $3->text;
-     r->code = $7;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
-   } |
-   FUNCTION  IDENT REFLPAREN REFRPAREN {yyexpect("list of statements");} statementList {
-     MFunctionDef *r;
-     r = new MFunctionDef();
-     r->name = $2->text;
-     r->code = $5;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
-   } 
-   ;
+   FUNCTION  error {yyxpt("function name or return declaration");} |
+   FUNCTION  IDENT error {yyxpt("argument list or statement list");} |
+   FUNCTION  IDENT REFLPAREN  error {yyxpt("(possibly empty) argument list");}  |
+   FUNCTION  IDENT REFLPAREN argumentList REFRPAREN error {yyxpt("statement list");} |
+   FUNCTION  returnDeclaration  error {yyxpt("function name");} |
+   FUNCTION  returnDeclaration IDENT error {yyxpt("argument list or statement list");} |
+   FUNCTION  returnDeclaration IDENT REFLPAREN  error {yyxpt("(possibly empty) argument list");} |
+   FUNCTION  returnDeclaration IDENT REFLPAREN argumentList REFRPAREN error {yyxpt("statement list");}
+  ;
 
 functionDefList:
   functionDef |
@@ -230,7 +245,13 @@ functionDefList:
 returnDeclaration:
   VARARGOUT '=' {$$ = $1;} |
   IDENT '=' {$$ = $1;} | 
-  '[' argumentList ']' '=' {$$ = $2;}
+  '[' argumentList ']' '=' {$$ = $2;} |
+  error {yyxpt("either 'varargout', a single returned variable, or a list of return variables in return declaration");} |
+  VARARGOUT error {yyxpt("an '=' symbol after 'varargout' in return declaration");} |
+  IDENT error {yyxpt("an '=' symbol after identifier in return declaration");} |
+  '[' error {yyxpt("a valid list of return arguments in return declaration");} | 
+  '[' argumentList error {yyxpt("matching ']' in return declaration");} |
+  '[' argumentList ']' error {yyxpt("an '=' symbol after return declaration");}
   ;
 
 argumentList:
@@ -245,7 +266,8 @@ argument:
 	b[0] = '&';
 	strcpy(b+1,$2->text);
 	$$->text = b;
-  }
+  } 
+  error {yyxpt("either an identifier or an ampersand '&' (indicating pass by reference) followed by an identifier in argument list");}
   ;
   
 
@@ -281,7 +303,7 @@ statement:
 	      $$->down->down = $1;
 	    } else
 	      $$->down = $1;
-	 }
+	 } 
 	 ;
 
 statementType:
@@ -301,7 +323,8 @@ statementType:
 	 | globalStatement
 	 | persistentStatement
 	 | specialSyntaxStatement
-	 | QUIT | RETALL
+	 | QUIT | RETALL |
+	error {yyxpt("recognizable statement type (assignment, expression, function call, etc...)");}
          ;
 
 specialSyntaxStatement:
@@ -314,18 +337,19 @@ stringList:
 	;
 
 persistentStatement:
-	PERSISTENT {yyexpect("list of identifiers (to be tagged as persistent)");}
-	identList {$$ = $1; $$->addChild($3); }
+	PERSISTENT identList {$$ = $1; $$->addChild($2); } |
+	PERSISTENT error {yyxpt("list of variables to be tagged as persistent");}
  	;
 
 globalStatement:
-	GLOBAL {yyexpect("list of identifiers (to be tagged as global)");}
-	identList {$$ = $1; $$->addChild($3);}
+	GLOBAL identList {$$ = $1; $$->addChild($2);} |
+	GLOBAL error {yyxpt("list of variables to be tagged as global");}
 	;
 
 identList:
 	IDENT | 
-	identList IDENT {$$ = $1; $$->addChild($2);}
+	identList IDENT {$$ = $1; $$->addChild($2);} |
+	identList error {yyxpt("list of valid identifiers");}
 	;
 
 returnStatement:
@@ -614,11 +638,7 @@ namespace FreeMat {
     interactiveMode = true;
     yyexpect("a valid list of statements");
     setLexBuffer(txt);
-    try {
-      yyparse();
-    } catch (Exception& e) {
-      yyerror(e.getMessageCopy());
-    }
+    yyparse();
     return parseState();
   }
   
@@ -628,11 +648,7 @@ namespace FreeMat {
     filename = fname;
     setLexFile(fp);
     yyexpect("a valid function definition or script");
-    try {
-      yyparse();
-    } catch (Exception& e) {
-      yyerror(e.getMessageCopy());
-    }
+    yyparse();
     return parseState();
   }
   

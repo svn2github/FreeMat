@@ -1918,11 +1918,9 @@ namespace FreeMat {
     while ((s != NULL) && (m.size() > 0)) {
       Array c(assignExpression(s->down,m));
       context->insertVariable(s->down->text,c);
-//       LeftHandSide r(lhsExpression(s->down));
-//       c = r.assign(m);
-//       context->insertVariable(s->down->text,c);
       if (printIt) {
-	std::cout << s->down->text << " = \n";
+	io->outputMessage(s->down->text);
+	io->outputMessage(" = \n");
 	c.printMe(printLimit,io->getTerminalWidth());
       }
       s = s->right;

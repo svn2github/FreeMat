@@ -38,9 +38,9 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/configure \
-	$(top_srcdir)/doc/Doxyfile.in COPYING INSTALL compile \
-	config.guess config.sub depcomp install-sh ltcf-c.sh ltconfig \
-	ltmain.sh missing mkinstalldirs ylwrap
+	$(top_srcdir)/doc/Doxyfile.in COPYING INSTALL config.guess \
+	config.sub depcomp install-sh ltcf-c.sh ltconfig ltmain.sh \
+	missing mkinstalldirs ylwrap
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \

@@ -118,11 +118,17 @@ extern "C" {
   void sgeqrf_(int *M, int *N, float *A, int *LDA, float *TAU, float *WORK,
 	       int *LWORK, int *INFO);
 
+  void sgeqp3_(int *M, int *N, float *A, int *LDA, int *JPVT, 
+	       float *TAU, float *WORK, int *LWORK, int *INFO);
+
   void sorgqr_(int *M, int *N, int *K, float *A, int *LDA, 
 	       float *TAU, float *WORK, int *LWORK, int *INFO);
 
   void dgeqrf_(int *M, int *N, double *A, int *LDA, double *TAU, double *WORK,
 	       int *LWORK, int *INFO);
+
+  void dgeqp3_(int *M, int *N, double *A, int *LDA, int *JPVT,
+	       double *TAU, double *WORK, int *LWORK, int *INFO);
 
   void dorgqr_(int *M, int *N, int *K, double *A, int *LDA, 
 	       double *TAU, double *WORK, int *LWORK, int *INFO);
@@ -130,11 +136,17 @@ extern "C" {
   void cgeqrf_(int *M, int *N, float *A, int *LDA, float *TAU, float *WORK,
 	       int *LWORK, int *INFO);
 
+  void cgeqp3_(int *M, int *N, float *A, int *LDA, int *JPVT,
+	       float *TAU, float *WORK, int *LWORK, float *RWORK, int *INFO);
+
   void cungqr_(int *M, int *N, int *K, float *A, int *LDA, 
 	       float *TAU, float *WORK, int *LWORK, int *INFO);
 
   void zgeqrf_(int *M, int *N, double *A, int *LDA, double *TAU, double *WORK,
 	       int *LWORK, int *INFO);
+
+  void zgeqp3_(int *M, int *N, double *A, int *LDA, int *JPVT,
+	       double *TAU, double *WORK, int *LWORK, double *RWORK, int *INFO);
 
   void zungqr_(int *M, int *N, int *K, double *A, int *LDA, 
 	       double *TAU, double *WORK, int *LWORK, int *INFO);

@@ -487,7 +487,6 @@ namespace FreeMat {
     Free(WORK);
     Free(TAU);
   }
-}
 
   void floatQRDP(const int nrows, const int ncols, float *q, float *r, int *p, float *a) {
     //      SUBROUTINE SGEQP3( M, N, A, LDA, JPVT, TAU, WORK, LWORK, INFO )
@@ -807,10 +806,10 @@ namespace FreeMat {
     LWORK = -1;
     float WORKSZE[2];
     int INFO;
-    cgeqr3_(&M, &N, A, &LDA, JPVT, TAU, WORKSZE, &LWORK, RWORK, &INFO);
+    cgeqp3_(&M, &N, A, &LDA, JPVT, TAU, WORKSZE, &LWORK, RWORK, &INFO);
     LWORK = (int) WORKSZE[0];
     WORK = (float*) Malloc(LWORK*sizeof(float)*2);
-    cgeqrf_(&M, &N, A, &LDA, JPVT, TAU, WORK, &LWORK, RWORK, &INFO);
+    cgeqp3_(&M, &N, A, &LDA, JPVT, TAU, WORK, &LWORK, RWORK, &INFO);
     Free(WORK);
     Free(RWORK);
     int minmn;
@@ -929,10 +928,10 @@ namespace FreeMat {
     LWORK = -1;
     double WORKSZE[2];
     int INFO;
-    zgeqr3_(&M, &N, A, &LDA, JPVT, TAU, WORKSZE, &LWORK, RWORK, &INFO);
+    zgeqp3_(&M, &N, A, &LDA, JPVT, TAU, WORKSZE, &LWORK, RWORK, &INFO);
     LWORK = (int) WORKSZE[0];
     WORK = (double*) Malloc(LWORK*sizeof(double)*2);
-    zgeqr3_(&M, &N, A, &LDA, JPVT, TAU, WORK, &LWORK, RWORK, &INFO);
+    zgeqp3_(&M, &N, A, &LDA, JPVT, TAU, WORK, &LWORK, RWORK, &INFO);
     Free(WORK);
     int minmn;
     minmn = MIN(M,N);
@@ -966,7 +965,6 @@ namespace FreeMat {
     Free(TAU);
   }
 }
-
 #ifdef STAND
 void dumpmat(double* t, int rows, int cols) {
   int i, j;

@@ -1021,9 +1021,13 @@ namespace FreeMat {
   //@>
   //!
   void WalkTree::globalStatement(ASTPtr t) {
-    while (t!=NULL) {
+    if (t) {
       context->addGlobalVariable(t->text);
       t = t->down;
+      while (t) {
+	context->addGlobalVariable(t->text);
+	t = t->right;
+      }
     }
   }
 
@@ -1055,9 +1059,13 @@ namespace FreeMat {
   //@>
   //!
   void WalkTree::persistentStatement(ASTPtr t) {
-    while (t!=NULL) {
+    if (t) {
       context->addPersistentVariable(t->text);
       t = t->down;
+      while (t) {
+	context->addPersistentVariable(t->text);
+	t = t->right;
+      }
     }
   }
 

@@ -52,8 +52,6 @@ namespace FreeMat {
   static int zN = 0;
 
   void complex_fft_init(int Narg) {
-    int i;
-
     if (cN == Narg) return;
     cN = Narg;
     if (cwp) free(cwp);
@@ -77,8 +75,6 @@ namespace FreeMat {
   }
 
   void dcomplex_fft_init(int Narg) {
-    int i;
-
     if (zN == Narg) return;
     zN = Narg;
     if (zwp) free(zwp);
@@ -110,7 +106,6 @@ namespace FreeMat {
     
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -172,7 +167,6 @@ namespace FreeMat {
     
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;

@@ -199,7 +199,7 @@ ShowUnInstDetails show
 Section "Program" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "..\..\Debug\FreeMat.exe"
+  File "..\..\Release\FreeMat.exe"
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\FreeMat.lnk" "$INSTDIR\FreeMat.exe"
   CreateShortCut "$DESKTOP\FreeMat.lnk" "$INSTDIR\FreeMat.exe"

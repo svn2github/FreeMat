@@ -775,7 +775,6 @@ namespace FreeMat {
     outDim[workDim] = 1;
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -1157,7 +1156,6 @@ namespace FreeMat {
     outDim[workDim] = 1;
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -1496,7 +1494,6 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -1629,7 +1626,6 @@ namespace FreeMat {
     outDim[workDim] = 1;
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -1762,7 +1758,6 @@ namespace FreeMat {
     outDim[workDim] = 1;
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -1894,7 +1889,6 @@ namespace FreeMat {
     outDim[workDim] = 1;
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;
@@ -2322,7 +2316,6 @@ namespace FreeMat {
     outDim[workDim] = 1;
     // Calculate the stride...
     int d;
-    int workcount;
     int planecount;
     int planesize;
     int linesize;

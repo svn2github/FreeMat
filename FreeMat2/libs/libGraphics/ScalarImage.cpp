@@ -79,7 +79,6 @@ namespace FreeMat {
   void ScalarImage::Zoom1D(double* src, double *dst,
 		       int s_stride, int d_stride,
 		       int s_count, int d_count) {
-    double s_time, d_time;
     double d_delta;
     d_delta = s_count/((double) d_count);
     for (int i=0;i<d_count;i++) {

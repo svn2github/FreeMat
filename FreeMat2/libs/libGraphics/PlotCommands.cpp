@@ -763,10 +763,6 @@ namespace FreeMat {
   //    a string, then a linestyle is extracted.  Otherwise,
   //    a default linestyle is generated.
   ArrayVector PlotFunction(int nargout,const ArrayVector& arg) {
-    int plotLength;
-    double *xvals;
-    double *yvals;
-    double *dp;
     char *linestyle;
     char *linestyle_arg;
     // Check for zero arguments

@@ -114,6 +114,7 @@ namespace FreeMat {
     charWidth = tm.tmAveCharWidth;
     charHeight = tm.tmHeight;
     scrollback = 5000;
+	nlinecount = 0;
     textbuf = (char*) calloc(MAXCOLS*scrollback,sizeof(char));
     UpdateLineCount();
     ShowWindow(hwnd, iCmdShow);
@@ -301,6 +302,7 @@ namespace FreeMat {
   }
   
   void WinTerminal::OnDraw(HDC hdc, PAINTSTRUCT ps) {
+	if (nlinecount == 0) return;
     HideCaret(hwnd);
     SelectObject(hdc,hfnt);
     si.cbSize = sizeof(si);

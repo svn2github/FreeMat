@@ -146,7 +146,7 @@ namespace FreeMat {
     for (i=0;i<tCount;i++)
       if (tickLocations[i] != 0.0) {
 	if (fabs(tickLocations[i]) > 1e-15)
-	  exponentialForm |= fabs(log10(fabs(tickLocations[i]))) >= 4.0;
+	  exponentialForm |= (fabs(log10(fabs(tickLocations[i]))) >= 4.0);
       }
     for (i=0;i<tCount;i++) {
       if (!isLogarithmic)

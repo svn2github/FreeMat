@@ -61,13 +61,7 @@ namespace FreeMat {
     virtual void outputMessage(const char* msg);
     virtual void errorMessage(const char* msg);
     virtual void warningMessage(const char* msg);
-    virtual void setMessageContext(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
-    virtual void pushMessageContext();
-    virtual void popMessageContext();
-    virtual void clearMessageContextStack();
-    virtual void clearMessageContextStackToNULL();
-    virtual std::vector<std::string> getMessageContextStack();
     virtual void ExecuteLine(const char* line);
     virtual void RegisterInterrupt();
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 

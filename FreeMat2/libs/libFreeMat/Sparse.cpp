@@ -12,6 +12,15 @@ extern "C" {
     a = 3 + 5;
   }
 
+template <class T>
+void RawPrintString(T* src) {
+  int j;
+  printf("%d <",(int)src[0]);
+  for (j=0;j<(int)src[0];j++) {
+    std::cout << " " << src[j+1];
+  }
+  std::cout << ">\r\n";
+}
 
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
@@ -219,6 +228,10 @@ void RLEDecoder<T>::update() {
   while ((m < len) && (data[n] == 0)) {
     m += (int) data[n+1];
     n += 2;
+    if ((m < len) && (n>data[0])) {
+      RawPrintString<T>((T*)data);
+      throw FreeMat::Exception("Invalid data string!\n");
+    }
   }
 }
 
@@ -439,15 +452,6 @@ void RLEDecoderComplex<T>::advance() {
 namespace FreeMat {
 
   template <class T>
-  void RawPrintString(T* src) {
-    int j;
-    printf("%d <",(int)src[0]);
-    for (j=0;j<(int)src[0];j++) {
-      std::cout << " " << src[j+1];
-    }
-    std::cout << "\r\n";
-  }
-  template <class T>
   void RawPrint(T** src, int rows, int cols) {
     int i, j;
     for (i=0;i<cols;i++) {
@@ -500,7 +504,6 @@ namespace FreeMat {
   template <class T>
   T* CompressRealVector(T* buffer, const T* src, int count) {
     RLEEncoder<T> A(buffer,count);
-    tstop();
     for (int i=0;i<count;i++)
       A.push(src[i]);
     A.end();
@@ -901,17 +904,44 @@ namespace FreeMat {
   
 
   template <class T, class S>
-  S** TypeConvertSparseTT(T** src, int rows, int cols) {
+  S** TypeConvertSparseRealReal(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    int i, j;
-    for (i=0;i<cols;i++) {
-      int blen;
-      blen = (int) (src[i][0]+1);
-      dp[i] = new S[blen];
-      for (j=0;j<blen;j++)
-	dp[i][j] = (S) src[i][j];
+    S* buffer = new S[rows*2];
+    for (int p=0;p<cols;p++) {
+      RLEEncoder<S> B(buffer,rows);
+      RLEDecoder<T> A(src[p],rows);
+      A.update(); 
+      while (A.more()) {
+	B.set(A.row());
+	B.push((S) A.value());
+	A.advance();
+      }
+      B.end();
+      dp[p] = B.copyout();
     }
+    delete[] buffer;
+    return dp;
+  }
+
+  template <class T, class S>
+  S** TypeConvertSparseComplexComplex(T** src, int rows, int cols) {
+    S** dp;
+    dp = new S*[cols];
+    S* buffer = new S[rows*4];
+    for (int p=0;p<cols;p++) {
+      RLEEncoderComplex<S> B(buffer,rows);
+      RLEDecoderComplex<T> A(src[p],rows);
+      A.update(); 
+      while (A.more()) {
+	B.set(A.row());
+	B.push((S) A.value_real(),(S) A.value_imag());
+	A.advance();
+      }
+      B.end();
+      dp[p] = B.copyout();
+    }
+    delete[] buffer;
     return dp;
   }
 
@@ -1424,9 +1454,9 @@ namespace FreeMat {
     if (dclass == FM_INT32) {
       switch(oclass) {
       case FM_FLOAT:
-	return TypeConvertSparseTT<int32,float>((int32**)cp,rows,cols);
+	return TypeConvertSparseRealReal<int32,float>((int32**)cp,rows,cols);
       case FM_DOUBLE:
-	return TypeConvertSparseTT<int32,double>((int32**)cp,rows,cols);
+	return TypeConvertSparseRealReal<int32,double>((int32**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseRealComplex<int32,float>((int32**)cp,rows,cols);
       case FM_DCOMPLEX:
@@ -1435,9 +1465,9 @@ namespace FreeMat {
     } else if (dclass == FM_FLOAT) {
       switch(oclass) {
       case FM_INT32:
-	return TypeConvertSparseTT<float,int32>((float**)cp,rows,cols);
+	return TypeConvertSparseRealReal<float,int32>((float**)cp,rows,cols);
       case FM_DOUBLE:
-	return TypeConvertSparseTT<float,double>((float**)cp,rows,cols);
+	return TypeConvertSparseRealReal<float,double>((float**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseRealComplex<float,float>((float**)cp,rows,cols);
       case FM_DCOMPLEX:
@@ -1446,9 +1476,9 @@ namespace FreeMat {
     } else if (dclass == FM_DOUBLE) {
       switch(oclass) {
       case FM_INT32:
-	return TypeConvertSparseTT<double,int32>((double**)cp,rows,cols);
+	return TypeConvertSparseRealReal<double,int32>((double**)cp,rows,cols);
       case FM_FLOAT:
-	return TypeConvertSparseTT<double,float>((double**)cp,rows,cols);
+	return TypeConvertSparseRealReal<double,float>((double**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseRealComplex<double,float>((double**)cp,rows,cols);
       case FM_DCOMPLEX:
@@ -1463,7 +1493,7 @@ namespace FreeMat {
       case FM_DOUBLE:
 	return TypeConvertSparseComplexReal<float,double>((float**)cp,rows,cols);
       case FM_DCOMPLEX:
-	return TypeConvertSparseTT<float,double>((float**)cp,rows,cols);
+	return TypeConvertSparseComplexComplex<float,double>((float**)cp,rows,cols);
       }
     } else if (dclass == FM_DCOMPLEX) {
       switch(oclass) {
@@ -1474,7 +1504,7 @@ namespace FreeMat {
       case FM_DOUBLE:
 	return TypeConvertSparseComplexReal<double,double>((double**)cp,rows,cols);
       case FM_COMPLEX:
-	return TypeConvertSparseTT<double,float>((double**)cp,rows,cols);
+	return TypeConvertSparseComplexComplex<double,float>((double**)cp,rows,cols);
       }
     } 
   }
@@ -2539,7 +2569,8 @@ namespace FreeMat {
 	dptr++;
       }
     }
-    T** dst = (T**) ConvertIJVtoRLEReal<T>(mlist,nnz,rows-delete_len,1);
+    rows -= delete_len;
+    T** dst = (T**) ConvertIJVtoRLEReal<T>(mlist,nnz,rows,1);
     delete mlist;
     delete ilist;
     return dst;
@@ -2604,7 +2635,8 @@ namespace FreeMat {
       }
     }
     int qptr = 0;
-    T** dst = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,rows-delete_len,1);
+    rows -= delete_len;
+    T** dst = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,rows,1);
     delete mlist;
     delete ilist;
     return dst;
@@ -4381,11 +4413,6 @@ namespace FreeMat {
 	memcpy( workd+ipntr[1]-1, workd+ipntr[0]-1, sizeof(double)*rows);
       else
 	break;
-    }
-
-    for (int k=0;k<ncv;k++) {
-      printf("ritz[%d] = %f + %fi\r\n",k,
-	     workl[ipntr[5]-1+k],workl[ipntr[6]-1+k]);
     }
 
     // Free the numeric component

@@ -3025,7 +3025,7 @@ namespace FreeMat {
 
   ArrayVector UniqueFunctionString(int nargout, Array& input) {
     int len(input.getLength());
-    if (!VerifyAllStrings(input.getDataPointer(),len))
+    if (!VerifyAllStrings((Array*) input.getDataPointer(),len))
       throw Exception("when 'unique' is applied to cell arrays, each cell must contain a string");
     XSEntry *buf = new XSEntry[len];
     Array *sp = (Array*) input.getDataPointer();
@@ -3037,7 +3037,7 @@ namespace FreeMat {
     sortreverse = false;
     std::sort(buf,buf+len);
     i = 1;
-    cnt = 1;
+    int cnt = 1;
     while (i < len) {
       if (!(buf[i] == buf[i-1]))
 	cnt++;
@@ -3045,45 +3045,40 @@ namespace FreeMat {
     }
     int tcnt = cnt;
     if (nargout <= 1) {
-      // FINISHME
-      T* op = (T*) Malloc(sizeof(T)*cnt*cols);
-      for (j=0;j<cols;j++)
-	op[0+j*tcnt] = sp[0].data[0+j*rows];
+      Array *op = new Array[cnt];
+      op[0] = sp[buf[0].n];
       i = 1;
       cnt = 1;
       while (i < len) {
-	if (!(sp[i] == sp[i-1])) {
-	  for (j=0;j<cols;j++)
-	    op[cnt+j*tcnt] = sp[i].data[0+j*rows];
+	if (!(buf[i] == buf[i-1])) {
+	  op[cnt] = sp[buf[i].n];
 	  cnt++;
 	}
 	i++;
       }
-      delete[] sp;
-      return singleArrayVector(Array(cls,Dimensions(cnt,cols),op));
+      delete[] buf;
+      return singleArrayVector(Array(FM_CELL_ARRAY,Dimensions(cnt,1),op));
     } else {
       uint32* np = (uint32*) Malloc(sizeof(int32)*len);
       uint32* mp = (uint32*) Malloc(sizeof(int32)*cnt);
-      T* op = (T*) Malloc(sizeof(T)*cnt*cols); 
-      for (j=0;j<cols;j++)
-	op[0+j*tcnt] = sp[0].data[0+j*rows];
+      Array *op = new Array[cnt];
+      op[0] = sp[buf[0].n];
       i = 1;
       cnt = 1;
-      np[sp[0].n] = 1;
-      mp[0] = sp[0].n + 1;
+      np[buf[0].n] = 1;
+      mp[0] = buf[0].n + 1;
       while (i < len) {
-	if (!(sp[i] == sp[i-1])) {
-	  for (j=0;j<cols;j++)
-	    op[cnt+j*tcnt] = sp[i].data[0+j*rows];
-	  mp[cnt] = sp[i].n + 1;
+	if (!(buf[i] == buf[i-1])) {
+	  op[cnt] = sp[buf[i].n];
+	  mp[cnt] = buf[i].n + 1;
 	  cnt++;
 	}
-	np[sp[i].n] = cnt;
+	np[buf[i].n] = cnt;
 	i++;
       }
       delete[] sp;
       ArrayVector retval;
-      retval.push_back(Array(cls,Dimensions(cnt,cols),op));
+      retval.push_back(Array(FM_CELL_ARRAY,Dimensions(cnt,1),op));
       retval.push_back(Array(FM_UINT32,Dimensions(cnt,1),mp));
       retval.push_back(Array(FM_UINT32,Dimensions(len,1),np));
       return retval;
@@ -3091,7 +3086,7 @@ namespace FreeMat {
   }
   
   ArrayVector UniqueFunctionAux(int nargout, Array input, bool rowmode) {
-    if (!rowmode) {
+    if ((input.getDataClass() == FM_CELL_ARRAY) || (!rowmode)) {
       Dimensions newdim(input.getLength(),1);
       input.reshape(newdim);
     }
@@ -3118,7 +3113,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return UniqueFunctionRowModeComplex<double>(nargout, input);
     case FM_CELL_ARRAY:
-      return UniqueFunctionStrings(nargout, input);
+      return UniqueFunctionString(nargout, input);
     }
     throw Exception("Unsupported type in call to unique");
     return ArrayVector();

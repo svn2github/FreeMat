@@ -488,7 +488,7 @@ namespace FreeMat {
 	float t;
 	t = psi_(sp+i);
 	if (t == 1.70e38)
-	  t = 1.0f/0.0f;
+	  t = atof("inf");
 	dp[i] = t;
       }
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
@@ -501,7 +501,7 @@ namespace FreeMat {
 	double t;
 	t = dpsi_(sp+i);
 	if (t == 1.70E38)
-	  t = 1.0/0.0;	
+	  t = atof("inf");	
 	dp[i] = t;
       }
       return singleArrayVector(Array(FM_DOUBLE,odims,dp));
@@ -560,7 +560,7 @@ namespace FreeMat {
 	float t;
 	t = gamma_(sp+i);
 	if (t == 3.4e38)
-	  t = 1.0f/0.0f;
+	  t = atof("inf");
 	dp[i] = t;
       }
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
@@ -573,7 +573,7 @@ namespace FreeMat {
 	double t;
 	t = dgamma_(sp+i);
 	if (t == 1.79E308)
-	  t = 1.0/0.0;
+	  t = atof("inf");
 	dp[i] = t;
       }
       return singleArrayVector(Array(FM_DOUBLE,odims,dp));
@@ -621,7 +621,7 @@ namespace FreeMat {
 	float t;
 	t = algama_(sp+i);
 	if (t == 3.4e38)
-	  t = 1.0f/0.0f;
+	  t = atof("inf");
 	dp[i] = t;
       }
       return singleArrayVector(Array(FM_FLOAT,odims,dp));
@@ -634,7 +634,7 @@ namespace FreeMat {
 	double t;
 	t = dlgama_(sp+i);
 	if (t == 1.79E308)
-	  t = 1.0/0.0;
+	  t = atof("inf");
 	dp[i] = t;
       }
       return singleArrayVector(Array(FM_DOUBLE,odims,dp));

@@ -178,6 +178,9 @@
 				RelativePath=".\f2c\i1.c">
 			</File>
 			<File
+				RelativePath=".\Interp1D.cpp">
+			</File>
+			<File
 				RelativePath=".\f2c\j0y0.c">
 			</File>
 			<File

@@ -73,6 +73,10 @@ namespace FreeMat {
      * The last error that occured.
      */
     char *lasterr;
+    /**
+     * autostop storage flag
+     */
+    bool autostop;
   public:
     /**
      * Construct a WalkTree object with the given context to operate
@@ -83,6 +87,12 @@ namespace FreeMat {
      * Destruct the WalkTree object.
      */
     ~WalkTree();
+    /**
+     * Set the autostop flag - this flag determines what happens when
+     * an exception occurs
+     */
+    bool AutoStop();
+    void AutoStop(bool a);
     /**
      * Set the print limit (number of element printed prior to truncation).
      */

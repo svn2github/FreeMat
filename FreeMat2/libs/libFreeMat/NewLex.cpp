@@ -65,8 +65,8 @@ inline void pushBracket(char t) {
 }
 
 inline void popBracket(char t) {
-	if (bracketStackSize <= 0)
-		LexerException("underflow!");
+  if (bracketStackSize <= 0)
+    LexerException("mismatched parenthesis");
   if (bracketStack[--bracketStackSize] != t)
     LexerException("mismatched parenthesis");
 }

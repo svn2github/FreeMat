@@ -25,7 +25,7 @@ CFG=libffi - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "libffi - Win32 Release"
@@ -47,7 +47,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 
@@ -70,7 +70,7 @@ LIB32=xilink6.exe -lib
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 
@@ -109,24 +109,7 @@ SOURCE=.\msvc_build\types.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\msvc_build\win32.S
-
-!IF  "$(CFG)" == "libffi - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "libffi - Win32 Debug"
-
-# Begin Custom Build
-OutDir=.\Debug
-InputPath=.\msvc_build\win32.S
-InputName=win32
-
-"$(OutDir)\$(InputName).OBJ" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	as.exe -o $(OutDir)\$(InputName).OBJ  $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
+SOURCE=.\msvc_build\win32c.c
 # End Source File
 # End Group
 # Begin Group "Header Files"

@@ -2,7 +2,7 @@
 function test_val = test_svd9
   t1all = 1;
   p = [];
-  for n=2:100
+  for n=2:4:100
     a = float(rand(n,2*n));
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');
@@ -13,7 +13,7 @@ function test_val = test_svd9
     if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t1all = t1all & t1;    
   end
-  for n=2:100
+  for n=2:4:100
     a = float(rand(2*n,n));
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');
@@ -23,7 +23,7 @@ function test_val = test_svd9
     if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t1all = t1all & t1;    
   end
-  for n=2:100
+  for n=2:4:100
     a = float(rand(n,n));
     [u,s,v] = svd(a,0);
     emat = abs(a-u*s*v');

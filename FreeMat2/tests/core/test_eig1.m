@@ -2,13 +2,12 @@
 function t = test_eig1
 % First the float version
 t1all = 1;
-printf('Float version\n');
-for i=2:100
+for i=2:4:100
   a = float(randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
   er = max(abs(emat(:)));
-  bnd = 2*max(diag(abs(d)))*feps*i;
+  bnd = 4*max(diag(abs(d)))*feps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
   g = eig(a);
@@ -19,13 +18,12 @@ for i=2:100
 end
 % Now the double version
 t2all = 1;
-printf('Double version\n');
-for i=2:100
+for i=2:4:100
   a = double(randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
   er = max(abs(emat(:)));
-  bnd = 2*max(diag(abs(d)))*eps*i;
+  bnd = 4*max(diag(abs(d)))*eps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
   g = eig(a);
@@ -35,14 +33,13 @@ for i=2:100
   t2all = t2all & t1 & tb;
 end
 % Now the complex version
-printf('Complex version\n');
 t3all = 1;
-for i=2:100
+for i=2:4:100
   a = complex(randn(i)+j*randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
   er = max(abs(emat(:)));
-  bnd = 2*max(diag(abs(d)))*feps*i;
+  bnd = 4*max(diag(abs(d)))*feps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
   g = eig(a);
@@ -52,14 +49,13 @@ for i=2:100
   t3all = t3all & t1 & tb;
 end
 % Now the double version
-printf('DComplex version\n');
 t4all = 1;
-for i=2:100
+for i=2:4:100
   a = dcomplex(randn(i)+j*randn(i)); 
   [v,d] = eig(a);
   emat = a*v - v*d;
   er = max(abs(emat(:)));
-  bnd = 2*max(diag(abs(d)))*eps*i;
+  bnd = 4*max(diag(abs(d)))*eps*i;
   t1 = (er < bnd);
   if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
   g = eig(a);

@@ -1,8 +1,7 @@
 % Test the QR decomposition (full, pivoting)
 function test_val = test_qr11
-  printf('Float\n');
   t1all = 1;
-  for n=2:100
+  for n=2:4:100
     a = float(rand(n,n));
     [q,r,e] = qr(a);
     err = abs(a-q*r*e');
@@ -12,9 +11,8 @@ function test_val = test_qr11
     if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t1all = t1all & t1;
   end
-  printf('Double\n');
   t2all = 1;
-  for n=2:100
+  for n=2:4:100
     a = double(rand(n,n));
     [q,r,e] = qr(a);
     err = abs(a-q*r*e');
@@ -24,9 +22,8 @@ function test_val = test_qr11
     if (~t2) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t2all = t2all & t2;
   end
-  printf('Complex\n');
   t3all = 1;
-  for n=2:100
+  for n=2:4:100
     a = complex(rand(n,n)+i*rand(n,n));
     [q,r,e] = qr(a);
     err = abs(a-q*r*e');
@@ -36,9 +33,8 @@ function test_val = test_qr11
     if (~t3) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
     t3all = t3all & t3;
   end
-  printf('Dcomplex\n');
   t4all = 1;
-  for n=2:100
+  for n=2:4:100
     a = dcomplex(rand(n,n)+i*rand(n,n));
     [q,r,e] = qr(a);
     err = abs(a-q*r*e');

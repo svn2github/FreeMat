@@ -2863,8 +2863,24 @@ namespace FreeMat {
   //@@Section VARIABLES
   //@@Usage
   //Starting with version 1.11, FreeMat now supports @|function handles|,
-  //or @|function pointers|.  
-
+  //or @|function pointers|.  A @|function handle| is an alias for a function
+  //or script that is stored in a variable.  First, the way to assign
+  //a function handle is to use the notation
+  //@[
+  //    handle = @func
+  //@]
+  //where @|func| is the name to point to.  The function @|func| must exist
+  //at the time we make the call.  It can be a local function (i.e., a
+  //subfunction).  To use the @|handle|, we can either pass it to @|feval|
+  //via 
+  //@[
+  //   [x,y] = feval(handle,arg1,arg2).
+  //@]
+  //Alternately, you can the function directly using the notation
+  //@[
+  //   [x,y] = handle(arg1,arg2)
+  //@]
+  //!
   ArrayVector WalkTree::FunctionPointerDispatch(Array r, ASTPtr args, 
 						int narg_out) {
     const FunctionDef** dp;

@@ -85,10 +85,6 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\BitmapFont.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\BitmapPrinterGC.cpp
 # End Source File
 # Begin Source File
@@ -130,10 +126,6 @@ SOURCE=.\Reducer.cpp
 # Begin Source File
 
 SOURCE=.\RGBImage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\RGBImageGC.cpp
 # End Source File
 # Begin Source File
 

@@ -2242,7 +2242,7 @@ namespace FreeMat {
   //functions.  It indicates how many arguments were passed
   //to the function when it was called.  FreeMat allows for
   //fewer arguments to be passed to a function than were declared,
-  //and @|nargin|, along with @|exist| can be used to determine
+  //and @|nargin|, along with @|isset| can be used to determine
   //exactly what subset of the arguments were defined.
   //There is no syntax for the use of @|nargin| - it is 
   //automatically defined inside the function body.

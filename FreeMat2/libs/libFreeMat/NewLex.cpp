@@ -157,24 +157,10 @@ void lexString() {
 
   strptr = stringval;
   discardChar();
-  while ((currentChar() != '\'') && !testNewline()) {
-    if (currentChar() == '\\') {
+  while ((currentChar() != '\'') || ((currentChar() == '\'') && (datap[1] == '\'')) && !testNewline()) {
+    if ((currentChar() == '\'') && (datap[1] == '\''))
       discardChar();
-      if (currentChar() == 'n')
-	*strptr++ = 10;
-      else if (currentChar() == 't')
-	*strptr++ = 9;
-      else if (currentChar() == 'r')
-	*strptr++ = 13;
-      else if (currentChar() == 'b')
-	*strptr++ = 8;
-      else if (currentChar() == 'f')
-	*strptr++ = 12;
-      else {
-	*strptr++ = currentChar();
-      } 
-    } else 
-      *strptr++ = currentChar();
+    *strptr++ = currentChar();
     discardChar();
   }
   if (testNewline()) LexerException("unterminated string");

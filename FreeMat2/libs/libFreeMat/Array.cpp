@@ -1655,6 +1655,85 @@ break;
     return Array(FM_DOUBLE,dim,NULL);
   }
 
+  //!
+  //@Module STRING String Arrays
+  //@@Section VARIABLES
+  //@@Usage
+  //FreeMat supports a @|string| array type that operates very
+  //much as you would expect.  Strings are stored internally as
+  //8-bit values, and are otherwise similar to numerical arrays in
+  //all respects.  In some respects, this makes strings arrays
+  //less useful than one might imagine.  For example, numerical
+  //arrays in 2-D are rectangular.  Thus, each row in the array
+  //must have the same number of columns.  This requirement is
+  //natural for numerical arrays and matrices, but consider a
+  //string array.  If one wants to store multiple strings in
+  //a single data structure, they must all be the
+  //same length (unlikely).  The alternative is to use a cell
+  //array of strings, in which case, each string can be of
+  //arbitrary length.  Most of the functions that support 
+  //strings in a set-theoretic way, like @|unique| and @|sort|
+  //operate on cell-arrays of strings instead of string arrays.
+  //Just to make the example concrete, here is the old way of
+  //storing several strings in an array:
+  //@<
+  //% This is an error
+  //A = ['hello';'bye']
+  //% This is OK, but awkward
+  //A = ['hello';'bye  ']
+  //% This is the right way to do it
+  //A = {'hello','bye'}
+  //@>
+  //
+  //One important (tricky) point in FreeMat is the treatment
+  //of escape sequences.  Recall that in @|C| programming, an
+  //escape sequence is a special character that causes the output
+  //to do something unusual.  FreeMat supports the following
+  //escape sequences:
+  //\begin{itemize}
+  //\item @|\t| - causes a tab to be output
+  //\item @|\r| - causes a carriage return (return to the beginning
+  //     of the line of output, and overwrite the text)
+  //\item @|\n| - causes a linefeed (advance to next line)
+  //\end{itemize}
+  //FreeMat follows the @|Unix/Linux| convention, that a @|\n|
+  //causes both a carriage return and a linefeed.  
+  //To put a single quote into a string use the MATLAB convention
+  //of two single quotes, not the @|\'| sequence.  Here is an
+  //example of a string containing some escape sequences:
+  //@<
+  //a = 'I can''t use contractions\n\tOr can I?\n'
+  //@>
+  //Now, note that the string itself still contains the @|\n|
+  //characters.  With the exception of the @|\'|, the escape 
+  //sequences do not affect the output unless the strings are 
+  //put through @|printf| or @|fprintf|.  For example, if we 
+  //@|printf| the variable @|a|, we see the @|\n| and @|\t| 
+  //take effect:
+  //@<
+  //printf(a);
+  //@>
+  //The final complicating factor is on @|MSWin| systems.  There,
+  //filenames regularly contain @|\| characters.  Thus, if you
+  //try to print a string containing the filename 
+  //@|C:\redball\timewarp\newton.txt|, the output will be mangled
+  //because FreeMat thinks the @|\r|, @|\t| and @|\n| are escape
+  //sequences.  You have two options.  You can use @|disp| to show
+  //the filename (@|disp| does not do escape translation to be 
+  //compatible with MATLAB).  The second option is to escape the
+  //backslashes in the string, so that the string you send to 
+  //@|printf| contains @|C:\\redball\\timewarp\\newton.txt|.
+  //@<
+  //% disp displays it ok
+  //a = 'C:\redball\timewarp\newton.txt'
+  //% printf makes a mess
+  //printf(a)
+  //% If we double up the slashes it works fine
+  //a = 'C:\\redball\\timewarp\\newton.txt'
+  //printf(a)
+  //@>
+  //!
+
   Array Array::stringConstructor(std::string astr) {
     int length;
     char *cp;

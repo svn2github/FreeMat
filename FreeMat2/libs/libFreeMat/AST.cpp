@@ -27,46 +27,6 @@
 #include <stdio.h>
 
 namespace FreeMat {
-  bool isEscape(char *dp) {
-    return ((dp[0] == '\\') &&
-	    ((dp[1] == '\'') ||
-	     (dp[1] == 'n') ||
-	     (dp[1] == 't') ||
-	     (dp[1] == 'r') ||
-	     (dp[1] == '\\')));
-  }
-  void convertEscapeSequences(char *dst, char* src) {
-    char *sp;
-    char *dp;
-    sp = src;
-    dp = dst;
-    while (*sp) {
-      // Is this an escape sequence?
-      if (isEscape(sp)) {
-	switch (sp[1]) {
-	case '\\':
-	  *(dp++) = '\\';
-	  break;
-	case 'n':
-	  *(dp++) = '\n';
-	  break;
-	case 't':
-	  *(dp++) = '\t';
-	  break;
-	case 'r':
-	  *(dp++) = '\r';
-	  break;
-	case '\'':
-	  *(dp++) = '\'';
-	  break;
-	}
-	sp += 2;
-      } else
-	*(dp++) = *(sp++);
-    }
-    // Null terminate
-    *dp = 0;
-  }
 
   AST::AST(void) {
     type = non_terminal;
@@ -80,7 +40,7 @@ namespace FreeMat {
   AST::AST(NODE_TYPE ntype, char* name, int context) {
     type = ntype;
     text = (char*) malloc(strlen(name)+1);
-    convertEscapeSequences(text,name);
+    strcpy(text,name);
     tokenNumber = 0;
     down = NULL;
     right = NULL;

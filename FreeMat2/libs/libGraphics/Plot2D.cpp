@@ -68,7 +68,7 @@ namespace FreeMat {
       PutSymbol(gc,xc+9,centerline,linestyle[1],3);
       gc.SetForeGroundColor(Color("black"));
       gc.DrawTextString(label,Point2D(xc+22,centerline+strut/2-1));
-      Point2D tmp(gc.GetTextExtent(label));
+      Point2D tmp(gc.GetTextExtent(std::string(label)));
       maxwidth = (maxwidth < tmp.x) ? tmp.x : maxwidth;
       centerline += strut*1.2;
     }

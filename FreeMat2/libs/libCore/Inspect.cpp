@@ -543,7 +543,51 @@ namespace FreeMat {
   }
 
   //!
-  //@Module EXIST Text for Existence
+  //@Module ISSET Test If Variable Set
+  //@@Section INSPECTION
+  //@@Usage
+  //Tests for the existence and non-emptiness of a variable.
+  //the general syntax for its use is
+  //@[
+  //   y = isset('name')
+  //@]
+  //where @|name| is the name of the variable to test.  This
+  //is functionally equivalent to 
+  //@[
+  //   y = exist('name','var') & ~isempty(name)
+  //@]
+  //It returns a @|logical| 1 if the variable is defined 
+  //in the current workspace, and is not empty, and returns
+  //a 0 otherwise.
+  //@@Example
+  //Some simple examples of using @|isset|
+  //@<
+  //who
+  //isset('a')
+  //a = [];
+  //isset('a')
+  //a = 2;
+  //isset('a')
+  //@>
+  //!
+  ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 1)
+      throw Exception("isset function takes at least one argument - the name of the variable to check for");
+    Array tmp(arg[0]);
+    char *fname;
+    fname = tmp.getContentsAsCString();
+    bool isDefed;
+    Array d;
+    isDefed = eval->getContext()->lookupVariable(fname, d);
+    if (isDefed && !d.isEmpty())
+      return singleArrayVector(Array::logicalConstructor(1));
+    else
+      return singleArrayVector(Array::logicalConstructor(0));
+  }
+    
+  
+  //!
+  //@Module EXIST Test for Existence
   //@@Section INSPECTION
   //@@Usage
   //Tests for the existence of a variable, function, directory or
@@ -575,6 +619,9 @@ namespace FreeMat {
   //\item 5 - if @|item| is a built-in FreeMat function
   //\item 7 - if @|item| is a directory
   //\end{itemize}
+  //Note: previous to version @|1.10|, @|exist| used a different notion
+  //of existence for variables: a variable was said to exist if it 
+  //was defined and non-empty.  This test is now performed by @|isset|.
   //@@Example
   //Some examples of the @|exist| function.  Note that generally @|exist|
   //is used in functions to test for keywords.  For example,
@@ -598,7 +645,7 @@ namespace FreeMat {
   //!
   ArrayVector ExistFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() < 1)
-      throw Exception("exist function takes one argument - the name of the variable to check for");
+      throw Exception("exist function takes at least one argument - the name of the object to check for");
     Array tmp(arg[0]);
     char *fname;
     fname = tmp.getContentsAsCString();

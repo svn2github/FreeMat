@@ -763,36 +763,53 @@ namespace FreeMat {
       return 0;
   }
     
-  //!
-  //@Module SPRINTF Formated String Output Function (C-Style)
-  //@@Section IO
-  //@@Usage
-  //Prints values to a string.  The general syntax for its use is
-  //@[
-  //  y = sprintf(format,a1,a2,...).
-  //@]
-  //Here @|format| is the format string, which is a string that
-  //controls the format of the output.  The values of the variables
-  //@|a_i| are substituted into the output as required.  It is
-  //an error if there are not enough variables to satisfy the format
-  //string.  Note that this @|sprintf| command is not vectorized!  Each
-  //variable must be a scalar.  The returned value @|y| contains the
-  //string that would normally have been printed. For
-  //more details on the format string, see @|printf|.  
-  //@@Examples
-  //Here is an example of a loop that generates a sequence of files based on
-  //a template name, and stores them in a cell array.
-  //@<
-  //l = {}; for i = 1:5; s = sprintf('file_%d.dat',i); l(i) = {s}; end;
-  //l
-  //@>
-  //!
-  ArrayVector SprintfFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() == 0)
-      throw Exception("sprintf requires at least one (string) argument");
+  bool isEscape(char *dp) {
+    return ((dp[0] == '\\') &&
+	    ((dp[1] == 'n') ||
+	     (dp[1] == 't') ||
+	     (dp[1] == 'r') ||
+	     (dp[1] == '\\')));
+  }
+  
+  void convertEscapeSequences(char *dst, char* src) {
+    char *sp;
+    char *dp;
+    sp = src;
+    dp = dst;
+    while (*sp) {
+      // Is this an escape sequence?
+      if (isEscape(sp)) {
+	switch (sp[1]) {
+	case '\\':
+	  *(dp++) = '\\';
+	  break;
+	case 'n':
+	  *(dp++) = '\n';
+	  break;
+	case 't':
+	  *(dp++) = '\t';
+	  break;
+	case 'r':
+	  *(dp++) = '\r';
+	  break;
+	}
+	sp += 2;
+      } else
+	*(dp++) = *(sp++);
+    }
+    // Null terminate
+    *dp = 0;
+  }
+  
+  //Common routine used by sprintf,printf,fprintf.  They all
+  //take the same inputs, and output either to a string, the
+  //console or a file.  For output to a console or a file, 
+  //we want escape-translation on.  For output to a string, we
+  //want escape-translation off.  So this common routine prints
+  //the contents to a string, which is then processed by each 
+  //subroutine.
+  char* xprintfFunction(int nargout, const ArrayVector& arg) {
     Array format(arg[0]);
-    if (!format.isString())
-      throw Exception("sprintf format argument must be a string");
     char *frmt = format.getContentsAsCString();
     char *buff = (char*) malloc(strlen(frmt)+1);
     strcpy(buff,frmt);
@@ -875,11 +892,44 @@ namespace FreeMat {
 	}
       }
     }
+    free(buff);
+    return op;
+  }
+
+  //!
+  //@Module SPRINTF Formated String Output Function (C-Style)
+  //@@Section IO
+  //@@Usage
+  //Prints values to a string.  The general syntax for its use is
+  //@[
+  //  y = sprintf(format,a1,a2,...).
+  //@]
+  //Here @|format| is the format string, which is a string that
+  //controls the format of the output.  The values of the variables
+  //@|a_i| are substituted into the output as required.  It is
+  //an error if there are not enough variables to satisfy the format
+  //string.  Note that this @|sprintf| command is not vectorized!  Each
+  //variable must be a scalar.  The returned value @|y| contains the
+  //string that would normally have been printed. For
+  //more details on the format string, see @|printf|.  
+  //@@Examples
+  //Here is an example of a loop that generates a sequence of files based on
+  //a template name, and stores them in a cell array.
+  //@<
+  //l = {}; for i = 1:5; s = sprintf('file_%d.dat',i); l(i) = {s}; end;
+  //l
+  //@>
+  //!
+  ArrayVector SprintfFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() == 0)
+      throw Exception("sprintf requires at least one (string) argument");
+    Array format(arg[0]);
+    if (!format.isString())
+      throw Exception("sprintf format argument must be a string");
+    char *op = xprintfFunction(nargout,arg);
     Array outString(Array::stringConstructor(op));
     free(op);
-    ArrayVector retval;
-    retval.push_back(outString);
-    return retval;
+    return singleArrayVector(outString);
   }
   
   //!
@@ -972,77 +1022,12 @@ namespace FreeMat {
     Array format(arg[0]);
     if (!format.isString())
       throw Exception("printf format argument must be a string");
-    char *frmt = format.getContentsAsCString();
-    char *buff = (char*) malloc(strlen(frmt)+1);
-    strcpy(buff,frmt);
-    // Search for the start of a format subspec
-    char *dp = buff;
-    char *np;
-    char sv;
-    int nextArg = 1;
-    Interface *io;
-    io = eval->getInterface();
-    // Scan the string
-    while (*dp) {
-      np = dp;
-      while ((*dp) && (*dp != '%')) dp++;
-      // Print out the formatless segment
-      sv = *dp;
-      *dp = 0;
-      io->outputMessage(np);
-      *dp = sv;
-      char nbuff[4096];
-      // Process the format spec
-      if (*dp) {
-	np = validateFormatSpec(dp+1);
-	if (!np)
-	  throw Exception("erroneous format specification " + std::string(dp));
-	else {
-	  if (*(np-1) == '%') {
-	    io->outputMessage("%");
-	    dp+=2;
-	  } else {
-	    sv = *np;
-	    *np = 0;
-	    if (arg.size() <= nextArg)
-	      throw Exception("not enough arguments to satisfy format specification");
-	    Array nextVal(arg[nextArg++]);
-	    if (nextVal.isEmpty()) {
-	      io->outputMessage("[]");
-	    } else {
-	      switch (*(np-1)) {
-	      case 'd':
-	      case 'i':
-	      case 'o':
-	      case 'u':
-	      case 'x':
-	      case 'X':
-	      case 'c':
-		nextVal.promoteType(FM_INT32);
-		sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
-		io->outputMessage(nbuff);
-		break;
-	      case 'e':
-	      case 'E':
-	      case 'f':
-	      case 'F':
-	      case 'g':
-	      case 'G':
-	      nextVal.promoteType(FM_DOUBLE);
-	      sprintf(nbuff,dp,*((double*)nextVal.getDataPointer()));
-	      io->outputMessage(nbuff);
-	      break;
-	      case 's':
-		sprintf(nbuff,dp,nextVal.getContentsAsCString());
-		io->outputMessage(nbuff);
-	      }
-	    }
-	    *np = sv;
-	    dp = np;
-	  }
-	}
-      }
-    }
+    char *op = xprintfFunction(nargout,arg);
+    char *buff = (char*) malloc(strlen(op)+1);
+    convertEscapeSequences(buff,op);
+    eval->getInterface()->outputMessage(buff);
+    free(buff);
+    free(op);
     return ArrayVector();
   }
 
@@ -1294,69 +1279,14 @@ namespace FreeMat {
     Array format(arg[1]);
     if (!format.isString())
       throw Exception("fprintf format argument must be a string");
-    char *frmt = format.getContentsAsCString();
-    char *buff = (char*) malloc(strlen(frmt)+1);
-    strcpy(buff,frmt);
-    // Search for the start of a format subspec
-    char *dp = buff;
-    char *np;
-    char sv;
-    int nextArg = 2;
-    // Scan the string
-    while (*dp) {
-      np = dp;
-      while ((*dp) && (*dp != '%')) dp++;
-      // Print out the formatless segment
-      sv = *dp;
-      *dp = 0;
-      fprintf(fptr->fp,np);
-      *dp = sv;
-      // Process the format spec
-      if (*dp) {
-	np = validateFormatSpec(dp+1);
-	if (!np)
-	  throw Exception("erroneous format specification " + std::string(dp));
-	else {
-	  if (*(np-1) == '%') {
-	    fprintf(fptr->fp,"%%");
-	    dp+=2;
-	  } else {
-	    sv = *np;
-	    *np = 0;
-	    if (arg.size() <= nextArg)
-	      throw Exception("not enough arguments to satisfy format specification");
-	    Array nextVal(arg[nextArg++]);
-	    if (!nextVal.isEmpty()) {
-	      switch (*(np-1)) {
-	      case 'd':
-	      case 'i':
-	      case 'o':
-	      case 'u':
-	      case 'x':
-	      case 'X':
-	      case 'c':
-		nextVal.promoteType(FM_INT32);
-		fprintf(fptr->fp,dp,*((int32*)nextVal.getDataPointer()));
-		break;
-	      case 'e':
-	      case 'E':
-	      case 'f':
-	      case 'F':
-	      case 'g':
-	      case 'G':
-		nextVal.promoteType(FM_DOUBLE);
-		fprintf(fptr->fp,dp,*((double*)nextVal.getDataPointer()));
-		break;
-	      case 's':
-		fprintf(fptr->fp,dp,nextVal.getContentsAsCString());
-	      }
-	    }
-	    *np = sv;
-	    dp = np;
-	  }
-	}
-      }
-    }
+    ArrayVector argcopy(arg);
+    argcopy.erase(argcopy.begin());
+    char *op = xprintfFunction(nargout,argcopy);
+    char *buff = (char*) malloc(strlen(op)+1);
+    convertEscapeSequences(buff,op);
+    fprintf(fptr->fp,"%s",buff);
+    free(buff);
+    free(op);
     return ArrayVector();
   }
 

@@ -179,8 +179,12 @@ namespace FreeMat {
      context->addSpecialFunction("source",SourceFunction,1,0,args);
      args.clear();
      context->addSpecialFunction("who",WhoFunction,-1,0,args);
-     args.push_back("varname");
+     args.push_back("name");
+     args.push_back("type");
      context->addSpecialFunction("exist",ExistFunction,2,1,args);
+     args.clear();
+     args.push_back("name");
+     context->addSpecialFunction("isset",IsSetFunction,1,1,args);
      args.clear();
      args.push_back("fname");
      context->addSpecialFunction("which",WhichFunction,1,0,args);

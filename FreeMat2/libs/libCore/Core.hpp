@@ -105,6 +105,7 @@ namespace FreeMat {
   ArrayVector SecFunction(int, const ArrayVector& arg);  
   ArrayVector WhoFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector ExistFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector IsSetFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector ClearFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector FevalFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector FdumpFunction(int, const ArrayVector& arg, WalkTree* eval);

@@ -1,4 +1,5 @@
 #!/bin/sh
+lamboot
 mkdir mtex
 cp ../MFiles/mprint*.m mtex/.
 cp mkhsetpath.m mtex/.

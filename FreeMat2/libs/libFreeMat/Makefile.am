@@ -46,6 +46,8 @@ MatrixMultiply.hpp \
 Module.cpp \
 Module.hpp \
 ParserInterface.hpp \
+QRDecompose.hpp \
+QRDecompose.cpp \
 Reserved.cpp \
 Reserved.hpp \
 Scope.cpp \

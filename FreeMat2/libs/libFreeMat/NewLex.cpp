@@ -127,7 +127,7 @@ inline int currentChar() {
   return datap[0];
 }
 
-inline int discardChar() {
+inline void discardChar() {
   datap++;
 }
 

@@ -24,9 +24,12 @@
 #include <iostream>
 #include "Malloc.hpp"
 #include <wx/image.h>
+#include "Command.hpp"
 
 namespace FreeMat {
 
+  void PostGUIReply(Command*);
+  
 IMPLEMENT_DYNAMIC_CLASS(ScalarImage, wxFrame)
 
 BEGIN_EVENT_TABLE(ScalarImage, wxFrame)
@@ -64,23 +67,24 @@ END_EVENT_TABLE()
     if (img) delete img;
   }
 
-  Array ScalarImage::GetClick() {
+  void ScalarImage::GetClick() {
     // First, change our cursor to 
     SetCursor(*wxCROSS_CURSOR);
     // Set the click bit.
-    //     state = 1;
-    //     while (state == 1) {
-    //       m_server->Yield(true);
-    //     }
+    // state = 1;
+    //while (state == 1) {
+    //  m_server->Yield(true);
+    // }
     // First, change our cursor to 
-    SetCursor(*wxSTANDARD_CURSOR);
-    Array retval(Array::doubleVectorConstructor(3));
-    double *d_ip;
-    d_ip = (double*) retval.getReadWriteDataPointer();
-    d_ip[0] = (double) (yposClick/((double)zoomRows)*rows)+1;
-    d_ip[1] = (double) (xposClick/((double)zoomColumns)*columns)+1;
-    d_ip[2] = (double) valClick;
-    return retval;
+    // Set the click bit.
+    state = 1;
+//     Array retval(Array::doubleVectorConstructor(3));
+//     double *d_ip;
+//     d_ip = (double*) retval.getReadWriteDataPointer();
+//     d_ip[0] = (double) (yposClick/((double)zoomRows)*rows)+1;
+//     d_ip[1] = (double) (xposClick/((double)zoomColumns)*columns)+1;
+//     d_ip[2] = (double) valClick;
+//     return retval;
   }
 
   void ScalarImage::SetColormap(Array &dp) {
@@ -176,6 +180,14 @@ END_EVENT_TABLE()
 	valClick = atof("nan");
       else 
 	valClick = zoomImage[xposClick*zoomRows+yposClick];
+      Array retval(Array::doubleVectorConstructor(3));
+      double *d_ip;
+      d_ip = (double*) retval.getReadWriteDataPointer();
+      d_ip[0] = (double) (yposClick/((double)zoomRows)*rows)+1;
+      d_ip[1] = (double) (xposClick/((double)zoomColumns)*columns)+1;
+      d_ip[2] = (double) valClick;
+      PostGUIReply(new FreeMat::Command(CMD_PointAcq,retval));
+      SetCursor(*wxSTANDARD_CURSOR);
       state = 0;
     }
   }

@@ -385,10 +385,11 @@ void GraphicsServer::ProcessGraphicsServerCommands(wxCommandEvent& event) {
     }
     case CMD_Point: {
       g = GetCurrentImage();
-      Array clickVal(g->GetClick());
-      Command *cmd;
-      cmd = new Command(CMD_PointAcq, clickVal);
-      PostGUIReply(cmd);
+      g->GetClick();
+//       Array clickVal(g->GetClick());
+//       Command *cmd;
+//       cmd = new Command(CMD_PointAcq, clickVal);
+//       PostGUIReply(cmd);
       break;
     }
     case CMD_HelpShow: {

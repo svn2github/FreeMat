@@ -60,7 +60,7 @@ namespace FreeMat {
     /**
      * Pick a point in the current image
      */
-    Array GetClick();
+    void GetClick();
     void Zoom1D(double* src, double *dst,
 	   int s_stride, int d_stride,
 	   int s_count, int d_count);

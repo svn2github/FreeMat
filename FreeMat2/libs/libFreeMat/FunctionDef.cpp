@@ -639,9 +639,9 @@ namespace FreeMat {
       }
     }
 
-    ArrayVector toReturn;
-    toReturn.push_back(retArray);
-    return toReturn;
+    free(refPointers);
+    free(values);
+    return singleArrayVector(retArray);
   }
 
 #if 0

@@ -1,12 +1,12 @@
 More stuff:
 2.  Add DrawPoint to XWindow
 5.  Menu? File, Edit, Help?
-7.  Printing (Win32)
 6.  Copy/Paste?
 7.  Filename completions still not quite right on Win32...
 8.  OpenGL?
-9.  Resize of plot doesn't fill in background...  - not on XP?
+9.  Resize of plot doesn't fill in background...  - not on XP - X11?
 10. Robustify plot-style handler
+11. close image/plots
 
 General Issues:
 1. Empty plot windows are black - why? - Done

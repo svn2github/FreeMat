@@ -8,6 +8,8 @@
 
 namespace FreeMat {
   class WinTerminal : public KeyManager, public Interface {
+    int selstart_row, selstart_col;
+    int selstop_row, selstop_col;
     int caret_x, caret_y;
     int charWidth, charHeight;
     int scrollback;
@@ -43,6 +45,8 @@ namespace FreeMat {
     void Resize(int w, int h);
     void OnScroll(int scrollType);
     void initialize(std::string path, Context *contxt);
+    void OnMouseDown(int x, int y);
+    void OnDrag(int x, int y);
     virtual void rescanPath();
     virtual void scanDirectory(std::string scdir);
     virtual void procFile(std::string fname, std::string fullname);
@@ -53,10 +57,12 @@ namespace FreeMat {
     virtual void setMessageContext(const char* msg);
     virtual void SetEvalEngine(WalkTree* a_eval);
     virtual void ExecuteLine(const char* line);
-	virtual void RegisterInterrupt();
+    virtual void RegisterInterrupt();
     virtual std::vector<std::string> GetCompletions(const char *line, int word_end, 
 						    std::string &matchString);
     virtual char* getLine(const char* prompt);
+	void Copy();
+	void Paste();
   };
 
   void SetupWinTerminalClass(HINSTANCE hInstance);

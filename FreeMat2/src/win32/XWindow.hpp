@@ -53,6 +53,7 @@ class XWindow {
   int m_box_x1, m_box_x2, m_box_y1, m_box_y2;
   HCURSOR defcursor;
   HCURSOR clickcursor;
+  unsigned char* m_bitmap_contents;
 };
 
 void InitializeXWindowSystem(HINSTANCE hInstance);

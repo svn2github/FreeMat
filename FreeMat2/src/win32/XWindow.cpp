@@ -32,6 +32,7 @@ XWindow::XWindow(WindowType wtype) {
   SetWindowLong(m_window,GWL_USERDATA,(LONG) this);
   defcursor = (HCURSOR) LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
   clickcursor = (HCURSOR) LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
+  m_bitmap_contents = NULL;
 }
 
 XWindow::~XWindow() {
@@ -192,6 +193,7 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
   hdc = GetDC(m_window);
   hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
   ReleaseDC(m_window, hdc);
+  m_bitmap_contents = data;
 }
 
 void XWindow::GetClick(int &x, int &y) {
@@ -223,6 +225,8 @@ void XWindow::SetTheCursor() {
 
 
 void XWindow::PrintMe(std::string filename) {
+  if (m_type == BitmapWindow && m_bitmap_contents == NULL)
+    throw FreeMat::Exception("Cannot print empty image window!\n");
   // Logic to detect print mode..
   int np;
   np = filename.find_last_of(".");
@@ -231,69 +235,63 @@ void XWindow::PrintMe(std::string filename) {
 	std::transform (extension.begin(), extension.end(), 
 	       extension.begin(), tolower);
     if (extension == ".eps" || extension == ".ps") {
-      PostScriptGC gc(filename, m_width, m_height);
-      OnDraw(gc);
+      if (m_type == VectorWindow) {
+	PostScriptGC gc(filename, m_width, m_height);
+	OnDraw(gc);
+      } else
+	WriteEPSFile(filename, m_bitmap_contents, m_width, m_height);
     } else {
-      static PBITMAPINFO		pBitmapInfo;
-      pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
-      pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-      pBitmapInfo->bmiHeader.biWidth = m_width;
-      pBitmapInfo->bmiHeader.biHeight = m_height;
-      pBitmapInfo->bmiHeader.biPlanes = 1;
-      pBitmapInfo->bmiHeader.biBitCount = 24;
-      pBitmapInfo->bmiHeader.biCompression = BI_RGB;
-      pBitmapInfo->bmiHeader.biSizeImage = 0;
-      pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
-      pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
-      pBitmapInfo->bmiHeader.biClrUsed = 0;
-      pBitmapInfo->bmiHeader.biClrImportant = 0;
-      unsigned char* pixelVals;
-      HDC hdc = GetDC(m_window);
-      HDC hdcMem = CreateCompatibleDC(hdc);
-      HBITMAP hBmp = CreateDIBSection(hdc,pBitmapInfo,DIB_RGB_COLORS,(void**)&pixelVals,NULL,0); 
-      SelectObject(hdcMem, hBmp);
-      WinGC wgc(hdcMem, m_width, m_height);
-      OnDraw(wgc);
-	  unsigned char *rgbdata = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
-	  unsigned char *rgbdata2 = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
-	  GetDIBits(hdcMem, hBmp, 0, m_height, rgbdata, pBitmapInfo, DIB_RGB_COLORS);
-      // "Fix" the image - remap it to a normal RGB image - this is a two step
-	  // process - we have to swap the image top to bottom and revert BGR --> RGB
-	  int i, j;
-	  for (i=0;i<m_height;i++)
-		  for (j=0;j<m_width;j++) {
-			  rgbdata2[3*((m_height-1-i)*m_width+j)] = rgbdata[3*(i*m_width+j)+2];
-			  rgbdata2[3*((m_height-1-i)*m_width+j)+1] = rgbdata[3*(i*m_width+j)+1];
-			  rgbdata2[3*((m_height-1-i)*m_width+j)+2] = rgbdata[3*(i*m_width+j)];
-		  }
-	  free(rgbdata);
-	  if (extension == ".jpeg" || extension == ".jpg") 
-		  WriteJPEGFile(filename, rgbdata2, m_width, m_height);
-	  else if (extension == ".png")
-		  WritePNGFile(filename, rgbdata2, m_width, m_height);
-	  else if (extension == ".tiff" || extension == ".tif")
-		  WriteTIFFFile(filename, rgbdata2, m_width, m_height);
-	  free(rgbdata2);
-      ReleaseDC(m_window, hdc);
-      DeleteDC(hdcMem);
-	  DeleteObject(hBmp);
-//       if (extension == ".jpeg" || extension == ".jpg") {
-// 	img.WriteJPEG(filename);
-// 	// JPEG
-//       } else if (extension == ".png") {
-// 	img.WritePNG(filename);
-// 	// PNG
-//       } else if (extension == ".tiff" || extension == ".tif") {
-// 	img.WriteTIFF(filename);
-// 	// TIFF
-//       } else if (extension == ".ppm" || extension == ".pnm") {
-// 	img.WritePPM(filename);
-// 	// PPM
-//       } else {
-// 	free(data);
-// 	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
-//       }
-//       free(data);
+      unsigned char *pdata;
+      if (m_type == VectorWindow) {
+	static PBITMAPINFO		pBitmapInfo;
+	pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
+	pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	pBitmapInfo->bmiHeader.biWidth = m_width;
+	pBitmapInfo->bmiHeader.biHeight = m_height;
+	pBitmapInfo->bmiHeader.biPlanes = 1;
+	pBitmapInfo->bmiHeader.biBitCount = 24;
+	pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+	pBitmapInfo->bmiHeader.biSizeImage = 0;
+	pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+	pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+	pBitmapInfo->bmiHeader.biClrUsed = 0;
+	pBitmapInfo->bmiHeader.biClrImportant = 0;
+	unsigned char* pixelVals;
+	HDC hdc = GetDC(m_window);
+	HDC hdcMem = CreateCompatibleDC(hdc);
+	HBITMAP hBmp = CreateDIBSection(hdc,pBitmapInfo,DIB_RGB_COLORS,(void**)&pixelVals,NULL,0); 
+	SelectObject(hdcMem, hBmp);
+	WinGC wgc(hdcMem, m_width, m_height);
+	OnDraw(wgc);
+	unsigned char *rgbdata = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
+	unsigned char *rgbdata2 = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
+	GetDIBits(hdcMem, hBmp, 0, m_height, rgbdata, pBitmapInfo, DIB_RGB_COLORS);
+	// "Fix" the image - remap it to a normal RGB image - this is a two step
+	// process - we have to swap the image top to bottom and revert BGR --> RGB
+	int i, j;
+	for (i=0;i<m_height;i++)
+	  for (j=0;j<m_width;j++) {
+	    rgbdata2[3*((m_height-1-i)*m_width+j)] = rgbdata[3*(i*m_width+j)+2];
+	    rgbdata2[3*((m_height-1-i)*m_width+j)+1] = rgbdata[3*(i*m_width+j)+1];
+	    rgbdata2[3*((m_height-1-i)*m_width+j)+2] = rgbdata[3*(i*m_width+j)];
+	  }
+	free(rgbdata);
+	pdata = rgbdata2;
+	ReleaseDC(m_window, hdc);
+	DeleteDC(hdcMem);
+	DeleteObject(hBmp);
+      } else {
+	pdata = m_bitmap_contents;
+      }
+      if (extension == ".jpeg" || extension == ".jpg") 
+	WriteJPEGFile(filename, pdata, m_width, m_height);
+      else if (extension == ".png")
+	WritePNGFile(filename, pdata, m_width, m_height);
+      else if (extension == ".tiff" || extension == ".tif")
+	WriteTIFFFile(filename, pdata, m_width, m_height);
+      if (m_type == VectorWindow) {
+	free(pdata);
+      }
     }
   } else
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));

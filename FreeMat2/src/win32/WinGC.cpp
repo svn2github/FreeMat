@@ -40,8 +40,8 @@ void WinGC::DrawTextString(std::string label, Point2D pos, OrientationType orien
   TextOut(hdc,pos.x+twiddlex, pos.y+twiddley, label.c_str(), label.size());
 }
 
-void WinGC::SetFont(std::string fontname, int fontsize) {
-  if ((fontname != m_fontname) || (fontsize != m_fontsize)) {
+void WinGC::SetFont(int fontsize) {
+  if (fontsize != m_fontsize) {
     int nHeight;
     nHeight = -MulDiv(fontsize-2, GetDeviceCaps(hdc, LOGPIXELSY), 72);
     m_hfont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 
@@ -52,7 +52,6 @@ void WinGC::SetFont(std::string fontname, int fontsize) {
 			 FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS,
 			 CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 
 			 FF_SWISS, "Arial");
-    m_fontname = fontname;
     m_fontsize = fontsize;
   }
 }

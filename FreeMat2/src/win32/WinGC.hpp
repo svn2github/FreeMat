@@ -11,7 +11,7 @@ public:
   virtual Point2D GetCanvasSize();
   virtual Point2D GetTextExtent(std::string label);
   virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient = ORIENT_0);
-  virtual void SetFont(std::string fontname, int fontsize);
+  virtual void SetFont(int fontsize);
   virtual Color SetBackGroundColor(Color col);
   virtual Color SetForeGroundColor(Color col);
   virtual LineStyleType SetLineStyle(LineStyleType style);

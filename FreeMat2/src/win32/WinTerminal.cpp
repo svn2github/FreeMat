@@ -2,6 +2,7 @@
 #include "XWindow.hpp"
 #include <string.h>
 #include <algorithm>
+#include "resource.h"
 
 #include <direct.h>
 #define getcwd _getcwd
@@ -75,7 +76,7 @@ namespace FreeMat {
     wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
     wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
-    wndclass.lpszMenuName = NULL;
+    wndclass.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
     wndclass.lpszClassName = "WinTerminal";
     if (!RegisterClass(&wndclass))
       {
@@ -262,7 +263,7 @@ namespace FreeMat {
       UpdateWindow(hwnd);
     }
   }
-
+  
   void WinTerminal::OnDraw(HDC hdc, PAINTSTRUCT ps) {
     HideCaret(hwnd);
     SelectObject(hdc,hfnt);
@@ -273,7 +274,20 @@ namespace FreeMat {
     int paintBeg = max(0, iVertpos + ps.rcPaint.top/charHeight);
     int paintEnd = min(nlinecount-1,
 		       iVertpos + ps.rcPaint.bottom/charHeight);
-	for (int y=paintBeg; y <= paintEnd; y++) {
+    bool selectActive;
+    int sel_y1, sel_y2, sel_x1, sel_x2;
+    sel_y1 = selstart_row;
+    sel_y2 = selstop_row;
+    sel_x1 = selstart_col;
+    sel_x2 = selstop_col;
+    if (sel_y1 > sel_y2) {
+      sel_y2 = selstart_row;
+      sel_y1 = selstop_row;
+      sel_x2 = selstart_col;
+      sel_x1 = selstop_col;
+    }
+    for (int y=paintBeg; y <= paintEnd; y++) {
+      selectActive = ((y >= sel_y1) && (y <= sel_y2));
       char buffer[1000];
       int x;
       for (x=0;x<ncolumn;x++) {
@@ -282,8 +296,64 @@ namespace FreeMat {
 	if (!ch) break;
       }
       buffer[x] = 0;
-      if (strlen(buffer) != 0)
-	TextOut(hdc,0,(y-iVertpos)*charHeight,buffer,strlen(buffer));
+      if (strlen(buffer) != 0) {
+		  int textlen;
+		  textlen = strlen(buffer);
+	if (selectActive) {
+	  // Special case if start and stop row are the same
+	  if ((sel_y1 == sel_y2) && (y == sel_y1)) {
+	    if (sel_x1 >= sel_x2) {
+	      int t = sel_x1;
+	      sel_x1 = sel_x2;
+	      sel_x2 = t;
+	    }
+	    // We output three parts of text - start in black
+	    TextOut(hdc,0,(y-iVertpos)*charHeight,buffer,
+		    min(sel_x1,textlen));
+	    // The second part is in red (requires textlen > sel_x1)
+	    if (textlen > sel_x1) {
+	      SetTextColor(hdc, RGB(255, 0, 0));
+	      TextOut(hdc,sel_x1*charWidth,
+		      (y-iVertpos)*charHeight,buffer+sel_x1,
+		      min(sel_x2,textlen)-sel_x1);
+	      SetTextColor(hdc, RGB(0, 0, 0));
+	    }
+	    // The third part is in black (requires textlen > sel_x2)
+	    if (textlen > sel_x2) 
+	      TextOut(hdc,sel_x2*charWidth,(y-iVertpos)*charHeight,
+			buffer+sel_x2,
+		      textlen - sel_x2);
+	  } else if (y == sel_y1) {
+	    TextOut(hdc,0,(y-iVertpos)*charHeight,buffer,
+		    min(sel_x1,textlen));
+	    // The second part is in red (requires textlen > sel_x1)
+	    if (textlen > sel_x1) {
+	      SetTextColor(hdc, RGB(255, 0, 0));
+	      TextOut(hdc,sel_x1*charWidth,
+		      (y-iVertpos)*charHeight,buffer+sel_x1,
+		      textlen-sel_x1);
+	      SetTextColor(hdc, RGB(0, 0, 0));
+	    }
+	  } else if (y == sel_y2) {
+		// Output enough text in red to cover sel_x2
+	    SetTextColor(hdc, RGB(255, 0, 0));
+	    TextOut(hdc,0,(y-iVertpos)*charHeight,buffer,min(sel_x2,textlen));
+	    SetTextColor(hdc, RGB(0, 0, 0));
+		if (textlen > sel_x2)
+  	      TextOut(hdc,sel_x2*charWidth,
+		    (y-iVertpos)*charHeight,buffer+sel_x2,
+		    textlen-sel_x2);
+	  } else {
+	    SetTextColor(hdc, RGB(255, 0, 0));
+	    TextOut(hdc,0,(y-iVertpos)*charHeight,buffer,
+		    strlen(buffer));
+	    SetTextColor(hdc, RGB(0, 0, 0));
+	  }
+	} else {
+	  SetTextColor(hdc, RGB(0, 0, 0));
+	  TextOut(hdc,0,(y-iVertpos)*charHeight,buffer,strlen(buffer));
+	}
+      }
     }
     ShowCaret(hwnd);
   }
@@ -435,8 +505,34 @@ namespace FreeMat {
   void WinTerminal::RegisterInterrupt() {
 	sigInterrupt(0);
   }
+  
+  void WinTerminal::OnMouseDown(int x, int y) {
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_POS;
+    GetScrollInfo(hwnd, SB_VERT, &si);
+    selstart_row = si.nPos + y/charHeight;
+    selstart_col = x/charWidth;
+  }
 
-
+  void WinTerminal::OnDrag(int x, int y) {
+    si.cbSize = sizeof(si);
+    si.fMask = SIF_POS | SIF_PAGE;
+    GetScrollInfo(hwnd, SB_VERT, &si);
+    selstop_row = si.nPos + y/charHeight;
+    selstop_col = x/charWidth;
+    InvalidateRect(hwnd,NULL,FALSE);
+    if (selstop_row >= si.nPos + si.nPage - 1) {
+      si.nPos ++;
+      SetScrollInfo(hwnd,SB_VERT,&si,TRUE);
+      InvalidateRect(hwnd,NULL,TRUE);
+    } else if (selstop_row <= si.nPos + 1) {
+      si.nPos --;
+      SetScrollInfo(hwnd,SB_VERT,&si,TRUE);
+      InvalidateRect(hwnd,NULL,TRUE);
+    } else
+      InvalidateRect(hwnd,NULL,FALSE);
+  }
+  
   char* WinTerminal::getLine(const char* prompt) {
     fflush(stdout);
     ReplacePrompt(prompt);
@@ -448,6 +544,85 @@ namespace FreeMat {
     char *cp;
     cp = strdup(theline.c_str());
     return cp;
+  }
+
+  void WinTerminal::Copy() {
+    int sel_y1, sel_y2, sel_x1, sel_x2;
+    sel_y1 = selstart_row;
+    sel_y2 = selstop_row;
+    sel_x1 = selstart_col;
+    sel_x2 = selstop_col;
+    if (sel_y1 > sel_y2) {
+      sel_y2 = selstart_row;
+      sel_y1 = selstop_row;
+      sel_x2 = selstart_col;
+      sel_x1 = selstop_col;
+    }
+    HGLOBAL hGlobal;
+    hGlobal = GlobalAlloc(GHND | GMEM_SHARE, (sel_y2 - sel_y1 + 1)*ncolumn);
+    LPVOID pGlobal;
+    pGlobal = GlobalLock(hGlobal);
+    char* ptr = (char*) pGlobal;
+    for (int y=sel_y1;y <= sel_y2;y++) {
+      char buffer[1000];
+      int x;
+      for (x=0;x<ncolumn;x++) {
+	char ch = CharAt(y,x);
+	buffer[x] = ch;
+	if (!ch) break;
+      }
+      buffer[x] = 0;
+	  int textlen;
+	  textlen = strlen(buffer);
+      if ((sel_y1 == sel_y2) && (y == sel_y1)) {
+	if (sel_x1 >= sel_x2) {
+	  int t = sel_x1;
+	  sel_x1 = sel_x2;
+	  sel_x2 = t;
+	}
+	if (textlen > sel_x1) {
+	  memcpy(ptr, buffer+sel_x1, min(sel_x2,textlen)-sel_x1);
+	  ptr += min(sel_x2,textlen)-sel_x1;
+	  *ptr++ = '\r'; *ptr++ = '\n';
+	}
+      } else if (y == sel_y1) {
+	if (textlen > sel_x1) {
+	  memcpy(ptr, buffer+sel_x1, textlen-sel_x1);
+	  ptr += textlen - sel_x1;
+	  *ptr++ = '\r'; *ptr++ = '\n';
+	}
+      } else if (y == sel_y2) {
+	memcpy(ptr, buffer, min(sel_x2,textlen));
+	ptr += min(sel_x2,textlen);
+	*ptr++ = '\r'; *ptr++ = '\n';
+      } else {
+	memcpy(ptr, buffer, strlen(buffer));
+	ptr += strlen(buffer);
+	*ptr++ = '\r'; *ptr++ = '\n';
+      }
+    }
+    GlobalUnlock(hGlobal);
+    OpenClipboard(hwnd);
+    EmptyClipboard();
+    SetClipboardData(CF_TEXT, hGlobal);
+    CloseClipboard();
+  }
+
+  void WinTerminal::Paste() {
+    if (IsClipboardFormatAvailable(CF_TEXT)) {
+      OpenClipboard(hwnd);
+      HGLOBAL hGlobal = GetClipboardData(CF_TEXT);
+      char *ptext = (char*) malloc(GlobalSize(hGlobal));
+      LPVOID pGlobal = GlobalLock(hGlobal);
+      strcpy(ptext, (const char *)pGlobal);
+      GlobalUnlock(hGlobal);
+      CloseClipboard();
+      char *cp = ptext;
+      while (*cp) {
+	OnChar(*cp++);
+      }
+      free(ptext);
+    }
   }
   
   /*.......................................................................
@@ -570,6 +745,13 @@ namespace FreeMat {
 	return 0;
       case WM_CREATE:
 	return 0;
+      case WM_LBUTTONDOWN:
+	wptr->OnMouseDown(LOWORD(lParam),HIWORD(lParam));
+	return 0;
+      case WM_MOUSEMOVE:
+	if (wParam & MK_LBUTTON)
+	  wptr->OnDrag(LOWORD(lParam),HIWORD(lParam));
+	return 0;
       case WM_PAINT:
 	hdc = BeginPaint(hwnd, &ps);
 	wptr->OnDraw(hdc, ps);
@@ -595,6 +777,15 @@ namespace FreeMat {
 	wptr->OnScroll(LOWORD(wParam));
 	break;
       }
+	  case WM_COMMAND:
+		  switch (LOWORD(wParam)) {
+		  case IDM_EDIT_COPY:
+			  wptr->Copy();
+			  break;
+		  case IDM_EDIT_PASTE:
+			  wptr->Paste();
+			  break;
+		  }
       case WM_KEYDOWN:{
 	switch (wParam) {
 	case VK_LEFT:

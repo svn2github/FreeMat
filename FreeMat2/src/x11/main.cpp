@@ -97,7 +97,7 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
   return ndx;
 }
 
-bool checkBundleMode(char* argv0, char bundlefunc[1024], WalkTree *twalk) {
+bool checkBundleMode(char* argv0, char bundlefunc[1024]) {
   // Get the path
   std::string apppath = GetApplicationPath(argv0);
   std::string appname = GetFilenameOnly(argv0);
@@ -127,6 +127,44 @@ bool checkBundleMode(char* argv0, char bundlefunc[1024], WalkTree *twalk) {
     int namelen;
     fread(&namelen,1,sizeof(int),fp);
     fread(bundlefunc,namelen,sizeof(char),fp);
+  } else {
+    retval = false;
+  }
+  // Close up the file handle
+  fclose(fp);
+  return retval;
+}
+
+
+void LoadBundleFunctions(char* argv0, WalkTree *twalk) {
+  char bundlefunc[1024];
+  // Get the path
+  std::string apppath = GetApplicationPath(argv0);
+  std::string appname = GetFilenameOnly(argv0);
+  // Check for existence of the app binary
+  if (!FileExists(apppath + "/" + appname)) {
+    fprintf(stderr,"Unable to resolve %s to a functional pathname.\n",argv0);
+    exit(1);
+  }
+  // Open us up.
+  std::string appfull = apppath + "/" + appname;
+  FILE *fp = fopen(appfull.c_str(),"rb");
+  // Seek to the end minus 1024 bytes
+  fseek(fp,-1024, SEEK_END);
+  // Read next 5 bytes into a buffer
+  char buf[5];
+  fread(buf,5,sizeof(char),fp);
+  // These should be "fmexe" if this is a bound executable
+  if (memcmp(buf,"fmexe",5)==0) {
+    // The next piece of information should be the 
+    // offset of the p-code data
+    int pcodeOffset;
+    fread(&pcodeOffset,1,sizeof(int),fp);
+    // The next piece of information should be the
+    // name of the startup function
+    int namelen;
+    fread(&namelen,1,sizeof(int),fp);
+    fread(bundlefunc,namelen,sizeof(char),fp);
     // Seek to the p-code data
     fseek(fp,pcodeOffset,SEEK_SET);
     int pcodeCount;
@@ -142,11 +180,8 @@ bool checkBundleMode(char* argv0, char bundlefunc[1024], WalkTree *twalk) {
       twalk->getContext()->insertFunctionGlobally(adef);
     }
     delete(f);
-    fclose(fp);
-  } else {
-    retval = false;
-  }
-  return retval;
+  } 
+  fclose(fp);
 }
 
 void usage() {
@@ -165,21 +200,87 @@ void usage() {
   exit(0);
 }
 
+char ** unpackBundledArgs(int& myargc, char bundlefunc[1024], int argc, char *argv[]) {
+  // The bundlefunc has to be tokenized into arguments
+  bool instring;
+  int argcount;
+  instring = false;
+  argcount = 0;
+  char *cp = bundlefunc;
+  while (*cp) {
+    // Remove leading whitespace
+    while ((*cp) && (*cp == ' ')) cp++;
+    if (*cp) {
+      argcount++;
+      instring = false;
+      while ((*cp) && (instring || (!instring && (*cp != ' ')))) {
+	if (*cp == '\'')
+	  instring = !instring;
+	cp++;
+      }
+    }
+  }
+  myargc = argc+argcount;
+  char **myargv = (char**) malloc(sizeof(char*)*(argcount+argc));
+  myargv[0] = argv[0];
+  char tbuff[1024];
+  char *tp;
+
+  instring = false;
+  argcount = 0;
+  cp = bundlefunc;
+  while (*cp) {
+    // Remove leading whitespace
+    while ((*cp) && (*cp == ' ')) cp++;
+    if (*cp) {
+      argcount++;
+      instring = false;
+      tp = tbuff;
+      memset(tbuff,0,1024);
+      while ((*cp) && (instring || (!instring && (*cp != ' ')))) {
+	*tp++ = *cp;
+	if (*cp == '\'')
+	  instring = !instring;
+	cp++;
+      }
+      myargv[argcount] = strdup(tbuff);
+    }
+  }
+  for (int i=1;i<argc;i++)
+    myargv[i+argcount] = argv[i];
+  
+  return myargv;
+}
+
 int main(int argc, char *argv[]) {
   // First thing to do is determine if we are bundled
   // or not. 
   int bundledMode;
+  char bundlefunc[1024];
+  bundledMode = checkBundleMode(argv[0],bundlefunc);
+
+  int myargc;
+  char **myargv;
+
+  // If we are in bundled mode, then we have to unpack the arguments in bundlefunc
+  // and adjust the argument array.
+  if (bundledMode)
+    myargv = unpackBundledArgs(myargc,bundlefunc,argc,argv);
+  else {
+    myargc = argc;
+    myargv = argv;
+  }
+
   int scriptMode;
   int funcMode;
   int withoutX;
   int guimode;
-  char bundlefunc[1024];
   
-  scriptMode = parseFlagArg(argc,argv,"-e",false);
-  funcMode = parseFlagArg(argc,argv,"-f",true);
-  withoutX = parseFlagArg(argc,argv,"-noX",false);
-  guimode = parseFlagArg(argc,argv,"-gui",false);
-  if (parseFlagArg(argc,argv,"-help",false)) usage();
+  scriptMode = parseFlagArg(myargc,myargv,"-e",false);
+  funcMode = parseFlagArg(myargc,myargv,"-f",true);
+  withoutX = parseFlagArg(myargc,myargv,"-noX",false);
+  guimode = parseFlagArg(myargc,myargv,"-gui",false);
+  if (parseFlagArg(myargc,myargv,"-help",false)) usage();
 
   if (!withoutX) {
     fl_open_display();
@@ -218,8 +319,13 @@ int main(int argc, char *argv[]) {
       term->setPath(std::string(""));
     WalkTree *twalk = new WalkTree(context,term);
     term->SetEvalEngine(twalk);
-    term->Initialize();
-    bundledMode = checkBundleMode(argv[0], bundlefunc, twalk);
+    try {
+      term->Initialize();
+    } catch(Exception &e) {
+      fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
+      exit(1);
+    }
+    LoadBundleFunctions(myargv[0], twalk);
     if (!funcMode && !bundledMode) {
       term->outputMessage(" Freemat v");
       term->outputMessage(VERSION);
@@ -233,13 +339,11 @@ int main(int argc, char *argv[]) {
       }
     } else {
       char buffer[1024];
-      if (funcMode) 
-	sprintf(buffer,"%s\n",argv[funcMode+1]);
-      else {
-	sprintf(buffer,"%s",bundlefunc);
-	for (int i=1;i<argc;i++) {
+      if (funcMode) {
+	sprintf(buffer,"%s",myargv[funcMode+1]);
+	for (int i=funcMode+2;i<myargc;i++) {
 	  strcat(buffer," ");
-	  strcat(buffer,argv[i]);
+	  strcat(buffer,myargv[i]);
 	}
 	strcat(buffer,"\n");
       }

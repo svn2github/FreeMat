@@ -180,6 +180,7 @@ void PostScriptGC::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
   data = img.GetPixelData();
   pos = ToPS(pos);
   fprintf(fp,"/picstr %d string def\n",width);
+  fprintf(fp,"gsave\n");
   fprintf(fp,"%d %d translate\n",pos.x,pos.y-height);
   fprintf(fp,"%d %d scale\n",width,height);
   fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
@@ -197,8 +198,7 @@ void PostScriptGC::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
     outcount += linelen;
     fprintf(fp,"\n");
   }
-  fprintf(fp,"%d %d translate\n",-pos.x,-(pos.y-height));
-  fprintf(fp,"1 1 scale\n");
+  fprintf(fp,"grestore\n");
 }
 
 void PostScriptGC::BlitRGBImage(Point2D pos, RGBImage &img) {
@@ -214,6 +214,7 @@ void PostScriptGC::BlitRGBImage(Point2D pos, RGBImage &img) {
   data = img.GetPixelData();
   pos = ToPS(pos);
   fprintf(fp,"/picstr %d string def\n",3*width);
+  fprintf(fp,"gsave\n");
   fprintf(fp,"%d %d translate\n",pos.x,pos.y-height);
   fprintf(fp,"%d %d scale\n",width,height);
   fprintf(fp,"%d %d 8 [%d 0 0 -%d 0 %d]\n",width,height,width,height,height);
@@ -231,6 +232,5 @@ void PostScriptGC::BlitRGBImage(Point2D pos, RGBImage &img) {
     outcount += linelen;
     fprintf(fp,"\n");
   }
-  fprintf(fp,"%d %d translate\n",-pos.x,-(pos.y-height));
-  fprintf(fp,"1 1 scale\n");
+  fprintf(fp,"grestore\n");
 }

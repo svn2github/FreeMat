@@ -1,2 +1,2 @@
-SUBDIRS = extlibs libs src manual
+SUBDIRS = extlibs libs @mpidir@ manual src 
 AUTOMAKE_OPTIONS = foreign

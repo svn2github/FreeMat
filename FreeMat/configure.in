@@ -46,6 +46,12 @@ AC_ARG_WITH(minilapack,
 		forceminilapack="yes",
 		forceminilapack="no")
 
+AC_ARG_WITH(mpi,
+	[AC_HELP_STRING([--with-mpi],
+	        [Build the MPI executables [default=no]])],
+		usempi="yes",
+		usempi="no")
+
 MP_WITH_CURSES([],[])
 
 case $host in
@@ -62,6 +68,8 @@ AC_SUBST(YFLAGS)
 AC_SUBST(LFLAGS)
 
 #ACX_LAPACK([] , AC_MSG_ERROR([Could not find LAPACK+BLAS.  See installation instructions for more information...]) )
+AC_LANG_CPLUSPLUS
+ACX_MPI([], usempi="no")
 
 if test "$forceminiblas" = "yes" ; then
   BLAS_LIBS="-L\${top_builddir}/libs/libMiniBLAS -lMiniBLAS"
@@ -73,8 +81,14 @@ if test "$forceminilapack" = "yes" ; then
   minilapackdir="libMiniLAPACK"
 fi
 
+if test "$usempi" = "yes" ; then
+  mpidir="mpi"
+fi
+
 AC_SUBST(minilapackdir)
 AC_SUBST(miniblasdir)
+AC_SUBST(mpidir)
+AC_SUBST(MPICXX)
 
 if test "$forceminiblas" = "yes" ; then
    AC_OUTPUT(libs/libMiniBLAS/Makefile)
@@ -100,7 +114,7 @@ dnl cd extlibs/wxWindows-2.4.0
 dnl $SHELL configure --enable-postscript --with-opengl --with-libpng --with-libjpeg --with-libtiff --disable-shared --enable-debug
 dnl cd ../..
 
-AC_OUTPUT(Makefile src/Makefile doc/Doxyfile manual/Doxyfile libs/Makefile extlibs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile)
+AC_OUTPUT(Makefile src/Makefile doc/Doxyfile manual/Doxyfile libs/Makefile extlibs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile mpi/Makefile)
 
 echo \
 "------------------------------------------------------------------------

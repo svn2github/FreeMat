@@ -252,8 +252,8 @@ namespace FreeMat {
       bool commentsOnly;
       commentsOnly = true;
       helpText.clear();
+      char buffer[1000];
       while (commentsOnly) {
-	char buffer[1000];
 	fgets(buffer,1000,fp);
 	char *cp;
 	cp = buffer;
@@ -266,6 +266,8 @@ namespace FreeMat {
 	else
 	  helpText.push_back(++cp);
       }
+      if (helpText.size() == 0)
+	helpText.push_back(buffer);
       rewind(fp);
       ParserState pstate = parseFile(fp,fileName.c_str());
       // If pstate is a FuncDef, then get the parsed data

@@ -31,7 +31,7 @@ namespace FreeMat {
   ScalarImage* GetCurrentImage() {
     Figure *fig = GetCurrentFig();
     if (fig->getType() == figscimg) {
-		return ((ScalarImage*) fig->GetChildWidget());
+      return ((ScalarImage*) fig->GetChildWidget());
     } else {
       ScalarImage* t = new ScalarImage(fig->w(),fig->h());
       fig->SetFigureChild(t,figscimg);
@@ -299,7 +299,7 @@ namespace FreeMat {
     img.promoteType(FM_DOUBLE);
     ScalarImage *f;
     f = GetCurrentImage();
-    double zoomfact = 1.0f;
+    double zoomfact = 0.0f;
     if (arg.size() == 2) {
       Array z(arg[1]);
       zoomfact = z.getContentsAsDoubleScalar();

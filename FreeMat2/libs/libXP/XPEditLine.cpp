@@ -1,5 +1,4 @@
 #include "XPEditLine.hpp"
-#include <windows.h>
 
 XPEditLine::XPEditLine(XPWidget* parent, Rect2D sze, std::string init) : XPWidget(parent, sze) {
   state = 0;

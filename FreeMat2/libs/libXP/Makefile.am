@@ -41,10 +41,17 @@ BitmapPrinterGC.cpp \
 BitmapPrinterGC.hpp \
 helv_table.h \
 XPWidget.hpp \
+XPWidget.cpp \
 XPContainer.hpp \
 XPContainer.cpp \
 XPButton.hpp \
-XPButton.cpp
+XPButton.cpp \
+XPEditLine.hpp \
+XPEditLine.cpp \
+XPLabel.hpp \
+XPLabel.cpp \
+XPVSlider.hpp \
+XPVSlider.cpp
 
 AUTOMAKE_OPTIONS 	= foreign
 

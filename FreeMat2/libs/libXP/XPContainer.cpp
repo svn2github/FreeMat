@@ -18,12 +18,15 @@ void XPContainer::AddChild(XPWidget* child) {
 }
 
 void XPContainer::OnDraw(GraphicsContext &gc, Rect2D region) {
-  gc.SetBackGroundColor(Color("light grey"));
-  gc.SetForeGroundColor(Color("light grey"));
-  gc.FillRectangle(region);
+  // gc.SetBackGroundColor(Color("light grey"));
+  //  gc.SetForeGroundColor(Color("light grey"));
+  //  gc.FillRectangle(region);
   int i;
-  for (i=0;i<children.size();i++)
-    children[i]->OnDraw(gc,region);
+  for (i=0;i<children.size();i++) 
+    if (children[i]->GetBoundingRect().TestIntersect(region)) {
+      Rect2D bnd(children[i]->GetBoundingRect());
+      children[i]->OnDraw(gc,region);
+    }
 }
 
 void XPContainer::OnChar(char key) {
@@ -44,8 +47,9 @@ void XPContainer::OnMouseDown(Point2D pt) {
     if (hit) {
       children[i]->OnMouseDown(pt);
       focus = i;
-      children[i]->SetFocus(true);
-    } else 
+      if (!children[i]->GetFocus())
+	children[i]->SetFocus(true);
+    } else if (children[i]->GetFocus())
       children[i]->SetFocus(false);
   }
 }

@@ -12,6 +12,7 @@ class Rect2D {
   Rect2D(int ax1, int ay1, int awidth, int aheight);
   Rect2D();
   bool TestOutside(Point2D a);
+  bool TestIntersect(Rect2D a);
 };
 
 #endif

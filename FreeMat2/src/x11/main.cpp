@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "XWindow.hpp"
 #include "Terminal.hpp"
+#include "DumbTerminal.hpp"
 #include <stdio.h>
 #include "Module.hpp"
 #include "LoadCore.hpp"
@@ -17,13 +18,13 @@ using namespace FreeMat;
 Display *d;
 int screen_num = 0;
 
-Terminal term;
+Terminal *term;
 
 sig_t signal_suspend_default;
 sig_t signal_resume_default;
 
 void signal_suspend(int a) {
-  term.RestoreOriginalMode();
+  term->RestoreOriginalMode();
   printf("Suspending FreeMat...\n");
   fflush(stdout);
   signal(SIGTSTP,signal_suspend_default);
@@ -33,18 +34,18 @@ void signal_suspend(int a) {
 void signal_resume(int a) {
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   printf("Resuming FreeMat...\n");
-  term.SetRawMode();
-  term.Redisplay();
+  term->SetRawMode();
+  term->Redisplay();
 }
 
 void signal_resize(int a) {
-  term.ResizeEvent();
+  term->ResizeEvent();
 }
 
 void stdincb() {
   char c;
   while (read(STDIN_FILENO, &c, 1) == 1) {
-    term.ProcessChar(c);
+    term->ProcessChar(c);
   }
 }
 
@@ -77,14 +78,13 @@ int main(int argc, char *argv[]) {
     fprintf(stderr,"Error - unable to open X display\n");
     exit(1);
   }
-  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   SetActiveDisplay(d);
   RegisterSTDINCallback(stdincb);
   Context *context = new Context;
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
   sfdef->retCount = 0;
   sfdef->argCount = 5;
-  sfdef->name = "loadFunction";
+  sfdef->name = "loadlib";
   sfdef->fptr = LoadLibFunction;
   context->insertFunctionGlobally(sfdef);
   
@@ -99,14 +99,7 @@ int main(int argc, char *argv[]) {
   LoadGraphicsCoreFunctions(context);  
   InitializePlotSubsystem();
   InitializeImageSubsystem();
-  const char *envPtr;
-  envPtr = getenv("FREEMAT_PATH");
-  if (envPtr)
-    term.initialize(std::string(envPtr),context);
-  else
-    term.initialize(std::string(""),context);
-  WalkTree *twalk = new WalkTree(context,&term);
-  term.SetEvalEngine(twalk);
+
   // Check for scripting mode
   bool scriptMode = false;
   int scriptSpec = 1;
@@ -114,31 +107,30 @@ int main(int argc, char *argv[]) {
     scriptMode = scriptMode | strcmp(argv[scriptSpec],"-e") == 0;
     scriptSpec++;
   }
-  if (scriptSpec >= argc) scriptMode = false;
+  if (scriptSpec > argc) scriptMode = false;
+
+  // Instantiate the terminal class
   if (!scriptMode) {
-    term.Initialize();
-    term.outputMessage(" Freemat - build ");
-    term.outputMessage(__DATE__);
-    term.outputMessage("\n");
-    term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
-    twalk->evalCLI();
-    term.RestoreOriginalMode();
+    term = new Terminal;
+    fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   } else {
-    FILE *fp;
-    fp = fopen(argv[scriptSpec],"r");
-    if (!fp) {
-      fprintf(stderr,"Unable to open script file %s for reading\n",
-	      argv[scriptSpec]);
-      exit(1);
-    }
-    while (!feof(fp)) {
-      char buffer[4096];
-      fgets(buffer,sizeof(buffer),fp);
-      printf("--> %s",buffer);
-      fflush(stdout);
-      twalk->evaluateString(buffer);
-    }
-    fclose(fp);
+    term = new DumbTerminal;
   }
+
+  const char *envPtr;
+  envPtr = getenv("FREEMAT_PATH");
+  if (envPtr)
+    term->initialize(std::string(envPtr),context);
+  else 
+    term->initialize(std::string(""),context);
+  WalkTree *twalk = new WalkTree(context,term);
+  term->SetEvalEngine(twalk);
+  term->Initialize();
+  term->outputMessage(" Freemat - build ");
+  term->outputMessage(__DATE__);
+  term->outputMessage("\n");
+  term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+  twalk->evalCLI();
+  term->RestoreOriginalMode();
   return 0;
 }

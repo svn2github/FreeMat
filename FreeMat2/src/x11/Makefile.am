@@ -5,6 +5,8 @@ INCLUDES=-I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdi
 bin_PROGRAMS = FreeMat
 
 FreeMat_SOURCES = main.cpp \
+DumbTerminal.cpp \
+DumbTerminal.hpp \
 Terminal.cpp \
 Terminal.hpp \
 XWindow.cpp \

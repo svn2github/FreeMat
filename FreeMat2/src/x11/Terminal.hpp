@@ -16,6 +16,7 @@ namespace FreeMat {
   typedef struct termios Termios;
 
   class Terminal : public KeyManager, public Interface {
+  protected:
     int state;
     Termios oldattr;
     Termios newattr;
@@ -36,14 +37,14 @@ namespace FreeMat {
   public:
     Terminal();
     ~Terminal();
-    void Initialize();
-    void SetRawMode();
-    void RestoreOriginalMode();
-    void RetrieveTerminalName();
+    virtual void Initialize();
+    virtual void SetRawMode();
+    virtual void RestoreOriginalMode();
+    virtual void RetrieveTerminalName();
     const char* LookupControlString(const char *name);
-    void SetupControlStrings();
-    void ProcessChar(char c);
-    void ResizeEvent();
+    virtual void SetupControlStrings();
+    virtual void ProcessChar(char c);
+    virtual void ResizeEvent();
     virtual void MoveDown();
     virtual void MoveUp();
     virtual void MoveRight();

@@ -55,7 +55,7 @@ namespace FreeMat {
 	throw Exception(std::string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
     }
   }
-
+  
   void Terminal::RestoreOriginalMode() {
     // Restore the original terminal setttings
     while (tcsetattr(STDIN_FILENO, TCSADRAIN, &oldattr)) {

@@ -111,6 +111,8 @@ INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_src
 bin_PROGRAMS = FreeMat
 
 FreeMat_SOURCES = main.cpp \
+DumbTerminal.cpp \
+DumbTerminal.hpp \
 Terminal.cpp \
 Terminal.hpp \
 XWindow.cpp \
@@ -127,8 +129,8 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = FreeMat$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_FreeMat_OBJECTS = main.$(OBJEXT) Terminal.$(OBJEXT) XWindow.$(OBJEXT) \
-	XGC.$(OBJEXT)
+am_FreeMat_OBJECTS = main.$(OBJEXT) DumbTerminal.$(OBJEXT) \
+	Terminal.$(OBJEXT) XWindow.$(OBJEXT) XGC.$(OBJEXT)
 FreeMat_OBJECTS = $(am_FreeMat_OBJECTS)
 FreeMat_LDFLAGS =
 
@@ -139,7 +141,8 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Terminal.Po ./$(DEPDIR)/XGC.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/DumbTerminal.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Terminal.Po ./$(DEPDIR)/XGC.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/XWindow.Po ./$(DEPDIR)/main.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -197,6 +200,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DumbTerminal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Terminal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XGC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XWindow.Po@am__quote@

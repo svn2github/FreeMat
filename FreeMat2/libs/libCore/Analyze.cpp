@@ -29,6 +29,7 @@
 #include "AST.hpp"
 #include <math.h>
 #include "Types.hpp"
+#include <algorithm>
 
 namespace FreeMat {
 

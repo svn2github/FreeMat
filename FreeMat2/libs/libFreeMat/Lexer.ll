@@ -78,9 +78,19 @@ reservedWordStruct ts, *p;
     contextCount++;
   }
 
-  end_context popContext() {
-    if (contextCount < 1) 
-      throw Exception("unexpected 'end' encountered");
+  end_context popContext(char t) {
+    if (contextCount < 1) {
+      switch (t) {
+      case ')':
+	throw Exception("unexpected ')' encountered");
+      case '}':
+	throw Exception("unexpected '}' encountered");
+      case ']':
+	throw Exception("unexpected ']' encountered");
+      case 'x':
+	throw Exception("unexpected 'end' encountered");
+      }
+    }	
     contextCount--;
     return contextStack[contextCount];
   }
@@ -360,7 +370,7 @@ SpecialArgument ({Argument}|{String})
 }
 
 <Scanning>")" {
-  popContext();
+  popContext(')');
   if (topState() == Scanning) {
     BEGIN(TransposeCheck);
     return ')'; 
@@ -371,7 +381,7 @@ SpecialArgument ({Argument}|{String})
 }
 
 <Scanning>"}" {
-  popContext();
+  popContext('}');
   if (topState() == Scanning) {
     BEGIN(TransposeCheck);
     return '}';
@@ -387,7 +397,7 @@ SpecialArgument ({Argument}|{String})
 }
 
 <Scanning>"]" {
-  popContext();
+  popContext(']');
   pushState(Scanning);
   BEGIN(TransposeCheck);
   return ']';
@@ -461,7 +471,7 @@ SpecialArgument ({Argument}|{String})
       pushContext(context_if);
       break;
     case END:
-      thisContext = popContext();
+      thisContext = popContext('x');
       switch (thisContext) {
       case context_for:
 	rettoken = ENDFOR;
@@ -486,6 +496,13 @@ SpecialArgument ({Argument}|{String})
     yylval = new AST(reserved_node,p->ordinal);
     return rettoken;
   }
+}
+
+<IdentDereference>{Whitespace}*"..."{Whitespace}*{Newline} {
+  lineNumber++;
+  continuationCount++;
+  firstToken = false;
+  BEGIN(IdentDereference);
 }
 
 <IdentDereference>"."{Word} {

@@ -255,26 +255,31 @@ void XWindow::PrintMe(std::string filename) {
       pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
       pBitmapInfo->bmiHeader.biClrUsed = 0;
       pBitmapInfo->bmiHeader.biClrImportant = 0;
-      static unsigned char* pixelVals;
-      int nwidth;
-      nwidth = (3*width+3)&~3; // Width of the scanline in bytes
-      pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
-      memset(pixelVals,255,height*nwidth);
+      unsigned char* pixelVals;
       HDC hdc = GetDC(m_window);
-      HDC hdcMem = CreateCompatible(hdc);
-      HANDLE hBmp = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
+      HDC hdcMem = CreateCompatibleDC(hdc);
+      HBITMAP hBmp = CreateDIBSection(hdc,pBitmapInfo,DIB_RGB_COLORS,(void**)&pixelVals,NULL,0); 
       SelectObject(hdcMem, hBmp);
       WinGC wgc(hdcMem, m_width, m_height);
       OnDraw(wgc);
+	  unsigned char *rgbdata = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
+	  unsigned char *rgbdata2 = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
+	  GetDIBits(hdcMem, hBmp, 0, m_height, rgbdata, pBitmapInfo, DIB_RGB_COLORS);
+      // "Fix" the image - remap it to a normal RGB image - this is a two step
+	  // process - we have to swap the image top to bottom and revert BGR --> RGB
+	  int i, j;
+	  for (i=0;i<m_height;i++)
+		  for (j=0;j<m_width;j++) {
+			  rgbdata2[3*((m_height-1-i)*m_width+j)] = rgbdata[3*(i*m_width+j)+2];
+			  rgbdata2[3*((m_height-1-i)*m_width+j)+1] = rgbdata[3*(i*m_width+j)+1];
+			  rgbdata2[3*((m_height-1-i)*m_width+j)+2] = rgbdata[3*(i*m_width+j)];
+		  }
+	  free(rgbdata);
+	  WritePNGFile(filename, rgbdata2, m_width, m_height);
+	  free(rgbdata2);
       ReleaseDC(m_window, hdc);
       DeleteDC(hdcMem);
-      
-//       unsigned char *data;
-//       data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
-//       RGBImage img(m_width, m_height, data);
-//      RGBImageGC gc(img);
-//      img.SetAllPixels(Color("light grey"));
-//      OnDraw(gc);
+	  DeleteObject(hBmp);
 //       if (extension == ".jpeg" || extension == ".jpg") {
 // 	img.WriteJPEG(filename);
 // 	// JPEG

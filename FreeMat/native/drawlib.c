@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 char *image;
+int fg_red, fg_green, fg_blue;
+int bg_red, bg_green, bg_blue;
 
 void writePPM() {
   FILE *fp;
@@ -12,10 +14,31 @@ void writePPM() {
   fwrite(image,sizeof(char),512*512*3,fp);
   fclose(fp);
 }
-void putPixel(int x, int y, int c) {
-  image[3*(x*512+y)] = c & 0xff;
-  image[3*(x*512+y)+1] = 0;
-  image[3*(x*512+y)+2] = 0;
+
+void setBGColor(int r, int g, int b) {
+  bg_red = r;
+  bg_green = g;
+  bg_blue = b;
+}
+
+void setFGColor(int r, int g, int b) {
+  fg_red = r;
+  fg_green = g;
+  fg_blue = b;
+}
+
+void setPixel(int x, int y, int c) {
+  c = c & 0xff;
+  image[3*(x*512+y)] = (c*fg_red) >> 8;
+  image[3*(x*512+y)+1] = (c*fg_green) >> 8;
+  image[3*(x*512+y)+2] = (c*fg_blue) >> 8;
+}
+
+void blendPixel(int x, int y, int c) {
+  c = c & 0xff;
+  image[3*(x*512+y)] = (c*fg_red+(256-c)*image[3*(x*512+y)]) >> 8;
+  image[3*(x*512+y)+1] = (c*fg_red+(256-c)*image[3*(x*512+y)+1]) >> 8;
+  image[3*(x*512+y)+2] = (c*fg_red+(256-c)*image[3*(x*512+y)+2]) >> 8;
 }
 
 void Plot8CirclePoints(int cx, int cy, int x, int y, int c) {

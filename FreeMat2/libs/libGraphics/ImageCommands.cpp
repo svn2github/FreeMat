@@ -177,7 +177,7 @@ namespace FreeMat {
       throw Exception("printimage function takes a single, string argument");
     Array t(arg[0]);
     ScalarImage* f = GetCurrentImage();
-    f->Print(t.getContentsAsCString());
+    f->PrintMe(t.getContentsAsCString());
     return ArrayVector();
   }
 

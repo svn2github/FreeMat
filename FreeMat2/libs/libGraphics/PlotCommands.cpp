@@ -261,7 +261,8 @@ namespace FreeMat {
       throw Exception("printplot function takes a single, string argument");
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
-    f->Print(t.getContentsAsCString());
+	std::string outname(t.getContentsAsCString());
+    f->PrintMe(outname.c_str());
     return ArrayVector();
   }
 

@@ -6,7 +6,7 @@ More stuff:
 6.  Copy/Paste?
 7.  Filename completions still not quite right on Win32...
 8.  OpenGL?
-9.  Resize of plot doesn't fill in background...
+9.  Resize of plot doesn't fill in background...  - not on XP?
 10. Robustify plot-style handler
 
 General Issues:

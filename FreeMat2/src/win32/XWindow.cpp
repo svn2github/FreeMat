@@ -1,4 +1,5 @@
 #include "XWindow.hpp"
+#include "WinGC.hpp"
 #include "RGBImageGC.hpp"
 #include "PostScriptGC.hpp"
 #include "Exception.hpp"
@@ -15,6 +16,7 @@ HINSTANCE AppInstance;
 
 XWindow::XWindow(WindowType wtype) {
   m_type = wtype;
+#if 0
   m_window = CreateWindow("FreeMat Window",
 			  "Figure Window",
 			  WS_OVERLAPPEDWINDOW,
@@ -26,13 +28,14 @@ XWindow::XWindow(WindowType wtype) {
 			  NULL,
 			  AppInstance,
 			  NULL);
-//  defcursor = LoadCursor(NULL, IDC_ARROW);
-//  clickcursor = LoadCursor(NULL, IDC_CROSS);
-  defcursor = LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
-  clickcursor = LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
-  SetWindowLong(m_window,GWL_USERDATA,(LONG) this);
+#endif
   m_width = 500;
   m_height = 400;
+#if 0
+  SetWindowLong(m_window,GWL_USERDATA,(LONG) this);
+  defcursor = (HCURSOR) LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
+  clickcursor = (HCURSOR) LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
+#endif
 }
 
 XWindow::~XWindow() {
@@ -63,8 +66,12 @@ void XWindow::OnExpose(int x, int y, int w, int h) {
     BitBlt(hdc, x, y, w, h, hdcMem, x, y, SRCCOPY);
     DeleteDC(hdcMem);
     ReleaseDC(m_window, hdc);
-  } else
-    OnDraw(*this);
+  } else {
+    	  HDC hdc = GetDC(m_window);
+      WinGC wgc(hdc, m_width, m_height);
+    OnDraw(wgc);
+      ReleaseDC(m_window, hdc);
+  }
 }
 
 void XWindow::Refresh() {
@@ -135,8 +142,13 @@ void XWindow::OnResize(int w, int h) {
   if (w == 0 || h == 0) return;
   m_width = w;
   m_height = h;
-  if (m_type == BitmapWindow)
-    OnDraw(*this);
+  if (m_type == BitmapWindow) {
+	  // SKB - this is stupid... must be a cleaner way.
+    HDC hdc = GetDC(m_window);
+    WinGC wgc(hdc, m_width, m_height);
+       OnDraw(wgc);
+ 	  ReleaseDC(m_window, hdc);
+  }
   OnSize();
   InvalidateRect(m_window,NULL,TRUE);
   UpdateWindow(m_window);
@@ -150,52 +162,12 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
 }
 
 void XWindow::UpdateContents(unsigned char *data, int width, int height) {
-  OnDraw(*this);
-//   RGBImage img(width, height, data);
-//   RGBImageGC gc(img);
-//   img.SetAllPixels(Color("light grey"));
-//   OnDraw(gc);
+   HDC hdc = GetDC(m_window);
+   WinGC wgc(hdc, m_width, m_height);
+   OnDraw(wgc);
+   ReleaseDC(m_window, hdc);
 }
 
-void XWindow::Print(std::string filename) {
-  // Logic to detect print mode..
-  int np;
-  np = filename.find_last_of(".");
-  if (np > 0) {
-    std::string extension(filename.substr(np));
-	std::transform (extension.begin(), extension.end(), 
-	       extension.begin(), tolower);
-    if (extension == ".eps" || extension == ".ps") {
-      PostScriptGC gc(filename, m_width, m_height);
-      OnDraw(gc);
-    } else {
-      unsigned char *data;
-      data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
-      RGBImage img(m_width, m_height, data);
-      RGBImageGC gc(img);
-      img.SetAllPixels(Color("light grey"));
-      OnDraw(gc);
-      if (extension == ".jpeg" || extension == ".jpg") {
-	img.WriteJPEG(filename);
-	// JPEG
-      } else if (extension == ".png") {
-	img.WritePNG(filename);
-	// PNG
-      } else if (extension == ".tiff" || extension == ".tif") {
-	img.WriteTIFF(filename);
-	// TIFF
-      } else if (extension == ".ppm" || extension == ".pnm") {
-	img.WritePPM(filename);
-	// PPM
-      } else {
-	free(data);
-	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
-      }
-      free(data);
-    }
-  } else
-    throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
-}
 
 void XWindow::SetImage(unsigned char *data, int width, int height) {
   // Check for PseudoColor visual
@@ -254,212 +226,52 @@ int XWindow::GetState() {
 void XWindow::GetBox(int &x1, int &y1, int &x2, int &y2) {
 }
 
-Point2D XWindow::GetCanvasSize() {
-  return Point2D(m_width,m_height);
-}
-
-Point2D XWindow::GetTextExtent(std::string label) {
-  Point2D a;
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SIZE t;
-  GetTextExtentPoint32(hdc, label.c_str(), label.size(), &t);
-  a.x = t.cx;
-  a.y = t.cy;
-  ReleaseDC(m_window, hdc);
-  return a;
-}
-
-void XWindow::DrawTextString(std::string label, Point2D pos, OrientationType orient) {
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SIZE t;
-  GetTextExtentPoint32(hdc, label.c_str(), label.size(), &t);
-  int twiddlex, twiddley;
-  if (orient == ORIENT_0) {
-	SelectObject(hdc, m_hfont);
-	twiddlex = 0;
-	twiddley = -t.cy;
-  }
-  else {
-	SelectObject(hdc, m_vfont);
-	twiddlex = -t.cy;
-	twiddley = 0;
-  }
-  SetBkColor(hdc, RGB(bgcol.red,bgcol.green,bgcol.blue));
-  TextOut(hdc,pos.x+twiddlex, pos.y+twiddley, label.c_str(), label.size());
-  ReleaseDC(m_window, hdc);
-}
-
-void XWindow::SetFont(std::string fontname, int fontsize) {
-  int nHeight;
-  HDC hdc;
-  hdc = GetDC(m_window);
-  nHeight = -MulDiv(fontsize-2, GetDeviceCaps(hdc, LOGPIXELSY), 72);
-  m_hfont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 
-		       FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS,
-		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 
-		       FF_SWISS, "Arial");
-  m_vfont = CreateFont(nHeight, 0, 900, 900, FW_NORMAL, FALSE, FALSE, 
-		       FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS,
-		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 
-		       FF_SWISS, "Arial");
-  ReleaseDC(m_window, hdc);
-}
-
-Color XWindow::SetBackGroundColor(Color col) {
-	Color oldbg;
-	oldbg = bgcol;
-    HDC hdc;
-    hdc = GetDC(m_window);
-	SetBkColor(hdc, RGB(col.red,col.green,col.blue));
-	bgcol = col;
-    ReleaseDC(m_window, hdc);  
-	return oldbg;
-}
-
-Color XWindow::SetForeGroundColor(Color col) {
-	Color oldfg;
-	oldfg = fgcol;
-	fgcol = col;
-	return oldfg;
-}
-
-LineStyleType XWindow::SetLineStyle(LineStyleType style) {
-  LineStyleType old_style;
-  old_style = m_style;
-  m_style = style;
-  return old_style;
-}
-
-HPEN GetWinPen(LineStyleType style, Color col) {
-	HPEN hpen;
-	int penStyle;
-	switch (style) {
-	case LINE_SOLID:
-		penStyle = PS_SOLID;
-		break;
-	case LINE_DASHED:
-		penStyle = PS_DASH;
-		break;
-	case LINE_DOTTED:
-		penStyle = PS_DOT;
-		break;
-	case LINE_DASH_DOT:
-		penStyle = PS_DASHDOT;
-		break;
-	}
-	hpen = CreatePen(penStyle,1,RGB(col.red,col.green,col.blue));
-	return hpen;
-}
-
-void XWindow::DrawLine(Point2D pos1, Point2D pos2) {
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SelectClipRgn(hdc,clipwin);
-  HPEN hpen = GetWinPen(m_style, fgcol);
-  SelectObject(hdc, hpen);
-  MoveToEx(hdc, pos1.x, pos1.y, NULL);
-  LineTo(hdc, pos2.x, pos2.y);
-  ReleaseDC(m_window, hdc);
-  DeleteObject(hpen);
-}
-
-void XWindow::DrawPoint(Point2D pos) {
-}
-
-void XWindow::DrawCircle(Point2D pos, int radius) {
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SelectClipRgn(hdc,clipwin);
-  HPEN hpen = GetWinPen(m_style, fgcol);
-  SelectObject(hdc, hpen);
-  SelectObject(hdc, GetStockObject(NULL_BRUSH));
-  Ellipse(hdc, pos.x - radius, pos.y - radius,
-	  pos.x + radius, pos.y + radius);
-  ReleaseDC(m_window, hdc);  
-  DeleteObject(hpen);
-}
-
-void XWindow::DrawRectangle(Rect2D rect) {
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SelectClipRgn(hdc,clipwin);
-  HPEN hpen = GetWinPen(m_style, fgcol);
-  SelectObject(hdc, hpen);
-  Rectangle(hdc, rect.x1, rect.y1, 
-	  rect.x1+rect.width, rect.y1+rect.height);
-  ReleaseDC(m_window, hdc);  
-  DeleteObject(hpen);
-}
-
-void XWindow::FillRectangle(Rect2D rect) {
-  HBRUSH hbrush;
-  hbrush = CreateSolidBrush(RGB(fgcol.red,fgcol.green,fgcol.blue));
-  RECT rt;
-  rt.left = rect.x1;
-  rt.top = rect.y1;
-  rt.right = rect.x1+rect.width;
-  rt.bottom = rect.y1+rect.height;
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SelectClipRgn(hdc,clipwin);
-  FillRect(hdc, &rt, hbrush);
-  ReleaseDC(m_window, hdc);  
-  DeleteObject(hbrush);
-}
-
-void XWindow::DrawLines(std::vector<Point2D> pts) {
-  POINT *pt;
-  pt = (POINT *) malloc(sizeof(POINT)*pts.size());
-  int i;
-  for (i=0;i<pts.size();i++) {
-	  pt[i].x = pts[i].x;
-	  pt[i].y = pts[i].y;
-  }
-  HDC hdc;
-  hdc = GetDC(m_window);
-  SelectClipRgn(hdc,clipwin);
-  HPEN hpen = GetWinPen(m_style, fgcol);
-  SelectObject(hdc, hpen);
-  Polyline(hdc, pt, pts.size());
-  ReleaseDC(m_window, hdc);
-  DeleteObject(hpen);
-}
-
-void XWindow::PushClippingRegion(Rect2D rect) {
-  clipwin = CreateRectRgn(rect.x1, rect.y1, 
-			  rect.x1+rect.width, rect.y1+rect.height);
-  clipstack.push_back(rect);
-}
-
-Rect2D XWindow::PopClippingRegion() {
-  clipstack.pop_back();
-  Rect2D rect;
-  if (clipstack.empty()) {
-    rect.x1 = 0;
-    rect.y1 = 0;
-    rect.width = m_width;
-    rect.height = m_height;
-  } else {
-    rect = clipstack.back();
-  }
-  clipwin = CreateRectRgn(rect.x1, rect.y1, 
-			  rect.x1+rect.width, rect.y1+rect.height);
-  return rect;
-}
-
-void XWindow::BlitGrayscaleImage(Point2D pos, GrayscaleImage &img) {
-}
-
-void XWindow::BlitRGBImage(Point2D pos, RGBImage &img) {
-}
-
 void XWindow::SetTheCursor() {
-	if (m_state == state_click_waiting)
-		SetCursor(clickcursor);
-	else
-		SetCursor(defcursor);
+//	if (m_state == state_click_waiting)
+//		SetCursor(clickcursor);
+//	else
+//		SetCursor(defcursor);
+}
+
+
+void XWindow::PrintMe(std::string filename) {
+  // Logic to detect print mode..
+  int np;
+  np = filename.find_last_of(".");
+  if (np > 0) {
+    std::string extension(filename.substr(np));
+	std::transform (extension.begin(), extension.end(), 
+	       extension.begin(), tolower);
+    if (extension == ".eps" || extension == ".ps") {
+      PostScriptGC gc(filename, m_width, m_height);
+      OnDraw(gc);
+    } else {
+      unsigned char *data;
+      data = (unsigned char*) malloc(3*sizeof(char)*m_width*m_height);
+      RGBImage img(m_width, m_height, data);
+      RGBImageGC gc(img);
+      img.SetAllPixels(Color("light grey"));
+      OnDraw(gc);
+      if (extension == ".jpeg" || extension == ".jpg") {
+	img.WriteJPEG(filename);
+	// JPEG
+      } else if (extension == ".png") {
+	img.WritePNG(filename);
+	// PNG
+      } else if (extension == ".tiff" || extension == ".tif") {
+	img.WriteTIFF(filename);
+	// TIFF
+      } else if (extension == ".ppm" || extension == ".pnm") {
+	img.WritePPM(filename);
+	// PPM
+      } else {
+	free(data);
+	throw FreeMat::Exception(std::string("Unrecognized extension ") + extension);
+      }
+      free(data);
+    }
+  } else
+    throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
 }
 
 
@@ -508,7 +320,7 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
   wndclass.cbWndExtra = 4;
   wndclass.hInstance = hInstance;
   wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  wndclass.hCursor = NULL;
+  wndclass.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
   wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
   wndclass.lpszMenuName = NULL;
   wndclass.lpszClassName = "Freemat Window";

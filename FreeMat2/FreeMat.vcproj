@@ -88,9 +88,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="libs\libFN,libs\libXP,libs\libFreeMat,libs\libffi\msvc_build,libs\libCore,libs\libGraphics,C:/Program\ Files/HTML\ Help\ Workshop/include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
-				BasicRuntimeChecks="3"
+				AdditionalIncludeDirectories="libs\libfltk;libs\libFN;libs\libXP;libs\libFreeMat;libs\libffi\msvc_build;libs\libCore;libs\libGraphics;&quot;C:/Program\ Files/HTML\ Help\ Workshop/include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;VC_EXTRA_LEAN;WIN32_EXTRA_LEAN"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="5"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/FreeMat.pch"
@@ -105,10 +105,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ws2_32.lib libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libFN\Debug\libFN.lib  libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib libs\lpng125\Debug\lpng125.lib libs\libz\Debug\libz.lib src\win32\htmlhelp.lib"
+				AdditionalDependencies="libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libFN\Debug\libFN.lib libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib  libs\lpng125\Debug\lpng125.lib libs\libz\Debug\libz.lib src\win32\htmlhelp.lib comctl32.lib wsock32.lib"
 				OutputFile=".\Debug/FreeMat.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				IgnoreAllDefaultLibraries="FALSE"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/FreeMat.pdb"
 				SubSystem="2"
@@ -169,99 +171,10 @@
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="src\win32\Script1.rc">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="src\win32"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="src\win32"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="src\win32\WinGC.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="src\win32\WinTerminal.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="src\win32\XWindow.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
-			<File
-				RelativePath="src\win32\resource.h">
-			</File>
-			<File
-				RelativePath="src\win32\WinGC.hpp">
-			</File>
-			<File
-				RelativePath="src\win32\WinTerminal.hpp">
-			</File>
-			<File
-				RelativePath="src\win32\XWindow.hpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

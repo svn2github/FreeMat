@@ -5,6 +5,12 @@
 namespace FreeMat {
 
 #ifdef WIN32
+
+	std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
+	std::vector<std::string> retval;
+	
+	return retval;
+	}
 #if 0
 #include <stdio.h> 
 #include <windows.h> 

@@ -2140,8 +2140,6 @@ break;
 
     if (isEmpty())
       throw Exception("Cannot index into empty variable.");
-    if (isSparse())
-      throw Exception("getNDimSubset not supported for sparse arrays.");
     try {
       int L = index.size();
       // Convert the indexing variables into an ordinal type.
@@ -2158,7 +2156,21 @@ break;
       for (i=0;i<L;i++) {
 	outDims[i] = (index[i].getLength());
 	indx[i] = (constIndexPtr) index[i].dp->getData();
-      }    
+      }
+      if (isSparse()) {
+	if (L > 2)
+	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays");
+	return Array(dp->dataClass,outDims,
+		     GetSparseNDimSubsets(dp->dataClass,
+					  getDimensionLength(0),
+					  getDimensionLength(1),
+					  dp->getData(),
+					  (const indexType*) indx[0],
+					  outDims[0],
+					  (const indexType*) indx[1],
+					  outDims[1]),
+		     true);
+      }
       qp = allocateArray(dp->dataClass,outDims.getElementCount(),dp->fieldNames);
       Dimensions argPointer(L);
       Dimensions currentIndex(L);

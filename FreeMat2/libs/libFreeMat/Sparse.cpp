@@ -855,7 +855,6 @@ namespace FreeMat {
     }
   }
 			  
-
   void DeleteSparseMatrix(Class dclass, int rows, int cols, void *cp) {
     switch(dclass) {
     case FM_INT32:

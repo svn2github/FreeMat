@@ -5,19 +5,28 @@
 #include "Array.hpp"
 
 namespace FreeMat {
+  // Test 56
   void DeleteSparseMatrix(Class dclass, int rows, int cols, void * cp);
+  // Test 57
   void* makeDenseArray(Class dclass, int rows, int cols, const void* cp);
+  // Test 57
   void* makeSparseArray(Class dclass, int rows, int cols, const void* cp);
+  // Test 58
   void* TypeConvertSparse(Class dclass, int rows, int cols, 
 			  const void *cp, Class oclass);
+  // Test 57 & 58
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp);
   int CountNonzeros(Class dclass, int rows, int cols, const void *cp);
+  // Test 59
   void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
 				  const void* ap, const void* bp);
+  // Test 60
   void* DenseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
 				  const void* ap, const void* bp);
+  // Test 61
   void* SparseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
 				   const void* ap, const void* bp);
+  // Test 62
   void* SparseMatrixConstructor(Class dclass, int rows, int cols,
 				ArrayMatrix m);
   void* GetSparseVectorSubsets(Class dclass, int rows, int cols, 

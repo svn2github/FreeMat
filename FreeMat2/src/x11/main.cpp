@@ -250,7 +250,21 @@ int main(int argc, char *argv[]) {
     }
     term->RestoreOriginalMode();
   } else {
-    win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,"");
+    // We need to find the help files...
+    // To do so, we need to search through the
+    // path.
+    std::string helppath;
+    if (envPtr) {
+      PathSearcher psearch(envPtr);
+      try {
+	helppath = psearch.ResolvePath("../html/index.html");
+      } catch (Exception& E) {
+	helppath = "/usr/local/share/FreeMat/html/index.html";
+      }
+    } else 
+      helppath = "/usr/local/share/FreeMat/html/index.html";
+    win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,
+				 helppath.c_str());
     win->term()->setContext(context);
     if (envPtr)
       win->term()->setPath(std::string(envPtr));

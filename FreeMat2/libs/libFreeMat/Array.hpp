@@ -167,12 +167,12 @@ namespace FreeMat {
      * Get the reference count to our data object - useful for 
      * debug purposes.
      */
-    const int getReferenceCount() const;
+    int getReferenceCount() const;
     /**
      * Get the length of the array as a vector.  This is equivalent
      * to computing length(this(:)).
      */
-    const int getLength() const;
+    int getLength() const;
     /**
      * Get a copy of our dimensions vector.
      */
@@ -184,7 +184,7 @@ namespace FreeMat {
     /**
      * Get our length along the given dimension.
      */
-    const int getDimensionLength(int) const;
+    int getDimensionLength(int) const;
     /** Get the contents of our data block as a (read-only) void* pointer.
      * Get the contents of our data block as a void* pointer.  The
      * resulting pointer is read only, so that no modifications can

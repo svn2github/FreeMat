@@ -40,7 +40,7 @@ namespace FreeMat {
    ***************************************************************************/
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void doubleSolveLinEq(Interface* io, const int m, const int n, double *c, double* a, double *b) {
+  void doubleSolveLinEq(Interface* io, int m, int n, double *c, double* a, double *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE DGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -358,7 +358,7 @@ namespace FreeMat {
   }
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void dcomplexSolveLinEq(Interface* io, const int m, const int n, double *c, double* a, double *b) {
+  void dcomplexSolveLinEq(Interface* io, int m, int n, double *c, double* a, double *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE ZGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -680,7 +680,7 @@ namespace FreeMat {
    ***************************************************************************/
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void floatSolveLinEq(Interface* io, const int m, const int n, float *c, float* a, float *b) {
+  void floatSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE SGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -996,7 +996,7 @@ namespace FreeMat {
   }
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void complexSolveLinEq(Interface* io, const int m, const int n, float *c, float* a, float *b) {
+  void complexSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE CGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,

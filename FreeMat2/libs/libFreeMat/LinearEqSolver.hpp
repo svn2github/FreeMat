@@ -33,25 +33,25 @@ namespace FreeMat {
    * $$m \times n$$.  All quantities are double precision.  Uses the
    * LAPACK function dgesvx.
    */
-  void doubleSolveLinEq(Interface* io, const int m, const int n, double *c, double* a, double *b);
+  void doubleSolveLinEq(Interface* io, int m, int n, double *c, double* a, double *b);
   /**
    * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
    * $$m \times n$$.  All quantities are double-complex precision.  Uses the
    * LAPACK function zgesvx.
    */
-  void dcomplexSolveLinEq(Interface* io, const int m, const int n, double *c, double* a, double *b);
+  void dcomplexSolveLinEq(Interface* io, int m, int n, double *c, double* a, double *b);
   /**
    * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
    * $$m \times n$$.  All quantities are single precision.  Uses the
    * LAPACK function sgesvx.
    */
-  void floatSolveLinEq(Interface* io, const int m, const int n, float *c, float* a, float *b);
+  void floatSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b);
   /**
    * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
    * $$m \times n$$.  All quantities are complex precision.  Uses the
    * LAPACK function cgesvx.
    */
-  void complexSolveLinEq(Interface* io, const int m, const int n, float *c, float* a, float *b);
+  void complexSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b);
 }
 
 #endif

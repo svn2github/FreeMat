@@ -26,7 +26,7 @@
 
 namespace FreeMat {
 
-  void floatSVD(const int nrows, const int ncols, float *u, float *vt, 
+  void floatSVD(int nrows, int ncols, float *u, float *vt, 
 		float *s, float *a, bool compact, bool vectors) {
     //      SUBROUTINE SGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
     //     $                   LWORK, IWORK, INFO )
@@ -209,7 +209,7 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void doubleSVD(const int nrows, const int ncols, double *u, double *vt,
+  void doubleSVD(int nrows, int ncols, double *u, double *vt,
 		 double *s, double *a, bool compact, bool vectors) {
     char JOBZ;
     if (!vectors)
@@ -256,7 +256,7 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void complexSVD(const int nrows, const int ncols, float *u, float *vt, 
+  void complexSVD(int nrows, int ncols, float *u, float *vt, 
 		  float *s, float *a, bool compact, bool vectors) {
     //       SUBROUTINE CGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
     //      $                   LWORK, RWORK, IWORK, INFO )
@@ -440,7 +440,7 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void dcomplexSVD(const int nrows, const int ncols, double *u, double *vt, 
+  void dcomplexSVD(int nrows, int ncols, double *u, double *vt, 
 		   double *s, double *a, bool compact, bool vectors) {
     char JOBZ;
     if (!vectors)

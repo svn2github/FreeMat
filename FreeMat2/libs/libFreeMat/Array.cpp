@@ -521,14 +521,14 @@ namespace FreeMat {
       dp = NULL;
   }
 
-  const int Array::getReferenceCount() const {
+  int Array::getReferenceCount() const {
     if (dp)
       return dp->numberOfOwners();
     else
       return 0;
   }
 
-  const int Array::getLength() const {
+  int Array::getLength() const {
     if (dp)
       return dp->dimensions.getElementCount();
     else
@@ -549,7 +549,7 @@ namespace FreeMat {
       return stringVector();
   }
 
-  const int Array::getDimensionLength(int t) const {
+  int Array::getDimensionLength(int t) const {
     if (dp)
       return dp->dimensions[t];
     else

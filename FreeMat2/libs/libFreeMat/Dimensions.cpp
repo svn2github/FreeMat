@@ -72,11 +72,11 @@ namespace FreeMat {
     return data[i];
   }
 
-  const int Dimensions::getLength() const{
+  int Dimensions::getLength() const{
     return length;
   }
 
-  const int Dimensions::getElementCount() const {
+  int Dimensions::getElementCount() const {
     int retval;
 
     if (length == 0) return 0;
@@ -86,14 +86,14 @@ namespace FreeMat {
     return retval;
   }
 
-  const int Dimensions::getRows() const {
+  int Dimensions::getRows() const {
     if (length == 0) 
       return 0;
     else
       return data[0];
   }
 
-  const int Dimensions::getColumns() const {
+  int Dimensions::getColumns() const {
     if (length == 0)
       return 0;
     else if (length == 1)
@@ -102,7 +102,7 @@ namespace FreeMat {
       return data[1];
   }
 
-  const int Dimensions::getDimensionLength(int arg) const {
+  int Dimensions::getDimensionLength(int arg) const {
     if (length <= arg)
       return 1;
     else
@@ -113,7 +113,7 @@ namespace FreeMat {
     data[dim] = len;
   }
 
-  const int Dimensions::mapPoint(const Dimensions& point) throw (Exception) {
+  int Dimensions::mapPoint(const Dimensions& point) throw (Exception) {
     int retval;
     int nextCoeff;
     int testableDims;

@@ -80,13 +80,13 @@ namespace FreeMat {
     /**
      * Get the number of currently allocated dimensions.
      */
-    const int getLength() const;
+    int getLength() const;
     /**
      * Return the total number of elements in the associated Array object.
      * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
      * of length, and $$a_i$$ is equivalent to data[i].
      */
-    const int getElementCount() const;
+    int getElementCount() const;
     /**
      * Map the given point using the current Dimensions.  If the argument
      * values are denoted as $$b_i$$, and our dimensions are $$a_i$$, then
@@ -96,24 +96,24 @@ namespace FreeMat {
      *   - any of the arguments are outside the valid range, i.e., 
      *     $$b_i < 0$$ or $$b_i >= a_i$$.
      */
-    const int mapPoint(const Dimensions& point) throw (Exception);
+    int mapPoint(const Dimensions& point) throw (Exception);
     /**
      * Returns the first dimension value (or zero if no dimensions have
      * been defined yet).
      */
-    const int getRows() const;
+    int getRows() const;
     /**
      * Returns the second dimension value (or zero if no dimensions have
      * been defined yet).
      */
-    const int getColumns() const;
+    int getColumns() const;
     /**
      * Returns the requested dimension, or a 1 if the requested dimension
      * exceeds the currently allocated number of dimensions.  Unlike
      * the access operator, this call does not modify the contents of
      * the class.
      */
-    const int getDimensionLength(int arg) const;
+    int getDimensionLength(int arg) const;
     /**
      * A synonym for (*this)[dim] = len.
      */

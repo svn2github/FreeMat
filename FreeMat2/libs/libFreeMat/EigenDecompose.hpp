@@ -31,13 +31,13 @@ namespace FreeMat {
    * eigenvalues are stored in the array d, with the real and 
    * imaginary parts stored sequentially.
    */
-  void floatEigenDecompose(const int n, float *v, float *d, float *a,
+  void floatEigenDecompose(int n, float *v, float *d, float *a,
 			   bool eigenvectors, bool balance);
-  void floatEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
+  void floatEigenDecomposeSymmetric(int n, float *v, float *d, float *a,
 				    bool eigenvectors);
-  void floatGenEigenDecompose(const int n, float *v, float *d, float *a,
+  void floatGenEigenDecompose(int n, float *v, float *d, float *a,
 			      float *b, bool eigenvectors);
-  bool floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool floatGenEigenDecomposeSymmetric(int n, float *v, float *d,
 				       float *a, float *b, bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, complex valued
@@ -46,13 +46,13 @@ namespace FreeMat {
    * pre-allocated before the routine is called.  The $$n$$ complex 
    * eigenvalues are stored in the array d.
    */
-  void complexEigenDecompose(const int n, float *v, float *d, float *a,
+  void complexEigenDecompose(int n, float *v, float *d, float *a,
 			     bool eigenvectors, bool balance);
-  void complexEigenDecomposeSymmetric(const int n, float *v, float *d, 
+  void complexEigenDecomposeSymmetric(int n, float *v, float *d, 
 				      float *a, bool eigenvectors);
-  void complexGenEigenDecompose(const int n, float *v, float *d, float *a,
+  void complexGenEigenDecompose(int n, float *v, float *d, float *a,
 			      float *b, bool eigenvectors);
-  bool complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool complexGenEigenDecomposeSymmetric(int n, float *v, float *d,
 					 float *a, float *b, 
 					 bool eigenvectors);
   /**
@@ -63,13 +63,13 @@ namespace FreeMat {
    * eigenvalues are stored in the array d, with the real and 
    * imaginary parts stored sequentially.
    */
-  void doubleEigenDecompose(const int n, double *v, double *d, double *a,
+  void doubleEigenDecompose(int n, double *v, double *d, double *a,
 			    bool eigenvectors, bool balance);
-  void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, 
+  void doubleEigenDecomposeSymmetric(int n, double *v, double *d, 
 				     double *a, bool eigenvectors);
-  void doubleGenEigenDecompose(const int n, double *v, double *d, double *a,
+  void doubleGenEigenDecompose(int n, double *v, double *d, double *a,
 			      double *b, bool eigenvectors);
-  bool doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool doubleGenEigenDecomposeSymmetric(int n, double *v, double *d,
 				       double *a, double *b, 
 					bool eigenvectors);
   /**
@@ -79,13 +79,13 @@ namespace FreeMat {
    * pre-allocated before the routine is called.  The $$n$$ dcomplex 
    * eigenvalues are stored in the array d.
    */
-  void dcomplexEigenDecompose(const int n, double *v, double *d, double *a,
+  void dcomplexEigenDecompose(int n, double *v, double *d, double *a,
 			   bool eigenvectors, bool balance);
-  void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d, 
+  void dcomplexEigenDecomposeSymmetric(int n, double *v, double *d, 
 				       double *a, bool eigenvectors);
-  void dcomplexGenEigenDecompose(const int n, double *v, double *d, double *a,
+  void dcomplexGenEigenDecompose(int n, double *v, double *d, double *a,
 				 double *b, bool eigenvectors);
-  bool dcomplexGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool dcomplexGenEigenDecomposeSymmetric(int n, double *v, double *d,
 					  double *a, double *b, 
 					  bool eigenvectors);
 }

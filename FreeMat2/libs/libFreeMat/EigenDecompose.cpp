@@ -28,7 +28,7 @@
 
 namespace FreeMat {
 
-  void floatEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
+  void floatEigenDecomposeSymmetric(int n, float *v, float *d, float *a,
 				    bool eigenvectors) {
     //      SUBROUTINE SSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
     //*  Purpose
@@ -121,7 +121,7 @@ namespace FreeMat {
       memcpy(v,a,n*n*sizeof(float));
   }
 
-  void floatEigenDecompose(const int n, float *v, float *d, float *a,
+  void floatEigenDecompose(int n, float *v, float *d, float *a,
 			   bool eigenvectors, bool balance) {
     //	SUBROUTINE SGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR, WI,
     //     $                   VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
@@ -382,7 +382,7 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void floatGenEigenDecompose(const int n, float *v, float *d, float *a,
+  void floatGenEigenDecompose(int n, float *v, float *d, float *a,
 			      float *b, bool eigenvectors) {
     //    SUBROUTINE SGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR, ALPHAI,
     //     $                  BETA, VL, LDVL, VR, LDVR, WORK, LWORK, INFO )
@@ -546,7 +546,7 @@ namespace FreeMat {
     Free(WORK);
   }
   
-  bool floatGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool floatGenEigenDecomposeSymmetric(int n, float *v, float *d,
 				       float *a, float *b, bool eigenvectors) {
     //          SUBROUTINE SSYGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK,
     //     $                  LWORK, INFO )
@@ -668,7 +668,7 @@ namespace FreeMat {
     return true;
   }
 
-  void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, 
+  void doubleEigenDecomposeSymmetric(int n, double *v, double *d, 
 				     double *a, bool eigenvectors) {
     //      SUBROUTINE DSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
     //*  Purpose
@@ -761,7 +761,7 @@ namespace FreeMat {
       memcpy(v,a,n*n*sizeof(double));
   }
 
-  void doubleEigenDecompose(const int n, double *v, double *d, double *a,
+  void doubleEigenDecompose(int n, double *v, double *d, double *a,
 			    bool eigenvectors, bool balance) {
     //	SUBROUTINE DGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR, WI,
     //     $                   VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
@@ -1022,7 +1022,7 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void doubleGenEigenDecompose(const int n, double *v, double *d, double *a,
+  void doubleGenEigenDecompose(int n, double *v, double *d, double *a,
 			      double *b, bool eigenvectors) {
     char JOBVL = 'N';
     char JOBVR;
@@ -1062,7 +1062,7 @@ namespace FreeMat {
     Free(WORK);
   }
   
-  bool doubleGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool doubleGenEigenDecomposeSymmetric(int n, double *v, double *d,
 				       double *a, double *b, bool eigenvectors) {
     int ITYPE = 1;
     char JOBZ;
@@ -1093,7 +1093,7 @@ namespace FreeMat {
     return true;
   }
 
-  void complexEigenDecomposeSymmetric(const int n, float *v, float *d,
+  void complexEigenDecomposeSymmetric(int n, float *v, float *d,
 				      float *a, bool eigenvectors) {
     //        SUBROUTINE CHEEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, RWORK,
     //     $                  INFO )
@@ -1190,7 +1190,7 @@ namespace FreeMat {
       memcpy(v,a,2*n*n*sizeof(float));
   }
 
-  void complexEigenDecompose(const int n, float *v, float *d, float *a,
+  void complexEigenDecompose(int n, float *v, float *d, float *a,
 			     bool eigenvectors, bool balance) {
     //	SUBROUTINE CGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, W, VL,
     //     $                   LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM, RCONDE,
@@ -1456,7 +1456,7 @@ namespace FreeMat {
     c[0] = cr;
   }
 
-  void complexGenEigenDecompose(const int n, float *v, float *d, float *a,
+  void complexGenEigenDecompose(int n, float *v, float *d, float *a,
 				float *b, bool eigenvectors) {
     //      SUBROUTINE CGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHA, BETA,
     //     $                  VL, LDVL, VR, LDVR, WORK, LWORK, RWORK, INFO )
@@ -1609,7 +1609,7 @@ namespace FreeMat {
     Free(WORK);
   }
 
-  bool complexGenEigenDecomposeSymmetric(const int n, float *v, float *d,
+  bool complexGenEigenDecomposeSymmetric(int n, float *v, float *d,
 					 float *a, float *b, 
 					 bool eigenvectors) {
     //      SUBROUTINE CHEGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK,
@@ -1735,7 +1735,7 @@ namespace FreeMat {
     return true;
   }
 
-  void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d,
+  void dcomplexEigenDecomposeSymmetric(int n, double *v, double *d,
 				       double *a, bool eigenvectors) {
     //        SUBROUTINE ZHEEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, RWORK,
     //     $                  INFO )
@@ -1832,7 +1832,7 @@ namespace FreeMat {
       memcpy(v,a,2*n*n*sizeof(double));
   }
 
-  void dcomplexEigenDecompose(const int n, double *v, double *d, 
+  void dcomplexEigenDecompose(int n, double *v, double *d, 
 			      double *a, bool eigenvectors, bool balance) {
     //	SUBROUTINE ZGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, W, VL,
     //     $                   LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM, RCONDE,
@@ -2096,7 +2096,7 @@ namespace FreeMat {
     c[0] = cr;
   }
 
-  bool dcomplexGenEigenDecomposeSymmetric(const int n, double *v, double *d,
+  bool dcomplexGenEigenDecomposeSymmetric(int n, double *v, double *d,
 					  double *a, double *b, 
 					  bool eigenvectors) {
     int ITYPE = 1;
@@ -2131,7 +2131,7 @@ namespace FreeMat {
     return true;
   }
 
-  void dcomplexGenEigenDecompose(const int n, double *v, double *d,
+  void dcomplexGenEigenDecompose(int n, double *v, double *d,
 				 double *a, double *b, 
 				 bool eigenvectors) {
     char JOBVL = 'N';

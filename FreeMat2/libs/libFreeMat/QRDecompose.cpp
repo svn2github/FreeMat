@@ -35,7 +35,7 @@ namespace FreeMat {
   // Generally speaking, a QR decomposition should be Q=MxN and R=NxN
   // if M>N.  If M<=N, then Q=MxM, R = MxN.  In either case, if L=min(M,N),
   // then Q = MxL and R=LxN
-  void floatQRD(const int nrows, const int ncols, float *q, float *r, float *a) {
+  void floatQRD(int nrows, int ncols, float *q, float *r, float *a) {
     //      SUBROUTINE SGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
     //*
     //*  -- LAPACK routine (version 3.0) --
@@ -211,7 +211,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void doubleQRD(const int nrows, const int ncols, double *q, double *r, double *a) {
+  void doubleQRD(int nrows, int ncols, double *q, double *r, double *a) {
     int M = nrows;
     int N = ncols;
     double *A;
@@ -257,7 +257,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void complexQRD(const int nrows, const int ncols, float *q, float *r, float *a) {
+  void complexQRD(int nrows, int ncols, float *q, float *r, float *a) {
     //      SUBROUTINE CGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
     //*
     //*  -- LAPACK routine (version 3.0) --
@@ -438,7 +438,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void dcomplexQRD(const int nrows, const int ncols, double *q, double *r, double *a) {
+  void dcomplexQRD(int nrows, int ncols, double *q, double *r, double *a) {
     int M = nrows;
     int N = ncols;
     double *A;
@@ -488,7 +488,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void floatQRDP(const int nrows, const int ncols, float *q, float *r, int *p, float *a) {
+  void floatQRDP(int nrows, int ncols, float *q, float *r, int *p, float *a) {
     //      SUBROUTINE SGEQP3( M, N, A, LDA, JPVT, TAU, WORK, LWORK, INFO )
     //*
     //*  -- LAPACK routine (version 3.0) --
@@ -672,7 +672,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void doubleQRDP(const int nrows, const int ncols, double *q, double *r, int *p, double *a) {
+  void doubleQRDP(int nrows, int ncols, double *q, double *r, int *p, double *a) {
     int M = nrows;
     int N = ncols;
     double *A;
@@ -720,7 +720,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void complexQRDP(const int nrows, const int ncols, float *q, float *r, int *p, float *a) {
+  void complexQRDP(int nrows, int ncols, float *q, float *r, int *p, float *a) {
     //      SUBROUTINE CGEQP3( M, N, A, LDA, JPVT, TAU, WORK, LWORK, RWORK,
     //     $                   INFO )
     //*
@@ -913,7 +913,7 @@ namespace FreeMat {
     Free(TAU);
   }
 
-  void dcomplexQRDP(const int nrows, const int ncols, double *q, double *r, int *p, double *a) {
+  void dcomplexQRDP(int nrows, int ncols, double *q, double *r, int *p, double *a) {
     int M = nrows;
     int N = ncols;
     double *A;

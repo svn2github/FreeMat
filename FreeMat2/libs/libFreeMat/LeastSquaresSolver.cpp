@@ -42,7 +42,7 @@ static char msgBuffer[MSGBUFLEN];
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void doubleSolveLeastSq(Interface* io,const int m, const int n, const int k, double *c,
+void doubleSolveLeastSq(Interface* io,int m, int n, int k, double *c,
 		      double *a, double *b) {
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE DGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
@@ -246,7 +246,7 @@ void doubleSolveLeastSq(Interface* io,const int m, const int n, const int k, dou
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void dcomplexSolveLeastSq(Interface* io,const int m, const int n, const int k, double *c,
+void dcomplexSolveLeastSq(Interface* io,int m, int n, int k, double *c,
 			  double *a, double *b) {
   //	SUBROUTINE ZGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //     $                   WORK, LWORK, RWORK, INFO )
@@ -454,7 +454,7 @@ void dcomplexSolveLeastSq(Interface* io,const int m, const int n, const int k, d
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void floatSolveLeastSq(Interface* io,const int m, const int n, const int k, float *c,
+void floatSolveLeastSq(Interface* io,int m, int n, int k, float *c,
 		       float *a, float *b) {
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE SGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
@@ -658,7 +658,7 @@ void floatSolveLeastSq(Interface* io,const int m, const int n, const int k, floa
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void complexSolveLeastSq(Interface* io,const int m, const int n, const int k, float *c,
+void complexSolveLeastSq(Interface* io,int m, int n, int k, float *c,
 			 float *a, float *b) {
   //	SUBROUTINE CGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //     $                   WORK, LWORK, RWORK, INFO )

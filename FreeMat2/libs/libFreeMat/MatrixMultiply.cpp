@@ -44,7 +44,7 @@ namespace FreeMat {
    * Matrix-matrix multiply for real arguments
    ***************************************************************************/
 
-  void floatMatrixMatrixMultiply(const int m, const int n, const int k,
+  void floatMatrixMatrixMultiply(int m, int n, int k,
 				 float* c, const float* a, const float *b) {
     // Use gemm, which computes
     // C = alpha*A*B + beta*C
@@ -211,7 +211,7 @@ namespace FreeMat {
    * Matrix-matrix multiply for complex arguments
    ***************************************************************************/
 
-  void complexMatrixMatrixMultiply(const int m, const int n, const int k,
+  void complexMatrixMatrixMultiply(int m, int n, int k,
 				   float* c, const float* a, const float*b) {
     // Use gemm, which computes
     // C = alpha*A*B + beta*C
@@ -385,7 +385,7 @@ namespace FreeMat {
    * Matrix-matrix multiply for real arguments
    ***************************************************************************/
 
-  void doubleMatrixMatrixMultiply(const int m, const int n, const int k,
+  void doubleMatrixMatrixMultiply(int m, int n, int k,
 				  double* c, const double* a, const double *b) {
     // Use gemm, which computes
     // C = alpha*A*B + beta*C
@@ -554,7 +554,7 @@ namespace FreeMat {
    * Matrix-matrix multiply for complex arguments
    ***************************************************************************/
 
-  void dcomplexMatrixMatrixMultiply(const int m, const int n, const int k,
+  void dcomplexMatrixMatrixMultiply(int m, int n, int k,
 				    double* c, const double* a, const double *b) {
     // Use gemm, which computes
     // C = alpha*A*B + beta*C

@@ -31,28 +31,28 @@ namespace FreeMat {
    * $$n \times k$$, and all three are single precision.  Uses the 
    * BLAS function sgemm.
    */
-  void floatMatrixMatrixMultiply(const int m, const int n, const int k,
+  void floatMatrixMatrixMultiply(int m, int n, int k,
 				 float* c, const float* a, const float *b);
   /**
    * Compute $$C = A B$$, where $$A$$ is $$m \times n$$ and $$B$$ is
    * $$n \times k$$, and all three are complex precision.  Uses the 
    * BLAS function cgemm.
    */
-  void complexMatrixMatrixMultiply(const int m, const int n, const int k,
+  void complexMatrixMatrixMultiply(int m, int n, int k,
 				   float* c, const float* a, const float *b);
   /**
    * Compute $$C = A B$$, where $$A$$ is $$m \times n$$ and $$B$$ is
    * $$n \times k$$, and all three are double precision.  Uses the 
    * BLAS function dgemm.
    */
-  void doubleMatrixMatrixMultiply(const int m, const int n, const int k,
+  void doubleMatrixMatrixMultiply(int m, int n, int k,
 				  double* c, const double* a, const double *b);
   /**
    * Compute $$C = A B$$, where $$A$$ is $$m \times n$$ and $$B$$ is
    * $$n \times k$$, and all three are double complex precision.  Uses the 
    * BLAS function zgemm.
    */
-  void dcomplexMatrixMatrixMultiply(const int m, const int n, const int k,
+  void dcomplexMatrixMatrixMultiply(int m, int n, int k,
 				    double* c, const double* a, const double *b);
 }
 #endif

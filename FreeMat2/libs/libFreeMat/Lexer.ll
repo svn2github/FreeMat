@@ -90,7 +90,7 @@ reservedWordStruct ts, *p;
       case 'x':
 	throw Exception("unexpected 'end' encountered");
       }
-    }	
+    } 
     contextCount--;
     return contextStack[contextCount];
   }
@@ -138,6 +138,7 @@ SpecialArgument ({Argument}|{String})
 %x SpecialSyntaxStart
 %x SpecialSyntaxArgs
 %x str
+%s CommaScan
 %%
 
 	char string_buf[4095];
@@ -283,7 +284,7 @@ SpecialArgument ({Argument}|{String})
 
 <Scanning>"{" {
   pushState(Scanning);
-  pushContext(context_index);
+  pushContext(context_cell);
   return '{';
 }
 
@@ -319,6 +320,21 @@ SpecialArgument ({Argument}|{String})
   pushState(Scanning);
   BEGIN(TransposeCheck);
   return ']';
+}
+
+<Scanning>[a-zA-Z0-9)]{Whitespace}+[+-][a-zA-Z0-9(+-] {
+  if ((contextStack[contextCount-1] == context_matrix) ||
+	(contextStack[contextCount-1] == context_cell)) {
+    int i;
+    char *yycopy = strdup(yytext);
+    for (i=yyleng-1;i>=0;--i) 
+      if (i != 1)
+        unput(yycopy[i]);
+      else
+        unput(',');
+    free(yycopy);
+  } else
+    REJECT;
 }
 
 <Scanning>[ \f\t] {
@@ -437,7 +453,7 @@ SpecialArgument ({Argument}|{String})
 
 <IdentDereference>"{" {
   pushState(IdentDereference);
-  pushContext(context_index);
+  pushContext(context_cell);
   BEGIN(Scanning);
   return REFLBRACE;
 }
@@ -521,6 +537,7 @@ namespace FreeMat {
   int getContinuationCount() {
     return continuationCount;
   }
+
   bool lexCheckForMoreInput(int ccount) {
     // Scan the command line
     while (yylex() > 0);

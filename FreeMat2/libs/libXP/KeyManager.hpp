@@ -39,7 +39,7 @@
 #define KM_RIGHT     0x102
 #define KM_UP        0x103
 #define KM_DOWN      0x104
-#define KM_DELETE    0x7e
+#define KM_DELETE    0x108
 #define KM_INSERT    0x105
 #define KM_HOME      0x106
 #define KM_END       0x107

@@ -1,5 +1,6 @@
 #ifdef WIN32
 #include <windows.h>
+#include <htmlhelp.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -14,7 +15,6 @@
 #include "WalkTree.hpp"
 #include "File.hpp"
 #include <algorithm>
-#include <htmlhelp.h>
 
 const char *g_helppath;
 
@@ -205,7 +205,7 @@ void FLTKTerminalWidget::docopy() {
 	free((void*) copy);
 	free((void*) cbuf);
 #else
-	if (*copy) Fl::copy(cbuf,strlen(cbuf),1);
+	if (*copy) Fl::copy(copy,strlen(copy),1);
 	free((void*) copy);
 #endif
 }

@@ -55,8 +55,10 @@ XPVSlider.cpp \
 FLTKGC.hpp \
 FLTKGC.cpp \
 PrintableWidget.hpp \
-PrintableWidget.cpp
+PrintableWidget.cpp \
+FLTKTerminal.cpp \
+FLTKTerminal.hpp
 
 AUTOMAKE_OPTIONS 	= foreign
 
-INCLUDES= -I@top_srcdir@/libs/libFreeMat $(PNG_INCLUDES) $(TIFF_INCLUDES) $(JPEG_INCLUDES)  -I@top_srcdir@/libs/libFLTK
+INCLUDES= -I@top_srcdir@/libs/libFreeMat $(PNG_INCLUDES) $(TIFF_INCLUDES) $(JPEG_INCLUDES)  -I@top_srcdir@/libs/libFLTK -I@top_builddir@/libs/libffi/include

@@ -62,7 +62,12 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector InfFunction(int nargout, const ArrayVector& arg) {
-    Array A(Array::floatConstructor(atof("inf")));
+	union {
+		float f;
+		unsigned int i;
+	} u;
+	u.i = 0x7f800000;
+    Array A(Array::floatConstructor(u.f));
     ArrayVector retval;
     retval.push_back(A);
     return retval;
@@ -92,7 +97,12 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector NaNFunction(int nargout, const ArrayVector& arg) {
-    Array A(Array::floatConstructor(atof("nan")));
+	union {
+		float f;
+		unsigned int i;
+	} u;
+	u.i = 0x7fC00000;
+    Array A(Array::floatConstructor(u.f));
     ArrayVector retval;
     retval.push_back(A);
     return retval;

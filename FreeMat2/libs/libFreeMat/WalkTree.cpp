@@ -46,8 +46,8 @@ namespace FreeMat {
   int endValStackLength;
   int endValStack[1000];
 
-#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right)); return func(a,b);}
-#define DoUnaryOp(func) {Array a(expression(t->down)); return func(a);}
+#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right)); io->setMessageContext("built-in binary operator"); return func(a,b);}
+#define DoUnaryOp(func) {Array a(expression(t->down)); io->setMessageContext("built-in unary operator"); return func(a);}
 
 
   void sigInterrupt(int arg) {

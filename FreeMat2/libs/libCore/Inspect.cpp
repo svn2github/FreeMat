@@ -1243,7 +1243,7 @@ namespace FreeMat {
     Array tmp(arg[0]);
     if (tmp.isReferenceType())
       throw Exception("find does not work on reference types (cell-arrays or structure arrays)");
-    if ((nargout == 1) && !tmp.isSparse())
+    if ((nargout <= 1) && !tmp.isSparse())
       return SingleFindModeFull(tmp);
     if ((nargout == 2) && !tmp.isSparse())
       return RCFindModeFull(tmp);

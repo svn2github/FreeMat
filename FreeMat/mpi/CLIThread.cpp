@@ -99,42 +99,7 @@ namespace FreeMat {
     sfdef->fptr = ImportFunction;
     context->insertFunctionGlobally(sfdef);
 
-        f2def = new BuiltInFunctionDef;
-    f2def->retCount = 0;
-    f2def->argCount = 4;
-    f2def->name = "mpisend";
-    f2def->fptr = MPISend;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
-    f2def->argCount = 3;
-    f2def->name = "mpirecv";
-    f2def->fptr = MPIRecv;
-    context->insertFunctionGlobally(f2def);
-
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
-    f2def->argCount = 1;
-    f2def->name = "mpicommrank";
-    f2def->fptr = MPICommRank;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
-    f2def->argCount = 1;
-    f2def->name = "mpicommsize";
-    f2def->fptr = MPICommSize;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 0;
-    f2def->argCount = 3;
-    f2def->name = "mpieval";
-    f2def->fptr = MPIEval;
-    context->insertFunctionGlobally(f2def);
-    
-    InitializeMPIWrap();
+    LoadMPIFunctions(context);
     LoadCoreFunctions(context);
     LoadGraphicsCoreFunctions(context);
     const char *envPtr;

@@ -2,6 +2,8 @@
 #include "HandleList.hpp"
 #include "MPIWrap.hpp"
 #include "Malloc.hpp"
+#include "FunctionDef.hpp"
+#include "Context.hpp"
 
 namespace FreeMat {
 
@@ -392,6 +394,72 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  ArrayVector MPIBarrier(int nargout, const ArrayVector& args) {
+    int comhandle;
+    if (args.size() == 0) {
+      Array tmp(args[0]);
+      comhandle = tmp.getContentsAsIntegerScalar();
+    } else {
+      comhandle = 1;
+    }
+    MPI_Comm comm(comms.lookupHandle(comhandle));
+    MPI_Barrier(comm);
+    return ArrayVector();
+  }
+
+  /*
+   * Broadcast an array via MPI:
+   *  Arguments: A = MPIBcast(A,root,communicator)
+   */
+  ArrayVector MPIBcast(int nargout, const ArrayVector& args) {
+    if ((args.size() < 2) || (args.size() > 3))
+      throw Exception("expect 3 arguments to MPIBcast: array, root rank and (optionally) communicator handle");
+    Array A(args[0]);
+    Array tmp(args[1]);
+    int root(tmp.getContentsAsIntegerScalar());
+    int comhandle;
+    if (args.size() > 2) {
+      tmp = args[2];
+      comhandle = tmp.getContentsAsIntegerScalar();
+    } else {
+      comhandle = 1;
+    }
+    MPI_Comm comm(comms.lookupHandle(comhandle));
+    // Get our rank
+    int ourrank;
+    MPI_Comm_rank(comm,&ourrank);
+    ArrayVector retval;
+    // Are we the originator of this broadcast?
+    if (ourrank == root) {
+      // Marshall the array into a message
+      int Asize = getArrayByteFootPrint(A,comm);
+      int bufsize = Asize;
+      void *cp = malloc(Asize);
+      int packpos = 0;
+      packArrayMPI(A,cp,bufsize,&packpos,comm);
+      // First broadcast the size
+      MPI_Bcast(&packpos,1,MPI_INT,root,comm);
+      // Then broadcast the data
+      MPI_Bcast(cp,packpos,MPI_PACKED,root,comm);
+      // Clean up
+      free(cp);
+      // Return it to the sender...
+      retval.push_back(A);
+    } else {
+      // We are note the originator - wait for the size to 
+      // appear
+      int msgsize;
+      MPI_Bcast(&msgsize,1,MPI_INT,root,comm);
+      void *cp = malloc(msgsize);
+      MPI_Bcast(cp,msgsize,MPI_PACKED,root,comm);
+      int packpos = 0;
+      Array A2(unpackArrayMPI(cp,msgsize,&packpos,comm));
+      free(cp);
+      retval.push_back(A2);
+    }
+    return retval;
+  }
+
   /*
    * Recv an array via MPI:
    *  Arguments: A = MPIRecv(source, tag, communicator)
@@ -440,7 +508,7 @@ namespace FreeMat {
     int32 *ranks;
     ranks = (int32*) tmp.getDataPointer();
     int comhandle;
-    if (args.size() < 2) {
+    if (args.size() < 3) {
       comhandle = 1;
     } else {
       tmp = args[2];
@@ -482,5 +550,60 @@ namespace FreeMat {
     ArrayVector retval;
     retval.push_back(Array::int32Constructor(size));
     return retval;
+  }
+
+  void LoadMPIFunctions(Context*context) {
+    BuiltInFunctionDef *f2def;
+
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 0;
+    f2def->argCount = 4;
+    f2def->name = "mpisend";
+    f2def->fptr = MPISend;
+    context->insertFunctionGlobally(f2def);
+    
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 1;
+    f2def->argCount = 3;
+    f2def->name = "mpirecv";
+    f2def->fptr = MPIRecv;
+    context->insertFunctionGlobally(f2def);
+    
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 1;
+    f2def->argCount = 3;
+    f2def->name = "mpibcast";
+    f2def->fptr = MPIBcast;
+    context->insertFunctionGlobally(f2def);
+    
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 0;
+    f2def->argCount = 1;
+    f2def->name = "mpibarrier";
+    f2def->fptr = MPIBarrier;
+    context->insertFunctionGlobally(f2def);
+
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 1;
+    f2def->argCount = 1;
+    f2def->name = "mpicommrank";
+    f2def->fptr = MPICommRank;
+    context->insertFunctionGlobally(f2def);
+    
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 1;
+    f2def->argCount = 1;
+    f2def->name = "mpicommsize";
+    f2def->fptr = MPICommSize;
+    context->insertFunctionGlobally(f2def);
+    
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 0;
+    f2def->argCount = 3;
+    f2def->name = "mpieval";
+    f2def->fptr = MPIEval;
+    context->insertFunctionGlobally(f2def);
+    
+    InitializeMPIWrap();
   }
 }

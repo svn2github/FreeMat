@@ -105,42 +105,7 @@ int main(int argc, char *argv[]) {
     sfdef->fptr = ImportFunction;
     context->insertFunctionGlobally(sfdef);
 
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 0;
-    f2def->argCount = 4;
-    f2def->name = "mpisend";
-    f2def->fptr = MPISend;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
-    f2def->argCount = 3;
-    f2def->name = "mpirecv";
-    f2def->fptr = MPIRecv;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
-    f2def->argCount = 1;
-    f2def->name = "mpicommrank";
-    f2def->fptr = MPICommRank;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
-    f2def->argCount = 1;
-    f2def->name = "mpicommsize";
-    f2def->fptr = MPICommSize;
-    context->insertFunctionGlobally(f2def);
-    
-    f2def = new BuiltInFunctionDef;
-    f2def->retCount = 0;
-    f2def->argCount = 3;
-    f2def->name = "mpieval";
-    f2def->fptr = MPIEval;
-    context->insertFunctionGlobally(f2def);
-    
-    InitializeMPIWrap();
+    LoadMPIFunctions(context);
     LoadCoreFunctions(context);
     const char *envPtr;
     envPtr = getenv("FREEMAT_PATH");
@@ -155,27 +120,6 @@ int main(int argc, char *argv[]) {
     bool keepRunning;
     keepRunning = true;
     while (keepRunning) {
-//       Array source(Array::int32Constructor(0));
-//       Array tag(Array::int32Constructor(0));
-//       Array comm(Array::int32Constructor(1));
-//       ArrayVector args;
-//       args.push_back(source);
-//       args.push_back(tag);
-//       args.push_back(comm);
-//       // Get an array...
-//       ArrayVector A(MPIRecv(1,args));
-//       Array retrievedVal(A[0]);
-//       // Send it back
-//       ArrayVector args2;
-//       args2.push_back(retrievedVal);
-//       args2.push_back(source);
-//       args2.push_back(Array::int32Constructor(1));
-//       args2.push_back(comm);
-//       MPISend(0,args2);
-//--> mpicommsize
-//ans =
-//  <int32>  - size: [1 1]
-//             4
 //--> mpi
 //mpicommrank  mpicommsize  mpieval      mpirecv      mpisend
 //--> mpieval('a = randn(32)',1:3,1)
@@ -187,6 +131,7 @@ int main(int argc, char *argv[]) {
       MPI_Status status;
       MPI_Recv(cmdBuffer,4096,MPI_CHAR,0,0,MPI_COMM_WORLD,&status);
       std::cout << "Got command: " << cmdBuffer << "\n";
+      strcat(cmdBuffer,"\n");
       keepRunning = !(twalk->evaluateString(cmdBuffer));
     }
   } catch (Exception &e) {

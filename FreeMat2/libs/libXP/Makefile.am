@@ -31,6 +31,7 @@ PostScriptGC.hpp \
 Point2D.cpp \
 Point2D.hpp \
 GraphicsContext.hpp \
+GraphicsContext.cpp \
 Color.cpp \
 Color.hpp \
 Reducer.hpp \

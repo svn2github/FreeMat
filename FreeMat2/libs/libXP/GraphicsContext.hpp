@@ -25,12 +25,27 @@ typedef enum {
   ORIENT_270
 } OrientationType;
 
+typedef enum {
+  LR_LEFT,
+  LR_RIGHT,
+  LR_CENTER
+} XALIGNTYPE;
+
+typedef enum {
+  TB_TOP,
+  TB_BOTTOM,
+  TB_CENTER
+} YALIGNTYPE;
+
 // The GraphicsContext class is a purely virtual base class for the
 // various graphics context types.
 class GraphicsContext {
 public:
   virtual Point2D GetCanvasSize() {return Point2D();};
   virtual Point2D GetTextExtent(std::string label) {return Point2D();};
+  virtual void DrawTextStringAligned(std::string text, Point2D pos, 
+				     XALIGNTYPE xalign, 
+				     YALIGNTYPE yalign);
   virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient = ORIENT_0) {};
   virtual void SetFont(int fontsize) {};
   virtual Color SetBackGroundColor(Color col) {return col;};

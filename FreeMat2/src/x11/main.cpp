@@ -17,7 +17,9 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "config.h"
+#if 0
 #include "freemat.xpm"
+#endif
 
 using namespace FreeMat;
 

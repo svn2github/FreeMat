@@ -40,7 +40,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libs\libCore\Release\libCore.lib libs\libf2c\Release\libf2c.lib libs\libFreeMat\Release\libFreeMat.lib libs\libGraphics\Release\libGraphics.lib libs\libFN\Release\libFN.lib libs\libMiniBLAS\Release\libMiniBLAS.lib libs\libMiniLAPACK\Release\libMiniLAPACK.lib libs\libXP\Release\libXP.lib libs\libFFTPack\Release\libFFTPack.lib libs\libffi\Release\libffi.lib libs\lpng125\Release\lpng125.lib libs\libz\Release\libz.lib src\win32\htmlhelp.lib comctl32.lib wsock32.lib"
+				AdditionalDependencies="libs\libUMFPACK\UMFPACK\libUMFPACK\Release\libUMFPACK.lib libs\libUMFPACK\AMD\libAMD\Release\libAMD.lib libs\libCore\Release\libCore.lib libs\libf2c\Release\libf2c.lib libs\libFreeMat\Release\libFreeMat.lib libs\libGraphics\Release\libGraphics.lib libs\libFN\Release\libFN.lib libs\libMiniBLAS\Release\libMiniBLAS.lib libs\libMiniLAPACK\Release\libMiniLAPACK.lib libs\libXP\Release\libXP.lib libs\libFFTPack\Release\libFFTPack.lib libs\libffi\Release\libffi.lib libs\lpng125\Release\lpng125.lib libs\libz\Release\libz.lib src\win32\htmlhelp.lib comctl32.lib wsock32.lib"
 				OutputFile=".\Release/FreeMat.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -106,7 +106,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libFN\Debug\libFN.lib libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib  libs\lpng125\Debug\lpng125.lib libs\libz\Debug\libz.lib src\win32\htmlhelp.lib comctl32.lib wsock32.lib"
+				AdditionalDependencies="libs\libUMFPACK\UMFPACK\libUMFPACK\Release\libUMFPACK.lib libs\libUMFPACK\AMD\libAMD\Release\libAMD.lib libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libFN\Debug\libFN.lib libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib  libs\lpng125\Debug\lpng125.lib libs\libz\Debug\libz.lib src\win32\htmlhelp.lib comctl32.lib wsock32.lib"
 				OutputFile=".\Debug/FreeMat.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -153,6 +153,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\FreeMat.rc">
+			</File>
+			<File
 				RelativePath="src\win32\main.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -172,32 +175,16 @@
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\src\win32\Script1.rc">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="src\win32\freemat.ico">
-			</File>
-			<File
-				RelativePath="src\win32\icon1.ico">
-			</File>
-			<File
-				RelativePath="src\win32\icon2.ico">
-			</File>
-			<File
-				RelativePath="src\win32\phi_logo_bmp.bmp">
+				RelativePath=".\resource1.h">
 			</File>
 		</Filter>
 		<File
-			RelativePath="src\win32\htmlhelp.lib">
+			RelativePath=".\src\win32\freemat.ico">
 		</File>
 	</Files>
 	<Globals>

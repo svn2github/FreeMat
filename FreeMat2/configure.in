@@ -155,7 +155,7 @@ LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
 LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB $MPILIBS"
 
 
-AC_OUTPUT(Makefile src/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile src/win32/Makefile libs/libf2c/Makefile libs/libz/Makefile libs/lpng125/Makefile libs/libMiniLAPACK/Makefile libs/libMiniBLAS/Makefile src/mac src/mac/MainMenu.nib)
+AC_OUTPUT(Makefile src/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile help/Makefile help/mdc/Makefile help/html/Makefile MFiles/Makefile src/win32/Makefile libs/libf2c/Makefile libs/libz/Makefile libs/lpng125/Makefile libs/libMiniLAPACK/Makefile libs/libMiniBLAS/Makefile src/mac/Makefile src/mac/MainMenu.nib/Makefile)
 
 echo \
 "------------------------------------------------------------------------

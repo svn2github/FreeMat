@@ -101,6 +101,7 @@ void WuCircle(int cx, int cy, int R) {
   }
 }
 
+
 /* Wu antialiased line drawer.
  * (X0,Y0),(X1,Y1) = line to draw
  * BaseColor = color # of first color in block used for antialiasing, the
@@ -114,13 +115,8 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1)
 {
    unsigned int IntensityShift, ErrorAdj, ErrorAcc;
    unsigned int ErrorAccTemp, Weighting, WeightingComplementMask;
-   int DeltaX, DeltaY, Temp, XDir;
+   int DeltaX, DeltaY, Temp, XDir, YDir;
 
-   /* Make sure the line runs top to bottom */
-   if (Y0 > Y1) {
-      Temp = Y0; Y0 = Y1; Y1 = Temp;
-      Temp = X0; X0 = X1; X1 = Temp;
-   }
    /* Draw the initial pixel, which is always exactly intersected by
       the line and so needs no weighting */
    blendPixel(X0, Y0, 256);
@@ -131,10 +127,18 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1)
       XDir = -1;
       DeltaX = -DeltaX; /* make DeltaX positive */
    }
+
+   if ((DeltaY = Y1 - Y0) >= 0) {
+      YDir = 1;
+   } else {
+      YDir = -1;
+      DeltaY = -DeltaY; /* make DeltaY positive */
+   }
+
    /* Special-case horizontal, vertical, and diagonal lines, which
       require no weighting because they go right through the center of
       every pixel */
-   if ((DeltaY = Y1 - Y0) == 0) {
+   if (DeltaY == 0) {
       /* Horizontal line */
       while (DeltaX-- != 0) {
          X0 += XDir;
@@ -145,7 +149,7 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1)
    if (DeltaX == 0) {
       /* Vertical line */
       do {
-         Y0++;
+         Y0 += YDir;
          blendPixel(X0, Y0, 256);
       } while (--DeltaY != 0);
       return;
@@ -154,7 +158,7 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1)
       /* Diagonal line */
       do {
          X0 += XDir;
-         Y0++;
+         Y0 += YDir;
          blendPixel(X0, Y0, 256);
       } while (--DeltaY != 0);
       return;
@@ -180,7 +184,7 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1)
             /* The error accumulator turned over, so advance the X coord */
             X0 += XDir;
          }
-         Y0++; /* Y-major, so always advance Y */
+         Y0 += YDir; /* Y-major, so always advance Y */
          /* The 8 most significant bits of ErrorAcc give us the
             intensity weighting for this pixel, and the complement of the
             weighting for the paired pixel */
@@ -233,13 +237,8 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
 {
   unsigned int IntensityShift, ErrorAdj, ErrorAcc;
   unsigned int ErrorAccTemp, Weighting, WeightingComplementMask;
-  int DeltaX, DeltaY, Temp, XDir;
+  int DeltaX, DeltaY, Temp, XDir, YDir;
   
-  /* Make sure the line runs top to bottom */
-  if (Y0 > Y1) {
-    Temp = Y0; Y0 = Y1; Y1 = Temp;
-    Temp = X0; X0 = X1; X1 = Temp;
-  }
   /* Draw the initial pixel, which is always exactly intersected by
      the line and so needs no weighting */
   if (penDraws())
@@ -247,17 +246,25 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
 
   if ((X0 == X1) && (Y0 == Y1))
     return;
-  
-  if ((DeltaX = X1 - X0) >= 0) {
-    XDir = 1;
-  } else {
-    XDir = -1;
-    DeltaX = -DeltaX; /* make DeltaX positive */
-  }
+
+   if ((DeltaX = X1 - X0) >= 0) {
+      XDir = 1;
+   } else {
+      XDir = -1;
+      DeltaX = -DeltaX; /* make DeltaX positive */
+   }
+
+   if ((DeltaY = Y1 - Y0) >= 0) {
+      YDir = 1;
+   } else {
+      YDir = -1;
+      DeltaY = -DeltaY; /* make DeltaY positive */
+   }
+
   /* Special-case horizontal, vertical, and diagonal lines, which
      require no weighting because they go right through the center of
      every pixel */
-  if ((DeltaY = Y1 - Y0) == 0) {
+  if (DeltaY == 0) {
     /* Horizontal line */
     while (DeltaX-- != 0) {
       X0 += XDir; 
@@ -269,7 +276,7 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
   if (DeltaX == 0) {
     /* Vertical line */
     do {
-      Y0++;
+      Y0 += YDir;
       if (penDraws())
 	blendPixel(X0, Y0, 256);
     } while (--DeltaY != 0);
@@ -279,7 +286,7 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
     /* Diagonal line */
     do {
       X0 += XDir;
-      Y0++;
+      Y0 += YDir;
       if (penDraws())
 	blendPixel(X0, Y0, 256);
     } while (--DeltaY != 0);
@@ -306,7 +313,7 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
 	/* The error accumulator turned over, so advance the X coord */
 	X0 += XDir;
       }
-      Y0++; /* Y-major, so always advance Y */
+      Y0 += YDir; /* Y-major, so always advance Y */
       /* The 8 most significant bits of ErrorAcc give us the
 	 intensity weighting for this pixel, and the complement of the
 	 weighting for the paired pixel */
@@ -333,7 +340,7 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
     ErrorAcc += ErrorAdj;      /* calculate error for next pixel */
     if (ErrorAcc <= ErrorAccTemp) {
       /* The error accumulator turned over, so advance the Y coord */
-      Y0++;
+      Y0 += YDir;
     }
     X0 += XDir; /* X-major, so always advance X */
     /* The 8 most significant bits of ErrorAcc give us the
@@ -342,7 +349,7 @@ void DrawWuLineStyle(int X0, int Y0, int X1, int Y1)
     Weighting = ErrorAcc >> IntensityShift;
     if (penDraws()) {
       blendPixel(X0, Y0, 256 - Weighting);
-      blendPixel(X0, Y0 + 1,
+      blendPixel(X0, Y0 + YDir,
 		 256 + (Weighting - WeightingComplementMask));
     }
    }
@@ -372,15 +379,20 @@ int main() {
   pen_style = PEN_DASH_DOT;
   DrawWuLineStyle(92,37,169,307);
   pen_state = 0;
-  pen_style = PEN_DOTTED;
+  pen_style = PEN_DASHED;
   lastx = 100;
   lasty = 250;
   for (t=100;t < 400;t++) {
     float rad = (t-100.0)/400*2*M_PI*3;
     float y = sin(rad)*50 + 250;
-    printf("line from %d %d to %d %d\n",lastx,lasty,t,(int)y);
     DrawWuLineStyle(lastx,lasty,t,(int)y);
     lastx = t; lasty = y;
+  }
+/*   pen_style = PEN_DASH_DOT; */
+  for (t=0;t<360;t+=10) {
+    float delx = 100*cos(t*M_PI/180);
+    float dely = 100*sin(t*M_PI/180);
+    DrawWuLineStyle(256,256,256+delx,256+dely);
   }
   writePPM();
 }

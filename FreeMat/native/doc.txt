@@ -122,3 +122,21 @@ I have to use RGB images only, as colormaps don't work well with antialiased
 lines.  This will be really neat.  I can develop the entire drawing library
 independant of FreeMat, and then build a little windowing system into it.
 
+This is now the critical question.  If I can draw to a bitmap using fltk,
+I will consider just porting the code to fltk
+.  If I cannot draw to a bitmap
+using fltk, then I will consider the custom drawing route (which is almost
+working).  OK - critical question solved.  So its onward with the 
+draw-it-myself approach.  That leaves only one serious question: fonts.
+
+I think that using libt1 (or whatever its called) is the better option -
+although consider that on linux, FreeType is widely available, its interface
+is easy to use, and that there is code parse_afm that can be used to read
+the afm files for postscript output.  But FreeType doesn't do type1 fonts.
+Arghhh....   Anyway, for now, I'll focus on the line drawing that doesn't 
+work right yet.
+
+Dummy-stupid.  The answer is to pre-discretize the fonts and not have any 
+font library dependance at all...  Simple solution.  Which prog to use
+for the fonts?  small fonts render best with TrueType... So I'll use a TTF
+rendering of the fonts...  

@@ -74,6 +74,7 @@ namespace FreeMat {
     int getZoomRows() {return zoomRows;}
     void draw();
     void resize(int, int, int, int);
+    int handle(int event);
   private:
     /**
      * Our pointer to the raw data.  We own this data, and
@@ -121,6 +122,9 @@ namespace FreeMat {
     byte *picData;
     void UpdateZoom(bool forceUpdate);
     void UpdateImage();
+    bool inClickState;
+    int xposClick;
+    int yposClick;
   };
 }
 #endif  

@@ -23,6 +23,7 @@
 #include <iostream>
 #include "Malloc.hpp"
 #include "GraphicsCore.hpp"
+#include "FL/Fl.H"
 
 namespace FreeMat {
 
@@ -37,16 +38,30 @@ namespace FreeMat {
     level = 0;
     zoomImage = NULL;
     picData = NULL;
+    inClickState = false;
   }
   
   ScalarImage::~ScalarImage() {
     if (rawData) Free(rawData);
   }
 
+
+  int ScalarImage::handle(int event) {
+    if (event == FL_PUSH) {
+      inClickState = false;
+      xposClick = Fl::event_x();
+      yposClick = Fl::event_y();
+      return 1;
+    }
+    return 0;
+  }
+
   Array ScalarImage::GetPoint() {
-    int xposClick, yposClick;
-    //FIXME
-    //    GetClick(xposClick, yposClick);
+    inClickState = true;
+    ((Fl_Window*)parent())->cursor(FL_CURSOR_CROSS);
+    while (inClickState)
+      Fl::wait(0);
+    ((Fl_Window*)parent())->cursor(FL_CURSOR_DEFAULT);
     double valClick;
     if (zoomImage == NULL) 
       valClick = atof("nan");

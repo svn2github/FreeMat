@@ -45,6 +45,42 @@ namespace FreeMat {
     NotifyPlotClose(myFigureNumber);
   }
 
+  void Plot2D::DrawLegend(GraphicsContext &gc) {
+    double xc, yc;
+    xc = xAxis->MapPoint(legend_xc);
+    yc = yAxis->MapPoint(legend_yc);
+    int i;
+    int strut;
+    Point2D strutSize(gc.GetTextExtent("|"));
+    strut = strutSize.y;
+    double centerline;
+    centerline = yc + strut/2*1.2;
+    int maxwidth = 0;
+    for (i=0;i<legend_data.size();i+=2) {
+      Array ls(legend_data[i]);
+      Array label_txt(legend_data[i+1]);
+      char *linestyle = ls.getContentsAsCString();
+      char *label = label_txt.getContentsAsCString();
+      // Draw the line segment - set the color and line style
+      // from linestyle
+      gc.SetLineStyle(UtilityMapLineStyleToType(linestyle[2]));
+      gc.SetForeGroundColor(UtilityMapColorSpecToColor(linestyle[0]));
+      gc.DrawLine(Point2D(xc,centerline),
+		  Point2D(xc+18,centerline));
+      // Draw the symbol
+      gc.SetLineStyle(LINE_SOLID);
+      PutSymbol(gc,xc+9,centerline,linestyle[1],3);
+      gc.SetForeGroundColor(Color("black"));
+      gc.DrawTextString(label,Point2D(xc+22,centerline+strut/2-1));
+      Point2D tmp(gc.GetTextExtent(label));
+      maxwidth = (maxwidth < tmp.x) ? tmp.x : maxwidth;
+      centerline += strut*1.2;
+    }
+    gc.SetLineStyle(UtilityMapLineStyleToType(legend_linestyle[2]));
+    gc.SetForeGroundColor(UtilityMapColorSpecToColor(legend_linestyle[0]));
+    gc.DrawRectangle(Rect2D(xc-5,yc,32+maxwidth,centerline-strut/2-yc));
+  }
+
   void Plot2D::StartSequence() {
     if (!holdflag)
       data.clear();
@@ -57,6 +93,16 @@ namespace FreeMat {
     holdflag = holdSave;
     updating = false;
 	Refresh();
+  }
+
+  void Plot2D::SetLegend(double xc, double yc, Array style, 
+			 ArrayVector legendData) {
+    legendActive = true;
+    legend_xc = xc;
+    legend_yc = yc;
+    strcpy(legend_linestyle,style.getContentsAsCString());
+    legend_data = legendData;
+    Refresh();
   }
 
   void Plot2D::SetTitleText(std::string txt) {
@@ -243,6 +289,118 @@ namespace FreeMat {
     for (int i=0;i<data.size();i++)
       data[i].DrawMe(gc, xAxis, yAxis);
 
+    if (legendActive)
+      DrawLegend(gc);
+
     gc.PopClippingRegion();
+  }
+
+  LineStyleType UtilityMapLineStyleToType(char line) {
+    if (line == '-')
+      return LINE_SOLID;
+    if (line == ':')
+      return LINE_DOTTED;
+    if (line == ';')
+      return LINE_DASH_DOT;
+    if (line == '|')
+      return LINE_DASHED;
+    return LINE_SOLID;
+  }
+
+  Color UtilityMapColorSpecToColor(char color) {
+    switch(color) {
+    case 'y':
+      return(Color("yellow"));
+    case 'm':
+      return(Color("magenta"));
+    case 'c':
+      return(Color("cyan"));
+    case 'r':
+      return(Color("red"));
+    case 'g':
+      return(Color("green"));
+    case 'b':
+      return(Color("blue"));
+    case 'w':
+      return(Color("white"));
+    case 'k':
+      return(Color("black"));
+    }
+    return(Color("black"));
+  }
+
+  void PutSymbol(GraphicsContext &dc, int xp, int yp, char symbol, int len) {
+    int len2 = (int) (len / sqrt(2.0));
+    switch (symbol) {
+    case '.':
+      dc.DrawPoint(Point2D(xp, yp));
+      break;
+    case 'o':
+      dc.DrawCircle(Point2D(xp, yp), len);
+      break;
+    case 'x':
+      dc.DrawLine(Point2D(xp - len2, yp - len2), 
+		  Point2D(xp + len2 + 1, yp + len2 + 1));
+      dc.DrawLine(Point2D(xp + len2, yp - len2), 
+		  Point2D(xp - len2 - 1, yp + len2 + 1));
+      break;
+    case '+':
+      dc.DrawLine(Point2D(xp - len, yp), 
+		  Point2D(xp + len + 1, yp));
+      dc.DrawLine(Point2D(xp, yp - len), 
+		  Point2D(xp, yp + len + 1));
+      break;
+    case '*':
+      dc.DrawLine(Point2D(xp - len, yp), 
+		  Point2D(xp + len + 1, yp));
+      dc.DrawLine(Point2D(xp, yp - len), 
+		  Point2D(xp, yp + len + 1));
+      dc.DrawLine(Point2D(xp - len2, yp - len2), 
+		  Point2D(xp + len2 + 1, yp + len2 + 1));
+      dc.DrawLine(Point2D(xp + len2, yp - len2), 
+		  Point2D(xp - len2 - 1, yp + len2 + 1));
+      break;
+    case 's':
+      dc.DrawRectangle(Rect2D(xp - len/2, yp - len/2, len + 1, len + 1));
+      break;
+    case 'd':
+      dc.DrawLine(Point2D(xp - len, yp), Point2D(xp, yp - len));
+      dc.DrawLine(Point2D(xp, yp - len), Point2D(xp + len, yp));
+      dc.DrawLine(Point2D(xp + len, yp), Point2D(xp, yp + len));
+      dc.DrawLine(Point2D(xp, yp + len), Point2D(xp - len, yp));
+      break;
+    case 'v':
+      dc.DrawLine(Point2D(xp - len, yp - len), 
+		  Point2D(xp + len, yp - len));
+      dc.DrawLine(Point2D(xp + len, yp - len), 
+		  Point2D(xp, yp + len));
+      dc.DrawLine(Point2D(xp, yp + len), 
+		  Point2D(xp - len, yp - len));
+      break;
+    case '^':
+      dc.DrawLine(Point2D(xp - len, yp + len), 
+		  Point2D(xp + len, yp + len));
+      dc.DrawLine(Point2D(xp + len, yp + len), 
+		  Point2D(xp, yp - len));
+      dc.DrawLine(Point2D(xp, yp - len), 
+		  Point2D(xp - len, yp + len));
+      break;
+    case '<':
+      dc.DrawLine(Point2D(xp + len, yp - len), 
+		  Point2D(xp - len, yp));
+      dc.DrawLine(Point2D(xp - len, yp), 
+		  Point2D(xp + len, yp + len));
+      dc.DrawLine(Point2D(xp + len, yp + len), 
+		  Point2D(xp + len, yp - len));
+      break;
+    case '>':
+      dc.DrawLine(Point2D(xp - len, yp - len), 
+		  Point2D(xp + len, yp));
+      dc.DrawLine(Point2D(xp + len, yp), 
+		  Point2D(xp - len, yp + len));
+      dc.DrawLine(Point2D(xp - len, yp + len), 
+		  Point2D(xp - len, yp - len));
+      break;
+    }
   }
 }

@@ -89,15 +89,6 @@ namespace FreeMat {
      * style also.
      */
     void SetPenColor(GraphicsContext&, bool);
-    /**
-     * Draw the indicated symbol at the given coordinates, with 
-     * a characteristic length indicated by len.
-     */
-    void PutSymbol(GraphicsContext& dc, int xp, int yp, char symbol, int len);
-    /**
-     * Converts the pen style into a pen style.
-     */
-    LineStyleType GetPenStyle();
   public:
     /**
      * Construct a dataset with the given attributes.

@@ -57,6 +57,7 @@ namespace FreeMat {
   ArrayVector PointFunction(int,const ArrayVector& arg);
   ArrayVector HelpwinFunction(int,const ArrayVector& arg);
   ArrayVector WinLevFunction(int,const ArrayVector& arg);
+  ArrayVector LegendFunction(int, const ArrayVector& arg);
   void LoadGraphicsCoreFunctions(Context* context);
   void InitializePlotSubsystem();
   void NotifyPlotClose(int num);

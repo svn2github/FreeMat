@@ -22,7 +22,7 @@
 #include <math.h>
 #include "Malloc.hpp"
 #include "IEEEFP.hpp"
-
+#include "Plot2D.hpp"
 #include <iostream>
 
 namespace FreeMat {
@@ -40,54 +40,18 @@ namespace FreeMat {
   DataSet2D::~DataSet2D() {
   }
 
-  LineStyleType DataSet2D::GetPenStyle() {
-    if (line == '-')
-      return LINE_SOLID;
-    if (line == ':')
-      return LINE_DOTTED;
-    if (line == ';')
-      return LINE_DASH_DOT;
-    if (line == '|')
-      return LINE_DASHED;
-    return LINE_SOLID;
-  }
-
   void DataSet2D::SetPenColor(GraphicsContext& dc, bool useStyle) {
     LineStyleType penStyle;
 
     if (useStyle)
-      penStyle = GetPenStyle();
+      penStyle = UtilityMapLineStyleToType(line);
     else
       penStyle = LINE_SOLID;
 
     dc.SetLineStyle(penStyle);
 
-    switch(color) {
-    case 'y':
-      dc.SetForeGroundColor(Color("yellow"));
-      break;
-    case 'm':
-      dc.SetForeGroundColor(Color("magenta"));
-      break;
-    case 'c':
-      dc.SetForeGroundColor(Color("cyan"));
-      break;
-    case 'r':
-      dc.SetForeGroundColor(Color("red"));
-      break;
-    case 'g':
-      dc.SetForeGroundColor(Color("green"));
-      break;
-    case 'b':
-      dc.SetForeGroundColor(Color("blue"));
-      break;
-    case 'w':
-      dc.SetForeGroundColor(Color("white"));
-      break;
-    case 'k':
-      dc.SetForeGroundColor(Color("black"));
-      break;
-    }
+    dc.SetForeGroundColor(UtilityMapColorSpecToColor(color));
+
     if (useStyle && (line == ' '))
       dc.SetLineStyle( LINE_NONE );
   }
@@ -157,81 +121,6 @@ namespace FreeMat {
       
   }
 
-  void DataSet2D::PutSymbol(GraphicsContext &dc, int xp, int yp, 
-			    char symbol, int len) {
-    int len2 = (int) (len / sqrt(2.0));
-    switch (symbol) {
-    case '.':
-      dc.DrawPoint(Point2D(xp, yp));
-      break;
-    case 'o':
-      dc.DrawCircle(Point2D(xp, yp), len);
-      break;
-    case 'x':
-      dc.DrawLine(Point2D(xp - len2, yp - len2), 
-		  Point2D(xp + len2 + 1, yp + len2 + 1));
-      dc.DrawLine(Point2D(xp + len2, yp - len2), 
-		  Point2D(xp - len2 - 1, yp + len2 + 1));
-      break;
-    case '+':
-      dc.DrawLine(Point2D(xp - len, yp), 
-		  Point2D(xp + len + 1, yp));
-      dc.DrawLine(Point2D(xp, yp - len), 
-		  Point2D(xp, yp + len + 1));
-      break;
-    case '*':
-      dc.DrawLine(Point2D(xp - len, yp), 
-		  Point2D(xp + len + 1, yp));
-      dc.DrawLine(Point2D(xp, yp - len), 
-		  Point2D(xp, yp + len + 1));
-      dc.DrawLine(Point2D(xp - len2, yp - len2), 
-		  Point2D(xp + len2 + 1, yp + len2 + 1));
-      dc.DrawLine(Point2D(xp + len2, yp - len2), 
-		  Point2D(xp - len2 - 1, yp + len2 + 1));
-      break;
-    case 's':
-      dc.DrawRectangle(Rect2D(xp - len/2, yp - len/2, len + 1, len + 1));
-      break;
-    case 'd':
-      dc.DrawLine(Point2D(xp - len, yp), Point2D(xp, yp - len));
-      dc.DrawLine(Point2D(xp, yp - len), Point2D(xp + len, yp));
-      dc.DrawLine(Point2D(xp + len, yp), Point2D(xp, yp + len));
-      dc.DrawLine(Point2D(xp, yp + len), Point2D(xp - len, yp));
-      break;
-    case 'v':
-      dc.DrawLine(Point2D(xp - len, yp - len), 
-		  Point2D(xp + len, yp - len));
-      dc.DrawLine(Point2D(xp + len, yp - len), 
-		  Point2D(xp, yp + len));
-      dc.DrawLine(Point2D(xp, yp + len), 
-		  Point2D(xp - len, yp - len));
-      break;
-    case '^':
-      dc.DrawLine(Point2D(xp - len, yp + len), 
-		  Point2D(xp + len, yp + len));
-      dc.DrawLine(Point2D(xp + len, yp + len), 
-		  Point2D(xp, yp - len));
-      dc.DrawLine(Point2D(xp, yp - len), 
-		  Point2D(xp - len, yp + len));
-      break;
-    case '<':
-      dc.DrawLine(Point2D(xp + len, yp - len), 
-		  Point2D(xp - len, yp));
-      dc.DrawLine(Point2D(xp - len, yp), 
-		  Point2D(xp + len, yp + len));
-      dc.DrawLine(Point2D(xp + len, yp + len), 
-		  Point2D(xp + len, yp - len));
-      break;
-    case '>':
-      dc.DrawLine(Point2D(xp - len, yp - len), 
-		  Point2D(xp + len, yp));
-      dc.DrawLine(Point2D(xp + len, yp), 
-		  Point2D(xp - len, yp + len));
-      dc.DrawLine(Point2D(xp - len, yp + len), 
-		  Point2D(xp - len, yp - len));
-      break;
-    }
-  }
 
   void DataSet2D::DrawMe(GraphicsContext &dc, Axis *xAxis, Axis *yAxis) {
     const double *xVals;

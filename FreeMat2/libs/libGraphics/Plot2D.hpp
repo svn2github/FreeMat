@@ -52,6 +52,16 @@ namespace FreeMat {
      */
     ~Plot2D();
     /**
+     * Render the legend (if any) to the current plot.
+     */
+    void DrawLegend(GraphicsContext &gc);
+    /**
+     * Set the legend data for the current plot.  The
+     * legendData array is a sequence of linestyle/label
+     * pairs.
+     */
+    void SetLegend(double xc, double yc, Array style, ArrayVector legendData);
+    /**
      * Add another data set to the current plot.
      */
     void AddPlot(DataSet2D dp);
@@ -170,7 +180,21 @@ namespace FreeMat {
      * Set to true during plot updates.
      */ 
     bool updating;
+    /**
+     * The current set of legend data
+     */
+    bool legendActive;
+    double legend_xc;
+    double legend_yc;
+    char legend_linestyle[4];
+    ArrayVector legend_data;
   };
+  
+  // These are some helper routines called by DataSet2D and
+  // Plot2D itself
+  LineStyleType UtilityMapLineStyleToType(char line);
+  Color UtilityMapColorSpecToColor(char cspec);
+  void PutSymbol(GraphicsContext &dc, int xp, int yp, char symbol, int len);
 }
 
 #endif  

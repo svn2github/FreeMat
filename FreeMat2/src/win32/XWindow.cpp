@@ -320,7 +320,7 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
   wndclass.cbWndExtra = 4;
   wndclass.hInstance = hInstance;
   wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-  wndclass.hCursor = NULL; //LoadCursor(NULL, IDC_ARROW);
+  wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
   wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
   wndclass.lpszMenuName = NULL;
   wndclass.lpszClassName = "Freemat Window";

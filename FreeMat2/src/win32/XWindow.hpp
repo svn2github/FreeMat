@@ -12,6 +12,7 @@ typedef enum {
 
 class XWindow {
  public:
+	 XWindow() {};
   XWindow(WindowType wtype);
   virtual ~XWindow();
   HWND getWindow() {return m_window;}

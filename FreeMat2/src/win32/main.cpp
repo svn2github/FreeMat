@@ -17,7 +17,7 @@ class XWindow2 {
 	int m_width;
 	int m_height;
 public:
-	XWindow2(WindowType wtype)  {m_type = wtype;};
+	XWindow2(WindowType wtype);
 	virtual ~XWindow2() {};
   HWND getWindow() {return m_window;}
   int getWidth() {return m_width;}
@@ -49,9 +49,11 @@ public:
   virtual void OnDraw(GraphicsContext &gc) = 0;
 };
 
-class MinWin : public XWindow2 {
+
+
+class MinWin : public XWindow {
 public:
-	MinWin() : XWindow2(VectorWindow) {PrintMe("Google.dat");}
+	MinWin() : XWindow(VectorWindow) {}
 	void OnDraw(GraphicsContext &gc) {};
 };
 

@@ -1,128 +1,206 @@
 #include <vector>
 #include <iostream>
 #include <stdlib.h>
+#include <sys/time.h>
 
-template <class T>
-class SpString {
- public:
-  int start_row;
-  std::vector<T> data;
-};
-
-template <class T>
-class SpMatrix {
-  int m_rows;
-  int m_cols;
-  std::vector<SpString<T> > *colstrings;
- public:
-  // Null constructor
-  SpMatrix();
-  // Empty constructor
-  SpMatrix(int rows, int cols);
-  // Construct a sparse matrix from a dense one
-  SpMatrix(T *data, int rows, int cols);
-  // Destructor
-  ~SpMatrix();
-  // Print me
-  void PrintMe(std::ostream &o);
-  // Print me in native form
-  void PrintMeNative(std::ostream &o);
-};
-
-template <class T>
-SpMatrix<T>::SpMatrix() {
-  m_rows = 0;
-  m_cols = 0;
-  colstrings = NULL;
+long timer() {
+  struct timeval tp;
+  struct timezone tzp;
+  gettimeofday(&tp,&tzp);
+  return tp.tv_sec;
 }
 
 template <class T>
-SpMatrix<T>::~SpMatrix() {
-  delete[] colstrings;
-}
-
-template <class T>
-SpMatrix<T>::SpMatrix(int rows, int cols) {
-  m_rows = rows;
-  m_cols = cols;
-  colstrings = new std::vector<SpString<T> >[cols];
-}
-
-template <class T>
-SpMatrix<T>::SpMatrix(T *data, int rows, int cols)  {
-  m_rows = rows;
-  m_cols = cols;
-  colstrings = new std::vector<SpString<T> >[cols];
-  int i, j, p;
-  bool newstring;
-  SpString<T> wstring;
-  p = 0;
-  for (i=0;i<cols;i++) {
-    newstring = true;
-    wstring.data.clear();
-    for (j=0;j<rows;j++) {
-      if ((data[p] == 0) && !newstring) {
-	// add wstring to the current column's set of strings
-	colstrings[i].push_back(wstring);
-	newstring = true;
-	wstring.data.clear();
-      } else if ((data[p] != 0) && newstring) {
-	wstring.start_row = j;
-	wstring.data.push_back(data[p]);
-	newstring = false;
-      } else if (data[p] != 0) {
-	wstring.data.push_back(data[p]);	
-      }
-      p++;
+void DenseDenseRealMultiply(T* A, int A_rows, int A_cols,
+			    T* B, int B_cols, T* C) {
+  int i, j, k;
+  for (i=0;i<A_rows;i++)
+    for (j=0;j<B_cols;j++) {
+      T accum = 0;
+      for (k=0;k<A_cols;k++)
+	accum += A[i+k*A_rows]*B[k+j*A_cols];
+      C[i+j*A_rows] = accum;
     }
-    if (!newstring)
-      colstrings[i].push_back(wstring);
-  }    
 }
 
+// Multiply a dense matrix by a sparse matrix (result is dense)
 template <class T>
-void SpMatrix<T>::PrintMe(std::ostream &o) {
-  
-}
-
-template <class T>
-void SpMatrix<T>::PrintMeNative(std::ostream &o) {
-  for (int i=0;i<m_cols;i++) {
-    o << "Strings for column " << i << "\n";
-    for (int j=0;j<colstrings[i].size();j++) {
-      o << "    start row = " << colstrings[i][j].start_row << "\n";
-      o << "    data = ";
-      for (int k=0;k<colstrings[i][j].data.size();k++) {
-	o << colstrings[i][j].data[k] << ",";
+void DenseSparseRealMultiply(T* A, int A_rows, int A_cols,
+			     T** B, int B_cols, T* C) {
+  int i, j, k, n;
+  int B_rows;
+  T* str;
+  T accum;
+  B_rows = A_cols;
+  for (i=0;i<A_rows;i++) {
+    for (j=0;j<B_cols;j++) {
+      str = B[j];
+      k = 0;
+      n = 0;
+      accum = 0;
+      while (n<B_rows) {
+	if (str[k] != 0) {
+	  accum += A[i+n*A_rows]*str[k];
+	  n++;
+	  k++;
+	} else {
+	  n += (int) (str[k+1]);
+	  k += 2;
+	}
       }
-      o << "\n";
+      C[i+j*A_rows] = accum;
     }
   }
 }
 
+template <class T>
+void DecompressRealString(const T* src, T* dst, int count) {
+  int i=0;
+  int n=0;
+  int j;
+  while (i<count) {
+    if (src[n] != 0) {
+      dst[i] = src[n];
+      i++;
+      n++;
+    } else {
+      j = (int) src[n+1];
+      memset(dst+i,0,sizeof(T)*j);
+      i += j;
+      n += 2;
+    }
+  }
+}
+
+template <class T>
+T* CompressRealVector(const T* src, int count) {
+  int i, j;
+  int zlen;
+  int outlen = 0;
+  i = 0;
+  while (i<count) {
+    if (src[i] != 0) {
+      i++;
+      outlen++;
+    } else {
+      outlen+=2;
+      while ((src[i] == 0) && (i<count)) i++;
+    }
+  }
+  T* dp = new T[outlen];
+  j = 0;
+  i = 0;
+  outlen = 0;
+  while (i<count) {
+    if (src[i] != 0) {
+      dp[outlen] = src[i];
+      i++;
+      outlen++;
+    } else {
+      zlen = 0;
+      while ((src[i] == 0) && (i<count)) {
+	i++;
+	zlen++;
+      }
+      dp[outlen++] = 0;
+      dp[outlen++] = zlen;
+    }
+  }
+  return dp;
+}
+
+template <class T>
+T** ConvertDenseToSparseReal(const T* src, int rows, int cols) {
+  T** dp;
+  dp = new T*[cols];
+  int i;
+  for (i=0;i<cols;i++)
+    dp[i] = CompressRealVector<T>(src+i*rows, rows);
+  return dp;
+}
+
+template <class T>
+void ConvertSparseToDenseReal(T** src, int rows, int cols, T* dst) {
+  int i;
+  for (i=0;i<cols;i++)
+    DecompressRealString<T>(src[i],dst+i*rows,rows);
+}
+
+template <class T>
+void DeleteSparse(T** src, int rows, int cols) {
+  int i;
+  for (i=0;i<cols;i++)
+    delete[] src[i];
+  delete[] src;
+}
+
 #define TSIZE 5000
 int main(int argc, char *argv[]) {
+  float P[15] = {0,0,1,2,0,0,4,0,0,0,0,5,2,0,0};
+  float *C;
+  int Clen;
+  C = CompressRealVector<float>(P,15);
+  int j;
+  for (j=0;j<12;j++) {
+    printf("C[%d] = %f\n",j,C[j]);
+  }
+  float Q[15];
+  DecompressRealString<float>(C,Q,15);
+  for (j=0;j<15;j++) {
+    printf("Q[%d] = %f\n",j,Q[j]);
+  }
   // N = [0, 3, 4, 0, 2]
   //     [1, 0, 3, 0, 0]
   //     [2, 7, 2, 1, 0]
   float N[15] = {0,1,2,3,0,7,4,3,2,0,0,1,2,0,0};
-  SpMatrix<float> A(N,3,5);
-  A.PrintMeNative(std::cout);
+
+  float **Nsparse = ConvertDenseToSparseReal<float>(N,3,5);
+  float NN[15];
+  ConvertSparseToDenseReal<float>(Nsparse,3,5,NN);
+  for (j=0;j<15;j++) {
+    printf("NN[%d] = %f\n",j,NN[j]);
+  }
+
+  // Z = [1 5 3]
+  //     [3 2 3]
+  float Z[6] = {1,3,5,2,3,3};
+
+  
+  float ZP[10];
+  DenseDenseRealMultiply<float>(Z,2,3,N,5,ZP);
+  for (int k=0;k<10;k++)
+    printf("ZP[%d] = %f\n",k,ZP[k]);
+  
+  printf("Sparse version...\n");
+  DenseSparseRealMultiply<float>(Z,2,3,Nsparse,5,ZP);
+  for (int k=0;k<10;k++)
+    printf("ZP[%d] = %f\n",k,ZP[k]);
+  
+
+
   float *M;
   std::cout << "Allocating array\n";
   M = new float[TSIZE*TSIZE];
-  int i, j;
+  int i;
   std::cout << "Filling array...\n";
+  int t1, t2;
+  t1 = timer();
   for (i=0;i<TSIZE;i++)
     for (j=0;j<TSIZE;j++) {
       double useelt = ((double) random())/RAND_MAX;
-      if (useelt < 0.1)
+      if (useelt < 0.01)
 	M[i+TSIZE*j] = useelt;
     }
+  t2 = timer() - t1;
+  std::cout << "time for fill = " << t2 << " sec\n";
   std::cout << "Converting array...\n";
-  SpMatrix<float> B(M,TSIZE,TSIZE);
+  float** L;
+  t1 = timer();
+  L = ConvertDenseToSparseReal(M,TSIZE,TSIZE);
+  t2 = timer() - t1;
+  std::cout << "time for convert2 = " << t2 << " sec\n";
+  DeleteSparse(L,TSIZE,TSIZE);
   std::cout << "Done.\n";
-  
   return 0;
 
 }

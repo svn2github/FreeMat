@@ -40,7 +40,7 @@
 namespace FreeMat {
   bool FileExists(std::string filename) {
     struct stat filestat;
-    stat(filename.c_str(),&filestat);
+    if (stat(filename.c_str(),&filestat)==-1) return false;
     return (S_ISREG(filestat.st_mode));
   }
 

@@ -158,7 +158,7 @@ END_EVENT_TABLE()
   }
 
   void VolView::OnClose(wxCloseEvent &event) {
-    m_server->NotifyImageClose(myFigureNumber);
+    m_server->NotifyVolumeClose(myFigureNumber);
     Destroy();
   }
 

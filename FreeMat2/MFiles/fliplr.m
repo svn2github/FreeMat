@@ -1,7 +1,15 @@
-%
-%  Function x = fliplr(y) 
-%  Flip the columns of y.
-
+%  FLIPLR Reverse the Columns of a Matrix
+%  
+%  
+%  USAGE
+%  
+%  Reverses the columns of a matrix.  The syntax for its use is
+%  
+%     y = fliplr(x)
+%  
+%  where x is matrix.  If x is an N-dimensional array then
+%  the second dimension is reversed.
+%  
 % Copyright (c) 2002, 2003 Samit Basu
 %
 % Permission is hereby granted, free of charge, to any person obtaining a 
@@ -22,5 +30,4 @@
 % FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 % DEALINGS IN THE SOFTWARE.
 function x = fliplr(y)
-  n = size(y,2):-1:1;
-  x = y(:,n);
+  x = flipdim(y,2);

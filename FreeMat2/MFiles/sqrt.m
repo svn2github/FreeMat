@@ -1,7 +1,17 @@
-% Function y = sqrt(x)
-%  Returns the square root of x.
+%  SQRT Square Root of an Array
+%  
+%  
+%  USAGE
+%  
+%  Computes the square root of the argument matrix.  The general
+%  syntax for its use is
+%  
+%     y = sqrt(x)
+%  
+%  where x is an N-dimensional numerical array.
+%  
 
-% Copyright (c) 2002, 2003 Samit Basu
+% Copyright (c) 2002-2005 Samit Basu
 %
 % Permission is hereby granted, free of charge, to any person obtaining a 
 % copy of this software and associated documentation files (the "Software"), 

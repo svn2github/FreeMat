@@ -128,7 +128,11 @@ SpecialArgument ({Argument}|{String})
 %x SpecialSyntax
 %x SpecialSyntaxStart
 %x SpecialSyntaxArgs
+%x str
 %%
+
+	char string_buf[4095];
+	char *string_buf_ptr;
 
 {Commentline} {
 }
@@ -401,11 +405,27 @@ SpecialArgument ({Argument}|{String})
   BEGIN(Scanning);
 }
 
-<Scanning>{String} {
-  yytext[yyleng-1] = 0; 
-  yylval = new AST(string_const_node,yytext+1);
-  return STRING;
-}
+<Scanning>\'  string_buf_ptr = string_buf; BEGIN(str);
+
+<str>\' {
+	BEGIN(Scanning); 
+	*string_buf_ptr = '\0';
+	yylval = new AST(string_const_node,string_buf);
+	return STRING;
+	}
+
+<str>\\n *string_buf_ptr++ = 13;
+<str>\\t *string_buf_ptr++ = 19;
+<str>\\r *string_buf_ptr++ = 17;
+<str>\\b *string_buf_ptr++ = 1;
+<str>\\f *string_buf_ptr++ = 5;
+<str>\\(.|\n)  *string_buf_ptr++ = yytext[1];
+
+<str>[^\\\n\']+  {
+                   char *yptr = yytext;
+                   while ( *yptr )
+                           *string_buf_ptr++ = *yptr++;
+                 }
 
 <Scanning>{Word} {
   /* Search for the identifier in the keyword table */

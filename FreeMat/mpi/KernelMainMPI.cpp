@@ -130,7 +130,6 @@ int main(int argc, char *argv[]) {
       char cmdBuffer[4096];
       MPI_Status status;
       MPI_Recv(cmdBuffer,4096,MPI_CHAR,0,0,MPI_COMM_WORLD,&status);
-      std::cout << "Got command: " << cmdBuffer << "\n";
       strcat(cmdBuffer,"\n");
       keepRunning = !(twalk->evaluateString(cmdBuffer));
     }

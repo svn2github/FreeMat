@@ -13,6 +13,12 @@ namespace FreeMat {
     comms.assignHandle(MPI_COMM_WORLD);
   }
 
+  // Helper function
+  int ArrayToInt(const Array &A) {
+    Array tmp(A);
+    return tmp.getContentsAsIntegerScalar();
+  }
+  
   /* 
    * Send an array via MPI:
    *  Arguments: MPISend(A, dest, tag, communicator)
@@ -388,8 +394,8 @@ namespace FreeMat {
     void *cp = malloc(Asize);
     int packpos = 0;
     packArrayMPI(A,cp,bufsize,&packpos,comm);
-    MPI_Send(&packpos,1,MPI_INT,dest,2*tag+1,comm);
-    MPI_Send(cp,packpos,MPI_PACKED,dest,2*tag+2,comm);
+    MPI_Send(&packpos,1,MPI_INT,dest,tag,comm);
+    MPI_Send(cp,packpos,MPI_PACKED,dest,tag,comm);
     free(cp);
     return ArrayVector();
   }
@@ -481,14 +487,17 @@ namespace FreeMat {
     }
     MPI_Comm comm(comms.lookupHandle(comhandle));
     int msgsize;
-    MPI_Recv(&msgsize,1,MPI_INT,source,2*tag+1,comm,MPI_STATUS_IGNORE);
+    MPI_Status status;
+    MPI_Recv(&msgsize,1,MPI_INT,source,tag,comm,&status);
     void *cp = malloc(msgsize);
-    MPI_Recv(cp,msgsize,MPI_PACKED,source,2*tag+2,comm,MPI_STATUS_IGNORE);
+    MPI_Recv(cp,msgsize,MPI_PACKED,status.MPI_SOURCE,status.MPI_TAG,comm,MPI_STATUS_IGNORE);
     int packpos = 0;
     Array A(unpackArrayMPI(cp,msgsize,&packpos,comm));
     free(cp);
     ArrayVector retval;
     retval.push_back(A);
+    retval.push_back(Array::int32Constructor(status.MPI_SOURCE));
+    retval.push_back(Array::int32Constructor(status.MPI_TAG));
     return retval;
   }
 
@@ -552,6 +561,84 @@ namespace FreeMat {
     return retval;
   }
 
+  /*
+   * syntax: x = mpireduce(y,operation,root,comm)
+   */
+  ArrayVector MPIReduce(int nargout, const ArrayVector& args) {
+    int comhandle;
+    if (args.size() < 4)
+      comhandle = 1;
+    else 
+      comhandle = ArrayToInt(args[3]);
+    MPI_Comm comm(comms.lookupHandle(comhandle));
+    if (args.size() < 3)
+      throw Exception("mpireduce requires an array, an operation, and a root rank");
+    int root = ArrayToInt(args[2]);
+    char *op;
+    Array oper(args[1]);
+    op = oper.getContentsAsCString();
+    MPI_Op mpiop;
+    switch (*op) {
+    case '+':
+      mpiop = MPI_SUM;
+      break;
+    case '*':
+      mpiop = MPI_PROD;
+      break;
+    case '<':
+      mpiop = MPI_MIN;
+      break;
+    case '>':
+      mpiop = MPI_MAX;
+      break;
+    default:
+      throw Exception(std::string("unrecognized mpiop type:") + op + ": supported types are '+','*','>' and '<'");
+    }
+    Array source(args[0]);
+    Array dest(source);
+    Class dataClass(source.getDataClass());
+    switch (dataClass) {
+    case FM_LOGICAL:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED_CHAR,mpiop,root,comm);
+      break;
+    case FM_UINT8:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED_CHAR,mpiop,root,comm);
+      break;
+    case FM_INT8:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_CHAR,mpiop,root,comm);
+      break;
+    case FM_UINT16:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED_SHORT,mpiop,root,comm);
+      break;
+    case FM_INT16:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_SHORT,mpiop,root,comm);
+      break;
+    case FM_UINT32:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_UNSIGNED,mpiop,root,comm);
+      break;
+    case FM_INT32:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_INT,mpiop,root,comm);
+      break;
+    case FM_FLOAT:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_FLOAT,mpiop,root,comm);
+      break;
+    case FM_DOUBLE:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),source.getLength(),MPI_DOUBLE,mpiop,root,comm);
+      break;
+    case FM_COMPLEX:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),2*source.getLength(),MPI_FLOAT,mpiop,root,comm);
+      break;
+    case FM_DCOMPLEX:
+      MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),2*source.getLength(),MPI_DOUBLE,mpiop,root,comm);
+      break;
+    default:
+      throw Exception("unsupported array type in argument to reduce - must be a numerical type");
+    }
+    ArrayVector retval;
+    retval.push_back(dest);
+    return retval;
+  }
+
   void LoadMPIFunctions(Context*context) {
     BuiltInFunctionDef *f2def;
 
@@ -563,7 +650,7 @@ namespace FreeMat {
     context->insertFunctionGlobally(f2def);
     
     f2def = new BuiltInFunctionDef;
-    f2def->retCount = 1;
+    f2def->retCount = 3;
     f2def->argCount = 3;
     f2def->name = "mpirecv";
     f2def->fptr = MPIRecv;
@@ -602,6 +689,13 @@ namespace FreeMat {
     f2def->argCount = 3;
     f2def->name = "mpieval";
     f2def->fptr = MPIEval;
+    context->insertFunctionGlobally(f2def);
+    
+    f2def = new BuiltInFunctionDef;
+    f2def->retCount = 1;
+    f2def->argCount = 4;
+    f2def->name = "mpireduce";
+    f2def->fptr = MPIReduce;
     context->insertFunctionGlobally(f2def);
     
     InitializeMPIWrap();

@@ -175,6 +175,22 @@ int main(int argc, char *argv[]) {
   } else {
     char buffer[1024];
     sprintf(buffer,"%s\n",argv[funcMode+1]);
+    ParserState parserState;
+    try {
+      parserState = parseString(line);
+      if (parserState != ScriptBlock) {
+	printf("Error: syntax error on argument to -f\r\n");
+	term->RestoreOriginalMode();
+	return 1;
+      }
+      ASTPtr tree = getParsedScriptBlock();
+      try {
+	block(tree);
+      } catch(Exception &e) {
+	e.printMe(term);
+	term->RestoreOriginalMode();
+	return 5;	
+      }
     twalk->evaluateString(buffer);
   }
   term->RestoreOriginalMode();

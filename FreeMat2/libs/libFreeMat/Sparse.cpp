@@ -2398,7 +2398,7 @@ namespace FreeMat {
     int ptr = 0;
     for (i=0;i<cols;i++) {
       // Decompress this column
-      memset(OBuf,0,rows*sizeof(T));
+      memset(OBuf,0,2*rows*sizeof(T));
       DecompressComplexString<T>(src[i],OBuf,rows);
       // Copy it
       int ptr = 0;
@@ -2922,123 +2922,33 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*2];
     for (i=0;i<cols;i++) {
-      const T* A, *B;
-      A = Amat[i];
-      B = Bmat[i];
-      // We have four pointers, An, Ai, Bn, Bi
-      int An, Ai, Bn, Bi;
-      int Cn;
-      int outcount;
-      outcount = 0;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0)) {
-	  An += (int) A[Ai+1];
-	  Ai += 2;
-	}
-	while ((Bn < rows) && (B[Bi] == 0)) {
-	  Bn += (int) B[Bi+1];
-	  Bi += 2;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// check Cn against An and Bn - if it is smaller
-	// than both
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An)
-	    outcount += 2;
-	  Cn = An;
-	  Ai++;
-	  Bi++;
-	  An++;
-	  Bn++;
-	  Cn++;
-	  outcount++;
-	} else if (An < Bn) {
-	  if (Cn < An)
-	    outcount += 2;
-	  Cn = An;
-	  Ai++;
-	  An++;
-	  Cn++;
-	  outcount++;
+      RLEDecoder<T> A(Amat[i],rows);
+      RLEDecoder<T> B(Bmat[i],rows);
+      RLEEncoder<T> C(buffer,rows); 
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(A.value() - B.value());
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  C.set(A.row());
+	  C.push(A.value());
+	  A.advance();
 	} else {
-	  if (Cn < Bn)
-	    outcount += 2;
-	  Cn = Bn;
-	  Bi++;
-	  Bn++;
-	  Cn++;
-	  outcount++;
+	  C.set(B.row());
+	  C.push(-B.value());
+	  B.advance();
 	}
       }
-      if (Cn < rows)
-	outcount+=2;
-      Cmat[i] = new T[outcount+1];
-      Cmat[i][0] = outcount;
-      outcount = 1;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0)) {
-	  An += (int) A[Ai+1];
-	  Ai += 2;
-	}
-	while ((Bn < rows) && (B[Bi] == 0)) {
-	  Bn += (int) B[Bi+1];
-	  Bi += 2;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai] - B[Bi];
-	  Ai++;
-	  Bi++;
-	  An++;
-	  Bn++;
-	  Cn++;
-	} else if (An < Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai];
-	  Ai++;
-	  An++;
-	  Cn++;
-	} else {
-	  if (Cn < Bn) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = Bn - Cn;
-	    Cn = Bn;
-	  }
-	  Cmat[i][outcount++] = -B[Bi];
-	  Bi++;
-	  Bn++;
-	  Cn++;
-	}
-      }
-      if (Cn < rows) {
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = rows - Cn;      
-      }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 
@@ -3047,130 +2957,34 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*4];
     for (i=0;i<cols;i++) {
-      const T* A, *B;
-      A = Amat[i];
-      B = Bmat[i];
-      // We have four pointers, An, Ai, Bn, Bi
-      int An, Ai, Bn, Bi;
-      int Cn;
-      int outcount;
-      outcount = 0;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
-	  An += (int) A[Ai+2];
-	  Ai += 3;
-	}
-	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
-	  Bn += (int) B[Bi+2];
-	  Bi += 3;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// check Cn against An and Bn - if it is smaller
-	// than both
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An)
-	    outcount += 3;
-	  Cn = An;
-	  Ai+=2;
-	  Bi+=2;
-	  An++;
-	  Bn++;
-	  Cn++;
-	  outcount+=2;
-	} else if (An < Bn) {
-	  if (Cn < An)
-	    outcount += 3;
-	  Cn = An;
-	  Ai+=2;
-	  An++;
-	  Cn++;
-	  outcount+=2;
+      RLEDecoderComplex<T> A(Amat[i],rows);
+      RLEDecoderComplex<T> B(Bmat[i],rows);
+      RLEEncoderComplex<T> C(buffer,rows); 
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(A.value_real() - B.value_real(),
+		 A.value_imag() - B.value_imag());
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  C.set(A.row());
+	  C.push(A.value_real(),A.value_imag());
+	  A.advance();
 	} else {
-	  if (Cn < Bn)
-	    outcount += 3;
-	  Cn = Bn;
-	  Bi+=2;
-	  Bn++;
-	  Cn++;
-	  outcount+=2;
+	  C.set(B.row());
+	  C.push(-B.value_real(),-B.value_imag());
+	  B.advance();
 	}
       }
-      if (Cn < rows)
-	outcount+=3;
-      Cmat[i] = new T[outcount+1];
-      Cmat[i][0] = outcount;
-      outcount = 1;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
-	  An += (int) A[Ai+2];
-	  Ai += 3;
-	}
-	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
-	  Bn += (int) B[Bi+2];
-	  Bi += 3;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai] - B[Bi];
-	  Cmat[i][outcount++] = A[Ai+1] - B[Bi+1];
-	  Ai+=2;
-	  Bi+=2;
-	  An++;
-	  Bn++;
-	  Cn++;
-	} else if (An < Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai];
-	  Cmat[i][outcount++] = A[Ai+1];
-	  Ai+=2;
-	  An++;
-	  Cn++;
-	} else {
-	  if (Cn < Bn) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = Bn - Cn;
-	    Cn = Bn;
-	  }
-	  Cmat[i][outcount++] = -B[Bi];
-	  Cmat[i][outcount++] = -B[Bi+1];
-	  Bi+=2;
-	  Bn++;
-	  Cn++;
-	}
-      }
-      if (Cn < rows) {
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = rows - Cn;      
-      }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 
@@ -3200,99 +3014,29 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*2];
     for (i=0;i<cols;i++) {
-      const T* A, *B;
-      A = Amat[i];
-      B = Bmat[i];
-      // We have four pointers, An, Ai, Bn, Bi
-      int An, Ai, Bn, Bi;
-      int Cn;
-      int outcount;
-      outcount = 0;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0)) {
-	  An += (int) A[Ai+1];
-	  Ai += 2;
-	}
-	while ((Bn < rows) && (B[Bi] == 0)) {
-	  Bn += (int) B[Bi+1];
-	  Bi += 2;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// check Cn against An and Bn - if it is smaller
-	// than both
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An)
-	    outcount += 2;
-	  Cn = An;
-	  Ai++;
-	  Bi++;
-	  An++;
-	  Bn++;
-	  Cn++;
-	  outcount++;
-	} else if (An < Bn) {
-	  Ai++;
-	  An++;
+      RLEDecoder<T> A(Amat[i],rows);
+      RLEDecoder<T> B(Bmat[i],rows);
+      RLEEncoder<T> C(buffer,rows); 
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(A.value()*B.value());
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  A.advance();
 	} else {
-	  Bi++;
-	  Bn++;
+	  B.advance();
 	}
       }
-      if (Cn < rows)
-	outcount+=2;
-      Cmat[i] = new T[outcount+1];
-      Cmat[i][0] = outcount;
-      outcount = 1;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0)) {
-	  An += (int) A[Ai+1];
-	  Ai += 2;
-	}
-	while ((Bn < rows) && (B[Bi] == 0)) {
-	  Bn += (int) B[Bi+1];
-	  Bi += 2;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai] * B[Bi];
-	  Ai++;
-	  Bi++;
-	  An++;
-	  Bn++;
-	  Cn++;
-	} else if (An < Bn) {
-	  Ai++;
-	  An++;
-	} else {
-	  Bi++;
-	  Bn++;
-	}
-      }
-      if (Cn < rows) {
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = rows - Cn;      
-      }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 
@@ -3301,102 +3045,32 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*4];
     for (i=0;i<cols;i++) {
-      const T* A, *B;
-      A = Amat[i];
-      B = Bmat[i];
-      // We have four pointers, An, Ai, Bn, Bi
-      int An, Ai, Bn, Bi;
-      int Cn;
-      int outcount;
-      outcount = 0;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
-	  An += (int) A[Ai+2];
-	  Ai += 3;
-	}
-	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
-	  Bn += (int) B[Bi+2];
-	  Bi += 3;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// check Cn against An and Bn - if it is smaller
-	// than both
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An)
-	    outcount += 3;
-	  Cn = An;
-	  Ai+=2;
-	  Bi+=2;
-	  An++;
-	  Bn++;
-	  Cn++;
-	  outcount+=2;
-	} else if (An < Bn) {
-	  Ai+=2;
-	  An++;
+      RLEDecoderComplex<T> A(Amat[i],rows);
+      RLEDecoderComplex<T> B(Bmat[i],rows);
+      RLEEncoderComplex<T> C(buffer,rows); 
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(A.value_real()*B.value_real()-
+		 A.value_imag()*B.value_imag(),
+		 A.value_real()*B.value_imag()+
+		 A.value_imag()*B.value_real());
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  A.advance();
 	} else {
-	  Bi+=2;
-	  Bn++;
+	  B.advance();
 	}
       }
-      if (Cn < rows)
-	outcount+=3;
-      Cmat[i] = new T[outcount+1];
-      Cmat[i][0] = outcount;
-      outcount = 1;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
-	  An += (int) A[Ai+2];
-	  Ai += 3;
-	}
-	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
-	  Bn += (int) B[Bi+2];
-	  Bi += 3;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai] * B[Bi] - A[Ai+1] * B[Bi+1];
-	  Cmat[i][outcount++] = A[Ai] * B[Bi+1] + A[Ai+1] * B[Bi];
-	  Ai+=2;
-	  Bi+=2;
-	  An++;
-	  Bn++;
-	  Cn++;
-	} else if (An < Bn) {
-	  Ai+=2;
-	  An++;
-	} else {
-	  Bi+=2;
-	  Bn++;
-	}
-      }
-      if (Cn < rows) {
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = rows - Cn;      
-      }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 
@@ -3426,25 +3100,20 @@ namespace FreeMat {
 				 const T* Bval) {
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*2];
     for (int i=0;i<cols;i++) {
-      int blen = (int) Amat[i][0];
-      Cmat[i] = new T[blen+1];
-      Cmat[i][0] = blen;
-      int k = 0;
-      int n = 1;
-      while (k<rows) {
-	if (Amat[i][n] != 0) {
-	  Cmat[i][n] = Amat[i][n] * Bval[0];
-	  k++;
-	  n++;
-	} else {
-	  Cmat[i][n] = 0;
-	  Cmat[i][n+1] = Amat[i][n+1];
-	  k += (int) Amat[i][n+1];
-	  n+= 2;
-	}
+      RLEDecoder<T> A(Amat[i],rows);
+      RLEEncoder<T> C(buffer,rows);
+      A.update();
+      while (A.more()) {
+	C.set(A.row());
+	C.push(A.value()*Bval[0]);
+	A.advance();
       }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 
@@ -3453,26 +3122,19 @@ namespace FreeMat {
 				    const T* Bval) {
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*4];
     for (int i=0;i<cols;i++) {
-      int blen = (int) Amat[i][0];
-      Cmat[i] = new T[blen+1];
-      Cmat[i][0] = blen;
-      int k = 0;
-      int n = 1;
-      while (k<rows) {
-	if ((Amat[i][n] != 0) || (Amat[i][n+1] != 0)) {
-	  Cmat[i][n] = Amat[i][n] * Bval[0] - Amat[i][n+1] * Bval[1];
-	  Cmat[i][n+1] = Amat[i][n] * Bval[1] + Amat[i][n+1] * Bval[0];
-	  k++;
-	  n+=2;
-	} else {
-	  Cmat[i][n] = 0;
-	  Cmat[i][n+1] = 0;
-	  Cmat[i][n+2] = Amat[i][n+2];
-	  k += (int) Amat[i][n+2];
-	  n += 3;
-	}
+      RLEDecoderComplex<T> A(Amat[i],rows);
+      RLEEncoderComplex<T> C(buffer,rows);
+      A.update();
+      while (A.more()) {
+	C.set(A.row());
+	C.push(A.value_real()*Bval[0]-A.value_imag()*Bval[1],
+	       A.value_real()*Bval[1]+A.value_imag()*Bval[0]);
+	A.advance();
       }
+      C.end();
+      Cmat[i] = C.copyout();
     }
     return Cmat;
   }
@@ -3510,31 +3172,18 @@ namespace FreeMat {
     Adata = new double[nnz];
     // We have to unpack the matrix into these arrays... we do this
     // by traversing the columns
-    int p = 0;
+    int m = 0;
+    Acolstart[0] = 0;
     for (int i=0;i<cols;i++) {
-      int n = 1;
-      int m = 0;
-      bool firstEntry = true;
-      while (m<rows) {
-	if (Ap[i][n] != 0) {
-	  if (firstEntry) {
-	    Acolstart[i] = p;
-	    firstEntry = false;
-	  }
-	  Arowindx[p] = m;
-	  Adata[p] = Ap[i][n];
-	  p++;
-	  n++;
-	  m++;
-	} else {
-	  m += (int) Ap[i][n+1];
-	  n += 2;
-	}
+      RLEDecoder<double> A(Ap[i],rows);
+      A.update();
+      while (A.more()) {
+	Arowindx[m] = A.row();
+	Adata[m++] = A.value();
+	A.advance();
       }
-      if (firstEntry)
-	Acolstart[i] = p;
+      Acolstart[i+1] = m;
     }
-    Acolstart[cols] = nnz;
     return nnz;
   }
 
@@ -3551,32 +3200,19 @@ namespace FreeMat {
     Aimag = new double[nnz];
     // We have to unpack the matrix into these arrays... we do this
     // by traversing the columns
-    int p = 0;
+    int m = 0;
+    Acolstart[0] = 0;
     for (int i=0;i<cols;i++) {
-      int n = 1;
-      int m = 0;
-      bool firstEntry = true;
-      while (m<rows) {
-	if ((Ap[i][n] != 0) || (Ap[i][n+1] != 0)) {
-	  if (firstEntry) {
-	    Acolstart[i] = p;
-	    firstEntry = false;
-	  }
-	  Arowindx[p] = m;
-	  Adata[p] = Ap[i][n];
-	  Aimag[p] = Ap[i][n+1];
-	  p++;
-	  n+=2;
-	  m++;
-	} else {
-	  m += (int) Ap[i][n+2];
-	  n += 3;
-	}
+      RLEDecoderComplex<double> A(Ap[i],rows);
+      A.update();
+      while (A.more()) {
+	Arowindx[m] = A.row();
+	Adata[m] = A.value_real();
+	Aimag[m++] = A.value_imag();
+	A.advance();
       }
-      if (firstEntry)
-	Acolstart[i] = p;
+      Acolstart[i+1] = m;
     }
-    Acolstart[cols] = nnz;
     return nnz;
   }
 
@@ -3634,8 +3270,8 @@ namespace FreeMat {
     const double * bp = (const double *) Bp;
     for (int i=0;i<Bcols;i++) {
       for (int j=0;j<Brows;j++) {
-	br[j] = bp[2*j];
-	bi[j] = bp[2*j+1];
+	br[j] = bp[2*Brows*i+2*j];
+	bi[j] = bp[2*Brows*i+2*j+1];
       }
       memset(xr,0,sizeof(double)*Arows);
       memset(xi,0,sizeof(double)*Arows);
@@ -3643,8 +3279,8 @@ namespace FreeMat {
 			       Adata, Aimag, xr, xi, br, bi, Numeric, 
 			       null, null);
       for (int j=0;j<Arows;j++) {
-	x[2*j] = xr[j];
-	x[2*j+1] = xi[j];
+	x[2*Arows*i+2*j] = xr[j];
+	x[2*Arows*i+2*j+1] = xi[j];
       }
     }
     umfpack_zi_free_numeric (&Numeric) ;

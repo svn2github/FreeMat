@@ -211,8 +211,10 @@ namespace FreeMat {
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
     // Hack needed to avoid XLib core dump
+#ifndef __APPLE__
     while (!fl_gc)
       Fl::wait(0);
+#endif
     f->Print(outname);
     return ArrayVector();
   }

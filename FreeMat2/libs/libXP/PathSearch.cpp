@@ -19,6 +19,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "PathSearch.hpp"
+#include "Exception.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <sys/types.h>
@@ -109,7 +110,8 @@ std::string GetApplicationPath(char *argv0) {
     }
     if (found)
       return(fullname);
-    else
-      return std::string();
+    else {
+      throw Exception("Unable to find file " + fname + " on the current path!");
+    }
   }
 }

@@ -44,7 +44,7 @@ namespace FreeMat {
 #else
     void *func = dlsym(lib,symbolName);
     if (func == NULL)
-      throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
+      throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName) + " : " + dlerror());
     return func;
 #endif
   }

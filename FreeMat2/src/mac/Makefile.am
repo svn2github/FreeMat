@@ -19,8 +19,8 @@ bin_PROGRAMS = FreeMat
 
 FreeMat_SOURCES = main.cpp 
 
-FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB) @top_builddir@/libs/libFLTK/libFLTK.a
-FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFLTK/libFLTK.a @top_builddir@/libs/libffi/libffi.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB)  -lg2c 
+FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libARPACK/libARPACK.a @top_builddir@/libs/libUMFPACK/UMFPACK/libUMFPACKdi.a @top_builddir@/libs/libUMFPACK/UMFPACK/libUMFPACKzi.a @top_builddir@/libs/libUMFPACK/AMD/libAMD.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB) @top_builddir@/libs/libFLTK/libFLTK.a
+FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/libs/libARPACK/libARPACK.a @top_builddir@/libs/libUMFPACK/UMFPACK/libUMFPACKdi.a @top_builddir@/libs/libUMFPACK/UMFPACK/libUMFPACKzi.a @top_builddir@/libs/libUMFPACK/AMD/libAMD.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFLTK/libFLTK.a @top_builddir@/libs/libffi/libffi.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB)  -lg2c 
 
 bundle:
 	/Developer/Tools/Rez @top_srcdir@/src/mac/mac.r -o @top_builddir@/src/mac/FreeMat

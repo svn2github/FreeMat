@@ -576,7 +576,7 @@ int yylexScreen() {
       /* Test if next character indicates the start of an expression */
       if ((currentChar() == '(') || (currentChar() == '+') || (currentChar() == '-') ||
 	  (currentChar() == '~') || (currentChar() == '[') || (currentChar() == '{') ||
-	  (currentChar() == '\'') || (isalnum(currentChar()))) {
+	  (currentChar() == '\'') || (isalnum(currentChar())) || ((currentChar() == '.') && (isdigit(datap[1])))) {
 	/* 
 	   OK - now we have to decide if the "+/-" are infix or prefix operators...
 	   In fact, this decision alone is the reason for this whole lexer.

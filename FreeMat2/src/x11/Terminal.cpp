@@ -389,15 +389,13 @@ namespace FreeMat {
   void Terminal::errorMessage(const char* msg) {
     std::string msg2(TranslateString(msg));
     OutputRawString("Error: " + msg2 + "\r\n");
-    if (messageContext != NULL)
-      OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
+    OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
   }
 
   void Terminal::warningMessage(const char* msg) {
     std::string msg2(TranslateString(msg));
     OutputRawString("Warning: " + msg2 + "\r\n");
-    if (messageContext != NULL)
-      OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
+    OutputRawString("   at " + TranslateString(messageContext) + "\r\n");
   }
 
   void Terminal::SetEvalEngine(WalkTree* a_eval) {

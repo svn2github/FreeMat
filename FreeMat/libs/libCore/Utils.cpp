@@ -48,7 +48,7 @@ namespace FreeMat {
     return(temp);
   }
 
-  double dcomplex_abs(double real, double imag) {
+  double complex_abs(double real, double imag) {
     double temp;
   
     if(real < 0)
@@ -96,7 +96,7 @@ namespace FreeMat {
   }
 
   void zlog(double real, double imag, double *re, double *im) {
-    *re = log(dcomplex_abs(real,imag));
+    *re = log(complex_abs(real,imag));
     *im = atan2(imag,real);
   }
 

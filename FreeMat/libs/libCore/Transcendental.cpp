@@ -101,7 +101,7 @@ namespace FreeMat {
        int len(input.getLength());
        double *op = (double *)Malloc(len*sizeof(double)*2);
        for (int i=0;i<2*len;i+=2) {
-	 op[i] = log(dcomplex_abs(dp[i],dp[i+1]));
+	 op[i] = log(complex_abs(dp[i],dp[i+1]));
 	 op[i+1] = atan2(dp[i+1],dp[i]);
        }
        output = Array(FM_DCOMPLEX,input.getDimensions(),op);

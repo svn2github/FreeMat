@@ -95,23 +95,21 @@ namespace FreeMat {
     // Allocate the output vector...
     Dimensions outDim(inDim);
     outDim[FFTDim] = FFTLen;
+    
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int majstride_in, majstride_out;
-    for (d = 0;d<FFTDim;d++)
-      stride *= inDim[d];
-    if (FFTDim == 0) {
-      majstride_in = inDim[0];
-      majstride_out = outDim[0];
-    } else {
-      majstride_in = 1;
-      majstride_out = 1;
-    }
-    // Calculate the number of fft's to do...
-    int fftcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != FFTDim) fftcount *= inDim[d];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[FFTDim];
+    planesize = 1;
+    for (d=0;d<FFTDim;d++)
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=FFTDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
+    
     // Allocate the buffer for the FFT
     float *buffer;
     buffer = (float*) Malloc(sizeof(float)*FFTLen*2);
@@ -126,25 +124,27 @@ namespace FreeMat {
     // Get the data pointer
     float *dp;
     dp = (float*) input.getDataPointer();
-    // Do the ffts...
-    for (int i=0;i<fftcount;i++) {
-      // Reset the buffer
-      memset(buffer,0,sizeof(float)*FFTLen*2);
-      // Copy the data
-      int j;
-      for (j=0;j<copyIn;j++) {
-	buffer[2*j] = dp[2*(i*majstride_in+j*stride)];
-	buffer[2*j+1] = dp[2*(i*majstride_in+j*stride)+1];
-      }
-      // Take the FFT
-      if (!inverse)
-	complex_fft_forward(FFTLen,buffer);
-      else
-	complex_fft_backward(FFTLen,buffer);
-      // Copy the result out
-      for (j=0;j<FFTLen;j++) {
-	ob[2*(i*majstride_out+j*stride)] = buffer[2*j];
-	ob[2*(i*majstride_out+j*stride)+1] = buffer[2*j+1];
+    // Do the ffts...d
+    for (int i=0;i<planecount;i++) {
+      for (int j=0;j<planesize;j++) {
+	// Reset the buffer
+	memset(buffer,0,sizeof(float)*FFTLen*2);
+	// Copy the data
+	int k;
+	for (k=0;k<copyIn;k++) {
+	  buffer[2*k] = dp[2*(i*planesize*linesize + j + k*planesize)];
+	  buffer[2*k+1] = dp[2*(i*planesize*linesize + j + k*planesize)+1];
+	}
+	// Take the FFT
+	if (!inverse)
+	  complex_fft_forward(FFTLen,buffer);
+	else
+	  complex_fft_backward(FFTLen,buffer);
+	// Copy the result out
+	for (k=0;k<FFTLen;k++) {
+	  ob[2*(i*planesize*FFTLen + j + k*planesize)] = buffer[2*k];
+	  ob[2*(i*planesize*FFTLen + j + k*planesize) + 1] = buffer[2*k+1];
+	}
       }
     }
     Free(buffer);
@@ -157,23 +157,21 @@ namespace FreeMat {
     // Allocate the output vector...
     Dimensions outDim(inDim);
     outDim[FFTDim] = FFTLen;
+    
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int majstride_in, majstride_out;
-    for (d = 0;d<FFTDim;d++)
-      stride *= inDim[d];
-    if (FFTDim == 0) {
-      majstride_in = inDim[0];
-      majstride_out = outDim[0];
-    } else {
-      majstride_in = 1;
-      majstride_out = 1;
-    }
-    // Calculate the number of fft's to do...
-    int fftcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != FFTDim) fftcount *= inDim[d];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[FFTDim];
+    planesize = 1;
+    for (d=0;d<FFTDim;d++)
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=FFTDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
+    
     // Allocate the buffer for the FFT
     double *buffer;
     buffer = (double*) Malloc(sizeof(double)*FFTLen*2);
@@ -189,27 +187,30 @@ namespace FreeMat {
     double *dp;
     dp = (double*) input.getDataPointer();
     // Do the ffts...
-    for (int i=0;i<fftcount;i++) {
-      // Reset the buffer
-      memset(buffer,0,sizeof(double)*FFTLen*2);
-      // Copy the data
-      int j;
-      for (j=0;j<copyIn;j++) {
-	buffer[2*j] = dp[2*(i*majstride_in+j*stride)];
-	buffer[2*j+1] = dp[2*(i*majstride_in+j*stride)+1];
-      }
-      // Take the FFT
-      if (!inverse)
-	dcomplex_fft_forward(FFTLen,buffer);
-      else
-	dcomplex_fft_backward(FFTLen,buffer);
-      // Copy the result out
-      for (j=0;j<FFTLen;j++) {
-	ob[2*(i*majstride_out+j*stride)] = buffer[2*j];
-	ob[2*(i*majstride_out+j*stride)+1] = buffer[2*j+1];
+    for (int i=0;i<planecount;i++) {
+      for (int j=0;j<planesize;j++) {
+	// Reset the buffer
+	memset(buffer,0,sizeof(double)*FFTLen*2);
+	// Copy the data
+	int k;
+	for (k=0;j<copyIn;j++) {
+	  buffer[2*k] = dp[2*(i*planesize*linesize + j + k*planesize)];
+	  buffer[2*k+1] = dp[2*(i*planesize*linesize + j + k*planesize)+1];
+	}
+	// Take the FFT
+	if (!inverse)
+	  dcomplex_fft_forward(FFTLen,buffer);
+	else
+	  dcomplex_fft_backward(FFTLen,buffer);
+	// Copy the result out
+	for (k=0;k<FFTLen;k++) {
+	  ob[2*(i*planesize*FFTLen + j + k*planesize)] = buffer[2*k];
+	  ob[2*(i*planesize*FFTLen + j + k*planesize) + 1] = buffer[2*k+1];
+	}
       }
     }
-    return Array(FM_DCOMPLEX,outDim,ob);
+    Free(buffer);
+    return Array(FM_COMPLEX,outDim,ob);
   }
 
   ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {

@@ -82,6 +82,7 @@ namespace FreeMat {
   ArrayVector MinFunction(int, const ArrayVector& arg);
   ArrayVector MaxFunction(int, const ArrayVector& arg);
   ArrayVector SumFunction(int, const ArrayVector& arg);
+  ArrayVector CumsumFunction(int, const ArrayVector& arg);
   ArrayVector MeanFunction(int, const ArrayVector& arg);
   ArrayVector VarFunction(int, const ArrayVector& arg);
   ArrayVector ProdFunction(int, const ArrayVector& arg);

@@ -25,175 +25,24 @@
 #include "Utils.hpp"
 #include "IEEEFP.hpp"
 #include <math.h>
+#include "Types.hpp"
 
 namespace FreeMat {
 
-  /**
-   * Less-than function for logical arguments.
-   */
-  void logicalLess(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const logical *spx, *spy;
-    logical *dp;
+  template <class T>
+  void TRealLess(const T* spx, const T* spy, T* dp, int count, 
+	     int stridex, int stridey) {
     uint32 i;
-
-    spx = (const logical*) srcx;
-    spy = (const logical*) srcy;
-    dp = (logical*) dst;
     for (i=0;i<count;i++)
       dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
 	spx[stridex*i] : spy[stridey*i];
   }
 
-  /**
-   * Less-than function for uint8 arguments.
-   */
-  void uint8Less(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const uint8 *spx, *spy;
-    uint8 *dp;
+  template <class T>
+  void TComplexLess(const T* spx, const T* spy, T* dp, int count, 
+	     int stridex, int stridey) {
     uint32 i;
-
-    spx = (const uint8*) srcx;
-    spy = (const uint8*) srcy;
-    dp = (uint8*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for int8 arguments.
-   */
-  void int8Less(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const int8 *spx, *spy;
-    int8 *dp;
-    uint32 i;
-
-    spx = (const int8*) srcx;
-    spy = (const int8*) srcy;
-    dp = (int8*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for uint16 arguments.
-   */
-  void uint16Less(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const uint16 *spx, *spy;
-    uint16 *dp;
-    uint32 i;
-
-    spx = (const uint16*) srcx;
-    spy = (const uint16*) srcy;
-    dp = (uint16*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for int16 arguments.
-   */
-  void int16Less(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const int16 *spx, *spy;
-    int16 *dp;
-    uint32 i;
-
-    spx = (const int16*) srcx;
-    spy = (const int16*) srcy;
-    dp = (int16*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for uint32 arguments.
-   */
-  void uint32Less(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const uint32 *spx, *spy;
-    uint32 *dp;
-    uint32 i;
-
-    spx = (const uint32*) srcx;
-    spy = (const uint32*) srcy;
-    dp = (uint32*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for int32 arguments.
-   */
-  void int32Less(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const int32 *spx, *spy;
-    int32 *dp;
-    uint32 i;
-
-    spx = (const int32*) srcx;
-    spy = (const int32*) srcy;
-    dp = (int32*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for float arguments.
-   */
-  void floatLess(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const float *spx, *spy;
-    float *dp;
-    uint32 i;
-
-    spx = (const float*) srcx;
-    spy = (const float*) srcy;
-    dp = (float*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for double arguments.
-   */
-  void doubleLess(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const double *spx, *spy;
-    double *dp;
-    uint32 i;
-
-    spx = (const double*) srcx;
-    spy = (const double*) srcy;
-    dp = (double*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Less-than function for complex arguments.
-   */
-  void complexLess(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const float *spx, *spy;
-    float *dp;
-    uint32 i;
-    float xmag, ymag;
-
-    spx = (const float*) srcx;
-    spy = (const float*) srcy;
-    dp = (float*) dst;
+    T xmag, ymag;
     for (i=0;i<count;i++) {
       xmag = complex_abs(spx[2*stridex*i],spx[2*stridex*i+1]);
       ymag = complex_abs(spy[2*stridey*i],spy[2*stridey*i+1]);
@@ -208,284 +57,62 @@ namespace FreeMat {
   }
 
   /**
-   * Less-than function for dcomplex arguments.
+   * Minimum function for integer-type arguments.
    */
-  void dcomplexLess(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const double *spx, *spy;
-    double *dp;
-    uint32 i;
-    double xmag, ymag;
-
-    spx = (const double*) srcx;
-    spy = (const double*) srcy;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      xmag = dcomplex_abs(spx[2*stridex*i],spx[2*stridex*i+1]);
-      ymag = dcomplex_abs(spy[2*stridey*i],spy[2*stridey*i+1]);
-      if (xmag < ymag) {
-	dp[2*i] = spx[2*stridex*i];
-	dp[2*i+1] = spx[2*stridex*i+1];
-      } else {
-	dp[2*i] = spy[2*stridey*i];
-	dp[2*i+1] = spy[2*stridey*i+1];
-      }
-    }
-  }
-
-  /**
-   * Minimum function for logical arguments.
-   */
-  void logicalMin(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const logical *sp;
-    logical *dp;
-    logical minval;
+  template <class T>
+  void TIntMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
+    T minval;
     uint32 mindex;
-    uint32 i, j;
-
-    sp = (const logical*) src;
-    dp = (logical*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
+    uint32 i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	minval = sp[i*planesize*linesize + j];
+	mindex = 0;
+	for (k=0;k<linesize;k++)
+	  if (sp[i*planesize*linesize + j + k*planesize] < minval) {
+	    minval = sp[i*planesize*linesize + j + k*planesize];
+	    mindex = k;
+	  }
+	dp[i*planesize + j] = minval;
+	iptr[i*planesize + j] = mindex + 1;
       }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
-    }
-  }
-
-  /**
-   * Minimum function for uint8 arguments.
-   */
-  void uint8Min(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const uint8 *sp;
-    uint8 *dp;
-    uint8 minval;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const uint8*) src;
-    dp = (uint8*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
-      }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
-    }
-  }
-
-  /**
-   * Minimum function for int8 arguments.
-   */
-  void int8Min(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const int8 *sp;
-    int8 *dp;
-    int8 minval;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const int8*) src;
-    dp = (int8*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
-      }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
-    }
-  }
-
-  /**
-   * Minimum function for uint16 arguments.
-   */
-  void uint16Min(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const uint16 *sp;
-    uint16 *dp;
-    uint16 minval;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const uint16*) src;
-    dp = (uint16*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
-      }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
-    }
-  }
-
-  /**
-   * Minimum function for int16 arguments.
-   */
-  void int16Min(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const int16 *sp;
-    int16 *dp;
-    int16 minval;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const int16*) src;
-    dp = (int16*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
-      }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
-    }
-  }
-
-  /**
-   * Minimum function for uint32 arguments.
-   */
-  void uint32Min(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const uint32 *sp;
-    uint32 *dp;
-    uint32 minval;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const uint32*) src;
-    dp = (uint32*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
-      }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
-    }
-  }
-
-  /**
-   * Minimum function for int32 arguments.
-   */
-  void int32Min(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const int32 *sp;
-    int32 *dp;
-    int32 minval;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const int32*) src;
-    dp = (int32*) dst;
-    for (i=0;i<count;i++) {
-      minval = sp[majstride*i];
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] < minval) {
-	  minval = sp[majstride*i+stride*j];
-	  mindex = j;
-	}
-      }
-      dp[i] = minval;
-      iptr[i] = mindex + 1;
     }
   }
 
   /**
    * Minimum function for float arguments.
    */
-  void floatMin(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float minval;
-    bool init;
+  template <class T>
+  void TRealMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
+    T minval;
     uint32 mindex;
-    uint32 i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (!IsNaN(sp[majstride*i+stride*j]))
-	  if (!init) {
-	    init = true;
-	    minval = sp[majstride*i+stride*j];
-	    mindex = j;
-	  } else if (sp[majstride*i+stride*j] < minval) {
-	    minval = sp[majstride*i+stride*j];
-	    mindex = j;
-	  }
-      }
-      if (init) {
-	dp[i] = minval;
-	iptr[i] = mindex + 1;
-      }
-      else {
-	dp[i] = atof("nan");
-	iptr[i] = 0;
-      }
-    }
-  }
-
-  /**
-   * Minimum function for double arguments.
-   */
-  void doubleMin(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double minval;
+    uint32 i, j, k;
     bool init;
-    uint32 mindex;
-    uint32 i, j;
 
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if (!IsNaN(sp[majstride*i+stride*j]))
-	  if (!init) {
-	    init = true;
-	    minval = sp[majstride*i+stride*j];
-	    mindex = j;
-	  } else if (sp[majstride*i+stride*j] < minval) {
-	    minval = sp[majstride*i+stride*j];
-	    mindex = j;
-	  }
-      }
-      if (init) {
-	dp[i] = minval;
-	iptr[i] = mindex + 1;
-      } else {
-	dp[i] = atof("nan");
-	iptr[i] = 0;
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	init = false;
+	mindex = 0;
+	for (k=0;k<linesize;k++) {
+	  if (!IsNaN(sp[i*planesize*linesize + j + k*planesize]))
+	    if (!init) {
+	      init = true;
+	      minval = sp[i*planesize*linesize + j + k*planesize];
+	      mindex = k;
+	    } else if (sp[i*planesize*linesize + j + k*planesize] < minval) {
+	      minval = sp[i*planesize*linesize + j + k*planesize];
+	      mindex = k;
+	    }
+	}
+	if (init) {
+	  dp[i*planesize + j] = minval;
+	  iptr[i*planesize + j] = mindex + 1;
+	}
+	else {
+	  dp[i*planesize + j] = atof("nan");
+	  iptr[i*planesize + j] = 0;
+	}
       }
     }
   }
@@ -493,269 +120,64 @@ namespace FreeMat {
   /**
    * Minimum function for complex argument - based on magnitude.
    */
-  void complexMin(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float minval;
-    float minval_r;
-    float minval_i;
-    float tstval;
-    bool init;
+  template <class T>
+  void TComplexMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
+    T minval, minval_r, minval_i;
+    T tstval;
     uint32 mindex;
-    uint32 i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
-	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
-	  tstval = complex_abs(sp[2*(majstride*i+stride*j)],
-			       sp[2*(majstride*i+stride*j)+1]);
-	  if (!init) {
-	    init = true;
-	    minval = tstval;
-	    mindex = j;
-	    minval_r = sp[2*(majstride*i+stride*j)];
-	    minval_i = sp[2*(majstride*i+stride*j)+1];
-	  } else if (tstval < minval) {
-	    minval = tstval;
-	    mindex = j;
-	    minval_r = sp[2*(majstride*i+stride*j)];
-	    minval_i = sp[2*(majstride*i+stride*j)+1];
+    uint32 i, j, k;
+    bool init;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	init = false;
+	mindex = 0;
+	for (k=0;k<linesize;k++) {
+	  if ((!IsNaN(sp[2*(i*planesize*linesize+j+k*planesize)])) &&
+	      (!IsNaN(sp[2*(i*planesize*linesize+j+k*planesize)+1]))) {
+	    tstval = complex_abs(sp[2*(i*planesize*linesize+j+k*planesize)],
+				 sp[2*(i*planesize*linesize+j+k*planesize)+1]);
+	    if (!init) {
+	      init = true;
+	      minval = tstval;
+	      mindex = j;
+	      minval_r = sp[2*(i*planesize*linesize+j+k*planesize)];
+	      minval_i = sp[2*(i*planesize*linesize+j+k*planesize)+1];
+	    } else if (tstval < minval) {
+	      minval = tstval;
+	      mindex = j;
+	      minval_r = sp[2*(i*planesize*linesize+j+k*planesize)];
+	      minval_i = sp[2*(i*planesize*linesize+j+k*planesize)+1];
+	    }
 	  }
 	}
-      }
-      if (init) {
-	dp[2*i] = minval_r;
-	dp[2*i+1] = minval_i;
-	iptr[i] = mindex + 1;
-      } else {
-	dp[2*i] = atof("nan");
-	dp[2*i+1] = atof("nan");
-	iptr[i] = 0;
+	if (init) {
+	  dp[2*(i*planesize+j)] = minval_r;
+	  dp[2*(i*planesize+j)+1] = minval_i;
+	  iptr[i*planesize+j] = mindex + 1;
+	} else {
+	  dp[2*(i*planesize+j)] = atof("nan");
+	  dp[2*(i*planesize+j)+1] = atof("nan");
+	  iptr[i*planesize+j] = 0;
+	}
       }
     }
   }
 
-  /**
-   * Minimum function for dcomplex argument - based on magnitude.
-   */
-  void dcomplexMin(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double minval;
-    double minval_r;
-    double minval_i;
-    double tstval;
-    bool init;
-    uint32 mindex;
-    uint32 i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      mindex = 0;
-      for (j=0;j<length;j++) {
-	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
-	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
-	  tstval = dcomplex_abs(sp[2*(majstride*i+stride*j)],
-			       sp[2*(majstride*i+stride*j)+1]);
-	  if (!init) {
-	    init = true;
-	    minval = tstval;
-	    mindex = j;
-	    minval_r = sp[2*(majstride*i+stride*j)];
-	    minval_i = sp[2*(majstride*i+stride*j)+1];
-	  } else if (tstval < minval) {
-	    minval = tstval;
-	    mindex = j;
-	    minval_r = sp[2*(majstride*i+stride*j)];
-	    minval_i = sp[2*(majstride*i+stride*j)+1];
-	  }
-	}
-      }
-      if (init) {
-	dp[2*i] = minval_r;
-	dp[2*i+1] = minval_i;
-	iptr[i] = mindex + 1;
-      } else {
-	dp[2*i] = atof("nan");
-	dp[2*i+1] = atof("nan");
-	iptr[i] = 0;
-      }
-    }
-  }
-
-  /**
-   * Greater-than function for logical arguments.
-   */
-  void logicalGreater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const logical *spx, *spy;
-    logical *dp;
+  template <class T>
+  void TRealGreater(const T* spx, const T* spy, T* dp, int count, 
+		    int stridex, int stridey) {
     uint32 i;
-
-    spx = (const logical*) srcx;
-    spy = (const logical*) srcy;
-    dp = (logical*) dst;
     for (i=0;i<count;i++)
       dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
 	spx[stridex*i] : spy[stridey*i];
   }
 
-  /**
-   * Greater-than function for uint8 arguments.
-   */
-  void uint8Greater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const uint8 *spx, *spy;
-    uint8 *dp;
+  template <class T>
+  void TComplexGreater(const T* spx, const T* spy, T* dp, int count, 
+		       int stridex, int stridey) {
     uint32 i;
-
-    spx = (const uint8*) srcx;
-    spy = (const uint8*) srcy;
-    dp = (uint8*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for int8 arguments.
-   */
-  void int8Greater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const int8 *spx, *spy;
-    int8 *dp;
-    uint32 i;
-
-    spx = (const int8*) srcx;
-    spy = (const int8*) srcy;
-    dp = (int8*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for uint16 arguments.
-   */
-  void uint16Greater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const uint16 *spx, *spy;
-    uint16 *dp;
-    uint32 i;
-
-    spx = (const uint16*) srcx;
-    spy = (const uint16*) srcy;
-    dp = (uint16*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for int16 arguments.
-   */
-  void int16Greater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const int16 *spx, *spy;
-    int16 *dp;
-    uint32 i;
-
-    spx = (const int16*) srcx;
-    spy = (const int16*) srcy;
-    dp = (int16*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for uint32 arguments.
-   */
-  void uint32Greater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const uint32 *spx, *spy;
-    uint32 *dp;
-    uint32 i;
-
-    spx = (const uint32*) srcx;
-    spy = (const uint32*) srcy;
-    dp = (uint32*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for int32 arguments.
-   */
-  void int32Greater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const int32 *spx, *spy;
-    int32 *dp;
-    uint32 i;
-
-    spx = (const int32*) srcx;
-    spy = (const int32*) srcy;
-    dp = (int32*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for float arguments.
-   */
-  void floatGreater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const float *spx, *spy;
-    float *dp;
-    uint32 i;
-
-    spx = (const float*) srcx;
-    spy = (const float*) srcy;
-    dp = (float*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for double arguments.
-   */
-  void doubleGreater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const double *spx, *spy;
-    double *dp;
-    uint32 i;
-
-    spx = (const double*) srcx;
-    spy = (const double*) srcy;
-    dp = (double*) dst;
-    for (i=0;i<count;i++)
-      dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
-	spx[stridex*i] : spy[stridey*i];
-  }
-
-  /**
-   * Greater-than function for complex arguments.
-   */
-  void complexGreater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const float *spx, *spy;
-    float *dp;
-    uint32 i;
-    float xmag, ymag;
-
-    spx = (const float*) srcx;
-    spy = (const float*) srcy;
-    dp = (float*) dst;
+    T xmag, ymag;
     for (i=0;i<count;i++) {
       xmag = complex_abs(spx[2*stridex*i],spx[2*stridex*i+1]);
       ymag = complex_abs(spy[2*stridey*i],spy[2*stridey*i+1]);
@@ -770,284 +192,62 @@ namespace FreeMat {
   }
 
   /**
-   * Greater-than function for dcomplex arguments.
+   * Minimum function for integer-type arguments.
    */
-  void dcomplexGreater(const char* srcx, const char* srcy, char* dst, int count, 
-		   int stridex, int stridey) {
-    const double *spx, *spy;
-    double *dp;
-    uint32 i;
-    double xmag, ymag;
-
-    spx = (const double*) srcx;
-    spy = (const double*) srcy;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      xmag = dcomplex_abs(spx[2*stridex*i],spx[2*stridex*i+1]);
-      ymag = dcomplex_abs(spy[2*stridey*i],spy[2*stridey*i+1]);
-      if (xmag > ymag) {
-	dp[2*i] = spx[2*stridex*i];
-	dp[2*i+1] = spx[2*stridex*i+1];
-      } else {
-	dp[2*i] = spy[2*stridey*i];
-	dp[2*i+1] = spy[2*stridey*i+1];
-      }
-    }
-  }
-
-  /**
-   * Maximum function for logical arguments.
-   */
-  void logicalMax(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const logical *sp;
-    logical *dp;
-    logical maxval;
+  template <class T>
+  void TIntMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
+    T maxval;
     uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const logical*) src;
-    dp = (logical*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
+    uint32 i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	maxval = sp[i*planesize*linesize + j];
+	maxdex = 0;
+	for (k=0;k<linesize;k++)
+	  if (sp[i*planesize*linesize + j + k*planesize] > maxval) {
+	    maxval = sp[i*planesize*linesize + j + k*planesize];
+	    maxdex = k;
+	  }
+	dp[i*planesize + j] = maxval;
+	iptr[i*planesize + j] = maxdex + 1;
       }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
-    }
-  }
-
-  /**
-   * Maximum function for uint8 arguments.
-   */
-  void uint8Max(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const uint8 *sp;
-    uint8 *dp;
-    uint8 maxval;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const uint8*) src;
-    dp = (uint8*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
-      }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
-    }
-  }
-
-  /**
-   * Maximum function for int8 arguments.
-   */
-  void int8Max(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const int8 *sp;
-    int8 *dp;
-    int8 maxval;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const int8*) src;
-    dp = (int8*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
-      }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
-    }
-  }
-
-  /**
-   * Maximum function for uint16 arguments.
-   */
-  void uint16Max(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const uint16 *sp;
-    uint16 *dp;
-    uint16 maxval;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const uint16*) src;
-    dp = (uint16*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
-      }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
-    }
-  }
-
-  /**
-   * Maximum function for int16 arguments.
-   */
-  void int16Max(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const int16 *sp;
-    int16 *dp;
-    int16 maxval;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const int16*) src;
-    dp = (int16*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
-      }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
-    }
-  }
-
-  /**
-   * Maximum function for uint32 arguments.
-   */
-  void uint32Max(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const uint32 *sp;
-    uint32 *dp;
-    uint32 maxval;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const uint32*) src;
-    dp = (uint32*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
-      }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
-    }
-  }
-
-  /**
-   * Maximum function for int32 arguments.
-   */
-  void int32Max(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const int32 *sp;
-    int32 *dp;
-    int32 maxval;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const int32*) src;
-    dp = (int32*) dst;
-    for (i=0;i<count;i++) {
-      maxval = sp[majstride*i];
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (sp[majstride*i+stride*j] > maxval) {
-	  maxval = sp[majstride*i+stride*j];
-	  maxdex = j;
-	}
-      }
-      dp[i] = maxval;
-      iptr[i] = maxdex + 1;
     }
   }
 
   /**
    * Maximum function for float arguments.
    */
-  void floatMax(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float maxval;
-    bool init;
+  template <class T>
+  void TRealMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
+    T maxval;
     uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (!IsNaN(sp[majstride*i+stride*j]))
-	  if (!init) {
-	    init = true;
-	    maxval = sp[majstride*i+stride*j];
-	    maxdex = j;
-	  } else if (sp[majstride*i+stride*j] > maxval) {
-	    maxval = sp[majstride*i+stride*j];
-	    maxdex = j;
-	  }
-      }
-      if (init) {
-	dp[i] = maxval;
-	iptr[i] = maxdex + 1;
-      }
-      else {
-	dp[i] = atof("nan");
-	iptr[i] = 0;
-      }
-    }
-  }
-
-  /**
-   * Maximum function for double arguments.
-   */
-  void doubleMax(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double maxval;
+    uint32 i, j, k;
     bool init;
-    uint32 maxdex;
-    uint32 i, j;
 
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if (!IsNaN(sp[majstride*i+stride*j]))
-	  if (!init) {
-	    init = true;
-	    maxval = sp[majstride*i+stride*j];
-	    maxdex = j;
-	  } else if (sp[majstride*i+stride*j] > maxval) {
-	    maxval = sp[majstride*i+stride*j];
-	    maxdex = j;
-	  }
-      }
-      if (init) {
-	dp[i] = maxval;
-	iptr[i] = maxdex + 1;
-      } else {
-	dp[i] = atof("nan");
-	iptr[i] = 0;
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	init = false;
+	maxdex = 0;
+	for (k=0;k<linesize;k++) {
+	  if (!IsNaN(sp[i*planesize*linesize + j + k*planesize]))
+	    if (!init) {
+	      init = true;
+	      maxval = sp[i*planesize*linesize + j + k*planesize];
+	      maxdex = k;
+	    } else if (sp[i*planesize*linesize + j + k*planesize] > maxval) {
+	      maxval = sp[i*planesize*linesize + j + k*planesize];
+	      maxdex = k;
+	    }
+	}
+	if (init) {
+	  dp[i*planesize + j] = maxval;
+	  iptr[i*planesize + j] = maxdex + 1;
+	}
+	else {
+	  dp[i*planesize + j] = atof("nan");
+	  iptr[i*planesize + j] = 0;
+	}
       }
     }
   }
@@ -1055,463 +255,242 @@ namespace FreeMat {
   /**
    * Maximum function for complex argument - based on magnitude.
    */
-  void complexMax(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float maxval;
-    float maxval_r;
-    float maxval_i;
-    float tstval;
-    bool init;
+  template <class T>
+  void TComplexMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
+    T maxval, maxval_r, maxval_i;
+    T tstval;
     uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
-	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
-	  tstval = complex_abs(sp[2*(majstride*i+stride*j)],
-			       sp[2*(majstride*i+stride*j)+1]);
-	  if (!init) {
-	    init = true;
-	    maxval = tstval;
-	    maxdex = j;
-	    maxval_r = sp[2*(majstride*i+stride*j)];
-	    maxval_i = sp[2*(majstride*i+stride*j)+1];
-	  } else if (tstval > maxval) {
-	    maxval = tstval;
-	    maxdex = j;
-	    maxval_r = sp[2*(majstride*i+stride*j)];
-	    maxval_i = sp[2*(majstride*i+stride*j)+1];
+    uint32 i, j, k;
+    bool init;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	init = false;
+	maxdex = 0;
+	for (k=0;k<linesize;k++) {
+	  if ((!IsNaN(sp[2*(i*planesize*linesize+j+k*planesize)])) &&
+	      (!IsNaN(sp[2*(i*planesize*linesize+j+k*planesize)+1]))) {
+	    tstval = complex_abs(sp[2*(i*planesize*linesize+j+k*planesize)],
+				 sp[2*(i*planesize*linesize+j+k*planesize)+1]);
+	    if (!init) {
+	      init = true;
+	      maxval = tstval;
+	      maxdex = j;
+	      maxval_r = sp[2*(i*planesize*linesize+j+k*planesize)];
+	      maxval_i = sp[2*(i*planesize*linesize+j+k*planesize)+1];
+	    } else if (tstval > maxval) {
+	      maxval = tstval;
+	      maxdex = j;
+	      maxval_r = sp[2*(i*planesize*linesize+j+k*planesize)];
+	      maxval_i = sp[2*(i*planesize*linesize+j+k*planesize)+1];
+	    }
 	  }
 	}
-      }
-      if (init) {
-	dp[2*i] = maxval_r;
-	dp[2*i+1] = maxval_i;
-	iptr[i] = maxdex + 1;
-      } else {
-	dp[2*i] = atof("nan");
-	dp[2*i+1] = atof("nan");
-	iptr[i] = 0;
-      }
-    }
-  }
-
-  /**
-   * Maximum function for dcomplex argument - based on magnitude.
-   */
-  void dcomplexMax(const char* src, char* dst, uint32 *iptr, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double maxval;
-    double maxval_r;
-    double maxval_i;
-    double tstval;
-    bool init;
-    uint32 maxdex;
-    uint32 i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      init = false;
-      maxdex = 0;
-      for (j=0;j<length;j++) {
-	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
-	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
-	  tstval = dcomplex_abs(sp[2*(majstride*i+stride*j)],
-			       sp[2*(majstride*i+stride*j)+1]);
-	  if (!init) {
-	    init = true;
-	    maxval = tstval;
-	    maxdex = j;
-	    maxval_r = sp[2*(majstride*i+stride*j)];
-	    maxval_i = sp[2*(majstride*i+stride*j)+1];
-	  } else if (tstval > maxval) {
-	    maxval = tstval;
-	    maxdex = j;
-	    maxval_r = sp[2*(majstride*i+stride*j)];
-	    maxval_i = sp[2*(majstride*i+stride*j)+1];
-	  }
+	if (init) {
+	  dp[2*(i*planesize+j)] = maxval_r;
+	  dp[2*(i*planesize+j)+1] = maxval_i;
+	  iptr[i*planesize+j] = maxdex + 1;
+	} else {
+	  dp[2*(i*planesize+j)] = atof("nan");
+	  dp[2*(i*planesize+j)+1] = atof("nan");
+	  iptr[i*planesize+j] = 0;
 	}
       }
-      if (init) {
-	dp[2*i] = maxval_r;
-	dp[2*i+1] = maxval_i;
-	iptr[i] = maxdex + 1;
-      } else {
-	dp[2*i] = atof("nan");
-	dp[2*i+1] = atof("nan");
-	iptr[i] = 0;
+    }
+  }
+
+  template <class T>
+  void TRealCumsum(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum;
+    int i, j, k;
+
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum = 0;
+	for (k=0;k<linesize;k++) {
+	  accum += sp[i*planesize*linesize + j + k*planesize];
+	  dp[i*planesize*linesize + j + k*planesize] = accum;
+	}
+      }
+    }    
+  }
+
+  template <class T>
+  void TRealSum(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum;
+    int i, j, k;
+
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum = 0;
+	for (k=0;k<linesize;k++)
+	  accum += sp[i*planesize*linesize + j + k*planesize];
+	dp[i*planesize + j] = accum;
       }
     }
   }
 
-  void int32Sum(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const int32 *sp;
-    int32 *dp;
-    int32 accum;
-    int i, j;
+  template <class T>
+  void TComplexCumsum(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum_r;
+    T accum_i;
+    int i, j, k;
 
-    sp = (const int32*) src;
-    dp = (int32*) dst;
-    for (i=0;i<count;i++) {
-      accum = 0;
-      for (j=0;j<length;j++) {
-	accum += sp[majstride*i+stride*j];
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum_r = 0;
+	accum_i = 0;
+	for (k=0;k<linesize;k++) {
+	  accum_r += sp[2*(i*planesize*linesize + j + k*planesize)];
+	  accum_i += sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	  dp[2*(i*planesize*linesize + j + k*planesize)] = accum_r;
+	  dp[2*(i*planesize*linesize + j + k*planesize)+1] = accum_i;
+	}
       }
-      dp[i] = accum;
+    }    
+  }
+
+  template <class T>
+  void TComplexSum(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum_r;
+    T accum_i;
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum_r = 0;
+	accum_i = 0;
+	for (k=0;k<linesize;k++) {
+	  accum_r += sp[2*(i*planesize*linesize + j + k*planesize)];
+	  accum_i += sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	}
+	dp[2*(i*planesize + j)] = accum_r;
+	dp[2*(i*planesize + j)+1] = accum_i;
+      }
     }
   }
 
-  void floatSum(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float accum;
-    int i, j;
+  template <class T>
+  void TRealMean(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum;
+    int i, j, k;
 
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum = 0.0f;
-      for (j=0;j<length;j++) {
-	accum += sp[majstride*i+stride*j];
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum = 0;
+	for (k=0;k<linesize;k++)
+	  accum += sp[i*planesize*linesize + j + k*planesize];
+	dp[i*planesize + j] = accum/linesize;
       }
-      dp[i] = accum;
     }
   }
 
-  void doubleSum(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double accum;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum = 0;
-      for (j=0;j<length;j++) {
-	accum += sp[majstride*i+stride*j];
+  template <class T>
+  void TComplexMean(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum_r;
+    T accum_i;
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum_r = 0;
+	accum_i = 0;
+	for (k=0;k<linesize;k++) {
+	  accum_r += sp[2*(i*planesize*linesize + j + k*planesize)];
+	  accum_i += sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	}
+	dp[2*(i*planesize + j)] = accum_r/linesize;
+	dp[2*(i*planesize + j)+1] = accum_i/linesize;
       }
-      dp[i] = accum;
     }
   }
 
-  void complexSum(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float*sp;
-    float *dp;
-    float accum_r;
-    float accum_i;
-    int i, j;
+  template <class T>
+  void TRealVariance(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum_first;
+    T accum_second;
+    int i, j, k;
 
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum_r = 0;
-      accum_i = 0;
-      for (j=0;j<length;j++) {
-	accum_r += sp[2*(majstride*i+stride*j)];
-	accum_i += sp[2*(majstride*i+stride*j)+1];
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum_first = 0;
+	accum_second = 0;
+	for (k=0;k<linesize;k++) {
+	  accum_first += sp[i*planesize*linesize + j + k*planesize];
+	  accum_second += sp[i*planesize*linesize + j + k*planesize]*
+	    sp[i*planesize*linesize + j + k*planesize];	    
+	}
+	dp[i*planesize + j] = accum_second/(linesize-1) - 
+	  (accum_first/linesize)*(accum_first/(linesize-1));
       }
-      dp[2*i] = accum_r;
-      dp[2*i+1] = accum_i;
+    }
+  }
+  
+  template <class T>
+  void TComplexVariance(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum_r_first;
+    T accum_i_first;
+    T accum_second;
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum_r_first = 0;
+	accum_i_first = 0;
+	accum_second = 0;
+	for (k=0;k<linesize;k++) {
+	  accum_r_first += sp[2*(i*planesize*linesize + j + k*planesize)];
+	  accum_i_first += sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	  accum_second += sp[2*(i*planesize*linesize + j + k*planesize)]*
+	    sp[2*(i*planesize*linesize + j + k*planesize)] + 
+	    sp[2*(i*planesize*linesize + j + k*planesize)+1]*
+	    sp[2*(i*planesize*linesize + j + k*planesize)+1]; 
+	}
+	dp[i*planesize + j] = accum_second/(linesize-1) - 
+	  (accum_r_first*accum_r_first + accum_i_first*accum_i_first)/(linesize*(linesize-1));
+      }
     }
   }
 
-  void dcomplexSum(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double*sp;
-    double *dp;
-    double accum_r;
-    double accum_i;
-    int i, j;
+  template <class T>
+  void TRealProd(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum;
+    int i, j, k;
 
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum_r = 0;
-      accum_i = 0;
-      for (j=0;j<length;j++) {
-	accum_r += sp[2*(majstride*i+stride*j)];
-	accum_i += sp[2*(majstride*i+stride*j)+1];
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum = 1;
+	for (k=0;k<linesize;k++)
+	  accum *= sp[i*planesize*linesize + j + k*planesize];
+	dp[i*planesize + j] = accum;
       }
-      dp[2*i] = accum_r;
-      dp[2*i+1] = accum_i;
     }
   }
 
-  void floatMean(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float accum;
-    int i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum = 0.0f;
-      for (j=0;j<length;j++) {
-	accum += sp[majstride*i+stride*j];
+  template <class T>
+  void TComplexProd(const T* sp, T* dp, int planes, int planesize, int linesize) {
+    T accum_r;
+    T accum_i;
+    T t1, t2;
+    int i, j, k;
+    
+    for (i=0;i<planes;i++) {
+      for (j=0;j<planesize;j++) {
+	accum_r = 1;
+	accum_i = 0;
+	for (k=0;k<linesize;k++) {
+	  t1 = accum_r*sp[2*(i*planesize*linesize + j + k*planesize)] - 
+	    accum_i*sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	  t2 = accum_r*sp[2*(i*planesize*linesize + j + k*planesize)+1] + 
+	    accum_i*sp[2*(i*planesize*linesize + j + k*planesize)];
+	  accum_r = t1;
+	  accum_r = t2;
+	}
+	dp[2*(i*planesize + j)] = accum_r;
+	dp[2*(i*planesize + j)+1] = accum_i;
       }
-      dp[i] = accum/length;
     }
   }
-
-  void doubleMean(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double accum;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum = 0;
-      for (j=0;j<length;j++) {
-	accum += sp[majstride*i+stride*j];
-      }
-      dp[i] = accum/length;
-    }
-  }
-
-  void complexMean(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float*sp;
-    float *dp;
-    float accum_r;
-    float accum_i;
-    int i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum_r = 0;
-      accum_i = 0;
-      for (j=0;j<length;j++) {
-	accum_r += sp[2*(majstride*i+stride*j)];
-	accum_i += sp[2*(majstride*i+stride*j)+1];
-      }
-      dp[2*i] = accum_r/length;
-      dp[2*i+1] = accum_i/length;
-    }
-  }
-
-  void dcomplexMean(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double*sp;
-    double *dp;
-    double accum_r;
-    double accum_i;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum_r = 0;
-      accum_i = 0;
-      for (j=0;j<length;j++) {
-	accum_r += sp[2*(majstride*i+stride*j)];
-	accum_i += sp[2*(majstride*i+stride*j)+1];
-      }
-      dp[2*i] = accum_r/length;
-      dp[2*i+1] = accum_i/length;
-    }
-  }
-
-  void floatVar(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float accum_first;
-    float accum_second;
-    int i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum_first = 0.0f;
-      accum_second = 0.0f;
-      for (j=0;j<length;j++) {
-	accum_first += sp[majstride*i+stride*j];
-	accum_second += sp[majstride*i+stride*j]*sp[majstride*i+stride*j];
-	
-      }
-      dp[i] = accum_second/(length-1.0) - (accum_first/length)*(accum_first/(length-1.0));
-    }
-  }
-
-  void doubleVar(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double accum_first;
-    double accum_second;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum_first = 0.0f;
-      accum_second = 0.0f;
-      for (j=0;j<length;j++) {
-	accum_first += sp[majstride*i+stride*j];
-	accum_second += sp[majstride*i+stride*j]*sp[majstride*i+stride*j];
-	
-      }
-      dp[i] = accum_second/(length-1.0) - (accum_first/length)*(accum_first/(length-1.0));
-    }
-  }
-
-  void complexVar(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float*sp;
-    float *dp;
-    float accum_r_first;
-    float accum_i_first;
-    float accum_second;
-    int i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum_r_first = 0;
-      accum_i_first = 0;
-      accum_second = 0;
-      for (j=0;j<length;j++) {
-	accum_r_first += sp[2*(majstride*i+stride*j)];
-	accum_i_first += sp[2*(majstride*i+stride*j)+1];
-	accum_second += sp[2*(majstride*i+stride*j)]*sp[2*(majstride*i+stride*j)] + 
-	  sp[2*(majstride*i+stride*j)+1]*sp[2*(majstride*i+stride*j)+1];
-      }
-      dp[i] = accum_second/(length-1.0) - 
-	(accum_r_first*accum_r_first + accum_i_first*accum_i_first)/(length*(length-1.0));
-    }
-  }
-
-  void dcomplexVar(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double*sp;
-    double *dp;
-    double accum_r_first;
-    double accum_i_first;
-    double accum_second;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum_r_first = 0;
-      accum_i_first = 0;
-      accum_second = 0;
-      for (j=0;j<length;j++) {
-	accum_r_first += sp[2*(majstride*i+stride*j)];
-	accum_i_first += sp[2*(majstride*i+stride*j)+1];
-	accum_second += sp[2*(majstride*i+stride*j)]*sp[2*(majstride*i+stride*j)] + 
-	  sp[2*(majstride*i+stride*j)+1]*sp[2*(majstride*i+stride*j)+1];
-      }
-      dp[i] = accum_second/(length-1.0) - 
-	(accum_r_first*accum_r_first + accum_i_first*accum_i_first)/(length*(length-1.0));
-    }
-  }
-
-  void int32Prod(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const int32 *sp;
-    int32 *dp;
-    int32 accum;
-    int i, j;
-
-    sp = (const int32*) src;
-    dp = (int32*) dst;
-    for (i=0;i<count;i++) {
-      accum = 1;
-      for (j=0;j<length;j++) {
-	accum *= sp[majstride*i+stride*j];
-      }
-      dp[i] = accum;
-    }
-  }
-
-  void floatProd(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float *sp;
-    float *dp;
-    float accum;
-    int i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum = 1.0f;
-      for (j=0;j<length;j++) {
-	accum *= sp[majstride*i+stride*j];
-      }
-      dp[i] = accum;
-    }
-  }
-
-  void doubleProd(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double *sp;
-    double *dp;
-    double accum;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum = 1.0;
-      for (j=0;j<length;j++) {
-	accum *= sp[majstride*i+stride*j];
-      }
-      dp[i] = accum;
-    }
-  }
-
-  void complexProd(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const float*sp;
-    float *dp;
-    float accum_r;
-    float accum_i;
-    float t1, t2;
-    int i, j;
-
-    sp = (const float*) src;
-    dp = (float*) dst;
-    for (i=0;i<count;i++) {
-      accum_r = 1;
-      accum_i = 0;
-      for (j=0;j<length;j++) {
-	t1 = accum_r*sp[2*(majstride*i+stride*j)] - accum_i*sp[2*(majstride*i+stride*j)+1];
-	t2 = accum_r*sp[2*(majstride*i+stride*j)+1] + accum_i*sp[2*(majstride*i+stride*j)];
-	accum_r = t1;
-	accum_i = t2;
-      }
-      dp[2*i] = accum_r;
-      dp[2*i+1] = accum_i;
-    }
-  }
-
-  void dcomplexProd(const char* src, char* dst, int count, int stride, int majstride, int length) {
-    const double*sp;
-    double *dp;
-    double accum_r;
-    double accum_i;
-    double t1, t2;
-    int i, j;
-
-    sp = (const double*) src;
-    dp = (double*) dst;
-    for (i=0;i<count;i++) {
-      accum_r = 1;
-      accum_i = 0;
-      for (j=0;j<length;j++) {
-	t1 = accum_r*sp[2*(majstride*i+stride*j)] - accum_i*sp[2*(majstride*i+stride*j)+1];
-	t2 = accum_r*sp[2*(majstride*i+stride*j)+1] + accum_i*sp[2*(majstride*i+stride*j)];
-	accum_r = t1;
-	accum_i = t2;
-      }
-      dp[2*i] = accum_r;
-      dp[2*i+1] = accum_i;
-    }
-  }
-
 
   ArrayVector LessThan(int nargout, const ArrayVector& arg) {
     ArrayVector retvec;
@@ -1565,100 +544,100 @@ namespace FreeMat {
     switch(outType) {
     case FM_LOGICAL: {
       char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
-      logicalLess((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<logical>((const logical *) x.getDataPointer(),
+			 (const logical *) y.getDataPointer(),
+			 (logical *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_LOGICAL,outDim,ptr);
       break;
     }
     case FM_UINT8: {
       char* ptr = (char *) Malloc(sizeof(uint8)*outDim.getElementCount());
-      uint8Less((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<uint8>((const uint8 *) x.getDataPointer(),
+			 (const uint8 *) y.getDataPointer(),
+			 (uint8 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_UINT8,outDim,ptr);
       break;
     }
     case FM_INT8: {
       char* ptr = (char *) Malloc(sizeof(int8)*outDim.getElementCount());
-      int8Less((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<int8>((const int8 *) x.getDataPointer(),
+			 (const int8 *) y.getDataPointer(),
+			 (int8 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_INT8,outDim,ptr);
       break;
     }
     case FM_UINT16: {
       char* ptr = (char *) Malloc(sizeof(uint16)*outDim.getElementCount());
-      uint16Less((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<uint16>((const uint16 *) x.getDataPointer(),
+			 (const uint16 *) y.getDataPointer(),
+			 (uint16 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_UINT16,outDim,ptr);
       break;
     }
     case FM_INT16: {
       char* ptr = (char *) Malloc(sizeof(int16)*outDim.getElementCount());
-      int16Less((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<int16>((const int16 *) x.getDataPointer(),
+			 (const int16 *) y.getDataPointer(),
+			 (int16 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_INT16,outDim,ptr);
       break;
     }
     case FM_UINT32: {
       char* ptr = (char *) Malloc(sizeof(uint32)*outDim.getElementCount());
-      uint32Less((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<uint32>((const uint32 *) x.getDataPointer(),
+			 (const uint32 *) y.getDataPointer(),
+			 (uint32 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_UINT32,outDim,ptr);
       break;
     }
     case FM_INT32: {
       char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
-      int32Less((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<int32>((const int32 *) x.getDataPointer(),
+			 (const int32 *) y.getDataPointer(),
+			 (int32 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_INT32,outDim,ptr);
       break;
     }
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatLess((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<float>((const float *) x.getDataPointer(),
+			 (const float *) y.getDataPointer(),
+			 (float *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleLess((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealLess<double>((const double *) x.getDataPointer(),
+			 (const double *) y.getDataPointer(),
+			 (double *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexLess((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TComplexLess<float>((const float *) x.getDataPointer(),
+			  (const float *) y.getDataPointer(),
+			  (float *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexLess((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TComplexLess<double>((const double *) x.getDataPointer(),
+			   (const double *) y.getDataPointer(),
+			   (double *) ptr, outDim.getElementCount(),
+			   xStride, yStride);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
@@ -1706,21 +685,18 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     outDim[workDim] = 1;
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int length;
-    int majstride_in;
-    length = inDim[workDim];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
     for (d=0;d<workDim;d++)
-      stride *= inDim[d];
-    if (workDim == 0)
-      majstride_in = inDim[0];
-    else
-      majstride_in = 1;
-    // Calculate the number of ops to do...
-    int workcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != workDim) workcount *= inDim[d];
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
     // Allocate the output that contains the indices
     uint32* iptr = (uint32 *) Malloc(sizeof(uint32)*outDim.getElementCount());
     // Allocate the values output, and call the appropriate helper func.
@@ -1728,71 +704,82 @@ namespace FreeMat {
     switch (argType) {
     case FM_LOGICAL: {
       char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
-      logicalMin((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<logical>((const logical *) input.getDataPointer(),
+		       (logical *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_LOGICAL,outDim,ptr);
       break;
     }
     case FM_UINT8: {
       char* ptr = (char *) Malloc(sizeof(uint8)*outDim.getElementCount());
-      uint8Min((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<uint8>((const uint8 *) input.getDataPointer(),
+		       (uint8 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_UINT8,outDim,ptr);
       break;
     }
     case FM_INT8: {
       char* ptr = (char *) Malloc(sizeof(int8)*outDim.getElementCount());
-      int8Min((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<int8>((const int8 *) input.getDataPointer(),
+		       (int8 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_INT8,outDim,ptr);
       break;
     }
     case FM_UINT16: {
       char* ptr = (char *) Malloc(sizeof(uint16)*outDim.getElementCount());
-      uint16Min((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<uint16>((const uint16 *) input.getDataPointer(),
+		       (uint16 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_UINT16,outDim,ptr);
       break;
     }
     case FM_INT16: {
       char* ptr = (char *) Malloc(sizeof(int16)*outDim.getElementCount());
-      int16Min((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<int16>((const int16 *) input.getDataPointer(),
+		       (int16 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_INT16,outDim,ptr);
       break;
     }
     case FM_UINT32: {
       char* ptr = (char *) Malloc(sizeof(uint32)*outDim.getElementCount());
-      uint32Min((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<uint32>((const uint32 *) input.getDataPointer(),
+		       (uint32 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_UINT32,outDim,ptr);
       break;
     }
     case FM_INT32: {
       char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
-      int32Min((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMin<int32>((const int32 *) input.getDataPointer(),
+		       (int32 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_INT32,outDim,ptr);
       break;
     }
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatMin((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TRealMin<float>((const float *) input.getDataPointer(),
+		      (float *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleMin((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TRealMin<double>((const double *) input.getDataPointer(),
+		      (double *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexMin((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TComplexMin<float>((const float *) input.getDataPointer(),
+			 (float *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexMin((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TComplexMin<double>((const double *) input.getDataPointer(),
+			  (double *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
-   }
+    }
     Array iretval(FM_UINT32,outDim,iptr);
     ArrayVector retArray;
     retArray.push_back(retval);
@@ -1852,100 +839,100 @@ namespace FreeMat {
     switch(outType) {
     case FM_LOGICAL: {
       char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
-      logicalGreater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<logical>((const logical *) x.getDataPointer(),
+			    (const logical *) y.getDataPointer(),
+			    (logical *) ptr, outDim.getElementCount(),
+			    xStride, yStride);
       retval = Array(FM_LOGICAL,outDim,ptr);
       break;
     }
     case FM_UINT8: {
       char* ptr = (char *) Malloc(sizeof(uint8)*outDim.getElementCount());
-      uint8Greater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<uint8>((const uint8 *) x.getDataPointer(),
+			  (const uint8 *) y.getDataPointer(),
+			  (uint8 *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_UINT8,outDim,ptr);
       break;
     }
     case FM_INT8: {
       char* ptr = (char *) Malloc(sizeof(int8)*outDim.getElementCount());
-      int8Greater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<int8>((const int8 *) x.getDataPointer(),
+			 (const int8 *) y.getDataPointer(),
+			 (int8 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
       retval = Array(FM_INT8,outDim,ptr);
       break;
     }
     case FM_UINT16: {
       char* ptr = (char *) Malloc(sizeof(uint16)*outDim.getElementCount());
-      uint16Greater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<uint16>((const uint16 *) x.getDataPointer(),
+			   (const uint16 *) y.getDataPointer(),
+			   (uint16 *) ptr, outDim.getElementCount(),
+			   xStride, yStride);
       retval = Array(FM_UINT16,outDim,ptr);
       break;
     }
     case FM_INT16: {
       char* ptr = (char *) Malloc(sizeof(int16)*outDim.getElementCount());
-      int16Greater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<int16>((const int16 *) x.getDataPointer(),
+			  (const int16 *) y.getDataPointer(),
+			  (int16 *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_INT16,outDim,ptr);
       break;
     }
     case FM_UINT32: {
       char* ptr = (char *) Malloc(sizeof(uint32)*outDim.getElementCount());
-      uint32Greater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<uint32>((const uint32 *) x.getDataPointer(),
+			  (const uint32 *) y.getDataPointer(),
+			  (uint32 *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_UINT32,outDim,ptr);
       break;
     }
     case FM_INT32: {
       char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
-      int32Greater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<int32>((const int32 *) x.getDataPointer(),
+			  (const int32 *) y.getDataPointer(),
+			  (int32 *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_INT32,outDim,ptr);
       break;
     }
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatGreater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<float>((const float *) x.getDataPointer(),
+			  (const float *) y.getDataPointer(),
+			  (float *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleGreater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TRealGreater<double>((const double *) x.getDataPointer(),
+			  (const double *) y.getDataPointer(),
+			  (double *) ptr, outDim.getElementCount(),
+			  xStride, yStride);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexGreater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TComplexGreater<float>((const float *) x.getDataPointer(),
+			     (const float *) y.getDataPointer(),
+			     (float *) ptr, outDim.getElementCount(),
+			     xStride, yStride);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexGreater((const char *)x.getDataPointer(),
-		  (const char *)y.getDataPointer(),
-		  ptr,outDim.getElementCount(),
-		  xStride, yStride);
+      TComplexGreater<double>((const double *) x.getDataPointer(),
+			      (const double *) y.getDataPointer(),
+			      (double *) ptr, outDim.getElementCount(),
+			      xStride, yStride);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
@@ -1993,21 +980,18 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     outDim[workDim] = 1;
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int length;
-    int majstride_in;
-    length = inDim[workDim];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
     for (d=0;d<workDim;d++)
-      stride *= inDim[d];
-    if (workDim == 0)
-      majstride_in = inDim[0];
-    else
-      majstride_in = 1;
-    // Calculate the number of ops to do...
-    int workcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != workDim) workcount *= inDim[d];
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
     // Allocate the output that contains the indices
     uint32* iptr = (uint32 *) Malloc(sizeof(uint32)*outDim.getElementCount());
     // Allocate the values output, and call the appropriate helper func.
@@ -2015,71 +999,82 @@ namespace FreeMat {
     switch (argType) {
     case FM_LOGICAL: {
       char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
-      logicalMax((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<logical>((const logical *) input.getDataPointer(),
+		       (logical *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_LOGICAL,outDim,ptr);
       break;
     }
     case FM_UINT8: {
       char* ptr = (char *) Malloc(sizeof(uint8)*outDim.getElementCount());
-      uint8Max((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<uint8>((const uint8 *) input.getDataPointer(),
+		       (uint8 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_UINT8,outDim,ptr);
       break;
     }
     case FM_INT8: {
       char* ptr = (char *) Malloc(sizeof(int8)*outDim.getElementCount());
-      int8Max((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<int8>((const int8 *) input.getDataPointer(),
+		       (int8 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_INT8,outDim,ptr);
       break;
     }
     case FM_UINT16: {
       char* ptr = (char *) Malloc(sizeof(uint16)*outDim.getElementCount());
-      uint16Max((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<uint16>((const uint16 *) input.getDataPointer(),
+		       (uint16 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_UINT16,outDim,ptr);
       break;
     }
     case FM_INT16: {
       char* ptr = (char *) Malloc(sizeof(int16)*outDim.getElementCount());
-      int16Max((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<int16>((const int16 *) input.getDataPointer(),
+		       (int16 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_INT16,outDim,ptr);
       break;
     }
     case FM_UINT32: {
       char* ptr = (char *) Malloc(sizeof(uint32)*outDim.getElementCount());
-      uint32Max((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<uint32>((const uint32 *) input.getDataPointer(),
+		       (uint32 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_UINT32,outDim,ptr);
       break;
     }
     case FM_INT32: {
       char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
-      int32Max((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TIntMax<int32>((const int32 *) input.getDataPointer(),
+		       (int32 *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_INT32,outDim,ptr);
       break;
     }
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatMax((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TRealMax<float>((const float *) input.getDataPointer(),
+		      (float *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleMax((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TRealMax<double>((const double *) input.getDataPointer(),
+		      (double *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexMax((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TComplexMax<float>((const float *) input.getDataPointer(),
+			 (float *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexMax((const char*) input.getDataPointer(),ptr,iptr,workcount,stride,majstride_in,length);
+      TComplexMax<double>((const double *) input.getDataPointer(),
+			  (double *) ptr, iptr, planecount, planesize, linesize);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
-   }
+    }
     Array iretval(FM_UINT32,outDim,iptr);
     ArrayVector retArray;
     retArray.push_back(retval);
@@ -2181,6 +1176,98 @@ namespace FreeMat {
     return retArray;    
   }
   
+  ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
+    // Get the data argument
+    if (arg.size() < 1)
+      throw Exception("cumsum requires at least one argument");
+    Array input(arg[0]);
+    Class argType(input.getDataClass());
+    if (input.isReferenceType() || input.isString())
+      throw Exception("sum only defined for numeric types");
+    if ((argType >= FM_LOGICAL) && (argType < FM_INT32)) {
+      input.promoteType(FM_INT32);
+      argType = FM_INT32;
+    }    
+    // Get the dimension argument (if supplied)
+    int workDim = -1;
+    if (arg.size() > 1) {
+      Array WDim(arg[1]);
+      workDim = WDim.getContentsAsIntegerScalar() - 1;
+      if (workDim < 0)
+	throw Exception("Dimension argument to cumsum should be positive");
+    }
+    if (input.isScalar() || input.isEmpty()) {
+      ArrayVector retArray;
+      retArray.push_back(arg[0]);
+      return retArray;
+    }    
+    // No dimension supplied, look for a non-singular dimension
+    Dimensions inDim(input.getDimensions());
+    if (workDim == -1) {
+      int d = 0;
+      while (inDim[d] == 1) 
+	d++;
+      workDim = d;      
+    }
+    // Calculate the output size
+    Dimensions outDim(inDim);
+    // Calculate the stride...
+    int d;
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
+    for (d=0;d<workDim;d++)
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
+    // Allocate the values output, and call the appropriate helper func.
+    Array retval;
+    switch (argType) {
+    case FM_INT32: {
+      char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+      TRealCumsum<int32>((const int32 *) input.getDataPointer(),
+			 (int32 *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_INT32,outDim,ptr);
+      break;
+    }
+    case FM_FLOAT: {
+      char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
+      TRealCumsum<float>((const float *) input.getDataPointer(),
+			 (float *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_FLOAT,outDim,ptr);
+      break;
+    }
+    case FM_DOUBLE: {
+      char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
+      TRealCumsum<double>((const double *) input.getDataPointer(),
+			  (double *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_DOUBLE,outDim,ptr);
+      break;
+    }
+    case FM_COMPLEX: {
+      char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
+      TComplexCumsum<float>((const float *) input.getDataPointer(),
+			    (float *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_COMPLEX,outDim,ptr);
+      break;
+    }
+    case FM_DCOMPLEX: {
+      char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
+      TComplexCumsum<double>((const double *) input.getDataPointer(),
+			     (double *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_DCOMPLEX,outDim,ptr);
+      break;
+    }
+    }
+    ArrayVector retArray;
+    retArray.push_back(retval);
+    return retArray;
+  }
+
   ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
     // Get the data argument
     if (arg.size() < 1)
@@ -2218,51 +1305,53 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     outDim[workDim] = 1;
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int length;
-    int majstride_in;
-    length = inDim[workDim];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
     for (d=0;d<workDim;d++)
-      stride *= inDim[d];
-    if (workDim == 0)
-      majstride_in = inDim[0];
-    else
-      majstride_in = 1;
-    // Calculate the number of ops to do...
-    int workcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != workDim) workcount *= inDim[d];
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
     // Allocate the values output, and call the appropriate helper func.
     Array retval;
     switch (argType) {
     case FM_INT32: {
       char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
-      int32Sum((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealSum<int32>((const int32 *) input.getDataPointer(),
+		      (int32 *) ptr, planecount, planesize, linesize);
       retval = Array(FM_INT32,outDim,ptr);
       break;
     }
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatSum((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealSum<float>((const float *) input.getDataPointer(),
+		      (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleSum((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealSum<double>((const double *) input.getDataPointer(),
+		       (double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexSum((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TComplexSum<float>((const float *) input.getDataPointer(),
+			 (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexSum((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TComplexSum<double>((const double *) input.getDataPointer(),
+			 (double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
@@ -2309,45 +1398,46 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     outDim[workDim] = 1;
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int length;
-    int majstride_in;
-    length = inDim[workDim];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
     for (d=0;d<workDim;d++)
-      stride *= inDim[d];
-    if (workDim == 0)
-      majstride_in = inDim[0];
-    else
-      majstride_in = 1;
-    // Calculate the number of ops to do...
-    int workcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != workDim) workcount *= inDim[d];
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
     // Allocate the values output, and call the appropriate helper func.
     Array retval;
     switch (argType) {
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatMean((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealMean<float>((const float *) input.getDataPointer(),
+		       (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleMean((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealMean<double>((const double *) input.getDataPointer(),
+			(double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexMean((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TComplexMean<float>((const float *) input.getDataPointer(),
+			  (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexMean((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TComplexMean<double>((const double *) input.getDataPointer(),
+			 (double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
@@ -2394,49 +1484,50 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     outDim[workDim] = 1;
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int length;
-    int majstride_in;
-    length = inDim[workDim];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
     for (d=0;d<workDim;d++)
-      stride *= inDim[d];
-    if (workDim == 0)
-      majstride_in = inDim[0];
-    else
-      majstride_in = 1;
-    // Calculate the number of ops to do...
-    int workcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != workDim) workcount *= inDim[d];
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
     // Allocate the values output, and call the appropriate helper func.
     Array retval;
     switch (argType) {
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatVar((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealVariance<float>((const float *) input.getDataPointer(),
+		      (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleVar((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealVariance<double>((const double *) input.getDataPointer(),
+		       (double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
-      char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      complexVar((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
-      retval = Array(FM_FLOAT,outDim,ptr);
+      char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
+      TComplexVariance<float>((const float *) input.getDataPointer(),
+			 (float *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
-      char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      dcomplexVar((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
-      retval = Array(FM_DOUBLE,outDim,ptr);
+      char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
+      TComplexVariance<double>((const double *) input.getDataPointer(),
+			  (double *) ptr, planecount, planesize, linesize);
+      retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }
-   }
+    }
     ArrayVector retArray;
     retArray.push_back(retval);
     return retArray;
@@ -2502,8 +1593,7 @@ namespace FreeMat {
       double *ptr = (double*) Malloc(sizeof(double)*tmp.getLength());
       for (i=0;i<len;i++)
 	ptr[i] = dp[2*i];
-      retval = Array(FM_DOUBLE,tmp.getDimensions(),ptr);
-    } else
+      retval = Array(FM_DOUBLE,tmp.getDimensions(),ptr);    } else
       retval = tmp;
     ArrayVector out;
     out.push_back(retval);
@@ -2677,51 +1767,53 @@ namespace FreeMat {
     Dimensions outDim(inDim);
     outDim[workDim] = 1;
     // Calculate the stride...
-    int stride = 1;
     int d;
-    int length;
-    int majstride_in;
-    length = inDim[workDim];
+    int workcount;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
     for (d=0;d<workDim;d++)
-      stride *= inDim[d];
-    if (workDim == 0)
-      majstride_in = inDim[0];
-    else
-      majstride_in = 1;
-    // Calculate the number of ops to do...
-    int workcount = 1;
-    for (d=0;d<inDim.getLength();d++)
-      if (d != workDim) workcount *= inDim[d];
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
     // Allocate the values output, and call the appropriate helper func.
     Array retval;
     switch (argType) {
     case FM_INT32: {
       char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
-      int32Prod((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealProd<int32>((const int32 *) input.getDataPointer(),
+		       (int32 *) ptr, planecount, planesize, linesize);
       retval = Array(FM_INT32,outDim,ptr);
       break;
     }
     case FM_FLOAT: {
       char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
-      floatProd((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealProd<float>((const float *) input.getDataPointer(),
+		       (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_FLOAT,outDim,ptr);
       break;
     }
     case FM_DOUBLE: {
       char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
-      doubleProd((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TRealProd<double>((const double *) input.getDataPointer(),
+		       (double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DOUBLE,outDim,ptr);
       break;
     }
     case FM_COMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
-      complexProd((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TComplexProd<float>((const float *) input.getDataPointer(),
+			  (float *) ptr, planecount, planesize, linesize);
       retval = Array(FM_COMPLEX,outDim,ptr);
       break;
     }
     case FM_DCOMPLEX: {
       char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
-      dcomplexProd((const char*) input.getDataPointer(),ptr,workcount,stride,majstride_in,length);
+      TComplexProd<double>((const double *) input.getDataPointer(),
+			   (double *) ptr, planecount, planesize, linesize);
       retval = Array(FM_DCOMPLEX,outDim,ptr);
       break;
     }

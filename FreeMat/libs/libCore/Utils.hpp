@@ -23,7 +23,7 @@
 
 namespace FreeMat {
   float complex_abs(float, float);
-  double dcomplex_abs(double, double);
+  double complex_abs(double, double);
   void clog(float real, float imag, float *re, float *im);
   void cexp(float real, float imag, float *re, float *im);
   void csqrt(float real, float imag, float *re, float *im);

@@ -57,7 +57,8 @@ namespace FreeMat {
     //    context->addFunction("closevolume",CloseVolumeFunction,1,0,args);
     args.clear();
     args.push_back("x");        
-    context->addFunction("image",ImageFunction,1,0,args);
+    args.push_back("zoom");        
+    context->addFunction("image",ImageFunction,2,0,args);
     args.clear();
     args.push_back("height");
     args.push_back("width");

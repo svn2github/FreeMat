@@ -169,8 +169,10 @@ namespace FreeMat {
   }
 
   ArrayVector ImageFunction(int nargout,const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("image function takes a single argument");
+    if (arg.size() < 1)
+      throw Exception("image function requires at least one argument");
+    if (arg.size() > 2)
+      throw Exception("image function takes at most two arguments (image and zoom factor)");
     Array img;
     img = arg[0];
     if (!img.is2D())
@@ -182,7 +184,13 @@ namespace FreeMat {
     img.promoteType(FM_DOUBLE);
     ScalarImage *f;
     f = GetCurrentImage();
-    f->SetImageArray(img);
+    double zoomfact = 1.0f;
+    if (arg.size() == 2) {
+      Array z(arg[1]);
+      zoomfact = z.getContentsAsDoubleScalar();
+    }
+    
+    f->SetImageArray(img,zoomfact);
     return ArrayVector();
   }
 

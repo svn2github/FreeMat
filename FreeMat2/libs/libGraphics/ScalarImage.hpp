@@ -63,7 +63,7 @@ namespace FreeMat {
      * Set the contents of the figure to the given
      * array with dimensions.
      */
-    void SetImageArray(Array &dp);    
+    void SetImageArray(Array &dp, double zoomf);    
     /**
      * Routine that draws the contents of the window.
      */

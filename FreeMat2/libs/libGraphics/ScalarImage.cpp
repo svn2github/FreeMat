@@ -162,7 +162,7 @@ namespace FreeMat {
     SetImage(picData, zoomColumns, zoomRows);
   }
 
-  void ScalarImage::SetImageArray(Array &dp) {
+  void ScalarImage::SetImageArray(Array &dp, double zoomf) {
     if (rawData != NULL)
       Free(rawData);
     rows = dp.getDimensionLength(0);
@@ -181,7 +181,7 @@ namespace FreeMat {
     }
     window = maxval - minval;
     level = (maxval + minval)/2.0;
-    zoom = 1.0;
+    zoom = zoomf;
     UpdateZoom(true);
     Zoom(zoom);
   }

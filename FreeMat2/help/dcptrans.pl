@@ -9,8 +9,8 @@ sub outputMFile {
     $line =~ s/\@\@(.*)/\n${\uc($1)}\n/gi;
     $line =~ s/\@\[//gi;
     $line =~ s/\@\]//gi;
-    $line =~ s/\@\{/***/gi;
-    $line =~ s/\@\}/***/gi;
+    $line =~ s/\@\{/\n\$\n ***/gi;
+    $line =~ s/\@\}/\$\n/gi;
     $line =~ s/\@\|([^\|]*)\|/$1/gi;
     $line =~ s/\@figure\s*(.*)/<<Figure $1 omitted>>/g;
     $line =~ s/\\begin\{itemize\}//g;

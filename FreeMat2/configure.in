@@ -15,6 +15,11 @@ AC_PROG_YACC
 AC_PROG_RANLIB
 
 dnl **** Configure Options ****
+AC_ARG_WITH(alllibs,
+	[AC_HELP_STRING([--with-alllibs],
+		[Force use of all built-in libraries [default=no]])],
+		builtinall="yes",
+		builtinall="no")
 
 AC_ARG_WITH(builtin-png,
 	[AC_HELP_STRING([--with-builtin-png],
@@ -45,6 +50,13 @@ AC_ARG_WITH(mpi,
 	        [Build the MPI executables [default=no]])],
 		usempi="yes",
 		usempi="no")
+
+if test "$builtinall" == "yes" ; then
+   builtinpng="yes";
+   builtintiff="yes";
+   builtinjpg="yes";
+   forceminiblas="yes";
+fi
 
 AC_C_BIGENDIAN(AC_DEFINE([WORDS_BIGENDIAN],1,[System is big endian]),AC_DEFINE([WORDS_BIGENDIAN],0,[System is not big endian]),AC_MSG_ERROR([cannot determine if system is big endian or little endian... what kind of system is this??]))
 

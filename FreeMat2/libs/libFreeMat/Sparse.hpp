@@ -22,6 +22,9 @@ namespace FreeMat {
 				ArrayMatrix m);
   void* GetSparseVectorSubsets(Class dclass, int rows, int cols, const void* src,
 			       const indexType* indx, int irows, int icols);
+  void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
+			     const indexType* rindx, int irows,
+			     const indexType* cindx, int icols);
 }
 
 #endif

@@ -36,7 +36,7 @@
 POSIXLY_CORRECT=1; export POSIXLY_CORRECT	# disable GNU extensions
 
 QUIET=no				# suppress messages to tty
-NONINTERACTIVE=no			# control prompting of config params
+NONINTERACTIVE=yes			# control prompting of config params
 SITE=					# dir where config.site is located
 TARGET=					# target system identity
 SRCDIR=					# dir where source is located
@@ -156,11 +156,11 @@ do
 	exit 0
 	;;
     -help|--help)		usage; exit 0;;
-    -*)
-	bitch "configure: $ac_option: invalid option; use -help for usage."
-	kill -1 $$
-	;;
-    *)
+#dnl     -*)
+#dnl 	bitch "configure: $ac_option: invalid option; use -help for usage."
+#dnl 	kill -1 $$
+#dnl 	;;
+     *)
 	if [ x"$TARGET" != x ]; then
 	    bitch "configure: Can only configure for one target at a time."
 	    kill -1 $$
@@ -1906,12 +1906,7 @@ CONF_FILES="Makefile"
 if [ $SRCDIR_IS_LIBTIFF != yes ] ; then
     CONF_FILES="$CONF_FILES
         libtiff/Makefile
-        man/Makefile
-        tools/Makefile
-        port/install.sh
         "
-    test $HTML = yes &&		CONF_FILES="$CONF_FILES html/Makefile"
-    test $PORT = yes &&		CONF_FILES="$CONF_FILES port/Makefile"
 fi
 SedConfigFiles $CONF_FILES
 

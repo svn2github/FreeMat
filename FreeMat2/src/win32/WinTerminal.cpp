@@ -507,9 +507,27 @@ namespace FreeMat {
 	  adef->fileName = fullname;
 	  context->insertFunctionGlobally(adef);
 	}
+      }else if (fname[namelen-2] == '.' && 
+		(fname[namelen-1] == 'p' ||
+		 fname[namelen-1] == 'P')) {
+	fname[namelen-2] = 0;
+	// Look for the function in the context - only insert it
+	// if it is not already defined.
+	FunctionDef *fdef;
+	if (!context->lookupFunctionGlobally(std::string(fname),fdef)) {
+	  MFunctionDef *adef;
+	  // Open the file
+	  File *f = new File(fullname.c_str(),"rb");
+	  Serialize *s = new Serialize(f);
+	  s->handshakeClient();
+	  s->checkSignature('p',1);
+	  adef = ThawMFunction(s);
+	  adef->pcodeFunction = true;
+	  context->insertFunctionGlobally(adef);
+	}
       }
     }
-	free(fname);
+    free(fname);
   }
 
   int WinTerminal::getTerminalWidth() {

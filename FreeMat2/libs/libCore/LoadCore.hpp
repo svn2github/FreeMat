@@ -26,5 +26,6 @@
 namespace FreeMat {
   void LoadCoreFunctions(Context* context);
   void InitializeHelpDirectory(std::string path);
+  std::string GetHelpDirectory();
 }
 #endif

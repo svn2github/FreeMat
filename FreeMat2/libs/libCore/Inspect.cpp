@@ -49,6 +49,10 @@ namespace FreeMat {
     helppath = path;
   }
 
+  std::string GetHelpDirectory() {
+	  return helppath;
+  }
+
   //!
   //@Module HELP Help
   //@@Usage

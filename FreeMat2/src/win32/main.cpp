@@ -49,6 +49,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   InitializeXWindowSystem(hInstance);
   InitializePlotSubsystem();
   InitializeImageSubsystem();
+  char buffer[1000];
+  GetAppPath(buffer,sizeof(buffer));
+  InitializeHelpDirectory(buffer);
 
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "resource.h"
 #include "htmlhelp.h"
+#include "LoadCore.hpp"
 
 #include <direct.h>
 #define getcwd _getcwd
@@ -921,7 +922,9 @@ namespace FreeMat {
 	  PostQuitMessage(0);
 	  break;
 	case ID_HELP_CONTENTS:
-	  HtmlHelp(GetDesktopWindow(),"freemat.chm",HH_DISPLAY_TOC,NULL);
+		std::string app_path(GetHelpDirectory());
+		app_path = app_path + "//freemat.chm";
+	  HtmlHelp(GetDesktopWindow(),app_path.c_str(),HH_DISPLAY_TOC,NULL);
 	}
       case WM_KEYDOWN:{
 	switch (wParam) {

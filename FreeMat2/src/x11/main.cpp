@@ -10,6 +10,7 @@
 #include "System.hpp"
 #include "PathSearch.hpp"
 #include "ParserInterface.hpp"
+#include "File.hpp"
 #include <stdlib.h>
 #include <signal.h>
 
@@ -89,6 +90,58 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
   return ndx;
 }
 
+bool checkBundleMode(char* argv0, char bundlefunc[1024], WalkTree *twalk) {
+  // Get the path
+  std::string apppath = GetApplicationPath(argv0);
+  std::string appname = GetFilenameOnly(argv0);
+  // Check for existence of the app binary
+  if (!FileExists(apppath + "/" + appname)) {
+    fprintf(stderr,"Unable to resolve %s to a functional pathname.\n",argv0);
+    exit(1);
+  }
+  // Open us up.
+  std::string appfull = apppath + "/" + appname;
+  FILE *fp = fopen(appfull.c_str(),"rb");
+  // Seek to the end minus 1024 bytes
+  fseek(fp,-1024, SEEK_END);
+  // Read next 5 bytes into a buffer
+  char buf[5];
+  fread(buf,5,sizeof(char),fp);
+  // These should be "fmexe" if this is a bound executable
+  bool retval;
+  if (memcmp(buf,"fmexe",5)==0) {
+    retval = true;
+    // The next piece of information should be the 
+    // offset of the p-code data
+    int pcodeOffset;
+    fread(&pcodeOffset,1,sizeof(int),fp);
+    // The next piece of information should be the
+    // name of the startup function
+    int namelen;
+    fread(&namelen,1,sizeof(int),fp);
+    fread(bundlefunc,namelen,sizeof(char),fp);
+    // Seek to the p-code data
+    fseek(fp,pcodeOffset,SEEK_SET);
+    int pcodeCount;
+    fread(&pcodeCount,1,sizeof(int),fp);
+    int i;
+    File *f = new File(fp);
+    for (i=0;i<pcodeCount;i++) {
+      Serialize *s = new Serialize(f);
+      s->handshakeClient();
+      s->checkSignature('p',1);
+      MFunctionDef *adef = ThawMFunction(s);
+      adef->pcodeFunction = true;
+      twalk->getContext()->insertFunctionGlobally(adef);
+    }
+    delete(f);
+    fclose(fp);
+  } else {
+    retval = false;
+  }
+  return retval;
+}
+
 void usage() {
   printf("FreeMat Command Line Help\n");
   printf("   You can invoke FreeMat with the following command line options:\n");
@@ -103,10 +156,14 @@ void usage() {
 }
 
 int main(int argc, char *argv[]) {
+  // First thing to do is determine if we are bundled
+  // or not. 
+  int bundledMode;
   int scriptMode;
   int funcMode;
   int withoutX;
-
+  char bundlefunc[1024];
+  
   scriptMode = parseFlagArg(argc,argv,"-e",false);
   funcMode = parseFlagArg(argc,argv,"-f",true);
   withoutX = parseFlagArg(argc,argv,"-noX",false);
@@ -162,7 +219,8 @@ int main(int argc, char *argv[]) {
   WalkTree *twalk = new WalkTree(context,term);
   term->SetEvalEngine(twalk);
   term->Initialize();
-  if (!funcMode) {
+  bundledMode = checkBundleMode(argv[0], bundlefunc, twalk);
+  if (!funcMode && !bundledMode) {
     term->outputMessage(" Freemat v");
     term->outputMessage(VERSION);
     term->outputMessage("\n");
@@ -175,7 +233,10 @@ int main(int argc, char *argv[]) {
     }
   } else {
     char buffer[1024];
-    sprintf(buffer,"%s\n",argv[funcMode+1]);
+    if (funcMode) 
+      sprintf(buffer,"%s\n",argv[funcMode+1]);
+    else
+      sprintf(buffer,"%s\n",bundlefunc);
     ParserState parserState = parseString(buffer);
     if (parserState != ScriptBlock) {
       printf("Error: syntax error on argument to -f\r\n");

@@ -34,7 +34,7 @@ sub outputLaTeX {
     $line =~ s/\@\{/\\begin{verbatim}/gi;
     $line =~ s/\@\}/\\end{verbatim}/gi;
     $line =~ s/\@\|([^\|]*)\|/\\verb|$1|/gi;
-    $line =~ s/\@figure\s*(.*)/\\doplot{width=8cm}{$1}/g;
+    $line =~ s/\@figure\s*(.*)/\n\n\\doplot{width=8cm}{$1}\n/g;
     foreach $resulttext (@$clickres) {
 	$line =~ s/\@<(.*?)\@>/\\begin{verbatim}\n$resulttext\\end{verbatim}/sm;
     }
@@ -50,7 +50,6 @@ foreach $file (@ARGV) {
     # Read input file as one long record 
     $data=<INPUT>; 
     close INPUT; 
-#    @modules = ($data =~  (/\/\/\!\s*([^\/\/\!]*?)\/\/\!/gsm));
     @modules = ($data =~  (/\/\/\!(.*?)\/\/\!/gsm));
     foreach $module (@modules) {
 	($module =~ /\@Module\s*(\w*)/gi);

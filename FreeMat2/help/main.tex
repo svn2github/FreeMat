@@ -2,9 +2,16 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{html}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\floatpagefraction}{0.9}
-\newcommand{\doplot}[2]{\begin{minipage}{\linewidth}\centering\includegraphics[#1]{#2}\end{minipage}}
+%begin{latexonly}
+\newcommand{\doplot}[2]{\centerline{\includegraphics[#1]{#2}}}
+%end{latexonly}
+\begin{htmlonly}
+\newcommand{\doplot}[2]{\begin{center}\htmladdimg[center]{#2.png}\end{center}}
+\end{htmlonly}
+%\newcommand{\doplot}[2]{\begin{minipage}{\linewidth}\centering\includegraphics[#1]{#2}\end{minipage}}
 \title{FreeMat Help}
 \author{Samit Basu}
 \begin{document}

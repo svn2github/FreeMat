@@ -1,9 +1,12 @@
 #!/bin/sh
 mkdir mtex
+cp ../MFiles/mprint*.m mtex/.
 cd mtex
 perl ../dcptrans.pl ../../libs/lib*/*.cpp
 cp ../main.tex .
 latex main
+latex main
 dvips -o main.ps main.dvi
 pdflatex main
-latex2html --split 5 -dir ../html -prefix ./ -mkdir -noinfo -local_icons main.tex
+latex2html --split 5 -dir ../html -mkdir -noinfo -local_icons main.tex
+cp *.png ../html/.

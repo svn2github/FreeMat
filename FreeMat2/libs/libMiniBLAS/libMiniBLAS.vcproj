@@ -202,6 +202,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\cgbmv.c">
+			</File>
+			<File
 				RelativePath="f2c\cgemm.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -282,6 +285,39 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\chbmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chemm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chemv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cher.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cher2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cher2k.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cherk.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chpmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chpr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chpr2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\crotg.c">
+			</File>
+			<File
 				RelativePath="f2c\cscal.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -300,6 +336,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\csrot.c">
 			</File>
 			<File
 				RelativePath="f2c\csscal.c">
@@ -340,6 +379,27 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\csymm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\csyr2k.c">
+			</File>
+			<File
+				RelativePath=".\f2c\csyrk.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ctbmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ctbsv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ctpmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ctpsv.c">
 			</File>
 			<File
 				RelativePath="f2c\ctrmm.c">
@@ -522,6 +582,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dgbmv.c">
+			</File>
+			<File
 				RelativePath="f2c\dgemm.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -642,6 +705,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\drotg.c">
+			</File>
+			<File
+				RelativePath=".\f2c\drotm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\drotmg.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsbmv.c">
+			</File>
+			<File
 				RelativePath="f2c\dscal.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -662,6 +737,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dsdot.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dspmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dspr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dspr2.c">
+			</File>
+			<File
 				RelativePath="f2c\dswap.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -680,6 +767,36 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\dsymm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsymv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsyr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsyr2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsyr2k.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsyrk.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dtbmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dtbsv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dtpmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dtpsv.c">
 			</File>
 			<File
 				RelativePath="f2c\dtrmm.c">
@@ -1002,6 +1119,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\sdsdot.c">
+			</File>
+			<File
+				RelativePath=".\f2c\sgbmv.c">
+			</File>
+			<File
 				RelativePath="f2c\sgemm.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1122,6 +1245,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\srotg.c">
+			</File>
+			<File
+				RelativePath=".\f2c\srotm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\srotmg.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssbmv.c">
+			</File>
+			<File
 				RelativePath="f2c\sscal.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1142,6 +1277,15 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\sspmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\sspr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\sspr2.c">
+			</File>
+			<File
 				RelativePath="f2c\sswap.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1160,6 +1304,36 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\ssymm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssymv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssyr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssyr2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssyr2k.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssyrk.c">
+			</File>
+			<File
+				RelativePath=".\f2c\stbmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\stbsv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\stpmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\stpsv.c">
 			</File>
 			<File
 				RelativePath="f2c\strmm.c">
@@ -1342,6 +1516,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\zdrot.c">
+			</File>
+			<File
 				RelativePath="f2c\zdscal.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1360,6 +1537,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zgbmv.c">
 			</File>
 			<File
 				RelativePath="f2c\zgemm.c">
@@ -1442,6 +1622,39 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\zhbmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhemm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhemv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zher.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zher2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zher2k.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zherk.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhpmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhpr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhpr2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zrotg.c">
+			</File>
+			<File
 				RelativePath="f2c\zscal.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1480,6 +1693,27 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zsymm.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zsyr2k.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zsyrk.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ztbmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ztbsv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ztpmv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ztpsv.c">
 			</File>
 			<File
 				RelativePath="f2c\ztrmm.c">

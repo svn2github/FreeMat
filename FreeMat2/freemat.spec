@@ -45,7 +45,7 @@ make prefix=$RPM_BUILD_ROOT%{_prefix} bindir=$RPM_BUILD_ROOT%{_bindir} \
 %{_datadir}/FreeMat
 
 %changelog
+* Sun Oct 10 2004 <sbasu@nycap.rr.com>
+- Deleted unused entries from %doc & updated version number
 * Thu Jul 8 2004 <jeremy.gill@med.ge.com>
 - Initial Redhat 8.0 build.
-* Sun Oct 10 2004 <sbasu@nycap.rr.com>
-- Changed doc info for 1.08 release on fc2.

@@ -43,6 +43,12 @@
 #define KM_INSERT    0x105
 #define KM_HOME      0x106
 #define KM_END       0x107
+
+#include "Interface.hpp"
+
+using namespace FreeMat;
+
+
 class KeyManager
 {
 public:
@@ -117,8 +123,7 @@ public:
   void AddHistory(std::string);
   void KillLine();
   void Yank();
-  virtual std::vector<std::string> GetCompletions(const char *line, int word_end,
-	  std::string &matchString) {std::vector<std::string> t; return t;};
+  void SetInterface(Interface* io);
   void CompleteWord();
   virtual void ExecuteLine(const char * line) {};
   virtual void RegisterInterrupt() {};
@@ -163,6 +168,7 @@ protected:
   // True in insert mode
   bool insert;
   int startsearch;
+  Interface *io;
 };
 
   

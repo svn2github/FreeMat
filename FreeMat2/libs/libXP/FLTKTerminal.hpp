@@ -20,11 +20,8 @@ class FLTKTerminalWidget : public Fl_Text_Display, public Interface {
   Fl_Text_Buffer *textbuf;
   const char *m_prompt;
   int promptlen;
-  Context *m_context; 
-  std::vector<std::string> dirTab;
   std::list<std::string> enteredLines;
   bool enteredLinesChanged;
-  std::string m_path;
   int linecount;
   int m_width, m_height;
   bool textInitialized;
@@ -38,10 +35,6 @@ class FLTKTerminalWidget : public Fl_Text_Display, public Interface {
 public:
   FLTKTerminalWidget(int x, int y, int w, int h, const char *label = 0);
   virtual ~FLTKTerminalWidget();
-  void setContext(Context *ctxt);
-  std::string getPath();
-  void setPath(std::string);
-  void rescanPath();
   char* getLine(const char *prompt);
   int getTerminalWidth();
   void outputMessage(const char* msg);
@@ -67,12 +60,8 @@ public:
   int handleascii(int key);
   void adjustInsertPosition();
   void adjustScrollPosition();
-  void scanDirectory(std::string scdir, bool);
-  void procFile(std::string fname, std::string fullname, bool);
   void resize(int X, int Y, int W, int H);
   void RegisterInterrupt();
-  std::vector<std::string> GetCompletions(const char *line, int word_end, 
-					  std::string &matchString);
   void CompleteWord();
   void ListCompletions(std::vector<std::string> completions);
   void draw(void);

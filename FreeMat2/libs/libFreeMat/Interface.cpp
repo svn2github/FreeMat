@@ -1,10 +1,358 @@
+#ifdef WIN32
+#include <windows.h>
+#include <htmlhelp.h>
+#else
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <glob.h>
+#include <unistd.h>
+#endif
+
 #include "Interface.hpp"
+#include "Context.hpp"
+#include "File.hpp"
+#include <algorithm>
+
+#ifdef WIN32
+#define DELIM "\\"
+#define S_ISREG(x) (x & _S_IFREG)
+#include <direct.h>
+#define PATH_DELIM ";"
+#else
+#define DELIM "/"
+#define PATH_DELIM ":"
+#endif
 
 namespace FreeMat {
   Interface::Interface() {
+    m_context = NULL;
   }
 
   Interface::~Interface() {
   }
 
+  void Interface::setContext(Context *ctxt) {
+    if (m_context) delete m_context;
+    m_context = ctxt;
+  }
+
+  void Interface::setPath(std::string path) {
+    char* pathdata = strdup(path.c_str());
+    // Search through the path
+    char *saveptr = (char*) malloc(sizeof(char)*1024);
+    char* token;
+    token = strtok(pathdata,PATH_DELIM);
+    while (token != NULL) {
+      if (strcmp(token,".") != 0)
+	dirTab.push_back(std::string(token));
+      token = strtok(NULL,PATH_DELIM);
+    }
+    m_path = path;
+    rescanPath();
+  }
+
+  std::string Interface::getPath() {
+    return m_path;
+  }
+  
+  void Interface::rescanPath() {
+    m_context->flushTemporaryGlobalFunctions();
+    int i;
+    for (i=0;i<dirTab.size();i++)
+      scanDirectory(dirTab[i],false);
+    // Scan the current working directory.
+    char cwd[1024];
+    getcwd(cwd,1024);
+    scanDirectory(std::string(cwd),true);
+  }
+  
+  /*.......................................................................
+   * Search backwards for the potential start of a filename. This
+   * looks backwards from the specified index in a given string,
+   * stopping at the first unescaped space or the start of the line.
+   *
+   * Input:
+   *  string  const char *  The string to search backwards in.
+   *  back_from      int    The index of the first character in string[]
+   *                        that follows the pathname.
+   * Output:
+   *  return        char *  The pointer to the first character of
+   *                        the potential pathname, or NULL on error.
+   */
+  static char *start_of_path(const char *string, int back_from)
+  {
+    int i, j;
+    /*
+     * Search backwards from the specified index.
+     */
+    for(i=back_from-1; i>=0; i--) {
+      int c = string[i];
+      /*
+       * Stop on unescaped spaces.
+       */
+      if(isspace((int)(unsigned char)c)) {
+	/*
+	 * The space can't be escaped if we are at the start of the line.
+	 */
+	if(i==0)
+	  break;
+	/*
+	 * Find the extent of the escape characters which precedes the space.
+	 */
+	for(j=i-1; j>=0 && string[j]=='\\'; j--)
+	  ;
+	/*
+	 * If there isn't an odd number of escape characters before the space,
+	 * then the space isn't escaped.
+	 */
+	if((i - 1 - j) % 2 == 0)
+	  break;
+      } 
+      else if (!isalpha(c) && !isdigit(c) && (c != '_') && (c != '.') && (c != '\\') && (c != '/'))
+	break;
+    };
+    return (char *)string + i + 1;
+  }
+
+  std::vector<std::string> Interface::GetCompletions(const char *line, int word_end, 
+						     std::string &matchString) {
+    std::vector<std::string> completions;
+    /*
+     * Find the start of the filename prefix to be completed, searching
+     * backwards for the first unescaped space, or the start of the line.
+     */
+    char *start = start_of_path(line, word_end);
+    char *tmp;
+    int mtchlen;
+    mtchlen = word_end - (start-line);
+    tmp = (char*) malloc(mtchlen+1);
+    memcpy(tmp,start,mtchlen);
+    tmp[mtchlen] = 0;
+    matchString = std::string(tmp);
+    
+    /*
+     *  the preceeding character was not a ' (quote), then
+     * do a command expansion, otherwise, do a filename expansion.
+     */
+    if (start[-1] != '\'') {
+      std::vector<std::string> local_completions;
+      std::vector<std::string> global_completions;
+      int i;
+      local_completions = m_context->getCurrentScope()->getCompletions(std::string(start));
+      global_completions = m_context->getGlobalScope()->getCompletions(std::string(start));
+      for (i=0;i<local_completions.size();i++)
+	completions.push_back(local_completions[i]);
+      for (i=0;i<global_completions.size();i++)
+	completions.push_back(global_completions[i]);
+      std::sort(completions.begin(),completions.end());
+      return completions;
+    } else {
+#ifdef WIN32
+      HANDLE hSearch;
+      WIN32_FIND_DATA FileData;
+      std::string pattern(tmp);
+      pattern.append("*");
+      OutputDebugString("Searching ");
+      OutputDebugString(pattern.c_str());
+      OutputDebugString("\n");
+      hSearch = FindFirstFile(pattern.c_str(),&FileData);
+      if (hSearch != INVALID_HANDLE_VALUE) {
+	// Windows does not return any part of the path in the completion,
+	// So we need to find the base part of the pattern.
+	int lastslash;
+	std::string prefix;
+	lastslash = pattern.find_last_of("/");
+	if (lastslash == -1) {
+	  lastslash = pattern.find_last_of("\\");
+	}
+	if (lastslash != -1)
+	  prefix = pattern.substr(0,lastslash+1);
+	completions.push_back(prefix + FileData.cFileName);
+	while (FindNextFile(hSearch, &FileData))
+	  completions.push_back(prefix + FileData.cFileName);
+      }
+      FindClose(hSearch);
+      return completions;
+#else
+      glob_t names;
+      std::string pattern(tmp);
+      pattern.append("*");
+      glob(pattern.c_str(), GLOB_MARK, NULL, &names);
+      int i;
+      for (i=0;i<names.gl_pathc;i++) 
+	completions.push_back(names.gl_pathv[i]);
+      globfree(&names);
+      free(tmp);
+      return completions;
+#endif
+    }
+  }
+
+  void Interface::scanDirectory(std::string scdir, bool tempfunc) {
+#ifdef WIN32
+    HANDLE hSearch;
+    WIN32_FIND_DATA FileData;
+    std::string searchpat(scdir + "\\*.m");
+    hSearch = FindFirstFile(searchpat.c_str(), &FileData);
+    if (hSearch != INVALID_HANDLE_VALUE) {
+      procFile(std::string(FileData.cFileName),
+	       scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+      while (FindNextFile(hSearch, &FileData)) {
+	procFile(std::string(FileData.cFileName),
+		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+      }
+      FindClose(hSearch);
+    }
+#else
+    // Open the directory
+    DIR *dir;
+  
+    dir = opendir(scdir.c_str());
+    if (dir == NULL) return;
+    // Scan through the directory..
+    struct dirent *fspec;
+    char *fname;
+    std::string fullname;
+    while (fspec = readdir(dir)) {
+      // Get the name of the entry
+      fname = fspec->d_name;
+      // Check for '.' and '..'
+      if ((strcmp(fname,".") == 0) || (strcmp(fname,"..") == 0)) 
+	continue;
+      // Stat the file...
+      fullname = std::string(scdir + std::string(DELIM) + fname);
+      procFile(fname,fullname,tempfunc);
+    }
+    closedir(dir);
+#endif
+  }
+
+  void Interface::procFile(std::string fname, std::string fullname, bool tempfunc) {
+#ifdef WIN32
+    struct stat filestat;
+    char buffer[1024];
+    char *fnamec;
+  
+    fnamec = strdup(fname.c_str());
+    stat(fullname.c_str(),&filestat);
+    if (S_ISREG(filestat.st_mode)) {
+      int namelen;
+      namelen = strlen(fnamec);
+      if (fnamec[namelen-2] == '.' && 
+	  (fnamec[namelen-1] == 'm' ||
+	   fnamec[namelen-1] == 'M')) {
+	fnamec[namelen-2] = 0;
+	// Look for the function in the context - only insert it
+	// if it is not already defined.
+	FunctionDef *fdef;
+	bool lookup;
+	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
+	// If the function was not found, add it.  If it _was_ found,
+	// and is a script and has the same filename as ours, we
+	// do nothing
+	if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	    && ((MFunctionDef*)fdef)->fileName == fullname) {
+	  // Skipping this one
+	} else {
+	  MFunctionDef *adef;
+	  adef = new MFunctionDef();
+	  adef->name = std::string(fnamec);
+	  adef->fileName = fullname;
+	  m_context->insertFunctionGlobally(adef, tempfunc);
+	}
+      }else if (fnamec[namelen-2] == '.' && 
+		(fnamec[namelen-1] == 'p' ||
+		 fnamec[namelen-1] == 'P')) {
+	fnamec[namelen-2] = 0;
+	// Look for the function in the context - only insert it
+	// if it is not already defined.
+	FunctionDef *fdef;
+	bool lookup;
+	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
+	// If the function was not found, add it.  If it _was_ found,
+	// and is a script and has the same filename as ours, we
+	// do nothing
+	if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	    && ((MFunctionDef*)fdef)->fileName == fullname) {
+	  // Skipping this one
+	} else {
+	  MFunctionDef *adef;
+	  // Open the file
+	  File *f = new File(fullname.c_str(),"rb");
+	  Serialize *s = new Serialize(f);
+	  s->handshakeClient();
+	  s->checkSignature('p',1);
+	  adef = ThawMFunction(s);
+	  adef->pcodeFunction = true;
+	  m_context->insertFunctionGlobally(adef, tempfunc);
+	}
+      }
+    }
+    free(fnamec);
+#else
+    struct stat filestat;
+    char buffer[1024];
+    char fnamec[1024];
+    strcpy(fnamec,fname.c_str());
+    stat(fullname.c_str(),&filestat);
+    if (S_ISREG(filestat.st_mode)) {
+      int namelen;
+      namelen = strlen(fnamec);
+      if (fnamec[namelen-2] == '.' && 
+	  (fnamec[namelen-1] == 'm' ||
+	   fnamec[namelen-1] == 'M')) {
+	fnamec[namelen-2] = 0;
+	// Look for the function in the context - only insert it
+	// if it is not already defined.
+	FunctionDef *fdef;
+	bool lookup;
+	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
+	// If the function was not found, add it.  If it _was_ found,
+	// and is a script and has the same filename as ours, we
+	// do nothing
+	if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	    && ((MFunctionDef*)fdef)->fileName == fullname) {
+	  // Skipping this one
+	} else {
+	  MFunctionDef *adef;
+	  adef = new MFunctionDef();
+	  adef->name = std::string(fnamec);
+	  adef->fileName = fullname;
+	  m_context->insertFunctionGlobally(adef, tempfunc);
+	}
+      } else if (fnamec[namelen-2] == '.' && 
+		 (fnamec[namelen-1] == 'p' ||
+		  fnamec[namelen-1] == 'P')) {
+	fnamec[namelen-2] = 0;
+	// Look for the function in the context - only insert it
+	// if it is not already defined.
+	FunctionDef *fdef;
+	bool lookup;
+	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
+	// If the function was not found, add it.  If it _was_ found,
+	// and is a script and has the same filename as ours, we
+	// do nothing
+	if (lookup && (fdef->type() == FM_M_FUNCTION) 
+	    && ((MFunctionDef*)fdef)->fileName == fullname) {
+	  // Skipping this one
+	} else {
+	  MFunctionDef *adef;
+	  // Open the file
+	  File *f = new File(fullname.c_str(),"rb");
+	  Serialize *s = new Serialize(f);
+	  s->handshakeClient();
+	  s->checkSignature('p',1);
+	  adef = ThawMFunction(s);
+	  adef->pcodeFunction = true;
+	  m_context->insertFunctionGlobally(adef, tempfunc);
+	}
+      }
+    } else if (S_ISLNK(filestat.st_mode)) {
+      int lncnt = readlink(fullname.c_str(),buffer,1024);
+      buffer[lncnt] = 0;
+      procFile(fnamec, std::string(buffer),tempfunc);
+    }
+#endif
+  }
 }

@@ -23,7 +23,6 @@
 
 #include "Interface.hpp"
 #include <string>
-
 namespace FreeMat {
 
 /**

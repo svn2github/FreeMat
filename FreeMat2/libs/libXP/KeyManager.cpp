@@ -25,6 +25,7 @@
 #include <iostream>
 #include <algorithm>
 #include "KeyManager.hpp"
+#include "Interface.hpp"
 
 #define TAB_WIDTH 8
 /*
@@ -64,6 +65,10 @@ KeyManager::KeyManager() {
   history.push_back("");
 }
 
+
+void KeyManager::SetInterface(Interface* a_io) {
+  io = a_io;
+}
 
 void KeyManager::EndOfLine() {
   PlaceCursor(ntotal);
@@ -941,7 +946,7 @@ void KeyManager::CompleteWord() {
    * Perform the completion.
    */
   std::string tempstring;
-  matches = GetCompletions(line, buff_curpos, tempstring);
+  matches = io->GetCompletions(line, buff_curpos, tempstring);
   if(matches.size() == 0) {
     OutputRawString("\r\n");
     term_curpos = 0;

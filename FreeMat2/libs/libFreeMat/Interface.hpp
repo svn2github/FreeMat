@@ -23,26 +23,38 @@
 
 #include <string>
 #include <vector>
+
 namespace FreeMat {
   class Context;
 
   class Interface {
+    Context *m_context;
+    std::string m_path;
+    std::vector<std::string> dirTab;    
+    void scanDirectory(std::string scdir, bool);
+    void procFile(std::string fname, std::string fullname, bool);
   public:
     Interface();
     virtual ~Interface();
+    std::vector<std::string> GetCompletions(const char *line, int word_end, 
+					    std::string &matchString);
     /**
      *  Get the current path set for the interface.
      */
-    virtual std::string getPath() = 0;
+    virtual std::string getPath();
     /**
      *  Set the path for the interface.
      */
-    virtual void setPath(std::string) = 0;
+    virtual void setPath(std::string);
+    /**
+     *  Set the context for the interface.
+     */
+    virtual void setContext(Context *ctxt);
     /**
      *  Force a rescan of the current path to look for 
      *  new function files.
      */
-    virtual void rescanPath() = 0;
+    virtual void rescanPath();
     /**
      *  Get a line of input from the user with the
      *  given prompt.

@@ -204,7 +204,7 @@ namespace FreeMat {
     refresh.right = ncolumn * charWidth;
     refresh.top = (caret_y+1-si.nPos)*charHeight;
     refresh.bottom = (nlinecount-si.nPos)*charHeight;
-    //    InvalidateRect(hwnd,NULL,TRUE);
+    InvalidateRect(hwnd,NULL,TRUE);
     UpdateWindow(hwnd);
   }
 

@@ -66,9 +66,6 @@ std::string GetApplicationPath(char *argv0) {
 }
 
 int main(int argc, char *argv[]) {
-  std::string paths;
-
-  paths = GetApplicationPath(argv[0]);
   
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);
@@ -99,6 +96,7 @@ int main(int argc, char *argv[]) {
   LoadGraphicsCoreFunctions(context);  
   InitializePlotSubsystem();
   InitializeImageSubsystem();
+  InitializeHelpDirectory(GetApplicationPath(argv[0]));
 
   // Check for scripting mode
   bool scriptMode = false;

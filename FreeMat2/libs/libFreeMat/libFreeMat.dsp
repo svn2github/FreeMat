@@ -64,7 +64,7 @@ LIB32=xilink6.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "\FreeMat2\libs\libffi\msvc_build" /I "\FreeMat2\libs\libXP" /I "\FreeMat2\libs\libf2c" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "X86_WIN32" /D "YY_NEVER_INTERACTIVE" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\libffi\msvc_build" /I "..\libXP" /I "..\libf2c" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "X86_WIN32" /D "YY_NEVER_INTERACTIVE" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe

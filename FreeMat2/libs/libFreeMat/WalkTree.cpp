@@ -72,6 +72,11 @@ namespace FreeMat {
  
  void WalkTree::resetState() {
     state = FM_STATE_OK;
+    cname = "base";
+    IDnums.clear();
+    cnameStack.clear();
+    contextStack.clear();
+    IDnums.push_back(0);
   }
 
   State WalkTree::getState() {

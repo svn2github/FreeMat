@@ -2177,21 +2177,21 @@ namespace FreeMat {
   //and forcing explicit empty brackets for don't care parameters.
   //@{ keyfunc.m
   //function c = keyfunc(a,b,operation,printit)
-  //  if (~exist('a') | ~exist('b')) 
+  //  if (~isset('a') | ~isset('b')) 
   //    error('keyfunc requires at least the first two 2 arguments'); 
   //  end;
-  //  if (~exist('operation'))
+  //  if (~isset('operation'))
   //    % user did not define the operation, default to '+'
   //    operation = '+';
   //  end
-  //  if (~exist('printit'))
+  //  if (~isset('printit'))
   //    % user did not specify the printit flag, default is false
   //    printit = 0;
   //  end
   //  % simple operation...
   //  eval(['c = a ' operation ' b;']);
   //  if (printit) 
-  //    printf('%f %s %f = %f',a,operation,b,c);
+  //    printf('%f %s %f = %f\n',a,operation,b,c);
   //  end
   //@}
   //Now some examples of how this function can be called using
@@ -2407,29 +2407,174 @@ namespace FreeMat {
   //strcattest hi ho
   //@>
   //!
+
+  void WalkTree::collectKeywords(ASTPtr q, ArrayVector &keyvals,
+				 ASTPtrVector &keyexpr, stringVector &keywords) {
+    // Search for the keyword uses - 
+    // To handle keywords, we make one pass through the arguments,
+    // recording a list of keywords used and using ::expression to
+    // evaluate their values. 
+    while (q != NULL) {
+      if (q->opNum == OP_KEYWORD) {
+	keywords.push_back(q->down->text);
+	if (q->down->right != NULL)
+	  keyvals.push_back(expression(q->down->right));
+	else
+	  keyvals.push_back(Array::logicalConstructor(true));
+	keyexpr.push_back(q->down->right);
+      }
+      q = q->right;
+    }
+  }
+					
+
+  int* WalkTree::sortKeywords(ArrayVector &m, stringVector &keywords,
+			      stringVector arguments, ArrayVector keyvals) {
+    // If keywords were used, we have to permute the
+    // entries of the arrayvector to the correct order.
+    int *keywordNdx = new int[keywords.size()];
+    int maxndx;
+    maxndx = 0;
+    // Map each keyword to an argument number
+    for (int i=0;i<keywords.size();i++) {
+      int ndx;
+      ndx = getArgumentIndex(arguments,keywords[i]);
+      if (ndx == -1)
+	throw Exception("out-of-order argument /" + keywords[i] + " is not defined in the called function!");
+      keywordNdx[i] = ndx;
+      if (ndx > maxndx) maxndx = ndx;
+    }
+    // Next, we have to determine how many "holes" there are
+    // in the argument list - we get the maximum list
+    int holes;
+    holes = maxndx + 1 - keywords.size();
+    // At this point, holes is the number of missing arguments
+    // If holes > m.size(), then the total number of arguments
+    // is just maxndx+1.  Otherwise, its 
+    // maxndx+1+(m.size() - holes)
+    int totalCount;
+    if (holes > m.size())
+      totalCount = maxndx+1;
+    else
+      totalCount = maxndx+1+(m.size() - holes);
+    // Next, we allocate a vector to hold the values
+    ArrayVector toFill(totalCount);
+    bool *filled = new bool[totalCount];
+    int *argTypeMap = new int[totalCount];
+    for (int i=0;i<totalCount;i++) {
+      filled[i] = false;
+      argTypeMap[i] = -1;
+    }
+    // Finally...
+    // Copy the keyword values in
+    for (int i=0;i<keywords.size();i++) {
+      toFill[keywordNdx[i]] = keyvals[i];
+      filled[keywordNdx[i]] = true;
+      argTypeMap[keywordNdx[i]] = i;
+    }
+    // Fill out the rest of the values from m
+    int n = 0;
+    int p = 0;
+    while (n < m.size()) {
+      if (!filled[p]) {
+	toFill[p] = m[n];
+	filled[p] = true;
+	argTypeMap[p] = -2;
+	n++;
+      } 
+      p++;
+    }
+    // Finally, fill in empty matrices for the
+    // remaining arguments
+    for (int i=0;i<totalCount;i++)
+      if (!filled[i])
+	toFill[i] = Array::emptyConstructor();
+    // Clean up
+    delete[] filled;
+    delete[] keywordNdx;
+    // Reassign
+    m = toFill;
+    return argTypeMap;
+  }
+
+  void WalkTree::handlePassByReference(ASTPtr q, stringVector arguments,
+				       ArrayVector m,stringVector keywords, 
+				       ASTPtrVector keyexpr, int* argTypeMap) {
+    ASTPtr p;
+    // M functions can modify their arguments
+    int maxsearch = m.size(); 
+    if (maxsearch > arguments.size()) maxsearch = arguments.size();
+    for (int i=0;i<maxsearch;i++) {
+      // Was this argument passed out of order?
+      if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
+      if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
+	p = keyexpr[argTypeMap[i]];
+      } else {
+	p = q;
+	if (q != NULL)
+	  q = q->right;
+      }
+      std::string args(arguments[i]);
+      if (args[0] == '&') {
+	args.erase(0,1);
+	// This argument was passed by reference
+	if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
+	  throw Exception("Must have lvalue in argument passed by reference");
+	if (p->down->down == NULL && p->down->type == id_node) {
+	  context->insertVariable(p->down->text,m[i]);
+	} else {
+	  Array c(assignExpression(p->down,m[i]));
+	  context->insertVariable(p->down->text,c);
+	}
+      }
+    }
+  }
+
+  static ArrayVector mergeVecs(ArrayVector a, ArrayVector b) {
+    for (int i=0;i<b.size();i++)
+      a.push_back(b[i]);
+    return a;
+  }
+
   ArrayVector WalkTree::functionExpression(ASTPtr t, 
 					   int narg_out, 
 					   bool outputOptional) {
     ArrayVector m, n;
-    ASTPtr s, q, p;
+    ASTPtr s;
     stringVector keywords;
     ArrayVector keyvals;
     ASTPtrVector keyexpr;
-    int *keywordNdx;
-    int *argTypeMap;
     int i;
     char buffer[2048];
     FuncPtr funcDef;
-
-    pushID(t->context());
-    if (!lookupFunctionWithRescan(t->text,funcDef))
-      throw Exception(std::string("Undefined function or variable ") + 
-		      t->text);
-    funcDef->updateCode();
+    int* argTypeMap;
     bool CLIFlagsave;
-    
     CLIFlagsave = InCLI;
+    
+    pushID(t->context());
     try {
+      // Because of the introduction of user-defined classes, we have to 
+      // first evaluate the keywords and the arguments, before we know
+      // which function to call.
+      // First, check for arguments
+      if (t->down != NULL) {
+	// Collect all the arguments
+	s = t->down;
+	if (s->opNum ==(OP_PARENS)) {
+	  s = s->down;
+	  // Collect keywords
+	  collectKeywords(s,keyvals,keyexpr,keywords);
+	  // Evaluate function arguments
+	  m = expressionList(s,NULL);
+	} else
+	  throw Exception("Illegal expression in function expression");
+      }
+      // Now that the arguments have been evaluated, we have to 
+      // find the dominant class
+      if (!lookupFunctionWithRescan(t->text,funcDef,mergeVecs(m,keyvals)))
+	throw Exception(std::string("Undefined function or variable ") + 
+			t->text);
+      funcDef->updateCode();
       if (funcDef->scriptFlag) {
 	if (t->down != NULL)
 	  throw Exception(std::string("Cannot use arguments in a call to a script."));
@@ -2442,103 +2587,10 @@ namespace FreeMat {
 	popDebug();
 	InCLI = CLIFlagsave;
       } else {
-	// Look for arguments
-	if (t->down != NULL) {
-	  s = t->down;
-	  if (s->opNum ==(OP_PARENS)) {
-	    s = s->down;
-	    // Search for the keyword uses - 
-	    // To handle keywords, we make one pass through the arguments,
-	    // recording a list of keywords used and using ::expression to
-	    // evaluate their values. 
-	    q = s;
-	    while (q != NULL) {
-	      if (q->opNum == OP_KEYWORD) {
-		keywords.push_back(q->down->text);
-		if (q->down->right != NULL)
-		  keyvals.push_back(expression(q->down->right));
-		else
-		  keyvals.push_back(Array::logicalConstructor(true));
-		keyexpr.push_back(q->down->right);
-	      }
-	      q = q->right;
-	    }
-	    m = expressionList(s,NULL);
-	    // Check for keywords
-	    if (keywords.size() > 0) {
-	      // If keywords were used, we have to permute the
-	      // entries of the arrayvector to the correct order.
-	      stringVector arguments;
-	      // Get the arguments from the MFunction pointer.
-	      arguments = funcDef->arguments;
-	      keywordNdx = new int[keywords.size()];
-	      int maxndx;
-	      maxndx = 0;
-	      // Map each keyword to an argument number
-	      for (i=0;i<keywords.size();i++) {
-		int ndx;
-		ndx = getArgumentIndex(arguments,keywords[i]);
-		if (ndx == -1)
-		  throw Exception("out-of-order argument /" + keywords[i] + " is not defined in the called function!");
-		keywordNdx[i] = ndx;
-		if (ndx > maxndx) maxndx = ndx;
-	      }
-	      // Next, we have to determine how many "holes" there are
-	      // in the argument list - we get the maximum list
-	      int holes;
-	      holes = maxndx + 1 - keywords.size();
-	      // At this point, holes is the number of missing arguments
-	      // If holes > m.size(), then the total number of arguments
-	      // is just maxndx+1.  Otherwise, its 
-	      // maxndx+1+(m.size() - holes)
-	      int totalCount;
-	      if (holes > m.size())
-		totalCount = maxndx+1;
-	      else
-		totalCount = maxndx+1+(m.size() - holes);
-	      // Next, we allocate a vector to hold the values
-	      ArrayVector toFill(totalCount);
-	      bool *filled;
-	      filled = new bool[totalCount];
-	      argTypeMap = new int[totalCount];
-	      for (i=0;i<totalCount;i++) {
-		filled[i] = false;
-		argTypeMap[i] = -1;
-	      }
-	      // Finally...
-	      // Copy the keyword values in
-	      for (i=0;i<keywords.size();i++) {
-		toFill[keywordNdx[i]] = keyvals[i];
-		filled[keywordNdx[i]] = true;
-		argTypeMap[keywordNdx[i]] = i;
-	      }
-	      // Fill out the rest of the values from m
-	      int n = 0;
-	      int p = 0;
-	      while (n < m.size()) {
-		if (!filled[p]) {
-		  toFill[p] = m[n];
-		  filled[p] = true;
-		  argTypeMap[p] = -2;
-		  n++;
-		} 
-		p++;
-	      }
-	      // Finally, fill in empty matrices for the
-	      // remaining arguments
-	      for (i=0;i<totalCount;i++)
-		if (!filled[i])
-		  toFill[i] = Array::emptyConstructor();
-	      // Clean up
-	      delete[] filled;
-	      // delete[] keywordNdx;
-	      // Reassign
-	      m = toFill;
-	    }
-	  } else
-	    throw Exception("Illegal expression in function expression");
-	} else
-	  m = ArrayVector();
+	// We can now adjust the keywords (because we know the argument list)
+	// Apply keyword mapping
+	if (!keywords.empty()) 
+	  argTypeMap = sortKeywords(m,keywords,funcDef->arguments,keyvals);
 	if ((funcDef->inputArgCount() >= 0) && 
 	    (m.size() > funcDef->inputArgCount()))
 	  throw Exception(std::string("Too many inputs to function ")+t->text);
@@ -2550,42 +2602,10 @@ namespace FreeMat {
 	n = funcDef->evaluateFunction(this,m,narg_out);
 	InCLI = CLIFlagsave;
 	if (state == FM_STATE_RETALL)
-		return n;
+	  return n;
 	// Check for any pass by reference
-	if ((t->down != NULL) && (funcDef->arguments.size() > 0)) {
-	  // Get the argument list
-	  stringVector arguments;
-	  arguments = funcDef->arguments;
-	  // M functions can modify their arguments
-	  q = s;
-	  int maxsearch;
-	  maxsearch = m.size(); 
-	  if (maxsearch > arguments.size()) maxsearch = arguments.size();
-	  for (i=0;i<maxsearch;i++) {
-	    // Was this argument passed out of order?
-	    if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
-	    if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
-	      p = keyexpr[argTypeMap[i]];
-	    } else {
-	      p = q;
-	      if (q != NULL)
-		q = q->right;
-	    }
-	    std::string args(arguments[i]);
-	    if (args[0] == '&') {
-	      args.erase(0,1);
-	      // This argument was passed by reference
-	      if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
-		throw Exception("Must have lvalue in argument passed by reference");
-	      if (p->down->down == NULL && p->down->type == id_node) {
-		context->insertVariable(p->down->text,m[i]);
-	      } else {
-		Array c(assignExpression(p->down,m[i]));
-		context->insertVariable(p->down->text,c);
-	      }
-	    }
-	  }
-	}
+	if ((t->down != NULL) && (funcDef->arguments.size() > 0)) 
+	  handlePassByReference(s,funcDef->arguments,m,keywords,keyexpr,argTypeMap);
       }
       // Some routines (e.g., min and max) will return more outputs
       // than were actually requested... so here we have to trim 
@@ -2743,23 +2763,42 @@ namespace FreeMat {
     classTable.insertSymbol(classname,cdata);
   }
 
-  
-  bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val) {
-    bool isFun;
-    // Check for a constructor with this name
-    isFun = context->lookupFunction(std::string("@") + funcName + 
-				    std::string("_") + funcName, val);
-    if (isFun) return true;
-    io->rescanPath();
-    isFun = context->lookupFunction(std::string("@") + funcName + 
-				    std::string("_") + funcName, val);
-    if (isFun) return true;
-    isFun = context->lookupFunction(funcName,val);
+  bool WalkTree::lookupFunctionWithRescanMangled(std::string funcName, FuncPtr& val) {
+    bool isFun = context->lookupFunction(funcName,val);
     if (!isFun) {
       io->rescanPath();
       isFun = context->lookupFunction(funcName,val);
     }
     return isFun;
+  }
+
+  bool WalkTree::lookupFunctionMangled(std::string funcName, FuncPtr& val) {
+    return context->lookupFunction(funcName,val);
+  }
+
+  bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val,
+					  ArrayVector args) {
+    // Check to see if it is a constructor
+    if (lookupFunctionWithRescanMangled(std::string("@") + 
+					funcName + std::string("_") + funcName, val))
+      return true;
+    // Check to see if it is a method
+    // Are any of the arguments classes?
+    bool anyClasses = false;
+    int i=0;
+    while ((!anyClasses) && (i < args.size())) {
+      anyClasses = args[i].isUserClass();
+      if (!anyClasses) i++;
+    }
+    if (anyClasses) {
+      if (lookupFunctionMangled(std::string("@") + args[i].getClassName() + std::string("_") + 
+				funcName, val))
+	return true;
+    }
+    // Just check for the plain old function
+    if (lookupFunctionMangled(funcName, val))
+      return true;
+    return false;
   }
 
   Array WalkTree::rhsExpressionSimple(ASTPtr t) {

@@ -105,6 +105,15 @@ namespace FreeMat {
     bool bpActive;
     // This data structure stores the class records
     SymbolTable<UserClass> classTable;
+    void collectKeywords(ASTPtr q, ArrayVector &keyvals,
+			 ASTPtrVector &keyexpr, stringVector &keywords);
+    int* sortKeywords(ArrayVector &m, stringVector &keywords,
+		      stringVector arguments, ArrayVector keyvals);
+    void handlePassByReference(ASTPtr q, stringVector arguments,
+			       ArrayVector m,stringVector keywords,
+			       ASTPtrVector keyexpr, int* argTypeMap);
+    bool lookupFunctionMangled(std::string funcName, FuncPtr& val);
+    bool lookupFunctionWithRescanMangled(std::string funcName, FuncPtr& val);
   public:
     bool debugActive;
     void dbstep(int linecount);
@@ -268,7 +277,8 @@ namespace FreeMat {
      * Look up an identifier as a potential function name, using a
      * rescan if the identifier is not found on the first pass.
      */
-    bool lookupFunctionWithRescan(std::string funcName, FuncPtr& val);
+    bool lookupFunctionWithRescan(std::string funcName, FuncPtr& val, 
+				  ArrayVector args = ArrayVector());
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */

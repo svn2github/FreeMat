@@ -57,6 +57,8 @@ void FLTKTerminalWidget::blink() {
   blinkactive = true;
 }
 
+Fl_Preferences app(Fl_Preferences::USER, "freemat", "main/font");
+
 FLTKTerminalWidget::FLTKTerminalWidget(int x, int y, int w, int h, const char *label) : textInitialized(false),
   Fl_Text_Display(x,y,w,h,label) {
   textfont(FL_COURIER);
@@ -69,7 +71,7 @@ FLTKTerminalWidget::FLTKTerminalWidget(int x, int y, int w, int h, const char *l
   linecount = 0;
   m_width = 80;
   m_height = 25;
-  //  Fl::add_timeout(1, FLTKTerminalWidget::blinkCB, this);
+  Fl::add_timeout(1, FLTKTerminalWidget::blinkCB, this);
   blinkon = true;
   blinkactive = false;
   crflag = false;
@@ -184,39 +186,39 @@ void FLTKTerminalWidget::adjustScrollPosition() {
 }
 
 void FLTKTerminalWidget::dopaste() {
-	Fl::paste(*this,1);
+  Fl::paste(*this,1);
 }
 
 void FLTKTerminalWidget::docopy() {
-	if (!buffer()->selected()) return;
-	const char *copy = buffer()->selection_text();
-	if (!*copy) return;
+  if (!buffer()->selected()) return;
+  const char *copy = buffer()->selection_text();
+  if (!*copy) return;
 #ifdef WIN32
-	// Need to add '\r' to the '\n'
-	int newline_count = 0;
-	const char *cp = copy;
-	while (*cp) {
-		if (*cp == '\n') newline_count++;
-		cp++;
-	}
-	cp = copy;
-	char *cbuf = (char*) malloc(strlen(copy)+1+newline_count);
-	memset(cbuf,0,strlen(copy)+1+newline_count);
-	char *dp = cbuf;
-	while (*cp) {
-		if (*cp == '\n') {
-			*dp++ = '\r';
-			*dp++ = *cp;
-		} else 
-			*dp++ = *cp;
-		cp++;
-	}
-	Fl::copy(cbuf,strlen(cbuf),1);
-	free((void*) copy);
-	free((void*) cbuf);
+  // Need to add '\r' to the '\n'
+  int newline_count = 0;
+  const char *cp = copy;
+  while (*cp) {
+    if (*cp == '\n') newline_count++;
+    cp++;
+  }
+  cp = copy;
+  char *cbuf = (char*) malloc(strlen(copy)+1+newline_count);
+  memset(cbuf,0,strlen(copy)+1+newline_count);
+  char *dp = cbuf;
+  while (*cp) {
+    if (*cp == '\n') {
+      *dp++ = '\r';
+      *dp++ = *cp;
+    } else 
+      *dp++ = *cp;
+    cp++;
+  }
+  Fl::copy(cbuf,strlen(cbuf),1);
+  free((void*) copy);
+  free((void*) cbuf);
 #else
-	if (*copy) Fl::copy(copy,strlen(copy),1);
-	free((void*) copy);
+  if (*copy) Fl::copy(copy,strlen(copy),1);
+  free((void*) copy);
 #endif
 }
 
@@ -280,23 +282,6 @@ void FLTKTerminalWidget::outputText(const char *txt) {
     cp++;
   }
   buffer()->append(buf);
-#if 0
-	*dp = '\n';
-	buffer()->append(buf);	
-      }
-    } else {
-    }
-    if (*cp == '\r') {
-      crflag = true;
-    } else {
-      *dp++ = *cp++;
-    }
-    if (*cp++ == '\n') {
-      linecount++;
-      linecount_changed = true;
-    }
-  buffer()->append(txt);
-#endif
   //  insert_position(buffer()->length());
   if (linecount_changed) 
     adjustScrollPosition();
@@ -323,7 +308,7 @@ void FLTKTerminalWidget::errorMessage(const char*msg) {
   outputText("\n");
   outputText("  at ");
   outputText(messageContext.c_str());
-  outputText("\n");
+outputText("\n");
 }
 
 void FLTKTerminalWidget::warningMessage(const char*msg) {
@@ -336,9 +321,9 @@ void FLTKTerminalWidget::warningMessage(const char*msg) {
 }
 
 void FLTKTerminalWidget::adjustInsertPosition() {
-  int line, col;
-  position_to_linecol(insert_position(),&line,&col);
-  if ((linecount+1) != line)
+int line, col;
+position_to_linecol(insert_position(),&line,&col);
+if ((linecount+1) != line)
     insert_position(buffer()->length());
   adjustScrollPosition();
 }
@@ -478,6 +463,13 @@ int FLTKTerminalWidget::enter() {
   return 1;
 }
 
+void FLTKTerminalWidget::fontsize(int sze) {
+  sizetext = sze;
+  textsize(sze);
+  redraw();
+  app.set("textsize",sizetext);
+}
+
 int FLTKTerminalWidget::handleascii(int key) {
   adjustInsertPosition();
   if ((key>=32) && (key <129)) {
@@ -492,9 +484,11 @@ int FLTKTerminalWidget::handleascii(int key) {
 int FLTKTerminalWidget::handle_key() {
   int key;
   key = Fl::event_key();
-  if ((key == 'a') && (Fl::event_state() & FL_CTRL))
+  if (((key == 'a') && (Fl::event_state() & FL_CTRL)) ||
+      (key == FL_Home))
     return ctrla();
-  if ((key == 'e') && (Fl::event_state() & FL_CTRL))
+  if (((key == 'e') && (Fl::event_state() & FL_CTRL)) ||
+      (key == FL_End))
     return ctrle();
   if ((key == 'd') && (Fl::event_state() & FL_CTRL))
     return ctrld();
@@ -504,6 +498,8 @@ int FLTKTerminalWidget::handle_key() {
     return ctrly();
   if ((key == 'c') && (Fl::event_state() & FL_CTRL))
     return ctrlc();
+  if ((key >= FL_KP) && (key <= FL_KP_Last))
+    key -= FL_KP;
   switch(key) {
   case FL_Tab:
     return tab();
@@ -525,6 +521,16 @@ int FLTKTerminalWidget::handle_key() {
     break;
   case FL_Down:
     return downkey();
+    break;
+  case FL_Page_Up:
+    for (int i=0;i<m_height;i++)
+      move_up();
+    show_insert_position();
+    break;
+  case FL_Page_Down:
+    for (int i=0;i<m_height;i++)
+      move_down();
+    show_insert_position();
     break;
   default: 
     handleascii(key);
@@ -1028,20 +1034,40 @@ void paste_cb(Fl_Widget*, void*w) {
   win->term()->dopaste();
 }
 
+void font_cb(Fl_Widget* wb, void*w) {
+  Fl_Menu_* mw = (Fl_Menu_*)wb;
+  const Fl_Menu_Item* m = mw->mvalue();
+  FLTKTerminalWindow *win = (FLTKTerminalWindow*) w;
+  if (m) {
+    int fontsize;
+    fontsize = atoi(m->label());
+    win->term()->fontsize(fontsize);
+  }
+}
+
 Fl_Menu_Item menuitems[] = {
-  { "&File", 0, 0, 0, FL_SUBMENU },
-    { "&Save Transcript", 0, (Fl_Callback *)save_cb },
-    { "E&xit", 0, (Fl_Callback *)quit_cb, 0 },
-    { 0 },
-  { "&Edit", 0, 0, 0, FL_SUBMENU },
-    { "&Copy",  0, (Fl_Callback *)copy_cb },
-    { "&Paste",  0 , (Fl_Callback *)paste_cb },
-    { 0 },
-  { "&Help", 0, 0, 0, FL_SUBMENU },
-    { "&Online Help",  0, (Fl_Callback *)help_cb },
-    { "&About FreeMat", 0, (Fl_Callback *)about_cb },
-    { 0 },
-  { 0 }
+{ "&File", 0, 0, 0, FL_SUBMENU },
+{ "&Save Transcript", 0, (Fl_Callback *)save_cb },
+{ "E&xit", 0, (Fl_Callback *)quit_cb, 0 },
+{ 0 },
+{ "&Edit", 0, 0, 0, FL_SUBMENU },
+{ "&Copy",  0, (Fl_Callback *)copy_cb },
+{ "&Paste",  0 , (Fl_Callback *)paste_cb },
+{ "&Font Size", 0, 0, 0, FL_SUBMENU },
+{ "8", 0, (Fl_Callback *)font_cb , (void *) 8, FL_MENU_RADIO},
+{ "10", 0, (Fl_Callback *)font_cb , (void *) 10, FL_MENU_RADIO},
+{ "12", 0, (Fl_Callback *)font_cb , (void *) 12, FL_MENU_RADIO|FL_MENU_VALUE},
+{ "14", 0, (Fl_Callback *)font_cb , (void *) 14, FL_MENU_RADIO},
+{ "16", 0, (Fl_Callback *)font_cb , (void *) 16, FL_MENU_RADIO},
+{ "18", 0, (Fl_Callback *)font_cb , (void *) 18, FL_MENU_RADIO},
+{ "20", 0, (Fl_Callback *)font_cb , (void *) 20, FL_MENU_RADIO},
+{ 0 },
+{ 0 },
+{ "&Help", 0, 0, 0, FL_SUBMENU },
+{ "&Online Help",  0, (Fl_Callback *)help_cb },
+{ "&About FreeMat", 0, (Fl_Callback *)about_cb },
+{ 0 },
+{ 0 }
 };
 
 void quit_check_cb(Fl_Widget*, void*) {
@@ -1057,6 +1083,18 @@ FLTKTerminalWindow::FLTKTerminalWindow(int w, int h, const char* t, const char *
   m_menu->box(FL_NO_BOX);
   m_menu->copy(menuitems,this);
   m_term = new FLTKTerminalWidget(0,30,w,h-30);
+  int sizetext;
+  app.get("textsize",sizetext,12);
+  char buffer[100];
+  sprintf(buffer,"Edit/Font Size/%d",sizetext);
+  for (int k=0;k<6;k++)
+    m_menu->mode(8+k,FL_MENU_RADIO);
+  m_menu->mode(8+(sizetext-8)/2,FL_MENU_RADIO|FL_MENU_VALUE);
+  //  const Fl_Menu_Item *p = m_menu->find_item("buffer");
+  //  printf("menu item is %x\r\n",p);
+  //  if (p)
+  //    p->setonly();
+  m_term->fontsize(sizetext);
   end();
   resizable(m_term);
   callback(quit_check_cb);

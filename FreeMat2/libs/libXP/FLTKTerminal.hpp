@@ -34,6 +34,7 @@ class FLTKTerminalWidget : public Fl_Text_Display, public Interface {
   bool blinkon;
   bool blinkactive;
   bool crflag;
+  int sizetext;
 public:
   FLTKTerminalWidget(int x, int y, int w, int h, const char *label = 0);
   virtual ~FLTKTerminalWidget();
@@ -47,6 +48,7 @@ public:
   void errorMessage(const char* msg);
   void warningMessage(const char* msg);
   void outputText(const char *txt);
+  void fontsize(int sze);
   int handle(int event);
   int handle_key();
   int backspace();

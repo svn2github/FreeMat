@@ -417,4 +417,20 @@ namespace FreeMat {
     eval->getContext()->insertFunctionGlobally(fptr);
     return ArrayVector();
   }
+  
+  void LoadModuleFunctions(Context* context) {
+    SpecialFunctionDef *sfdef = new SpecialFunctionDef;
+    sfdef->retCount = 0;
+    sfdef->argCount = 5;
+    sfdef->name = "loadlib";
+    sfdef->fptr = LoadLibFunction;
+    context->insertFunctionGlobally(sfdef);
+    
+    sfdef = new SpecialFunctionDef;
+    sfdef->retCount = 0;
+    sfdef->argCount = 5;
+    sfdef->name = "import";
+    sfdef->fptr = ImportFunction;
+    context->insertFunctionGlobally(sfdef);
+  }
 }

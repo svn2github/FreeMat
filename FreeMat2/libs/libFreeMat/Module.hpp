@@ -33,19 +33,14 @@ namespace FreeMat {
   ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg,
 	  WalkTree* eval) throw(Exception);
   /**
-   * Make a CCall - this is a special call into a library
-   * that allows us to bypass the need to compile against 
-   * the FreeMat libraries or source.  A good "raw" interface
-   * for low-level codes.
-   */
-  void CCallFunction(const Array& libName,const Array& funcName,ArrayVector& funcValues) 
-    throw(Exception);
-
-  /**
    * import a C function 
    */
   ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
 			     WalkTree* eval) throw(Exception);
+  /**
+   *  Add the loadlib and import functions to the given context.
+   */
+  void LoadModuleFunctions(Context* context);
 }
 
 #endif

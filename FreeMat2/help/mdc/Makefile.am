@@ -151,3 +151,10 @@ xlabel.mdc\
 ylabel.mdc\
 zeros.mdc\
 zoom.mdc
+
+install-data-local:
+	mkdir -p $(prefix)/share/FreeMat/MFiles
+	for scriptname in $(EXTRA_DIST); do \
+	  echo "Installing Text Help File $$scriptname"; \
+	  $(INSTALL) $(srcdir)/$$scriptname $(prefix)/share/FreeMat/MFiles;\
+	done;

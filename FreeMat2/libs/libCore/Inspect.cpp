@@ -21,6 +21,7 @@
 #include "Array.hpp"
 #include "WalkTree.hpp"
 #include "Malloc.hpp"
+#include "PathSearch.hpp"
 #include <stdio.h>
 
 namespace FreeMat {
@@ -45,13 +46,6 @@ namespace FreeMat {
       }
   }
   
-  void InitializeHelpDirectory(std::string path) {
-    helppath = path;
-  }
-
-  std::string GetHelpDirectory() {
-	  return helppath;
-  }
 
   //!
   //@Module HELP Help
@@ -68,6 +62,10 @@ namespace FreeMat {
   //!
   ArrayVector HelpFunction(int nargout, const ArrayVector& arg, WalkTree* eval)
   {
+    Interface *io;
+    io = eval->getInterface();
+    PathSearcher psearch(io->getPath());
+
     if (arg.size() != 1)
       throw Exception("help function requires a single argument (the function or script name)");
     Array singleArg(arg[0]);
@@ -76,7 +74,6 @@ namespace FreeMat {
     bool isFun;
     FuncPtr val;
     isFun = eval->getContext()->lookupFunction(fname,val);
-    Interface *io = eval->getInterface();
     if (isFun && (val->type() == FM_M_FUNCTION)) {
       MFunctionDef *mptr;
       mptr = (MFunctionDef *) val;
@@ -87,7 +84,12 @@ namespace FreeMat {
     } else {
       // Check for a mdc file with the given name
       std::string mdcname;
-      mdcname = helppath + "/help/" + fname + ".mdc";
+      mdcname = std::string(fname) + ".mdc";
+      try {
+	mdcname = psearch.ResolvePath(mdcname);
+      } catch (Exception& e) {
+	throw Exception(std::string("no help available on ") + fname);
+      }
       FILE *fp;
       fp = fopen(mdcname.c_str(),"r");
       if (fp) {

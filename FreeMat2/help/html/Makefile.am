@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-XTRA_DIST = acosplot.png\
+EXTRA_DIST = acosplot.png\
 asinplot.png\
 atan2plot.png\
 atanplot.png\
@@ -330,3 +330,10 @@ zoom3.png\
 zoom4.png\
 zoom5.png\
 zoom6.png
+
+install-data-local:
+	mkdir -p $(prefix)/share/FreeMat/html
+	for fname in $(EXTRA_DIST); do \
+	  echo "Installing manual html file $$fname"; \
+	  $(INSTALL) $(srcdir)/$$fname $(prefix)/share/FreeMat/html;\
+	done;

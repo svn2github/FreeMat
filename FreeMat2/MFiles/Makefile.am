@@ -21,3 +21,10 @@ rserver.m\
 sqrt.m\
 std.m\
 winlev.m
+
+install-data-local:
+	mkdir -p $(prefix)/share/FreeMat/MFiles
+	for scriptname in $(EXTRA_DIST); do \
+	  echo "Installing M File $$scriptname"; \
+	  $(INSTALL) $(srcdir)/$$scriptname $(prefix)/share/FreeMat/MFiles;\
+	done;

@@ -23,7 +23,9 @@ EXTRA_DIST = LICENSE ChangeLog.v1 \
 	src/sparc/ffi.c \
 	src/x86/ffi.c src/x86/sysv.S src/x86/win32.S \
 	src/x86/ffi64.c src/x86/unix64.S src/x86/ffitarget.h \
-	src/pa/ffi.c src/pa/linux.S
+	src/pa/ffi.c src/pa/linux.S \
+	src/debug.c src/prep_cif.c src/types.c src/raw_api.c \
+	src/java_raw_api.c
 
 ## ################################################################
 
@@ -80,13 +82,10 @@ MULTISUBDIR =
 MULTIDO = true
 MULTICLEAN = true
 
-toolexeclib_LIBRARIES = libffi.a
 noinst_LIBRARIES = libffi.a
 
-libffi_a_SOURCES = src/debug.c src/prep_cif.c src/types.c \
-		src/raw_api.c src/java_raw_api.c
-
-nodist_libffi_a_SOURCES =
+nodist_libffi_a_SOURCES = src/debug.c src/prep_cif.c src/types.c \
+			src/raw_api.c src/java_raw_api.c
 
 if MIPS_IRIX
 nodist_libffi_a_SOURCES += src/mips/ffi.c src/mips/o32.S src/mips/n32.S

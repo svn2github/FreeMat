@@ -97,7 +97,6 @@ int main(int argc, char *argv[]) {
   LoadGraphicsCoreFunctions(context);  
   InitializePlotSubsystem();
   InitializeImageSubsystem();
-  InitializeHelpDirectory(GetApplicationPath(argv[0]));
 
   // Check for scripting mode
   bool scriptMode = false;

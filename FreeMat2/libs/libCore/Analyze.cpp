@@ -2026,8 +2026,8 @@ namespace FreeMat {
       float *dp = (float*) tmp.getDataPointer();
       float *ptr = (float*) Malloc(sizeof(float)*tmp.getLength()*2);
       for (i=0;i<len;i++) {
-	ptr[2*i] = dp[2*i+1];
-	ptr[2*i+1] = dp[2*i];
+	ptr[2*i] = dp[2*i];
+	ptr[2*i+1] = -dp[2*i+1];
       }
       retval = Array(FM_COMPLEX,tmp.getDimensions(),ptr);
     } else if (argType == FM_DCOMPLEX) {
@@ -2036,8 +2036,8 @@ namespace FreeMat {
       double *dp = (double*) tmp.getDataPointer();
       double *ptr = (double*) Malloc(sizeof(double)*tmp.getLength()*2);
       for (i=0;i<len;i++) {
-	ptr[2*i] = dp[2*i+1];
-	ptr[2*i+1] = dp[2*i];
+	ptr[2*i] = dp[2*i];
+	ptr[2*i+1] = -dp[2*i+1];
       }
       retval = Array(FM_DCOMPLEX,tmp.getDimensions(),ptr);
     } else

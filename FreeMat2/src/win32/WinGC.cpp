@@ -94,6 +94,9 @@ HPEN GetWinPen(LineStyleType style, Color col) {
   case LINE_DASH_DOT:
     penStyle = PS_DASHDOT;
     break;
+  case LINE_NONE:
+    penStyle = PS_NULL;
+    break;    
   }
   hpen = CreatePen(penStyle,1,RGB(col.red,col.green,col.blue));
   return hpen;
@@ -108,6 +111,12 @@ void WinGC::DrawLine(Point2D pos1, Point2D pos2) {
 }
 
 void WinGC::DrawPoint(Point2D pos) {
+  HPEN hpen = GetWinPen(m_style, fgcol);
+  SelectObject(hdc, hpen);
+  SelectObject(hdc, GetStockObject(NULL_BRUSH));
+  Ellipse(hdc, pos.x - 1, pos.y - 1,
+	  pos.x + 1, pos.y + 1);
+  DeleteObject(hpen);
 }
 
 void WinGC::DrawCircle(Point2D pos, int radius) {

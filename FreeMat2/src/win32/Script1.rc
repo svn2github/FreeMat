@@ -46,6 +46,19 @@ BEGIN
     END
 END
 
+IDR_MENU2 MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Save",                        IDM2_FILE_SAVE
+        MENUITEM "Close",                       IDM2_FILE_CLOSE
+    END
+    POPUP "Edit"
+    BEGIN
+        MENUITEM "Copy",                        IDM2_EDIT_COPY
+    END
+END
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

@@ -94,7 +94,7 @@ namespace FreeMat {
   void ClosePlotHelper(int fig) {
     if (fig == -1) return;
     if (plots[fig] == NULL) return;
-    delete plots[fig];
+    CloseXWindow(plots[fig]);
     plots[fig] = NULL;
     if (currentPlot == fig)
     currentPlot = -1;
@@ -232,7 +232,7 @@ namespace FreeMat {
       if ((action < MAX_PLOTS) && (action >= 1))
 	ClosePlotHelper(action-1);
     }
-    Run();
+    FlushWindowEvents();
     return ArrayVector();
   }
 

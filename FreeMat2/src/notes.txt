@@ -1,32 +1,8 @@
 More stuff:
-2.  Add DrawPoint to XWindow
+11. Command line help
 5.  Help?
-7.  Filename completions still not quite right on Win32...
 8.  OpenGL?
 9.  Resize of plot doesn't fill in background...  - not on XP - X11?
 10. Robustify plot-style handler
-11. Command line help
-12. EMF support.
 
-General Issues:
-1. Empty plot windows are black - why? - Done
-2. filename expansion needs to be fixed - Done
-3. System calls don't work any more
-4. LS?
-5. Images
-6. Print to EPS, TIFF, JPEG
-7. keyboard command, CTRL-C
-8. Output size adjustment (text) is not perfect yet.
-9. Help?
-10. "X"s symbols are not centered/symmetric?
-11. Close notification on 2D plots. - Done
-12. Re-enable point, implement 2D zoom.
-13. output does not get flushed...
-14. Close on command... - Done
-
-By priority:
-
-8. Output size adjustment (text) is not perfect yet.
-9. Help?
-10. "X"s symbols are not centered/symmetric?
 

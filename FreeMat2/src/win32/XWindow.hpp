@@ -35,13 +35,16 @@ class XWindow {
   void GetBox(int &x1, int &y1, int &x2, int &y2);
   void EraseRectangle(int cx, int cy, int cwidth, int cheight);
   void SetSize(int w, int h);
+  void UpdatePalette();
   int GetState();
   void Refresh();
   WindowType GetWindowType() {return m_type;}
-  void SetTheCursor();
+  bool SetTheCursor();
   virtual void OnSize() {};
   virtual void OnClose();
   virtual void OnDraw(GraphicsContext &gc) = 0;
+  void Save();
+  void Copy();
  private:
   WindowType m_type;
   HWND m_window;
@@ -54,8 +57,12 @@ class XWindow {
   HCURSOR defcursor;
   HCURSOR clickcursor;
   unsigned char* m_bitmap_contents;
+  HPALETTE hPalette;
+  bool palette_active;
+  OPENFILENAME ofn;
 };
 
+void CloseXWindow(XWindow*);
 void InitializeXWindowSystem(HINSTANCE hInstance);
 void FlushWindowEvents();
 bool DoEvents();

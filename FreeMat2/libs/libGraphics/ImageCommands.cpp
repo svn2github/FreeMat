@@ -36,7 +36,7 @@ namespace FreeMat {
   void CloseImageHelper(int fig) {
     if (fig == -1) return;
     if (images[fig] == NULL) return;
-    delete images[fig];
+    CloseXWindow(images[fig]);
     images[fig] = NULL;
     if (currentImage == fig)
       currentImage = -1;
@@ -136,6 +136,7 @@ namespace FreeMat {
       if ((action < MAX_IMAGES) && (action >= 1))
 	CloseImageHelper(action-1);
     }
+    FlushWindowEvents();
     return ArrayVector();
   }
 

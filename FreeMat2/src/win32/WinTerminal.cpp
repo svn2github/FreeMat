@@ -761,10 +761,10 @@ namespace FreeMat {
     return (char *)string + i + 1;
   }
 
-
-    std::vector<std::string> 
-    WinTerminal::GetCompletions(const char *line, int word_end, 
-				std::string &matchString) {
+  
+  std::vector<std::string> 
+  WinTerminal::GetCompletions(const char *line, int word_end, 
+			      std::string &matchString) {
     std::vector<std::string> completions;
     /*
      * Find the start of the filename prefix to be completed, searching
@@ -800,17 +800,24 @@ namespace FreeMat {
       WIN32_FIND_DATA FileData;
       std::string pattern(tmp);
       pattern.append("*");
-	  OutputDebugString("Searching ");
-	  OutputDebugString(pattern.c_str());
-	  OutputDebugString("\n");
+      OutputDebugString("Searching ");
+      OutputDebugString(pattern.c_str());
+      OutputDebugString("\n");
       hSearch = FindFirstFile(pattern.c_str(),&FileData);
       if (hSearch != INVALID_HANDLE_VALUE) {
-	completions.push_back(FileData.cFileName);
+	// Windows does not return any part of the path in the completion,
+	// So we need to find the base part of the pattern.
+	int lastslash;
+	std::string prefix;
+	lastslash = pattern.find_last_of("/");
+	if (lastslash == -1) {
+	  lastslash = pattern.find_last_of("\\");
+	}
+	if (lastslash != -1)
+	  prefix = pattern.substr(0,lastslash+1);
+	completions.push_back(prefix + FileData.cFileName);
 	while (FindNextFile(hSearch, &FileData))
-	  completions.push_back(FileData.cFileName);
-	OutputDebugString("completion :");
-	OutputDebugString(FileData.cFileName);
-	OutputDebugString("\n");
+	  completions.push_back(prefix + FileData.cFileName);
       }
       FindClose(hSearch);
       return completions;

@@ -1,5 +1,7 @@
 #include "XWindow.hpp"
+#include "Reducer.hpp"
 #include "WinGC.hpp"
+#include "resource.h"
 #include "RGBImageGC.hpp"
 #include "PostScriptGC.hpp"
 #include "Exception.hpp"
@@ -33,6 +35,28 @@ XWindow::XWindow(WindowType wtype) {
   defcursor = (HCURSOR) LoadImage(NULL, IDC_ARROW, IMAGE_CURSOR, 0, 0, LR_SHARED);
   clickcursor = (HCURSOR) LoadImage(NULL, IDC_CROSS, IMAGE_CURSOR, 0, 0, LR_SHARED);
   m_bitmap_contents = NULL;
+  palette_active = false;
+  static TCHAR szFilter[] = "JPEG Files (*.JPG)\0*.jpg\0TIFF Files (*.TIF)\0*.tif\0PNG Files (*.PNG)\0*.png\0EPS Files (*.EPS)\0*.eps\0\0";
+  ofn.lStructSize = sizeof(OPENFILENAME);
+  ofn.hwndOwner = m_window;
+  ofn.hInstance = NULL;
+  ofn.lpstrFilter = szFilter;
+  ofn.lpstrCustomFilter = NULL;
+  ofn.nMaxCustFilter = 0;
+  ofn.nFilterIndex = 0;
+  ofn.lpstrFile = NULL;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrFileTitle = NULL;
+  ofn.nMaxFileTitle = MAX_PATH;
+  ofn.lpstrInitialDir = NULL;
+  ofn.lpstrTitle = NULL;
+  ofn.Flags = 0;
+  ofn.nFileOffset = 0;
+  ofn.nFileExtension = 0;
+  ofn.lpstrDefExt = "jpg";
+  ofn.lCustData = 0L;
+  ofn.lpfnHook = NULL;
+  ofn.lpTemplateName = NULL;
 }
 
 XWindow::~XWindow() {
@@ -60,14 +84,20 @@ void XWindow::OnExpose(int x, int y, int w, int h) {
     HDC hdc = GetDC(m_window);
     HDC hdcMem = CreateCompatibleDC(hdc);
     SelectObject (hdcMem, hBitmap);
+    if (palette_active) {
+      SelectPalette(hdcMem, hPalette, FALSE);
+      RealizePalette(hdcMem);
+      SelectPalette(hdc, hPalette, FALSE);
+      RealizePalette(hdc);
+    }
     BitBlt(hdc, x, y, w, h, hdcMem, x, y, SRCCOPY);
     DeleteDC(hdcMem);
     ReleaseDC(m_window, hdc);
   } else {
-    	  HDC hdc = GetDC(m_window);
-      WinGC wgc(hdc, m_width, m_height);
+    HDC hdc = GetDC(m_window);
+    WinGC wgc(hdc, m_width, m_height);
     OnDraw(wgc);
-      ReleaseDC(m_window, hdc);
+    ReleaseDC(m_window, hdc);
   }
 }
 
@@ -156,15 +186,80 @@ void XWindow::SetTitle(std::string title) {
 }
 
 void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
+  HDC hdc;
+  hdc = GetDC(m_window);
+  int pal_size;
+  pal_size = GetDeviceCaps(hdc, SIZEPALETTE);
+  int res_colors;
+  res_colors = GetDeviceCaps(hdc, NUMRESERVED);
+  char buffer[2000];
+  int colorCount = pal_size - res_colors;
+  colorCount = (colorCount > 32768) ? 32768 : colorCount;
+  // OK, now we use the color reducer to get a colormapped image
+  unsigned short *outimg = (unsigned short*) 
+    malloc(width*height*sizeof(short));
+  unsigned short *outcolors = (unsigned short*)
+    malloc(colorCount*3*sizeof(short));
+  int colorsUsed;
+  colorsUsed = ColorReduce(data, width, height, colorCount, outcolors, outimg);
+  LOGPALETTE *plp;
+  plp = (LOGPALETTE *) malloc(sizeof(LOGPALETTE)+
+			      colorsUsed*sizeof(PALETTEENTRY));
+  plp->palVersion = 0x0300;
+  plp->palNumEntries = colorsUsed;
+  for (int k=0;k<colorsUsed;k++) {
+    plp->palPalEntry[k].peRed = (BYTE) (outcolors[3*k]>>8);
+    plp->palPalEntry[k].peGreen = (BYTE) (outcolors[3*k+1]>>8);
+    plp->palPalEntry[k].peBlue = (BYTE) (outcolors[3*k+2]>>8);
+    plp->palPalEntry[k].peFlags = 0;
+  }
+  hPalette = CreatePalette(plp);
+  palette_active = true;
+  free(plp);
+  static PBITMAPINFO		pBitmapInfo;
+  pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER)+colorsUsed*sizeof(RGBQUAD));
+  pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  pBitmapInfo->bmiHeader.biWidth = width;
+  pBitmapInfo->bmiHeader.biHeight = height;
+  pBitmapInfo->bmiHeader.biPlanes = 1;
+  pBitmapInfo->bmiHeader.biBitCount = 8;
+  pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+  pBitmapInfo->bmiHeader.biSizeImage = 0;
+  pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+  pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+  pBitmapInfo->bmiHeader.biClrUsed = colorsUsed;
+  pBitmapInfo->bmiHeader.biClrImportant = 0;
+  RGBQUAD *ptr = (RGBQUAD *) &(pBitmapInfo->bmiColors[0]);
+  for (int p=0;p<colorsUsed;p++) {
+	  ptr[p].rgbBlue = outcolors[3*p+2]>>8;
+	  ptr[p].rgbGreen = outcolors[3*p+1]>>8;
+	  ptr[p].rgbRed = outcolors[3*p]>>8;
+  }
+  static unsigned char* pixelVals;
+  int nwidth;
+  nwidth = (width+3)&~3; // Width of the scanline in bytes
+  pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
+  int i, j;
+  for (i=0;i<height;i++)
+    for (j=0;j<width;j++)
+      pixelVals[nwidth*(height-1-i)+j] = outimg[i*width+j];
+  free(outcolors);
+  free(outimg);
+  SelectPalette(hdc, hPalette, FALSE);
+  RealizePalette(hdc);
+  hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,
+	  (unsigned char*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
+  ReleaseDC(m_window, hdc);
+  m_bitmap_contents = data;
 }
 
 void XWindow::SetImage(unsigned char *data, int width, int height) {
-  // Check for PseudoColor visual
-  //  if ((m_visual->c_class != TrueColor) &&
-  //      (m_visual->c_class != DirectColor)) {
-  //    SetImagePseudoColor(data,width,height);
-  //    return;
-  //  }
+  HDC hdc;
+  hdc = GetDC(m_window);
+  if (RC_PALETTE & GetDeviceCaps(hdc, RASTERCAPS)) {
+    SetImagePseudoColor(data, width, height);
+    return;
+  }
   static PBITMAPINFO		pBitmapInfo;
   pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
   pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -189,8 +284,6 @@ void XWindow::SetImage(unsigned char *data, int width, int height) {
       pixelVals[nwidth*(height-1-i)+3*j+1] = (unsigned char) data[3*(i*width+j)+1];
       pixelVals[nwidth*(height-1-i)+3*j+2] = (unsigned char) data[3*(i*width+j)];
     }
-  HDC hdc;
-  hdc = GetDC(m_window);
   hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
   ReleaseDC(m_window, hdc);
   m_bitmap_contents = data;
@@ -216,13 +309,93 @@ int XWindow::GetState() {
 void XWindow::GetBox(int &x1, int &y1, int &x2, int &y2) {
 }
 
-void XWindow::SetTheCursor() {
-//	if (m_state == state_click_waiting)
-//		SetCursor(clickcursor);
-//	else
-//		SetCursor(defcursor);
+bool XWindow::SetTheCursor() {
+  if (m_state == state_click_waiting) {
+    SetCursor(clickcursor);
+    return true;
+  }
+  return false;
 }
 
+void XWindow::UpdatePalette() {
+  if (!palette_active) return;
+  HDC hdc;
+  hdc = GetDC(m_window);
+  SelectPalette(hdc, hPalette, FALSE);
+  RealizePalette(hdc);
+  InvalidateRect(m_window, NULL, TRUE);
+  ReleaseDC(m_window, hdc);
+}
+
+void XWindow::Copy() {
+  // Obtain a handle to a reference device context. 
+  HDC hdcRef = GetDC(m_window); 
+ 
+  // Determine the picture frame dimensions. 
+  // iWidthMM is the display width in millimeters. 
+  // iHeightMM is the display height in millimeters. 
+  // iWidthPels is the display width in pixels. 
+  // iHeightPels is the display height in pixels 
+  
+  int iWidthMM = GetDeviceCaps(hdcRef, HORZSIZE); 
+  int iHeightMM = GetDeviceCaps(hdcRef, VERTSIZE); 
+  int iWidthPels = GetDeviceCaps(hdcRef, HORZRES); 
+  int iHeightPels = GetDeviceCaps(hdcRef, VERTRES); 
+  
+  // Retrieve the coordinates of the client 
+  // rectangle, in pixels. 
+
+  RECT rect;
+  GetClientRect(m_window, &rect); 
+  
+  // Convert client coordinates to .01-mm units. 
+  // Use iWidthMM, iWidthPels, iHeightMM, and 
+  // iHeightPels to determine the number of 
+  // .01-millimeter units per pixel in the x- 
+  //  and y-directions. 
+  
+  rect.left = (rect.left * iWidthMM * 100)/iWidthPels; 
+  rect.top = (rect.top * iHeightMM * 100)/iHeightPels; 
+  rect.right = (rect.right * iWidthMM * 100)/iWidthPels; 
+  rect.bottom = (rect.bottom * iHeightMM * 100)/iHeightPels; 
+  
+  // Create the metafile device context. 
+  HDC hdcMeta = CreateEnhMetaFile(hdcRef, NULL, &rect, NULL); 
+  if (m_type == VectorWindow) {
+    WinGC wgc(hdcMeta, m_width, m_height);
+    OnDraw(wgc);
+  } else {
+    HDC hdcMem = CreateCompatibleDC(hdcRef);
+    SelectObject (hdcMem, hBitmap);
+    BitBlt(hdcMeta, 0, 0, m_width, m_height, hdcMem, 0, 0, SRCCOPY);
+    DeleteDC(hdcMem);
+  }
+  HENHMETAFILE hMeta = CloseEnhMetaFile(hdcMeta);
+// Release the reference device context. 
+  ReleaseDC(m_window, hdcRef); 
+  OpenClipboard(m_window);
+  EmptyClipboard();
+  SetClipboardData(CF_ENHMETAFILE, hMeta);
+  CloseClipboard();
+}
+
+void XWindow::Save() {
+  char fname[MAX_PATH];
+  char ftitle[MAX_PATH];
+  ofn.Flags = OFN_OVERWRITEPROMPT;
+  fname[0] = 0;
+  ftitle[0] = 0;
+  ofn.lpstrFile = fname;
+  ofn.lpstrFileTitle = ftitle;
+  if (m_type == BitmapWindow && m_bitmap_contents == NULL)
+    throw FreeMat::Exception("Cannot save empty image window!\n");
+  if (!GetSaveFileName(&ofn)) {
+    DWORD tmp;
+    tmp = CommDlgExtendedError();
+    return;
+  }
+  PrintMe(fname);
+}
 
 void XWindow::PrintMe(std::string filename) {
   if (m_type == BitmapWindow && m_bitmap_contents == NULL)
@@ -297,6 +470,9 @@ void XWindow::PrintMe(std::string filename) {
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
 }
 
+void CloseXWindow(XWindow* ptr) {
+  DestroyWindow(ptr->getWindow());
+}
 
 LRESULT CALLBACK XWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
   XWindow *xptr;
@@ -315,20 +491,37 @@ LRESULT CALLBACK XWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     EndPaint(xptr->getWindow(), &ps);
     return 0;
   case WM_DESTROY:
+    delete xptr;
     return 0;
   case WM_LBUTTONDOWN:
-	  xptr->OnMouseDown(LOWORD(lParam),HIWORD(lParam));
-	  return 0;
+    xptr->OnMouseDown(LOWORD(lParam),HIWORD(lParam));
+    return 0;
   case WM_MOUSEMOVE:
-	  if (wParam & MK_LBUTTON)
-		  xptr->OnDrag(LOWORD(lParam),HIWORD(lParam));
-	  return 0;
+    if (wParam & MK_LBUTTON)
+      xptr->OnDrag(LOWORD(lParam),HIWORD(lParam));
+    return 0;
   case WM_SIZE:
-	  xptr->OnResize(LOWORD(lParam),HIWORD(lParam));
-	  return 0;
+    xptr->OnResize(LOWORD(lParam),HIWORD(lParam));
+    return 0;
   case WM_SETCURSOR:
-	  xptr->SetTheCursor();
-	  return 0;
+    if (xptr->SetTheCursor())
+      return 0;
+    break;
+  case WM_QUERYNEWPALETTE:
+    xptr->UpdatePalette();
+    break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam)) {
+    case IDM2_EDIT_COPY:
+      xptr->Copy();
+      break;
+    case IDM2_FILE_SAVE:
+      xptr->Save();
+      break;
+    case IDM2_FILE_CLOSE:
+      DestroyWindow(xptr->getWindow());
+      break;
+    }
   }
   return DefWindowProc(hwnd, message, wParam, lParam);
 }
@@ -345,7 +538,7 @@ void InitializeXWindowSystem(HINSTANCE hInstance) {
   wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
   wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
   wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
-  wndclass.lpszMenuName = NULL;
+  wndclass.lpszMenuName = MAKEINTRESOURCE(IDR_MENU2);
   wndclass.lpszClassName = "Freemat Window";
   AppInstance = hInstance;
   if (!RegisterClass(&wndclass)) {

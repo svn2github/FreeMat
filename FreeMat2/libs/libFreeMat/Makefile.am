@@ -1,4 +1,4 @@
-EXTRA_DIST = Lexer.cpp Parser.cpp libFreeMat.dsp f2c/VectorOps_assist.c
+EXTRA_DIST = libFreeMat.dsp f2c/VectorOps_assist.c
 
 noinst_LIBRARIES = libFreeMat.a
 
@@ -6,9 +6,9 @@ CFLAGS=@CFLAGS@
 CXXFLAGS=@CXXFLAGS@ 
 INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/src/x11
 
-libFreeMat_a_SOURCES = Parser.yy \
+libFreeMat_a_SOURCES = Parser.yxx \
 Parser.h \
-Lexer.ll \
+Lexer.lxx \
 Array.cpp \
 Array.hpp \
 AST.cpp \
@@ -66,5 +66,6 @@ Stream.hpp \
 Interface.hpp \
 Interface.cpp \
 SymbolTable.hpp 
+
 
 AUTOMAKE_OPTIONS 	= foreign

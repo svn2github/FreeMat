@@ -141,7 +141,7 @@ SOURCE=.\LeastSquaresSolver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Lexer.cpp
+SOURCE=.\Lexer.cxx
 # End Source File
 # Begin Source File
 
@@ -165,7 +165,7 @@ SOURCE=.\Module.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Parser.cpp
+SOURCE=.\Parser.cxx
 # End Source File
 # Begin Source File
 

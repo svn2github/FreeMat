@@ -323,6 +323,11 @@ namespace FreeMat {
      args.push_back("x");
      context->addFunction("lu",LUFunction,1,-1,args);
      args.clear();
+     args.push_back("A");
+     args.push_back("dim");
+     args.push_back("mode");
+     context->addFunction("sort",SortFunction,3,2,args);
+     args.clear();
      args.push_back("x");
      context->addSpecialFunction("autostop",AutoStopFunction,1,1,args);
      InitializeFileSubsystem();

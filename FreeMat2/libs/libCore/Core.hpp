@@ -162,6 +162,7 @@ namespace FreeMat {
   ArrayVector SparseFunction(int, const ArrayVector& arg);
   ArrayVector FullFunction(int, const ArrayVector& arg);
   ArrayVector LUFunction(int, const ArrayVector& arg);
+  ArrayVector SortFunction(int nargout, const ArrayVector& arg);
 }
 
 #endif

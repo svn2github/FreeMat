@@ -319,7 +319,7 @@ namespace FreeMat {
       }
     }
     io = eval->getInterface();
-    sprintf(buffer,"  Variable Name      Type   Flags   Size\n");
+    sprintf(buffer,"  Variable Name      Type   Flags             Size\n");
     io->outputMessage(buffer);
     for (i=0;i<names.size();i++) {
       Array lookup;
@@ -374,6 +374,10 @@ namespace FreeMat {
 	  break;
 	}
 	io->outputMessage(buffer);
+	if (lookup.isSparse())
+	  io->outputMessage("   sparse");
+	else
+	  io->outputMessage("         ");	  
 	if (eval->getContext()->isVariableGlobal(names[i])) {
 	  sprintf(buffer,"  global ");
 	  io->outputMessage(buffer);

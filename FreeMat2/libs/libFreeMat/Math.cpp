@@ -31,6 +31,127 @@
 
 namespace FreeMat {
 
+  template <class T>
+  void addfullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[i] = A[m] + B[p];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void addfullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[2*i] = A[2*m] + B[2*p];
+      C[2*i+1] = A[2*m+1] + B[2*p+1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void subtractfullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[i] = A[m] - B[p];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void subtractfullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[2*i] = A[2*m] - B[2*p];
+      C[2*i+1] = A[2*m+1] - B[2*p+1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+
+  template <class T>
+  void multiplyfullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[i] = A[m] * B[p];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void multiplyfullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[2*i] = A[2*m] * B[2*p] - A[2*m+1] * B[2*p+1];
+      C[2*i+1] = A[2*m] * B[2*p+1] + A[2*m+1] * B[2*p];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+
+  template <class T>
+  void dividefullreal(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      C[i] = A[m] / B[p];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  template <class T>
+  void complex_divide(T* c, const T* a, const T* b) {
+    double ratio, den;
+    double abr, abi, cr;
+    
+    if( (abr = b[0]) < 0.)
+      abr = - abr;
+    if( (abi = b[1]) < 0.)
+      abi = - abi;
+    if( abr <= abi )
+      {
+	if(abi == 0) {
+	  if (a[1] != 0 || a[0] != 0)
+	    abi = 1.;
+	  c[1] = c[0] = abi / abr;
+	  return;
+	}
+	ratio = b[0] / b[1] ;
+	den = b[1] * (1 + ratio*ratio);
+	cr = (a[0]*ratio + a[1]) / den;
+	c[1] = (a[1]*ratio - a[0]) / den;
+      }
+    else
+      {
+	ratio = b[1] / b[0] ;
+	den = b[0] * (1 + ratio*ratio);
+	cr = (a[0] + a[1]*ratio) / den;
+	c[1] = (a[1] - a[0]*ratio) / den;
+      }
+    c[0] = cr;
+  }
+}
+    
+  }
+
+  template <class T>
+  void dividefullcomplex(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+    int m, p;
+    for (int i=0;i<N;i++) {
+      complex_divide<T>(C+2*i,A+2*m,B+2*p);
+      m += stride1;
+      p += stride2;
+    }
+  }
+  
+
   /**
    * This is the generic function interface into calculations
    * that can be performed on some type.

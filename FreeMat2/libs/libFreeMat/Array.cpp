@@ -695,7 +695,6 @@ namespace FreeMat {
    * operation.  The distinction is made in complex classed by overriding
    * this method.
    */
-  // NEED SPARSE
   void Array::hermitian()  {
     if (!is2D())
       throw Exception("Cannot apply Hermitian transpose operation to multi-dimensional array.");
@@ -769,7 +768,6 @@ namespace FreeMat {
   /**
    * Transpose our array.
    */
-  //NEEDSPARSE
   void Array::transpose()  {
     if (!is2D())
       throw Exception("Cannot apply transpose operation to multi-dimensional array.");

@@ -11,6 +11,68 @@ long timer() {
 }
 
 template <class T>
+void DecompressComplexString(const T* src, T* dst, int count) {
+  int i=0;
+  int n=0;
+  int j;
+  while (i<2*count) {
+    if ((src[n] != 0) || (src[n+1] != 0)) {
+      dst[i] = src[n];
+      i++;
+      n++;
+      dst[i] = src[n];
+      i++;
+      n++;
+    } else {
+      j = (int) src[n+2];
+      memset(dst+i,0,2*sizeof(T)*j);
+      i += j*2;
+      n += 3;
+    }
+  }
+}
+
+template <class T>
+T* CompressComplexVector(const T* src, int count) {
+  int i, j;
+  int zlen;
+  int outlen = 0;
+  i = 0;
+  while (i<count) {
+    if ((src[2*i] != 0) || (src[2*i+1] != 0)) {
+      i++;
+      outlen+=2;
+    } else {
+      outlen+=3;
+      while ((i<count) && (src[2*i] == 0) && (src[2*i+1] == 0)) i++;
+    }
+  }
+  T* dp = new T[outlen];
+  j = 0;
+  i = 0;
+  outlen = 0;
+  while (i<count) {
+    if ((src[2*i] != 0) || (src[2*i+1] != 0)) {
+      dp[outlen] = src[2*i];
+      outlen++;
+      dp[outlen] = src[2*i+1];
+      outlen++;
+      i++;
+    } else {
+      zlen = 0;
+      while ((i<count) && (src[2*i] == 0) && (src[2*i+1] == 0)) {
+	i++;
+	zlen++;
+      }
+      dp[outlen++] = 0;
+      dp[outlen++] = 0;
+      dp[outlen++] = zlen;
+    }
+  }
+  return dp;
+}
+
+template <class T>
 void DecompressRealString(const T* src, T* dst, int count) {
   int i=0;
   int n=0;
@@ -216,6 +278,24 @@ void DenseSparseRealMultiply(T* A, int A_rows, int A_cols,
 }
 
 template <class T>
+void DenseDenseRealDotTimes(T* A, T* B, int rows, int cols, T* C) {
+  int i;
+  for (i=0;i<rows*cols;i++)
+    C[i] = A[i] * B[i];
+}
+
+template <class T>
+void DenseSparseRealDotTimes(T* A, T** B, int rows, int cols, T** C) {
+  T* Buffer = new T[rows];
+  for (int i=0;i<cols;i++) {
+    DecompressRealString<T>(B[i],Buffer,rows);
+    for (int j=0;j<rows;j++)
+      Buffer[j] *= A[j+i*rows];
+    C[i] = CompressRealVector<T>(Buffer,rows);
+  }
+}
+
+template <class T>
 void DenseDenseRealAdd(T* A, T* B, int rows, int cols, T* C) {
   int i;
   for (i=0;i<rows*cols;i++)
@@ -252,6 +332,15 @@ void SparseSparseRealAdd(T** A, T** B, int rows, int cols, T** C) {
   delete Ccol;
 }
 
+template <class T>
+T** ConvertDenseToSparseComplex(const T* src, int rows, int cols) {
+  T** dp;
+  dp = new T*[cols];
+  int i;
+  for (i=0;i<cols;i++)
+    dp[i] = CompressComplexVector<T>(src+i*rows*2, rows);
+  return dp;
+}
 
 template <class T>
 T** ConvertDenseToSparseReal(const T* src, int rows, int cols) {
@@ -261,6 +350,13 @@ T** ConvertDenseToSparseReal(const T* src, int rows, int cols) {
   for (i=0;i<cols;i++)
     dp[i] = CompressRealVector<T>(src+i*rows, rows);
   return dp;
+}
+
+template <class T>
+void ConvertSparseToDenseComplex(T** src, int rows, int cols, T* dst) {
+  int i;
+  for (i=0;i<cols;i++)
+    DecompressComplexString<T>(src[i],dst+i*2*rows,rows);
 }
 
 template <class T>
@@ -279,22 +375,6 @@ void DeleteSparse(T** src, int rows, int cols) {
 }
 
 template <class T>
-void PrintSparse(T** src, int rows, int cols) {
-  T* full = new T[rows*cols];
-  int i, j;
-
-  ConvertSparseToDenseReal(src, rows, cols, full);
-  for (i=0;i<rows;i++) {
-    for (j=0;j<cols;j++) {
-      std::cout << full[i+j*rows] << "\t";
-    }
-    std::cout << "\n";
-  }
-  delete full;
-  std::cout << "--------------------\n";
-}
-
-template <class T>
 void PrintDense(T* full, int rows, int cols) {
   int i, j;
   for (i=0;i<rows;i++) {
@@ -304,6 +384,36 @@ void PrintDense(T* full, int rows, int cols) {
     std::cout << "\n";
   }
   std::cout << "--------------------\n";
+}
+
+template <class T>
+void PrintDenseComplex(T* full, int rows, int cols) {
+  int i, j;
+  for (i=0;i<rows;i++) {
+    for (j=0;j<cols;j++) {
+      std::cout << full[2*(i+j*rows)] << "+" << full[2*(i+j*rows)+1] << "i\t";
+    }
+    std::cout << "\n";
+  }
+  std::cout << "--------------------\n";
+}
+
+template <class T>
+void PrintSparse(T** src, int rows, int cols) {
+  T* full = new T[rows*cols];
+  int i, j;
+
+  ConvertSparseToDenseReal<T>(src, rows, cols, full);
+  PrintDense<T>(full,rows,cols);
+}
+
+template <class T>
+void PrintSparseComplex(T** src, int rows, int cols) {
+  T* full = new T[2*rows*cols];
+  int i, j;
+
+  ConvertSparseToDenseComplex<T>(src, rows, cols, full);
+  PrintDenseComplex<T>(full,rows,cols);
 }
 
 float *RandSparse(float frac, int rows, int cols) {
@@ -330,6 +440,15 @@ void toc(char *str) {
 
 #define TSIZE 5000
 int main(int argc, char *argv[]) {
+
+  // NC = [0 0, 3 2, 4 1, 0 0, 2 1]
+  //      [1 3, 0 2, 3 1, 0 0, 0 0]
+  //      [2 4, 7 3, 2 1, 0 9, 0 0]
+  float NC[30] = {0,0,1,3,2,4,3,2,0,2,7,3,4,1,3,1,2,1,0,0,0,0,0,9,2,1,0,0,0,0};
+  float **NCsparse = ConvertDenseToSparseComplex<float>(NC,3,5);
+  PrintDenseComplex<float>(NC,3,5);
+  PrintSparseComplex<float>(NCsparse,3,5);
+
   // N = [0, 3, 4, 0, 2]
   //     [1, 0, 3, 0, 0]
   //     [2, 7, 2, 0, 0]
@@ -380,6 +499,15 @@ int main(int argc, char *argv[]) {
   float *Ssparse[5];
   SparseSparseRealAdd<float>(Nsparse,Psparse,3,5,Ssparse);
   PrintSparse<float>(Ssparse,3,5);
+  
+  std::cout << "NEW Test.........\n";
+
+  DenseDenseRealDotTimes(N,P,3,5,S);
+  PrintDense<float>(S,3,5);
+  DenseSparseRealDotTimes(N,Psparse,3,5,Ssparse);
+  PrintSparse<float>(Ssparse,3,5);
+
+  std::cout << "NEW Test.........\n";
 
   float *N2 = RandSparse(0.0015,4000,1000);
   float **N2sparse = ConvertDenseToSparseReal<float>(N2,4000,1000);
@@ -425,7 +553,13 @@ int main(int argc, char *argv[]) {
   SparseSparseRealAdd<float>(X1sparse,X2sparse,4000,4000,X3sparse);
   toc("ss");
 
-    
+  tic();
+  DenseDenseRealDotTimes(X1,X2,4000,4000,X3);
+  toc("dt");
+
+  tic();
+  DenseSparseRealDotTimes(X1,X2sparse,4000,4000,X3sparse);
+  toc("dst");
 }
 
 

@@ -825,7 +825,7 @@ namespace FreeMat {
     for (i=0;i<N;i++)\
       for (j=1;j<N;j++) {\
         if (qp[2*(i+j*N)] != qp[2*(j+i*N)]) return false;\
-        if (qp[2*(i+j*N)+1] != qp[2*(j+i*N)+1]) return false;\
+        if (qp[2*(i+j*N)+1] != -qp[2*(j+i*N)+1]) return false;\
       }\
     return true;\
     break;\

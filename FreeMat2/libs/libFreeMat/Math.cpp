@@ -1543,6 +1543,7 @@ namespace FreeMat {
    */
   void EigenDecomposeCompactSymmetric(Array A, Array& D) {
     Class Aclass;
+    printf("ED-CS\r\n");
 
     // Test for numeric
     if (A.isReferenceType())
@@ -1559,7 +1560,7 @@ namespace FreeMat {
     // Create one square matrix to store the eigenvectors
     Dimensions Vdims(2);
     Vdims[0] = N;
-    Vdims[1] = N;
+    Vdims[1] = 1;
 
     // Handle the type of A - if it is an integer type, then promote to double
     Aclass = A.getDataClass();
@@ -1577,7 +1578,8 @@ namespace FreeMat {
       {
 	// A temporary vector to store the eigenvalues
 	float *eigenvals = (float*) Malloc(N*sizeof(float));
-	floatEigenDecomposeSymmetric(N, NULL, eigenvals, (float*)A.getReadWriteDataPointer(),
+	floatEigenDecomposeSymmetric(N, NULL, eigenvals, 
+				     (float*)A.getReadWriteDataPointer(),
 				     false);
 	// Copy the eigenvalues into a diagonal (float) matrix
 	D = Array(FM_FLOAT,Vdims,eigenvals);
@@ -1587,7 +1589,8 @@ namespace FreeMat {
       {
 	// A temporary vector to store the eigenvalues
 	double *eigenvals = (double*) Malloc(N*sizeof(double));
-	doubleEigenDecomposeSymmetric(N, NULL, eigenvals, (double*)A.getReadWriteDataPointer(),
+	doubleEigenDecomposeSymmetric(N, NULL, eigenvals, 
+				      (double*)A.getReadWriteDataPointer(),
 				     false);
 	// Copy the eigenvalues into a diagonal (double) matrix
 	D = Array(FM_DOUBLE,Vdims,eigenvals);
@@ -1595,20 +1598,22 @@ namespace FreeMat {
       break;
     case FM_COMPLEX:
       {
-	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
-	complexEigenDecomposeSymmetric(N, NULL, eigenvals, (float*)A.getReadWriteDataPointer(),
+	float *eigenvals = (float*) Malloc(N*sizeof(float));
+	complexEigenDecomposeSymmetric(N, NULL, eigenvals, 
+				       (float*)A.getReadWriteDataPointer(),
 				       false);
 	// Copy the eigenvalues into a diagonal (complex) matrix
-	D = Array(FM_COMPLEX,Vdims,eigenvals);
+	D = Array(FM_FLOAT,Vdims,eigenvals);
       }
       break;
     case FM_DCOMPLEX:
       {
-	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
-	dcomplexEigenDecomposeSymmetric(N, NULL, eigenvals, (double*)A.getReadWriteDataPointer(),
+	double *eigenvals = (double*) Malloc(N*sizeof(double));
+	dcomplexEigenDecomposeSymmetric(N, NULL, eigenvals, 
+					(double*)A.getReadWriteDataPointer(),
 					false);
 	// Copy the eigenvalues into a diagonaal (complex) matrix
-	D = Array(FM_DCOMPLEX,Vdims,eigenvals);
+	D = Array(FM_DOUBLE,Vdims,eigenvals);
       }
       break;
     }
@@ -1621,6 +1626,7 @@ namespace FreeMat {
     int i;
     Class Aclass;
 
+    printf("ED-FS\r\n");
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -1681,17 +1687,16 @@ namespace FreeMat {
       break;
     case FM_COMPLEX:
       {
-	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
+	float *eigenvals = (float*) Malloc(N*sizeof(float));
 	float *Vp = (float*) Malloc(N*N*A.getElementSize());
-	complexEigenDecomposeSymmetric(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer(),
+	complexEigenDecomposeSymmetric(N, Vp, eigenvals, 
+				       (float*)A.getReadWriteDataPointer(),
 				       true);
-	// Copy the eigenvalues into a diagonal (complex) matrix
-	D = Array(FM_COMPLEX,Vdims,NULL);
-	float *Dp = (float*) Malloc(N*N*D.getElementSize());
-	for (i=0;i<N;i++) {
-	  Dp[2*(i+N*i)] = eigenvals[2*i];
-	  Dp[2*(i+N*i)+1] = eigenvals[2*i+1];
-	}
+	// Copy the eigenvalues into a diagonal (real) matrix
+	D = Array(FM_FLOAT,Vdims,NULL);
+	float *Dp = (float*) Malloc(N*N*sizeof(float));
+	for (i=0;i<N;i++) 
+	  Dp[i+N*i] = eigenvals[i];
 	D.setDataPointer(Dp);
 	V = Array(FM_COMPLEX,Vdims,Vp);
 	Free(eigenvals);
@@ -1699,17 +1704,16 @@ namespace FreeMat {
       break;
     case FM_DCOMPLEX:
       {
-	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
+	double *eigenvals = (double*) Malloc(N*sizeof(double));
 	double *Vp = (double*) Malloc(N*N*A.getElementSize());
-	dcomplexEigenDecomposeSymmetric(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer(),
+	dcomplexEigenDecomposeSymmetric(N, Vp, eigenvals, 
+					(double*)A.getReadWriteDataPointer(),
 					true);
 	// Copy the eigenvalues into a diagonal (complex) matrix
-	D = Array(FM_DCOMPLEX,Vdims,NULL);
-	double *Dp = (double*) Malloc(N*N*D.getElementSize());
-	for (i=0;i<N;i++) {
-	  Dp[2*(i+N*i)] = eigenvals[2*i];
-	  Dp[2*(i+N*i)+1] = eigenvals[2*i+1];
-	}
+	D = Array(FM_DOUBLE,Vdims,NULL);
+	double *Dp = (double*) Malloc(N*N*sizeof(double));
+	for (i=0;i<N;i++) 
+	  Dp[i+N*i] = eigenvals[i];
 	D.setDataPointer(Dp);
 	V = Array(FM_DCOMPLEX,Vdims,Vp);
 	Free(eigenvals);
@@ -1726,6 +1730,7 @@ namespace FreeMat {
     int i, j;
     Class Aclass;
 
+    printf("ED-FG - balance = %d\r\n",balanceFlag);
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
@@ -1924,6 +1929,8 @@ namespace FreeMat {
   void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag) {
     int i, j;
     Class Aclass;
+
+    printf("ED-CG : balance = %d\r\n",balanceFlag);
 
     // Test for numeric
     if (A.isReferenceType())

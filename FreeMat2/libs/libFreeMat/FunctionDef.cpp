@@ -353,6 +353,10 @@ namespace FreeMat {
     sig_t save_sig;
     int i;
     save_sig = signal(SIGINT,sigFP);
+    char buffer[1000];
+    sprintf(buffer,"Inside built-in function %s",name.c_str());
+    walker->getInterface()->setMessageContext(buffer);
+    walker->getInterface()->pushMessageContext();
     i = setjmp(env);
     if (i == 0)
       outputs = fptr(nargout,inputs);
@@ -360,6 +364,7 @@ namespace FreeMat {
       walker->getInterface()->warningMessage("Warning: Control-C received while evaluating internal function");
       sigInterrupt(1);
     }
+    walker->getInterface()->popMessageContext();
     signal(SIGINT, save_sig);
     return outputs;
   }
@@ -377,12 +382,17 @@ namespace FreeMat {
     int i;
     save_sig = signal(SIGINT,sigFP);
     i = setjmp(env);
+    char buffer[1000];
+    sprintf(buffer,"Inside special function %s",name.c_str());
+    walker->getInterface()->setMessageContext(buffer);
+    walker->getInterface()->pushMessageContext();
     if (i == 0)
       outputs = fptr(nargout,inputs,walker);
     else {
       walker->getInterface()->warningMessage("Warning: Control-C received while evaluating internal function");
       sigInterrupt(1);
     }
+    walker->getInterface()->popMessageContext();
     signal(SIGINT, save_sig);
     return outputs;
   }
@@ -472,6 +482,10 @@ namespace FreeMat {
   ArrayVector ImportedFunctionDef::evaluateFunction(WalkTree *walker,
 						    ArrayVector& inputs,
 						    int nargout) {
+    char buffer[1000];
+    sprintf(buffer,"Inside special function %s",name.c_str());
+    walker->getInterface()->setMessageContext(buffer);
+    walker->getInterface()->pushMessageContext();
     /**
      * To actually evaluate the function, we have to process each of
      * the arguments and get them into the right form.
@@ -526,9 +540,11 @@ namespace FreeMat {
 	  }
 	}
       } catch (Exception& e) {
+	walker->getInterface()->popMessageContext();
 	context->popScope();
 	throw;
       }
+      walker->getInterface()->popMessageContext();
       context->popScope();
     }
       

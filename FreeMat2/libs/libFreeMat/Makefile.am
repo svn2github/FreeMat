@@ -8,7 +8,7 @@ INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I
 
 libFreeMat_a_SOURCES = Parser.yxx \
 Parser.h \
-Lexer.lxx \
+NewLex.cpp \
 Array.cpp \
 Array.hpp \
 AST.cpp \

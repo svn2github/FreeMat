@@ -59,6 +59,7 @@ reservedWordStruct ts, *p;
   
   void pushState(int state) {
     stateStack[stackCount] = state;
+    printf("push top state is %d\n",stateStack[stackCount]);
     stackCount++;
   }
   
@@ -66,6 +67,7 @@ reservedWordStruct ts, *p;
     if (stackCount < 1)
 	return 0;
     stackCount--;
+    printf("pop top state is %d\n",stateStack[stackCount]);
     return stateStack[stackCount];
   }
   
@@ -269,6 +271,11 @@ SpecialArgument ({Argument}|{String})
   return ENDQSTMNT;
 }
 
+<Scanning,Mscan>"," {
+  BEGIN(Scanning);
+  return ',';
+}
+
 <Scanning,Mscan>"\r\n"|\n {
   lineNumber++;
   firstToken = true;
@@ -277,17 +284,24 @@ SpecialArgument ({Argument}|{String})
 }
 
 <Scanning,Mscan>"(" {
-  pushState(Scanning);
+  pushState(YYSTATE);
   pushContext(context_index);
   BEGIN(Scanning);
   return '(';
 }
 
 <Scanning,Mscan>"{" {
-  pushState(Scanning);
+  pushState(YYSTATE);
   pushContext(context_cell);
   BEGIN(Mscan);
   return '{';
+}
+
+<Scanning,Mscan>"[" {
+  pushState(YYSTATE);
+  pushContext(context_matrix);
+  BEGIN(Mscan);
+  return '[';
 }
 
 <Scanning,Mscan>")" {
@@ -312,15 +326,9 @@ SpecialArgument ({Argument}|{String})
   }
 }
 
-<Scanning,Mscan>"[" {
-  pushContext(context_matrix);
-  BEGIN(Mscan);
-  return '[';
-}
-
 <Scanning,Mscan>"]" {
   popContext(']');
-  pushState(Scanning);
+  pushState(YYSTATE);
   BEGIN(TransposeCheck);
   return ']';
 }
@@ -381,6 +389,7 @@ SpecialArgument ({Argument}|{String})
 	    sizeof(reservedWordStruct),
 	    compareReservedWord);
   if (p==NULL) {
+    pushState(YYSTATE);
     BEGIN(IdentDereference);
     yylval = new AST(id_node,yytext); 
     return IDENT;
@@ -388,20 +397,30 @@ SpecialArgument ({Argument}|{String})
     // Check for reserved words that trigger end-context changes
     rettoken = p->token;
     switch (p->token) {
+    case ELSEIF:
+      BEGIN(Mscan);
+      break;
+    case CASE:
+      BEGIN(Mscan);
+      break;
     case SWITCH:
       pushContext(context_switch);
+      BEGIN(Mscan);
       break;
     case FOR:
       pushContext(context_for);
+      BEGIN(Mscan);
       break;
     case WHILE:
       pushContext(context_while);
+      BEGIN(Mscan);
       break;
     case TRY:
       pushContext(context_try);
       break;
     case IF:
       pushContext(context_if);
+      BEGIN(Mscan);
       break;
     case END:
       thisContext = popContext('x');
@@ -435,7 +454,6 @@ SpecialArgument ({Argument}|{String})
   lineNumber++;
   continuationCount++;
   firstToken = false;
-  BEGIN(IdentDereference);
 }
 
 <IdentDereference>"."{Word} {
@@ -458,13 +476,13 @@ SpecialArgument ({Argument}|{String})
 }
 
 <IdentDereference>"'" {
-  BEGIN(Scanning);
+  BEGIN(popState());
   return *yytext;
 }
 
 <IdentDereference>[^"'"] {
   unput(yytext[0]);
-  BEGIN(Scanning);
+  BEGIN(popState());
 }
 
 <Scanning,Mscan>{FloatingPoint} {
@@ -541,7 +559,10 @@ namespace FreeMat {
 
   bool lexCheckForMoreInput(int ccount) {
     // Scan the command line
-    while (yylex() > 0);
+//    while (yylex() > 0);
+    while (yylex() > 0) {
+	printf("token = %s\r\n",yytext);
+   }
     return (((contextCount > 0) && (stackCount == 0)) || (continuationCount > ccount));
   }
   

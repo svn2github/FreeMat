@@ -42,7 +42,7 @@ static char msgBuffer[MSGBUFLEN];
 
 #include "LexerInterface.hpp"
 
-extern char* yytext;
+//extern char* yytext;
 extern int yylex(void);
 
 extern int lineNumber;
@@ -74,6 +74,7 @@ namespace FreeMat {
     char *tokbuffer = "unprintable";
     char buffer[256];
     int addone = 1;
+#if 0
     if (*yytext < 33) {
 	tokdesc = tokbuffer;
 	sprintf(buffer,"Ran out of input on this line.");
@@ -82,7 +83,8 @@ namespace FreeMat {
     } else {
         sprintf(buffer,"Current token is '%s'",yytext);
 	tokdesc = buffer;
-    }	
+    }
+#endif	
     if (xStr)
       if (!interactiveMode)
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  %s",
@@ -116,11 +118,12 @@ using namespace FreeMat;
 %token DOTPOWER DOTTRANSPOSE
 %token STRING SPECIALCALL
 %token END IF FUNCTION FOR BREAK
+%token MAGICEND
 %token WHILE ELSE ELSEIF
 %token SWITCH CASE OTHERWISE CONTINUE
 %token TRY CATCH
-%token FIELD REFLPAREN REFRPAREN REFLBRACE REFRBRACE 
-%token ENDFOR ENDSWITCH ENDWHILE ENDTRY ENDIF PERSISTENT
+%token FIELD REFLPAREN REFRPAREN
+%token PERSISTENT
 %token KEYBOARD RETURN VARARGIN VARARGOUT GLOBAL
 %token QUIT RETALL
 
@@ -142,12 +145,27 @@ program:
 ;
 
 functionDef:
-   FUNCTION  returnDeclaration IDENT REFLPAREN argumentList REFRPAREN statementList {
+   FUNCTION  returnDeclaration IDENT '(' argumentList ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
      r->returnVals = $2->toStringList();
      r->name = $3->text;
      r->arguments = $5->toStringList();
+     r->code = $8;
+     r->nextFunction = NULL;
+     if (mainMDef == NULL)
+	mainMDef = r;
+     else {
+	r->localFunction = true;
+        r->nextFunction = mainMDef->nextFunction;
+	mainMDef->nextFunction = r;
+     }
+   } |
+   FUNCTION  IDENT '(' argumentList ')' newLine statementList {
+     MFunctionDef *r;
+     r = new MFunctionDef();
+     r->name = $2->text;
+     r->arguments = $4->toStringList();
      r->code = $7;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
@@ -158,12 +176,12 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  IDENT REFLPAREN argumentList REFRPAREN statementList {
+   FUNCTION  returnDeclaration IDENT newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->name = $2->text;
-     r->arguments = $4->toStringList();
-     r->code = $6;
+     r->returnVals = $2->toStringList();
+     r->name = $3->text;
+     r->code = $5;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -173,11 +191,10 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  returnDeclaration IDENT statementList {
+   FUNCTION  IDENT newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
-     r->returnVals = $2->toStringList();
-     r->name = $3->text;
+     r->name = $2->text;
      r->code = $4;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
@@ -188,26 +205,12 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  IDENT statementList {
-     MFunctionDef *r;
-     r = new MFunctionDef();
-     r->name = $2->text;
-     r->code = $3;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
-   } |
-   FUNCTION  returnDeclaration IDENT REFLPAREN REFRPAREN statementList {
+   FUNCTION  returnDeclaration IDENT '(' ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
      r->returnVals = $2->toStringList();
      r->name = $3->text;
-     r->code = $6;
+     r->code = $7;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -217,11 +220,11 @@ functionDef:
 	mainMDef->nextFunction = r;
      }
    } |
-   FUNCTION  IDENT REFLPAREN REFRPAREN statementList {
+   FUNCTION  IDENT '(' ')' newLine statementList {
      MFunctionDef *r;
      r = new MFunctionDef();
      r->name = $2->text;
-     r->code = $4;
+     r->code = $6;
      r->nextFunction = NULL;
      if (mainMDef == NULL)
 	mainMDef = r;
@@ -233,12 +236,12 @@ functionDef:
    } |
    FUNCTION  error {yyxpt("function name or return declaration");} |
    FUNCTION  IDENT error {yyxpt("argument list or statement list");} |
-   FUNCTION  IDENT REFLPAREN  error {yyxpt("(possibly empty) argument list");}  |
-   FUNCTION  IDENT REFLPAREN argumentList REFRPAREN error {yyxpt("statement list");} |
+   FUNCTION  IDENT '('  error {yyxpt("(possibly empty) argument list");}  |
+   FUNCTION  IDENT '(' argumentList ')' error {yyxpt("statement list");} |
    FUNCTION  returnDeclaration  error {yyxpt("function name");} |
    FUNCTION  returnDeclaration IDENT error {yyxpt("argument list or statement list");} |
-   FUNCTION  returnDeclaration IDENT REFLPAREN  error {yyxpt("(possibly empty) argument list");} |
-   FUNCTION  returnDeclaration IDENT REFLPAREN argumentList REFRPAREN error {yyxpt("statement list");}
+   FUNCTION  returnDeclaration IDENT '('  error {yyxpt("(possibly empty) argument list");} |
+   FUNCTION  returnDeclaration IDENT '(' argumentList ')' error {yyxpt("statement list");}
   ;
 
 functionDefList:
@@ -371,7 +374,7 @@ breakStatement:
 	 ;
 
 tryStatement:
-	TRY statementList optionalCatch ENDTRY 
+	TRY statementList optionalCatch END 
 	{ $$ = $1; $$->addChild($2); if ($3 != NULL) $$->addChild($3);} 
         ;
 
@@ -381,7 +384,7 @@ optionalCatch:
 	;
 
 switchStatement:
-	SWITCH 	expr optionalEndStatement caseBlock otherwiseClause ENDSWITCH {
+	SWITCH 	expr optionalEndStatement caseBlock otherwiseClause END {
 	  $$ = $1; $$->addChild($2); 
 	  if ($4 != NULL) $$->addChild($4); 
 	  if ($5 != NULL) $$->addChild($5);
@@ -389,8 +392,13 @@ switchStatement:
         ;
 
 optionalEndStatement:
-	',' | ENDSTMNT | ENDQSTMNT | ';'
+	',' | ENDSTMNT | ENDQSTMNT | ';' | '#'
 	;
+
+newLine:
+	ENDSTMNT | ENDQSTMNT
+	;
+
 
 caseBlock:
 	/* empty */ {$$ = NULL;} |
@@ -422,7 +430,7 @@ otherwiseClause:
 ;
 
 forStatement:
-	FOR forIndexExpression optionalEndStatement statementList ENDFOR {
+	FOR forIndexExpression optionalEndStatement statementList END {
 	  $$ = $1; $$->addChild($2); $$->addChild($4);
 	}
 ;
@@ -440,14 +448,14 @@ forIndexExpression:
 ;
 
 whileStatement:
-	WHILE expr optionalEndStatement statementList ENDWHILE {
+	WHILE expr optionalEndStatement statementList END {
 	  $$ = $1; $$->addChild($2); $$->addChild($4);
 	}  |
 	WHILE error {yyxpt("test expression after 'while'");} 
 ;
 
 ifStatement:
-	IF conditionedStatement elseIfBlock elseStatement ENDIF {
+	IF conditionedStatement elseIfBlock elseStatement END {
 	  $$ = $1; $$->addChild($2); if ($3 != NULL) $$->addChild($3); 
 	  if ($4 != NULL) $$->addChild($4);
 	} |
@@ -494,7 +502,7 @@ assignmentStatement:
         ;
 
 multiFunctionCall:
-	'[' matrixDef ']' '='  IDENT REFLPAREN  indexList REFRPAREN {
+	'[' matrixDef ']' '='  IDENT '('  indexList ')' {
 	  $5->addChild(new AST(OP_PARENS,$7));
 	  $$ = new AST(OP_MULTICALL,$2,$5);
 	} |
@@ -502,9 +510,9 @@ multiFunctionCall:
 	  $5->addChild(new AST(OP_PARENS,NULL));
 	  $$ = new AST(OP_MULTICALL,$2,$5);
 	} |
-	'[' matrixDef ']' '='  IDENT REFLPAREN  indexList error 
+	'[' matrixDef ']' '='  IDENT '('  indexList error 
 	{yyxpt("matching right parenthesis");} |
-	'[' matrixDef ']' '='  IDENT REFLPAREN  error 
+	'[' matrixDef ']' '='  IDENT '('  error 
 	{yyxpt("indexing list");} |
 	'[' matrixDef ']' '='  IDENT error 
 	{yyxpt("left parenthesis");} |	
@@ -566,7 +574,7 @@ expr:
 terminal:
         NUMERIC
 	| STRING
-	| END
+	| MAGICEND
 	| symbRefList {$$ = new AST(OP_RHS,$1);}
         | '[' matrixDef ']' {$$ = $2;}
         | '[' error {yyxpt("a matrix definition followed by a right bracket");}
@@ -581,18 +589,17 @@ terminal:
 	| '{' '}' {$$ = new AST(OP_EMPTY_CELL,NULL);}
 	| '{' error {yyxpt("a cell-array definition followed by a right brace");}
         ;
-
 symbRefList:
 	IDENT 
         | symbRefList symbRef {$$ = $1; $$->addChild($2);}
         ;
 	
 symbRef:
-	REFLPAREN indexList REFRPAREN {$$ = new AST(OP_PARENS,$2); }
-	| REFLPAREN indexList error {yyxpt("matching right parenthesis");}
-        | REFLBRACE indexList REFRBRACE {$$ = new AST(OP_BRACES,$2); }
-	| REFLBRACE indexList error {yyxpt("matching right brace");}
-        | FIELD {$$ = new AST(OP_DOT,$1); }
+	'(' indexList ')' {$$ = new AST(OP_PARENS,$2); }
+	| '(' indexList error {yyxpt("matching right parenthesis");}
+        | '{' indexList '}' {$$ = new AST(OP_BRACES,$2); }
+	| '{' indexList error {yyxpt("matching right brace");}
+        | '.' IDENT {$$ = new AST(OP_DOT,$2); }
         ;
 
 indexElement:
@@ -624,7 +631,7 @@ rowSeperator:
        ;
 
 columnSep:
-       ',' |
+       ',' | '#'
        ;
 
 rowDef:

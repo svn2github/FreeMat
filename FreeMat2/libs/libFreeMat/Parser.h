@@ -48,37 +48,31 @@
      FUNCTION = 274,
      FOR = 275,
      BREAK = 276,
-     WHILE = 277,
-     ELSE = 278,
-     ELSEIF = 279,
-     SWITCH = 280,
-     CASE = 281,
-     OTHERWISE = 282,
-     CONTINUE = 283,
-     TRY = 284,
-     CATCH = 285,
-     FIELD = 286,
-     REFLPAREN = 287,
-     REFRPAREN = 288,
-     REFLBRACE = 289,
-     REFRBRACE = 290,
-     ENDFOR = 291,
-     ENDSWITCH = 292,
-     ENDWHILE = 293,
-     ENDTRY = 294,
-     ENDIF = 295,
-     PERSISTENT = 296,
-     KEYBOARD = 297,
-     RETURN = 298,
-     VARARGIN = 299,
-     VARARGOUT = 300,
-     GLOBAL = 301,
-     QUIT = 302,
-     RETALL = 303,
-     NE = 304,
-     NOT = 305,
-     NEG = 306,
-     POS = 307
+     MAGICEND = 277,
+     WHILE = 278,
+     ELSE = 279,
+     ELSEIF = 280,
+     SWITCH = 281,
+     CASE = 282,
+     OTHERWISE = 283,
+     CONTINUE = 284,
+     TRY = 285,
+     CATCH = 286,
+     FIELD = 287,
+     REFLPAREN = 288,
+     REFRPAREN = 289,
+     PERSISTENT = 290,
+     KEYBOARD = 291,
+     RETURN = 292,
+     VARARGIN = 293,
+     VARARGOUT = 294,
+     GLOBAL = 295,
+     QUIT = 296,
+     RETALL = 297,
+     NE = 298,
+     NOT = 299,
+     NEG = 300,
+     POS = 301
    };
 #endif
 #define IDENT 258
@@ -100,37 +94,31 @@
 #define FUNCTION 274
 #define FOR 275
 #define BREAK 276
-#define WHILE 277
-#define ELSE 278
-#define ELSEIF 279
-#define SWITCH 280
-#define CASE 281
-#define OTHERWISE 282
-#define CONTINUE 283
-#define TRY 284
-#define CATCH 285
-#define FIELD 286
-#define REFLPAREN 287
-#define REFRPAREN 288
-#define REFLBRACE 289
-#define REFRBRACE 290
-#define ENDFOR 291
-#define ENDSWITCH 292
-#define ENDWHILE 293
-#define ENDTRY 294
-#define ENDIF 295
-#define PERSISTENT 296
-#define KEYBOARD 297
-#define RETURN 298
-#define VARARGIN 299
-#define VARARGOUT 300
-#define GLOBAL 301
-#define QUIT 302
-#define RETALL 303
-#define NE 304
-#define NOT 305
-#define NEG 306
-#define POS 307
+#define MAGICEND 277
+#define WHILE 278
+#define ELSE 279
+#define ELSEIF 280
+#define SWITCH 281
+#define CASE 282
+#define OTHERWISE 283
+#define CONTINUE 284
+#define TRY 285
+#define CATCH 286
+#define FIELD 287
+#define REFLPAREN 288
+#define REFRPAREN 289
+#define PERSISTENT 290
+#define KEYBOARD 291
+#define RETURN 292
+#define VARARGIN 293
+#define VARARGOUT 294
+#define GLOBAL 295
+#define QUIT 296
+#define RETALL 297
+#define NE 298
+#define NOT 299
+#define NEG 300
+#define POS 301
 
 
 

@@ -46,6 +46,7 @@ AC_ARG_WITH(mpi,
 		usempi="yes",
 		usempi="no")
 
+AC_C_BIGENDIAN(AC_DEFINE([WORDS_BIGENDIAN]),[],AC_MSG_ERROR([cannot determine if system is big endian or little endian... what kind of system is this??]))
 
 dnl **** Check for X11 ****
 

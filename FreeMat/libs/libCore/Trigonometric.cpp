@@ -24,6 +24,7 @@
 #include "Malloc.hpp"
 #include <math.h>
 #include "Utils.hpp"
+#include "IEEEFP.hpp"
 
 namespace FreeMat {
   ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
@@ -455,7 +456,7 @@ namespace FreeMat {
       cnt = input.getLength();
       init = false;
       for (i=0;i<cnt;i++) {
-	if (!isnan(dp[i])) {
+	if (!IsNaN(dp[i])) {
 	  if (init) {
 	    rngeVal = (fabs(dp[i]) > rngeVal) ? fabs(dp[i]) : rngeVal;
 	  } else {
@@ -482,7 +483,7 @@ namespace FreeMat {
       cnt = input.getLength();
       init = false;
       for (i=0;i<cnt;i++) {
-	if (!isnan(dp[i])) {
+	if (!IsNaN(dp[i])) {
 	  if (init) {
 	    rngeVal = (fabs(dp[i]) > rngeVal) ? fabs(dp[i]) : rngeVal;
 	  } else {
@@ -613,7 +614,7 @@ namespace FreeMat {
       cnt = input.getLength();
       init = false;
       for (i=0;i<cnt;i++) {
-	if (!isnan(dp[i])) {
+	if (!IsNaN(dp[i])) {
 	  if (init) {
 	    rngeVal = (fabs(dp[i]) > rngeVal) ? fabs(dp[i]) : rngeVal;
 	  } else {
@@ -640,7 +641,7 @@ namespace FreeMat {
       cnt = input.getLength();
       init = false;
       for (i=0;i<cnt;i++) {
-	if (!isnan(dp[i])) {
+	if (!IsNaN(dp[i])) {
 	  if (init) {
 	    rngeVal = (fabs(dp[i]) > rngeVal) ? fabs(dp[i]) : rngeVal;
 	  } else {

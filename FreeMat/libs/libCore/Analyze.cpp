@@ -23,6 +23,7 @@
 #include "Array.hpp"
 #include "Malloc.hpp"
 #include "Utils.hpp"
+#include "IEEEFP.hpp"
 #include <math.h>
 
 namespace FreeMat {
@@ -431,7 +432,7 @@ namespace FreeMat {
       init = false;
       mindex = 0;
       for (j=0;j<length;j++) {
-	if (!isnan(sp[majstride*i+stride*j]))
+	if (!IsNaN(sp[majstride*i+stride*j]))
 	  if (!init) {
 	    init = true;
 	    minval = sp[majstride*i+stride*j];
@@ -469,7 +470,7 @@ namespace FreeMat {
       init = false;
       mindex = 0;
       for (j=0;j<length;j++) {
-	if (!isnan(sp[majstride*i+stride*j]))
+	if (!IsNaN(sp[majstride*i+stride*j]))
 	  if (!init) {
 	    init = true;
 	    minval = sp[majstride*i+stride*j];
@@ -509,8 +510,8 @@ namespace FreeMat {
       init = false;
       mindex = 0;
       for (j=0;j<length;j++) {
-	if ((!isnan(sp[2*(majstride*i+stride*j)])) &&
-	    (!isnan(sp[2*(majstride*i+stride*j)+1]))) {
+	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
+	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
 	  tstval = complex_abs(sp[2*(majstride*i+stride*j)],
 			       sp[2*(majstride*i+stride*j)+1]);
 	  if (!init) {
@@ -559,8 +560,8 @@ namespace FreeMat {
       init = false;
       mindex = 0;
       for (j=0;j<length;j++) {
-	if ((!isnan(sp[2*(majstride*i+stride*j)])) &&
-	    (!isnan(sp[2*(majstride*i+stride*j)+1]))) {
+	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
+	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
 	  tstval = dcomplex_abs(sp[2*(majstride*i+stride*j)],
 			       sp[2*(majstride*i+stride*j)+1]);
 	  if (!init) {
@@ -993,7 +994,7 @@ namespace FreeMat {
       init = false;
       maxdex = 0;
       for (j=0;j<length;j++) {
-	if (!isnan(sp[majstride*i+stride*j]))
+	if (!IsNaN(sp[majstride*i+stride*j]))
 	  if (!init) {
 	    init = true;
 	    maxval = sp[majstride*i+stride*j];
@@ -1031,7 +1032,7 @@ namespace FreeMat {
       init = false;
       maxdex = 0;
       for (j=0;j<length;j++) {
-	if (!isnan(sp[majstride*i+stride*j]))
+	if (!IsNaN(sp[majstride*i+stride*j]))
 	  if (!init) {
 	    init = true;
 	    maxval = sp[majstride*i+stride*j];
@@ -1071,8 +1072,8 @@ namespace FreeMat {
       init = false;
       maxdex = 0;
       for (j=0;j<length;j++) {
-	if ((!isnan(sp[2*(majstride*i+stride*j)])) &&
-	    (!isnan(sp[2*(majstride*i+stride*j)+1]))) {
+	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
+	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
 	  tstval = complex_abs(sp[2*(majstride*i+stride*j)],
 			       sp[2*(majstride*i+stride*j)+1]);
 	  if (!init) {
@@ -1121,8 +1122,8 @@ namespace FreeMat {
       init = false;
       maxdex = 0;
       for (j=0;j<length;j++) {
-	if ((!isnan(sp[2*(majstride*i+stride*j)])) &&
-	    (!isnan(sp[2*(majstride*i+stride*j)+1]))) {
+	if ((!IsNaN(sp[2*(majstride*i+stride*j)])) &&
+	    (!IsNaN(sp[2*(majstride*i+stride*j)+1]))) {
 	  tstval = dcomplex_abs(sp[2*(majstride*i+stride*j)],
 			       sp[2*(majstride*i+stride*j)+1]);
 	  if (!init) {

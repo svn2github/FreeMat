@@ -29,6 +29,7 @@
 #include "Serialize.hpp"
 #include "Socket.hpp"
 #include "ServerSocket.hpp"
+#include "IEEEFP.hpp"
 
 namespace FreeMat {
   class FilePtr {
@@ -250,8 +251,8 @@ namespace FreeMat {
     int elementCount = 1;
     int infiniteDim = 0;
     for (int i=0;i<dimCount;i++) {
-      if (isnan(dp[i])) throw Exception("nan not allowed in size argument");
-      if (isinf(dp[i])) {
+      if (IsNaN(dp[i])) throw Exception("nan not allowed in size argument");
+      if (IsInfinite(dp[i])) {
 	if (infinityFound) throw Exception("only a single inf is allowed in size argument");
 	infinityFound = true;
 	infiniteDim = i;

@@ -48,7 +48,8 @@ namespace FreeMat {
 			       bool *dmap);
   void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
 			       bool *dmap);
-  void* DeleteSparseMatrixVectorSubset(Class dclass, int &rows, int &cols, const void *cp,
+  void* DeleteSparseMatrixVectorSubset(Class dclass, int &rows, int &cols, 
+				       const void *cp,
 				       const indexType *todel, int delete_len);
 }
 

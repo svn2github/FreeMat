@@ -2293,6 +2293,7 @@ break;
     return qp[ndx];
   }
 
+  // NEEDSPARSE
   Array Array::getDiagonal(int diagonalOrder)  {
     if (!is2D()) 
       throw Exception("Cannot take diagonal of N-dimensional array.");
@@ -2879,13 +2880,15 @@ break;
       if (isSparse()) {
 	int rows = getDimensionLength(0);
 	int cols = getDimensionLength(1);
-	void *dp = DeleteSparseMatrixVectorSubset(dp->dataClass,rows,cols,
-						  dp->getData(),arg.getDataPointer(),
+	void *cp = DeleteSparseMatrixVectorSubset(dp->dataClass,rows,cols,
+						  dp->getData(),
+						  (const indexType *)
+						  arg.getDataPointer(),
 						  arg.getLength());
 	Dimensions newdim;
 	newdim[0] = rows;
 	newdim[1] = cols;
-	dp = dp->putData(dp->dataClass,newdim,dp,true);
+	dp = dp->putData(dp->dataClass,newdim,cp,true);
 	return;
       }
       // Next, build a deletion map.
@@ -3131,6 +3134,7 @@ break;
    * Print this object when it is an element of a cell array.  This is
    * generally a shorthand summary of the description of the object.
    */
+  // NEEDSPARSE
   void Array::summarizeCellEntry() const {
     if (isSparse())
       throw Exception("summarizeCellEntry not supported for sparse arrays.");
@@ -3656,6 +3660,7 @@ break;
     return (cls == FM_CELL_ARRAY || cls == FM_STRUCT_ARRAY);
   }
 
+  //NEEDSPARSE
   bool Array::anyNotFinite() {
     if (isSparse())
       throw Exception("anyNotFinite not supported for sparse arrays.");

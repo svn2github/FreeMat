@@ -1904,4 +1904,98 @@ namespace FreeMat {
     }
   }
 
+  template <class T>
+  void* DeleteSparseMatrixRowReal(int &rows, int &cols, const T** src,
+				  const indexType* ndx, int delete_len) {
+    // Get the source matrix as an IJV array
+    int nnz;
+    IJVEntry<T>* mlist = ConvertSparseToIJVListReal<T>(src,rows,cols,nnz);
+    // reshape the IJV list into a vector
+    int i;
+    for (i=0;i<nnz;i++) {
+      mlist[i].I += rows*mlist[i].J;
+      mlist[i].J = 0;
+    }
+    rows = rows*cols;
+    cols = 1;
+    int* ilist = new int[delete_len];
+    // Copy the index info in
+    for (i=0;i<delete_len;i++)
+      ilist[i] = ndx[i]-1;
+    // Sort the list
+    std::sort(ilist,ilist+delete_len);
+    // eliminate duplicates
+    i=0;
+    int j=0;
+    tstop();
+    while (i<delete_len) {
+      j = i+1;
+      while ((j<delete_len) && 
+	     (ilist[j] == ilist[i])) j++;
+      if (j>i+1) {
+	for (int k=j;k<delete_len;k++)
+	  ilist[i+1+k-j] = ilist[k];
+	delete_len -= (j-i-1);
+      }
+      i++;
+    }
+    // Now, we have to determine how many elements are present in the
+    // output 
+    int newnnz;
+    // to do this, we loop through the IJV list
+    int dptr;
+    dptr = 0;
+    int iptr;
+    iptr = 0;
+    while (dptr < nnz) {
+      // Check the index pointer.  If it is smaller than our 
+      // current index, skip forward.
+      while ((iptr < delete_len) && 
+	     (ilist[iptr] < mlist[dptr].I)) iptr++;
+      // Is this element deleted?
+      if ((iptr < delete_len) && (ilist[iptr] == mlist[dptr].I)) {
+	// yes, so copy and adjust
+	for (int j=dptr+1;j<nnz;j++)
+	  mlist[j-1] = mlist[j];
+	nnz--;
+      } else {
+	mlist[dptr].I -= iptr;
+	dptr++;
+      }
+    }
+    printIJV(mlist,nnz);
+    int qptr = 0;
+    T** dst;
+    dst = new T*[1];
+    rows -= delete_len;
+    dst[0]= CompressRealIJV(mlist,nnz,qptr,0,rows); 
+    delete mlist;
+    delete ilist;
+    return dst;
+  }
+
+  void* DeleteSparseMatrixVectorSubset(Class dclass, int &rows, int &cols,
+				       const void* cp, const indexType* ndx,
+				       int delete_len) {
+    switch(dclass) {
+    case FM_INT32:
+      return DeleteSparseMatrixRowReal<int32>(rows, cols, (const int32**) cp,
+					       ndx, delete_len);
+    case FM_FLOAT:
+      return DeleteSparseMatrixRowReal<float>(rows, cols, (const float**) cp,
+					       ndx, delete_len);
+    case FM_DOUBLE:
+      return DeleteSparseMatrixRowReal<double>(rows, cols, 
+						(const double**) cp,
+						ndx, delete_len);
+//     case FM_COMPLEX:
+//       return DeleteSparseMatrixRowsComplex<float>(rows, cols, 
+// 						  (const float**) cp,
+// 						  ndx, delete_len);
+//     case FM_DCOMPLEX:
+//       return DeleteSparseMatrixRowsComplex<double>(rows, cols, 
+// 						   (const double**) cp,
+// 						   ndx, delete_len);
+    }
+  }
 }

@@ -143,7 +143,7 @@ char* FLTKTerminalWidget::getLine(const char*prompt) {
     promptlen = strlen(prompt);
     int line, col;
     position_to_linecol(buffer()->length(),&line,&col);
-    if (col != 0) buffer()->append("\n");
+    if (col != 0) outputText("\n");
     buffer()->append(prompt);
     insert_position(buffer()->length());
     history_ptr = -1;

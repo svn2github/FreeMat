@@ -47,12 +47,19 @@ namespace FreeMat {
   int endValStackLength;
   int endValStack[1000];
 
-#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right)); io->setMessageContext("built-in binary operator"); return func(a,b);}
-#define DoUnaryOp(func) {Array a(expression(t->down)); io->setMessageContext("built-in unary operator"); return func(a);}
-
+#define DoBinaryOp(func) {Array a(expression(t->down)); Array b(expression(t->down->right)); io->setMessageContext("built-in binary operator"); retval = func(a,b);}
+#define DoUnaryOp(func) {Array a(expression(t->down)); io->setMessageContext("built-in unary operator"); retval = func(a);}
 
   void sigInterrupt(int arg) {
     InterruptPending = true;
+  }
+
+  void WalkTree::pushID(int a) {
+    IDnums.push_back(a);
+  }
+
+  void WalkTree::popID() {
+    IDnums.pop_back();
   }
 
   void WalkTree::setPrintLimit(int lim) {
@@ -72,9 +79,12 @@ namespace FreeMat {
   }
 
   ArrayVector WalkTree::rowDefinition(ASTPtr t) {
+    pushID(t->context());
     if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
-    return expressionList(s,NULL);
+    ArrayVector retval(expressionList(s,NULL));
+    popID();
+    return retval;
   }
 
   //!
@@ -141,12 +151,14 @@ namespace FreeMat {
     ArrayMatrix m;
     if (t->opNum != OP_BRACKETS) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
-  
+    pushID(s->context());
     while (s != NULL) {
       m.push_back(rowDefinition(s));
       s = s->right;
     }
-    return Array::matrixConstructor(m);
+    Array retval(Array::matrixConstructor(m));
+    popID();
+    return retval;
   }
 
   //!
@@ -194,120 +206,244 @@ namespace FreeMat {
     ArrayMatrix m;
     if (t->opNum != OP_BRACES) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
-
+    pushID(s->context());
     while (s != NULL) {
       m.push_back(rowDefinition(s));
       s = s->right;
     }
-    return Array::cellConstructor(m);
+    Array retval(Array::cellConstructor(m));
+    popID();
+    return retval;
   }
 
   Array WalkTree::ShortCutOr(ASTPtr t) {
+    pushID(t->context());
     Array a(expression(t->down));
+    Array retval;
     if (!a.isScalar()) {
-      io->setMessageContext("built-in binary operator Or (|)"); 
-      return Or(a,expression(t->down->right));
+      retval = Or(a,expression(t->down->right));
+    } else {
+      // A is a scalar - is it true?
+      a.promoteType(FM_LOGICAL);
+      if (*((const logical*)a.getDataPointer()))
+	retval = a;
+      else 
+	retval = Or(a,expression(t->down->right));
     }
-    // A is a scalar - is it true?
-    a.promoteType(FM_LOGICAL);
-    if (*((const logical*)a.getDataPointer()))
-      return a;
-    else {
-      io->setMessageContext("built-in binary operator Or (|)"); 
-      return Or(a,expression(t->down->right));
-    }
+    popID();
+    return retval;
   }
 
   Array WalkTree::ShortCutAnd(ASTPtr t) {
+    pushID(t->context());
     Array a(expression(t->down));
+    Array retval;
     if (!a.isScalar()) {
-      io->setMessageContext("built-in binary operator And (&)"); 
-      return And(a,expression(t->down->right));
+      retval = And(a,expression(t->down->right));
+    } else {
+      // A is a scalar - is it false?
+      a.promoteType(FM_LOGICAL);
+      if (!*((const logical*)a.getDataPointer()))
+	retval = a;
+      else 
+	retval = And(a,expression(t->down->right));
     }
-    // A is a scalar - is it false?
-    a.promoteType(FM_LOGICAL);
-    if (!*((const logical*)a.getDataPointer()))
-      return a;
-    else {
-      io->setMessageContext("built-in binary operator And (&)"); 
-      return And(a,expression(t->down->right));
-    }
+    popID();
+    return retval;
   }
 
   Array WalkTree::expression(ASTPtr t) {
+    pushID(t->context());
+    Array retval;
     if (t->type == const_int_node) {
       int iv;
       double fv;
       iv = strtol(t->text,NULL,10);
       if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
 	fv = strtod(t->text,NULL);
-	return Array::doubleConstructor(fv);
+	retval = Array::doubleConstructor(fv);
       } else {
-	return Array::int32Constructor(iv);
+	retval = Array::int32Constructor(iv);
       }
     }
-    if (t->type == const_float_node)
-      return Array::floatConstructor(atof(t->text));
-    if (t->type == const_double_node)
-      return Array::doubleConstructor(atof(t->text));
-    if (t->type == string_const_node)
-      return Array::stringConstructor(std::string(t->text));
-    if (t->type == reserved_node)
+    else if (t->type == const_float_node) {
+      retval = Array::floatConstructor(atof(t->text));
+    }
+    else if (t->type == const_double_node) {
+      retval = Array::doubleConstructor(atof(t->text));
+    }
+    else if (t->type == string_const_node) {
+      retval = Array::stringConstructor(std::string(t->text));
+    }
+    else if (t->type == reserved_node) {
       if (t->tokenNumber == FM_END) {
 	if (endValStackLength == 0) throw Exception("END keyword illegal!");
-	return Array::int32Constructor(endValStack[endValStackLength-1]);
+	retval = Array::int32Constructor(endValStack[endValStackLength-1]);
+      } else 
+	throw Exception("Unrecognized reserved node in expression tree!");
+    }
+    else {
+      switch (t->opNum) {
+      case OP_COLON:
+	if ((t->down != NULL) && (t->down->opNum ==(OP_COLON))) {
+	  retval = doubleColon(t);
+	} else {
+	  retval = unitColon(t);
+	}
+	break;
+      case OP_EMPTY: 
+	{ 
+	  retval = Array::emptyConstructor();
+	}
+	break;
+      case OP_EMPTY_CELL: 
+	{
+	  Array a(Array::emptyConstructor());
+	  a.promoteType(FM_CELL_ARRAY);
+	  retval = a;
+	}
+	break;
+      case OP_BRACKETS: 
+	{ 
+	  retval = matrixDefinition(t); 
+	}
+	break;
+      case OP_BRACES: 
+	{ 
+	  retval = cellDefinition(t); 
+	}
+	break;
+      case OP_PLUS: 
+	{  
+	  DoBinaryOp(Add); 
+	}
+	break;
+      case OP_SUBTRACT: 
+	{  
+	  DoBinaryOp(Subtract); 
+	}
+	break;
+      case OP_TIMES: 
+	{  
+	  DoBinaryOp(Multiply); 
+	}
+	break;
+      case OP_RDIV: 
+	{  
+	  DoBinaryOp(RightDivide); 
+	}
+	break;
+      case OP_LDIV: 
+	{  
+	  DoBinaryOp(LeftDivide); 
+	}
+	break;
+      case OP_OR: 
+	{  
+	  retval = ShortCutOr(t); 
+	}
+	break;
+      case OP_AND: 
+	{  
+	  retval = ShortCutAnd(t); 
+	}
+	break;
+      case OP_LT: 
+	{  
+	  DoBinaryOp(LessThan); 
+	}
+	break;
+      case OP_LEQ: 
+	{ 
+	  DoBinaryOp(LessEquals); 
+	}
+	break;
+      case OP_GT: 
+	{  
+	  DoBinaryOp(GreaterThan); 
+	}
+	break;
+      case OP_GEQ: 
+	{ 
+	  DoBinaryOp(GreaterEquals); 
+	}
+	break;
+      case OP_EQ: 
+	{ 
+	  DoBinaryOp(Equals); 
+	}
+	break;
+      case OP_NEQ: 
+	{ 
+	  DoBinaryOp(NotEquals); 
+	}
+	break;
+      case OP_DOT_TIMES: 
+	{ 
+	  DoBinaryOp(DotMultiply); 
+	}
+	break;
+      case OP_DOT_RDIV: 
+	{ 
+	  DoBinaryOp(DotRightDivide); 
+	}
+	break;
+      case OP_DOT_LDIV: 
+	{ 
+	  DoBinaryOp(DotLeftDivide); 
+	}
+	break;
+      case OP_NEG: 
+	{ 
+	  DoUnaryOp(Negate); 
+	}
+	break;
+      case OP_NOT: 
+	{ 
+	  DoUnaryOp(Not); 
+	}
+	break;
+      case OP_POWER: 
+	{ 
+	  DoBinaryOp(Power); 
+	}
+	break;
+      case OP_DOT_POWER: 
+	{ 
+	  DoBinaryOp(DotPower); 
+	}
+	break;
+      case OP_TRANSPOSE: 
+	{ 
+	  DoUnaryOp(Transpose); 
+	}
+	break;
+      case OP_DOT_TRANSPOSE: 
+	{ 
+	  DoUnaryOp(DotTranspose); 
+	}
+	break;
+      case OP_RHS: 
+	{
+	  // Test for simple variable lookup
+	  if (t->down->down == NULL) {
+	  retval = rhsExpressionSimple(t->down);
+	  } else {
+	    ArrayVector m(rhsExpression(t->down));
+	    if (m.empty()) {
+	      retval = Array::emptyConstructor();
+	    } else {
+	      retval = m[0];
+	    }
+	  }
+	}
+	break;
+      default:
+	throw Exception("Unrecognized expression!");
       }
-    switch (t->opNum) {
-    case OP_COLON:
-      if ((t->down != NULL) && (t->down->opNum ==(OP_COLON)))
-	return doubleColon(t);
-      else
-	return unitColon(t);
-    case OP_EMPTY: { return Array::emptyConstructor();}
-    case OP_EMPTY_CELL: {
-      Array a(Array::emptyConstructor());
-      a.promoteType(FM_CELL_ARRAY);
-      return a;
     }
-    case OP_BRACKETS: { return matrixDefinition(t); }
-    case OP_BRACES: { return cellDefinition(t); }
-    case OP_PLUS: {  DoBinaryOp(Add); }
-    case OP_SUBTRACT: {  DoBinaryOp(Subtract); }
-    case OP_TIMES: {  DoBinaryOp(Multiply); }
-    case OP_RDIV: {  DoBinaryOp(RightDivide); }
-    case OP_LDIV: {  DoBinaryOp(LeftDivide); }
-    case OP_OR: {  return ShortCutOr(t); }
-    case OP_AND: {  return ShortCutAnd(t); }
-    case OP_LT: {  DoBinaryOp(LessThan); }
-    case OP_LEQ: { DoBinaryOp(LessEquals); }
-    case OP_GT: {  DoBinaryOp(GreaterThan); }
-    case OP_GEQ: { DoBinaryOp(GreaterEquals); }
-    case OP_EQ: { DoBinaryOp(Equals); }
-    case OP_NEQ: { DoBinaryOp(NotEquals); }
-    case OP_DOT_TIMES: { DoBinaryOp(DotMultiply); }
-    case OP_DOT_RDIV: { DoBinaryOp(DotRightDivide); }
-    case OP_DOT_LDIV: { DoBinaryOp(DotLeftDivide); }
-    case OP_NEG: { DoUnaryOp(Negate); }
-    case OP_NOT: { DoUnaryOp(Not); }
-    case OP_POWER: { DoBinaryOp(Power); }
-    case OP_DOT_POWER: { DoBinaryOp(DotPower); }
-    case OP_TRANSPOSE: { DoUnaryOp(Transpose); }
-    case OP_DOT_TRANSPOSE: { DoUnaryOp(DotTranspose); }
-    case OP_RHS: {
-      // Test for simple variable lookup
-      if (t->down->down == NULL)
-	return(rhsExpressionSimple(t->down));
-      else {
-	ArrayVector m(rhsExpression(t->down));
-	if (m.empty())
-	  return Array::emptyConstructor();
-	else
-	  return m[0];
-      }
-    }
-    default:
-      throw Exception("Unrecognized expression!");
-    }
+    popID();
+    return retval;
   }
 
   //!
@@ -352,19 +488,23 @@ namespace FreeMat {
   //!
   Array WalkTree::unitColon(ASTPtr t) {
     Array a, b;
-
+    pushID(t->context());
     a = expression(t->down);
     b = expression(t->down->right);
-    return UnitColon(a,b);
+    Array retval(UnitColon(a,b));
+    popID();
+    return retval;
   }
 
   Array WalkTree::doubleColon(ASTPtr t) {
     Array a, b, c;
-
+    pushID(t->context());
     a = expression(t->down->down);
     b = expression(t->down->down->right);
     c = expression(t->down->right);
-    return DoubleColon(a,b,c);
+    Array retval(DoubleColon(a,b,c));
+    popID();
+    return retval;
   }
 
   /**
@@ -379,7 +519,7 @@ namespace FreeMat {
     ASTPtr root;
     int index, tmp;
     int endVal;
-
+    pushID(t->context());
     root = t;
     index = 0;
     while (t != NULL) {
@@ -429,6 +569,7 @@ namespace FreeMat {
       index++;
       t = t->right;
     }
+    popID();
     return m;
   }
 
@@ -437,6 +578,7 @@ namespace FreeMat {
     if (t->opNum != OP_CSTAT)
       throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
+    pushID(s->context());
     bool conditionTrue;
     Array condVar;
     condVar = expression(s);
@@ -444,6 +586,7 @@ namespace FreeMat {
     ASTPtr codeBlock = s->right;
     if (conditionState) 
       block(codeBlock);
+    popID();
     return conditionState;
   }
 
@@ -459,6 +602,7 @@ namespace FreeMat {
   bool WalkTree::testCaseStatement(ASTPtr t, Array s) {
     bool caseMatched;
     Array r;
+    pushID(t->context());
     if (t->type != reserved_node || t->tokenNumber != FM_CASE) 
       throw Exception("AST- syntax error!");
     t = t->down;
@@ -466,6 +610,7 @@ namespace FreeMat {
     caseMatched = s.testForCaseMatch(r);
     if (caseMatched)
       block(t->right);
+    popID();
     return caseMatched;
   }
 
@@ -515,9 +660,21 @@ namespace FreeMat {
     // Turn off autostop for this statement block
     bool autostop_save = autostop;
     autostop = false;
+    // Get the state of the IDnum stack and the
+    // contextStack and the cnameStack
+    int iddepth, cntxtdepth, cnamedepth;
+    iddepth = IDnums.size();
+    cntxtdepth = contextStack.size();
+    cnamedepth = cnameStack.size();
+    std::string cname_store = cname;
     try {
       block(t);
     } catch (Exception &e) {
+      std::string cname = cname_store;
+      // Clear the stacks
+      while (IDnums.size() > iddepth) IDnums.pop_back();
+      while (contextStack.size() > cntxtdepth) contextStack.pop_back();
+      while (cnameStack.size() > cnamedepth) cnameStack.pop_back();
       t = t->right;
       if (t != NULL) {
 	autostop = autostop_save;
@@ -587,7 +744,7 @@ namespace FreeMat {
   //!
   void WalkTree::switchStatement(ASTPtr t) {
     Array switchVal;
-
+    pushID(t->context());
     // First, extract the value to perform the switch on.
     switchVal = expression(t);
     // Assess its type to determine if this is a scalar switch
@@ -597,19 +754,21 @@ namespace FreeMat {
     // Move to the next node in the AST
     t = t->right;
     // Check for additional conditions
-    if (t==NULL) return;
-    bool caseMatched = false;
-    if (t->opNum ==(OP_CASEBLOCK)) {
-      ASTPtr s = t->down;
-      while (!caseMatched && s != NULL) {
-	caseMatched = testCaseStatement(s,switchVal);
-	s = s->right;
+    if (t!=NULL) {
+      bool caseMatched = false;
+      if (t->opNum ==(OP_CASEBLOCK)) {
+	ASTPtr s = t->down;
+	while (!caseMatched && s != NULL) {
+	  caseMatched = testCaseStatement(s,switchVal);
+	  s = s->right;
+	}
       }
+      t = t->right;
+      if (!(caseMatched || (t == NULL)))
+      // Do the "otherwise" code
+	block(t);
     }
-    t = t->right;
-    if (caseMatched || (t == NULL)) return;
-    // Do the "otherwise" code
-    block(t);
+    popID();
   }
 
   //!
@@ -660,22 +819,26 @@ namespace FreeMat {
   //!
   void WalkTree::ifStatement(ASTPtr t) {
     bool elseifMatched;
-
-    if (conditionedStatement(t)) return;
-    t = t->right;
-    // Check for additional conditions
-    if (t == NULL) return;
-    elseifMatched = false;
-    if (t->opNum ==(OP_ELSEIFBLOCK)) {
-      ASTPtr s = t->down;
-      while (!elseifMatched && s != NULL) {
-	elseifMatched = conditionedStatement(s);
-	s = s->right;
-      }
+    pushID(t->context());
+    bool condStat = conditionedStatement(t);
+    if (!condStat) {
       t = t->right;
+      // Check for additional conditions
+      if (t != NULL) {
+	elseifMatched = false;
+	if (t->opNum ==(OP_ELSEIFBLOCK)) {
+	  ASTPtr s = t->down;
+	  while (!elseifMatched && s != NULL) {
+	    elseifMatched = conditionedStatement(s);
+	    s = s->right;
+	  }
+	  t = t->right;
+	}
+	if (!(elseifMatched || t == NULL))
+	  block(t);
+      }
     }
-    if (elseifMatched || t == NULL) return;
-    block(t);
+    popID();
   }
 
   //!
@@ -710,7 +873,8 @@ namespace FreeMat {
     ASTPtr codeBlock;
     bool conditionTrue;
     bool breakEncountered;
-  
+    
+    pushID(t->context());
     testCondition = t;
     codeBlock = t->right;
     breakEncountered = false;
@@ -732,6 +896,7 @@ namespace FreeMat {
 	state = FM_STATE_OK;
     }
     context->exitLoop();
+    popID();
   }
 
   //!
@@ -790,7 +955,7 @@ namespace FreeMat {
     Array indexVar;
     int     elementNumber;
     int     elementCount;
-
+    pushID(t->context());
     /* Get the name of the indexing variable */
     indexVarName = t->text;
     /* Evaluate the index set */
@@ -816,6 +981,7 @@ namespace FreeMat {
       }
     }
     context->exitLoop();
+    popID();
   }
 
   //!
@@ -1150,6 +1316,7 @@ namespace FreeMat {
     ArrayVector m;
     FunctionDef *fdef;
     Fl::wait(0);
+    pushID(t->context());
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {
@@ -1196,10 +1363,14 @@ namespace FreeMat {
 	state = FM_STATE_RETURN;
 	break;
       case FM_SWITCH:
+	pushID(t->context());
 	switchStatement(t->down);
+	popID();
 	break;
       case FM_TRY:
+	pushID(t->context());
 	tryStatement(t->down);
+	popID();
 	break;
       case FM_QUIT:
 	state = FM_STATE_QUIT;
@@ -1208,6 +1379,7 @@ namespace FreeMat {
 	state = FM_STATE_RETALL;
 	break;
       case FM_KEYBOARD:
+	pushID(t->context());
 	depth++;
 	io->pushMessageContext();
 	evalCLI();
@@ -1216,12 +1388,17 @@ namespace FreeMat {
 	    state != FM_STATE_RETALL)
 	  state = FM_STATE_OK;
 	depth--;
+ 	popID();
 	break;
       case FM_GLOBAL:
+	pushID(t->context());
 	globalStatement(t->down);
+ 	popID();
 	break;
       case FM_PERSISTENT:
+	pushID(t->context());
 	persistentStatement(t->down);
+ 	popID();
 	break;
       default:
 	throw Exception("Unrecognized statement type");
@@ -1275,33 +1452,39 @@ namespace FreeMat {
 	return;
       context->insertVariable("ans",b);
     }
+    popID();
   }
 
 
+  //Trapping at the statement level is much better! - two
+  //problems... try/catch and multiline statements (i.e.,atell.m)
+  //The try-catch one is easy, I think...  When a try occurs,
+  //we capture the stack depth... if an exception occurs, we 
+  //unwind the stack to this depth..
+  //The second one is trickier - suppose we have a conditional
+  //statement
+  //if (a == 3)
+  //    bfunc
+  //else
+  //    cfunc
+  //end
+  //this is represented in the parse tree as a single construct...
+  //
   void WalkTree::statement(ASTPtr t) {
-    int sdepth = io->getMessageContextStackDepth();
     try {
-      if (t->opNum ==(OP_QSTATEMENT)) {
-	if (t->down->type == context_node) {
-	  io->setMessageContext(t->down->text);
-	  statementType(t->down->down,false);
-	} else {
-	  io->setMessageContext(NULL);
-	  statementType(t->down,false);
-	}
-      } else if (t->opNum ==(OP_RSTATEMENT)) {
-	if (t->down->type == context_node) {
-	  io->setMessageContext(t->down->text);
-	  statementType(t->down->down,true);
-	} else {
-	  io->setMessageContext(NULL);
-	  statementType(t->down,true);
-	}
-      }
+      pushID(t->context());
+      if (t->opNum ==(OP_QSTATEMENT)) 
+	statementType(t->down,false);
+      else if (t->opNum ==(OP_RSTATEMENT))
+	statementType(t->down,true);
+      else
+	statementType(t->down,true);
+      popID();
     } catch (Exception& e) {
       if (autostop & !InCLI) {
+	char buffer[4096];
 	e.printMe(io);
-	io->clearMessageContextStackToDepth(sdepth);
+	stackTrace(true);
 	depth++;
 	io->pushMessageContext();
 	evalCLI();
@@ -1355,7 +1538,7 @@ namespace FreeMat {
   Array WalkTree::simpleSubindexExpression(Array& r, ASTPtr t) {
     Dimensions rhsDimensions;
     ArrayVector m;
-
+    
     rhsDimensions = r.getDimensions();
     if (t->opNum ==(OP_PARENS)) {
       m = expressionList(t->down,&rhsDimensions);
@@ -1421,7 +1604,7 @@ namespace FreeMat {
 
   void WalkTree::simpleAssign(Array& r, ASTPtr t, Array& value) {
     ArrayVector vec;
-
+    
     vec.push_back(value);
     simpleAssign(r,t,vec);
   }
@@ -1429,7 +1612,7 @@ namespace FreeMat {
   void WalkTree::simpleAssign(Array& r, ASTPtr t, ArrayVector& value) {
     Dimensions rhsDimensions;
     ArrayVector m;
-
+    pushID(t->context());
     if (!r.isEmpty()) {
       rhsDimensions = r.getDimensions();
     } else if (t->opNum != OP_BRACES) {
@@ -1443,9 +1626,11 @@ namespace FreeMat {
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	r.setVectorSubset(m[0],value[0]);
+	popID();
 	return;
       } else {
 	r.setNDimSubset(m,value[0]);
+	popID();
 	return;
       }
     }
@@ -1455,14 +1640,17 @@ namespace FreeMat {
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
 	r.setVectorContentsAsList(m[0],value);
+	popID();
 	return;
       } else {
 	r.setNDimContentsAsList(m,value);
+	popID();
 	return;
       }
     }
     if (t->opNum ==(OP_DOT)) {
       r.setFieldAsList(t->down->text,value);
+	popID();
       return;
     }    
     if (t->opNum == (OP_DOTDYN)) {
@@ -1474,8 +1662,10 @@ namespace FreeMat {
 	throw Exception("dynamic field reference to structure requires a string argument");
       }
       r.setFieldAsList(field,value);
+      popID();
       return;
     }
+    popID();
   }
 
   int WalkTree::countLeftHandSides(ASTPtr t) {
@@ -1483,7 +1673,11 @@ namespace FreeMat {
     if (!context->lookupVariable(t->text,lhs))
       lhs = Array::emptyConstructor();
     ASTPtr s = t->down;
-    if (s == NULL) return 1;
+    pushID(s->context());
+    if (s == NULL) {
+      popID();
+      return 1;
+    }
     while (s->right != NULL) {
       if (!lhs.isEmpty())
 	lhs = simpleSubindexExpression(lhs,s);
@@ -1502,6 +1696,7 @@ namespace FreeMat {
 	  m[0].toOrdinalType();
 	  if (m[0].getLength() > 1)
 	    throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
+	  popID();
 	  return (m[0].getLength());
 	}
 	else {
@@ -1514,6 +1709,7 @@ namespace FreeMat {
 	  }
 	  if (outputCount > 1)
 	    throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
+	  popID();
 	  return (outputCount);
 	}
     }
@@ -1524,6 +1720,7 @@ namespace FreeMat {
       if (m.size() == 1) {
 	// m[0] should have only one element...
 	m[0].toOrdinalType();
+	popID();
 	return (m[0].getLength());
       }
       else {
@@ -1534,11 +1731,15 @@ namespace FreeMat {
 	  outputCount *= m[i].getLength();
 	  i++;
 	}
+	popID();
 	return (outputCount);
       }
     }
-    if (s->opNum ==(OP_DOT))
+    if (s->opNum ==(OP_DOT)) {
+      popID();
       return lhs.getLength();
+    }
+    popID();
     return 1;
   }
 
@@ -1551,9 +1752,11 @@ namespace FreeMat {
   
   // If we got this far, we must have at least one subindex
   Array WalkTree::assignExpression(ASTPtr t, ArrayVector& value) {
+    pushID(t->context());
     if (t->down == NULL) {
       Array retval(value[0]);
       value.erase(value.begin());
+      popID();
       return retval;
     }
     // Get the variable in question
@@ -1597,6 +1800,7 @@ namespace FreeMat {
       simpleAssign(lhs,ref.back(),tmp);
     } else
       lhs = tmp;
+    popID();
     return lhs;
   }
 
@@ -1604,10 +1808,12 @@ namespace FreeMat {
     FunctionDef *fptr;
     ASTPtr fAST;
     ArrayVector m;
+    pushID(t->context());
 
     if (!lookupFunctionWithRescan(t->text,fptr))
       throw Exception(std::string("Undefined function ") + t->text);
     m = functionExpression(fptr,t,0,false);
+    popID();
   }
 
   void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) {
@@ -1617,8 +1823,10 @@ namespace FreeMat {
     int lhsSize;
     int lhsCounter;
     FunctionDef *fptr;
-  
+
     fAST = t->right;
+    pushID(fAST->context());
+
     if (!lookupFunctionWithRescan(fAST->text,fptr))
       throw Exception(std::string("Undefined function ") + fAST->text);
     if (t->opNum != OP_BRACKETS)
@@ -1659,6 +1867,7 @@ namespace FreeMat {
     }
     if (s != NULL)
       io->warningMessage("Warning! one or more outputs not assigned in call.");
+    popID();
   }
 
   int getArgumentIndex(stringVector list, std::string t) {
@@ -2115,10 +2324,14 @@ namespace FreeMat {
     ASTPtrVector keyexpr;
     int *keywordNdx;
     int *argTypeMap;
-	int i;
+    int i;
+    char buffer[2048];
 
+    pushID(t->context());
     funcDef->updateCode();
+    
     io->pushMessageContext();
+
     try {
       if (funcDef->scriptFlag) {
 	if (t->down != NULL)
@@ -2127,7 +2340,9 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
 	bool CLIFlagsave = InCLI;
 	InCLI = false;
+	pushDebug(funcDef->name);
 	block(((MFunctionDef*)funcDef)->code);
+	popDebug();
 	InCLI = CLIFlagsave;
       } else {
 	// Look for arguments
@@ -2298,11 +2513,41 @@ namespace FreeMat {
       while (n.size() > narg_out)
 	n.pop_back();
       io->popMessageContext();
+      popID();
       return n;
     } catch (Exception& e) {
       io->popMessageContext();
       throw;
     }
+    popID();
+  }
+
+  void WalkTree::stackTrace(bool includeCurrent) {
+    char buffer[4096];
+    if (includeCurrent) {
+      sprintf(buffer,"In %s, line %d, position %d\n",
+	      cname.c_str(), IDnums.back() & 0x0000FFFF,
+	      IDnums.back() >> 16);
+      io->outputMessage(buffer);
+    }
+    for (int i=contextStack.size()-1;i>0;i--) {
+      io->outputMessage(contextStack[i].c_str());
+    }
+  }
+
+  void WalkTree::pushDebug(std::string fname) {
+    char buffer[1024];
+    sprintf(buffer,"In %s, line %d, position %d\n",
+	    cname.c_str(), IDnums.back() & 0x0000FFFF, IDnums.back() >> 16);
+    contextStack.push_back(buffer);
+    cnameStack.push_back(cname);
+    cname = fname;
+  }
+
+  void WalkTree::popDebug() {
+    contextStack.pop_back();
+    cname = cnameStack.back();
+    cnameStack.pop_back();
   }
 
   Interface* WalkTree::getInterface() {
@@ -2325,24 +2570,29 @@ namespace FreeMat {
     bool isVar;
     bool isFun;
     FunctionDef *funcDef;
-
+    pushID(t->context());
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
     isVar = context->lookupVariable(t->text,r);
     if (isVar && (t->down == NULL)) {
+      popID();
       return r;
     }
     if (!isVar)
       isFun = lookupFunctionWithRescan(t->text,funcDef);
     if (!isVar && isFun) {
       m = functionExpression(funcDef,t,1,false);
-      if (m.empty())
+      if (m.empty()) {
+	popID();
 	return Array::emptyConstructor();
-      else
+      } else {
+	popID();
 	return m[0];
+      }
     }
     if (!isVar && !isFun)
       throw Exception(std::string("Undefined function or variable ") + t->text);
+    popID();
   }
 
   //!
@@ -2537,19 +2787,21 @@ namespace FreeMat {
     bool isFun;
     Dimensions rhsDimensions;
     FunctionDef *funcDef;
-
+    pushID(t->context());
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
     isVar = context->lookupVariable(t->text,r);
     if (isVar && (t->down == NULL)) {
       ArrayVector rv;
       rv.push_back(r);
+      popID();
       return rv;
     }
     if (!isVar)
       isFun = lookupFunctionWithRescan(t->text,funcDef);
     if (!isVar && isFun) {
       m = functionExpression(funcDef,t,1,false);
+      popID();
       return m;
     }
     if (!isVar && !isFun)
@@ -2612,6 +2864,7 @@ namespace FreeMat {
     }
     if (rv.empty())
       rv.push_back(r);
+    popID();
     return rv;
   }
 
@@ -2629,6 +2882,8 @@ namespace FreeMat {
     printLimit = 1000;
     autostop = true;
     InCLI = false;
+    cname = "base";
+    IDnums.push_back(0);
   }
 
   bool WalkTree::evaluateString(char *line) {
@@ -2731,9 +2986,14 @@ namespace FreeMat {
 	line = NULL;
       }
       InCLI = true;
-      if (line && evaluateString(line)) {
-	InCLI = false;
-	return;
+      if (line) {
+	pushDebug("interactive");
+	bool tresult =  evaluateString(line);
+	popDebug();
+	if (tresult) {
+	  InCLI = false;
+	  return;
+	}
       }
       InCLI = false;
     }

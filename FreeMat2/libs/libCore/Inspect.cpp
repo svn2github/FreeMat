@@ -751,17 +751,7 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector WhereFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    Interface *io = eval->getInterface();
-    std::vector<std::string> stacktrace;
-    stacktrace = io->getMessageContextStack();
-    int i;
-    char buffer[100];
-    for (i=0;i<stacktrace.size()-1;i++) {
-      sprintf(buffer,"[%d]  -- ",i);
-      io->outputMessage(buffer);
-      io->outputMessage(stacktrace[i].c_str());
-      io->outputMessage("\r\n");
-    }
+    eval->stackTrace(false);
     return ArrayVector();
   }
 

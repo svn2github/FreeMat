@@ -20,6 +20,7 @@ using namespace FreeMat;
 
 extern YYSTYPE yylval;
 extern bool interactiveMode;
+extern int charcontext;
 char *buffer = NULL;
 char *datap;
 char *linestart;
@@ -40,24 +41,6 @@ int vcStack[256];
 int vcStackSize;
 int vcFlag;
 
-extern char prevline_context_buffer[4096];
-extern char currline_context_buffer[4096];
-
-void NextLine() {
-  if (linestart) {
-    memcpy(prevline_context_buffer,linestart,datap-linestart);
-    prevline_context_buffer[datap-linestart] = 0;
-  } else
-    prevline_context_buffer[0] = 0;
-  lineNumber++;
-  linestart = datap;
-  // Copy the current line into the other buffer
-  char *tp = linestart;
-  while ((*tp) && (*tp != '\n')) tp++;
-  memcpy(currline_context_buffer,linestart,tp-linestart);
-  currline_context_buffer[tp-linestart] = 0;
-}
-
 /*
  * These variables capture the token information
  */
@@ -67,14 +50,23 @@ ASTPtr tokenValue;
 
 reservedWordStruct ts, *p;
 
+int ContextInt() {
+  return ((datap-linestart) << 16) | lineNumber;
+}
+
+void NextLine() {
+  lineNumber++;
+  linestart = datap;
+}
+
 void LexerException(const char *msg) {
   char buffer[256];
   if (!interactiveMode && parsing_filename && msg) {
-    sprintf(buffer,"Lexical error '%s'\n\tat line %d of file %s\n\t>>%s",
-	    msg,lineNumber,parsing_filename,currline_context_buffer);
+    sprintf(buffer,"Lexical error '%s'\n\tat line %d of file %s\n\t>>",
+	    msg,lineNumber,parsing_filename);
     throw Exception(buffer);
   } else {
-    sprintf(buffer,"Lexical error '%s'\n\t%s",msg,currline_context_buffer);
+    sprintf(buffer,"Lexical error '%s'\n\t>>",msg);
     throw Exception(buffer);
   }
 }
@@ -186,7 +178,7 @@ void lexString() {
   discardChar();
   *strptr++ = '\0';
   setTokenType(STRING);
-  tokenValue = new AST(string_const_node,stringval);
+  tokenValue = new AST(string_const_node,stringval,ContextInt());
   return;
 }
 
@@ -220,7 +212,7 @@ void lexSpecialCall() {
     }
     *strptr++ = '\0';
     setTokenType(STRING);
-    tokenValue = new AST(string_const_node,stringval);
+    tokenValue = new AST(string_const_node,stringval,ContextInt());
   }
   if ((datap[0] == ';') || (datap[0] == '\r') ||
       (datap[0] == '\n'))
@@ -269,7 +261,7 @@ int lexTestSpecialSyntax() {
   datap += n;
   lexState = SpecialCall;
   setTokenType(SPECIALCALL);
-  tokenValue = new AST(id_node,ident_candidate);
+  tokenValue = new AST(id_node,ident_candidate,ContextInt());
   return 1;
 }
 
@@ -300,7 +292,7 @@ void lexIdentifier() {
     // The lexer no longer _has_ to keep track of the "end" keywords
     // to match them up.  But we need this information to determine
     // if more text is needed...
-    tokenValue = new AST(reserved_node,p->ordinal);
+    tokenValue = new AST(reserved_node,p->ordinal,ContextInt());
     if ((p->token == FOR) || (p->token == WHILE) || 
 	(p->token == IF) || (p->token == ELSEIF) || 
 	(p->token == CASE)) {
@@ -310,7 +302,7 @@ void lexIdentifier() {
     return;
   } else {
     setTokenType(IDENT);
-    tokenValue = new AST(id_node, ident);
+    tokenValue = new AST(id_node,ident,ContextInt());
   }
 }
 
@@ -425,13 +417,13 @@ int lexNumber() {
   setTokenType(NUMERIC);
   switch (vtype) {
   case 1:
-    tokenValue = new AST(const_float_node,buffer);
+    tokenValue = new AST(const_float_node,buffer,ContextInt());
     break;
   case 2:
-    tokenValue = new AST(const_double_node,buffer);
+    tokenValue = new AST(const_double_node,buffer,ContextInt());
     break;
   case 3:
-    tokenValue = new AST(const_int_node,buffer);
+    tokenValue = new AST(const_int_node,buffer,ContextInt());
     break;
   }
   return 1;
@@ -645,9 +637,12 @@ int yylexScreen() {
 
 int yylex() {
   int retval;
+  yylval = (YYSTYPE) 0;
   retval = yylexScreen();
   while (retval == WS)
     retval = yylexScreen();
+  if (!yylval)
+    yylval = (YYSTYPE) ContextInt();
   return retval;
 }
 
@@ -664,6 +659,7 @@ namespace FreeMat {
     datap = buffer;
     strcpy(buffer,buf);
     linestart = datap;
+    lineNumber = 0;
   }
 
   void setLexFile(FILE *fp) {

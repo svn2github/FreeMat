@@ -78,6 +78,11 @@ namespace FreeMat {
      * scope.
      */
     stringVector persistentVars;
+    /**
+     * The location ID stack - stores information on where in the source
+     * file the current token resides.
+     */
+    std::vector<int> IDstack;
   public:
     /**
      * Construct a scope with the given name.

@@ -25,7 +25,7 @@ namespace FreeMat {
 
   void Interface::clearMessageContextStackToDepth(int depth) {
     while (messageStack.size() > depth)
-      messageStack.pop_back();      
+      messageStack.pop_back();
   }
 
   int Interface::getMessageContextStackDepth() {

@@ -127,7 +127,7 @@ namespace FreeMat {
 
     context = walker->getContext();
     context->pushScope(name);
-
+    walker->pushDebug(name);
     // Push our local functions onto the function scope
     MFunctionDef *cp;
     cp = nextFunction;
@@ -240,9 +240,11 @@ namespace FreeMat {
 	context->lookupVariableLocally(arg,inputs[i]);
       }
       context->popScope();
+      walker->popDebug();
       return outputs;
     } catch (Exception& e) {
       context->popScope();
+      walker->popDebug();
       throw e;
     }
   }
@@ -383,11 +385,14 @@ namespace FreeMat {
     sprintf(buffer,"built-in function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
+    walker->pushDebug(name);
     try {
       outputs = fptr(nargout,inputs);
+      walker->popDebug();
       walker->getInterface()->popMessageContext();
       return outputs;
     } catch(Exception& e) {
+      walker->popDebug();
       walker->getInterface()->popMessageContext();
       throw;
     }
@@ -406,11 +411,14 @@ namespace FreeMat {
     sprintf(buffer,"special function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
+    walker->pushDebug(name);
     try {
       outputs = fptr(nargout,inputs,walker);
+      walker->popDebug();
       walker->getInterface()->popMessageContext();
       return outputs;
     } catch(Exception& e) {
+      walker->popDebug();
       walker->getInterface()->popMessageContext();
       throw;
     }
@@ -502,9 +510,10 @@ namespace FreeMat {
 						    ArrayVector& inputs,
 						    int nargout) {
     char buffer[1000];
-    sprintf(buffer,"special function %s",name.c_str());
+    sprintf(buffer,"imported function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
+    walker->pushDebug(name);
     /**
      * To actually evaluate the function, we have to process each of
      * the arguments and get them into the right form.
@@ -538,6 +547,7 @@ namespace FreeMat {
       Context* context;
       context = walker->getContext();
       context->pushScope("temp");
+      walker->pushDebug("bounds check");
       try {
 	for (i=0;i<inputs.size();i++)
 	  context->insertVariableLocally(arguments[i],inputs[i]);
@@ -565,6 +575,7 @@ namespace FreeMat {
       }
       walker->getInterface()->popMessageContext();
       context->popScope();
+      walker->popDebug();
     }
       
     /**
@@ -651,6 +662,7 @@ namespace FreeMat {
 
     free(refPointers);
     free(values);
+    walker->popDebug();
     return singleArrayVector(retArray);
   }
 

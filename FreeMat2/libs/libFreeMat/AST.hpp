@@ -36,7 +36,6 @@ namespace FreeMat {
     string_const_node,
     null_node,
     reserved_node,
-    context_node
   } NODE_TYPE;
 
   typedef enum {
@@ -100,10 +99,10 @@ namespace FreeMat {
     NODE_TYPE type;
     char* text;
     int tokenNumber;
+    int m_context;
     AST* down;
     AST* right;
     OP_TYPE opNum;
-  
     /** Default constructor
      * Creates an empty AST node.  All pointers are initialized to NULL,
      * the type is set to non_terminal.
@@ -113,38 +112,41 @@ namespace FreeMat {
      * Creates a node of the specified type with the text field set to a copy
      * of the name argument.
      */
-    AST(NODE_TYPE ntype, char* name);
+    AST(NODE_TYPE ntype, char* name, int context);
     /** Token constructor
      * Creates a node of the specified type with the tokenNumber field set to
      * the token argument.  This constructor is useful for nodes that are represented
      * by a single, numeric token (as opposed to a string).
      */
-    AST(NODE_TYPE ntype, int token);
+    AST(NODE_TYPE ntype, int token, int context);
     /** Nonterminal constructor with two arguments
      * Creates a non-terminal node with the text set to a copy of the name argument
      * with the given left and right AST nodes.  The resulting tree fragment
      * looks like:
      *\dotfile ASTdot1.dot
      */
-    AST(OP_TYPE op, AST* lt, AST* rt);
+    AST(OP_TYPE op, AST* lt, AST* rt, int context);
     /** Nonterminal constructor with three arguments
      * Creates a non-terminal node with the text set to a copy of the name argument
      * with the given three AST nodes.  The resulting tree fragment
      * looks like:
      *\dotfile ASTdot2.dot
      */
-    AST(OP_TYPE op, AST* lt, AST* md, AST* rt);
+    AST(OP_TYPE op, AST* lt, AST* md, AST* rt, int context);
     /** Nonterminal constructor with a single argument
      * Creates a non-terminal node with the text set to a copy of the name argument
      * with the given AST node.  The resulting tree fragment
      * looks like:
      *\dotfile ASTdot3.dot
      */
-    AST(OP_TYPE op, AST* arg);
+    AST(OP_TYPE op, AST* arg, int context);
     /** Destructor
      */
     ~AST();
-
+    /** Context string
+     * Returns the context string for this node.
+     */
+    int context();
     /** Test for a match
      * Returns true if textual content of this node matches the supplied argument
      * (and is not NULL).

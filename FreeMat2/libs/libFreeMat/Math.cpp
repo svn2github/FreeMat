@@ -674,13 +674,14 @@ namespace FreeMat {
   /**
    * Check that both of the argument objects are numeric.
    */
-  inline void CheckNumeric(Array &A, Array &B) throw(Exception){
+  inline void CheckNumeric(Array &A, Array &B, std::string opname) throw(Exception){
     bool Anumeric, Bnumeric;
 
     Anumeric = !A.isReferenceType();
     Bnumeric = !B.isReferenceType();
     if (!(Anumeric && Bnumeric))
-      throw Exception("Cannot apply numeric operations to reference types.");
+      throw Exception(std::string("Cannot apply numeric operation ") + 
+		      opname + std::string(" to reference types."));
   }
 
   /**
@@ -747,17 +748,18 @@ namespace FreeMat {
    *  5. A & B must be conformant, i.e. the number of columns in A must
    *     match the number of rows in B.
    */
-  inline bool MatrixCheck(Array &A, Array &B) throw(Exception){
+  inline bool MatrixCheck(Array &A, Array &B, std::string opname) throw(Exception){
     // Test for either a scalar (test 1)
     if (A.isScalar() || B.isScalar())
       return false;
 
     // Test for A & B numeric
-    CheckNumeric(A,B);
+    CheckNumeric(A,B,opname);
 
     // Test for 2D
     if (!A.is2D() || !B.is2D()) 
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception(std::string("Cannot apply matrix operation ") + 
+		      opname + std::string(" to N-Dimensional arrays."));
   
     // Test the types
     TypeCheck(A,B,true);
@@ -781,14 +783,14 @@ namespace FreeMat {
    *  2. Either A & B are the same size or
    *      A is a scalar or B is a scalar.
    */
-  inline void VectorCheck(Array& A, Array& B, bool promote) throw(Exception){
+  inline void VectorCheck(Array& A, Array& B, bool promote, std::string opname) throw(Exception){
     stringVector dummySV;
 
     // Check for numeric types
-    CheckNumeric(A,B);
+    CheckNumeric(A,B,opname);
   
     if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
-      throw Exception("Size mismatch on arguments to arithmetic operator.");
+      throw Exception(std::string("Size mismatch on arguments to arithmetic operator ") + opname);
   
     // Test the types.
     TypeCheck(A,B,promote);
@@ -801,12 +803,12 @@ namespace FreeMat {
    *  2. Either A & B must be the same size, or A is a
    *     scalar or B is a scalar.
    */
-  inline void BoolVectorCheck(Array& A, Array& B) throw(Exception){
+  inline void BoolVectorCheck(Array& A, Array& B,std::string opname) throw(Exception){
     A.promoteType(FM_LOGICAL);
     B.promoteType(FM_LOGICAL);
 
     if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
-      throw Exception("Size mismatch on arguments.");
+      throw Exception(std::string("Size mismatch on arguments to ") + opname);
   }
 
 
@@ -912,9 +914,9 @@ namespace FreeMat {
 
     if (A.isEmpty() || B.isEmpty())
       return Array::emptyConstructor();
-    CheckNumeric(A,B);
+    CheckNumeric(A,B,"^");
     if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
-      throw Exception("Size mismatch on arguments to arithmetic operator.");
+      throw Exception("Size mismatch on arguments to power (^) operator.");
     // If A is not at least a float type, promote it to double
     AClass = A.getDataClass();
     BClass = B.getDataClass();
@@ -998,10 +1000,10 @@ namespace FreeMat {
    *   logical scalar vector
    * The remaining 3 function placeholders in the packVectorVector are unused.
    */
-  inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec) {
+  inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opname) {
     Array C;
   
-    BoolVectorCheck(A,B);
+    BoolVectorCheck(A,B,opname);
     if (A.isScalar()) {
       int Blen(B.getLength());
       C = Array(FM_LOGICAL,B.getDimensions(),NULL);
@@ -1114,7 +1116,7 @@ namespace FreeMat {
   //!
   Array Add(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,"+");
     // Get a pointer to the function we ultimately need to execute
     int Astride, Bstride;
     void *Cp = NULL;
@@ -1274,7 +1276,7 @@ namespace FreeMat {
   //!
   Array Subtract(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,"-");
     // Get a pointer to the function we ultimately need to execute
     int Astride, Bstride;
     void *Cp = NULL;
@@ -1429,7 +1431,7 @@ namespace FreeMat {
   //!
   Array DotMultiply(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,".*");
     // Get a pointer to the function we ultimately need to execute
     int Astride, Bstride;
     void *Cp = NULL;
@@ -1587,7 +1589,7 @@ namespace FreeMat {
   //!
   Array DotRightDivide(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,true);
+    VectorCheck(A,B,true,"./");
     // Get a pointer to the function we ultimately need to execute
     int Astride, Bstride;
     void *Cp = NULL;
@@ -1712,6 +1714,8 @@ namespace FreeMat {
   //@>
   //!
   Array DotLeftDivide(Array A, Array B) {
+    // Process the two arguments through the type check and dimension checks...
+    VectorCheck(A,B,true,".\\");
     return DotRightDivide(B,A);
   }
 
@@ -1806,7 +1810,7 @@ namespace FreeMat {
   //!
   Array LessThan(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,"<");
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
@@ -1862,7 +1866,7 @@ namespace FreeMat {
    */
   Array LessEquals(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,"<=");
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
@@ -1918,7 +1922,7 @@ namespace FreeMat {
    */
   Array GreaterThan(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,">");
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
@@ -1974,7 +1978,7 @@ namespace FreeMat {
    */
   Array GreaterEquals(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,">=");
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
@@ -2030,7 +2034,7 @@ namespace FreeMat {
    */
   Array Equals(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,"==");
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
@@ -2086,7 +2090,7 @@ namespace FreeMat {
    */
   Array NotEquals(Array A, Array B) {
     // Process the two arguments through the type check and dimension checks...
-    VectorCheck(A,B,false);
+    VectorCheck(A,B,false,"~=");
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
@@ -2206,7 +2210,7 @@ namespace FreeMat {
     int Clen;
     Dimensions Cdim;
 
-    BoolVectorCheck(A,B);
+    BoolVectorCheck(A,B,"&");
 
     if (A.isScalar()) {
       Astride = 0;
@@ -2237,7 +2241,7 @@ namespace FreeMat {
     int Clen;
     Dimensions Cdim;
 
-    BoolVectorCheck(A,B);
+    BoolVectorCheck(A,B,"|");
 
     if (A.isScalar()) {
       Astride = 0;
@@ -2371,7 +2375,7 @@ namespace FreeMat {
     if (A.isEmpty() || B.isEmpty())
       return Array::emptyConstructor();
     // Process our arguments
-    if (!MatrixCheck(A,B))
+    if (!MatrixCheck(A,B,"*"))
       // Its really a vector product, pass...
       return DotMultiply(A,B);
   
@@ -2530,7 +2534,7 @@ namespace FreeMat {
       return Array::emptyConstructor();
     stringVector dummySV;
     // Process our arguments
-    if (!MatrixCheck(A,B))
+    if (!MatrixCheck(A,B,"\\"))
       // Its really a vector product, pass...
       return DotLeftDivide(A,B);
   
@@ -2674,7 +2678,7 @@ namespace FreeMat {
     if (A.isEmpty() || B.isEmpty())
       return Array::emptyConstructor();
     // Process our arguments
-    if (!MatrixCheck(A,B))
+    if (!MatrixCheck(A,B,"/"))
       // Its really a vector product, pass...
       return DotRightDivide(A,B);
 
@@ -2698,7 +2702,7 @@ namespace FreeMat {
       throw Exception("Cannot apply eigendecomposition to reference types.");
   
     if (!A.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
 
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
@@ -2779,7 +2783,7 @@ namespace FreeMat {
       throw Exception("Cannot apply eigendecomposition to reference types.");
   
     if (!A.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
 
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
@@ -2882,7 +2886,7 @@ namespace FreeMat {
       throw Exception("Cannot apply eigendecomposition to reference types.");
   
     if (!A.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
 
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
@@ -3081,7 +3085,7 @@ namespace FreeMat {
       throw Exception("Cannot apply eigendecomposition to reference types.");
   
     if (!A.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
 
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
@@ -3194,7 +3198,7 @@ namespace FreeMat {
     if (A.isReferenceType() || B.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
     if (!A.is2D() || !B.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
     if (B.getDimensionLength(0) != B.getDimensionLength(1))
@@ -3302,7 +3306,7 @@ namespace FreeMat {
     if (A.isReferenceType() || B.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
     if (!A.is2D() || !B.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
     if (B.getDimensionLength(0) != B.getDimensionLength(1))
@@ -3436,7 +3440,7 @@ namespace FreeMat {
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
     if (!A.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
     int N = A.getDimensionLength(0);
@@ -3629,7 +3633,7 @@ namespace FreeMat {
     if (A.isReferenceType())
       throw Exception("Cannot apply eigendecomposition to reference types.");
       if (!A.is2D())
-      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+      throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
     if (A.getDimensionLength(0) != A.getDimensionLength(1))
       throw Exception("Cannot eigendecompose a non-square matrix.");
     int N = A.getDimensionLength(0);
@@ -3929,7 +3933,7 @@ namespace FreeMat {
     if (A.isScalar() && B.isScalar()) return DotPower(A,B);
 
     // Check for A & B numeric
-    CheckNumeric(A,B);
+    CheckNumeric(A,B,"^");
 
     // Test for 2D on both A & B
     if (!A.is2D() || !B.is2D())

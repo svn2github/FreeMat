@@ -27,7 +27,6 @@
 #include <stdio.h>
 
 namespace FreeMat {
-
   bool isEscape(char *dp) {
     return ((dp[0] == '\\') &&
 	    ((dp[1] == '\'') ||
@@ -78,7 +77,7 @@ namespace FreeMat {
     opNum = OP_NULL;
   }
 
-  AST::AST(NODE_TYPE ntype, char* name) {
+  AST::AST(NODE_TYPE ntype, char* name, int context) {
     type = ntype;
     text = (char*) malloc(strlen(name)+1);
     convertEscapeSequences(text,name);
@@ -86,27 +85,30 @@ namespace FreeMat {
     down = NULL;
     right = NULL;
     opNum = OP_NULL;
+    m_context = context;
   }
 
-  AST::AST(NODE_TYPE ntype, int token) {
+  AST::AST(NODE_TYPE ntype, int token, int context) {
     type = ntype;
     tokenNumber = token;
     down = NULL;
     right = NULL;
     text = NULL;
     opNum = OP_NULL;
+    m_context = context;
   }
 
-  AST::AST(OP_TYPE op, AST* arg) {
+  AST::AST(OP_TYPE op, AST* arg, int context) {
     type = non_terminal;
     text = NULL;
     tokenNumber = 0;
     down = arg;
     right = NULL;
     opNum = op;
+    m_context = context;
   }
 
-  AST::AST(OP_TYPE op, AST* lt, AST* rt) {
+  AST::AST(OP_TYPE op, AST* lt, AST* rt, int context) {
     type = non_terminal;
     text = NULL;
     opNum = op;
@@ -114,9 +116,10 @@ namespace FreeMat {
     tokenNumber = 0;
     down = lt;
     right = NULL;
+    m_context = context;
   }
 
-  AST::AST(OP_TYPE op, AST* lt, AST* md, AST* rt) {
+  AST::AST(OP_TYPE op, AST* lt, AST* md, AST* rt, int context) {
     type = non_terminal;
     text = NULL;
     opNum = op;
@@ -125,12 +128,17 @@ namespace FreeMat {
     tokenNumber = 0;
     down = lt;
     right = NULL;
+    m_context = context;
   }
 
   AST::~AST() {
     if (text != NULL) free(text);
   }
 
+  int AST::context() {
+    return m_context;
+  }
+  
   bool AST::match(OP_TYPE test) {
     return (test == opNum);
   }

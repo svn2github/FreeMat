@@ -81,7 +81,18 @@ namespace FreeMat {
      * When this flag is active, autostop does nothing.
      */
     bool InCLI;
+    
+    std::string cname;
+    std::vector<int> IDnums;
+    std::vector<std::string> contextStack;
+    std::vector<std::string> cnameStack;
   public:
+    void pushDebug(std::string fname);
+
+    void popDebug();
+    
+    void stackTrace(bool includeCurrent);
+
     /**
      * Construct a WalkTree object with the given context to operate
      * in.
@@ -91,6 +102,14 @@ namespace FreeMat {
      * Destruct the WalkTree object.
      */
     ~WalkTree();
+    /**
+     * Push the given location ID onto the stack
+     */
+    void pushID(int);
+    /**
+     * Pop a location ID off the stack
+     */
+    void popID();
     /**
      * Set the autostop flag - this flag determines what happens when
      * an exception occurs

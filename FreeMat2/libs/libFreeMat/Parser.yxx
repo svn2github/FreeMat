@@ -55,10 +55,6 @@ bool interactiveMode;
 #define snprintf _snprintf
 #endif
 
-char prevline_context_buffer[4096];
-char currline_context_buffer[4096];
-
-
 namespace FreeMat {
   static ASTPtr mainAST;
   static MFunctionDef *mainMDef;
@@ -80,15 +76,15 @@ namespace FreeMat {
     if (xStr)
       if (!interactiveMode)
         snprintf(msgBuffer,MSGBUFLEN,
-	"Expecting %s\n\tat line %d of file %s\n\t>>%s",
-	xStr,lineNumber+addone,parsing_filename,currline_context_buffer);
+	"Expecting %s\n\tat line %d of file %s",
+	xStr,lineNumber+addone,parsing_filename);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s",xStr);
     else
       if (!interactiveMode)	
         snprintf(msgBuffer,MSGBUFLEN,
-	"Syntax error at line %d of file %s\n\t%s",
-	lineNumber+addone,parsing_filename,currline_context_buffer);
+	"Syntax error at line %d of file %s",
+	lineNumber+addone,parsing_filename);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input");
     throw Exception(msgBuffer);
@@ -272,50 +268,29 @@ argument:
   
 
 statementList:
-   statement {$$ = new AST(OP_BLOCK,$1);} | 
+   statement {$$ = new AST(OP_BLOCK,$1,$1->context());} | 
    statementList statement {$$ = $1; $$->addChild($2);}
    ;
 
 statement:
 	 statementType ENDQSTMNT {
-  	    $$ = new AST(OP_QSTATEMENT,NULL);
-	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,
-	               "line %d of file %s\n\t>>%s",
-                       lineNumber,parsing_filename,prevline_context_buffer);
-	      $$->down = new AST(context_node, strdup(msgBuffer));
-	      $$->down->down = $1;
-	    } else
-	      $$->down = $1;
+  	    $$ = new AST(OP_QSTATEMENT,NULL,(int)$2);
+	    $$->down = $1;
 	 }
 	 | statementType ENDSTMNT {
-	    $$ = new AST(OP_RSTATEMENT,NULL);
-	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,
-	               "line %d of file %s\n\t>>%s",
-			lineNumber,parsing_filename,prevline_context_buffer);
-	      $$->down = new AST(context_node, strdup(msgBuffer));
-	      $$->down->down = $1;
-	    } else
-	      $$->down = $1;
+	    $$ = new AST(OP_RSTATEMENT,NULL,(int)$2);
+            $$->down = $1;
 	 }
 	 | statementType ',' {
-	    $$ = new AST(OP_RSTATEMENT,NULL);
-	    if (!interactiveMode) {
-	      snprintf(msgBuffer,MSGBUFLEN,
-			"line %d of file %s\n\t>>%s",
-			lineNumber,parsing_filename,currline_context_buffer);
-	      $$->down = new AST(context_node, strdup(msgBuffer));
-	      $$->down->down = $1;
-	    } else
-	      $$->down = $1;
+	    $$ = new AST(OP_RSTATEMENT,NULL,(int)$2);
+	    $$->down = $1;
 	 } 
 	 ;
 
 statementType:
 	 assignmentStatement
 	 | expr
-	 | {$$ = new AST(null_node,"");} 
+	 | {$$ = new AST(null_node,"",-1);} 
          | multiFunctionCall
          | forStatement
          | breakStatement
@@ -334,11 +309,12 @@ statementType:
          ;
 
 specialSyntaxStatement:
-	SPECIALCALL stringList {$1->addChild($2); $$ = new AST(OP_SCALL,$1);}
+	SPECIALCALL stringList {$1->addChild($2); 
+				$$ = new AST(OP_SCALL,$1,$1->context());}
 	;
 
 stringList:
-	STRING {$$ = new AST(OP_PARENS,$1);} |
+	STRING {$$ = new AST(OP_PARENS,$1,$1->context());} |
 	stringList STRING {$$ = $1; $$->addChild($2);}
 	;
 
@@ -407,7 +383,7 @@ caseBlock:
 
 caseList:
 	caseStatement {
-	  $$ = new AST(OP_CASEBLOCK,$1);
+	  $$ = new AST(OP_CASEBLOCK,$1,$1->context());
 	} |
 	caseList caseStatement {
 	  $$ = $1; $$->addChild($2);
@@ -438,7 +414,8 @@ forStatement:
 forIndexExpression:
 	'(' IDENT '=' expr ')' {$$ = $2; $$->addChild($4);} |
 	IDENT '=' expr {$$ = $1; $$->addChild($3);} |
-	IDENT {$$ = $1; $$->addChild(new AST(OP_RHS, new AST(id_node,$1->text))); } |
+	IDENT {$$ = $1; 
+	      $$->addChild(new AST(OP_RHS,new AST(id_node,$1->text,$1->context()),$1->context())); } |
 	'(' IDENT '=' expr error {yyxpt("matching right parenthesis");} |
 	'(' IDENT '=' error {yyxpt("indexing expression");} |
 	'(' IDENT error {yyxpt("equals operator after loop index");} |
@@ -464,7 +441,7 @@ ifStatement:
 
 conditionedStatement:
 	expr optionalEndStatement statementList {
-	  $$ = new AST(OP_CSTAT,$1,$3);
+	  $$ = new AST(OP_CSTAT,$1,$3,$1->context());
 	}
 ;
 
@@ -475,7 +452,7 @@ elseIfBlock:
 
 elseIfStatementList:
 	elseIfStatement {
-	  $$ = new AST(OP_ELSEIFBLOCK,$1);
+	  $$ = new AST(OP_ELSEIFBLOCK,$1,$1->context());
 	} |
 	elseIfStatementList elseIfStatement {
 	  $$ = $1; $$->addChild($2);
@@ -497,18 +474,18 @@ elseStatement:
 ;
 
 assignmentStatement:
-	symbRefList '=' expr {$$ = new AST(OP_ASSIGN,$1,$3);} |
+	symbRefList '=' expr {$$ = new AST(OP_ASSIGN,$1,$3,(int)$2);} |
 	symbRefList '=' error {yyxpt("expression in assignment");}
         ;
 
 multiFunctionCall:
 	'[' matrixDef ']' '='  IDENT '('  indexList ')' {
-	  $5->addChild(new AST(OP_PARENS,$7));
-	  $$ = new AST(OP_MULTICALL,$2,$5);
+	  $5->addChild(new AST(OP_PARENS,$7,(int)$6));
+	  $$ = new AST(OP_MULTICALL,$2,$5,(int)$1);
 	} |
 	'[' matrixDef ']' '=' IDENT  {
-	  $5->addChild(new AST(OP_PARENS,NULL));
-	  $$ = new AST(OP_MULTICALL,$2,$5);
+	  $5->addChild(new AST(OP_PARENS,NULL,-1));
+	  $$ = new AST(OP_MULTICALL,$2,$5,(int)$1);
 	} |
 	'[' matrixDef ']' '='  IDENT '('  indexList error 
 	{yyxpt("matching right parenthesis");} |
@@ -521,51 +498,51 @@ multiFunctionCall:
         ; 
 
 expr:
-	expr ':' expr {$$ = new AST(OP_COLON,$1,$3);} 
+	expr ':' expr {$$ = new AST(OP_COLON,$1,$3,(int)$2);} 
 	| expr ':' error {yyxpt("an expression after ':'");}
 	| terminal
-	| expr '+' expr {$$ = new AST(OP_PLUS,$1,$3);}
+	| expr '+' expr {$$ = new AST(OP_PLUS,$1,$3,(int)$2);}
 	| expr '+' error {yyxpt("an expression after '+'");}
-	| expr '-' expr {$$ = new AST(OP_SUBTRACT,$1,$3);}
+	| expr '-' expr {$$ = new AST(OP_SUBTRACT,$1,$3,(int)$2);}
 	| expr '-' error {yyxpt("an expression after '-'");}
-	| expr '*' expr {$$ = new AST(OP_TIMES,$1,$3);}
+	| expr '*' expr {$$ = new AST(OP_TIMES,$1,$3,(int)$2);}
 	| expr '*' error {yyxpt("an expression after '*'");}
-	| expr '/' expr {$$ = new AST(OP_RDIV,$1,$3);}
+	| expr '/' expr {$$ = new AST(OP_RDIV,$1,$3,(int)$2);}
 	| expr '/' error {yyxpt("an expression after '/'");}
-	| expr '\\' expr {$$ = new AST(OP_LDIV,$1,$3);}
+	| expr '\\' expr {$$ = new AST(OP_LDIV,$1,$3,(int)$2);}
 	| expr '\\' error {yyxpt("an expression after '\\'");}
-	| expr '|' expr {$$ = new AST(OP_OR,$1,$3);}
+	| expr '|' expr {$$ = new AST(OP_OR,$1,$3,(int)$2);}
 	| expr '|' error {yyxpt("an expression after '|'");}
-	| expr '&' expr {$$ = new AST(OP_AND,$1,$3);}
+	| expr '&' expr {$$ = new AST(OP_AND,$1,$3,(int)$2);}
 	| expr '&' error {yyxpt("an expression after '&'");}
-	| expr '<' expr {$$ = new AST(OP_LT,$1,$3);}
+	| expr '<' expr {$$ = new AST(OP_LT,$1,$3,(int)$2);}
 	| expr '<' error {yyxpt("an expression after '<'");}
-	| expr LE  expr {$$ = new AST(OP_LEQ,$1,$3);}
+	| expr LE  expr {$$ = new AST(OP_LEQ,$1,$3,(int)$2);}
 	| expr LE  error {yyxpt("an expression after '<='");}
-	| expr '>' expr {$$ = new AST(OP_GT,$1,$3);}
+	| expr '>' expr {$$ = new AST(OP_GT,$1,$3,(int)$2);}
 	| expr '>' error {yyxpt("an expression after '>'");}
-	| expr GE  expr {$$ = new AST(OP_GEQ,$1,$3);}
+	| expr GE  expr {$$ = new AST(OP_GEQ,$1,$3,(int)$2);}
 	| expr GE  error {yyxpt("an expression after '>='");}
-	| expr EQ  expr {$$ = new AST(OP_EQ,$1,$3);}
+	| expr EQ  expr {$$ = new AST(OP_EQ,$1,$3,(int)$2);}
 	| expr EQ  error {yyxpt("an expression after '=='");}
-	| expr NE  expr {$$ = new AST(OP_NEQ,$1,$3);}
+	| expr NE  expr {$$ = new AST(OP_NEQ,$1,$3,(int)$2);}
 	| expr NE  error {yyxpt("an expression after '~='");}
-	| expr DOTTIMES expr {$$ = new AST(OP_DOT_TIMES,$1,$3);}
+	| expr DOTTIMES expr {$$ = new AST(OP_DOT_TIMES,$1,$3,(int)$2);}
 	| expr DOTTIMES error {yyxpt("an expression after '.*'");}
-	| expr DOTRDIV  expr {$$ = new AST(OP_DOT_RDIV,$1,$3);}
+	| expr DOTRDIV  expr {$$ = new AST(OP_DOT_RDIV,$1,$3,(int)$2);}
 	| expr DOTRDIV  error {yyxpt("an expression after './'");}
-	| expr DOTLDIV expr {$$ = new AST(OP_DOT_LDIV,$1,$3);}
+	| expr DOTLDIV expr {$$ = new AST(OP_DOT_LDIV,$1,$3,(int)$2);}
 	| expr DOTLDIV error {yyxpt("an expression after '.\\'");}
-	| '-'  expr %prec NEG {$$ = new AST(OP_NEG,$2);}
+	| '-'  expr %prec NEG {$$ = new AST(OP_NEG,$2,(int)$1);}
 	| '+'  expr %prec POS {$$ = $2;}
-	| '~' expr %prec NOT {$$ = new AST(OP_NOT,$2);}
+	| '~' expr %prec NOT {$$ = new AST(OP_NOT,$2,(int)$1);}
 	| '~' error %prec NOT {yyxpt("an expression after logical not");}
-	| expr '^' expr  {$$ = new AST(OP_POWER,$1,$3);}
+	| expr '^' expr  {$$ = new AST(OP_POWER,$1,$3,(int)$2);}
 	| expr '^' error  {yyxpt("an expression after '^'");}
-	| expr DOTPOWER expr {$$ = new AST(OP_DOT_POWER,$1,$3);}
+	| expr DOTPOWER expr {$$ = new AST(OP_DOT_POWER,$1,$3,(int)$2);}
 	| expr DOTPOWER error {yyxpt("an expression after '.^'");}
-	| expr '\''          {$$ = new AST(OP_TRANSPOSE,$1);}
-	| expr DOTTRANSPOSE  {$$ = new AST(OP_DOT_TRANSPOSE,$1);}
+	| expr '\''          {$$ = new AST(OP_TRANSPOSE,$1,(int)$2);}
+	| expr DOTTRANSPOSE  {$$ = new AST(OP_DOT_TRANSPOSE,$1,(int)$2);}
 	| '(' expr ')'  {$$ = $2;}
 	| '(' expr error  {yyxpt("a right parenthesis after expression");}
 	| '(' error  {yyxpt("an expression after left parenthesis");}
@@ -575,18 +552,18 @@ terminal:
         NUMERIC
 	| STRING
 	| MAGICEND
-	| symbRefList {$$ = new AST(OP_RHS,$1);}
+	| symbRefList {$$ = new AST(OP_RHS,$1,$1->context());}
         | '[' matrixDef ']' {$$ = $2;}
         | '[' error {yyxpt("a matrix definition followed by a right bracket");}
         | '[' rowSeperator matrixDef ']' {$$ = $3;}
         | '[' matrixDef rowSeperator ']' {$$ = $2;}
         | '[' rowSeperator matrixDef rowSeperator ']' {$$ = $3;}
-	| '[' ']' {$$ = new AST(OP_EMPTY,NULL);}
+	| '[' ']' {$$ = new AST(OP_EMPTY,NULL,(int)$1);}
         | '{' cellDef '}' {$$ = $2;}
         | '{' rowSeperator cellDef '}' {$$ = $3;}
         | '{' cellDef rowSeperator '}' {$$ = $2;}
         | '{' rowSeperator cellDef rowSeperator '}' {$$ = $3;}
-	| '{' '}' {$$ = new AST(OP_EMPTY_CELL,NULL);}
+	| '{' '}' {$$ = new AST(OP_EMPTY_CELL,NULL,(int)$1);}
 	| '{' error {yyxpt("a cell-array definition followed by a right brace");}
         ;
 symbRefList:
@@ -595,20 +572,20 @@ symbRefList:
         ;
 	
 symbRef:
-	'(' indexList ')' {$$ = new AST(OP_PARENS,$2); }
+	'(' indexList ')' {$$ = new AST(OP_PARENS,$2,(int)$1); }
 	| '(' indexList error {yyxpt("matching right parenthesis");}
-        | '{' indexList '}' {$$ = new AST(OP_BRACES,$2); }
+        | '{' indexList '}' {$$ = new AST(OP_BRACES,$2,(int)$1); }
 	| '{' indexList error {yyxpt("matching right brace");}
-        | '.' IDENT {$$ = new AST(OP_DOT,$2); }
-	| '.' '(' expr ')' {$$ = new AST(OP_DOTDYN,$3);}
+        | '.' IDENT {$$ = new AST(OP_DOT,$2,(int)$1); }
+	| '.' '(' expr ')' {$$ = new AST(OP_DOTDYN,$3,(int)$1);}
         ;
 
 indexElement:
 	expr
-	| ':' {$$ = new AST(OP_ALL,NULL);}
-	| '/' IDENT '=' expr {$$ = new AST(OP_KEYWORD,$2,$4);}
+	| ':' {$$ = new AST(OP_ALL,NULL,(int)$1);}
+	| '/' IDENT '=' expr {$$ = new AST(OP_KEYWORD,$2,$4,(int)$1);}
 	| '/' IDENT '=' error {yyxpt("expecting expression after '=' in keyword assignment");}
-	| '/' IDENT {$$ = new AST(OP_KEYWORD,$2);}
+	| '/' IDENT {$$ = new AST(OP_KEYWORD,$2,(int)$1);}
 	| '/' error {yyxpt("expecting keyword identifier after '/' in keyword assignment");}
         ;
 
@@ -618,12 +595,12 @@ indexList:
         ;
 
 cellDef:
-       rowDef {$$ = new AST(OP_BRACES,$1);}|
+       rowDef {$$ = new AST(OP_BRACES,$1,$1->context());}|
        cellDef rowSeperator rowDef {$$ = $1; $$->addChild($3);}
        ;
 
 matrixDef:
-       rowDef {$$ = new AST(OP_BRACKETS,$1);}|
+       rowDef {$$ = new AST(OP_BRACKETS,$1,$1->context());}|
        matrixDef rowSeperator rowDef {$$ = $1; $$->addChild($3);} 
        ;
 
@@ -636,7 +613,7 @@ columnSep:
        ;
 
 rowDef:
-       expr {$$ = new AST(OP_SEMICOLON,$1);} |
+       expr {$$ = new AST(OP_SEMICOLON,$1,$1->context());} |
        rowDef  columnSep expr {$$ = $1; $$->addChild($3);}
        ;
 

@@ -246,7 +246,8 @@ namespace FreeMat {
   //@[
   //   clear 'all'
   //@]
-  //clears all variables from the current context.
+  //clears all variables from the current context.  With no arguments,
+  //@|clear| defaults to clearing @|'all'|.
   //@@Example
   //Here is a simple example of using @|clear| to delete a variable.  First, we create a variable called @|a|:
   //@<
@@ -261,11 +262,11 @@ namespace FreeMat {
   ArrayVector ClearFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     int i;
     stringVector names;
+    char * singleArgC;
     if (arg.size() == 0) 
-      throw Exception("clear function expects either a list of variables to clear or the argument 'all' to clear all currently defined variables");
+      singleArgC = "all";
     if (arg.size() == 1) {
       Array singleArg(arg[0]);
-      char * singleArgC;
       singleArgC = singleArg.getContentsAsCString();
       if (strcmp(singleArgC,"all") == 0)
 	names = eval->getContext()->getCurrentScope()->listAllVariables();

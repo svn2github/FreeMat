@@ -27,6 +27,8 @@ Color::Color(const char* name) {
     red = green = blue = 255;
   } else if (strcmp(name,"light grey")==0) {
     red = green = blue = 211;
+  } else if (strcmp(name,"grey")==0) {
+    red = green = blue = 100;
   } else if (strcmp(name,"yellow")==0) {
     red = green = 255; blue = 0;
   } else if (strcmp(name,"magenta")==0) {

@@ -338,6 +338,10 @@ namespace FreeMat {
     root = t;
     index = 0;
     while (t != NULL) {
+      if (t->opNum == OP_KEYWORD) {
+	t = t->right;
+	continue;
+      }
       if (t->type == non_terminal && t->opNum ==(OP_RHS)) {
 	try {
 	  n = rhsExpression(t->down);
@@ -2021,6 +2025,7 @@ namespace FreeMat {
 	  }
  	  // If any keywords were found, make another pass through the
  	  // arguments and remove them.
+#if 0
 	  if (keywords.size() > 0) {
 // 	    if (funcDef->type() != FM_M_FUNCTION)
 // 	      throw Exception("out of order argument passing only supported for M files");
@@ -2036,6 +2041,7 @@ namespace FreeMat {
 	      }
 	    }
 	  }
+#endif
 	  m = expressionList(s,NULL);
 	  // Check for keywords
 	  if (keywords.size() > 0) {

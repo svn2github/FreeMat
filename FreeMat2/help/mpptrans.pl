@@ -6,6 +6,9 @@ sub outputMFile {
     my ($line, $clickres) = @_;
     my $result;
     $line =~ s/\@Module\s*(.*)/$1/gi;
+    $line =~ s/\@\@Section(.*)//gi;
+    $line =~ s/\@\@Function(.*)//gi;
+    $line =~ s/\@\@Example(.*)//gsm;
     $line =~ s/\@\@(.*)/\n${\uc($1)}\n/gi;
     $line =~ s/\@\[//gi;
     $line =~ s/\@\]//gi;
@@ -21,6 +24,7 @@ sub outputMFile {
     foreach $resulttext (@$clickres) {
 	$line =~ s/\@<(.*?)\@>/\n\$\n$resulttext\$\n/sm;
     }
+    $line =~ s/\n/\n%  /g;
     return $line;
 }
 
@@ -28,6 +32,7 @@ sub outputLaTeX {
     my ($line, $clickres) = @_;
     my $result;
     $line =~ s/\@Module\s*(.*)/\\subsection{$1}/gi;
+    $line =~ s/\@\@Section(.*)//gi;
     $line =~ s/\@\@(.*)/\n\\subsubsection{$1}\n/gi;
     $line =~ s/\@\[/\n\\begin{verbatim}/gi;
     $line =~ s/\@\]/\\end{verbatim}\n/gi; 
@@ -47,10 +52,21 @@ foreach $file (@ARGV) {
 	print STDERR "Can't open input file $file\n"; 
 	next; 
     } 
+    # Calculate the output name
+    $file =~ s/mpp/m/g;
+    print $file;
+    print "\n";
     # Read input file as one long record 
     $data=<INPUT>; 
     close INPUT; 
     @modules = ($data =~  (/\/\/\!(.*?)\/\/\!/gsm));
+    $data =~  s/\/\/\!(.*?)\/\/\!//gsm;
+    # write out the initial .m file
+    if (!open(OUTPUT,">$file")) {
+	die "Can't open $file for output...\n";
+    }
+    print OUTPUT $data;
+    close OUTPUT;
     foreach $module (@modules) {
 	($module =~ /\@Module\s*(\w*)/gi);
         $modulename = lc($1);
@@ -116,11 +132,13 @@ foreach $file (@ARGV) {
 	}
 	print OUTPUT &outputLaTeX($line,\@clickres);
 	close OUTPUT;
-	$outfile = $modulename . ".mdc";
-	if (!open(OUTPUT,">$outfile")) {
-	    die "Can't open output file $file\n";
+
+	if (!open(OUTPUT,">$file")) {
+	    die "Can't open $file for output...\n";
 	}
+	print OUTPUT "%  ";
 	print OUTPUT &outputMFile($line,\@clickres);
+	print OUTPUT $data;
 	close OUTPUT;
     }
 }

@@ -6,6 +6,9 @@ sub outputMFile {
     my ($line, $clickres) = @_;
     my $result;
     $line =~ s/\@Module\s*(.*)/$1/gi;
+    $line =~ s/\@\@Section(.*)//gi;
+    $line =~ s/\@\@Function(.*)//gi;
+    $line =~ s/\@\@Example(.*)//gsm;
     $line =~ s/\@\@(.*)/\n${\uc($1)}\n/gi;
     $line =~ s/\@\[//gi;
     $line =~ s/\@\]//gi;
@@ -28,6 +31,7 @@ sub outputLaTeX {
     my ($line, $clickres) = @_;
     my $result;
     $line =~ s/\@Module\s*(.*)/\\subsection{$1}/gi;
+    $line =~ s/\@\@Section(.*)//gi;
     $line =~ s/\@\@(.*)/\n\\subsubsection{$1}\n/gi;
     $line =~ s/\@\[/\n\\begin{verbatim}/gi;
     $line =~ s/\@\]/\\end{verbatim}\n/gi; 

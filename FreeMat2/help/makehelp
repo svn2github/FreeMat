@@ -1,10 +1,12 @@
 #!/bin/sh
 lamboot
+rm -rf mtex
 mkdir mtex
 cp ../MFiles/mprint*.m mtex/.
 cp mkhsetpath.m mtex/.
 cd mtex
 perl ../dcptrans.pl ../../libs/lib*/*.cpp
+perl ../mpptrans.pl ../../MFiles/*.mpp
 cp ../main.tex .
 cp float.tex hfloat.tex
 cp times.tex htimes.tex

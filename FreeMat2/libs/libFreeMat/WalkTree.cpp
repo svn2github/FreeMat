@@ -1503,7 +1503,7 @@ namespace FreeMat {
 	  b = Array::emptyConstructor();
 	else 
 	  b = m[0];
-	if (printIt && (fdef->outputArgCount() != 0)
+	if (printIt && (fdef->outputArgCount() != 0) && (!b.isEmpty())
 	    && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	  io->outputMessage("ans = \n");
 	  b.printMe(printLimit,io->getTerminalWidth());
@@ -3090,6 +3090,69 @@ namespace FreeMat {
     }
   }
 
+  static std::string EvalPrep(char *line) {
+    char buffer1[4096];
+    char buffer2[4096];
+    strcpy(buffer1,line);
+    if (buffer1[strlen(buffer1)-1] == '\n')
+      buffer1[strlen(buffer1)-1] = 0;
+    if (buffer1[strlen(buffer1)-1] == '\r')
+      buffer1[strlen(buffer1)-1] = 0;
+    sprintf(buffer2,"%s",buffer1);
+    if (strlen(buffer2) > 20) {
+      buffer2[22] = buffer2[21] = buffer2[20] = '.'; 
+      buffer2[23] = 0;
+    }
+    return std::string(buffer2);
+  }
+
+  bool WalkTree::evaluateStringTryCatch(char *try_line, char* catch_line, int popspec) {
+    ASTPtr try_tree, catch_tree;
+    ParserState parserState;
+    
+    InterruptPending = false;
+
+    bool saveCLI = InCLI;
+    InCLI = true;
+    // Parse the catch_tree first... if an error occurs there, we display it
+    try{
+      parserState = parseString(catch_line);
+    } catch(Exception &e) {
+      e.printMe(io);
+      InCLI = saveCLI;
+      return false;
+    }
+    catch_tree = getParsedScriptBlock();
+    
+    // Parse the try line next.
+    try {
+      parserState = parseString(try_line);
+      try_tree = getParsedScriptBlock();
+      pushDebug("Eval - try clause",EvalPrep(catch_line));
+      context->bypassScope(popspec);
+      block(try_tree);
+      context->restoreBypassedScopes();
+      popDebug();
+    } catch(Exception &e) {
+      // Execute the catch line
+      context->restoreBypassedScopes();
+      pushDebug("Eval - catch clause",EvalPrep(catch_line));
+      try {
+	block(catch_tree);
+      } catch(Exception &e) {
+	e.printMe(io);
+	popDebug();
+	InCLI = saveCLI;
+	return false;
+      }
+      popDebug();
+      InCLI = saveCLI;
+      return false;
+    }
+      InCLI = saveCLI;
+    return false;
+  }
+
   bool WalkTree::evaluateString(char *line) {
     ASTPtr tree;
     ParserState parserState;
@@ -3106,20 +3169,8 @@ namespace FreeMat {
       return false;
 
     tree = getParsedScriptBlock();
-    char buffer1[2048];
-    char buffer2[2048];
-    strcpy(buffer1,line);
-    if (buffer1[strlen(buffer1)-1] == '\n')
-      buffer1[strlen(buffer1)-1] = 0;
-    if (buffer1[strlen(buffer1)-1] == '\r')
-      buffer1[strlen(buffer1)-1] = 0;
-    sprintf(buffer2,"%s",buffer1);
-    if (strlen(buffer2) > 20) {
-      buffer2[22] = buffer2[21] = buffer2[20] = '.'; 
-      buffer2[23] = 0;
-    }
     try {
-      pushDebug("Eval",buffer2);
+      pushDebug("Eval",EvalPrep(line));
       block(tree);
       if (state == FM_STATE_RETURN) {
 	if (depth > 0) {

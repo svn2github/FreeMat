@@ -369,6 +369,77 @@ namespace FreeMat {
     return nnz;
   }
 
+  template <class T>
+  void* SparseToIJVComplex(T**A, int rows, int cols) {
+    int nnz = CountNonzerosComplex<T>(A,rows,cols);
+    T* ret;
+    ret = (T*) Malloc(sizeof(T)*nnz*4);
+    int i, j, n;
+    int ptr = 0;
+    for (i=0;i<cols;i++) {
+      n = 1;
+      j = 0;
+      while (j<rows) {
+	if ((src[i][n] != 0) || (src[i][n+1] != 0)) {
+	  T[ptr] = j+1;
+	  T[ptr+nnz] = i+1;
+	  T[ptr+2*nnz] = src[i][n];
+	  T[ptr+3*nnz] = src[i][n+1];
+	  ptr++;
+	  j++;
+	  n+=2;
+	} else {
+	  j += (int) src[i][n+2];
+	  n += 3;
+	}
+      }
+    }
+    return T;
+  }
+
+  template <class T>
+  void* SparseToIJVReal(T**A, int rows, int cols) {
+    int nnz = CountNonzerosReal<T>(A,rows,cols);
+    T* ret;
+    ret = (T*) Malloc(sizeof(T)*nnz*3);
+    int i, j, n;
+    int ptr = 0;
+    for (i=0;i<cols;i++) {
+      n = 1;
+      j = 0;
+      while (j<rows) {
+	if (src[i][n] != 0) {
+	  T[ptr] = j+1;
+	  T[ptr+nnz] = i+1;
+	  T[ptr+2*nnz] = src[i][n];
+	  ptr++;
+	  j++;
+	  n++;
+	} else {
+	  j += (int) src[i][n+1];
+	  n += 2;
+	}
+      }
+    }
+    return T;
+  }
+
+  // Convert a sparse matrix to IJV
+  void* SparseToIJV(Class dclass, int rows, int cols, const void* cp) {
+    switch (dclass) {
+    case FM_INT32:
+      return SparseToIJVReal<int32>((int32**)cp,rows,cols);
+    case FM_FLOAT:
+      return SparseToIJVReal<float>((float**)cp,rows,cols);
+    case FM_DOUBLE:
+      return SparseToIJVReal<double>((double**)cp,rows,cols);
+    case FM_COMPLEX:
+      return SparseToIJVComplex<float>((float**)cp,rows,cols);
+    case FM_DCOMPLEX:
+      return SparseToIJVComplex<double>((double**)cp,rows,cols);
+    }
+  }
+
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
     switch (dclass) {
     case FM_INT32:

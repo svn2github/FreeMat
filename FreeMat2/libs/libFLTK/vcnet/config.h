@@ -49,7 +49,7 @@
  * OpenGL, and FLTK will be smaller.
  */
 
-#define HAVE_GL 1
+#define HAVE_GL 0
 
 /*
  * HAVE_GL_GLU_H:
@@ -58,7 +58,7 @@
  * (many broken Mesa RPMs do not...)
  */
 
-#define HAVE_GL_GLU_H 1
+#define HAVE_GL_GLU_H 0
 
 /*
  * USE_COLORMAP:

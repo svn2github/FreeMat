@@ -44,7 +44,7 @@ close OUTPUT;
 $filelist = `cd ../MFiles && ls *.m`;
 chop $filelist;
 $filelist =~ s/\n/\\\n/gm;
-open(OUTPUT,">../MFiles/Makefile.amc") || die "Can't open Makefile.am for writing in MFiles...\n";
+open(OUTPUT,">../MFiles/Makefile.am") || die "Can't open Makefile.am for writing in MFiles...\n";
 print OUTPUT "EXTRA_DIST = ";
 print OUTPUT $filelist;
 print OUTPUT "\n";

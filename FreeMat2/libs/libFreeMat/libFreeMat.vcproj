@@ -21,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\libffi\msvc_build,..\libXP,..\libf2c,..\..\src\win32"
+				AdditionalIncludeDirectories="..\libfltk;..\libffi\msvc_build;..\libXP;..\libf2c;..\..\src\win32"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;YY_NEVER_INTERACTIVE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"

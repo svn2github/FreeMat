@@ -2752,14 +2752,14 @@ namespace FreeMat {
   public:
     uint32 n;
     uint32 len;
-    T* data;
+    const T* data;
   };
 
   template <class T>
   bool operator<(const UniqueEntryReal<T>& a, const UniqueEntryReal<T>& b) {
     int i;
     i = 0;
-    while (i<len) {
+    while (i<a.len) {
       if (a.data[i] < b.data[i]) return true;
       i++;
     }
@@ -2770,7 +2770,7 @@ namespace FreeMat {
   bool operator==(const UniqueEntryReal<T>& a, const UniqueEntryReal<T>& b) {
     int i;
     i = 0;
-    while (i<len) {
+    while (i<a.len) {
       if (a.data[i] != b.data[i]) return false;
       i++;
     }
@@ -2852,9 +2852,39 @@ namespace FreeMat {
 	}
 	i++;
       }
+      delete[] sp;
       return singleArrayVector(Array(cls,Dimensions(cnt,1),op));
+    } else {
+      // Second pass through the array - build the output vector
+      // Also build the two indexing arrays
+      uint32* np = (uint32*) Malloc(sizeof(int32)*len);
+      uint32* mp = (uint32*) Malloc(sizeof(int32)*cnt);
+      T* op = (T*) Malloc(sizeof(T)*cnt);
+      op[0] = sp[0].data[0];
+      i = 1;
+      cnt = 1;
+      // np[0] is supposed to have the index into 
+      // the output vector - when cnt == 0, 
+      // the corresponding entry from x is sp[0]
+      // which belongs to A[sp[0].n]
+      np[sp[0].n] = 1;
+      mp[0] = sp[0].n + 1;
+      while (i < len) {
+	if (!(sp[i] == sp[i-1])) {
+	  op[cnt] = sp[i].data[0];
+	  mp[cnt] = sp[i].n + 1;
+	  cnt++;
+	}
+	np[sp[i].n] = cnt;
+	i++;
+      }
+      delete[] sp;
+      ArrayVector retval;
+      retval.push_back(Array(cls,Dimensions(cnt,1),op));
+      retval.push_back(Array(FM_UINT32,Dimensions(cnt,1),mp));
+      retval.push_back(Array(FM_UINT32,Dimensions(len,1),np));
+      return retval;
     }
-    return ArrayVector();
   }
   
   ArrayVector UniqueFunctionRowMode(int nargout, Array input) {

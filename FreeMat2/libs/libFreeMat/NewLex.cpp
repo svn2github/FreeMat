@@ -221,6 +221,7 @@ int lexTestSpecialSyntax() {
    */
   int i, n;
   char ident_candidate[2048];
+  if (bracketStackSize) return 0;
   if (!testAlphaChar()) return 0;
   i = 0;
   while (isalnum(datap[i]) || (datap[i] == '_')) {
@@ -644,6 +645,7 @@ int yylex() {
     yylval.isToken = true;
     yylval.v.i = ContextInt();
   }
+#ifdef LEXDEBUG
   if (tokenType == STRING)
     printf("token string %s\r\n",tokenValue.v.p->text);
   else if (tokenType == IDENT)
@@ -654,6 +656,7 @@ int yylex() {
     printf("token specialcall %s\r\n",tokenValue.v.p->text);
   else
     printf("token %c %d\r\n",retval,retval);
+#endif
   return retval;
 }
 

@@ -47,6 +47,7 @@ namespace FreeMat {
 
   void Figure::Copy() {
 	  make_current();
+	  redraw();
   // Obtain a handle to a reference device context. 
   HDC hdcRef = GetDC(fl_window); 
  

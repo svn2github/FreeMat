@@ -32,7 +32,6 @@
 #include <signal.h>
 #include "ffi.h"
 #include "SymbolTable.hpp"
-#include <setjmp.h>
 #include "Types.hpp"
 
 #ifdef WIN32
@@ -375,35 +374,17 @@ namespace FreeMat {
     io->outputMessage(msgBuffer);
   }
 
-  jmp_buf env;
-
-  void sigFP(int) {
-    longjmp(env,2);
-  }
-
-#ifdef WIN32
-  typedef void (*sig_t)(int);
-#endif
 
   ArrayVector BuiltInFunctionDef::evaluateFunction(WalkTree *walker, ArrayVector& inputs, 
 						   int nargout) {
     ArrayVector outputs;
-    sig_t save_sig;
     int i;
-    save_sig = signal(SIGINT,sigFP);
     char buffer[1000];
     sprintf(buffer,"built-in function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
-    i = setjmp(env);
-    if (i == 0)
-      outputs = fptr(nargout,inputs);
-    else {
-      walker->getInterface()->warningMessage("Warning: Control-C received while evaluating internal function");
-      sigInterrupt(1);
-    }
+    outputs = fptr(nargout,inputs);
     walker->getInterface()->popMessageContext();
-    signal(SIGINT, save_sig);
     return outputs;
   }
 
@@ -416,22 +397,12 @@ namespace FreeMat {
   ArrayVector SpecialFunctionDef::evaluateFunction(WalkTree *walker, 
 						   ArrayVector& inputs, int nargout) {
     ArrayVector outputs;
-    sig_t save_sig;
-    int i;
-    save_sig = signal(SIGINT,sigFP);
-    i = setjmp(env);
     char buffer[1000];
     sprintf(buffer,"special function %s",name.c_str());
     walker->getInterface()->setMessageContext(buffer);
     walker->getInterface()->pushMessageContext();
-    if (i == 0)
-      outputs = fptr(nargout,inputs,walker);
-    else {
-      walker->getInterface()->warningMessage("Warning: Control-C received while evaluating internal function");
-      sigInterrupt(1);
-    }
+    outputs = fptr(nargout,inputs,walker);
     walker->getInterface()->popMessageContext();
-    signal(SIGINT, save_sig);
     return outputs;
   }
 
@@ -616,66 +587,57 @@ namespace FreeMat {
 
 
     Array retArray;
-    sig_t save_sig;
-    save_sig = signal(SIGINT,sigFP);
-    int itst = setjmp(env);
-    if (itst == 0) {
-      /*
-       * Based on the return type, we call the function...
-       */
-      if ((retType == "uint8") || (retType == "logical")) {
-	uint8 retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::uint8Constructor(retval);
-      } else if (retType == "int8") {
-	int8 retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::int8Constructor(retval);
-      } else if (retType == "uint16") {
-	uint16 retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::uint16Constructor(retval);
-      } else if (retType == "int16") {
-	int16 retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::int16Constructor(retval);
-      } else if (retType== "uint32") {
-	uint32 retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::uint32Constructor(retval);
-      } else if (retType == "int32") {
-	int32 retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::int32Constructor(retval);
-      } else if ((retType == "float") || (retType == "complex")) {
-	float retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::floatConstructor(retval);
-      } else if ((retType == "double") || (retType == "dcomplex")) {
-	double retval;					   
-	ffi_call(&cif, address, &retval, values);
-	retArray = Array::doubleConstructor(retval);
-      } else {
-	int dummy;
-	ffi_call(&cif, address, &dummy, values);
-	retArray = Array::emptyConstructor();
-      }
-
-      // Strings that were passed by reference have to be
-      // special-cased
-      ptr = 0;
-      for (i=0;i<inputs.size();i++) {
-	if ((arguments[i][0] == '&') || (types[i] == "string")) {
-	  if ((types[i] == "string") && (arguments[i][0] == '&'))
-	    inputs[i] = Array::stringConstructor((char*) refPointers[ptr]);
-	  ptr++;
-	}
-      }
+    /*
+     * Based on the return type, we call the function...
+     */
+    if ((retType == "uint8") || (retType == "logical")) {
+      uint8 retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::uint8Constructor(retval);
+    } else if (retType == "int8") {
+      int8 retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::int8Constructor(retval);
+    } else if (retType == "uint16") {
+      uint16 retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::uint16Constructor(retval);
+    } else if (retType == "int16") {
+      int16 retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::int16Constructor(retval);
+    } else if (retType== "uint32") {
+      uint32 retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::uint32Constructor(retval);
+    } else if (retType == "int32") {
+      int32 retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::int32Constructor(retval);
+    } else if ((retType == "float") || (retType == "complex")) {
+      float retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::floatConstructor(retval);
+    } else if ((retType == "double") || (retType == "dcomplex")) {
+      double retval;					   
+      ffi_call(&cif, address, &retval, values);
+      retArray = Array::doubleConstructor(retval);
     } else {
-      walker->getInterface()->warningMessage("Warning: Control-C received while evaluating internal function");
-      sigInterrupt(1);
+      int dummy;
+      ffi_call(&cif, address, &dummy, values);
+      retArray = Array::emptyConstructor();
     }
-    signal(SIGINT, save_sig);
+    
+    // Strings that were passed by reference have to be
+    // special-cased
+    ptr = 0;
+    for (i=0;i<inputs.size();i++) {
+      if ((arguments[i][0] == '&') || (types[i] == "string")) {
+	if ((types[i] == "string") && (arguments[i][0] == '&'))
+	  inputs[i] = Array::stringConstructor((char*) refPointers[ptr]);
+	ptr++;
+      }
+    }
 
     ArrayVector toReturn;
     toReturn.push_back(retArray);

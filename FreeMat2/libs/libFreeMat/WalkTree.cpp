@@ -1085,7 +1085,7 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
-    Fl::flush();
+    Fl::wait(0);
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {

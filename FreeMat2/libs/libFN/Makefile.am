@@ -9,4 +9,6 @@ lmdif.f \
 lmpar.f \
 qrfac.f \
 dpmpar.f \
-enorm.f
+enorm.f \
+qrsolv.f \
+fdjac2.f

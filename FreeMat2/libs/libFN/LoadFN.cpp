@@ -8,6 +8,6 @@ namespace FreeMat {
     args.push_back("y");
     args.push_back("tol");
     args.push_back("params");
-    context->addSpecialFunction("fitfun",FitFunFunction,-1,1,args);
+    context->addSpecialFunction("fitfun",FitFunFunction,-1,2,args);
   }
 }

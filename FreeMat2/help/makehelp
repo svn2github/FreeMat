@@ -1,2 +1,6 @@
 #!/bin/sh
-perl dcptrans.pl ../libs/lib*/*.cpp
+mkdir mtex
+cd mtex
+perl ../dcptrans.pl ../../libs/lib*/*.cpp
+cp ../main.tex .
+pdflatex main

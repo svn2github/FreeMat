@@ -179,6 +179,15 @@ void lexSpecialCall() {
   while ((datap[0] == ' ') || (datap[0] == '\t'))
     discardChar();
 
+  if (match("...")) {
+    while (!isNewline())
+      discardChar();
+    lineNumber++;
+    continuationCount++;
+    while ((datap[0] == ' ') || (datap[0] == '\t'))
+      discardChar();
+  }
+
   if (datap[0] == '\'') 
     lexString();
   else {

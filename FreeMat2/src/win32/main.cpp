@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <FL/x.H>
 #include "FLTKTerminal.hpp"
 #include "WalkTree.hpp"
 #include "Module.hpp"
@@ -6,6 +7,7 @@
 #include "LoadFN.hpp"
 #include "GraphicsCore.hpp"
 #include "System.hpp"
+#include "../../resource1.h"
 
 char help_path[1024];
 
@@ -35,7 +37,7 @@ void SetupHelpPath() {
 int main(int argc, char *argv[]) {
   Context *context = new Context;
   SetupHelpPath();
-  LoadModulefunctions(context);
+  LoadModuleFunctions(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
@@ -44,12 +46,15 @@ int main(int argc, char *argv[]) {
   envPtr = getenv("FREEMAT_PATH");
 
   FLTKTerminalWindow *win = new FLTKTerminalWindow(400,300,"FreeMat v " VERSION,help_path);
+  HICON g = LoadIcon(fl_display, MAKEINTRESOURCE(IDI_ICON1));
+  win->icon((char*) g);
   win->term()->setContext(context);
   if (envPtr)
     win->term()->setPath(std::string(envPtr));
   else 
     win->term()->setPath(std::string(""));
   WalkTree *twalk = new WalkTree(context,win->term());
+  win->show();
   win->term()->outputMessage(" Freemat v");
   win->term()->outputMessage(VERSION);
   win->term()->outputMessage("\n");

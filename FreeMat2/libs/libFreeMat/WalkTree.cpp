@@ -1824,8 +1824,17 @@ namespace FreeMat {
 
     if (!lookupFunctionWithRescan(t->text,fptr))
       throw Exception(std::string("Undefined function ") + t->text);
-    m = functionExpression(fptr,t,0,false);
+    bool CLIFlagsave = InCLI;
+    InCLI = false;
+    try {
+      m = functionExpression(fptr,t,0,false);
+    } catch(Exception& e) {
+      InCLI = CLIFlagsave;
+      throw;
+    }
+    InCLI = CLIFlagsave;
     popID();
+
   }
 
   void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) {

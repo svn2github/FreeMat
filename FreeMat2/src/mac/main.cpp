@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
     win->term()->setPath(m_path+std::string(envPtr));
   else 
     win->term()->setPath(m_path);
+  win->show();
   WalkTree *twalk = new WalkTree(context,win->term());
   win->term()->outputMessage(" Freemat v");
   win->term()->outputMessage(VERSION);

@@ -404,42 +404,17 @@ namespace FreeMat {
   
 
   template <class T, class S>
-  S** TypeConvertSparseRealReal(T** src, int rows, int cols) {
+  S** TypeConvertSparseTT(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    T* src_col;
-    src_col = new T[rows];
-    S* dst_col;
-    dst_col = new S[rows];
     int i, j;
     for (i=0;i<cols;i++) {
-      DecompressRealString<T>(src[i],src_col,rows);
-      for (j=0;j<rows;j++)
-	dst_col[j] = (S) src_col[j];
-      dp[i] = CompressRealVector<S>(dst_col,rows);
+      int blen;
+      blen = (int) (src[i][0]+1);
+      dp[i] = new S[blen];
+      for (j=0;j<blen;j++)
+	dp[i][j] = (S) src[i][j];
     }
-    delete[] src_col;
-    delete[] dst_col;
-    return dp;
-  }
-
-  template <class T, class S>
-  S** TypeConvertSparseComplexComplex(T** src, int rows, int cols) {
-    S** dp;
-    dp = new S*[cols];
-    T* src_col;
-    src_col = new T[2*rows];
-    S* dst_col;
-    dst_col = new S[2*rows];
-    int i, j;
-    for (i=0;i<cols;i++) {
-      DecompressComplexString<T>(src[i],src_col,rows);
-      for (j=0;j<2*rows;j++)
-	dst_col[j] = (S) src_col[j];
-      dp[i] = CompressComplexVector<S>(dst_col,rows);
-    }
-    delete[] src_col;
-    delete[] dst_col;
     return dp;
   }
 
@@ -447,21 +422,45 @@ namespace FreeMat {
   S** TypeConvertSparseRealComplex(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    T* src_col;
-    src_col = new T[rows];
-    S* dst_col;
-    dst_col = new S[rows*2];
-    int i, j;
-    for (i=0;i<cols;i++) {
-      DecompressRealString<T>(src[i],src_col,rows);
-      for (j=0;j<rows;j++) {
-	dst_col[2*j] = (S) src_col[j];
-	dst_col[2*j+1] = 0;
+    for (int p=0;p<cols;p++) {
+      // Scan the array to see how many values we have to increase it by
+      int i = 0;
+      int n = 1;
+      int outlen = 0;
+      while (i<rows) {
+	if (src[p][n] != 0) {
+	  i++;
+	  n++;
+	  outlen += 2;
+	} else {
+	  int j = (int) src[p][n+1];
+	  i += j;
+	  n += 2;
+	  outlen += 3;
+	}
       }
-      dp[i] = CompressComplexVector<S>(dst_col,rows);
+      // allocate the output array
+      dp[p] = new S[outlen+1];
+      dp[p][0] = outlen;
+      i = 0;
+      n = 1;
+      outlen = 1;
+      while (i<rows) {
+	if (src[p][n] != 0) {
+	  dp[p][outlen++] = (S) src[p][n];
+	  dp[p][outlen++] = 0;
+	  i++;
+	  n++;
+	} else {
+	  int j = (int) src[p][n+1];
+	  i += j;
+	  n += 2;
+	  dp[p][outlen++] = 0;
+	  dp[p][outlen++] = 0;
+	  dp[p][outlen++] = (S) j;
+	}
+      }
     }
-    delete[] src_col;
-    delete[] dst_col;
     return dp;
   }
 
@@ -469,21 +468,45 @@ namespace FreeMat {
   S** TypeConvertSparseComplexReal(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    T* src_col;
-    src_col = new T[rows*2];
-    S* dst_col;
-    dst_col = new S[rows];
-    int i, j;
-    for (i=0;i<cols;i++) {
-      DecompressComplexString<T>(src[i],src_col,rows);
-      for (j=0;j<rows;j++)
-	dst_col[j] = (S) src_col[2*j];
-      dp[i] = CompressRealVector<S>(dst_col,rows);
-    }
-    delete[] src_col;
-    delete[] dst_col;
+    for (int p=0;p<cols;p++) {
+      int i=0;
+      int n=1;
+      int j;
+      int outlen = 0;
+      tstop();
+      while (i<2*rows) {
+	if ((src[p][n] != 0) || (src[p][n+1] != 0)) {
+	  i+=2;
+	  n+=2;
+	  outlen++;
+	} else {
+	  j = (int) src[p][n+2];
+	  i += j*2;
+	  n += 3;
+	  outlen += 2;
+	}
+      }
+      dp[p] = new S[outlen+1];
+      dp[p][0] = outlen;
+      i=0;
+      n=1;
+      outlen = 1;
+      while (i<2*rows) {
+	if ((src[p][n] != 0) || (src[p][n+1] != 0)) {
+	  dp[p][outlen++] = (S) src[p][n];
+	  i+=2;
+	  n+=2;
+	} else {
+	  j = (int) src[p][n+2];
+	  i += j*2;
+	  n += 3;
+	  dp[p][outlen++] = 0;
+	  dp[p][outlen++] = j;
+	}
+      }
+    } 
     return dp;
-  }
+ }
 
   template <class T>
   void* CopySparseMatrix(const T** src, int rows, int cols) {
@@ -608,8 +631,8 @@ namespace FreeMat {
     case FM_DOUBLE:
       return SparseToIJVReal<double>((const double**)cp,rows,cols,I,J,nnz);
     case FM_COMPLEX:
-      return SparseToIJVComplex<float>((const float**)cp,rows,cols,I,J,nnz);
-    case FM_DCOMPLEX:
+      return SparseToIJVComplex<float>((const float**)cp,rows,cols,I,J,nnz); 
+   case FM_DCOMPLEX:
       return SparseToIJVComplex<double>((const double**)cp,rows,cols,I,J,nnz);
     }
   }
@@ -854,9 +877,9 @@ namespace FreeMat {
     if (dclass == FM_INT32) {
       switch(oclass) {
       case FM_FLOAT:
-	return TypeConvertSparseRealReal<int32,float>((int32**)cp,rows,cols);
+	return TypeConvertSparseTT<int32,float>((int32**)cp,rows,cols);
       case FM_DOUBLE:
-	return TypeConvertSparseRealReal<int32,double>((int32**)cp,rows,cols);
+	return TypeConvertSparseTT<int32,double>((int32**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseRealComplex<int32,float>((int32**)cp,rows,cols);
       case FM_DCOMPLEX:
@@ -865,9 +888,9 @@ namespace FreeMat {
     } else if (dclass == FM_FLOAT) {
       switch(oclass) {
       case FM_INT32:
-	return TypeConvertSparseRealReal<float,int32>((float**)cp,rows,cols);
+	return TypeConvertSparseTT<float,int32>((float**)cp,rows,cols);
       case FM_DOUBLE:
-	return TypeConvertSparseRealReal<float,double>((float**)cp,rows,cols);
+	return TypeConvertSparseTT<float,double>((float**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseRealComplex<float,float>((float**)cp,rows,cols);
       case FM_DCOMPLEX:
@@ -876,9 +899,9 @@ namespace FreeMat {
     } else if (dclass == FM_DOUBLE) {
       switch(oclass) {
       case FM_INT32:
-	return TypeConvertSparseRealReal<double,int32>((double**)cp,rows,cols);
+	return TypeConvertSparseTT<double,int32>((double**)cp,rows,cols);
       case FM_FLOAT:
-	return TypeConvertSparseRealReal<double,float>((double**)cp,rows,cols);
+	return TypeConvertSparseTT<double,float>((double**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseRealComplex<double,float>((double**)cp,rows,cols);
       case FM_DCOMPLEX:
@@ -893,7 +916,7 @@ namespace FreeMat {
       case FM_DOUBLE:
 	return TypeConvertSparseComplexReal<float,double>((float**)cp,rows,cols);
       case FM_DCOMPLEX:
-	return TypeConvertSparseComplexComplex<float,double>((float**)cp,rows,cols);
+	return TypeConvertSparseTT<float,double>((float**)cp,rows,cols);
       }
     } else if (dclass == FM_DCOMPLEX) {
       switch(oclass) {
@@ -904,7 +927,7 @@ namespace FreeMat {
       case FM_DOUBLE:
 	return TypeConvertSparseComplexReal<double,double>((double**)cp,rows,cols);
       case FM_COMPLEX:
-	return TypeConvertSparseComplexComplex<double,float>((double**)cp,rows,cols);
+	return TypeConvertSparseTT<double,float>((double**)cp,rows,cols);
       }
     } 
   }

@@ -31,6 +31,14 @@ bool IsInfinite(double t) {
 
 }
 
+bool IsNaN(int t) {
+  return true;
+}
+
+bool IsNaN(unsigned int t) {
+  return true;
+}
+
 bool IsNaN(float t) {
   union {
     float f;

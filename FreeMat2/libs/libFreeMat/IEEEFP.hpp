@@ -3,7 +3,8 @@
 
 bool IsInfinite(float t);
 bool IsInfinite(double t);
-bool IsNaN(float t);
+bool IsNaN(int t);
+bool IsNaN(unsigned int t);
 bool IsNaN(double t);
 bool IsFinite(float t);
 bool IsFinite(double t);

@@ -453,6 +453,32 @@ namespace FreeMat {
   //of the current call stack, and where you are relative to the
   //stack.
   //@@Example
+  //Suppose we have the following chain of functions.
+  //@{ chain1.m
+  //function chain1
+  //  a = 32;
+  //  b = a + 5;
+  //  chain2(b)
+  //@}
+  //@{ chain2.m
+  //function chain2(d)
+  //  d = d + 5;
+  //  chain3
+  //@}
+  //@{ chain3.m
+  //function chain3
+  //  g = 54;
+  //  f = g + 1;
+  //  keyboard
+  //@}
+  //The execution of the @|where| command shows the stack trace.
+  //@<
+  //chain1
+  //where
+  //@>
+  //The double question marks mean that the context is not fully defined
+  //for these cases.  They usually mean that execution is in a keyboard
+  //session or started from the @|-->| prompt.
   //!
   ArrayVector WhereFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     Interface *io = eval->getInterface();

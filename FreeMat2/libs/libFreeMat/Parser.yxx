@@ -63,6 +63,21 @@ namespace FreeMat {
      return;
   }
 
+  void chainFunction(MFunctionDef *r) {
+     r->nextFunction = NULL;
+     r->prevFunction = NULL;
+     if (mainMDef == NULL)
+	mainMDef = r;
+     else {
+	r->localFunction = true;
+        r->nextFunction = mainMDef->nextFunction;
+	if (r->nextFunction)
+	  r->nextFunction->prevFunction = r;
+	mainMDef->nextFunction = r;
+	r->prevFunction = mainMDef;
+     }
+  }
+
   std::string decodeline(ParseRHS val) {
     int tokenID;
     int linenumber, colnumber;
@@ -145,14 +160,7 @@ functionDef:
      r->arguments = $5.v.p->toStringList();
      r->code = $8.v.p;
      r->fileName = parsing_filename;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
+     chainFunction(r);
    } |
    FUNCTION  IDENT '(' argumentList ')' newLine statementList {
      MFunctionDef *r;
@@ -161,14 +169,7 @@ functionDef:
      r->arguments = $4.v.p->toStringList();
      r->code = $7.v.p;
      r->fileName = parsing_filename;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
+     chainFunction(r);
    } |
    FUNCTION  returnDeclaration IDENT newLine statementList {
      MFunctionDef *r;
@@ -177,14 +178,7 @@ functionDef:
      r->name = $3.v.p->text;
      r->code = $5.v.p;
      r->fileName = parsing_filename;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
+     chainFunction(r);
    } |
    FUNCTION  IDENT newLine statementList {
      MFunctionDef *r;
@@ -192,14 +186,7 @@ functionDef:
      r->name = $2.v.p->text;
      r->code = $4.v.p;
      r->fileName = parsing_filename;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
+     chainFunction(r);
    } |
    FUNCTION  returnDeclaration IDENT '(' ')' newLine statementList {
      MFunctionDef *r;
@@ -208,14 +195,7 @@ functionDef:
      r->name = $3.v.p->text;
      r->code = $7.v.p;
      r->fileName = parsing_filename;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
+     chainFunction(r);
    } |
    FUNCTION  IDENT '(' ')' newLine statementList {
      MFunctionDef *r;
@@ -223,14 +203,7 @@ functionDef:
      r->name = $2.v.p->text;
      r->code = $6.v.p;
      r->fileName = parsing_filename;
-     r->nextFunction = NULL;
-     if (mainMDef == NULL)
-	mainMDef = r;
-     else {
-	r->localFunction = true;
-        r->nextFunction = mainMDef->nextFunction;
-	mainMDef->nextFunction = r;
-     }
+     chainFunction(r);
    } |
    FUNCTION  error {yyxpt("legal function name or return declaration after 'function'",$1);} |
    FUNCTION  IDENT error {yyxpt(std::string("argument list or statement list after identifier '") + 

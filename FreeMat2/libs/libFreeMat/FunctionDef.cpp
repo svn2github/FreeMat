@@ -69,6 +69,7 @@ namespace FreeMat {
     timeStamp = 0;
     localFunction = false;
     nextFunction = NULL;
+    prevFunction = NULL;
     pcodeFunction = false;
   }
 
@@ -130,7 +131,10 @@ namespace FreeMat {
     walker->pushDebug(fileName,name);
     // Push our local functions onto the function scope
     MFunctionDef *cp;
-    cp = nextFunction;
+    // Walk up until we get to the head of the list
+    cp = this;
+    while (cp->prevFunction != NULL) cp = cp->prevFunction;
+    cp = cp->nextFunction;
     while (cp != NULL) {
       context->insertFunctionLocally((FuncPtr) cp);
       cp = cp->nextFunction;
@@ -299,6 +303,7 @@ namespace FreeMat {
 	  code = cp->code;
 	  functionCompiled = true;
 	  nextFunction = cp->nextFunction;
+	  prevFunction = cp->prevFunction;
 	  return;
 	} else if (pstate == ScriptBlock) {
 	  code = getParsedScriptBlock();
@@ -343,10 +348,11 @@ namespace FreeMat {
     t->helpText = s->getStringVector();
     t->code = ThawAST(s);
     bool nextFun = s->getBool();
-    if (nextFun) 
+    if (nextFun) {
       t->nextFunction = ThawMFunction(s);
-    else
-      t->nextFunction = false;
+      t->nextFunction->prevFunction = t;
+    } else
+      t->nextFunction = NULL;
     return t;
   }
 

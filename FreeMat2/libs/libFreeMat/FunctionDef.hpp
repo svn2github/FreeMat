@@ -158,6 +158,7 @@ namespace FreeMat {
      * at the head of the list.
      */
     MFunctionDef *nextFunction;
+    MFunctionDef *prevFunction;
     /**
      * Set to true for all of the localFunctions.  False for the head of the
      * linked list.

@@ -146,27 +146,35 @@ LineStyleType PostScriptGC::SetLineStyle(LineStyleType style) {
 }
 
 void PostScriptGC::DrawLine(Point2D pos1, Point2D pos2) {
-  pos1 = ToPS(pos1);
-  pos2 = ToPS(pos2);
-  fprintf(fp,"newpath\n%d %d moveto\n%d %d lineto\n1 setlinewidth\nstroke\n",
-	  pos1.x,pos1.y,pos2.x,pos2.y);
+  if (m_lst != LINE_NONE) {
+    pos1 = ToPS(pos1);
+    pos2 = ToPS(pos2);
+    fprintf(fp,"newpath\n%d %d moveto\n%d %d lineto\n1 setlinewidth\nstroke\n",
+	    pos1.x,pos1.y,pos2.x,pos2.y);
+  }
 }
 
 void PostScriptGC::DrawPoint(Point2D pos) {
-  DrawCircle(ToPS(pos),1);
+  if (m_lst != LINE_NONE) {
+    DrawCircle(ToPS(pos),1);
+  }
 }
 
 void PostScriptGC::DrawCircle(Point2D pos, int radius) {
-  pos = ToPS(pos);
-  fprintf(fp,"newpath\n");
-  fprintf(fp,"%d %d %d 0 360 arc\n",pos.x,pos.y,radius);
-  fprintf(fp,"closepath\n1 setlinewidth\nstroke\n");
+  if (m_lst != LINE_NONE) {
+    pos = ToPS(pos);
+    fprintf(fp,"newpath\n");
+    fprintf(fp,"%d %d %d 0 360 arc\n",pos.x,pos.y,radius);
+    fprintf(fp,"closepath\n1 setlinewidth\nstroke\n");
+  }
 }
 
 void PostScriptGC::DrawRectangle(Rect2D rect) { 
-  fprintf(fp,"newpath\n");
-  DoRect(rect);
-  fprintf(fp,"closepath\n1 setlinewidth\nstroke\n");
+  if (m_lst != LINE_NONE) {
+    fprintf(fp,"newpath\n");
+    DoRect(rect);
+    fprintf(fp,"closepath\n1 setlinewidth\nstroke\n");
+  }
 }
 
 void PostScriptGC::FillRectangle(Rect2D rect) {
@@ -176,15 +184,17 @@ void PostScriptGC::FillRectangle(Rect2D rect) {
 }
 
 void PostScriptGC::DrawLines(std::vector<Point2D> pts) {
-  if (pts.size() >= 2) {
-    fprintf(fp,"newpath\n");
-    Point2D t(ToPS(pts[0]));
-    fprintf(fp,"%d %d moveto\n",t.x,t.y);
-    for (int i=1;i<pts.size();i++) {
-      Point2D t(ToPS(pts[i]));
-      fprintf(fp,"%d %d lineto\n",t.x,t.y);
+  if (m_lst != LINE_NONE) {
+    if (pts.size() >= 2) {
+      fprintf(fp,"newpath\n");
+      Point2D t(ToPS(pts[0]));
+      fprintf(fp,"%d %d moveto\n",t.x,t.y);
+      for (int i=1;i<pts.size();i++) {
+	Point2D t(ToPS(pts[i]));
+	fprintf(fp,"%d %d lineto\n",t.x,t.y);
+      }
+      fprintf(fp,"1 setlinewidth\nstroke\n");
     }
-    fprintf(fp,"1 setlinewidth\nstroke\n");
   }
 }
 

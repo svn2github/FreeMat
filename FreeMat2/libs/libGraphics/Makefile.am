@@ -1,3 +1,5 @@
+EXTRA_DIST = libGraphics.dsp
+
 noinst_LIBRARIES = libGraphics.a
 
 CFLAGS=@CFLAGS@ @X_CFLAGS@

@@ -1,3 +1,5 @@
+EXTRA_DIST = libXP.dsp
+
 noinst_LIBRARIES = libXP.a
 
 libXP_a_SOURCES = DynLib.hpp \

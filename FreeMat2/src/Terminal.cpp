@@ -472,6 +472,7 @@ namespace FreeMat {
 
   std::vector<std::string> Terminal::GetCompletions(const char *line, int word_end, 
 						    std::string &matchString) {
+    std::vector<std::string> completions;
     /*
      * Find the start of the filename prefix to be completed, searching
      * backwards for the first unescaped space, or the start of the line.
@@ -492,7 +493,6 @@ namespace FreeMat {
     if (start[-1] != '\'') {
       std::vector<std::string> local_completions;
       std::vector<std::string> global_completions;
-      std::vector<std::string> completions;
       int i;
       local_completions = context->getCurrentScope()->getCompletions(std::string(start));
       global_completions = context->getGlobalScope()->getCompletions(std::string(start));
@@ -503,7 +503,6 @@ namespace FreeMat {
       std::sort(completions.begin(),completions.end());
       return completions;
     } else {
-      std::vector<std::string> completions;
       glob_t names;
       std::string pattern(tmp);
       pattern.append("*");

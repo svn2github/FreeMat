@@ -292,7 +292,7 @@ namespace FreeMat {
     if (strcmp(txt,"on") == 0)
       f->SetHoldFlag(true);
     else if (strcmp(txt,"off") == 0)
-      f->SetHoldFlag(true);
+      f->SetHoldFlag(false);
     else
       throw Exception("Hold function argument needs to be 'on/off'");
     return ArrayVector();  

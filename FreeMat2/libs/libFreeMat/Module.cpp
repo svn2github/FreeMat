@@ -188,7 +188,7 @@ namespace FreeMat {
     void *func;
     DynLib *lib;
     if (!libPointers.findSymbol(libfullpath.c_str(),lib)) {
-      lib = new DynLib(libfile);
+      lib = new DynLib(libfullpath.c_str());
       libPointers.insertSymbol(libfullpath.c_str(),lib);
     }
     func = lib->GetSymbol(symbolname);

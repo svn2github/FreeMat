@@ -255,6 +255,7 @@ VOID main(VOID)
 }
 #else
 #include <unistd.h>
+#include <errno.h>
 
 #define MAX 1024
 

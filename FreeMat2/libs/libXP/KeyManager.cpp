@@ -1044,7 +1044,11 @@ void KeyManager::OnChar( int c ) {
     ForwardDeleteChar();
     break;
   case KM_TAB:
-    CompleteWord();
+    if ((buff_curpos != 0) && (line[buff_curpos-1] != ' ') &&
+	(line[buff_curpos-1] != '\t'))
+      CompleteWord();
+    else
+      AddCharToLine(c);
     break;
   case KM_CTRLK:
     KillLine();

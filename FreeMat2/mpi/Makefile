@@ -15,9 +15,9 @@
 
 SHELL = /bin/sh
 
-srcdir = /localhome/basu/tmp/FreeMat2/mpi
-top_srcdir = /localhome/basu/tmp/FreeMat2
-VPATH = /localhome/basu/tmp/FreeMat2/mpi
+srcdir = /localhome/basu/FreeMat2/mpi
+top_srcdir = /localhome/basu/FreeMat2
+VPATH = /localhome/basu/FreeMat2/mpi
 prefix = /usr/local
 exec_prefix = ${prefix}
 
@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/FreeMat
 pkgincludedir = $(includedir)/FreeMat
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /localhome/basu/tmp/FreeMat2/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /localhome/basu/tmp/FreeMat2/missing --run autoconf
-AUTOMAKE = ${SHELL} /localhome/basu/tmp/FreeMat2/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /localhome/basu/tmp/FreeMat2/missing --run autoheader
+ACLOCAL = ${SHELL} /localhome/basu/FreeMat2/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /localhome/basu/FreeMat2/missing --run autoconf
+AUTOMAKE = ${SHELL} /localhome/basu/FreeMat2/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /localhome/basu/FreeMat2/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -69,7 +69,7 @@ target_triplet = i686-pc-linux-gnu
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /localhome/basu/tmp/FreeMat2/missing --run tar
+AMTAR = ${SHELL} /localhome/basu/FreeMat2/missing --run tar
 AWK = gawk
 BLAS_LIBS = -lblas
 CC = gcc
@@ -101,12 +101,12 @@ YACC = bison -y
 YFLAGS =  -d
 am__include = include
 am__quote = 
-install_sh = /localhome/basu/tmp/FreeMat2/install-sh
+install_sh = /localhome/basu/FreeMat2/install-sh
 miniblasdir = 
 minilapackdir = 
 mpidir = 
-CFLAGS = -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/tmp/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cflags`
-CXXFLAGS = -O3  -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/tmp/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cxxflags`  -I/localhome/basu/tmp/FreeMat2/libs/libFreeMat -I/localhome/basu/tmp/FreeMat2/libs/libCore -I/localhome/basu/tmp/FreeMat2/extlibs/libtecla -I/localhome/basu/tmp/FreeMat2/libs/libGraphics  -I/localhome/basu/tmp/FreeMat2/extlibs/libffi-2.00-beta/include  -I/localhome/basu/tmp/FreeMat2/extlibs/volpack-1.0c2/src
+CFLAGS = -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cflags`
+CXXFLAGS = -g  -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cxxflags`  -I/localhome/basu/FreeMat2/libs/libFreeMat -I/localhome/basu/FreeMat2/libs/libCore -I/localhome/basu/FreeMat2/extlibs/libtecla -I/localhome/basu/FreeMat2/libs/libGraphics  -I/localhome/basu/FreeMat2/extlibs/libffi-2.00-beta/include  -I/localhome/basu/FreeMat2/extlibs/volpack-1.0c2/src
 
 bin_PROGRAMS = FMKernelMPI FreeMatMPI
 
@@ -127,7 +127,7 @@ MPIWrap.cpp \
 MPIWrap.hpp
 
 
-LIBS = `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/tmp/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --libs` -llapack -lblas -ltiff -lm -ljpeg -lpng -lz -lm -O3    -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../.. -ltiff -lfrtbegin -lg2c -lm -ljpeg -lpng -lz -lgcc_s -lcurses 
+LIBS = `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --libs` -llapack -lblas -ltiff -lm -ljpeg -lpng -lz -lm -g    -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../.. -ltiff -lfrtbegin -lg2c -lm -ljpeg -lpng -lz -lgcc_s -lcurses 
 
 FreeMatMPI_DEPENDENCIES = ..//libs/libCore/libCore.a ..//libs/libGraphics/libGraphics.a ..//libs/libFreeMat/libFreeMat.a ..//libs/libFFTPack/libFFTPack.a ..//extlibs/libtecla/libtecla.a  ..//extlibs/libffi-2.00-beta/libffi.a ..//extlibs/volpack-1.0c2/src/libvolpack.a
 

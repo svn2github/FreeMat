@@ -56,6 +56,7 @@ namespace FreeMat {
   void Plot2D::StopSequence() {
     holdflag = holdSave;
     updating = false;
+	Refresh();
   }
 
   void Plot2D::SetTitleText(std::string txt) {
@@ -194,7 +195,8 @@ namespace FreeMat {
    }
 
   void Plot2D::OnDraw(GraphicsContext &gc) {
-    if (updating || (data.size() == 0));
+    if (updating || (data.size() == 0))
+      return;
     if (xAxis == NULL) return;
     if (yAxis == NULL) return;
     int width = getWidth();

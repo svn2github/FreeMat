@@ -900,7 +900,10 @@ std::string GetCommonPrefix(std::vector<std::string> matches,
     }
     prefixlength = (j < prefixlength) ? j : prefixlength;
   }
-  return(templ.substr(tempstring.length(),prefixlength-tempstring.length()));
+  if (prefixlength <= tempstring.length())
+    return (std::string(""));
+  else
+    return(templ.substr(tempstring.length(),prefixlength-tempstring.length()));
 }
 
 void KeyManager::CompleteWord() {

@@ -102,11 +102,12 @@ YFLAGS =  -d
 am__include = include
 am__quote = 
 install_sh = /localhome/basu/FreeMat2/install-sh
+maindir = src/x11
 miniblasdir = 
 minilapackdir = 
 mpidir = 
 CFLAGS = -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cflags`
-CXXFLAGS = -g  -g -O2 `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cxxflags`  -I/localhome/basu/FreeMat2/libs/libFreeMat -I/localhome/basu/FreeMat2/libs/libCore -I/localhome/basu/FreeMat2/extlibs/libtecla -I/localhome/basu/FreeMat2/libs/libGraphics  -I/localhome/basu/FreeMat2/extlibs/libffi-2.00-beta/include  -I/localhome/basu/FreeMat2/extlibs/volpack-1.0c2/src
+CXXFLAGS = -O3  `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --cxxflags`  -I/localhome/basu/FreeMat2/libs/libFreeMat -I/localhome/basu/FreeMat2/libs/libCore -I/localhome/basu/FreeMat2/extlibs/libtecla -I/localhome/basu/FreeMat2/libs/libGraphics  -I/localhome/basu/FreeMat2/extlibs/libffi-2.00-beta/include  -I/localhome/basu/FreeMat2/extlibs/volpack-1.0c2/src
 
 bin_PROGRAMS = FMKernelMPI FreeMatMPI
 
@@ -127,7 +128,7 @@ MPIWrap.cpp \
 MPIWrap.hpp
 
 
-LIBS = `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --libs` -llapack -lblas -ltiff -lm -ljpeg -lpng -lz -lm -g    -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../.. -ltiff -lfrtbegin -lg2c -lm -ljpeg -lpng -lz -lgcc_s -lcurses 
+LIBS = `..//extlibs/wxWindows/wx-config --prefix=/localhome/basu/FreeMat2/extlibs/wxWindows --exec-prefix=..//extlibs/wxWindows --libs` -llapack -lblas -ltiff -lm -ljpeg -lpng -lz -lm -O3    -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../.. -ltiff -lfrtbegin -lg2c -lm -ljpeg -lpng -lz -lgcc_s -lcurses 
 
 FreeMatMPI_DEPENDENCIES = ..//libs/libCore/libCore.a ..//libs/libGraphics/libGraphics.a ..//libs/libFreeMat/libFreeMat.a ..//libs/libFFTPack/libFFTPack.a ..//extlibs/libtecla/libtecla.a  ..//extlibs/libffi-2.00-beta/libffi.a ..//extlibs/volpack-1.0c2/src/libvolpack.a
 

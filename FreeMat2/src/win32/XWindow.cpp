@@ -258,12 +258,21 @@ Point2D XWindow::GetTextExtent(std::string label) {
 void XWindow::DrawTextString(std::string label, Point2D pos, OrientationType orient) {
   HDC hdc;
   hdc = GetDC(m_window);
-  if (orient == ORIENT_0)
-	  SelectObject(hdc, m_hfont);
-  else
-	  SelectObject(hdc, m_vfont);
+  SIZE t;
+  GetTextExtentPoint32(hdc, label.c_str(), label.size(), &t);
+  int twiddlex, twiddley;
+  if (orient == ORIENT_0) {
+	SelectObject(hdc, m_hfont);
+	twiddlex = 0;
+	twiddley = -t.cy;
+  }
+  else {
+	SelectObject(hdc, m_vfont);
+	twiddlex = -t.cy;
+	twiddley = 0;
+  }
   SetBkColor(hdc, RGB(bgcol.red,bgcol.green,bgcol.blue));
-  TextOut(hdc,pos.x, pos.y, label.c_str(), label.size());
+  TextOut(hdc,pos.x+twiddlex, pos.y+twiddley, label.c_str(), label.size());
   ReleaseDC(m_window, hdc);
 }
 
@@ -271,7 +280,7 @@ void XWindow::SetFont(std::string fontname, int fontsize) {
   int nHeight;
   HDC hdc;
   hdc = GetDC(m_window);
-  nHeight = -MulDiv(fontsize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+  nHeight = -MulDiv(fontsize-2, GetDeviceCaps(hdc, LOGPIXELSY), 72);
   m_hfont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 
 		       FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS,
 		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 

@@ -33,6 +33,7 @@ namespace FreeMat {
   
   void WinTerminal::MakeCaret() {
     CreateCaret(hwnd, (HBITMAP) NULL, charWidth, charHeight);
+	ShowCaret(hwnd);
   }
   
   void WinTerminal::DoMoveCaret() {
@@ -78,12 +79,12 @@ namespace FreeMat {
 
   WinTerminal::WinTerminal(HINSTANCE hInstance, int iCmdShow) {
     hwnd = CreateWindow("WinTerminal",
-			TEXT("The Hello Program"),
+			TEXT("FreeMat"),
 			WS_OVERLAPPEDWINDOW | WS_VSCROLL,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
+			500,
+			400,
 			NULL,
 			NULL,
 			hInstance,
@@ -507,17 +508,17 @@ namespace FreeMat {
       std::sort(completions.begin(),completions.end());
       return completions;
     } else {
-#if 0
-      glob_t names;
+      HANDLE hSearch;
+      WIN32_FIND_DATA FileData;
       std::string pattern(tmp);
-      pattern.append("*");
-      glob(pattern.c_str(), GLOB_MARK, NULL, &names);
-      int i;
-      for (i=0;i<names.gl_pathc;i++) 
-	completions.push_back(names.gl_pathv[i]);
-      globfree(&names);
-      free(tmp);
-#endif
+      pattern.append("*.*");
+      hSearch = FindFirstFile(pattern.c_str(),&FileData);
+      if (hSearch != INVALID_HANDLE_VALUE) {
+	completions.push_back(FileData.cFileName);
+	while (FindNextFile(hSearch, &FileData))
+	  completions.push_back(FileData.cFileName);
+      }
+      FindClose(hSearch);
       return completions;
     }
   }
@@ -549,10 +550,7 @@ namespace FreeMat {
       case WM_SETFOCUS:  
 	// Create a solid black caret. 
 	wptr->MakeCaret();
-	// Adjust the caret position, in client coordinates. 
-	SetCaretPos(wptr->getCaretX(), wptr->getCaretY()); 
-	// Display the caret. 
-	ShowCaret(hwnd); 
+	wptr->DoMoveCaret();
 	break;
       case WM_KILLFOCUS:  
 	// The window is losing the keyboard focus, so destroy the caret. 

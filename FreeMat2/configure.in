@@ -30,7 +30,7 @@ AC_PATH_XTRA
 AC_ARG_WITH(debug,
 	[AC_HELP_STRING([--with-debug],
 		[Include debug options [default=no]])],
-		debug_flag="-g",
+		debug_flag="-O0 -g3",
 		debug_flag="-O3")
 
 AC_ARG_WITH(miniblas,
@@ -59,7 +59,7 @@ case $host in
 esac
 
 LIBS="$debug_flag $prof_flag $LIBS"
-CXXFLAGS="$debug_flag $prof_flag $CXXFLAGS"
+CXXFLAGS="$debug_flag $prof_flag"
 YFLAGS="$YFLAGS -d"
 LFLAGS="$LFLAGS"
 

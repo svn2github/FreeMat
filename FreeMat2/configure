@@ -258,7 +258,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_unique_file="src/main.cpp"
+ac_unique_file="src/x11/main.cpp"
 ac_subdirs_all="$ac_subdirs_all libs/libffi"
 
 # Initialize some variables set by options.
@@ -822,13 +822,11 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking Speeds up one-time builds
   --enable-dependency-tracking  Do not reject slow dependency extractors
---enable-postscript	 enable postscript output (needed on Windows)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
-  --with-profile          Include profiling options [default=no]
   --with-debug            Include debug options [default=no]
   --with-miniblas         Force use of built-in BLAS library [default=no]
   --with-minilapack       Force use of built-in LAPACK library [default=no]
@@ -3049,7 +3047,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3052:" \
+echo "$as_me:3050:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -3542,6 +3540,12 @@ fi
 case $host in
 *-*-linux-* | *-*-cygwin*)
   FLIBS=`echo $FLIBS | sed -e 's/-lfrtbegin//g'` ;;
+esac
+
+maindir="src/x11"
+case $host in
+*-*-cygwin*)
+  maindir="src/win32"
 esac
 
 ac_ext=c
@@ -4917,26 +4921,11 @@ fi
 fi
 
 
-# Check whether --enable-postscript or --disable-postscript was given.
-if test "${enable_postscript+set}" = set; then
-  enableval="$enable_postscript"
-
-fi;
-
-
-# Check whether --with-profile or --without-profile was given.
-if test "${with_profile+set}" = set; then
-  withval="$with_profile"
-  prof_flag="-pg"
-else
-  prof_flag=""
-fi;
-
 
 # Check whether --with-debug or --without-debug was given.
 if test "${with_debug+set}" = set; then
   withval="$with_debug"
-  debug_flag="-g"
+  debug_flag="-O0 -g3"
 else
   debug_flag="-O3"
 fi;
@@ -5099,7 +5088,7 @@ case $host in
 esac
 
 LIBS="$debug_flag $prof_flag $LIBS"
-CXXFLAGS="$debug_flag $prof_flag $CXXFLAGS"
+CXXFLAGS="$debug_flag $prof_flag"
 YFLAGS="$YFLAGS -d"
 LFLAGS="$LFLAGS"
 
@@ -5623,6 +5612,7 @@ fi
 if test "$usempi" = "yes" ; then
   mpidir="mpi"
 fi
+
 
 
 
@@ -6296,6 +6286,7 @@ s,@MPILIBS@,$MPILIBS,;t t
 s,@minilapackdir@,$minilapackdir,;t t
 s,@miniblasdir@,$miniblasdir,;t t
 s,@mpidir@,$mpidir,;t t
+s,@maindir@,$maindir,;t t
 CEOF
 
 _ACEOF
@@ -6717,7 +6708,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_verb"
-(eval echo $as_me:6720: \"$ac_link\") >&5
+(eval echo $as_me:6711: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -6796,7 +6787,7 @@ _ACEOF
 # flags.
 ac_save_FFLAGS=$FFLAGS
 FFLAGS="$FFLAGS $ac_cv_prog_f77_v"
-(eval echo $as_me:6799: \"$ac_link\") >&5
+(eval echo $as_me:6790: \"$ac_link\") >&5
 ac_f77_v_output=`eval $ac_link 5>&1 2>&1 | grep -v 'Driving:'`
 echo "$ac_f77_v_output" >&5
 FFLAGS=$ac_save_FFLAGS
@@ -9066,6 +9057,7 @@ s,@MPILIBS@,$MPILIBS,;t t
 s,@minilapackdir@,$minilapackdir,;t t
 s,@miniblasdir@,$miniblasdir,;t t
 s,@mpidir@,$mpidir,;t t
+s,@maindir@,$maindir,;t t
 s,@FLIBS@,$FLIBS,;t t
 s,@BLAS_LIBS@,$BLAS_LIBS,;t t
 CEOF
@@ -9701,7 +9693,7 @@ ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
 subdirs="$subdirs libs/libffi"
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile"
+ac_config_files="$ac_config_files Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -10219,7 +10211,8 @@ do
   "libs/libMiniBLAS/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/libMiniBLAS/Makefile" ;;
   "libs/libMiniLAPACK/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/libMiniLAPACK/Makefile" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "src/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+  "src/win32/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/win32/Makefile" ;;
+  "src/x11/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/x11/Makefile" ;;
   "doc/Doxyfile" ) CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;
   "libs/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/Makefile" ;;
   "libs/libFFTPack/Makefile" ) CONFIG_FILES="$CONFIG_FILES libs/libFFTPack/Makefile" ;;
@@ -10378,6 +10371,7 @@ s,@MPILIBS@,$MPILIBS,;t t
 s,@minilapackdir@,$minilapackdir,;t t
 s,@miniblasdir@,$miniblasdir,;t t
 s,@mpidir@,$mpidir,;t t
+s,@maindir@,$maindir,;t t
 s,@FLIBS@,$FLIBS,;t t
 s,@BLAS_LIBS@,$BLAS_LIBS,;t t
 s,@LAPACK_LIBS@,$LAPACK_LIBS,;t t
@@ -10899,6 +10893,7 @@ echo \
 Configuration:
 
   Source code location:       ${srcdir}
+  Main location:              ${maindir}
   C Compiler:	              ${CC}
   C Compiler flags:           ${CFLAGS}
   C++ Compiler:		      ${CXX}

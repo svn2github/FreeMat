@@ -417,6 +417,8 @@ namespace FreeMat {
     Class AClass, BClass;
     int opType;
 
+    if (A.isEmpty() || B.isEmpty())
+      return Array::emptyConstructor();
     CheckNumeric(A,B);
     if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
       throw Exception("Size mismatch on arguments to arithmetic operator.");
@@ -1272,6 +1274,8 @@ namespace FreeMat {
   //Note that the output is double precision.
   //!
   Array Multiply(Array A, Array B) throw(Exception){
+    if (A.isEmpty() || B.isEmpty())
+      return Array::emptyConstructor();
     // Process our arguments
     if (!MatrixCheck(A,B))
       // Its really a vector product, pass...
@@ -1400,6 +1404,8 @@ namespace FreeMat {
   //which is the same solution.
   //!
   Array LeftDivide(Array A, Array B) throw(Exception) {
+    if (A.isEmpty() || B.isEmpty())
+      return Array::emptyConstructor();
     stringVector dummySV;
     // Process our arguments
     if (!MatrixCheck(A,B))
@@ -1524,6 +1530,8 @@ namespace FreeMat {
   Array RightDivide(Array A, Array B) {
     Array C;
 
+    if (A.isEmpty() || B.isEmpty())
+      return Array::emptyConstructor();
     // Process our arguments
     if (!MatrixCheck(A,B))
       // Its really a vector product, pass...
@@ -2770,6 +2778,9 @@ namespace FreeMat {
   //@>
   //!
   Array Power(Array A, Array B) throw(Exception){
+
+    if (A.isEmpty() || B.isEmpty())
+      return Array::emptyConstructor();
 
     if (A.isScalar() && B.isScalar()) return DotPower(A,B);
 

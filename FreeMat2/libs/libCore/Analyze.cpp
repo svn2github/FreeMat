@@ -2746,7 +2746,171 @@ namespace FreeMat {
     }
     delete[] buf;
   }
+
+  template <class T>
+  class UniqueEntryReal {
+  public:
+    uint32 n;
+    uint32 len;
+    T* data;
+  };
+
+  template <class T>
+  bool operator<(const UniqueEntryReal<T>& a, const UniqueEntryReal<T>& b) {
+    int i;
+    i = 0;
+    while (i<len) {
+      if (a.data[i] < b.data[i]) return true;
+      i++;
+    }
+    return false;
+  }
   
+  template <class T>
+  bool operator==(const UniqueEntryReal<T>& a, const UniqueEntryReal<T>& b) {
+    int i;
+    i = 0;
+    while (i<len) {
+      if (a.data[i] != b.data[i]) return false;
+      i++;
+    }
+    return true;
+  }
+  
+  
+  //!
+  //@Module UNIQUE Unique
+  //@@Section ARRAY
+  //@@Usage
+  //Returns a vector containing the unique elements of an array.  The first
+  //form is simply
+  //@[
+  //   y = unique(x)
+  //@]
+  //where @|x| is either a numerical array or a cell-array of strings.  The 
+  //result is sorted in increasing order.  You can also retrieve two sets
+  //of index vectors
+  //@[
+  //   [y, m, n] = unique(x)
+  //@]
+  //such that @|y = x(m)| and @|x = y(n)|.  If the argument @|x| is a matrix,
+  //you can also indicate that FreeMat should look for unique rows in the
+  //matrix via
+  //@[
+  //   y = unique(x,'rows')
+  //@]
+  //and
+  //@[
+  //   [y, m, n] = unique(x,'rows')
+  //@]
+  //@@Example
+  //@<
+  //A = randi(zeros(1,9),5*ones(1,9))
+  //unique(A)
+  //[b,m,n] = unique(A)
+  //A(m)
+  //b(n)
+  //@>
+  //!
+
+
+  template <class T>
+  ArrayVector UniqueFunctionVecModeReal(int nargout, Array input) {
+    const T* dp = (const T*) input.getDataPointer();
+    int len = input.getLength();
+    Class cls(input.getDataClass());
+    int i;
+    int cnt;
+    UniqueEntryReal<T> *sp = new UniqueEntryReal<T>[len];
+    for (i=0;i<len;i++) {
+      sp[i].n = i;
+      sp[i].len = 1;
+      sp[i].data = dp + i;
+    }
+    std::sort(sp,sp+len);
+    // Make one pass through the array to determine how many
+    // output elements there are
+    i = 1;
+    cnt = 1;
+    // 0 0 0 1 2 3 3 4 4 5 6 7
+    // 1 1 1 2
+    while (i < len) {
+      if (!(sp[i] == sp[i-1]))
+	cnt++;
+      i++;
+    }
+    if (nargout <= 1) {
+      // Second pass through the array - build the output vector
+      T* op = (T*) Malloc(sizeof(T)*cnt);
+      op[0] = sp[0].data[0];
+      i = 1;
+      cnt = 1;
+      while (i < len) {
+	if (!(sp[i] == sp[i-1])) {
+	  op[cnt] = sp[i].data[0];
+	  cnt++;
+	}
+	i++;
+      }
+      return singleArrayVector(Array(cls,Dimensions(cnt,1),op));
+    }
+    return ArrayVector();
+  }
+  
+  ArrayVector UniqueFunctionRowMode(int nargout, Array input) {
+    return ArrayVector();
+  }
+
+  ArrayVector UniqueFunctionVecMode(int nargout, Array input) {
+    Class argType(input.getDataClass());
+    switch (argType) {
+    case FM_INT8: 
+      return UniqueFunctionVecModeReal<int8>(nargout, input);
+    case FM_UINT8:
+      return UniqueFunctionVecModeReal<uint8>(nargout, input);
+    case FM_INT16: 
+      return UniqueFunctionVecModeReal<int16>(nargout, input);
+    case FM_UINT16:
+      return UniqueFunctionVecModeReal<uint16>(nargout, input);
+    case FM_INT32: 
+      return UniqueFunctionVecModeReal<int32>(nargout, input);
+    case FM_UINT32:
+      return UniqueFunctionVecModeReal<uint32>(nargout, input);
+    case FM_FLOAT: 
+      return UniqueFunctionVecModeReal<float>(nargout, input);
+    case FM_DOUBLE:
+      return UniqueFunctionVecModeReal<double>(nargout, input);
+    }
+    throw Exception("Unsupported type in call to unique");
+  }
+
+  ArrayVector UniqueFunction(int nargout, const ArrayVector& arg) {
+    // Get the data argument
+    if (arg.size() < 1)
+      throw Exception("unique function requires at least one argument");
+    Array input(arg[0]);
+    bool rowmode = false;
+    if (arg.size() == 2) {
+      Array Sdir(arg[1]);
+      if (!Sdir.isString())
+	throw Exception("second argument to unique must be 'rows'");
+      const char *dp = (const char*) Sdir.getDataPointer();
+      if ((dp[0] == 'r') || (dp[0] == 'R'))
+	rowmode = true;
+      else
+	throw Exception("second argument to unique must be 'rows'");
+    }
+    // Get the input dimensions
+    Dimensions inDim(input.getDimensions());
+    if (rowmode && (inDim.getLength() != 2))
+      throw Exception("'rows' mode only works for matrix (2D) arguments");
+    // What happens next depends on the rowmode
+    if (rowmode)
+      return UniqueFunctionRowMode(nargout, input);
+    else
+      return UniqueFunctionVecMode(nargout, input);
+  }
+
   //!
   //@Module SORT Sort 
   //@@Section ARRAY

@@ -329,6 +329,10 @@ namespace FreeMat {
      context->addFunction("sort",SortFunction,3,2,args);
      args.clear();
      args.push_back("x");
+     args.push_back("mode");
+     context->addFunction("unique",UniqueFunction,2,3,args);
+     args.clear();
+     args.push_back("x");
      context->addSpecialFunction("autostop",AutoStopFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI

@@ -163,6 +163,7 @@ namespace FreeMat {
   ArrayVector FullFunction(int, const ArrayVector& arg);
   ArrayVector LUFunction(int, const ArrayVector& arg);
   ArrayVector SortFunction(int nargout, const ArrayVector& arg);
+  ArrayVector UniqueFunction(int nargout, const ArrayVector& arg);
 }
 
 #endif

@@ -1,0 +1,185 @@
+\documentclass{book}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\floatpagefraction}{0.9}
+\newcommand{\doplot}[2]{\begin{minipage}{\linewidth}\centering\includegraphics[#1]{#2}\end{minipage}}
+\title{FreeMat Help}
+\author{Samit Basu}
+\begin{document}
+\maketitle
+\tableofcontents
+\chapter{Basic Language}
+\section{Variables and Arrays}
+\input{cell}
+\input{global}
+\input{indexing}
+\input{matrix}
+\input{persist}
+\input{struct}
+\section{Functions and Scripts}
+\input{function}
+\input{keywords}
+\input{nargin}
+\input{nargout}
+\input{script}
+\input{special}
+\input{varargin}
+\input{varargout}
+\section{Mathematical Operators}
+\input{colon}
+\input{comparisonops}
+\input{dotleftdivide}
+\input{dotpower}
+\input{dotrightdivide}
+\input{dottimes}
+\input{hermitian}
+\input{leftdivide}
+\input{logicalops}
+\input{minus}
+\input{plus}
+\input{power}
+\input{rightdivide}
+\input{times}
+\input{transpose}
+\section{Flow Control}
+\input{break}
+\input{continue}
+\input{error}
+\input{for}
+\input{if}
+\input{keyboard}
+\input{lasterr}
+\input{retall}
+\input{return}
+\input{switch}
+\input{try}
+\input{while}
+\section{Special Functions}
+\input{eval}
+\input{feval}
+\input{help}
+\input{import}
+\input{loadlib}
+\input{quit}
+\input{sleep}
+\input{source}
+\chapter{Built In Functions}
+\section{Transcendental Functions}
+\input{exp}
+\input{log}
+\section{Trigonometric/Inverse Trig Functions}
+\input{acos}
+\input{asin}
+\input{atan}
+\input{atan2}
+\input{cos}
+\input{cot}
+\input{csc}
+\input{sec}
+\input{sin}
+\input{tan}
+\section{Base Constants}
+\input{e}
+\input{i}
+\input{inf}
+\input{nan}
+\input{pi}
+\section{Statistical Functions}
+\input{mean}
+\input{var}
+\section{Inspection Functions}
+\input{clear}
+\input{exist}
+\input{getprintlimit}
+\input{isempty}
+\input{setprintlimit}
+\input{size}
+\input{typeof}
+\input{who}
+\section{Type Cast Functions}
+\input{complex}
+\input{dcomplex}
+\input{double}
+\input{float}
+\input{int16}
+\input{int32}
+\input{int8}
+\input{uint16}
+\input{uint32}
+\input{uint8}
+\section{Elementary Functions}
+\input{abs}
+\input{ceil}
+\input{conj}
+\input{cumsum}
+\input{floor}
+\input{imag}
+\input{max}
+\input{min}
+\input{prod}
+\input{real}
+\input{sum}
+\section{Array Generation and Manipulations}
+\input{diag}
+\input{find}
+\input{ones}
+\input{reshape}
+\input{zeros}
+\section{Random Number Generation}
+\input{rand}
+\input{randn}
+\input{seed}
+\section{Input/Ouput Functions}
+\input{disp}
+\input{fclose}
+\input{feof}
+\input{fgetline}
+\input{fopen}
+\input{fprintf}
+\input{fread}
+\input{fscanf}
+\input{fseek}
+\input{ftell}
+\input{fwrite}
+\input{load}
+\input{printf}
+\input{save}
+\input{sprintf}
+\section{String Functions}
+\input{strcmp}
+\section{Transforms/Decompositions}
+\input{eig}
+\input{fft}
+\input{svd}
+\section{Operating System Functions}
+\input{cd}
+\input{ls}
+\input{pwd}
+\input{system}
+\chapter{Graphing Functions}
+\section{Image Display Functions}
+\input{image}
+\input{colormap}
+\input{closeimage}
+\input{newimage}
+\input{useimage}
+\input{useplot}
+\input{point}
+\input{printimage}
+\input{sizeimage}
+\input{zoom}
+\section{Plot Functions}
+\input{axis}
+\input{closeplot}
+\input{grid}
+\input{hold}
+\input{newplot}
+\input{plot}
+\input{printplot}
+\input{sizeplot}
+\input{xlabel}
+\input{ylabel}
+\input{title}
+\end{document}

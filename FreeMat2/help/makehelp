@@ -1,0 +1,2 @@
+#!/bin/sh
+perl dcptrans.pl ../libs/lib*/*.cpp

@@ -3430,7 +3430,7 @@ namespace FreeMat {
     int n_col;
     int nz_udiag;
 
-    (void) umfpack_di_get_lunz(&lnz,&unz,&n_row,&n_col,NULL,Numeric);
+    (void) umfpack_di_get_lunz(&lnz,&unz,&n_row,&n_col,&nz_udiag,Numeric);
 
     int *Lp = new int[Arows+1];
     int *Lj = new int[lnz];
@@ -3446,6 +3446,13 @@ namespace FreeMat {
     
     int do_recip;
     umfpack_di_get_numeric(Lp, Lj, Lx, Up, Ui, Ux, P, Q, NULL, &do_recip, Rs, Numeric);
+
+    for (int i=0;i<Arows;i++)
+      P[i]++;
+
+    for (int i=0;i<Acols;i++)
+      Q[i]++;
+
     IJVEntry<double>* llist = ConvertCCSToIJVListReal(Lp,Lj,Lx,Arows,lnz);
     for (int j=0;j<lnz;j++) {
       int tmp;
@@ -3460,9 +3467,9 @@ namespace FreeMat {
       rlist[i].I = i;
       rlist[i].J = i;
       if (do_recip)
-	rlist[i].Vreal = 1.0/Rs[i];
-      else
 	rlist[i].Vreal = Rs[i];
+      else
+	rlist[i].Vreal = 1.0/Rs[i];
     }
     ArrayVector retval;
     // Push L, U, P, Q, R
@@ -3476,6 +3483,21 @@ namespace FreeMat {
     retval.push_back(Array(FM_INT32,Dimensions(1,Acols),Q,false));
     retval.push_back(Array(FM_DOUBLE,Dimensions(Arows,Arows),
 			   ConvertIJVtoRLEReal<double>(rlist,Arows,Arows,Arows),true));
+    umfpack_di_free_symbolic(&Symbolic);
+    umfpack_di_free_numeric(&Numeric);
+    delete[] rlist;
+    delete[] ulist;
+    delete[] llist;
+    delete[] Rs;
+    delete[] Ux;
+    delete[] Ui;
+    delete[] Up;
+    delete[] Lx;
+    delete[] Lj;
+    delete[] Lp;
+    delete[] Acolstart;
+    delete[] Arowindx;
+    delete[] Adata;
     return retval;
   }
 
@@ -3487,10 +3509,12 @@ namespace FreeMat {
     int Acols;
     Arows = A.getDimensionLength(0);
     Acols = A.getDimensionLength(1);
+    if (Arows != Acols)
+      throw Exception("FreeMat currently only supports LU decompositions for square matrices");
     if (A.getDataClass() == FM_DOUBLE)
       return SparseLUDecomposeReal(Arows, Acols, A.getSparseDataPointer());
     else
-      return SparseLUDecomposeReal(Arows, Acols, A.getSparseDataPointer());
+      return SparseLUDecomposeComplex(Arows, Acols, A.getSparseDataPointer());
   }
 
 }

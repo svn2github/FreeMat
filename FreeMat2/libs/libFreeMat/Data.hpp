@@ -66,7 +66,7 @@ namespace FreeMat {
      * Construct a Data object with the given arguments.
      * the owner count is initialized to 1.
      */
-    Data(Class aClass, const Dimensions& dims, void *s, const stringVector& fields = stringVector());
+    Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag = false, const stringVector& fields = stringVector());
     /**
      * The destructor.  Calls freeDataBlock member function.
      */
@@ -88,7 +88,9 @@ namespace FreeMat {
      *     is decreased by one, and a new Data object is returned
      *     with the given contents.
      */
-    Data* putData(Class aClass, const Dimensions& dims, void *s, const stringVector& fields = stringVector());
+    Data* putData(Class aClass, const Dimensions& dims, void *s, 
+		  bool sparseflag = false, 
+		  const stringVector& fields = stringVector());
     /**
      * Decrement the reference count (owners) by one.
      */

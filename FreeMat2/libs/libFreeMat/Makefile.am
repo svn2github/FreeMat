@@ -67,6 +67,8 @@ File.hpp \
 Stream.hpp \
 Interface.hpp \
 Interface.cpp \
-SymbolTable.hpp 
+SymbolTable.hpp \
+Sparse.cpp \
+Sparse.hpp
 
 AUTOMAKE_OPTIONS 	= foreign

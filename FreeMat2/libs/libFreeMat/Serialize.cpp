@@ -516,7 +516,7 @@ namespace FreeMat {
       Array *dp = new Array[elCount*ncount];
       for (i=0;i<elCount*ncount;i++)
 	getArray(dp[i]);
-      dat = Array(dclass,dims,dp,fnames);
+      dat = Array(dclass,dims,dp,false,fnames);
       return;
     }
     case FM_LOGICAL: {

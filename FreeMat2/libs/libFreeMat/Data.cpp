@@ -24,7 +24,7 @@
 
 namespace FreeMat {
 
-  Data::Data(Class aClass, const Dimensions& dims, void *s, const stringVector& fields, bool sparseflag): 
+  Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, const stringVector& fields): 
     cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass) {
       sparse = sparseflag;
   } 
@@ -38,7 +38,7 @@ namespace FreeMat {
     return this; 
   }
 
-  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, const stringVector& fields, bool sparseflag) {
+  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, bool sparseflag, const stringVector& fields) {
     if ((owners <= 1)) {
       freeDataBlock();
       cp = s;
@@ -50,7 +50,7 @@ namespace FreeMat {
       return this;
     } else {
       owners--;
-      return new Data(aClass,dims,s,fields,sparseflag);
+      return new Data(aClass,dims,s,sparseflag,fields);
     }
   }
 
@@ -92,7 +92,7 @@ namespace FreeMat {
 	Array* rp = (Array*) cp;
 	delete [] rp;
       } else if (sparse) {
-	DeleteSparseMatrix(dataClass,dim[0],dim[1],cp);
+	DeleteSparseMatrix(dataClass,dimensions[0],dimensions[1],cp);
       } else 
 	Free(cp);
     }

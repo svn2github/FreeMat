@@ -23,6 +23,7 @@
 #include "Data.hpp"
 #include "Malloc.hpp"
 #include "IEEEFP.hpp"
+#include "Sparse.hpp"
 #include <math.h>
 #include <stdio.h>
 #include <set>
@@ -228,6 +229,8 @@ namespace FreeMat {
   }
 
   void Array::toOrdinalType()  {
+    if (isSparse())
+      makeDense();
     switch(dp->dataClass) {
     case FM_LOGICAL:
       {
@@ -481,8 +484,8 @@ namespace FreeMat {
   /**
    * Create a variable with the specified contents.
    */
-  Array::Array(Class type, const Dimensions& dims, void* data, const stringVector& fnames) {
-    dp = new Data(type, dims, data, fnames);
+  Array::Array(Class type, const Dimensions& dims, void* data, bool sparse, const stringVector& fnames) {
+    dp = new Data(type, dims, data, sparse, fnames);
   }
 
   Array::Array(Class type) {
@@ -554,6 +557,8 @@ namespace FreeMat {
   }
 
   const void *Array::getDataPointer() const {
+    if (isSparse())
+      throw Exception("operation does not support sparse matrix arguments.");
     if (dp)
       return dp->getData();
     else
@@ -562,19 +567,34 @@ namespace FreeMat {
 
   void Array::ensureSingleOwner() {
     if (dp->numberOfOwners() > 1) {
-      void *np = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
-      copyElements(0,np,0,getLength());
-      dp = dp->putData(dp->dataClass,dp->dimensions,np,dp->fieldNames);
+      if (!dp->sparse) {
+	void *np = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
+	copyElements(0,np,0,getLength());
+	dp = dp->putData(dp->dataClass,dp->dimensions,np,
+			 dp->sparse,dp->fieldNames);
+      } else {
+	dp = dp->putData(dp->dataClass,dp->dimensions,
+			 copySparseMatrix(dp->dataClass,
+					  dp->dimensions[0],
+					  dp->dimensions[1],
+					  dp->getData()),
+			 dp->sparse,dp->fieldNames);	
+      }
     }
   }
 
   void* Array::getReadWriteDataPointer() {
+    if (isSparse()) {
+      io->warningMessage("Warning: sparse matrix converted to full for operation.");
+      makeDense();
+    }
     ensureSingleOwner();
     return dp->getWriteableData();
   }
 
   void Array::setDataPointer(void* rp) {
-    dp = dp->putData(dp->dataClass,dp->dimensions,rp,dp->fieldNames);
+    dp = dp->putData(dp->dataClass,dp->dimensions,rp,
+		     dp->sparse,dp->fieldNames);
   }
 
   void Array::resize(Dimensions& a) {
@@ -591,6 +611,7 @@ namespace FreeMat {
       dp->dimensions = newSize;
       return;
     }
+    if (isSparse()) throw Exception("Cannot resize sparse arrays.");
     // Allocate space for our new size.
     void *dst_data = allocateArray(dp->dataClass,newSize.getElementCount(),dp->fieldNames);
     if (!isEmpty()) {
@@ -618,7 +639,8 @@ namespace FreeMat {
 	srcIndex += rowCount;
       }
     } 
-    dp = dp->putData(dp->dataClass,newSize,dst_data,dp->fieldNames);
+    dp = dp->putData(dp->dataClass,newSize,dst_data,
+		     dp->sparse,dp->fieldNames);
   }
 
   void Array::vectorResize(int max_index) {
@@ -653,6 +675,8 @@ namespace FreeMat {
    * elements remains the same after reshaping.
    */
   void Array::reshape(Dimensions& a)  {
+    if (isSparse())
+      throw Exception("reshape not supported for sparse arrays.");
     if (a.getElementCount() != getLength())
       throw Exception("Reshape operation cannot change the number of elements in array.");
     ensureSingleOwner();
@@ -669,6 +693,8 @@ namespace FreeMat {
       throw Exception("Cannot apply Hermitian transpose operation to multi-dimensional array.");
     if (isEmpty())
       return;
+    if (isSparse())
+      throw Exception("Hermitian not supported for sparse arrays.");
     if (!isComplex())
       transpose();
     else {
@@ -732,6 +758,8 @@ namespace FreeMat {
       throw Exception("Cannot apply transpose operation to multi-dimensional array.");
     if (isEmpty())
       return;
+    if (isSparse())
+      throw Exception("Transpose not supported for sparse arrays.");
     // Allocate space for our transposed array
     void *dstPtr = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
     int i, j;
@@ -750,7 +778,8 @@ namespace FreeMat {
     Dimensions newDim(2);
     newDim[0] = colCount;
     newDim[1] = rowCount;
-    dp = dp->putData(dp->dataClass,newDim,dstPtr,dp->fieldNames);
+    dp = dp->putData(dp->dataClass,newDim,dstPtr,
+		     dp->sparse,dp->fieldNames);
   }
 
   /**
@@ -804,6 +833,8 @@ namespace FreeMat {
    * Calculate the total number of bytes required to store this array.
    */
   int Array::getByteSize() const {
+    if (isSparse())
+      throw Exception("Byte size calculation not supported for sparse arrays.");
     return getElementSize()*getLength();
   }
 
@@ -840,6 +871,8 @@ namespace FreeMat {
   const bool Array::isSymmetric() const {
     if (!is2D()) return false;
     if (isReferenceType()) return false;
+    if (isSparse())
+      throw Exception("Cannot determine symmetry of sparse arrays");
     switch(dp->dataClass) {
       caseReal(FM_INT8,int8);
       caseReal(FM_INT16,int16);
@@ -879,6 +912,8 @@ namespace FreeMat {
       return true;
     if (dp->dataClass == FM_COMPLEX || dp->dataClass == FM_DCOMPLEX)
       return false;
+    if (isSparse())
+      throw Exception("isPositive not supported for sparse arrays.");
     switch (dp->dataClass) {
       caseMacro(FM_FLOAT,float);
       caseMacro(FM_DOUBLE,double);
@@ -908,6 +943,8 @@ namespace FreeMat {
 
     allZeros = true;
     i = 0;
+    if (isSparse())
+      throw Exception("isPositive not supported for sparse arrays.");
     switch (dp->dataClass) {
       caseMacro(FM_LOGICAL,logical,qp[i]==0);
       caseMacro(FM_UINT8,uint8,qp[i]==0);
@@ -939,6 +976,8 @@ namespace FreeMat {
     break;
 
   const bool Array::testCaseMatchScalar(Array x) const {
+    if (isSparse())
+      throw Exception("isPositive not supported for sparse arrays.");
     // Now we have to compare ourselves to the argument.  Check for the
     // case that we are a string type
     if (isString()) {
@@ -985,6 +1024,8 @@ namespace FreeMat {
 #undef caseMacroComplex
 
   const bool Array::testForCaseMatch(Array x) const  {
+    if (isSparse())
+      throw Exception("isPositive not supported for sparse arrays.");
     // We had better be a scalar
     if (!(isScalar() || isString()))
       throw Exception("Switch argument must be a scalar or a string");
@@ -1067,10 +1108,15 @@ namespace FreeMat {
     return (dp->dataClass == FM_STRING);
   }
 
+  const bool Array::isSparse() const {
+    return (dp->sparse);
+  }
+
   void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex, 
 			   int count) {
     int elSize(getElementSize());
-
+    if (isSparse())
+      throw Exception("copyElements not supported for sparse arrays.");
     switch(dp->dataClass) {
     case FM_CELL_ARRAY:
       {
@@ -1136,7 +1182,7 @@ namespace FreeMat {
     void *dstPtr;
 
     if (isEmpty()) {
-      dp = dp->putData(dstClass,dp->dimensions,NULL,fNames);
+      dp = dp->putData(dstClass,dp->dimensions,NULL,false,fNames);
       return;
     }
     // Handle the reference types.
@@ -1184,7 +1230,7 @@ namespace FreeMat {
 	  for (int j=0;j<elCount;j++)
 	    dst_rp[j*newFieldCount + newNdx] = src_rp[j*fieldCount + i];
 	}
-	dp = dp->putData(dp->dataClass,dp->dimensions,dstPtr,fNames);
+	dp = dp->putData(dp->dataClass,dp->dimensions,dstPtr,false,fNames);
 	return;
       }
       else
@@ -1194,6 +1240,16 @@ namespace FreeMat {
       throw Exception("Cannot convert base types to reference types.");
     // Do nothing for promoting to same class (no-op).
     if (dstClass == dp->dataClass) return;
+    if (isSparse()) {
+      dp = dp->putData(dstClass,dp->dimensions,
+		       TypeConvertSparse(dp->dataClass,
+					 dp->dimensions[0],
+					 dp->dimensions[1],
+					 dp->getData(),
+					 dstClass),
+		       true);
+      return;
+    }
     elCount = getLength();
     // We have to promote...
     dstPtr = allocateArray(dstClass,elCount);
@@ -1470,7 +1526,7 @@ break;
 	src.copyElements(i,rp,dstIndex,1);
       }
     }
-    return Array(src.dp->dataClass,dims,rp,src.dp->fieldNames);
+    return Array(src.dp->dataClass,dims,rp,false,src.dp->fieldNames);
   }
 
   Array Array::logicalConstructor(bool aval) {
@@ -1676,6 +1732,8 @@ break;
 	ArrayVector ptr = (ArrayVector) *i;
 	for (int j=0;j<ptr.size();j++) {
 	  const Array& d = ptr[j];
+	  if (d.isSparse())
+	    throw Exception("matrixConstructor not supported for sparse arrays.");
 	  if (!d.isEmpty()) {
 	    if (maxType < d.dp->dataClass) maxType = d.dp->dataClass;
 	    if (minType > d.dp->dataClass) minType = d.dp->dataClass;
@@ -1845,7 +1903,7 @@ break;
 	row_corner += row_count;
 	i++;
       }
-      return Array(retType,retDims,dstPtr,retNames);
+      return Array(retType,retDims,dstPtr,false,retNames);
     } catch (Exception &e) {
       Free(dstPtr);
       throw e;
@@ -1975,6 +2033,8 @@ break;
       for (j=0;j<length;j++)
 	for (i=0;i<fNames.size();i++) {
 	  Array rval = values[i];
+	  if (rval.isSparse())
+	    throw Exception("sparse arrays not supported for struct constructor.");
 	  rptr = (const Array*) rval.dp->getData();
 	  if (rval.dp->dataClass == FM_CELL_ARRAY) {
 	    if (rval.isScalar())
@@ -1985,7 +2045,7 @@ break;
 	    qp[offset] = rval;
 	  offset++;
 	}
-      return Array(FM_STRUCT_ARRAY,dims,qp,fNames);
+      return Array(FM_STRUCT_ARRAY,dims,qp,false,fNames);
     } catch (Exception &e) {
       Free(qp);
       throw;
@@ -2003,9 +2063,12 @@ break;
    */
   Array Array::getVectorSubset(Array& index)  {
     void *qp = NULL;
+    if (isSparse())
+      throw Exception("getVectorSubset not supported for sparse arrays.");
     try {
       if (index.isEmpty()) {
-	return Array(dp->dataClass,index.dp->dimensions,NULL,dp->fieldNames);
+	return Array(dp->dataClass,index.dp->dimensions,
+		     NULL,dp->sparse,dp->fieldNames);
       }
       if (isEmpty()) 
 	throw Exception("Cannot index into empty variable.");
@@ -2028,7 +2091,7 @@ break;
       }
       Dimensions retdims(index.dp->dimensions);
       retdims.simplify();
-      return Array(dp->dataClass,retdims,qp,dp->fieldNames);
+      return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames);
     } catch (Exception &e) {
       Free(qp);
       throw;
@@ -2047,7 +2110,8 @@ break;
 
     if (isEmpty())
       throw Exception("Cannot index into empty variable.");
-
+    if (isSparse())
+      throw Exception("getVectorSubset not supported for sparse arrays.");
     try {
       int L = index.size();
       // Convert the indexing variables into an ordinal type.
@@ -2079,7 +2143,7 @@ break;
       }
       Free(indx);
       outDims.simplify();
-      return Array(dp->dataClass,outDims,qp,dp->fieldNames);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
     } catch (Exception &e) {
       Free(indx);
       Free(qp);
@@ -2095,6 +2159,8 @@ break;
       throw Exception("Attempt to apply contents-indexing to non-cell array object.");
     if (indexing.isEmpty())
       throw Exception("Empty contents indexing is not defined.");
+    if (isSparse())
+      throw Exception("getVectorContents not supported for sparse arrays.");
     indexing.toOrdinalType();
     //
     // The output is the same size as the _index_, not the
@@ -2120,6 +2186,8 @@ break;
   Array Array::getNDimContents(ArrayVector& indexing)  {
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non-cell array object.");
+    if (isSparse())
+      throw Exception("getNDimContents not supported for sparse arrays.");
     int L = indexing.size();
     Dimensions outPos(L);
     
@@ -2144,6 +2212,8 @@ break;
     // First make sure that we are a scalar value.
     if (!isScalar())
       throw Exception("Cannot dereference a field of a multi-element structure array.");
+    if (isSparse())
+      throw Exception("getField not supported for sparse arrays.");
     // Then, find the field index.
     int ndx = getFieldIndex(fieldName);
     if (ndx < 0)
@@ -2157,6 +2227,8 @@ break;
   Array Array::getDiagonal(int diagonalOrder)  {
     if (!is2D()) 
       throw Exception("Cannot take diagonal of N-dimensional array.");
+    if (isSparse())
+      throw Exception("getDiagonal not supported for sparse arrays.");
     int rows = dp->dimensions.getRows();
     int cols = dp->dimensions.getColumns();
     int outLen;
@@ -2174,7 +2246,7 @@ break;
 	srcIndex = -diagonalOrder + i*(rows+1);
 	copyElements(srcIndex,qp,i,1);
       }
-      return Array(dp->dataClass,outDims,qp,dp->fieldNames);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
       outLen = (outLen  < 0) ? 0 : outLen;
@@ -2186,13 +2258,15 @@ break;
 	srcIndex = diagonalOrder*rows + i*(rows+1);
 	copyElements(srcIndex,qp,i,1);
       }
-      return Array(dp->dataClass,outDims,qp,dp->fieldNames);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames);
     }
   }
 
   ArrayVector Array::getFieldAsList(std::string fieldName)  {
     if (dp->dataClass != FM_STRUCT_ARRAY)
       throw Exception("Attempt to apply field-indexing to non structure-array object.");
+    if (isSparse())
+      throw Exception("getFieldAsList not supported for sparse arrays.");
     ArrayVector m;
     const Array *qp = (const Array*) dp->getData();
     int N = getLength();
@@ -2213,6 +2287,8 @@ break;
     ArrayVector m;
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non cell-array object.");
+    if (isSparse())
+      throw Exception("getVectorContentsAsList not supported for sparse arrays.");
     if (index.isEmpty()) return ArrayVector();
     index.toOrdinalType();
     // Get the maximum index
@@ -2238,6 +2314,8 @@ break;
   ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
     if (dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Attempt to apply contents-indexing to non cell-array object.");
+    if (isSparse())
+      throw Exception("getNDimContentsAsList not supported for sparse arrays.");
     // Store the return value here
     ArrayVector m;
     // Get the number of indexing dimensions
@@ -2288,6 +2366,8 @@ break;
       deleteVectorSubset(index);
       return;
     }
+    if (isSparse())
+      throw Exception("setVectorSubset not supported for sparse arrays.");
     // Make sure the index is an ordinal type
     index.toOrdinalType();
     int index_length = index.getLength();
@@ -2366,7 +2446,7 @@ break;
     }
     try {
       int L = index.size();
-	  int i;
+      int i;
       // Convert the indexing variables into an ordinal type.
       for (i=0;i<L;i++)
 	index[i].toOrdinalType();
@@ -2457,6 +2537,8 @@ break;
    */
   void Array::setVectorContents(Array& index, Array& data) {
     promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
+    if (isSparse())
+      throw Exception("setVectorContents not supported for sparse arrays.");
     index.toOrdinalType();
     if (index.getLength() == 0)
       return;
@@ -2479,9 +2561,11 @@ break;
    */
   void Array::setNDimContents(ArrayVector& index, Array& data) {
     promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
+    if (isSparse())
+      throw Exception("setNDimContents not supported for sparse arrays.");
     int L = index.size();
     Dimensions outPos(L);
-	int i;
+    int i;
     for (i=0;i<L;i++) {
       index[i].toOrdinalType();
       if (!index[i].isScalar()) 
@@ -2512,6 +2596,8 @@ break;
       a[1] = 1;
       resize(a);
     }
+    if (isSparse())
+      throw Exception("setField not supported for sparse arrays.");
     if (dp->dataClass != FM_STRUCT_ARRAY)
       throw Exception("Cannot apply A.field_name = B to non struct-array object A.");
     if (!isScalar())
@@ -2533,6 +2619,8 @@ break;
    *   2. Deletions do not occur.
    */
   void Array::setVectorContentsAsList(Array& index, ArrayVector& data) {
+    if (isSparse())
+      throw Exception("setVectorContentsAsList not supported for sparse arrays.");
     promoteType(FM_CELL_ARRAY);
     index.toOrdinalType();
     if (data.size() < index.getLength())
@@ -2562,6 +2650,8 @@ break;
    * This is for content-based indexing (curly brackets).
    */
   void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& data) {
+    if (isSparse())
+      throw Exception("setNDimContentsAsList not supported for sparse arrays.");
     promoteType(FM_CELL_ARRAY);
     int L = index.size();
     // Convert the indexing variables into an ordinal type.
@@ -2619,6 +2709,8 @@ break;
    * Set the contents of a field in a structure.
    */
   void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
+    if (isSparse())
+      throw Exception("setFieldAsList not supported for sparse arrays.");
     Array *rp = NULL;
     if (isEmpty()) {
       stringVector names(dp->fieldNames);
@@ -2653,6 +2745,8 @@ break;
    * Add another fieldname to our structure array.
    */
   int Array::insertFieldName(std::string fieldName) {
+    if (isSparse())
+      throw Exception("insertFieldName not supported for sparse arrays.");
     stringVector names(dp->fieldNames);
     names.push_back(fieldName);
     const Array* qp = (const Array*) dp->getData();
@@ -2660,7 +2754,7 @@ break;
     int fN = names.size();
     for (int i=0;i<fN-1;i++)
       rp[i] = qp[i];
-    dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,names);
+    dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names);
     return (fN-1);
   }
 
@@ -2674,6 +2768,8 @@ break;
   void Array::deleteVectorSubset(Array& arg) {
     void *qp = NULL;
     bool *deletionMap = NULL;
+    if (isSparse())
+      throw Exception("deleteVectorSubset not supported for sparse arrays.");
     try {
       // First convert arg to an ordinal type.
       arg.toOrdinalType();
@@ -2711,12 +2807,44 @@ break;
 	newDim[0] = 1;
 	newDim[1] = newSize;
       }
-      dp = dp->putData(dp->dataClass,newDim,qp,dp->fieldNames);
+      dp = dp->putData(dp->dataClass,newDim,qp,dp->sparse,dp->fieldNames);
     } catch (Exception &e) {
       Free(qp);
       Free(deletionMap);
       throw e;
     }
+  }
+
+  void Array::makeSparse() {
+    if (!is2D())
+      throw Exception("Cannot make n-dimensional arrays sparse.");
+    if (isEmpty())
+      return;
+    if (isReferenceType() || isString())
+      throw Exception("Cannot make strings or reference types sparse.");
+    if (dp->dataClass < FM_INT32)
+      promoteType(FM_INT32);
+    dp = dp->putData(dp->dataClass,dp->dimensions,
+		     makeSparseArray(dp->dataClass,
+				     dp->dimensions[0],
+				     dp->dimensions[1],
+				     dp->getData()),
+		     true,
+		     dp->fieldNames);
+  }
+
+  void Array::makeDense() {
+    if (!isSparse())
+      return;
+    if (isEmpty())
+      dp->sparse = false;
+    dp = dp->putData(dp->dataClass,dp->dimensions,
+		     makeDenseArray(dp->dataClass,
+				    dp->dimensions[0],
+				    dp->dimensions[1],
+				    dp->getData()),
+		     false,
+		     dp->fieldNames);
   }
 
   /**
@@ -2730,6 +2858,8 @@ break;
     bool *indxCovered = NULL;
     bool *deletionMap = NULL;
     void *cp = NULL;
+    if (isSparse())
+      throw Exception("deleteNDimSubset not supported for sparse arrays.");
     try {
       // Our strategy is as follows.  To make the deletion, we need
       // one piece of information: the dimension to delete.
@@ -2835,10 +2965,10 @@ break;
 	}
 	Free(deletionMap);
 	retDims.simplify();
-	dp = dp->putData(dp->dataClass,retDims,cp,dp->fieldNames);
+	dp = dp->putData(dp->dataClass,retDims,cp,dp->sparse,dp->fieldNames);
       } else {
 	Dimensions newDims;
-	dp = dp->putData(dp->dataClass,newDims,NULL,dp->fieldNames);
+	dp = dp->putData(dp->dataClass,newDims,NULL,dp->sparse,dp->fieldNames);
       }
     } catch (Exception &e) {
       Free(deletionMap);
@@ -2857,6 +2987,8 @@ break;
    * generally a shorthand summary of the description of the object.
    */
   void Array::summarizeCellEntry() const {
+    if (isSparse())
+      throw Exception("summarizeCellEntry not supported for sparse arrays.");
     if (isEmpty()) 
       io->outputMessage("[]");
     else {
@@ -3206,6 +3338,8 @@ break;
       io->outputMessage("  []\n");
       return;
     }
+    if (isSparse())
+      throw Exception("printMe not supported for sparse arrays.");
     if (dp->dataClass == FM_STRUCT_ARRAY) {
       if (dp->dimensions.isScalar()) {
 	Array *ap;
@@ -3324,7 +3458,6 @@ break;
 	}
 	if (items_printed >= printLimit) 
 	  io->outputMessage("\n... Output truncated - use setprintlimit function to see more of the output ...\n");
-
       }
     }
   }
@@ -3368,6 +3501,8 @@ break;
   }
 
   bool Array::anyNotFinite() {
+    if (isSparse())
+      throw Exception("anyNotFinite not supported for sparse arrays.");
     switch(dp->dataClass) {
     case FM_FLOAT: 
       {

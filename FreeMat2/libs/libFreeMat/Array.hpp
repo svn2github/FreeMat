@@ -154,7 +154,7 @@ namespace FreeMat {
     /**
      * Create an Array with the specified contents.
      */
-    Array(Class,const Dimensions& ,void*,const stringVector& = stringVector());
+    Array(Class,const Dimensions& ,void*,bool sparse = false, const stringVector& = stringVector());
     /**
      * Destructor - free the data object.
      */
@@ -284,6 +284,9 @@ namespace FreeMat {
      * Throws an exception if we are a string, cell-array or struct-array type.
      */
     const bool isRealAllZeros() const;
+    const bool isSparse() const;
+    void makeSparse();
+    void makeDense();
     /**
      * Returns true if we match the scalar value in x.  For strings, this is done by
      * doing a string compare.  For numerical values, we promote to a common type

@@ -36,7 +36,7 @@
 //@figure spy2
 //!
 function spy(A,colspec)
-if (nargin==2)
+if (nargin==1)
   colspec = 'r.';
 end
 [i,j] = find(A);

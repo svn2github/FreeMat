@@ -119,10 +119,13 @@ public:
   void AddHistory(std::string);
   void KillLine();
   void Yank();
+  wxChar& CharAt(int row, int column);
+  int ScrollRowAdjust(int row);
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
   void DoResizeBuffer(int xsize, int ysize);
+  void UpdateLineCount();
   App *mainApp;
   wxFont   m_font;
   // size (in pixels) of one character
@@ -163,9 +166,20 @@ private:
   // True in insert mode
   bool insert;
   int startsearch;
+  // Number of scroll-back buffer lines
+  int scrollback;
+  // Which row of the scroll-buffer represents
+  // the last line of producable text
+  int scrolltail;
+  // This indicates which row the top of the 
+  // scroll buffer represents
+  int nlinecount;
   wxChar *m_text;
+
   DECLARE_DYNAMIC_CLASS(wxCLI)
+
   DECLARE_EVENT_TABLE()
+
 };
 
   

@@ -27,7 +27,7 @@
 #include "wx/wx.h"
 #endif
 
-#include "wxCLI.hpp"
+#include "wxCLI2.hpp"
 //#include "CLITextCtrl.hpp"
 
 class SessionFrame : public wxFrame

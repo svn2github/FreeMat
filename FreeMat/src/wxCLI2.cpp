@@ -19,7 +19,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 /*
- * To-add: Completions, copy/paste/select, resize logic, first char not deleted with kill, scroll!
+ * To-add: Completions, copy/paste/select
  */
 
 #include "wxCLI2.hpp"
@@ -43,6 +43,9 @@
 
 #define GL_WORD_CHARS "_*\?\\[]"
 
+// Maximum allowed number of columns in the text window
+#define MAXCOLS 256
+
 // ----------------------------------------------------------------------------
 // wxCLI
 // ----------------------------------------------------------------------------
@@ -56,7 +59,7 @@ END_EVENT_TABLE()
   wxCLI::wxCLI( App* tMain, wxWindow *parent )
     : wxScrolledWindow( parent, -1,
 			wxDefaultPosition, wxDefaultSize,
-			wxSUNKEN_BORDER ) {
+			wxVSCROLL ) {
   mainApp = tMain;
   SetBackgroundColour(*wxWHITE);
   m_font = wxFont(10, wxMODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
@@ -65,12 +68,27 @@ END_EVENT_TABLE()
   cutbuf[0] = '\0';
   linelen = 1000;
   ntotal = 0;
-  m_text = NULL;
   buff_curpos = 0;
   term_curpos = 0;
   keyseq_count = 0;
   last_search = -1;
+  scrollback = 10000;
+  ncolumn = 80;
+  nline = 24;
+  scrolltail = 0;
+  nlinecount = 0;
   insert = true;
+  m_text = (wxChar*) calloc(MAXCOLS*scrollback,sizeof(wxChar));
+  UpdateLineCount();
+}
+
+void wxCLI::UpdateLineCount() {
+  int nscroll;
+  nscroll = (nlinecount < scrollback) ? nlinecount : scrollback;
+  if (nscroll < nline) nscroll = nline;
+  if (nscroll < 1) nscroll = 1;
+  SetScrollRate(0,charHeight);
+  SetVirtualSize(-1,nscroll*charHeight);
 }
 
 // Predefined control sequence
@@ -112,16 +130,19 @@ void wxCLI::OutputRawString(std::string txt) {
 
 void wxCLI::ClearEOL() {
   int i;
-  for (i=caretCol;i<ncolumn;i++)
-    m_text[i+caretRow*ncolumn] = ' ';
-  m_text[ncolumn-1+caretRow*ncolumn] = 0;
+  for (i=caretCol;i<MAXCOLS;i++)
+    CharAt(caretRow,i) = ' ';
+  CharAt(caretRow,caretCol) = 0;
   Refresh();
 }
 
 void wxCLI::ClearEOD() {
-  int i;
-  for (i=caretCol+caretRow*ncolumn;i<nline*ncolumn;i++)
-    m_text[i] = 0;
+  int i, j;
+  ClearEOL();
+  for (i=caretRow+1;i<nlinecount;i++) {
+    for (j=0;j<MAXCOLS;j++)
+      CharAt(i,j) = 0;
+  }
   Refresh();
 }
 
@@ -652,6 +673,7 @@ int wxCLI::DisplayPrompt() {
    * put the cursor at the beginning of the current terminal line.
    */
   MoveBOL();
+  ClearEOL();
   /*
    * Write the prompt, using the currently selected prompt style.
    */
@@ -691,6 +713,7 @@ void wxCLI::PutMessage(const char * msg) {
   cp = msg;
   while (*cp) {
     if (*cp == '\n') {
+      CharAt(caretRow,caretCol) = 0;
       caretRow++;
       caretCol = 0;
       cp++;
@@ -698,10 +721,14 @@ void wxCLI::PutMessage(const char * msg) {
       caretRow++;
       caretCol = 0;
     } else {
-      m_text[caretRow*ncolumn+(caretCol++)] = *cp;
+      CharAt(caretRow,caretCol) = *cp;
+      caretCol++;
       cp++;
     }
   }
+  CharAt(caretRow,caretCol) = 0;
+  UpdateLineCount();
+  wxPostEvent(this,gScroll);
   DoMoveCaret();
   Refresh();
 }
@@ -732,43 +759,67 @@ void wxCLI::MoveCaret(int x, int y) {
   //    DoMoveCaret();
 }
 
+// This is the reverse adjustment, we have row 10, say, but there are 
+// nlinecount rows in the buffer.  Our scroll head must be at 
+// max(0,nlinecount-scrollback).
+int wxCLI::ScrollRowAdjust(int row) {
+  int scrollhead;
+  scrollhead = nlinecount - scrollback;
+  if (scrollhead < 0) scrollhead = 0;
+  return (row+scrollhead);
+}
+
 void wxCLI::DoMoveCaret() {
+  if (caretRow >= nlinecount) {
+    nlinecount = caretRow+1;
+    UpdateLineCount();
+  }
   int screen_x, screen_y;
-  
+  int adjrow;
+
+  adjrow = caretRow;
+  if (adjrow >= scrollback)
+    adjrow = scrollback-1;
+
   CalcScrolledPosition(caretCol * charWidth,
-		       caretRow * charHeight,
+		       adjrow * charHeight,
 		       &screen_x, &screen_y);
   GetCaret()->Move(screen_x, screen_y);
 }
 
 void wxCLI::DoResizeBuffer(int xsize, int ysize) {
-  if (m_text == NULL) {
-    m_text = (wxChar *) calloc(xsize*ysize,sizeof(wxChar));
-    ncolumn = xsize;
-    nline = ysize;
-    return;
-  }
-//   std::cout << "Got size event " << xsize << " x " << ysize << "\n";
-//   std::cout.flush();
-  if ((ncolumn == xsize) && (nline == ysize)) return;
-  wxChar *newBuf;
-
-  newBuf = (wxChar *) calloc(xsize*ysize,sizeof(wxChar));
-  int copyx;
-  copyx = xsize;
-  if (copyx > ncolumn) copyx = ncolumn;
-  for (int k=0;k<nline;k++) {
-    for (int l=0;l<copyx;l++)
-      newBuf[k*xsize+l] = m_text[k*ncolumn+l];
-  }
-  free(m_text);
-  m_text = newBuf;
+  int i;
+  int cols_used = DisplayedStringWidth(line,-1,prompt_len) + prompt_len + ncolumn - 1;
+  int lines_used = (DisplayedStringWidth(line,-1,prompt_len) +
+		    prompt_len + ncolumn - 2) / (ncolumn-1);
+  /*
+   * Move to the cursor to the start of the line.
+   */
+  for(i=1; i<lines_used; i++) {
+    MoveUp();
+  };
+  MoveBOL();
+  /*
+   * Clear to the end of the terminal.
+   */
+  ClearEOD();
+  /*
+   * Record the fact that the cursor is now at the beginning of the line.
+   */
+  term_curpos = 0;
+  /*
+   * Update the recorded window size.
+   */
   ncolumn = xsize;
   nline = ysize;
+  /*
+   * Redisplay the line?
+   */
+  Redisplay();
 }
 
 void wxCLI::OnSize( wxSizeEvent &event ) {
-
+  wxCaretSuspend cs(this);
   int ncolumn_new = (event.GetSize().x) / charWidth;
   int nline_new = (event.GetSize().y) / charHeight;
   if ( !ncolumn_new )
@@ -777,11 +828,6 @@ void wxCLI::OnSize( wxSizeEvent &event ) {
     nline_new = 1;
 
   DoResizeBuffer(ncolumn_new,nline_new);
-
-  //    PutMessage("Ready\n");
-  //     for (int k=0;k<50;k++)
-  //       PutMessage("Hello!\n  Welcome to Grace Brothers!\n-->");
-
   event.Skip();
 }
 
@@ -798,11 +844,11 @@ void wxCLI::OnDraw(wxDC& dc) {
   CalcUnscrolledPosition(rectUpdate.x, rectUpdate.y,
 			 &rectUpdate.x, &rectUpdate.y);
   
-  size_t lineFrom = rectUpdate.y / charHeight,
-    lineTo = rectUpdate.GetBottom() / charHeight;
+  size_t lineFrom = rectUpdate.y / charHeight;
+  size_t lineTo = rectUpdate.GetBottom() / charHeight;
   
-  if ( lineTo > nline - 1)
-    lineTo = nline - 1;
+  if ( lineTo > scrollback-1)
+    lineTo = scrollback-1;
   
   wxCoord y = lineFrom*charHeight;
   for ( size_t line = lineFrom; line <= lineTo; line++ )  {
@@ -811,13 +857,11 @@ void wxCLI::OnDraw(wxDC& dc) {
 
     wxString oline;
     for (int x=0; x < ncolumn; x++) {
-      wxChar ch = m_text[x + line*ncolumn];
+      wxChar ch = CharAt(ScrollRowAdjust(line),x);
       if (!ch) break;
       oline += ch;
     }
     dc.DrawText(oline,0,y);
-    //    dc.DrawText(wxString::Format(_T("Line %u (logical %d, physical %d)"),
-    //				 line, y, yPhys), 0, y);
     y += charHeight;
   }
   DoMoveCaret();
@@ -830,6 +874,7 @@ void wxCLI::IssueGetWidthRequest() {
 }
 
 void wxCLI::IssueGetLineRequest(const char *aprompt) {
+  memset(line,0,1002);
   ntotal = 0;
   buff_curpos = 0;
   term_curpos = 0;
@@ -976,6 +1021,11 @@ void wxCLI::Yank() {
   if (cutbuf[0] == '\0')
     return;
   AddStringToLine(cutbuf);
+}
+
+wxChar& wxCLI::CharAt(int row, int column) {
+  // First lets just make sure scrolling works...
+  return m_text[(row%scrollback)*MAXCOLS+column];
 }
 
 void wxCLI::OnChar( wxKeyEvent &event ) {

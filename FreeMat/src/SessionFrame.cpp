@@ -20,7 +20,6 @@
 
 #include "SessionFrame.hpp"
 #include "Command.hpp"
-#include "wxCLI.hpp"
 #include <wx/fontdlg.h>
 #include <iostream>
 #include "App.hpp"

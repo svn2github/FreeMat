@@ -18,6 +18,18 @@ typedef enum {
 } LineStyleType;
 
 typedef enum {
+  LRALIGN_LEFT,
+  LRALIGN_CENTER,
+  LRALIGN_RIGHT
+} LRAlignType;
+
+typedef enum {
+  TBALIGN_TOP,
+  TBALIGN_CENTER,
+  TBALIGN_BOTTOM
+} TBAlignType;
+
+typedef enum {
   ORIENT_0,
   ORIENT_90,
   ORIENT_180,
@@ -29,9 +41,9 @@ typedef enum {
 class GraphicsContext {
 public:
   virtual Point2D GetCanvasSize() = 0;
-  virtual Point2D GetTextExtent(std::string label) = 0;
-  virtual void DrawText(std::string label, Point2D pos) = 0;
-  virtual void DrawRotatedText(std::string label, Point2D pos, OrientationType orient) = 0;
+  virtual void DrawText(std::string label, Point2D pos, 
+			LRAlignType lralign, TBAlignType tbalign,
+			OrientationType orient) = 0;
   virtual void SetFont(std::string fontname, int fontsize) = 0;
   virtual Color SetBackGroundColor(Color col) = 0;
   virtual Color SetForeGroundColor(Color col) = 0;

@@ -18,23 +18,24 @@ Point2D RGBImageGC::GetCanvasSize() {
 
 Point2D RGBImageGC::GetTextExtent(std::string text) {
   FM_Glyph *currentFont;
-  int penx, peny;
+  int penx;
+  int stringheight, charheight;
   int len, i, g1, g2;
   
   currentFont = c_font.GetGlyphPointer();
   penx = 0;
-  peny = 0;
   len = text.size();
+  stringheight = 0;
   for (i=0;i<len-1;i++) {
     g1 = text[i];
     g2 = text[i+1];
     penx += (currentFont[g1].advance_x + currentFont[g1].kerning_x[g2]) >> 6;
-    peny += (currentFont[g1].advance_y + currentFont[g1].kerning_y[g2]) >> 6;
+    charheight = currentFont[g1].offset_top;
+    stringheight = (stringheight > charheight) ? stringheight : charheight;
   }
   g1 = text[len-1];
-  penx += (currentFont[g1].advance_x) >> 6;
-  peny += (currentFont[g1].advance_y) >> 6;
-  return Point2D(penx,c_font.GetFontSize());
+  penx += currentFont[g1].offset_left + currentFont[g1].width;
+  return Point2D(penx,stringheight);
 }
 
 bool RGBImageGC::InsideClippingRegion(int x, int y) {
@@ -74,15 +75,40 @@ bool RGBImageGC::PenDraws() {
   return false;
 }
 
-void RGBImageGC::DrawText(std::string text, Point2D pos) {
+void RGBImageGC::DrawText(std::string text, Point2D pos,
+			  LRAlignType lralign, TBAlignType tbalign,
+			  OrientationType orient) {
   FM_Glyph *currentFont;
   int penx, peny;
   int length, m, g1, g2;
   int i, j;
   
+  // To calculate the point at which to start the text drawing,
+  // we have to calculate the extent of the text
+  Point2D extents(GetTextExtent(text));
   currentFont = c_font.GetGlyphPointer();
   penx = pos.x;
   peny = pos.y;
+  switch (lralign) {
+  case LRALIGN_LEFT:
+    break;
+  case LRALIGN_RIGHT:
+    penx -= extents.x;
+    break;
+  case LRALIGN_CENTER:
+    penx -= extents.x/2;
+    break;
+  }
+  switch (tbalign) {
+  case TBALIGN_BOTTOM:
+    break;
+  case TBALIGN_TOP:
+    peny += extents.y;
+    break;
+  case TBALIGN_CENTER:
+    peny += extents.y/2;
+    break;
+  }
   length = text.size();
   for (m=0;m<length;m++) {
     g1 = text[m];
@@ -99,9 +125,6 @@ void RGBImageGC::DrawText(std::string text, Point2D pos) {
       peny += currentFont[g1].kerning_y[g2] >> 6;
     }
   }  
-}
-
-void RGBImageGC::DrawRotatedText(std::string label, Point2D pos, OrientationType orient) {
 }
 
 void RGBImageGC::SetFont(std::string fontname, int fontsize) {

@@ -38,6 +38,16 @@ PostScriptGC::PostScriptGC(std::string filename, int width, int height) {
   fprintf(fp,"%%%%LanguageLevel: 2\n");
   fprintf(fp,"%%%%Pages: 1\n");
   fprintf(fp,"%%%%Page: 1 1\n");
+  fprintf(fp,"/stringbox {gsave newpath 0 0 moveto false charpath flattenpath pathbbox grestore 4 2 roll pop pop} def\n");
+  fprintf(fp,"/showrb {dup stringbox pop neg 0 rmoveto show} def\n");
+  fprintf(fp,"/showcb {dup stringbox pop 2 div neg 0 rmoveto show} def\n");
+  fprintf(fp,"/showlb {show} def\n");
+  fprintf(fp,"/showrc {dup stringbox 2 div neg exch neg exch rmoveto show} def\n");
+  fprintf(fp,"/showcc {dup stringbox 2 div neg exch 2 div neg exch rmoveto show} def\n");
+  fprintf(fp,"/showlc {dup stringbox 2 div neg exch pop 0 exch rmoveto show} def\n");
+  fprintf(fp,"/showrt {dup stringbox neg exch neg exch rmoveto show} def\n");
+  fprintf(fp,"/showct {dup stringbox neg exch 2 div neg exch rmoveto show} def\n");
+  fprintf(fp,"/showlt {dup stringbox neg exch pop 0 exch rmoveto show} def\n");
 }
 
 PostScriptGC::~PostScriptGC() {
@@ -49,16 +59,51 @@ Point2D PostScriptGC::GetCanvasSize() {
   return Point2D(m_width,m_height);
 }
 
-Point2D PostScriptGC::GetTextExtent(std::string label) {
-  return Point2D(0,0);
-}
-
-void PostScriptGC::DrawText(std::string text, Point2D pos) {
+// /stringbox {gsave newpath 0 0 moveto false charpath flattenpath pathbbox grestore 4 2 roll pop pop} def
+// R/B - (Nui biento) dup stringbox pop neg 0 rmoveto show
+// C/B - (Nui biento) dup stringbox pop 2 div neg 0 rmoveto show
+// L/B - (Nui biento) show
+// R/C - (Nui biento) dup stringbox 2 div neg exch neg exch rmoveto show
+// C/C - (Nui biento) dup stringbox 2 div neg exch 2 div neg exch rmoveto show
+// L/C - (Nui biento) dup stringbox 2 div neg exch pop 0 exch rmoveto show 
+void PostScriptGC::DrawText(std::string text, Point2D pos,
+			LRAlignType lralign, TBAlignType tbalign,
+			    OrientationType orient) {
   pos = ToPS(pos);
-  fprintf(fp,"newpath\n%d %d moveto\n(%s) show\n",pos.x,pos.y,text.c_str());
-}
-
-void PostScriptGC::DrawRotatedText(std::string text, Point2D pos, OrientationType orient) {
+  fprintf(fp,"newpath\n%d %d moveto\n(%s)\n",pos.x,pos.y,text.c_str());
+  fprintf(fp,"gsave\n");
+  switch(orient) {
+  case ORIENT_0:
+    break;
+  case ORIENT_90:
+    fprintf(fp,"90 rotate\n");
+    break;
+  case ORIENT_180:
+    fprintf(fp,"180 rotate\n");
+    break;
+  case ORIENT_270:
+    fprintf(fp,"270 rotate\n");
+    break;
+  }
+  if ((lralign == LRALIGN_LEFT) && (tbalign == TBALIGN_TOP))
+    fprintf(fp,"showlt\n");
+  if ((lralign == LRALIGN_CENTER) && (tbalign == TBALIGN_TOP))
+    fprintf(fp,"showct\n");
+  if ((lralign == LRALIGN_RIGHT) && (tbalign == TBALIGN_TOP))
+    fprintf(fp,"showrt\n");
+  if ((lralign == LRALIGN_LEFT) && (tbalign == TBALIGN_CENTER))
+    fprintf(fp,"showlc\n");
+  if ((lralign == LRALIGN_CENTER) && (tbalign == TBALIGN_CENTER))
+    fprintf(fp,"showcc\n");
+  if ((lralign == LRALIGN_RIGHT) && (tbalign == TBALIGN_CENTER))
+    fprintf(fp,"showrc\n");
+  if ((lralign == LRALIGN_LEFT) && (tbalign == TBALIGN_BOTTOM))
+    fprintf(fp,"showlb\n");
+  if ((lralign == LRALIGN_CENTER) && (tbalign == TBALIGN_BOTTOM))
+    fprintf(fp,"showcb\n");
+  if ((lralign == LRALIGN_RIGHT) && (tbalign == TBALIGN_BOTTOM))
+    fprintf(fp,"showrb\n");
+  fprintf(fp,"grestore\n");
 }
 
 void PostScriptGC::SetFont(std::string fontname, int fontsize) {

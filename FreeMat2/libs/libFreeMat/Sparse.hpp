@@ -20,11 +20,15 @@ namespace FreeMat {
 				   const void* ap, const void* bp);
   void* SparseMatrixConstructor(Class dclass, int rows, int cols,
 				ArrayMatrix m);
-  void* GetSparseVectorSubsets(Class dclass, int rows, int cols, const void* src,
-			       const indexType* indx, int irows, int icols);
+  void* GetSparseVectorSubsets(Class dclass, int rows, int cols, 
+			       const void* src, const indexType* indx, 
+			       int irows, int icols);
   void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
 			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols);
+  void* GetSparseScalarElement(Class dclass, int rows, int cols, 
+			       const void* src,  indexType rindx, 
+			       indexType cindx);
 }
 
 #endif

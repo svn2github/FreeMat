@@ -34,6 +34,7 @@ namespace FreeMat {
     RetrieveTerminalName();
     SetRawMode();
     SetupControlStrings();
+    ResizeEvent();
     state = 0;
   }
 

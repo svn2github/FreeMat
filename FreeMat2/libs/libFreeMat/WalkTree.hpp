@@ -53,6 +53,8 @@ namespace FreeMat {
     ~stackentry();
   };
 
+  class UserClass;
+
   /**
    * This is the class that implements the interpreter - it generally
    * operates on abstract syntax trees (ASTs).
@@ -101,9 +103,10 @@ namespace FreeMat {
     int lineNumber;
     stackentry stepTrap;
     bool bpActive;
+    // This data structure stores the class records
+    SymbolTable<UserClass> classTable;
   public:
     bool debugActive;
-
     void dbstep(int linecount);
     void handleDebug(int fullcontext);
     void debugCLI();
@@ -116,6 +119,10 @@ namespace FreeMat {
     void listBreakpoints();
     void deleteBreakpoint(int number);
     void stackTrace(bool includeCurrent);
+
+    bool isUserClassDefined(std::string classname);
+    UserClass lookupUserClass(std::string classname);
+    void registerUserClass(std::string classname, UserClass cdata);
 
     /**
      * Construct a WalkTree object with the given context to operate

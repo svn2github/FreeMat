@@ -61,12 +61,15 @@ namespace FreeMat {
      * The field names of the array - used only for structure array types.
      */
     stringVector fieldNames;
-
+    /**
+     * The class name - only used for user-defined classes
+     */
+    std::string className;
     /**
      * Construct a Data object with the given arguments.
      * the owner count is initialized to 1.
      */
-    Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag = false, const stringVector& fields = stringVector());
+    Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag = false, const stringVector& fields = stringVector(), std::string classname = std::string());
     /**
      * The destructor.  Calls freeDataBlock member function.
      */
@@ -90,7 +93,8 @@ namespace FreeMat {
      */
     Data* putData(Class aClass, const Dimensions& dims, void *s, 
 		  bool sparseflag = false, 
-		  const stringVector& fields = stringVector());
+		  const stringVector& fields = stringVector(),
+		  std::string classname = std::string());
     /**
      * Decrement the reference count (owners) by one.
      */
@@ -107,6 +111,14 @@ namespace FreeMat {
      * Get the field names for the data block
      */
     const stringVector& getFieldNames() const;
+    /**
+     * Return true if this is a user-defined class
+     */
+    bool isUserClass() const;
+    /**
+     * Return name of user-defined class
+     */
+    std::string getClassName() const;
     /**
      * Set the dimensions for the data block.
      */

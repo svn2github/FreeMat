@@ -174,6 +174,18 @@ namespace FreeMat {
      */
     int getLength() const;
     /**
+     * Return true if this is a user-defined class
+     */    
+    bool isUserClass() const;
+    /**
+     * Return name of user-defined class
+     */
+    std::string getClassName() const;
+    /**
+     * Set classname tag - implies this is a structure array.
+     */
+    void setClassName(std::string);
+    /**
      * Get a copy of our dimensions vector.
      */
     Dimensions getDimensions() const;

@@ -24,8 +24,8 @@
 
 namespace FreeMat {
 
-  Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, const stringVector& fields): 
-    cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass) {
+  Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, const stringVector& fields, std::string classname): 
+    cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
       sparse = sparseflag;
   } 
 
@@ -38,7 +38,7 @@ namespace FreeMat {
     return this; 
   }
 
-  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, bool sparseflag, const stringVector& fields) {
+  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, bool sparseflag, const stringVector& fields, std::string classname) {
     if ((owners <= 1)) {
       freeDataBlock();
       cp = s;
@@ -46,11 +46,12 @@ namespace FreeMat {
       dimensions = dims;
       fieldNames = fields;
       sparse = sparseflag;
+      className = classname;
       owners = 1;
       return this;
     } else {
       owners--;
-      return new Data(aClass,dims,s,sparseflag,fields);
+      return new Data(aClass,dims,s,sparseflag,fields,classname);
     }
   }
 
@@ -72,6 +73,14 @@ namespace FreeMat {
 
   const stringVector& Data::getFieldNames() const {
     return fieldNames;
+  }
+
+  std::string Data::getClassName() const {
+    return className;
+  }
+
+  bool Data::isUserClass() const {
+    return (!className.empty());
   }
 
   void Data::setDimensions(const Dimensions& dim) {

@@ -528,6 +528,27 @@ namespace FreeMat {
       return 0;
   }
 
+  bool Array::isUserClass() const {
+    if (dp)
+      return dp->isUserClass();
+    else
+      return false;
+  }
+
+  std::string Array::getClassName() const {
+    if (dp)
+      return dp->getClassName();
+    else
+      return std::string();
+  }
+
+  void Array::setClassName(std::string cname) {
+    if (getDataClass() != FM_STRUCT_ARRAY)
+      throw Exception("cannot set class name for non-struct array");
+    ensureSingleOwner();
+    dp->className = cname;
+  }
+
   int Array::getLength() const {
     if (dp)
       return dp->dimensions.getElementCount();
@@ -578,14 +599,14 @@ namespace FreeMat {
 	void *np = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
 	copyElements(0,np,0,getLength());
 	dp = dp->putData(dp->dataClass,dp->dimensions,np,
-			 dp->sparse,dp->fieldNames);
+			 dp->sparse,dp->fieldNames,dp->className);
       } else {
 	dp = dp->putData(dp->dataClass,dp->dimensions,
 			 CopySparseMatrix(dp->dataClass,
 					  dp->dimensions[0],
 					  dp->dimensions[1],
 					  dp->getData()),
-			 dp->sparse,dp->fieldNames);	
+			 dp->sparse,dp->fieldNames,dp->className);	
       }
     }
   }
@@ -601,7 +622,7 @@ namespace FreeMat {
 
   void Array::setDataPointer(void* rp) {
     dp = dp->putData(dp->dataClass,dp->dimensions,rp,
-		     dp->sparse,dp->fieldNames);
+		     dp->sparse,dp->fieldNames,dp->className);
   }
 
   void Array::resize(Dimensions& a) {
@@ -647,7 +668,7 @@ namespace FreeMat {
       }
     } 
     dp = dp->putData(dp->dataClass,newSize,dst_data,
-		     dp->sparse,dp->fieldNames);
+		     dp->sparse,dp->fieldNames,dp->className);
   }
 
   void Array::vectorResize(int max_index) {
@@ -802,7 +823,7 @@ namespace FreeMat {
     newDim[0] = colCount;
     newDim[1] = rowCount;
     dp = dp->putData(dp->dataClass,newDim,dstPtr,
-		     dp->sparse,dp->fieldNames);
+		     dp->sparse,dp->fieldNames,dp->className);
   }
 
   /**
@@ -2966,7 +2987,7 @@ break;
     int fN = names.size();
     for (int i=0;i<fN-1;i++)
       rp[i] = qp[i];
-    dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names);
+    dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,dp->className);
     return (fN-1);
   }
 
@@ -3031,7 +3052,8 @@ break;
 	newDim[0] = 1;
 	newDim[1] = newSize;
       }
-      dp = dp->putData(dp->dataClass,newDim,qp,dp->sparse,dp->fieldNames);
+      dp = dp->putData(dp->dataClass,newDim,qp,dp->sparse,
+		       dp->fieldNames,dp->className);
     } catch (Exception &e) {
       Free(qp);
       Free(deletionMap);
@@ -3056,7 +3078,8 @@ break;
 				     dp->dimensions[1],
 				     dp->getData()),
 		     true,
-		     dp->fieldNames);
+		     dp->fieldNames,
+		     dp->className);
   }
 
   int Array::getNonzeros() const {
@@ -3082,7 +3105,8 @@ break;
 				    dp->dimensions[1],
 				    dp->getData()),
 		     false,
-		     dp->fieldNames);
+		     dp->fieldNames,
+		     dp->className);
   }
 
   /**
@@ -3219,10 +3243,12 @@ break;
 	}
 	Free(deletionMap);
 	retDims.simplify();
-	dp = dp->putData(dp->dataClass,retDims,cp,dp->sparse,dp->fieldNames);
+	dp = dp->putData(dp->dataClass,retDims,cp,dp->sparse,
+			 dp->fieldNames,dp->className);
       } else {
 	Dimensions newDims;
-	dp = dp->putData(dp->dataClass,newDims,NULL,false,dp->fieldNames);
+	dp = dp->putData(dp->dataClass,newDims,NULL,false,dp->fieldNames,
+			 dp->className);
       }
     } catch (Exception &e) {
       Free(deletionMap);
@@ -3253,7 +3279,12 @@ break;
       case FM_STRUCT_ARRAY:
 	io->outputMessage(" ");
 	dp->dimensions.printMe(io);
-	io->outputMessage(" struct array");
+	if (isUserClass()) {
+	  io->outputMessage(" ");
+	  io->outputMessage(getClassName().c_str());
+	  io->outputMessage(" object");
+	} else
+	  io->outputMessage(" struct array");
 	break;
       case FM_STRING:
 	{
@@ -3588,13 +3619,20 @@ break;
       nominalWidth = 10;
       break;
     case FM_STRUCT_ARRAY:
-      io->outputMessage("  <structure array> ");
+	if (isUserClass()) {
+	  io->outputMessage(" ");
+	  io->outputMessage(getClassName().c_str());
+	  io->outputMessage(" object");
+	} else
+	  io->outputMessage("  <structure array> ");
       nominalWidth = 10;
       break;
     }
     io->outputMessage("- size: ");
     dp->dimensions.printMe(io);
     io->outputMessage("\n");
+    if (isUserClass())
+      return;
     if (isEmpty()) {
       io->outputMessage("  []\n");
       return;

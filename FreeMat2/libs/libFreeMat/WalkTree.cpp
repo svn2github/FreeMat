@@ -37,7 +37,7 @@
 #include <signal.h>
 #include <FL/Fl.H>
 #include <errno.h>
-
+#include "Class.hpp"
 
 namespace FreeMat {
 
@@ -2748,6 +2748,22 @@ namespace FreeMat {
     return io;
   }
 
+  bool WalkTree::isUserClassDefined(std::string classname) {
+    UserClass ret;
+    return classTable.findSymbol(classname,ret);
+  }
+  
+  UserClass WalkTree::lookupUserClass(std::string classname) {
+    UserClass ret;
+    classTable.findSymbol(classname,ret);
+    return ret;
+  }
+
+  void WalkTree::registerUserClass(std::string classname, UserClass cdata) {
+    classTable.insertSymbol(classname,cdata);
+  }
+
+  
   bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val) {
     bool isFun;
     isFun = context->lookupFunction(funcName,val);

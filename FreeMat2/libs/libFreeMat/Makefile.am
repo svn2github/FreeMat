@@ -68,6 +68,8 @@ Interface.hpp \
 Interface.cpp \
 SymbolTable.hpp \
 Sparse.cpp \
-Sparse.hpp
+Sparse.hpp \
+Class.cpp \
+Class.hpp
 
 AUTOMAKE_OPTIONS 	= foreign

@@ -61,3 +61,11 @@ bool IsNaN(double t) {
 #endif
   return false;
 }
+
+bool IsFinite(float t) {
+  return (!(IsNaN(t) || IsInfinite(t)));
+}
+
+bool IsFinite(double t) {
+  return (!(IsNaN(t) || IsInfinite(t)));
+}

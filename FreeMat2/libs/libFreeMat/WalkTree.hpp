@@ -63,7 +63,7 @@ namespace FreeMat {
     /**
      * The interface for I/O
      */
-    Interface *interface;
+    Interface* io;
     /**
      * The print limit (how many elements get printed before output 
      * stops).

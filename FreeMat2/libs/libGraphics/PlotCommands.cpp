@@ -18,6 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+#include "Plot2D.hpp"
 #include "GraphicsCore.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"
@@ -26,7 +27,7 @@
 #include "Malloc.hpp"
 #include "Command.hpp"
 #include "Core.hpp"
-#include "Plot2D.hpp"
+
 
 namespace FreeMat {
 

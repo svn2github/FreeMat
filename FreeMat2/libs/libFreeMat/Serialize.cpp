@@ -21,8 +21,13 @@
 #include "Serialize.hpp"
 #include "Exception.hpp"
 #include "Malloc.hpp"
-#include <netinet/in.h>
 #include <stdio.h>
+
+#ifdef WIN32
+#include <winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
 
 namespace FreeMat {
   Serialize::Serialize(Stream *sck) {

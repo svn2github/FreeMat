@@ -78,7 +78,7 @@ bool RGBImageGC::PenDraws() {
 // [c -s]
 // [s c]
 //
-void RGBImageGC::DrawText(std::string text, Point2D pos, OrientationType orient) {
+void RGBImageGC::DrawTextString(std::string text, Point2D pos, OrientationType orient) {
   FM_Glyph *currentFont;
   int penx, peny;
   int length, m, g1, g2;

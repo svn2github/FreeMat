@@ -18,13 +18,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+#include "ScalarImage.hpp"
 #include "GraphicsCore.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"
 #include <math.h>
 #include <stdio.h>
 #include "Malloc.hpp"
-#include "ScalarImage.hpp"
 
 namespace FreeMat {
 

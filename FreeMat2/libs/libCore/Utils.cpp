@@ -21,11 +21,6 @@
 #include "Utils.hpp"
 #include "Exception.hpp"
 #include <math.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#define  MAX   1000
 
 namespace FreeMat {
   float complex_abs(float real, float imag) {
@@ -122,34 +117,4 @@ namespace FreeMat {
     *im = 2.0*real*imag;
   }
 
-  char *doSystemCall(const char* sysline) {
-    int n, fd[2];
-    char *output;
-    char *op;
-    int readSoFar;
-  
-    if(pipe(fd) < 0)
-      throw FreeMat::Exception("Internal error - unable to set up pipe for system call!!");
-    switch(fork()) {
-    case -1:
-      throw FreeMat::Exception("Internal error - unable to fork system call!!");
-    case 0:                 /* child */
-      close(fd[0]);
-      dup2(fd[1], fileno(stdout));
-      execlp("sh", "sh", "-c", sysline, NULL);
-    default:                /* parent */
-      close(fd[1]);
-      output = (char*) malloc(MAX);
-      op = output;
-      readSoFar = 0;
-      while (n = read(fd[0], op, MAX - 1)) {
-	readSoFar += n;
-	output = (char*) realloc(output,readSoFar+MAX);
-	op += n;
-      }
-      *op = '\0';
-      close(fd[0]);
-    }
-    return output;
-  }
 }

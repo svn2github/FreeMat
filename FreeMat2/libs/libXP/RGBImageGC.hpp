@@ -27,7 +27,7 @@ public:
   // Methods for generic GCs
   virtual Point2D GetCanvasSize();
   Point2D GetTextExtent(std::string label);
-  virtual void DrawText(std::string label, Point2D pos, OrientationType orient = ORIENT_0);
+  virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient = ORIENT_0);
   virtual void SetFont(std::string fontname, int fontsize);
   virtual Color SetBackGroundColor(Color col);
   virtual Color SetForeGroundColor(Color col);

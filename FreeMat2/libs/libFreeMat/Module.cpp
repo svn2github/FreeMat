@@ -18,13 +18,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+#include "DynLib.hpp"
 #include "Module.hpp"
 #include "FunctionDef.hpp"
+#include "WalkTree.hpp"
 #include "Exception.hpp"
 #include "Context.hpp"
 #include "ParserInterface.hpp"
-#include "WalkTree.hpp"
-#include "DynLib.hpp"
 #include "PathSearch.hpp"
 
 namespace FreeMat {

@@ -22,7 +22,7 @@
 #define __DynLib_hpp__
 
 #ifdef WIN32
-#include "Windows.h"
+#include <windows.h>
 typedef HMODULE libhandle;
 #else
 #include <dlfcn.h>

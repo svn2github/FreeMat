@@ -20,6 +20,9 @@
 
 #include "ServerSocket.hpp"
 #include "Socket.hpp"
+#ifdef WIN32
+#include <winsock2.h>
+#else
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -27,6 +30,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <unistd.h>
+#endif
 #include "Exception.hpp"
 #include <stdio.h>
 #include <errno.h>
@@ -53,7 +57,7 @@ namespace FreeMat {
   
   Socket* ServerSocket::AcceptConnection() {
     struct sockaddr cliaddr;
-    socklen_t clilen;
+    int clilen;
     int new_sockfd;
     
   again:
@@ -70,10 +74,10 @@ namespace FreeMat {
 
   int ServerSocket::getPortNumber() {
     struct sockaddr_in test_addr;
-    socklen_t len = sizeof(test_addr);
+    int len = sizeof(test_addr);
     memset(&test_addr,0,len);
     getsockname(sockfd,(sockaddr *) &test_addr,&len);
-    ushort portnum = ntohs(test_addr.sin_port);
+    unsigned short portnum = ntohs(test_addr.sin_port);
     return (int) portnum;
   }
   

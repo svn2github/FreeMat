@@ -12,7 +12,7 @@
 #define HAVE_ALLOCA 1
 
 /* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
-#define HAVE_ALLOCA_H 1
+/* #undef HAVE_ALLOCA_H */
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be

@@ -30,7 +30,7 @@
 #define KM_TAB       0x09
 #define KM_CTRLK     0x0b
 #define KM_CTRLY     0x19
-#define KM_BACKSPACE 0x7f
+#define KM_BACKSPACE 0x08
 #define KM_ESC       0x1b
 #define KM_NEWLINE   0x0d
 #define KM_LEFT      0x101
@@ -116,9 +116,8 @@ public:
   void KillLine();
   void Yank();
   virtual std::vector<std::string> GetCompletions(const char *line, int word_end,
-						  std::string &matchString) {};
+	  std::string &matchString) {std::vector<std::string> t; return t;};
   void CompleteWord();
-  int ScrollRowAdjust(int row);
   virtual void ExecuteLine(const char * line) {};
 protected:
   // move the caret to m_xCaret, m_yCaret

@@ -48,12 +48,8 @@ Scope.cpp \
 Scope.hpp \
 Serialize.cpp \
 Serialize.hpp \
-ServerSocket.cpp \
-ServerSocket.hpp \
 SingularValueDecompose.cpp \
 SingularValueDecompose.hpp \
-Socket.cpp \
-Socket.hpp \
 Types.hpp \
 VectorOps_assist.f \
 VectorOps.cpp \

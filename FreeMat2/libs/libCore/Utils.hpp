@@ -32,6 +32,5 @@ namespace FreeMat {
   void zexp(double real, double imag, double *re, double *im);
   void zsqrt(double real, double imag, double *re, double *im);
   void zsqr(double real, double imag, double *re, double *im);
-  char* doSystemCall(const char* sysline);
 }
 #endif

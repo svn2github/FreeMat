@@ -216,10 +216,10 @@ namespace FreeMat {
     int tenHeight(tensize.y), tenWidth(tensize.x);
     int descender = (int) (0.7 * th);
     if (isLogarithmic) {
-      dc.DrawText( "10", Point2D(x - (tw + tenWidth)/2, y + descender));
-      dc.DrawText( label, Point2D((int)(x - (tw + tenWidth)/2 + tenWidth + 0.05 * tw), y ));
+      dc.DrawTextString( "10", Point2D(x - (tw + tenWidth)/2, y + descender));
+      dc.DrawTextString( label, Point2D((int)(x - (tw + tenWidth)/2 + tenWidth + 0.05 * tw), y ));
     } else 
-      dc.DrawText( label, Point2D((int)(x - tw/2), y));
+      dc.DrawTextString( label, Point2D((int)(x - tw/2), y));
   }
 
   void Axis::VCenterLabel(GraphicsContext &dc, std::string label, int x, int y) {
@@ -229,11 +229,11 @@ namespace FreeMat {
     int tenHeight(tensize.y), tenWidth(tensize.x);
     int descender = (int) (0.7 * th);
     if (isLogarithmic) {
-      dc.DrawText( "10", Point2D((int)(x - tenWidth - 1.05 * tw),
+      dc.DrawTextString( "10", Point2D((int)(x - tenWidth - 1.05 * tw),
 				 (int)(y - ( tenHeight + 0.7 * th ) + descender)) );
-      dc.DrawText( label, Point2D(x - tw, (int)(y - ( tenHeight + 0.7 * th ))) );
+      dc.DrawTextString( label, Point2D(x - tw, (int)(y - ( tenHeight + 0.7 * th ))) );
     } else 
-      dc.DrawText( label, Point2D(x - tw, y + th / 2) );
+      dc.DrawTextString( label, Point2D(x - tw, y + th / 2) );
   }  
 
   void Axis::ComputeTextBounds(GraphicsContext &dc) {
@@ -306,7 +306,7 @@ namespace FreeMat {
     if (axisType == Axis_X) {
       // The x title is centered on the axis, and is 2 spaces
       // below the axis line.
-      dc.DrawText(title, Point2D(xOffset + (length - titleWidth)/2,
+      dc.DrawTextString(title, Point2D(xOffset + (length - titleWidth)/2,
 				 yOffset + 2*space + 2*maxLabelExtent));
       dc.DrawLine(Point2D(xOffset, yOffset), Point2D(xOffset + length + 1, yOffset));
       for (int i=0;i<tCount;i++) {
@@ -327,7 +327,7 @@ namespace FreeMat {
       // The y title is centered on the axis, and is 2 spaces to 
       // the left of the axis line.
       if (titleWidth != 0)
-	dc.DrawText(title, Point2D(xOffset - 2*space - maxLabelExtent,
+	dc.DrawTextString(title, Point2D(xOffset - 2*space - maxLabelExtent,
 				   yOffset + (length + titleWidth)/2), ORIENT_90);
       dc.DrawLine(Point2D(xOffset, yOffset), Point2D(xOffset, yOffset + length + 1));
       for (int i=0;i<tCount;i++) {

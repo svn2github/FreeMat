@@ -325,6 +325,10 @@ namespace FreeMat {
     longjmp(env,2);
   }
 
+#ifdef WIN32
+  typedef void (*sig_t)(int);
+#endif
+
   ArrayVector BuiltInFunctionDef::evaluateFunction(WalkTree *walker, ArrayVector& inputs, 
 						   int nargout) {
     ArrayVector outputs;

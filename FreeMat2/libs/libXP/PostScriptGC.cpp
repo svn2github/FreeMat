@@ -74,7 +74,7 @@ Point2D PostScriptGC::GetTextExtent(std::string text) {
   return Point2D(penx,stringheight);
 }
 
-void PostScriptGC::DrawText(std::string text, Point2D pos, OrientationType orient) {
+void PostScriptGC::DrawTextString(std::string text, Point2D pos, OrientationType orient) {
   pos = ToPS(pos);
   fprintf(fp,"newpath\n%d %d moveto\n(%s)\n",pos.x,pos.y,text.c_str());
   fprintf(fp,"gsave\n");

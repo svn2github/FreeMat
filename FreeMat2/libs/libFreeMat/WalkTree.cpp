@@ -425,18 +425,18 @@ namespace FreeMat {
 	Array b(expression(t->down->right));
 	context->insertVariable(t->down->text,b);
 	if (printIt) {
-	  interface->outputMessage(t->down->text);
-	  interface->outputMessage(" = \n");
-	  b.printMe(printLimit,interface->getTerminalWidth());
+	  io->outputMessage(t->down->text);
+	  io->outputMessage(" = \n");
+	  b.printMe(printLimit,io->getTerminalWidth());
 	}	  
       } else {
 	Array expr(expression(t->down->right));
 	Array c(assignExpression(t->down,expr));
 	context->insertVariable(t->down->text,c);
 	if (printIt) {
-	  interface->outputMessage(t->down->text);
-	  interface->outputMessage(" = \n");
-	  c.printMe(printLimit,interface->getTerminalWidth());
+	  io->outputMessage(t->down->text);
+	  io->outputMessage(" = \n");
+	  c.printMe(printLimit,io->getTerminalWidth());
 	}
       }
     } else if (t->opNum ==(OP_MULTICALL)) {
@@ -506,8 +506,8 @@ namespace FreeMat {
 	else 
 	  b = m[0];
 	if (printIt && (fdef->outputArgCount() != 0)) {
-	  interface->outputMessage("ans = \n");
-	  b.printMe(printLimit,interface->getTerminalWidth());
+	  io->outputMessage("ans = \n");
+	  b.printMe(printLimit,io->getTerminalWidth());
 	} 
       }
       else if (t->opNum == OP_RHS) {
@@ -517,22 +517,22 @@ namespace FreeMat {
 	else {
 	  b = m[0];
 	  if (printIt) {
-	    interface->outputMessage("ans = \n");
+	    io->outputMessage("ans = \n");
 	    for (int j=0;j<m.size();j++) {
 	      char buffer[1000];
 	      if (m.size() > 1) {
 		sprintf(buffer,"\n%d of %d:\n",j,m.size());
-		interface->outputMessage(buffer);
+		io->outputMessage(buffer);
 	      }
-	      m[j].printMe(printLimit,interface->getTerminalWidth());
+	      m[j].printMe(printLimit,io->getTerminalWidth());
 	    }
 	  }
 	}
       } else {
 	b = expression(t);
 	if (printIt) {
-	  interface->outputMessage("ans = \n");
-	  b.printMe(printLimit,interface->getTerminalWidth());
+	  io->outputMessage("ans = \n");
+	  b.printMe(printLimit,io->getTerminalWidth());
 	} 
       }
       if (state == FM_STATE_QUIT || 
@@ -546,18 +546,18 @@ namespace FreeMat {
   void WalkTree::statement(ASTPtr t) {
     if (t->opNum ==(OP_QSTATEMENT)) {
       if (t->down->type == context_node) {
-	interface->setMessageContext(t->down->text);
+	io->setMessageContext(t->down->text);
 	statementType(t->down->down,false);
       } else {
-	interface->setMessageContext(NULL);
+	io->setMessageContext(NULL);
 	statementType(t->down,false);
       }
     } else if (t->opNum ==(OP_RSTATEMENT)) {
       if (t->down->type == context_node) {
-	interface->setMessageContext(t->down->text);
+	io->setMessageContext(t->down->text);
 	statementType(t->down->down,true);
       } else {
-	interface->setMessageContext(NULL);
+	io->setMessageContext(NULL);
 	statementType(t->down,true);
       }
     }
@@ -921,12 +921,12 @@ namespace FreeMat {
 //       context->insertVariable(s->down->text,c);
       if (printIt) {
 	std::cout << s->down->text << " = \n";
-	c.printMe(printLimit,interface->getTerminalWidth());
+	c.printMe(printLimit,io->getTerminalWidth());
       }
       s = s->right;
     }
     if (s != NULL)
-      interface->warningMessage("Warning! one or more outputs not assigned in call.");
+      io->warningMessage("Warning! one or more outputs not assigned in call.");
   }
 
   int getArgumentIndex(stringVector list, std::string t) {
@@ -1124,14 +1124,14 @@ namespace FreeMat {
   }
 
   Interface* WalkTree::getInterface() {
-    return interface;
+    return io;
   }
 
   bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val) {
     bool isFun;
     isFun = context->lookupFunction(funcName,val);
     if (!isFun) {
-      interface->rescanPath();
+      io->rescanPath();
       isFun = context->lookupFunction(funcName,val);
     }
     return isFun;
@@ -1245,8 +1245,8 @@ namespace FreeMat {
     endValStackLength = 0;
     endValStack[endValStackLength] = 0;
     depth = 0;
-    interface = aInterface;
-    Array::setArrayIOInterface(interface);
+    io = aInterface;
+    Array::setArrayIOInterface(io);
     InterruptPending = false;
     signal(SIGINT,sigInterrupt);
     printLimit = 1000;
@@ -1279,7 +1279,7 @@ namespace FreeMat {
 	    }
 	  }
 	} catch(Exception &e) {
-	  e.printMe(interface);
+	  e.printMe(io);
 	}
 	break;
       case FuncDef:
@@ -1287,7 +1287,7 @@ namespace FreeMat {
 	break;
       }
     } catch(Exception &e) {
-      e.printMe(interface);
+      e.printMe(io);
     }
     return false;
   }
@@ -1304,7 +1304,7 @@ namespace FreeMat {
       sprintf(prompt,"[%s,%d] --> ",context->getCurrentScope()->getName().c_str(),depth);
 
     while(1) {
-      line = interface->getLine(prompt);
+      line = io->getLine(prompt);
       if (!line)
 	continue;
       // scan the line and tokenize it
@@ -1318,7 +1318,7 @@ namespace FreeMat {
 	// Loop until we have enough input
 	while (!enoughInput) {
 	  // Get more text
-	  line = interface->getLine("");
+	  line = io->getLine("");
 	  // User pressed ctrl-D (or equivalent) - stop looking for
 	  // input
 	  if (!line) 

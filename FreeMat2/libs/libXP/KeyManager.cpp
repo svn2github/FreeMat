@@ -769,13 +769,14 @@ void KeyManager::HistoryFindForwards() {
 }
 
 void KeyManager::SearchPrefix(const char* aline, int aprefix_len) {
-  char tbuf[linelen+2];
+  char *tbuf = (char*) malloc(linelen+2);
   // Set the prefix string
   memcpy(tbuf,aline,aprefix_len);
   tbuf[aprefix_len] = 0;
   prefix_len = aprefix_len;
   prefix = std::string(tbuf);
   startsearch = history.size();
+  free(tbuf);
 }
 
 void KeyManager::HistorySearchBackward() {

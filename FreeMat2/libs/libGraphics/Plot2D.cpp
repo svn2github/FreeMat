@@ -230,7 +230,7 @@ namespace FreeMat {
     xAxis->Place(plotX, plotY + plotHeight, plotWidth, plotHeight);
     yAxis->Place(plotX, plotY, plotHeight, plotWidth);
 
-    gc.DrawText(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));
+    gc.DrawTextString(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));
     gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));
 

@@ -36,7 +36,8 @@ namespace FreeMat {
   }
   void* DynLib::GetSymbol(const char*symbolName) {
 #ifdef WIN32
-    void *func = GetProcAddress(lib,symbolName);
+    void *func;
+    func = (void*) GetProcAddress(lib,symbolName);
     if (func == NULL)
       throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
     return func;

@@ -5,6 +5,7 @@
 namespace FreeMat {
 
 #ifdef WIN32
+#if 0
 #include <stdio.h> 
 #include <windows.h> 
   
@@ -253,6 +254,7 @@ VOID main(VOID)
 	break; 
     } 
 }
+#endif
 #else
 #include <unistd.h>
 #include <errno.h>

@@ -31,7 +31,7 @@ class GraphicsContext {
 public:
   virtual Point2D GetCanvasSize() = 0;
   virtual Point2D GetTextExtent(std::string label) = 0;
-  virtual void DrawText(std::string label, Point2D pos, OrientationType orient = ORIENT_0) = 0;
+  virtual void DrawTextString(std::string label, Point2D pos, OrientationType orient = ORIENT_0) = 0;
   virtual void SetFont(std::string fontname, int fontsize) = 0;
   virtual Color SetBackGroundColor(Color col) = 0;
   virtual Color SetForeGroundColor(Color col) = 0;

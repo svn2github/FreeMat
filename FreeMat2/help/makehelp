@@ -11,6 +11,5 @@ pdflatex main
 latex2html --split 5 -dir ../html -mkdir -noinfo -local_icons main.tex
 cp *.png ../html/.
 cd ..
-perl bldindex.pl > toc_body.hhc;
+perl bldindex.pl
 cat toc_template.hhc toc_body.hhc > toc.hhc
-

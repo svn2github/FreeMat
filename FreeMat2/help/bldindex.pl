@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 
-if (!open(INPUT,"<html/index.html")) {
-    die "Can't open html/index.html for processing...\n";
-}
+open(INPUT,"<html/index.html") || die "Can't open html/index.html for processing...\n";
+open(OUTPUT,">toc_body.hhc") || die "Can't open output file >toc_body.hhc...\n";
+
 # Skip the prefix
 while (defined($data=<INPUT>)  && !($data =~ /Table of Child-Links/g)) {};
 # Skip the header
 while (defined($data=<INPUT>) && !($data =~ /<UL>/g)) {};
-print $data;
+print OUTPUT $data;
 # Scan through the file..  
 while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
 # Does this line start with a "<LI>?
@@ -26,17 +26,18 @@ while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
 	    $pst = $entry;
 	    ($pst =~ /HREF=\"([^\"]*)\"/g);
 	    $file = $1;
-	    print "<LI> <OBJECT type=\"text/sitemap\">\n";
-	    print "       <param name=\"Name\" value=\"$name\"\>\n";
-	    print "       <param name=\"Local\" value=\"html/$file\"\>\n";
-	    print "     </OBJECT>\n";
+	    print OUTPUT "<LI> <OBJECT type=\"text/sitemap\">\n";
+	    print OUTPUT "       <param name=\"Name\" value=\"$name\"\>\n";
+	    print OUTPUT "       <param name=\"Local\" value=\"html/$file\"\>\n";
+	    print OUTPUT "     </OBJECT>\n";
 	}
     } else {
-	print $data;
+	print OUTPUT $data;
     }
 }
-print "</BODY></HTML>\n";
+print OUTPUT "</BODY></HTML>\n";
 close(INPUT);
+close(OUTPUT);
 #$linkstart = "<!--Table of Child-Links-->";
 #$linkend = "<!--End of Table of Child-Links-->";
 #$data =~ s/$linkstart([^$linkend]*)$linkend/($1)/gm;

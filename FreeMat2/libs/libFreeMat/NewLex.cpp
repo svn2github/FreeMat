@@ -661,7 +661,7 @@ namespace FreeMat {
     buffer = (char*) calloc(cpos+1,sizeof(char));
     datap = buffer;
     int n = fread(buffer,sizeof(char),cpos,fp);
-	buffer[n]=0;
+    buffer[n]=0;
   }
 
   bool lexCheckForMoreInput(int ccount) {

@@ -556,6 +556,13 @@ namespace FreeMat {
       return 0;
   }
 
+  const void *Array::getSparseDataPointer() const {
+    if (dp)
+      return dp->getData();
+    else
+      return NULL;
+  }
+
   const void *Array::getDataPointer() const {
     if (isSparse())
       throw Exception("operation does not support sparse matrix arguments.");
@@ -1721,6 +1728,7 @@ break;
     stringVector retNames;
     Dimensions retDims;
     void *dstPtr = NULL;
+    bool sparseArg = false;
 
     try {
       maxType = FM_CELL_ARRAY;
@@ -1733,7 +1741,7 @@ break;
 	for (int j=0;j<ptr.size();j++) {
 	  const Array& d = ptr[j];
 	  if (d.isSparse())
-	    throw Exception("matrixConstructor not supported for sparse arrays.");
+	    sparseArg = true;
 	  if (!d.isEmpty()) {
 	    if (maxType < d.dp->dataClass) maxType = d.dp->dataClass;
 	    if (minType > d.dp->dataClass) minType = d.dp->dataClass;
@@ -1812,6 +1820,20 @@ break;
 	ArrayVector ptr = *i;
 	const Array& d = ptr.front();
 	retNames = d.dp->fieldNames;
+      }
+
+      /**
+       * Check for the sparse case - if any of the elements are sparse,
+       * the output is sparse.
+       */
+      if (sparseArg) {
+	if (retType < FM_INT32) retType = FM_INT32;
+	return Array(retType,retDims,
+		     SparseMatrixConstructor(retType,
+					     retDims[0],
+					     retDims[1],
+					     m),
+		     true);
       }
 
       /**
@@ -2063,8 +2085,6 @@ break;
    */
   Array Array::getVectorSubset(Array& index)  {
     void *qp = NULL;
-    if (isSparse())
-      throw Exception("getVectorSubset not supported for sparse arrays.");
     try {
       if (index.isEmpty()) {
 	return Array(dp->dataClass,index.dp->dimensions,
@@ -2073,6 +2093,18 @@ break;
       if (isEmpty()) 
 	throw Exception("Cannot index into empty variable.");
       index.toOrdinalType();
+      Dimensions retdims(index.dp->dimensions);
+      retdims.simplify();
+      if (isSparse())
+	return Array(dp->dataClass,retdims,
+		     GetSparseVectorSubsets(dp->dataClass,
+					    getDimensionLength(0),
+					    getDimensionLength(1),
+					    dp->getData(),
+					    (const indexType*) index.dp->getData(),
+					    index.getDimensionLength(0),
+					    index.getDimensionLength(1)),
+		     true);
       //
       // The output is the same size as the _index_, not the
       // source variable (neat, huh?).  But it inherits the
@@ -2089,8 +2121,6 @@ break;
 	  throw Exception("Index exceeds variable dimensions");
 	copyElements(ndx,qp,i,1);
       }
-      Dimensions retdims(index.dp->dimensions);
-      retdims.simplify();
       return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames);
     } catch (Exception &e) {
       Free(qp);
@@ -2111,7 +2141,7 @@ break;
     if (isEmpty())
       throw Exception("Cannot index into empty variable.");
     if (isSparse())
-      throw Exception("getVectorSubset not supported for sparse arrays.");
+      throw Exception("getNDimSubset not supported for sparse arrays.");
     try {
       int L = index.size();
       // Convert the indexing variables into an ordinal type.
@@ -2826,8 +2856,10 @@ break;
       return;
     if (isReferenceType() || isString())
       throw Exception("Cannot make strings or reference types sparse.");
+    if (isSparse()) return;
     if (dp->dataClass < FM_INT32)
       promoteType(FM_INT32);
+    ensureSingleOwner();
     dp = dp->putData(dp->dataClass,dp->dimensions,
 		     makeSparseArray(dp->dataClass,
 				     dp->dimensions[0],
@@ -2837,6 +2869,15 @@ break;
 		     dp->fieldNames);
   }
 
+  int Array::getNonzeros() const {
+    if (!isSparse())
+      return (dp->dimensions.getElementCount());
+    if (isEmpty())
+      return 0;
+    return CountNonzeros(dp->dataClass,dp->dimensions[0],dp->dimensions[1],
+			 dp->getData());
+  }
+
   void Array::makeDense() {
     if (!isSparse())
       return;
@@ -2844,6 +2885,7 @@ break;
       dp->sparse = false;
       return;
     }
+    ensureSingleOwner();
     dp = dp->putData(dp->dataClass,dp->dimensions,
 		     makeDenseArray(dp->dataClass,
 				    dp->dimensions[0],
@@ -3086,54 +3128,64 @@ break;
 	}
 	break;
       case FM_INT32:
-	if (dp->dimensions.isScalar()) {
+	if (!isSparse() && dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int32*) dp->getData()));
 	  io->outputMessage(msgBuffer);
 	} else {
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
+	  if (isSparse())
+	    io->outputMessage(" sparse ");
 	  io->outputMessage(" int32]");
 	}
 	break;
       case FM_DOUBLE:
-	if (dp->dimensions.isScalar()) {
+	if (!isSparse() && dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%lf]",*((const double*) dp->getData()));
 	  io->outputMessage(msgBuffer);
 	} else {
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
+	  if (isSparse())
+	    io->outputMessage(" sparse ");
 	  io->outputMessage(" double]");
 	}
 	break;
       case FM_DCOMPLEX:
-	if (dp->dimensions.isScalar()) {
+	if (!isSparse() && dp->dimensions.isScalar()) {
 	  const double *ap = (const double*) dp->getData();
 	  snprintf(msgBuffer,MSGBUFLEN,"[%lf+%lfi]",ap[0],ap[1]);
 	  io->outputMessage(msgBuffer);
 	} else {
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
+	  if (isSparse())
+	    io->outputMessage(" sparse ");
 	  io->outputMessage(" dcomplex]");
 	}
 	break;
       case FM_FLOAT:
-	if (dp->dimensions.isScalar()) {
+	if (!isSparse() && dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%f]",*((const float*) dp->getData()));
 	  io->outputMessage(msgBuffer);
 	} else {
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
+	  if (isSparse())
+	    io->outputMessage(" sparse ");
 	  io->outputMessage(" float]");
 	}
 	break;
       case FM_COMPLEX:
-	if (dp->dimensions.isScalar()) {
+	if (!isSparse() && dp->dimensions.isScalar()) {
 	  const float *ap = (const float*) dp->getData();
 	  snprintf(msgBuffer,MSGBUFLEN,"[%f+%fi]",ap[0],ap[1]);
 	  io->outputMessage(msgBuffer);
 	} else {
 	  io->outputMessage("[");
 	  dp->dimensions.printMe(io);
+	  if (isSparse())
+	    io->outputMessage(" sparse ");
 	  io->outputMessage(" complex]");
 	}
 	break;
@@ -3344,8 +3396,12 @@ break;
       io->outputMessage("  []\n");
       return;
     }
-    if (isSparse())
-      throw Exception("printMe not supported for sparse arrays.");
+    if (isSparse()) {
+      sprintf(msgBuffer,"\tMatrix is sparse with %d nonzeros\n",
+	      getNonzeros());
+      io->outputMessage(msgBuffer);
+      return;
+    }
     if (dp->dataClass == FM_STRUCT_ARRAY) {
       if (dp->dimensions.isScalar()) {
 	Array *ap;

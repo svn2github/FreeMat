@@ -3,6 +3,18 @@
 namespace FreeMat {
 
   template <class T>
+  void RawPrint(T** src, int rows, int cols) {
+    int i, j;
+    for (i=0;i<cols;i++) {
+      printf("%d <",(int)src[i][0]);
+      for (j=0;j<(int)src[i][0];j++) {
+	std::cout << " " << src[i][j+1];
+      }
+      std::cout << "\r\n";
+    }
+  }
+  
+  template <class T>
   void DeleteSparse(T** src, int rows, int cols) {
     int i;
     for (i=0;i<cols;i++)
@@ -271,8 +283,10 @@ namespace FreeMat {
     int i, j;
     for (i=0;i<cols;i++) {
       DecompressRealString<T>(src[i],src_col,rows);
-      for (j=0;j<rows;j++)
+      for (j=0;j<rows;j++) {
 	dst_col[2*j] = (S) src_col[j];
+	dst_col[2*j+1] = 0;
+      }
       dp[i] = CompressComplexVector<S>(dst_col,rows);
     }
     delete[] src_col;
@@ -306,12 +320,54 @@ namespace FreeMat {
     dp = new T*[cols];
     int i;
     for (i=0;i<cols;i++) {
-      dp[i] = new T[(int)(src[i][0]+1)];
-      memcpy(dp[i],src[i],sizeof(T)*((int)(src[i][0]+1)));
+      int blen = (int)(src[i][0]+1);
+      dp[i] = new T[blen];
+      memcpy(dp[i],src[i],sizeof(T)*blen);
     }
     return dp;
   }
 
+  template <class T>
+  int CountNonzerosComplex(T** src, int rows, int cols) {
+    int nnz = 0;
+    int i, j, n;
+    for (i=0;i<cols;i++) {
+      n = 1;
+      j = 0;
+      while (j<rows) {
+	if ((src[i][n] != 0) || (src[i][n+1] != 0)){
+	  nnz++;
+	  j++;
+	  n+=2;
+	} else {
+	  j += (int) src[i][n+2];
+	  n += 3;
+	}
+      }
+    }
+    return nnz;
+  }
+
+  template <class T>
+  int CountNonzerosReal(T** src, int rows, int cols) {
+    int nnz = 0;
+    int i, j, n;
+    for (i=0;i<cols;i++) {
+      n = 1;
+      j = 0;
+      while (j<rows) {
+	if (src[i][n] != 0) {
+	  nnz++;
+	  j++;
+	  n++;
+	} else {
+	  j += (int) src[i][n+1];
+	  n += 2;
+	}
+      }
+    }
+    return nnz;
+  }
 
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
     switch (dclass) {
@@ -328,7 +384,226 @@ namespace FreeMat {
     }
   }
 
+  int CountNonzeros(Class dclass, int rows, int cols, const void *cp) {
+    switch (dclass) {
+    case FM_INT32:
+      return CountNonzerosReal<int32>((int32**)cp,rows,cols);
+    case FM_FLOAT:
+      return CountNonzerosReal<float>((float**)cp,rows,cols);
+    case FM_DOUBLE:
+      return CountNonzerosReal<double>((double**)cp,rows,cols);
+    case FM_COMPLEX:
+      return CountNonzerosComplex<float>((float**)cp,rows,cols);
+    case FM_DCOMPLEX:
+      return CountNonzerosComplex<double>((double**)cp,rows,cols);
+    }
+  }
+
+  // Multiply a sparse matrix by a sparse matrix (result is sparse)
+  // Here we use the following order for the loops:
+  // A normal multiply is
+  // for j=1:Ccols
+  //   for k=1:Acols
+  //     for i=1:Arows
+  //       c[i][j] += a[i][k]*b[k][j]
+  template <class T>
+  void SparseSparseRealMultiply(T** A, int A_rows, int A_cols,
+				T** B, int B_cols,
+				T** C) {
+    T* CColumn;
+    int i, j, k, m, n;
+    
+    CColumn = new T[A_rows];
+    for (j=0;j<B_cols;j++) {
+      memset(CColumn,0,A_rows*sizeof(T));
+      k=0;
+      m=1;
+      while (k<A_cols) {
+	if (B[j][m] != 0) {
+	  T Bval = B[j][m];
+	  T* Acol = A[k];
+	  i=0;
+	  n=1;
+	  while (i<A_rows) {
+	    if (Acol[n] != 0) {
+	      CColumn[i] += Acol[n]*Bval;
+	      n++;
+	      i++;
+	    } else {
+	      i += (int) Acol[n+1];
+	      n += 2;
+	    }
+	  }
+	  k++;
+	  m++;
+	} else {
+	  k += (int) B[j][m+1];
+	  m += 2;
+	}
+      }
+      C[j] = CompressRealVector(CColumn, A_rows);
+    }
+    delete CColumn;
+  }
+
+  // Multiply a sparse matrix by a dense matrix (result is dense)
+  // A normal muliply is
+  // for i=1:Arows
+  //   for j=1:Ccols
+  //     c[i][j] = 0;
+  //     for k = 1:Acols
+  //       c[i][j] += a[i][k]*b[k][j]
+  // If we assume c is initialized to zero, we can write:
+  // for i=1:Arows
+  //   for j=1:Ccols
+  //     for k = 1:Acols
+  //       c[i][j] += a[i][k]*b[k][j]
+  // And change the order of the loops:
+  // for k=1:Acols
+  //   for j=1:Bcols
+  //      for i=1:Arows
+  //       c[i][j] += a[i][k]*b[k][j]
+  // The inner loop is now striding over the compressed
+  // dimension of A, which is the best case.  Also, we can
+  // apply a simple zero-check to b[k][j] and skip loops
+  // over i for which it is zero.
+  template <class T>
+  void SparseDenseRealMultiply(T**A, int A_rows, int A_cols,
+			       T*B, int B_cols,
+			       T*C) {
+    int i, j, k, n;
+    T* Acol;
+    T Bval;
+    memset(C,0,A_rows*B_cols*sizeof(T));
+    for (k=0;k<A_cols;k++) {
+      Acol = A[k];
+      for (j=0;j<B_cols;j++) {
+	Bval = B[k+j*A_cols];
+	if (Bval != 0) {
+	  i=0;
+	  n=1;
+	  while (i<A_rows) {
+	    if (Acol[n] != 0) {
+	      C[i+j*A_rows] += Acol[n]*Bval;
+	      n++;
+	      i++;
+	    } else {
+	      i += (int) Acol[n+1];
+	      n += 2;
+	    }
+	  }
+	}
+      }
+    }
+  }
+  
+  // for i=1:Arows
+  //   for j=1:Ccols
+  //     for k = 1:Acols
+  //       c[i][j] += a[i][k]*b[k][j]
+  // Multiply a dense matrix by a sparse matrix (result is dense)
+  // If we move the I loop inside, we can use the sparsity of B
+  // to our advantage
+  // for j=1:Ccols
+  //   for k = 1:Acols
+  //     for i=1:Arows
+  //       c[i][j] += a[i][k]*b[k][j]
+  template <class T>
+  void DenseSparseRealMultiply(T* A, int A_rows, int A_cols,
+			       T** B, int B_cols, T* C) {
+    int i, j, k, n;
+    int B_rows;
+    T* str;
+    T accum;
+    memset(C,0,sizeof(T)*A_rows*B_cols);
+    B_rows = A_cols;
+    for (j=0;j<B_cols;j++) {
+      str = B[j];
+      k = 1;
+      n = 0;
+      while (n<B_rows) {
+	if (str[k] != 0) {
+	  for (i=0;i<A_rows;i++)
+	    C[i+j*A_rows] += A[i+n*A_rows]*str[k];
+	  n++;
+	  k++;
+	} else {
+	  n += (int) (str[k+1]);
+	  k += 2;
+	}
+      }
+    }
+  }
+  
+
+  void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
+				  const void* ap, const void* bp) {
+    switch (dclass) {
+    case FM_FLOAT: 
+      {
+	float *C = (float*) Malloc(rows*bcols*sizeof(float));
+	SparseDenseRealMultiply<float>((float**)ap,rows,cols,
+				       (float*)bp,bcols,C);
+	return C;
+      }
+    case FM_DOUBLE: 
+      {
+	double *C = (double*) Malloc(rows*bcols*sizeof(double));
+	SparseDenseRealMultiply<double>((double**)ap,rows,cols,
+					(double*)bp,bcols,C);
+	return C;
+      }
+    otherwise:
+      throw Exception("Complex multiplies with sparse matrices not handled.");
+    }
+  }
+  
+  void* DenseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
+				  const void* ap, const void* bp) {
+    switch (dclass) {
+    case FM_FLOAT: 
+      {
+	float *C = (float*) Malloc(rows*bcols*sizeof(float));
+	DenseSparseRealMultiply<float>((float*)ap,rows,cols,
+				       (float**)bp,bcols,C);
+	return C;
+      }
+    case FM_DOUBLE: 
+      {
+	double *C = (double*) Malloc(rows*bcols*sizeof(double));
+	DenseSparseRealMultiply<double>((double*)ap,rows,cols,
+					(double**)bp,bcols,C);
+	return C;
+      }
+    otherwise:
+      throw Exception("Complex multiplies with sparse matrices not handled.");
+    }
+  }
+
+  void* SparseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
+				   const void* ap, const void* bp) {
+    switch (dclass) {
+    case FM_FLOAT: 
+      {
+	float **C = new float*[bcols];
+	SparseSparseRealMultiply<float>((float**)ap,rows,cols,
+					(float**)bp,bcols,C);
+	return C;
+      }
+    case FM_DOUBLE: 
+      {
+	double **C = new double*[bcols];
+	SparseSparseRealMultiply<double>((double**)ap,rows,cols,
+					 (double**)bp,bcols,C);
+	return C;
+      }
+    otherwise:
+      throw Exception("Complex multiplies with sparse matrices not handled.");
+    }
+  }
+
   /* Type convert the given sparse array and delete it */
+  /* dclass is the source type, oclass is the destination class*/
   void* TypeConvertSparse(Class dclass, int rows, int cols, 
 			  const void *cp, Class oclass) {
     if (dclass == FM_INT32) {
@@ -387,5 +662,158 @@ namespace FreeMat {
 	return TypeConvertSparseComplexComplex<double,float>((double**)cp,rows,cols);
       }
     } 
+  }
+
+  // The strategy is straightforward, we loop over the output columns
+  // We need one pointer for each row of the array matrix
+  template <class T>
+  void* SparseMatrixConst(int rows, int cols, ArrayMatrix m) {
+    T** dst;
+    dst = new T*[cols];
+    // The blockindx array tracks which "block" within each 
+    // row is active
+    int *blockindx = new int[m.size()];
+    // The colindx array tracks which column within each block
+    // is active
+    int *colindx = new int[m.size()];
+    int j;
+    for (j=0;j<m.size();j++) {
+      blockindx[j] = 0;
+      colindx[j] = 0;
+    }
+    for (int i=0;i<cols;i++) {
+      // Working on column i
+      // For the current column, we loop over all rows of m, and
+      // concatenate their strings together.
+      int outstringlength = 0;
+      for (j=0;j<m.size();j++) {
+	T** src;
+	src = (T**) m[j][blockindx[j]].getSparseDataPointer();
+	// Get the string length
+	outstringlength += (int) src[colindx[j]][0];
+      }
+      // Allocate space for the output string
+      dst[i] = new T[outstringlength+1];
+      dst[i][0] = (T) outstringlength;
+      // Loop over the rows again, copying them into the new string
+      // buffer
+      outstringlength = 0;
+      for (j=0;j<m.size();j++) {
+	T** src;
+	src = (T**) m[j][blockindx[j]].getSparseDataPointer();
+	memcpy(dst[i]+outstringlength+1,src[colindx[j]]+1,
+	       ((int) src[colindx[j]][0])*sizeof(T));
+	outstringlength += (int) src[colindx[j]][0];
+      }
+      // Now we have to update the column pointers
+      for (j=0;j<m.size();j++) {
+	colindx[j]++;
+	if (colindx[j] >= m[j][blockindx[j]].getDimensionLength(1)) {
+	  blockindx[j]++;
+	  colindx[j] = 0;
+	}
+      }
+    }
+    delete blockindx;
+    delete colindx;
+    return dst;
+  } 
+
+  void* SparseMatrixConstructor(Class dclass, int rows, int cols,
+				ArrayMatrix m) {
+    // Precondition the arrays by converting to sparse and to
+    // the output type
+    for (ArrayMatrix::iterator i=m.begin();i != m.end();i++) {
+      for (ArrayVector::iterator j= i->begin(); j != i->end();j++) {
+	j->promoteType(dclass);
+	j->makeSparse();
+      }
+    }
+    // Now, we can construct the output array
+    switch (dclass) {
+    case FM_INT32:
+      return SparseMatrixConst<int32>(rows, cols, m);
+    case FM_FLOAT:
+      return SparseMatrixConst<float>(rows, cols, m);
+    case FM_DOUBLE:
+      return SparseMatrixConst<double>(rows, cols, m);
+    case FM_COMPLEX:
+      return SparseMatrixConst<float>(rows, cols, m);
+    case FM_DCOMPLEX:
+      return SparseMatrixConst<double>(rows, cols, m);
+    }    
+  }
+
+
+  template <class T>
+  void RealStringExtract(const T* src, int ndx, T* dst) {
+    int i=0;
+    int n=1;
+    int j;
+    while (i<ndx) {
+      if (src[n] != 0) {
+	i++;
+	n++;
+      } else {
+	j = (int) src[n+1];
+	i += j;
+	n += 2;
+      }
+    }
+    if (i==ndx)
+      *dst = src[n];
+    else
+      *dst = 0;
+  }
+
+  // This implementation is poor because for a linear access of the elements
+  // of A, it requires significant time.
+  template <class T>
+  void* GetSparseVectorSubsetsReal(int rows, int cols, const T** A,
+				   const indexType* indx, int irows, int icols) {
+    int i, j, n;
+    int nrow, ncol;
+    T* Acol = new T[irows];
+    T** dp = new T*[icols];
+    for (i=0;i<icols;i++) {
+      for (j=0;j<irows;j++) {
+	// Get the vector index
+	n = indx[i*irows+j] - 1;
+	// Decompose this into a row and column
+	ncol = n / rows;
+	if (ncol > cols)
+	  throw Exception("Index exceeds variable dimensions");
+	nrow = n % rows;
+	// Extract this value from the source matrix
+	RealStringExtract<T>(A[ncol],nrow,Acol+j);
+      }
+      dp[i] = CompressRealVector(Acol,irows);
+    }
+    delete Acol;
+    return dp;
+  }
+
+  // GetSparseVectorSubsets - This one is a bit difficult to do efficiently.
+  // For each column in the output, we have to extract potentially random
+  // elements from the source array.
+  void* GetSparseVectorSubsets(Class dclass, int rows, int cols, const void* src,
+			       const indexType* indx, int irows, int icols) {
+    switch (dclass) {
+    case FM_INT32:
+      return GetSparseVectorSubsetsReal<int32>(rows, cols, (const int32**) src,
+					       indx, irows, icols);
+    case FM_FLOAT:
+      return GetSparseVectorSubsetsReal<float>(rows, cols, (const float**) src,
+					       indx, irows, icols);
+    case FM_DOUBLE:
+      return GetSparseVectorSubsetsReal<double>(rows, cols, (const double**) src,
+						indx, irows, icols);
+      //    case FM_COMPLEX:
+      //      return GetSparseVectorSubsetsComplex<float>(rows, cols, (float**) src,
+      //						  indx, irows, icols);
+      //    case FM_DCOMPLEX:
+      //      return GetSparseVectorSubsetsComplex<double>(rows, cols, (double**) src,
+      //						   indx, irows, icols);
+    }
   }
 }

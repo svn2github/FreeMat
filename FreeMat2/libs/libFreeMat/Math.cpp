@@ -27,6 +27,7 @@
 #include "LeastSquaresSolver.hpp"
 #include "EigenDecompose.hpp"
 #include "Malloc.hpp"
+#include "Sparse.hpp"
 
 namespace FreeMat {
 
@@ -1291,7 +1292,37 @@ namespace FreeMat {
     Arows = A.getDimensionLength(0);
     Acols = A.getDimensionLength(1);
     Bcols = B.getDimensionLength(1);
+
+    Dimensions outDim(2);
+    outDim[0] = Arows;
+    outDim[1] = Bcols;
   
+    // Check for sparse multiply case
+    if (A.isSparse() && !B.isSparse())
+      return Array(A.getDataClass(),
+		   outDim,
+		   SparseDenseMatrixMultiply(A.getDataClass(),
+					     Arows,Acols,Bcols,
+					     A.getSparseDataPointer(),
+					     B.getDataPointer()),
+		   false);
+    if (!A.isSparse() && B.isSparse())
+      return Array(A.getDataClass(),
+		   outDim,
+		   DenseSparseMatrixMultiply(A.getDataClass(),
+					     Arows,Acols,Bcols,
+					     A.getDataPointer(),
+					     B.getSparseDataPointer()),
+		   false);
+    if (A.isSparse() && B.isSparse())
+      return Array(A.getDataClass(),
+		   outDim,
+		   SparseSparseMatrixMultiply(A.getDataClass(),
+					      Arows,Acols,Bcols,
+					      A.getSparseDataPointer(),
+					      B.getSparseDataPointer()),
+		   true);
+
     // Its really a matrix-matrix operation, and the arguments are
     // satisfactory.  Check for the type.
     void *Cp = Malloc(Arows*Bcols*A.getElementSize());
@@ -1312,9 +1343,6 @@ namespace FreeMat {
       dcomplexMatrixMatrixMultiply(Arows,Bcols,Acols,(double*)Cp,
 				   (const double*)A.getDataPointer(),
 				   (const double*)B.getDataPointer());
-    Dimensions outDim(2);
-    outDim[0] = Arows;
-    outDim[1] = Bcols;
     return Array(A.getDataClass(),outDim,Cp);
   }
     

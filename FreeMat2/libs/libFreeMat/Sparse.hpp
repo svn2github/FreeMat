@@ -11,6 +11,17 @@ namespace FreeMat {
   void* TypeConvertSparse(Class dclass, int rows, int cols, 
 			  const void *cp, Class oclass);
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp);
+  int CountNonzeros(Class dclass, int rows, int cols, const void *cp);
+  void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
+				  const void* ap, const void* bp);
+  void* DenseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
+				  const void* ap, const void* bp);
+  void* SparseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
+				   const void* ap, const void* bp);
+  void* SparseMatrixConstructor(Class dclass, int rows, int cols,
+				ArrayMatrix m);
+  void* GetSparseVectorSubsets(Class dclass, int rows, int cols, const void* src,
+			       const indexType* indx, int irows, int icols);
 }
 
 #endif

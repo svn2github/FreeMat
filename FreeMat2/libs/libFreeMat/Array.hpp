@@ -197,6 +197,7 @@ namespace FreeMat {
      * pointer that is free of object aliases.
      */
     const void* getDataPointer() const;
+    const void* getSparseDataPointer() const;
     /** Get the contents of our data block as a read-write void* pointer.
      * Get the contents of our data block as a read-write void*
      * pointer.  It ensures that our data block is not aliased (meaning
@@ -287,6 +288,7 @@ namespace FreeMat {
     const bool isSparse() const;
     void makeSparse();
     void makeDense();
+    int getNonzeros() const;
     /**
      * Returns true if we match the scalar value in x.  For strings, this is done by
      * doing a string compare.  For numerical values, we promote to a common type

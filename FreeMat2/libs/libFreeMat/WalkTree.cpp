@@ -3151,16 +3151,18 @@ namespace FreeMat {
     char prompt[150];
     int lastCount;
 
-    if (depth == 0)
+    if ((depth == 0) || (cstack.size() == 0))
       if (bpActive)
 	sprintf(prompt,"D-> ");
       else
 	sprintf(prompt,"--> ");
     else
-      if (bpActive)
-	sprintf(prompt,"[%s,%d] D-> ",context->getCurrentScope()->getName().c_str(),depth);
+      if (bpActive)	
+	sprintf(prompt,"[%s,%d] D-> ",cstack.back().detail.c_str(),
+		cstack.back().tokid & 0xffff);
       else
-	sprintf(prompt,"[%s,%d] --> ",context->getCurrentScope()->getName().c_str(),depth);
+	sprintf(prompt,"[%s,%d] --> ",cstack.back().detail.c_str(),
+		cstack.back().tokid & 0xffff);
     while(1) {
       line = io->getLine(prompt);
       if (!line)

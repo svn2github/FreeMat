@@ -113,7 +113,9 @@ std::string GetApplicationPath(char *argv0) {
 
   std::string PathSearcher::ResolvePath(std::string fname) {
     int ndx = 0;
-    bool found = false;
+    bool found = FileExists(fname);
+    if (found)
+      return fname;
     std::string tpath;
     std::string fullname;
     while (!found && (ndx < pathList.size())) {

@@ -63,6 +63,7 @@ namespace FreeMat {
 			     const void *bp);
   void* SparseScalarMultiply(Class dclass, const void *ap, int rows, int cols, 
 			     const void *bp);
+  void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
+						 int Brows, int Bcols, const void *Bp);
 }
-
 #endif

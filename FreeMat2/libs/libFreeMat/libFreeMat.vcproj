@@ -21,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\libfltk;..\libffi\msvc_build;..\libXP;..\libf2c;..\..\src\win32"
+				AdditionalIncludeDirectories="..\libUMFPACK\UMFPACK\Include;..\libfltk;..\libffi\msvc_build;..\libXP;..\libf2c;..\..\src\win32"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;YY_NEVER_INTERACTIVE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
@@ -73,7 +73,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\libfltk;..\libffi\msvc_build;..\libXP;..\libf2c;..\..\src\win32"
+				AdditionalIncludeDirectories="..\libUMFPACK\UMFPACK\Include;..\libfltk;..\libffi\msvc_build;..\libXP;..\libf2c;..\..\src\win32"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;YY_NEVER_INTERACTIVE"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
@@ -608,6 +608,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Sparse.cpp">
+			</File>
+			<File
 				RelativePath="VectorOps.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -757,6 +760,9 @@
 			</File>
 			<File
 				RelativePath="Socket.hpp">
+			</File>
+			<File
+				RelativePath=".\Sparse.hpp">
 			</File>
 			<File
 				RelativePath="Stream.hpp">

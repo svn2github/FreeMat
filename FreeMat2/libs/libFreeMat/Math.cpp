@@ -2515,6 +2515,24 @@ namespace FreeMat {
     Acols = A.getDimensionLength(1);
     Brows = B.getDimensionLength(0);
     Bcols = B.getDimensionLength(1);
+
+	// Check for sparse case...
+	if (A.isSparse()) {
+		// Make sure B is _not_ sparse
+		B.makeDense();
+		// Make sure A is square
+		if (Arows != Acols)
+			throw Exception("FreeMat currently only supports A\b for square matrices A");
+		// Make sure A is either double or dcomplex
+		if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
+			throw Exception("FreeMat currently only supports A\b for double and dcomplex matrices A");
+		Dimensions outDim;
+		outDim[0] = Arows;
+		outDim[1] = Bcols;
+		return Array(A.getDataClass(),outDim,
+			SparseSolveLinEq(A.getDataClass(),Arows,Acols,A.getSparseDataPointer(),
+							  Brows,Bcols,B.getDataPointer()),false);
+	}
   
     // Its really a matrix-matrix operation, and the arguments are
     // satisfactory.  Check for the type.

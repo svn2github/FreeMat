@@ -2,6 +2,9 @@
 #include "Malloc.hpp"
 #include <algorithm>
 #include "IEEEFP.hpp"
+extern "C" {
+#include "umfpack.h"
+}
 
 // The following ops are O(N^2) instead of O(nnz^2):
 //
@@ -370,7 +373,7 @@ namespace FreeMat {
 	  ptr++;
 	}
 	n++;
-	if (accum == 0) {
+	if ((accum_real == 0) && (accum_imag == 0)) {
 	  buffer[m++] = 0;
 	  buffer[m++] = 0;
 	  buffer[m++] = 1;
@@ -427,8 +430,8 @@ namespace FreeMat {
 
   template <class T>
   void* makeSparseFromIJVComplex(int rows, int cols, int nnz,
-			      uint32* I, int istride, uint32 *J, int jstride,
-			      T* cp, int cpstride) {
+				 uint32* I, int istride, uint32 *J, int jstride,
+				 T* cp, int cpstride) {
     // build an IJV master list
     IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
     int i;
@@ -604,7 +607,7 @@ namespace FreeMat {
       }
     } 
     return dp;
- }
+  }
 
   template <class T>
   void* CopySparseMatrix(const T** src, int rows, int cols) {
@@ -730,7 +733,7 @@ namespace FreeMat {
       return SparseToIJVReal<double>((const double**)cp,rows,cols,I,J,nnz);
     case FM_COMPLEX:
       return SparseToIJVComplex<float>((const float**)cp,rows,cols,I,J,nnz); 
-   case FM_DCOMPLEX:
+    case FM_DCOMPLEX:
       return SparseToIJVComplex<double>((const double**)cp,rows,cols,I,J,nnz);
     }
   }
@@ -920,7 +923,7 @@ namespace FreeMat {
 	return C;
       }
     otherwise:
-      throw Exception("Complex multiplies with sparse matrices not handled.");
+    throw Exception("Complex multiplies with sparse matrices not handled.");
     }
   }
   
@@ -942,7 +945,7 @@ namespace FreeMat {
 	return C;
       }
     otherwise:
-      throw Exception("Complex multiplies with sparse matrices not handled.");
+    throw Exception("Complex multiplies with sparse matrices not handled.");
     }
   }
 
@@ -964,7 +967,7 @@ namespace FreeMat {
 	return C;
       }
     otherwise:
-      throw Exception("Complex multiplies with sparse matrices not handled.");
+    throw Exception("Complex multiplies with sparse matrices not handled.");
     }
   }
 
@@ -2019,16 +2022,16 @@ namespace FreeMat {
 						dmap);
     case FM_COMPLEX:
       return DeleteSparseMatrixRowsComplex<float>(rows, cols, (const float**) cp,
-						 dmap);
+						  dmap);
     case FM_DCOMPLEX:
       return DeleteSparseMatrixRowsComplex<double>(rows, cols, (const double**) cp,
-						  dmap);
+						   dmap);
     }
   }
 
   template <class T>
   void* DeleteSparseMatrixVectorReal(int &rows, int &cols, const T** src,
-				  const indexType* ndx, int delete_len) {
+				     const indexType* ndx, int delete_len) {
     // Get the source matrix as an IJV array
     int nnz;
     IJVEntry<T>* mlist = ConvertSparseToIJVListReal<T>(src,rows,cols,nnz);
@@ -2170,14 +2173,14 @@ namespace FreeMat {
     switch(dclass) {
     case FM_INT32:
       return DeleteSparseMatrixVectorReal<int32>(rows, cols, (const int32**) cp,
-					       ndx, delete_len);
+						 ndx, delete_len);
     case FM_FLOAT:
       return DeleteSparseMatrixVectorReal<float>(rows, cols, (const float**) cp,
-					       ndx, delete_len);
+						 ndx, delete_len);
     case FM_DOUBLE:
       return DeleteSparseMatrixVectorReal<double>(rows, cols, 
-						(const double**) cp,
-						ndx, delete_len);
+						  (const double**) cp,
+						  ndx, delete_len);
     case FM_COMPLEX:
       return DeleteSparseMatrixVectorComplex<float>(rows, cols, 
 						    (const float**) cp,
@@ -2613,13 +2616,13 @@ namespace FreeMat {
     switch(dclass) {
     case FM_INT32:
       return SparseAddReal<int32>(rows, cols, (const int32**) ap,
-					(const int32**) bp);
+				  (const int32**) bp);
     case FM_FLOAT:
       return SparseAddReal<float>(rows, cols, (const float**) ap,
-					(const float**) bp);
+				  (const float**) bp);
     case FM_DOUBLE:
       return SparseAddReal<double>(rows, cols, (const double**) ap,
-					 (const double**) bp);
+				   (const double**) bp);
     case FM_COMPLEX:
       return SparseAddComplex<float>(rows, cols, (const float**) ap,
 				     (const float**) bp);
@@ -2888,7 +2891,7 @@ namespace FreeMat {
   }
 
   void* SparseSparseSubtract(Class dclass, const void *ap, int rows, int cols,
-			const void *bp) {
+			     const void *bp) {
     switch(dclass) {
     case FM_INT32:
       return SparseSubtractReal<int32>(rows, cols, (const int32**) ap,
@@ -3114,7 +3117,7 @@ namespace FreeMat {
   }
 
   void* SparseSparseMultiply(Class dclass, const void *ap, int rows, int cols,
-			const void *bp) {
+			     const void *bp) {
     switch(dclass) {
     case FM_INT32:
       return SparseMultiplyReal<int32>(rows, cols, (const int32**) ap,
@@ -3213,4 +3216,169 @@ namespace FreeMat {
     }
   }
 
+  int ConvertSparseCCSReal(int rows, int cols, const double **Ap, int* &Acolstart,
+			   int* &Arowindx, double* &Adata) {
+    // Get number of nonzeros
+    int nnz = CountNonzerosReal<double>(Ap,rows,cols);
+    // Set up the output arrays
+    Acolstart = new int[cols+1];
+    Arowindx = new int[nnz];
+    Adata = new double[nnz];
+    // We have to unpack the matrix into these arrays... we do this
+    // by traversing the columns
+    int p = 0;
+    for (int i=0;i<cols;i++) {
+      int n = 1;
+      int m = 0;
+      bool firstEntry = true;
+      while (m<rows) {
+	if (Ap[i][n] != 0) {
+	  if (firstEntry) {
+	    Acolstart[i] = p;
+	    firstEntry = false;
+	  }
+	  Arowindx[p] = m;
+	  Adata[p] = Ap[i][n];
+	  p++;
+	  n++;
+	  m++;
+	} else {
+	  m += (int) Ap[i][n+1];
+	  n += 2;
+	}
+      }
+      if (firstEntry)
+	Acolstart[i] = p;
+    }
+    Acolstart[cols] = nnz;
+    return nnz;
+  }
+
+  int ConvertSparseCCSComplex(int rows, int cols, const double **Ap, 
+			      int* &Acolstart,
+			      int* &Arowindx, double* &Adata,
+			      double* &Aimag) {
+    // Get number of nonzeros
+    int nnz = CountNonzerosComplex<double>(Ap,rows,cols);
+    // Set up the output arrays
+    Acolstart = new int[cols+1];
+    Arowindx = new int[nnz];
+    Adata = new double[nnz];
+    Aimag = new double[nnz];
+    // We have to unpack the matrix into these arrays... we do this
+    // by traversing the columns
+    int p = 0;
+    for (int i=0;i<cols;i++) {
+      int n = 1;
+      int m = 0;
+      bool firstEntry = true;
+      while (m<rows) {
+	if ((Ap[i][n] != 0) || (Ap[i][n+1] != 0)) {
+	  if (firstEntry) {
+	    Acolstart[i] = p;
+	    firstEntry = false;
+	  }
+	  Arowindx[p] = m;
+	  Adata[p] = Ap[i][n];
+	  p++;
+	  n+=2;
+	  m++;
+	} else {
+	  m += (int) Ap[i][n+2];
+	  n += 3;
+	}
+      }
+      if (firstEntry)
+	Acolstart[i] = p;
+    }
+    Acolstart[cols] = nnz;
+    return nnz;
+  }
+
+  void* SparseSolveLinEqReal(int Arows, int Acols, const void *Ap, 
+			     int Brows, int Bcols, const void *Bp) {
+    // Convert A into CCS form
+    int *Acolstart;
+    int *Arowindx;
+    double *Adata;
+    int nnz;
+    nnz = ConvertSparseCCSReal(Arows, Acols, (const double**) Ap, 
+			       Acolstart, Arowindx, Adata);
+    double *null = (double *) NULL ;
+    void *Symbolic, *Numeric ;
+    (void) umfpack_di_symbolic (Acols, Acols, Acolstart, Arowindx, Adata, 
+				&Symbolic, null, null);
+    (void) umfpack_di_numeric (Acolstart, Arowindx, Adata, Symbolic, 
+			       &Numeric, null, null) ;
+    umfpack_di_free_symbolic (&Symbolic) ;
+    double *x = (double*) Malloc(sizeof(double)*Arows*Bcols);
+    const double *b = (const double*) Bp;
+    for (int i=0;i<Bcols;i++)
+      (void) umfpack_di_solve (UMFPACK_A, Acolstart, Arowindx, 
+			       Adata, x+i*Arows, b+i*Brows, Numeric, 
+			       null, null) ;
+    umfpack_di_free_numeric (&Numeric);
+    delete Acolstart;
+    delete Arowindx;
+    delete Adata;
+    return x;
+  }
+  
+  void* SparseSolveLinEqComplex(int Arows, int Acols, const void *Ap, 
+				int Brows, int Bcols, const void *Bp) {
+    // Convert A into CCS form
+    int *Acolstart;
+    int *Arowindx;
+    double *Adata;
+    double *Aimag;
+    int nnz;
+    nnz = ConvertSparseCCSComplex(Arows, Acols, (const double**) Ap, 
+				  Acolstart, Arowindx, Adata, Aimag);
+    double *null = (double *) NULL ;
+    void *Symbolic, *Numeric ;
+    (void) umfpack_zi_symbolic (Acols, Acols, Acolstart, Arowindx, Adata, 
+				Aimag, &Symbolic, null, null);
+    (void) umfpack_zi_numeric (Acolstart, Arowindx, Adata, Aimag, Symbolic, 
+			       &Numeric, null, null) ;
+    umfpack_zi_free_symbolic (&Symbolic) ;
+    double *x = (double*) Malloc(sizeof(double)*2*Arows*Bcols);
+    double *xr = (double*) Malloc(sizeof(double)*Arows);
+    double *xi = (double*) Malloc(sizeof(double)*Arows);
+    double *br = (double*) Malloc(sizeof(double)*Brows);
+    double *bi = (double*) Malloc(sizeof(double)*Brows);
+	const double * bp = (const double *) Bp;
+    for (int i=0;i<Bcols;i++) {
+      for (int j=0;j<Brows;j++) {
+	br[j] = bp[2*j];
+	bi[j] = bp[2*j+1];
+      }
+      memset(xr,0,sizeof(double)*Arows);
+      memset(xi,0,sizeof(double)*Arows);
+      (void) umfpack_zi_solve (UMFPACK_A, Acolstart, Arowindx, 
+			       Adata, Aimag, xr, xi, br, bi, Numeric, 
+			       null, null);
+      for (int j=0;j<Arows;j++) {
+	x[2*j] = xr[j];
+	x[2*j+1] = xi[j];
+      }
+    }
+    umfpack_zi_free_numeric (&Numeric) ;
+    delete Acolstart;
+    delete Arowindx;
+    delete Adata;
+    delete Aimag;
+    Free(xr);
+    Free(xi);
+    Free(br);
+    Free(bi);
+    return x;
+  }
+
+  void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
+			 int Brows, int Bcols, const void *Bp) {
+    if (dclass == FM_DOUBLE)
+      return SparseSolveLinEqReal(Arows, Acols, Ap, Brows, Bcols, Bp);
+    else
+      return SparseSolveLinEqComplex(Arows, Acols, Ap, Brows, Bcols, Bp);
+  }
 }

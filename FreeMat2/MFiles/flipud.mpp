@@ -1,38 +1,26 @@
 //!
-//@Module STD Standard Deviation Function
-//@@Section ELEMENTARY
-//@@Usage
-//Computes the standard deviation of an array along a given dimension.  
-//The general syntax for its use is
+//@Module FLIPUD Reverse the Columns of a Matrix
+//@@Section ARRAY
+//@@USAGE
+//Reverses the rows of a matrix.  The syntax for its use is
 //@[
-//  y = std(x,d)
+//   y = flipud(x)
 //@]
-//where @|x| is an @|n|-dimensions array of numerical type.
-//The output is of the same numerical type as the input.  The argument
-//@|d| is optional, and denotes the dimension along which to take
-//the variance.  The output @|y| is the same size as @|x|, except
-//that it is singular along the mean direction.  So, for example,
-//if @|x| is a @|3 x 3 x 4| array, and we compute the mean along
-//dimension @|d=2|, then the output is of size @|3 x 1 x 4|.
+//where @|x| is matrix.  If @|x| is an N-dimensional array then
+//the first dimension is reversed.
 //@@Example
-//The following piece of code demonstrates various uses of the @|std|
-//function
+//The following example shows @|flipud| applied to a 2D matrix.
 //@<
-//A = [5,1,3;3,2,1;0,3,1]
+//x = int32(rand(4)*10)
+//flipud(x)
 //@>
-//We start by calling @|std| without a dimension argument, in which 
-//case it defaults to the first nonsingular dimension (in this case, 
-//along the columns or @|d = 1|).
+//For a 3D array, note how the rows in each slice are flipped.
 //@<
-//std(A)
-//@>
-//Next, we take the variance along the rows.
-//@<
-//std(A,2)
+//x = int32(rand(4,4,3)*10)
+//flipud(x)
 //@>
 //!
-
-% Copyright (c) 2002-2005 Samit Basu
+% Copyright (c) 2002, 2003 Samit Basu
 %
 % Permission is hereby granted, free of charge, to any person obtaining a 
 % copy of this software and associated documentation files (the "Software"), 
@@ -51,5 +39,5 @@
 % LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 % FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 % DEALINGS IN THE SOFTWARE.
-function y = std(varargin)
-  y = sqrt(var(varargin{:}));
+function x = flipud(y)
+  x = flipdim(y,1);

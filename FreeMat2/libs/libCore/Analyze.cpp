@@ -31,6 +31,26 @@
 #include "Types.hpp"
 #include <algorithm>
 
+#ifdef WIN32
+#include <SYS\TIMEB.H>
+
+double getcurrenttime() {
+  struct _timeb currSysTime;
+  _ftime(&currSysTime);
+  return currSysTime.time*1e6 + currSysTime.millitm*1000;
+}
+#else
+#include <sys/time.h>
+
+double getcurrenttime() {
+  struct timeval tv;
+  struct timezone tz;
+  gettimeofday(&tv, &tz);
+  return tv.tv_sec*1e6 + tv.tv_usec;
+}
+
+#endif // WIN32
+
 namespace FreeMat {
 
   ArrayVector HandleEmpty(Array arg) {
@@ -3152,6 +3172,37 @@ namespace FreeMat {
     if (rowmode && (inDim.getLength() != 2))
       throw Exception("'rows' mode only works for matrix (2D) arguments");
     return UniqueFunctionAux(nargout, input, rowmode);
+  }
+
+  //!
+  //@Module TIC Start Stopwatch Timer
+  //@@Section FREEMAT
+  //@@Usage
+  //Starts the stopwatch timer, which can be used to time tasks in FreeMat.
+  //The @|tic| takes no arguments, and returns no outputs.  You must use
+  //@|toc| to get the elapsed time.  The usage is
+  //@[
+  //  tic
+  //@]
+  //@@Example
+  //Here is an example of timing the solution of a large matrix equation.
+  //@<
+  //A = rand(100);
+  //b = rand(100,1);
+  //tic; c = A\b; toc
+  //@>
+  //!
+  
+  static double ticvalue = 0;
+
+  ArrayVector TicFunction(int nargout, const ArrayVector& arg) {
+    ticvalue = getcurrenttime();
+    return ArrayVector();
+  }
+
+  ArrayVector TocFunction(int nargout, const ArrayVector& arg) {
+    double outtime = (getcurrenttime() - ticvalue)/1e6;
+    return singleArrayVector(Array::doubleConstructor(outtime));
   }
 
   //!

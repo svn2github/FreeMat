@@ -38,10 +38,10 @@ pkglibdir = $(libdir)/FreeMat
 pkgincludedir = $(includedir)/FreeMat
 top_builddir = ../..
 
-ACLOCAL = ${SHELL} /localhome/basu/FreeMat/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /localhome/basu/FreeMat/missing --run autoconf
-AUTOMAKE = ${SHELL} /localhome/basu/FreeMat/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /localhome/basu/FreeMat/missing --run autoheader
+ACLOCAL = ${SHELL} /home/user/share/FreeMat/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /home/user/share/FreeMat/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/user/share/FreeMat/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /home/user/share/FreeMat/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -69,9 +69,9 @@ target_triplet = i686-pc-linux-gnu
 EXEEXT = 
 OBJEXT = o
 PATH_SEPARATOR = :
-AMTAR = ${SHELL} /localhome/basu/FreeMat/missing --run tar
+AMTAR = ${SHELL} /home/user/share/FreeMat/missing --run tar
 AWK = gawk
-BLAS_LIBS = -lblas
+BLAS_LIBS = -L${top_builddir}/libs/libMiniBLAS -lMiniBLAS
 CC = gcc
 CXX = g++
 DEPDIR = .deps
@@ -83,6 +83,10 @@ LEX = flex
 LEXLIB = -lfl
 LEX_OUTPUT_ROOT = lex.yy
 LFLAGS = 
+MPICC = @MPICC@
+MPICXX = mpiCC
+MPIF77 = @MPIF77@
+MPILIBS =  
 PACKAGE = FreeMat
 RANLIB = ranlib
 STRIP = 
@@ -91,9 +95,10 @@ YACC = bison -y
 YFLAGS =  -d
 am__include = include
 am__quote = 
-install_sh = /localhome/basu/FreeMat/install-sh
-miniblasdir = 
+install_sh = /home/user/share/FreeMat/install-sh
+miniblasdir = libMiniBLAS
 minilapackdir = libMiniLAPACK
+mpidir = 
 noinst_LIBRARIES = libMiniLAPACK.a
 
 libMiniLAPACK_a_SOURCES = complex16/zdrscl.f \
@@ -590,11 +595,11 @@ am_libMiniLAPACK_a_OBJECTS = zdrscl.$(OBJEXT) zgebak.$(OBJEXT) \
 	izmax1.$(OBJEXT)
 libMiniLAPACK_a_OBJECTS = $(am_libMiniLAPACK_a_OBJECTS)
 
-DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"FreeMat\" -DVERSION=\"1.0\" -DYYTEXT_POINTER=1 -DHAVE_CURSES_H=1 -DHAVE_BLAS=1 
+DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE=\"FreeMat\" -DVERSION=\"1.0\" -DYYTEXT_POINTER=1 -DHAVE_CURSES_H=1 -DHAVE_MPI=1 
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 CPPFLAGS = 
 LDFLAGS = 
-LIBS = -L${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK -lblas -O3   -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../..  -lg2c -lm -lgcc_s -lcurses
+LIBS = -L${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK -L${top_builddir}/libs/libMiniBLAS -lMiniBLAS -O3   -L/usr/lib/gcc-lib/i386-redhat-linux/3.2 -L/usr/lib/gcc-lib/i386-redhat-linux/3.2/../../..  -lg2c -lm -lgcc_s -lcurses
 F77COMPILE = $(F77) $(AM_FFLAGS) $(FFLAGS)
 F77LD = $(F77)
 F77LINK = $(F77LD) $(AM_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@

@@ -246,7 +246,7 @@ SpecialArgument ({Argument}|{String})
   return POS;
 }
 
-<Scanning>[({[,'+\-*/\\|&<>~^\xFA\xFB;=:][ \f\t]*"-" {
+<Scanning>[({[,+\-*/\\|&<>~^\xFA\xFB;=:][ \f\t]*"-" {
   // Replace the - with a NEG
   int i; 
   char *yycopy = strdup(yytext);
@@ -265,7 +265,7 @@ SpecialArgument ({Argument}|{String})
   free(yycopy);
 }
 
-<Scanning>[({[,'+\-*/\\|&<>~^\xFA\xFB;=:][ \f\t]*"+" {
+<Scanning>[({[,+\-*/\\|&<>~^\xFA\xFB;=:][ \f\t]*"+" {
   // Replace the - with a NEG
   int i;
   char *yycopy = strdup(yytext);

@@ -83,6 +83,10 @@ LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 LFLAGS = @LFLAGS@
+MPICC = @MPICC@
+MPICXX = @MPICXX@
+MPIF77 = @MPIF77@
+MPILIBS = @MPILIBS@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
@@ -94,6 +98,7 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 miniblasdir = @miniblasdir@
 minilapackdir = @minilapackdir@
+mpidir = @mpidir@
 noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS = @CFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cflags`

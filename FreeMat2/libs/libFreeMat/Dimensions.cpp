@@ -39,6 +39,12 @@ namespace FreeMat {
     length = 0;
   }
 
+  Dimensions::Dimensions(int rows, int cols) {
+    data[0] = rows;
+    data[1] = cols;
+    length = 2;
+  }
+
   Dimensions::Dimensions(int dimCount) throw (Exception) {
     if (dimCount < 0) 
       throw Exception("Illegal argument to Dimensions constructor");

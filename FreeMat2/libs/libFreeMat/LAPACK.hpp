@@ -199,6 +199,13 @@ extern "C" {
 	      int *LDA, double *B, int *LDB, double *W, double *WORK,
 	      int *LWORK, double *RWORK, int *INFO );
 
+  void sgetrf_(int *M, int *N, float *A, int *LDA, int *IPIV, int *INFO);
+  
+  void cgetrf_(int *M, int *N, float *A, int *LDA, int *IPIV, int *INFO);
+
+  void dgetrf_(int *M, int *N, double *A, int *LDA, int *IPIV, int *INFO);
+  
+  void zgetrf_(int *M, int *N, double *A, int *LDA, int *IPIV, int *INFO);
 }
 
 namespace FreeMat {

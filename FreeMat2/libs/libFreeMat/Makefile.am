@@ -4,7 +4,7 @@ noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS=@CFLAGS@ 
 CXXFLAGS=@CXXFLAGS@ -DYY_NEVER_INTERACTIVE
-INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/src/x11 -I@top_srcdir@/libs/libFLTK
+INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/src/x11 -I@top_srcdir@/libs/libFLTK -I@top_srcdir@/libs/libUMFPACK/UMFPACK/Include
 
 libFreeMat_a_SOURCES = Parser.yxx \
 Parser.h \
@@ -39,6 +39,8 @@ LeastSquaresSolver.hpp \
 LexerInterface.hpp \
 LinearEqSolver.cpp \
 LinearEqSolver.hpp \
+LUDecompose.cpp \
+LUDecompose.hpp \
 Malloc.cpp \
 Malloc.hpp \
 MatrixMultiply.cpp \

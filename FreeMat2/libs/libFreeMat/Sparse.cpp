@@ -1365,7 +1365,6 @@ namespace FreeMat {
       dlist[optr++] = mlist[jptr++];
     // Now resort the list
     std::sort(dlist,dlist+optr);
-    printIJV(dlist,optr);
     // Build a sparse matrix out of this
     T** B;
     B = new T*[cols];
@@ -2329,6 +2328,16 @@ namespace FreeMat {
     return B;
   }
 
+  template <class T>
+  void* ConvertIJVtoRLEReal(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
+    T** B;
+    B = new T*[cols];
+    int ptr = 0;
+    for (int col=0;col<cols;col++)
+      B[col] = CompressRealIJV<T>(mlist,nnz,ptr,col,rows);
+    return B;
+  }
+
 
   void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp) {
     switch(dclass) {
@@ -3280,6 +3289,7 @@ namespace FreeMat {
 	  }
 	  Arowindx[p] = m;
 	  Adata[p] = Ap[i][n];
+	  Aimag[p] = Ap[i][n+1];
 	  p++;
 	  n+=2;
 	  m++;
@@ -3346,7 +3356,7 @@ namespace FreeMat {
     double *xi = (double*) Malloc(sizeof(double)*Arows);
     double *br = (double*) Malloc(sizeof(double)*Brows);
     double *bi = (double*) Malloc(sizeof(double)*Brows);
-	const double * bp = (const double *) Bp;
+    const double * bp = (const double *) Bp;
     for (int i=0;i<Bcols;i++) {
       for (int j=0;j<Brows;j++) {
 	br[j] = bp[2*j];
@@ -3374,6 +3384,22 @@ namespace FreeMat {
     return x;
   }
 
+  IJVEntry<double>* ConvertCCSToIJVListReal(int *Ap, int *Ai, double *Ax, 
+					    int Acols, int Anz) {
+    IJVEntry<double>* T = new IJVEntry<double>[Anz];
+    int i, j, p, q;
+    p = 0;
+    for (i=0;i<Acols;i++) {
+      for (j=0;j<(Ap[i+1] - Ap[i]);j++) {
+	T[p].I = Ai[p];
+	T[p].J = i;
+	T[p].Vreal = Ax[p];
+	p++;
+      }
+    }
+    return T;
+  }
+
   void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
 			 int Brows, int Bcols, const void *Bp) {
     if (dclass == FM_DOUBLE)
@@ -3381,4 +3407,90 @@ namespace FreeMat {
     else
       return SparseSolveLinEqComplex(Arows, Acols, Ap, Brows, Bcols, Bp);
   }
+
+  ArrayVector SparseLUDecomposeReal(int Arows, int Acols, const void *Ap) {
+    // Convert A into CCS form
+    int *Acolstart;
+    int *Arowindx;
+    double *Adata;
+    int nnz;
+    nnz = ConvertSparseCCSReal(Arows, Acols, (const double**) Ap, 
+			       Acolstart, Arowindx, Adata);
+    double *null = (double *) NULL ;
+    void *Symbolic, *Numeric ;
+    (void) umfpack_di_symbolic (Acols, Acols, Acolstart, Arowindx, Adata, 
+				&Symbolic, null, null);
+    (void) umfpack_di_numeric (Acolstart, Arowindx, Adata, Symbolic, 
+			       &Numeric, null, null);
+    // Set up the output arrays for the LU Decomposition.
+    // The first matrix is L, which is stored in comprssed row form.
+    int lnz;
+    int unz;
+    int n_row;
+    int n_col;
+    int nz_udiag;
+
+    (void) umfpack_di_get_lunz(&lnz,&unz,&n_row,&n_col,NULL,Numeric);
+
+    int *Lp = new int[Arows+1];
+    int *Lj = new int[lnz];
+    double *Lx = new double[lnz];
+
+    int *Up = new int[Acols+1];
+    int *Ui = new int[unz];
+    double *Ux = new double[unz];
+
+    int32 *P = (int32*) Malloc(sizeof(int32)*Arows);
+    int32 *Q = (int32*) Malloc(sizeof(int32)*Acols);
+    double *Rs = new double[Arows];
+    
+    int do_recip;
+    umfpack_di_get_numeric(Lp, Lj, Lx, Up, Ui, Ux, P, Q, NULL, &do_recip, Rs, Numeric);
+    IJVEntry<double>* llist = ConvertCCSToIJVListReal(Lp,Lj,Lx,Arows,lnz);
+    for (int j=0;j<lnz;j++) {
+      int tmp;
+      tmp = llist[j].I;
+      llist[j].I = llist[j].J;
+      llist[j].J = tmp;
+    }
+    IJVEntry<double>* ulist = ConvertCCSToIJVListReal(Up,Ui,Ux,Acols,unz);
+    IJVEntry<double>* rlist = new IJVEntry<double>[Arows];
+    std::sort(llist,llist+lnz);
+    for (int i=0;i<Arows;i++) {
+      rlist[i].I = i;
+      rlist[i].J = i;
+      if (do_recip)
+	rlist[i].Vreal = 1.0/Rs[i];
+      else
+	rlist[i].Vreal = Rs[i];
+    }
+    ArrayVector retval;
+    // Push L, U, P, Q, R
+    int Amid;
+    Amid = (Arows < Acols) ? Arows : Acols;
+    retval.push_back(Array(FM_DOUBLE,Dimensions(Arows,Amid),
+			   ConvertIJVtoRLEReal<double>(llist,lnz,Arows,Amid),true));
+    retval.push_back(Array(FM_DOUBLE,Dimensions(Amid,Acols),
+			   ConvertIJVtoRLEReal<double>(ulist,unz,Amid,Acols),true));
+    retval.push_back(Array(FM_INT32,Dimensions(1,Arows),P,false));
+    retval.push_back(Array(FM_INT32,Dimensions(1,Acols),Q,false));
+    retval.push_back(Array(FM_DOUBLE,Dimensions(Arows,Arows),
+			   ConvertIJVtoRLEReal<double>(rlist,Arows,Arows,Arows),true));
+    return retval;
+  }
+
+  
+  ArrayVector SparseLUDecompose(int nargout, Array A) {
+    if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
+      throw Exception("FreeMat currently only supports the LU decomposition for double and dcomplex matrices");
+    int Arows;
+    int Acols;
+    Arows = A.getDimensionLength(0);
+    Acols = A.getDimensionLength(1);
+    if (A.getDataClass() == FM_DOUBLE)
+      return SparseLUDecomposeReal(Arows, Acols, A.getSparseDataPointer());
+    else
+      return SparseLUDecomposeReal(Arows, Acols, A.getSparseDataPointer());
+  }
+
 }

@@ -315,6 +315,9 @@ namespace FreeMat {
      context->addFunction("full",FullFunction,1,1,args);
      args.clear();
      args.push_back("x");
+     context->addFunction("lu",LUFunction,1,-1,args);
+     args.clear();
+     args.push_back("x");
      context->addSpecialFunction("autostop",AutoStopFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI

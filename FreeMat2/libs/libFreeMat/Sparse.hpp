@@ -65,5 +65,6 @@ namespace FreeMat {
 			     const void *bp);
   void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
 						 int Brows, int Bcols, const void *Bp);
+  ArrayVector SparseLUDecompose(int nargout, Array A);
 }
 #endif

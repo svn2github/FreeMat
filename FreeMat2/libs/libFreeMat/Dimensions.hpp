@@ -63,6 +63,11 @@ namespace FreeMat {
      */
     Dimensions(int dimCount) throw(Exception);
     /**
+     * Return a 2-D dimension object with the specified number of
+     * rows and columns.
+     */
+    Dimensions(int nrows, int ncols);
+    /**
      * Return a reference to the ith dimension.  This member function
      * will adjust the number of dimensions present if the argument
      * exceeds the current number allocated.  The extra dimensions are

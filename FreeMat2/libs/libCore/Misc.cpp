@@ -35,6 +35,7 @@
 #include "QRDecompose.hpp"
 #include "System.hpp"
 #include "Sparse.hpp"
+#include "LUDecompose.hpp"
 
 namespace FreeMat {
   //!
@@ -225,6 +226,24 @@ namespace FreeMat {
     r.ensureSingleOwner();
     r.makeDense();
     return singleArrayVector(r);
+  }
+
+  ArrayVector LUFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 1)
+      throw Exception("lu function requires at least one argument - the matrix to decompose.");
+    Array A(arg[0]);
+    if (A.isReferenceType())
+      throw Exception("cannot apply lu decomposition to reference types.");
+    if (!A.is2D())
+      throw Exception("cannot apply matrix operations to N-dimensional arrays");
+    if (!A.isSparse()) {
+      if (A.anyNotFinite())
+	throw Exception("lu decomposition only defined for matrices with finite entries.");
+      return LUDecompose(nargout,A);
+    } else {
+      return SparseLUDecompose(nargout,A);
+    }
+    return ArrayVector();
   }
 
   //!

@@ -24,6 +24,7 @@
 #include "XWindow.hpp"
 #include "Array.hpp"
 #include "GraphicsContext.hpp"
+#include "XPWidget.hpp"
 
 namespace FreeMat {
 
@@ -31,18 +32,14 @@ namespace FreeMat {
    * This is a window for viewing a scalar image with
    * a color map.
    */
-  class ScalarImage: public XWindow
+  class ScalarImage : public XPWidget
   {
   public:
     /**
      * Create a new scalar image window with the given
      * figure number.
      */
-    ScalarImage(int fignum);
-    /**
-     * Default constructor.
-     */
-    ScalarImage() : XWindow(BitmapWindow) {}
+    ScalarImage();
     /**
      * Destructor.
      */
@@ -75,6 +72,8 @@ namespace FreeMat {
     double GetCurrentWindow();
     double GetCurrentLevel();
     virtual void OnSize();
+    int getZoomColumns() {return zoomColumns;}
+    int getZoomRows() {return zoomRows;}
   private:
     /**
      * Our pointer to the raw data.  We own this data, and

@@ -27,97 +27,21 @@
 #include "Malloc.hpp"
 #include "Command.hpp"
 #include "Core.hpp"
-
+#include "Figure.hpp"
 
 namespace FreeMat {
-
-#define MAX_PLOTS 50
-
-  Plot2D* plots[MAX_PLOTS];
-  int currentPlot;
-  
-  void InitializePlotSubsystem() {
-    currentPlot = -1;
-    for (int i=0;i<MAX_PLOTS;i++) 
-      plots[i] = NULL;
-  }
-
-  void NewPlot() {
-    // First search for an unused plot number
-    int plotNum = 0;
-    bool plotFree = false;
-    while ((plotNum < MAX_PLOTS) && !plotFree) {
-      plotFree = (plots[plotNum] == NULL);
-      if (!plotFree) plotNum++;
-    }
-    if (!plotFree) {
-      throw Exception("No more plot handles available!  Close some plots...");
-    }
-    plots[plotNum] = new Plot2D(plotNum);
-    plots[plotNum]->Show();
-    plots[plotNum]->Raise();
-    plots[plotNum]->SetHoldFlag(false);
-    currentPlot = plotNum;
-  }
-
-  void SelectPlot(int plotnum) {
-    if (plots[plotnum] == NULL) {
-      plots[plotnum] = new Plot2D(plotnum);
-    }
-    plots[plotnum]->Show();
-    plots[plotnum]->Raise();
-    currentPlot = plotnum;
-  } 
-  
   Plot2D* GetCurrentPlot() {
-    if (currentPlot == -1)
-      NewPlot();
-    plots[currentPlot]->Raise();
-    return plots[currentPlot];
-  }
-
-  
-  //!
-  //@Module SIZEPLOT Set Size of an Plot Window
-  //@@Usage
-  //The @|sizeplot| function changes the size of the currently
-  //selected plot window.  The general syntax for its use is
-  //@[
-  //   sizeplot(width,height)
-  //@]
-  //where @|width| and @|height| are the dimensions of the plot
-  //window.
-  //!
-  ArrayVector SizePlotFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 2)
-      throw Exception("sizeplot function takes two arguments: height and width");
-    Array w(arg[1]);
-    Array h(arg[0]);
-    int width;
-    int height;
-    width = w.getContentsAsIntegerScalar();
-    height = h.getContentsAsIntegerScalar();
-    Plot2D *f;
-    f = GetCurrentPlot();
-    f->SetSize(width,height);
-    return ArrayVector();
-  }
-
-  void ClosePlotHelper(int fig) {
-    if (fig == -1) return;
-    if (plots[fig] == NULL) return;
-    CloseXWindow(plots[fig]);
-    plots[fig] = NULL;
-    if (currentPlot == fig)
-    currentPlot = -1;
+    Figure* fig = GetCurrentFig();
+    if (fig->getType() == figplot) {
+      return ((Plot2D*) fig->GetWidget());
+    } else {
+      Plot2D* t = new Plot2D;
+      fig->SetWidget(t,figplot);
+      return t;
+    }
+    return NULL;
   }
   
-  void NotifyPlotClose(int fig) {
-    plots[fig] = NULL;
-    if (currentPlot == fig)
-      currentPlot = -1;
-  }
-
   static char *colors = "rgbkcmy";
   static int colornumber;
   static char *styles = "-:;|";
@@ -168,111 +92,6 @@ namespace FreeMat {
     return outStyle;
   }
 
-  //!
-  //@Module NEWPLOT New Plot Window Function
-  //@@Usage
-  //Creates a new window for the display of plots using the @|plot| commands.
-  //The general syntax for its use is
-  //@[
-  //   y = newplot
-  //@]
-  //where @|y| is the handle (or plot number) of the newly created window.  
-  //Plot handles are sequential, starting with 1, unless one is closed, in 
-  //which case the smallest unused handle is returned.
-  //!
-  ArrayVector NewPlotFunction(int nargout,const ArrayVector& arg) {  
-    NewPlot();
-    ArrayVector retval;
-    retval.push_back(Array::int32Constructor(currentPlot+1));
-    return retval;
-  }
-
-  //!
-  //@Module USEPLOT Use Plot Window Function
-  //@@Usage
-  //Changes the active plot window to the specified handle (or plot number).  
-  //The general syntax for its use is 
-  //@[
-  //  useplot(handle)
-  //@]
-  //where @|handle| is the handle to use.  If the plot window corresponding to
-  //@|x| does not already exist, a new window with this handle number is 
-  //created.
-  //@@Example
-  //In this example, we create two plot windows, and then use the @|useplot|
-  //command to activate the first window.
-  //@<
-  //newplot
-  //newplot
-  //useplot(1)
-  //@>  
-  //!  
-  ArrayVector UsePlotFunction(int nargout,const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("useplot function takes a single, integer argument");
-    Array t(arg[0]);
-    int fignum = t.getContentsAsIntegerScalar();
-    if ((fignum<=0) || (fignum>MAX_GFX))
-      throw Exception("figure number is out of range - it must be between 1 and 50");
-    SelectPlot(fignum-1);
-    return ArrayVector();
-  }
-
-  //!
-  //@Module CLOSEPLOT Close Plot Window
-  //@@Usage
-  //Closes an plot window, either the currently active window, a 
-  //window with a specific handle, or all plot windows.  The general
-  //syntax for its use is
-  //@[
-  //   closeplot(handle)
-  //@]
-  //in which case the plot window with the speicified @|handle| is
-  //closed.  Alternately, issuing the command with no argument
-  //@[
-  //   closeplot
-  //@]
-  //is equivalent to closing the currently active plot window.  Finally
-  //the command
-  //@[
-  //   closeplot('all')
-  //@]
-  //closes all plot windows currently open.
-  //!
-  ArrayVector ClosePlotFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() > 1)
-      throw Exception("closeplot takes at most one argument - either the string 'all' to close all plots, or a scalar integer indicating which plot is to be closed.");
-    int action;
-    if (arg.size() == 0) 
-      action = 0;
-    else {
-      Array t(arg[0]);
-      if (t.isString()) {
-	char *allflag = t.getContentsAsCString();
-	if (strcmp(allflag,"all") == 0) 
-	  action = -1;
-	else
-	  throw Exception("string argument to closeplot function must be 'all'");
-      } else {
-	int handle = t.getContentsAsIntegerScalar();
-	if (handle < 1)
-	  throw Exception("Invalid plot number argument to closeplot function");
-	action = handle;
-      }
-    }
-    if (action == 0) {
-      if (currentPlot != -1) 
-	ClosePlotHelper(currentPlot);
-    } else if (action == -1) {
-      for (int i=0;i<MAX_PLOTS;i++)
-	ClosePlotHelper(i);
-    } else {
-      if ((action < MAX_PLOTS) && (action >= 1))
-	ClosePlotHelper(action-1);
-    }
-    FlushWindowEvents();
-    return ArrayVector();
-  }
 
   //!
   //@Module XLABEL Plot X-axis Label Function
@@ -311,6 +130,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetXLabel(t.getContentsAsCString());
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -351,6 +171,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetYLabel(t.getContentsAsCString());
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -392,7 +213,12 @@ namespace FreeMat {
     Array legendLS(arg[2]);
     if (!legendLS.isString())
       throw Exception("linestyle for legend box is invalid");
-    char *boxstyle = GetLineStyle(legendLS.getContentsAsCString());
+    char *cp = legendLS.getContentsAsCString();
+    char *boxstyle;
+    if (strlen(cp) == 0) 
+      boxstyle = "   ";
+    else 
+      boxstyle = GetLineStyle(legendLS.getContentsAsCString());
     legendLS = Array::stringConstructor(boxstyle);
     Plot2D* t;
     t = GetCurrentPlot();
@@ -413,6 +239,7 @@ namespace FreeMat {
     xcorner = x.getContentsAsDoubleScalar();
     ycorner = y.getContentsAsDoubleScalar();
     t->SetLegend(xcorner, ycorner, legendLS, legendData);
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -453,58 +280,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetTitleText(t.getContentsAsCString());
-    return ArrayVector();
-  }
-
-  //!
-  //@Module PRINTPLOT Print an Plot To A File
-  //@@Usage
-  //This function ``prints'' the currently active plot to a file.  The 
-  //generic syntax for its use is
-  //@[
-  //  printplot(filename)
-  //@]
-  //or, alternately,
-  //@[
-  //  printplot filename
-  //@]
-  //where @|filename| is the (string) filename of the destined file.  The current
-  //plot is then saved to the output file using a format that is determined
-  //by the extension of the filename.  The exact output formats may vary on
-  //different platforms, but generally speaking, the following extensions
-  //should be supported cross-platform:
-  //\begin{itemize}
-  //\item @|jpg|, @|jpeg|  --  JPEG file 
-  //\item @|ps|, @|eps| -- Encapsulated Postscript file 
-  //\item @|png| -- Portable Net Graphics file
-  //\end{itemize}
-  //Note that only the plot is printed, not the window displaying
-  //the plot.  If you want something like that (essentially a window-capture)
-  //use a seperate utility or your operating system's built in screen
-  //capture ability.
-  //@@Example
-  //Here is a simple example of how the figures in this manual are generated.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(5*pi*x);
-  //plot(x,y,'r-');
-  //printplot printplot1.eps
-  //printplot printplot1.jpg
-  //mprintplot printplt
-  //@>
-  //which creates two plots @|printplot1.eps|, which is an Encapsulated
-  //Postscript file, and @|printplot1.jpg| which is a JPEG file.
-  //@figure printplt
-  //!
-  ArrayVector PrintPlotFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("printplot function takes a single, string argument");
-    if (!(arg[0].isString()))
-      throw Exception("printplot function takes a single, string argument");
-    Array t(arg[0]);
-    Plot2D* f = GetCurrentPlot();
-	std::string outname(t.getContentsAsCString());
-    f->PrintMe(outname.c_str());
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -557,6 +333,7 @@ namespace FreeMat {
       f->SetGrid(false);
     else
       throw Exception("Grid function argument needs to be 'on/off'");
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -622,6 +399,7 @@ namespace FreeMat {
       f->SetHoldFlag(false);
     else
       throw Exception("Hold function argument needs to be 'on/off'");
+    ForceRefresh();
     return ArrayVector();  
   }
 
@@ -902,6 +680,7 @@ namespace FreeMat {
       throw e;
     }
     // Stop the plot 
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -1016,6 +795,7 @@ namespace FreeMat {
 	f->SetAxes(dp[0],dp[1],dp[2],dp[3]);
       }
       ArrayVector retval;
+      ForceRefresh();
       return retval;
     } else {
       Array retArr;
@@ -1026,6 +806,7 @@ namespace FreeMat {
       f->GetAxes(dp[0],dp[1],dp[2],dp[3]);
       ArrayVector retval;
       retval.push_back(retArr);
+      ForceRefresh();
       return retval;
     }
   }

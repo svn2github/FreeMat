@@ -26,7 +26,7 @@
 
 namespace FreeMat {
 
-  ScalarImage::ScalarImage(int fignum) : XWindow(BitmapWindow) {
+  ScalarImage::ScalarImage() : XPWidget() {
     rawData = NULL;
     for (int i=0;i<256;i++) {
       colormap[0][i] = i;
@@ -35,22 +35,18 @@ namespace FreeMat {
     }
     window = 0;
     level = 0;
-    myFigureNumber = fignum;
-    char buffer[1000];
-    sprintf(buffer,"Image Window %d",fignum+1);
-    SetTitle(buffer);  
     zoomImage = NULL;
     picData = NULL;
   }
   
   ScalarImage::~ScalarImage() {
     if (rawData) Free(rawData);
-    NotifyImageClose(myFigureNumber);
   }
 
   Array ScalarImage::GetPoint() {
     int xposClick, yposClick;
-    GetClick(xposClick, yposClick);
+    //FIXME
+    //    GetClick(xposClick, yposClick);
     double valClick;
     if (zoomImage == NULL) 
       valClick = atof("nan");
@@ -89,7 +85,7 @@ namespace FreeMat {
   void ScalarImage::Zoom(float z) {
     zoom = z;
     UpdateZoom(false);
-    if (z>0) SetSize(zoomColumns,zoomRows);
+    //    if (z>0) SetSize(zoomColumns,zoomRows);
   }
 
   void ScalarImage::UpdateZoom(bool forceUpdate) {
@@ -102,8 +98,8 @@ namespace FreeMat {
     } else if (zoom == 0) {
       int client_width;
       int client_height;
-      client_width = getWidth();
-      client_height = getHeight();
+      client_width = m_width;
+      client_height = m_height;
       double zoomColFactor;
       zoomColFactor = ((double) client_width)/columns;
       double zoomRowFactor;
@@ -116,8 +112,8 @@ namespace FreeMat {
     } else {
       int client_width;
       int client_height;
-      client_width = getWidth();
-      client_height = getHeight();
+      client_width = m_width;
+      client_height = m_height;
       newZoomColumns = (int) (client_width);
       newZoomRows = (int) (client_height);
     }
@@ -220,6 +216,5 @@ namespace FreeMat {
 	op[ndx+2] = colormap[2][dv];
       }
     }
-    Refresh();
   }
 }

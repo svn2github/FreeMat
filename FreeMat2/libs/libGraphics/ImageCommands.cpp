@@ -25,172 +25,19 @@
 #include <math.h>
 #include <stdio.h>
 #include "Malloc.hpp"
+#include "Figure.hpp"
 
 namespace FreeMat {
-
-#define MAX_IMAGES 50
-
-  ScalarImage* images[MAX_IMAGES];
-  int currentImage;
-
-  void CloseImageHelper(int fig) {
-    if (fig == -1) return;
-    if (images[fig] == NULL) return;
-    CloseXWindow(images[fig]);
-    images[fig] = NULL;
-    if (currentImage == fig)
-      currentImage = -1;
-  }
-    
-  void InitializeImageSubsystem() {
-    currentImage = -1;
-    for (int i=0;i<MAX_IMAGES;i++) 
-      images[i] = NULL;
-  }
-  
-  void NewImage() {
-    // First search for an unused image number
-    int imageNum = 0;
-    bool imageFree = false;
-    while ((imageNum < MAX_IMAGES) && !imageFree) {
-      imageFree = (images[imageNum] == NULL);
-      if (!imageFree) imageNum++;
-    }
-    if (!imageFree) {
-      throw Exception("No more image handles available!  Close some images...");
-    }
-    images[imageNum] = new ScalarImage(imageNum);
-    images[imageNum]->Show();
-    images[imageNum]->Raise();
-    currentImage = imageNum;
-  }
-
-  void SelectImage(int imagenum) {
-    if (images[imagenum] == NULL) {
-      images[imagenum] = new ScalarImage(imagenum);
-    }
-    images[imagenum]->Show();
-    images[imagenum]->Raise();
-    currentImage = imagenum;
-  } 
-
   ScalarImage* GetCurrentImage() {
-    if (currentImage == -1)
-      NewImage();
-    images[currentImage]->Raise();
-    return images[currentImage];
-  }
-
-  void NotifyImageClose(int figNum) {
-    images[figNum] = NULL;
-    if (currentImage == figNum)
-      currentImage = -1;
-  }
-
-  //!
-  //@Module NEWIMAGE New Image Window Function
-  //@@Usage
-  //Creates a new window for the display of images using the @|image| commands.
-  //The general syntax for its use is
-  //@[
-  //   y = newimage
-  //@]
-  //where @|y| is the handle (or image number) of the newly created window.  
-  //Image handles are sequential, starting with 1, unless one is closed, in 
-  //which case the smallest unused handle is returned.
-  //!
-  ArrayVector NewImageFunction(int nargout,const ArrayVector& arg) {  
-    NewImage();
-    ArrayVector retval;
-    retval.push_back(Array::int32Constructor(currentImage+1));
-    return retval;
-  }
-
-  //!
-  //@Module USEIMAGE Use Image Window Function
-  //@@Usage
-  //Changes the active image window to the specified handle (or image number).  
-  //The general syntax for its use is 
-  //@[
-  //  useimage(handle)
-  //@]
-  //where @|handle| is the handle to use.  If the image window corresponding to
-  //@|x| does not already exist, a new window with this handle number is 
-  //created.
-  //@@Example
-  //In this example, we create two image windows, and then use the @|useimage|
-  //command to activate the first window.
-  //@<
-  //newimage
-  //newimage
-  //useimage(1)
-  //@>  
-  //!
-  ArrayVector UseImageFunction(int nargout,const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("useimage function takes a single, integer argument");
-    Array t(arg[0]);
-    int fignum = t.getContentsAsIntegerScalar();
-    if ((fignum<=0) || (fignum>MAX_GFX))
-      throw Exception("image number is out of range - it must be between 1 and 50");
-    SelectImage(fignum-1);
-    return ArrayVector();
-  }
-
-  //!
-  //@Module CLOSEIMAGE Close Image Window
-  //@@Usage
-  //Closes an image window, either the currently active window, a 
-  //window with a specific handle, or all image windows.  The general
-  //syntax for its use is
-  //@[
-  //   closeimage(handle)
-  //@]
-  //in which case the image window with the speicified @|handle| is
-  //closed.  Alternately, issuing the command with no argument
-  //@[
-  //   closeimage
-  //@]
-  //is equivalent to closing the currently active image window.  Finally
-  //the command
-  //@[
-  //   closeimage('all')
-  //@]
-  //closes all image windows currently open.
-  //!
-  ArrayVector CloseImageFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() > 1)
-      throw Exception("closeimage takes at most one argument - either the string 'all' to close all images, or a scalar integer indicating which image is to be closed.");
-    int action;
-    if (arg.size() == 0) 
-      action = 0;
-    else {
-      Array t(arg[0]);
-      if (t.isString()) {
-	char *allflag = t.getContentsAsCString();
-	if (strcmp(allflag,"all") == 0) 
-	  action = -1;
-	else
-	  throw Exception("string argument to closeimage function must be 'all'");
-      } else {
-	int handle = t.getContentsAsIntegerScalar();
-	if (handle < 1)
-	  throw Exception("Invalid image number argument to closeimage function");
-	action = handle;
-      }
-    }
-    if (action == 0) {
-      if (currentImage != -1) 
-	CloseImageHelper(currentImage);
-    } else if (action == -1) {
-      for (int i=0;i<MAX_IMAGES;i++)
-	CloseImageHelper(i);
+    Figure *fig = GetCurrentFig();
+    if (fig->getType() == figscimg) {
+      return ((ScalarImage*) fig->GetWidget());
     } else {
-      if ((action < MAX_IMAGES) && (action >= 1))
-	CloseImageHelper(action-1);
+      ScalarImage* t = new ScalarImage;
+      fig->SetWidget(t,figscimg);
+      return t;
     }
-    FlushWindowEvents();
-    return ArrayVector();
+    return NULL;
   }
 
   //!
@@ -305,32 +152,7 @@ namespace FreeMat {
     ScalarImage *f;
     f = GetCurrentImage();
     f->SetColormap(t);
-    return ArrayVector();
-  }
-
-  //!
-  //@Module SIZEIMAGE Set Size of an Image Window
-  //@@Usage
-  //The @|sizeimage| function changes the size of the currently
-  //selected image window.  The general syntax for its use is
-  //@[
-  //   sizeimage(width,height)
-  //@]
-  //where @|width| and @|height| are the dimensions of the image
-  //window.
-  //!
-  ArrayVector SizeImageFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 2)
-      throw Exception("sizeimage function takes two arguments: height and width");
-    Array w(arg[1]);
-    Array h(arg[0]);
-    int width;
-    int height;
-    width = w.getContentsAsIntegerScalar();
-    height = h.getContentsAsIntegerScalar();
-    ScalarImage *f;
-    f = GetCurrentImage();
-    f->SetSize(width,height);
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -424,6 +246,7 @@ namespace FreeMat {
     level = lev.getContentsAsDoubleScalar();
     f = GetCurrentImage();
     f->WindowLevel(window,level);
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -480,59 +303,9 @@ namespace FreeMat {
       zoomfact = z.getContentsAsDoubleScalar();
     }
     f->SetImageArray(img,zoomfact);
-    return ArrayVector();
-  }
-  
-  //!
-  //@Module PRINTIMAGE Print an Image To A File
-  //@@Usage
-  //This function ``prints'' the currently active image to a file.  The 
-  //generic syntax for its use is
-  //@[
-  //  printimage(filename)
-  //@]
-  //or, alternately,
-  //@[
-  //  printimage filename
-  //@]
-  //where @|filename| is the (string) filename of the destined file.  The current
-  //image is then saved to the output file using a format that is determined
-  //by the extension of the filename.  The exact output formats may vary on
-  //different platforms, but generally speaking, the following extensions
-  //should be supported cross-platform:
-  //\begin{itemize}
-  //\item @|jpg|, @|jpeg|  --  JPEG file 
-  //\item @|ps|, @|eps| -- Encapsulated Postscript file 
-  //\item @|png| -- Portable Net Graphics file
-  //\end{itemize}
-  //Note that only the image is printed, not the window displaying
-  //the image.  If you want something like that (essentially a window-capture)
-  //use a seperate utility or your operating system's built in screen
-  //capture ability.
-  //@@Example
-  //Here is a simple example of how the figures in this manual are generated.
-  //@<
-  //x = linspace(-1,1,512)'*ones(1,512);
-  //y = x';
-  //Z = exp(-(x.^2+y.^2)/0.3);
-  //image(Z);
-  //printimage printimage1.eps
-  //printimage printimage1.jpg
-  //mprintimage printimg1
-  //@>
-  //which creates two images @|printimage1.eps|, which is an Encapsulated
-  //Postscript file, and @|printimage1.jpg| which is a JPEG file.
-  //
-  //@figure printimg1
-  //!
-  ArrayVector PrintImageFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("printimage function takes a single, string argument");
-    if (!(arg[0].isString()))
-      throw Exception("printimage function takes a single, string argument");
-    Array t(arg[0]);
-    ScalarImage* f = GetCurrentImage();
-    f->PrintMe(t.getContentsAsCString());
+    Figure *t = GetCurrentFig();
+    t->SetSize(f->getZoomRows(),f->getZoomColumns());
+    ForceRefresh();
     return ArrayVector();
   }
 
@@ -621,6 +394,9 @@ namespace FreeMat {
     ScalarImage *f;
     f = GetCurrentImage();
     f->Zoom(fact.getContentsAsDoubleScalar());
+    Figure *t = GetCurrentFig();
+    t->SetSize(f->getZoomRows(),f->getZoomColumns());
+    ForceRefresh();
     return ArrayVector();
   }
   
@@ -647,6 +423,7 @@ namespace FreeMat {
     f = GetCurrentImage();
     ArrayVector retval;
     retval.push_back(f->GetPoint());
+    ForceRefresh();
     return retval;
   }
 }

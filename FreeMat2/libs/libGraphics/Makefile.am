@@ -17,5 +17,9 @@ Plot2D.hpp \
 PlotCommands.cpp \
 ImageCommands.cpp \
 ScalarImage.cpp \
-ScalarImage.hpp 
+ScalarImage.hpp \
+trackball.c \
+trackball.h \
+Figure.cpp \
+Figure.hpp
 AUTOMAKE_OPTIONS 	= foreign

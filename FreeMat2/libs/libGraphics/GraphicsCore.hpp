@@ -27,19 +27,12 @@
 namespace FreeMat {
 
 #define MAX_GFX 50
-  ArrayVector NewPlotFunction(int,const ArrayVector& arg);
-  ArrayVector UsePlotFunction(int,const ArrayVector& arg);
-  ArrayVector ClosePlotFunction(int,const ArrayVector& arg);
+  ArrayVector FigureFunction(int, const ArrayVector& arg);
+  ArrayVector CloseFunction(int, const ArrayVector& arg);
+  ArrayVector PrintFunction(int,const ArrayVector& arg);
   ArrayVector PlotFunction(int,const ArrayVector& arg);
-  ArrayVector NewImageFunction(int,const ArrayVector& arg);
-  ArrayVector UseImageFunction(int,const ArrayVector& arg);
-  ArrayVector CloseImageFunction(int,const ArrayVector& arg);
   ArrayVector ImageFunction(int,const ArrayVector& arg);
-  ArrayVector SizeImageFunction(int,const ArrayVector& arg);
-  ArrayVector SizePlotFunction(int,const ArrayVector& arg);
-  ArrayVector NewVolumeFunction(int,const ArrayVector& arg);
-  ArrayVector UseVolumeFunction(int,const ArrayVector& arg);
-  ArrayVector CloseVolumeFunction(int,const ArrayVector& arg);
+  ArrayVector SizeFigFunction(int,const ArrayVector& arg);
   ArrayVector VolumeFunction(int,const ArrayVector& arg);
   ArrayVector XLabelFunction(int,const ArrayVector& arg);
   ArrayVector YLabelFunction(int,const ArrayVector& arg);
@@ -50,8 +43,6 @@ namespace FreeMat {
   ArrayVector TocFunction(int,const ArrayVector& arg);
   ArrayVector AxisFunction(int,const ArrayVector& arg);
   ArrayVector ColormapFunction(int,const ArrayVector& arg);
-  ArrayVector PrintImageFunction(int,const ArrayVector& arg);
-  ArrayVector PrintPlotFunction(int,const ArrayVector& arg);
   ArrayVector ZoomFunction(int,const ArrayVector& arg);
   ArrayVector PickFileFunction(int,const ArrayVector& arg);
   ArrayVector PointFunction(int,const ArrayVector& arg);
@@ -59,10 +50,7 @@ namespace FreeMat {
   ArrayVector WinLevFunction(int,const ArrayVector& arg);
   ArrayVector LegendFunction(int, const ArrayVector& arg);
   void LoadGraphicsCoreFunctions(Context* context);
-  void InitializePlotSubsystem();
-  void NotifyPlotClose(int num);
-  void InitializeImageSubsystem();
-  void NotifyImageClose(int num);
+  void InitializeFigureSubsystem();
 }
 
 #endif

@@ -27,15 +27,11 @@
 
 namespace FreeMat {
 
-  Plot2D::Plot2D(int fignum) : XWindow(VectorWindow){
+  Plot2D::Plot2D() {
     space = 10;
     xAxis = NULL;
     yAxis = NULL;
     holdflag = false;
-    char buffer[1000];
-    sprintf(buffer,"Plot Window %d",fignum+1);
-    SetTitle(buffer);  
-    myFigureNumber = fignum;
     updating = false;
     legendActive = false;
   }
@@ -43,7 +39,6 @@ namespace FreeMat {
   Plot2D::~Plot2D() {
     if (xAxis != NULL) delete xAxis;
     if (yAxis != NULL) delete yAxis;
-    NotifyPlotClose(myFigureNumber);
   }
 
   void Plot2D::DrawLegend(GraphicsContext &gc) {
@@ -94,7 +89,6 @@ namespace FreeMat {
   void Plot2D::StopSequence() {
     holdflag = holdSave;
     updating = false;
-	Refresh();
   }
 
   void Plot2D::SetLegend(double xc, double yc, Array style, 
@@ -104,24 +98,20 @@ namespace FreeMat {
     legend_yc = yc;
     strcpy(legend_linestyle,style.getContentsAsCString());
     legend_data = legendData;
-    Refresh();
   }
 
   void Plot2D::SetTitleText(std::string txt) {
     title = txt;
-    Refresh();
   }
 
   void Plot2D::SetXLabel(std::string txt) {
     if (xAxis != NULL)
       xAxis->SetLabelText(txt);
-    Refresh();
   }
 
   void Plot2D::SetYLabel(std::string txt) {
     if (yAxis != NULL)
       yAxis->SetLabelText(txt);
-    Refresh();
   }
 
   void Plot2D::SetHoldFlag(bool flag) {
@@ -137,7 +127,6 @@ namespace FreeMat {
       xAxis->SetLogarithmic(xLog);
     if (yAxis != NULL)
       yAxis->SetLogarithmic(yLog);
-    Refresh();
   }
 
   void Plot2D::SetAxes(double x1, double x2, double y1, double y2) {
@@ -145,7 +134,6 @@ namespace FreeMat {
       xAxis->ManualSetAxis(x1, x2);
     if (yAxis != NULL)
       yAxis->ManualSetAxis(y1, y2);
-    Refresh();
   }
 
   void Plot2D::GetAxes(double &x1, double &x2, double &y1, double &y2) {
@@ -168,7 +156,6 @@ namespace FreeMat {
       xAxis->SetGrid(gridVal);
     if (yAxis != NULL)
       yAxis->SetGrid(gridVal);
-    Refresh();
   }
 
   void Plot2D::SetAxesTight() {
@@ -192,7 +179,6 @@ namespace FreeMat {
     if (yAxis == NULL)
       yAxis = new Axis(yMin, yMax, false, Axis_Y);
     yAxis->ManualSetAxis(yMin, yMax);
-    Refresh();
   }
   
   void Plot2D::SetAxesAuto() {
@@ -218,7 +204,6 @@ namespace FreeMat {
       yAxis = new Axis(yMin, yMax, false, Axis_Y);
     else
       yAxis->SetExtent(yMin, yMax);
-    Refresh();
   }
 
   void Plot2D::AddPlot(DataSet2D dp) {
@@ -226,7 +211,6 @@ namespace FreeMat {
       data.clear();
     data.push_back(dp);
     SetAxesAuto();
-    Refresh();
   }
 
   void Plot2D::ComputeTextBounds(GraphicsContext &dc) {
@@ -239,12 +223,17 @@ namespace FreeMat {
   }
 
   void Plot2D::OnDraw(GraphicsContext &gc) {
+    Point2D sze(gc.GetCanvasSize());
+    int width = sze.x;
+    int height = sze.y;
+    gc.SetBackGroundColor(Color("light grey"));
+    gc.SetForeGroundColor(Color("light grey"));
+    gc.FillRectangle(Rect2D(0, 0, sze.x, sze.y));
+
     if (updating || (data.size() == 0))
       return;
     if (xAxis == NULL) return;
     if (yAxis == NULL) return;
-    int width = getWidth();
-    int height = getHeight();
 
     gc.SetFont(12);
 
@@ -276,9 +265,6 @@ namespace FreeMat {
     xAxis->Place(plotX, plotY + plotHeight, plotWidth, plotHeight);
     yAxis->Place(plotX, plotY, plotHeight, plotWidth);
 
-    gc.SetBackGroundColor(Color("light grey"));
-    gc.SetForeGroundColor(Color("light grey"));
-    gc.FillRectangle(Rect2D(0, 0, getWidth(), getHeight()));
     gc.SetForeGroundColor(Color("black"));
     gc.DrawTextString(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));
     gc.SetForeGroundColor(Color("white"));
@@ -306,6 +292,8 @@ namespace FreeMat {
       return LINE_DASH_DOT;
     if (line == '|')
       return LINE_DASHED;
+    if (line == ' ')
+      return LINE_NONE;
     return LINE_SOLID;
   }
 

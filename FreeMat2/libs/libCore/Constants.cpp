@@ -19,6 +19,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Array.hpp"
+#include "LAPACK.hpp"
 #include <math.h>
 
 namespace FreeMat {
@@ -190,4 +191,58 @@ namespace FreeMat {
     retval.push_back(A);
     return retval;
   }  
+
+  //!
+  //@Module EPS Double Precision Floating Point Relative Machine Precision Epsilon
+  //@@Usage
+  //Returns @|eps|, which quantifies the relative machine precision
+  //of floating point numbers (a machine specific quantity).  The syntax
+  //for @|eps| is:
+  //@[
+  //   y = eps
+  //@]
+  //which returns @|eps| for @|double| precision values. For most
+  //typical processors, this value is approximately 2^-52, or 2.2204e-16.
+  //@@Example
+  //The following example demonstrates the use of the @|eps| function,
+  //and one of its numerical consequences.
+  //@<
+  //eps
+  //1.0+eps
+  //@>
+  //!
+  ArrayVector EpsFunction(int nargout, const ArrayVector& arg) {
+    char CMACH = 'E';
+    Array A(Array::doubleConstructor(dlamch_(&CMACH)));
+    ArrayVector retval;
+    retval.push_back(A);
+    return retval;
+  }
+
+  //!
+  //@Module FEPS Single Precision Floating Point Relative Machine Precision Epsilon
+  //@@Usage
+  //Returns @|feps|, which quantifies the relative machine precision
+  //of floating point numbers (a machine specific quantity).  The syntax
+  //for @|feps| is:
+  //@[
+  //   y = feps
+  //@]
+  //which returns @|feps| for @|single| precision values. For most
+  //typical processors, this value is approximately 2^-24, or 5.9604e-8.
+  //@@Example
+  //The following example demonstrates the use of the @|feps| function,
+  //and one of its numerical consequences.
+  //@<
+  //feps
+  //1.0f+eps
+  //@>
+  //!
+  ArrayVector FepsFunction(int nargout, const ArrayVector& arg) {
+    char CMACH = 'E';
+    Array A(Array::floatConstructor(slamch_(&CMACH)));
+    ArrayVector retval;
+    retval.push_back(A);
+    return retval;
+  }
 }

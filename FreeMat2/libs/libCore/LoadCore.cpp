@@ -95,7 +95,8 @@ namespace FreeMat {
      context->addFunction("int8",Int8Function,1,1,args);
      context->addFunction("int16",Int16Function,1,1,args);
      context->addFunction("int32",Int32Function,1,1,args);  
-     context->addFunction("svd",SVDFunction,1,3,args);
+     args.push_back("flag");
+     context->addFunction("svd",SVDFunction,2,3,args);
      args.clear();
      args.push_back("x");
      args.push_back("n");
@@ -285,6 +286,8 @@ namespace FreeMat {
      args.push_back("n");
      context->addFunction("sleep",SleepFunction,1,0,args);
      args.clear();
+     context->addFunction("eps",EpsFunction,0,1,args);
+     context->addFunction("feps",FepsFunction,0,1,args);
      args.push_back("x");
      args.push_back("rows");
      args.push_back("cols");

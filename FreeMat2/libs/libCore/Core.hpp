@@ -148,6 +148,8 @@ namespace FreeMat {
   ArrayVector IsNaNFunction(int, const ArrayVector& arg);
   ArrayVector IsInfFunction(int, const ArrayVector& arg);
   ArrayVector RepMatFunction(int, const ArrayVector& arg);
+  ArrayVector EpsFunction(int, const ArrayVector& arg);
+  ArrayVector FepsFunction(int, const ArrayVector& arg);
 }
 
 #endif

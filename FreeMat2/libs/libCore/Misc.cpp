@@ -69,6 +69,35 @@ namespace FreeMat {
     return retval;
   } 
 
+  ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
+    Array A(arg[0]);
+    Array B(arg[1]);
+    if (!A.is2D() || !B.is2D())
+      throw Exception("cannot apply matrix operations to N-dimensional arrays.");
+    if (A.anyNotFinite() || B.anyNotFinite())
+      throw Exception("eig only defined for matrices with finite entries.");
+
+    ArrayVector retval;
+    Array V, D;
+
+    if (nargout > 1) {
+      if (A.isSymmetric() && B.isSymmetric()) {
+	if (!GeneralizedEigenDecomposeFullSymmetric(A,B,V,D))
+	  GeneralizedEigenDecomposeFullGeneral(A,B,V,D);
+      } else
+	GeneralizedEigenDecomposeFullGeneral(A,B,V,D);
+      retval.push_back(V);
+      retval.push_back(D);
+    } else {
+      if (A.isSymmetric() && B.isSymmetric()) {
+	if (!GeneralizedEigenDecomposeCompactSymmetric(A,B,D))
+	  GeneralizedEigenDecomposeCompactGeneral(A,B,D);
+      } else
+	GeneralizedEigenDecomposeCompactGeneral(A,B,D);
+      retval.push_back(D);
+    }
+    return retval;
+  }
   //!
   //@Module EIG Eigendecomposition of a Matrix
   //@@Usage
@@ -101,13 +130,28 @@ namespace FreeMat {
   //@]
   //recovers both the eigenvectors and eigenvalues of @|A| without balancing.
   //Note that the 'nobalance' option has no affect on symmetric matrices.
+  //
+  //FreeMat also provides the ability to calculate generalized eigenvalues
+  //and eigenvectors.  Similarly to the regular case, there are two forms
+  //for @|eig| when computing generalized eigenvector (see the Function
+  //Internals section for a description of what a generalized eigenvector is).
+  //The first returns only the generalized eigenvalues of the matrix
+  //pair @|A,B|
+  //@[
+  //  s = eig(A,B)
+  //@]
+  //The second form also computes the generalized eigenvectors, and is
+  //accessible via
+  //@[
+  //  [V,D] = eig(A,B)
+  //@]
   //@@Function Internals
   //Recall that @|v| is an eigenvector of @|A| with associated eigenvalue
   //@|d| if
   //\[
   //  A v = d v.
   //\]
-  //This can be written in matrix form as
+  //This decomposition can be written in matrix form as
   //\[
   //  A V = V D
   //\]
@@ -116,13 +160,40 @@ namespace FreeMat {
   //  V = [v_1,v_2,\ldots,v_n], D = \mathrm{diag}(d_1,d_2,\ldots,d_n).
   //\]
   //The @|eig| function uses the @|LAPACK| class of functions @|GEEVX|
-  //to compute the eigenvalue decomposition.
+  //to compute the eigenvalue decomposition for non-symmetric 
+  //(or non-Hermitian) matrices @|A|.  For symmetric matrices, @|SSYEV|
+  // and @|DSYEV| are used for @|float| and @|double| matrices (respectively).
+  //For Hermitian matrices, @|CHEEV| and @|ZHEEV| are used for @|complex|
+  //and @|dcomplex| matrices.
   //
   //For some matrices, the process of balancing (in which the rows and
   //columns of the matrix are pre-scaled to facilitate the search for
   //eigenvalues) is detrimental to the quality of the final solution.
   //This is particularly true if the matrix contains some elements on
-  //the order of round off error, somachine precision, and other elements that are 
+  //the order of round off error.  See the Example section for an example.
+  //
+  //A generalized eigenvector of the matrix pair @|A,B| is simply a 
+  //vector @|v| with associated eigenvalue @|d| such that
+  //\[
+  //  A v = d B v,
+  //\]
+  //where @|B| is a square matrix of the same size as @|A|.  This
+  //decomposition can be written in matrix form as 
+  //\[
+  //  A V = B V D
+  //\]
+  //where
+  //\[
+  //  V = [v_1,v_2,\ldots,v_n], D = \mathrm{diag}(d_1,d_2,\ldots,d_n).
+  //\]
+  //For general matrices @|A| and @|B|, the @|GGEV| class of routines are
+  //used to compute the generalized eigendecomposition.  If howevever,
+  //@|A| and @|B| are both symmetric (or Hermitian, as appropriate),
+  //Then FreeMat first attempts to use @|SSYGV| and @|DSYGV| for @|float|
+  //and @|double| arguments and @|CHEGV| and @|ZHEGV| for @|complex|
+  //and @|dcomplex| arguments (respectively).  These routines requires
+  //that @|B| also be positive definite, and if it fails to be, FreeMat
+  //will revert to the routines used for general arguments.
   //@@Example
   //Some examples of eigenvalue decompositions.  First, for a diagonal
   //matrix, the eigenvalues are the diagonal elements of the matrix.
@@ -144,11 +215,9 @@ namespace FreeMat {
   //A*V - V*D
   //@>
   //Now, we consider a matrix that requires the nobalance option
-  //to compute the eigenvalues and eigenvectors properly.  I could not
-  //find an example that worked better than the one from MATLAB's
-  //manual.
+  //to compute the eigenvalues and eigenvectors properly.  Here is
+  //an example from MATLAB's manual.
   //@<
-  //eps = 2^-52
   //B = [3,-2,-.9,2*eps;-2,4,1,-eps;-eps/4,eps/2,-1,0;-.5,-.5,.1,1]
   //[VB,DB] = eig(B)
   //B*VB - VB*DB
@@ -169,22 +238,15 @@ namespace FreeMat {
 	    (strcmp(b2,"NOBALANCE") == 0))
 	  balance = false;
       }
+      return GenEigFunction(nargout, arg);
     }
-    //    if (arg.size() != 1)
-    //      throw Exception("eig function takes exactly one argument - the matrix to decompose");
-
     Array A(arg[0]);
-
     if (!A.is2D())
       throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
-
     if (A.anyNotFinite())
-      throw Exception("SVD only defined for matrices with finite entries.");
-
+      throw Exception("eig only defined for matrices with finite entries.");
     ArrayVector retval;
-    stringVector dummy;
     Array V, D;
-
     if (nargout > 1) {
       if (A.isSymmetric())
 	EigenDecomposeFullSymmetric(A,V,D);
@@ -201,7 +263,7 @@ namespace FreeMat {
     }
     return retval;
   }
-
+  
 
   ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
     int nrows = A.getDimensionLength(0);
@@ -486,7 +548,7 @@ namespace FreeMat {
 	  dim[1] = ncols;
 	  rmat = Array(FM_DCOMPLEX,dim,r);
 	}
-	if (compactSav) {
+	if (!compactSav) {
 	  int *p2 = (int*) Malloc(ncols*ncols*sizeof(int));
 	  for (i=0;i<ncols;i++) 
 	    p2[p[i] + i*ncols - 1] = 1;
@@ -592,7 +654,7 @@ namespace FreeMat {
   //@Module SVD Singular Value Decomposition of a Matrix
   //@@Usage
   //Computes the singular value decomposition (SVD) of a matrix.  The 
-  //@|svd| function has two forms.  The first returns only the singular
+  //@|svd| function has three forms.  The first returns only the singular
   //values of the matrix:
   //@[
   //  s = svd(A)
@@ -601,6 +663,12 @@ namespace FreeMat {
   //matrix @|S|, as well as the left and right eigenvectors.
   //@[
   //  [U,S,V] = svd(A)
+  //@]
+  //The third form returns a more compact decomposition, with the
+  //left and right singular vectors corresponding to zero singular
+  //values being eliminated.  The syntax is
+  //@[
+  //  [U,S,V] = svd(A,0)
   //@]
   //@@Function Internals
   //Recall that @|sigma_i| is a singular value of an @|M x N|
@@ -620,7 +688,7 @@ namespace FreeMat {
   //\]
   //The matrix @|S| is then of size @|M x N| with the singular
   //values along the diagonal.  The SVD is computed using the 
-  //@|LAPACK| call of functions @|GESDD|.
+  //@|LAPACK| class of functions @|GESDD|.
   //@@Examples
   //Here is an example of a partial and complete singular value
   //decomposition.
@@ -632,21 +700,25 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("svd function takes exactly one argument - the matrix to decompose");
-
+    if (arg.size() > 2)
+      throw Exception("svd function takes at most two arguments");
+    if (arg.size() < 1)
+      throw Exception("svd function requries at least one argument - the matrix to decompose");
     Array A(arg[0]);
-
+    bool compactform = false;
+    if (arg.size() > 1) {
+      Array flag(arg[1]);
+      if (flag.getContentsAsIntegerScalar() == 0)
+	compactform = true;
+    }
     // Test for numeric
     if (A.isReferenceType())
       throw Exception("Cannot apply svd to reference types.");
-  
     if (!A.is2D())
       throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
 
     if (A.anyNotFinite())
       throw Exception("SVD only defined for matrices with finite entries.");
-
     int nrows = A.getDimensionLength(0);
     int ncols = A.getDimensionLength(1);
     Class Aclass(A.getDataClass());
@@ -654,149 +726,241 @@ namespace FreeMat {
       A.promoteType(FM_DOUBLE);
       Aclass = FM_DOUBLE;
     }
+    bool computevectors;
+    computevectors = (nargout>1);
     ArrayVector retval;
     switch (Aclass) {
     case FM_FLOAT:
       {
 	int mindim;
-	int maxdim;
 	mindim = (nrows < ncols) ? nrows : ncols;
-	maxdim = (nrows < ncols) ? ncols : nrows;
 	// A temporary vector to store the singular values
 	float *svals = (float*) Malloc(mindim*sizeof(float));
 	// A temporary vector to store the left singular vectors
-	float *umat = (float*) Malloc(nrows*nrows*sizeof(float));
+	float *umat = NULL; 
 	// A temporary vector to store the right singular vectors
-	float *vtmat = (float*) Malloc(ncols*ncols*sizeof(float));
-	floatSVD(nrows,ncols,umat,vtmat,svals,(float*) A.getReadWriteDataPointer());
+	float *vtmat = NULL; 
+	if (computevectors) 
+	  if (!compactform) {
+	    umat = (float*) Malloc(nrows*nrows*sizeof(float));
+	    vtmat = (float*) Malloc(ncols*ncols*sizeof(float));
+	  } else {
+	    umat = (float*) Malloc(nrows*mindim*sizeof(float));
+	    vtmat = (float*) Malloc(ncols*mindim*sizeof(float));
+	  }
+	floatSVD(nrows,ncols,umat,vtmat,svals,
+		 (float*) A.getReadWriteDataPointer(),
+		 compactform, computevectors);
 	// Always transfer the singular values into an Array
 	Dimensions dim;
-	if (nargout == 1) {
+	if (!computevectors) {
 	  dim[0] = mindim; dim[1] = 1;
 	  retval.push_back(Array(FM_FLOAT,dim,svals));
-	  Free(umat);
-	  Free(vtmat);
 	} else {
-	  dim[0] = nrows; dim[1] = nrows;
-	  retval.push_back(Array(FM_FLOAT,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
-	  float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
-	  for (int i=0;i<mindim;i++)
-	    smat[i+i*nrows] = svals[i];
-	  retval.push_back(Array(FM_FLOAT,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
-	  Array Utrans(FM_FLOAT,dim,vtmat);
-	  Utrans.transpose();
-	  retval.push_back(Utrans);
-	  Free(svals);
+	  if (!compactform) {
+	    dim[0] = nrows; dim[1] = nrows;
+	    retval.push_back(Array(FM_FLOAT,dim,umat));
+	    dim[0] = nrows; dim[1] = ncols;
+	    float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*nrows] = svals[i];
+	    retval.push_back(Array(FM_FLOAT,dim,smat));
+	    dim[0] = ncols; dim[1] = ncols;
+	    Array Utrans(FM_FLOAT,dim,vtmat);
+	    Utrans.transpose();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  } else {
+	    dim[0] = nrows; dim[1] = mindim;
+	    retval.push_back(Array(FM_FLOAT,dim,umat));
+	    dim[0] = mindim; dim[1] = mindim;
+	    float *smat = (float*) Malloc(mindim*mindim*sizeof(float));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*mindim] = svals[i];
+	    retval.push_back(Array(FM_FLOAT,dim,smat));
+	    dim[0] = mindim; dim[1] = ncols;
+	    Array Utrans(FM_FLOAT,dim,vtmat);
+	    Utrans.transpose();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  }
 	}
 	break;
       }
     case FM_DOUBLE:
       {
 	int mindim;
-	int maxdim;
 	mindim = (nrows < ncols) ? nrows : ncols;
-	maxdim = (nrows < ncols) ? ncols : nrows;
 	// A temporary vector to store the singular values
 	double *svals = (double*) Malloc(mindim*sizeof(double));
 	// A temporary vector to store the left singular vectors
-	double *umat = (double*) Malloc(nrows*nrows*sizeof(double));
+	double *umat = NULL;
 	// A temporary vector to store the right singular vectors
-	double *vtmat = (double*) Malloc(ncols*ncols*sizeof(double));
-	doubleSVD(nrows,ncols,umat,vtmat,svals,(double*) A.getReadWriteDataPointer());
+	double *vtmat = NULL;
+	if (computevectors) 
+	  if (!compactform) {
+	    umat = (double*) Malloc(nrows*nrows*sizeof(double));
+	    vtmat = (double*) Malloc(ncols*ncols*sizeof(double));
+	  } else {
+	    umat = (double*) Malloc(nrows*mindim*sizeof(double));
+	    vtmat = (double*) Malloc(ncols*mindim*sizeof(double));
+	  }
+	doubleSVD(nrows,ncols,umat,vtmat,svals,
+		  (double*) A.getReadWriteDataPointer(),
+		  compactform, computevectors);
 	// Always transfer the singular values into an Array
 	Dimensions dim;
-	if (nargout == 1) {
+	if (!computevectors) {
 	  dim[0] = mindim; dim[1] = 1;
 	  retval.push_back(Array(FM_DOUBLE,dim,svals));
 	  Free(umat);
 	  Free(vtmat);
 	} else {
-	  dim[0] = nrows; dim[1] = nrows;
-	  retval.push_back(Array(FM_DOUBLE,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
-	  double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
-	  for (int i=0;i<mindim;i++)
-	    smat[i+i*nrows] = svals[i];
-	  retval.push_back(Array(FM_DOUBLE,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
-	  Array Utrans(FM_DOUBLE,dim,vtmat);
-	  Utrans.transpose();
-	  retval.push_back(Utrans);
-	  Free(svals);
+	  if (!compactform) {
+	    dim[0] = nrows; dim[1] = nrows;
+	    retval.push_back(Array(FM_DOUBLE,dim,umat));
+	    dim[0] = nrows; dim[1] = ncols;
+	    double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*nrows] = svals[i];
+	    retval.push_back(Array(FM_DOUBLE,dim,smat));
+	    dim[0] = ncols; dim[1] = ncols;
+	    Array Utrans(FM_DOUBLE,dim,vtmat);
+	    Utrans.transpose();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  } else {
+	    dim[0] = nrows; dim[1] = mindim;
+	    retval.push_back(Array(FM_DOUBLE,dim,umat));
+	    dim[0] = mindim; dim[1] = mindim;
+	    double *smat = (double*) Malloc(mindim*mindim*sizeof(double));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*mindim] = svals[i];
+	    retval.push_back(Array(FM_DOUBLE,dim,smat));
+	    dim[0] = mindim; dim[1] = ncols;
+	    Array Utrans(FM_DOUBLE,dim,vtmat);
+	    Utrans.transpose();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  }		  
 	}
 	break;
       }
     case FM_COMPLEX:
       {
 	int mindim;
-	int maxdim;
 	mindim = (nrows < ncols) ? nrows : ncols;
-	maxdim = (nrows < ncols) ? ncols : nrows;
 	// A temporary vector to store the singular values
 	float *svals = (float*) Malloc(mindim*sizeof(float));
 	// A temporary vector to store the left singular vectors
-	float *umat = (float*) Malloc(2*nrows*nrows*sizeof(float));
+	float *umat = NULL;
 	// A temporary vector to store the right singular vectors
-	float *vtmat = (float*) Malloc(2*ncols*ncols*sizeof(float));
-	complexSVD(nrows,ncols,umat,vtmat,svals,(float*) A.getReadWriteDataPointer());
+	float *vtmat = NULL;
+	if (computevectors)
+	  if (!compactform) {
+	    umat = (float*) Malloc(2*nrows*nrows*sizeof(float));
+	    vtmat = (float*) Malloc(2*ncols*ncols*sizeof(float));
+	  } else {
+	    umat = (float*) Malloc(2*nrows*mindim*sizeof(float));
+	    vtmat = (float*) Malloc(2*ncols*mindim*sizeof(float));
+	  }
+	complexSVD(nrows,ncols,umat,vtmat,svals,
+		   (float*) A.getReadWriteDataPointer(),
+		   compactform, computevectors);
 	// Always transfer the singular values into an Array
 	Dimensions dim;
-	if (nargout == 1) {
+	if (!computevectors) {
 	  dim[0] = mindim; dim[1] = 1;
 	  retval.push_back(Array(FM_FLOAT,dim,svals));
 	  Free(umat);
 	  Free(vtmat);
 	} else {
-	  dim[0] = nrows; dim[1] = nrows;
-	  retval.push_back(Array(FM_COMPLEX,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
-	  float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
-	  for (int i=0;i<mindim;i++)
-	    smat[i+i*nrows] = svals[i];
-	  retval.push_back(Array(FM_FLOAT,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
-	  Array Utrans(FM_COMPLEX,dim,vtmat);
-	  Utrans.hermitian();
-	  retval.push_back(Utrans);
-	  Free(svals);
+	  if (!compactform) {
+	    dim[0] = nrows; dim[1] = nrows;
+	    retval.push_back(Array(FM_COMPLEX,dim,umat));
+	    dim[0] = nrows; dim[1] = ncols;
+	    float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*nrows] = svals[i];
+	    retval.push_back(Array(FM_FLOAT,dim,smat));
+	    dim[0] = ncols; dim[1] = ncols;
+	    Array Utrans(FM_COMPLEX,dim,vtmat);
+	    Utrans.hermitian();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  } else {
+	    dim[0] = nrows; dim[1] = mindim;
+	    retval.push_back(Array(FM_COMPLEX,dim,umat));
+	    dim[0] = mindim; dim[1] = mindim;
+	    float *smat = (float*) Malloc(mindim*mindim*sizeof(float));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*mindim] = svals[i];
+	    retval.push_back(Array(FM_FLOAT,dim,smat));
+	    dim[0] = mindim; dim[1] = ncols;
+	    Array Utrans(FM_COMPLEX,dim,vtmat);
+	    Utrans.hermitian();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  }
 	}
 	break;
       }
     case FM_DCOMPLEX:
       {
 	int mindim;
-	int maxdim;
 	mindim = (nrows < ncols) ? nrows : ncols;
-	maxdim = (nrows < ncols) ? ncols : nrows;
 	// A temporary vector to store the singular values
 	double *svals = (double*) Malloc(mindim*sizeof(double));
 	// A temporary vector to store the left singular vectors
-	double *umat = (double*) Malloc(2*nrows*nrows*sizeof(double));
+	double *umat = NULL;
 	// A temporary vector to store the right singular vectors
-	double *vtmat = (double*) Malloc(2*ncols*ncols*sizeof(double));
-	dcomplexSVD(nrows,ncols,umat,vtmat,svals,(double*) A.getReadWriteDataPointer());
+	double *vtmat = NULL;
+	if (computevectors)
+	  if (!compactform) {
+	    umat = (double*) Malloc(2*nrows*nrows*sizeof(double));
+	    vtmat = (double*) Malloc(2*ncols*ncols*sizeof(double));
+	  } else {
+	    umat = (double*) Malloc(2*nrows*mindim*sizeof(double));
+	    vtmat = (double*) Malloc(2*ncols*mindim*sizeof(double));
+	  }
+	dcomplexSVD(nrows,ncols,umat,vtmat,svals,
+		    (double*) A.getReadWriteDataPointer(),
+		    compactform, computevectors);
 	// Always transfer the singular values into an Array
 	Dimensions dim;
-	if (nargout == 1) {
+	if (!computevectors) {
 	  dim[0] = mindim; dim[1] = 1;
 	  retval.push_back(Array(FM_DOUBLE,dim,svals));
 	  Free(umat);
 	  Free(vtmat);
 	} else {
-	  dim[0] = nrows; dim[1] = nrows;
-	  retval.push_back(Array(FM_DCOMPLEX,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
-	  double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
-	  for (int i=0;i<mindim;i++)
-	    smat[i+i*nrows] = svals[i];
-	  retval.push_back(Array(FM_DOUBLE,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
-	  Array Utrans(FM_DCOMPLEX,dim,vtmat);
-	  Utrans.hermitian();
-	  retval.push_back(Utrans);
-	  Free(svals);
+	  if (!compactform) {
+	    dim[0] = nrows; dim[1] = nrows;
+	    retval.push_back(Array(FM_DCOMPLEX,dim,umat));
+	    dim[0] = nrows; dim[1] = ncols;
+	    double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*nrows] = svals[i];
+	    retval.push_back(Array(FM_DOUBLE,dim,smat));
+	    dim[0] = ncols; dim[1] = ncols;
+	    Array Utrans(FM_DCOMPLEX,dim,vtmat);
+	    Utrans.hermitian();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  } else {
+	    dim[0] = nrows; dim[1] = mindim;
+	    retval.push_back(Array(FM_DCOMPLEX,dim,umat));
+	    dim[0] = mindim; dim[1] = mindim;
+	    double *smat = (double*) Malloc(mindim*mindim*sizeof(double));
+	    for (int i=0;i<mindim;i++)
+	      smat[i+i*mindim] = svals[i];
+	    retval.push_back(Array(FM_DOUBLE,dim,smat));
+	    dim[0] = mindim; dim[1] = ncols;
+	    Array Utrans(FM_DCOMPLEX,dim,vtmat);
+	    Utrans.hermitian();
+	    retval.push_back(Utrans);
+	    Free(svals);
+	  }
 	}
       }
       break;

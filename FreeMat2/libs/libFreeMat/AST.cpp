@@ -268,6 +268,7 @@ namespace FreeMat {
 	cnum(OP_QSTATEMENT,"end quiet stat.");
 	cnum(OP_SCALL,"special call");
 	cnum(OP_KEYWORD,"keyword");
+	cnum(OP_DOTDYN,".()");
       }
       printf("\r\n");
     } else if (t->type == id_node) {

@@ -39,6 +39,8 @@ int vcStack[256];
 int vcStackSize;
 int vcFlag;
 
+extern void SetTextString(char *c);
+
 /*
  * These variables capture the token information
  */

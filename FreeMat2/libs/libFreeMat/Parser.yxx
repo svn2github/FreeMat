@@ -55,6 +55,11 @@ bool interactiveMode;
 #define snprintf _snprintf
 #endif
 
+char buffer[4096];
+void SetTextString(char *c) {
+  strcpy(buffer,c);
+}
+
 namespace FreeMat {
   static ASTPtr mainAST;
   static MFunctionDef *mainMDef;
@@ -588,6 +593,7 @@ symbRef:
         | '{' indexList '}' {$$ = new AST(OP_BRACES,$2); }
 	| '{' indexList error {yyxpt("matching right brace");}
         | '.' IDENT {$$ = new AST(OP_DOT,$2); }
+	| '.' '(' expr ')' {$$ = new AST(OP_DOTDYN,$3);}
         ;
 
 indexElement:

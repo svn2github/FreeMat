@@ -87,7 +87,8 @@ namespace FreeMat {
     OP_CCALL,
     OP_SAVE,
     OP_LOAD,
-    OP_KEYWORD
+    OP_KEYWORD,
+    OP_DOTDYN
   } OP_TYPE;
 
   /** The abstract syntax tree class

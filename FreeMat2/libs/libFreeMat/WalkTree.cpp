@@ -206,7 +206,7 @@ namespace FreeMat {
     if (t->type == const_int_node) {
       int iv;
       double fv;
-      iv = strtol(t->text,NULL,0);
+      iv = strtol(t->text,NULL,10);
       if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
 	fv = strtod(t->text,NULL);
 	return Array::doubleConstructor(fv);
@@ -1370,7 +1370,21 @@ namespace FreeMat {
 	return(Array::emptyConstructor());
       }
     }
+    if (t->opNum ==(OP_DOTDYN)) {
+      char *field;
+      try {
+	Array fname(expression(t->down));
+	field = fname.getContentsAsCString();
+      } catch (Exception &e) {
+	throw Exception("dynamic field reference to structure requires a string argument");
+      }
+      try {
+	return(r.getField(field));
+      } catch (Exception &e) {
 	return(Array::emptyConstructor());
+      }
+    }
+    return(Array::emptyConstructor());
   }
 
   void WalkTree::simpleAssign(Array& r, ASTPtr t, Array& value) {
@@ -1419,6 +1433,17 @@ namespace FreeMat {
       r.setFieldAsList(t->down->text,value);
       return;
     }    
+    if (t->opNum == (OP_DOTDYN)) {
+      char *field;
+      try {
+	Array fname(expression(t->down));
+	field = fname.getContentsAsCString();
+      } catch (Exception &e) {
+	throw Exception("dynamic field reference to structure requires a string argument");
+      }
+      r.setFieldAsList(field,value);
+      return;
+    }
   }
 
   int WalkTree::countLeftHandSides(ASTPtr t) {
@@ -2437,6 +2462,24 @@ namespace FreeMat {
   //A(2).maxreturn = [];
   //[A.maxreturn] = max(randn(1,4))
   //@>
+  //FreeMat now also supports the so called dynamic-field indexing 
+  //expressions.  In this mode, the fieldname is supplied through 
+  //an expression instead of being explicitly provided.  For example,
+  //suppose we have a set of structure indexed by color,
+  //@<
+  //x.red = 430;
+  //x.green = 240;
+  //x.blue = 53;
+  //x.yello = 105
+  //@>
+  //Then we can index into the structure @|x| using a dynamic field
+  //reference:
+  //@<
+  //y = 'green'
+  //a = x.(y)
+  //@>
+  //Note that the indexing expression has to resolve to a string for
+  //dynamic field indexing to work.
   //@@Complex Indexing
   //The indexing expressions described above can be freely combined
   //to affect complicated indexing expressions.  Here is an example
@@ -2518,6 +2561,20 @@ namespace FreeMat {
 	  r = rv[0];
 	  rv = ArrayVector();
 	}
+      }
+      if (t->opNum == (OP_DOTDYN)) {
+      char *field;
+      try {
+	Array fname(expression(t->down));
+	field = fname.getContentsAsCString();
+      } catch (Exception &e) {
+	throw Exception("dynamic field reference to structure requires a string argument");
+      }
+      rv = r.getFieldAsList(field);
+      if (rv.size() <= 1) {
+	r = rv[0];
+	rv = ArrayVector();
+      }      
       }
       t = t->right;
     }

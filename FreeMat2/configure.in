@@ -4,7 +4,7 @@ AC_INIT(src/x11/main.cpp)
 dnl sets build, host, target variables and the same with _alias
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 1.08)
+AM_INIT_AUTOMAKE(FreeMat, 1.09)
 
 dnl Checks for programs.
 AC_PROG_CXX

@@ -28,8 +28,6 @@
 
 namespace FreeMat {
 
-  void PostGUIReply(Command*);
-  
 IMPLEMENT_DYNAMIC_CLASS(ScalarImage, wxFrame)
 
 BEGIN_EVENT_TABLE(ScalarImage, wxFrame)

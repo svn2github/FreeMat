@@ -192,6 +192,18 @@ void App::OnProcessCustom(wxCommandEvent& event) {
       sf->getTextControl()->IssueGetWidthRequest();
       break;
     }
+    case CMD_GUIFunctionList: {
+      Array t(cp->data);
+      stringVector fnames;
+      Array *cp;
+      cp = (Array *) t.getDataPointer();
+      int cnt;
+      cnt = t.getLength();
+      for (int i=0;i<cnt;i++)
+	fnames.push_back(cp[i].getContentsAsCString());
+      sf->getTextControl()->SetFunctionList(fnames);
+      break;
+    }
     case CMD_SystemCapture: {
       wxString command(cp->data.getContentsAsCString());
       wxArrayString output;

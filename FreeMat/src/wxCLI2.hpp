@@ -124,6 +124,7 @@ public:
 					  std::string &matchString);
   void CompleteWord();
   int ScrollRowAdjust(int row);
+  void SetFunctionList(std::vector<std::string> ifnames);
 private:
   // move the caret to m_xCaret, m_yCaret
   void DoMoveCaret();
@@ -141,6 +142,8 @@ private:
   int ncolumn;
   // the text
   std::vector<std::string> history;
+  // Names of functions (for use in completions)
+  std::vector<std::string> fnames;
   // The line buffer
   char line[1002];
   // The maximum allowed line length

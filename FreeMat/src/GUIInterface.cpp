@@ -104,6 +104,28 @@ namespace FreeMat {
       processFilename(fname);
       fname = wxFindNextFile();
     }
+    stringVector funclist;
+    // Get completions...
+    stringVector cscope_completions;
+    cscope_completions = context->getCurrentScope()->getCompletions(std::string(""));
+    stringVector gscope_completions;
+    gscope_completions = context->getGlobalScope()->getCompletions(std::string(""));
+    int k;
+    for (k=0;k<cscope_completions.size();k++)
+      funclist.push_back(cscope_completions[k]);
+    for (k=0;k<gscope_completions.size();k++)
+      funclist.push_back(gscope_completions[k]);
+    // Convert the given stringVector into an Array object - a cell array,
+    // in which each cell contains a string from the list
+    Array *slist = new Array[funclist.size()];
+    for (int i=0;i<funclist.size();i++) 
+      slist[i] = Array::stringConstructor(funclist[i]);
+    Dimensions dim;
+    dim[1] = 1;
+    dim[0] = funclist.size();
+    Array retarray(FM_CELL_ARRAY,dim,slist);
+    // Send the list of function names to the GUI for later use...
+    SendGUICommand(new Command(CMD_GUIFunctionList,retarray));
   }
 
   GUIInterface::~GUIInterface() {

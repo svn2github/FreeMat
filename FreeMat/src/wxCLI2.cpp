@@ -767,6 +767,10 @@ void wxCLI::PutMessage(const char * msg) {
       caretRow++;
       caretCol = 0;
       cp++;
+    } else if (*cp == '\r') {
+      CharAt(caretRow,caretCol) = 0;
+      caretCol = 0;
+      cp++;
     } else if (caretCol == ncolumn) {
       caretRow++;
       caretCol = 0;
@@ -1078,6 +1082,11 @@ wxChar& wxCLI::CharAt(int row, int column) {
   return m_text[(row%scrollback)*MAXCOLS+column];
 }
 
+void wxCLI::SetFunctionList(std::vector<std::string> ifnames) {
+  fnames = ifnames;
+  std::sort(fnames.begin(),fnames.end());
+}
+
 std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end, 
 					       std::string &matchString) {
   /*
@@ -1085,28 +1094,37 @@ std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end,
    * backwards for the first unescaped space, or the start of the line.
    */
   char *start = start_of_path(line, word_end);
+  char *tmp;
+  int mtchlen;
+  mtchlen = word_end - (start-line);
+  tmp = (char*) malloc(mtchlen+1);
+  memcpy(tmp,start,mtchlen);
+  tmp[mtchlen] = 0;
+  matchString = std::string(tmp);
+  
   /*
-   * If the preceeding character was not a ' (quote), then
+   *  the preceeding character was not a ' (quote), then
    * do a command expansion, otherwise, do a filename expansion.
    */
   if (start[-1] != '\'') {
-#if 0
     std::vector<std::string> local_completions;
-    local_completions = context->getCurrentScope()->getCompletions(std::string(start));
-    std::vector<std::string> global_completions;
-    global_completions = context->getGlobalScope()->getCompletions(std::string(start)); 
-    for (int i=0;i<global_completions.size();i++)
-      local_completions.push_back(global_completions[i]);
-    return local_completions;
-#endif
+    int i;
+    i = 0;
+    while (i<fnames.size() && !(fnames[i].substr(0,mtchlen) == matchString)) i++;
+    if (i == fnames.size()) {
+      free(tmp);
+      return std::vector<std::string>();
+    } else {
+      while (i<fnames.size() && (fnames[i].substr(0,mtchlen) == matchString)) {
+	local_completions.push_back(fnames[i]);
+	i++;
+      }
+      free(tmp);
+      return local_completions;
+    }
+    free(tmp);
     return std::vector<std::string>();
   } else {
-    char *tmp;
-    int mtchlen;
-    mtchlen = word_end - (start-line);
-    tmp = (char*) malloc(mtchlen+1);
-    memcpy(tmp,start,mtchlen);
-    tmp[mtchlen] = 0;
     std::vector<std::string> retval;
     wxString pattern(tmp);
     wxString f = wxFindFirstFile(pattern+"*",0);
@@ -1118,9 +1136,8 @@ std::vector<std::string> wxCLI::GetCompletions(const char *line, int word_end,
 	f = wxFindNextFile();
       }
     }
-    matchString = std::string(tmp);
     free(tmp);
-    sort(retval.begin(),retval.end());
+    std::sort(retval.begin(),retval.end());
     return retval;
   }
 }

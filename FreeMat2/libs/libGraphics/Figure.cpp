@@ -1,7 +1,7 @@
+#include "FL/x.H"
 #include "Figure.hpp"
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
-#include "FL/x.H"
 #include "FLTKGC.hpp"
 #include <algorithm>
 #include "PostScriptGC.hpp"
@@ -20,12 +20,12 @@ namespace FreeMat {
   }
   
   Figure::Figure(int fignum) :
-    Fl_Double_Window(500,400) {
+    Fl_Double_Window(500,400,"Figure Window") {
     m_num = fignum;
     m_type = fignone;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
-    label(buffer);
+    label(strdup(buffer));
     resizable(this);
   }
   
@@ -59,7 +59,7 @@ namespace FreeMat {
       PostScriptGC gc(filename, width, height);
       m_wid->OnDraw(gc);
     } else {
-      unsigned char *data = new (unsigned char)[width*height*3];
+      unsigned char *data = new unsigned char[width*height*3];
       Fl_Offscreen id;
       id = fl_create_offscreen(width,height);
       fl_begin_offscreen((Fl_Offscreen) id);

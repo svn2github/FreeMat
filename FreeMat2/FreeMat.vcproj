@@ -171,6 +171,9 @@
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\src\win32\Script1.rc">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

@@ -21,6 +21,7 @@
 #include "DataSet2D.hpp"
 #include <math.h>
 #include "Malloc.hpp"
+#include "IEEEFP.hpp"
 
 #include <iostream>
 
@@ -95,38 +96,63 @@ namespace FreeMat {
     const double *xVals;
     const double *yVals;
     int ptCount;
-	int i;
+    int i, j;
+    bool firstval;
 
     xVals = (const double *) x.getDataPointer();
     yVals = (const double *) y.getDataPointer();
     ptCount = x.getLength();
 
     // Calculate the min and max values in x
-    xMin = xVals[0];  
-    xMax = xMin;
+    firstval = true;
     for (i=0;i<ptCount;i++) {
-      xMin = (xVals[i] < xMin) ? xVals[i] : xMin;
-      xMax = (xVals[i] > xMax) ? xVals[i] : xMax;
+      if (IsFinite(xVals[i])) {
+	if (firstval) {
+	  xMin = xVals[i];
+	  xMax = xVals[i];
+	  firstval = false;
+	} else {
+	  xMin = (xVals[i] < xMin) ? xVals[i] : xMin;
+	  xMax = (xVals[i] > xMax) ? xVals[i] : xMax;
+	}
+      }
     }
+    if (firstval) {
+      xMin = -1;
+      xMax = 1;
+    }
+
     // Calculate the min and max values in y
-    yMin = yVals[0];
-    yMax = yMin;
+    firstval = true;
     for (i=0;i<ptCount;i++) {
-      yMin = (yVals[i] < yMin) ? yVals[i] : yMin;
-      yMax = (yVals[i] > yMax) ? yVals[i] : yMax;
+      if (IsFinite(yVals[i])) {
+	if (firstval) {
+	  yMin = yVals[i];
+	  yMax = yVals[i];
+	  firstval = false;
+	} else {
+	  yMin = (yVals[i] < yMin) ? yVals[i] : yMin;
+	  yMax = (yVals[i] > yMax) ? yVals[i] : yMax;
+	}
+      }
     }
+    if (firstval) {
+      yMin = -1;
+      yMax = 1;
+    }
+
     // If the y values are less than eps apart, set the y range to eps
-    if (fabs(yMax - yMin) < 1e-5) {
-      yMin = (yMax+yMin)/2 - 1e-5;
-      yMax = (yMax+yMin)/2 + 1e-5;
+    if (fabs(yMax - yMin) < 1e-16) {
+      yMin = (yMax+yMin)/2 - 1e-16;
+      yMax = (yMax+yMin)/2 + 1e-16;
     }
     if (ptCount == 1) {
       xMin = xMin - 1;
       xMax = xMax + 1;
     }
-    if (fabs(xMax - xMin) < 1e-5) {
-      xMin = (xMax+xMin)/2 - 1e-5;
-      xMax = (xMax+xMin)/2 + 1e-5;
+    if (fabs(xMax - xMin) < 1e-16) {
+      xMin = (xMax+xMin)/2 - 1e-16;
+      xMax = (xMax+xMin)/2 + 1e-16;
     }
       
   }
@@ -221,17 +247,25 @@ namespace FreeMat {
     // Draw the symbols
     for (i=0;i<ptCount;i++) {
       // Map the data point to a coordinate
-      int xp, yp;
-      xp = xAxis->MapPoint(xVals[i]);
-      yp = yAxis->MapPoint(yVals[i]);
-      PutSymbol(dc, xp, yp, symbol, symbolLength);
+      if (IsFinite(xVals[i]) && IsFinite(yVals[i])) {
+	int xp, yp;
+	xp = xAxis->MapPoint(xVals[i]);
+	yp = yAxis->MapPoint(yVals[i]);
+	PutSymbol(dc, xp, yp, symbol, symbolLength);
+      }
     }
     // Plot the lines
     SetPenColor(dc, true);
     std::vector<Point2D> pts;
-    for (i=0;i<ptCount;i++)
-      pts.push_back(Point2D(xAxis->MapPoint(xVals[i]),
-			    yAxis->MapPoint(yVals[i])));
+    for (i=0;i<ptCount;i++) {
+      if (IsFinite(xVals[i]) && (IsFinite(yVals[i]))) 
+	pts.push_back(Point2D(xAxis->MapPoint(xVals[i]),
+			      yAxis->MapPoint(yVals[i])));
+      else {
+	dc.DrawLines(pts);
+	pts.clear();
+      }
+    }
     dc.DrawLines(pts);
   }
 }

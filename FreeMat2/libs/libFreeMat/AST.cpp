@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include "Reserved.hpp"
+#include "Serialize.hpp"
 #include <stdio.h>
 
 namespace FreeMat {
@@ -287,5 +288,34 @@ namespace FreeMat {
     printAST(t->down);
     tabLevel--;
     printAST(t->right);  
+  }  
+  
+  void FreezeAST(ASTPtr t, Serialize *s) {
+    if (t == NULL) {
+      s->putByte(0);
+      return;
+    }
+    s->putByte(1);
+    s->putByte(t->type);
+    s->putInt(t->tokenNumber);
+    s->putByte(t->opNum);
+    s->putString(t->text);
+    FreezeAST(t->down,s);
+    FreezeAST(t->right,s);
+  }
+
+  ASTPtr ThawAST(Serialize *s) {
+    char flag;
+    flag = s->getByte();
+    if (!flag)
+      return NULL;
+    ASTPtr t = new AST;
+    t->type = (NODE_TYPE) s->getByte();
+    t->tokenNumber = s->getInt();
+    t->opNum = (OP_TYPE) s->getByte();
+    t->text = s->getString();
+    t->down = ThawAST(s);
+    t->right = ThawAST(s);
+    return t;
   }  
 }

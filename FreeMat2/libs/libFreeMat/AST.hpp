@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 #include "Types.hpp"
+#include "Serialize.hpp"
 
 namespace FreeMat {
 
@@ -194,6 +195,17 @@ namespace FreeMat {
    * tab level, children are printed at a higher tab level.
    */
   void printAST(ASTPtr t);
+  /** Freeze the tree
+   * Serializes an AST tree to a serialization object.  The resulting stream should
+   * be portable across reasonable systems (i.e., little-vs-big endian can be handled
+   * but that's about it).
+   */
+  void FreezeAST(ASTPtr t, Serialize *s);
+  /** Thaw an AST tree
+   * Given a serialization object pointing to the beginning of a frozen AST, reads the AST
+   * from the serialized stream and returns a pointer to the resulting AST.
+   */
+  ASTPtr ThawAST(Serialize *s);
 }
 
 #endif

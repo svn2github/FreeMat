@@ -99,24 +99,32 @@ noinst_LIBRARIES = libMiniLAPACK.a
 libMiniLAPACK_a_SOURCES = complex16/zdrscl.f \
 complex16/zgebak.f \
 complex16/zgebal.f \
+complex16/zgebd2.f \
+complex16/zgebrd.f \
 complex16/zgecon.f \
 complex16/zgeequ.f \
 complex16/zgeevx.f \
 complex16/zgehd2.f \
 complex16/zgehrd.f \
+complex16/zgelq2.f \
+complex16/zgelqf.f \
 complex16/zgelsy.f \
 complex16/zgeqp3.f \
 complex16/zgeqr2.f \
 complex16/zgeqrf.f \
 complex16/zgerfs.f \
+complex16/zgesdd.f \
 complex16/zgesvx.f \
 complex16/zgetf2.f \
 complex16/zgetrf.f \
 complex16/zgetrs.f \
 complex16/zhseqr.f \
+complex16/zlabrd.f \
 complex16/zlacgv.f \
 complex16/zlacon.f \
+complex16/zlacp2.f \
 complex16/zlacpy.f \
+complex16/zlacrm.f \
 complex16/zladiv.f \
 complex16/zlahqr.f \
 complex16/zlahrd.f \
@@ -127,6 +135,7 @@ complex16/zlantr.f \
 complex16/zlaqge.f \
 complex16/zlaqp2.f \
 complex16/zlaqps.f \
+complex16/zlarcm.f \
 complex16/zlarfb.f \
 complex16/zlarf.f \
 complex16/zlarfg.f \
@@ -148,32 +157,46 @@ complex16/ztrexc.f \
 complex16/ztrsna.f \
 complex16/ztzrzf.f \
 complex16/zung2r.f \
+complex16/zungbr.f \
 complex16/zunghr.f \
+complex16/zungl2.f \
+complex16/zunglq.f \
 complex16/zungqr.f \
 complex16/zunm2r.f \
+complex16/zunmbr.f \
+complex16/zunml2.f \
+complex16/zunmlq.f \
 complex16/zunmqr.f \
 complex16/zunmr3.f \
 complex16/zunmrz.f \
 complex/cgebak.f \
 complex/cgebal.f \
+complex/cgebd2.f \
+complex/cgebrd.f \
 complex/cgecon.f \
 complex/cgeequ.f \
 complex/cgeevx.f \
 complex/cgehd2.f \
 complex/cgehrd.f \
+complex/cgelq2.f \
+complex/cgelqf.f \
 complex/cgelsy.f \
 complex/cgeqp3.f \
 complex/cgeqr2.f \
 complex/cgeqrf.f \
 complex/cgerfs.f \
+complex/cgesdd.f \
 complex/cgesvx.f \
 complex/cgetf2.f \
 complex/cgetrf.f \
 complex/cgetrs.f \
 complex/chseqr.f \
+complex/clabrd.f \
 complex/clacgv.f \
 complex/clacon.f \
+complex/clacp2.f \
 complex/clacpy.f \
+complex/clacrm.f \
 complex/cladiv.f \
 complex/clahqr.f \
 complex/clahrd.f \
@@ -184,6 +207,7 @@ complex/clantr.f \
 complex/claqge.f \
 complex/claqp2.f \
 complex/claqps.f \
+complex/clarcm.f \
 complex/clarfb.f \
 complex/clarf.f \
 complex/clarfg.f \
@@ -206,41 +230,58 @@ complex/ctrexc.f \
 complex/ctrsna.f \
 complex/ctzrzf.f \
 complex/cung2r.f \
+complex/cungbr.f \
 complex/cunghr.f \
+complex/cungl2.f \
+complex/cunglq.f \
 complex/cungqr.f \
 complex/cunm2r.f \
+complex/cunmbr.f \
+complex/cunml2.f \
+complex/cunmlq.f \
 complex/cunmqr.f \
 complex/cunmr3.f \
 complex/cunmrz.f \
+double/dbdsdc.f \
+double/dbdsqr.f \
 double/dgebak.f \
 double/dgebal.f \
+double/dgebd2.f \
+double/dgebrd.f \
 double/dgecon.f \
 double/dgeequ.f \
 double/dgeevx.f \
 double/dgehd2.f \
 double/dgehrd.f \
+double/dgelq2.f \
+double/dgelqf.f \
 double/dgelsy.f \
 double/dgeqp3.f \
 double/dgeqr2.f \
 double/dgeqrf.f \
 double/dgerfs.f \
+double/dgesdd.f \
 double/dgesvx.f \
 double/dgetf2.f \
 double/dgetrf.f \
 double/dgetrs.f \
 double/dhseqr.f \
 double/dlabad.f \
+double/dlabrd.f \
 double/dlacon.f \
 double/dlacpy.f \
 double/dladiv.f \
+double/dlaed6.f \
 double/dlaexc.f \
 double/dlahqr.f \
 double/dlahrd.f \
 double/dlaic1.f \
 double/dlaln2.f \
 double/dlamch.f \
+double/dlamrg.f \
 double/dlange.f \
 double/dlanhs.f \
+double/dlanst.f \
 double/dlantr.f \
 double/dlanv2.f \
 double/dlapy2.f \
@@ -258,17 +299,45 @@ double/dlartg.f \
 double/dlarzb.f \
 double/dlarz.f \
 double/dlarzt.f \
+double/dlas2.f \
 double/dlascl.f \
+double/dlasd0.f \
+double/dlasd1.f \
+double/dlasd2.f \
+double/dlasd3.f \
+double/dlasd4.f \
+double/dlasd5.f \
+double/dlasd6.f \
+double/dlasd7.f \
+double/dlasd8.f \
+double/dlasda.f \
+double/dlasdq.f \
+double/dlasdt.f \
 double/dlaset.f \
+double/dlasq1.f \
+double/dlasq2.f \
+double/dlasq3.f \
+double/dlasq4.f \
+double/dlasq5.f \
+double/dlasq6.f \
+double/dlasr.f \
+double/dlasrt.f \
 double/dlassq.f \
+double/dlasv2.f \
 double/dlaswp.f \
 double/dlasy2.f \
 double/dlatrs.f \
 double/dlatrz.f \
 double/dorg2r.f \
+double/dorgbr.f \
 double/dorghr.f \
+double/dorgl2.f \
+double/dorglq.f \
 double/dorgqr.f \
 double/dorm2r.f \
+double/dormbr.f \
+double/dorml2.f \
+double/dormlq.f \
 double/dormqr.f \
 double/dormr3.f \
 double/dormrz.f \
@@ -278,36 +347,47 @@ double/dtrexc.f \
 double/dtrsna.f \
 double/dtzrzf.f \
 double/dzsum1.f \
+single/sbdsdc.f \
+single/sbdsqr.f \
 single/scsum1.f \
 single/sgebak.f \
 single/sgebal.f \
+single/sgebd2.f \
+single/sgebrd.f \
 single/sgecon.f \
 single/sgeequ.f \
 single/sgeevx.f \
 single/sgehd2.f \
 single/sgehrd.f \
+single/sgelq2.f \
+single/sgelqf.f \
 single/sgelsy.f \
 single/sgeqp3.f \
 single/sgeqr2.f \
 single/sgeqrf.f \
 single/sgerfs.f \
+single/sgesdd.f \
 single/sgesvx.f \
 single/sgetf2.f \
 single/sgetrf.f \
 single/sgetrs.f \
 single/shseqr.f \
 single/slabad.f \
+single/slabrd.f \
 single/slacon.f \
 single/slacpy.f \
 single/sladiv.f \
+single/slaed6.f \
 single/slaexc.f \
 single/slahqr.f \
 single/slahrd.f \
 single/slaic1.f \
 single/slaln2.f \
 single/slamch.f \
+single/slamrg.f \
 single/slange.f \
 single/slanhs.f \
+single/slanst.f \
 single/slantr.f \
 single/slanv2.f \
 single/slapy2.f \
@@ -325,17 +405,45 @@ single/slartg.f \
 single/slarzb.f \
 single/slarz.f \
 single/slarzt.f \
+single/slas2.f \
 single/slascl.f \
+single/slasd0.f \
+single/slasd1.f \
+single/slasd2.f \
+single/slasd3.f \
+single/slasd4.f \
+single/slasd5.f \
+single/slasd6.f \
+single/slasd7.f \
+single/slasd8.f \
+single/slasda.f \
+single/slasdq.f \
+single/slasdt.f \
 single/slaset.f \
+single/slasq1.f \
+single/slasq2.f \
+single/slasq3.f \
+single/slasq4.f \
+single/slasq5.f \
+single/slasq6.f \
+single/slasr.f \
+single/slasrt.f \
 single/slassq.f \
+single/slasv2.f \
 single/slaswp.f \
 single/slasy2.f \
 single/slatrs.f \
 single/slatrz.f \
 single/sorg2r.f \
+single/sorgbr.f \
 single/sorghr.f \
+single/sorgl2.f \
+single/sorglq.f \
 single/sorgqr.f \
 single/sorm2r.f \
+single/sormbr.f \
+single/sorml2.f \
+single/sormlq.f \
 single/sormqr.f \
 single/sormr3.f \
 single/sormrz.f \
@@ -347,7 +455,7 @@ single/stzrzf.f \
 util/icmax1.f \
 util/ieeeck.f \
 util/ilaenv.f \
-util/izmax1.f 
+util/izmax1.f
 
 
 EXTRA_DIST = bootstrap
@@ -360,35 +468,43 @@ LIBRARIES = $(noinst_LIBRARIES)
 libMiniLAPACK_a_AR = $(AR) cru
 libMiniLAPACK_a_LIBADD =
 am_libMiniLAPACK_a_OBJECTS = zdrscl.$(OBJEXT) zgebak.$(OBJEXT) \
-	zgebal.$(OBJEXT) zgecon.$(OBJEXT) zgeequ.$(OBJEXT) \
-	zgeevx.$(OBJEXT) zgehd2.$(OBJEXT) zgehrd.$(OBJEXT) \
-	zgelsy.$(OBJEXT) zgeqp3.$(OBJEXT) zgeqr2.$(OBJEXT) \
-	zgeqrf.$(OBJEXT) zgerfs.$(OBJEXT) zgesvx.$(OBJEXT) \
-	zgetf2.$(OBJEXT) zgetrf.$(OBJEXT) zgetrs.$(OBJEXT) \
-	zhseqr.$(OBJEXT) zlacgv.$(OBJEXT) zlacon.$(OBJEXT) \
-	zlacpy.$(OBJEXT) zladiv.$(OBJEXT) zlahqr.$(OBJEXT) \
-	zlahrd.$(OBJEXT) zlaic1.$(OBJEXT) zlange.$(OBJEXT) \
-	zlanhs.$(OBJEXT) zlantr.$(OBJEXT) zlaqge.$(OBJEXT) \
-	zlaqp2.$(OBJEXT) zlaqps.$(OBJEXT) zlarfb.$(OBJEXT) \
+	zgebal.$(OBJEXT) zgebd2.$(OBJEXT) zgebrd.$(OBJEXT) \
+	zgecon.$(OBJEXT) zgeequ.$(OBJEXT) zgeevx.$(OBJEXT) \
+	zgehd2.$(OBJEXT) zgehrd.$(OBJEXT) zgelq2.$(OBJEXT) \
+	zgelqf.$(OBJEXT) zgelsy.$(OBJEXT) zgeqp3.$(OBJEXT) \
+	zgeqr2.$(OBJEXT) zgeqrf.$(OBJEXT) zgerfs.$(OBJEXT) \
+	zgesdd.$(OBJEXT) zgesvx.$(OBJEXT) zgetf2.$(OBJEXT) \
+	zgetrf.$(OBJEXT) zgetrs.$(OBJEXT) zhseqr.$(OBJEXT) \
+	zlabrd.$(OBJEXT) zlacgv.$(OBJEXT) zlacon.$(OBJEXT) \
+	zlacp2.$(OBJEXT) zlacpy.$(OBJEXT) zlacrm.$(OBJEXT) \
+	zladiv.$(OBJEXT) zlahqr.$(OBJEXT) zlahrd.$(OBJEXT) \
+	zlaic1.$(OBJEXT) zlange.$(OBJEXT) zlanhs.$(OBJEXT) \
+	zlantr.$(OBJEXT) zlaqge.$(OBJEXT) zlaqp2.$(OBJEXT) \
+	zlaqps.$(OBJEXT) zlarcm.$(OBJEXT) zlarfb.$(OBJEXT) \
 	zlarf.$(OBJEXT) zlarfg.$(OBJEXT) zlarft.$(OBJEXT) \
 	zlarfx.$(OBJEXT) zlartg.$(OBJEXT) zlarzb.$(OBJEXT) \
 	zlarz.$(OBJEXT) zlarzt.$(OBJEXT) zlascl.$(OBJEXT) \
 	zlaset.$(OBJEXT) zlassq.$(OBJEXT) zlaswp.$(OBJEXT) \
 	zlatrs.$(OBJEXT) zlatrz.$(OBJEXT) zrot.$(OBJEXT) \
 	ztrevc.$(OBJEXT) ztrexc.$(OBJEXT) ztrsna.$(OBJEXT) \
-	ztzrzf.$(OBJEXT) zung2r.$(OBJEXT) zunghr.$(OBJEXT) \
-	zungqr.$(OBJEXT) zunm2r.$(OBJEXT) zunmqr.$(OBJEXT) \
+	ztzrzf.$(OBJEXT) zung2r.$(OBJEXT) zungbr.$(OBJEXT) \
+	zunghr.$(OBJEXT) zungl2.$(OBJEXT) zunglq.$(OBJEXT) \
+	zungqr.$(OBJEXT) zunm2r.$(OBJEXT) zunmbr.$(OBJEXT) \
+	zunml2.$(OBJEXT) zunmlq.$(OBJEXT) zunmqr.$(OBJEXT) \
 	zunmr3.$(OBJEXT) zunmrz.$(OBJEXT) cgebak.$(OBJEXT) \
-	cgebal.$(OBJEXT) cgecon.$(OBJEXT) cgeequ.$(OBJEXT) \
-	cgeevx.$(OBJEXT) cgehd2.$(OBJEXT) cgehrd.$(OBJEXT) \
-	cgelsy.$(OBJEXT) cgeqp3.$(OBJEXT) cgeqr2.$(OBJEXT) \
-	cgeqrf.$(OBJEXT) cgerfs.$(OBJEXT) cgesvx.$(OBJEXT) \
-	cgetf2.$(OBJEXT) cgetrf.$(OBJEXT) cgetrs.$(OBJEXT) \
-	chseqr.$(OBJEXT) clacgv.$(OBJEXT) clacon.$(OBJEXT) \
-	clacpy.$(OBJEXT) cladiv.$(OBJEXT) clahqr.$(OBJEXT) \
-	clahrd.$(OBJEXT) claic1.$(OBJEXT) clange.$(OBJEXT) \
-	clanhs.$(OBJEXT) clantr.$(OBJEXT) claqge.$(OBJEXT) \
-	claqp2.$(OBJEXT) claqps.$(OBJEXT) clarfb.$(OBJEXT) \
+	cgebal.$(OBJEXT) cgebd2.$(OBJEXT) cgebrd.$(OBJEXT) \
+	cgecon.$(OBJEXT) cgeequ.$(OBJEXT) cgeevx.$(OBJEXT) \
+	cgehd2.$(OBJEXT) cgehrd.$(OBJEXT) cgelq2.$(OBJEXT) \
+	cgelqf.$(OBJEXT) cgelsy.$(OBJEXT) cgeqp3.$(OBJEXT) \
+	cgeqr2.$(OBJEXT) cgeqrf.$(OBJEXT) cgerfs.$(OBJEXT) \
+	cgesdd.$(OBJEXT) cgesvx.$(OBJEXT) cgetf2.$(OBJEXT) \
+	cgetrf.$(OBJEXT) cgetrs.$(OBJEXT) chseqr.$(OBJEXT) \
+	clabrd.$(OBJEXT) clacgv.$(OBJEXT) clacon.$(OBJEXT) \
+	clacp2.$(OBJEXT) clacpy.$(OBJEXT) clacrm.$(OBJEXT) \
+	cladiv.$(OBJEXT) clahqr.$(OBJEXT) clahrd.$(OBJEXT) \
+	claic1.$(OBJEXT) clange.$(OBJEXT) clanhs.$(OBJEXT) \
+	clantr.$(OBJEXT) claqge.$(OBJEXT) claqp2.$(OBJEXT) \
+	claqps.$(OBJEXT) clarcm.$(OBJEXT) clarfb.$(OBJEXT) \
 	clarf.$(OBJEXT) clarfg.$(OBJEXT) clarft.$(OBJEXT) \
 	clarfx.$(OBJEXT) clartg.$(OBJEXT) clarzb.$(OBJEXT) \
 	clarz.$(OBJEXT) clarzt.$(OBJEXT) clascl.$(OBJEXT) \
@@ -396,50 +512,78 @@ am_libMiniLAPACK_a_OBJECTS = zdrscl.$(OBJEXT) zgebak.$(OBJEXT) \
 	clatrs.$(OBJEXT) clatrz.$(OBJEXT) crot.$(OBJEXT) \
 	csrscl.$(OBJEXT) ctrevc.$(OBJEXT) ctrexc.$(OBJEXT) \
 	ctrsna.$(OBJEXT) ctzrzf.$(OBJEXT) cung2r.$(OBJEXT) \
-	cunghr.$(OBJEXT) cungqr.$(OBJEXT) cunm2r.$(OBJEXT) \
+	cungbr.$(OBJEXT) cunghr.$(OBJEXT) cungl2.$(OBJEXT) \
+	cunglq.$(OBJEXT) cungqr.$(OBJEXT) cunm2r.$(OBJEXT) \
+	cunmbr.$(OBJEXT) cunml2.$(OBJEXT) cunmlq.$(OBJEXT) \
 	cunmqr.$(OBJEXT) cunmr3.$(OBJEXT) cunmrz.$(OBJEXT) \
-	dgebak.$(OBJEXT) dgebal.$(OBJEXT) dgecon.$(OBJEXT) \
-	dgeequ.$(OBJEXT) dgeevx.$(OBJEXT) dgehd2.$(OBJEXT) \
-	dgehrd.$(OBJEXT) dgelsy.$(OBJEXT) dgeqp3.$(OBJEXT) \
+	dbdsdc.$(OBJEXT) dbdsqr.$(OBJEXT) dgebak.$(OBJEXT) \
+	dgebal.$(OBJEXT) dgebd2.$(OBJEXT) dgebrd.$(OBJEXT) \
+	dgecon.$(OBJEXT) dgeequ.$(OBJEXT) dgeevx.$(OBJEXT) \
+	dgehd2.$(OBJEXT) dgehrd.$(OBJEXT) dgelq2.$(OBJEXT) \
+	dgelqf.$(OBJEXT) dgelsy.$(OBJEXT) dgeqp3.$(OBJEXT) \
 	dgeqr2.$(OBJEXT) dgeqrf.$(OBJEXT) dgerfs.$(OBJEXT) \
-	dgesvx.$(OBJEXT) dgetf2.$(OBJEXT) dgetrf.$(OBJEXT) \
-	dgetrs.$(OBJEXT) dhseqr.$(OBJEXT) dlabad.$(OBJEXT) \
-	dlacon.$(OBJEXT) dlacpy.$(OBJEXT) dladiv.$(OBJEXT) \
+	dgesdd.$(OBJEXT) dgesvx.$(OBJEXT) dgetf2.$(OBJEXT) \
+	dgetrf.$(OBJEXT) dgetrs.$(OBJEXT) dhseqr.$(OBJEXT) \
+	dlabad.$(OBJEXT) dlabrd.$(OBJEXT) dlacon.$(OBJEXT) \
+	dlacpy.$(OBJEXT) dladiv.$(OBJEXT) dlaed6.$(OBJEXT) \
 	dlaexc.$(OBJEXT) dlahqr.$(OBJEXT) dlahrd.$(OBJEXT) \
 	dlaic1.$(OBJEXT) dlaln2.$(OBJEXT) dlamch.$(OBJEXT) \
-	dlange.$(OBJEXT) dlanhs.$(OBJEXT) dlantr.$(OBJEXT) \
-	dlanv2.$(OBJEXT) dlapy2.$(OBJEXT) dlapy3.$(OBJEXT) \
-	dlaqge.$(OBJEXT) dlaqp2.$(OBJEXT) dlaqps.$(OBJEXT) \
-	dlaqtr.$(OBJEXT) dlarfb.$(OBJEXT) dlarf.$(OBJEXT) \
-	dlarfg.$(OBJEXT) dlarft.$(OBJEXT) dlarfx.$(OBJEXT) \
-	dlartg.$(OBJEXT) dlarzb.$(OBJEXT) dlarz.$(OBJEXT) \
-	dlarzt.$(OBJEXT) dlascl.$(OBJEXT) dlaset.$(OBJEXT) \
-	dlassq.$(OBJEXT) dlaswp.$(OBJEXT) dlasy2.$(OBJEXT) \
+	dlamrg.$(OBJEXT) dlange.$(OBJEXT) dlanhs.$(OBJEXT) \
+	dlanst.$(OBJEXT) dlantr.$(OBJEXT) dlanv2.$(OBJEXT) \
+	dlapy2.$(OBJEXT) dlapy3.$(OBJEXT) dlaqge.$(OBJEXT) \
+	dlaqp2.$(OBJEXT) dlaqps.$(OBJEXT) dlaqtr.$(OBJEXT) \
+	dlarfb.$(OBJEXT) dlarf.$(OBJEXT) dlarfg.$(OBJEXT) \
+	dlarft.$(OBJEXT) dlarfx.$(OBJEXT) dlartg.$(OBJEXT) \
+	dlarzb.$(OBJEXT) dlarz.$(OBJEXT) dlarzt.$(OBJEXT) \
+	dlas2.$(OBJEXT) dlascl.$(OBJEXT) dlasd0.$(OBJEXT) \
+	dlasd1.$(OBJEXT) dlasd2.$(OBJEXT) dlasd3.$(OBJEXT) \
+	dlasd4.$(OBJEXT) dlasd5.$(OBJEXT) dlasd6.$(OBJEXT) \
+	dlasd7.$(OBJEXT) dlasd8.$(OBJEXT) dlasda.$(OBJEXT) \
+	dlasdq.$(OBJEXT) dlasdt.$(OBJEXT) dlaset.$(OBJEXT) \
+	dlasq1.$(OBJEXT) dlasq2.$(OBJEXT) dlasq3.$(OBJEXT) \
+	dlasq4.$(OBJEXT) dlasq5.$(OBJEXT) dlasq6.$(OBJEXT) \
+	dlasr.$(OBJEXT) dlasrt.$(OBJEXT) dlassq.$(OBJEXT) \
+	dlasv2.$(OBJEXT) dlaswp.$(OBJEXT) dlasy2.$(OBJEXT) \
 	dlatrs.$(OBJEXT) dlatrz.$(OBJEXT) dorg2r.$(OBJEXT) \
-	dorghr.$(OBJEXT) dorgqr.$(OBJEXT) dorm2r.$(OBJEXT) \
+	dorgbr.$(OBJEXT) dorghr.$(OBJEXT) dorgl2.$(OBJEXT) \
+	dorglq.$(OBJEXT) dorgqr.$(OBJEXT) dorm2r.$(OBJEXT) \
+	dormbr.$(OBJEXT) dorml2.$(OBJEXT) dormlq.$(OBJEXT) \
 	dormqr.$(OBJEXT) dormr3.$(OBJEXT) dormrz.$(OBJEXT) \
 	drscl.$(OBJEXT) dtrevc.$(OBJEXT) dtrexc.$(OBJEXT) \
 	dtrsna.$(OBJEXT) dtzrzf.$(OBJEXT) dzsum1.$(OBJEXT) \
-	scsum1.$(OBJEXT) sgebak.$(OBJEXT) sgebal.$(OBJEXT) \
-	sgecon.$(OBJEXT) sgeequ.$(OBJEXT) sgeevx.$(OBJEXT) \
-	sgehd2.$(OBJEXT) sgehrd.$(OBJEXT) sgelsy.$(OBJEXT) \
+	sbdsdc.$(OBJEXT) sbdsqr.$(OBJEXT) scsum1.$(OBJEXT) \
+	sgebak.$(OBJEXT) sgebal.$(OBJEXT) sgebd2.$(OBJEXT) \
+	sgebrd.$(OBJEXT) sgecon.$(OBJEXT) sgeequ.$(OBJEXT) \
+	sgeevx.$(OBJEXT) sgehd2.$(OBJEXT) sgehrd.$(OBJEXT) \
+	sgelq2.$(OBJEXT) sgelqf.$(OBJEXT) sgelsy.$(OBJEXT) \
 	sgeqp3.$(OBJEXT) sgeqr2.$(OBJEXT) sgeqrf.$(OBJEXT) \
-	sgerfs.$(OBJEXT) sgesvx.$(OBJEXT) sgetf2.$(OBJEXT) \
-	sgetrf.$(OBJEXT) sgetrs.$(OBJEXT) shseqr.$(OBJEXT) \
-	slabad.$(OBJEXT) slacon.$(OBJEXT) slacpy.$(OBJEXT) \
-	sladiv.$(OBJEXT) slaexc.$(OBJEXT) slahqr.$(OBJEXT) \
+	sgerfs.$(OBJEXT) sgesdd.$(OBJEXT) sgesvx.$(OBJEXT) \
+	sgetf2.$(OBJEXT) sgetrf.$(OBJEXT) sgetrs.$(OBJEXT) \
+	shseqr.$(OBJEXT) slabad.$(OBJEXT) slabrd.$(OBJEXT) \
+	slacon.$(OBJEXT) slacpy.$(OBJEXT) sladiv.$(OBJEXT) \
+	slaed6.$(OBJEXT) slaexc.$(OBJEXT) slahqr.$(OBJEXT) \
 	slahrd.$(OBJEXT) slaic1.$(OBJEXT) slaln2.$(OBJEXT) \
-	slamch.$(OBJEXT) slange.$(OBJEXT) slanhs.$(OBJEXT) \
-	slantr.$(OBJEXT) slanv2.$(OBJEXT) slapy2.$(OBJEXT) \
-	slapy3.$(OBJEXT) slaqge.$(OBJEXT) slaqp2.$(OBJEXT) \
-	slaqps.$(OBJEXT) slaqtr.$(OBJEXT) slarfb.$(OBJEXT) \
-	slarf.$(OBJEXT) slarfg.$(OBJEXT) slarft.$(OBJEXT) \
-	slarfx.$(OBJEXT) slartg.$(OBJEXT) slarzb.$(OBJEXT) \
-	slarz.$(OBJEXT) slarzt.$(OBJEXT) slascl.$(OBJEXT) \
-	slaset.$(OBJEXT) slassq.$(OBJEXT) slaswp.$(OBJEXT) \
+	slamch.$(OBJEXT) slamrg.$(OBJEXT) slange.$(OBJEXT) \
+	slanhs.$(OBJEXT) slanst.$(OBJEXT) slantr.$(OBJEXT) \
+	slanv2.$(OBJEXT) slapy2.$(OBJEXT) slapy3.$(OBJEXT) \
+	slaqge.$(OBJEXT) slaqp2.$(OBJEXT) slaqps.$(OBJEXT) \
+	slaqtr.$(OBJEXT) slarfb.$(OBJEXT) slarf.$(OBJEXT) \
+	slarfg.$(OBJEXT) slarft.$(OBJEXT) slarfx.$(OBJEXT) \
+	slartg.$(OBJEXT) slarzb.$(OBJEXT) slarz.$(OBJEXT) \
+	slarzt.$(OBJEXT) slas2.$(OBJEXT) slascl.$(OBJEXT) \
+	slasd0.$(OBJEXT) slasd1.$(OBJEXT) slasd2.$(OBJEXT) \
+	slasd3.$(OBJEXT) slasd4.$(OBJEXT) slasd5.$(OBJEXT) \
+	slasd6.$(OBJEXT) slasd7.$(OBJEXT) slasd8.$(OBJEXT) \
+	slasda.$(OBJEXT) slasdq.$(OBJEXT) slasdt.$(OBJEXT) \
+	slaset.$(OBJEXT) slasq1.$(OBJEXT) slasq2.$(OBJEXT) \
+	slasq3.$(OBJEXT) slasq4.$(OBJEXT) slasq5.$(OBJEXT) \
+	slasq6.$(OBJEXT) slasr.$(OBJEXT) slasrt.$(OBJEXT) \
+	slassq.$(OBJEXT) slasv2.$(OBJEXT) slaswp.$(OBJEXT) \
 	slasy2.$(OBJEXT) slatrs.$(OBJEXT) slatrz.$(OBJEXT) \
-	sorg2r.$(OBJEXT) sorghr.$(OBJEXT) sorgqr.$(OBJEXT) \
-	sorm2r.$(OBJEXT) sormqr.$(OBJEXT) sormr3.$(OBJEXT) \
+	sorg2r.$(OBJEXT) sorgbr.$(OBJEXT) sorghr.$(OBJEXT) \
+	sorgl2.$(OBJEXT) sorglq.$(OBJEXT) sorgqr.$(OBJEXT) \
+	sorm2r.$(OBJEXT) sormbr.$(OBJEXT) sorml2.$(OBJEXT) \
+	sormlq.$(OBJEXT) sormqr.$(OBJEXT) sormr3.$(OBJEXT) \
 	sormrz.$(OBJEXT) srscl.$(OBJEXT) strevc.$(OBJEXT) \
 	strexc.$(OBJEXT) strsna.$(OBJEXT) stzrzf.$(OBJEXT) \
 	icmax1.$(OBJEXT) ieeeck.$(OBJEXT) ilaenv.$(OBJEXT) \
@@ -476,24 +620,32 @@ clean-noinstLIBRARIES:
 zdrscl.$(OBJEXT): complex16/zdrscl.f
 zgebak.$(OBJEXT): complex16/zgebak.f
 zgebal.$(OBJEXT): complex16/zgebal.f
+zgebd2.$(OBJEXT): complex16/zgebd2.f
+zgebrd.$(OBJEXT): complex16/zgebrd.f
 zgecon.$(OBJEXT): complex16/zgecon.f
 zgeequ.$(OBJEXT): complex16/zgeequ.f
 zgeevx.$(OBJEXT): complex16/zgeevx.f
 zgehd2.$(OBJEXT): complex16/zgehd2.f
 zgehrd.$(OBJEXT): complex16/zgehrd.f
+zgelq2.$(OBJEXT): complex16/zgelq2.f
+zgelqf.$(OBJEXT): complex16/zgelqf.f
 zgelsy.$(OBJEXT): complex16/zgelsy.f
 zgeqp3.$(OBJEXT): complex16/zgeqp3.f
 zgeqr2.$(OBJEXT): complex16/zgeqr2.f
 zgeqrf.$(OBJEXT): complex16/zgeqrf.f
 zgerfs.$(OBJEXT): complex16/zgerfs.f
+zgesdd.$(OBJEXT): complex16/zgesdd.f
 zgesvx.$(OBJEXT): complex16/zgesvx.f
 zgetf2.$(OBJEXT): complex16/zgetf2.f
 zgetrf.$(OBJEXT): complex16/zgetrf.f
 zgetrs.$(OBJEXT): complex16/zgetrs.f
 zhseqr.$(OBJEXT): complex16/zhseqr.f
+zlabrd.$(OBJEXT): complex16/zlabrd.f
 zlacgv.$(OBJEXT): complex16/zlacgv.f
 zlacon.$(OBJEXT): complex16/zlacon.f
+zlacp2.$(OBJEXT): complex16/zlacp2.f
 zlacpy.$(OBJEXT): complex16/zlacpy.f
+zlacrm.$(OBJEXT): complex16/zlacrm.f
 zladiv.$(OBJEXT): complex16/zladiv.f
 zlahqr.$(OBJEXT): complex16/zlahqr.f
 zlahrd.$(OBJEXT): complex16/zlahrd.f
@@ -504,6 +656,7 @@ zlantr.$(OBJEXT): complex16/zlantr.f
 zlaqge.$(OBJEXT): complex16/zlaqge.f
 zlaqp2.$(OBJEXT): complex16/zlaqp2.f
 zlaqps.$(OBJEXT): complex16/zlaqps.f
+zlarcm.$(OBJEXT): complex16/zlarcm.f
 zlarfb.$(OBJEXT): complex16/zlarfb.f
 zlarf.$(OBJEXT): complex16/zlarf.f
 zlarfg.$(OBJEXT): complex16/zlarfg.f
@@ -525,32 +678,46 @@ ztrexc.$(OBJEXT): complex16/ztrexc.f
 ztrsna.$(OBJEXT): complex16/ztrsna.f
 ztzrzf.$(OBJEXT): complex16/ztzrzf.f
 zung2r.$(OBJEXT): complex16/zung2r.f
+zungbr.$(OBJEXT): complex16/zungbr.f
 zunghr.$(OBJEXT): complex16/zunghr.f
+zungl2.$(OBJEXT): complex16/zungl2.f
+zunglq.$(OBJEXT): complex16/zunglq.f
 zungqr.$(OBJEXT): complex16/zungqr.f
 zunm2r.$(OBJEXT): complex16/zunm2r.f
+zunmbr.$(OBJEXT): complex16/zunmbr.f
+zunml2.$(OBJEXT): complex16/zunml2.f
+zunmlq.$(OBJEXT): complex16/zunmlq.f
 zunmqr.$(OBJEXT): complex16/zunmqr.f
 zunmr3.$(OBJEXT): complex16/zunmr3.f
 zunmrz.$(OBJEXT): complex16/zunmrz.f
 cgebak.$(OBJEXT): complex/cgebak.f
 cgebal.$(OBJEXT): complex/cgebal.f
+cgebd2.$(OBJEXT): complex/cgebd2.f
+cgebrd.$(OBJEXT): complex/cgebrd.f
 cgecon.$(OBJEXT): complex/cgecon.f
 cgeequ.$(OBJEXT): complex/cgeequ.f
 cgeevx.$(OBJEXT): complex/cgeevx.f
 cgehd2.$(OBJEXT): complex/cgehd2.f
 cgehrd.$(OBJEXT): complex/cgehrd.f
+cgelq2.$(OBJEXT): complex/cgelq2.f
+cgelqf.$(OBJEXT): complex/cgelqf.f
 cgelsy.$(OBJEXT): complex/cgelsy.f
 cgeqp3.$(OBJEXT): complex/cgeqp3.f
 cgeqr2.$(OBJEXT): complex/cgeqr2.f
 cgeqrf.$(OBJEXT): complex/cgeqrf.f
 cgerfs.$(OBJEXT): complex/cgerfs.f
+cgesdd.$(OBJEXT): complex/cgesdd.f
 cgesvx.$(OBJEXT): complex/cgesvx.f
 cgetf2.$(OBJEXT): complex/cgetf2.f
 cgetrf.$(OBJEXT): complex/cgetrf.f
 cgetrs.$(OBJEXT): complex/cgetrs.f
 chseqr.$(OBJEXT): complex/chseqr.f
+clabrd.$(OBJEXT): complex/clabrd.f
 clacgv.$(OBJEXT): complex/clacgv.f
 clacon.$(OBJEXT): complex/clacon.f
+clacp2.$(OBJEXT): complex/clacp2.f
 clacpy.$(OBJEXT): complex/clacpy.f
+clacrm.$(OBJEXT): complex/clacrm.f
 cladiv.$(OBJEXT): complex/cladiv.f
 clahqr.$(OBJEXT): complex/clahqr.f
 clahrd.$(OBJEXT): complex/clahrd.f
@@ -561,6 +728,7 @@ clantr.$(OBJEXT): complex/clantr.f
 claqge.$(OBJEXT): complex/claqge.f
 claqp2.$(OBJEXT): complex/claqp2.f
 claqps.$(OBJEXT): complex/claqps.f
+clarcm.$(OBJEXT): complex/clarcm.f
 clarfb.$(OBJEXT): complex/clarfb.f
 clarf.$(OBJEXT): complex/clarf.f
 clarfg.$(OBJEXT): complex/clarfg.f
@@ -583,41 +751,58 @@ ctrexc.$(OBJEXT): complex/ctrexc.f
 ctrsna.$(OBJEXT): complex/ctrsna.f
 ctzrzf.$(OBJEXT): complex/ctzrzf.f
 cung2r.$(OBJEXT): complex/cung2r.f
+cungbr.$(OBJEXT): complex/cungbr.f
 cunghr.$(OBJEXT): complex/cunghr.f
+cungl2.$(OBJEXT): complex/cungl2.f
+cunglq.$(OBJEXT): complex/cunglq.f
 cungqr.$(OBJEXT): complex/cungqr.f
 cunm2r.$(OBJEXT): complex/cunm2r.f
+cunmbr.$(OBJEXT): complex/cunmbr.f
+cunml2.$(OBJEXT): complex/cunml2.f
+cunmlq.$(OBJEXT): complex/cunmlq.f
 cunmqr.$(OBJEXT): complex/cunmqr.f
 cunmr3.$(OBJEXT): complex/cunmr3.f
 cunmrz.$(OBJEXT): complex/cunmrz.f
+dbdsdc.$(OBJEXT): double/dbdsdc.f
+dbdsqr.$(OBJEXT): double/dbdsqr.f
 dgebak.$(OBJEXT): double/dgebak.f
 dgebal.$(OBJEXT): double/dgebal.f
+dgebd2.$(OBJEXT): double/dgebd2.f
+dgebrd.$(OBJEXT): double/dgebrd.f
 dgecon.$(OBJEXT): double/dgecon.f
 dgeequ.$(OBJEXT): double/dgeequ.f
 dgeevx.$(OBJEXT): double/dgeevx.f
 dgehd2.$(OBJEXT): double/dgehd2.f
 dgehrd.$(OBJEXT): double/dgehrd.f
+dgelq2.$(OBJEXT): double/dgelq2.f
+dgelqf.$(OBJEXT): double/dgelqf.f
 dgelsy.$(OBJEXT): double/dgelsy.f
 dgeqp3.$(OBJEXT): double/dgeqp3.f
 dgeqr2.$(OBJEXT): double/dgeqr2.f
 dgeqrf.$(OBJEXT): double/dgeqrf.f
 dgerfs.$(OBJEXT): double/dgerfs.f
+dgesdd.$(OBJEXT): double/dgesdd.f
 dgesvx.$(OBJEXT): double/dgesvx.f
 dgetf2.$(OBJEXT): double/dgetf2.f
 dgetrf.$(OBJEXT): double/dgetrf.f
 dgetrs.$(OBJEXT): double/dgetrs.f
 dhseqr.$(OBJEXT): double/dhseqr.f
 dlabad.$(OBJEXT): double/dlabad.f
+dlabrd.$(OBJEXT): double/dlabrd.f
 dlacon.$(OBJEXT): double/dlacon.f
 dlacpy.$(OBJEXT): double/dlacpy.f
 dladiv.$(OBJEXT): double/dladiv.f
+dlaed6.$(OBJEXT): double/dlaed6.f
 dlaexc.$(OBJEXT): double/dlaexc.f
 dlahqr.$(OBJEXT): double/dlahqr.f
 dlahrd.$(OBJEXT): double/dlahrd.f
 dlaic1.$(OBJEXT): double/dlaic1.f
 dlaln2.$(OBJEXT): double/dlaln2.f
 dlamch.$(OBJEXT): double/dlamch.f
+dlamrg.$(OBJEXT): double/dlamrg.f
 dlange.$(OBJEXT): double/dlange.f
 dlanhs.$(OBJEXT): double/dlanhs.f
+dlanst.$(OBJEXT): double/dlanst.f
 dlantr.$(OBJEXT): double/dlantr.f
 dlanv2.$(OBJEXT): double/dlanv2.f
 dlapy2.$(OBJEXT): double/dlapy2.f
@@ -635,17 +820,45 @@ dlartg.$(OBJEXT): double/dlartg.f
 dlarzb.$(OBJEXT): double/dlarzb.f
 dlarz.$(OBJEXT): double/dlarz.f
 dlarzt.$(OBJEXT): double/dlarzt.f
+dlas2.$(OBJEXT): double/dlas2.f
 dlascl.$(OBJEXT): double/dlascl.f
+dlasd0.$(OBJEXT): double/dlasd0.f
+dlasd1.$(OBJEXT): double/dlasd1.f
+dlasd2.$(OBJEXT): double/dlasd2.f
+dlasd3.$(OBJEXT): double/dlasd3.f
+dlasd4.$(OBJEXT): double/dlasd4.f
+dlasd5.$(OBJEXT): double/dlasd5.f
+dlasd6.$(OBJEXT): double/dlasd6.f
+dlasd7.$(OBJEXT): double/dlasd7.f
+dlasd8.$(OBJEXT): double/dlasd8.f
+dlasda.$(OBJEXT): double/dlasda.f
+dlasdq.$(OBJEXT): double/dlasdq.f
+dlasdt.$(OBJEXT): double/dlasdt.f
 dlaset.$(OBJEXT): double/dlaset.f
+dlasq1.$(OBJEXT): double/dlasq1.f
+dlasq2.$(OBJEXT): double/dlasq2.f
+dlasq3.$(OBJEXT): double/dlasq3.f
+dlasq4.$(OBJEXT): double/dlasq4.f
+dlasq5.$(OBJEXT): double/dlasq5.f
+dlasq6.$(OBJEXT): double/dlasq6.f
+dlasr.$(OBJEXT): double/dlasr.f
+dlasrt.$(OBJEXT): double/dlasrt.f
 dlassq.$(OBJEXT): double/dlassq.f
+dlasv2.$(OBJEXT): double/dlasv2.f
 dlaswp.$(OBJEXT): double/dlaswp.f
 dlasy2.$(OBJEXT): double/dlasy2.f
 dlatrs.$(OBJEXT): double/dlatrs.f
 dlatrz.$(OBJEXT): double/dlatrz.f
 dorg2r.$(OBJEXT): double/dorg2r.f
+dorgbr.$(OBJEXT): double/dorgbr.f
 dorghr.$(OBJEXT): double/dorghr.f
+dorgl2.$(OBJEXT): double/dorgl2.f
+dorglq.$(OBJEXT): double/dorglq.f
 dorgqr.$(OBJEXT): double/dorgqr.f
 dorm2r.$(OBJEXT): double/dorm2r.f
+dormbr.$(OBJEXT): double/dormbr.f
+dorml2.$(OBJEXT): double/dorml2.f
+dormlq.$(OBJEXT): double/dormlq.f
 dormqr.$(OBJEXT): double/dormqr.f
 dormr3.$(OBJEXT): double/dormr3.f
 dormrz.$(OBJEXT): double/dormrz.f
@@ -655,36 +868,47 @@ dtrexc.$(OBJEXT): double/dtrexc.f
 dtrsna.$(OBJEXT): double/dtrsna.f
 dtzrzf.$(OBJEXT): double/dtzrzf.f
 dzsum1.$(OBJEXT): double/dzsum1.f
+sbdsdc.$(OBJEXT): single/sbdsdc.f
+sbdsqr.$(OBJEXT): single/sbdsqr.f
 scsum1.$(OBJEXT): single/scsum1.f
 sgebak.$(OBJEXT): single/sgebak.f
 sgebal.$(OBJEXT): single/sgebal.f
+sgebd2.$(OBJEXT): single/sgebd2.f
+sgebrd.$(OBJEXT): single/sgebrd.f
 sgecon.$(OBJEXT): single/sgecon.f
 sgeequ.$(OBJEXT): single/sgeequ.f
 sgeevx.$(OBJEXT): single/sgeevx.f
 sgehd2.$(OBJEXT): single/sgehd2.f
 sgehrd.$(OBJEXT): single/sgehrd.f
+sgelq2.$(OBJEXT): single/sgelq2.f
+sgelqf.$(OBJEXT): single/sgelqf.f
 sgelsy.$(OBJEXT): single/sgelsy.f
 sgeqp3.$(OBJEXT): single/sgeqp3.f
 sgeqr2.$(OBJEXT): single/sgeqr2.f
 sgeqrf.$(OBJEXT): single/sgeqrf.f
 sgerfs.$(OBJEXT): single/sgerfs.f
+sgesdd.$(OBJEXT): single/sgesdd.f
 sgesvx.$(OBJEXT): single/sgesvx.f
 sgetf2.$(OBJEXT): single/sgetf2.f
 sgetrf.$(OBJEXT): single/sgetrf.f
 sgetrs.$(OBJEXT): single/sgetrs.f
 shseqr.$(OBJEXT): single/shseqr.f
 slabad.$(OBJEXT): single/slabad.f
+slabrd.$(OBJEXT): single/slabrd.f
 slacon.$(OBJEXT): single/slacon.f
 slacpy.$(OBJEXT): single/slacpy.f
 sladiv.$(OBJEXT): single/sladiv.f
+slaed6.$(OBJEXT): single/slaed6.f
 slaexc.$(OBJEXT): single/slaexc.f
 slahqr.$(OBJEXT): single/slahqr.f
 slahrd.$(OBJEXT): single/slahrd.f
 slaic1.$(OBJEXT): single/slaic1.f
 slaln2.$(OBJEXT): single/slaln2.f
 slamch.$(OBJEXT): single/slamch.f
+slamrg.$(OBJEXT): single/slamrg.f
 slange.$(OBJEXT): single/slange.f
 slanhs.$(OBJEXT): single/slanhs.f
+slanst.$(OBJEXT): single/slanst.f
 slantr.$(OBJEXT): single/slantr.f
 slanv2.$(OBJEXT): single/slanv2.f
 slapy2.$(OBJEXT): single/slapy2.f
@@ -702,17 +926,45 @@ slartg.$(OBJEXT): single/slartg.f
 slarzb.$(OBJEXT): single/slarzb.f
 slarz.$(OBJEXT): single/slarz.f
 slarzt.$(OBJEXT): single/slarzt.f
+slas2.$(OBJEXT): single/slas2.f
 slascl.$(OBJEXT): single/slascl.f
+slasd0.$(OBJEXT): single/slasd0.f
+slasd1.$(OBJEXT): single/slasd1.f
+slasd2.$(OBJEXT): single/slasd2.f
+slasd3.$(OBJEXT): single/slasd3.f
+slasd4.$(OBJEXT): single/slasd4.f
+slasd5.$(OBJEXT): single/slasd5.f
+slasd6.$(OBJEXT): single/slasd6.f
+slasd7.$(OBJEXT): single/slasd7.f
+slasd8.$(OBJEXT): single/slasd8.f
+slasda.$(OBJEXT): single/slasda.f
+slasdq.$(OBJEXT): single/slasdq.f
+slasdt.$(OBJEXT): single/slasdt.f
 slaset.$(OBJEXT): single/slaset.f
+slasq1.$(OBJEXT): single/slasq1.f
+slasq2.$(OBJEXT): single/slasq2.f
+slasq3.$(OBJEXT): single/slasq3.f
+slasq4.$(OBJEXT): single/slasq4.f
+slasq5.$(OBJEXT): single/slasq5.f
+slasq6.$(OBJEXT): single/slasq6.f
+slasr.$(OBJEXT): single/slasr.f
+slasrt.$(OBJEXT): single/slasrt.f
 slassq.$(OBJEXT): single/slassq.f
+slasv2.$(OBJEXT): single/slasv2.f
 slaswp.$(OBJEXT): single/slaswp.f
 slasy2.$(OBJEXT): single/slasy2.f
 slatrs.$(OBJEXT): single/slatrs.f
 slatrz.$(OBJEXT): single/slatrz.f
 sorg2r.$(OBJEXT): single/sorg2r.f
+sorgbr.$(OBJEXT): single/sorgbr.f
 sorghr.$(OBJEXT): single/sorghr.f
+sorgl2.$(OBJEXT): single/sorgl2.f
+sorglq.$(OBJEXT): single/sorglq.f
 sorgqr.$(OBJEXT): single/sorgqr.f
 sorm2r.$(OBJEXT): single/sorm2r.f
+sormbr.$(OBJEXT): single/sormbr.f
+sorml2.$(OBJEXT): single/sorml2.f
+sormlq.$(OBJEXT): single/sormlq.f
 sormqr.$(OBJEXT): single/sormqr.f
 sormr3.$(OBJEXT): single/sormr3.f
 sormrz.$(OBJEXT): single/sormrz.f
@@ -760,6 +1012,18 @@ zgebal.o: complex16/zgebal.f
 zgebal.obj: complex16/zgebal.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgebal.obj `cygpath -w complex16/zgebal.f`
 
+zgebd2.o: complex16/zgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgebd2.o `test -f 'complex16/zgebd2.f' || echo '$(srcdir)/'`complex16/zgebd2.f
+
+zgebd2.obj: complex16/zgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgebd2.obj `cygpath -w complex16/zgebd2.f`
+
+zgebrd.o: complex16/zgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgebrd.o `test -f 'complex16/zgebrd.f' || echo '$(srcdir)/'`complex16/zgebrd.f
+
+zgebrd.obj: complex16/zgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgebrd.obj `cygpath -w complex16/zgebrd.f`
+
 zgecon.o: complex16/zgecon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgecon.o `test -f 'complex16/zgecon.f' || echo '$(srcdir)/'`complex16/zgecon.f
 
@@ -789,6 +1053,18 @@ zgehrd.o: complex16/zgehrd.f
 
 zgehrd.obj: complex16/zgehrd.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgehrd.obj `cygpath -w complex16/zgehrd.f`
+
+zgelq2.o: complex16/zgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgelq2.o `test -f 'complex16/zgelq2.f' || echo '$(srcdir)/'`complex16/zgelq2.f
+
+zgelq2.obj: complex16/zgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgelq2.obj `cygpath -w complex16/zgelq2.f`
+
+zgelqf.o: complex16/zgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgelqf.o `test -f 'complex16/zgelqf.f' || echo '$(srcdir)/'`complex16/zgelqf.f
+
+zgelqf.obj: complex16/zgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgelqf.obj `cygpath -w complex16/zgelqf.f`
 
 zgelsy.o: complex16/zgelsy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgelsy.o `test -f 'complex16/zgelsy.f' || echo '$(srcdir)/'`complex16/zgelsy.f
@@ -820,6 +1096,12 @@ zgerfs.o: complex16/zgerfs.f
 zgerfs.obj: complex16/zgerfs.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgerfs.obj `cygpath -w complex16/zgerfs.f`
 
+zgesdd.o: complex16/zgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgesdd.o `test -f 'complex16/zgesdd.f' || echo '$(srcdir)/'`complex16/zgesdd.f
+
+zgesdd.obj: complex16/zgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgesdd.obj `cygpath -w complex16/zgesdd.f`
+
 zgesvx.o: complex16/zgesvx.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zgesvx.o `test -f 'complex16/zgesvx.f' || echo '$(srcdir)/'`complex16/zgesvx.f
 
@@ -850,6 +1132,12 @@ zhseqr.o: complex16/zhseqr.f
 zhseqr.obj: complex16/zhseqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zhseqr.obj `cygpath -w complex16/zhseqr.f`
 
+zlabrd.o: complex16/zlabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlabrd.o `test -f 'complex16/zlabrd.f' || echo '$(srcdir)/'`complex16/zlabrd.f
+
+zlabrd.obj: complex16/zlabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlabrd.obj `cygpath -w complex16/zlabrd.f`
+
 zlacgv.o: complex16/zlacgv.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacgv.o `test -f 'complex16/zlacgv.f' || echo '$(srcdir)/'`complex16/zlacgv.f
 
@@ -862,11 +1150,23 @@ zlacon.o: complex16/zlacon.f
 zlacon.obj: complex16/zlacon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacon.obj `cygpath -w complex16/zlacon.f`
 
+zlacp2.o: complex16/zlacp2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacp2.o `test -f 'complex16/zlacp2.f' || echo '$(srcdir)/'`complex16/zlacp2.f
+
+zlacp2.obj: complex16/zlacp2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacp2.obj `cygpath -w complex16/zlacp2.f`
+
 zlacpy.o: complex16/zlacpy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacpy.o `test -f 'complex16/zlacpy.f' || echo '$(srcdir)/'`complex16/zlacpy.f
 
 zlacpy.obj: complex16/zlacpy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacpy.obj `cygpath -w complex16/zlacpy.f`
+
+zlacrm.o: complex16/zlacrm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacrm.o `test -f 'complex16/zlacrm.f' || echo '$(srcdir)/'`complex16/zlacrm.f
+
+zlacrm.obj: complex16/zlacrm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlacrm.obj `cygpath -w complex16/zlacrm.f`
 
 zladiv.o: complex16/zladiv.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zladiv.o `test -f 'complex16/zladiv.f' || echo '$(srcdir)/'`complex16/zladiv.f
@@ -927,6 +1227,12 @@ zlaqps.o: complex16/zlaqps.f
 
 zlaqps.obj: complex16/zlaqps.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlaqps.obj `cygpath -w complex16/zlaqps.f`
+
+zlarcm.o: complex16/zlarcm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlarcm.o `test -f 'complex16/zlarcm.f' || echo '$(srcdir)/'`complex16/zlarcm.f
+
+zlarcm.obj: complex16/zlarcm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlarcm.obj `cygpath -w complex16/zlarcm.f`
 
 zlarfb.o: complex16/zlarfb.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zlarfb.o `test -f 'complex16/zlarfb.f' || echo '$(srcdir)/'`complex16/zlarfb.f
@@ -1054,11 +1360,29 @@ zung2r.o: complex16/zung2r.f
 zung2r.obj: complex16/zung2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zung2r.obj `cygpath -w complex16/zung2r.f`
 
+zungbr.o: complex16/zungbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zungbr.o `test -f 'complex16/zungbr.f' || echo '$(srcdir)/'`complex16/zungbr.f
+
+zungbr.obj: complex16/zungbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zungbr.obj `cygpath -w complex16/zungbr.f`
+
 zunghr.o: complex16/zunghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunghr.o `test -f 'complex16/zunghr.f' || echo '$(srcdir)/'`complex16/zunghr.f
 
 zunghr.obj: complex16/zunghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunghr.obj `cygpath -w complex16/zunghr.f`
+
+zungl2.o: complex16/zungl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zungl2.o `test -f 'complex16/zungl2.f' || echo '$(srcdir)/'`complex16/zungl2.f
+
+zungl2.obj: complex16/zungl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zungl2.obj `cygpath -w complex16/zungl2.f`
+
+zunglq.o: complex16/zunglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunglq.o `test -f 'complex16/zunglq.f' || echo '$(srcdir)/'`complex16/zunglq.f
+
+zunglq.obj: complex16/zunglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunglq.obj `cygpath -w complex16/zunglq.f`
 
 zungqr.o: complex16/zungqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zungqr.o `test -f 'complex16/zungqr.f' || echo '$(srcdir)/'`complex16/zungqr.f
@@ -1071,6 +1395,24 @@ zunm2r.o: complex16/zunm2r.f
 
 zunm2r.obj: complex16/zunm2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunm2r.obj `cygpath -w complex16/zunm2r.f`
+
+zunmbr.o: complex16/zunmbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunmbr.o `test -f 'complex16/zunmbr.f' || echo '$(srcdir)/'`complex16/zunmbr.f
+
+zunmbr.obj: complex16/zunmbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunmbr.obj `cygpath -w complex16/zunmbr.f`
+
+zunml2.o: complex16/zunml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunml2.o `test -f 'complex16/zunml2.f' || echo '$(srcdir)/'`complex16/zunml2.f
+
+zunml2.obj: complex16/zunml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunml2.obj `cygpath -w complex16/zunml2.f`
+
+zunmlq.o: complex16/zunmlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunmlq.o `test -f 'complex16/zunmlq.f' || echo '$(srcdir)/'`complex16/zunmlq.f
+
+zunmlq.obj: complex16/zunmlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunmlq.obj `cygpath -w complex16/zunmlq.f`
 
 zunmqr.o: complex16/zunmqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o zunmqr.o `test -f 'complex16/zunmqr.f' || echo '$(srcdir)/'`complex16/zunmqr.f
@@ -1102,6 +1444,18 @@ cgebal.o: complex/cgebal.f
 cgebal.obj: complex/cgebal.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgebal.obj `cygpath -w complex/cgebal.f`
 
+cgebd2.o: complex/cgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgebd2.o `test -f 'complex/cgebd2.f' || echo '$(srcdir)/'`complex/cgebd2.f
+
+cgebd2.obj: complex/cgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgebd2.obj `cygpath -w complex/cgebd2.f`
+
+cgebrd.o: complex/cgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgebrd.o `test -f 'complex/cgebrd.f' || echo '$(srcdir)/'`complex/cgebrd.f
+
+cgebrd.obj: complex/cgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgebrd.obj `cygpath -w complex/cgebrd.f`
+
 cgecon.o: complex/cgecon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgecon.o `test -f 'complex/cgecon.f' || echo '$(srcdir)/'`complex/cgecon.f
 
@@ -1131,6 +1485,18 @@ cgehrd.o: complex/cgehrd.f
 
 cgehrd.obj: complex/cgehrd.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgehrd.obj `cygpath -w complex/cgehrd.f`
+
+cgelq2.o: complex/cgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgelq2.o `test -f 'complex/cgelq2.f' || echo '$(srcdir)/'`complex/cgelq2.f
+
+cgelq2.obj: complex/cgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgelq2.obj `cygpath -w complex/cgelq2.f`
+
+cgelqf.o: complex/cgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgelqf.o `test -f 'complex/cgelqf.f' || echo '$(srcdir)/'`complex/cgelqf.f
+
+cgelqf.obj: complex/cgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgelqf.obj `cygpath -w complex/cgelqf.f`
 
 cgelsy.o: complex/cgelsy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgelsy.o `test -f 'complex/cgelsy.f' || echo '$(srcdir)/'`complex/cgelsy.f
@@ -1162,6 +1528,12 @@ cgerfs.o: complex/cgerfs.f
 cgerfs.obj: complex/cgerfs.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgerfs.obj `cygpath -w complex/cgerfs.f`
 
+cgesdd.o: complex/cgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgesdd.o `test -f 'complex/cgesdd.f' || echo '$(srcdir)/'`complex/cgesdd.f
+
+cgesdd.obj: complex/cgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgesdd.obj `cygpath -w complex/cgesdd.f`
+
 cgesvx.o: complex/cgesvx.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cgesvx.o `test -f 'complex/cgesvx.f' || echo '$(srcdir)/'`complex/cgesvx.f
 
@@ -1192,6 +1564,12 @@ chseqr.o: complex/chseqr.f
 chseqr.obj: complex/chseqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o chseqr.obj `cygpath -w complex/chseqr.f`
 
+clabrd.o: complex/clabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clabrd.o `test -f 'complex/clabrd.f' || echo '$(srcdir)/'`complex/clabrd.f
+
+clabrd.obj: complex/clabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clabrd.obj `cygpath -w complex/clabrd.f`
+
 clacgv.o: complex/clacgv.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacgv.o `test -f 'complex/clacgv.f' || echo '$(srcdir)/'`complex/clacgv.f
 
@@ -1204,11 +1582,23 @@ clacon.o: complex/clacon.f
 clacon.obj: complex/clacon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacon.obj `cygpath -w complex/clacon.f`
 
+clacp2.o: complex/clacp2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacp2.o `test -f 'complex/clacp2.f' || echo '$(srcdir)/'`complex/clacp2.f
+
+clacp2.obj: complex/clacp2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacp2.obj `cygpath -w complex/clacp2.f`
+
 clacpy.o: complex/clacpy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacpy.o `test -f 'complex/clacpy.f' || echo '$(srcdir)/'`complex/clacpy.f
 
 clacpy.obj: complex/clacpy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacpy.obj `cygpath -w complex/clacpy.f`
+
+clacrm.o: complex/clacrm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacrm.o `test -f 'complex/clacrm.f' || echo '$(srcdir)/'`complex/clacrm.f
+
+clacrm.obj: complex/clacrm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clacrm.obj `cygpath -w complex/clacrm.f`
 
 cladiv.o: complex/cladiv.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cladiv.o `test -f 'complex/cladiv.f' || echo '$(srcdir)/'`complex/cladiv.f
@@ -1269,6 +1659,12 @@ claqps.o: complex/claqps.f
 
 claqps.obj: complex/claqps.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o claqps.obj `cygpath -w complex/claqps.f`
+
+clarcm.o: complex/clarcm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clarcm.o `test -f 'complex/clarcm.f' || echo '$(srcdir)/'`complex/clarcm.f
+
+clarcm.obj: complex/clarcm.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clarcm.obj `cygpath -w complex/clarcm.f`
 
 clarfb.o: complex/clarfb.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o clarfb.o `test -f 'complex/clarfb.f' || echo '$(srcdir)/'`complex/clarfb.f
@@ -1402,11 +1798,29 @@ cung2r.o: complex/cung2r.f
 cung2r.obj: complex/cung2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cung2r.obj `cygpath -w complex/cung2r.f`
 
+cungbr.o: complex/cungbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cungbr.o `test -f 'complex/cungbr.f' || echo '$(srcdir)/'`complex/cungbr.f
+
+cungbr.obj: complex/cungbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cungbr.obj `cygpath -w complex/cungbr.f`
+
 cunghr.o: complex/cunghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunghr.o `test -f 'complex/cunghr.f' || echo '$(srcdir)/'`complex/cunghr.f
 
 cunghr.obj: complex/cunghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunghr.obj `cygpath -w complex/cunghr.f`
+
+cungl2.o: complex/cungl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cungl2.o `test -f 'complex/cungl2.f' || echo '$(srcdir)/'`complex/cungl2.f
+
+cungl2.obj: complex/cungl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cungl2.obj `cygpath -w complex/cungl2.f`
+
+cunglq.o: complex/cunglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunglq.o `test -f 'complex/cunglq.f' || echo '$(srcdir)/'`complex/cunglq.f
+
+cunglq.obj: complex/cunglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunglq.obj `cygpath -w complex/cunglq.f`
 
 cungqr.o: complex/cungqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cungqr.o `test -f 'complex/cungqr.f' || echo '$(srcdir)/'`complex/cungqr.f
@@ -1419,6 +1833,24 @@ cunm2r.o: complex/cunm2r.f
 
 cunm2r.obj: complex/cunm2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunm2r.obj `cygpath -w complex/cunm2r.f`
+
+cunmbr.o: complex/cunmbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunmbr.o `test -f 'complex/cunmbr.f' || echo '$(srcdir)/'`complex/cunmbr.f
+
+cunmbr.obj: complex/cunmbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunmbr.obj `cygpath -w complex/cunmbr.f`
+
+cunml2.o: complex/cunml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunml2.o `test -f 'complex/cunml2.f' || echo '$(srcdir)/'`complex/cunml2.f
+
+cunml2.obj: complex/cunml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunml2.obj `cygpath -w complex/cunml2.f`
+
+cunmlq.o: complex/cunmlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunmlq.o `test -f 'complex/cunmlq.f' || echo '$(srcdir)/'`complex/cunmlq.f
+
+cunmlq.obj: complex/cunmlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunmlq.obj `cygpath -w complex/cunmlq.f`
 
 cunmqr.o: complex/cunmqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunmqr.o `test -f 'complex/cunmqr.f' || echo '$(srcdir)/'`complex/cunmqr.f
@@ -1438,6 +1870,18 @@ cunmrz.o: complex/cunmrz.f
 cunmrz.obj: complex/cunmrz.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o cunmrz.obj `cygpath -w complex/cunmrz.f`
 
+dbdsdc.o: double/dbdsdc.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dbdsdc.o `test -f 'double/dbdsdc.f' || echo '$(srcdir)/'`double/dbdsdc.f
+
+dbdsdc.obj: double/dbdsdc.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dbdsdc.obj `cygpath -w double/dbdsdc.f`
+
+dbdsqr.o: double/dbdsqr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dbdsqr.o `test -f 'double/dbdsqr.f' || echo '$(srcdir)/'`double/dbdsqr.f
+
+dbdsqr.obj: double/dbdsqr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dbdsqr.obj `cygpath -w double/dbdsqr.f`
+
 dgebak.o: double/dgebak.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgebak.o `test -f 'double/dgebak.f' || echo '$(srcdir)/'`double/dgebak.f
 
@@ -1449,6 +1893,18 @@ dgebal.o: double/dgebal.f
 
 dgebal.obj: double/dgebal.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgebal.obj `cygpath -w double/dgebal.f`
+
+dgebd2.o: double/dgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgebd2.o `test -f 'double/dgebd2.f' || echo '$(srcdir)/'`double/dgebd2.f
+
+dgebd2.obj: double/dgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgebd2.obj `cygpath -w double/dgebd2.f`
+
+dgebrd.o: double/dgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgebrd.o `test -f 'double/dgebrd.f' || echo '$(srcdir)/'`double/dgebrd.f
+
+dgebrd.obj: double/dgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgebrd.obj `cygpath -w double/dgebrd.f`
 
 dgecon.o: double/dgecon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgecon.o `test -f 'double/dgecon.f' || echo '$(srcdir)/'`double/dgecon.f
@@ -1480,6 +1936,18 @@ dgehrd.o: double/dgehrd.f
 dgehrd.obj: double/dgehrd.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgehrd.obj `cygpath -w double/dgehrd.f`
 
+dgelq2.o: double/dgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgelq2.o `test -f 'double/dgelq2.f' || echo '$(srcdir)/'`double/dgelq2.f
+
+dgelq2.obj: double/dgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgelq2.obj `cygpath -w double/dgelq2.f`
+
+dgelqf.o: double/dgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgelqf.o `test -f 'double/dgelqf.f' || echo '$(srcdir)/'`double/dgelqf.f
+
+dgelqf.obj: double/dgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgelqf.obj `cygpath -w double/dgelqf.f`
+
 dgelsy.o: double/dgelsy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgelsy.o `test -f 'double/dgelsy.f' || echo '$(srcdir)/'`double/dgelsy.f
 
@@ -1509,6 +1977,12 @@ dgerfs.o: double/dgerfs.f
 
 dgerfs.obj: double/dgerfs.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgerfs.obj `cygpath -w double/dgerfs.f`
+
+dgesdd.o: double/dgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgesdd.o `test -f 'double/dgesdd.f' || echo '$(srcdir)/'`double/dgesdd.f
+
+dgesdd.obj: double/dgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgesdd.obj `cygpath -w double/dgesdd.f`
 
 dgesvx.o: double/dgesvx.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dgesvx.o `test -f 'double/dgesvx.f' || echo '$(srcdir)/'`double/dgesvx.f
@@ -1546,6 +2020,12 @@ dlabad.o: double/dlabad.f
 dlabad.obj: double/dlabad.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlabad.obj `cygpath -w double/dlabad.f`
 
+dlabrd.o: double/dlabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlabrd.o `test -f 'double/dlabrd.f' || echo '$(srcdir)/'`double/dlabrd.f
+
+dlabrd.obj: double/dlabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlabrd.obj `cygpath -w double/dlabrd.f`
+
 dlacon.o: double/dlacon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlacon.o `test -f 'double/dlacon.f' || echo '$(srcdir)/'`double/dlacon.f
 
@@ -1563,6 +2043,12 @@ dladiv.o: double/dladiv.f
 
 dladiv.obj: double/dladiv.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dladiv.obj `cygpath -w double/dladiv.f`
+
+dlaed6.o: double/dlaed6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlaed6.o `test -f 'double/dlaed6.f' || echo '$(srcdir)/'`double/dlaed6.f
+
+dlaed6.obj: double/dlaed6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlaed6.obj `cygpath -w double/dlaed6.f`
 
 dlaexc.o: double/dlaexc.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlaexc.o `test -f 'double/dlaexc.f' || echo '$(srcdir)/'`double/dlaexc.f
@@ -1600,6 +2086,12 @@ dlamch.o: double/dlamch.f
 dlamch.obj: double/dlamch.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlamch.obj `cygpath -w double/dlamch.f`
 
+dlamrg.o: double/dlamrg.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlamrg.o `test -f 'double/dlamrg.f' || echo '$(srcdir)/'`double/dlamrg.f
+
+dlamrg.obj: double/dlamrg.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlamrg.obj `cygpath -w double/dlamrg.f`
+
 dlange.o: double/dlange.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlange.o `test -f 'double/dlange.f' || echo '$(srcdir)/'`double/dlange.f
 
@@ -1611,6 +2103,12 @@ dlanhs.o: double/dlanhs.f
 
 dlanhs.obj: double/dlanhs.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlanhs.obj `cygpath -w double/dlanhs.f`
+
+dlanst.o: double/dlanst.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlanst.o `test -f 'double/dlanst.f' || echo '$(srcdir)/'`double/dlanst.f
+
+dlanst.obj: double/dlanst.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlanst.obj `cygpath -w double/dlanst.f`
 
 dlantr.o: double/dlantr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlantr.o `test -f 'double/dlantr.f' || echo '$(srcdir)/'`double/dlantr.f
@@ -1714,11 +2212,89 @@ dlarzt.o: double/dlarzt.f
 dlarzt.obj: double/dlarzt.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlarzt.obj `cygpath -w double/dlarzt.f`
 
+dlas2.o: double/dlas2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlas2.o `test -f 'double/dlas2.f' || echo '$(srcdir)/'`double/dlas2.f
+
+dlas2.obj: double/dlas2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlas2.obj `cygpath -w double/dlas2.f`
+
 dlascl.o: double/dlascl.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlascl.o `test -f 'double/dlascl.f' || echo '$(srcdir)/'`double/dlascl.f
 
 dlascl.obj: double/dlascl.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlascl.obj `cygpath -w double/dlascl.f`
+
+dlasd0.o: double/dlasd0.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd0.o `test -f 'double/dlasd0.f' || echo '$(srcdir)/'`double/dlasd0.f
+
+dlasd0.obj: double/dlasd0.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd0.obj `cygpath -w double/dlasd0.f`
+
+dlasd1.o: double/dlasd1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd1.o `test -f 'double/dlasd1.f' || echo '$(srcdir)/'`double/dlasd1.f
+
+dlasd1.obj: double/dlasd1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd1.obj `cygpath -w double/dlasd1.f`
+
+dlasd2.o: double/dlasd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd2.o `test -f 'double/dlasd2.f' || echo '$(srcdir)/'`double/dlasd2.f
+
+dlasd2.obj: double/dlasd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd2.obj `cygpath -w double/dlasd2.f`
+
+dlasd3.o: double/dlasd3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd3.o `test -f 'double/dlasd3.f' || echo '$(srcdir)/'`double/dlasd3.f
+
+dlasd3.obj: double/dlasd3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd3.obj `cygpath -w double/dlasd3.f`
+
+dlasd4.o: double/dlasd4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd4.o `test -f 'double/dlasd4.f' || echo '$(srcdir)/'`double/dlasd4.f
+
+dlasd4.obj: double/dlasd4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd4.obj `cygpath -w double/dlasd4.f`
+
+dlasd5.o: double/dlasd5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd5.o `test -f 'double/dlasd5.f' || echo '$(srcdir)/'`double/dlasd5.f
+
+dlasd5.obj: double/dlasd5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd5.obj `cygpath -w double/dlasd5.f`
+
+dlasd6.o: double/dlasd6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd6.o `test -f 'double/dlasd6.f' || echo '$(srcdir)/'`double/dlasd6.f
+
+dlasd6.obj: double/dlasd6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd6.obj `cygpath -w double/dlasd6.f`
+
+dlasd7.o: double/dlasd7.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd7.o `test -f 'double/dlasd7.f' || echo '$(srcdir)/'`double/dlasd7.f
+
+dlasd7.obj: double/dlasd7.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd7.obj `cygpath -w double/dlasd7.f`
+
+dlasd8.o: double/dlasd8.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd8.o `test -f 'double/dlasd8.f' || echo '$(srcdir)/'`double/dlasd8.f
+
+dlasd8.obj: double/dlasd8.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasd8.obj `cygpath -w double/dlasd8.f`
+
+dlasda.o: double/dlasda.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasda.o `test -f 'double/dlasda.f' || echo '$(srcdir)/'`double/dlasda.f
+
+dlasda.obj: double/dlasda.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasda.obj `cygpath -w double/dlasda.f`
+
+dlasdq.o: double/dlasdq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasdq.o `test -f 'double/dlasdq.f' || echo '$(srcdir)/'`double/dlasdq.f
+
+dlasdq.obj: double/dlasdq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasdq.obj `cygpath -w double/dlasdq.f`
+
+dlasdt.o: double/dlasdt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasdt.o `test -f 'double/dlasdt.f' || echo '$(srcdir)/'`double/dlasdt.f
+
+dlasdt.obj: double/dlasdt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasdt.obj `cygpath -w double/dlasdt.f`
 
 dlaset.o: double/dlaset.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlaset.o `test -f 'double/dlaset.f' || echo '$(srcdir)/'`double/dlaset.f
@@ -1726,11 +2302,65 @@ dlaset.o: double/dlaset.f
 dlaset.obj: double/dlaset.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlaset.obj `cygpath -w double/dlaset.f`
 
+dlasq1.o: double/dlasq1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq1.o `test -f 'double/dlasq1.f' || echo '$(srcdir)/'`double/dlasq1.f
+
+dlasq1.obj: double/dlasq1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq1.obj `cygpath -w double/dlasq1.f`
+
+dlasq2.o: double/dlasq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq2.o `test -f 'double/dlasq2.f' || echo '$(srcdir)/'`double/dlasq2.f
+
+dlasq2.obj: double/dlasq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq2.obj `cygpath -w double/dlasq2.f`
+
+dlasq3.o: double/dlasq3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq3.o `test -f 'double/dlasq3.f' || echo '$(srcdir)/'`double/dlasq3.f
+
+dlasq3.obj: double/dlasq3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq3.obj `cygpath -w double/dlasq3.f`
+
+dlasq4.o: double/dlasq4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq4.o `test -f 'double/dlasq4.f' || echo '$(srcdir)/'`double/dlasq4.f
+
+dlasq4.obj: double/dlasq4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq4.obj `cygpath -w double/dlasq4.f`
+
+dlasq5.o: double/dlasq5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq5.o `test -f 'double/dlasq5.f' || echo '$(srcdir)/'`double/dlasq5.f
+
+dlasq5.obj: double/dlasq5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq5.obj `cygpath -w double/dlasq5.f`
+
+dlasq6.o: double/dlasq6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq6.o `test -f 'double/dlasq6.f' || echo '$(srcdir)/'`double/dlasq6.f
+
+dlasq6.obj: double/dlasq6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasq6.obj `cygpath -w double/dlasq6.f`
+
+dlasr.o: double/dlasr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasr.o `test -f 'double/dlasr.f' || echo '$(srcdir)/'`double/dlasr.f
+
+dlasr.obj: double/dlasr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasr.obj `cygpath -w double/dlasr.f`
+
+dlasrt.o: double/dlasrt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasrt.o `test -f 'double/dlasrt.f' || echo '$(srcdir)/'`double/dlasrt.f
+
+dlasrt.obj: double/dlasrt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasrt.obj `cygpath -w double/dlasrt.f`
+
 dlassq.o: double/dlassq.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlassq.o `test -f 'double/dlassq.f' || echo '$(srcdir)/'`double/dlassq.f
 
 dlassq.obj: double/dlassq.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlassq.obj `cygpath -w double/dlassq.f`
+
+dlasv2.o: double/dlasv2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasv2.o `test -f 'double/dlasv2.f' || echo '$(srcdir)/'`double/dlasv2.f
+
+dlasv2.obj: double/dlasv2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlasv2.obj `cygpath -w double/dlasv2.f`
 
 dlaswp.o: double/dlaswp.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dlaswp.o `test -f 'double/dlaswp.f' || echo '$(srcdir)/'`double/dlaswp.f
@@ -1762,11 +2392,29 @@ dorg2r.o: double/dorg2r.f
 dorg2r.obj: double/dorg2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorg2r.obj `cygpath -w double/dorg2r.f`
 
+dorgbr.o: double/dorgbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorgbr.o `test -f 'double/dorgbr.f' || echo '$(srcdir)/'`double/dorgbr.f
+
+dorgbr.obj: double/dorgbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorgbr.obj `cygpath -w double/dorgbr.f`
+
 dorghr.o: double/dorghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorghr.o `test -f 'double/dorghr.f' || echo '$(srcdir)/'`double/dorghr.f
 
 dorghr.obj: double/dorghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorghr.obj `cygpath -w double/dorghr.f`
+
+dorgl2.o: double/dorgl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorgl2.o `test -f 'double/dorgl2.f' || echo '$(srcdir)/'`double/dorgl2.f
+
+dorgl2.obj: double/dorgl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorgl2.obj `cygpath -w double/dorgl2.f`
+
+dorglq.o: double/dorglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorglq.o `test -f 'double/dorglq.f' || echo '$(srcdir)/'`double/dorglq.f
+
+dorglq.obj: double/dorglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorglq.obj `cygpath -w double/dorglq.f`
 
 dorgqr.o: double/dorgqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorgqr.o `test -f 'double/dorgqr.f' || echo '$(srcdir)/'`double/dorgqr.f
@@ -1779,6 +2427,24 @@ dorm2r.o: double/dorm2r.f
 
 dorm2r.obj: double/dorm2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorm2r.obj `cygpath -w double/dorm2r.f`
+
+dormbr.o: double/dormbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dormbr.o `test -f 'double/dormbr.f' || echo '$(srcdir)/'`double/dormbr.f
+
+dormbr.obj: double/dormbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dormbr.obj `cygpath -w double/dormbr.f`
+
+dorml2.o: double/dorml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorml2.o `test -f 'double/dorml2.f' || echo '$(srcdir)/'`double/dorml2.f
+
+dorml2.obj: double/dorml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dorml2.obj `cygpath -w double/dorml2.f`
+
+dormlq.o: double/dormlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dormlq.o `test -f 'double/dormlq.f' || echo '$(srcdir)/'`double/dormlq.f
+
+dormlq.obj: double/dormlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dormlq.obj `cygpath -w double/dormlq.f`
 
 dormqr.o: double/dormqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dormqr.o `test -f 'double/dormqr.f' || echo '$(srcdir)/'`double/dormqr.f
@@ -1834,6 +2500,18 @@ dzsum1.o: double/dzsum1.f
 dzsum1.obj: double/dzsum1.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o dzsum1.obj `cygpath -w double/dzsum1.f`
 
+sbdsdc.o: single/sbdsdc.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sbdsdc.o `test -f 'single/sbdsdc.f' || echo '$(srcdir)/'`single/sbdsdc.f
+
+sbdsdc.obj: single/sbdsdc.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sbdsdc.obj `cygpath -w single/sbdsdc.f`
+
+sbdsqr.o: single/sbdsqr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sbdsqr.o `test -f 'single/sbdsqr.f' || echo '$(srcdir)/'`single/sbdsqr.f
+
+sbdsqr.obj: single/sbdsqr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sbdsqr.obj `cygpath -w single/sbdsqr.f`
+
 scsum1.o: single/scsum1.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o scsum1.o `test -f 'single/scsum1.f' || echo '$(srcdir)/'`single/scsum1.f
 
@@ -1851,6 +2529,18 @@ sgebal.o: single/sgebal.f
 
 sgebal.obj: single/sgebal.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgebal.obj `cygpath -w single/sgebal.f`
+
+sgebd2.o: single/sgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgebd2.o `test -f 'single/sgebd2.f' || echo '$(srcdir)/'`single/sgebd2.f
+
+sgebd2.obj: single/sgebd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgebd2.obj `cygpath -w single/sgebd2.f`
+
+sgebrd.o: single/sgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgebrd.o `test -f 'single/sgebrd.f' || echo '$(srcdir)/'`single/sgebrd.f
+
+sgebrd.obj: single/sgebrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgebrd.obj `cygpath -w single/sgebrd.f`
 
 sgecon.o: single/sgecon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgecon.o `test -f 'single/sgecon.f' || echo '$(srcdir)/'`single/sgecon.f
@@ -1882,6 +2572,18 @@ sgehrd.o: single/sgehrd.f
 sgehrd.obj: single/sgehrd.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgehrd.obj `cygpath -w single/sgehrd.f`
 
+sgelq2.o: single/sgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgelq2.o `test -f 'single/sgelq2.f' || echo '$(srcdir)/'`single/sgelq2.f
+
+sgelq2.obj: single/sgelq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgelq2.obj `cygpath -w single/sgelq2.f`
+
+sgelqf.o: single/sgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgelqf.o `test -f 'single/sgelqf.f' || echo '$(srcdir)/'`single/sgelqf.f
+
+sgelqf.obj: single/sgelqf.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgelqf.obj `cygpath -w single/sgelqf.f`
+
 sgelsy.o: single/sgelsy.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgelsy.o `test -f 'single/sgelsy.f' || echo '$(srcdir)/'`single/sgelsy.f
 
@@ -1911,6 +2613,12 @@ sgerfs.o: single/sgerfs.f
 
 sgerfs.obj: single/sgerfs.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgerfs.obj `cygpath -w single/sgerfs.f`
+
+sgesdd.o: single/sgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgesdd.o `test -f 'single/sgesdd.f' || echo '$(srcdir)/'`single/sgesdd.f
+
+sgesdd.obj: single/sgesdd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgesdd.obj `cygpath -w single/sgesdd.f`
 
 sgesvx.o: single/sgesvx.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sgesvx.o `test -f 'single/sgesvx.f' || echo '$(srcdir)/'`single/sgesvx.f
@@ -1948,6 +2656,12 @@ slabad.o: single/slabad.f
 slabad.obj: single/slabad.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slabad.obj `cygpath -w single/slabad.f`
 
+slabrd.o: single/slabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slabrd.o `test -f 'single/slabrd.f' || echo '$(srcdir)/'`single/slabrd.f
+
+slabrd.obj: single/slabrd.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slabrd.obj `cygpath -w single/slabrd.f`
+
 slacon.o: single/slacon.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slacon.o `test -f 'single/slacon.f' || echo '$(srcdir)/'`single/slacon.f
 
@@ -1965,6 +2679,12 @@ sladiv.o: single/sladiv.f
 
 sladiv.obj: single/sladiv.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sladiv.obj `cygpath -w single/sladiv.f`
+
+slaed6.o: single/slaed6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slaed6.o `test -f 'single/slaed6.f' || echo '$(srcdir)/'`single/slaed6.f
+
+slaed6.obj: single/slaed6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slaed6.obj `cygpath -w single/slaed6.f`
 
 slaexc.o: single/slaexc.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slaexc.o `test -f 'single/slaexc.f' || echo '$(srcdir)/'`single/slaexc.f
@@ -2002,6 +2722,12 @@ slamch.o: single/slamch.f
 slamch.obj: single/slamch.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slamch.obj `cygpath -w single/slamch.f`
 
+slamrg.o: single/slamrg.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slamrg.o `test -f 'single/slamrg.f' || echo '$(srcdir)/'`single/slamrg.f
+
+slamrg.obj: single/slamrg.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slamrg.obj `cygpath -w single/slamrg.f`
+
 slange.o: single/slange.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slange.o `test -f 'single/slange.f' || echo '$(srcdir)/'`single/slange.f
 
@@ -2013,6 +2739,12 @@ slanhs.o: single/slanhs.f
 
 slanhs.obj: single/slanhs.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slanhs.obj `cygpath -w single/slanhs.f`
+
+slanst.o: single/slanst.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slanst.o `test -f 'single/slanst.f' || echo '$(srcdir)/'`single/slanst.f
+
+slanst.obj: single/slanst.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slanst.obj `cygpath -w single/slanst.f`
 
 slantr.o: single/slantr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slantr.o `test -f 'single/slantr.f' || echo '$(srcdir)/'`single/slantr.f
@@ -2116,11 +2848,89 @@ slarzt.o: single/slarzt.f
 slarzt.obj: single/slarzt.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slarzt.obj `cygpath -w single/slarzt.f`
 
+slas2.o: single/slas2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slas2.o `test -f 'single/slas2.f' || echo '$(srcdir)/'`single/slas2.f
+
+slas2.obj: single/slas2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slas2.obj `cygpath -w single/slas2.f`
+
 slascl.o: single/slascl.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slascl.o `test -f 'single/slascl.f' || echo '$(srcdir)/'`single/slascl.f
 
 slascl.obj: single/slascl.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slascl.obj `cygpath -w single/slascl.f`
+
+slasd0.o: single/slasd0.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd0.o `test -f 'single/slasd0.f' || echo '$(srcdir)/'`single/slasd0.f
+
+slasd0.obj: single/slasd0.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd0.obj `cygpath -w single/slasd0.f`
+
+slasd1.o: single/slasd1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd1.o `test -f 'single/slasd1.f' || echo '$(srcdir)/'`single/slasd1.f
+
+slasd1.obj: single/slasd1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd1.obj `cygpath -w single/slasd1.f`
+
+slasd2.o: single/slasd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd2.o `test -f 'single/slasd2.f' || echo '$(srcdir)/'`single/slasd2.f
+
+slasd2.obj: single/slasd2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd2.obj `cygpath -w single/slasd2.f`
+
+slasd3.o: single/slasd3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd3.o `test -f 'single/slasd3.f' || echo '$(srcdir)/'`single/slasd3.f
+
+slasd3.obj: single/slasd3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd3.obj `cygpath -w single/slasd3.f`
+
+slasd4.o: single/slasd4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd4.o `test -f 'single/slasd4.f' || echo '$(srcdir)/'`single/slasd4.f
+
+slasd4.obj: single/slasd4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd4.obj `cygpath -w single/slasd4.f`
+
+slasd5.o: single/slasd5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd5.o `test -f 'single/slasd5.f' || echo '$(srcdir)/'`single/slasd5.f
+
+slasd5.obj: single/slasd5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd5.obj `cygpath -w single/slasd5.f`
+
+slasd6.o: single/slasd6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd6.o `test -f 'single/slasd6.f' || echo '$(srcdir)/'`single/slasd6.f
+
+slasd6.obj: single/slasd6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd6.obj `cygpath -w single/slasd6.f`
+
+slasd7.o: single/slasd7.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd7.o `test -f 'single/slasd7.f' || echo '$(srcdir)/'`single/slasd7.f
+
+slasd7.obj: single/slasd7.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd7.obj `cygpath -w single/slasd7.f`
+
+slasd8.o: single/slasd8.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd8.o `test -f 'single/slasd8.f' || echo '$(srcdir)/'`single/slasd8.f
+
+slasd8.obj: single/slasd8.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasd8.obj `cygpath -w single/slasd8.f`
+
+slasda.o: single/slasda.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasda.o `test -f 'single/slasda.f' || echo '$(srcdir)/'`single/slasda.f
+
+slasda.obj: single/slasda.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasda.obj `cygpath -w single/slasda.f`
+
+slasdq.o: single/slasdq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasdq.o `test -f 'single/slasdq.f' || echo '$(srcdir)/'`single/slasdq.f
+
+slasdq.obj: single/slasdq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasdq.obj `cygpath -w single/slasdq.f`
+
+slasdt.o: single/slasdt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasdt.o `test -f 'single/slasdt.f' || echo '$(srcdir)/'`single/slasdt.f
+
+slasdt.obj: single/slasdt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasdt.obj `cygpath -w single/slasdt.f`
 
 slaset.o: single/slaset.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slaset.o `test -f 'single/slaset.f' || echo '$(srcdir)/'`single/slaset.f
@@ -2128,11 +2938,65 @@ slaset.o: single/slaset.f
 slaset.obj: single/slaset.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slaset.obj `cygpath -w single/slaset.f`
 
+slasq1.o: single/slasq1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq1.o `test -f 'single/slasq1.f' || echo '$(srcdir)/'`single/slasq1.f
+
+slasq1.obj: single/slasq1.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq1.obj `cygpath -w single/slasq1.f`
+
+slasq2.o: single/slasq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq2.o `test -f 'single/slasq2.f' || echo '$(srcdir)/'`single/slasq2.f
+
+slasq2.obj: single/slasq2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq2.obj `cygpath -w single/slasq2.f`
+
+slasq3.o: single/slasq3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq3.o `test -f 'single/slasq3.f' || echo '$(srcdir)/'`single/slasq3.f
+
+slasq3.obj: single/slasq3.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq3.obj `cygpath -w single/slasq3.f`
+
+slasq4.o: single/slasq4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq4.o `test -f 'single/slasq4.f' || echo '$(srcdir)/'`single/slasq4.f
+
+slasq4.obj: single/slasq4.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq4.obj `cygpath -w single/slasq4.f`
+
+slasq5.o: single/slasq5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq5.o `test -f 'single/slasq5.f' || echo '$(srcdir)/'`single/slasq5.f
+
+slasq5.obj: single/slasq5.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq5.obj `cygpath -w single/slasq5.f`
+
+slasq6.o: single/slasq6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq6.o `test -f 'single/slasq6.f' || echo '$(srcdir)/'`single/slasq6.f
+
+slasq6.obj: single/slasq6.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasq6.obj `cygpath -w single/slasq6.f`
+
+slasr.o: single/slasr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasr.o `test -f 'single/slasr.f' || echo '$(srcdir)/'`single/slasr.f
+
+slasr.obj: single/slasr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasr.obj `cygpath -w single/slasr.f`
+
+slasrt.o: single/slasrt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasrt.o `test -f 'single/slasrt.f' || echo '$(srcdir)/'`single/slasrt.f
+
+slasrt.obj: single/slasrt.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasrt.obj `cygpath -w single/slasrt.f`
+
 slassq.o: single/slassq.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slassq.o `test -f 'single/slassq.f' || echo '$(srcdir)/'`single/slassq.f
 
 slassq.obj: single/slassq.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slassq.obj `cygpath -w single/slassq.f`
+
+slasv2.o: single/slasv2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasv2.o `test -f 'single/slasv2.f' || echo '$(srcdir)/'`single/slasv2.f
+
+slasv2.obj: single/slasv2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slasv2.obj `cygpath -w single/slasv2.f`
 
 slaswp.o: single/slaswp.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o slaswp.o `test -f 'single/slaswp.f' || echo '$(srcdir)/'`single/slaswp.f
@@ -2164,11 +3028,29 @@ sorg2r.o: single/sorg2r.f
 sorg2r.obj: single/sorg2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorg2r.obj `cygpath -w single/sorg2r.f`
 
+sorgbr.o: single/sorgbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorgbr.o `test -f 'single/sorgbr.f' || echo '$(srcdir)/'`single/sorgbr.f
+
+sorgbr.obj: single/sorgbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorgbr.obj `cygpath -w single/sorgbr.f`
+
 sorghr.o: single/sorghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorghr.o `test -f 'single/sorghr.f' || echo '$(srcdir)/'`single/sorghr.f
 
 sorghr.obj: single/sorghr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorghr.obj `cygpath -w single/sorghr.f`
+
+sorgl2.o: single/sorgl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorgl2.o `test -f 'single/sorgl2.f' || echo '$(srcdir)/'`single/sorgl2.f
+
+sorgl2.obj: single/sorgl2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorgl2.obj `cygpath -w single/sorgl2.f`
+
+sorglq.o: single/sorglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorglq.o `test -f 'single/sorglq.f' || echo '$(srcdir)/'`single/sorglq.f
+
+sorglq.obj: single/sorglq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorglq.obj `cygpath -w single/sorglq.f`
 
 sorgqr.o: single/sorgqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorgqr.o `test -f 'single/sorgqr.f' || echo '$(srcdir)/'`single/sorgqr.f
@@ -2181,6 +3063,24 @@ sorm2r.o: single/sorm2r.f
 
 sorm2r.obj: single/sorm2r.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorm2r.obj `cygpath -w single/sorm2r.f`
+
+sormbr.o: single/sormbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sormbr.o `test -f 'single/sormbr.f' || echo '$(srcdir)/'`single/sormbr.f
+
+sormbr.obj: single/sormbr.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sormbr.obj `cygpath -w single/sormbr.f`
+
+sorml2.o: single/sorml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorml2.o `test -f 'single/sorml2.f' || echo '$(srcdir)/'`single/sorml2.f
+
+sorml2.obj: single/sorml2.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sorml2.obj `cygpath -w single/sorml2.f`
+
+sormlq.o: single/sormlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sormlq.o `test -f 'single/sormlq.f' || echo '$(srcdir)/'`single/sormlq.f
+
+sormlq.obj: single/sormlq.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sormlq.obj `cygpath -w single/sormlq.f`
 
 sormqr.o: single/sormqr.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o sormqr.o `test -f 'single/sormqr.f' || echo '$(srcdir)/'`single/sormqr.f

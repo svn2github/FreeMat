@@ -49,6 +49,8 @@ Serialize.cpp \
 Serialize.hpp \
 ServerSocket.cpp \
 ServerSocket.hpp \
+SingularValueDecompose.cpp \
+SingularValueDecompose.hpp \
 Socket.cpp \
 Socket.hpp \
 Types.hpp \

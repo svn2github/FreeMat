@@ -145,6 +145,8 @@ Serialize.cpp \
 Serialize.hpp \
 ServerSocket.cpp \
 ServerSocket.hpp \
+SingularValueDecompose.cpp \
+SingularValueDecompose.hpp \
 Socket.cpp \
 Socket.hpp \
 Types.hpp \
@@ -177,8 +179,8 @@ am_libFreeMat_a_OBJECTS = Parser.$(OBJEXT) Lexer.$(OBJEXT) \
 	LeastSquaresSolver.$(OBJEXT) LinearEqSolver.$(OBJEXT) \
 	Malloc.$(OBJEXT) MatrixMultiply.$(OBJEXT) Module.$(OBJEXT) \
 	Reserved.$(OBJEXT) Scope.$(OBJEXT) Serialize.$(OBJEXT) \
-	ServerSocket.$(OBJEXT) Socket.$(OBJEXT) \
-	VectorOps_assist.$(OBJEXT) VectorOps.$(OBJEXT) \
+	ServerSocket.$(OBJEXT) SingularValueDecompose.$(OBJEXT) \
+	Socket.$(OBJEXT) VectorOps_assist.$(OBJEXT) VectorOps.$(OBJEXT) \
 	WalkTree.$(OBJEXT) File.$(OBJEXT)
 libFreeMat_a_OBJECTS = $(am_libFreeMat_a_OBJECTS)
 
@@ -202,8 +204,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/MatrixMultiply.Po ./$(DEPDIR)/Module.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Parser.Po ./$(DEPDIR)/Reserved.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Scope.Po ./$(DEPDIR)/Serialize.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/ServerSocket.Po ./$(DEPDIR)/Socket.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/VectorOps.Po ./$(DEPDIR)/WalkTree.Po
+@AMDEP_TRUE@	./$(DEPDIR)/ServerSocket.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SingularValueDecompose.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Socket.Po ./$(DEPDIR)/VectorOps.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/WalkTree.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -272,6 +276,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Scope.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Serialize.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ServerSocket.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SingularValueDecompose.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Socket.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VectorOps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WalkTree.Po@am__quote@

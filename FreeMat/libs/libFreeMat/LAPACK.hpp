@@ -102,9 +102,21 @@ extern "C" {
 	       int *IHI, double* SCALE, double* ABNRM, double* RCONDE,
 	       double* RCONDV, double *WORK, int *LWORK, double *RWORK,
 	       int *INFO);
+  void sgesdd_(char* JOBS, int* M, int *N, float* A, int *LDA, float *S, 
+	       float *U, int *LDU, float *VT, int *LDVT, float *WORK,
+	       int *LWORK, int *IWORK, int *INFO);
+  void dgesdd_(char* JOBS, int* M, int *N, double* A, int *LDA, double *S, 
+	       double *U, int *LDU, double *VT, int *LDVT, double *WORK,
+	       int *LWORK, int *IWORK, int *INFO);
+  void cgesdd_(char* JOBS, int* M, int *N, float* A, int *LDA, float *S, 
+	       float *U, int *LDU, float *VT, int *LDVT, float *WORK,
+	       int *LWORK, int *IWORK, int *INFO);
+  void zgesdd_(char* JOBS, int* M, int *N, double* A, int *LDA, double *S, 
+	       double *U, int *LDU, double *VT, int *LDVT, double *WORK,
+	       int *LWORK, int *IWORK, int *INFO);
 
-//   void sgecon_(char* NORM, int* N, float *A, int *LDA, float *ANORM,
-// 	       float *RCOND, float *WORK, int* IWORK, int *INFO);
+//   void sgecon_(char* NORM, int* N, double *A, int *LDA, double *ANORM,
+// 	       double *RCOND, double *WORK, int* IWORK, int *INFO);
 }
 
 namespace FreeMat {

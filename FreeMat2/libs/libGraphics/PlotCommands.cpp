@@ -588,7 +588,7 @@ namespace FreeMat {
       throw Exception("Plot does not handle N-ary arrays (one or more arguments supplied were not 1-D or 2-D).");
     int argptr = 0;
     // Start the plot 
-    Array x, y, sliceY, Z;
+    Array x, y, sliceY, sliceX, Z;
     // Reset the color generator
     ResetLineColors();
     Plot2D* f = GetCurrentPlot();
@@ -599,18 +599,36 @@ namespace FreeMat {
 	  Z = arg[argptr];
 	  // Get the real part into x;
  	  x = GetRealPart(Z);
+	  x.promoteType(FM_DOUBLE);
  	  // Get the imaginary part into y;
  	  y = GetImagPart(Z);
+	  y.promoteType(FM_DOUBLE);
 	  argptr++;
 	  // Check for a linestyle
 	  if (argptr < arg.size()) {
 	    if (arg[argptr].isString()) {
-	      linestyle = GetLineStyle(arg[argptr].getContentsAsCString());
+	      linestyle_arg = arg[argptr].getContentsAsCString();
 	      argptr++;
 	    }
 	  } else
-	    linestyle = GetLineStyle(NULL);
-	  f->AddPlot(DataSet2D(x,y,linestyle[0],linestyle[1],linestyle[2]));
+	    linestyle_arg = NULL;
+	  // Slice up x and y into columns...
+	  int columns = y.getDimensionLength(1);
+	  int rows = y.getDimensionLength(0);
+	  if ((columns != 1) && (rows != 1)) {
+	    for (int i=0;i<columns;i++) {
+	      Array ndx;
+	      ndx = Array::int32RangeConstructor(1+i*rows,1,rows+i*rows,true);
+	      sliceY = y.getVectorSubset(ndx);
+	      sliceX = x.getVectorSubset(ndx);
+	      linestyle = GetLineStyle(linestyle_arg);
+	      f->AddPlot(DataSet2D(sliceX,sliceY,linestyle[0],
+				   linestyle[1],linestyle[2]));
+	    }
+	  } else {
+	    linestyle = GetLineStyle(linestyle_arg);
+	    f->AddPlot(DataSet2D(x,y,linestyle[0],linestyle[1],linestyle[2])); 
+	  }
 	} else {
 	  x = arg[argptr];
 	  argptr++;

@@ -1,6 +1,11 @@
 #include "WinGC.hpp"
 #include "Reducer.hpp"
 
+#define MMIN(a,b) ((a) < (b) ? (a) : (b))
+#define MMAX(a,b) ((a) > (b) ? (a) : (b))
+#define PTMAP(x) MMAX(MMIN(x,10000),-10000)
+
+
 WinGC::WinGC(HDC dc, int width, int height) {
   hdc = dc;
   m_width = width;
@@ -106,8 +111,8 @@ HPEN GetWinPen(LineStyleType style, Color col) {
 void WinGC::DrawLine(Point2D pos1, Point2D pos2) {
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
-  MoveToEx(hdc, pos1.x, pos1.y, NULL);
-  LineTo(hdc, pos2.x, pos2.y);
+  MoveToEx(hdc, PTMAP(pos1.x), PTMAP(pos1.y), NULL);
+  LineTo(hdc, PTMAP(pos2.x), PTMAP(pos2.y));
   DeleteObject(hpen);
 }
 
@@ -115,8 +120,8 @@ void WinGC::DrawPoint(Point2D pos) {
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
   SelectObject(hdc, GetStockObject(NULL_BRUSH));
-  Ellipse(hdc, pos.x - 1, pos.y - 1,
-	  pos.x + 1, pos.y + 1);
+  Ellipse(hdc, PTMAP(pos.x - 1), PTMAP(pos.y - 1),
+	  PTMAP(pos.x + 1), PTMAP(pos.y + 1));
   DeleteObject(hpen);
 }
 
@@ -124,16 +129,16 @@ void WinGC::DrawCircle(Point2D pos, int radius) {
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
   SelectObject(hdc, GetStockObject(NULL_BRUSH));
-  Ellipse(hdc, pos.x - radius, pos.y - radius,
-	  pos.x + radius, pos.y + radius);
+  Ellipse(hdc, PTMAP(pos.x - radius), PTMAP(pos.y - radius),
+	  PTMAP(pos.x + radius), PTMAP(pos.y + radius));
   DeleteObject(hpen);
 }
 
 void WinGC::DrawRectangle(Rect2D rect) {
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);
-  Rectangle(hdc, rect.x1, rect.y1, 
-	    rect.x1+rect.width, rect.y1+rect.height);
+  Rectangle(hdc, PTMAP(rect.x1), PTMAP(rect.y1), 
+	    PTMAP(rect.x1+rect.width), PTMAP(rect.y1+rect.height));
   DeleteObject(hpen);
 }
 
@@ -141,10 +146,10 @@ void WinGC::FillRectangle(Rect2D rect) {
   HBRUSH hbrush;
   hbrush = CreateSolidBrush(RGB(fgcol.red,fgcol.green,fgcol.blue));
   RECT rt;
-  rt.left = rect.x1;
-  rt.top = rect.y1;
-  rt.right = rect.x1+rect.width;
-  rt.bottom = rect.y1+rect.height;
+  rt.left = PTMAP(rect.x1);
+  rt.top = PTMAP(rect.y1);
+  rt.right = PTMAP(rect.x1+rect.width);
+  rt.bottom = PTMAP(rect.y1+rect.height);
   FillRect(hdc, &rt, hbrush);
   DeleteObject(hbrush);
 }
@@ -154,8 +159,8 @@ void WinGC::DrawLines(std::vector<Point2D> pts) {
   pt = (POINT *) malloc(sizeof(POINT)*pts.size());
   int i;
   for (i=0;i<pts.size();i++) {
-    pt[i].x = pts[i].x;
-    pt[i].y = pts[i].y;
+    pt[i].x = PTMAP(pts[i].x);
+    pt[i].y = PTMAP(pts[i].y);
   }
   HPEN hpen = GetWinPen(m_style, fgcol);
   SelectObject(hdc, hpen);

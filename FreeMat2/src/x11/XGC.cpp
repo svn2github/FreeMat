@@ -4,6 +4,10 @@
 #include <X11/X.h>
 #include <X11/Xutil.h>
 
+#define MMIN(a,b) ((a) < (b) ? (a) : (b))
+#define MMAX(a,b) ((a) > (b) ? (a) : (b))
+#define PTMAP(x) MMAX(MMIN(x,10000),-10000)
+
 static unsigned int bitsPerPixelAtDepth(Display *disp, int scrn, unsigned int depth) {
   XPixmapFormatValues *xf;
   unsigned int nxf, a;
@@ -172,17 +176,18 @@ LineStyleType XGC::SetLineStyle(LineStyleType style) {
 
 void XGC::DrawLine(Point2D pos1, Point2D pos2) {
   if (ls != LINE_NONE)
-    XDrawLine(m_display, drawable, m_gc, pos1.x, pos1.y, pos2.x, pos2.y);
+    XDrawLine(m_display, drawable, m_gc, PTMAP(pos1.x), PTMAP(pos1.y), 
+	      PTMAP(pos2.x), PTMAP(pos2.y));
 }
 
 void XGC::DrawPoint(Point2D pos) {
-  XDrawPoint(m_display, drawable, m_gc, pos.x, pos.y);
+  XDrawPoint(m_display, drawable, m_gc, PTMAP(pos.x), PTMAP(pos.y));
 }
 
 void XGC::DrawCircle(Point2D pos, int radius) {
   if (ls != LINE_NONE)
-    XDrawArc(m_display, drawable, m_gc, pos.x - radius, pos.y - radius, radius*2, 
-	     radius*2 , 0, 64*360);
+    XDrawArc(m_display, drawable, m_gc, PTMAP(pos.x - radius), 
+	     PTMAP(pos.y - radius), radius*2, radius*2 , 0, 64*360);
 }
 
 void XGC::DrawRectangle(Rect2D rect) {
@@ -200,8 +205,8 @@ void XGC::DrawLines(std::vector<Point2D> pts) {
     t = (XPoint*) malloc(sizeof(XPoint)*pts.size());
     int i;
     for (i=0;i<pts.size();i++) {
-      t[i].x = pts[i].x;
-      t[i].y = pts[i].y;
+      t[i].x = PTMAP(pts[i].x);
+      t[i].y = PTMAP(pts[i].y);
     }
     XDrawLines(m_display, drawable, m_gc, t, pts.size(), CoordModeOrigin);
     free(t);

@@ -2160,16 +2160,26 @@ break;
       if (isSparse()) {
 	if (L > 2)
 	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays");
-	return Array(dp->dataClass,outDims,
-		     GetSparseNDimSubsets(dp->dataClass,
-					  getDimensionLength(0),
-					  getDimensionLength(1),
-					  dp->getData(),
-					  (const indexType*) indx[0],
-					  outDims[0],
-					  (const indexType*) indx[1],
-					  outDims[1]),
-		     true);
+	if ((outDims[0] == 1) && (outDims[1] == 1))
+	  return Array(dp->dataClass,outDims,
+		       GetSparseScalarElement(dp->dataClass,
+					      getDimensionLength(0),
+					      getDimensionLength(1),
+					      dp->getData(),
+					      *((const indexType*) indx[0]),
+					      *((const indexType*) indx[1])),
+		       false);
+	else
+	  return Array(dp->dataClass,outDims,
+		       GetSparseNDimSubsets(dp->dataClass,
+					    getDimensionLength(0),
+					    getDimensionLength(1),
+					    dp->getData(),
+					    (const indexType*) indx[0],
+					    outDims[0],
+					    (const indexType*) indx[1],
+					    outDims[1]),
+		       true);
       }
       qp = allocateArray(dp->dataClass,outDims.getElementCount(),dp->fieldNames);
       Dimensions argPointer(L);

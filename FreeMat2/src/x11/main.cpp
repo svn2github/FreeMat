@@ -9,6 +9,7 @@
 #include "GraphicsCore.hpp"
 #include "System.hpp"
 #include "PathSearch.hpp"
+#include "ParserInterface.hpp"
 #include <stdlib.h>
 #include <signal.h>
 
@@ -175,23 +176,20 @@ int main(int argc, char *argv[]) {
   } else {
     char buffer[1024];
     sprintf(buffer,"%s\n",argv[funcMode+1]);
-    ParserState parserState;
+    ParserState parserState = parseString(buffer);
+    if (parserState != ScriptBlock) {
+      printf("Error: syntax error on argument to -f\r\n");
+      term->RestoreOriginalMode();
+      return 1;
+    }
+    ASTPtr tree = getParsedScriptBlock();
     try {
-      parserState = parseString(line);
-      if (parserState != ScriptBlock) {
-	printf("Error: syntax error on argument to -f\r\n");
-	term->RestoreOriginalMode();
-	return 1;
-      }
-      ASTPtr tree = getParsedScriptBlock();
-      try {
-	block(tree);
-      } catch(Exception &e) {
-	e.printMe(term);
-	term->RestoreOriginalMode();
-	return 5;	
-      }
-    twalk->evaluateString(buffer);
+      twalk->block(tree);
+    } catch(Exception &e) {
+      e.printMe(term);
+      term->RestoreOriginalMode();
+      return 5;	
+    }
   }
   term->RestoreOriginalMode();
   return 0;

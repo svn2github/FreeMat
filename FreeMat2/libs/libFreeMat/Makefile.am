@@ -4,7 +4,7 @@ noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS=@CFLAGS@ 
 CXXFLAGS=@CXXFLAGS@ -DYY_NEVER_INTERACTIVE
-INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/src/x11
+INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/src/x11 -I@top_srcdir@/libs/libFLTK
 
 libFreeMat_a_SOURCES = Parser.yxx \
 Parser.h \

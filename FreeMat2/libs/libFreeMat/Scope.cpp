@@ -137,7 +137,14 @@ namespace FreeMat {
   }
 
   stringVector Scope::getCompletions(const std::string& prefix) {
-    return codeTab.getCompletions(prefix);
+    stringVector codecompletions;
+    stringVector varcompletions;
+    codecompletions = codeTab.getCompletions(prefix);
+    varcompletions = symTab.getCompletions(prefix);
+    codecompletions.insert(codecompletions.end(),
+			   varcompletions.begin(),
+			   varcompletions.end());
+    return codecompletions;
   }
   
   stringVector Scope::listAllVariables() {

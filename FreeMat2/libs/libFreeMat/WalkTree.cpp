@@ -18,7 +18,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#include "XWindow.hpp"
 #include "WalkTree.hpp"
 #include <iostream>
 #include <stack>
@@ -36,6 +35,7 @@
 #include "File.hpp"
 #include "Serialize.hpp"
 #include <signal.h>
+#include <FL/Fl.H>
 
 namespace FreeMat {
   /**
@@ -1084,8 +1084,7 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) throw(Exception){
     ArrayVector m;
     FunctionDef *fdef;
-    /* Flush the window events */
-    FlushWindowEvents();
+    Fl::flush();
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {

@@ -28,4 +28,6 @@ chmod +x configure
 cd libs/libffi
 aclocal
 automake --add-missing --copy
+mv Makefile.in Makefile.in_auto
+sed -e 's/$(CCASCOMPILE) -c $</$(CCASCOMPILE) -c -o $@ $</g' Makefile.in_auto > Makefile.in
 autoconf

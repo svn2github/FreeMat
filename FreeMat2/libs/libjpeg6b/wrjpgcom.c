@@ -18,6 +18,7 @@
 extern void * malloc ();
 #endif
 #include <ctype.h>		/* to declare isupper(), tolower() */
+#undef USE_SETMODE
 #ifdef USE_SETMODE
 #include <fcntl.h>		/* to declare setmode()'s parameter macros */
 /* If you have setmode() but not <io.h>, just delete this line: */

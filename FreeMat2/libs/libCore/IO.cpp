@@ -482,7 +482,7 @@ namespace FreeMat {
       fseek(fptr->fp,0L,SEEK_END);
       fsize = ftell(fptr->fp) - fcpos + 1;
       fseek(fptr->fp,fcpos,SEEK_SET);
-      dp[infiniteDim] = ceil(fsize/elementSize/elementCount);
+      dp[infiniteDim] = ceil((float)(fsize/elementSize/elementCount));
       elementCount *= (int) dp[infiniteDim];
     }
     // Next, we allocate space for the result

@@ -211,6 +211,29 @@ namespace FreeMat {
     }
   }
 
+  void* makeSparseFromIJV(Class dclass, int rows, int cols, int nnz, 
+			  uint32* I, int istride, uint32 *J, int jstride,
+			  void* cp, int cpstride) {
+    switch(dclass) {
+    case FM_INT32:
+      return makeSparseFromIJVReal<int32>(rows,cols,nnz,I,istride,
+					  J,jstride,cp,cpstride);
+    case FM_FLOAT:
+      return makeSparseFromIJVReal<float>(rows,cols,nnz,I,istride,
+					  J,jstride,cp,cpstride);
+    case FM_DOUBLE:
+      return makeSparseFromIJVReal<double>(rows,cols,nnz,I,istride,
+					   J,jstride,cp,cpstride);
+    case FM_COMPLEX:
+      return makeSparseFromIJVComplex<float>(rows,cols,nnz,I,istride,
+					     J,jstride,cp,cpstride);
+    case FM_DCOMPLEX:
+      return makeSparseFromIJVComplex<double>(rows,cols,nnz,I,istride,
+					      J,jstride,cp,cpstride);
+    }
+  }
+			  
+
   void DeleteSparseMatrix(Class dclass, int rows, int cols, void *cp) {
     switch(dclass) {
     case FM_INT32:
@@ -370,10 +393,11 @@ namespace FreeMat {
   }
 
   template <class T>
-  void* SparseToIJVComplex(T**A, int rows, int cols) {
-    int nnz = CountNonzerosComplex<T>(A,rows,cols);
-    T* ret;
-    ret = (T*) Malloc(sizeof(T)*nnz*4);
+  T* SparseToIJVComplex(T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
+    nnz = CountNonzerosComplex<T>(src,rows,cols);
+    I = (uint32*) Malloc(sizeof(uint32)*nnz);
+    J = (uint32*) Malloc(sizeof(uint32)*nnz);
+    T* V = (T*) Malloc(sizeof(T)*nnz*2);
     int i, j, n;
     int ptr = 0;
     for (i=0;i<cols;i++) {
@@ -381,10 +405,10 @@ namespace FreeMat {
       j = 0;
       while (j<rows) {
 	if ((src[i][n] != 0) || (src[i][n+1] != 0)) {
-	  T[ptr] = j+1;
-	  T[ptr+nnz] = i+1;
-	  T[ptr+2*nnz] = src[i][n];
-	  T[ptr+3*nnz] = src[i][n+1];
+	  I[ptr] = j+1;
+	  J[ptr] = i+1;
+	  V[2*ptr] = src[i][n];
+	  V[2*ptr+1] = src[i][n+1];
 	  ptr++;
 	  j++;
 	  n+=2;
@@ -394,14 +418,15 @@ namespace FreeMat {
 	}
       }
     }
-    return T;
+    return V;
   }
 
   template <class T>
-  void* SparseToIJVReal(T**A, int rows, int cols) {
-    int nnz = CountNonzerosReal<T>(A,rows,cols);
-    T* ret;
-    ret = (T*) Malloc(sizeof(T)*nnz*3);
+  T* SparseToIJVReal(T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
+    nnz = CountNonzerosReal<T>(src,rows,cols);
+    I = (uint32*) Malloc(sizeof(uint32)*nnz);
+    J = (uint32*) Malloc(sizeof(uint32)*nnz);
+    T* V = (T*) Malloc(sizeof(T)*nnz);
     int i, j, n;
     int ptr = 0;
     for (i=0;i<cols;i++) {
@@ -409,9 +434,9 @@ namespace FreeMat {
       j = 0;
       while (j<rows) {
 	if (src[i][n] != 0) {
-	  T[ptr] = j+1;
-	  T[ptr+nnz] = i+1;
-	  T[ptr+2*nnz] = src[i][n];
+	  I[ptr] = j+1;
+	  J[ptr] = i+1;
+	  V[ptr] = src[i][n];
 	  ptr++;
 	  j++;
 	  n++;
@@ -421,22 +446,23 @@ namespace FreeMat {
 	}
       }
     }
-    return T;
+    return V;
   }
 
   // Convert a sparse matrix to IJV
-  void* SparseToIJV(Class dclass, int rows, int cols, const void* cp) {
+  void* SparseToIJV(Class dclass, int rows, int cols, const void* cp,
+		    uint32* &I, uint32* &J, int &nnz) {
     switch (dclass) {
     case FM_INT32:
-      return SparseToIJVReal<int32>((int32**)cp,rows,cols);
+      return SparseToIJVReal<int32>((int32**)cp,rows,cols,I,J,nnz);
     case FM_FLOAT:
-      return SparseToIJVReal<float>((float**)cp,rows,cols);
+      return SparseToIJVReal<float>((float**)cp,rows,cols,I,J,nnz);
     case FM_DOUBLE:
-      return SparseToIJVReal<double>((double**)cp,rows,cols);
+      return SparseToIJVReal<double>((double**)cp,rows,cols,I,J,nnz);
     case FM_COMPLEX:
-      return SparseToIJVComplex<float>((float**)cp,rows,cols);
+      return SparseToIJVComplex<float>((float**)cp,rows,cols,I,J,nnz);
     case FM_DCOMPLEX:
-      return SparseToIJVComplex<double>((double**)cp,rows,cols);
+      return SparseToIJVComplex<double>((double**)cp,rows,cols,I,J,nnz);
     }
   }
 
@@ -889,8 +915,29 @@ namespace FreeMat {
     return dp;
   }
 
-  // This implementation is poor because for a linear access of the elements
-  // of A, it requires significant time.
+  // The original implementation is poor because for a linear access of the elements
+  // of A, it requires significant time.  A better approach is to build a sorted list
+  // of the type:
+  //              ord indx_row indx_col
+  // and then sort by the indx_col (and subsort by indx_row).  We can then loop over
+  // the indx_col's and populate the output with the corresponding element ord.  The
+  // reason this approach is best is because of the assignment version (which is equally
+  // complicated).
+  //
+  // The problem is that the output needs to be resorted by ord to build the 
+  // sparse output matrix.  I think the IJV notation is in order here...
+  
+  class Update {
+  public:
+    int ord;
+    int row;
+    int col;
+  };
+  
+  bool operator<(const Update& a, const Update& b) {
+    return a.col < b.col;
+  }
+
   template <class T>
   void* GetSparseVectorSubsetsReal(int rows, int cols, const T** A,
 				   const indexType* indx, int irows, int icols) {

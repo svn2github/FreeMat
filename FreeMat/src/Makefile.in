@@ -84,6 +84,10 @@ LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
 
 LFLAGS = @LFLAGS@
+MPICC = @MPICC@
+MPICXX = @MPICXX@
+MPIF77 = @MPIF77@
+MPILIBS = @MPILIBS@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
@@ -95,6 +99,7 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 miniblasdir = @miniblasdir@
 minilapackdir = @minilapackdir@
+mpidir = @mpidir@
 
 CFLAGS = @CFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cflags`
 CXXFLAGS = @CXXFLAGS@ `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --cxxflags`  -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/extlibs/libtecla -I@top_srcdir@/libs/libGraphics  -I@top_srcdir@/extlibs/libffi-2.00-beta/include  -I@top_srcdir@/extlibs/volpack-1.0c2/src
@@ -128,14 +133,16 @@ wxCLI2.cpp \
 wxCLI2.hpp 
 
 
+LIBS = `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @LIBS@ 
+
 FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libtecla/libtecla.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
-FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 
 FreeMatGUI_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
-FreeMatGUI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs`  @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
+FreeMatGUI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 
 FMKernel_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a
-FMKernel_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @top_builddir@/extlibs/libtecla/libtecla.a
+FMKernel_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libFreeMat/libFreeMat.a   @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a
 
 EXTRA_DIST = bootstrap
 AUTOMAKE_OPTIONS = foreign
@@ -162,7 +169,6 @@ DEFS = @DEFS@
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
-LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/App.Po ./$(DEPDIR)/AppNoGUI.Po \

@@ -28,7 +28,7 @@
 
 namespace FreeMat {
 
-  Plot2D::Plot2D(int fignum) {
+  Plot2D::Plot2D(int fignum) : XWindow(VectorWindow){
     space = 10;
     xAxis = NULL;
     yAxis = NULL;
@@ -230,6 +230,9 @@ namespace FreeMat {
     xAxis->Place(plotX, plotY + plotHeight, plotWidth, plotHeight);
     yAxis->Place(plotX, plotY, plotHeight, plotWidth);
 
+    gc.SetForeGroundColor(Color("light grey"));
+    gc.FillRectangle(Rect2D(0, 0, getWidth(), getHeight()));
+    gc.SetForeGroundColor(Color("black"));
     gc.DrawTextString(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));
     gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));

@@ -27,8 +27,8 @@
 #include "WalkTree.hpp"
 #include "File.hpp"
 #include "Serialize.hpp"
-#include "Socket.hpp"
-#include "ServerSocket.hpp"
+// #include "Socket.hpp"
+// #include "ServerSocket.hpp"
 #include "IEEEFP.hpp"
 
 namespace FreeMat {
@@ -38,15 +38,15 @@ namespace FreeMat {
     bool swapflag;
   };
   
-  class SockPtr {
-  public:
-    Socket *sock;
-    Serialize *ser;
-  };
+//   class SockPtr {
+//   public:
+//     Socket *sock;
+//     Serialize *ser;
+//   };
 
   HandleList<FilePtr*> fileHandles;
-  HandleList<ServerSocket*> servers;
-  HandleList<SockPtr*> sockets;
+  //  HandleList<ServerSocket*> servers;
+//   HandleList<SockPtr*> sockets;
 
   void InitializeFileSubsystem() {
     FilePtr *fptr = new FilePtr();
@@ -869,89 +869,89 @@ namespace FreeMat {
     return ArrayVector();
   } 
 
-  ArrayVector SendFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 2)
-      throw Exception("send requires two arguments - the socket handle and the array to send");
-    Array tmp(arg[0]);
-    int sockHandle = tmp.getContentsAsIntegerScalar();
-    SockPtr *p = sockets.lookupHandle(sockHandle);
-    p->ser->putArray(arg[1]);
-    return ArrayVector();
-  }
+//   ArrayVector SendFunction(int nargout, const ArrayVector& arg) {
+//     if (arg.size() != 2)
+//       throw Exception("send requires two arguments - the socket handle and the array to send");
+//     Array tmp(arg[0]);
+//     int sockHandle = tmp.getContentsAsIntegerScalar();
+//     SockPtr *p = sockets.lookupHandle(sockHandle);
+//     p->ser->putArray(arg[1]);
+//     return ArrayVector();
+//   }
 
-  ArrayVector ReceiveFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("receive requires one argument - the socket handle to receive from");
-    Array tmp(arg[0]);
-    int sockHandle = tmp.getContentsAsIntegerScalar();
-    SockPtr *p = sockets.lookupHandle(sockHandle);
-    ArrayVector retval;
-    Array arr;
-    p->ser->getArray(arr);
-    retval.push_back(arr);
-    return retval;
-  }
+//   ArrayVector ReceiveFunction(int nargout, const ArrayVector& arg) {
+//     if (arg.size() != 1)
+//       throw Exception("receive requires one argument - the socket handle to receive from");
+//     Array tmp(arg[0]);
+//     int sockHandle = tmp.getContentsAsIntegerScalar();
+//     SockPtr *p = sockets.lookupHandle(sockHandle);
+//     ArrayVector retval;
+//     Array arr;
+//     p->ser->getArray(arr);
+//     retval.push_back(arr);
+//     return retval;
+//   }
 
-  ArrayVector ConnectFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 2)
-      throw Exception("connect requires two arguments, the machine name and the portnumber");
-    char *hostname;
-    Array tmp(arg[0]);
-    hostname = tmp.getContentsAsCString();
-    Array tmp2(arg[1]);
-    int portNum;
-    portNum = tmp2.getContentsAsIntegerScalar();
-    Socket *sock = new Socket(hostname, portNum);
-    Serialize *t = new Serialize(sock);
-    t->handshakeClient();
-    SockPtr *c = new SockPtr;
-    c->sock = sock;
-    c->ser = t;
-    unsigned int rethan = sockets.assignHandle(c);
-    ArrayVector retval;
-    retval.push_back(Array::uint32Constructor(rethan));
-    return retval;    
-  }
+//   ArrayVector ConnectFunction(int nargout, const ArrayVector& arg) {
+//     if (arg.size() != 2)
+//       throw Exception("connect requires two arguments, the machine name and the portnumber");
+//     char *hostname;
+//     Array tmp(arg[0]);
+//     hostname = tmp.getContentsAsCString();
+//     Array tmp2(arg[1]);
+//     int portNum;
+//     portNum = tmp2.getContentsAsIntegerScalar();
+//     Socket *sock = new Socket(hostname, portNum);
+//     Serialize *t = new Serialize(sock);
+//     t->handshakeClient();
+//     SockPtr *c = new SockPtr;
+//     c->sock = sock;
+//     c->ser = t;
+//     unsigned int rethan = sockets.assignHandle(c);
+//     ArrayVector retval;
+//     retval.push_back(Array::uint32Constructor(rethan));
+//     return retval;    
+//   }
 
-  ArrayVector AcceptFunction(int nargout, const ArrayVector& arg) {
-    int servHandle;
-    ServerSocket *t;
-    if (arg.size() == 0)
-      throw Exception("must supply a server handle to acceptconnection");
-    Array tmp(arg[0]);
-    servHandle = tmp.getContentsAsIntegerScalar();
-    t = servers.lookupHandle(servHandle);
-    Socket *s = t->AcceptConnection();
-    Serialize *z = new Serialize(s);
-    z->handshakeServer();
-    SockPtr *c = new SockPtr;
-    c->sock = s;
-    c->ser = z;
-    unsigned int rethan = sockets.assignHandle(c);
-    ArrayVector retval;
-    retval.push_back(Array::uint32Constructor(rethan));
-    return retval;
-  }
+//   ArrayVector AcceptFunction(int nargout, const ArrayVector& arg) {
+//     int servHandle;
+//     ServerSocket *t;
+//     if (arg.size() == 0)
+//       throw Exception("must supply a server handle to acceptconnection");
+//     Array tmp(arg[0]);
+//     servHandle = tmp.getContentsAsIntegerScalar();
+//     t = servers.lookupHandle(servHandle);
+//     Socket *s = t->AcceptConnection();
+//     Serialize *z = new Serialize(s);
+//     z->handshakeServer();
+//     SockPtr *c = new SockPtr;
+//     c->sock = s;
+//     c->ser = z;
+//     unsigned int rethan = sockets.assignHandle(c);
+//     ArrayVector retval;
+//     retval.push_back(Array::uint32Constructor(rethan));
+//     return retval;
+//   }
 
-  ArrayVector ServerFunction(int nargout, const ArrayVector& arg) {
-    int portNumber;
-    // Retrieve the portnumber
-    portNumber = 0;
-    if (arg.size() == 1) {
-      Array tmp(arg[0]);
-      portNumber = tmp.getContentsAsIntegerScalar();
-    }
-    // Get a new socket server
-    ServerSocket *t = new ServerSocket(portNumber);
-    // Assign a handle
-    unsigned int rethan = servers.assignHandle(t);
-    // Query it to find out what portnumber it got...
-    unsigned int outPortNum;
-    outPortNum = t->getPortNumber();
-    // Return the two values...
-    ArrayVector retval;
-    retval.push_back(Array::uint32Constructor(rethan));
-    retval.push_back(Array::uint32Constructor(outPortNum));
-    return retval;
-  }
+//   ArrayVector ServerFunction(int nargout, const ArrayVector& arg) {
+//     int portNumber;
+//     // Retrieve the portnumber
+//     portNumber = 0;
+//     if (arg.size() == 1) {
+//       Array tmp(arg[0]);
+//       portNumber = tmp.getContentsAsIntegerScalar();
+//     }
+//     // Get a new socket server
+//     ServerSocket *t = new ServerSocket(portNumber);
+//     // Assign a handle
+//     unsigned int rethan = servers.assignHandle(t);
+//     // Query it to find out what portnumber it got...
+//     unsigned int outPortNum;
+//     outPortNum = t->getPortNumber();
+//     // Return the two values...
+//     ArrayVector retval;
+//     retval.push_back(Array::uint32Constructor(rethan));
+//     retval.push_back(Array::uint32Constructor(outPortNum));
+//     return retval;
+//   }
 }

@@ -31,13 +31,14 @@
 #define KM_CTRLK     0x0b
 #define KM_CTRLY     0x19
 #define KM_BACKSPACE 0x08
+#define KM_BACKSPACEALT 0x7f
 #define KM_ESC       0x1b
 #define KM_NEWLINE   0x0d
 #define KM_LEFT      0x101
 #define KM_RIGHT     0x102
 #define KM_UP        0x103
 #define KM_DOWN      0x104
-#define KM_DELETE    0x80
+#define KM_DELETE    0x7e
 #define KM_INSERT    0x105
 #define KM_HOME      0x106
 #define KM_END       0x107

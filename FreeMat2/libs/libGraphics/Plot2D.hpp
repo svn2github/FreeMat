@@ -46,7 +46,7 @@ namespace FreeMat {
     /**
      * Default constructor.
      */
-    Plot2D() {}
+    Plot2D() : XWindow(VectorWindow) {}
     /**
      * Default destructor.
      */

@@ -27,7 +27,7 @@
 
 namespace FreeMat {
 
-  ScalarImage::ScalarImage(int fignum) {
+  ScalarImage::ScalarImage(int fignum) : XWindow(BitmapWindow) {
     rawData = NULL;
     for (int i=0;i<256;i++) {
       colormap[0][i] = i;
@@ -159,8 +159,10 @@ namespace FreeMat {
 
   void ScalarImage::OnDraw(GraphicsContext &gc) {
     if (rawData == NULL) return;
-    RGBImage src(zoomColumns, zoomRows, picData);
-    gc.BlitRGBImage(Point2D(0,0),src);
+    //    RGBImage src(zoomColumns, zoomRows, picData);
+    //    gc.BlitRGBImage(Point2D(0,0),src);
+    printf("\r\nOn draw called!\n\r");
+    SetImage(picData, zoomColumns, zoomRows);
   }
 
   void ScalarImage::SetImageArray(Array &dp) {

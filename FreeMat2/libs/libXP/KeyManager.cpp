@@ -1061,6 +1061,7 @@ void KeyManager::OnChar( int c ) {
     Yank();
     break;
   case KM_BACKSPACE:
+  case KM_BACKSPACEALT:
     BackwardDeleteChar();
     break;
   default:

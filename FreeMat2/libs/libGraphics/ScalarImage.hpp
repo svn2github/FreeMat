@@ -42,7 +42,7 @@ namespace FreeMat {
     /**
      * Default constructor.
      */
-    ScalarImage() {}
+    ScalarImage() : XWindow(BitmapWindow) {}
     /**
      * Destructor.
      */

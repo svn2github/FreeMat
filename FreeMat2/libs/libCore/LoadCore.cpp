@@ -270,7 +270,7 @@ namespace FreeMat {
      context->addFunction("randexp",RandExpFunction,1,1,args);
      context->addFunction("randp",RandPoissonFunction,1,1,args);
      args.push_back("x");          
-     context->addFunction("find",FindFunction,1,1,args);
+     context->addFunction("find",FindFunction,1,-1,args);
      context->addFunction("conj",ConjFunction,1,1,args);
      context->addFunction("real",RealFunction,1,1,args);
      context->addFunction("imag",ImagFunction,1,1,args);

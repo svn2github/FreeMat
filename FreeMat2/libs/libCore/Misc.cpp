@@ -1517,7 +1517,7 @@ namespace FreeMat {
   //Here is an example of calling the @|ls| function (the
   //list files function under Un*x-like operating system).
   //@<
-  //y = system('ls a*.m')
+  //y = system('ls m*.m')
   //y{1}
   //@>
   //!

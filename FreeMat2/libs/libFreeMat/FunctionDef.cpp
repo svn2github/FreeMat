@@ -281,24 +281,31 @@ namespace FreeMat {
       if (helpText.size() == 0)
 	helpText.push_back(buffer);
       rewind(fp);
-      ParserState pstate = parseFile(fp,fileName.c_str());
-      // If pstate is a FuncDef, then get the parsed data
-      if (pstate == FuncDef) {
-	MFunctionDef *cp = getParsedFunctionDef();
-	scriptFlag = false;
-	returnVals = cp->returnVals;
-	arguments = cp->arguments;
-	code = cp->code;
-	functionCompiled = true;
-	nextFunction = cp->nextFunction;
-	return;
-      } else if (pstate == ScriptBlock) {
-	code = getParsedScriptBlock();
-	scriptFlag = true;
-	functionCompiled = true;
-	return;
-      } else
-	throw Exception(std::string("Syntax error parsing file:") + fileName + ", expecting a script or function definition");
+      try {
+	ParserState pstate = parseFile(fp,fileName.c_str());
+	fclose(fp);
+	fp = NULL;
+	// If pstate is a FuncDef, then get the parsed data
+	if (pstate == FuncDef) {
+	  MFunctionDef *cp = getParsedFunctionDef();
+	  scriptFlag = false;
+	  returnVals = cp->returnVals;
+	  arguments = cp->arguments;
+	  code = cp->code;
+	  functionCompiled = true;
+	  nextFunction = cp->nextFunction;
+	  return;
+	} else if (pstate == ScriptBlock) {
+	  code = getParsedScriptBlock();
+	  scriptFlag = true;
+	  functionCompiled = true;
+	  return;
+	} else
+	  throw Exception(std::string("Syntax error parsing file:") + fileName + ", expecting a script or function definition");
+      } catch (Exception &e) {
+	if (fp) fclose(fp);
+	throw;
+      }
     }
   }
 

@@ -235,7 +235,7 @@ Section "M Files" SEC02
 SectionEnd
 
 Section "Text Help" SEC03
-  SetOutPath "$INSTDIR\help"
+  SetOutPath "$INSTDIR\MFiles"
   File "..\..\help\mdc\zoom.mdc"
   File "..\..\help\mdc\zeros.mdc"
   File "..\..\help\mdc\ylabel.mdc"

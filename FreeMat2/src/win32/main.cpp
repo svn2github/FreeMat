@@ -58,8 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     term.setPath(std::string(""));
   WalkTree *twalk = new WalkTree(context,&term);
   term.SetEvalEngine(twalk);
-  term.outputMessage(" Freemat - build ");
-  term.outputMessage(__DATE__);
+  term.outputMessage(" Freemat v1.02 ");
   term.outputMessage("\n");
   term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
   while (twalk->getState() != FM_STATE_QUIT) {

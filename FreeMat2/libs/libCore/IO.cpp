@@ -1046,6 +1046,8 @@ namespace FreeMat {
   //This function reads characters from the file @|handle| into
   //a @|string| array @|s| until it encounters the end of the file
   //or a newline.  The newline, if any, is retained in the output
+  //string.  If the file is at its end, (i.e., that @|feof| would
+  //return true on this handle), @|fgetline| returns an empty
   //string.
   //@@Example
   //First we write a couple of strings to a test file.
@@ -1071,10 +1073,9 @@ namespace FreeMat {
     FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
     char buffer[4096];
     fgets(buffer,sizeof(buffer),fptr->fp);
-    Array retval(Array::stringConstructor(buffer));
-    ArrayVector retvals;
-    retvals.push_back(retval);
-    return retvals;
+    if (feof(fptr->fp))
+      return singleArrayVector(Array::emptyConstructor());
+    return singleArrayVector(Array::stringConstructor(buffer));
   }
 
   //!
@@ -1112,7 +1113,8 @@ namespace FreeMat {
   //Here @|format| is the format string, which is a string that
   //controls the format of the input.  Each value that is parsed from
   //the file described by @|handle| occupies one output slot.
-  //See @|printf| for a description of the format.
+  //See @|printf| for a description of the format.  Note that if
+  //the file is at the end-of-file, the fscanf will return 
   //!
   ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
@@ -1123,6 +1125,8 @@ namespace FreeMat {
     Array format(arg[1]);
     if (!format.isString())
       throw Exception("fscanf format argument must be a string");
+    if (feof(fptr->fp))
+      return singleArrayVector(Array::emptyConstructor());
     char *frmt = format.getContentsAsCString();
     char *buff = (char*) malloc(strlen(frmt)+1);
     strcpy(buff,frmt);
@@ -1142,6 +1146,8 @@ namespace FreeMat {
       sv = *dp;
       *dp = 0;
       fscanf(fptr->fp,np);
+      if (feof(fptr->fp))
+	values.push_back(Array::emptyConstructor());
       *dp = sv;
       // Process the format spec
       if (*dp) {
@@ -1170,11 +1176,17 @@ namespace FreeMat {
 	      if (shortarg) {
 		short sdumint;
 		fscanf(fptr->fp,dp,&sdumint);
-		values.push_back(Array::int16Constructor(sdumint));
+		if (feof(fptr->fp))
+		  values.push_back(Array::emptyConstructor());
+		else
+		  values.push_back(Array::int16Constructor(sdumint));
 	      } else {
 		int sdumint;
 		fscanf(fptr->fp,dp,&sdumint);
-		values.push_back(Array::int32Constructor(sdumint));
+		if (feof(fptr->fp))
+		  values.push_back(Array::emptyConstructor());
+		else
+		  values.push_back(Array::int32Constructor(sdumint));
 	      }
 	      break;
 	    case 'o':
@@ -1185,11 +1197,17 @@ namespace FreeMat {
 	      if (shortarg) {
 		int sdumint;
 		fscanf(fptr->fp,dp,&sdumint);
-		values.push_back(Array::int32Constructor(sdumint));
+		if (feof(fptr->fp))
+		  values.push_back(Array::emptyConstructor());
+		else
+		  values.push_back(Array::int32Constructor(sdumint));
 	      } else {
 		unsigned int dumint;
 		fscanf(fptr->fp,dp,&dumint);
-		values.push_back(Array::uint32Constructor(dumint));
+		if (feof(fptr->fp))
+		  values.push_back(Array::emptyConstructor());
+		else
+		  values.push_back(Array::uint32Constructor(dumint));
 	      }
 	      break;
 	    case 'e':
@@ -1201,17 +1219,26 @@ namespace FreeMat {
 	      if (doublearg) {
 		double dumfloat;
 		fscanf(fptr->fp,dp,&dumfloat);
-		values.push_back(Array::doubleConstructor(dumfloat));
+		if (feof(fptr->fp))
+		  values.push_back(Array::emptyConstructor());
+		else
+		  values.push_back(Array::doubleConstructor(dumfloat));
 	      } else {
 		float dumfloat;
 		fscanf(fptr->fp,dp,&dumfloat);
-		values.push_back(Array::floatConstructor(dumfloat));
+		if (feof(fptr->fp))
+		  values.push_back(Array::emptyConstructor());
+		else
+		  values.push_back(Array::floatConstructor(dumfloat));
 	      }
 	      break;
 	    case 's':
 	      char stbuff[4096];
 	      fscanf(fptr->fp,dp,stbuff);
-	      values.push_back(Array::stringConstructor(stbuff));
+	      if (feof(fptr->fp))
+		values.push_back(Array::emptyConstructor());
+	      else
+		values.push_back(Array::stringConstructor(stbuff));
 	      break;
 	    default:
 	      throw Exception("unsupported fscanf configuration");

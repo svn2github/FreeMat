@@ -23,10 +23,12 @@
 #include "Array.hpp"
 #include "Malloc.hpp"
 #include <math.h>
-#include "config.h"
 
+#ifndef WIN32
+#include "config.h"
 #ifdef USE_MPI
 #include "MPIWrap.hpp"
+#endif
 #endif
 
 namespace FreeMat {

@@ -281,6 +281,11 @@ namespace FreeMat {
      args.clear();
      args.push_back("n");
      context->addFunction("sleep",SleepFunction,1,0,args);
+     args.clear();
+     args.push_back("x");
+     args.push_back("rows");
+     args.push_back("cols");
+     context->addFunction("repmat",RepMatFunction,3,1,args);
      //     context->addFunction("clock",ClockFunction,0,1,args);
      //      context->addSpecialFunction("whoglobals",WhoGlobalsFunction,0,0,args);
      args.clear();

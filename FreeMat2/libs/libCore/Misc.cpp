@@ -1133,6 +1133,129 @@ namespace FreeMat {
   }
 
   //!
+  //@Module REPMAT Array Replication Function
+  //@@Usage
+  //The @|repmat| function replicates an array the specified
+  //number of times.  The source and destination arrays may
+  //be multidimensional.  There are three distinct syntaxes for
+  //the @|repmap| function.  The first form:
+  //@[
+  //  y = repmat(x,n)
+  //@]
+  //replicates the array @|x| on an @|n-times-n| tiling, to create
+  //a matrix @|y| that has @|n| times as many rows and columns
+  //as @|x|.  The output @|y| will match @|x| in all remaining
+  //dimensions.  The second form is
+  //@[
+  //  y = repmat(x,m,n)
+  //@]
+  //And creates a tiling of @|x| with @|m| copies of @|x| in the
+  //row direction, and @|n| copies of @|x| in the column direction.
+  //The final form is the most general
+  //@[
+  //  y = repmat(x,[m n p...])
+  //@]
+  //where the supplied vector indicates the replication factor in 
+  //each dimension.  
+  //@@Example
+  //Here is an example of using the @|repmat| function to replicate
+  //a row 5 times.  Note that the same effect can be accomplished
+  //(although somewhat less efficiently) by a multiplication.
+  //@<
+  //x = [1 2 3 4]
+  //y = repmat(x,[5,1])
+  //@>
+  //The @|repmat| function can also be used to create a matrix of scalars
+  //or to provide replication in arbitrary dimensions.  Here we use it to
+  //replicate a 2D matrix into a 3D volume.
+  //@<
+  //x = [1 2;3 4]
+  //y = repmat(x,[1,1,3])
+  //@>
+  //!
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+  ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
+    int i, j, k;
+    if (arg.size() < 2)
+      throw Exception("repmat function requires at least two arguments");
+    Array x(arg[0]);
+    Dimensions repcount;
+    // Case 1, look for a scalar second argument
+    if ((arg.size() == 2) && (arg[1].isScalar())) {
+      Array t(arg[1]);
+      repcount[0] = t.getContentsAsIntegerScalar();
+      repcount[1] = t.getContentsAsIntegerScalar();
+    } 
+    // Case 2, look for two scalar arguments
+    else if ((arg.size() == 3) && (arg[1].isScalar()) && (arg[2].isScalar())) {
+      Array t(arg[1]);
+      repcount[0] = t.getContentsAsIntegerScalar();
+      t = arg[2];
+      repcount[1] = t.getContentsAsIntegerScalar();
+    }
+    // Case 3, look for a vector second argument
+    else {
+      if (arg.size() > 2) throw Exception("unrecognized form of arguments for repmat function");
+      Array t(arg[1]);
+      t.promoteType(FM_INT32);
+      if (t.getLength() > maxDims) throw Exception("replication request exceeds maxDims constant - either rebuild FreeMat with a higher maxDims constant, or shorten the requested replication array");
+      int32 *dp = (int32*) t.getDataPointer();
+      for (i=0;i<t.getLength();i++)
+	repcount[i] = dp[i];
+    }
+    // Check for a valid replication count
+    for (i=0;i<repcount.getLength();i++)
+      if (repcount[i] < 0) throw Exception("negative replication counts not allowed in argument to repmat function");
+    // All is peachy.  Allocate an output array of sufficient size.
+    Dimensions originalSize(x.getDimensions());
+    Dimensions outdims;
+    int outdim;
+    outdim = MAX(repcount.getLength(),originalSize.getLength());
+    for (i=0;i<outdim;i++)
+      outdims[i] = originalSize[i]*repcount[i];
+    outdims.simplify();
+    void *dp;
+    dp = Malloc(outdims.getElementCount()*x.getElementSize());
+    // Copy can work by pushing or by pulling.  I have opted for
+    // pushing, because we can push a column at a time, which might
+    // be slightly more efficient.
+    int colsize = originalSize[0];
+    int outcolsize = outdims[0];
+    int colcount = originalSize.getElementCount()/colsize;
+    // copySelect stores which copy we are pushing.
+    Dimensions copySelect(outdim);
+    // anchor is used to calculate where this copy lands in the output matrix
+    Dimensions anchor(outdim);
+    // sourceAddress is used to track which column we are pushing in the
+    // source matrix
+    Dimensions sourceAddress(originalSize.getLength());
+    int destanchor;
+    int copyCount;
+    copyCount = repcount.getElementCount();
+    for (i=0;i<copyCount;i++) {
+      // Reset the source address
+      sourceAddress.zeroOut();
+      // Next, we loop over the columns of the source matrix
+      for (j=0;j<colcount;j++) {
+	// We can calculate the anchor of this copy by multiplying the source
+	// address by the copySelect vector
+	for (k=0;k<outdim;k++)
+	  anchor[k] = copySelect[k]*originalSize[k]+sourceAddress[k];
+	// Now, we map this to a point in the destination array
+	destanchor = outdims.mapPoint(anchor);
+	// And copy the elements
+	x.copyElements(j*colsize,dp,destanchor,colsize);
+	// Now increment the source address
+	sourceAddress.incrementModulo(originalSize,1);
+      }
+      copySelect.incrementModulo(repcount,0);
+    }
+    ArrayVector retval;
+    retval.push_back(Array(x.getDataClass(),outdims,dp,x.getFieldNames()));
+    return retval;
+  }
+
+  //!
   //@Module SYSTEM Call an External Program
   //@@Usage
   //The @|system| function allows you to call an external

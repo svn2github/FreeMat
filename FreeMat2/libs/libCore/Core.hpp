@@ -147,6 +147,7 @@ namespace FreeMat {
   ArrayVector WhereFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector IsNaNFunction(int, const ArrayVector& arg);
   ArrayVector IsInfFunction(int, const ArrayVector& arg);
+  ArrayVector RepMatFunction(int, const ArrayVector& arg);
 }
 
 #endif

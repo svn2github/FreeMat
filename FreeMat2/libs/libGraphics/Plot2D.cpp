@@ -29,7 +29,6 @@
 namespace FreeMat {
 
   Plot2D::Plot2D(int fignum) : XWindow(VectorWindow){
-    PrintMe("Test.eps");
     space = 10;
     xAxis = NULL;
     yAxis = NULL;

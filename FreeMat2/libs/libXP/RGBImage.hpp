@@ -27,4 +27,6 @@ class RGBImage {
   Color GetPixel(int x, int y);
   void SetAllPixels(Color col);
 };
+
+void WritePNGFile(std::string filename, byte *data, int width, int height);
 #endif

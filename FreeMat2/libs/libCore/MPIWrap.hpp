@@ -2,6 +2,7 @@
 #define __MPIWRAP_HPP__
 
 #include "Array.hpp"
+#include "config.h"
 
 namespace FreeMat {
 #ifdef USE_MPI

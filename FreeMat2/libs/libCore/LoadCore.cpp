@@ -23,6 +23,7 @@
 #include "Array.hpp"
 #include "Malloc.hpp"
 #include <math.h>
+#include "config.h"
 
 #ifdef USE_MPI
 #include "MPIWrap.hpp"

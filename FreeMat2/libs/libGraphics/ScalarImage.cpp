@@ -131,6 +131,8 @@ namespace FreeMat {
       delete[] zoomImage;
     if (zoomColumns < 1) zoomColumns = 1;
     if (zoomRows < 1) zoomRows = 1;
+    if (zoomColumns > 3000) zoomColumns = 3000;
+    if (zoomRows > 3000) zoomRows = 3000;
     zoomImage = new double[zoomColumns*zoomRows];
     double *tmpImage = new double[zoomRows*columns];
     // First zoom the columns

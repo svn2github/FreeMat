@@ -268,6 +268,12 @@ namespace FreeMat {
     grid_length = a_grid_length;
   }
 
+  int RANGE(int u) {
+    if (u < -4096) u = -4096;
+    if (u > 4096) u = 4096;
+    return u;
+  }
+
   int Axis::MapPoint(double t) {
     if (!isLogarithmic) {
       if (axisType == Axis_X) {
@@ -275,14 +281,14 @@ namespace FreeMat {
 	u = (xOffset + (t - tStart)/(tStop - tStart) * length);
 // 	if (u < xOffset-100) u = xOffset-100;
 // 	if (u > (xOffset+length+100)) u = xOffset+length+100;
-	return ((int)0.5+u);
+	return RANGE((int)(0.5+u));
       }
       if (axisType == Axis_Y) {
 	double u;
 	u = (yOffset + (tStop - t)/(tStop - tStart) * length);
 // 	if (u < yOffset-100) u = yOffset-100;
 // 	if (u > (yOffset+length+100)) u = yOffset+length+1;
-	return ((int)0.5+u);
+	return RANGE((int)(0.5+u));
       }
     } else {
       if (axisType == Axis_X) {
@@ -291,7 +297,7 @@ namespace FreeMat {
 	u = (xOffset + (s - tStart)/(tStop - tStart) * length);
 // 	if (u < xOffset-1) u = xOffset-1;
 // 	if (u > (xOffset+length+1)) u = xOffset+length+1;
-	return ((int)0.5+u);
+	return RANGE((int)(0.5+u));
       }
       if (axisType == Axis_Y) {
 	double s;
@@ -300,7 +306,7 @@ namespace FreeMat {
 	u = (yOffset + (tStop - s)/(tStop - tStart) * length);
 // 	if (u < yOffset-1) u = yOffset-1;
 // 	if (u > (yOffset+length+1)) u = yOffset+length+1;
-	return ((int)0.5+u);
+	return RANGE((int)(0.5+u));
       }      
     }
     return 0;

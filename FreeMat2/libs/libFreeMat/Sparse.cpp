@@ -43,6 +43,378 @@ extern "C" {
 	int *lworkl, int *info);
 }
 
+template <class T>
+class RLEEncoder {
+  T* buffer;
+  int m;
+  int n;
+  int len;
+  int zlen;
+  int state;
+public:
+  RLEEncoder(T* buf, int alen);
+  int row();
+  void set(int p);
+  void push(T val);
+  void end();
+  T* copyout();
+};
+
+template <class T>
+RLEEncoder<T>::RLEEncoder(T* buf, int alen) {
+  m = 0;
+  n = 0;
+  buffer = buf;
+  len = alen;
+  state = 0;
+  zlen = 0;
+}
+
+template <class T>
+int RLEEncoder<T>::row() {
+  return m;
+}
+
+// State 0 - Set the state to 1, zlen = p
+// State 1 - zlen += p;
+template <class T>
+void RLEEncoder<T>::set(int p) {
+  if (p <= m) return;
+  p -= m;
+  if (state == 0) {
+    zlen = p;
+    state = 1;
+  } else
+    zlen += p;
+  m += p;  
+}
+
+// State 0 - If the value is nonzero, push it on the stack, move to state 0
+// State 0 - If the value is zero, move to state 1, zlen = 1
+// State 1 - If the value is zero, stay in state 1, zlen++
+// State 1 - If the value is nonzero, output a zeros string of length zlen
+//           push the nonzero value on the stack, move to state 0
+template <class T>
+void RLEEncoder<T>::push(T val) {
+  if (state == 0) {
+    if (val != 0) {
+      buffer[n] = val;
+      n++;
+    } else {
+      state = 1;
+      zlen = 1;
+    }
+  } else {
+    if (val == 0) {
+      zlen++;
+    } else {
+      buffer[n] = 0;
+      buffer[n+1] = zlen;
+      buffer[n+2] = val;
+      state = 0;
+      n+=3;
+    }
+  }
+  m++;
+}
+
+template <class T>
+T* RLEEncoder<T>::copyout() {
+  T* ret;
+  ret = new T[n+1];
+  ret[0] = n;
+  memcpy(ret+1,buffer,n*sizeof(T));
+  return ret;
+}
+
+template <class T>
+void RLEEncoder<T>::end() {
+  set(len);
+  buffer[n] = 0;
+  buffer[n+1] = zlen;
+  state = 0;
+  n+=2;
+}
+
+template <class T>
+class RLEDecoder {
+  const T* data;
+  int m;
+  int n;
+  int len;
+public:
+  RLEDecoder(const T* str, int alen);
+  int row();
+  void update();
+  void advance();
+  T value();
+  void print();
+  bool more();
+  int nnzs();
+};
+
+template <class T>
+int RLEDecoder<T>::nnzs() {
+  int nnz = 0;
+  int t = 0;
+  int p = 1;
+  while (t < len) {
+    if (data[p] != 0) {
+      nnz++;
+      p++;
+      t++;
+    } else {
+      t += (int) data[p+1];
+      p += 2;
+    }
+  }
+  return nnz;
+}
+
+template <class T>
+bool RLEDecoder<T>::more() {
+  return (m < len);
+}
+
+template <class T>
+void RLEDecoder<T>::print() {
+  update();
+  while(m < len) {
+    std::cout << "row " << row() << " value = " << value() << "\r\n";
+    advance();
+  }
+}
+
+template <class T>
+RLEDecoder<T>::RLEDecoder(const T* str, int alen) {
+  data = str;
+  m = 0;
+  n = 1;
+  len = alen;
+}
+
+template <class T>
+T RLEDecoder<T>::value() {
+  if (m >= len)
+    throw FreeMat::Exception("RLE Decoder overflow - corrupted sparse matrix string encountered");
+  return data[n];
+}
+
+template <class T>
+int RLEDecoder<T>::row() {
+  return m;
+}
+
+template <class T>
+void RLEDecoder<T>::update() {
+  while ((m < len) && (data[n] == 0)) {
+    m += (int) data[n+1];
+    n += 2;
+  }
+}
+
+template <class T>
+void RLEDecoder<T>::advance() {
+  if (m < len) {
+    m++;
+    n++;
+    update();
+  }
+}
+
+template <class T>
+class RLEEncoderComplex {
+  T* buffer;
+  int m;
+  int n;
+  int len;
+  int zlen;
+  int state;
+public:
+  RLEEncoderComplex(T* buf, int alen);
+  int row();
+  void set(int p);
+  void push(T valr, T vali);
+  void end();
+  T* copyout();
+};
+
+template <class T>
+RLEEncoderComplex<T>::RLEEncoderComplex(T* buf, int alen) {
+  m = 0;
+  n = 0;
+  buffer = buf;
+  len = alen;
+  state = 0;
+  zlen = 0;
+}
+
+
+template <class T>
+int RLEEncoderComplex<T>::row() {
+  return m;
+}
+
+// State 0 - Set the state to 1, zlen = p
+// State 1 - zlen += p;
+template <class T>
+void RLEEncoderComplex<T>::set(int p) {
+  if (p <= m) return;
+  p -= m;
+  if (state == 0) {
+    zlen = p;
+    state = 1;
+  } else
+    zlen += p;
+  m += p;  
+}
+
+// State 0 - If the value is nonzero, push it on the stack, move to state 0
+// State 0 - If the value is zero, move to state 1, zlen = 1
+// State 1 - If the value is zero, stay in state 1, zlen++
+// State 1 - If the value is nonzero, output a zeros string of length zlen
+//           push the nonzero value on the stack, move to state 0
+template <class T>
+void RLEEncoderComplex<T>::push(T valr, T vali) {
+  if (state == 0) {
+    if ((valr != 0) || (vali != 0)) {
+      buffer[n++] = valr;
+      buffer[n++] = vali;
+    } else {
+      state = 1;
+      zlen = 1;
+    }
+  } else {
+    if ((valr == 0) && (vali == 0)) {
+      zlen++;
+    } else {
+      buffer[n++] = 0;
+      buffer[n++] = 0;
+      buffer[n++] = zlen;
+      buffer[n++] = valr;
+      buffer[n++] = vali;
+      state = 0;
+    }
+  }
+  m++;
+}
+
+template <class T>
+T* RLEEncoderComplex<T>::copyout() {
+  T* ret;
+  ret = new T[n+1];
+  ret[0] = n;
+  memcpy(ret+1,buffer,n*sizeof(T));
+  return ret;
+}
+
+template <class T>
+void RLEEncoderComplex<T>::end() {
+  set(len);
+  buffer[n++] = 0;
+  buffer[n++] = 0;
+  buffer[n++] = zlen;
+  state = 0;
+}
+
+template <class T>
+class RLEDecoderComplex {
+  const T* data;
+  int m;
+  int n;
+  int len;
+public:
+  RLEDecoderComplex(const T* str, int alen);
+  void reset();
+  int row();
+  void update();
+  void advance();
+  T value_real();
+  T value_imag();
+  void print();
+  bool more();
+  int nnzs();
+};
+
+template <class T>
+int RLEDecoderComplex<T>::nnzs() {
+  int nnz = 0;
+  int t = 0;
+  int p = 1;
+  while (t < len) {
+    if ((data[p] != 0) || (data[p+1] != 0)) {
+      nnz++;
+      p+=2;
+      t++;
+    } else {
+      t += (int) data[p+2];
+      p += 3;
+    }
+  }
+  return nnz;
+}
+
+
+
+template <class T>
+bool RLEDecoderComplex<T>::more() {
+  return (m < len);
+}
+
+template <class T>
+void RLEDecoderComplex<T>::print() {
+  update();
+  while(m < len) {
+    std::cout << "row " << row() << " value = " << value_real();
+    std::cout << " + i" << value_imag() << "\r\n";
+    advance();
+  }
+}
+
+template <class T>
+RLEDecoderComplex<T>::RLEDecoderComplex(const T* str, int alen) {
+  data = str;
+  m = 0;
+  n = 1;
+  len = alen;
+}
+
+template <class T>
+T RLEDecoderComplex<T>::value_real() {
+  if (m >= len)
+    throw FreeMat::Exception("RLE DecoderComplex overflow - corrupted sparse matrix string encountered");
+  return data[n];
+}
+
+template <class T>
+T RLEDecoderComplex<T>::value_imag() {
+  if (m >= len)
+    throw FreeMat::Exception("RLE DecoderComplex overflow - corrupted sparse matrix string encountered");
+  return data[n+1];
+}
+
+template <class T>
+int RLEDecoderComplex<T>::row() {
+  return m;
+}
+
+template <class T>
+void RLEDecoderComplex<T>::update() {
+  while ((m < len) && (data[n] == 0) && (data[n+1] == 0)) {
+    m += (int) data[n+2];
+    n += 3;
+  }
+}
+
+template <class T>
+void RLEDecoderComplex<T>::advance() {
+  if (m < len) {
+    m++;
+    n+=2;
+    update();
+  }
+}
+
 // The following ops are O(N^2) instead of O(nnz^2):
 //
 //  GetSparseNDimSubsets - If the rowindex is sorted into an IJV type list, it can be done without the Decompress step.  Although it is really not too bad, since the vector being recompressed is of the subset size.
@@ -71,141 +443,63 @@ namespace FreeMat {
       delete[] src[i];
     delete[] src;
   }
+
   template <class T>
   void DecompressComplexString(const T* src, T* dst, int count) {
-    int i=0;
-    int n=1;
-    int j;
-    while (i<2*count) {
-      if ((src[n] != 0) || (src[n+1] != 0)) {
-	dst[i] = src[n];
-	i++;
-	n++;
-	dst[i] = src[n];
-	i++;
-	n++;
-      } else {
-	j = (int) src[n+2];
-	memset(dst+i,0,2*sizeof(T)*j);
-	i += j*2;
-	n += 3;
-      }
+    RLEDecoderComplex<T> A(src,count);
+    A.update();
+    while (A.more()) {
+      dst[2*A.row()] = A.value_real();
+      dst[2*A.row()+1] = A.value_imag();
+      A.advance();
     }
   }
 
   template <class T>
-  T* CompressComplexVector(const T* src, int count) {
-    int i, j;
-    int zlen;
-    int outlen = 0;
-    i = 0;
-    while (i<count) {
-      if ((src[2*i] != 0) || (src[2*i+1] != 0)) {
-	i++;
-	outlen+=2;
-      } else {
-	outlen+=3;
-	while ((i<count) && (src[2*i] == 0) && (src[2*i+1] == 0)) i++;
-      }
-    }
-    T* dp = new T[outlen+1];
-    dp[0] = outlen;
-    j = 0;
-    i = 0;
-    outlen = 1;
-    while (i<count) {
-      if ((src[2*i] != 0) || (src[2*i+1] != 0)) {
-	dp[outlen] = src[2*i];
-	outlen++;
-	dp[outlen] = src[2*i+1];
-	outlen++;
-	i++;
-      } else {
-	zlen = 0;
-	while ((i<count) && (src[2*i] == 0) && (src[2*i+1] == 0)) {
-	  i++;
-	  zlen++;
-	}
-	dp[outlen++] = 0;
-	dp[outlen++] = 0;
-	dp[outlen++] = zlen;
-      }
-    }
-    return dp;
+  T* CompressComplexVector(T* buffer, const T* src, int count) {
+    RLEEncoderComplex<T> A(buffer,count);
+    for (int i=0;i<count;i++)
+      A.push(src[2*i],src[2*i+1]);
+    A.end();
+    return A.copyout();
   }
 
   template <class T>
   void DecompressRealString(const T* src, T* dst, int count) {
-    int i=0;
-    int n=1;
-    int j;
-    while (i<count) {
-      if (src[n] != 0) {
-	dst[i] = src[n];
-	i++;
-	n++;
-      } else {
-	j = (int) src[n+1];
-	memset(dst+i,0,sizeof(T)*j);
-	i += j;
-	n += 2;
-      }
+    RLEDecoder<T> A(src,count);
+    A.update();
+    while (A.more()) {
+      dst[A.row()] = A.value();
+      A.advance();
     }
   }
 
   template <class T>
-  T* CompressRealVector(const T* src, int count) {
-    int i, j;
-    int zlen;
-    int outlen = 0;
-    i = 0;
-    while (i<count) {
-      if (src[i] != 0) {
-	i++;
-	outlen++;
-      } else {
-	outlen+=2;
-	while ((i<count) && (src[i] == 0)) i++;
-      }
-    }
-    T* dp = new T[outlen+1];
-    dp[0] = outlen;
-    j = 0;
-    i = 0;
-    outlen = 1;
-    while (i<count) {
-      if (src[i] != 0) {
-	dp[outlen] = src[i];
-	i++;
-	outlen++;
-      } else {
-	zlen = 0;
-	while ((i<count) && (src[i] == 0)) {
-	  i++;
-	  zlen++;
-	}
-	dp[outlen++] = 0;
-	dp[outlen++] = zlen;
-      }
-    }
-    return dp;
+  T* CompressRealVector(T* buffer, const T* src, int count) {
+    RLEEncoder<T> A(buffer,count);
+    for (int i=0;i<count;i++)
+      A.push(src[i]);
+    A.end();
+    return A.copyout();
   }
 
   template <class T>
   T** ConvertDenseToSparseComplex(const T* src, int rows, int cols) {
-    T** dp;
-    dp = new T*[cols];
+    T** dp = new T*[cols];
+    T* buffer = new T[rows*4];
     for (int i=0;i<cols;i++)
-      dp[i] = CompressComplexVector<T>(src+i*rows*2, rows);
+      dp[i] = CompressComplexVector<T>(buffer,src+i*rows*2, rows);
+    delete buffer;
     return dp;
   }
   
   template <class T>
   T** ConvertDenseToSparseReal(const T* src, int rows, int cols) {
-    T** dp;
-    dp = new T*[cols];
+    T** dp = new T*[cols];
+    T* buffer = new T[rows*2];
     for (int i=0;i<cols;i++)
-      dp[i] = CompressRealVector<T>(src+i*rows, rows);
+      dp[i] = CompressRealVector<T>(buffer,src+i*rows, rows);
+    delete buffer;
     return dp;
   }
   
@@ -290,152 +584,58 @@ namespace FreeMat {
     }    
   }
 
-  void tstop() {
-    int i;
-    i = 423;
-  }
-
   template <class T>
-  T* CompressRealIJV(IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
+  T* CompressRealIJV(T* buffer, IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
     // Special case an all zeros column
     if ((ptr >= len) || (mlist[ptr].J > col)) {
-      T* buffer = new T[3];
-      buffer[0] = 2;
-      buffer[1] = 0;
-      buffer[2] = row;
-      return buffer;
+      T* buf = new T[3];
+      buf[0] = 2;
+      buf[1] = 0;
+      buf[2] = row;
+      return buf;
     }
-    // m is the pointer to the output cell, n is the effective
-    // row number
-    int m = 0;
-    int n = 0;
-    int sptr = ptr;
-    // First pass, calculate how many entries in the output
-    while (mlist[sptr].J == col) {
-      if (mlist[sptr].I == n) {
-	T accum = 0;
-	while ((mlist[sptr].I == n) && (mlist[sptr].J == col)) {
-	  accum += mlist[sptr].Vreal;
-	  sptr++;
-	}
-	n++;
-	if (accum == 0)
-	  m += 2;
-	else
-	  m++;
-      } else {
-	m += 2;
-	n = mlist[sptr].I;
-      }
-    }
-    if (n<row)
-      m += 2;
-    // Allocate the output buffer
-    T* buffer = new T[m+1];
-    buffer[0] = m;
-    m = 1;
-    n = 0;
-    // Second pass...
+    RLEEncoder<T> A(buffer, row);
     while (mlist[ptr].J == col) {
-      if (mlist[ptr].I == n) {
-	T accum = 0;
-	while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
-	  accum += mlist[ptr].Vreal;
-	  ptr++;
-	}
-	n++;
-	if (accum == 0) {
-	  buffer[m++] = 0;
-	  buffer[m++] = 1;
-	} else
-	  buffer[m++] = accum;
-      } else {
-	buffer[m++] = 0;
-	buffer[m++] = mlist[ptr].I - n;
-	n = mlist[ptr].I;
+      int n;
+      n = mlist[ptr].I;
+      T accum = 0;
+      while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
+	accum += mlist[ptr].Vreal;
+	ptr++;
       }
+      A.set(n);
+      A.push(accum);
     }
-    if (n<row) {
-      buffer[m++] = 0;
-      buffer[m++] = row - n;
-    }
-    return buffer;
+    A.end();
+    return A.copyout();
   }
 
   template <class T>
-  T* CompressComplexIJV(IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
+  T* CompressComplexIJV(T* buffer, IJVEntry<T> *mlist, int len, int &ptr, int col, int row) {
     if ((ptr >= len) || (mlist[ptr].J > col)) {
-      T* buffer = new T[4];
-      buffer[0] = 3;
-      buffer[1] = 0;
-      buffer[2] = 0;
-      buffer[3] = row;
-      return buffer;
+      T* buf = new T[4];
+      buf[0] = 3;
+      buf[1] = 0;
+      buf[2] = 0;
+      buf[3] = row;
+      return buf;
     }
-    // m is the pointer to the output cell, n is the effective
-    // row number
-    int m = 0;
-    int n = 0;
-    int sptr = ptr;
-    // First pass, calculate how many entries in the output
-    while (mlist[sptr].J == col) {
-      if (mlist[sptr].I == n) {
-	T accum_real = 0;
-	T accum_imag = 0;
-	while ((mlist[sptr].I == n) && (mlist[sptr].J == col)) {
-	  accum_real += mlist[sptr].Vreal;
-	  accum_imag += mlist[sptr].Vimag;
-	  sptr++;
-	}
-	n++;
-	if ((accum_real == 0) && (accum_imag == 0)) 
-	  m += 3;
-	else
-	  m += 2;
-      } else {
-	m += 3;
-	n = mlist[sptr].I;
-      }
-    }
-    if (n<row)
-      m += 3;
-    // Allocate the output buffer
-    T* buffer = new T[m+1];
-    buffer[0] = m;
-    m = 1;
-    n = 0;
-    // Second pass...
+    RLEEncoderComplex<T> A(buffer, row);
     while (mlist[ptr].J == col) {
-      if (mlist[ptr].I == n) {
-	T accum_real = 0;
-	T accum_imag = 0;
-	while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
-	  accum_real += mlist[ptr].Vreal;
-	  accum_imag += mlist[ptr].Vimag;
-	  ptr++;
-	}
-	n++;
-	if ((accum_real == 0) && (accum_imag == 0)) {
-	  buffer[m++] = 0;
-	  buffer[m++] = 0;
-	  buffer[m++] = 1;
-	} else {
-	  buffer[m++] = accum_real;
-	  buffer[m++] = accum_imag;
-	}
-      } else {
-	buffer[m++] = 0;
-	buffer[m++] = 0;
-	buffer[m++] = mlist[ptr].I - n;
-	n = mlist[ptr].I;
+      int n;
+      n = mlist[ptr].I;
+      T accum_real = 0;
+      T accum_imag = 0;
+      while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
+	accum_real += mlist[ptr].Vreal;
+	accum_imag += mlist[ptr].Vimag;
+	ptr++;
       }
+      A.set(n);
+      A.push(accum_real,accum_imag);
     }
-    if (n<row) {
-      buffer[m++] = 0;
-      buffer[m++] = 0;
-      buffer[m++] = row - n;
-    }
-    return buffer;
+    A.end();
+    return A.copyout();
   }
 
 
@@ -462,8 +662,10 @@ namespace FreeMat {
     // Get an integer pointer into the IJV list
     int ptr = 0;
     // Stringify...
+    T* buffer = new T[rows*2];
     for (int col=0;col<cols;col++)
-      op[col] = CompressRealIJV<T>(mlist,nnz,ptr,col,rows);
+      op[col] = CompressRealIJV<T>(buffer,mlist,nnz,ptr,col,rows);
+    delete[] buffer;
     // Free the space
     delete[] mlist;
     // Return the array
@@ -620,8 +822,10 @@ namespace FreeMat {
     // Get an integer pointer into the IJV list
     int ptr = 0;
     // Stringify...
+    T* buffer = new T[rows*4];
     for (int col=0;col<cols;col++)
-      op[col] = CompressComplexIJV<T>(mlist,nnz,ptr,col,rows);
+      op[col] = CompressComplexIJV<T>(buffer,mlist,nnz,ptr,col,rows);
+    delete[] buffer;
     // Free the space
     delete[] mlist;
     // Return the array
@@ -692,45 +896,20 @@ namespace FreeMat {
   S** TypeConvertSparseRealComplex(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
+    S* buffer = new S[rows*4];
     for (int p=0;p<cols;p++) {
-      // Scan the array to see how many values we have to increase it by
-      int i = 0;
-      int n = 1;
-      int outlen = 0;
-      while (i<rows) {
-	if (src[p][n] != 0) {
-	  i++;
-	  n++;
-	  outlen += 2;
-	} else {
-	  int j = (int) src[p][n+1];
-	  i += j;
-	  n += 2;
-	  outlen += 3;
-	}
+      RLEEncoderComplex<S> B(buffer,rows);
+      RLEDecoder<T> A(src[p],rows);
+      A.update();
+      while (A.more()) {
+	B.set(A.row());
+	B.push(A.value(),0);
+	A.advance();
       }
-      // allocate the output array
-      dp[p] = new S[outlen+1];
-      dp[p][0] = outlen;
-      i = 0;
-      n = 1;
-      outlen = 1;
-      while (i<rows) {
-	if (src[p][n] != 0) {
-	  dp[p][outlen++] = (S) src[p][n];
-	  dp[p][outlen++] = 0;
-	  i++;
-	  n++;
-	} else {
-	  int j = (int) src[p][n+1];
-	  i += j;
-	  n += 2;
-	  dp[p][outlen++] = 0;
-	  dp[p][outlen++] = 0;
-	  dp[p][outlen++] = (S) j;
-	}
-      }
+      B.end();
+      dp[p] = B.copyout();
     }
+    delete[] buffer;
     return dp;
   }
 
@@ -738,42 +917,20 @@ namespace FreeMat {
   S** TypeConvertSparseComplexReal(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
+    S* buffer = new S[rows*2];
     for (int p=0;p<cols;p++) {
-      int i=0;
-      int n=1;
-      int j;
-      int outlen = 0;
-      while (i<2*rows) {
-	if ((src[p][n] != 0) || (src[p][n+1] != 0)) {
-	  i+=2;
-	  n+=2;
-	  outlen++;
-	} else {
-	  j = (int) src[p][n+2];
-	  i += j*2;
-	  n += 3;
-	  outlen += 2;
-	}
+      RLEEncoder<S> B(buffer,rows);
+      RLEDecoderComplex<T> A(src[p],rows);
+      A.update();
+      while (A.more()) {
+	B.set(A.row());
+	B.push((S) A.value_real());
+	A.advance();
       }
-      dp[p] = new S[outlen+1];
-      dp[p][0] = outlen;
-      i=0;
-      n=1;
-      outlen = 1;
-      while (i<2*rows) {
-	if ((src[p][n] != 0) || (src[p][n+1] != 0)) {
-	  dp[p][outlen++] = (S) src[p][n];
-	  i+=2;
-	  n+=2;
-	} else {
-	  j = (int) src[p][n+2];
-	  i += j*2;
-	  n += 3;
-	  dp[p][outlen++] = 0;
-	  dp[p][outlen++] = j;
-	}
-      }
-    } 
+      B.end();
+      dp[p] = B.copyout();
+    }
+    delete[] buffer;
     return dp;
   }
 
@@ -793,20 +950,9 @@ namespace FreeMat {
   template <class T>
   int CountNonzerosComplex(const T** src, int rows, int cols) {
     int nnz = 0;
-    int i, j, n;
-    for (i=0;i<cols;i++) {
-      n = 1;
-      j = 0;
-      while (j<rows) {
-	if ((src[i][n] != 0) || (src[i][n+1] != 0)){
-	  nnz++;
-	  j++;
-	  n+=2;
-	} else {
-	  j += (int) src[i][n+2];
-	  n += 3;
-	}
-      }
+    for (int i=0;i<cols;i++) {
+      RLEDecoderComplex<T> A(src[i],rows);
+      nnz += A.nnzs();
     }
     return nnz;
   }
@@ -814,20 +960,9 @@ namespace FreeMat {
   template <class T>
   int CountNonzerosReal(const T** src, int rows, int cols) {
     int nnz = 0;
-    int i, j, n;
-    for (i=0;i<cols;i++) {
-      n = 1;
-      j = 0;
-      while (j<rows) {
-	if (src[i][n] != 0) {
-	  nnz++;
-	  j++;
-	  n++;
-	} else {
-	  j += (int) src[i][n+1];
-	  n += 2;
-	}
-      }
+    for (int i=0;i<cols;i++) {
+      RLEDecoder<T> A(src[i],rows);
+      nnz += A.nnzs();
     }
     return nnz;
   }
@@ -838,24 +973,17 @@ namespace FreeMat {
     I = (uint32*) Malloc(sizeof(uint32)*nnz);
     J = (uint32*) Malloc(sizeof(uint32)*nnz);
     T* V = (T*) Malloc(sizeof(T)*nnz*2);
-    int i, j, n;
     int ptr = 0;
-    for (i=0;i<cols;i++) {
-      n = 1;
-      j = 0;
-      while (j<rows) {
-	if ((src[i][n] != 0) || (src[i][n+1] != 0)) {
-	  I[ptr] = j+1;
-	  J[ptr] = i+1;
-	  V[2*ptr] = src[i][n];
-	  V[2*ptr+1] = src[i][n+1];
-	  ptr++;
-	  j++;
-	  n+=2;
-	} else {
-	  j += (int) src[i][n+2];
-	  n += 3;
-	}
+    for (int i=0;i<cols;i++) {
+      RLEDecoderComplex<T> A(src[i],rows);
+      A.update();
+      while (A.more()) {
+	I[ptr] = A.row()+1;
+	J[ptr] = i+1;
+	V[2*ptr] = A.value_real();
+	V[2*ptr+1] = A.value_imag();
+	ptr++;
+	A.advance();
       }
     }
     return V;
@@ -867,23 +995,16 @@ namespace FreeMat {
     I = (uint32*) Malloc(sizeof(uint32)*nnz);
     J = (uint32*) Malloc(sizeof(uint32)*nnz);
     T* V = (T*) Malloc(sizeof(T)*nnz);
-    int i, j, n;
     int ptr = 0;
-    for (i=0;i<cols;i++) {
-      n = 1;
-      j = 0;
-      while (j<rows) {
-	if (src[i][n] != 0) {
-	  I[ptr] = j+1;
-	  J[ptr] = i+1;
-	  V[ptr] = src[i][n];
-	  ptr++;
-	  j++;
-	  n++;
-	} else {
-	  j += (int) src[i][n+1];
-	  n += 2;
-	}
+    for (int i=0;i<cols;i++) {
+      RLEDecoder<T> A(src[i],rows);
+      A.update();
+      while (A.more()) {
+	I[ptr] = A.row()+1;
+	J[ptr] = i+1;
+	V[ptr] = A.value();
+	ptr++;
+	A.advance();
       }
     }
     return V;
@@ -947,40 +1068,47 @@ namespace FreeMat {
   void SparseSparseRealMultiply(T** A, int A_rows, int A_cols,
 				T** B, int B_cols,
 				T** C) {
-    T* CColumn;
-    int i, j, k, m, n;
-    
-    CColumn = new T[A_rows];
-    for (j=0;j<B_cols;j++) {
-      memset(CColumn,0,A_rows*sizeof(T));
-      k=0;
-      m=1;
-      while (k<A_cols) {
-	if (B[j][m] != 0) {
-	  T Bval = B[j][m];
-	  T* Acol = A[k];
-	  i=0;
-	  n=1;
-	  while (i<A_rows) {
-	    if (Acol[n] != 0) {
-	      CColumn[i] += Acol[n]*Bval;
-	      n++;
-	      i++;
-	    } else {
-	      i += (int) Acol[n+1];
-	      n += 2;
-	    }
+    // This new version of the sparse-sparse matrix multiply works
+    // as follows.  The outer loop is over the columns of B
+    T* abuff = new T[2*A_rows];
+    for (int j=0;j<B_cols;j++) {
+      T* cbuff = new T[3];
+      cbuff[0] = 2; cbuff[1] = 0; cbuff[2] = A_rows;
+      // Put a decoder on this column of B
+      RLEDecoder<T> Bcol(B[j],A_cols);
+      Bcol.update();
+      while (Bcol.more()) {
+	T scale = Bcol.value();
+	RLEDecoder<T> Acol(A[Bcol.row()],A_rows);
+	RLEDecoder<T> Ccol(cbuff,A_rows);
+	RLEEncoder<T> Dcol(abuff,A_rows);
+	// Add Acol*scale + Ccol --> Dcol
+	Acol.update();
+	Ccol.update();
+	while (Acol.more() || Ccol.more()) {
+	  if (Acol.row() == Ccol.row()) {
+	    Dcol.set(Acol.row());
+	    Dcol.push(Acol.value()*scale+Ccol.value());
+	    Acol.advance();
+	    Ccol.advance();
+	  } else if (Acol.row() < Ccol.row()) {
+	    Dcol.set(Acol.row());
+	    Dcol.push(Acol.value()*scale);
+	    Acol.advance();
+	  } else {
+	    Dcol.set(Ccol.row());
+	    Dcol.push(Ccol.value());
+	    Ccol.advance();
 	  }
-	  k++;
-	  m++;
-	} else {
-	  k += (int) B[j][m+1];
-	  m += 2;
 	}
+	Dcol.end();
+	delete cbuff;
+	cbuff = Dcol.copyout();
+	Bcol.advance();
       }
-      C[j] = CompressRealVector(CColumn, A_rows);
+      C[j] = cbuff;
     }
-    delete CColumn;
+    delete abuff;
   }
   
   // Multiply a sparse matrix by a sparse matrix (result is sparse)
@@ -994,42 +1122,52 @@ namespace FreeMat {
   void SparseSparseComplexMultiply(T** A, int A_rows, int A_cols,
 				   T** B, int B_cols,
 				   T** C) {
-    T* CColumn;
-    int i, j, k, m, n;
-    
-    CColumn = new T[2*A_rows];
-    for (j=0;j<B_cols;j++) {
-      memset(CColumn,0,2*A_rows*sizeof(T));
-      k=0;
-      m=1;
-      while (k<A_cols) {
-	if ((B[j][m] != 0) || (B[j][m+1] != 0)){
-	  T Bval_real = B[j][m];
-	  T Bval_imag = B[j][m+1];
-	  T* Acol = A[k];
-	  i=0;
-	  n=1;
-	  while (i<A_rows) {
-	    if ((Acol[n] != 0) || (Acol[n+1] != 0)) {
-	      CColumn[2*i] += Acol[n]*Bval_real - Acol[n+1]*Bval_imag;
-	      CColumn[2*i+1] += Acol[n]*Bval_imag + Acol[n+1]*Bval_real;
-	      n+=2;
-	      i++;
-	    } else {
-	      i += (int) Acol[n+2];
-	      n += 3;
-	    }
+    T* abuff = new T[4*A_rows];
+    for (int j=0;j<B_cols;j++) {
+      T* cbuff = new T[4];
+      cbuff[0] = 3; cbuff[1] = 0; cbuff[2] = 0; cbuff[3] = A_rows;
+      // Put a decoder on this column of B
+      RLEDecoderComplex<T> Bcol(B[j],A_cols);
+      Bcol.update();
+      while (Bcol.more()) {
+	T scale_real = Bcol.value_real();
+	T scale_imag = Bcol.value_imag();
+	RLEDecoderComplex<T> Acol(A[Bcol.row()],A_rows);
+	RLEDecoderComplex<T> Ccol(cbuff,A_rows);
+	RLEEncoderComplex<T> Dcol(abuff,A_rows);
+	// Add Acol*scale + Ccol --> Dcol
+	Acol.update();
+	Ccol.update();
+	while (Acol.more() || Ccol.more()) {
+	  if (Acol.row() == Ccol.row()) {
+	    Dcol.set(Acol.row());
+	    Dcol.push(Acol.value_real()*scale_real - 
+		      Acol.value_imag()*scale_imag + Ccol.value_real(),
+		      Acol.value_imag()*scale_real + 
+		      Acol.value_real()*scale_imag + Ccol.value_imag());
+	    Acol.advance();
+	    Ccol.advance();
+	  } else if (Acol.row() < Ccol.row()) {
+	    Dcol.set(Acol.row());
+	    Dcol.push(Acol.value_real()*scale_real - 
+		      Acol.value_imag()*scale_imag,
+		      Acol.value_imag()*scale_real + 
+		      Acol.value_real()*scale_imag);
+	    Acol.advance();
+	  } else {
+	    Dcol.set(Ccol.row());
+	    Dcol.push(Ccol.value_real(),Ccol.value_imag());
+	    Ccol.advance();
 	  }
-	  k++;
-	  m += 2;
-	} else {
-	  k += (int) B[j][m+2];
-	  m += 3;
 	}
+	Dcol.end();
+	delete cbuff;
+	cbuff = Dcol.copyout();
+	Bcol.advance();
       }
-	  C[j] = CompressComplexVector(CColumn, A_rows);
+      C[j] = cbuff;
     }
-    delete CColumn;
+    delete abuff;
   }
   
   // Multiply a sparse matrix by a dense matrix (result is dense)
@@ -1057,63 +1195,46 @@ namespace FreeMat {
   void SparseDenseRealMultiply(T**A, int A_rows, int A_cols,
 			       T*B, int B_cols,
 			       T*C) {
-    int i, j, k, n;
-    T* Acol;
     T Bval;
     memset(C,0,A_rows*B_cols*sizeof(T));
-    for (k=0;k<A_cols;k++) {
-      Acol = A[k];
-      for (j=0;j<B_cols;j++) {
+    for (int k=0;k<A_cols;k++) 
+      for (int j=0;j<B_cols;j++) {
 	Bval = B[k+j*A_cols];
 	if (Bval != 0) {
-	  i=0;
-	  n=1;
-	  while (i<A_rows) {
-	    if (Acol[n] != 0) {
-	      C[i+j*A_rows] += Acol[n]*Bval;
-	      n++;
-	      i++;
-	    } else {
-	      i += (int) Acol[n+1];
-	      n += 2;
-	    }
+	  RLEDecoder<T> Acol(A[k],A_rows);
+	  Acol.update();
+	  while (Acol.more()) {
+	    C[Acol.row()+j*A_rows] += Acol.value()*Bval;
+	    Acol.advance();
 	  }
 	}
       }
-    }
   }
   
   template <class T>
   void SparseDenseComplexMultiply(T**A, int A_rows, int A_cols,
 				  T*B, int B_cols,
 				  T*C) {
-    int i, j, k, n;
-    T* Acol;
     T Bval_real;
     T Bval_imag;
     memset(C,0,2*A_rows*B_cols*sizeof(T));
-    for (k=0;k<A_cols;k++) {
-      Acol = A[k];
-      for (j=0;j<B_cols;j++) {
+    for (int k=0;k<A_cols;k++) 
+      for (int j=0;j<B_cols;j++) {
 	Bval_real = B[2*(k+j*A_cols)];
 	Bval_imag = B[2*(k+j*A_cols)+1];
 	if ((Bval_real != 0) || (Bval_imag != 0)) {
-	  i=0;
-	  n=1;
-	  while (i<A_rows) {
-	    if ((Acol[n] != 0) || (Acol[n+1] != 0)){
-	      C[2*(i+j*A_rows)] += Acol[n]*Bval_real - Acol[n+1]*Bval_imag;
-	      C[2*(i+j*A_rows)+1] += Acol[n]*Bval_imag + Acol[n+1]*Bval_real;
-	      n+=2;
-	      i++;
-	    } else {
-	      i += (int) Acol[n+2];
-	      n += 3;
-	    }
+	  RLEDecoderComplex<T> Acol(A[k],A_rows);
+	  Acol.update();
+	  while (Acol.more()) {
+	    int i = Acol.row();
+	    C[2*(i+j*A_rows)] += Acol.value_real()*Bval_real - 
+	      Acol.value_imag()*Bval_imag;
+	    C[2*(i+j*A_rows)+1] += Acol.value_real()*Bval_imag + 
+	      Acol.value_imag()*Bval_real;
+	    Acol.advance();
 	  }
 	}
       }
-    }
   }
   
   // for i=1:Arows
@@ -1130,26 +1251,18 @@ namespace FreeMat {
   template <class T>
   void DenseSparseRealMultiply(T* A, int A_rows, int A_cols,
 			       T** B, int B_cols, T* C) {
-    int i, j, k, n;
     int B_rows;
-    T* str;
-    T accum;
     memset(C,0,sizeof(T)*A_rows*B_cols);
     B_rows = A_cols;
-    for (j=0;j<B_cols;j++) {
-      str = B[j];
-      k = 1;
-      n = 0;
-      while (n<B_rows) {
-	if (str[k] != 0) {
-	  for (i=0;i<A_rows;i++)
-	    C[i+j*A_rows] += A[i+n*A_rows]*str[k];
-	  n++;
-	  k++;
-	} else {
-	  n += (int) (str[k+1]);
-	  k += 2;
-	}
+    for (int j=0;j<B_cols;j++) {
+      RLEDecoder<T> Bcol(B[j],B_rows);
+      Bcol.update();
+      while (Bcol.more()) {
+	T Bval = Bcol.value();
+	int n = Bcol.row();
+	for (int i=0;i<A_rows;i++)
+	  C[i+j*A_rows] += A[i+n*A_rows]*Bval;
+	Bcol.advance();
       }
     }
   }
@@ -1157,30 +1270,23 @@ namespace FreeMat {
   template <class T>
   void DenseSparseComplexMultiply(T* A, int A_rows, int A_cols,
 				  T** B, int B_cols, T* C) {
-    int i, j, k, n;
     int B_rows;
-    T* str;
-    T accum;
     memset(C,0,2*sizeof(T)*A_rows*B_cols);
     B_rows = A_cols;
-    for (j=0;j<B_cols;j++) {
-      str = B[j];
-      k = 1;
-      n = 0;
-      while (n<B_rows) {
-	if ((str[k] != 0) || (str[k+1] != 0)) {
-	  for (i=0;i<A_rows;i++) {
-	    C[2*(i+j*A_rows)] += A[2*(i+n*A_rows)]*str[k] - 
-	      A[2*(i+n*A_rows)+1]*str[k+1];
-	    C[2*(i+j*A_rows)+1] += A[2*(i+n*A_rows)+1]*str[k] + 
-	      A[2*(i+n*A_rows)]*str[k+1];
-	  }
-	  n++;
-	  k+=2;
-	} else {
-	  n += (int) (str[k+2]);
-	  k += 3;
+    for (int j=0;j<B_cols;j++) {
+      RLEDecoderComplex<T> Bcol(B[j],B_rows);
+      Bcol.update();
+      while (Bcol.more()) {
+	T Bval_real = Bcol.value_real();
+	T Bval_imag = Bcol.value_imag();
+	int n = Bcol.row();
+	for (int i=0;i<A_rows;i++) {
+	  C[2*(i+j*A_rows)] += A[2*(i+n*A_rows)]*Bval_real - 
+	    A[2*(i+n*A_rows)+1]*Bval_imag;
+	  C[2*(i+j*A_rows)+1] += A[2*(i+n*A_rows)+1]*Bval_real + 
+	    A[2*(i+n*A_rows)]*Bval_imag;
 	}
+	Bcol.advance();
       }
     }
   }
@@ -1529,6 +1635,30 @@ namespace FreeMat {
     return mlist;
   }
 
+  template <class T>
+  void* ConvertIJVtoRLEReal(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
+    T** B;
+    B = new T*[cols];
+    T* buffer = new T[rows*2];
+    int ptr = 0;
+    for (int col=0;col<cols;col++)
+      B[col] = CompressRealIJV<T>(buffer,mlist,nnz,ptr,col,rows);
+    delete buffer;
+    return B;
+  }
+
+  template <class T>
+  void* ConvertIJVtoRLEComplex(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
+    T** B;
+    B = new T*[cols];
+    T* buffer = new T[rows*4];
+    int ptr = 0;
+    for (int col=0;col<cols;col++)
+      B[col] = CompressComplexIJV<T>(buffer,mlist,nnz,ptr,col,rows);
+    delete buffer;
+    return B;
+  }
+
   // The original implementation is poor because for a linear access of the elements
   // of A, it requires significant time.  A better approach is to build a sorted list
   // of the type:
@@ -1594,13 +1724,7 @@ namespace FreeMat {
     // Now resort the list
     std::sort(ilist,ilist+icount);
     // Build a sparse matrix out of this
-    T** B;
-    B = new T*[icols];
-    int ptr = 0;
-    for (int col=0;col<icols;col++)
-      B[col] = CompressRealIJV<T>(ilist,icount,ptr,col,irows);
-    delete[] mlist;
-    delete[] ilist;
+    T** B = (T**) ConvertIJVtoRLEReal<T>(ilist,icount,irows,cols);
     return B;
   }
 
@@ -1670,11 +1794,7 @@ namespace FreeMat {
     // Now resort the list
     std::sort(dlist,dlist+optr);
     // Build a sparse matrix out of this
-    T** B;
-    B = new T*[cols];
-    int ptr = 0;
-    for (int col=0;col<cols;col++)
-      B[col] = CompressRealIJV<T>(dlist,optr,ptr,col,rows);
+    T** B = (T**) ConvertIJVtoRLEReal<T>(dlist,optr,rows,cols);
     delete[] mlist;
     delete[] ilist;
     delete[] dlist;
@@ -1749,11 +1869,7 @@ namespace FreeMat {
     std::sort(dlist,dlist+optr);
     printIJV(dlist,optr);
     // Build a sparse matrix out of this
-    T** B;
-    B = new T*[cols];
-    int ptr = 0;
-    for (int col=0;col<cols;col++)
-      B[col] = CompressComplexIJV<T>(dlist,optr,ptr,col,rows);
+    T** B = (T**) ConvertIJVtoRLEComplex<T>(dlist,optr,rows,cols);
     delete[] mlist;
     delete[] ilist;
     delete[] dlist;
@@ -1810,13 +1926,7 @@ namespace FreeMat {
     // Now resort the list
     std::sort(ilist,ilist+icount);
     // Build a sparse matrix out of this
-    T** B;
-    B = new T*[icols];
-    int ptr = 0;
-    for (int col=0;col<icols;col++)
-      B[col] = CompressComplexIJV<T>(ilist,icount,ptr,col,irows);
-    delete[] mlist;
-    delete[] ilist;
+    T** B = (T**) ConvertIJVtoRLEComplex<T>(ilist,icount,irows,cols);
     return B;
   }
 
@@ -1890,6 +2000,7 @@ namespace FreeMat {
     T* Acol = new T[rows];
     T* Bcol = new T[irows];
     T** dp = new T*[icols];
+    T* buffer = new T[irows*2];
     for (i=0;i<icols;i++) {
       // Get the column index
       m = cindx[i] - 1;
@@ -1904,8 +2015,9 @@ namespace FreeMat {
 	  throw Exception("row index exceeds variable bounds in expression of type A(n,m)");
 	Bcol[j] = Acol[n];
       }
-      dp[i] = CompressRealVector<T>(Bcol,irows);
+      dp[i] = CompressRealVector<T>(buffer,Bcol,irows);
     }
+    delete buffer;
     delete Acol;
     delete Bcol;
     return dp;
@@ -1921,6 +2033,7 @@ namespace FreeMat {
     T* Acol = new T[2*rows];
     T* Bcol = new T[2*irows];
     T** dp = new T*[icols];
+    T* buffer = new T[irows*4];
     for (i=0;i<icols;i++) {
       // Get the column index
       m = cindx[i] - 1;
@@ -1936,8 +2049,9 @@ namespace FreeMat {
 	Bcol[2*j] = Acol[2*n];
 	Bcol[2*j+1] = Acol[2*n+1];
       }
-      dp[i] = CompressComplexVector<T>(Bcol,irows);
+      dp[i] = CompressComplexVector<T>(buffer,Bcol,irows);
     }
+    delete buffer;
     delete Acol;
     delete Bcol;
     return dp;
@@ -2102,6 +2216,7 @@ namespace FreeMat {
       dp = (T**) CopySparseMatrix<T>(A,rows,cols);
 
     T* Acol = new T[rows];
+    T* buffer = new T[rows*2];
     for (i=0;i<icols;i++) {
       // Get the column index
       m = cindx[i] - 1;
@@ -2117,9 +2232,10 @@ namespace FreeMat {
 	data += advance;
       }
       delete dp[m];
-      dp[m] = CompressRealVector<T>(Acol,rows);
+      dp[m] = CompressRealVector<T>(buffer,Acol,rows);
     }
     delete Acol;
+    delete buffer;
     return dp;
   }
 
@@ -2151,6 +2267,7 @@ namespace FreeMat {
       dp = (T**) CopySparseMatrix<T>(A,rows,cols);
 
     T* Acol = new T[2*rows];
+    T* buffer = new T[4*rows];
     for (i=0;i<icols;i++) {
       // Get the column index
       m = cindx[i] - 1;
@@ -2167,9 +2284,10 @@ namespace FreeMat {
 	data += 2*advance;
       }
       delete dp[m];
-      dp[m] = CompressComplexVector<T>(Acol,rows);
+      dp[m] = CompressComplexVector<T>(buffer,Acol,rows);
     }
     delete Acol;
+    delete buffer;
     return dp;
   }
 
@@ -2219,6 +2337,7 @@ namespace FreeMat {
     // Allocate a buffer array
     T* NBuf = new T[newrow*2];
     T* OBuf = new T[rows*2];
+    T* buffer = new T[newrow*4];
     // Allocate the output array
     int ptr = 0;
     for (i=0;i<cols;i++) {
@@ -2232,14 +2351,14 @@ namespace FreeMat {
 	  NBuf[ptr++] = OBuf[2*j+1];
 	}
       // Recompress it
-      dest[i] = CompressComplexVector<T>(NBuf,newrow);
+      dest[i] = CompressComplexVector<T>(buffer,NBuf,newrow);
     }
+    delete buffer;
     return dest;
   }
 
   template <class T>
   void* DeleteSparseMatrixRowsReal(int rows, int cols, const T** src, bool *dmap) {
-    tstop();
     // Count the number of undeleted columns
     int newrow;
     int i;
@@ -2251,6 +2370,7 @@ namespace FreeMat {
     // Allocate a buffer array
     T* NBuf = new T[newrow];
     T* OBuf = new T[rows];
+    T* buffer = new T[newrow*2];
     // Allocate the output array
     int ptr = 0;
     for (i=0;i<cols;i++) {
@@ -2261,8 +2381,9 @@ namespace FreeMat {
       for (int j=0;j<rows;j++)
 	if (!dmap[j]) NBuf[ptr++] = OBuf[j];
       // Recompress it
-      dest[i] = CompressRealVector<T>(NBuf,newrow);
+      dest[i] = CompressRealVector<T>(buffer,NBuf,newrow);
     }
+    delete buffer;
     delete NBuf;
     delete OBuf;
     return dest;
@@ -2355,7 +2476,6 @@ namespace FreeMat {
     // eliminate duplicates
     i=0;
     int j=0;
-    tstop();
     while (i<delete_len) {
       j = i+1;
       while ((j<delete_len) && 
@@ -2391,11 +2511,7 @@ namespace FreeMat {
 	dptr++;
       }
     }
-    int qptr = 0;
-    T** dst;
-    dst = new T*[1];
-    rows -= delete_len;
-    dst[0]= CompressRealIJV(mlist,nnz,qptr,0,rows); 
+    T** dst = (T**) ConvertIJVtoRLEReal<T>(mlist,nnz,rows-delete_len,1);
     delete mlist;
     delete ilist;
     return dst;
@@ -2424,7 +2540,6 @@ namespace FreeMat {
     // eliminate duplicates
     i=0;
     int j=0;
-    tstop();
     while (i<delete_len) {
       j = i+1;
       while ((j<delete_len) && 
@@ -2461,10 +2576,7 @@ namespace FreeMat {
       }
     }
     int qptr = 0;
-    T** dst;
-    dst = new T*[1];
-    rows -= delete_len;
-    dst[0]= CompressComplexIJV(mlist,nnz,qptr,0,rows); 
+    T** dst = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,rows-delete_len,1);
     delete mlist;
     delete ilist;
     return dst;
@@ -2503,15 +2615,19 @@ namespace FreeMat {
     if (diagonalOrder < 0) {
       outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
       T* buffer = new T[outLen];
+      T* abuf = new T[outLen*2];
       for (int j=0;j<outLen;j++) 
 	RealStringExtract(src[j],j-diagonalOrder,buffer+j);
-      dst[0] = CompressRealVector(buffer,outLen);
+      dst[0] = CompressRealVector(abuf,buffer,outLen);
+      delete abuf;      
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
       T* buffer = new T[outLen];
+      T* abuf = new T[outLen*2];
       for (int j=0;j<outLen;j++) 
 	RealStringExtract(src[diagonalOrder+j],j,buffer+j);
-      dst[0] = CompressRealVector(buffer,outLen);
+      dst[0] = CompressRealVector(abuf,buffer,outLen);
+      delete abuf;
     }      
     return dst;
   }
@@ -2524,15 +2640,19 @@ namespace FreeMat {
     if (diagonalOrder < 0) {
       outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
       T* buffer = new T[2*outLen];
+      T* abuf = new T[4*outLen];
       for (int j=0;j<outLen;j++) 
 	ComplexStringExtract(src[j],j-diagonalOrder,buffer+2*j);
-      dst[0] = CompressComplexVector(buffer,outLen);
+      dst[0] = CompressComplexVector(abuf,buffer,outLen);
+      delete abuf;
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
       T* buffer = new T[2*outLen];
+      T* abuf = new T[4*outLen];
       for (int j=0;j<outLen;j++) 
 	ComplexStringExtract(src[diagonalOrder+j],j,buffer+2*j);
-      dst[0] = CompressComplexVector(buffer,outLen);
+      dst[0] = CompressComplexVector(abuf,buffer,outLen);
+      delete abuf;
     }      
     return dst;    
   }
@@ -2584,11 +2704,7 @@ namespace FreeMat {
       mlist[i].J = tmp;
     }
     std::sort(mlist,mlist+nnz);
-    T** B;
-    B = new T*[rows];
-    int ptr = 0;
-    for (int row=0;row<rows;row++)
-      B[row] = CompressRealIJV<T>(mlist,nnz,ptr,row,cols);
+    T** B = (T**) ConvertIJVtoRLEReal<T>(mlist,nnz,cols,rows);
     delete mlist;
     return B;
   }
@@ -2603,11 +2719,7 @@ namespace FreeMat {
       mlist[i].J = tmp;
     }
     std::sort(mlist,mlist+nnz);
-    T** B;
-    B = new T*[rows];
-    int ptr = 0;
-    for (int row=0;row<rows;row++)
-      B[row] = CompressComplexIJV<T>(mlist,nnz,ptr,row,cols);
+    T** B = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,cols,rows);
     delete mlist;
     return B;
   }
@@ -2623,35 +2735,10 @@ namespace FreeMat {
       mlist[i].Vimag = -mlist[i].Vimag;
     }
     std::sort(mlist,mlist+nnz);
-    T** B;
-    B = new T*[rows];
-    int ptr = 0;
-    for (int row=0;row<rows;row++)
-      B[row] = CompressComplexIJV<T>(mlist,nnz,ptr,row,cols);
+    T** B = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,cols,rows);
     delete mlist;
     return B;
   }
-
-  template <class T>
-  void* ConvertIJVtoRLEReal(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
-    T** B;
-    B = new T*[cols];
-    int ptr = 0;
-    for (int col=0;col<cols;col++)
-      B[col] = CompressRealIJV<T>(mlist,nnz,ptr,col,rows);
-    return B;
-  }
-
-  template <class T>
-  void* ConvertIJVtoRLEComplex(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
-    T** B;
-    B = new T*[cols];
-    int ptr = 0;
-    for (int col=0;col<cols;col++)
-      B[col] = CompressComplexIJV<T>(mlist,nnz,ptr,col,rows);
-    return B;
-  }
-
 
   void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp) {
     switch(dclass) {
@@ -2682,123 +2769,33 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*2];
     for (i=0;i<cols;i++) {
-      const T* A, *B;
-      A = Amat[i];
-      B = Bmat[i];
-      // We have four pointers, An, Ai, Bn, Bi
-      int An, Ai, Bn, Bi;
-      int Cn;
-      int outcount;
-      outcount = 0;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0)) {
-	  An += (int) A[Ai+1];
-	  Ai += 2;
-	}
-	while ((Bn < rows) && (B[Bi] == 0)) {
-	  Bn += (int) B[Bi+1];
-	  Bi += 2;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// check Cn against An and Bn - if it is smaller
-	// than both
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An)
-	    outcount += 2;
-	  Cn = An;
-	  Ai++;
-	  Bi++;
-	  An++;
-	  Bn++;
-	  Cn++;
-	  outcount++;
-	} else if (An < Bn) {
-	  if (Cn < An)
-	    outcount += 2;
-	  Cn = An;
-	  Ai++;
-	  An++;
-	  Cn++;
-	  outcount++;
+      RLEDecoder<T> A(Amat[i],rows);
+      RLEDecoder<T> B(Bmat[i],rows);
+      RLEEncoder<T> C(buffer,rows); 
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(A.value() + B.value());
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  C.set(A.row());
+	  C.push(A.value());
+	  A.advance();
 	} else {
-	  if (Cn < Bn)
-	    outcount += 2;
-	  Cn = Bn;
-	  Bi++;
-	  Bn++;
-	  Cn++;
-	  outcount++;
+	  C.set(B.row());
+	  C.push(B.value());
+	  B.advance();
 	}
       }
-      if (Cn < rows)
-	outcount+=2;
-      Cmat[i] = new T[outcount+1];
-      Cmat[i][0] = outcount;
-      outcount = 1;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0)) {
-	  An += (int) A[Ai+1];
-	  Ai += 2;
-	}
-	while ((Bn < rows) && (B[Bi] == 0)) {
-	  Bn += (int) B[Bi+1];
-	  Bi += 2;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai] + B[Bi];
-	  Ai++;
-	  Bi++;
-	  An++;
-	  Bn++;
-	  Cn++;
-	} else if (An < Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai];
-	  Ai++;
-	  An++;
-	  Cn++;
-	} else {
-	  if (Cn < Bn) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = Bn - Cn;
-	    Cn = Bn;
-	  }
-	  Cmat[i][outcount++] = B[Bi];
-	  Bi++;
-	  Bn++;
-	  Cn++;
-	}
-      }
-      if (Cn < rows) {
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = rows - Cn;      
-      }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 
@@ -2807,130 +2804,34 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
+    T* buffer = new T[rows*4];
     for (i=0;i<cols;i++) {
-      const T* A, *B;
-      A = Amat[i];
-      B = Bmat[i];
-      // We have four pointers, An, Ai, Bn, Bi
-      int An, Ai, Bn, Bi;
-      int Cn;
-      int outcount;
-      outcount = 0;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
-	  An += (int) A[Ai+2];
-	  Ai += 3;
-	}
-	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
-	  Bn += (int) B[Bi+2];
-	  Bi += 3;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// check Cn against An and Bn - if it is smaller
-	// than both
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An)
-	    outcount += 3;
-	  Cn = An;
-	  Ai+=2;
-	  Bi+=2;
-	  An++;
-	  Bn++;
-	  Cn++;
-	  outcount+=2;
-	} else if (An < Bn) {
-	  if (Cn < An)
-	    outcount += 3;
-	  Cn = An;
-	  Ai+=2;
-	  An++;
-	  Cn++;
-	  outcount+=2;
+      RLEDecoderComplex<T> A(Amat[i],rows);
+      RLEDecoderComplex<T> B(Bmat[i],rows);
+      RLEEncoderComplex<T> C(buffer,rows); 
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(A.value_real() + B.value_real(),
+		 A.value_imag() + B.value_imag());
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  C.set(A.row());
+	  C.push(A.value_real(),A.value_imag());
+	  A.advance();
 	} else {
-	  if (Cn < Bn)
-	    outcount += 3;
-	  Cn = Bn;
-	  Bi+=2;
-	  Bn++;
-	  Cn++;
-	  outcount+=2;
+	  C.set(B.row());
+	  C.push(B.value_real(),B.value_imag());
+	  B.advance();
 	}
       }
-      if (Cn < rows)
-	outcount+=3;
-      Cmat[i] = new T[outcount+1];
-      Cmat[i][0] = outcount;
-      outcount = 1;
-      An = 0;  Bn = 0;
-      Ai = 1;  Bi = 1;
-      Cn = 0;
-      // Loop until both pointers reach the end of this column
-      while ((An < rows) || (Bn < rows)) {
-	// Make sure both are at nonzero entries
-	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
-	  An += (int) A[Ai+2];
-	  Ai += 3;
-	}
-	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
-	  Bn += (int) B[Bi+2];
-	  Bi += 3;
-	}
-	if ((An >= rows) && (Bn >= rows)) break;
-	// If the row indices are the same output gets
-	// bumped by one.
-	if (An == Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai] + B[Bi];
-	  Cmat[i][outcount++] = A[Ai+1] + B[Bi+1];
-	  Ai+=2;
-	  Bi+=2;
-	  An++;
-	  Bn++;
-	  Cn++;
-	} else if (An < Bn) {
-	  if (Cn < An) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = An - Cn;
-	    Cn = An;
-	  }
-	  Cmat[i][outcount++] = A[Ai];
-	  Cmat[i][outcount++] = A[Ai+1];
-	  Ai+=2;
-	  An++;
-	  Cn++;
-	} else {
-	  if (Cn < Bn) {
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = 0;
-	    Cmat[i][outcount++] = Bn - Cn;
-	    Cn = Bn;
-	  }
-	  Cmat[i][outcount++] = B[Bi];
-	  Cmat[i][outcount++] = B[Bi+1];
-	  Bi+=2;
-	  Bn++;
-	  Cn++;
-	}
-      }
-      if (Cn < rows) {
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = 0;
-	Cmat[i][outcount++] = rows - Cn;      
-      }
+      C.end();
+      Cmat[i] = C.copyout();
     }
+    delete buffer;
     return Cmat;
   }
 

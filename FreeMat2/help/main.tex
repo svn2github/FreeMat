@@ -12,7 +12,7 @@
 \newcommand{\doplot}[2]{\begin{center}\htmladdimg[center]{#2.png}\end{center}}
 \end{htmlonly}
 %\newcommand{\doplot}[2]{\begin{minipage}{\linewidth}\centering\includegraphics[#1]{#2}\end{minipage}}
-\title{FreeMat Help\\Version 1.09}
+\title{FreeMat Help\\Version 1.10}
 \author{Samit Basu}
 \begin{document}
 \maketitle
@@ -27,227 +27,50 @@ Unlike previous versions of FreeMat, which were all backwards compatible, there 
 \end{itemize}
 \chapter{Basic Language}
 \section{Variables and Arrays}
-\input{cell}
-\input{global}
-\input{indexing}
-\input{matrix}
-\input{persistent}
-\input{struct}
+\input{VARIABLES}
 \section{Functions and Scripts}
-\input{function}
-\input{keywords}
-\input{nargin}
-\input{nargout}
-\input{script}
-\input{special}
-\input{varargin}
-\input{varargout}
+\input{FUNCTIONS}
 \section{Mathematical Operators}
-\input{colon}
-\input{comparisonops}
-\input{dotleftdivide}
-\input{dotpower}
-\input{dotrightdivide}
-\input{dottimes}
-\input{hermitian}
-\input{leftdivide}
-\input{logicalops}
-\input{minus}
-\input{plus}
-\input{power}
-\input{rightdivide}
-\input{htimes}
-\input{transpose}
+\input{OPERATORS}
 \section{Flow Control}
-\input{break}
-\input{continue}
-\input{error}
-\input{for}
-\input{if}
-\input{keyboard}
-\input{lasterr}
-\input{retall}
-\input{return}
-\input{switch}
-\input{try}
-\input{while}
+\input{FLOW}
 \section{FreeMat Functions}
-\input{eval}
-\input{feval}
-\input{help}
-\input{import}
-\input{loadlib}
-\input{quit}
-\input{sleep}
-\input{source}
-\input{pcode}
+\input{FREEMAT}
+\section{Sparse Matrix Support}
+\input{SPARSE}
 \chapter{Built In Functions}
-\section{Transcendental Functions}
-\input{exp}
-\input{log}
-\section{Trigonometric/Inverse Trig Functions}
-\input{acos}
-\input{asin}
-\input{atan}
-\input{atan2}
-\input{cos}
-\input{cot}
-\input{csc}
-\input{sec}
-\input{sin}
-\input{tan}
-\section{Special Functions}
-\input{ei}
-\input{eone}
-\input{dawson}
-\input{erfc}
-\input{erfcx}
-\input{erf}
-\input{expei}
-\input{gammaln}
-\input{gamma}
-\input{psi}
+\section{Mathematical Functions}
+\input{MATHFUNCTIONS}
 \section{Base Constants}
-\input{e}
-\input{i}
-\input{inf}
-\input{nan}
-\input{pi}
-\input{eps}
-\input{feps}
-\section{Statistical Functions}
-\input{mean}
-\input{var}
-\section{Inspection Functions}
-\input{clear}
-\input{exist}
-\input{getprintlimit}
-\input{isempty}
-\input{setprintlimit}
-\input{size}
-\input{typeof}
-\input{who}
-\input{which}
-\input{where}
-\input{isinf}
-\input{isnan}
-\section{Type Cast Functions}
-\input{complex}
-\input{dcomplex}
-\input{double}
-\input{hfloat}
-\input{int16}
-\input{int32}
-\input{int8}
-\input{uint16}
-\input{uint32}
-\input{uint8}
+\input{CONSTANTS}
 \section{Elementary Functions}
-\input{abs}
-\input{ceil}
-\input{conj}
-\input{cumsum}
-\input{floor}
-\input{imag}
-\input{max}
-\input{min}
-\input{prod}
-\input{real}
-\input{sum}
+\input{ELEMENTARY}
+\section{Inspection Functions}
+\input{INSPECTION}
+\section{Type Cast Functions}
+\input{TYPECAST}
 \section{Array Generation and Manipulations}
-\input{diag}
-\input{find}
-\input{ones}
-\input{reshape}
-\input{zeros}
-\input{bin2int}
-\input{int2bin}
-\input{repmat}
+\input{ARRAY}
 \section{Random Number Generation}
-\input{rand}
-\input{randn}
-\input{seed}
-\input{randbeta}
-\input{randbin}
-\input{randchi}
-\input{randexp}
-\input{randf}
-\input{randgamma}
-\input{randi}
-\input{randmulti}
-\input{randnbin}
-\input{randnchi}
-\input{randnf}
-\input{randp}
+\input{RANDOM}
 \section{Input/Ouput Functions}
-\input{disp}
-\input{fclose}
-\input{feof}
-\input{fgetline}
-\input{fopen}
-\input{fprintf}
-\input{fread}
-\input{fscanf}
-\input{fseek}
-\input{ftell}
-\input{fwrite}
-\input{load}
-\input{printf}
-\input{save}
-\input{sprintf}
+\input{IO}
 \section{String Functions}
-\input{strcmp}
-\input{str2num}
+\input{STRING}
 \section{Transforms/Decompositions}
-\input{eig}
-\input{fft}
-\input{qr}
-\input{svd}
+\input{TRANSFORMS}
 \section{Operating System Functions}
-\input{cd}
-\input{ls}
-\input{pwd}
-\input{system}
-\input{getpath}
-\input{setpath}
+\input{OS}
 \section{Optimization and Curve Fitting}
-\input{fitfun}
+\input{CURVEFIT}
 \chapter{Graphing Functions}
 \section{Figure Functions}
-\input{figure}
-\input{copy}
-\input{print}
-\input{close}
-\input{sizefig}
+\input{FIGURE}
 \section{Image Display Functions}
-\input{image}
-\input{colormap}
-\input{point}
-\input{zoom}
-\input{winlev}
+\input{IMAGE}
 \section{Plot Functions}
-\input{axis}
-\input{grid}
-\input{hold}
-\input{plot}
-\input{xlabel}
-\input{ylabel}
-\input{title}
-\input{legend}
+\input{PLOT}
 \chapter{MPI Functions}
 \section{MPI Functions}
-\input{mpiinit}
-\input{mpiinitialized}
-\input{mpibarrier}
-\input{mpibcast}
-\input{mpicommgetparent}
-\input{mpicommrank}
-\input{mpicommsize}
-\input{mpicommspawn}
-\input{mpiintercommmerge}
-\input{mpisend}
-\input{mpirecv}
-\input{mpireduce}
-\input{mpifinalize}
-\input{mpiallreduce}
+\input{MPI}
 \end{document}

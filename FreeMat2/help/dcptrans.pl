@@ -55,6 +55,16 @@ foreach $file (@ARGV) {
 	($module =~ /\@Module\s*(\w*)/gi);
         $modulename = lc($1);
 	print "Module $modulename\n";
+	($module =~ /\@\@Section\s*(\w*)/gi);
+	$sectionname = uc($1);
+	print "Section $sectionname\n";
+	if (!open(OUTPUT,">>$sectionname.tex")) {
+	    die "Can't open $sectionname for output...\n";
+	}
+	print OUTPUT "\\input{";
+	print OUTPUT $modulename;
+	print OUTPUT "}\n";
+	close OUTPUT;
         $line = $module;
         $line =~ s/^\s*\/\///gsm;
         @functs=($line =~ m/\@\{(.*?)\@\}/gsm);

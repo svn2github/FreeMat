@@ -191,7 +191,7 @@ namespace FreeMat {
   }
   
   //!
-  //@Module Generate Chi-Square Random Variable
+  //@Module RANDCHI Generate Chi-Square Random Variable
   //@@Usage
   //Generates a vector of chi-square random variables with the
   //given number of degrees of freedom.  The general syntax for
@@ -249,7 +249,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Exponential Random Variable
+  //@Module RANDEXP Generate Exponential Random Variable
   //@@Usage
   //Generates a vector of exponential random variables with
   //the specified parameter.  The general syntax for its use is
@@ -290,7 +290,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Poisson Random Variable
+  //@Module RANDP Generate Poisson Random Variable
   //@@Usage
   //Generates a vector Poisson random variables with the given
   //parameters.  The general syntax for its use is
@@ -335,7 +335,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Binomial Random Variables
+  //@Module RANDBIN Generate Binomial Random Variables
   //@@Usage
   //Generates random variables with a binomial distribution.
   //The general syntax for its use is
@@ -397,7 +397,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Negative Binomial Random Variables
+  //@Module RANDNBIN Generate Negative Binomial Random Variables
   //@@Usage
   //Generates random variables with a negative binomial distribution.
   //The general syntax for its use is
@@ -455,7 +455,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate F-Distributed Random Variable
+  //@Module RANDF Generate F-Distributed Random Variable
   //@@Usage
   //Generates random variables with an F-distribution.  The general
   //syntax for its use is
@@ -521,7 +521,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Gamma-Distributed Random Variable
+  //@Module RANDGAMMA Generate Gamma-Distributed Random Variable
   //@@Usage
   //Generates random variables with a gamma distribution.  The general
   //syntax for its use is
@@ -588,7 +588,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Multinomial-distributed Random Variables
+  //@Module RANDMULTI Generate Multinomial-distributed Random Variables
   //@@Usage
   //This function generates samples from a multinomial distribution
   //given the probability of each outcome.  The general syntax for
@@ -650,7 +650,7 @@ namespace FreeMat {
   }
   
   //!
-  //@Module Generate Noncentral Chi-Square Random Variable
+  //@Module RANDNCHI Generate Noncentral Chi-Square Random Variable
   //@@Usage
   //Generates a vector of non-central chi-square random variables
   //with the given number of degrees of freedom and the given
@@ -710,7 +710,7 @@ namespace FreeMat {
   }
 
   //!
-  //@Module Generate Noncentral F-Distribution Random Variable
+  //@Module RANDNF Generate Noncentral F-Distribution Random Variable
   //@@Usage
   //Generates a vector of non-central F-distributed random variables
   //with the specified parameters.  The general syntax for its use is

@@ -693,6 +693,7 @@ v   *     Part 2 - dimension data
   //@[
   //   x = mpiallreduce(y,operation,comm)
   //@]
+  //!
     ArrayVector MPIAllReduce(int nargout, const ArrayVector& args) {
     int comhandle;
     if (args.size() < 3)

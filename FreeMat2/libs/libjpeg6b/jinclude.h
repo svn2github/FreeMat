@@ -17,7 +17,12 @@
 
 /* Include auto-config file to find out which system include files we need. */
 
+#ifdef WIN32
+#include "jconfig.vc"
+#else
 #include "jconfig.h"		/* auto configuration options */
+#endif
+
 #define JCONFIG_INCLUDED	/* so that jpeglib.h doesn't do it again */
 
 /*

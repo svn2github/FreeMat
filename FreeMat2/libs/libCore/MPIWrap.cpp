@@ -10,9 +10,20 @@
 namespace FreeMat {
 
   HandleList<MPI_Comm> comms;
+  MPI_Errhandler errhdl;
+
+  void MPIErrHandler(MPI_Comm *comm, int *errorcode, ...) {
+    char buffer[4096];
+    int resultlen;
+    MPI_Error_string(*errorcode,buffer,&resultlen);
+    buffer[resultlen] = 0;
+    throw Exception(buffer);
+  }
 
   void InitializeMPIWrap() {
     comms.assignHandle(MPI_COMM_WORLD);
+    MPI_Comm_create_errhandler(MPIErrHandler,&errhdl);
+    MPI_Comm_set_errhandler(MPI_COMM_WORLD, errhdl);
   }
 
   // Helper function
@@ -32,7 +43,7 @@ namespace FreeMat {
    *
    *  Suppose A is an array (homogenous) - 
    *     Part 1 - type
-   *     Part 2 - dimension data
+v   *     Part 2 - dimension data
    *     Part 3 - array contents
    *
    *  Suppose A is an array (structure)
@@ -373,6 +384,42 @@ namespace FreeMat {
     return Array(dataClass,outDim,cp);
   }
 
+  //!
+  //@Module MPISEND MPI Send Array
+  //@@Usage
+  //This function sends an array to a destination node on a 
+  //given communicator with a specific message tag.  Note that
+  //there has to be a matching receive issued by the destination
+  //node.  The general syntax for its use is
+  //@[
+  //  mpisend(x,rank,tag,comm)
+  //@]
+  //where @|x| is the array to send, @|rank| is the rank of the
+  //node to receive the message, @|tag| is the message tag, and
+  //@|comm| is the handle of the communicator to use.  If no
+  //communicator is specified, then @|MPI_COMM_WORLD| is used.
+  //@@Function Internals
+  //The @|mpisend| command works by packing the array into a 
+  //linear buffer and then sending two messages.  The first
+  //message captures the size of the buffer, and the second
+  //contains the actual data.  The matching @|mpirecv| command
+  //reads the two messages, decodes the buffer, and returns
+  //the resulting array.
+  //@@Example
+  //The @|mpisend| command is fairly straightforward to use.
+  //Its power is in the ability to send arrays of arbitrary
+  //complexity, including cell arrays, structures, strings, etc.
+  //Here is an example of an @|mpisend| and @|mpirecv| being used
+  //on the same node to pass a structure through MPI.
+  //@<
+  //mpiinit
+  //x.color = 'blue';
+  //x.pi = 3;
+  //x.cells = {'2',2};
+  //mpisend(x,0,32);
+  //y = mpirecv(0,32)
+  //@>
+  //!
   ArrayVector MPISend(int nargout, const ArrayVector& args) {
     if ((args.size() < 3) || (args.size() > 4))
       throw Exception("Expect 4 arguments to MPISend: array to send, destination rank, message tag and (optionally communicator handle -- defaults to MPI_COMM_WORLD)");
@@ -402,6 +449,19 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module MPIBARRIER MPI Barrier
+  //@@Usage
+  //This function is used as a synchronization point for all
+  //processes in a group.  All processes are blocked until
+  //every process calls @|mpibarrier|.  The general syntax 
+  //for its use is
+  //@[
+  //  mpibarrier(comm)
+  //@]
+  //where @|comm| is the communicator.  If no communicator is
+  //provided, it defaults to @|MPI_COMM_WORLD|.
+  //!
   ArrayVector MPIBarrier(int nargout, const ArrayVector& args) {
     int comhandle;
     if (args.size() == 0) {
@@ -419,6 +479,27 @@ namespace FreeMat {
    * Broadcast an array via MPI:
    *  Arguments: A = MPIBcast(A,root,communicator)
    */
+  //!
+  //@Module MPIBCAST MPI Broadcast
+  //@@Usage
+  //This function is used to broadcast an array to all group
+  //members.  The syntax for its use 
+  //@[
+  //  B = mpibcast(A,root,comm)
+  //@]
+  //where @|A| is the array to broadcast, @|root| is the rank
+  //of the root of the broadcast, and @|comm| is the communicator
+  //to do the broadcast on.  If no communicator is provided, it
+  //defaults to @|MPI_COMM_WORLD|.  Note that in practice, the process
+  //running at the root will use the syntax:
+  //@[
+  //  mpibcast(A,root,comm),
+  //@]
+  //while the remaining processes will use the syntax
+  //@[
+  //  B = mpibcast([],root,comm).
+  //@]
+  //!
   ArrayVector MPIBcast(int nargout, const ArrayVector& args) {
     if ((args.size() < 2) || (args.size() > 3))
       throw Exception("expect 3 arguments to MPIBcast: array, root rank and (optionally) communicator handle");
@@ -473,6 +554,34 @@ namespace FreeMat {
    *  Arguments: A = MPIRecv(source, tag, communicator)
    *  Throws an exception if there is an error.
    */
+  //!
+  //@Module MPIRECV MPI Receive Array
+  //@@Usage
+  //This function receives an array from a source node on
+  //a given communicator with the specified tag.  The 
+  //general syntax for its use is
+  //@[
+  //  y = mpirecv(rank,tag,comm)
+  //@]
+  //where @|rank| is the rank of the node sending the message,
+  //@|tag| is the message tag and @|comm| is the communicator
+  //to use.  If no communicator is provided, then @|MPI_COMM_WORLD|
+  //is used.
+  //@@Example
+  //The @|mpirecv| command is fairly straightforward to use.
+  //Its power is in the ability to receive arrays of arbitrary
+  //complexity, including cell arrays, structures, strings, etc.
+  //Here is an example of an @|mpisend| and @|mpirecv| being used
+  //on the same node to pass a structure through MPI.
+  //@<
+  //mpiinit
+  //x.color = 'blue';
+  //x.pi = 3;
+  //x.cells = {'2',2};
+  //mpisend(x,0,32);
+  //y = mpirecv(0,32)
+  //@>
+  //!
   ArrayVector MPIRecv(int nargout, const ArrayVector& args) {
     if ((args.size() < 2) || (args.size() > 3))
       throw Exception("Expect 3 arguments to MPIRecv: source rank, message tag and (optionally communicator handle -- defaults to MPI_COMM_WORLD)");
@@ -503,34 +612,27 @@ namespace FreeMat {
     return retval;
   }
 
-  /*
-   * Arguments MPIEval(commandline, ranks, communicator)
-   */
-  ArrayVector MPIEval(int nargout, const ArrayVector& args) {
-    if (args.size()  < 2)
-      throw Exception("mpieval requires at least a command line to execute, and a set of ranks to eval at");
-    Array tmp(args[0]);
-    char *cmd_line;
-    cmd_line = tmp.getContentsAsCString();
-    tmp = args[1];
-    int rankcount;
-    rankcount = tmp.getLength();
-    tmp.promoteType(FM_INT32);
-    int32 *ranks;
-    ranks = (int32*) tmp.getDataPointer();
-    int comhandle;
-    if (args.size() < 3) {
-      comhandle = 1;
-    } else {
-      tmp = args[2];
-      comhandle = tmp.getContentsAsIntegerScalar();
-    }
-    MPI_Comm comm(comms.lookupHandle(comhandle));
-    for (int i=0;i<rankcount;i++)
-      MPI_Send(cmd_line,strlen(cmd_line)+1,MPI_CHAR,ranks[i],0,comm);
-    return ArrayVector();
-  }  
-
+  //!
+  //@Module MPICOMMRANK MPI Communicator Rank
+  //@@Usage
+  //This function returns the rank of a process within
+  //the specified communicator.  The general syntax for 
+  //its use is
+  //@[
+  //   y = mpicommrank(comm)
+  //@]
+  //where @|comm| is the communicator to use.  If no communicator
+  //is provided, then @|MPI_COMM_WORLD| is used.  The returned value
+  //@|y| is the rank of the current process in the communicator.
+  //@@Example
+  //Here is a simple example of using @|mpicommrank| to obtain the
+  //process rank.  It defaults to 0, because the process is the root
+  //of the group (which contains only itself).
+  //@<
+  //mpiinit
+  //mpicommrank
+  //@>
+  //!
   ArrayVector MPICommRank(int nargout, const ArrayVector& args) {
     int comhandle;
     if (args.size() == 0) {
@@ -547,6 +649,23 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module MPICOMMSIZE MPI Communicator Size
+  //@@Usage
+  //This function returns the size of the group using the
+  //given communicator.  The general syntax for its use is
+  //@[
+  //    y = mpicommsize(comm)
+  //@]
+  //where @|comm| is the communicator to use.  If no communicator 
+  //is provided, then @|MPI_COMM_WORLD| is assumed.  
+  //@@Example
+  //Here is a simple example of using @|mpicommsize|:
+  //@<
+  //mpiinit
+  //mpicommrank
+  //@>
+  //!
   ArrayVector MPICommSize(int nargout, const ArrayVector& args) {
     int comhandle;
     if (args.size() == 0) {
@@ -566,6 +685,27 @@ namespace FreeMat {
   /*
    * syntax: x = mpireduce(y,operation,root,comm)
    */
+  //!
+  //@Module MPIREDUCE MPI Reduce Operation
+  //@@Usage
+  //This function implements the reduction operation using MPI.
+  //The general syntax for its use is
+  //@[
+  //   x = mpireduce(y,operation,root,comm)
+  //@]
+  //where @|y| is the current processes contribution to the
+  //reduction operation, @|operation| is either @|'+','*','>','<'| for
+  //an additive, multiplicative, max or min type reduction operations
+  //respectively,
+  //@|root| is the rank of the process that will retrieve the
+  //result of the reduction operation, and @|comm| is the MPI
+  //communicator handle.  If no communicator is provided,
+  //then @|MPI_COMM_WORLD| is used by default.  Note that FreeMat does not
+  //check to ensure that the reduction operation @|y| arguments
+  //are all the same size across the various processes in the group.
+  //Instead, you must make sure that each process passes the same
+  //sized array to the @|mpireduce| operation.
+  //!
   ArrayVector MPIReduce(int nargout, const ArrayVector& args) {
     int comhandle;
     if (args.size() < 4)
@@ -641,6 +781,26 @@ namespace FreeMat {
     return retval;
   }
 
+
+  //!
+  //@Module MPIINITIALIZED MPI Initialized Test
+  //@@Usage
+  //This function tests to see if MPI is already initialized.
+  //The general syntax for its use is
+  //@[
+  //   x = mpiinitialized
+  //@]
+  //It returns a logical 1 if @|mpiinit| has already been called,
+  //and a logical 0 otherwise.
+  //@@Example
+  //Here we call @|mpiinitialized| before and after a call to 
+  //@|mpiinit|.
+  //@<
+  //mpiinitialized
+  //mpiinit
+  //mpiinitialized
+  //@>
+  //!
   ArrayVector MPIInitialized(int nargout, const ArrayVector& args) {
     int flag;
     MPI_Initialized(&flag);
@@ -649,16 +809,49 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module MPIINIT MPI Initialize
+  //@@Usage
+  //This function initializes the MPI subsystem and joins
+  //the current FreeMat process to the MPI environment.
+  //The general syntax for its use is
+  //@[
+  //   mpiinit
+  //@]
+  //Note that @|mpiinit| must be called before any other
+  //MPI routines (with the exception of @|mpiinitialized|), or
+  //an MPI error will occur.
+  //!
   ArrayVector MPIInit(int nargout, const ArrayVector& args) {
+    int flag;
+    MPI_Initialized(&flag);
+    if (flag) {
+      return ArrayVector();
+    }
     MPI_Init(NULL,NULL);
     InitializeMPIWrap();
     return ArrayVector();
   }
 
-  //       MPI_Comm_spawn(char* command, char** argv, int maxprocs, MPI_Info info,
-  //                      int root, MPI_Comm comm, MPI_Comm *intercomm,
-  //                      int *errcodes)
-
+  //!
+  //@Module MPICOMMSPAWN MPI Communicator Spawn
+  //@@Usage
+  //This function uses MPI to spawn a process on a members of a group.
+  //The full power of the underlying routine, @|MPI_Comm_spawn| is not
+  //yet available via the @|mpicommspawn| routine in FreeMat.  The
+  //general syntax for its use is
+  //@[
+  //  errcodes = mpicommspawn(command,argv,maxprocs,root,comm)
+  //@]
+  //where @|command| is the command to execute, @|argv| is a cell-array
+  //of strings to pass as arguments to @|command|, @|maxprocs| is the
+  //number of processes to spawn, @|root| is the node that will actually
+  //do the process spawn, and @|comm| is the communicator to use.
+  //If no communicator is specified, @|comm| defaults to @|MPI_COMM_SELF|.
+  //If @|root| is not specified, it defaults to 0.  If @|maxprocs| is
+  //not specified, it defaults to 1.  If @|argv| is not specified no
+  //arguments are passed to the spawned processes.
+  //!
   ArrayVector MPICommSpawn(int nargout, const ArrayVector& args) {
     char *command;
     char **argv;
@@ -726,6 +919,19 @@ namespace FreeMat {
     return retarr;
   }
 
+  //!
+  //@Module MPIINTERCOMMMERGE MPI Intercommunicator Merge
+  //@@Usage
+  //This routine merges the current process with an existing group.
+  //The general syntax for its use is 
+  //@[
+  //  newcomm = mpiintercommmerge(comm,highflag)
+  //@]
+  //where @|comm| is the communicator we want to merge onto,
+  //@|highflag| determines if our rank is at the high end of
+  //ranks in the new communicator or at the bottom end, and
+  //@|newcomm| is the handle to the new communicator.
+  //!
   ArrayVector MPIIntercommMerge(int nargout, const ArrayVector& args) {
     ArrayVector retval;
     MPI_Comm newcomm;
@@ -743,7 +949,18 @@ namespace FreeMat {
     retval.push_back(Array::int32Constructor(comms.assignHandle(newcomm)));
     return retval;
   }
-
+  
+  //!
+  //@Module MPICOMMGETPARENT MPI Get Parent Communicator
+  //@@Usage
+  //This routine returns the communicator for the group that
+  //spawned the current process.  Calling this routine for a 
+  //process that was not spawned using @|mpicommspawn| will 
+  //cause an error.  The general syntax for its use is
+  //@[
+  //  comm = mpicommgetparent
+  //@]
+  //!
   ArrayVector MPICommGetParent(int nargout, const ArrayVector& args) {
     ArrayVector retval;
     MPI_Comm parent;
@@ -768,6 +985,15 @@ namespace FreeMat {
     return retval;
   }
 
+  //!
+  //@Module MPIFINALIZE MPI Finalize
+  //This routine will shut down the MPI interface.  Once called,
+  //no more MPI calls can be made (except for @|mpiinitialized|).
+  //The syntax for its use is
+  //@[
+  //  mpifinalize
+  //@]
+  //!
   ArrayVector MPIFinalize(int nargout, const ArrayVector& args) {
     MPI_Finalize();
     return ArrayVector();
@@ -820,13 +1046,6 @@ namespace FreeMat {
     args.push_back("intercomm");
     args.push_back("highflag");
     context->addFunction("mpiintercommmerge",MPIIntercommMerge,2,1,args);
-//     f2def = new BuiltInFunctionDef;
-//     f2def->retCount = 0;
-//     f2def->argCount = 3;
-//     f2def->name = "mpieval";
-//     f2def->fptr = MPIEval;
-//     context->insertFunctionGlobally(f2def);
-//    InitializeMPIWrap();
   }
 }
 

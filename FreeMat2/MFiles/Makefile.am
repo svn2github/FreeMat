@@ -9,6 +9,9 @@ imagez.m\
 length.m\
 linspace.m\
 log2.m\
+mpispawn.m\
+mpiserver.m\
+mpirun.m\
 mprintimage.m\
 mprintplot.m\
 popdir.m\

@@ -140,7 +140,7 @@ namespace FreeMat {
 	      // Yes... send it and move on
 	      io->outputMessage(tokens[tokencount].c_str());
 	      io->outputMessage(" ");
-	      outlen += tokens[tokencount++].size();
+	      outlen += tokens[tokencount++].size()+1;
 	    } else {
 	      io->outputMessage("\n          ");
 	      outlen = 0;

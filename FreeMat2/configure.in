@@ -4,7 +4,7 @@ AC_INIT(src/x11/main.cpp)
 dnl sets build, host, target variables and the same with _alias
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 1.03)
+AM_INIT_AUTOMAKE(FreeMat, 1.04)
 
 dnl Checks for programs.
 AC_PROG_CXX
@@ -26,6 +26,8 @@ case $host in
   FLIBS="-lg2c";;
 esac
 
+use_mpi="no";
+
 AC_PATH_XTRA
 
 AC_ARG_WITH(debug,
@@ -40,11 +42,11 @@ AC_ARG_WITH(miniblas,
 		forceminiblas="yes",
 		forceminiblas="no")
 
-dnl AC_ARG_WITH(mpi,
-dnl	[AC_HELP_STRING([--with-mpi],
-dnl	        [Build the MPI executables [default=no]])],
-dnl		usempi="yes",
-dnl		usempi="no")
+AC_ARG_WITH(mpi,
+	[AC_HELP_STRING([--with-mpi],
+	        [Build the MPI executables [default=no]])],
+		usempi="yes",
+		usempi="no")
 
 MP_WITH_CURSES([],[])
 
@@ -63,7 +65,7 @@ AC_SUBST(LFLAGS)
 
 AC_LANG_CPLUSPLUS
 
-ACX_MPI(AC_DEFINE(USE_MPI,1,[Define to build MPI routines]), usempi="no")
+ACX_MPI( ,usempi="no")
 
 AC_CHECK_LIB(png, png_check_sig, LIBS="-lpng -lz -lm $LIBS"; AC_DEFINE(HAVE_PNG,1,[Define if you have PNG library.]), , [-lz -lm])
 AC_CHECK_LIB(jpeg, jpeg_read_header, LIBS="-ljpeg $LIBS"; AC_DEFINE(HAVE_JPEG,1,[Define if you have JPEG library.]))
@@ -77,8 +79,9 @@ fi
 LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
 minilapackdir="libMiniLAPACK"
 
-if test "$usempi" != "no" ; then
+if test "$usempi" = "yes" ; then
   CXX="$MPICXX"
+  CXXFLAGS="$CXXFLAGS -DUSE_MPI=1"
 fi
 
 dnl if test "$usempi" = "yes" ; then
@@ -121,6 +124,7 @@ Configuration:
   Install path:		      ${prefix}
   Libs:			      ${LIBS}
   Force Mini-BLAS:	      ${forceminiblas}
+  Build MPI:		      ${usempi}
 
 ------------------------------------------------------------------------"
 

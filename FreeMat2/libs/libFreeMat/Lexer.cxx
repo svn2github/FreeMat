@@ -764,7 +764,7 @@ reservedWordStruct ts, *p;
 
 #define Mscan 8
 
-#line 769 "Lexer.cxx"
+#line 769 "../../../libs/libFreeMat/Lexer.cxx"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -921,7 +921,7 @@ YY_DECL
 	char string_buf[4095];
 	char *string_buf_ptr;
 
-#line 926 "Lexer.cxx"
+#line 926 "../../../libs/libFreeMat/Lexer.cxx"
 
 	if ( yy_init )
 		{
@@ -1546,7 +1546,7 @@ YY_RULE_SETUP
 #line 505 "../../../libs/libFreeMat/Lexer.lxx"
 ECHO;
 	YY_BREAK
-#line 1551 "Lexer.cxx"
+#line 1551 "../../../libs/libFreeMat/Lexer.cxx"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(IdentDereference):
 case YY_STATE_EOF(TransposeCheck):

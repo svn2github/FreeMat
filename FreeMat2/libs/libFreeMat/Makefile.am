@@ -67,9 +67,4 @@ Interface.hpp \
 Interface.cpp \
 SymbolTable.hpp 
 
-dist-hook:
-	sed 's/#include <unistd.h>//g' Lexer.cxx > Lpatch.cxx
-	rm Lexer.cxx
-	mv Lpatch.cxx Lexer.cxx
-
 AUTOMAKE_OPTIONS 	= foreign

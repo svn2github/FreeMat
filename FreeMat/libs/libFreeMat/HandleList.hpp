@@ -21,6 +21,7 @@
 #ifndef __HandleList_hpp__
 #define __HandleList_hpp__
 #include <map>
+#include "Exception.hpp"
 
 namespace FreeMat {
   template<class T>

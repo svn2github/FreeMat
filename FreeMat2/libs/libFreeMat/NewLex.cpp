@@ -2,7 +2,6 @@
  * A lexical analyzer... my apologies for this, but I couldn't get 
  * FLEX to do what I wanted.
  */
-#include <windows.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/stat.h>

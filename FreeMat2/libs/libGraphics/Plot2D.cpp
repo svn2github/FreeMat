@@ -236,7 +236,7 @@ namespace FreeMat {
     gc.DrawTextString(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));
     gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));
-
+    gc.SetBackGroundColor(Color("light grey"));
     xAxis->DrawMe(gc);
     yAxis->DrawMe(gc);
 

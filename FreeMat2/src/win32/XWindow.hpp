@@ -10,7 +10,7 @@ typedef enum {
   BitmapWindow
 } WindowType;
 
-class XWindow {
+class XWindow : public GraphicsContext {
  public:
   XWindow(WindowType wtype);
   virtual ~XWindow();
@@ -69,6 +69,8 @@ class XWindow {
   int m_box_x1, m_box_x2, m_box_y1, m_box_y2;
   HFONT m_hfont;
   HFONT m_vfont;
+  Color bgcol, fgcol;
+  LineStyleType m_style;
 };
 
 void InitializeXWindowSystem(HINSTANCE hInstance);

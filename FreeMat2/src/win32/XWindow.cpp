@@ -59,7 +59,7 @@ void XWindow::OnExpose(int x, int y, int w, int h) {
     DeleteDC(hdcMem);
     ReleaseDC(m_window, hdc);
   } else
-    OnDraw((GraphicsContext&) *this);
+    OnDraw(*this);
 }
 
 void XWindow::Refresh() {
@@ -131,7 +131,7 @@ void XWindow::OnResize(int w, int h) {
   m_width = w;
   m_height = h;
   if (m_type == BitmapWindow)
-    OnDraw((GraphicsContext&) *this);
+    OnDraw(*this);
   OnSize();
   InvalidateRect(m_window,NULL,TRUE);
   UpdateWindow(m_window);
@@ -145,7 +145,7 @@ void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
 }
 
 void XWindow::UpdateContents(unsigned char *data, int width, int height) {
-  OnDraw((GraphicsContext&) *this);
+  OnDraw(*this);
 //   RGBImage img(width, height, data);
 //   RGBImageGC gc(img);
 //   img.SetAllPixels(Color("light grey"));
@@ -245,12 +245,24 @@ Point2D XWindow::GetCanvasSize() {
 
 Point2D XWindow::GetTextExtent(std::string label) {
   Point2D a;
+  HDC hdc;
+  hdc = GetDC(m_window);
+  SIZE t;
+  GetTextExtentPoint32(hdc, label.c_str(), label.size(), &t);
+  a.x = t.cx;
+  a.y = t.cy;
+  ReleaseDC(m_window, hdc);
   return a;
 }
 
 void XWindow::DrawTextString(std::string label, Point2D pos, OrientationType orient) {
   HDC hdc;
   hdc = GetDC(m_window);
+  if (orient == ORIENT_0)
+	  SelectObject(hdc, m_hfont);
+  else
+	  SelectObject(hdc, m_vfont);
+  SetBkColor(hdc, RGB(bgcol.red,bgcol.green,bgcol.blue));
   TextOut(hdc,pos.x, pos.y, label.c_str(), label.size());
   ReleaseDC(m_window, hdc);
 }
@@ -260,41 +272,129 @@ void XWindow::SetFont(std::string fontname, int fontsize) {
   HDC hdc;
   hdc = GetDC(m_window);
   nHeight = -MulDiv(fontsize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
-  m_hfont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PREC,
-		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS, "Arial");
-  m_vfont = CreateFont(nHeight, 0, 900, 900, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PREC,
-		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_SWISS, "Arial");
+  m_hfont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 
+		       FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS,
+		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 
+		       FF_SWISS, "Arial");
+  m_vfont = CreateFont(nHeight, 0, 900, 900, FW_NORMAL, FALSE, FALSE, 
+		       FALSE, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS,
+		       CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 
+		       FF_SWISS, "Arial");
   ReleaseDC(m_window, hdc);
 }
 
 Color XWindow::SetBackGroundColor(Color col) {
-  return col;
+	Color oldbg;
+	oldbg = bgcol;
+    HDC hdc;
+    hdc = GetDC(m_window);
+	SetBkColor(hdc, RGB(col.red,col.green,col.blue));
+	bgcol = col;
+    ReleaseDC(m_window, hdc);  
+	return oldbg;
 }
 
 Color XWindow::SetForeGroundColor(Color col) {
-  return col;
+	Color oldfg;
+	oldfg = fgcol;
+	fgcol = col;
+	return oldfg;
 }
 
 LineStyleType XWindow::SetLineStyle(LineStyleType style) {
-  return style;
+  LineStyleType old_style;
+  old_style = m_style;
+  m_style = style;
+  return old_style;
 }
 
+HPEN GetWinPen(LineStyleType style, Color col) {
+	HPEN hpen;
+	int penStyle;
+	switch (style) {
+	case LINE_SOLID:
+		penStyle = PS_SOLID;
+		break;
+	case LINE_DASHED:
+		penStyle = PS_DASH;
+		break;
+	case LINE_DOTTED:
+		penStyle = PS_DOT;
+		break;
+	case LINE_DASH_DOT:
+		penStyle = PS_DASHDOT;
+		break;
+	}
+	hpen = CreatePen(penStyle,1,RGB(col.red,col.green,col.blue));
+	return hpen;
+}
 void XWindow::DrawLine(Point2D pos1, Point2D pos2) {
+  HDC hdc;
+  hdc = GetDC(m_window);
+  HPEN hpen = GetWinPen(m_style, fgcol);
+  SelectObject(hdc, hpen);
+  MoveToEx(hdc, pos1.x, pos1.y, NULL);
+  LineTo(hdc, pos2.x, pos2.y);
+  ReleaseDC(m_window, hdc);
+  DeleteObject(hpen);
 }
 
 void XWindow::DrawPoint(Point2D pos) {
 }
 
 void XWindow::DrawCircle(Point2D pos, int radius) {
+  HDC hdc;
+  hdc = GetDC(m_window);
+  HPEN hpen = GetWinPen(m_style, fgcol);
+  SelectObject(hdc, hpen);
+  SelectObject(hdc, GetStockObject(NULL_BRUSH));
+  Ellipse(hdc, pos.x - radius, pos.y - radius,
+	  pos.x + radius, pos.y + radius);
+  ReleaseDC(m_window, hdc);  
+  DeleteObject(hpen);
 }
 
 void XWindow::DrawRectangle(Rect2D rect) {
+  HDC hdc;
+  hdc = GetDC(m_window);
+  HPEN hpen = GetWinPen(m_style, fgcol);
+  SelectObject(hdc, hpen);
+  Rectangle(hdc, rect.x1, rect.y1, 
+	  rect.x1+rect.width, rect.y1+rect.height);
+  ReleaseDC(m_window, hdc);  
+  DeleteObject(hpen);
 }
 
 void XWindow::FillRectangle(Rect2D rect) {
+  HBRUSH hbrush;
+  hbrush = CreateSolidBrush(RGB(fgcol.red,fgcol.green,fgcol.blue));
+  RECT rt;
+  rt.left = rect.x1;
+  rt.top = rect.y1;
+  rt.right = rect.x1+rect.width;
+  rt.bottom = rect.y1+rect.height;
+  HDC hdc;
+  hdc = GetDC(m_window);
+  FillRect(hdc, &rt, hbrush);
+  ReleaseDC(m_window, hdc);  
+  DeleteObject(hbrush);
 }
 
 void XWindow::DrawLines(std::vector<Point2D> pts) {
+  POINT *pt;
+  pt = (POINT *) malloc(sizeof(POINT)*pts.size());
+  int i;
+  for (i=0;i<pts.size();i++) {
+	  pt[i].x = pts[i].x;
+	  pt[i].y = pts[i].y;
+  }
+  HDC hdc;
+  hdc = GetDC(m_window);
+  HPEN hpen = GetWinPen(m_style, fgcol);
+  SelectObject(hdc, hpen);
+  Polyline(hdc, pt, pts.size());
+  ReleaseDC(m_window, hdc);
+  DeleteObject(hpen);
 }
 
 void XWindow::PushClippingRegion(Rect2D rect) {

@@ -52,13 +52,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   term.outputMessage("\n");
   term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
   twalk->evalCLI();
-
-  MSG msg;
-  while (GetMessage(&msg, NULL, 0, 0))
-    {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
-    }
-  return msg.wParam;
+  return 0;
 }
 

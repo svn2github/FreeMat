@@ -116,6 +116,10 @@ namespace FreeMat {
     ShowWindow(hwnd, iCmdShow);
     UpdateWindow(hwnd);
 	messageContext = NULL;
+	selstart_col = 0;
+	selstart_row = 0;
+	selstop_col = 0;
+	selstop_row = 0;
   }
 
   void WinTerminal::MoveDown() {

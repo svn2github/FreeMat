@@ -27,6 +27,7 @@
 
 namespace FreeMat {
 
+  class Plot2D;
   /**
    * This class encapsulates a single line in a 2D plot, including
    * the number of points in the plot, the x and y coordinates, the
@@ -103,7 +104,7 @@ namespace FreeMat {
      * Plot the data set to the given device context, using the 
      * given x and y axis.
      */
-    void DrawMe(GraphicsContext& dc, Axis* xAxis, Axis* yAxis);
+    void DrawMe(GraphicsContext& dc, Plot2D &plt);
     /**
      * Calculate the range of the data.
      */

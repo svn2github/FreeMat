@@ -189,7 +189,7 @@ namespace FreeMat {
       x_max = std::max(x_max,xvals[i]);
     }
     x_center = (x_min+x_max)/2.0;
-    XAxis.SetExtent(x_min,x_max);
+    XAxis.SetDataRange(x_min,x_max);
 
     y_min = yvals[0];
     y_max = yvals[0];
@@ -198,7 +198,7 @@ namespace FreeMat {
       y_max = std::max(y_max,yvals[i]);
     }
     y_center = (y_min+y_max)/2.0;
-    YAxis.SetExtent(x_min,x_max);
+    YAxis.SetDataRange(x_min,x_max);
 
     z_min = zvals[0];
     z_max = zvals[0];
@@ -207,7 +207,7 @@ namespace FreeMat {
       z_max = std::max(z_max,zvals[i]);
     }
     z_center = (z_min+z_max)/2.0;
-    ZAxis.SetExtent(x_min,x_max);
+    ZAxis.SetDataRange(x_min,x_max);
     
     // Now, we also need the maximum radius.
     max_radius = 0;
@@ -321,24 +321,28 @@ namespace FreeMat {
     gc.SetForeGroundColor(Color("black"));
     gc.DrawLine(MapPoint(a_start),MapPoint(a_stop));
     gc.SetFont(12);
-     double tmin, tdelta;
-     int tcount;
-     ref.GetIntervals(tmin,tdelta,tcount);
-     for (int i=0;i<tcount;i++) {
-       Point2D h_start, h_stop;
-       pt3d tmp;
-       tmp.x = a_start.x + i/((double) tcount-1)*(a_stop.x-a_start.x);
-       tmp.y = a_start.y + i/((double) tcount-1)*(a_stop.y-a_start.y);
-       h_start = MapPoint(tmp);
-       float deltx, delty;
-       deltx = unit.x*scalex;
-       delty = unit.y*scaley;
-       if ((deltx != 0) || (delty != 0)) {
-	 h_stop.x = h_start.x + deltx*10.0/sqrt(deltx*deltx+delty*delty);
-	 h_stop.y = h_start.y + delty*10.0/sqrt(deltx*deltx+delty*delty);
-	 gc.DrawLine(h_start,h_stop);
-       }
-     }
+    double tmin, tdelta;
+    int tcount;
+    int axlen;
+    axlen = sqrt(pow(scaley*(a_stop.y-a_start.y),2.0) + 
+		 pow(scalex*(a_stop.x-a_start.x),2.0));
+    ref.SetAxisLength(axlen); 
+    ref.GetIntervals(tmin,tdelta,tcount);
+    for (int i=0;i<tcount;i++) {
+      Point2D h_start, h_stop;
+      pt3d tmp;
+      tmp.x = a_start.x + i/((double) tcount-1)*(a_stop.x-a_start.x);
+      tmp.y = a_start.y + i/((double) tcount-1)*(a_stop.y-a_start.y);
+      h_start = MapPoint(tmp);
+      float deltx, delty;
+      deltx = unit.x*scalex;
+      delty = unit.y*scaley;
+      if ((deltx != 0) || (delty != 0)) {
+	h_stop.x = h_start.x + deltx*10.0/sqrt(deltx*deltx+delty*delty);
+	h_stop.y = h_start.y + delty*10.0/sqrt(deltx*deltx+delty*delty);
+	gc.DrawLine(h_start,h_stop);
+      }
+    }
   }
 
   void SurfPlot::DrawAxisTest(GraphicsContext &gc, const char *label,

@@ -22,7 +22,7 @@
 #define __Plot2D_hpp__
 
 #include "DataSet2D.hpp"
-#include "Axis.hpp"
+#include "NewAxis.hpp"
 #include "FLTKGC.hpp"
 #include "PrintableWidget.hpp"
 
@@ -126,12 +126,9 @@ namespace FreeMat {
     void SetAxesAuto();
     void draw();
     void resize(int, int, int, int);
+    void MapPoint(double, double, int&, int&);
+    void DrawAxes(GraphicsContext& gc, Rect2D);
   private:
-    /**
-     * Update our text bounds (title width and height),
-     * and then the text bounds for the axes.
-     */
-    void ComputeTextBounds(GraphicsContext&);
     /**
      * The vector of datasets.
      */
@@ -139,11 +136,14 @@ namespace FreeMat {
     /**
      * The x axis object.
      */
-    Axis *xAxis;
+    NewAxis xAxis;
+    std::string xlabel;
     /**
      * The y axis object.
      */
-    Axis *yAxis;
+    NewAxis yAxis;
+    std::string ylabel;
+    bool gridflag;
     /**
      * The title of the plot.
      */
@@ -186,6 +186,8 @@ namespace FreeMat {
     double legend_yc;
     char legend_linestyle[4];
     ArrayVector legend_data;
+    int sze_textheight;
+    Rect2D viewport;
   };
   
   // These are some helper routines called by DataSet2D and

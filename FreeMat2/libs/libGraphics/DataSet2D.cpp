@@ -122,24 +122,23 @@ namespace FreeMat {
   }
 
 
-  void DataSet2D::DrawMe(GraphicsContext &dc, Axis *xAxis, Axis *yAxis) {
+  void DataSet2D::DrawMe(GraphicsContext &dc, Plot2D &plt) {
     const double *xVals;
     const double *yVals;
     int ptCount;
-	int i;
-
+    int i;
+    
     xVals = (const double *) x.getDataPointer();
     yVals = (const double *) y.getDataPointer();
     ptCount = x.getLength();
-
+    
     SetPenColor(dc, false);
     // Draw the symbols
     for (i=0;i<ptCount;i++) {
       // Map the data point to a coordinate
       if (IsFinite(xVals[i]) && IsFinite(yVals[i])) {
 	int xp, yp;
-	xp = xAxis->MapPoint(xVals[i]);
-	yp = yAxis->MapPoint(yVals[i]);
+	plt.MapPoint(xVals[i],yVals[i],xp,yp);
 	PutSymbol(dc, xp, yp, symbol, symbolLength);
       }
     }
@@ -147,10 +146,11 @@ namespace FreeMat {
     SetPenColor(dc, true);
     std::vector<Point2D> pts;
     for (i=0;i<ptCount;i++) {
-      if (IsFinite(xVals[i]) && (IsFinite(yVals[i]))) 
-	pts.push_back(Point2D(xAxis->MapPoint(xVals[i]),
-			      yAxis->MapPoint(yVals[i])));
-      else {
+      if (IsFinite(xVals[i]) && (IsFinite(yVals[i]))) {
+	int xp, yp;
+	plt.MapPoint(xVals[i],yVals[i],xp,yp);
+	pts.push_back(Point2D(xp,yp));
+      } else {
 	dc.DrawLines(pts);
 	pts.clear();
       }

@@ -29,22 +29,18 @@ namespace FreeMat {
 
   Plot2D::Plot2D(int width, int height) : PrintableWidget(0,0,width,height) {
     space = 10;
-    xAxis = NULL;
-    yAxis = NULL;
     holdflag = false;
     updating = false;
     legendActive = false;
+    gridflag = false;
   }
 
   Plot2D::~Plot2D() {
-    if (xAxis != NULL) delete xAxis;
-    if (yAxis != NULL) delete yAxis;
   }
 
   void Plot2D::DrawLegend(GraphicsContext &gc) {
-    double xc, yc;
-    xc = xAxis->MapPoint(legend_xc);
-    yc = yAxis->MapPoint(legend_yc);
+    int xc, yc;
+    MapPoint(legend_xc,legend_yc,xc,yc);
     int i;
     int strut;
     Point2D strutSize(gc.GetTextExtent("|"));
@@ -105,13 +101,11 @@ namespace FreeMat {
   }
 
   void Plot2D::SetXLabel(std::string txt) {
-    if (xAxis != NULL)
-      xAxis->SetLabelText(txt);
+    xlabel = txt;
   }
 
   void Plot2D::SetYLabel(std::string txt) {
-    if (yAxis != NULL)
-      yAxis->SetLabelText(txt);
+    ylabel = txt;
   }
 
   void Plot2D::SetHoldFlag(bool flag) {
@@ -123,39 +117,24 @@ namespace FreeMat {
   }
 
   void Plot2D::SetLog(bool xLog, bool yLog) {
-    if (xAxis != NULL)
-      xAxis->SetLogarithmic(xLog);
-    if (yAxis != NULL)
-      yAxis->SetLogarithmic(yLog);
+    //    if (xAxis != NULL)
+    //      xAxis->SetLogarithmic(xLog);
+    //    if (yAxis != NULL)
+    //      yAxis->SetLogarithmic(yLog);
   }
 
   void Plot2D::SetAxes(double x1, double x2, double y1, double y2) {
-    if (xAxis != NULL)
-      xAxis->ManualSetAxis(x1, x2);
-    if (yAxis != NULL)
-      yAxis->ManualSetAxis(y1, y2);
+    xAxis.ManualSetAxis(x1,x2);
+    yAxis.ManualSetAxis(y1,y2);
   }
 
   void Plot2D::GetAxes(double &x1, double &x2, double &y1, double &y2) {
-    if (xAxis != NULL)
-      xAxis->GetAxisExtents(x1, x2);
-    else {
-      x1 = 0;
-      x2 = 1;
-    }
-    if (yAxis != NULL)
-      yAxis->GetAxisExtents(y1, y2);
-    else {
-      y1 = 0;
-      y2 = 1;
-    }
+    xAxis.GetAxisExtents(x1,x2);
+    yAxis.GetAxisExtents(y1,y2);
   }
 
   void Plot2D::SetGrid(bool gridVal) {
-    if (xAxis != NULL)
-      xAxis->SetGrid(gridVal);
-    if (yAxis != NULL)
-      yAxis->SetGrid(gridVal);
+    gridflag = gridVal;
   }
 
   void Plot2D::SetAxesTight() {
@@ -173,12 +152,8 @@ namespace FreeMat {
       xMax = (xMax > txMax) ? xMax : txMax;
       yMax = (yMax > tyMax) ? yMax : tyMax;
     }
-    if (xAxis == NULL)
-      xAxis = new Axis(xMin, xMax, false, Axis_X);
-    xAxis->ManualSetAxis(xMin, xMax);
-    if (yAxis == NULL)
-      yAxis = new Axis(yMin, yMax, false, Axis_Y);
-    yAxis->ManualSetAxis(yMin, yMax);
+    xAxis.ManualSetAxis(xMin, xMax);
+    yAxis.ManualSetAxis(yMin, yMax);
   }
   
   void Plot2D::SetAxesAuto() {
@@ -196,14 +171,8 @@ namespace FreeMat {
       xMax = (xMax > txMax) ? xMax : txMax;
       yMax = (yMax > tyMax) ? yMax : tyMax;
     }
-    if (xAxis == NULL)
-      xAxis = new Axis(xMin, xMax, false, Axis_X);
-    else
-      xAxis->SetExtent(xMin, xMax);
-    if (yAxis == NULL)
-      yAxis = new Axis(yMin, yMax, false, Axis_Y);
-    else
-      yAxis->SetExtent(yMin, yMax);
+    xAxis.SetDataRange(xMin, xMax);
+    yAxis.SetDataRange(yMin, yMax);
   }
 
   void Plot2D::AddPlot(DataSet2D dp) {
@@ -211,15 +180,6 @@ namespace FreeMat {
       data.clear();
     data.push_back(dp);
     SetAxesAuto();
-  }
-
-  void Plot2D::ComputeTextBounds(GraphicsContext &dc) {
-    Point2D t(dc.GetTextExtent(title));
-    titleWidth = t.x; titleHeight = t.y;
-    if (xAxis != NULL)
-      xAxis->ComputeTextBounds(dc);
-    if (yAxis != NULL)
-      yAxis->ComputeTextBounds(dc);
   }
 
   void Plot2D::draw() {
@@ -232,6 +192,21 @@ namespace FreeMat {
     redraw();
   }
 
+  void Plot2D::DrawAxes(GraphicsContext &gc, Rect2D viewport) {
+  }
+
+  void Plot2D::MapPoint(double x, double y, int &xc, int &yc) {
+    double xn = xAxis.Normalize(x);
+    double yn = yAxis.Normalize(y);
+    double u, v;
+    u = viewport.x1 + xn*viewport.width;
+    v = viewport.y1 + yn*viewport.height;
+    u = std::min(4096.0,std::max(-4096.0,u));
+    v = std::min(4096.0,std::max(-4096.0,v));
+    xc = (int) u;
+    yc = (int) v;
+  }
+
   void Plot2D::OnDraw(GraphicsContext &gc) {
     Point2D sze(gc.GetCanvasSize());
     int width = sze.x;
@@ -242,9 +217,6 @@ namespace FreeMat {
 
     if (updating || (data.size() == 0))
       return;
-    if (xAxis == NULL) return;
-    if (yAxis == NULL) return;
-
     gc.SetFont(12);
 
     int client_y_offset = 0;
@@ -254,38 +226,56 @@ namespace FreeMat {
     client_y_offset = 5;
     width -= 10;
     height -= 10;
-    ComputeTextBounds(gc);
+
     int space = 10;
-    // The title is located vspace pixels down from the
+    // A generic length for text
+    Point2D t(gc.GetTextExtent("|"));
+    int sze_textheight = t.y;
+
+    // The title is located space pixels down from the
     // top, and with the left corner at the center of
     // the plot area minus half the title width
     // The width of the plot is width - 4*hspace 
     int plotWidth;
     int plotHeight;
-
-    plotWidth = width - space - yAxis->getWidth();
-    plotHeight = height - 2*space - titleHeight - xAxis->getHeight();
-
     int plotX;
     int plotY;
 
-    plotX = yAxis->getWidth();
-    plotY = 2*space + titleHeight;
+    // Need space for the tic, text, and a spacer
+    plotWidth = width - 2*space - sze_textheight;
+    plotX = 2*space+sze_textheight;
+    // If the label is active, subtract another text and spacer
+    if (!ylabel.empty()) {
+      plotWidth -= (space+sze_textheight);
+      plotX += space+sze_textheight;
+    }
 
-    xAxis->Place(plotX, plotY + plotHeight, plotWidth, plotHeight);
-    yAxis->Place(plotX, plotY, plotHeight, plotWidth);
+    // Need space for the tic, text and a spacer
+    plotHeight = height-2*space-sze_textheight;
+    plotY = 2*space+sze_textheight;
+    // If the label is active, subtract another text and spacer
+    if (!xlabel.empty()) 
+      plotHeight -= (space+sze_textheight);
+
+    // If the title is active, subtract another text and spacer
+    if (!title.empty()) {
+      plotHeight -= (space+sze_textheight);
+      plotY += (space+sze_textheight);
+    }
 
     gc.SetForeGroundColor(Color("black"));
-    gc.DrawTextString(title, Point2D(plotX + (plotWidth - titleWidth)/2, space + titleHeight));
+    gc.DrawTextStringAligned(title, Point2D(plotX + plotWidth/2,space),
+			     LR_CENTER, TB_TOP);
     gc.SetForeGroundColor(Color("white"));
     gc.FillRectangle(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));
-    xAxis->DrawMe(gc);
-    yAxis->DrawMe(gc);
+    
 
-    gc.PushClippingRegion(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));
+    viewport = Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1);
+    DrawAxes(gc,viewport);
+    gc.PushClippingRegion(viewport);
 
     for (int i=0;i<data.size();i++)
-      data[i].DrawMe(gc, xAxis, yAxis);
+      data[i].DrawMe(gc, *this);
 
     if (legendActive)
       DrawLegend(gc);

@@ -24,6 +24,9 @@
 #include "Malloc.hpp"
 #include "Utils.hpp"
 #include "IEEEFP.hpp"
+#include "File.hpp"
+#include "Serialize.hpp"
+#include "AST.hpp"
 #include <math.h>
 #include "Types.hpp"
 
@@ -2495,5 +2498,59 @@ namespace FreeMat {
     }
     retval.push_back(Array(FM_UINT32,xdim,dp));
     return retval;
+  }
+
+  //!
+  //@Module PCODE Convert a Script or Function to P-Code
+  //@@Usage
+  //Writes out a script or function as a P-code function.
+  //The general syntax for its use is:
+  //@[
+  //   pcode fun1 fun2 ...
+  //@]
+  //The compiled functions are written to the current
+  //directory.
+  //!
+  ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    int i;
+    for (i=0;i<arg.size();i++) {
+      Array func(arg[i]);
+      if (!func.isString())
+	throw Exception("arguments to pcode must be function names");
+      char *fname = func.getContentsAsCString();
+      FunctionDef *funcDef;
+      bool isFun;
+      char buffer[1024];
+      char buffer2[1024];
+      int n;
+      n = strlen(fname);
+      isFun = eval->lookupFunctionWithRescan(fname,funcDef);
+      if ((n>3) && (fname[n-1] == 'm' || fname[n-1] == 'M')
+	  && (fname[n-2] == '.')) {
+	fname[n-2] = 0;
+	isFun = eval->lookupFunctionWithRescan(fname,funcDef);
+      }
+      if (!isFun) {
+	sprintf(buffer,"could not find definition for %s",fname);
+	eval->getInterface()->warningMessage(buffer);
+      } else {
+	sprintf(buffer,"Translating %s to P-Code\n",fname);
+	eval->getInterface()->outputMessage(buffer);
+	funcDef->updateCode();
+	if (funcDef->type() != FM_M_FUNCTION) {
+	  sprintf(buffer,"function %s is not an M-file",fname);
+	  eval->getInterface()->warningMessage(buffer);
+	}
+	sprintf(buffer2,"%s.p",fname);
+	File *stream = new File(buffer2,"wb");
+	Serialize *s = new Serialize(stream);
+	s->handshakeServer();
+	s->sendSignature('p',1);
+	FreezeMFunction((MFunctionDef*)funcDef,s);
+	delete s;
+	delete stream;
+      }
+    }
+    return ArrayVector();
   }
 }

@@ -70,6 +70,7 @@ namespace FreeMat {
     timeStamp = 0;
     localFunction = false;
     nextFunction = NULL;
+    pcodeFunction = false;
   }
 
   MFunctionDef::~MFunctionDef() {
@@ -250,6 +251,7 @@ namespace FreeMat {
   // Compile the function...
   void MFunctionDef::updateCode() throw(Exception) {
     if (localFunction) return;
+    if (pcodeFunction) return;
     // First, stat the file to get its time stamp
     struct stat filestat;
     stat(fileName.c_str(),&filestat);
@@ -308,6 +310,41 @@ namespace FreeMat {
 	throw;
       }
     }
+  }
+
+  void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {
+    s->putString(fptr->name.c_str());
+    s->putBool(fptr->scriptFlag);
+    s->putStringVector(fptr->arguments);
+    s->putStringVector(fptr->returnVals);
+    s->putBool(fptr->functionCompiled);
+    s->putBool(fptr->localFunction);
+    s->putStringVector(fptr->helpText);
+    FreezeAST(fptr->code,s);
+    if (fptr->nextFunction) {
+      s->putBool(true);
+      FreezeMFunction(fptr->nextFunction,s);
+    } else {
+      s->putBool(false);
+    }
+  }
+
+  MFunctionDef* ThawMFunction(Serialize *s) {
+    MFunctionDef *t = new MFunctionDef();
+    t->name = std::string(s->getString());
+    t->scriptFlag = s->getBool();
+    t->arguments = s->getStringVector();
+    t->returnVals = s->getStringVector();
+    t->functionCompiled = s->getBool();
+    t->localFunction = s->getBool();
+    t->helpText = s->getStringVector();
+    t->code = ThawAST(s);
+    bool nextFun = s->getBool();
+    if (nextFun) 
+      t->nextFunction = ThawMFunction(s);
+    else
+      t->nextFunction = false;
+    return t;
   }
 
   BuiltInFunctionDef::BuiltInFunctionDef() {

@@ -53,6 +53,8 @@ namespace FreeMat {
     void putInt(int t);
     void putFloat(float t);
     void putDouble(double t);
+    void putBool(bool t);
+    void putStringVector(stringVector t);
     // Receive a stream of base objects
     void getBytes(char* ptr, int count);
     void getShorts(short* ptr, int count);
@@ -66,6 +68,8 @@ namespace FreeMat {
     int    getInt();
     float  getFloat();
     double getDouble();
+    bool   getBool();
+    stringVector getStringVector();
     // Put an array
     void putDataClass(Class cls);
     void putArray(const Array& dat);

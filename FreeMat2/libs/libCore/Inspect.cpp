@@ -679,12 +679,22 @@ namespace FreeMat {
 	MFunctionDef *mptr;
 	mptr = (MFunctionDef *) val;
 	mptr->updateCode();
-	if (mptr->scriptFlag) {
-	  sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
-	  io->outputMessage(buffer);
+	if (mptr->pcodeFunction) {
+	  if (mptr->scriptFlag) {
+	    sprintf(buffer,"Function %s, P-code script\n",fname);
+	    io->outputMessage(buffer);
+	  } else {
+	    sprintf(buffer,"Function %s, P-code function\n",fname);
+	    io->outputMessage(buffer);
+	  }
 	} else {
-	  sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
-	  io->outputMessage(buffer);
+	  if (mptr->scriptFlag) {
+	    sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
+	    io->outputMessage(buffer);
+	  } else {
+	    sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
+	    io->outputMessage(buffer);
+	  }
 	}
       } else if ((val->type() == FM_BUILT_IN_FUNCTION) || (val->type() == FM_SPECIAL_FUNCTION) ) {
 	sprintf(buffer,"Function %s is a built in function\n",fname);

@@ -141,13 +141,49 @@ namespace FreeMat {
   void Serialize::putString(const char *ptr) {
     unsigned int len;
     sendSignature('x',0);
-    len = strlen(ptr);
-    putInts((int*)&len,1);
-    putBytes(ptr,len);
+    if (ptr == NULL) {
+      len = 0;
+      putInts((int*)&len,1);
+    } else {
+      len = strlen(ptr);
+      putInts((int*)&len,1);
+      putBytes(ptr,len);
+    }
+  }
+
+  void Serialize::putBool(bool b) {
+    if (b)
+      putByte(1);
+    else
+      putByte(0);
+  }
+
+  bool Serialize::getBool() {
+    char b;
+    b = getByte();
+    return (b == 1);
   }
 
   void Serialize::putByte(char t) {
     putBytes(&t,1);
+  }
+
+  void Serialize::putStringVector(stringVector t) {
+    sendSignature('S',1);
+    putInt(t.size());
+    int i;
+    for (i=0;i<t.size();i++)
+      putString(t[i].c_str());
+  }
+
+  stringVector Serialize::getStringVector() {
+    checkSignature('S',1);
+    int L = getInt();
+    int i;
+    stringVector N;
+    for (i=0;i<L;i++)
+      N.push_back(getString());
+    return N;
   }
 
   void Serialize::putShort(short t) {
@@ -228,6 +264,7 @@ namespace FreeMat {
     checkSignature('x',0);
     unsigned int len;
     getInts((int*) &len,1);
+    if (len == 0) return NULL;
     char *cp = (char*) malloc((len+1)*sizeof(char));
     getBytes(cp,len);
     cp[len] = 0;

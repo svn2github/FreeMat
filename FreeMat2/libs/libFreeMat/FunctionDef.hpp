@@ -163,6 +163,7 @@ namespace FreeMat {
      * linked list.
      */
     bool localFunction;
+    bool pcodeFunction;
     /**
      * The help text.
      */
@@ -211,6 +212,17 @@ namespace FreeMat {
      */
     virtual void updateCode() throw(Exception);
   };
+
+  /**
+   * Routine to freeze an M-function to a serializing
+   * stream.
+   */
+  void FreezeMFunction(MFunctionDef *fptr, Serialize *s);
+
+  /**
+   * Routine to thaw an M-function from a stream.
+   */
+  MFunctionDef* ThawMFunction(Serialize *s);
 
   class BuiltInFunctionDef : public FunctionDef {
   public:

@@ -152,6 +152,7 @@ namespace FreeMat {
   ArrayVector FepsFunction(int, const ArrayVector& arg);
   ArrayVector Int2BinFunction(int, const ArrayVector& arg);
   ArrayVector Bin2IntFunction(int, const ArrayVector& arg);
+  ArrayVector PCodeFunction(int, const ArrayVector& arg, WalkTree* eval);
 }
 
 #endif

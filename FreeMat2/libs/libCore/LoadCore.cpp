@@ -299,6 +299,8 @@ namespace FreeMat {
      args.clear();
      args.push_back("function");
      context->addSpecialFunction("help",HelpFunction,1,0,args);
+     args.clear();
+     context->addSpecialFunction("pcode",PCodeFunction,-1,0,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

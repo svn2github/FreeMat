@@ -112,6 +112,9 @@ namespace FreeMat {
      args.push_back("balanceflag");
      context->addFunction("eig",EigFunction,2,2,args);
      args.clear();
+     args.push_back("A");
+     context->addFunction("eigs",EigsFunction,-1,-1,args);
+     args.clear();
      args.push_back("x");     
      context->addFunction("isempty",IsEmptyFunction,1,1,args);
      args.clear();

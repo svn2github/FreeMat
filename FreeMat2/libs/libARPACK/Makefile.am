@@ -69,6 +69,21 @@ SRC/zneigh.f \
 SRC/zneupd.f \
 SRC/zngets.f \
 SRC/zsortc.f \
-SRC/zstatn.f 
+SRC/zstatn.f \
+UTIL/cmout.f \
+UTIL/cvout.f \
+UTIL/dmout.f \
+UTIL/dvout.f \
+UTIL/icnteq.f \
+UTIL/icopy.f \
+UTIL/iset.f \
+UTIL/iswap.f \
+UTIL/ivout.f \
+UTIL/second.f \
+UTIL/smout.f \
+UTIL/svout.f \
+UTIL/zmout.f \
+UTIL/zvout.f 
+
 
 AUTOMAKE_OPTIONS 	= foreign

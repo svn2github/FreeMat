@@ -55,6 +55,7 @@ namespace FreeMat {
   ArrayVector LengthFunction(int, const ArrayVector& arg);
   ArrayVector QRDFunction(int, const ArrayVector& arg);
   ArrayVector EigFunction(int, const ArrayVector& arg);
+  ArrayVector EigsFunction(int, const ArrayVector& arg);
   ArrayVector SVDFunction(int, const ArrayVector& arg);
   ArrayVector DiagFunction(int, const ArrayVector& arg);
   ArrayVector IsEmptyFunction(int, const ArrayVector& arg);

@@ -426,6 +426,8 @@ namespace FreeMat {
   //!
   ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
     bool balance;
+    if (arg.size() == 0)
+      throw Exception("eig function requires at least one argument");
     if (arg.size() == 1)
       balance = true;
     else {
@@ -463,6 +465,24 @@ namespace FreeMat {
     }
     return retval;
   }
+
+
+  ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() == 0)
+      throw Exception("eigs function requires at least one argument");
+    Array A(arg[0]);
+    if (!A.isSparse())
+      throw Exception("eigs only applies to sparse matrix arguments");
+    int k;
+    if (arg.size() < 2)
+      k = 6;
+    else {
+      Array kval(arg[1]);
+      k = kval.getContentsAsIntegerScalar();
+    }
+    return SparseEigDecompose(nargout,A,k);
+  }
+
   
 
   ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {

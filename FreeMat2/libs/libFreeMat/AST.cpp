@@ -268,6 +268,7 @@ namespace FreeMat {
     s->putByte(1);
     s->putByte(t->type);
     s->putInt(t->tokenNumber);
+    s->putInt(t->m_context);
     s->putByte(t->opNum);
     s->putString(t->text);
     FreezeAST(t->down,s);
@@ -282,6 +283,7 @@ namespace FreeMat {
     ASTPtr t = new AST;
     t->type = (NODE_TYPE) s->getByte();
     t->tokenNumber = s->getInt();
+    t->m_context = s->getInt();
     t->opNum = (OP_TYPE) s->getByte();
     t->text = s->getString();
     t->down = ThawAST(s);

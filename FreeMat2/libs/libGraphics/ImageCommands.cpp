@@ -273,7 +273,7 @@ namespace FreeMat {
   //@<
   //x = rand(512);
   //x((-64:63)+256,(-128:127)+256) = 1.0;
-  //newimage
+  //figure
   //image(x)
   //mprintimage image1
   //@>
@@ -373,7 +373,7 @@ namespace FreeMat {
   //@<
   //image(Z);
   //zoom(0);
-  //sizeimage(200,400);
+  //sizefig(200,400);
   //mprintimage zoom5
   //@>
   //@figure zoom5
@@ -383,7 +383,7 @@ namespace FreeMat {
   //@<
   //image(Z);
   //zoom(-1);
-  //sizeimage(200,400);
+  //sizefig(200,400);
   //mprintimage zoom6
   //@>
   //@figure zoom6

@@ -241,11 +241,10 @@ namespace FreeMat {
   //plot(x,y,'r-');
   //print printfig1.eps
   //print printfig1.jpg
-  //mprintplot printplt
   //@>
-  //which creates two plots @|printplot1.eps|, which is an Encapsulated
-  //Postscript file, and @|printplot1.jpg| which is a JPEG file.
-  //@figure printplt
+  //which creates two plots @|printfig1.eps|, which is an Encapsulated
+  //Postscript file, and @|printfig1.jpg| which is a JPEG file.
+  //@figure printfig1
   //!
   ArrayVector PrintFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)

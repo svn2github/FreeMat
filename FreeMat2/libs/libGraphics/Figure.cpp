@@ -193,7 +193,7 @@ namespace FreeMat {
   //@<
   //x = linspace(-1,1);
   //y = cos(5*pi*x);
-  //fig(x,y,'r-');
+  //plot(x,y,'r-');
   //print printfig1.eps
   //print printfig1.jpg
   //mprintplot printplt
@@ -317,7 +317,7 @@ namespace FreeMat {
   //!
   //@Module CLOSE Close Figure Window
   //@@Usage
-  //Closes an figure window, either the currently active window, a 
+  //Closes a figure window, either the currently active window, a 
   //window with a specific handle, or all figure windows.  The general
   //syntax for its use is
   //@[

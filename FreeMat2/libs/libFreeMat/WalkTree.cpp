@@ -1553,7 +1553,7 @@ namespace FreeMat {
       s = s->right;
     }
     if (s != NULL)
-      io->warningMessage("Warning! one or more outputs not assigned in call.\n");
+      io->warningMessage("Warning! one or more outputs not assigned in call.\r\n");
   }
 
   int getArgumentIndex(stringVector list, std::string t) {
@@ -2171,6 +2171,11 @@ namespace FreeMat {
 	}
       }
     }
+    // Some routines (e.g., min and max) will return more outputs
+    // than were actually requested... so here we have to trim 
+    // any elements received that we didn't ask for.
+    while (n.size() > narg_out)
+      n.pop_back();
     io->popMessageContext();
     return n;
   }

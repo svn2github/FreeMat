@@ -359,7 +359,8 @@ single/stzrzf.f \
 util/icmax1.f \
 util/ieeeck.f \
 util/ilaenv.f \
-util/izmax1.f
+util/izmax1.f \
+util/lsame.f
 
 EXTRA_DIST		= bootstrap
 AUTOMAKE_OPTIONS 	= foreign

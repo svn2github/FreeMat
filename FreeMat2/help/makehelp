@@ -14,3 +14,4 @@ cd ..
 perl bldindex.pl
 cat toc_template.hhc toc_body.hhc > toc.hhc
 cat Index_template.hhk index_body.hhk > index.hhk
+mv mtex/*.mdc mdc/.

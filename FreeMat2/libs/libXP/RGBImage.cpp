@@ -1,12 +1,20 @@
 #include "RGBImage.hpp"
 
+#ifdef HAVE_PNG
 #include <png.h>
+#endif
+
+#ifdef HAVE_JPEG
 extern "C" {
 #include <jpeglib.h>
 }
+#endif
+
+#ifdef HAVE_TIFF
 extern "C" {
 #include <tiffio.h>
 }
+#endif
 
 #include <stdio.h>
 #include "Exception.hpp"

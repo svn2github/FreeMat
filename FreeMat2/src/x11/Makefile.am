@@ -1,6 +1,6 @@
 CFLAGS=@CFLAGS@ 
 CXXFLAGS=@CXXFLAGS@ 
-INCLUDES=-I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP
+INCLUDES=-I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP
 
 bin_PROGRAMS = FreeMat
 

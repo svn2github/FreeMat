@@ -22,7 +22,11 @@ esac
 maindir="src/x11"
 case $host in
 *-*-cygwin*)
-  maindir="src/win32"
+  maindir="src/win32";;
+*-*-darwin*)
+  LDFLAGS="$LDFLAGS -L/sw/lib";
+  CXXFLAGS="$CXXFLAGS -I/sw/include";
+  FLIBS="-lg2c";;
 esac
 
 AC_PATH_XTRA
@@ -39,12 +43,6 @@ AC_ARG_WITH(miniblas,
 		forceminiblas="yes",
 		forceminiblas="no")
 
-AC_ARG_WITH(minilapack,
-	[AC_HELP_STRING([--with-minilapack],
-		[Force use of built-in LAPACK library [default=no]])],
-		forceminilapack="yes",
-		forceminilapack="no")
-
 AC_ARG_WITH(mpi,
 	[AC_HELP_STRING([--with-mpi],
 	        [Build the MPI executables [default=no]])],
@@ -59,14 +57,13 @@ case $host in
 esac
 
 LIBS="$debug_flag $prof_flag $LIBS"
-CXXFLAGS="$debug_flag $prof_flag"
+CXXFLAGS="$CXXFLAGS $debug_flag $prof_flag"
 YFLAGS="$YFLAGS -d"
 LFLAGS="$LFLAGS"
 
 AC_SUBST(YFLAGS)
 AC_SUBST(LFLAGS)
 
-#ACX_LAPACK([] , AC_MSG_ERROR([Could not find LAPACK+BLAS.  See installation instructions for more information...]) )
 AC_LANG_CPLUSPLUS
 ACX_MPI([], usempi="no")
 AC_CHECK_LIB(png, png_check_sig, LIBS="-lpng -lz -lm $LIBS"; AC_DEFINE(HAVE_PNG,1,[Define if you have PNG library.]), , [-lz -lm])
@@ -78,10 +75,8 @@ if test "$forceminiblas" = "yes" ; then
   miniblasdir="libMiniBLAS"
 fi
 
-if test "$forceminilapack" = "yes" ; then
-  LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
-  minilapackdir="libMiniLAPACK"
-fi
+LAPACK_LIBS="-L\${top_builddir}/libs/libMiniLAPACK -lMiniLAPACK"
+minilapackdir="libMiniLAPACK"
 
 if test "$usempi" = "yes" ; then
   mpidir="mpi"
@@ -99,16 +94,11 @@ else
    ACX_BLAS([], AC_MSG_ERROR([Could not find BLAS. Try using --with-blas or --with-miniblas.]))
 fi
 
-if test "$forceminilapack" = "yes" ; then
-   AC_OUTPUT(libs/libMiniLAPACK/Makefile)
-else
-   ACX_LAPACK([], AC_MSG_ERROR([Could not find LAPACK. Try using --with-lapack or --with-lapack.]))
-fi
+AC_OUTPUT(libs/libMiniLAPACK/Makefile)
 
 LIBS="$LAPACK_LIBS $BLAS_LIBS $LIBS $FLIBS $CURSES_LIB"
 
-ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
-AC_CONFIG_SUBDIRS(libs/libffi)
+#ac_configure_args="--srcdir=$ac_abs_top_srcdir/libs/libffi $ac_configure_args"
 
 AC_OUTPUT(Makefile src/win32/Makefile src/x11/Makefile doc/Doxyfile libs/Makefile libs/libFFTPack/Makefile libs/libFreeMat/Makefile libs/libCore/Makefile libs/libGraphics/Makefile libs/libXP/Makefile mpi/Makefile)
 

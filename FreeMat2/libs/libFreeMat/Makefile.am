@@ -2,14 +2,14 @@ noinst_LIBRARIES = libFreeMat.a
 
 CFLAGS=@CFLAGS@ 
 CXXFLAGS=@CXXFLAGS@ 
-INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/@maindir@
+INCLUDES=-I@top_srcdir@/libs/libGraphics -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP -I@top_srcdir@/@maindir@
 
 libFreeMat_a_SOURCES = Parser.yy \
 Lexer.ll \
 Array.cpp \
 Array.hpp \
 AST.cpp \
-AST.h \
+AST.hpp \
 Math.cpp \
 Math.hpp \
 Command.cpp \
@@ -43,7 +43,7 @@ Module.cpp \
 Module.hpp \
 ParserInterface.hpp \
 Reserved.cpp \
-Reserved.h \
+Reserved.hpp \
 Scope.cpp \
 Scope.hpp \
 Serialize.cpp \

@@ -78,7 +78,6 @@ DEPDIR = @DEPDIR@
 F77 = @F77@
 FLIBS = @FLIBS@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LAPACK_LIBS = @LAPACK_LIBS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
@@ -465,7 +464,8 @@ single/stzrzf.f \
 util/icmax1.f \
 util/ieeeck.f \
 util/ilaenv.f \
-util/izmax1.f
+util/izmax1.f \
+util/lsame.f
 
 
 EXTRA_DIST = bootstrap
@@ -597,7 +597,7 @@ am_libMiniLAPACK_a_OBJECTS = zdrscl.$(OBJEXT) zgebak.$(OBJEXT) \
 	sormrz.$(OBJEXT) srscl.$(OBJEXT) strevc.$(OBJEXT) \
 	strexc.$(OBJEXT) strsna.$(OBJEXT) stzrzf.$(OBJEXT) \
 	icmax1.$(OBJEXT) ieeeck.$(OBJEXT) ilaenv.$(OBJEXT) \
-	izmax1.$(OBJEXT)
+	izmax1.$(OBJEXT) lsame.$(OBJEXT)
 libMiniLAPACK_a_OBJECTS = $(am_libMiniLAPACK_a_OBJECTS)
 
 DEFS = @DEFS@
@@ -987,6 +987,7 @@ icmax1.$(OBJEXT): util/icmax1.f
 ieeeck.$(OBJEXT): util/ieeeck.f
 ilaenv.$(OBJEXT): util/ilaenv.f
 izmax1.$(OBJEXT): util/izmax1.f
+lsame.$(OBJEXT): util/lsame.f
 libMiniLAPACK.a: $(libMiniLAPACK_a_OBJECTS) $(libMiniLAPACK_a_DEPENDENCIES) 
 	-rm -f libMiniLAPACK.a
 	$(libMiniLAPACK_a_AR) libMiniLAPACK.a $(libMiniLAPACK_a_OBJECTS) $(libMiniLAPACK_a_LIBADD)
@@ -3163,6 +3164,12 @@ izmax1.o: util/izmax1.f
 
 izmax1.obj: util/izmax1.f
 	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o izmax1.obj `cygpath -w util/izmax1.f`
+
+lsame.o: util/lsame.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o lsame.o `test -f 'util/lsame.f' || echo '$(srcdir)/'`util/lsame.f
+
+lsame.obj: util/lsame.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o lsame.obj `cygpath -w util/lsame.f`
 uninstall-info-am:
 
 ETAGS = etags

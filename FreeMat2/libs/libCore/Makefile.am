@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libCore.a
 
-INCLUDES= -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libtecla -I@top_srcdir@/libs/libffi/include -I@top_srcdir@/libs/libXP
+INCLUDES= -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libtecla -I@top_builddir@/libs/libffi/include -I@top_srcdir@/libs/libXP
 
 libCore_a_SOURCES = Cast.cpp \
 Constructors.cpp \

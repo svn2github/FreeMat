@@ -7,6 +7,12 @@ extern "C" {
 }
 #include "LAPACK.hpp"
 
+  void tstop() {
+    int a;
+    a = 3 + 5;
+  }
+
+
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
@@ -108,11 +114,13 @@ void RLEEncoder<T>::push(T val) {
     if (val == 0) {
       zlen++;
     } else {
-      buffer[n] = 0;
-      buffer[n+1] = zlen;
-      buffer[n+2] = val;
+      if (zlen) {
+	buffer[n++] = 0;
+	buffer[n++] = zlen;
+      }
+      buffer[n++] = val;
       state = 0;
-      n+=3;
+      zlen = 0;
     }
   }
   m++;
@@ -130,10 +138,11 @@ T* RLEEncoder<T>::copyout() {
 template <class T>
 void RLEEncoder<T>::end() {
   set(len);
-  buffer[n] = 0;
-  buffer[n+1] = zlen;
+  if (zlen) {
+    buffer[n++] = 0;
+    buffer[n++] = zlen;
+  }
   state = 0;
-  n+=2;
 }
 
 template <class T>
@@ -288,12 +297,15 @@ void RLEEncoderComplex<T>::push(T valr, T vali) {
     if ((valr == 0) && (vali == 0)) {
       zlen++;
     } else {
-      buffer[n++] = 0;
-      buffer[n++] = 0;
-      buffer[n++] = zlen;
+      if (zlen) {
+	buffer[n++] = 0;
+	buffer[n++] = 0;
+	buffer[n++] = zlen;
+      }
       buffer[n++] = valr;
       buffer[n++] = vali;
       state = 0;
+      zlen = 0;
     }
   }
   m++;
@@ -311,9 +323,11 @@ T* RLEEncoderComplex<T>::copyout() {
 template <class T>
 void RLEEncoderComplex<T>::end() {
   set(len);
-  buffer[n++] = 0;
-  buffer[n++] = 0;
-  buffer[n++] = zlen;
+  if (zlen>0) {
+    buffer[n++] = 0;
+    buffer[n++] = 0;
+    buffer[n++] = zlen;
+  }
   state = 0;
 }
 
@@ -425,6 +439,15 @@ void RLEDecoderComplex<T>::advance() {
 namespace FreeMat {
 
   template <class T>
+  void RawPrintString(T* src) {
+    int j;
+    printf("%d <",(int)src[0]);
+    for (j=0;j<(int)src[0];j++) {
+      std::cout << " " << src[j+1];
+    }
+    std::cout << "\r\n";
+  }
+  template <class T>
   void RawPrint(T** src, int rows, int cols) {
     int i, j;
     for (i=0;i<cols;i++) {
@@ -477,6 +500,7 @@ namespace FreeMat {
   template <class T>
   T* CompressRealVector(T* buffer, const T* src, int count) {
     RLEEncoder<T> A(buffer,count);
+    tstop();
     for (int i=0;i<count;i++)
       A.push(src[i]);
     A.end();
@@ -497,7 +521,7 @@ namespace FreeMat {
   T** ConvertDenseToSparseReal(const T* src, int rows, int cols) {
     T** dp = new T*[cols];
     T* buffer = new T[rows*2];
-    for (int i=0;i<cols;i++)
+    for (int i=0;i<cols;i++) 
       dp[i] = CompressRealVector<T>(buffer,src+i*rows, rows);
     delete buffer;
     return dp;
@@ -540,7 +564,7 @@ namespace FreeMat {
 
   void* makeSparseArray(Class dclass, int rows, int cols, const void *cp) {
     switch(dclass) {
-    case FM_INT32:
+    case FM_INT32: 
       return ConvertDenseToSparseReal<int32>((const int32 *)cp,rows,cols);
     case FM_FLOAT:
       return ConvertDenseToSparseReal<float>((const float *)cp,rows,cols);
@@ -1866,7 +1890,6 @@ namespace FreeMat {
       dlist[optr++] = mlist[jptr++];
     // Now resort the list
     std::sort(dlist,dlist+optr);
-    printIJV(dlist,optr);
     // Build a sparse matrix out of this
     T** B = (T**) ConvertIJVtoRLEComplex<T>(dlist,optr,rows,cols);
     delete[] mlist;
@@ -2005,6 +2028,7 @@ namespace FreeMat {
       m = cindx[i] - 1;
       if ((m<0) || (m>=cols))
 	throw Exception("column index exceeds variable bounds in expression of type A(n,m)");
+      memset(Acol,0,rows*sizeof(T));
       DecompressRealString<T>(A[m],Acol,rows);
       memset(Bcol,0,irows*sizeof(T));
       for (j=0;j<irows;j++) {
@@ -2038,6 +2062,7 @@ namespace FreeMat {
       m = cindx[i] - 1;
       if ((m<0) || (m>=cols))
 	throw Exception("column index exceeds variable bounds in expression of type A(n,m)");
+      memset(Acol,0,2*rows*sizeof(T));
       DecompressComplexString<T>(A[m],Acol,rows);
       memset(Bcol,0,2*irows*sizeof(T));
       for (j=0;j<irows;j++) {
@@ -4297,10 +4322,8 @@ namespace FreeMat {
 							int nev, int nargout, double shift) {
     // Set up the scaled identity matrix
     double** scI = (double**) MakeSparseScaledIdentityReal<double>(shift, rows);
-    RawPrint(scI,rows,rows);
     // Compute A - scI
     double** C = (double**) SparseSubtractReal(rows,cols,(const double**) ap,(const double**) scI);
-    RawPrint(C,rows,rows);
     // Factor it...
     // Convert C into CCS form
     int *Ccolstart;

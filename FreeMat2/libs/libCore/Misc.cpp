@@ -383,7 +383,7 @@ namespace FreeMat {
   }
   //!
   //@Module EIG Eigendecomposition of a Matrix
-  //@@Section TRANFORMS
+  //@@Section TRANSFORMS
   //@@Usage
   //Computes the eigendecomposition of a square matrix.  The @|eig| function
   //has several forms.  The first returns only the eigenvalues of the matrix:

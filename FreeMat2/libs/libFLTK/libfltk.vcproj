@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="libfltk"
+	Name="libFLTK"
 	ProjectGUID="{11DB8592-6280-45AD-8F30-F95B242F28DC}"
 	Keyword="Win32Proj">
 	<Platforms>

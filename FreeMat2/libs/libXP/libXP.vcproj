@@ -359,6 +359,24 @@
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\XPButton.cpp">
+			</File>
+			<File
+				RelativePath=".\XPContainer.cpp">
+			</File>
+			<File
+				RelativePath=".\XPEditLine.cpp">
+			</File>
+			<File
+				RelativePath=".\XPLabel.cpp">
+			</File>
+			<File
+				RelativePath=".\XPVSlider.cpp">
+			</File>
+			<File
+				RelativePath=".\XPWidget.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -371,9 +389,6 @@
 			</File>
 			<File
 				RelativePath="DynLib.hpp">
-			</File>
-			<File
-				RelativePath="GraphicsContext.hpp">
 			</File>
 			<File
 				RelativePath="GrayscaleImage.hpp">
@@ -404,6 +419,18 @@
 			</File>
 			<File
 				RelativePath="System.hpp">
+			</File>
+			<File
+				RelativePath=".\XPButton.hpp">
+			</File>
+			<File
+				RelativePath=".\XPContainer.hpp">
+			</File>
+			<File
+				RelativePath=".\XPSlider.hpp">
+			</File>
+			<File
+				RelativePath=".\XPWidget.hpp">
 			</File>
 		</Filter>
 	</Files>

@@ -1,69 +1,45 @@
 #include "XPButton.hpp"
 
-XPButton::XPButton(int a_x0, int a_y0,
-		   int a_width, int a_height,
-		   std::string a_label) {
-  label = a_label;
-  x0 = a_x0;
-  y0 = a_y0;
-  m_width = a_width;
-  m_height = a_height;
+XPButton::XPButton(XPWidget* parent, Rect2D sze, XPWidget* child) :
+  XPWidget(parent, sze) {
+  m_child = child;
+  m_child->SetParent(this);
   state = 0;
 }
 
-void XPButton::OnDraw(GraphicsContext &gc) {
+void XPButton::OnDraw(GraphicsContext &gc, Rect2D region) {
   if (state == 0) {
     gc.SetForeGroundColor(Color("white"));
-    gc.DrawLine(Point2D(x0,y0),Point2D(x0+m_width-2,y0));
-    gc.DrawLine(Point2D(x0,y0),Point2D(x0,y0+m_height-2));
-    gc.SetForeGroundColor(Color("black"));
-    gc.DrawLine(Point2D(x0,y0+m_height-1),
-		Point2D(x0+m_width-1,y0+m_height-1));
-    gc.DrawLine(Point2D(x0+m_width-1,y0),
-		Point2D(x0+m_width-1,y0+m_height-1));
+    gc.DrawLine(Point2D(bounds.x1,bounds.y1),Point2D(bounds.x1+bounds.width-2,bounds.y1));
+    gc.DrawLine(Point2D(bounds.x1,bounds.y1),Point2D(bounds.x1,bounds.y1+bounds.height-2));
     gc.SetForeGroundColor(Color("grey"));
-    gc.DrawLine(Point2D(x0+1,y0+m_height-2),
-		Point2D(x0+m_width-2,y0+m_height-2));
-    gc.DrawLine(Point2D(x0+m_width-2,y0+1),
-		Point2D(x0+m_width-2,y0+m_height-2));
-    gc.SetForeGroundColor(Color("black"));
-    gc.SetFont(12);
-    Point2D txtsze(gc.GetTextExtent(label));
-    gc.DrawTextString(label,
-		      Point2D(x0+m_width/2-txtsze.x/2,
-			      y0+m_height/2+txtsze.y/2),
-		      ORIENT_0);
+    gc.DrawLine(Point2D(bounds.x1,bounds.y1+bounds.height-1),
+		Point2D(bounds.x1+bounds.width-1,bounds.y1+bounds.height-1));
+    gc.DrawLine(Point2D(bounds.x1+bounds.width-1,bounds.y1),
+		Point2D(bounds.x1+bounds.width-1,bounds.y1+bounds.height-1));
+    m_child->OnDraw(gc, region);
   } else {
-    gc.SetForeGroundColor(Color("black"));
-    gc.DrawLine(Point2D(x0,y0),Point2D(x0+m_width-2,y0));
-    gc.DrawLine(Point2D(x0,y0),Point2D(x0,y0+m_height-2));
-    gc.SetForeGroundColor(Color("white"));
-    gc.DrawLine(Point2D(x0,y0+m_height-1),
-		Point2D(x0+m_width-1,y0+m_height-1));
-    gc.DrawLine(Point2D(x0+m_width-1,y0),
-		Point2D(x0+m_width-1,y0+m_height-1));
     gc.SetForeGroundColor(Color("grey"));
-    gc.DrawLine(Point2D(x0+1,y0+1),
-		Point2D(x0+1,y0+m_height-2));
-    gc.DrawLine(Point2D(x0+1,y0+1),
-		Point2D(x0+m_width-3,y0+1));
-    gc.SetForeGroundColor(Color("black"));
-    gc.SetFont(12);
-    Point2D txtsze(gc.GetTextExtent(label));
-    gc.DrawTextString(label,
-		      Point2D(x0+m_width/2-txtsze.x/2+1,
-			      y0+m_height/2+txtsze.y/2+1),
-		      ORIENT_0);
+    gc.DrawLine(Point2D(bounds.x1,bounds.y1),Point2D(bounds.x1+bounds.width-2,bounds.y1));
+    gc.DrawLine(Point2D(bounds.x1,bounds.y1),Point2D(bounds.x1,bounds.y1+bounds.height-2));
+    gc.SetForeGroundColor(Color("white"));
+    gc.DrawLine(Point2D(bounds.x1,bounds.y1+bounds.height-1),
+		Point2D(bounds.x1+bounds.width-1,bounds.y1+bounds.height-1));
+    gc.DrawLine(Point2D(bounds.x1+bounds.width-1,bounds.y1),
+		Point2D(bounds.x1+bounds.width-1,bounds.y1+bounds.height-1));
+    m_child->ShiftWidget(Point2D(2,2));
+    m_child->OnDraw(gc, region);
+    m_child->ShiftWidget(Point2D(-2,-2));
   }
 }
 
-void XPButton::OnMouseDown(int x, int y) {
+void XPButton::OnMouseDown(Point2D pt) {
   state = 1;
-  Refresh();
+  Refresh(bounds);
 }
 
-void XPButton::OnMouseUp(int x, int y) {
+void XPButton::OnMouseUp(Point2D pt) {
   state = 0;
-  Refresh();
+  Refresh(bounds);
 }
 

@@ -6,11 +6,16 @@
 
 class XPContainer : public XPWidget {
   std::vector<XPWidget*> children;
+  int focus;
 public:
-  virtual void OnDraw(GraphicsContext &gc);
+  XPContainer(XPWidget *parent, Rect2D rect);
+  virtual ~XPContainer();
+  virtual void OnDraw(GraphicsContext &gc, Rect2D region);
   void AddChild(XPWidget* child);
-  virtual void OnMouseDown(int x, int y);
-  virtual void OnMouseUp(int x, int y);
+  virtual void OnMouseDown(Point2D pt);
+  virtual void OnMouseDrag(Point2D pt);
+  virtual void OnMouseUp(Point2D pt);
+  virtual void OnChar(char key);
 };
 
 #endif

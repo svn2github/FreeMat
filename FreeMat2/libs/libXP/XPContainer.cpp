@@ -1,50 +1,79 @@
 #include "XPWidget.hpp"
 #include "XPContainer.hpp"
 
+XPContainer::XPContainer(XPWidget *parent, Rect2D rect) :
+  XPWidget(parent, rect) {
+  focus = -1;
+}
+
+XPContainer::~XPContainer() {
+  int i;
+  for (i=0;i<children.size();i++)
+    delete children[i];
+}
+
 void XPContainer::AddChild(XPWidget* child) {
   child->SetParent(this);
   children.push_back(child);
 }
 
-void XPContainer::OnDraw(GraphicsContext &gc) {
+void XPContainer::OnDraw(GraphicsContext &gc, Rect2D region) {
   gc.SetBackGroundColor(Color("light grey"));
   gc.SetForeGroundColor(Color("light grey"));
-  gc.FillRectangle(Rect2D(0, 0, m_width, m_height));
+  gc.FillRectangle(region);
   int i;
   for (i=0;i<children.size();i++)
-    children[i]->OnDraw(gc);
+    children[i]->OnDraw(gc,region);
 }
 
-void XPContainer::OnMouseDown(int x, int y) {
+void XPContainer::OnChar(char key) {
+  if (focus>=0)
+    children[focus]->OnChar(key);
+}
+
+void XPContainer::OnMouseDown(Point2D pt) {
   int i;
   bool hit;
-  XPWidget *w;
   i = children.size();
   hit = false;
+  focus = -1;
   while ((i>=0) && !hit) {
     i = i - 1;
     if (i<0) continue;
-    w = children[i];
-    hit = (x>w->x0) && (x<(w->x0+w->m_width)) &&
-      (y>w->y0) && (y<(w->y0+w->m_height));
-    if (hit)
-      w->OnMouseDown(x,y);
+    hit = children[i]->HitTest(pt);
+    if (hit) {
+      children[i]->OnMouseDown(pt);
+      focus = i;
+      children[i]->SetFocus(true);
+    } else 
+      children[i]->SetFocus(false);
   }
 }
 
-void XPContainer::OnMouseUp(int x, int y) {
+void XPContainer::OnMouseUp(Point2D pt) {
   int i;
   bool hit;
-  XPWidget *w;
   i = children.size();
   hit = false;
   while ((i>=0) && !hit) {
     i = i - 1;
     if (i<0) continue;
-    w = children[i];
-    hit = (x>w->x0) && (x<(w->x0+w->m_width)) &&
-      (y>w->y0) && (y<(w->y0+w->m_height));
+    hit = children[i]->HitTest(pt);
     if (hit)
-      w->OnMouseUp(x,y);
+      children[i]->OnMouseUp(pt);
+  }
+}
+
+void XPContainer::OnMouseDrag(Point2D pt) {
+  int i;
+  bool hit;
+  i = children.size();
+  hit = false;
+  while ((i>=0) && !hit) {
+    i = i - 1;
+    if (i<0) continue;
+    hit = children[i]->HitTest(pt);
+    if (hit)
+      children[i]->OnMouseDrag(pt);
   }
 }

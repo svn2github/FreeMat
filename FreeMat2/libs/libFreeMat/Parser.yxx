@@ -543,7 +543,7 @@ terminal:
         NUMERIC
 	| STRING
 	| MAGICEND
-	| '@' IDENT {$$.v.p = new AST(OP_ADDRESS,$2.v.p);}
+	| '@' IDENT {$$.v.p = new AST(OP_ADDRESS,$2.v.p,$1.v.i);}
 	| symbRefList {$$.v.p = new AST(OP_RHS,$1.v.p,$1.v.p->context());}
         | '[' matrixDef ']' {$$.v.p = $2.v.p;}
         | '[' error {yyxpt("a matrix definition followed by a right bracket",$1);}
@@ -565,6 +565,7 @@ symbRefList:
 	
 symbRef:
 	'(' indexList ')' {$$.v.p = new AST(OP_PARENS,$2.v.p,$1.v.i); }
+        | '(' ')' {$$.v.p = new AST(OP_PARENS,NULL,$1.v.i); }
 	| '(' indexList error {yyxpt("matching right parenthesis",$1);}
         | '{' indexList '}' {$$.v.p = new AST(OP_BRACES,$2.v.p,$1.v.i); }
 	| '{' indexList error {yyxpt("matching right brace",$1);}

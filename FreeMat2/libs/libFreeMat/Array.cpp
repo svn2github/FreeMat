@@ -164,6 +164,8 @@ namespace FreeMat {
     switch(type) {
     case FM_FUNCPTR_ARRAY: {
       FunctionDef **dp = new FunctionDef*[length];
+      for (int i=0;i<length;i++)
+	dp[i] = NULL;
       return dp;
     }
     case FM_CELL_ARRAY: {
@@ -1245,7 +1247,7 @@ namespace FreeMat {
     }
     // Handle the reference types.
     // Cell arrays can be promoted with no effort to cell arrays.
-    if (dp->dataClass = FM_FUNCPTR_ARRAY)
+    if (dp->dataClass == FM_FUNCPTR_ARRAY)
       if (dstClass == FM_FUNCPTR_ARRAY)
 	return;
       else
@@ -1873,7 +1875,7 @@ break;
     bool sparseArg = false;
 
     try {
-      maxType = FM_CELL_ARRAY;
+      maxType = FM_FUNCPTR_ARRAY;
       minType = FM_STRING;
       ArrayMatrix::iterator i = m.begin();
       bool firstNonzeroColumn = true;
@@ -2069,7 +2071,8 @@ break;
       }
       return Array(retType,retDims,dstPtr,false,retNames);
     } catch (Exception &e) {
-      Free(dstPtr);
+      // Memory leak?
+      //      freeArray(dstPtr);
       throw e;
     }
   }
@@ -3590,7 +3593,14 @@ break;
     case FM_FUNCPTR_ARRAY: {
       const FunctionDef** ap;
       ap = (const FunctionDef**) dp;
-      io->outputMessage(ap[num]->name);
+      if (!ap[num]) {
+	io->outputMessage("[]  ");
+      } else {
+	io->outputMessage("@");
+	io->outputMessage(ap[num]->name.c_str());
+	snprintf(msgBuffer,MSGBUFLEN,"  ");
+	io->outputMessage(msgBuffer);
+      }
     }
     }
   }

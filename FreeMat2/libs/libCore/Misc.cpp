@@ -2016,28 +2016,44 @@ namespace FreeMat {
   //The @|feval| function executes a function using its name.
   //The syntax of @|feval| is
   //@[
-  //  [y1,y2,...,yn] = feval(fname,x1,x2,...,xm)
+  //  [y1,y2,...,yn] = feval(f,x1,x2,...,xm)
   //@]
-  //where @|fname| is the name of the function to evaluate, and
+  //where @|f| is the name of the function to evaluate, and
   //@|xi| are the arguments to the function, and @|yi| are the
   //return values.
+  //
+  //Alternately, @|f| can be a function handle to a function
+  //(see the section on @|function handles| for more information).
   //@@Example
   //Here is an example of using @|feval| to call the @|cos| 
   //function indirectly.
   //@<
   //feval('cos',pi/4)
   //@>
+  //Now, we call it through a function handle
+  //@<
+  //c = @cos
+  //feval(c,pi/4)
+  //@>
   //!
   ArrayVector FevalFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
     if (arg.size() == 0)
       throw Exception("feval function requires at least one argument");
-    if (!(arg[0].isString()))
-      throw Exception("first argument to feval must be the name of a function (i.e., a string)");
-    char *fname = arg[0].getContentsAsCString();
-    Context *context = eval->getContext();
+    if (!(arg[0].isString()) && (arg[0].getDataClass() != FM_FUNCPTR_ARRAY))
+      throw Exception("first argument to feval must be the name of a function (i.e., a string) or a function handle");
     FunctionDef *funcDef;
-    if (!context->lookupFunction(fname,funcDef))
-      throw Exception(std::string("function ") + fname + " undefined!");
+    if (arg[0].isString()) {
+      char *fname = arg[0].getContentsAsCString();
+      Context *context = eval->getContext();
+      if (!context->lookupFunction(fname,funcDef))
+	throw Exception(std::string("function ") + fname + " undefined!");
+    } else {
+      if (!arg[0].isScalar())
+	throw Exception("function handle argument to feval must be a scalar");
+      const FunctionDef **fp = (const FunctionDef **) arg[0].getDataPointer();
+      funcDef = (FunctionDef*) fp[0];
+      if (!funcDef) return ArrayVector();
+    }
     funcDef->updateCode();
     if (funcDef->scriptFlag)
       throw Exception("cannot use feval on a script");

@@ -25,11 +25,32 @@
 // When we call a method of the parent class on the current class
 // what does it get passed?
 //
+//  The answer:
+//   Suppose g is of class1, and inherits class2, and class3.
+//   Then g has fields class2 and class3.
+//   When we call 
+//     method(g), where method is a member function of class2, then
+//   effectively, the output is the same as
+//     method(g.class2)
+//     p = g
+//     p.class2 = method(g.class2)
+//   Odd - that's not quite right...  it must be more complicated than that
 // Class related issues
 //    rhs subscripting
 //    assignment
 //
-// What about function pointers?  
+// What about function pointers?   - done
+//
+// Need overload capability for
+//   And
+//   Or
+//   Uplus
+//   a(s1,s2,...,sn) - subsref
+//   a(s1, ..., sn) - subsasgn
+//   b(a) - subsindex
+//   [a b] - horzcat
+//   [a; b] - vertcat
+//   Colon
 
 namespace FreeMat {
   UserClass::UserClass() {

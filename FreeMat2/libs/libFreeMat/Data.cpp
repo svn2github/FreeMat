@@ -97,7 +97,10 @@ namespace FreeMat {
 
   void Data::freeDataBlock() {
     if (cp) {
-      if (Array::isDataClassReferenceType(dataClass)) {
+      if (dataClass == FM_FUNCPTR_ARRAY) {
+	FunctionDef **dp = (FunctionDef**) cp;
+	delete[] dp;
+      } else if (Array::isDataClassReferenceType(dataClass)) {
 	Array* rp = (Array*) cp;
 	delete [] rp;
       } else if (sparse) {

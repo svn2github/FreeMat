@@ -119,6 +119,7 @@ namespace FreeMat {
     bool lookupFunctionWithRescanMangled(std::string funcName, FuncPtr& val);
     Array DoBinaryOperator(ASTPtr t, BinaryFunc fnc, std::string fname);
     Array DoUnaryOperator(ASTPtr t, UnaryFunc fnc, std::string fname);
+    ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
   public:
     bool debugActive;
     void dbstep(int linecount);

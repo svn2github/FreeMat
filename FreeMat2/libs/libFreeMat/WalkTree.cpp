@@ -368,12 +368,12 @@ namespace FreeMat {
 	break;
       case OP_RDIV: 
 	{  
-	  retval = DoBinaryOperator(t,RightDivide,"rdiv");
+	  retval = DoBinaryOperator(t,RightDivide,"mrdivide");
 	}
 	break;
       case OP_LDIV: 
 	{  
-	  retval = DoBinaryOperator(t,LeftDivide,"ldiv"); 
+	  retval = DoBinaryOperator(t,LeftDivide,"mldivide"); 
 	}
 	break;
       case OP_OR: 
@@ -423,17 +423,17 @@ namespace FreeMat {
 	break;
       case OP_DOT_RDIV: 
 	{ 
-	  retval = DoBinaryOperator(t,DotRightDivide,"rdiv"); 
+	  retval = DoBinaryOperator(t,DotRightDivide,"rdivide"); 
 	}
 	break;
       case OP_DOT_LDIV: 
 	{ 
-	  retval = DoBinaryOperator(t,DotLeftDivide,"ldiv"); 
+	  retval = DoBinaryOperator(t,DotLeftDivide,"ldivide"); 
 	}
 	break;
       case OP_NEG: 
 	{ 
-	  retval = DoUnaryOperator(t,Negate,"negate"); 
+	  retval = DoUnaryOperator(t,Negate,"uminus"); 
 	}
 	break;
       case OP_NOT: 
@@ -453,21 +453,22 @@ namespace FreeMat {
 	break;
       case OP_TRANSPOSE: 
 	{ 
-	  retval = DoUnaryOperator(t,Transpose,"transpose"); 
+	  retval = DoUnaryOperator(t,Transpose,"ctranspose"); 
 	}
 	break;
       case OP_DOT_TRANSPOSE: 
 	{ 
-	  retval = DoUnaryOperator(t,DotTranspose,"dottranspose"); 
+	  retval = DoUnaryOperator(t,DotTranspose,"transpose"); 
 	}
 	break;
       case OP_ADDRESS:
 	{
-	  FuncPtr& val;
+	  FuncPtr val;
 	  if (!lookupFunctionWithRescan(t->down->text,val))
-	    throw Exception("unable to resolve" + std::string(t->down->text) + 
+	    throw Exception("unable to resolve " + std::string(t->down->text) + 
 			    " to a function call");
 	  retval = Array::funcPtrConstructor(val);
+	  break;
 	}
       case OP_RHS: 
 	{
@@ -1968,7 +1969,14 @@ namespace FreeMat {
       lhsCount += dmp;
       mptr = mptr->right;
     }
-    m = functionExpression(fAST,lhsCount,false);
+    // Trap the special case where function pointers are used
+    Array r;
+    bool isVar = context->lookupVariable(fAST->text,r);
+    if (isVar && (r.getDataClass() == FM_FUNCPTR_ARRAY) &&
+	r.isScalar()) 
+      m = FunctionPointerDispatch(r,fAST->down,lhsCount);
+    else
+      m = functionExpression(fAST,lhsCount,false);
     s = saveLHS;
     while ((s != NULL) && (m.size() > 0)) {
       Array c(assignExpression(s->down,m));
@@ -2851,6 +2859,46 @@ namespace FreeMat {
   }
 
   //!
+  //@Module Function Handles
+  //@@Section VARIABLES
+  //@@Usage
+  //Starting with version 1.11, FreeMat now supports @|function handles|,
+  //or @|function pointers|.  
+
+  ArrayVector WalkTree::FunctionPointerDispatch(Array r, ASTPtr args, 
+						int narg_out) {
+    const FunctionDef** dp;
+    bool CLIFlagsave;
+    dp = (const FunctionDef**) r.getDataPointer();
+    FunctionDef* fun = (FunctionDef*) dp[0];
+    if (!fun) return ArrayVector();
+    if (args->opNum != OP_PARENS)
+      throw Exception("Expected either '()' or function arguments inside parenthesis");
+    Dimensions rhsDimensions;
+    ArrayVector m = expressionList(args->down,&rhsDimensions);
+    ArrayVector n;
+    fun->updateCode();
+    if (fun->scriptFlag) {
+      if (!m.empty())
+	throw Exception(std::string("Cannot use arguments in a call to a script."));
+      CLIFlagsave = InCLI;
+      InCLI = false;
+      pushDebug(((MFunctionDef*)fun)->fileName,std::string("script"));
+      block(((MFunctionDef*)fun)->code);
+      popDebug();
+      InCLI = CLIFlagsave;
+    } else {
+      CLIFlagsave = InCLI;
+      InCLI = false;
+      //HACK!
+      int narg_out = 1;
+      n = fun->evaluateFunction(this,m,narg_out);
+      InCLI = CLIFlagsave;
+    }
+    return n;
+  }
+
+  //!
   //@Module INDEXING Indexing Expressions
   //@@Section VARIABLES
   //@@Usage
@@ -3055,6 +3103,11 @@ namespace FreeMat {
       m = functionExpression(t,1,false);
       popID();
       return m;
+    }
+    // Check for a scalar function pointer element
+    if (r.getDataClass() == FM_FUNCPTR_ARRAY &&
+	r.isScalar()) {
+      return FunctionPointerDispatch(r,t->down,1);
     }
     // If r is a user defined object, we have to divert to the
     // class function...

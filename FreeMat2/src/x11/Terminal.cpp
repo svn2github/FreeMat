@@ -92,9 +92,10 @@ namespace FreeMat {
     d_arrow = LookupControlString("kcud1");
     l_arrow = LookupControlString("kcub1");
     r_arrow = LookupControlString("kcuf1");
+    const char* delstr = LookupControlString("kdch1");
     // Store these in the esc_seq_array for later lookup
-    esc_seq_array = (mapping*) malloc(12*sizeof(mapping));
-    esc_seq_count = 12;
+    esc_seq_array = (mapping*) malloc(13*sizeof(mapping));
+    esc_seq_count = 13;
     // These are the ones provided by terminfo
     esc_seq_array[0].sequence = l_arrow;
     esc_seq_array[0].keycode = 0x101;
@@ -122,6 +123,9 @@ namespace FreeMat {
     esc_seq_array[10].keycode = 0x103;
     esc_seq_array[11].sequence = "\033OB";
     esc_seq_array[11].keycode = 0x104;
+    // The delete character...
+    esc_seq_array[12].sequence = delstr;
+    esc_seq_array[12].keycode = 0x108;
   }
 
   // Translate the given character (which is a raw

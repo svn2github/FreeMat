@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
   InitializePlotSubsystem();
   InitializeImageSubsystem();
 
-  // Check for scripting mode
+  // Check for simple scripting mode
   bool scriptMode = false;
   int scriptSpec = 1;
   while (!scriptMode && scriptSpec < argc) {
@@ -107,8 +107,16 @@ int main(int argc, char *argv[]) {
   }
   if (scriptSpec > argc) scriptMode = false;
 
+  bool funcMode = false;
+  int funcSpec = 1;
+  while (!funcMode && funcSpec < argc) {
+    funcMode = funcMode | strcmp(argv[funcSpec],"-f") == 0;
+    funcSpec++;
+  }
+  if (funcSpec >= argc) funcMode = false;
+
   // Instantiate the terminal class
-  if (!scriptMode) {
+  if (!scriptMode && !funcMode) {
     term = new Terminal;
     fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   } else {
@@ -128,9 +136,15 @@ int main(int argc, char *argv[]) {
   term->outputMessage(" Freemat v1.03 ");
   term->outputMessage("\n");
   term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
-  while (twalk->getState() != FM_STATE_QUIT) {
-    twalk->resetState();
-    twalk->evalCLI();
+  if (!funcMode) {
+    while (twalk->getState() != FM_STATE_QUIT) {
+      twalk->resetState();
+      twalk->evalCLI();
+    }
+  } else {
+    char buffer[1024];
+    sprintf(buffer,"%s\n",argv[funcSpec]);
+    twalk->evaluateString(buffer);
   }
   term->RestoreOriginalMode();
   return 0;

@@ -21,6 +21,8 @@ Inspect.cpp \
 Random.cpp \
 LoadCore.cpp \
 LoadCore.hpp \
-Core.hpp 
+Core.hpp \
+MPIWrap.hpp \
+MPIWrap.cpp
 
 AUTOMAKE_OPTIONS 	= foreign

@@ -24,6 +24,10 @@
 #include "Malloc.hpp"
 #include <math.h>
 
+#ifdef USE_MPI
+#include "MPIWrap.hpp"
+#endif
+
 namespace FreeMat {
    void LoadCoreFunctions(Context* context) {
      stringVector args;
@@ -248,5 +252,8 @@ namespace FreeMat {
      args.push_back("function");
      context->addSpecialFunction("help",HelpFunction,1,0,args);
      InitializeFileSubsystem();
+#ifdef USE_MPI
+     LoadMPIFunctions(context);
+#endif
    }
 }

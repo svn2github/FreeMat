@@ -2311,11 +2311,11 @@ break;
     // force our type to agree with the inserted data.
     // Also, if we are empty, we promote ourselves (regardless of
     // our type).
-    if (isEmpty() || data.getDataClass() >= getDataClass())
+    if (isEmpty() || data.getDataClass() > getDataClass())
       promoteType(data.getDataClass(),data.dp->fieldNames);
     // If our type is superior to the RHS, we convert
     // the RHS to our type
-    else if (data.getDataClass() < dp->dataClass)
+    else if (data.getDataClass() <= dp->dataClass)
       data.promoteType(dp->dataClass,dp->fieldNames);
     // If the max index is larger than our current length, then
     // we have to resize ourselves - but this is only legal if we are
@@ -2398,11 +2398,11 @@ break;
 
       // If the RHS type is superior to ours, we 
       // force our type to agree with the inserted data.
-      if (isEmpty() || data.getDataClass() >= getDataClass())
+      if (isEmpty() || data.getDataClass() > getDataClass())
 	promoteType(data.dp->dataClass,data.dp->fieldNames);
       // If our type is superior to the RHS, we convert
       // the RHS to our type
-      else if (data.dp->dataClass < dp->dataClass)
+      else if (data.dp->dataClass <= dp->dataClass)
 	data.promoteType(dp->dataClass,dp->fieldNames);
       // Now, resize us to fit this data
       resize(a);

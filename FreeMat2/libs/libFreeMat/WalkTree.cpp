@@ -1498,7 +1498,7 @@ namespace FreeMat {
       if (t->opNum ==(OP_RHS) && 
 	  !context->lookupVariable(t->down->text,b) &&
 	  lookupFunctionWithRescan(t->down->text,fdef)) {
-	m = functionExpression(fdef,t->down,1,true);
+	m = functionExpression(fdef,t->down,0,true);
 	if (m.size() == 0) 
 	  b = Array::emptyConstructor();
 	else 
@@ -2466,25 +2466,6 @@ namespace FreeMat {
 	      }
 	      q = q->right;
 	    }
-	    // If any keywords were found, make another pass through the
-	    // arguments and remove them.
-#if 0
-	    if (keywords.size() > 0) {
-	      // 	    if (funcDef->type() != FM_M_FUNCTION)
-	      // 	      throw Exception("out of order argument passing only supported for M files");
-	      while (s != NULL && s->opNum == OP_KEYWORD)
-		s = s->right;
-	      if (s != NULL) {
-		q = s;
-		while (q->right != NULL) {
-		  if (q->right->opNum == OP_KEYWORD)
-		    q->right = q->right->right;
-		  else
-		    q = q->right;
-		}
-	      }
-	    }
-#endif
 	    m = expressionList(s,NULL);
 	    // Check for keywords
 	    if (keywords.size() > 0) {
@@ -2612,6 +2593,8 @@ namespace FreeMat {
       // Some routines (e.g., min and max) will return more outputs
       // than were actually requested... so here we have to trim 
       // any elements received that we didn't ask for.
+      // preserve one output if we were called as an expression (for ans)
+      if (outputOptional) narg_out = (narg_out == 0) ? 1 : narg_out;
       while (n.size() > narg_out)
 	n.pop_back();
       popID();
@@ -3131,6 +3114,10 @@ namespace FreeMat {
     if (buffer1[strlen(buffer1)-1] == '\r')
       buffer1[strlen(buffer1)-1] = 0;
     sprintf(buffer2,"%s",buffer1);
+    if (strlen(buffer2) > 20) {
+      buffer2[22] = buffer2[21] = buffer2[20] = '.'; 
+      buffer2[23] = 0;
+    }
     try {
       pushDebug("Eval",buffer2);
       block(tree);

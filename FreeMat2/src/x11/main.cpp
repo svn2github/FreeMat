@@ -38,7 +38,6 @@ void signal_resume(int a) {
 }
 
 void signal_resize(int a) {
-  printf("Resize...\n");
   term.ResizeEvent();
 }
 

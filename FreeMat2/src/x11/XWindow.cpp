@@ -528,7 +528,7 @@ bool XNextEventStdInCallback(Display *d, XEvent *r) {
 
 void DoEvents() {
   XEvent report;
-  XWindow *p;
+  XWindow *p, *q;
 
   // Get the event
   if (XNextEventStdInCallback(theDisplay, &report)) {
@@ -540,7 +540,15 @@ void DoEvents() {
     case Expose:
       if (p->GetWindowType() == VectorWindow) {
 	XEvent repcheck;
-	while (XCheckMaskEvent(theDisplay,ExposureMask,&repcheck));
+	while (XCheckMaskEvent(theDisplay,ExposureMask,&repcheck)) {
+	  if (report.xany.window != repcheck.xany.window) {
+	    if (winlist.count(report.xany.window) != 0) {
+	      q = winlist[repcheck.xany.window];
+	      q->OnExpose(repcheck.xexpose.x,repcheck.xexpose.y,
+			  repcheck.xexpose.width,repcheck.xexpose.height);
+	    }
+	  }
+	}
       }
       p->OnExpose(report.xexpose.x,report.xexpose.y,
 		  report.xexpose.width,report.xexpose.height);

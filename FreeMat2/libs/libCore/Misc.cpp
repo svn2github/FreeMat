@@ -232,13 +232,14 @@ namespace FreeMat {
     else {
       Array b(arg[1]);
       if (b.isString()) {
-	char *b2 = b.getContentsAsCString();
-	if ((strcmp(b2,"nobalance") == 0) ||
-	    (strcmp(b2,"NoBalance") == 0) ||
-	    (strcmp(b2,"NOBALANCE") == 0))
-	  balance = false;
-      }
-      return GenEigFunction(nargout, arg);
+		char *b2 = b.getContentsAsCString();
+		if ((strcmp(b2,"nobalance") == 0) ||
+			(strcmp(b2,"NoBalance") == 0) ||
+			(strcmp(b2,"NOBALANCE") == 0))
+			balance = false;
+		}
+	  else
+		return GenEigFunction(nargout, arg);
     }
     Array A(arg[0]);
     if (!A.is2D())

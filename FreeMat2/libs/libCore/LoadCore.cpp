@@ -80,10 +80,18 @@ namespace FreeMat {
      args.clear();
      args.push_back("x");
      context->addSpecialFunction("disp",DispFunction,-1,0,args);
-	 args.clear();
-	 args.push_back("file");
-	 args.push_back("line");
-	 context->addSpecialFunction("setbreak",BreakFunction,2,0,args);
+     args.clear();
+     args.push_back("file");
+     args.push_back("line");
+     context->addSpecialFunction("dbstop",DbStopFunction,2,0,args);
+     args.clear();
+     args.push_back("line");
+     context->addSpecialFunction("dbstep",DbStepFunction,1,0,args);
+     args.clear();
+     context->addSpecialFunction("dblist",DbListFunction,0,0,args);
+     args.clear();
+     args.push_back("number");
+     context->addSpecialFunction("dbdelete",DbDeleteFunction,1,0,args);
      args.clear();
      context->addFunction("i",IFunction,0,1,args);
      context->addFunction("j",IFunction,0,1,args);
@@ -341,7 +349,7 @@ namespace FreeMat {
      context->addFunction("unique",UniqueFunction,2,3,args);
      args.clear();
      args.push_back("x");
-     context->addSpecialFunction("autostop",AutoStopFunction,1,1,args);
+     context->addSpecialFunction("dbauto",AutoStopFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

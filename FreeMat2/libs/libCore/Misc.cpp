@@ -1735,39 +1735,62 @@ namespace FreeMat {
     fclose(fp);
     return ArrayVector();
   }
+  
+  ArrayVector DbDeleteFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 1)
+      throw Exception("dbdelete requires an argument (number of breakpoint to delete)");
+    Array tmp(arg[0]);
+    int bpnum;
+    bpnum = tmp.getContentsAsIntegerScalar();
+    eval->deleteBreakpoint(bpnum);
+    return ArrayVector();
+  }
 
-  ArrayVector BreakFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-	  if (arg.size() < 2)
-		  throw Exception("break function requires at least two arguments");
-	  if (!(arg[0].isString()))
-		  throw Exception("first argument to break must be the name of routine where to stop");
-	  char *cname = arg[0].getContentsAsCString();
+  ArrayVector DbListFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    eval->listBreakpoints();
+    return ArrayVector();
+  }
+
+  ArrayVector DbStepFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    int linesToSkip;
+    if (arg.size() == 0)
+      linesToSkip = 1;
+    else {
+      Array tmp(arg[0]);
+      linesToSkip = tmp.getContentsAsIntegerScalar();
+    }
+    eval->dbstep(linesToSkip);
+    return ArrayVector();
+  }
+
+  ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 2)
+      throw Exception("dbstop function requires at least two arguments");
+    if (!(arg[0].isString()))
+      throw Exception("first argument to dbstop must be the name of routine where to stop");
+    char *cname = arg[0].getContentsAsCString();
     bool isFun;
     FuncPtr val;
     isFun = eval->getContext()->lookupFunction(cname,val);
     Interface *io = eval->getInterface();
     char buffer[1000];
     if (!isFun)
-		throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
-	std::string resolved_name;
+      throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
+    std::string resolved_name;
     if (val->type() == FM_M_FUNCTION) {
-	  MFunctionDef *mptr;
-	  mptr = (MFunctionDef *) val;
-	  mptr->updateCode();
-	  resolved_name = mptr->fileName;
+      MFunctionDef *mptr;
+      mptr = (MFunctionDef *) val;
+      mptr->updateCode();
+      resolved_name = mptr->fileName;
     } else {
-	  throw Exception("Cannot set breakpoints in built-in or imported functions");
+      throw Exception("Cannot set breakpoints in built-in or imported functions");
     }
-	Array tmp(arg[1]);
-	int line = tmp.getContentsAsIntegerScalar();
-	breakpoint bp;
-	bp.cname = resolved_name;
-	bp.line = line;
-	eval->bpStack.push_back(bp);
-	eval->debugActive = true;
-	return ArrayVector();
+    Array tmp(arg[1]);
+    int line = tmp.getContentsAsIntegerScalar();
+    eval->addBreakpoint(stackentry(resolved_name,cname,line));
+    return ArrayVector();
   }
-
+  
 //   ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
 //     if (arg.size() == 0)
 //       throw Exception("fdump function requires at least one argument");

@@ -160,7 +160,10 @@ namespace FreeMat {
   ArrayVector PCodeFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector GetLineFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector AutoStopFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector BreakFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector DbStopFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector DbDeleteFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector DbListFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector DbStepFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SparseFunction(int, const ArrayVector& arg);
   ArrayVector FullFunction(int, const ArrayVector& arg);
   ArrayVector LUFunction(int, const ArrayVector& arg);

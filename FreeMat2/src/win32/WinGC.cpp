@@ -1,4 +1,5 @@
 #include "WinGC.hpp"
+#include "Reducer.hpp"
 
 WinGC::WinGC(HDC dc, int width, int height) {
   hdc = dc;
@@ -224,7 +225,7 @@ void WinGC::BlitImage(unsigned char *data, int width, int height, int x0, int y0
 }
 
 bool WinGC::IsColormapActive() {
-	return FALSE;
+	return colormapActive;
 }
 
 HPALETTE WinGC::GetColormap() {
@@ -232,5 +233,71 @@ HPALETTE WinGC::GetColormap() {
 }
 
 void WinGC::BlitImagePseudoColor(unsigned char *data, int width, int height, int x0, int y0) {
+  int pal_size;
+  pal_size = GetDeviceCaps(hdc, SIZEPALETTE);
+  int res_colors;
+  res_colors = GetDeviceCaps(hdc, NUMRESERVED);
+  char buffer[2000];
+  int colorCount = pal_size - res_colors;
+  colorCount = (colorCount > 32768) ? 32768 : colorCount;
+  // OK, now we use the color reducer to get a colormapped image
+  unsigned short *outimg = (unsigned short*) 
+    malloc(width*height*sizeof(short));
+  unsigned short *outcolors = (unsigned short*)
+    malloc(colorCount*3*sizeof(short));
+  int colorsUsed;
+  colorsUsed = ColorReduce(data, width, height, colorCount, outcolors, outimg);
+  LOGPALETTE *plp;
+  plp = (LOGPALETTE *) malloc(sizeof(LOGPALETTE)+
+			      colorsUsed*sizeof(PALETTEENTRY));
+  plp->palVersion = 0x0300;
+  plp->palNumEntries = colorsUsed;
+  for (int k=0;k<colorsUsed;k++) {
+    plp->palPalEntry[k].peRed = (BYTE) (outcolors[3*k]>>8);
+    plp->palPalEntry[k].peGreen = (BYTE) (outcolors[3*k+1]>>8);
+    plp->palPalEntry[k].peBlue = (BYTE) (outcolors[3*k+2]>>8);
+    plp->palPalEntry[k].peFlags = 0;
+  }
+  m_colormap = CreatePalette(plp);
+  colormapActive = true;
+  free(plp);
+  static PBITMAPINFO		pBitmapInfo;
+  pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER)+colorsUsed*sizeof(RGBQUAD));
+  pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  pBitmapInfo->bmiHeader.biWidth = width;
+  pBitmapInfo->bmiHeader.biHeight = height;
+  pBitmapInfo->bmiHeader.biPlanes = 1;
+  pBitmapInfo->bmiHeader.biBitCount = 8;
+  pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+  pBitmapInfo->bmiHeader.biSizeImage = 0;
+  pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+  pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+  pBitmapInfo->bmiHeader.biClrUsed = colorsUsed;
+  pBitmapInfo->bmiHeader.biClrImportant = 0;
+  RGBQUAD *ptr = (RGBQUAD *) &(pBitmapInfo->bmiColors[0]);
+  for (int p=0;p<colorsUsed;p++) {
+	  ptr[p].rgbBlue = outcolors[3*p+2]>>8;
+	  ptr[p].rgbGreen = outcolors[3*p+1]>>8;
+	  ptr[p].rgbRed = outcolors[3*p]>>8;
+  }
+  static unsigned char* pixelVals;
+  int nwidth;
+  nwidth = (width+3)&~3; // Width of the scanline in bytes
+  pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
+  int i, j;
+  for (i=0;i<height;i++)
+    for (j=0;j<width;j++)
+      pixelVals[nwidth*(height-1-i)+j] = outimg[i*width+j];
+  free(outcolors);
+  free(outimg);
+  SelectPalette(hdc, m_colormap, FALSE);
+  RealizePalette(hdc);
+  HBITMAP  hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,
+	  (unsigned char*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
+  HDC hdcMem = CreateCompatibleDC(hdc);
+  SelectObject (hdcMem, hBitmap);
+  BitBlt(hdc, x0, y0, m_width, m_height, hdcMem, 0, 0, SRCCOPY);
+  DeleteDC(hdcMem);
+  DeleteObject(hBitmap);
 }
 

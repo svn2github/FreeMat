@@ -195,11 +195,9 @@ void XWindow::OnResize(int w, int h) {
   XGC xgc(m_display, m_visual, m_pixmap, m_gc, m_width, m_height);
   OnDraw(xgc);
   if (xgc.IsColormapActive()) {
-    //    XSetWindowColormap(m_display, m_window, xgc.GetColormap());
     Colormap cmap;
     cmap = xgc.GetColormap();
     XSetWindowColormap(m_display, m_window, cmap);
-    xgc.foofoo();
   }
   bitmapActive = true;
   XClearArea(m_display, m_window, 0, 0, w, h, True);

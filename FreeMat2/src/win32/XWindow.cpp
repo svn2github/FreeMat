@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "RGBImageGC.hpp"
 #include "PostScriptGC.hpp"
+#include "BitmapPrinterGC.hpp"
 #include "Exception.hpp"
 #include <windows.h>
 #include <winuser.h>
@@ -82,10 +83,9 @@ void XWindow::Close() {
 
 void XWindow::OnExpose(int x, int y, int w, int h) {
   if (!bitmap_active) return;
-  OnResize(m_width, m_height);
   HDC hdc = GetDC(m_window);
   HDC hdcMem = CreateCompatibleDC(hdc);
-  SelectObject (hdcMem, hBitmap);
+  SelectObject (hdcMem, hBitmp);
   if (palette_active) {
     SelectPalette(hdcMem, hPalette, FALSE);
     RealizePalette(hdcMem);
@@ -168,136 +168,25 @@ void XWindow::OnResize(int w, int h) {
   HDC hdc = GetDC(m_window);
   HDC hdcMem = CreateCompatibleDC(hdc);
   if (bitmap_active)
-    DeleteObject(hBitmap);
-  hBitmap = CreateCompatibleBitmap(hdc, m_width, m_height);
-  SelectObject(hdcMem, hBitmap);
-  HBRUSH redbrush;
-  RECT rect;
-  rect.bottom = 150;
-  rect.top = 10;
-  rect.left = 10;
-  rect.right = 150;
-  redbrush = (HBRUSH) GetStockObject(GRAY_BRUSH);
-  FillRect(hdcMem,&rect,redbrush);
-//  WinGC wgc(hdcMem, m_width, m_height);
-//  OnDraw(wgc);
-//  OnSize();
-//  InvalidateRect(m_window,NULL,TRUE);
-//  UpdateWindow(m_window);
+    DeleteObject(hBitmp);
+  hBitmp = CreateCompatibleBitmap(hdc, m_width, m_height);
+  SelectObject(hdcMem, hBitmp);
+  WinGC wgc(hdcMem, m_width, m_height);
+  OnDraw(wgc);
+  if (wgc.IsColormapActive()) {
+    palette_active = true;
+    hPalette = wgc.GetColormap();
+  }
+  DeleteDC(hdcMem);
+  OnSize();
+  InvalidateRect(m_window,NULL,TRUE);
+  UpdateWindow(m_window);
   bitmap_active = true;
-//  ReleaseDC(m_window, hdc);
+  ReleaseDC(m_window, hdc);
 }
 
 void XWindow::SetTitle(std::string title) {
   SetWindowText(m_window, title.c_str());
-}
-
-void XWindow::SetImagePseudoColor(unsigned char *data, int width, int height) {
-#if 0
-  HDC hdc;
-  hdc = GetDC(m_window);
-  int pal_size;
-  pal_size = GetDeviceCaps(hdc, SIZEPALETTE);
-  int res_colors;
-  res_colors = GetDeviceCaps(hdc, NUMRESERVED);
-  char buffer[2000];
-  int colorCount = pal_size - res_colors;
-  colorCount = (colorCount > 32768) ? 32768 : colorCount;
-  // OK, now we use the color reducer to get a colormapped image
-  unsigned short *outimg = (unsigned short*) 
-    malloc(width*height*sizeof(short));
-  unsigned short *outcolors = (unsigned short*)
-    malloc(colorCount*3*sizeof(short));
-  int colorsUsed;
-  colorsUsed = ColorReduce(data, width, height, colorCount, outcolors, outimg);
-  LOGPALETTE *plp;
-  plp = (LOGPALETTE *) malloc(sizeof(LOGPALETTE)+
-			      colorsUsed*sizeof(PALETTEENTRY));
-  plp->palVersion = 0x0300;
-  plp->palNumEntries = colorsUsed;
-  for (int k=0;k<colorsUsed;k++) {
-    plp->palPalEntry[k].peRed = (BYTE) (outcolors[3*k]>>8);
-    plp->palPalEntry[k].peGreen = (BYTE) (outcolors[3*k+1]>>8);
-    plp->palPalEntry[k].peBlue = (BYTE) (outcolors[3*k+2]>>8);
-    plp->palPalEntry[k].peFlags = 0;
-  }
-  hPalette = CreatePalette(plp);
-  palette_active = true;
-  free(plp);
-  static PBITMAPINFO		pBitmapInfo;
-  pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER)+colorsUsed*sizeof(RGBQUAD));
-  pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  pBitmapInfo->bmiHeader.biWidth = width;
-  pBitmapInfo->bmiHeader.biHeight = height;
-  pBitmapInfo->bmiHeader.biPlanes = 1;
-  pBitmapInfo->bmiHeader.biBitCount = 8;
-  pBitmapInfo->bmiHeader.biCompression = BI_RGB;
-  pBitmapInfo->bmiHeader.biSizeImage = 0;
-  pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
-  pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
-  pBitmapInfo->bmiHeader.biClrUsed = colorsUsed;
-  pBitmapInfo->bmiHeader.biClrImportant = 0;
-  RGBQUAD *ptr = (RGBQUAD *) &(pBitmapInfo->bmiColors[0]);
-  for (int p=0;p<colorsUsed;p++) {
-	  ptr[p].rgbBlue = outcolors[3*p+2]>>8;
-	  ptr[p].rgbGreen = outcolors[3*p+1]>>8;
-	  ptr[p].rgbRed = outcolors[3*p]>>8;
-  }
-  static unsigned char* pixelVals;
-  int nwidth;
-  nwidth = (width+3)&~3; // Width of the scanline in bytes
-  pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
-  int i, j;
-  for (i=0;i<height;i++)
-    for (j=0;j<width;j++)
-      pixelVals[nwidth*(height-1-i)+j] = outimg[i*width+j];
-  free(outcolors);
-  free(outimg);
-  SelectPalette(hdc, hPalette, FALSE);
-  RealizePalette(hdc);
-  hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,
-	  (unsigned char*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
-  ReleaseDC(m_window, hdc);
-  m_bitmap_contents = data;
-#endif
-}
-
-void XWindow::SetImage(unsigned char *data, int width, int height) {
-#if 0
-  HDC hdc;
-  hdc = GetDC(m_window);
-  if (RC_PALETTE & GetDeviceCaps(hdc, RASTERCAPS)) {
-    SetImagePseudoColor(data, width, height);
-    return;
-  }
-  static PBITMAPINFO		pBitmapInfo;
-  pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
-  pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  pBitmapInfo->bmiHeader.biWidth = width;
-  pBitmapInfo->bmiHeader.biHeight = height;
-  pBitmapInfo->bmiHeader.biPlanes = 1;
-  pBitmapInfo->bmiHeader.biBitCount = 24;
-  pBitmapInfo->bmiHeader.biCompression = BI_RGB;
-  pBitmapInfo->bmiHeader.biSizeImage = 0;
-  pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
-  pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
-  pBitmapInfo->bmiHeader.biClrUsed = 0;
-  pBitmapInfo->bmiHeader.biClrImportant = 0;
-  static unsigned char* pixelVals;
-  int nwidth;
-  nwidth = (3*width+3)&~3; // Width of the scanline in bytes
-  pixelVals = (unsigned char*) malloc(height*nwidth*sizeof(char));
-  int i, j;
-  for (i=0;i<height;i++)
-    for (j=0;j<width;j++) {
-      pixelVals[nwidth*(height-1-i)+3*j] = (unsigned char) data[3*(i*width+j)+2];
-      pixelVals[nwidth*(height-1-i)+3*j+1] = (unsigned char) data[3*(i*width+j)+1];
-      pixelVals[nwidth*(height-1-i)+3*j+2] = (unsigned char) data[3*(i*width+j)];
-    }
-  hBitmap = CreateDIBitmap(hdc,&pBitmapInfo->bmiHeader,CBM_INIT,(BYTE*) pixelVals,pBitmapInfo,DIB_RGB_COLORS);
-  ReleaseDC(m_window, hdc);
-  m_bitmap_contents = data;
-#endif
 }
 
 void XWindow::GetClick(int &x, int &y) {
@@ -402,78 +291,61 @@ void XWindow::Save() {
 }
 
 void XWindow::PrintMe(std::string filename) {
-#if 0
-  if (m_type == BitmapWindow && m_bitmap_contents == NULL)
-    throw FreeMat::Exception("Cannot print empty image window!\n");
-  // Logic to detect print mode..
-  int np;
-  np = filename.find_last_of(".");
-  if (np > 0) {
-    std::string extension(filename.substr(np));
-	std::transform (extension.begin(), extension.end(), 
-	       extension.begin(), tolower);
-    if (extension == ".eps" || extension == ".ps") {
-      if (m_type == VectorWindow) {
-	PostScriptGC gc(filename, m_width, m_height);
-	OnDraw(gc);
-      } else
-	WriteEPSFile(filename, m_bitmap_contents, m_width, m_height);
-    } else {
-      unsigned char *pdata;
-      if (m_type == VectorWindow) {
-	static PBITMAPINFO		pBitmapInfo;
-	pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
-	pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	pBitmapInfo->bmiHeader.biWidth = m_width;
-	pBitmapInfo->bmiHeader.biHeight = m_height;
-	pBitmapInfo->bmiHeader.biPlanes = 1;
-	pBitmapInfo->bmiHeader.biBitCount = 24;
-	pBitmapInfo->bmiHeader.biCompression = BI_RGB;
-	pBitmapInfo->bmiHeader.biSizeImage = 0;
-	pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
-	pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
-	pBitmapInfo->bmiHeader.biClrUsed = 0;
-	pBitmapInfo->bmiHeader.biClrImportant = 0;
-	unsigned char* pixelVals;
-	HDC hdc = GetDC(m_window);
-	HDC hdcMem = CreateCompatibleDC(hdc);
-	HBITMAP hBmp = CreateDIBSection(hdc,pBitmapInfo,DIB_RGB_COLORS,(void**)&pixelVals,NULL,0); 
-	SelectObject(hdcMem, hBmp);
-	WinGC wgc(hdcMem, m_width, m_height);
-	OnDraw(wgc);
-	unsigned char *rgbdata = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
-	unsigned char *rgbdata2 = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
-	GetDIBits(hdcMem, hBmp, 0, m_height, rgbdata, pBitmapInfo, DIB_RGB_COLORS);
-	// "Fix" the image - remap it to a normal RGB image - this is a two step
-	// process - we have to swap the image top to bottom and revert BGR --> RGB
-	int i, j;
-	for (i=0;i<m_height;i++)
-	  for (j=0;j<m_width;j++) {
-	    rgbdata2[3*((m_height-1-i)*m_width+j)] = rgbdata[3*(i*m_width+j)+2];
-	    rgbdata2[3*((m_height-1-i)*m_width+j)+1] = rgbdata[3*(i*m_width+j)+1];
-	    rgbdata2[3*((m_height-1-i)*m_width+j)+2] = rgbdata[3*(i*m_width+j)];
-	  }
-	free(rgbdata);
-	pdata = rgbdata2;
-	ReleaseDC(m_window, hdc);
-	DeleteDC(hdcMem);
-	DeleteObject(hBmp);
-      } else {
-	pdata = m_bitmap_contents;
-      }
-      if (extension == ".jpeg" || extension == ".jpg") 
-	WriteJPEGFile(filename, pdata, m_width, m_height);
-      else if (extension == ".png")
-	WritePNGFile(filename, pdata, m_width, m_height);
-      else if (extension == ".tiff" || extension == ".tif")
-	WriteTIFFFile(filename, pdata, m_width, m_height);
-      if (m_type == VectorWindow) {
-	free(pdata);
-      }
-    }
-  } else
+  int np = filename.find_last_of(".");
+  if (np <= 0) 
     throw FreeMat::Exception(std::string("Unable to determine format of output from filename"));
-#endif
+  std::string extension(filename.substr(np));
+  std::transform (extension.begin(), extension.end(), 
+		  extension.begin(), tolower);
+  if (m_type == VectorWindow) {
+    if (extension == ".eps" || extension == ".ps") {
+      PostScriptGC gc(filename, m_width, m_height);
+      OnDraw(gc);
+    } else {
+      static PBITMAPINFO		pBitmapInfo;
+      pBitmapInfo = (PBITMAPINFO)malloc(sizeof(BITMAPINFOHEADER));
+      pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+      pBitmapInfo->bmiHeader.biWidth = m_width;
+      pBitmapInfo->bmiHeader.biHeight = m_height;
+      pBitmapInfo->bmiHeader.biPlanes = 1;
+      pBitmapInfo->bmiHeader.biBitCount = 24;
+      pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+      pBitmapInfo->bmiHeader.biSizeImage = 0;
+      pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+      pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+      pBitmapInfo->bmiHeader.biClrUsed = 0;
+      pBitmapInfo->bmiHeader.biClrImportant = 0;
+      unsigned char* pixelVals;
+      HDC hdc = GetDC(m_window);
+      HDC hdcMem = CreateCompatibleDC(hdc);
+      HBITMAP hBmp = CreateDIBSection(hdc,pBitmapInfo,DIB_RGB_COLORS,(void**)&pixelVals,NULL,0); 
+      SelectObject(hdcMem, hBmp);
+      WinGC wgc(hdcMem, m_width, m_height);
+      OnDraw(wgc);
+      unsigned char *rgbdata = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
+      unsigned char *rgbdata2 = (unsigned char *) malloc(m_height*m_width*3*sizeof(char));
+      GetDIBits(hdcMem, hBmp, 0, m_height, rgbdata, pBitmapInfo, DIB_RGB_COLORS);
+      // "Fix" the image - remap it to a normal RGB image - this is a two step
+      // process - we have to swap the image top to bottom and revert BGR --> RGB
+      int i, j;
+      for (i=0;i<m_height;i++)
+	for (j=0;j<m_width;j++) {
+	  rgbdata2[3*((m_height-1-i)*m_width+j)] = rgbdata[3*(i*m_width+j)+2];
+	  rgbdata2[3*((m_height-1-i)*m_width+j)+1] = rgbdata[3*(i*m_width+j)+1];
+	  rgbdata2[3*((m_height-1-i)*m_width+j)+2] = rgbdata[3*(i*m_width+j)];
+	}
+      free(rgbdata);
+      ReleaseDC(m_window, hdc);
+      DeleteDC(hdcMem);
+      DeleteObject(hBmp);
+      BitmapPrinterGC outgc(filename);
+      outgc.BlitImage(rgbdata2,m_width,m_height,0,0);
+      free(rgbdata2);
+    } 
+  } else {
+    BitmapPrinterGC outgc(filename);
+    OnDraw(outgc);
+  }
 }
 
 void CloseXWindow(XWindow* ptr) {

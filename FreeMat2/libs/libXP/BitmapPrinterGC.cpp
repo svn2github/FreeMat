@@ -28,6 +28,6 @@ void BitmapPrinterGC::BlitImage(unsigned char *data, int width, int height, int 
     WriteTIFFFile(filename, data, width, height); 
   else if (extension == ".eps" || extension == ".ps")
     WriteEPSFile(filename, data, width, height);
-  throw FreeMat::Exception(std::string("Unrecognized file extension ") + 
-			   extension);
+  else throw FreeMat::Exception(std::string("Unrecognized file extension ") + 
+				   extension);
 }

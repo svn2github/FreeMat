@@ -22,8 +22,6 @@ class XWindow {
   void Show();
   void Hide();
   void Close();
-  void SetImagePseudoColor(unsigned char *data, int width, int height);
-  void SetImage(unsigned char *data, int width, int height);
   void OnExpose(int x, int y, int w, int h);
   void OnMouseDown(int x, int y);
   void OnMouseUp(int x, int y);
@@ -48,7 +46,7 @@ class XWindow {
  private:
   WindowType m_type;
   HWND m_window;
-  HBITMAP hBitmap;
+  HBITMAP hBitmp;
   int m_width;
   int m_height;
   int m_state;

@@ -801,6 +801,56 @@ namespace FreeMat {
     return getElementSize()*getLength();
   }
 
+#define caseReal(caseLabel,dpType) \
+  case caseLabel:\
+  {\
+    const dpType* qp = (const dpType*) dp->getData();\
+    bool allPositive = true;\
+    int N = dp->dimensions[0];\
+    int i, j;\
+    for (i=0;i<N;i++)\
+      for (j=1;j<N;j++)\
+        if (qp[i+j*N] != qp[j+i*N]) return false;\
+    return true;\
+    break;\
+  }
+
+#define caseComplex(caseLabel,dpType) \
+  case caseLabel:\
+  {\
+    const dpType* qp = (const dpType*) dp->getData();\
+    bool allPositive = true;\
+    int N = dp->dimensions[0];\
+    int i, j;\
+    for (i=0;i<N;i++)\
+      for (j=1;j<N;j++) {\
+        if (qp[2*(i+j*N)] != qp[2*(j+i*N)]) return false;\
+        if (qp[2*(i+j*N)+1] != qp[2*(j+i*N)+1]) return false;\
+      }\
+    return true;\
+    break;\
+  }
+
+  const bool Array::isSymmetric() const {
+    if (!is2D()) return false;
+    if (isReferenceType()) return false;
+    switch(dp->dataClass) {
+      caseReal(FM_INT8,int8);
+      caseReal(FM_INT16,int16);
+      caseReal(FM_INT32,int32);
+      caseReal(FM_UINT8,uint8);
+      caseReal(FM_UINT16,uint16);
+      caseReal(FM_UINT32,uint32);
+      caseReal(FM_FLOAT,float);
+      caseReal(FM_DOUBLE,double);
+      caseComplex(FM_COMPLEX,float);
+      caseComplex(FM_DCOMPLEX,double);
+    }
+  }
+ 
+#undef caseReal
+#undef caseComplex
+
   /**
    * Returns true if we are positive.
    */

@@ -90,7 +90,7 @@ foreach $file (@ARGV) {
 	    $resulttext = `../../build/src/x11/FreeMat -e <tmpFMinput`;
 	    $resulttext =~ s/^ Free.*\n//g;
 	    $resulttext =~ s/^ Copy.*\n//g;
-	    $resulttext =~ s/(--> mkhsetpath*\n)//g;
+	    $resulttext =~ s/(--> mkhsetpath.*\n)//g;
 	    $resulttext =~ s/(--> save env.dat\s*\n)//g;
 	    $resulttext =~ s/(--> load env.dat\s*\n)//g;
 	    $resulttext =~ s/(--> quit\n)//g;

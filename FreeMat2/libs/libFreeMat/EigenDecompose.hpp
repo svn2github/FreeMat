@@ -31,7 +31,10 @@ namespace FreeMat {
    * eigenvalues are stored in the array d, with the real and 
    * imaginary parts stored sequentially.
    */
-  void floatEigenDecompose(const int n, float *v, float *d, float *a);
+  void floatEigenDecompose(const int n, float *v, float *d, float *a,
+			   bool eigenvectors, bool balance);
+  void floatEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
+				    bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, complex valued
    * matrix of size $$n \times n$$.  The $$n \times n$$ matrix of
@@ -39,7 +42,10 @@ namespace FreeMat {
    * pre-allocated before the routine is called.  The $$n$$ complex 
    * eigenvalues are stored in the array d.
    */
-  void complexEigenDecompose(const int n, float *v, float *d, float *a);
+  void complexEigenDecompose(const int n, float *v, float *d, float *a,
+			     bool eigenvectors, bool balance);
+  void complexEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
+				      bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, double valued
    * matrix of size $$n \times n$$.  The $$n \times n$$ matrix of
@@ -48,7 +54,10 @@ namespace FreeMat {
    * eigenvalues are stored in the array d, with the real and 
    * imaginary parts stored sequentially.
    */
-  void doubleEigenDecompose(const int n, double *v, double *d, double *a);
+  void doubleEigenDecompose(const int n, double *v, double *d, double *a,
+			    bool eigenvectors, bool balance);
+  void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, double *a,
+				     bool eigenvectors);
   /**
    * Compute the eigen decomposition of an arbitrary, dcomplex valued
    * matrix of size $$n \times n$$.  The $$n \times n$$ matrix of
@@ -56,7 +65,10 @@ namespace FreeMat {
    * pre-allocated before the routine is called.  The $$n$$ dcomplex 
    * eigenvalues are stored in the array d.
    */
-  void dcomplexEigenDecompose(const int n, double *v, double *d, double *a);
+  void dcomplexEigenDecompose(const int n, double *v, double *d, double *a,
+			   bool eigenvectors, bool balance);
+  void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d, double *a,
+				       bool eigenvectors);
 }
 
 #endif

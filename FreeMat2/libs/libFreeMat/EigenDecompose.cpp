@@ -24,31 +24,108 @@
 #include <stdio.h>
 #include "Malloc.hpp"
 
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+
 namespace FreeMat {
 
-  void floatEigenDecompose(const int n, float *v, float *d, float *a) {
+  void floatEigenDecomposeSymmetric(const int n, float *v, float *d, float *a,
+				    bool eigenvectors) {
+    //      SUBROUTINE SSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
+    //*  Purpose
+    //*  =======
+    //*
+    //*  SSYEV computes all eigenvalues and, optionally, eigenvectors of a
+    //*  real symmetric matrix A.
+    //*
+    //*  Arguments
+    //*  =========
+    //*
+    //*  JOBZ    (input) CHARACTER*1
+    //*          = 'N':  Compute eigenvalues only;
+    //*          = 'V':  Compute eigenvalues and eigenvectors.
+    char JOBZ;
+    if (eigenvectors)
+      JOBZ = 'V';
+    else
+      JOBZ = 'N';
+
+    //*
+    //*  UPLO    (input) CHARACTER*1
+    //*          = 'U':  Upper triangle of A is stored;
+    //*          = 'L':  Lower triangle of A is stored.
+    //*
+    char UPLO = 'U';
+
+    //*  N       (input) INTEGER
+    //*          The order of the matrix A.  N >= 0.
+    //*
+    int N = n;
+
+    //*  A       (input/output) REAL array, dimension (LDA, N)
+    //*          On entry, the symmetric matrix A.  If UPLO = 'U', the
+    //*          leading N-by-N upper triangular part of A contains the
+    //*          upper triangular part of the matrix A.  If UPLO = 'L',
+    //*          the leading N-by-N lower triangular part of A contains
+    //*          the lower triangular part of the matrix A.
+    //*          On exit, if JOBZ = 'V', then if INFO = 0, A contains the
+    //*          orthonormal eigenvectors of the matrix A.
+    //*          If JOBZ = 'N', then on exit the lower triangle (if UPLO='L')
+    //*          or the upper triangle (if UPLO='U') of A, including the
+    //*          diagonal, is destroyed.
+    //*
+
+    float *Ain = a;
+    
+    //*  LDA     (input) INTEGER
+    //*          The leading dimension of the array A.  LDA >= max(1,N).
+    //*
+    
+    int LDA = n;
+    
+    //*  W       (output) REAL array, dimension (N)
+    //*          If INFO = 0, the eigenvalues in ascending order.
+    //*
+    
+    //*  WORK    (workspace/output) REAL array, dimension (LWORK)
+    //*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+    //*
+    
+    //*  LWORK   (input) INTEGER
+    //*          The length of the array WORK.  LWORK >= max(1,3*N-1).
+    //*          For optimal efficiency, LWORK >= (NB+2)*N,
+    //*          where NB is the blocksize for SSYTRD returned by ILAENV.
+    //*
+    //*          If LWORK = -1, then a workspace query is assumed; the routine
+    //*          only calculates the optimal size of the WORK array, returns
+    //*          this value as the first entry of the WORK array, and no error
+    //*          message related to LWORK is issued by XERBLA.
+    //*
+    //*  INFO    (output) INTEGER
+    //*          = 0:  successful exit
+    //*          < 0:  if INFO = -i, the i-th argument had an illegal value
+    //*          > 0:  if INFO = i, the algorithm failed to converge; i
+    //*                off-diagonal elements of an intermediate tridiagonal
+    //*                form did not converge to zero.
+    //    
+    int INFO;
+    float WORKSZE;
+    int LWORK;
+
+    LWORK = -1;
+    ssyev_(&JOBZ, &UPLO, &N, Ain, &LDA, d, &WORKSZE, &LWORK, &INFO);
+    LWORK = (int) WORKSZE;
+    float *WORK = (float*) Malloc(LWORK*sizeof(float));
+    ssyev_(&JOBZ, &UPLO, &N, Ain, &LDA, d, WORK, &LWORK, &INFO);
+    Free(WORK);
+    if (eigenvectors)
+      memcpy(v,a,n*n*sizeof(float));
+  }
+
+  void floatEigenDecompose(const int n, float *v, float *d, float *a,
+			   bool eigenvectors, bool balance) {
     //	SUBROUTINE SGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR, WI,
     //     $                   VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
     //     $                   RCONDE, RCONDV, WORK, LWORK, IWORK, INFO )
-    //*
-    //*  -- LAPACK driver routine (version 3.0) --
-    //*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-    //*     Courant Institute, Argonne National Lab, and Rice University
-    //*     June 30, 1999
-    //*     8-15-00:  Improve consistency of WS calculations (eca)
-    //*
-    //*     .. Scalar Arguments ..
-    //	CHARACTER          BALANC, JOBVL, JOBVR, SENSE
-    //	INTEGER            IHI, ILO, INFO, LDA, LDVL, LDVR, LWORK, N
-    //	REAL   ABNRM
-    //*     ..
-    //*     .. Array Arguments ..
-    //	INTEGER            IWORK( * )
-    //	REAL   A( LDA, * ), RCONDE( * ), RCONDV( * ),
-    //     $                   SCALE( * ), VL( LDVL, * ), VR( LDVR, * ),
-    //     $                   WI( * ), WORK( * ), WR( * )
-    //*     ..
-    //*
     //*  Purpose
     //*  =======
     //*
@@ -103,7 +180,11 @@ namespace FreeMat {
     //*          condition numbers (in exact arithmetic), but balancing does.
     //*
 
-    char BALANC = 'B';
+    char BALANC;
+    if (balance)
+      BALANC = 'B';
+    else
+      BALANC = 'N';
 
     //*  JOBVL   (input) CHARACTER*1
     //*          = 'N': left eigenvectors of A are not computed;
@@ -117,7 +198,11 @@ namespace FreeMat {
     //*          = 'V': right eigenvectors of A are computed.
     //*          If SENSE = 'E' or 'B', JOBVR must = 'V'.
 
-    char JOBVR = 'V';
+    char JOBVR;
+    if (eigenvectors)
+      JOBVR = 'V';
+    else
+      JOBVR = 'N';
 
     //*  SENSE   (input) CHARACTER*1
     //*          Determines which reciprocal condition numbers are computed.
@@ -297,29 +382,104 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void doubleEigenDecompose(const int n, double *v, double *d, double *a) {
+  void doubleEigenDecomposeSymmetric(const int n, double *v, double *d, 
+				     double *a, bool eigenvectors) {
+    //      SUBROUTINE DSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
+    //*  Purpose
+    //*  =======
+    //*
+    //*  DSYEV computes all eigenvalues and, optionally, eigenvectors of a
+    //*  real symmetric matrix A.
+    //*
+    //*  Arguments
+    //*  =========
+    //*
+    //*  JOBZ    (input) CHARACTER*1
+    //*          = 'N':  Compute eigenvalues only;
+    //*          = 'V':  Compute eigenvalues and eigenvectors.
+    char JOBZ;
+    if (eigenvectors)
+      JOBZ = 'V';
+    else
+      JOBZ = 'N';
+
+    //*
+    //*  UPLO    (input) CHARACTER*1
+    //*          = 'U':  Upper triangle of A is stored;
+    //*          = 'L':  Lower triangle of A is stored.
+    //*
+    char UPLO = 'U';
+
+    //*  N       (input) INTEGER
+    //*          The order of the matrix A.  N >= 0.
+    //*
+    int N = n;
+
+    //*  A       (input/output) DOUBLE PRECISION array, dimension (LDA, N)
+    //*          On entry, the symmetric matrix A.  If UPLO = 'U', the
+    //*          leading N-by-N upper triangular part of A contains the
+    //*          upper triangular part of the matrix A.  If UPLO = 'L',
+    //*          the leading N-by-N lower triangular part of A contains
+    //*          the lower triangular part of the matrix A.
+    //*          On exit, if JOBZ = 'V', then if INFO = 0, A contains the
+    //*          orthonormal eigenvectors of the matrix A.
+    //*          If JOBZ = 'N', then on exit the lower triangle (if UPLO='L')
+    //*          or the upper triangle (if UPLO='U') of A, including the
+    //*          diagonal, is destroyed.
+    //*
+
+    double *Ain = a;
+    
+    //*  LDA     (input) INTEGER
+    //*          The leading dimension of the array A.  LDA >= max(1,N).
+    //*
+    
+    int LDA = n;
+    
+    //*  W       (output) DOUBLE PRECISION array, dimension (N)
+    //*          If INFO = 0, the eigenvalues in ascending order.
+    //*
+    
+    //*  WORK    (workspace/output) DOUBLE PRECISION array, dimension (LWORK)
+    //*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+    //*
+    
+    //*  LWORK   (input) INTEGER
+    //*          The length of the array WORK.  LWORK >= max(1,3*N-1).
+    //*          For optimal efficiency, LWORK >= (NB+2)*N,
+    //*          where NB is the blocksize for SSYTRD returned by ILAENV.
+    //*
+    //*          If LWORK = -1, then a workspace query is assumed; the routine
+    //*          only calculates the optimal size of the WORK array, returns
+    //*          this value as the first entry of the WORK array, and no error
+    //*          message related to LWORK is issued by XERBLA.
+    //*
+    //*  INFO    (output) INTEGER
+    //*          = 0:  successful exit
+    //*          < 0:  if INFO = -i, the i-th argument had an illegal value
+    //*          > 0:  if INFO = i, the algorithm failed to converge; i
+    //*                off-diagonal elements of an intermediate tridiagonal
+    //*                form did not converge to zero.
+    //    
+    int INFO;
+    double WORKSZE;
+    int LWORK;
+
+    LWORK = -1;
+    dsyev_(&JOBZ, &UPLO, &N, Ain, &LDA, d, &WORKSZE, &LWORK, &INFO);
+    LWORK = (int) WORKSZE;
+    double *WORK = (double*) Malloc(LWORK*sizeof(double));
+    dsyev_(&JOBZ, &UPLO, &N, Ain, &LDA, d, WORK, &LWORK, &INFO);
+    Free(WORK);
+    if (eigenvectors)
+      memcpy(v,a,n*n*sizeof(double));
+  }
+
+  void doubleEigenDecompose(const int n, double *v, double *d, double *a,
+			    bool eigenvectors, bool balance) {
     //	SUBROUTINE DGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR, WI,
     //     $                   VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
     //     $                   RCONDE, RCONDV, WORK, LWORK, IWORK, INFO )
-    //*
-    //*  -- LAPACK driver routine (version 3.0) --
-    //*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-    //*     Courant Institute, Argonne National Lab, and Rice University
-    //*     June 30, 1999
-    //*     8-15-00:  Improve consistency of WS calculations (eca)
-    //*
-    //*     .. Scalar Arguments ..
-    //	CHARACTER          BALANC, JOBVL, JOBVR, SENSE
-    //	INTEGER            IHI, ILO, INFO, LDA, LDVL, LDVR, LWORK, N
-    //	DOUBLE PRECISION   ABNRM
-    //*     ..
-    //*     .. Array Arguments ..
-    //	INTEGER            IWORK( * )
-    //	DOUBLE PRECISION   A( LDA, * ), RCONDE( * ), RCONDV( * ),
-    //     $                   SCALE( * ), VL( LDVL, * ), VR( LDVR, * ),
-    //     $                   WI( * ), WORK( * ), WR( * )
-    //*     ..
-    //*
     //*  Purpose
     //*  =======
     //*
@@ -374,7 +534,11 @@ namespace FreeMat {
     //*          condition numbers (in exact arithmetic), but balancing does.
     //*
 
-    char BALANC = 'B';
+    char BALANC;
+    if (balance)
+      BALANC = 'B';
+    else
+      BALANC = 'N';
 
     //*  JOBVL   (input) CHARACTER*1
     //*          = 'N': left eigenvectors of A are not computed;
@@ -388,7 +552,11 @@ namespace FreeMat {
     //*          = 'V': right eigenvectors of A are computed.
     //*          If SENSE = 'E' or 'B', JOBVR must = 'V'.
 
-    char JOBVR = 'V';
+    char JOBVR;
+    if (eigenvectors)
+      JOBVR = 'V';
+    else
+      JOBVR = 'N';
 
     //*  SENSE   (input) CHARACTER*1
     //*          Determines which reciprocal condition numbers are computed.
@@ -568,28 +736,107 @@ namespace FreeMat {
     Free(IWORK);
   }
 
-  void complexEigenDecompose(const int n, float *v, float *d, float *a) {
+  void complexEigenDecomposeSymmetric(const int n, float *v, float *d,
+				      float *a, bool eigenvectors) {
+    //        SUBROUTINE CHEEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, RWORK,
+    //     $                  INFO )
+    //*  Purpose
+    //*  =======
+    //*
+    //*  CHEEV computes all eigenvalues and, optionally, eigenvectors of a
+    //*  complex Hermitian matrix A.
+    //*
+    //*  Arguments
+    //*  =========
+    //*
+    //*  JOBZ    (input) CHARACTER*1
+    //*          = 'N':  Compute eigenvalues only;
+    //*          = 'V':  Compute eigenvalues and eigenvectors.
+    //*
+
+    char JOBZ;
+    if (eigenvectors)
+      JOBZ = 'V';
+    else
+      JOBZ = 'N';
+
+    //*  UPLO    (input) CHARACTER*1
+    //*          = 'U':  Upper triangle of A is stored;
+    //*          = 'L':  Lower triangle of A is stored.
+    //*
+    char UPLO = 'U';
+
+    //*  N       (input) INTEGER
+    //*          The order of the matrix A.  N >= 0.
+    //*
+    int N = n;
+
+    //*  A       (input/output) COMPLEX array, dimension (LDA, N)
+    //*          On entry, the Hermitian matrix A.  If UPLO = 'U', the
+    //*          leading N-by-N upper triangular part of A contains the
+    //*          upper triangular part of the matrix A.  If UPLO = 'L',
+    //*          the leading N-by-N lower triangular part of A contains
+    //*          the lower triangular part of the matrix A.
+    //*          On exit, if JOBZ = 'V', then if INFO = 0, A contains the
+    //*          orthonormal eigenvectors of the matrix A.
+    //*          If JOBZ = 'N', then on exit the lower triangle (if UPLO='L')
+    //*          or the upper triangle (if UPLO='U') of A, including the
+    //*          diagonal, is destroyed.
+    //*
+    //*  LDA     (input) INTEGER
+    //*          The leading dimension of the array A.  LDA >= max(1,N).
+    //*
+    
+    int LDA = n;
+    
+    //*  W       (output) REAL array, dimension (N)
+    //*          If INFO = 0, the eigenvalues in ascending order.
+    //*
+
+    //*  WORK    (workspace/output) COMPLEX array, dimension (LWORK)
+    //*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+    //*
+
+    //*  LWORK   (input) INTEGER
+    //*          The length of the array WORK.  LWORK >= max(1,2*N-1).
+    //*          For optimal efficiency, LWORK >= (NB+1)*N,
+    //*          where NB is the blocksize for CHETRD returned by ILAENV.
+    //*
+    //*          If LWORK = -1, then a workspace query is assumed; the routine
+    //*          only calculates the optimal size of the WORK array, returns
+    //*          this value as the first entry of the WORK array, and no error
+    //*          message related to LWORK is issued by XERBLA.
+    //*
+
+    //*  RWORK   (workspace) REAL array, dimension (max(1, 3*N-2))
+    //*
+    float *RWORK = (float*) Malloc(MAX(1,3*N-2)*sizeof(float));
+
+    //*  INFO    (output) INTEGER
+    //*          = 0:  successful exit
+    //*          < 0:  if INFO = -i, the i-th argument had an illegal value
+    //*          > 0:  if INFO = i, the algorithm failed to converge; i
+    //*                off-diagonal elements of an intermediate tridiagonal
+    //*                form did not converge to zero.
+    //*
+    int LWORK;
+    int INFO;
+    float WORKSZE[2];
+    LWORK = -1;
+    cheev_(&JOBZ,&UPLO,&N,a,&LDA,d,WORKSZE,&LWORK,RWORK,&INFO);
+    LWORK = (int) WORKSZE[0];
+    float *WORK = (float*) Malloc(2*LWORK*sizeof(float));
+    cheev_(&JOBZ,&UPLO,&N,a,&LDA,d,WORK,&LWORK,RWORK,&INFO);
+    Free(WORK);
+    if (eigenvectors)
+      memcpy(v,a,2*n*n*sizeof(float));
+  }
+
+  void complexEigenDecompose(const int n, float *v, float *d, float *a,
+			     bool eigenvectors, bool balance) {
     //	SUBROUTINE CGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, W, VL,
     //     $                   LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM, RCONDE,
     //     $                   RCONDV, WORK, LWORK, RWORK, INFO )
-    //*
-    //*  -- LAPACK driver routine (version 3.0) --
-    //*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-    //*     Courant Institute, Argonne National Lab, and Rice University
-    //*     June 30, 1999
-    //*
-    //*     .. Scalar Arguments ..
-    //	CHARACTER          BALANC, JOBVL, JOBVR, SENSE
-    //	INTEGER            IHI, ILO, INFO, LDA, LDVL, LDVR, LWORK, N
-    //	REAL   ABNRM
-    //*     ..
-    //*     .. Array Arguments ..
-    //	REAL   RCONDE( * ), RCONDV( * ), RWORK( * ),
-    //     $                   SCALE( * )
-    //	COMPLEX         A( LDA, * ), VL( LDVL, * ), VR( LDVR, * ),
-    //     $                   W( * ), WORK( * )
-    //*     ..
-    //*
     //*  Purpose
     //*  =======
     //*
@@ -643,7 +890,11 @@ namespace FreeMat {
     //*          after balancing and/or permuting. Permuting does not change
     //*          condition numbers (in exact arithmetic), but balancing does.
   
-    char BALANC = 'N';
+    char BALANC;
+    if (balance)
+      BALANC = 'B';
+    else
+      BALANC = 'N';
 
     //*  JOBVL   (input) CHARACTER*1
     //*          = 'N': left eigenvectors of A are not computed;
@@ -657,7 +908,11 @@ namespace FreeMat {
     //*          = 'V': right eigenvectors of A are computed.
     //*          If SENSE = 'E' or 'B', JOBVR must = 'V'.
 
-    char JOBVR = 'V';
+    char JOBVR;
+    if (eigenvectors)
+      JOBVR = 'V';
+    else
+      JOBVR = 'N';
 
     //*  SENSE   (input) CHARACTER*1
     //*          Determines which reciprocal condition numbers are computed.
@@ -792,15 +1047,15 @@ namespace FreeMat {
 
     int INFO;
 
-    float WORKSZE;
+    float WORKSZE[2];
 
     LWORK = -1;
     cgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, W,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, SCALE, &ABNRM,
-	     RCONDE, RCONDV, &WORKSZE, &LWORK, RWORK, &INFO );
+	     RCONDE, RCONDV, WORKSZE, &LWORK, RWORK, &INFO );
 
-    LWORK = (int) WORKSZE;
-    float *WORK = (float*) Malloc(LWORK*sizeof(float));
+    LWORK = (int) WORKSZE[0];
+    float *WORK = (float*) Malloc(2*LWORK*sizeof(float));
 
     cgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, W,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, SCALE, &ABNRM,
@@ -813,28 +1068,107 @@ namespace FreeMat {
     Free(RWORK);
   }
 
-  void dcomplexEigenDecompose(const int n, double *v, double *d, double *a) {
+  void dcomplexEigenDecomposeSymmetric(const int n, double *v, double *d,
+				       double *a, bool eigenvectors) {
+    //        SUBROUTINE ZHEEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, RWORK,
+    //     $                  INFO )
+    //*  Purpose
+    //*  =======
+    //*
+    //*  ZHEEV computes all eigenvalues and, optionally, eigenvectors of a
+    //*  complex Hermitian matrix A.
+    //*
+    //*  Arguments
+    //*  =========
+    //*
+    //*  JOBZ    (input) CHARACTER*1
+    //*          = 'N':  Compute eigenvalues only;
+    //*          = 'V':  Compute eigenvalues and eigenvectors.
+    //*
+
+    char JOBZ;
+    if (eigenvectors)
+      JOBZ = 'V';
+    else
+      JOBZ = 'N';
+
+    //*  UPLO    (input) CHARACTER*1
+    //*          = 'U':  Upper triangle of A is stored;
+    //*          = 'L':  Lower triangle of A is stored.
+    //*
+    char UPLO = 'U';
+
+    //*  N       (input) INTEGER
+    //*          The order of the matrix A.  N >= 0.
+    //*
+    int N = n;
+
+    //*  A       (input/output) COMPLEX array, dimension (LDA, N)
+    //*          On entry, the Hermitian matrix A.  If UPLO = 'U', the
+    //*          leading N-by-N upper triangular part of A contains the
+    //*          upper triangular part of the matrix A.  If UPLO = 'L',
+    //*          the leading N-by-N lower triangular part of A contains
+    //*          the lower triangular part of the matrix A.
+    //*          On exit, if JOBZ = 'V', then if INFO = 0, A contains the
+    //*          orthonormal eigenvectors of the matrix A.
+    //*          If JOBZ = 'N', then on exit the lower triangle (if UPLO='L')
+    //*          or the upper triangle (if UPLO='U') of A, including the
+    //*          diagonal, is destroyed.
+    //*
+    //*  LDA     (input) INTEGER
+    //*          The leading dimension of the array A.  LDA >= max(1,N).
+    //*
+    
+    int LDA = n;
+    
+    //*  W       (output) REAL array, dimension (N)
+    //*          If INFO = 0, the eigenvalues in ascending order.
+    //*
+
+    //*  WORK    (workspace/output) COMPLEX array, dimension (LWORK)
+    //*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+    //*
+
+    //*  LWORK   (input) INTEGER
+    //*          The length of the array WORK.  LWORK >= max(1,2*N-1).
+    //*          For optimal efficiency, LWORK >= (NB+1)*N,
+    //*          where NB is the blocksize for CHETRD returned by ILAENV.
+    //*
+    //*          If LWORK = -1, then a workspace query is assumed; the routine
+    //*          only calculates the optimal size of the WORK array, returns
+    //*          this value as the first entry of the WORK array, and no error
+    //*          message related to LWORK is issued by XERBLA.
+    //*
+
+    //*  RWORK   (workspace) REAL array, dimension (max(1, 3*N-2))
+    //*
+    double *RWORK = (double*) Malloc(MAX(1,3*N-2)*sizeof(double));
+
+    //*  INFO    (output) INTEGER
+    //*          = 0:  successful exit
+    //*          < 0:  if INFO = -i, the i-th argument had an illegal value
+    //*          > 0:  if INFO = i, the algorithm failed to converge; i
+    //*                off-diagonal elements of an intermediate tridiagonal
+    //*                form did not converge to zero.
+    //*
+    int LWORK;
+    int INFO;
+    double WORKSZE[2];
+    LWORK = -1;
+    zheev_(&JOBZ,&UPLO,&N,a,&LDA,d,WORKSZE,&LWORK,RWORK,&INFO);
+    LWORK = (int) WORKSZE[0];
+    double *WORK = (double*) Malloc(2*LWORK*sizeof(double));
+    zheev_(&JOBZ,&UPLO,&N,a,&LDA,d,WORK,&LWORK,RWORK,&INFO);
+    Free(WORK);
+    if (eigenvectors)
+      memcpy(v,a,2*n*n*sizeof(double));
+  }
+
+  void dcomplexEigenDecompose(const int n, double *v, double *d, 
+			      double *a, bool eigenvectors, bool balance) {
     //	SUBROUTINE ZGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, W, VL,
     //     $                   LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM, RCONDE,
     //     $                   RCONDV, WORK, LWORK, RWORK, INFO )
-    //*
-    //*  -- LAPACK driver routine (version 3.0) --
-    //*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-    //*     Courant Institute, Argonne National Lab, and Rice University
-    //*     June 30, 1999
-    //*
-    //*     .. Scalar Arguments ..
-    //	CHARACTER          BALANC, JOBVL, JOBVR, SENSE
-    //	INTEGER            IHI, ILO, INFO, LDA, LDVL, LDVR, LWORK, N
-    //	DOUBLE PRECISION   ABNRM
-    //*     ..
-    //*     .. Array Arguments ..
-    //	DOUBLE PRECISION   RCONDE( * ), RCONDV( * ), RWORK( * ),
-    //     $                   SCALE( * )
-    //	COMPLEX*16         A( LDA, * ), VL( LDVL, * ), VR( LDVR, * ),
-    //     $                   W( * ), WORK( * )
-    //*     ..
-    //*
     //*  Purpose
     //*  =======
     //*
@@ -888,7 +1222,11 @@ namespace FreeMat {
     //*          after balancing and/or permuting. Permuting does not change
     //*          condition numbers (in exact arithmetic), but balancing does.
   
-    char BALANC = 'N';
+    char BALANC;
+    if (balance)
+      BALANC = 'B';
+    else
+      BALANC = 'N';
 
     //*  JOBVL   (input) CHARACTER*1
     //*          = 'N': left eigenvectors of A are not computed;
@@ -902,7 +1240,11 @@ namespace FreeMat {
     //*          = 'V': right eigenvectors of A are computed.
     //*          If SENSE = 'E' or 'B', JOBVR must = 'V'.
 
-    char JOBVR = 'V';
+    char JOBVR;
+    if (eigenvectors)
+      JOBVR = 'V';
+    else
+      JOBVR = 'N';
 
     //*  SENSE   (input) CHARACTER*1
     //*          Determines which reciprocal condition numbers are computed.
@@ -1037,15 +1379,15 @@ namespace FreeMat {
 
     int INFO;
 
-    double WORKSZE;
+    double WORKSZE[2];
 
     LWORK = -1;
     zgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, W,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, SCALE, &ABNRM,
-	     RCONDE, RCONDV, &WORKSZE, &LWORK, RWORK, &INFO );
+	     RCONDE, RCONDV, WORKSZE, &LWORK, RWORK, &INFO );
 
-    LWORK = (int) WORKSZE;
-    double *WORK = (double*) Malloc(LWORK*sizeof(double));
+    LWORK = (int) WORKSZE[0];
+    double *WORK = (double*) Malloc(2*LWORK*sizeof(double));
 
     zgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, W,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, SCALE, &ABNRM,

@@ -151,6 +151,19 @@ extern "C" {
   void zungqr_(int *M, int *N, int *K, double *A, int *LDA, 
 	       double *TAU, double *WORK, int *LWORK, int *INFO);
 
+  void ssyev_(char *JOBZ, char *UPLO, int *N, float *A, int *LDA, 
+	      float *W, float *WORK, int *LWORK, int *INFO);
+
+  void dsyev_(char *JOBZ, char *UPLO, int *N, double *A, int *LDA, 
+	      double *W, double *WORK, int *LWORK, int *INFO);
+
+  void cheev_(char *JOBZ, char *UPLO, int *N, float *A, int *LDA, 
+	      float *W, float *WORK, int *LWORK, float *RWORK, int *INFO);
+
+  void zheev_(char *JOBZ, char *UPLO, int *N, double *A, int *LDA, 
+	      double *W, double *WORK, int *LWORK, double *RWORK, int *INFO);
+
+
 //   void sgecon_(char* NORM, int* N, double *A, int *LDA, double *ANORM,
 // 	       double *RCOND, double *WORK, int* IWORK, int *INFO);
 }

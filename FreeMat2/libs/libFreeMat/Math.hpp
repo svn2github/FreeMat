@@ -146,7 +146,10 @@ namespace FreeMat {
    * columns.  If $$A$$ is real, the eigenvectors $$V$$ are real, and 
    * the eigenvalues come in conjugate pairs.  
    */
-  void EigenDecompose(Array A, Array& V, Array& D) throw(Exception);
+  void EigenDecomposeCompactSymmetric(Array A, Array& D);
+  void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D);
+  void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag);
+  void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag);
   /**
    * For scalars $$A$$ and $$B$$, the output is the row vector
    * $$[A,A+1,\ldots,A+n]$$, where $$n$$ is the largest integer

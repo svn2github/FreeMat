@@ -80,7 +80,7 @@ namespace FreeMat {
   //The second form returns both the eigenvectors and eigenvalues as two 
   //matrices (the eigenvalues are stored in a diagonal matrix):
   //@[
-  //  [D,V] = eig(A)
+  //  [V,D] = eig(A)
   //@]
   //where @|D| is the diagonal matrix of eigenvalues, and @|V| is the
   //matrix of eigenvectors.
@@ -117,7 +117,7 @@ namespace FreeMat {
   //a random matrix, and then resynthesize the matrix.
   //@<
   //A = float(randn(2))
-  //[D,V] = eig(A)
+  //[V,D] = eig(A)
   //(V * D) / V
   //@>
   //!
@@ -136,12 +136,20 @@ namespace FreeMat {
     ArrayVector retval;
     stringVector dummy;
     Array V, D;
-    EigenDecompose(A,V,D);
+
     if (nargout > 1) {
-      retval.push_back(D);
+      if (A.isSymmetric())
+	EigenDecomposeFullSymmetric(A,V,D);
+      else
+	EigenDecomposeFullGeneral(A,V,D,true);
       retval.push_back(V);
+      retval.push_back(D);
     } else {
-      retval.push_back(D.getDiagonal(0));
+      if (A.isSymmetric())
+	EigenDecomposeCompactSymmetric(A,D);
+      else
+	EigenDecomposeCompactGeneral(A,D,true);
+      retval.push_back(D);
     }
     return retval;
   }

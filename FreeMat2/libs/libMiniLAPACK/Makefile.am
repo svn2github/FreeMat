@@ -21,6 +21,9 @@ f2c/cgesvx.c \
 f2c/cgetf2.c \
 f2c/cgetrf.c \
 f2c/cgetrs.c \
+f2c/cheev.c \
+f2c/chetd2.c \
+f2c/chetrd.c \
 f2c/chseqr.c \
 f2c/clabrd.c \
 f2c/clacgv.c \
@@ -33,6 +36,7 @@ f2c/clahqr.c \
 f2c/clahrd.c \
 f2c/claic1.c \
 f2c/clange.c \
+f2c/clanhe.c \
 f2c/clanhs.c \
 f2c/clantr.c \
 f2c/claqge.c \
@@ -50,22 +54,28 @@ f2c/clarz.c \
 f2c/clarzt.c \
 f2c/clascl.c \
 f2c/claset.c \
+f2c/clasr.c \
 f2c/classq.c \
 f2c/claswp.c \
+f2c/clatrd.c \
 f2c/clatrs.c \
 f2c/clatrz.c \
 f2c/crot.c \
 f2c/csrscl.c \
+f2c/csteqr.c \
 f2c/ctrevc.c \
 f2c/ctrexc.c \
 f2c/ctrsna.c \
 f2c/ctzrzf.c \
+f2c/cung2l.c \
 f2c/cung2r.c \
 f2c/cungbr.c \
 f2c/cunghr.c \
 f2c/cungl2.c \
 f2c/cunglq.c \
+f2c/cungql.c \
 f2c/cungqr.c \
+f2c/cungtr.c \
 f2c/cunm2r.c \
 f2c/cunmbr.c \
 f2c/cunml2.c \
@@ -102,7 +112,9 @@ f2c/dlabrd.c \
 f2c/dlacon.c \
 f2c/dlacpy.c \
 f2c/dladiv.c \
+f2c/dlae2.c \
 f2c/dlaed6.c \
+f2c/dlaev2.c \
 f2c/dlaexc.c \
 f2c/dlahqr.c \
 f2c/dlahrd.c \
@@ -113,6 +125,7 @@ f2c/dlamrg.c \
 f2c/dlange.c \
 f2c/dlanhs.c \
 f2c/dlanst.c \
+f2c/dlansy.c \
 f2c/dlantr.c \
 f2c/dlanv2.c \
 f2c/dlapy2.c \
@@ -157,14 +170,18 @@ f2c/dlassq.c \
 f2c/dlasv2.c \
 f2c/dlaswp.c \
 f2c/dlasy2.c \
+f2c/dlatrd.c \
 f2c/dlatrs.c \
 f2c/dlatrz.c \
+f2c/dorg2l.c \
 f2c/dorg2r.c \
 f2c/dorgbr.c \
 f2c/dorghr.c \
 f2c/dorgl2.c \
 f2c/dorglq.c \
+f2c/dorgql.c \
 f2c/dorgqr.c \
+f2c/dorgtr.c \
 f2c/dorm2r.c \
 f2c/dormbr.c \
 f2c/dorml2.c \
@@ -173,6 +190,11 @@ f2c/dormqr.c \
 f2c/dormr3.c \
 f2c/dormrz.c \
 f2c/drscl.c \
+f2c/dsteqr.c \
+f2c/dsterf.c \
+f2c/dsyev.c \
+f2c/dsytd2.c \
+f2c/dsytrd.c \
 f2c/dtrevc.c \
 f2c/dtrexc.c \
 f2c/dtrsna.c \
@@ -213,7 +235,9 @@ f2c/slabrd.c \
 f2c/slacon.c \
 f2c/slacpy.c \
 f2c/sladiv.c \
+f2c/slae2.c \
 f2c/slaed6.c \
+f2c/slaev2.c \
 f2c/slaexc.c \
 f2c/slahqr.c \
 f2c/slahrd.c \
@@ -224,6 +248,7 @@ f2c/slamrg.c \
 f2c/slange.c \
 f2c/slanhs.c \
 f2c/slanst.c \
+f2c/slansy.c \
 f2c/slantr.c \
 f2c/slanv2.c \
 f2c/slapy2.c \
@@ -268,14 +293,18 @@ f2c/slassq.c \
 f2c/slasv2.c \
 f2c/slaswp.c \
 f2c/slasy2.c \
+f2c/slatrd.c \
 f2c/slatrs.c \
 f2c/slatrz.c \
+f2c/sorg2l.c \
 f2c/sorg2r.c \
 f2c/sorgbr.c \
 f2c/sorghr.c \
 f2c/sorgl2.c \
 f2c/sorglq.c \
+f2c/sorgql.c \
 f2c/sorgqr.c \
+f2c/sorgtr.c \
 f2c/sorm2r.c \
 f2c/sormbr.c \
 f2c/sorml2.c \
@@ -284,6 +313,11 @@ f2c/sormqr.c \
 f2c/sormr3.c \
 f2c/sormrz.c \
 f2c/srscl.c \
+f2c/ssteqr.c \
+f2c/ssterf.c \
+f2c/ssyev.c \
+f2c/ssytd2.c \
+f2c/ssytrd.c \
 f2c/strevc.c \
 f2c/strexc.c \
 f2c/strsna.c \
@@ -310,6 +344,9 @@ f2c/zgesvx.c \
 f2c/zgetf2.c \
 f2c/zgetrf.c \
 f2c/zgetrs.c \
+f2c/zheev.c \
+f2c/zhetd2.c \
+f2c/zhetrd.c \
 f2c/zhseqr.c \
 f2c/zlabrd.c \
 f2c/zlacgv.c \
@@ -322,6 +359,7 @@ f2c/zlahqr.c \
 f2c/zlahrd.c \
 f2c/zlaic1.c \
 f2c/zlange.c \
+f2c/zlanhe.c \
 f2c/zlanhs.c \
 f2c/zlantr.c \
 f2c/zlaqge.c \
@@ -339,29 +377,34 @@ f2c/zlarz.c \
 f2c/zlarzt.c \
 f2c/zlascl.c \
 f2c/zlaset.c \
+f2c/zlasr.c \
 f2c/zlassq.c \
 f2c/zlaswp.c \
+f2c/zlatrd.c \
 f2c/zlatrs.c \
 f2c/zlatrz.c \
 f2c/zrot.c \
+f2c/zsteqr.c \
 f2c/ztrevc.c \
 f2c/ztrexc.c \
 f2c/ztrsna.c \
 f2c/ztzrzf.c \
+f2c/zung2l.c \
 f2c/zung2r.c \
 f2c/zungbr.c \
 f2c/zunghr.c \
 f2c/zungl2.c \
 f2c/zunglq.c \
+f2c/zungql.c \
 f2c/zungqr.c \
+f2c/zungtr.c \
 f2c/zunm2r.c \
 f2c/zunmbr.c \
 f2c/zunml2.c \
 f2c/zunmlq.c \
 f2c/zunmqr.c \
 f2c/zunmr3.c \
-f2c/zunmrz.c
-
+f2c/zunmrz.c 
 
 noinst_LIBRARIES = libMiniLAPACK.a
 
@@ -387,6 +430,9 @@ complex16/zgesvx.f \
 complex16/zgetf2.f \
 complex16/zgetrf.f \
 complex16/zgetrs.f \
+complex16/zheev.f \
+complex16/zhetd2.f \
+complex16/zhetrd.f \
 complex16/zhseqr.f \
 complex16/zlabrd.f \
 complex16/zlacgv.f \
@@ -399,6 +445,7 @@ complex16/zlahqr.f \
 complex16/zlahrd.f \
 complex16/zlaic1.f \
 complex16/zlange.f \
+complex16/zlanhe.f \
 complex16/zlanhs.f \
 complex16/zlantr.f \
 complex16/zlaqge.f \
@@ -416,21 +463,27 @@ complex16/zlarz.f \
 complex16/zlarzt.f \
 complex16/zlascl.f \
 complex16/zlaset.f \
+complex16/zlasr.f \
 complex16/zlassq.f \
 complex16/zlaswp.f \
+complex16/zlatrd.f \
 complex16/zlatrs.f \
 complex16/zlatrz.f \
 complex16/zrot.f \
+complex16/zsteqr.f \
 complex16/ztrevc.f \
 complex16/ztrexc.f \
 complex16/ztrsna.f \
 complex16/ztzrzf.f \
+complex16/zung2l.f \
 complex16/zung2r.f \
 complex16/zungbr.f \
 complex16/zunghr.f \
 complex16/zungl2.f \
 complex16/zunglq.f \
+complex16/zungql.f \
 complex16/zungqr.f \
+complex16/zungtr.f \
 complex16/zunm2r.f \
 complex16/zunmbr.f \
 complex16/zunml2.f \
@@ -459,6 +512,9 @@ complex/cgesvx.f \
 complex/cgetf2.f \
 complex/cgetrf.f \
 complex/cgetrs.f \
+complex/cheev.f \
+complex/chetd2.f \
+complex/chetrd.f \
 complex/chseqr.f \
 complex/clabrd.f \
 complex/clacgv.f \
@@ -471,6 +527,7 @@ complex/clahqr.f \
 complex/clahrd.f \
 complex/claic1.f \
 complex/clange.f \
+complex/clanhe.f \
 complex/clanhs.f \
 complex/clantr.f \
 complex/claqge.f \
@@ -488,22 +545,28 @@ complex/clarz.f \
 complex/clarzt.f \
 complex/clascl.f \
 complex/claset.f \
+complex/clasr.f \
 complex/classq.f \
 complex/claswp.f \
+complex/clatrd.f \
 complex/clatrs.f \
 complex/clatrz.f \
 complex/crot.f \
 complex/csrscl.f \
+complex/csteqr.f \
 complex/ctrevc.f \
 complex/ctrexc.f \
 complex/ctrsna.f \
 complex/ctzrzf.f \
+complex/cung2l.f \
 complex/cung2r.f \
 complex/cungbr.f \
 complex/cunghr.f \
 complex/cungl2.f \
 complex/cunglq.f \
+complex/cungql.f \
 complex/cungqr.f \
+complex/cungtr.f \
 complex/cunm2r.f \
 complex/cunmbr.f \
 complex/cunml2.f \
@@ -540,7 +603,9 @@ double/dlabrd.f \
 double/dlacon.f \
 double/dlacpy.f \
 double/dladiv.f \
+double/dlae2.f \
 double/dlaed6.f \
+double/dlaev2.f \
 double/dlaexc.f \
 double/dlahqr.f \
 double/dlahrd.f \
@@ -551,6 +616,7 @@ double/dlamrg.f \
 double/dlange.f \
 double/dlanhs.f \
 double/dlanst.f \
+double/dlansy.f \
 double/dlantr.f \
 double/dlanv2.f \
 double/dlapy2.f \
@@ -595,14 +661,18 @@ double/dlassq.f \
 double/dlasv2.f \
 double/dlaswp.f \
 double/dlasy2.f \
+double/dlatrd.f \
 double/dlatrs.f \
 double/dlatrz.f \
+double/dorg2l.f \
 double/dorg2r.f \
 double/dorgbr.f \
 double/dorghr.f \
 double/dorgl2.f \
 double/dorglq.f \
+double/dorgql.f \
 double/dorgqr.f \
+double/dorgtr.f \
 double/dorm2r.f \
 double/dormbr.f \
 double/dorml2.f \
@@ -611,6 +681,11 @@ double/dormqr.f \
 double/dormr3.f \
 double/dormrz.f \
 double/drscl.f \
+double/dsteqr.f \
+double/dsterf.f \
+double/dsyev.f \
+double/dsytd2.f \
+double/dsytrd.f \
 double/dtrevc.f \
 double/dtrexc.f \
 double/dtrsna.f \
@@ -646,7 +721,9 @@ single/slabrd.f \
 single/slacon.f \
 single/slacpy.f \
 single/sladiv.f \
+single/slae2.f \
 single/slaed6.f \
+single/slaev2.f \
 single/slaexc.f \
 single/slahqr.f \
 single/slahrd.f \
@@ -657,6 +734,7 @@ single/slamrg.f \
 single/slange.f \
 single/slanhs.f \
 single/slanst.f \
+single/slansy.f \
 single/slantr.f \
 single/slanv2.f \
 single/slapy2.f \
@@ -701,14 +779,18 @@ single/slassq.f \
 single/slasv2.f \
 single/slaswp.f \
 single/slasy2.f \
+single/slatrd.f \
 single/slatrs.f \
 single/slatrz.f \
+single/sorg2l.f \
 single/sorg2r.f \
 single/sorgbr.f \
 single/sorghr.f \
 single/sorgl2.f \
 single/sorglq.f \
+single/sorgql.f \
 single/sorgqr.f \
+single/sorgtr.f \
 single/sorm2r.f \
 single/sormbr.f \
 single/sorml2.f \
@@ -717,6 +799,11 @@ single/sormqr.f \
 single/sormr3.f \
 single/sormrz.f \
 single/srscl.f \
+single/ssteqr.f \
+single/ssterf.f \
+single/ssyev.f \
+single/ssytd2.f \
+single/ssytrd.f \
 single/strevc.f \
 single/strexc.f \
 single/strsna.f \
@@ -725,6 +812,7 @@ util/icmax1.f \
 util/ieeeck.f \
 util/ilaenv.f \
 util/izmax1.f \
-util/lsame.f
+util/lsame.f 
+
 
 AUTOMAKE_OPTIONS 	= foreign

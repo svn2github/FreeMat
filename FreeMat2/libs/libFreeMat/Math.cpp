@@ -1539,9 +1539,190 @@ namespace FreeMat {
   }
 
   /**
-   * Perform an eigen decomposition of the matrix A
+   * Eigen decomposition, symmetric matrix, compact decomposition case
    */
-  void EigenDecompose(Array A, Array& V, Array& D) throw(Exception) {
+  void EigenDecomposeCompactSymmetric(Array A, Array& D) {
+    Class Aclass;
+
+    // Test for numeric
+    if (A.isReferenceType())
+      throw Exception("Cannot apply eigendecomposition to reference types.");
+  
+    if (!A.is2D())
+      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+
+    if (A.getDimensionLength(0) != A.getDimensionLength(1))
+      throw Exception("Cannot eigendecompose a non-square matrix.");
+
+    int N = A.getDimensionLength(0);
+
+    // Create one square matrix to store the eigenvectors
+    Dimensions Vdims(2);
+    Vdims[0] = N;
+    Vdims[1] = N;
+
+    // Handle the type of A - if it is an integer type, then promote to double
+    Aclass = A.getDataClass();
+    if (Aclass < FM_FLOAT) {
+      A.promoteType(FM_DOUBLE);
+      Aclass = FM_DOUBLE;
+    }
+
+    // Select the eigenvector decomposition routine based on A's type
+    Dimensions VDims(2);
+    VDims[0] = N;
+    VDims[1] = 1;
+    switch (Aclass) {
+    case FM_FLOAT: 
+      {
+	// A temporary vector to store the eigenvalues
+	float *eigenvals = (float*) Malloc(N*sizeof(float));
+	floatEigenDecomposeSymmetric(N, NULL, eigenvals, (float*)A.getReadWriteDataPointer(),
+				     false);
+	// Copy the eigenvalues into a diagonal (float) matrix
+	D = Array(FM_FLOAT,Vdims,eigenvals);
+      }
+      break;
+    case FM_DOUBLE: 
+      {
+	// A temporary vector to store the eigenvalues
+	double *eigenvals = (double*) Malloc(N*sizeof(double));
+	doubleEigenDecomposeSymmetric(N, NULL, eigenvals, (double*)A.getReadWriteDataPointer(),
+				     false);
+	// Copy the eigenvalues into a diagonal (double) matrix
+	D = Array(FM_DOUBLE,Vdims,eigenvals);
+      }
+      break;
+    case FM_COMPLEX:
+      {
+	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
+	complexEigenDecomposeSymmetric(N, NULL, eigenvals, (float*)A.getReadWriteDataPointer(),
+				       false);
+	// Copy the eigenvalues into a diagonal (complex) matrix
+	D = Array(FM_COMPLEX,Vdims,eigenvals);
+      }
+      break;
+    case FM_DCOMPLEX:
+      {
+	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
+	dcomplexEigenDecomposeSymmetric(N, NULL, eigenvals, (double*)A.getReadWriteDataPointer(),
+					false);
+	// Copy the eigenvalues into a diagonaal (complex) matrix
+	D = Array(FM_DCOMPLEX,Vdims,eigenvals);
+      }
+      break;
+    }
+  }
+
+  /**
+   * Eigen decomposition, symmetric matrix, full decomposition case
+   */
+  void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D) {
+    int i;
+    Class Aclass;
+
+    // Test for numeric
+    if (A.isReferenceType())
+      throw Exception("Cannot apply eigendecomposition to reference types.");
+  
+    if (!A.is2D())
+      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+
+    if (A.getDimensionLength(0) != A.getDimensionLength(1))
+      throw Exception("Cannot eigendecompose a non-square matrix.");
+
+    int N = A.getDimensionLength(0);
+
+    // Create one square matrix to store the eigenvectors
+    Dimensions Vdims(2);
+    Vdims[0] = N;
+    Vdims[1] = N;
+
+    // Handle the type of A - if it is an integer type, then promote to double
+    Aclass = A.getDataClass();
+    if (Aclass < FM_FLOAT) {
+      A.promoteType(FM_DOUBLE);
+      Aclass = FM_DOUBLE;
+    }
+
+    // Select the eigenvector decomposition routine based on A's type
+    switch (Aclass) {
+    case FM_FLOAT: 
+      {
+	// A temporary vector to store the eigenvalues
+	float *eigenvals = (float*) Malloc(N*sizeof(float));
+	float *Vp = (float*) Malloc(N*N*A.getElementSize());
+	floatEigenDecomposeSymmetric(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer(),
+				     true);
+	// Copy the eigenvalues into a diagonal (float) matrix
+	D = Array(FM_FLOAT,Vdims,NULL);
+	float *Dp = (float*) Malloc(N*N*D.getElementSize());
+	for (i=0;i<N;i++)
+	  Dp[i+N*i] = eigenvals[i];
+	D.setDataPointer(Dp);
+	V = Array(FM_FLOAT,Vdims,Vp);
+      }
+      break;
+    case FM_DOUBLE: 
+      {
+	// A temporary vector to store the eigenvalues
+	double *eigenvals = (double*) Malloc(N*sizeof(double));
+	double *Vp = (double*) Malloc(N*N*A.getElementSize());
+	doubleEigenDecomposeSymmetric(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer(),
+				     true);
+	// Copy the eigenvalues into a diagonal (double) matrix
+	D = Array(FM_DOUBLE,Vdims,NULL);
+	double *Dp = (double*) Malloc(N*N*D.getElementSize());
+	for (i=0;i<N;i++)
+	  Dp[i+N*i] = eigenvals[i];
+	D.setDataPointer(Dp);
+	V = Array(FM_DOUBLE,Vdims,Vp);
+      }
+      break;
+    case FM_COMPLEX:
+      {
+	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
+	float *Vp = (float*) Malloc(N*N*A.getElementSize());
+	complexEigenDecomposeSymmetric(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer(),
+				       true);
+	// Copy the eigenvalues into a diagonal (complex) matrix
+	D = Array(FM_COMPLEX,Vdims,NULL);
+	float *Dp = (float*) Malloc(N*N*D.getElementSize());
+	for (i=0;i<N;i++) {
+	  Dp[2*(i+N*i)] = eigenvals[2*i];
+	  Dp[2*(i+N*i)+1] = eigenvals[2*i+1];
+	}
+	D.setDataPointer(Dp);
+	V = Array(FM_COMPLEX,Vdims,Vp);
+	Free(eigenvals);
+      }
+      break;
+    case FM_DCOMPLEX:
+      {
+	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
+	double *Vp = (double*) Malloc(N*N*A.getElementSize());
+	dcomplexEigenDecomposeSymmetric(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer(),
+					true);
+	// Copy the eigenvalues into a diagonal (complex) matrix
+	D = Array(FM_DCOMPLEX,Vdims,NULL);
+	double *Dp = (double*) Malloc(N*N*D.getElementSize());
+	for (i=0;i<N;i++) {
+	  Dp[2*(i+N*i)] = eigenvals[2*i];
+	  Dp[2*(i+N*i)+1] = eigenvals[2*i+1];
+	}
+	D.setDataPointer(Dp);
+	V = Array(FM_DCOMPLEX,Vdims,Vp);
+	Free(eigenvals);
+      }
+      break;
+    }
+  }
+
+  /**
+   * Perform an eigen decomposition of the matrix A - This version computes the 
+   * eigenvectors, and returns the eigenvalues in a diagonal matrix
+   */
+  void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag) {
     int i, j;
     Class Aclass;
 
@@ -1581,7 +1762,8 @@ namespace FreeMat {
 	// the vector.  Successive columns can be used because the 
 	// eigenvalues occur in conjugate pairs.
 	float *Vp = (float*) Malloc(N*N*A.getElementSize());
-	floatEigenDecompose(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer());
+	floatEigenDecompose(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer(),
+			    true, balanceFlag);
 	// Make a pass through the eigenvals, and look for complex eigenvalues.
 	bool complexEigenvalues = false;
 	for (i=0;(i<N) && !complexEigenvalues;i++)
@@ -1643,7 +1825,8 @@ namespace FreeMat {
 	// the vector.  Successive columns can be used because the 
 	// eigenvalues occur in conjugate pairs.
 	double *Vp = (double*) Malloc(N*N*A.getElementSize());
-	doubleEigenDecompose(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer());
+	doubleEigenDecompose(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer(),
+			     true, balanceFlag);
 	// Make a pass through the eigenvals, and look for complex eigenvalues.
 	bool complexEigenvalues = false;
 	for (i=0;(i<N) && !complexEigenvalues;i++)
@@ -1699,7 +1882,8 @@ namespace FreeMat {
       {
 	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
 	float *Vp = (float*) Malloc(N*N*A.getElementSize());
-	complexEigenDecompose(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer());
+	complexEigenDecompose(N, Vp, eigenvals, (float*)A.getReadWriteDataPointer(),
+			      true, balanceFlag);
 	// Copy the eigenvalues into a diagonal (complex) matrix
 	D = Array(FM_COMPLEX,Vdims,NULL);
 	float *Dp = (float*) Malloc(N*N*D.getElementSize());
@@ -1716,7 +1900,8 @@ namespace FreeMat {
       {
 	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
 	double *Vp = (double*) Malloc(N*N*A.getElementSize());
-	dcomplexEigenDecompose(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer());
+	dcomplexEigenDecompose(N, Vp, eigenvals, (double*)A.getReadWriteDataPointer(),
+			       true, balanceFlag);
 	// Copy the eigenvalues into a diagonal (complex) matrix
 	D = Array(FM_DCOMPLEX,Vdims,NULL);
 	double *Dp = (double*) Malloc(N*N*D.getElementSize());
@@ -1727,6 +1912,125 @@ namespace FreeMat {
 	D.setDataPointer(Dp);
 	V = Array(FM_DCOMPLEX,Vdims,Vp);
 	Free(eigenvals);
+      }
+      break;
+    }
+  }
+
+  /**
+   * Perform an eigen decomposition of the matrix A - This version computes the 
+   * eigenvalues only in a vector
+   */
+  void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag) {
+    int i, j;
+    Class Aclass;
+
+    // Test for numeric
+    if (A.isReferenceType())
+      throw Exception("Cannot apply eigendecomposition to reference types.");
+  
+    if (!A.is2D())
+      throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
+
+    if (A.getDimensionLength(0) != A.getDimensionLength(1))
+      throw Exception("Cannot eigendecompose a non-square matrix.");
+
+    int N = A.getDimensionLength(0);
+
+    // Create one square matrix to store the eigenvectors
+    Dimensions Vdims(2);
+    Vdims[0] = N;
+    Vdims[1] = 1;
+
+    // Handle the type of A - if it is an integer type, then promote to double
+    Aclass = A.getDataClass();
+    if (Aclass < FM_FLOAT) {
+      A.promoteType(FM_DOUBLE);
+      Aclass = FM_DOUBLE;
+    }
+
+    // Select the eigenvector decomposition routine based on A's type
+    switch (Aclass) {
+    case FM_FLOAT: 
+      {
+	// A temporary vector to store the eigenvalues
+	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
+	floatEigenDecompose(N, NULL, eigenvals, 
+			    (float*)A.getReadWriteDataPointer(),
+			    false, balanceFlag);
+	// Make a pass through the eigenvals, and look for complex eigenvalues.
+	bool complexEigenvalues = false;
+	for (i=0;(i<N) && !complexEigenvalues;i++)
+	  complexEigenvalues = (eigenvals[2*i+1] != 0);
+	if (!complexEigenvalues) {
+	  // Copy the eigenvalues into a real (float) vector
+	  D = Array(FM_FLOAT,Vdims,NULL);
+	  float *Dp = (float*) Malloc(N*D.getElementSize());
+	  for (i=0;i<N;i++)
+	    Dp[i] = eigenvals[2*i];
+	  D.setDataPointer(Dp);
+	} else {
+	  // Copy the eigenvalues into a complex vector
+	  D = Array(FM_COMPLEX,Vdims,NULL);
+	  float *Dp = (float*) Malloc(N*D.getElementSize());
+	  for (i=0;i<N;i++) {
+	    Dp[2*i] = eigenvals[2*i];
+	    Dp[2*i+1] = eigenvals[2*i+1];
+	  }
+	  D.setDataPointer(Dp);
+	}
+	Free(eigenvals);
+      }
+      break;
+    case FM_DOUBLE: 
+      {
+	// A temporary vector to store the eigenvalues
+	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
+	doubleEigenDecompose(N, NULL, eigenvals, 
+			     (double*)A.getReadWriteDataPointer(),
+			     false, balanceFlag);
+	// Make a pass through the eigenvals, and look for complex eigenvalues.
+	bool complexEigenvalues = false;
+	for (i=0;(i<N) && !complexEigenvalues;i++)
+	  complexEigenvalues = (eigenvals[2*i+1] != 0);
+	if (!complexEigenvalues) {
+	  // Copy the eigenvalues into a real (double) vector
+	  D = Array(FM_DOUBLE,Vdims,NULL);
+	  double *Dp = (double*) Malloc(N*D.getElementSize());
+	  for (i=0;i<N;i++)
+	    Dp[i] = eigenvals[2*i];
+	  D.setDataPointer(Dp);
+	} else {
+	  // Copy the eigenvalues into a complex vector
+	  D = Array(FM_COMPLEX,Vdims,NULL);
+	  double *Dp = (double*) Malloc(N*D.getElementSize());
+	  for (i=0;i<N;i++) {
+	    Dp[2*i] = eigenvals[2*i];
+	    Dp[2*i+1] = eigenvals[2*i+1];
+	  }
+	  D.setDataPointer(Dp);
+	}
+	Free(eigenvals);
+      }
+      break;
+    case FM_COMPLEX:
+      {
+	float *eigenvals = (float*) Malloc(2*N*sizeof(float));
+	complexEigenDecompose(N, NULL, eigenvals, 
+			      (float*)A.getReadWriteDataPointer(),
+			      false, balanceFlag);
+	// Copy the eigenvalues into a diagonal (complex) matrix
+	D = Array(FM_COMPLEX,Vdims,eigenvals);
+      }
+      break;
+    case FM_DCOMPLEX:
+      {
+	double *eigenvals = (double*) Malloc(2*N*sizeof(double));
+	dcomplexEigenDecompose(N, NULL, eigenvals, 
+			       (double*)A.getReadWriteDataPointer(),
+			       false, balanceFlag);
+	// Copy the eigenvalues into a diagonal (complex) matrix
+	D = Array(FM_DCOMPLEX,Vdims,eigenvals);
       }
       break;
     }
@@ -1803,7 +2107,10 @@ namespace FreeMat {
   inline Array PowerScalarMatrix(Array A, Array B) {
     // Do an eigendecomposition of B
     Array V, D;
-    EigenDecompose(B,V,D);
+    if (B.isSymmetric())
+      EigenDecomposeFullSymmetric(B,V,D);
+    else
+      EigenDecomposeFullGeneral(B,V,D,false);
     // Get the diagonal part of D
     Array E = D.getDiagonal(0);
     // Call the vector version of the exponential
@@ -1818,7 +2125,10 @@ namespace FreeMat {
   inline Array PowerMatrixScalar(Array A, Array B) {
     // Do an eigendecomposition of A
     Array V, D;
-    EigenDecompose(A,V,D); //A, B, V, D
+    if (A.isSymmetric())
+      EigenDecomposeFullSymmetric(A,V,D); //A, B, V, D
+    else
+      EigenDecomposeFullGeneral(A,V,D,false);
     // Get the diagonal part of D
     Array E = D.getDiagonal(0); // A, B, V, D, E
     // Call the vector version of the exponential

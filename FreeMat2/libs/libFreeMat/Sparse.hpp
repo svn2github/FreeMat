@@ -55,6 +55,14 @@ namespace FreeMat {
   bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp);
   void* SparseArrayHermitian(Class dclass, int rows, int cols, const void* cp);
   void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp);
+  void* SparseSparseAdd(Class dclass, const void *ap, int rows, int cols, 
+			const void *bp);
+  void* SparseSparseSubtract(Class dclass, const void *ap, int rows, int cols, 
+			     const void *bp);
+  void* SparseSparseMultiply(Class dclass, const void *ap, int rows, int cols, 
+			     const void *bp);
+  void* SparseScalarMultiply(Class dclass, const void *ap, int rows, int cols, 
+			     const void *bp);
 }
 
 #endif

@@ -29,6 +29,8 @@
 #include "Sparse.hpp"
 #include <math.h>
 
+// Sparse ops: +, -, neg, *
+
 namespace FreeMat {
   void boolean_and(int N, logical* C, const logical *A, int Astride, 
 		   const logical *B, int Bstride) {
@@ -761,7 +763,8 @@ namespace FreeMat {
     TypeCheck(A,B,true);
     return true;
   }
- 
+
+
   /*
    * Check to see if two dimensions (when treated as vectors) are equivalent in size.
    */
@@ -1115,8 +1118,8 @@ namespace FreeMat {
     int Astride, Bstride;
     void *Cp = NULL;
     int Clen;
+    bool sparse;
     Dimensions Cdim;
-
     if (A.isScalar()) {
       Astride = 0;
       Bstride = 1;
@@ -1130,36 +1133,54 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
-    Clen = Cdim.getElementCount();
-    Cp = Malloc(Clen*B.getElementSize());
-    switch(B.getDataClass()) {
-    case FM_INT32:
-      addfullreal<int32>(Clen,(int32*) Cp, 
-			 (int32*) A.getDataPointer(), Astride,
-			 (int32*) B.getDataPointer(), Bstride);
-      break;
-    case FM_FLOAT:
-      addfullreal<float>(Clen,(float*) Cp, 
-			 (float*) A.getDataPointer(), Astride,
-			 (float*) B.getDataPointer(), Bstride);
-      break;
-    case FM_DOUBLE:
-      addfullreal<double>(Clen,(double*) Cp, 
-			  (double*) A.getDataPointer(), Astride,
-			  (double*) B.getDataPointer(), Bstride);
-      break;
-    case FM_COMPLEX:
-      addfullcomplex<float>(Clen,(float*) Cp, 
-			    (float*) A.getDataPointer(), Astride,
-			    (float*) B.getDataPointer(), Bstride);
-      break;
-    case FM_DCOMPLEX:
-      addfullcomplex<double>(Clen,(double*) Cp, 
-			     (double*) A.getDataPointer(), Astride,
-			     (double*) B.getDataPointer(), Bstride);
-      break;			 
+    if (!Astride || !Bstride) {
+      A.makeDense();
+      B.makeDense();
     }
-    return Array(B.getDataClass(),Cdim,Cp);
+    if (A.isSparse() && !B.isSparse()) 
+      A.makeDense();
+    if (!A.isSparse() && B.isSparse()) 
+      B.makeDense();
+    if (A.isSparse()) {
+      sparse = true;
+      Cp = SparseSparseAdd(A.getDataClass(),
+			   A.getSparseDataPointer(),
+			   A.getDimensionLength(0),
+			   A.getDimensionLength(1),
+			   B.getSparseDataPointer());
+    } else {
+      sparse = false;
+      Clen = Cdim.getElementCount();
+      Cp = Malloc(Clen*B.getElementSize());
+      switch(B.getDataClass()) {
+      case FM_INT32:
+	addfullreal<int32>(Clen,(int32*) Cp, 
+			   (int32*) A.getDataPointer(), Astride,
+			   (int32*) B.getDataPointer(), Bstride);
+	break;
+      case FM_FLOAT:
+	addfullreal<float>(Clen,(float*) Cp, 
+			   (float*) A.getDataPointer(), Astride,
+			   (float*) B.getDataPointer(), Bstride);
+	break;
+      case FM_DOUBLE:
+	addfullreal<double>(Clen,(double*) Cp, 
+			    (double*) A.getDataPointer(), Astride,
+			    (double*) B.getDataPointer(), Bstride);
+	break;
+      case FM_COMPLEX:
+	addfullcomplex<float>(Clen,(float*) Cp, 
+			      (float*) A.getDataPointer(), Astride,
+			      (float*) B.getDataPointer(), Bstride);
+	break;
+      case FM_DCOMPLEX:
+	addfullcomplex<double>(Clen,(double*) Cp, 
+			       (double*) A.getDataPointer(), Astride,
+			       (double*) B.getDataPointer(), Bstride);
+	break;			 
+      }
+    }
+    return Array(B.getDataClass(),Cdim,Cp,sparse);
   }
 
   /**
@@ -1257,6 +1278,7 @@ namespace FreeMat {
     void *Cp = NULL;
     int Clen;
     Dimensions Cdim;
+    bool sparse;
 
     if (A.isScalar()) {
       Astride = 0;
@@ -1271,36 +1293,54 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
-    Clen = Cdim.getElementCount();
-    Cp = Malloc(Clen*B.getElementSize());
-    switch(B.getDataClass()) {
-    case FM_INT32:
-      subtractfullreal<int32>(Clen,(int32*) Cp, 
-			 (int32*) A.getDataPointer(), Astride,
-			 (int32*) B.getDataPointer(), Bstride);
-      break;
-    case FM_FLOAT:
-      subtractfullreal<float>(Clen,(float*) Cp, 
-			 (float*) A.getDataPointer(), Astride,
-			 (float*) B.getDataPointer(), Bstride);
-      break;
-    case FM_DOUBLE:
-      subtractfullreal<double>(Clen,(double*) Cp, 
-			  (double*) A.getDataPointer(), Astride,
-			  (double*) B.getDataPointer(), Bstride);
-      break;
-    case FM_COMPLEX:
-      subtractfullcomplex<float>(Clen,(float*) Cp, 
-			    (float*) A.getDataPointer(), Astride,
-			    (float*) B.getDataPointer(), Bstride);
-      break;
-    case FM_DCOMPLEX:
-      subtractfullcomplex<double>(Clen,(double*) Cp, 
-			     (double*) A.getDataPointer(), Astride,
-			     (double*) B.getDataPointer(), Bstride);
-      break;			 
+    if (!Astride || !Bstride) {
+      A.makeDense();
+      B.makeDense();
     }
-    return Array(B.getDataClass(),Cdim,Cp);
+    if (A.isSparse() && !B.isSparse()) 
+      A.makeDense();
+    if (!A.isSparse() && B.isSparse()) 
+      B.makeDense();
+    if (A.isSparse()) {
+      sparse = true;
+      Cp = SparseSparseSubtract(A.getDataClass(),
+				A.getSparseDataPointer(),
+				A.getDimensionLength(0),
+				A.getDimensionLength(1),
+				B.getSparseDataPointer());
+    } else {
+      sparse = false;
+      Clen = Cdim.getElementCount();
+      Cp = Malloc(Clen*B.getElementSize());
+      switch(B.getDataClass()) {
+      case FM_INT32:
+	subtractfullreal<int32>(Clen,(int32*) Cp, 
+				(int32*) A.getDataPointer(), Astride,
+				(int32*) B.getDataPointer(), Bstride);
+	break;
+      case FM_FLOAT:
+	subtractfullreal<float>(Clen,(float*) Cp, 
+				(float*) A.getDataPointer(), Astride,
+				(float*) B.getDataPointer(), Bstride);
+	break;
+      case FM_DOUBLE:
+	subtractfullreal<double>(Clen,(double*) Cp, 
+				 (double*) A.getDataPointer(), Astride,
+				 (double*) B.getDataPointer(), Bstride);
+	break;
+      case FM_COMPLEX:
+	subtractfullcomplex<float>(Clen,(float*) Cp, 
+			    (float*) A.getDataPointer(), Astride,
+				   (float*) B.getDataPointer(), Bstride);
+	break;
+      case FM_DCOMPLEX:
+	subtractfullcomplex<double>(Clen,(double*) Cp, 
+				    (double*) A.getDataPointer(), Astride,
+				    (double*) B.getDataPointer(), Bstride);
+	break;			 
+      }
+    }
+    return Array(B.getDataClass(),Cdim,Cp,sparse);
   }
 
   /**
@@ -1392,7 +1432,7 @@ namespace FreeMat {
     void *Cp = NULL;
     int Clen;
     Dimensions Cdim;
-
+    bool sparse;
     if (A.isScalar()) {
       Astride = 0;
       Bstride = 1;
@@ -1406,38 +1446,71 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
-    Clen = Cdim.getElementCount();
-    Cp = Malloc(Clen*B.getElementSize());
-    switch(B.getDataClass()) {
-    case FM_INT32:
-      multiplyfullreal<int32>(Clen,(int32*) Cp, 
-			 (int32*) A.getDataPointer(), Astride,
-			 (int32*) B.getDataPointer(), Bstride);
-      break;
-    case FM_FLOAT:
-      multiplyfullreal<float>(Clen,(float*) Cp, 
-			 (float*) A.getDataPointer(), Astride,
-			 (float*) B.getDataPointer(), Bstride);
-      break;
-    case FM_DOUBLE:
-      multiplyfullreal<double>(Clen,(double*) Cp, 
-			  (double*) A.getDataPointer(), Astride,
-			  (double*) B.getDataPointer(), Bstride);
-      break;
-    case FM_COMPLEX:
-      multiplyfullcomplex<float>(Clen,(float*) Cp, 
-			    (float*) A.getDataPointer(), Astride,
-			    (float*) B.getDataPointer(), Bstride);
-      break;
-    case FM_DCOMPLEX:
-      multiplyfullcomplex<double>(Clen,(double*) Cp, 
-			     (double*) A.getDataPointer(), Astride,
-			     (double*) B.getDataPointer(), Bstride);
-      break;			 
+    //FIXME - these rules don't apply for multiplication!!
+    if (A.isSparse() && B.isScalar()) {
+      sparse = true;
+      B.makeDense();
+      Cp = SparseScalarMultiply(A.getDataClass(),
+				A.getSparseDataPointer(),
+				A.getDimensionLength(0),
+				A.getDimensionLength(1),
+				B.getDataPointer());
+    } else if (B.isSparse() && A.isScalar()) {
+      sparse = true;
+      A.makeDense();
+      Cp = SparseScalarMultiply(B.getDataClass(),
+				B.getSparseDataPointer(),
+				B.getDimensionLength(0),
+				B.getDimensionLength(1),
+				A.getDataPointer());
+    } else {
+      if (A.isSparse() && !B.isSparse()) 
+	A.makeDense();
+      if (!A.isSparse() && B.isSparse()) 
+	B.makeDense();
+      if (A.isSparse()) {
+	sparse = true;
+	Cp = SparseSparseMultiply(A.getDataClass(),
+				  A.getSparseDataPointer(),
+				  A.getDimensionLength(0),
+				  A.getDimensionLength(1),
+				  B.getSparseDataPointer());
+      } else {
+	sparse = false;
+	Clen = Cdim.getElementCount();
+	Cp = Malloc(Clen*B.getElementSize());
+	switch(B.getDataClass()) {
+	case FM_INT32:
+	  multiplyfullreal<int32>(Clen,(int32*) Cp, 
+				  (int32*) A.getDataPointer(), Astride,
+				  (int32*) B.getDataPointer(), Bstride);
+	  break;
+	case FM_FLOAT:
+	  multiplyfullreal<float>(Clen,(float*) Cp, 
+				  (float*) A.getDataPointer(), Astride,
+				  (float*) B.getDataPointer(), Bstride);
+	  break;
+	case FM_DOUBLE:
+	  multiplyfullreal<double>(Clen,(double*) Cp, 
+				   (double*) A.getDataPointer(), Astride,
+				   (double*) B.getDataPointer(), Bstride);
+	  break;
+	case FM_COMPLEX:
+	  multiplyfullcomplex<float>(Clen,(float*) Cp, 
+				     (float*) A.getDataPointer(), Astride,
+				     (float*) B.getDataPointer(), Bstride);
+	  break;
+	case FM_DCOMPLEX:
+	  multiplyfullcomplex<double>(Clen,(double*) Cp, 
+				      (double*) A.getDataPointer(), Astride,
+				      (double*) B.getDataPointer(), Bstride);
+	  break;			 
+	}
+      }
     }
-    return Array(B.getDataClass(),Cdim,Cp);
+    return Array(B.getDataClass(),Cdim,Cp,sparse);
   }
-
+ 
   /**
    * Element-wise right divide.
    */

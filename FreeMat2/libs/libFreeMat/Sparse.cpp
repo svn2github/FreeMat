@@ -472,7 +472,6 @@ namespace FreeMat {
       int n=1;
       int j;
       int outlen = 0;
-      tstop();
       while (i<2*rows) {
 	if ((src[p][n] != 0) || (src[p][n+1] != 0)) {
 	  i+=2;
@@ -2249,6 +2248,868 @@ namespace FreeMat {
       return SparseArrayHermitianComplex<float>(rows, cols, (const float**) cp);
     case FM_DCOMPLEX:
       return SparseArrayHermitianComplex<double>(rows, cols, (const double**) cp);
+    }
+  }
+
+  template <class T>
+  void* SparseAddReal(int rows, int cols,const T** Amat,const T** Bmat) {
+    int i;
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (i=0;i<cols;i++) {
+      const T* A, *B;
+      A = Amat[i];
+      B = Bmat[i];
+      // We have four pointers, An, Ai, Bn, Bi
+      int An, Ai, Bn, Bi;
+      int Cn;
+      int outcount;
+      outcount = 0;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0)) {
+	  An += (int) A[Ai+1];
+	  Ai += 2;
+	}
+	while ((Bn < rows) && (B[Bi] == 0)) {
+	  Bn += (int) B[Bi+1];
+	  Bi += 2;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// check Cn against An and Bn - if it is smaller
+	// than both
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An)
+	    outcount += 2;
+	  Cn = An;
+	  Ai++;
+	  Bi++;
+	  An++;
+	  Bn++;
+	  Cn++;
+	  outcount++;
+	} else if (An < Bn) {
+	  if (Cn < An)
+	    outcount += 2;
+	  Cn = An;
+	  Ai++;
+	  An++;
+	  Cn++;
+	  outcount++;
+	} else {
+	  if (Cn < Bn)
+	    outcount += 2;
+	  Cn = Bn;
+	  Bi++;
+	  Bn++;
+	  Cn++;
+	  outcount++;
+	}
+      }
+      if (Cn < rows)
+	outcount+=2;
+      Cmat[i] = new T[outcount+1];
+      Cmat[i][0] = outcount;
+      outcount = 1;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0)) {
+	  An += (int) A[Ai+1];
+	  Ai += 2;
+	}
+	while ((Bn < rows) && (B[Bi] == 0)) {
+	  Bn += (int) B[Bi+1];
+	  Bi += 2;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai] + B[Bi];
+	  Ai++;
+	  Bi++;
+	  An++;
+	  Bn++;
+	  Cn++;
+	} else if (An < Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai];
+	  Ai++;
+	  An++;
+	  Cn++;
+	} else {
+	  if (Cn < Bn) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = Bn - Cn;
+	    Cn = Bn;
+	  }
+	  Cmat[i][outcount++] = B[Bi];
+	  Bi++;
+	  Bn++;
+	  Cn++;
+	}
+      }
+      if (Cn < rows) {
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = rows - Cn;      
+      }
+    }
+    return Cmat;
+  }
+
+  template <class T>
+  void* SparseAddComplex(int rows, int cols,const T** Amat,const T** Bmat) {
+    int i;
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (i=0;i<cols;i++) {
+      const T* A, *B;
+      A = Amat[i];
+      B = Bmat[i];
+      // We have four pointers, An, Ai, Bn, Bi
+      int An, Ai, Bn, Bi;
+      int Cn;
+      int outcount;
+      outcount = 0;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
+	  An += (int) A[Ai+2];
+	  Ai += 3;
+	}
+	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
+	  Bn += (int) B[Bi+2];
+	  Bi += 3;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// check Cn against An and Bn - if it is smaller
+	// than both
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An)
+	    outcount += 3;
+	  Cn = An;
+	  Ai+=2;
+	  Bi+=2;
+	  An++;
+	  Bn++;
+	  Cn++;
+	  outcount+=2;
+	} else if (An < Bn) {
+	  if (Cn < An)
+	    outcount += 3;
+	  Cn = An;
+	  Ai+=2;
+	  An++;
+	  Cn++;
+	  outcount+=2;
+	} else {
+	  if (Cn < Bn)
+	    outcount += 3;
+	  Cn = Bn;
+	  Bi+=2;
+	  Bn++;
+	  Cn++;
+	  outcount+=2;
+	}
+      }
+      if (Cn < rows)
+	outcount+=3;
+      Cmat[i] = new T[outcount+1];
+      Cmat[i][0] = outcount;
+      outcount = 1;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
+	  An += (int) A[Ai+2];
+	  Ai += 3;
+	}
+	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
+	  Bn += (int) B[Bi+2];
+	  Bi += 3;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai] + B[Bi];
+	  Cmat[i][outcount++] = A[Ai+1] + B[Bi+1];
+	  Ai+=2;
+	  Bi+=2;
+	  An++;
+	  Bn++;
+	  Cn++;
+	} else if (An < Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai];
+	  Cmat[i][outcount++] = A[Ai+1];
+	  Ai+=2;
+	  An++;
+	  Cn++;
+	} else {
+	  if (Cn < Bn) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = Bn - Cn;
+	    Cn = Bn;
+	  }
+	  Cmat[i][outcount++] = B[Bi];
+	  Cmat[i][outcount++] = B[Bi+1];
+	  Bi+=2;
+	  Bn++;
+	  Cn++;
+	}
+      }
+      if (Cn < rows) {
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = rows - Cn;      
+      }
+    }
+    return Cmat;
+  }
+
+  void* SparseSparseAdd(Class dclass, const void *ap, int rows, int cols,
+			const void *bp) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseAddReal<int32>(rows, cols, (const int32**) ap,
+					(const int32**) bp);
+    case FM_FLOAT:
+      return SparseAddReal<float>(rows, cols, (const float**) ap,
+					(const float**) bp);
+    case FM_DOUBLE:
+      return SparseAddReal<double>(rows, cols, (const double**) ap,
+					 (const double**) bp);
+    case FM_COMPLEX:
+      return SparseAddComplex<float>(rows, cols, (const float**) ap,
+				     (const float**) bp);
+    case FM_DCOMPLEX:
+      return SparseAddComplex<double>(rows, cols, (const double**) ap,
+				      (const double**) bp);
+    }
+  }
+
+
+  template <class T>
+  void* SparseSubtractReal(int rows, int cols,const T** Amat,const T** Bmat) {
+    int i;
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (i=0;i<cols;i++) {
+      const T* A, *B;
+      A = Amat[i];
+      B = Bmat[i];
+      // We have four pointers, An, Ai, Bn, Bi
+      int An, Ai, Bn, Bi;
+      int Cn;
+      int outcount;
+      outcount = 0;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0)) {
+	  An += (int) A[Ai+1];
+	  Ai += 2;
+	}
+	while ((Bn < rows) && (B[Bi] == 0)) {
+	  Bn += (int) B[Bi+1];
+	  Bi += 2;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// check Cn against An and Bn - if it is smaller
+	// than both
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An)
+	    outcount += 2;
+	  Cn = An;
+	  Ai++;
+	  Bi++;
+	  An++;
+	  Bn++;
+	  Cn++;
+	  outcount++;
+	} else if (An < Bn) {
+	  if (Cn < An)
+	    outcount += 2;
+	  Cn = An;
+	  Ai++;
+	  An++;
+	  Cn++;
+	  outcount++;
+	} else {
+	  if (Cn < Bn)
+	    outcount += 2;
+	  Cn = Bn;
+	  Bi++;
+	  Bn++;
+	  Cn++;
+	  outcount++;
+	}
+      }
+      if (Cn < rows)
+	outcount+=2;
+      Cmat[i] = new T[outcount+1];
+      Cmat[i][0] = outcount;
+      outcount = 1;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0)) {
+	  An += (int) A[Ai+1];
+	  Ai += 2;
+	}
+	while ((Bn < rows) && (B[Bi] == 0)) {
+	  Bn += (int) B[Bi+1];
+	  Bi += 2;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai] - B[Bi];
+	  Ai++;
+	  Bi++;
+	  An++;
+	  Bn++;
+	  Cn++;
+	} else if (An < Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai];
+	  Ai++;
+	  An++;
+	  Cn++;
+	} else {
+	  if (Cn < Bn) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = Bn - Cn;
+	    Cn = Bn;
+	  }
+	  Cmat[i][outcount++] = -B[Bi];
+	  Bi++;
+	  Bn++;
+	  Cn++;
+	}
+      }
+      if (Cn < rows) {
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = rows - Cn;      
+      }
+    }
+    return Cmat;
+  }
+
+  template <class T>
+  void* SparseSubtractComplex(int rows, int cols,const T** Amat,const T** Bmat) {
+    int i;
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (i=0;i<cols;i++) {
+      const T* A, *B;
+      A = Amat[i];
+      B = Bmat[i];
+      // We have four pointers, An, Ai, Bn, Bi
+      int An, Ai, Bn, Bi;
+      int Cn;
+      int outcount;
+      outcount = 0;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
+	  An += (int) A[Ai+2];
+	  Ai += 3;
+	}
+	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
+	  Bn += (int) B[Bi+2];
+	  Bi += 3;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// check Cn against An and Bn - if it is smaller
+	// than both
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An)
+	    outcount += 3;
+	  Cn = An;
+	  Ai+=2;
+	  Bi+=2;
+	  An++;
+	  Bn++;
+	  Cn++;
+	  outcount+=2;
+	} else if (An < Bn) {
+	  if (Cn < An)
+	    outcount += 3;
+	  Cn = An;
+	  Ai+=2;
+	  An++;
+	  Cn++;
+	  outcount+=2;
+	} else {
+	  if (Cn < Bn)
+	    outcount += 3;
+	  Cn = Bn;
+	  Bi+=2;
+	  Bn++;
+	  Cn++;
+	  outcount+=2;
+	}
+      }
+      if (Cn < rows)
+	outcount+=3;
+      Cmat[i] = new T[outcount+1];
+      Cmat[i][0] = outcount;
+      outcount = 1;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
+	  An += (int) A[Ai+2];
+	  Ai += 3;
+	}
+	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
+	  Bn += (int) B[Bi+2];
+	  Bi += 3;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai] - B[Bi];
+	  Cmat[i][outcount++] = A[Ai+1] - B[Bi+1];
+	  Ai+=2;
+	  Bi+=2;
+	  An++;
+	  Bn++;
+	  Cn++;
+	} else if (An < Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai];
+	  Cmat[i][outcount++] = A[Ai+1];
+	  Ai+=2;
+	  An++;
+	  Cn++;
+	} else {
+	  if (Cn < Bn) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = Bn - Cn;
+	    Cn = Bn;
+	  }
+	  Cmat[i][outcount++] = -B[Bi];
+	  Cmat[i][outcount++] = -B[Bi+1];
+	  Bi+=2;
+	  Bn++;
+	  Cn++;
+	}
+      }
+      if (Cn < rows) {
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = rows - Cn;      
+      }
+    }
+    return Cmat;
+  }
+
+  void* SparseSparseSubtract(Class dclass, const void *ap, int rows, int cols,
+			const void *bp) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseSubtractReal<int32>(rows, cols, (const int32**) ap,
+				       (const int32**) bp);
+    case FM_FLOAT:
+      return SparseSubtractReal<float>(rows, cols, (const float**) ap,
+				       (const float**) bp);
+    case FM_DOUBLE:
+      return SparseSubtractReal<double>(rows, cols, (const double**) ap,
+					(const double**) bp);
+    case FM_COMPLEX:
+      return SparseSubtractComplex<float>(rows, cols, (const float**) ap,
+					  (const float**) bp);
+    case FM_DCOMPLEX:
+      return SparseSubtractComplex<double>(rows, cols, (const double**) ap,
+					   (const double**) bp);
+    }
+  }
+
+  template <class T>
+  void* SparseMultiplyReal(int rows, int cols,const T** Amat,const T** Bmat) {
+    int i;
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (i=0;i<cols;i++) {
+      const T* A, *B;
+      A = Amat[i];
+      B = Bmat[i];
+      // We have four pointers, An, Ai, Bn, Bi
+      int An, Ai, Bn, Bi;
+      int Cn;
+      int outcount;
+      outcount = 0;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0)) {
+	  An += (int) A[Ai+1];
+	  Ai += 2;
+	}
+	while ((Bn < rows) && (B[Bi] == 0)) {
+	  Bn += (int) B[Bi+1];
+	  Bi += 2;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// check Cn against An and Bn - if it is smaller
+	// than both
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An)
+	    outcount += 2;
+	  Cn = An;
+	  Ai++;
+	  Bi++;
+	  An++;
+	  Bn++;
+	  Cn++;
+	  outcount++;
+	} else if (An < Bn) {
+	  Ai++;
+	  An++;
+	} else {
+	  Bi++;
+	  Bn++;
+	}
+      }
+      if (Cn < rows)
+	outcount+=2;
+      Cmat[i] = new T[outcount+1];
+      Cmat[i][0] = outcount;
+      outcount = 1;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0)) {
+	  An += (int) A[Ai+1];
+	  Ai += 2;
+	}
+	while ((Bn < rows) && (B[Bi] == 0)) {
+	  Bn += (int) B[Bi+1];
+	  Bi += 2;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai] * B[Bi];
+	  Ai++;
+	  Bi++;
+	  An++;
+	  Bn++;
+	  Cn++;
+	} else if (An < Bn) {
+	  Ai++;
+	  An++;
+	} else {
+	  Bi++;
+	  Bn++;
+	}
+      }
+      if (Cn < rows) {
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = rows - Cn;      
+      }
+    }
+    return Cmat;
+  }
+
+  template <class T>
+  void* SparseMultiplyComplex(int rows, int cols,const T** Amat,const T** Bmat) {
+    int i;
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (i=0;i<cols;i++) {
+      const T* A, *B;
+      A = Amat[i];
+      B = Bmat[i];
+      // We have four pointers, An, Ai, Bn, Bi
+      int An, Ai, Bn, Bi;
+      int Cn;
+      int outcount;
+      outcount = 0;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
+	  An += (int) A[Ai+2];
+	  Ai += 3;
+	}
+	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
+	  Bn += (int) B[Bi+2];
+	  Bi += 3;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// check Cn against An and Bn - if it is smaller
+	// than both
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An)
+	    outcount += 3;
+	  Cn = An;
+	  Ai+=2;
+	  Bi+=2;
+	  An++;
+	  Bn++;
+	  Cn++;
+	  outcount+=2;
+	} else if (An < Bn) {
+	  Ai+=2;
+	  An++;
+	} else {
+	  Bi+=2;
+	  Bn++;
+	}
+      }
+      if (Cn < rows)
+	outcount+=3;
+      Cmat[i] = new T[outcount+1];
+      Cmat[i][0] = outcount;
+      outcount = 1;
+      An = 0;  Bn = 0;
+      Ai = 1;  Bi = 1;
+      Cn = 0;
+      // Loop until both pointers reach the end of this column
+      while ((An < rows) || (Bn < rows)) {
+	// Make sure both are at nonzero entries
+	while ((An < rows) && (A[Ai] == 0) && (A[Ai+1] == 0)) {
+	  An += (int) A[Ai+2];
+	  Ai += 3;
+	}
+	while ((Bn < rows) && (B[Bi] == 0) && (B[Bi+1] == 0)) {
+	  Bn += (int) B[Bi+2];
+	  Bi += 3;
+	}
+	if ((An >= rows) && (Bn >= rows)) break;
+	// If the row indices are the same output gets
+	// bumped by one.
+	if (An == Bn) {
+	  if (Cn < An) {
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = 0;
+	    Cmat[i][outcount++] = An - Cn;
+	    Cn = An;
+	  }
+	  Cmat[i][outcount++] = A[Ai] * B[Bi] - A[Ai+1] * B[Bi+1];
+	  Cmat[i][outcount++] = A[Ai] * B[Bi+1] + A[Ai+1] * B[Bi];
+	  Ai+=2;
+	  Bi+=2;
+	  An++;
+	  Bn++;
+	  Cn++;
+	} else if (An < Bn) {
+	  Ai+=2;
+	  An++;
+	} else {
+	  Bi+=2;
+	  Bn++;
+	}
+      }
+      if (Cn < rows) {
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = 0;
+	Cmat[i][outcount++] = rows - Cn;      
+      }
+    }
+    return Cmat;
+  }
+
+  void* SparseSparseMultiply(Class dclass, const void *ap, int rows, int cols,
+			const void *bp) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseMultiplyReal<int32>(rows, cols, (const int32**) ap,
+				       (const int32**) bp);
+    case FM_FLOAT:
+      return SparseMultiplyReal<float>(rows, cols, (const float**) ap,
+				       (const float**) bp);
+    case FM_DOUBLE:
+      return SparseMultiplyReal<double>(rows, cols, (const double**) ap,
+					(const double**) bp);
+    case FM_COMPLEX:
+      return SparseMultiplyComplex<float>(rows, cols, (const float**) ap,
+					  (const float**) bp);
+    case FM_DCOMPLEX:
+      return SparseMultiplyComplex<double>(rows, cols, (const double**) ap,
+					   (const double**) bp);
+    }
+  }
+  
+  template <class T>
+  void* SparseScalarMultiplyReal(int rows, int cols, const T** Amat, 
+				 const T* Bval) {
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (int i=0;i<cols;i++) {
+      int blen = (int) Amat[i][0];
+      Cmat[i] = new T[blen+1];
+      Cmat[i][0] = blen;
+      int k = 0;
+      int n = 1;
+      while (k<rows) {
+	if (Amat[i][n] != 0) {
+	  Cmat[i][n] = Amat[i][n] * Bval[0];
+	  k++;
+	  n++;
+	} else {
+	  Cmat[i][n] = 0;
+	  Cmat[i][n+1] = Amat[i][n+1];
+	  k += (int) Amat[i][n+1];
+	  n+= 2;
+	}
+      }
+    }
+    return Cmat;
+  }
+
+  template <class T>
+  void* SparseScalarMultiplyComplex(int rows, int cols, const T** Amat, 
+				    const T* Bval) {
+    T** Cmat;
+    Cmat = new T*[cols];
+    for (int i=0;i<cols;i++) {
+      int blen = (int) Amat[i][0];
+      Cmat[i] = new T[blen+1];
+      Cmat[i][0] = blen;
+      int k = 0;
+      int n = 1;
+      while (k<rows) {
+	if ((Amat[i][n] != 0) || (Amat[i][n+1] != 0)) {
+	  Cmat[i][n] = Amat[i][n] * Bval[0] - Amat[i][n+1] * Bval[1];
+	  Cmat[i][n+1] = Amat[i][n] * Bval[1] + Amat[i][n+1] * Bval[0];
+	  k++;
+	  n+=2;
+	} else {
+	  Cmat[i][n] = 0;
+	  Cmat[i][n+1] = 0;
+	  Cmat[i][n+2] = Amat[i][n+2];
+	  k += (int) Amat[i][n+2];
+	  n += 3;
+	}
+      }
+    }
+    return Cmat;
+  }
+
+
+  void* SparseScalarMultiply(Class dclass, const void *ap, int rows, int cols,
+			     const void *bp) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseScalarMultiplyReal<int32>(rows, cols, (const int32**) ap,
+					     (const int32*) bp);
+    case FM_FLOAT:
+      return SparseScalarMultiplyReal<float>(rows, cols, (const float**) ap,
+					     (const float*) bp);
+    case FM_DOUBLE:
+      return SparseScalarMultiplyReal<double>(rows, cols, (const double**) ap,
+					      (const double*) bp);
+    case FM_COMPLEX:
+      return SparseScalarMultiplyComplex<float>(rows, cols, (const float**) ap,
+						(const float*) bp);
+    case FM_DCOMPLEX:
+      return SparseScalarMultiplyComplex<double>(rows, cols, 
+						 (const double**) ap,
+						 (const double*) bp);
     }
   }
 

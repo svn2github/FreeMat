@@ -8,12 +8,31 @@
 #include <algorithm>
 #include "PostScriptGC.hpp"
 #include "BitmapPrinterGC.hpp"
-
+#include "HandleList.hpp"
+#include "WalkTree.hpp"
 #define MAX_FIGS 100
 
 namespace FreeMat {
+  HandleList<Fl_Widget*> guiHandles;
+
   Figure* figs[MAX_FIGS];
   int currentFig;
+
+  typedef struct {
+    int handle;
+    FunctionDef *fdef;
+    WalkTree *eval;
+    Array payload;
+  } cbstruct;
+  
+  void generic_cb(Fl_Widget*, void *dp) {
+    cbstruct *ap;
+    ap = (cbstruct *) dp;
+    FreeMat::ArrayVector tocall;
+    tocall.push_back(Array::int32Constructor(ap->handle));
+    tocall.push_back(ap->payload);
+    ap->fdef->evaluateFunction(ap->eval,tocall,0);
+  }
   
   void NotifyFigClose(int fig) {
     figs[fig] = NULL;
@@ -220,11 +239,62 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  void CheckBoxArgument(Array t) {
+    if ((t.isReferenceType() || t.isComplex()) || (t.getLength() != 4))
+      throw Exception("box argument invalid (must be real, numeric and of length 4)");
+  }
+  
   // how does the button work?  we can just add a button to the
   // current figure.  something like:
-  // handle = button(box,label,callback,data)
+  // handle = button(parent,box,label,callback,data)
   // where callback is the function to execute, and data
   // contains any data needed by the callback.
+  ArrayVector ButtonFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 4)
+      throw Exception("button function requires at least four arguments: handle, box, label, callback");
+    Array hnd(arg[0]);
+    Fl_Group *ptr;
+    int32 handle = hnd.getContentsAsIntegerScalar();
+    CheckBoxArgument(arg[1]);
+    if (!(arg[2].isString()))
+      throw Exception("second argument to button must be a string label");
+    if (!(arg[3].isString()))
+      throw Exception("third argument to button must be a string callback function");
+    if (handle < MAX_FIGS) {
+      SelectFig(handle);
+      ptr = figs[handle];
+    } else {
+      ptr = (Fl_Group*)guiHandles.lookupHandle(handle-MAX_FIGS);
+    }
+    Array box(arg[1]);
+    box.promoteType(FM_INT32);
+    int32 *dp = (int32*)box.getDataPointer();
+    char *label = arg[2].getContentsAsCString();
+    char *callback = arg[3].getContentsAsCString();
+    eval->getInterface()->rescanPath();
+    Context *context = eval->getContext();
+    FunctionDef *funcDef;
+    if (!context->lookupFunction(callback,funcDef))
+      throw Exception(std::string("function ") + callback + " undefined!");
+    funcDef->updateCode();
+    ptr->begin();
+    Fl_Button *ok = new Fl_Button(dp[0],dp[1],dp[2],dp[3],
+				  label);
+    int newhandle = guiHandles.assignHandle(ok) + MAX_FIGS;
+    cbstruct *cb = new cbstruct;
+    cb->eval = eval;
+    cb->handle = newhandle;
+    cb->fdef = funcDef;
+    if (arg.size() == 4)
+      cb->payload = arg[3];
+    else
+      cb->payload = Array::emptyConstructor();
+    ok->callback(generic_cb,cb);
+    ptr->end();
+    ptr->redraw();
+    return singleArrayVector(Array::int32Constructor(newhandle));
+  }
+
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
     f->begin();

@@ -26,6 +26,10 @@ namespace FreeMat {
   void doubleQRD(const int nrows, const int ncols, double *q, double *r, double *a);
   void complexQRD(const int nrows, const int ncols, float *q, float *r, float *a);
   void dcomplexQRD(const int nrows, const int ncols, double *q, double *r, double *a);
+  void floatQRDP(const int nrows, const int ncols, float *q, float *r, int *p, float *a);
+  void doubleQRDP(const int nrows, const int ncols, double *q, double *r, int *p, double *a);
+  void complexQRDP(const int nrows, const int ncols, float *q, float *r, int *p, float *a);
+  void dcomplexQRDP(const int nrows, const int ncols, double *q, double *r, int *p, double *a);
 }
 
 #endif

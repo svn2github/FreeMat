@@ -115,6 +115,30 @@ extern "C" {
 	       double *U, int *LDU, double *VT, int *LDVT, double *WORK,
 	       int *LWORK, double *RWORK, int *IWORK, int *INFO);
 
+  void sgeqrf_(int *M, int *N, float *A, int *LDA, float *TAU, float *WORK,
+	       int *LWORK, int *INFO);
+
+  void sorgqr_(int *M, int *N, int *K, float *A, int *LDA, 
+	       float *TAU, float *WORK, int *LWORK, int *INFO);
+
+  void dgeqrf_(int *M, int *N, double *A, int *LDA, double *TAU, double *WORK,
+	       int *LWORK, int *INFO);
+
+  void dorgqr_(int *M, int *N, int *K, double *A, int *LDA, 
+	       double *TAU, double *WORK, int *LWORK, int *INFO);
+
+  void cgeqrf_(int *M, int *N, float *A, int *LDA, float *TAU, float *WORK,
+	       int *LWORK, int *INFO);
+
+  void cungqr_(int *M, int *N, int *K, float *A, int *LDA, 
+	       float *TAU, float *WORK, int *LWORK, int *INFO);
+
+  void zgeqrf_(int *M, int *N, double *A, int *LDA, double *TAU, double *WORK,
+	       int *LWORK, int *INFO);
+
+  void zungqr_(int *M, int *N, int *K, double *A, int *LDA, 
+	       double *TAU, double *WORK, int *LWORK, int *INFO);
+
 //   void sgecon_(char* NORM, int* N, double *A, int *LDA, double *ANORM,
 // 	       double *RCOND, double *WORK, int* IWORK, int *INFO);
 }

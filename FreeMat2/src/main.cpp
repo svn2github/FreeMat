@@ -8,10 +8,9 @@
 #include "LoadCore.hpp"
 #include "GraphicsCore.hpp"
 #include "System.hpp"
+#include "PathSearch.hpp"
 #include <stdlib.h>
 #include <signal.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 
 using namespace FreeMat;
@@ -37,9 +36,15 @@ void signal_suspend(int a) {
 }
 
 void signal_resume(int a) {
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   printf("Resuming FreeMat...\n");
   term.SetRawMode();
   term.Redisplay();
+}
+
+void signal_resize(int a) {
+  printf("Resize...\n");
+  term.ResizeEvent();
 }
 
 void stdincb() {
@@ -49,25 +54,6 @@ void stdincb() {
   }
 }
 
-bool FileExists(std::string filename) {
-  struct stat filestat;
-  stat(filename.c_str(),&filestat);
-  return (S_ISREG(filestat.st_mode));
-}
-
-std::string GetPathOnly(std::string a) {
-  // Strip off application name
-  int ndx;
-  ndx = a.rfind("/");
-  a.erase(ndx+1,a.size());
-  return a;
-}
-
-std::string CheckEndSlash(std::string a) {
-  if (a[a.size()-1] != '/')
-    a.append("/");
-  return a;
-}
 std::string GetApplicationPath(char *argv0) {
   std::string retpath;
   // Case 1 - absolute path
@@ -80,23 +66,9 @@ std::string GetApplicationPath(char *argv0) {
   // This file should exist
   if (FileExists(retpath))
     return GetPathOnly(std::string(retpath));
-  // Case 3 - file in "PATH" variable
-  std::string path(getenv("PATH"));
-  bool found = false;
-  std::string tpath;
-  while (!found && !path.empty()) {
-    int ndx;
-    ndx = path.find(":");
-    tpath = path.substr(0,ndx);
-    found = FileExists(CheckEndSlash(tpath) + std::string(argv0));
-    path.erase(0,ndx+1);
-  }
-  if (found) {
-    return tpath;
-  } else {
-    fprintf(stderr,"Error: unable to determine application path - support files unavailable!\n\r");
-    return std::string();
-  }
+  printf("Searching PATH...\n");
+  PathSearcher psearch("PATH");
+  return GetPathOnly(psearch.ResolvePath(argv0));
 }
 
 int main(int argc, char *argv[]) {
@@ -107,6 +79,7 @@ int main(int argc, char *argv[]) {
   
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);
+  signal(SIGWINCH, signal_resize);
   d = XOpenDisplay(0);
   if (!d) {
     fprintf(stderr,"Error - unable to open X display\n");

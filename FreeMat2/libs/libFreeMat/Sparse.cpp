@@ -5,7 +5,6 @@
 
 // The following ops are O(N^2) instead of O(nnz^2):
 //
-//  Type conversion - a simple one to convert
 //  GetSparseNDimSubsets - If the rowindex is sorted into an IJV type list, it can be done without the Decompress step.  Although it is really not too bad, since the vector being recompressed is of the subset size.
 //  CompressRealIJV - This should be O(nnz) instead of O(N).
 //  SetSparseNDimSubsets - same story, only this time the vector being recompressed is of size (N) instead of size (M).  So the cost is higher.  The right way to do this is with a list merge.

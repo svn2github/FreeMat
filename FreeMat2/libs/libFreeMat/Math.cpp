@@ -27,6 +27,7 @@
 #include "EigenDecompose.hpp"
 #include "Malloc.hpp"
 #include "Sparse.hpp"
+#include <math.h>
 
 namespace FreeMat {
   void boolean_and(int N, logical* C, const logical *A, int Astride, 
@@ -367,7 +368,282 @@ namespace FreeMat {
       p += stride2;
     }
   }
+
+  /**
+   * These are the power functions...
+   */
+  // cicPower --> pow_zi
+  // cfcPower --> pow_zz
+  // zdzPower --> pow_zz
+  // cccPower --> pow_zz
+  // zzzPower --> pow_zz
+  // zizPower --> pow_zi
+  // didPower --> pow_di
+  // dddPower --> pow_dd
+  // fifPower --> pow_ri
+  // fffPower --> pow_dd
+
+  void power_zi(double *p, double *a, int b) 	/* p = a**b  */
+  {
+    int n;
+    unsigned long u;
+    double t;
+    double q[2], x[2];
+    static double one[2] = {1.0, 0.0};
+    n = b;
+    q[0] = 1;
+    q[1] = 0;
+    
+    if(n == 0)
+      goto done;
+    if(n < 0)
+      {
+	n = -n;
+	complex_divide<double>(x,one,a);
+      }
+    else
+      {
+	x[0] = a[0];
+	x[1] = a[1];
+      }
+    for(u = n; ; )
+      {
+	if(u & 01)
+	  {
+	    t = q[0] * x[0] - q[1] * x[1];
+	    q[1] = q[0] * x[1] + q[1] * x[0];
+	    q[0] = t;
+	  }
+	if(u >>= 1)
+	  {
+	    t = x[0] * x[0] - x[1] * x[1];
+	    x[1] = 2 * x[0] * x[1];
+	    x[0] = t;
+	  }
+	else
+	  break;
+      }
+  done:
+    p[1] = q[1];
+    p[0] = q[0];
+  }
+
+  void power_zz(double *c, double *a, double *b) 
+  {
+    double logr, logi, x, y;
+
+    logr = log(complex_abs<double>(a[0], a[1]) );
+    logi = atan2(a[1], a[0]);
+    
+    x = exp( logr * b[0] - logi * b[1] );
+    y = logr * b[1] + logi * b[0];
+    
+    c[0] = x * cos(y);
+    c[1] = x * sin(y);
+  }
+
+  double power_di(double a, int b) {
+    double pow, x;
+    int n;
+    unsigned long u;
+    
+    pow = 1;
+    x = a;
+    n = b;
+
+    if(n != 0)
+      {
+	if(n < 0)
+	  {
+	    n = -n;
+	    x = 1/x;
+	  }
+	for(u = n; ; )
+	  {
+	    if(u & 01)
+	      pow *= x;
+	    if(u >>= 1)
+	      x *= x;
+	    else
+	      break;
+	  }
+      }
+    return(pow);
+  }  
+
+  double power_dd(double a, double b) {
+    return pow(a,b);
+  }
   
+  
+  void cicpower(int n, float *c, float *a, int stride1, int *b, 
+		int stride2) {
+    int m, p;
+    double z1[2];
+    double z3[2];
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      z1[0] = a[2*m];
+      z1[1] = a[2*m+1];
+      power_zi(z3,z1,b[p]);
+      c[2*i] = z3[0];
+      c[2*i+1] = z3[1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+  
+  void cfcpower(int n, float *c, float *a, int stride1, float *b, 
+		int stride2) {
+    int m, p;
+    double z1[2];
+    double z2[2];
+    double z3[2];
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      z1[0] = a[2*m];
+      z1[1] = a[2*m+1];
+      z2[0] = b[p];
+      z2[1] = 0;
+      power_zz(z3,z1,z2);
+      c[2*i] = z3[0];
+      c[2*i+1] = z3[1];
+      m += stride1;
+      p += stride2;
+    }
+  } 
+  
+  void zdzpower(int n, double *c, double *a, int stride1, 
+		double *b, int stride2) { 
+    int m, p;
+    double z1[2];
+    double z2[2];
+    double z3[2];
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      z1[0] = a[2*m];
+      z1[1] = a[2*m+1];
+      z2[0] = b[p];
+      z2[1] = 0;
+      power_zz(z3,z1,z2);
+      c[2*i] = z3[0];
+      c[2*i+1] = z3[1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+  
+  void cccpower(int n, float *c, float *a, int stride1, float *b, 
+		int stride2) {
+    int m, p;
+    double z1[2];
+    double z2[2];
+    double z3[2];
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      z1[0] = a[2*m];
+      z1[1] = a[2*m+1];
+      z2[0] = b[2*p];
+      z2[1] = b[2*p+1];
+      power_zz(z3,z1,z2);
+      c[2*i] = z3[0];
+      c[2*i+1] = z3[1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+  
+  void zzzpower(int n, double *c, double *a, int stride1, double *b, 
+		int stride2) {
+    int m, p;
+    double z1[2];
+    double z2[2];
+    double z3[2];
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      z1[0] = a[2*m];
+      z1[1] = a[2*m+1];
+      z2[0] = b[2*p];
+      z2[1] = b[2*p+1];
+      power_zz(z3,z1,z2);
+      c[2*i] = z3[0];
+      c[2*i+1] = z3[1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  void zizpower(int n, double *c, double *a, int stride1, int *b,
+		int stride2) {
+    int m, p;
+    double z1[2];
+    double z3[2];
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      z1[0] = a[2*m];
+      z1[1] = a[2*m+1];
+      power_zi(z3,z1,b[p]);
+      c[2*i] = z3[0];
+      c[2*i+1] = z3[1];
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  void didpower(int n, double *c, double *a, int stride1, int *b,
+		int stride2) {
+    int m, p;
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      c[i] = power_di(a[m],b[p]);
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  void dddpower(int n, double *c, double *a, int stride1, double *b,
+		int stride2) {
+    int m, p;
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      c[i] = power_dd(a[m],b[p]);
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  void fifpower(int n, float *c, float *a, int stride1, int *b,
+		int stride2) {
+    int m, p;
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      c[i] = power_di(a[m],b[p]);
+      m += stride1;
+      p += stride2;
+    }
+  }
+
+  void fffpower(int n, float *c, float *a, int stride1, float *b,
+		int stride2) {
+    int m, p;
+    m = 0;
+    p = 0;
+    for (int i=0;i<n;i++) {
+      c[i] = power_dd(a[m],b[p]);
+      m += stride1;
+      p += stride2;
+    }
+  }
+
   /**
    * This is the generic function interface into calculations
    * that can be performed on some type.
@@ -696,16 +972,16 @@ namespace FreeMat {
     }
     // Invoke the appropriate case
     switch(opType) {
-      MAPOP(1,FM_COMPLEX,FM_INT32,FM_COMPLEX,cicPower);
-      MAPOP(2,FM_COMPLEX,FM_FLOAT,FM_COMPLEX,cfcPower);
-      MAPOP(3,FM_DCOMPLEX,FM_DOUBLE,FM_DCOMPLEX,zdzPower);
-      MAPOP(4,FM_COMPLEX,FM_COMPLEX,FM_COMPLEX,cccPower);
-      MAPOP(5,FM_DCOMPLEX,FM_DCOMPLEX,FM_DCOMPLEX,zzzPower);
-      MAPOP(6,FM_DCOMPLEX,FM_INT32,FM_DCOMPLEX,zizPower);
-      MAPOP(7,FM_DOUBLE,FM_INT32,FM_DOUBLE,didPower);
-      MAPOP(8,FM_DOUBLE,FM_DOUBLE,FM_DOUBLE,dddPower);
-      MAPOP(9,FM_FLOAT,FM_INT32,FM_FLOAT,fifPower);
-      MAPOP(10,FM_FLOAT,FM_FLOAT,FM_FLOAT,fffPower);
+      MAPOP(1,FM_COMPLEX,FM_INT32,FM_COMPLEX,(vvfun) cicpower);
+      MAPOP(2,FM_COMPLEX,FM_FLOAT,FM_COMPLEX,(vvfun) cfcpower);
+      MAPOP(3,FM_DCOMPLEX,FM_DOUBLE,FM_DCOMPLEX,(vvfun) zdzpower);
+      MAPOP(4,FM_COMPLEX,FM_COMPLEX,FM_COMPLEX,(vvfun) cccpower);
+      MAPOP(5,FM_DCOMPLEX,FM_DCOMPLEX,FM_DCOMPLEX,(vvfun) zzzpower);
+      MAPOP(6,FM_DCOMPLEX,FM_INT32,FM_DCOMPLEX,(vvfun) zizpower);
+      MAPOP(7,FM_DOUBLE,FM_INT32,FM_DOUBLE,(vvfun) didpower);
+      MAPOP(8,FM_DOUBLE,FM_DOUBLE,FM_DOUBLE,(vvfun) dddpower);
+      MAPOP(9,FM_FLOAT,FM_INT32,FM_FLOAT,(vvfun) fifpower);
+      MAPOP(10,FM_FLOAT,FM_FLOAT,FM_FLOAT,(vvfun) fffpower);
     }
   }
 
@@ -1922,16 +2198,16 @@ namespace FreeMat {
       negate<int32>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
       break;
     case FM_FLOAT:
-      negate<float>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
+      negate<float>(A.getLength(),(float*)Cp,(float*)A.getDataPointer());
       break;
     case FM_DOUBLE:
-      negate<double>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
+      negate<double>(A.getLength(),(double*)Cp,(double*)A.getDataPointer());
       break;
     case FM_COMPLEX:
-      negate<float>(2*A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
+      negate<float>(2*A.getLength(),(float*)Cp,(float*)A.getDataPointer());
       break;
     case FM_DCOMPLEX:
-      negate<double>(2*A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
+      negate<double>(2*A.getLength(),(double*)Cp,(double*)A.getDataPointer());
       break;
     }
     C.setDataPointer(Cp);

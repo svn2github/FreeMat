@@ -1,4 +1,4 @@
-EXTRA_DIST = libFreeMat.dsp libFreeMat.vcproj  f2c/VectorOps_assist.c
+EXTRA_DIST = libFreeMat.dsp libFreeMat.vcproj  
 
 noinst_LIBRARIES = libFreeMat.a
 
@@ -57,9 +57,6 @@ Serialize.hpp \
 SingularValueDecompose.cpp \
 SingularValueDecompose.hpp \
 Types.hpp \
-VectorOps_assist.f \
-VectorOps.cpp \
-VectorOps.hpp \
 WalkTree.cpp \
 WalkTree.hpp \
 File.cpp \

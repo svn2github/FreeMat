@@ -1,6 +1,5 @@
 #include <FL/Fl.H>
 #include <FL/x.H>
-#include <X11/Xlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include "Module.hpp"
@@ -160,7 +159,7 @@ int main(int argc, char *argv[]) {
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
 
-  FLTKTerminalWindow *win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION);
+  FLTKTerminalWindow *win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,"");
   win->term()->setContext(context);
   if (envPtr)
     win->term()->setPath(std::string(envPtr));

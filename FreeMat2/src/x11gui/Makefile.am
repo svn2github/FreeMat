@@ -14,9 +14,7 @@ INCLUDES=-I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdi
 
 bin_PROGRAMS = FreeMatGUI
 
-FreeMatGUI_SOURCES = main.cpp \
-FLTKTerminal.hpp \
-FLTKTerminal.cpp
+FreeMatGUI_SOURCES = main.cpp 
 
 FreeMatGUI_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB) @top_builddir@/libs/libFLTK/libFLTK.a
-FreeMatGUI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFLTK/libFLTK.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB)  -lg2c 
+FreeMatGUI_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a  @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFreeMat/libFreeMat.a  @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFLTK/libFLTK.a @top_builddir@/libs/libffi/libffi.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB)  -lg2c 

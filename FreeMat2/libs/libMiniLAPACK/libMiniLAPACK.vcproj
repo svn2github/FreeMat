@@ -542,6 +542,39 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\cggbak.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cggbal.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cggev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cgghrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cheev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chegs2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chegst.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chegv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chetd2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chetrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\chgeqz.c">
+			</File>
+			<File
 				RelativePath="f2c\chseqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -780,6 +813,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\clanhe.c">
 			</File>
 			<File
 				RelativePath="f2c\clanhs.c">
@@ -1122,6 +1158,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\clasr.c">
+			</File>
+			<File
 				RelativePath="f2c\classq.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1160,6 +1199,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\clatrd.c">
 			</File>
 			<File
 				RelativePath="f2c\clatrs.c">
@@ -1202,6 +1244,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\cpotf2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\cpotrf.c">
+			</File>
+			<File
 				RelativePath="f2c\crot.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1240,6 +1288,12 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\csteqr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ctgevc.c">
 			</File>
 			<File
 				RelativePath="f2c\ctrevc.c">
@@ -1320,6 +1374,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\cung2l.c">
 			</File>
 			<File
 				RelativePath="f2c\cung2r.c">
@@ -1422,6 +1479,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\cungql.c">
+			</File>
+			<File
 				RelativePath="f2c\cungqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -1440,6 +1500,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\cungtr.c">
 			</File>
 			<File
 				RelativePath="f2c\cunm2r.c">
@@ -2042,6 +2105,21 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dggbak.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dggbal.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dggev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dgghrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dhgeqz.c">
+			</File>
+			<File
 				RelativePath="f2c\dhseqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2162,6 +2240,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dlae2.c">
+			</File>
+			<File
 				RelativePath="f2c\dlaed6.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2182,6 +2263,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dlaev2.c">
+			</File>
+			<File
 				RelativePath="f2c\dlaexc.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -2200,6 +2284,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\dlag2.c">
 			</File>
 			<File
 				RelativePath="f2c\dlahqr.c">
@@ -2380,6 +2467,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\dlansy.c">
 			</File>
 			<File
 				RelativePath="f2c\dlantr.c">
@@ -3262,6 +3352,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dlatrd.c">
+			</File>
+			<File
 				RelativePath="f2c\dlatrs.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -3300,6 +3393,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\dorg2l.c">
 			</File>
 			<File
 				RelativePath="f2c\dorg2r.c">
@@ -3402,6 +3498,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dorgql.c">
+			</File>
+			<File
 				RelativePath="f2c\dorgqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -3420,6 +3519,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\dorgtr.c">
 			</File>
 			<File
 				RelativePath="f2c\dorm2r.c">
@@ -3562,6 +3664,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\dpotf2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dpotrf.c">
+			</File>
+			<File
 				RelativePath="f2c\drscl.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -3580,6 +3688,33 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\dsteqr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsterf.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsyev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsygs2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsygst.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsygv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsytd2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dsytrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\dtgevc.c">
 			</File>
 			<File
 				RelativePath="f2c\dtrevc.c">
@@ -4262,6 +4397,21 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\sggbak.c">
+			</File>
+			<File
+				RelativePath=".\f2c\sggbal.c">
+			</File>
+			<File
+				RelativePath=".\f2c\sggev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\sgghrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\shgeqz.c">
+			</File>
+			<File
 				RelativePath="f2c\shseqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -4382,6 +4532,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\slae2.c">
+			</File>
+			<File
 				RelativePath="f2c\slaed6.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -4402,6 +4555,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\slaev2.c">
+			</File>
+			<File
 				RelativePath="f2c\slaexc.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -4420,6 +4576,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\slag2.c">
 			</File>
 			<File
 				RelativePath="f2c\slahqr.c">
@@ -4600,6 +4759,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\slansy.c">
 			</File>
 			<File
 				RelativePath="f2c\slantr.c">
@@ -5482,6 +5644,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\slatrd.c">
+			</File>
+			<File
 				RelativePath="f2c\slatrs.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -5520,6 +5685,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\sorg2l.c">
 			</File>
 			<File
 				RelativePath="f2c\sorg2r.c">
@@ -5622,6 +5790,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\sorgql.c">
+			</File>
+			<File
 				RelativePath="f2c\sorgqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -5640,6 +5811,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\sorgtr.c">
 			</File>
 			<File
 				RelativePath="f2c\sorm2r.c">
@@ -5782,6 +5956,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\spotf2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\spotrf.c">
+			</File>
+			<File
 				RelativePath="f2c\srscl.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -5800,6 +5980,33 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\ssteqr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssterf.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssyev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssygs2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssygst.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssygv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssytd2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ssytrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\stgevc.c">
 			</File>
 			<File
 				RelativePath="f2c\strevc.c">
@@ -5880,6 +6087,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\xerbla.c">
 			</File>
 			<File
 				RelativePath="f2c\zdrscl.c">
@@ -6322,6 +6532,39 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\zggbak.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zggbal.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zggev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zgghrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zheev.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhegs2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhegst.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhegv.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhetd2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhetrd.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zhgeqz.c">
+			</File>
+			<File
 				RelativePath="f2c\zhseqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -6560,6 +6803,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zlanhe.c">
 			</File>
 			<File
 				RelativePath="f2c\zlanhs.c">
@@ -6902,6 +7148,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\zlasr.c">
+			</File>
+			<File
 				RelativePath="f2c\zlassq.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -6940,6 +7189,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zlatrd.c">
 			</File>
 			<File
 				RelativePath="f2c\zlatrs.c">
@@ -6982,6 +7234,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\zpotf2.c">
+			</File>
+			<File
+				RelativePath=".\f2c\zpotrf.c">
+			</File>
+			<File
 				RelativePath="f2c\zrot.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -7000,6 +7258,12 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zsteqr.c">
+			</File>
+			<File
+				RelativePath=".\f2c\ztgevc.c">
 			</File>
 			<File
 				RelativePath="f2c\ztrevc.c">
@@ -7080,6 +7344,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zung2l.c">
 			</File>
 			<File
 				RelativePath="f2c\zung2r.c">
@@ -7182,6 +7449,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\f2c\zungql.c">
+			</File>
+			<File
 				RelativePath="f2c\zungqr.c">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -7200,6 +7470,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\f2c\zungtr.c">
 			</File>
 			<File
 				RelativePath="f2c\zunm2r.c">

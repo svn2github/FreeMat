@@ -192,14 +192,13 @@ namespace FreeMat {
 		      "return type, argument list");
     plist.AddEnvList("FREEMAT_PATH");
     libfile = arg[0].getContentsAsCString();
-    libfullpath = plist.FindValidPath(libfile);
+    libfullpath = plist.FindAbsoluteValidPath(libfile);
     symbolname = arg[1].getContentsAsCString();
     funcname = arg[2].getContentsAsCString();
     rettype = arg[3].getContentsAsCString();
     arglist = arg[4].getContentsAsCString();
     wxDynamicLibrary *lib;
     if (!libPointers.findSymbol(libfullpath.c_str(),lib)) {
-      std::cout << "loading " << libfile << "\n";
       lib = new wxDynamicLibrary(libfullpath);    
       if (!lib->IsLoaded())
 	throw Exception(std::string("Unable to open library ") + 

@@ -97,6 +97,8 @@ namespace FreeMat {
 #else
 #include <unistd.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define MAX 1024
 
@@ -107,10 +109,13 @@ std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
   char *line;
   int readSoFar;
   std::vector<std::string > ret;
+  pid_t pid;
   
   if(pipe(fd) < 0) 
     throw FreeMat::Exception("Internal error - unable to set up pipe for system call!!");
-  switch(fork()) {
+
+  pid = fork();
+  switch(pid) {
   case -1:
     throw FreeMat::Exception("Internal error - unable to fork system call!!");
   case 0:                 /* child */
@@ -139,6 +144,8 @@ std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
   for (line=strtok(output,"\n");line;line=strtok(NULL,"\n"))
     ret.push_back(std::string(line));
   free(output);
+  int status;
+  waitpid(pid,&status,0);
   return ret;
 }
 #endif

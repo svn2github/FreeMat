@@ -89,11 +89,11 @@ namespace FreeMat {
 
   void ScalarImage::Zoom(float z) {
     zoom = z;
-    UpdateZoom();
+    UpdateZoom(false);
     if (z>0) SetSize(zoomColumns,zoomRows);
   }
 
-  void ScalarImage::UpdateZoom() {
+  void ScalarImage::UpdateZoom(bool forceUpdate) {
     int newZoomRows, newZoomColumns;
     if (rawData == NULL) return;
     if (zoom>0) {
@@ -123,7 +123,8 @@ namespace FreeMat {
     }
     if (newZoomColumns == zoomColumns &&
 	newZoomRows == zoomRows &&
-	zoomImage != NULL) return;
+	zoomImage != NULL &&
+	!forceUpdate) return;
     zoomColumns = newZoomColumns;
     zoomRows = newZoomRows;
     if (zoomImage != NULL)
@@ -143,12 +144,13 @@ namespace FreeMat {
 	     columns, zoomColumns);
     delete[] tmpImage;
     //    SetSize(zoomColumns,zoomRows);
+    //    SetSize(zoomColumns,zoomRows);
     UpdateImage();
   }
 
   void ScalarImage::OnSize() {
     if (zoom <= 0) 
-      UpdateZoom();
+      UpdateZoom(false);
   }
 
   void ScalarImage::OnClose() {
@@ -180,9 +182,9 @@ namespace FreeMat {
     }
     window = maxval - minval;
     level = (maxval + minval)/2.0;
-    zoom = 0.0;
-    UpdateZoom();
-    Refresh();
+    zoom = 1.0;
+    UpdateZoom(true);
+    Zoom(zoom);
   }
 
   void ScalarImage::UpdateImage() {

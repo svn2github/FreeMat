@@ -119,7 +119,7 @@ namespace FreeMat {
     int zoomRows;
     // The data for the zoomed pic in RGB format
     byte *picData;
-    void UpdateZoom();
+    void UpdateZoom(bool forceUpdate);
     void UpdateImage();
   };
 }

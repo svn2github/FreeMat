@@ -3851,7 +3851,7 @@ namespace FreeMat {
     char cmach = 'E';
     double tol = dlamch_(&cmach);
     double *resid = new double[n];
-    int ncv = 2*nev;
+    int ncv = 2*nev+1;
     if (ncv > n) ncv = n;
     double *v = new double[n*ncv];
     int ldv = n;

@@ -264,7 +264,7 @@ void lexIdentifier() {
   int i;
   char ident[256];
   i=0;
-  while (testAlphaNumChar()) {
+  while (testAlphaNumChar() || (currentChar() == '_')) {
     ident[i++] = currentChar();
     discardChar();
   }
@@ -527,7 +527,7 @@ void lexScanningState() {
     setTokenType(EQ);
     return;
   }
-  if (testAlphaChar()) {
+  if (testAlphaChar() || currentChar() == '_') {
     lexIdentifier();
     return;
   }

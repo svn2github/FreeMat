@@ -33,10 +33,10 @@ namespace FreeMat {
   Plot2D* GetCurrentPlot() {
     Figure* fig = GetCurrentFig();
     if (fig->getType() == figplot) {
-      return ((Plot2D*) fig->GetWidget());
+      return ((Plot2D*) fig->GetChildWidget());
     } else {
       Plot2D* t = new Plot2D;
-      fig->SetWidget(t,figplot);
+      fig->SetFigureChild(t,figplot);
       return t;
     }
     return NULL;

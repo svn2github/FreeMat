@@ -10,6 +10,7 @@ WinGC::WinGC(HDC dc, int width, int height) {
   hdc = dc;
   m_width = width;
   m_height = height;
+  m_style = LINE_SOLID;
 }
 
 WinGC::~WinGC() {

@@ -89,7 +89,7 @@ namespace FreeMat {
   void Plot2D::StopSequence() {
     holdflag = holdSave;
     updating = false;
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetLegend(double xc, double yc, Array style, 
@@ -99,24 +99,24 @@ namespace FreeMat {
     legend_yc = yc;
     strcpy(legend_linestyle,style.getContentsAsCString());
     legend_data = legendData;
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetTitleText(std::string txt) {
     title = txt;
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetXLabel(std::string txt) {
     if (xAxis != NULL)
       xAxis->SetLabelText(txt);
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetYLabel(std::string txt) {
     if (yAxis != NULL)
       yAxis->SetLabelText(txt);
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetHoldFlag(bool flag) {
@@ -132,7 +132,7 @@ namespace FreeMat {
       xAxis->SetLogarithmic(xLog);
     if (yAxis != NULL)
       yAxis->SetLogarithmic(yLog);
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetAxes(double x1, double x2, double y1, double y2) {
@@ -140,7 +140,7 @@ namespace FreeMat {
       xAxis->ManualSetAxis(x1, x2);
     if (yAxis != NULL)
       yAxis->ManualSetAxis(y1, y2);
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::GetAxes(double &x1, double &x2, double &y1, double &y2) {
@@ -163,7 +163,7 @@ namespace FreeMat {
       xAxis->SetGrid(gridVal);
     if (yAxis != NULL)
       yAxis->SetGrid(gridVal);
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::SetAxesTight() {
@@ -187,7 +187,7 @@ namespace FreeMat {
     if (yAxis == NULL)
       yAxis = new Axis(yMin, yMax, false);
     yAxis->ManualSetAxis(yMin, yMax);
-    Refresh();
+    Refresh(bounds);
   }
   
   void Plot2D::SetAxesAuto() {
@@ -213,7 +213,7 @@ namespace FreeMat {
       yAxis = new Axis(yMin, yMax, false);
     else
       yAxis->SetExtent(yMin, yMax);
-    Refresh();
+    Refresh(bounds);
   }
 
   void Plot2D::AddPlot(DataSet2D dp) {

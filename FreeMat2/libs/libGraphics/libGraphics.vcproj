@@ -160,6 +160,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Figure.cpp">
+			</File>
+			<File
 				RelativePath="ImageCommands.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -270,10 +273,19 @@
 				RelativePath="DataSet2D.hpp">
 			</File>
 			<File
+				RelativePath=".\Figure.hpp">
+			</File>
+			<File
+				RelativePath="..\libXP\GraphicsContext.hpp">
+			</File>
+			<File
 				RelativePath="GraphicsCore.hpp">
 			</File>
 			<File
 				RelativePath="Plot2D.hpp">
+			</File>
+			<File
+				RelativePath=".\Plot3D.hpp">
 			</File>
 			<File
 				RelativePath="ScalarImage.hpp">

@@ -49,8 +49,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
   InitializeXWindowSystem(hInstance);
-  InitializePlotSubsystem();
-  InitializeImageSubsystem();
+  InitializeFigureSubsystem();
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
   term.setContext(context);

@@ -3,68 +3,47 @@
 #include "GraphicsCore.hpp"
 #include "XPContainer.hpp"
 #include "XPButton.hpp"
+#include "XPWidget.hpp"
+#include "XPLabel.hpp"
+#include "XPVSlider.hpp"
+#include "XPEditLine.hpp"
 
 #define MAX_FIGS 100
 
 namespace FreeMat {
   Figure* figs[MAX_FIGS];
   int currentFig;
-
+  
   void NotifyFigClose(int fig) {
     figs[fig] = NULL;
     if (currentFig == fig)
       currentFig = -1;
   }
-
-  Figure::Figure(int fignum) {
+  
+  Figure::Figure(int fignum) :
+    XWindow(Rect2D(0,0,400,500)) {
     m_num = fignum;
     m_type = fignone;
-    m_payload = NULL;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
     SetTitle(buffer);
   }
-
+  
   Figure::~Figure() {
-    if (m_payload) delete(m_payload);
     NotifyFigClose(m_num);
   }
-
-  void Figure::SetWidget(XPWidget *xp, figType typ) {
-    if (m_payload) delete(m_payload);
-    m_payload = xp;
+  
+  void Figure::SetFigureChild(XPWidget *xp, figType typ) {
+    SetChildWidget(xp);
     m_type = typ;
-    xp->SetParent(this);
-  }
-
-  XPWidget* Figure::GetWidget() {
-    return m_payload;
-  }
-
-  void Figure::OnDraw(GraphicsContext& dc) {
-    if (m_payload)
-      m_payload->OnDraw(dc);
-  }
-
-  void Figure::Print(std::string fname) {
   }
   
-  void Figure::OnMouseDown(int x, int y) {
-    if (m_payload)
-      m_payload->OnMouseDown(x,y);
-  }
-
-  void Figure::OnMouseUp(int x, int y) {
-    if (m_payload)
-      m_payload->OnMouseUp(x,y);
-  }
-
   void InitializeFigureSubsystem() {
     currentFig = -1;
     for (int i=0;i<MAX_FIGS;i++) 
       figs[i] = NULL;
   }
-
+  
   void NewFig() {
     // First search for an unused fig number
     int figNum = 0;
@@ -81,7 +60,7 @@ namespace FreeMat {
     figs[figNum]->Raise();
     currentFig = figNum;
   }
-
+  
   void SelectFig(int fignum) {
     if (figs[fignum] == NULL) {
       figs[fignum] = new Figure(fignum);
@@ -146,19 +125,22 @@ namespace FreeMat {
     Array t(arg[0]);
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
-    f->Print(outname);
+    //    f->Print(outname);
     return ArrayVector();
   }
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
-    XPContainer *c = new XPContainer;
-    c->SetParent(f);
-    c->OnResize(f->getWidth(),f->getHeight());
-    XPButton *b = new XPButton(50,50,150,100,"Press Me!");
+    XPContainer *c = new XPContainer(f, f->GetBoundingRect());
+    XPLabel *l = new XPLabel(NULL, Rect2D(75,75,50,75), "Label!");
+    XPButton *b = new XPButton(NULL, Rect2D(50,50,150,100), l);
+    XPVSlider *s = new XPVSlider(NULL, Rect2D(250,50,35,200), 0.0);
+    XPEditLine *e = new XPEditLine(NULL, Rect2D(200,300,200,30), "twe");
     c->AddChild(b);
-    f->SetWidget(c, figgui);
-    f->Refresh();
+    c->AddChild(s);
+    c->AddChild(e);
+    f->SetFigureChild(c, figgui);
+    f->Refresh(f->GetBoundingRect());
     return ArrayVector();
   }
 
@@ -183,7 +165,7 @@ namespace FreeMat {
     width = w.getContentsAsIntegerScalar();
     height = h.getContentsAsIntegerScalar();
     Figure *f = GetCurrentFig();
-    f->SetSize(width,height);
+    f->OnResize(Point2D(width,height));
     return ArrayVector();
   }
 
@@ -288,6 +270,6 @@ namespace FreeMat {
 
   void ForceRefresh() {
     Figure* fig = GetCurrentFig();
-    fig->Refresh();
+    fig->Refresh(fig->GetBoundingRect());
   }
 }

@@ -98,8 +98,8 @@ namespace FreeMat {
     } else if (zoom == 0) {
       int client_width;
       int client_height;
-      client_width = m_width;
-      client_height = m_height;
+      client_width = bounds.width;
+      client_height = bounds.height;
       double zoomColFactor;
       zoomColFactor = ((double) client_width)/columns;
       double zoomRowFactor;
@@ -112,8 +112,8 @@ namespace FreeMat {
     } else {
       int client_width;
       int client_height;
-      client_width = m_width;
-      client_height = m_height;
+      client_width = bounds.width;
+      client_height = bounds.height;
       newZoomColumns = (int) (client_width);
       newZoomRows = (int) (client_height);
     }

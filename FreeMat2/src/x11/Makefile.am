@@ -1,5 +1,5 @@
 if NEED_PNG
-  PNGLIB = @top_builddir@/libs/lpng125/libpng.a
+  PNGLIB = @top_builddir@/libs/lpng125/libpng.a @top_builddir@/libs/libz/libz.a
 endif
 
 if NEED_TIFF

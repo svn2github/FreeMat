@@ -619,6 +619,11 @@ double/dgesvx.f \
 double/dgetf2.f \
 double/dgetrf.f \
 double/dgetrs.f \
+double/dggbak.f \
+double/dggbal.f \
+double/dggev.f \
+double/dgghrd.f \
+double/dhgeqz.f \
 double/dhseqr.f \
 double/dlabad.f \
 double/dlabrd.f \
@@ -629,11 +634,11 @@ double/dlae2.f \
 double/dlaed6.f \
 double/dlaev2.f \
 double/dlaexc.f \
+double/dlag2.f \
 double/dlahqr.f \
 double/dlahrd.f \
 double/dlaic1.f \
 double/dlaln2.f \
-double/dlamch.f \
 double/dlamrg.f \
 double/dlange.f \
 double/dlanhs.f \
@@ -713,6 +718,7 @@ double/dsygst.f \
 double/dsygv.f \
 double/dsytd2.f \
 double/dsytrd.f \
+double/dtgevc.f \
 double/dtrevc.f \
 double/dtrexc.f \
 double/dtrsna.f \
@@ -762,7 +768,6 @@ single/slahqr.f \
 single/slahrd.f \
 single/slaic1.f \
 single/slaln2.f \
-single/slamch.f \
 single/slamrg.f \
 single/slange.f \
 single/slanhs.f \
@@ -847,13 +852,13 @@ single/strevc.f \
 single/strexc.f \
 single/strsna.f \
 single/stzrzf.f \
-util/dlamch.f \
 util/icmax1.f \
 util/ieeeck.f \
 util/ilaenv.f \
 util/izmax1.f \
 util/lsame.f \
 util/slamch.f \
+util/dlamch.f \
 util/xerbla.f 
 
 

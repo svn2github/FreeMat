@@ -163,6 +163,8 @@
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'CHEGV ', -INFO )
          RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
       END IF
 *
 *     Quick return if possible

@@ -68,7 +68,7 @@ LINK32=xilink6.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "\FreeMat2\libs\libXP" /I "\FreeMat2\libs\libFreeMat" /I "\FreeMat2\libs\libffi\msvc_build" /I "\FreeMat2\libs\libCore" /I "\FreeMat2\libs\libGraphics" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "libs\libXP" /I "libs\libFreeMat" /I "libs\libffi\msvc_build" /I "libs\libCore" /I "libs\libGraphics" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib \FreeMat2\libs\libCore\Debug\libCore.lib \FreeMat2\libs\libf2c\Debug\libf2c.lib \FreeMat2\libs\libFreeMat\Debug\libFreeMat.lib \FreeMat2\libs\libGraphics\Debug\libGraphics.lib \FreeMat2\libs\libMiniBLAS\Debug\libMiniBLAS.lib \FreeMat2\libs\libMiniLAPACK\Debug\libMiniLAPACK.lib \FreeMat2\libs\libXP\Debug\libXP.lib \FreeMat2\libs\libFFTPack\Debug\libFFTPack.lib \FreeMat2\libs\libffi\Debug\libffi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ws2_32.lib libs\libCore\Debug\libCore.lib libs\libf2c\Debug\libf2c.lib libs\libFreeMat\Debug\libFreeMat.lib libs\libGraphics\Debug\libGraphics.lib libs\libMiniBLAS\Debug\libMiniBLAS.lib libs\libMiniLAPACK\Debug\libMiniLAPACK.lib libs\libXP\Debug\libXP.lib libs\libFFTPack\Debug\libFFTPack.lib libs\libffi\Debug\libffi.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 

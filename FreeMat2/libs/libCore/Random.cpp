@@ -411,7 +411,7 @@ namespace FreeMat {
   //@|x| that occur in @|x+r| bernoulli trials, with a success on the 
   //@|x+r| trial.  The pdf is given by
   //\[
-  //  P_{r,p}(x)=\left\(\begin{matrix}x+r-1\\r-1\end{matrix}\right\)p^r(1-p)^x.
+  //  P_{r,p}(x)=\left(\begin{matrix}x+r-1\\r-1\end{matrix}\right)p^r(1-p)^x.
   //\]
   //@@Example
   //Here we generate some negative binomial random variables:

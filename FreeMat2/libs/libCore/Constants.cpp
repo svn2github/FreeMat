@@ -202,7 +202,7 @@ namespace FreeMat {
   //   y = eps
   //@]
   //which returns @|eps| for @|double| precision values. For most
-  //typical processors, this value is approximately 2^-52, or 2.2204e-16.
+  //typical processors, this value is approximately @|2^-52|, or 2.2204e-16.
   //@@Example
   //The following example demonstrates the use of the @|eps| function,
   //and one of its numerical consequences.
@@ -229,7 +229,7 @@ namespace FreeMat {
   //   y = feps
   //@]
   //which returns @|feps| for @|single| precision values. For most
-  //typical processors, this value is approximately 2^-24, or 5.9604e-8.
+  //typical processors, this value is approximately @|2^-24|, or 5.9604e-8.
   //@@Example
   //The following example demonstrates the use of the @|feps| function,
   //and one of its numerical consequences.

@@ -29,6 +29,8 @@ namespace FreeMat {
   void* GetSparseScalarElement(Class dclass, int rows, int cols, 
 			       const void* src,  indexType rindx, 
 			       indexType cindx);
+  void* SparseToIJV(Class dclass, int rows, int cols, const void* cp,
+		    uint32* &I, uint32* &J, int &nnz);
 }
 
 #endif

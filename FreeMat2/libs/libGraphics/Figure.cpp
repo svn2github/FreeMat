@@ -25,6 +25,8 @@ namespace FreeMat {
   Figure* figs[MAX_FIGS];
   int currentFig;
 
+  Fl_Widget* focus_widget;
+
   typedef struct {
     int handle;
     FunctionDef *fdef;
@@ -32,6 +34,15 @@ namespace FreeMat {
     Array payload;
   } cbstruct;
   
+  void SaveFocus() {
+    focus_widget = Fl::focus();
+  }
+
+  void RestoreFocus() {
+    if (focus_widget)
+      focus_widget->take_focus();
+  }
+
   void generic_cb(Fl_Widget*, void *dp) {
     cbstruct *ap;
     ap = (cbstruct *) dp;
@@ -170,7 +181,9 @@ namespace FreeMat {
       throw Exception("No more fig handles available!  Close some figs...");
     }
     figs[figNum] = new Figure(figNum);
+    SaveFocus();
     figs[figNum]->show();
+    RestoreFocus();
     currentFig = figNum;
   }
   
@@ -178,14 +191,18 @@ namespace FreeMat {
     if (figs[fignum] == NULL) {
       figs[fignum] = new Figure(fignum);
     }
+    SaveFocus();
     figs[fignum]->show();
+    RestoreFocus();
     currentFig = fignum;
   } 
 
   Figure* GetCurrentFig() {
     if (currentFig == -1)
       NewFig();
+    SaveFocus();
     figs[currentFig]->show();
+    RestoreFocus();
     return figs[currentFig];
   }
 

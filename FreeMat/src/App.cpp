@@ -139,12 +139,12 @@ bool App::OnInit()
   t->Create();
   t->Run();
   // Need to disable signals...
+#ifndef WIN32
   sigset_t st;
   sigfillset(&st);
   sigdelset(&st,SIGINT);
   pthread_sigmask(SIG_SETMASK,&st,NULL);
-
-
+#endif
   return TRUE;
 }
 

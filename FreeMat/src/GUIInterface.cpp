@@ -81,10 +81,18 @@ namespace FreeMat {
       context->deleteFunctionGlobally(transientFuncs[i]);
     // Scan the current directory...
     transientScan = false;
+#ifndef WIN32
     wxStringTokenizer tkz(pathList,":");
+#else
+    wxStringTokenizer tkz(pathList,";");
+#endif
     while (tkz.HasMoreTokens()) {
       wxString token = tkz.GetNextToken();
+#ifndef WIN32
       wxString fname = wxFindFirstFile(token + "/*.m",wxFILE);
+#else
+      wxString fname = wxFindFirstFile(token + "\\*.m",wxFILE);
+#endif
       while (!fname.IsEmpty()) {
 	processFilename(fname);
 	fname = wxFindNextFile();

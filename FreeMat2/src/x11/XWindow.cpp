@@ -14,7 +14,7 @@ static bool firstWindow = true;
 Atom proto_atom, delete_atom;
 bool stdincb_active = false;
 fdcallback stdin_cb;
-static Display *theDisplay;
+static Display *theDisplay = NULL;
 std::vector<XWindow*> deleteQ;
 
 void SetActiveDisplay(Display *d) {
@@ -41,6 +41,8 @@ void UnregisterXWindow(XWindow *p) {
 }
 
 XWindow::XWindow(WindowType wtype) {
+  if (!theDisplay)
+    throw FreeMat::Exception("Graphics not available!");
   m_display = theDisplay;
   m_type = wtype;
   m_window = XCreateSimpleWindow(m_display, RootWindow(m_display, 0),
@@ -386,52 +388,78 @@ bool XNextEventStdInCallback(Display *d, XEvent *r) {
 }
 
 void DoEvents() {
-  XEvent report;
-  XWindow *p, *q;
-
-  // Get the event
-  if (XNextEventStdInCallback(theDisplay, &report)) {
-    // Lookup the window
-    if (winlist.count(report.xany.window) == 0)
+  if (theDisplay) {
+    XEvent report;
+    XWindow *p, *q;
+    
+    // Get the event
+    if (XNextEventStdInCallback(theDisplay, &report)) {
+      // Lookup the window
+      if (winlist.count(report.xany.window) == 0)
       return;
-    p = winlist[report.xany.window];
-    switch(report.type) {
-    case Expose:
-      p->OnExpose(report.xexpose.x,report.xexpose.y,
-		  report.xexpose.width,report.xexpose.height);
-      break;
-    case ButtonPress:
+      p = winlist[report.xany.window];
+      switch(report.type) {
+      case Expose:
+	p->OnExpose(report.xexpose.x,report.xexpose.y,
+		    report.xexpose.width,report.xexpose.height);
+	break;
+      case ButtonPress:
       p->OnMouseDown(report.xbutton.x, report.xbutton.y);
       break;
-    case ButtonRelease:
-      p->OnMouseUp(report.xbutton.x, report.xbutton.y);
-      break;
-    case MotionNotify:
-    p->OnDrag(report.xmotion.x, report.xmotion.y);
-    break;
-    case ConfigureNotify: 
-      XEvent repcheck;
-      while (XCheckMaskEvent(theDisplay,StructureNotifyMask,&repcheck))
-	if (repcheck.type == ConfigureNotify) report = repcheck;
-      if (report.xconfigure.width != p->getWidth() ||
-	  report.xconfigure.height != p->getHeight())
-	p->OnResize(report.xconfigure.width, report.xconfigure.height);
-      break;
-    case ClientMessage:
-      if (report.xclient.data.l[0] == delete_atom) {
-	if (p->GetState() == state_normal) {
-	  delete p;
+      case ButtonRelease:
+	p->OnMouseUp(report.xbutton.x, report.xbutton.y);
+	break;
+      case MotionNotify:
+	p->OnDrag(report.xmotion.x, report.xmotion.y);
+	break;
+      case ConfigureNotify: 
+	XEvent repcheck;
+	while (XCheckMaskEvent(theDisplay,StructureNotifyMask,&repcheck))
+	  if (repcheck.type == ConfigureNotify) report = repcheck;
+	if (report.xconfigure.width != p->getWidth() ||
+	    report.xconfigure.height != p->getHeight())
+	  p->OnResize(report.xconfigure.width, report.xconfigure.height);
+	break;
+      case ClientMessage:
+	if (report.xclient.data.l[0] == delete_atom) {
+	  if (p->GetState() == state_normal) {
+	    delete p;
+	  }
 	}
+	break;
       }
-      break;
+    }
+  } else {
+    fd_set rmask, emask;
+    FD_ZERO(&rmask);
+    FD_SET(STDIN_FILENO, &rmask);
+    FD_ZERO(&emask);
+    FD_SET(STDIN_FILENO, &emask);
+    int ret;
+    ret = select(STDIN_FILENO+1, &rmask, NULL, &emask, NULL);
+    if (ret == -1) {
+      if (errno != EINTR)
+	perror("select");
+      else
+	/* Do nothing */
+	;
+    } else {
+      if (FD_ISSET(STDIN_FILENO, &emask)) {
+	perror("stdin");
+	printf("\r\nException!\r\n");
+	fflush(stdout);
+      }
+      if (FD_ISSET(STDIN_FILENO, &rmask))
+	stdin_cb();
     }
   }
 }
 
 void Run() {
-  while(XPending(theDisplay)) {
-    DoEvents();
-  }
+  if (theDisplay)
+    while(XPending(theDisplay)) {
+      DoEvents();
+    }
 }
 
 void FlushWindowEvents() {

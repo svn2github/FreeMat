@@ -66,17 +66,70 @@ std::string GetApplicationPath(char *argv0) {
   return GetPathOnly(psearch.ResolvePath(argv0));
 }
 
+// Search through the arguments to freemat... look for the given
+// flag.  if the flagarg variable is true, then an argument must
+// be provided to the flag.  If the flag is not found, then a 
+// 0 is returned.  Otherwise, the index into argv of the flag is
+// returned.
+int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
+  bool flagFound = false;
+  int ndx;
+  ndx = 1;
+  while (!flagFound && ndx < argc) {
+    flagFound = strcmp(argv[ndx],flagstring) == 0;
+    if (!flagFound) ndx++;
+  }
+  if (flagFound && flagarg && (ndx == argc-1)) {
+    fprintf(stderr,"Error: flag %s requires an argument!\n",flagstring);
+    exit(1);
+  }
+  if (!flagFound)
+    ndx = 0;
+  return ndx;
+}
+
+void usage() {
+  printf("FreeMat Command Line Help\n");
+  printf("   You can invoke FreeMat with the following command line options:\n");
+  printf("     -f <command>  Runs FreeMat in command mode.  FreeMat will \n");
+  printf("                   startup, run the given command, and then quit.\n");
+  printf("     -noX          Disables the graphics subsystem.\n");
+  printf("     -e            uses a dumb terminal interface (no command line editing, etc.)\n");
+  printf("                   This flag is primarily used when you want to capture input/output\n");
+  printf("                   to FreeMat from another application.\n");
+  printf("     -help         Get this help text\n");
+  exit(0);
+}
+
 int main(int argc, char *argv[]) {
+  int scriptMode;
+  int funcMode;
+  int withoutX;
+
+  scriptMode = parseFlagArg(argc,argv,"-e",false);
+  funcMode = parseFlagArg(argc,argv,"-f",true);
+  withoutX = parseFlagArg(argc,argv,"-noX",false);
+  if (parseFlagArg(argc,argv,"-help",false)) usage();
   
+  // Instantiate the terminal class
+  if (!scriptMode && !funcMode) {
+    term = new Terminal;
+    fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  } else {
+    term = new DumbTerminal;
+  }
+
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
-  d = XOpenDisplay(0);
-  if (!d) {
-    fprintf(stderr,"Error - unable to open X display\n");
-    exit(1);
+  if (!withoutX) {
+    d = XOpenDisplay(0);
+    if (!d) {
+      fprintf(stderr,"Error - unable to open X display.  Please check the environment variable DISPLAY.\n");
+      exit(1);
+    }
+    SetActiveDisplay(d);
   }
-  SetActiveDisplay(d);
   RegisterSTDINCallback(stdincb);
   Context *context = new Context;
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
@@ -97,31 +150,6 @@ int main(int argc, char *argv[]) {
   LoadGraphicsCoreFunctions(context);  
   InitializePlotSubsystem();
   InitializeImageSubsystem();
-
-  // Check for simple scripting mode
-  bool scriptMode = false;
-  int scriptSpec = 1;
-  while (!scriptMode && scriptSpec < argc) {
-    scriptMode = scriptMode | strcmp(argv[scriptSpec],"-e") == 0;
-    scriptSpec++;
-  }
-  if (scriptSpec > argc) scriptMode = false;
-
-  bool funcMode = false;
-  int funcSpec = 1;
-  while (!funcMode && funcSpec < argc) {
-    funcMode = funcMode | strcmp(argv[funcSpec],"-f") == 0;
-    funcSpec++;
-  }
-  if (funcSpec >= argc) funcMode = false;
-
-  // Instantiate the terminal class
-  if (!scriptMode && !funcMode) {
-    term = new Terminal;
-    fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
-  } else {
-    term = new DumbTerminal;
-  }
 
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
@@ -145,7 +173,7 @@ int main(int argc, char *argv[]) {
     }
   } else {
     char buffer[1024];
-    sprintf(buffer,"%s\n",argv[funcSpec]);
+    sprintf(buffer,"%s\n",argv[funcMode+1]);
     twalk->evaluateString(buffer);
   }
   term->RestoreOriginalMode();

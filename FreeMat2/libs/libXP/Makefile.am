@@ -1,5 +1,17 @@
 EXTRA_DIST = libXP.dsp
 
+if NEED_PNG
+  PNG_INCLUDES = -I@top_srcdir@/libs/lpng125 -I@top_srcdir@/libs/libz
+endif
+
+if NEED_TIFF
+  TIFF_INCLUDES = -I@top_srcdir@/libs/libtiff361
+endif
+
+if NEED_JPEG
+  JPEG_INCLUDES = -I@top_srcdir@/libs/libjpeg6b
+endif
+
 noinst_LIBRARIES = libXP.a
 
 libXP_a_SOURCES = DynLib.hpp \
@@ -31,4 +43,4 @@ helv_table.h
 
 AUTOMAKE_OPTIONS 	= foreign
 
-INCLUDES= -I@top_srcdir@/libs/libFreeMat 
+INCLUDES= -I@top_srcdir@/libs/libFreeMat $(PNG_INCLUDES) $(TIFF_INCLUDES) $(JPEG_INCLUDES)

@@ -1,3 +1,4 @@
+#include <FL/Fl.H>
 #include "Terminal.hpp"
 #include <errno.h>
 #include <unistd.h>
@@ -13,7 +14,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <glob.h>
-#include "XWindow.hpp"
 #include "File.hpp"
 #include "Serialize.hpp"
 
@@ -481,7 +481,7 @@ namespace FreeMat {
     ReplacePrompt(prompt);
     DisplayPrompt();
     while(enteredLines.empty())
-      DoEvents();
+      Fl::wait(0);
     std::string theline(enteredLines.front());
     enteredLines.pop_front();
     char *cp;

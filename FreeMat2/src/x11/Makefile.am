@@ -18,11 +18,7 @@ FreeMat_SOURCES = main.cpp \
 DumbTerminal.cpp \
 DumbTerminal.hpp \
 Terminal.cpp \
-Terminal.hpp \
-XWindow.cpp \
-XWindow.hpp \
-XGC.hpp \
-XGC.cpp
+Terminal.hpp 
 
 FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB) @top_builddir@/libs/libFLTK/libFLTK.a
 FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a  @top_builddir@/libs/libffi/libffi.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libFLTK/libFLTK.a $(PNGLIB) $(TIFFLIB) $(JPEGLIB) @X_PRE_LIBS@ @X_LIBS@ -lX11 @X_EXTRA_LIBS@ -L/sw/lib -lg2c 

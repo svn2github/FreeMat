@@ -1,8 +1,8 @@
 #include <FL/Fl.H>
 #include <FL/x.H>
-#include <X11/Xlib.h>
 #include <unistd.h>
-#include "XWindow.hpp"
+#include <fcntl.h>
+#include "FLTKTerminal.hpp"
 #include "Terminal.hpp"
 #include "DumbTerminal.hpp"
 #include <stdio.h>
@@ -16,7 +16,6 @@
 #include "File.hpp"
 #include <stdlib.h>
 #include <signal.h>
-#include "Plot3D.hpp"
 #include "config.h"
 
 using namespace FreeMat;
@@ -25,6 +24,7 @@ Display *d;
 int screen_num = 0;
 
 Terminal *term;
+FLTKTerminalWindow *win;
 
 sig_t signal_suspend_default;
 sig_t signal_resume_default;
@@ -151,6 +151,9 @@ void usage() {
   printf("   You can invoke FreeMat with the following command line options:\n");
   printf("     -f <command>  Runs FreeMat in command mode.  FreeMat will \n");
   printf("                   startup, run the given command, and then quit.\n");
+  printf("                   Note that this option uses the remainder of the\n");
+  printf("                   command line, so use it last.\n");
+  printf("     -gui          Launch the GUI version of FreeMat.\n");
   printf("     -noX          Disables the graphics subsystem.\n");
   printf("     -e            uses a dumb terminal interface (no command line editing, etc.)\n");
   printf("                   This flag is primarily used when you want to capture input/output\n");
@@ -166,99 +169,104 @@ int main(int argc, char *argv[]) {
   int scriptMode;
   int funcMode;
   int withoutX;
+  int guimode;
   char bundlefunc[1024];
   
   scriptMode = parseFlagArg(argc,argv,"-e",false);
   funcMode = parseFlagArg(argc,argv,"-f",true);
   withoutX = parseFlagArg(argc,argv,"-noX",false);
+  guimode = parseFlagArg(argc,argv,"-gui",false);
   if (parseFlagArg(argc,argv,"-help",false)) usage();
+
+  if (!withoutX) {
+    fl_open_display();
+    Fl::visual(FL_RGB);
+  }
   
   // Instantiate the terminal class
-  if (!scriptMode && !funcMode) {
+  if (!scriptMode && !funcMode && !guimode) {
     term = new Terminal;
     fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
-  } else {
+  } else if (!guimode) {
     term = new DumbTerminal;
   }
 
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
-  if (!withoutX) {
-    fl_open_display();
-    /*
-   d = XOpenDisplay(0);
-    if (!d) {
-      fprintf(stderr,"Error - unable to open X display.  Please check the environment variable DISPLAY.\n");
-      exit(1);
-    }
-    SetActiveDisplay(d);
-    */
-  }
-  //   RegisterSTDINCallback(stdincb);stst
+
   Fl::add_fd(STDIN_FILENO,FL_READ,stdincb);
   Context *context = new Context;
-  SpecialFunctionDef *sfdef = new SpecialFunctionDef;
-  sfdef->retCount = 0;
-  sfdef->argCount = 5;
-  sfdef->name = "loadlib";
-  sfdef->fptr = LoadLibFunction;
-  context->insertFunctionGlobally(sfdef);
-  
-  sfdef = new SpecialFunctionDef;
-  sfdef->retCount = 0;
-  sfdef->argCount = 5;
-  sfdef->name = "import";
-  sfdef->fptr = ImportFunction;
-  context->insertFunctionGlobally(sfdef);
-
+  LoadModuleFunctions(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
   InitializeFigureSubsystem();
+
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
-  term->setContext(context);
-  if (envPtr)
-    term->setPath(std::string(envPtr));
-  else 
-    term->setPath(std::string(""));
-  WalkTree *twalk = new WalkTree(context,term);
-  term->SetEvalEngine(twalk);
-  term->Initialize();
-  bundledMode = checkBundleMode(argv[0], bundlefunc, twalk);
-  if (!funcMode && !bundledMode) {
-    term->outputMessage(" Freemat v");
-    term->outputMessage(VERSION);
-    term->outputMessage("\n");
-    term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+
+  if (!guimode) {
+    term->setContext(context);
+    if (envPtr)
+      term->setPath(std::string(envPtr));
+    else 
+      term->setPath(std::string(""));
+    WalkTree *twalk = new WalkTree(context,term);
+    term->SetEvalEngine(twalk);
+    term->Initialize();
+    bundledMode = checkBundleMode(argv[0], bundlefunc, twalk);
+    if (!funcMode && !bundledMode) {
+      term->outputMessage(" Freemat v");
+      term->outputMessage(VERSION);
+      term->outputMessage("\n");
+      term->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
+      while (twalk->getState() != FM_STATE_QUIT) {
+	if (twalk->getState() == FM_STATE_RETALL) 
+	  term->clearMessageContextStack();
+	twalk->resetState();
+	twalk->evalCLI();
+      }
+    } else {
+      char buffer[1024];
+      if (funcMode) 
+	sprintf(buffer,"%s\n",argv[funcMode+1]);
+      else
+	sprintf(buffer,"%s\n",bundlefunc);
+      ParserState parserState = parseString(buffer);
+      if (parserState != ScriptBlock) {
+	printf("Error: syntax error on argument to -f\r\n");
+	term->RestoreOriginalMode();
+	return 1;
+      }
+      ASTPtr tree = getParsedScriptBlock();
+      try {
+	twalk->block(tree);
+      } catch(Exception &e) {
+	e.printMe(term);
+	term->RestoreOriginalMode();
+	return 5;	
+      }
+    }
+    term->RestoreOriginalMode();
+  } else {
+    win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,"");
+    win->term()->setContext(context);
+    if (envPtr)
+      win->term()->setPath(std::string(envPtr));
+    else 
+      win->term()->setPath(std::string(""));
+    WalkTree *twalk = new WalkTree(context,win->term());
+    win->term()->outputMessage(" Freemat v");
+    win->term()->outputMessage(VERSION);
+    win->term()->outputMessage("\n");
+    win->term()->outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
     while (twalk->getState() != FM_STATE_QUIT) {
       if (twalk->getState() == FM_STATE_RETALL) 
-	term->clearMessageContextStack();
+	win->term()->clearMessageContextStack();
       twalk->resetState();
       twalk->evalCLI();
     }
-  } else {
-    char buffer[1024];
-    if (funcMode) 
-      sprintf(buffer,"%s\n",argv[funcMode+1]);
-    else
-      sprintf(buffer,"%s\n",bundlefunc);
-    ParserState parserState = parseString(buffer);
-    if (parserState != ScriptBlock) {
-      printf("Error: syntax error on argument to -f\r\n");
-      term->RestoreOriginalMode();
-      return 1;
-    }
-    ASTPtr tree = getParsedScriptBlock();
-    try {
-      twalk->block(tree);
-    } catch(Exception &e) {
-      e.printMe(term);
-      term->RestoreOriginalMode();
-      return 5;	
-    }
   }
-  term->RestoreOriginalMode();
   return 0;
 }

@@ -1,0 +1,37 @@
+This is the Mac OS X bundle of FreeMat 1.05.  Installation should be
+just like any other Mac application.  One requirement, however, is that
+you have XWindow installed.  It is available for free from Apple's 
+web site at http://www.apple.com/macosx/features/x11/download.  If you
+need help with FreeMat, or find a bug to report, please go to
+http://freemat.sf.net
+There is an online help system (just type "help <topic>" inside FreeMat),
+as well as an HTML help.  I haven't figured out how to integrate the
+bundled help yet, so I suggest the PDF version of the help, available
+for download at http://freemat.sf.net (and bundled in this drive image).
+
+Samit
+
+
+FreeMat is covered under the following license:
+
+Copyright (c) 2002-2004 Samit Basu
+
+Permission is hereby granted, free of charge, to any person obtaining a 
+copy of this software and associated documentation files (the "Software"), 
+to deal in the Software without restriction, including without limitation 
+the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the 
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included 
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+THE SOFTWARE.
+
+

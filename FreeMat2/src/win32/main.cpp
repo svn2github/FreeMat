@@ -21,6 +21,8 @@
 #include "GraphicsCore.hpp"
 #include "System.hpp"
 
+char help_path[1024];
+
 using namespace FreeMat;
 #define VERSION "1.08"
 
@@ -38,8 +40,15 @@ int GetAppPath(LPTSTR pstr,int length){
  return lstrlen(pstr); //return length of final string
 }
 
+void SetupHelpPath() {
+	char apppath[1024];
+	GetAppPath(apppath,sizeof(apppath));
+	sprintf(help_path,"%s/freemat.chm",apppath);
+}
+
 int main(int argc, char *argv[]) {
   Context *context = new Context;
+  SetupHelpPath();
   SpecialFunctionDef *sfdef = new SpecialFunctionDef;
   sfdef->retCount = 0;
   sfdef->argCount = 5;
@@ -61,7 +70,7 @@ int main(int argc, char *argv[]) {
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
 
-  FLTKTerminalWindow *win = new FLTKTerminalWindow(400,300,"FreeMat v " VERSION);
+  FLTKTerminalWindow *win = new FLTKTerminalWindow(400,300,"FreeMat v " VERSION,help_path);
   win->term()->setContext(context);
   if (envPtr)
     win->term()->setPath(std::string(envPtr));
@@ -80,50 +89,3 @@ int main(int argc, char *argv[]) {
   }
   return 0;
 }
-
-#if 0
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
-  SetupWinTerminalClass(hInstance);
-  WinTerminal term(hInstance, iCmdShow);
-
-  Context *context = new Context;
-  SpecialFunctionDef *sfdef = new SpecialFunctionDef;
-  sfdef->retCount = 0;
-  sfdef->argCount = 5;
-  sfdef->name = "loadFunction";
-  sfdef->fptr = LoadLibFunction;
-  context->insertFunctionGlobally(sfdef);
-
-  sfdef = new SpecialFunctionDef;
-  sfdef->retCount = 0;
-  sfdef->argCount = 5;
-  sfdef->name = "import";
-  sfdef->fptr = ImportFunction;
-  context->insertFunctionGlobally(sfdef);
-
-  LoadCoreFunctions(context);
-  LoadFNFunctions(context);
-  LoadGraphicsCoreFunctions(context);  
-  InitializeXWindowSystem(hInstance);
-  InitializeFigureSubsystem();
-  const char *envPtr;
-  envPtr = getenv("FREEMAT_PATH");
-  term.setContext(context);
-  if (envPtr)
-    term.setPath(std::string(envPtr));
-  else
-    term.setPath(std::string(""));
-  WalkTree *twalk = new WalkTree(context,&term);
-  term.SetEvalEngine(twalk);
-  term.outputMessage(" Freemat v1.07 ");
-  term.outputMessage("\n");
-  term.outputMessage(" Copyright (c) 2002-2004 by Samit Basu\n");
-  while (twalk->getState() != FM_STATE_QUIT) {
-    if (twalk->getState() == FM_STATE_RETALL) 
-      term.clearMessageContextStack();
-    twalk->resetState();
-    twalk->evalCLI();
-  }
-  return 0;
-}
-#endif

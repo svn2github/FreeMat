@@ -65,10 +65,12 @@ namespace FreeMat {
     char *tokdesc;
     char *tokbuffer = "unprintable";
     char buffer[256];
+    int addone = 1;
     if (*yytext < 33) {
 	tokdesc = tokbuffer;
 	sprintf(buffer,"Ran out of input on this line.");
 	tokdesc = buffer;
+	addone = 0;
     } else {
         sprintf(buffer,"Current token is '%s'",yytext);
 	tokdesc = buffer;
@@ -76,13 +78,13 @@ namespace FreeMat {
     if (expectString)
       if (!interactiveMode)
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s at line %d of file %s.  %s",
-	expectString,lineNumber,filename,tokdesc);
+	expectString,lineNumber+addone,filename,tokdesc);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Expecting %s.  %s",expectString, tokdesc);
     else
       if (!interactiveMode)
         snprintf(msgBuffer,MSGBUFLEN,"Syntax error at line %d of file %s.  %s",
-	lineNumber,filename,tokdesc);
+	lineNumber+addone,filename,tokdesc);
       else
         snprintf(msgBuffer,MSGBUFLEN,"Syntax error at input.  %s",tokdesc);
     throw Exception(msgBuffer);
@@ -362,7 +364,7 @@ switchStatement:
         ;
 
 optionalEndStatement:
-	ENDSTMNT | ENDQSTMNT |
+	',' | ENDSTMNT | ENDQSTMNT |
 	;
 
 caseBlock:

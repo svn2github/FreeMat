@@ -119,8 +119,8 @@ SessionFrame.cpp \
 SessionFrame.hpp \
 CLIThread.cpp \
 CLIThread.hpp \
-wxCLI.cpp \
-wxCLI.hpp 
+wxCLI2.cpp \
+wxCLI2.hpp 
 
 
 FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libtecla/libtecla.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
@@ -143,7 +143,7 @@ FreeMat_OBJECTS = $(am_FreeMat_OBJECTS)
 FreeMat_LDFLAGS =
 am_FreeMatGUI_OBJECTS = App.$(OBJEXT) GUIInterface.$(OBJEXT) \
 	CLIBuffer.$(OBJEXT) SessionFrame.$(OBJEXT) CLIThread.$(OBJEXT) \
-	wxCLI.$(OBJEXT)
+	wxCLI2.$(OBJEXT)
 FreeMatGUI_OBJECTS = $(am_FreeMatGUI_OBJECTS)
 FreeMatGUI_LDFLAGS =
 
@@ -158,7 +158,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/CLIBuffer.Po ./$(DEPDIR)/CLIThread.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/GUIInterface.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SessionFrame.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/TeclaInterface.Po ./$(DEPDIR)/wxCLI.Po
+@AMDEP_TRUE@	./$(DEPDIR)/TeclaInterface.Po ./$(DEPDIR)/wxCLI2.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -225,7 +225,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GUIInterface.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SessionFrame.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TeclaInterface.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wxCLI.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wxCLI2.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

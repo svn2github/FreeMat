@@ -38,8 +38,8 @@ SessionFrame.cpp \
 SessionFrame.hpp \
 CLIThread.cpp \
 CLIThread.hpp \
-wxCLI.cpp \
-wxCLI.hpp 
+wxCLI2.cpp \
+wxCLI2.hpp 
 
 FreeMat_DEPENDENCIES = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libtecla/libtecla.a  @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a
 FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libFFTPack/libFFTPack.a @top_builddir@/extlibs/libffi-2.00-beta/libffi.a @top_builddir@/extlibs/libtecla/libtecla.a `@top_builddir@/extlibs/wxWindows/wx-config --prefix=@top_srcdir@/extlibs/wxWindows --exec-prefix=@top_builddir@/extlibs/wxWindows --libs` @top_builddir@/extlibs/volpack-1.0c2/src/libvolpack.a

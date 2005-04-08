@@ -8,6 +8,7 @@
 #include "GraphicsCore.hpp"
 #include "System.hpp"
 #include "resource.h"
+#include "Class.hpp"
 
 char help_path[1024];
 
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]) {
   Context *context = new Context;
   SetupHelpPath();
   LoadModuleFunctions(context);
+  LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  

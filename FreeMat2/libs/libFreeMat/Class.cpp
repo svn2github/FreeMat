@@ -291,6 +291,48 @@ namespace FreeMat {
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back() + " and " + b.getClassName().back());
   }
 
+  ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
+    stringVector fNames;
+    fNames.push_back("type");
+    fNames.push_back("subs");
+    Dimensions rhsDimensions;
+    while (t != NULL) {
+      rhsDimensions = r.getDimensions();
+      if (!rv.empty()) 
+	throw Exception("Cannot reindex an expression that returns multiple values.");
+      if (t->opNum ==(OP_PARENS)) {
+	m = eval->expressionList(t->down,&rhsDimensions);
+	if (m.size() == 0) 
+	  throw Exception("Expected indexing expression!");
+	// Take the arguments and push them into a cell array...
+	ArrayMatrix q;	q.push_back(m);
+	Array args(Array::cellConstructor(q));
+	ArrayVector tmp;
+	tmp.push_back(Array::stringConstructor("()"));
+	tmp.push_back(args);
+	Array strct(Array::structConstructor(fNames,tmp));
+      }
+      if (t->opNum ==(OP_BRACES)) {
+	m = eval->expressionList(t->down,&rhsDimensions);
+	if (m.size() == 0) 
+	  throw Exception("Expected indexing expression!");
+	// Take the arguments and push them into a cell array...
+	ArrayMatrix q;	q.push_back(m);
+	Array args(Array::cellConstructor(q));
+	ArrayVector tmp;
+	tmp.push_back(Array::stringConstructor("{}"));
+	tmp.push_back(args);
+	Array strct(Array::structConstructor(fNames,tmp));
+      }
+      if (t->opNum ==(OP_DOT)) {
+	ArrayVector tmp;
+	tmp.push_back(Array::stringConstructor("."));
+	tmp.push_back(t->down->text);
+	Array strct(Array::structConstructor(fNames,tmp));
+      }
+    }
+  }
+
   // What is special here...  Need to be able to do field indexing
   // 
   ArrayVector ClassRHSExpression(Array r, ASTPtr t, WalkTree* eval) {
@@ -302,6 +344,13 @@ namespace FreeMat {
     int dims;
     bool isVar;
     bool isFun;
+    FuncPtr val;
+
+    // Try and look up subsref...
+    if (ClassResolveFunction(eval,r,"subsref",val)) {
+      // Overloaded subsref case
+      return ClassSubsrefCall(eval,t,r,val);
+    }
 
     ArrayVector rv;
     Dimensions rhsDimensions;

@@ -286,7 +286,7 @@ namespace FreeMat {
      * rescan if the identifier is not found on the first pass.
      */
     bool lookupFunctionWithRescan(std::string funcName, FuncPtr& val, 
-				  ArrayVector args = ArrayVector());
+				  ArrayVector& args);
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */

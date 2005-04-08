@@ -213,7 +213,7 @@ namespace FreeMat {
       }
       FindClose(hSearch);
     }    
-    searchpat = std::string("@*");
+    searchpat = std::string(scdir+"\\@*");
     hSearch = FindFirstFile(searchpat.c_str(), &FileData);
     if (hSearch != INVALID_HANDLE_VALUE) {
       scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,

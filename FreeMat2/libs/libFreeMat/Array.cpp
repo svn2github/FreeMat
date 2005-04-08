@@ -498,7 +498,7 @@ namespace FreeMat {
    * Create a variable with the specified contents.
    */
   Array::Array(Class type, const Dimensions& dims, void* data, bool sparse, 
-	       const stringVector& fnames, const std::string classname) {
+	       const stringVector& fnames, const stringVector& classname) {
     dp = new Data(type, dims, data, sparse, fnames, classname);
   }
 
@@ -549,14 +549,14 @@ namespace FreeMat {
       return false;
   }
 
-  std::string Array::getClassName() const {
+  stringVector Array::getClassName() const {
     if (dp)
       return dp->getClassName();
     else
-      return std::string();
+      return stringVector();
   }
 
-  void Array::setClassName(std::string cname) {
+  void Array::setClassName(stringVector cname) {
     if (getDataClass() != FM_STRUCT_ARRAY)
       throw Exception("cannot set class name for non-struct array");
     ensureSingleOwner();
@@ -1593,7 +1593,8 @@ break;
 	src.copyElements(i,rp,dstIndex,1);
       }
     }
-    return Array(src.dp->dataClass,dims,rp,false,src.dp->fieldNames,src.dp->className);
+    return Array(src.dp->dataClass,dims,rp,false,src.dp->fieldNames,
+		 src.dp->className);
   }
 
   Array Array::logicalConstructor(bool aval) {
@@ -2282,7 +2283,8 @@ break;
 	  throw Exception("Index exceeds variable dimensions");
 	copyElements(ndx,qp,i,1);
       }
-      return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames,dp->className);
+      return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames,
+		   dp->className);
     } catch (Exception &e) {
       Free(qp);
       throw;
@@ -2358,7 +2360,8 @@ break;
       }
       Free(indx);
       outDims.simplify();
-      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,dp->className);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
+		   dp->className);
     } catch (Exception &e) {
       Free(indx);
       Free(qp);
@@ -2465,7 +2468,8 @@ break;
 	  srcIndex = -diagonalOrder + i*(rows+1);
 	  copyElements(srcIndex,qp,i,1);
 	}
-	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,dp->className);
+	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
+		     dp->className);
       }
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
@@ -2485,7 +2489,8 @@ break;
 	  copyElements(srcIndex,qp,i,1);
 	}
       }
-      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,dp->className);
+      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
+		   dp->className);
     }
   }
 
@@ -3017,7 +3022,8 @@ break;
     int fN = names.size();
     for (int i=0;i<fN-1;i++)
       rp[i] = qp[i];
-    dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,dp->className);
+    dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,
+		     dp->className);
     return (fN-1);
   }
 
@@ -3316,7 +3322,7 @@ break;
 	dp->dimensions.printMe(io);
 	if (isUserClass()) {
 	  io->outputMessage(" ");
-	  io->outputMessage(getClassName().c_str());
+	  io->outputMessage(getClassName().back().c_str());
 	  io->outputMessage(" object");
 	} else
 	  io->outputMessage(" struct array");
@@ -3668,7 +3674,7 @@ break;
     case FM_STRUCT_ARRAY:
 	if (isUserClass()) {
 	  io->outputMessage(" ");
-	  io->outputMessage(getClassName().c_str());
+	  io->outputMessage(getClassName().back().c_str());
 	  io->outputMessage(" object");
 	} else
 	  io->outputMessage("  <structure array> ");

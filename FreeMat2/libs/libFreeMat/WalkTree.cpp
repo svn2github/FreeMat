@@ -464,7 +464,8 @@ namespace FreeMat {
       case OP_ADDRESS:
 	{
 	  FuncPtr val;
-	  if (!lookupFunctionWithRescan(t->down->text,val))
+	  ArrayVector dummy;
+	  if (!lookupFunctionWithRescan(t->down->text,val,dummy))
 	    throw Exception("unable to resolve " + std::string(t->down->text) + 
 			    " to a function call");
 	  retval = Array::funcPtrConstructor(val);
@@ -2601,7 +2602,7 @@ namespace FreeMat {
       }
       // Now that the arguments have been evaluated, we have to 
       // find the dominant class
-      if (!lookupFunctionWithRescan(t->text,funcDef,mergeVecs(m,keyvals)))
+      if (!lookupFunctionWithRescan(t->text,funcDef,m))
 	throw Exception(std::string("Undefined function or variable ") + 
 			t->text);
       funcDef->updateCode();
@@ -2621,6 +2622,8 @@ namespace FreeMat {
 	// Apply keyword mapping
 	if (!keywords.empty()) 
 	  argTypeMap = sortKeywords(m,keywords,funcDef->arguments,keyvals);
+	else
+		argTypeMap = NULL;
 	if ((funcDef->inputArgCount() >= 0) && 
 	    (m.size() > funcDef->inputArgCount()))
 	  throw Exception(std::string("Too many inputs to function ")+t->text);
@@ -2811,7 +2814,7 @@ namespace FreeMat {
   }
 
   bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val,
-					  ArrayVector args) {
+					  ArrayVector &args) {
     // Check to see if it is a constructor
     if (lookupFunctionWithRescanMangled(std::string("@") + 
 					funcName + std::string("_") + funcName, val))
@@ -2827,7 +2830,7 @@ namespace FreeMat {
     if (anyClasses)
       // Try to resolve this to a method for the class or one of its parent
       // classes.
-      if (ClassResolveFunction(this,args[i].getClassName(),funcName,val))
+      if (ClassResolveFunction(this,args[i],funcName,val))
 	return true;
     // Just check for the plain old function
     if (lookupFunctionMangled(funcName, val))
@@ -3131,8 +3134,8 @@ namespace FreeMat {
     }
     // If r is a user defined object, we have to divert to the
     // class function...
-//     if (r.isUserClass()) 
-//       return ClassRHSExpression(r,t->down,this);
+    if (r.isUserClass()) 
+      return ClassRHSExpression(r,t->down,this);
     t = t->down;
     while (t != NULL) {
       rhsDimensions = r.getDimensions();

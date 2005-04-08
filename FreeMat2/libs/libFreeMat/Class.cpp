@@ -55,7 +55,35 @@
 //
 // More ideas on overloading classes...
 //
-// What happens when the parent classes are different sizes
+// What happens when the parent classes are different sizes - resolved
+//    force parent classes to be the same size as the created object
+//
+// In c++, polymorphism is done through the notion of a pointer and
+// type casting.  But we can't do exactly the same thing... Because
+// when we type-cast, only methods and fields from the type-cast
+// object are present... 
+//
+// What we want is 
+//   a.class1.class2.foo = 32
+// In this case, a is of some class (e.g., class3).  But we want to
+// call some method on a that belongs to class2.  now, inside the
+// method, we want something like
+//    x.foo = 32
+// but _x_ has to be tagged with prefix information, because _x_ is
+// really of class class3.  The tag has to be on the object because
+// if there are multiple arguments to the function, they can be
+// typecast at different levels.  Also, it tracks only the _instance_
+// of the array, not the core array itself.  So the information has
+// to be tagged on the array somehow.
+//
+// One idea is to replace the class name with the class path.  So if
+// a is of type class3, but we want to access it as a type class2,
+// we "cast" it to type class3:class1:class2.  Then, when accessing
+// members of "a", we use the class list to determine the indexing
+// sequence.  This casting operation can be done at the dispatch
+// level.  Because the "struct" operation simply strips the class name
+// from the object, it will still return the intact data array.
+//
 namespace FreeMat {
   UserClass::UserClass() {
   }
@@ -125,13 +153,15 @@ namespace FreeMat {
       }
     // return a new object with the specified properties
     Array retval(FM_STRUCT_ARRAY,s.getDimensions(),dp,false,newfields);
-    retval.setClassName(classname);
+	stringVector cp;
+	cp.push_back(classname);
+    retval.setClassName(cp);
     return retval;
   }
 
   Array ClassOneArgFunction(Array x) {
     if (x.isUserClass())
-      return Array::stringConstructor(x.getClassName());
+      return Array::stringConstructor(x.getClassName().back());
     else {
       switch (x.getDataClass()) {
       case FM_CELL_ARRAY:
@@ -179,7 +209,7 @@ namespace FreeMat {
       if (!parent.isUserClass())
 	throw Exception("parent objects must be user defined classes");
       parents.push_back(parent);
-      parentNames.push_back(parent.getClassName());
+      parentNames.push_back(parent.getClassName().back());
     }
     Array sval(arg[0]);
     Array classname(arg[1]);
@@ -200,7 +230,7 @@ namespace FreeMat {
 			   WalkTree* eval) {
     FuncPtr val;
     ArrayVector m, n;
-    if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName() + "_" + funcname,val)) {
+    if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName().back() + "_" + funcname,val)) {
       val->updateCode();
       m.push_back(a);
       n = val->evaluateFunction(eval,m,1);
@@ -209,23 +239,23 @@ namespace FreeMat {
       else
 	return Array::emptyConstructor();
     }
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
   }
 
-  bool ClassResolveFunction(WalkTree* eval, std::string classname,
-			    std::string funcName, FuncPtr& val) {
+  bool ClassResolveFunction(WalkTree* eval, Array& args, std::string funcName, FuncPtr& val) {
     Context *context = eval->getContext();
     // First try to resolve to a method of the base class
-    if (context->lookupFunction("@" + classname + "_" + funcName,val)) {
-      eval->setClassPrefix("");
+    if (context->lookupFunction("@" + args.getClassName().back() + "_" + funcName,val)) {
       return true;
     } 
-    UserClass eclass(eval->lookupUserClass(classname));
+    UserClass eclass(eval->lookupUserClass(args.getClassName().back()));
     stringVector parentClasses(eclass.getParentClasses());
     // Now check the parent classes
     for (int i=0;i<parentClasses.size();i++) {
       if (context->lookupFunction("@" + parentClasses[i] + "_" + funcName,val)) {
-	eval->setClassPrefix(parentClasses[i]);
+	stringVector argClass(args.getClassName());
+	argClass.push_back(parentClasses[i]);
+	args.setClassName(argClass);
 	return true;
       }
     }
@@ -238,7 +268,7 @@ namespace FreeMat {
     FuncPtr val;
     ArrayVector m, n;
     if (a.isUserClass()) {
-      if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName() + "_" + funcname,val)) {
+      if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName().back() + "_" + funcname,val)) {
 	val->updateCode();
 	m.push_back(a); m.push_back(b);
 	n = val->evaluateFunction(eval,m,1);
@@ -248,7 +278,7 @@ namespace FreeMat {
 	  return Array::emptyConstructor();
       }
     } else if (b.isUserClass()) {
-      if (eval->getContext()->lookupFunction(std::string("@") + b.getClassName() + "_" + funcname,val)) {
+      if (eval->getContext()->lookupFunction(std::string("@") + b.getClassName().back() + "_" + funcname,val)) {
 	val->updateCode();
 	m.push_back(a); m.push_back(b);
 	n = val->evaluateFunction(eval,m,1);
@@ -258,7 +288,86 @@ namespace FreeMat {
 	  return Array::emptyConstructor();
       }
     }
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName() + " and " + b.getClassName());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back() + " and " + b.getClassName().back());
   }
 
+  // What is special here...  Need to be able to do field indexing
+  // 
+  ArrayVector ClassRHSExpression(Array r, ASTPtr t, WalkTree* eval) {
+    ASTPtr s;
+    Array q;
+    Array n, p;
+    ArrayVector m;
+    int peerCnt;
+    int dims;
+    bool isVar;
+    bool isFun;
+
+    ArrayVector rv;
+    Dimensions rhsDimensions;
+    while (t != NULL) {
+      rhsDimensions = r.getDimensions();
+      if (!rv.empty()) 
+	throw Exception("Cannot reindex an expression that returns multiple values.");
+      if (t->opNum ==(OP_PARENS)) {
+	m = eval->expressionList(t->down,&rhsDimensions);
+	if (m.size() == 0) 
+	  throw Exception("Expected indexing expression!");
+	else if (m.size() == 1) {
+	  q = r.getVectorSubset(m[0]);
+	  r = q;
+	} else {
+	  q = r.getNDimSubset(m);
+	  r = q;
+	}
+      }
+      if (t->opNum ==(OP_BRACES)) {
+	m = eval->expressionList(t->down,&rhsDimensions);
+	if (m.size() == 0) 
+	  throw Exception("Expected indexing expression!");
+	else if (m.size() == 1)
+	  rv = r.getVectorContentsAsList(m[0]);
+	else
+	  rv = r.getNDimContentsAsList(m);
+	if (rv.size() == 1) {
+	  r = rv[0];
+	  rv = ArrayVector();
+	} else if (rv.size() == 0) {
+	  throw Exception("Empty expression!");
+	  r = Array::emptyConstructor();
+	}
+      }
+      if (t->opNum ==(OP_DOT)) {
+	// This is where the classname chain comes into being.
+	stringVector className = r.getClassName();
+	for (int i=1;i<className.size();i++) {
+	  rv = r.getFieldAsList(className[i]);
+	  r = rv[0];
+	}
+	rv = r.getFieldAsList(t->down->text);
+	if (rv.size() <= 1) {
+	  r = rv[0];
+	  rv = ArrayVector();
+	}
+      }
+      if (t->opNum == (OP_DOTDYN)) {
+	char *field;
+	try {
+	  Array fname(eval->expression(t->down));
+	  field = fname.getContentsAsCString();
+	} catch (Exception &e) {
+	  throw Exception("dynamic field reference to structure requires a string argument");
+	}
+	rv = r.getFieldAsList(field);
+	if (rv.size() <= 1) {
+	  r = rv[0];
+	  rv = ArrayVector();
+	}      
+      }
+      t = t->right;
+    }
+    if (rv.empty())
+      rv.push_back(r);
+    return rv;
+  }
 }

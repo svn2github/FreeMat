@@ -351,7 +351,7 @@ namespace FreeMat {
 	return singleArrayVector(t);
       if (!t.isUserClass())
 	throw Exception("can only convert objects (user-defined types) into structs");
-      t.setClassName(std::string());
+      t.setClassName(stringVector());
       return singleArrayVector(t);
     }
     if (arg.size() % 2)

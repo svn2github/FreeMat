@@ -156,7 +156,8 @@ namespace FreeMat {
      * Create an Array with the specified contents.
      */
     Array(Class,const Dimensions& ,void*,bool sparse = false, 
-	  const stringVector& = stringVector(), const std::string classname = std::string());
+	  const stringVector& = stringVector(), 
+	  const stringVector& classname = stringVector());
     /**
      * Destructor - free the data object.
      */
@@ -182,11 +183,11 @@ namespace FreeMat {
     /**
      * Return name of user-defined class
      */
-    std::string getClassName() const;
+    stringVector getClassName() const;
     /**
      * Set classname tag - implies this is a structure array.
      */
-    void setClassName(std::string);
+    void setClassName(stringVector);
     /**
      * Get a copy of our dimensions vector.
      */

@@ -64,12 +64,15 @@ namespace FreeMat {
     /**
      * The class name - only used for user-defined classes
      */
-    std::string className;
+    stringVector className;
     /**
      * Construct a Data object with the given arguments.
      * the owner count is initialized to 1.
      */
-    Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag = false, const stringVector& fields = stringVector(), std::string classname = std::string());
+    Data(Class aClass, const Dimensions& dims, void *s, 
+	 bool sparseflag = false, 
+	 const stringVector& fields = stringVector(), 
+	 stringVector classname = stringVector());
     /**
      * The destructor.  Calls freeDataBlock member function.
      */
@@ -94,7 +97,7 @@ namespace FreeMat {
     Data* putData(Class aClass, const Dimensions& dims, void *s, 
 		  bool sparseflag = false, 
 		  const stringVector& fields = stringVector(),
-		  std::string classname = std::string());
+		  stringVector classname = stringVector());
     /**
      * Decrement the reference count (owners) by one.
      */
@@ -118,7 +121,7 @@ namespace FreeMat {
     /**
      * Return name of user-defined class
      */
-    std::string getClassName() const;
+    stringVector getClassName() const;
     /**
      * Set the dimensions for the data block.
      */

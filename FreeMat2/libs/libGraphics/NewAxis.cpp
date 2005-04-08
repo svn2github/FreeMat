@@ -23,6 +23,10 @@
 #include <iostream>
 #include <string>
 
+double log2(double x) {
+	return (log(x)/log(2.0));
+}
+
 namespace FreeMat {
   static std::string TrimPrint(double val, bool scientificNotation) {
     char buffer[1000];

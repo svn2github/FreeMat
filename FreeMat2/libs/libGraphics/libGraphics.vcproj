@@ -203,6 +203,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\NewAxis.cpp">
+			</File>
+			<File
 				RelativePath="Plot2D.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -261,6 +264,9 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\SurfPlot.cpp">
 			</File>
 		</Filter>
 		<Filter

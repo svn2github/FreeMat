@@ -25,6 +25,9 @@
 #include <iostream>
 #include <stdio.h>
 
+#undef min
+#undef max
+
 namespace FreeMat {
 
   Plot2D::Plot2D(int width, int height) : PrintableWidget(0,0,width,height) {

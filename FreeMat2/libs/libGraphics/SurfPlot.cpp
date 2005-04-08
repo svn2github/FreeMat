@@ -31,6 +31,12 @@ extern "C" {
 #include "trackball.h"
 }
 
+#undef min
+#undef max
+#ifndef M_PI
+#define M_PI 4.0*atan(1.0)
+#endif
+
 namespace FreeMat {
 
   void SurfPlot::SetData(const double*x, const double*y, const double*z, int nx, int ny) {
@@ -225,7 +231,8 @@ namespace FreeMat {
     deltx = unit.x*scalex;
     delty = unit.y*scaley;
     float rad;
-    rad = std::max(1e-6,sqrt(deltx*deltx+delty*delty));
+	rad = sqrt(deltx*deltx+delty*delty);
+    rad = std::max(1e-6f,rad);
     deltx /= rad;
     delty /= rad;
     int maxlabellength = 0;

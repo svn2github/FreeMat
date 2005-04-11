@@ -293,7 +293,6 @@ namespace FreeMat {
   
   ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
     ArrayVector struct_args, m;
-    Dimensions rhsDimensions;
     stringVector fNames;
     fNames.push_back("type");
     fNames.push_back("subs");
@@ -301,11 +300,10 @@ namespace FreeMat {
     Array rsave(r);
     
     while (t != NULL) {
-      rhsDimensions = r.getDimensions();
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
-	m = eval->expressionList(t->down,&rhsDimensions);
+	m = eval->variableSubIndexExpressions(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
@@ -314,7 +312,7 @@ namespace FreeMat {
 	struct_args.push_back(Array::cellConstructor(q));
       }
       if (t->opNum ==(OP_BRACES)) {
-	m = eval->expressionList(t->down,&rhsDimensions);
+	m = eval->variableSubIndexExpressions(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
@@ -361,13 +359,11 @@ namespace FreeMat {
     }
 
     ArrayVector rv;
-    Dimensions rhsDimensions;
     while (t != NULL) {
-      rhsDimensions = r.getDimensions();
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
-	m = eval->expressionList(t->down,&rhsDimensions);
+	m = eval->variableSubIndexExpressions(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
@@ -379,7 +375,7 @@ namespace FreeMat {
 	}
       }
       if (t->opNum ==(OP_BRACES)) {
-	m = eval->expressionList(t->down,&rhsDimensions);
+	m = eval->variableSubIndexExpressions(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)

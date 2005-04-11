@@ -256,7 +256,11 @@ namespace FreeMat {
      * valid if we are a subindexing expression list (i.e., 
      * VAR(exprssionlist)), in which case dim != NULL.
      */
-    ArrayVector expressionList(ASTPtr t, Dimensions* dim);
+    ArrayVector expressionList(ASTPtr t);
+    
+    Array EndReference(Array v, int index, int count);
+    Array AllColonReference(Array v, int index, bool vector);
+    ArrayVector variableSubIndexExpressions(ASTPtr t, Array subroot);
     /**
      * The RHS expression is used to represent an rvalue in an
      * assignment statement (or an implicit assignment such as 

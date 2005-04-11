@@ -621,6 +621,7 @@ namespace FreeMat {
 	  Q.count = 1;
 	} else {
 	  Q.index = index;
+	  //FIXME!!
 	  Q.count = 4;
 	}
 	endStack.push_back(Q);
@@ -1710,7 +1711,7 @@ namespace FreeMat {
     ArrayVector m;
     
     if (t->opNum ==(OP_PARENS)) {
-      m = expressionList(t->down,r);
+      m = variableSubIndexExpressions(t->down,r);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
@@ -1729,7 +1730,7 @@ namespace FreeMat {
       }
     }
     if (t->opNum ==(OP_BRACES)) {
-      m = expressionList(t->down,r);
+      m = variableSubIndexExpressions(t->down,r);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
@@ -1880,7 +1881,7 @@ namespace FreeMat {
 	}
     }
     if (s->opNum ==(OP_BRACES)) {
-      m = simpleSubindexExpressions(s->down,lhs);
+      m = variableSubIndexExpressions(s->down,lhs);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       if (m.size() == 1) {
@@ -1914,6 +1915,22 @@ namespace FreeMat {
 
     vec.push_back(val);
     return assignExpression(t,vec);
+  }
+
+  Array WalkTree::EndReference(Array v, int index, int count) {
+    Dimensions dim(v.getDimensions());
+    if (count == 1)
+      return Array::int32Constructor(dim.getElementCount());
+    else
+      return Array::int32Constructor(dim.getDimensionLength(index));
+  }
+
+  Array WalkTree::AllColonReference(Array v, int index, bool vector) {
+    Dimensions dim(v.getDimensions());
+    if (vector)
+      return Array::int32RangeConstructor(1,1,dim.getElementCount(),true);
+    else
+      return Array::int32RangeConstructor(1,1,dim.getDimensionLength(index),true);
   }
   
   // If we got this far, we must have at least one subindex
@@ -3194,7 +3211,7 @@ namespace FreeMat {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
-	m = varSub(t->down,r);
+	m = variableSubIndexExpressions(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
@@ -3206,7 +3223,7 @@ namespace FreeMat {
 	}
       }
       if (t->opNum ==(OP_BRACES)) {
-	m = expressionList(t->down,r);
+	m = variableSubIndexExpressions(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)

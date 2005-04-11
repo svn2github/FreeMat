@@ -139,6 +139,8 @@ namespace FreeMat {
 
     bool lookupFunction(std::string funcName, FuncPtr& val);
     
+    bool lookupFunctionLocally(std::string funcName, FuncPtr& val);
+
     bool lookupFunctionGlobally(std::string funcName, FuncPtr& val);
     
     void deleteFunctionGlobally(std::string funcName);

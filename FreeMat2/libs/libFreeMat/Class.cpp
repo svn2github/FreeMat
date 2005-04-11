@@ -230,7 +230,7 @@ namespace FreeMat {
 			   WalkTree* eval) {
     FuncPtr val;
     ArrayVector m, n;
-    if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName().back() + "_" + funcname,val)) {
+    if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) {
       val->updateCode();
       m.push_back(a);
       n = val->evaluateFunction(eval,m,1);
@@ -245,14 +245,14 @@ namespace FreeMat {
   bool ClassResolveFunction(WalkTree* eval, Array& args, std::string funcName, FuncPtr& val) {
     Context *context = eval->getContext();
     // First try to resolve to a method of the base class
-    if (context->lookupFunction("@" + args.getClassName().back() + "_" + funcName,val)) {
+    if (context->lookupFunction(ClassMangleName(args.getClassName().back(),funcName),val)) {
       return true;
     } 
     UserClass eclass(eval->lookupUserClass(args.getClassName().back()));
     stringVector parentClasses(eclass.getParentClasses());
     // Now check the parent classes
     for (int i=0;i<parentClasses.size();i++) {
-      if (context->lookupFunction("@" + parentClasses[i] + "_" + funcName,val)) {
+      if (context->lookupFunction(ClassMangleName(parentClasses[i],funcName),val)) {
 	stringVector argClass(args.getClassName());
 	argClass.push_back(parentClasses[i]);
 	args.setClassName(argClass);
@@ -268,7 +268,7 @@ namespace FreeMat {
     FuncPtr val;
     ArrayVector m, n;
     if (a.isUserClass()) {
-      if (eval->getContext()->lookupFunction(std::string("@") + a.getClassName().back() + "_" + funcname,val)) {
+      if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) {
 	val->updateCode();
 	m.push_back(a); m.push_back(b);
 	n = val->evaluateFunction(eval,m,1);
@@ -278,7 +278,7 @@ namespace FreeMat {
 	  return Array::emptyConstructor();
       }
     } else if (b.isUserClass()) {
-      if (eval->getContext()->lookupFunction(std::string("@") + b.getClassName().back() + "_" + funcname,val)) {
+      if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) {
 	val->updateCode();
 	m.push_back(a); m.push_back(b);
 	n = val->evaluateFunction(eval,m,1);
@@ -290,12 +290,16 @@ namespace FreeMat {
     }
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back() + " and " + b.getClassName().back());
   }
-
+  
   ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
+    ArrayVector struct_args, m;
+    Dimensions rhsDimensions;
     stringVector fNames;
     fNames.push_back("type");
     fNames.push_back("subs");
-    Dimensions rhsDimensions;
+    ArrayVector rv;
+    Array rsave(r);
+    
     while (t != NULL) {
       rhsDimensions = r.getDimensions();
       if (!rv.empty()) 
@@ -306,11 +310,8 @@ namespace FreeMat {
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
 	ArrayMatrix q;	q.push_back(m);
-	Array args(Array::cellConstructor(q));
-	ArrayVector tmp;
-	tmp.push_back(Array::stringConstructor("()"));
-	tmp.push_back(args);
-	Array strct(Array::structConstructor(fNames,tmp));
+	struct_args.push_back(Array::stringConstructor("()"));
+	struct_args.push_back(Array::cellConstructor(q));
       }
       if (t->opNum ==(OP_BRACES)) {
 	m = eval->expressionList(t->down,&rhsDimensions);
@@ -318,19 +319,26 @@ namespace FreeMat {
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
 	ArrayMatrix q;	q.push_back(m);
-	Array args(Array::cellConstructor(q));
-	ArrayVector tmp;
-	tmp.push_back(Array::stringConstructor("{}"));
-	tmp.push_back(args);
-	Array strct(Array::structConstructor(fNames,tmp));
+	struct_args.push_back(Array::stringConstructor("{}"));
+	struct_args.push_back(Array::cellConstructor(q));
       }
       if (t->opNum ==(OP_DOT)) {
-	ArrayVector tmp;
-	tmp.push_back(Array::stringConstructor("."));
-	tmp.push_back(t->down->text);
-	Array strct(Array::structConstructor(fNames,tmp));
+	struct_args.push_back(Array::stringConstructor("."));
+	struct_args.push_back(Array::stringConstructor(t->down->text));
       }
+      t = t->right;
     }
+    int cnt = struct_args.size()/2;
+    Array *cp = (Array*) Array::allocateArray(FM_STRUCT_ARRAY,cnt,fNames);
+    for (int i=0;i<2*cnt;i++) 
+      cp[i] = struct_args[i];
+    Array starg(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
+    ArrayVector p;
+    p.push_back(rsave);
+    p.push_back(starg);
+    val->updateCode();
+    ArrayVector n = val->evaluateFunction(eval,p,1);
+    return n;
   }
 
   // What is special here...  Need to be able to do field indexing
@@ -345,7 +353,7 @@ namespace FreeMat {
     bool isVar;
     bool isFun;
     FuncPtr val;
-
+    
     // Try and look up subsref...
     if (ClassResolveFunction(eval,r,"subsref",val)) {
       // Overloaded subsref case
@@ -418,5 +426,12 @@ namespace FreeMat {
     if (rv.empty())
       rv.push_back(r);
     return rv;
+  }
+
+  // Ideally, this would be the only place where the class name is mangled.
+  // However, currently, the same op is repeated in the Interface implementation
+  // code.
+  std::string ClassMangleName(std::string className, std::string funcName) {
+    return "@" + className + "_" + funcName;
   }
 }

@@ -44,6 +44,8 @@ namespace FreeMat {
   }
 
   void Context::pushScope(std::string name) {
+    if (scopestack.size() > 100)
+      throw Exception("Allowable stack depth exceeded...");
     scopestack.push_back(new Scope(name));
   }
 
@@ -154,9 +156,14 @@ namespace FreeMat {
     return scopestack.front()->lookupFunction(funcName,val);
   }
 
+  bool Context::lookupFunctionLocally(std::string funcName, FuncPtr& val) {
+    return scopestack.back()->lookupFunction(funcName,val);
+  }
+
   bool Context::lookupFunctionGlobally(std::string funcName, FuncPtr& val) {
     return scopestack.front()->lookupFunction(funcName,val);
   }
+
 
   void Context::deleteFunctionGlobally(std::string funcName) {
     scopestack.front()->deleteFunction(funcName);

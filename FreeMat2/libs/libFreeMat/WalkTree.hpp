@@ -116,12 +116,15 @@ namespace FreeMat {
     void handlePassByReference(ASTPtr q, stringVector arguments,
 			       ArrayVector m,stringVector keywords,
 			       ASTPtrVector keyexpr, int* argTypeMap);
-    bool lookupFunctionMangled(std::string funcName, FuncPtr& val);
-    bool lookupFunctionWithRescanMangled(std::string funcName, FuncPtr& val);
     Array DoBinaryOperator(ASTPtr t, BinaryFunc fnc, std::string fname);
     Array DoUnaryOperator(ASTPtr t, UnaryFunc fnc, std::string fname);
     ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
+    // Set this flag to stop overloading of functions
+    bool stopoverload;
   public:
+    bool getStopOverload();
+    void setStopOverload(bool flag);
+
     void setClassPrefix(std::string prefix);
     bool debugActive;
     void dbstep(int linecount);
@@ -285,8 +288,8 @@ namespace FreeMat {
      * Look up an identifier as a potential function name, using a
      * rescan if the identifier is not found on the first pass.
      */
-    bool lookupFunctionWithRescan(std::string funcName, FuncPtr& val, 
-				  ArrayVector& args);
+    bool lookupFunction(std::string funcName, FuncPtr& val, ArrayVector& args, 
+			bool disableOverload = false);
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */

@@ -2587,17 +2587,17 @@ namespace FreeMat {
 	throw Exception("arguments to pcode must be function names");
       char *fname = func.getContentsAsCString();
       FunctionDef *funcDef;
-	  ArrayVector m;
+      ArrayVector m;
       bool isFun;
       char buffer[1024];
       char buffer2[1024];
       int n;
       n = strlen(fname);
-      isFun = eval->lookupFunctionWithRescan(fname,funcDef,m);
+      isFun = eval->lookupFunction(fname,funcDef,m);
       if ((n>3) && (fname[n-1] == 'm' || fname[n-1] == 'M')
 	  && (fname[n-2] == '.')) {
 	fname[n-2] = 0;
-	isFun = eval->lookupFunctionWithRescan(fname,funcDef,m);
+	isFun = eval->lookupFunction(fname,funcDef,m);
       }
       if (!isFun) {
 	sprintf(buffer,"could not find definition for %s",fname);

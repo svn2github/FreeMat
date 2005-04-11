@@ -2009,6 +2009,47 @@ namespace FreeMat {
 //     return ArrayVector();
 //   }
 
+
+  //!
+  //@Module BUILTIN Evaulate Builtin Function
+  //@@Section FREEMAT
+  //@@Usage
+  //The @|builtin| function evaluates a built in function
+  //with the given name, bypassing any overloaded functions.
+  //The syntax of @|builtin| is
+  //@[
+  //  [y1,y2,...,yn] = builtin(fname,x1,x2,...,xm)
+  //@]
+  //where @|fname| is the name of the function to call.  Apart
+  //from the fact that @|fname| must be a string, and that @|builtin|
+  //always calls the non-overloaded method, it operates exactly like
+  //@|feval|.  Note that unlike MATLAB, @|builtin| does not force
+  //evaluation to an actual compiled function.  It simply subverts
+  //the activation of overloaded method calls.
+  //!
+  ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+    if (arg.size() == 0)
+      throw Exception("builtin function requires at least one argument");
+    if (!(arg[0].isString()))
+      throw Exception("first argument to builtin must be the name of a function (i.e., a string)");
+    FunctionDef *funcDef;
+    char *fname = arg[0].getContentsAsCString();
+    Context *context = eval->getContext();
+    if (!context->lookupFunction(fname,funcDef))
+      throw Exception(std::string("function ") + fname + " undefined!");
+    funcDef->updateCode();
+    if (funcDef->scriptFlag)
+      throw Exception("cannot use feval on a script");
+    ArrayVector newarg(arg);
+    newarg.erase(newarg.begin());
+    bool flagsave = eval->getStopOverload();
+    eval->setStopOverload(true);
+    ArrayVector tmp(funcDef->evaluateFunction(eval,newarg,nargout));
+    eval->setStopOverload(flagsave);
+    return tmp;
+  }
+  
+  
   //!
   //@Module FEVAL Evaluate a Function
   //@@Section FREEMAT

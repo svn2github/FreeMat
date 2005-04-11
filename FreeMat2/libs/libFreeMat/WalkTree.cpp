@@ -465,7 +465,7 @@ namespace FreeMat {
 	{
 	  FuncPtr val;
 	  ArrayVector dummy;
-	  if (!lookupFunctionWithRescan(t->down->text,val,dummy))
+	  if (!lookupFunction(t->down->text,val,dummy))
 	    throw Exception("unable to resolve " + std::string(t->down->text) + 
 			    " to a function call");
 	  retval = Array::funcPtrConstructor(val);
@@ -2602,7 +2602,7 @@ namespace FreeMat {
       }
       // Now that the arguments have been evaluated, we have to 
       // find the dominant class
-      if (!lookupFunctionWithRescan(t->text,funcDef,m))
+      if (!lookupFunction(t->text,funcDef,m))
 	throw Exception(std::string("Undefined function or variable ") + 
 			t->text);
       funcDef->updateCode();
@@ -2693,7 +2693,8 @@ namespace FreeMat {
     char *cname = strdup(bp.detail.c_str());
     bool isFun;
     FuncPtr val;
-    isFun = context->lookupFunction(cname,val);
+    ArrayVector dummy;
+    isFun = lookupFunction(cname,val,dummy);
     char buffer[1000];
     if (!isFun) return false;
     if (val->type() == FM_M_FUNCTION) {
@@ -2752,7 +2753,7 @@ namespace FreeMat {
 	while ((j < cstack.size()) && (cstack[j].cname == cstack[i].cname)
 	       && (cstack[j].detail == cstack[i].detail) 
 	       && (cstack[j].tokid != 0)) j++;
-	sprintf(buffer,"In %s(%s), line %d, position %d\n",
+	sprintf(buffer,"In %s(%s), line %d, column %d\n",
 		cstack[j-1].cname.c_str(),
 		cstack[j-1].detail.c_str(),
 		cstack[j-1].tokid & 0x0000FFFF,
@@ -2796,45 +2797,42 @@ namespace FreeMat {
     classTable.insertSymbol(classname,cdata);
   }
 
-  bool WalkTree::lookupFunctionWithRescanMangled(std::string funcName, FuncPtr& val) {
-    bool isFun = context->lookupFunction(funcName,val);
-    if (!isFun) {
-      io->rescanPath();
-      isFun = context->lookupFunction(funcName,val);
-    }
-    return isFun;
-  }
-
   void WalkTree::setClassPrefix(std::string prefix) {
     classPrefix = prefix;
   }
 
-  bool WalkTree::lookupFunctionMangled(std::string funcName, FuncPtr& val) {
-    return context->lookupFunction(funcName,val);
-  }
-
-  bool WalkTree::lookupFunctionWithRescan(std::string funcName, FuncPtr& val,
-					  ArrayVector &args) {
-    // Check to see if it is a constructor
-    if (lookupFunctionWithRescanMangled(std::string("@") + 
-					funcName + std::string("_") + funcName, val))
-      return true;
-    // Check to see if it is a method
-    // Are any of the arguments classes?
-    bool anyClasses = false;
-    int i=0;
-    while ((!anyClasses) && (i < args.size())) {
-      anyClasses = args[i].isUserClass();
-      if (!anyClasses) i++;
-    }
-    if (anyClasses)
-      // Try to resolve this to a method for the class or one of its parent
-      // classes.
-      if (ClassResolveFunction(this,args[i],funcName,val))
+  // Look up a function by name.  Use the arguments (if available) to assist
+  // in resolving method calls for objects
+  bool WalkTree::lookupFunction(std::string funcName, FuncPtr& val, 
+				ArrayVector &args, bool disableOverload) {
+    int passcount = 0;
+    while(passcount < 2) {
+      // This is the order for function dispatch according to the Matlab manual
+      // Subfunctions
+      if (context->lookupFunctionLocally(funcName,val))
 	return true;
-    // Just check for the plain old function
-    if (lookupFunctionMangled(funcName, val))
-      return true;
+      // Private functions (not implemented yet)
+      // Class constructor functions
+      if (context->lookupFunctionGlobally(ClassMangleName(funcName,funcName),val))
+	return true;
+      if (!(disableOverload || stopoverload)) {
+	// Look for a class method
+	// Are any of the arguments classes?
+	bool anyClasses = false;
+	int i=0;
+	while ((!anyClasses) && (i < args.size())) {
+	  anyClasses = args[i].isUserClass();
+	  if (!anyClasses) i++;
+	}
+	// Yes, try and resolve the call to a method
+	if (anyClasses && ClassResolveFunction(this,args[i],funcName,val));
+      }
+      if (context->lookupFunction(funcName,val))
+	return true;
+      if (passcount == 0)
+	io->rescanPath();
+      passcount++;
+    }
     return false;
   }
 
@@ -3133,8 +3131,8 @@ namespace FreeMat {
       return FunctionPointerDispatch(r,t->down,1);
     }
     // If r is a user defined object, we have to divert to the
-    // class function...
-    if (r.isUserClass()) 
+    // class function... (unless overloading is turned off)
+    if (r.isUserClass() && !stopoverload) 
       return ClassRHSExpression(r,t->down,this);
     t = t->down;
     while (t != NULL) {
@@ -3215,7 +3213,16 @@ namespace FreeMat {
     debugActive = false;
     inStepMode = false;
     bpActive = false;
+    stopoverload = false;
     clearStacks();
+  }
+
+  bool WalkTree::getStopOverload() {
+    return stopoverload;
+  }
+
+  void WalkTree::setStopOverload(bool flag) {
+    stopoverload = flag;
   }
 
   void WalkTree::dbstep(int linecount) {

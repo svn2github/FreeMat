@@ -3596,6 +3596,7 @@ break;
       else
 	ap[num].summarizeCellEntry();
       io->outputMessage("  ");
+      break;
     }
     case FM_FUNCPTR_ARRAY: {
       const FunctionDef** ap;

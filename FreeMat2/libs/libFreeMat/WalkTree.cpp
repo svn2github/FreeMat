@@ -56,6 +56,19 @@ namespace FreeMat {
    */
   bool InterruptPending;
 
+  /**
+   * Stores the current array for which to apply the "end" expression to.
+   */
+  typedef struct {
+    Array endArray;
+    bool isvalid;
+    int index;
+    int count;
+  } endData;
+  
+  std::vector<endData> endStack;
+  
+
   int endValStackLength;
   int endValStack[1000];
 
@@ -120,7 +133,7 @@ namespace FreeMat {
     pushID(t->context());
     if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!");
     ASTPtr s = t->down;
-    ArrayVector retval(expressionList(s,NULL));
+    ArrayVector retval(expressionList(s));
     popID();
     return retval;
   }
@@ -315,8 +328,10 @@ namespace FreeMat {
     }
     else if (t->type == reserved_node) {
       if (t->tokenNumber == FM_END) {
-	if (endValStackLength == 0) throw Exception("END keyword illegal!");
-	retval = Array::int32Constructor(endValStack[endValStackLength-1]);
+	endData t(endStack.back());
+	if (!t.isvalid)
+	  throw Exception("END keyword illegal!");
+	retval = EndReference(t.endArray,t.index,t.count);
       } else 
 	throw Exception("Unrecognized reserved node in expression tree!");
     }
@@ -561,7 +576,12 @@ namespace FreeMat {
    * through rhsExpression, which can return
    * a vector of variables.
    */
-  ArrayVector WalkTree::expressionList(ASTPtr t, Dimensions* dim) {
+
+  /*
+   * called to resolve var(expr,expr) = someval or
+   *                   someval = var(expr,expr)
+   */
+  ArrayVector WalkTree::variableSubIndexExpressions(ASTPtr t, Array subroot) {
     ArrayVector m;
     ArrayVector n;
     ASTPtr root;
@@ -588,32 +608,71 @@ namespace FreeMat {
 	for (int i=0;i<n.size();i++)
 	  m.push_back(n[i]);
       } else if (t->type == non_terminal && t->opNum ==(OP_ALL)) {
-	if (dim == NULL)
-	  throw Exception("Illegal use of the ':' keyword in indexing expression");
-	if (root->right == NULL) {
-	  // Singleton reference, with ':' - return 1:length as column vector...
-	  tmp = dim->getElementCount();
-	  m.push_back(Array::int32RangeConstructor(1,1,tmp,true));
-	} else {
-	  tmp = dim->getDimensionLength(index);
-	  m.push_back(Array::int32RangeConstructor(1,1,tmp,false));
-	}
+	if (root->right == NULL) 
+	  m.push_back(AllColonReference(subroot,index,true));
+	else
+	  m.push_back(AllColonReference(subroot,index,false));
       } else {
-	// Set up the value of the "end" token
-	if (dim != NULL) {
-	  if (root->right == NULL) 
-	    endVal = dim->getElementCount();
-	  else
-	    endVal = dim->getDimensionLength(index);
-	  // Push it onto the stack
-	  endValStack[endValStackLength] = endVal;
-	  endValStackLength++;
+	endData Q;
+	Q.endArray = subroot;
+	Q.isvalid = true;
+	if (root->right == NULL) {
+	  Q.index = 0;
+	  Q.count = 1;
+	} else {
+	  Q.index = index;
+	  Q.count = 4;
 	}
+	endStack.push_back(Q);
 	// Call the expression
 	m.push_back(expression(t));
-	if (dim != NULL)
-	  // Pop the endVal stack
-	  endValStackLength--;
+	endStack.pop_back();
+      }
+      index++;
+      t = t->right;
+    }
+    popID();
+    return m;
+  }
+
+  /*
+   * 
+   */
+  ArrayVector WalkTree::expressionList(ASTPtr t) {
+    ArrayVector m;
+    ArrayVector n;
+    ASTPtr root;
+    int index, tmp;
+    int endVal;
+    if (t == NULL) return m;
+    pushID(t->context());
+    root = t;
+    index = 0;
+    while (t != NULL) {
+      if (t->opNum == OP_KEYWORD) {
+	t = t->right;
+	continue;
+      }
+      if (t->type == non_terminal && t->opNum ==(OP_RHS)) {
+	try {
+	  n = rhsExpression(t->down);
+	} catch (Exception& e) {
+	  if (!e.matches("Empty expression!"))
+	    throw;
+	  else
+	    n = ArrayVector();
+	}
+	for (int i=0;i<n.size();i++)
+	  m.push_back(n[i]);
+      } else if (t->type == non_terminal && t->opNum ==(OP_ALL)) {
+	throw Exception("Illegal use of the ':' keyword in indexing expression");
+      } else {
+	endData Q;
+	Q.isvalid = false;
+	endStack.push_back(Q);
+	// Call the expression
+	m.push_back(expression(t));
+	endStack.pop_back();
       }
       index++;
       t = t->right;
@@ -1650,9 +1709,8 @@ namespace FreeMat {
     Dimensions rhsDimensions;
     ArrayVector m;
     
-    rhsDimensions = r.getDimensions();
     if (t->opNum ==(OP_PARENS)) {
-      m = expressionList(t->down,&rhsDimensions);
+      m = expressionList(t->down,r);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
@@ -1671,7 +1729,7 @@ namespace FreeMat {
       }
     }
     if (t->opNum ==(OP_BRACES)) {
-      m = expressionList(t->down,&rhsDimensions);
+      m = expressionList(t->down,r);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
@@ -1723,16 +1781,15 @@ namespace FreeMat {
   void WalkTree::simpleAssign(Array& r, ASTPtr t, ArrayVector& value) {
     Dimensions rhsDimensions;
     ArrayVector m;
+    Array assignVal;
     pushID(t->context());
     if (!r.isEmpty()) {
-      rhsDimensions = r.getDimensions();
+      assignVal = r;
     } else if (t->opNum != OP_BRACES) {
-      rhsDimensions = value[0].getDimensions();
-    } else
-      rhsDimensions.makeScalar();
-
+      assignVal = value[0];
+    } 
     if (t->opNum ==(OP_PARENS)) {
-      m = expressionList(t->down,&rhsDimensions);
+      m = variableSubIndexExpressions(t->down,assignVal);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
@@ -1746,7 +1803,7 @@ namespace FreeMat {
       }
     }
     if (t->opNum ==(OP_BRACES)) {
-      m = expressionList(t->down,&rhsDimensions);
+      m = variableSubIndexExpressions(t->down,assignVal);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       else if (m.size() == 1) {
@@ -1795,10 +1852,9 @@ namespace FreeMat {
     }
     // We are down to the last subindexing expression...
     // We have to special case this one
-    Dimensions rhsDimensions(lhs.getDimensions());
     ArrayVector m;
     if (s->opNum == (OP_PARENS)) {
-	m = expressionList(s->down,&rhsDimensions);
+	m = variableSubIndexExpressions(s->down,lhs);
 	if (m.size() == 0)
 	  throw Exception("Expected indexing expression!");
 	if (m.size() == 1) {
@@ -1824,7 +1880,7 @@ namespace FreeMat {
 	}
     }
     if (s->opNum ==(OP_BRACES)) {
-      m = expressionList(s->down,&rhsDimensions);
+      m = simpleSubindexExpressions(s->down,lhs);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       if (m.size() == 1) {
@@ -2596,7 +2652,7 @@ namespace FreeMat {
 	  // Collect keywords
 	  collectKeywords(s,keyvals,keyexpr,keywords);
 	  // Evaluate function arguments
-	  m = expressionList(s,NULL);
+	  m = expressionList(s);
 	} else
 	  throw Exception("Illegal expression in function expression");
       }
@@ -2895,8 +2951,7 @@ namespace FreeMat {
     if (!fun) return ArrayVector();
     if (args->opNum != OP_PARENS)
       throw Exception("Expected either '()' or function arguments inside parenthesis");
-    Dimensions rhsDimensions;
-    ArrayVector m = expressionList(args->down,&rhsDimensions);
+    ArrayVector m = expressionList(args->down);
     ArrayVector n;
     fun->updateCode();
     if (fun->scriptFlag) {
@@ -3136,11 +3191,10 @@ namespace FreeMat {
       return ClassRHSExpression(r,t->down,this);
     t = t->down;
     while (t != NULL) {
-      rhsDimensions = r.getDimensions();
-	  if (!rv.empty()) 
-	    throw Exception("Cannot reindex an expression that returns multiple values.");
+      if (!rv.empty()) 
+	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
-	m = expressionList(t->down,&rhsDimensions);
+	m = varSub(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
@@ -3152,7 +3206,7 @@ namespace FreeMat {
 	}
       }
       if (t->opNum ==(OP_BRACES)) {
-	m = expressionList(t->down,&rhsDimensions);
+	m = expressionList(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)

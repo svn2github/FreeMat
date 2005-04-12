@@ -257,9 +257,8 @@ namespace FreeMat {
      * VAR(exprssionlist)), in which case dim != NULL.
      */
     ArrayVector expressionList(ASTPtr t);
-    
     Array EndReference(Array v, int index, int count);
-    Array AllColonReference(Array v, int index, bool vector);
+    Array AllColonReference(Array v, int index, int count);
     ArrayVector variableSubIndexExpressions(ASTPtr t, Array subroot);
     /**
      * The RHS expression is used to represent an rvalue in an

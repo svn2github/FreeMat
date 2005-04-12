@@ -290,6 +290,16 @@ namespace FreeMat {
     }
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back() + " and " + b.getClassName().back());
   }
+
+  void AdjustColonCalls(ArrayVector& m, ASTPtr t) {
+    int ndx = 0;
+    while (t) {
+      if ((t->type == non_terminal) && (t->opNum == OP_ALL))
+	m[ndx] = Array::stringConstructor(":");
+      ndx++;
+      t = t->right;
+    }
+  }
   
   ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
     ArrayVector struct_args, m;
@@ -304,6 +314,8 @@ namespace FreeMat {
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
 	m = eval->variableSubIndexExpressions(t->down,r);
+	// Scan through the expressions... adjust for "colon" calls
+	AdjustColonCalls(m,t->down);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
@@ -313,6 +325,7 @@ namespace FreeMat {
       }
       if (t->opNum ==(OP_BRACES)) {
 	m = eval->variableSubIndexExpressions(t->down,r);
+	AdjustColonCalls(m,t->down);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...

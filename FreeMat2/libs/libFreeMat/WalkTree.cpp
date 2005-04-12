@@ -585,12 +585,18 @@ namespace FreeMat {
     ArrayVector m;
     ArrayVector n;
     ASTPtr root;
-    int index, tmp;
+    int index, tmp, count;
     int endVal;
     if (t == NULL) return m;
     pushID(t->context());
     root = t;
     index = 0;
+    count = 0;
+    while (t != NULL) {
+      t = t->right;
+      count++;
+    }
+    t = root;
     while (t != NULL) {
       if (t->opNum == OP_KEYWORD) {
 	t = t->right;
@@ -608,22 +614,13 @@ namespace FreeMat {
 	for (int i=0;i<n.size();i++)
 	  m.push_back(n[i]);
       } else if (t->type == non_terminal && t->opNum ==(OP_ALL)) {
-	if (root->right == NULL) 
-	  m.push_back(AllColonReference(subroot,index,true));
-	else
-	  m.push_back(AllColonReference(subroot,index,false));
+	m.push_back(AllColonReference(subroot,index,count));
       } else {
 	endData Q;
 	Q.endArray = subroot;
 	Q.isvalid = true;
-	if (root->right == NULL) {
-	  Q.index = 0;
-	  Q.count = 1;
-	} else {
-	  Q.index = index;
-	  //FIXME!!
-	  Q.count = 4;
-	}
+	Q.index = index;
+	Q.count = count;
 	endStack.push_back(Q);
 	// Call the expression
 	m.push_back(expression(t));
@@ -1918,6 +1915,16 @@ namespace FreeMat {
   }
 
   Array WalkTree::EndReference(Array v, int index, int count) {
+    FuncPtr val;
+    if (v.isUserClass() && ClassResolveFunction(this,v,"end",val)) {
+      // User has overloaded "end" operator
+      val->updateCode();
+      ArrayVector argvec;
+      argvec.push_back(Array::int32Constructor(index+1));
+      argvec.push_back(Array::int32Constructor(count));
+      ArrayVector retvec(val->evaluateFunction(this,argvec,1));
+      return retvec[0];
+    }
     Dimensions dim(v.getDimensions());
     if (count == 1)
       return Array::int32Constructor(dim.getElementCount());
@@ -1925,9 +1932,10 @@ namespace FreeMat {
       return Array::int32Constructor(dim.getDimensionLength(index));
   }
 
-  Array WalkTree::AllColonReference(Array v, int index, bool vector) {
+  Array WalkTree::AllColonReference(Array v, int index, int count) {
+    if (v.isUserClass()) return Array::emptyConstructor();
     Dimensions dim(v.getDimensions());
-    if (vector)
+    if (count == 1)
       return Array::int32RangeConstructor(1,1,dim.getElementCount(),true);
     else
       return Array::int32RangeConstructor(1,1,dim.getDimensionLength(index),true);

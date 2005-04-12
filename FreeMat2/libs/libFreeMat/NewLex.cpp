@@ -558,6 +558,7 @@ void lexScanningState() {
     popBracket('{');
   }
 
+
   if (currentChar() == ',') {
     if (bracketStackSize == 0)
       vcFlag = 0;

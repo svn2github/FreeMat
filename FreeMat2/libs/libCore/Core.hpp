@@ -174,6 +174,7 @@ namespace FreeMat {
   ArrayVector UniqueFunction(int nargout, const ArrayVector& arg);
   ArrayVector TicFunction(int nargout, const ArrayVector& arg);
   ArrayVector TocFunction(int nargout, const ArrayVector& arg);
+  ArrayVector ComputerFunction(int nargout, const ArrayVector& arg);
 }
 
 #endif

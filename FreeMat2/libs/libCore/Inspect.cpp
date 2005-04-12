@@ -1254,4 +1254,31 @@ namespace FreeMat {
      return FindModeSparse(tmp,nargout);
     return ArrayVector();
   }
+
+  //!
+  //@Module COMPUTER Computer System FreeMat is Running On
+  //@@Section FreeMat
+  //@@Usage
+  //Returns a string describing the name of the system FreeMat is running on.
+  //The exact value of this string is subject to change, although the @|'MAC'|
+  //and @|'PCWIN'| values are probably fixed.
+  //@[
+  //  str = computer
+  //@]
+  //Currently, the following return values are defined
+  //\begin{itemize}
+  //  \item @|'PCWIN'| - MS Windows
+  //  \item @|'MAC'| - Mac OS X
+  //  \item @|'UNIX'| - All others
+  //\end{itemize}
+  //!
+  ArrayVector ComputerFunction(int nargout, const ArrayVector& arg) {
+#ifdef WIN32
+    return singleArrayVector(Array::stringConstructor("PCWIN"));
+#elif defined(__APPLE__)
+    return singleArrayVector(Array::stringConstructor("MAC"));
+#else
+    return singleArrayVector(Array::stringConstructor("UNIX"));
+#endif
+  }
 }

@@ -44,4 +44,4 @@ function y = isa(x,type)
   if (~strcmp(typeof(type),'string'))
     error('type argument to isa must be a string');
   end
-  y = strcmp(typeof(x),type);
+  y = strcmp(class(x),type);

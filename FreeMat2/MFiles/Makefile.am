@@ -23,6 +23,7 @@ mprintplot.m\
 nonzeros.m\
 norm.m\
 numel.m\
+path.m\
 pinv.m\
 polyfit.m\
 polyval.m\

@@ -29,6 +29,6 @@ end
 x = getpath;
 if (nargin == 1)
   setpath(a);
-else
+elseif (nargin == 2)
   setpath([a,pathdiv,b]);  
 end

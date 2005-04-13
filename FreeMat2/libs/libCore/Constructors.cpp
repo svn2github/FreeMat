@@ -217,6 +217,89 @@ namespace FreeMat {
   }
 
   //!
+  //@Module CELL Cell Array of Empty Matrices
+  //@@Section ARRAY
+  //@@Usage
+  //Creates a cell array of empty matrix entres.  Two seperate 
+  //syntaxes are possible.  The first syntax specifies the array 
+  //dimensions as a sequence of scalar dimensions:
+  //@[
+  //   y = cell(d1,d2,...,dn).
+  //@]
+  //The resulting array has the given dimensions, and is filled with
+  //all zeros.  The type of @|y| is @|cell|, a cell array.  
+  //    
+  //The second syntax specifies the array dimensions as a vector,
+  //where each element in the vector specifies a dimension length:
+  //@[
+  //   y = cell([d1,d2,...,dn]).
+  //@]
+  //This syntax is more convenient for calling @|zeros| using a 
+  //variable for the argument.  In both cases, specifying only one
+  //dimension results in a square matrix output.
+  //@@Example
+  //The following examples demonstrate generation of some zero arrays 
+  //using the first form.
+  //@<
+  //cell(2,3,2)
+  //cell(1,3)
+  //@>
+  //The same expressions, using the second form.
+  //@<
+  //cell([2,6])
+  //cell([1,3])
+  //@>
+  //!
+  ArrayVector CellFunction(int nargout, const ArrayVector& arg) {
+    Array t, s;
+    Dimensions dims;
+    int32 *dp;
+    int i;
+    if (arg.size() == 0)
+      dims.makeScalar();
+    else {
+      // Case 1 - all of the entries are scalar
+      bool allScalars;
+      allScalars = true;
+      for (i=0;i<arg.size();i++)
+	allScalars &= arg[i].isScalar();
+      if (allScalars) {
+	t = arg[0];
+	if (arg.size() == 1) {
+	  // If all scalars and only one argument - we want a square zero matrix
+	  dims[0] = t.getContentsAsIntegerScalar();
+	  dims[1] = dims[0];
+	} else {
+	  // If all scalars and and multiple arguments, we count dimensions
+	  for (i=0;i<arg.size();i++) {
+	    t = arg[i];
+	    dims[i] = t.getContentsAsIntegerScalar();
+	  }
+	  
+	}
+      } else {
+	if (arg.size() > 1)
+	  throw Exception("Arguments to cell function must be either all scalars or a single vector");
+	t = arg[0];
+	t.promoteType(FM_UINT32);
+	dp = (int*) t.getDataPointer();
+	for (i=0;i<t.getLength();i++)
+	  dims[i] = dp[i];
+      }
+      bool allPositive;
+      allPositive = true;
+      for (i=0;i<dims.getLength();i++)
+	allPositive &= (dims[i] >= 0);
+      if (!allPositive)
+	throw Exception("Zeros function requires positive arguments");
+    }
+    s = Array(FM_CELL_ARRAY,dims,Array::allocateArray(FM_CELL_ARRAY,dims.getElementCount()));
+    ArrayVector retval;
+    retval.push_back(s);
+    return retval;
+  }
+
+  //!
   //@Module ONES Array of Ones
   //@@Section ARRAY
   //@@Usage

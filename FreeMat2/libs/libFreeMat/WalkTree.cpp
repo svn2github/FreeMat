@@ -329,7 +329,7 @@ namespace FreeMat {
     else if (t->type == reserved_node) {
       if (t->tokenNumber == FM_END) {
 	if (endStack.empty())
-	  throw Exception("END keyword illegal!");
+	  throw Exception("END keyword illegal (end stack underflow)!");
 	endData t(endStack.back());
 	if (!t.isvalid)
 	  throw Exception("END keyword illegal!");
@@ -1672,6 +1672,7 @@ namespace FreeMat {
 
   void WalkTree::block(ASTPtr t) {
     try {
+      if (!t) return;
       ASTPtr s;
       s = t->down;
       if ((state != FM_STATE_QUIT) && (state != FM_STATE_RETALL))

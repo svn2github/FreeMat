@@ -22,6 +22,7 @@
 #include "WalkTree.hpp"
 #include "Utils.hpp"
 #include "Command.hpp"
+#include "Interface.hpp"
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -76,7 +77,7 @@ namespace FreeMat {
   ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() != 1)
       throw Exception("cd function requires exactly one argument");
-    char* cdir = arg[0].getContentsAsCString();
+    char* cdir = TildeExpand(arg[0].getContentsAsCString());
     if (chdir(cdir) != 0)
       throw Exception(std::string("Unable to change to specified directory:") + 
 		      cdir);
@@ -145,7 +146,7 @@ namespace FreeMat {
     sprintf(buffer,"ls ");
     bp = buffer + strlen(buffer);
     for (i=0;i<arg.size();i++) {
-      char *target = arg[i].getContentsAsCString();
+      char *target = TildeExpand(arg[i].getContentsAsCString());
       sprintf(bp,"%s ",target);
       bp = buffer + strlen(buffer);
     }

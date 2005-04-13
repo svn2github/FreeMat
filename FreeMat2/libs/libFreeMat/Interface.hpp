@@ -78,6 +78,8 @@ namespace FreeMat {
      */
     virtual void warningMessage(const char* msg) = 0;
   };
+
+  char* TildeExpand(char* path);
 }
 
 #endif

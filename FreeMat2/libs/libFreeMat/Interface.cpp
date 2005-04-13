@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <glob.h>
 #include <unistd.h>
+#include <pwd.h>
 #endif
 
 #include "Interface.hpp"
@@ -25,6 +26,41 @@
 #endif
 
 namespace FreeMat {
+
+  char* TildeExpand(char* path) {
+#ifdef WIN32
+    return path;
+#else
+    char *newpath = path;
+    if (path[0] == '~' && (path[1] == '/') || (path[1] == 0)) {
+      char *home;
+      home = getenv("HOME");
+      if (home) {
+	newpath = (char*) malloc(strlen(path) + strlen(home));
+	strcpy(newpath,home);
+	strcat(newpath,path+1);
+      }
+    } else if (path[0] == '~' && isalpha(path[1])) {
+      char username[4096];
+      char *cp, *dp;
+      // Extract the user name
+      cp = username;
+      dp = path+1;
+      while (*dp != '/')
+	*cp++ = *dp++;
+      *cp = 0;
+      // Call getpwnam...
+      struct passwd *dat = getpwnam(cp);
+      if (dat) {
+	newpath = (char*) malloc(strlen(path) + strlen(dat->pw_dir));
+	strcpy(newpath,dat->pw_dir);
+	strcat(newpath,dp);
+      }
+    }
+    return newpath;
+#endif
+  }
+  
   Interface::Interface() {
     m_context = NULL;
   }
@@ -45,7 +81,7 @@ namespace FreeMat {
     token = strtok(pathdata,PATH_DELIM);
     while (token != NULL) {
       if (strcmp(token,".") != 0)
-	dirTab.push_back(std::string(token));
+	dirTab.push_back(std::string(TildeExpand(token)));
       token = strtok(NULL,PATH_DELIM);
     }
     m_path = path;

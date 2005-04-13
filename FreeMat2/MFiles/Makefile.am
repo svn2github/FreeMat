@@ -3,6 +3,7 @@ circshift.m\
 copper.m\
 exit.m\
 eye.m\
+filesep.m\
 flipdim.m\
 fliplr.m\
 flipud.m\
@@ -24,6 +25,7 @@ nonzeros.m\
 norm.m\
 numel.m\
 path.m\
+pathsep.m\
 pinv.m\
 polyfit.m\
 polyval.m\

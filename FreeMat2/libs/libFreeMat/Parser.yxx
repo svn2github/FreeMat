@@ -290,6 +290,7 @@ statementType:
 
 specialCall:
 	IDENT NUMERIC {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context());} |
+	STRING STRING {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context());} |
 	IDENT STRING {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context());} |
 	IDENT IDENT {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context()); } |
 	specialCall STRING {$1.v.p->addChild($2.v.p);} |

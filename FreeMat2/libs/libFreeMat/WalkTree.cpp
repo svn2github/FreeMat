@@ -2695,7 +2695,7 @@ namespace FreeMat {
 	  // Evaluate function arguments
 	  m = expressionList(s);
 	} else
-	  throw Exception("Illegal expression in function expression");
+	  throw Exception(std::string("Unknown function or variable ") + t->text);
       }
       // Now that the arguments have been evaluated, we have to 
       // find the dominant class

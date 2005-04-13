@@ -407,7 +407,7 @@ union yyalloc
 /* YYNNTS -- Number of nonterminals. */
 #define YYNNTS  49
 /* YYNRULES -- Number of rules. */
-#define YYNRULES  221
+#define YYNRULES  222
 /* YYNRULES -- Number of states. */
 #define YYNSTATES  334
 
@@ -470,18 +470,18 @@ static const unsigned short yyprhs[] =
      263,   265,   267,   269,   271,   273,   275,   277,   278,   280,
      282,   285,   290,   293,   294,   300,   306,   312,   316,   318,
      324,   329,   333,   336,   340,   342,   348,   351,   357,   363,
-     366,   372,   376,   379,   380,   382,   384,   387,   390,   393,
-     396,   397,   400,   404,   408,   417,   423,   432,   440,   447,
-     453,   457,   461,   463,   467,   471,   475,   479,   483,   487,
-     491,   495,   499,   503,   507,   511,   515,   519,   523,   527,
-     531,   535,   539,   543,   547,   551,   555,   559,   563,   567,
-     571,   575,   579,   583,   587,   591,   594,   597,   600,   603,
-     607,   611,   615,   619,   622,   625,   629,   633,   636,   638,
-     640,   642,   645,   647,   651,   654,   659,   664,   670,   673,
-     677,   682,   687,   693,   696,   699,   701,   704,   708,   711,
-     715,   719,   723,   726,   731,   733,   735,   740,   745,   748,
-     751,   753,   757,   759,   763,   765,   769,   771,   773,   775,
-     777,   779
+     366,   372,   376,   379,   382,   383,   385,   387,   390,   393,
+     396,   399,   400,   403,   407,   411,   420,   426,   435,   443,
+     450,   456,   460,   464,   466,   470,   474,   478,   482,   486,
+     490,   494,   498,   502,   506,   510,   514,   518,   522,   526,
+     530,   534,   538,   542,   546,   550,   554,   558,   562,   566,
+     570,   574,   578,   582,   586,   590,   594,   597,   600,   603,
+     606,   610,   614,   618,   622,   625,   628,   632,   636,   639,
+     641,   643,   645,   648,   650,   654,   657,   662,   667,   673,
+     676,   680,   685,   690,   696,   699,   702,   704,   707,   711,
+     714,   718,   722,   726,   729,   734,   736,   738,   743,   748,
+     751,   754,   756,   760,   762,   766,   768,   772,   774,   776,
+     778,   780,   782
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS. */
@@ -524,48 +524,48 @@ static const yysigned_char yyrhs[] =
        1,    -1,    23,   110,    93,    79,    17,    -1,    23,     1,
       -1,    23,   110,    93,    79,     1,    -1,    18,   103,   104,
      107,    17,    -1,    18,     1,    -1,    18,   103,   104,   107,
-       1,    -1,   110,    93,    79,    -1,   110,     1,    -1,    -1,
-     105,    -1,   106,    -1,   105,   106,    -1,    25,   103,    -1,
-      25,     1,    -1,    24,    79,    -1,    -1,    24,     1,    -1,
-     112,    61,   110,    -1,   112,    61,     1,    -1,    62,   117,
-      63,    61,     3,    59,   115,    60,    -1,    62,   117,    63,
-      61,     3,    -1,    62,   117,    63,    61,     3,    59,   115,
-       1,    -1,    62,   117,    63,    61,     3,    59,     1,    -1,
-      62,   117,    63,    61,     3,     1,    -1,    62,   117,    63,
-      61,     1,    -1,   110,    43,   110,    -1,   110,    43,     1,
-      -1,   111,    -1,   110,    49,   110,    -1,   110,    49,     1,
-      -1,   110,    50,   110,    -1,   110,    50,     1,    -1,   110,
-      51,   110,    -1,   110,    51,     1,    -1,   110,    52,   110,
-      -1,   110,    52,     1,    -1,   110,    53,   110,    -1,   110,
-      53,     1,    -1,   110,    44,   110,    -1,   110,    44,     1,
-      -1,   110,    45,   110,    -1,   110,    45,     1,    -1,   110,
-      46,   110,    -1,   110,    46,     1,    -1,   110,     7,   110,
-      -1,   110,     7,     1,    -1,   110,    47,   110,    -1,   110,
-      47,     1,    -1,   110,     8,   110,    -1,   110,     8,     1,
-      -1,   110,     9,   110,    -1,   110,     9,     1,    -1,   110,
-      48,   110,    -1,   110,    48,     1,    -1,   110,    10,   110,
-      -1,   110,    10,     1,    -1,   110,    11,   110,    -1,   110,
-      11,     1,    -1,   110,    12,   110,    -1,   110,    12,     1,
-      -1,    50,   110,    -1,    49,   110,    -1,    67,   110,    -1,
-      67,     1,    -1,   110,    57,   110,    -1,   110,    57,     1,
-      -1,   110,    13,   110,    -1,   110,    13,     1,    -1,   110,
-      58,    -1,   110,    14,    -1,    59,   110,    60,    -1,    59,
-     110,     1,    -1,    59,     1,    -1,     4,    -1,    15,    -1,
-      22,    -1,    68,     3,    -1,   112,    -1,    62,   117,    63,
-      -1,    62,     1,    -1,    62,   118,   117,    63,    -1,    62,
-     117,   118,    63,    -1,    62,   118,   117,   118,    63,    -1,
-      62,    63,    -1,    69,   116,    70,    -1,    69,   118,   116,
-      70,    -1,    69,   116,   118,    70,    -1,    69,   118,   116,
-     118,    70,    -1,    69,    70,    -1,    69,     1,    -1,     3,
-      -1,   112,   113,    -1,    59,   115,    60,    -1,    59,    60,
-      -1,    59,   115,     1,    -1,    69,   115,    70,    -1,    69,
-     115,     1,    -1,    71,     3,    -1,    71,    59,   110,    60,
-      -1,   110,    -1,    43,    -1,    52,     3,    61,   110,    -1,
-      52,     3,    61,     1,    -1,    52,     3,    -1,    52,     1,
-      -1,   114,    -1,   115,    64,   114,    -1,   120,    -1,   116,
-     118,   120,    -1,   120,    -1,   117,   118,   120,    -1,     6,
-      -1,     5,    -1,    64,    -1,    66,    -1,   110,    -1,   120,
-     119,   110,    -1
+       1,    -1,   110,    93,    79,    -1,   110,    93,    -1,   110,
+       1,    -1,    -1,   105,    -1,   106,    -1,   105,   106,    -1,
+      25,   103,    -1,    25,     1,    -1,    24,    79,    -1,    -1,
+      24,     1,    -1,   112,    61,   110,    -1,   112,    61,     1,
+      -1,    62,   117,    63,    61,     3,    59,   115,    60,    -1,
+      62,   117,    63,    61,     3,    -1,    62,   117,    63,    61,
+       3,    59,   115,     1,    -1,    62,   117,    63,    61,     3,
+      59,     1,    -1,    62,   117,    63,    61,     3,     1,    -1,
+      62,   117,    63,    61,     1,    -1,   110,    43,   110,    -1,
+     110,    43,     1,    -1,   111,    -1,   110,    49,   110,    -1,
+     110,    49,     1,    -1,   110,    50,   110,    -1,   110,    50,
+       1,    -1,   110,    51,   110,    -1,   110,    51,     1,    -1,
+     110,    52,   110,    -1,   110,    52,     1,    -1,   110,    53,
+     110,    -1,   110,    53,     1,    -1,   110,    44,   110,    -1,
+     110,    44,     1,    -1,   110,    45,   110,    -1,   110,    45,
+       1,    -1,   110,    46,   110,    -1,   110,    46,     1,    -1,
+     110,     7,   110,    -1,   110,     7,     1,    -1,   110,    47,
+     110,    -1,   110,    47,     1,    -1,   110,     8,   110,    -1,
+     110,     8,     1,    -1,   110,     9,   110,    -1,   110,     9,
+       1,    -1,   110,    48,   110,    -1,   110,    48,     1,    -1,
+     110,    10,   110,    -1,   110,    10,     1,    -1,   110,    11,
+     110,    -1,   110,    11,     1,    -1,   110,    12,   110,    -1,
+     110,    12,     1,    -1,    50,   110,    -1,    49,   110,    -1,
+      67,   110,    -1,    67,     1,    -1,   110,    57,   110,    -1,
+     110,    57,     1,    -1,   110,    13,   110,    -1,   110,    13,
+       1,    -1,   110,    58,    -1,   110,    14,    -1,    59,   110,
+      60,    -1,    59,   110,     1,    -1,    59,     1,    -1,     4,
+      -1,    15,    -1,    22,    -1,    68,     3,    -1,   112,    -1,
+      62,   117,    63,    -1,    62,     1,    -1,    62,   118,   117,
+      63,    -1,    62,   117,   118,    63,    -1,    62,   118,   117,
+     118,    63,    -1,    62,    63,    -1,    69,   116,    70,    -1,
+      69,   118,   116,    70,    -1,    69,   116,   118,    70,    -1,
+      69,   118,   116,   118,    70,    -1,    69,    70,    -1,    69,
+       1,    -1,     3,    -1,   112,   113,    -1,    59,   115,    60,
+      -1,    59,    60,    -1,    59,   115,     1,    -1,    69,   115,
+      70,    -1,    69,   115,     1,    -1,    71,     3,    -1,    71,
+      59,   110,    60,    -1,   110,    -1,    43,    -1,    52,     3,
+      61,   110,    -1,    52,     3,    61,     1,    -1,    52,     3,
+      -1,    52,     1,    -1,   114,    -1,   115,    64,   114,    -1,
+     120,    -1,   116,   118,   120,    -1,   120,    -1,   117,   118,
+     120,    -1,     6,    -1,     5,    -1,    64,    -1,    66,    -1,
+     110,    -1,   120,   119,   110,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
@@ -582,18 +582,18 @@ static const unsigned short yyrline[] =
      365,   365,   365,   365,   365,   369,   369,   374,   375,   379,
      382,   388,   394,   397,   403,   406,   411,   412,   413,   415,
      416,   417,   418,   419,   420,   424,   427,   428,   433,   437,
-     438,   442,   445,   449,   450,   454,   457,   463,   466,   469,
-     472,   473,   477,   478,   482,   486,   490,   492,   494,   496,
-     501,   502,   503,   504,   505,   506,   507,   508,   509,   510,
-     511,   512,   513,   514,   515,   516,   517,   518,   519,   520,
-     521,   522,   523,   524,   525,   526,   527,   528,   529,   530,
-     531,   532,   533,   534,   535,   536,   537,   538,   539,   540,
-     541,   542,   543,   544,   545,   546,   547,   548,   552,   553,
-     554,   555,   556,   557,   558,   559,   560,   561,   562,   563,
-     564,   565,   566,   567,   568,   571,   572,   576,   577,   578,
-     579,   580,   581,   582,   586,   587,   588,   589,   590,   591,
-     595,   596,   600,   601,   605,   606,   610,   610,   614,   614,
-     618,   619
+     438,   442,   445,   448,   452,   453,   457,   460,   466,   469,
+     472,   475,   476,   480,   481,   485,   489,   493,   495,   497,
+     499,   504,   505,   506,   507,   508,   509,   510,   511,   512,
+     513,   514,   515,   516,   517,   518,   519,   520,   521,   522,
+     523,   524,   525,   526,   527,   528,   529,   530,   531,   532,
+     533,   534,   535,   536,   537,   538,   539,   540,   541,   542,
+     543,   544,   545,   546,   547,   548,   549,   550,   551,   555,
+     556,   557,   558,   559,   560,   561,   562,   563,   564,   565,
+     566,   567,   568,   569,   570,   571,   574,   575,   579,   580,
+     581,   582,   583,   584,   585,   589,   590,   591,   592,   593,
+     594,   598,   599,   603,   604,   608,   609,   613,   613,   617,
+     617,   621,   622
 };
 #endif
 
@@ -657,18 +657,18 @@ static const unsigned char yyr1[] =
       93,    93,    93,    93,    93,    94,    94,    95,    95,    96,
       96,    97,    98,    98,    99,    99,   100,   100,   100,   100,
      100,   100,   100,   100,   100,   101,   101,   101,   102,   102,
-     102,   103,   103,   104,   104,   105,   105,   106,   106,   107,
-     107,   107,   108,   108,   109,   109,   109,   109,   109,   109,
+     102,   103,   103,   103,   104,   104,   105,   105,   106,   106,
+     107,   107,   107,   108,   108,   109,   109,   109,   109,   109,
+     109,   110,   110,   110,   110,   110,   110,   110,   110,   110,
      110,   110,   110,   110,   110,   110,   110,   110,   110,   110,
      110,   110,   110,   110,   110,   110,   110,   110,   110,   110,
      110,   110,   110,   110,   110,   110,   110,   110,   110,   110,
-     110,   110,   110,   110,   110,   110,   110,   110,   110,   110,
-     110,   110,   110,   110,   110,   110,   110,   110,   111,   111,
+     110,   110,   110,   110,   110,   110,   110,   110,   110,   111,
      111,   111,   111,   111,   111,   111,   111,   111,   111,   111,
-     111,   111,   111,   111,   111,   112,   112,   113,   113,   113,
-     113,   113,   113,   113,   114,   114,   114,   114,   114,   114,
-     115,   115,   116,   116,   117,   117,   118,   118,   119,   119,
-     120,   120
+     111,   111,   111,   111,   111,   111,   112,   112,   113,   113,
+     113,   113,   113,   113,   113,   114,   114,   114,   114,   114,
+     114,   115,   115,   116,   116,   117,   117,   118,   118,   119,
+     119,   120,   120
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -685,18 +685,18 @@ static const unsigned char yyr2[] =
        1,     1,     1,     1,     1,     1,     1,     0,     1,     1,
        2,     4,     2,     0,     5,     5,     5,     3,     1,     5,
        4,     3,     2,     3,     1,     5,     2,     5,     5,     2,
-       5,     3,     2,     0,     1,     1,     2,     2,     2,     2,
-       0,     2,     3,     3,     8,     5,     8,     7,     6,     5,
-       3,     3,     1,     3,     3,     3,     3,     3,     3,     3,
+       5,     3,     2,     2,     0,     1,     1,     2,     2,     2,
+       2,     0,     2,     3,     3,     8,     5,     8,     7,     6,
+       5,     3,     3,     1,     3,     3,     3,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
        3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     2,     2,     2,     2,     3,
-       3,     3,     3,     2,     2,     3,     3,     2,     1,     1,
-       1,     2,     1,     3,     2,     4,     4,     5,     2,     3,
-       4,     4,     5,     2,     2,     1,     2,     3,     2,     3,
-       3,     3,     2,     4,     1,     1,     4,     4,     2,     2,
-       1,     3,     1,     3,     1,     3,     1,     1,     1,     1,
-       1,     3
+       3,     3,     3,     3,     3,     3,     2,     2,     2,     2,
+       3,     3,     3,     3,     2,     2,     3,     3,     2,     1,
+       1,     1,     2,     1,     3,     2,     4,     4,     5,     2,
+       3,     4,     4,     5,     2,     2,     1,     2,     3,     2,
+       3,     3,     3,     2,     4,     1,     1,     4,     4,     2,
+       2,     1,     3,     1,     3,     1,     3,     1,     1,     1,
+       1,     1,     3
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -704,40 +704,40 @@ static const unsigned char yyr2[] =
    means the default is an error.  */
 static const unsigned char yydefact[] =
 {
-       0,     5,   195,   178,   179,     0,     0,     0,    73,   180,
+       0,     5,   196,   179,   180,     0,     0,     0,    73,   181,
        0,     0,    72,    40,     0,    71,    70,     0,    54,    55,
        0,     0,     0,     0,     0,     0,     0,     0,    20,     3,
       40,    33,     0,    53,    52,    51,    50,    49,    44,    43,
-      48,    47,    42,    45,    46,    38,    41,    39,   132,   182,
-      59,    56,    58,    57,   109,   195,   179,     0,   113,     0,
-     182,    12,     0,     0,     0,     0,   104,    98,     0,     0,
-     106,     0,     0,    40,    64,    67,     0,    66,     0,   166,
-     165,   177,     0,   184,   217,   216,   188,   220,     0,     0,
-     214,   168,   167,   181,   194,   193,     0,     0,   212,     1,
+      48,    47,    42,    45,    46,    38,    41,    39,   133,   183,
+      59,    56,    58,    57,   109,   196,   180,     0,   114,     0,
+     183,    12,     0,     0,     0,     0,   104,    98,     0,     0,
+     106,     0,     0,    40,    64,    67,     0,    66,     0,   167,
+     166,   178,     0,   185,   218,   217,   189,   221,     0,     0,
+     215,   169,   168,   182,   195,   194,     0,     0,   213,     1,
       21,    34,    35,    36,    37,    61,    62,    60,     0,     0,
-       0,     0,     0,     0,     0,   174,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,   173,     0,
-       0,     0,     0,   196,     0,     0,   120,   114,   115,   112,
-      82,    81,    80,    83,    84,    40,    13,    86,    85,     0,
+       0,     0,     0,     0,     0,   175,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,   174,     0,
+       0,     0,     0,   197,     0,     0,   121,   115,   116,   113,
+      82,    81,    80,    83,    84,   112,    13,    86,    85,     0,
       23,    40,    22,    26,    31,     0,     0,    29,    16,     0,
        0,   102,     0,    40,    40,    87,    40,     0,    69,    68,
-     176,   175,   183,     0,     0,   218,   219,     0,   189,     0,
-       0,   150,   149,   154,   153,   156,   155,   160,   159,   162,
-     161,   164,   163,   172,   171,   131,   130,   144,   143,   146,
-     145,   148,   147,   152,   151,   158,   157,   134,   133,   136,
-     135,   138,   137,   140,   139,   142,   141,   170,   169,   205,
-       0,   198,   204,   210,     0,   123,   122,     0,   202,     0,
-     183,   118,   117,     0,     0,   116,   111,    14,     0,     0,
+     177,   176,   184,     0,     0,   219,   220,     0,   190,     0,
+       0,   151,   150,   155,   154,   157,   156,   161,   160,   163,
+     162,   165,   164,   173,   172,   132,   131,   145,   144,   147,
+     146,   149,   148,   153,   152,   159,   158,   135,   134,   137,
+     136,   139,   138,   141,   140,   143,   142,   171,   170,   206,
+       0,   199,   205,   211,     0,   124,   123,     0,   203,     0,
+     184,   119,   118,     0,     0,   117,   111,    14,     0,     0,
       40,    32,    27,     0,     0,    17,     0,    40,   103,    97,
      101,     0,     0,     0,     0,    93,    88,    89,    40,    75,
-      74,     0,   186,   215,   185,     0,   221,   191,   213,   190,
-       0,   209,   208,   199,   197,     0,   201,   200,     0,   121,
+      74,     0,   187,   216,   186,     0,   222,   192,   214,   191,
+       0,   210,   209,   200,   198,     0,   202,   201,     0,   122,
       40,   110,   108,    40,     0,    28,    24,    30,    18,     0,
        0,    40,   100,     0,    95,    94,   107,   105,     0,    40,
-       0,    90,   129,     0,   187,   192,     0,   211,   203,    40,
+       0,    90,   130,     0,   188,   193,     0,   212,   204,    40,
       15,    40,    40,     0,    99,    96,    40,    40,    79,    78,
-     128,     0,   207,   206,    40,    40,    19,    40,    91,   127,
-       0,    40,   126,   124
+     129,     0,   208,   207,    40,    40,    19,    40,    91,   128,
+       0,    40,   127,   125
 };
 
 /* YYDEFGOTO[NTERM-NUM]. */
@@ -769,7 +769,7 @@ static const short yypact[] =
     1450,  1480,  1510,  1540,  1570,  -149,  1600,  1630,  1660,  1690,
     1720,  1750,  1780,  1810,  1840,  1870,  1900,  1930,  -149,  2226,
     1960,  2240,    78,  -149,   198,  1990,    75,    52,  -149,  -149,
-    -149,  -149,  -149,  -149,  -149,  2197,   270,  -149,  -149,   153,
+    -149,  -149,  -149,  -149,  -149,  2140,   270,  -149,  -149,   153,
     -149,  2197,  -149,  -149,  -149,   145,    21,  -149,  -149,   236,
     2020,  -149,    13,  2197,  2197,   150,  2197,    32,  -149,  -149,
     -149,  -149,   100,   156,   226,  -149,  -149,   516,  -149,   140,
@@ -805,7 +805,7 @@ static const short yypgoto[] =
    positive, shift that token.  If negative, reduce the rule which
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
-#define YYTABLE_NINF -126
+#define YYTABLE_NINF -127
 static const short yytable[] =
 {
       49,   163,    59,   164,   165,    98,   227,    71,    72,   276,
@@ -815,13 +815,13 @@ static const short yytable[] =
       66,   168,    67,   169,   174,   -63,   -63,   281,    56,   260,
      129,   318,   155,     6,    87,     9,    93,    50,    51,    74,
      131,    75,   132,   282,   152,   285,   168,   319,   169,    52,
-     -65,   -65,   275,    49,   251,   320,    98,   135,   277,  -125,
-    -125,   228,    20,    21,   243,   244,    87,   273,   160,   173,
+     -65,   -65,   275,    49,   251,   320,    98,   135,   277,  -126,
+    -126,   228,    20,    21,   243,   244,    87,   273,   160,   173,
      283,   101,    22,   178,    87,    57,   269,   179,    68,   233,
       24,    25,    26,    95,   -63,   182,   184,   186,   188,   190,
      192,   194,   290,   196,   198,   200,   202,   204,   206,   208,
      210,   212,   214,   216,   218,   286,   222,   226,   222,   -65,
-     105,   106,    59,   321,   101,   173,   311,   229,  -125,    84,
+     105,   106,    59,   321,   101,   173,   311,   229,  -126,    84,
       85,   312,   107,    55,     3,    49,   274,    77,   241,    75,
      275,    49,   263,   332,   237,    56,   154,   249,   268,    55,
        3,   261,     9,    49,    49,   327,    49,   236,   140,   141,
@@ -921,8 +921,8 @@ static const short yytable[] =
        0,    12,    13,     0,     0,     0,     0,    14,    15,    16,
        0,     0,    17,    18,    19,     0,     0,     0,     0,     0,
        0,    20,    21,     0,     0,     0,     0,     0,     0,     0,
-    -119,    22,     2,     3,    23,     0,     0,     0,     0,    24,
-      25,    26,     0,     0,     4,     0,  -119,     5,     0,     7,
+    -120,    22,     2,     3,    23,     0,     0,     0,     0,    24,
+      25,    26,     0,     0,     4,     0,  -120,     5,     0,     7,
        8,     9,    10,     0,     0,    11,     0,     0,    12,    13,
        0,     0,     0,     0,    14,    15,    16,     0,     0,    17,
       18,    19,     0,     0,     0,     0,     0,     0,    20,    21,
@@ -2462,505 +2462,512 @@ yyreduce:
 
   case 112:
 #line 445 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("valid list of statements after condition",yyvsp[0]);}
+    {
+	  yyval.v.p = new AST(OP_CSTAT,yyvsp[-1].v.p,yyvsp[-1].v.p->context());
+	}
     break;
 
   case 113:
-#line 449 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = NULL;}
+#line 448 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("valid list of statements after condition",yyvsp[0]);}
     break;
 
-  case 115:
-#line 454 "../../../libs/libFreeMat/Parser.yxx"
-    {
-	  yyval.v.p = new AST(OP_ELSEIFBLOCK,yyvsp[0].v.p,yyvsp[0].v.p->context());
-	}
+  case 114:
+#line 452 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = NULL;}
     break;
 
   case 116:
 #line 457 "../../../libs/libFreeMat/Parser.yxx"
     {
-	  yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);
+	  yyval.v.p = new AST(OP_ELSEIFBLOCK,yyvsp[0].v.p,yyvsp[0].v.p->context());
 	}
     break;
 
   case 117:
-#line 463 "../../../libs/libFreeMat/Parser.yxx"
+#line 460 "../../../libs/libFreeMat/Parser.yxx"
     {
-	  yyval.v.p = yyvsp[0].v.p;
+	  yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);
 	}
     break;
 
   case 118:
 #line 466 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("test condition for 'elseif' clause",yyvsp[-1]);}
-    break;
-
-  case 119:
-#line 469 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyval.v.p = yyvsp[0].v.p;
 	}
     break;
 
+  case 119:
+#line 469 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("test condition for 'elseif' clause",yyvsp[-1]);}
+    break;
+
   case 120:
 #line 472 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = NULL;}
+    {
+	  yyval.v.p = yyvsp[0].v.p;
+	}
     break;
 
   case 121:
-#line 473 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("statement list for 'else' clause",yyvsp[-1]);}
+#line 475 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = NULL;}
     break;
 
   case 122:
-#line 477 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = new AST(OP_ASSIGN,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
+#line 476 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("statement list for 'else' clause",yyvsp[-1]);}
     break;
 
   case 123:
-#line 478 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("expression in assignment",yyvsp[-1]);}
+#line 480 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = new AST(OP_ASSIGN,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
   case 124:
-#line 482 "../../../libs/libFreeMat/Parser.yxx"
+#line 481 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("expression in assignment",yyvsp[-1]);}
+    break;
+
+  case 125:
+#line 485 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyvsp[-3].v.p->addChild(new AST(OP_PARENS,yyvsp[-1].v.p,yyvsp[-2].v.i));
 	  yyval.v.p = new AST(OP_MULTICALL,yyvsp[-6].v.p,yyvsp[-3].v.p,yyvsp[-7].v.i);
 	}
     break;
 
-  case 125:
-#line 486 "../../../libs/libFreeMat/Parser.yxx"
+  case 126:
+#line 489 "../../../libs/libFreeMat/Parser.yxx"
     {
 	  yyvsp[0].v.p->addChild(new AST(OP_PARENS,NULL,-1));
 	  yyval.v.p = new AST(OP_MULTICALL,yyvsp[-3].v.p,yyvsp[0].v.p,yyvsp[-4].v.i);
 	}
     break;
 
-  case 126:
-#line 491 "../../../libs/libFreeMat/Parser.yxx"
+  case 127:
+#line 494 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right parenthesis",yyvsp[-2]);}
     break;
 
-  case 127:
-#line 493 "../../../libs/libFreeMat/Parser.yxx"
+  case 128:
+#line 496 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("indexing list",yyvsp[-1]);}
     break;
 
-  case 128:
-#line 495 "../../../libs/libFreeMat/Parser.yxx"
+  case 129:
+#line 498 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("left parenthesis",yyvsp[-1]);}
     break;
 
-  case 129:
-#line 497 "../../../libs/libFreeMat/Parser.yxx"
+  case 130:
+#line 500 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("identifier",yyvsp[-1]);}
     break;
 
-  case 130:
-#line 501 "../../../libs/libFreeMat/Parser.yxx"
+  case 131:
+#line 504 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_COLON,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 131:
-#line 502 "../../../libs/libFreeMat/Parser.yxx"
+  case 132:
+#line 505 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after ':'",yyvsp[-1]);}
     break;
 
-  case 133:
-#line 504 "../../../libs/libFreeMat/Parser.yxx"
+  case 134:
+#line 507 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_PLUS,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 134:
-#line 505 "../../../libs/libFreeMat/Parser.yxx"
+  case 135:
+#line 508 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '+'",yyvsp[-1]);}
     break;
 
-  case 135:
-#line 506 "../../../libs/libFreeMat/Parser.yxx"
+  case 136:
+#line 509 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_SUBTRACT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 136:
-#line 507 "../../../libs/libFreeMat/Parser.yxx"
+  case 137:
+#line 510 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '-'",yyvsp[-1]);}
     break;
 
-  case 137:
-#line 508 "../../../libs/libFreeMat/Parser.yxx"
+  case 138:
+#line 511 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_TIMES,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 138:
-#line 509 "../../../libs/libFreeMat/Parser.yxx"
+  case 139:
+#line 512 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '*'",yyvsp[-1]);}
     break;
 
-  case 139:
-#line 510 "../../../libs/libFreeMat/Parser.yxx"
+  case 140:
+#line 513 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_RDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 140:
-#line 511 "../../../libs/libFreeMat/Parser.yxx"
+  case 141:
+#line 514 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '/'",yyvsp[-1]);}
     break;
 
-  case 141:
-#line 512 "../../../libs/libFreeMat/Parser.yxx"
+  case 142:
+#line 515 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_LDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 142:
-#line 513 "../../../libs/libFreeMat/Parser.yxx"
+  case 143:
+#line 516 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '\\'",yyvsp[-1]);}
     break;
 
-  case 143:
-#line 514 "../../../libs/libFreeMat/Parser.yxx"
+  case 144:
+#line 517 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_OR,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 144:
-#line 515 "../../../libs/libFreeMat/Parser.yxx"
+  case 145:
+#line 518 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '|'",yyvsp[-1]);}
     break;
 
-  case 145:
-#line 516 "../../../libs/libFreeMat/Parser.yxx"
+  case 146:
+#line 519 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_AND,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 146:
-#line 517 "../../../libs/libFreeMat/Parser.yxx"
+  case 147:
+#line 520 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '&'",yyvsp[-1]);}
     break;
 
-  case 147:
-#line 518 "../../../libs/libFreeMat/Parser.yxx"
+  case 148:
+#line 521 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_LT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 148:
-#line 519 "../../../libs/libFreeMat/Parser.yxx"
+  case 149:
+#line 522 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '<'",yyvsp[-1]);}
     break;
 
-  case 149:
-#line 520 "../../../libs/libFreeMat/Parser.yxx"
+  case 150:
+#line 523 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_LEQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 150:
-#line 521 "../../../libs/libFreeMat/Parser.yxx"
+  case 151:
+#line 524 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '<='",yyvsp[-1]);}
     break;
 
-  case 151:
-#line 522 "../../../libs/libFreeMat/Parser.yxx"
+  case 152:
+#line 525 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_GT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 152:
-#line 523 "../../../libs/libFreeMat/Parser.yxx"
+  case 153:
+#line 526 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '>'",yyvsp[-1]);}
     break;
 
-  case 153:
-#line 524 "../../../libs/libFreeMat/Parser.yxx"
+  case 154:
+#line 527 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_GEQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 154:
-#line 525 "../../../libs/libFreeMat/Parser.yxx"
+  case 155:
+#line 528 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '>='",yyvsp[-1]);}
     break;
 
-  case 155:
-#line 526 "../../../libs/libFreeMat/Parser.yxx"
+  case 156:
+#line 529 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_EQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 156:
-#line 527 "../../../libs/libFreeMat/Parser.yxx"
+  case 157:
+#line 530 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '=='",yyvsp[-1]);}
     break;
 
-  case 157:
-#line 528 "../../../libs/libFreeMat/Parser.yxx"
+  case 158:
+#line 531 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_NEQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 158:
-#line 529 "../../../libs/libFreeMat/Parser.yxx"
+  case 159:
+#line 532 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '~='",yyvsp[-1]);}
     break;
 
-  case 159:
-#line 530 "../../../libs/libFreeMat/Parser.yxx"
+  case 160:
+#line 533 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOT_TIMES,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 160:
-#line 531 "../../../libs/libFreeMat/Parser.yxx"
+  case 161:
+#line 534 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '.*'",yyvsp[-1]);}
     break;
 
-  case 161:
-#line 532 "../../../libs/libFreeMat/Parser.yxx"
+  case 162:
+#line 535 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOT_RDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 162:
-#line 533 "../../../libs/libFreeMat/Parser.yxx"
+  case 163:
+#line 536 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after './'",yyvsp[-1]);}
     break;
 
-  case 163:
-#line 534 "../../../libs/libFreeMat/Parser.yxx"
+  case 164:
+#line 537 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOT_LDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 164:
-#line 535 "../../../libs/libFreeMat/Parser.yxx"
+  case 165:
+#line 538 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '.\\'",yyvsp[-1]);}
     break;
 
-  case 165:
-#line 536 "../../../libs/libFreeMat/Parser.yxx"
+  case 166:
+#line 539 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_NEG,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 166:
-#line 537 "../../../libs/libFreeMat/Parser.yxx"
+  case 167:
+#line 540 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[0].v.p;}
     break;
 
-  case 167:
-#line 538 "../../../libs/libFreeMat/Parser.yxx"
+  case 168:
+#line 541 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_NOT,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 168:
-#line 539 "../../../libs/libFreeMat/Parser.yxx"
+  case 169:
+#line 542 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after logical not",yyvsp[0]);}
     break;
 
-  case 169:
-#line 540 "../../../libs/libFreeMat/Parser.yxx"
+  case 170:
+#line 543 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_POWER,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 170:
-#line 541 "../../../libs/libFreeMat/Parser.yxx"
+  case 171:
+#line 544 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '^'",yyvsp[-1]);}
     break;
 
-  case 171:
-#line 542 "../../../libs/libFreeMat/Parser.yxx"
+  case 172:
+#line 545 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOT_POWER,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 172:
-#line 543 "../../../libs/libFreeMat/Parser.yxx"
+  case 173:
+#line 546 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after '.^'",yyvsp[-1]);}
     break;
 
-  case 173:
-#line 544 "../../../libs/libFreeMat/Parser.yxx"
+  case 174:
+#line 547 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_TRANSPOSE,yyvsp[-1].v.p,yyvsp[0].v.i);}
     break;
 
-  case 174:
-#line 545 "../../../libs/libFreeMat/Parser.yxx"
+  case 175:
+#line 548 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOT_TRANSPOSE,yyvsp[-1].v.p,yyvsp[0].v.i);}
     break;
 
-  case 175:
-#line 546 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-1].v.p;}
-    break;
-
   case 176:
-#line 547 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("a right parenthesis after expression to match this one",yyvsp[-2]);}
+#line 549 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-1].v.p;}
     break;
 
   case 177:
-#line 548 "../../../libs/libFreeMat/Parser.yxx"
+#line 550 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("a right parenthesis after expression to match this one",yyvsp[-2]);}
+    break;
+
+  case 178:
+#line 551 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("an expression after left parenthesis",yyvsp[-1]);}
     break;
 
-  case 181:
-#line 555 "../../../libs/libFreeMat/Parser.yxx"
+  case 182:
+#line 558 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_ADDRESS,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 182:
-#line 556 "../../../libs/libFreeMat/Parser.yxx"
+  case 183:
+#line 559 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_RHS,yyvsp[0].v.p,yyvsp[0].v.p->context());}
     break;
 
-  case 183:
-#line 557 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-1].v.p;}
-    break;
-
   case 184:
-#line 558 "../../../libs/libFreeMat/Parser.yxx"
-    {yyxpt("a matrix definition followed by a right bracket",yyvsp[-1]);}
+#line 560 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-1].v.p;}
     break;
 
   case 185:
-#line 559 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-1].v.p;}
+#line 561 "../../../libs/libFreeMat/Parser.yxx"
+    {yyxpt("a matrix definition followed by a right bracket",yyvsp[-1]);}
     break;
 
   case 186:
-#line 560 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-2].v.p;}
+#line 562 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-1].v.p;}
     break;
 
   case 187:
-#line 561 "../../../libs/libFreeMat/Parser.yxx"
+#line 563 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-2].v.p;}
     break;
 
   case 188:
-#line 562 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = new AST(OP_EMPTY,NULL,yyvsp[-1].v.i);}
+#line 564 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-2].v.p;}
     break;
 
   case 189:
-#line 563 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-1].v.p;}
+#line 565 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = new AST(OP_EMPTY,NULL,yyvsp[-1].v.i);}
     break;
 
   case 190:
-#line 564 "../../../libs/libFreeMat/Parser.yxx"
+#line 566 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-1].v.p;}
     break;
 
   case 191:
-#line 565 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-2].v.p;}
+#line 567 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-1].v.p;}
     break;
 
   case 192:
-#line 566 "../../../libs/libFreeMat/Parser.yxx"
+#line 568 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-2].v.p;}
     break;
 
   case 193:
-#line 567 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = new AST(OP_EMPTY_CELL,NULL,yyvsp[-1].v.i);}
+#line 569 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-2].v.p;}
     break;
 
   case 194:
-#line 568 "../../../libs/libFreeMat/Parser.yxx"
+#line 570 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = new AST(OP_EMPTY_CELL,NULL,yyvsp[-1].v.i);}
+    break;
+
+  case 195:
+#line 571 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("a cell-array definition followed by a right brace",yyvsp[-1]);}
     break;
 
-  case 196:
-#line 572 "../../../libs/libFreeMat/Parser.yxx"
+  case 197:
+#line 575 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);}
     break;
 
-  case 197:
-#line 576 "../../../libs/libFreeMat/Parser.yxx"
+  case 198:
+#line 579 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_PARENS,yyvsp[-1].v.p,yyvsp[-2].v.i); }
     break;
 
-  case 198:
-#line 577 "../../../libs/libFreeMat/Parser.yxx"
+  case 199:
+#line 580 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_PARENS,NULL,yyvsp[-1].v.i); }
     break;
 
-  case 199:
-#line 578 "../../../libs/libFreeMat/Parser.yxx"
+  case 200:
+#line 581 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right parenthesis",yyvsp[-2]);}
     break;
 
-  case 200:
-#line 579 "../../../libs/libFreeMat/Parser.yxx"
+  case 201:
+#line 582 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_BRACES,yyvsp[-1].v.p,yyvsp[-2].v.i); }
     break;
 
-  case 201:
-#line 580 "../../../libs/libFreeMat/Parser.yxx"
+  case 202:
+#line 583 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("matching right brace",yyvsp[-2]);}
     break;
 
-  case 202:
-#line 581 "../../../libs/libFreeMat/Parser.yxx"
+  case 203:
+#line 584 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOT,yyvsp[0].v.p,yyvsp[-1].v.i); }
     break;
 
-  case 203:
-#line 582 "../../../libs/libFreeMat/Parser.yxx"
+  case 204:
+#line 585 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_DOTDYN,yyvsp[-1].v.p,yyvsp[-3].v.i);}
     break;
 
-  case 205:
-#line 587 "../../../libs/libFreeMat/Parser.yxx"
+  case 206:
+#line 590 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_ALL,NULL,yyvsp[0].v.i);}
     break;
 
-  case 206:
-#line 588 "../../../libs/libFreeMat/Parser.yxx"
+  case 207:
+#line 591 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_KEYWORD,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-3].v.i);}
     break;
 
-  case 207:
-#line 589 "../../../libs/libFreeMat/Parser.yxx"
+  case 208:
+#line 592 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("expecting expression after '=' in keyword assignment",yyvsp[-1]);}
     break;
 
-  case 208:
-#line 590 "../../../libs/libFreeMat/Parser.yxx"
+  case 209:
+#line 593 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_KEYWORD,yyvsp[0].v.p,yyvsp[-1].v.i);}
     break;
 
-  case 209:
-#line 591 "../../../libs/libFreeMat/Parser.yxx"
+  case 210:
+#line 594 "../../../libs/libFreeMat/Parser.yxx"
     {yyxpt("expecting keyword identifier after '/' in keyword assignment",yyvsp[-1]);}
     break;
 
-  case 211:
-#line 596 "../../../libs/libFreeMat/Parser.yxx"
+  case 212:
+#line 599 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addPeer(yyvsp[0].v.p);}
     break;
 
-  case 212:
-#line 600 "../../../libs/libFreeMat/Parser.yxx"
+  case 213:
+#line 603 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_BRACES,yyvsp[0].v.p,yyvsp[0].v.p->context());}
     break;
 
-  case 213:
-#line 601 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);}
-    break;
-
   case 214:
-#line 605 "../../../libs/libFreeMat/Parser.yxx"
-    {yyval.v.p = new AST(OP_BRACKETS,yyvsp[0].v.p,yyvsp[0].v.p->context());}
+#line 604 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);}
     break;
 
   case 215:
-#line 606 "../../../libs/libFreeMat/Parser.yxx"
+#line 608 "../../../libs/libFreeMat/Parser.yxx"
+    {yyval.v.p = new AST(OP_BRACKETS,yyvsp[0].v.p,yyvsp[0].v.p->context());}
+    break;
+
+  case 216:
+#line 609 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);}
     break;
 
-  case 220:
-#line 618 "../../../libs/libFreeMat/Parser.yxx"
+  case 221:
+#line 621 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = new AST(OP_SEMICOLON,yyvsp[0].v.p,yyvsp[0].v.p->context());}
     break;
 
-  case 221:
-#line 619 "../../../libs/libFreeMat/Parser.yxx"
+  case 222:
+#line 622 "../../../libs/libFreeMat/Parser.yxx"
     {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);}
     break;
 
@@ -2968,7 +2975,7 @@ yyreduce:
     }
 
 /* Line 1000 of yacc.c.  */
-#line 2972 "../../../libs/libFreeMat/Parser.cxx"
+#line 2979 "../../../libs/libFreeMat/Parser.cxx"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3193,7 +3200,7 @@ yyreturn:
 }
 
 
-#line 622 "../../../libs/libFreeMat/Parser.yxx"
+#line 625 "../../../libs/libFreeMat/Parser.yxx"
 
 
 namespace FreeMat {

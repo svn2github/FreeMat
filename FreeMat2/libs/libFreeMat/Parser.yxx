@@ -442,6 +442,9 @@ conditionedStatement:
 	expr optionalEndStatement statementList {
 	  $$.v.p = new AST(OP_CSTAT,$1.v.p,$3.v.p,$1.v.p->context());
 	} |
+	expr optionalEndStatement {
+	  $$.v.p = new AST(OP_CSTAT,$1.v.p,$1.v.p->context());
+	} |
 	expr error {yyxpt("valid list of statements after condition",$2);}
 ;
 

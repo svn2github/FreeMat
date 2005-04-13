@@ -33,7 +33,6 @@ int inBlock;
 typedef enum {
   Initial,
   Scanning,
-  SpecialCall
 } LexingStates;
 
 LexingStates lexState;
@@ -139,6 +138,10 @@ inline int testNewline() {
 				 (datap[1] == '\n')));
 }
 
+inline int testWhitespace() {
+  return ((datap[0] == ' ')  || (datap[0] == '\t'));
+}
+
 inline int previousChar() {
   if (datap == buffer)
     return 0;
@@ -152,6 +155,22 @@ inline int currentChar() {
 
 inline void discardChar() {
   datap++;
+}
+
+void lexUntermString() {
+  char stringval[4096];
+  char *strptr;
+
+  strptr = stringval;
+  while (!testNewline() && !testWhitespace()) {
+    *strptr++ = currentChar();
+    discardChar();
+  }
+  *strptr++ = '\0';
+  setTokenType(STRING);
+  tokenValue.isToken = false;
+  tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
+  return;
 }
 
 void lexString() {
@@ -176,90 +195,90 @@ void lexString() {
 }
 
 
-void lexSpecialCall() {
-  char stringval[4096];
-  char *strptr;
-
-  while ((datap[0] == ' ') || (datap[0] == '\t'))
-    discardChar();
-
-  if (match("...")) {
-    while (!isNewline())
-      discardChar();
-    NextLine();
-    continuationCount++;
-    while ((datap[0] == ' ') || (datap[0] == '\t'))
-      discardChar();
-  }
-
-  if (datap[0] == '\'') 
-    lexString();
-  else {
-    /* Parse this as a string */
-    strptr = stringval;
-    while ((datap[0] != ' ') && (datap[0] != '\t') &&
-	   (datap[0] != '\n') && (datap[0] != '\r') &&
-	   (datap[0] != ';')) {
-      *strptr++ = currentChar();
-      discardChar();
-    }
-    *strptr++ = '\0';
-    setTokenType(STRING);
-    tokenValue.isToken = false;
-    tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
-  }
-  if ((datap[0] == ';') || (datap[0] == '\r') ||
-      (datap[0] == '\n'))
-    lexState = Scanning;
-}
-
-int lexTestSpecialSyntax() {
-  /*
-   * Special syntax detection works by checking for a certain
-   * pattern.  In particular, we look for an identifier followed
-   * by a whitespace.
-   */
-  int i, n;
-  char ident_candidate[2048];
-  if (bracketStackSize) return 0;
-  if (!testAlphaChar()) return 0;
-  i = 0;
-  while (isalnum(datap[i]) || (datap[i] == '_')) {
-    ident_candidate[i] = datap[i];
-    i++;
-  }
-  ident_candidate[i] = '\0';
-  ts.word = ident_candidate;
-    p = (reservedWordStruct*)
-    bsearch(&ts,reservedWord,RESWORDCOUNT,
-	    sizeof(reservedWordStruct),
-	    compareReservedWord);
-  if (p != NULL)
-    return 0;
-  n = i;
-  if ((datap[i] != ' ') && (datap[i] != '\t')) return 0;
-  while ((datap[i] == ' ') || (datap[i] == '\t')) i++;
-  if ((datap[i] == '.') && (datap[i+1] == '*')) return 0;
-  if (datap[i] == '+') return 0;
-  if (datap[i] == '-') return 0;
-  if (datap[i] == '/') return 0;
-  if (datap[i] == '\\') return 0;
-  if ((datap[i] == '.') && (datap[i+1] == '/')) return 0;
-  if ((datap[i] == '.') && (datap[i+1] == '\\')) return 0;
-  if ((datap[i] == '.') && (datap[i+1] == '^')) return 0;
-  if (datap[i] == '^') return 0;
-  if (datap[i] == '>') return 0;
-  if (datap[i] == '=') return 0;
-  if (datap[i] == '<') return 0;
-  if (datap[i] == '~') return 0;
-  if ((datap[i] == '.') && (datap[i+1] == '\'')) return 0;
-  datap += n;
-  lexState = SpecialCall;
-  setTokenType(SPECIALCALL);
-  tokenValue.isToken = false;
-  tokenValue.v.p = new AST(id_node,ident_candidate,ContextInt());
-  return 1;
-}
+//void lexSpecialCall() {
+//  char stringval[4096];
+//  char *strptr;
+//
+//  while ((datap[0] == ' ') || (datap[0] == '\t'))
+//    discardChar();
+//
+//  if (match("...")) {
+//    while (!isNewline())
+//      discardChar();
+//    NextLine();
+//    continuationCount++;
+//    while ((datap[0] == ' ') || (datap[0] == '\t'))
+//      discardChar();
+//  }
+//
+//  if (datap[0] == '\'') 
+//    lexString();
+//  else {
+//    /* Parse this as a string */
+//    strptr = stringval;
+//    while ((datap[0] != ' ') && (datap[0] != '\t') &&
+//	   (datap[0] != '\n') && (datap[0] != '\r') &&
+//	   (datap[0] != ';')) {
+//      *strptr++ = currentChar();
+//      discardChar();
+//    }
+//    *strptr++ = '\0';
+//    setTokenType(STRING);
+//    tokenValue.isToken = false;
+//    tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
+//  }
+//  if ((datap[0] == ';') || (datap[0] == '\r') ||
+//      (datap[0] == '\n'))
+//    lexState = Scanning;
+//}
+//
+//int lexTestSpecialSyntax() {
+//  /*
+//   * Special syntax detection works by checking for a certain
+//   * pattern.  In particular, we look for an identifier followed
+//   * by a whitespace.
+//   */
+//  int i, n;
+//  char ident_candidate[2048];
+//  if (bracketStackSize) return 0;
+//  if (!testAlphaChar()) return 0;
+//  i = 0;
+//  while (isalnum(datap[i]) || (datap[i] == '_')) {
+//    ident_candidate[i] = datap[i];
+//    i++;
+//  }
+//  ident_candidate[i] = '\0';
+//  ts.word = ident_candidate;
+//    p = (reservedWordStruct*)
+//    bsearch(&ts,reservedWord,RESWORDCOUNT,
+//	    sizeof(reservedWordStruct),
+//	    compareReservedWord);
+//  if (p != NULL)
+//    return 0;
+//  n = i;
+//  if ((datap[i] != ' ') && (datap[i] != '\t')) return 0;
+//  while ((datap[i] == ' ') || (datap[i] == '\t')) i++;
+//  if ((datap[i] == '.') && (datap[i+1] == '*')) return 0;
+//  if (datap[i] == '+') return 0;
+//  if (datap[i] == '-') return 0;
+//  if (datap[i] == '/') return 0;
+//  if (datap[i] == '\\') return 0;
+//  if ((datap[i] == '.') && (datap[i+1] == '/')) return 0;
+//  if ((datap[i] == '.') && (datap[i+1] == '\\')) return 0;
+//  if ((datap[i] == '.') && (datap[i+1] == '^')) return 0;
+//  if (datap[i] == '^') return 0;
+//  if (datap[i] == '>') return 0;
+//  if (datap[i] == '=') return 0;
+//  if (datap[i] == '<') return 0;
+//  if (datap[i] == '~') return 0;
+//  if ((datap[i] == '.') && (datap[i+1] == '\'')) return 0;
+//  datap += n;
+//  lexState = SpecialCall;
+//  setTokenType(SPECIALCALL);
+//  tokenValue.isToken = false;
+//  tokenValue.v.p = new AST(id_node,ident_candidate,ContextInt());
+//  return 1;
+//}
 
 void lexIdentifier() {
   int i;
@@ -437,7 +456,6 @@ int lexNumber() {
  * a string.  This means that we need to look at the _previous_ token.
  */
 void lexScanningState() {
-
   if (match("...")) {
     while (!isNewline())
       discardChar();
@@ -577,7 +595,7 @@ void lexInitialState() {
       discardChar();
     NextLine();
   } else if (testAlphaChar()) {
-    if (!lexTestSpecialSyntax())
+    //    if (!lexTestSpecialSyntax())
       lexState = Scanning;
   } else {
     lexState = Scanning;
@@ -592,8 +610,8 @@ void yylexDoLex() {
   case Scanning:
     lexScanningState();
     break;
-  case SpecialCall:
-    lexSpecialCall();
+    //  case SpecialCall:
+    //    lexSpecialCall();
     break;
   }
 }
@@ -607,7 +625,7 @@ int yylexScreen() {
     /* Check for virtual commas... */
     if ((previousToken == ')') || (previousToken == '\'') || (previousToken == NUMERIC) ||
 	(previousToken == STRING) || (previousToken == ']') || (previousToken == '}') ||
-	(previousToken == IDENT)) {
+	(previousToken == IDENT) || (previousToken == MAGICEND)) {
       /* Test if next character indicates the start of an expression */
       if ((currentChar() == '(') || (currentChar() == '+') || (currentChar() == '-') ||
 	  ((currentChar() == '~')  && (datap[1] != '=')) || (currentChar() == '[') || (currentChar() == '{') ||
@@ -653,8 +671,8 @@ int yylex() {
     printf("token ident %s\r\n",tokenValue.v.p->text);
   else if (tokenType == NUMERIC)
     printf("token number %s\r\n",tokenValue.v.p->text);
-  else if (tokenType == SPECIALCALL)
-    printf("token specialcall %s\r\n",tokenValue.v.p->text);
+  //  else if (tokenType == SPECIALCALL)
+  //    printf("token specialcall %s\r\n",tokenValue.v.p->text);
   else
     printf("token %c %d\r\n",retval,retval);
 #endif

@@ -284,19 +284,27 @@ statementType:
 	 | returnStatement
 	 | globalStatement
 	 | persistentStatement
-	 | specialSyntaxStatement
+	 | specialCall
 	 | QUIT | RETALL 
          ;
 
-specialSyntaxStatement:
-	SPECIALCALL stringList {$1.v.p->addChild($2.v.p); 
-				$$.v.p = new AST(OP_SCALL,$1.v.p,$1.v.p->context());}
-	;
+specialCall:
+	IDENT NUMERIC {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context());} |
+	IDENT STRING {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context());} |
+	IDENT IDENT {$$.v.p = new AST(OP_SCALL,$1.v.p,$2.v.p,$1.v.p->context()); } |
+	specialCall STRING {$1.v.p->addChild($2.v.p);} |
+	specialCall IDENT {$1.v.p->addChild($2.v.p);} |
+	specialCall NUMERIC {$1.v.p->addChild($2.v.p);}
+        ;
 
-stringList:
-	STRING {$$.v.p = new AST(OP_PARENS,$1.v.p,$1.v.p->context());} |
-	stringList STRING {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);}
-	;
+//specialSyntaxStatement:
+//	SPECIALCALL stringList {$1.v.p->addChild($2.v.p); 
+//				$$.v.p = new AST(OP_SCALL,$1.v.p,$1.v.p->context());}
+//	;
+
+//	STRING STRING {$$.v.p = new AST(OP_PARENS,$1.v.p,$1.v.p->context());} |
+//	stringList STRING {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);}
+//	;
 
 persistentStatement:
 	PERSISTENT identList {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p); } |

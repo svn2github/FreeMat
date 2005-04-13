@@ -665,12 +665,12 @@ namespace FreeMat {
       } else if (t->type == non_terminal && t->opNum ==(OP_ALL)) {
 	throw Exception("Illegal use of the ':' keyword in indexing expression");
       } else {
-	endData Q;
-	Q.isvalid = false;
-	endStack.push_back(Q);
+// 	endData Q;
+// 	Q.isvalid = false;
+// 	endStack.push_back(Q);
 	// Call the expression
 	m.push_back(expression(t));
-	endStack.pop_back();
+// 	endStack.pop_back();
       }
       index++;
       t = t->right;
@@ -1998,12 +1998,26 @@ namespace FreeMat {
   void WalkTree::specialFunctionCall(ASTPtr t, bool printIt) {
     ASTPtr fAST;
     ArrayVector m;
+    stringVector args;
+    args.push_back(t->text);
+    ASTPtr s = t->right;
+    while (s) {
+      args.push_back(s->text);
+      s = s->right;
+    }
+    if (args.empty()) return;
     pushID(t->context());
-
+    ArrayVector n;
+    for (int i=1;i<args.size();i++)
+      n.push_back(Array::stringConstructor(args[i].c_str()));
+    FuncPtr val;
+    if (!lookupFunction(args[0],val,n))
+      throw Exception("unable to resolve " + args[0] + " to a function call");
+    val->updateCode();
     bool CLIFlagsave = InCLI;
     InCLI = false;
     try {
-      m = functionExpression(t,0,false);
+      m = val->evaluateFunction(this,n,0);
     } catch(Exception& e) {
       InCLI = CLIFlagsave;
       throw;

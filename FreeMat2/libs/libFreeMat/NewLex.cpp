@@ -33,6 +33,7 @@ int inBlock;
 typedef enum {
   Initial,
   Scanning,
+  SpecScan
 } LexingStates;
 
 LexingStates lexState;
@@ -594,9 +595,8 @@ void lexInitialState() {
     while (!isNewline())
       discardChar();
     NextLine();
-  } else if (testAlphaChar()) {
-    //    if (!lexTestSpecialSyntax())
-      lexState = Scanning;
+  } else if (testSpecialFuncs()) {
+    lexState = SpecScan;
   } else {
     lexState = Scanning;
   }
@@ -610,8 +610,8 @@ void yylexDoLex() {
   case Scanning:
     lexScanningState();
     break;
-    //  case SpecialCall:
-    //    lexSpecialCall();
+  case SpecScan:
+    lexSpecCall();
     break;
   }
 }

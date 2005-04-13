@@ -328,6 +328,8 @@ namespace FreeMat {
     }
     else if (t->type == reserved_node) {
       if (t->tokenNumber == FM_END) {
+	if (endStack.empty())
+	  throw Exception("END keyword illegal!");
 	endData t(endStack.back());
 	if (!t.isvalid)
 	  throw Exception("END keyword illegal!");

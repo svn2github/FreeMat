@@ -49,13 +49,13 @@ namespace FreeMat {
   ArrayVector StrCmpFunction(int nargout, const ArrayVector& arg) {
     Array retval, arg1, arg2;
     if (arg.size() != 2)
-      throw Exception("strcmp function requires two string arguments");
+      throw Exception("strcmp function requires two arguments");
     arg1 = arg[0];
     arg2 = arg[1];
     if (!(arg1.isString()))
-      throw Exception("strcmp function requires two string arguments");
+      return singleArrayVector(Array::logicalConstructor(false));
     if (!(arg2.isString()))
-      throw Exception("strcmp function requires two string arguments");
+      return singleArrayVector(Array::logicalConstructor(false));
     if (!(arg1.getDimensions().equals(arg2.getDimensions())))
       retval = Array::logicalConstructor(false);
     else {
@@ -68,5 +68,122 @@ namespace FreeMat {
     ArrayVector o;
     o.push_back(retval);
     return o;
+  }
+
+  //!
+  //@Module STRSTR String Search Function
+  //@@Section STRING
+  //@@Usage
+  //Searches for the first occurance of one string inside another.
+  //The general syntax for its use is
+  //@[
+  //   p = strstr(x,y)
+  //@]
+  //where @|x| and @|y| are two strings.  The returned integer @|p|
+  //indicates the index into the string @|x| where the substring @|y|
+  //occurs.  If no instance of @|y| is found, then @|p| is set to
+  //zero.
+  //@@Example
+  //Some examples of @|strstr| in action
+  //@<
+  //strstr('hello','lo')
+  //strstr('quick brown fox','own')
+  //strstr('free stuff','lunch')
+  //@>
+  ArrayVector StrStrFunction(int nargout, const ArrayVector& arg) {
+    Array retval, arg1, arg2;
+    if (arg.size() != 2)
+      throw Exception("strstr function requires two string arguments");
+    arg1 = arg[0];
+    arg2 = arg[1];
+    if (!(arg1.isString()))
+      throw Exception("strstr function requires two string arguments");
+    if (!(arg2.isString()))
+      throw Exception("strstr function requires two string arguments");
+    char *s1 = arg1.getContentsAsCString();
+    char *s2 = arg2.getContentsAsCString();
+    char *cp;
+    cp = strstr(s1,s2);
+    int retndx;
+    if (!cp)
+      retndx = 0;
+    else
+      retndx = cp-s1+1;
+    return singleArrayVector(Array::int32Constructor(retndx));
+  }
+
+  char* strrep(char* source, char* pattern, char* replace) {
+    // Count how many instances of 'pattern' occur
+    int instances = 0;
+    char *cp = source;
+    while (cp) {
+      cp = strstr(cp,pattern);
+      if (cp) {
+	cp += strlen(pattern);
+	instances++;
+      }
+    }
+    // The output array should be large enough...
+    int outlen = strlen(source) + instances*(strlen(replace) - strlen(pattern)) + 1;
+    char *op = (char*) malloc(sizeof(char)*outlen);
+    char *opt = op;
+    // Retrace through the source array
+    cp = source;
+    char *lastp = source;
+    while (cp) {
+      cp = strstr(cp,pattern);
+      if (cp) {
+	memcpy(opt,lastp,(cp-lastp));
+	opt += (cp-lastp);
+	memcpy(opt,replace,strlen(replace));
+	opt += strlen(replace);
+	cp += strlen(pattern);
+	lastp = cp;
+	instances++;
+      } else
+	memcpy(opt,lastp,strlen(source)-(lastp-source)+1);
+    }
+    return op;
+  }
+
+  //!
+  //@Module STRREP String Substitute Function
+  //@@Section STRING
+  //@@Usage
+  //Replaces instances of one string in another string.  The general
+  //syntax for its use is
+  //@[
+  //   p = strrep(source,pattern,replace)
+  //@]
+  //where @|source|, @|pattern| and @|replace| are all strings.  Optionally
+  //they can be cell arrays of strings or scalar cell arrays.  
+  //@@Example
+  //Here are some simple examples
+  //@<
+  //strrep({'hello','hohew'},'he','be')
+  //strrep({'hello','hohew'},'he',{'be'})
+  //strrep({'hello','hohew'},'he',{'be','ce'})
+  //@>
+  //!
+  ArrayVector StrRepFunction(int nargout, const ArrayVector& arg) {
+    Array arg1, arg2, arg3;
+    if (arg.size() != 3)
+      throw Exception("strrep function requires three string arguments");
+    arg1 = arg[0];
+    arg2 = arg[1];
+    arg3 = arg[2];
+    if (!(arg1.isString()))
+      throw Exception("strrep function requires three string arguments");
+    if (!(arg2.isString()))
+      throw Exception("strrep function requires three string arguments");
+    if (!(arg3.isString()))
+      throw Exception("strrep function requires three string arguments");
+    char *s1 = arg1.getContentsAsCString();
+    char *s2 = arg2.getContentsAsCString();
+    char *s3 = arg3.getContentsAsCString();
+    char *cp = strrep(s1,s2,s3);
+    ArrayVector retval(singleArrayVector(Array::stringConstructor(cp)));
+    free(cp);
+    return retval;
   }
 }

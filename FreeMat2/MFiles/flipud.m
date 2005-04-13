@@ -1,15 +1,4 @@
-%  FLIPUD Reverse the Columns of a Matrix
-%  
-%  
-%  USAGE
-%  
-%  Reverses the rows of a matrix.  The syntax for its use is
-%  
-%     y = flipud(x)
-%  
-%  where x is matrix.  If x is an N-dimensional array then
-%  the first dimension is reversed.
-%  
+
 % Copyright (c) 2002, 2003 Samit Basu
 %
 % Permission is hereby granted, free of charge, to any person obtaining a 

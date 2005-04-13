@@ -25,6 +25,8 @@
 //\item @|'dcomplex'| for complex floating point numbers with 64-bits per field
 //\item @|'string'| for string arrays
 //\end{itemize}
+//If the argument is a user-defined type (via the @|class| function), then
+//the name of that class is returned.
 //@@Examples
 //Here are some examples of the @|isa| call.
 //@<

@@ -34,5 +34,5 @@ end
 if (nargin == 1)
   setpath(a);
 elseif (nargin == 2)
-  setpath([a,pathdiv,b]);  
+  setpath([a,pathsep,b]);  
 end

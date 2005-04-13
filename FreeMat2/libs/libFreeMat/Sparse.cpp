@@ -3681,7 +3681,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout == 1)
+    if (nargout < 1)
       rvec = 0;
     else
       rvec = 1;
@@ -3690,7 +3690,7 @@ namespace FreeMat {
     double *dr = (double*) Malloc(sizeof(double)*(nev+1));
     double *di = (double*) Malloc(sizeof(double)*(nev+1));
     double *z;
-    if (nargout == 1)
+    if (nargout < 1)
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
@@ -3760,7 +3760,7 @@ namespace FreeMat {
 	}
       }
       ArrayVector retval;
-      if (nargout == 1)
+      if (nargout < 1)
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
       else {
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -3770,7 +3770,7 @@ namespace FreeMat {
       return retval;
     } else {
       ArrayVector retval;
-      if (nargout == 1)
+      if (nargout < 1)
 	retval.push_back(Array(FM_DOUBLE,Dimensions(nev,1),dr));
       else {
 	// I know that technically this is a bad thing... dr and z are larger than
@@ -3829,7 +3829,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout == 1)
+    if (nargout < 1)
       rvec = 0;
     else
       rvec = 1;
@@ -3837,7 +3837,7 @@ namespace FreeMat {
     int *select = new int[ncv];
     double *d = (double*) Malloc(sizeof(double)*nev);
     double *z;
-    if (nargout == 1)
+    if (nargout < 1)
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*nev));
@@ -3867,7 +3867,7 @@ namespace FreeMat {
     ArrayVector retval;
     // I know that technically this is a bad thing... dr and z are larger than
     // they need to be, but I don't think this will cause any problems.
-    if (nargout == 1) {
+    if (nargout < 1) {
       retval.push_back(Array(FM_DOUBLE,Dimensions(nev,1),d));
       Free(z);
     } else {
@@ -3924,7 +3924,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout == 1)
+    if (nargout < 1)
       rvec = 0;
     else
       rvec = 1;
@@ -3932,7 +3932,7 @@ namespace FreeMat {
     int *select = new int[ncv];
     double *d = (double*) Malloc(2*sizeof(double)*(nev+1));
     double *z;
-    if (nargout == 1)
+    if (nargout < 1)
       z = NULL;
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
@@ -3974,7 +3974,7 @@ namespace FreeMat {
       }
     }
     ArrayVector retval;
-    if (nargout == 1)
+    if (nargout < 1)
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
     else {
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -4056,7 +4056,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout == 1)
+    if (nargout < 1)
       rvec = 0;
     else
       rvec = 1;
@@ -4066,7 +4066,7 @@ namespace FreeMat {
     double *dr = (double*) Malloc(sizeof(double)*(nev+1));
     double *di = (double*) Malloc(sizeof(double)*(nev+1));
     double *z;
-    if (nargout == 1)
+    if (nargout < 1)
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
@@ -4132,7 +4132,7 @@ namespace FreeMat {
 	}
       }
       ArrayVector retval;
-      if (nargout == 1)
+      if (nargout < 1)
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
       else {
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -4142,7 +4142,7 @@ namespace FreeMat {
       return retval;
     } else {
       ArrayVector retval;
-      if (nargout == 1)
+      if (nargout < 1)
 	retval.push_back(Array(FM_DOUBLE,Dimensions(nev,1),dr));
       else {
 	// I know that technically this is a bad thing... dr and z are larger than
@@ -4243,7 +4243,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout == 1)
+    if (nargout < 1)
       rvec = 0;
     else
       rvec = 1;
@@ -4252,7 +4252,7 @@ namespace FreeMat {
 	//lambda_a = 1/lambda_c + sigma
     double *d = (double*) Malloc(2*sizeof(double)*(nev+1));
     double *z;
-    if (nargout == 1)
+    if (nargout < 1)
       z = NULL;
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
@@ -4296,7 +4296,7 @@ namespace FreeMat {
       }
     }
     ArrayVector retval;
-    if (nargout == 1)
+    if (nargout < 1)
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
     else {
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));

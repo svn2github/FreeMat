@@ -96,9 +96,31 @@ inline void popVCState() {
 }
 
 inline bool testSpecialFuncs() {
-  return ((strncmp(datap,"cd ",3)==0) ||
-	  (strncmp(datap,"ls ",3)==0) ||
-	  (strncmp(datap,"dir ",4)==0));
+  bool test1, test2;
+  char *cp;
+  if (!isalpha(datap[0])) return false;
+  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0) || (strncmp(datap,"dir ",4)==0));
+  if (test1)
+    return test1;
+  // Check for non-keyword identifier followed by whitespace followed by alphanum
+  char keyword[100];
+  cp = datap;
+  while (isalnum(*cp)) {
+    keyword[cp-datap] = *cp;
+    cp++;
+  }
+  keyword[cp-datap] = 0;
+  ts.word = keyword;
+  p = (reservedWordStruct*)
+    bsearch(&ts,reservedWord,RESWORDCOUNT,
+	    sizeof(reservedWordStruct),
+	    compareReservedWord);
+  if (p != NULL)
+    return false;
+  while ((*cp == ' ') || (*cp == '\t')) cp++;
+  if (isalnum(*cp)) 
+    return true;
+  return false;
 }
 
 inline void setTokenType(int type) {
@@ -182,6 +204,9 @@ void lexUntermString() {
   setTokenType(STRING);
   tokenValue.isToken = false;
   tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
+#ifdef LEXDEBUG
+  printf("Untermed string %s\r\n",stringval);
+#endif
   if ((datap[0] == ';') || (datap[0] == '\r') ||
       (datap[0] == '\n'))
     lexState = Scanning;

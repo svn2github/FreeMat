@@ -95,6 +95,12 @@ inline void popVCState() {
   vcFlag = vcStack[--vcStackSize];
 }
 
+inline bool testSpecialFuncs() {
+  return ((strncmp(datap,"cd ",3)==0) ||
+	  (strncmp(datap,"ls ",3)==0) ||
+	  (strncmp(datap,"dir ",4)==0));
+}
+
 inline void setTokenType(int type) {
   tokenType = type;
   tokenActive = 1;
@@ -163,6 +169,11 @@ void lexUntermString() {
   char *strptr;
 
   strptr = stringval;
+  while (isWhitespace());
+  if (testNewline()) {
+    lexState = Scanning;
+    return;
+  }
   while (!testNewline() && !testWhitespace()) {
     *strptr++ = currentChar();
     discardChar();
@@ -171,7 +182,9 @@ void lexUntermString() {
   setTokenType(STRING);
   tokenValue.isToken = false;
   tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
-  return;
+  if ((datap[0] == ';') || (datap[0] == '\r') ||
+      (datap[0] == '\n'))
+    lexState = Scanning;
 }
 
 void lexString() {
@@ -195,6 +208,38 @@ void lexString() {
   return;
 }
 
+// void lexSpecCall() {
+//   char stringval[4096];
+//   char *strptr;
+
+//   while ((datap[0] == ' ') || (datap[0] == '\t'))
+//     discardChar();
+  
+//   // First comes the command
+//   while (currentChar() != ' ') {
+    
+//   }
+
+//  if (datap[0] == '\'') 
+//    lexString();
+//  else {
+//    /* Parse this as a string */
+//    strptr = stringval;
+//    while ((datap[0] != ' ') && (datap[0] != '\t') &&
+//	   (datap[0] != '\n') && (datap[0] != '\r') &&
+//	   (datap[0] != ';')) {
+//      *strptr++ = currentChar();
+//      discardChar();
+//    }
+//    *strptr++ = '\0';
+//    setTokenType(STRING);
+//    tokenValue.isToken = false;
+//    tokenValue.v.p = new AST(string_const_node,stringval,ContextInt());
+//  }
+//  if ((datap[0] == ';') || (datap[0] == '\r') ||
+//      (datap[0] == '\n'))
+//    lexState = Scanning;  
+//}
 
 //void lexSpecialCall() {
 //  char stringval[4096];
@@ -611,7 +656,8 @@ void yylexDoLex() {
     lexScanningState();
     break;
   case SpecScan:
-    lexSpecCall();
+  //    lexSpecCall();
+    lexUntermString();
     break;
   }
 }

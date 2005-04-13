@@ -132,6 +132,7 @@ namespace FreeMat {
      context->addFunction("isempty",IsEmptyFunction,1,1,args);
      args.clear();
      context->addFunction("zeros",ZerosFunction,-1,1,args);
+     context->addFunction("cell",CellFunction,-1,1,args);
      context->addFunction("reshape",ReshapeFunction,-1,1,args);
      context->addFunction("ones",OnesFunction,-1,1,args);
      context->addFunction("pwd",PrintWorkingDirectoryFunction,0,1,args);
@@ -213,7 +214,7 @@ namespace FreeMat {
      context->addFunction("fopen",FopenFunction,3,1,args);
      args.clear();
      args.push_back("handle");
-     context->addFunction("fclose",FcloseFunction,1,0,args);
+     context->addFunction("fclose",FcloseFunction,1,1,args);
      args.clear();
      args.push_back("handle");
      args.push_back("A");
@@ -359,6 +360,13 @@ namespace FreeMat {
      context->addSpecialFunction("dbauto",DbAutoFunction,1,1,args);
      args.clear();
      context->addFunction("computer",ComputerFunction,0,1,args);
+     args.push_back("x");
+     args.push_back("y");
+     context->addFunction("strstr",StrStrFunction,2,1,args);
+     args.push_back("source");
+     args.push_back("pattern");
+     args.push_back("replace");
+     context->addFunction("strrep",StrRepFunction,3,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

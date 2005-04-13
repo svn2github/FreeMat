@@ -357,7 +357,8 @@ namespace FreeMat {
   //@]
   //In the first case a specific file is closed,  In the second, all open
   //files are closed.  Note that until a file is closed the file buffers
-  //are not flushed.
+  //are not flushed.  Returns a '0' if the close was successful and a '-1' if
+  //the close failed for some reason.
   //@@Example
   //A simple example of a file being opened with @|fopen| and then closed with @|fclose|.
   //@<
@@ -369,6 +370,7 @@ namespace FreeMat {
     if (arg.size() != 1)
       throw Exception("Fclose must have one argument, either 'all' or a file handle");
     bool closingAll = false;
+    int retval = 0;
     if (arg[0].isString()) {
       char *allflag = arg[0].getContentsAsCString();
       if (strcmp(allflag,"all") == 0) {
@@ -382,11 +384,11 @@ namespace FreeMat {
 	throw Exception("Cannot close handles 0-2, the standard in/out/error file handles");
       FilePtr* fptr = (fileHandles.lookupHandle(handle+1));
       if (fclose(fptr->fp))
-	throw Exception(strerror(errno));
+	retval = -1;
       fileHandles.deleteHandle(handle+1);
       delete fptr;
     }
-    return ArrayVector();
+    return singleArrayVector(Array::int32Constructor(retval));
   }
 
   //!

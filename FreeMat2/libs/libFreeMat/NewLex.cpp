@@ -99,7 +99,10 @@ inline bool testSpecialFuncs() {
   bool test1, test2;
   char *cp;
   if (!isalpha(datap[0])) return false;
-  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0) || (strncmp(datap,"dir ",4)==0));
+  //FIXME - this should check the current context to see if any of these have been 
+  //masked or assigned
+  //  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0) || (strncmp(datap,"dir ",4)==0));
+  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0));
   if (test1)
     return test1;
   // Check for non-keyword identifier followed by whitespace followed by alphanum
@@ -164,7 +167,8 @@ inline int testDigit() {
 
 inline int testNewline() {
   return ((datap[0] == '\n') || ((datap[0] == '\r') && 
-				 (datap[1] == '\n')));
+				 (datap[1] == '\n')) ||
+	  (datap[0] == 0));
 }
 
 inline int testWhitespace() {

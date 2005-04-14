@@ -1904,7 +1904,7 @@ namespace FreeMat {
     }
     if (s->opNum ==(OP_DOT)) {
       popID();
-      return lhs.getLength();
+      return std::max(1,lhs.getLength());
     }
     popID();
     return 1;
@@ -2036,6 +2036,25 @@ namespace FreeMat {
     debugActive = true;
   }
 
+
+
+  //Some notes on the multifunction call...  This one is pretty complicated, and the current logic is hardly transparent.  Assume we have an expression of the form:
+  //
+  //[expr1 expr2 ... exprn] = fcall
+  //
+  //where fcall is a function call (obviously).  Now, we want to determine how many output arguments fcall should have.  There are several interesting cases to consider:
+  //
+  //expr_i is an existing numeric variable -- lhscount += 1
+  //
+  //expr_i is an existing cell array -- lhscount += size(expr_i)
+  //
+  //expr_i is an existing struct array -- lhscount += size(expr_i)
+  //
+  //expr_i does not exist -- lhscount += 1
+  //
+  //Where this will fail is in one case.  If expr_i is a cell reference for a variable that does not exist, and has a sized argument, something like
+  //[eg{1:3}]
+  //in which case the lhscount += 3, even though eg does not exist. 
   void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) {
     ArrayVector m;
     ASTPtr s, fAST, saveLHS;
@@ -2088,7 +2107,7 @@ namespace FreeMat {
       s = s->right;
     }
     if (s != NULL)
-      io->warningMessage("Warning! one or more outputs not assigned in call.");
+      io->warningMessage("one or more outputs not assigned in call.");
     popID();
   }
 

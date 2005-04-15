@@ -81,6 +81,18 @@
 static unsigned long mt[N]; /* the array for the state vector  */
 static int mti=N+1; /* mti==N+1 means mt[N] is not initialized */
 
+void GetRandStateVect(unsigned int* dt) {
+  for (int i=0;i<N;i++)
+    dt[i] = mt[i];
+  dt[N] = mti;
+}
+
+void SetRandStateVect(unsigned int* dt) {
+  for (int i=0;i<N;i++) 
+    mt[i] = dt[i];
+  mti = dt[N];
+}
+
 /* initializes mt[N] with a seed */
 void init_genrand(unsigned long s)
 {

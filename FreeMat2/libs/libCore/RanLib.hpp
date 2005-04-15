@@ -40,4 +40,6 @@ double genrand_real1(void);
 double genrand_real2(void);
 double genrand_real3(void);
 double genrand_res53(void);
+void GetRandStateVect(unsigned int*);
+void SetRandStateVect(unsigned int*);
 #endif

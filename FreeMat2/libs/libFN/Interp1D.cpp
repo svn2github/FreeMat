@@ -323,6 +323,10 @@ namespace FreeMat {
       throw Exception("arguments to interplin1 must be numerical arrays");
     if (x1.isComplex() || xi.isComplex())
       throw Exception("x-coordinates cannot be complex in interplin1");
+    if (x1.getDataClass() < y1.getDataClass())
+      x1.promoteType(y1.getDataClass());
+    else
+      y1.promoteType(x1.getDataClass());
     if (x1.getDataClass() < FM_FLOAT)
       x1.promoteType(FM_FLOAT);
     if (xi.getDataClass() > x1.getDataClass())
@@ -352,8 +356,6 @@ namespace FreeMat {
       else
 	throw Exception("unrecognized extrapolation type flag to routine interplin1");
     }
-    if (y1.getDataClass() < FM_FLOAT)
-      y1.promoteType(FM_FLOAT);
     Array retval;
     char *dp;
     switch(y1.getDataClass()) {

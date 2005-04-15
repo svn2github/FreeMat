@@ -2269,5 +2269,18 @@ namespace FreeMat {
     retval.push_back(ret);
     return retval;
   }
+
+  //!
+  //@Module CONV2 Matrix Convolution
+  //@@Section SIGNAL
+  //@@Usage
+  //The @|conv2| function performs a two-dimensional convolution of
+  //matrix arguments.  The syntax for its use is
+  //@[
+  //    Z = conv2(X,Y)
+  //@]
+  //which performs the full 2-D convolution of @|X| and @|Y|.  The output
+  //
+  //!
 }
 

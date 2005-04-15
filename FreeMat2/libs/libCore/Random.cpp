@@ -821,6 +821,36 @@ namespace FreeMat {
     return singleArrayVector(Array(FM_FLOAT,outDims,dp));
   }
 
+  void InitializeRandGen() {
+    unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
+    init_by_array(init, length);
+    initialized = true;
+  }
+
+  ArrayVector RandStateControl(const ArrayVector& arg) {
+    char* key = arg[0].getContentsAsCString();
+    if (!((strcmp(key,"state") == 0) ||
+	  (strcmp(key,"STATE") == 0)))
+      throw Exception("expecting string 'state' as first argument");
+    if (arg.size() == 1) {
+      uint32 *mt = (uint32*) Malloc(sizeof(uint32)*625);
+      GetRandStateVect(mt);
+      return singleArrayVector(Array(FM_UINT32,Dimensions(625,1),mt));
+    } else {
+      Array statevec(arg[1]);
+      if ((statevec.isScalar()) && (statevec.getContentsAsIntegerScalar() == 0)) {
+	InitializeRandGen();
+	return ArrayVector();
+      } else {
+	statevec.promoteType(FM_UINT32);
+	if (statevec.getLength() != 625)
+	  throw Exception("illegal state vector - must be of length 625");
+	SetRandStateVect((uint32*)statevec.getDataPointer());
+	return ArrayVector();
+      }
+    }
+  }
+
   //!
   //@Module RANDN Gaussian (Normal) Random Number Generator
   //@@Section RANDOM
@@ -845,6 +875,22 @@ namespace FreeMat {
   //@]
   //This syntax is more convenient for calling @|randn| using a 
   //variable for the argument.
+  //
+  //Finally, @|randn| supports two additional forms that allow
+  //you to manipulate the state of the random number generator.
+  //The first retrieves the state
+  //@[
+  //  y = randn('state')
+  //@]
+  //which is a 625 length integer vector.  The second form sets
+  //the state
+  //@[
+  //  randn('state',y)
+  //@]
+  //or alternately, you can reset the random number generator with
+  //@[
+  //  randn('state',0)
+  //@]
   //@@Function Internals
   //Recall that the
   //probability density function (PDF) of a normal random variable is
@@ -867,20 +913,30 @@ namespace FreeMat {
   //mean(x)
   //var(x)
   //@>
+  //Now, we use the state manipulation functions of @|randn| to exactly reproduce 
+  //a random sequence.  Note that unlike using @|seed|, we can exactly control where
+  //the random number generator starts by saving the state.
+  //@<
+  //randn('state',0)    % restores us to startup conditions
+  //a = randn(1,3)      % random sequence 1
+  //b = randn('state'); % capture the state vector
+  //c = randn(1,3)      % random sequence 2  
+  //randn('state',b);   % restart the random generator so...
+  //c = randn(1,3)      % we get random sequence 2 again
+  //@>
   //!
   ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
+    if (!initialized) 
+      InitializeRandGen();
     int i;
-    unsigned long init[4]={0x923, 0x234, 0x405, 0x456}, length=4;
-    if (!initialized) {
-      init_by_array(init, length);
-      initialized = true;
-    }
     Array t;
     Dimensions dims;
     int32 *dp;
     if (arg.size() == 0)
       dims.makeScalar();
     else {
+      if (arg[0].isString())
+	return RandStateControl(arg);
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;
@@ -960,6 +1016,22 @@ namespace FreeMat {
   //@]
   //This syntax is more convenient for calling @|rand| using a 
   //variable for the argument.
+  //
+  //Finally, @|rand| supports two additional forms that allow
+  //you to manipulate the state of the random number generator.
+  //The first retrieves the state
+  //@[
+  //  y = rand('state')
+  //@]
+  //which is a 625 length integer vector.  The second form sets
+  //the state
+  //@[
+  //  rand('state',y)
+  //@]
+  //or alternately, you can reset the random number generator with
+  //@[
+  //  rand('state',0)
+  //@]
   //@@Example
   //The following example demonstrates an example of using the first form of the @|rand| function.
   //@<
@@ -975,8 +1047,21 @@ namespace FreeMat {
   //mean(x)
   //var(x)
   //@>
+  //Now, we use the state manipulation functions of @|rand| to exactly reproduce 
+  //a random sequence.  Note that unlike using @|seed|, we can exactly control where
+  //the random number generator starts by saving the state.
+  //@<
+  //rand('state',0)    % restores us to startup conditions
+  //a = rand(1,3)      % random sequence 1
+  //b = rand('state'); % capture the state vector
+  //c = rand(1,3)      % random sequence 2  
+  //rand('state',b);   % restart the random generator so...
+  //c = rand(1,3)      % we get random sequence 2 again
+  //@>
   //!
   ArrayVector RandFunction(int nargout, const ArrayVector& arg) {
+    if (!initialized)
+      InitializeRandGen();
     int i;
     Array t;
     Dimensions dims;
@@ -984,6 +1069,9 @@ namespace FreeMat {
     if (arg.size() == 0)
       dims.makeScalar();
     else {
+      // Check for state assignment
+      if (arg[0].isString())
+	return RandStateControl(arg);
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;

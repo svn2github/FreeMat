@@ -88,6 +88,7 @@ namespace FreeMat {
   ArrayVector MinFunction(int, const ArrayVector& arg);
   ArrayVector MaxFunction(int, const ArrayVector& arg);
   ArrayVector SumFunction(int, const ArrayVector& arg);
+  ArrayVector AnyFunction(int, const ArrayVector& arg);
   ArrayVector CumsumFunction(int, const ArrayVector& arg);
   ArrayVector MeanFunction(int, const ArrayVector& arg);
   ArrayVector VarFunction(int, const ArrayVector& arg);
@@ -139,6 +140,7 @@ namespace FreeMat {
   ArrayVector ImagFunction(int, const ArrayVector& arg);
   ArrayVector CeilFunction(int, const ArrayVector& arg);
   ArrayVector FloorFunction(int, const ArrayVector& arg);
+  ArrayVector RoundFunction(int, const ArrayVector& arg);
   ArrayVector AbsFunction(int, const ArrayVector& arg);
   ArrayVector FindFunction(int, const ArrayVector& arg);
   ArrayVector HelpFunction(int, const ArrayVector& arg, WalkTree* eval);

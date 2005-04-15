@@ -63,6 +63,7 @@ namespace FreeMat {
      args.push_back("x");
      args.push_back("d");
      context->addFunction("sum",SumFunction,2,1,args);
+     context->addFunction("any",AnyFunction,2,1,args);
      context->addFunction("cumsum",CumsumFunction,2,1,args);
      context->addFunction("mean",MeanFunction,2,1,args);
      context->addFunction("var",VarFunction,2,1,args);
@@ -71,6 +72,7 @@ namespace FreeMat {
      args.push_back("x");
      context->addFunction("ceil",CeilFunction,1,1,args);
      context->addFunction("floor",FloorFunction,1,1,args);
+     context->addFunction("round",RoundFunction,1,1,args);
      args.clear();
      args.push_back("x");
      args.push_back("n");
@@ -101,6 +103,7 @@ namespace FreeMat {
      args.clear();
      args.push_back("x");     
      context->addFunction("float",FloatFunction,1,1,args);
+     context->addFunction("single",FloatFunction,1,1,args);
      context->addFunction("double",DoubleFunction,1,1,args);
      context->addFunction("complex",ComplexFunction,1,1,args);
      context->addFunction("dcomplex",DcomplexFunction,1,1,args);

@@ -368,6 +368,21 @@ namespace FreeMat {
   }
 
   //!
+  //@Module SINGLE Convert to 32-bit Floating Point
+  //@@Section TYPECAST
+  //@@Usage
+  //A synonym for the @|float| function, converts the argument to
+  //a 32-bit floating point number.  The syntax
+  //for its use is
+  //@[
+  //   y = float(x)
+  //@]
+  //where @|x| is an @|n|-dimensional numerical array.  Conversion 
+  //follows the general C rules.  Note that both @|NaN| and @|Inf| 
+  //are both preserved under type conversion.
+  //!
+
+  //!
   //@Module FLOAT Convert to 32-bit Floating Point
   //@@Section TYPECAST
   //@@Usage

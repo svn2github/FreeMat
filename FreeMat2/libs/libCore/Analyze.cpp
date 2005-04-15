@@ -1493,6 +1493,87 @@ namespace FreeMat {
   }
 
   //!
+  //@Module ROUND Round Function
+  //@@Section ELEMENTARY
+  //@@Usage
+  //Rounds an n-dimensional array to the nearest integer elementwise.
+  //The general syntax for its use is
+  //@[
+  //   y = round(x)
+  //@]
+  //where @|x| is a multidimensional array of numerical type.  The @|round| 
+  //function preserves the type of the argument.  So integer arguments 
+  //are not modified, and @|float| arrays return @|float| arrays as 
+  //outputs, and similarly for @|double| arrays.  The @|round| function 
+  //is not defined for @|complex| or @|dcomplex| types.
+  //@@Example
+  //The following demonstrates the @|round| function applied to various
+  //(numerical) arguments.  For integer arguments, the round function has
+  //no effect:
+  //@<
+  //round(3)
+  //round(-3)
+  //@>
+  //Next, we take the @|round| of a floating point value:
+  //@<
+  //round(3.023f)
+  //round(-2.341f)
+  //@>
+  //Note that the return type is a @|float| also.  Finally, for a @|double|
+  //type:
+  //@<
+  //round(4.312)
+  //round(-5.32)
+  //@>
+ //!
+  ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 1)
+      throw Exception("round requires one argument");
+    Array input(arg[0]);
+    Class argType(input.getDataClass());
+    if (input.isReferenceType() || input.isString())
+      throw Exception("round only defined for numeric types");
+    Array retval;
+    switch (argType) {
+    case FM_LOGICAL:
+    case FM_UINT8: 
+    case FM_INT8:
+    case FM_UINT16:
+    case FM_INT16:
+    case FM_UINT32:
+    case FM_INT32: 
+      retval = input;
+      break;
+    case FM_FLOAT: {
+      float* dp = (float *) Malloc(sizeof(float)*input.getLength());
+      const float* sp = (const float *) input.getDataPointer();
+      int cnt;
+      cnt = input.getLength();
+      for (int i = 0;i<cnt;i++)
+	dp[i] = rintf(sp[i]);
+      retval = Array(FM_FLOAT,input.getDimensions(),dp);
+      break;
+    }
+    case FM_DOUBLE: {
+      double* dp = (double *) Malloc(sizeof(double)*input.getLength());
+      const double* sp = (const double *) input.getDataPointer();
+      int cnt;
+      cnt = input.getLength();
+      for (int i = 0;i<cnt;i++)
+	dp[i] = rint(sp[i]);
+      retval = Array(FM_DOUBLE,input.getDimensions(),dp);
+      break;
+    }
+    case FM_COMPLEX:
+    case FM_DCOMPLEX: 
+      throw Exception("round not defined for complex arguments");
+    }
+    ArrayVector retArray;
+    retArray.push_back(retval);
+    return retArray;    
+  }
+
+  //!
   //@Module CUMSUM Cumulative Summation Function
   //@@Section ELEMENTARY
   //@@Usage
@@ -1750,6 +1831,105 @@ namespace FreeMat {
     ArrayVector retArray;
     retArray.push_back(retval);
     return retArray;
+  }
+
+  //!
+  //@Module ANY Any True Function
+  //@@Section ELEMENTARY
+  //@@Usage
+  //Reduces a logical array along a given dimension by testing for any
+  //logical 1's.  The general 
+  //syntax for its use is
+  //@[
+  //  y = any(x,d)
+  //@]
+  //where @|x| is an @|n|-dimensions array of @|logical| type.
+  //The output is of @|logical| type.  The argument @|d| is 
+  //optional, and denotes the dimension along which to operate.
+  //The output @|y| is the same size as @|x|, except that it is 
+  //singular along the operated direction.  So, for example,
+  //if @|x| is a @|3 x 3 x 4| array, and we @|any| operation along
+  //dimension @|d=2|, then the output is of size @|3 x 1 x 4|.
+  //@@Function Internals
+  //The output is computed via
+  //\[
+  //y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+  //\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+  //\]
+  //If @|d| is omitted, then the summation is taken along the 
+  //first non-singleton dimension of @|x|. 
+  //@@Example
+  //The following piece of code demonstrates various uses of the summation
+  //function
+  //@<
+  //A = [1,0,0;1,0,0;0,0,1]
+  //@>
+  //We start by calling @|any| without a dimension argument, in which 
+  //case it defaults to the first nonsingular dimension (in this case, 
+  //along the columns or @|d = 1|).
+  //@<
+  //any(A)
+  //@>
+  //Next, we apply the @|any| operation along the rows.
+  //@<
+  //any(A,2)
+  //@>
+  //!
+  ArrayVector AnyFunction(int nargout, const ArrayVector& arg) {
+    // Get the data argument
+    if (arg.size() < 1)
+      throw Exception("any requires at least one argument");
+    Array input(arg[0]);
+    input.promoteType(FM_LOGICAL);
+    // Get the dimension argument (if supplied)
+    int workDim = -1;
+    if (arg.size() > 1) {
+      Array WDim(arg[1]);
+      workDim = WDim.getContentsAsIntegerScalar() - 1;
+      if (workDim < 0)
+	throw Exception("Dimension argument to any should be positive");
+    }
+    if (input.isEmpty()) 
+      return HandleEmpty(input);
+    if (input.isScalar())
+      return singleArrayVector(input);
+    // No dimension supplied, look for a non-singular dimension
+    Dimensions inDim(input.getDimensions());
+    if (workDim == -1) {
+      int d = 0;
+      while (inDim[d] == 1) 
+	d++;
+      workDim = d;      
+    }
+    // Calculate the output size
+    Dimensions outDim(inDim);
+    outDim[workDim] = 1;
+    // Calculate the stride...
+    int d;
+    int planecount;
+    int planesize;
+    int linesize;
+    linesize = inDim[workDim];
+    planesize = 1;
+    for (d=0;d<workDim;d++)
+      planesize *= inDim[d];
+    planecount = 1;
+    for (d=workDim+1;d<inDim.getLength();d++)
+      planecount *= inDim[d];
+    // Allocate the values output, and call the appropriate helper func.
+    Array retval;
+    logical* dp = (logical*) Malloc(sizeof(logical)*outDim.getElementCount());
+    const logical* sp = (const logical*) input.getDataPointer();
+    logical accum;
+    int i, j, k;
+    for (i=0;i<planecount;i++) 
+      for (j=0;j<planesize;j++) {
+	accum = 0;
+	for (k=0;(k<linesize) && !accum;k++)
+	  accum = sp[i*planesize*linesize + j + k*planesize];
+	dp[i*planesize+j] = accum;
+      }
+    return singleArrayVector(Array(FM_LOGICAL,outDim,dp));
   }
 
   //!

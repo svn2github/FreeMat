@@ -166,5 +166,7 @@ namespace FreeMat {
    * such that $$A+nB < C$$.
    */
   Array DoubleColon(Array A, Array B, Array C) throw(Exception);
+
+  void TypeCheck(Array &A, Array &B, bool isDivOrMatrix);
 }
 #endif

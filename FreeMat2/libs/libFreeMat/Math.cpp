@@ -708,7 +708,7 @@ namespace FreeMat {
    *    objects to an FM_DOUBLE64!
    *
    */
-  inline void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
+  void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
     Class Aclass, Bclass, Cclass;
 
     Aclass = A.getDataClass();

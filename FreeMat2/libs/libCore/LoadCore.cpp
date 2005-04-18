@@ -370,6 +370,8 @@ namespace FreeMat {
      args.push_back("pattern");
      args.push_back("replace");
      context->addFunction("strrep",StrRepFunction,3,1,args);
+     args.clear();
+     context->addFunction("conv2",Conv2Function,4,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

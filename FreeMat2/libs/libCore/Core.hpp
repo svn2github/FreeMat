@@ -180,6 +180,7 @@ namespace FreeMat {
   ArrayVector StrStrFunction(int nargout, const ArrayVector& arg);
   ArrayVector CellFunction(int nargout, const ArrayVector& arg);
   ArrayVector StrRepFunction(int nargout, const ArrayVector& arg);
+  ArrayVector Conv2Function(int nargout, const ArrayVector& arg);
 }
 
 #endif

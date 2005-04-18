@@ -23,6 +23,7 @@
 #else
 #include <windows.h>
 #endif
+#include <math.h>
 #include "Core.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"
@@ -2279,8 +2280,260 @@ namespace FreeMat {
   //@[
   //    Z = conv2(X,Y)
   //@]
-  //which performs the full 2-D convolution of @|X| and @|Y|.  The output
+  //which performs the full 2-D convolution of @|X| and @|Y|.  If the 
+  //input matrices are of size @|[xm,xn]| and @|[ym,yn]| respectively,
+  //then the output is of size @|[xm+ym-1,xn+yn-1]|.  Another form is
+  //@[
+  //    Z = conv2(hcol,hrow,X)
+  //@]
+  //where @|hcol| and @|hrow| are vectors.  In this form, @|conv2|
+  //first convolves @|Y| along the columns with @|hcol|, and then 
+  //convolves @|Y| along the rows with @|hrow|.  This is equivalent
+  //to @|conv2(hcol(:)*hrow(:)',Y)|.
   //
+  //You can also provide an optional @|shape| argument to @|conv2|
+  //via either
+  //@[
+  //    Z = conv2(X,Y,'shape')
+  //    Z = conv2(hcol,hrow,X,'shape')
+  //@]
+  //where @|shape| is one of the following strings
+  //\begin{itemize}
+  //\item @|'full'| - compute the full convolution result - this is the default if no @|shape| argument is provided.
+  //\item @|'same'| - returns the central part of the result that is the same size as @|X|.
+  //\item @|'valid'| - returns the portion of the convolution that is computed without the zero-padded edges.  In this situation, @|Z| has 
+  //size @|[xm-ym+1,xn-yn+1]| when @|xm>=ym| and @|xn>=yn|.  Otherwise
+  //@|conv2| returns an empty matrix.
+  //\end{itemize}
+  //@@Function Internals
+  //The convolution is computed explicitly using the definition:
+  //\[
+  //  Z(m,n) = \sum_{k} \sum_{j} X(k,j) Y(m-k,n-j)
+  //\]
+  //If the full output is requested, then @|m| ranges over @|0 <= m < xm+ym-1|
+  //and @|n| ranges over @|0 <= n < xn+yn-1|.  For the case where @|shape|
+  //is @|'same'|, the output ranges over @|(ym-1)/2 <= m < xm + (ym-1)/2|
+  //and @|(yn-1)/2 <= n < xn + (yn-1)/2|.  
   //!
+  
+  
+
+  // Summation limits...
+  //  sum a(i,j) b(m-i,n-j)
+  //  Need
+  //    0 <= m-i <= Bm-1
+  //  Can rewrite this as:
+  //    -m <= -i <= Bm-1-m
+  //    m >= i >= m+1-Bm
+  //    m+1-Bm <= i <= m
+  //    0 <= n-j <= Bn-1
+  //    n >= j >= n+1-Bn
+  //    n+1-Bn <= j <= n
+  //  And
+  //    0 <= i <= Am-1
+  //    0 <= j <= An-1
+  //  So  
+  //    m+1-Bm <= i <= m
+  //    0 <= i <= Am-1
+  //    max(0,m+1-Bm) <= i <= min(m,Am-1)
+  //
+  //    n+1-Bn <= j <= n
+  //    0 <= j <= An-1
+  //    max(0,n+1-Bn) <= j <= min(n,An-1)
+  //
+  //
+  //    max(0,m+1-Bm) <= i <= min(m,Am-1)
+  //    max(0,n+1-Bn) <= j <= min(n,An-1)
+
+  template <class T>
+  static void Conv2MainReal(T* C, const T* A, const T*B,
+		     int Am, int An, int Bm, int Bn, 
+		     int Cm, int Cn, int Cm_offset, int Cn_offset) {
+    for (int n=0;n<Cn;n++)
+      for (int m=0;m<Cm;m++) {
+	T accum = 0;
+	int iMin, iMax;
+	int jMin, jMax;
+	iMin = std::max(0,m+Cm_offset-Bm+1);
+	iMax = std::min(Am-1,m+Cm_offset);
+	jMin = std::max(0,n+Cn_offset-Bn+1);
+	jMax = std::min(An-1,n+Cn_offset);
+	for (int j=jMin;j<=jMax;j++)
+	  for (int i=iMin;i<=iMax;i++)
+	    accum += A[i+j*Am]*B[(m+Cm_offset-i)+(n+Cn_offset-j)*Bm];
+	C[m+n*Cm] = accum;
+      }
+  }
+
+  template <class T>
+  static void Conv2MainComplex(T* C, const T* A, const T*B,
+			int Am, int An, int Bm, int Bn, 
+			int Cm, int Cn, int Cm_offset, int Cn_offset) {
+    for (int n=0;n<Cn;n++)
+      for (int m=0;m<Cm;m++) {
+	T accum_r = 0;
+	T accum_i = 0;
+	int iMin, iMax;
+	int jMin, jMax;
+	iMin = std::max(0,m+Cm_offset-Bm+1);
+	iMax = std::min(Am-1,m+Cm_offset);
+	jMin = std::max(0,n+Cn_offset-Bn+1);
+	jMax = std::min(An-1,n+Cn_offset);
+	for (int j=jMin;j<=jMax;j++)
+	  for (int i=iMin;i<=iMax;i++) {
+	    accum_r += A[2*(i+j*Am)]*
+	      B[2*((m+Cm_offset-i)+(n+Cn_offset-j)*Bm)]
+	      - A[2*(i+j*Am)+1]*B[2*((m+Cm_offset-i)+(n+Cn_offset-j)*Bm)+1];
+	    accum_i += A[2*(i+j*Am)]*
+	      B[2*((m+Cm_offset-i)+(n+Cn_offset-j)*Bm)+1]
+	      - A[2*(i+j*Am)+1]*B[2*((m+Cm_offset-i)+(n+Cn_offset-j)*Bm)];
+	  }
+	C[2*(m+n*Cm)] = accum_r;
+	C[2*(m+n*Cm)] = accum_i;
+      }
+  }
+
+  Array Conv2FunctionDispatch(Array X,Array Y,int Cm,int Cn,
+			      int Cm_offset, int Cn_offset) {
+    switch (X.getDataClass()) {
+    case FM_FLOAT: {
+      float *cp = (float*) Array::allocateArray(FM_FLOAT,Cm*Cn);
+      Conv2MainReal<float>(cp,
+			   (const float*) X.getDataPointer(),
+			   (const float*) Y.getDataPointer(),
+			   X.getDimensionLength(0),
+			   X.getDimensionLength(1),
+			   Y.getDimensionLength(0),
+			   Y.getDimensionLength(1),
+			   Cm, Cn, Cm_offset, Cn_offset);
+      return Array(FM_FLOAT,Dimensions(Cm,Cn),cp);
+    }
+    case FM_DOUBLE: {
+      double *cp = (double*) Array::allocateArray(FM_DOUBLE,Cm*Cn);
+      Conv2MainReal<double>(cp,
+			   (const double*) X.getDataPointer(),
+			   (const double*) Y.getDataPointer(),
+			   X.getDimensionLength(0),
+			   X.getDimensionLength(1),
+			   Y.getDimensionLength(0),
+			   Y.getDimensionLength(1),
+			   Cm, Cn, Cm_offset, Cn_offset);
+      return Array(FM_DOUBLE,Dimensions(Cm,Cn),cp);
+    }
+    case FM_INT32: {
+      int32 *cp = (int32*) Array::allocateArray(FM_INT32,Cm*Cn);
+      Conv2MainReal<int32>(cp,
+			   (const int32*) X.getDataPointer(),
+			   (const int32*) Y.getDataPointer(),
+			   X.getDimensionLength(0),
+			   X.getDimensionLength(1),
+			   Y.getDimensionLength(0),
+			   Y.getDimensionLength(1),
+			   Cm, Cn, Cm_offset, Cn_offset);
+      return Array(FM_INT32,Dimensions(Cm,Cn),cp);
+    }
+    case FM_COMPLEX: {
+      float *cp = (float*) Array::allocateArray(FM_COMPLEX,Cm*Cn);
+      Conv2MainComplex<float>(cp,
+			      (const float*) X.getDataPointer(),
+			      (const float*) Y.getDataPointer(),
+			      X.getDimensionLength(0),
+			      X.getDimensionLength(1),
+			      Y.getDimensionLength(0),
+			      Y.getDimensionLength(1),
+			      Cm, Cn, Cm_offset, Cn_offset);
+      return Array(FM_COMPLEX,Dimensions(Cm,Cn),cp);
+    }
+    case FM_DCOMPLEX: {
+      double *cp = (double*) Array::allocateArray(FM_DCOMPLEX,Cm*Cn);
+      Conv2MainComplex<double>(cp,
+			       (const double*) X.getDataPointer(),
+			       (const double*) Y.getDataPointer(),
+			       X.getDimensionLength(0),
+			       X.getDimensionLength(1),
+			       Y.getDimensionLength(0),
+			       Y.getDimensionLength(1),
+			       Cm, Cn, Cm_offset, Cn_offset);
+      return Array(FM_DCOMPLEX,Dimensions(Cm,Cn),cp);
+    }
+    }
+  }
+
+  static ArrayVector Conv2FunctionFullXY(Array X, Array Y) {
+    int Cm, Cn, Cm_offset, Cn_offset;
+    Cm = X.getDimensionLength(0) + Y.getDimensionLength(0) - 1;
+    Cn = X.getDimensionLength(1) + Y.getDimensionLength(1) - 1;
+    Cm_offset = 0;
+    Cn_offset = 0;
+    return singleArrayVector(Conv2FunctionDispatch(X,Y,Cm,Cn,Cm_offset,Cn_offset));
+  }
+
+  static ArrayVector Conv2FunctionSameXY(Array X, Array Y) {
+    int Cm, Cn, Cm_offset, Cn_offset;
+    Cm = X.getDimensionLength(0);
+    Cn = X.getDimensionLength(1);
+    Cm_offset = ceil((Y.getDimensionLength(0)-1)/2)+1;
+    Cn_offset = ceil((Y.getDimensionLength(1)-1)/2)+1;
+    return singleArrayVector(Conv2FunctionDispatch(X,Y,Cm,Cn,Cm_offset,Cn_offset));
+  }
+
+  static ArrayVector Conv2FunctionValidXY(Array X, Array Y) {
+    int Cm, Cn, Cm_offset, Cn_offset;
+    Cm = X.getDimensionLength(0)-Y.getDimensionLength(0)+1;
+    Cn = X.getDimensionLength(1)-Y.getDimensionLength(1)+1;
+    if ((Cm <= 0) || (Cn <= 0))
+      return singleArrayVector(Array::emptyConstructor());
+    Cm_offset = Y.getDimensionLength(0)-1;
+    Cn_offset = Y.getDimensionLength(1)-1;
+    return singleArrayVector(Conv2FunctionDispatch(X,Y,Cm,Cn,Cm_offset,Cn_offset));    
+  }
+
+  ArrayVector Conv2FunctionXY(Array X, Array Y, char* type) {
+    // Check the arguments
+    if (X.isReferenceType() || Y.isReferenceType())
+      throw Exception("cannot apply conv2 to reference types.");
+    if (!X.is2D() || !Y.is2D())
+      throw Exception("arguments must be matrices, not n-dimensional arrays.");
+    TypeCheck(X,Y,false);
+    if ((strcmp(type,"full") == 0) || (strcmp(type,"FULL") == 0))
+      return Conv2FunctionFullXY(X,Y);
+    if ((strcmp(type,"same") == 0) || (strcmp(type,"SAME") == 0))
+      return Conv2FunctionSameXY(X,Y);
+    if ((strcmp(type,"valid") == 0) || (strcmp(type,"VALID") == 0))
+      return Conv2FunctionValidXY(X,Y);
+    throw Exception("count not recognize the arguments to conv2");
+  }
+
+  ArrayVector Conv2FunctionRCX(Array hcol, Array hrow, Array X, char *type) {
+    if (hcol.isReferenceType() || hrow.isReferenceType() ||
+	X.isReferenceType())
+      throw Exception("cannot apply conv2 to reference types.");
+    if (!hcol.is2D() || !hrow.is2D() || !X.is2D())
+      throw Exception("arguments must be matrices, not n-dimensional arrays.");
+    Dimensions t(hcol.getLength(),1);
+    hcol.reshape(t);
+    t = Dimensions(1,hrow.getLength());
+    hrow.reshape(t);
+    ArrayVector rvec;
+    rvec = Conv2FunctionXY(X,hcol,type);
+    rvec = Conv2FunctionXY(rvec.back(),hrow,type);
+    return rvec;
+  }
+
+  ArrayVector Conv2Function(int nargout, const ArrayVector& arg) {
+    // Call the right function based on the arguments
+    if (arg.size() < 2) 
+      throw Exception("conv2 requires at least 2 arguments");
+    if (arg.size() == 2)
+      return Conv2FunctionXY(arg[0],arg[1],"full");
+    if ((arg.size() == 3) && (arg[2].isString()))
+      return Conv2FunctionXY(arg[0],arg[1],arg[2].getContentsAsCString());
+    if (arg.size() == 3)
+      return Conv2FunctionRCX(arg[0],arg[1],arg[2],"full");
+    if ((arg.size() == 4) && (arg[3].isString()))
+      return Conv2FunctionRCX(arg[0],arg[1],arg[2],
+			      arg[3].getContentsAsCString());
+    throw Exception("could not recognize which form of conv2 was requested - check help conv2 for details");
+  }
 }
 

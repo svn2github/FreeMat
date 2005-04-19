@@ -36,7 +36,6 @@ function y = input(prompt,stringflag)
       a = getline(prompt);
       a(end) = [];
       needval = 0;
-      y = evalin('caller',a,'printf(lasterr);needval=1;');
+      y = evalin('caller',a,'0;printf(''%s\n'',lasterr);needval=1;');
     end
   end
-

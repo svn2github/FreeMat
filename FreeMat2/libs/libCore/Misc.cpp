@@ -1744,7 +1744,8 @@ namespace FreeMat {
       char tname[4096];
       Array tval;
       sprintf(tname,"_t%d",i);
-      eval->getContext()->lookupVariable(tname,tval);
+      if (!eval->getContext()->lookupVariable(tname,tval))
+	tval = Array::emptyConstructor();
       eval->getContext()->deleteVariable(tname);
       retval.push_back(tval);
     }
@@ -1757,11 +1758,24 @@ namespace FreeMat {
       char *try_buf = PrePendCallVars(try_line,nargout);
       char *catch_line = arg[1].getContentsAsCString();
       char *catch_buf = PrePendCallVars(catch_line,nargout);
-      eval->evaluateStringTryCatch(try_buf,catch_buf,popSpec);
-      // Retrieve the temp vars from the context
+      ArrayVector retval;
+      bool autostop;
+      autostop = eval->AutoStop();
+      eval->AutoStop(false);
+      try {
+	eval->getContext()->bypassScope(popSpec);
+	eval->evaluateString(try_buf,true);
+	retval = RetrieveCallVars(eval,nargout);
+	eval->getContext()->restoreBypassedScopes();
+      } catch (Exception &e) {
+	eval->getContext()->restoreBypassedScopes();
+	eval->evaluateString(catch_buf,false);
+	retval = RetrieveCallVars(eval,nargout);
+      }
+      eval->AutoStop(true);
       free(try_buf);
       free(catch_buf);
-      return RetrieveCallVars(eval,nargout);
+      return retval;
     } else {
       char *try_line = arg[0].getContentsAsCString();
       char *catch_line = arg[1].getContentsAsCString();
@@ -1769,7 +1783,15 @@ namespace FreeMat {
       char *catch_buf = (char*) malloc(strlen(catch_line)+2);
       sprintf(try_buf,"%s\n",try_line);
       sprintf(catch_buf,"%s\n",catch_line);
-      eval->evaluateStringTryCatch(try_buf,catch_buf,popSpec);
+      bool autostop;
+      autostop = eval->AutoStop();
+      eval->AutoStop(false);
+      try {
+	eval->evaluateString(try_buf,true);
+      } catch (Exception &e) {
+	eval->evaluateString(catch_buf,false);
+      }
+      eval->AutoStop(true);
       free(try_buf);
       free(catch_buf);
       return ArrayVector();
@@ -1782,9 +1804,10 @@ namespace FreeMat {
       char *buf = PrePendCallVars(line,nargout);
       eval->getContext()->bypassScope(popSpec);
       eval->evaluateString(buf);
+      ArrayVector retval(RetrieveCallVars(eval,nargout));
       eval->getContext()->restoreBypassedScopes();
       free(buf);
-      return RetrieveCallVars(eval,nargout);
+      return retval;
     } else {
       char *line = arg[0].getContentsAsCString();
       char *buf = (char*) malloc(strlen(line)+2);

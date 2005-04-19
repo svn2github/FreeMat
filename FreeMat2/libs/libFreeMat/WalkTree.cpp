@@ -3365,54 +3365,7 @@ namespace FreeMat {
     return std::string(buffer2);
   }
 
-  bool WalkTree::evaluateStringTryCatch(char *try_line, char* catch_line, int popspec) {
-    ASTPtr try_tree, catch_tree;
-    ParserState parserState;
-    
-    InterruptPending = false;
-
-    bool saveCLI = InCLI;
-    InCLI = true;
-    // Parse the catch_tree first... if an error occurs there, we display it
-    try{
-      parserState = parseString(catch_line);
-    } catch(Exception &e) {
-      e.printMe(io);
-      InCLI = saveCLI;
-      return false;
-    }
-    catch_tree = getParsedScriptBlock();
-    
-    // Parse the try line next.
-    try {
-      parserState = parseString(try_line);
-      try_tree = getParsedScriptBlock();
-      pushDebug("Eval - try clause",EvalPrep(catch_line));
-      context->bypassScope(popspec);
-      block(try_tree);
-      context->restoreBypassedScopes();
-      popDebug();
-    } catch(Exception &e) {
-      // Execute the catch line
-      context->restoreBypassedScopes();
-      pushDebug("Eval - catch clause",EvalPrep(catch_line));
-      try {
-	block(catch_tree);
-      } catch(Exception &e) {
-	e.printMe(io);
-	popDebug();
-	InCLI = saveCLI;
-	return false;
-      }
-      popDebug();
-      InCLI = saveCLI;
-      return false;
-    }
-      InCLI = saveCLI;
-    return false;
-  }
-
-  bool WalkTree::evaluateString(char *line) {
+  bool WalkTree::evaluateString(char *line, bool propogateExceptions) {
     ASTPtr tree;
     ParserState parserState;
     
@@ -3442,6 +3395,8 @@ namespace FreeMat {
 	return true;
       }
     } catch(Exception &e) {
+      if (propogateExceptions)
+	throw;
       e.printMe(io);
     }
     popDebug();
@@ -3449,7 +3404,10 @@ namespace FreeMat {
   }
   
   char* WalkTree::getLastErrorString() {
-    return lasterr;
+    if (lasterr)
+      return lasterr;
+    else
+      return "";
   }
 
   void WalkTree::setLastErrorString(char* txt) {

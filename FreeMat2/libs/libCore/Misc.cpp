@@ -1614,6 +1614,26 @@ namespace FreeMat {
   }
 
   //!
+  //@Module WARNING Emits a Warning Message
+  //@@Section FLOW
+  //@@Usage
+  //The @|warning| function causes a warning message to be
+  //sent to the user.  The general syntax for its use is
+  //@[
+  //   warning(s)
+  //@]
+  //where @|s| is the string message containing the warning.
+  //!
+  ArrayVector WarningFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() == 0)
+      throw Exception("Not enough inputs to warning function");
+    if (!(arg[0].isString()))
+      throw Exception("Input to error function must be a string");
+    eval->getInterface()->warningMessage(arg[0].getContentsAsCString());
+    return ArrayVector();
+  }
+
+  //!
   //@Module ERROR Causes an Error Condition Raised
   //@@Section FLOW
   //@@Usage

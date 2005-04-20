@@ -61,6 +61,7 @@ namespace FreeMat {
   ArrayVector DiagFunction(int, const ArrayVector& arg);
   ArrayVector IsEmptyFunction(int, const ArrayVector& arg);
   ArrayVector ErrorFunction(int, const ArrayVector& arg);
+  ArrayVector WarningFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector LasterrFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SaveFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector LoadFunction(int, const ArrayVector& arg, WalkTree* eval);

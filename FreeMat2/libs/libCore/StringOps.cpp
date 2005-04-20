@@ -49,7 +49,7 @@ namespace FreeMat {
   ArrayVector StrCmpFunction(int nargout, const ArrayVector& arg) {
     Array retval, arg1, arg2;
     if (arg.size() != 2)
-      throw Exception("strcmp function requires two arguments");
+      throw Exception("strcomp function requires two arguments");
     arg1 = arg[0];
     arg2 = arg[1];
     if (!(arg1.isString()))

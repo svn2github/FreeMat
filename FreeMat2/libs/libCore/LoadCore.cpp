@@ -143,12 +143,13 @@ namespace FreeMat {
      args.push_back("x");     
      //     context->addFunction("test",TestFunction,1,1,args);
      context->addFunction("error",ErrorFunction,1,0,args);
+     context->addSpecialFunction("warning",WarningFunction,1,0,args);
      context->addSpecialFunction("lasterr",LasterrFunction,1,1,args);
      context->addFunction("typeof",TypeOfFunction,1,1,args);
      args.clear();
      args.push_back("x");
      args.push_back("y");
-     context->addFunction("strcmp",StrCmpFunction,2,1,args);
+     context->addFunction("strcomp",StrCmpFunction,2,1,args);
      args.clear();
      context->addFunction("struct",StructFunction,-1,1,args);
      context->addFunction("size",SizeFunction,-1,-1,args);

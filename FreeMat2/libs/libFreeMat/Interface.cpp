@@ -79,6 +79,7 @@ namespace FreeMat {
     char *saveptr = (char*) malloc(sizeof(char)*1024);
     char* token;
     token = strtok(pathdata,PATH_DELIM);
+    dirTab.clear();
     while (token != NULL) {
       if (strcmp(token,".") != 0)
 	dirTab.push_back(std::string(TildeExpand(token)));
@@ -94,13 +95,13 @@ namespace FreeMat {
   
   void Interface::rescanPath() {
     m_context->flushTemporaryGlobalFunctions();
-    int i;
-    for (i=0;i<dirTab.size();i++)
-      scanDirectory(dirTab[i],false,"");
     // Scan the current working directory.
     char cwd[1024];
     getcwd(cwd,1024);
     scanDirectory(std::string(cwd),true,"");
+    int i;
+    for (i=0;i<dirTab.size();i++)
+      scanDirectory(dirTab[dirTab.size()-1-i],false,"");
   }
   
   /*.......................................................................
@@ -304,50 +305,24 @@ namespace FreeMat {
 	  (fnamec[namelen-1] == 'm' ||
 	   fnamec[namelen-1] == 'M')) {
 	fnamec[namelen-2] = 0;
-	// Look for the function in the context - only insert it
-	// if it is not already defined.
-	FunctionDef *fdef;
-	bool lookup;
-	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
-	// If the function was not found, add it.  If it _was_ found,
-	// and is a script and has the same filename as ours, we
-	// do nothing
-	if (lookup && (fdef->type() == FM_M_FUNCTION) 
-	    && ((MFunctionDef*)fdef)->fileName == fullname) {
-	  // Skipping this one
-	} else {
-	  MFunctionDef *adef;
-	  adef = new MFunctionDef();
-	  adef->name = std::string(fnamec);
-	  adef->fileName = fullname;
-	  m_context->insertFunctionGlobally(adef, tempfunc);
-	}
+	MFunctionDef *adef;
+	adef = new MFunctionDef();
+	adef->name = std::string(fnamec);
+	adef->fileName = fullname;
+	m_context->insertFunctionGlobally(adef, tempfunc);
       } else if (fnamec[namelen-2] == '.' && 
 		 (fnamec[namelen-1] == 'p' ||
 		  fnamec[namelen-1] == 'P')) {
 	fnamec[namelen-2] = 0;
-	// Look for the function in the context - only insert it
-	// if it is not already defined.
-	FunctionDef *fdef;
-	bool lookup;
-	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
-	// If the function was not found, add it.  If it _was_ found,
-	// and is a script and has the same filename as ours, we
-	// do nothing
-	if (lookup && (fdef->type() == FM_M_FUNCTION) 
-	    && ((MFunctionDef*)fdef)->fileName == fullname) {
-	  // Skipping this one
-	} else {
-	  MFunctionDef *adef;
-	  // Open the file
-	  File *f = new File(fullname.c_str(),"rb");
-	  Serialize *s = new Serialize(f);
-	  s->handshakeClient();
-	  s->checkSignature('p',1);
-	  adef = ThawMFunction(s);
-	  adef->pcodeFunction = true;
-	  m_context->insertFunctionGlobally(adef, tempfunc);
-	}
+	MFunctionDef *adef;
+	// Open the file
+	File *f = new File(fullname.c_str(),"rb");
+	Serialize *s = new Serialize(f);
+	s->handshakeClient();
+	s->checkSignature('p',1);
+	adef = ThawMFunction(s);
+	adef->pcodeFunction = true;
+	m_context->insertFunctionGlobally(adef, tempfunc);
       }
     }
     free(fnamec);
@@ -364,50 +339,24 @@ namespace FreeMat {
 	  (fnamec[namelen-1] == 'm' ||
 	   fnamec[namelen-1] == 'M')) {
 	fnamec[namelen-2] = 0;
-	// Look for the function in the context - only insert it
-	// if it is not already defined.
-	FunctionDef *fdef;
-	bool lookup;
-	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
-	// If the function was not found, add it.  If it _was_ found,
-	// and is a script and has the same filename as ours, we
-	// do nothing
-	if (lookup && (fdef->type() == FM_M_FUNCTION) 
-	    && ((MFunctionDef*)fdef)->fileName == fullname) {
-	  // Skipping this one
-	} else {
-	  MFunctionDef *adef;
-	  adef = new MFunctionDef();
-	  adef->name = std::string(fnamec);
-	  adef->fileName = fullname;
-	  m_context->insertFunctionGlobally(adef, tempfunc);
-	}
+	MFunctionDef *adef;
+	adef = new MFunctionDef();
+	adef->name = std::string(fnamec);
+	adef->fileName = fullname;
+	m_context->insertFunctionGlobally(adef, tempfunc);
       } else if (fnamec[namelen-2] == '.' && 
 		 (fnamec[namelen-1] == 'p' ||
 		  fnamec[namelen-1] == 'P')) {
 	fnamec[namelen-2] = 0;
-	// Look for the function in the context - only insert it
-	// if it is not already defined.
-	FunctionDef *fdef;
-	bool lookup;
-	lookup = m_context->lookupFunctionGlobally(std::string(fname),fdef);
-	// If the function was not found, add it.  If it _was_ found,
-	// and is a script and has the same filename as ours, we
-	// do nothing
-	if (lookup && (fdef->type() == FM_M_FUNCTION) 
-	    && ((MFunctionDef*)fdef)->fileName == fullname) {
-	  // Skipping this one
-	} else {
-	  MFunctionDef *adef;
-	  // Open the file
-	  File *f = new File(fullname.c_str(),"rb");
-	  Serialize *s = new Serialize(f);
-	  s->handshakeClient();
-	  s->checkSignature('p',1);
-	  adef = ThawMFunction(s);
-	  adef->pcodeFunction = true;
-	  m_context->insertFunctionGlobally(adef, tempfunc);
-	}
+	MFunctionDef *adef;
+	// Open the file
+	File *f = new File(fullname.c_str(),"rb");
+	Serialize *s = new Serialize(f);
+	s->handshakeClient();
+	s->checkSignature('p',1);
+	adef = ThawMFunction(s);
+	adef->pcodeFunction = true;
+	m_context->insertFunctionGlobally(adef, tempfunc);
       }
     } else if (S_ISLNK(filestat.st_mode)) {
       int lncnt = readlink(fullname.c_str(),buffer,1024);

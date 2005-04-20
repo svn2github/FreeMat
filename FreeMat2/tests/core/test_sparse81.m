@@ -1,2 +1,7 @@
 function x = test_sparse81
-return 1;
+A = sparse(rand(10));
+C = [];
+D = [C,A];
+x = testeq(D,C);
+
+

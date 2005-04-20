@@ -194,9 +194,9 @@ namespace FreeMat {
       if (outputArgCount() != -1) {
 	outputs = ArrayVector(returnVals.size());
 	for (int i=0;i<returnVals.size();i++) {
-	  if (!context->lookupVariableLocally(returnVals[i],a)) {
+	  if (!context->lookupVariableLocally(returnVals[i],a) && (i < nargout)) {
 	    if (!warningIssued) {
-	      walker->getInterface()->warningMessage("one or more outputs not assigned in call");
+	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (1)");
 	      warningIssued = true;
 	    }
 	    a = Array::emptyConstructor();
@@ -209,9 +209,9 @@ namespace FreeMat {
 	// For each explicit argument (that we have), insert it
 	// into the scope.
 	for (int i=0;i<explicitCount;i++) {
-	  if (!context->lookupVariableLocally(returnVals[i],a)) {
+	  if (!context->lookupVariableLocally(returnVals[i],a)  && (i < nargout)) {
 	    if (!warningIssued) {
-	      walker->getInterface()->warningMessage("one or more outputs not assigned in call");
+	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (2)");
 	      warningIssued = true;
 	    }
 	    a = Array::emptyConstructor();

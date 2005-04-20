@@ -822,6 +822,7 @@ namespace FreeMat {
       return makeSparseFromIJVComplex<double>(rows,cols,nnz,I,istride,
 					      J,jstride,(double*)cp,cpstride);
     }
+    throw Exception("unsupported type for makeSparseFromIJV");
   }
 			  
   void DeleteSparseMatrix(Class dclass, int rows, int cols, void *cp) {
@@ -842,6 +843,7 @@ namespace FreeMat {
       DeleteSparse<double>((double**)cp,rows,cols);
       return;
     }
+    throw Exception("unsupported type for DeleteSparseMatrix");
   }
   
 
@@ -1020,6 +1022,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseToIJVComplex<double>((const double**)cp,rows,cols,I,J,nnz);
     }
+    throw Exception("unsupported type for SparseToIJV");
   }
 
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
@@ -1035,6 +1038,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return CopySparseMatrix<double>((const double**)cp,rows,cols);
     }
+    throw Exception("unsupported type for CopySparseMatrix");
   }
 
   int CountNonzeros(Class dclass, int rows, int cols, const void *cp) {
@@ -1050,6 +1054,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return CountNonzerosComplex<double>((const double**)cp,rows,cols);
     }
+    throw Exception("unsupported type for CountNonzeros");
   }
 
   // Multiply a sparse matrix by a sparse matrix (result is sparse)
@@ -1449,6 +1454,35 @@ namespace FreeMat {
 	return TypeConvertSparseComplexComplex<double,float>((double**)cp,rows,cols);
       }
     } 
+    throw Exception("unsupported type for TypeConvertSparse");
+  }
+
+  // There _has_ to be a better way to do this.. =P
+  void TrimEmpties(ArrayMatrix &m) {
+    for (ArrayMatrix::iterator i=m.begin();i != m.end();i++) {
+      // Scan for empties
+      bool emptiesFound = true;
+      while (emptiesFound) {
+	emptiesFound = false;
+	for (ArrayVector::iterator j = i->begin(); j != i->end(); j++)
+	  if (j->isEmpty()) {
+	    i->erase(j);
+	    emptiesFound = true;
+	    break;
+	  }
+      }
+    }
+    bool emptiesFound = true;
+    while (emptiesFound) {
+      emptiesFound = false;
+      for (ArrayMatrix::iterator i=m.begin();i != m.end();i++) {
+	if (i->empty()) {
+	  m.erase(i);
+	  emptiesFound = true;
+	  break;
+	}
+      }
+    }
   }
 
   // The strategy is straightforward, we loop over the output columns
@@ -1508,6 +1542,7 @@ namespace FreeMat {
 
   void* SparseMatrixConstructor(Class dclass, int rows, int cols,
 				ArrayMatrix m) {
+    TrimEmpties(m);
     // Precondition the arrays by converting to sparse and to
     // the output type
     for (ArrayMatrix::iterator i=m.begin();i != m.end();i++) {
@@ -1529,6 +1564,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseMatrixConst<double>(rows, cols, m);
     }    
+    throw Exception("unsupported type for SparseMatrixConstructor");
   }
 
 
@@ -1946,6 +1982,7 @@ namespace FreeMat {
       return GetSparseVectorSubsetsComplex<double>(rows, cols, (const double**) src,
       						   indx, irows, icols);
     }
+    throw Exception("unsupported type for GetSparseVctorSubsets");
   }
 
   // SetSparseVectorSubsets - This one is a bit difficult to do efficiently.
@@ -1983,6 +2020,7 @@ namespace FreeMat {
 						   (const double*) data, 
  						   advance);
     }
+    throw Exception("unsupported type for SetSparseVctorSubsets");
   }
 
   template <class T>
@@ -2074,6 +2112,7 @@ namespace FreeMat {
       return GetSparseNDimSubsetsComplex<double>(rows, cols, (const double**) src,
 						 rindx, irows, cindx, icols);
     }
+    throw Exception("unsupported type for GetSparseNDimSubsets");
   }
 
   template <class T>
@@ -2125,6 +2164,7 @@ namespace FreeMat {
       return GetSparseScalarComplex<double>(rows, cols, (const double**) src,
 					    rindx, cindx);
     }
+    throw Exception("unsupported type for GetSparseScalarElement");
   }
 
   template <class T>
@@ -2319,6 +2359,7 @@ namespace FreeMat {
 						 (const double*) data, 
 						 advance);
     }
+    throw Exception("unsupported type for SetSparseNDimSubsets");
   }
 
 
@@ -2430,6 +2471,7 @@ namespace FreeMat {
       return DeleteSparseMatrixCols<double>(rows, cols, (const double**) cp,
 					    dmap);
     }    
+    throw Exception("unsupported type for DeleteSparseMatrixCols");
   }
 
   void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
@@ -2451,6 +2493,7 @@ namespace FreeMat {
       return DeleteSparseMatrixRowsComplex<double>(rows, cols, (const double**) cp,
 						   dmap);
     }
+    throw Exception("unsupported type for DeleteSparseMatrixRows");
   }
 
   template <class T>
@@ -2607,6 +2650,7 @@ namespace FreeMat {
 						     (const double**) cp,
 						     ndx, delete_len);
     }
+    throw Exception("unsupported type for DeleteSparseMatrixVectorSubset");
   }
 
   template <class T>
@@ -2672,6 +2716,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return GetSparseDiagonalComplex<double>(rows, cols, (const double**) cp, diag_order);
     }    
+    throw Exception("unsupported type for GetSparseDiagonal");
   }
 
   template <class T>
@@ -2694,7 +2739,8 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return TestSparseNotFinite<double>(rows, cols, (const double**) cp);
     }        
-  }
+     throw Exception("unsupported type for SparseAnyNotFinite");
+ }
 
   template <class T>
   void* SparseArrayTransposeReal(int rows, int cols, const T** src) {
@@ -2755,6 +2801,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseArrayTransposeComplex<double>(rows, cols, (const double**) cp);
     }        
+    throw Exception("unsupported type for SparseArrayTranspose");
   }
 
   void* SparseArrayHermitian(Class dclass, int rows, int cols, const void* cp) {
@@ -2764,6 +2811,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseArrayHermitianComplex<double>(rows, cols, (const double**) cp);
     }
+    throw Exception("unsupported type for SparseArrayHermitian");
   }
 
   template <class T>
@@ -2856,6 +2904,7 @@ namespace FreeMat {
       return SparseAddComplex<double>(rows, cols, (const double**) ap,
 				      (const double**) bp);
     }
+    throw Exception("unsupported type for SparseSparseAdd");
   }
 
 
@@ -2949,6 +2998,7 @@ namespace FreeMat {
       return SparseSubtractComplex<double>(rows, cols, (const double**) ap,
 					   (const double**) bp);
     }
+    throw Exception("unsupported type for SparseSparseSubtract");
   }
 
   template <class T>
@@ -3035,6 +3085,7 @@ namespace FreeMat {
       return SparseMultiplyComplex<double>(rows, cols, (const double**) ap,
 					   (const double**) bp);
     }
+    throw Exception("unsupported type for SparseSparseMultiply");
   }
   
   template <class T>
@@ -3135,6 +3186,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseOnesFuncComplex<double>(Arows,Acols,(const double**)Ap);
     }
+    throw Exception("unsupported type for SparseOnesFunc");
   }
 
   void* SparseScalarMultiply(Class dclass, const void *ap, int rows, int cols,
@@ -3157,6 +3209,7 @@ namespace FreeMat {
 						 (const double**) ap,
 						 (const double*) bp);
     }
+    throw Exception("unsupported type for SparseScalarMultiply");
   }
 
   int ConvertSparseCCSReal(int rows, int cols, const double **Ap, int* &Acolstart,

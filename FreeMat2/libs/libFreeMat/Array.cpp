@@ -1888,9 +1888,9 @@ break;
 	  const Array& d = ptr[j];
 	  if (d.isSparse())
 	    sparseArg = true;
+	  if (maxType < d.dp->dataClass) maxType = d.dp->dataClass;
+	  if (minType > d.dp->dataClass) minType = d.dp->dataClass;
 	  if (!d.isEmpty()) {
-	    if (maxType < d.dp->dataClass) maxType = d.dp->dataClass;
-	    if (minType > d.dp->dataClass) minType = d.dp->dataClass;
 	    if (firstNonzeroColumn) {
 	      /**
 	       * For the first element in the row, we copy

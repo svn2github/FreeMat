@@ -591,16 +591,11 @@ namespace FreeMat {
      */
     Context* getContext();
     /**
-     * "evaluate" the contents of a string
-     * and execute it, with a provisional clause that is executed when 
-     * an exception occurs.
-     */
-    bool evaluateStringTryCatch(char *try_line, char* catch_line, int popSpec);
-    /**
      * The workhorse routine - "evaluate" the contents of a string
-     * and execute it.
+     * and execute it.  The flag indicates whether or not exceptions
+     * are propogated or printed.
      */
-    bool evaluateString(char *line);
+    bool evaluateString(char *line, bool propogateExceptions = false);
     /**
      * Get the last error that occurred.
      */

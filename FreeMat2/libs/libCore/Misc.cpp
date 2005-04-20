@@ -103,6 +103,8 @@ namespace FreeMat {
   ArrayVector SparseFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() == 1) {
       Array r(arg[0]);
+      if (r.getDataClass() < FM_INT32)
+	r.promoteType(FM_INT32);
       r.makeSparse();
       return singleArrayVector(r);
     } else if (arg.size() == 2) {
@@ -121,6 +123,8 @@ namespace FreeMat {
       Array v_arg(arg[2]);
       i_arg.promoteType(FM_UINT32);
       j_arg.promoteType(FM_UINT32);
+      if (v_arg.getDataClass() < FM_INT32)
+	v_arg.promoteType(FM_INT32);
       int ilen, jlen, vlen;
       ilen = i_arg.getLength();
       jlen = j_arg.getLength();
@@ -174,6 +178,8 @@ namespace FreeMat {
       Array v_arg(arg[2]);
       i_arg.promoteType(FM_UINT32);
       j_arg.promoteType(FM_UINT32);
+      if (v_arg.getDataClass() < FM_INT32)
+	v_arg.promoteType(FM_INT32);
       int ilen, jlen, vlen;
       ilen = i_arg.getLength();
       jlen = j_arg.getLength();

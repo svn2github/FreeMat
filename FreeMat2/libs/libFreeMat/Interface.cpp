@@ -316,13 +316,17 @@ namespace FreeMat {
 	fnamec[namelen-2] = 0;
 	MFunctionDef *adef;
 	// Open the file
-	File *f = new File(fullname.c_str(),"rb");
-	Serialize *s = new Serialize(f);
-	s->handshakeClient();
-	s->checkSignature('p',1);
-	adef = ThawMFunction(s);
-	adef->pcodeFunction = true;
-	m_context->insertFunctionGlobally(adef, tempfunc);
+	try {
+	  File *f = new File(fullname.c_str(),"rb");
+	  Serialize *s = new Serialize(f);
+	  s->handshakeClient();
+	  s->checkSignature('p',1);
+	  adef = ThawMFunction(s);
+	  adef->pcodeFunction = true;
+	  delete f;
+	  m_context->insertFunctionGlobally(adef, tempfunc);
+	} catch (Exception &e) {
+	}
       }
     }
     free(fnamec);
@@ -349,14 +353,18 @@ namespace FreeMat {
 		  fnamec[namelen-1] == 'P')) {
 	fnamec[namelen-2] = 0;
 	MFunctionDef *adef;
-	// Open the file
-	File *f = new File(fullname.c_str(),"rb");
-	Serialize *s = new Serialize(f);
-	s->handshakeClient();
-	s->checkSignature('p',1);
-	adef = ThawMFunction(s);
-	adef->pcodeFunction = true;
-	m_context->insertFunctionGlobally(adef, tempfunc);
+	try {
+	  // Open the file
+	  File *f = new File(fullname.c_str(),"rb");
+	  Serialize *s = new Serialize(f);
+	  s->handshakeClient();
+	  s->checkSignature('p',1);
+	  adef = ThawMFunction(s);
+	  adef->pcodeFunction = true;
+	  delete f;
+	  m_context->insertFunctionGlobally(adef, tempfunc);
+	} catch (Exception &e) {
+	}
       }
     } else if (S_ISLNK(filestat.st_mode)) {
       int lncnt = readlink(fullname.c_str(),buffer,1024);

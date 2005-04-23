@@ -1173,7 +1173,7 @@ namespace FreeMat {
       int numrows;
       numrows = x.getDimensionLength(0);
       for (int i=0;i<nnz;i++)
-	rows[i] = rows[i] + cols[i]*numrows;
+	rows[i] = rows[i] + (cols[i]-1)*numrows;
       Free(cols);
       Free(dp);
       retval.push_back(Array(FM_UINT32,retDim,rows));      

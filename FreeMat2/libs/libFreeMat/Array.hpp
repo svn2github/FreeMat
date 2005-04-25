@@ -464,6 +464,11 @@ namespace FreeMat {
      * that is a (row) vector with the given length.
      */
     static Array doubleVectorConstructor(int len);
+    /**
+     * Float vector constructor - Construct an FM_FLOAT object
+     * that is a (row) vector with the given length.
+     */
+    static Array floatVectorConstructor(int len);
 
     /**
      * Construct a FM_INT32 vector (either vertical or horizontal) corresponding to 

@@ -6,6 +6,7 @@ extern "C" {
 #include "umfpack.h"
 }
 #include "LAPACK.hpp"
+#include "Math.hpp"
 
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
@@ -500,8 +501,26 @@ namespace FreeMat {
     return dst;
   }
 
+  logical* ConvertSparseToDenseLogical(const uint32** src, int rows, int cols) {
+    logical* dst;
+    uint32* tbuf;
+    dst = (logical*) Malloc(sizeof(logical)*rows*cols);
+    tbuf = (uint32*) Malloc(sizeof(uint32)*rows);
+    for (int i=0;i<cols;i++) {
+      memset(tbuf,0,sizeof(uint32)*rows);
+      DecompressRealString<uint32>(src[i],tbuf,rows);
+      for (int j=0;j<rows;j++)
+	dst[j+i*rows] = tbuf[j];
+    }
+    Free(tbuf);
+    return dst;
+  }
+  
+
   void* makeDenseArray(Class dclass, int rows, int cols, const void *cp) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return ConvertSparseToDenseLogical((const uint32 **)cp,rows,cols);
     case FM_INT32:
       return ConvertSparseToDenseReal<int32>((const int32 **)cp,rows,cols);
     case FM_FLOAT:
@@ -519,6 +538,8 @@ namespace FreeMat {
 
   void* makeSparseArray(Class dclass, int rows, int cols, const void *cp) {
     switch(dclass) {
+    case FM_LOGICAL: 
+      return ConvertDenseToSparseReal<logical>((const logical *)cp,rows,cols);
     case FM_INT32: 
       return ConvertDenseToSparseReal<int32>((const int32 *)cp,rows,cols);
     case FM_FLOAT:
@@ -806,6 +827,9 @@ namespace FreeMat {
 			  uint32* I, int istride, uint32 *J, int jstride,
 			  const void* cp, int cpstride) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return makeSparseFromIJVReal<uint32>(rows,cols,nnz,I,istride,
+					    J,jstride,(uint32*)cp,cpstride);
     case FM_INT32:
       return makeSparseFromIJVReal<int32>(rows,cols,nnz,I,istride,
 					  J,jstride,(int32*)cp,cpstride);
@@ -827,6 +851,9 @@ namespace FreeMat {
 			  
   void DeleteSparseMatrix(Class dclass, int rows, int cols, void *cp) {
     switch(dclass) {
+    case FM_LOGICAL:
+      DeleteSparse<uint32>((uint32**)cp,rows,cols);
+      return;
     case FM_INT32:
       DeleteSparse<int32>((int32**)cp,rows,cols);
       return;
@@ -932,6 +959,54 @@ namespace FreeMat {
   }
 
   template <class T>
+  uint32** TypeConvertSparseRealLogical(T** src, int rows, int cols) {
+    uint32** dp;
+    dp = new uint32*[cols];
+    uint32* buffer = new uint32[rows*2];
+    for (int p=0;p<cols;p++) {
+      RLEEncoder<uint32> B(buffer,rows);
+      RLEDecoder<T> A(src[p],rows);
+      A.update(); 
+      while (A.more()) {
+	B.set(A.row());
+	if (A.value() == 0)
+	  B.push(0);
+	else
+	  B.push(1);
+	A.advance();
+      }
+      B.end();
+      dp[p] = B.copyout();
+    }
+    delete[] buffer;
+    return dp;
+  }
+
+  template <class T>
+  uint32** TypeConvertSparseComplexLogical(T** src, int rows, int cols) {
+    uint32** dp;
+    dp = new uint32*[cols];
+    uint32* buffer = new uint32[rows*2];
+    for (int p=0;p<cols;p++) {
+      RLEEncoder<uint32> B(buffer,rows);
+      RLEDecoderComplex<T> A(src[p],rows);
+      A.update();
+      while (A.more()) {
+	B.set(A.row());
+	if ((A.value_real() == 0) && (A.value_imag() == 0))
+	  B.push(0);
+	else
+	  B.push(1);
+	A.advance();
+      }
+      B.end();
+      dp[p] = B.copyout();
+    }
+    delete[] buffer;
+    return dp;
+  }
+
+  template <class T>
   void* CopySparseMatrix(const T** src, int rows, int cols) {
     T** dp;
     dp = new T*[cols];
@@ -1011,6 +1086,8 @@ namespace FreeMat {
   void* SparseToIJV(Class dclass, int rows, int cols, const void* cp,
 		    uint32* &I, uint32* &J, int &nnz) {
     switch (dclass) {
+    case FM_LOGICAL:
+      return SparseToIJVReal<uint32>((const uint32**)cp,rows,cols,I,J,nnz);
     case FM_INT32:
       return SparseToIJVReal<int32>((const int32**)cp,rows,cols,I,J,nnz);
     case FM_FLOAT:
@@ -1027,6 +1104,8 @@ namespace FreeMat {
 
   void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
     switch (dclass) {
+    case FM_LOGICAL:
+      return CopySparseMatrix<uint32>((const uint32**)cp,rows,cols);
     case FM_INT32:
       return CopySparseMatrix<int32>((const int32**)cp,rows,cols);
     case FM_FLOAT:
@@ -1043,6 +1122,8 @@ namespace FreeMat {
 
   int CountNonzeros(Class dclass, int rows, int cols, const void *cp) {
     switch (dclass) {
+    case FM_LOGICAL:
+      return CountNonzerosReal<uint32>((const uint32**)cp,rows,cols);
     case FM_INT32:
       return CountNonzerosReal<int32>((const int32**)cp,rows,cols);
     case FM_FLOAT:
@@ -1398,8 +1479,23 @@ namespace FreeMat {
   /* dclass is the source type, oclass is the destination class*/
   void* TypeConvertSparse(Class dclass, int rows, int cols, 
 			  const void *cp, Class oclass) {
-    if (dclass == FM_INT32) {
+    if (dclass == FM_LOGICAL) {
       switch(oclass) {
+      case FM_INT32:
+	return TypeConvertSparseRealReal<uint32,int32>((uint32**)cp,rows,cols);
+      case FM_FLOAT:
+	return TypeConvertSparseRealReal<uint32,float>((uint32**)cp,rows,cols);
+      case FM_DOUBLE:
+	return TypeConvertSparseRealReal<uint32,double>((uint32**)cp,rows,cols);
+      case FM_COMPLEX:
+	return TypeConvertSparseRealComplex<uint32,float>((uint32**)cp,rows,cols);
+      case FM_DCOMPLEX:
+	return TypeConvertSparseRealComplex<uint32,double>((uint32**)cp,rows,cols);
+      }
+    } else if (dclass == FM_INT32) {
+      switch(oclass) {
+      case FM_LOGICAL:
+	return TypeConvertSparseRealLogical<int32>((int32**)cp,rows,cols);
       case FM_FLOAT:
 	return TypeConvertSparseRealReal<int32,float>((int32**)cp,rows,cols);
       case FM_DOUBLE:
@@ -1411,6 +1507,8 @@ namespace FreeMat {
       }
     } else if (dclass == FM_FLOAT) {
       switch(oclass) {
+      case FM_LOGICAL:
+	return TypeConvertSparseRealLogical<float>((float**)cp,rows,cols);
       case FM_INT32:
 	return TypeConvertSparseRealReal<float,int32>((float**)cp,rows,cols);
       case FM_DOUBLE:
@@ -1422,6 +1520,8 @@ namespace FreeMat {
       }
     } else if (dclass == FM_DOUBLE) {
       switch(oclass) {
+      case FM_LOGICAL:
+	return TypeConvertSparseRealLogical<double>((double**)cp,rows,cols);
       case FM_INT32:
 	return TypeConvertSparseRealReal<double,int32>((double**)cp,rows,cols);
       case FM_FLOAT:
@@ -1433,6 +1533,8 @@ namespace FreeMat {
       }
     } else if (dclass == FM_COMPLEX) {
       switch(oclass) {
+      case FM_LOGICAL:
+	return TypeConvertSparseComplexLogical<float>((float**)cp,rows,cols);
       case FM_INT32:
 	return TypeConvertSparseComplexReal<float,int32>((float**)cp,rows,cols);
       case FM_FLOAT:
@@ -1444,6 +1546,8 @@ namespace FreeMat {
       }
     } else if (dclass == FM_DCOMPLEX) {
       switch(oclass) {
+      case FM_LOGICAL:
+	return TypeConvertSparseComplexLogical<double>((double**)cp,rows,cols);
       case FM_INT32:
 	return TypeConvertSparseComplexReal<double,int32>((double**)cp,rows,cols);
       case FM_FLOAT:
@@ -1553,6 +1657,8 @@ namespace FreeMat {
     }
     // Now, we can construct the output array
     switch (dclass) {
+    case FM_LOGICAL:
+      return SparseMatrixConst<uint32>(rows, cols, m);
     case FM_INT32:
       return SparseMatrixConst<int32>(rows, cols, m);
     case FM_FLOAT:
@@ -1966,6 +2072,9 @@ namespace FreeMat {
   void* GetSparseVectorSubsets(Class dclass, int rows, int cols, const void* src,
 			       const indexType* indx, int irows, int icols) {
     switch (dclass) {
+    case FM_LOGICAL:
+      return GetSparseVectorSubsetsReal<uint32>(rows, cols, (const uint32**) src,
+					       indx, irows, icols);
     case FM_INT32:
       return GetSparseVectorSubsetsReal<int32>(rows, cols, (const int32**) src,
 					       indx, irows, icols);
@@ -1993,6 +2102,10 @@ namespace FreeMat {
 			       const indexType* indx, int irows, int icols,
 			       const void* data, int advance) {
     switch (dclass) {
+    case FM_LOGICAL:
+      return SetSparseVectorSubsetsReal<uint32>(rows, cols, (const uint32**) src,
+					       indx, irows, icols, 
+					       (const uint32*) data, advance);
     case FM_INT32:
       return SetSparseVectorSubsetsReal<int32>(rows, cols, (const int32**) src,
 					       indx, irows, icols, 
@@ -2096,6 +2209,9 @@ namespace FreeMat {
 			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return GetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
+					     rindx, irows, cindx, icols);
     case FM_INT32:
       return GetSparseNDimSubsetsReal<int32>(rows, cols, (const int32**) src,
 					     rindx, irows, cindx, icols);
@@ -2125,7 +2241,7 @@ namespace FreeMat {
       throw Exception("out of range row index in sparse scalar indexing expression A(m,n)");
     if ((cindx<0) || (cindx >= cols))
       throw Exception("out of range col index in sparse scalar indexing expression A(m,n)");
-    RealStringExtract(src[cindx],rindx,ret);
+    RealStringExtract<T>(src[cindx],rindx,ret);
     return ret;
   }
 
@@ -2148,6 +2264,9 @@ namespace FreeMat {
 			       const void* src, indexType rindx, 
 			       indexType cindx) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return GetSparseScalarReal<uint32>(rows, cols, (const uint32**) src,
+					rindx, cindx);
     case FM_INT32:
       return GetSparseScalarReal<int32>(rows, cols, (const int32**) src,
 					rindx, cindx);
@@ -2335,6 +2454,10 @@ namespace FreeMat {
 			     const indexType* cindx, int icols,
 			     const void *data, int advance) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return SetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
+					     rindx, irows, cindx, icols,
+					     (const uint32*) data, advance);
     case FM_INT32:
       return SetSparseNDimSubsetsReal<int32>(rows, cols, (const int32**) src,
 					     rindx, irows, cindx, icols,
@@ -2455,6 +2578,9 @@ namespace FreeMat {
   void* DeleteSparseMatrixCols(Class dclass, int rows, int cols, const void* cp,
 			       bool *dmap) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return DeleteSparseMatrixCols<uint32>(rows, cols, (const uint32**) cp,
+					     dmap);
     case FM_INT32:
       return DeleteSparseMatrixCols<int32>(rows, cols, (const int32**) cp,
 					   dmap);
@@ -2477,6 +2603,9 @@ namespace FreeMat {
   void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
 			       bool *dmap) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return DeleteSparseMatrixRowsReal<uint32>(rows, cols, (const uint32**) cp,
+					       dmap);
     case FM_INT32:
       return DeleteSparseMatrixRowsReal<int32>(rows, cols, (const int32**) cp,
 					       dmap);
@@ -2631,6 +2760,9 @@ namespace FreeMat {
 				       const void* cp, const indexType* ndx,
 				       int delete_len) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return DeleteSparseMatrixVectorReal<uint32>(rows, cols, (const uint32**) cp,
+						   ndx, delete_len);
     case FM_INT32:
       return DeleteSparseMatrixVectorReal<int32>(rows, cols, (const int32**) cp,
 						 ndx, delete_len);
@@ -2663,16 +2795,16 @@ namespace FreeMat {
       T* buffer = new T[outLen];
       T* abuf = new T[outLen*2];
       for (int j=0;j<outLen;j++) 
-	RealStringExtract(src[j],j-diagonalOrder,buffer+j);
-      dst[0] = CompressRealVector(abuf,buffer,outLen);
+	RealStringExtract<T>(src[j],j-diagonalOrder,buffer+j);
+      dst[0] = CompressRealVector<T>(abuf,buffer,outLen);
       delete abuf;      
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
       T* buffer = new T[outLen];
       T* abuf = new T[outLen*2];
       for (int j=0;j<outLen;j++) 
-	RealStringExtract(src[diagonalOrder+j],j,buffer+j);
-      dst[0] = CompressRealVector(abuf,buffer,outLen);
+	RealStringExtract<T>(src[diagonalOrder+j],j,buffer+j);
+      dst[0] = CompressRealVector<T>(abuf,buffer,outLen);
       delete abuf;
     }      
     return dst;
@@ -2705,6 +2837,8 @@ namespace FreeMat {
 
   void* GetSparseDiagonal(Class dclass, int rows, int cols, const void* cp, int diag_order) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return GetSparseDiagonalReal<uint32>(rows, cols, (const uint32**) cp, diag_order);
     case FM_INT32:
       return GetSparseDiagonalReal<int32>(rows, cols, (const int32**) cp, diag_order);
     case FM_FLOAT:
@@ -2724,12 +2858,15 @@ namespace FreeMat {
     for (int i=0;i<cols;i++)
       for (int j=0;j<(int)src[i][0];j++) 
 	if (!IsFinite(src[i][j])) return true;
+    return false;
   }
-    
+  
   bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return false;
     case FM_INT32:
-      return true;
+      return false;
     case FM_FLOAT:
       return TestSparseNotFinite<float>(rows, cols, (const float**) cp);
     case FM_DOUBLE:
@@ -2790,6 +2927,8 @@ namespace FreeMat {
 
   void* SparseArrayTranspose(Class dclass, int rows, int cols, const void* cp) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return SparseArrayTransposeReal<uint32>(rows, cols, (const uint32**) cp);
     case FM_INT32:
       return SparseArrayTransposeReal<int32>(rows, cols, (const int32**) cp);
     case FM_FLOAT:
@@ -3175,6 +3314,8 @@ namespace FreeMat {
 
   void* SparseOnesFunc(Class dclass, int Arows, int Acols, const void *Ap) {
     switch(dclass) {
+    case FM_LOGICAL:
+      return SparseOnesFuncReal<uint32>(Arows,Acols,(const uint32**)Ap);
     case FM_INT32:
       return SparseOnesFuncReal<int32>(Arows,Acols,(const int32**)Ap);
     case FM_FLOAT:
@@ -3734,7 +3875,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout < 1)
+    if (nargout <= 1)
       rvec = 0;
     else
       rvec = 1;
@@ -3743,7 +3884,7 @@ namespace FreeMat {
     double *dr = (double*) Malloc(sizeof(double)*(nev+1));
     double *di = (double*) Malloc(sizeof(double)*(nev+1));
     double *z;
-    if (nargout < 1)
+    if (nargout <= 1)
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
@@ -3813,7 +3954,7 @@ namespace FreeMat {
 	}
       }
       ArrayVector retval;
-      if (nargout < 1)
+      if (nargout <= 1)
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
       else {
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -3823,7 +3964,7 @@ namespace FreeMat {
       return retval;
     } else {
       ArrayVector retval;
-      if (nargout < 1)
+      if (nargout <= 1)
 	retval.push_back(Array(FM_DOUBLE,Dimensions(nev,1),dr));
       else {
 	// I know that technically this is a bad thing... dr and z are larger than
@@ -3882,7 +4023,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout < 1)
+    if (nargout <= 1)
       rvec = 0;
     else
       rvec = 1;
@@ -3890,7 +4031,7 @@ namespace FreeMat {
     int *select = new int[ncv];
     double *d = (double*) Malloc(sizeof(double)*nev);
     double *z;
-    if (nargout < 1)
+    if (nargout <= 1)
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*nev));
@@ -3920,7 +4061,7 @@ namespace FreeMat {
     ArrayVector retval;
     // I know that technically this is a bad thing... dr and z are larger than
     // they need to be, but I don't think this will cause any problems.
-    if (nargout < 1) {
+    if (nargout <= 1) {
       retval.push_back(Array(FM_DOUBLE,Dimensions(nev,1),d));
       Free(z);
     } else {
@@ -3977,7 +4118,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout < 1)
+    if (nargout <= 1)
       rvec = 0;
     else
       rvec = 1;
@@ -3985,7 +4126,7 @@ namespace FreeMat {
     int *select = new int[ncv];
     double *d = (double*) Malloc(2*sizeof(double)*(nev+1));
     double *z;
-    if (nargout < 1)
+    if (nargout <= 1)
       z = NULL;
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
@@ -4027,7 +4168,7 @@ namespace FreeMat {
       }
     }
     ArrayVector retval;
-    if (nargout < 1)
+    if (nargout <= 1)
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
     else {
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -4109,7 +4250,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout < 1)
+    if (nargout <= 1)
       rvec = 0;
     else
       rvec = 1;
@@ -4119,7 +4260,7 @@ namespace FreeMat {
     double *dr = (double*) Malloc(sizeof(double)*(nev+1));
     double *di = (double*) Malloc(sizeof(double)*(nev+1));
     double *z;
-    if (nargout < 1)
+    if (nargout <= 1)
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
@@ -4185,7 +4326,7 @@ namespace FreeMat {
 	}
       }
       ArrayVector retval;
-      if (nargout < 1)
+      if (nargout <= 1)
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
       else {
 	retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -4195,7 +4336,7 @@ namespace FreeMat {
       return retval;
     } else {
       ArrayVector retval;
-      if (nargout < 1)
+      if (nargout <= 1)
 	retval.push_back(Array(FM_DOUBLE,Dimensions(nev,1),dr));
       else {
 	// I know that technically this is a bad thing... dr and z are larger than
@@ -4296,7 +4437,7 @@ namespace FreeMat {
       DNAUPARPACKError(info);
     // Compute vectors and values
     int rvec;
-    if (nargout < 1)
+    if (nargout <= 1)
       rvec = 0;
     else
       rvec = 1;
@@ -4305,7 +4446,7 @@ namespace FreeMat {
 	//lambda_a = 1/lambda_c + sigma
     double *d = (double*) Malloc(2*sizeof(double)*(nev+1));
     double *z;
-    if (nargout < 1)
+    if (nargout <= 1)
       z = NULL;
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
@@ -4349,7 +4490,7 @@ namespace FreeMat {
       }
     }
     ArrayVector retval;
-    if (nargout < 1)
+    if (nargout <= 1)
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(nev,1),eigvals));
     else {
       retval.push_back(Array(FM_DCOMPLEX,Dimensions(n,nev),eigvecs));
@@ -4397,4 +4538,672 @@ namespace FreeMat {
 						       k, nargout, shift[0]);
     }
   }
+  
+  Array SparsePowerFuncComplexComplex(Array A, Array B) {
+    A.promoteType(FM_DCOMPLEX);
+    B.promoteType(FM_DCOMPLEX);
+    B.makeDense();
+    int rows, cols;
+    rows = A.getDimensionLength(0);
+    cols = A.getDimensionLength(1);
+    const double *bval = (const double *) B.getDataPointer();
+    double **dp = new double*[cols];
+    double *buffer = new double[4*rows];
+    const double **ap = (const double **) A.getSparseDataPointer();
+    for (int p=0;p<cols;p++) {
+      RLEDecoderComplex<double> Adecoder(ap[p],rows);
+      RLEEncoderComplex<double> Cencoder(buffer,rows);
+      Adecoder.update();
+      while (Adecoder.more()) {
+	Cencoder.set(Adecoder.row());
+	double aval[2];
+	double cval[2];
+	aval[0] = Adecoder.value_real();
+	aval[1] = Adecoder.value_imag();
+	power_zz(cval,aval,bval);
+	Cencoder.push(cval[0],cval[1]);
+	Adecoder.advance();
+      }
+      Cencoder.end();
+      dp[p] = Cencoder.copyout();
+    }
+    delete [] buffer;
+    return Array(FM_DCOMPLEX,Dimensions(rows,cols),dp,true);
+  }
+  
+  Array SparsePowerFuncComplexInteger(Array A, Array B) {
+    A.promoteType(FM_DCOMPLEX);
+    B.promoteType(FM_INT32);
+    B.makeDense();
+    int rows, cols;
+    rows = A.getDimensionLength(0);
+    cols = A.getDimensionLength(1);
+    int32 bval = *((const int32 *) B.getDataPointer());
+    double **dp = new double*[cols];
+    double *buffer = new double[4*rows];
+    const double **ap = (const double **) A.getSparseDataPointer();
+    for (int p=0;p<cols;p++) {
+      RLEDecoderComplex<double> Adecoder(ap[p],rows);
+      RLEEncoderComplex<double> Cencoder(buffer,rows);
+      Adecoder.update();
+      while (Adecoder.more()) {
+	Cencoder.set(Adecoder.row());
+	double aval[2];
+	double cval[2];
+	aval[0] = Adecoder.value_real();
+	aval[1] = Adecoder.value_imag();
+	power_zi(cval,aval,bval);
+	Cencoder.push(cval[0],cval[1]);
+	Adecoder.advance();
+      }
+      Cencoder.end();
+      dp[p] = Cencoder.copyout();
+    }
+    delete [] buffer;
+    return Array(FM_DCOMPLEX,Dimensions(rows,cols),dp,true);
+  }
+
+  Array SparsePowerFuncRealReal(Array A, Array B) {
+    A.promoteType(FM_DOUBLE);
+    B.promoteType(FM_DOUBLE);
+    B.makeDense();
+    int rows, cols;
+    rows = A.getDimensionLength(0);
+    cols = A.getDimensionLength(1);
+    double bval = *((const double *) B.getDataPointer());
+    double **dp = new double*[cols];
+    double *buffer = new double[2*rows];
+    const double **ap = (const double **) A.getSparseDataPointer();
+    for (int p=0;p<cols;p++) {
+      RLEDecoder<double> Adecoder(ap[p],rows);
+      RLEEncoder<double> Cencoder(buffer,rows);
+      Adecoder.update();
+      while (Adecoder.more()) {
+	Cencoder.set(Adecoder.row());
+	Cencoder.push(power_dd(Adecoder.value(),bval));
+	Adecoder.advance();
+      }
+      Cencoder.end();
+      dp[p] = Cencoder.copyout();
+    }
+    delete [] buffer;
+    return Array(FM_DOUBLE,Dimensions(rows,cols),dp,true);
+  }
+  
+  Array SparsePowerFuncRealInteger(Array A, Array B) {
+    A.promoteType(FM_DOUBLE);
+    B.promoteType(FM_INT32);
+    B.makeDense();
+    int rows, cols;
+    rows = A.getDimensionLength(0);
+    cols = A.getDimensionLength(1);
+    int32 bval = *((const int32 *) B.getDataPointer());
+    double **dp = new double*[cols];
+    double *buffer = new double[2*rows];
+    const double **ap = (const double **) A.getSparseDataPointer();
+    for (int p=0;p<cols;p++) {
+      RLEDecoder<double> Adecoder(ap[p],rows);
+      RLEEncoder<double> Cencoder(buffer,rows);
+      Adecoder.update();
+      while (Adecoder.more()) {
+	Cencoder.set(Adecoder.row());
+	Cencoder.push(power_di(Adecoder.value(),bval));
+	Adecoder.advance();
+      }
+      Cencoder.end();
+      dp[p] = Cencoder.copyout();
+    }
+    delete [] buffer;
+    return Array(FM_DOUBLE,Dimensions(rows,cols),dp,true);
+  }
+
+  // Compute A^B where B is a scalar, A is sparse and B is a scalar
+  // We do this the lazy way - convert both to dcomplex or complex, and
+  // then check the result to see if its real (or integer)
+  //
+  // These are the four case to consider:
+  //
+  // power_zi
+  // power_zz
+  // power_di
+  // power_dd
+  //
+  //
+  Array SparsePowerFunc(Array A, Array B) {
+    Class Aclass, Bclass;
+    Aclass = A.getDataClass();
+    Bclass = B.getDataClass();
+    Array C;
+    if (A.isReal())
+      if (Bclass == FM_INT32)
+	C = SparsePowerFuncRealInteger(A,B);
+      else
+	C = SparsePowerFuncRealReal(A,B);
+    else
+      if (Bclass == FM_INT32)
+	C = SparsePowerFuncComplexInteger(A,B);
+      else
+	C = SparsePowerFuncComplexComplex(A,B);
+    C.promoteType(A.getDataClass());
+    return C;
+  }
+
+  template <class T>
+  bool IsPositiveSparse(int rows, int cols, const T** src) {
+    bool allPositive = true;
+    for (int p=0;p<cols;p++) {
+      RLEDecoder<T> A(src[p],rows);
+      A.update();
+      while (A.more()) {
+	allPositive = allPositive & (A.value() >= 0);
+	if (!allPositive) return false;
+	A.advance();
+      }
+    }
+    return allPositive;
+  }
+
+  // Test for positive entries (technically non-negative entries) - only applicable to 
+  // real valued matrices
+  bool SparseIsPositive(Class dclass, int rows, int cols, const void *ap) {
+    switch(dclass) {
+    case FM_INT32:
+      return IsPositiveSparse<int32>(rows, cols, (const int32**) ap);
+    case FM_FLOAT:
+      return IsPositiveSparse<float>(rows, cols, (const float**) ap);
+    case FM_DOUBLE:
+      return IsPositiveSparse<double>(rows, cols, (const double**) ap);
+    }
+    throw Exception("unsupported type for ispositive");
+  }
+
+
+  template <class T>
+  void* SparseMatrixSumColumnsReal(int rows, int cols, const T** A) {
+    T **out = (T**) new T*[cols];
+    T* buffer = new T[3];
+    for (int col=0;col<cols;col++) {
+      T accum = 0;
+      RLEDecoder<T> Acmp(A[col], rows);
+      Acmp.update();
+      while (Acmp.more()) {
+	accum += Acmp.value();
+	Acmp.advance();
+      }
+      RLEEncoder<T> Bcmp(buffer,1);
+      Bcmp.push(accum);
+      Bcmp.end();
+      out[col] = Bcmp.copyout();
+    }
+    delete[] buffer;
+    return out;
+  }
+
+  template <class T>
+  void* SparseMatrixSumColumnsComplex(int rows, int cols, const T** A) {
+    T **out = (T**) new T*[cols];
+    T* buffer = new T[5];
+    for (int col=0;col<cols;col++) {
+      T accum_real = 0;
+      T accum_imag = 0;
+      RLEDecoderComplex<T> Acmp(A[col], rows);
+      Acmp.update();
+      while (Acmp.more()) {
+	accum_real += Acmp.value_real();
+	accum_imag += Acmp.value_imag();
+	Acmp.advance();
+      }
+      RLEEncoderComplex<T> Bcmp(buffer,1);
+      Bcmp.push(accum_real,accum_imag);
+      Bcmp.end();
+      out[col] = Bcmp.copyout();
+    }
+    delete[] buffer;
+    return out;
+  }
+
+  template <class T>
+  void* SparseMatrixSumRowsReal(int rows, int cols, const T** A) {
+    T** out = (T**) new T*[1];
+    T* buffer = new T[rows];
+    memset(buffer,0,sizeof(T)*rows);
+    for (int col=0;col<cols;col++) {
+      RLEDecoder<T> Acmp(A[col], rows);
+      Acmp.update();
+      while (Acmp.more()) {
+	buffer[Acmp.row()] += Acmp.value();
+	Acmp.advance();
+      }
+    }
+    T* cbuf = new T[rows*2];
+    out[0] = CompressRealVector<T>(cbuf, buffer, rows);
+    delete[] cbuf;
+    delete[] buffer;
+    return out;
+  }
+
+  template <class T>
+  void* SparseMatrixSumRowsComplex(int rows, int cols, const T** A) {
+    T** out = (T**) new T*[1];
+    T* buffer = new T[2*rows];
+    memset(buffer,0,sizeof(T)*rows*2);
+    for (int col=0;col<cols;col++) {
+      RLEDecoderComplex<T> Acmp(A[col], rows);
+      Acmp.update();
+      while (Acmp.more()) {
+	buffer[2*Acmp.row()] += Acmp.value_real();
+	buffer[2*Acmp.row()+1] += Acmp.value_imag();
+	Acmp.advance();
+      }
+    }
+    T* cbuf = new T[rows*4];
+    out[0] = CompressComplexVector(cbuf, buffer, rows);
+    delete[] cbuf;
+    delete[] buffer;
+    return out;
+  }
+
+  void* SparseMatrixSumRows(Class dclass, int Arows, int Acols, const void *Ap) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseMatrixSumRowsReal<int32>(Arows, Acols, (const int32**) Ap);
+    case FM_FLOAT:
+      return SparseMatrixSumRowsReal<float>(Arows, Acols, (const float**) Ap);
+    case FM_DOUBLE:
+      return SparseMatrixSumRowsReal<double>(Arows, Acols, (const double**) Ap);
+    case FM_COMPLEX:
+      return SparseMatrixSumRowsComplex<float>(Arows, Acols, (const float**) Ap);
+    case FM_DCOMPLEX:
+      return SparseMatrixSumRowsComplex<double>(Arows, Acols, (const double**) Ap);
+    }
+  }
+
+  void* SparseMatrixSumColumns(Class dclass, int Arows, int Acols, const void *Ap) {
+    switch(dclass) {
+    case FM_INT32:
+      return SparseMatrixSumColumnsReal<int32>(Arows, Acols, (const int32**) Ap);
+    case FM_FLOAT:
+      return SparseMatrixSumColumnsReal<float>(Arows, Acols, (const float**) Ap);
+    case FM_DOUBLE:
+      return SparseMatrixSumColumnsReal<double>(Arows, Acols, (const double**) Ap);
+    case FM_COMPLEX:
+      return SparseMatrixSumColumnsComplex<float>(Arows, Acols, (const float**) Ap);
+    case FM_DCOMPLEX:
+      return SparseMatrixSumColumnsComplex<double>(Arows, Acols, (const double**) Ap);
+    }
+  }
+
+  uint32* SparseLogicalToOrdinal(int rows, int cols, const void *Ap, int &nnz) {
+    nnz = CountNonzerosReal((const uint32 **) Ap,rows,cols);
+    uint32* retptr = (uint32*) Malloc(sizeof(uint32)*nnz);
+    const uint32 **src = (const uint32**) Ap;
+    int k = 0;
+    for (int i=0;i<cols;i++) {
+      RLEDecoder<uint32> A(src[i],rows);
+      A.update();
+      while (A.more()) {
+	retptr[k++] = A.row()+i*rows+1;
+	A.advance();
+      }
+    }
+    return retptr;
+  }
+
+  template <class T>
+  uint32 slo_lt_real(T a, T b) {
+    return (a < b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_gt_real(T a, T b) {
+    return (a > b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_ne_real(T a, T b) {
+    return (a != b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_le_real(T a, T b) {
+    return (a <= b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_ge_real(T a, T b) {
+    return (a >= b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_eq_real(T a, T b) {
+    return (a == b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32** ApplyLogicalOpComplexZP(int rows, int cols, 
+				    const T** Asrc, const T** Bsrc, 
+				    uint32 (*fnop)(T,T,T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    uint32* buffer = new uint32[rows*2];
+    memset(buffer,0,sizeof(uint32)*rows*2);
+    for (int col=0;col<cols;col++) {
+      RLEDecoderComplex<T> A(Asrc[col],rows);
+      RLEDecoderComplex<T> B(Bsrc[col],rows);
+      RLEEncoder<uint32> C(buffer,rows);
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(fnop(A.value_real(),A.value_imag(),
+		      B.value_real(),B.value_imag()));
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  C.set(A.row());
+	  C.push(fnop(A.value_real(),A.value_imag(),0,0));
+	  A.advance();
+	} else {
+	  C.set(B.row());
+	  C.push(fnop(0,0,B.value_real(),B.value_imag()));
+	  B.advance();
+	}
+      }
+      C.end();
+      Cmat[col] = C.copyout();
+    }
+    delete buffer;
+    return Cmat;
+  }
+
+  template <class T>
+  uint32** ApplyLogicalOpRealZP(int rows, int cols, 
+				 const T** Asrc, const T** Bsrc, 
+				 uint32 (*fnop)(T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    uint32* buffer = new uint32[rows*2];
+    memset(buffer,0,sizeof(uint32)*rows*2);
+    for (int col=0;col<cols;col++) {
+      RLEDecoder<T> A(Asrc[col],rows);
+      RLEDecoder<T> B(Bsrc[col],rows);
+      RLEEncoder<uint32> C(buffer,rows);
+      A.update();
+      B.update();
+      while (A.more() || B.more()) {
+	if (A.row() == B.row()) {
+	  C.set(A.row());
+	  C.push(fnop(A.value(),B.value()));
+	  A.advance();
+	  B.advance();
+	} else if (A.row() < B.row()) {
+	  C.set(A.row());
+	  C.push(fnop(A.value(),0));
+	  A.advance();
+	} else {
+	  C.set(B.row());
+	  C.push(fnop(0,B.value()));
+	  B.advance();
+	}
+      }
+      C.end();
+      Cmat[col] = C.copyout();
+    }
+    delete buffer;
+    return Cmat;
+  }
+
+  // Non-zero preserving
+  template <class T>
+  uint32** ApplyLogicalOpRealNZ(int rows, int cols, 
+				 const T** Asrc, const T** Bsrc, 
+				 uint32 (*fnop)(T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    T* Abuf = new T[rows];
+    T* Bbuf = new T[rows];
+    uint32* Cbuf = new uint32[rows];
+    uint32* buffer = new uint32[rows*2];
+    for (int col=0;col<cols;col++) {
+      memset(Abuf,0,rows*sizeof(T));
+      memset(Bbuf,0,rows*sizeof(T));
+      DecompressRealString<T>(Asrc[col],Abuf,rows);
+      DecompressRealString<T>(Bsrc[col],Bbuf,rows);
+      for (int row=0;row<rows;row++)
+	Cbuf[row] = fnop(Abuf[row],Bbuf[row]);
+      Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
+    }
+    delete buffer;
+    return Cmat;
+  }
+
+  // Non-zero preserving
+  template <class T>
+  uint32** ApplyLogicalOpComplexNZ(int rows, int cols, 
+				   const T** Asrc, const T** Bsrc, 
+				   uint32 (*fnop)(T,T,T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    T* Abuf = new T[2*rows];
+    T* Bbuf = new T[2*rows];
+    uint32* Cbuf = new uint32[rows];
+    uint32* buffer = new uint32[rows*2];
+    for (int col=0;col<cols;col++) {
+      DecompressComplexString<T>(Asrc[col],Abuf,rows);
+      DecompressComplexString<T>(Bsrc[col],Bbuf,rows);
+      for (int row=0;row<rows;row++)
+	Cbuf[row] = fnop(Abuf[2*row],
+			 Abuf[2*row+1],
+			 Bbuf[2*row],
+			 Bbuf[2*row+1]);
+      Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
+    }
+    delete buffer;
+    return Cmat;
+  }
+  template <class T>
+  uint32** ApplyLogicalOpComplexScalarZP(int rows, int cols, 
+					 const T** Asrc, const T* Bsrc, 
+					 uint32 (*fnop)(T,T,T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    uint32* buffer = new uint32[rows*2];
+    memset(buffer,0,sizeof(uint32)*rows*2);
+    for (int col=0;col<cols;col++) {
+      RLEDecoderComplex<T> A(Asrc[col],rows);
+      RLEEncoder<uint32> C(buffer,rows);
+      A.update();
+      while (A.more()) {
+	C.set(A.row());
+	C.push(fnop(A.value_real(),A.value_imag(),
+		    Bsrc[0],Bsrc[1]));
+	A.advance();
+      }
+      C.end();
+      Cmat[col] = C.copyout();
+    }
+    delete buffer;
+    return Cmat;
+  }
+
+  template <class T>
+  uint32** ApplyLogicalOpRealScalarZP(int rows, int cols, 
+				      const T** Asrc, const T* Bsrc, 
+				      uint32 (*fnop)(T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    uint32* buffer = new uint32[rows*2];
+    memset(buffer,0,sizeof(uint32)*rows*2);
+    for (int col=0;col<cols;col++) {
+      RLEDecoder<T> A(Asrc[col],rows);
+      RLEEncoder<uint32> C(buffer,rows);
+      A.update();
+      while (A.more()) {
+	C.set(A.row());
+	C.push(fnop(A.value(),Bsrc[0]));
+	A.advance();
+      }
+      C.end();
+      Cmat[col] = C.copyout();
+    }
+    delete buffer;
+    return Cmat;
+  }
+
+  // Non-zero preserving
+  template <class T>
+  uint32** ApplyLogicalOpRealScalarNZ(int rows, int cols, 
+				      const T** Asrc, const T* Bsrc, 
+				      uint32 (*fnop)(T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    T* Abuf = new T[rows];
+    uint32* Cbuf = new uint32[rows];
+    uint32* buffer = new uint32[rows*2];
+    for (int col=0;col<cols;col++) {
+      memset(Abuf,0,rows*sizeof(T));
+      DecompressRealString<T>(Asrc[col],Abuf,rows);
+      for (int row=0;row<rows;row++)
+	Cbuf[row] = fnop(Abuf[row],Bsrc[0]);
+      Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
+    }
+    delete buffer;
+    return Cmat;
+  }
+  
+  // Non-zero preserving
+  template <class T>
+  uint32** ApplyLogicalOpComplexScalarNZ(int rows, int cols, 
+					 const T** Asrc, const T* Bsrc, 
+					 uint32 (*fnop)(T,T,T,T)) {
+    uint32** Cmat = new uint32*[cols];
+    T* Abuf = new T[2*rows];
+    uint32* Cbuf = new uint32[rows];
+    uint32* buffer = new uint32[rows*2];
+    for (int col=0;col<cols;col++) {
+      DecompressComplexString<T>(Asrc[col],Abuf,rows);
+      for (int row=0;row<rows;row++)
+	Cbuf[row] = fnop(Abuf[2*row],
+			 Abuf[2*row+1],
+			 Bsrc[0],
+			 Bsrc[1]);
+      Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
+    }
+    delete buffer;
+    return Cmat;
+  }
+  
+  template <class T>
+  uint32** ApplyLogicalOpRealScalar(int rows, int cols,
+				  const T** Asrc,
+				  const T* Bsrc,
+				  uint32 (*fnop)(T,T)) {
+    // Is fnop zero preserving?
+    if (!fnop(0,Bsrc[0])) 
+      return ApplyLogicalOpRealScalarZP<T>(rows,cols,Asrc,Bsrc,fnop);
+    else 
+      return ApplyLogicalOpRealScalarNZ<T>(rows,cols,Asrc,Bsrc,fnop);
+  }
+
+  template <class T>
+  uint32** ApplyLogicalOpComplexScalar(int rows, int cols,
+				       const T** Asrc,
+				       const T* Bsrc,
+				       uint32 (*fnop)(T,T,T,T)) {
+    // Is fnop zero preserving?
+    if (!fnop(0,0,Bsrc[0],Bsrc[1])) 
+      return ApplyLogicalOpComplexScalarZP<T>(rows,cols,Asrc,Bsrc,fnop);
+    else 
+      return ApplyLogicalOpComplexScalarNZ<T>(rows,cols,Asrc,Bsrc,fnop);
+  }
+
+  // Apply a logical op to two sparse matrices of the same size.  
+  // The algo to handle the operation depends on wheter or not
+  // the op is zero preserving.  For sparse-sparse interactions,
+  // the ops stack up like this:
+  //  SLO_LT,  0 < 0 = 0   -> Zero Preserving
+  //  SLO_GT,  0 > 0 = 0   -> Zero Preserving
+  //  SLO_NE,  0 ~= 0 = 0  -> Zero Preserving
+  //  SLO_AND, 0 && 0 = 0  -> Zero Preserving
+  //  SLO_OR   0 || 0 = 0  -> Zero Preserving
+  //  SLO_LE,  0 <= 0 = 1  -> not zero preserving
+  //  SLO_GE,  0 >= 0 = 1  -> not zero preserving
+  //  SLO_EQ,  0 == 0 = 1  -> not zero preserving
+  //  SLO_NOT, ~0 = 1      -> not zero preserving
+  // For an action that is _not_ zero preserving, we shouldn't be here - just
+  // convert both arguments to full matrices and use the regular routines
+  void* SparseSparseLogicalOp(Class dclass, int rows, int cols, 
+			      const void *Ap, const void *Bp, 
+			      SparseLogOpID opselect) {
+    switch (dclass) {
+    case FM_INT32:
+      switch (opselect) {
+      case SLO_LT:
+	return ApplyLogicalOpRealZP<int32>(rows,cols,
+					   (const int32**)Ap,
+					   (const int32**)Bp,
+					   slo_lt_real<int32>);
+      case SLO_GT:
+	return ApplyLogicalOpRealZP<int32>(rows,cols,
+					   (const int32**)Ap,
+					   (const int32**)Bp,
+					   slo_gt_real<int32>);
+      case SLO_NE:
+	return ApplyLogicalOpRealZP<int32>(rows,cols,
+					   (const int32**)Ap,
+					   (const int32**)Bp,
+					   slo_ne_real<int32>);
+      case SLO_LE:
+	return ApplyLogicalOpRealNZ<int32>(rows,cols,
+					   (const int32**)Ap,
+					   (const int32**)Bp,
+					   slo_le_real<int32>);
+      case SLO_GE:
+	return ApplyLogicalOpRealNZ<int32>(rows,cols,
+					   (const int32**)Ap,
+					   (const int32**)Bp,
+					   slo_ge_real<int32>);
+      case SLO_EQ:
+	return ApplyLogicalOpRealNZ<int32>(rows,cols,
+					   (const int32**)Ap,
+					   (const int32**)Bp,
+					   slo_eq_real<int32>);
+      }	
+    }
+  }
+
+  void* SparseScalarLogicalOp(Class dclass, int rows, int cols, 
+			      const void *Ap, const void *Bp, 
+			      SparseLogOpID opselect) {
+    switch (dclass) {
+    case FM_INT32:
+      switch (opselect) {
+      case SLO_LT:
+	return ApplyLogicalOpRealScalar<int32>(rows,cols,
+					       (const int32**)Ap,
+					       (const int32*)Bp,
+					       slo_lt_real<int32>);
+      case SLO_GT:
+	return ApplyLogicalOpRealScalar<int32>(rows,cols,
+					       (const int32**)Ap,
+					       (const int32*)Bp,
+					       slo_gt_real<int32>);
+      case SLO_NE:
+	return ApplyLogicalOpRealScalar<int32>(rows,cols,
+					       (const int32**)Ap,
+					       (const int32*)Bp,
+					       slo_ne_real<int32>);
+      case SLO_LE:
+	return ApplyLogicalOpRealScalar<int32>(rows,cols,
+					       (const int32**)Ap,
+					       (const int32*)Bp,
+					       slo_le_real<int32>);
+      case SLO_GE:
+	return ApplyLogicalOpRealScalar<int32>(rows,cols,
+					       (const int32**)Ap,
+					       (const int32*)Bp,
+					       slo_ge_real<int32>);
+      case SLO_EQ:
+	return ApplyLogicalOpRealScalar<int32>(rows,cols,
+					       (const int32**)Ap,
+					       (const int32*)Bp,
+					       slo_eq_real<int32>);
+      }	
+    }
+  }
+
 }

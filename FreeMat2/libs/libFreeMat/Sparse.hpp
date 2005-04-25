@@ -5,6 +5,18 @@
 #include "Array.hpp"
 
 namespace FreeMat {
+  typedef enum {
+    SLO_LT,
+    SLO_GT,
+    SLO_LE,
+    SLO_GE,
+    SLO_NE,
+    SLO_EQ,
+    SLO_AND,
+    SLO_NOT,
+    SLO_OR
+  } SparseLogOpID;  
+
   // Test 56
   void DeleteSparseMatrix(Class dclass, int rows, int cols, void * cp);
   // Test 57
@@ -99,5 +111,12 @@ namespace FreeMat {
   ArrayVector SparseEigDecomposeShifted(int nargout, Array A, int k, double shift[2]);
   // Test 81
   void* SparseOnesFunc(Class dclass, int Arows, int Acols, const void *Ap);
+  Array SparsePowerFunc(Array A, Array B);
+  bool SparseIsPositive(Class dclass, int Arows, int Acols, const void *Ap);
+  void* SparseMatrixSumRows(Class dclass, int Arows, int Acols, const void *Ap);  
+  void* SparseMatrixSumColumns(Class dclass, int Arows, int Acols, const void *Ap);  
+  uint32* SparseLogicalToOrdinal(int rows, int cols, const void *Ap, int& nnz);
+  void* SparseSparseLogicalOp(Class dclass, int rows, int cols, const void *Ap, const void *Bp, SparseLogOpID opselect);
+  void* SparseScalarLogicalOp(Class dclass, int rows, int cols, const void *Ap, const void *Bp, SparseLogOpID opselect);
 }
 #endif

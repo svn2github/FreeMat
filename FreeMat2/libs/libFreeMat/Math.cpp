@@ -385,7 +385,7 @@ namespace FreeMat {
   // fifPower --> pow_ri
   // fffPower --> pow_dd
 
-  void power_zi(double *p, double *a, int b) 	/* p = a**b  */
+  void power_zi(double *p, const double *a, int b) 	/* p = a**b  */
   {
     int n;
     unsigned long u;
@@ -430,7 +430,7 @@ namespace FreeMat {
     p[0] = q[0];
   }
 
-  void power_zz(double *c, double *a, double *b) 
+  void power_zz(double *c, const double *a, const double *b) 
   {
     double logr, logi, x, y;
 
@@ -821,6 +821,14 @@ namespace FreeMat {
     Array C;
     A.promoteType(AClass);
     B.promoteType(BClass);
+
+    // S^F, F^S, S^S are all done via full intermediate products
+    // Only S^scalar is done using a sparse algorithm
+    if (B.isScalar() && A.isSparse())
+      return SparsePowerFunc(A,B);
+    A.makeDense();
+    B.makeDense();
+
     if (A.isScalar()) {
       int Blen(B.getLength());
       C = Array(CClass,B.getDimensions(),NULL);
@@ -841,6 +849,71 @@ namespace FreeMat {
       C.setDataPointer(Cp);
     }
     return C;
+  }
+
+  // Invert a square matrix - Should check for diagonal matrices
+  // as a special case
+  Array InvertMatrix(Array a) {
+    if (!a.is2D())
+      throw Exception("Cannot invert N-dimensional arrays.");
+    if (a.isReferenceType())
+      throw Exception("Cannot invert reference-type arrays.");
+    if (a.isScalar())
+      return DotPower(a,Array::floatConstructor(-1));
+    int N(a.getDimensionLength(0));
+    if (a.isSparse()) {
+      uint32 *I = (uint32*) Malloc(sizeof(uint32)*N);
+      for (int k=0;k<N;k++)
+	I[k] = k+1;
+      float v = 1.0f;
+      Array B(FM_FLOAT,a.getDimensions(),
+	      makeSparseFromIJV(FM_FLOAT,N,N,N,I,1,I,1,&v,0),true);
+      Free(I);
+      Array c(LeftDivide(a,B));
+      c.makeSparse();
+      return c;
+    } else {
+      Array ones(Array::floatVectorConstructor(N));
+      float *dp = (float*) ones.getReadWriteDataPointer();
+      for (int i=0;i<N;i++) dp[i] = 1.0f;
+      Array B(Array::diagonalConstructor(ones,0));
+      return LeftDivide(a,B);
+    }
+  }
+  
+  // Handle matrix powers for sparse matrices
+  Array MatrixPowerSparse(Array a, Array b) {
+    // The expression a^B where a is a scalar, and B is sparse is not handled
+    if (a.isScalar() && !b.isScalar())
+      throw Exception("expression a^B, where a is a scalar and B is a sparse matrix is not supported (use full to convert B to non-sparse matrix");
+    // The expression A^B is not supported
+    if (!a.isScalar() && !b.isScalar())
+      throw Exception("expression A^B where A and B are both sparse matrices is not supported (or defined)");
+    // The expression A^b where b is not an integer is not supported
+    if (!b.isReal())
+      throw Exception("expression A^b where b is complex and A is sparse is not supported (use full to convert A to a non-sparse matrix)");
+    b.promoteType(FM_DOUBLE);
+    const double*dp = (const double*) b.getDataPointer();
+    if ((*dp) != rint(*dp))
+      throw Exception("expression A^b where b is non-integer and A is sparse is not supported (use full to convert A to a non-sparse matrix)");
+    if (a.getDimensionLength(0) != a.getDimensionLength(1))
+      throw Exception("expression A^b requires A to be square.");
+    int power = (int) *dp;
+    if (power < 0) {
+      a = InvertMatrix(a);
+      power = -power;
+    }
+    if (power == 0) {
+      Array r(FM_FLOAT,a.getDimensions(),
+	      SparseOnesFunc(a.getDataClass(),a.getDimensionLength(0),a.getDimensionLength(1),
+			     a.getSparseDataPointer()),true);
+      r.promoteType(a.getDataClass());
+      return r;
+    }
+    Array c(a);
+    for (int i=1;i<power;i++)
+      c = Multiply(c,a);
+    return c;
   }
 
   /**
@@ -1769,7 +1842,10 @@ namespace FreeMat {
   //@>
   //!
   Array DotPower(Array A, Array B) {
-    return(DoPowerTwoArgFunction(A,B));
+    Array C(DoPowerTwoArgFunction(A,B));
+    if (A.isSparse())
+      C.makeSparse();
+    return(C);
   }
 
   /**
@@ -1829,6 +1905,40 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_LT),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_LT),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_GT),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*sizeof(logical));
     switch(B.getDataClass()) {
@@ -3827,6 +3937,13 @@ namespace FreeMat {
   }
 
   inline Array PowerMatrixScalar(Array A, Array B) {
+    if (B.isReal()) {
+      Array C(B);
+      C.promoteType(FM_DOUBLE);
+      const double*dp = (const double*) C.getDataPointer();
+      if (*dp == rint(*dp) && (*dp == -1))
+	return InvertMatrix(A);
+    }
     // Do an eigendecomposition of A
     Array V, D;
     if (A.isSymmetric())
@@ -3946,6 +4063,9 @@ namespace FreeMat {
     if ((A.getDimensionLength(0) != A.getDimensionLength(1)) ||
 	(B.getDimensionLength(0) != B.getDimensionLength(1)))
       throw Exception("Power (^) operator can only be applied to scalar and square arguments.");
+
+    if (A.isSparse() || B.isSparse())
+      return MatrixPowerSparse(A,B);
 
     // OK - check for A a scalar - if so, do a decomposition of B
     int i;

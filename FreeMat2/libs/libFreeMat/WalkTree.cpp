@@ -94,7 +94,7 @@ namespace FreeMat {
   }
 
   void WalkTree::pushID(int a) {
-    if (!cstack.empty())
+    if (!cstack.empty()) 
       cstack.push_back(stackentry(cstack.back().cname,cstack.back().detail,a));
     else
       cstack.push_back(stackentry("base","base",a));

@@ -168,5 +168,12 @@ namespace FreeMat {
   Array DoubleColon(Array A, Array B, Array C) throw(Exception);
 
   void TypeCheck(Array &A, Array &B, bool isDivOrMatrix);
+
+  Array InvertMatrix(Array A);
+
+  void power_zi(double *p, const double *a, int b);
+  void power_zz(double *c, const double *a, const double *b);
+  double power_di(double a, int b);
+  double power_dd(double a, double b);
 }
 #endif

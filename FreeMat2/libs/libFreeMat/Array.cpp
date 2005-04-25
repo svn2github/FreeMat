@@ -237,6 +237,14 @@ namespace FreeMat {
   }
 
   void Array::toOrdinalType()  {
+    // Special case : sparse matrices with logical type can be efficiently
+    // converted to ordinal types
+    if (isSparse() && dp->dataClass == FM_LOGICAL) {
+      int outcount;
+      uint32 *sp = SparseLogicalToOrdinal(dp->dimensions[0],dp->dimensions[1],dp->getData(),outcount);
+      dp = dp->putData(FM_UINT32,Dimensions(outcount,1),sp);
+      return;
+    }
     if (isSparse())
       makeDense();
     switch(dp->dataClass) {
@@ -972,8 +980,11 @@ namespace FreeMat {
       return true;
     if (dp->dataClass == FM_COMPLEX || dp->dataClass == FM_DCOMPLEX)
       return false;
-    if (isSparse())
-      throw Exception("isPositive not supported for sparse arrays.");
+    if (isSparse()) 
+      return SparseIsPositive(dp->dataClass,
+			      getDimensionLength(0),
+			      getDimensionLength(1),
+			      getSparseDataPointer());
     switch (dp->dataClass) {
       caseMacro(FM_FLOAT,float);
       caseMacro(FM_DOUBLE,double);
@@ -1667,6 +1678,14 @@ break;
     double *data = (double *) allocateArray(FM_DOUBLE,1);
     *data = aval;
     return Array(FM_DOUBLE,dim,data);
+  }
+
+  Array Array::floatVectorConstructor(int len) {
+    Dimensions dim;
+    dim.makeScalar();
+    dim[1] = len;
+    float *data = (float*) allocateArray(FM_FLOAT,len);
+    return Array(FM_FLOAT,dim,data);
   }
 
   Array Array::doubleVectorConstructor(int len) {
@@ -3105,7 +3124,7 @@ break;
     if (isReferenceType() || isString())
       throw Exception("Cannot make strings or reference types sparse.");
     if (isSparse()) return;
-    if (dp->dataClass < FM_INT32)
+    if ((dp->dataClass != FM_LOGICAL) && (dp->dataClass < FM_INT32))
       promoteType(FM_INT32);
     ensureSingleOwner();
     dp = dp->putData(dp->dataClass,dp->dimensions,

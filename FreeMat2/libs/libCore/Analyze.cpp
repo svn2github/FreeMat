@@ -30,6 +30,7 @@
 #include <math.h>
 #include "Types.hpp"
 #include <algorithm>
+#include "Sparse.hpp"
 
 #ifdef WIN32
 #include <SYS\TIMEB.H>
@@ -1790,6 +1791,27 @@ namespace FreeMat {
     for (d=workDim+1;d<inDim.getLength();d++)
       planecount *= inDim[d];
     // Allocate the values output, and call the appropriate helper func.
+    // Special case Sparse Matrices
+    if (input.isSparse()) {
+      if (workDim == 0)
+	return singleArrayVector(Array(input.getDataClass(),
+				       outDim,
+				       SparseMatrixSumColumns(input.getDataClass(),
+							      input.getDimensionLength(0),
+							      input.getDimensionLength(1),
+							      input.getSparseDataPointer()),
+				       true));
+      else if (workDim == 1)
+	return singleArrayVector(Array(input.getDataClass(),
+				       outDim,
+				       SparseMatrixSumRows(input.getDataClass(),
+							   input.getDimensionLength(0),
+							   input.getDimensionLength(1),
+							   input.getSparseDataPointer()),
+				       true));
+      else
+	return singleArrayVector(input);
+    }
     Array retval;
     switch (argType) {
     case FM_INT32: {

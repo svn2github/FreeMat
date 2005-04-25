@@ -11,6 +11,7 @@ errors = {};
 [succeeded,failed,errors] = runtest('test_assign7',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_assign8',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_assign9',succeeded,failed,errors);
+[succeeded,failed,errors] = runtest('test_assign10',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_call1',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_call2',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_call3',succeeded,failed,errors);

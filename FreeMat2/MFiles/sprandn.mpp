@@ -57,7 +57,7 @@ else
   i = A(:,1);
   j = A(:,2);
   s = randn(size(i));
-  y = sparse(i,j,s);
+  y = sparse(i,j,s,m,n);
 end
  
  

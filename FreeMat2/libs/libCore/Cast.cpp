@@ -53,6 +53,34 @@ namespace FreeMat {
   }
 
   //!
+  //@Module STRING Convert Array to String
+  //@@Section TYPECAST
+  //@@Usage
+  //Converts the argument array into a string.  The syntax for its
+  //use is
+  //@[
+  //   y = string(x)
+  //@]
+  //where @|x| is an @|n|-dimensional numerical array.
+  //@@Example
+  //Here we take an array containing ASCII codes for a string, and
+  //convert it into a string.
+  //@<
+  //a = [104,101,108,108,111]
+  //string(a)
+  //@>
+  //!
+  ArrayVector StringFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("type conversion function requires one argument");
+    Array A(arg[0]);
+    A.promoteType(FM_STRING);
+    ArrayVector retval;
+    retval.push_back(A);
+    return retval;
+  }
+
+  //!
   //@Module UINT8 Convert to Unsigned 8-bit Integer
   //@@Section TYPECAST
   //@@Usage

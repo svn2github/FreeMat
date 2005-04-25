@@ -103,7 +103,7 @@ namespace FreeMat {
   ArrayVector SparseFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() == 1) {
       Array r(arg[0]);
-      if (r.getDataClass() < FM_INT32)
+      if ((r.getDataClass() != FM_LOGICAL) && (r.getDataClass() < FM_INT32))
 	r.promoteType(FM_INT32);
       r.makeSparse();
       return singleArrayVector(r);
@@ -123,7 +123,7 @@ namespace FreeMat {
       Array v_arg(arg[2]);
       i_arg.promoteType(FM_UINT32);
       j_arg.promoteType(FM_UINT32);
-      if (v_arg.getDataClass() < FM_INT32)
+      if (v_arg.getDataClass() != FM_LOGICAL && v_arg.getDataClass() < FM_INT32)
 	v_arg.promoteType(FM_INT32);
       int ilen, jlen, vlen;
       ilen = i_arg.getLength();
@@ -139,19 +139,19 @@ namespace FreeMat {
 	else if (ilen == olen)
 	  istride = 1;
 	else
-	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	  throw Exception("in I, J, V format, all three vectors must be the same size or be scalars");
 	if (jlen == 1)
 	  jstride = 0;
 	else if (jlen == olen)
 	  jstride = 1;
 	else
-	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	  throw Exception("in I, J, V format, all three vectors must be the same size or be scalars");
 	if (vlen == 1)
 	  vstride = 0;
 	else if (vlen == olen)
 	  vstride = 1;
 	else
-	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	  throw Exception("in I, J, V format, all three vectors must be the same size or be scalars");
       }
       // Calculate the number of rows in the matrix
       uint32 *ip = (uint32*) i_arg.getDataPointer();
@@ -178,7 +178,7 @@ namespace FreeMat {
       Array v_arg(arg[2]);
       i_arg.promoteType(FM_UINT32);
       j_arg.promoteType(FM_UINT32);
-      if (v_arg.getDataClass() < FM_INT32)
+      if (v_arg.getDataClass() != FM_LOGICAL && v_arg.getDataClass() < FM_INT32)
 	v_arg.promoteType(FM_INT32);
       int ilen, jlen, vlen;
       ilen = i_arg.getLength();
@@ -194,19 +194,19 @@ namespace FreeMat {
 	else if (ilen == olen)
 	  istride = 1;
 	else
-	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	  throw Exception("in I, J, V format, all three vectors must be the same size or be scalars");
 	if (jlen == 1)
 	  jstride = 0;
 	else if (jlen == olen)
 	  jstride = 1;
 	else
-	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	  throw Exception("in I, J, V format, all three vectors must be the same size or be scalars");
 	if (vlen == 1)
 	  vstride = 0;
 	else if (vlen == olen)
 	  vstride = 1;
 	else
-	  throw("in I, J, V format, all three vectors must be the same size or be scalars");
+	  throw Exception("in I, J, V format, all three vectors must be the same size or be scalars");
       }
       Array m_arg(arg[3]);
       Array n_arg(arg[4]);
@@ -226,6 +226,33 @@ namespace FreeMat {
 				     true));
     }
     throw Exception("unrecognized form of sparse - see help for the allowed forms of sparse");
+  }
+
+  //!
+  //@Module INV Invert Matrix
+  //@@Section TRANSFORMS
+  //@@Usage
+  //Inverts the argument matrix, provided it is square and invertible.
+  //The syntax for its use is
+  //@[
+  //   y = inv(x)
+  //@]
+  //Internally, the @|inv| function uses the matrix divide operators.
+  //For sparse matrices, a sparse matrix solver is used.
+  //@@Example
+  //Here we invert some simple matrices
+  //@<
+  //a = randi(zeros(3),5*ones(3))
+  //b = inv(a)
+  //a*b
+  //b*a
+  //@>
+  //!
+  ArrayVector InvFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("inv function needs at least one argument");
+    Array r(arg[0]);
+    return singleArrayVector(InvertMatrix(r));
   }
 
   //!
@@ -251,7 +278,7 @@ namespace FreeMat {
   //!
   ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
-      throw("Need one argument to full function");
+      throw Exception("Need one argument to full function");
     Array r(arg[0]);
     r.ensureSingleOwner();
     r.makeDense();

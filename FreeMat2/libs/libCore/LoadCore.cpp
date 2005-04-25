@@ -108,6 +108,7 @@ namespace FreeMat {
      context->addFunction("complex",ComplexFunction,1,1,args);
      context->addFunction("dcomplex",DcomplexFunction,1,1,args);
      context->addFunction("uint8",UInt8Function,1,1,args);
+     context->addFunction("string",StringFunction,1,1,args);
      context->addFunction("uint16",UInt16Function,1,1,args);
      context->addFunction("uint32",UInt32Function,1,1,args);
      context->addFunction("int8",Int8Function,1,1,args);
@@ -373,6 +374,8 @@ namespace FreeMat {
      context->addFunction("strrep",StrRepFunction,3,1,args);
      args.clear();
      context->addFunction("conv2",Conv2Function,4,1,args);
+     args.push_back("A");
+     context->addFunction("inv",InvFunction,1,1,args);
      InitializeFileSubsystem();
 #ifdef USE_MPI
      LoadMPIFunctions(context);

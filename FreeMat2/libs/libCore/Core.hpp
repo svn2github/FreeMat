@@ -51,6 +51,7 @@ namespace FreeMat {
   ArrayVector UInt16Function(int, const ArrayVector& arg);
   ArrayVector UInt32Function(int, const ArrayVector& arg);
   ArrayVector UInt8Function(int, const ArrayVector& arg);
+  ArrayVector StringFunction(int, const ArrayVector& arg);
   ArrayVector ZerosFunction(int, const ArrayVector& arg);
   ArrayVector DispFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector LengthFunction(int, const ArrayVector& arg);
@@ -182,6 +183,7 @@ namespace FreeMat {
   ArrayVector CellFunction(int nargout, const ArrayVector& arg);
   ArrayVector StrRepFunction(int nargout, const ArrayVector& arg);
   ArrayVector Conv2Function(int nargout, const ArrayVector& arg);
+  ArrayVector InvFunction(int nargout, const ArrayVector& arg);
 }
 
 #endif

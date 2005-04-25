@@ -854,7 +854,7 @@ namespace FreeMat {
 	    if (arg.size() <= nextArg)
 	      throw Exception("not enough arguments to satisfy format specification");
 	    Array nextVal(arg[nextArg++]);
-	    if (nextVal.isEmpty()) {
+	    if ((*(np-1) != 's') && (nextVal.isEmpty())) {
 	      op = (char*) realloc(op,strlen(op)+strlen("[]")+1);
 	      strcat(op,"[]");
 	    } else {

@@ -133,10 +133,13 @@ using namespace FreeMat;
 %token KEYBOARD RETURN VARARGIN VARARGOUT GLOBAL
 %token QUIT RETALL
 
-%left ':'
+
+%left SOR
+%left SAND
 %left '|'
 %left '&'
 %left '<' LE '>' GE EQ NE
+%left ':'
 %left '+' '-'
 %left '*' '/' '\\' DOTTIMES DOTRDIV DOTLDIV
 %left POS NEG NOT
@@ -518,6 +521,10 @@ expr:
 	| expr '|' error {yyxpt("an expression after '|'",$2);}
 	| expr '&' expr {$$.v.p = new AST(OP_AND,$1.v.p,$3.v.p,$2.v.i);}
 	| expr '&' error {yyxpt("an expression after '&'",$2);}
+	| expr SOR expr {$$.v.p = new AST(OP_SOR,$1.v.p,$3.v.p,$2.v.i);}
+	| expr SOR error {yyxpt("an expression after '||'",$2);}
+	| expr SAND expr {$$.v.p = new AST(OP_SAND,$1.v.p,$3.v.p,$2.v.i);}
+	| expr SAND error {yyxpt("an expression after '&&'",$2);}
 	| expr '<' expr {$$.v.p = new AST(OP_LT,$1.v.p,$3.v.p,$2.v.i);}
 	| expr '<' error {yyxpt("an expression after '<'",$2);}
 	| expr LE  expr {$$.v.p = new AST(OP_LEQ,$1.v.p,$3.v.p,$2.v.i);}

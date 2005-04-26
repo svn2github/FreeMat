@@ -272,14 +272,14 @@ namespace FreeMat {
     Array a(expression(t->down));
     Array retval;
     if (!a.isScalar()) {
-      retval = Or(a,expression(t->down->right));
+      retval = DoBinaryOperator(t,Or,"or");
     } else {
       // A is a scalar - is it true?
       a.promoteType(FM_LOGICAL);
       if (*((const logical*)a.getDataPointer()))
 	retval = a;
       else 
-	retval = Or(a,expression(t->down->right));
+	retval = DoBinaryOperator(t,Or,"or");
     }
     popID();
     return retval;
@@ -290,14 +290,14 @@ namespace FreeMat {
     Array a(expression(t->down));
     Array retval;
     if (!a.isScalar()) {
-      retval = And(a,expression(t->down->right));
+      retval = DoBinaryOperator(t,And,"and");
     } else {
       // A is a scalar - is it false?
       a.promoteType(FM_LOGICAL);
       if (!*((const logical*)a.getDataPointer()))
 	retval = a;
       else 
-	retval = And(a,expression(t->down->right));
+	retval = DoBinaryOperator(t,And,"and");
     }
     popID();
     return retval;
@@ -393,14 +393,24 @@ namespace FreeMat {
 	  retval = DoBinaryOperator(t,LeftDivide,"mldivide"); 
 	}
 	break;
+      case OP_SOR: 
       case OP_OR: 
 	{  
 	  retval = ShortCutOr(t); 
 	}
 	break;
       case OP_AND: 
+      case OP_SAND: 
 	{  
 	  retval = ShortCutAnd(t); 
+	}
+	break;
+	{  
+	  retval = DoBinaryOperator(t,Or,"or"); 
+	}
+	break;
+	{  
+	  retval = DoBinaryOperator(t,And,"and"); 
 	}
 	break;
       case OP_LT: 

@@ -2434,6 +2434,19 @@ namespace FreeMat {
     Array tmp(arg[0]);
     if (tmp.isReferenceType())
       throw Exception("argument to abs function must be numeric");
+    if (tmp.isSparse()) {
+      Class rettype;
+      if (tmp.getDataClass() == FM_LOGICAL) return singleArrayVector(tmp);
+      rettype = tmp.getDataClass();
+      if (tmp.getDataClass() == FM_COMPLEX) rettype = FM_FLOAT;
+      if (tmp.getDataClass() == FM_DCOMPLEX) rettype = FM_DOUBLE;
+      Array retval(rettype,tmp.getDimensions(),
+		   SparseAbsFunction(tmp.getDataClass(),
+				     tmp.getDimensionLength(0),
+				     tmp.getDimensionLength(1),
+				     tmp.getSparseDataPointer()),true);
+      return singleArrayVector(retval);
+    }
     Class argType(tmp.getDataClass());
     Array retval;
     int i;

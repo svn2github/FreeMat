@@ -1500,6 +1500,17 @@ namespace FreeMat {
     }
   }
 
+  void WalkTree::displayArray(Array b) {
+    // Check for a user defined class
+    FuncPtr val;
+    if (b.isUserClass() && ClassResolveFunction(this,b,"display",val)) {
+      val->updateCode();
+      ArrayVector args(singleArrayVector(b));
+      ArrayVector retvec(val->evaluateFunction(this,args,1));
+    } else
+      b.printMe(printLimit,io->getTerminalWidth());
+  }
+
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
@@ -1518,7 +1529,7 @@ namespace FreeMat {
 	if (printIt) {
 	  io->outputMessage(t->down->text);
 	  io->outputMessage(" = \n");
-	  b.printMe(printLimit,io->getTerminalWidth());
+	  displayArray(b);
 	}	  
       } else {
 	Array expr(expression(t->down->right));
@@ -1527,7 +1538,7 @@ namespace FreeMat {
 	if (printIt) {
 	  io->outputMessage(t->down->text);
 	  io->outputMessage(" = \n");
-	  c.printMe(printLimit,io->getTerminalWidth());
+	  displayArray(c);
 	}
       }
     } else if (t->opNum ==(OP_MULTICALL)) {
@@ -1598,7 +1609,7 @@ namespace FreeMat {
 	if (printIt && !b.isEmpty()
 	    && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	  io->outputMessage("ans = \n");
-	  b.printMe(printLimit,io->getTerminalWidth());
+	  displayArray(b);
 	}
       }
       else if (t->opNum == OP_RHS) {
@@ -1615,7 +1626,7 @@ namespace FreeMat {
 		sprintf(buffer,"\n%d of %d:\n",j+1,m.size());
 		io->outputMessage(buffer);
 	      }
-	      m[j].printMe(printLimit,io->getTerminalWidth());
+	      displayArray(m[j]);
 	    }
 	  }
 	}
@@ -1623,7 +1634,7 @@ namespace FreeMat {
 	b = expression(t);
 	if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	  io->outputMessage("ans = \n");
-	  b.printMe(printLimit,io->getTerminalWidth());
+	  displayArray(b);
 	} 
       }
       if (state == FM_STATE_QUIT || 
@@ -2112,7 +2123,7 @@ namespace FreeMat {
       if (printIt) {
 	io->outputMessage(s->down->text);
 	io->outputMessage(" = \n");
-	c.printMe(printLimit,io->getTerminalWidth());
+	displayArray(c);
       }
       s = s->right;
     }
@@ -2952,7 +2963,8 @@ namespace FreeMat {
 	  if (!anyClasses) i++;
 	}
 	// Yes, try and resolve the call to a method
-	if (anyClasses && ClassResolveFunction(this,args[i],funcName,val));
+	if (anyClasses && ClassResolveFunction(this,args[i],funcName,val))
+	  return true;
       }
       if (context->lookupFunction(funcName,val))
 	return true;

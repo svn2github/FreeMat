@@ -1840,8 +1840,11 @@ namespace FreeMat {
       autostop = eval->AutoStop();
       eval->AutoStop(false);
       try {
+	eval->getContext()->bypassScope(popSpec);
 	eval->evaluateString(try_buf,true);
+	eval->getContext()->restoreBypassedScopes();
       } catch (Exception &e) {
+	eval->getContext()->restoreBypassedScopes();
 	eval->evaluateString(catch_buf,false);
       }
       eval->AutoStop(true);

@@ -3486,6 +3486,7 @@ namespace FreeMat {
     if (arg.size() < 1)
       throw Exception("sort requires at least one argument");
     Array input(arg[0]);
+    if (input.isScalar()) return singleArrayVector(input);
     Class argType(input.getDataClass());
     // Get the dimension argument (if supplied)
     int workDim = -1;

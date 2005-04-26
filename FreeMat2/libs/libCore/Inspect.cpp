@@ -1291,6 +1291,21 @@ namespace FreeMat {
   }
 
   //!
+  //@Module MFILENAME Name of Current Function
+  //@@Section FreeMat
+  //@@Usage
+  //Returns a string describing the name of the current function.  For M-files
+  //this string will be the complete filename of the function.  This is true even
+  //for subfunctions.  The syntax for its use is
+  //@[
+  //    y = mfilename
+  //@]
+  //!
+  ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    return singleArrayVector(Array::stringConstructor(eval->getMFileName()));
+  }
+
+  //!
   //@Module COMPUTER Computer System FreeMat is Running On
   //@@Section FreeMat
   //@@Usage

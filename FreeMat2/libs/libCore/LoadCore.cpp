@@ -365,6 +365,7 @@ namespace FreeMat {
      args.push_back("x");
      context->addSpecialFunction("dbauto",DbAutoFunction,1,1,args);
      args.clear();
+     context->addSpecialFunction("mfilename",MFilenameFunction,0,1,args);
      context->addFunction("computer",ComputerFunction,0,1,args);
      args.push_back("x");
      args.push_back("y");

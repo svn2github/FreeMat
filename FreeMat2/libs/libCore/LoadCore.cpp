@@ -337,6 +337,9 @@ namespace FreeMat {
      context->addFunction("toc",TocFunction,0,1,args);
      context->addFunction("clock",ClockFunction,0,1,args);
      args.clear();
+     args.push_back("x");
+     context->addFunction("clocktotime",ClockToTimeFunction,1,1,args);
+     args.clear();
      args.push_back("function");
      context->addSpecialFunction("help",HelpFunction,1,0,args);
      args.clear();

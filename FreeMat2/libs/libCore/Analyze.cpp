@@ -3458,7 +3458,8 @@ namespace FreeMat {
   //Given the output of the @|clock| command, this function computes
   //the epoch time, i.e, the time in seconds since January 1,1970 
   //at 00:00:00 UTC.  This function is most useful for calculating elapsed
-  //times using the clock, and is accurate to the systems clock precision.
+  //times using the clock, and should be accurate to less than a millisecond
+  //(although the true accuracy depends on accuracy of the argument vector). 
   //The usage for @|clocktotime| is
   //@[
   //   y = clocktotime(x)
@@ -3476,7 +3477,26 @@ namespace FreeMat {
   //clocktotime(y) - clocktotime(x)
   //@>
   //!
-  
+  ArrayVector ClockToTimeFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("clocktotime expects 1 argument - a vector in clock format: [year month day hour minute seconds]");
+    Array targ(arg[0]);
+    targ.promoteType(FM_DOUBLE);
+    if (targ.getLength() != 6)
+      throw Exception("clocktotime expects 1 argument - a vector in clock format: [year month day hour minute seconds]");
+    const double *dp = (const double*) targ.getDataPointer();
+    struct tm breakdown;
+    breakdown.tm_year = dp[0] - 1900;
+    breakdown.tm_mon = dp[1] - 1;
+    breakdown.tm_mday = dp[2] - 1;
+    breakdown.tm_hour = dp[3];
+    breakdown.tm_min = dp[4];
+    breakdown.tm_sec = (int) dp[5];
+    time_t qtime = mktime(&breakdown);
+    double retval;
+    retval = qtime + (dp[5] - (int) dp[5]);
+    return singleArrayVector(Array::doubleConstructor(retval));
+  }
   
 
   //!

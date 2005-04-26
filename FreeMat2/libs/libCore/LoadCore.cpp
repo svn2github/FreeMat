@@ -160,6 +160,7 @@ namespace FreeMat {
      context->addFunction("Inf",InfFunction,0,1,args);
      args.clear();
      args.push_back("x");
+     context->addFunction("fieldnames",FieldNamesFunction,1,1,args);
      context->addFunction("IsNaN",IsNaNFunction,1,1,args);
      context->addFunction("isnan",IsNaNFunction,1,1,args);
      context->addFunction("issparse",IsSparseFunction,1,1,args);

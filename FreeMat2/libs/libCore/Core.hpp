@@ -70,6 +70,7 @@ namespace FreeMat {
   ArrayVector ListFilesFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SystemFunction(int, const ArrayVector& arg);
   ArrayVector PrintWorkingDirectoryFunction(int, const ArrayVector& arg);
+  ArrayVector FieldNamesFunction(int, const ArrayVector& arg);
   ArrayVector SizeFunction(int, const ArrayVector& arg);
   ArrayVector TestFunction(int, const ArrayVector& arg);
   ArrayVector ErrorFunction(int, const ArrayVector& arg);

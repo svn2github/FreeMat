@@ -417,6 +417,41 @@ namespace FreeMat {
   }
 
   //!
+  //@Module FIELDNAMES Fieldnames of a Structure
+  //@@Section INSPECTION
+  //@@Usage
+  //Returns a cell array containing the names of the fields in
+  //a structure array.  The syntax for its use is
+  //@[
+  //   x = fieldnames(y)
+  //@]
+  //where @|y| is a structure array of object array.  The result
+  //is a cell array, with one entry per field in @|y|.
+  //@@Example
+  //We define a simple structure array:
+  //@<
+  //y.foo = 3; y.goo = 'hello';
+  //x = fieldnames(y)
+  //@>
+  //!
+  ArrayVector FieldNamesFunction(int nargout, const ArrayVector& arg) {
+    ArrayVector retval;
+    if (arg.size() < 1)
+      throw Exception("fieldnames function requires at least one argument");
+    Array a(arg[0]);
+    if (a.getDataClass() != FM_STRUCT_ARRAY) {
+      Array ret(Array::emptyConstructor());
+      ret.promoteType(FM_CELL_ARRAY);
+      return singleArrayVector(ret);
+    }
+    stringVector names(a.getFieldNames());
+    ArrayMatrix m;
+    for (int i=0;i<names.size();i++)
+      m.push_back(singleArrayVector(Array::stringConstructor(names[i])));
+    return singleArrayVector(Array::cellConstructor(m));
+  }
+
+  //!
   //@Module SIZE Size of a Variable
   //@@Section INSPECTION
   //@@Usage

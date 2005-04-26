@@ -101,6 +101,9 @@ namespace FreeMat {
 
     // The debug stack - this stack tracks our current location
     // in each file, as well as the files themselves.
+    std::string ip_funcname;
+    std::string ip_detailname;
+    int ip_context;
     std::vector<stackentry> cstack;
     std::vector<stackentry> bpStack;
     bool inStepMode;
@@ -121,6 +124,8 @@ namespace FreeMat {
     ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
     // Set this flag to stop overloading of functions
     bool stopoverload;
+    // Name of last Mfile run.
+    std::string lastname;
   public:
     bool getStopOverload();
     void setStopOverload(bool flag);
@@ -153,14 +158,7 @@ namespace FreeMat {
      * Destruct the WalkTree object.
      */
     ~WalkTree();
-    /**
-     * Push the given location ID onto the stack
-     */
-    void pushID(int);
-    /**
-     * Pop a location ID off the stack
-     */
-    void popID();
+    inline void SetContext(int id);
     /**
      * Set the autostop flag - this flag determines what happens when
      * an exception occurs
@@ -612,7 +610,11 @@ namespace FreeMat {
     /**
      * Display an array - added so user classes divert to "display" function
      */
-    void WalkTree::displayArray(Array b);
+    void displayArray(Array b);
+    /**
+     * Retrieve data about the current location of the instruction pointer
+     */
+    std::string getMFileName();
   };
   void sigInterrupt(int arg);
 }

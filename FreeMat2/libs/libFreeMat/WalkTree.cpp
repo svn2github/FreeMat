@@ -40,14 +40,13 @@
 #include "Class.hpp"
 
 namespace FreeMat {
-
-  std::string ip_funcname;
-  std::string ip_detailname;
-  int ip_context;
-
-  void SetContext(int a) {
+  void WalkTree::SetContext(int a) {
     ip_context = a;
-    //     std::cout << "IP:" << ip_funcname << "(" << ip_detailname << ")" << "." << (ip_context >> 16) << "." << (ip_context & 0xffff) << "\r\n";
+  }
+
+  std::string WalkTree::getMFileName() {
+    if (lastname.empty()) return std::string("");
+    return lastname;
   }
 
   stackentry::stackentry(std::string cntxt, std::string det, int id) :
@@ -100,20 +99,6 @@ namespace FreeMat {
     if (!a.isUserClass())
        return fnc(a);
     return ClassUnaryOperator(a,funcname,this);
-  }
-
-  void WalkTree::pushID(int a) {
-    if (!cstack.empty()) 
-      cstack.push_back(stackentry(cstack.back().cname,cstack.back().detail,a));
-    else
-      cstack.push_back(stackentry("base","base",a));
-  }
-
-  void WalkTree::popID() {
-    if (!cstack.empty())
-      cstack.pop_back();
-    else
-      io->outputMessage("IDERROR\n");
   }
 
   void WalkTree::setPrintLimit(int lim) {
@@ -2779,6 +2764,7 @@ namespace FreeMat {
 	CLIFlagsave = InCLI;
 	InCLI = false;
 	pushDebug(((MFunctionDef*)funcDef)->fileName,std::string("script"));
+	lastname = ((MFunctionDef*)funcDef)->fileName;
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
@@ -2798,6 +2784,8 @@ namespace FreeMat {
 	  throw Exception(std::string("Too many outputs to function ")+t->text);
 	CLIFlagsave = InCLI;
 	InCLI = false;
+	if (funcDef->type() == FM_M_FUNCTION)
+	  lastname = ((MFunctionDef*)funcDef)->fileName;
 	n = funcDef->evaluateFunction(this,m,narg_out);
 	InCLI = CLIFlagsave;
 	if (state == FM_STATE_RETALL)

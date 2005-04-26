@@ -3420,7 +3420,7 @@ namespace FreeMat {
   //@Module CLOCK Get Current Time
   //@@Section FreeMat
   //@@Usage
-  //Returs the current date and time as a vector.  The syntax for its use is
+  //Returns the current date and time as a vector.  The syntax for its use is
   //@[
   //   y = clock
   //@]
@@ -3428,6 +3428,11 @@ namespace FreeMat {
   //@[
   //   y = [year month day hour minute seconds]
   //@]
+  //@@Example
+  //Here is the time that this manual was last built:
+  //@<
+  //clock
+  //@>
   //!
   ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
     struct tm *breakdown;
@@ -3445,6 +3450,34 @@ namespace FreeMat {
     dp[5] = breakdown->tm_sec + curtime/1e6 - timeval;
     return singleArrayVector(retvec);
   }
+
+  //!
+  //@Module CLOCKTOTIME Convert Clock Vector to Epoch Time
+  //@@Section FreeMat
+  //@@Usage
+  //Given the output of the @|clock| command, this function computes
+  //the epoch time, i.e, the time in seconds since January 1,1970 
+  //at 00:00:00 UTC.  This function is most useful for calculating elapsed
+  //times using the clock, and is accurate to the systems clock precision.
+  //The usage for @|clocktotime| is
+  //@[
+  //   y = clocktotime(x)
+  //@]
+  //where @|x| must be in the form of the output of @|clock|, that is
+  //@[
+  //   x = [year month day hour minute seconds]
+  //@]
+  //@@Example
+  //Here is an example of using @|clocktotime| to time a delay of 1 second
+  //@<
+  //x = clock
+  //sleep(1)
+  //y = clock
+  //clocktotime(y) - clocktotime(x)
+  //@>
+  //!
+  
+  
 
   //!
   //@Module TOC Start Stopwatch Timer

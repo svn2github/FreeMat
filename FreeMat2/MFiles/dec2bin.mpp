@@ -26,7 +26,7 @@
 //!
 function t = dec2bin(x,n)
   x = x(:); 
-  if (~exist('n') & max(x) > 0)
+  if (~exist('n') && max(x) > 0)
     n = ceil(log2(max(x)));
   elseif (~exist('n'))
     t = zeros(length(x),n);

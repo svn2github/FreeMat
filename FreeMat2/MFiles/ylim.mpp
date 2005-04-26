@@ -37,7 +37,7 @@
 //!
 %Copyright (c) 2004,2005 Brian Yanoff, Samit Basu
 function ylim(lim1, lim2)
-  if isa(lim1,'string') & strcmp(lim1,'auto')
+  if isa(lim1,'string') && strcmp(lim1,'auto')
       axis_limits = axis;
       axis('auto');
       auto_limits = axis; 

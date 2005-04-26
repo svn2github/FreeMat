@@ -12,6 +12,8 @@
 //@@Example
 //Here we convert some numbers to bits
 //@<
+//bin2dec('101110')
+//bin2dec('010')
 //@>
 //!
 function t = bin2dec(x)

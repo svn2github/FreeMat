@@ -55,7 +55,7 @@ else
 end
 
 function y = vector_norm(A,p)
-if (p<1 & p~=-inf) 
+if (p<1 && p~=-inf) 
   error('p argument in vector norm must be between 1 and inf, or be -inf');
 end
 if (p == inf)

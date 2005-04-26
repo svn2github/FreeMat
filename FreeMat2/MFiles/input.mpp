@@ -25,7 +25,7 @@
 //@]
 //!
 function y = input(prompt,stringflag)
-  if (isset('stringflag') & ischar(stringflag) & (strcmp(stringflag,'s') | strcmp(stringflag,'S')))
+  if (isset('stringflag') && ischar(stringflag) && (strcmp(stringflag,'s') | strcmp(stringflag,'S')))
     y = getline(prompt);
     y(end) = [];
   elseif isset('stringflag')

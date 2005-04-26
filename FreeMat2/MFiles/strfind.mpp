@@ -47,7 +47,7 @@ function y = strfind_string(source,pattern)
   patlen = length(pattern);
   y = [];
   p = strstr(source,pattern);
-  while ((p > 0) & ~isempty(source))      
+  while ((p > 0) && ~isempty(source))      
     if (~isempty(y))
       y = [y,p+y(end)+patlen-1];
     else

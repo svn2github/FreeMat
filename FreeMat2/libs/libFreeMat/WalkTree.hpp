@@ -609,6 +609,10 @@ namespace FreeMat {
      */
     Array ShortCutOr(ASTPtr t);
     Array ShortCutAnd(ASTPtr t);
+    /**
+     * Display an array - added so user classes divert to "display" function
+     */
+    void WalkTree::displayArray(Array b);
   };
   void sigInterrupt(int arg);
 }

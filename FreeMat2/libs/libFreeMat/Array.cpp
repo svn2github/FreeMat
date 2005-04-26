@@ -725,12 +725,23 @@ namespace FreeMat {
    * elements remains the same after reshaping.
    */
   void Array::reshape(Dimensions& a)  {
-    if (isSparse())
-      throw Exception("reshape not supported for sparse arrays.");
     if (a.getElementCount() != getLength())
       throw Exception("Reshape operation cannot change the number of elements in array.");
-    ensureSingleOwner();
-    dp->dimensions = a;
+    if (isSparse()) {
+      a.simplify();
+      if (a.getLength() > 2)
+	throw Exception("Cannot reshape sparse matrix to an N-dimensional array - FreeMat does not support N-dimensional sparse arrays");
+      dp = dp->putData(dp->dataClass,a,
+		       ReshapeSparseMatrix(dp->dataClass,
+					   dp->dimensions[0],
+					   dp->dimensions[1],
+					   dp->getData(),
+					   a[0],
+					   a[1]),true);
+    } else {
+      ensureSingleOwner();
+      dp->dimensions = a;
+    }
   }
 
   /**

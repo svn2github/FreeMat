@@ -3417,6 +3417,36 @@ namespace FreeMat {
   }
 
   //!
+  //@Module CLOCK Get Current Time
+  //@@Section FreeMat
+  //@@Usage
+  //Returs the current date and time as a vector.  The syntax for its use is
+  //@[
+  //   y = clock
+  //@]
+  //where @|y| has the following format:
+  //@[
+  //   y = [year month day hour minute seconds]
+  //@]
+  //!
+  ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
+    struct tm *breakdown;
+    time_t timeval;
+    double curtime = getcurrenttime();
+    timeval = (time_t) (curtime/1e6);
+    breakdown = localtime(&timeval);
+    Array retvec(Array::doubleVectorConstructor(6));
+    double *dp = (double*) retvec.getReadWriteDataPointer();
+    dp[0] = breakdown->tm_year+1900;
+    dp[1] = breakdown->tm_mon+1;
+    dp[2] = breakdown->tm_mday+1;
+    dp[3] = breakdown->tm_hour;
+    dp[4] = breakdown->tm_min;
+    dp[5] = breakdown->tm_sec + curtime/1e6 - timeval;
+    return singleArrayVector(retvec);
+  }
+
+  //!
   //@Module TOC Start Stopwatch Timer
   //@@Section FREEMAT
   //@@Usage

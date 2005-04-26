@@ -179,6 +179,7 @@ namespace FreeMat {
   ArrayVector UniqueFunction(int nargout, const ArrayVector& arg);
   ArrayVector TicFunction(int nargout, const ArrayVector& arg);
   ArrayVector TocFunction(int nargout, const ArrayVector& arg);
+  ArrayVector ClockFunction(int nargout, const ArrayVector& arg);
   ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, WalkTree* eval);
   ArrayVector ComputerFunction(int nargout, const ArrayVector& arg);
   ArrayVector StrStrFunction(int nargout, const ArrayVector& arg);

@@ -335,6 +335,7 @@ namespace FreeMat {
      args.clear();
      context->addFunction("tic",TicFunction,0,0,args);
      context->addFunction("toc",TocFunction,0,1,args);
+     context->addFunction("clock",ClockFunction,0,1,args);
      args.clear();
      args.push_back("function");
      context->addSpecialFunction("help",HelpFunction,1,0,args);
@@ -365,7 +366,7 @@ namespace FreeMat {
      args.push_back("x");
      context->addSpecialFunction("dbauto",DbAutoFunction,1,1,args);
      args.clear();
-     context->addSpecialFunction("mfilename",MFilenameFunction,0,1,args);
+     context->addSpecialFunction("mfilename",MFilenameFunction,-1,1,args);
      context->addFunction("computer",ComputerFunction,0,1,args);
      args.push_back("x");
      args.push_back("y");

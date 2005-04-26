@@ -621,6 +621,14 @@ void lexScanningState() {
     setTokenType(EQ);
     return;
   }
+  if (match("||")) {
+    setTokenType(SOR);
+    return;
+  }
+  if (match("&&")) {
+    setTokenType(SAND);
+    return;
+  }
   if (testAlphaChar() || currentChar() == '_') {
     lexIdentifier();
     return;

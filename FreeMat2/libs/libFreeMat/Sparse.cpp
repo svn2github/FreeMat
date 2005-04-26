@@ -4850,6 +4850,16 @@ namespace FreeMat {
   }
 
   template <class T>
+  uint32 slo_and_real(T a, T b) {
+    return (a && b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_or_real(T a, T b) {
+    return (a || b) ? 1 : 0;
+  }
+
+  template <class T>
   uint32 slo_lt_real(T a, T b) {
     return (a < b) ? 1 : 0;
   }
@@ -4877,6 +4887,36 @@ namespace FreeMat {
   template <class T>
   uint32 slo_eq_real(T a, T b) {
     return (a == b) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_lt_complex(T ar, T ai, T br, T bi) {
+    return (complex_abs<T>(ar,ai) < complex_abs<T>(br,bi)) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_gt_complex(T ar, T ai, T br, T bi) {
+    return (complex_abs<T>(ar,ai) > complex_abs<T>(br,bi)) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_ne_complex(T ar, T ai, T br, T bi) {
+    return ((ar != br) || (ai != bi)) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_le_complex(T ar, T ai, T br, T bi) {
+    return (complex_abs<T>(ar,ai) <= complex_abs<T>(br,bi)) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_ge_complex(T ar, T ai, T br, T bi) {
+    return (complex_abs<T>(ar,ai) >= complex_abs<T>(br,bi)) ? 1 : 0;
+  }
+
+  template <class T>
+  uint32 slo_eq_complex(T ar, T ai, T br, T bi) {
+    return ((ar == br) && (ai == bi)) ? 1 : 0;
   }
 
   template <class T>
@@ -4972,6 +5012,8 @@ namespace FreeMat {
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
     delete buffer;
+    delete Abuf;
+    delete Bbuf;
     return Cmat;
   }
 
@@ -4986,6 +5028,8 @@ namespace FreeMat {
     uint32* Cbuf = new uint32[rows];
     uint32* buffer = new uint32[rows*2];
     for (int col=0;col<cols;col++) {
+      memset(Abuf,0,2*rows*sizeof(T));
+      memset(Bbuf,0,2*rows*sizeof(T));
       DecompressComplexString<T>(Asrc[col],Abuf,rows);
       DecompressComplexString<T>(Bsrc[col],Bbuf,rows);
       for (int row=0;row<rows;row++)
@@ -4996,6 +5040,8 @@ namespace FreeMat {
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
     delete buffer;
+    delete Abuf;
+    delete Bbuf;
     return Cmat;
   }
   template <class T>
@@ -5062,6 +5108,7 @@ namespace FreeMat {
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
     delete buffer;
+    delete Abuf;
     return Cmat;
   }
   
@@ -5075,6 +5122,7 @@ namespace FreeMat {
     uint32* Cbuf = new uint32[rows];
     uint32* buffer = new uint32[rows*2];
     for (int col=0;col<cols;col++) {
+      memset(Abuf,0,2*rows*sizeof(T));
       DecompressComplexString<T>(Asrc[col],Abuf,rows);
       for (int row=0;row<rows;row++)
 	Cbuf[row] = fnop(Abuf[2*row],
@@ -5084,6 +5132,7 @@ namespace FreeMat {
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
     delete buffer;
+    delete Abuf;
     return Cmat;
   }
   
@@ -5130,38 +5179,61 @@ namespace FreeMat {
 			      const void *Ap, const void *Bp, 
 			      SparseLogOpID opselect) {
     switch (dclass) {
+    case FM_LOGICAL:
+      switch (opselect) {
+      case SLO_AND: return ApplyLogicalOpRealZP<uint32>(rows,cols,(const uint32**)Ap,(const uint32**)Bp,slo_and_real<uint32>);
+      case SLO_OR: return ApplyLogicalOpRealZP<uint32>(rows,cols,(const uint32**)Ap,(const uint32**)Bp,slo_or_real<uint32>);
+	throw Exception("unsupported sparse type/op combination");
+      }
     case FM_INT32:
       switch (opselect) {
-      case SLO_LT:
-	return ApplyLogicalOpRealZP<int32>(rows,cols,
-					   (const int32**)Ap,
-					   (const int32**)Bp,
-					   slo_lt_real<int32>);
-      case SLO_GT:
-	return ApplyLogicalOpRealZP<int32>(rows,cols,
-					   (const int32**)Ap,
-					   (const int32**)Bp,
-					   slo_gt_real<int32>);
-      case SLO_NE:
-	return ApplyLogicalOpRealZP<int32>(rows,cols,
-					   (const int32**)Ap,
-					   (const int32**)Bp,
-					   slo_ne_real<int32>);
-      case SLO_LE:
-	return ApplyLogicalOpRealNZ<int32>(rows,cols,
-					   (const int32**)Ap,
-					   (const int32**)Bp,
-					   slo_le_real<int32>);
-      case SLO_GE:
-	return ApplyLogicalOpRealNZ<int32>(rows,cols,
-					   (const int32**)Ap,
-					   (const int32**)Bp,
-					   slo_ge_real<int32>);
-      case SLO_EQ:
-	return ApplyLogicalOpRealNZ<int32>(rows,cols,
-					   (const int32**)Ap,
-					   (const int32**)Bp,
-					   slo_eq_real<int32>);
+      case SLO_LT: return ApplyLogicalOpRealZP<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_lt_real<int32>);
+      case SLO_GT: return ApplyLogicalOpRealZP<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_gt_real<int32>);
+      case SLO_NE: return ApplyLogicalOpRealZP<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_ne_real<int32>);
+      case SLO_LE: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_le_real<int32>);
+      case SLO_GE: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_ge_real<int32>);
+      case SLO_EQ: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_eq_real<int32>);
+	throw Exception("unsupported sparse type/op combination");
+      }
+    case FM_FLOAT:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpRealZP<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_lt_real<float>);
+      case SLO_GT: return ApplyLogicalOpRealZP<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_gt_real<float>);
+      case SLO_NE: return ApplyLogicalOpRealZP<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_ne_real<float>);
+      case SLO_LE: return ApplyLogicalOpRealNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_le_real<float>);
+      case SLO_GE: return ApplyLogicalOpRealNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_ge_real<float>);
+      case SLO_EQ: return ApplyLogicalOpRealNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_eq_real<float>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_DOUBLE:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpRealZP<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_lt_real<double>);
+      case SLO_GT: return ApplyLogicalOpRealZP<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_gt_real<double>);
+      case SLO_NE: return ApplyLogicalOpRealZP<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_ne_real<double>);
+      case SLO_LE: return ApplyLogicalOpRealNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_le_real<double>);
+      case SLO_GE: return ApplyLogicalOpRealNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_ge_real<double>);
+      case SLO_EQ: return ApplyLogicalOpRealNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_eq_real<double>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_COMPLEX:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpComplexZP<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_lt_complex<float>);
+      case SLO_GT: return ApplyLogicalOpComplexZP<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_gt_complex<float>);
+      case SLO_NE: return ApplyLogicalOpComplexZP<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_ne_complex<float>);
+      case SLO_LE: return ApplyLogicalOpComplexNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_le_complex<float>);
+      case SLO_GE: return ApplyLogicalOpComplexNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_ge_complex<float>);
+      case SLO_EQ: return ApplyLogicalOpComplexNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_eq_complex<float>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_DCOMPLEX:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpComplexZP<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_lt_complex<double>);
+      case SLO_GT: return ApplyLogicalOpComplexZP<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_gt_complex<double>);
+      case SLO_NE: return ApplyLogicalOpComplexZP<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_ne_complex<double>);
+      case SLO_LE: return ApplyLogicalOpComplexNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_le_complex<double>);
+      case SLO_GE: return ApplyLogicalOpComplexNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_ge_complex<double>);
+      case SLO_EQ: return ApplyLogicalOpComplexNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_eq_complex<double>);
+	throw Exception("unsupported sparse type/op combination");
       }	
     }
   }
@@ -5170,40 +5242,62 @@ namespace FreeMat {
 			      const void *Ap, const void *Bp, 
 			      SparseLogOpID opselect) {
     switch (dclass) {
+    case FM_LOGICAL:
+      switch (opselect) {
+      case SLO_AND: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)Bp,slo_and_real<uint32>);
+      case SLO_OR: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)Bp,slo_or_real<uint32>);
+	throw Exception("unsupported sparse type/op combination");
+      }
     case FM_INT32:
       switch (opselect) {
-      case SLO_LT:
-	return ApplyLogicalOpRealScalar<int32>(rows,cols,
-					       (const int32**)Ap,
-					       (const int32*)Bp,
-					       slo_lt_real<int32>);
-      case SLO_GT:
-	return ApplyLogicalOpRealScalar<int32>(rows,cols,
-					       (const int32**)Ap,
-					       (const int32*)Bp,
-					       slo_gt_real<int32>);
-      case SLO_NE:
-	return ApplyLogicalOpRealScalar<int32>(rows,cols,
-					       (const int32**)Ap,
-					       (const int32*)Bp,
-					       slo_ne_real<int32>);
-      case SLO_LE:
-	return ApplyLogicalOpRealScalar<int32>(rows,cols,
-					       (const int32**)Ap,
-					       (const int32*)Bp,
-					       slo_le_real<int32>);
-      case SLO_GE:
-	return ApplyLogicalOpRealScalar<int32>(rows,cols,
-					       (const int32**)Ap,
-					       (const int32*)Bp,
-					       slo_ge_real<int32>);
-      case SLO_EQ:
-	return ApplyLogicalOpRealScalar<int32>(rows,cols,
-					       (const int32**)Ap,
-					       (const int32*)Bp,
-					       slo_eq_real<int32>);
+      case SLO_LT: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_lt_real<int32>);
+      case SLO_GT: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_gt_real<int32>);
+      case SLO_NE: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_ne_real<int32>);
+      case SLO_LE: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_le_real<int32>);
+      case SLO_GE: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_ge_real<int32>);
+      case SLO_EQ: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_eq_real<int32>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_FLOAT:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_lt_real<float>);
+      case SLO_GT: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_gt_real<float>);
+      case SLO_NE: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_ne_real<float>);
+      case SLO_LE: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_le_real<float>);
+      case SLO_GE: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_ge_real<float>);
+      case SLO_EQ: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_eq_real<float>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_DOUBLE:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_lt_real<double>);
+      case SLO_GT: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_gt_real<double>);
+      case SLO_NE: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_ne_real<double>);
+      case SLO_LE: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_le_real<double>);
+      case SLO_GE: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_ge_real<double>);
+      case SLO_EQ: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_eq_real<double>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_COMPLEX:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_lt_complex<float>);
+      case SLO_GT: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_gt_complex<float>);
+      case SLO_NE: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_ne_complex<float>);
+      case SLO_LE: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_le_complex<float>);
+      case SLO_GE: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_ge_complex<float>);
+      case SLO_EQ: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_eq_complex<float>);
+	throw Exception("unsupported sparse type/op combination");
+      }	
+    case FM_DCOMPLEX:
+      switch (opselect) {
+      case SLO_LT: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_lt_complex<double>);
+      case SLO_GT: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_gt_complex<double>);
+      case SLO_NE: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_ne_complex<double>);
+      case SLO_LE: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_le_complex<double>);
+      case SLO_GE: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_ge_complex<double>);
+      case SLO_EQ: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_eq_complex<double>);
+	throw Exception("unsupported sparse type/op combination");
       }	
     }
   }
-
 }

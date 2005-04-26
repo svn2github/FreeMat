@@ -69,10 +69,12 @@
      GLOBAL = 295,
      QUIT = 296,
      RETALL = 297,
-     NE = 298,
-     NOT = 299,
-     NEG = 300,
-     POS = 301
+     SOR = 298,
+     SAND = 299,
+     NE = 300,
+     NOT = 301,
+     NEG = 302,
+     POS = 303
    };
 #endif
 #define IDENT 258
@@ -115,10 +117,12 @@
 #define GLOBAL 295
 #define QUIT 296
 #define RETALL 297
-#define NE 298
-#define NOT 299
-#define NEG 300
-#define POS 301
+#define SOR 298
+#define SAND 299
+#define NE 300
+#define NOT 301
+#define NEG 302
+#define POS 303
 
 
 

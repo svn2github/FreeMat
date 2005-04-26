@@ -175,5 +175,7 @@ namespace FreeMat {
   void power_zz(double *c, const double *a, const double *b);
   double power_di(double a, int b);
   double power_dd(double a, double b);
+  template <class T>
+  T complex_abs(T real, T imag);
 }
 #endif

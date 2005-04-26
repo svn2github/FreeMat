@@ -54,6 +54,8 @@ namespace FreeMat {
     OP_LDIV,
     OP_OR,
     OP_AND,
+    OP_SOR,
+    OP_SAND,
     OP_LT,
     OP_LEQ,
     OP_GT,

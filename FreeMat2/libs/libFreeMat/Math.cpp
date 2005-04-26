@@ -1995,6 +1995,39 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_LE),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_LE),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_GE),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*sizeof(logical));
     switch(B.getDataClass()) {
@@ -2051,6 +2084,39 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_GT),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_GT),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_LT),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*sizeof(logical));
     switch(B.getDataClass()) {
@@ -2107,6 +2173,39 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_GE),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_GE),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_LE),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*sizeof(logical));
     switch(B.getDataClass()) {
@@ -2163,6 +2262,39 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_EQ),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_EQ),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_EQ),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*sizeof(logical));
     switch(B.getDataClass()) {
@@ -2219,6 +2351,39 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_NE),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_NE),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_NE),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*sizeof(logical));
     switch(B.getDataClass()) {
@@ -2335,6 +2500,40 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_AND),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_AND),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_AND),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*B.getElementSize());
     boolean_and(Clen, (logical*) Cp, (const logical*) A.getDataPointer(), Astride, 
@@ -2366,6 +2565,39 @@ namespace FreeMat {
       Bstride = 1;
       Cdim = A.getDimensions();
     }
+    // Check for sparse arguments
+    if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseSparseLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getSparseDataPointer(),
+					 SLO_OR),true);
+    } else if (Astride && !Bstride && A.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(A.getDataClass(),
+					 A.getDimensionLength(0),
+					 A.getDimensionLength(1),
+					 A.getSparseDataPointer(),
+					 B.getDataPointer(),
+					 SLO_OR),true);
+    } else if (!Astride && Bstride && B.isSparse()) {
+      return Array(FM_LOGICAL,
+		   Cdim,
+		   SparseScalarLogicalOp(B.getDataClass(),
+					 B.getDimensionLength(0),
+					 B.getDimensionLength(1),
+					 B.getSparseDataPointer(),
+					 A.getDataPointer(),
+					 SLO_OR),true);
+    }
+
+    A.makeDense();
+    B.makeDense();
+
     Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*B.getElementSize());
     boolean_or(Clen, (logical*) Cp, (const logical*) A.getDataPointer(), Astride, 

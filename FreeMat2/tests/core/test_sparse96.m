@@ -1,6 +1,6 @@
-function x = test_sparse84
-A = int32(10*sprandn(10,10,0.3));
-B = int32(10*sprandn(10,10,0.3));
+function x = test_sparse96
+A = double(int32(10*sprandn(10,10,0.3)));
+B = double(int32(10*sprandn(10,10,0.3)));
 C = A < B;
 c = full(A) < full(B);
 x = testeq(c,C);

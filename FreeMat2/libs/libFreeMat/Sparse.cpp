@@ -7,6 +7,7 @@ extern "C" {
 }
 #include "LAPACK.hpp"
 #include "Math.hpp"
+#include <math.h>
 
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
@@ -4832,6 +4833,55 @@ namespace FreeMat {
       return SparseMatrixSumColumnsComplex<double>(Arows, Acols, (const double**) Ap);
     }
   }
+  
+  template <class T>
+  void* ReshapeSparseMatrixComplex(int rows, int cols, const T** A, int newrows, int newcols) {
+    // Convert the sparse matrix into IJV format
+    IJVEntry<T>* mlist;
+    int nnz;
+    mlist = ConvertSparseToIJVListComplex<T>(A,rows,cols,nnz);
+    for (int i=0;i<nnz;i++) {
+      int vind = mlist[i].I + mlist[i].J*rows;
+      mlist[i].I = vind % newrows;
+      mlist[i].J = vind / newrows;
+    }
+    std::sort(mlist,mlist+nnz);
+    return ConvertIJVtoRLEComplex<T>(mlist,nnz,newrows,newcols);
+  }
+
+
+  template <class T>
+  void* ReshapeSparseMatrixReal(int rows, int cols, const T** A, int newrows, int newcols) {
+    // Convert the sparse matrix into IJV format
+    IJVEntry<T>* mlist;
+    int nnz;
+    mlist = ConvertSparseToIJVListReal<T>(A,rows,cols,nnz);
+    for (int i=0;i<nnz;i++) {
+      int vind = mlist[i].I + mlist[i].J*rows;
+      mlist[i].I = vind % newrows;
+      mlist[i].J = vind / newrows;
+    }
+    std::sort(mlist,mlist+nnz);
+    return ConvertIJVtoRLEReal<T>(mlist,nnz,newrows,newcols);
+  }
+
+  void* ReshapeSparseMatrix(Class dclass, int rows, int cols, const void *Ap,
+			    int newrows, int newcols) {
+    switch(dclass) {
+    case FM_LOGICAL:
+      return ReshapeSparseMatrixReal<uint32>(rows,cols,(const uint32**) Ap,newrows,newcols);
+    case FM_INT32:
+      return ReshapeSparseMatrixReal<int32>(rows,cols,(const int32**) Ap,newrows,newcols);
+    case FM_FLOAT:
+      return ReshapeSparseMatrixReal<float>(rows,cols,(const float**) Ap,newrows,newcols);
+    case FM_DOUBLE:
+      return ReshapeSparseMatrixReal<double>(rows,cols,(const double**) Ap,newrows,newcols);
+    case FM_COMPLEX:
+      return ReshapeSparseMatrixComplex<float>(rows,cols,(const float**) Ap,newrows,newcols);
+    case FM_DCOMPLEX:
+      return ReshapeSparseMatrixReal<double>(rows,cols,(const double**) Ap,newrows,newcols);
+    }    
+  }
 
   uint32* SparseLogicalToOrdinal(int rows, int cols, const void *Ap, int &nnz) {
     nnz = CountNonzerosReal((const uint32 **) Ap,rows,cols);
@@ -5299,5 +5349,58 @@ namespace FreeMat {
 	throw Exception("unsupported sparse type/op combination");
       }	
     }
+  }
+  
+  template <class T>
+  T** SparseAbsFunctionReal(int rows, int cols, const T**src) {
+    T** dp;
+    dp = new T*[cols];
+    T* buffer = new T[rows*2];
+    for (int p=0;p<cols;p++) {
+      RLEEncoder<T> B(buffer,rows);
+      RLEDecoder<T> A(src[p],rows);
+      A.update(); 
+      while (A.more()) {
+	B.set(A.row());
+	B.push((T)(fabs(A.value())));
+	A.advance();
+      }
+      B.end();
+      dp[p] = B.copyout();
+    }
+    delete[] buffer;
+    return dp;
+  }
+
+  template <class T>
+  T** SparseAbsFunctionComplex(int rows, int cols, const T**src) {
+    T** dp;
+    dp = new T*[cols];
+    T* buffer = new T[rows*2];
+    for (int p=0;p<cols;p++) {
+      RLEEncoder<T> B(buffer,rows);
+      RLEDecoderComplex<T> A(src[p],rows);
+      A.update(); 
+      while (A.more()) {
+	B.set(A.row());
+	B.push(complex_abs<T>(A.value_real(),A.value_imag()));
+	A.advance();
+      }
+      B.end();
+      dp[p] = B.copyout();
+    }
+    delete[] buffer;
+    return dp;
+  }
+
+  void* SparseAbsFunction(Class dclass, int rows, int cols, const void *Ap) {
+    switch(dclass) {
+    case FM_INT32:  return SparseAbsFunctionReal<int32>(rows,cols,(const int32**)Ap);
+    case FM_FLOAT:  return SparseAbsFunctionReal<float>(rows,cols,(const float**)Ap);
+    case FM_DOUBLE:  return SparseAbsFunctionReal<double>(rows,cols,(const double**)Ap);
+    case FM_COMPLEX:  return SparseAbsFunctionComplex<float>(rows,cols,(const float**)Ap);
+    case FM_DCOMPLEX:  return SparseAbsFunctionComplex<double>(rows,cols,(const double**)Ap);
+    }
+    throw Exception("unsupported sparse matrix type in argument to abs");
   }
 }

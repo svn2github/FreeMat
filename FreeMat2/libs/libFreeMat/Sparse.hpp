@@ -118,5 +118,7 @@ namespace FreeMat {
   uint32* SparseLogicalToOrdinal(int rows, int cols, const void *Ap, int& nnz);
   void* SparseSparseLogicalOp(Class dclass, int rows, int cols, const void *Ap, const void *Bp, SparseLogOpID opselect);
   void* SparseScalarLogicalOp(Class dclass, int rows, int cols, const void *Ap, const void *Bp, SparseLogOpID opselect);
+  void* ReshapeSparseMatrix(Class dclass, int rows, int cols, const void *Ap, int newrows, int newcols);
+  void* SparseAbsFunction(Class dclass, int rows, int cols, const void *Ap);
 }
 #endif

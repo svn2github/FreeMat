@@ -46,6 +46,14 @@ extern "C" {
 }
 
 template <class T>
+T* RLEDuplicate(const T*src) {
+  int blen = (int) (src[0]+1);
+  T* ret = new T[blen];
+  memcpy(ret,src,sizeof(T)*blen);
+  return ret;
+}
+
+template <class T>
 class RLEEncoder {
   T* buffer;
   int m;
@@ -54,92 +62,66 @@ class RLEEncoder {
   int zlen;
   int state;
 public:
-  RLEEncoder(T* buf, int alen);
-  int row();
-  void set(int p);
-  void push(T val);
-  void end();
-  T* copyout();
+  RLEEncoder(T* buf, int alen) {
+    m = 0;
+    n = 0;
+    buffer = buf;
+    len = alen;
+    state = 0;
+    zlen = 0;
+  }
+  int row() {return m;}
+  void set(int p) {
+    if (p <= m) return;
+    p -= m;
+    if (state == 0) {
+      zlen = p;
+      state = 1;
+    } else
+      zlen += p;
+    m += p;  
+  }
+  void push(T val) {
+    if (state == 0) {
+      if (val != 0) {
+	buffer[n] = val;
+	n++;
+      } else {
+	state = 1;
+	zlen = 1;
+      }
+    } else {
+      if (val == 0) {
+	zlen++;
+      } else {
+	if (zlen) {
+	  buffer[n++] = 0;
+	  buffer[n++] = zlen;
+	}
+	buffer[n++] = val;
+	state = 0;
+	zlen = 0;
+      }
+    }
+    m++;
+  }
+  void end() {
+    set(len);
+    if (zlen) {
+      buffer[n++] = 0;
+      buffer[n++] = zlen;
+    }
+    state = 0;
+  }
+  T* copyout() {
+    T* ret;
+    ret = new T[n+1];
+    ret[0] = n;
+    memcpy(ret+1,buffer,n*sizeof(T));
+    return ret;
+  }
 };
 
-template <class T>
-RLEEncoder<T>::RLEEncoder(T* buf, int alen) {
-  m = 0;
-  n = 0;
-  buffer = buf;
-  len = alen;
-  state = 0;
-  zlen = 0;
-}
-
-template <class T>
-int RLEEncoder<T>::row() {
-  return m;
-}
-
-// State 0 - Set the state to 1, zlen = p
-// State 1 - zlen += p;
-template <class T>
-void RLEEncoder<T>::set(int p) {
-  if (p <= m) return;
-  p -= m;
-  if (state == 0) {
-    zlen = p;
-    state = 1;
-  } else
-    zlen += p;
-  m += p;  
-}
-
-// State 0 - If the value is nonzero, push it on the stack, move to state 0
-// State 0 - If the value is zero, move to state 1, zlen = 1
-// State 1 - If the value is zero, stay in state 1, zlen++
-// State 1 - If the value is nonzero, output a zeros string of length zlen
-//           push the nonzero value on the stack, move to state 0
-template <class T>
-void RLEEncoder<T>::push(T val) {
-  if (state == 0) {
-    if (val != 0) {
-      buffer[n] = val;
-      n++;
-    } else {
-      state = 1;
-      zlen = 1;
-    }
-  } else {
-    if (val == 0) {
-      zlen++;
-    } else {
-      if (zlen) {
-	buffer[n++] = 0;
-	buffer[n++] = zlen;
-      }
-      buffer[n++] = val;
-      state = 0;
-      zlen = 0;
-    }
-  }
-  m++;
-}
-
-template <class T>
-T* RLEEncoder<T>::copyout() {
-  T* ret;
-  ret = new T[n+1];
-  ret[0] = n;
-  memcpy(ret+1,buffer,n*sizeof(T));
-  return ret;
-}
-
-template <class T>
-void RLEEncoder<T>::end() {
-  set(len);
-  if (zlen) {
-    buffer[n++] = 0;
-    buffer[n++] = zlen;
-  }
-  state = 0;
-}
 
 template <class T>
 class RLEDecoder {
@@ -148,78 +130,57 @@ class RLEDecoder {
   int n;
   int len;
 public:
-  RLEDecoder(const T* str, int alen);
-  int row();
-  void update();
-  void advance();
-  T value();
-  void print();
-  bool more();
-  int nnzs();
+  RLEDecoder(const T* str, int alen) {
+    data = str;
+    m = 0;
+    n = 1;
+    len = alen;
+  }
+  int row() {
+    return m;
+  }
+  void update() {
+    while ((m < len) && (data[n] == 0)) {
+      m += (int) data[n+1];
+      n += 2;
+      if ((m < len) && (n>data[0])) {
+	throw FreeMat::Exception("Invalid data string!\n");
+      }
+    }
+  }
+  void advance() {
+    if (m < len) {
+      m++;
+      n++;
+      update();
+    }
+  }
+  T value() {
+    if (m >= len)
+      throw FreeMat::Exception("RLE Decoder overflow - corrupted sparse matrix string encountered");
+    return data[n];
+  }
+  bool more() {
+    return (m < len);
+  }
+  int nnzs() {
+    int nnz = 0;
+    int t = 0;
+    int p = 1;
+    while (t < len) {
+      if (data[p] != 0) {
+	nnz++;
+	p++;
+	t++;
+      } else {
+	t += (int) data[p+1];
+	p += 2;
+      }
+    }
+    return nnz;
+  }
 };
 
-template <class T>
-int RLEDecoder<T>::nnzs() {
-  int nnz = 0;
-  int t = 0;
-  int p = 1;
-  while (t < len) {
-    if (data[p] != 0) {
-      nnz++;
-      p++;
-      t++;
-    } else {
-      t += (int) data[p+1];
-      p += 2;
-    }
-  }
-  return nnz;
-}
-
-template <class T>
-bool RLEDecoder<T>::more() {
-  return (m < len);
-}
-
-template <class T>
-RLEDecoder<T>::RLEDecoder(const T* str, int alen) {
-  data = str;
-  m = 0;
-  n = 1;
-  len = alen;
-}
-
-template <class T>
-T RLEDecoder<T>::value() {
-  if (m >= len)
-    throw FreeMat::Exception("RLE Decoder overflow - corrupted sparse matrix string encountered");
-  return data[n];
-}
-
-template <class T>
-int RLEDecoder<T>::row() {
-  return m;
-}
-
-template <class T>
-void RLEDecoder<T>::update() {
-  while ((m < len) && (data[n] == 0)) {
-    m += (int) data[n+1];
-    n += 2;
-    if ((m < len) && (n>data[0])) {
-      throw FreeMat::Exception("Invalid data string!\n");
-    }
-  }
-}
-
-template <class T>
-void RLEDecoder<T>::advance() {
-  if (m < len) {
-    m++;
-    n++;
-    update();
-  }
-}
 
 template <class T>
 class RLEEncoderComplex {
@@ -230,96 +191,70 @@ class RLEEncoderComplex {
   int zlen;
   int state;
 public:
-  RLEEncoderComplex(T* buf, int alen);
-  int row();
-  void set(int p);
-  void push(T valr, T vali);
-  void end();
-  T* copyout();
-};
-
-template <class T>
-RLEEncoderComplex<T>::RLEEncoderComplex(T* buf, int alen) {
-  m = 0;
-  n = 0;
-  buffer = buf;
-  len = alen;
-  state = 0;
-  zlen = 0;
-}
-
-
-template <class T>
-int RLEEncoderComplex<T>::row() {
-  return m;
-}
-
-// State 0 - Set the state to 1, zlen = p
-// State 1 - zlen += p;
-template <class T>
-void RLEEncoderComplex<T>::set(int p) {
-  if (p <= m) return;
-  p -= m;
-  if (state == 0) {
-    zlen = p;
-    state = 1;
-  } else
-    zlen += p;
-  m += p;  
-}
-
-// State 0 - If the value is nonzero, push it on the stack, move to state 0
-// State 0 - If the value is zero, move to state 1, zlen = 1
-// State 1 - If the value is zero, stay in state 1, zlen++
-// State 1 - If the value is nonzero, output a zeros string of length zlen
-//           push the nonzero value on the stack, move to state 0
-template <class T>
-void RLEEncoderComplex<T>::push(T valr, T vali) {
-  if (state == 0) {
-    if ((valr != 0) || (vali != 0)) {
-      buffer[n++] = valr;
-      buffer[n++] = vali;
-    } else {
+  RLEEncoderComplex(T* buf, int alen) {
+    m = 0;
+    n = 0;
+    buffer = buf;
+    len = alen;
+    state = 0;
+    zlen = 0;
+  }
+  int row() {
+    return m;
+  }
+  void set(int p) {
+    if (p <= m) return;
+    p -= m;
+    if (state == 0) {
+      zlen = p;
       state = 1;
-      zlen = 1;
-    }
-  } else {
-    if ((valr == 0) && (vali == 0)) {
-      zlen++;
-    } else {
-      if (zlen) {
-	buffer[n++] = 0;
-	buffer[n++] = 0;
-	buffer[n++] = zlen;
+    } else
+      zlen += p;
+    m += p;  
+  }
+  void push(T valr, T vali) {
+    if (state == 0) {
+      if ((valr != 0) || (vali != 0)) {
+	buffer[n++] = valr;
+	buffer[n++] = vali;
+      } else {
+	state = 1;
+	zlen = 1;
       }
-      buffer[n++] = valr;
-      buffer[n++] = vali;
-      state = 0;
-      zlen = 0;
+    } else {
+      if ((valr == 0) && (vali == 0)) {
+	zlen++;
+      } else {
+	if (zlen) {
+	  buffer[n++] = 0;
+	  buffer[n++] = 0;
+	  buffer[n++] = zlen;
+	}
+	buffer[n++] = valr;
+	buffer[n++] = vali;
+	state = 0;
+	zlen = 0;
+      }
     }
+    m++;
   }
-  m++;
-}
-
-template <class T>
-T* RLEEncoderComplex<T>::copyout() {
-  T* ret;
-  ret = new T[n+1];
-  ret[0] = n;
-  memcpy(ret+1,buffer,n*sizeof(T));
-  return ret;
-}
-
-template <class T>
-void RLEEncoderComplex<T>::end() {
-  set(len);
-  if (zlen>0) {
-    buffer[n++] = 0;
-    buffer[n++] = 0;
-    buffer[n++] = zlen;
+  void end() {
+    set(len);
+    if (zlen>0) {
+      buffer[n++] = 0;
+      buffer[n++] = 0;
+      buffer[n++] = zlen;
+    }
+    state = 0;
   }
-  state = 0;
-}
+  T* copyout() {
+    T* ret;
+    ret = new T[n+1];
+    ret[0] = n;
+    memcpy(ret+1,buffer,n*sizeof(T));
+    return ret;
+  }
+};
 
 template <class T>
 class RLEDecoderComplex {
@@ -328,86 +263,59 @@ class RLEDecoderComplex {
   int n;
   int len;
 public:
-  RLEDecoderComplex(const T* str, int alen);
-  void reset();
-  int row();
-  void update();
-  void advance();
-  T value_real();
-  T value_imag();
-  void print();
-  bool more();
-  int nnzs();
-};
-
-template <class T>
-int RLEDecoderComplex<T>::nnzs() {
-  int nnz = 0;
-  int t = 0;
-  int p = 1;
-  while (t < len) {
-    if ((data[p] != 0) || (data[p+1] != 0)) {
-      nnz++;
-      p+=2;
-      t++;
-    } else {
-      t += (int) data[p+2];
-      p += 3;
+  RLEDecoderComplex(const T* str, int alen) {
+    data = str;
+    m = 0;
+    n = 1;
+    len = alen;
+  }
+  int row() {
+    return m;
+  }
+  void update() {
+    while ((m < len) && (data[n] == 0) && (data[n+1] == 0)) {
+      m += (int) data[n+2];
+      n += 3;
     }
   }
-  return nnz;
-}
-
-
-
-template <class T>
-bool RLEDecoderComplex<T>::more() {
-  return (m < len);
-}
-
-template <class T>
-RLEDecoderComplex<T>::RLEDecoderComplex(const T* str, int alen) {
-  data = str;
-  m = 0;
-  n = 1;
-  len = alen;
-}
-
-template <class T>
-T RLEDecoderComplex<T>::value_real() {
-  if (m >= len)
-    throw FreeMat::Exception("RLE DecoderComplex overflow - corrupted sparse matrix string encountered");
-  return data[n];
-}
-
-template <class T>
-T RLEDecoderComplex<T>::value_imag() {
-  if (m >= len)
-    throw FreeMat::Exception("RLE DecoderComplex overflow - corrupted sparse matrix string encountered");
-  return data[n+1];
-}
-
-template <class T>
-int RLEDecoderComplex<T>::row() {
-  return m;
-}
-
-template <class T>
-void RLEDecoderComplex<T>::update() {
-  while ((m < len) && (data[n] == 0) && (data[n+1] == 0)) {
-    m += (int) data[n+2];
-    n += 3;
+  void advance() {
+    if (m < len) {
+      m++;
+      n+=2;
+      update();
+    }
   }
-}
-
-template <class T>
-void RLEDecoderComplex<T>::advance() {
-  if (m < len) {
-    m++;
-    n+=2;
-    update();
+  T value_real() {
+    if (m >= len)
+      throw FreeMat::Exception("RLE DecoderComplex overflow - corrupted sparse matrix string encountered");
+    return data[n];
   }
-}
+  T value_imag() {
+    if (m >= len)
+      throw FreeMat::Exception("RLE DecoderComplex overflow - corrupted sparse matrix string encountered");
+    return data[n+1];
+  }
+  bool more() {
+    return (m < len);
+  }
+  int nnzs() {
+    int nnz = 0;
+    int t = 0;
+    int p = 1;
+    while (t < len) {
+      if ((data[p] != 0) || (data[p+1] != 0)) {
+	nnz++;
+	p+=2;
+	t++;
+      } else {
+	t += (int) data[p+2];
+	p += 3;
+      }
+    }
+    return nnz;
+  }
+};
+
 
 // The following ops are O(N^2) instead of O(nnz^2):
 //
@@ -1012,11 +920,8 @@ namespace FreeMat {
     T** dp;
     dp = new T*[cols];
     int i;
-    for (i=0;i<cols;i++) {
-      int blen = (int)(src[i][0]+1);
-      dp[i] = new T[blen];
-      memcpy(dp[i],src[i],sizeof(T)*blen);
-    }
+    for (i=0;i<cols;i++) 
+      dp[i] = RLEDuplicate(src[i]);
     return dp;
   }
 
@@ -2134,8 +2039,42 @@ namespace FreeMat {
 						   (const double*) data, 
  						   advance);
     }
-    throw Exception("unsupported type for SetSparseVctorSubsets");
+    throw Exception("unsupported type for SetSparseVectorSubsets");
   }
+
+
+  template <class T>
+  void* GetSparseColumnSubsetAssist(int rows, int cols, const T** A, const indexType*cindx, int icols) {
+    for (int i=0;i<icols;i++) 
+      if ((cindx[i] < 1) || (cindx[i] > cols))
+	throw Exception("out of range column index in sparse matrix expression of type A(:,n)");
+    T** dest;
+    dest = new T*[icols];
+    for (int i=0;i<icols;i++) 
+      dest[i] = RLEDuplicate<T>(A[cindx[i]-1]);
+    return dest;
+  }
+
+  // GetSparseNDimSubsets
+  void* GetSparseColumnSubset(Class dclass, int rows, int cols, const void* src,
+			      const indexType* cindx, int icols) {
+    switch(dclass) {
+    case FM_LOGICAL:
+      return GetSparseColumnSubsetAssist<uint32>(rows, cols, (const uint32**) src, cindx, icols);
+    case FM_INT32:
+      return GetSparseColumnSubsetAssist<int32>(rows, cols, (const int32**) src, cindx, icols);
+    case FM_FLOAT:
+      return GetSparseColumnSubsetAssist<float>(rows, cols, (const float**) src, cindx, icols);
+    case FM_DOUBLE:
+      return GetSparseColumnSubsetAssist<double>(rows, cols, (const double**) src, cindx, icols);
+    case FM_COMPLEX:
+      return GetSparseColumnSubsetAssist<float>(rows, cols, (const float**) src, cindx, icols);
+    case FM_DCOMPLEX:
+      return GetSparseColumnSubsetAssist<double>(rows, cols, (const double**) src, cindx, icols);
+    }
+    throw Exception("unsupported type for GetSparseColumnSubset");
+  }
+
 
   template <class T>
   void* GetSparseNDimSubsetsReal(int rows, int cols, const T** A,
@@ -2205,10 +2144,19 @@ namespace FreeMat {
     return dp;
   }
 
+
+  bool CheckAllRowsReference(const indexType* rindx, int rows) {
+    for (int i=0;i<rows;i++)
+      if (rindx[i] != (i+1)) return false;
+    return true;
+  }
+
   // GetSparseNDimSubsets
   void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
 			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols) {
+    if ((irows == rows) && CheckAllRowsReference(rindx,rows))
+      return GetSparseColumnSubset(dclass,rows,cols,src,cindx,icols);
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
@@ -2231,6 +2179,9 @@ namespace FreeMat {
     }
     throw Exception("unsupported type for GetSparseNDimSubsets");
   }
+
+
+
 
   template <class T>
   void* GetSparseScalarReal(int rows, int cols, const T** src,
@@ -2567,9 +2518,7 @@ namespace FreeMat {
     int ptr = 0;
     for (i=0;i<cols;i++) {
       if (!dmap[i]) {
-	int blen = (int) src[i][0]+1;
-	dest[ptr] = new T[blen];
-	memcpy(dest[ptr],src[i],sizeof(T)*blen);
+	dest[ptr] = RLEDuplicate(src[i]);
 	ptr++;
       }
     }

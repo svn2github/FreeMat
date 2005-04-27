@@ -45,8 +45,14 @@ namespace FreeMat {
   }
 
   std::string WalkTree::getMFileName() {
-    if (lastname.empty()) return std::string("");
-    return lastname;
+#ifdef WIN32
+#error "complete me"
+#else
+    if (ip_funcname[0] == '/') return ip_funcname;
+    for (int i=cstack.size()-1;i>=0;i--)
+      if (cstack[i].cname[0] == '/') return cstack[i].cname;
+    return std::string("");
+#endif
   }
 
   stackentry::stackentry(std::string cntxt, std::string det, int id) :
@@ -2764,7 +2770,6 @@ namespace FreeMat {
 	CLIFlagsave = InCLI;
 	InCLI = false;
 	pushDebug(((MFunctionDef*)funcDef)->fileName,std::string("script"));
-	lastname = ((MFunctionDef*)funcDef)->fileName;
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
@@ -2784,8 +2789,6 @@ namespace FreeMat {
 	  throw Exception(std::string("Too many outputs to function ")+t->text);
 	CLIFlagsave = InCLI;
 	InCLI = false;
-	if (funcDef->type() == FM_M_FUNCTION)
-	  lastname = ((MFunctionDef*)funcDef)->fileName;
 	n = funcDef->evaluateFunction(this,m,narg_out);
 	InCLI = CLIFlagsave;
 	if (state == FM_STATE_RETALL)

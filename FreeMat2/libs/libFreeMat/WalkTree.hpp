@@ -124,8 +124,6 @@ namespace FreeMat {
     ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
     // Set this flag to stop overloading of functions
     bool stopoverload;
-    // Name of last Mfile run.
-    std::string lastname;
   public:
     bool getStopOverload();
     void setStopOverload(bool flag);

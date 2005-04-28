@@ -313,7 +313,7 @@ namespace FreeMat {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
-	m = eval->variableSubIndexExpressions(t->down,r);
+	m = eval->varExpressionList(t->down,r);
 	// Scan through the expressions... adjust for "colon" calls
 	AdjustColonCalls(m,t->down);
 	if (m.size() == 0) 
@@ -324,7 +324,7 @@ namespace FreeMat {
 	struct_args.push_back(Array::cellConstructor(q));
       }
       if (t->opNum ==(OP_BRACES)) {
-	m = eval->variableSubIndexExpressions(t->down,r);
+	m = eval->varExpressionList(t->down,r);
 	AdjustColonCalls(m,t->down);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
@@ -376,7 +376,7 @@ namespace FreeMat {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (t->opNum ==(OP_PARENS)) {
-	m = eval->variableSubIndexExpressions(t->down,r);
+	m = eval->varExpressionList(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
@@ -388,7 +388,7 @@ namespace FreeMat {
 	}
       }
       if (t->opNum ==(OP_BRACES)) {
-	m = eval->variableSubIndexExpressions(t->down,r);
+	m = eval->varExpressionList(t->down,r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)

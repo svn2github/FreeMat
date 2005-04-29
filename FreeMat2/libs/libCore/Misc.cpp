@@ -1797,8 +1797,11 @@ namespace FreeMat {
       char tname[4096];
       Array tval;
       sprintf(tname,"_t%d",i);
-      if (!eval->getContext()->lookupVariable(tname,tval))
+      Array *ptr = eval->getContext()->lookupVariable(tname);
+      if (!ptr)
 	tval = Array::emptyConstructor();
+      else
+	tval = *ptr;
       eval->getContext()->deleteVariable(tname);
       retval.push_back(tval);
     }

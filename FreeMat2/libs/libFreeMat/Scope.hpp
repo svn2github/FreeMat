@@ -113,10 +113,12 @@ namespace FreeMat {
      */
     bool lookupFunction(std::string funcName, FuncPtr& val);
     /**
-     * Lookup a variable.  Return true if the variable is defined, and
-     * assigns the value of the variable to the second argument.
+     * Lookup a variable.  Return a pointer to the variable in the symbol 
+     * table if found and NULL otherwise.  Different than lookupFunction
+     * because in write-back assignments (e.g., A(:,346) = b) it is critical 
+     * to manage the number of copies.
      */
-    bool lookupVariable(const std::string& funcName, Array& val);
+    Array* lookupVariable(const std::string& funcName);
     /**
      * Add a variable name to the global variables list.
      */

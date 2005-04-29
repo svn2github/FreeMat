@@ -109,11 +109,11 @@ namespace FreeMat {
      * with the given name, and inserted into the scope that was
      * searched.  A pointer to this newly created variable is returned.
      */
-    bool lookupVariable(const std::string& varName, Array &var);
+    Array* lookupVariable(const std::string& varName);
     /**
      * Look for a variable, but only locally.
      */
-    bool lookupVariableLocally(std::string varName, Array &var);
+    Array* lookupVariableLocally(std::string varName);
     /**
      * Insert a function definition into the local scope (bottom of
      * the scope stack).

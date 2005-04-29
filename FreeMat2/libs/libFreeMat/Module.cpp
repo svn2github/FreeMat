@@ -383,11 +383,13 @@ namespace FreeMat {
     rettype = arg[3].getContentsAsCString();
     arglist = arg[4].getContentsAsCString();
     void *func;
-    DynLib *lib;
-    if (!libPointers.findSymbol(libfullpath,lib)) {
+    DynLib *lib, **ptr;
+    ptr = libPointers.findSymbol(libfullpath);
+    if (!ptr) {
       lib = new DynLib(libfullpath);
       libPointers.insertSymbol(libfullpath,lib);
-    }
+    } else
+      lib = *ptr;
     func = lib->GetSymbol(symbolname);
     stringVector types;
     stringVector arguments;

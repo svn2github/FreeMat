@@ -77,7 +77,7 @@ namespace FreeMat {
     active->insertVariable(mapName,var);
   }
 
-  bool Context::lookupVariable(const std::string& varName, Array &var) {
+  Array* Context::lookupVariable(const std::string& varName) {
     Scope* active;
     std::string mapName;
     
@@ -88,9 +88,9 @@ namespace FreeMat {
       mapName = varName;
       active = scopestack.front();
     } else {
-      return (scopestack.back()->lookupVariable(varName,var));
+      return (scopestack.back()->lookupVariable(varName));
     }
-    return (active->lookupVariable(mapName,var));
+    return (active->lookupVariable(mapName));
   }
 
   bool Context::isVariableGlobal(const std::string& varName) {
@@ -101,8 +101,8 @@ namespace FreeMat {
     return scopestack.back()->isVariablePersistent(varName);
   }
 
-  bool Context::lookupVariableLocally(std::string varName, Array &var) {
-    return scopestack.back()->lookupVariable(varName,var);
+  Array* Context::lookupVariableLocally(std::string varName) {
+    return scopestack.back()->lookupVariable(varName);
   }
 
   void Context::insertFunctionLocally(FuncPtr f) {
@@ -195,18 +195,16 @@ namespace FreeMat {
   }
 
   void Context::addPersistentVariable(std::string var) {
-    Array dummy;
     // Delete local variables with this name
     scopestack.back()->deleteVariable(var);
     // Delete global variables with this name
     scopestack.front()->deleteVariable(var);
     scopestack.back()->addPersistentVariablePointer(var);
-    if (!scopestack.front()->lookupVariable(scopestack.back()->getMangledName(var),dummy))
+    if (!scopestack.front()->lookupVariable(scopestack.back()->getMangledName(var)))
       scopestack.front()->insertVariable(scopestack.back()->getMangledName(var), Array::emptyConstructor());
   }
 
   void Context::addGlobalVariable(std::string var) {
-    Array dummy;
     // Delete local variables with this name
     scopestack.back()->deleteVariable(var);
     // Delete global persistent variables with this name
@@ -214,7 +212,7 @@ namespace FreeMat {
     // Add a point in the local scope to the global variable
     scopestack.back()->addGlobalVariablePointer(var);
     // Make sure the variable exists
-    if (!scopestack.front()->lookupVariable(var,dummy))
+    if (!scopestack.front()->lookupVariable(var))
       scopestack.front()->insertVariable(var, Array::emptyConstructor());
   }
 

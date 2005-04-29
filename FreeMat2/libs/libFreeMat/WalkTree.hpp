@@ -618,7 +618,7 @@ namespace FreeMat {
     void subsassignDot(Array &r, ASTPtr t, ArrayVector& value);
     void subsassignDotDyn(Array &r, ASTPtr t, ArrayVector& value);
     void subassignSingle(Array &r, ASTPtr t, ArrayVector& value);
-    void subassign(Array &r, ASTPtr t, ArrayVector& value);
+    void subassign(Array *r, ASTPtr t, ArrayVector& value);
     int countSubExpressions(ASTPtr t);
   };
   void sigInterrupt(int arg);

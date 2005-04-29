@@ -1585,39 +1585,40 @@ namespace FreeMat {
       // There is a special case to consider here - when a 
       // function call is made as a statement, we do not require
       // that the function have an output.
-      Array b;
-      if (t->opNum ==(OP_RHS) && 
-	  !context->lookupVariable(t->down->text,b)) {
-	m = functionExpression(t->down,0,true);
-	SetContext(t->context());
-	if (m.size() == 0) 
-	  b = Array::emptyConstructor();
-	else 
-	  b = m[0];
-	if (printIt && !b.isEmpty()
-	    && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
-	  io->outputMessage("ans = \n");
-	  displayArray(b);
+      Array b, *ptr;
+      if (t->opNum == (OP_RHS)) {
+	ptr = context->lookupVariable(t->down->text);
+	if (ptr == NULL) {
+	  m = functionExpression(t->down,0,true);
 	  SetContext(t->context());
-	}
-      }
-      else if (t->opNum == OP_RHS) {
-	m = rhsExpression(t->down);
-	SetContext(t->context());
-	if (m.size() == 0)
-	  b = Array::emptyConstructor();
-	else {
-	  b = m[0];
-	  if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
+	  if (m.size() == 0) 
+	    b = Array::emptyConstructor();
+	  else 
+	    b = m[0];
+	  if (printIt && !b.isEmpty()
+	      && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
 	    io->outputMessage("ans = \n");
-	    for (int j=0;j<m.size();j++) {
-	      char buffer[1000];
-	      if (m.size() > 1) {
-		sprintf(buffer,"\n%d of %d:\n",j+1,m.size());
-		io->outputMessage(buffer);
+	    displayArray(b);
+	    SetContext(t->context());
+	  }
+	} else {
+	  m = rhsExpression(t->down);
+	  SetContext(t->context());
+	  if (m.size() == 0)
+	    b = Array::emptyConstructor();
+	  else {
+	    b = m[0];
+	    if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
+	      io->outputMessage("ans = \n");
+	      for (int j=0;j<m.size();j++) {
+		char buffer[1000];
+		if (m.size() > 1) {
+		  sprintf(buffer,"\n%d of %d:\n",j+1,m.size());
+		  io->outputMessage(buffer);
+		}
+		displayArray(m[j]);
+		SetContext(t->context());
 	      }
-	      displayArray(m[j]);
-	      SetContext(t->context());
 	    }
 	  }
 	}
@@ -1715,9 +1716,12 @@ namespace FreeMat {
   }
 
   int WalkTree::countLeftHandSides(ASTPtr t) {
-    Array lhs;
-    if (!context->lookupVariable(t->text,lhs))
+    Array lhs, *ptr;
+    ptr = context->lookupVariable(t->text);
+    if (ptr == NULL)
       lhs = Array::emptyConstructor();
+    else
+      lhs = *ptr;
     ASTPtr s = t->down;
     if (s == NULL) {
       return 1;
@@ -1836,12 +1840,11 @@ namespace FreeMat {
       return retval;
     }
     // Get the variable in question
-    Array lhs;
-    if (!context->lookupVariable(t->text,lhs))
-      lhs = Array::emptyConstructor();
+    Array *ptr;
+    ptr = context->lookupVariable(t->text);
     // Make the assignment
-    subassign(lhs,t,value);
-    return lhs;
+    subassign(ptr,t,value);
+    return *ptr;
   }
 
   void WalkTree::specialFunctionCall(ASTPtr t, bool printIt) {
@@ -1934,9 +1937,10 @@ namespace FreeMat {
       mptr = mptr->right;
     }
     // Trap the special case where function pointers are used
-    Array r;
-    bool isVar = context->lookupVariable(fAST->text,r);
-    if (isVar && (r.getDataClass() == FM_FUNCPTR_ARRAY) &&
+    Array r, *ptr;
+    ptr = context->lookupVariable(fAST->text);
+    if (ptr) r = *ptr;
+    if (ptr && (r.getDataClass() == FM_FUNCPTR_ARRAY) &&
 	r.isScalar()) 
       m = FunctionPointerDispatch(r,fAST->down,lhsCount);
     else
@@ -2778,14 +2782,12 @@ namespace FreeMat {
   }
 
   bool WalkTree::isUserClassDefined(std::string classname) {
-    UserClass ret;
-    return classTable.findSymbol(classname,ret);
+    UserClass *ret;
+    return (classTable.findSymbol(classname)!=NULL);
   }
   
   UserClass WalkTree::lookupUserClass(std::string classname) {
-    UserClass ret;
-    classTable.findSymbol(classname,ret);
-    return ret;
+    return(*(classTable.findSymbol(classname)));
   }
 
   void WalkTree::registerUserClass(std::string classname, UserClass cdata) {
@@ -3069,7 +3071,7 @@ namespace FreeMat {
   //!
   ArrayVector WalkTree::rhsExpression(ASTPtr t) {
     ASTPtr s;
-    Array r, q;
+    Array r, q, *ptr;
     Array n, p;
     ArrayVector m;
     ArrayVector rv;
@@ -3082,7 +3084,12 @@ namespace FreeMat {
     SetContext(ctxt);
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
-    isVar = context->lookupVariable(t->text,r);
+    ptr = context->lookupVariable(t->text);
+    if (ptr) {
+      r = *ptr;
+      isVar = true;
+    } else
+      isVar = false;
     if (isVar && (t->down == NULL)) {
       ArrayVector rv;
       rv.push_back(r);
@@ -3470,7 +3477,7 @@ namespace FreeMat {
   //    t2.fname2 = t3
   //    t1.fname1 = t2
   //    a(xpr1) = t1
-  void WalkTree::subassign(Array &r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subassign(Array *r, ASTPtr t, ArrayVector& value) {
     int ctxt = t->context();
     // Set up a stack
     ArrayVector stack;

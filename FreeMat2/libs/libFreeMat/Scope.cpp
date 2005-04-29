@@ -47,13 +47,18 @@ namespace FreeMat {
   void Scope::deleteFunction(const std::string& funcName) {
     codeTab.deleteSymbol(funcName);
   }
-
-  bool Scope::lookupFunction(std::string funcName, FuncPtr& val) {
-    return codeTab.findSymbol(funcName,val);
+  
+  bool Scope::lookupFunction(std::string funcName, FuncPtr& ptr) {
+    FuncPtr* ret = codeTab.findSymbol(funcName);
+    if (ret) {
+      ptr = *ret;
+      return true;
+    }
+    return false;
   }
   
-  bool Scope::lookupVariable(const std::string& varName, Array& val) {
-    return symTab.findSymbol(varName,val);
+  Array* Scope::lookupVariable(const std::string& varName) {
+    return(symTab.findSymbol(varName));
   }
 
   std::string Scope::getName() {

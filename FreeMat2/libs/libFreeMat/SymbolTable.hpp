@@ -68,18 +68,16 @@ namespace FreeMat {
       }
     }
 
-    bool findSymbol(const key_type& key, value_type& dest) {
+    value_type* findSymbol(const key_type& key) {
       size_t i = hashKey(key)%SYMTAB; // Hash
       Entry* ptr;
       ptr = hashTable[i];
       while (ptr) {
-	if (ptr->key == key) {
-	  dest = ptr->val;
-	  return true;
-	}
+	if (ptr->key == key) 
+	  return (&ptr->val);
 	ptr = ptr->next;
       }
-      return false;
+      return NULL;
     }
 
     void deleteSymbol(const key_type& key) {

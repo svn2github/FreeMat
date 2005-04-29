@@ -1360,10 +1360,11 @@ namespace FreeMat {
       }
     }
     for (i=0;i<names.size();i++) {
-      Array toWrite;
+      Array *toWrite;
       char flags;
       if (!(names[i].compare("ans") == 0)) {
-	if (!cntxt->lookupVariable(names[i],toWrite))
+	toWrite = cntxt->lookupVariable(names[i]);
+	if (!toWrite)
 	  throw Exception(std::string("unable to find variable ")+
 			names[i]+" to save to file "+fname);
 	flags = 'n';
@@ -1373,7 +1374,7 @@ namespace FreeMat {
 	  flags = 'p';
 	output.putString(names[i].c_str());
 	output.putByte(flags);
-	output.putArray(toWrite);
+	output.putArray(*toWrite);
       }
     }
     output.putString("__eof");

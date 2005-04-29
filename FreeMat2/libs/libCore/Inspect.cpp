@@ -342,12 +342,14 @@ namespace FreeMat {
     sprintf(buffer,"  Variable Name      Type   Flags             Size\n");
     io->outputMessage(buffer);
     for (i=0;i<names.size();i++) {
-      Array lookup;
+      Array lookup, *ptr;
       sprintf(buffer,"% 15s",names[i].c_str());
       io->outputMessage(buffer);
-      if (!eval->getContext()->lookupVariable(names[i],lookup))
+      ptr = eval->getContext()->lookupVariable(names[i]);
+      if (!ptr)
 	io->outputMessage("   <undefined>");
       else {
+	lookup = *ptr;
 	Class t = lookup.getDataClass();
 	switch(t) {
 	case FM_CELL_ARRAY:
@@ -556,9 +558,7 @@ namespace FreeMat {
   }
 
   int ExistVariableFunction(char* fname, WalkTree* eval) {
-    bool isDefed;
-    Array d;
-    isDefed = eval->getContext()->lookupVariable(fname, d);
+    bool isDefed = (eval->getContext()->lookupVariable(fname) != NULL);
     if (isDefed)
       return 1;
     else
@@ -613,9 +613,9 @@ namespace FreeMat {
     char *fname;
     fname = tmp.getContentsAsCString();
     bool isDefed;
-    Array d;
-    isDefed = eval->getContext()->lookupVariable(fname, d);
-    if (isDefed && !d.isEmpty())
+    Array *d = eval->getContext()->lookupVariable(fname);
+    isDefed = (d != NULL);
+    if (isDefed && !d->isEmpty())
       return singleArrayVector(Array::logicalConstructor(1));
     else
       return singleArrayVector(Array::logicalConstructor(0));

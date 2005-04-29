@@ -194,14 +194,15 @@ namespace FreeMat {
       if (outputArgCount() != -1) {
 	outputs = ArrayVector(returnVals.size());
 	for (int i=0;i<returnVals.size();i++) {
-	  if (!context->lookupVariableLocally(returnVals[i],a) && (i < nargout)) {
+	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
+	  if (!ptr && (i < nargout)) {
 	    if (!warningIssued) {
 	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (1)");
 	      warningIssued = true;
 	    }
 	    a = Array::emptyConstructor();
 	  }
-	  outputs[i] = a;
+	  outputs[i] = *ptr;
 	}
       } else {
 	outputs = ArrayVector(nargout);
@@ -209,21 +210,24 @@ namespace FreeMat {
 	// For each explicit argument (that we have), insert it
 	// into the scope.
 	for (int i=0;i<explicitCount;i++) {
-	  if (!context->lookupVariableLocally(returnVals[i],a)  && (i < nargout)) {
+	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
+	  if (!ptr  && (i < nargout)) {
 	    if (!warningIssued) {
 	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (2)");
 	      warningIssued = true;
 	    }
 	    a = Array::emptyConstructor();
 	  }
-	  outputs[i] = a;
+	  outputs[i] = *ptr;
 	}
       // Are there any outputs not yet filled?
 	if (nargout > explicitCount) {
-	  Array varargout;
+	  Array varargout, *ptr;
 	  // Yes, get a pointer to the "vargout" variable that should be defined
-	  if (!context->lookupVariableLocally("varargout",varargout))
+	  ptr = context->lookupVariableLocally("varargout");
+	  if (!ptr)
 	    throw Exception("The special variable 'varargout' was not defined as expected");
+	  varargout = *ptr;
 	  if (varargout.getDataClass() != FM_CELL_ARRAY)
 	    throw Exception("The special variable 'varargout' was not defined as a cell-array");
 	  // Get the data pointer
@@ -243,7 +247,9 @@ namespace FreeMat {
 	std::string arg(arguments[i]);
 	if (arg[0] == '&')
 	  arg.erase(0,1);
-	context->lookupVariableLocally(arg,inputs[i]);
+	Array *ptr = context->lookupVariableLocally(arg);
+	if (ptr)
+	  inputs[i] = *ptr;
       }
       context->popScope();
       walker->popDebug();
@@ -431,17 +437,17 @@ namespace FreeMat {
   }
 
   static Class mapTypeNameToClass(std::string type) {
-    CType ret;
-    if (!ffiTypes.findSymbol(type,ret))
+    CType *ret = ffiTypes.findSymbol(type);
+    if (!ret)
       throw Exception("import type " + type + " not defined in type table");
-    return ret.FMClass;
+    return ret->FMClass;
   }
 
   static ffi_type* mapTypeNameToFFTType(std::string type) {
-    CType ret;
-    if (!ffiTypes.findSymbol(type,ret))
+    CType *ret = ffiTypes.findSymbol(type);
+    if (!ret)
       throw Exception("import type " + type + " not defined in type table");
-    return ret.FFIType;
+    return ret->FFIType;
   }
 
   void SetupImportTables() {

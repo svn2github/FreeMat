@@ -1519,7 +1519,7 @@ namespace FreeMat {
       } else {
 	Array expr(expression(t->down->right));
 	SetContext(t->context());
-	Array c(assignExpression(t->down,singleArrayVector(expr)));
+	Array c(assignExpression(t->down,expr));
 	SetContext(t->context());
 	context->insertVariable(t->down->text,c);
 	if (printIt) {
@@ -1714,73 +1714,6 @@ namespace FreeMat {
     return context;
   }
 
-
-  Array WalkTree::simpleSubindexExpression(Array& r, ASTPtr t) {
-    Dimensions rhsDimensions;
-    ArrayVector m;
-    
-    if (t->opNum ==(OP_PARENS)) {
-      m = varExpressionList(t->down,r);
-      if (m.size() == 0)
-	throw Exception("Expected indexing expression!");
-      else if (m.size() == 1) {
-	try {
-	  return(r.getVectorSubset(m[0]));
-	} catch (Exception &e) {
-	  return(Array::emptyConstructor());
-	}
-      }
-      else {
-	try {
-	  return(r.getNDimSubset(m));
-	} catch (Exception &e) {
-	  return(Array::emptyConstructor());
-	}
-      }
-    }
-    if (t->opNum ==(OP_BRACES)) {
-      m = varExpressionList(t->down,r);
-      if (m.size() == 0)
-	throw Exception("Expected indexing expression!");
-      else if (m.size() == 1) {
-	try {
-	  return(r.getVectorContents(m[0]));
-	} catch (Exception &e) {
-	  return(Array::emptyConstructor());
-	}
-      }
-      else {
-	try {
-	  return(r.getNDimContents(m));
-	} catch (Exception &e) {
-	  return(Array::emptyConstructor());
-	}
-      }
-    }
-    if (t->opNum ==(OP_DOT)) {
-      try {
-	return(r.getField(t->down->text));
-      } catch (Exception &e) {
-	return(Array::emptyConstructor());
-      }
-    }
-    if (t->opNum ==(OP_DOTDYN)) {
-      char *field;
-      try {
-	Array fname(expression(t->down));
-	field = fname.getContentsAsCString();
-      } catch (Exception &e) {
-	throw Exception("dynamic field reference to structure requires a string argument");
-      }
-      try {
-	return(r.getField(field));
-      } catch (Exception &e) {
-	return(Array::emptyConstructor());
-      }
-    }
-    return(Array::emptyConstructor());
-  }
-
   int WalkTree::countLeftHandSides(ASTPtr t) {
     Array lhs;
     if (!context->lookupVariable(t->text,lhs))
@@ -1792,8 +1725,17 @@ namespace FreeMat {
     int ctxt = s->context();
     while (s->right != NULL) {
       SetContext(s->context());
-      if (!lhs.isEmpty())
-	lhs = simpleSubindexExpression(lhs,s);
+      if (!lhs.isEmpty()) {
+	try {
+	  ArrayVector n(subsrefSingle(lhs,s));
+	  if (n.size() > 0)
+	    lhs = n[0];
+	  else
+	    lhs = Array::emptyConstructor();
+	} catch (Exception& e) {
+	    lhs = Array::emptyConstructor();	  
+	}
+      }
       s = s->right;
     }
     // We are down to the last subindexing expression...
@@ -1878,8 +1820,14 @@ namespace FreeMat {
       return Array::int32RangeConstructor(1,1,dim.getDimensionLength(index),true);
   }
   
+  Array WalkTree::assignExpression(ASTPtr t, Array &value) {
+    ArrayVector tmp;
+    tmp.push_back(value);
+    return assignExpression(t,tmp);
+  }
+
   // If we got this far, we must have at least one subindex
-  Array WalkTree::assignExpression(ASTPtr t, ArrayVector value) {
+  Array WalkTree::assignExpression(ASTPtr t, ArrayVector &value) {
     int ctxt = t->context();
     SetContext(ctxt);
     if (t->down == NULL) {
@@ -2570,7 +2518,7 @@ namespace FreeMat {
 	if (p->down->down == NULL && p->down->type == id_node) {
 	  context->insertVariable(p->down->text,m[i]);
 	} else {
-	  Array c(assignExpression(p->down,singleArrayVector(m[i])));
+	  Array c(assignExpression(p->down,m[i]));
 	  context->insertVariable(p->down->text,c);
 	}
       }
@@ -3386,7 +3334,7 @@ namespace FreeMat {
   //  In the first case, there is no "mother" object, and in the second case there is.  So the
   //  context dependent symbols 'end' and ':' make a difference here.  
   
-  ArrayVector WalkTree::subsrefParen(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefParen(Array &r, ASTPtr t) {
     ArrayVector m = varExpressionList(t->down,r);
     SetContext(t->context());
     if (m.size() == 0) 
@@ -3397,7 +3345,7 @@ namespace FreeMat {
       return singleArrayVector(r.getNDimSubset(m));
   }
   
-  ArrayVector WalkTree::subsrefBrace(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefBrace(Array &r, ASTPtr t) {
     ArrayVector m = varExpressionList(t->down,r);
     SetContext(t->context());
     if (m.size() == 0) 
@@ -3408,11 +3356,11 @@ namespace FreeMat {
       return(r.getNDimContentsAsList(m));
   }
   
-  ArrayVector WalkTree::subsrefDot(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefDot(Array &r, ASTPtr t) {
     return r.getFieldAsList(t->down->text);
   }
   
-  ArrayVector WalkTree::subsrefDotDyn(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefDotDyn(Array &r, ASTPtr t) {
     char *field;
     try {
       Array fname(expression(t->down));
@@ -3424,21 +3372,20 @@ namespace FreeMat {
     return r.getFieldAsList(field);
   }
 
-  ArrayVector WalkTree::subsrefSingle(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefSingle(Array &r, ASTPtr t) {
     if (t->opNum ==(OP_PARENS))
-      return(subsrefParen(r,t->down));
+      return(subsrefParen(r,t));
     else if (t->opNum ==(OP_BRACES)) 
-      return(subsrefBrace(r,t->down));
+      return(subsrefBrace(r,t));
     else if (t->opNum ==(OP_DOT)) 
-      return(subsrefDot(r,t->down));
+      return(subsrefDot(r,t));
     else if (t->opNum == (OP_DOTDYN)) 
-      return(subsrefDotDyn(r,t->down));
+      return(subsrefDotDyn(r,t));
   }
   
-  ArrayVector WalkTree::subsref(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsref(Array &r, ASTPtr t) {
     ArrayVector rv;
     SetContext(t->context());
-    t = t->down;
     while (t != NULL) {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
@@ -3534,9 +3481,11 @@ namespace FreeMat {
     // Subindex
     while (s->right != NULL) {
       SetContext(ctxt);
-      ArrayVector m = subsrefSingle(data,s);
-      if (m.size() != 1) throw Exception("invalid assignment expression");
-      data = m[0];
+      if (!data.isEmpty()) {
+	ArrayVector m = subsrefSingle(data,s);
+	if (m.size() != 1) throw Exception("invalid assignment expression");
+	data = m[0];
+      }
       stack.push_back(data);
       ref.push_back(s);
       s = s->right;

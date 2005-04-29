@@ -3482,9 +3482,13 @@ namespace FreeMat {
     while (s->right != NULL) {
       SetContext(ctxt);
       if (!data.isEmpty()) {
-	ArrayVector m = subsrefSingle(data,s);
-	if (m.size() != 1) throw Exception("invalid assignment expression");
-	data = m[0];
+	try {
+	  ArrayVector m = subsrefSingle(data,s);
+	  if (m.size() != 1) throw Exception("invalid assignment expression");
+	  data = m[0];
+	} catch (Exception &e) {
+	  data = Array::emptyConstructor();
+	}
       }
       stack.push_back(data);
       ref.push_back(s);

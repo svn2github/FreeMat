@@ -613,11 +613,11 @@ namespace FreeMat {
     ArrayVector subsrefDotDyn(Array &r, ASTPtr t);
     ArrayVector subsrefSingle(Array &r, ASTPtr t);
     ArrayVector subsref(Array &r, ASTPtr t);
-    void subsassignParen(Array &r, ASTPtr t, ArrayVector& value);
-    void subsassignBrace(Array &r, ASTPtr t, ArrayVector& value);
-    void subsassignDot(Array &r, ASTPtr t, ArrayVector& value);
-    void subsassignDotDyn(Array &r, ASTPtr t, ArrayVector& value);
-    void subassignSingle(Array &r, ASTPtr t, ArrayVector& value);
+    void subsassignParen(Array *r, ASTPtr t, ArrayVector& value);
+    void subsassignBrace(Array *r, ASTPtr t, ArrayVector& value);
+    void subsassignDot(Array *r, ASTPtr t, ArrayVector& value);
+    void subsassignDotDyn(Array *r, ASTPtr t, ArrayVector& value);
+    void subassignSingle(Array *r, ASTPtr t, ArrayVector& value);
     void subassign(Array *r, ASTPtr t, ArrayVector& value);
     int countSubExpressions(ASTPtr t);
   };

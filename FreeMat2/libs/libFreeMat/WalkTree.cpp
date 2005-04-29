@@ -1840,8 +1840,12 @@ namespace FreeMat {
       return retval;
     }
     // Get the variable in question
-    Array *ptr;
-    ptr = context->lookupVariable(t->text);
+    Array *ptr = context->lookupVariable(t->text);
+    Array ltmp;
+    if (!ptr) {
+      ltmp = Array::emptyConstructor();
+      ptr = &ltmp;
+    }
     // Make the assignment
     subassign(ptr,t,value);
     return *ptr;
@@ -3408,35 +3412,35 @@ namespace FreeMat {
     return rv;
   }
 
-  void WalkTree::subsassignParen(Array &r, ASTPtr t, ArrayVector& value) {
-    ArrayVector m = varExpressionList(t->down,r);
+  void WalkTree::subsassignParen(Array *r, ASTPtr t, ArrayVector& value) {
+    ArrayVector m = varExpressionList(t->down,*r);
     SetContext(t->context());
     if (m.size() == 0)
       throw Exception("Expected indexing expression!");
     else if (m.size() == 1) 
-      r.setVectorSubset(m[0],value[0]);
+      r->setVectorSubset(m[0],value[0]);
     else 
-      r.setNDimSubset(m,value[0]);
+      r->setNDimSubset(m,value[0]);
     return;
   }
 
-  void WalkTree::subsassignBrace(Array &r, ASTPtr t, ArrayVector& value) {
-    ArrayVector m = varExpressionList(t->down,r);
+  void WalkTree::subsassignBrace(Array *r, ASTPtr t, ArrayVector& value) {
+    ArrayVector m = varExpressionList(t->down,*r);
     SetContext(t->context());
     if (m.size() == 0)
       throw Exception("Expected indexing expression!");
     else if (m.size() == 1) 
-      r.setVectorContentsAsList(m[0],value);
+      r->setVectorContentsAsList(m[0],value);
     else
-      r.setNDimContentsAsList(m,value);
+      r->setNDimContentsAsList(m,value);
     return;
   }
   
-  void WalkTree::subsassignDot(Array &r, ASTPtr t, ArrayVector& value) {
-    r.setFieldAsList(t->down->text,value);
+  void WalkTree::subsassignDot(Array *r, ASTPtr t, ArrayVector& value) {
+    r->setFieldAsList(t->down->text,value);
   }
   
-  void WalkTree::subsassignDotDyn(Array &r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subsassignDotDyn(Array *r, ASTPtr t, ArrayVector& value) {
     char *field;
     try {
       Array fname(expression(t->down));
@@ -3445,11 +3449,11 @@ namespace FreeMat {
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
     }
-    r.setFieldAsList(field,value);
+    r->setFieldAsList(field,value);
   }
   
   // Does foo(exprlist) = val, foo{exprlist} = vals, foo.field = vals, or foo.(fieldname) = vals
-  void WalkTree::subassignSingle(Array &r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subassignSingle(Array *r, ASTPtr t, ArrayVector& value) {
     ArrayVector m;
     SetContext(t->context());
     if (t->opNum ==(OP_PARENS)) 
@@ -3483,8 +3487,11 @@ namespace FreeMat {
     ArrayVector stack;
     ASTPtrVector ref;
     ASTPtr s = t->down;
-    Array data;
-    data = r;
+    if (s->right == NULL) {
+      subassignSingle(r,s,value);
+      return;
+    }
+    Array data(*r);
     // Subindex
     while (s->right != NULL) {
       SetContext(ctxt);
@@ -3503,7 +3510,7 @@ namespace FreeMat {
     }
     // Do the assignment on the last temporary
     Array tmp(data);
-    subassignSingle(tmp,s,value);
+    subassignSingle(&tmp,s,value);
     SetContext(ctxt);
     Array rhs(tmp);
     if (stack.size() > 0) {
@@ -3514,7 +3521,7 @@ namespace FreeMat {
 	tmp = stack.back();
 	// Make the assignment
 	ArrayVector m(singleArrayVector(rhs));
-	subassignSingle(tmp,ref.back(),m);
+	subassignSingle(&tmp,ref.back(),m);
 	SetContext(ctxt);
 	// Assign this temporary to be the RHS of the next temporary
 	rhs = tmp;
@@ -3529,7 +3536,7 @@ namespace FreeMat {
       subassignSingle(r,ref.back(),m);
       SetContext(ctxt);
     } else
-      r = tmp;
+      *r = tmp;
   }
   
   int WalkTree::countSubExpressions(ASTPtr t) {

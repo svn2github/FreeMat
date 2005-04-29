@@ -2492,6 +2492,14 @@ break;
     if (isSparse())
       throw Exception("getVectorContentsAsList not supported for sparse arrays.");
     if (index.isEmpty()) return ArrayVector();
+    if (isColonOperator(index)) {
+      int cnt = getLength();
+      // Get a pointer to our data
+      const Array* qp = (const Array*) dp->getData();
+      for (int i=0;i<cnt;i++) 
+	m.push_back(qp[i]);
+      return m;
+    }
     index.toOrdinalType();
     // Get the maximum index
     indexType max_index = index.getMaxAsIndex();

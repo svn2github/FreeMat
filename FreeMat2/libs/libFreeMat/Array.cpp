@@ -44,6 +44,12 @@ namespace FreeMat {
   typedef std::set<uint32, std::less<uint32> > intSet;
   intSet addresses;
 
+  bool isColonOperator(Array& a) {
+    return ((a.getDataClass() == FM_STRING) && 
+	    (a.getLength() == 1) &&
+	    (((const char*) a.getDataPointer())[0] == ':'));
+  }
+
   ArrayVector singleArrayVector(Array a) {
     ArrayVector retval;
     retval.push_back(a);
@@ -2269,6 +2275,13 @@ break;
       }
       if (isEmpty()) 
 	throw Exception("Cannot index into empty variable.");
+      // Check for a(:), which is mapped to a reshape operation
+      if (isColonOperator(index)) {
+	Array ret(*this);
+	Dimensions retDims(getLength(),1);
+	ret.reshape(retDims);
+	return ret;
+      }
       index.toOrdinalType();
       Dimensions retdims(index.dp->dimensions);
       retdims.simplify();
@@ -2397,79 +2410,6 @@ break;
       Free(qp);
       throw e;
     }
-  }
-
-  /**
-   * Return the contents of a cell array - must be a scalar...
-   */
-  Array Array::getVectorContents(Array& indexing)  {
-    if (dp->dataClass != FM_CELL_ARRAY)
-      throw Exception("Attempt to apply contents-indexing to non-cell array object.");
-    if (indexing.isEmpty())
-      throw Exception("Empty contents indexing is not defined.");
-    if (isSparse())
-      throw Exception("getVectorContents not supported for sparse arrays.");
-    indexing.toOrdinalType();
-    //
-    // The output is the same size as the _index_, not the
-    // source variable (neat, huh?).  But it inherits the
-    // type of the source variable.
-      //
-      // The index HAS to be a scalar for contents-based addressing
-    if (indexing.getLength() != 1) 
-      throw Exception("Content indexing must return a single value.");
-    constIndexPtr index_p = (constIndexPtr) indexing.dp->getData();
-    indexType ndx = *index_p - 1;
-    int bound = getLength();
-    if (ndx < 0 || ndx >= bound)
-      throw Exception("Index exceeds cell array dimensions");
-    const Array* srcPart = (const Array*) dp->getData();
-    // Make a source of whatever is in that index, and return it.
-    return srcPart[ndx];
-  }
-
-  /**
-   * Return the contents of a cell array - indexed via a multi-dim index.
-   */
-  Array Array::getNDimContents(ArrayVector& indexing)  {
-    if (dp->dataClass != FM_CELL_ARRAY)
-      throw Exception("Attempt to apply contents-indexing to non-cell array object.");
-    if (isSparse())
-      throw Exception("getNDimContents not supported for sparse arrays.");
-    int L = indexing.size();
-    Dimensions outPos(L);
-    
-    // Convert each of the indexing variables into an ordinal type.
-    // We don't catch any exceptions - let them propogate up the
-    // call chain.
-    // The index HAS to be a scalar for contents-based addressing.
-    for (int i=0;i<L;i++) {
-      indexing[i].toOrdinalType();
-      if (indexing[i].getLength() != 1)
-	throw Exception("Content indexing must return a single value.");
-      constIndexPtr sp = (constIndexPtr) indexing[i].dp->getData();
-      outPos[i] = *sp - 1;
-    }
-    int j;
-    j = dp->dimensions.mapPoint(outPos);
-    const Array* qp = (const Array*) dp->getData();
-    return qp[j];
-  }
-
-  Array Array::getField(std::string fieldName)  {
-    // First make sure that we are a scalar value.
-    if (!isScalar())
-      throw Exception("Cannot dereference a field of a multi-element structure array.");
-    if (isSparse())
-      throw Exception("getField not supported for sparse arrays.");
-    // Then, find the field index.
-    int ndx = getFieldIndex(fieldName);
-    if (ndx < 0)
-      throw Exception(std::string("Reference to non-existent field ") + 
-		      fieldName);
-    // Cast real part into a data pointer, and return a copy of what the caller asked for!
-    const Array* qp = (const Array*) dp->getData();
-    return qp[ndx];
   }
 
   Array Array::getDiagonal(int diagonalOrder)  {

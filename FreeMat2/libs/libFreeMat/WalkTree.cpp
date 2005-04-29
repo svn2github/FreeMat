@@ -1817,11 +1817,12 @@ namespace FreeMat {
 
   Array WalkTree::AllColonReference(Array v, int index, int count) {
     if (v.isUserClass()) return Array::emptyConstructor();
-    Dimensions dim(v.getDimensions());
-    if (count == 1)
-      return Array::int32RangeConstructor(1,1,dim.getElementCount(),true);
-    else
-      return Array::int32RangeConstructor(1,1,dim.getDimensionLength(index),true);
+    return Array::stringConstructor(":");
+//     Dimensions dim(v.getDimensions());
+//     if (count == 1)
+//       return Array::int32RangeConstructor(1,1,dim.getElementCount(),true);
+//     else
+//       return Array::int32RangeConstructor(1,1,dim.getDimensionLength(index),true);
   }
   
   Array WalkTree::assignExpression(ASTPtr t, Array &value) {

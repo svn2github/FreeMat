@@ -548,36 +548,6 @@ namespace FreeMat {
      */
     Array getNDimSubset(ArrayVector& index);
     /**
-     * Get a subset of an Array using contents-addressing.  This is for vector-
-     * indexing, meaning that the argument is assumed to refer to the elements in
-     * their order as a vector.   So, x{10} is equivalent to x(:){10}, even if, 
-     * say, x is 3 x 4.  This function is only used in assignment calls of the
-     * form e.g., a{10} = 5.  The vector argument must therefor be a scalar.
-     * Throws an exception if
-     *  - we are not a cell array
-     *  - the argument is empty
-     *  - the argument defines more than a single value
-     *  - the index exceeds the bounds of the array.
-     */
-    Array getVectorContents(Array& index);
-    /**
-     * Get a subset of an Array using contents-addressing.  This is for NDim-
-     * indexing, meaning that the argument is assumed to refer to the elements in
-     * their N-Dimensional: meaning that x{10} is really x{10,1}.  Like 
-     * getVectorContents, this function is meant for assignments only.
-     * Throws an exception if
-     *  - we are not a cell array
-     *  - the indices do not define a single value
-     */  
-    Array getNDimContents(ArrayVector& index);
-    /**
-     * Get the contents of a field from its field name.  Again, like getVectorContents
-     * and getNDimContents, this function is meant for assignments only, and the
-     * argument must be a scalar structure.
-     * Throws an exection if we are a vector, or if the supplied field do not exist.
-     */
-    Array getField(std::string fieldName);
-    /**
      * Get the diagonal elements of an array.  Only applicable to 2-dimensional arrays.
      * The diagonal part of a rectangular matrix
      * is a vector of length K.  For an M x N matrix, the L order diagonal has a length

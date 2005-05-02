@@ -2335,6 +2335,51 @@ break;
   }
 
   /**
+   * Given a vector of indexing arrays, convert them into
+   * index pointers.  If a colon is encountered, it is 
+   * preserved (the first one -- the remaining colon expressions
+   * are expanded out into vectors).
+   */
+  constIndexPtr* ProcessNDimIndexes(Dimensions dims,
+				    ArrayVector& index,
+				    bool& anyEmpty,
+				    int& colonIndex) {
+    int L = index.size();
+    constIndexPtr* outndx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
+    bool colonFound = false;
+    anyEmpty = false;
+    colonIndex = -1;
+    for (int i=0;i<index.size();i++) {
+      bool isColon = isColonOperator(index[i]);
+      if (!colonFound && isColon) {
+	colonFound = true;
+	colonIndex = i;
+	outndx[i] = NULL;
+      } else if (isColon) {
+	indexType* buildcolon = (indexType*) Malloc(sizeof(indexType)*dims[i]);
+	for (int j=1;j<=dims[i];j++)
+	  buildcolon[j-1] = (indexType) j;
+	outndx[i] = buildcolon;
+      } else if (index[i].isEmpty()) {
+	anyEmpty = true;
+	outndx[i] = NULL;
+      } else {
+	Array tmp(index[i]);
+	tmp.toOrdinalType();
+	outndx[i] = (constIndexPtr) tmp.getDataPointer();
+      }
+    }
+    return outndx;
+  }
+
+  
+  void getNDimSubsetNumeric(const char *sp, char* destp, int elsize,
+			    int outDims[maxDims], 
+			    int srcDims[maxDims],
+			    constIndexPtr* ndx) {
+  }
+
+  /**
    * Take the current variable, and return a new array consisting of
    * the elements in source indexed by the index argument.  Indexing
    * is done using ndimensional indices.
@@ -2343,25 +2388,23 @@ break;
     constIndexPtr* indx = NULL;  
     void *qp = NULL;
     int i;
+    bool anyEmpty;
+    int colonIndex;
 
     if (isEmpty())
       throw Exception("Cannot index into empty variable.");
     try {
       int L = index.size();
-      // Convert the indexing variables into an ordinal type.
-      // We don't catch any exceptions - let them propogate up the
-      // call chain.
-      for (i=0;i<L;i++) {
-	if (index[i].isEmpty()) return Array::emptyConstructor();
-	index[i].toOrdinalType();
-      }
-      // Set up data pointers
-      indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
+      indx = ProcessNDimIndexes(dp->dimensions,
+				index, anyEmpty, colonIndex);
+      if (anyEmpty) return Array::emptyConstructor();
       // Calculate the size of the output.
       Dimensions outDims(L);
       for (i=0;i<L;i++) {
-	outDims[i] = (index[i].getLength());
-	indx[i] = (constIndexPtr) index[i].dp->getData();
+	if (i == colonIndex)
+	  outDims[i] = dp->dimensions[i];
+	else
+	  outDims[i] = (index[i].getLength());
       }
       if (isSparse()) {
 	if (L > 2)
@@ -2798,61 +2841,6 @@ break;
     vectorResize(ndx+1);
     Array *qp = (Array*) getReadWriteDataPointer();
     qp[ndx] = data;
-    dp->dimensions.simplify();
-  }
-
-  /**
-   * This is the multidimensional cell-replacement function.
-   * This is for content-based indexing (curly brackets).
-   */
-  void Array::setNDimContents(ArrayVector& index, Array& data) {
-    promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
-    if (isSparse())
-      throw Exception("setNDimContents not supported for sparse arrays.");
-    int L = index.size();
-    Dimensions outPos(L);
-    int i;
-    for (i=0;i<L;i++) {
-      index[i].toOrdinalType();
-      if (!index[i].isScalar()) 
-	throw Exception("In expression A{I1,I2,...,IN} = B, (I1,...,IN) must reference a single element of cell-array A.");
-      constIndexPtr sp = (constIndexPtr) index[i].dp->getData();
-      outPos[i] = *sp;
-    }
-    resize(outPos);
-    for (i=0;i<L;i++)
-      outPos[i] = outPos[i] - 1;
-    int j;
-    j = dp->dimensions.mapPoint(outPos);
-    Array *qp = (Array*) getReadWriteDataPointer();
-    qp[j] = data;
-    dp->dimensions.simplify();
-  }
-
-  /**
-   * Set the contents of a field in a structure.
-   */
-  void Array::setField(std::string fieldName, Array& data)  {
-    if (isEmpty()) {
-      stringVector newNames(dp->fieldNames);
-      newNames.push_back(fieldName);
-      promoteType(FM_STRUCT_ARRAY,newNames);
-      Dimensions a;
-      a[0] = 1;
-      a[1] = 1;
-      resize(a);
-    }
-    if (isSparse())
-      throw Exception("setField not supported for sparse arrays.");
-    if (dp->dataClass != FM_STRUCT_ARRAY)
-      throw Exception("Cannot apply A.field_name = B to non struct-array object A.");
-    if (!isScalar())
-      throw Exception("Cannot apply A.field_name = B to multi-element structure array A.");
-    int field_ndx = getFieldIndex(fieldName);
-    if (field_ndx == -1) 
-      field_ndx = insertFieldName(fieldName);
-    Array *sp = (Array*) getReadWriteDataPointer();
-    sp[field_ndx] = data;
     dp->dimensions.simplify();
   }
 

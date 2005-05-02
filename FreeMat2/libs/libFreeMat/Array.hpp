@@ -602,19 +602,6 @@ namespace FreeMat {
      */
     void setVectorContents(Array& index, Array& data);
     /**
-     * Set a subset of an Array.   This if for n-Dimensional-indexing, meaning
-     * that x{10} is really x{10,1}.
-     * Throws an exception if the index is not a scalar
-     */
-    void setNDimContents(ArrayVector& index, Array& data);
-    /**
-     * Replace the contents of a field with the supplied array.  Only valid for
-     * scalar structures.
-     * Throws an exception if we are not a structure array or we are a multi-element
-     * structure-array.
-     */
-    void setField(std::string fieldName, Array& data);
-    /**
      * Set a subset of an Array using contents-indexing, meaning that the
      * argument is assumed to refer to the elements in their order as a vector.
      * So, x{10} is equivalent to x(:){10}, even if, say, x is 3 x 4. 

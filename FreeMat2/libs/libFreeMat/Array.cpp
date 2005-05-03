@@ -33,6 +33,7 @@
 #endif
 
 #include "FunctionDef.hpp"
+#include "NumericArray.hpp"
 
 namespace FreeMat {
 
@@ -2364,20 +2365,14 @@ break;
 	anyEmpty = true;
 	outndx[i] = NULL;
       } else {
-	Array tmp(index[i]);
-	tmp.toOrdinalType();
-	outndx[i] = (constIndexPtr) tmp.getDataPointer();
+	index[i].toOrdinalType();
+	outndx[i] = (constIndexPtr) index[i].getDataPointer();
       }
     }
     return outndx;
   }
 
   
-  void getNDimSubsetNumeric(const char *sp, char* destp, int elsize,
-			    int outDims[maxDims], 
-			    int srcDims[maxDims],
-			    constIndexPtr* ndx) {
-  }
 
   /**
    * Take the current variable, and return a new array consisting of
@@ -2431,6 +2426,35 @@ break;
 		       true);
       }
       qp = allocateArray(dp->dataClass,outDims.getElementCount(),dp->fieldNames);
+      if (dp->dataClass == FM_FLOAT) {
+	int outDimsInt[maxDims];
+	int srcDimsInt[maxDims];
+	for (int i=0;i<L;i++) {
+	  outDimsInt[i] = outDims[i];
+	  srcDimsInt[i] = dp->dimensions[i];
+	}
+	if (colonIndex < 0)
+	  getNDimSubsetNumericNoColon<float>((const float*) getDataPointer(),
+					     (float*) qp,outDimsInt,srcDimsInt,
+					     indx, L);
+	else if (colonIndex == 0)
+	  getNDimSubsetNumericFirstColon<float>((const float*) getDataPointer(),
+						(float*) qp,outDimsInt,srcDimsInt,
+						indx, L);
+ 	else if (outDims.getElementCount() > dp->dimensions[colonIndex])
+ 	  getNDimSubsetNumericAnyColon<float>((const float*) getDataPointer(),
+ 					      (float*) qp,outDimsInt,srcDimsInt,
+ 					      indx, L,colonIndex);
+	else
+	  getNDimSubsetSlice<float>((const float*) getDataPointer(),
+				    (float*) qp,outDimsInt,srcDimsInt,
+				    indx,L,colonIndex);
+	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
+		     dp->className);
+      }
+      // A = randn(3000);
+      // svn = 1:3000; 
+      // tic; f = A(svn,250:260); toc
       Dimensions argPointer(L);
       Dimensions currentIndex(L);
       int srcindex;
@@ -2440,7 +2464,7 @@ break;
 	for (int i=0;i<L;i++)
 	  currentIndex[i] = (int) indx[i][argPointer[i]] - 1;
 	srcindex = dp->dimensions.mapPoint(currentIndex);
-	copyElements(srcindex,qp,dstindex,1);
+	copyElements(srcindex,qp,dstindex,1); // 1.89 seconds w/out, 2.678 seconds
 	dstindex++;
 	argPointer.incrementModulo(outDims,0);
       }

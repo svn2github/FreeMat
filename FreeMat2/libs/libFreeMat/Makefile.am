@@ -70,6 +70,8 @@ SymbolTable.hpp \
 Sparse.cpp \
 Sparse.hpp \
 Class.cpp \
-Class.hpp
+Class.hpp \
+NumericArray.cpp \
+NumericArray.hpp
 
 AUTOMAKE_OPTIONS 	= foreign

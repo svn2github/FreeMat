@@ -2445,6 +2445,11 @@ break;
 						  (double*) qp,outDimsInt,srcDimsInt,
 						  indx, L, 2);
 	break;
+      case FM_LOGICAL: 
+	getNDimSubsetNumericDispatchReal<logical>(colonIndex,(const logical*) getDataPointer(),
+						(logical*) qp,outDimsInt,srcDimsInt,
+						indx, L);
+	break;
       case FM_FLOAT: 
 	getNDimSubsetNumericDispatchReal<float>(colonIndex,(const float*) getDataPointer(),
 						(float*) qp,outDimsInt,srcDimsInt,

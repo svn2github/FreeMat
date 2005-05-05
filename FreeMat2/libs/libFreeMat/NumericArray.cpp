@@ -478,12 +478,12 @@ namespace FreeMat {
 							int outDimsInt[maxDims], 
 							int srcDimsInt[maxDims], 
 							constIndexPtr* indx, int L);
-  template void getNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
-							const logical* srcptr, 
-							logical* destptr, 
-							int outDimsInt[maxDims], 
-							int srcDimsInt[maxDims], 
-							constIndexPtr* indx, int L);
+//  template void getNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
+//							const logical* srcptr, 
+//							logical* destptr, 
+//							int outDimsInt[maxDims], 
+//							int srcDimsInt[maxDims], 
+//							constIndexPtr* indx, int L);
   template void getNDimSubsetNumericDispatchReal<double>(int colonIndex, 
 							const double* srcptr, 
 							double* destptr, 

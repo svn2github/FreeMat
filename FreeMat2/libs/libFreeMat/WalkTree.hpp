@@ -314,7 +314,7 @@ namespace FreeMat {
     int countLeftHandSides(ASTPtr t);
     
     Array assignExpression(ASTPtr t, Array &value);
-    Array assignExpression(ASTPtr t, ArrayVector &value);
+    Array assignExpression(ASTPtr t, ArrayVector &value, bool multipleLHS = true);
 
     /**
      * Evaluate a function and return the results of the function as
@@ -607,12 +607,12 @@ namespace FreeMat {
      * Retrieve data about the current location of the instruction pointer
      */
     std::string getMFileName();
-    ArrayVector subsrefParen(Array &r, ASTPtr t);
-    ArrayVector subsrefBrace(Array &r, ASTPtr t);
-    ArrayVector subsrefDot(Array &r, ASTPtr t);
-    ArrayVector subsrefDotDyn(Array &r, ASTPtr t);
-    ArrayVector subsrefSingle(Array &r, ASTPtr t);
-    ArrayVector subsref(Array &r, ASTPtr t);
+    ArrayVector subsrefParen(Array r, ASTPtr t);
+    ArrayVector subsrefBrace(Array r, ASTPtr t);
+    ArrayVector subsrefDot(Array r, ASTPtr t);
+    ArrayVector subsrefDotDyn(Array r, ASTPtr t);
+    ArrayVector subsrefSingle(Array r, ASTPtr t);
+    ArrayVector subsref(Array r, ASTPtr t);
     void subsassignParen(Array *r, ASTPtr t, ArrayVector& value);
     void subsassignBrace(Array *r, ASTPtr t, ArrayVector& value);
     void subsassignDot(Array *r, ASTPtr t, ArrayVector& value);

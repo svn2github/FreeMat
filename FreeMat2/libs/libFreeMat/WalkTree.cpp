@@ -502,6 +502,8 @@ namespace FreeMat {
 	  if (m.empty()) {
 	    retval = Array::emptyConstructor();
 	  } else {
+	    if (m.size() > 1) 
+	      io->warningMessage("discarding one or more outputs from an expression");
 	    retval = m[0];
 	  }
 	}
@@ -1829,14 +1831,16 @@ namespace FreeMat {
   Array WalkTree::assignExpression(ASTPtr t, Array &value) {
     ArrayVector tmp;
     tmp.push_back(value);
-    return assignExpression(t,tmp);
+    return assignExpression(t,tmp,false);
   }
 
   // If we got this far, we must have at least one subindex
-  Array WalkTree::assignExpression(ASTPtr t, ArrayVector &value) {
+  Array WalkTree::assignExpression(ASTPtr t, ArrayVector &value, bool multipleLHS) {
     int ctxt = t->context();
     SetContext(ctxt);
     if (t->down == NULL) {
+      if ((value.size() > 1) && !multipleLHS)
+	throw Exception("to many values in the rhs to match the left hand side assignment");
       Array retval(value[0]);
       value.erase(value.begin());
       return retval;
@@ -3347,7 +3351,7 @@ namespace FreeMat {
   //  In the first case, there is no "mother" object, and in the second case there is.  So the
   //  context dependent symbols 'end' and ':' make a difference here.  
   
-  ArrayVector WalkTree::subsrefParen(Array &r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefParen(Array r, ASTPtr t) {
     ArrayVector m = varExpressionList(t->down,r);
     SetContext(t->context());
     if (m.size() == 0) 
@@ -3358,7 +3362,7 @@ namespace FreeMat {
       return singleArrayVector(r.getNDimSubset(m));
   }
   
-  ArrayVector WalkTree::subsrefBrace(Array &r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefBrace(Array r, ASTPtr t) {
     ArrayVector m = varExpressionList(t->down,r);
     SetContext(t->context());
     if (m.size() == 0) 
@@ -3369,11 +3373,11 @@ namespace FreeMat {
       return(r.getNDimContentsAsList(m));
   }
   
-  ArrayVector WalkTree::subsrefDot(Array &r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefDot(Array r, ASTPtr t) {
     return r.getFieldAsList(t->down->text);
   }
   
-  ArrayVector WalkTree::subsrefDotDyn(Array &r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefDotDyn(Array r, ASTPtr t) {
     char *field;
     try {
       Array fname(expression(t->down));
@@ -3385,7 +3389,7 @@ namespace FreeMat {
     return r.getFieldAsList(field);
   }
 
-  ArrayVector WalkTree::subsrefSingle(Array &r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefSingle(Array r, ASTPtr t) {
     if (t->opNum ==(OP_PARENS))
       return(subsrefParen(r,t));
     else if (t->opNum ==(OP_BRACES)) 
@@ -3396,7 +3400,7 @@ namespace FreeMat {
       return(subsrefDotDyn(r,t));
   }
   
-  ArrayVector WalkTree::subsref(Array &r, ASTPtr t) {
+  ArrayVector WalkTree::subsref(Array r, ASTPtr t) {
     ArrayVector rv;
     SetContext(t->context());
     while (t != NULL) {

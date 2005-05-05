@@ -92,14 +92,6 @@ namespace FreeMat {
      * $$1,\ldots,\mathrm{maxD}$.
      */
     bool* getBinaryMap(uint32);
-    /** Compute the maximum index.
-     * This computes the maximum value of the array as an index (meaning
-     * that it must be greater than 0.  Because this is an internal function, it
-     * assumes that the variable has already been passed through toOrdinalType()
-     * successfully.  Throws an exception if the maximum value is zero or
-     * negative.
-     */
-    uint32 getMaxAsIndex();
     /** Get the internal index corresponding to a given field name.
      * Get the internal index corresponding to a given field name.  This
      * is the index into the fieldname array of the argument.  If the
@@ -115,6 +107,14 @@ namespace FreeMat {
      */
     void deleteContents(void);
   public:
+    /** Compute the maximum index.
+     * This computes the maximum value of the array as an index (meaning
+     * that it must be greater than 0.  Because this is an internal function, it
+     * assumes that the variable has already been passed through toOrdinalType()
+     * successfully.  Throws an exception if the maximum value is zero or
+     * negative.
+     */
+    uint32 getMaxAsIndex();
     /**
      * Allocate an array.
      */

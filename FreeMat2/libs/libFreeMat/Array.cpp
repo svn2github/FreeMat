@@ -2344,7 +2344,9 @@ break;
   constIndexPtr* ProcessNDimIndexes(Dimensions dims,
 				    ArrayVector& index,
 				    bool& anyEmpty,
-				    int& colonIndex) {
+				    int& colonIndex,
+				    Dimensions& outDims,
+				    bool argCheck) {
     int L = index.size();
     constIndexPtr* outndx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
     bool colonFound = false;
@@ -2356,23 +2358,27 @@ break;
 	colonFound = true;
 	colonIndex = i;
 	outndx[i] = NULL;
+	outDims[i] = dims[i];
       } else if (isColon) {
 	indexType* buildcolon = (indexType*) Malloc(sizeof(indexType)*dims[i]);
 	for (int j=1;j<=dims[i];j++)
 	  buildcolon[j-1] = (indexType) j;
 	outndx[i] = buildcolon;
+	outDims[i] = dims[i];
       } else if (index[i].isEmpty()) {
 	anyEmpty = true;
 	outndx[i] = NULL;
+	outDims[i] = 0;
       } else {
 	index[i].toOrdinalType();
+	if (argCheck && (index[i].getMaxAsIndex() > dims[i]))
+	  throw Exception("index exceeds array bounds");
 	outndx[i] = (constIndexPtr) index[i].getDataPointer();
+	outDims[i] = index[i].getLength();
       }
     }
     return outndx;
   }
-
-  
 
   /**
    * Take the current variable, and return a new array consisting of
@@ -2385,22 +2391,17 @@ break;
     int i;
     bool anyEmpty;
     int colonIndex;
+    Dimensions myDims(dp->dimensions);
 
     if (isEmpty())
       throw Exception("Cannot index into empty variable.");
     try {
       int L = index.size();
-      indx = ProcessNDimIndexes(dp->dimensions,
-				index, anyEmpty, colonIndex);
-      if (anyEmpty) return Array::emptyConstructor();
-      // Calculate the size of the output.
       Dimensions outDims(L);
-      for (i=0;i<L;i++) {
-	if (i == colonIndex)
-	  outDims[i] = dp->dimensions[i];
-	else
-	  outDims[i] = (index[i].getLength());
-      }
+      indx = ProcessNDimIndexes(myDims,
+				index, anyEmpty, 
+				colonIndex, outDims, true);
+      if (anyEmpty) return Array::emptyConstructor();
       if (isSparse()) {
 	if (L > 2)
 	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays");
@@ -2426,47 +2427,85 @@ break;
 		       true);
       }
       qp = allocateArray(dp->dataClass,outDims.getElementCount(),dp->fieldNames);
-      if (dp->dataClass == FM_FLOAT) {
-	int outDimsInt[maxDims];
-	int srcDimsInt[maxDims];
-	for (int i=0;i<L;i++) {
-	  outDimsInt[i] = outDims[i];
-	  srcDimsInt[i] = dp->dimensions[i];
-	}
-	if (colonIndex < 0)
-	  getNDimSubsetNumericNoColon<float>((const float*) getDataPointer(),
-					     (float*) qp,outDimsInt,srcDimsInt,
-					     indx, L);
-	else if (colonIndex == 0)
-	  getNDimSubsetNumericFirstColon<float>((const float*) getDataPointer(),
+      int outDimsInt[maxDims];
+      int srcDimsInt[maxDims];
+      for (int i=0;i<L;i++) {
+	outDimsInt[i] = outDims[i];
+	srcDimsInt[i] = myDims[i];
+      }
+      outDims.simplify();
+      switch (dp->dataClass) {
+      case FM_COMPLEX: 
+	getNDimSubsetNumericDispatchBurst<float>(colonIndex,(const float*) getDataPointer(),
+						 (float*) qp,outDimsInt,srcDimsInt,
+						 indx, L, 2);
+	break;
+      case FM_DCOMPLEX: 
+	getNDimSubsetNumericDispatchBurst<double>(colonIndex,(const double*) getDataPointer(),
+						  (double*) qp,outDimsInt,srcDimsInt,
+						  indx, L, 2);
+	break;
+      case FM_FLOAT: 
+	getNDimSubsetNumericDispatchReal<float>(colonIndex,(const float*) getDataPointer(),
 						(float*) qp,outDimsInt,srcDimsInt,
 						indx, L);
- 	else if (outDims.getElementCount() > dp->dimensions[colonIndex])
- 	  getNDimSubsetNumericAnyColon<float>((const float*) getDataPointer(),
- 					      (float*) qp,outDimsInt,srcDimsInt,
- 					      indx, L,colonIndex);
-	else
-	  getNDimSubsetSlice<float>((const float*) getDataPointer(),
-				    (float*) qp,outDimsInt,srcDimsInt,
-				    indx,L,colonIndex);
-	return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
-		     dp->className);
-      }
-      // A = randn(3000);
-      // svn = 1:3000; 
-      // tic; f = A(svn,250:260); toc
-      Dimensions argPointer(L);
-      Dimensions currentIndex(L);
-      int srcindex;
-      int dstindex;
-      dstindex = 0;
-      while (argPointer.inside(outDims)) {
-	for (int i=0;i<L;i++)
-	  currentIndex[i] = (int) indx[i][argPointer[i]] - 1;
-	srcindex = dp->dimensions.mapPoint(currentIndex);
-	copyElements(srcindex,qp,dstindex,1); // 1.89 seconds w/out, 2.678 seconds
-	dstindex++;
-	argPointer.incrementModulo(outDims,0);
+	break;
+      case FM_DOUBLE: 
+	getNDimSubsetNumericDispatchReal<double>(colonIndex,(const double*) getDataPointer(),
+						(double*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_INT8: 
+	getNDimSubsetNumericDispatchReal<int8>(colonIndex,(const int8*) getDataPointer(),
+						(int8*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_UINT8: 
+	getNDimSubsetNumericDispatchReal<uint8>(colonIndex,(const uint8*) getDataPointer(),
+						(uint8*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_INT16: 
+	getNDimSubsetNumericDispatchReal<int16>(colonIndex,(const int16*) getDataPointer(),
+						(int16*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_UINT16: 
+	getNDimSubsetNumericDispatchReal<uint16>(colonIndex,(const uint16*) getDataPointer(),
+						(uint16*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_INT32: 
+	getNDimSubsetNumericDispatchReal<int32>(colonIndex,(const int32*) getDataPointer(),
+						(int32*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_UINT32: 
+	getNDimSubsetNumericDispatchReal<uint32>(colonIndex,(const uint32*) getDataPointer(),
+						(uint32*) qp,outDimsInt,srcDimsInt,
+						 indx, L);
+	break;
+      case FM_STRING: 
+	getNDimSubsetNumericDispatchReal<char>(colonIndex,(const char*) getDataPointer(),
+					       (char*) qp,outDimsInt,srcDimsInt,
+					       indx, L);
+	break;
+      case FM_FUNCPTR_ARRAY:
+	getNDimSubsetNumericDispatchReal<FunctionDefPtr>(colonIndex,
+							 (const FunctionDefPtr*) getDataPointer(),
+							 (FunctionDefPtr*) qp,outDimsInt,srcDimsInt,
+							 indx, L);
+	break;
+      case FM_CELL_ARRAY: 
+	getNDimSubsetNumericDispatchReal<Array>(colonIndex,(const Array*) getDataPointer(),
+						(Array*) qp,outDimsInt,srcDimsInt,
+						indx, L);
+	break;
+      case FM_STRUCT_ARRAY: 
+	getNDimSubsetNumericDispatchBurst<Array>(colonIndex,(const Array*) getDataPointer(),
+						 (Array*) qp,outDimsInt,srcDimsInt,
+						 indx, L, dp->fieldNames.size());
+	break;
       }
       Free(indx);
       outDims.simplify();

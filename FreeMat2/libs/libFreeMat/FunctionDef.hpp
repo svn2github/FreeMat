@@ -110,6 +110,8 @@ namespace FreeMat {
     virtual void updateCode() {}
   };
 
+  typedef FunctionDef* FunctionDefPtr;
+
   class MFunctionDef;
 
   /**

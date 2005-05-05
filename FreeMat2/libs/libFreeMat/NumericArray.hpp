@@ -4,29 +4,19 @@
 
 namespace FreeMat {
   template <class T>
-  void getNDimSubsetNumericNoColon(const T *sp, T* destp, 
-				   int outDims[maxDims], 
-				   int srcDims[maxDims],
-				   constIndexPtr* ndx,
-				   int numDims);
+  void getNDimSubsetNumericDispatchBurst(int colonIndex, 
+					 const T* srcptr, 
+					 T* destptr, 
+					 int outDimsInt[maxDims], 
+					 int srcDimsInt[maxDims], 
+					 constIndexPtr* indx, 
+					 int L, int burstLen);
+  
   template <class T>
-  void getNDimSubsetNumericFirstColon(const T *sp, T* destp, 
-				      int outDims[maxDims], 
-				      int srcDims[maxDims],
-				      constIndexPtr* ndx,
-				      int numDims);
-  template <class T>
-  void getNDimSubsetNumericAnyColon(const T *sp, T* destp, 
-				    int outDims[maxDims], 
-				    int srcDims[maxDims],
-				    constIndexPtr* ndx,
-				    int numDims,
-				    int colonIndex);
-  template <class T>
-  void getNDimSubsetSlice(const T *sp, T* destp, 
-			  int outDims[maxDims], 
-			  int srcDims[maxDims],
-			  constIndexPtr* ndx,
-			  int numDims,
-			  int colonIndex);
+  void getNDimSubsetNumericDispatchReal(int colonIndex, 
+					const T* srcptr, 
+					T* destptr, 
+					int outDimsInt[maxDims], 
+					int srcDimsInt[maxDims], 
+					constIndexPtr* indx, int L);
 }

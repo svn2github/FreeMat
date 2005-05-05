@@ -2580,6 +2580,7 @@ break;
       throw Exception("Attempt to apply field-indexing to non structure-array object.");
     if (isSparse())
       throw Exception("getFieldAsList not supported for sparse arrays.");
+    if (isEmpty()) return ArrayVector();
     ArrayVector m;
     const Array *qp = (const Array*) dp->getData();
     int N = getLength();

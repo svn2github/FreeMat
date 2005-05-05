@@ -5311,7 +5311,7 @@ namespace FreeMat {
       A.update(); 
       while (A.more()) {
 	B.set(A.row());
-	B.push((T)(fabs(A.value())));
+	B.push((T)(fabs((double)A.value())));
 	A.advance();
       }
       B.end();

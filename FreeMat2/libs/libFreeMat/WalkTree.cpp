@@ -46,7 +46,8 @@ namespace FreeMat {
 
   std::string WalkTree::getMFileName() {
 #ifdef WIN32
-#error "complete me"
+  return std::string("");
+//#error "complete me"
 #else
     if (ip_funcname[0] == '/') return ip_funcname;
     for (int i=cstack.size()-1;i>=0;i--)

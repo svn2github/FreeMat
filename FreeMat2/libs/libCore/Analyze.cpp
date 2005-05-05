@@ -18,22 +18,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#include "Core.hpp"
-#include "Exception.hpp"
-#include "Array.hpp"
-#include "Malloc.hpp"
-#include "Utils.hpp"
-#include "IEEEFP.hpp"
-#include "File.hpp"
-#include "Serialize.hpp"
-#include "AST.hpp"
-#include <math.h>
-#include "Types.hpp"
-#include <algorithm>
-#include "Sparse.hpp"
-
 #ifdef WIN32
 #include <SYS\TIMEB.H>
+#include <TIME.H>
+#include <windows.h>
 
 double getcurrenttime() {
   struct _timeb currSysTime;
@@ -51,6 +39,22 @@ double getcurrenttime() {
 }
 
 #endif // WIN32
+
+#include "Core.hpp"
+#include "Exception.hpp"
+#include "Array.hpp"
+#include "Malloc.hpp"
+#include "Utils.hpp"
+#include "IEEEFP.hpp"
+#include "File.hpp"
+#include "Serialize.hpp"
+#include "AST.hpp"
+#include <math.h>
+#include "Types.hpp"
+#include <algorithm>
+#include "Sparse.hpp"
+#include "Math.hpp"
+
 
 namespace FreeMat {
 
@@ -1551,7 +1555,7 @@ namespace FreeMat {
       int cnt;
       cnt = input.getLength();
       for (int i = 0;i<cnt;i++)
-	dp[i] = rintf(sp[i]);
+	    dp[i] = rint(sp[i]);
       retval = Array(FM_FLOAT,input.getDimensions(),dp);
       break;
     }

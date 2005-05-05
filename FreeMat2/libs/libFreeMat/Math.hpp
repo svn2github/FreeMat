@@ -177,5 +177,8 @@ namespace FreeMat {
   double power_dd(double a, double b);
   template <class T>
   T complex_abs(T real, T imag);
+#ifdef WIN32
+  double rint(double);
+#endif
 }
 #endif

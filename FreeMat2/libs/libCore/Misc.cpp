@@ -38,6 +38,10 @@
 #include "Sparse.hpp"
 #include "LUDecompose.hpp"
 
+#include <algorithm>
+#undef max
+#undef min
+
 namespace FreeMat {
   //!
   //@Module DISP Display a Variable or Expression
@@ -2554,8 +2558,8 @@ namespace FreeMat {
     int Cm, Cn, Cm_offset, Cn_offset;
     Cm = X.getDimensionLength(0);
     Cn = X.getDimensionLength(1);
-    Cm_offset = ceil((Y.getDimensionLength(0)-1)/2)+1;
-    Cn_offset = ceil((Y.getDimensionLength(1)-1)/2)+1;
+    Cm_offset = ceil((double)((Y.getDimensionLength(0)-1)/2))+1;
+    Cn_offset = ceil((double)((Y.getDimensionLength(1)-1)/2))+1;
     return singleArrayVector(Conv2FunctionDispatch(X,Y,Cm,Cn,Cm_offset,Cn_offset));
   }
 

@@ -4,6 +4,7 @@
 #include "NumericArray.hpp"
 #include "Array.hpp"
 #include "FunctionDef.hpp"
+#include "Dimensions.hpp"
 
 namespace FreeMat {
   // We want to get an n-dimimensional subset of an array
@@ -35,11 +36,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -76,11 +77,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -121,11 +122,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -163,11 +164,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -208,11 +209,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -254,11 +255,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -307,11 +308,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];
@@ -357,11 +358,11 @@ namespace FreeMat {
     int outCount = 1;
     for (int i=0;i<numDims;i++) outCount *= outDims[i];
     // Initialize the ndxpointer to zero
-    int ndxptr[numDims];
+    int ndxptr[maxDims];
     for (int j=0;j<numDims;j++) 
       ndxptr[j] = 0;
-    int ndxval[numDims];
-    int srcfact[numDims];
+    int ndxval[maxDims];
+    int srcfact[maxDims];
     srcfact[0] = 1;
     for (int j=1;j<numDims;j++)
       srcfact[j] = srcfact[j-1]*srcDims[j-1];

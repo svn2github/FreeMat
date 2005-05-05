@@ -511,6 +511,9 @@
 				RelativePath=".\NewLex.cpp">
 			</File>
 			<File
+				RelativePath=".\NumericArray.cpp">
+			</File>
+			<File
 				RelativePath="Parser.cxx">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -702,6 +705,9 @@
 			</File>
 			<File
 				RelativePath="Module.hpp">
+			</File>
+			<File
+				RelativePath=".\NumericArray.hpp">
 			</File>
 			<File
 				RelativePath="Parser.h">

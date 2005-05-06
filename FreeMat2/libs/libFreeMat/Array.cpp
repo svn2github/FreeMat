@@ -2646,16 +2646,14 @@ break;
     ArrayVector m;
     // Get the number of indexing dimensions
     int L = index.size();
-    // Setup the data pointers
+    Dimensions myDims(dp->dimensions);
+    bool anyEmpty;
+    int colonIndex;
     Dimensions outDims(L);
-    int i;
-#error Not colon-compliant
-    for (i=0;i<L;i++)
-      index[i].toOrdinalType();
-    constIndexPtr* indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
-    for (i=0;i<L;i++) {
-      outDims[i] = (index[i].getLength());
-      indx[i] = (constIndexPtr) index[i].dp->getData();
+    constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,true);
+    if (anyEmpty) {
+      Free(indx);
+      return singleArrayVector(Array::emptyConstructor());
     }
     Dimensions argPointer(L);
     Dimensions currentIndex(L);

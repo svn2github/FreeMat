@@ -2341,7 +2341,8 @@ break;
    * preserved (the first one -- the remaining colon expressions
    * are expanded out into vectors).
    */
-  constIndexPtr* ProcessNDimIndexes(Dimensions dims,
+  constIndexPtr* ProcessNDimIndexes(bool preserveColons,
+				    Dimensions dims,
 				    ArrayVector& index,
 				    bool& anyEmpty,
 				    int& colonIndex,
@@ -2354,7 +2355,7 @@ break;
     colonIndex = -1;
     for (int i=0;i<index.size();i++) {
       bool isColon = isColonOperator(index[i]);
-      if (!colonFound && isColon) {
+      if (!colonFound && isColon && preserveColons) {
 	colonFound = true;
 	colonIndex = i;
 	outndx[i] = NULL;
@@ -2398,10 +2399,13 @@ break;
     try {
       int L = index.size();
       Dimensions outDims(L);
-      indx = ProcessNDimIndexes(myDims,
+      indx = ProcessNDimIndexes(true,myDims,
 				index, anyEmpty, 
 				colonIndex, outDims, true);
-      if (anyEmpty) return Array::emptyConstructor();
+      if (anyEmpty) {
+	Free(indx);
+	return Array::emptyConstructor();
+      }
       if (isSparse()) {
 	if (L > 2)
 	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays");
@@ -2645,6 +2649,7 @@ break;
     // Setup the data pointers
     Dimensions outDims(L);
     int i;
+#error Not colon-compliant
     for (i=0;i<L;i++)
       index[i].toOrdinalType();
     constIndexPtr* indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
@@ -2689,6 +2694,7 @@ break;
       return;
     }
     // Make sure the index is an ordinal type
+#error Not colon-compliant
     index.toOrdinalType();
     int index_length = index.getLength();
     if (index_length == 0) return;
@@ -2782,35 +2788,26 @@ break;
     }
     try {
       int L = index.size();
-      int i;
-      // Convert the indexing variables into an ordinal type.
-      for (i=0;i<L;i++){
-	if (index[i].isEmpty()) return;
-	index[i].toOrdinalType();
+      Dimensions myDims(dp->dimensions);
+      Dimensions outDims;
+      bool anyEmpty;
+      int colonIndex;
+      indx = ProcessNDimIndexes(true,myDims,index,anyEmpty,colonIndex,outDims,false);
+      if (anyEmpty) {
+	Free(indx);
+	return;
       }
-      // Check to see if any of the index variables are empty - 
-      bool anyEmpty = false;
-      for (i=0;i<L;i++)
-	anyEmpty = anyEmpty | (index[i].isEmpty());
-      // If any of the dimensions are empty, this entire method
-      // is a NOP.  The reason we don't just return is because
-      // of clean up.
-      if (anyEmpty) return;
-      // Set up data pointers
-      indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr)*L);
       Dimensions a(L);
       // First, we compute the maximum along each dimension.
-      for (i=0;i<L;i++) {
-	a[i] = index[i].getMaxAsIndex();
-	indx[i] = (constIndexPtr) index[i].dp->getData();
-      }
-      // Next, we compute the number of entries in each component.
-      Dimensions argLengths(L);
-      Dimensions argPointer(L);
       int dataCount = 1;
-      for (i=0;i<L;i++) {
-	argLengths[i] = index[i].getLength();
-	dataCount *= argLengths[i];
+      for (int i=0;i<L;i++) {
+	if (i == colonIndex) {
+	  a[i] = myDims[i];
+	  dataCount *= myDims[i];
+	} else {
+	  a[i] = index[i].getMaxAsIndex();
+	  dataCount *= index[i].getLength();
+	}
       }
       // Next, we compute the dimensions of the right hand side
       indexType advance;
@@ -2824,7 +2821,6 @@ break;
 	throw Exception("Size mismatch in assignment A(I1,I2,...,In) = B.\n");
       else
 	advance = 1;
-
       // If the RHS type is superior to ours, we 
       // force our type to agree with the inserted data.
       if (!isEmpty() &&
@@ -2850,9 +2846,9 @@ break;
 	void *qp = SetSparseNDimSubsets(dp->dataClass, rows, cols, 
 					dp->getData(), 
 					(const indexType*) indx[0], 
-					argLengths[0],
+					outDims[0],
 					(const indexType*) indx[1], 
-					argLengths[1],
+					outDims[1],
 					data.getDataPointer(),advance);
 	Dimensions newdim;
 	newdim[0] = rows;
@@ -2862,20 +2858,108 @@ break;
       }
       // Now, resize us to fit this data
       resize(a);
+      myDims = dp->dimensions;
       // Get a writable data pointer
       void *qp = getReadWriteDataPointer();
-      // Now, we copy data from dp to our real part,
-      // computing indices along the way.
-      Dimensions currentIndex(dp->dimensions.getLength());
-      indexType srcIndex = 0;
-      indexType j;
-      while (argPointer.inside(argLengths)) {
-	for (int i=0;i<L;i++) 
-	  currentIndex[i] = (indexType) indx[i][argPointer[i]] - 1;
-	j = dp->dimensions.mapPoint(currentIndex);
-	data.copyElements(srcIndex,qp,j,1);
-	srcIndex += advance;
-	argPointer.incrementModulo(argLengths,0);
+      int outDimsInt[maxDims];
+      int srcDimsInt[maxDims];
+      for (int i=0;i<L;i++) {
+	outDimsInt[i] = outDims[i];
+	srcDimsInt[i] = myDims[i];
+      }
+      outDims.simplify();
+      switch (dp->dataClass) {
+      case FM_COMPLEX: 
+	setNDimSubsetNumericDispatchBurst<float>(colonIndex,(float*) qp,
+						 (const float*) data.getDataPointer(),
+						 outDimsInt,srcDimsInt,
+						 indx, L, 2,advance);
+	break;
+      case FM_DCOMPLEX: 
+	setNDimSubsetNumericDispatchBurst<double>(colonIndex,(double*) qp,
+						  (const double*) data.getDataPointer(),
+						  outDimsInt,srcDimsInt,
+						  indx, L, 2,advance);
+	break;
+      case FM_LOGICAL: 
+	setNDimSubsetNumericDispatchReal<logical>(colonIndex,(logical*) qp,
+						(const logical*) data.getDataPointer(),
+						  outDimsInt,srcDimsInt,
+						  indx, L,advance);
+	break;
+      case FM_FLOAT: 
+	setNDimSubsetNumericDispatchReal<float>(colonIndex,(float*) qp,
+						(const float*) data.getDataPointer()
+						,outDimsInt,srcDimsInt,
+						indx, L,advance);
+	break;
+      case FM_DOUBLE: 
+	setNDimSubsetNumericDispatchReal<double>(colonIndex,(double*) qp,
+						(const double*) data.getDataPointer(),
+						 outDimsInt,srcDimsInt,
+						 indx, L,advance);
+	break;
+      case FM_INT8: 
+	setNDimSubsetNumericDispatchReal<int8>(colonIndex,(int8*) qp,
+					       (const int8*) data.getDataPointer(),
+					       outDimsInt,srcDimsInt,
+					       indx, L,advance);
+	break;
+      case FM_UINT8: 
+	setNDimSubsetNumericDispatchReal<uint8>(colonIndex,(uint8*) qp,
+						(const uint8*) data.getDataPointer(),
+						outDimsInt,srcDimsInt,
+						 indx, L,advance);
+	break;
+      case FM_INT16: 
+	setNDimSubsetNumericDispatchReal<int16>(colonIndex,(int16*) qp,
+						(const int16*) data.getDataPointer(),
+						outDimsInt,srcDimsInt,
+						 indx, L,advance);
+	break;
+      case FM_UINT16: 
+	setNDimSubsetNumericDispatchReal<uint16>(colonIndex,(uint16*) qp,
+						(const uint16*) data.getDataPointer(),
+						 outDimsInt,srcDimsInt,
+						 indx, L,advance);
+	break;
+      case FM_INT32: 
+	setNDimSubsetNumericDispatchReal<int32>(colonIndex,(int32*) qp,
+						(const int32*) data.getDataPointer(),
+						outDimsInt,srcDimsInt,
+						 indx, L,advance);
+	break;
+      case FM_UINT32: 
+	setNDimSubsetNumericDispatchReal<uint32>(colonIndex,(uint32*) qp,
+						(const uint32*) data.getDataPointer(),
+						 outDimsInt,srcDimsInt,
+						 indx, L,advance);
+	break;
+      case FM_STRING: 
+	setNDimSubsetNumericDispatchReal<char>(colonIndex,(char*) qp,
+					       (const char*) data.getDataPointer(),
+					       outDimsInt,srcDimsInt,
+					       indx, L,advance);
+	break;
+      case FM_FUNCPTR_ARRAY:
+	setNDimSubsetNumericDispatchReal<FunctionDefPtr>(colonIndex,
+							 (FunctionDefPtr*) qp,
+							 (const FunctionDefPtr*) data.getDataPointer(),
+							 outDimsInt,srcDimsInt,
+							 indx, L,advance);
+	break;
+      case FM_CELL_ARRAY: 
+	setNDimSubsetNumericDispatchReal<Array>(colonIndex,(Array*) qp,
+						(const Array*) data.getDataPointer(),
+						outDimsInt,srcDimsInt,
+						indx, L,advance);
+	break;
+      case FM_STRUCT_ARRAY: 
+	setNDimSubsetNumericDispatchBurst<Array>(colonIndex,(Array*) qp,
+						 (const Array*) data.getDataPointer(),
+						 outDimsInt,srcDimsInt,
+						 indx, L, dp->fieldNames.size(),advance);
+	break;
       }
       Free(indx);
       dp->dimensions.simplify();
@@ -2885,33 +2969,6 @@ break;
     }
   }
 
-  /**
-   * This is the vector version of the multidimensional cell-replacement function.
-   * This is for content-based indexing (curly brackets).  Two points that make
-   * this function different than replaceData are
-   *   1. If the index is larger than the size, we resize to a vector of sufficient
-   *      length.
-   *   2. Deletions do not occur.
-   */
-  void Array::setVectorContents(Array& index, Array& data) {
-    promoteType(FM_CELL_ARRAY,data.dp->fieldNames);
-    if (isSparse())
-      throw Exception("setVectorContents not supported for sparse arrays.");
-    index.toOrdinalType();
-    if (index.getLength() == 0)
-      return;
-    if (index.getLength() != 1)
-      throw Exception("In expression A{I} = B, I must reference a single element of cell-array A.");
-    constIndexPtr index_p = (constIndexPtr) index.dp->getData();
-    indexType ndx = *index_p - 1;
-    int bound = getLength();
-    if (ndx < 0)
-      throw Exception("Illegal negative index in expression A{I} = B.");
-    vectorResize(ndx+1);
-    Array *qp = (Array*) getReadWriteDataPointer();
-    qp[ndx] = data;
-    dp->dimensions.simplify();
-  }
 
   /**
    * This is the vector version of the multidimensional cell-replacement function.
@@ -2925,6 +2982,16 @@ break;
     if (isSparse())
       throw Exception("setVectorContentsAsList not supported for sparse arrays.");
     promoteType(FM_CELL_ARRAY);
+    if (isColonIndexOperator(index)) {
+      if (getLength() > data.size())
+	throw Exception("Not enough right hand side values to satisy left hand side expression.");
+      Array *qp = (Array*) getReadWriteDataPointer();
+      for (int i=0;i<data.size();i++) {
+	qp[i] = data.front();
+	data.erase(data.begin());
+      }
+      dp->dimensions.simplify();
+    }
     index.toOrdinalType();
     if (data.size() < index.getLength())
       throw Exception("Not enough right hand side values to satisy left hand side expression.");
@@ -2958,6 +3025,7 @@ break;
     promoteType(FM_CELL_ARRAY);
     int L = index.size();
     // Convert the indexing variables into an ordinal type.
+#error Not colon-compliant
     int i;
     for (i=0;i<L;i++)
       index[i].toOrdinalType();
@@ -3074,6 +3142,7 @@ break;
     bool *deletionMap = NULL;
     try {
       // First convert arg to an ordinal type.
+#error Not colon-compliant
       arg.toOrdinalType();
       if (isSparse()) {
 	int rows = getDimensionLength(0);
@@ -3202,6 +3271,7 @@ break;
       // the index list matches our number of dimensions.  We extend
       // it using 1 references, and throw an exception if there are
       // more indices than our dimension set.
+#error Not colon-compliant
       for (i=0;i<args.size();i++)
 	args[i].toOrdinalType();
       // First, add enough "1" singleton references to pad the

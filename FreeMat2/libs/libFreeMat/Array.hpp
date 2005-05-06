@@ -595,15 +595,6 @@ namespace FreeMat {
     /**
      * Set a subset of an Array using contents-indexing, meaning that the
      * argument is assumed to refer to the elements in their order as a vector.
-     * So, x{10} is equivalent to x(:){10}, even if, say, x is 3 x 4.
-     * Throws an exception if
-     *   - the index has more than one element in it
-     *   - the index is less than 1
-     */
-    void setVectorContents(Array& index, Array& data);
-    /**
-     * Set a subset of an Array using contents-indexing, meaning that the
-     * argument is assumed to refer to the elements in their order as a vector.
      * So, x{10} is equivalent to x(:){10}, even if, say, x is 3 x 4. 
      * This is used when a cell-array is used as the return of a 
      * multi-function call, i.e.: [x{3:5}] = foo.

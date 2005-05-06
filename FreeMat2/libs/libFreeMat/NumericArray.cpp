@@ -227,7 +227,7 @@ namespace FreeMat {
       }
       // Copy the value
       for (int k=0;k<numrows;k++)
-	destp[i+k] = sp[srcadd+k];
+      	destp[i+k] = sp[srcadd+k];
       // Update the ndxset
       ndxptr[1]++;
       for (int j=1;j<numDims-1;j++) {
@@ -269,9 +269,10 @@ namespace FreeMat {
 	srcadd += ndxval*srcfact[j];
       }
       // Copy the value
-      for (int k=0;k<numrows;k++)
-	sp[srcadd+k] = destp[k];
-      destp += (advance*numrows);
+      for (int k=0;k<numrows;k++) {
+	sp[srcadd+k] = *destp;
+	destp += advance;
+      }
       // Update the ndxset
       ndxptr[1]++;
       for (int j=1;j<numDims-1;j++) {
@@ -418,6 +419,56 @@ namespace FreeMat {
     }
   }
 
+  // This is a slight optimization - if a colon op is
+  // used, but not in the first index, we save the generation
+  // of the colon array in that index - a small optimization.
+  template <class T>
+  void setNDimSubsetNumericAnyColonReal(T *sp, const T* destp, 
+					int outDims[maxDims], 
+					int srcDims[maxDims],
+					constIndexPtr* ndx,
+					int numDims,
+					int colonIndex,
+					int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    // For each output element
+    for (int i=0;i<outCount;i++) {
+      int srcadd = 0;
+      // Retrieve the index values based on ndxptr
+      // Use these to calculate the source address
+      for (int j=0;j<numDims;j++) {
+	int ndxval;
+	if (j==colonIndex)
+	  ndxval = ndxptr[j];
+	else
+	  ndxval = ndx[j][ndxptr[j]]-1;
+	srcadd += ndxval*srcfact[j];
+      }
+      // Copy the value
+      sp[srcadd] = *destp;
+      destp += advance;
+      // Update the ndxset
+      ndxptr[0]++;
+      for (int j=0;j<numDims-1;j++) {
+	if (ndxptr[j] >= outDims[j]) {
+	  ndxptr[j] = 0;
+	  ndxptr[j+1]++;
+	}
+      }
+    }
+  }
+
   template <class T>
   void getNDimSubsetNumericAnyColonBurst(const T *sp, T* destp, 
 					 int outDims[maxDims], 
@@ -454,6 +505,54 @@ namespace FreeMat {
       // Copy the value
       for (int k=0;k<burstLen;k++) 
 	*destp++ = sp[burstLen*srcadd+k];
+      // Update the ndxset
+      ndxptr[0]++;
+      for (int j=0;j<numDims-1;j++) {
+	if (ndxptr[j] >= outDims[j]) {
+	  ndxptr[j] = 0;
+	  ndxptr[j+1]++;
+	}
+      }
+    }
+  }
+
+  template <class T>
+  void setNDimSubsetNumericAnyColonBurst(T *sp, const T* destp, 
+					 int outDims[maxDims], 
+					 int srcDims[maxDims],
+					 constIndexPtr* ndx,
+					 int numDims,
+					 int colonIndex,
+					 int burstLen,
+					 int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    // For each output element
+    for (int i=0;i<outCount;i++) {
+      int srcadd = 0;
+      // Retrieve the index values based on ndxptr
+      // Use these to calculate the source address
+      for (int j=0;j<numDims;j++) {
+	int ndxval;
+	if (j==colonIndex)
+	  ndxval = ndxptr[j];
+	else
+	  ndxval = ndx[j][ndxptr[j]]-1;
+	srcadd += ndxval*srcfact[j];
+      }
+      // Copy the value
+      for (int k=0;k<burstLen;k++) 
+	sp[burstLen*srcadd+k] = destp[i*advance+k];
       // Update the ndxset
       ndxptr[0]++;
       for (int j=0;j<numDims-1;j++) {
@@ -521,6 +620,62 @@ namespace FreeMat {
     }
   }
 
+  // An optimized case - here, we have the case
+  // A(n1,n2,...nd,:,nd+1,...nm)
+  // We do this using a simple stride/start calculation
+  // The first element we calculate as in the regular case
+  // 
+  template <class T>
+  void setNDimSubsetNumericSliceReal(T *sp, const T* destp, 
+				     int outDims[maxDims], 
+				     int srcDims[maxDims],
+				     constIndexPtr* ndx,
+				     int numDims,
+				     int colonIndex,
+				     int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    // Calculate the start element
+    int start = 0;
+    for (int j=0;j<numDims;j++) {
+      int ndxval;
+      if (j==colonIndex)
+	ndxval = 0;
+      else
+	ndxval = ndx[j][0]-1;
+      start += ndxval*srcfact[j];
+    }
+    // Next, calculate the stride distance
+    // we do this by setting the colon component to 1
+    int stride = 0;
+    for (int j=0;j<numDims;j++) {
+      int ndxval;
+      if (j==colonIndex)
+	ndxval = 1;
+      else
+	ndxval = ndx[j][0]-1;
+      stride += ndxval*srcfact[j];
+    }
+    stride -= start;
+    int srcadd = start;
+    // The output equation is easy now
+    for (int i=0;i<outCount;i++) {
+      sp[srcadd] = *destp;
+      destp += advance;
+      srcadd += stride;
+    }
+  }
+
   template <class T>
   void getNDimSubsetNumericSliceBurst(const T *sp, T* destp, 
 				      int outDims[maxDims], 
@@ -573,6 +728,59 @@ namespace FreeMat {
   }
   
   template <class T>
+  void setNDimSubsetNumericSliceBurst(T *sp, const T* destp, 
+				      int outDims[maxDims], 
+				      int srcDims[maxDims],
+				      constIndexPtr* ndx,
+				      int numDims,
+				      int colonIndex,
+				      int burstLen,
+				      int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    // Calculate the start element
+    int start = 0;
+    for (int j=0;j<numDims;j++) {
+      int ndxval;
+      if (j==colonIndex)
+	ndxval = 0;
+      else
+	ndxval = ndx[j][0]-1;
+      start += ndxval*srcfact[j];
+    }
+    // Next, calculate the stride distance
+    // we do this by setting the colon component to 1
+    int stride = 0;
+    for (int j=0;j<numDims;j++) {
+      int ndxval;
+      if (j==colonIndex)
+	ndxval = 1;
+      else
+	ndxval = ndx[j][0]-1;
+      stride += ndxval*srcfact[j];
+    }
+    stride -= start;
+    int srcadd = start;
+    // The output equation is easy now
+    for (int i=0;i<outCount;i++) {
+      for (int k=0;k<burstLen;k++) 
+	sp[burstLen*srcadd+k] = destp[k];
+      destp += advance*burstLen;
+      srcadd += stride;
+    }
+  }
+  
+  template <class T>
   void getNDimSubsetNumericDispatchBurst(int colonIndex, 
 					 const T* srcptr, 
 					 T* destptr, 
@@ -601,6 +809,34 @@ namespace FreeMat {
   }
   
   template <class T>
+  void setNDimSubsetNumericDispatchBurst(int colonIndex, 
+					 T* srcptr, 
+					 const T* destptr, 
+					 int outDimsInt[maxDims], 
+					 int srcDimsInt[maxDims], 
+					 constIndexPtr* indx, int L,
+					 int burstLen, int advance) {
+    int elCount = 1;
+    for (int i=0;i<L;i++) elCount *= outDimsInt[i];
+    if (colonIndex < 0)
+      setNDimSubsetNumericNoColonBurst<T>(srcptr,
+					  destptr,outDimsInt,srcDimsInt,
+					  indx, L, burstLen, advance);
+    else if (colonIndex == 0)
+      setNDimSubsetNumericFirstColonBurst<T>(srcptr,
+					     destptr,outDimsInt,srcDimsInt,
+					     indx, L, burstLen, advance);
+    else if (elCount > srcDimsInt[colonIndex])
+      setNDimSubsetNumericAnyColonBurst<T>(srcptr,
+					   destptr,outDimsInt,srcDimsInt,
+					   indx, L,colonIndex, burstLen, advance);
+    else
+      setNDimSubsetNumericSliceBurst<T>(srcptr,
+					destptr,outDimsInt,srcDimsInt,
+					indx,L,colonIndex, burstLen, advance);
+  }
+  
+  template <class T>
   void getNDimSubsetNumericDispatchReal(int colonIndex, 
 					const T* srcptr, 
 					T* destptr, 
@@ -620,11 +856,39 @@ namespace FreeMat {
     else if (elCount > srcDimsInt[colonIndex])
       getNDimSubsetNumericAnyColonReal<T>(srcptr,
 					  destptr,outDimsInt,srcDimsInt,
-					  indx, L,colonIndex);
+					  indx, L, colonIndex);
     else
       getNDimSubsetNumericSliceReal<T>(srcptr,
 				       destptr,outDimsInt,srcDimsInt,
-				       indx,L,colonIndex);
+				       indx, L, colonIndex);
+  }
+
+  template <class T>
+  void setNDimSubsetNumericDispatchReal(int colonIndex, 
+					T* srcptr, 
+					const T* destptr, 
+					int outDimsInt[maxDims], 
+					int srcDimsInt[maxDims], 
+					constIndexPtr* indx, int L,
+					int advance) {
+    int elCount = 1;
+    for (int i=0;i<L;i++) elCount *= outDimsInt[i];
+    if (colonIndex < 0)
+      setNDimSubsetNumericNoColonReal<T>(srcptr,
+					 destptr,outDimsInt,srcDimsInt,
+					 indx, L, advance);
+    else if (colonIndex == 0)
+      setNDimSubsetNumericFirstColonReal<T>(srcptr,
+					    destptr,outDimsInt,srcDimsInt,
+					    indx, L, advance);
+    else if (elCount > srcDimsInt[colonIndex])
+      setNDimSubsetNumericAnyColonReal<T>(srcptr,
+					  destptr,outDimsInt,srcDimsInt,
+					  indx, L,colonIndex, advance);
+    else
+      setNDimSubsetNumericSliceReal<T>(srcptr,
+				       destptr,outDimsInt,srcDimsInt,
+				       indx,L,colonIndex, advance);
   }
   
   template void getNDimSubsetNumericDispatchBurst<float>(int colonIndex, 
@@ -720,4 +984,99 @@ namespace FreeMat {
 								 int outDimsInt[maxDims], 
 								 int srcDimsInt[maxDims], 
 								 constIndexPtr* indx, int L);
+
+
+  template void setNDimSubsetNumericDispatchBurst<float>(int colonIndex, 
+							 float* srcptr, 
+							 const float* destptr, 
+							 int outDimsInt[maxDims], 
+							 int srcDimsInt[maxDims], 
+							 constIndexPtr* indx, int L,
+							 int burstLen,int advance);
+  template void setNDimSubsetNumericDispatchBurst<double>(int colonIndex, 
+							  double* srcptr, 
+							  const double* destptr, 
+							  int outDimsInt[maxDims], 
+							  int srcDimsInt[maxDims], 
+							  constIndexPtr* indx, int L,
+							  int burstLen,int advance);
+  template void setNDimSubsetNumericDispatchBurst<Array>(int colonIndex, 
+							 Array* srcptr, 
+							 const Array* destptr, 
+							 int outDimsInt[maxDims], 
+							 int srcDimsInt[maxDims], 
+							 constIndexPtr* indx, int L,
+							 int burstLen,int advance);
+  template void setNDimSubsetNumericDispatchReal<float>(int colonIndex, 
+							float* srcptr, 
+							const float* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+//  template void setNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
+//							logical* srcptr, 
+//							const logical* destptr, 
+//							int outDimsInt[maxDims], 
+//							int srcDimsInt[maxDims], 
+//							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<double>(int colonIndex, 
+							double* srcptr, 
+							const double* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<char>(int colonIndex, 
+							char* srcptr, 
+							const char* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+//   template void setNDimSubsetNumericDispatchReal<int8>(int colonIndex, 
+// 							int8* srcptr, 
+// 							const int8* destptr, 
+// 							int outDimsInt[maxDims], 
+// 							int srcDimsInt[maxDims], 
+// 							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<uint8>(int colonIndex, 
+							uint8* srcptr, 
+							const uint8* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<int16>(int colonIndex, 
+							int16* srcptr, 
+							const int16* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<uint16>(int colonIndex, 
+							uint16* srcptr, 
+							const uint16* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<int32>(int colonIndex, 
+							int32* srcptr, 
+							const int32* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<uint32>(int colonIndex, 
+							uint32* srcptr, 
+							const uint32* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<Array>(int colonIndex, 
+							Array* srcptr, 
+							const Array* destptr, 
+							int outDimsInt[maxDims], 
+							int srcDimsInt[maxDims], 
+							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<FunctionDefPtr>(int colonIndex, 
+								 FunctionDefPtr* srcptr, 
+								 const FunctionDefPtr* destptr, 
+								 int outDimsInt[maxDims], 
+								 int srcDimsInt[maxDims], 
+								 constIndexPtr* indx, int L,int advance);
 }

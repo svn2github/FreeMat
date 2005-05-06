@@ -2055,6 +2055,71 @@ namespace FreeMat {
     return dest;
   }
 
+  template <class T>
+  void* GetSparseRowSubsetReal(int rows, int cols, const T** A, const indexType* rindx, int irows) {
+    T* Acol = new T[rows];
+    T* buffer = new T[irows*2];
+    T** dp = new T*[cols];
+    for (int i=0;i<cols;i++) {
+      memset(Acol,0,rows*sizeof(T));
+      DecompressRealString<T>(A[i],Acol,rows);
+      memset(buffer,0,irows*2*sizeof(T));
+      RLEEncoder<T> Acode(buffer,irows);
+      for (int j=0;j<irows;j++) {
+	int n = rindx[j] - 1;
+	Acode.set(j);
+	Acode.push(Acol[n]);
+      }
+      Acode.end();
+      dp[i] = Acode.copyout();
+    }
+    delete buffer;
+    delete Acol;
+    return dp;
+  }
+
+  template <class T>
+  void* GetSparseRowSubsetComplex(int rows, int cols, const T** A, const indexType* rindx, int irows) {
+    T* Acol = new T[rows*2];
+    T* buffer = new T[irows*4];
+    T** dp = new T*[cols];
+    for (int i=0;i<cols;i++) {
+      memset(Acol,0,rows*sizeof(T)*2);
+      DecompressComplexString<T>(A[i],Acol,rows);
+      memset(buffer,0,irows*4*sizeof(T));
+      RLEEncoderComplex<T> Acode(buffer,irows);
+      for (int j=0;j<irows;j++) {
+	int n = rindx[j] - 1;
+	Acode.set(j);
+	Acode.push(Acol[2*n],Acol[2*n+1]);
+      }
+      Acode.end();
+      dp[i] = Acode.copyout();
+    }
+    delete buffer;
+    delete Acol;
+    return dp;
+  }
+
+  void* GetSparseRowSubset(Class dclass, int rows, int cols, const void* src,
+			   const indexType* rindx, int irows) {
+    switch(dclass) {
+    case FM_LOGICAL:
+      return GetSparseRowSubsetReal<uint32>(rows, cols, (const uint32**) src, rindx, irows);
+    case FM_INT32:
+      return GetSparseRowSubsetReal<int32>(rows, cols, (const int32**) src, rindx, irows);
+    case FM_FLOAT:
+      return GetSparseRowSubsetReal<float>(rows, cols, (const float**) src, rindx, irows);
+    case FM_DOUBLE:
+      return GetSparseRowSubsetReal<double>(rows, cols, (const double**) src, rindx, irows);
+    case FM_COMPLEX:
+      return GetSparseRowSubsetComplex<float>(rows,cols,(const float**) src,rindx,irows);
+    case FM_DCOMPLEX:
+      return GetSparseRowSubsetComplex<double>(rows,cols,(const double**) src,rindx,irows);
+    }
+    throw Exception("unsupported type for GetSparseRowSubset");    
+  }
+
   // GetSparseNDimSubsets
   void* GetSparseColumnSubset(Class dclass, int rows, int cols, const void* src,
 			      const indexType* cindx, int icols) {
@@ -2155,8 +2220,11 @@ namespace FreeMat {
   void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
 			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols) {
-    if ((irows == rows) && CheckAllRowsReference(rindx,rows))
+    if ((rindx == NULL) || ((irows == rows) && 
+			    CheckAllRowsReference(rindx,rows)))
       return GetSparseColumnSubset(dclass,rows,cols,src,cindx,icols);
+    if (cindx == NULL)
+      return GetSparseRowSubset(dclass,rows,cols,src,rindx,irows);
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,

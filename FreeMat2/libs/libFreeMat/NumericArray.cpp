@@ -65,7 +65,48 @@ namespace FreeMat {
       }
     }
   }
-  
+
+  template <class T>
+  void setNDimSubsetNumericNoColonReal(T *sp, const T* destp, 
+				       int outDims[maxDims], 
+				       int srcDims[maxDims],
+				       constIndexPtr* ndx,
+				       int numDims, int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    // For each output element
+    for (int i=0;i<outCount;i++) {
+      int srcadd = 0;
+      // Retrieve the index values based on ndxptr
+      // Use these to calculate the source address
+      for (int j=0;j<numDims;j++) {
+	int ndxval = ndx[j][ndxptr[j]]-1;
+	srcadd += ndxval*srcfact[j];
+      }
+      // Copy the value
+      sp[srcadd] = *destp;
+      destp += advance;
+      // Update the ndxset
+      ndxptr[0]++;
+      for (int j=0;j<numDims-1;j++) {
+	if (ndxptr[j] >= outDims[j]) {
+	  ndxptr[j] = 0;
+	  ndxptr[j+1]++;
+	}
+      }
+    }
+  }
+
   template <class T>
   void getNDimSubsetNumericNoColonBurst(const T *sp, T* destp, 
 					int outDims[maxDims], 
@@ -97,6 +138,50 @@ namespace FreeMat {
       // Copy the value
       for (int k=0;k<burstLen;k++)
 	*destp++ = sp[burstLen*srcadd+k];
+      // Update the ndxset
+      ndxptr[0]++;
+      for (int j=0;j<numDims-1;j++) {
+	if (ndxptr[j] >= outDims[j]) {
+	  ndxptr[j] = 0;
+	  ndxptr[j+1]++;
+	}
+      }
+    }
+  }
+  
+  template <class T>
+  void setNDimSubsetNumericNoColonBurst(T *sp, const T* destp, 
+					int outDims[maxDims], 
+					int srcDims[maxDims],
+					constIndexPtr* ndx,
+					int numDims,
+					int burstLen,
+					int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    // For each output element
+    for (int i=0;i<outCount;i++) {
+      int srcadd = 0;
+      // Retrieve the index values based on ndxptr
+      // Use these to calculate the source address
+      for (int j=0;j<numDims;j++) {
+	int ndxval = ndx[j][ndxptr[j]]-1;
+	srcadd += ndxval*srcfact[j];
+      }
+      // Copy the value
+      for (int k=0;k<burstLen;k++) 
+	sp[burstLen*srcadd+k] = destp[k];
+      destp += burstLen*advance;
       // Update the ndxset
       ndxptr[0]++;
       for (int j=0;j<numDims-1;j++) {
@@ -141,7 +226,52 @@ namespace FreeMat {
 	srcadd += ndxval*srcfact[j];
       }
       // Copy the value
-      memcpy(destp+i,sp+srcadd,numrows*sizeof(T));
+      for (int k=0;k<numrows;k++)
+	destp[i+k] = sp[srcadd+k];
+      // Update the ndxset
+      ndxptr[1]++;
+      for (int j=1;j<numDims-1;j++) {
+	if (ndxptr[j] >= outDims[j]) {
+	  ndxptr[j] = 0;
+	  ndxptr[j+1]++;
+	}
+      }
+    }
+  }
+
+  template <class T>
+  void setNDimSubsetNumericFirstColonReal(T *sp, const T* destp, 
+					  int outDims[maxDims], 
+					  int srcDims[maxDims],
+					  constIndexPtr* ndx,
+					  int numDims,
+					  int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    int numrows = outDims[0];
+    // For each output element
+    for (int i=0;i<outCount;i+=numrows) {
+      int srcadd = 0;
+      // Retrieve the index values based on ndxptr
+      // Use these to calculate the source address
+      for (int j=1;j<numDims;j++) {
+	int ndxval = ndx[j][ndxptr[j]]-1;
+	srcadd += ndxval*srcfact[j];
+      }
+      // Copy the value
+      for (int k=0;k<numrows;k++)
+	sp[srcadd+k] = destp[k];
+      destp += (advance*numrows);
       // Update the ndxset
       ndxptr[1]++;
       for (int j=1;j<numDims-1;j++) {
@@ -183,7 +313,52 @@ namespace FreeMat {
 	srcadd += ndxval*srcfact[j];
       }
       // Copy the value
-      memcpy(destp+burstLen*i,sp+burstLen*srcadd,numrows*sizeof(T)*burstLen);
+      for (int k=0;k<burstLen;k++)
+	destp[i*burstLen+k] = sp[burstLen*srcadd+k];
+      // Update the ndxset
+      ndxptr[1]++;
+      for (int j=1;j<numDims-1;j++) {
+	if (ndxptr[j] >= outDims[j]) {
+	  ndxptr[j] = 0;
+	  ndxptr[j+1]++;
+	}
+      }
+    }
+  }
+
+  template <class T>
+  void setNDimSubsetNumericFirstColonBurst(T *sp, const T* destp, 
+					   int outDims[maxDims], 
+					   int srcDims[maxDims],
+					   constIndexPtr* ndx,
+					   int numDims,
+					   int burstLen,
+					   int advance) {
+    // Calculate the number of output elements
+    int outCount = 1;
+    for (int i=0;i<numDims;i++) outCount *= outDims[i];
+    // Initialize the ndxpointer to zero
+    int ndxptr[maxDims];
+    for (int j=0;j<numDims;j++) 
+      ndxptr[j] = 0;
+    int ndxval[maxDims];
+    int srcfact[maxDims];
+    srcfact[0] = 1;
+    for (int j=1;j<numDims;j++)
+      srcfact[j] = srcfact[j-1]*srcDims[j-1];
+    int numrows = outDims[0];
+    // For each output element
+    for (int i=0;i<outCount;i+=numrows) {
+      int srcadd = 0;
+      // Retrieve the index values based on ndxptr
+      // Use these to calculate the source address
+      for (int j=1;j<numDims;j++) {
+	int ndxval = ndx[j][ndxptr[j]]-1;
+	srcadd += ndxval*srcfact[j];
+      }
+      // Copy the value
+      for (int k=0;k<burstLen;k++)
+	sp[burstLen*srcadd+k] = destp[i*burstLen*advance+k];
       // Update the ndxset
       ndxptr[1]++;
       for (int j=1;j<numDims-1;j++) {

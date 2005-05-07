@@ -1755,6 +1755,8 @@ namespace FreeMat {
 	  throw Exception("Expected indexing expression!");
 	if (m.size() == 1) {
 	  // m[0] should have only one element...
+	  if (isColonOperator(m[0]))
+	    return(lhs.getLength());
 	  m[0].toOrdinalType();
 	  if (m[0].getLength() > 1)
 	    throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
@@ -1764,8 +1766,12 @@ namespace FreeMat {
 	  int i=0;
 	  int outputCount=1;
 	  while (i<m.size()) {
-	    m[i].toOrdinalType();
-	    outputCount *= m[i].getLength();
+	    if (isColonOperator(m[i])) {
+	      outputCount *= lhs.getDimensionLength(i);
+	    } else {
+	      m[i].toOrdinalType();
+	      outputCount *= m[i].getLength();
+	    }
 	    i++;
 	  }
 	  if (outputCount > 1)
@@ -1780,6 +1786,8 @@ namespace FreeMat {
 	throw Exception("Expected indexing expression!");
       if (m.size() == 1) {
 	// m[0] should have only one element...
+	if (isColonOperator(m[0]))
+	  return (lhs.getLength());
 	m[0].toOrdinalType();
 	return (m[0].getLength());
       }
@@ -1787,8 +1795,12 @@ namespace FreeMat {
 	int i=0;
 	int outputCount=1;
 	while (i<m.size()) {
-	  m[i].toOrdinalType();
-	  outputCount *= m[i].getLength();
+	  if (isColonOperator(m[i])) 
+	    outputCount *= lhs.getDimensionLength(i);
+	  else {
+	    m[i].toOrdinalType();
+	    outputCount *= m[i].getLength();
+	  }
 	  i++;
 	}
 	return (outputCount);

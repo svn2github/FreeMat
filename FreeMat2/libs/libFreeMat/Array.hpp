@@ -689,6 +689,8 @@ namespace FreeMat {
     int32 nnz();
   };
 
+  bool isColonOperator(Array& a);
+
   void printObjectBalance();
   void dumpAllArrays();
 }

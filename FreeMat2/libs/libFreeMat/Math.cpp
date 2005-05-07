@@ -2544,6 +2544,7 @@ namespace FreeMat {
 					 B.getSparseDataPointer(),
 					 SLO_AND),true);
     } else if (Astride && !Bstride && A.isSparse()) {
+      B.promoteType(FM_UINT32);
       return Array(FM_LOGICAL,
 		   Cdim,
 		   SparseScalarLogicalOp(A.getDataClass(),
@@ -2553,6 +2554,7 @@ namespace FreeMat {
 					 B.getDataPointer(),
 					 SLO_AND),true);
     } else if (!Astride && Bstride && B.isSparse()) {
+      A.promoteType(FM_UINT32);
       return Array(FM_LOGICAL,
 		   Cdim,
 		   SparseScalarLogicalOp(B.getDataClass(),
@@ -2608,6 +2610,7 @@ namespace FreeMat {
 					 B.getSparseDataPointer(),
 					 SLO_OR),true);
     } else if (Astride && !Bstride && A.isSparse()) {
+      B.promoteType(FM_UINT32);
       return Array(FM_LOGICAL,
 		   Cdim,
 		   SparseScalarLogicalOp(A.getDataClass(),
@@ -2617,6 +2620,7 @@ namespace FreeMat {
 					 B.getDataPointer(),
 					 SLO_OR),true);
     } else if (!Astride && Bstride && B.isSparse()) {
+      A.promoteType(FM_UINT32);
       return Array(FM_LOGICAL,
 		   Cdim,
 		   SparseScalarLogicalOp(B.getDataClass(),

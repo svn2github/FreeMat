@@ -1725,6 +1725,7 @@ namespace FreeMat {
   template <class T>
   void* GetSparseVectorSubsetsReal(int rows, int cols, const T** A,
 				   const indexType* indx, int irows, int icols) {
+    //#error Not colon compliant
     // Convert the sparse matrix into IJV format
     IJVEntry<T>* mlist;
     int nnz;
@@ -1779,6 +1780,7 @@ namespace FreeMat {
     IJVEntry<T>* mlist;
     int nnz;
     mlist = ConvertSparseToIJVListReal<T>(A,rows,cols,nnz);
+    //#error Not colon compliant
     // Unpack the indexing array into IJV format
     IJVEntry<T>* ilist;
     int icount;
@@ -1858,6 +1860,7 @@ namespace FreeMat {
     icount = irows*icols;
     // check to see if a resize is necessary...
     int maxindx = indx[0];
+    //#error Not colon compliant
     int i, j;
     for (i=0;i<icount;i++)
       maxindx = (maxindx > indx[i]) ? maxindx : indx[i];
@@ -1929,6 +1932,7 @@ namespace FreeMat {
     int nnz;
     mlist = ConvertSparseToIJVListComplex<T>(A,rows,cols,nnz);
     // Unpack the indexing array into IJV format
+    //#error Not colon compliant
     IJVEntry<T>* ilist;
     int icount;
     icount = irows*icols;
@@ -2103,6 +2107,7 @@ namespace FreeMat {
 
   void* GetSparseRowSubset(Class dclass, int rows, int cols, const void* src,
 			   const indexType* rindx, int irows) {
+    //#error Not colon compliant
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseRowSubsetReal<uint32>(rows, cols, (const uint32**) src, rindx, irows);
@@ -2123,6 +2128,7 @@ namespace FreeMat {
   // GetSparseNDimSubsets
   void* GetSparseColumnSubset(Class dclass, int rows, int cols, const void* src,
 			      const indexType* cindx, int icols) {
+    //#error Not colon compliant
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseColumnSubsetAssist<uint32>(rows, cols, (const uint32**) src, cindx, icols);
@@ -5117,10 +5123,10 @@ namespace FreeMat {
 					 uint32 (*fnop)(T,T,T,T)) {
     uint32** Cmat = new uint32*[cols];
     uint32* buffer = new uint32[rows*2];
-    memset(buffer,0,sizeof(uint32)*rows*2);
     for (int col=0;col<cols;col++) {
       RLEDecoderComplex<T> A(Asrc[col],rows);
       RLEEncoder<uint32> C(buffer,rows);
+      memset(buffer,0,sizeof(uint32)*rows*2);
       A.update();
       while (A.more()) {
 	C.set(A.row());
@@ -5141,10 +5147,10 @@ namespace FreeMat {
 				      uint32 (*fnop)(T,T)) {
     uint32** Cmat = new uint32*[cols];
     uint32* buffer = new uint32[rows*2];
-    memset(buffer,0,sizeof(uint32)*rows*2);
     for (int col=0;col<cols;col++) {
       RLEDecoder<T> A(Asrc[col],rows);
       RLEEncoder<uint32> C(buffer,rows);
+      memset(buffer,0,sizeof(uint32)*rows*2);
       A.update();
       while (A.more()) {
 	C.set(A.row());
@@ -5309,12 +5315,14 @@ namespace FreeMat {
 			      const void *Ap, const void *Bp, 
 			      SparseLogOpID opselect) {
     switch (dclass) {
-    case FM_LOGICAL:
+    case FM_LOGICAL: {
+      uint32 Btmp = ((logical*) Bp)[0];
       switch (opselect) {
-      case SLO_AND: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)Bp,slo_and_real<uint32>);
-      case SLO_OR: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)Bp,slo_or_real<uint32>);
+      case SLO_AND: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)&Btmp,slo_and_real<uint32>);
+      case SLO_OR: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)&Btmp,slo_or_real<uint32>);
 	throw Exception("unsupported sparse type/op combination");
       }
+    }
     case FM_INT32:
       switch (opselect) {
       case SLO_LT: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_lt_real<int32>);

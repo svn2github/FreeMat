@@ -2691,8 +2691,19 @@ break;
       deleteVectorSubset(index);
       return;
     }
+    if (isColonOperator(index)) {
+      if (data.isScalar()) {
+	index = Array::int32RangeConstructor(1,1,getLength(),true);
+      } else {
+	Dimensions myDims(dp->dimensions);
+	if (myDims.getLength() != data.getLength())
+	  throw Exception("assignment A(:) = B requires A and B to be the same size");
+	dp = data.dp->getCopy();
+	reshape(myDims);
+	return;
+      }
+    }      
     // Make sure the index is an ordinal type
-#error Not colon-compliant
     index.toOrdinalType();
     int index_length = index.getLength();
     if (index_length == 0) return;
@@ -2980,15 +2991,16 @@ break;
     if (isSparse())
       throw Exception("setVectorContentsAsList not supported for sparse arrays.");
     promoteType(FM_CELL_ARRAY);
-    if (isColonIndexOperator(index)) {
+    if (isColonOperator(index)) {
       if (getLength() > data.size())
 	throw Exception("Not enough right hand side values to satisy left hand side expression.");
       Array *qp = (Array*) getReadWriteDataPointer();
-      for (int i=0;i<data.size();i++) {
+      for (int i=0;i<getLength();i++) {
 	qp[i] = data.front();
 	data.erase(data.begin());
       }
       dp->dimensions.simplify();
+      return;
     }
     index.toOrdinalType();
     if (data.size() < index.getLength())
@@ -3021,23 +3033,20 @@ break;
     if (isSparse())
       throw Exception("setNDimContentsAsList not supported for sparse arrays.");
     promoteType(FM_CELL_ARRAY);
-    int L = index.size();
+    Dimensions myDims(dp->dimensions);
+    Dimensions outDims;
+    bool anyEmpty;
+    int colonIndex;
     // Convert the indexing variables into an ordinal type.
-#error Not colon-compliant
-    int i;
-    for (i=0;i<L;i++)
-      index[i].toOrdinalType();
-    
-    // Set up data pointers
-    constIndexPtr* indx = (constIndexPtr *) Malloc(sizeof(constIndexPtr)*L);
+    constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,false);
+    int L = index.size();
     try {
       Dimensions a(L);
       // First, we compute the maximum along each dimension.
       // We also get pointers to each of the index pointers.
-      for (i=0;i<L;i++) {
+      int i;
+      for (i=0;i<L;i++)
 	a[i] = index[i].getMaxAsIndex();
-	indx[i] = (constIndexPtr) index[i].dp->getData();
-      }
       // Next, we compute the number of entries in each component.
       Dimensions argLengths(L);
       Dimensions argPointer(L);
@@ -3140,7 +3149,10 @@ break;
     bool *deletionMap = NULL;
     try {
       // First convert arg to an ordinal type.
-#error Not colon-compliant
+      if (isColonOperator(arg)) {
+	dp = dp->putData(dp->dataClass,Dimensions(0,0),NULL,dp->sparse,dp->fieldNames,dp->className);
+	return;
+      }
       arg.toOrdinalType();
       if (isSparse()) {
 	int rows = getDimensionLength(0);
@@ -3269,9 +3281,11 @@ break;
       // the index list matches our number of dimensions.  We extend
       // it using 1 references, and throw an exception if there are
       // more indices than our dimension set.
-#error Not colon-compliant
-      for (i=0;i<args.size();i++)
+      for (i=0;i<args.size();i++) {
+	if (isColonOperator(args[i]))
+	  args[i] = Array::int32RangeConstructor(1,1,dp->dimensions[i],true);
 	args[i].toOrdinalType();
+      }
       // First, add enough "1" singleton references to pad the
       // index set out to the size of our variable.
       if (args.size() < dp->dimensions.getLength())

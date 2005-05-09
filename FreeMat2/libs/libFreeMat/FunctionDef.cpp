@@ -122,7 +122,6 @@ namespace FreeMat {
 					     int nargout) throw(Exception) {
     ArrayVector outputs;
     Context* context;
-    Array a;
     bool warningIssued;
     int minCount;
 
@@ -195,14 +194,15 @@ namespace FreeMat {
 	outputs = ArrayVector(returnVals.size());
 	for (int i=0;i<returnVals.size();i++) {
 	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
-	  if (!ptr && (i < nargout)) {
+	  if (!ptr)
+	    outputs[i] = Array::emptyConstructor();
+	  else
+	    outputs[i] = *ptr;
+	  if (!ptr && (i < nargout))
 	    if (!warningIssued) {
 	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (1)");
 	      warningIssued = true;
 	    }
-	    a = Array::emptyConstructor();
-	  }
-	  outputs[i] = *ptr;
 	}
       } else {
 	outputs = ArrayVector(nargout);
@@ -211,14 +211,15 @@ namespace FreeMat {
 	// into the scope.
 	for (int i=0;i<explicitCount;i++) {
 	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
-	  if (!ptr  && (i < nargout)) {
+	  if (!ptr)
+	    outputs[i] = Array::emptyConstructor();
+	  else
+	    outputs[i] = *ptr;
+	  if (!ptr  && (i < nargout)) 
 	    if (!warningIssued) {
 	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (2)");
 	      warningIssued = true;
 	    }
-	    a = Array::emptyConstructor();
-	  }
-	  outputs[i] = *ptr;
 	}
       // Are there any outputs not yet filled?
 	if (nargout > explicitCount) {

@@ -674,7 +674,7 @@ namespace FreeMat {
 					      dp->dimensions[1],
 					      dp->getData(),
 					      newSize[0],
-					      newSize[1]));
+					      newSize[1]),true);
       return;
     } 
     // Allocate space for our new size.
@@ -2282,6 +2282,8 @@ break;
 	return Array(dp->dataClass,index.dp->dimensions,
 		     NULL,false,dp->fieldNames,dp->className);
       }
+      if (isColonOperator(index) && isEmpty())
+	return Array::emptyConstructor();
       if (isEmpty()) 
 	throw Exception("Cannot index into empty variable.");
       // Check for a(:), which is mapped to a reshape operation
@@ -2753,14 +2755,13 @@ break;
     // If the max index is larger than our current length, then
     // we have to resize ourselves - but this is only legal if we are
     // a vector.
-    vectorResize(max_index);
     if (isSparse()) {
       if (dp->dataClass == FM_LOGICAL)
 	data.promoteType(FM_UINT32);
       int rows = getDimensionLength(0);
       int cols = getDimensionLength(1);
-      SetSparseVectorSubsets(dp->dataClass,rows,cols,dp->getWriteableData(),
-			     (const indexType*) index.dp->getData(),
+      void *qp = SetSparseVectorSubsets(dp->dataClass,rows,cols,dp->getData(),
+					(const indexType*) index.dp->getData(),
 					index.getDimensionLength(0),
 					index.getDimensionLength(1),
 					data.getDataPointer(),
@@ -2771,6 +2772,7 @@ break;
       dp = dp->putData(dp->dataClass,newdim,qp,true);
       return;
     }
+    vectorResize(max_index);
     // Get a writable data pointer
     void *qp = getReadWriteDataPointer();
     // Now, we copy data from the RHS to our real part,
@@ -2804,6 +2806,14 @@ break;
     if (data.isEmpty()) {
       deleteNDimSubset(index);
       return;
+    }
+    // If we are empty, then fill in the colon dimensions with the corresponding
+    // sizes of data
+    if (isEmpty()) {
+      int m = 0;
+      for (int i=0;i<index.size();i++)
+	if (isColonOperator(index[i]))
+	  index[i] = Array::int32RangeConstructor(1,1,data.getDimensionLength(m++),true);
     }
     try {
       int L = index.size();
@@ -2857,14 +2867,16 @@ break;
 	else if (data.dp->dataClass <= dp->dataClass)
 	  data.promoteType(dp->dataClass,dp->fieldNames);
       }
+      // Now, resize us to fit this data
+      resize(a);
       if (isSparse()) {
 	if (dp->dataClass == FM_LOGICAL)
 	  data.promoteType(FM_UINT32);
 	if (L > 2)
 	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays in assignment A(I1,I2,...,IN) = B");
-	int rows = getDimensionLength(0);
-	int cols = getDimensionLength(1);
-	SetSparseNDimSubsets(dp->dataClass, rows, cols, 
+	SetSparseNDimSubsets(dp->dataClass, 
+			     getDimensionLength(0), 
+			     getDimensionLength(1), 
 			     dp->getWriteableData(), 
 			     (const indexType*) indx[0], 
 			     outDims[0],
@@ -2873,8 +2885,6 @@ break;
 			     data.getDataPointer(),advance);
 	return;
       }
-      // Now, resize us to fit this data
-      resize(a);
       myDims = dp->dimensions;
       // Get a writable data pointer
       void *qp = getReadWriteDataPointer();

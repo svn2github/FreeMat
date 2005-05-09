@@ -3418,6 +3418,8 @@ namespace FreeMat {
     while (t != NULL) {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
+      if (r.isUserClass() && !stopoverload)
+	return ClassRHSExpression(r,t,this);
       rv = subsrefSingle(r,t);
       if (rv.size() == 1) {
 	r = rv[0];

@@ -63,7 +63,6 @@ namespace FreeMat {
      args.push_back("x");
      args.push_back("d");
      context->addFunction("sum",SumFunction,2,1,args);
-     context->addFunction("any",AnyFunction,2,1,args);
      context->addFunction("cumsum",CumsumFunction,2,1,args);
      context->addFunction("mean",MeanFunction,2,1,args);
      context->addFunction("var",VarFunction,2,1,args);

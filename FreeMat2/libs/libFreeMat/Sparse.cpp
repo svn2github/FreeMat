@@ -9,6 +9,15 @@ extern "C" {
 #include "Math.hpp"
 #include <math.h>
 
+// Routines that need to be Colon-compliant
+// SetSparseNDimSubsets
+//
+// Routines that could stand to optimized
+// getSparseNDimSubsets and getSparseRowSubset
+//
+// Need to move resize for sparse matrices back into Array class so that
+// no unnecessary copies get made during the set operations.
+
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
@@ -1725,7 +1734,6 @@ namespace FreeMat {
   template <class T>
   void* GetSparseVectorSubsetsReal(int rows, int cols, const T** A,
 				   const indexType* indx, int irows, int icols) {
-    //#error Not colon compliant
     // Convert the sparse matrix into IJV format
     IJVEntry<T>* mlist;
     int nnz;
@@ -1780,7 +1788,6 @@ namespace FreeMat {
     IJVEntry<T>* mlist;
     int nnz;
     mlist = ConvertSparseToIJVListReal<T>(A,rows,cols,nnz);
-    //#error Not colon compliant
     // Unpack the indexing array into IJV format
     IJVEntry<T>* ilist;
     int icount;
@@ -1860,7 +1867,6 @@ namespace FreeMat {
     icount = irows*icols;
     // check to see if a resize is necessary...
     int maxindx = indx[0];
-    //#error Not colon compliant
     int i, j;
     for (i=0;i<icount;i++)
       maxindx = (maxindx > indx[i]) ? maxindx : indx[i];
@@ -1932,7 +1938,6 @@ namespace FreeMat {
     int nnz;
     mlist = ConvertSparseToIJVListComplex<T>(A,rows,cols,nnz);
     // Unpack the indexing array into IJV format
-    //#error Not colon compliant
     IJVEntry<T>* ilist;
     int icount;
     icount = irows*icols;
@@ -2059,76 +2064,10 @@ namespace FreeMat {
     return dest;
   }
 
-  template <class T>
-  void* GetSparseRowSubsetReal(int rows, int cols, const T** A, const indexType* rindx, int irows) {
-    T* Acol = new T[rows];
-    T* buffer = new T[irows*2];
-    T** dp = new T*[cols];
-    for (int i=0;i<cols;i++) {
-      memset(Acol,0,rows*sizeof(T));
-      DecompressRealString<T>(A[i],Acol,rows);
-      memset(buffer,0,irows*2*sizeof(T));
-      RLEEncoder<T> Acode(buffer,irows);
-      for (int j=0;j<irows;j++) {
-	int n = rindx[j] - 1;
-	Acode.set(j);
-	Acode.push(Acol[n]);
-      }
-      Acode.end();
-      dp[i] = Acode.copyout();
-    }
-    delete buffer;
-    delete Acol;
-    return dp;
-  }
-
-  template <class T>
-  void* GetSparseRowSubsetComplex(int rows, int cols, const T** A, const indexType* rindx, int irows) {
-    T* Acol = new T[rows*2];
-    T* buffer = new T[irows*4];
-    T** dp = new T*[cols];
-    for (int i=0;i<cols;i++) {
-      memset(Acol,0,rows*sizeof(T)*2);
-      DecompressComplexString<T>(A[i],Acol,rows);
-      memset(buffer,0,irows*4*sizeof(T));
-      RLEEncoderComplex<T> Acode(buffer,irows);
-      for (int j=0;j<irows;j++) {
-	int n = rindx[j] - 1;
-	Acode.set(j);
-	Acode.push(Acol[2*n],Acol[2*n+1]);
-      }
-      Acode.end();
-      dp[i] = Acode.copyout();
-    }
-    delete buffer;
-    delete Acol;
-    return dp;
-  }
-
-  void* GetSparseRowSubset(Class dclass, int rows, int cols, const void* src,
-			   const indexType* rindx, int irows) {
-    //#error Not colon compliant
-    switch(dclass) {
-    case FM_LOGICAL:
-      return GetSparseRowSubsetReal<uint32>(rows, cols, (const uint32**) src, rindx, irows);
-    case FM_INT32:
-      return GetSparseRowSubsetReal<int32>(rows, cols, (const int32**) src, rindx, irows);
-    case FM_FLOAT:
-      return GetSparseRowSubsetReal<float>(rows, cols, (const float**) src, rindx, irows);
-    case FM_DOUBLE:
-      return GetSparseRowSubsetReal<double>(rows, cols, (const double**) src, rindx, irows);
-    case FM_COMPLEX:
-      return GetSparseRowSubsetComplex<float>(rows,cols,(const float**) src,rindx,irows);
-    case FM_DCOMPLEX:
-      return GetSparseRowSubsetComplex<double>(rows,cols,(const double**) src,rindx,irows);
-    }
-    throw Exception("unsupported type for GetSparseRowSubset");    
-  }
 
   // GetSparseNDimSubsets
   void* GetSparseColumnSubset(Class dclass, int rows, int cols, const void* src,
 			      const indexType* cindx, int icols) {
-    //#error Not colon compliant
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseColumnSubsetAssist<uint32>(rows, cols, (const uint32**) src, cindx, icols);
@@ -2151,32 +2090,39 @@ namespace FreeMat {
   void* GetSparseNDimSubsetsReal(int rows, int cols, const T** A,
 				 const indexType* rindx, int irows, 
 				 const indexType* cindx, int icols) {
-    int i, j, n, m;
-    int nrow, ncol;
-    T* Acol = new T[rows];
-    T* Bcol = new T[irows];
-    T** dp = new T*[icols];
-    T* buffer = new T[irows*2];
-    for (i=0;i<icols;i++) {
-      // Get the column index
-      m = cindx[i] - 1;
-      if ((m<0) || (m>=cols))
-	throw Exception("column index exceeds variable bounds in expression of type A(n,m)");
-      memset(Acol,0,rows*sizeof(T));
-      DecompressRealString<T>(A[m],Acol,rows);
-      memset(Bcol,0,irows*sizeof(T));
-      for (j=0;j<irows;j++) {
-	// Get the row index
-	n = rindx[j] - 1;
-	if ((n<0) || (n>=rows))
-	  throw Exception("row index exceeds variable bounds in expression of type A(n,m)");
-	Bcol[j] = Acol[n];
-      }
-      dp[i] = CompressRealVector<T>(buffer,Bcol,irows);
+    // We need to put rindx into an IJV list, we can set the J column
+    // to 1 (it doesn't matter), and then sort the list.   
+    IJVEntry<T>* mlist = new IJVEntry<T>[irows];
+    for (int i=0;i<irows;i++) {
+      mlist[i].I = rindx[i] - 1;
+      mlist[i].J = 1;
+      mlist[i].Vreal = (T) i;
     }
-    delete buffer;
-    delete Acol;
-    delete Bcol;
+    std::sort(mlist,mlist+irows);
+    IJVEntry<T>* ilist = new IJVEntry<T>[irows];
+    T** dp = new T*[icols];
+    T* buffer = new T[2*irows];
+    for (int n=0;n<icols;n++) {
+      // For this column, we take a decoder
+      RLEDecoder<T> Acol(A[cindx[n]-1],rows);
+      Acol.update();
+      for (int m=0;m<irows;m++) {
+	while (Acol.more() && Acol.row() < mlist[m].I)
+	  Acol.advance();
+	ilist[m].I = (uint32) mlist[m].Vreal;
+	ilist[m].J = 1;
+	if (Acol.row() > mlist[m].I) 
+	  ilist[m].Vreal = 0;
+	else
+	  ilist[m].Vreal = Acol.value();
+      }
+      std::sort(ilist,ilist+irows);
+      int ptr = 0;
+      dp[n] = CompressRealIJV<T>(buffer,ilist,irows,ptr,1,irows);
+    }
+    delete[] buffer;
+    delete[] ilist;
+    delete[] mlist;
     return dp;
   }
 
@@ -2185,33 +2131,42 @@ namespace FreeMat {
   void* GetSparseNDimSubsetsComplex(int rows, int cols, const T** A,
 				    const indexType* rindx, int irows, 
 				    const indexType* cindx, int icols) {
-    int i, j, n, m;
-    int nrow, ncol;
-    T* Acol = new T[2*rows];
-    T* Bcol = new T[2*irows];
-    T** dp = new T*[icols];
-    T* buffer = new T[irows*4];
-    for (i=0;i<icols;i++) {
-      // Get the column index
-      m = cindx[i] - 1;
-      if ((m<0) || (m>=cols))
-	throw Exception("column index exceeds variable bounds in expression of type A(n,m)");
-      memset(Acol,0,2*rows*sizeof(T));
-      DecompressComplexString<T>(A[m],Acol,rows);
-      memset(Bcol,0,2*irows*sizeof(T));
-      for (j=0;j<irows;j++) {
-	// Get the row index
-	n = rindx[j] - 1;
-	if ((n<0) || (n>=rows))
-	  throw Exception("row index exceeds variable bounds in expression of type A(n,m)");
-	Bcol[2*j] = Acol[2*n];
-	Bcol[2*j+1] = Acol[2*n+1];
-      }
-      dp[i] = CompressComplexVector<T>(buffer,Bcol,irows);
+    // We need to put rindx into an IJV list, we can set the J column
+    // to 1 (it doesn't matter), and then sort the list.   
+    IJVEntry<T>* mlist = new IJVEntry<T>[irows];
+    for (int i=0;i<irows;i++) {
+      mlist[i].I = rindx[i] - 1;
+      mlist[i].J = 1;
+      mlist[i].Vreal = (T) i;
     }
-    delete buffer;
-    delete Acol;
-    delete Bcol;
+    std::sort(mlist,mlist+irows);
+    IJVEntry<T>* ilist = new IJVEntry<T>[irows];
+    T** dp = new T*[icols];
+    T* buffer = new T[4*irows];
+    for (int n=0;n<icols;n++) {
+      // For this column, we take a decoder
+      RLEDecoderComplex<T> Acol(A[cindx[n]-1],rows);
+      Acol.update();
+      for (int m=0;m<irows;m++) {
+	while (Acol.more() && Acol.row() < mlist[m].I)
+	  Acol.advance();
+	ilist[m].I = (uint32) mlist[m].Vreal;
+	ilist[m].J = 1;
+	if (Acol.row() > mlist[m].I) {
+	  ilist[m].Vreal = 0;
+	  ilist[m].Vimag = 0;
+	} else {
+	  ilist[m].Vreal = Acol.value_real();
+	  ilist[m].Vreal = Acol.value_imag();
+	}
+      }
+      std::sort(ilist,ilist+irows);
+      int ptr = 0;
+      dp[n] = CompressComplexIJV<T>(buffer,ilist,irows,ptr,1,irows);
+    }
+    delete[] buffer;
+    delete[] ilist;
+    delete[] mlist;
     return dp;
   }
 
@@ -2229,8 +2184,13 @@ namespace FreeMat {
     if ((rindx == NULL) || ((irows == rows) && 
 			    CheckAllRowsReference(rindx,rows)))
       return GetSparseColumnSubset(dclass,rows,cols,src,cindx,icols);
-    if (cindx == NULL)
-      return GetSparseRowSubset(dclass,rows,cols,src,rindx,irows);
+    indexType* cptr;
+    if (cindx == NULL) {
+      // Memory leak!
+      cptr = new indexType[icols];
+      for (int i=0;i<icols;i++) cptr[i] = i+1;
+    } else
+      cptr = (indexType*) cindx;
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
@@ -2370,32 +2330,39 @@ namespace FreeMat {
     return dp;
   }
 
+  void* CopyResizeSparseMatrix(Class dclass, int rows, int cols,
+			       const void *Ap, int newrows, int newcols) {
+    switch(dclass) {
+    case FM_LOGICAL:
+      return CopyResizeSparseMatrixReal<uint32>((const uint32 **)Ap,
+						rows,cols,newrows,newcols);
+    case FM_INT32:
+      return CopyResizeSparseMatrixReal<int32>((const int32 **)Ap,
+					       rows,cols,newrows,newcols);
+    case FM_FLOAT:
+      return CopyResizeSparseMatrixReal<float>((const float **)Ap,
+					       rows,cols,newrows,newcols);
+    case FM_DOUBLE:
+      return CopyResizeSparseMatrixReal<double>((const double **)Ap,
+						rows,cols,newrows,newcols);
+    case FM_COMPLEX:
+      return CopyResizeSparseMatrixComplex<float>((const float **)Ap,
+						  rows,cols,newrows,newcols);
+    case FM_DCOMPLEX:
+      return CopyResizeSparseMatrixComplex<double>((const double **)Ap,
+						   rows,cols,newrows,newcols);
+    otherwise:
+      throw Exception("Unsupported type in makeDenseArray");
+    }
+  }
+
   template <class T>
-  void* SetSparseNDimSubsetsReal(int &rows, int &cols, const T** A,
-				 const indexType* rindx, int irows, 
-				 const indexType* cindx, int icols,
-				 const T* data, int advance) {
+  void SetSparseNDimSubsetsReal(int rows, int cols, T** dp,
+				const indexType* rindx, int irows, 
+				const indexType* cindx, int icols,
+				const T* data, int advance) {
     int i, j, n, m;
     int nrow, ncol;
-
-    T**dp;
-    // Check for a resize...
-    int maxrow, maxcol;
-    maxrow = rindx[0];
-    for (i=0;i<irows;i++)
-      maxrow = (maxrow > rindx[i]) ? maxrow : rindx[i];
-    maxcol = cindx[0];
-    for (i=0;i<icols;i++)
-      maxcol = (maxcol > cindx[i]) ? maxcol : cindx[i];
-    if ((maxrow > rows) || (maxcol > cols)) {
-      maxrow = maxrow > rows ? maxrow : rows;
-      maxcol = maxcol > cols ? maxcol : cols;
-      dp = (T**) CopyResizeSparseMatrixReal<T>(A,rows,cols,maxrow,maxcol);
-      rows = maxrow;
-      cols = maxcol;
-    } else 
-      dp = (T**) CopySparseMatrix<T>(A,rows,cols);
-
     T* Acol = new T[rows];
     T* buffer = new T[rows*2];
     for (i=0;i<icols;i++) {
@@ -2418,36 +2385,16 @@ namespace FreeMat {
     }
     delete Acol;
     delete buffer;
-    return dp;
   }
 
 
   template <class T>
-  void* SetSparseNDimSubsetsComplex(int &rows, int &cols, const T** A,
-				    const indexType* rindx, int irows, 
-				    const indexType* cindx, int icols,
-				    const T* data, int advance) {
+  void SetSparseNDimSubsetsComplex(int rows, int cols, T** dp,
+				   const indexType* rindx, int irows, 
+				   const indexType* cindx, int icols,
+				   const T* data, int advance) {
     int i, j, n, m;
     int nrow, ncol;
-
-    T**dp;
-    // Check for a resize...
-    int maxrow, maxcol;
-    maxrow = rindx[0];
-    for (i=0;i<irows;i++)
-      maxrow = (maxrow > rindx[i]) ? maxrow : rindx[i];
-    maxcol = cindx[0];
-    for (i=0;i<icols;i++)
-      maxcol = (maxcol > cindx[i]) ? maxcol : cindx[i];
-    if ((maxrow > rows) || (maxcol > cols)) {
-      maxrow = maxrow > rows ? maxrow : rows;
-      maxcol = maxcol > cols ? maxcol : cols;
-      dp = (T**) CopyResizeSparseMatrixComplex<T>(A,rows,cols,maxrow,maxcol);
-      rows = maxrow;
-      cols = maxcol;
-    } else 
-      dp = (T**) CopySparseMatrix<T>(A,rows,cols);
-
     T* Acol = new T[2*rows];
     T* buffer = new T[4*rows];
     for (i=0;i<icols;i++) {
@@ -2471,19 +2418,96 @@ namespace FreeMat {
     }
     delete Acol;
     delete buffer;
-    return dp;
   }
 
-  void* SetSparseNDimSubsets(Class dclass, int &rows, int &cols, 
+  template <class T>
+  void SetSparseColumnSubsetReal(int rows, int cols, T** dp,
+				 const indexType* cindx, int icols,
+				 const T* data, int advance) {
+    T* Acol = new T[rows];
+    T* buffer = new T[2*rows];
+    for (int i=0;i<icols;i++) {
+      memset(Acol,0,rows*sizeof(T));
+      for (i=0;i<rows;i++) {
+	Acol[i] = *data;
+	data += advance;
+      }
+      int n = cindx[i] - 1;
+      delete dp[n];
+      dp[n] = CompressRealVector<T>(buffer,Acol,rows);
+    }
+    delete buffer;
+    delete Acol;
+  }
+
+  template <class T>
+  void SetSparseColumnSubsetComplex(int rows, int cols, T** dp,
+				    const indexType* cindx, int icols,
+				    const T* data, int advance) {
+    T* Acol = new T[2*rows];
+    T* buffer = new T[4*rows];
+    for (int i=0;i<icols;i++) {
+      memset(Acol,0,2*rows*sizeof(T));
+      for (i=0;i<rows;i++) {
+	Acol[2*i] = data[0];
+	Acol[2*i+1] = data[1];
+	data += (2*advance);
+      }
+      int n = cindx[i] - 1;
+      delete dp[n];
+      dp[n] = CompressComplexVector<T>(buffer,Acol,rows);
+    }
+    delete buffer;
+    delete Acol;
+  }
+
+  void SetSparseColumnSubset(Class dclass, int rows, int cols,
 			     const void* src,
-			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols,
 			     const void *data, int advance) {
     switch(dclass) {
     case FM_LOGICAL:
+      return SetSparseColumnSubsetReal<uint32>(rows,cols,(uint32**) src,
+					       cindx,icols,(uint32*) data, advance);
+    case FM_INT32:
+      return SetSparseColumnSubsetReal<int32>(rows,cols,(int32**) src,
+					      cindx,icols,(int32*) data, advance);
+    case FM_FLOAT:
+      return SetSparseColumnSubsetReal<float>(rows,cols,(float**) src,
+					      cindx,icols,(float*) data, advance);
+    case FM_DOUBLE:
+      return SetSparseColumnSubsetReal<double>(rows,cols,(double**) src,
+					      cindx,icols,(double*) data, advance);
+    case FM_COMPLEX:
+      return SetSparseColumnSubsetComplex<float>(rows,cols,(float**) src,
+						 cindx,icols,(float*) data, advance);
+    case FM_DCOMPLEX:
+      return SetSparseColumnSubsetComplex<double>(rows,cols,(double**) src,
+						  cindx,icols,(double*) data, advance);
+    }
+  }    
+   
+  void SetSparseNDimSubsets(Class dclass, int rows, int cols, 
+			      void* src,
+			      const indexType* rindx, int irows,
+			      const indexType* cindx, int icols,
+			      const void *data, int advance) {
+      if ((rindx == NULL) || ((irows == rows) && 
+			      CheckAllRowsReference(rindx,rows))) 
+	return SetSparseColumnSubset(dclass,rows,cols,src,cindx,icols,data,advance);
+      indexType* cptr;
+      if (cindx == NULL) {
+	// Memory leak!
+	cptr = new indexType[icols];
+	for (int i=0;i<icols;i++) cptr[i] = i+1;
+      } else {
+	cptr = cindx;
+      }
+      switch(dclass) {
+    case FM_LOGICAL:
       return SetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
-					     rindx, irows, cindx, icols,
-					     (const uint32*) data, advance);
+					      rindx, irows, cindx, icols,
+					      (const uint32*) data, advance);
     case FM_INT32:
       return SetSparseNDimSubsetsReal<int32>(rows, cols, (const int32**) src,
 					     rindx, irows, cindx, icols,
@@ -2510,7 +2534,6 @@ namespace FreeMat {
     }
     throw Exception("unsupported type for SetSparseNDimSubsets");
   }
-
 
   template <class T>
   void* DeleteSparseMatrixRowsComplex(int rows, int cols, const T** src, bool *dmap) {

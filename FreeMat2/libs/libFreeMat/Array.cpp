@@ -664,11 +664,19 @@ namespace FreeMat {
     if (newSize.equals(dp->dimensions)) return;
     // Check to see if the total number of elements is unchanged.
     if (newSize.getElementCount() == getLength()) {
-      ensureSingleOwner();
-      dp->dimensions = newSize;
+      reshape(newSize);
       return;
     }
-    if (isSparse()) throw Exception("Cannot resize sparse arrays.");
+    if (isSparse()) {
+      dp = dp->putData(dp->dataClass,newSize,
+		       CopyResizeSparseMatrix(dp->dataClass,
+					      dp->dimensions[0],
+					      dp->dimensions[1],
+					      dp->getData(),
+					      newSize[0],
+					      newSize[1]));
+      return;
+    } 
     // Allocate space for our new size.
     void *dst_data = allocateArray(dp->dataClass,newSize.getElementCount(),dp->fieldNames);
     if (!isEmpty()) {
@@ -2696,7 +2704,7 @@ break;
 	index = Array::int32RangeConstructor(1,1,getLength(),true);
       } else {
 	Dimensions myDims(dp->dimensions);
-	if (myDims.getLength() != data.getLength())
+	if (myDims.getElementCount() != data.getLength())
 	  throw Exception("assignment A(:) = B requires A and B to be the same size");
 	dp = data.dp->getCopy();
 	reshape(myDims);
@@ -2721,7 +2729,7 @@ break;
       advance = 1;
     else
       throw Exception("Size mismatch in assignment A(I) = B.\n");
-    // Compute the maximum index
+    // Compute the maximum index;
     indexType max_index = index.getMaxAsIndex();
     // If the RHS type is superior to ours, we 
     // force our type to agree with the inserted data.
@@ -2742,11 +2750,17 @@ break;
       else if (data.getDataClass() <= dp->dataClass)
       data.promoteType(dp->dataClass,dp->fieldNames);
     }
+    // If the max index is larger than our current length, then
+    // we have to resize ourselves - but this is only legal if we are
+    // a vector.
+    vectorResize(max_index);
     if (isSparse()) {
+      if (dp->dataClass == FM_LOGICAL)
+	data.promoteType(FM_UINT32);
       int rows = getDimensionLength(0);
       int cols = getDimensionLength(1);
-      void *qp = SetSparseVectorSubsets(dp->dataClass,rows,cols,dp->getData(),
-					(const indexType*) index.dp->getData(),
+      SetSparseVectorSubsets(dp->dataClass,rows,cols,dp->getWriteableData(),
+			     (const indexType*) index.dp->getData(),
 					index.getDimensionLength(0),
 					index.getDimensionLength(1),
 					data.getDataPointer(),
@@ -2757,10 +2771,6 @@ break;
       dp = dp->putData(dp->dataClass,newdim,qp,true);
       return;
     }
-    // If the max index is larger than our current length, then
-    // we have to resize ourselves - but this is only legal if we are
-    // a vector.
-    vectorResize(max_index);
     // Get a writable data pointer
     void *qp = getReadWriteDataPointer();
     // Now, we copy data from the RHS to our real part,
@@ -2848,21 +2858,19 @@ break;
 	  data.promoteType(dp->dataClass,dp->fieldNames);
       }
       if (isSparse()) {
+	if (dp->dataClass == FM_LOGICAL)
+	  data.promoteType(FM_UINT32);
 	if (L > 2)
 	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays in assignment A(I1,I2,...,IN) = B");
 	int rows = getDimensionLength(0);
 	int cols = getDimensionLength(1);
-	void *qp = SetSparseNDimSubsets(dp->dataClass, rows, cols, 
-					dp->getData(), 
-					(const indexType*) indx[0], 
-					outDims[0],
-					(const indexType*) indx[1], 
-					outDims[1],
-					data.getDataPointer(),advance);
-	Dimensions newdim;
-	newdim[0] = rows;
-	newdim[1] = cols;
-	dp = dp->putData(dp->dataClass,newdim,qp,true);
+	SetSparseNDimSubsets(dp->dataClass, rows, cols, 
+			     dp->getWriteableData(), 
+			     (const indexType*) indx[0], 
+			     outDims[0],
+			     (const indexType*) indx[1], 
+			     outDims[1],
+			     data.getDataPointer(),advance);
 	return;
       }
       // Now, resize us to fit this data
@@ -3150,7 +3158,7 @@ break;
     try {
       // First convert arg to an ordinal type.
       if (isColonOperator(arg)) {
-	dp = dp->putData(dp->dataClass,Dimensions(0,0),NULL,dp->sparse,dp->fieldNames,dp->className);
+	dp = dp->putData(dp->dataClass,Dimensions(0,0),NULL,false,dp->fieldNames,dp->className);
 	return;
       }
       arg.toOrdinalType();

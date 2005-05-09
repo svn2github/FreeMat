@@ -55,11 +55,11 @@ namespace FreeMat {
 			       int irows, int icols, const void* data, 
 			       int advance);
   // Test 66
-  void* SetSparseNDimSubsets(Class dclass, int &rows, int &cols, 
-			     const void* src,
-			     const indexType* rindx, int irows,
-			     const indexType* cindx, int icols,
-			     const void* data, int advance);
+  void SetSparseNDimSubsets(Class dclass, int rows, int cols, 
+			    void* src,
+			    const indexType* rindx, int irows,
+			    const indexType* cindx, int icols,
+			    const void* data, int advance);
   // Test 67
   void* GetSparseScalarElement(Class dclass, int rows, int cols, 
 			       const void* src,  indexType rindx, 
@@ -120,5 +120,7 @@ namespace FreeMat {
   void* SparseScalarLogicalOp(Class dclass, int rows, int cols, const void *Ap, const void *Bp, SparseLogOpID opselect);
   void* ReshapeSparseMatrix(Class dclass, int rows, int cols, const void *Ap, int newrows, int newcols);
   void* SparseAbsFunction(Class dclass, int rows, int cols, const void *Ap);
+  void* CopyResizeSparseMatrix(Class dclass, int rows, int cols, 
+			       const void *Ap, int newrows, int newcols);
 }
 #endif

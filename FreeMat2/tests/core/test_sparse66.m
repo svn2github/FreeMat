@@ -18,4 +18,3 @@ yd1(ndxr,ndxc) = gd; zd1(ndxr,ndxc) = gd;
 yc1(ndxr,ndxc) = gc; zc1(ndxr,ndxc) = gc;
 yz1(ndxr,ndxc) = gz; zz1(ndxr,ndxc) = gz;
 x = testeq(yi1,zi1) & testeq(yf1,zf1) & testeq(yd1,zd1) & testeq(yc1,zc1) & testeq(yz1,zz1);
-

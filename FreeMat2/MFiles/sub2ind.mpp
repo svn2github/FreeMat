@@ -65,4 +65,5 @@ function n = sub2ind(sizevec,varargin)
     slicesize = slicesize*sizevec(i);
   end
   n = (outvec + 1)';
+  n = reshape(n,size(varargin{1}));
 

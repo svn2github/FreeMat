@@ -2220,9 +2220,6 @@ namespace FreeMat {
   void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
 			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols) {
-    if ((rindx == NULL) || ((irows == rows) && 
-			    CheckAllRowsReference(rindx,rows)))
-      return GetSparseColumnSubset(dclass,rows,cols,src,cindx,icols);
     indexType* cptr;
     if (cindx == NULL) {
       // Memory leak!
@@ -2230,6 +2227,9 @@ namespace FreeMat {
       for (int i=0;i<icols;i++) cptr[i] = i+1;
     } else
       cptr = (indexType*) cindx;
+    if ((rindx == NULL) || ((irows == rows) && 
+			    CheckAllRowsReference(rindx,rows)))
+      return GetSparseColumnSubset(dclass,rows,cols,src,cptr,icols);
     switch(dclass) {
     case FM_LOGICAL:
       return GetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
@@ -2588,9 +2588,6 @@ namespace FreeMat {
 			      const indexType* rindx, int irows,
 			      const indexType* cindx, int icols,
 			      const void *data, int advance) {
-      if ((rindx == NULL) || ((irows == rows) && 
-			      CheckAllRowsReference(rindx,rows))) 
-	return SetSparseColumnSubset(dclass,rows,cols,src,cindx,icols,data,advance);
       indexType* cptr;
       if (cindx == NULL) {
 	// Memory leak!
@@ -2599,6 +2596,9 @@ namespace FreeMat {
       } else {
 	cptr = (indexType*) cindx;
       }
+      if ((rindx == NULL) || ((irows == rows) && 
+			      CheckAllRowsReference(rindx,rows))) 
+	return SetSparseColumnSubset(dclass,rows,cols,src,cptr,icols,data,advance);
       switch(dclass) {
       case FM_LOGICAL:
 	return SetSparseNDimSubsetsReal<uint32>(rows, cols, (uint32**) src,

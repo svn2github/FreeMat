@@ -73,7 +73,7 @@ namespace FreeMat {
       C = arg[i];
       C.printMe(eval->getPrintLimit());
     }
-    retval.push_back(C);
+    //    retval.push_back(C);
     return retval;
   } 
 
@@ -2558,8 +2558,8 @@ namespace FreeMat {
     int Cm, Cn, Cm_offset, Cn_offset;
     Cm = X.getDimensionLength(0);
     Cn = X.getDimensionLength(1);
-    Cm_offset = ceil((double)((Y.getDimensionLength(0)-1)/2))+1;
-    Cn_offset = ceil((double)((Y.getDimensionLength(1)-1)/2))+1;
+    Cm_offset = floor((double)((Y.getDimensionLength(0)-1)/2));
+    Cn_offset = floor((double)((Y.getDimensionLength(1)-1)/2));
     return singleArrayVector(Conv2FunctionDispatch(X,Y,Cm,Cn,Cm_offset,Cn_offset));
   }
 

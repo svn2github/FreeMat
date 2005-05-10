@@ -2830,7 +2830,7 @@ break;
       // First, we compute the maximum along each dimension.
       int dataCount = 1;
       for (int i=0;i<L;i++) {
-	if (i == colonIndex) {
+	if (isColonOperator(index[i])) {
 	  a[i] = myDims[i];
 	  dataCount *= myDims[i];
 	} else {

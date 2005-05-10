@@ -550,7 +550,7 @@ namespace FreeMat {
   template <class T>
   void* makeSparseFromIJVReal(int rows, int cols, int nnz,
 			      uint32* I, int istride, uint32 *J, int jstride,
-			      T* cp, int cpstride) {
+			      const T* cp, int cpstride) {
     // build an IJV master list
     IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
     int i;
@@ -573,6 +573,39 @@ namespace FreeMat {
     T* buffer = new T[rows*2];
     for (int col=0;col<cols;col++)
       op[col] = CompressRealIJV<T>(buffer,mlist,nnz,ptr,col,rows);
+    delete[] buffer;
+    // Free the space
+    delete[] mlist;
+    // Return the array
+    return op;
+  }
+
+  void* makeSparseFromIJVLogical(int rows, int cols, int nnz,
+				 uint32* I, int istride, uint32 *J, 
+				 int jstride, const logical* cp, 
+				 int cpstride) {
+    // build an IJV master list
+    IJVEntry<uint32> *mlist = new IJVEntry<uint32>[nnz];
+    int i;
+    for (i=0;i<nnz;i++) {
+      mlist[i].I = I[istride*i]-1;
+      if ((mlist[i].I < 0) || (mlist[i].I >= rows))
+	throw Exception("an element of the I vector in the I,J,V exceeds the size of the output matrix");
+      mlist[i].J = J[jstride*i]-1;
+      if ((mlist[i].J < 0) || (mlist[i].J >= cols))
+	throw Exception("an element of the J vector in the I,J,V exceeds the size of the output matrix");
+      mlist[i].Vreal = cp[cpstride*i];
+    }
+    std::sort(mlist,mlist+nnz);
+    uint32** op;
+    // Allocate the output (sparse) array
+    op = new uint32*[cols];
+    // Get an integer pointer into the IJV list
+    int ptr = 0;
+    // Stringify...
+    uint32* buffer = new uint32[rows*2];
+    for (int col=0;col<cols;col++)
+      op[col] = CompressRealIJV<uint32>(buffer,mlist,nnz,ptr,col,rows);
     delete[] buffer;
     // Free the space
     delete[] mlist;
@@ -709,7 +742,7 @@ namespace FreeMat {
   template <class T>
   void* makeSparseFromIJVComplex(int rows, int cols, int nnz,
 				 uint32* I, int istride, uint32 *J, int jstride,
-				 T* cp, int cpstride) {
+				 const T* cp, int cpstride) {
     // build an IJV master list
     IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
     int i;
@@ -746,23 +779,29 @@ namespace FreeMat {
 			  const void* cp, int cpstride) {
     switch(dclass) {
     case FM_LOGICAL:
-      return makeSparseFromIJVReal<uint32>(rows,cols,nnz,I,istride,
-					    J,jstride,(uint32*)cp,cpstride);
+      return makeSparseFromIJVLogical(rows,cols,nnz,I,istride,
+				      J,jstride,(const logical*)cp,
+				      cpstride);
     case FM_INT32:
       return makeSparseFromIJVReal<int32>(rows,cols,nnz,I,istride,
-					  J,jstride,(int32*)cp,cpstride);
+					  J,jstride,(const int32*)cp,
+					  cpstride);
     case FM_FLOAT:
       return makeSparseFromIJVReal<float>(rows,cols,nnz,I,istride,
-					  J,jstride,(float*)cp,cpstride);
+					  J,jstride,(const float*)cp,
+					  cpstride);
     case FM_DOUBLE:
       return makeSparseFromIJVReal<double>(rows,cols,nnz,I,istride,
-					   J,jstride,(double*)cp,cpstride);
+					   J,jstride,(const double*)cp,
+					   cpstride);
     case FM_COMPLEX:
       return makeSparseFromIJVComplex<float>(rows,cols,nnz,I,istride,
-					     J,jstride,(float*)cp,cpstride);
+					     J,jstride,(const float*)cp,
+					     cpstride);
     case FM_DCOMPLEX:
       return makeSparseFromIJVComplex<double>(rows,cols,nnz,I,istride,
-					      J,jstride,(double*)cp,cpstride);
+					      J,jstride,(const double*)cp,
+					      cpstride);
     }
     throw Exception("unsupported type for makeSparseFromIJV");
   }

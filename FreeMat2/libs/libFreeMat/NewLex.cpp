@@ -196,11 +196,11 @@ void lexUntermString() {
 
   strptr = stringval;
   while (isWhitespace());
-  if (testNewline()) {
+  if (testNewline() || !isalpha(currentChar())) {
     lexState = Scanning;
     return;
   }
-  while (!testNewline() && !testWhitespace()) {
+  while (!testNewline() && isalnum(currentChar())) {
     *strptr++ = currentChar();
     discardChar();
   }
@@ -222,13 +222,13 @@ void lexString() {
 
   strptr = stringval;
   discardChar();
-  while ((currentChar() != '\'') || ((currentChar() == '\'') && (datap[1] == '\'')) && !testNewline()) {
+  while (!currentChar() && (currentChar() != '\'') || ((currentChar() == '\'') && (datap[1] == '\'')) && !testNewline()) {
     if ((currentChar() == '\'') && (datap[1] == '\''))
       discardChar();
     *strptr++ = currentChar();
     discardChar();
   }
-  if (testNewline()) LexerException("unterminated string");
+  if (testNewline() || !currentChar()) LexerException("unterminated string");
   discardChar();
   *strptr++ = '\0';
   setTokenType(STRING);

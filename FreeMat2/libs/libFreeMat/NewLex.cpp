@@ -101,10 +101,10 @@ inline bool testSpecialFuncs() {
   if (!isalpha(datap[0])) return false;
   //FIXME - this should check the current context to see if any of these have been 
   //masked or assigned
-  //  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0) || (strncmp(datap,"dir ",4)==0));
-  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0));
-  if (test1)
-    return test1;
+  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0) || (strncmp(datap,"dir ",4)==0));
+  //  test1 = ((strncmp(datap,"cd ",3)==0) || (strncmp(datap,"ls ",3)==0));
+  //  if (test1)
+  return test1;
   // Check for non-keyword identifier followed by whitespace followed by alphanum
   char keyword[100];
   cp = datap;
@@ -196,11 +196,11 @@ void lexUntermString() {
 
   strptr = stringval;
   while (isWhitespace());
-  if (testNewline() || !isalpha(currentChar())) {
+  if (testNewline()) {
     lexState = Scanning;
     return;
   }
-  while (!testNewline() && isalnum(currentChar())) {
+  while (!testNewline()) {
     *strptr++ = currentChar();
     discardChar();
   }
@@ -222,7 +222,7 @@ void lexString() {
 
   strptr = stringval;
   discardChar();
-  while (!currentChar() && (currentChar() != '\'') || ((currentChar() == '\'') && (datap[1] == '\'')) && !testNewline()) {
+  while (currentChar() && (currentChar() != '\'') || ((currentChar() == '\'') && (datap[1] == '\'')) && !testNewline()) {
     if ((currentChar() == '\'') && (datap[1] == '\''))
       discardChar();
     *strptr++ = currentChar();
@@ -678,6 +678,7 @@ void lexInitialState() {
       discardChar();
     NextLine();
   } else if (testSpecialFuncs()) {
+    lexIdentifier();
     lexState = SpecScan;
   } else {
     lexState = Scanning;
@@ -712,7 +713,7 @@ int yylexScreen() {
       /* Test if next character indicates the start of an expression */
       if ((currentChar() == '(') || (currentChar() == '+') || (currentChar() == '-') ||
 	  ((currentChar() == '~')  && (datap[1] != '=')) || (currentChar() == '[') || (currentChar() == '{') ||
-	  (currentChar() == '\'') || (isalnum(currentChar())) || ((currentChar() == '.') && (isdigit(datap[1])))) {
+	  (currentChar() == '\'') || (isalnum(currentChar())) || ((currentChar() == '.') && (isdigit(datap[1])))  || (strncmp(datap,"...",3) == 0) ){
 	/* 
 	   OK - now we have to decide if the "+/-" are infix or prefix operators...
 	   In fact, this decision alone is the reason for this whole lexer.

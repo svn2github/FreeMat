@@ -2618,6 +2618,7 @@ break;
     if (isSparse())
       throw Exception("getVectorContentsAsList not supported for sparse arrays.");
     if (index.isEmpty()) return ArrayVector();
+    if (isEmpty()) return ArrayVector();
     if (isColonOperator(index)) {
       int cnt = getLength();
       // Get a pointer to our data

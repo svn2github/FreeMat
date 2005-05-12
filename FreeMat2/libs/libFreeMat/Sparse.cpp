@@ -1106,44 +1106,27 @@ namespace FreeMat {
     // This new version of the sparse-sparse matrix multiply works
     // as follows.  The outer loop is over the columns of B
     T* abuff = new T[2*A_rows];
+    T* dbuff = new T[A_rows];
     for (int j=0;j<B_cols;j++) {
-      T* cbuff = new T[3];
-      cbuff[0] = 2; cbuff[1] = 0; cbuff[2] = A_rows;
       // Put a decoder on this column of B
       RLEDecoder<T> Bcol(B[j],A_cols);
       Bcol.update();
+      // Zero out the accumulator
+      memset(dbuff,0,sizeof(T)*A_rows);
       while (Bcol.more()) {
 	T scale = Bcol.value();
 	RLEDecoder<T> Acol(A[Bcol.row()],A_rows);
-	RLEDecoder<T> Ccol(cbuff,A_rows);
-	RLEEncoder<T> Dcol(abuff,A_rows);
-	// Add Acol*scale + Ccol --> Dcol
 	Acol.update();
-	Ccol.update();
-	while (Acol.more() || Ccol.more()) {
-	  if (Acol.row() == Ccol.row()) {
-	    Dcol.set(Acol.row());
-	    Dcol.push(Acol.value()*scale+Ccol.value());
-	    Acol.advance();
-	    Ccol.advance();
-	  } else if (Acol.row() < Ccol.row()) {
-	    Dcol.set(Acol.row());
-	    Dcol.push(Acol.value()*scale);
-	    Acol.advance();
-	  } else {
-	    Dcol.set(Ccol.row());
-	    Dcol.push(Ccol.value());
-	    Ccol.advance();
-	  }
+	while (Acol.more()) {
+	  dbuff[Acol.row()] += Acol.value()*scale;
+	  Acol.advance();
 	}
-	Dcol.end();
-	delete cbuff;
-	cbuff = Dcol.copyout();
 	Bcol.advance();
       }
-      C[j] = cbuff;
+      C[j] = CompressRealVector(abuff,dbuff,A_rows);
     }
     delete abuff;
+    delete dbuff;
   }
   
   // Multiply a sparse matrix by a sparse matrix (result is sparse)
@@ -1157,52 +1140,32 @@ namespace FreeMat {
   void SparseSparseComplexMultiply(T** A, int A_rows, int A_cols,
 				   T** B, int B_cols,
 				   T** C) {
+    // This new version of the sparse-sparse matrix multiply works
+    // as follows.  The outer loop is over the columns of B
     T* abuff = new T[4*A_rows];
+    T* dbuff = new T[2*A_rows];
     for (int j=0;j<B_cols;j++) {
-      T* cbuff = new T[4];
-      cbuff[0] = 3; cbuff[1] = 0; cbuff[2] = 0; cbuff[3] = A_rows;
       // Put a decoder on this column of B
       RLEDecoderComplex<T> Bcol(B[j],A_cols);
       Bcol.update();
+      // Zero out the accumulator
+      memset(dbuff,0,sizeof(T)*A_rows*2);
       while (Bcol.more()) {
 	T scale_real = Bcol.value_real();
 	T scale_imag = Bcol.value_imag();
 	RLEDecoderComplex<T> Acol(A[Bcol.row()],A_rows);
-	RLEDecoderComplex<T> Ccol(cbuff,A_rows);
-	RLEEncoderComplex<T> Dcol(abuff,A_rows);
-	// Add Acol*scale + Ccol --> Dcol
 	Acol.update();
-	Ccol.update();
-	while (Acol.more() || Ccol.more()) {
-	  if (Acol.row() == Ccol.row()) {
-	    Dcol.set(Acol.row());
-	    Dcol.push(Acol.value_real()*scale_real - 
-		      Acol.value_imag()*scale_imag + Ccol.value_real(),
-		      Acol.value_imag()*scale_real + 
-		      Acol.value_real()*scale_imag + Ccol.value_imag());
-	    Acol.advance();
-	    Ccol.advance();
-	  } else if (Acol.row() < Ccol.row()) {
-	    Dcol.set(Acol.row());
-	    Dcol.push(Acol.value_real()*scale_real - 
-		      Acol.value_imag()*scale_imag,
-		      Acol.value_imag()*scale_real + 
-		      Acol.value_real()*scale_imag);
-	    Acol.advance();
-	  } else {
-	    Dcol.set(Ccol.row());
-	    Dcol.push(Ccol.value_real(),Ccol.value_imag());
-	    Ccol.advance();
-	  }
+	while (Acol.more()) {
+	  dbuff[2*Acol.row()] += Acol.value_real()*scale_real - Acol.value_imag()*scale_imag;
+	  dbuff[2*Acol.row()+1] += Acol.value_imag()*scale_real + Acol.value_real()*scale_imag;
+	  Acol.advance();
 	}
-	Dcol.end();
-	delete cbuff;
-	cbuff = Dcol.copyout();
 	Bcol.advance();
       }
-      C[j] = cbuff;
+      C[j] = CompressComplexVector(abuff,dbuff,A_rows);
     }
     delete abuff;
+    delete dbuff;
   }
   
   // Multiply a sparse matrix by a dense matrix (result is dense)

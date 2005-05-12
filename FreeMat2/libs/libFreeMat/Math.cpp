@@ -4205,13 +4205,6 @@ namespace FreeMat {
   }
 
   inline Array PowerMatrixScalar(Array A, Array B) {
-    if (B.isReal()) {
-      Array C(B);
-      C.promoteType(FM_DOUBLE);
-      const double*dp = (const double*) C.getDataPointer();
-      if (*dp == rint(*dp) && (*dp == -1))
-	return InvertMatrix(A);
-    }
     // Do an eigendecomposition of A
     Array V, D;
     if (A.isSymmetric())
@@ -4323,6 +4316,14 @@ namespace FreeMat {
     // Test for 2D on both A & B
     if (!A.is2D() || !B.is2D())
       throw Exception("Cannot apply exponential operation to N-Dimensional arrays.");
+
+    if (B.isReal() && B.isScalar()) {
+      Array C(B);
+      C.promoteType(FM_DOUBLE);
+      const double*dp = (const double*) C.getDataPointer();
+      if (*dp == rint(*dp) && (*dp == -1))
+	return InvertMatrix(A);
+    }
 
     // Test the types
     TypeCheck(A,B,true);

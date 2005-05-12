@@ -95,13 +95,13 @@ namespace FreeMat {
   
   void Interface::rescanPath() {
     m_context->flushTemporaryGlobalFunctions();
+    int i;
+    for (i=0;i<dirTab.size();i++)
+      scanDirectory(dirTab[dirTab.size()-1-i],false,"");
     // Scan the current working directory.
     char cwd[1024];
     getcwd(cwd,1024);
     scanDirectory(std::string(cwd),true,"");
-    int i;
-    for (i=0;i<dirTab.size();i++)
-      scanDirectory(dirTab[dirTab.size()-1-i],false,"");
   }
   
   /*.......................................................................

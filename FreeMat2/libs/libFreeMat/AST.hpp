@@ -33,6 +33,8 @@ namespace FreeMat {
     const_int_node,
     const_double_node,
     const_float_node,
+    const_dcomplex_node,
+    const_complex_node,
     string_const_node,
     null_node,
     reserved_node,

@@ -26,14 +26,13 @@ if (iflag0==1 & iflag1==1)
   draw(x1,y1);
   mask(x0,y0,x1,y1);
 else
+  drawln(x0,y0,x1,y1,lacc,iflag0,iflag1);
   mask(x0,y0,x1,y1);
 end
-
 x0 = x1;
 y0 = y1;
 iflag0 = iflag1;
 
-			    
 function move(x,y)
 global lx ly
 lx = x;
@@ -41,7 +40,9 @@ ly = y;
 
 function draw(x,y)
 global lx ly
-plot([lx,x],[ly,y]);
+plot([lx,x],[-ly,-y]);
+lx = x;
+ly = y;
 
 function order(xx0,yy0,xx1,yy1,&x0,&y0,&x1,&y1)
 if (xx0 <= xx1)
@@ -86,3 +87,40 @@ if (ns > nstot) ns = nstot; end
 if (ns < 1) ns = 1; end
 if (y >= ymax(ns)) iflag = 1; end;
 if (y <= ymin(ns)) iflag = 1; end;
+
+
+function drawln(xa,ya,xb,yb,lacc,iflag0,iflag1)
+if (iflag0 == 1)
+  x0 = xa;
+  y0 = ya;
+  x1 = xb;
+  y1 = yb;
+else
+  x0 = xb;
+  y0 = yb;
+  x1 = xa;
+  y1 = ya;
+end
+
+iflag = 0;
+for i=1:lacc
+  x = (x0+x1)/2;
+  y = (y0+y1)/2;
+  visible(x,y,iflag);
+  if (iflag == 0)
+    x1 = x;
+    y1 = y;
+  else
+    x0 = x;
+    y0 = y;
+  end
+end
+if (iflag0 == 1 & iflag1 == 0)
+  draw(x0,y0);
+else if (iflag0 == 0 & iflag1 == 1)
+    move(x0,y0);
+    draw(xb,yb);
+end
+end
+
+

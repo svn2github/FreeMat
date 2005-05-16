@@ -203,21 +203,3 @@ Renderer
 
 Etc.  The main figure window then doesn't care what renderer it carries.
 
-8-30-04
-
-For 3D plots, can I reuse the code to draw/manipulate axes in 2D?  
-
-Maroon 5 - BEP
-Nickelback
-Live
-Audioslave (Exclusive)
-Edie Brickell
-
-
-What still needs to be done:
-1. Menu on the main window
-2. Font selection
-3. Copy/paste/etc
-4. Bundle in libFLTK
-
-

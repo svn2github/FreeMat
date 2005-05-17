@@ -3,6 +3,7 @@
 #include <iostream>
 #include <qpainter.h>
 #include <qapplication.h>
+#include <qstyle.h>
 
 // Need: a scroll bar, and a cursor...
 
@@ -15,13 +16,30 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   m_clearall = true;
   m_scrollbar = new QScrollBar(Qt::Vertical,this);
   m_scrollbar->setRange(0,100);
-  m_timer = new QTimer;
-  QObject::connect(m_timer, SIGNAL(timeout()), this, SLOT(refresh()));
+  m_timer_refresh = new QTimer;
+  QObject::connect(m_timer_refresh, SIGNAL(timeout()), this, SLOT(refresh()));
+  m_timer_blink = new QTimer;
+  QObject::connect(m_timer_blink, SIGNAL(timeout()), this, SLOT(blink()));
+  adjustScrollbarPosition();
   setFont(11);
+  cursorOn = true;
   //  buffer.fill(colorGroup().base());
 }
 
 TermWidget::~TermWidget() {
+}
+
+void TermWidget::blink() {
+  cursorOn = !cursorOn;
+  repaint(cursorRect,true);
+}
+
+void TermWidget::adjustScrollbarPosition() {
+  m_scrollbar->resize(QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent),
+		      contentsRect().height());
+  m_active_width = contentsRect().width() - 2 - m_scrollbar->width();
+  m_scrollbar->move(contentsRect().topRight() - QPoint(m_scrollbar->width()-1,0));
+  m_scrollbar->show();
 }
 
 void TermWidget::refresh() {
@@ -32,8 +50,9 @@ void TermWidget::refresh() {
 }
 
 void TermWidget::resizeTextSurface() {
-  m_timer->start(30,false);
-  int new_width = width()/m_char_w;
+  m_timer_refresh->start(30,false);
+  m_timer_blink->start(1000);
+  int new_width = m_active_width/m_char_w;
   int new_height = height()/m_char_h;
   char *new_surface = new char[new_width*new_height];
   memset(new_surface,' ',new_width*new_height*sizeof(char));
@@ -49,16 +68,16 @@ void TermWidget::resizeTextSurface() {
 }
 
 void TermWidget::OutputString(std::string txt) {
+  m_timer_blink->start(1000);
+  cursorOn = true;
   for (int i=0;i<txt.size();i++) {
     m_surface[m_cursor_x + m_cursor_y*m_width] = txt[i];
-    m_cursor_x++;
-    m_cursor_y += m_cursor_x/m_width;
-    m_cursor_x %= m_width;
-    m_cursor_y %= m_height;
+    setCursor(m_cursor_x+1,m_cursor_y);
   }
 }
 
 void TermWidget::ProcessChar(char c) {
+  m_timer_blink->start(1000);
   if (c == 'q')
     exit(0);
   if (c != 'd') {
@@ -72,6 +91,7 @@ void TermWidget::ProcessChar(char c) {
 
 void TermWidget::resizeEvent(QResizeEvent *e) {
   QFrame::resizeEvent(e);
+  adjustScrollbarPosition();
   resizeTextSurface();
 }
 
@@ -103,38 +123,41 @@ void TermWidget::paintContents(QPainter &paint, const QRect &rect, bool pm) {
       while ((j <= rlx) && 
 	     (m_onscreen[i*m_width+j] == m_surface[i*m_width+j])) j++;
       // We have found a difference
-      char strbuf[100];
-      int strlen = 0;
       QString todraw;
+      bool emptystring = true;
       int x0 = j*m_char_w;
       int y0 = i*m_char_h;
       while ((j <= rlx) && 
 	     (m_onscreen[i*m_width+j] != m_surface[i*m_width+j])) {
 	todraw.append(m_surface[i*m_width+j]);
-	strbuf[strlen++] = m_surface[i*m_width+j];
 	m_onscreen[i*m_width+j] = m_surface[i*m_width+j];
 	j++;
+	emptystring = false;
       }
-      strbuf[strlen] = 0;
-      if (strlen) {
+      if (!emptystring) {
 	erase(QRect(x0,y0,todraw.length()*m_char_w,m_char_h));
 	paint.drawText(x0,y0+m_char_h,todraw);
-	std::cout << "rendering " << strbuf << " len = " << strlen << "\n";;
-	std::cout.flush();
       }
     }
-//     for (int j=lux;j<=rlx;j++) {
-//       int k = i*m_width+j;
-//       if (m_onscreen[k] != m_surface[k]) {
-// 	char buffer[2];
-// 	m_onscreen[k] = m_surface[k];
-// 	buffer[0] = m_onscreen[k];
-// 	buffer[1] = 0;
-// 	erase(QRect(j*m_char_w,i*m_char_h,m_char_w,m_char_h));
-// 	paint.drawText(j*m_char_w,(i+1)*m_char_h,buffer,1);
-//       }
-//     }
+    m_onscreen[m_cursor_x + m_cursor_y*m_width] = -1;
+    if (cursorOn) {
+      QBrush brush(black);
+      paint.fillRect(cursorRect,brush);
+    }
   }
+}
+
+void TermWidget::setCursor(int x, int y) {
+  cursorOn = false;
+  repaint(cursorRect,true);
+  m_cursor_x = x;
+  m_cursor_y = y;
+  m_cursor_y += m_cursor_x/m_width;
+  m_cursor_x %= m_width;
+  m_cursor_y %= m_height;
+  cursorRect = QRect(x*m_char_w,y*m_char_h,m_char_w,m_char_h);
+  cursorOn = true;
+  repaint(cursorRect,true);
 }
 
 void TermWidget::keyPressEvent(QKeyEvent *e) {

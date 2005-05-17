@@ -18,9 +18,13 @@ class TermWidget : public QFrame
   char* m_onscreen; // width x height - contains contents of the screen
   int m_char_w;    // width of a character
   int m_char_h;    // height of a character
+  int m_active_width; // width of the active text region.
   bool m_clearall;
   QScrollBar *m_scrollbar;
-  QTimer *m_timer;
+  QTimer *m_timer_refresh;
+  QTimer *m_timer_blink;
+  bool cursorOn;
+  QRect cursorRect;
   //  QPixmap buffer;
  public:
   TermWidget(QWidget *parent=0, const char *name=0);
@@ -30,6 +34,9 @@ class TermWidget : public QFrame
   void OutputString(std::string txt);
   public slots:
   void refresh();
+  void blink();
+  void adjustScrollbarPosition();
+  void setCursor(int x, int y);
   //TK dependant functions
  protected:
   void resizeEvent( QResizeEvent *e );

@@ -16,6 +16,7 @@ class TermWidget : public QFrame
   int m_cursor_x;  // column position of the cursor
   int m_cursor_y;  // row position of the cursor
   char* m_onscreen; // width x height - contains contents of the screen
+  char* m_history;  // width x scrollheight - contains history of terminal
   int m_char_w;    // width of a character
   int m_char_h;    // height of a character
   int m_active_width; // width of the active text region.
@@ -24,7 +25,11 @@ class TermWidget : public QFrame
   QTimer *m_timer_refresh;
   QTimer *m_timer_blink;
   bool cursorOn;
+  bool blinkEnable;
   QRect cursorRect;
+  int m_scrollback;
+  int m_history_lines;
+  QPixmap pm_cursor;
   //  QPixmap buffer;
  public:
   TermWidget(QWidget *parent=0, const char *name=0);
@@ -37,12 +42,14 @@ class TermWidget : public QFrame
   void blink();
   void adjustScrollbarPosition();
   void setCursor(int x, int y);
+  void markDirty(QRect& e);
+  void toggleCursor();
   //TK dependant functions
  protected:
   void resizeEvent( QResizeEvent *e );
   void paintEvent( QPaintEvent *e );
   void keyPressEvent( QKeyEvent *e );
-  void paintContents(QPainter &paint, const QRect &rect, bool pm);
+  void paintContents(QPainter &paint);
   void setFont(int size);
 };
 

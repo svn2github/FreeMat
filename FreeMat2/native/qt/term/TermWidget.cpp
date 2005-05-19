@@ -13,6 +13,11 @@
 // characters.... one way to handle this is to set a bit in the 
 
 
+// History - suppose we start with a long rectangle of text
+//      
+//
+//  Need copy & paste & select
+
 TermWidget::TermWidget(QWidget *parent, const char *name) : 
   QFrame(parent,name), pm_cursor(50,50) {
   m_surface = NULL;
@@ -24,21 +29,31 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   m_cursor_y = 0;
   m_clearall = true;
   m_scrollbar = new QScrollBar(Qt::Vertical,this);
-  m_scrollbar->setRange(0,100);
+  m_scrollbar->setRange(0,0);
   m_timer_refresh = new QTimer;
   QObject::connect(m_timer_refresh, SIGNAL(timeout()), this, SLOT(refresh()));
   m_timer_blink = new QTimer;
   QObject::connect(m_timer_blink, SIGNAL(timeout()), this, SLOT(blink()));
+  QObject::connect(m_scrollbar,SIGNAL(valueChanged(int)), this, SLOT(scrollBack(int)));
   adjustScrollbarPosition();
-  setFont(12);
+  setFont(11);
   pm_cursor.fill(Qt::white);
   cursorOn = false;
   blinkEnable = true;
   setBackgroundColor(Qt::white);
+  m_scrolling = false;
   //  buffer.fill(colorGroup().base());
 }
 
 TermWidget::~TermWidget() {
+}
+
+void TermWidget::scrollBack(int val) {
+  if (m_history_lines == 0) return;
+  m_scrolling =  (val != m_history_lines);
+  if ((m_surface[m_cursor_y*m_width+m_cursor_x] & 128) != 0)
+    m_surface[m_cursor_y*m_width+m_cursor_x] ^= 128;
+  m_surface = m_history + (m_scrollback - m_height - (m_history_lines - val))*m_width;
 }
 
 void TermWidget::toggleCursor() {
@@ -50,9 +65,9 @@ void TermWidget::blink() {
   if (!blinkEnable) return;
   m_surface[m_cursor_x + m_cursor_y*m_width] ^= 128;
   //  toggleCursor();
-//   if (!cursorOn)
-//     m_onscreen[m_cursor_x + m_cursor_y*m_width] = -1;
-//   repaint(cursorRect,true);
+  //   if (!cursorOn)
+  //     m_onscreen[m_cursor_x + m_cursor_y*m_width] = -1;
+  //   repaint(cursorRect,true);
 }
 
 void TermWidget::adjustScrollbarPosition() {
@@ -71,33 +86,54 @@ void TermWidget::refresh() {
 }
 
 void TermWidget::resizeTextSurface() {
-  blinkEnable = false;
+  bool firsttime = (m_surface == NULL);
+  if (m_surface && (m_surface[m_cursor_y*m_width+m_cursor_x] & 128) != 0)
+    m_surface[m_cursor_y*m_width+m_cursor_x] ^= 128;  
+  int cursor_offset = m_height - 1 - m_cursor_y;
   m_timer_refresh->start(30,false);
   m_timer_blink->start(1000);
   int new_width = m_active_width/m_char_w;
   int new_height = height()/m_char_h;
-  char *new_surface = new char[new_width*new_height];
-  memset(new_surface,' ',new_width*new_height*sizeof(char));
   char *new_history = new char[new_width*m_scrollback];
   memset(new_history,' ',new_width*m_scrollback*sizeof(char));
-  // Copy old surface to new surface here
+  
+  if (m_history) {
+    int minwidth = QMIN(new_width,m_width);
+    for (int i=0;i<m_scrollback;i++)
+      for (int j=0;j<minwidth;j++)
+	new_history[i*new_width+j] = m_history[i*m_width+j];
+  }
   // Copy old history to new history here
+  
   delete[] m_onscreen;
-  delete[] m_surface;
   delete[] m_history;
   m_onscreen = new char[new_width*new_height];
   memset(m_onscreen,' ',new_width*new_height*sizeof(char));
   m_history = new_history;
-  m_surface = new_surface;
+  m_surface = m_history + (m_scrollback - new_height)*new_width;
+  
+  if (!firsttime) {
+    m_history_lines -= (new_height-m_height);
+    m_history_lines = QMAX(0,m_history_lines);
+  }
+
   m_width = new_width;
   m_height = new_height;
   m_clearall = true;
-  blinkEnable = true;
   // only do this the first time
-  setCursor(0,0);
+  if (firsttime)
+    setCursor(0,0);
+  else {
+    m_cursor_y = m_height - 1 - cursor_offset;
+    m_scrollbar->setRange(0,m_history_lines);
+    m_scrollbar->setSteps(1,m_height);
+    m_scrollbar->setValue(m_history_lines);
+  }
 }
 
 void TermWidget::OutputString(std::string txt) {
+  if (m_scrolling) 
+    m_scrollbar->setValue(0);  
   for (int i=0;i<txt.size();i++) {
     if (txt[i] == '\n' || txt[i] == '\r') {
       setCursor(0,m_cursor_y+1);
@@ -110,19 +146,28 @@ void TermWidget::OutputString(std::string txt) {
 }
 
 void TermWidget::ProcessChar(char c) {
+  if (m_scrolling) 
+    m_scrollbar->setValue(0);  
   if (c == 'q')
     exit(0);
   if (c == 'l') {
     setCursor(QMAX(m_cursor_x-1,0),m_cursor_y);
     return;
   }
-  if (c != 'd') {
+  if (c != 'd' && c != 'x') {
     char buffer[2];
     buffer[0] = c;
     buffer[1] = 0;
     OutputString(buffer);
-  } else 
+  } else if (c == 'd')
     OutputString("Now is the time for all men to come to the aid of their country, and by their aid, assist those who need it, or something like that....");
+  else if (c == 'x') {
+    for (int i=0;i<100;i++) {
+      char buffer[1000];
+      sprintf(buffer,"line %d\n",i);
+      OutputString(buffer);
+    }
+  }
 }
 
 void TermWidget::resizeEvent(QResizeEvent *e) {
@@ -168,59 +213,35 @@ void TermWidget::paintContents(QPainter &paint) {
       if (j < m_width) {
 	QString todraw;
 	QRect txtrect(j*m_char_w,i*m_char_h,m_char_w,m_char_h);
-	if ((m_surface[i*m_width+j] & 128) == 0) {
-	  todraw.append(m_surface[i*m_width+j]);
+	char g = m_surface[i*m_width+j];
+	if (m_scrolling) g &= 0x7F;
+	if ((g & 128) == 0) {
+	  todraw.append(g);
 	  paint.eraseRect(txtrect);
 	  paint.drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
 	} else {
-	  todraw.append(m_surface[i*m_width+j] ^ 128);
+	  todraw.append(g ^ 128);
 	  paint.setPen(Qt::white);
 	  paint.setBackgroundColor(Qt::black);
 	  paint.eraseRect(txtrect);
 	  paint.drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
-	  //	  paint.setPen(Qt::black);
-	  //	  paint.setBackgroundColor(Qt::white);
 	  paint.setPen(Qt::black);
 	  paint.setBackgroundColor(Qt::white);
 	}
-	m_onscreen[i*m_width+j] = m_surface[i*m_width+j];
+	m_onscreen[i*m_width+j] = g;
 	j++;
       }
     }
   }
 }
-#if 0
-      // We have found a difference
-      QString todraw;
-      bool emptystring = true;
-      int x0 = j*m_char_w;
-      int y0 = i*m_char_h;
-      while ((j < m_width) && 
-	     (m_onscreen[i*m_width+j] != m_surface[i*m_width+j])) {
-	todraw.append(m_surface[i*m_width+j]);
-	m_onscreen[i*m_width+j] = m_surface[i*m_width+j];
-	j++;
-	emptystring = false;
-      }
-      if (!emptystring) {
-	QRect txtrect(x0,y0,todraw.length()*m_char_w,m_char_h);
-	erase(txtrect);
-	paint.drawText(txtrect,Qt::AlignLeft | Qt::AlignTop, todraw);
-      }
-    }
-//     if (cursorOn && cursorEnable) {
-//       QBrush brush(black);
-//       paint.fillRect(cursorRect,brush);
-//     }
-  }
-#endif
-
 
 void TermWidget::setCursor(int x, int y) {
 //   cursorOn = false;
 //   m_onscreen[m_cursor_x + m_cursor_y*m_width] = -1;
 //   repaint(cursorRect,true);
 //   cursorEnable = false;
+  if (m_scrolling) 
+    m_scrollbar->setValue(0);  
   if ((m_surface[m_cursor_y*m_width+m_cursor_x] & 128) != 0)
     m_surface[m_cursor_y*m_width+m_cursor_x] ^= 128;
   m_cursor_x = x;
@@ -228,16 +249,16 @@ void TermWidget::setCursor(int x, int y) {
   m_cursor_y += m_cursor_x/m_width;
   m_cursor_x %= m_width;
   if (m_cursor_y >= m_height) {
-    // scroll up
+    // scroll up - which we do by a single memmove op
     int toscroll = m_cursor_y - m_height + 1;
-    memcpy(m_history+m_history_lines*m_width,
-	   m_surface,toscroll*m_width*sizeof(char));
-    m_history_lines += toscroll;
-    memmove(m_surface,m_surface+toscroll*m_width*sizeof(char),
-	    (m_height-toscroll)*m_width*sizeof(char));
-    memset(m_surface+(m_height-toscroll)*m_width*sizeof(char),
-	   ' ',toscroll*m_width*sizeof(char));
+    memmove(m_history,m_history+toscroll*m_width*sizeof(char),
+	    (m_scrollback - toscroll)*m_width*sizeof(char));
+    memset(m_history+(m_scrollback - toscroll)*m_width,' ',toscroll*m_width);
+    m_history_lines = QMIN(m_history_lines+toscroll,m_scrollback-m_height);
     m_cursor_y -= toscroll;
+    m_scrollbar->setRange(0,m_history_lines);
+    m_scrollbar->setSteps(1,m_height);
+    m_scrollbar->setValue(m_history_lines);
   }
   m_surface[m_cursor_y*m_width+m_cursor_x] |= 128;
 }

@@ -30,7 +30,10 @@ class TermWidget : public QFrame
   int m_scrollback;
   int m_history_lines;
   QPixmap pm_cursor;
+  bool m_scrolling;
   //  QPixmap buffer;
+ public slots:
+  void scrollBack(int val);
  public:
   TermWidget(QWidget *parent=0, const char *name=0);
   virtual ~TermWidget();

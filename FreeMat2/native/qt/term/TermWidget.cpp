@@ -42,6 +42,8 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   blinkEnable = true;
   setBackgroundColor(Qt::white);
   m_scrolling = false;
+  m_scroll_offset = 0;
+  m_mousePressed = false;
   //  buffer.fill(colorGroup().base());
 }
 
@@ -51,9 +53,9 @@ TermWidget::~TermWidget() {
 void TermWidget::scrollBack(int val) {
   if (m_history_lines == 0) return;
   m_scrolling =  (val != m_history_lines);
-  if ((m_surface[m_cursor_y*m_width+m_cursor_x] & 128) != 0)
-    m_surface[m_cursor_y*m_width+m_cursor_x] ^= 128;
+  m_surface[m_cursor_y*m_width+m_cursor_x].clearCursor();
   m_surface = m_history + (m_scrollback - m_height - (m_history_lines - val))*m_width;
+  m_scroll_offset = (m_scrollback - m_height - (m_history_lines - val))*m_width;
 }
 
 void TermWidget::toggleCursor() {
@@ -63,11 +65,7 @@ void TermWidget::toggleCursor() {
 
 void TermWidget::blink() {
   if (!blinkEnable) return;
-  m_surface[m_cursor_x + m_cursor_y*m_width] ^= 128;
-  //  toggleCursor();
-  //   if (!cursorOn)
-  //     m_onscreen[m_cursor_x + m_cursor_y*m_width] = -1;
-  //   repaint(cursorRect,true);
+  m_surface[m_cursor_x + m_cursor_y*m_width].toggleCursor();
 }
 
 void TermWidget::adjustScrollbarPosition() {
@@ -87,15 +85,14 @@ void TermWidget::refresh() {
 
 void TermWidget::resizeTextSurface() {
   bool firsttime = (m_surface == NULL);
-  if (m_surface && (m_surface[m_cursor_y*m_width+m_cursor_x] & 128) != 0)
-    m_surface[m_cursor_y*m_width+m_cursor_x] ^= 128;  
+  if (m_surface)
+    m_surface[m_cursor_y*m_width+m_cursor_x].clearCursor();  
   int cursor_offset = m_height - 1 - m_cursor_y;
   m_timer_refresh->start(30,false);
   m_timer_blink->start(1000);
   int new_width = m_active_width/m_char_w;
   int new_height = height()/m_char_h;
-  char *new_history = new char[new_width*m_scrollback];
-  memset(new_history,' ',new_width*m_scrollback*sizeof(char));
+  tagChar *new_history = new tagChar[new_width*m_scrollback];
   
   if (m_history) {
     int minwidth = QMIN(new_width,m_width);
@@ -107,8 +104,7 @@ void TermWidget::resizeTextSurface() {
   
   delete[] m_onscreen;
   delete[] m_history;
-  m_onscreen = new char[new_width*new_height];
-  memset(m_onscreen,' ',new_width*new_height*sizeof(char));
+  m_onscreen = new tagChar[new_width*new_height];
   m_history = new_history;
   m_surface = m_history + (m_scrollback - new_height)*new_width;
   
@@ -138,7 +134,7 @@ void TermWidget::OutputString(std::string txt) {
     if (txt[i] == '\n' || txt[i] == '\r') {
       setCursor(0,m_cursor_y+1);
     } else {
-      m_surface[m_cursor_x + m_cursor_y*m_width] = txt[i];
+      m_surface[m_cursor_x + m_cursor_y*m_width] = tagChar(txt[i]);
       setCursor(m_cursor_x+1,m_cursor_y);
     }
   }
@@ -213,16 +209,23 @@ void TermWidget::paintContents(QPainter &paint) {
       if (j < m_width) {
 	QString todraw;
 	QRect txtrect(j*m_char_w,i*m_char_h,m_char_w,m_char_h);
-	char g = m_surface[i*m_width+j];
-	if (m_scrolling) g &= 0x7F;
-	if ((g & 128) == 0) {
-	  todraw.append(g);
+	tagChar g = m_surface[i*m_width+j];
+	if (m_scrolling) 
+	  g.flags &= ~CURSORBIT;
+	todraw.append(g.v);
+	if (g.noflags()) {
 	  paint.eraseRect(txtrect);
 	  paint.drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
-	} else {
-	  todraw.append(g ^ 128);
+	} else if (g.cursor()) {
 	  paint.setPen(Qt::white);
 	  paint.setBackgroundColor(Qt::black);
+	  paint.eraseRect(txtrect);
+	  paint.drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+	  paint.setPen(Qt::black);
+	  paint.setBackgroundColor(Qt::white);
+	} else {
+	  paint.setPen(Qt::white);
+	  paint.setBackgroundColor(Qt::blue);
 	  paint.eraseRect(txtrect);
 	  paint.drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
 	  paint.setPen(Qt::black);
@@ -242,8 +245,8 @@ void TermWidget::setCursor(int x, int y) {
 //   cursorEnable = false;
   if (m_scrolling) 
     m_scrollbar->setValue(0);  
-  if ((m_surface[m_cursor_y*m_width+m_cursor_x] & 128) != 0)
-    m_surface[m_cursor_y*m_width+m_cursor_x] ^= 128;
+  if (m_surface[m_cursor_y*m_width+m_cursor_x].cursor())
+    m_surface[m_cursor_y*m_width+m_cursor_x].toggleCursor();
   m_cursor_x = x;
   m_cursor_y = y;
   m_cursor_y += m_cursor_x/m_width;
@@ -251,16 +254,17 @@ void TermWidget::setCursor(int x, int y) {
   if (m_cursor_y >= m_height) {
     // scroll up - which we do by a single memmove op
     int toscroll = m_cursor_y - m_height + 1;
-    memmove(m_history,m_history+toscroll*m_width*sizeof(char),
-	    (m_scrollback - toscroll)*m_width*sizeof(char));
-    memset(m_history+(m_scrollback - toscroll)*m_width,' ',toscroll*m_width);
+    for (int i=0;i<(m_scrollback - toscroll)*m_width;i++)
+      m_history[i] = m_history[i+toscroll*m_width];
+    for (int i=0;i<toscroll*m_width;i++)
+      m_history[(m_scrollback - toscroll)*m_width+i] = tagChar();
     m_history_lines = QMIN(m_history_lines+toscroll,m_scrollback-m_height);
     m_cursor_y -= toscroll;
     m_scrollbar->setRange(0,m_history_lines);
     m_scrollbar->setSteps(1,m_height);
     m_scrollbar->setValue(m_history_lines);
   }
-  m_surface[m_cursor_y*m_width+m_cursor_x] |= 128;
+  m_surface[m_cursor_y*m_width+m_cursor_x].setCursor();
 }
 
 void TermWidget::keyPressEvent(QKeyEvent *e) {
@@ -275,6 +279,46 @@ void TermWidget::setFont(int size) {
   m_char_h = fmi.height();
 }
 
+
+void TermWidget::mousePressEvent( QMouseEvent *e ) {
+  m_mousePressed = true;
+  // Get the x and y coordinates of the mouse click - map that
+  // to a row and column
+  int clickcol = e->x()/m_char_w;
+  int clickrow = e->y()/m_char_h;
+  selectionStart = m_scroll_offset + clickcol + clickrow*m_width;
+  selectionStart = QMIN(QMAX(0,selectionStart),m_width*m_scrollback-1);
+  selectionStop = selectionStart;
+}
+
+void TermWidget::mouseMoveEvent( QMouseEvent *e ) {
+  if (m_mousePressed) {
+    if (e->y() < 0) 
+      m_scrollbar->setValue(m_scrollbar->value()-1);
+    if (e->y() > height())
+      m_scrollbar->setValue(m_scrollbar->value()+1);
+    // Get the position of the click
+    // to a row and column
+    int clickcol = e->x()/m_char_w;
+    int clickrow = e->y()/m_char_h;
+    selectionStop = m_scroll_offset + clickcol + clickrow*m_width;
+    selectionStop = QMIN(QMAX(0,selectionStop),m_width*m_scrollback-1);
+    // clear the selection bits
+    for (int i=0;i<m_width*m_scrollback;i++)
+      m_history[i].clearSelection();
+    // set the selection bits
+    if (selectionStart < selectionStop)
+      for (int i=selectionStart;i<selectionStop;i++)
+	m_history[i].setSelection();
+    else
+      for (int i=selectionStop;i<selectionStart;i++)
+	m_history[i].setSelection();
+  }
+}
+
+void TermWidget::mouseReleaseEvent( QMouseEvent *e ) {
+  m_mousePressed = false;
+}
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv, TRUE);

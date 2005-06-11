@@ -10,10 +10,10 @@ class SocketCB : public QObject {
 
   cb m_cb;
 public:
-  SocketCB(cb acb) {m_cb = acb;};
-  virtual ~SocketCB() {};
+  SocketCB(cb acb);
+  virtual ~SocketCB();
  public slots:
- void activated(int) {m_cb();}
+ void activated(int);
 };
 
 #endif

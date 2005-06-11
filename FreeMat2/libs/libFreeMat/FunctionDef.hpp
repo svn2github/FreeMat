@@ -25,7 +25,6 @@
 #include "AST.hpp"
 #include "Interface.hpp"
 #include <sys/stat.h>
-#include "ffi.h"
 
 namespace FreeMat {
 
@@ -313,7 +312,7 @@ namespace FreeMat {
   };
 
   typedef void (*GenericFuncPointer)();
-
+  
   class ImportedFunctionDef : public FunctionDef {
   public:
     /**
@@ -329,9 +328,11 @@ namespace FreeMat {
      */
     GenericFuncPointer address;
     /**
-     * The call interface object.
+     * The call interface object - changed to a void* to 
+     * decouple the ffi lib from libFreeMat.  Should be
+     * a better way to do this...
      */
-    ffi_cif cif;
+    void *cif;
     /**
      * The types of each argument
      */

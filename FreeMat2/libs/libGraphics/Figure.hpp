@@ -1,28 +1,28 @@
 #ifndef __Figure_hpp__
 #define __Figure_hpp__
 
-#include <FL/Fl_Double_Window.H>
-#include "PrintableWidget.hpp"
+#include "XPWindow.hpp"
+#include "XPWidget.hpp"
 #include <string>
 
 namespace FreeMat {
   
   typedef enum {fignone, figplot, figscimg, figgui, fig3plot} figType;
   
-  class Figure : public Fl_Double_Window {
+  class Figure : public XPWindow {
   public:
     Figure(int fignum);
     ~Figure();
     figType getType() {return m_type;};
-    void SetFigureChild(PrintableWidget *widget, figType w_type);
-    PrintableWidget* GetChildWidget();
-    void Print(std::string filename);
-	void Copy();
+    void SetFigureChild(XPWidget *widget, figType w_type);
+    XPWidget* GetChildWidget();
+    void Copy();
   private:
     int m_num;
     figType m_type;
-    PrintableWidget *m_wid;
+    XPWidget *m_wid;
   };
+
   Figure* GetCurrentFig();
 }
 #endif

@@ -632,7 +632,6 @@ namespace FreeMat {
       } else {
 	dp = dp->putData(dp->dataClass,dp->dimensions,
 			 CopySparseMatrix(dp->dataClass,
-					  dp->dimensions[0],
 					  dp->dimensions[1],
 					  dp->getData()),
 			 dp->sparse,dp->fieldNames,dp->className);	
@@ -2021,7 +2020,6 @@ break;
 	if (retType < FM_INT32) retType = FM_INT32;
 	return Array(retType,retDims,
 		     SparseMatrixConstructor(retType,
-					     retDims[0],
 					     retDims[1],
 					     m),
 		     true);
@@ -2877,7 +2875,6 @@ break;
 	  throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays in assignment A(I1,I2,...,IN) = B");
 	SetSparseNDimSubsets(dp->dataClass, 
 			     getDimensionLength(0), 
-			     getDimensionLength(1), 
 			     dp->getWriteableData(), 
 			     (const indexType*) indx[0], 
 			     outDims[0],
@@ -3380,7 +3377,7 @@ break;
 						    dp->getData(),deletionMap),true);
 	  else if (singletonDimension == 1)
 	    dp = dp->putData(dp->dataClass,retDims,
-			     DeleteSparseMatrixCols(dp->dataClass,rows,cols,
+			     DeleteSparseMatrixCols(dp->dataClass,cols,
 						    dp->getData(),deletionMap),true);
 	  else
 	    throw Exception("sparse matrices do not support deleting n-dimensional planes - they are only 2-D");
@@ -4056,7 +4053,6 @@ break;
   bool Array::anyNotFinite() {
     if (isSparse())
       return SparseAnyNotFinite(dp->dataClass,
-				getDimensionLength(0),
 				getDimensionLength(1),
 				dp->getData());
     switch(dp->dataClass) {

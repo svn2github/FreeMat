@@ -510,14 +510,26 @@ int lexNumber() {
   switch (vtype) {
   case 1:
     tokenValue.isToken = false;
-    tokenValue.v.p = new AST(const_float_node,buffer,ContextInt());
+    if ((currentChar() == 'i') || (currentChar() == 'I')) {
+      tokenValue.v.p = new AST(const_complex_node,buffer,ContextInt());
+      discardChar();
+    } else 
+      tokenValue.v.p = new AST(const_float_node,buffer,ContextInt());
     break;
   case 2:
     tokenValue.isToken = false;
+    if ((currentChar() == 'i') || (currentChar() == 'I')) {
+      tokenValue.v.p = new AST(const_dcomplex_node,buffer,ContextInt());
+      discardChar();
+    } else 
     tokenValue.v.p = new AST(const_double_node,buffer,ContextInt());
     break;
   case 3:
     tokenValue.isToken = false;
+    if ((currentChar() == 'i') || (currentChar() == 'I')) {
+      tokenValue.v.p = new AST(const_dcomplex_node,buffer,ContextInt());
+      discardChar();
+    } else 
     tokenValue.v.p = new AST(const_int_node,buffer,ContextInt());
     break;
   }

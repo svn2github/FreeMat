@@ -18,7 +18,7 @@ namespace FreeMat {
   } SparseLogOpID;  
 
   // Test 56
-  void DeleteSparseMatrix(Class dclass, int rows, int cols, void * cp);
+  void DeleteSparseMatrix(Class dclass, int cols, void * cp);
   // Test 57
   void* makeDenseArray(Class dclass, int rows, int cols, const void* cp);
   // Test 57
@@ -27,7 +27,7 @@ namespace FreeMat {
   void* TypeConvertSparse(Class dclass, int rows, int cols, 
 			  const void *cp, Class oclass);
   // Test 57 & 58
-  void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp);
+  void* CopySparseMatrix(Class dclass, int cols, const void* cp);
   int CountNonzeros(Class dclass, int rows, int cols, const void *cp);
   // Test 59
   void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
@@ -39,8 +39,7 @@ namespace FreeMat {
   void* SparseSparseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
 				   const void* ap, const void* bp);
   // Test 62
-  void* SparseMatrixConstructor(Class dclass, int rows, int cols,
-				ArrayMatrix m);
+  void* SparseMatrixConstructor(Class dclass, int cols, ArrayMatrix m);
   // Test 63
   void* GetSparseVectorSubsets(Class dclass, int rows, int cols, 
 			       const void* src, const indexType* indx, 
@@ -55,7 +54,7 @@ namespace FreeMat {
 			       int irows, int icols, const void* data, 
 			       int advance);
   // Test 66
-  void SetSparseNDimSubsets(Class dclass, int rows, int cols, 
+  void SetSparseNDimSubsets(Class dclass, int rows, 
 			    void* src,
 			    const indexType* rindx, int irows,
 			    const indexType* cindx, int icols,
@@ -74,7 +73,7 @@ namespace FreeMat {
 			  uint32* I, int istride, uint32 *J, int jstride,
 			  const void* cp, int cpstride);
   // Test 71
-  void* DeleteSparseMatrixCols(Class dclass, int rows, int cols, const void* cp,
+  void* DeleteSparseMatrixCols(Class dclass, int cols, const void* cp,
 			       bool *dmap);
   // Test 72
   void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
@@ -86,7 +85,7 @@ namespace FreeMat {
   // Test 74
   void* GetSparseDiagonal(Class dclass, int rows, int cols, const void* cp, int diag_order);
   // Test 75
-  bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp);
+  bool SparseAnyNotFinite(Class dclass, int cols, const void* cp);
   // Test 76
   void* SparseArrayHermitian(Class dclass, int rows, int cols, const void* cp);
   // Test 77

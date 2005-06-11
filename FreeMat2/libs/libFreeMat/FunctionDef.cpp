@@ -18,6 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
+#include "ffi.h"
 #include "FunctionDef.hpp"
 #include "WalkTree.hpp"
 #include "ParserInterface.hpp"
@@ -30,7 +31,6 @@
 #include <sys/types.h>
 #include <iostream>
 #include <signal.h>
-#include "ffi.h"
 #include "SymbolTable.hpp"
 #include "Types.hpp"
 
@@ -494,7 +494,8 @@ namespace FreeMat {
 	args[i] = mapTypeNameToFFTType(types[i]);
       }
     }
-    if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, argCount,
+    cif = (ffi_cif*) new ffi_cif;
+    if (ffi_prep_cif((ffi_cif*) cif, FFI_DEFAULT_ABI, argCount,
 		     mapTypeNameToFFTType(retType), args) != FFI_OK)
       throw Exception("unable to import function through fft!");
     if (retType == "void") 
@@ -610,39 +611,39 @@ namespace FreeMat {
      */
     if ((retType == "uint8") || (retType == "logical")) {
       uint8 retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::uint8Constructor(retval);
     } else if (retType == "int8") {
       int8 retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::int8Constructor(retval);
     } else if (retType == "uint16") {
       uint16 retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::uint16Constructor(retval);
     } else if (retType == "int16") {
       int16 retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::int16Constructor(retval);
     } else if (retType== "uint32") {
       uint32 retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::uint32Constructor(retval);
     } else if (retType == "int32") {
       int32 retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::int32Constructor(retval);
     } else if ((retType == "float") || (retType == "complex")) {
       float retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::floatConstructor(retval);
     } else if ((retType == "double") || (retType == "dcomplex")) {
       double retval;					   
-      ffi_call(&cif, address, &retval, values);
+      ffi_call((ffi_cif*) cif, address, &retval, values);
       retArray = Array::doubleConstructor(retval);
     } else {
       int dummy;
-      ffi_call(&cif, address, &dummy, values);
+      ffi_call((ffi_cif*) cif, address, &dummy, values);
       retArray = Array::emptyConstructor();
     }
     

@@ -35,25 +35,55 @@
 #include "File.hpp"
 #include "Serialize.hpp"
 #include <signal.h>
-#include <FL/Fl.H>
 #include <errno.h>
 #include "Class.hpp"
+
+#ifdef WIN32
+#define DELIM "\\"
+#else
+#define DELIM "/"
+#endif
 
 namespace FreeMat {
   void WalkTree::SetContext(int a) {
     ip_context = a;
   }
 
-  std::string WalkTree::getMFileName() {
+  static bool isMFile(std::string arg) {
 #ifdef WIN32
-  return std::string("");
-//#error "complete me"
-#else
-    if (ip_funcname[0] == '/') return ip_funcname;
-    for (int i=cstack.size()-1;i>=0;i--)
-      if (cstack[i].cname[0] == '/') return cstack[i].cname;
     return std::string("");
+#error "complete me"
+#else
+    return arg[0] == '/';
 #endif
+  }
+
+  static std::string PrivateMangleName(std::string cfunc, std::string fname) {
+    if (cfunc.empty()) return "";
+    int ndx;
+    ndx = cfunc.rfind(DELIM);
+    if (ndx>=0)
+      cfunc.erase(ndx+1,cfunc.size());
+    return cfunc + "private_" + fname;
+  }
+
+  std::string WalkTree::getPrivateMangledName(std::string fname) {
+    std::string ret;
+    char buff[4096];
+    if (isMFile(ip_funcname)) 
+      ret = PrivateMangleName(ip_funcname,fname);
+    else {
+      getcwd(buff,4096);
+      ret = std::string(buff) + DELIM + std::string("private_" + fname);
+    }
+    return ret; 
+  }
+
+  std::string WalkTree::getMFileName() {
+    if (isMFile(ip_funcname)) return ip_funcname;
+    for (int i=cstack.size()-1;i>=0;i--)
+      if (isMFile(cstack[i].cname)) return cstack[i].cname;
+    return std::string("");
   }
 
   stackentry::stackentry(std::string cntxt, std::string det, int id) :
@@ -322,6 +352,12 @@ namespace FreeMat {
     }
     else if (t->type == const_double_node) {
       retval = Array::doubleConstructor(atof(t->text));
+    }
+    else if (t->type == const_complex_node) {
+      retval = Array::complexConstructor(0,atof(t->text));
+    }
+    else if (t->type == const_dcomplex_node) {
+      retval = Array::dcomplexConstructor(0,atof(t->text));
     }
     else if (t->type == string_const_node) {
       retval = Array::stringConstructor(std::string(t->text));
@@ -1501,8 +1537,9 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
+#ifdef USE_FLTK
     Fl::wait(0);
-
+#endif
     SetContext(t->context());
     // check the debug flag
     //    int fullcontext = t->context();
@@ -2830,7 +2867,11 @@ namespace FreeMat {
       // Subfunctions
       if (context->lookupFunctionLocally(funcName,val))
 	return true;
-      // Private functions (not implemented yet)
+      // Private functions
+      // Not sure if you have to be an M-file in the current directory
+      // to access a private function...
+      if (context->lookupFunctionGlobally(getPrivateMangledName(funcName),val))
+	return true;
       // Class constructor functions
       if (context->lookupFunctionGlobally(ClassMangleName(funcName,funcName),val))
 	return true;
@@ -3416,7 +3457,7 @@ namespace FreeMat {
     ArrayVector rv;
     SetContext(t->context());
     while (t != NULL) {
-      if (!rv.empty()) 
+      if (rv.size()>1) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (r.isUserClass() && !stopoverload)
 	return ClassRHSExpression(r,t,this);
@@ -3424,11 +3465,12 @@ namespace FreeMat {
       if (rv.size() == 1) {
 	r = rv[0];
 	rv.clear();
+	rv.push_back(r);
       }
       t = t->right;
     }
-    if (rv.empty())
-      rv.push_back(r);
+    //    if (rv.empty())
+    //      rv.push_back(r);
     return rv;
   }
 

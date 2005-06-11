@@ -335,7 +335,7 @@ public:
 
 namespace FreeMat {
   template <class T>
-  void DeleteSparse(T** src, int rows, int cols) {
+  void DeleteSparse(T** src, int cols) {
     int i;
     for (i=0;i<cols;i++)
       delete[] src[i];
@@ -449,7 +449,7 @@ namespace FreeMat {
       return ConvertSparseToDenseComplex<float>((const float **)cp,rows,cols);
     case FM_DCOMPLEX:
       return ConvertSparseToDenseComplex<double>((const double **)cp,rows,cols);
-    otherwise:
+    default:
       throw Exception("Unsupported type in makeDenseArray");
     }
   }
@@ -468,7 +468,7 @@ namespace FreeMat {
       return ConvertDenseToSparseComplex<float>((const float *)cp,rows,cols);
     case FM_DCOMPLEX:
       return ConvertDenseToSparseComplex<double>((const double *)cp,rows,cols);
-    otherwise:
+    default:
       throw Exception("Unsupported type in makeSparseArray");
     }
   }
@@ -476,8 +476,8 @@ namespace FreeMat {
   template <class T>
   class IJVEntry {
   public:
-    uint32 I;
-    uint32 J;
+    int32 I;
+    int32 J;
     T Vreal;
     T Vimag;
   };
@@ -802,32 +802,34 @@ namespace FreeMat {
       return makeSparseFromIJVComplex<double>(rows,cols,nnz,I,istride,
 					      J,jstride,(const double*)cp,
 					      cpstride);
+    default:
+      throw Exception("unsupported type for makeSparseFromIJV");
     }
-    throw Exception("unsupported type for makeSparseFromIJV");
   }
 			  
-  void DeleteSparseMatrix(Class dclass, int rows, int cols, void *cp) {
+  void DeleteSparseMatrix(Class dclass, int cols, void *cp) {
     switch(dclass) {
     case FM_LOGICAL:
-      DeleteSparse<uint32>((uint32**)cp,rows,cols);
+      DeleteSparse<uint32>((uint32**)cp,cols);
       return;
     case FM_INT32:
-      DeleteSparse<int32>((int32**)cp,rows,cols);
+      DeleteSparse<int32>((int32**)cp,cols);
       return;
     case FM_FLOAT:
-      DeleteSparse<float>((float**)cp,rows,cols);
+      DeleteSparse<float>((float**)cp,cols);
       return;
     case FM_DOUBLE:
-      DeleteSparse<double>((double**)cp,rows,cols);
+      DeleteSparse<double>((double**)cp,cols);
       return;
     case FM_COMPLEX:
-      DeleteSparse<float>((float**)cp,rows,cols);
+      DeleteSparse<float>((float**)cp,cols);
       return;
     case FM_DCOMPLEX:
-      DeleteSparse<double>((double**)cp,rows,cols);
+      DeleteSparse<double>((double**)cp,cols);
       return;
+    default:
+      throw Exception("unsupported type for DeleteSparseMatrix");
     }
-    throw Exception("unsupported type for DeleteSparseMatrix");
   }
   
 
@@ -964,7 +966,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  void* CopySparseMatrix(const T** src, int rows, int cols) {
+  void* CopySparseMatrix(const T** src, int cols) {
     T** dp;
     dp = new T*[cols];
     int i;
@@ -1052,26 +1054,28 @@ namespace FreeMat {
       return SparseToIJVComplex<float>((const float**)cp,rows,cols,I,J,nnz); 
     case FM_DCOMPLEX:
       return SparseToIJVComplex<double>((const double**)cp,rows,cols,I,J,nnz);
+    default:
+      throw Exception("unsupported type for SparseToIJV");
     }
-    throw Exception("unsupported type for SparseToIJV");
   }
 
-  void* CopySparseMatrix(Class dclass, int rows, int cols, const void* cp) { 
+  void* CopySparseMatrix(Class dclass, int cols, const void* cp) { 
     switch (dclass) {
     case FM_LOGICAL:
-      return CopySparseMatrix<uint32>((const uint32**)cp,rows,cols);
+      return CopySparseMatrix<uint32>((const uint32**)cp,cols);
     case FM_INT32:
-      return CopySparseMatrix<int32>((const int32**)cp,rows,cols);
+      return CopySparseMatrix<int32>((const int32**)cp,cols);
     case FM_FLOAT:
-      return CopySparseMatrix<float>((const float**)cp,rows,cols);
+      return CopySparseMatrix<float>((const float**)cp,cols);
     case FM_DOUBLE:
-      return CopySparseMatrix<double>((const double**)cp,rows,cols);
+      return CopySparseMatrix<double>((const double**)cp,cols);
     case FM_COMPLEX:
-      return CopySparseMatrix<float>((const float**)cp,rows,cols);
+      return CopySparseMatrix<float>((const float**)cp,cols);
     case FM_DCOMPLEX:
-      return CopySparseMatrix<double>((const double**)cp,rows,cols);
+      return CopySparseMatrix<double>((const double**)cp,cols);
+    default:
+      throw Exception("unsupported type for CopySparseMatrix");
     }
-    throw Exception("unsupported type for CopySparseMatrix");
   }
 
   int CountNonzeros(Class dclass, int rows, int cols, const void *cp) {
@@ -1088,8 +1092,126 @@ namespace FreeMat {
       return CountNonzerosComplex<float>((const float**)cp,rows,cols);
     case FM_DCOMPLEX:
       return CountNonzerosComplex<double>((const double**)cp,rows,cols);
+    default:
+      throw Exception("unsupported type for CountNonzeros");
     }
-    throw Exception("unsupported type for CountNonzeros");
+  }
+
+  template <class T>
+  bool AllZerosReal(T* A) {
+    return ((A[0] == 2) && (A[1] == 0)); 
+  }
+
+  template <class T>
+  bool AllZerosComplex(T* A) {
+    return ((A[0] == 3) && (A[1] == 0) && (A[2] == 0)); 
+  }
+
+  template <class T>
+  bool MatchRLESpotReal(T* A, int pos, int nrows) {
+    if (pos == 1) 
+      return ((A[0] == 3) && (A[1] != 0) && (A[2] == 0) && (A[3] == nrows-1));
+    if (pos == nrows)
+      return ((A[0] == 3) && (A[1] == 0) && (A[2] == nrows-1) && (A[3] != 0));
+    return ((A[0] == 5) && (A[1] == 0) && (A[2] == pos-1) &&
+	    (A[3] != 0) && (A[4] == 0) && (A[5] == nrows-pos));
+  } 
+
+  template <class T>
+  bool MatchRLESpotComplex(T* A, int pos, int nrows) {
+    if (pos == 1) 
+      return ((A[0] == 5) && 
+	      ((A[1] != 0) || (A[2] != 0)) &&
+	      (A[3] == 0) && (A[4] == 0) &&
+	      (A[5] == (nrows-1)));
+    if (pos == nrows)
+      return ((A[0] == 5) && 
+	      (A[1] == 0) && (A[2] == 0) &&
+	      (A[3] == nrows-1) && 
+	      (A[4] != 0) || (A[5] != 0));
+    // The mth column should [3 0 0 nrows] or [9 0 0 m-1 nz_r nz_i 0 0 nrows-m-1]
+    return ((A[0] == 8) && 
+	    (A[1] == 0) && (A[2] == 0) && (A[3] == pos-1) &&
+	    ((A[4] != 0) || (A[5] != 0)) && 
+	    (A[6] == 0) && (A[7] == 0) && (A[8] == nrows-pos));    
+  }
+
+  template <class T>
+  bool IsSparseMatrixDiagonalReal(T** A, int rows, int cols) {
+    if (rows != cols) 
+      return false;
+    // First column should be [3 nz 0 nrows-1] or [2 0 nrows]
+    // The mth column should [2 0 nrows] or [5 0 m-1 nz 0 nrows-m-1]
+    // Last column should be [3 0 nrows-1 nz] or [2 0 nrows]
+    for (int i=1;i<=cols;i++)
+      if (!AllZerosReal<T>(A[i-1]) && !MatchRLESpotReal<T>(A[i-1],i,rows)) 
+	return false;
+    return true;
+  }
+
+  template <class T>
+  bool IsSparseMatrixDiagonalComplex(T** A, int rows, int cols) {
+    if (rows != cols) 
+      return false;
+    // First column should be [5 nz_r nz_i 0 0 nrows-1] or [3 0 0 nrows]
+    // The mth column should [3 0 0 nrows] or [8 0 0 m-1 nz_r nz_i 0 0 nrows-m-1]
+    // Last column should be [5 0 0 nrows-1 nz_r nz_i] or [3 0 0 nrows]
+    for (int i=1;i<=cols;i++)
+      if (!AllZerosComplex<T>(A[i-1]) && !MatchRLESpotComplex<T>(A[i-1],i,rows)) 
+	return false;
+    return true;
+  }
+
+  template <class T>
+  void DiagSparseRealMultiply(T** A, int A_rows, int A_cols,
+			      T** B, int B_cols, T**C) {
+    T* Aweights = new T[A_rows];
+    for (int i=0;i<A_cols;i++)
+      RealStringExtract(A[i],i,Aweights+i);
+    // Setup the output matrix
+    T* buffer = new T[2*A_rows];
+    for (int i=0;i<B_cols;i++) {
+      RLEDecoder<T> Bcol(B[i],A_cols);
+      RLEEncoder<T> Ccol(buffer,A_rows);
+      Bcol.update();
+      while (Bcol.more()) {
+	Ccol.set(Bcol.row());
+	Ccol.push(Bcol.value()*Aweights[Bcol.row()]);
+	Bcol.advance();
+      }
+      Ccol.end();
+      C[i] = Ccol.copyout();
+    }
+    delete[] Aweights;
+    delete[] buffer;
+  }
+
+
+  template <class T>
+  void DiagSparseComplexMultiply(T** A, int A_rows, int A_cols,
+				 T** B, int B_cols, T**C) {
+    T* Aweights = new T[2*A_rows];
+    for (int i=0;i<A_cols;i++)
+      ComplexStringExtract(A[i],i,Aweights+i);
+    // Setup the output matrix
+    T* buffer = new T[4*A_rows];
+    for (int i=0;i<B_cols;i++) {
+      RLEDecoderComplex<T> Bcol(B[i],A_cols);
+      RLEEncoderComplex<T> Ccol(buffer,A_rows);
+      Bcol.update();
+      while (Bcol.more()) {
+	Ccol.set(Bcol.row());
+	Ccol.push(Bcol.value_real()*Aweights[2*Bcol.row()] -
+		  Bcol.value_imag()*Aweights[2*Bcol.row()+1],
+		  Bcol.value_real()*Aweights[2*Bcol.row()+1] + 
+		  Bcol.value_imag()*Aweights[2*Bcol.row()]);
+	Bcol.advance();
+      }
+      Ccol.end();
+      C[i] = Ccol.copyout();
+    }
+    delete[] Aweights;
+    delete[] buffer;
   }
 
   // Multiply a sparse matrix by a sparse matrix (result is sparse)
@@ -1105,6 +1227,9 @@ namespace FreeMat {
 				T** C) {
     // This new version of the sparse-sparse matrix multiply works
     // as follows.  The outer loop is over the columns of B
+    if (IsSparseMatrixDiagonalReal<T>(A,A_rows,A_cols)) 
+      return DiagSparseRealMultiply<T>(A,A_rows,A_cols,
+				       B,B_cols,C);
     T* abuff = new T[2*A_rows];
     T* dbuff = new T[A_rows];
     for (int j=0;j<B_cols;j++) {
@@ -1140,6 +1265,9 @@ namespace FreeMat {
   void SparseSparseComplexMultiply(T** A, int A_rows, int A_cols,
 				   T** B, int B_cols,
 				   T** C) {
+    if (IsSparseMatrixDiagonalComplex<T>(A,A_rows,A_cols)) 
+      return DiagSparseComplexMultiply<T>(A,A_rows,A_cols,
+					  B,B_cols,C);
     // This new version of the sparse-sparse matrix multiply works
     // as follows.  The outer loop is over the columns of B
     T* abuff = new T[4*A_rows];
@@ -1292,12 +1420,14 @@ namespace FreeMat {
 
   void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
 				  const void* ap, const void* bp) {
+    std::cout << "sparse dense mult\r\n";
     switch (dclass) {
     case FM_FLOAT: 
       {
 	float *C = (float*) Malloc(rows*bcols*sizeof(float));
 	SparseDenseRealMultiply<float>((float**)ap,rows,cols,
 				       (float*)bp,bcols,C);
+    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     case FM_DOUBLE: 
@@ -1305,6 +1435,7 @@ namespace FreeMat {
 	double *C = (double*) Malloc(rows*bcols*sizeof(double));
 	SparseDenseRealMultiply<double>((double**)ap,rows,cols,
 					(double*)bp,bcols,C);
+    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     case FM_COMPLEX: 
@@ -1312,6 +1443,7 @@ namespace FreeMat {
 	float *C = (float*) Malloc(2*rows*bcols*sizeof(float));
 	SparseDenseComplexMultiply<float>((float**)ap,rows,cols,
 					  (float*)bp,bcols,C);
+    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     case FM_DCOMPLEX: 
@@ -1319,8 +1451,11 @@ namespace FreeMat {
 	double *C = (double*) Malloc(2*rows*bcols*sizeof(double));
 	SparseDenseComplexMultiply<double>((double**)ap,rows,cols,
 					   (double*)bp,bcols,C);
+    std::cout << "sparse dense mult\r\n";
 	return C;
       }
+    default:
+      throw Exception("unexpected type in sparse-sparse matrix multiply");
     }
   }
   
@@ -1355,6 +1490,8 @@ namespace FreeMat {
 					(double**)bp,bcols,C);
 	return C;
       }
+    default:
+      throw Exception("unsupported type for sparse-dense multiply");
     }
   }
 
@@ -1389,6 +1526,8 @@ namespace FreeMat {
 					    (double**)bp,bcols,C);
 	return C;
       }
+    default:
+      throw Exception("unsupported type for sparse-sparse complex multiply");
     }
   }
 
@@ -1408,6 +1547,8 @@ namespace FreeMat {
 	return TypeConvertSparseRealComplex<uint32,float>((uint32**)cp,rows,cols);
       case FM_DCOMPLEX:
 	return TypeConvertSparseRealComplex<uint32,double>((uint32**)cp,rows,cols);
+      default:
+	throw Exception("unsupported type for sparse-dense multiply");
       }
     } else if (dclass == FM_INT32) {
       switch(oclass) {
@@ -1421,6 +1562,8 @@ namespace FreeMat {
 	return TypeConvertSparseRealComplex<int32,float>((int32**)cp,rows,cols);
       case FM_DCOMPLEX:
 	return TypeConvertSparseRealComplex<int32,double>((int32**)cp,rows,cols);
+      default:
+	throw Exception("unsupported type for sparse-dense multiply");
       }
     } else if (dclass == FM_FLOAT) {
       switch(oclass) {
@@ -1434,6 +1577,8 @@ namespace FreeMat {
 	return TypeConvertSparseRealComplex<float,float>((float**)cp,rows,cols);
       case FM_DCOMPLEX:
 	return TypeConvertSparseRealComplex<float,double>((float**)cp,rows,cols);
+      default:
+	throw Exception("unsupported type for sparse-dense multiply");
       }
     } else if (dclass == FM_DOUBLE) {
       switch(oclass) {
@@ -1447,6 +1592,8 @@ namespace FreeMat {
 	return TypeConvertSparseRealComplex<double,float>((double**)cp,rows,cols);
       case FM_DCOMPLEX:
 	return TypeConvertSparseRealComplex<double,double>((double**)cp,rows,cols);
+      default:
+	throw Exception("unsupported type for sparse-dense multiply");
       }
     } else if (dclass == FM_COMPLEX) {
       switch(oclass) {
@@ -1460,6 +1607,8 @@ namespace FreeMat {
 	return TypeConvertSparseComplexReal<float,double>((float**)cp,rows,cols);
       case FM_DCOMPLEX:
 	return TypeConvertSparseComplexComplex<float,double>((float**)cp,rows,cols);
+      default:
+	throw Exception("unsupported type for sparse-dense multiply");
       }
     } else if (dclass == FM_DCOMPLEX) {
       switch(oclass) {
@@ -1473,6 +1622,8 @@ namespace FreeMat {
 	return TypeConvertSparseComplexReal<double,double>((double**)cp,rows,cols);
       case FM_COMPLEX:
 	return TypeConvertSparseComplexComplex<double,float>((double**)cp,rows,cols);
+      default:
+	throw Exception("unsupported type for sparse-dense multiply");
       }
     } 
     throw Exception("unsupported type for TypeConvertSparse");
@@ -1509,7 +1660,7 @@ namespace FreeMat {
   // The strategy is straightforward, we loop over the output columns
   // We need one pointer for each row of the array matrix
   template <class T>
-  void* SparseMatrixConst(int rows, int cols, ArrayMatrix m) {
+  void* SparseMatrixConst(int cols, ArrayMatrix m) {
     T** dst;
     dst = new T*[cols];
     // The blockindx array tracks which "block" within each 
@@ -1518,7 +1669,7 @@ namespace FreeMat {
     // The colindx array tracks which column within each block
     // is active
     int *colindx = new int[m.size()];
-    int j;
+    unsigned int j;
     for (j=0;j<m.size();j++) {
       blockindx[j] = 0;
       colindx[j] = 0;
@@ -1561,7 +1712,7 @@ namespace FreeMat {
     return dst;
   } 
 
-  void* SparseMatrixConstructor(Class dclass, int rows, int cols,
+  void* SparseMatrixConstructor(Class dclass, int cols,
 				ArrayMatrix m) {
     TrimEmpties(m);
     // Precondition the arrays by converting to sparse and to
@@ -1575,19 +1726,20 @@ namespace FreeMat {
     // Now, we can construct the output array
     switch (dclass) {
     case FM_LOGICAL:
-      return SparseMatrixConst<uint32>(rows, cols, m);
+      return SparseMatrixConst<uint32>(cols, m);
     case FM_INT32:
-      return SparseMatrixConst<int32>(rows, cols, m);
+      return SparseMatrixConst<int32>(cols, m);
     case FM_FLOAT:
-      return SparseMatrixConst<float>(rows, cols, m);
+      return SparseMatrixConst<float>(cols, m);
     case FM_DOUBLE:
-      return SparseMatrixConst<double>(rows, cols, m);
+      return SparseMatrixConst<double>(cols, m);
     case FM_COMPLEX:
-      return SparseMatrixConst<float>(rows, cols, m);
+      return SparseMatrixConst<float>(cols, m);
     case FM_DCOMPLEX:
-      return SparseMatrixConst<double>(rows, cols, m);
+      return SparseMatrixConst<double>(cols, m);
+    default:
+      throw Exception("unsupported type for SparseMatrixConstructor");
     }    
-    throw Exception("unsupported type for SparseMatrixConstructor");
   }
 
 
@@ -1745,8 +1897,7 @@ namespace FreeMat {
     int icount;
     icount = irows*icols;
     ilist = new IJVEntry<T>[icount];
-    int i, j;
-    for (i=0;i<icount;i++) {
+    for (int i=0;i<icount;i++) {
       ilist[i].I = (indx[i]-1) % rows;
       ilist[i].J = (indx[i]-1) / rows;
       ilist[i].Vreal = (int) (i % irows);
@@ -1796,8 +1947,7 @@ namespace FreeMat {
     icount = irows*icols;
     // check to see if a resize is necessary...
     int maxindx = indx[0];
-    int i, j;
-    for (i=0;i<icount;i++)
+    for (int i=0;i<icount;i++)
       maxindx = (maxindx > indx[i]) ? maxindx : indx[i];
     // if maxindx is larger than rows*cols, we have to
     // vector resize
@@ -1805,7 +1955,7 @@ namespace FreeMat {
       // To vector resize, we set rows = maxindx, cols = 1, but
       // we also adjust the row & column index of each IJVentry
       // first
-      for (i=0;i<nnz;i++) {
+      for (int i=0;i<nnz;i++) {
 	mlist[i].I += rows*mlist[i].J;
 	mlist[i].J = 0;
       }
@@ -1813,7 +1963,7 @@ namespace FreeMat {
       cols = 1;
     }
     ilist = new IJVEntry<T>[icount];
-    for (i=0;i<icount;i++) {
+    for (int i=0;i<icount;i++) {
       ilist[i].I = (indx[i]-1) % rows;
       ilist[i].J = (indx[i]-1) / rows;
       ilist[i].Vreal = data[advance*i];
@@ -1869,8 +2019,7 @@ namespace FreeMat {
     icount = irows*icols;
     // check to see if a resize is necessary...
     int maxindx = indx[0];
-    int i, j;
-    for (i=0;i<icount;i++)
+    for (int i=0;i<icount;i++)
       maxindx = (maxindx > indx[i]) ? maxindx : indx[i];
     // if maxindx is larger than rows*cols, we have to
     // vector resize
@@ -1878,7 +2027,7 @@ namespace FreeMat {
       // To vector resize, we set rows = maxindx, cols = 1, but
       // we also adjust the row & column index of each IJVentry
       // first
-      for (i=0;i<nnz;i++) {
+      for (int i=0;i<nnz;i++) {
 	mlist[i].I += rows*mlist[i].J;
 	mlist[i].J = 0;
       }
@@ -1886,7 +2035,7 @@ namespace FreeMat {
       cols = 1;
     }
     ilist = new IJVEntry<T>[icount];
-    for (i=0;i<icount;i++) {
+    for (int i=0;i<icount;i++) {
       ilist[i].I = (indx[i]-1) % rows;
       ilist[i].J = (indx[i]-1) / rows;
       ilist[i].Vreal = data[2*advance*i];
@@ -1944,8 +2093,7 @@ namespace FreeMat {
     int icount;
     icount = irows*icols;
     ilist = new IJVEntry<T>[icount];
-    int i, j;
-    for (i=0;i<icount;i++) {
+    for (int i=0;i<icount;i++) {
       ilist[i].I = (indx[i]-1) % rows;
       ilist[i].J = (indx[i]-1) / rows;
       ilist[i].Vreal = (int) (i % irows);
@@ -2007,8 +2155,9 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return GetSparseVectorSubsetsComplex<double>(rows, cols, (const double**) src,
       						   indx, irows, icols);
+    default:
+      throw Exception("unsupported type for GetSparseVctorSubsets");
     }
-    throw Exception("unsupported type for GetSparseVctorSubsets");
   }
 
   // SetSparseVectorSubsets - This one is a bit difficult to do efficiently.
@@ -2049,13 +2198,14 @@ namespace FreeMat {
        						   indx, irows, icols, 
 						   (const double*) data, 
  						   advance);
+    default:
+      throw Exception("unsupported type for SetSparseVectorSubsets");
     }
-    throw Exception("unsupported type for SetSparseVectorSubsets");
   }
 
 
   template <class T>
-  void* GetSparseColumnSubsetAssist(int rows, int cols, const T** A, const indexType*cindx, int icols) {
+  void* GetSparseColumnSubsetAssist(int cols, const T** A, const indexType*cindx, int icols) {
     for (int i=0;i<icols;i++) 
       if ((cindx[i] < 1) || (cindx[i] > cols))
 	throw Exception("out of range column index in sparse matrix expression of type A(:,n)");
@@ -2068,28 +2218,29 @@ namespace FreeMat {
 
 
   // GetSparseNDimSubsets
-  void* GetSparseColumnSubset(Class dclass, int rows, int cols, const void* src,
+  void* GetSparseColumnSubset(Class dclass, int cols, const void* src,
 			      const indexType* cindx, int icols) {
     switch(dclass) {
     case FM_LOGICAL:
-      return GetSparseColumnSubsetAssist<uint32>(rows, cols, (const uint32**) src, cindx, icols);
+      return GetSparseColumnSubsetAssist<uint32>(cols, (const uint32**) src, cindx, icols);
     case FM_INT32:
-      return GetSparseColumnSubsetAssist<int32>(rows, cols, (const int32**) src, cindx, icols);
+      return GetSparseColumnSubsetAssist<int32>(cols, (const int32**) src, cindx, icols);
     case FM_FLOAT:
-      return GetSparseColumnSubsetAssist<float>(rows, cols, (const float**) src, cindx, icols);
+      return GetSparseColumnSubsetAssist<float>(cols, (const float**) src, cindx, icols);
     case FM_DOUBLE:
-      return GetSparseColumnSubsetAssist<double>(rows, cols, (const double**) src, cindx, icols);
+      return GetSparseColumnSubsetAssist<double>(cols, (const double**) src, cindx, icols);
     case FM_COMPLEX:
-      return GetSparseColumnSubsetAssist<float>(rows, cols, (const float**) src, cindx, icols);
+      return GetSparseColumnSubsetAssist<float>(cols, (const float**) src, cindx, icols);
     case FM_DCOMPLEX:
-      return GetSparseColumnSubsetAssist<double>(rows, cols, (const double**) src, cindx, icols);
+      return GetSparseColumnSubsetAssist<double>(cols, (const double**) src, cindx, icols);
+    default:
+      throw Exception("unsupported type for GetSparseColumnSubset");
     }
-    throw Exception("unsupported type for GetSparseColumnSubset");
   }
 
 
   template <class T>
-  void* GetSparseNDimSubsetsReal(int rows, int cols, const T** A,
+  void* GetSparseNDimSubsetsReal(int rows, const T** A,
 				 const indexType* rindx, int irows, 
 				 const indexType* cindx, int icols) {
     // We need to put rindx into an IJV list, we can set the J column
@@ -2130,7 +2281,7 @@ namespace FreeMat {
 
 
   template <class T>
-  void* GetSparseNDimSubsetsComplex(int rows, int cols, const T** A,
+  void* GetSparseNDimSubsetsComplex(int rows, const T** A,
 				    const indexType* rindx, int irows, 
 				    const indexType* cindx, int icols) {
     // We need to put rindx into an IJV list, we can set the J column
@@ -2174,7 +2325,7 @@ namespace FreeMat {
 
 
   bool CheckAllRowsReference(const indexType* rindx, int rows) {
-    for (int i=0;i<rows;i++)
+    for (unsigned int i=0;i<rows;i++)
       if (rindx[i] != (i+1)) return false;
     return true;
   }
@@ -2192,32 +2343,30 @@ namespace FreeMat {
       cptr = (indexType*) cindx;
     if ((rindx == NULL) || ((irows == rows) && 
 			    CheckAllRowsReference(rindx,rows)))
-      return GetSparseColumnSubset(dclass,rows,cols,src,cptr,icols);
+      return GetSparseColumnSubset(dclass,cols,src,cptr,icols);
     switch(dclass) {
     case FM_LOGICAL:
-      return GetSparseNDimSubsetsReal<uint32>(rows, cols, (const uint32**) src,
+      return GetSparseNDimSubsetsReal<uint32>(rows, (const uint32**) src,
 					     rindx, irows, cptr, icols);
     case FM_INT32:
-      return GetSparseNDimSubsetsReal<int32>(rows, cols, (const int32**) src,
+      return GetSparseNDimSubsetsReal<int32>(rows, (const int32**) src,
 					     rindx, irows, cptr, icols);
     case FM_FLOAT:
-      return GetSparseNDimSubsetsReal<float>(rows, cols, (const float**) src,
+      return GetSparseNDimSubsetsReal<float>(rows, (const float**) src,
 					     rindx, irows, cptr, icols);
     case FM_DOUBLE:
-      return GetSparseNDimSubsetsReal<double>(rows, cols, (const double**) src,
+      return GetSparseNDimSubsetsReal<double>(rows, (const double**) src,
 					      rindx, irows, cptr, icols);
     case FM_COMPLEX:
-      return GetSparseNDimSubsetsComplex<float>(rows, cols, (const float**) src,
+      return GetSparseNDimSubsetsComplex<float>(rows, (const float**) src,
 						rindx, irows, cptr, icols);
     case FM_DCOMPLEX:
-      return GetSparseNDimSubsetsComplex<double>(rows, cols, (const double**) src,
+      return GetSparseNDimSubsetsComplex<double>(rows, (const double**) src,
 						 rindx, irows, cptr, icols);
-    }
+    default:
     throw Exception("unsupported type for GetSparseNDimSubsets");
+    }
   }
-
-
-
 
   template <class T>
   void* GetSparseScalarReal(int rows, int cols, const T** src,
@@ -2270,8 +2419,9 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return GetSparseScalarComplex<double>(rows, cols, (const double**) src,
 					    rindx, cindx);
+    default:
+      throw Exception("unsupported type for GetSparseScalarElement");
     }
-    throw Exception("unsupported type for GetSparseScalarElement");
   }
 
   template <class T>
@@ -2353,7 +2503,7 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return CopyResizeSparseMatrixComplex<double>((const double **)Ap,
 						   rows,cols,newrows,newcols);
-    otherwise:
+    default:
       throw Exception("Unsupported type in makeDenseArray");
     }
   }
@@ -2362,7 +2512,7 @@ namespace FreeMat {
   //  We can use a merge style - for each column, we 
 
   template <class T>
-  void SetSparseNDimSubsetsReal(int rows, int cols, T** dp,
+  void SetSparseNDimSubsetsReal(int rows, T** dp,
 				const indexType* rindx, int irows, 
 				const indexType* cindx, int icols,
 				const T* data, int advance) {
@@ -2421,7 +2571,7 @@ namespace FreeMat {
 
 
   template <class T>
-  void SetSparseNDimSubsetsComplex(int rows, int cols, T** dp,
+  void SetSparseNDimSubsetsComplex(int rows, T** dp,
 				   const indexType* rindx, int irows, 
 				   const indexType* cindx, int icols,
 				   const T* data, int advance) {
@@ -2480,7 +2630,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  void SetSparseColumnSubsetReal(int rows, int cols, T** dp,
+  void SetSparseColumnSubsetReal(int rows, T** dp,
 				 const indexType* cindx, int icols,
 				 const T* data, int advance) {
     T* Acol = new T[rows];
@@ -2500,7 +2650,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  void SetSparseColumnSubsetComplex(int rows, int cols, T** dp,
+  void SetSparseColumnSubsetComplex(int rows, T** dp,
 				    const indexType* cindx, int icols,
 				    const T* data, int advance) {
     T* Acol = new T[2*rows];
@@ -2520,33 +2670,35 @@ namespace FreeMat {
     delete Acol;
   }
 
-  void SetSparseColumnSubset(Class dclass, int rows, int cols,
+  void SetSparseColumnSubset(Class dclass, int rows, 
 			     const void* src,
 			     const indexType* cindx, int icols,
 			     const void *data, int advance) {
     switch(dclass) {
     case FM_LOGICAL:
-      return SetSparseColumnSubsetReal<uint32>(rows,cols,(uint32**) src,
+      return SetSparseColumnSubsetReal<uint32>(rows,(uint32**) src,
 					       cindx,icols,(uint32*) data, advance);
     case FM_INT32:
-      return SetSparseColumnSubsetReal<int32>(rows,cols,(int32**) src,
+      return SetSparseColumnSubsetReal<int32>(rows,(int32**) src,
 					      cindx,icols,(int32*) data, advance);
     case FM_FLOAT:
-      return SetSparseColumnSubsetReal<float>(rows,cols,(float**) src,
+      return SetSparseColumnSubsetReal<float>(rows,(float**) src,
 					      cindx,icols,(float*) data, advance);
     case FM_DOUBLE:
-      return SetSparseColumnSubsetReal<double>(rows,cols,(double**) src,
+      return SetSparseColumnSubsetReal<double>(rows,(double**) src,
 					      cindx,icols,(double*) data, advance);
     case FM_COMPLEX:
-      return SetSparseColumnSubsetComplex<float>(rows,cols,(float**) src,
+      return SetSparseColumnSubsetComplex<float>(rows,(float**) src,
 						 cindx,icols,(float*) data, advance);
     case FM_DCOMPLEX:
-      return SetSparseColumnSubsetComplex<double>(rows,cols,(double**) src,
+      return SetSparseColumnSubsetComplex<double>(rows,(double**) src,
 						  cindx,icols,(double*) data, advance);
+    default:
+      throw Exception("unexpected type in setsparsecolumn subset");
     }
   }    
    
-  void SetSparseNDimSubsets(Class dclass, int rows, int cols, 
+  void SetSparseNDimSubsets(Class dclass, int rows, 
 			      void* src,
 			      const indexType* rindx, int irows,
 			      const indexType* cindx, int icols,
@@ -2561,35 +2713,36 @@ namespace FreeMat {
       }
       if ((rindx == NULL) || ((irows == rows) && 
 			      CheckAllRowsReference(rindx,rows))) 
-	return SetSparseColumnSubset(dclass,rows,cols,src,cptr,icols,data,advance);
+	return SetSparseColumnSubset(dclass,rows,src,cptr,icols,data,advance);
       switch(dclass) {
       case FM_LOGICAL:
-	return SetSparseNDimSubsetsReal<uint32>(rows, cols, (uint32**) src,
+	return SetSparseNDimSubsetsReal<uint32>(rows, (uint32**) src,
 						rindx, irows, cptr, icols,
 						(const uint32*) data, advance);
       case FM_INT32:
-	return SetSparseNDimSubsetsReal<int32>(rows, cols, (int32**) src,
+	return SetSparseNDimSubsetsReal<int32>(rows, (int32**) src,
 					       rindx, irows, cptr, icols,
 					       (const int32*) data, advance);
       case FM_FLOAT:
-	return SetSparseNDimSubsetsReal<float>(rows, cols, (float**) src,
+	return SetSparseNDimSubsetsReal<float>(rows, (float**) src,
 					       rindx, irows, cptr, icols,
 					       (const float*) data, advance);
       case FM_DOUBLE:
-	return SetSparseNDimSubsetsReal<double>(rows, cols, (double**) src,
+	return SetSparseNDimSubsetsReal<double>(rows, (double**) src,
 						rindx, irows, cptr, icols,
 						(const double*) data, advance);
       case FM_COMPLEX:
-	return SetSparseNDimSubsetsComplex<float>(rows, cols, (float**) src,
+	return SetSparseNDimSubsetsComplex<float>(rows, (float**) src,
 						  rindx, irows, cptr, icols,
 						  (const float*) data, advance);
       case FM_DCOMPLEX:
-	return SetSparseNDimSubsetsComplex<double>(rows, cols, (double**) src,
+	return SetSparseNDimSubsetsComplex<double>(rows, (double**) src,
 						   rindx, irows, cptr, icols,
 						   (const double*) data, 
 						   advance);
+      default:
+	throw Exception("unsupported type for SetSparseNDimSubsets");
       }
-      throw Exception("unsupported type for SetSparseNDimSubsets");
   }
   
   template <class T>
@@ -2607,7 +2760,6 @@ namespace FreeMat {
     T* OBuf = new T[rows*2];
     T* buffer = new T[newrow*4];
     // Allocate the output array
-    int ptr = 0;
     for (i=0;i<cols;i++) {
       // Decompress this column
       memset(OBuf,0,2*rows*sizeof(T));
@@ -2641,7 +2793,6 @@ namespace FreeMat {
     T* OBuf = new T[rows];
     T* buffer = new T[newrow*2];
     // Allocate the output array
-    int ptr = 0;
     for (i=0;i<cols;i++) {
       // Decompress this column
       memset(OBuf,0,rows*sizeof(T));
@@ -2660,7 +2811,7 @@ namespace FreeMat {
   }
 
   template <class T>
-  void* DeleteSparseMatrixCols(int rows, int cols, const T** src, bool *dmap) {
+  void* DeleteSparseMatrixCols(int cols, const T** src, bool *dmap) {
     // Count the number of undeleted columns
     int newcol;
     int i;
@@ -2679,29 +2830,30 @@ namespace FreeMat {
     return dest;
   }
 
-  void* DeleteSparseMatrixCols(Class dclass, int rows, int cols, const void* cp,
+  void* DeleteSparseMatrixCols(Class dclass, int cols, const void* cp,
 			       bool *dmap) {
     switch(dclass) {
     case FM_LOGICAL:
-      return DeleteSparseMatrixCols<uint32>(rows, cols, (const uint32**) cp,
+      return DeleteSparseMatrixCols<uint32>(cols, (const uint32**) cp,
 					     dmap);
     case FM_INT32:
-      return DeleteSparseMatrixCols<int32>(rows, cols, (const int32**) cp,
+      return DeleteSparseMatrixCols<int32>(cols, (const int32**) cp,
 					   dmap);
     case FM_FLOAT:
-      return DeleteSparseMatrixCols<float>(rows, cols, (const float**) cp,
+      return DeleteSparseMatrixCols<float>(cols, (const float**) cp,
 					   dmap);
     case FM_DOUBLE:
-      return DeleteSparseMatrixCols<double>(rows, cols, (const double**) cp,
+      return DeleteSparseMatrixCols<double>(cols, (const double**) cp,
 					    dmap);
     case FM_COMPLEX:
-      return DeleteSparseMatrixCols<float>(rows, cols, (const float**) cp,
+      return DeleteSparseMatrixCols<float>(cols, (const float**) cp,
 					   dmap);
     case FM_DCOMPLEX:
-      return DeleteSparseMatrixCols<double>(rows, cols, (const double**) cp,
+      return DeleteSparseMatrixCols<double>(cols, (const double**) cp,
 					    dmap);
+    default:
+      throw Exception("unsupported type for DeleteSparseMatrixCols");
     }    
-    throw Exception("unsupported type for DeleteSparseMatrixCols");
   }
 
   void* DeleteSparseMatrixRows(Class dclass, int rows, int cols, const void* cp,
@@ -2725,8 +2877,9 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return DeleteSparseMatrixRowsComplex<double>(rows, cols, (const double**) cp,
 						   dmap);
+    default:
+      throw Exception("unsupported type for DeleteSparseMatrixRows");
     }
-    throw Exception("unsupported type for DeleteSparseMatrixRows");
   }
 
   template <class T>
@@ -2765,7 +2918,6 @@ namespace FreeMat {
     }
     // Now, we have to determine how many elements are present in the
     // output 
-    int newnnz;
     // to do this, we loop through the IJV list
     int dptr;
     dptr = 0;
@@ -2830,7 +2982,6 @@ namespace FreeMat {
     }
     // Now, we have to determine how many elements are present in the
     // output 
-    int newnnz;
     // to do this, we loop through the IJV list
     int dptr;
     dptr = 0;
@@ -2852,7 +3003,6 @@ namespace FreeMat {
 	dptr++;
       }
     }
-    int qptr = 0;
     rows -= delete_len;
     T** dst = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,rows,1);
     delete mlist;
@@ -2885,8 +3035,9 @@ namespace FreeMat {
       return DeleteSparseMatrixVectorComplex<double>(rows, cols, 
 						     (const double**) cp,
 						     ndx, delete_len);
+    default:
+      throw Exception("unsupported type for DeleteSparseMatrixVectorSubset");
     }
-    throw Exception("unsupported type for DeleteSparseMatrixVectorSubset");
   }
 
   template <class T>
@@ -2953,34 +3104,36 @@ namespace FreeMat {
       return GetSparseDiagonalComplex<float>(rows, cols, (const float**) cp, diag_order);
     case FM_DCOMPLEX:
       return GetSparseDiagonalComplex<double>(rows, cols, (const double**) cp, diag_order);
+    default:
+      throw Exception("unsupported type for GetSparseDiagonal");
     }    
-    throw Exception("unsupported type for GetSparseDiagonal");
   }
 
   template <class T>
-  bool TestSparseNotFinite(int rows, int cols, const T** src) {
+  bool TestSparseNotFinite(int cols, const T** src) {
     for (int i=0;i<cols;i++)
       for (int j=0;j<(int)src[i][0];j++) 
 	if (!IsFinite(src[i][j])) return true;
     return false;
   }
   
-  bool SparseAnyNotFinite(Class dclass, int rows, int cols, const void* cp) {
+  bool SparseAnyNotFinite(Class dclass, int cols, const void* cp) {
     switch(dclass) {
     case FM_LOGICAL:
       return false;
     case FM_INT32:
       return false;
     case FM_FLOAT:
-      return TestSparseNotFinite<float>(rows, cols, (const float**) cp);
+      return TestSparseNotFinite<float>(cols, (const float**) cp);
     case FM_DOUBLE:
-      return TestSparseNotFinite<double>(rows, cols, (const double**) cp);
+      return TestSparseNotFinite<double>(cols, (const double**) cp);
     case FM_COMPLEX:
-      return TestSparseNotFinite<float>(rows, cols, (const float**) cp);
+      return TestSparseNotFinite<float>(cols, (const float**) cp);
     case FM_DCOMPLEX:
-      return TestSparseNotFinite<double>(rows, cols, (const double**) cp);
+      return TestSparseNotFinite<double>(cols, (const double**) cp);
+    default:
+      throw Exception("unsupported type for SparseAnyNotFinite");
     }        
-     throw Exception("unsupported type for SparseAnyNotFinite");
  }
 
   template <class T>
@@ -3043,8 +3196,9 @@ namespace FreeMat {
       return SparseArrayTransposeComplex<float>(rows, cols, (const float**) cp);
     case FM_DCOMPLEX:
       return SparseArrayTransposeComplex<double>(rows, cols, (const double**) cp);
+    default:
+      throw Exception("unsupported type for SparseArrayTranspose");
     }        
-    throw Exception("unsupported type for SparseArrayTranspose");
   }
 
   void* SparseArrayHermitian(Class dclass, int rows, int cols, const void* cp) {
@@ -3053,8 +3207,9 @@ namespace FreeMat {
       return SparseArrayHermitianComplex<float>(rows, cols, (const float**) cp);
     case FM_DCOMPLEX:
       return SparseArrayHermitianComplex<double>(rows, cols, (const double**) cp);
+    default:
+      throw Exception("unsupported type for SparseArrayHermitian");
     }
-    throw Exception("unsupported type for SparseArrayHermitian");
   }
 
   template <class T>
@@ -3146,8 +3301,9 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseAddComplex<double>(rows, cols, (const double**) ap,
 				      (const double**) bp);
+    default:
+      throw Exception("unsupported type for SparseSparseAdd");
     }
-    throw Exception("unsupported type for SparseSparseAdd");
   }
 
 
@@ -3240,8 +3396,9 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseSubtractComplex<double>(rows, cols, (const double**) ap,
 					   (const double**) bp);
+    default:
+      throw Exception("unsupported type for SparseSparseSubtract");
     }
-    throw Exception("unsupported type for SparseSparseSubtract");
   }
 
   template <class T>
@@ -3327,8 +3484,9 @@ namespace FreeMat {
     case FM_DCOMPLEX:
       return SparseMultiplyComplex<double>(rows, cols, (const double**) ap,
 					   (const double**) bp);
+    default:
+      throw Exception("unsupported type for SparseSparseMultiply");
     }
-    throw Exception("unsupported type for SparseSparseMultiply");
   }
   
   template <class T>
@@ -3430,8 +3588,9 @@ namespace FreeMat {
       return SparseOnesFuncComplex<float>(Arows,Acols,(const float**)Ap);
     case FM_DCOMPLEX:
       return SparseOnesFuncComplex<double>(Arows,Acols,(const double**)Ap);
+    default:
+      throw Exception("unsupported type for SparseOnesFunc");
     }
-    throw Exception("unsupported type for SparseOnesFunc");
   }
 
   void* SparseScalarMultiply(Class dclass, const void *ap, int rows, int cols,
@@ -3453,8 +3612,9 @@ namespace FreeMat {
       return SparseScalarMultiplyComplex<double>(rows, cols, 
 						 (const double**) ap,
 						 (const double*) bp);
+    default:
+      throw Exception("unsupported type for SparseScalarMultiply");
     }
-    throw Exception("unsupported type for SparseScalarMultiply");
   }
 
   int ConvertSparseCCSReal(int rows, int cols, const double **Ap, int* &Acolstart,
@@ -3593,7 +3753,7 @@ namespace FreeMat {
   IJVEntry<double>* ConvertCCSToIJVListReal(int *Ap, int *Ai, double *Ax, 
 					    int Acols, int Anz) {
     IJVEntry<double>* T = new IJVEntry<double>[Anz];
-    int i, j, p, q;
+    int i, j, p;
     p = 0;
     for (i=0;i<Acols;i++) {
       for (j=0;j<(Ap[i+1] - Ap[i]);j++) {
@@ -3609,7 +3769,7 @@ namespace FreeMat {
   IJVEntry<double>* ConvertCCSToIJVListComplex(int *Ap, int *Ai, double *Ax, double *Ay,
 					       int Acols, int Anz) {
     IJVEntry<double>* T = new IJVEntry<double>[Anz];
-    int i, j, p, q;
+    int i, j, p;
     p = 0;
     for (i=0;i<Acols;i++) {
       for (j=0;j<(Ap[i+1] - Ap[i]);j++) {
@@ -3992,7 +4152,6 @@ namespace FreeMat {
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
-    int ldz = n;
     double sigmar;
     double sigmai;
     double *workev = new double[3*ncv];
@@ -4139,7 +4298,6 @@ namespace FreeMat {
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*nev));
-    int ldz = n;
     double sigma;
     int ierr;
     dseupd_(&rvec, &howmny, select, d,z, &ldv, 
@@ -4234,7 +4392,6 @@ namespace FreeMat {
       z = NULL;
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
-    int ldz = n;
     double sigma[2];
     double *workev = new double[2*2*ncv];
     int ierr;
@@ -4368,7 +4525,6 @@ namespace FreeMat {
       z = NULL;
     else
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
-    int ldz = n;
     double sigmar;
     double sigmai;
     sigmar = shift;
@@ -4554,7 +4710,6 @@ namespace FreeMat {
       z = NULL;
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
-    int ldz = n;
     double sigma[2];
     sigma[0] = shift[0];
     sigma[1] = shift[1];
@@ -4817,8 +4972,9 @@ namespace FreeMat {
       return IsPositiveSparse<float>(rows, cols, (const float**) ap);
     case FM_DOUBLE:
       return IsPositiveSparse<double>(rows, cols, (const double**) ap);
+    default:
+      throw Exception("unsupported type for ispositive");
     }
-    throw Exception("unsupported type for ispositive");
   }
 
 
@@ -4919,6 +5075,8 @@ namespace FreeMat {
       return SparseMatrixSumRowsComplex<float>(Arows, Acols, (const float**) Ap);
     case FM_DCOMPLEX:
       return SparseMatrixSumRowsComplex<double>(Arows, Acols, (const double**) Ap);
+    default:
+      throw Exception("unexpected type in sparse matrix sum rows");
     }
   }
 
@@ -4934,6 +5092,8 @@ namespace FreeMat {
       return SparseMatrixSumColumnsComplex<float>(Arows, Acols, (const float**) Ap);
     case FM_DCOMPLEX:
       return SparseMatrixSumColumnsComplex<double>(Arows, Acols, (const double**) Ap);
+    default:
+      throw Exception("unexpected type in sparse matrix sum cols");
     }
   }
   
@@ -4983,6 +5143,8 @@ namespace FreeMat {
       return ReshapeSparseMatrixComplex<float>(rows,cols,(const float**) Ap,newrows,newcols);
     case FM_DCOMPLEX:
       return ReshapeSparseMatrixReal<double>(rows,cols,(const double**) Ap,newrows,newcols);
+    default:
+      throw Exception("unexpected type in reshapse sparse matrix");
     }    
   }
 
@@ -5336,6 +5498,7 @@ namespace FreeMat {
       switch (opselect) {
       case SLO_AND: return ApplyLogicalOpRealZP<uint32>(rows,cols,(const uint32**)Ap,(const uint32**)Bp,slo_and_real<uint32>);
       case SLO_OR: return ApplyLogicalOpRealZP<uint32>(rows,cols,(const uint32**)Ap,(const uint32**)Bp,slo_or_real<uint32>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }
     case FM_INT32:
@@ -5345,7 +5508,8 @@ namespace FreeMat {
       case SLO_NE: return ApplyLogicalOpRealZP<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_ne_real<int32>);
       case SLO_LE: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_le_real<int32>);
       case SLO_GE: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_ge_real<int32>);
-      case SLO_EQ: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_eq_real<int32>);
+      case SLO_EQ: return ApplyLogicalOpRealNZ<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp,slo_eq_real<int32>);	
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }
     case FM_FLOAT:
@@ -5356,6 +5520,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpRealNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_le_real<float>);
       case SLO_GE: return ApplyLogicalOpRealNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_ge_real<float>);
       case SLO_EQ: return ApplyLogicalOpRealNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_eq_real<float>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_DOUBLE:
@@ -5366,6 +5531,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpRealNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_le_real<double>);
       case SLO_GE: return ApplyLogicalOpRealNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_ge_real<double>);
       case SLO_EQ: return ApplyLogicalOpRealNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_eq_real<double>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_COMPLEX:
@@ -5376,6 +5542,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpComplexNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_le_complex<float>);
       case SLO_GE: return ApplyLogicalOpComplexNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_ge_complex<float>);
       case SLO_EQ: return ApplyLogicalOpComplexNZ<float>(rows,cols,(const float**)Ap,(const float**)Bp,slo_eq_complex<float>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_DCOMPLEX:
@@ -5386,8 +5553,11 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpComplexNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_le_complex<double>);
       case SLO_GE: return ApplyLogicalOpComplexNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_ge_complex<double>);
       case SLO_EQ: return ApplyLogicalOpComplexNZ<double>(rows,cols,(const double**)Ap,(const double**)Bp,slo_eq_complex<double>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
+    default:
+	throw Exception("unsupported sparse type/op combination");
     }
   }
 
@@ -5400,6 +5570,7 @@ namespace FreeMat {
       switch (opselect) {
       case SLO_AND: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)&Btmp,slo_and_real<uint32>);
       case SLO_OR: return ApplyLogicalOpRealScalar<uint32>(rows,cols,(const uint32**)Ap,(const uint32*)&Btmp,slo_or_real<uint32>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }
     }
@@ -5411,6 +5582,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_le_real<int32>);
       case SLO_GE: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_ge_real<int32>);
       case SLO_EQ: return ApplyLogicalOpRealScalar<int32>(rows,cols,(const int32**)Ap,(const int32*)Bp,slo_eq_real<int32>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_FLOAT:
@@ -5421,6 +5593,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_le_real<float>);
       case SLO_GE: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_ge_real<float>);
       case SLO_EQ: return ApplyLogicalOpRealScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_eq_real<float>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_DOUBLE:
@@ -5431,6 +5604,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_le_real<double>);
       case SLO_GE: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_ge_real<double>);
       case SLO_EQ: return ApplyLogicalOpRealScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_eq_real<double>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_COMPLEX:
@@ -5441,6 +5615,7 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_le_complex<float>);
       case SLO_GE: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_ge_complex<float>);
       case SLO_EQ: return ApplyLogicalOpComplexScalar<float>(rows,cols,(const float**)Ap,(const float*)Bp,slo_eq_complex<float>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
     case FM_DCOMPLEX:
@@ -5451,8 +5626,11 @@ namespace FreeMat {
       case SLO_LE: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_le_complex<double>);
       case SLO_GE: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_ge_complex<double>);
       case SLO_EQ: return ApplyLogicalOpComplexScalar<double>(rows,cols,(const double**)Ap,(const double*)Bp,slo_eq_complex<double>);
+      default:
 	throw Exception("unsupported sparse type/op combination");
       }	
+    default:
+      throw Exception("unsupported sparse type/op combination");
     }
   }
   
@@ -5505,7 +5683,8 @@ namespace FreeMat {
     case FM_DOUBLE:  return SparseAbsFunctionReal<double>(rows,cols,(const double**)Ap);
     case FM_COMPLEX:  return SparseAbsFunctionComplex<float>(rows,cols,(const float**)Ap);
     case FM_DCOMPLEX:  return SparseAbsFunctionComplex<double>(rows,cols,(const double**)Ap);
+    default:
+      throw Exception("unsupported sparse matrix type in argument to abs");
     }
-    throw Exception("unsupported sparse matrix type in argument to abs");
   }
 }

@@ -44,16 +44,12 @@
 #define KM_HOME      0x106
 #define KM_END       0x107
 
-#include "Interface.hpp"
-
-using namespace FreeMat;
-
 
 class KeyManager
 {
 public:
   KeyManager();
-  ~KeyManager();
+  virtual ~KeyManager();
 
   // Predefined control sequence
   virtual void MoveDown() = 0;
@@ -64,6 +60,12 @@ public:
   virtual void ClearEOD() = 0;
   virtual void MoveBOL() = 0;
   virtual void OutputRawString(std::string txt) = 0;
+  virtual void ExecuteLine(const char * line) = 0;
+  //FIXME
+  virtual void RegisterInterrupt() {};
+  virtual std::vector<std::string> GetCompletionList(const char *line, 
+						     int word_end, 
+						     std::string &matchString) = 0;
 
   // Output a character or string to the terminal after converting
   // tabs to spaces and control characters to a caret followed by
@@ -123,10 +125,8 @@ public:
   void AddHistory(std::string);
   void KillLine();
   void Yank();
-  void SetInterface(Interface* io);
   void CompleteWord();
-  virtual void ExecuteLine(const char * line) {};
-  virtual void RegisterInterrupt() {};
+  
 protected:
   // move the caret to m_xCaret, m_yCaret
   void DoResizeBuffer(int xsize, int ysize);
@@ -168,7 +168,6 @@ protected:
   // True in insert mode
   bool insert;
   int startsearch;
-  Interface *io;
 };
 
   

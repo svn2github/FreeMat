@@ -4,9 +4,6 @@
 #include "Point2D.hpp"
 #include "Rect2D.hpp"
 #include "Color.hpp"
-#include "GrayscaleImage.hpp"
-#include "RGBImage.hpp"
-
 #include <string>
 #include <vector>
 

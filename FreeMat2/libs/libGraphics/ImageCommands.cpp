@@ -33,7 +33,7 @@ namespace FreeMat {
     if (fig->getType() == figscimg) {
       return ((ScalarImage*) fig->GetChildWidget());
     } else {
-      ScalarImage* t = new ScalarImage(fig->w(),fig->h());
+      ScalarImage* t = new ScalarImage(fig->GetWidth(),fig->GetHeight());
       fig->SetFigureChild(t,figscimg);
       return t;
     }
@@ -154,7 +154,7 @@ namespace FreeMat {
     f = GetCurrentImage();
     f->SetColormap(t);
     Figure *fig = GetCurrentFig();
-    fig->redraw();
+    fig->Redraw();
     return ArrayVector();
   }
 
@@ -250,7 +250,7 @@ namespace FreeMat {
     f = GetCurrentImage();
     f->WindowLevel(window,level);
     Figure *fig = GetCurrentFig();
-    fig->redraw();
+    fig->Redraw();
     return ArrayVector();
   }
 
@@ -308,9 +308,10 @@ namespace FreeMat {
       zoomfact = z.getContentsAsDoubleScalar();
     }
     f->SetImageArray(img,zoomfact);
+    f->Redraw();
     Figure *t = GetCurrentFig();
-    t->resize(t->x(),t->y(),f->getZoomColumns(),f->getZoomRows());
-    t->redraw();
+    t->Resize(f->getZoomColumns(),f->getZoomRows());
+    t->Redraw();
     return ArrayVector();
   }
 
@@ -401,8 +402,8 @@ namespace FreeMat {
     f = GetCurrentImage();
     f->Zoom(fact.getContentsAsDoubleScalar());
     Figure *t = GetCurrentFig();
-    t->resize(t->x(),t->y(),f->getZoomColumns(),f->getZoomRows());
-    t->redraw();
+    t->Resize(f->getZoomColumns(),f->getZoomRows());
+    t->Redraw();
     return ArrayVector();
   }
   

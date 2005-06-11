@@ -2,41 +2,53 @@
 #define __XPWidget_hpp__
 
 #include "GraphicsContext.hpp"
+#include <qwidget.h>
+#include <iostream>
 
-/**
- * This class is the basic widget class.  A widget is just an area that
- * responds to events and can draw itself.  There are two mechanisms for
- * triggering a draw of a widget.  If the parent widget requires a child
- * widget to redraw itself, it will call "OnDraw".  If the widget wants
- * to draw itself, it must get a graphics context from its parent, and
- * then call "OnDraw" directly.
- */
-class XPWidget {
-protected:
-  Rect2D bounds;
-  XPWidget *m_parent;
-  bool focused;
+// In its phoenix-like reincarnation, xpwidget is the base class that
+// represents a generic (cross platform) widget - it is a subregion
+// of another widget that can draw itself, receive mouse clicks, etc.
+// 
+// <soap>
+// If/when libXP is ported to a new platform/toolkit, get XPWidget
+// to work first (along with XPGC).  Then XPWindow.
+// </soap>
+class XPWidget : public QWidget {
+
+  Q_OBJECT
+
+  XPWidget* m_parent;
+  bool m_mousepressed;
+  Point2D m_size;
 public:
-  XPWidget(XPWidget *parent, Rect2D rect);
-  XPWidget() {m_parent = NULL;}
+  // These are the interface methods to libXP - they should be toolkit neutral
+  XPWidget(XPWidget *parent, Point2D sze);
+  XPWidget();
   virtual ~XPWidget() {};
   virtual void OnMouseDown(Point2D pt) {};
   virtual void OnMouseDrag(Point2D pt) {};
   virtual void OnMouseUp(Point2D pt) {};
-  virtual void OnResize(Point2D pt);
-  virtual void OnDraw(GraphicsContext &gc, Rect2D region) {}; 
-  virtual void OnChar(char key) {};
-  virtual Rect2D GetBoundingRect() {return bounds;};
-  virtual int getWidth() {return bounds.width;};
-  virtual int getHeight() {return bounds.height;};
-  virtual void Refresh(Rect2D region) {m_parent->Refresh(region);};
-  virtual XPWidget* GetParent() {return m_parent;};
-  virtual GraphicsContext GetGC() {return m_parent->GetGC();};
-  virtual bool HitTest(Point2D pt) {return (!bounds.TestOutside(pt));};
-  virtual void SetParent(XPWidget *parent) {m_parent = parent;};
-  virtual void ShiftWidget(Point2D pt) {bounds.x1 += pt.x; bounds.y1 += pt.y;};
-  virtual void SetFocus(bool arg) {focused = arg; Refresh(bounds);};
-  virtual bool GetFocus() {return focused;};
+  virtual void OnResize() {};
+  virtual void OnDraw(GraphicsContext &gc) {};
+  int GetWidth();
+  int GetHeight();
+  void Redraw();
+  XPWidget* GetParent();
+  void GetClick(int &x, int &y);
+  void Resize(Point2D pt);
+  void Hide();
+  void Show();
+  bool Print(std::string filename,std::string type);
+  // These are toolkit dependant routines that map the toolkit stuff to the above events
+private:
+  void paintEvent(QPaintEvent* e);
+  void mousePressEvent(QMouseEvent* e);
+  void mouseReleaseEvent(QMouseEvent* e);
+  void mouseMoveEvent(QMouseEvent* e);
+  void resizeEvent(QResizeEvent* e);
+  QSize sizeHint();
 };
 
+void SaveFocus();
+void RestoreFocus();
 #endif

@@ -23,15 +23,14 @@
 
 #include "DataSet2D.hpp"
 #include "Axis.hpp"
-#include "FLTKGC.hpp"
-#include "PrintableWidget.hpp"
+#include "XPWidget.hpp"
 
 
 namespace FreeMat {
 
   typedef std::vector<DataSet3D> DataSet3DVector;
   
-  class Plot3D: public PrintableWidget {
+  class Plot3D: public XPWidget {
   public:
     /**
      * Default constructor.
@@ -40,13 +39,11 @@ namespace FreeMat {
     /**
      * Default destructor.
      */
-    ~Plot3D();
+    virtual ~Plot3D();
     void OnMouseDown(int x, int y);
     void OnMouseUp(int x, int y);
     void OnDrag(int x, int y);
     void OnDraw(GraphicsContext &gc);
-    void draw();
-    int handle(int event);
   private:
     DataSet3DVector data;
     /**

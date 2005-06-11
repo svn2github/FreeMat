@@ -70,9 +70,9 @@ class TermWidget : public QFrame
   void adjustScrollbarPosition();
   void setCursor(int x, int y);
   void markDirty(QRect& e);
-  void toggleCursor();
   //TK dependant functions
  protected:
+  void setScrollbar(int val);
   void resizeEvent( QResizeEvent *e );
   void paintEvent( QPaintEvent *e );
   void keyPressEvent( QKeyEvent *e );

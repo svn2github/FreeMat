@@ -28,6 +28,8 @@ extern "C" {
   double dlamch_(char * CMACH);
   
   double slamch_(char * CMACH);
+
+  // WORKAROUNDS - CHEGV, SGESDD
   
   void dgesvx_(char* FACT, char* TRANS, int * N, int * NRHS, 
 	       double *A, int * LDA, double * AF, int * LDAF, 

@@ -2,7 +2,7 @@ EXTRA_DIST = libAMD/libAMD.vcproj
 
 noinst_LIBRARIES = libAMD.a
 
-INCLUDES=-I@top_srcdir@/libs/libUMFPACK/AMD/Include
+INCLUDEPATH += -I@top_srcdir@/libs/libUMFPACK/AMD/Include
 
 libAMD_a_SOURCES = \
 Include/amd.h \

@@ -8,7 +8,7 @@ class BitmapPrinterGC : public GraphicsContext {
   std::string filename;
 public:
   BitmapPrinterGC(std::string fname);
-  ~BitmapPrinterGC();
+  virtual ~BitmapPrinterGC();
   virtual void BlitImage(unsigned char *data, int width, int height, int x0, int y0);
 };
 #endif

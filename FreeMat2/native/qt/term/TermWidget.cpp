@@ -19,7 +19,7 @@
 //  Need copy & paste & select
 
 TermWidget::TermWidget(QWidget *parent, const char *name) : 
-  QFrame(parent,name), pm_cursor(50,50) {
+  QFrame(parent,name) {
   m_surface = NULL;
   m_onscreen = NULL;
   m_history = NULL;
@@ -36,15 +36,13 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   QObject::connect(m_timer_blink, SIGNAL(timeout()), this, SLOT(blink()));
   QObject::connect(m_scrollbar,SIGNAL(valueChanged(int)), this, SLOT(scrollBack(int)));
   adjustScrollbarPosition();
-  setFont(11);
-  pm_cursor.fill(Qt::white);
+  setFont(10);
   cursorOn = false;
   blinkEnable = true;
   setBackgroundColor(Qt::white);
   m_scrolling = false;
   m_scroll_offset = 0;
   m_mousePressed = false;
-  //  buffer.fill(colorGroup().base());
 }
 
 TermWidget::~TermWidget() {
@@ -56,11 +54,6 @@ void TermWidget::scrollBack(int val) {
   m_surface[m_cursor_y*m_width+m_cursor_x].clearCursor();
   m_surface = m_history + (m_scrollback - m_height - (m_history_lines - val))*m_width;
   m_scroll_offset = (m_scrollback - m_height - (m_history_lines - val))*m_width;
-}
-
-void TermWidget::toggleCursor() {
-  //  cursorOn = !cursorOn;
-  //  bitBlt(this,m_cursor_x*m_char_w,m_cursor_y*m_char_h,&pm_cursor,0,0,m_char_w,m_char_h,Qt::XorROP,TRUE);
 }
 
 void TermWidget::blink() {
@@ -117,19 +110,25 @@ void TermWidget::resizeTextSurface() {
   m_height = new_height;
   m_clearall = true;
   // only do this the first time
-  if (firsttime)
+  if (firsttime) {
     setCursor(0,0);
-  else {
+    setScrollbar(0);
+  } else {
     m_cursor_y = m_height - 1 - cursor_offset;
-    m_scrollbar->setRange(0,m_history_lines);
-    m_scrollbar->setSteps(1,m_height);
-    m_scrollbar->setValue(m_history_lines);
+    setScrollbar(m_history_lines);
   }
+  m_scroll_offset = (m_scrollback - m_height)*m_width;
+}
+
+void TermWidget::setScrollbar(int val) {
+  m_scrollbar->setRange(0,m_history_lines);
+  m_scrollbar->setSteps(1,m_height);
+  m_scrollbar->setValue(val);
 }
 
 void TermWidget::OutputString(std::string txt) {
-  if (m_scrolling) 
-    m_scrollbar->setValue(0);  
+  if (m_scrolling)
+    setScrollbar(0);  
   for (int i=0;i<txt.size();i++) {
     if (txt[i] == '\n' || txt[i] == '\r') {
       setCursor(0,m_cursor_y+1);
@@ -143,7 +142,7 @@ void TermWidget::OutputString(std::string txt) {
 
 void TermWidget::ProcessChar(char c) {
   if (m_scrolling) 
-    m_scrollbar->setValue(0);  
+    setScrollbar(0);
   if (c == 'q')
     exit(0);
   if (c == 'l') {
@@ -244,7 +243,7 @@ void TermWidget::setCursor(int x, int y) {
 //   repaint(cursorRect,true);
 //   cursorEnable = false;
   if (m_scrolling) 
-    m_scrollbar->setValue(0);  
+    setScrollbar(0);
   if (m_surface[m_cursor_y*m_width+m_cursor_x].cursor())
     m_surface[m_cursor_y*m_width+m_cursor_x].toggleCursor();
   m_cursor_x = x;
@@ -260,9 +259,7 @@ void TermWidget::setCursor(int x, int y) {
       m_history[(m_scrollback - toscroll)*m_width+i] = tagChar();
     m_history_lines = QMIN(m_history_lines+toscroll,m_scrollback-m_height);
     m_cursor_y -= toscroll;
-    m_scrollbar->setRange(0,m_history_lines);
-    m_scrollbar->setSteps(1,m_height);
-    m_scrollbar->setValue(m_history_lines);
+    setScrollbar(m_history_lines);
   }
   m_surface[m_cursor_y*m_width+m_cursor_x].setCursor();
 }

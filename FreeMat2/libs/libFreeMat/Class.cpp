@@ -263,11 +263,18 @@ namespace FreeMat {
     return false;
   }
 
+  void printClassNames(Array a) {
+    stringVector classname(a.getClassName());
+    for (int i=0;i<classname.size();i++)
+      std::cout << "class " << classname[i] << "\r\n";
+  }
+
   Array ClassBinaryOperator(Array a, Array b, std::string funcname,
 			    WalkTree* eval) {
     FuncPtr val;
     ArrayVector m, n;
     if (a.isUserClass()) {
+      printClassNames(a);
       if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) {
 	val->updateCode();
 	m.push_back(a); m.push_back(b);
@@ -277,6 +284,7 @@ namespace FreeMat {
 	else
 	  return Array::emptyConstructor();
       }
+      throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
     } else if (b.isUserClass()) {
       if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) {
 	val->updateCode();
@@ -287,8 +295,8 @@ namespace FreeMat {
 	else
 	  return Array::emptyConstructor();
       }
+      throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
     }
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back() + " and " + b.getClassName().back());
   }
 
   void AdjustColonCalls(ArrayVector& m, ASTPtr t) {

@@ -1,7 +1,0 @@
-To do before release:
-2.  Add MPI capability.
-6.  Make FreeMat web site.
-7.  Fix windows installer to set path variables
-8.  Roll RPM
-9.  Roll Mac OS X Installer
-10. Icons for X11?

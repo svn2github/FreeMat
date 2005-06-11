@@ -248,6 +248,10 @@ namespace FreeMat {
       printf("double: %s\r\n",t->text);
     } else if (t->type == const_float_node) {
       printf("float: %s\r\n",t->text);
+    } else if (t->type == const_dcomplex_node) {
+      printf("double: %si\r\n",t->text);
+    } else if (t->type == const_complex_node) {
+      printf("float: %si\r\n",t->text);
     } else if (t->type == string_const_node) {
       printf("string: '%s'\r\n",t->text);
     } else if (t->type == null_node) {

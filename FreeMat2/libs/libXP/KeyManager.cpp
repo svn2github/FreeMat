@@ -66,10 +66,6 @@ KeyManager::KeyManager() {
 }
 
 
-void KeyManager::SetInterface(Interface* a_io) {
-  io = a_io;
-}
-
 void KeyManager::EndOfLine() {
   PlaceCursor(ntotal);
 }
@@ -946,7 +942,7 @@ void KeyManager::CompleteWord() {
    * Perform the completion.
    */
   std::string tempstring;
-  matches = io->GetCompletions(line, buff_curpos, tempstring);
+  matches = GetCompletionList(line, buff_curpos, tempstring);
   if(matches.size() == 0) {
     OutputRawString("\r\n");
     term_curpos = 0;

@@ -3213,6 +3213,8 @@ yyreturn:
 
 namespace FreeMat {
   
+//  int yyparse();
+
   void resetParser() {
     mainAST = NULL;
     mainMDef = NULL;

@@ -261,6 +261,7 @@ namespace FreeMat {
       }
       FindClose(hSearch);
     }
+#error Need to add private dir functionality in win32
 #else
     // Open the directory
     DIR *dir;
@@ -281,6 +282,8 @@ namespace FreeMat {
       fullname = std::string(scdir + std::string(DELIM) + fname);
       if (fname[0] == '@')
 	scanDirectory(fullname,tempfunc,fname);
+      if (strcmp(fname,"private")==0)
+	scanDirectory(fullname,tempfunc,fullname);
       if (prefix.empty())
 	procFile(fname,fullname,tempfunc);
       else
@@ -295,7 +298,7 @@ namespace FreeMat {
     struct stat filestat;
     char buffer[1024];
     char *fnamec;
-  
+
     fnamec = strdup(fname.c_str());
     stat(fullname.c_str(),&filestat);
     if (S_ISREG(filestat.st_mode)) {
@@ -339,7 +342,8 @@ namespace FreeMat {
     if (S_ISREG(filestat.st_mode)) {
       int namelen;
       namelen = strlen(fnamec);
-      if (fnamec[namelen-2] == '.' && 
+      if ((namelen > 2) && 
+	  fnamec[namelen-2] == '.' && 
 	  (fnamec[namelen-1] == 'm' ||
 	   fnamec[namelen-1] == 'M')) {
 	fnamec[namelen-2] = 0;

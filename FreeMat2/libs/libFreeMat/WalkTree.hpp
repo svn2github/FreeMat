@@ -607,6 +607,10 @@ namespace FreeMat {
      * Retrieve data about the current location of the instruction pointer
      */
     std::string getMFileName();
+    /**
+     * Mangle a function name to get the private version (if it exists)
+     */
+    std::string getPrivateMangledName(std::string fname);
     ArrayVector subsrefParen(Array r, ASTPtr t);
     ArrayVector subsrefBrace(Array r, ASTPtr t);
     ArrayVector subsrefDot(Array r, ASTPtr t);

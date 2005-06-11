@@ -104,7 +104,7 @@ namespace FreeMat {
   //   y = sparse(i,j,v,m,n)
   //@]
   //!
-  ArrayVector SparseFunction(int nargout, const ArrayVector& arg) {
+  ArrayVector SparseFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() == 1) {
       Array r(arg[0]);
       if ((r.getDataClass() != FM_LOGICAL) && (r.getDataClass() < FM_INT32))
@@ -176,7 +176,9 @@ namespace FreeMat {
 						       v_arg.getDataPointer(),
 						       vstride),
 				     true));
-    } else if (arg.size() == 5) {
+    } else if (arg.size() >= 5) {
+      if (arg.size() > 5)
+	eval->getInterface()->warningMessage("extra arguments to sparse (nnz to reserve) ignored");
       Array i_arg(arg[0]);
       Array j_arg(arg[1]);
       Array v_arg(arg[2]);

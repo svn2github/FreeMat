@@ -1301,8 +1301,20 @@ namespace FreeMat {
   //    y = mfilename
   //@]
   //!
+
+  static std::string fname_only(std::string name) {
+    int ndx;
+    ndx = name.rfind("/");
+    if (ndx>=0)
+      name.erase(0,ndx+1);
+    ndx = name.rfind(".");
+    if (ndx>=0)
+      name.erase(ndx,name.size());
+    return name;
+  }
+
   ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    return singleArrayVector(Array::stringConstructor(eval->getMFileName()));
+    return singleArrayVector(Array::stringConstructor(fname_only(eval->getMFileName())));
   }
 
   //!

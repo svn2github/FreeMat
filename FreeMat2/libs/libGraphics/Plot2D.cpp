@@ -19,7 +19,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Plot2D.hpp"
-#include "RGBImage.hpp"
 #include "GraphicsCore.hpp"
 #include <math.h>
 #include <iostream>
@@ -30,7 +29,7 @@
 
 namespace FreeMat {
 
-  Plot2D::Plot2D(int width, int height) : PrintableWidget(0,0,width,height) {
+  Plot2D::Plot2D(int width, int height) : XPWidget(NULL,Point2D(width,height)) {
     space = 10;
     holdflag = false;
     updating = false;
@@ -183,16 +182,6 @@ namespace FreeMat {
       data.clear();
     data.push_back(dp);
     SetAxesAuto();
-  }
-
-  void Plot2D::draw() {
-    FLTKGC gc(w(),h());
-    OnDraw(gc);
-  }
-
-  void Plot2D::resize(int x, int y, int w, int h) {
-    Fl_Widget::resize(x,y,w,h);
-    redraw();
   }
 
   void Plot2D::DrawAxes(GraphicsContext &gc) {

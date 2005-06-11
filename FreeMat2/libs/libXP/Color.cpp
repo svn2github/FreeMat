@@ -1,5 +1,4 @@
 #include "Color.hpp"
-#include "Exception.hpp"
 #include <string.h>
 
 Color::Color(int r, int g, int b) {
@@ -22,27 +21,50 @@ Color::Color(const Color &copy) {
 
 Color::Color(const char* name) {
   if (strcmp(name,"black")==0) {
-    red = green = blue = 0;
+    red = 0;
+    green = 0;
+    blue = 0;
   } else if (strcmp(name,"white")==0) {
-    red = green = blue = 255;
+    red = 255;
+    green = 255;
+    blue = 255;
   } else if (strcmp(name,"light grey")==0) {
-    red = green = blue = 211;
+    red = 211;
+    green = 211;
+    blue = 211;
   } else if (strcmp(name,"grey")==0) {
-    red = green = blue = 100;
+    red = 100;
+    green = 100;
+    blue = 100;
   } else if (strcmp(name,"yellow")==0) {
-    red = green = 255; blue = 0;
+    red = 255;
+    green = 255; 
+    blue = 0;
   } else if (strcmp(name,"magenta")==0) {
-    red = blue = 255; green = 0;
+    red = 255;
+    blue = 255; 
+    green = 0;
   } else if (strcmp(name,"cyan")==0) {
-    red = 0; green = blue = 255;
+    red = 0; 
+    green = 255;
+    blue = 255;
   } else if (strcmp(name,"red")==0) {
-    red = 255; green = blue = 0;
+    red = 255; 
+    green = 0;
+    blue = 0;
   } else if (strcmp(name,"green")==0) {
-    green = 255; red = blue = 0;
+    green = 255; 
+    red = 0;
+    blue = 0;
   } else if (strcmp(name,"blue")==0) {
-    blue = 255; red = green = 0;
-  } else
-    throw FreeMat::Exception("Unrecognized color!");
+    blue = 255; 
+    red = 0;
+    green = 0;
+  } else {
+    blue = 0; 
+    red = 0; 
+    green = 0;
+  }
 }
 
 Color Color::Blend8(Color fg, Color bg, int level) {

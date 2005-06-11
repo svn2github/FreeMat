@@ -107,7 +107,7 @@ namespace FreeMat {
 	Array* rp = (Array*) cp;
 	delete [] rp;
       } else if (sparse) {
-	DeleteSparseMatrix(dataClass,dimensions[0],dimensions[1],cp);
+	DeleteSparseMatrix(dataClass,dimensions[1],cp);
       } else 
 	Free(cp);
     }

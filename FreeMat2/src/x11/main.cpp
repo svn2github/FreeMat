@@ -1,37 +1,33 @@
-#include <FL/Fl.H>
-#include <FL/x.H>
+#include <qapplication.h>
+#include <qsocketnotifier.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "FLTKTerminal.hpp"
 #include "Terminal.hpp"
 #include "DumbTerminal.hpp"
 #include <stdio.h>
-#include "Class.hpp"
-#include "Module.hpp"
-#include "LoadCore.hpp"
-#include "LoadFN.hpp"
-#include "GraphicsCore.hpp"
-#include "System.hpp"
 #include "PathSearch.hpp"
-#include "ParserInterface.hpp"
-#include "File.hpp"
+#include "SocketCB.hpp"
 #include <stdlib.h>
 #include <signal.h>
 #include "config.h"
-#if 0
-#include "freemat.xpm"
-#endif
+#include "GUITerminal.hpp"
+#include "BaseTerminal.hpp"
+
+#include "Module.hpp"
+#include "Class.hpp"
+#include "LoadCore.hpp"
+#include "LoadFN.hpp"
+#include "GraphicsCore.hpp"
+#include "File.hpp"
+
+#define VERSION "1.11"
 
 using namespace FreeMat;
 
-Display *d;
-int screen_num = 0;
-
-Terminal *term;
-FLTKTerminalWindow *win;
-
 sig_t signal_suspend_default;
 sig_t signal_resume_default;
+
+BaseTerminal *term;
 
 void signal_suspend(int a) {
   term->RestoreOriginalMode();
@@ -52,11 +48,10 @@ void signal_resize(int a) {
   term->ResizeEvent();
 }
 
-void stdincb(int fd, void *data) {
+void stdincb() {
   char c;
-  while (read(STDIN_FILENO, &c, 1) == 1) {
-    term->ProcessChar(c);
-  }
+  while (read(STDIN_FILENO, &c, 1) == 1)
+    ((Terminal*)term)->ProcessChar(c);
 }
 
 std::string GetApplicationPath(char *argv0) {
@@ -253,7 +248,39 @@ char ** unpackBundledArgs(int& myargc, char bundlefunc[1024], int argc, char *ar
   return myargv;
 }
 
+
+int RunMainApp(BaseTerminal* term, std::string helpPath) {
+  Context *context = new Context;
+  
+  LoadModuleFunctions(context);
+  LoadClassFunction(context);
+  LoadCoreFunctions(context);
+  LoadFNFunctions(context);
+  LoadGraphicsCoreFunctions(context);  
+  InitializeFigureSubsystem();
+
+  const char *envPtr;
+  envPtr = getenv("FREEMAT_PATH");
+  term->setContext(context);
+  if (envPtr)
+    term->setPath(std::string(envPtr));
+  else 
+    term->setPath(std::string(""));
+  WalkTree *twalk = new WalkTree(context,term);
+  term->outputMessage(" Freemat v2.0");
+  term->outputMessage("\n");
+  term->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
+  while (twalk->getState() != FM_STATE_QUIT) {
+    twalk->resetState();
+    twalk->evalCLI();
+  }
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
+
+  QApplication app(argc, argv, TRUE);
+
   // First thing to do is determine if we are bundled
   // or not. 
   int bundledMode;
@@ -283,123 +310,47 @@ int main(int argc, char *argv[]) {
   guimode = parseFlagArg(myargc,myargv,"-gui",false);
   if (parseFlagArg(myargc,myargv,"-help",false)) usage();
 
-  if (!withoutX) {
-    fl_open_display();
-    Fl::visual(FL_RGB);
-  }
-  
   // Instantiate the terminal class
   if (!scriptMode && !funcMode && !guimode) {
     term = new Terminal;
     fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
-  } else if (!guimode) {
-    term = new DumbTerminal;
-  }
-
-  if (!guimode) {
-    signal_suspend_default = signal(SIGTSTP,signal_suspend);
-    signal_resume_default = signal(SIGCONT,signal_resume);
-    signal(SIGWINCH, signal_resize);
-    Fl::add_fd(STDIN_FILENO,FL_READ,stdincb);
-  }
-  Context *context = new Context;
-  LoadModuleFunctions(context);
-  LoadClassFunction(context);
-  LoadCoreFunctions(context);
-  LoadFNFunctions(context);
-  LoadGraphicsCoreFunctions(context);  
-  InitializeFigureSubsystem();
-
-  const char *envPtr;
-  envPtr = getenv("FREEMAT_PATH");
-
-  if (!guimode) {
-    term->setContext(context);
-    if (envPtr)
-      term->setPath(std::string(envPtr));
-    else 
-      term->setPath(std::string(""));
-    WalkTree *twalk = new WalkTree(context,term);
-    term->SetEvalEngine(twalk);
     try {
       term->Initialize();
     } catch(Exception &e) {
       fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
       exit(1);
     }
-    LoadBundleFunctions(myargv[0], twalk);
-    if (!funcMode && !bundledMode) {
-      term->outputMessage(" Freemat v");
-      term->outputMessage(VERSION);
-      term->outputMessage("\n");
-      term->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
-      while (twalk->getState() != FM_STATE_QUIT) {
-	twalk->resetState();
-	twalk->evalCLI();
-      }
-    } else {
-      char buffer[1024];
-      if (funcMode) {
-	sprintf(buffer,"%s",myargv[funcMode+1]);
-	for (int i=funcMode+2;i<myargc;i++) {
-	  strcat(buffer," ");
-	  strcat(buffer,myargv[i]);
-	}
-	strcat(buffer,"\n");
-      }
-      ParserState parserState = parseString(buffer);
-      if (parserState != ScriptBlock) {
-	printf("Error: syntax error in command line arguments to FreeMat\r\n");
-	term->RestoreOriginalMode();
-	return 1;
-      }
-      ASTPtr tree = getParsedScriptBlock();
-      try {
-	twalk->block(tree);
-      } catch(Exception &e) {
-	e.printMe(term);
-	term->RestoreOriginalMode();
-	return 5;	
-      }
-    }
-    term->RestoreOriginalMode();
+  } else if (!guimode) {
+    term = new DumbTerminal;
   } else {
-    // We need to find the help files...
-    // To do so, we need to search through the
-    // path.
-    std::string helppath;
-    if (envPtr) {
-      PathSearcher psearch(envPtr);
-      try {
-	helppath = psearch.ResolvePath("../html/index.html");
-      } catch (Exception& E) {
-	helppath = "/usr/local/share/FreeMat/html/index.html";
-      }
-    } else 
-      helppath = "/usr/local/share/FreeMat/html/index.html";
-    win = new FLTKTerminalWindow(400,300,"FreeMat v" VERSION,
-				 helppath.c_str());
-    win->term()->setContext(context);
-//     Pixmap p, mask;
-//     XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display),
-// 			    freemat, &p, &mask, NULL);
-//     win->icon((char*) p)
-    win->show();
-    if (envPtr)
-      win->term()->setPath(std::string(envPtr));
-    else 
-      win->term()->setPath(std::string(""));
-    WalkTree *twalk = new WalkTree(context,win->term());
-    win->term()->outputMessage(" Freemat v");
-    win->term()->outputMessage(VERSION);
-    win->term()->outputMessage("\n");
-    win->term()->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
-    while (twalk->getState() != FM_STATE_QUIT) {
-      if (twalk->getState() == FM_STATE_RETALL)
-	twalk->clearStacks();
-      twalk->resetState();
-      twalk->evalCLI();
-    }
+    GUITerminal *iterm = new GUITerminal;
+    iterm->show();
+    iterm->resizeTextSurface();
+    term = (BaseTerminal*) iterm;
   }
-  return 0;
+  
+  if (!guimode) {
+    signal_suspend_default = signal(SIGTSTP,signal_suspend);
+    signal_resume_default = signal(SIGCONT,signal_resume);
+    signal(SIGWINCH, signal_resize);
+    QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+    SocketCB *socketcb = new SocketCB(stdincb);
+    QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
+  }
+
+//   // We need to find the help files...
+//   // To do so, we need to search through the
+//   // path.
+//   std::string helppath;
+//   if (envPtr) {
+//     PathSearcher psearch(envPtr);
+//     try {
+//       helppath = psearch.ResolvePath("../html/index.html");
+//     } catch (Exception& E) {
+//       helppath = "/usr/local/share/FreeMat/html/index.html";
+//     }
+//   } else 
+//     helppath = "/usr/local/share/FreeMat/html/index.html";
+  //FIXME - fix bundled mode...
+  return RunMainApp(term, "");
 }

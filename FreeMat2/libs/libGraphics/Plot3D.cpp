@@ -19,20 +19,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Plot3D.hpp"
-#include "RGBImage.hpp"
 #include "GraphicsCore.hpp"
-#include "FLTKGC.hpp"
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
-#include "FL/Fl.H"
 extern "C" {
 #include "trackball.h"
 }
 
 namespace FreeMat {
 
-  Plot3D::Plot3D(int width, int height) : PrintableWidget(0,0,width,height){
+  Plot3D::Plot3D(int width, int height) : XPWidget(NULL,Point2D(width,height)){
     m_width = width;
     m_height = height;
     trackball(quat,0.0,0.0,0.0,0.0);
@@ -83,24 +80,9 @@ namespace FreeMat {
 	      -(2.0*x - szx) / szx / 10,
 	      (szy - 2.0*y) / szy / 10);
     add_quats( spin_quat, quat, quat );
-    redraw();
+    Redraw();
   }
 
-  void Plot3D::draw() {
-    FLTKGC gc(w(),h());
-    OnDraw(gc);
-  }
-
-  int Plot3D::handle(int event) {
-    if (event == FL_PUSH) {
-      OnMouseDown(Fl::event_x(),Fl::event_y());
-      return 1;
-    } else if (event == FL_DRAG) {
-      OnDrag(Fl::event_x(),Fl::event_y());
-      return 1;
-    }
-    return 0;
-  }
 
   void Plot3D::OnDraw(GraphicsContext &gc) {
     float m[4][4];

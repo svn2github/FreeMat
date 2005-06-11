@@ -19,17 +19,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "SurfPlot.hpp"
-#include "RGBImage.hpp"
 #include "GraphicsCore.hpp"
-#include "FLTKGC.hpp"
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
 #include <algorithm>
-#include "FL/Fl.H"
-extern "C" {
-#include "trackball.h"
-}
 
 #undef min
 #undef max
@@ -53,13 +47,6 @@ namespace FreeMat {
     memcpy(yvals,y,ny*sizeof(double));
     memcpy(zvals,z,nx*ny*sizeof(double));
     SurfaceToQuads();
-  }
-
-  void SurfPlot::resize(int x, int y, int w, int h) {
-    Fl_Widget::resize(x,y,w,h);
-    m_width = w;
-    m_height = h;
-    redraw();    
   }
 
   void SurfPlot::SurfaceToQuads() {
@@ -133,10 +120,7 @@ namespace FreeMat {
     x_center = y_center = z_center = 0.0;
   }
 
-  SurfPlot::SurfPlot(int width, int height) : PrintableWidget(0,0,width,height){
-    m_width = width;
-    m_height = height;
-    //    trackball(quat,0.0,0.0,0.0,0.0);
+  SurfPlot::SurfPlot(int width, int height) : XPWidget(NULL,Point2D(width,height)){
     xvals = NULL;
     yvals = NULL;
     zvals = NULL;
@@ -152,43 +136,25 @@ namespace FreeMat {
   SurfPlot::~SurfPlot() {
   }
 
-  void SurfPlot::OnMouseDown(int x, int y) {
-    beginx = x;
-    beginy = y;
+  void SurfPlot::OnMouseDown(Point2D pt) {
+    beginx = pt.x;
+    beginy = pt.y;
     dragging = true;
   }
 
-  void SurfPlot::OnMouseUp(int x, int y) {
+  void SurfPlot::OnMouseUp(Point2D pt) {
     dragging = false;
-    redraw();
+    Redraw();
   }
 
-  void SurfPlot::OnDrag(int x, int y) {
-    elev -= (y - beginy);
-    azim += (x - beginx);
+  void SurfPlot::OnMouseDrag(Point2D pt) {
+    elev -= (pt.y - beginy);
+    azim += (pt.x - beginx);
     elev = (elev + 360) % 360;
     azim = (azim + 360) % 360;
-    beginx = x;
-    beginy = y;    
-    redraw();
-  }
-
-  void SurfPlot::draw() {
-    FLTKGC gc(w(),h());
-    OnDraw(gc);
-  }
-
-  int SurfPlot::handle(int event) {
-    if (event == FL_PUSH) {
-      OnMouseDown(Fl::event_x(),Fl::event_y());
-      return 1;
-    } else if (event == FL_DRAG) {
-      OnDrag(Fl::event_x(),Fl::event_y());
-      return 1;
-    } else if (event == FL_RELEASE) {
-      OnMouseUp(Fl::event_x(),Fl::event_y());
-    }
-    return 0;
+    beginx = pt.x;
+    beginy = pt.y;    
+    Redraw();
   }
 
   void transformPoint(pt3d& src, pt3d& dst, float m[4][4]) {
@@ -553,6 +519,10 @@ namespace FreeMat {
     gc.SetFont(12);
     gc.SetBackGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("light grey"));
+
+    int m_width = GetWidth();
+    int m_height = GetHeight();
+
     gc.FillRectangle(Rect2D(0, 0, m_width, m_height));
 
     double cosaz, sinaz;

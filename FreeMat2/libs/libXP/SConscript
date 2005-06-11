@@ -1,0 +1,19 @@
+env = Environment(tools=['default','qt'])
+list = Split(""" DynLib.cpp 
+System.cpp 
+PathSearch.cpp 
+Rect2D.cpp 
+PostScriptGC.cpp 
+Point2D.cpp 
+GraphicsContext.cpp 
+Color.cpp 
+KeyManager.cpp 
+XPWidget.cpp 
+XPWindow.cpp 
+QTGC.cpp 
+GUITerminal.cpp 
+TermWidget.cpp 
+BaseTerminal.cpp """)
+env.Append(CPPPATH = ['.','../libFreeMat'])
+env.Library('XP',list)
+

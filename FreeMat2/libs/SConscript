@@ -1,0 +1,10 @@
+subdirs = Split("""libFreeMat/SConscript
+libFFTPack/SConscript
+libFN/SConscript
+libARPACK/SConscript
+libCore/SConscript
+libXP/SConscript
+libUMFPACK/SConscript
+libGraphics/SConscript""")
+SConscript(subdirs)
+

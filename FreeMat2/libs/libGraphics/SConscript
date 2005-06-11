@@ -1,0 +1,16 @@
+env = Environment(tools=['default','qt'])
+list = Split("""Axis.cpp 
+DataSet2D.cpp 
+LoadGraphicsCore.cpp 
+Plot2D.cpp 
+PlotCommands.cpp 
+ImageCommands.cpp 
+ScalarImage.cpp 
+Figure.cpp 
+Plot3D.cpp 
+SurfPlot.cpp 
+NewAxis.cpp""")
+env.Append(CPPPATH = ['.','../libXP','../libFreeMat','../libCore'])
+env.Library('Graphics', list)
+
+

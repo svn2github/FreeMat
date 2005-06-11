@@ -1,4 +1,5 @@
-#include "config.h"
+//FIXME
+//#include "config.h"
 #ifdef USE_MPI
 
 #include <mpi.h>

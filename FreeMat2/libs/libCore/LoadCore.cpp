@@ -24,8 +24,9 @@
 #include "Malloc.hpp"
 #include <math.h>
 
+//FIXME
 #ifndef WIN32
-#include "config.h"
+//#include "config.h"
 #ifdef USE_MPI
 #include "MPIWrap.hpp"
 #endif

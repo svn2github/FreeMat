@@ -40,11 +40,11 @@ PATH: /home/basu/bin
 ## ----------- ##
 
 configure:1328: checking build system type
-configure:1346: result: i686-pc-linux-gnu
+configure:1346: result: i686-redhat-linux-gnu
 configure:1354: checking host system type
-configure:1368: result: i686-pc-linux-gnu
+configure:1368: result: i686-redhat-linux-gnu
 configure:1376: checking target system type
-configure:1390: result: i686-pc-linux-gnu
+configure:1390: result: i686-redhat-linux-gnu
 configure:1420: checking for a BSD-compatible install
 configure:1475: result: /usr/bin/install -c
 configure:1486: checking whether build environment is sane
@@ -129,7 +129,7 @@ configure: failed program was:
 configure:2759: checking for style of include used by make
 configure:2787: result: GNU
 configure:2815: checking dependency style of gcc
-configure:2905: result: gcc3
+configure:2905: result: none
 configure:2933: checking whether gcc and cc understand -c and -o together
 configure:2963: gcc -c conftest.c -o conftest.o >&5
 configure:2966: $? = 0
@@ -496,7 +496,6 @@ config.status:762: creating include/ffi.h
 config.status:762: creating Makefile
 config.status:762: creating testsuite/Makefile
 config.status:866: creating fficonfig.h
-config.status:976: fficonfig.h is unchanged
 config.status:1055: linking ./src/x86/ffitarget.h to include/ffitarget.h
 config.status:1292: executing depfiles commands
 config.status:1292: executing include commands
@@ -506,8 +505,8 @@ config.status:1292: executing src commands
 ## Cache variables. ##
 ## ---------------- ##
 
-ac_cv_build=i686-pc-linux-gnu
-ac_cv_build_alias=i686-pc-linux-gnu
+ac_cv_build=i686-redhat-linux-gnu
+ac_cv_build_alias=i686-redhat-linux-gnu
 ac_cv_c_compiler_gnu=yes
 ac_cv_decl_map_anon=yes
 ac_cv_env_CCASFLAGS_set=
@@ -537,8 +536,8 @@ ac_cv_func_mmap_anon=yes
 ac_cv_func_mmap_dev_zero=yes
 ac_cv_func_mmap_file=yes
 ac_cv_header_stdc=yes
-ac_cv_host=i686-pc-linux-gnu
-ac_cv_host_alias=i686-pc-linux-gnu
+ac_cv_host=i686-redhat-linux-gnu
+ac_cv_host_alias=i686-redhat-linux-gnu
 ac_cv_objext=o
 ac_cv_path_install='/usr/bin/install -c'
 ac_cv_prog_AWK=gawk
@@ -552,35 +551,35 @@ ac_cv_prog_egrep='grep -E'
 ac_cv_prog_make_make_set=yes
 ac_cv_sizeof_double=8
 ac_cv_sizeof_long_double=12
-ac_cv_target=i686-pc-linux-gnu
-ac_cv_target_alias=i686-pc-linux-gnu
+ac_cv_target=i686-redhat-linux-gnu
+ac_cv_target_alias=i686-redhat-linux-gnu
 ac_cv_working_alloca_h=yes
-am_cv_CC_dependencies_compiler_type=gcc3
+am_cv_CC_dependencies_compiler_type=none
 libffi_cv_ro_eh_frame=yes
 
 ## ----------------- ##
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/basu/FreeMat2/missing --run aclocal-1.9'
+ACLOCAL='${SHELL} /home/basu/HEAD/FreeMat2/libs/libffi/missing --run aclocal-1.9'
 ALLOCA=''
 ALPHA_FALSE=''
 ALPHA_TRUE='#'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
-AMTAR='${SHELL} /home/basu/FreeMat2/missing --run tar'
+AMTAR='${SHELL} /home/basu/HEAD/FreeMat2/libs/libffi/missing --run tar'
 AM_RUNTESTFLAGS=''
 ARM_FALSE=''
 ARM_TRUE='#'
-AUTOCONF='${SHELL} /home/basu/FreeMat2/missing --run autoconf'
-AUTOHEADER='${SHELL} /home/basu/FreeMat2/missing --run autoheader'
-AUTOMAKE='${SHELL} /home/basu/FreeMat2/missing --run automake-1.9'
+AUTOCONF='${SHELL} /home/basu/HEAD/FreeMat2/libs/libffi/missing --run autoconf'
+AUTOHEADER='${SHELL} /home/basu/HEAD/FreeMat2/libs/libffi/missing --run autoheader'
+AUTOMAKE='${SHELL} /home/basu/HEAD/FreeMat2/libs/libffi/missing --run automake-1.9'
 AWK='gawk'
 CC='gcc'
 CCAS='gcc'
 CCASFLAGS='-g -O2'
-CCDEPMODE='depmode=gcc3'
+CCDEPMODE='depmode=none'
 CFLAGS='-g -O2'
 CPP='gcc -E'
 CPPFLAGS=''
@@ -605,7 +604,7 @@ LIBS=''
 LTLIBOBJS=''
 M68K_FALSE=''
 M68K_TRUE='#'
-MAKEINFO='${SHELL} /home/basu/FreeMat2/missing --run makeinfo'
+MAKEINFO='${SHELL} /home/basu/HEAD/FreeMat2/libs/libffi/missing --run makeinfo'
 MIPS_IRIX_FALSE=''
 MIPS_IRIX_TRUE='#'
 MIPS_LINUX_FALSE=''
@@ -652,30 +651,30 @@ X86_WIN32_TRUE='#'
 ac_ct_CC='gcc'
 ac_ct_RANLIB='ranlib'
 ac_ct_STRIP=''
-am__fastdepCC_FALSE='#'
-am__fastdepCC_TRUE=''
+am__fastdepCC_FALSE=''
+am__fastdepCC_TRUE='#'
 am__include='include'
 am__leading_dot='.'
 am__quote=''
 am__tar='${AMTAR} chof - "$$tardir"'
 am__untar='${AMTAR} xf -'
 bindir='${exec_prefix}/bin'
-build='i686-pc-linux-gnu'
+build='i686-redhat-linux-gnu'
 build_alias=''
 build_cpu='i686'
 build_os='linux-gnu'
-build_vendor='pc'
+build_vendor='redhat'
 datadir='${prefix}/share'
 exec_prefix='${prefix}'
 gcc_version=''
-host='i686-pc-linux-gnu'
+host='i686-redhat-linux-gnu'
 host_alias=''
 host_cpu='i686'
 host_os='linux-gnu'
-host_vendor='pc'
+host_vendor='redhat'
 includedir='${prefix}/include'
 infodir='${prefix}/info'
-install_sh='/home/basu/FreeMat2/install-sh'
+install_sh='/home/basu/HEAD/FreeMat2/libs/libffi/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localstatedir='${prefix}/var'
@@ -687,11 +686,11 @@ program_transform_name='s,x,x,'
 sbindir='${exec_prefix}/sbin'
 sharedstatedir='${prefix}/com'
 sysconfdir='${prefix}/etc'
-target='i686-pc-linux-gnu'
+target='i686-redhat-linux-gnu'
 target_alias=''
 target_cpu='i686'
 target_os='linux-gnu'
-target_vendor='pc'
+target_vendor='redhat'
 tool_include_dir=''
 toolexecdir='$(libdir)/gcc-lib/$(target_alias)'
 toolexeclibdir='$(libdir)'
@@ -735,7 +734,7 @@ generated by GNU Autoconf 2.59.  Invocation command line was
   CONFIG_COMMANDS = 
   $ ./config.status fficonfig.h
 
-on diablo
+on siren
 
-config.status:864: creating fficonfig.h
-config.status:974: fficonfig.h is unchanged
+config.status:866: creating fficonfig.h
+config.status:976: fficonfig.h is unchanged

@@ -1,5 +1,6 @@
 #ifndef WIN32
-#include "config.h"
+//FIXME
+//#include "config.h"
 #endif
 #include "IEEEFP.hpp"
 

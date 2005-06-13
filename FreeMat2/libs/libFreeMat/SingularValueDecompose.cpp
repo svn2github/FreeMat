@@ -26,6 +26,10 @@
 
 namespace FreeMat {
 
+
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
   void floatSVD(int nrows, int ncols, float *u, float *vt, 
 		float *s, float *a, bool compact, bool vectors) {
     //      SUBROUTINE SGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
@@ -197,11 +201,12 @@ namespace FreeMat {
     //*          > 0:  SBDSDC did not converge, updating process failed.
     //*
     int INFO;
-    float WORKSZE;
-    LWORK = -1;
-    sgesdd_( &JOBZ, &M, &N, A, &LDA, S, U, &LDU, VT, &LDVT, 
-	     &WORKSZE, &LWORK, IWORK,&INFO);
-    LWORK = (int) WORKSZE;
+    // LWORK Calculation does not work in Lapack3
+    if (JOBZ == 'N')
+      LWORK = 3*min(M,N) + max(max(M,N),6*min(M,N));
+    else
+      LWORK = 3*min(M,N)*min(M,N) +
+	max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N));
     WORK = (float*) Malloc(LWORK*sizeof(float));
     sgesdd_( &JOBZ, &M, &N, A, &LDA, S, U, &LDU, VT, &LDVT, 
 	     WORK, &LWORK, IWORK,&INFO);
@@ -244,11 +249,12 @@ namespace FreeMat {
     minMN = (M < N) ? M : N;
     IWORK = (int*) Malloc(8*minMN*sizeof(int));
     int INFO;
-    double WORKSZE;
-    LWORK = -1;
-    dgesdd_( &JOBZ, &M, &N, A, &LDA, S, U, &LDU, VT, &LDVT, 
-	     &WORKSZE, &LWORK, IWORK,&INFO);
-    LWORK = (int) WORKSZE;
+    // LWORK Calculation does not work in Lapack3
+    if (JOBZ == 'N')
+      LWORK = 3*min(M,N) + max(max(M,N),6*min(M,N));
+    else
+      LWORK = 3*min(M,N)*min(M,N) +
+	max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N));
     WORK = (double*) Malloc(LWORK*sizeof(double));
     dgesdd_( &JOBZ, &M, &N, A, &LDA, S, U, &LDU, VT, &LDVT, 
 	     WORK, &LWORK, IWORK,&INFO);

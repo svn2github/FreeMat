@@ -1721,11 +1721,7 @@ namespace FreeMat {
     //*                    no eigenvalues or eigenvectors were computed.
     int INFO;
     int LWORK;
-    float WORKSZE[2];
-    LWORK = -1;
-    chegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORKSZE,
-	   &LWORK, RWORK, &INFO );
-    LWORK = (int) WORKSZE[0];
+    LWORK = MAX(1,2*N-1);
     float *WORK = (float*) Malloc(2*LWORK*sizeof(float));
     chegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORK,
 	   &LWORK, RWORK, &INFO );    
@@ -2116,10 +2112,7 @@ namespace FreeMat {
     int INFO;
     int LWORK;
     double WORKSZE[2];
-    LWORK = -1;
-    zhegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORKSZE,
-	   &LWORK, RWORK, &INFO );
-    LWORK = (int) WORKSZE[0];
+    LWORK = MAX(1,2*N-1);
     double *WORK = (double*) Malloc(LWORK*sizeof(double)*2);
     zhegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORK,
 	   &LWORK, RWORK, &INFO );    

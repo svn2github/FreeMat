@@ -1,10 +1,11 @@
-SConscript('AMD/SConscript')
+Import('env')
+SConscript('AMD/SConscript','env')
 
-zint = Environment()
+zint = env.Copy()
 zint.Append(CPPPATH = ['AMD/Include','AMD/Source','UMFPACK/Include'])
 zint.Append(CCFLAGS = ['-DZINT'])
 
-dint = Environment()
+dint = env.Copy()
 dint.Append(CPPPATH = ['AMD/Include','AMD/Source','UMFPACK/Include'])
 dint.Append(CCFLAGS = ['-DDINT'])
 

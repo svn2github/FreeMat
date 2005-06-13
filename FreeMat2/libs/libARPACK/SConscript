@@ -1,3 +1,4 @@
+Import('env')
 list = Split("""SRC/cgetv0.f 
 SRC/cnaitr.f 
 SRC/cnapps.f 

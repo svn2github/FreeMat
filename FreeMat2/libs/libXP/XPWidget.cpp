@@ -1,7 +1,6 @@
 #include "XPWidget.hpp"
 #include <algorithm>
 #include <ctype.h>
-#include "PostScriptGC.hpp"
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qimage.h>

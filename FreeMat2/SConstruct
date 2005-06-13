@@ -1,1 +1,75 @@
-SConscript(['libs/SConscript','src/SConscript'])
+# Endian test
+# MPI
+
+def CheckEndian(context):
+	context.Message('Checking for Little Endian...')
+	ret = context.TryRun("""
+int main () {
+  /* Are we little or big endian?  From Harbison&Steele.  */
+  union
+  {
+    long l;
+    char c[sizeof (long)];
+  } u;
+  u.l = 1;
+  exit (u.c[sizeof (long) - 1] == 1);
+}
+""",'.c')
+	context.Result(ret[0])
+	return ret[0]
+
+opts = Options()
+opts.AddOptions(
+	BoolOption('nogui','Set to 1 to enable non-gui version', 0)
+)
+
+env = Environment(tools=['default','qt'], options = opts)
+
+conf = Configure(env, custom_tests = {'CheckEndian' : CheckEndian} )
+
+Help(opts.GenerateHelpText(env))
+
+if not conf.CheckLib('qt-mt'):
+	print "Could not find QT lib... exiting!"
+	Exit(1)
+	
+if env['PLATFORM'] == 'mac':
+	print "Using vector-lib framework for LAPACK/BLAS"
+	env.Append(LIBS = '-framework vecLib')
+else:
+	if conf.CheckLib('atlas'):
+		env.Append(LIBS = ['lapackatlas','f77blas','cblas','atlas'])
+	elif conf.CheckLib('blas'):
+		env.Append(LIBS = 'blas')
+	else:
+		print "Could not find BLAS or ATLAS"
+		Exit(1)
+	if conf.CheckLib('lapack'):
+		env.Append(LIBS = 'lapack')
+	else:
+		print "Could not find LAPACK"
+		Exit(1)
+
+
+if not conf.CheckEndian():
+	print "System is big endian"
+	conf.env.Append(CXXFLAGS = '-DWORDS_BIGENDIAN=1')
+else:
+	print "System is little endian"
+	conf.env.Append(CXXFLAGS = '-DWORDS_BIGENDIAN=0')
+
+
+if ARGUMENTS.get('nogui','0') == '1':
+	print "Enabling non-gui build... This does not work properly under OSX"
+	conf.env.Append(CXXFLAGS = '-DNOGUI')
+	if conf.CheckLib('curses'):
+		conf.env.Append(LIBS = 'curses')
+	elif conf.CheckLib('ncurses'):
+		conf.env.Append(LIBS = 'ncurses')
+	else:
+		print "Could not find curses or ncurses"
+		Exit(1)
+
+env = conf.Finish()
+
+SConscript(['libs/SConscript','src/SConscript'], 'env')

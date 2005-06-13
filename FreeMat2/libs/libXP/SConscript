@@ -3,7 +3,6 @@ list = Split(""" DynLib.cpp
 System.cpp 
 PathSearch.cpp 
 Rect2D.cpp 
-PostScriptGC.cpp 
 Point2D.cpp 
 GraphicsContext.cpp 
 Color.cpp 

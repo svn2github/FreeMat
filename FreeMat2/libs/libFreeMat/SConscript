@@ -1,3 +1,4 @@
+Import('env')
 list = Split("""Parser.cxx
 NewLex.cpp
 Array.cpp

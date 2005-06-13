@@ -1,3 +1,4 @@
+Import('env')
 list = Split("""OptFun.cpp 
 LoadFN.cpp 
 Interp1D.cpp 

@@ -1,3 +1,4 @@
+Import('env')
 subdirs = Split("""libFreeMat/SConscript
 libFFTPack/SConscript
 libFN/SConscript
@@ -6,5 +7,5 @@ libCore/SConscript
 libXP/SConscript
 libUMFPACK/SConscript
 libGraphics/SConscript""")
-SConscript(subdirs)
+SConscript(subdirs, 'env')
 

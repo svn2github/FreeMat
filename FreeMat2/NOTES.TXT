@@ -1,0 +1,22 @@
+A few notes on what needs to still be fixed:
+
+P N   Desc
+H 1.  Rotated text needs to be fixed.
+H 6.  Dumbterminal needs to be re-enabled
+H 9.  Re-enable interrupts in GUI code
+H 10. Copy/paste of text in GUI code
+H 11. Save of text in GUI mode
+H 12. Change Font in GUI mode
+H 13. Parsing of "print foo.bar" doesn't work...
+H 14. Copy/Paste of figures
+M 3.  Plotting code needs to be moved into the FreeMat regime.
+M 5.  MPIFreeMat needs to be re-enabled
+L 7.  libffi --> upgraded
+L 15. Migrate System call -->Qt
+L 16. Migrate DynLib --> Qt
+
+H **8.  Lapack bug workarounds enabled
+H 2.  The printing mechanism needs to be fixed.
+M 4.  Postscript generation --> Qt?
+
+

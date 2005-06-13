@@ -1,3 +1,4 @@
+Import('env')
 list = Split("""cfftb1.f
 cfftb.f
 cfftf1.f

@@ -1,4 +1,6 @@
 #include "XPWidget.hpp"
+#include <algorithm>
+#include <ctype.h>
 #include "PostScriptGC.hpp"
 #include <qpainter.h>
 #include <qpixmap.h>
@@ -59,8 +61,14 @@ void XPWidget::Resize(Point2D pt) {
 }
 
 bool XPWidget::Print(std::string filename, std::string type) {
-  if (type == "eps" || type == "ps") {
-    PostScriptGC gc(filename,width(),height());
+  if (type == "EPS" || type == "PS") {
+    QPrinter mprnt;
+    mprnt.setOutputToFile(TRUE);
+    mprnt.setOutputFileName(filename);
+    mprnt.setColorMode(QPrinter::Color);
+    QPainter paint(&mprnt);
+    paint.setClipRect(0,0,width(),height());
+    QTGC gc(paint,width(),height());
     OnDraw(gc);
     return true;
   } else {
@@ -104,4 +112,22 @@ void SaveFocus() {
 void RestoreFocus() {
   if (save)
     save->setFocus();
+}
+
+std::string NormalizeImageExtension(std::string ext) {
+  std::transform(ext.begin(),ext.end(),ext.begin(),toupper);
+  if (ext == "JPG") return std::string("JPEG");
+  if ((ext == "PS") || (ext == "EPS")) return ext;
+  QStrList formats(QImage::outputFormats());
+  for (int i=0;i<formats.count();i++)
+    if (formats.at(i) == ext) return ext;
+  return std::string();
+}
+
+std::string FormatListAsString() {
+  std::string ret_text = "Supported Formats: ";
+  QStrList formats(QImage::outputFormats());
+  for (int i=0;i<formats.count();i++)
+    ret_text = ret_text + formats.at(i) + " ";
+  return ret_text;
 }

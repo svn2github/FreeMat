@@ -25,7 +25,7 @@ void QTGC::DrawTextString(std::string txt, Point2D pos, OrientationType orient) 
     break;
   case ORIENT_90:
     m_qt.rotate(-90);
-    m_qt.drawText(pos.x,pos.y,txt);
+    m_qt.drawText(pos.y,pos.x,txt);
     m_qt.rotate(90);
     break;
   case ORIENT_180:

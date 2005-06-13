@@ -51,4 +51,7 @@ private:
 
 void SaveFocus();
 void RestoreFocus();
+
+std::string NormalizeImageExtension(std::string ext);
+std::string FormatListAsString();
 #endif

@@ -1,4 +1,4 @@
-env = Environment(tools=['default','qt'])
+Import('env')
 list = Split(""" DynLib.cpp 
 System.cpp 
 PathSearch.cpp 

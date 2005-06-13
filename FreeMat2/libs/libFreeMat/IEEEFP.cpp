@@ -1,7 +1,3 @@
-#ifndef WIN32
-//FIXME
-//#include "config.h"
-#endif
 #include "IEEEFP.hpp"
 
 bool IsInfinite(float t) {

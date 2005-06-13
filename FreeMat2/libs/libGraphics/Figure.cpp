@@ -2,7 +2,6 @@
 #include "Exception.hpp"
 #include "GraphicsCore.hpp"
 #include <algorithm>
-#include "PostScriptGC.hpp"
 #include "HandleList.hpp"
 #include "WalkTree.hpp"
 #include "Plot3D.hpp"

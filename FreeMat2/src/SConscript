@@ -1,4 +1,4 @@
-env = Environment(tools=['default','qt'])
+Import('env')
 #DumbTerminal.cpp
 list = Split(""" 
 MainApp.cpp
@@ -30,8 +30,6 @@ ARPACK
 UMFPACKzi
 UMFPACKdi
 AMD
-blas
-lapack
 curses
 """)
 env.Prepend(LIBPATH = libdirlist)

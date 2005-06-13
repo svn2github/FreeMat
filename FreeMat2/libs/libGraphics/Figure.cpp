@@ -230,9 +230,19 @@ namespace FreeMat {
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
     XPWidget* g = f->GetChildWidget();
-    if (g)
-      //FIXME - 
-      g->Print(outname,"PNG");
+    if (g) {
+      int pos = outname.rfind(".");
+      if (pos < 0)
+	throw Exception("print function argument must contain an extension - which is used to figure out the format for the output");
+      std::string original_extension(outname.substr(pos+1,outname.size()));
+      std::string modified_extension = 
+	NormalizeImageExtension(original_extension);
+      if (modified_extension.empty())
+	throw Exception(std::string("unsupported output format ") + 
+			original_extension + " for print.\n" + 
+			FormatListAsString());
+      g->Print(outname,modified_extension);
+    }
     return ArrayVector();
   }
 

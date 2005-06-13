@@ -1,4 +1,4 @@
-env = Environment(tools=['default','qt'])
+Import('env')
 list = Split("""Axis.cpp 
 DataSet2D.cpp 
 LoadGraphicsCore.cpp 

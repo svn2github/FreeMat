@@ -18,25 +18,32 @@ Point2D QTGC::GetTextExtent(std::string label) {
   return Point2D(sze.width(),sze.height());
 }
 //FIXME - rotated text never show up?
+
 void QTGC::DrawTextString(std::string txt, Point2D pos, OrientationType orient) {
   switch (orient) {
   case ORIENT_0:
     m_qt.drawText(pos.x,pos.y,txt);
     break;
   case ORIENT_90:
+    m_qt.save();
+    m_qt.translate(pos.x, pos.y);
     m_qt.rotate(-90);
-    m_qt.drawText(pos.y,pos.x,txt);
-    m_qt.rotate(90);
+    m_qt.drawText(0, 0, txt);
+    m_qt.restore();
     break;
   case ORIENT_180:
+    m_qt.save();
+    m_qt.translate(pos.x, pos.y);
     m_qt.rotate(-180);
-    m_qt.drawText(pos.x,pos.y,txt);
-    m_qt.rotate(180);
+    m_qt.drawText(0, 0, txt);
+    m_qt.restore();
     break;
   case ORIENT_270:
+    m_qt.save();
+    m_qt.translate(pos.x, pos.y);
     m_qt.rotate(-270);
-    m_qt.drawText(pos.x,pos.y,txt);
-    m_qt.rotate(270);
+    m_qt.drawText(0, 0, txt);
+    m_qt.restore();
     break;
   }
 }

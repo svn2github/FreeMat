@@ -1,6 +1,7 @@
 A few notes on what needs to still be fixed:
 
 P N   Desc
+
 H 1.  Rotated text needs to be fixed.
 H 6.  Dumbterminal needs to be re-enabled
 H 9.  Re-enable interrupts in GUI code

@@ -6,6 +6,8 @@
 #include "MainApp.hpp"
 #include <qapplication.h>
 #include "Exception.hpp"
+#include "DumbTerminal.hpp"
+#include <qmainwindow.h>
 
 using namespace FreeMat;
 
@@ -72,31 +74,45 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv, TRUE);
-  bool nogui = parseFlagArg(argc, argv,"-nogui",false);
+  int nogui = parseFlagArg(argc,argv,"-nogui",false);
+  int scriptMode = parseFlagArg(argc,argv,"-e",false); 
+
+  if (scriptMode) nogui = 1;
 
   MainApp m_app;
   QTimer *m_start;
+  QMainWindow *m_win;
 
   if (!nogui) {
-    term = new GUITerminal;
+    m_win = new QMainWindow;
+    term = new GUITerminal(m_win);
     ((GUITerminal*)term)->show();
+    //    ((GUITerminal*)term)->reparent(m_win,QPoint(0,0));
+    m_win->setCentralWidget((GUITerminal*)term);
+    m_win->setMinimumSize(400,300);
+    m_win->show();
     ((GUITerminal*)term)->resizeTextSurface();
+    ((GUITerminal*)term)->setFocus();
+//     m_win->setFocus();
   } else {
 #ifndef WIN32
-    term = new Terminal;
-    fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
-    try {
-      term->Initialize();
-    } catch(Exception &e) {
-      fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
-      exit(1);
-    }
+    if (!scriptMode) {
+      term = new Terminal;
+      fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+      try {
+	term->Initialize();
+      } catch(Exception &e) {
+	fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
+	exit(1);
+      }
+      QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+      SocketCB *socketcb = new SocketCB(stdincb);
+      QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
+    } else
+      term = new DumbTerminal;
     signal_suspend_default = signal(SIGTSTP,signal_suspend);
     signal_resume_default = signal(SIGCONT,signal_resume);
     signal(SIGWINCH, signal_resize);
-    QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
-    SocketCB *socketcb = new SocketCB(stdincb);
-    QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
 #else
     fprintf(stderr,"-nogui flag is unsupported on win32\n");
     exit(1);

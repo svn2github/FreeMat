@@ -1,4 +1,6 @@
 #include "DumbTerminal.hpp"
+#include <qapplication.h>
+#include <qeventloop.h>
 
 namespace FreeMat {
   DumbTerminal::DumbTerminal() {
@@ -56,6 +58,8 @@ namespace FreeMat {
     fgets(buffer,sizeof(buffer),stdin);
     printf("%s",buffer);
     fflush(stdout);
+    if (feof(stdin)) 
+      exit(0);
     return buffer;
   }
 

@@ -30,4 +30,5 @@ Interface.cpp
 Sparse.cpp
 Class.cpp
 NumericArray.cpp""")
-Library('FreeMat', list, CPPPATH = ['.','../libffi/include','../libXP','../libUMFPACK/UMFPACK/Include'])
+env.Append(CPPPATH = ['.','../libffi/include','../libXP','../libUMFPACK/UMFPACK/Include'])
+env.Library('FreeMat', list)

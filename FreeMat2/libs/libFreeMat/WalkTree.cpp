@@ -37,12 +37,19 @@
 #include <signal.h>
 #include <errno.h>
 #include "Class.hpp"
+#include <qapplication.h>
+#include <qeventloop.h>
 
 #ifdef WIN32
 #define DELIM "\\"
 #else
 #define DELIM "/"
 #endif
+
+/**
+ * Pending control-C
+ */
+bool InterruptPending;
 
 namespace FreeMat {
   void WalkTree::SetContext(int a) {
@@ -96,10 +103,6 @@ namespace FreeMat {
   stackentry::~stackentry() {
   }
 
-  /**
-   * Pending control-C
-   */
-  bool InterruptPending;
 
   /**
    * Stores the current array for which to apply the "end" expression to.
@@ -1537,9 +1540,7 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
-#ifdef USE_FLTK
-    Fl::wait(0);
-#endif
+    qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
     SetContext(t->context());
     // check the debug flag
     //    int fullcontext = t->context();

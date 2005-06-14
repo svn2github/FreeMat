@@ -5,6 +5,8 @@
 #include "BaseTerminal.hpp"
 
 class GUITerminal : public TermWidget, public BaseTerminal {
+public:
+  GUITerminal(QWidget *parent);
   void OutputRawString(std::string txt);
   void MoveDown();
   void MoveUp();

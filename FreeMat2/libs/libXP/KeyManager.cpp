@@ -1029,6 +1029,12 @@ void KeyManager::CompleteWord() {
   return;
 }
 
+extern bool InterruptPending;
+
+void KeyManager::RegisterInterrupt() {
+  InterruptPending  = true;
+}
+
 void KeyManager::OnChar( int c ) {
   keyseq_count++;
   switch(c) {
@@ -1060,8 +1066,8 @@ void KeyManager::OnChar( int c ) {
     BeginningOfLine();
     break;
   case KM_CTRLC:
-	RegisterInterrupt();
-	break;
+    RegisterInterrupt();
+    break;
   case KM_CTRLE:
     EndOfLine();
     break;

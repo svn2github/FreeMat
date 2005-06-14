@@ -1,6 +1,10 @@
 #include "GUITerminal.hpp"
 #include <qapplication.h>
 
+GUITerminal::GUITerminal(QWidget *parent) :
+  TermWidget(parent) {
+}
+
 void GUITerminal::MoveDown() {
   setCursor(m_cursor_x,m_cursor_y+1);
 }

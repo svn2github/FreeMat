@@ -61,8 +61,7 @@ public:
   virtual void MoveBOL() = 0;
   virtual void OutputRawString(std::string txt) = 0;
   virtual void ExecuteLine(const char * line) = 0;
-  //FIXME
-  virtual void RegisterInterrupt() {};
+  virtual void RegisterInterrupt();
   virtual std::vector<std::string> GetCompletionList(const char *line, 
 						     int word_end, 
 						     std::string &matchString) = 0;

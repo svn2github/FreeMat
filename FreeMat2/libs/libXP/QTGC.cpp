@@ -17,7 +17,6 @@ Point2D QTGC::GetTextExtent(std::string label) {
   QRect sze(m_qt.fontMetrics().boundingRect(label));
   return Point2D(sze.width(),sze.height());
 }
-//FIXME - rotated text never show up?
 
 void QTGC::DrawTextString(std::string txt, Point2D pos, OrientationType orient) {
   switch (orient) {

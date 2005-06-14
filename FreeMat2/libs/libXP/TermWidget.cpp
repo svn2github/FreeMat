@@ -43,6 +43,7 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   m_scrolling = false;
   m_scroll_offset = 0;
   m_mousePressed = false;
+  setFocusPolicy(QWidget::ClickFocus);
 }
 
 TermWidget::~TermWidget() {
@@ -249,6 +250,8 @@ void TermWidget::keyPressEvent(QKeyEvent *e) {
   if (!keycode) return;
   if (keycode == Qt::Key_Left)
     ProcessChar(KM_LEFT);
+  else if ((keycode == 'Z') && (e->state() && Qt::ControlButton))
+    ProcessChar(KM_CTRLC);
   else if (keycode == Qt::Key_Right)
     ProcessChar(KM_RIGHT);
   else if (keycode == Qt::Key_Up)

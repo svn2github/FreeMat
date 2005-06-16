@@ -7,7 +7,7 @@
 #include <qapplication.h>
 #include "Exception.hpp"
 #include "DumbTerminal.hpp"
-#include <qmainwindow.h>
+#include "application.h"
 
 using namespace FreeMat;
 
@@ -81,19 +81,15 @@ int main(int argc, char *argv[]) {
 
   MainApp m_app;
   QTimer *m_start;
-  QMainWindow *m_win;
+  ApplicationWindow *m_win;
 
   if (!nogui) {
-    m_win = new QMainWindow;
+    m_win = new ApplicationWindow;
     term = new GUITerminal(m_win);
-    ((GUITerminal*)term)->show();
-    //    ((GUITerminal*)term)->reparent(m_win,QPoint(0,0));
-    m_win->setCentralWidget((GUITerminal*)term);
-    m_win->setMinimumSize(400,300);
+    m_win->SetGUITerminal((GUITerminal*)term);
     m_win->show();
     ((GUITerminal*)term)->resizeTextSurface();
     ((GUITerminal*)term)->setFocus();
-//     m_win->setFocus();
   } else {
 #ifndef WIN32
     if (!scriptMode) {

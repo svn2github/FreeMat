@@ -83,4 +83,4 @@ UTIL/smout.f
 UTIL/svout.f 
 UTIL/zmout.f 
 UTIL/zvout.f""")
-Library('ARPACK', list)
+env.Library('ARPACK', list)

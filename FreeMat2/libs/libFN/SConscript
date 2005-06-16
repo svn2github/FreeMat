@@ -23,5 +23,5 @@ gamma.f
 dgamma.f 
 algama.f 
 dlgama.f""")
-Library('FN', list, CPPPATH = ['.','../libFreeMat'])
+env.Library('FN', list, CPPPATH = ['.','../libFreeMat'])
 

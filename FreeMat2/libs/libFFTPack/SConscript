@@ -31,5 +31,5 @@ zpassf3.f
 zpassf4.f
 zpassf5.f
 zpassf.f""")
-Library('FFTPack', list)
+env.Library('FFTPack', list)
 

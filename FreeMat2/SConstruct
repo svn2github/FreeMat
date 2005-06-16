@@ -23,19 +23,32 @@ opts.AddOptions(
 	BoolOption('nogui','Set to 1 to enable non-gui version', 0)
 )
 
-env = Environment(tools=['default','qt'], options = opts)
+import os
+
+env = Environment(tools=['default','qt','g77'], options = opts, ENV = os.environ)
+
+#dict = env.Dictionary()
+#keys = dict.keys()
+#keys.sort()
+#for key in keys:
+#    print "construction variable = '%s', value = '%s'" % (key, dict[key])
+#Exit(1)
 
 conf = Configure(env, custom_tests = {'CheckEndian' : CheckEndian} )
 
 Help(opts.GenerateHelpText(env))
 
-if not conf.CheckLib('qt-mt'):
+print env['PLATFORM']
+
+if not conf.CheckLib('qt'):
 	print "Could not find QT lib... exiting!"
 	Exit(1)
 	
-if env['PLATFORM'] == 'mac':
+if env['PLATFORM'] == 'darwin':
 	print "Using vector-lib framework for LAPACK/BLAS"
-	env.Append(LIBS = '-framework vecLib')
+	env.Append(LINKFLAGS = '-framework vecLib -framework Carbon')
+	env.Append(LIBS = ['z','g2c'])
+	env.Append(LIBPATH = '/sw/lib')
 else:
 	if conf.CheckLib('atlas'):
 		env.Append(LIBS = ['lapackatlas','f77blas','cblas','atlas'])

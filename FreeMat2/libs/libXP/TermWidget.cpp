@@ -44,9 +44,22 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   m_scroll_offset = 0;
   m_mousePressed = false;
   setFocusPolicy(QWidget::ClickFocus);
+  selectionStart = 0;
+  selectionStop = 0;
 }
 
 TermWidget::~TermWidget() {
+}
+
+void TermWidget::getSelection(int& start, int& stop) {
+  // selection tags are relative to the start of the buffer...
+  // we need to map the selection pointers to the buffer
+  if (selectionStart == selectionStop) {
+    start = stop = 0;
+    return;
+  }
+  start = selectionStart - (m_scrollback - m_height - m_history_lines)*m_width;
+  stop = selectionStop - (m_scrollback - m_height - m_history_lines)*m_width;
 }
 
 char* TermWidget::getTextSurface(int &count, int &width) {

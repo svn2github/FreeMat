@@ -69,6 +69,7 @@ protected:
   void refresh();
   void blink();
   void adjustScrollbarPosition();
+  char* getTextSurface(int& count, int& width);
   void setCursor(int x, int y);
   void markDirty(QRect& e);
   int  getTextWidth() {return m_width;};

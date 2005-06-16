@@ -49,6 +49,19 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
 TermWidget::~TermWidget() {
 }
 
+char* TermWidget::getTextSurface(int &count, int &width) {
+  if (m_history_lines == 0)
+    count = m_cursor_y;
+  else
+    count = m_height + m_history_lines;
+  width = m_width;
+  char *outptr = new char[width*count];
+  tagChar *ptr = m_history + (m_scrollback - m_height - m_history_lines)*m_width;
+  for (int i=0;i<width*count;i++)
+    outptr[i] = ptr[i].v;
+  return outptr;
+}
+
 void TermWidget::scrollBack(int val) {
   if (m_history_lines == 0) return;
   m_scrolling =  (val != m_history_lines);
@@ -273,7 +286,11 @@ void TermWidget::keyPressEvent(QKeyEvent *e) {
 }
 
 void TermWidget::setFont(int size) {
+#ifdef __APPLE__
+  QFont afont("Monaco",size);
+#else
   QFont afont("Monospace",size);
+#endif
   QFrame::setFont(afont);
   QFontMetrics fmi(afont);
   m_char_w = fmi.width("w");

@@ -5,6 +5,8 @@
 #include <qmessagebox.h>
 #include <qpixmap.h>
 #include <qfiledialog.h>
+#include <qclipboard.h>
+#include <iostream>
 
 #include "filesave.xpm"
 
@@ -83,6 +85,53 @@ void ApplicationWindow::save() {
 }
 
 void ApplicationWindow::copy() {
+  int history_count;
+  int width;
+  char *textbuffer;
+  textbuffer = m_term->getTextSurface(history_count, width);
+  int start, stop;
+  m_term->getSelection(start,stop);
+  if (start == stop) return; // No-op
+  if (start > stop) {
+    int tmp;
+    tmp = start;
+    start = stop;
+    stop = tmp;
+  }
+  // Map the selection to a row/column for start
+  int startrow, startcol;
+  int stoprow, stopcol;
+  startrow = start/width;
+  startcol = start%width;
+  stoprow = stop/width;
+  stopcol = stop%width;
+  // Initialize the copy text buf with enough space to hold the selection
+  char *copytextbuf = (char*) malloc((width+2)*(stoprow-startrow+1));
+  char *cp = copytextbuf;
+  for (int i=startrow;i<stoprow;i++) {
+    int jmin, jmax;
+    jmin = 0;
+    jmax = width-1;
+    if (i==startrow)
+      jmin = startcol;
+    if (i==stoprow)
+      jmax = stopcol;
+    int j = jmax;
+    while ((j>jmin) && (textbuffer[i*width+j] == ' '))
+      j--;
+    j++;
+    std::cout << "copy range " << j << " to " << jmax << " on line " << i << "\n";
+    for (int k=jmin;k<j;k++)
+      *cp++ = textbuffer[i*width+k];
+#ifdef WIN32
+    *cp++ = '\r';
+#endif
+    *cp++ = '\n';
+  }
+  *cp++ = 0;
+  QClipboard *cb = QApplication::clipboard();
+  cb->setText(copytextbuf, QClipboard::Clipboard);
+  std::cout << "Setting text on clipboard:" << copytextbuf << "\n";
 }
 
 void ApplicationWindow::paste() {

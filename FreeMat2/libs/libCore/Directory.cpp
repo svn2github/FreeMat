@@ -161,7 +161,7 @@ namespace FreeMat {
     int outcolumns;
     Interface *io;
     io = eval->getInterface();
-    int termwidth = io->getTerminalWidth();
+    int termwidth = io->getTerminalWidth()-1;
     outcolumns = termwidth/(maxlen+1);
     if (outcolumns < 1) outcolumns = 1;
     int colwidth = termwidth/outcolumns;

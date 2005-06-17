@@ -56,6 +56,9 @@ namespace FreeMat {
   }
 
   void Figure::Copy() {
+    Figure* f = GetCurrentFig();
+    XPWidget* g = f->GetChildWidget();
+    g->Copy();
 #ifdef WIN32
     make_current();
     Redraw();

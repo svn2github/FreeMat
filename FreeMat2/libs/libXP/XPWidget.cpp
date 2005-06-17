@@ -8,6 +8,7 @@
 #include "QTGC.hpp"
 #include <iostream>
 #include <qapplication.h>
+#include <qclipboard.h>
 
 XPWidget::XPWidget(XPWidget *parent, Point2D size) 
   : QWidget(parent), m_size(size) { 
@@ -57,6 +58,19 @@ void XPWidget::Show() {
 
 void XPWidget::Resize(Point2D pt) {
   resize(pt.x,pt.y);
+}
+
+QPixmap *cpxmap = NULL;
+
+void XPWidget::Copy() {
+  if (cpxmap)
+    delete cpxmap;
+  cpxmap = new QPixmap(width(),height());
+  QPainter paint(cpxmap);
+  QTGC gc(paint,width(),height());
+  OnDraw(gc);
+  QClipboard *cb = QApplication::clipboard();
+  cb->setPixmap(*cpxmap);
 }
 
 bool XPWidget::Print(std::string filename, std::string type) {

@@ -39,6 +39,7 @@ public:
   void Hide();
   void Show();
   bool Print(std::string filename,std::string type);
+  void Copy();
   // These are toolkit dependant routines that map the toolkit stuff to the above events
 private:
   void paintEvent(QPaintEvent* e);

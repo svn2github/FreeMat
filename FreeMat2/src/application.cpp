@@ -7,6 +7,8 @@
 #include <qfiledialog.h>
 #include <qclipboard.h>
 #include <iostream>
+#include <qfontdialog.h>
+#include <qsettings.h>
 
 #include "filesave.xpm"
 
@@ -37,6 +39,7 @@ ApplicationWindow::ApplicationWindow() :
 
 void ApplicationWindow::closeEvent(QCloseEvent* ce) {
   ce->accept();
+  exit(0);
   return;
 }
 
@@ -44,6 +47,14 @@ void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
   m_term = term;
   setCentralWidget(term);
   setMinimumSize(400,300);
+  QSettings settings;
+  settings.setPath("FreeMat","FreeMat");
+  QString font = settings.readEntry("/terminal/font");
+  if (!font.isNull()) {
+    QFont new_font;
+    new_font.fromString(font);
+    m_term->setFont(new_font);
+  }
   term->show();
 }
 
@@ -85,59 +96,37 @@ void ApplicationWindow::save() {
 }
 
 void ApplicationWindow::copy() {
-  int history_count;
-  int width;
-  char *textbuffer;
-  textbuffer = m_term->getTextSurface(history_count, width);
-  int start, stop;
-  m_term->getSelection(start,stop);
-  if (start == stop) return; // No-op
-  if (start > stop) {
-    int tmp;
-    tmp = start;
-    start = stop;
-    stop = tmp;
-  }
-  // Map the selection to a row/column for start
-  int startrow, startcol;
-  int stoprow, stopcol;
-  startrow = start/width;
-  startcol = start%width;
-  stoprow = stop/width;
-  stopcol = stop%width;
-  // Initialize the copy text buf with enough space to hold the selection
-  char *copytextbuf = (char*) malloc((width+2)*(stoprow-startrow+1));
-  char *cp = copytextbuf;
-  for (int i=startrow;i<stoprow;i++) {
-    int jmin, jmax;
-    jmin = 0;
-    jmax = width-1;
-    if (i==startrow)
-      jmin = startcol;
-    if (i==stoprow)
-      jmax = stopcol;
-    int j = jmax;
-    while ((j>jmin) && (textbuffer[i*width+j] == ' '))
-      j--;
-    j++;
-    std::cout << "copy range " << j << " to " << jmax << " on line " << i << "\n";
-    for (int k=jmin;k<j;k++)
-      *cp++ = textbuffer[i*width+k];
-#ifdef WIN32
-    *cp++ = '\r';
-#endif
-    *cp++ = '\n';
-  }
-  *cp++ = 0;
+  char *copytextbuf = m_term->getSelectionText();
+  if (!copytextbuf) return;
   QClipboard *cb = QApplication::clipboard();
   cb->setText(copytextbuf, QClipboard::Clipboard);
-  std::cout << "Setting text on clipboard:" << copytextbuf << "\n";
+  free(copytextbuf);
 }
 
 void ApplicationWindow::paste() {
+  QClipboard *cb = QApplication::clipboard();
+  QString text;
+  if (cb->supportsSelection())
+    text = cb->text(QClipboard::Selection);
+  if (text.isNull())
+    text = cb->text(QClipboard::Clipboard);
+  if (!text.isNull()) {
+    const char *cp = text.ascii();
+    while (*cp) 
+      m_term->ProcessChar(*cp++);
+  }
 }
 
 void ApplicationWindow::font() {
+  QFont old_font = m_term->getFont();
+  bool ok;
+  QFont new_font = QFontDialog::getFont(&ok, old_font, this);
+  if (ok) {
+    QSettings settings;
+    settings.setPath("FreeMat","FreeMat");
+    settings.writeEntry("/terminal/font",new_font.toString());
+    m_term->setFont(new_font);
+  }
 }
 
 void ApplicationWindow::about() {

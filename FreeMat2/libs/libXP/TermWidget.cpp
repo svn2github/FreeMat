@@ -3,6 +3,7 @@
 #include <iostream>
 #include <qpainter.h>
 #include <qapplication.h>
+#include <qclipboard.h>
 #include <qstyle.h>
 #include <math.h>
 
@@ -19,7 +20,7 @@
 //  Need copy & paste & select
 
 TermWidget::TermWidget(QWidget *parent, const char *name) : 
-  QFrame(parent,name) {
+  QFrame(parent,name,WRepaintNoErase) {
   m_surface = NULL;
   m_onscreen = NULL;
   m_history = NULL;
@@ -46,20 +47,66 @@ TermWidget::TermWidget(QWidget *parent, const char *name) :
   setFocusPolicy(QWidget::ClickFocus);
   selectionStart = 0;
   selectionStop = 0;
+  m_firsttime = true;
 }
 
 TermWidget::~TermWidget() {
 }
 
-void TermWidget::getSelection(int& start, int& stop) {
+char* TermWidget::getSelectionText() {
+  int start;
+  int stop;
   // selection tags are relative to the start of the buffer...
   // we need to map the selection pointers to the buffer
   if (selectionStart == selectionStop) {
-    start = stop = 0;
-    return;
+    return NULL;
   }
   start = selectionStart - (m_scrollback - m_height - m_history_lines)*m_width;
   stop = selectionStop - (m_scrollback - m_height - m_history_lines)*m_width;
+  if (start == stop) 
+    return NULL; // No-op
+  if (start > stop) {
+    int tmp;
+    tmp = start;
+    start = stop;
+    stop = tmp;
+  }
+  int history_count;
+  int width;
+  char *textbuffer =  getTextSurface(history_count, width);
+  // Map the selection to a row/column for start
+  int startrow, startcol;
+  int stoprow, stopcol;
+  startrow = start/width;
+  startcol = start%width;
+  stoprow = stop/width;
+  stopcol = stop%width;
+  // Initialize the copy text buf with enough space to hold the selection
+  char *copytextbuf = (char*) malloc((width+2)*(stoprow-startrow+1));
+  char *cp = copytextbuf;
+  for (int i=startrow;i<=stoprow;i++) {
+    int jmin, jmax;
+    jmin = 0;
+    jmax = width-1;
+    if (i==startrow)
+      jmin = startcol;
+    if (i==stoprow)
+      jmax = stopcol;
+    int j = jmax;
+    while ((j>jmin) && (textbuffer[i*width+j] == ' '))
+      j--;
+    j++;
+    for (int k=jmin;k<j;k++)
+      *cp++ = textbuffer[i*width+k];
+    if (i != stoprow) {
+#ifdef WIN32
+      *cp++ = '\r';
+#endif
+      *cp++ = '\n';
+    }
+  }
+  *cp++ = 0;
+  return copytextbuf;
 }
 
 char* TermWidget::getTextSurface(int &count, int &width) {
@@ -89,8 +136,14 @@ void TermWidget::blink() {
 }
 
 void TermWidget::adjustScrollbarPosition() {
+#ifdef __APPLE__
+  m_scrollbar->resize(QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent),
+		      contentsRect().height() - 
+		      QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent));
+#else
   m_scrollbar->resize(QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent),
 		      contentsRect().height());
+#endif
   m_active_width = contentsRect().width() - 2 - m_scrollbar->width();
   m_scrollbar->move(contentsRect().topRight() - QPoint(m_scrollbar->width()-1,0));
   m_scrollbar->show();
@@ -104,7 +157,6 @@ void TermWidget::refresh() {
 }
 
 void TermWidget::resizeTextSurface() {
-  bool firsttime = (m_surface == NULL);
   if (m_surface)
     m_surface[m_cursor_y*m_width+m_cursor_x].clearCursor();  
   int cursor_offset = m_height - 1 - m_cursor_y;
@@ -128,7 +180,7 @@ void TermWidget::resizeTextSurface() {
   m_history = new_history;
   m_surface = m_history + (m_scrollback - new_height)*new_width;
   
-  if (!firsttime) {
+  if (!m_firsttime) {
     m_history_lines -= (new_height-m_height);
     m_history_lines = QMAX(0,m_history_lines);
   }
@@ -137,7 +189,7 @@ void TermWidget::resizeTextSurface() {
   m_height = new_height;
   m_clearall = true;
   // only do this the first time
-  if (firsttime) {
+  if (m_firsttime) {
     setCursor(0,0);
     setScrollbar(0);
   } else {
@@ -154,6 +206,7 @@ void TermWidget::setScrollbar(int val) {
 }
 
 void TermWidget::PutString(std::string txt) {
+  m_firsttime = false;
   if (m_scrolling) {
     setScrollbar(m_history_lines);
   }
@@ -298,17 +351,26 @@ void TermWidget::keyPressEvent(QKeyEvent *e) {
   }
 }
 
+void TermWidget::setFont(QFont font) {
+  QFrame::setFont(font);
+  QFontMetrics fmi(font);
+  m_char_w = fmi.width("w");
+  m_char_h = fmi.height();
+  resizeTextSurface();
+}
+
+QFont TermWidget::getFont() {
+  return QFrame::font();
+}
+
 void TermWidget::setFont(int size) {
 #ifdef __APPLE__
   QFont afont("Monaco",size);
 #else
   QFont afont("Monospace",size);
 #endif
-  QFrame::setFont(afont);
-  QFontMetrics fmi(afont);
-  m_char_w = fmi.width("w");
-  m_char_h = fmi.height();
-}
+  setFont(afont);
+ }
 
 
 void TermWidget::mousePressEvent( QMouseEvent *e ) {
@@ -349,5 +411,12 @@ void TermWidget::mouseMoveEvent( QMouseEvent *e ) {
 
 void TermWidget::mouseReleaseEvent( QMouseEvent *e ) {
   m_mousePressed = false;
+  QClipboard *cb = QApplication::clipboard();
+  if (!cb->supportsSelection())
+    return;
+  char *copytextbuf = getSelectionText();
+  if (!copytextbuf) return;
+  cb->setText(copytextbuf, QClipboard::Selection);
+  free(copytextbuf);  
 }
 

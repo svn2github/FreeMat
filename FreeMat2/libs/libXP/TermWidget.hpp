@@ -57,6 +57,7 @@ protected:
   int selectionStart;
   int selectionStop;
   int m_scroll_offset;
+  bool m_firsttime;
  public slots:
   void scrollBack(int val);
  public:
@@ -69,12 +70,14 @@ protected:
   void refresh();
   void blink();
   void adjustScrollbarPosition();
-  void getSelection(int& start, int& stop);
+  char* getSelectionText();
   char* getTextSurface(int& count, int& width);
   void setCursor(int x, int y);
   void markDirty(QRect& e);
   int  getTextWidth() {return m_width;};
   //TK dependant functions
+  void setFont(QFont font);
+  QFont getFont();
  protected:
   void setScrollbar(int val);
   void resizeEvent( QResizeEvent *e );

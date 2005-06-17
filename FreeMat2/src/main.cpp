@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
 
   if (!nogui) {
     m_win = new ApplicationWindow;
+    QObject::connect(qApp,SIGNAL(lastWindowClosed()),qApp,SLOT(quit()));
     term = new GUITerminal(m_win);
     m_win->SetGUITerminal((GUITerminal*)term);
     m_win->show();
@@ -117,6 +118,6 @@ int main(int argc, char *argv[]) {
   m_app.SetTerminal(term);
   m_start = new QTimer;
   QObject::connect(m_start,SIGNAL(timeout()),&m_app,SLOT(Run()));
-  m_start->start(10,TRUE);
+  m_start->start(0,TRUE);
   return app.exec();
 }

@@ -1,7 +1,11 @@
 #include "XPWindow.hpp"
+#include <qpixmap.h>
+#include "freemat-2.xpm"
 
 XPWindow::XPWindow(int width, int height) :
   QMainWindow() {
+  QPixmap myIcon = QPixmap(freemat_2);
+  setIcon(myIcon);
   resize(width,height);
   child = NULL;
 }

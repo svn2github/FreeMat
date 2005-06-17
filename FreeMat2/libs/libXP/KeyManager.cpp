@@ -1085,6 +1085,7 @@ void KeyManager::OnChar( int c ) {
     KillLine();
     break;
   case KM_NEWLINE:
+  case 10:
     NewLine();
     break;
   case KM_CTRLY:

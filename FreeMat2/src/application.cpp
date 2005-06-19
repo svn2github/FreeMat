@@ -11,14 +11,17 @@
 #include <qsettings.h>
 
 #include "filesave.xpm"
+#include "../libs/libXP/freemat-2.xpm"
 
 ApplicationWindow::~ApplicationWindow() {
 }
 
 ApplicationWindow::ApplicationWindow() :
   QMainWindow(0,"FreeMat v2.0", WDestructiveClose | WGroupLeader) {
-  QPixmap saveIcon;
+  QPixmap myIcon = QPixmap(freemat_2);
+  setIcon(myIcon);
 
+  QPixmap saveIcon;
   saveIcon = QPixmap(filesave);
   QPopupMenu *file = new QPopupMenu(this);
   menuBar()->insertItem("&File", file);

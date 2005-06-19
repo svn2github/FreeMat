@@ -9,6 +9,7 @@
 #include <iostream>
 #include <qfontdialog.h>
 #include <qsettings.h>
+#include "Core.hpp"
 
 #include "filesave.xpm"
 #include "../libs/libXP/freemat-2.xpm"
@@ -136,6 +137,7 @@ void ApplicationWindow::about() {
 }
 
 void ApplicationWindow::manual() {
+  HelpWinFunction();
 }
 
 void ApplicationWindow::aboutQt() {

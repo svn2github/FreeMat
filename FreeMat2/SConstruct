@@ -40,6 +40,12 @@ Help(opts.GenerateHelpText(env))
 
 print env['PLATFORM']
 
+if ARGUMENTS.get('debug',0):
+	env.Append(CCFLAGS = '-g')
+	env.Append(F77FLAGS = '-g')
+	env.Append(LINKFLAGS = '-g')
+	print "Debug mode"
+
 if not conf.CheckLib('qt'):
 	print "Could not find QT lib... exiting!"
 	Exit(1)

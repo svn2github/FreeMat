@@ -16,5 +16,5 @@ Random.cpp
 LoadCore.cpp 
 MPIWrap.cpp 
 RanLib.cpp """)
-Library('Core', list, CPPPATH = ['.','../libFreeMat','../libXP'])
+env.Library('Core', list, CPPPATH = ['.','../libFreeMat','../libXP'])
 

@@ -3863,6 +3863,7 @@ break;
 	// the terminal width
 	int colsPerPage;
 	colsPerPage = (int) floor((termWidth-1)/((float) nominalWidth));
+	colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
 	int pageCount;
 	pageCount = (int) ceil(columns/((float)colsPerPage));
 	for (int k=0;k<pageCount && (items_printed<printLimit);k++) {
@@ -3920,6 +3921,7 @@ break;
 	  // the terminal width
 	  int colsPerPage;
 	  colsPerPage = (int) floor((termWidth-1)/((float) nominalWidth));
+	  colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
 	  int pageCount;
 	  pageCount = (int) ceil(columns/((float)colsPerPage));
 	  for (int k=0;k<pageCount && (items_printed<printLimit);k++) {

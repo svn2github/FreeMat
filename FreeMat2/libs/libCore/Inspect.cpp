@@ -123,6 +123,38 @@ namespace FreeMat {
   }
 
   //!
+  //@Module HELPWIN Online Help Window
+  //@@Section FREEMAT
+  //@@Usage
+  //Brings up the online help window with the FreeMat manual.  The
+  //@|helpwin| function takes no arguments:
+  //@[
+  //  helpwin
+  //@]
+  //!
+  ArrayVector HelpWinFunction(int natgout, const ArrayVector& arg) {
+    // Get the path to the help files.
+    // On the mac, they are in the application bundle.
+#ifdef __APPLE__
+    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, 
+						  kCFURLPOSIXPathStyle);
+    const char *pathPtr = CFStringGetCStringPtr(macPath, 
+						CFStringGetSystemEncoding());
+    std::string fpath;
+    fpath = "file://" + pathPtr + "/Contents/Resources/html/index.html";
+    CFRelease(pluginRef);
+    CFRelease(macPath);
+    AHGotoPage(NULL,
+	       CFStringCreateWithBytes(NULL,fpath.c_str(),
+				       fpath.size(),0,false),NULL);
+#elif WIN32
+#else
+    
+#endif    
+  }
+
+  //!
   //@Module HELP Help
   //@@Section FREEMAT
   //@@Usage

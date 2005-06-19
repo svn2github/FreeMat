@@ -41,6 +41,12 @@
 #define P_DELIM ":"
 #endif
 
+#ifndef WIN32
+#ifndef __APPLE__
+#include "helpwindow.h"
+#endif
+#endif
+
 namespace FreeMat {
 
   static std::string helppath;
@@ -143,15 +149,31 @@ namespace FreeMat {
 						CFStringGetSystemEncoding());
     std::string fpath;
     fpath = "file://" + pathPtr + "/Contents/Resources/html/index.html";
-    CFRelease(pluginRef);
-    CFRelease(macPath);
     AHGotoPage(NULL,
 	       CFStringCreateWithBytes(NULL,fpath.c_str(),
 				       fpath.size(),0,false),NULL);
+    CFRelease(pluginRef);
+    CFRelease(macPath);
 #elif WIN32
 #else
-    
+    const char *envPtr;
+    envPtr = getenv("FREEMAT_PATH");
+    std::string helppath;
+    if (envPtr) {
+      PathSearcher psearch(envPtr);
+      try {
+	helppath = psearch.ResolvePath("../html/index.html");
+      } catch (Exception& E) {
+	helppath = "/usr/local/share/FreeMat/html/index.html";
+      }
+    } else 
+      helppath = "/usr/local/share/FreeMat/html/index.html";
+    HelpWindow *help = new HelpWindow(std::string("file://") + helppath,
+				      ".", 0, "FreeMat Online Help");
+    help->setCaption("FreeMat Online Help");
+    help->show();
 #endif    
+    return ArrayVector();
   }
 
   //!

@@ -14,7 +14,9 @@ IO.cpp
 Inspect.cpp 
 Random.cpp 
 LoadCore.cpp 
+helpwindow.cpp
 MPIWrap.cpp 
 RanLib.cpp """)
-env.Library('Core', list, CPPPATH = ['.','../libFreeMat','../libXP'])
+env.Append(CPPPATH = ['.','../libFreeMat','../libXP'])
+env.Library('Core', list)
 

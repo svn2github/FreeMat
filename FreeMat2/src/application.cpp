@@ -137,7 +137,8 @@ void ApplicationWindow::about() {
 }
 
 void ApplicationWindow::manual() {
-  HelpWinFunction();
+  ArrayVector dummy;
+  HelpWinFunction(0,dummy);
 }
 
 void ApplicationWindow::aboutQt() {

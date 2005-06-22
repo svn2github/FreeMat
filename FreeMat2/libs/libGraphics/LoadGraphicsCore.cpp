@@ -72,6 +72,11 @@ namespace FreeMat {
     context->addFunction("demo",DemoFunction,-1,0,args);
     args.clear();
     context->addFunction("copy",CopyFunction,0,0,args);
+    args.clear();
+    args.push_back("x");
+    args.push_back("y");
+    args.push_back("label");
+    context->addFunction("addtxt",AddTxtFunction,3,1,args);
 #if 0
     args.push_back("parent");
     args.push_back("box");

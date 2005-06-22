@@ -125,7 +125,15 @@ namespace FreeMat {
     void SetAxesAuto();
     void MapPoint(double, double, int&, int&);
     void DrawAxes(GraphicsContext& gc);
+    void AddText(double, double, std::string);
+    void DrawTextLabels(GraphicsContext &gc);
   private:
+    /**
+     * The vector of text data
+     */
+    std::vector<double> textx;
+    std::vector<double> texty;
+    std::vector<std::string> textlabel;
     /**
      * The vector of datasets.
      */

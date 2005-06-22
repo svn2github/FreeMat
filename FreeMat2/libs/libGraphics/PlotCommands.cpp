@@ -707,6 +707,20 @@ namespace FreeMat {
     // Stop the plot 
     return ArrayVector();
   }
+  
+  ArrayVector AddTxtFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 3)
+      throw Exception("addtxt function takes three arguments, x, y and text label");
+    Plot2D* f = GetCurrentPlot();
+    Array xval(arg[0]);
+    Array yval(arg[1]);
+    Array label(arg[2]);
+    f->AddText(xval.getContentsAsDoubleScalar(),
+	       yval.getContentsAsDoubleScalar(),
+	       label.getContentsAsCString());
+    f->Redraw();
+    return ArrayVector();
+  }
 
   //!
   //@Module AXIS Plot Axis Set/Get Function

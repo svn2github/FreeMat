@@ -40,6 +40,15 @@ namespace FreeMat {
   Plot2D::~Plot2D() {
   }
 
+  void Plot2D::DrawTextLabels(GraphicsContext &gc) {
+    int xc, yc;
+    gc.SetForeGroundColor(Color("black"));
+    for (int i=0;i<textx.size();i++) {
+      MapPoint(textx[i],texty[i],xc,yc);
+      gc.DrawTextStringAligned(textlabel[i],Point2D(xc,yc),LR_LEFT,TB_BOTTOM);
+    }
+  }
+
   void Plot2D::DrawLegend(GraphicsContext &gc) {
     int xc, yc;
     MapPoint(legend_xc,legend_yc,xc,yc);
@@ -82,6 +91,9 @@ namespace FreeMat {
     holdflag = true;
     updating = true;
     legendActive = false;
+    textx.clear();
+    texty.clear();
+    textlabel.clear();
   }
 
   void Plot2D::StopSequence() {
@@ -96,6 +108,12 @@ namespace FreeMat {
     legend_yc = yc;
     strcpy(legend_linestyle,style.getContentsAsCString());
     legend_data = legendData;
+  }
+
+  void Plot2D::AddText(double x, double y, std::string val) {
+    textx.push_back(x);
+    texty.push_back(y);
+    textlabel.push_back(val);
   }
 
   void Plot2D::SetTitleText(std::string txt) {
@@ -359,6 +377,9 @@ namespace FreeMat {
 
     if (legendActive)
       DrawLegend(gc);
+
+    if (!textx.empty())
+      DrawTextLabels(gc);
 
     gc.PopClippingRegion();
   }

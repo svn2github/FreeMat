@@ -3457,6 +3457,11 @@ namespace FreeMat {
   ArrayVector WalkTree::subsref(Array r, ASTPtr t) {
     ArrayVector rv;
     SetContext(t->context());
+    // Special case - r is an empty cell array, t is an all-deref
+    if ((r.getDataClass() == FM_CELL_ARRAY) && t &&
+	(t->opNum == OP_BRACES) && (t->down) && (t->down->opNum == OP_ALL) &&
+	r.isEmpty()) 
+      return ArrayVector();
     while (t != NULL) {
       if (rv.size()>1) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");

@@ -33,14 +33,11 @@ extern "C" char* lasterr;
 
 namespace FreeMat {
 
-  typedef enum {
-    FM_STATE_OK,
-    FM_STATE_BREAK,
-    FM_STATE_CONTINUE,
-    FM_STATE_RETURN,
-    FM_STATE_QUIT,
-    FM_STATE_RETALL
-  } State;
+  class WalkTreeContinueException : public std::exception {};
+  class WalkTreeBreakException : public std::exception {};
+  class WalkTreeReturnException : public std::exception {};
+  class WalkTreeRetallException : public std::exception {};
+  class WalkTreeQuitException : public std::exception {};
 
   class stackentry {
   public:
@@ -68,10 +65,6 @@ namespace FreeMat {
      * The context that the intepreter operates in.
      */
     Context* context;
-    /**
-     * The current state of the interpreter.
-     */
-    State state;
     /**
      * The debug depth.  Each time the command line interface is invoked
      * via a keyboard command, the debug depth is increased.
@@ -172,17 +165,9 @@ namespace FreeMat {
      */
     int getPrintLimit();
     /**
-     * Reset the state of the tree walker.
-     */
-    void resetState();
-    /**
      * Clear the context stacks.
      */
     void clearStacks();
-    /**
-     * Get the state of the tree walker.
-     */
-    State getState();
     /**
      * Convert an expression list into a vector of Array variables.
      */
@@ -294,7 +279,6 @@ namespace FreeMat {
      */
     inline Array rhsExpressionSimple(ASTPtr t);
     Interface* getInterface();
-    void ccallStatement(ASTPtr t);
     /**
      * Process an AST to form an lvalue in an assignment statement.
      * The AST looks like:
@@ -585,7 +569,7 @@ namespace FreeMat {
      * and execute it.  The flag indicates whether or not exceptions
      * are propogated or printed.
      */
-    bool evaluateString(char *line, bool propogateExceptions = false);
+    void evaluateString(char *line, bool propogateExceptions = false);
     /**
      * Get the last error that occurred.
      */

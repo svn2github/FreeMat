@@ -183,12 +183,11 @@ namespace FreeMat {
     context->insertVariableLocally("nargout",
 				   Array::int32Constructor(nargout));
     try {
-      walker->block(code);
-      State state(walker->getState());
-      if ((state != FM_STATE_RETALL) && (state != FM_STATE_QUIT))
-	walker->resetState(); 
-      if (state == FM_STATE_RETALL)
-		  return singleArrayVector(Array::emptyConstructor());
+      try {
+	walker->block(code);
+      } catch (WalkTreeBreakException& e) {
+      } catch (WalkTreeContinueException& e) {
+      }
       warningIssued = false;
       if (outputArgCount() != -1) {
 	outputs = ArrayVector(returnVals.size());
@@ -260,6 +259,11 @@ namespace FreeMat {
       walker->popDebug();
       throw e;
     }
+    // catch (WalkTreeRetallException& e) {
+    //       context->popScope();
+    //       walker->popDebug();
+    //      throw;
+    //    }
   }
 
   // Compile the function...
@@ -569,6 +573,9 @@ namespace FreeMat {
 	  }
 	}
       } catch (Exception& e) {
+	context->popScope();
+	throw;
+      } catch (WalkTreeRetallException& e) {
 	context->popScope();
 	throw;
       }

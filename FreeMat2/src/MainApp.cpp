@@ -45,9 +45,18 @@ int MainApp::Run() {
   m_term->outputMessage(" Freemat v2.0");
   m_term->outputMessage("\n");
   m_term->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
-  while (twalk->getState() != FM_STATE_QUIT) {
-    twalk->resetState();
-    twalk->evalCLI();
+  try {
+    while (1) {
+      try {
+	twalk->evalCLI();
+      } catch (WalkTreeRetallException) {
+	m_term->outputMessage("retall\n");
+	twalk->clearStacks();
+      } catch (WalkTreeReturnException &e) {
+      }
+    }
+  } catch (WalkTreeQuitException &e) {
+  } catch (...) {
   }
   m_term->RestoreOriginalMode();
   qApp->quit();

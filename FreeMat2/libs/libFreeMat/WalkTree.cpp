@@ -151,18 +151,13 @@ namespace FreeMat {
     return(printLimit);
   }
  
-  void WalkTree::resetState() {
-    state = FM_STATE_OK;
-  }
-  
   void WalkTree::clearStacks() {
     //    cname = "base";
     cstack.clear();
+    ip_funcname = "base";
+    ip_detailname = "base";
+    ip_context = 0;
     //    gstack.push_back(cname);
-  }
-
-  State WalkTree::getState() {
-    return state;
   }
 
   ArrayVector WalkTree::rowDefinition(ASTPtr t) {
@@ -1018,20 +1013,19 @@ namespace FreeMat {
     conditionTrue = !condVar.isRealAllZeros();
     context->enterLoop();
     while (conditionTrue && !breakEncountered) {
-      block(codeBlock);
-      SetContext(ctxt);
-      if (state == FM_STATE_RETURN || 
-	  state == FM_STATE_RETALL ||
-	  state == FM_STATE_QUIT) break;
-      if (state == FM_STATE_CONTINUE) 
-	state = FM_STATE_OK;
-      breakEncountered = (state == FM_STATE_BREAK);
+      breakEncountered = false;
+      try {
+	block(codeBlock);
+	SetContext(ctxt);
+      } catch (WalkTreeContinueException& e) {
+      } catch (WalkTreeBreakException& e) {
+	breakEncountered = true;
+      }
       if (!breakEncountered) {
 	condVar = expression(testCondition);
 	SetContext(ctxt);
 	conditionTrue = !condVar.isRealAllZeros();
-      } else 
-	state = FM_STATE_OK;
+      } 
     }
     context->exitLoop();
   }
@@ -1108,16 +1102,11 @@ namespace FreeMat {
       indexNum = Array::int32Constructor(elementNumber+1);
       indexVar = indexSet.getVectorSubset(indexNum);
       context->insertVariable(indexVarName,indexVar);
-      block(codeBlock);
-      SetContext(ctxt);
-      if (state == FM_STATE_RETURN || 
-	  state == FM_STATE_RETALL ||
-	  state == FM_STATE_QUIT) {
-	break;
-      }
-      if (state == FM_STATE_CONTINUE) state = FM_STATE_OK;
-      if (state == FM_STATE_BREAK) {
-	state = FM_STATE_OK;
+      try {
+	block(codeBlock);
+	SetContext(ctxt);
+      } catch (WalkTreeContinueException &e) {
+      } catch (WalkTreeBreakException &e) {
 	break;
       }
     }
@@ -1466,9 +1455,11 @@ namespace FreeMat {
   void WalkTree::debugCLI() {
     depth++;
     bpActive = true;
-    evalCLI();
+    try {
+      evalCLI();
+    } catch(WalkTreeReturnException& e) {
+    }
     bpActive = false;
-    if (state == FM_STATE_RETURN) state = FM_STATE_OK;
     depth--;
   }
 
@@ -1585,13 +1576,15 @@ namespace FreeMat {
 	ifStatement(t->down);
 	break;
       case FM_BREAK:
-	if (context->inLoop()) state = FM_STATE_BREAK;
+	if (context->inLoop()) 
+	  throw WalkTreeBreakException();
 	break;
       case FM_CONTINUE:
-	if (context->inLoop()) state = FM_STATE_CONTINUE;
+	if (context->inLoop()) 
+	  throw WalkTreeContinueException();
 	break;
       case FM_RETURN:
-	state = FM_STATE_RETURN;
+	throw WalkTreeReturnException();
 	break;
       case FM_SWITCH:
 	switchStatement(t->down);
@@ -1600,17 +1593,19 @@ namespace FreeMat {
 	tryStatement(t->down);
 	break;
       case FM_QUIT:
-	state = FM_STATE_QUIT;
+	throw WalkTreeQuitException();
 	break;
       case FM_RETALL:
-	state = FM_STATE_RETALL;
+	throw WalkTreeRetallException();
 	break;
       case FM_KEYBOARD:
 	depth++;
-	evalCLI();
-	if (state != FM_STATE_QUIT &&
-	    state != FM_STATE_RETALL)
-	  state = FM_STATE_OK;
+	try {
+	  evalCLI();
+	} catch (WalkTreeContinueException& e) {
+	} catch (WalkTreeBreakException& e) {
+	} catch (WalkTreeReturnException& e) {
+	}
 	depth--;
 	break;
       case FM_GLOBAL:
@@ -1636,8 +1631,7 @@ namespace FreeMat {
 	    b = Array::emptyConstructor();
 	  else 
 	    b = m[0];
-	  if (printIt && !b.isEmpty()
-	      && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
+	  if (printIt && !b.isEmpty()) {
 	    io->outputMessage("ans = \n");
 	    displayArray(b);
 	    SetContext(t->context());
@@ -1649,7 +1643,7 @@ namespace FreeMat {
 	    b = Array::emptyConstructor();
 	  else {
 	    b = m[0];
-	    if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
+	    if (printIt) {
 	      io->outputMessage("ans = \n");
 	      for (int j=0;j<m.size();j++) {
 		char buffer[1000];
@@ -1665,15 +1659,11 @@ namespace FreeMat {
 	}
       } else {
 	b = expression(t);
-	if (printIt && (state != FM_STATE_QUIT) && (state != FM_STATE_RETALL)) {
+	if (printIt) {
 	  io->outputMessage("ans = \n");
 	  displayArray(b);
 	  SetContext(t->context());
 	} 
-      }
-      if (state == FM_STATE_QUIT || 
-	  state == FM_STATE_RETALL) {
-	return;
       }
       context->insertVariable("ans",b);
     }
@@ -1711,9 +1701,6 @@ namespace FreeMat {
 	e.printMe(io);
 	stackTrace(true);
 	debugCLI();
-	if (state != FM_STATE_QUIT &&
-	    state != FM_STATE_RETALL)
-	  state = FM_STATE_OK;
       } else  {
 	throw;
       }
@@ -1725,11 +1712,7 @@ namespace FreeMat {
       if (!t) return;
       ASTPtr s;
       s = t->down;
-      if ((state != FM_STATE_QUIT) && (state != FM_STATE_RETALL))
-	state = FM_STATE_OK;
-      while (state != FM_STATE_RETALL &&
-	     state != FM_STATE_QUIT && 
-	     s != NULL) {
+      while (s != NULL) {
 	if (InterruptPending) {
 	  io->outputMessage("Interrupt (ctrl-c) encountered\n");
 	  stackTrace(true);
@@ -1737,11 +1720,6 @@ namespace FreeMat {
 	  debugCLI();
 	} else {
 	  statement(s);
-	  if (state == FM_STATE_BREAK || 
-	      state == FM_STATE_CONTINUE ||
-	      state == FM_STATE_RETURN ||
-	      state == FM_STATE_RETALL ||
-	      state == FM_STATE_QUIT) break;
 	  s = s->right;
 	}
       }
@@ -2667,8 +2645,6 @@ namespace FreeMat {
 	InCLI = false;
 	n = funcDef->evaluateFunction(this,m,narg_out);
 	InCLI = CLIFlagsave;
-	if (state == FM_STATE_RETALL)
-	  return n;
 	// Check for any pass by reference
 	if ((t->down != NULL) && (funcDef->arguments.size() > 0)) 
 	  handlePassByReference(s,funcDef->arguments,m,keywords,keyexpr,argTypeMap);
@@ -2683,6 +2659,9 @@ namespace FreeMat {
       return n;
     } catch (Exception& e) {
       InCLI = CLIFlagsave;
+      throw;
+    } catch (WalkTreeRetallException& e) {
+      std::cout << "What??";
       throw;
     }
   }
@@ -3178,7 +3157,6 @@ namespace FreeMat {
   WalkTree::WalkTree(Context* aContext, Interface* aInterface) {
     lasterr = NULL;
     context = aContext;
-    state = FM_STATE_OK;
     endValStackLength = 0;
     endValStack[endValStackLength] = 0;
     depth = 0;
@@ -3194,9 +3172,6 @@ namespace FreeMat {
     bpActive = false;
     stopoverload = false;
     clearStacks();
-    ip_funcname = "base";
-    ip_detailname = "base";
-    ip_context = 0;
   }
 
   bool WalkTree::getStopOverload() {
@@ -3212,7 +3187,7 @@ namespace FreeMat {
       stepTrap.tokid = (stepTrap.tokid & 0xffff) + linecount;
       inStepMode = true;
       adjustBreakpoints();
-      state = FM_STATE_RETURN;
+      throw WalkTreeReturnException();
     }
   }
 
@@ -3232,7 +3207,7 @@ namespace FreeMat {
     return std::string(buffer2);
   }
 
-  bool WalkTree::evaluateString(char *line, bool propogateExceptions) {
+  void WalkTree::evaluateString(char *line, bool propogateExceptions) {
     ASTPtr tree;
     ParserState parserState;
     
@@ -3241,25 +3216,28 @@ namespace FreeMat {
       parserState = parseString(line);
     } catch(Exception &e) {
       e.printMe(io);
-      return false;
+      return;
     }
 
     if (parserState != ScriptBlock)
-      return false;
+      return;
 
     tree = getParsedScriptBlock();
     try {
       pushDebug("Eval",EvalPrep(line));
-      block(tree);
-      if (state == FM_STATE_RETURN) {
+      try {
+	block(tree);
+      } catch (WalkTreeReturnException& e) {
 	if (depth > 0) {
 	  popDebug();
-	  return true;
+	  throw;
 	}
-      }
-      if (state == FM_STATE_QUIT || state == FM_STATE_RETALL) {
+      } catch (WalkTreeQuitException& e) {
 	popDebug();
-	return true;
+	throw;
+      } catch (WalkTreeRetallException& e) {
+	popDebug();
+	throw;
       }
     } catch(Exception &e) {
       popDebug();
@@ -3268,7 +3246,6 @@ namespace FreeMat {
       e.printMe(io);
     }
     popDebug();
-    return false;
   }
   
   char* WalkTree::getLastErrorString() {
@@ -3345,12 +3322,8 @@ namespace FreeMat {
       if (line && (strlen(line) > 0)) {
 	int stackdepth;
 	stackdepth = cstack.size();
-	bool tresult =  evaluateString(line);
+	evaluateString(line);
 	while (cstack.size() > stackdepth) cstack.pop_back();
-	if (tresult) {
-	  InCLI = false;
-	  return;
-	}
       }
     }
   }

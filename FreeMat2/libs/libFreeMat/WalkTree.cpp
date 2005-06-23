@@ -157,6 +157,7 @@ namespace FreeMat {
     ip_funcname = "base";
     ip_detailname = "base";
     ip_context = 0;
+    bpActive = false;
     //    gstack.push_back(cname);
   }
 

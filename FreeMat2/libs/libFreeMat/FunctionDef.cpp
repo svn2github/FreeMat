@@ -119,7 +119,7 @@ namespace FreeMat {
 
   ArrayVector MFunctionDef::evaluateFunction(WalkTree *walker, 
 					     ArrayVector& inputs, 
-					     int nargout) throw(Exception) {
+					     int nargout) {
     ArrayVector outputs;
     Context* context;
     bool warningIssued;
@@ -187,6 +187,7 @@ namespace FreeMat {
 	walker->block(code);
       } catch (WalkTreeBreakException& e) {
       } catch (WalkTreeContinueException& e) {
+      } catch (WalkTreeReturnException& e) {
       }
       warningIssued = false;
       if (outputArgCount() != -1) {
@@ -259,15 +260,15 @@ namespace FreeMat {
       walker->popDebug();
       throw e;
     }
-    // catch (WalkTreeRetallException& e) {
-    //       context->popScope();
-    //       walker->popDebug();
-    //      throw;
-    //    }
+    catch (WalkTreeRetallException& e) {
+      context->popScope();
+      walker->popDebug();
+      throw;
+    }
   }
 
   // Compile the function...
-  void MFunctionDef::updateCode() throw(Exception) {
+  void MFunctionDef::updateCode() {
     if (localFunction) return;
     if (pcodeFunction) return;
     // First, stat the file to get its time stamp
@@ -409,6 +410,10 @@ namespace FreeMat {
       walker->popDebug();
       throw;
     }
+    catch (WalkTreeRetallException& e) {
+      walker->popDebug();
+      throw;
+    }
   }
 
   SpecialFunctionDef::SpecialFunctionDef() {
@@ -426,6 +431,10 @@ namespace FreeMat {
       walker->popDebug();
       return outputs;
     } catch(Exception& e) {
+      walker->popDebug();
+      throw;
+    }
+    catch (WalkTreeRetallException& e) {
       walker->popDebug();
       throw;
     }

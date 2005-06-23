@@ -205,14 +205,14 @@ namespace FreeMat {
      *     number of return values in the call
      *   - the variable 'varargout' is the wrong type.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector &, int) throw(Exception);
+    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector &, int);
     /**
      * Check the timestamp on the file, and if necessary, recompile the 
      * function.  Throws an exception if a syntax error occurs in the
      * parsing of the file (i.e., it cannot be classified as either a
      * script or a function definition).
      */
-    virtual void updateCode() throw(Exception);
+    virtual void updateCode();
   };
 
   /**

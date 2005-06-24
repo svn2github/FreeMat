@@ -103,6 +103,9 @@ namespace FreeMat {
     int lineNumber;
     stackentry stepTrap;
     bool bpActive;
+    bool ignoreBP;
+    int ignoreBPLineNumber;
+    std::string ignoreBPName;
     // This data structure stores the class records
     SymbolTable<UserClass> classTable;
     void collectKeywords(ASTPtr q, ArrayVector &keyvals,

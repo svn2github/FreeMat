@@ -158,6 +158,7 @@ namespace FreeMat {
     ip_detailname = "base";
     ip_context = 0;
     bpActive = false;
+    ignoreBP = false;
     //    gstack.push_back(cname);
   }
 
@@ -1013,14 +1014,21 @@ namespace FreeMat {
     SetContext(ctxt);
     conditionTrue = !condVar.isRealAllZeros();
     context->enterLoop();
+    breakEncountered = false;
     while (conditionTrue && !breakEncountered) {
-      breakEncountered = false;
       try {
 	block(codeBlock);
 	SetContext(ctxt);
       } catch (WalkTreeContinueException& e) {
+	std::cout << "caught continue exception\r\n";
       } catch (WalkTreeBreakException& e) {
 	breakEncountered = true;
+      } catch (WalkTreeReturnException& e) {
+	context->exitLoop();
+	throw;
+      } catch (WalkTreeRetallException& e) {
+	context->exitLoop();
+	throw;
       }
       if (!breakEncountered) {
 	condVar = expression(testCondition);
@@ -1109,6 +1117,12 @@ namespace FreeMat {
       } catch (WalkTreeContinueException &e) {
       } catch (WalkTreeBreakException &e) {
 	break;
+      } catch (WalkTreeReturnException& e) {
+	context->exitLoop();
+	throw;
+      } catch (WalkTreeRetallException& e) {
+	context->exitLoop();
+	throw;
       }
     }
     context->exitLoop();
@@ -1469,7 +1483,7 @@ namespace FreeMat {
     linenumber = fullcontext & 0xffff;
     if (debugActive) {
       if (inStepMode) {
-	if ((stepTrap.cname == cstack.back().cname) &&
+	if ((stepTrap.cname == ip_funcname) &&
 	    (stepTrap.tokid == linenumber)) {
 	  // Finished stepping...
 	  inStepMode = false;
@@ -1487,7 +1501,7 @@ namespace FreeMat {
 	while ((j<bpStack.size()) && !found) {
 	  // Is this a resolved breakpoint?
 	  if ((bpStack[j].tokid >> 16) != 0) {
-	    if ((bpStack[j].cname == cstack.back().cname) && 
+	    if ((bpStack[j].cname == ip_funcname) && 
 		(bpStack[j].tokid == fullcontext)) {
 	      found = true;
 	    } else {
@@ -1495,7 +1509,7 @@ namespace FreeMat {
 	      j++;
 	    }
 	  } else {
-	    if ((bpStack[j].cname == cstack.back().cname) && 
+	    if ((bpStack[j].cname == ip_funcname) && 
 		(bpStack[j].tokid == linenumber)) {
 	      found = true;
 	      bpStack[j].tokid = fullcontext;
@@ -1506,14 +1520,33 @@ namespace FreeMat {
 	  }
 	}
 	if (found) {
+	  std::cout << "ignoreBP = " << ignoreBP; 
+	  std::cout << " found = " << found << "\r\n";
+	  std::cout << " ip_funcname = " << ip_funcname;
+	  std::cout << " fullcontext = " << fullcontext;
+	  std::cout << " bp.cname = " << bpStack[j].cname;
+	  std::cout << " bp.tokid = " << bpStack[j].tokid;
+	  std::cout << " \r\n";
+	}
+	if (found && !ignoreBP) {
 	  stepTrap = bpStack[j];
 	  char buffer[2048];
 	  sprintf(buffer,"Encountered breakpoint at %s, line %d\n",
 		  bpStack[j].cname.c_str(),
 		  linenumber);
 	  io->outputMessage(buffer);
+	  ignoreBP = true;
+	  ignoreBPLineNumber = fullcontext & 0xffff;
+	  ignoreBPName = bpStack[j].cname;
 	  debugCLI();
-	}
+	  std::cout << "CLI Ends\r\n";
+	  ignoreBP = false;
+	} else if (found && ignoreBP &&
+		   (ignoreBPLineNumber != (fullcontext & 0xffff)) &&
+		   (ignoreBPName == bpStack[j].cname)) {
+	  std::cout << "Ignored! " << ignoreBPName << " " << ignoreBPLineNumber << "\r\n";
+	  ignoreBP = false;
+	} 
       }
     }
   }
@@ -1535,8 +1568,8 @@ namespace FreeMat {
     qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
     SetContext(t->context());
     // check the debug flag
-    //    int fullcontext = t->context();
-    //    handleDebug(fullcontext);
+    int fullcontext = t->context();
+    handleDebug(fullcontext);
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {
@@ -2802,12 +2835,14 @@ namespace FreeMat {
     ip_funcname = fname;
     ip_detailname = detail;
     ip_context = 0;
+    std::cout << "push Debug " << fname << "(" << detail << ")\r\n";
 //     cstack.push_back(stackentry(fname,detail,0));
 //     ip_funcname = fname;
 //     ip_detailname = detail;
   }
 
   void WalkTree::popDebug() {
+    std::cout << "pop Debug\r\n";
     if (!cstack.empty()) {
       ip_funcname = cstack.back().cname;
       ip_detailname = cstack.back().detail;
@@ -2919,7 +2954,10 @@ namespace FreeMat {
       CLIFlagsave = InCLI;
       InCLI = false;
       pushDebug(((MFunctionDef*)fun)->fileName,std::string("script"));
-      block(((MFunctionDef*)fun)->code);
+      try {
+	block(((MFunctionDef*)fun)->code);
+      } catch (WalkTreeReturnException& e) {
+      }
       popDebug();
       InCLI = CLIFlagsave;
     } else {
@@ -3173,6 +3211,7 @@ namespace FreeMat {
     bpActive = false;
     stopoverload = false;
     clearStacks();
+    ignoreBP = false;
   }
 
   bool WalkTree::getStopOverload() {

@@ -190,9 +190,9 @@ namespace FreeMat {
      args.clear();
      context->addSpecialFunction("feval",FevalFunction,-1,-1,args);
      context->addSpecialFunction("builtin",BuiltinFunction,-1,-1,args);
-//      args.clear();
-//      args.push_back("function");
-//      context->addSpecialFunction("fdump",FdumpFunction,1,0,args);
+     args.clear();
+     args.push_back("function");
+     context->addSpecialFunction("fdump",FdumpFunction,1,0,args);
      args.clear();
      context->addSpecialFunction("eval",EvalFunction,-1,-1,args);
      args.clear();

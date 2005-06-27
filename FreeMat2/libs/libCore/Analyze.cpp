@@ -19,8 +19,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 #ifdef WIN32
-#include <SYS\TIMEB.H>
-#include <TIME.H>
+#include <sys/timeb.h>
+#include <time.h>
 #include <windows.h>
 
 double getcurrenttime() {

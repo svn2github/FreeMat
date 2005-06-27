@@ -41,11 +41,7 @@
 #define P_DELIM ":"
 #endif
 
-#ifndef WIN32
-#ifndef __APPLE__
-#include "helpwindow.h"
-#endif
-#endif
+#include <qassistantclient.h>
 
 namespace FreeMat {
 
@@ -168,10 +164,13 @@ namespace FreeMat {
       }
     } else 
       helppath = "/usr/local/share/FreeMat/html/index.html";
-    HelpWindow *help = new HelpWindow(std::string("file://") + helppath,
-				      ".", 0, "FreeMat Online Help");
-    help->setCaption("FreeMat Online Help");
-    help->show();
+    QString path;
+    QAssistantClient *client = new QAssistantClient(path);
+    client->showPage(std::string("file://") + helppath);
+//     HelpWindow *help = new HelpWindow(std::string("file://") + helppath,
+// 				      ".", 0, "FreeMat Online Help");
+//     help->setCaption("FreeMat Online Help");
+//     help->show();
 #endif    
     return ArrayVector();
   }

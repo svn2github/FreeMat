@@ -2069,6 +2069,8 @@ namespace FreeMat {
     if (!isFun)
       throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
     std::string resolved_name;
+    Array tmp(arg[1]);
+    int line = tmp.getContentsAsIntegerScalar();
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr;
       mptr = (MFunctionDef *) val;
@@ -2077,26 +2079,24 @@ namespace FreeMat {
     } else {
       throw Exception("Cannot set breakpoints in built-in or imported functions");
     }
-    Array tmp(arg[1]);
-    int line = tmp.getContentsAsIntegerScalar();
     eval->addBreakpoint(stackentry(resolved_name,cname,line));
     return ArrayVector();
   }
   
-//   ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
-//     if (arg.size() == 0)
-//       throw Exception("fdump function requires at least one argument");
-//     if (!(arg[0].isString()))
-//       throw Exception("first argument to fdump must be the name of a function (i.e., a string)");
-//     char *fname = arg[0].getContentsAsCString();
-//     Context *context = eval->getContext();
-//     FunctionDef *funcDef;
-//     if (!context->lookupFunction(fname,funcDef))
-//       throw Exception(std::string("function ") + fname + " undefined!");
-//     funcDef->updateCode();
-//     funcDef->printMe(eval->getInterface());
-//     return ArrayVector();
-//   }
+   ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+     if (arg.size() == 0)
+       throw Exception("fdump function requires at least one argument");
+     if (!(arg[0].isString()))
+       throw Exception("first argument to fdump must be the name of a function (i.e., a string)");
+     char *fname = arg[0].getContentsAsCString();
+     Context *context = eval->getContext();
+     FunctionDef *funcDef;
+     if (!context->lookupFunction(fname,funcDef))
+       throw Exception(std::string("function ") + fname + " undefined!");
+     funcDef->updateCode();
+     funcDef->printMe(eval->getInterface());
+     return ArrayVector();
+   }
 
 
   //!

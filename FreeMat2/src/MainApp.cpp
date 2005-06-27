@@ -56,7 +56,8 @@ int MainApp::Run() {
       }
     }
   } catch (WalkTreeQuitException &e) {
-  } catch (...) {
+  } catch (std::exception& e) {
+    std::cout << "Exception caught: " << e.what() << "\n";
   }
   m_term->RestoreOriginalMode();
   qApp->quit();

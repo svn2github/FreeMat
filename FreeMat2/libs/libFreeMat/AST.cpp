@@ -182,7 +182,7 @@ namespace FreeMat {
       printf("   ");
   }
 
-#define cnum(op,msg) case op: printf(msg); break;
+#define cnum(op,msg) case op: printf("%s,<%d,%d>",msg,t->m_context >> 16, t->m_context & 0xffff); break;
   void printAST(ASTPtr t) {
     if (t==NULL) return;
     if (t->isEmpty()) return;
@@ -234,6 +234,8 @@ namespace FreeMat {
 	cnum(OP_NULL,"null");
 	cnum(OP_RSTATEMENT,"end stat.");
 	cnum(OP_QSTATEMENT,"end quiet stat.");
+	cnum(OP_DEBUG_RSTATEMENT,"debug end stat.");
+	cnum(OP_DEBUG_QSTATEMENT,"debug end quiet stat.");
 	cnum(OP_SCALL,"special call");
 	cnum(OP_KEYWORD,"keyword");
 	cnum(OP_DOTDYN,".()");
@@ -294,4 +296,94 @@ namespace FreeMat {
     t->right = ThawAST(s);
     return t;
   }  
+
+  void TagWithDebug(ASTPtr t, int context) {
+    if (t==NULL) return;
+    if (t->isEmpty()) return;
+    if ((t->type == non_terminal)&& 
+	((t->opNum == OP_RSTATEMENT) ||
+	 (t->opNum == OP_QSTATEMENT) ||
+	 (t->opNum == OP_DEBUG_RSTATEMENT) ||
+	 (t->opNum == OP_DEBUG_QSTATEMENT)) &&
+	(t->m_context == context)) {
+      if (t->opNum == OP_RSTATEMENT)
+	t->opNum = OP_DEBUG_RSTATEMENT;
+      if (t->opNum == OP_QSTATEMENT)
+	t->opNum = OP_DEBUG_QSTATEMENT;
+    }
+    TagWithDebug(t->right,context);
+    TagWithDebug(t->down,context);
+  }
+
+  void TagWithNoDebug(ASTPtr t, int context) {
+    if (t==NULL) return;
+    if (t->isEmpty()) return;
+    if ((t->type == non_terminal)&& 
+	((t->opNum == OP_RSTATEMENT) ||
+	 (t->opNum == OP_QSTATEMENT) ||
+	 (t->opNum == OP_DEBUG_RSTATEMENT) ||
+	 (t->opNum == OP_DEBUG_QSTATEMENT)) &&
+	(t->m_context == context)) {
+      if (t->opNum == OP_DEBUG_RSTATEMENT)
+	t->opNum = OP_RSTATEMENT;
+      if (t->opNum == OP_DEBUG_QSTATEMENT)
+	t->opNum = OP_QSTATEMENT;
+    }
+    TagWithNoDebug(t->right,context);
+    TagWithNoDebug(t->down,context);
+  }
+
+  int SearchASTMinimumContext(ASTPtr t, int lineNo, int contextval) {
+    int bestcontext = contextval;
+    if (t==NULL) return contextval;
+    if (t->isEmpty()) return contextval;
+    if (t->type == non_terminal && 
+	((t->opNum == OP_RSTATEMENT) ||
+	 (t->opNum == OP_QSTATEMENT) ||
+	 (t->opNum == OP_DEBUG_RSTATEMENT) ||
+	 (t->opNum == OP_DEBUG_QSTATEMENT))) {
+      // decompose the context into a line number and position
+      int my_lineno = t->m_context & 0xffff;
+      int my_column = t->m_context >> 16;
+      // decompose the arg context into a line number and position
+      int arg_lineno = contextval & 0xffff;
+      int arg_column = contextval >> 16;
+      // Check to see if we are better than the arg context
+      if (((my_lineno >= lineNo) && (my_lineno < arg_lineno)) ||
+	  ((my_lineno == arg_lineno) && (my_column < arg_column))) 
+	bestcontext = t->m_context;
+      else
+	bestcontext = contextval;
+    }
+    bestcontext = SearchASTMinimumContext(t->down, lineNo, bestcontext);
+    bestcontext = SearchASTMinimumContext(t->right, lineNo, bestcontext);
+    return bestcontext;
+  }
+
+  void SetASTBreakPoint(ASTPtr t, int lineNumber) {
+    // First, do a recursive search for all statements
+    // that match the target line number, recording
+    // the minimum context value for each
+    int contextMinimum = SearchASTMinimumContext(t, lineNumber, 0xffffffff);
+    if (contextMinimum == 0xffffffff) return;
+    // Found a closest match...  Tag the node (should be unique)
+    TagWithDebug(t,contextMinimum);
+  }
+
+  bool CheckASTBreakPoint(ASTPtr t, int lineNumber) {
+    int contextMinimum = SearchASTMinimumContext(t, lineNumber, 0xffffffff);
+    if (contextMinimum == 0xffffffff) return false;
+    return true;
+  }
+
+  void ClearASTBreakPoint(ASTPtr t, int lineNumber) {
+    // First, do a recursive search for all statements
+    // that match the target line number, recording
+    // the minimum context value for each
+    int contextMinimum = SearchASTMinimumContext(t, lineNumber, 0xffffffff);
+    if (contextMinimum == 0xffffffff) return;
+    // Found a closest match...  Tag the node (should be unique)
+    TagWithNoDebug(t,contextMinimum);
+  }
+
 }

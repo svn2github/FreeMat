@@ -92,7 +92,9 @@ namespace FreeMat {
     OP_LOAD,
     OP_KEYWORD,
     OP_DOTDYN,
-    OP_ADDRESS
+    OP_ADDRESS,
+    OP_DEBUG_RSTATEMENT,
+    OP_DEBUG_QSTATEMENT
   } OP_TYPE;
 
   /** The abstract syntax tree class
@@ -227,6 +229,22 @@ namespace FreeMat {
     bool isToken;
     contextOrPointer v;
   } ParseRHS;
+
+  /** Mark a line for breakpoint
+   * Given a line number and an AST, searches the AST for the first statement
+   * on that line, and marks it as a breakpoint (OP_RSTATEMENT -> OP_DEBUG_RSTATEMENT)
+   * or (OP_QSTATEMENT -> OP_DEBUG_QSTATEMENT).  Returns true if the operation
+   * is successful, or false if no reasonable line can be found.
+   */
+  void SetASTBreakPoint(ASTPtr t, int lineNumber);
+
+  bool CheckASTBreakPoint(ASTPtr t, int lineNumber);
+
+  /** Clear breakpoint from a line
+   * Given a line number and an AST, clears all debug flags from nodes
+   * in the AST with the given line number.
+   */
+  void ClearASTBreakPoint(ASTPtr t, int lineNumber);
 }
 
 #endif

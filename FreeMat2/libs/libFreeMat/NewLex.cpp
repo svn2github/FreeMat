@@ -575,8 +575,10 @@ void lexScanningState() {
     return;
   }
   if (match(";\n") || match(";\r\n")) {
-    NextLine();
     setTokenType(ENDQSTMNT);
+    tokenValue.isToken = true;
+    tokenValue.v.i = ContextInt();
+    NextLine();
     lexState = Initial;
     if (bracketStackSize == 0)
       vcFlag = 0;

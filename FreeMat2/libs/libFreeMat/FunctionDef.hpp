@@ -124,6 +124,7 @@ namespace FreeMat {
    */
   class MFunctionDef : public FunctionDef {
   public:
+    std::vector<int> breakPoints;
     /**
      * The names of the return values - this is a vector of strings with
      * one entry for each return value in the declared function.  Thus,
@@ -213,6 +214,26 @@ namespace FreeMat {
      * script or a function definition).
      */
     virtual void updateCode();
+    /**
+     * Set a breakpoint
+     */
+    void SetBreakpoint(int bpline);
+    /**
+     * Delete a breakpoint
+     */
+    void DeleteBreakpoint(int bpline);
+    /**
+     * Activate a breakpoint
+     */
+    void AddBreakpoint(int bpline);
+    /**
+     * Deactivate a breakpoint
+     */
+    void RemoveBreakpoint(int bpline);
+    /**
+     * Reactivate breakpoints for this file
+     */
+    void RestoreBreakpoints();
   };
 
   /**

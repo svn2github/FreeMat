@@ -120,6 +120,7 @@ namespace FreeMat {
     ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
     // Set this flag to stop overloading of functions
     bool stopoverload;
+    void doDebugCycle();
   public:
     bool getStopOverload();
     void setStopOverload(bool flag);
@@ -127,12 +128,11 @@ namespace FreeMat {
     void setClassPrefix(std::string prefix);
     bool debugActive;
     void dbstep(int linecount);
-    void handleDebug(int fullcontext);
     void debugCLI();
     void pushDebug(std::string fname, std::string detail);
     void popDebug();
     
-    void addBreakpoint(stackentry bp);
+    void addBreakpoint(stackentry bp, bool registerIt = true);
     bool adjustBreakpoint(stackentry &bp, bool dbstep);
     void adjustBreakpoints();
     void listBreakpoints();

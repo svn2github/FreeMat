@@ -1020,7 +1020,6 @@ namespace FreeMat {
 	block(codeBlock);
 	SetContext(ctxt);
       } catch (WalkTreeContinueException& e) {
-	std::cout << "caught continue exception\r\n";
       } catch (WalkTreeBreakException& e) {
 	breakEncountered = true;
       } catch (WalkTreeReturnException& e) {
@@ -1478,77 +1477,35 @@ namespace FreeMat {
     depth--;
   }
 
-  void WalkTree::handleDebug(int fullcontext) {
-    int linenumber;
-    linenumber = fullcontext & 0xffff;
-    if (debugActive) {
-      if (inStepMode) {
-	if ((stepTrap.cname == ip_funcname) &&
-	    (stepTrap.tokid == linenumber)) {
-	  // Finished stepping...
-	  inStepMode = false;
-	  char buffer[2048];
-	  sprintf(buffer,"Finished stepping to %s, line %d\n",
-		  stepTrap.cname.c_str(),
-		  linenumber);
-	  io->outputMessage(buffer);
-	  debugCLI();
-	}
-      } else {
-	// check the breakpoint list
-	bool found = false;
-	int j=0;
-	while ((j<bpStack.size()) && !found) {
-	  // Is this a resolved breakpoint?
-	  if ((bpStack[j].tokid >> 16) != 0) {
-	    if ((bpStack[j].cname == ip_funcname) && 
-		(bpStack[j].tokid == fullcontext)) {
-	      found = true;
-	    } else {
-	      found = false;
-	      j++;
-	    }
-	  } else {
-	    if ((bpStack[j].cname == ip_funcname) && 
-		(bpStack[j].tokid == linenumber)) {
-	      found = true;
-	      bpStack[j].tokid = fullcontext;
-	    } else {
-	      found = false;
-	      j++;
-	    }
-	  }
-	}
-	if (found) {
-	  std::cout << "ignoreBP = " << ignoreBP; 
-	  std::cout << " found = " << found << "\r\n";
-	  std::cout << " ip_funcname = " << ip_funcname;
-	  std::cout << " fullcontext = " << fullcontext;
-	  std::cout << " bp.cname = " << bpStack[j].cname;
-	  std::cout << " bp.tokid = " << bpStack[j].tokid;
-	  std::cout << " \r\n";
-	}
-	if (found && !ignoreBP) {
-	  stepTrap = bpStack[j];
-	  char buffer[2048];
-	  sprintf(buffer,"Encountered breakpoint at %s, line %d\n",
-		  bpStack[j].cname.c_str(),
-		  linenumber);
-	  io->outputMessage(buffer);
-	  ignoreBP = true;
-	  ignoreBPLineNumber = fullcontext & 0xffff;
-	  ignoreBPName = bpStack[j].cname;
-	  debugCLI();
-	  std::cout << "CLI Ends\r\n";
-	  ignoreBP = false;
-	} else if (found && ignoreBP &&
-		   (ignoreBPLineNumber != (fullcontext & 0xffff)) &&
-		   (ignoreBPName == bpStack[j].cname)) {
-	  std::cout << "Ignored! " << ignoreBPName << " " << ignoreBPLineNumber << "\r\n";
-	  ignoreBP = false;
-	} 
+
+  void WalkTree::doDebugCycle() {
+    if (inStepMode) {
+      // We have to clear the dbstep trap...
+      // We check the list of break points - if one of them matches the
+      // steptrap, we just clear the inStepMode flag (that bp belongs
+      // there anyway).  Otherwise, we clear it.
+      bool alreadySet = false;
+      for (int i=0;(i<bpStack.size()) && !alreadySet;i++)
+	alreadySet = (bpStack[i].detail == stepTrap.detail) &&
+	  ((bpStack[i].tokid & 0xffff) == (stepTrap.tokid & 0xffff));
+      if (!alreadySet) {
+	// we do this by clearing any break points on the line in question
+	FuncPtr val;
+	ArrayVector dummy;
+	bool isFun = lookupFunction(stepTrap.detail,val,dummy);
+	if (isFun && (val->type() == FM_M_FUNCTION))
+	  ((MFunctionDef*)val)->RemoveBreakpoint(stepTrap.tokid);
       }
+      inStepMode = false;
     }
+    depth++;
+    try {
+      evalCLI();
+    } catch (WalkTreeContinueException& e) {
+    } catch (WalkTreeBreakException& e) {
+    } catch (WalkTreeReturnException& e) {
+    }
+    depth--;
   }
 
   void WalkTree::displayArray(Array b) {
@@ -1568,8 +1525,8 @@ namespace FreeMat {
     qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
     SetContext(t->context());
     // check the debug flag
-    int fullcontext = t->context();
-    handleDebug(fullcontext);
+    //    int fullcontext = t->context();
+    //    handleDebug(fullcontext);
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {
@@ -1633,14 +1590,7 @@ namespace FreeMat {
 	throw WalkTreeRetallException();
 	break;
       case FM_KEYBOARD:
-	depth++;
-	try {
-	  evalCLI();
-	} catch (WalkTreeContinueException& e) {
-	} catch (WalkTreeBreakException& e) {
-	} catch (WalkTreeReturnException& e) {
-	}
-	depth--;
+	doDebugCycle();
 	break;
       case FM_GLOBAL:
 	globalStatement(t->down);
@@ -1723,12 +1673,22 @@ namespace FreeMat {
   void WalkTree::statement(ASTPtr t) {
     try {
       SetContext(t->context());
-      if (t->opNum ==(OP_QSTATEMENT)) 
+      switch (t->opNum) {
+      case OP_QSTATEMENT:
 	statementType(t->down,false);
-      else if (t->opNum ==(OP_RSTATEMENT))
+	break;
+      case OP_RSTATEMENT:
 	statementType(t->down,true);
-      else
+	break;
+      case OP_DEBUG_QSTATEMENT:
+	doDebugCycle();
+	statementType(t->down,false);
+	break;
+      case OP_DEBUG_RSTATEMENT:
+	doDebugCycle();
 	statementType(t->down,true);
+	break;
+      }
     } catch (Exception& e) {
       if (autostop && !InCLI) {
 	char buffer[4096];
@@ -1949,10 +1909,29 @@ namespace FreeMat {
     InCLI = CLIFlagsave;
   }
 
-  void WalkTree::addBreakpoint(stackentry bp) {
-    bpStack.push_back(bp);
-    adjustBreakpoints();
-    debugActive = true;
+  void WalkTree::addBreakpoint(stackentry bp, bool registerIt) {
+    char *cname = strdup(bp.detail.c_str());
+    bool isFun;
+    FuncPtr val;
+    ArrayVector dummy;
+    isFun = lookupFunction(cname,val,dummy);
+    char buffer[1000];
+    if (!isFun) {
+      sprintf(buffer,"unable to find function %s to set breakpoint",bp.detail.c_str());
+      io->warningMessage(buffer);
+      return;
+    }
+    if (val->type() != FM_M_FUNCTION) {
+      sprintf(buffer,"function %s is not an m-file, and does not support breakpoints",bp.detail.c_str());
+      io->warningMessage(buffer);
+      return;
+    }
+    if (registerIt) {
+      ((MFunctionDef*)val)->SetBreakpoint(bp.tokid);
+      bpStack.push_back(bp);
+    } else {
+      ((MFunctionDef*)val)->AddBreakpoint(bp.tokid);
+    }
   }
 
 
@@ -2657,10 +2636,13 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
 	CLIFlagsave = InCLI;
 	InCLI = false;
-	pushDebug(((MFunctionDef*)funcDef)->fileName,std::string("script"));
+	pushDebug(((MFunctionDef*)funcDef)->fileName,((MFunctionDef*)funcDef)->name);
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
+	// Special case - dbstep acts like "return"
+	if (funcDef->name == "dbstep")
+	  throw WalkTreeReturnException();
       } else {
 	// We can now adjust the keywords (because we know the argument list)
 	// Apply keyword mapping
@@ -2690,18 +2672,20 @@ namespace FreeMat {
       if (outputOptional) narg_out = (narg_out == 0) ? 1 : narg_out;
       while (n.size() > narg_out)
 	n.pop_back();
+      // Special case - dbstep acts like "return"
+      if (funcDef->name == "dbstep")
+	throw WalkTreeReturnException();
       return n;
     } catch (Exception& e) {
       InCLI = CLIFlagsave;
       throw;
     } catch (WalkTreeRetallException& e) {
-      std::cout << "What??";
       throw;
     }
   }
-
+  
   int COST(int a, int b) {
-	return (((a) >= (b)) ? ((a)-(b)) : 10000);
+    return (((a) >= (b)) ? ((a)-(b)) : 10000);
   }
 
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
@@ -2724,13 +2708,23 @@ namespace FreeMat {
   }
 
   void WalkTree::deleteBreakpoint(int number) {
-    char buffer[2048];
-    if ((number >= 1) && (number <= bpStack.size())) {
-      bpStack.erase(bpStack.begin() + number - 1);
-    } else {
-      sprintf(buffer,"Unable to delete breakpoint %d\n",number);
-      throw Exception(buffer);
+    if ((number < 1) || (number > bpStack.size())) {
+      io->warningMessage("Unable to delete specified breakpoint (does not exist)");
+      return;
     }
+    stackentry bp(bpStack[number-1]);
+    bpStack.erase(bpStack.begin() + number - 1);
+    char buffer[2048];
+    char *cname = strdup(bp.detail.c_str());
+    bool isFun;
+    FuncPtr val;
+    ArrayVector dummy;
+    isFun = lookupFunction(cname,val,dummy);
+    if (!isFun) 
+      return;
+    if (val->type() != FM_M_FUNCTION) 
+      return;
+    ((MFunctionDef*)val)->RemoveBreakpoint(bp.tokid);
   }
 
   bool WalkTree::adjustBreakpoint(stackentry& bp, bool dbstep) {
@@ -2835,14 +2829,9 @@ namespace FreeMat {
     ip_funcname = fname;
     ip_detailname = detail;
     ip_context = 0;
-    std::cout << "push Debug " << fname << "(" << detail << ")\r\n";
-//     cstack.push_back(stackentry(fname,detail,0));
-//     ip_funcname = fname;
-//     ip_detailname = detail;
   }
 
   void WalkTree::popDebug() {
-    std::cout << "pop Debug\r\n";
     if (!cstack.empty()) {
       ip_funcname = cstack.back().cname;
       ip_detailname = cstack.back().detail;
@@ -2953,7 +2942,7 @@ namespace FreeMat {
 	throw Exception(std::string("Cannot use arguments in a call to a script."));
       CLIFlagsave = InCLI;
       InCLI = false;
-      pushDebug(((MFunctionDef*)fun)->fileName,std::string("script"));
+      pushDebug(((MFunctionDef*)fun)->fileName,((MFunctionDef*)fun)->name);
       try {
 	block(((MFunctionDef*)fun)->code);
       } catch (WalkTreeReturnException& e) {
@@ -3223,12 +3212,13 @@ namespace FreeMat {
   }
 
   void WalkTree::dbstep(int linecount) {
-    if (bpActive) {
-      stepTrap.tokid = (stepTrap.tokid & 0xffff) + linecount;
-      inStepMode = true;
-      adjustBreakpoints();
-      throw WalkTreeReturnException();
-    }
+    // Get the current function
+    if (cstack.size() < 2) throw Exception("cannot dbstep unless inside an M-function");
+    stackentry bp(cstack[cstack.size()-2]);
+    // Add a breakpoint
+    addBreakpoint(stackentry(bp.cname,bp.detail,(bp.tokid & 0xffff) + linecount),false);
+    stepTrap = stackentry(bp.cname,bp.detail,(bp.tokid & 0xffff) + linecount);
+    inStepMode = true;
   }
 
   static std::string EvalPrep(char *line) {
@@ -3280,9 +3270,10 @@ namespace FreeMat {
 	throw;
       }
     } catch(Exception &e) {
-      popDebug();
-      if (propogateExceptions)
+      if (propogateExceptions) {
+	popDebug();
 	throw;
+      }
       e.printMe(io);
     }
     popDebug();

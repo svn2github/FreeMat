@@ -316,11 +316,13 @@ namespace FreeMat {
 	  functionCompiled = true;
 	  nextFunction = cp->nextFunction;
 	  prevFunction = cp->prevFunction;
+	  RestoreBreakpoints();
 	  return;
 	} else if (pstate == ScriptBlock) {
 	  code = getParsedScriptBlock();
 	  scriptFlag = true;
 	  functionCompiled = true;
+	  RestoreBreakpoints();
 	  return;
 	} else
 	  throw Exception(std::string("Syntax error parsing file:") + fileName + ", expecting a script or function definition");
@@ -330,6 +332,79 @@ namespace FreeMat {
 	throw;
       }
     }
+  }
+
+  void MFunctionDef::RestoreBreakpoints() {
+    for (int i=0;i<breakPoints.size();i++) 
+      try {
+	AddBreakpoint(breakPoints[i]);
+      } catch (Exception &e) {
+      }
+  }
+
+  void MFunctionDef::RemoveBreakpoint(int bpline) {
+    // The way this function works...  We have to
+    // find which subfunction to set the breakpoint in.
+    // Build a vector of the function defs
+    std::vector<ASTPtr> codes;
+    codes.push_back(code);
+    MFunctionDef *ptr = nextFunction;
+    while (ptr) {
+      codes.push_back(ptr->code);
+      ptr = ptr->nextFunction;
+    }
+    // Search backward through the subfunction definitions
+    int i=codes.size()-1;
+    bool found = false;
+    while ((i>=0) && !found) {
+      found = CheckASTBreakPoint(codes[i],bpline);
+      if (!found)
+	i--;
+    }
+    if (!found)
+      throw Exception("Unable to clear breakpoint...");
+    ClearASTBreakPoint(codes[i],bpline);
+  }
+  
+  void MFunctionDef::AddBreakpoint(int bpline) {
+    // The way this function works...  We have to
+    // find which subfunction to set the breakpoint in.
+    // Build a vector of the function defs
+    std::vector<ASTPtr> codes;
+    codes.push_back(code);
+    MFunctionDef *ptr = nextFunction;
+    while (ptr) {
+      codes.push_back(ptr->code);
+      ptr = ptr->nextFunction;
+    }
+    // Search backward through the subfunction definitions
+    int i=codes.size()-1;
+    bool found = false;
+    while ((i>=0) && !found) {
+      found = CheckASTBreakPoint(codes[i],bpline);
+      if (!found)
+	i--;
+    }
+    if (!found) {
+      char buffer[1000];
+      sprintf(buffer,"Unable to set a breakpoint at line %d of routine %s",bpline,name.c_str());
+      throw Exception(buffer);
+    }
+    SetASTBreakPoint(codes[i],bpline);
+  }
+
+  void MFunctionDef::SetBreakpoint(int bpline) {
+    // Add it to the list of breakpoints for this function
+    AddBreakpoint(bpline);
+    breakPoints.push_back(bpline);
+  }
+
+  void MFunctionDef::DeleteBreakpoint(int bpline) {
+    for (std::vector<int>::iterator i=breakPoints.begin();
+	 i!=breakPoints.end();i++)
+      if (*i == bpline)
+	breakPoints.erase(i);
+    RemoveBreakpoint(bpline);
   }
 
   void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {

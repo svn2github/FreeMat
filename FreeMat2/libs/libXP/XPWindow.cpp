@@ -3,7 +3,7 @@
 #include "freemat-2.xpm"
 
 XPWindow::XPWindow(int width, int height) :
-  QMainWindow() {
+  QMainWindow(NULL,NULL,WRepaintNoErase) {
   QPixmap myIcon = QPixmap(freemat_2);
   setIcon(myIcon);
   resize(width,height);

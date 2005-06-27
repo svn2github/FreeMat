@@ -20,6 +20,8 @@ class XPWidget : public QWidget {
   XPWidget* m_parent;
   bool m_mousepressed;
   Point2D m_size;
+  bool click_mode;
+  int click_x, click_y;
 public:
   // These are the interface methods to libXP - they should be toolkit neutral
   XPWidget(XPWidget *parent, Point2D sze);

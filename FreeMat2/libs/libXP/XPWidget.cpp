@@ -9,6 +9,8 @@
 #include <iostream>
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <qcursor.h>
+#include <qeventloop.h>
 
 XPWidget::XPWidget(XPWidget *parent, Point2D size) 
   : QWidget(parent), m_size(size) { 
@@ -28,11 +30,14 @@ void XPWidget::paintEvent(QPaintEvent* e) {
 void XPWidget::mousePressEvent(QMouseEvent* e) {
   m_mousepressed = true;
   OnMouseDown(Point2D(e->x(),e->y()));
+  click_x = e->x();
+  click_y = e->y();
 }
 
 void XPWidget::mouseReleaseEvent(QMouseEvent* e) {
   m_mousepressed = false;
   OnMouseUp(Point2D(e->x(),e->y()));
+  click_mode = false;
 }
 
 void XPWidget::mouseMoveEvent(QMouseEvent* e) {
@@ -95,7 +100,14 @@ bool XPWidget::Print(std::string filename, std::string type) {
 }
 
 void XPWidget::GetClick(int &x, int &y) {
-  //FIXME
+  // Set the cross cursor
+  setCursor(QCursor(QCursor::CrossCursor));
+  click_mode = true;
+  while (click_mode)
+    qApp->eventLoop()->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMore);
+  x = click_x;
+  y = click_y;
+  setCursor(QCursor(QCursor::ArrowCursor));
 }
 
 XPWidget* XPWidget::GetParent() {

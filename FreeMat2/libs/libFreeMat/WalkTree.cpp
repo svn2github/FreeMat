@@ -1525,8 +1525,6 @@ namespace FreeMat {
     qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
     SetContext(t->context());
     // check the debug flag
-    //    int fullcontext = t->context();
-    //    handleDebug(fullcontext);
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {

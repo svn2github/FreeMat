@@ -1,6 +1,12 @@
 /*
  * A lexical analyzer... my apologies for this, but I couldn't get 
  * FLEX to do what I wanted.
+ *
+ * A note on the special syntax formulation...  
+ * If we encounter something like:
+ *  ident ws alphanum
+ * and we are _not_ inside a bracket []/{}, then 
+ * we should treat alphanum as the start of an unterminated string.
  */
 #include <stdio.h>
 #include <ctype.h>
@@ -8,7 +14,6 @@
 #include <sys/types.h>
 
 #define WS 999
-
 
 #include "AST.hpp"
 
@@ -645,6 +650,14 @@ void lexScanningState() {
   }
   if (testAlphaChar() || currentChar() == '_') {
     lexIdentifier();
+    // Are we inside a bracket? If so, leave well enough alone
+    if ((tokenType != IDENT) || bracketStackSize)
+      return;
+    // No, so... munch the whitespace
+    while (isWhitespace());
+    // How do you know ident /ident is not ident/ident and is ident('/ident')?
+    if (testAlphaChar())
+      lexState = SpecScan;
     return;
   }
   if (testDigit() || currentChar() == '.')

@@ -25,14 +25,11 @@ opts.AddOptions(
 
 import os
 
-env = Environment(tools=['default','qt','g77'], options = opts, ENV = os.environ)
 
-#dict = env.Dictionary()
-#keys = dict.keys()
-#keys.sort()
-#for key in keys:
-#    print "construction variable = '%s', value = '%s'" % (key, dict[key])
-#Exit(1)
+if ARGUMENTS.get('win32',0):
+	env = Environment(tools=['crossmingw','qt',],toolpath=['scons-tools'])
+else:
+	env = Environment(tools=['default','qt','g77'], options = opts, ENV = os.environ)
 
 conf = Configure(env, custom_tests = {'CheckEndian' : CheckEndian} )
 
@@ -46,9 +43,9 @@ if ARGUMENTS.get('debug',0):
 	env.Append(LINKFLAGS = '-g')
 	print "Debug mode"
 
-if not conf.CheckLib('qt'):
-	print "Could not find QT lib... exiting!"
-	Exit(1)
+#if not conf.CheckLib('qt'):
+#	print "Could not find QT lib... exiting!"
+#	Exit(1)
 	
 if env['PLATFORM'] == 'darwin':
 	print "Using vector-lib framework for LAPACK/BLAS"
@@ -68,6 +65,7 @@ else:
 	else:
 		print "Could not find LAPACK"
 		Exit(1)
+	env.Append(LIBS = ['qassistantclient'])
 
 
 if not conf.CheckEndian():

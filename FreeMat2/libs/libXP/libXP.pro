@@ -1,31 +1,43 @@
 TEMPLATE = lib
 
-TARGET = Graphics
+TARGET = XP
 
 CONFIG += staticlib
 
-INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
+INCLUDEPATH = ../libFreeMat ../.. ../libCore ../libFN ../libGraphics
 
-HEADERS += Axis.hpp \
-DataSet2D.hpp \
-GraphicsCore.hpp \
-Plot2D.hpp \
-ScalarImage.hpp \
-trackball.h \
-Figure.hpp \
-Plot3D.hpp \
-SurfPlot.hpp \
-NewAxis.hpp
+HEADERS += DynLib.hpp \
+System.hpp \
+PathSearch.hpp \
+Rect2D.hpp \
+PostScriptGC.hpp \
+Point2D.hpp \
+GraphicsContext.cpp \
+Color.hpp \
+KeyManager.hpp \
+helv_table.h \
+XPWidget.hpp \
+XPWindow.hpp \
+QTGC.hpp \
+TermWidget.hpp \
+BaseTerminal.hpp 
 
-SOURCES += Axis.cpp \
-DataSet2D.cpp \
-LoadGraphicsCore.cpp \
-Plot2D.cpp \
-PlotCommands.cpp \
-ImageCommands.cpp \
-ScalarImage.cpp \
-trackball.c \
-Figure.cpp \
-Plot3D.cpp \
-SurfPlot.cpp \
-NewAxis.cpp 
+DEPENDPATH += INCLUDEPATH
+
+SOURCES += DynLib.cpp \
+System.cpp \
+PathSearch.cpp \
+Rect2D.cpp \
+PostScriptGC.cpp \
+Point2D.cpp \
+GraphicsContext.cpp \
+Color.cpp \
+KeyManager.cpp \
+XPWidget.cpp \
+XPWindow.cpp \
+QTGC.cpp \
+GUITerminal.cpp \
+TermWidget.cpp \
+BaseTerminal.cpp 
+
+

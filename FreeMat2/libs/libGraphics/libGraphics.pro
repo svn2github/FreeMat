@@ -1,31 +1,31 @@
 TEMPLATE = lib
 
-TARGET = Core
+TARGET = Graphics
 
 CONFIG += staticlib
 
-INCLUDEPATH = ../libFreeMat ../libXP ../..
+INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
 
-HEADERS += Utils.hpp \
-LoadCore.hpp \
-Core.hpp \
-MPIWrap.hpp \
-RanLib.hpp
+HEADERS += Axis.hpp \
+DataSet2D.hpp \
+GraphicsCore.hpp \
+Plot2D.hpp \
+ScalarImage.hpp \
+trackball.h \
+Figure.hpp \
+Plot3D.hpp \
+SurfPlot.hpp \
+NewAxis.hpp
 
-SOURCES += Cast.cpp \
-Constructors.cpp \
-FFT.cpp \
-StringOps.cpp \
-Transcendental.cpp \
-Trigonometric.cpp \
-Misc.cpp \
-Constants.cpp \
-Directory.cpp \
-Analyze.cpp \
-Utils.cpp \
-IO.cpp \
-Inspect.cpp \
-Random.cpp \
-LoadCore.cpp \
-MPIWrap.cpp \
-RanLib.cpp 
+SOURCES += Axis.cpp \
+DataSet2D.cpp \
+LoadGraphicsCore.cpp \
+Plot2D.cpp \
+PlotCommands.cpp \
+ImageCommands.cpp \
+ScalarImage.cpp \
+trackball.c \
+Figure.cpp \
+Plot3D.cpp \
+SurfPlot.cpp \
+NewAxis.cpp 

@@ -1,31 +1,38 @@
 TEMPLATE = lib
 
-TARGET = Core
+TARGET = FFTPack
 
 CONFIG += staticlib
 
-INCLUDEPATH = ../libFreeMat ../libXP ../..
-
-HEADERS += Utils.hpp \
-LoadCore.hpp \
-Core.hpp \
-MPIWrap.hpp \
-RanLib.hpp
-
-SOURCES += Cast.cpp \
-Constructors.cpp \
-FFT.cpp \
-StringOps.cpp \
-Transcendental.cpp \
-Trigonometric.cpp \
-Misc.cpp \
-Constants.cpp \
-Directory.cpp \
-Analyze.cpp \
-Utils.cpp \
-IO.cpp \
-Inspect.cpp \
-Random.cpp \
-LoadCore.cpp \
-MPIWrap.cpp \
-RanLib.cpp 
+SOURCES += cfftb1.f \
+cfftb.f \
+cfftf1.f \
+cfftf.f \
+cffti1.f \
+cffti.f \
+cpassb2.f \
+cpassb3.f \
+cpassb4.f \
+cpassb5.f \
+cpassb.f \
+cpassf2.f \
+cpassf3.f \
+cpassf4.f \
+cpassf5.f \
+cpassf.f \
+zfftb1.f \
+zfftb.f \
+zfftf1.f \
+zfftf.f \
+zffti1.f \
+zffti.f \
+zpassb2.f \
+zpassb3.f \
+zpassb4.f \
+zpassb5.f \
+zpassb.f \
+zpassf2.f \
+zpassf3.f \
+zpassf4.f \
+zpassf5.f \
+zpassf.f

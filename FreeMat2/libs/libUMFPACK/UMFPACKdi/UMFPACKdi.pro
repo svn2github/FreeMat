@@ -1,0 +1,3 @@
+TEMPLATE = subdirs
+
+SUBDIRS = AMD UMFPACKdi UMFPACKzi

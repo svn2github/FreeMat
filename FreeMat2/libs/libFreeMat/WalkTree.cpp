@@ -42,6 +42,8 @@
 
 #ifdef WIN32
 #define DELIM "\\"
+#include <direct.h>
+#define getcwd _getcwd
 #else
 #define DELIM "/"
 #endif
@@ -58,8 +60,7 @@ namespace FreeMat {
 
   static bool isMFile(std::string arg) {
 #ifdef WIN32
-    return std::string("");
-#error "complete me"
+    return arg[1] == ':';
 #else
     return arg[0] == '/';
 #endif
@@ -1522,7 +1523,11 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
+#ifdef QT3
     qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
+#else
+    qApp->processEvents(QEventLoop::AllEvents);
+#endif
     SetContext(t->context());
     // check the debug flag
     if (t->isEmpty()) {

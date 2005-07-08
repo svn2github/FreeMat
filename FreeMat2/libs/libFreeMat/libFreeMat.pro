@@ -3,9 +3,14 @@ TEMPLATE = lib
 TARGET = FreeMatLib
 
 CONFIG += staticlib
+ warn_off
 
 INCLUDEPATH = ../libffi/include ../libXP ../libUMFPACK/UMFPACK/Include ../..
 
+
+DEFINES -= UNICODE
+
+DEPENDPATH += INCLUDEPATH
 
 HEADERS += Array.hpp \
 AST.hpp \

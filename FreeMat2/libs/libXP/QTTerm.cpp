@@ -124,7 +124,7 @@ void QTTerm::adjustScrollbarPosition() {
 		      QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent));
 #else
   m_scrollbar->resize(QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent),
-		      contentsRect().height());
+		      height());
 #endif
 #else
 #ifdef __APPLE__
@@ -136,8 +136,8 @@ void QTTerm::adjustScrollbarPosition() {
 		      contentsRect().height());
 #endif
 #endif
-  m_active_width = contentsRect().width() - 2 - m_scrollbar->width();
-  m_scrollbar->move(contentsRect().topRight() - QPoint(m_scrollbar->width()-1,0));
+  m_active_width = width() - 2 - m_scrollbar->width();
+  m_scrollbar->move(QPoint(width()-m_scrollbar->width()+1,0));
   m_scrollbar->show();
 }
  
@@ -207,17 +207,28 @@ void QTTerm::resizeEvent(QResizeEvent *e) {
 
 void QTTerm::paintEvent(QPaintEvent *e) {
   // QWidget::paintEvent(e);
+#ifndef QT3
   Q3MemArray<QRect> rects = e->region().rects();
+#else
+  QMemArray<QRect> rects = e->region().rects();
+#endif
   QPainter painter(this);
-   for ( uint i = 0; i < rects.count(); i++ ) 
-     painter.drawPixmap(rects[(int) i],surface,rects[(int) i]);
+  for ( uint i = 0; i < rects.count(); i++ ) {
+#ifndef QT3
+    painter.drawPixmap(rects[(int) i],surface,rects[(int) i]);
+#else
+    painter.drawPixmap(QPoint(rects[(int) i].left(),rects[(int) i].top()),surface,rects[(int) i]);
+#endif
+  }
 }
 
 void QTTerm::BeginDraw() {
   paint = new QPainter(&surface);
   paint->setFont(QWidget::font());
   paint->setPen(Qt::black);
+#ifndef QT3
   paint->setBackground(QBrush(Qt::white));
+#endif
   paint->setBackgroundMode(Qt::OpaqueMode);
 }
 
@@ -342,7 +353,11 @@ void QTTerm::mousePressEvent( QMouseEvent *e ) {
 }
 
 void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
+#ifndef QT3
   if (e->buttons())
+#else
+    if (e->state() & (LeftButton | RightButton | MidButton))
+#endif
     OnMouseDrag(e->x(),e->y());
 }
 

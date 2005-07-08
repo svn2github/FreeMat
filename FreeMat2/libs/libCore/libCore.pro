@@ -12,8 +12,7 @@ HEADERS += Utils.hpp \
 LoadCore.hpp \
 Core.hpp \
 MPIWrap.hpp \
-RanLib.hpp \
-hwin.h
+RanLib.hpp 
 
 SOURCES += Cast.cpp \
 Constructors.cpp \
@@ -31,10 +30,11 @@ Inspect.cpp \
 Random.cpp \
 LoadCore.cpp \
 MPIWrap.cpp \
-RanLib.cpp \
-hwin.cpp
+RanLib.cpp 
 
+win32 {
 QT += qt3support
+}
 
 CONFIG += assistant
 

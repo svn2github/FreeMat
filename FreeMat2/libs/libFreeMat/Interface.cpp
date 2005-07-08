@@ -1,6 +1,5 @@
 #ifdef WIN32
 #include <windows.h>
-#include <htmlhelp.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -190,9 +189,6 @@ namespace FreeMat {
       WIN32_FIND_DATA FileData;
       std::string pattern(tmp);
       pattern.append("*");
-      OutputDebugString("Searching ");
-      OutputDebugString(pattern.c_str());
-      OutputDebugString("\n");
       hSearch = FindFirstFile(pattern.c_str(),&FileData);
       if (hSearch != INVALID_HANDLE_VALUE) {
 	// Windows does not return any part of the path in the completion,
@@ -261,7 +257,13 @@ namespace FreeMat {
       }
       FindClose(hSearch);
     }
-#error Need to add private dir functionality in win32
+    searchpat = std::string(scdir+"\\private");
+    hSearch = FindFirstFile(searchpat.c_str(), &FileData);
+    if (hSearch != INVALID_HANDLE_VALUE) {
+      scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,
+		    scdir + "\\" + std::string(FileData.cFileName));
+      FindClose(hSearch);
+    }
 #else
     // Open the directory
     DIR *dir;

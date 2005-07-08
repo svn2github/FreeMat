@@ -28,3 +28,8 @@
 #define WSOLVE
 #include "umfpack_solve.c"
 #undef WSOLVE
+
+#include "umf_utsolve.c"
+#include "umf_ltsolve.c"
+#include "umf_store_lu.c"
+#include "umfpack_solve.c"

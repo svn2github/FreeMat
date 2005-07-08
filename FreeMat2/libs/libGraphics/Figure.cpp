@@ -59,86 +59,8 @@ namespace FreeMat {
     Figure* f = GetCurrentFig();
     XPWidget* g = f->GetChildWidget();
     g->Copy();
-#ifdef WIN32
-    make_current();
-    Redraw();
-    // Obtain a handle to a reference device context. 
-    HDC hdcRef = GetDC(fl_window); 
- 
-  // Determine the picture frame dimensions. 
-  // iWidthMM is the display width in millimeters. 
-  // iHeightMM is the display height in millimeters. 
-  // iWidthPels is the display width in pixels. 
-  // iHeightPels is the display height in pixels 
-  
-  int iWidthMM = GetDeviceCaps(hdcRef, HORZSIZE); 
-  int iHeightMM = GetDeviceCaps(hdcRef, VERTSIZE); 
-  int iWidthPels = GetDeviceCaps(hdcRef, HORZRES); 
-  int iHeightPels = GetDeviceCaps(hdcRef, VERTRES); 
-  
-  // Retrieve the coordinates of the client 
-  // rectangle, in pixels. 
-
-  RECT rect;
-  GetClientRect(fl_window, &rect); 
-  
-  // Convert client coordinates to .01-mm units. 
-  // Use iWidthMM, iWidthPels, iHeightMM, and 
-  // iHeightPels to determine the number of 
-  // .01-millimeter units per pixel in the x- 
-  //  and y-directions. 
-  
-  rect.left = (rect.left * iWidthMM * 100)/iWidthPels; 
-  rect.top = (rect.top * iHeightMM * 100)/iHeightPels; 
-  rect.right = (rect.right * iWidthMM * 100)/iWidthPels; 
-  rect.bottom = (rect.bottom * iHeightMM * 100)/iHeightPels; 
-  
-  // Create the metafile device context. 
-  HDC hdcMeta = CreateEnhMetaFile(hdcRef, NULL, &rect, NULL); 
-  HDC gcsave = fl_gc;
-  fl_gc = hdcMeta;
-  draw();
-  HENHMETAFILE hMeta = CloseEnhMetaFile(hdcMeta);
-  // Release the reference device context. 
-  ReleaseDC(fl_window, hdcRef); 
-  OpenClipboard(fl_window);
-  EmptyClipboard();
-  SetClipboardData(CF_ENHMETAFILE, hMeta);
-  CloseClipboard();
-  fl_gc = gcsave;
-#endif
   }
 
-#if 0
-  void Figure::Print(std::string filename) {
-    if (m_type == fignone) return;
-    int width(m_wid->GetWidth());
-    int height(m_wid->GetHeight());
-    int np = filename.find_last_of(".");
-    if (np <= 0)
-      throw FreeMat::Exception("Unable to determine format of output from filename");
-    std::string extension(filename.substr(np));
-    std::transform(extension.begin(), extension.end(),
-		   extension.begin(), tolower);
-    if (extension == ".eps" || extension == ".ps") {
-      PostScriptGC gc(filename, width, height);
-      m_wid->OnDraw(gc);
-    } else {
-      unsigned char *data = new unsigned char[width*height*3];
-      Fl_Offscreen id;
-      id = fl_create_offscreen(width,height);
-      fl_begin_offscreen((Fl_Offscreen) id);
-      m_wid->draw();
-      fl_read_image(data,0,0,width,height);
-      fl_end_offscreen();
-      fl_delete_offscreen(id);
-      BitmapPrinterGC gc(filename);
-      gc.BlitImage(data, width, height, 0, 0);
-      delete data;
-    }      
-  }
-#endif
-  
   void InitializeFigureSubsystem() {
     currentFig = -1;
     for (int i=0;i<MAX_FIGS;i++) 

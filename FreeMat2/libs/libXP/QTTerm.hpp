@@ -5,7 +5,6 @@
 #include <qscrollbar.h>
 #include <qtimer.h>
 #include <qpixmap.h>
-#include <q3frame.h>
 
 class QTTerm :  public QWidget, public TermWidget {
   Q_OBJECT

@@ -1,31 +1,21 @@
 TEMPLATE = lib
 
-TARGET = Core
+TARGET = FN
 
 CONFIG += staticlib
 
-INCLUDEPATH = ../libFreeMat ../libXP ../..
+INCLUDEPATH = ../libFreeMat
 
-HEADERS += Utils.hpp \
-LoadCore.hpp \
-Core.hpp \
-MPIWrap.hpp \
-RanLib.hpp
+HEADERS += LoadFN.hpp \
+FN.hpp
 
-SOURCES += Cast.cpp \
-Constructors.cpp \
-FFT.cpp \
-StringOps.cpp \
-Transcendental.cpp \
-Trigonometric.cpp \
-Misc.cpp \
-Constants.cpp \
-Directory.cpp \
-Analyze.cpp \
-Utils.cpp \
-IO.cpp \
-Inspect.cpp \
-Random.cpp \
-LoadCore.cpp \
-MPIWrap.cpp \
-RanLib.cpp 
+SOURCES += OptFun.cpp \
+LoadFN.cpp \
+Interp1D.cpp  \
+FNFun.cpp \
+lmdif1.f lmdif.f  lmpar.f  qrfac.f \
+dpmpar.f enorm.f qrsolv.f fdjac2.f \
+erf.f derf.f ei.f dei.f daw.f ddaw.f \
+psi.f dpsi.f gamma.f dgamma.f algama.f dlgama.f 
+
+DEPENDPATH += INCLUDEPATH

@@ -10,10 +10,12 @@
 #include "GUITerminal.hpp"
 
 #ifdef QT3
-class ApplicationWindow: public QMainWindow
+#define MainWin QMainWindow
 #else
-class ApplicationWindow: public Q3MainWindow
+#define MainWin Q3MainWindow
 #endif
+
+class ApplicationWindow: public MainWin
 {
   Q_OBJECT
 

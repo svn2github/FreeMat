@@ -8,8 +8,11 @@
 #include "Exception.hpp"
 #include "DumbTerminal.hpp"
 #include "application.h"
+#include "BaseTerminal.hpp"
 
 using namespace FreeMat;
+
+BaseTerminal *term;
 
 #ifndef WIN32
 #include "Terminal.hpp"
@@ -20,8 +23,6 @@ using namespace FreeMat;
 
 sig_t signal_suspend_default;
 sig_t signal_resume_default;
-
-BaseTerminal *term;
 
 void signal_suspend(int a) {
   term->RestoreOriginalMode();
@@ -73,7 +74,11 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
 }
 
 int main(int argc, char *argv[]) {
+#ifdef QT3
   QApplication app(argc, argv, TRUE);
+#else
+  QApplication app(argc, argv);
+#endif
   int nogui = parseFlagArg(argc,argv,"-nogui",false);
   int scriptMode = parseFlagArg(argc,argv,"-e",false); 
 
@@ -88,6 +93,7 @@ int main(int argc, char *argv[]) {
     QObject::connect(qApp,SIGNAL(lastWindowClosed()),qApp,SLOT(quit()));
     term = new GUITerminal(m_win);
     m_win->SetGUITerminal((GUITerminal*)term);
+    m_win->resize(400,300);
     m_win->show();
     ((GUITerminal*)term)->resizeTextSurface();
     ((GUITerminal*)term)->setFocus();

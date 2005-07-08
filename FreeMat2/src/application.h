@@ -1,10 +1,19 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
+#ifdef QT3
 #include <qmainwindow.h>
+#else
+#include <q3mainwindow.h>
+#endif
+
 #include "GUITerminal.hpp"
 
+#ifdef QT3
 class ApplicationWindow: public QMainWindow
+#else
+class ApplicationWindow: public Q3MainWindow
+#endif
 {
   Q_OBJECT
 

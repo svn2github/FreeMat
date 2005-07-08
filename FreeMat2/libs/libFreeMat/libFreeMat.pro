@@ -2,8 +2,7 @@ TEMPLATE = lib
 
 TARGET = FreeMatLib
 
-CONFIG += staticlib
- warn_off
+CONFIG += staticlib warn_off
 
 INCLUDEPATH = ../libffi/include ../libXP ../libUMFPACK/UMFPACK/Include ../..
 

@@ -31,7 +31,7 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
-
+#include <qapplication.h>
 #ifdef WIN32
 #include <direct.h>
 #define getcwd _getcwd
@@ -41,7 +41,13 @@
 #define P_DELIM ":"
 #endif
 
+#ifdef QT3
 #include <qassistantclient.h>
+#else
+#include <QTAssistant/qassistantclient.h>
+#include <QMessageBox>
+#endif
+#include "hwin.h"
 
 namespace FreeMat {
 
@@ -135,43 +141,15 @@ namespace FreeMat {
   //@]
   //!
   ArrayVector HelpWinFunction(int natgout, const ArrayVector& arg) {
-    // Get the path to the help files.
-    // On the mac, they are in the application bundle.
-#ifdef __APPLE__
-    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, 
-						  kCFURLPOSIXPathStyle);
-    const char *pathPtr = CFStringGetCStringPtr(macPath, 
-						CFStringGetSystemEncoding());
-    std::string fpath;
-    fpath = "file://" + pathPtr + "/Contents/Resources/html/index.html";
-    AHGotoPage(NULL,
-	       CFStringCreateWithBytes(NULL,fpath.c_str(),
-				       fpath.size(),0,false),NULL);
-    CFRelease(pluginRef);
-    CFRelease(macPath);
-#elif WIN32
-#else
-    const char *envPtr;
-    envPtr = getenv("FREEMAT_PATH");
-    std::string helppath;
-    if (envPtr) {
-      PathSearcher psearch(envPtr);
-      try {
-	helppath = psearch.ResolvePath("../html/index.html");
-      } catch (Exception& E) {
-	helppath = "/usr/local/share/FreeMat/html/index.html";
-      }
-    } else 
-      helppath = "/usr/local/share/FreeMat/html/index.html";
-    QString path;
-    QAssistantClient *client = new QAssistantClient(path);
-    client->showPage(std::string("file://") + helppath);
-//     HelpWindow *help = new HelpWindow(std::string("file://") + helppath,
-// 				      ".", 0, "FreeMat Online Help");
-//     help->setCaption("FreeMat Online Help");
-//     help->show();
-#endif    
+    QMessageBox::information(NULL,"Hello","Starting help 3",QMessageBox::Ok);
+    //    QAssistantClient *client = new QAssistantClient("assistant");
+    QAssistantClient *client = new QAssistantClient("c:/qt/4.0.0/bin/assistant");
+    client->showPage("c:/sandbox/html/index.html");
+    //    client->showPage("c:\\sandbox\\html\\index.html");
+    //      HelpWindow *help = new HelpWindow("c:\\sandbox\\html\\index.html",
+    //    				      ".", 0, "FreeMat Online Help");
+    //      help->setCaption("FreeMat Online Help");
+    //      help->show();
     return ArrayVector();
   }
 

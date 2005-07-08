@@ -29,3 +29,5 @@ Figure.cpp \
 Plot3D.cpp \
 SurfPlot.cpp \
 NewAxis.cpp 
+
+DEPENDPATH += INCLUDEPATH

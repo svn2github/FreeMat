@@ -1,12 +1,12 @@
 TEMPLATE = lib
 
-TARGET = UMFPACKdi 
+TARGET = UMFPACKzi 
 
 CONFIG += staticlib
 
 INCLUDEPATH += ../AMD/Source ../UMFPACK/Include ../UMFPACK/Source ../AMD/Include
 
-DEFINES += DINT
+DEFINES += ZINT
 
 SOURCES += ../UMFPACK/Source/umf_2by2.c \
 ../UMFPACK/Source/umf_analyze.c \
@@ -84,7 +84,7 @@ SOURCES += ../UMFPACK/Source/umf_2by2.c \
 ../UMFPACK/Source/umf_utsolve.c \
 ../UMFPACK/Source/umf_ltsolve.c \
 ../UMFPACK/Source/umf_triplet.c \
-../UMFPACK/Source/umf_assemble.c \
+../UMFPACK/Source/umf_assemble2.c \
 ../UMFPACK/Source/umf_store_lu.c
 
 HEADERS += ../UMFPACK/Include/umfpack_col_to_triplet.h \

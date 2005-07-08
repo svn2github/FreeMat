@@ -2,27 +2,27 @@
 #include <qapplication.h>
 
 GUITerminal::GUITerminal(QWidget *parent) :
-  TermWidget(parent) {
+  QTTerm(parent,NULL) {
 }
 
 void GUITerminal::MoveDown() {
-  setCursor(m_cursor_x,m_cursor_y+1);
+  SetCursor(m_cursor_x,m_cursor_y+1);
 }
 
 void GUITerminal::MoveUp() {
-  setCursor(m_cursor_x,m_cursor_y-1);
+  SetCursor(m_cursor_x,m_cursor_y-1);
 }
 
 void GUITerminal::MoveLeft() {
-  setCursor(m_cursor_x-1,m_cursor_y);
+  SetCursor(m_cursor_x-1,m_cursor_y);
 }
 
 void GUITerminal::MoveRight() {
-  setCursor(m_cursor_x+1,m_cursor_y);
+  SetCursor(m_cursor_x+1,m_cursor_y);
 }
 
 void GUITerminal::MoveBOL() {
-  setCursor(0,m_cursor_y);
+  SetCursor(0,m_cursor_y);
 }
 
 void GUITerminal::ClearEOL() {

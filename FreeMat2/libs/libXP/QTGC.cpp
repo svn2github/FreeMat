@@ -14,34 +14,34 @@ Point2D QTGC::GetCanvasSize() {
 }
 
 Point2D QTGC::GetTextExtent(std::string label) {
-  QRect sze(m_qt.fontMetrics().boundingRect(label));
+  QRect sze(m_qt.fontMetrics().boundingRect(label.c_str()));
   return Point2D(sze.width(),sze.height());
 }
 
 void QTGC::DrawTextString(std::string txt, Point2D pos, OrientationType orient) {
   switch (orient) {
   case ORIENT_0:
-    m_qt.drawText(pos.x,pos.y,txt);
+    m_qt.drawText(pos.x,pos.y,txt.c_str());
     break;
   case ORIENT_90:
     m_qt.save();
     m_qt.translate(pos.x, pos.y);
     m_qt.rotate(-90);
-    m_qt.drawText(0, 0, txt);
+    m_qt.drawText(0, 0, txt.c_str());
     m_qt.restore();
     break;
   case ORIENT_180:
     m_qt.save();
     m_qt.translate(pos.x, pos.y);
     m_qt.rotate(-180);
-    m_qt.drawText(0, 0, txt);
+    m_qt.drawText(0, 0, txt.c_str());
     m_qt.restore();
     break;
   case ORIENT_270:
     m_qt.save();
     m_qt.translate(pos.x, pos.y);
     m_qt.rotate(-270);
-    m_qt.drawText(0, 0, txt);
+    m_qt.drawText(0, 0, txt.c_str());
     m_qt.restore();
     break;
   }
@@ -53,7 +53,9 @@ void QTGC::SetFont(int fontsize) {
 
 Color QTGC::SetBackGroundColor(Color col) {
   Color ret(m_bg);
+#ifdef QT3
   m_qt.setBackgroundColor(QColor(col.red,col.green,col.blue));
+#endif
   m_bg = col;
   return ret;
 }
@@ -114,21 +116,43 @@ void QTGC::FillRectangle(Rect2D rect) {
 }
 
 void QTGC::FillQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+#ifdef QT3
   QPointArray a(4);
   a.putPoints(0,4,p1.x,p1.y,p2.x,p2.y,p3.x,p3.y,p4.x,p4.y);
+#else
+  QPolygon a;
+  a.push_back(QPoint(p1.x,p1.y));
+  a.push_back(QPoint(p2.x,p2.y));
+  a.push_back(QPoint(p3.x,p3.y));
+  a.push_back(QPoint(p4.x,p4.y));
+#endif
   m_qt.drawPolygon(a);
 }
 
 void QTGC::DrawQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+#ifdef QT3
   QPointArray a(4);
   a.putPoints(0,4,p1.x,p1.y,p2.x,p2.y,p3.x,p3.y,p4.x,p4.y,p1.x,p1.y);
+#else
+  QPolygon a;
+  a.push_back(QPoint(p1.x,p1.y));
+  a.push_back(QPoint(p2.x,p2.y));
+  a.push_back(QPoint(p3.x,p3.y));
+  a.push_back(QPoint(p4.x,p4.y));
+#endif
   m_qt.drawPolyline(a);
 }
 
 void QTGC::DrawLines(std::vector<Point2D> pts) {
+#ifdef QT3
   QPointArray a(pts.size());
   for (int i=0;i<pts.size();i++)
     a.setPoint(i,pts[i].x,pts[i].y);
+#else
+  QPolygon a;
+  for (int i=0;i<pts.size();i++)
+    a.push_back(QPoint(pts[i].x,pts[i].y));  
+#endif
   m_qt.drawPolyline(a);
 }
 
@@ -151,7 +175,11 @@ Rect2D QTGC::PopClippingRegion() {
 }
 
 void QTGC::BlitImage(unsigned char *data, int width, int height, int x0, int y0) {
+#ifdef QT3
   QImage qimg(width, height, 32);
+#else
+  QImage qimg(width, height, QImage::Format_RGB32);
+#endif
   for (int i=0;i<height;i++) {
     uint *p = (uint*) qimg.scanLine(i);
     for (int j=0;j<width;j++)

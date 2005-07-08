@@ -1,12 +1,7 @@
 #ifndef TERMWIDGET_H
 #define TERMWIDGET_H
 
-#include <qframe.h>
-#include <qscrollbar.h>
-#include <qtimer.h>
-#include <qpixmap.h>
-#include "KeyManager.hpp"
-
+#include <string>
 #define CURSORBIT 1
 #define SELECTBIT 2
 class tagChar
@@ -26,10 +21,7 @@ class tagChar
   bool operator == (const tagChar& b) {return (v==b.v) && (flags==b.flags);};
 };
 
-class TermWidget : public QFrame
-{
-  Q_OBJECT
-
+class TermWidget {
 protected:
   tagChar* m_surface;  // width x height
   int m_height;        // height of terminal in characters
@@ -40,55 +32,55 @@ protected:
   tagChar* m_history;  // width x scrollheight - contains history of terminal
   int m_char_w;        // width of a character
   int m_char_h;        // height of a character
+  int m_char_decent;   // descent of a character
   int m_active_width;  // width of the active text region.
+  bool m_blink_skip;
   bool m_clearall;
-  QScrollBar *m_scrollbar;
-  QTimer *m_timer_refresh;
-  QTimer *m_timer_blink;
   bool cursorOn;
   bool blinkEnable;
-  QRect cursorRect;
   int m_scrollback;
   int m_history_lines;
-  QPixmap pm_cursor;
   bool m_scrolling;
-  //  QPixmap buffer;
   bool m_mousePressed;
   int selectionStart;
   int selectionStop;
   int m_scroll_offset;
+  int m_scrollmin, m_scrollmax, m_scrollline, m_scrollpage;
   bool m_firsttime;
- public slots:
-  void scrollBack(int val);
  public:
-  TermWidget(QWidget *parent=0, const char *name=0);
+  void scrollBack(int val);
+  TermWidget();
   virtual ~TermWidget();
   void resizeTextSurface();
-  virtual void ProcessChar(int c) = 0;
+  //  virtual void ProcessChar(int c) = 0;
   void PutString(std::string txt);
-  public slots:
-  void refresh();
   void blink();
-  void adjustScrollbarPosition();
-  char* getSelectionText();
-  char* getTextSurface(int& count, int& width);
-  void setCursor(int x, int y);
-  void markDirty(QRect& e);
+  void SetCursor(int x, int y);
   int  getTextWidth() {return m_width;};
+  void Initialize();
   //TK dependant functions
-  void setFont(QFont font);
-  QFont getFont();
- protected:
+public:
   void setScrollbar(int val);
-  void resizeEvent( QResizeEvent *e );
-  void paintEvent( QPaintEvent *e );
-  void keyPressEvent( QKeyEvent *e );
-  void paintContents(QPainter &paint);
-  void setFont(int size);
-  void mousePressEvent( QMouseEvent *e );
-  void mouseMoveEvent( QMouseEvent *e );
-  void mouseReleaseEvent( QMouseEvent *e );
+  void OnResize();
+  void OnKeyPress(int key);
+  void OnMouseDown(int x, int y);
+  void OnMouseDrag(int x, int y);
+  void OnMouseUp(int x, int y);
+  void OnScroll(int val);
+  void DrawContent();
+  
+  virtual int GetHeight() = 0;
+  virtual int GetWidth() = 0;
+  virtual void InstallEventTimers() = 0;
+  virtual void ScrollLineUp() = 0;
+  virtual void ScrollLineDown() = 0;
+  virtual void SetScrollBarValue(int val) = 0;
+  virtual void SetupScrollBar(int minval, int maxval, int step, int page, int val) = 0;
+  virtual void BeginDraw() = 0;
+  virtual void PutTagChar(int x, int y, tagChar g) = 0;
+  virtual void EndDraw() = 0;
+  virtual void setFont(int size) = 0;
+  virtual void Erase() = 0;
 };
-
 
 #endif

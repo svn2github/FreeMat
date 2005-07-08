@@ -12,6 +12,11 @@
 #include <qcursor.h>
 #include <qeventloop.h>
 
+#ifndef QT3
+#include <QMouseEvent>
+#include <QImageWriter>
+#endif
+
 XPWidget::XPWidget(XPWidget *parent, Point2D size) 
   : QWidget(parent), m_size(size) { 
 }
@@ -78,11 +83,24 @@ void XPWidget::Copy() {
   cb->setPixmap(*cpxmap);
 }
 
+
+
+// To add PS capability to win32...  how can this work?  The problem
+// is that without FreeType, you can't get font metric information...
+// Perhaps its best to drop PS/EPS output on Win/Mac?  Anyway, the
+// way the PS/EPS output works is by creating a QPrinter object.
+//
+// Now QPrinter <-- QPaintDevice,  so is this enough?
+
 bool XPWidget::Print(std::string filename, std::string type) {
   if (type == "EPS" || type == "PS") {
     QPrinter mprnt;
+#ifdef QT3
     mprnt.setOutputToFile(TRUE);
     mprnt.setOutputFileName(filename);
+#else
+    mprnt.setOutputFileName(filename.c_str());
+#endif
     mprnt.setColorMode(QPrinter::Color);
     QPainter paint(&mprnt);
     paint.setClipRect(0,0,width(),height());
@@ -94,20 +112,36 @@ bool XPWidget::Print(std::string filename, std::string type) {
     QPainter paint(&pxmap);
     QTGC gc(paint,width(),height());
     OnDraw(gc);
+#ifdef QT3
     QImage img(pxmap.convertToImage());
-    return img.save(filename,type.c_str());
+#else
+    QImage img(pxmap.toImage());
+#endif
+    return img.save(filename.c_str(),type.c_str());
   }
 }
 
 void XPWidget::GetClick(int &x, int &y) {
   // Set the cross cursor
+#ifdef QT3
   setCursor(QCursor(QCursor::CrossCursor));
+#else
+  setCursor(QCursor(Qt::CrossCursor));
+#endif
   click_mode = true;
   while (click_mode)
+#ifdef QT3
     qApp->eventLoop()->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMore);
+#else
+    qApp->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents);
+#endif
   x = click_x;
   y = click_y;
-  setCursor(QCursor(QCursor::ArrowCursor));
+#ifdef QT3
+  setCursor(QCursor(Qt::ArrowCursor));
+#else
+  setCursor(QCursor(Qt::ArrowCursor));
+#endif
 }
 
 XPWidget* XPWidget::GetParent() {
@@ -143,16 +177,28 @@ std::string NormalizeImageExtension(std::string ext) {
   std::transform(ext.begin(),ext.end(),ext.begin(),toupper);
   if (ext == "JPG") return std::string("JPEG");
   if ((ext == "PS") || (ext == "EPS")) return ext;
+#ifdef QT3
   QStrList formats(QImage::outputFormats());
   for (int i=0;i<formats.count();i++)
     if (formats.at(i) == ext) return ext;
+#else
+  QList<QByteArray> formats(QImageWriter::supportedImageFormats());
+  for (int i=0;i<formats.count();i++)
+    if (formats.at(i).data() == ext) return ext;
+#endif
   return std::string();
 }
 
 std::string FormatListAsString() {
   std::string ret_text = "Supported Formats: ";
+#ifdef QT3
   QStrList formats(QImage::outputFormats());
   for (int i=0;i<formats.count();i++)
     ret_text = ret_text + formats.at(i) + " ";
+#else
+  QList<QByteArray> formats(QImageWriter::supportedImageFormats());
+  for (int i=0;i<formats.count();i++)
+    ret_text = ret_text + formats.at(i).data() + " ";
+#endif
   return ret_text;
 }

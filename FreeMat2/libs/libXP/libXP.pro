@@ -6,29 +6,31 @@ CONFIG += staticlib
 
 INCLUDEPATH = ../libFreeMat ../.. ../libCore ../libFN ../libGraphics
 
+DEFINES -= UNICODE
+
 HEADERS += DynLib.hpp \
 System.hpp \
 PathSearch.hpp \
 Rect2D.hpp \
-PostScriptGC.hpp \
 Point2D.hpp \
 GraphicsContext.cpp \
 Color.hpp \
 KeyManager.hpp \
-helv_table.h \
 XPWidget.hpp \
 XPWindow.hpp \
 QTGC.hpp \
 TermWidget.hpp \
-BaseTerminal.hpp 
+BaseTerminal.hpp \
+GUITerminal.hpp \
+QTTerm.hpp
 
 DEPENDPATH += INCLUDEPATH
 
 SOURCES += DynLib.cpp \
+TermWidget.cpp \
 System.cpp \
 PathSearch.cpp \
 Rect2D.cpp \
-PostScriptGC.cpp \
 Point2D.cpp \
 GraphicsContext.cpp \
 Color.cpp \
@@ -36,8 +38,10 @@ KeyManager.cpp \
 XPWidget.cpp \
 XPWindow.cpp \
 QTGC.cpp \
+BaseTerminal.cpp \
 GUITerminal.cpp \
-TermWidget.cpp \
-BaseTerminal.cpp 
+QTTerm.cpp
 
-
+win32 {
+QT += qt3support
+}

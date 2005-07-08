@@ -13,9 +13,10 @@ using namespace FreeMat;
 //Terminal types.  An actual (concrete) terminal must implement
 //the OutputRawString function and the Move/Clear functions.
 class BaseTerminal : public KeyManager, public Interface {
-    std::list<std::string> enteredLines;  
+  std::list<std::string> enteredLines;  
+  bool enteredLinesEmpty;
 public:
-  BaseTerminal() : KeyManager(), Interface() {}
+  BaseTerminal() : KeyManager(), Interface() {enteredLinesEmpty = true;}
   virtual ~BaseTerminal() {}
   virtual char* getLine(const char* prompt);
   virtual void outputMessage(const char* msg);

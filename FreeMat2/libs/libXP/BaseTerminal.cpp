@@ -33,6 +33,7 @@ void BaseTerminal::warningMessage(const char* msg) {
 void BaseTerminal::ExecuteLine(const char * line) {
   enteredLines.push_back(line);
   ReplacePrompt("");
+  enteredLinesEmpty = false;
 }
 
 std::vector<std::string> BaseTerminal::GetCompletionList(const char *line, int word_end, 
@@ -45,10 +46,13 @@ char* BaseTerminal::getLine(const char* prompt) {
   fflush(stdout);
   ReplacePrompt(prompt);
   DisplayPrompt();
-  while(enteredLines.empty())
+  if (enteredLines.empty()) enteredLinesEmpty = true;
+  while(enteredLinesEmpty)
+#ifdef QT3
     qApp->eventLoop()->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMore);
-    //    qApp->processOneEvent();
-  //    qApp->processEvents();
+#else
+    qApp->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents);
+#endif
   std::string theline(enteredLines.front());
   enteredLines.pop_front();
   char *cp;

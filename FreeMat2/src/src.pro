@@ -19,10 +19,13 @@ TARGETDEPS += ../libs/libCore/libCore.a ../libs/libFN/libFN.a ../libs/libGraphic
 
 win32 {
 QT += qt3support
-### Will break qt3...
+
 LIBS += -L../libs/libCore/Debug -lCore -L../libs/libFN/Debug -lFN -L../libs/libGraphics/Debug -lGraphics   -L../libs/libFFTPack/Debug -lFFTPack  -L../libs/libFreeMat/Debug -lFreeMatLib -L../libs/libffi -lffi -L../libs/libXP/Debug -lXP -L../libs/libARPACK/Debug -lARPACK -L../libs/libUMFPACK/UMFPACKdi/Debug -lUMFPACKdi -L../libs/libUMFPACK/UMFPACKzi/Debug -lUMFPACKzi -L../libs/libUMFPACK/AMD/Debug -lAMD  ../extern/LAPACK/lapack_MINGW.a -L../extern/blas -lblas -lg2c -lws2_32
 
 TARGETDEPS += ../libs/libCore/Debug/libCore.a ../libs/libFN/Debug/libFN.a ../libs/libGraphics/Debug/libGraphics.a ../libs/libFFTPack/Debug/libFFTPack.a ../libs/libFreeMat/Debug/libFreeMatLib.a ../libs/libffi/libffi.a ../libs/libXP/Debug/libXP.a ../libs/libARPACK/Debug/libARPACK.a ../libs/libUMFPACK/UMFPACKdi/Debug/libUMFPACKdi.a ../libs/libUMFPACK/UMFPACKzi/Debug/libUMFPACKzi.a ../libs/libUMFPACK/AMD/Debug/libAMD.a
+
+RC_FILE = freemat.rc
 }
 
 CONFIG += assistant
+

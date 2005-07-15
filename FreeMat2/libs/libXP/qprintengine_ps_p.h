@@ -38,13 +38,14 @@
 
 #include "qpaintengine.h"
 #include "qprintengine.h"
+#include "qpsprinter.h"
 
 #ifndef QT_NO_PRINTER
 
 class QPSPrinter;
 class QPSPrintEnginePrivate;
 
-class Q_GUI_EXPORT QPSPrintEngine : public QPaintEngine, public QPrintEngine
+class QPSPrintEngine : public QPaintEngine, public QPrintEngine
 {
     Q_DECLARE_PRIVATE(QPSPrintEngine)
 public:

@@ -4,13 +4,14 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qimage.h>
-#include <qprinter.h>
+#include <qpsprinter.h>
 #include "QTGC.hpp"
 #include <iostream>
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <qcursor.h>
 #include <qeventloop.h>
+#include <qmessagebox.h>
 
 #ifndef QT3
 #include <QMouseEvent>
@@ -94,14 +95,16 @@ void XPWidget::Copy() {
 
 bool XPWidget::Print(std::string filename, std::string type) {
   if (type == "EPS" || type == "PS") {
-    QPrinter mprnt;
+    QPSPrinter mprnt;
 #ifdef QT3
     mprnt.setOutputToFile(TRUE);
     mprnt.setOutputFileName(filename);
 #else
     mprnt.setOutputFileName(filename.c_str());
 #endif
-    mprnt.setColorMode(QPrinter::Color);
+    mprnt.setColorMode(QPSPrinter::Color);
+    QMessageBox::information(NULL,"POSTSCRIPT","Triggering new PS output",
+			     QMessageBox::Ok);
     QPainter paint(&mprnt);
     paint.setClipRect(0,0,width(),height());
     QTGC gc(paint,width(),height());

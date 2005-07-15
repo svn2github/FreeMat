@@ -35,15 +35,16 @@
 #endif
 
 class QPSPrinterPrivate;
-class QPaintEngine;
+class QPrintEngine;
 
-class Q_GUI_EXPORT QPSPrinter : public QPaintDevice
+class QPSPrinter : public QPaintDevice
 {
-    Q_DECLARE_PRIVATE(QPSPrinter)
 public:
+  QPrintEngine *printEngine;
+
     enum PrinterMode { ScreenResolution, PrinterResolution, HighResolution };
 
-    explicit QPSPrinter(PrinterMode mode = ScreenResolution);
+    QPSPrinter(PrinterMode mode = ScreenResolution);
    ~QPSPrinter();
 
     int devType() const;
@@ -79,67 +80,18 @@ public:
                         Active,
                         Aborted,
                         Error };
-#ifdef QT3_SUPPORT
-    enum PrintRange { AllPages, Selection, PageRange };
-    enum PrinterOption { PrintToFile, PrintSelection, PrintPageRange };
-#endif // QT3_SUPPORT
-
-    void setPrinterName(const QString &);
-    QString printerName() const;
 
     void setOutputFileName(const QString &);
     QString outputFileName()const;
 
-    void setPrintProgram(const QString &);
-    QString printProgram() const;
-
-    void setDocName(const QString &);
-    QString docName() const;
-
-    void setCreator(const QString &);
-    QString creator() const;
-
-    void setOrientation(Orientation);
-    Orientation orientation() const;
-
-    void setPageSize(PageSize);
-    PageSize pageSize() const;
-
-    void setPageOrder(PageOrder);
-    PageOrder pageOrder() const;
-
-    void setResolution(int);
-    int resolution() const;
-
     void setColorMode(ColorMode);
+
     ColorMode colorMode() const;
-
-    void setCollateCopies(bool collate);
-    bool collateCopies() const;
-
-    void setFullPage(bool);
-    bool fullPage() const;
-
-    void setNumCopies(int);
-    int numCopies() const;
-
-    void setPaperSource(PaperSource);
-    PaperSource paperSource() const;
 
     QList<int> supportedResolutions() const;
 
-#ifdef Q_WS_WIN
-    void setWinPageSize(int winPageSize);
-    int winPageSize() const;
-#endif
-
     QRect paperRect() const;
     QRect pageRect() const;
-
-#if !defined(Q_WS_WIN) || defined(qdoc)
-    QString printerSelectionOption() const;
-    void setPrinterSelectionOption(const QString &);
-#endif
 
     bool newPage();
     bool abort();
@@ -148,79 +100,14 @@ public:
 
     QPaintEngine *paintEngine() const;
 
-#ifdef Q_WS_WIN
-    HDC getDC() const;
-    void releaseDC(HDC hdc) const;
-#endif
-
-#if defined (QT3_SUPPORT)
-#ifdef Q_WS_MAC
-    QT3_SUPPORT bool pageSetup(QWidget *parent = 0);
-    QT3_SUPPORT bool printSetup(QWidget *parent = 0);
-#endif
-
-    QT3_SUPPORT bool setup(QWidget *parent = 0);
-
-    QT3_SUPPORT void setFromTo(int fromPage, int toPage);
-    QT3_SUPPORT int fromPage() const;
-    QT3_SUPPORT int toPage() const;
-
-    QT3_SUPPORT void setMinMax(int minPage, int maxPage);
-    QT3_SUPPORT int minPage() const;
-    QT3_SUPPORT int maxPage() const;
-
-    QT3_SUPPORT void setCollateCopiesEnabled(bool);
-    QT3_SUPPORT bool collateCopiesEnabled() const;
-
-    QT3_SUPPORT void setPrintRange(PrintRange range);
-    QT3_SUPPORT PrintRange printRange() const;
-
-    QT3_SUPPORT void setOptionEnabled(PrinterOption, bool enable);
-    QT3_SUPPORT bool isOptionEnabled(PrinterOption) const;
-
-    inline QT3_SUPPORT QSize margins() const;
-    inline QT3_SUPPORT void margins(uint *top, uint *left, uint *bottom, uint *right) const;
-
-    inline QT3_SUPPORT bool aborted() { return printerState() == Aborted; }
-
-    QT3_SUPPORT void setOutputToFile(bool);
-    inline QT3_SUPPORT bool outputToFile() const { return !outputFileName().isEmpty(); }
-#endif
 
 protected:
     int         metric(PaintDeviceMetric) const;
 
 private:
     Q_DISABLE_COPY(QPSPrinter)
-
-    QPSPrinterPrivate *d_ptr;
-
-    friend class QPrintDialogWin;
 };
 
-#ifdef QT3_SUPPORT
-inline QSize QPSPrinter::margins() const
-{
-    QRect page = pageRect();
-    QRect paper = paperRect();
-    return QSize(page.left() - paper.left(), page.top() - paper.top());
-}
-
-inline void QPSPrinter::margins(uint *top, uint *left, uint *bottom, uint *right) const
-{
-    QRect page = pageRect();
-    QRect paper = paperRect();
-    if (top)
-        *top = page.top() - paper.top();
-    if (left)
-        *left = page.left() - paper.left();
-    if (bottom)
-        *bottom = paper.bottom() - page.bottom();
-    if (right)
-        *right = paper.right() - page.right();
-}
-
-#endif // QT3_SUPPORT
 
 #endif // QT_NO_PRINTER
 

@@ -23,7 +23,7 @@
 
 #include "qplatformdefs.h"
 
-#include <private/qprintengine_ps_p.h>
+#include "qprintengine_ps_p.h"
 #include <private/qpainter_p.h>
 #include <private/qfontengine_p.h>
 #include <private/qpaintengine_p.h>
@@ -33,11 +33,15 @@
 # undef Status
 #endif
 
+#if defined(IN)
+#undef IN
+#endif
+
 #ifndef QT_NO_PRINTER
 
 #undef Q_PRINTER_USE_TYPE42
 
-#include "qprinter.h"
+#include "qpsprinter.h"
 #include "qpainter.h"
 #include "qapplication.h"
 #include "qpixmap.h"
@@ -515,7 +519,7 @@ struct PaperSize {
     int width, height;
 };
 
-static const PaperSize paperSizes[QPrinter::NPageSize] =
+static const PaperSize paperSizes[QPSPrinter::NPageSize] =
 {
     {  MM(210), MM(297) },      // A4
     {  MM(176), MM(250) },      // B5
@@ -779,7 +783,7 @@ class QPSPrintEngineFont;
 
 class QPSPrintEnginePrivate : public QPaintEnginePrivate {
 public:
-    QPSPrintEnginePrivate(QPrinter::PrinterMode m);
+    QPSPrintEnginePrivate(QPSPrinter::PrinterMode m);
     ~QPSPrintEnginePrivate();
 
     void orientationSetup();
@@ -791,7 +795,7 @@ public:
     QRect pageRect() const;
     QRegion getClip();
 
-    QPrinter   *printer;
+    QPSPrinter   *printer;
     int         pageCount;
     bool        epsf;
     QString     fontsUsed;
@@ -846,14 +850,14 @@ public:
     QString printProgram;
     QString docName;
     QString creator;
-    QPrinter::Orientation orientation;
-    QPrinter::PageSize pageSize;
-    QPrinter::PageOrder pageOrder;
+    QPSPrinter::Orientation orientation;
+    QPSPrinter::PageSize pageSize;
+    QPSPrinter::PageOrder pageOrder;
     int resolution;
-    QPrinter::ColorMode colorMode;
+    QPSPrinter::ColorMode colorMode;
     bool fullPage;
-    QPrinter::PaperSource paperSource;
-    QPrinter::PrinterState printerState;
+    QPSPrinter::PaperSource paperSource;
+    QPSPrinter::PrinterState printerState;
 };
 
 
@@ -2669,22 +2673,22 @@ end:
 }
 #endif
 
-QPSPrintEnginePrivate::QPSPrintEnginePrivate(QPrinter::PrinterMode m)
+QPSPrintEnginePrivate::QPSPrintEnginePrivate(QPSPrinter::PrinterMode m)
     : buffer(0), outDevice(0), fd(-1), pageBuffer(0), fontBuffer(0), clipOn(false),
       bkMode(Qt::TransparentMode),
-      collate(false), copies(1), orientation(QPrinter::Portrait),
-      pageSize(QPrinter::A4), pageOrder(QPrinter::FirstPageFirst), colorMode(QPrinter::GrayScale),
-      printerState(QPrinter::Idle)
+      collate(false), copies(1), orientation(QPSPrinter::Portrait),
+      pageSize(QPSPrinter::A4), pageOrder(QPSPrinter::FirstPageFirst), colorMode(QPSPrinter::GrayScale),
+      printerState(QPSPrinter::Idle)
 {
     currentFont = 0;
     currentPSFont = 0;
 
     firstPage = true;
     resolution = 72;
-    if (m == QPrinter::HighResolution)
+    if (m == QPSPrinter::HighResolution)
         resolution = 1200;
 #ifdef Q_WS_X11
-    else if (m == QPrinter::ScreenResolution)
+    else if (m == QPSPrinter::ScreenResolution)
         resolution = QX11Info::appDpiY();
 #endif
 
@@ -3157,7 +3161,7 @@ void QPSPrintEnginePrivate::drawImage(qreal x, qreal y, qreal w, qreal h,
     qreal scaleX = width/w;
     qreal scaleY = height/h;
 
-    bool gray = (colorMode == QPrinter::GrayScale) ||
+    bool gray = (colorMode == QPSPrinter::GrayScale) ||
                 img.allGray();
     int splitSize = 21830 * (gray ? 3 : 1);
     if (width * height > splitSize) { // 65535/3, tolerance for broken printers
@@ -3213,7 +3217,7 @@ void QPSPrintEnginePrivate::drawImage(qreal x, qreal y, qreal w, qreal h,
 
 void QPSPrintEnginePrivate::orientationSetup()
 {
-    if (orientation == QPrinter::Landscape)
+    if (orientation == QPSPrinter::Landscape)
         pageStream << "QLS\n";
 }
 
@@ -3243,7 +3247,7 @@ void QPSPrintEnginePrivate::emitHeader(bool finished)
        ) {
         if (!boundingBox.isValid())
             boundingBox.setRect(0, 0, width, height);
-        if (orientation == QPrinter::Landscape) {
+        if (orientation == QPSPrinter::Landscape) {
             if (!fullPage)
                 boundingBox.translate(-mleft, -mtop);
             outStream << " EPSF-3.0\n%%BoundingBox: "
@@ -3266,7 +3270,7 @@ void QPSPrintEnginePrivate::emitHeader(bool finished)
         w = (int)(w*scale);
         h = (int)(h*scale);
         // set a bounding box according to the DSC
-        if (orientation == QPrinter::Landscape)
+        if (orientation == QPSPrinter::Landscape)
             outStream << "\n%%BoundingBox: 0 0 " << h << " " << w;
         else
             outStream << "\n%%BoundingBox: 0 0 " << w << " " << h;
@@ -3276,7 +3280,7 @@ void QPSPrintEnginePrivate::emitHeader(bool finished)
         outStream << wrapDSC("%%Title: " + title);
     outStream << "%%CreationDate: " << QDateTime::currentDateTime().toString();
     outStream << "\n%%Orientation: ";
-    if (orientation == QPrinter::Landscape)
+    if (orientation == QPSPrinter::Landscape)
         outStream << "Landscape";
     else
         outStream << "Portrait";
@@ -3312,14 +3316,14 @@ void QPSPrintEnginePrivate::emitHeader(bool finished)
 
     outStream << "/pageinit {\n";
     if (!fullPage) {
-        if (orientation == QPrinter::Portrait)
+        if (orientation == QPSPrinter::Portrait)
             outStream << mleft*scale << " "
                    << mbottom*scale << " translate\n";
         else
             outStream << mtop*scale << " "
                    << mleft*scale << " translate\n";
     }
-    if (orientation == QPrinter::Portrait) {
+    if (orientation == QPSPrinter::Portrait) {
         outStream << "% " << printer->widthMM() << "*" << printer->heightMM()
                << "mm (portrait)\n0 " << height*scale
                << " translate " << scale << " -" << scale << " scale/defM matrix CM d } d\n";
@@ -3406,13 +3410,13 @@ void QPSPrintEnginePrivate::flushPage(bool last)
 // ================ PSPrinter class ========================
 
 // ### Implementation LinearGradients
-QPSPrintEngine::QPSPrintEngine(QPrinter::PrinterMode m)
+QPSPrintEngine::QPSPrintEngine(QPSPrinter::PrinterMode m)
     : QPaintEngine(*(new QPSPrintEnginePrivate(m)),
                    PrimitiveTransform
                    | PatternTransform
                    | PixmapTransform
                    | PainterPaths
-        )
+		   )
 {
 }
 
@@ -3429,7 +3433,7 @@ static void ignoreSigPipe(bool b)
 {
 }
 
-static const char * const psToStr[QPrinter::NPageSize+1] =
+static const char * const psToStr[QPSPrinter::NPageSize+1] =
 {
     "A4", "B5", "Letter", "Legal", "Executive",
     "A0", "A1", "A2", "A3", "A5", "A6", "A7", "A8", "A9", "B0", "B1",
@@ -3461,7 +3465,7 @@ bool QPSPrintEngine::begin(QPaintDevice *pdev)
 {
     Q_D(QPSPrintEngine);
     d->pdev = pdev;
-    d->printer = static_cast<QPrinter*>(pdev);
+    d->printer = static_cast<QPSPrinter*>(pdev);
     if (!d->outputFileName.isEmpty()) {
         d->fd = QT_OPEN( d->outputFileName.toLocal8Bit().constData(), O_CREAT | O_TRUNC | O_WRONLY,
 #if defined(Q_OS_WIN)
@@ -3571,7 +3575,7 @@ void QPSPrintEngine::updateBrush(const QBrush &brush, const QPointF &/*origin*/)
     // ### use brush origin!
     if (brush.style() == Qt::TexturePattern) {
 #if defined(CHECK_RANGE)
-        qWarning("QPrinter: Pixmap brush not supported");
+        qWarning("QPSPrinter: Pixmap brush not supported");
 #endif
         return;
     }
@@ -3898,7 +3902,7 @@ QRect QPSPrintEnginePrivate::paperRect() const
     PaperSize s = paperSizes[pageSize];
     int w = qRound(s.width*resolution/72.);
     int h = qRound(s.height*resolution/72.);
-    if (orientation == QPrinter::Portrait)
+    if (orientation == QPSPrinter::Portrait)
         return QRect(0, 0, w, h);
     else
         return QRect(0, 0, h, w);
@@ -3948,7 +3952,7 @@ int  QPSPrintEngine::metric(QPaintDevice::PaintDeviceMetric metricType) const
         val = 32;
         break;
     default:
-        qWarning("QPrinter::metric: Invalid metric command");
+        qWarning("QPSPrinter::metric: Invalid metric command");
         return 0;
     }
     return val;
@@ -3957,7 +3961,7 @@ int  QPSPrintEngine::metric(QPaintDevice::PaintDeviceMetric metricType) const
 QPrinter::PrinterState QPSPrintEngine::printerState() const
 {
     Q_D(const QPSPrintEngine);
-    return d->printerState;
+    return (QPrinter::PrinterState) d->printerState;
 }
 
 void QPSPrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &value)
@@ -3968,7 +3972,7 @@ void QPSPrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &val
         d->collate = value.toBool();
         break;
     case PPK_ColorMode:
-        d->colorMode = QPrinter::ColorMode(value.toInt());
+        d->colorMode = QPSPrinter::ColorMode(value.toInt());
         break;
     case PPK_Creator:
         d->creator = value.toString();
@@ -3983,19 +3987,19 @@ void QPSPrintEngine::setProperty(PrintEnginePropertyKey key, const QVariant &val
         d->copies = value.toInt();
         break;
     case PPK_Orientation:
-        d->orientation = QPrinter::Orientation(value.toInt());
+        d->orientation = QPSPrinter::Orientation(value.toInt());
         break;
     case PPK_OutputFileName:
         d->outputFileName = value.toString();
         break;
     case PPK_PageOrder:
-        d->pageOrder = QPrinter::PageOrder(value.toInt());
+        d->pageOrder = QPSPrinter::PageOrder(value.toInt());
         break;
     case PPK_PageSize:
-        d->pageSize = QPrinter::PageSize(value.toInt());
+        d->pageSize = QPSPrinter::PageSize(value.toInt());
         break;
     case PPK_PaperSource:
-        d->paperSource = QPrinter::PaperSource(value.toInt());
+        d->paperSource = QPSPrinter::PaperSource(value.toInt());
         break;
     case PPK_PrinterName:
         d->printerName = value.toString();

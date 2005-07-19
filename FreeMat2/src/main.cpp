@@ -14,7 +14,7 @@ using namespace FreeMat;
 
 BaseTerminal *term;
 
-#ifndef WIN32
+#ifdef Q_WS_X11
 #include "Terminal.hpp"
 #include "SocketCB.hpp"
 #include <unistd.h>
@@ -49,7 +49,6 @@ void stdincb() {
     ((Terminal*)term)->ProcessChar(c);
 }
 #endif
-
 
 // Search through the arguments to freemat... look for the given
 // flag.  if the flagarg variable is true, then an argument must
@@ -98,7 +97,7 @@ int main(int argc, char *argv[]) {
     ((GUITerminal*)term)->resizeTextSurface();
     ((GUITerminal*)term)->setFocus();
   } else {
-#ifndef WIN32
+#ifdef Q_WS_X11
     if (!scriptMode) {
       term = new Terminal;
       fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
@@ -117,7 +116,7 @@ int main(int argc, char *argv[]) {
     signal_resume_default = signal(SIGCONT,signal_resume);
     signal(SIGWINCH, signal_resize);
 #else
-    fprintf(stderr,"-nogui flag is unsupported on win32\n");
+    fprintf(stderr,"-nogui flag is unsupported on win32/macosx\n");
     exit(1);
 #endif
   }

@@ -33,6 +33,16 @@ TermWidget::TermWidget() {
 TermWidget::~TermWidget() {
 }
 
+void TermWidget::EnableBlink() {
+  blinkEnable = true;
+}
+
+void TermWidget::DisableBlink() {
+  if (m_surface[m_cursor_y*m_width+m_cursor_x].cursor())
+    m_surface[m_cursor_y*m_width+m_cursor_x].toggleCursor();
+  blinkEnable = false;
+}
+
 void TermWidget::Initialize() {
   setFont(10);
   m_active_width = 400;

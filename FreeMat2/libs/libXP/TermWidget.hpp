@@ -68,6 +68,8 @@ public:
   void OnMouseUp(int x, int y);
   void OnScroll(int val);
   void DrawContent();
+  void EnableBlink();
+  void DisableBlink();
   
   virtual int GetHeight() = 0;
   virtual int GetWidth() = 0;

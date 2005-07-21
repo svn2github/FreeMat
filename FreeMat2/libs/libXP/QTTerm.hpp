@@ -49,6 +49,8 @@ protected:
   void mousePressEvent( QMouseEvent *e );
   void mouseMoveEvent( QMouseEvent *e );
   void mouseReleaseEvent( QMouseEvent *e );
+  void focusOutEvent(QFocusEvent *e);
+  void focusInEvent(QFocusEvent *e);
   void markDirty(QRect &rect);
  public slots:
   void scrollBack(int val);

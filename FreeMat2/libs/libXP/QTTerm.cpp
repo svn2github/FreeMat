@@ -246,7 +246,7 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
   char buffer[1000];
   QString todraw;
   todraw.append(g.v);
-  QRect txtrect(x,y,m_char_w,m_char_h);
+  QRect txtrect(x,y,m_char_w+1,m_char_h);
   update(txtrect);
   if (g.noflags()) {
     paint->eraseRect(txtrect);
@@ -378,3 +378,12 @@ void QTTerm::mouseReleaseEvent( QMouseEvent *e ) {
   free(copytextbuf);  
 }
 
+void QTTerm::focusOutEvent(QFocusEvent *e) {
+  QWidget::focusOutEvent(e);
+  DisableBlink();
+}
+
+void QTTerm::focusInEvent(QFocusEvent *e) {
+  QWidget::focusInEvent(e);
+  EnableBlink();
+}

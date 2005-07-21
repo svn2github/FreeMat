@@ -66,6 +66,8 @@ void TermWidget::resizeTextSurface() {
   m_blink_skip = true;
   int new_width = m_active_width/m_char_w;
   int new_height = GetHeight()/m_char_h;
+  if (new_width < 5) new_width = 5;
+  if (new_height < 5) new_height = 5;
   tagChar *new_history = new tagChar[new_width*m_scrollback];
   
   if (m_history) {

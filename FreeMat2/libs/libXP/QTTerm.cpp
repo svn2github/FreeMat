@@ -161,9 +161,15 @@ void QTTerm::scrollBack(int val) {
 void QTTerm::SetupScrollBar(int minval, int maxval, int step, int page, int val) {
   m_scrollbar->setRange(minval,maxval);
 #ifdef QT3
-  m_scrollbar->setSteps(step,page);
+  if (maxval == minval)
+    m_scrollbar->setSteps(0,0);
+  else
+    m_scrollbar->setSteps(step,page);
 #else
-  m_scrollbar->setPageStep(page);
+  if (maxval == minval)
+    m_scrollbar->setPageStep(0);
+  else
+    m_scrollbar->setPageStep(page);
 #endif
   m_scrollbar->setValue(val);
 }

@@ -24,6 +24,10 @@ TermWidget::TermWidget() {
   m_firsttime = true;
   selectionStart = 0;
   selectionStop = 0;
+  m_scrollmin = 0;
+  m_scrollmax = 0;
+  m_scrollline = 1;
+  m_scrollpage = 0;
 }
 
 TermWidget::~TermWidget() {
@@ -69,9 +73,15 @@ void TermWidget::resizeTextSurface() {
     int offset = 0;
     if (!m_history_lines && !m_firsttime)
       offset = m_height - new_height;
-    for (int i=-offset;i<m_scrollback;i++)
-      for (int j=0;j<minwidth;j++)
-	new_history[(i+offset)*new_width+j] = m_history[i*m_width+j];
+    if (offset < 0) {
+      for (int i=-offset;i<m_scrollback;i++)
+	for (int j=0;j<minwidth;j++)
+	  new_history[(i+offset)*new_width+j] = m_history[i*m_width+j];
+    } else {
+      for (int i=offset;i<m_scrollback;i++)
+	for (int j=0;j<minwidth;j++)
+	  new_history[i*new_width+j] = m_history[(i-offset)*m_width+j];
+    }
   }
   // Copy old history to new history here
   

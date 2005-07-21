@@ -119,7 +119,7 @@ c
       ftol = tol
       xtol = tol
       gtol = zero
-      epsfcn = 0.0001
+      epsfcn = zero
       mode = 1
       nprint = 0
       mp5n = m + 5*n

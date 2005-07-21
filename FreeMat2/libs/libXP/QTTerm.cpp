@@ -137,7 +137,7 @@ void QTTerm::adjustScrollbarPosition() {
 #endif
 #endif
   m_active_width = width() - 2 - m_scrollbar->width();
-  m_scrollbar->move(QPoint(width()-m_scrollbar->width()+1,0));
+  m_scrollbar->move(QPoint(width()-m_scrollbar->width(),0));
   m_scrollbar->show();
 }
  

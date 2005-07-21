@@ -22,9 +22,7 @@ QTGC.hpp \
 TermWidget.hpp \
 BaseTerminal.hpp \
 GUITerminal.hpp \
-QTTerm.hpp \
-qprintengine_ps_p.h \
-qpsprinter.h 
+QTTerm.hpp 
 
 DEPENDPATH += INCLUDEPATH
 
@@ -42,10 +40,10 @@ XPWindow.cpp \
 QTGC.cpp \
 BaseTerminal.cpp \
 GUITerminal.cpp \
-QTTerm.cpp \
-qprintengine_ps.cpp \
-qpsprinter.cpp
+QTTerm.cpp 
 
 win32 {
 QT += qt3support
+HEADERS += qprintengine_ps_p.h qpsprinter.h 
+SOURCES += qprintengine_ps.cpp qpsprinter.cpp
 }

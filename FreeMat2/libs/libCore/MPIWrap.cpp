@@ -1103,57 +1103,21 @@ namespace FreeMat {
   }
 
   void LoadMPIFunctions(Context*context) {
-    stringVector args;
-
-    args.push_back("array");
-    args.push_back("dest");
-    args.push_back("tag");
-    args.push_back("communicator");
-    context->addFunction("mpisend",MPISend,4,0,args);
-    args.clear();
-    args.push_back("source");
-    args.push_back("tag");
-    args.push_back("communicator");
-    context->addFunction("mpirecv",MPIRecv,3,3,args);
-    args.clear();
-    args.push_back("array");
-    args.push_back("root");
-    args.push_back("communicator"); 
-    context->addFunction("mpibcast",MPIBcast,3,1,args);
-    args.clear();
-    args.push_back("communicator");
-    context->addFunction("mpibarrier",MPIBarrier,1,0,args);
-    args.clear();
-    args.push_back("communicator");
-    context->addFunction("mpicommrank",MPICommRank,1,1,args);
-    context->addFunction("mpicommsize",MPICommSize,1,1,args);
-    args.clear();
-    args.push_back("y");
-    args.push_back("operation");
-    args.push_back("root");
-    args.push_back("comm");
-    context->addFunction("mpireduce",MPIReduce,4,1,args);
-    args.clear();
-    args.push_back("y");
-    args.push_back("operation");
-    args.push_back("root");
-    context->addFunction("mpiallreduce",MPIAllReduce,3,1,args);
-    args.clear();
-    context->addFunction("mpiinitialized",MPIInitialized,0,1,args);
-    context->addFunction("mpiinit",MPIInit,0,0,args);
-    context->addFunction("mpifinalize",MPIFinalize,0,0,args);
-    context->addFunction("mpicommgetparent",MPICommGetParent,0,1,args);
-    args.clear();
-    args.push_back("command");
-    args.push_back("args");
-    args.push_back("maxprocs");
-    args.push_back("root");
-    args.push_back("comm");
-    context->addFunction("mpicommspawn",MPICommSpawn,5,2,args);
-    args.clear();
-    args.push_back("intercomm");
-    args.push_back("highflag");
-    context->addFunction("mpiintercommmerge",MPIIntercommMerge,2,1,args);
+    context->addFunction("mpisend",MPISend,4,0,"array","dest","tag","communicator");
+    context->addFunction("mpirecv",MPIRecv,3,3,"source","tag","communicator");
+    context->addFunction("mpibcast",MPIBcast,3,1,"array","root","communicator");
+    context->addFunction("mpibarrier",MPIBarrier,1,0,"communicator");
+    context->addFunction("mpicommrank",MPICommRank,1,1,"communicator");
+    context->addFunction("mpicommsize",MPICommSize,1,1,"communicator");
+    context->addFunction("mpireduce",MPIReduce,4,1,"y","operation","root","comm");
+    context->addFunction("mpiallreduce",MPIAllReduce,3,1,"y","operation","root");
+    context->addFunction("mpiinitialized",MPIInitialized,0,1);
+    context->addFunction("mpiinit",MPIInit,0,0);
+    context->addFunction("mpifinalize",MPIFinalize,0,0);
+    context->addFunction("mpicommgetparent",MPICommGetParent,0,1);
+    context->addFunction("mpicommspawn",MPICommSpawn,5,2,
+			 "command","args","maxprocs","root","comm");
+    context->addFunction("mpiintercommmerge",MPIIntercommMerge,2,1,"intercomm","highflag");
   }
 }
 

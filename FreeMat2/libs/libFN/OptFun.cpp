@@ -33,8 +33,9 @@ extern "C" {
     f.promoteType(FM_DOUBLE);
     rp = (double*) f.getDataPointer();
     int i;
-    for (i=0;i<(*m);i++)
+    for (i=0;i<(*m);i++) {
       fvec[i] = wp[i]*(yp[i] - rp[i]);
+    }
   }
 }
 

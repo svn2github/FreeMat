@@ -131,11 +131,11 @@ namespace FreeMat {
     /**
      * Add a built in function to the global scope with the given name.
      */
-    void addFunction(char*name, BuiltInFuncPtr fptr, int argin, int argout, stringVector args);
+    void addFunction(char*name, BuiltInFuncPtr fptr, int argin, int argout, ...);
     /**
      * Add a special function to the global scope with the given name.
      */
-    void addSpecialFunction(char*name, SpecialFuncPtr fptr, int argin, int argout, stringVector args);
+    void addSpecialFunction(char*name, SpecialFuncPtr fptr, int argin, int argout, ...);
 
     bool lookupFunction(std::string funcName, FuncPtr& val);
     

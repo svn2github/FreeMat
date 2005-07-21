@@ -20,6 +20,7 @@
 
 #include "Context.hpp"
 #include "Array.hpp"
+#include <stdarg.h>
 
 namespace FreeMat {
 
@@ -123,8 +124,15 @@ namespace FreeMat {
 
   void Context::addSpecialFunction(char*name,
 				   SpecialFuncPtr fptr,
-				   int argc_in, int argc_out,
-				   stringVector args) {
+				   int argc_in, int argc_out,...) {
+    stringVector args;
+    va_list argp;
+    if (argc_in>0) {
+      va_start(argp,argc_out);
+      for (int i=0;i<argc_in;i++)
+	args.push_back(va_arg(argp,const char *));
+      va_end(argp);
+    }
     SpecialFunctionDef *f2def;
     f2def = new SpecialFunctionDef;
     f2def->retCount = argc_out;
@@ -137,8 +145,15 @@ namespace FreeMat {
 
   void Context::addFunction(char*name, 
 			    BuiltInFuncPtr fptr, 
-			    int argc_in, int argc_out,
-			    stringVector args) {
+			    int argc_in, int argc_out,...) {
+    stringVector args;
+    va_list argp;
+    if (argc_in>0) {
+      va_start(argp,argc_out);
+      for (int i=0;i<argc_in;i++)
+	args.push_back(va_arg(argp,const char *));
+      va_end(argp);
+    }
     BuiltInFunctionDef *f2def;
     f2def = new BuiltInFunctionDef;
     f2def->retCount = argc_out;

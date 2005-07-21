@@ -4,7 +4,6 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qimage.h>
-#include <qpsprinter.h>
 #include "QTGC.hpp"
 #include <iostream>
 #include <qapplication.h>
@@ -16,10 +15,19 @@
 #ifndef QT3
 #include <QMouseEvent>
 #include <QImageWriter>
+#include <qpsprinter.h>
+#define QPRN QPSPrinter
+#else
+#include <qprinter.h>
+#define QPRN QPrinter
 #endif
 
 XPWidget::XPWidget(XPWidget *parent, Point2D size) 
-  : QWidget(parent), m_size(size) { 
+#ifdef QT3
+  : QWidget(parent,NULL,WRepaintNoErase), m_size(size) { 
+#else
+  : QWidget(parent,NULL,Qt::WNoAutoErase), m_size(size) { 
+#endif
 }
 
 XPWidget::XPWidget() : QWidget(NULL), m_size(Point2D(1,1)) {
@@ -95,16 +103,14 @@ void XPWidget::Copy() {
 
 bool XPWidget::Print(std::string filename, std::string type) {
   if (type == "EPS" || type == "PS") {
-    QPSPrinter mprnt;
+    QPRN mprnt;
 #ifdef QT3
     mprnt.setOutputToFile(TRUE);
     mprnt.setOutputFileName(filename);
 #else
     mprnt.setOutputFileName(filename.c_str());
 #endif
-    mprnt.setColorMode(QPSPrinter::Color);
-    QMessageBox::information(NULL,"POSTSCRIPT","Triggering new PS output",
-			     QMessageBox::Ok);
+    mprnt.setColorMode(QPRN::Color);
     QPainter paint(&mprnt);
     paint.setClipRect(0,0,width(),height());
     QTGC gc(paint,width(),height());

@@ -1523,11 +1523,13 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
+    if (processguievents) {
 #ifdef QT3
-    qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
+      qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
 #else
-    qApp->processEvents(QEventLoop::AllEvents);
+      qApp->processEvents(QEventLoop::AllEvents);
 #endif
+    }
     SetContext(t->context());
     // check the debug flag
     if (t->isEmpty()) {
@@ -3204,6 +3206,15 @@ namespace FreeMat {
     stopoverload = false;
     clearStacks();
     ignoreBP = false;
+    processguievents = true;
+  }
+
+  bool WalkTree::GUIEventFlag() {
+    return(processguievents);
+  }
+
+  void WalkTree::GUIEventFlag(bool t) {
+    processguievents = t;
   }
 
   bool WalkTree::getStopOverload() {

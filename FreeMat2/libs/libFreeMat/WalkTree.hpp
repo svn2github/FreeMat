@@ -121,6 +121,7 @@ namespace FreeMat {
     // Set this flag to stop overloading of functions
     bool stopoverload;
     void doDebugCycle();
+    bool processguievents;
   public:
     bool getStopOverload();
     void setStopOverload(bool flag);
@@ -159,6 +160,14 @@ namespace FreeMat {
      */
     bool AutoStop();
     void AutoStop(bool a);
+    /**
+     * Stop automatic processing of GUI events between statements
+     */
+    void GUIEventFlag(bool);
+    /**
+     * Reenable automatic processing of GUI events between statements
+     */
+    bool GUIEventFlag();
     /**
      * Set the print limit (number of element printed prior to truncation).
      */

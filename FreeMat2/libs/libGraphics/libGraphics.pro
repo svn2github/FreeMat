@@ -15,7 +15,8 @@ trackball.h \
 Figure.hpp \
 Plot3D.hpp \
 SurfPlot.hpp \
-NewAxis.hpp
+NewAxis.hpp \
+QTDraw.hpp
 
 SOURCES += Axis.cpp \
 DataSet2D.cpp \
@@ -28,6 +29,7 @@ trackball.c \
 Figure.cpp \
 Plot3D.cpp \
 SurfPlot.cpp \
-NewAxis.cpp 
+NewAxis.cpp \
+QTDraw.cpp
 
 DEPENDPATH += INCLUDEPATH

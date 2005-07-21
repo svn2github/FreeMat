@@ -30,30 +30,14 @@ namespace FreeMat {
   // It works through a callback.
   class QTDraw : public XPWidget {
     FunctionDef* m_fdef;
+    ArrayVector m_args;
     WalkTree* m_tree;
   public:
     void SetWalkTree(WalkTree* tree);
-    void SetCallback(FunctionDef* fdef);
+    void SetCallback(FunctionDef* fdef, ArrayVector arg);
     void OnDraw(GraphicsContext &gc);
   };
-  
-  ArrayVector GetCanvasSizeFunction(int nargout, const ArrayVector& arg);
-  ArrayVector GetTextExtentFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawTextStringAlignedFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawTextStringFunction(int nargout, const ArrayVector& arg);
-  ArrayVector SetFontFunction(int nargout, const ArrayVector& arg);
-  ArrayVector SetForeGroundColorFunction(int nargout, const ArrayVector& arg);
-  ArrayVector SetLineStyleFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawLineFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawPointFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawCircleFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawRectangleFunction(int nargout, const ArrayVector& arg);
-  ArrayVector FillRectangleFunction(int nargout, const ArrayVector& arg);
-  ArrayVector FillQuadFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawQuadFunction(int nargout, const ArrayVector& arg);
-  ArrayVector DrawLinesFunction(int nargout, const ArrayVector& arg);
-  ArrayVector SetClipFunction(int nargout, const ArrayVector& arg);
-  ArrayVector BlitImageFunction(int nargout, const ArrayVector& arg);
+  void LoadQTDraw(Context*eval);
 }
 
 #endif

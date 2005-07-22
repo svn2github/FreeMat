@@ -1,5 +1,4 @@
 #include "TermWidget.hpp"
-#include <iostream>
 
 #include <qglobal.h>
 

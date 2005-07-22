@@ -31,8 +31,10 @@ QTTerm::QTTerm(QWidget *parent, const char *name) :
 #endif
 #ifdef QT3
   setFocusPolicy(QWidget::ClickFocus);
+  setCaption("FreeMat Command Window");
 #else
   setFocusPolicy(Qt::ClickFocus);  
+  setWindowTitle("FreeMat Command Window");
 #endif
   InstallEventTimers();
 }

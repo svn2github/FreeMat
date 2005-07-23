@@ -58,8 +58,8 @@ namespace FreeMat {
     /**
      *  Get a line of input from the user with the
      *  given prompt.
-     */
-    virtual char* getLine(const char* prompt) = 0;
+     */ 
+    virtual char* getLine(std::string prompt) = 0;
     /**
      *  Return the width of the current "terminal" in
      *  characters.
@@ -68,15 +68,15 @@ namespace FreeMat {
     /**
      *  Output the following text message.
      */
-    virtual void outputMessage(const char* msg) = 0;
+    virtual void outputMessage(std::string msg) = 0;
     /**
      *  Output the following error message.
      */
-    virtual void errorMessage(const char* msg) = 0;
+    virtual void errorMessage(std::string msg) = 0;
     /**
      *  Output the following warning message.
      */
-    virtual void warningMessage(const char* msg) = 0;
+    virtual void warningMessage(std::string msg) = 0;
   };
 
   char* TildeExpand(char* path);

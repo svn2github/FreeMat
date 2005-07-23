@@ -32,7 +32,7 @@ namespace FreeMat {
     File(const char *filename, const char *accessmode);
     File(FILE*afp);
     // Close the file
-    ~File();
+    virtual ~File();
     // Write a sequence of bytes to the file
     virtual void writeBytes(const void* data, int len);
     // Read a sequence of bytes from the file

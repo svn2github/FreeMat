@@ -1,7 +1,8 @@
-  if (empty(this.data)) return; end
-  [xmin,xmax,ymin,ymax] = getdatarange(data{1});
-  for i=2:length(data)
-    [txmin,txmax,tymin,tymax] = getdatarange(data{i});
+function setaxesauto(&this);
+  if (isempty(this.data)) return; end
+  [xmin,xmax,ymin,ymax] = getdatarange(this.data{1});
+  for i=2:length(this.data)
+    [txmin,txmax,tymin,tymax] = getdatarange(this.data{i});
     xmin = min(xmin,txmin);
     xmax = max(xmax,txmax);
     ymin = min(ymin,tymin);

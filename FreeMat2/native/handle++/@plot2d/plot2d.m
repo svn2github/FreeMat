@@ -10,9 +10,11 @@ function this = plot2d(a)
     this.gridFlag = 0;
     this.title = '';
     this.space = 10;
-    this.tickLength = 5;
+    this.ticlen = 5;
     this.holdFlag = 0;
     this.holdSave = 0;
+    this.sze_textheight = 0;
+    this.viewport = [0,0,1,1];
     this = class(this,'plot2d');
   elseif (strcmp(class(a),'plot2d'))
     this = a;

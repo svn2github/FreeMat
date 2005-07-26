@@ -1,4 +1,7 @@
 #include "QTDraw.hpp"
+#include "GraphicsContext.hpp"
+#include <qpainter.h>
+#include "QTGC.hpp"
 
 namespace FreeMat {
 
@@ -20,8 +23,31 @@ namespace FreeMat {
     m_fdef = fdef;
     m_args = arg;
   }
+
+  QTDraw::QTDraw() : QWidget(NULL,NULL,WRepaintNoErase) {
+    m_pixmap = NULL;
+  }
+
+  QTDraw::~QTDraw() {
+  }
+
+  void QTDraw::paintEvent(QPaintEvent* e) {
+    QMemArray<QRect> rects = e->region().rects();
+    QPainter painter(this);
+    for ( uint i = 0; i < rects.count(); i++ ) {
+      painter.drawPixmap(QPoint(rects[(int) i].left(),rects[(int) i].top()),m_pixmap,
+			 rects[(int) i]);
+    }
+  }
+
+  void QTDraw::resizeEvent(QResizeEvent* e) {
+    m_pixmap = QPixmap(width(),height());
+    OnDraw();
+  }
   
-  void QTDraw::OnDraw(GraphicsContext &gc) {
+  void QTDraw::OnDraw() {
+    QPainter *paint = new QPainter(&m_pixmap);
+    QTGC gc(*paint,width(),height());
     the_gc = &gc;
     m_fdef->updateCode();
     bool eflag(m_tree->GUIEventFlag());
@@ -29,6 +55,7 @@ namespace FreeMat {
     ArrayVector cval = m_fdef->evaluateFunction(m_tree,m_args,0);
     m_tree->GUIEventFlag(eflag);
     the_gc = NULL;
+    delete paint;
   }
   
   Array Point2Array(Point2D pt) {
@@ -136,6 +163,7 @@ namespace FreeMat {
     case LINE_NONE:
       return Array::stringConstructor("none");
     }
+    return Array::stringConstructor("unknown");
   }
 
   int Array2Int(Array a) {
@@ -316,7 +344,7 @@ namespace FreeMat {
     QTDraw* p = new QTDraw;
     p->SetWalkTree(eval);
     p->SetCallback(callback,args);
-    p->Show();
+    p->show();
     return ArrayVector();
   }
 
@@ -330,6 +358,7 @@ namespace FreeMat {
     context->addFunction("setforegroundcolor",SetForeGroundColorFunction,1,1,"color");
     context->addFunction("setlinestyle",SetLineStyleFunction,1,1,"linestyle");
     context->addFunction("drawline",DrawLineFunction,2,0,"start","stop");
+    context->addFunction("drawlines",DrawLinesFunction,1,0,"points");
     context->addFunction("drawpoint",DrawPointFunction,1,0,"pos");
     context->addFunction("drawcircle",DrawCircleFunction,2,0,"pos","radius");
     context->addFunction("drawrectangle",DrawRectangleFunction,1,0,"rect");

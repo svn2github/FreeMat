@@ -21,21 +21,31 @@
 #ifndef __QTDraw_hpp__
 #define __QTDraw_hpp__
 
-#include "XPWidget.hpp"
 #include "FunctionDef.hpp"
 #include "WalkTree.hpp"
+#include <qwidget.h>
+#include <qpixmap.h>
 
 namespace FreeMat {
   // This class allows for user-defined drawing functions.
   // It works through a callback.
-  class QTDraw : public XPWidget {
+  class QTDraw : public QWidget {
+
+    Q_OBJECT
+
     FunctionDef* m_fdef;
     ArrayVector m_args;
     WalkTree* m_tree;
+    QPixmap m_pixmap;
   public:
+    QTDraw();
+    virtual ~QTDraw();
     void SetWalkTree(WalkTree* tree);
     void SetCallback(FunctionDef* fdef, ArrayVector arg);
-    void OnDraw(GraphicsContext &gc);
+    void OnDraw();
+  private:
+    void paintEvent(QPaintEvent* e);
+    void resizeEvent(QResizeEvent* e);
   };
   void LoadQTDraw(Context*eval);
 }

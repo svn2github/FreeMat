@@ -4,16 +4,16 @@ function drawaxes(this)
   [xc_min,yc_min] = mappoint(this,xmin,ymin);
   [xc_max,yc_max] = mappoint(this,xmax,ymax);
   setforegroundcolor([0,0,0]);
-  setlinestyle('solid')
-  drawline([xc_min,yc_min],[xc_max,yc_max]);
+  setlinestyle('solid');
+  drawline([xc_min,yc_min],[xc_max,yc_min]);
   drawline([xc_min,yc_min],[xc_min,yc_max]);
   if (~isempty(this.xlabel))
      drawtextstringaligned(this.xlabel,[mean([xc_min,xc_max]),...
-			yc_min+space+sze_textheight+space)],...
-			'center','top');
+			yc_min+this.space+this.sze_textheight+this.space],...
+			'center','top',0);
   end
   if (~isempty(this.ylabel))
-     drawtextstringaligned(this.ylabel,[space+sze_textheight,...
+     drawtextstringaligned(this.ylabel,[this.space+this.sze_textheight,...
 			mean([yc_min,yc_max])],'center','top',90);
   end
   xtics = getticklocations(this.xaxis);
@@ -21,7 +21,7 @@ function drawaxes(this)
   for (i=1:length(xtics))
     xp = xtics(i);
     [xn,yn] = mappoint(this,xp,ymin);
-    drawtextstringaligned(xlabels{i},[xn,yn+ticlen],'center','top');
+    drawtextstringaligned(xlabels{i},[xn,yn+this.ticlen],'center','top',0);
     [xn2,yn2] = mappoint(this,xp,ymax);
     if (this.gridFlag & (xn ~= xc_min) & (xn ~= xc_max))
        setforegroundcolor([211,211,211]);
@@ -37,7 +37,7 @@ function drawaxes(this)
   for (i=1:length(ytics))
     yp = ytics(i);
     [xn,yn] = mappoint(this,xmin,yp);
-    drawtextstringaligned(ylabels{i},[xn-5,yn],'right','center');
+    drawtextstringaligned(ylabels{i},[xn-5,yn],'right','center',0);
     [xn2,yn2] = mappoint(this,xmax,yp);
     if (this.gridFlag & (yn ~= yc_min) & (yn ~= yc_max))
        setforegroundcolor([211,211,211]);

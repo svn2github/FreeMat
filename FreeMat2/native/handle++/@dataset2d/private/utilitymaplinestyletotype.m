@@ -10,6 +10,6 @@ function style = utilitymaplinestyletotype(spec)
     style='dashed';
    case {' '}
     style='none';
-   otherwise:
+   otherwise
     style='solid';
   end

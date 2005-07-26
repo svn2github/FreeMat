@@ -53,6 +53,8 @@ function ondraw(this)
   end  
 
   this.viewport = [plotX, plotY, plotWidth + 1, plotHeight + 1];
+  setforegroundcolor([0,0,0]);
+  drawrectangle(this.viewport);
   setforegroundcolor([255,255,255]);
   fillrectangle(this.viewport);
   setaxislength(this.xaxis,plotWidth);
@@ -60,7 +62,7 @@ function ondraw(this)
 
   drawaxes(this);
   pushclip(this.viewport);
-  for i=1:length(data)
-    drawme(data{i},this);
+  for i=1:length(this.data)
+    drawme(this.data{i},this);
   end
   popclip;

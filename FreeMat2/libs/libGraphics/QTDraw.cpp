@@ -23,11 +23,10 @@ namespace FreeMat {
   
   void QTDraw::OnDraw(GraphicsContext &gc) {
     the_gc = &gc;
-    ArrayVector tocall;
     m_fdef->updateCode();
     bool eflag(m_tree->GUIEventFlag());
     m_tree->GUIEventFlag(false);
-    ArrayVector cval = m_fdef->evaluateFunction(m_tree,tocall,0);
+    ArrayVector cval = m_fdef->evaluateFunction(m_tree,m_args,0);
     m_tree->GUIEventFlag(eflag);
     the_gc = NULL;
   }

@@ -49,9 +49,9 @@ namespace FreeMat {
   }
   
   char buffer[4096];
-  char* DumbTerminal::getLine(const char* prompt) {
+  char* DumbTerminal::getLine(std::string prompt) {
     fflush(stdout);
-    printf("%s",prompt);
+    printf("%s",prompt.c_str());
     fflush(stdout);
     if (feof(stdin)) 
       exit(0);

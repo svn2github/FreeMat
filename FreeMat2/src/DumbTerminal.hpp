@@ -11,7 +11,7 @@ namespace FreeMat {
     virtual void Initialize();
     virtual void RestoreOriginalMode();
     virtual void OutputRawString(std::string txt); 
-    virtual char* getLine(const char* prompt);
+    virtual char* getLine(std::string prompt);
     virtual void ResizeEvent();
     virtual void MoveDown();
     virtual void MoveUp();

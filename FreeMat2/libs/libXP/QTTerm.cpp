@@ -31,10 +31,8 @@ QTTerm::QTTerm(QWidget *parent, const char *name) :
 #endif
 #ifdef QT3
   setFocusPolicy(QWidget::ClickFocus);
-  setCaption("FreeMat Command Window");
 #else
   setFocusPolicy(Qt::ClickFocus);  
-  setWindowTitle("FreeMat Command Window");
 #endif
   InstallEventTimers();
 }
@@ -286,6 +284,12 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
   }
 }
 
+#ifdef QT3
+#define CTRLKEY(x)  else if ((keycode == x) && (e->state() && Qt::ControlButton))
+#else
+#define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() && Qt::ControlModifier))
+#endif
+
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   //  if (m_scrolling) 
   //    TermWidget::setScrollbar(m_history_lines);
@@ -293,12 +297,18 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
   if (!keycode) return;
   if (keycode == Qt::Key_Left)
     ProcessChar(KM_LEFT);
-#ifdef QT3
-  else if ((keycode == 'Z') && (e->state() && Qt::ControlButton))
-#else
-  else if ((keycode == 'Z') && (e->modifiers() && Qt::ControlModifier))
-#endif
+  CTRLKEY('Z')
     ProcessChar(KM_CTRLC);
+  CTRLKEY('A')
+    ProcessChar(KM_CTRLA);
+  CTRLKEY('D')
+    ProcessChar(KM_CTRLD);
+  CTRLKEY('E')
+    ProcessChar(KM_CTRLE);
+  CTRLKEY('K')
+    ProcessChar(KM_CTRLK);
+  CTRLKEY('Y')
+    ProcessChar(KM_CTRLY);
   else if (keycode == Qt::Key_Right)
     ProcessChar(KM_RIGHT);
   else if (keycode == Qt::Key_Up)

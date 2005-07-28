@@ -2,6 +2,7 @@
 #include "GraphicsContext.hpp"
 #include <qpainter.h>
 #include "QTGC.hpp"
+#include <math.h>
 #ifndef QT3
 #include <QMouseEvent>
 #include <QImageWriter>

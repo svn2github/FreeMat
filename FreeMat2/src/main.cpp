@@ -6,15 +6,15 @@
 #include "MainApp.hpp"
 #include <qapplication.h>
 #include "Exception.hpp"
-#include "DumbTerminal.hpp"
 #include "application.h"
-#include "BaseTerminal.hpp"
+#include "KeyManager.hpp"
 
 using namespace FreeMat;
 
-BaseTerminal *term;
+KeyManager *term;
 
 #ifdef Q_WS_X11
+#include "DumbTerminal.hpp"
 #include "Terminal.hpp"
 #include "SocketCB.hpp"
 #include <unistd.h>

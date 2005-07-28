@@ -2,7 +2,7 @@
 #include "MainApp.hpp"
 using namespace FreeMat;
 
-#include "BaseTerminal.hpp"
+#include "KeyManager.hpp"
 #include "Module.hpp"
 #include "Class.hpp"
 #include "LoadCore.hpp"
@@ -17,7 +17,7 @@ MainApp::MainApp() {
 MainApp::~MainApp() {
 }
 
-void MainApp::SetTerminal(BaseTerminal* term) {
+void MainApp::SetTerminal(KeyManager* term) {
   m_term = term;
 }
 

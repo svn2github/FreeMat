@@ -6,8 +6,8 @@ INCLUDEPATH += . ../libs/libFreeMat ../libs/libCore ../libs/libFN ../libs/libGra
 
 DEPENDPATH += INCLUDEPATH
 
-HEADERS = DumbTerminal.hpp MainApp.hpp SocketCB.hpp application.h
-SOURCES = DumbTerminal.cpp MainApp.cpp SocketCB.cpp application.cpp main.cpp
+HEADERS =  MainApp.hpp SocketCB.hpp application.h
+SOURCES =  MainApp.cpp SocketCB.cpp application.cpp main.cpp
 
 LIBS += -L../libs/libCore -lCore -L../libs/libFN -lFN -L../libs/libGraphics -lGraphics   -L../libs/libFFTPack -lFFTPack  -L../libs/libFreeMat -lFreeMatLib -L../libs/libffi -lffi -L../libs/libXP -lXP -L../libs/libARPACK/UTIL -L../libs/libARPACK/SRC -lARPACKMain -lARPACKUtil -L../libs/libUMFPACK/UMFPACKdi -lUMFPACKdi -L../libs/libUMFPACK/UMFPACKzi -lUMFPACKzi -L../libs/libUMFPACK/AMD -lAMD
 
@@ -22,8 +22,8 @@ RC_FILE = appIcon.icns
 
 !mac {
 unix {
-HEADERS += Terminal.hpp
-SOURCES += Terminal.cpp
+HEADERS += Terminal.hpp DumbTerminal.hpp
+SOURCES += Terminal.cpp DumbTerminal.cpp
 LIBS += -lblas -llapack -lcurses -lg2c
 }
 }

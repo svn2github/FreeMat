@@ -12,22 +12,27 @@ while (defined($data=<INPUT>) && !($data =~ /^<UL>/g)) {};
 #print OUTPUT "..";
 #print OUTPUT $data;
 # Scan through the file.. 
-$depth = 0;
 while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
-    print "Depth $depth\n";
     if ($data =~ /^<BR>/g) {
 	# Does this line contain a <BR>? if so, discard
     } elsif ($data =~ /^<UL>/g) {
 	# Does this line contain a <UL>? if so, indicate that nesting is increasing
-	$opening = 1;
-	$depth = $depth + 1;
+	if ($dataavail) {
+	    print OUTPUT "<section ref=\"$file\" title=\"$name\">\n";
+	    $dataavail = 0;
+	}
     } else {
 	if ($data =~ /^<LI>/g) {
+	    if ($dataavail) {
+		print OUTPUT "<section ref=\"$file\" title=\"$name\"/>\n";
+		$dataavail = 0;
+	    }
 	    chop ($data);
 	    $nextline=<INPUT>;
 	    $entry = $data . $nextline;
 # Make sure this isn't a sub-page reference.
-	    if (!($entry =~ /\#SECTION/g)) {
+#	    if (!($entry =~ /\#SECTION/g)) 
+	    {
 # Get the name of the entry
 		($entry =~ />([^<]*)<\/A>/g);
 		$name = $1;
@@ -42,19 +47,17 @@ while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
 #		$keyword = lc($1);
 #	    print OUTPUT "name2 = $name ";
 #	    print OUTPUT "keyword = $keyword\n";
-		print OUTPUT "<section ref=\"$file\" title=\"$name\"";
-		if ($opening) {
-		    print OUTPUT ">\n";
-		} else {
-		    print OUTPUT "/>\n";
-		}
-		$opening = 0;
+		$dataavail = 1;
 	    }
 	} else {
 	    if ($data =~ /<\/UL>/g) {
+		if ($dataavail) {
+		    print OUTPUT "<section ref=\"$file\" title=\"$name\"/>\n";
+		    $dataavail = 0;
+		}
 		$data =~ s/<\/UL>/<\/section>/g;
 		print OUTPUT "$data\n";
-		$depth = $depth-1;
+		$dataavail = 0;
 	    } 
 	}
     }

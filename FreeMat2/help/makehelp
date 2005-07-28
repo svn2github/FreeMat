@@ -5,9 +5,9 @@ mkdir mtex
 cp ../MFiles/mprint*.m mtex/.
 cp mkhsetpath.m mtex/.
 cd mtex
-perl ../dcptrans.pl ../../libs/lib*/*.cpp
+perl ../dcptrans.pl ../../libs/lib*/*.cpp 
 perl ../mppstrip.pl ../../MFiles/*.mpp
-perl ../mpptrans.pl ../../MFiles/*.mpp
+perl ../mpptrans.pl ../../MFiles/*.mpp 
 cp ../main.tex .
 cp float.tex hfloat.tex
 cp times.tex htimes.tex

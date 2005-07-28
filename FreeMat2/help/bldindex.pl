@@ -1,18 +1,18 @@
 #!/usr/bin/perl -w
 
-open(INPUT,"<html/index.html") || die "Can't open html/index.html for processing...\n";
+open(INPUT,"<html/node1.html") || die "Can't open html/node1.html for processing...\n";
 open(OUTPUT,">html/manual.dcf") || die "Can't open manual.dcf...\n";
 print OUTPUT "<assistantconfig version=\"3.2.0\">\n";
 print OUTPUT " <DCF ref=\"index.html\" >\n";
-
+print OUTPUT " <section title=\"FreeMat Reference Manual\">\n";
 # Skip the prefix
-while (defined($data=<INPUT>)  && !($data =~ /Table of Child-Links/g)) {};
+while (defined($data=<INPUT>)  && !($data =~ /Table of Contents/g)) {};
 # Skip the header
 while (defined($data=<INPUT>) && !($data =~ /^<UL>/g)) {};
 #print OUTPUT "..";
 #print OUTPUT $data;
 # Scan through the file.. 
-while (defined($data=<INPUT>) && !($data =~ /Table of Child-Links/g)) {
+while (defined($data=<INPUT>) && !($data =~ /Table of Contents/g)) {
     if ($data =~ /^<BR>/g) {
 	# Does this line contain a <BR>? if so, discard
     } elsif ($data =~ /^<UL>/g) {

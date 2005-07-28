@@ -18,7 +18,7 @@
 //\]
 //@|ndgrid| is useful for evaluating multivariate functionals over a
 //range of arguments.  It is a generalization of @|meshgrid|, except
-//that @|meshgrid transposes the dimensions corresponding to the 
+//that @|meshgrid| transposes the dimensions corresponding to the 
 //first two arguments to better fit graphical applications.
 //@@Example
 //Here is a simple @|ndgrid| example

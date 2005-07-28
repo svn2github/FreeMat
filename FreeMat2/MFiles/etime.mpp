@@ -3,7 +3,7 @@
 //@@Section FREEMAT
 //@@Usage
 //The @|etime| calculates the elapsed time between two @|clock| vectors
-//@|x1| and @|x2.  The syntax for its use is
+//@|x1| and @|x2|.  The syntax for its use is
 //@[
 //   y = etime(x1,x2)
 //@]

@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = XP
 
-CONFIG += staticlib
+CONFIG += staticlib debug
 
 INCLUDEPATH = ../libFreeMat ../.. ../libCore ../libFN ../libGraphics
 
@@ -20,7 +20,6 @@ XPWidget.hpp \
 XPWindow.hpp \
 QTGC.hpp \
 TermWidget.hpp \
-BaseTerminal.hpp \
 GUITerminal.hpp \
 QTTerm.hpp 
 
@@ -38,12 +37,17 @@ KeyManager.cpp \
 XPWidget.cpp \
 XPWindow.cpp \
 QTGC.cpp \
-BaseTerminal.cpp \
 GUITerminal.cpp \
 QTTerm.cpp 
 
 win32 {
 QT += qt3support
-HEADERS += qprintengine_ps_p.h qpsprinter.h 
 SOURCES += qprintengine_ps.cpp qpsprinter.cpp
+HEADERS += qprintengine_ps_p.h qpsprinter.h 
+}
+
+mac {
+QT += qt3support
+#HEADERS += qprintengine_ps_p.h qpsprinter.h 
+#SOURCES += qprintengine_ps.cpp qpsprinter.cpp
 }

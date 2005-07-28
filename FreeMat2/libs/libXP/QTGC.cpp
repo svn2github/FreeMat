@@ -143,7 +143,7 @@ void QTGC::DrawQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
   m_qt.drawPolyline(a);
 }
 
-void QTGC::DrawLines(std::vector<Point2D> pts) {
+void QTGC::DrawLineSegments(std::vector<Point2D> pts) {
 #ifdef QT3
   QPointArray a(pts.size());
   for (int i=0;i<pts.size();i++)
@@ -154,6 +154,21 @@ void QTGC::DrawLines(std::vector<Point2D> pts) {
     a.push_back(QPoint(pts[i].x,pts[i].y));  
 #endif
   m_qt.drawPolyline(a);
+}
+
+void QTGC::DrawLines(std::vector<Point2D> pts) {
+  // Break the list of points into runs of finite points
+  while (!pts.empty()) {
+    std::vector<Point2D> seg;
+    while (!pts.empty() && pts.front().isFinite()) {
+      seg.push_back(pts.front());
+      pts.erase(pts.begin());
+    }
+    DrawLineSegments(seg);
+    while (!pts.empty() && !pts.front().isFinite()) {
+      pts.erase(pts.begin());
+    }
+  }
 }
 
 void QTGC::PushClippingRegion(Rect2D rect) {

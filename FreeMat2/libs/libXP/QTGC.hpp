@@ -30,6 +30,7 @@ public:
   virtual void FillQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4);
   virtual void DrawQuad(Point2D p1, Point2D p2, Point2D p3, Point2D p4);
   virtual void DrawLines(std::vector<Point2D> pts);
+  virtual void DrawLineSegments(std::vector<Point2D> pts);
   virtual void PushClippingRegion(Rect2D rect);
   virtual Rect2D PopClippingRegion();
   virtual void BlitImage(unsigned char *data, int width, int height, int x0, int y0);

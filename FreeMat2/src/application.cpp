@@ -31,12 +31,18 @@ ApplicationWindow::~ApplicationWindow() {
 
 ApplicationWindow::ApplicationWindow() :
 #ifdef QT3
-  QMainWindow(0,"FreeMat v2.0", WDestructiveClose | WGroupLeader) {
+  QMainWindow(0,NULL, WDestructiveClose | WGroupLeader) {
 #else
-  Q3MainWindow(0,"FreeMat v2.0", Qt::WDestructiveClose | Qt::WGroupLeader) {
+  Q3MainWindow(0,NULL, Qt::WDestructiveClose | Qt::WGroupLeader) {
 #endif
   QPixmap myIcon = QPixmap(freemat_2);
   setIcon(myIcon);
+
+#ifdef QT3
+  setCaption("FreeMat v2.0 Command Window");
+#else
+  setWindowTitle("FreeMat v2.0 Command Window");
+#endif
 
   QPixmap saveIcon;
   saveIcon = QPixmap(filesave);

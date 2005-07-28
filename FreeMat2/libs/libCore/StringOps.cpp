@@ -90,6 +90,7 @@ namespace FreeMat {
   //strstr('quick brown fox','own')
   //strstr('free stuff','lunch')
   //@>
+  //!
   ArrayVector StrStrFunction(int nargout, const ArrayVector& arg) {
     Array retval, arg1, arg2;
     if (arg.size() != 2)

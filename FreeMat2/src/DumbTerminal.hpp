@@ -1,10 +1,10 @@
 #ifndef __DumbTerminal_hpp__
 #define __DumbTerminal_hpp__
 
-#include "BaseTerminal.hpp"
+#include "KeyManager.hpp"
 
 namespace FreeMat {
-  class DumbTerminal : public BaseTerminal {
+  class DumbTerminal : public KeyManager {
   public:
     DumbTerminal();
     virtual ~DumbTerminal();

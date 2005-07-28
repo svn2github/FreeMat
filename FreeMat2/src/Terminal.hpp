@@ -1,7 +1,7 @@
 #ifndef __Terminal_hpp__
 #define __Terminal_hpp__
 
-#include "BaseTerminal.hpp"
+#include "KeyManager.hpp"
 #include <termios.h>
 
 namespace FreeMat {
@@ -13,7 +13,7 @@ namespace FreeMat {
 
   typedef struct termios Termios;
 
-  class Terminal : public BaseTerminal {
+  class Terminal : public KeyManager {
   protected:
     int state;
     Termios oldattr;

@@ -1,6 +1,11 @@
 #include "GUITerminal.hpp"
 #include <qapplication.h>
 
+void GUITerminal::resizeEvent( QResizeEvent *e ) {
+  QTTerm::resizeEvent(e);
+  setTerminalWidth(getTextWidth());
+}
+
 GUITerminal::GUITerminal(QWidget *parent) :
   QTTerm(parent,NULL) {
 }

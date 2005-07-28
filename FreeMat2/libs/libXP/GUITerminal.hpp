@@ -2,10 +2,14 @@
 #define __GUITerminal_hpp__
 
 #include "QTTerm.hpp"
-#include "BaseTerminal.hpp"
+#include "KeyManager.hpp"
 
-class GUITerminal : public QTTerm, public BaseTerminal {
-public:
+class GUITerminal : public QTTerm, public KeyManager {
+  Q_OBJECT
+
+ protected:
+  void resizeEvent( QResizeEvent *e );
+ public:
   GUITerminal(QWidget *parent);
   void OutputRawString(std::string txt);
   void MoveDown();

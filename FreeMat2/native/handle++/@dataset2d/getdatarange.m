@@ -3,15 +3,15 @@ function [xmin,xmax,ymin,ymax] = getdatarange(this)
     xmin = -1;
     xmax = 1;
   else
-    xmin = min(this.x);
-    xmax = max(this.x);
+    xmin = infmin(this.x);
+    xmax = infmax(this.x);
   end
   if (all(isinf(this.y)))
     ymin = -1;
     ymax = 1;
   else
-    ymin = min(this.y);
-    ymax = max(this.y);
+    ymin = infmin(this.y);
+    ymax = infmax(this.y);
   end
   if ((ymax-ymin) < eps)
     ymin = (ymax+ymin)/2-eps/2;
@@ -25,5 +25,3 @@ function [xmin,xmax,ymin,ymax] = getdatarange(this)
     xmin = (xmax+xmin)/2-eps/2;
     xmax = (xmax-xmin)/2+eps/2;
   end
-  
-    

@@ -130,7 +130,7 @@ std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
     bool moreOutput = true;
     while (moreOutput) {
       n = read(fd[0], op, MAX - 1);
-      if ((n == 0) && (errno != EINTR))
+      if (n == 0)
 	moreOutput = false;
       else {
 	readSoFar += n;

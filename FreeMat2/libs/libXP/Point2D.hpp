@@ -7,6 +7,7 @@ class Point2D {
   int y;
   Point2D(int xarg, int yarg);
   Point2D();
+  bool isFinite();
 };
 
 #endif

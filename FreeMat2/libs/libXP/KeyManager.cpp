@@ -22,14 +22,16 @@
  * To-add: copy/paste/select - typeahead
  */
 
-#include <iostream>
 #include <algorithm>
 #include "KeyManager.hpp"
 #include "Interface.hpp"
+#include <qapplication.h>
+#include <qeventloop.h>
+#include <iostream>
 
 #define TAB_WIDTH 8
 /*
- * The following macro returns non-zero if a character is
+v * The following macro returns non-zero if a character is
  * a control character.
  */
 #define IS_CTRL_CHAR(c) ((unsigned char)(c) < ' ' || (unsigned char)(c)=='\177')
@@ -63,11 +65,310 @@ KeyManager::KeyManager() {
   ReplacePrompt("");
   ResetLineBuffer();
   history.push_back("");
+  enteredLinesEmpty = true;
 }
 
+void KeyManager::SetTermCurpos(int n) {
+  TerminalMove(n - term_curpos);
+}
 
-void KeyManager::EndOfLine() {
-  PlaceCursor(ntotal);
+void KeyManager::PlaceCursor(int n) {
+  /*
+   * Don't allow the cursor position to go out of the bounds of the input
+   * line.
+   */
+  if(n >= ntotal)
+    n = ntotal;
+  if(n < 0)
+    n = 0;
+  /*
+   * Record the new buffer position.
+   */
+  buff_curpos = n;
+  /*
+   * Move the terminal cursor to the corresponding character.
+   */
+  int tmpi = BuffCurposToTermCurpos(n);
+  SetTermCurpos(tmpi);
+}
+
+int KeyManager::DisplayedCharWidth(char c, int aterm_curpos) {
+  if(c=='\t')
+    return TAB_WIDTH - ((aterm_curpos % ncolumn) % TAB_WIDTH);
+  if(IS_CTRL_CHAR(c))
+    return 2;
+  if(!isprint((int)(unsigned char) c)) {
+    char string[TAB_WIDTH + 4];
+    sprintf(string, "\\%o", (int)(unsigned char)c);
+    return strlen(string);
+  };
+  return 1;
+}
+
+// Return the number of terminal characters needed to display a
+// given substring.
+int KeyManager::DisplayedStringWidth(std::string s, int nc, int aterm_curpos) {
+  int slen=0;   /* The displayed number of characters */
+  int i;
+  /*
+   * How many characters are to be measured?
+   */
+  if(nc < 0)
+    nc = s.length();
+  /*
+   * Add up the length of the displayed string.
+   */
+  for(i=0; i<nc; i++)
+    slen += DisplayedCharWidth(s[i], aterm_curpos + slen);
+  return slen;
+}
+int KeyManager::BuffCurposToTermCurpos(int n) {
+  return prompt_len + DisplayedStringWidth(line, n, prompt_len);
+}
+
+void KeyManager::Redisplay() {
+   /*
+    * Keep a record of the current cursor position.
+    */
+   int sbuff_curpos = buff_curpos;
+   /*
+    * Move the cursor to the start of the terminal line, and clear from there
+    * to the end of the display.
+    */
+   SetTermCurpos(0);
+   ClearEOD();
+   /*
+    * Nothing is displayed yet.
+    */
+   term_len = 0;
+   /*
+    * Display the current prompt.
+    */
+   DisplayPrompt();
+   /*
+    * Render the part of the line that the user has typed in so far.
+    */
+   OutputString(line,'\0');
+   /*
+    * Restore the cursor position.
+    */
+   PlaceCursor(sbuff_curpos);
+}
+
+void KeyManager::setTerminalWidth(int w) {
+  ncolumn = w-1; 
+}
+
+void KeyManager::ReplacePrompt(std::string aprompt) {
+  prompt = aprompt;
+  prompt_len = DisplayedStringWidth(aprompt,-1,0);
+}
+
+void KeyManager::TerminalMove(int n) {
+  int cur_row, cur_col; /* The current terminal row and column index of */
+                        /*  the cursor wrt the start of the input line. */
+  int new_row, new_col; /* The target terminal row and column index of */
+                        /*  the cursor wrt the start of the input line. */
+  /*
+   * How far can we move left?
+   */
+  if(term_curpos + n < 0)
+    n = term_curpos;
+  /*
+   * Break down the current and target cursor locations into rows and columns.
+   */
+  cur_row = term_curpos / ncolumn;
+  cur_col = term_curpos % ncolumn;
+  new_row = (term_curpos + n) / ncolumn;
+  new_col = (term_curpos + n) % ncolumn;
+  /*
+   * Move down to the next line.
+   */
+  for(; cur_row < new_row; cur_row++) 
+    MoveDown();
+  /*
+   * Move up to the previous line.
+   */
+  for(; cur_row > new_row; cur_row--)
+    MoveUp();
+  /*
+   * Move to the right within the target line?
+   */
+  if(cur_col < new_col) {
+    {
+      for(; cur_col < new_col; cur_col++)
+	MoveRight();
+    };
+    /*
+     * Move to the left within the target line?
+     */
+  } else if(cur_col > new_col) {
+    {
+      for(; cur_col > new_col; cur_col--)
+	MoveLeft();
+    };
+  }
+  /*
+   * Update the recorded position of the terminal cursor.
+   */
+  term_curpos += n;  
+}
+
+void KeyManager::TruncateDisplay() {
+  /*
+   * Keep a record of the current terminal cursor position.
+   */
+  int aterm_curpos = term_curpos;
+  /*
+   * First clear from the cursor to the end of the current input line.
+   */
+  ClearEOL();
+  /*
+   * If there is more than one line displayed, go to the start of the
+   * next line and clear from there to the end of the display. Note that
+   * we can't use clear_eod to do the whole job of clearing from the
+   * current cursor position to the end of the terminal because
+   * clear_eod is only defined when used at the start of a terminal line
+   * (eg. with gnome terminals, clear_eod clears from the start of the
+   * current terminal line, rather than from the current cursor
+   * position).
+   */
+  if(term_len / ncolumn > term_curpos / ncolumn) {
+    MoveDown();
+    MoveBOL();
+    ClearEOD();
+    /*
+     * Where is the cursor now?
+     */
+    term_curpos = ncolumn * (aterm_curpos / ncolumn + 1);
+    /*
+     * Restore the cursor position.
+     */
+    SetTermCurpos(aterm_curpos);
+  };
+  /*
+   * Update the recorded position of the final character.
+   */
+  term_len = term_curpos;  
+}
+
+void KeyManager::SetChar(unsigned int p, char c) {
+  if (line.size() <= p)
+    line.insert(p,1,c);
+  else
+    line[p] = c;
+}
+
+void KeyManager::AddCharToLine(char c) {
+  /*
+   * Keep a record of the current cursor position.
+   */
+  int sbuff_curpos = buff_curpos;
+  int sterm_curpos = term_curpos;
+  /*
+   * Work out the displayed width of the new character.
+   */
+  int width = DisplayedCharWidth(c, sterm_curpos);
+  /*
+   * If we are in insert mode, or at the end of the line,
+   * check that we can accomodate a new character in the buffer.
+   * If not, simply return, leaving it up to the calling program
+   * to check for the absence of a newline character.
+   */
+  if((insert || sbuff_curpos >= ntotal) && ntotal >= linelen)
+    return;
+  /*
+   * Are we adding characters to the line (ie. inserting or appending)?
+   */
+  if(insert || sbuff_curpos >= ntotal) {
+    /*
+     * If inserting, make room for the new character.
+     */
+    if(sbuff_curpos < ntotal) {
+      line.insert(sbuff_curpos," ");
+    };    
+    /*
+     * Copy the character into the buffer.
+     */
+    SetChar(sbuff_curpos,c);
+    buff_curpos++;
+    /*
+     * If the line was extended, update the record of the string length
+     * and terminate the extended string.
+     */
+    ntotal++;
+    /*
+     * Redraw the line from the cursor position to the end of the line,
+     * and move the cursor to just after the added character.
+     */
+    OutputString(std::string(line,sbuff_curpos), '\0');
+    SetTermCurpos(sterm_curpos + width);
+    /*
+     * Are we overwriting an existing character?
+     */
+  } else {
+    /*
+     * Get the widths of the character to be overwritten and the character
+     * that is going to replace it.
+     */
+    int old_width = DisplayedCharWidth(line[sbuff_curpos],
+				       sterm_curpos);
+    /*
+     * Overwrite the character in the buffer.
+     */
+    SetChar(sbuff_curpos,c);
+    /*
+     * If we are replacing with a narrower character, we need to
+     * redraw the terminal string to the end of the line, then
+     * overwrite the trailing old_width - width characters
+     * with spaces.
+     */
+    if(old_width > width) {
+      OutputString(std::string(line,sbuff_curpos), '\0');
+      /*
+       * Clear to the end of the terminal.
+       */
+      TruncateDisplay();
+      /*
+       * Move the cursor to the end of the new character.
+       */
+      SetTermCurpos(sterm_curpos + width);
+      buff_curpos++;
+      /*
+       * If we are replacing with a wider character, then we will be
+       * inserting new characters, and thus extending the line.
+       */
+    } else if(width > old_width) {
+      /*
+       * Redraw the line from the cursor position to the end of the line,
+       * and move the cursor to just after the added character.
+       */
+      OutputString(std::string(line,sbuff_curpos), '\0');
+      SetTermCurpos(sterm_curpos + width);
+      buff_curpos++;
+      /*
+       * The original and replacement characters have the same width,
+       * so simply overwrite.
+       */
+    } else {
+      /*
+       * Copy the character into the buffer.
+       */
+      SetChar(sbuff_curpos,c);
+      buff_curpos++;
+      /*
+       * Overwrite the original character.
+       */
+      OutputChar(c, line.at(buff_curpos));
+    };
+  };
+}
+
+int KeyManager::DisplayPrompt() {
+  MoveBOL();
+  ClearEOL();
+  OutputString(prompt, '\0');
+  return 0;
 }
 
 /*.......................................................................
@@ -153,38 +454,62 @@ void KeyManager::OutputChar(char c, char pad) {
   };
 }
 
-/*.......................................................................
- * Write a string to the terminal after expanding tabs and control
- * characters to their multi-character representations.
- *
- * Input:
- *  gl    GetLine *   The resource object of this program.
- *  string   char *   The string to be output.
- *  pad      char     Many terminals have the irritating feature that
- *                    when one writes a character in the last column of
- *                    of the terminal, the cursor isn't wrapped to the
- *                    start of the next line until one more character
- *                    is written. Some terminals don't do this, so
- *                    after such a write, we don't know where the
- *                    terminal is unless we output an extra character.
- *                    This argument specifies the character to write.
- *                    If at the end of the input line send '\0' or a
- *                    space, and a space will be written. Otherwise,
- *                    pass the next character in the input line
- *                    following the one being written.
- * Output:
- *  return    int     0 - OK.
- */
 void KeyManager::OutputString(std::string st, char pad) {
   if (st.size() == 0) return;
-  for(int i=0;i<st.size()-1;i++)
+  for(unsigned int i=0;i<st.size()-1;i++)
     OutputChar(st[i],st[i+1]);
   OutputChar(st[st.size()-1],pad);
 }
 
-void KeyManager::ReplacePrompt(std::string aprompt) {
-  prompt = aprompt;
-  prompt_len = DisplayedPromptWidth();
+KeyManager::~KeyManager() {
+}
+
+
+void KeyManager::ResetLineBuffer() {
+  line.clear();
+  ntotal = 0;
+  buff_curpos = 0;
+  term_curpos = 0;
+  term_len = 0;
+  insert_curpos = 0;
+}
+
+void KeyManager::NewLine() {
+  AddHistory(line);
+  line.append("\n");
+  PlaceCursor(ntotal);
+  OutputRawString("\r\n");
+  ExecuteLine(line);
+  ResetLineBuffer();
+  DisplayPrompt();
+}
+
+extern bool InterruptPending;
+
+void KeyManager::RegisterInterrupt() {
+  InterruptPending  = true;
+}
+
+void KeyManager::CursorLeft() {
+  PlaceCursor(buff_curpos-1);
+}
+
+void KeyManager::CursorRight() {
+  PlaceCursor(buff_curpos+1);
+}
+
+void KeyManager::BeginningOfLine() {
+  PlaceCursor(0);
+}
+void KeyManager::BackwardDeleteChar() {
+  if (1 > buff_curpos - insert_curpos)
+    return;
+  CursorLeft();
+  DeleteChars(1,0);
+}
+
+void KeyManager::ForwardDeleteChar() {
+  DeleteChars(1,0);
 }
 
   // Delete nc characters starting from the one under the cursor.
@@ -200,8 +525,7 @@ void KeyManager::DeleteChars(int nc, int cut) {
  * Copy the about to be deleted region to the cut buffer.
  */
   if(cut) {
-    memcpy(cutbuf, line + buff_curpos, nc);
-    cutbuf[nc] = '\0';
+    cutbuf = std::string(line,buff_curpos,nc);
   }
   /*
    * Nothing to delete?
@@ -211,14 +535,14 @@ void KeyManager::DeleteChars(int nc, int cut) {
   /*
    * Copy the remaining part of the line back over the deleted characters.
    */
-  memmove(line + buff_curpos, line + buff_curpos + nc,
-	  ntotal - buff_curpos - nc + 1);
+  line.erase(buff_curpos,nc);
+
   ntotal -= nc;
 
   /*
    * Redraw the remaining characters following the cursor.
    */
-  OutputString(line + buff_curpos, '\0');
+  OutputString(std::string(line,buff_curpos), '\0');
   /*
    * Clear to the end of the terminal.
    */
@@ -229,123 +553,86 @@ void KeyManager::DeleteChars(int nc, int cut) {
   PlaceCursor(buff_curpos);
 }
 
-/*.......................................................................
- * Add a character to the line buffer at the current cursor position,
- * inserting or overwriting according the current mode.
- *
- * Input:
- *  gl   GetLine *   The resource object of this library.
- *  c       char     The character to be added.
- * Output:
- *  return   int     0 - OK.
- *                   1 - Insufficient room.
- */
-void KeyManager::AddCharToLine(char c) {
-  /*
-   * Keep a record of the current cursor position.
-   */
-  int sbuff_curpos = buff_curpos;
-  int sterm_curpos = term_curpos;
-  /*
-   * Work out the displayed width of the new character.
-   */
-  int width = DisplayedCharWidth(c, sterm_curpos);
-  /*
-   * If we are in insert mode, or at the end of the line,
-   * check that we can accomodate a new character in the buffer.
-   * If not, simply return, leaving it up to the calling program
-   * to check for the absence of a newline character.
-   */
-  if((insert || sbuff_curpos >= ntotal) && ntotal >= linelen)
-    return;
-  /*
-   * Are we adding characters to the line (ie. inserting or appending)?
-   */
-  if(insert || sbuff_curpos >= ntotal) {
-    /*
-     * If inserting, make room for the new character.
-     */
-    if(sbuff_curpos < ntotal) {
-      memmove(line + sbuff_curpos + 1, line + sbuff_curpos,
-	      ntotal - sbuff_curpos);
-    };
-    /*
-     * Copy the character into the buffer.
-     */
-    line[sbuff_curpos] = c;
-    buff_curpos++;
-    /*
-     * If the line was extended, update the record of the string length
-     * and terminate the extended string.
-     */
-    ntotal++;
-    line[ntotal] = '\0';
-    /*
-     * Redraw the line from the cursor position to the end of the line,
-     * and move the cursor to just after the added character.
-     */
-    OutputString(line + sbuff_curpos, '\0');
-    SetTermCurpos(sterm_curpos + width);
-    /*
-     * Are we overwriting an existing character?
-     */
-  } else {
-    /*
-     * Get the widths of the character to be overwritten and the character
-     * that is going to replace it.
-     */
-    int old_width = DisplayedCharWidth(line[sbuff_curpos],
-				       sterm_curpos);
-    /*
-     * Overwrite the character in the buffer.
-     */
-    line[sbuff_curpos] = c;
-    /*
-     * If we are replacing with a narrower character, we need to
-     * redraw the terminal string to the end of the line, then
-     * overwrite the trailing old_width - width characters
-     * with spaces.
-     */
-    if(old_width > width) {
-      OutputString(line + sbuff_curpos, '\0');
-      /*
-       * Clear to the end of the terminal.
-       */
-      TruncateDisplay();
-      /*
-       * Move the cursor to the end of the new character.
-       */
-      SetTermCurpos(sterm_curpos + width);
-      buff_curpos++;
-      /*
-       * If we are replacing with a wider character, then we will be
-       * inserting new characters, and thus extending the line.
-       */
-    } else if(width > old_width) {
-      /*
-       * Redraw the line from the cursor position to the end of the line,
-       * and move the cursor to just after the added character.
-       */
-      OutputString(line + sbuff_curpos, '\0');
-      SetTermCurpos(sterm_curpos + width);
-      buff_curpos++;
-      /*
-       * The original and replacement characters have the same width,
-       * so simply overwrite.
-       */
-    } else {
-      /*
-       * Copy the character into the buffer.
-       */
-      line[sbuff_curpos] = c;
-      buff_curpos++;
-      /*
-       * Overwrite the original character.
-       */
-      OutputChar(c, line[buff_curpos]);
-    };
-  };
+void KeyManager::EndOfLine() {
+  PlaceCursor(ntotal);
 }
+
+void KeyManager::KillLine() {
+  cutbuf = std::string(line,buff_curpos);
+  ntotal = buff_curpos;
+  line = std::string(line,0,ntotal);
+  TruncateDisplay();
+  PlaceCursor(buff_curpos);
+}
+
+void KeyManager::HistorySearchBackward() {
+  if (last_search != keyseq_count-1)
+    SearchPrefix(line,buff_curpos);
+  last_search = keyseq_count;
+  HistoryFindBackwards();
+  ntotal = line.size();
+  buff_curpos = line.size();
+  Redisplay();
+}
+
+void KeyManager::HistorySearchForward() {
+  if (last_search != keyseq_count-1)
+    SearchPrefix(line,buff_curpos);
+  last_search = keyseq_count;
+  HistoryFindForwards();
+  ntotal = line.size();
+  buff_curpos = line.size();
+  Redisplay();
+}
+
+void KeyManager::SearchPrefix(std::string aline, int aprefix_len) {
+  prefix = std::string(aline,0,aprefix_len);
+  prefix_len = aprefix_len;
+  startsearch = history.size();
+}
+
+void KeyManager::AddHistory(std::string line) {
+  prefix = "";
+  prefix_len = 0;
+  history.push_back(line);
+  return;
+}
+
+void KeyManager::HistoryFindForwards() {
+  unsigned int i;
+  bool found;
+  if (startsearch == 0) return;
+  i = startsearch+1;
+  found = false;
+  while (i<history.size() && !found) {
+    found = (prefix_len == 0) || 
+      (history[i].compare(0,prefix_len,prefix) == 0);
+    if (!found) i++;
+  }
+  if (!found && (i >= history.size())) {
+    line = std::string();
+    return;
+  }
+  line = history[i];
+  startsearch = i;
+}
+
+void KeyManager::HistoryFindBackwards() {
+  int i;
+  bool found;
+  if (startsearch == 0) return;
+  i = startsearch-1;
+  found = false;
+  while (i>=0 && !found) {
+    found = (history[i].compare(0,prefix_len,prefix) == 0);
+    if (!found) i--;
+  }
+  if (!found) return;
+  line = history[i];
+  startsearch = i;
+}
+
+
 
 /*.......................................................................
  * Insert/append a string to the line buffer and terminal at the current
@@ -384,450 +671,26 @@ void KeyManager::AddStringToLine(std::string s) {
    * Move the characters that follow the cursor in the buffer by
    * buff_slen characters to the right.
    */
-  if(ntotal > buff_curpos) {
-    memmove(line + buff_curpos + buff_slen, line + buff_curpos,
-	    ntotal - buff_curpos);
-  };
+  line.insert(buff_curpos,s);
   /*
    * Copy the string into the buffer.
    */
-  memcpy(line + buff_curpos, s.c_str(), buff_slen);
   ntotal += buff_slen;
   buff_curpos += buff_slen;
   /*
    * Maintain the buffer properly terminated.
    */
-  line[ntotal] = '\0';
   /*
    * Write the modified part of the line to the terminal, then move
    * the terminal cursor to the end of the displayed input string.
    */
-  OutputString(line + sbuff_curpos, '\0');
+  OutputString(std::string(line,sbuff_curpos), '\0');
   SetTermCurpos(sterm_curpos + term_slen);
-}
-
-/*.......................................................................
- * Truncate the displayed input line starting from the current
- * terminal cursor position, and leave the cursor at the end of the
- * truncated line. The input-line buffer is not affected.
- *
- * Input:
- *  gl     GetLine *   The resource object of gl_get_line().
- * Output:
- *  return     int     0 - OK.
- *                     1 - Error.
- */
-void KeyManager::TruncateDisplay() {
-  /*
-   * Keep a record of the current terminal cursor position.
-   */
-  int aterm_curpos = term_curpos;
-  /*
-   * First clear from the cursor to the end of the current input line.
-   */
-  ClearEOL();
-  /*
-   * If there is more than one line displayed, go to the start of the
-   * next line and clear from there to the end of the display. Note that
-   * we can't use clear_eod to do the whole job of clearing from the
-   * current cursor position to the end of the terminal because
-   * clear_eod is only defined when used at the start of a terminal line
-   * (eg. with gnome terminals, clear_eod clears from the start of the
-   * current terminal line, rather than from the current cursor
-   * position).
-   */
-  if(term_len / ncolumn > term_curpos / ncolumn) {
-    MoveDown();
-    MoveBOL();
-    ClearEOD();
-    /*
-     * Where is the cursor now?
-     */
-    term_curpos = ncolumn * (aterm_curpos / ncolumn + 1);
-    /*
-     * Restore the cursor position.
-     */
-    SetTermCurpos(aterm_curpos);
-  };
-  /*
-   * Update the recorded position of the final character.
-   */
-  term_len = term_curpos;
-}
-
-/*.......................................................................
- * Move the terminal cursor n characters to the left or right.
- *
- * Input:
- *  gl     GetLine *   The resource object of this program.
- *  n          int     number of positions to the right (> 0) or left (< 0).
- * Output:
- *  return     int     0 - OK.
- *                     1 - Error.
- */
-void KeyManager::TerminalMoveCursor(int n) {
-  int cur_row, cur_col; /* The current terminal row and column index of */
-                        /*  the cursor wrt the start of the input line. */
-  int new_row, new_col; /* The target terminal row and column index of */
-                        /*  the cursor wrt the start of the input line. */
-  /*
-   * How far can we move left?
-   */
-  if(term_curpos + n < 0)
-    n = term_curpos;
-  /*
-   * Break down the current and target cursor locations into rows and columns.
-   */
-  cur_row = term_curpos / ncolumn;
-  cur_col = term_curpos % ncolumn;
-  new_row = (term_curpos + n) / ncolumn;
-  new_col = (term_curpos + n) % ncolumn;
-  /*
-   * Move down to the next line.
-   */
-  for(; cur_row < new_row; cur_row++) 
-    MoveDown();
-  /*
-   * Move up to the previous line.
-   */
-  for(; cur_row > new_row; cur_row--)
-    MoveUp();
-  /*
-   * Move to the right within the target line?
-   */
-  if(cur_col < new_col) {
-    {
-      for(; cur_col < new_col; cur_col++)
-	MoveRight();
-    };
-    /*
-     * Move to the left within the target line?
-     */
-  } else if(cur_col > new_col) {
-    {
-      for(; cur_col > new_col; cur_col--)
-	MoveLeft();
-    };
-  }
-  /*
-   * Update the recorded position of the terminal cursor.
-   */
-  term_curpos += n;
-}
-
-// Move the terminal cursor to a given position.
-void KeyManager::SetTermCurpos(int aterm_curpos) {
-  TerminalMoveCursor(aterm_curpos - term_curpos);
-}
-
-// Set the position of the cursor both in the line input buffer and on the
-// terminal.
-void KeyManager::PlaceCursor(int abuff_curpos) {
-  /*
-   * Don't allow the cursor position to go out of the bounds of the input
-   * line.
-   */
-  if(abuff_curpos >= ntotal)
-    abuff_curpos = ntotal;
-  if(abuff_curpos < 0)
-    abuff_curpos = 0;
-  /*
-   * Record the new buffer position.
-   */
-  buff_curpos = abuff_curpos;
-  /*
-   * Move the terminal cursor to the corresponding character.
-   */
-  int tmpi = BuffCurposToTermCurpos(abuff_curpos);
-  SetTermCurpos(tmpi);
-}
-
-// Return the terminal cursor position that corresponds to a given
-// line buffer cursor position.
-int KeyManager::BuffCurposToTermCurpos(int abuff_curpos) {
-  return prompt_len + DisplayedStringWidth(line, abuff_curpos,
-					   prompt_len);
-}
-
-// Return the number of terminal characters needed to display a
-// given raw character.
-int KeyManager::DisplayedCharWidth(char c, int aterm_curpos) {
-  if(c=='\t')
-    return TAB_WIDTH - ((aterm_curpos % ncolumn) % TAB_WIDTH);
-  if(IS_CTRL_CHAR(c))
-    return 2;
-  if(!isprint((int)(unsigned char) c)) {
-    char string[TAB_WIDTH + 4];
-    sprintf(string, "\\%o", (int)(unsigned char)c);
-    return strlen(string);
-  };
-  return 1;
-}
-
-// Return the number of terminal characters needed to display a
-// given substring.
-int KeyManager::DisplayedStringWidth(std::string s, int nc, int aterm_curpos) {
-  int slen=0;   /* The displayed number of characters */
-  int i;
-  /*
-   * How many characters are to be measured?
-   */
-  if(nc < 0)
-    nc = s.length();
-  /*
-   * Add up the length of the displayed string.
-   */
-  for(i=0; i<nc; i++)
-    slen += DisplayedCharWidth(s[i], aterm_curpos + slen);
-  return slen;
-}
-
-// Return non-zero if 'c' is to be consIdered part of a word.
-int KeyManager::IsWordChar(int c) {
-  return isalnum((int)(unsigned char)c) || strchr(GL_WORD_CHARS, c) != NULL;
-}
-
-// Display the prompt regardless of the current visibility mode.
-int KeyManager::DisplayPrompt() {
-  const char *pptr;       /* A pointer into gl->prompt[] */
-  unsigned old_attr=0;    /* The current text display attributes */
-  unsigned new_attr=0;    /* The requested text display attributes */
-  /*
-   * In case the screen got messed up, send a carriage return to
-   * put the cursor at the beginning of the current terminal line.
-   */
-  MoveBOL();
-  ClearEOL();
-  /*
-   * Write the prompt, using the currently selected prompt style.
-   */
-  OutputString(prompt, '\0');
-  return 0;
-}
-
-// Return the number of characters used by the prompt on the terminal.
-int KeyManager::DisplayedPromptWidth() {
-  int slen=0;         /* The displayed number of characters */
-  const char *pptr;   /* A pointer into prompt[] */
-  /*
-   * The length differs according to the prompt display style.
-   */
-  return DisplayedStringWidth(prompt, -1, 0);
-}
-
-KeyManager::~KeyManager() {
-}
-
-
-void KeyManager::DoResizeBuffer(int xsize, int ysize) {
-  int i;
-  int cols_used = DisplayedStringWidth(line,-1,prompt_len) + prompt_len + ncolumn - 1;
-  int lines_used = (DisplayedStringWidth(line,-1,prompt_len) +
-		    prompt_len + ncolumn - 2) / (ncolumn-1);
-  /*
-   * Move to the cursor to the start of the line.
-   */
-  for(i=1; i<lines_used; i++) {
-    MoveUp();
-  };
-  MoveBOL();
-  /*
-   * Clear to the end of the terminal.
-   */
-  ClearEOD();
-  /*
-   * Record the fact that the cursor is now at the beginning of the line.
-   */
-  term_curpos = 0;
-  /*
-   * Update the recorded window size.
-   */
-  ncolumn = (xsize>20) ? xsize : 20;
-  nline = (ysize>5) ? ysize : 5;
-  /*
-   * Redisplay the line?
-   */
-  Redisplay();
-}
-
-
-void KeyManager::ResetLineBuffer() {
-  memset(line,0,1002);
-  ntotal = 0;
-  buff_curpos = 0;
-  term_curpos = 0;
-  term_len = 0;
-  insert_curpos = 0;
-}
-
-void KeyManager::NewLine() {
-  line[ntotal++] = '\n';
-  line[ntotal] = 0;
-  //  if (waitingForInput) {
-    //    FreeMat::PostGUIReply(new FreeMat::Command(FreeMat::CMD_GUIGetLineAcq,
-    //					       FreeMat::Array::stringConstructor(line)));
-  //    waitingForInput = false;
-  //  } else {
-  //    pendinglines.push_back(line);
-  //  }
-  //  printf("Execute command %s\r\n",line);
-  EndOfLine();
-  OutputRawString("\r\n");
-  ExecuteLine(line);
-  AddHistory(line);
-  ResetLineBuffer();
-  DisplayPrompt();
-}
-
-void KeyManager::CursorLeft() {
-  PlaceCursor(buff_curpos-1);
-}
-
-void KeyManager::CursorRight() {
-  PlaceCursor(buff_curpos+1);
-}
-
-void KeyManager::BeginningOfLine() {
-  PlaceCursor(0);
-}
-
-void KeyManager::BackwardDeleteChar() {
-  if (1 > buff_curpos - insert_curpos)
-    return;
-  CursorLeft();
-  DeleteChars(1,0);
-}
-
-void KeyManager::ForwardDeleteChar() {
-  DeleteChars(1,0);
-}
-
-void KeyManager::AddHistory(std::string line) {
-  prefix = "";
-  prefix_len = 0;
-  history.push_back(line);
-  return;
-//  if (line.size() <= 1) return;
-//  if (history.size() >= 1)
-//    history.pop_back();
-//  if ((history.size() > 0) && (history.back() == line)) {
-//    history.push_back("");    
-//    return;
-//  }
-//  history.push_back(line);    
-//  history.push_back("");
-//  return;
-}
-
-void KeyManager::Redisplay() {
-  /*
-   * Keep a record of the current cursor position.
-   */
-  int sbuff_curpos = buff_curpos;
-  /*
-   * Move the cursor to the start of the terminal line, and clear from there
-   * to the end of the display.
-   */
-  SetTermCurpos(0);
-  ClearEOD();
-  /*
-   * Nothing is displayed yet.
-   */
-  term_len = 0;
-  /*
-   * Display the current prompt.
-   */
-  DisplayPrompt();
-  /*
-   * Render the part of the line that the user has typed in so far.
-   */
-  OutputString(line,'\0');
-  /*
-   * Restore the cursor position.
-   */
-  PlaceCursor(sbuff_curpos);
-}
-
-void KeyManager::HistoryFindBackwards() {
-  int i;
-  bool found;
-  if (startsearch == 0) return;
-  i = startsearch-1;
-  found = false;
-  while (i>=0 && !found) {
-    found = (history[i].compare(0,prefix_len,prefix) == 0);
-    if (!found) i--;
-  }
-  if (!found) return;
-  strcpy(line,history[i].c_str());
-  if (strlen(line)>=1)
-    line[strlen(line)-1] = 0;
-  startsearch = i;
-}
-
-void KeyManager::HistoryFindForwards() {
-  int i;
-  bool found;
-  if (startsearch == 0) return;
-  i = startsearch+1;
-  found = false;
-  while (i<history.size() && !found) {
-    found = (prefix_len == 0) || 
-      (history[i].compare(0,prefix_len,prefix) == 0);
-    if (!found) i++;
-  }
-  if (!found && (i >= history.size())) {
-    line[0] = 0;
-    return;
-  }
-  strcpy(line,history[i].c_str());
-  if (strlen(line)>=1)
-    line[strlen(line)-1] = 0;
-  startsearch = i;
-}
-
-void KeyManager::SearchPrefix(const char* aline, int aprefix_len) {
-  char *tbuf = (char*) malloc(linelen+2);
-  // Set the prefix string
-  memcpy(tbuf,aline,aprefix_len);
-  tbuf[aprefix_len] = 0;
-  prefix_len = aprefix_len;
-  prefix = std::string(tbuf);
-  startsearch = history.size();
-  free(tbuf);
-}
-
-void KeyManager::HistorySearchBackward() {
-  if (last_search != keyseq_count-1)
-    SearchPrefix(line,buff_curpos);
-  last_search = keyseq_count;
-  HistoryFindBackwards();
-  ntotal = strlen(line);
-  buff_curpos = strlen(line);
-  Redisplay();
-}
-
-void KeyManager::HistorySearchForward() {
-  if (last_search != keyseq_count-1)
-    SearchPrefix(line,buff_curpos);
-  last_search = keyseq_count;
-  HistoryFindForwards();
-  ntotal = strlen(line);
-  buff_curpos = strlen(line);
-  Redisplay();
-}
-
-void KeyManager::KillLine() {
-  strcpy(cutbuf,line+buff_curpos);
-  ntotal = buff_curpos;
-  line[ntotal] = '\0';
-  TruncateDisplay();
-  PlaceCursor(buff_curpos);
 }
 
 void KeyManager::Yank() {
   buff_mark = buff_curpos;
-  if (cutbuf[0] == '\0')
+  if (cutbuf.empty())
     return;
   AddStringToLine(cutbuf);
 }
@@ -838,7 +701,7 @@ void KeyManager::ListCompletions(std::vector<std::string> completions) {
   int ncol;      /* The number of columns to list */
   int nrow;      /* The number of rows needed to list all of the matches */
   int row,col;   /* The row and column being written to */
-  int i;
+  unsigned int i;
   /*
    * Not enough space to list anything?
    */
@@ -879,7 +742,7 @@ void KeyManager::ListCompletions(std::vector<std::string> completions) {
    */
   for(row=0; row < nrow; row++) {
     for(col=0; col < ncol; col++) {
-      int m = col*nrow + row;
+      unsigned int m = col*nrow + row;
       if(m < completions.size()) {
 	char buffer[4096];
 	sprintf(buffer, "%s%-*s%s", completions[m].c_str(),
@@ -896,11 +759,11 @@ void KeyManager::ListCompletions(std::vector<std::string> completions) {
 
 std::string GetCommonPrefix(std::vector<std::string> matches,
 			    std::string tempstring) {
-  int minlength;
-  int prefixlength;
+  unsigned int minlength;
+  unsigned int prefixlength;
   bool allmatch;
   std::string templ;
-  int i, j;
+  unsigned int i, j;
 
   minlength = matches[0].size();
   for (i=0;i<matches.size();i++)
@@ -942,7 +805,7 @@ void KeyManager::CompleteWord() {
    * Perform the completion.
    */
   std::string tempstring;
-  matches = GetCompletionList(line, buff_curpos, tempstring);
+  matches = GetCompletions(line, buff_curpos, tempstring);
   if(matches.size() == 0) {
     OutputRawString("\r\n");
     term_curpos = 0;
@@ -984,12 +847,7 @@ void KeyManager::CompleteWord() {
 	/*
 	 * Make room to insert the filename extension.
 	 */
-	memmove(line + buff_curpos + nextra, line + buff_curpos,
-		ntotal - buff_curpos);
-	/*
-	 * Insert the filename extension.
-	 */
-	memcpy(line + buff_curpos, prefix.c_str(), suffix_len);
+	line.insert(buff_curpos,std::string(prefix,nextra));
 	/*
 	 * Record the increased length of the line.
 	 */
@@ -999,17 +857,13 @@ void KeyManager::CompleteWord() {
 	 */
 	buff_curpos += nextra;
 	/*
-	 * Terminate the extended line.
-	 */
-	line[ntotal] = '\0';
-	/*
 	 * If we don't have to redisplay the whole line, redisplay the part
 	 * of the line which follows the original cursor position, and place
 	 * the cursor at the end of the completion.
 	 */
 	if(!redisplay) {
 	  TruncateDisplay();
-	  OutputString(line + buff_pos, '\0');
+	  OutputString(std::string(line,buff_pos), '\0');
 	  PlaceCursor(buff_curpos);
 	  return;
 	};
@@ -1029,15 +883,14 @@ void KeyManager::CompleteWord() {
   return;
 }
 
-extern bool InterruptPending;
-
-void KeyManager::RegisterInterrupt() {
-  InterruptPending  = true;
-}
 
 void KeyManager::OnChar( int c ) {
   keyseq_count++;
   switch(c) {
+  case KM_BACKSPACE:
+  case KM_BACKSPACEALT:
+    BackwardDeleteChar();
+    break;
   case KM_LEFT:
     CursorLeft();
     break;
@@ -1076,10 +929,13 @@ void KeyManager::OnChar( int c ) {
     break;
   case KM_TAB:
     if ((buff_curpos != 0) && (line[buff_curpos-1] != ' ') &&
-	(line[buff_curpos-1] != '\t'))
+ 	(line[buff_curpos-1] != '\t'))
       CompleteWord();
     else
       AddCharToLine(c);
+    break;
+  case KM_CTRLY:
+    Yank();
     break;
   case KM_CTRLK:
     KillLine();
@@ -1088,15 +944,57 @@ void KeyManager::OnChar( int c ) {
   case 10:
     NewLine();
     break;
-  case KM_CTRLY:
-    Yank();
-    break;
-  case KM_BACKSPACE:
-  case KM_BACKSPACEALT:
-    BackwardDeleteChar();
-    break;
   default:
     AddCharToLine(c);
   }
 }
 
+std::string TranslateString(std::string x) {
+  std::string y(x);
+  unsigned int n;
+  n = 0;
+  while (n<y.size()) {
+    if (y[n] == '\n') 
+      y.insert(n++,"\r");
+    n++;
+  }
+  return y;
+}
+
+void KeyManager::outputMessage(std::string msg) {
+  std::string msg2(TranslateString(msg));
+  OutputRawString(msg2);
+}
+
+void KeyManager::errorMessage(std::string msg) {
+  std::string msg2(TranslateString(msg));
+  OutputRawString("Error: " + msg2 + "\r\n");
+}
+
+void KeyManager::warningMessage(std::string msg) {
+  std::string msg2(TranslateString(msg));
+  OutputRawString("Warning: " + msg2 + "\r\n");
+}
+
+void KeyManager::ExecuteLine(std::string line) {
+  enteredLines.push_back(line);
+  ReplacePrompt("");
+  enteredLinesEmpty = false;
+}
+
+char* KeyManager::getLine(std::string aprompt) {
+  ReplacePrompt(aprompt);
+  DisplayPrompt();
+  if (enteredLines.empty()) enteredLinesEmpty = true;
+  while(enteredLinesEmpty)
+#ifdef QT3
+    qApp->eventLoop()->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMore);
+#else
+  qApp->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents);
+#endif
+  std::string theline(enteredLines.front());
+  enteredLines.pop_front();
+  char *cp;
+  cp = strdup(theline.c_str());
+  return cp;
+}

@@ -23,6 +23,8 @@
 
 #include <string>
 #include <vector>
+#include <list>
+#include "Interface.hpp"
 
 #define KM_CTRLA     0x01
 #define KM_CTRLC     0x03
@@ -44,9 +46,12 @@
 #define KM_HOME      0x106
 #define KM_END       0x107
 
+using namespace FreeMat;
 
-class KeyManager
+class KeyManager : public Interface
 {
+  std::list<std::string> enteredLines;  
+  bool enteredLinesEmpty;  
 public:
   KeyManager();
   virtual ~KeyManager();
@@ -60,94 +65,69 @@ public:
   virtual void ClearEOD() = 0;
   virtual void MoveBOL() = 0;
   virtual void OutputRawString(std::string txt) = 0;
-  virtual void ExecuteLine(const char * line) = 0;
-  virtual void RegisterInterrupt();
-  virtual std::vector<std::string> GetCompletionList(const char *line, 
-						     int word_end, 
-						     std::string &matchString) = 0;
 
-  // Output a character or string to the terminal after converting
-  // tabs to spaces and control characters to a caret followed by
-  // the modified character
-  void OutputChar(char c, char pad);
-  void OutputString(std::string string, char pad);
-  // Delete nc characters starting from the one under the cursor.
-  // Optionally copy the deleted characters to the cut buffer.
-  void DeleteChars(int nc, int cut);
-  // Add a character to the line buffer at the current cursor position,
-  // inserting or overwriting according the current mode.
+  virtual void ExecuteLine(std::string line);
+  virtual char* getLine(std::string aprompt);
+  virtual void outputMessage(std::string msg);
+  virtual void errorMessage(std::string msg);
+  virtual void warningMessage(std::string msg);
+
+  virtual void RestoreOriginalMode() {};
+  virtual void SetRawMode() {};
+  virtual void Initialize() {};
+  virtual void ResizeEvent() {};
+  virtual void RegisterInterrupt();
+
+  void Redisplay();
+  void setTerminalWidth(int w);
   void AddCharToLine(char c);
-  // Insert/append a string to the line buffer and terminal at the
-  // current cursor position
-  void AddStringToLine(std::string s);
-  // Delete the displayed part of the input line that follows the current
-  // terminal cursor position.
-  void TruncateDisplay();
-  // Move the terminal cursor n positions to the left or right.
-  void TerminalMoveCursor(int n);
-  // Move the terminal cursor to a given position.
-  void SetTermCurpos(int term_curpos);
-  // Set the position of the cursor both in the line input buffer and on the
-  // terminal.
-  void PlaceCursor(int buff_curpos);
-  // Return the terminal cursor position that corresponds to a given
-  // line buffer cursor position.
-  int BuffCurposToTermCurpos(int buff_curpos);
-  // Return the number of terminal characters needed to display a
-  // given raw character.
-  int DisplayedCharWidth(char c, int term_curpos);
-  // Return the number of terminal characters needed to display a
-  // given substring.
-  int DisplayedStringWidth(std::string s, int nc, int term_curpos);
-  // Return non-zero if 'c' is to be considered part of a word.
-  int IsWordChar(int c);
-  // Display the prompt regardless of the current visibility mode.
+  void ReplacePrompt(std::string prmt);
   int DisplayPrompt();
-  // Return the number of characters used by the prompt on the terminal.
-  int DisplayedPromptWidth();
-  void EndOfLine();
-  void ReplacePrompt(std::string prmpt);
-  // event handlers
-  //  void OnSize( wxSizeEvent &event );
   void OnChar( int c );
+  void OutputChar(char c, char pad);
+  void OutputString(std::string msg, char c);
+  void TerminalMove(int n);
+  void SetTermCurpos(int n);
+  void PlaceCursor(int n);
+  int DisplayedCharWidth(char c, int aterm_curpos);
+  int DisplayedStringWidth(std::string s, int nc, int offset);
+  int BuffCurposToTermCurpos(int n);
+  void DeleteChars(int nc, int cut);
+  void TruncateDisplay();
+  void SetChar(unsigned int p, char c);
+  void EndOfLine();
+  void KillLine();
+ private:
   void CursorLeft();
   void CursorRight();
   void BeginningOfLine();
   void BackwardDeleteChar();
   void ForwardDeleteChar();
-  void HistoryFindBackwards();
-  void HistoryFindForwards();
-  void SearchPrefix(const char*, int);
+
   void HistorySearchBackward();
   void HistorySearchForward();
-  void Redisplay();
-  void AddHistory(std::string);
-  void KillLine();
+  void AddHistory(std::string line);
+  void HistoryFindForwards();
+  void HistoryFindBackwards();
+  void AddStringToLine(std::string s);
+  void SearchPrefix(std::string aline, int alen);
   void Yank();
-  void CompleteWord();
-  
-protected:
-  // move the caret to m_xCaret, m_yCaret
-  void DoResizeBuffer(int xsize, int ysize);
   void ListCompletions(std::vector<std::string> completions);
+  void CompleteWord();
+ protected:
   void NewLine();
   void ResetLineBuffer();
-
   // the size (in text coords) of the window
   int nline;
   int ncolumn;
   // the text
   std::vector<std::string> history;
   // The line buffer
-  char line[1002];
+  std::string line;
   // The maximum allowed line length
   int linelen;
   // The cut buffer
-  char cutbuf[1002];
-  // The prompt
-  std::string prompt;
-  // length of the prompt string
-  int prompt_len;
+  std::string cutbuf;
   // number of characters in line
   int ntotal;
   // Current position in the buffer
@@ -167,6 +147,10 @@ protected:
   // True in insert mode
   bool insert;
   int startsearch;
+  // The prompt
+  std::string prompt;
+  // length of the prompt string
+  int prompt_len;
 };
 
   

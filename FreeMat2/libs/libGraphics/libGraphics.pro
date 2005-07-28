@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib
+CONFIG += staticlib debug
 
 INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
 
@@ -33,3 +33,11 @@ NewAxis.cpp \
 QTDraw.cpp
 
 DEPENDPATH += INCLUDEPATH
+
+win32 {
+QT += qt3support
+}
+
+mac {
+QT += qt3support
+}

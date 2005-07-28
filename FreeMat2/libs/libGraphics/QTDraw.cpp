@@ -2,6 +2,11 @@
 #include "GraphicsContext.hpp"
 #include <qpainter.h>
 #include "QTGC.hpp"
+#ifndef QT3
+#include <QMouseEvent>
+#include <QImageWriter>
+#include <Q3MemArray>
+#endif
 
 namespace FreeMat {
 
@@ -24,19 +29,31 @@ namespace FreeMat {
     m_args = arg;
   }
 
-  QTDraw::QTDraw() : QWidget(NULL,NULL,WRepaintNoErase) {
-    m_pixmap = NULL;
+  QTDraw::QTDraw() : 
+#ifdef QT3
+    QWidget(NULL,NULL,WRepaintNoErase) 
+#else
+      QWidget(NULL,NULL,Qt::WNoAutoErase)
+#endif
+  {
   }
 
   QTDraw::~QTDraw() {
   }
 
   void QTDraw::paintEvent(QPaintEvent* e) {
-    QMemArray<QRect> rects = e->region().rects();
+#ifndef QT3
+  Q3MemArray<QRect> rects = e->region().rects();
+#else
+  QMemArray<QRect> rects = e->region().rects();
+#endif
     QPainter painter(this);
     for ( uint i = 0; i < rects.count(); i++ ) {
-      painter.drawPixmap(QPoint(rects[(int) i].left(),rects[(int) i].top()),m_pixmap,
-			 rects[(int) i]);
+#ifndef QT3
+    painter.drawPixmap(rects[(int) i],m_pixmap,rects[(int) i]);
+#else
+    painter.drawPixmap(QPoint(rects[(int) i].left(),rects[(int) i].top()),m_pixmap,rects[(int) i]);
+#endif
     }
   }
 
@@ -164,6 +181,10 @@ namespace FreeMat {
       return Array::stringConstructor("none");
     }
     return Array::stringConstructor("unknown");
+  }
+
+  double Array2Double(Array a) {
+    return a.getContentsAsDoubleScalar();
   }
 
   int Array2Int(Array a) {
@@ -307,6 +328,137 @@ namespace FreeMat {
     return ArrayVector();
   }
   
+  void DrawSymbol(Point2D pos, std::string symbol, int len) {
+    int len2 = (int) (len / sqrt(2.0));
+    if (symbol == ".")
+      the_gc->DrawPoint(pos);
+    else if (symbol == "o")
+      the_gc->DrawCircle(pos, len);
+    else if (symbol == "x") {
+      the_gc->DrawLine(Point2D(pos.x - len2, pos.y - len2), 
+		       Point2D(pos.x + len2 + 1, pos.y + len2 + 1));
+      the_gc->DrawLine(Point2D(pos.x + len2, pos.y - len2), 
+			Point2D(pos.x - len2 - 1, pos.y + len2 + 1));
+    }
+    else if (symbol == "+") {
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y), 
+		       Point2D(pos.x + len + 1, pos.y));
+      the_gc->DrawLine(Point2D(pos.x, pos.y - len), 
+		       Point2D(pos.x, pos.y + len + 1));
+    }
+    else if (symbol == "*") {
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y), 
+		       Point2D(pos.x + len + 1, pos.y));
+      the_gc->DrawLine(Point2D(pos.x, pos.y - len), 
+		       Point2D(pos.x, pos.y + len + 1));
+      the_gc->DrawLine(Point2D(pos.x - len2, pos.y - len2), 
+		       Point2D(pos.x + len2 + 1, pos.y + len2 + 1));
+      the_gc->DrawLine(Point2D(pos.x + len2, pos.y - len2), 
+		       Point2D(pos.x - len2 - 1, pos.y + len2 + 1));
+    }
+    else if (symbol == "s") 
+      the_gc->DrawRectangle(Rect2D(pos.x - len/2, pos.y - len/2, len + 1, len + 1));
+    else if (symbol == "d") {
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y), Point2D(pos.x, pos.y - len));
+      the_gc->DrawLine(Point2D(pos.x, pos.y - len), Point2D(pos.x + len, pos.y));
+      the_gc->DrawLine(Point2D(pos.x + len, pos.y), Point2D(pos.x, pos.y + len));
+      the_gc->DrawLine(Point2D(pos.x, pos.y + len), Point2D(pos.x - len, pos.y));
+    }
+    else if (symbol == "v") {
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y - len), 
+		       Point2D(pos.x + len, pos.y - len));
+      the_gc->DrawLine(Point2D(pos.x + len, pos.y - len), 
+		       Point2D(pos.x, pos.y + len));
+      the_gc->DrawLine(Point2D(pos.x, pos.y + len), 
+		       Point2D(pos.x - len, pos.y - len));
+    }
+    else if (symbol == "^") {
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y + len), 
+		       Point2D(pos.x + len, pos.y + len));
+      the_gc->DrawLine(Point2D(pos.x + len, pos.y + len), 
+		       Point2D(pos.x, pos.y - len));
+      the_gc->DrawLine(Point2D(pos.x, pos.y - len), 
+		       Point2D(pos.x - len, pos.y + len));
+    }
+    else if (symbol == "<") {
+      the_gc->DrawLine(Point2D(pos.x + len, pos.y - len), 
+		       Point2D(pos.x - len, pos.y));
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y), 
+		       Point2D(pos.x + len, pos.y + len));
+      the_gc->DrawLine(Point2D(pos.x + len, pos.y + len), 
+		       Point2D(pos.x + len, pos.y - len));
+    }
+    else if (symbol == ">") {
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y - len), 
+		       Point2D(pos.x + len, pos.y));
+      the_gc->DrawLine(Point2D(pos.x + len, pos.y), 
+		       Point2D(pos.x - len, pos.y + len));
+      the_gc->DrawLine(Point2D(pos.x - len, pos.y + len), 
+		       Point2D(pos.x - len, pos.y - len));
+    }    
+  }
+
+  std::string TrimPrint(double val, bool scientificNotation) {
+    char buffer[1000];
+    char *p;
+    if (!scientificNotation) {
+      sprintf(buffer,"%f",val);
+      p = buffer + strlen(buffer) - 1;
+      while (*p == '0') {
+	*p = 0;
+	p--;
+      }
+      if ((*p == '.') || (*p == ',')) {
+	*(p+1) = '0';
+	*(p+2) = 0;
+      }
+      return std::string(buffer);
+    } else {
+      sprintf(buffer,"%e",val);
+      std::string label(buffer);
+      unsigned int ePtr;
+      ePtr = label.size() - 1;
+      while ((label[ePtr] != 'e') && (label[ePtr] != 'E'))
+	ePtr--;
+      ePtr--;
+      while (label[ePtr] == '0') {
+	label.erase(ePtr,1);
+	ePtr--;
+      }
+      if ((label[ePtr] == '.') || (label[ePtr] == ','))
+	label.insert(ePtr+1, 1,'0');
+      ePtr = label.size() - 1;
+      while ((label[ePtr] != 'e') && (label[ePtr] != 'E'))
+	ePtr--;
+      ePtr+=2;
+      while ((label[ePtr] == '0') && ePtr < label.size()) {
+	label.erase(ePtr,1);
+      }
+      if (ePtr == label.size())
+	label.append("0");
+      return label;
+    }
+  }
+
+  ArrayVector TrimPrintFunction(int /* nargout */, const ArrayVector& arg) {
+    if (arg.size() != 2) 
+      throw Exception("trimprint requires at least 2 arguments");
+    double val(Array2Double(arg[0]));
+    int boolflag(Array2Int(arg[1]));
+    return singleArrayVector(Array::stringConstructor(TrimPrint(val,boolflag)));
+  }
+
+  ArrayVector DrawSymbolsFunction(int /* nargout */, const ArrayVector& arg) {
+    ARGTEST(3,"drawsymbols");
+    std::vector<Point2D> pos(Array2PointVector(arg[0]));
+    std::string symbol(Array2String(arg[1]));
+    int length(Array2Int(arg[2]));
+    for (int i=0;i<pos.size();i++)
+      if (pos[i].isFinite())
+	DrawSymbol(pos[i],symbol,length);
+    return ArrayVector();
+  }
+  
   ArrayVector DrawLinesFunction(int /* nargout */, const ArrayVector& arg) {
     ARGTEST(1,"drawlines");
     the_gc->DrawLines(Array2PointVector(arg[0]));
@@ -353,11 +505,13 @@ namespace FreeMat {
     context->addFunction("gettextextent",GetTextExtentFunction,1,1,"string");
     context->addFunction("drawtextstringaligned",DrawTextStringAlignedFunction,5,0,
 			 "string","pos","xalign","yalign","orient");
-    context->addFunction("drawtextstring",DrawTextStringFunction,3,0,"string","pos","orient");
+    context->addFunction("drawtextstring",DrawTextStringFunction,3,0,
+			 "string","pos","orient");
     context->addFunction("setfontsize",SetFontFunction,1,0,"size");
     context->addFunction("setforegroundcolor",SetForeGroundColorFunction,1,1,"color");
     context->addFunction("setlinestyle",SetLineStyleFunction,1,1,"linestyle");
     context->addFunction("drawline",DrawLineFunction,2,0,"start","stop");
+    context->addFunction("drawsymbols",DrawSymbolsFunction,3,0,"pos","symbol","length");
     context->addFunction("drawlines",DrawLinesFunction,1,0,"points");
     context->addFunction("drawpoint",DrawPointFunction,1,0,"pos");
     context->addFunction("drawcircle",DrawCircleFunction,2,0,"pos","radius");
@@ -368,6 +522,7 @@ namespace FreeMat {
     context->addFunction("pushclip",PushClipFunction,1,0,"rect");
     context->addFunction("popclip",PopClipFunction,0,1);
     context->addFunction("blitimage",BlitImageFunction,1,0,"imagedata","pos");
+    context->addFunction("trimprint",TrimPrintFunction,2,1,"val","scientific");
     context->addSpecialFunction("cfigure",CFigureFunction,-1,0);
   }
 }

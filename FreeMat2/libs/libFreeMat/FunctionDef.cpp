@@ -258,7 +258,7 @@ namespace FreeMat {
     } catch (Exception& e) {
       context->popScope();
       walker->popDebug();
-      throw e;
+      throw;
     }
     catch (WalkTreeRetallException& e) {
       context->popScope();

@@ -1,5 +1,20 @@
 #include "IEEEFP.hpp"
 
+static bool endianDetected = false;
+static bool bigEndian = false;
+
+union {
+  long l;
+  char c[sizeof (long)];
+} u;
+
+void CheckBigEndian() {
+  u.l = 1;
+  endianDetected = true;
+  bigEndian = (u.c[sizeof(long) - 1] == 1);
+  
+}
+
 bool IsInfinite(float t) {
   union {
     float f;
@@ -18,15 +33,17 @@ bool IsInfinite(double t) {
     unsigned int i[2];
   } u;
   u.d = t;
-#if (WORDS_BIGENDIAN!=1)
-  if( ((u.i[1] & 0x7ff00000) == 0x7ff00000)
-      && (((u.i[1] & 0x000fffff) == 0) && (u.i[0] == 0)))
-    return true;
-#else
-  if( ((u.i[0] & 0x7ff00000) == 0x7ff00000)
-      && (((u.i[0] & 0x000fffff) == 0) && (u.i[1] == 0)))
-    return true;
-#endif
+  if (!endianDetected) 
+    CheckBigEndian();
+  if (!bigEndian) {
+    if( ((u.i[1] & 0x7ff00000) == 0x7ff00000)
+	&& (((u.i[1] & 0x000fffff) == 0) && (u.i[0] == 0)))
+      return true;
+  } else {
+    if( ((u.i[0] & 0x7ff00000) == 0x7ff00000)
+	&& (((u.i[0] & 0x000fffff) == 0) && (u.i[1] == 0)))
+      return true;
+  }
   return false;
 
 }
@@ -58,15 +75,17 @@ bool IsNaN(double t) {
   } u;
   u.d = t;
 
-#if (WORDS_BIGENDIAN!=1)
-  if( ((u.i[1] & 0x7ff00000) == 0x7ff00000)
-      && (((u.i[1] & 0x000fffff) != 0) || (u.i[0] != 0)))
-    return true;
-#else
- if( ((u.i[0] & 0x7ff00000) == 0x7ff00000)
-      && (((u.i[0] & 0x000fffff) != 0) || (u.i[1] != 0)))
-    return true;
-#endif
+  if (!endianDetected) 
+    CheckBigEndian();
+  if (!bigEndian) {
+    if( ((u.i[1] & 0x7ff00000) == 0x7ff00000)
+	&& (((u.i[1] & 0x000fffff) != 0) || (u.i[0] != 0)))
+      return true;
+  } else {
+    if( ((u.i[0] & 0x7ff00000) == 0x7ff00000)
+	&& (((u.i[0] & 0x000fffff) != 0) || (u.i[1] != 0)))
+      return true;
+  }
   return false;
 }
 

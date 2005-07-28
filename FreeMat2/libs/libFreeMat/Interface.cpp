@@ -151,17 +151,18 @@ namespace FreeMat {
     return (char *)string + i + 1;
   }
 
-  std::vector<std::string> Interface::GetCompletions(const char *line, int word_end, 
+  std::vector<std::string> Interface::GetCompletions(std::string line, 
+						     int word_end, 
 						     std::string &matchString) {
     std::vector<std::string> completions;
     /*
      * Find the start of the filename prefix to be completed, searching
      * backwards for the first unescaped space, or the start of the line.
      */
-    char *start = start_of_path(line, word_end);
+    char *start = start_of_path(line.c_str(), word_end);
     char *tmp;
     int mtchlen;
-    mtchlen = word_end - (start-line);
+    mtchlen = word_end - (start-line.c_str());
     tmp = (char*) malloc(mtchlen+1);
     memcpy(tmp,start,mtchlen);
     tmp[mtchlen] = 0;

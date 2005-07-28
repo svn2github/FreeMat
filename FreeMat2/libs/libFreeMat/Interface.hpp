@@ -36,7 +36,7 @@ namespace FreeMat {
   public:
     Interface();
     virtual ~Interface();
-    std::vector<std::string> GetCompletions(const char *line, int word_end, 
+    std::vector<std::string> GetCompletions(std::string line, int word_end, 
 					    std::string &matchString);
     /**
      *  Get the current path set for the interface.

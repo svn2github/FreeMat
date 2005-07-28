@@ -19,7 +19,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "WalkTree.hpp"
-#include <iostream>
 #include <stack>
 #include <math.h>
 #include <stdio.h>
@@ -59,6 +58,7 @@ namespace FreeMat {
   }
 
   static bool isMFile(std::string arg) {
+    if (arg.empty()) return false;
 #ifdef WIN32
     return arg[1] == ':';
 #else
@@ -1523,6 +1523,7 @@ namespace FreeMat {
   void WalkTree::statementType(ASTPtr t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
+
     if (processguievents) {
 #ifdef QT3
       qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
@@ -1541,7 +1542,7 @@ namespace FreeMat {
 	context->insertVariable(t->down->text,b);
 	if (printIt) {
 	  io->outputMessage(t->down->text);
-	  io->outputMessage(" = \n");
+	  io->outputMessage(std::string(" = \n"));
 	  displayArray(b);
 	}	  
       } else {
@@ -1552,7 +1553,7 @@ namespace FreeMat {
 	context->insertVariable(t->down->text,c);
 	if (printIt) {
 	  io->outputMessage(t->down->text);
-	  io->outputMessage(" = \n");
+	  io->outputMessage(std::string(" = \n"));
 	  displayArray(c);
 	}
       }
@@ -1621,7 +1622,7 @@ namespace FreeMat {
 	  else 
 	    b = m[0];
 	  if (printIt && !b.isEmpty()) {
-	    io->outputMessage("ans = \n");
+	    io->outputMessage(std::string("ans = \n"));
 	    displayArray(b);
 	    SetContext(t->context());
 	  }
@@ -1633,12 +1634,12 @@ namespace FreeMat {
 	  else {
 	    b = m[0];
 	    if (printIt) {
-	      io->outputMessage("ans = \n");
+	      io->outputMessage(std::string("ans = \n"));
 	      for (int j=0;j<m.size();j++) {
 		char buffer[1000];
 		if (m.size() > 1) {
 		  sprintf(buffer,"\n%d of %d:\n",j+1,m.size());
-		  io->outputMessage(buffer);
+		  io->outputMessage(std::string(buffer));
 		}
 		displayArray(m[j]);
 		SetContext(t->context());
@@ -1649,7 +1650,7 @@ namespace FreeMat {
       } else {
 	b = expression(t);
 	if (printIt) {
-	  io->outputMessage("ans = \n");
+	  io->outputMessage(std::string("ans = \n"));
 	  displayArray(b);
 	  SetContext(t->context());
 	} 

@@ -6,6 +6,11 @@ Test "for with break/continue/retall/return/quit"
 P N   Desc
 H 21. Online Help
 H 20. Application Icon
+H 22. Fix hanging menus on Win32
+H 23. PS printing on Mac OS X
+H 24. Build system should be debug/release aware on Win32.
+H 25. Port to ATLAS?
+
 M 3.  Plotting code needs to be moved into the FreeMat regime.
 M 5.  MPIFreeMat needs to be re-enabled
 L 7.  libffi --> upgraded
@@ -28,4 +33,4 @@ H 14. Copy/Paste of figures
 H 18. fft(rand(1,4)) produces no output in GUI version
 H 21. Re-enable debugging - what happens to break points when file is reparsed - and what about subfunctions?
 H 22. What about the "point()" function?
-H 13. Parsing of "print foo.bar" doesn't work...
+

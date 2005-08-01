@@ -66,6 +66,7 @@ KeyManager::KeyManager() {
   ResetLineBuffer();
   history.push_back("");
   enteredLinesEmpty = true;
+  m_loop = NULL;
 }
 
 void KeyManager::SetTermCurpos(int n) {
@@ -980,18 +981,19 @@ void KeyManager::ExecuteLine(std::string line) {
   enteredLines.push_back(line);
   ReplacePrompt("");
   enteredLinesEmpty = false;
+  if (m_loop)
+    m_loop->exit();
 }
 
 char* KeyManager::getLine(std::string aprompt) {
   ReplacePrompt(aprompt);
   DisplayPrompt();
-  if (enteredLines.empty()) enteredLinesEmpty = true;
-  while(enteredLinesEmpty)
-#ifdef QT3
-    qApp->eventLoop()->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMore);
-#else
-  qApp->processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents);
-#endif
+  if (enteredLines.empty()) {
+    m_loop = new QEventLoop();
+    m_loop->exec();
+    delete m_loop;
+    m_loop = NULL;
+  }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();
   char *cp;

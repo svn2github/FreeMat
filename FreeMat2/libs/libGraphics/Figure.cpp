@@ -7,6 +7,7 @@
 #include "Plot3D.hpp"
 #include "SurfPlot.hpp"
 #define MAX_FIGS 100
+#include <qgridlayout.h>
 
 namespace FreeMat {
   typedef struct {
@@ -35,24 +36,67 @@ namespace FreeMat {
   Figure::Figure(int fignum) : 
     XPWindow(500,400) {
     m_num = fignum;
-    m_type = fignone;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
     Title(buffer);
+    m_layout = new QGridLayout(this);
+    setLayout(m_layout);
+    m_type = new figType[1];
+    m_wid = new XPWidget*[1];
+    m_wid[0] = NULL;
+    m_type[0] = fignone;
+    m_rows = 1;
+    m_cols = 1;
+    m_active_slot = 0;
   }
   
   Figure::~Figure() {
     NotifyFigClose(m_num);
   }
+
+  figType Figure::getType() {
+    return m_type[m_active_slot];
+  }
   
   XPWidget* Figure::GetChildWidget() {
-    return m_wid;
+    return m_wid[m_active_slot];
   }
 
   void Figure::SetFigureChild(XPWidget *widget, figType typ) {
-    m_type = typ;
-    AddWidget(widget);
-    m_wid = widget;
+    if (m_wid[m_active_slot]) {
+      m_wid[m_active_slot]->hide();
+      delete m_wid[m_active_slot];
+    }
+    m_type[m_active_slot] = typ;
+    m_wid[m_active_slot] = widget;
+    m_layout->addWidget(widget,m_active_slot % m_rows,m_active_slot / m_rows);
+  }
+
+  void Figure::ReconfigurePlotMatrix(int rows, int cols) {
+    for (int i=0;i<m_rows*m_cols;i++) {
+      if (m_wid[i]) {
+	m_wid[i]->hide();
+	delete m_wid[i];
+      }
+    }
+    delete m_wid;
+    delete m_type;
+    delete m_layout;
+    m_layout = new QGridLayout(this);
+    setLayout(m_layout);
+    m_rows = rows;
+    m_cols = cols;
+    m_type = new figType[rows*cols];
+    m_wid = new XPWidget*[rows*cols];
+  }
+
+  void Figure::ActivateMatrixEntry(int slot) {
+    m_active_slot = slot;
+  }
+
+  void Figure::GetPlotMatrix(int& rows, int& cols) {
+    rows = m_rows;
+    cols = m_cols;
   }
 
   void Figure::Copy() {
@@ -506,7 +550,37 @@ namespace FreeMat {
     }
     return ArrayVector();
   }
-
+  
+  //!
+  //@Module SUBPLOT Subplot Function
+  //@@Section PLOT
+  //@@Usage
+  //This function divides the current figure into a 2-dimensional
+  //grid, each of which can contain a plot of some kind.  The
+  //syntax for its use is
+  //@[
+  //   subplot(row,col)
+  //@]
+  //which either activates the subplot indexed by @|[row,col]|, or 
+  //sets up a subplot grid of size @|row x col|.  The @|subplot|
+  //function decides which of these scenarios you intend by
+  //applying the following...
+  //!
+  ArrayVector SubPlotFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 3) 
+      throw Exception("Need at least three arguments for subplot");
+    int row = ArrayToInt32(arg[0]);
+    int col = ArrayToInt32(arg[1]);
+    int slot = ArrayToInt32(arg[2]);
+    Figure* fig = GetCurrentFig();
+    int crows, ccols;
+    fig->GetPlotMatrix(crows,ccols);
+    if ((row != crows) || (col != ccols))
+      fig->ReconfigurePlotMatrix(row,col);
+    fig->ActivateMatrixEntry(slot-1);
+    return ArrayVector();
+  }
+  
   void ForceRefresh() {
     Figure* fig = GetCurrentFig();
     fig->Redraw();

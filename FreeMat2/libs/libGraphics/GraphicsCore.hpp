@@ -56,6 +56,7 @@ namespace FreeMat {
   ArrayVector SliderFunction(int, const ArrayVector& arg);
   ArrayVector CopyFunction(int, const ArrayVector&);
   ArrayVector AddTxtFunction(int, const ArrayVector&);
+  ArrayVector SubPlotFunction(int, const ArrayVector&);
   void LoadGraphicsCoreFunctions(Context* context);
   void InitializeFigureSubsystem();
 }

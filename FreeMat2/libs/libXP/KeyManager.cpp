@@ -26,7 +26,6 @@
 #include "KeyManager.hpp"
 #include "Interface.hpp"
 #include <qapplication.h>
-#include <qeventloop.h>
 #include <iostream>
 
 #define TAB_WIDTH 8
@@ -66,7 +65,7 @@ KeyManager::KeyManager() {
   ResetLineBuffer();
   history.push_back("");
   enteredLinesEmpty = true;
-  m_loop = NULL;
+  loopactive = 0;
 }
 
 void KeyManager::SetTermCurpos(int n) {
@@ -981,18 +980,18 @@ void KeyManager::ExecuteLine(std::string line) {
   enteredLines.push_back(line);
   ReplacePrompt("");
   enteredLinesEmpty = false;
-  if (m_loop)
-    m_loop->exit();
+  if (loopactive) {
+    loopactive--;
+    qApp->exit();
+  }
 }
 
 char* KeyManager::getLine(std::string aprompt) {
   ReplacePrompt(aprompt);
   DisplayPrompt();
   if (enteredLines.empty()) {
-    m_loop = new QEventLoop();
-    m_loop->exec();
-    delete m_loop;
-    m_loop = NULL;
+    loopactive++;
+    qApp->exec();
   }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();

@@ -4098,4 +4098,9 @@ break;
       return false;
     }
   }
+  
+  int32 ArrayToInt32(const Array& a) {
+    Array b(a);
+    return b.getContentsAsIntegerScalar();
+  }
 }

@@ -3,17 +3,15 @@
 
 #include "XPWidget.hpp"
 #include <string>
-#include <qmainwindow.h>
+#include <qwidget.h>
 
 // A window is a widget with a title, frame, etc
 // It has one child widget
-class XPWindow : public QMainWindow {
-  XPWidget *child;
+class XPWindow : public QWidget {
 public:
   virtual ~XPWindow() {};
   XPWindow(int width, int height);
   void Title(std::string title);
-  void AddWidget(XPWidget *widget);
   void Show() {show();}
   int GetHeight() {return height();}
   int GetWidth() {return width();}

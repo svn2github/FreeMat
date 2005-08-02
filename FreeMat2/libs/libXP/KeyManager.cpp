@@ -848,7 +848,7 @@ void KeyManager::CompleteWord() {
 	/*
 	 * Make room to insert the filename extension.
 	 */
-	line.insert(buff_curpos,std::string(prefix,nextra));
+	line.insert(buff_curpos,std::string(prefix,0,nextra));
 	/*
 	 * Record the increased length of the line.
 	 */

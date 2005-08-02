@@ -4,14 +4,17 @@
 #include "XPWindow.hpp"
 #include "XPWidget.hpp"
 #include <string>
+#ifdef QT3
+#include <qlayout.h>
+#else
 #include <qgridlayout.h>
+#endif
 
 namespace FreeMat {
   
   typedef enum {fignone, figplot, figscimg, figgui, fig3plot} figType;
   
   class Figure : public XPWindow {
-    Q_OBJECT
   public:
     Figure(int fignum);
     ~Figure();

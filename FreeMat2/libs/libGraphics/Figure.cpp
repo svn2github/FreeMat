@@ -7,7 +7,6 @@
 #include "Plot3D.hpp"
 #include "SurfPlot.hpp"
 #define MAX_FIGS 100
-#include <qgridlayout.h>
 
 namespace FreeMat {
   typedef struct {
@@ -40,7 +39,7 @@ namespace FreeMat {
     sprintf(buffer,"Figure %d",fignum+1);
     Title(buffer);
     m_layout = new QGridLayout(this);
-    setLayout(m_layout);
+    //    setLayout(m_layout);
     m_type = new figType[1];
     m_wid = new XPWidget*[1];
     m_wid[0] = NULL;
@@ -83,7 +82,7 @@ namespace FreeMat {
     delete m_type;
     delete m_layout;
     m_layout = new QGridLayout(this);
-    setLayout(m_layout);
+    //    setLayout(m_layout);
     m_rows = rows;
     m_cols = cols;
     m_type = new figType[rows*cols];

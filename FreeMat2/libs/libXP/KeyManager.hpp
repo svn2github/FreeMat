@@ -25,6 +25,9 @@
 #include <vector>
 #include <list>
 #include "Interface.hpp"
+#ifndef QT3
+#include <QEventLoop>
+#endif
 
 #define KM_CTRLA     0x01
 #define KM_CTRLC     0x03
@@ -153,6 +156,9 @@ public:
   int prompt_len;
   // Are we waiting for input?
   int loopactive;
+#ifndef QT3
+  QEventLoop *m_loop;
+#endif
 };
 
   

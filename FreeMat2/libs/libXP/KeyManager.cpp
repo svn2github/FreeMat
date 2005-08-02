@@ -66,6 +66,9 @@ KeyManager::KeyManager() {
   history.push_back("");
   enteredLinesEmpty = true;
   loopactive = 0;
+#ifndef QT3
+  m_loop = NULL;
+#endif
 }
 
 void KeyManager::SetTermCurpos(int n) {
@@ -982,7 +985,11 @@ void KeyManager::ExecuteLine(std::string line) {
   enteredLinesEmpty = false;
   if (loopactive) {
     loopactive--;
+#ifdef QT3
     qApp->exit();
+#else
+    m_loop->exit();
+#endif
   }
 }
 
@@ -991,7 +998,12 @@ char* KeyManager::getLine(std::string aprompt) {
   DisplayPrompt();
   if (enteredLines.empty()) {
     loopactive++;
+#ifdef QT3
     qApp->exec();
+#else
+    m_loop = new QEventLoop(this);
+    m_loop->exec();
+#endif
   }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();

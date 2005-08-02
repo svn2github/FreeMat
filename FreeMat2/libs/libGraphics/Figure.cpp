@@ -11,7 +11,7 @@
 namespace FreeMat {
   typedef struct {
     int type;
-    XPWidget* w;
+    QWidget* w;
   } widget;
 
   HandleList<widget*> guiHandles;
@@ -33,15 +33,19 @@ namespace FreeMat {
   }
   
   Figure::Figure(int fignum) : 
-    XPWindow(500,400) {
+    QWidget(NULL,"figureWindow") {
     m_num = fignum;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
-    Title(buffer);
+#ifdef QT3
+    setCaption(buffer);
+#else
+    setWindowTitle(buffer);
+#endif
     m_layout = new QGridLayout(this);
     //    setLayout(m_layout);
     m_type = new figType[1];
-    m_wid = new XPWidget*[1];
+    m_wid = new QWidget*[1];
     m_wid[0] = NULL;
     m_type[0] = fignone;
     m_rows = 1;
@@ -57,11 +61,11 @@ namespace FreeMat {
     return m_type[m_active_slot];
   }
   
-  XPWidget* Figure::GetChildWidget() {
+  QWidget* Figure::GetChildWidget() {
     return m_wid[m_active_slot];
   }
 
-  void Figure::SetFigureChild(XPWidget *widget, figType typ) {
+  void Figure::SetFigureChild(QWidget *widget, figType typ) {
     if (m_wid[m_active_slot]) {
       m_wid[m_active_slot]->hide();
       delete m_wid[m_active_slot];
@@ -69,6 +73,7 @@ namespace FreeMat {
     m_type[m_active_slot] = typ;
     m_wid[m_active_slot] = widget;
     m_layout->addWidget(widget,m_active_slot % m_rows,m_active_slot / m_rows);
+    widget->show();
   }
 
   void Figure::ReconfigurePlotMatrix(int rows, int cols) {
@@ -80,13 +85,13 @@ namespace FreeMat {
     }
     delete m_wid;
     delete m_type;
-    delete m_layout;
-    m_layout = new QGridLayout(this);
-    //    setLayout(m_layout);
+//     delete m_layout;
+//     m_layout = new QGridLayout(this);
+//     //    setLayout(m_layout);
     m_rows = rows;
     m_cols = cols;
     m_type = new figType[rows*cols];
-    m_wid = new XPWidget*[rows*cols];
+    m_wid = new QWidget*[rows*cols];
     for (int i=0;i<rows*cols;i++)
       m_wid[i] = NULL;
   }
@@ -102,8 +107,9 @@ namespace FreeMat {
 
   void Figure::Copy() {
     Figure* f = GetCurrentFig();
-    XPWidget* g = f->GetChildWidget();
-    g->Copy();
+    QWidget* g = f->GetChildWidget();
+    // FIXME
+    //   g->Copy();
   }
 
   void InitializeFigureSubsystem() {
@@ -125,7 +131,7 @@ namespace FreeMat {
     }
     figs[figNum] = new Figure(figNum);
     SaveFocus();
-    figs[figNum]->Show();
+    figs[figNum]->show();
     RestoreFocus();
     currentFig = figNum;
   }
@@ -135,7 +141,7 @@ namespace FreeMat {
       figs[fignum] = new Figure(fignum);
     }
     SaveFocus();
-    figs[fignum]->Show();
+    figs[fignum]->show();
     RestoreFocus();
     currentFig = fignum;
   } 
@@ -144,7 +150,7 @@ namespace FreeMat {
     if (currentFig == -1)
       NewFig();
     SaveFocus();
-    figs[currentFig]->Show();
+    figs[currentFig]->show();
     RestoreFocus();
     return figs[currentFig];
   }
@@ -197,7 +203,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
-    XPWidget* g = f->GetChildWidget();
+    QWidget* g = f->GetChildWidget();
     if (g) {
       int pos = outname.rfind(".");
       if (pos < 0)
@@ -209,7 +215,9 @@ namespace FreeMat {
 	throw Exception(std::string("unsupported output format ") + 
 			original_extension + " for print.\n" + 
 			FormatListAsString());
-      g->Print(outname,modified_extension);
+      throw Exception("Need to re-enable printing");
+      // FIXME
+      //      g->Print(outname,modified_extension);
     }
     return ArrayVector();
   }
@@ -379,7 +387,7 @@ namespace FreeMat {
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
-    SurfPlot* t = new SurfPlot(f->GetWidth(),f->GetHeight());
+    SurfPlot* t = new SurfPlot(f);
     Array s(arg[0]);
     s.promoteType(FM_DOUBLE);
     if (s.getLength() != 256*3)
@@ -397,7 +405,7 @@ namespace FreeMat {
 	       x.getLength(),
 	       y.getLength());
     f->SetFigureChild(t,fig3plot);
-    f->Redraw();
+    f->repaint();
 #if 0
     XPContainer *c = new XPContainer(f, f->GetBoundingRect());
     XPLabel *l = new XPLabel(NULL, Rect2D(75,75,50,75), "Label!");
@@ -435,14 +443,14 @@ namespace FreeMat {
     width = w.getContentsAsIntegerScalar();
     height = h.getContentsAsIntegerScalar();
     Figure *f = GetCurrentFig();
-    f->Resize(width,height);
+    f->resize(width,height);
     return ArrayVector();
   }
 
   void CloseHelper(int fig) {
     if (fig == -1) return;
     if (figs[fig] == NULL) return;
-    figs[fig]->Hide();
+    figs[fig]->hide();
     delete figs[fig];
     figs[fig] = NULL;
     if (currentFig == fig)
@@ -584,6 +592,6 @@ namespace FreeMat {
   
   void ForceRefresh() {
     Figure* fig = GetCurrentFig();
-    fig->Redraw();
+    fig->repaint();
   }
 }

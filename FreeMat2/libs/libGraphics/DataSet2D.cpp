@@ -23,6 +23,7 @@
 #include "Malloc.hpp"
 #include "IEEEFP.hpp"
 #include "Plot2D.hpp"
+#include "GraphicsCore.hpp"
 #include <iostream>
 
 namespace FreeMat {
@@ -38,22 +39,6 @@ namespace FreeMat {
   }
 
   DataSet2D::~DataSet2D() {
-  }
-
-  void DataSet2D::SetPenColor(GraphicsContext& dc, bool useStyle) {
-    LineStyleType penStyle;
-
-    if (useStyle)
-      penStyle = UtilityMapLineStyleToType(line);
-    else
-      penStyle = LINE_SOLID;
-
-    dc.SetLineStyle(penStyle);
-
-    dc.SetForeGroundColor(UtilityMapColorSpecToColor(color));
-
-    if (useStyle && (line == ' '))
-      dc.SetLineStyle( LINE_NONE );
   }
 
   void DataSet2D::GetDataRange(double& xMin, double &xMax, double &yMin, double & yMax) {
@@ -122,7 +107,7 @@ namespace FreeMat {
   }
 
 
-  void DataSet2D::DrawMe(GraphicsContext &dc, Plot2D &plt) {
+  void DataSet2D::DrawMe(QPainter& dc, Plot2D &plt) {
     const double *xVals;
     const double *yVals;
     int ptCount;
@@ -131,8 +116,8 @@ namespace FreeMat {
     xVals = (const double *) x.getDataPointer();
     yVals = (const double *) y.getDataPointer();
     ptCount = x.getLength();
-    
-    SetPenColor(dc, false);
+
+    dc.setPen(QPen(UtilityMapColorSpecToColor(color)));
     // Draw the symbols
     for (i=0;i<ptCount;i++) {
       // Map the data point to a coordinate
@@ -143,7 +128,8 @@ namespace FreeMat {
       }
     }
     // Plot the lines
-    SetPenColor(dc, true);
+    dc.setPen(QPen(UtilityMapColorSpecToColor(color),0,
+		   UtilityMapLineStyleToType(line)));
     std::vector<Point2D> pts;
     for (i=0;i<ptCount;i++) {
       if (IsFinite(xVals[i]) && (IsFinite(yVals[i]))) {
@@ -151,13 +137,14 @@ namespace FreeMat {
 	plt.MapPoint(xVals[i],yVals[i],xp,yp);
 	pts.push_back(Point2D(xp,yp));
       } else {
-	dc.DrawLines(pts);
+	DrawLines(dc,pts);
 	pts.clear();
       }
     }
-    dc.DrawLines(pts);
+    DrawLines(dc,pts);
   }
 
+#if 0
   DataSet3D::DataSet3D(Array xarg, Array yarg, Array zarg,
 		       char a_color, char a_symbol, char a_line) {
     color = a_color;
@@ -341,5 +328,5 @@ namespace FreeMat {
     }
     dc.DrawLines(pts);
   }
-
+#endif
 }

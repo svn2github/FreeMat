@@ -29,7 +29,8 @@
 
 namespace FreeMat {
 
-  Plot2D::Plot2D(int width, int height) : XPWidget(NULL,Point2D(width,height)) {
+  Plot2D::Plot2D(QWidget *parent) : 
+    QWidget(parent,"plot2d",0) {
     space = 10;
     holdflag = false;
     updating = false;
@@ -40,21 +41,21 @@ namespace FreeMat {
   Plot2D::~Plot2D() {
   }
 
-  void Plot2D::DrawTextLabels(GraphicsContext &gc) {
+  void Plot2D::DrawTextLabels(QPainter &gc) {
     int xc, yc;
-    gc.SetForeGroundColor(Color("black"));
+    gc.setPen(QPen(Qt::black));
     for (int i=0;i<textx.size();i++) {
       MapPoint(textx[i],texty[i],xc,yc);
-      gc.DrawTextStringAligned(textlabel[i],Point2D(xc,yc),LR_LEFT,TB_BOTTOM);
+      DrawTextStringAligned(gc,textlabel[i],Point2D(xc,yc),LR_LEFT,TB_BOTTOM);
     }
   }
-
-  void Plot2D::DrawLegend(GraphicsContext &gc) {
+  
+  void Plot2D::DrawLegend(QPainter &gc) {
     int xc, yc;
     MapPoint(legend_xc,legend_yc,xc,yc);
     int i;
     int strut;
-    Point2D strutSize(gc.GetTextExtent("|"));
+    Point2D strutSize(GetTextExtent(gc,"|"));
     strut = strutSize.y;
     double centerline;
     centerline = yc + strut/2*1.2;
@@ -66,22 +67,22 @@ namespace FreeMat {
       char *label = label_txt.getContentsAsCString();
       // Draw the line segment - set the color and line style
       // from linestyle
-      gc.SetLineStyle(UtilityMapLineStyleToType(linestyle[2]));
-      gc.SetForeGroundColor(UtilityMapColorSpecToColor(linestyle[0]));
-      gc.DrawLine(Point2D(xc,centerline),
-		  Point2D(xc+18,centerline));
+      gc.setPen(QPen(UtilityMapColorSpecToColor(linestyle[0]),0,
+		     UtilityMapLineStyleToType(linestyle[2])));
+      gc.drawLine(xc,centerline,xc+18,centerline);
       // Draw the symbol
-      gc.SetLineStyle(LINE_SOLID);
+      gc.setPen(Qt::SolidLine);
       PutSymbol(gc,xc+9,centerline,linestyle[1],3);
-      gc.SetForeGroundColor(Color("black"));
-      gc.DrawTextString(label,Point2D(xc+22,centerline+strut/2-1));
-      Point2D tmp(gc.GetTextExtent(std::string(label)));
+      gc.setPen(QPen(Qt::black));
+      DrawTextString(gc,label,Point2D(xc+22,centerline+strut/2-1));
+      Point2D tmp(GetTextExtent(gc,std::string(label)));
       maxwidth = (maxwidth < tmp.x) ? tmp.x : maxwidth;
       centerline += strut*1.2;
     }
-    gc.SetLineStyle(UtilityMapLineStyleToType(legend_linestyle[2]));
-    gc.SetForeGroundColor(UtilityMapColorSpecToColor(legend_linestyle[0]));
-    gc.DrawRectangle(Rect2D(xc-5,yc,32+maxwidth,centerline-strut/2-yc));
+    gc.setPen(QPen(UtilityMapColorSpecToColor(legend_linestyle[0]),0,
+		   UtilityMapLineStyleToType(legend_linestyle[2])));
+    gc.setBrush(Qt::NoBrush);
+    gc.drawRect(xc-5,yc,32+maxwidth,centerline-strut/2-yc);
   }
 
   void Plot2D::StartSequence() {
@@ -202,7 +203,7 @@ namespace FreeMat {
     SetAxesAuto();
   }
 
-  void Plot2D::DrawAxes(GraphicsContext &gc) {
+  void Plot2D::DrawAxes(QPainter &gc) {
     double xmin, xmax, ymin, ymax;
     int xc_min, xc_max, yc_min, yc_max;
     xAxis.GetAxisExtents(xmin,xmax);
@@ -284,7 +285,7 @@ namespace FreeMat {
     yc = (int) v;
   }
 
-  void Plot2D::OnDraw(GraphicsContext &gc) {
+  void Plot2D::OnDraw(QPainter &gc) {
     Point2D sze(gc.GetCanvasSize());
     int width = sze.x;
     int height = sze.y;
@@ -399,99 +400,81 @@ namespace FreeMat {
     return LINE_SOLID;
   }
 
-  Color UtilityMapColorSpecToColor(char color) {
+  QColor UtilityMapColorSpecToColor(char color) {
     switch(color) {
     case 'y':
-      return(Color("yellow"));
+      return(Qt::yellow);
     case 'm':
-      return(Color("magenta"));
+      return(Qt::magenta);
     case 'c':
-      return(Color("cyan"));
+      return(Qt::cyan);
     case 'r':
-      return(Color("red"));
+      return(Qt::red);
     case 'g':
-      return(Color("green"));
+      return(Qt::green);
     case 'b':
-      return(Color("blue"));
+      return(Qt::blue);
     case 'w':
-      return(Color("white"));
+      return(Qt::white);
     case 'k':
-      return(Color("black"));
+      return(Qt::black);
     }
-    return(Color("black"));
+    return(Qt::black);
   }
 
-  void PutSymbol(GraphicsContext &dc, int xp, int yp, char symbol, int len) {
+  void PutSymbol(QPainter &dc, int xp, int yp, char symbol, int len) {
     int len2 = (int) (len / sqrt(2.0));
     switch (symbol) {
     case '.':
-      dc.DrawPoint(Point2D(xp, yp));
+      dc.drawPoint(xp, yp);
       break;
     case 'o':
-      dc.DrawCircle(Point2D(xp, yp), len);
+      dc.setBrush(Qt::NoBrush);
+      dc.drawEllipse(xp-len,yp-len,2*len,2*len);
       break;
     case 'x':
-      dc.DrawLine(Point2D(xp - len2, yp - len2), 
-		  Point2D(xp + len2 + 1, yp + len2 + 1));
-      dc.DrawLine(Point2D(xp + len2, yp - len2), 
-		  Point2D(xp - len2 - 1, yp + len2 + 1));
+      dc.drawLine(xp - len2, yp - len2, xp + len2 + 1, yp + len2 + 1);
+      dc.drawLine(xp + len2, yp - len2, xp - len2 - 1, yp + len2 + 1);
       break;
     case '+':
-      dc.DrawLine(Point2D(xp - len, yp), 
-		  Point2D(xp + len + 1, yp));
-      dc.DrawLine(Point2D(xp, yp - len), 
-		  Point2D(xp, yp + len + 1));
+      dc.drawLine(xp - len, yp, xp + len + 1, yp);
+      dc.drawLine(xp, yp - len, xp, yp + len + 1);
       break;
     case '*':
-      dc.DrawLine(Point2D(xp - len, yp), 
-		  Point2D(xp + len + 1, yp));
-      dc.DrawLine(Point2D(xp, yp - len), 
-		  Point2D(xp, yp + len + 1));
-      dc.DrawLine(Point2D(xp - len2, yp - len2), 
-		  Point2D(xp + len2 + 1, yp + len2 + 1));
-      dc.DrawLine(Point2D(xp + len2, yp - len2), 
-		  Point2D(xp - len2 - 1, yp + len2 + 1));
+      dc.drawLine(xp - len, yp, xp + len + 1, yp);
+      dc.drawLine(xp, yp - len, xp, yp + len + 1);
+      dc.drawLine(xp - len2, yp - len2, xp + len2 + 1, yp + len2 + 1);
+      dc.drawLine(xp + len2, yp - len2, xp - len2 - 1, yp + len2 + 1);
       break;
     case 's':
-      dc.DrawRectangle(Rect2D(xp - len/2, yp - len/2, len + 1, len + 1));
+      dc.setBrush(Qt::NoBrush);
+      dc.drawRect(xp - len/2, yp - len/2, len + 1, len + 1);
       break;
     case 'd':
-      dc.DrawLine(Point2D(xp - len, yp), Point2D(xp, yp - len));
-      dc.DrawLine(Point2D(xp, yp - len), Point2D(xp + len, yp));
-      dc.DrawLine(Point2D(xp + len, yp), Point2D(xp, yp + len));
-      dc.DrawLine(Point2D(xp, yp + len), Point2D(xp - len, yp));
+      dc.drawLine(xp - len, yp, xp, yp - len);
+      dc.drawLine(xp, yp - len, xp + len, yp);
+      dc.drawLine(xp + len, yp, xp, yp + len);
+      dc.drawLine(xp, yp + len, xp - len, yp);
       break;
     case 'v':
-      dc.DrawLine(Point2D(xp - len, yp - len), 
-		  Point2D(xp + len, yp - len));
-      dc.DrawLine(Point2D(xp + len, yp - len), 
-		  Point2D(xp, yp + len));
-      dc.DrawLine(Point2D(xp, yp + len), 
-		  Point2D(xp - len, yp - len));
+      dc.drawLine(xp - len, yp - len, xp + len, yp - len);
+      dc.drawLine(xp + len, yp - len, xp, yp + len);
+      dc.drawLine(xp, yp + len, xp - len, yp - len);
       break;
     case '^':
-      dc.DrawLine(Point2D(xp - len, yp + len), 
-		  Point2D(xp + len, yp + len));
-      dc.DrawLine(Point2D(xp + len, yp + len), 
-		  Point2D(xp, yp - len));
-      dc.DrawLine(Point2D(xp, yp - len), 
-		  Point2D(xp - len, yp + len));
+      dc.drawLine(xp - len, yp + len, xp + len, yp + len);
+      dc.drawLine(xp + len, yp + len, xp, yp - len);
+      dc.drawLine(xp, yp - len, xp - len, yp + len);
       break;
     case '<':
-      dc.DrawLine(Point2D(xp + len, yp - len), 
-		  Point2D(xp - len, yp));
-      dc.DrawLine(Point2D(xp - len, yp), 
-		  Point2D(xp + len, yp + len));
-      dc.DrawLine(Point2D(xp + len, yp + len), 
-		  Point2D(xp + len, yp - len));
+      dc.drawLine(xp + len, yp - len, xp - len, yp);
+      dc.drawLine(xp - len, yp, xp + len, yp + len);
+      dc.drawLine(xp + len, yp + len, xp + len, yp - len);
       break;
     case '>':
-      dc.DrawLine(Point2D(xp - len, yp - len), 
-		  Point2D(xp + len, yp));
-      dc.DrawLine(Point2D(xp + len, yp), 
-		  Point2D(xp - len, yp + len));
-      dc.DrawLine(Point2D(xp - len, yp + len), 
-		  Point2D(xp - len, yp - len));
+      dc.drawLine(xp - len, yp - len, xp + len, yp);
+      dc.drawLine(xp + len, yp, xp - len, yp + len);
+      dc.drawLine(xp - len, yp + len, xp - len, yp - len);
       break;
     }
   }

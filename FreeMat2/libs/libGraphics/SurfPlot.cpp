@@ -120,7 +120,8 @@ namespace FreeMat {
     x_center = y_center = z_center = 0.0;
   }
 
-  SurfPlot::SurfPlot(int width, int height) : XPWidget(NULL,Point2D(width,height)){
+  SurfPlot::SurfPlot(QWidget* parent) : 
+    QWidget(parent,"surfplot",0) {
     xvals = NULL;
     yvals = NULL;
     zvals = NULL;
@@ -144,7 +145,7 @@ namespace FreeMat {
 
   void SurfPlot::OnMouseUp(Point2D pt) {
     dragging = false;
-    Redraw();
+    repaint();
   }
 
   void SurfPlot::OnMouseDrag(Point2D pt) {
@@ -154,7 +155,7 @@ namespace FreeMat {
     azim = (azim + 360) % 360;
     beginx = pt.x;
     beginy = pt.y;    
-    Redraw();
+    repaint();
   }
 
   void transformPoint(pt3d& src, pt3d& dst, float m[4][4]) {
@@ -520,8 +521,8 @@ namespace FreeMat {
     gc.SetBackGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("light grey"));
 
-    int m_width = GetWidth();
-    int m_height = GetHeight();
+    int m_width = width();
+    int m_height = height();
 
     gc.FillRectangle(Rect2D(0, 0, m_width, m_height));
 

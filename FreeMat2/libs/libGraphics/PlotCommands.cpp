@@ -35,7 +35,7 @@ namespace FreeMat {
     if (fig->getType() == figplot) {
       return ((Plot2D*) fig->GetChildWidget());
     } else {
-      Plot2D* t = new Plot2D(fig->GetWidth(),fig->GetHeight());
+      Plot2D* t = new Plot2D(fig);
       fig->SetFigureChild(t,figplot);
       return t;
     }
@@ -131,7 +131,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetXLabel(t.getContentsAsCString());
-    f->Redraw();
+    f->repaint();
     return ArrayVector();
   }
 
@@ -173,7 +173,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetYLabel(t.getContentsAsCString());
-    f->Redraw();
+    f->repaint();
     return ArrayVector();
   }
 
@@ -242,7 +242,7 @@ namespace FreeMat {
     xcorner = x.getContentsAsDoubleScalar();
     ycorner = y.getContentsAsDoubleScalar();
     t->SetLegend(xcorner, ycorner, legendLS, legendData);
-    t->Redraw();
+    t->repaint();
     return ArrayVector();
   }
 
@@ -284,7 +284,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Plot2D* f = GetCurrentPlot();
     f->SetTitleText(t.getContentsAsCString());
-    f->Redraw();
+    f->repaint();
     return ArrayVector();
   }
 
@@ -338,7 +338,7 @@ namespace FreeMat {
       f->SetGrid(false);
     else
       throw Exception("Grid function argument needs to be 'on/off'");
-    f->Redraw();
+    f->repaint();
     return ArrayVector();
   }
 
@@ -703,7 +703,7 @@ namespace FreeMat {
       f->StopSequence();
       throw e;
     }
-    f->Redraw();
+    f->repaint();
     // Stop the plot 
     return ArrayVector();
   }
@@ -718,7 +718,7 @@ namespace FreeMat {
     f->AddText(xval.getContentsAsDoubleScalar(),
 	       yval.getContentsAsDoubleScalar(),
 	       label.getContentsAsCString());
-    f->Redraw();
+    f->repaint();
     return ArrayVector();
   }
 
@@ -833,7 +833,7 @@ namespace FreeMat {
 	dp = (double*) t.getDataPointer();
 	f->SetAxes(dp[0],dp[1],dp[2],dp[3]);
       }
-      f->Redraw();
+      f->repaint();
       ArrayVector retval;
       return retval;
     } else {
@@ -843,7 +843,7 @@ namespace FreeMat {
       dp = (double*) retArr.getReadWriteDataPointer();
       f = GetCurrentPlot();
       f->GetAxes(dp[0],dp[1],dp[2],dp[3]);
-      f->Redraw();
+      f->repaint();
       ArrayVector retval;
       retval.push_back(retArr);
       return retval;

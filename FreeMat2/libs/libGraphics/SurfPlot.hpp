@@ -25,6 +25,7 @@
 #include "Axis.hpp"
 #include "XPWidget.hpp"
 #include "NewAxis.hpp"
+#include <qwidget.h>
 
 namespace FreeMat {
 
@@ -43,12 +44,12 @@ namespace FreeMat {
   } quad3d;
 
 
-  class SurfPlot: public XPWidget {
+  class SurfPlot: public QWidget {
   public:
     /**
      * Default constructor.
      */
-    SurfPlot(int width, int height);
+    SurfPlot(QWidget* parent);
     /**
      * Default destructor.
      */

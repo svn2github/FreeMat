@@ -31,13 +31,13 @@ namespace FreeMat {
    * This is a window for viewing a scalar image with
    * a color map.
    */
-  class ScalarImage : public XPWidget {
+  class ScalarImage : public QWidget {
   public:
     /**
      * Create a new scalar image window with the given
      * figure number.
      */
-    ScalarImage(int width, int height);
+    ScalarImage(QWidget* parent);
     /**
      * Destructor.
      */

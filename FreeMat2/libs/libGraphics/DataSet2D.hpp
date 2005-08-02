@@ -23,7 +23,7 @@
 
 #include "Axis.hpp"
 #include "Array.hpp"
-#include "GraphicsContext.hpp"
+#include <qpainter.h>
 
 namespace FreeMat {
 
@@ -84,12 +84,6 @@ namespace FreeMat {
      * For screen rendering, this is in pixels.
      */
     int symbolLength;
-    /**
-     * Set the pen color in the given device context to the line
-     * color for the current dataset.  Optionally apply the line
-     * style also.
-     */
-    void SetPenColor(GraphicsContext&, bool);
   public:
     /**
      * Construct a dataset with the given attributes.
@@ -104,13 +98,14 @@ namespace FreeMat {
      * Plot the data set to the given device context, using the 
      * given x and y axis.
      */
-    void DrawMe(GraphicsContext& dc, Plot2D &plt);
+    void DrawMe(QPainter& dc, Plot2D &plt);
     /**
      * Calculate the range of the data.
      */
     void GetDataRange(double& xMin, double& xMax, double& yMin, double& yMax);
   };
 
+#if 0
   /**
    * This class encapsulates a single line in a 3D plot, including
    * the number of points in the plot, the x, y, z coordinates, the
@@ -136,5 +131,6 @@ namespace FreeMat {
 		      double& yMin, double& yMax,
 		      double& zMin, double& zMax);
   };
+#endif
 }
 #endif

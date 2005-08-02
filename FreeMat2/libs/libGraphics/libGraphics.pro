@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib debug
+CONFIG += staticlib
 
 INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
 

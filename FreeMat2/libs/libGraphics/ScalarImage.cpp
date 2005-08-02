@@ -27,7 +27,8 @@
 
 namespace FreeMat {
 
-  ScalarImage::ScalarImage(int width, int height) : XPWidget(NULL,Point2D(width,height)) {
+  ScalarImage::ScalarImage(QWidget* parent) 
+    : QWidget(parent,"scalarimage",0) {
     rawData = NULL;
     for (int i=0;i<256;i++) {
       colormap[0][i] = i;
@@ -53,7 +54,8 @@ namespace FreeMat {
   Array ScalarImage::GetPoint() {
     int xposClick;
     int yposClick;
-
+    throw Exception("Need to implement!");
+#if 0
     GetClick(xposClick, yposClick);
     double valClick;
     if (zoomImage == NULL) 
@@ -67,6 +69,7 @@ namespace FreeMat {
     d_ip[1] = (double) (xposClick/((double)zoomColumns)*columns)+1;
     d_ip[2] = (double) valClick;
     return retval;
+#endif
   }
 
   void ScalarImage::SetColormap(Array &dp) {
@@ -106,8 +109,8 @@ namespace FreeMat {
     } else if (zoom == 0) {
       int client_width;
       int client_height;
-      client_width = GetWidth();
-      client_height = GetHeight();
+      client_width = width();
+      client_height = height();
       if (drawColorBar)
 	client_width -= (barWidth - tickWidth - ColorbarWidth(client_height));
       double zoomColFactor;
@@ -122,10 +125,10 @@ namespace FreeMat {
     } else {
       int client_width;
       int client_height;
-      client_width = GetWidth();
+      client_width = width();
       if (drawColorBar)
 	client_width -= (barWidth - tickWidth - ColorbarWidth(client_height));
-      client_height = GetHeight();
+      client_height = height();
       newZoomColumns = (int) (client_width);
       newZoomRows = (int) (client_height);
     }
@@ -159,10 +162,9 @@ namespace FreeMat {
   }
 
   void ScalarImage::OnResize() {
-    XPWidget::OnResize();
     if (zoom <= 0) 
       UpdateZoom(false);
-    Redraw();
+    repaint();
   }
 
   int ScalarImage::getZoomColumns() {
@@ -294,5 +296,6 @@ namespace FreeMat {
 	}
       }
     }
+    setMinimumSize(getZoomColumns(),getZoomRows());
   }
 }

@@ -23,7 +23,9 @@
 
 #include "DataSet2D.hpp"
 #include "NewAxis.hpp"
-#include "XPWidget.hpp"
+#include <qwidget.h>
+#include <qpainter.h>
+#include <qpen.h>
 
 namespace FreeMat {
 
@@ -35,13 +37,13 @@ namespace FreeMat {
    * number of 2D data sets.  It is responsible 
    * for drawing the data sets and managing them.
    */
-  class Plot2D : public XPWidget {
+  class Plot2D : public QWidget {
   public:
     /**
      * Construct a 2D plot frame with the given
      * figure number.
      */
-    Plot2D(int width, int height);
+    Plot2D(QWidget* parent);
     /**
      * Default destructor.
      */
@@ -49,7 +51,9 @@ namespace FreeMat {
     /**
      * Render the legend (if any) to the current plot.
      */
-    void DrawLegend(GraphicsContext &gc);
+    void DrawLegend(QPainter &gc);
+    void DrawAxes(QPainter& gc);
+    void DrawTextLabels(QPainter &gc);
     /**
      * Set the legend data for the current plot.  The
      * legendData array is a sequence of linestyle/label
@@ -112,7 +116,7 @@ namespace FreeMat {
     /**
      * Routine that draws the contents of the window.
      */
-    void OnDraw(GraphicsContext &gc);
+    void paintEvent(QPaintEvent* e);
     /**
      * Force the axes to fit the data tightly - i.e., with no
      * additional buffering to make the labels come out nicely.
@@ -124,9 +128,7 @@ namespace FreeMat {
      */
     void SetAxesAuto();
     void MapPoint(double, double, int&, int&);
-    void DrawAxes(GraphicsContext& gc);
     void AddText(double, double, std::string);
-    void DrawTextLabels(GraphicsContext &gc);
   private:
     /**
      * The vector of text data
@@ -198,9 +200,9 @@ namespace FreeMat {
   
   // These are some helper routines called by DataSet2D and
   // Plot2D itself
-  LineStyleType UtilityMapLineStyleToType(char line);
-  Color UtilityMapColorSpecToColor(char cspec);
-  void PutSymbol(GraphicsContext &dc, int xp, int yp, char symbol, int len);
+  Qt::PenStyle UtilityMapLineStyleToType(char line);
+  QColor UtilityMapColorSpecToColor(char cspec);
+  void PutSymbol(QPainter &dc, int xp, int yp, char symbol, int len);
 }
 
 #endif  

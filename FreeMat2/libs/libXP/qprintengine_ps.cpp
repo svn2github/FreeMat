@@ -24,9 +24,9 @@
 #include "qplatformdefs.h"
 
 #include "qprintengine_ps_p.h"
-#include <private/qpainter_p.h>
-#include <private/qfontengine_p.h>
-#include <private/qpaintengine_p.h>
+#include "private/qpainter_p.h"
+#include "private/qfontengine_p.h"
+#include "private/qpaintengine_p.h"
 
 // <X11/Xlib.h> redefines Status -> int
 #if defined(Status)
@@ -58,8 +58,10 @@
 #include "qfontdatabase.h"
 #include "qbitmap.h"
 #include "qregion.h"
+#if 0
 #include <private/qunicodetables_p.h>
 #include <private/qpainterpath_p.h>
+#endif
 #include <qdebug.h>
 
 #if defined(Q_OS_WIN32)

@@ -310,7 +310,7 @@ namespace FreeMat {
     f->SetImageArray(img,zoomfact);
     f->Redraw();
     Figure *t = GetCurrentFig();
-    t->Resize(f->getZoomColumns(),f->getZoomRows());
+    f->Resize(Point2D(f->getZoomColumns(),f->getZoomRows()));
     t->Redraw();
     return ArrayVector();
   }

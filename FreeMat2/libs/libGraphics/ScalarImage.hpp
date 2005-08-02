@@ -69,8 +69,9 @@ namespace FreeMat {
     void WindowLevel(double awindow, double alevel);
     double GetCurrentWindow();
     double GetCurrentLevel();
-    int getZoomColumns() {return zoomColumns;}
-    int getZoomRows() {return zoomRows;}
+    int getZoomColumns();
+    int getZoomRows();
+    int ColorbarWidth(int zoomRows);
     void OnResize();
   private:
     /**
@@ -122,6 +123,13 @@ namespace FreeMat {
     bool inClickState;
     int xposClick;
     int yposClick;
+    bool drawColorBar;
+    // The data for the colorbar
+    uchar *barData;
+    int barWidth;
+    int numTicks;
+    int tickWidth;
+    int maxLabelWidth;
   };
 }
 #endif  

@@ -88,6 +88,8 @@ namespace FreeMat {
     m_cols = cols;
     m_type = new figType[rows*cols];
     m_wid = new XPWidget*[rows*cols];
+    for (int i=0;i<rows*cols;i++)
+      m_wid[i] = NULL;
   }
 
   void Figure::ActivateMatrixEntry(int slot) {

@@ -288,10 +288,11 @@ namespace FreeMat {
     Point2D sze(gc.GetCanvasSize());
     int width = sze.x;
     int height = sze.y;
+#if 0
     gc.SetBackGroundColor(Color("light grey"));
     gc.SetForeGroundColor(Color("light grey"));
     gc.FillRectangle(Rect2D(0, 0, sze.x, sze.y));
-
+#endif
     if (updating || (data.size() == 0))
       return;
     gc.SetFont(12);

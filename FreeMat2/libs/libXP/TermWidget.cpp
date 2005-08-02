@@ -1,5 +1,5 @@
 #include "TermWidget.hpp"
-
+#include <iostream>
 #include <qglobal.h>
 
 #define TMIN(a,b) ((a) < (b) ? (a) : (b))
@@ -90,8 +90,8 @@ void TermWidget::resizeTextSurface() {
 	  new_history[(i+offset)*new_width+j] = m_history[i*m_width+j];
     } else {
       for (int i=offset;i<m_scrollback;i++)
-	for (int j=0;j<minwidth;j++)
-	  new_history[i*new_width+j] = m_history[(i-offset)*m_width+j];
+      	for (int j=0;j<minwidth;j++)
+      	  new_history[i*new_width+j] = m_history[(i-offset)*m_width+j];
     }
   }
   // Copy old history to new history here
@@ -106,7 +106,6 @@ void TermWidget::resizeTextSurface() {
     m_history_lines -= (new_height-m_height);
     m_history_lines = TMAX(0,m_history_lines);
   }
-
   m_width = new_width;
   m_height = new_height;
   m_clearall = true;

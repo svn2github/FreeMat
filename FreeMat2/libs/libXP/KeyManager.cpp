@@ -1003,6 +1003,7 @@ char* KeyManager::getLine(std::string aprompt) {
 #else
     m_loop = new QEventLoop(this);
     m_loop->exec();
+    delete m_loop;
 #endif
   }
   std::string theline(enteredLines.front());

@@ -1,10 +1,16 @@
 #!/usr/bin/perl -w
 
 open(INPUT,"<html/node1.html") || die "Can't open html/node1.html for processing...\n";
-open(OUTPUT,">html/manual.dcf") || die "Can't open manual.dcf...\n";
+open(OUTPUT,">html/manual.adf") || die "Can't open manual.adf...\n";
 print OUTPUT "<assistantconfig version=\"3.2.0\">\n";
-print OUTPUT " <DCF ref=\"index.html\" >\n";
-print OUTPUT " <section title=\"FreeMat Reference Manual\">\n";
+print OUTPUT "<profile>\n";
+print OUTPUT "	<property name=\"name\">FreeMatHelp</property>\n";
+print OUTPUT "  <property name=\"title\">FreeMat Help</property>\n";
+print OUTPUT "  <property name=\"startpage\">index.html</property>\n";
+print OUTPUT "  <property name=\"aboutmenutext\">About Help</property>\n";
+print OUTPUT "</profile>\n";
+print OUTPUT " <DCF ref=\"index.html\" title=\"FreeMat Documentation Set\">\n";
+print OUTPUT " <section ref=\"node1.html\" title=\"FreeMat Reference Manual\">\n";
 # Skip the prefix
 while (defined($data=<INPUT>)  && !($data =~ /Table of Contents/g)) {};
 # Skip the header

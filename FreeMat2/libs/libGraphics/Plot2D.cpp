@@ -30,7 +30,7 @@
 namespace FreeMat {
 
   Plot2D::Plot2D(QWidget *parent) : 
-    QWidget(parent,"plot2d",0) {
+    QPWidget(parent,"plot2d",0) {
     space = 10;
     holdflag = false;
     updating = false;
@@ -201,6 +201,7 @@ namespace FreeMat {
       data.clear();
     data.push_back(dp);
     SetAxesAuto();
+    setMinimumSize(200,150);
   }
 
   void Plot2D::DrawAxes(QPainter &gc) {
@@ -279,10 +280,7 @@ namespace FreeMat {
     yc = (int) v;
   }
 
-  void Plot2D::paintEvent(QPaintEvent *e) {
-    QWidget::paintEvent(e);
-    QPainter gc(this);
-
+  void Plot2D::DrawMe(QPainter &gc) {
     Point2D sze(width(),height());
     int width = sze.x;
     int height = sze.y;
@@ -368,7 +366,9 @@ namespace FreeMat {
     xAxis.SetAxisLength(plotWidth);
     yAxis.SetAxisLength(plotHeight);
     DrawAxes(gc);
-    gc.setClipRect(viewport.x1,viewport.y1,viewport.width,viewport.height);
+    gc.save();
+    QPoint origin(gc.xForm(QPoint(0,0)));
+    gc.setClipRect(viewport.x1+origin.x(),viewport.y1+origin.y(),viewport.width,viewport.height);
 
     for (int i=0;i<data.size();i++)
       data[i].DrawMe(gc, *this);
@@ -378,8 +378,8 @@ namespace FreeMat {
 
     if (!textx.empty())
       DrawTextLabels(gc);
+    gc.restore();
 
-    gc.setClipping(FALSE);
   }
 
   Qt::PenStyle UtilityMapLineStyleToType(char line) {

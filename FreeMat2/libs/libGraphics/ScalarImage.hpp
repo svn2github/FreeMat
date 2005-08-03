@@ -22,8 +22,7 @@
 #define __ScalarImage_h__
 
 #include "Array.hpp"
-#include "GraphicsContext.hpp"
-#include "XPWidget.hpp"
+#include "QPWidget.hpp"
 
 namespace FreeMat {
 
@@ -31,7 +30,7 @@ namespace FreeMat {
    * This is a window for viewing a scalar image with
    * a color map.
    */
-  class ScalarImage : public QWidget {
+  class ScalarImage : public QPWidget {
   public:
     /**
      * Create a new scalar image window with the given
@@ -62,7 +61,13 @@ namespace FreeMat {
     /**
      * Routine that draws the contents of the window.
      */
-    void OnDraw(GraphicsContext &gc);
+    void DrawMe(QPainter& gc);
+    /**
+     * A resize event for the widget
+     */
+    void resizeEvent(QResizeEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void GetClick(int& x, int& y);
     /**
      * Routine to change the window level
      */
@@ -71,8 +76,6 @@ namespace FreeMat {
     double GetCurrentLevel();
     int getZoomColumns();
     int getZoomRows();
-    int ColorbarWidth(int zoomRows);
-    void OnResize();
   private:
     /**
      * Our pointer to the raw data.  We own this data, and
@@ -123,13 +126,10 @@ namespace FreeMat {
     bool inClickState;
     int xposClick;
     int yposClick;
-    bool drawColorBar;
-    // The data for the colorbar
-    uchar *barData;
-    int barWidth;
-    int numTicks;
-    int tickWidth;
-    int maxLabelWidth;
+
+    bool click_mode;
+    int click_x;
+    int click_y;
   };
 }
 #endif  

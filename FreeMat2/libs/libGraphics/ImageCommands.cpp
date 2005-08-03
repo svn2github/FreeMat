@@ -153,8 +153,7 @@ namespace FreeMat {
     ScalarImage *f;
     f = GetCurrentImage();
     f->SetColormap(t);
-    Figure *fig = GetCurrentFig();
-    fig->repaint();
+    f->repaint();
     return ArrayVector();
   }
 
@@ -311,6 +310,7 @@ namespace FreeMat {
     f->repaint();
     Figure *t = GetCurrentFig();
     f->resize(f->getZoomColumns(),f->getZoomRows());
+    t->adjustSize();
     t->repaint();
     return ArrayVector();
   }

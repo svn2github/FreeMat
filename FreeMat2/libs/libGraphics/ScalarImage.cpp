@@ -23,12 +23,19 @@
 #include <iostream>
 #include "Malloc.hpp"
 #include "GraphicsCore.hpp"
-#include "QTGC.hpp"
+#include "Util.hpp"
+#include <qapplication.h>
+#include <qcursor.h>
 
 namespace FreeMat {
 
   ScalarImage::ScalarImage(QWidget* parent) 
-    : QWidget(parent,"scalarimage",0) {
+#ifdef QT3
+    : QPWidget(parent,"scalarimage",WRepaintNoErase) 
+#else
+      : QWidget(parent,"scalarimage",0) 
+#endif
+  {
     rawData = NULL;
     for (int i=0;i<256;i++) {
       colormap[0][i] = i;
@@ -40,10 +47,6 @@ namespace FreeMat {
     zoomImage = NULL;
     picData = NULL;
     inClickState = false;
-    drawColorBar = true;
-    barData = NULL;
-    barWidth = 20;
-    tickWidth = 10;
   }
   
   ScalarImage::~ScalarImage() {
@@ -51,11 +54,48 @@ namespace FreeMat {
   }
 
 
+  void ScalarImage::mousePressEvent(QMouseEvent* e) {
+    if (click_mode) {
+      click_x = e->x();
+      click_y = e->y();
+#ifdef QT3
+      qApp->exit();
+#else
+      m_loop->exit();
+#endif
+      click_mode = false;
+    }
+  }
+
+  void ScalarImage::GetClick(int &x, int &y) {
+    // Set the cross cursor
+#ifdef QT3
+    setCursor(QCursor(QCursor::CrossCursor));
+#else
+    setCursor(QCursor(Qt::CrossCursor));
+#endif
+    click_mode = true;
+    // Run the event loop
+#ifdef QT3
+    qApp->exec();
+#else
+    m_loop = new QEventLoop(this);
+    m_loop->exec();
+    delete m_loop;
+#endif
+    x = click_x;
+    y = click_y;
+#ifdef QT3
+    setCursor(QCursor(Qt::ArrowCursor));
+#else
+    setCursor(QCursor(Qt::ArrowCursor));
+#endif
+  }
+
   Array ScalarImage::GetPoint() {
     int xposClick;
     int yposClick;
     throw Exception("Need to implement!");
-#if 0
     GetClick(xposClick, yposClick);
     double valClick;
     if (zoomImage == NULL) 
@@ -69,7 +109,6 @@ namespace FreeMat {
     d_ip[1] = (double) (xposClick/((double)zoomColumns)*columns)+1;
     d_ip[2] = (double) valClick;
     return retval;
-#endif
   }
 
   void ScalarImage::SetColormap(Array &dp) {
@@ -111,8 +150,6 @@ namespace FreeMat {
       int client_height;
       client_width = width();
       client_height = height();
-      if (drawColorBar)
-	client_width -= (barWidth - tickWidth - ColorbarWidth(client_height));
       double zoomColFactor;
       zoomColFactor = ((double) client_width)/columns;
       double zoomRowFactor;
@@ -126,8 +163,6 @@ namespace FreeMat {
       int client_width;
       int client_height;
       client_width = width();
-      if (drawColorBar)
-	client_width -= (barWidth - tickWidth - ColorbarWidth(client_height));
       client_height = height();
       newZoomColumns = (int) (client_width);
       newZoomRows = (int) (client_height);
@@ -161,63 +196,23 @@ namespace FreeMat {
     UpdateImage();
   }
 
-  void ScalarImage::OnResize() {
+  void ScalarImage::resizeEvent(QResizeEvent* e) {
     if (zoom <= 0) 
       UpdateZoom(false);
     repaint();
   }
 
   int ScalarImage::getZoomColumns() {
-    if (!drawColorBar)
-      return zoomColumns;
-    else
-      return (zoomColumns + barWidth + tickWidth + ColorbarWidth(zoomRows));
+    return zoomColumns;
   }
 
   int ScalarImage::getZoomRows() {
     return zoomRows;
   }
 
-  int ScalarImage::ColorbarWidth(int zoomRows) {
-    QPainter pnt(this);
-    QTGC gc(pnt,1,1);
-    int numTicks = zoomRows/75;
-    int delTick = zoomRows/numTicks;
-    int maxWidth = 0;
-    for (int i=0;i<=numTicks;i++) {
-      char buffer[1000];
-      sprintf(buffer,"%f",level-window/2.0+i/((float)numTicks)*window);
-      Point2D pt(gc.GetTextExtent(buffer));
-      maxWidth = (maxWidth > pt.x) ? maxWidth : pt.x;
-    }
-    return maxWidth;
-  }
-
-  void ScalarImage::OnDraw(GraphicsContext &gc) {
+  void ScalarImage::DrawMe(QPainter &gc) {
     if (rawData == NULL) return;
-    gc.BlitImage(picData, zoomColumns, zoomRows, 0, 0);
-    if (drawColorBar)
-      gc.BlitImage(barData, barWidth, zoomRows, zoomColumns, 0);
-    numTicks = zoomRows/75;
-    int delTick = zoomRows/numTicks;
-    for (int i=0;i<=numTicks;i++) {
-      char buffer[1000];
-      int ypos = (numTicks-i)*delTick;
-      sprintf(buffer,"%f",level-window/2.0+i/((float)numTicks)*window);
-      if (i == 0)
-	gc.DrawTextStringAligned(buffer,
-				 Point2D(zoomColumns+barWidth+tickWidth+3,ypos),
-				 LR_LEFT,TB_BOTTOM);
-      else if (i == numTicks) 
-	gc.DrawTextStringAligned(buffer,
-				 Point2D(zoomColumns+barWidth+tickWidth+3,ypos),
-				 LR_LEFT,TB_TOP);
-      else
-	gc.DrawTextStringAligned(buffer,
-				 Point2D(zoomColumns+barWidth+tickWidth+3,ypos),
-				 LR_LEFT,TB_CENTER);
-      
-    }
+    BlitImage(gc,picData, zoomColumns, zoomRows, (width()-zoomColumns)/2, (height()-zoomRows)/2);
   }
 
   void ScalarImage::SetImageArray(Array &dp, double zoomf) {
@@ -278,22 +273,6 @@ namespace FreeMat {
 	op[ndx] = colormap[0][dv];
 	op[ndx+1] = colormap[1][dv];
 	op[ndx+2] = colormap[2][dv];
-      }
-    }
-    if (drawColorBar) {
-      delete barData;
-      barData = new uchar[barWidth*zoomRows*3];
-      uchar *op = barData;
-      for (int i=0;i<barWidth;i++) {
-	for (int j=0;j<zoomRows;j++) {
-	  int ndx;
-	  int dv;
-	  dv = ((float) j)/(zoomRows-1)*255;
-	  ndx = 3*(i+barWidth*(zoomRows-1-j));
-	  op[ndx] = colormap[0][dv];
-	  op[ndx+1] = colormap[1][dv];
-	  op[ndx+2] = colormap[2][dv];
-	}
       }
     }
     setMinimumSize(getZoomColumns(),getZoomRows());

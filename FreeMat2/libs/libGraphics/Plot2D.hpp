@@ -23,8 +23,7 @@
 
 #include "DataSet2D.hpp"
 #include "NewAxis.hpp"
-#include <qwidget.h>
-#include <qpainter.h>
+#include "QPWidget.hpp"
 #include <qpen.h>
 
 namespace FreeMat {
@@ -37,7 +36,7 @@ namespace FreeMat {
    * number of 2D data sets.  It is responsible 
    * for drawing the data sets and managing them.
    */
-  class Plot2D : public QWidget {
+  class Plot2D : public QPWidget {
   public:
     /**
      * Construct a 2D plot frame with the given
@@ -116,7 +115,7 @@ namespace FreeMat {
     /**
      * Routine that draws the contents of the window.
      */
-    void paintEvent(QPaintEvent* e);
+    void DrawMe(QPainter &gc);
     /**
      * Force the axes to fit the data tightly - i.e., with no
      * additional buffering to make the labels come out nicely.

@@ -23,6 +23,7 @@ namespace FreeMat {
     void ReconfigurePlotMatrix(int rows, int cols);
     void ActivateMatrixEntry(int slot);
     void GetPlotMatrix(int& rows, int& cols);
+    void Figure::closeEvent(QCloseEvent* e);
     void Copy();
   private:
     int m_num;

@@ -1,4 +1,7 @@
 #include "Util.hpp"
+#include <qimage.h>
+#include <qapplication.h>
+#include <qwidget.h>
 
 namespace FreeMat {
   Point2D GetTextExtent(QPainter& gc, std::string label) {
@@ -56,5 +59,60 @@ namespace FreeMat {
 
   void SetFontSize(QPainter& gc, int size) {
     gc.setFont(QFont("Helvetica",size));
+  }
+  
+  void BlitImage(QPainter& gc, unsigned char *data, int width, int height, int x0, int y0) {
+#ifdef QT3
+    QImage qimg(width, height, 32);
+#else
+    QImage qimg(width, height, QImage::Format_RGB32);
+#endif
+    for (int i=0;i<height;i++) {
+      uint *p = (uint*) qimg.scanLine(i);
+      for (int j=0;j<width;j++)
+	p[j] = qRgb(data[i*width*3 + j*3],data[i*width*3 + j*3 + 1],data[i*width*3 + j*3 + 2]);
+    }
+    gc.drawImage(x0,y0,qimg);
+  }
+
+  QWidget *save = NULL;
+  
+  void SaveFocus() {
+    save = qApp->focusWidget();
+  }
+  
+  void RestoreFocus() {
+    if (save)
+      save->setFocus();
+  }
+  
+  std::string NormalizeImageExtension(std::string ext) {
+    std::transform(ext.begin(),ext.end(),ext.begin(),toupper);
+    if (ext == "JPG") return std::string("JPEG");
+    if ((ext == "PS") || (ext == "EPS")) return ext;
+#ifdef QT3
+    QStrList formats(QImage::outputFormats());
+    for (int i=0;i<formats.count();i++)
+      if (formats.at(i) == ext) return ext;
+#else
+    QList<QByteArray> formats(QImageWriter::supportedImageFormats());
+    for (int i=0;i<formats.count();i++)
+    if (formats.at(i).data() == ext) return ext;
+#endif
+    return std::string();
+  }
+  
+  std::string FormatListAsString() {
+    std::string ret_text = "Supported Formats: ";
+#ifdef QT3
+    QStrList formats(QImage::outputFormats());
+    for (int i=0;i<formats.count();i++)
+      ret_text = ret_text + formats.at(i) + " ";
+#else
+    QList<QByteArray> formats(QImageWriter::supportedImageFormats());
+    for (int i=0;i<formats.count();i++)
+      ret_text = ret_text + formats.at(i).data() + " ";
+#endif
+    return ret_text;
   }
 }

@@ -17,7 +17,8 @@ Plot3D.hpp \
 SurfPlot.hpp \
 NewAxis.hpp \
 QTDraw.hpp \
-Util.hpp
+Util.hpp \
+QPWidget.hpp
 
 SOURCES += Axis.cpp \
 DataSet2D.cpp \
@@ -32,7 +33,8 @@ Plot3D.cpp \
 SurfPlot.cpp \
 NewAxis.cpp \
 QTDraw.cpp \
-Util.cpp
+Util.cpp \
+QPWidget.cpp
 
 DEPENDPATH += INCLUDEPATH
 

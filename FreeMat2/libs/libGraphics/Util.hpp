@@ -1,4 +1,5 @@
 #include <qpainter.h>
+#include <vector>
 #include "Point2D.hpp"
 
 namespace FreeMat {
@@ -24,4 +25,12 @@ typedef enum {
 			     int orient = 0);
   void DrawLines(QPainter& gc, std::vector<Point2D> pts);
   void SetFontSize(QPainter& gc, int size);
+  void BlitImage(QPainter& gc, unsigned char *data, int width, int height, int x0, int y0);
+  
+  void SaveFocus();
+  void RestoreFocus();
+  
+  std::string NormalizeImageExtension(std::string ext);
+  std::string FormatListAsString();
+  
 }

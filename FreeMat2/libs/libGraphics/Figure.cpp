@@ -5,7 +5,26 @@
 #include "HandleList.hpp"
 #include "WalkTree.hpp"
 #include "SurfPlot.hpp"
+#include "QPWidget.hpp"
+#include "Util.hpp"
 #define MAX_FIGS 100
+
+#include <qapplication.h>
+#include <qpixmap.h>
+#include <qimage.h>
+#include <qobjectlist.h>
+#include <qclipboard.h>
+
+#ifndef QT3
+#include <QMouseEvent>
+#include <QImageWriter>
+#include <qpsprinter.h>
+#define QPRN QPSPrinter
+#else
+#include <qprinter.h>
+#define QPRN QPrinter
+#endif
+
 
 namespace FreeMat {
   typedef struct {
@@ -29,6 +48,11 @@ namespace FreeMat {
     figs[fig] = NULL;
     if (currentFig == fig)
       currentFig = -1;
+  }
+
+  void Figure::closeEvent(QCloseEvent* e) {
+    NotifyFigClose(m_num);
+    QWidget::closeEvent(e);
   }
   
   Figure::Figure(int fignum) : 
@@ -57,7 +81,6 @@ namespace FreeMat {
   }
 
   figType Figure::getType() {
-    std::cout << "Type of slot " << m_active_slot << " is " << m_type[m_active_slot] << "\n";
     return m_type[m_active_slot];
   }
   
@@ -68,8 +91,7 @@ namespace FreeMat {
   void Figure::SetFigureChild(QWidget *widget, figType typ) {
     if (m_wid[m_active_slot]) {
       m_wid[m_active_slot]->hide();
-      //      delete m_wid[m_active_slot];
-      // FIXME
+      delete m_wid[m_active_slot];
     }
     m_type[m_active_slot] = typ;
     m_wid[m_active_slot] = widget;
@@ -107,9 +129,8 @@ namespace FreeMat {
 
   void Figure::Copy() {
     Figure* f = GetCurrentFig();
-    QWidget* g = f->GetChildWidget();
-    // FIXME
-    //   g->Copy();
+    QClipboard *cb = QApplication::clipboard();
+    cb->setPixmap(QPixmap::grabWidget(f));
   }
 
   void InitializeFigureSubsystem() {
@@ -153,6 +174,67 @@ namespace FreeMat {
     figs[currentFig]->show();
     RestoreFocus();
     return figs[currentFig];
+  }
+
+
+#ifdef QT3
+  void PrintWidgetHelper(QWidget* g, QPainter &gc) {
+    if (!g) return;
+    QPWidget *w = dynamic_cast<QPWidget *>(g);
+    if (w) {
+      gc.save();
+      gc.translate(w->pos().x(),w->pos().y());
+      w->DrawMe(gc);
+      gc.restore();
+    }
+    const QObjectList * children = g->children();
+    if ( children ) {
+      QObjectListIt it( *children );
+      QObject * child;
+      while( (child=it.current()) != 0 ) {
+ 	++it;
+ 	if ( child->isWidgetType() &&
+ 	     !((QWidget *)child)->isHidden() &&
+ 	     ((QWidget *)child)->geometry().intersects( g->rect() ) ) {
+ 	  PrintWidgetHelper((QWidget*) child, gc);
+ 	}
+       }
+     }
+   }
+#else
+  void PrintWidgetHelper(QWidget* g, QPaintDevice *mprnt) {
+    QPainter::setRedirected(g, paint);
+    QPaintEvent e(g->rect());
+    QApplication::sendEvent(g, &e);
+    QPainter::restoreRedirected(g);
+  }
+#endif
+    
+
+  bool PrintWidget(QWidget* g, std::string filename, std::string type) {
+    if (type == "EPS" || type == "PS") {
+      QPRN mprnt;
+#ifdef QT3
+      mprnt.setOutputToFile(TRUE);
+      mprnt.setOutputFileName(filename);
+#else
+      mprnt.setOutputFileName(filename.c_str());
+#endif
+      mprnt.setColorMode(QPRN::Color);
+      QPainter p(&mprnt);
+      p.setClipRect(g->rect());
+      PrintWidgetHelper(g, p);
+      return true;
+    } else {
+      // Binary print - use grabWidget
+      QPixmap pxmap(QPixmap::grabWidget(g));
+#ifdef QT3
+      QImage img(pxmap.convertToImage());
+#else
+      QImage img(pxmap.toImage());
+#endif
+      return img.save(filename.c_str(),type.c_str());
+    }
   }
 
   //!
@@ -203,8 +285,7 @@ namespace FreeMat {
     Array t(arg[0]);
     Figure* f = GetCurrentFig();
     std::string outname(t.getContentsAsCString());
-    QWidget* g = f->GetChildWidget();
-    if (g) {
+    if (f) {
       int pos = outname.rfind(".");
       if (pos < 0)
 	throw Exception("print function argument must contain an extension - which is used to figure out the format for the output");
@@ -215,9 +296,8 @@ namespace FreeMat {
 	throw Exception(std::string("unsupported output format ") + 
 			original_extension + " for print.\n" + 
 			FormatListAsString());
-      throw Exception("Need to re-enable printing");
-      // FIXME
-      //      g->Print(outname,modified_extension);
+      if (!PrintWidget(f,outname,modified_extension))
+	throw Exception("Printing failed!");
     }
     return ArrayVector();
   }
@@ -594,4 +674,6 @@ namespace FreeMat {
     Figure* fig = GetCurrentFig();
     fig->repaint();
   }
+
+  
 }

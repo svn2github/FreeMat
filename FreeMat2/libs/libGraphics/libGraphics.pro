@@ -16,7 +16,8 @@ Figure.hpp \
 Plot3D.hpp \
 SurfPlot.hpp \
 NewAxis.hpp \
-QTDraw.hpp
+QTDraw.hpp \
+Util.hpp
 
 SOURCES += Axis.cpp \
 DataSet2D.cpp \
@@ -30,7 +31,8 @@ Figure.cpp \
 Plot3D.cpp \
 SurfPlot.cpp \
 NewAxis.cpp \
-QTDraw.cpp
+QTDraw.cpp \
+Util.cpp
 
 DEPENDPATH += INCLUDEPATH
 

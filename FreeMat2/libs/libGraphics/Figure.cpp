@@ -4,7 +4,6 @@
 #include <algorithm>
 #include "HandleList.hpp"
 #include "WalkTree.hpp"
-#include "Plot3D.hpp"
 #include "SurfPlot.hpp"
 #define MAX_FIGS 100
 
@@ -58,6 +57,7 @@ namespace FreeMat {
   }
 
   figType Figure::getType() {
+    std::cout << "Type of slot " << m_active_slot << " is " << m_type[m_active_slot] << "\n";
     return m_type[m_active_slot];
   }
   
@@ -68,7 +68,8 @@ namespace FreeMat {
   void Figure::SetFigureChild(QWidget *widget, figType typ) {
     if (m_wid[m_active_slot]) {
       m_wid[m_active_slot]->hide();
-      delete m_wid[m_active_slot];
+      //      delete m_wid[m_active_slot];
+      // FIXME
     }
     m_type[m_active_slot] = typ;
     m_wid[m_active_slot] = widget;
@@ -85,15 +86,14 @@ namespace FreeMat {
     }
     delete m_wid;
     delete m_type;
-//     delete m_layout;
-//     m_layout = new QGridLayout(this);
-//     //    setLayout(m_layout);
     m_rows = rows;
     m_cols = cols;
     m_type = new figType[rows*cols];
     m_wid = new QWidget*[rows*cols];
-    for (int i=0;i<rows*cols;i++)
+    for (int i=0;i<rows*cols;i++) {
       m_wid[i] = NULL;
+      m_type[i] = fignone;
+    }
   }
 
   void Figure::ActivateMatrixEntry(int slot) {

@@ -19,7 +19,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Plot2D.hpp"
-#include "GraphicsCore.hpp"
+#include "Util.hpp"
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
@@ -210,22 +210,20 @@ namespace FreeMat {
     yAxis.GetAxisExtents(ymin,ymax);
     MapPoint(xmin,ymin,xc_min,yc_min);
     MapPoint(xmax,ymax,xc_max,yc_max);
-    gc.SetForeGroundColor(Color("black"));
-    gc.SetLineStyle(LINE_SOLID);
-    gc.DrawLine(Point2D(xc_min,yc_min),Point2D(xc_max,yc_min));
-    gc.DrawLine(Point2D(xc_min,yc_min),Point2D(xc_min,yc_max));
+    gc.setPen(QPen(Qt::black));
+    gc.drawLine(xc_min,yc_min,xc_max,yc_min);
+    gc.drawLine(xc_min,yc_min,xc_min,yc_max);
     if (!xlabel.empty()) {
-      gc.DrawTextStringAligned(xlabel,
-			       Point2D((xc_min+xc_max)/2,
-				       yc_min+space+sze_textheight+space),
-			       LR_CENTER, TB_TOP);
+      DrawTextStringAligned(gc,xlabel,
+			    Point2D((xc_min+xc_max)/2,
+				    yc_min+space+sze_textheight+space),
+			    LR_CENTER, TB_TOP);
     }
     if (!ylabel.empty()) {
-      gc.DrawTextStringAligned(ylabel,
-			       Point2D(space+sze_textheight,
-				       (yc_min+yc_max)/2),
-			       LR_CENTER, TB_TOP,
-			       ORIENT_90);
+      DrawTextStringAligned(gc,ylabel,
+			    Point2D(space+sze_textheight,
+				    (yc_min+yc_max)/2),
+			    LR_CENTER, TB_TOP, 90);
     }
     std::vector<double> xtics;
     xtics = xAxis.GetTickLocations();
@@ -236,18 +234,16 @@ namespace FreeMat {
       int xn, yn;
       xp = xtics[i]; yp = ymin;
       MapPoint(xp,yp,xn,yn);
-      gc.DrawTextStringAligned(xlabels[i],Point2D(xn,yn+ticlen),
-			       LR_CENTER, TB_TOP);
+      DrawTextStringAligned(gc,xlabels[i],Point2D(xn,yn+ticlen),
+			    LR_CENTER, TB_TOP);
       int xn2, yn2;
       MapPoint(xp,ymax,xn2,yn2);
       if (gridflag && (xn != xc_min) && (xn != xc_max)) {
-	gc.SetForeGroundColor(Color("light grey"));
-	gc.SetLineStyle(LINE_DOTTED);
-	gc.DrawLine(Point2D(xn,yn),Point2D(xn,yn2));
+	gc.setPen(QPen(Qt::lightGray,0,Qt::DotLine));
+	gc.drawLine(xn,yn,xn,yn2);
       }
-      gc.SetForeGroundColor(Color("black"));
-      gc.SetLineStyle(LINE_SOLID);
-      gc.DrawLine(Point2D(xn,yn),Point2D(xn,yn-ticlen));
+      gc.setPen(QPen(Qt::black));
+      gc.drawLine(xn,yn,xn,yn-ticlen);
     }
     std::vector<double> ytics;
     ytics = yAxis.GetTickLocations();
@@ -258,18 +254,16 @@ namespace FreeMat {
       int xn, yn;
       xp = xmin; yp = ytics[i];
       MapPoint(xp,yp,xn,yn);
-      gc.DrawTextStringAligned(ylabels[i],Point2D(xn-5,yn),
-			       LR_RIGHT, TB_CENTER);
+      DrawTextStringAligned(gc,ylabels[i],Point2D(xn-5,yn),
+			    LR_RIGHT, TB_CENTER);
       int xn2, yn2;
       MapPoint(xmax,yp,xn2,yn2);
       if (gridflag && (yn != yc_min) && (yn != yc_max)) {
-	gc.SetForeGroundColor(Color("light grey"));
-	gc.SetLineStyle(LINE_DOTTED);
-	gc.DrawLine(Point2D(xn,yn),Point2D(xn2,yn));
+	gc.setPen(QPen(Qt::lightGray,0,Qt::DotLine));
+	gc.drawLine(xn,yn,xn2,yn);
       }
-      gc.SetForeGroundColor(Color("black"));
-      gc.SetLineStyle(LINE_SOLID);
-      gc.DrawLine(Point2D(xn,yn),Point2D(xn+ticlen,yn));
+      gc.setPen(QPen(Qt::black));
+      gc.drawLine(xn,yn,xn+ticlen,yn);
     }
   }
 
@@ -285,8 +279,11 @@ namespace FreeMat {
     yc = (int) v;
   }
 
-  void Plot2D::OnDraw(QPainter &gc) {
-    Point2D sze(gc.GetCanvasSize());
+  void Plot2D::paintEvent(QPaintEvent *e) {
+    QWidget::paintEvent(e);
+    QPainter gc(this);
+
+    Point2D sze(width(),height());
     int width = sze.x;
     int height = sze.y;
 #if 0
@@ -296,7 +293,7 @@ namespace FreeMat {
 #endif
     if (updating || (data.size() == 0))
       return;
-    gc.SetFont(12);
+    SetFontSize(gc,12);
 
     int client_y_offset = 0;
     int client_x_offset = 0;
@@ -309,7 +306,7 @@ namespace FreeMat {
     space = 10;
     ticlen = 5;
     // A generic length for text
-    Point2D t(gc.GetTextExtent("|"));
+    Point2D t(GetTextExtent(gc,"|"));
     sze_textheight = t.y;
 
     // The title is located space pixels down from the
@@ -334,14 +331,14 @@ namespace FreeMat {
     }
 
     // Adjust the width to handle the length of the last x-label
-    t = gc.GetTextExtent(xlabels.back());
+    t = GetTextExtent(gc,xlabels.back());
     plotWidth -= t.x/2;
 
     // Adjust the plotX for the width of the labels on the y-axis
     int maxwidth;
     maxwidth = 0;
     for (int i=0;i<ylabels.size();i++){ 
-      t = gc.GetTextExtent(ylabels[i]);
+      t = GetTextExtent(gc,ylabels[i]);
       maxwidth = std::max(maxwidth,t.x);
     }
     plotX += maxwidth+space/2;
@@ -360,19 +357,18 @@ namespace FreeMat {
       plotY += (space+sze_textheight);
     }
 
-    gc.SetForeGroundColor(Color("black"));
+    gc.setPen(QPen(Qt::black));
     if (!title.empty())
-      gc.DrawTextStringAligned(title, Point2D(plotX + plotWidth/2,space),
-			       LR_CENTER, TB_TOP);
-    gc.SetForeGroundColor(Color("white"));
-    gc.FillRectangle(Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1));
-    
+      DrawTextStringAligned(gc, title, Point2D(plotX + plotWidth/2,space),
+			    LR_CENTER, TB_TOP);
+    gc.fillRect(plotX, plotY, plotWidth + 1, plotHeight + 1,
+		QBrush(Qt::white));
 
     viewport = Rect2D(plotX, plotY, plotWidth + 1, plotHeight + 1);
     xAxis.SetAxisLength(plotWidth);
     yAxis.SetAxisLength(plotHeight);
     DrawAxes(gc);
-    gc.PushClippingRegion(viewport);
+    gc.setClipRect(viewport.x1,viewport.y1,viewport.width,viewport.height);
 
     for (int i=0;i<data.size();i++)
       data[i].DrawMe(gc, *this);
@@ -383,21 +379,21 @@ namespace FreeMat {
     if (!textx.empty())
       DrawTextLabels(gc);
 
-    gc.PopClippingRegion();
+    gc.setClipping(FALSE);
   }
 
-  LineStyleType UtilityMapLineStyleToType(char line) {
+  Qt::PenStyle UtilityMapLineStyleToType(char line) {
     if (line == '-')
-      return LINE_SOLID;
+      return Qt::SolidLine;
     if (line == ':')
-      return LINE_DOTTED;
+      return Qt::DotLine;
     if (line == ';')
-      return LINE_DASH_DOT;
+      return Qt::DashDotLine;
     if (line == '|')
-      return LINE_DASHED;
+      return Qt::DashLine;
     if (line == ' ')
-      return LINE_NONE;
-    return LINE_SOLID;
+      return Qt::NoPen;
+    return Qt::SolidLine;
   }
 
   QColor UtilityMapColorSpecToColor(char color) {

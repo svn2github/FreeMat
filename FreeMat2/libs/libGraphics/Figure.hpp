@@ -2,6 +2,7 @@
 #define __Figure_hpp__
 
 #include <string>
+#include <qwidget.h>
 #ifdef QT3
 #include <qlayout.h>
 #else

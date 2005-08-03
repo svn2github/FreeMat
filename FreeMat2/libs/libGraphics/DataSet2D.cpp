@@ -24,6 +24,7 @@
 #include "IEEEFP.hpp"
 #include "Plot2D.hpp"
 #include "GraphicsCore.hpp"
+#include "Util.hpp"
 #include <iostream>
 
 namespace FreeMat {
@@ -144,7 +145,6 @@ namespace FreeMat {
     DrawLines(dc,pts);
   }
 
-#if 0
   DataSet3D::DataSet3D(Array xarg, Array yarg, Array zarg,
 		       char a_color, char a_symbol, char a_line) {
     color = a_color;
@@ -160,6 +160,7 @@ namespace FreeMat {
   }
 
   void DataSet3D::SetPenColor(GraphicsContext& dc, bool useStyle) {
+#if 0
     LineStyleType penStyle;
 
     if (useStyle)
@@ -173,6 +174,8 @@ namespace FreeMat {
 
     if (useStyle && (line == ' '))
       dc.SetLineStyle( LINE_NONE );
+    //FIXME
+#endif
   }
 
   void DataSet3D::GetDataRange(double &xMin, double &xMax, 
@@ -288,11 +291,6 @@ namespace FreeMat {
       // Map the data point to a coordinate
       if (IsFinite(xVals[i]) && IsFinite(yVals[i]) && IsFinite(zVals[i])) {
 	int xp, yp, zp;
-#if 0
-	xp = xAxis->MapPoint(xVals[i]);
-	yp = yAxis->MapPoint(yVals[i]);
-	zp = zAxis->MapPoint(zVals[i]);
-#endif
 	xp = xVals[i];
 	yp = yVals[i];
 	zp = zVals[i];
@@ -301,7 +299,8 @@ namespace FreeMat {
 		    xform[0][2]*zp + xform[0][3]) + 200;
 	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
 		    xform[1][2]*zp + xform[1][3]) + 200;
-	PutSymbol(dc, xxp, yyp, symbol, symbolLength);
+	//	PutSymbol(dc, xxp, yyp, symbol, symbolLength);
+	//FIXME
       }
     }
     // Plot the lines
@@ -328,5 +327,4 @@ namespace FreeMat {
     }
     dc.DrawLines(pts);
   }
-#endif
 }

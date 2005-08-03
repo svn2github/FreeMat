@@ -59,11 +59,6 @@ namespace FreeMat {
   ArrayVector SubPlotFunction(int, const ArrayVector&);
   void LoadGraphicsCoreFunctions(Context* context);
   void InitializeFigureSubsystem();
-  
-  // Helper functions
-  Point2D GetTextExtent(QPainter& gc, std::string label);
-  void DrawTextString(QPainter& gc, std::string txt, Point2D pos, OrientationType orient);
-  void DrawLines(QPainter& gc, std::vector<Point2D> pts);
 }
 
 #endif

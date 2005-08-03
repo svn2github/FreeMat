@@ -105,7 +105,6 @@ namespace FreeMat {
     void GetDataRange(double& xMin, double& xMax, double& yMin, double& yMax);
   };
 
-#if 0
   /**
    * This class encapsulates a single line in a 3D plot, including
    * the number of points in the plot, the x, y, z coordinates, the
@@ -131,6 +130,5 @@ namespace FreeMat {
 		      double& yMin, double& yMax,
 		      double& zMin, double& zMax);
   };
-#endif
 }
 #endif

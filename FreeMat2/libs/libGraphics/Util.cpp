@@ -2,6 +2,7 @@
 #include <qimage.h>
 #include <qapplication.h>
 #include <qwidget.h>
+#include <qimagewriter.h>
 
 namespace FreeMat {
   Point2D GetTextExtent(QPainter& gc, std::string label) {

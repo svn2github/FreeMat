@@ -23,6 +23,7 @@
 
 #include "Array.hpp"
 #include "QPWidget.hpp"
+#include <qeventloop.h>
 
 namespace FreeMat {
 
@@ -37,6 +38,11 @@ namespace FreeMat {
      * figure number.
      */
     ScalarImage(QWidget* parent);
+    /**
+     * Kind of a copy constructor - duplicates the image data
+     * colormap, etc.
+     */
+    ScalarImage(QWidget* parent, ScalarImage* src);
     /**
      * Destructor.
      */
@@ -130,6 +136,9 @@ namespace FreeMat {
     bool click_mode;
     int click_x;
     int click_y;
+#ifndef QT3
+    QEventLoop *m_loop;
+#endif
   };
 }
 #endif  

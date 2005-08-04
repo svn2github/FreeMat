@@ -18,7 +18,8 @@ SurfPlot.hpp \
 NewAxis.hpp \
 QTDraw.hpp \
 Util.hpp \
-QPWidget.hpp
+QPWidget.hpp \
+ColorBar.hpp
 
 SOURCES += Axis.cpp \
 DataSet2D.cpp \
@@ -34,7 +35,8 @@ SurfPlot.cpp \
 NewAxis.cpp \
 QTDraw.cpp \
 Util.cpp \
-QPWidget.cpp
+QPWidget.cpp \
+ColorBar.cpp
 
 DEPENDPATH += INCLUDEPATH
 

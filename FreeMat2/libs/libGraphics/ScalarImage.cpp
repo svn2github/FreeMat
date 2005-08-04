@@ -26,15 +26,34 @@
 #include "Util.hpp"
 #include <qapplication.h>
 #include <qcursor.h>
+#ifndef QT3
+#include <QMouseEvent>
+#endif
 
 namespace FreeMat {
 
+  ScalarImage::ScalarImage(QWidget* parent, ScalarImage* src) 
+    : QPWidget(parent,"scalarimage") 
+  {
+    rows = src->rows;
+    columns = src->columns;
+    rawData = (double*) Malloc(rows*columns*sizeof(double));
+    memcpy(rawData,src->rawData,rows*columns*sizeof(double));
+    memcpy(colormap,src->colormap,sizeof(colormap));
+    window = src->window;
+    level = src->level;
+    zoom = src->zoom;
+    zoomColumns = src->zoomColumns;
+    zoomRows = src->zoomRows;
+    zoomImage = new double[zoomColumns*zoomRows];
+    memcpy(zoomImage,src->zoomImage,zoomColumns*zoomRows*sizeof(double));
+    picData = new uchar[zoomColumns*zoomRows*3];
+    memcpy(picData,src->picData,zoomColumns*zoomRows*3*sizeof(uchar));
+    setMinimumSize(zoomColumns,zoomRows);
+  }
+
   ScalarImage::ScalarImage(QWidget* parent) 
-#ifdef QT3
-    : QPWidget(parent,"scalarimage",WRepaintNoErase) 
-#else
-      : QWidget(parent,"scalarimage",0) 
-#endif
+    : QPWidget(parent,"scalarimage") 
   {
     rawData = NULL;
     for (int i=0;i<256;i++) {
@@ -95,7 +114,6 @@ namespace FreeMat {
   Array ScalarImage::GetPoint() {
     int xposClick;
     int yposClick;
-    throw Exception("Need to implement!");
     GetClick(xposClick, yposClick);
     double valClick;
     if (zoomImage == NULL) 
@@ -211,7 +229,7 @@ namespace FreeMat {
   }
 
   void ScalarImage::DrawMe(QPainter &gc) {
-    if (rawData == NULL) return;
+    if (!rawData || !picData) return;
     BlitImage(gc,picData, zoomColumns, zoomRows, (width()-zoomColumns)/2, (height()-zoomRows)/2);
   }
 

@@ -43,6 +43,7 @@ namespace FreeMat {
   ArrayVector TocFunction(int,const ArrayVector& arg);
   ArrayVector AxisFunction(int,const ArrayVector& arg);
   ArrayVector ColormapFunction(int,const ArrayVector& arg);
+  ArrayVector ColorbarFunction(int,const ArrayVector& arg);
   ArrayVector ZoomFunction(int,const ArrayVector& arg);
   ArrayVector PickFileFunction(int,const ArrayVector& arg);
   ArrayVector PointFunction(int,const ArrayVector& arg);

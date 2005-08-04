@@ -2,8 +2,8 @@
 
 namespace FreeMat {
 
-QPWidget::QPWidget(QWidget* parent, const char *Name, WFlags f) :
-  QWidget(parent,Name,f) {
+QPWidget::QPWidget(QWidget* parent, const char *Name) :
+  QWidget(parent,Name) {
 }
 
 void QPWidget::paintEvent(QPaintEvent* e) {

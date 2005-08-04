@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "Malloc.hpp"
 #include "Figure.hpp"
+#include "Colorbar.hpp"
 
 namespace FreeMat {
   ScalarImage* GetCurrentImage() {
@@ -154,6 +155,26 @@ namespace FreeMat {
     f = GetCurrentImage();
     f->SetColormap(t);
     f->repaint();
+    return ArrayVector();
+  }
+
+  ArrayVector ColorbarFunction(int nargout, const ArrayVector& arg) {
+    Figure *fig = GetCurrentFig();
+    if (fig->getType() != figscimg)
+      return ArrayVector();
+    // Get the scalar image widget
+    ScalarImage *f = (ScalarImage*) fig->GetChildWidget();
+    // We need a new widget
+    QWidget *w = new QWidget(fig,"container");
+    ScalarImage *fcopy = new ScalarImage(w,f);
+    QGridLayout *l = new QGridLayout(w);
+    ColorBar *c = new ColorBar(w);
+    c->WindowLevel(10,5);
+    l->addWidget(fcopy,0,0);
+    l->addWidget(c,0,1);
+    fcopy->show();
+    c->show();
+    fig->SetFigureChild(w,figcbar);
     return ArrayVector();
   }
 

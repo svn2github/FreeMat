@@ -12,7 +12,6 @@
 #include <qapplication.h>
 #include <qpixmap.h>
 #include <qimage.h>
-#include <qobjectlist.h>
 #include <qclipboard.h>
 
 #ifndef QT3
@@ -21,6 +20,7 @@
 #include <qpsprinter.h>
 #define QPRN QPSPrinter
 #else
+#include <qobjectlist.h>
 #include <qprinter.h>
 #define QPRN QPrinter
 #endif
@@ -177,7 +177,6 @@ namespace FreeMat {
   }
 
 
-#ifdef QT3
   void PrintWidgetHelper(QWidget* g, QPainter &gc) {
     if (!g) return;
     QPWidget *w = dynamic_cast<QPWidget *>(g);
@@ -187,6 +186,7 @@ namespace FreeMat {
       w->DrawMe(gc);
       gc.restore();
     }
+#ifdef QT3
     const QObjectList * children = g->children();
     if ( children ) {
       QObjectListIt it( *children );
@@ -199,16 +199,18 @@ namespace FreeMat {
  	  PrintWidgetHelper((QWidget*) child, gc);
  	}
        }
-     }
-   }
+    }
 #else
-  void PrintWidgetHelper(QWidget* g, QPaintDevice *mprnt) {
-    QPainter::setRedirected(g, paint);
-    QPaintEvent e(g->rect());
-    QApplication::sendEvent(g, &e);
-    QPainter::restoreRedirected(g);
-  }
+    const QObjectList children = g->children();
+    for (int i = 0; i < children.size(); ++i) {
+        QWidget *child = static_cast<QWidget*>(children.at(i));
+        if (!child->isWidgetType() || child->isWindow()
+            || child->isHidden())
+            continue;
+	PrintWidgetHelper((QWidget*) child, gc);
+    }
 #endif
+   }
     
 
   bool PrintWidget(QWidget* g, std::string filename, std::string type) {

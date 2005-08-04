@@ -30,7 +30,7 @@
 namespace FreeMat {
 
   Plot2D::Plot2D(QWidget *parent) : 
-    QPWidget(parent,"plot2d",0) {
+    QPWidget(parent,"plot2d") {
     space = 10;
     holdflag = false;
     updating = false;

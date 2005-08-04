@@ -14,7 +14,7 @@ namespace FreeMat {
    */
   class QPWidget : public QWidget {
   public:
-    QPWidget(QWidget* parent, const char *Name, WFlags f);
+    QPWidget(QWidget* parent, const char *Name);
     virtual void DrawMe(QPainter& gc) = 0;
     void paintEvent(QPaintEvent* e);
   };

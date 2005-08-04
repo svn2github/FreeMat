@@ -996,7 +996,7 @@ void KeyManager::ExecuteLine(std::string line) {
 char* KeyManager::getLine(std::string aprompt) {
   ReplacePrompt(aprompt);
   DisplayPrompt();
-  if (enteredLines.empty()) {
+  while (enteredLines.empty()) {
     loopactive++;
 #ifdef QT3
     qApp->exec();

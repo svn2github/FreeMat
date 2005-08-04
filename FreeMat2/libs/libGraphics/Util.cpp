@@ -2,12 +2,21 @@
 #include <qimage.h>
 #include <qapplication.h>
 #include <qwidget.h>
+#include <qfontmetrics.h>
+#ifndef QT3
 #include <qimagewriter.h>
+#endif
 
 namespace FreeMat {
   Point2D GetTextExtent(QPainter& gc, std::string label) {
     QRect sze(gc.fontMetrics().boundingRect(label.c_str()));
     return Point2D(sze.width(),sze.height());    
+  }
+
+  Point2D GetTextExtentNoGC(std::string label, int size) {
+    QFontMetrics fm(QFont("Helvetica",size));
+    QRect sze(fm.boundingRect(label.c_str()));
+    return Point2D(sze.width(),sze.height());        
   }
 
   void DrawTextString(QPainter& gc, std::string txt, Point2D pos, 

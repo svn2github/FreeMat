@@ -18,6 +18,7 @@ typedef enum {
 
   // Helper functions
   Point2D GetTextExtent(QPainter& gc, std::string label);
+  Point2D GetTextExtentNoGC(std::string label, int size);
   void DrawTextString(QPainter& gc, std::string txt, Point2D pos, 
 		      int orient = 0);
   void DrawTextStringAligned(QPainter& gc, std::string txt, Point2D pos, 

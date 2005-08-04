@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include "Malloc.hpp"
 #include "Figure.hpp"
-#include "Colorbar.hpp"
+#include "ColorBar.hpp"
 
 namespace FreeMat {
   ScalarImage* GetCurrentImage() {
@@ -58,9 +58,9 @@ namespace FreeMat {
   //labeled as:
   //\[
   //  c = \begin{bmatrix}
-  //    r_1 & g_1 & b_1 \			\
-  //    r_1 & g_2 & b_2 \			\
-  //    r_1 & g_3 & b_3 \			\
+  //    r_1 & g_1 & b_1 \\
+  //    r_1 & g_2 & b_2 \\
+  //    r_1 & g_3 & b_3 \\
   //    \vdots & \vdots & \vdots 
   //      \end{bmatrix} 
   //\]
@@ -175,6 +175,7 @@ namespace FreeMat {
     fcopy->show();
     c->show();
     fig->SetFigureChild(w,figcbar);
+    fig->adjustSize();
     return ArrayVector();
   }
 

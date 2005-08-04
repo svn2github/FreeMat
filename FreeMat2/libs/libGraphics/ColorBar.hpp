@@ -20,12 +20,15 @@ namespace FreeMat {
     std::vector<std::string> m_labels;
     std::vector<Point2D> m_pos;
     int m_colorbar_width;
+    int m_pref_height;
+    int m_pref_width;
   public:
     ColorBar(QWidget* parent);
     virtual ~ColorBar();
     /**
      * Set the colormap for the image
      */
+    QSize sizeHint();
     void SetColormap(Array &dp);
     void DrawMe(QPainter& gc);
     void WindowLevel(double window, double level);

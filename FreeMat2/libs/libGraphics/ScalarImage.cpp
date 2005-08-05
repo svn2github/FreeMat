@@ -49,7 +49,11 @@ namespace FreeMat {
     memcpy(zoomImage,src->zoomImage,zoomColumns*zoomRows*sizeof(double));
     picData = new uchar[zoomColumns*zoomRows*3];
     memcpy(picData,src->picData,zoomColumns*zoomRows*3*sizeof(uchar));
-    setMinimumSize(zoomColumns,zoomRows);
+    if (zoom > 0)
+      setMinimumSize(zoomColumns,zoomRows);
+    else
+      setMinimumSize(50,50);
+    click_mode = false;
   }
 
   ScalarImage::ScalarImage(QWidget* parent) 
@@ -65,7 +69,7 @@ namespace FreeMat {
     level = 0;
     zoomImage = NULL;
     picData = NULL;
-    inClickState = false;
+    click_mode = false;
   }
   
   ScalarImage::~ScalarImage() {
@@ -212,6 +216,8 @@ namespace FreeMat {
     //    SetSize(zoomColumns,zoomRows);
     //    SetSize(zoomColumns,zoomRows);
     UpdateImage();
+    updateGeometry();
+    update();
   }
 
   void ScalarImage::resizeEvent(QResizeEvent* e) {
@@ -293,6 +299,13 @@ namespace FreeMat {
 	op[ndx+2] = colormap[2][dv];
       }
     }
-    setMinimumSize(getZoomColumns(),getZoomRows());
+    if (zoom > 0)
+      setMinimumSize(getZoomColumns(),getZoomRows());
+    else
+      setMinimumSize(50,50);
+  }
+
+  QSizePolicy ScalarImage::sizePolicy() {
+    return QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
   }
 }

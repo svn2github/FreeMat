@@ -16,11 +16,15 @@ namespace FreeMat {
       m_window = 1;
       m_level = 0.5;
       m_pref_width = 0;
-      m_pref_height = 0;
+      m_height = 300;
     }
   
+  QSizePolicy ColorBar::sizePolicy() {
+    return QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+  }
+
   void ColorBar::resizeEvent(QResizeEvent* e) {
-    UpdateImage();
+    SetBarHeight(height());
   }
   
   void ColorBar::WindowLevel(double window, double level) {
@@ -38,10 +42,17 @@ namespace FreeMat {
 	m_colormap[j][i] = (char)(255.0*(*dpdat++));
     UpdateImage();
   }
+
+  void ColorBar::SetBarHeight(int height) {
+    if (m_height != height) {
+      m_height = height;
+      UpdateImage();
+    }
+  }
   
   void ColorBar::UpdateImage() {
     delete picData;
-    int picHeight = height();
+    int picHeight = m_height;
     picData = new uchar[picHeight*m_colorbar_width*3];
     uchar *op = picData;
     for (int i=0;i<m_colorbar_width;i++) {
@@ -60,23 +71,30 @@ namespace FreeMat {
     }
     m_labels.clear();
     m_pos.clear();
-    int numlabels = height()/75;
+    int numlabels = m_height/75;
+    if (numlabels < 2) numlabels = 2;
     int maxwidth = 0;
     for (int i=0;i<numlabels;i++) {
     char buffer[1000];
     sprintf(buffer,"%f",m_level-m_window/2.0+i/(numlabels-1.0)*m_window);
     m_labels.push_back(buffer);
-    m_pos.push_back(Point2D(m_colorbar_width+10,i/(numlabels-1.0)*height()));
+    m_pos.push_back(Point2D(m_colorbar_width+10,i/(numlabels-1.0)*m_height));
     std::cout << "label " << m_labels.back() << " at " << m_pos.back().x << "," << m_pos.back().y << "\n";
     Point2D dim(GetTextExtentNoGC(m_labels.back(),12));
     maxwidth = (maxwidth > dim.x) ? maxwidth : dim.x;
     }
-    m_pref_height = height();
-    m_pref_width = maxwidth+m_colorbar_width+10;
+    m_pref_width = maxwidth+m_colorbar_width;
+    setMinimumSize(m_pref_width, 100);
+    //    updateGeometry(); 
+    //    update();
   }
 
   QSize ColorBar::sizeHint() {
-    return QSize(m_pref_width, m_pref_height);
+    return QSize(m_pref_width, m_height);
+  }
+
+  QSize ColorBar::minimumSizeHint() {
+    return QSize(m_pref_width, m_height);
   }
   
   ColorBar::~ColorBar() {
@@ -85,16 +103,19 @@ namespace FreeMat {
   
   void ColorBar::DrawMe(QPainter& gc) {
     // Draw the colorbar
-    BlitImage(gc, picData, m_colorbar_width, height(), 0, 0);
+    int offset = (height() - m_height)/2;
+    BlitImage(gc, picData, m_colorbar_width, m_height, 0, offset);
     // Draw the labels
     gc.setPen(Qt::black);
     for (unsigned int i=0;i<m_labels.size();i++) {
+      Point2D mpos(m_pos[i]);
+      mpos.y += offset;
       if (i==0)
-	DrawTextStringAligned(gc,m_labels[i],m_pos[i],LR_LEFT,TB_TOP,0);
+	DrawTextStringAligned(gc,m_labels[i],mpos,LR_LEFT,TB_TOP,0);
       else if (i==m_labels.size()-1)
-	DrawTextStringAligned(gc,m_labels[i],m_pos[i],LR_LEFT,TB_BOTTOM,0);
+	DrawTextStringAligned(gc,m_labels[i],mpos,LR_LEFT,TB_BOTTOM,0);
       else
-	DrawTextStringAligned(gc,m_labels[i],m_pos[i],LR_LEFT,TB_CENTER,0);
+	DrawTextStringAligned(gc,m_labels[i],mpos,LR_LEFT,TB_CENTER,0);
     }
   }
 }

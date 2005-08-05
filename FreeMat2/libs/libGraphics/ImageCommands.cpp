@@ -33,12 +33,19 @@ namespace FreeMat {
     Figure *fig = GetCurrentFig();
     if (fig->getType() == figscimg) {
       return ((ScalarImage*) fig->GetChildWidget());
-    } else {
-      ScalarImage* t = new ScalarImage(fig);
-      fig->SetFigureChild(t,figscimg);
-      return t;
+    } else if (fig->getType() == figcbar) {
+      // Get the children
+      QWidget *w = (QWidget *) fig->GetChildWidget();
+      const QObjectList children = w->children();
+      for (int i = 0; i < children.size(); ++i) {
+	ScalarImage* p = dynamic_cast<ScalarImage*>(children.at(i));
+	if (p)
+	  return p;
+      }
     }
-    return NULL;
+    ScalarImage* t = new ScalarImage(fig);
+    fig->SetFigureChild(t,figscimg);
+    return t;
   }
 
   //!
@@ -167,11 +174,12 @@ namespace FreeMat {
     // We need a new widget
     QWidget *w = new QWidget(fig,"container");
     ScalarImage *fcopy = new ScalarImage(w,f);
-    QGridLayout *l = new QGridLayout(w);
+    QHBoxLayout *l = new QHBoxLayout(w);
     ColorBar *c = new ColorBar(w);
     c->WindowLevel(10,5);
-    l->addWidget(fcopy,0,0);
-    l->addWidget(c,0,1);
+    l->addWidget(fcopy);
+    l->addWidget(c);
+    l->setStretchFactor(fcopy,1);
     fcopy->show();
     c->show();
     fig->SetFigureChild(w,figcbar);

@@ -9,7 +9,6 @@ using namespace FreeMat;
 #include "LoadFN.hpp"
 #include "GraphicsCore.hpp"
 #include "File.hpp"
-#include "QTDraw.hpp"
 
 MainApp::MainApp() {
 }
@@ -33,7 +32,6 @@ int MainApp::Run() {
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
-  LoadQTDraw(context);
   InitializeFigureSubsystem();
 
   const char *envPtr;

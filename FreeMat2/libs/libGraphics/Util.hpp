@@ -33,5 +33,11 @@ typedef enum {
   
   std::string NormalizeImageExtension(std::string ext);
   std::string FormatListAsString();
+
+  /**
+   * Print the given floating point argument, truncating superfluous
+   * zeros, and optionally, print it in exponential format.
+   */
+  std::string TrimPrint(double val, bool scientificNotation);
   
 }

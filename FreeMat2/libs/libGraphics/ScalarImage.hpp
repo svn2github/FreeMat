@@ -32,6 +32,10 @@ namespace FreeMat {
    * a color map.
    */
   class ScalarImage : public QPWidget {
+    Q_OBJECT
+  signals:
+    void WinLevChanged(double window, double level);
+    void ColormapChanged(char *map);
   public:
     /**
      * Create a new scalar image window with the given
@@ -92,7 +96,7 @@ namespace FreeMat {
     /**
      * The colormap to apply to the data when being displayed.
      */
-    char colormap[3][256];
+    char colormap[3*256];
     /**
      * The display window.
      */

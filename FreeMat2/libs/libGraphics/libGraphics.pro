@@ -16,7 +16,6 @@ Figure.hpp \
 Plot3D.hpp \
 SurfPlot.hpp \
 NewAxis.hpp \
-QTDraw.hpp \
 Util.hpp \
 QPWidget.hpp \
 ColorBar.hpp
@@ -33,7 +32,6 @@ Figure.cpp \
 Plot3D.cpp \
 SurfPlot.cpp \
 NewAxis.cpp \
-QTDraw.cpp \
 Util.cpp \
 QPWidget.cpp \
 ColorBar.cpp

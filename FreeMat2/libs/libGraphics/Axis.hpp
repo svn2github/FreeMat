@@ -115,11 +115,6 @@ namespace FreeMat {
      */
     int tickLength;
     /**
-     * Print the given floating point argument, truncating superfluous
-     * zeros, and optionally, print it in exponential format.
-     */
-    std::string TrimPrint(double, bool);
-    /**
      * Calculate tStart, tStop and tStep for the given range assignment.
      * This is based on a heuristic algorithm, that I took from Robert
      * Roebling's wxPlotWindow code.  It essentially starts out by estimating

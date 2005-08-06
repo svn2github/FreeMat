@@ -12,18 +12,23 @@ namespace FreeMat {
    *  Widget to display a colormap
    */
   class ColorBar : public QPWidget {
-    char m_colormap[3][256];
+    Q_OBJECT
+  public slots:
+    void ChangeWinLev(double win, double lev);
+    void ChangeColormap(char* map);
+  private:
+    char m_colormap[3*256];
     double m_window;
     double m_level;
     uchar *picData;
-    bool m_ishoriz;
+    char m_orientation;
     std::vector<std::string> m_labels;
     std::vector<Point2D> m_pos;
     int m_colorbar_width;
     int m_pref_width;
-    int m_height;
+    int m_length;
   public:
-    ColorBar(QWidget* parent);
+    ColorBar(QWidget* parent, char orient);
     virtual ~ColorBar();
     /**
      * Set the colormap for the image
@@ -31,13 +36,12 @@ namespace FreeMat {
     QSize sizeHint();
     QSize minimumSizeHint();
     QSizePolicy sizePolicy();
-    void SetColormap(Array &dp);
-    void SetBarHeight(int height);
+    void SetBarLength(int length);
     void DrawMe(QPainter& gc);
-    void WindowLevel(double window, double level);
     void SetHorizontalFlag(bool ishoriz);
     void resizeEvent(QResizeEvent* e);
     void UpdateImage();
+    bool IsEastWest();
   };
 }
 

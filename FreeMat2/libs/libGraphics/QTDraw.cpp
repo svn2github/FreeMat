@@ -3,6 +3,7 @@
 #include <qpainter.h>
 #include "QTGC.hpp"
 #include <math.h>
+#include "Util.hpp"
 #ifndef QT3
 #include <QMouseEvent>
 #include <QImageWriter>
@@ -397,48 +398,6 @@ namespace FreeMat {
       the_gc->DrawLine(Point2D(pos.x - len, pos.y + len), 
 		       Point2D(pos.x - len, pos.y - len));
     }    
-  }
-
-  std::string TrimPrint(double val, bool scientificNotation) {
-    char buffer[1000];
-    char *p;
-    if (!scientificNotation) {
-      sprintf(buffer,"%f",val);
-      p = buffer + strlen(buffer) - 1;
-      while (*p == '0') {
-	*p = 0;
-	p--;
-      }
-      if ((*p == '.') || (*p == ',')) {
-	*(p+1) = '0';
-	*(p+2) = 0;
-      }
-      return std::string(buffer);
-    } else {
-      sprintf(buffer,"%e",val);
-      std::string label(buffer);
-      unsigned int ePtr;
-      ePtr = label.size() - 1;
-      while ((label[ePtr] != 'e') && (label[ePtr] != 'E'))
-	ePtr--;
-      ePtr--;
-      while (label[ePtr] == '0') {
-	label.erase(ePtr,1);
-	ePtr--;
-      }
-      if ((label[ePtr] == '.') || (label[ePtr] == ','))
-	label.insert(ePtr+1, 1,'0');
-      ePtr = label.size() - 1;
-      while ((label[ePtr] != 'e') && (label[ePtr] != 'E'))
-	ePtr--;
-      ePtr+=2;
-      while ((label[ePtr] == '0') && ePtr < label.size()) {
-	label.erase(ePtr,1);
-      }
-      if (ePtr == label.size())
-	label.append("0");
-      return label;
-    }
   }
 
   ArrayVector TrimPrintFunction(int /* nargout */, const ArrayVector& arg) {

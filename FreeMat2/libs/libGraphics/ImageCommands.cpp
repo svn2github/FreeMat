@@ -174,9 +174,14 @@ namespace FreeMat {
     // We need a new widget
     QWidget *w = new QWidget(fig,"container");
     ScalarImage *fcopy = new ScalarImage(w,f);
-    QHBoxLayout *l = new QHBoxLayout(w);
-    ColorBar *c = new ColorBar(w);
-    c->WindowLevel(10,5);
+    //    QHBoxLayout *l = new QHBoxLayout(w);
+    QVBoxLayout *l = new QVBoxLayout(w);
+    ColorBar *c = new ColorBar(w,'n');
+    QObject::connect(fcopy, SIGNAL(WinLevChanged(double,double)),
+		     c, SLOT(ChangeWinLev(double,double)));
+    QObject::connect(fcopy, SIGNAL(ColormapChanged(char*)),
+		     c, SLOT(ChangeColormap(char*)));
+    c->ChangeWinLev(fcopy->GetCurrentWindow(),fcopy->GetCurrentLevel());
     l->addWidget(fcopy);
     l->addWidget(c);
     l->setStretchFactor(fcopy,1);
@@ -337,11 +342,11 @@ namespace FreeMat {
       zoomfact = z.getContentsAsDoubleScalar();
     }
     f->SetImageArray(img,zoomfact);
-    f->repaint();
     Figure *t = GetCurrentFig();
-    f->resize(f->getZoomColumns(),f->getZoomRows());
+    t->resize(f->getZoomColumns(),f->getZoomRows());
     t->adjustSize();
-    t->repaint();
+    f->updateGeometry();
+    f->update();
     return ArrayVector();
   }
 

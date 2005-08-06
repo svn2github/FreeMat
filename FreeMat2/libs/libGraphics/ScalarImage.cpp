@@ -52,7 +52,7 @@ namespace FreeMat {
     if (zoom > 0)
       setMinimumSize(zoomColumns,zoomRows);
     else
-      setMinimumSize(50,50);
+      setMinimumSize(150,150);
     click_mode = false;
   }
 
@@ -61,9 +61,9 @@ namespace FreeMat {
   {
     rawData = NULL;
     for (int i=0;i<256;i++) {
-      colormap[0][i] = i;
-      colormap[1][i] = i;
-      colormap[2][i] = i;
+      colormap[0+i] = i;
+      colormap[1*256+i] = i;
+      colormap[2*256+i] = i;
     }
     window = 0;
     level = 0;
@@ -139,7 +139,8 @@ namespace FreeMat {
     dpdat = (double*) dp.getDataPointer();
     for (int j=0;j<3;j++)
       for (int i=0;i<256;i++)
-	colormap[j][i] = (char)(255.0*(*dpdat++));
+	colormap[j*256+i] = (char)(255.0*(*dpdat++));
+    emit ColormapChanged(colormap);
     UpdateImage();
   }
 
@@ -267,6 +268,7 @@ namespace FreeMat {
     window = awindow;
     level = alevel;
     UpdateImage();
+    emit WinLevChanged(awindow, alevel);
   }
 
   double ScalarImage::GetCurrentWindow() {
@@ -294,15 +296,15 @@ namespace FreeMat {
 	dv = (dv < 0) ? 0 : dv;
 	dv = (dv > 255) ? 255 : dv;
 	ndx = 3*(i+zoomColumns*j);
-	op[ndx] = colormap[0][dv];
-	op[ndx+1] = colormap[1][dv];
-	op[ndx+2] = colormap[2][dv];
+	op[ndx] = colormap[0+dv];
+	op[ndx+1] = colormap[1*256+dv];
+	op[ndx+2] = colormap[2*256+dv];
       }
     }
     if (zoom > 0)
       setMinimumSize(getZoomColumns(),getZoomRows());
     else
-      setMinimumSize(50,50);
+      setMinimumSize(150,150);
   }
 
   QSizePolicy ScalarImage::sizePolicy() {

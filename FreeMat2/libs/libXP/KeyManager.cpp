@@ -1001,7 +1001,7 @@ char* KeyManager::getLine(std::string aprompt) {
 #ifdef QT3
     qApp->exec();
 #else
-    m_loop = new QEventLoop(this);
+    m_loop = new QEventLoop();
     m_loop->exec();
     delete m_loop;
 #endif

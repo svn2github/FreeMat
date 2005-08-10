@@ -27,6 +27,8 @@
 #include "Malloc.hpp"
 #include "Figure.hpp"
 #include "ColorBar.hpp"
+#include "qlabel.h"
+#include "Label.hpp"
 
 namespace FreeMat {
   ScalarImage* GetCurrentImage() {
@@ -176,12 +178,15 @@ namespace FreeMat {
     ScalarImage *fcopy = new ScalarImage(w,f);
     //    QHBoxLayout *l = new QHBoxLayout(w);
     QVBoxLayout *l = new QVBoxLayout(w);
+    //    QGridLayout *l = new QGridLayout(w);
     ColorBar *c = new ColorBar(w,'n');
     QObject::connect(fcopy, SIGNAL(WinLevChanged(double,double)),
 		     c, SLOT(ChangeWinLev(double,double)));
     QObject::connect(fcopy, SIGNAL(ColormapChanged(char*)),
 		     c, SLOT(ChangeColormap(char*)));
     c->ChangeWinLev(fcopy->GetCurrentWindow(),fcopy->GetCurrentLevel());
+    //    l->addWidget(new QLabel("Title Goes Here",fig));
+    l->addWidget(new Label(fig,"Title goes Here\beta",'h'));
     l->addWidget(fcopy);
     l->addWidget(c);
     l->setStretchFactor(fcopy,1);

@@ -9,6 +9,34 @@
 //  
 
 namespace FreeMat {
+  FormulaTree::FormulaTree(QString text, FormulaTree* supertree, 
+			   FormulaTree* subtree, FormulaTree* nexttree) {
+    m_supertree = supertree;
+    m_subtree = subtree;
+    m_nexttree = nexttree;
+    m_text = text;
+  }
+
+  int depth = 0;
+
+  void FormulaTree::PrintMe() {
+    for (int i=0;i<depth;i++)
+      std::cout << "  ";
+    std::cout << "base " << (const char *) m_text << "\n";
+    if (m_supertree) {
+      depth++;
+      m_supertree->PrintMe();
+      depth--;
+    }
+    if (m_subtree) {
+      depth++;
+      m_subtree->PrintMe();
+      depth--;
+    }
+    if (m_nexttree)
+      m_nexttree->PrintMe();
+  }
+
   TexLabel::TexLabel(std::string text) {
     m_rawtext = text;
     CompileRawText();
@@ -100,28 +128,29 @@ namespace FreeMat {
     m_cp = 0;
     QString fragment;
     bool singleshot;
+    std::vector<QString> stringfrag;
     while (m_cp < m_processed_text.size()) {
       // Is this a bracket?
       if ((m_processed_text[m_cp] == '{') ||
 	  (m_processed_text[m_cp] == '}')) {
 	// Flush the current string
-	m_stringfragments.push_back(fragment);
+	stringfrag.push_back(fragment);
 	// Reset the fragment buffer
 	fragment.clear();
-	m_stringfragments.push_back(QString(m_processed_text[m_cp]));
+	stringfrag.push_back(QString(m_processed_text[m_cp]));
 	singleshot = false;
       } else if ((m_processed_text[m_cp] == '^') ||
 		 (m_processed_text[m_cp] == '_')) {
 	// If the current char is a ^, then push it as a fragment
 	// Flush the current string
-	m_stringfragments.push_back(fragment);
-	m_stringfragments.push_back(QString(m_processed_text[m_cp]));
+	stringfrag.push_back(fragment);
+	stringfrag.push_back(QString(m_processed_text[m_cp]));
 	fragment.clear();
 	singleshot = true;
       } else {
 	fragment.push_back(m_processed_text[m_cp]);
 	if (singleshot) {
-	  m_stringfragments.push_back(fragment);
+	  stringfrag.push_back(fragment);
 	  // Reset the fragment buffer
 	  fragment.clear();
 	  singleshot = false;
@@ -129,13 +158,39 @@ namespace FreeMat {
       }
       m_cp++;
     }
-    m_stringfragments.push_back(fragment);
-    for (int i=0;i<m_stringfragments.size();i++) {
-      if (!m_stringfragments[i].isEmpty())
-	qDebug("string fragment %d is %s",i,(const char*) m_stringfragments[i]);
+    stringfrag.push_back(fragment);
+    for (int i=0;i<stringfrag.size();i++) {
+      if (!stringfrag[i].isEmpty())
+	m_stringfragments.push_back(stringfrag[i]);
     }
   }
-  
+
+  FormulaTree* TexLabel::StringToTree() {
+    // The base of the tree should be the
+    // first non-empty entry
+    if (m_cptr >= m_stringfragments.size()) return NULL;
+    QString root(m_stringfragments[m_cptr]);
+    std::cout << "root = " << ((const char*) root) << "\n";
+    FormulaTree *super = NULL;
+    FormulaTree *sub = NULL;
+    m_cptr++;
+    if ((m_cptr < m_stringfragments.size()) &&
+	(m_stringfragments[m_cptr] == QString('^'))) {
+	m_cptr++;
+	super = StringToTree();
+	std::cout << "   superscript\n";
+	super->PrintMe();
+    } 
+    if ((m_cptr < m_stringfragments.size()) &&
+	(m_stringfragments[m_cptr] == QString('_'))) {
+	m_cptr++;
+	sub = StringToTree();
+	std::cout << "   subscript\n";
+	sub->PrintMe();
+    } 
+    return(new FormulaTree(root,super,sub,NULL));
+  }
+
   void TexLabel::CompileRawText() {
     // The compiling strategy - we have a sequence of tokens
     // like: a^b_cfg_h - it really is a 3-tree - every token has
@@ -143,32 +198,15 @@ namespace FreeMat {
     //   b
     //  a fg
     //   c  h
-    // 
+    // start with m(a), if n+1-->"^"
     m_processed_text = QString(m_rawtext.c_str());
     DoSubstitutions();
     // Break into strings
     Stringify();
-    // Initialize the settings
-    m_cp = 0;
-    m_xpos = 0;
-    m_ypos = 18;
-    m_size = 12;
-    m_supersub_level = 0;
-    while (m_cp < m_processed_text.size()) {
-      if (m_processed_text[m_cp] == '^') 
-	m_supersub_level++;
-      else if (m_processed_text[m_cp] == '_')
-	m_supersub_level++;
-      else {
-	m_sizes.push_back(GetCurrentSize());
-	m_xpos_list.push_back(m_xpos);
-	m_ypos_list.push_back(m_ypos+GetCurrentYPos());
-	if (m_supersub_level) m_supersub_level--;
-	m_output_text.push_back(m_processed_text[m_cp]);
-	m_xpos+=GetCurrentWidth(m_processed_text[m_cp]);
-      }
-      m_cp++;
-    }
+    // Build it into a tree
+    m_cptr = 0;
+    FormulaTree *m = StringToTree();
+    m->PrintMe();
   }
 
   int TexLabel::GetCurrentSize() {
@@ -244,7 +282,8 @@ namespace FreeMat {
     gc.restore();
 
     //    TexLabel tl("\\beta^2-3\\rightarrow\\int\\gamma_4^3");
-    TexLabel tl("A = H^3ello_{b-3^2} 123 \\beta 4.25");
+    //    TexLabel tl("A = H^3_5ello_b-3^2 123 \\beta 4.25");
+    TexLabel tl("H^3_5ello_b-3^2 123 \\beta 4.25");
     tl.Render(gc,Point2D(0,0));
 
 //     if (m_orientation == 'h')

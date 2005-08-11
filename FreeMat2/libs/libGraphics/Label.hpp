@@ -5,6 +5,17 @@
 #include "Point2D.hpp"
 
 namespace FreeMat {
+  class FormulaTree {
+    FormulaTree* m_supertree;
+    FormulaTree* m_subtree;
+    FormulaTree* m_nexttree;
+    QString m_text;
+  public:
+    FormulaTree(QString text, FormulaTree* supertree, 
+		FormulaTree* subtree, FormulaTree* nexttree);
+    void PrintMe();
+  };
+
   class TexLabel {
     std::string m_rawtext;
     QString m_processed_text; // (unicode) character stream
@@ -13,6 +24,7 @@ namespace FreeMat {
     std::vector<int> m_ypos_list;  // y position to draw text
     std::vector<QString> m_stringfragments;
     QString m_output_text;
+    int m_cptr;
     int m_cp;
     int m_xpos;
     int m_ypos;
@@ -29,6 +41,7 @@ namespace FreeMat {
     int GetCurrentYPos();
     int GetCurrentWidth(QChar a);
     void Stringify();
+    FormulaTree* StringToTree();
   };
 
   class Label : public QPWidget {

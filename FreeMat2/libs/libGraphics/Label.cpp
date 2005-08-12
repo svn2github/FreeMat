@@ -22,7 +22,7 @@ namespace FreeMat {
   void FormulaTree::PrintMe() {
     for (int i=0;i<depth;i++)
       std::cout << "  ";
-    std::cout << "base " << (const char *) m_text << "\n";
+    std::cout << (const char*) m_text << "(" << m_size << "," << m_ascent << ")\n";
     if (m_supertree) {
       depth++;
       m_supertree->PrintMe();
@@ -35,6 +35,113 @@ namespace FreeMat {
     }
     if (m_nexttree)
       m_nexttree->PrintMe();
+  }
+
+  void FormulaTree::Render(QPainter& gc, Point2D& pos) {
+    QFont tmp("Helvetica",m_size);
+    gc.setFont(tmp);
+    gc.drawText(pos.x,pos.y-m_ascent,m_text);
+    pos.x += gc.fontMetrics().boundingRect(m_text).width();
+    // draw the super tree
+    if (m_supertree)
+      m_supertree->Render(gc,pos);
+    if (m_subtree)
+      m_subtree->Render(gc,pos);
+    if (m_nexttree)
+      m_nexttree->Render(gc,pos);
+  }
+
+  int m_cptr;
+  std::vector<QString> m_stringfragments;
+
+  bool match(QString test) {
+    return ((m_cptr < m_stringfragments.size()) &&
+	    (m_stringfragments[m_cptr] == test));
+  }
+
+  FormulaTree* StringToTree();
+  
+  FormulaTree* Terminal() {
+    if (match("{")) {
+      m_cptr++;
+      FormulaTree* m = StringToTree();
+      if (!match("}")) {
+	std::cerr << "Unmatched left bracket {\n";
+	exit(1);
+      }
+      m_cptr++;
+      return m;
+    } else
+      return new FormulaTree(m_stringfragments[m_cptr++],NULL,NULL,NULL);
+  }
+  
+  FormulaTree* StringToTree() {
+    // The base of the tree should be the
+    // first non-empty entry
+    if (match("}")) return NULL;
+    if (m_cptr >= m_stringfragments.size()) return NULL;
+    QString root(m_stringfragments[m_cptr]);
+    FormulaTree *super = NULL;
+    FormulaTree *sub = NULL;
+    m_cptr++;
+    if (match("^")) {
+      m_cptr++;
+      super = Terminal();
+      if (match("_")) {
+	m_cptr++;
+	sub = Terminal();
+      }
+    } else {
+      if (match("_")) {
+	m_cptr++;
+	sub = Terminal();
+      } 
+      if (match("^")) {
+	m_cptr++;
+	super = Terminal();
+      }
+    }
+    return(new FormulaTree(root,super,sub,StringToTree()));
+  }
+  
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+  Box FormulaTree::GetBox() {
+    Box superBox, subBox, rootBox, nextBox;
+    if (m_supertree)
+      superBox = m_supertree->GetBox();
+    if (m_subtree)
+      subBox = m_subtree->GetBox();
+    // Replace with legitimate code
+    if (m_ascent < 0)
+      rootBox.depth = -m_ascent;
+    rootBox.width = m_size; 
+    rootBox.height = m_size+m_ascent;
+    if (m_nexttree)
+      nextBox = m_nexttree->GetBox();
+    Box output;
+    output.depth = MIN(superBox.depth,MIN(subBox.depth,MIN(rootBox.depth,
+							   nextBox.depth)));
+    output.height = MAX(superBox.height,
+			MIN(subBox.height,MIN(rootBox.height,
+					      nextBox.height)));
+    output.width = rootBox.width + nextBox.width + 
+      MAX(subBox.width,superBox.width);
+    return output;
+  }
+
+  void FormulaTree::SizeTree(int size, int ascent) {
+    // The root takes the current size
+    m_size = size;
+    m_ascent = ascent;
+    // The superscript takes a smaller size by 60%, and is raised
+    // so that the baseline is also 60% of size
+    if (m_supertree)
+      m_supertree->SizeTree(m_size*0.9,m_ascent + m_size*0.6);
+    if (m_subtree)
+      m_subtree->SizeTree(m_size*0.9,m_ascent - m_size*0.4);
+    if (m_nexttree)
+      m_nexttree->SizeTree(size, ascent);
   }
 
   TexLabel::TexLabel(std::string text) {
@@ -165,32 +272,6 @@ namespace FreeMat {
     }
   }
 
-  FormulaTree* TexLabel::StringToTree() {
-    // The base of the tree should be the
-    // first non-empty entry
-    if (m_cptr >= m_stringfragments.size()) return NULL;
-    QString root(m_stringfragments[m_cptr]);
-    std::cout << "root = " << ((const char*) root) << "\n";
-    FormulaTree *super = NULL;
-    FormulaTree *sub = NULL;
-    m_cptr++;
-    if ((m_cptr < m_stringfragments.size()) &&
-	(m_stringfragments[m_cptr] == QString('^'))) {
-	m_cptr++;
-	super = StringToTree();
-	std::cout << "   superscript\n";
-	super->PrintMe();
-    } 
-    if ((m_cptr < m_stringfragments.size()) &&
-	(m_stringfragments[m_cptr] == QString('_'))) {
-	m_cptr++;
-	sub = StringToTree();
-	std::cout << "   subscript\n";
-	sub->PrintMe();
-    } 
-    return(new FormulaTree(root,super,sub,NULL));
-  }
-
   void TexLabel::CompileRawText() {
     // The compiling strategy - we have a sequence of tokens
     // like: a^b_cfg_h - it really is a 3-tree - every token has
@@ -205,8 +286,9 @@ namespace FreeMat {
     Stringify();
     // Build it into a tree
     m_cptr = 0;
-    FormulaTree *m = StringToTree();
-    m->PrintMe();
+    m_tree = StringToTree();
+    m_tree->SizeTree(14,0);
+    m_tree->PrintMe();
   }
 
   int TexLabel::GetCurrentSize() {
@@ -238,6 +320,7 @@ namespace FreeMat {
   }
 
   void TexLabel::Render(QPainter& gc, Point2D pos) {
+    m_tree->Render(gc, pos);
     return;
     for (int i=0;i<m_output_text.size();i++) {
       QFont Tmp("Helvetica",m_sizes[i]);
@@ -253,7 +336,7 @@ namespace FreeMat {
     m_orientation = orient;
     Point2D m_size(GetTextExtentNoGC(text,12));
     if (m_orientation == 'h')
-      setMinimumSize(m_size.x,m_size.y);
+      setMinimumSize(m_size.x,m_size.y*2);
     else
       setMinimumSize(m_size.y,m_size.x);
     ProcessText();
@@ -278,13 +361,13 @@ namespace FreeMat {
     pos.x -= ext.x/2;
     gc.save();
     gc.translate(pos.x,pos.y);
-    gc.drawText(0,0,m_processed_text);
+    //    gc.drawText(0,0,m_processed_text);
     gc.restore();
 
     //    TexLabel tl("\\beta^2-3\\rightarrow\\int\\gamma_4^3");
     //    TexLabel tl("A = H^3_5ello_b-3^2 123 \\beta 4.25");
-    TexLabel tl("H^3_5ello_b-3^2 123 \\beta 4.25");
-    tl.Render(gc,Point2D(0,0));
+    TexLabel tl("H^3_5ello_b-3^2+7^{3-4_0}_52^{2^3} 123 \\beta 4.25");
+    tl.Render(gc,Point2D(0,15));
 
 //     if (m_orientation == 'h')
 //       DrawTextStringAligned(gc,m_text,Point2D(width()/2,0),LR_CENTER,TB_TOP,0);

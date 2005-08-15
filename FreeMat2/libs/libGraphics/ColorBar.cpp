@@ -3,8 +3,8 @@
 
 namespace FreeMat {
   
-  ColorBar::ColorBar(QWidget* parent, char orient) 
-    : QPWidget(parent, "colorbar") {
+  ColorBar::ColorBar(QWidget* parent, const char * name, char orient) 
+    : QPWidget(parent, name) {
       for (int i=0;i<256;i++) {
 	m_colormap[0+i] = i;
 	m_colormap[1*256+i] = i;

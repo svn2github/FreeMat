@@ -1,5 +1,6 @@
 #include "Label.hpp"
-#include "Util.hpp"
+#include "Point2D.hpp"
+#include "Exception.hpp"
 #include <math.h>
 #include <iostream>
 
@@ -9,6 +10,13 @@
 //  
 
 namespace FreeMat {
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+
+  Box::Box() {
+    width = height = depth = 0;
+  }
+
   FormulaTree::FormulaTree(QString text, FormulaTree* supertree, 
 			   FormulaTree* subtree, FormulaTree* nexttree) {
     m_supertree = supertree;
@@ -42,11 +50,15 @@ namespace FreeMat {
     gc.setFont(tmp);
     gc.drawText(pos.x,pos.y-m_ascent,m_text);
     pos.x += gc.fontMetrics().boundingRect(m_text).width();
+    // Save the current position
+    Point2D posSuper(pos);
+    Point2D posSub(pos);
     // draw the super tree
-    if (m_supertree)
-      m_supertree->Render(gc,pos);
+    if (m_supertree) 
+      m_supertree->Render(gc,posSuper);
     if (m_subtree)
-      m_subtree->Render(gc,pos);
+      m_subtree->Render(gc,posSub);
+    pos.x = MAX(posSuper.x,posSub.x);
     if (m_nexttree)
       m_nexttree->Render(gc,pos);
   }
@@ -65,10 +77,8 @@ namespace FreeMat {
     if (match("{")) {
       m_cptr++;
       FormulaTree* m = StringToTree();
-      if (!match("}")) {
-	std::cerr << "Unmatched left bracket {\n";
-	exit(1);
-      }
+      if (!match("}")) 
+	throw Exception("Unmatched left bracket `{` in label string");
       m_cptr++;
       return m;
     } else
@@ -104,26 +114,27 @@ namespace FreeMat {
     return(new FormulaTree(root,super,sub,StringToTree()));
   }
   
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
   Box FormulaTree::GetBox() {
     Box superBox, subBox, rootBox, nextBox;
     if (m_supertree)
       superBox = m_supertree->GetBox();
     if (m_subtree)
       subBox = m_subtree->GetBox();
+    QFontMetrics fm(QFont("Helvetica",m_size));
+    QRect sze(fm.boundingRect(m_text));
     // Replace with legitimate code
+    rootBox.depth = fm.descent();
     if (m_ascent < 0)
-      rootBox.depth = -m_ascent;
-    rootBox.width = m_size; 
-    rootBox.height = m_size+m_ascent;
+      rootBox.depth -= m_ascent;
+    rootBox.width = sze.width(); 
+    rootBox.height = sze.height()+m_ascent;
     if (m_nexttree)
       nextBox = m_nexttree->GetBox();
     Box output;
-    output.depth = MIN(superBox.depth,MIN(subBox.depth,MIN(rootBox.depth,
+    output.depth = MAX(superBox.depth,MAX(subBox.depth,MAX(rootBox.depth,
 							   nextBox.depth)));
     output.height = MAX(superBox.height,
-			MIN(subBox.height,MIN(rootBox.height,
+			MAX(subBox.height,MAX(rootBox.height,
 					      nextBox.height)));
     output.width = rootBox.width + nextBox.width + 
       MAX(subBox.width,superBox.width);
@@ -137,25 +148,23 @@ namespace FreeMat {
     // The superscript takes a smaller size by 60%, and is raised
     // so that the baseline is also 60% of size
     if (m_supertree)
-      m_supertree->SizeTree(m_size*0.9,m_ascent + m_size*0.6);
+      m_supertree->SizeTree(m_size*0.8,m_ascent + m_size*0.6);
     if (m_subtree)
-      m_subtree->SizeTree(m_size*0.9,m_ascent - m_size*0.4);
+      m_subtree->SizeTree(m_size*0.8,m_ascent - m_size*0.4);
     if (m_nexttree)
       m_nexttree->SizeTree(size, ascent);
   }
 
-  TexLabel::TexLabel(std::string text) {
+  TexLabel::TexLabel(std::string text, int size) {
     m_rawtext = text;
+    m_size = size;
     CompileRawText();
   }
 
   void TexLabel::Substitute(QString ecode, QChar rcode) {
     int j = 0;
-    while ((j = m_processed_text.indexOf(ecode,0)) != -1) {
+    while ((j = m_processed_text.indexOf(ecode,0)) != -1)
       m_processed_text.replace(j,ecode.size(),rcode);
-      qDebug("made substitution of %s to %x",(const char*) ecode,
-	     rcode.unicode());
-    }
   }
 
   void TexLabel::DoSubstitutions() {
@@ -232,7 +241,7 @@ namespace FreeMat {
     // Each fragment consists of a sequence of characters
     // at the same render level (i.e., subscript/superscript
     // history).
-    m_cp = 0;
+    int m_cp = 0;
     QString fragment;
     bool singleshot;
     std::vector<QString> stringfrag;
@@ -279,7 +288,7 @@ namespace FreeMat {
     //   b
     //  a fg
     //   c  h
-    // start with m(a), if n+1-->"^"
+    //    qDebug("compile raw text");
     m_processed_text = QString(m_rawtext.c_str());
     DoSubstitutions();
     // Break into strings
@@ -287,88 +296,69 @@ namespace FreeMat {
     // Build it into a tree
     m_cptr = 0;
     m_tree = StringToTree();
-    m_tree->SizeTree(14,0);
-    m_tree->PrintMe();
-  }
-
-  int TexLabel::GetCurrentSize() {
-    return ((int)(pow(0.8,abs(m_supersub_level))*m_size));
-  }
-
-  int TexLabel::GetCurrentYPos() {
-    // Get the height of the base character
-    QFont Base("Helvetica",m_size);
-    QFont Raise("Helvetica",GetCurrentSize());
-    QFontMetrics fmBase(Base);
-    QFontMetrics fmRaise(Raise);
-    QRect szeBase(fmBase.boundingRect("|"));
-    QRect szeRaise(fmRaise.boundingRect("|"));
-    // Next, we have to calculate how much to shift
-    int yShift;
-    yShift = szeBase.height() - szeRaise.height();
-    return yShift;
-  }
-
-  int TexLabel::GetCurrentWidth(QChar a) {
-    QFont Raise("Helvetica",GetCurrentSize());
-    QFontMetrics fmRaise(Raise);
-    QRect szeRaise(fmRaise.boundingRect(a));
-    return szeRaise.width();
+    m_tree->SizeTree(m_size,0);
+    m_box = m_tree->GetBox();
+    m_stringfragments.clear();
   }
 
   Point2D TexLabel::BoundingBox() {
+    return Point2D(m_box.width,m_box.depth+m_box.height);
+  }
+
+  Box TexLabel::Metrics() {
+    return m_box;
   }
 
   void TexLabel::Render(QPainter& gc, Point2D pos) {
     m_tree->Render(gc, pos);
-    return;
-    for (int i=0;i<m_output_text.size();i++) {
-      QFont Tmp("Helvetica",m_sizes[i]);
-      gc.setFont(Tmp);
-      gc.drawText(m_xpos_list[i],m_ypos_list[i],QString(m_output_text[i]));
-      qDebug("size: %d at %d,%d, char %x",m_sizes[i],m_xpos_list[i],m_ypos_list[i],m_output_text[i].unicode());
-    }
   }
 
-  Label::Label(QWidget* parent, std::string text, char orient) :
-    QPWidget(parent,"label") {
+  Label::Label(QWidget* parent, const char *name, std::string text, char orient) :
+    QPWidget(parent, name) {
     m_text = text;
     m_orientation = orient;
-    Point2D m_size(GetTextExtentNoGC(text,12));
+    m_label = new TexLabel(text, 12);
     if (m_orientation == 'h')
-      setMinimumSize(m_size.x,m_size.y*2);
+      setMinimumSize(m_label->BoundingBox().x,m_label->BoundingBox().y);
     else
-      setMinimumSize(m_size.y,m_size.x);
-    ProcessText();
+      setMinimumSize(m_label->BoundingBox().y,m_label->BoundingBox().x);
   }
   
   Label::~Label() {
   }
   
-  void Label::ProcessText() {
-    m_processed_text = QString(m_text.c_str());
-    int j = 0;
-    while ((j = m_processed_text.indexOf("\beta",0)) != -1) {
-      m_processed_text.replace(j,5,0x03B2);
-    }
-  }
-
   void Label::DrawMe(QPainter& gc) {
-    Point2D pos(width()/2,0);
-    QRect sze(gc.fontMetrics().boundingRect(m_processed_text));
-    Point2D ext(sze.width(),sze.height());
-    pos.y += ext.y;
-    pos.x -= ext.x/2;
-    gc.save();
-    gc.translate(pos.x,pos.y);
-    //    gc.drawText(0,0,m_processed_text);
-    gc.restore();
+    // Center the label in our window...
+    if (m_orientation == 'h') {
+      Point2D pos(width()/2,0);
+      Box box(m_label->Metrics());
+      pos.y = box.height;
+      pos.x -= box.width/2;
+      m_label->Render(gc, pos);
+    } else {
+      Point2D pos(0,height()/2);
+      Box box(m_label->Metrics());
+      pos.x = box.height;
+      pos.y += box.width/2;
+      gc.save();
+      gc.translate(pos.x,pos.y);
+      gc.rotate(-90);
+      Point2D dummy(0,0);
+      m_label->Render(gc, dummy);      
+      gc.restore();
+    }
+//     Point2D pos(width()/2,0);
+//     QRect sze(gc.fontMetrics().boundingRect(m_processed_text));
+//     Point2D ext(sze.width(),sze.height());
+//     pos.y += ext.y;
+//     pos.x -= ext.x/2;
+//     gc.save();
+//     gc.translate(pos.x,pos.y);
+//     //    gc.drawText(0,0,m_processed_text);
+//     gc.restore();
 
     //    TexLabel tl("\\beta^2-3\\rightarrow\\int\\gamma_4^3");
     //    TexLabel tl("A = H^3_5ello_b-3^2 123 \\beta 4.25");
-    TexLabel tl("H^3_5ello_b-3^2+7^{3-4_0}_52^{2^3} 123 \\beta 4.25");
-    tl.Render(gc,Point2D(0,15));
-
 //     if (m_orientation == 'h')
 //       DrawTextStringAligned(gc,m_text,Point2D(width()/2,0),LR_CENTER,TB_TOP,0);
 //     else

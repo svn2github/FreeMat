@@ -93,18 +93,6 @@ namespace FreeMat {
      */
     void SetHoldFlag(bool flag);
     /**
-     * Set the text of the title.
-     */
-    void SetTitleText(std::string);
-    /**
-     * Set the title for the X axis.
-     */ 
-    void SetXLabel(std::string);
-    /**
-     * Set the title for the Y axis.
-     */
-    void SetYLabel(std::string);
-    /**
      * Set us up for a sequence of plots.
      */
     void StartSequence();
@@ -143,25 +131,11 @@ namespace FreeMat {
      * The x axis object.
      */
     NewAxis xAxis;
-    std::string xlabel;
     /**
      * The y axis object.
      */
     NewAxis yAxis;
-    std::string ylabel;
     bool gridflag;
-    /**
-     * The title of the plot.
-     */
-    std::string title;
-    /**
-     * The height of the title.
-     */
-    int titleHeight;
-    /**
-     * The width of the title.
-     */
-    int titleWidth;
     /**
      * A characteristic length in the construction of the plot.
      */

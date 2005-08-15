@@ -28,7 +28,7 @@ namespace FreeMat {
     int m_pref_width;
     int m_length;
   public:
-    ColorBar(QWidget* parent, char orient);
+    ColorBar(QWidget* parent, const char * name, char orient);
     virtual ~ColorBar();
     /**
      * Set the colormap for the image

@@ -1,6 +1,7 @@
 #include <qpainter.h>
 #include <vector>
 #include "Point2D.hpp"
+#include "QPWidget.hpp"
 
 namespace FreeMat {
   
@@ -33,6 +34,9 @@ typedef enum {
   
   std::string NormalizeImageExtension(std::string ext);
   std::string FormatListAsString();
+
+  void ClearGridWidget(QWidget* w, const char *name);
+  void SetGridWidget(QWidget* w, QPWidget* m, int row, int col);
 
   /**
    * Print the given floating point argument, truncating superfluous

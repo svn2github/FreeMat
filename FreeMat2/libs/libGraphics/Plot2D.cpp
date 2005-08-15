@@ -117,18 +117,6 @@ namespace FreeMat {
     textlabel.push_back(val);
   }
 
-  void Plot2D::SetTitleText(std::string txt) {
-    title = txt;
-  }
-
-  void Plot2D::SetXLabel(std::string txt) {
-    xlabel = txt;
-  }
-
-  void Plot2D::SetYLabel(std::string txt) {
-    ylabel = txt;
-  }
-
   void Plot2D::SetHoldFlag(bool flag) {
     holdflag = flag;
   }
@@ -214,18 +202,6 @@ namespace FreeMat {
     gc.setPen(QPen(Qt::black));
     gc.drawLine(xc_min,yc_min,xc_max,yc_min);
     gc.drawLine(xc_min,yc_min,xc_min,yc_max);
-    if (!xlabel.empty()) {
-      DrawTextStringAligned(gc,xlabel,
-			    Point2D((xc_min+xc_max)/2,
-				    yc_min+space+sze_textheight+space),
-			    LR_CENTER, TB_TOP);
-    }
-    if (!ylabel.empty()) {
-      DrawTextStringAligned(gc,ylabel,
-			    Point2D(space+sze_textheight,
-				    (yc_min+yc_max)/2),
-			    LR_CENTER, TB_TOP, 90);
-    }
     std::vector<double> xtics;
     xtics = xAxis.GetTickLocations();
     std::vector<std::string> xlabels;
@@ -284,22 +260,11 @@ namespace FreeMat {
     Point2D sze(width(),height());
     int width = sze.x;
     int height = sze.y;
-#if 0
-    gc.SetBackGroundColor(Color("light grey"));
-    gc.SetForeGroundColor(Color("light grey"));
-    gc.FillRectangle(Rect2D(0, 0, sze.x, sze.y));
-#endif
+
     if (updating || (data.size() == 0))
       return;
+
     SetFontSize(gc,12);
-
-    int client_y_offset = 0;
-    int client_x_offset = 0;
-
-    client_x_offset = 5;
-    client_y_offset = 5;
-    width -= 10;
-    height -= 10;
 
     space = 10;
     ticlen = 5;
@@ -317,16 +282,11 @@ namespace FreeMat {
     int plotY;
 
     std::vector<std::string> xlabels = xAxis.GetTickLabels();
-    std::vector<std::string> ylabels = xAxis.GetTickLabels();
+    std::vector<std::string> ylabels = yAxis.GetTickLabels();
 
     // Need space for the text, and a spacer
     plotWidth = width - space - sze_textheight;
     plotX = space+sze_textheight;
-    // If the label is active, subtract another text and spacer
-    if (!ylabel.empty()) {
-      plotWidth -= (space+sze_textheight);
-      plotX += space+sze_textheight;
-    }
 
     // Adjust the width to handle the length of the last x-label
     t = GetTextExtent(gc,xlabels.back());
@@ -345,20 +305,7 @@ namespace FreeMat {
     // Need space for the tic, text and a spacer
     plotHeight = height-2*space-sze_textheight;
     plotY = space;
-    // If the label is active, subtract another text and spacer
-    if (!xlabel.empty()) 
-      plotHeight -= (space+sze_textheight);
 
-    // If the title is active, subtract another text and 2 spacers
-    if (!title.empty()) {
-      plotHeight -= (space+sze_textheight);
-      plotY += (space+sze_textheight);
-    }
-
-    gc.setPen(QPen(Qt::black));
-    if (!title.empty())
-      DrawTextStringAligned(gc, title, Point2D(plotX + plotWidth/2,space),
-			    LR_CENTER, TB_TOP);
     gc.fillRect(plotX, plotY, plotWidth + 1, plotHeight + 1,
 		QBrush(Qt::white));
 

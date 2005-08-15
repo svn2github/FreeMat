@@ -7,6 +7,7 @@
 #include "SurfPlot.hpp"
 #include "QPWidget.hpp"
 #include "Util.hpp"
+#include "Label.hpp"
 #define MAX_FIGS 100
 
 #include <qapplication.h>
@@ -24,7 +25,6 @@
 #include <qprinter.h>
 #define QPRN QPrinter
 #endif
-
 
 namespace FreeMat {
   typedef struct {
@@ -466,6 +466,138 @@ namespace FreeMat {
     return singleArrayVector(Array::int32Constructor(newhandle));
   }
 #endif
+
+  //!
+  //@Module XLABEL Plot X-axis Label Function
+  //@@Section PLOT
+  //@@Usage
+  //This command adds a label to the x-axis of the plot.  The general syntax
+  //for its use is
+  //@[
+  //  xlabel('label')
+  //@]
+  //or in the alternate form
+  //@[
+  //  xlabel 'label'
+  //@]
+  //or simply
+  //@[
+  //  xlabel label
+  //@]
+  //Here @|label| is a string variable.
+  //@@Example
+  //Here is an example of a simple plot with a label on the @|x|-axis.
+  //@<
+  //x = linspace(-1,1);
+  //y = cos(2*pi*x);
+  //plot(x,y,'r-');
+  //xlabel('time');
+  //mprintplot xlabel1
+  //@>
+  //which results in the following plot.
+  //@figure xlabel1
+  //!
+  ArrayVector XLabelFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("xlabel function takes only a single, string argument");
+    if (!(arg[0].isString()))
+      throw Exception("xlabel function takes only a single, string argument");
+    Array t(arg[0]);
+    Figure *fig = GetCurrentFig();
+    QWidget *f = fig->GetChildWidget();
+    ClearGridWidget(f,"xlabel");
+    ClearGridWidget(f,"colorbar_s");
+    SetGridWidget(f,new Label(f,"xlabel",t.getContentsAsCString(),'h'),2,1);
+    return ArrayVector();
+  }
+
+  //!
+  //@Module YLABEL Plot Y-axis Label Function
+  //@@Section PLOT
+  //@@Usage
+  //This command adds a label to the y-axis of the plot.  The general syntax
+  //for its use is
+  //@[
+  //  ylabel('label')
+  //@]
+  //or in the alternate form
+  //@[
+  //  ylabel 'label'
+  //@]
+  //or simply
+  //@[
+  //  ylabel label
+  //@]
+  //Here @|label| is a string variable.
+  //@@Example
+  //Here is an example of a simple plot with a label on the @|y|-axis.
+  //@<
+  //x = linspace(-1,1);
+  //y = cos(2*pi*x);
+  //plot(x,y,'r-');
+  //ylabel('cost');
+  //mprintplot ylabel1
+  //@>
+  //which results in the following plot.
+  //@figure ylabel1
+  //!
+  ArrayVector YLabelFunction(int nargout,const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("ylabel function takes only a single, string argument");
+    if (!(arg[0].isString()))
+      throw Exception("ylabel function takes only a single, string argument");
+    Array t(arg[0]);
+    Figure *fig = GetCurrentFig();
+    QWidget *f = fig->GetChildWidget();
+    ClearGridWidget(f,"ylabel");
+    ClearGridWidget(f,"colorbar_w");
+    SetGridWidget(f,new Label(f,"ylabel",t.getContentsAsCString(),'v'),1,0);
+    return ArrayVector();
+  }
+
+  //!
+  //@Module TITLE Plot Title Function
+  //@@Section PLOT
+  //@@Usage
+  //This command adds a title to the plot.  The general syntax
+  //for its use is
+  //@[
+  //  title('label')
+  //@]
+  //or in the alternate form
+  //@[
+  //  title 'label'
+  //@]
+  //or simply
+  //@[
+  //  title label
+  //@]
+  //Here @|label| is a string variable.
+  //@@Example
+  //Here is an example of a simple plot with a title.
+  //@<
+  //x = linspace(-1,1);
+  //y = cos(2*pi*x);
+  //plot(x,y,'r-');
+  //title('cost over time');
+  //mprintplot title1
+  //@>
+  //which results in the following plot.
+  //@figure title1
+  //!
+  ArrayVector TitleFunction(int nargout,const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("title function takes only a single, string argument");
+    if (!(arg[0].isString()))
+      throw Exception("title function takes only a single, string argument");
+    Array t(arg[0]);
+    Figure *fig = GetCurrentFig();
+    QWidget *f = fig->GetChildWidget();
+    ClearGridWidget(f,"title");
+    ClearGridWidget(f,"colorbar_n");
+    SetGridWidget(f,new Label(f,"title",t.getContentsAsCString(),'h'),0,1);
+    return ArrayVector();
+  }
 
   ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();

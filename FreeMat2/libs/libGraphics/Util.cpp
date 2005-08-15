@@ -1,3 +1,4 @@
+#include "Exception.hpp"
 #include "Util.hpp"
 #include <qimage.h>
 #include <qapplication.h>
@@ -5,6 +6,7 @@
 #include <qfontmetrics.h>
 #ifndef QT3
 #include <qimagewriter.h>
+#include <qgridlayout.h>
 #endif
 
 namespace FreeMat {
@@ -97,17 +99,24 @@ namespace FreeMat {
   }
   
   std::string NormalizeImageExtension(std::string ext) {
-    std::transform(ext.begin(),ext.end(),ext.begin(),toupper);
-    if (ext == "JPG") return std::string("JPEG");
-    if ((ext == "PS") || (ext == "EPS")) return ext;
+    std::string upperext(ext);
+    std::string lowerext(ext);
+    std::transform(upperext.begin(),upperext.end(),upperext.begin(),toupper);
+    std::transform(lowerext.begin(),lowerext.end(),lowerext.begin(),tolower);
+    if (upperext == "JPG") return std::string("JPEG");
+    if ((upperext == "PS") || (upperext == "EPS")) return upperext;
 #ifdef QT3
     QStrList formats(QImage::outputFormats());
-    for (int i=0;i<formats.count();i++)
-      if (formats.at(i) == ext) return ext;
+    for (int i=0;i<formats.count();i++) {
+      if (formats.at(i) == upperext) return upperext;
+      if (formats.at(i) == lowerext) return lowerext;
+    }
 #else
     QList<QByteArray> formats(QImageWriter::supportedImageFormats());
-    for (int i=0;i<formats.count();i++)
-    if (formats.at(i).data() == ext) return ext;
+    for (int i=0;i<formats.count();i++) {
+      if (formats.at(i).data() == upperext) return upperext;
+      if (formats.at(i).data() == lowerext) return lowerext;
+    }
 #endif
     return std::string();
   }
@@ -166,6 +175,27 @@ namespace FreeMat {
 	label.append("0");
       return label;
     }
+  }
+
+  void ClearGridWidget(QWidget* w, const char *name) {
+    // Look for a child widget in the position (row,col)
+    QGridLayout *l = dynamic_cast<QGridLayout*>(w->layout());
+    if (!l) throw Exception("ClearGridWidget failed... this is unexpected - please file a bug report at http://freemat.sf.net detailing what happened");
+    const QObjectList children = w->children();
+    for (int i = 0; i < children.size(); ++i) {
+      QWidget *p = dynamic_cast<QWidget*>(children.at(i));
+      if (p && (strcmp(p->name(),name)==0)) {
+	delete p;
+	break;
+      }
+    }
+  }
+
+  void SetGridWidget(QWidget* w, QPWidget* m, int row, int col) {
+    // Look for a child widget in the position (row,col)
+    QGridLayout *l = dynamic_cast<QGridLayout*>(w->layout());
+    if (!l) throw Exception("SetPlotWidget failed... this is unexpected - please file a bug report at http://freemat.sf.net detailing what happened");
+    l->addWidget(m,row,col);
   }
   
 }

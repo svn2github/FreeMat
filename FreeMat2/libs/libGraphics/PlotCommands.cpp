@@ -28,18 +28,29 @@
 #include "Command.hpp"
 #include "Core.hpp"
 #include "Figure.hpp"
+#include "Label.hpp"
+#include "Util.hpp"
 
 namespace FreeMat {
   Plot2D* GetCurrentPlot() {
     Figure* fig = GetCurrentFig();
     if (fig->getType() == figplot) {
-      return ((Plot2D*) fig->GetChildWidget());
-    } else {
-      Plot2D* t = new Plot2D(fig);
-      fig->SetFigureChild(t,figplot);
-      return t;
+      QWidget *w = (QWidget *) fig->GetChildWidget();
+      const QObjectList children = w->children();
+      for (int i = 0; i < children.size(); ++i) {
+	Plot2D* p = dynamic_cast<Plot2D*>(children.at(i));
+	if (p)
+	  return p;
+      }
     }
-    return NULL;
+    QWidget *w = new QWidget(fig,"container");
+    QGridLayout *l = new QGridLayout(w);
+    Plot2D* p = new Plot2D(w);
+    l->addWidget(p,1,1);
+    l->setColumnStretch(1,1);
+    l->setRowStretch(1,1);
+    fig->SetFigureChild(w,figplot);
+    return p;
   }
   
   static char *colors = "rgbkcmy";
@@ -92,90 +103,6 @@ namespace FreeMat {
     return outStyle;
   }
 
-
-  //!
-  //@Module XLABEL Plot X-axis Label Function
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a label to the x-axis of the plot.  The general syntax
-  //for its use is
-  //@[
-  //  xlabel('label')
-  //@]
-  //or in the alternate form
-  //@[
-  //  xlabel 'label'
-  //@]
-  //or simply
-  //@[
-  //  xlabel label
-  //@]
-  //Here @|label| is a string variable.
-  //@@Example
-  //Here is an example of a simple plot with a label on the @|x|-axis.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(2*pi*x);
-  //plot(x,y,'r-');
-  //xlabel('time');
-  //mprintplot xlabel1
-  //@>
-  //which results in the following plot.
-  //@figure xlabel1
-  //!
-  ArrayVector XLabelFunction(int nargout,const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("xlabel function takes only a single, string argument");
-    if (!(arg[0].isString()))
-      throw Exception("xlabel function takes only a single, string argument");
-    Array t(arg[0]);
-    Plot2D* f = GetCurrentPlot();
-    f->SetXLabel(t.getContentsAsCString());
-    f->repaint();
-    return ArrayVector();
-  }
-
-  //!
-  //@Module YLABEL Plot Y-axis Label Function
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a label to the y-axis of the plot.  The general syntax
-  //for its use is
-  //@[
-  //  ylabel('label')
-  //@]
-  //or in the alternate form
-  //@[
-  //  ylabel 'label'
-  //@]
-  //or simply
-  //@[
-  //  ylabel label
-  //@]
-  //Here @|label| is a string variable.
-  //@@Example
-  //Here is an example of a simple plot with a label on the @|y|-axis.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(2*pi*x);
-  //plot(x,y,'r-');
-  //ylabel('cost');
-  //mprintplot ylabel1
-  //@>
-  //which results in the following plot.
-  //@figure ylabel1
-  //!
-  ArrayVector YLabelFunction(int nargout,const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("ylabel function takes only a single, string argument");
-    if (!(arg[0].isString()))
-      throw Exception("ylabel function takes only a single, string argument");
-    Array t(arg[0]);
-    Plot2D* f = GetCurrentPlot();
-    f->SetYLabel(t.getContentsAsCString());
-    f->repaint();
-    return ArrayVector();
-  }
 
   //!
   //@Module LEGEND Add Legend to Plot
@@ -243,48 +170,6 @@ namespace FreeMat {
     ycorner = y.getContentsAsDoubleScalar();
     t->SetLegend(xcorner, ycorner, legendLS, legendData);
     t->repaint();
-    return ArrayVector();
-  }
-
-  //!
-  //@Module TITLE Plot Title Function
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a title to the plot.  The general syntax
-  //for its use is
-  //@[
-  //  title('label')
-  //@]
-  //or in the alternate form
-  //@[
-  //  title 'label'
-  //@]
-  //or simply
-  //@[
-  //  title label
-  //@]
-  //Here @|label| is a string variable.
-  //@@Example
-  //Here is an example of a simple plot with a title.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(2*pi*x);
-  //plot(x,y,'r-');
-  //title('cost over time');
-  //mprintplot title1
-  //@>
-  //which results in the following plot.
-  //@figure title1
-  //!
-  ArrayVector TitleFunction(int nargout,const ArrayVector& arg) {
-    if (arg.size() != 1)
-      throw Exception("title function takes only a single, string argument");
-    if (!(arg[0].isString()))
-      throw Exception("title function takes only a single, string argument");
-    Array t(arg[0]);
-    Plot2D* f = GetCurrentPlot();
-    f->SetTitleText(t.getContentsAsCString());
-    f->repaint();
     return ArrayVector();
   }
 

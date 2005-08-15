@@ -29,14 +29,12 @@
 #include "ColorBar.hpp"
 #include "qlabel.h"
 #include "Label.hpp"
+#include "Util.hpp"
 
 namespace FreeMat {
   ScalarImage* GetCurrentImage() {
     Figure *fig = GetCurrentFig();
     if (fig->getType() == figscimg) {
-      return ((ScalarImage*) fig->GetChildWidget());
-    } else if (fig->getType() == figcbar) {
-      // Get the children
       QWidget *w = (QWidget *) fig->GetChildWidget();
       const QObjectList children = w->children();
       for (int i = 0; i < children.size(); ++i) {
@@ -45,9 +43,15 @@ namespace FreeMat {
 	  return p;
       }
     }
-    ScalarImage* t = new ScalarImage(fig);
-    fig->SetFigureChild(t,figscimg);
-    return t;
+    // Outer level container
+    QWidget *w = new QWidget(fig,"container");
+    QGridLayout *l = new QGridLayout(w);
+    ScalarImage* p = new ScalarImage(w);
+    l->addWidget(p,1,1);
+    l->setColumnStretch(1,1);
+    l->setRowStretch(1,1);
+    fig->SetFigureChild(w,figscimg);
+    return p;
   }
 
   //!
@@ -168,32 +172,48 @@ namespace FreeMat {
   }
 
   ArrayVector ColorbarFunction(int nargout, const ArrayVector& arg) {
+    char orientation = 'e';
+    if (arg.size() != 0) {
+      char *cp = ArrayToString(arg[0]);
+      orientation = cp[0];
+    }
+    if ((orientation != 'e') && (orientation != 'w') &&
+	(orientation != 's') && (orientation != 'n')) 
+      throw Exception("Unable to determine orientation for colorbar");
     Figure *fig = GetCurrentFig();
-    if (fig->getType() != figscimg)
-      return ArrayVector();
-    // Get the scalar image widget
-    ScalarImage *f = (ScalarImage*) fig->GetChildWidget();
-    // We need a new widget
-    QWidget *w = new QWidget(fig,"container");
-    ScalarImage *fcopy = new ScalarImage(w,f);
-    //    QHBoxLayout *l = new QHBoxLayout(w);
-    QVBoxLayout *l = new QVBoxLayout(w);
-    //    QGridLayout *l = new QGridLayout(w);
-    ColorBar *c = new ColorBar(w,'n');
-    QObject::connect(fcopy, SIGNAL(WinLevChanged(double,double)),
-		     c, SLOT(ChangeWinLev(double,double)));
-    QObject::connect(fcopy, SIGNAL(ColormapChanged(char*)),
-		     c, SLOT(ChangeColormap(char*)));
-    c->ChangeWinLev(fcopy->GetCurrentWindow(),fcopy->GetCurrentLevel());
-    //    l->addWidget(new QLabel("Title Goes Here",fig));
-    l->addWidget(new Label(fig,"Title goes Here\beta",'h'));
-    l->addWidget(fcopy);
-    l->addWidget(c);
-    l->setStretchFactor(fcopy,1);
-    fcopy->show();
-    c->show();
-    fig->SetFigureChild(w,figcbar);
-    fig->adjustSize();
+    QWidget *f = fig->GetChildWidget();
+    ScalarImage *g = GetCurrentImage();
+    ColorBar *c;
+    switch(orientation) {
+    case 'n':
+      ClearGridWidget(f,"colorbar_n");
+      ClearGridWidget(f,"title");
+      c = new ColorBar(f,"colorbar_n",orientation);
+      SetGridWidget(f, c, 0, 1);
+      break;
+    case 's':
+      ClearGridWidget(f,"colorbar_s");
+      ClearGridWidget(f,"xlabel");
+      c = new ColorBar(f,"colorbar_s",orientation);
+      SetGridWidget(f, c, 2, 1);
+      break;
+    case 'e':
+      ClearGridWidget(f,"colorbar_e");
+      c = new ColorBar(f,"colorbar_e",orientation);
+      SetGridWidget(f, c, 1, 2);
+      break;
+    case 'w':
+      ClearGridWidget(f,"colorbar_w");
+      ClearGridWidget(f,"ylabel");
+      c = new ColorBar(f,"colorbar_w",orientation);
+      SetGridWidget(f, c, 1, 0);
+      break;
+    }
+    QObject::connect(g, SIGNAL(WinLevChanged(double,double)),
+ 		     c, SLOT(ChangeWinLev(double,double)));
+    QObject::connect(g, SIGNAL(ColormapChanged(char*)),
+ 		     c, SLOT(ChangeColormap(char*)));
+    c->ChangeWinLev(g->GetCurrentWindow(),g->GetCurrentLevel());
     return ArrayVector();
   }
 

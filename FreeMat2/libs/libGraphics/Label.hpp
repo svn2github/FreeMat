@@ -10,6 +10,7 @@ namespace FreeMat {
     int width;
     int height;
     int depth;
+    Box();
   };
 
   class FormulaTree {
@@ -31,37 +32,27 @@ namespace FreeMat {
   class TexLabel {
     std::string m_rawtext;
     QString m_processed_text; // (unicode) character stream
-    std::vector<int> m_sizes; // size in points of each character
-    std::vector<int> m_xpos_list;  // x position to draw text
-    std::vector<int> m_ypos_list;  // y position to draw text
-    QString m_output_text;
-    int m_cp;
-    int m_xpos;
-    int m_ypos;
-    int m_size;
-    int m_supersub_level;
     FormulaTree *m_tree;
-  public:
-    TexLabel(std::string text);
-    Point2D BoundingBox();
+    int m_size;
+    Box m_box;
     void Substitute(QString ecode, QChar rcode);
     void DoSubstitutions();
-    void Render(QPainter& gc, Point2D pos);
     void CompileRawText();
-    int GetCurrentSize();
-    int GetCurrentYPos();
-    int GetCurrentWidth(QChar a);
     void Stringify();
+  public:
+    TexLabel(std::string text, int size);
+    Point2D BoundingBox();
+    Box Metrics();
+    void Render(QPainter& gc, Point2D pos);
   };
 
   class Label : public QPWidget {
   private:
     std::string m_text;
-    QString m_processed_text;
+    TexLabel *m_label;
     char m_orientation;
   public:
-    Label(QWidget* parent, std::string text, char orient);
-    void ProcessText();
+    Label(QWidget* parent, const char *name, std::string text, char orient);
     virtual ~Label();
     void DrawMe(QPainter& gc);
   };

@@ -691,6 +691,7 @@ namespace FreeMat {
 
   bool isColonOperator(Array& a);
   int32 ArrayToInt32(const Array& a);
+  const char* ArrayToString(const Array& a);
 
   void printObjectBalance();
   void dumpAllArrays();

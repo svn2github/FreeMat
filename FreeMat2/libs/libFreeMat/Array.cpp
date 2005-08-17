@@ -4103,4 +4103,9 @@ break;
     Array b(a);
     return b.getContentsAsIntegerScalar();
   }
+
+  const char* ArrayToString(const Array& a) {
+    Array b(a);
+    return b.getContentsAsCString();
+  }
 }

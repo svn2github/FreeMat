@@ -28,6 +28,8 @@ namespace FreeMat {
 
   ArrayVector ClassRHSExpression(Array a, ASTPtr t, WalkTree* eval);
 
+  void ClassAssignExpression(Array* r, ASTPtr t, ArrayVector& value, WalkTree* eval);
+  
   bool ClassResolveFunction(WalkTree* eval, Array &args, std::string funcName, FuncPtr& val);
   
   std::string ClassMangleName(std::string className, std::string funcName);

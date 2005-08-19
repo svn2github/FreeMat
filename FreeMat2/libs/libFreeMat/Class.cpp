@@ -308,14 +308,14 @@ namespace FreeMat {
       t = t->right;
     }
   }
-  
-  ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
+
+  Array IndexExpressionToStruct(WalkTree* eval, ASTPtr t, Array r) {
     ArrayVector struct_args, m;
+    ArrayVector rv;
+    Array rsave(r);
     stringVector fNames;
     fNames.push_back("type");
     fNames.push_back("subs");
-    ArrayVector rv;
-    Array rsave(r);
     
     while (t != NULL) {
       if (!rv.empty()) 
@@ -351,10 +351,13 @@ namespace FreeMat {
     Array *cp = (Array*) Array::allocateArray(FM_STRUCT_ARRAY,cnt,fNames);
     for (int i=0;i<2*cnt;i++) 
       cp[i] = struct_args[i];
-    Array starg(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
+    return Array(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
+  }
+  
+  ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
     ArrayVector p;
-    p.push_back(rsave);
-    p.push_back(starg);
+    p.push_back(r);
+    p.push_back(IndexExpressionToStruct(eval,t, r));
     val->updateCode();
     ArrayVector n = val->evaluateFunction(eval,p,1);
     return n;
@@ -443,6 +446,27 @@ namespace FreeMat {
     if (rv.empty())
       rv.push_back(r);
     return rv;
+  }
+
+  void ClassAssignExpression(Array *dst, ASTPtr t, ArrayVector& value, WalkTree* eval) {
+    FuncPtr val;
+    if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
+      throw Exception("The method 'subsasgn' is not defined for objects of class " + 
+		      dst->getClassName().back());
+    ArrayVector p;
+    p.push_back(*dst);
+    p.push_back(IndexExpressionToStruct(eval, t, *dst));
+    for (unsigned i=0;i<value.size();i++)
+      p.push_back(value[i]);
+    val->updateCode();
+    bool overload(eval->getStopOverload());
+    eval->setStopOverload(true);
+    ArrayVector n = val->evaluateFunction(eval,p,1);
+    eval->setStopOverload(overload);
+    if (!n.empty())
+      *dst = n[0];
+    else
+      eval->getInterface()->warningMessage(std::string("'subsasgn' for class ") + dst->getClassName().back() + std::string(" did not return a value... operation has no effect."));
   }
 
   // Ideally, this would be the only place where the class name is mangled.

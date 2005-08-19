@@ -3570,6 +3570,11 @@ namespace FreeMat {
   //    a(xpr1) = t1
   void WalkTree::subassign(Array *r, ASTPtr t, ArrayVector& value) {
     int ctxt = t->context();
+    // Check for a class assignment
+    if (r && r->isUserClass() && !stopoverload) {
+      ClassAssignExpression(r,t,value,this);
+      return;
+    }
     // Set up a stack
     ArrayVector stack;
     ASTPtrVector ref;

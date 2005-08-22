@@ -41,7 +41,7 @@ namespace FreeMat {
   Plot2D::~Plot2D() {
   }
 
-  void Plot2D::DrawTextLabels(QPainter &gc) {
+  void Plot2D::DrawTextLabels(DrawEngine &gc) {
     int xc, yc;
     gc.setPen(QPen(Qt::black));
     for (int i=0;i<textx.size();i++) {
@@ -50,7 +50,7 @@ namespace FreeMat {
     }
   }
   
-  void Plot2D::DrawLegend(QPainter &gc) {
+  void Plot2D::DrawLegend(DrawEngine &gc) {
     int xc, yc;
     MapPoint(legend_xc,legend_yc,xc,yc);
     int i;
@@ -192,7 +192,7 @@ namespace FreeMat {
     setMinimumSize(200,150);
   }
 
-  void Plot2D::DrawAxes(QPainter &gc) {
+  void Plot2D::DrawAxes(DrawEngine &gc) {
     double xmin, xmax, ymin, ymax;
     int xc_min, xc_max, yc_min, yc_max;
     xAxis.GetAxisExtents(xmin,xmax);
@@ -256,7 +256,7 @@ namespace FreeMat {
     yc = (int) v;
   }
 
-  void Plot2D::DrawMe(QPainter &gc) {
+  void Plot2D::DrawMe(DrawEngine &gc) {
     Point2D sze(width(),height());
     int width = sze.x;
     int height = sze.y;
@@ -314,8 +314,10 @@ namespace FreeMat {
     yAxis.SetAxisLength(plotHeight);
     DrawAxes(gc);
     gc.save();
-    QPoint origin(gc.xForm(QPoint(0,0)));
-    gc.setClipRect(viewport.x1+origin.x(),viewport.y1+origin.y(),viewport.width,viewport.height);
+    // FIXME
+    //    QPoint origin(gc.xForm(QPoint(0,0)));
+    //    gc.setClipRect(viewport.x1+origin.x(),viewport.y1+origin.y(),viewport.width,viewport.height);
+    gc.setClipRect(viewport.x1,viewport.y1,viewport.width,viewport.height);
 
     for (int i=0;i<data.size();i++)
       data[i].DrawMe(gc, *this);
@@ -365,7 +367,7 @@ namespace FreeMat {
     return(Qt::black);
   }
 
-  void PutSymbol(QPainter &dc, int xp, int yp, char symbol, int len) {
+  void PutSymbol(DrawEngine &dc, int xp, int yp, char symbol, int len) {
     int len2 = (int) (len / sqrt(2.0));
     switch (symbol) {
     case '.':

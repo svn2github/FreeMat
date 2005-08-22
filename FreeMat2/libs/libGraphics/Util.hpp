@@ -1,6 +1,7 @@
 #include <qpainter.h>
 #include <vector>
 #include "Point2D.hpp"
+#include "DrawEngine.hpp"
 #include "QPWidget.hpp"
 
 namespace FreeMat {
@@ -18,16 +19,16 @@ typedef enum {
 } YALIGNTYPE;
 
   // Helper functions
-  Point2D GetTextExtent(QPainter& gc, std::string label);
+  Point2D GetTextExtent(DrawEngine& gc, std::string label);
   Point2D GetTextExtentNoGC(std::string label, int size);
-  void DrawTextString(QPainter& gc, std::string txt, Point2D pos, 
+  void DrawTextString(DrawEngine& gc, std::string txt, Point2D pos, 
 		      int orient = 0);
-  void DrawTextStringAligned(QPainter& gc, std::string txt, Point2D pos, 
+  void DrawTextStringAligned(DrawEngine& gc, std::string txt, Point2D pos, 
 			     XALIGNTYPE xalign, YALIGNTYPE yalign, 
 			     int orient = 0);
-  void DrawLines(QPainter& gc, std::vector<Point2D> pts);
-  void SetFontSize(QPainter& gc, int size);
-  void BlitImage(QPainter& gc, unsigned char *data, int width, int height, int x0, int y0);
+  void DrawLines(DrawEngine& gc, std::vector<Point2D> pts);
+  void SetFontSize(DrawEngine& gc, int size);
+  void BlitImage(DrawEngine& gc, unsigned char *data, int width, int height, int x0, int y0);
   
   void SaveFocus();
   void RestoreFocus();

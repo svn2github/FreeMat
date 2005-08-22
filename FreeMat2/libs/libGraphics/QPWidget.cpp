@@ -1,4 +1,6 @@
 #include "QPWidget.hpp"
+#include "QPainterDrawEngine.hpp"
+#include <qpainter.h>
 
 namespace FreeMat {
 
@@ -9,7 +11,8 @@ QPWidget::QPWidget(QWidget* parent, const char *Name) :
 void QPWidget::paintEvent(QPaintEvent* e) {
   QWidget::paintEvent(e);
   QPainter gc(this);
-  DrawMe(gc);
+  QPainterDrawEngine dc(gc);
+  DrawMe(dc);
 }
 
 }

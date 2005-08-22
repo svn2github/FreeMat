@@ -18,13 +18,11 @@
 #ifndef QT3
 #include <QMouseEvent>
 #include <QImageWriter>
-#include <qpsprinter.h>
-#define QPRN QPSPrinter
 #else
 #include <qobjectlist.h>
-#include <qprinter.h>
-#define QPRN QPrinter
 #endif
+
+#include "PSDrawEngine.hpp"
 
 namespace FreeMat {
   typedef struct {
@@ -177,7 +175,7 @@ namespace FreeMat {
   }
 
 
-  void PrintWidgetHelper(QWidget* g, QPainter &gc) {
+  void PrintWidgetHelper(QWidget* g, DrawEngine &gc) {
     if (!g) return;
     QPWidget *w = dynamic_cast<QPWidget *>(g);
     if (w) {
@@ -215,17 +213,8 @@ namespace FreeMat {
 
   bool PrintWidget(QWidget* g, std::string filename, std::string type) {
     if (type == "EPS" || type == "PS") {
-      QPRN mprnt;
-#ifdef QT3
-      mprnt.setOutputToFile(TRUE);
-      mprnt.setOutputFileName(filename);
-#else
-      mprnt.setOutputFileName(filename.c_str());
-#endif
-      mprnt.setColorMode(QPRN::Color);
-      QPainter p(&mprnt);
-      p.setClipRect(g->rect());
-      PrintWidgetHelper(g, p);
+      PSDrawEngine pE(filename,g->width(),g->height());
+      PrintWidgetHelper(g, pE);
       return true;
     } else {
       // Binary print - use grabWidget
@@ -595,7 +584,9 @@ namespace FreeMat {
     QWidget *f = fig->GetChildWidget();
     ClearGridWidget(f,"title");
     ClearGridWidget(f,"colorbar_n");
-    SetGridWidget(f,new Label(f,"title",t.getContentsAsCString(),'h'),0,1);
+    Label *p = new Label(f,"title",t.getContentsAsCString(),'h');
+    SetGridWidget(f,p,0,1);
+    p->show();
     return ArrayVector();
   }
 

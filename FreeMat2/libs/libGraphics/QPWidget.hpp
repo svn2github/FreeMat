@@ -2,7 +2,7 @@
 #define __QPWidget_hpp__
 
 #include <qwidget.h>
-#include <qpainter.h>
+#include "DrawEngine.hpp"
 
 namespace FreeMat {
   /**
@@ -15,7 +15,7 @@ namespace FreeMat {
   class QPWidget : public QWidget {
   public:
     QPWidget(QWidget* parent, const char *Name);
-    virtual void DrawMe(QPainter& gc) = 0;
+    virtual void DrawMe(DrawEngine& gc) = 0;
     void paintEvent(QPaintEvent* e);
   };
 }

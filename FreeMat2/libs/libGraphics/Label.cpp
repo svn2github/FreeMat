@@ -45,7 +45,7 @@ namespace FreeMat {
       m_nexttree->PrintMe();
   }
 
-  void FormulaTree::Render(QPainter& gc, Point2D& pos) {
+  void FormulaTree::Render(DrawEngine& gc, Point2D& pos) {
     QFont tmp("Helvetica",m_size);
     gc.setFont(tmp);
     gc.drawText(pos.x,pos.y-m_ascent,m_text);
@@ -309,7 +309,7 @@ namespace FreeMat {
     return m_box;
   }
 
-  void TexLabel::Render(QPainter& gc, Point2D pos) {
+  void TexLabel::Render(DrawEngine& gc, Point2D pos) {
     m_tree->Render(gc, pos);
   }
 
@@ -327,7 +327,7 @@ namespace FreeMat {
   Label::~Label() {
   }
   
-  void Label::DrawMe(QPainter& gc) {
+  void Label::DrawMe(DrawEngine& gc) {
     // Center the label in our window...
     if (m_orientation == 'h') {
       Point2D pos(width()/2,0);

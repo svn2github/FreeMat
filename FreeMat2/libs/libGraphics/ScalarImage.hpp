@@ -72,7 +72,7 @@ namespace FreeMat {
     /**
      * Routine that draws the contents of the window.
      */
-    void DrawMe(QPainter& gc);
+    void DrawMe(DrawEngine& gc);
     /**
      * A resize event for the widget
      */

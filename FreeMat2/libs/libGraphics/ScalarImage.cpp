@@ -235,7 +235,7 @@ namespace FreeMat {
     return zoomRows;
   }
 
-  void ScalarImage::DrawMe(QPainter &gc) {
+  void ScalarImage::DrawMe(DrawEngine &gc) {
     if (!rawData || !picData) return;
     BlitImage(gc,picData, zoomColumns, zoomRows, (width()-zoomColumns)/2, (height()-zoomRows)/2);
   }

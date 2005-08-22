@@ -136,7 +136,7 @@ namespace FreeMat {
     delete picData;
   }
   
-  void ColorBar::DrawMe(QPainter& gc) {
+  void ColorBar::DrawMe(DrawEngine& gc) {
     if (IsEastWest()) {
       // Draw the colorbar
       int offset = (height() - m_length)/2;

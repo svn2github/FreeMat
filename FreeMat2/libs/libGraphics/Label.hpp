@@ -26,7 +26,7 @@ namespace FreeMat {
     void PrintMe();
     Box GetBox();
     void SizeTree(int size, int ascent);
-    void Render(QPainter& gc, Point2D& pos);
+    void Render(DrawEngine& gc, Point2D& pos);
   };
 
   class TexLabel {
@@ -43,7 +43,7 @@ namespace FreeMat {
     TexLabel(std::string text, int size);
     Point2D BoundingBox();
     Box Metrics();
-    void Render(QPainter& gc, Point2D pos);
+    void Render(DrawEngine& gc, Point2D pos);
   };
 
   class Label : public QPWidget {
@@ -54,7 +54,7 @@ namespace FreeMat {
   public:
     Label(QWidget* parent, const char *name, std::string text, char orient);
     virtual ~Label();
-    void DrawMe(QPainter& gc);
+    void DrawMe(DrawEngine& gc);
   };
 }
 

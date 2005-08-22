@@ -10,7 +10,7 @@
 #endif
 
 namespace FreeMat {
-  Point2D GetTextExtent(QPainter& gc, std::string label) {
+  Point2D GetTextExtent(DrawEngine& gc, std::string label) {
     QRect sze(gc.fontMetrics().boundingRect(label.c_str()));
     return Point2D(sze.width(),sze.height());    
   }
@@ -21,7 +21,7 @@ namespace FreeMat {
     return Point2D(sze.width(),sze.height());        
   }
 
-  void DrawTextString(QPainter& gc, std::string txt, Point2D pos, 
+  void DrawTextString(DrawEngine& gc, std::string txt, Point2D pos, 
 		      int orient) {
     gc.save();
     gc.translate(pos.x, pos.y);
@@ -30,7 +30,7 @@ namespace FreeMat {
     gc.restore();    
   }
 
-  void DrawTextStringAligned(QPainter& gc, std::string text, Point2D pos, 
+  void DrawTextStringAligned(DrawEngine& gc, std::string text, Point2D pos, 
 			     XALIGNTYPE xalign, YALIGNTYPE yalign, 
 			     int orient) {
     Point2D txtSize(GetTextExtent(gc,text));
@@ -56,7 +56,7 @@ namespace FreeMat {
     DrawTextString(gc,text,pos,orient);
   }
 
-  void DrawLines(QPainter& gc, std::vector<Point2D> pts) {
+  void DrawLines(DrawEngine& gc, std::vector<Point2D> pts) {
 #ifdef QT3
     QPointArray a(pts.size());
     for (int i=0;i<pts.size();i++)
@@ -69,11 +69,11 @@ namespace FreeMat {
     gc.drawPolyline(a);
   }
 
-  void SetFontSize(QPainter& gc, int size) {
+  void SetFontSize(DrawEngine& gc, int size) {
     gc.setFont(QFont("Helvetica",size));
   }
   
-  void BlitImage(QPainter& gc, unsigned char *data, int width, int height, int x0, int y0) {
+  void BlitImage(DrawEngine& gc, unsigned char *data, int width, int height, int x0, int y0) {
 #ifdef QT3
     QImage qimg(width, height, 32);
 #else

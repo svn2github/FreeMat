@@ -108,7 +108,7 @@ namespace FreeMat {
   }
 
 
-  void DataSet2D::DrawMe(QPainter& dc, Plot2D &plt) {
+  void DataSet2D::DrawMe(DrawEngine& dc, Plot2D &plt) {
     const double *xVals;
     const double *yVals;
     int ptCount;
@@ -145,6 +145,7 @@ namespace FreeMat {
     DrawLines(dc,pts);
   }
 
+#if 0
   DataSet3D::DataSet3D(Array xarg, Array yarg, Array zarg,
 		       char a_color, char a_symbol, char a_line) {
     color = a_color;
@@ -271,60 +272,61 @@ namespace FreeMat {
   }
 
 
-  void DataSet3D::DrawMe(GraphicsContext &dc, Axis *xAxis, 
-			 Axis *yAxis, Axis *zAxis,
-			 double xform[2][4]) {
-    const double *xVals;
-    const double *yVals;
-    const double *zVals;
-    int ptCount;
-    int i;
+//   void DataSet3D::DrawMe(GraphicsContext &dc, Axis *xAxis, 
+// 			 Axis *yAxis, Axis *zAxis,
+// 			 double xform[2][4]) {
+//     const double *xVals;
+//     const double *yVals;
+//     const double *zVals;
+//     int ptCount;
+//     int i;
 
-    xVals = (const double *) x.getDataPointer();
-    yVals = (const double *) y.getDataPointer();
-    zVals = (const double *) z.getDataPointer();
-    ptCount = x.getLength();
+//     xVals = (const double *) x.getDataPointer();
+//     yVals = (const double *) y.getDataPointer();
+//     zVals = (const double *) z.getDataPointer();
+//     ptCount = x.getLength();
 
-    SetPenColor(dc, false);
-    // Draw the symbols
-    for (i=0;i<ptCount;i++) {
-      // Map the data point to a coordinate
-      if (IsFinite(xVals[i]) && IsFinite(yVals[i]) && IsFinite(zVals[i])) {
-	int xp, yp, zp;
-	xp = xVals[i];
-	yp = yVals[i];
-	zp = zVals[i];
-	int xxp, yyp;
-	xxp = (int)(xform[0][0]*xp + xform[0][1]*yp + 
-		    xform[0][2]*zp + xform[0][3]) + 200;
-	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
-		    xform[1][2]*zp + xform[1][3]) + 200;
-	//	PutSymbol(dc, xxp, yyp, symbol, symbolLength);
-	//FIXME
-      }
-    }
-    // Plot the lines
-    SetPenColor(dc, true);
-    std::vector<Point2D> pts;
-    for (i=0;i<ptCount;i++) {
-      if (IsFinite(xVals[i]) && IsFinite(yVals[i]) &&
-	  IsFinite(yVals[i])) {
-	int xp, yp, zp;
-	xp = xAxis->MapPoint(xVals[i]);
-	yp = yAxis->MapPoint(yVals[i]);
-	zp = zAxis->MapPoint(zVals[i]);
-	int xxp, yyp;
-	xxp = (int)(xform[0][0]*xp + xform[0][1]*yp + 
-		    xform[0][2]*zp + xform[0][3]) + 200;
-	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
-		    xform[1][2]*zp + xform[1][3]) + 200;
-	pts.push_back(Point2D(xxp,yyp));
-      }
-      else {
-	dc.DrawLines(pts);
-	pts.clear();
-      }
-    }
-    dc.DrawLines(pts);
-  }
+//     SetPenColor(dc, false);
+//     // Draw the symbols
+//     for (i=0;i<ptCount;i++) {
+//       // Map the data point to a coordinate
+//       if (IsFinite(xVals[i]) && IsFinite(yVals[i]) && IsFinite(zVals[i])) {
+// 	int xp, yp, zp;
+// 	xp = xVals[i];
+// 	yp = yVals[i];
+// 	zp = zVals[i];
+// 	int xxp, yyp;
+// 	xxp = (int)(xform[0][0]*xp + xform[0][1]*yp + 
+// 		    xform[0][2]*zp + xform[0][3]) + 200;
+// 	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
+// 		    xform[1][2]*zp + xform[1][3]) + 200;
+// 	//	PutSymbol(dc, xxp, yyp, symbol, symbolLength);
+// 	//FIXME
+//       }
+//     }
+//     // Plot the lines
+//     SetPenColor(dc, true);
+//     std::vector<Point2D> pts;
+//     for (i=0;i<ptCount;i++) {
+//       if (IsFinite(xVals[i]) && IsFinite(yVals[i]) &&
+// 	  IsFinite(yVals[i])) {
+// 	int xp, yp, zp;
+// 	xp = xAxis->MapPoint(xVals[i]);
+// 	yp = yAxis->MapPoint(yVals[i]);
+// 	zp = zAxis->MapPoint(zVals[i]);
+// 	int xxp, yyp;
+// 	xxp = (int)(xform[0][0]*xp + xform[0][1]*yp + 
+// 		    xform[0][2]*zp + xform[0][3]) + 200;
+// 	yyp = (int)(xform[1][0]*xp + xform[1][1]*yp + 
+// 		    xform[1][2]*zp + xform[1][3]) + 200;
+// 	pts.push_back(Point2D(xxp,yyp));
+//       }
+//       else {
+// 	dc.DrawLines(pts);
+// 	pts.clear();
+//       }
+//     }
+//     dc.DrawLines(pts);
+//   }
+#endif
 }

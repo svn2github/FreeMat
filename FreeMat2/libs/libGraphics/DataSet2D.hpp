@@ -21,9 +21,8 @@
 #ifndef __DataSet2D_hpp__
 #define __DataSet2D_hpp__
 
-#include "Axis.hpp"
 #include "Array.hpp"
-#include <qpainter.h>
+#include "DrawEngine.hpp"
 
 namespace FreeMat {
 
@@ -98,7 +97,7 @@ namespace FreeMat {
      * Plot the data set to the given device context, using the 
      * given x and y axis.
      */
-    void DrawMe(QPainter& dc, Plot2D &plt);
+    void DrawMe(DrawEngine& dc, Plot2D &plt);
     /**
      * Calculate the range of the data.
      */
@@ -119,13 +118,13 @@ namespace FreeMat {
     char symbol;
     char line;  
     int symbolLength;
-    void SetPenColor(GraphicsContext&, bool);
+    //    void SetPenColor(GraphicsContext&, bool);
   public:
     DataSet3D(Array xarg, Array yarg, Array zarg, 
 	      char a_color, char a_symbol, char a_line);
     ~DataSet3D();
-    void DrawMe(GraphicsContext& dc, Axis* xAxis, Axis* yAxis, 
-		Axis *zAxis, double xform[2][4]);
+//     void DrawMe(GraphicsContext& dc, Axis* xAxis, Axis* yAxis, 
+// 		Axis *zAxis, double xform[2][4]);
     void GetDataRange(double& xMin, double& xMax, 
 		      double& yMin, double& yMax,
 		      double& zMin, double& zMax);

@@ -6,6 +6,7 @@
 #include <string>
 #include "Point2D.hpp"
 #include "Array.hpp"
+#include "DrawEngine.hpp"
 
 namespace FreeMat {
   /**
@@ -37,7 +38,7 @@ namespace FreeMat {
     QSize minimumSizeHint();
     QSizePolicy sizePolicy();
     void SetBarLength(int length);
-    void DrawMe(QPainter& gc);
+    void DrawMe(DrawEngine& gc);
     void SetHorizontalFlag(bool ishoriz);
     void resizeEvent(QResizeEvent* e);
     void UpdateImage();

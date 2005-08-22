@@ -24,6 +24,7 @@
 #include "DataSet2D.hpp"
 #include "NewAxis.hpp"
 #include "QPWidget.hpp"
+#include "DrawEngine.hpp"
 #include <qpen.h>
 
 namespace FreeMat {
@@ -50,9 +51,9 @@ namespace FreeMat {
     /**
      * Render the legend (if any) to the current plot.
      */
-    void DrawLegend(QPainter &gc);
-    void DrawAxes(QPainter& gc);
-    void DrawTextLabels(QPainter &gc);
+    void DrawLegend(DrawEngine &gc);
+    void DrawAxes(DrawEngine& gc);
+    void DrawTextLabels(DrawEngine &gc);
     /**
      * Set the legend data for the current plot.  The
      * legendData array is a sequence of linestyle/label
@@ -103,7 +104,7 @@ namespace FreeMat {
     /**
      * Routine that draws the contents of the window.
      */
-    void DrawMe(QPainter &gc);
+    void DrawMe(DrawEngine &gc);
     /**
      * Force the axes to fit the data tightly - i.e., with no
      * additional buffering to make the labels come out nicely.
@@ -175,7 +176,7 @@ namespace FreeMat {
   // Plot2D itself
   Qt::PenStyle UtilityMapLineStyleToType(char line);
   QColor UtilityMapColorSpecToColor(char cspec);
-  void PutSymbol(QPainter &dc, int xp, int yp, char symbol, int len);
+  void PutSymbol(DrawEngine &dc, int xp, int yp, char symbol, int len);
 }
 
 #endif  

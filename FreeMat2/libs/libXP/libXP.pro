@@ -21,7 +21,9 @@ XPWindow.hpp \
 QTGC.hpp \
 TermWidget.hpp \
 GUITerminal.hpp \
-QTTerm.hpp 
+QTTerm.hpp \
+DrawEngine.hpp \
+QPainterDrawEngine.hpp
 
 DEPENDPATH += INCLUDEPATH
 
@@ -38,7 +40,9 @@ XPWidget.cpp \
 XPWindow.cpp \
 QTGC.cpp \
 GUITerminal.cpp \
-QTTerm.cpp 
+QTTerm.cpp \
+QPainterDrawEngine.cpp \
+PSDrawEngine.cpp
 
 win32 {
 QT += qt3support

@@ -7,6 +7,9 @@
 #ifndef QT3
 #include <qimagewriter.h>
 #include <qgridlayout.h>
+#else
+#include <qlayout.h>
+#include <qobjectlist.h>
 #endif
 
 namespace FreeMat {
@@ -57,16 +60,10 @@ namespace FreeMat {
   }
 
   void DrawLines(DrawEngine& gc, std::vector<Point2D> pts) {
-#ifdef QT3
-    QPointArray a(pts.size());
+    std::vector<QPoint> op;
     for (int i=0;i<pts.size();i++)
-      a.setPoint(i,pts[i].x,pts[i].y);
-#else
-    QPolygon a;
-    for (int i=0;i<pts.size();i++)
-      a.push_back(QPoint(pts[i].x,pts[i].y));  
-#endif
-    gc.drawPolyline(a);
+      op.push_back(QPoint(pts[i].x,pts[i].y));
+    gc.drawPolyline(op);
   }
 
   void SetFontSize(DrawEngine& gc, int size) {
@@ -181,6 +178,19 @@ namespace FreeMat {
     // Look for a child widget in the position (row,col)
     QGridLayout *l = dynamic_cast<QGridLayout*>(w->layout());
     if (!l) throw Exception("ClearGridWidget failed... this is unexpected - please file a bug report at http://freemat.sf.net detailing what happened");
+#ifdef QT3
+    const QObjectList* children = w->children();
+    QObjectListIt it(*children);
+    QObject *child;
+    while ((child=it.current()) != 0) {
+      ++it;
+      QWidget* p = dynamic_cast<QWidget*>(child);
+      if (p && (strcmp(p->name(),name)==0)) {
+	delete p;
+	break;
+      }
+    }
+#else
     const QObjectList children = w->children();
     for (int i = 0; i < children.size(); ++i) {
       QWidget *p = dynamic_cast<QWidget*>(children.at(i));
@@ -189,6 +199,7 @@ namespace FreeMat {
 	break;
       }
     }
+#endif
   }
 
   void SetGridWidget(QWidget* w, QPWidget* m, int row, int col) {

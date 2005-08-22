@@ -163,8 +163,13 @@ namespace FreeMat {
 
   void TexLabel::Substitute(QString ecode, QChar rcode) {
     int j = 0;
+#ifdef QT3
+    while ((j = m_processed_text.find(ecode)) != -1)
+      m_processed_text.replace(ecode,rcode);
+#else
     while ((j = m_processed_text.indexOf(ecode,0)) != -1)
       m_processed_text.replace(j,ecode.size(),rcode);
+#endif
   }
 
   void TexLabel::DoSubstitutions() {
@@ -245,14 +250,22 @@ namespace FreeMat {
     QString fragment;
     bool singleshot;
     std::vector<QString> stringfrag;
+#ifdef QT3
+    while (m_cp < m_processed_text.length()) {
+#else
     while (m_cp < m_processed_text.size()) {
+#endif
       // Is this a bracket?
       if ((m_processed_text[m_cp] == '{') ||
 	  (m_processed_text[m_cp] == '}')) {
 	// Flush the current string
 	stringfrag.push_back(fragment);
 	// Reset the fragment buffer
+#ifdef QT3
+	fragment = QString("");
+#else
 	fragment.clear();
+#endif
 	stringfrag.push_back(QString(m_processed_text[m_cp]));
 	singleshot = false;
       } else if ((m_processed_text[m_cp] == '^') ||
@@ -261,14 +274,26 @@ namespace FreeMat {
 	// Flush the current string
 	stringfrag.push_back(fragment);
 	stringfrag.push_back(QString(m_processed_text[m_cp]));
+#ifdef QT3
+	fragment = QString("");
+#else
 	fragment.clear();
+#endif
 	singleshot = true;
       } else {
+#ifdef QT3
+	fragment.append(m_processed_text[m_cp]);
+#else
 	fragment.push_back(m_processed_text[m_cp]);
+#endif
 	if (singleshot) {
 	  stringfrag.push_back(fragment);
 	  // Reset the fragment buffer
+#ifdef QT3
+	  fragment = QString("");
+#else
 	  fragment.clear();
+#endif
 	  singleshot = false;
 	}
       }

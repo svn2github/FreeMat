@@ -496,7 +496,9 @@ namespace FreeMat {
     QWidget *f = fig->GetChildWidget();
     ClearGridWidget(f,"xlabel");
     ClearGridWidget(f,"colorbar_s");
-    SetGridWidget(f,new Label(f,"xlabel",t.getContentsAsCString(),'h'),2,1);
+    Label *l = new Label(f,"xlabel",t.getContentsAsCString(),'h');
+    SetGridWidget(f,l,2,1);
+    l->show();
     return ArrayVector();
   }
 

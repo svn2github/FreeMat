@@ -5,10 +5,10 @@
 #include <qfontmetrics.h>
 #include <qpoint.h>
 #include <qbrush.h>
-#include <qpolygon.h>
 #include <qfont.h>
 #include <qimage.h>
 #include <qstring.h>
+#include <vector>
 
 class DrawEngine {
  public:
@@ -25,10 +25,10 @@ class DrawEngine {
   virtual void drawRect(int x1, int y1, int w, int h) = 0;
   virtual void fillRect(int x, int y, int w, int h, const QBrush &) = 0;
   virtual QPoint xForm(const QPoint &) = 0;
-  virtual void setClipRect(int x, int y, int w, int h, Qt::ClipOperation op = Qt::ReplaceClip) = 0;
+  virtual void setClipRect(int x, int y, int w, int h) = 0;
   virtual void drawPoint(int x, int y) = 0;
   virtual void drawEllipse(int x, int y, int w, int h) = 0;
-  virtual void drawPolyline(const QPolygon &pa) = 0;
+  virtual void drawPolyline(const std::vector<QPoint> &pa) = 0;
   virtual void setFont(const QFont &f) = 0;
   virtual void drawText(int x, int y, const QString &s) = 0;
   virtual void drawImage(int x, int y, const QImage &image) = 0;

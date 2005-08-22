@@ -16,8 +16,6 @@ Point2D.hpp \
 GraphicsContext.cpp \
 Color.hpp \
 KeyManager.hpp \
-XPWidget.hpp \
-XPWindow.hpp \
 QTGC.hpp \
 TermWidget.hpp \
 GUITerminal.hpp \
@@ -36,8 +34,6 @@ Point2D.cpp \
 GraphicsContext.cpp \
 Color.cpp \
 KeyManager.cpp \
-XPWidget.cpp \
-XPWindow.cpp \
 QTGC.cpp \
 GUITerminal.cpp \
 QTTerm.cpp \

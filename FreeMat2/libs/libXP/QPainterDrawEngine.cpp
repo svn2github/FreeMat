@@ -55,8 +55,8 @@ QPoint QPainterDrawEngine::xForm(const QPoint &p) {
   return m_gc.xForm(p);
 }
 
-void QPainterDrawEngine::setClipRect(int x, int y, int w, int h, Qt::ClipOperation op) {
-  m_gc.setClipRect(x,y,w,h,op);
+void QPainterDrawEngine::setClipRect(int x, int y, int w, int h) {
+  m_gc.setClipRect(x,y,w,h);
 }
 
 void QPainterDrawEngine::drawPoint(int x, int y) {
@@ -67,8 +67,17 @@ void QPainterDrawEngine::drawEllipse(int x, int y, int w, int h) {
   m_gc.drawEllipse(x,y,w,h);
 }
 
-void QPainterDrawEngine::drawPolyline(const QPolygon &pa) {
-  m_gc.drawPolyline(pa);
+void QPainterDrawEngine::drawPolyline(const std::vector<QPoint> &pts) {
+#ifdef QT3
+  QPointArray a(pts.size());
+  for (int i=0;i<pts.size();i++)
+    a.setPoint(i,pts[i].x(),pts[i].y());
+#else
+  QPolygon a;
+  for (int i=0;i<pts.size();i++)
+    a.push_back(pts[i]);  
+#endif
+  m_gc.drawPolyline(a);
 }
 
 void QPainterDrawEngine::setFont(const QFont &f) {

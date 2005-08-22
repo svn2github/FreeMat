@@ -28,10 +28,10 @@ class PSDrawEngine : public DrawEngine {
   virtual void drawRect(int x1, int y1, int w, int h);
   virtual void fillRect(int x, int y, int w, int h, const QBrush &);
   virtual QPoint xForm(const QPoint &);
-  virtual void setClipRect(int x, int y, int w, int h, Qt::ClipOperation op = Qt::ReplaceClip);
+  virtual void setClipRect(int x, int y, int w, int h);
   virtual void drawPoint(int x, int y);
   virtual void drawEllipse(int x, int y, int w, int h);
-  virtual void drawPolyline(const QPolygon &pa);
+  virtual void drawPolyline(const std::vector<QPoint> &pa);
   virtual void setFont(const QFont &f);
   virtual void drawText(int x, int y, const QString &s);
   virtual void drawImage(int x, int y, const QImage &image);  

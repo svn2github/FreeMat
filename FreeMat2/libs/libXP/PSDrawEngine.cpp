@@ -4,25 +4,6 @@
 
 #define POINT(p) p.x() << ' ' << p.y() << ' '
 
-// make sure DSC comments are not longer than 255 chars per line.
-static QString wrapDSC(const QString &str)
-{
-    QString dsc = str.simplified();
-    const int wrapAt = 254;
-    QString wrapped;
-    if (dsc.length() < wrapAt)
-        wrapped = dsc;
-    else {
-        wrapped = dsc.left(wrapAt);
-        QString tmp = dsc.mid(wrapAt);
-        while (tmp.length() > wrapAt-3) {
-            wrapped += "\n%%+" + tmp.left(wrapAt-3);
-            tmp = tmp.mid(wrapAt-3);
-        }
-        wrapped += "\n%%+" + tmp;
-    }
-    return wrapped + "\n";
-}
 
 static const char *const ps_header =
 "/d/def load def/D{bind d}bind d/d2{dup dup}D/ED{exch d}D/D0{0 ED}D/LT\n"
@@ -93,8 +74,8 @@ void PSDrawEngine::emitHeader()
   pageStream << "%!PS-Adobe-3.0";
   pageStream << " EPSF-3.0\n%%BoundingBox: ";
   pageStream << " 0 0 " << m_width << ' ' << m_height << "\n";
-  pageStream << "\n" << wrapDSC("%%Creator: FreeMat");
-  pageStream << wrapDSC("%%Title: " + m_title);
+  pageStream << "\n" << "%%Creator: FreeMat";
+  pageStream << "%%Title: " + m_title;
   pageStream << "%%CreationDate: " << QDateTime::currentDateTime().toString();
   pageStream << "\n%%Pages: 1";
   pageStream << "\n%% Page: 1 1";
@@ -110,14 +91,12 @@ void PSDrawEngine::emitHeader()
   // we have to do this here, as scaling can affect this.
   QString lineStyles = "/LArr["                                       // Pen styles:
     " [] []"                       //   solid line
-    " [w s] [s w]"                 //   dash line
-    " [s s] [s s]"                  //   dot line
-    " [m s s s] [s m s s]"      //   dash dot line
-    " [m s s s s] [s m s s s s]"         //   dash dot dot line
+    " [10 3] [10 3]"                 //   dash line
+    " [3 3] [3 3]"                  //   dot line
+    " [5 3 3 3] [3 5 3 3]"      //   dash dot line
+    " [5 3 3 3 3] [3 5 3 3 3 3]"         //   dash dot dot line
     "] d\n";
-  lineStyles.replace(QLatin1String("w"), "10");
-  lineStyles.replace(QLatin1String("m"), "5");
-  lineStyles.replace(QLatin1String("s"), "3");
+
   
   pageStream << lineStyles;
   
@@ -132,7 +111,11 @@ PSDrawEngine::PSDrawEngine(std::string filename, int width, int height) {
   m_width = width;
   m_height = height;
   outDevice = new QFile(m_title);
+#ifdef QT3
+  outDevice->open(IO_WriteOnly);
+#else
   outDevice->open(QIODevice::WriteOnly);
+#endif
   pageStream.setDevice(outDevice);
   emitHeader();
 }
@@ -192,7 +175,7 @@ QPoint PSDrawEngine::xForm(const QPoint &) {
   return QPoint(0,0);
 }
 
-void PSDrawEngine::setClipRect(int x, int y, int w, int h, Qt::ClipOperation op = Qt::ReplaceClip) {
+void PSDrawEngine::setClipRect(int x, int y, int w, int h) {
 }
 
 void PSDrawEngine::drawPoint(int x, int y) {
@@ -203,7 +186,7 @@ void PSDrawEngine::drawEllipse(int x, int y, int w, int h) {
   pageStream << x << ' ' << y << ' ' << w << ' ' << h << ' ' << "E\n";
 }
 
-void PSDrawEngine::drawPolyline(const QPolygon &pa) {
+void PSDrawEngine::drawPolyline(const std::vector<QPoint> &pa) {
   if (pa.empty()) return;
   pageStream << "NP\n";
   pageStream << POINT(pa[0]) << "MT\n";

@@ -30,7 +30,9 @@
 #include "Figure.hpp"
 #include "Label.hpp"
 #include "Util.hpp"
+#ifdef QT3
 #include <qobjectlist.h>
+#endif
 
 namespace FreeMat {
   Plot2D* GetCurrentPlot() {

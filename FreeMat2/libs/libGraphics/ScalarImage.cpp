@@ -271,6 +271,10 @@ namespace FreeMat {
     emit WinLevChanged(awindow, alevel);
   }
 
+  char* ScalarImage::GetCurrentColormap() {
+    return colormap;
+  }
+
   double ScalarImage::GetCurrentWindow() {
     return window;
   }

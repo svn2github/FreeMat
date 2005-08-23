@@ -30,7 +30,9 @@
 #include "qlabel.h"
 #include "Label.hpp"
 #include "Util.hpp"
+#ifdef QT3
 #include <qobjectlist.h>
+#endif
 
 namespace FreeMat {
   ScalarImage* GetCurrentImage() {
@@ -230,6 +232,7 @@ namespace FreeMat {
  		     c, SLOT(ChangeWinLev(double,double)));
     QObject::connect(g, SIGNAL(ColormapChanged(char*)),
  		     c, SLOT(ChangeColormap(char*)));
+    c->ChangeColormap(g->GetCurrentColormap());
     c->ChangeWinLev(g->GetCurrentWindow(),g->GetCurrentLevel());
     return ArrayVector();
   }

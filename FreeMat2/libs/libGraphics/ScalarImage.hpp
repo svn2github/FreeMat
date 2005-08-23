@@ -85,6 +85,7 @@ namespace FreeMat {
     void WindowLevel(double awindow, double alevel);
     double GetCurrentWindow();
     double GetCurrentLevel();
+    char* GetCurrentColormap();
     int getZoomColumns();
     int getZoomRows();
   private:

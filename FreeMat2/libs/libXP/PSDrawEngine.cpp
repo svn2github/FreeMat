@@ -1,6 +1,7 @@
 #include "PSDrawEngine.hpp"
 #include <qdatetime.h>
 #include <qtextstream.h>
+#include <iostream>
 
 #define POINT(p) p.x() << ' ' << p.y() << ' '
 
@@ -234,230 +235,331 @@ static const char *toHex(ushort u)
     return hexVal;
 }
 
+#define Translate(a,b,c) if (s[i].unicode() == b) out.push_back(c);
+
+std::string UnicodeToSymbol(const QString &s) {
+  std::string out;
+  for (unsigned i=0;i<s.length();i++) {
+    Translate("\\Alpha",0x0391,'A');
+    Translate("\\Beta",0x0392,'B');
+    Translate("\\Gamma",0x0393,'G');
+    Translate("\\Delta",0x0394,'D');
+    Translate("\\Epsilon",0x0395,'E');
+    Translate("\\Zeta",0x0396,'Z');
+    Translate("\\Eta",0x0397,'H');
+    Translate("\\Theta",0x0398,'Q');
+    Translate("\\Iota",0x0399,'J');
+    Translate("\\Kappa",0x039A,'K');
+    Translate("\\Lambda",0x039B,'L');
+    Translate("\\Mu",0x039C,'M');
+    Translate("\\Nu",0x039D,'N');
+    Translate("\\Xi",0x039E,'X');
+    Translate("\\Omicron",0x039F,'O');
+    Translate("\\Pi",0x03A0,'P');
+    Translate("\\Rho",0x03A1,'R');
+    Translate("\\Sigma",0x03A2,'S');
+    Translate("\\Tau",0x03A3,'T');
+    Translate("\\Upsilon",0x03A4,'U');
+    Translate("\\Phi",0x03A5,'F');
+    Translate("\\Chi",0x03A6,'C');
+    Translate("\\Psi",0x03A7,'Y');
+    Translate("\\Omega",0x03A8,'W');
+    Translate("\\alpha",0x03B1,'a');
+    Translate("\\beta",0x03B2,'b');
+    Translate("\\gamma",0x03B3,'g');
+    Translate("\\delta",0x03B4,'d');
+    Translate("\\epsilon",0x03B5,'e');
+    Translate("\\zeta",0x03B6,'z');
+    Translate("\\eta",0x03B7,'h');
+    Translate("\\theta",0x03B8,'q');
+    Translate("\\iota",0x03B9,'i');
+    Translate("\\kappa",0x03BA,'k');
+    Translate("\\lambda",0x03BB,'l');
+    Translate("\\mu",0x03BC,'m');
+    Translate("\\nu",0x03BD,'n');
+    Translate("\\xi",0x03BE,'x');
+    Translate("\\omicron",0x03BF,'o');
+    Translate("\\pi",0x03C0,'p');
+    Translate("\\rho",0x03C1,'r');
+    Translate("\\sigma",0x03C3,'s');
+    Translate("\\tau",0x03C4,'t');
+    Translate("\\upsilon",0x03C5,'u');
+    Translate("\\phi",0x03C6,'f');
+    Translate("\\chi",0x03C7,'c');
+    Translate("\\psi",0x03C8,'y');
+    Translate("\\omega",0x03C9,'w');
+    Translate("\\rightarrow",0x2192,174);
+    Translate("\\leftarrow",0x2190,172);
+    Translate("\\uparrow",0x2191,173);
+    Translate("\\downarrow",0x2193,175);
+    Translate("\\partial",0x2202,182);
+    Translate("\\nabla",0x2206,209);
+    Translate("\\Prod",0x220F,213);
+    Translate("\\prod",0x220F,213);
+    Translate("\\sum",0x2211,229);
+    Translate("\\Sum",0x2211,229);
+    Translate("\\plusminus",0x00B1,177);
+    Translate("\\infty",0x221E,165);
+    Translate("\\leq",0x2264,163);
+    Translate("\\geq",0x2265,179);
+    Translate("\\neq",0x2260,185);
+    Translate("\\approx",0x2248,187);
+    Translate("\\sim",'~','~');
+    Translate("\\int",0x222B,242);
+  }
+  return out;
+}
+
+//This web-link has some info on the old (non-unicode) mapping for the
+//symbol font.
+//http://www.sscnet.ucla.edu/soc/faculty/mcfarland/soc281/symbol.htm
+//If the font is outside the ascii range, switch to the symbol font
+//and translate from Unicode back to ascii
 void PSDrawEngine::drawText(int x, int y, const QString &s) {
-  pageStream << "gsave\nNP\n";
-  pageStream << x << ' ' << y << " MT\n";
-  pageStream << "1 -1 scale\n";
-  pageStream << "(" << s << ")\n";
-  pageStream << "show\ngrestore\n";
+  if (s[0].unicode() > 255) {
+    pageStream << "gsave\n";
+    pageStream << "/Symbol findfont\n" << m_font.pointSize() << " scalefont\nsetfont\n";
+    pageStream << "NP\n";
+    pageStream << x << ' ' << y << " MT\n";
+    pageStream << "1 -1 scale\n";
+    pageStream << "<";
+    std::string p(UnicodeToSymbol(s));
+    for (int i=0;i<p.length();i++)
+      pageStream << toHex((uchar) p[i]);
+    pageStream << ">\n";
+    pageStream << "show\ngrestore\n";
+    
+  } else {
+    pageStream << "gsave\nNP\n";
+    pageStream << x << ' ' << y << " MT\n";
+    pageStream << "1 -1 scale\n";
+    pageStream << "(" << s << ")\n";
+    pageStream << "show\ngrestore\n";
+  }
 }
 
-static QByteArray runlengthEncode(const QByteArray &input)
-{
-    if (!input.length())
-        return input;
+static std::string runlengthEncode(const std::string &input) {
+  if (!input.size())
+    return input;
 
-    const char *data = input.constData();
-
-    QByteArray out;
-    int start = 0;
-    char last = *data;
-
-    enum State {
-        Undef,
-        Equal,
-        Diff
-    };
-    State state = Undef;
-
-    int i = 1;
-    int written = 0;
-    while (1) {
-        bool flush = (i == input.size());
-        if (!flush) {
-            switch(state) {
-            case Undef:
-                state = (last == data[i]) ? Equal : Diff;
-                break;
-            case Equal:
-                if (data[i] != last)
-                    flush = true;
-                break;
-            case Diff:
-                if (data[i] == last) {
-                    --i;
-                    flush = true;
-                }
-            }
-        }
-        if (flush || i - start == 128) {
-            int size = i - start;
-            if (state == Equal) {
-                out.append((char)(uchar)(257-size));
-                out.append(last);
-                written += size;
-            } else {
-                out.append((char)(uchar)size-1);
-                while (start < i)
-                    out.append(data[start++]);
-                written += size;
-            }
-            state = Undef;
-            start = i;
-            if (i == input.size())
-                break;
-        }
-        last = data[i];
-        ++i;
-    };
-    out.append((char)(uchar)128);
-    return out;
-}
-
-static QByteArray ascii85Encode(const QByteArray &input)
-{
-    int isize = input.size()/4*4;
-    QByteArray output;
-    output.resize(input.size()*5/4+7);
-    char *out = output.data();
-    const uchar *in = (const uchar *)input.constData();
-    for (int i = 0; i < isize; i += 4) {
-        uint val = (((uint)in[i])<<24) + (((uint)in[i+1])<<16) + (((uint)in[i+2])<<8) + (uint)in[i+3];
-        if (val == 0) {
-            *out = 'z';
-            ++out;
-        } else {
-            char base[5];
-            base[4] = val % 85;
-            val /= 85;
-            base[3] = val % 85;
-            val /= 85;
-            base[2] = val % 85;
-            val /= 85;
-            base[1] = val % 85;
-            val /= 85;
-            base[0] = val % 85;
-            *(out++) = base[0] + '!';
-            *(out++) = base[1] + '!';
-            *(out++) = base[2] + '!';
-            *(out++) = base[3] + '!';
-            *(out++) = base[4] + '!';
-        }
+  std::string out;
+  const char *data = input.c_str();
+  int start = 0;
+  char last = input[0];
+  
+  enum State {
+    Undef,
+    Equal,
+    Diff
+  };
+  State state = Undef;
+  
+  int i = 1;
+  int written = 0;
+  while (1) {
+    bool flush = (i == input.size());
+    if (!flush) {
+      switch(state) {
+      case Undef:
+	state = (last == data[i]) ? Equal : Diff;
+	break;
+      case Equal:
+	if (data[i] != last)
+	  flush = true;
+	break;
+      case Diff:
+	if (data[i] == last) {
+	  --i;
+	  flush = true;
+	}
+      }
     }
-    //write the last few bytes
-    int remaining = input.size() - isize;
-    if (remaining) {
-        uint val = 0;
-        for (int i = isize; i < input.size(); ++i)
-            val = (val << 8) + in[i];
-        val <<= 8*(4-remaining);
-        char base[5];
-        base[4] = val % 85;
-        val /= 85;
-        base[3] = val % 85;
-        val /= 85;
-        base[2] = val % 85;
-        val /= 85;
-        base[1] = val % 85;
-        val /= 85;
-        base[0] = val % 85;
-        for (int i = 0; i < remaining+1; ++i)
-            *(out++) = base[i] + '!';
+    if (flush || i - start == 128) {
+      int size = i - start;
+      if (state == Equal) {
+	out.push_back((char)(uchar)(257-size));
+	out.push_back(last);
+	written += size;
+      } else {
+	out.push_back((char)(uchar)size-1);
+	while (start < i)
+	  out.push_back(data[start++]);
+	written += size;
+      }
+      state = Undef;
+      start = i;
+	if (i == input.size())
+	  break;
     }
-    *(out++) = '~';
-    *(out++) = '>';
-    output.resize(out-output.data());
-    return output;
+    last = data[i];
+    ++i;
+  };
+  out.push_back((char)(uchar)128);
+  return out;
 }
 
-static QByteArray compress(const QImage &img, bool gray) {
-    // we can't use premultiplied here
-    QImage image = img;
-    if (image.format() == QImage::Format_ARGB32_Premultiplied)
-        image = image.convertToFormat(QImage::Format_ARGB32);
-    int width = image.width();
-    int height = image.height();
-    int depth = image.depth();
-    int size = width*height;
-
-    if (depth == 1)
-        size = (width+7)/8*height;
-    else if (!gray)
-        size = size*3;
-
-    QByteArray pixelData;
-    pixelData.resize(size);
-    uchar *pixel = (uchar *)pixelData.data();
-    int i = 0;
-    if (depth == 1) {
-        QImage::Format format = image.format();
-        memset(pixel, 0xff, size);
-        for(int y=0; y < height; y++) {
-            const uchar * s = image.scanLine(y);
-            for(int x=0; x < width; x++) {
-                // need to copy bit for bit...
-                bool b = (format == QImage::Format_MonoLSB) ?
-                         (*(s + (x >> 3)) >> (x & 7)) & 1 :
-                         (*(s + (x >> 3)) << (x & 7)) & 0x80 ;
-                if (b)
-                    pixel[i >> 3] ^= (0x80 >> (i & 7));
-                i++;
-            }
-            // we need to align to 8 bit here
-            i = (i+7) & 0xffffff8;
-        }
-    } else if (depth == 8) {
-        for(int y=0; y < height; y++) {
-            const uchar * s = image.scanLine(y);
-            for(int x=0; x < width; x++) {
-                QRgb rgb = image.color(s[x]);
-                if (gray) {
-                    pixel[i] = (unsigned char) qGray(rgb);
-                    i++;
-                } else {
-                    pixel[i] = (unsigned char) qRed(rgb);
-                    pixel[i+1] = (unsigned char) qGreen(rgb);
-                    pixel[i+2] = (unsigned char) qBlue(rgb);
-                    i += 3;
-                }
-            }
-        }
+static std::string ascii85Encode(const std::string &input)
+{
+  int isize = input.size()/4*4;
+  std::string output;
+  output.resize(input.size()*5/4+7);
+  std::string::iterator out = output.begin();
+  const uchar *in = (const uchar *)input.c_str();
+  for (int i = 0; i < isize; i += 4) {
+    uint val = (((uint)in[i])<<24) + (((uint)in[i+1])<<16) + (((uint)in[i+2])<<8) + (uint)in[i+3];
+    if (val == 0) {
+      *out = 'z';
+      ++out;
     } else {
-        for(int y=0; y < height; y++) {
-            QRgb * s = (QRgb*)(image.scanLine(y));
-            for(int x=0; x < width; x++) {
-                QRgb rgb = (*s++);
-                if (gray) {
-                    pixel[i] = (unsigned char) qGray(rgb);
-                    i++;
-                } else {
-                    pixel[i] = (unsigned char) qRed(rgb);
-                    pixel[i+1] = (unsigned char) qGreen(rgb);
-                    pixel[i+2] = (unsigned char) qBlue(rgb);
-                    i += 3;
-                }
-            }
-        }
+      char base[5];
+      base[4] = val % 85;
+      val /= 85;
+      base[3] = val % 85;
+      val /= 85;
+      base[2] = val % 85;
+      val /= 85;
+      base[1] = val % 85;
+      val /= 85;
+      base[0] = val % 85;
+      *(out++) = base[0] + '!';
+      *(out++) = base[1] + '!';
+      *(out++) = base[2] + '!';
+      *(out++) = base[3] + '!';
+      *(out++) = base[4] + '!';
     }
+  }
+  //write the last few bytes
+  int remaining = input.size() - isize;
+  if (remaining) {
+    uint val = 0;
+    for (int i = isize; i < input.size(); ++i)
+      val = (val << 8) + in[i];
+    val <<= 8*(4-remaining);
+    char base[5];
+    base[4] = val % 85;
+    val /= 85;
+    base[3] = val % 85;
+    val /= 85;
+    base[2] = val % 85;
+    val /= 85;
+    base[1] = val % 85;
+    val /= 85;
+    base[0] = val % 85;
+    for (int i = 0; i < remaining+1; ++i)
+      *(out++) = base[i] + '!';
+  }
+  *(out++) = '~';
+  *(out++) = '>';
+  output.resize(out-output.begin());
+  return output;
+}
 
-    QByteArray runlength = runlengthEncode(pixelData);
-    QByteArray outarr = ascii85Encode(runlength);
-    return outarr;
+static std::string compress(const QImage &img, bool gray) {
+  // we can't use premultiplied here
+  QImage image = img;
+#ifndef QT3
+  if (image.format() == QImage::Format_ARGB32_Premultiplied)
+    image = image.convertToFormat(QImage::Format_ARGB32);
+#endif
+
+  int width = image.width();
+  int height = image.height();
+  int depth = image.depth();
+  int size = width*height;
+  
+  if (depth == 1)
+    size = (width+7)/8*height;
+  else if (!gray)
+    size = size*3;
+  
+  std::string pixelData;
+  pixelData.resize(size);
+  int i = 0;
+  if (depth == 1) {
+#ifndef QT3
+    QImage::Format format = image.format();
+#endif
+    pixelData = std::string(size, 0xff);
+    for(int y=0; y < height; y++) {
+      const uchar * s = image.scanLine(y);
+      for(int x=0; x < width; x++) {
+	// need to copy bit for bit...
+#ifdef QT3
+	bool b = (img.bitOrder() == QImage::LittleEndian) ?
+#else
+	  bool b = (format == QImage::Format_MonoLSB) ?
+#endif
+	  (*(s + (x >> 3)) >> (x & 7)) & 1 :
+	  (*(s + (x >> 3)) << (x & 7)) & 0x80 ;
+	if (b)
+	  pixelData[i >> 3] ^= (0x80 >> (i & 7));
+	i++;
+      }
+      // we need to align to 8 bit here
+      i = (i+7) & 0xffffff8;
+    }
+  } else if (depth == 8) {
+    for(int y=0; y < height; y++) {
+      const uchar * s = image.scanLine(y);
+      for(int x=0; x < width; x++) {
+	QRgb rgb = image.color(s[x]);
+	if (gray) {
+	  pixelData[i] = (unsigned char) qGray(rgb);
+	  i++;
+	} else {
+	  pixelData[i] = (unsigned char) qRed(rgb);
+	  pixelData[i+1] = (unsigned char) qGreen(rgb);
+	  pixelData[i+2] = (unsigned char) qBlue(rgb);
+	  i += 3;
+	}
+      }
+    }
+  } else {
+    for(int y=0; y < height; y++) {
+      QRgb * s = (QRgb*)(image.scanLine(y));
+      for(int x=0; x < width; x++) {
+	QRgb rgb = (*s++);
+	if (gray) {
+	  pixelData[i] = (unsigned char) qGray(rgb);
+	  i++;
+	} else {
+	  pixelData[i] = (unsigned char) qRed(rgb);
+	  pixelData[i+1] = (unsigned char) qGreen(rgb);
+	  pixelData[i+2] = (unsigned char) qBlue(rgb);
+	  i += 3;
+	}
+      }
+    }
+  }
+  
+  std::string runlength = runlengthEncode(pixelData);
+  std::string outarr = ascii85Encode(runlength);
+  return outarr;
 }
 
 
 static void ps_r7(QTextStream& stream, const char * s, int l)
 {
-    int i = 0;
-    uchar line[80];
-    int col = 0;
-
-    while(i < l) {
-        line[col++] = s[i++];
-        if (i < l - 1 && col >= 76) {
-            line[col++] = '\n';
-            line[col++] = '\0';
-            stream << (const char *)line;
-            col = 0;
-        }
+  int i = 0;
+  uchar line[80];
+  int col = 0;
+  
+  while(i < l) {
+    line[col++] = s[i++];
+    if (i < l - 1 && col >= 76) {
+      line[col++] = '\n';
+      line[col++] = '\0';
+      stream << (const char *)line;
+      col = 0;
     }
-    if (col > 0) {
-        while((col&3) != 0)
-            line[col++] = '%'; // use a comment as padding
-        line[col++] = '\n';
-        line[col++] = '\0';
-        stream << (const char *)line;
-    }
+  }
+  if (col > 0) {
+    while((col&3) != 0)
+      line[col++] = '%'; // use a comment as padding
+    line[col++] = '\n';
+    line[col++] = '\0';
+    stream << (const char *)line;
+  }
 }
 
 
@@ -470,7 +572,7 @@ void PSDrawEngine::drawImage(int x, int y, const QImage &img) {
   
   bool gray = img.allGray();
   int splitSize = 21830 * (gray ? 3 : 1);
-  QByteArray out;
+  std::string out;
   int size = 0;
   const char *bits;
   
@@ -479,7 +581,7 @@ void PSDrawEngine::drawImage(int x, int y, const QImage &img) {
     size = (width+7)/8*height;
     pageStream << "/mask currentfile/ASCII85Decode filter/RunLengthDecode filter "
 	       << size << " string readstring\n";
-    ps_r7( pageStream, out, out.size() );
+    ps_r7( pageStream, out.c_str(), out.size() );
     pageStream << " pop d\n";
   }
   if (img.depth() == 1) {
@@ -496,7 +598,7 @@ void PSDrawEngine::drawImage(int x, int y, const QImage &img) {
   out = ::compress(img, gray);
   pageStream << "/sl currentfile/ASCII85Decode filter/RunLengthDecode filter "
 	     << size << " string readstring\n";
-  ps_r7( pageStream, out, out.size() );
+  ps_r7( pageStream, out.c_str(), out.size() );
   pageStream << " pop d\n";
   pageStream << width << ' ' << height << "[" << 1.0 << " 0 0 " << 1.0 << " 0 0]sl "
 	     << bits << (!mask.isNull() ? "mask " : "false ")

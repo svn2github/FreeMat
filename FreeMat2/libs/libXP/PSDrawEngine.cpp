@@ -1,7 +1,7 @@
 #include "PSDrawEngine.hpp"
 #include <qdatetime.h>
 #include <qtextstream.h>
-#include <iostream>
+#include <qpen.h>
 
 #define POINT(p) p.x() << ' ' << p.y() << ' '
 
@@ -75,7 +75,7 @@ void PSDrawEngine::emitHeader()
   pageStream << "%!PS-Adobe-3.0";
   pageStream << " EPSF-3.0\n%%BoundingBox: ";
   pageStream << " 0 0 " << m_width << ' ' << m_height << "\n";
-  pageStream << "\n" << "%%Creator: FreeMat";
+  pageStream << "%%Creator: FreeMat\n";
   pageStream << "%%Title: " + m_title;
   pageStream << "%%CreationDate: " << QDateTime::currentDateTime().toString();
   pageStream << "\n%%Pages: 1";
@@ -106,6 +106,37 @@ void PSDrawEngine::emitHeader()
   pageStream << "1 -1 scale\n";
 }
 
+static QByteArray color(const QColor &c)
+{
+  QByteArray retval;
+  retval += '[';
+  retval += QByteArray::number(c.red()/255.);
+  retval += ' ';
+  retval += QByteArray::number(c.green()/255.);
+  retval += ' ';
+  retval += QByteArray::number(c.blue()/255.);
+  retval += ']';
+  return retval;
+}
+
+static const char * psCap(Qt::PenCapStyle p)
+{
+    if (p == Qt::SquareCap)
+        return "2 ";
+    else if (p == Qt::RoundCap)
+        return "1 ";
+    return "0 ";
+}
+
+
+static const char * psJoin(Qt::PenJoinStyle p) {
+    if (p == Qt::BevelJoin)
+        return "2 ";
+    else if (p == Qt::RoundJoin)
+        return "1 ";
+    return "0 ";
+}
+
 
 PSDrawEngine::PSDrawEngine(std::string filename, int width, int height) {
   m_title = QString(filename.c_str());
@@ -127,12 +158,23 @@ PSDrawEngine::~PSDrawEngine() {
 }
 
 void PSDrawEngine::setPen(const QPen &pen) {
+  if (pen.style() == Qt::SolidLine && pen.width() == 0 &&
+      pen.capStyle() == Qt::FlatCap &&
+      pen.joinStyle() == Qt::MiterJoin)
+    pageStream << color(pen.color()) << "P1\n";
+  else
+    pageStream << (int)pen.style() << ' ' << pen.width()
+	       << ' ' << color(pen.color())
+	       << psCap(pen.capStyle())
+	       << psJoin(pen.joinStyle()) << "PE\n";
 }
 
 void PSDrawEngine::setPen(const QColor &color) {
+  PSDrawEngine::setPen(QPen(color));
 }
 
-void PSDrawEngine::setPen(Qt::PenStyle) {
+void PSDrawEngine::setPen(Qt::PenStyle ps) {
+  PSDrawEngine::setPen(QPen(ps));
 }
 
 void PSDrawEngine::save() {
@@ -177,6 +219,12 @@ QPoint PSDrawEngine::xForm(const QPoint &) {
 }
 
 void PSDrawEngine::setClipRect(int x, int y, int w, int h) {
+  pageStream << "NP\n";
+  pageStream << x << ' ' << y << " MT\n";
+  pageStream << x+w << ' ' << y << " LT\n";
+  pageStream << x+w << ' ' << y+h << " LT\n";
+  pageStream << x << ' ' << y+h << " LT\n";
+  pageStream << "CP\nclip\n";
 }
 
 void PSDrawEngine::drawPoint(int x, int y) {
@@ -576,31 +624,40 @@ void PSDrawEngine::drawImage(int x, int y, const QImage &img) {
   int size = 0;
   const char *bits;
   
-  if (!mask.isNull()) {
-    out = ::compress(mask, true);
-    size = (width+7)/8*height;
-    pageStream << "/mask currentfile/ASCII85Decode filter/RunLengthDecode filter "
+  if (width * height > splitSize) { // 65535/3, tolerance for broken printers
+    int images, subheight;
+    images = (width * height + splitSize - 1) / splitSize;
+    subheight = (height + images-1) / images;
+    while (subheight * width > splitSize) {
+      images++;
+      subheight = (height + images-1) / images;
+    }
+    int suby = 0;
+    while(suby < height) {
+      drawImage(x, y + suby, img.copy(0, suby, width, qMin(subheight, height-suby)));
+      suby += subheight;
+    }
+  } else {
+    std::string out;
+    int size = 0;
+    const char *bits;
+    if (img.depth() == 1) {
+      size = (width+7)/8*height;
+      bits = "1 ";
+    } else if (gray) {
+      size = width*height;
+      bits = "8 ";
+    } else {
+      size = width*height*3;
+      bits = "24 ";
+    }
+    out = ::compress(img, gray);
+    pageStream << "/sl currentfile/ASCII85Decode filter/RunLengthDecode filter "
 	       << size << " string readstring\n";
     ps_r7( pageStream, out.c_str(), out.size() );
     pageStream << " pop d\n";
+    pageStream << width << ' ' << height << "[1 0 0 1 0 0]sl "
+	       << bits << (!mask.isNull() ? "mask " : "false ")
+	       << x << ' ' << y << " di\n";
   }
-  if (img.depth() == 1) {
-    size = (width+7)/8*height;
-    bits = "1 ";
-  } else if (gray) {
-    size = width*height;
-    bits = "8 ";
-  } else {
-    size = width*height*3;
-    bits = "24 ";
-  }
-  
-  out = ::compress(img, gray);
-  pageStream << "/sl currentfile/ASCII85Decode filter/RunLengthDecode filter "
-	     << size << " string readstring\n";
-  ps_r7( pageStream, out.c_str(), out.size() );
-  pageStream << " pop d\n";
-  pageStream << width << ' ' << height << "[" << 1.0 << " 0 0 " << 1.0 << " 0 0]sl "
-	     << bits << (!mask.isNull() ? "mask " : "false ")
-	     << x << ' ' << y << " di\n";
 }

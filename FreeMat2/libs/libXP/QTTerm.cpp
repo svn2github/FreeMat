@@ -291,9 +291,12 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
 #endif
 
 void QTTerm::keyPressEvent(QKeyEvent *e) {
-  //  if (m_scrolling) 
-  //    TermWidget::setScrollbar(m_history_lines);
-  int keycode = e->key();
+  int keycode = e->key(); 
+  {
+    char buffer[1000];
+    sprintf(buffer,"keycode = %d",keycode);
+    qDebug(buffer);
+  }  
   if (!keycode) return;
   if (keycode == Qt::Key_Left)
     ProcessChar(KM_LEFT);
@@ -333,9 +336,12 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
 #else
     QByteArray p(e->text().toAscii());
     char key;
-    if (!p.isEmpty())
+    if (!p.isEmpty()) {
       key = p.at(0);
-    else
+      char buffer[1000];
+      sprintf(buffer,"key = %d",key);
+      qDebug(buffer);
+    } else
       key = 0;
 #endif
     if (key) ProcessChar(key);

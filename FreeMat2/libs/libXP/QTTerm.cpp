@@ -285,9 +285,9 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
 }
 
 #ifdef QT3
-#define CTRLKEY(x)  else if ((keycode == x) && (e->state() && Qt::ControlButton))
+#define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::ControlButton))
 #else
-#define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() && Qt::ControlModifier))
+#define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() & Qt::ControlModifier))
 #endif
 
 void QTTerm::keyPressEvent(QKeyEvent *e) {
@@ -332,19 +332,19 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
     ProcessChar(KM_BACKSPACE);
   else {
 #ifdef QT3
-    char key = e->ascii();
+    const char *p(e->text().ascii());
 #else
     QByteArray p(e->text().toAscii());
-    char key;
-    if (!p.isEmpty()) {
-      key = p.at(0);
-      char buffer[1000];
-      sprintf(buffer,"key = %d",key);
-      qDebug(buffer);
-    } else
-      key = 0;
 #endif
-    if (key) ProcessChar(key);
+    char key;
+    if (!e->text().isEmpty())
+      key = p[0];
+    else
+      key = 0;
+    if (key) 
+      ProcessChar(key);
+    else
+      e->ignore();
   }
 }
 

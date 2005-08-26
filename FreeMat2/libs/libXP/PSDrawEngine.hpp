@@ -12,6 +12,8 @@ class PSDrawEngine : public DrawEngine {
   QString m_title;
   QFont m_font;
   void emitHeader();
+  void drawNormalText(int x, int y, const QString &s);
+  void drawSymbolText(int x, int y, const QString &s);
  public:
   PSDrawEngine(std::string filename, int width, int height);
   virtual ~PSDrawEngine();

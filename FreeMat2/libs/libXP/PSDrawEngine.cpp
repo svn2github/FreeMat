@@ -358,31 +358,53 @@ std::string UnicodeToSymbol(const QString &s) {
   return out;
 }
 
+
+void PSDrawEngine::drawNormalText(int x, int y, const QString &s) {
+  pageStream << "gsave\nNP\n";
+  pageStream << x << ' ' << y << " MT\n";
+  pageStream << "1 -1 scale\n";
+  pageStream << "(" << s << ")\n";
+  pageStream << "show\ngrestore\n";
+}
+
+void PSDrawEngine::drawSymbolText(int x, int y, const QString &s) {
+  pageStream << "gsave\n";
+  pageStream << "/Symbol findfont\n" << m_font.pointSize() << " scalefont\nsetfont\n";
+  pageStream << "NP\n";
+  pageStream << x << ' ' << y << " MT\n";
+  pageStream << "1 -1 scale\n";
+  pageStream << "<";
+  std::string p(UnicodeToSymbol(s));
+  for (int i=0;i<p.length();i++)
+    pageStream << toHex((uchar) p[i]);
+  pageStream << ">\n";
+  pageStream << "show\ngrestore\n";
+}
+
 //This web-link has some info on the old (non-unicode) mapping for the
 //symbol font.
 //http://www.sscnet.ucla.edu/soc/faculty/mcfarland/soc281/symbol.htm
 //If the font is outside the ascii range, switch to the symbol font
 //and translate from Unicode back to ascii
 void PSDrawEngine::drawText(int x, int y, const QString &s) {
-  if (s[0].unicode() > 255) {
-    pageStream << "gsave\n";
-    pageStream << "/Symbol findfont\n" << m_font.pointSize() << " scalefont\nsetfont\n";
-    pageStream << "NP\n";
-    pageStream << x << ' ' << y << " MT\n";
-    pageStream << "1 -1 scale\n";
-    pageStream << "<";
-    std::string p(UnicodeToSymbol(s));
-    for (int i=0;i<p.length();i++)
-      pageStream << toHex((uchar) p[i]);
-    pageStream << ">\n";
-    pageStream << "show\ngrestore\n";
-    
-  } else {
-    pageStream << "gsave\nNP\n";
-    pageStream << x << ' ' << y << " MT\n";
-    pageStream << "1 -1 scale\n";
-    pageStream << "(" << s << ")\n";
-    pageStream << "show\ngrestore\n";
+  // Break up the text string into a sequence of unicode chars
+  QString t(s);
+  while (!t.isEmpty()) {
+    QString p;
+    if (t[0].unicode()  < 255) {
+      while (!t.isEmpty() && t[0].unicode() < 255) {
+	p.push_back(t[0]);
+	t.remove(0,1);
+      }
+      drawNormalText(x,y,p);
+    } else {
+      while (!t.isEmpty() && t[0].unicode() > 255) {
+	p.push_back(t[0]);
+	t.remove(0,1);
+      }
+      drawSymbolText(x,y,p);
+    }
+    x += QFontMetrics(m_font).width(p);
   }
 }
 

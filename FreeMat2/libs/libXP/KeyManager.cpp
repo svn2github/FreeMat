@@ -368,6 +368,7 @@ void KeyManager::AddCharToLine(char c) {
 }
 
 int KeyManager::DisplayPrompt() {
+  term_curpos = 0;
   MoveBOL();
   ClearEOL();
   OutputString(prompt, '\0');

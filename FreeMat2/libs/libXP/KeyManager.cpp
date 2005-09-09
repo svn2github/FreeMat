@@ -159,7 +159,7 @@ void KeyManager::Redisplay() {
 }
 
 void KeyManager::setTerminalWidth(int w) {
-  ncolumn = w-1; 
+  ncolumn = w; 
 }
 
 void KeyManager::ReplacePrompt(std::string aprompt) {
@@ -1002,7 +1002,7 @@ char* KeyManager::getLine(std::string aprompt) {
 #ifdef QT3
     qApp->exec();
 #else
-    m_loop = new QEventLoop();
+    m_loop = new QEventLoop;
     m_loop->exec();
     delete m_loop;
 #endif

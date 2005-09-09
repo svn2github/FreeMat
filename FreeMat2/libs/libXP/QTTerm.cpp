@@ -27,7 +27,7 @@ QTTerm::QTTerm(QWidget *parent, const char *name) :
   setBackgroundColor(Qt::white);
 #else
   setBackgroundRole(QPalette::Base);
-  //  setAttribute(Qt::WA_NoBackground);
+  setAttribute(Qt::WA_NoBackground);
 #endif
 #ifdef QT3
   setFocusPolicy(QWidget::ClickFocus);
@@ -292,11 +292,6 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
 
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   int keycode = e->key(); 
-  {
-    char buffer[1000];
-    sprintf(buffer,"keycode = %d",keycode);
-    qDebug(buffer);
-  }  
   if (!keycode) return;
   if (keycode == Qt::Key_Left)
     ProcessChar(KM_LEFT);

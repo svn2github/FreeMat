@@ -2,6 +2,8 @@
 #include <qdatetime.h>
 #include <qtextstream.h>
 #include <qpen.h>
+#include <sstream>
+#include <string>
 
 #define POINT(p) p.x() << ' ' << p.y() << ' '
 
@@ -106,17 +108,18 @@ void PSDrawEngine::emitHeader()
   pageStream << "1 -1 scale\n";
 }
 
-static QByteArray color(const QColor &c)
+template< class type>
+inline std::string to_string( const type & value) {
+    std::ostringstream streamOut;
+    streamOut << value;
+    return streamOut.str();
+}
+
+static std::string color(const QColor &c)
 {
-  QByteArray retval;
-  retval += '[';
-  retval += QByteArray::number(c.red()/255.);
-  retval += ' ';
-  retval += QByteArray::number(c.green()/255.);
-  retval += ' ';
-  retval += QByteArray::number(c.blue()/255.);
-  retval += ']';
-  return retval;
+  std::ostringstream os;
+  os << '[' << c.red()/255. << ' ' << c.green()/255. << ' ' << ']';
+  return os.str();
 }
 
 static const char * psCap(Qt::PenCapStyle p)
@@ -393,13 +396,13 @@ void PSDrawEngine::drawText(int x, int y, const QString &s) {
     QString p;
     if (t[0].unicode()  < 255) {
       while (!t.isEmpty() && t[0].unicode() < 255) {
-	p.push_back(t[0]);
+	p.append(t[0]);
 	t.remove(0,1);
       }
       drawNormalText(x,y,p);
     } else {
       while (!t.isEmpty() && t[0].unicode() > 255) {
-	p.push_back(t[0]);
+	p.append(t[0]);
 	t.remove(0,1);
       }
       drawSymbolText(x,y,p);
@@ -656,7 +659,7 @@ void PSDrawEngine::drawImage(int x, int y, const QImage &img) {
     }
     int suby = 0;
     while(suby < height) {
-      drawImage(x, y + suby, img.copy(0, suby, width, qMin(subheight, height-suby)));
+      drawImage(x, y + suby, img.copy(0, suby, width, QMIN(subheight, height-suby)));
       suby += subheight;
     }
   } else {

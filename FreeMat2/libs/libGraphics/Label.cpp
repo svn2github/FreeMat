@@ -372,21 +372,5 @@ namespace FreeMat {
       m_label->Render(gc, dummy);      
       gc.restore();
     }
-//     Point2D pos(width()/2,0);
-//     QRect sze(gc.fontMetrics().boundingRect(m_processed_text));
-//     Point2D ext(sze.width(),sze.height());
-//     pos.y += ext.y;
-//     pos.x -= ext.x/2;
-//     gc.save();
-//     gc.translate(pos.x,pos.y);
-//     //    gc.drawText(0,0,m_processed_text);
-//     gc.restore();
-
-    //    TexLabel tl("\\beta^2-3\\rightarrow\\int\\gamma_4^3");
-    //    TexLabel tl("A = H^3_5ello_b-3^2 123 \\beta 4.25");
-//     if (m_orientation == 'h')
-//       DrawTextStringAligned(gc,m_text,Point2D(width()/2,0),LR_CENTER,TB_TOP,0);
-//     else
-//       DrawTextStringAligned(gc,m_text,Point2D(width()/2,height()),LR_LEFT,TB_BOTTOM,90);
   }
 }

@@ -17,11 +17,15 @@ namespace FreeMat {
     ~UserClass();
   };
 
+  Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname, WalkTree* eval);
+
   Array ClassBinaryOperator(Array a, Array b, std::string funcname,
 			    WalkTree* eval);
 
   Array ClassUnaryOperator(Array a, std::string funcname,
 			   WalkTree* eval);
+
+  Array ClassMatrixConstructor(ArrayMatrix m, WalkTree* eval);
 
   ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
 			    WalkTree* eval);

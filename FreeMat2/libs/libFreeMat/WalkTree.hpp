@@ -123,6 +123,8 @@ namespace FreeMat {
     void doDebugCycle();
     bool processguievents;
   public:
+    bool inMethodCall(std::string classname);
+
     bool getStopOverload();
     void setStopOverload(bool flag);
 

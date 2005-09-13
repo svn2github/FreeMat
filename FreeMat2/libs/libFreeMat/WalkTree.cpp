@@ -240,8 +240,16 @@ namespace FreeMat {
       m.push_back(rowDefinition(s));
       s = s->right;
     }
-    Array retval(Array::matrixConstructor(m));
-    return retval;
+    // Check if any of the elements are user defined classes
+    bool anyuser = false;
+    for (int i=0;i<m.size() && !anyuser;i++)
+      for (int j=0;j<m[i].size() && !anyuser;j++)
+	if (m[i][j].isUserClass()) 
+	  anyuser = true;
+    if (!anyuser)
+      return Array::matrixConstructor(m);
+    else
+      return ClassMatrixConstructor(m,this);
   }
 
   //!
@@ -599,8 +607,10 @@ namespace FreeMat {
     SetContext(t->context());
     b = expression(t->down->right);
     SetContext(t->context());
-    Array retval(UnitColon(a,b));
-    return retval;
+    if (!(a.isUserClass() || b.isUserClass()))
+      return UnitColon(a,b);
+    else
+      return ClassBinaryOperator(a,b,"colon",this);
   }
 
   Array WalkTree::doubleColon(ASTPtr t) {
@@ -612,8 +622,10 @@ namespace FreeMat {
     SetContext(t->context());
     c = expression(t->down->right);
     SetContext(t->context());
-    Array retval(DoubleColon(a,b,c));
-    return retval;
+    if (!(a.isUserClass() || b.isUserClass() || c.isUserClass()))
+      return DoubleColon(a,b,c);
+    else
+      return ClassTrinaryOperator(a,b,c,"colon",this);
   }
 
   /**
@@ -2830,6 +2842,12 @@ namespace FreeMat {
 #endif
   }
 
+  bool WalkTree::inMethodCall(std::string classname) {
+    if (ip_detailname.empty()) return false;
+    if (ip_detailname[0] != '@') return false;
+    return (ip_detailname.compare(1,classname.size(),classname)==0);
+  }
+
   void WalkTree::pushDebug(std::string fname, std::string detail) {
     cstack.push_back(stackentry(ip_funcname,ip_detailname,ip_context));
     ip_funcname = fname;
@@ -3183,7 +3201,7 @@ namespace FreeMat {
     }
     // If r is a user defined object, we have to divert to the
     // class function... (unless overloading is turned off)
-    if (r.isUserClass() && !stopoverload) 
+    if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName().back())) 
       return ClassRHSExpression(r,t->down,this);
     return subsref(r,t->down);
   }
@@ -3484,7 +3502,7 @@ namespace FreeMat {
     while (t != NULL) {
       if (rv.size()>1) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
-      if (r.isUserClass() && !stopoverload)
+      if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName().back()))
 	return ClassRHSExpression(r,t,this);
       rv = subsrefSingle(r,t);
       if (rv.size() == 1) {
@@ -3571,7 +3589,7 @@ namespace FreeMat {
   void WalkTree::subassign(Array *r, ASTPtr t, ArrayVector& value) {
     int ctxt = t->context();
     // Check for a class assignment
-    if (r && r->isUserClass() && !stopoverload) {
+    if (r && r->isUserClass() && !inMethodCall(r->getClassName().back()) && !stopoverload) {
       ClassAssignExpression(r,t,value,this);
       return;
     }

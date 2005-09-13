@@ -84,6 +84,12 @@
 // level.  Because the "struct" operation simply strips the class name
 // from the object, it will still return the intact data array.
 //
+// To track precedence...
+// 1.  Assume that inheritance and precedence do not interact (only the
+// outermost class determines precedence).
+// 2.  For each class, a list of superior classes is provided.
+// 3.  A inf B <--> B sup A
+// Precedence is then a simple question of testing interactions.
 namespace FreeMat {
   UserClass::UserClass() {
   }
@@ -226,6 +232,87 @@ namespace FreeMat {
     context->insertFunctionGlobally(sfdef,false);
   }
 
+  std::vector<int> MarkUserClasses(ArrayVector t) {
+    std::vector<int> set;
+    for (int j=0;j<t.size();j++) 
+      if (t[j].isUserClass()) set.push_back(j);
+    return set;
+  }
+ 
+  bool ClassSearchOverload(WalkTree* eval, ArrayVector t, 
+			   std::vector<int> userset, FuncPtr &val,
+			   std::string name) {
+    bool overload = false;
+    int k = 0;
+    while (k<userset.size() && !overload) {
+      overload = eval->getContext()->lookupFunction(ClassMangleName(t[userset[k]].getClassName().back(),name),val);
+      if (!overload) k++;
+    }
+    if (!overload)
+      throw Exception(std::string("Unable to find overloaded '") + name + "' for user defined classes");
+  }
+
+  Array ClassMatrixConstructor(ArrayMatrix m, WalkTree* eval) {
+    // Process the rows...
+    // If a row has no user defined classes, then
+    // use the standard matrixConstructor
+    ArrayVector rows;
+    for (int i=0;i<m.size();i++) {
+      // check this row - make a list of columns that are
+      // user classes
+      std::vector<int> userset(MarkUserClasses(m[i]));
+      if (userset.empty()) {
+	ArrayMatrix n;
+	n.push_back(m[i]);
+	rows.push_back(Array::matrixConstructor(n));
+      } else {
+	FuncPtr val;
+	bool horzcat_overload = ClassSearchOverload(eval,m[i],userset,
+						    val,"horzcat");
+	// scan through the list of user defined classes - look
+	// for one that has "horzcat" overloaded
+	val->updateCode();
+	ArrayVector p;
+	p = val->evaluateFunction(eval,m[i],1);
+	if (!p.empty())
+	  rows.push_back(p[0]);
+	else {
+	  eval->getInterface()->warningMessage("'horzcat' called for user defined class and it returned nothing.  Substituting empty array for result.");
+	  rows.push_back(Array::emptyConstructor());
+	}
+      }
+    }
+    // Check for a singleton - handle with special case
+    if (rows.size() == 1)
+      return rows[0];
+    // At this point we have a vector arrays that have to vertically
+    // concatenated.  There may not be any objects in it, so we have 
+    // to rescan.
+    std::vector<int> userset(MarkUserClasses(rows));
+    if (userset.empty()) {
+      // OK - we don't have any user-defined classes anymore,
+      // so we want to call matrix constructor, which needs
+      // an ArrayMatrix instead of an ArrayVector.
+      ArrayMatrix ref;
+      for (int i=0;i<rows.size();i++)
+	ref.push_back(singleArrayVector(rows[i]));
+      return Array::matrixConstructor(ref);
+    } else {
+      // We do have a user defined class - look for a vertcat defined
+      FuncPtr val;
+      bool vertcat_overload = ClassSearchOverload(eval,rows,userset,
+						  val,"vertcat");
+      val->updateCode();
+      ArrayVector p;
+      p = val->evaluateFunction(eval,rows,1);
+      if (!p.empty())
+	return p[0];
+      else
+	return Array::emptyConstructor();
+    }
+    return Array::emptyConstructor();
+  }
+
   Array ClassUnaryOperator(Array a, std::string funcname,
 			   WalkTree* eval) {
     FuncPtr val;
@@ -269,32 +356,59 @@ namespace FreeMat {
       std::cout << "class " << classname[i] << "\r\n";
   }
 
+
+  // TODO - add "inferiorto", etc and class precedence
+
+  Array ClassBiOp(Array a, Array b, FuncPtr val, WalkTree *eval) {
+    val->updateCode();
+    ArrayVector m, n;
+    m.push_back(a); m.push_back(b);
+    n = val->evaluateFunction(eval,m,1);
+    if (!n.empty())
+      return n[0];
+    else
+      return Array::emptyConstructor();
+  }
+
+  Array ClassTriOp(Array a, Array b, Array c, FuncPtr val, WalkTree *eval) {
+    val->updateCode();
+    ArrayVector m, n;
+    m.push_back(a); m.push_back(b); m.push_back(c);
+    n = val->evaluateFunction(eval,m,1);
+    if (!n.empty())
+      return n[0];
+    else
+      return Array::emptyConstructor();
+  }
+
+  Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname,
+			     WalkTree* eval) {
+    FuncPtr val;
+    if (a.isUserClass()) {
+      if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) 
+	return ClassTriOp(a,b,c,val,eval);
+      throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
+    } else if (b.isUserClass()) {
+      if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) 
+	return ClassTriOp(a,b,c,val,eval);
+      throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
+    } else if (c.isUserClass()) {
+      if (eval->getContext()->lookupFunction(ClassMangleName(c.getClassName().back(),funcname),val)) 
+	return ClassTriOp(a,b,c,val,eval);
+      throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
+    }
+  }
+
   Array ClassBinaryOperator(Array a, Array b, std::string funcname,
 			    WalkTree* eval) {
     FuncPtr val;
-    ArrayVector m, n;
     if (a.isUserClass()) {
-      printClassNames(a);
-      if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) {
-	val->updateCode();
-	m.push_back(a); m.push_back(b);
-	n = val->evaluateFunction(eval,m,1);
-	if (!n.empty())
-	  return n[0];
-	else
-	  return Array::emptyConstructor();
-      }
+      if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) 
+	return ClassBiOp(a,b,val,eval);
       throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
     } else if (b.isUserClass()) {
-      if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) {
-	val->updateCode();
-	m.push_back(a); m.push_back(b);
-	n = val->evaluateFunction(eval,m,1);
-	if (!n.empty())
-	  return n[0];
-	else
-	  return Array::emptyConstructor();
-      }
+      if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) 
+	return ClassBiOp(a,b,val,eval);
       throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
     }
   }
@@ -376,11 +490,13 @@ namespace FreeMat {
     bool isFun;
     FuncPtr val;
     
-    // Try and look up subsref...
-    if (ClassResolveFunction(eval,r,"subsref",val)) {
-      // Overloaded subsref case
-      return ClassSubsrefCall(eval,t,r,val);
-    }
+    // Try and look up subsref, _unless_ we are already in a method 
+    // of this class
+    if (!eval->inMethodCall(r.getClassName().back()))
+      if (ClassResolveFunction(eval,r,"subsref",val)) {
+	// Overloaded subsref case
+	return ClassSubsrefCall(eval,t,r,val);
+      }
 
     ArrayVector rv;
     while (t != NULL) {
@@ -455,7 +571,7 @@ namespace FreeMat {
 		      dst->getClassName().back());
     ArrayVector p;
     p.push_back(*dst);
-    p.push_back(IndexExpressionToStruct(eval, t, *dst));
+    p.push_back(IndexExpressionToStruct(eval,t->down, *dst));
     for (unsigned i=0;i<value.size();i++)
       p.push_back(value[i]);
     val->updateCode();
@@ -473,6 +589,6 @@ namespace FreeMat {
   // However, currently, the same op is repeated in the Interface implementation
   // code.
   std::string ClassMangleName(std::string className, std::string funcName) {
-    return "@" + className + "_" + funcName;
+    return "@" + className + ":" + funcName;
   }
 }

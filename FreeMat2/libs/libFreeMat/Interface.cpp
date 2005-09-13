@@ -290,7 +290,8 @@ namespace FreeMat {
       if (prefix.empty())
 	procFile(fname,fullname,tempfunc);
       else
-	procFile(prefix + "_" + fname,fullname,tempfunc);
+	// Class name mangling here...
+	procFile(prefix + ":" + fname,fullname,tempfunc);
     }
     closedir(dir);
 #endif

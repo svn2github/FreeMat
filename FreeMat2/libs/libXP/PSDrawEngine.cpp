@@ -164,10 +164,10 @@ void PSDrawEngine::setPen(const QPen &pen) {
   if (pen.style() == Qt::SolidLine && pen.width() == 0 &&
       pen.capStyle() == Qt::FlatCap &&
       pen.joinStyle() == Qt::MiterJoin)
-    pageStream << color(pen.color()) << "P1\n";
+    pageStream << color(pen.color()).c_str() << "P1\n";
   else
     pageStream << (int)pen.style() << ' ' << pen.width()
-	       << ' ' << color(pen.color())
+	       << ' ' << color(pen.color()).c_str()
 	       << psCap(pen.capStyle())
 	       << psJoin(pen.joinStyle()) << "PE\n";
 }

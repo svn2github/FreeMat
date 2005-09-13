@@ -284,11 +284,15 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
   }
 }
 
-#ifdef QT3
+#ifndef __APPLE__
 #define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::ControlButton))
 #else
-#define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() & Qt::ControlModifier))
+#define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::MetaButton))
 #endif
+//#ifdef QT3
+//#else
+//#define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::ControlModifier))
+//#endif
 
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   int keycode = e->key(); 

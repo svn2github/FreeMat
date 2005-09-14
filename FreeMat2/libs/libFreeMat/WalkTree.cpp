@@ -677,7 +677,7 @@ namespace FreeMat {
       index++;
       t = t->right;
     }
-    return m;
+    return subsindex(m);
   }
 
   /*
@@ -3390,6 +3390,20 @@ namespace FreeMat {
 	while (cstack.size() > stackdepth) cstack.pop_back();
       }
     }
+  }
+
+  // Convert a list of variable into indexing expressions
+  //  - for user defined classes, we call subsindex for 
+  //  - the object
+  ArrayVector WalkTree::subsindex(ArrayVector m) {
+    ArrayVector n;
+    for (int i=0;i<m.size();i++) {
+      if (m[i].isUserClass() && !stopoverload)
+	n.push_back(ClassUnaryOperator(m[i],"subsindex",this));
+      else
+	n.push_back(m[i]);
+    }
+    return n;
   }
 
 

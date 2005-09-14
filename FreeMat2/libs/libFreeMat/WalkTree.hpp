@@ -609,6 +609,7 @@ namespace FreeMat {
      * Mangle a function name to get the private version (if it exists)
      */
     std::string getPrivateMangledName(std::string fname);
+    ArrayVector subsindex(ArrayVector m);
     ArrayVector subsrefParen(Array r, ASTPtr t);
     ArrayVector subsrefBrace(Array r, ASTPtr t);
     ArrayVector subsrefDot(Array r, ASTPtr t);

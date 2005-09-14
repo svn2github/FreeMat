@@ -25,6 +25,8 @@
 #include "IEEEFP.hpp"
 #include "Sparse.hpp"
 #include <stdio.h>
+#include <iostream>
+#include <algorithm>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -43,6 +45,7 @@
 
 #ifdef QT3
 #include <qassistantclient.h>
+#include <qmessagebox.h>
 #else
 #include <QTAssistant/qassistantclient.h>
 #include <QMessageBox>
@@ -140,54 +143,10 @@ namespace FreeMat {
   //@]
   //!
   ArrayVector HelpWinFunction(int natgout, const ArrayVector& arg) {
-#if 0
-    // Get the path to the help files.
-    // On the mac, they are in the application bundle.
-#ifdef __APPLE__
-    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, 
-						  kCFURLPOSIXPathStyle);
-    const char *pathPtr = CFStringGetCStringPtr(macPath, 
-						CFStringGetSystemEncoding());
-    std::string fpath;
-    fpath = "file://" + pathPtr + "/Contents/Resources/html/index.html";
-    AHGotoPage(NULL,
-	       CFStringCreateWithBytes(NULL,fpath.c_str(),
-				       fpath.size(),0,false),NULL);
-    CFRelease(pluginRef);
-    CFRelease(macPath);
-#elif WIN32
-#else
-    const char *envPtr;
-    envPtr = getenv("FREEMAT_PATH");
-    std::string helppath;
-    if (envPtr) {
-      PathSearcher psearch(envPtr);
-      try {
-	helppath = psearch.ResolvePath("../html/index.html");
-      } catch (Exception& E) {
-	helppath = "/usr/local/share/FreeMat/html/index.html";
-      }
-    } else 
-      helppath = "/usr/local/share/FreeMat/html/index.html";
-    QString path;
-    QAssistantClient *client = new QAssistantClient(path);
-    client->showPage(helppath);
-//     HelpWindow *help = new HelpWindow(std::string("file://") + helppath,
-// 				      ".", 0, "FreeMat Online Help");
-//     help->setCaption("FreeMat Online Help");
-//     help->show();
-#endif    
     QMessageBox::information(NULL,"Hello","Starting help 3",QMessageBox::Ok);
     //    QAssistantClient *client = new QAssistantClient("assistant");
     QAssistantClient *client = new QAssistantClient("c:/qt/4.0.0/bin/assistant");
     client->showPage("c:/sandbox/html/index.html");
-    //    client->showPage("c:\\sandbox\\html\\index.html");
-    //      HelpWindow *help = new HelpWindow("c:\\sandbox\\html\\index.html",
-    //    				      ".", 0, "FreeMat Online Help");
-    //      help->setCaption("FreeMat Online Help");
-    //      help->show();
-#endif
     return ArrayVector();
   }
 
@@ -407,6 +366,7 @@ namespace FreeMat {
 	names.push_back(varName.getContentsAsCString());
       }
     }
+    std::sort(names.begin(),names.end());
     io = eval->getInterface();
     sprintf(buffer,"  Variable Name      Type   Flags             Size\n");
     io->outputMessage(buffer);
@@ -425,7 +385,10 @@ namespace FreeMat {
 	  sprintf(buffer,"% 10s","cell");
 	  break;
 	case FM_STRUCT_ARRAY:
-	  sprintf(buffer,"% 10s","struct");
+	  if (lookup.isUserClass())
+	    sprintf(buffer,"% 10s",lookup.getClassName().back().c_str());
+	  else
+	    sprintf(buffer,"% 10s","struct");
 	  break;
 	case FM_LOGICAL:
 	  sprintf(buffer,"% 10s","logical");

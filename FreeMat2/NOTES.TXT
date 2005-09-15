@@ -1,15 +1,55 @@
 A few notes on what needs to still be fixed:
 
-Test "While with break/continue/retall/return/quit"
-Test "for with break/continue/retall/return/quit"
+Replace XERBLA
+Fix problems with workspace calculations in DGESDD
+
+Postscript printing with symbols and super/subscript...
+- super and subscript works fine
+- postscript printing maps the symbols to unicode
+ 
+set(gca,'xtick',[vec]) 
+set(gca,'xlabel',string)
+set(gca,'xdir','reverse')
+
+
+Additional functions that would useful to have:
+clf
+hot
+image args --> MATLAB
+set(gca, 'xtick', [], 'ytick', [1 n2])
+text(1, 1.04*(n2+0.5), '1', ...
+	'horizontalalign', 'left', ...
+	'verticalalign', 'top')
+text(n1, 1.04*(n2+0.5), num2str(n1), ...
+	'horizontalalign', 'right', ...
+	'verticalalign', 'top')
+axis xy
+texts
+set(hh, 'CDataMapping', 'direct')
+set(gca, 'CLim', clim)
+set(gca, 'CLimMode', 'auto')
+set(gca, 'TickDir', 'out')
+drawnow
+if isxy, axis xy, end  <- why doesn't this parse right?
+
 
 P N   Desc
 H 21. Online Help
 H 20. Application Icon
+H 25. Port to ATLAS?
+
+Test "While with break/continue/retall/return/quit"
+Test "for with break/continue/retall/return/quit"
+
+M ??. "who" function should indicate type for an object
+M ??. "subsindex"
+H 23. Hanging Chads
+H 24. Colorbar
+H 25. Test copy of plots without background clearing.
+H 22. Need to finish terminal code. 
 H 22. Fix hanging menus on Win32
 H 23. PS printing on Mac OS X
 H 24. Build system should be debug/release aware on Win32.
-H 25. Port to ATLAS?
 
 M 3.  Plotting code needs to be moved into the FreeMat regime.
 M 5.  MPIFreeMat needs to be re-enabled

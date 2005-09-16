@@ -20,6 +20,10 @@
 
 #include "LAPACK.hpp"
 
+int xerbla_(char *srname, int *info) {
+  return 0;
+}
+
 namespace FreeMat {
 
   double getEPS() {

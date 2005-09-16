@@ -46,5 +46,6 @@ namespace FreeMat {
     context->addFunction("addtxt",AddTxtFunction,3,1,"x","y","label");
     context->addFunction("subplot",SubPlotFunction,3,0,"x","y","n");
     context->addFunction("colorbar",ColorbarFunction,1,0,"orientation");
+    context->addFunction("clf",ClearFigureFunction,0,0);
   }
 }

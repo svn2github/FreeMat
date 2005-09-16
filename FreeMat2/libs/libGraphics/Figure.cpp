@@ -768,6 +768,23 @@ namespace FreeMat {
     }
     return ArrayVector();
   }
+
+  //!
+  //@Module CLF Clear Figure
+  //@@Section PLOT
+  //@@Usage
+  //This function clears the contents of the current figure.  The
+  //syntax for its use is
+  //@[
+  //   clf
+  //@]
+  //!
+  ArrayVector ClearFigureFunction(int nargout, const ArrayVector& arg) {
+    Figure* fig = GetCurrentFig();
+    fig->ReconfigurePlotMatrix(1,1);
+    fig->repaint();
+    return ArrayVector();
+  }
   
   //!
   //@Module SUBPLOT Subplot Function

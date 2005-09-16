@@ -205,7 +205,7 @@ void lexUntermString() {
     lexState = Scanning;
     return;
   }
-  while (!testNewline()) {
+  while (!(testNewline() || (datap[0] == ';') || (datap[0] == ','))) {
     *strptr++ = currentChar();
     discardChar();
   }
@@ -216,8 +216,7 @@ void lexUntermString() {
 #ifdef LEXDEBUG
   printf("Untermed string %s\r\n",stringval);
 #endif
-  if ((datap[0] == ';') || (datap[0] == '\r') ||
-      (datap[0] == '\n'))
+  if ((datap[0] == ';') || (datap[0] == '\r') || (datap[0] == ',') || (datap[0] == '\n'))
     lexState = Scanning;
 }
 

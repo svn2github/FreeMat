@@ -166,9 +166,11 @@ namespace FreeMat {
   }
 
   Array ClassOneArgFunction(Array x) {
-    if (x.isUserClass())
+    if (x.isUserClass()) {
+      std::string p(x.getClassName().back());
+      std::cerr << " class query: " << p << "\n";
       return Array::stringConstructor(x.getClassName().back());
-    else {
+    } else {
       switch (x.getDataClass()) {
       case FM_CELL_ARRAY:
 	return Array::stringConstructor("cell");
@@ -198,6 +200,10 @@ namespace FreeMat {
 	return Array::stringConstructor("dcomplex");
       case FM_STRING:
 	return Array::stringConstructor("string");
+      case FM_FUNCPTR_ARRAY:
+	return Array::stringConstructor("function handle");
+      default:
+	throw Exception("Unrecognized class!");
       }
     }
   }
@@ -206,7 +212,7 @@ namespace FreeMat {
 			    WalkTree* eval) {
     if (arg.size() == 0)
       throw Exception("class function requires at least one argument");
-    if (arg.size() == 1)
+    if (arg.size() == 1) 
       return singleArrayVector(ClassOneArgFunction(arg[0]));
     ArrayVector parents;
     stringVector parentNames;

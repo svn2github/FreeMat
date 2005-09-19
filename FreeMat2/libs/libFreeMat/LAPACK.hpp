@@ -206,6 +206,8 @@ extern "C" {
   void dgetrf_(int *M, int *N, double *A, int *LDA, int *IPIV, int *INFO);
   
   void zgetrf_(int *M, int *N, double *A, int *LDA, int *IPIV, int *INFO);
+
+  int xerbla_(char *srname, int *info);
 }
 
 namespace FreeMat {

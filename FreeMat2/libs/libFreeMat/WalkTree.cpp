@@ -3398,9 +3398,15 @@ namespace FreeMat {
   ArrayVector WalkTree::subsindex(ArrayVector m) {
     ArrayVector n;
     for (int i=0;i<m.size();i++) {
-      if (m[i].isUserClass() && !stopoverload)
-	n.push_back(ClassUnaryOperator(m[i],"subsindex",this));
-      else
+      if (m[i].isUserClass() && !stopoverload) {
+	Array t(ClassUnaryOperator(m[i],"subsindex",this));
+	t.promoteType(FM_UINT32);
+	int len = t.getLength();
+	uint32 *dp = (uint32*) t.getReadWriteDataPointer();
+	for (int j=0;j<len;j++)
+	  dp[j]++;
+	n.push_back(t);
+      } else
 	n.push_back(m[i]);
     }
     return n;

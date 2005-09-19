@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = FreeMatLib
 
-CONFIG += staticlib warn_off
+CONFIG += staticlib warn_off debug
 
 INCLUDEPATH = ../libffi/include ../libXP ../libUMFPACK/UMFPACK/Include ../..
 
@@ -79,3 +79,4 @@ Sparse.cpp \
 Class.cpp \
 NumericArray.cpp \
 Parser.cxx
+

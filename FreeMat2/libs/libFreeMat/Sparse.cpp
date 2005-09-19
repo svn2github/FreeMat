@@ -507,7 +507,7 @@ namespace FreeMat {
       int n;
       n = mlist[ptr].I;
       T accum = 0;
-      while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
+      while (ptr < len && (mlist[ptr].I == n) && (mlist[ptr].J == col)) {
 	accum += mlist[ptr].Vreal;
 	ptr++;
       }
@@ -534,7 +534,7 @@ namespace FreeMat {
       n = mlist[ptr].I;
       T accum_real = 0;
       T accum_imag = 0;
-      while ((mlist[ptr].I == n) && (mlist[ptr].J == col)) {
+      while (ptr < len && (mlist[ptr].I == n) && (mlist[ptr].J == col)) {
 	accum_real += mlist[ptr].Vreal;
 	accum_imag += mlist[ptr].Vimag;
 	ptr++;

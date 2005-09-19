@@ -39,6 +39,7 @@ namespace FreeMat {
   ArrayVector TitleFunction(int,const ArrayVector& arg);
   ArrayVector GridFunction(int,const ArrayVector& arg);
   ArrayVector HoldFunction(int,const ArrayVector& arg);
+  ArrayVector IsHoldFunction(int,const ArrayVector& arg);
   ArrayVector TicFunction(int,const ArrayVector& arg);
   ArrayVector TocFunction(int,const ArrayVector& arg);
   ArrayVector AxisFunction(int,const ArrayVector& arg);

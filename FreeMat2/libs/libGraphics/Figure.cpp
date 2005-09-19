@@ -67,7 +67,7 @@ namespace FreeMat {
     //    setLayout(m_layout);
     m_type = new figType[1];
     m_wid = new QWidget*[1];
-    m_wid[0] = NULL;
+    m_wid[0] = new QWidget(this);
     m_type[0] = fignone;
     m_rows = 1;
     m_cols = 1;
@@ -83,6 +83,21 @@ namespace FreeMat {
   }
   
   QWidget* Figure::GetChildWidget() {
+    if (m_type[m_active_slot] == fignone) {
+      QWidget *w = new QWidget(this,"container");
+      QGridLayout *l = new QGridLayout(w);
+      l->addWidget(new QWidget(w),1,1);
+#ifdef QT3
+      l->setColStretch(1,1);
+#else
+      l->setColumnStretch(1,1);
+#endif
+      l->setRowStretch(1,1);
+      m_type[m_active_slot] = figblank;
+      m_wid[m_active_slot] = w;
+      m_layout->addWidget(w,m_active_slot % m_rows,m_active_slot / m_rows);
+      w->show();
+    } 
     return m_wid[m_active_slot];
   }
 
@@ -794,19 +809,27 @@ namespace FreeMat {
   //grid, each of which can contain a plot of some kind.  The
   //syntax for its use is
   //@[
-  //   subplot(row,col)
+  //   subplot(row,col,num)
   //@]
-  //which either activates the subplot indexed by @|[row,col]|, or 
-  //sets up a subplot grid of size @|row x col|.  The @|subplot|
-  //function decides which of these scenarios you intend by
-  //applying the following...
+  //which either activates subplot number @|num|, or 
+  //sets up a subplot grid of size @|row x col|, and then
+  //activates @|num|. 
   //!
   ArrayVector SubPlotFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() < 3) 
-      throw Exception("Need at least three arguments for subplot");
-    int row = ArrayToInt32(arg[0]);
-    int col = ArrayToInt32(arg[1]);
-    int slot = ArrayToInt32(arg[2]);
+    int row;
+    int col;
+    int slot;
+    if (arg.size() == 3) {
+      row = ArrayToInt32(arg[0]);
+      col = ArrayToInt32(arg[1]);
+      slot = ArrayToInt32(arg[2]);
+    } else if (arg.size() == 1) {
+      int p = ArrayToInt32(arg[0]);
+      row = p / 100;
+      col = p / 10;
+      slot = p % 10;
+    } else
+      throw Exception("unrecognized argument format for subplot");
     Figure* fig = GetCurrentFig();
     int crows, ccols;
     fig->GetPlotMatrix(crows,ccols);

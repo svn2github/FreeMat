@@ -200,8 +200,8 @@ namespace FreeMat {
 	(orientation != 's') && (orientation != 'n')) 
       throw Exception("Unable to determine orientation for colorbar");
     Figure *fig = GetCurrentFig();
-    QWidget *f = fig->GetChildWidget();
     ScalarImage *g = GetCurrentImage();
+    QWidget *f = fig->GetChildWidget();
     ColorBar *c;
     switch(orientation) {
     case 'n':

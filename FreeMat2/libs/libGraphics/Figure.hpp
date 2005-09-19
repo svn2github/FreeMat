@@ -11,7 +11,7 @@
 
 namespace FreeMat {
   
-  typedef enum {fignone, figplot, figscimg, figcbar, figgui, fig3plot} figType;
+  typedef enum {fignone, figblank, figplot, figscimg, figcbar, figgui, fig3plot} figType;
   
   class Figure : public QWidget {
   public:

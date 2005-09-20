@@ -14,6 +14,8 @@
 #include "File.hpp"
 #include <algorithm>
 
+#include <qglobal.h>
+
 #ifdef WIN32
 #define DELIM "\\"
 #define S_ISREG(x) (x & _S_IFREG)
@@ -235,14 +237,14 @@ namespace FreeMat {
 	procFile(std::string(FileData.cFileName),
 		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
       else
-	procFile(prefix + "_" + std::string(FileData.cFileName),
+	procFile(prefix + ":" + std::string(FileData.cFileName),
 		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
       while (FindNextFile(hSearch, &FileData)) {
 	if (prefix.empty())
 	  procFile(std::string(FileData.cFileName),
 		   scdir + "\\" + std::string(FileData.cFileName),tempfunc);
 	else
-	  procFile(prefix + "_" + std::string(FileData.cFileName),
+	  procFile(prefix + ":" + std::string(FileData.cFileName),
 		   scdir + "\\" + std::string(FileData.cFileName),tempfunc);
       }
       FindClose(hSearch);
@@ -304,6 +306,8 @@ namespace FreeMat {
     char *fnamec;
 
     fnamec = strdup(fname.c_str());
+    sprintf(buffer,"%s . %s",fname.c_str(),fullname.c_str());
+    qDebug(buffer);
     stat(fullname.c_str(),&filestat);
     if (S_ISREG(filestat.st_mode)) {
       int namelen;

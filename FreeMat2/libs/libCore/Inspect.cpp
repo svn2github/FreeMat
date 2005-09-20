@@ -426,6 +426,9 @@ namespace FreeMat {
 	case FM_STRING:
 	  sprintf(buffer,"% 10s","string");
 	  break;
+	case FM_FUNCPTR_ARRAY:
+	  sprintf(buffer,"% 10s","func ptr");
+	  break;
 	}
 	io->outputMessage(buffer);
 	if (lookup.isSparse())
@@ -569,6 +572,10 @@ namespace FreeMat {
 
   int ExistDirFunction(char* fname, WalkTree* eval) {
     struct stat filestat;
+    // Check for extra termination
+    if ((fname[strlen(fname)-1] == '/') ||
+	(fname[strlen(fname)-1] == '\\'))
+      fname[strlen(fname)-1] = 0;
     if (stat(fname,&filestat)==-1) return 0;
     if (S_ISDIR(filestat.st_mode)) return 7;
     return 0;

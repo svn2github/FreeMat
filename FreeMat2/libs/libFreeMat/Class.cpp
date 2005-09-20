@@ -119,9 +119,6 @@ namespace FreeMat {
     if (!eval->isUserClassDefined(classname)) {
       // new class... register it
       eval->registerUserClass(classname,newclass);
-      eval->getInterface()->outputMessage("registered class ");
-      eval->getInterface()->outputMessage(classname.c_str());
-      eval->getInterface()->outputMessage("\n");
     } else {
       // existing class...  make sure we match it
       UserClass eclass(eval->lookupUserClass(classname));

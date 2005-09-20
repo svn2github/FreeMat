@@ -195,6 +195,12 @@ inline void discardChar() {
   datap++;
 }
 
+inline int testStringTerm() {
+  return ((datap[0] == '\n') || (datap[0] == '\r') ||
+	  (datap[0] == ';') || (datap[0] == ',') ||
+	  (datap[0] == ' '));
+}
+
 void lexUntermString() {
   char stringval[4096];
   char *strptr;
@@ -205,7 +211,7 @@ void lexUntermString() {
     lexState = Scanning;
     return;
   }
-  while (!(testNewline() || (datap[0] == ';') || (datap[0] == ','))) {
+  while (!testStringTerm()) {
     *strptr++ = currentChar();
     discardChar();
   }
@@ -216,8 +222,9 @@ void lexUntermString() {
 #ifdef LEXDEBUG
   printf("Untermed string %s\r\n",stringval);
 #endif
-  if ((datap[0] == ';') || (datap[0] == '\r') || (datap[0] == ',') || (datap[0] == '\n'))
-    lexState = Scanning;
+//   if ((datap[0] == ';') || (datap[0] == '\r') || (datap[0] == ',') || (datap[0] == '\n'))
+//     lexState = Scanning;
+  lexState = Scanning;
 }
 
 void lexString() {

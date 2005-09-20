@@ -51,8 +51,8 @@ namespace FreeMat {
     memcpy(picData,src->picData,zoomColumns*zoomRows*3*sizeof(uchar));
     if (zoom > 0)
       setMinimumSize(zoomColumns,zoomRows);
-    else
-      setMinimumSize(150,150);
+    else 
+      setMinimumSize(500,500);
     click_mode = false;
   }
 
@@ -70,6 +70,7 @@ namespace FreeMat {
     zoomImage = NULL;
     picData = NULL;
     click_mode = false;
+    setMinimumSize(500,500);
   }
   
   ScalarImage::~ScalarImage() {
@@ -307,8 +308,9 @@ namespace FreeMat {
     }
     if (zoom > 0)
       setMinimumSize(getZoomColumns(),getZoomRows());
-    else
-      setMinimumSize(150,150);
+//     else
+//       setMinimumSize(150,150);
+    update();
   }
 
   QSizePolicy ScalarImage::sizePolicy() {

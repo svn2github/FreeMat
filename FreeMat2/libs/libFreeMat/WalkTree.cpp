@@ -58,12 +58,23 @@ namespace FreeMat {
   }
 
   static bool isMFile(std::string arg) {
-    if (arg.empty()) return false;
-#ifdef WIN32
-    return arg[1] == ':';
-#else
-    return arg[0] == '/';
-#endif
+    // Not completely right...
+    return (((arg[arg.size()-1] == 'm') ||
+	    (arg[arg.size()-1] == 'p')) && 
+	    (arg[arg.size()-2] == '.'));
+  }
+
+  std::string TrimFilename(std::string arg) {
+    int ndx = arg.rfind(DELIM);
+    if (ndx>=0)
+      arg.erase(0,ndx+1);
+    return arg;
+  }
+
+  std::string TrimExtension(std::string arg) {
+    if (arg.size() > 2 && arg[arg.size()-2] == '.')
+      arg.erase(arg.size()-2,arg.size());
+    return arg;
   }
 
   static std::string PrivateMangleName(std::string cfunc, std::string fname) {
@@ -72,7 +83,7 @@ namespace FreeMat {
     ndx = cfunc.rfind(DELIM);
     if (ndx>=0)
       cfunc.erase(ndx+1,cfunc.size());
-    return cfunc + "private_" + fname;
+    return cfunc + "private:" + fname;
   }
 
   std::string WalkTree::getPrivateMangledName(std::string fname) {
@@ -82,15 +93,17 @@ namespace FreeMat {
       ret = PrivateMangleName(ip_funcname,fname);
     else {
       getcwd(buff,4096);
-      ret = std::string(buff) + DELIM + std::string("private_" + fname);
+      ret = std::string(buff) + DELIM + std::string("private:" + fname);
     }
     return ret; 
   }
 
   std::string WalkTree::getMFileName() {
-    if (isMFile(ip_funcname)) return ip_funcname;
+    if (isMFile(ip_funcname)) 
+      return TrimFilename(TrimExtension(ip_funcname));
     for (int i=cstack.size()-1;i>=0;i--)
-      if (isMFile(cstack[i].cname)) return cstack[i].cname;
+      if (isMFile(cstack[i].cname)) 
+	return TrimFilename(TrimExtension(cstack[i].cname));
     return std::string("");
   }
 
@@ -2654,7 +2667,8 @@ namespace FreeMat {
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
 	CLIFlagsave = InCLI;
 	InCLI = false;
-	pushDebug(((MFunctionDef*)funcDef)->fileName,((MFunctionDef*)funcDef)->name);
+	pushDebug(((MFunctionDef*)funcDef)->fileName,
+		  ((MFunctionDef*)funcDef)->name);
 	block(((MFunctionDef*)funcDef)->code);
 	popDebug();
 	InCLI = CLIFlagsave;
@@ -2799,47 +2813,23 @@ namespace FreeMat {
   void WalkTree::stackTrace(bool includeCurrent) {
     char buffer[4096];
     for (int i=0;i<cstack.size();i++) {
+      std::string cname_trim(TrimExtension(TrimFilename(cstack[i].cname)));
       sprintf(buffer,"In %s(%s), line %d, column %d\n",
-	      cstack[i].cname.c_str(),
+	      cname_trim.c_str(),
 	      cstack[i].detail.c_str(),
 	      cstack[i].tokid & 0x0000FFFF,
 	      cstack[i].tokid >> 16);
       io->outputMessage(buffer);
     }
     if (includeCurrent) {
+      std::string ip_trim(TrimExtension(TrimFilename(ip_funcname)));
       sprintf(buffer,"In %s(%s), line %d, column %d\n",
-	      ip_funcname.c_str(),
+	      ip_trim.c_str(),
 	      ip_detailname.c_str(),
 	      ip_context & 0x0000FFFF,
 	      ip_context >> 16);
       io->outputMessage(buffer);
     }
-#if 0
-    stringVector outstack;
-    char buffer[4096];
-    int i=0;
-    while (i<cstack.size()) {
-      if (cstack[i].tokid == 0) {
-	// This is a new line in the stack trace - we search forward
-	// until we get the last line in the current function.  This
-	// is the "branch point" for that function.
-	int j = i+1;
-	while ((j < cstack.size()) && (cstack[j].cname == cstack[i].cname)
-	       && (cstack[j].detail == cstack[i].detail) 
-	       && (cstack[j].tokid != 0)) j++;
-	sprintf(buffer,"In %s(%s), line %d, column %d\n",
-		cstack[j-1].cname.c_str(),
-		cstack[j-1].detail.c_str(),
-		cstack[j-1].tokid & 0x0000FFFF,
-		cstack[j-1].tokid >> 16);
-	outstack.push_back(buffer);
-	i = j;
-      } else
-	i++;
-    }
-    for (i=outstack.size()-1;i>=0;i--)
-      io->outputMessage(outstack[i].c_str());
-#endif
   }
 
   bool WalkTree::inMethodCall(std::string classname) {
@@ -2884,6 +2874,10 @@ namespace FreeMat {
 
   void WalkTree::setClassPrefix(std::string prefix) {
     classPrefix = prefix;
+  }
+
+  std::string WalkTree::getClassPrefix() {
+    return classPrefix;
   }
 
   // Look up a function by name.  Use the arguments (if available) to assist
@@ -2966,7 +2960,8 @@ namespace FreeMat {
 	throw Exception(std::string("Cannot use arguments in a call to a script."));
       CLIFlagsave = InCLI;
       InCLI = false;
-      pushDebug(((MFunctionDef*)fun)->fileName,((MFunctionDef*)fun)->name);
+      pushDebug(((MFunctionDef*)fun)->fileName,
+		((MFunctionDef*)fun)->name);
       try {
 	block(((MFunctionDef*)fun)->code);
       } catch (WalkTreeReturnException& e) {

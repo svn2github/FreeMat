@@ -129,6 +129,7 @@ namespace FreeMat {
     void setStopOverload(bool flag);
 
     void setClassPrefix(std::string prefix);
+    std::string getClassPrefix();
     bool debugActive;
     void dbstep(int linecount);
     void debugCLI();
@@ -625,6 +626,9 @@ namespace FreeMat {
     int countSubExpressions(ASTPtr t);
   };
   void sigInterrupt(int arg);
+
+  std::string TrimFilename(std::string);
+
 }
 
 #endif

@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include "Core.hpp"
 #include "Malloc.hpp"
-
+#include <ctype.h>
 
 namespace FreeMat {
   //!
@@ -140,12 +140,22 @@ namespace FreeMat {
   //The resulting array has the given dimensions, and is filled with
   //all zeros.  The type of @|y| is @|float|, a 32-bit floating
   //point array.  To get arrays of other types, use the typecast 
-  //functions (e.g., @|uint8|, @|int8|, etc.).
+  //functions (e.g., @|uint8|, @|int8|, etc.).  An alternative syntax
+  //is to use the following notation:
+  //@[
+  //   y = zeros(d1,d2,...,dn,classname)
+  //@]
+  //where @|classname| is one of 'double', 'single', 'int8', 'uint8',
+  //'int16', 'uint16', 'int32', 'uint32', 'float'.  
   //    
   //The second syntax specifies the array dimensions as a vector,
   //where each element in the vector specifies a dimension length:
   //@[
-  //   y = zeros([d1,d2,...,dn]).
+  //   y = zeros([d1,d2,...,dn]),
+  //@]
+  //or
+  //@[
+  //   y = zeros([d1,d2,...,dn],classname).
   //@]
   //This syntax is more convenient for calling @|zeros| using a 
   //variable for the argument.  In both cases, specifying only one
@@ -166,38 +176,81 @@ namespace FreeMat {
   //@<
   //uint16(zeros(3))
   //@>
+  //Here we use the second syntax where the class of the output is specified 
+  //explicitly
+  //@<
+  //zeros(3,'int16')
+  //@>
   //!
   ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
     Array t, s;
     Dimensions dims;
     int32 *dp;
-	int i;
-    if (arg.size() == 0)
+    Class cls = FM_FLOAT;
+    int i;
+    // Trim out the classname if it was specified
+    ArrayVector trim_arg(arg);
+    if (trim_arg.size() > 0) {
+      // Check for the classname
+      if (trim_arg.back().isString()) {
+	// Get the classname as a string
+	char *cp = strdup(ArrayToString(trim_arg.back()));
+	// Convert to lowercase
+	char *dp = cp;
+	while (*dp) {
+	  *dp = tolower(*dp);
+	  dp++;
+	}
+	if (strcmp(cp,"double")==0)
+	  cls = FM_DOUBLE;
+	else if (strcmp(cp,"single")==0)
+	  cls = FM_FLOAT;
+	else if (strcmp(cp,"float")==0)
+	  cls = FM_FLOAT;
+	else if (strcmp(cp,"int8")==0)
+	  cls = FM_INT8;
+	else if (strcmp(cp,"uint8")==0)
+	  cls = FM_UINT8;
+	else if (strcmp(cp,"int16")==0)
+	  cls = FM_INT16;
+	else if (strcmp(cp,"uint16")==0)
+	  cls = FM_UINT16;
+	else if (strcmp(cp,"int32")==0)
+	  cls = FM_INT32;
+	else if (strcmp(cp,"uint32")==0)
+	  cls = FM_UINT32;
+	else
+	  throw Exception(std::string("Unsupported type ") + cp + std::string(" as classname argument to zeros function"));
+	// Remove the classspec
+	trim_arg.pop_back();
+      }
+    }
+    if (trim_arg.size() == 0)
       dims.makeScalar();
     else {
       // Case 1 - all of the entries are scalar
       bool allScalars;
       allScalars = true;
-      for (i=0;i<arg.size();i++)
-	allScalars &= arg[i].isScalar();
+      for (i=0;i<trim_arg.size();i++)
+	allScalars &= trim_arg[i].isScalar();
       if (allScalars) {
-	t = arg[0];
-	if (arg.size() == 1) {
+	t = trim_arg[0];
+	if (trim_arg.size() == 1) {
 	  // If all scalars and only one argument - we want a square zero matrix
 	  dims[0] = t.getContentsAsIntegerScalar();
 	  dims[1] = dims[0];
 	} else {
 	  // If all scalars and and multiple arguments, we count dimensions
-	  for (i=0;i<arg.size();i++) {
-	    t = arg[i];
+	  for (i=0;i<trim_arg.size();i++) {
+	    t = trim_arg[i];
 	    dims[i] = t.getContentsAsIntegerScalar();
 	  }
 	  
 	}
       } else {
-	if (arg.size() > 1)
+	if (trim_arg.size() > 1)
 	  throw Exception("Arguments to zeros function must be either all scalars or a single vector");
-	t = arg[0];
+	t = trim_arg[0];
 	t.promoteType(FM_UINT32);
 	dp = (int*) t.getDataPointer();
 	for (i=0;i<t.getLength();i++)
@@ -210,7 +263,7 @@ namespace FreeMat {
       if (!allPositive)
 	throw Exception("Zeros function requires positive arguments");
     }
-    s = Array(FM_FLOAT,dims,Calloc(sizeof(float)*dims.getElementCount()));
+    s = Array(cls,dims,Calloc(TypeSize(cls)*dims.getElementCount()));
     ArrayVector retval;
     retval.push_back(s);
     return retval;

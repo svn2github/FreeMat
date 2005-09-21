@@ -4108,4 +4108,23 @@ break;
     Array b(a);
     return b.getContentsAsCString();
   }
+
+  uint32 TypeSize(Class cls) {
+    switch (cls) {
+    case FM_UINT8:
+    case FM_INT8:
+      return sizeof(int8);
+    case FM_UINT16:
+    case FM_INT16:
+      return sizeof(int16);
+    case FM_UINT32:
+    case FM_INT32:
+      return sizeof(int32);
+    case FM_FLOAT:
+      return sizeof(float);
+    case FM_DOUBLE:
+      return sizeof(double);
+    }
+    throw Exception("Unsupported class as argument to TypeSize");
+  }
 }

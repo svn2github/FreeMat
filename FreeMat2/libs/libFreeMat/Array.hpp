@@ -695,5 +695,8 @@ namespace FreeMat {
 
   void printObjectBalance();
   void dumpAllArrays();
+
+  uint32 TypeSize(Class cls);
+
 }
 #endif

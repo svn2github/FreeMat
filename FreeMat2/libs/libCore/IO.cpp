@@ -1103,6 +1103,165 @@ namespace FreeMat {
     return retval;
   }
 
+  // How does sscanf work...
+  // a whitespace matches any number/type of whitespace
+  // a non-whitespace must be matched exactly
+  // a %d, %ld, etc.  reads a number... 
+  // a %s matches a sequence of characters that does
+  // not contain whitespaces...
+  // a mismatch - 
+
+  //!
+  //@Module SSCANF Formated String Input Function (C-Style)
+  //@@Section IO
+  //@@Usage
+  //Reads values from a string.  The general syntax for its use is
+  //@[
+  //  [a1,...,an] = sscanf(text,format)
+  //@]
+  //Here @|format| is the format string, which is a string that
+  //controls the format of the input.  Each value that is parsed
+  //from the @|text| occupies one output slot.  See @|printf|
+  //for a description of the format.
+  //!
+#if 0
+  ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
+    if ((arg.size() != 2) || (!arg[0].isString()) || (!arg[1].isString()))
+      throw Exception("sscanf takes two arguments, the text and the format string");
+    Array text(arg[0]);
+    Array format(arg[1]);
+    char *txt = text.getContentsAsCString();
+    char *frmt = format.getContentsAsCString();
+    char *buff = (char*) malloc(strlen(frmt)+1);
+    strcpy(buff,frmt);
+    // Search for the start of a format subspec
+    char *dp = buff;
+    char *np;
+    char sv;
+    int nextArg = 2;
+    bool shortarg;
+    bool doublearg;
+    // Scan the string
+    ArrayVector values;
+    // while there is more string to scan...
+    while (*fp) {
+      // If *dp is a whitespace...
+      if (iswhitespace(*fp)) {
+	// match zero or more whitespaces from the source string
+	while (*dp && iswhitespace(*dp)) dp++;
+      } else if (*fp != '%') {
+	// we must match it
+	if (!(*dp && (*dp == *fp)))
+	  // punt
+	  return values;
+	else {
+	  fp++;
+	  dp++;
+	}
+      } else {
+	// No... so we need to collect input...
+	// Now the nice thing is that we can use sscanf to 
+	// retrieve the value... the difficulty is
+	// that we don't know how much to advance dp....
+	// but we have to scan forward
+	// to determine which type to use.
+	np = validateScanFormatSpec(dp);
+	if (!np)
+	  throw Exception("erroneous format specification " + std::string(dp));
+	if (*(np-1) == '%') {
+	  dp += 2;
+	  fp ++;
+	} else {
+	  shortarg = false;
+	  doublearg = false;
+	  if (*(np-1) == 'h') {
+	    shortarg = true;
+	    np++;
+	  } else if (*(np-1) == 'l') {
+	    doublearg = true;
+	    np++;
+	  } 
+	  sv = *np;
+	  *np = 0;
+	  switch (*(np-1)) {
+	  case 'd':
+	  case 'i':
+	    if (shortarg) {
+	      short sdumint;
+	      if (!sscanf(fp,dp,&sdumint))
+		return values;
+	      else
+		values.push_back(Array::int16Constructor(sdumint));
+	      
+	    } else {
+	      int sdumint;
+	      fscanf(fptr->fp,dp,&sdumint);
+	      if (feof(fptr->fp))
+		values.push_back(Array::emptyConstructor());
+	      else
+		values.push_back(Array::int32Constructor(sdumint));
+	    }
+	    break;
+	  case 'o':
+	  case 'u':
+	  case 'x':
+	  case 'X':
+	  case 'c':
+	    if (shortarg) {
+	      int sdumint;
+	      fscanf(fptr->fp,dp,&sdumint);
+	      if (feof(fptr->fp))
+		values.push_back(Array::emptyConstructor());
+	      else
+		values.push_back(Array::int32Constructor(sdumint));
+	    } else {
+	      unsigned int dumint;
+	      fscanf(fptr->fp,dp,&dumint);
+	      if (feof(fptr->fp))
+		values.push_back(Array::emptyConstructor());
+	      else
+		values.push_back(Array::uint32Constructor(dumint));
+	    }
+	    break;
+	  case 'e':
+	  case 'E':
+	  case 'f':
+	  case 'F':
+	  case 'g':
+	  case 'G':
+	    if (doublearg) {
+	      double dumfloat;
+	      fscanf(fptr->fp,dp,&dumfloat);
+	      if (feof(fptr->fp))
+		values.push_back(Array::emptyConstructor());
+	      else
+		values.push_back(Array::doubleConstructor(dumfloat));
+	    } else {
+	      float dumfloat;
+	      fscanf(fptr->fp,dp,&dumfloat);
+	      if (feof(fptr->fp))
+		values.push_back(Array::emptyConstructor());
+	      else
+		values.push_back(Array::floatConstructor(dumfloat));
+	    }
+	    break;
+	  case 's':
+	    char stbuff[4096];
+	    fscanf(fptr->fp,dp,stbuff);
+	    if (feof(fptr->fp))
+	      values.push_back(Array::emptyConstructor());
+	    else
+	      values.push_back(Array::stringConstructor(stbuff));
+	    break;
+	  default:
+	    throw Exception("unsupported fscanf configuration");
+	  }
+	}
+      }
+    return values;
+  }
+#endif
+
   //!
   //@Module FSCANF Formatted File Input Function (C-Style)
   //@@Section IO

@@ -80,6 +80,7 @@ class GLWidget : public QGLWidget {
     glEnd();
 
     // Draw the box
+
     glEnable(GL_CULL_FACE);
     glBegin(GL_QUADS);
     glColor3f(1.0f,1.0f,1.0f);
@@ -114,6 +115,45 @@ class GLWidget : public QGLWidget {
     glVertex3f(xmin, ymax, zmax);
 
     glEnd();
+
+    // Draw the grid
+    glBegin(GL_LINES);
+    glColor3f(0.4f,0.4f,0.4f);
+    GLfloat xcmin = xmin + .001;
+    GLfloat ycmin = ymin + .001;
+    GLfloat zcmin = zmin + .001;
+    GLfloat xcmax = xmax - .001;
+    GLfloat ycmax = ymax - .001;
+    GLfloat zcmax = zmax - .001;
+    for (int i=0;i<=6;i++) {
+      GLfloat t = -6 + i*2;
+      glVertex3f(t,ycmin,zcmin);
+      glVertex3f(t,ycmax,zcmin);
+      glVertex3f(t,ycmin,zcmax);
+      glVertex3f(t,ycmax,zcmax);
+      glVertex3f(t,ycmin,zcmin);
+      glVertex3f(t,ycmin,zcmax);
+      glVertex3f(t,ycmax,zcmin);
+      glVertex3f(t,ycmax,zcmax);
+      glVertex3f(xcmin,t,zcmin);
+      glVertex3f(xcmin,t,zcmax);
+      glVertex3f(xcmax,t,zcmin);
+      glVertex3f(xcmax,t,zcmax);
+      glVertex3f(xcmin,t,zcmin);
+      glVertex3f(xcmax,t,zcmin);
+      glVertex3f(xcmin,t,zcmax);
+      glVertex3f(xcmax,t,zcmax);
+      glVertex3f(xcmin,ycmin,t);
+      glVertex3f(xcmax,ycmin,t);
+      glVertex3f(xcmin,ycmax,t);
+      glVertex3f(xcmax,ycmax,t);
+      glVertex3f(xcmin,ycmin,t);
+      glVertex3f(xcmin,ycmax,t);
+      glVertex3f(xcmax,ycmin,t);
+      glVertex3f(xcmax,ycmax,t);
+    }
+    glEnd();
+
     glDisable(GL_CULL_FACE);
 
     glPushMatrix();

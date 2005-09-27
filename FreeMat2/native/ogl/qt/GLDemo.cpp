@@ -21,6 +21,8 @@ class GLWidget : public QGLWidget {
   GLfloat rtri, rquad;
   GLfloat xmin, xmax, ymin, ymax, zmin, zmax;
   GLfloat beginx, beginy;
+  GLfloat vpx1, vpy1, vpx2, vpy2;
+  GLfloat vpw1, vph1, vpw2, vph2;
 
   void mousePressEvent(QMouseEvent* e) {
     beginx = e->x();
@@ -49,18 +51,68 @@ class GLWidget : public QGLWidget {
   }
   virtual void resizeGL(int width, int height) {
     height = height?height:1;
-    glViewport( 20, 20, (GLint)width-40, (GLint)height-40 );
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    //    gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
-    GLfloat scale = 2.0;
-    glOrtho(scale*xmin, scale*xmax, scale*ymin, 
-	    scale*ymax, scale*zmin, scale*zmax);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    vpx1 = 0; vpy1 = 0;
+    vpw1 = width/2; vph1 = height;
+    vpx2 = width/2; vpy2 = 0;
+    vpw2 = width/2; vph2 = height;
   }
-  virtual void paintGL() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  // Draw the background grid...
+  void DrawGrid() {
+    // Retrieve the current transformation matrix
+    float m[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,m);
+    // The normals of interest are 
+    // [0,0,1],[0,0,-1],
+    // [0,1,0],[0,-1,0],
+    // [1,0,0],[-1,0,0]
+    // We will multiply the transformation matrix 
+    // by a directional vector.  Then we test the
+    // sign of the z component.  This sequence of
+    // operations is equivalent to simply taking the
+    // 2, 6, 10 elements of m, and drawing the corresponding
+    // Select the set of grids to draw based on these elements
+    // Draw the grid
+    glBegin(GL_LINES);
+    glColor3f(0.4f,0.4f,0.4f);
+    for (int i=0;i<=6;i++) {
+      GLfloat t = -6 + i*2;
+      if (m[10] > 0) {
+	glVertex3f(t,ymin,zmin);
+	glVertex3f(t,ymax,zmin);
+	glVertex3f(xmin,t,zmin);
+	glVertex3f(xmax,t,zmin);
+      } else if (m[10] < 0) {
+	glVertex3f(t,ymin,zmax);
+	glVertex3f(t,ymax,zmax);
+	glVertex3f(xmin,t,zmax);
+	glVertex3f(xmax,t,zmax);
+      }
+      if (m[6] > 0) {
+	glVertex3f(t,ymin,zmin);
+	glVertex3f(t,ymin,zmax);
+	glVertex3f(xmin,ymin,t);
+	glVertex3f(xmax,ymin,t);
+      } else if (m[6] < 0) {
+	glVertex3f(t,ymax,zmin);
+	glVertex3f(t,ymax,zmax);
+	glVertex3f(xmin,ymax,t);
+	glVertex3f(xmax,ymax,t);
+      }
+      if (m[2] > 0) {
+	glVertex3f(xmin,t,zmin);
+	glVertex3f(xmin,t,zmax);
+	glVertex3f(xmin,ymin,t);
+	glVertex3f(xmin,ymax,t);
+      } else if (m[2] < 0) {
+	glVertex3f(xmax,t,zmin);
+	glVertex3f(xmax,t,zmax);
+	glVertex3f(xmax,ymin,t);
+	glVertex3f(xmax,ymax,t);
+      }
+    }
+    glEnd();
+  }
+  virtual void renderScene() {
     glLoadIdentity();
     glRotatef(elev,0,1,0);
     glRotatef(azim,1,0,0);
@@ -80,7 +132,6 @@ class GLWidget : public QGLWidget {
     glEnd();
 
     // Draw the box
-
     glEnable(GL_CULL_FACE);
     glBegin(GL_QUADS);
     glColor3f(1.0f,1.0f,1.0f);
@@ -116,43 +167,11 @@ class GLWidget : public QGLWidget {
 
     glEnd();
 
-    // Draw the grid
-    glBegin(GL_LINES);
-    glColor3f(0.4f,0.4f,0.4f);
-    GLfloat xcmin = xmin + .001;
-    GLfloat ycmin = ymin + .001;
-    GLfloat zcmin = zmin + .001;
-    GLfloat xcmax = xmax - .001;
-    GLfloat ycmax = ymax - .001;
-    GLfloat zcmax = zmax - .001;
-    for (int i=0;i<=6;i++) {
-      GLfloat t = -6 + i*2;
-      glVertex3f(t,ycmin,zcmin);
-      glVertex3f(t,ycmax,zcmin);
-      glVertex3f(t,ycmin,zcmax);
-      glVertex3f(t,ycmax,zcmax);
-      glVertex3f(t,ycmin,zcmin);
-      glVertex3f(t,ycmin,zcmax);
-      glVertex3f(t,ycmax,zcmin);
-      glVertex3f(t,ycmax,zcmax);
-      glVertex3f(xcmin,t,zcmin);
-      glVertex3f(xcmin,t,zcmax);
-      glVertex3f(xcmax,t,zcmin);
-      glVertex3f(xcmax,t,zcmax);
-      glVertex3f(xcmin,t,zcmin);
-      glVertex3f(xcmax,t,zcmin);
-      glVertex3f(xcmin,t,zcmax);
-      glVertex3f(xcmax,t,zcmax);
-      glVertex3f(xcmin,ycmin,t);
-      glVertex3f(xcmax,ycmin,t);
-      glVertex3f(xcmin,ycmax,t);
-      glVertex3f(xcmax,ycmax,t);
-      glVertex3f(xcmin,ycmin,t);
-      glVertex3f(xcmin,ycmax,t);
-      glVertex3f(xcmax,ycmin,t);
-      glVertex3f(xcmax,ycmax,t);
-    }
-    glEnd();
+    glDisable(GL_DEPTH_TEST);
+
+    DrawGrid();
+
+    glEnable(GL_DEPTH_TEST);
 
     glDisable(GL_CULL_FACE);
 
@@ -229,7 +248,30 @@ class GLWidget : public QGLWidget {
     glEnd();   
 
     glPopMatrix();
-
+  }
+  virtual void paintGL() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glViewport(vpx1,vpy1,vpw1,vph1);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //    gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+    GLfloat scale = 2.0;
+    glOrtho(scale*xmin, scale*xmax, scale*ymin, 
+	    scale*ymax, scale*zmin, scale*zmax);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    renderScene();
+    glViewport(vpx2,vpy2,vpw2,vph2);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //    gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
+    scale = 2.0;
+    glOrtho(scale*xmin, scale*xmax, scale*ymin, 
+	    scale*ymax, scale*zmin, scale*zmax);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    renderScene();
   }
 };
 

@@ -2,6 +2,29 @@
 #include <QMouseEvent>
 #include <qapplication.h>
 
+void calcNormal(float v0[3],float v1[3],float v2[3],float out[3]) {
+  static const int x = 0;
+  static const int y = 1;
+  static const int z = 2;
+  float t1[3];
+  float t2[3];
+  t1[x] = v0[x] - v1[x];
+  t1[y] = v0[y] - v1[y];
+  t1[z] = v0[z] - v1[z];
+  t2[x] = v1[x] - v2[x];
+  t2[y] = v1[y] - v2[y];
+  t2[z] = v1[z] - v2[z];
+  out[x] = v1[y]*v2[z] - v1[z]*v2[y];
+  out[y] = v1[z]*v2[x] - v1[x]*v2[z];
+  out[z] = v1[x]*v2[y] - v1[y]*v2[x];
+  float scale = out[x]*out[x]+out[y]*out[y]+out[z]*out[z];
+  scale = (scale == 0.0f) ? 1.0 : scale;
+  scale = sqrt(scale);
+  out[x] /= scale;
+  out[y] /= scale;
+  out[z] /= scale;
+}
+
 class GLWidget : public QGLWidget {
  public:
   GLWidget(QWidget *parent=0, char *name=0) {
@@ -111,6 +134,93 @@ class GLWidget : public QGLWidget {
       }
     }
     glEnd();
+  }
+  static void tess_error_callback(GLenum error) {
+  }
+  static void tess_combine_callback(GLdouble* xyz, GLvoid *indata[4], GLfloat *weights, GLvoid **outdata) {
+    *outdata = indata[0];
+  }
+  virtual void renderScene3() {
+    GLfloat ambientLight[] = {0.3f,0.3f,0.3f,1.0f};
+    GLfloat diffuseLight[] = {0.7f,0.7f,0.7f,1.0f};
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0,GL_AMBIENT,ambientLight);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuseLight);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+    glLoadIdentity();
+    glRotatef(elev,0,1,0);
+    glRotatef(azim,1,0,0);
+    // Quad surface...
+#define SURFCNT 36
+    double xmat[SURFCNT];
+    double ymat[SURFCNT];
+    double zmat[SURFCNT][SURFCNT];
+    for (int i=0;i<SURFCNT;i++) {
+      xmat[i] = i - ((SURFCNT-1.0)/2);
+      for (int j=0;j<SURFCNT;j++) {
+	ymat[j] = j - ((SURFCNT-1.0)/2);
+	zmat[i][j] = 2*cos((i-((SURFCNT-1.0)/2))*M_PI/((SURFCNT-1.0)/2))*sin((j-((SURFCNT-1.0)/2))*M_PI/((SURFCNT-1.0)/2));
+      }
+    }
+    for (int i=0;i<(SURFCNT-1);i++) {
+      glBegin(GL_QUAD_STRIP);
+      for (int j=0;j<SURFCNT;j++) {
+	float p0[3], p1[3], p2[3], norm[3];
+	// set up the three points for the normal...
+	if (j < (SURFCNT-1)) {
+	  p0[0] = xmat[i]; p0[1] = ymat[j]; p0[2] = zmat[i][j];
+	  p1[0] = xmat[i+1]; p1[1] = ymat[j]; p1[2] = zmat[i+1][j];
+	  p2[0] = xmat[i]; p2[1] = ymat[j+1]; p2[2] = zmat[i][j+1];
+	  calcNormal(p0,p1,p2,norm);
+	  glNormal3f(norm[0],norm[1],norm[2]);
+	}
+	glVertex3f(xmat[i],ymat[j],zmat[i][j]);
+	glVertex3f(xmat[i+1],ymat[j],zmat[i+1][j]);
+      }
+      glEnd();
+    }
+  }
+  virtual void renderScene2() {
+    GLfloat ambientLight[] = {0.3f,0.3f,0.3f,1.0f};
+    GLfloat diffuseLight[] = {0.7f,0.7f,0.7f,1.0f};
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glLightfv(GL_LIGHT0,GL_AMBIENT,ambientLight);
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,diffuseLight);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    
+    glLoadIdentity();
+    glRotatef(elev,0,1,0);
+    glRotatef(azim,1,0,0);
+    GLUtesselator *tess = gluNewTess();
+    glColor3f(0.0f,1.0f,0.0f);
+    gluTessCallback(tess, GLU_TESS_BEGIN, glBegin);
+    gluTessCallback(tess, GLU_TESS_END, glEnd);
+    gluTessCallback(tess, GLU_TESS_VERTEX, glVertex3dv);
+    gluTessCallback(tess, GLU_TESS_ERROR, tess_error_callback);
+    gluTessCallback(tess, GLU_TESS_COMBINE, tess_combine_callback);
+    gluTessBeginPolygon(tess,NULL);
+    glNormal3f(0.0f,0.0f,1.0f);
+    gluTessBeginContour(tess);
+#define SIDES 36
+    double vertex[SIDES][3];
+    for (int i=0;i<SIDES;i++) {
+      double angle = i/(SIDES-1.0)*2*M_PI;
+      vertex[i][0] = cos(angle)*5;
+      vertex[i][1] = sin(angle)*5;
+      vertex[i][2] = i*7.0/SIDES-3.5;
+      gluTessVertex(tess,vertex[i],vertex[i]);
+    }
+    gluTessEndContour(tess);
+    gluTessEndPolygon(tess);
+    gluDeleteTess(tess);
+    glDisable(GL_LIGHTING);
   }
   virtual void renderScene() {
     glLoadIdentity();
@@ -261,7 +371,7 @@ class GLWidget : public QGLWidget {
 	    scale*ymax, scale*zmin, scale*zmax);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    renderScene();
+    renderScene3();
     glViewport(vpx2,vpy2,vpw2,vph2);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -271,7 +381,7 @@ class GLWidget : public QGLWidget {
 	    scale*ymax, scale*zmin, scale*zmax);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    renderScene();
+    renderScene2();
   }
 };
 

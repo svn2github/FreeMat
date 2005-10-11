@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib
+CONFIG += staticlib debug
 
 INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
 
@@ -17,7 +17,11 @@ NewAxis.hpp \
 Util.hpp \
 QPWidget.hpp \
 ColorBar.hpp \
-Label.hpp
+Label.hpp \
+HandleAxis.hpp \
+HandleObject.hpp \
+HandleProperty.hpp \
+HandleFigure.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -32,7 +36,11 @@ NewAxis.cpp \
 Util.cpp \
 QPWidget.cpp \
 ColorBar.cpp \
-Label.cpp
+Label.cpp \
+HandleAxis.cpp \
+HandleObject.cpp \
+HandleProperty.cpp \
+HandleFigure.cpp
 
 DEPENDPATH += INCLUDEPATH
 
@@ -43,3 +51,5 @@ QT += qt3support
 mac {
 QT += qt3support
 }
+
+QT += opengl

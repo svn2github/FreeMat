@@ -20,10 +20,12 @@
 
 #include "GraphicsCore.hpp"
 #include "Context.hpp"
+#include "HandleAxis.hpp"
 
 namespace FreeMat {
 
   void LoadGraphicsCoreFunctions(Context* context) {
+    LoadHandleGraphicsFunctions(context);
     context->addFunction("figure",FigureFunction,1,1,"n");
     context->addFunction("close",CloseFunction,1,0,"handle");
     context->addFunction("plot",PlotFunction,-1,0);

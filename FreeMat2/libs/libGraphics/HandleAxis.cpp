@@ -1,6 +1,8 @@
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
+#include "HandleFigure.hpp"
 #include "Core.hpp"
+#include <qgl.h>
 
 // Need to build the transformation matrix...
 // Given a position rectangle and a camera matrix,
@@ -13,513 +15,29 @@
 //   the data scale, camera and xy scale matrices
 //  
 //   This is the final (view) matrix.
+//
+// Check out gluLookAt
+//
+// Actually, not...  it is more complicated than this.
+// The view matrix maps _rotated_ x,y,z coordinates
+// to the screen.  We want to specify the clipping
+// volume in _unrotated_ coordinates.  So, what needs
+// to happen is that we must transform the 8 corners
+// of the clipped volume using the current modelview
+// matrix, use them to establish new clipping planes
+// in x, y, z, and then map the clipped volume to viewer
+// space.
 namespace FreeMat {
-  class HandleProperty {
-    bool modified;
-  public:
-    HandleProperty() {modified = false;}
-    virtual ~HandleProperty() {}
-    virtual Array Get() = 0;
-    virtual void Set(Array) {modified = true;}
-    void ClearModified() {modified = false;}
-    bool isModified() {return modified;}
-  };
-
-  class HPHandles : public HandleProperty {
-  protected:
-    int m_len;
-    std::vector<unsigned> data;
-  public:
-    HPHandles(int len);
-    HPHandles();
-    virtual ~HPHandles() {}
-    virtual Array Get();
-    virtual void Set(Array);
-    std::vector<unsigned> Data() {return data;}
-    void Data(std::vector<unsigned> m) {data = m;}
-  };
-
-  class HPHandle : public HPHandles {
-  public:
-    HPHandle() : HPHandles(1) {}
-    ~HPHandle() {}
-  };
-
-  class HPVector : public HandleProperty {
-  protected:
-    std::vector<double> data;
-  public:
-    HPVector() {}
-    virtual ~HPVector() {}
-    virtual Array Get();
-    virtual void Set(Array);
-    std::vector<double> Data() {return data;}
-    void Data(std::vector<double> m) {data = m;}
-    double& operator[](int ndx);
-    double& At(int ndx);
-  };
-
-  class HPFixedVector : public HPVector {
-  protected:
-    unsigned m_len;
-  public:
-    HPFixedVector(unsigned len) : m_len(len) {for (int i=0;i<len;i++) data.push_back(0);}
-    virtual ~HPFixedVector() {}
-    virtual void Set(Array);    
-  };
-
-  class HPString : public HandleProperty {
-  protected:
-    std::string data;
-  public:
-    HPString() {}
-    virtual ~HPString() {}
-    virtual Array Get();
-    virtual void Set(Array);
-    std::string Data() {return data;}
-    void Data(std::string m) {data = m;}
-    void Value(std::string m) {data = m;}
-  };
-
-  class HPStringSet : public HandleProperty {
-  protected:
-    std::vector<std::string> data;
-  public:
-    HPStringSet() {}
-    virtual ~HPStringSet() {}
-    virtual Array Get();
-    virtual void Set(Array);
-    std::vector<std::string> Data() {return data;}
-    void Data(std::vector<std::string> m) {data = m;}
-  };
-
-  class HPConstrainedString : public HPString {
-  protected:
-    std::vector<std::string> m_dictionary;
-  public:
-    HPConstrainedString(std::vector<std::string> dict) : m_dictionary(dict) {
-      data = dict[0];
-    }
-    HPConstrainedString(const char **dict) {
-      while (*dict) {
-	m_dictionary.push_back(*dict);
-	dict++;
-      }
-    }
-    virtual void Set(Array);    
-  };
-
-  class HandleObject {
-    SymbolTable<HandleProperty*> m_properties;
-  public:
-    HandleObject();
-    virtual ~HandleObject() {}
-    virtual void RegisterProperties() {}
-    void AddProperty(HandleProperty* prop, std::string name);
-    HandleProperty* LookupProperty(std::string name);
-    void SetConstrainedStringDefault(std::string name, std::string value);
-    void SetTwoVectorDefault(std::string name, double x, double y);
-    void SetThreeVectorDefault(std::string name, double x, double y, double z);
-    void SetStringDefault(std::string name, std::string value);
-    void SetScalarDefault(std::string name, double value);
-    virtual void DrawMe(DrawEngine& gc) = 0;
-    virtual void UpdateState() = 0;
-  };
-  
-  class HPTwoVector : public HPFixedVector {
-  public:
-    HPTwoVector() : HPFixedVector(2) {}
-    virtual ~HPTwoVector() {}
-    void Value(double x, double y) {At(0) = x; At(1) = y;}
-  };
-
-  class HPThreeVector : public HPFixedVector {
-  public:
-    HPThreeVector() : HPFixedVector(3) {}
-    virtual ~HPThreeVector() {}
-    void Value(double x, double y, double z) {At(0) = x; At(1) = y; At(2) = z;}
-  };
-  
-  class HPFourVector : public HPFixedVector {
-  public:
-    HPFourVector() : HPFixedVector(4) {}
-    virtual ~HPFourVector() {}
-  };
-
-  const char *auto_manual_dict[3] = {"auto","manual",0};
-
-  class HPAutoManual : public HPConstrainedString {
-  public:
-    HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
-    virtual ~HPAutoManual() {}
-  };
-
-  class HPColor : public HPFixedVector {
-  public:
-    HPColor() : HPFixedVector(3) {}
-    virtual ~HPColor() {}
-    virtual void Set(Array);    
-    Array Get();    
-  };
-
-  class HPColorVector : public HPVector {
-  public:
-    HPColorVector() : HPVector() {}
-    virtual ~HPColorVector() {}
-    virtual void Set(Array);    
-    Array Get();    
-  };
-
-  const char *on_off_dict[3] = {"on","off",0};
-
-  class HPOnOff : public HPConstrainedString {
-  public:
-    HPOnOff() : HPConstrainedString(on_off_dict) {}
-    virtual ~HPOnOff() {}
-  };
-
-  class HPScalar : public HPFixedVector {
-  public:
-    HPScalar() : HPFixedVector(1) {}
-    virtual ~HPScalar() {}
-    void Value(double x);
-  };
-
-  const char *font_angle_dict[4] = {"normal","italic","oblique",0};
-    
-  class HPFontAngle : public HPConstrainedString {
-  public:
-    HPFontAngle() : HPConstrainedString(font_angle_dict) {}
-    virtual ~HPFontAngle() {}
-  };
-  
-  const char *font_units_dict[6] = {"points","normalized","inches",
-				    "centimeters","pixels",0};
-  
-  class HPFontUnits : public HPConstrainedString {
-  public:
-    HPFontUnits() : HPConstrainedString(font_units_dict) {}
-    virtual ~HPFontUnits() {}
-  };
-  
-  const char *font_weight_dict[5] = {"normal","bold","light","demi",0};
-
-  class HPFontWeight : public HPConstrainedString {
-  public:
-    HPFontWeight() : HPConstrainedString(font_weight_dict) {}
-    virtual ~HPFontWeight() {}
-  };
-
-  const char *line_style_dict[6] = {"-","--",":","-.","none",0};
-
-  class HPLineStyle : public HPConstrainedString {
-  public:
-    HPLineStyle() : HPConstrainedString(line_style_dict) {}
-    virtual ~HPLineStyle() {}
-  };
-
-  const char *top_bottom_dict[3] = {"top","bottom",0};
-
-  class HPTopBottom : public HPConstrainedString {
-  public:
-    HPTopBottom() : HPConstrainedString(top_bottom_dict) {}
-    virtual ~HPTopBottom() {}
-  };
-
-  const char *left_right_dict[3] = {"left","right",0};
-
-  class HPLeftRight : public HPConstrainedString {
-  public:
-    HPLeftRight() : HPConstrainedString(left_right_dict) {}
-    virtual ~HPLeftRight() {}
-  };
-
-  const char *normal_reverse_dict[3] = {"normal","reverse",0};
-
-  class HPNormalReverse : public HPConstrainedString {
-  public:
-    HPNormalReverse() : HPConstrainedString(normal_reverse_dict) {}
-    virtual ~HPNormalReverse() {}
-  };
-
-  const char *linear_log_dict[3] = {"linear","log",0};
-
-  class HPLinearLog : public HPConstrainedString {
-  public:
-    HPLinearLog() : HPConstrainedString(linear_log_dict) {}
-    virtual ~HPLinearLog() {}
-  };
-  
-  const char *next_plot_dict[4] = {"add","replace","replacechildren",0};
-
-  class HPNextPlotMode : public HPConstrainedString {
-  public:
-    HPNextPlotMode() : HPConstrainedString(next_plot_dict) {}
-    virtual ~HPNextPlotMode() {}
-  };
-
-  const char *projection_mode_dict[3] = {"orthographic","perspective",0};
-
-  class HPProjectionMode : public HPConstrainedString {
-  public:
-    HPProjectionMode() : HPConstrainedString(projection_mode_dict) {}
-    virtual ~HPProjectionMode() {}
-  };
-  
-  const char *in_out_dict[3] = {"in","out",0};
-
-  class HPInOut : public HPConstrainedString {
-  public:
-    HPInOut() : HPConstrainedString(in_out_dict) {}
-    virtual ~HPInOut() {}
-  };
-
-  const char *units_dict[7] = {"inches","centimeters","normalized",
-			       "points","pixels","characters",0};
-  
-  class HPUnits : public HPConstrainedString {
-  public:
-    HPUnits() : HPConstrainedString(units_dict) {}
-    virtual ~HPUnits() {}
-  };
-  
-  const char *position_dict[3] = {"outerposition","position",0};
-  
-  class HPPosition : public HPConstrainedString {
-  public:
-    HPPosition() : HPConstrainedString(position_dict) {}
-    virtual ~HPPosition() {}
-  };
-  
-  //The HandleAxis class encapsulates a 3D axis object, and is
-  //manipulated through the Set/Get interface.
-  class HandleAxis : public HandleObject {
-  public:
-    SymbolTable<HandleProperty*> properties;
-    double camera[4][4];
-
-    HandleAxis();
-    virtual ~HandleAxis();
-    virtual void ConstructProperties();
-    virtual void DrawMe(DrawEngine& gc);
-    virtual void UpdateState();
-    void SetupDefaults();
-    void Transform(double x, double y, double z, double &i, double &j);
-  };
-
-  //Figure
-  //   contains one or more axes
-  //   to redraw the figure, we proxy our draws to the axes
-  //   Axes
-  //   contains one or more children
-  //     to redraw the axes, we clear it with bkcolor
-  //     then draw it
-  //     set the transformation & clipping
-  //     then draw the children
-  class HandleFigure : public HandleObject {
-  public:
-    HandleFigure();
-    virtual ~HandleFigure() {}
-    virtual void ConstructProperties();
-    virtual void DrawMe(DrawEngine& gc);
-    virtual void UpdateState();
-    void SetupDefaults();
-  };
-
-  class BaseFigure : public QPWidget {
+  class BaseFigure : public QGLWidget {
   public:
     HandleFigure *hfig;
-    BaseFigure(QPWidget* parent, const char *Name);
-    virtual void DrawMe(DrawEngine& gc);
+    BaseFigure(QWidget* parent, const char *Name);
+    virtual void initializeGL();
+    virtual void paintGL();
+    virtual void resizeGL(int width, int height);
   };
 
   HandleList<HandleObject*> handleset;
-
-
-  HandleObject::HandleObject() {
-  }
-
-  HandleProperty* HandleObject::LookupProperty(std::string name) {
-    std::transform(name.begin(),name.end(),name.begin(),tolower);
-    HandleProperty** hp = m_properties.findSymbol(name);
-    if (!hp)
-      throw Exception("invalid property " + name);
-    return *hp;
-  }
-
-  HPHandles::HPHandles(int len) {
-    m_len = len;
-  }
-  
-  HPHandles::HPHandles() {
-    m_len = 1;
-  }
-  
-  Array HPHandles::Get() {
-    Array ret(Array::uint32VectorConstructor(data.size()));
-    unsigned *dp = (unsigned*) ret.getReadWriteDataPointer();
-    for (int i=0;i<data.size();i++)
-      dp[i] = data[i];
-    return ret;
-  }
-
-  void HPHandles::Set(Array arg) {
-    if (arg.isEmpty()) {
-      data.clear();
-      HandleProperty::Set(arg);
-      return;
-    }
-    if (!(arg.isScalar() && arg.isReal()))
-      throw Exception("expecting handle for property");
-    arg.promoteType(FM_UINT32);
-    const unsigned *dp = (const unsigned*) arg.getDataPointer();
-    if (m_len > 0 && arg.getLength() != m_len)
-      throw Exception("incorrect number of handles in property assignment");
-    // make sure they are all valid handles
-    for (int i=0;i<arg.getLength();i++) 
-      handleset.lookupHandle(dp[i]);
-    data.clear();
-    for (int i=0;i<arg.getLength();i++) 
-      data.push_back(dp[i]);
-    HandleProperty::Set(arg); 
-  }
-
-  Array HPString::Get() {
-    return Array::stringConstructor(data);
-  }
-
-  void HPString::Set(Array arg) {
-    HandleProperty::Set(arg);
-    if (!arg.isString())
-      throw Exception("Expecting a string for property ");
-    data = ArrayToString(arg);
-  }
-  
-  Array HPVector::Get() {
-    Array ret(Array::doubleVectorConstructor(data.size()));    
-    double *dp = (double*) ret.getReadWriteDataPointer();
-    for (int i=0;i<data.size();i++)
-      dp[i] = data[i];
-    return ret;
-  }
-  
-  void HPVector::Set(Array num) {
-    HandleProperty::Set(num);
-    num.promoteType(FM_DOUBLE);
-    const double *dp = (const double*) num.getDataPointer();
-    data.clear();
-    for (int i=0;i<num.getLength();i++)
-      data.push_back(dp[i]);
-  }
-  
-  void HPFixedVector::Set(Array num) {
-    HandleProperty::Set(num);
-    if (num.getLength() != m_len)
-      throw Exception("expecting a vector argument of a specific length for property");
-    HPVector::Set(num);
-  }
-
-  double& HPVector::At(int ndx) {
-    return data[ndx];
-  }
-
-  double& HPVector::operator[](int ndx) {
-    return data[ndx];
-  }
-
-  void HPColorVector::Set(Array arg) {
-    // TODO...
-  }
-
-  Array HPColorVector::Get() {
-    // TODO...
-  }
-  
-  void HPColor::Set(Array arg) {
-    HandleProperty::Set(arg);
-    if (arg.isString() && (strcmp(arg.getContentsAsCString(),"none") == 0)) {
-      data.clear();
-      data.push_back(-1);
-      data.push_back(-1);
-      data.push_back(-1);
-    } else {
-      if (arg.getLength() != 3)
-	throw Exception("color spec must be a length 3 array (or the string 'none')");
-      arg.promoteType(FM_DOUBLE);
-      const double *dp = (const double*) arg.getDataPointer();
-      if (((dp[0] < 0) || (dp[0] > 1)) ||
-	  ((dp[1] < 0) || (dp[1] > 1)) ||
-	  ((dp[2] < 0) || (dp[2] > 1)))
-	throw Exception("color spec must be a length 3 array of values between 0 and 1");
-      data.clear();
-      data.push_back(dp[0]);
-      data.push_back(dp[1]);
-      data.push_back(dp[2]);
-    }
-  }
-
-  Array HPColor::Get() {
-    if (data[0] == -1)
-      return Array::stringConstructor("none");
-    else
-      return HPVector::Get();
-  }
-  
-  Array HPStringSet::Get() {
-    std::string retval;
-    for (unsigned i=0;i<data.size()-1;i++) {
-      retval.append(data[i]);
-      retval.append("|");
-    }
-    retval.append(data.back());
-    return Array::stringConstructor(retval);
-  }
-
-  void HPStringSet::Set(Array arg) {
-    HandleProperty::Set(arg);
-    if (!arg.isString()) 
-      throw Exception("expecting a '|'-delimited list of strings for property argument");
-    std::string args(ArrayToString(arg));
-    data.clear();
-    Tokenize(args,data,"|");
-  }
-
-  void HPConstrainedString::Set(Array arg) {
-    HandleProperty::Set(arg);
-    if (!arg.isString())
-      throw Exception("expecting a string for property");
-    std::string tst(ArrayToString(arg));
-    if (find(m_dictionary.begin(),m_dictionary.end(),tst) == m_dictionary.end())
-      throw Exception("illegal selection for property");
-    HPString::Set(arg);
-  }
-
-  HandleFigure::HandleFigure() {
-    ConstructProperties();
-    SetupDefaults();
-  }
-  
-  void HandleFigure::ConstructProperties() {
-    AddProperty(new HPHandles,"children");
-    AddProperty(new HPHandles,"parent");
-    AddProperty(new HPFourVector,"position");
-  }
-
-  void HandleFigure::SetupDefaults() {
-  }
-
-  void HandleFigure::DrawMe(DrawEngine& gc) {
-    // draw the children...
-    HPHandles *children = LookupProperty("children");
-    std::vector<unsigned> handles(children->Data());
-    for (int i=0;i<handles.size();i++) {
-      HandleObject *fp = handleset.lookupHandle(handles[i]);
-      fp->DrawMe(gc);
-    }
-  }
-
-  void HandleFigure::UpdateState() {
-  }
 
   class pt3d {
   public:
@@ -549,6 +67,7 @@ namespace FreeMat {
     j = Position->At(1) + (Position->At(3)/2.0) + j*50;
   }
 
+#if 0
   void HandleAxis::DrawMe(DrawEngine& gc) {
     // Draw the box extents - to do something...
     // Load our transformation matrix... this
@@ -578,7 +97,9 @@ namespace FreeMat {
     gc.drawLine(x7,y7,x8,y8);
     gc.drawLine(x8,y8,x4,y4);
   }
+#endif
 
+#if 0
   void HandleAxis::UpdateState() {
     // If any of the axis limits have changed, or the camera parameters
     // have changed, we must recompute the transformation matrices
@@ -602,39 +123,7 @@ namespace FreeMat {
     camera[3][0] = 0; camera[3][1] = 0; camera[3][2] = 0; camera[3][3] = 1;
     camera[0][3] = -cpos.x; camera[1][3] = -cpos.y; camera[2][3] = -cpos.z;
   }
-
-  void HPScalar::Value(double x) {
-    At(0) = x;
-  }
-
-    void HandleObject::AddProperty(HandleProperty* hp, std::string name) {
-    m_properties.insertSymbol(name,hp);
-  }
-
-  void HandleObject::SetConstrainedStringDefault(std::string name, std::string value) {
-    HPConstrainedString *hp = (HPConstrainedString*) LookupProperty(name);
-    hp->Value(value);
-  }
-
-  void HandleObject::SetThreeVectorDefault(std::string name, double x, double y, double z) {
-    HPThreeVector *hp = (HPThreeVector*) LookupProperty(name);
-    hp->Value(x,y,z);
-  }
-
-  void HandleObject::SetTwoVectorDefault(std::string name, double x, double y) {
-    HPTwoVector *hp = (HPTwoVector*) LookupProperty(name);
-    hp->Value(x,y);
-  }
-
-  void HandleObject::SetStringDefault(std::string name, std::string value) {
-    HPString *hp = (HPString*) LookupProperty(name);
-    hp->Value(value);
-  }
-
-  void HandleObject::SetScalarDefault(std::string name, double value) {
-    HPScalar *hp = (HPScalar*) LookupProperty(name);
-    hp->Value(value);
-  }
+#endif
   
   void HandleAxis::ConstructProperties() {
     // These are all the properties of the axis
@@ -766,6 +255,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("minorgridlinestyle",":");
     SetConstrainedStringDefault("nextplot","replace");
     SetConstrainedStringDefault("plotboxaspectratiomode","auto");
+    SetFourVectorDefault("position",0.1,0.1,0.8,0.8);
     SetConstrainedStringDefault("projection","orthographic");
     SetConstrainedStringDefault("selected","off");
     SetConstrainedStringDefault("selectionhighlight","on");
@@ -832,7 +322,7 @@ namespace FreeMat {
       fp->LookupProperty(propname)->Set(t[1]);
       t.erase(t.begin(),t.begin()+2);
     }
-    fp->UpdateState();
+    //    fp->UpdateState();
     return singleArrayVector(Array::uint32Constructor(handle));
   }
 
@@ -845,7 +335,7 @@ namespace FreeMat {
     HandleObject *fp = handleset.lookupHandle(handle);
     // Use the address and property name to lookup the Get/Set handler
     fp->LookupProperty(propname)->Set(arg[2]);
-    fp->UpdateState();
+    //    fp->UpdateState();
     return ArrayVector();
   }
 
@@ -875,14 +365,323 @@ namespace FreeMat {
     context->addFunction("dmo",DmoFunction,0,0);
   };
 
-  BaseFigure::BaseFigure(QPWidget* parent, const char *name) :
-    QPWidget(parent,name) {
+  BaseFigure::BaseFigure(QWidget* parent, const char *name) :
+    QGLWidget(parent,name) {
       hfig = new HandleFigure;
       handleset.assignHandle(hfig);
   }
 
-  void BaseFigure::DrawMe(DrawEngine& gc) {
-    hfig->DrawMe(gc);
+  void BaseFigure::initializeGL() {
+    glShadeModel(GL_SMOOTH);
+    glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
+    glClearDepth(1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);    
   }
 
+  void BaseFigure::paintGL() {
+    hfig->paintGL();
+  }
+
+  void BaseFigure::resizeGL(int width, int height) {
+    hfig->resizeGL(width,height);
+  }
+
+  std::vector<double> HandleAxis::GetAxisLimits() {
+    HPTwoVector *hp;
+    std::vector<double> lims;
+    hp = (HPTwoVector*) LookupProperty("xlim");
+    lims.push_back(hp->Data()[0]);
+    lims.push_back(hp->Data()[1]);
+    hp = (HPTwoVector*) LookupProperty("ylim");
+    lims.push_back(hp->Data()[0]);
+    lims.push_back(hp->Data()[1]);
+    hp = (HPTwoVector*) LookupProperty("zlim");
+    lims.push_back(hp->Data()[0]);
+    lims.push_back(hp->Data()[1]);
+    return lims;
+  }
+
+  HandleFigure* HandleAxis::GetParentFigure() {
+    // Get our parent - should be a figure
+    HPHandle *parent = (HPHandle*) LookupProperty("parent");
+    if (parent->Data().empty()) return NULL;
+    unsigned parent_handle = parent->Data()[0];
+    HandleObject *fp = handleset.lookupHandle(parent_handle);
+    HandleFigure *fig = (HandleFigure*) fp;
+    return fig;
+  }
+
+  std::vector<double> HandleAxis::UnitsReinterpret(std::vector<double> a) {
+    HandleFigure *fig = GetParentFigure();
+    unsigned width = fig->GetWidth();
+    unsigned height = fig->GetHeight();
+    HPUnits *hp = (HPUnits*) LookupProperty("units");
+    if (hp->Is("normalized")) {
+      for (int i=0;i<a.size();i+=2) {
+	a[i] *= width;
+	a[i+1] *= height;
+      }
+      return a;
+    } else if (hp->Is("pixels")) {
+      return a;
+    } else {
+      throw Exception("Units of " + hp->Data() + " not yet implemented - please file a Request For Enhancement (RFE) on the FreeMat web site");
+    }
+  }
+  
+  std::vector<double> HandleAxis::GetPositionVectorAsPixels() {
+    HPFourVector *hp = (HPFourVector*) LookupProperty("position");
+    return (UnitsReinterpret(hp->Data()));
+  }
+
+  static void MapPoint(float m[16], double x, double y, double z, 
+		       double *tx, double *ty, double *tz) {
+    *tx = m[0]*x+m[4]*y+m[8]*z+m[12];
+    *ty = m[1]*x+m[5]*y+m[9]*z+m[13];
+    *tz = m[2]*x+m[6]*y+m[10]*z+m[14];
+  }
+
+  static void MinMaxVector(double *vals, int len, double &vmin, double &vmax) {
+    vmin = vmax = vals[0];
+    for (int i=0;i<len;i++) {
+      vmin = (vals[i] < vmin) ? vals[i] : vmin;
+      vmax = (vals[i] > vmax) ? vals[i] : vmax;
+    }
+  }
+  void HandleAxis::SetupProjection() {
+    // Build the modelview matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glRotatef(30,0,1,0);
+    glRotatef(60,1,0,0);
+    // Retrieve it
+    float m[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,m);
+    // Get the axis limits
+    std::vector<double> limits(GetAxisLimits());
+    // Map the 8 corners of the clipping cube to rotated space
+    double xvals[8];
+    double yvals[8];
+    double zvals[8];
+    MapPoint(m,limits[0],limits[2],limits[4],xvals+0,yvals+0,zvals+0);
+    MapPoint(m,limits[0],limits[2],limits[5],xvals+1,yvals+1,zvals+1);
+    MapPoint(m,limits[0],limits[3],limits[4],xvals+2,yvals+2,zvals+2);
+    MapPoint(m,limits[0],limits[3],limits[5],xvals+3,yvals+3,zvals+3);
+    MapPoint(m,limits[1],limits[2],limits[4],xvals+4,yvals+4,zvals+4);
+    MapPoint(m,limits[1],limits[2],limits[5],xvals+5,yvals+5,zvals+5);
+    MapPoint(m,limits[1],limits[3],limits[4],xvals+6,yvals+6,zvals+6);
+    MapPoint(m,limits[1],limits[3],limits[5],xvals+7,yvals+7,zvals+7);
+    // Get the min and max x, y and z coordinates
+    double xmin, xmax, ymin, ymax, zmin, zmax;
+    MinMaxVector(xvals,8,xmin,xmax);
+    MinMaxVector(yvals,8,ymin,ymax);
+    MinMaxVector(zvals,8,zmin,zmax);
+    // Get the position vector
+    std::vector<double> position(GetPositionVectorAsPixels());
+    glViewport(position[0],position[1],position[2],position[3]);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //    glOrtho(xmin,xmax,ymin,ymax,zmax,zmin);
+    // Not sure why the 2*zmin is needed...
+    glOrtho(xmin,xmax,ymin,ymax,2*zmin,zmax);
+  }
+
+  void HandleAxis::DrawBox() {
+    // Q: Is this outerposition that's supposed to be colored?
+    // Get the limits
+    HPColor *hp = (HPColor*) LookupProperty("color");
+    if (hp->IsNone()) return;
+    std::vector<double> limits(GetAxisLimits());
+    glEnable(GL_CULL_FACE);
+    glBegin(GL_QUADS);
+    glColor3f(hp->Data()[0],hp->Data()[1],hp->Data()[2]);
+
+    glVertex3f( limits[0], limits[2], limits[4]);
+    glVertex3f( limits[1], limits[2], limits[4]);
+    glVertex3f( limits[1], limits[3], limits[4]);
+    glVertex3f( limits[0], limits[3], limits[4]);
+    
+    glVertex3f( limits[0], limits[2], limits[5]);
+    glVertex3f( limits[0], limits[3], limits[5]);
+    glVertex3f( limits[1], limits[3], limits[5]);
+    glVertex3f( limits[1], limits[2], limits[5]);
+
+    glVertex3f(limits[0], limits[2], limits[4]);
+    glVertex3f(limits[0], limits[3], limits[4]);
+    glVertex3f(limits[0], limits[3], limits[5]);
+    glVertex3f(limits[0], limits[2], limits[5]);
+
+    glVertex3f(limits[1], limits[2], limits[4]);
+    glVertex3f(limits[1], limits[2], limits[5]);
+    glVertex3f(limits[1], limits[3], limits[5]);
+    glVertex3f(limits[1], limits[3], limits[4]);
+
+    glVertex3f(limits[0], limits[2], limits[4]);
+    glVertex3f(limits[0], limits[2], limits[5]);
+    glVertex3f(limits[1], limits[2], limits[5]);
+    glVertex3f(limits[1], limits[2], limits[4]);
+
+    glVertex3f(limits[0], limits[3], limits[4]);
+    glVertex3f(limits[1], limits[3], limits[4]);
+    glVertex3f(limits[1], limits[3], limits[5]);
+    glVertex3f(limits[0], limits[3], limits[5]);
+
+    glEnd();
+    glDisable(GL_CULL_FACE);
+  }
+
+  void HandleAxis::SetLineStyle(std::string style) {
+    if (style == "-") {
+      glDisable(GL_LINE_STIPPLE);
+      return;
+    }
+    if (style == "--") {
+      glEnable(GL_LINE_STIPPLE);
+      glLineStipple(1,0x00FF);
+      return;
+    }
+    if (style == ":") {
+      glEnable(GL_LINE_STIPPLE);
+      glLineStipple(1,0xDDDD);
+      return;
+    }
+    if (style == "-.") {
+      glEnable(GL_LINE_STIPPLE);
+      glLineStipple(1,0xF0D0);
+      return;
+    }
+    if (style == "none") {
+      glEnable(GL_LINE_STIPPLE);
+      glLineStipple(1,0x0000);
+      return;
+    }
+  }
+
+  void HandleAxis::DrawGridLines() {
+    std::vector<double> limits(GetAxisLimits());
+    glDisable(GL_DEPTH_TEST);
+    // Retrieve the current transformation matrix
+    float m[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,m);
+    // The normals of interest are 
+    // [0,0,1],[0,0,-1],
+    // [0,1,0],[0,-1,0],
+    // [1,0,0],[-1,0,0]
+    // We will multiply the transformation matrix 
+    // by a directional vector.  Then we test the
+    // sign of the z component.  This sequence of
+    // operations is equivalent to simply taking the
+    // 2, 6, 10 elements of m, and drawing the corresponding
+    // Select the set of grids to draw based on these elements
+    // Draw the grid
+    SetLineStyle(((HPLineStyle*) LookupProperty("gridlinestyle"))->Data());
+    glBegin(GL_LINES);
+    HPVector *hp;
+    hp = (HPVector*) LookupProperty("xtick");
+    std::vector<double> xticks(hp->Data());
+    hp = (HPVector*) LookupProperty("ytick");
+    std::vector<double> yticks(hp->Data());
+    hp = (HPVector*) LookupProperty("ztick");
+    std::vector<double> zticks(hp->Data());
+    HPColor *xc = (HPColor*) LookupProperty("xcolor");
+    HPColor *yc = (HPColor*) LookupProperty("ycolor");
+    HPColor *zc = (HPColor*) LookupProperty("zcolor");
+    if (((HPOnOff*) LookupProperty("xgrid"))->AsBool()) {
+      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      for (int i=0;i<xticks.size();i++) {
+	GLfloat t = xticks[i];
+	if (m[10] > 0) {
+	  glVertex3f(t,limits[2],limits[4]);
+	  glVertex3f(t,limits[3],limits[4]);
+	} else if (m[10] < 0) {
+	  glVertex3f(t,limits[2],limits[5]);
+	  glVertex3f(t,limits[3],limits[5]);
+	}
+	if (m[6] > 0) {
+	  glVertex3f(t,limits[2],limits[4]);
+	  glVertex3f(t,limits[2],limits[5]);
+	} else if (m[6] < 0) {
+	  glVertex3f(t,limits[3],limits[4]);
+	  glVertex3f(t,limits[3],limits[5]);
+	}
+      }
+    }
+    if (((HPOnOff*) LookupProperty("ygrid"))->AsBool()) {
+      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+      for (int i=0;i<yticks.size();i++) {
+	GLfloat t = yticks[i];
+	if (m[10] > 0) {
+	  glVertex3f(limits[0],t,limits[4]);
+	  glVertex3f(limits[1],t,limits[4]);
+	} else if (m[10] < 0) {
+	  glVertex3f(limits[0],t,limits[5]);
+	  glVertex3f(limits[1],t,limits[5]);
+	}
+	if (m[2] > 0) {
+	  glVertex3f(limits[0],t,limits[4]);
+	  glVertex3f(limits[0],t,limits[5]);
+	} else if (m[2] < 0) {
+	  glVertex3f(limits[1],t,limits[4]);
+	  glVertex3f(limits[1],t,limits[5]);
+	}
+      }
+    }
+    if (((HPOnOff*) LookupProperty("zgrid"))->AsBool()) {
+      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+      for (int i=0;i<zticks.size();i++) {
+	GLfloat t = zticks[i];
+	if (m[6] > 0) {
+	  glVertex3f(limits[0],limits[2],t);
+	  glVertex3f(limits[1],limits[2],t);
+	} else if (m[6] < 0) {
+	  glVertex3f(limits[0],limits[3],t);
+	  glVertex3f(limits[1],limits[3],t);
+	}
+	if (m[2] > 0) {
+	  glVertex3f(limits[0],limits[2],t);
+	  glVertex3f(limits[0],limits[3],t);
+	} else if (m[2] < 0) {
+	  glVertex3f(limits[1],limits[2],t);
+	  glVertex3f(limits[1],limits[3],t);
+	}
+      }
+    }
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_LINE_STIPPLE);
+  }
+  
+  void HandleAxis::DrawTickMarks() {
+    // Retrieve the transformation.
+    GLdouble modelMatrix[16];
+    GLdouble projMatrix[16];
+    GLint viewport[4];
+    glGetDoublev(GL_MODELVIEW_MATRIX,modelMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX,projMatrix);
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    
+    // Compute the longest 
+  }
+
+  void HandleAxis::DrawTickLabels() {
+  }
+
+  void HandleAxis::DrawAxisLabels() {
+  }
+
+  void HandleAxis::DrawChildren() {
+  }
+
+  void HandleAxis::paintGL() {
+    if (GetParentFigure() == NULL) return;
+    // Time to draw the axis...  
+    SetupProjection();
+    DrawBox();
+    DrawGridLines();
+    DrawTickMarks();
+    DrawTickLabels();
+    DrawAxisLabels();
+    DrawChildren();
+  }
 }

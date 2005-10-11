@@ -3,6 +3,10 @@ A few notes on what needs to still be fixed:
 Replace XERBLA
 Fix problems with workspace calculations in DGESDD
 
+Default ticklen is [0.01, 0.025]
+Default position is [0.13,0.11,0.775,0.815]
+
+
 Postscript printing with symbols and super/subscript...
 - super and subscript works fine
 - postscript printing maps the symbols to unicode
@@ -32,6 +36,12 @@ set(gca, 'TickDir', 'out')
 drawnow
 if isxy, axis xy, end  <- why doesn't this parse right?
 
+
+Redraw - under some circumstances plots do not refresh
+Broken lines
+0 --> 1e-18
+image --> causes a figure resize (even when zoom = -1)
+svd --> causes a seg fault
 
 P N   Desc
 H 21. Online Help

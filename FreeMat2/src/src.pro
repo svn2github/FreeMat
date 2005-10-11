@@ -39,5 +39,7 @@ TARGETDEPS += ../extern/LAPACK/lapack_MINGW.a ../extern/blas/libblas.a
 RC_FILE = freemat.rc
 }
 
-CONFIG += assistant
+CONFIG += assistant 
+QT += opengl
+
 

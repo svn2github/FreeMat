@@ -255,12 +255,13 @@ namespace FreeMat {
     SetConstrainedStringDefault("minorgridlinestyle",":");
     SetConstrainedStringDefault("nextplot","replace");
     SetConstrainedStringDefault("plotboxaspectratiomode","auto");
-    SetFourVectorDefault("position",0.1,0.1,0.8,0.8);
+    SetFourVectorDefault("position",0.13,0.11,0.775,0.815);
     SetConstrainedStringDefault("projection","orthographic");
     SetConstrainedStringDefault("selected","off");
     SetConstrainedStringDefault("selectionhighlight","on");
     SetConstrainedStringDefault("tickdir","in");
     SetConstrainedStringDefault("tickdirmode","auto");
+    SetTwoVectorDefault("ticklength",0.01,0.025);
     SetStringDefault("type","axes");
     SetConstrainedStringDefault("units","normalized");
     SetConstrainedStringDefault("visible","on");
@@ -374,7 +375,7 @@ namespace FreeMat {
   void BaseFigure::initializeGL() {
     glShadeModel(GL_SMOOTH);
     glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
-    glClearDepth(1.0f);
+    glClearDepth(1e10f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);    
   }
@@ -435,6 +436,15 @@ namespace FreeMat {
     return (UnitsReinterpret(hp->Data()));
   }
 
+  static void MapPoint4(float m[16], double x, double y, 
+		       double z, double w, double &tx,
+		       double &ty, double &tz, double &tw) {
+    tx = m[0]*x+m[4]*y+m[8]*z+m[12];
+    ty = m[1]*x+m[5]*y+m[9]*z+m[13];
+    tz = m[2]*x+m[6]*y+m[10]*z+m[14];
+    tw = m[3]*x+m[7]*y+m[11]*z+m[15];
+  }
+
   static void MapPoint(float m[16], double x, double y, double z, 
 		       double *tx, double *ty, double *tz) {
     *tx = m[0]*x+m[4]*y+m[8]*z+m[12];
@@ -484,7 +494,7 @@ namespace FreeMat {
     glLoadIdentity();
     //    glOrtho(xmin,xmax,ymin,ymax,zmax,zmin);
     // Not sure why the 2*zmin is needed...
-    glOrtho(xmin,xmax,ymin,ymax,2*zmin,zmax);
+    glOrtho(xmin,xmax,ymin,ymax,zmin,zmax);
   }
 
   void HandleAxis::DrawBox() {
@@ -653,15 +663,54 @@ namespace FreeMat {
   }
   
   void HandleAxis::DrawTickMarks() {
-    // Retrieve the transformation.
-    GLdouble modelMatrix[16];
-    GLdouble projMatrix[16];
-    GLint viewport[4];
-    glGetDoublev(GL_MODELVIEW_MATRIX,modelMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX,projMatrix);
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    
+    // Get the data on tick locations and the colors...
+    HPVector *hp;
+    hp = (HPVector*) LookupProperty("xtick");
+    std::vector<double> xticks(hp->Data());
+    hp = (HPVector*) LookupProperty("ytick");
+    std::vector<double> yticks(hp->Data());
+    hp = (HPVector*) LookupProperty("ztick");
+    std::vector<double> zticks(hp->Data());
+    HPColor *xc = (HPColor*) LookupProperty("xcolor");
+    HPColor *yc = (HPColor*) LookupProperty("ycolor");
+    HPColor *zc = (HPColor*) LookupProperty("zcolor");
     // Compute the longest 
+    std::vector<double> position(GetPositionVectorAsPixels());
+    int maxlen = (position[2] > position[3]) ? position[2] : position[3];
+    HPTwoVector *kp = (HPTwoVector*) LookupProperty("ticklength");
+    std::vector<double> ticklen(kp->Data());
+    // Have to decide if this is a 2D view
+    int ticlen = (int) (maxlen*ticklen[1]);
+    // Draw the ticks
+    // Retrieve the transformation matrix
+    float model[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    // Map the points from the grid...
+    float proj[16];
+    glGetFloatv(GL_PROJECTION_MATRIX,proj);
+    std::vector<double> limits(GetAxisLimits());
+    // map (xi,ymin,zmin) --> (ai,bi)
+    for (int i=0;i<xticks.size();i++) {
+      double x, y, z, w, tx, ty, tz, tw, wx, wy, wz, ww;
+      double a, b;
+      x = xticks[i];
+      y = limits[2];
+      z = limits[4];
+      w = 1;
+      MapPoint4(model,x,y,z,w,tx,ty,tz,tw);
+      MapPoint4(proj,tx,ty,tz,tw,wx,wy,wz,ww);
+      wx /= ww;
+      wy /= ww;
+      wz /= ww;
+      a = (wx+1)*(1.0/2)*position[2] + position[0];
+      b = (wy+1)*(1.0/2)*position[3] + position[1];
+      std::cout << "a = " << a << " b = " << b << "\n";
+      glDisable(GL_DEPTH_TEST);
+      glBegin(GL_LINES);
+      glVertex2f(wx,wy);
+      glVertex2f(wx,wy+.1);
+      glEnd();
+    }    
   }
 
   void HandleAxis::DrawTickLabels() {

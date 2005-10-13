@@ -469,7 +469,11 @@ namespace FreeMat {
      * that is a (row) vector with the given length.
      */
     static Array floatVectorConstructor(int len);
-
+    /**
+     * Unsigned int vector constructor - Construct an FM_INT32 object
+     * that is a (row) vector with the given length.
+     */
+    static Array uint32VectorConstructor(int len);
     /**
      * Construct a FM_INT32 vector (either vertical or horizontal) corresponding to 
      * minval:stepsize:maxval, with an optional transpose.

@@ -1713,6 +1713,14 @@ break;
     return Array(FM_FLOAT,dim,data);
   }
 
+  Array Array::uint32VectorConstructor(int len) {
+    Dimensions dim;
+    dim.makeScalar();
+    dim[1] = len;
+    uint32 *data = (uint32*) allocateArray(FM_UINT32,len);
+    return Array(FM_UINT32,dim,data);
+  }
+
   Array Array::doubleVectorConstructor(int len) {
     Dimensions dim;
     dim.makeScalar();

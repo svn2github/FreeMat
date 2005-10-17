@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib debug
+CONFIG += staticlib debug opengl
 
 INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
 

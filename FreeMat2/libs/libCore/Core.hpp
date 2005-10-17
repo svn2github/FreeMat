@@ -188,6 +188,8 @@ namespace FreeMat {
   ArrayVector StrRepFunction(int nargout, const ArrayVector& arg);
   ArrayVector Conv2Function(int nargout, const ArrayVector& arg);
   ArrayVector InvFunction(int nargout, const ArrayVector& arg);
+  void Tokenize(const std::string& str, std::vector<std::string>& tokens,
+		const std::string& delimiters = " \n");
 }
 
 #endif

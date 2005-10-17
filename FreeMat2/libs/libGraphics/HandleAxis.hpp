@@ -29,9 +29,13 @@ namespace FreeMat {
     virtual void paintGL();
     HandleFigure* GetParentFigure();
     std::vector<double> UnitsReinterpret(std::vector<double> a);
-    std::vector<double> GetPositionVectorAsPixels();
+    std::vector<double> GetPropertyVectorAsPixels(std::string name);
     std::vector<double> GetAxisLimits();
+    bool IsVisibleLine(float nx1, float nx2, float nx3, 
+		       float ny1, float ny2, float ny3);
     void SetLineStyle(std::string style);
+    void SetupDirectDraw();
+    void ReleaseDirectDraw();
     void SetupProjection();
     void ClearAxes();
     void DrawBox();

@@ -3,6 +3,13 @@
 #include "HandleFigure.hpp"
 #include "Core.hpp"
 #include <qgl.h>
+#include <QMouseEvent>
+
+// These are globals for now... ultimately, they need to be handled
+// differently...
+int azim = 0;
+int elev = 0;
+int arot = 0;
 
 // Need to build the transformation matrix...
 // Given a position rectangle and a camera matrix,
@@ -29,12 +36,18 @@
 // space.
 namespace FreeMat {
   class BaseFigure : public QGLWidget {
+    float beginx, beginy;
+    bool elevazim;
   public:
     HandleFigure *hfig;
     BaseFigure(QWidget* parent, const char *Name);
     virtual void initializeGL();
     virtual void paintGL();
     virtual void resizeGL(int width, int height);
+    // Support dragging...
+    void mousePressEvent(QMouseEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
   };
 
   HandleList<HandleObject*> handleset;
@@ -253,6 +266,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("layer","bottom");
     SetScalarDefault("linewidth",0.5);
     SetConstrainedStringDefault("minorgridlinestyle",":");
+    SetFourVectorDefault("outerposition",0,0,1,1);
     SetConstrainedStringDefault("nextplot","replace");
     SetConstrainedStringDefault("plotboxaspectratiomode","auto");
     SetFourVectorDefault("position",0.13,0.11,0.775,0.815);
@@ -388,6 +402,34 @@ namespace FreeMat {
     hfig->resizeGL(width,height);
   }
 
+  void BaseFigure::mousePressEvent(QMouseEvent* e) {
+    if (e->button() & Qt::LeftButton)
+      elevazim = true;
+    else
+      elevazim = false;
+    beginx = e->x();
+    beginy = e->y();
+  }
+
+  void BaseFigure::mouseMoveEvent(QMouseEvent* e) {
+    if (elevazim) {
+      elev -= (e->y() - beginy);
+      azim += (e->x() - beginx);
+      elev = (elev + 360) % 360;
+      azim = (azim + 360) % 360;
+    } else {
+      arot += (e->y() - beginy);
+      arot = (arot + 360) % 360;
+    }
+    beginx = e->x();
+    beginy = e->y();
+    updateGL();
+  }
+  
+  void BaseFigure::mouseReleaseEvent(QMouseEvent* e) {
+  }
+
+
   std::vector<double> HandleAxis::GetAxisLimits() {
     HPTwoVector *hp;
     std::vector<double> lims;
@@ -431,8 +473,8 @@ namespace FreeMat {
     }
   }
   
-  std::vector<double> HandleAxis::GetPositionVectorAsPixels() {
-    HPFourVector *hp = (HPFourVector*) LookupProperty("position");
+  std::vector<double> HandleAxis::GetPropertyVectorAsPixels(std::string name) {
+    HPFourVector *hp = (HPFourVector*) LookupProperty(name);
     return (UnitsReinterpret(hp->Data()));
   }
 
@@ -463,8 +505,9 @@ namespace FreeMat {
     // Build the modelview matrix
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glRotatef(30,0,1,0);
-    glRotatef(60,1,0,0);
+    glRotatef(arot,0,0,1);
+    glRotatef(azim,0,1,0);
+    glRotatef(elev,1,0,0);
     // Retrieve it
     float m[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,m);
@@ -488,7 +531,7 @@ namespace FreeMat {
     MinMaxVector(yvals,8,ymin,ymax);
     MinMaxVector(zvals,8,zmin,zmax);
     // Get the position vector
-    std::vector<double> position(GetPositionVectorAsPixels());
+    std::vector<double> position(GetPropertyVectorAsPixels("position"));
     glViewport(position[0],position[1],position[2],position[3]);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -662,8 +705,49 @@ namespace FreeMat {
     glDisable(GL_LINE_STIPPLE);
   }
   
+  void HandleAxis::ReleaseDirectDraw() {
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();    
+  }
+
+  void HandleAxis::SetupDirectDraw() {
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+    glViewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
+    glOrtho(outerpos[0],outerpos[0]+outerpos[2],
+	    outerpos[1],outerpos[1]+outerpos[3],-1,1);
+  }
+
+  bool HandleAxis::IsVisibleLine(float nx1, float ny1, float nz1,
+				 float nx2, float ny2, float nz2) {
+    // Retrieve the modelview matrix
+    float model[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    // Transform the normals, and take the z component
+    double tx, ty, tz, tw;
+    bool plane1visible;
+    bool plane2visible;
+    MapPoint4(model,nx1,ny1,nz1,0,tx,ty,tz,tw);
+    plane1visible = (tz > 0);
+    MapPoint4(model,nx2,ny2,nz2,0,tx,ty,tz,tw);
+    plane2visible = (tz > 0);
+    return (plane1visible ^ plane2visible);
+  }
+  
   void HandleAxis::DrawTickMarks() {
-    // Get the data on tick locations and the colors...
+    // The trick here is to determine where to attach the 
+    // three axes - there should be two possibilities for
+    // each axis.  We start with four possibilities for
+    // each axis.  Now each axis sits on the boundary of
+    // two facets.  If exactly one of the two facets is
+    // visible, then the axis line is visible.
     HPVector *hp;
     hp = (HPVector*) LookupProperty("xtick");
     std::vector<double> xticks(hp->Data());
@@ -675,11 +759,12 @@ namespace FreeMat {
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
     // Compute the longest 
-    std::vector<double> position(GetPositionVectorAsPixels());
+    std::vector<double> position(GetPropertyVectorAsPixels("position"));
     int maxlen = (position[2] > position[3]) ? position[2] : position[3];
     HPTwoVector *kp = (HPTwoVector*) LookupProperty("ticklength");
     std::vector<double> ticklen(kp->Data());
     // Have to decide if this is a 2D view
+    // FIXME - assume 3D view always...
     int ticlen = (int) (maxlen*ticklen[1]);
     // Draw the ticks
     // Retrieve the transformation matrix
@@ -689,6 +774,216 @@ namespace FreeMat {
     float proj[16];
     glGetFloatv(GL_PROJECTION_MATRIX,proj);
     std::vector<double> limits(GetAxisLimits());
+    // Setup a direct-draw coordinate system
+    //    SetupDirectDraw();
+
+    // Check the visibility flag for each of the 12 possibilities for 
+    // an axis line - the visibility test requires the two points on 
+    // the line, and the normals for the two planes that contain
+    // this line.
+    float xmin = limits[0];
+    float xmax = limits[1];
+    float ymin = limits[2];
+    float ymax = limits[3];
+    float zmin = limits[4];
+    float zmax = limits[5];
+
+    // Get the endpoints of the x, y and z axes
+    float xy, xz;
+    float yx, yz;
+    float zx1, zy1;
+    float zx2, zy2;
+    float zx, zy;
+
+    glDisable(GL_DEPTH_TEST);
+
+    xy = xz = 0.0;
+    yx = yz = 0.0;
+    zx1 = zy1 = 0.0;
+    zx2 = zy2 = 0.0;
+
+    // Check the "top/bottom" flag
+    if (((HPTopBottom*) LookupProperty("xaxislocation"))->Is("top")) {
+      if (IsVisibleLine(0,-1,0,0,0,1)) {
+	xy = ymax; xz = zmin;
+      } else if (IsVisibleLine(0,-1,0,0,0,-1)) {
+	xy = ymax; xz = zmax;
+      }
+    } else {
+      if (IsVisibleLine(0,1,0,0,0,1)) {
+	xy = ymin; xz = zmin;
+      }
+      if (IsVisibleLine(0,1,0,0,0,-1)) {
+	xy = ymin; xz = zmax;
+      }
+    }
+    // Check the "left/right" flag
+    if (((HPTopBottom*) LookupProperty("yaxislocation"))->Is("left")) {
+      if (IsVisibleLine(1,0,0,0,0,1)) {
+	yx = xmin; yz = zmin;
+      }
+      if (IsVisibleLine(1,0,0,0,0,-1)) {
+	yx = xmin; yz = zmax;
+      }
+    } else {
+      if (IsVisibleLine(-1,0,0,0,0,1)) {
+	yx = xmax; yz = zmin;
+      }
+      if (IsVisibleLine(-1,0,0,0,0,-1)) {
+	yx = xmax; yz = zmax;
+      }
+    }
+    // Get the two possibilities for the z axis
+    if (IsVisibleLine(1,0,0,0,1,0)) {
+      zx1 = xmin; zy1 = ymin;
+    }
+    if (IsVisibleLine(1,0,0,0,-1,0)) {
+      zx1 = xmin; zy1 = ymax;
+    }
+    if (IsVisibleLine(-1,0,0,0,1,0)) {
+      zx2 = xmax; zy2 = ymin;
+    }
+    if (IsVisibleLine(-1,0,0,0,-1,0)) {
+      zx2 = xmax; zy2 = ymax;
+    }
+
+    glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+    glBegin(GL_LINES);
+    glVertex3f(xmin,xy,xz);
+    glVertex3f(xmax,xy,xz);
+    glEnd();
+    glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+    glBegin(GL_LINES);
+    glVertex3f(yx,ymin,yz);
+    glVertex3f(yx,ymax,yz);
+    glEnd();
+    glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+    // For selecting the z-axis, we have different criteria - 
+    // The z-axis must connect to at least one of the two
+    // existing axes. So, first, we eliminate choices that
+    // do not touch either axis
+    if (!((((zx1 == xmin) || (zx1 == xmax)) && (zy1 == xy)) ||
+	  ((zx1 == yx) && ((zy1 == ymin) || (zy1 == ymax))))) {
+      zx1 = zx2;
+      zy1 = zy2;
+    }
+    if (!((((zx2 == xmin) || (zx2 == xmax)) && (zy2 == xy)) ||
+	  ((zx2 == yx) && ((zy2 == ymin) || (zy2 == ymax))))) {
+      zx2 = zx1;
+      zy2 = zy1;
+    }
+    // At this point, we have (possibly) two options - the
+    // last step is to pick the one with the smallest x coordinate
+    // and if they have the same x coordinate, the one with the
+    // smallest y coordinate
+    double tx1, ty1, tz1;
+    double tx2, ty2, tz2;
+    MapPoint(model,zx1,zy1,(zmin+zmax)/2.0,&tx1,&ty1,&tz1);
+    MapPoint(model,zx2,zy2,(zmin+zmax)/2.0,&tx2,&ty2,&tz2);
+    if (ty1 < ty2) {
+      zx = zx1;
+      zy = zy1;
+    } else if (ty1 > ty2) {
+      zx = zx2;
+      zy = zy2;
+    } else {
+      if (tx1 < tx2) {
+	zx = zx1;
+	zy = zy1;
+      } else if (tx1 > tx2) {
+	zx = zx2;
+	zy = zy2;
+      } else {
+	zx = zx1;
+	zy = zy1;
+      }
+    }
+    glBegin(GL_LINES);
+    glVertex3f(zx,zy,zmin);
+    glVertex3f(zx,zy,zmax);
+    glEnd();
+    // Next step - calculate the tick directions...
+    // For the x axis - this is the y direction or the z direction
+    // For the y axis - this is the x direction or the z direction
+    // For the z axis - this is the x direction or the y direction
+    // How do we tell?
+    float txy, txz;
+    if ((model[10] > 0) && (model[6] > 0)) {
+      txy = limits[2];
+      txz = limits[4];
+    } else if ((model[10] > 0) && (model[6] < 0)) {
+      txy = limits[3];
+      txz = limits[4];
+    } else if ((model[10] < 0) && (model[6] > 0)) {
+      txy = limits[2];
+      txz = limits[5];
+    } else if ((model[10] < 0) && (model[6] < 0)) {
+      txy = limits[3];
+      txz = limits[5];
+    }
+    for (int i=0;i<xticks.size();i++) {
+      GLfloat t = xticks[i];
+      glBegin(GL_LINES);
+      glVertex3f(t,xy,xz);
+      glVertex3f(t,txy,txz);
+      glEnd();
+    }
+
+
+#if 0
+    glColor3f(0,0,0);
+    // map (xi,ymin,zmin) --> (ai,bi)
+    for (int i=0;i<xticks.size();i++) {
+      double x, y, z, w, tx, ty, tz, tw, wx, wy, wz, ww;
+      double a, b;
+      x = xticks[i];
+      y = limits[3];
+      z = limits[5];
+      w = 1;
+      MapPoint4(model,x,y,z,w,tx,ty,tz,tw);
+      MapPoint4(proj,tx,ty,tz,tw,wx,wy,wz,ww);
+      wx /= ww;
+      wy /= ww;
+      wz /= ww;
+      a = (wx+1)*(1.0/2)*position[2] + position[0];
+      b = (wy+1)*(1.0/2)*position[3] + position[1];
+      char buffer[1023];
+      sprintf(buffer,"a = %f, b = %f",a,b);
+      qDebug(buffer);
+      //      std::cout << "a = " << a << " b = " << b << "\n";
+      glDisable(GL_DEPTH_TEST);
+      glBegin(GL_LINES);
+      glVertex2f(a,b);
+      glVertex2f(a,b+10);
+      glEnd();
+    }    
+
+    // map (xi,ymin,zmin) --> (ai,bi)
+    for (int i=0;i<xticks.size();i++) {
+      double x, y, z, w, tx, ty, tz, tw, wx, wy, wz, ww;
+      double a, b;
+      x = xticks[i];
+      y = limits[2];
+      z = limits[5];
+      w = 1;
+      MapPoint4(model,x,y,z,w,tx,ty,tz,tw);
+      MapPoint4(proj,tx,ty,tz,tw,wx,wy,wz,ww);
+      wx /= ww;
+      wy /= ww;
+      wz /= ww;
+      a = (wx+1)*(1.0/2)*position[2] + position[0];
+      b = (wy+1)*(1.0/2)*position[3] + position[1];
+      char buffer[1023];
+      sprintf(buffer,"a = %f, b = %f",a,b);
+      qDebug(buffer);
+      //      std::cout << "a = " << a << " b = " << b << "\n";
+      glDisable(GL_DEPTH_TEST);
+      glBegin(GL_LINES);
+      glVertex2f(a,b);
+      glVertex2f(a,b+10);
+      glEnd();
+    }    
+
     // map (xi,ymin,zmin) --> (ai,bi)
     for (int i=0;i<xticks.size();i++) {
       double x, y, z, w, tx, ty, tz, tw, wx, wy, wz, ww;
@@ -704,13 +999,43 @@ namespace FreeMat {
       wz /= ww;
       a = (wx+1)*(1.0/2)*position[2] + position[0];
       b = (wy+1)*(1.0/2)*position[3] + position[1];
-      std::cout << "a = " << a << " b = " << b << "\n";
+      char buffer[1023];
+      sprintf(buffer,"a = %f, b = %f",a,b);
+      qDebug(buffer);
+      //      std::cout << "a = " << a << " b = " << b << "\n";
       glDisable(GL_DEPTH_TEST);
       glBegin(GL_LINES);
-      glVertex2f(wx,wy);
-      glVertex2f(wx,wy+.1);
+      glVertex2f(a,b);
+      glVertex2f(a,b+10);
       glEnd();
     }    
+
+    // map (xi,ymin,zmin) --> (ai,bi)
+    for (int i=0;i<xticks.size();i++) {
+      double x, y, z, w, tx, ty, tz, tw, wx, wy, wz, ww;
+      double a, b;
+      x = xticks[i];
+      y = limits[3];
+      z = limits[4];
+      w = 1;
+      MapPoint4(model,x,y,z,w,tx,ty,tz,tw);
+      MapPoint4(proj,tx,ty,tz,tw,wx,wy,wz,ww);
+      wx /= ww;
+      wy /= ww;
+      wz /= ww;
+      a = (wx+1)*(1.0/2)*position[2] + position[0];
+      b = (wy+1)*(1.0/2)*position[3] + position[1];
+      char buffer[1023];
+      sprintf(buffer,"a = %f, b = %f",a,b);
+      qDebug(buffer);
+      //      std::cout << "a = " << a << " b = " << b << "\n";
+      glDisable(GL_DEPTH_TEST);
+      glBegin(GL_LINES);
+      glVertex2f(a,b);
+      glVertex2f(a,b+10);
+      glEnd();
+    }    
+#endif
   }
 
   void HandleAxis::DrawTickLabels() {

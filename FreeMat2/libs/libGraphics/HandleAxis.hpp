@@ -40,6 +40,7 @@ namespace FreeMat {
     void ClearAxes();
     void DrawBox();
     void DrawGridLines();
+    void DrawAxisLines();
     void DrawTickMarks();
     void DrawTickLabels();
     void DrawAxisLabels();

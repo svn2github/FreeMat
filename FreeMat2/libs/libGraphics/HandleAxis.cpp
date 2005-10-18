@@ -766,6 +766,11 @@ namespace FreeMat {
     // Have to decide if this is a 2D view
     // FIXME - assume 3D view always...
     int ticlen = (int) (maxlen*ticklen[1]);
+    float ticdir;
+    if (((HPInOut*) LookupProperty("tickdir"))->Is("in")) 
+      ticdir = 1;
+    else
+      ticdir = -1;
     // Draw the ticks
     // Retrieve the transformation matrix
     float model[16];
@@ -902,6 +907,7 @@ namespace FreeMat {
     glVertex3f(zx,zy,zmin);
     glVertex3f(zx,zy,zmax);
     glEnd();
+
     // Next step - calculate the tick directions...
     // For the x axis - this is the y direction or the z direction
     // For the y axis - this is the x direction or the z direction
@@ -921,13 +927,72 @@ namespace FreeMat {
       txy = limits[3];
       txz = limits[5];
     }
+    // Calculate a unit vector
+    float tnorm;
+    tnorm = sqrt((txy-xy)*(txy-xy) + (txz-xz)*(txz-xz));
+    txy = (txy-xy)/tnorm*ticlen*ticdir/100;
+    txz = (txz-xz)/tnorm*ticlen*ticdir/100;
+    glColor3f(0,0,0);
     for (int i=0;i<xticks.size();i++) {
       GLfloat t = xticks[i];
       glBegin(GL_LINES);
       glVertex3f(t,xy,xz);
-      glVertex3f(t,txy,txz);
+      glVertex3f(t,xy+txy,xz+txz);
       glEnd();
     }
+
+    float tyx, tyz;
+    if ((model[10] > 0) && (model[2] > 0)) {
+      tyx = limits[0];
+      tyz = limits[4];
+    } else if ((model[10] < 0) && (model[2] > 0)) {
+      tyx = limits[0];
+      tyz = limits[5];
+    } else if ((model[10] > 0) && (model[2] < 0)) {
+      tyx = limits[1];
+      tyz = limits[4];
+    } else if ((model[10] < 0) && (model[2] < 0)) {
+      tyx = limits[1];
+      tyz = limits[5];
+    }
+    tnorm = sqrt((tyx-yx)*(tyx-yx) + (tyz-yz)*(tyz-yz));
+    tyx = (tyx-yx)/tnorm*ticlen*ticdir/100;
+    tyz = (tyz-yz)/tnorm*ticlen*ticdir/100;
+    glColor3f(0,0,0);
+    for (int i=0;i<yticks.size();i++) {
+      GLfloat t = yticks[i];
+      glBegin(GL_LINES);
+      glVertex3f(yx,t,yz);
+      glVertex3f(yx+tyx,t,yz+tyz);
+      glEnd();
+    }
+    
+    float tzx, tzy;
+    if ((model[6] > 0) && (model[2] > 0)) {
+      tzx = limits[0];
+      tzy = limits[2];
+    } else if ((model[6] < 0) && (model[2] > 0)) {
+      tzx = limits[0];
+      tzy = limits[3];
+    } else if ((model[6] > 0) && (model[2] < 0)) {
+      tzx = limits[1];
+      tzy = limits[2];
+    } else if ((model[6] < 0) && (model[2] < 0)) {
+      tzx = limits[1];
+      tzy = limits[3];
+    }
+    tnorm = sqrt((tzx-zx)*(tzx-zx) + (tzy-zy)*(tzy-zy));
+    tzx = (tzx-zx)/tnorm*ticlen*ticdir/100;
+    tzy = (tzy-zy)/tnorm*ticlen*ticdir/100;
+    glColor3f(0,0,0);
+    for (int i=0;i<zticks.size();i++) {
+      GLfloat t = zticks[i];
+      glBegin(GL_LINES);
+      glVertex3f(zx,zy,t);
+      glVertex3f(zx+tzx,zy+tzy,t);
+      glEnd();
+    }
+    
 
 
 #if 0

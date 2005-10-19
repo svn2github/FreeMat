@@ -534,7 +534,7 @@ namespace FreeMat {
     // Build the modelview matrix
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //    glRotatef(arot,0,0,1);
+    glRotatef(arot,0,0,1);
     glRotatef(elev,1,0,0);
     glRotatef(azim,0,0,1);
     // Retrieve it
@@ -778,45 +778,51 @@ namespace FreeMat {
     // Project the visible axis positions
     float model[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,model);
-    float proj[16];
-    glGetFloatv(GL_PROJECTION_MATRIX,proj);
     std::vector<double> limits(GetAxisLimits());
-    if ((m[10] > 0) && (m[6] > 0)) {
-      float a1, b1, a2, b2;
-      ToPixels(model,proj,limits[0],limits[3],limits[4],a1,b1,position);
-      ToPixels(model,proj,limits[0],limits[2],limits[5],a2,b2,position);
-    } else if ((m[10] > 0) && (m[6] < 0)) {
-      float a1, b1, a2, b2;
-      ToPixels(model,proj,limits[0],limits[2],limits[4],a1,b1,position);
-      ToPixels(model,proj,limits[0],limits[3],limits[5],a2,b2,position);
-    } else if ((m[10] < 0) && (m[6] > 0)) {
-      float a1, b1, a2, b2;
-      ToPixels(model,proj,limits[0],limits[3],limits[5],a1,b1,position);
-      ToPixels(model,proj,limits[0],limits[2],limits[4],a2,b2,position);
-    } else if ((m[10] < 0) && (m[6] < 0)) {
-      float a1, b1, a2, b2;
-      ToPixels(model,proj,limits[0],limits[2],limits[5],a1,b1,position);
-      ToPixels(model,proj,limits[0],limits[3],limits[4],a2,b2,position);
+    double xyval;
+    if ((model[10] > 0) && (model[6] > 0)) {
+      xyval = limits[3];
+    } else if ((model[10] > 0) && (model[6] < 0)) {
+      xyval = limits[2];
+    } else if ((model[10] < 0) && (model[6] > 0)) {
+      xyval = limits[2];
+    } else if ((model[10] < 0) && (model[6] < 0)) {
+      xyval = limits[3];
     }
-    
-
-
-    // Check the "top/bottom" flag
-    if (IsVisibleLine(0,-1,0,0,0,1)) {
-      ys.push_back(ymax);
-	xy = ymax; xz = zmin;
-      } else if (IsVisibleLine(0,-1,0,0,0,-1)) {
-	xy = ymax; xz = zmax;
-      }
-    } else {
-      if (IsVisibleLine(0,1,0,0,0,1)) {
-	xy = ymin; xz = zmin;
-      }
-      if (IsVisibleLine(0,1,0,0,0,-1)) {
-	xy = ymin; xz = zmax;
-      }
+    double yxval;
+    if ((model[10] > 0) && (model[2] > 0)) {
+      yxval = limits[1];
+    } else if ((model[10] < 0) && (model[2] > 0)) {
+      yxval = limits[0];
+    } else if ((model[10] > 0) && (model[2] < 0)) {
+      yxval = limits[0];
+    } else if ((model[10] < 0) && (model[2] < 0)) {
+      yxval = limits[1];
     }
-    
+
+    double zxval, zyval;
+    if ((m[6] > 0) && (m[2] > 0)) {
+      glVertex3f(limits[1],limits[2],t); 
+      glVertex3f(limits[0],limits[3],t);
+    } else if ((m[6] < 0) && (m[2] > 0)) {
+      glVertex3f(limits[1],limits[3],t);
+      glVertex3f(limits[0],limits[2],t);
+    } else  if ((m[6] > 0) && (m[2] < 0)) {
+      glVertex3f(limits[0],limits[2],t);
+      glVertex3f(limits[1],limits[3],t);
+    } else if ((m[6] < 0) && (m[2] < 0)) {
+      glVertex3f(limits[0],limits[3],t);
+      glVertex3f(limits[1],limits[2],t);
+    }
+
+    glColor3f(1,0,0);
+    glDisable(GL_DEPTH_TEST);
+    glBegin(GL_LINES);
+    glVertex3f(limits[0],xyval,limits[4]);
+    glVertex3f(limits[1],xyval,limits[4]);
+    glVertex3f(yxval,limits[2],limits[4]);
+    glVertex3f(yxval,limits[3],limits[4]);
+    glEnd();
   }
 
   //
@@ -934,19 +940,19 @@ namespace FreeMat {
       zx2 = xmax; zy2 = ymax;
     }
 
-    glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
-    glBegin(GL_LINES);
-    glColor3f(1,0,0);
-    glVertex3f(xmin,xy,xz);
-    glVertex3f(xmax,xy,xz);
-    glEnd();
-    glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
-    glBegin(GL_LINES);
-    glColor3f(0,1,0);
-    glVertex3f(yx,ymin,yz);
-    glVertex3f(yx,ymax,yz);
-    glEnd();
-    glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+//     glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+//     glBegin(GL_LINES);
+//     glColor3f(1,0,0);
+//     glVertex3f(xmin,xy,xz);
+//     glVertex3f(xmax,xy,xz);
+//     glEnd();
+//     glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+//     glBegin(GL_LINES);
+//     glColor3f(0,1,0);
+//     glVertex3f(yx,ymin,yz);
+//     glVertex3f(yx,ymax,yz);
+//     glEnd();
+//     glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
     // For selecting the z-axis, we have different criteria - 
     // The z-axis must connect to at least one of the two
     // existing axes. So, first, we eliminate choices that
@@ -987,11 +993,11 @@ namespace FreeMat {
 	zy = zy1;
       }
     }
-    glBegin(GL_LINES);
-    glColor3f(0,0,1);
-    glVertex3f(zx,zy,zmin);
-    glVertex3f(zx,zy,zmax);
-    glEnd();
+//     glBegin(GL_LINES);
+//     glColor3f(0,0,1);
+//     glVertex3f(zx,zy,zmin);
+//     glVertex3f(zx,zy,zmax);
+//     glEnd();
 
     // Next step - calculate the tick directions...
     // For the x axis - this is the y direction or the z direction

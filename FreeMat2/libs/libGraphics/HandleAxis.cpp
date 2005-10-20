@@ -12,6 +12,7 @@ int azim = 0;
 int elev = 0;
 int arot = 0;
 
+
 // Need to build the transformation matrix...
 // Given a position rectangle and a camera matrix,
 //   1.  Map the 8 corners of the data space into the camera plane
@@ -50,6 +51,9 @@ namespace FreeMat {
     void mouseMoveEvent(QMouseEvent* e);
     void mouseReleaseEvent(QMouseEvent* e);
   };
+
+  // Probably a better way to do this...
+  BaseFigure *drawing;
 
   HandleList<HandleObject*> handleset;
 
@@ -396,6 +400,7 @@ namespace FreeMat {
   }
 
   void BaseFigure::paintGL() {
+    drawing = this;
     hfig->paintGL();
   }
 
@@ -755,6 +760,7 @@ namespace FreeMat {
     glViewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
     glOrtho(outerpos[0],outerpos[0]+outerpos[2],
 	    outerpos[1],outerpos[1]+outerpos[3],-1,1);
+    glTranslatef(0.375, 0.375, 0.0);
     glDisable(GL_DEPTH_TEST);
   }
 
@@ -832,35 +838,27 @@ namespace FreeMat {
     if ((model[10] > 0) && (model[6] > 0) && (model[2] > 0)) {
       zxval_opposite = limits[1];
       zyval_opposite = limits[3];
-      qDebug("case 1");
     } else if ((model[10] > 0) && (model[6] > 0) && (model[2] < 0)) {
       zxval_opposite = limits[0];
       zyval_opposite = limits[3];
-      qDebug("case 2");
     } else if ((model[10] > 0) && (model[6] < 0) && (model[2] > 0)) {
       zxval_opposite = limits[1];
       zyval_opposite = limits[2];
-      qDebug("case 3");
     } else if ((model[10] > 0) && (model[6] < 0) && (model[2] < 0)) {
       zxval_opposite = limits[0];
       zyval_opposite = limits[2];
-      qDebug("case 4");
     } else if ((model[10] < 0) && (model[6] > 0) && (model[2] > 0)) {
       zxval_opposite = limits[0];
       zyval_opposite = limits[2];
-      qDebug("case 5");
     } else if ((model[10] < 0) && (model[6] > 0) && (model[2] < 0)) {
       zxval_opposite = limits[1];
       zyval_opposite = limits[2];
-      qDebug("case 6");
     } else if ((model[10] < 0) && (model[6] < 0) && (model[2] > 0)) {
       zxval_opposite = limits[0];
       zyval_opposite = limits[3];
-      qDebug("case 7");
     } else if ((model[10] < 0) && (model[6] < 0) && (model[2] < 0)) {
       zxval_opposite = limits[1];
       zyval_opposite = limits[3];
-      qDebug("case 8");
     }
 
     glColor3f(1,0,0);
@@ -873,6 +871,34 @@ namespace FreeMat {
     glVertex3f(zxval,zyval,limits[4]);
     glVertex3f(zxval,zyval,limits[5]);
     glEnd();
+  }
+
+  // Assemble a font for the axis
+  QFont HandleAxis::GetAxisFont() {
+    QFont::Style fstyle;
+    QFont::Weight fweight;
+    HPFontAngle *fontangle = (HPFontAngle*) LookupProperty("fontangle");
+    HPFontWeight *fontweight = (HPFontWeight*) LookupProperty("fontweight");
+    HPScalar *fontsize = (HPScalar*) LookupProperty("fontsize");
+    if (fontangle->Is("normal"))
+      fstyle = QFont::StyleNormal;
+    if (fontangle->Is("italic"))
+      fstyle = QFont::StyleItalic;
+    if (fontangle->Is("oblique"))
+      fstyle = QFont::StyleOblique;
+    if (fontweight->Is("normal"))
+      fweight = QFont::Normal;
+    if (fontweight->Is("bold"))
+      fweight = QFont::Bold;
+    if (fontweight->Is("light"))
+      fweight = QFont::Light;
+    if (fontweight->Is("demi"))
+      fweight = QFont::DemiBold;
+    // Lookup the font
+    QFont fnt("Helvetica",fontsize->Data()[0]);
+    fnt.setStyle(fstyle);
+    fnt.setWeight(fweight);
+    return fnt;
   }
 
   //
@@ -893,6 +919,13 @@ namespace FreeMat {
     std::vector<double> yticks(hp->Data());
     hp = (HPVector*) LookupProperty("ztick");
     std::vector<double> zticks(hp->Data());
+    HPStringSet *qp;
+    qp = (HPStringSet*) LookupProperty("xticklabel");
+    std::vector<std::string> xlabels(qp->Data());
+    qp = (HPStringSet*) LookupProperty("yticklabel");
+    std::vector<std::string> ylabels(qp->Data());
+    qp = (HPStringSet*) LookupProperty("zticklabel");
+    std::vector<std::string> zlabels(qp->Data());
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
@@ -917,6 +950,8 @@ namespace FreeMat {
     float proj[16];
     glGetFloatv(GL_PROJECTION_MATRIX,proj);
     std::vector<double> limits(GetAxisLimits());
+    // Assemble the font we need to draw the labels
+    QFont fnt(GetAxisFont());
     // Next step - calculate the tick directions...
     // We have to draw the tics in flat space
     SetupDirectDraw();
@@ -936,6 +971,9 @@ namespace FreeMat {
       glVertex2f(x1,y1);
       glVertex2f(x2,y2);
       glEnd();
+      // put the label here...
+      if (i < xlabels.size())
+	drawing->renderText(x2,y2,0,QString(xlabels[i].c_str()),fnt);
     }
     for (int i=0;i<yticks.size();i++) {
       GLfloat t = yticks[i];
@@ -952,6 +990,9 @@ namespace FreeMat {
       glVertex2f(x1,y1);
       glVertex2f(x2,y2);
       glEnd();
+      // put the label here...
+      if (i < ylabels.size())
+	drawing->renderText(x2,y2,0,QString(ylabels[i].c_str()),fnt);
     }
     glColor3f(0,0,0);
     for (int i=0;i<zticks.size();i++) {
@@ -969,6 +1010,8 @@ namespace FreeMat {
       glVertex2f(x1,y1);
       glVertex2f(x2,y2);
       glEnd();
+      if (i < zlabels.size())
+	drawing->renderText(x2,y2,0,QString(zlabels[i].c_str()),fnt);
     }
     ReleaseDirectDraw();
   }

@@ -18,6 +18,7 @@ namespace FreeMat {
   class HandleAxis : public HandleObject {
     double xyval, yxval, zxval, zyval;
     double xyval_opposite, yxval_opposite, zxval_opposite, zyval_opposite;
+    QFont GetAxisFont();
   public:
     SymbolTable<HandleProperty*> properties;
     double camera[4][4];

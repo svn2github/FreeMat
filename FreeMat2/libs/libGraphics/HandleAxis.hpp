@@ -19,6 +19,12 @@ namespace FreeMat {
     double xyval, yxval, zxval, zyval;
     double xyval_opposite, yxval_opposite, zxval_opposite, zyval_opposite;
     QFont GetAxisFont();
+    void DrawTextLC(double x, double y, std::string text);
+    void DrawTextRC(double x, double y, std::string text);
+    void DrawTextCB(double x, double y, std::string text);
+    void DrawTextCT(double x, double y, std::string text);
+    void DrawLabel(double x1, double y1, 
+		   double x2, double y2, std::string text);
   public:
     SymbolTable<HandleProperty*> properties;
     double camera[4][4];

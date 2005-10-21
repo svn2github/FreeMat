@@ -901,6 +901,56 @@ namespace FreeMat {
     return fnt;
   }
 
+  void HandleAxis::DrawTextLC(double x, double y, std::string text) {
+    QFont fnt(GetAxisFont());
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(text.c_str()));
+    drawing->renderText(x,y-sze.height()/2,0,QString(text.c_str()),fnt);
+  }
+  
+  void HandleAxis::DrawTextRC(double x, double y, std::string text) {
+    QFont fnt(GetAxisFont());
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(text.c_str()));
+    drawing->renderText(x-sze.width(),y-sze.height()/2,0,
+			QString(text.c_str()),fnt);
+  }
+  
+  void HandleAxis::DrawTextCB(double x, double y, std::string text) {
+    QFont fnt(GetAxisFont());
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(text.c_str()));
+    drawing->renderText(x-sze.width()/2,y,0,QString(text.c_str()),fnt);
+  }
+  
+  void HandleAxis::DrawTextCT(double x, double y, std::string text) {
+    QFont fnt(GetAxisFont());
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(text.c_str()));
+    drawing->renderText(x-sze.width()/2,y-sze.height(),0,
+			QString(text.c_str()),fnt);
+  }
+
+  void HandleAxis::DrawLabel(double x1, double y1, 
+			     double x2, double y2, std::string text) {
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+    // put the label here...
+    if (fabs(dx) > fabs(dy)) {
+      if (dx > 0) {
+	DrawTextLC(x2,y2,text);
+      } else {
+	DrawTextRC(x2,y2,text);
+      }
+    } else {
+      if (dy > 0) {
+	DrawTextCB(x2,y2,text);
+      } else {
+	DrawTextCT(x2,y2,text);
+      }
+    }
+  }
+
   //
   // Look at the z axis... if T*[0;0;1;0] y component is positive,
   // put x and y axis at the bottom.  otherwise, put them at the top.
@@ -971,9 +1021,8 @@ namespace FreeMat {
       glVertex2f(x1,y1);
       glVertex2f(x2,y2);
       glEnd();
-      // put the label here...
       if (i < xlabels.size())
-	drawing->renderText(x2,y2,0,QString(xlabels[i].c_str()),fnt);
+	DrawLabel(x1,y1,x2,y2,xlabels[i]);
     }
     for (int i=0;i<yticks.size();i++) {
       GLfloat t = yticks[i];
@@ -992,7 +1041,7 @@ namespace FreeMat {
       glEnd();
       // put the label here...
       if (i < ylabels.size())
-	drawing->renderText(x2,y2,0,QString(ylabels[i].c_str()),fnt);
+	DrawLabel(x1,y1,x2,y2,ylabels[i]);
     }
     glColor3f(0,0,0);
     for (int i=0;i<zticks.size();i++) {
@@ -1011,7 +1060,7 @@ namespace FreeMat {
       glVertex2f(x2,y2);
       glEnd();
       if (i < zlabels.size())
-	drawing->renderText(x2,y2,0,QString(zlabels[i].c_str()),fnt);
+	DrawLabel(x1,y1,x2,y2,zlabels[i]);
     }
     ReleaseDirectDraw();
   }

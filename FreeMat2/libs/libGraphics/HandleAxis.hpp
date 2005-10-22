@@ -16,8 +16,10 @@ namespace FreeMat {
     //The HandleAxis class encapsulates a 3D axis object, and is
   //manipulated through the Set/Get interface.
   class HandleAxis : public HandleObject {
+    double xzval, yzval;
     double xyval, yxval, zxval, zyval;
     double xyval_opposite, yxval_opposite, zxval_opposite, zyval_opposite;
+    bool xvisible, yvisible, zvisible;
     QFont GetAxisFont();
     void DrawTextLC(double x, double y, std::string text);
     void DrawTextRC(double x, double y, std::string text);

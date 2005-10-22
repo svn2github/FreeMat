@@ -780,21 +780,46 @@ namespace FreeMat {
     return (plane1visible ^ plane2visible);
   }
 
-  void HandleAxis::DrawAxisLines() {
-    // Project the visible axis positions
+  void HandleAxis::DrawAxisLines() { 
+    std::vector<double> position(GetPropertyVectorAsPixels("position"));
+   // Project the visible axis positions
     float model[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,model);
     std::vector<double> limits(GetAxisLimits());
 
+    // Query the axisproperties to set the z-position of the
+    // x and y axis
+    if (((HPTopBottom*)LookupProperty("xaxislocation"))->Is("bottom")) {
+      xzval = limits[4];
+    } else
+      xzval = limits[5];
+
+    if (((HPLeftRight*)LookupProperty("yaxislocation"))->Is("left")) {
+      yzval = limits[4];
+    } else
+      yzval = limits[5];
+
     if ((model[10] > 0) && (model[6] > 0)) {
-      xyval = limits[3];
+      if (xzval == limits[4])
+	xyval = limits[3];
+      else
+	xyval = limits[2];
     } else if ((model[10] > 0) && (model[6] < 0)) {
-      xyval = limits[2];
+      if (xzval == limits[4])
+	xyval = limits[2];
+      else
+	xyval = limits[3];
     } else if ((model[10] < 0) && (model[6] > 0)) {
-      xyval = limits[2];
+      if (xzval == limits[4])
+	xyval = limits[2];
+      else
+	xyval = limits[3];
     } else if ((model[10] < 0) && (model[6] < 0)) {
-      xyval = limits[3];
-    }
+      if (xzval == limits[4])
+	xyval = limits[3];
+      else
+	xyval = limits[2];
+    } 
 
     if (xyval == limits[3])
       xyval_opposite = limits[2];
@@ -802,19 +827,32 @@ namespace FreeMat {
       xyval_opposite = limits[3];
 
     if ((model[10] > 0) && (model[2] > 0)) {
-      yxval = limits[1];
+      if (yzval == limits[4])
+	yxval = limits[1];
+      else
+	yxval = limits[0];
     } else if ((model[10] < 0) && (model[2] > 0)) {
-      yxval = limits[0];
+      if (yzval == limits[4])
+	yxval = limits[0];
+      else
+	yxval = limits[1];
     } else if ((model[10] > 0) && (model[2] < 0)) {
-      yxval = limits[0];
+      if (yzval == limits[4])
+	yxval = limits[0];
+      else
+	yxval = limits[1];
     } else if ((model[10] < 0) && (model[2] < 0)) {
-      yxval = limits[1];
-    }
+      if (yzval == limits[4])
+	yxval = limits[1];
+      else
+	yxval = limits[0];
+    } 
 
     if (yxval == limits[1])
       yxval_opposite = limits[0];
     else if (yxval == limits[0])
       yxval_opposite = limits[1];
+
     if (model[6]>0)
       zxval = limits[1];
     else if (model[6]<0)
@@ -861,15 +899,40 @@ namespace FreeMat {
       zyval_opposite = limits[3];
     }
 
-    glColor3f(1,0,0);
+    HPColor *xc = (HPColor*) LookupProperty("xcolor");
+    HPColor *yc = (HPColor*) LookupProperty("ycolor");
+    HPColor *zc = (HPColor*) LookupProperty("zcolor");
+
+    float proj[16];
+    glGetFloatv(GL_PROJECTION_MATRIX,proj);
+    double x1, y1, x2, y2;
+    ToPixels(model,proj,limits[0],xyval,xzval,x1,y1,position);
+    ToPixels(model,proj,limits[1],xyval,xzval,x2,y2,position);
+    xvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+    ToPixels(model,proj,yxval,limits[2],yzval,x1,y1,position);
+    ToPixels(model,proj,yxval,limits[3],yzval,x2,y2,position);
+    yvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+    ToPixels(model,proj,zxval,zyval,limits[4],x1,y1,position);
+    ToPixels(model,proj,zxval,zyval,limits[5],x2,y2,position);
+    zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+
     glDisable(GL_DEPTH_TEST);
     glBegin(GL_LINES);
-    glVertex3f(limits[0],xyval,limits[4]);
-    glVertex3f(limits[1],xyval,limits[4]);
-    glVertex3f(yxval,limits[2],limits[4]);
-    glVertex3f(yxval,limits[3],limits[4]);
-    glVertex3f(zxval,zyval,limits[4]);
-    glVertex3f(zxval,zyval,limits[5]);
+    if (xvisible) {
+      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      glVertex3f(limits[0],xyval,xzval);
+      glVertex3f(limits[1],xyval,xzval);
+    }
+    if (yvisible) {
+      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+      glVertex3f(yxval,limits[2],yzval);
+      glVertex3f(yxval,limits[3],yzval);
+    } 
+    if (zvisible) {
+      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+      glVertex3f(zxval,zyval,limits[4]);
+      glVertex3f(zxval,zyval,limits[5]);
+    }
     glEnd();
   }
 
@@ -1005,62 +1068,69 @@ namespace FreeMat {
     // Next step - calculate the tick directions...
     // We have to draw the tics in flat space
     SetupDirectDraw();
-    glColor3f(1,0,0);
-    for (int i=0;i<xticks.size();i++) {
-      GLfloat t = xticks[i];
-      // Map the coords ourselves
-      double x1, y1, x2, y2;
-      double norm;
-      ToPixels(model,proj,t,xyval,limits[4],x1,y1,position);
-      ToPixels(model,proj,t,xyval_opposite,limits[4],x2,y2,position);
-      // normalize the tick length
-      norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-      x2 = (x2-x1)/norm*ticlen*ticdir + x1;
-      y2 = (y2-y1)/norm*ticlen*ticdir + y1;
-      glBegin(GL_LINES);
-      glVertex2f(x1,y1);
-      glVertex2f(x2,y2);
-      glEnd();
-      if (i < xlabels.size())
-	DrawLabel(x1,y1,x2,y2,xlabels[i]);
+    if (xvisible) {
+      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      for (int i=0;i<xticks.size();i++) {
+	GLfloat t = xticks[i];
+	// Map the coords ourselves
+	double x1, y1, x2, y2;
+	double norm;
+	ToPixels(model,proj,t,xyval,xzval,x1,y1,position);
+	ToPixels(model,proj,t,xyval_opposite,xzval,x2,y2,position);
+	// normalize the tick length
+	norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+	x2 = (x2-x1)/norm*ticlen*ticdir + x1;
+	y2 = (y2-y1)/norm*ticlen*ticdir + y1;
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x2,y2);
+	glEnd();
+	if (i < xlabels.size())
+	  DrawLabel(x1,y1,x2,y2,xlabels[i]);
+      }
     }
-    for (int i=0;i<yticks.size();i++) {
-      GLfloat t = yticks[i];
-      // Map the coords ourselves
-      double x1, y1, x2, y2;
-      double norm;
-      ToPixels(model,proj,yxval,t,limits[4],x1,y1,position);
-      ToPixels(model,proj,yxval_opposite,t,limits[4],x2,y2,position);
-      // normalize the tick length
-      norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-      x2 = (x2-x1)/norm*ticlen*ticdir + x1;
-      y2 = (y2-y1)/norm*ticlen*ticdir + y1;
-      glBegin(GL_LINES);
-      glVertex2f(x1,y1);
-      glVertex2f(x2,y2);
-      glEnd();
-      // put the label here...
-      if (i < ylabels.size())
-	DrawLabel(x1,y1,x2,y2,ylabels[i]);
+    if (yvisible) {
+      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+      for (int i=0;i<yticks.size();i++) {
+	GLfloat t = yticks[i];
+	// Map the coords ourselves
+	double x1, y1, x2, y2;
+	double norm;
+	ToPixels(model,proj,yxval,t,yzval,x1,y1,position);
+	ToPixels(model,proj,yxval_opposite,t,yzval,x2,y2,position);
+	// normalize the tick length
+	norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+	x2 = (x2-x1)/norm*ticlen*ticdir + x1;
+	y2 = (y2-y1)/norm*ticlen*ticdir + y1;
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x2,y2);
+	glEnd();
+	// put the label here...
+	if (i < ylabels.size())
+	  DrawLabel(x1,y1,x2,y2,ylabels[i]);
+      }
     }
-    glColor3f(0,0,0);
-    for (int i=0;i<zticks.size();i++) {
-      GLfloat t = zticks[i];
-      // Map the coords ourselves
-      double x1, y1, x2, y2;
-      double norm;
-      ToPixels(model,proj,zxval,zyval,t,x1,y1,position);
-      ToPixels(model,proj,zxval_opposite,zyval_opposite,t,x2,y2,position);
-      // normalize the tick length
-      norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-      x2 = (x2-x1)/norm*ticlen*ticdir + x1;
-      y2 = (y2-y1)/norm*ticlen*ticdir + y1;
-      glBegin(GL_LINES);
-      glVertex2f(x1,y1);
-      glVertex2f(x2,y2);
-      glEnd();
-      if (i < zlabels.size())
-	DrawLabel(x1,y1,x2,y2,zlabels[i]);
+    if (zvisible) {
+      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+      for (int i=0;i<zticks.size();i++) {
+	GLfloat t = zticks[i];
+	// Map the coords ourselves
+	double x1, y1, x2, y2;
+	double norm;
+	ToPixels(model,proj,zxval,zyval,t,x1,y1,position);
+	ToPixels(model,proj,zxval_opposite,zyval_opposite,t,x2,y2,position);
+	// normalize the tick length
+	norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+	x2 = (x2-x1)/norm*ticlen*ticdir + x1;
+	y2 = (y2-y1)/norm*ticlen*ticdir + y1;
+	glBegin(GL_LINES);
+	glVertex2f(x1,y1);
+	glVertex2f(x2,y2);
+	glEnd();
+	if (i < zlabels.size())
+	  DrawLabel(x1,y1,x2,y2,zlabels[i]);
+      }
     }
     ReleaseDirectDraw();
   }

@@ -47,4 +47,9 @@ namespace FreeMat {
     HPScalar *hp = (HPScalar*) LookupProperty(name);
     hp->Value(value);
   }
+
+  bool HandleObject::IsAuto(std::string mode) {
+    HPAutoManual *hp = (HPAutoManual*) LookupProperty(mode);
+    return hp->Is("auto");
+  }
 }

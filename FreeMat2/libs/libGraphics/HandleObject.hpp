@@ -22,6 +22,7 @@ namespace FreeMat {
 			      double z, double w);
     void SetStringDefault(std::string name, std::string value);
     void SetScalarDefault(std::string name, double value);
+    bool IsAuto(std::string mode);
     virtual void paintGL() = 0;
   };
 }

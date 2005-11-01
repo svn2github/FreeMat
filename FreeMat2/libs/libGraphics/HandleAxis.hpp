@@ -27,6 +27,8 @@ namespace FreeMat {
     void DrawTextCT(double x, double y, std::string text);
     void DrawLabel(double x1, double y1, 
 		   double x2, double y2, std::string text);
+    void SetupAxis();
+    bool Is2DView();
   public:
     SymbolTable<HandleProperty*> properties;
     double camera[4][4];

@@ -4,14 +4,113 @@
 #include "Core.hpp"
 #include <qgl.h>
 #include <QMouseEvent>
+#include <qapplication.h>
 #include <math.h>
+#include <qpainter.h>
+#include "GLLabel.hpp"
 
 // These are globals for now... ultimately, they need to be handled
 // differently...
+
+// Text labels dont work correctly for now on win32 - the openGL
+// implementation seems far less capable than the mac OS X one.
+// So I will need a work around.  
 int azim = 0;
 int elev = 0;
 int arot = 0;
 
+// Property list & status
+//    activepositionproperty
+//    alim
+//    alimmode
+//    ambientlightcolor
+//    box
+//    cameraposition
+//    camerapositionmode
+//    cameratarget
+//    cameratargetmode
+//    cameraupvector
+//    cameraviewangle
+//    cameraviewanglemode
+//    childrenint
+//    clim
+//    climmode
+//    clipping
+//    color - done (does 'none' work?)
+//    colororder
+//    dataaspectratio
+//    dataaspectratiomode
+//    fontangle - done
+//    fontname - done
+//    fontsize - done
+//    fontunits - not implemented
+//    fontweight - done
+//    gridlinestyle - done
+//    handlevisibility
+//    hittest
+//    interruptible
+//    layer
+//    //    linestyleorder
+//    linewidth
+//    minorgridlinestyle 
+//    nextplot
+//    outerposition - done - need linkage to position
+//    parent - done
+//    plotboxaspectratio
+//    plotboxaspectratiomode
+//    position - done
+//    projection
+//    selected
+//    selectionhighlight
+//    tag - done
+//    tickdir - done - need labels to not follow tick direction
+//    tickdirmode - done
+//    ticklength - need 2d support
+//    tightinset
+//    title
+//    type
+//    units
+//    //    userdata
+//    visible
+//    xaxislocation - done
+//    yaxislocation - done
+//    xcolor - done
+//    ycolor - done
+//    zcolor - done
+//    xdir
+//    ydir
+//    zdir
+//    xgrid - done
+//    ygrid - done
+//    zgrid - done
+//    xlabel
+//    ylabel
+//    zlabel
+//    xlim - done
+//    ylim - done
+//    zlim - done
+//    xlimmode
+//    ylimmode
+//    zlimmode
+//    xminorgrid
+//    yminorgrid
+//    zminorgrid
+//    xscale
+//    yscale
+//    zscale
+//    xtick - done
+//    ytick - done
+//    ztick - done
+//    xticklabel - done
+//    yticklabel - done
+//    zticklabel - done
+//    xtickmode
+//    ytickmode
+//    ztickmode
+//    xticklabelmode
+//    yticklabelmode
+//    zticklabelmode
+ 
 
 // Need to build the transformation matrix...
 // Given a position rectangle and a camera matrix,
@@ -84,64 +183,6 @@ namespace FreeMat {
     i = Position->At(0) + (Position->At(2)/2.0) + i*50;
     j = Position->At(1) + (Position->At(3)/2.0) + j*50;
   }
-
-#if 0
-  void HandleAxis::DrawMe(DrawEngine& gc) {
-    // Draw the box extents - to do something...
-    // Load our transformation matrix... this
-    // should be part of gc... for now, we 
-    // transform the point directly
-    HPTwoVector *XLim = (HPTwoVector*) LookupProperty("xlim");
-    HPTwoVector *YLim = (HPTwoVector*) LookupProperty("ylim");
-    HPTwoVector *ZLim = (HPTwoVector*) LookupProperty("zlim");
-    double x1, x2, x3, x4, x5, x6, x7, x8;
-    double y1, y2, y3, y4, y5, y6, y7, y8;
-    Transform(XLim->At(0),YLim->At(0),ZLim->At(0),x1,y1);
-    Transform(XLim->At(0),YLim->At(0),ZLim->At(1),x2,y2);
-    Transform(XLim->At(0),YLim->At(1),ZLim->At(1),x3,y3);
-    Transform(XLim->At(0),YLim->At(1),ZLim->At(0),x4,y4);
-    Transform(XLim->At(1),YLim->At(0),ZLim->At(0),x5,y5);
-    Transform(XLim->At(1),YLim->At(0),ZLim->At(1),x6,y6);
-    Transform(XLim->At(1),YLim->At(1),ZLim->At(1),x7,y7);
-    Transform(XLim->At(1),YLim->At(1),ZLim->At(0),x8,y8);
-    // Draw the cube
-    gc.setPen(Qt::black);
-    gc.drawLine(x1,y1,x2,y2);
-    gc.drawLine(x2,y2,x3,y3);
-    gc.drawLine(x3,y3,x4,y4);
-    gc.drawLine(x4,y4,x1,y1);
-    gc.drawLine(x5,y5,x6,y6);
-    gc.drawLine(x6,y6,x7,y7);
-    gc.drawLine(x7,y7,x8,y8);
-    gc.drawLine(x8,y8,x4,y4);
-  }
-#endif
-
-#if 0
-  void HandleAxis::UpdateState() {
-    // If any of the axis limits have changed, or the camera parameters
-    // have changed, we must recompute the transformation matrices
-    // For now, we just do it always...
-    // Camera is at position M
-    // Looking at target T
-    // Up vector is given
-    // We want to map the optical axis to the -z axis
-    HPThreeVector *CameraTarget = (HPThreeVector*) LookupProperty("cameratarget");
-    HPThreeVector *CameraPosition = (HPThreeVector*) LookupProperty("cameraposition");
-    HPThreeVector *CameraUpVector = (HPThreeVector*) LookupProperty("cameraupvector");
-    pt3d ctarget(CameraTarget->At(0),CameraTarget->At(1),CameraTarget->At(2));
-    pt3d cpos(CameraPosition->At(0),CameraPosition->At(1),CameraPosition->At(2));
-    pt3d caxis(ctarget - cpos);
-    pt3d cup(CameraUpVector->At(0),CameraUpVector->At(1),CameraUpVector->At(2));
-    pt3d cright(crossprod(caxis,cup));
-    // stuff these into a matrix
-    camera[0][0] = cright.x; camera[0][1] = cright.y; camera[0][2] = cright.z;
-    camera[1][0] = cup.x; camera[1][1] = cup.y; camera[1][2] = cup.z;
-    camera[2][0] = caxis.x; camera[2][1] = caxis.y; camera[2][2] = caxis.z;
-    camera[3][0] = 0; camera[3][1] = 0; camera[3][2] = 0; camera[3][3] = 1;
-    camera[0][3] = -cpos.x; camera[1][3] = -cpos.y; camera[2][3] = -cpos.z;
-  }
-#endif
   
   void HandleAxis::ConstructProperties() {
     // These are all the properties of the axis
@@ -237,6 +278,41 @@ namespace FreeMat {
     AddProperty(new HPAutoManual,"zticklabelmode");
   }
 
+  GLubyte* GetTextAsBits(QFont fnt, std::string text, int &width, 
+			 int &height, GLubyte red, GLubyte green, 
+			 GLubyte blue) {
+    // Get the font
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(text.c_str()));
+    width = sze.width();
+    height = sze.height();
+    QImage img(width,height,QImage::Format_RGB32);
+    QPainter pnt(&img);
+    pnt.setBackground(QColor(255,255,255));
+    pnt.eraseRect(0,0,width,height);
+    pnt.setFont(fnt);
+    pnt.setPen(QColor(0,0,0));
+    pnt.drawText(0,height,text.c_str());
+    pnt.end();
+    // Now, we generate a synthetic image that is of the same size
+    GLubyte *bits = new GLubyte[width*height*4];
+    unsigned char *ibits = img.bits();
+    // Set the color bits to all be the same color as specified
+    // in the argument list, and use the grey scale to modulate
+    // the transparency
+    for (int i=0;i<height;i++) {
+      for (int j=0;j<width;j++) {
+	int dptr = 4*(i*width+j);
+	int sptr = 4*((height-1-i)*width+j);
+	bits[dptr] = red;
+	bits[dptr+1] = green;
+	bits[dptr+2] = blue;
+	bits[dptr+3] = 255-ibits[sptr];
+      }
+    }
+    return bits;
+  }
+
   HandleAxis::HandleAxis() {
     ConstructProperties();
     SetupDefaults();
@@ -261,6 +337,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("dataaspectratiomode","auto");
     //    SetConstrainedStringDefault("drawmode","normal");
     SetConstrainedStringDefault("fontangle","normal");
+    SetStringDefault("fontname","helvetica");
     SetScalarDefault("fontsize",12);
     SetConstrainedStringDefault("fontunits","points");
     SetConstrainedStringDefault("fontweight","normal");
@@ -313,23 +390,6 @@ namespace FreeMat {
     SetConstrainedStringDefault("xticklabelmode","auto");
     SetConstrainedStringDefault("yticklabelmode","auto");
     SetConstrainedStringDefault("zticklabelmode","auto");
-#if 0
-    // set axes area color to white
-    bkcolor[0] = 1.0; bkcolor[1] = 1.0; bkcolor[2] = 1.0;
-    // set x, y and z colors to black
-    XColor[0] = 0.0; XColor[1] = 0.0; XColor[2] = 0.0;
-    YColor[0] = 0.0; YColor[1] = 0.0; YColor[2] = 0.0;
-    ZColor[0] = 0.0; ZColor[1] = 0.0; ZColor[2] = 0.0;
-    // set the x, y and z limits to 0,1
-    XLim[0] = 0.0; XLim[1] = 1.0;
-    YLim[0] = 0.0; YLim[1] = 1.0;
-    ZLim[0] = 0.0; ZLim[1] = 1.0;
-    // set the camera position, etc..
-    CameraPosition[0] = 0.0; CameraPosition[1] = 0.0; CameraPosition[2] = 1.0;
-    CameraTarget[0] = 0.0; CameraTarget[1] = 0.0; CameraTarget[2] = 0.0;
-    CameraUpVector[0] = 0.0; CameraUpVector[1] = 1.0; CameraUpVector[2] = 0.0;
-    Position[0] = 0; Position[1] = 0; Position[2] = 100; Position[3] = 100;
-#endif
   }
 
   // Construct an axis object 
@@ -569,8 +629,6 @@ namespace FreeMat {
     glViewport(position[0],position[1],position[2],position[3]);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    //    glOrtho(xmin,xmax,ymin,ymax,zmax,zmin);
-    // Not sure why the 2*zmin is needed...
     glOrtho(xmin,xmax,ymin,ymax,zmin,zmax);
   }
 
@@ -758,8 +816,8 @@ namespace FreeMat {
     glLoadIdentity();
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     glViewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
-    glOrtho(outerpos[0],outerpos[0]+outerpos[2],
-	    outerpos[1],outerpos[1]+outerpos[3],-1,1);
+    glOrtho(outerpos[0],outerpos[0]+outerpos[2]-1,
+	    outerpos[1],outerpos[1]+outerpos[3]-1,-1,1);
     glTranslatef(0.375, 0.375, 0.0);
     glDisable(GL_DEPTH_TEST);
   }
@@ -780,25 +838,22 @@ namespace FreeMat {
     return (plane1visible ^ plane2visible);
   }
 
-  void HandleAxis::DrawAxisLines() { 
+  void HandleAxis::SetupAxis() {
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
    // Project the visible axis positions
     float model[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,model);
     std::vector<double> limits(GetAxisLimits());
-
     // Query the axisproperties to set the z-position of the
     // x and y axis
     if (((HPTopBottom*)LookupProperty("xaxislocation"))->Is("bottom")) {
       xzval = limits[4];
     } else
       xzval = limits[5];
-
     if (((HPLeftRight*)LookupProperty("yaxislocation"))->Is("left")) {
       yzval = limits[4];
     } else
       yzval = limits[5];
-
     if ((model[10] > 0) && (model[6] > 0)) {
       if (xzval == limits[4])
 	xyval = limits[3];
@@ -898,11 +953,6 @@ namespace FreeMat {
       zxval_opposite = limits[1];
       zyval_opposite = limits[3];
     }
-
-    HPColor *xc = (HPColor*) LookupProperty("xcolor");
-    HPColor *yc = (HPColor*) LookupProperty("ycolor");
-    HPColor *zc = (HPColor*) LookupProperty("zcolor");
-
     float proj[16];
     glGetFloatv(GL_PROJECTION_MATRIX,proj);
     double x1, y1, x2, y2;
@@ -915,7 +965,17 @@ namespace FreeMat {
     ToPixels(model,proj,zxval,zyval,limits[4],x1,y1,position);
     ToPixels(model,proj,zxval,zyval,limits[5],x2,y2,position);
     zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+  }
 
+  bool HandleAxis::Is2DView() {
+    return (!(xvisible && yvisible && zvisible));
+  }
+
+  void HandleAxis::DrawAxisLines() { 
+    std::vector<double> limits(GetAxisLimits());
+    HPColor *xc = (HPColor*) LookupProperty("xcolor");
+    HPColor *yc = (HPColor*) LookupProperty("ycolor");
+    HPColor *zc = (HPColor*) LookupProperty("zcolor");
     glDisable(GL_DEPTH_TEST);
     glBegin(GL_LINES);
     if (xvisible) {
@@ -940,6 +1000,7 @@ namespace FreeMat {
   QFont HandleAxis::GetAxisFont() {
     QFont::Style fstyle;
     QFont::Weight fweight;
+    HPString *fontname = (HPString*) LookupProperty("fontname");
     HPFontAngle *fontangle = (HPFontAngle*) LookupProperty("fontangle");
     HPFontWeight *fontweight = (HPFontWeight*) LookupProperty("fontweight");
     HPScalar *fontsize = (HPScalar*) LookupProperty("fontsize");
@@ -958,9 +1019,10 @@ namespace FreeMat {
     if (fontweight->Is("demi"))
       fweight = QFont::DemiBold;
     // Lookup the font
-    QFont fnt("Helvetica",fontsize->Data()[0]);
+    QFont fnt(fontname->Data().c_str(),fontsize->Data()[0]);
     fnt.setStyle(fstyle);
     fnt.setWeight(fweight);
+    qDebug(fnt.toString());
     return fnt;
   }
 
@@ -968,7 +1030,7 @@ namespace FreeMat {
     QFont fnt(GetAxisFont());
     QFontMetrics fm(fnt);
     QRect sze(fm.boundingRect(text.c_str()));
-    drawing->renderText(x,y-sze.height()/2,0,QString(text.c_str()),fnt);
+    drawing->renderText(x,y-sze.height()/2,0,QString(text.c_str()));
   }
   
   void HandleAxis::DrawTextRC(double x, double y, std::string text) {
@@ -1051,10 +1113,17 @@ namespace FreeMat {
     // FIXME - assume 3D view always...
     int ticlen = (int) (maxlen*ticklen[1]);
     float ticdir;
-    if (((HPInOut*) LookupProperty("tickdir"))->Is("in")) 
-      ticdir = 1;
-    else
-      ticdir = -1;
+    if (IsAuto("tickdirmode")) {
+      if (Is2DView())
+	ticdir = 1;
+      else
+	ticdir = -1;
+    } else {
+      if (((HPInOut*) LookupProperty("tickdir"))->Is("in")) 
+	ticdir = 1;
+      else
+	ticdir = -1;
+    }
     // Draw the ticks
     // Retrieve the transformation matrix
     float model[16];
@@ -1085,8 +1154,12 @@ namespace FreeMat {
 	glVertex2f(x1,y1);
 	glVertex2f(x2,y2);
 	glEnd();
-	if (i < xlabels.size())
-	  DrawLabel(x1,y1,x2,y2,xlabels[i]);
+	if (i < xlabels.size()) {
+	  if (ticdir < 0)
+	    DrawLabel(x1,y1,x2,y2,xlabels[i]);
+	  else
+	    DrawLabel(x2,y2,x1,y1,xlabels[i]);	    
+	}
       }
     }
     if (yvisible) {
@@ -1133,6 +1206,38 @@ namespace FreeMat {
       }
     }
     ReleaseDirectDraw();
+
+    glPushAttrib(GL_TRANSFORM_BIT | GL_VIEWPORT_BIT | GL_LIST_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, drawing->width(), 0, drawing->height(), -1, 1);
+    glViewport(0,0,drawing->width(),drawing->height());
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    
+    glBegin(GL_LINES);
+    glVertex2f(190,100);
+    glVertex2f(210,100);
+    glVertex2f(200,90);
+    glVertex2f(200,110);
+    glVertex2f(190,150);
+    glVertex2f(210,150);
+    glVertex2f(200,140);
+    glVertex2f(200,160);
+    glEnd();
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    GLLabel foo(GetAxisFont(),"Hello World! goopy!",200,0,0);
+    foo.DrawMe(200,100,GLLabel::Max,GLLabel::Min);
+    foo.DrawMe(200,150,GLLabel::Min,GLLabel::Mean);
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
   }
 
   void HandleAxis::DrawTickLabels() {
@@ -1148,6 +1253,7 @@ namespace FreeMat {
     if (GetParentFigure() == NULL) return;
     // Time to draw the axis...  
     SetupProjection();
+    SetupAxis();
     DrawBox();
     DrawGridLines();
     DrawAxisLines();

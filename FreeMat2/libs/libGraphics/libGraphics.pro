@@ -21,7 +21,8 @@ Label.hpp \
 HandleAxis.hpp \
 HandleObject.hpp \
 HandleProperty.hpp \
-HandleFigure.hpp
+HandleFigure.hpp \
+GLLabel.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -40,7 +41,8 @@ Label.cpp \
 HandleAxis.cpp \
 HandleObject.cpp \
 HandleProperty.cpp \
-HandleFigure.cpp
+HandleFigure.cpp \
+GLLabel.cpp
 
 DEPENDPATH += INCLUDEPATH
 

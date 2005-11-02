@@ -48,12 +48,12 @@ namespace FreeMat {
     y0 = sze.bottom();
     width = sze.width();
     height = sze.height();
-    qDebug("constructing label %d %d %d %d",x0,y0,width,height);
     QImage img(width,height,QImage::Format_RGB32);
     QPainter pnt(&img);
     pnt.setBackground(QColor(255,255,255));
     pnt.eraseRect(0,0,width,height);
     pnt.setFont(fnt);
+    QFontInfo fntinfo(pnt.fontInfo());
     pnt.setPen(QColor(0,0,0));
     pnt.drawText(x0,height-y0-1,text.c_str());
     pnt.end();
@@ -64,18 +64,14 @@ namespace FreeMat {
     // in the argument list, and use the grey scale to modulate
     // the transparency
     for (int i=0;i<height;i++) {
+      QRgb* ibits = (QRgb*) img.scanLine(height-1-i);
       for (int j=0;j<width;j++) {
 	int dptr = 4*(i*width+j);
-	int sptr = 4*((height-1-i)*width+j);
-	bits[dptr] = red;
-	bits[dptr+1] = green;
-	bits[dptr+2] = blue;
-	bits[dptr+3] = 255-ibits[sptr];
+  	bits[dptr] = red;
+  	bits[dptr+1] = green;
+  	bits[dptr+2] = blue;
+  	bits[dptr+3] = 255-qRed(ibits[j]);
       }
-      bits[4*i*width] = 0;
-      bits[4*i*width+1] = 0;
-      bits[4*i*width+2] = 0;
-      bits[4*i*width+3] = 255;
     }
   }
 
@@ -92,12 +88,6 @@ namespace FreeMat {
     qDebug("raster pos %d %d",x,y);
     glRasterPos2i(x,y);
     glDrawPixels(width,height,GL_RGBA,GL_UNSIGNED_BYTE,bits);
-    glBegin(GL_LINES);
-    glVertex2f(x,y);
-    glVertex2f(x+width,y+height);
-    glVertex2f(x+width,y);
-    glVertex2f(x,y+height);
-    glEnd();
   }
 
   GLLabel::~GLLabel() {

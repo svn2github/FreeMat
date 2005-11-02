@@ -9,12 +9,10 @@
 #include <qpainter.h>
 #include "GLLabel.hpp"
 
+// Tick direction still doesn't work right...
+
 // These are globals for now... ultimately, they need to be handled
 // differently...
-
-// Text labels dont work correctly for now on win32 - the openGL
-// implementation seems far less capable than the mac OS X one.
-// So I will need a work around.  
 int azim = 0;
 int elev = 0;
 int arot = 0;
@@ -456,7 +454,9 @@ namespace FreeMat {
     glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
     glClearDepth(1e10f);
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);    
+    glDepthFunc(GL_LEQUAL);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
   }
 
   void BaseFigure::paintGL() {
@@ -1026,52 +1026,68 @@ namespace FreeMat {
     return fnt;
   }
 
-  void HandleAxis::DrawTextLC(double x, double y, std::string text) {
-    QFont fnt(GetAxisFont());
-    QFontMetrics fm(fnt);
-    QRect sze(fm.boundingRect(text.c_str()));
-    drawing->renderText(x,y-sze.height()/2,0,QString(text.c_str()));
+  void HandleAxis::UpdateState() {
+    std::vector<std::string> tset;
+    tset.push_back("fontangle");  tset.push_back("fontname");
+    tset.push_back("fontsize");   tset.push_back("fontunits");
+    tset.push_back("fontweight"); tset.push_back("xtickabel");
+    tset.push_back("yticklabel"); tset.push_back("zticklabel");
+    tset.push_back("xcolor");     tset.push_back("ycolor"); 
+    tset.push_back("zcolor"); 
+    if (HasChanged(tset)) {
+      UpdateAxisFont();
+      GenerateLabels();
+      ClearChanged(tset);
+    }
+    // if ticklabels changed --> tickmode = manual
+    // if tickdir set --> tickdirmode = manual
+    // if resize || position chng && tickmode = auto --> recalculate tick marks
+    // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
+
   }
-  
-  void HandleAxis::DrawTextRC(double x, double y, std::string text) {
+
+  void HandleAxis::GenerateLabels() {
+    HPStringSet *qp;
+    qp = (HPStringSet*) LookupProperty("xticklabel");
+    std::vector<std::string> xlabeltxt(qp->Data());
+    qp = (HPStringSet*) LookupProperty("yticklabel");
+    std::vector<std::string> ylabeltxt(qp->Data());
+    qp = (HPStringSet*) LookupProperty("zticklabel");
+    std::vector<std::string> zlabeltxt(qp->Data());
     QFont fnt(GetAxisFont());
-    QFontMetrics fm(fnt);
-    QRect sze(fm.boundingRect(text.c_str()));
-    drawing->renderText(x-sze.width(),y-sze.height()/2,0,
-			QString(text.c_str()),fnt);
-  }
-  
-  void HandleAxis::DrawTextCB(double x, double y, std::string text) {
-    QFont fnt(GetAxisFont());
-    QFontMetrics fm(fnt);
-    QRect sze(fm.boundingRect(text.c_str()));
-    drawing->renderText(x-sze.width()/2,y,0,QString(text.c_str()),fnt);
-  }
-  
-  void HandleAxis::DrawTextCT(double x, double y, std::string text) {
-    QFont fnt(GetAxisFont());
-    QFontMetrics fm(fnt);
-    QRect sze(fm.boundingRect(text.c_str()));
-    drawing->renderText(x-sze.width()/2,y-sze.height(),0,
-			QString(text.c_str()),fnt);
+    HPColor *xc = (HPColor*) LookupProperty("xcolor");
+    HPColor *yc = (HPColor*) LookupProperty("ycolor");
+    HPColor *zc = (HPColor*) LookupProperty("zcolor");
+    xlabels.clear();
+    for (int i=0;i<xlabeltxt.size();i++)
+      xlabels.push_back(GLLabel(fnt,xlabeltxt[i],xc->Data()[0]*255,
+				xc->Data()[1]*255,xc->Data()[2]*255));
+    ylabels.clear();
+    for (int i=0;i<ylabeltxt.size();i++)
+      ylabels.push_back(GLLabel(fnt,ylabeltxt[i],yc->Data()[0]*255,
+				yc->Data()[1]*255,yc->Data()[2]*255));
+    zlabels.clear();
+    for (int i=0;i<zlabeltxt.size();i++)
+      zlabels.push_back(GLLabel(fnt,zlabeltxt[i],zc->Data()[0]*255,
+				zc->Data()[1]*255,zc->Data()[2]*255));
   }
 
   void HandleAxis::DrawLabel(double x1, double y1, 
-			     double x2, double y2, std::string text) {
+			     double x2, double y2, GLLabel& a) {
     double dx = x2 - x1;
     double dy = y2 - y1;
     // put the label here...
     if (fabs(dx) > fabs(dy)) {
       if (dx > 0) {
-	DrawTextLC(x2,y2,text);
+	a.DrawMe(x2,y2,GLLabel::Min,GLLabel::Mean);
       } else {
-	DrawTextRC(x2,y2,text);
+	a.DrawMe(x2,y2,GLLabel::Max,GLLabel::Mean);
       }
     } else {
       if (dy > 0) {
-	DrawTextCB(x2,y2,text);
+	a.DrawMe(x2,y2,GLLabel::Mean,GLLabel::Min);
       } else {
-	DrawTextCT(x2,y2,text);
+	a.DrawMe(x2,y2,GLLabel::Mean,GLLabel::Max);
       }
     }
   }
@@ -1094,13 +1110,6 @@ namespace FreeMat {
     std::vector<double> yticks(hp->Data());
     hp = (HPVector*) LookupProperty("ztick");
     std::vector<double> zticks(hp->Data());
-    HPStringSet *qp;
-    qp = (HPStringSet*) LookupProperty("xticklabel");
-    std::vector<std::string> xlabels(qp->Data());
-    qp = (HPStringSet*) LookupProperty("yticklabel");
-    std::vector<std::string> ylabels(qp->Data());
-    qp = (HPStringSet*) LookupProperty("zticklabel");
-    std::vector<std::string> zlabels(qp->Data());
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
@@ -1109,9 +1118,11 @@ namespace FreeMat {
     int maxlen = (position[2] > position[3]) ? position[2] : position[3];
     HPTwoVector *kp = (HPTwoVector*) LookupProperty("ticklength");
     std::vector<double> ticklen(kp->Data());
-    // Have to decide if this is a 2D view
-    // FIXME - assume 3D view always...
-    int ticlen = (int) (maxlen*ticklen[1]);
+    int ticlen;
+    if (Is2DView())
+      ticlen = (int) (maxlen*ticklen[0]);
+    else
+      ticlen = (int) (maxlen*ticklen[1]);
     float ticdir;
     if (IsAuto("tickdirmode")) {
       if (Is2DView())
@@ -1206,38 +1217,6 @@ namespace FreeMat {
       }
     }
     ReleaseDirectDraw();
-
-    glPushAttrib(GL_TRANSFORM_BIT | GL_VIEWPORT_BIT | GL_LIST_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0, drawing->width(), 0, drawing->height(), -1, 1);
-    glViewport(0,0,drawing->width(),drawing->height());
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    
-    glBegin(GL_LINES);
-    glVertex2f(190,100);
-    glVertex2f(210,100);
-    glVertex2f(200,90);
-    glVertex2f(200,110);
-    glVertex2f(190,150);
-    glVertex2f(210,150);
-    glVertex2f(200,140);
-    glVertex2f(200,160);
-    glEnd();
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    GLLabel foo(GetAxisFont(),"Hello World! goopy!",200,0,0);
-    foo.DrawMe(200,100,GLLabel::Max,GLLabel::Min);
-    foo.DrawMe(200,150,GLLabel::Min,GLLabel::Mean);
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glPopAttrib();
   }
 
   void HandleAxis::DrawTickLabels() {
@@ -1254,6 +1233,7 @@ namespace FreeMat {
     // Time to draw the axis...  
     SetupProjection();
     SetupAxis();
+    GenerateLabels(); // Should be triggered...
     DrawBox();
     DrawGridLines();
     DrawAxisLines();

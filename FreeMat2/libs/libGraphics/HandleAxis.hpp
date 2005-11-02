@@ -10,6 +10,7 @@
 #include "SymbolTable.hpp"
 #include "HandleObject.hpp"
 #include "HandleFigure.hpp"
+#include "GLLabel.hpp"
 
 namespace FreeMat {
 
@@ -21,22 +22,22 @@ namespace FreeMat {
     double xyval_opposite, yxval_opposite, zxval_opposite, zyval_opposite;
     bool xvisible, yvisible, zvisible;
     QFont GetAxisFont();
-    void DrawTextLC(double x, double y, std::string text);
-    void DrawTextRC(double x, double y, std::string text);
-    void DrawTextCB(double x, double y, std::string text);
-    void DrawTextCT(double x, double y, std::string text);
     void DrawLabel(double x1, double y1, 
-		   double x2, double y2, std::string text);
+		   double x2, double y2, GLLabel& a);
     void SetupAxis();
     bool Is2DView();
+    void GenerateLabels();
   public:
+    std::vector<GLLabel> xlabels;
+    std::vector<GLLabel> ylabels;
+    std::vector<GLLabel> zlabels;
     SymbolTable<HandleProperty*> properties;
     double camera[4][4];
 
     HandleAxis();
     virtual ~HandleAxis();
     virtual void ConstructProperties();
-    //    virtual void UpdateState();
+    virtual void UpdateState();
     void SetupDefaults();
     void Transform(double x, double y, double z, double &i, double &j);
     virtual void paintGL();

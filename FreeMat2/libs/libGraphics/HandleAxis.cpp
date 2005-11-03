@@ -1209,7 +1209,10 @@ namespace FreeMat {
 	glEnd();
 	// put the label here...
 	if (i < ylabels.size())
-	  DrawLabel(x1,y1,x2,y2,ylabels[i]);
+	  if (ticdir < 0)
+	    DrawLabel(x1,y1,x2,y2,ylabels[i]);
+	  else
+	    DrawLabel(x2,y2,x1,y1,ylabels[i]);
       }
     }
     if (zvisible) {
@@ -1230,7 +1233,10 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	if (i < zlabels.size())
-	  DrawLabel(x1,y1,x2,y2,zlabels[i]);
+	  if (ticdir < 0)
+	    DrawLabel(x1,y1,x2,y2,zlabels[i]);
+	  else
+	    DrawLabel(x2,y2,x1,y1,zlabels[i]);
       }
     }
     ReleaseDirectDraw();

@@ -50,6 +50,8 @@ namespace FreeMat {
     height = sze.height();
     QImage img(width,height,QImage::Format_RGB32);
     QPainter pnt(&img);
+    pnt.setRenderHint(QPainter::TextAntialiasing);
+    pnt.setRenderHint(QPainter::Antialiasing);
     pnt.setBackground(QColor(255,255,255));
     pnt.eraseRect(0,0,width,height);
     pnt.setFont(fnt);

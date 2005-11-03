@@ -997,7 +997,7 @@ namespace FreeMat {
   }
 
   // Assemble a font for the axis
-  QFont HandleAxis::GetAxisFont() {
+  void HandleAxis::UpdateAxisFont() {
     QFont::Style fstyle;
     QFont::Weight fweight;
     HPString *fontname = (HPString*) LookupProperty("fontname");
@@ -1022,15 +1022,14 @@ namespace FreeMat {
     QFont fnt(fontname->Data().c_str(),fontsize->Data()[0]);
     fnt.setStyle(fstyle);
     fnt.setWeight(fweight);
-    qDebug(fnt.toString());
-    return fnt;
+    m_font = fnt;
   }
 
   void HandleAxis::UpdateState() {
     std::vector<std::string> tset;
     tset.push_back("fontangle");  tset.push_back("fontname");
     tset.push_back("fontsize");   tset.push_back("fontunits");
-    tset.push_back("fontweight"); tset.push_back("xtickabel");
+    tset.push_back("fontweight"); tset.push_back("xticklabel");
     tset.push_back("yticklabel"); tset.push_back("zticklabel");
     tset.push_back("xcolor");     tset.push_back("ycolor"); 
     tset.push_back("zcolor"); 
@@ -1038,6 +1037,7 @@ namespace FreeMat {
       UpdateAxisFont();
       GenerateLabels();
       ClearChanged(tset);
+      qDebug("Updated Labels");
     }
     // if ticklabels changed --> tickmode = manual
     // if tickdir set --> tickdirmode = manual
@@ -1054,7 +1054,7 @@ namespace FreeMat {
     std::vector<std::string> ylabeltxt(qp->Data());
     qp = (HPStringSet*) LookupProperty("zticklabel");
     std::vector<std::string> zlabeltxt(qp->Data());
-    QFont fnt(GetAxisFont());
+    QFont fnt(m_font);
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
@@ -1072,24 +1072,41 @@ namespace FreeMat {
 				zc->Data()[1]*255,zc->Data()[2]*255));
   }
 
+  // The orientation of the label depends on the angle of the
+  // tick
   void HandleAxis::DrawLabel(double x1, double y1, 
 			     double x2, double y2, GLLabel& a) {
     double dx = x2 - x1;
     double dy = y2 - y1;
-    // put the label here...
-    if (fabs(dx) > fabs(dy)) {
-      if (dx > 0) {
-	a.DrawMe(x2,y2,GLLabel::Min,GLLabel::Mean);
-      } else {
-	a.DrawMe(x2,y2,GLLabel::Max,GLLabel::Mean);
-      }
-    } else {
-      if (dy > 0) {
-	a.DrawMe(x2,y2,GLLabel::Mean,GLLabel::Min);
-      } else {
-	a.DrawMe(x2,y2,GLLabel::Mean,GLLabel::Max);
-      }
+    double angle = atan2(dy,dx)*180.0/M_PI;
+    GLLabel::AlignmentFlag xalign;
+    GLLabel::AlignmentFlag yalign;
+    if (fabs(angle) < 10) {
+      xalign = GLLabel::Min;
+      yalign = GLLabel::Mean;
+    } else if (fabs(angle) > 170) {
+      xalign = GLLabel::Max;
+      yalign = GLLabel::Mean;
+    } else if ((angle >= 10) && (angle < 80)) {
+      xalign = GLLabel::Min;
+      yalign = GLLabel::Min;
+    } else if ((angle >= 80) && (angle < 100)) {
+      xalign = GLLabel::Mean;
+      yalign = GLLabel::Min;
+    } else if ((angle >= 100) && (angle < 170)) {
+      xalign = GLLabel::Max;
+      yalign = GLLabel::Min;
+    } else if ((angle <= -10) && (angle > -80)) {
+      xalign = GLLabel::Min;
+      yalign = GLLabel::Max;
+    } else if ((angle <= -80) && (angle > -100)) {
+      xalign = GLLabel::Mean;
+      yalign = GLLabel::Max;
+    } else if ((angle <= -100) && (angle > -170)) {
+      xalign = GLLabel::Max;
+      yalign = GLLabel::Max;
     }
+    a.DrawMe(x2,y2,xalign,yalign);
   }
 
   //
@@ -1144,7 +1161,7 @@ namespace FreeMat {
     glGetFloatv(GL_PROJECTION_MATRIX,proj);
     std::vector<double> limits(GetAxisLimits());
     // Assemble the font we need to draw the labels
-    QFont fnt(GetAxisFont());
+    QFont fnt(m_font);
     // Next step - calculate the tick directions...
     // We have to draw the tics in flat space
     SetupDirectDraw();
@@ -1233,7 +1250,7 @@ namespace FreeMat {
     // Time to draw the axis...  
     SetupProjection();
     SetupAxis();
-    GenerateLabels(); // Should be triggered...
+    UpdateState();
     DrawBox();
     DrawGridLines();
     DrawAxisLines();

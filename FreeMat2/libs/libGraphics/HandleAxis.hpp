@@ -21,7 +21,8 @@ namespace FreeMat {
     double xyval, yxval, zxval, zyval;
     double xyval_opposite, yxval_opposite, zxval_opposite, zyval_opposite;
     bool xvisible, yvisible, zvisible;
-    QFont GetAxisFont();
+    QFont m_font;
+    void UpdateAxisFont();
     void DrawLabel(double x1, double y1, 
 		   double x2, double y2, GLLabel& a);
     void SetupAxis();

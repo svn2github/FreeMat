@@ -13,6 +13,8 @@ namespace FreeMat {
     HandleObject();
     virtual ~HandleObject() {}
     virtual void RegisterProperties() {}
+    bool HasChanged(std::vector<std::string> names);
+    void ClearChanged(std::vector<std::string> names);
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);
     void SetConstrainedStringDefault(std::string name, std::string value);

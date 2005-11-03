@@ -46,17 +46,26 @@ namespace FreeMat {
     QRect sze(fm.boundingRect(txt.c_str()));
     x0 = sze.left();
     y0 = sze.bottom();
-    width = sze.width();
+    width = sze.width()+fm.width("W");
     height = sze.height();
     QImage img(width,height,QImage::Format_RGB32);
     QPainter pnt(&img);
     pnt.setBackground(QColor(255,255,255));
     pnt.eraseRect(0,0,width,height);
     pnt.setFont(fnt);
-    QFontInfo fntinfo(pnt.fontInfo());
     pnt.setPen(QColor(0,0,0));
     pnt.drawText(x0,height-y0-1,text.c_str());
     pnt.end();
+    // Figure out what the minimum bounding box is...
+    int newwidth = 0;
+    for (int j=0;j<height;j++) {
+      QRgb* ibits = (QRgb*) img.scanLine(j);
+      int k=width-1;
+      while ((qRed(ibits[k])==255) && (k>=0)) 
+	k--;
+      newwidth = (newwidth < k) ? k : newwidth;
+    }
+    width = newwidth+1;
     // Now, we generate a synthetic image that is of the same size
     bits = new GLubyte[width*height*4];
     GLubyte *ibits = img.bits();
@@ -85,7 +94,6 @@ namespace FreeMat {
       y -= height/2;
     else if (yflag == Max)
       y -= height;
-    qDebug("raster pos %d %d",x,y);
     glRasterPos2i(x,y);
     glDrawPixels(width,height,GL_RGBA,GL_UNSIGNED_BYTE,bits);
   }

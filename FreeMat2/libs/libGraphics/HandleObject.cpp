@@ -2,6 +2,23 @@
 
 namespace FreeMat {
 
+  bool HandleObject::HasChanged(std::vector<std::string> names) {
+    HandleProperty *hp;
+    for (int i=0;i<names.size();i++) {
+      hp = LookupProperty(names[i]);
+      if (hp->isModified()) return true;
+    }
+    return false;
+  }
+
+  void HandleObject::ClearChanged(std::vector<std::string> names) {
+    HandleProperty *hp;
+    for (int i=0;i<names.size();i++) {
+      hp = LookupProperty(names[i]);
+      hp->ClearModified();
+    }    
+  }
+
   HandleObject::HandleObject() {
   }
 

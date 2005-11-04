@@ -19,6 +19,7 @@ namespace FreeMat {
   }
 
   void HandleFigure::SetupDefaults() {
+    resized = false;
   }
 
   void HandleFigure::paintGL() {
@@ -36,6 +37,11 @@ namespace FreeMat {
   void HandleFigure::resizeGL(int width, int height) {
     m_width = width;
     m_height = height;
+    resized = true;
+  }
+
+  bool HandleFigure::resized() {
+    return resized;
   }
 
 #if 0

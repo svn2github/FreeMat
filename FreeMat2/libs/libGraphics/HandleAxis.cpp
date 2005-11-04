@@ -563,8 +563,8 @@ namespace FreeMat {
     wx /= ww;
     wy /= ww;
     wz /= ww;
-    a = (wx+1)*(1.0/2)*position[2] + position[0];
-    b = (wy+1)*(1.0/2)*position[3] + position[1];
+    a = (wx+1)*(1.0/2)*position[2] + position[0] - 1;
+    b = (wy+1)*(1.0/2)*position[3] + position[1] - 1;
   }
 
   static void GetDirection(float model[16], float proj[16], double x1, double y1,
@@ -816,9 +816,8 @@ namespace FreeMat {
     glLoadIdentity();
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     glViewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
-    glOrtho(outerpos[0],outerpos[0]+outerpos[2]-1,
-	    outerpos[1],outerpos[1]+outerpos[3]-1,-1,1);
-    glTranslatef(0.375, 0.375, 0.0);
+    glOrtho(outerpos[0],outerpos[0]+outerpos[2],
+	    outerpos[1],outerpos[1]+outerpos[3],-1,1);
     glDisable(GL_DEPTH_TEST);
   }
 
@@ -1025,6 +1024,14 @@ namespace FreeMat {
     m_font = fnt;
   }
 
+  void HandleAxis::RecalculateTicks() {
+    // We have to calculate the tick sets for each axis...
+    std::vector<double> xticks;
+    std::vector<double> yticks;
+    std::vector<double> zticks;
+    xticks = GetTickSet();
+  }
+
   void HandleAxis::UpdateState() {
     std::vector<std::string> tset;
     tset.push_back("fontangle");  tset.push_back("fontname");
@@ -1037,13 +1044,15 @@ namespace FreeMat {
       UpdateAxisFont();
       GenerateLabels();
       ClearChanged(tset);
-      qDebug("Updated Labels");
     }
     // if ticklabels changed --> tickmode = manual
     // if tickdir set --> tickdirmode = manual
     // if resize || position chng && tickmode = auto --> recalculate tick marks
     // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
-
+    HandleFigure* fig = GetParentFigure();
+    if ((fig->resized() || HasChanged("position")) && IsAuto("tickmode")) {
+      RecalculateTicks();
+    }
   }
 
   void HandleAxis::GenerateLabels() {

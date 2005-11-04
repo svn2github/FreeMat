@@ -11,6 +11,12 @@ namespace FreeMat {
     return false;
   }
 
+  bool HandleObject::HasChanged(std::string name) {
+    std::vector<std::string> names;
+    names.push_back(name);
+    return HasChanged(names);
+  }
+
   void HandleObject::ClearChanged(std::vector<std::string> names) {
     HandleProperty *hp;
     for (int i=0;i<names.size();i++) {

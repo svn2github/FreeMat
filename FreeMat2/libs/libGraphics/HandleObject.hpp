@@ -14,6 +14,7 @@ namespace FreeMat {
     virtual ~HandleObject() {}
     virtual void RegisterProperties() {}
     bool HasChanged(std::vector<std::string> names);
+    bool HasChanged(std::string name);
     void ClearChanged(std::vector<std::string> names);
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);

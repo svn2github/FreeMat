@@ -14,10 +14,12 @@ namespace FreeMat {
   //     then draw the children
   class HandleFigure : public HandleObject {
     int m_width, m_height;
+    bool resized;
   public:
     HandleFigure();
     virtual ~HandleFigure() {}
     virtual void ConstructProperties();
+    bool resized();
     int GetWidth() {return m_width;}
     int GetHeight() {return m_height;}
     //    virtual void UpdateState();

@@ -1024,12 +1024,37 @@ namespace FreeMat {
     m_font = fnt;
   }
 
+  std::vector<double> GetTickSet(double x1, double y1, double z1,
+				 double x2, double y2, double z2) {
+    // Retrieve the transformation matrix
+    float model[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    // Map the points from the grid...
+    float proj[16];
+    glGetFloatv(GL_PROJECTION_MATRIX,proj);
+    std::vector<double> position(GetPropertyVectorAsPixels("position"));
+    double u1, v1, u2, v2;
+    ToPixels(model,proj,x1,y1,z1,u1,v1,position);
+    ToPixels(model,proj,x2,y2,z2,u2,v2,position);
+    double axlen;
+    axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
+    int numtics = min(2,axlen/50);
+    FINISHME
+    
+  }
+
   void HandleAxis::RecalculateTicks() {
     // We have to calculate the tick sets for each axis...
+    std::vector<double> limits(GetAxisLimits());
     std::vector<double> xticks;
     std::vector<double> yticks;
     std::vector<double> zticks;
-    xticks = GetTickSet();
+    xticks = GetTickSet(limits[0],xyval,xzval,
+			limits[1],xyval,xzval);
+    yticks = GetTickSet(yxval,limits[2],yzval,
+			yxval,limits[3],yzval);
+    zticks = GetTickSet(zxval,zyval,limits[4],
+			zxval,zyval,limits[5]);
   }
 
   void HandleAxis::UpdateState() {
@@ -1191,12 +1216,10 @@ namespace FreeMat {
 	glVertex2f(x1,y1);
 	glVertex2f(x2,y2);
 	glEnd();
-	if (i < xlabels.size()) {
-	  if (ticdir < 0)
-	    DrawLabel(x1,y1,x2,y2,xlabels[i]);
-	  else
-	    DrawLabel(x2,y2,x1,y1,xlabels[i]);	    
-	}
+	if (ticdir < 0)
+	  DrawLabel(x1,y1,x2,y2,xlabels[i % xlabels.size()]);
+	else
+	  DrawLabel(x2,y2,x1,y1,xlabels[i % xlabels.size()]);	    
       }
     }
     if (yvisible) {
@@ -1217,12 +1240,10 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	// put the label here...
-	if (i < ylabels.size())
-	  if (ticdir < 0)
-	    DrawLabel(x1,y1,x2,y2,ylabels[i]);
-	  else
-	    DrawLabel(x2,y2,x1,y1,ylabels[i]);
-      }
+	if (ticdir < 0)
+	  DrawLabel(x1,y1,x2,y2,ylabels[i % ylabels.size()]);
+	else
+	  DrawLabel(x2,y2,x1,y1,ylabels[i % ylabels.size()]);
     }
     if (zvisible) {
       glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
@@ -1241,11 +1262,10 @@ namespace FreeMat {
 	glVertex2f(x1,y1);
 	glVertex2f(x2,y2);
 	glEnd();
-	if (i < zlabels.size())
-	  if (ticdir < 0)
-	    DrawLabel(x1,y1,x2,y2,zlabels[i]);
-	  else
-	    DrawLabel(x2,y2,x1,y1,zlabels[i]);
+	if (ticdir < 0)
+	  DrawLabel(x1,y1,x2,y2,zlabels[i % zlabels.size()]);
+	else
+	  DrawLabel(x2,y2,x1,y1,zlabels[i % zlabels.size()]);
       }
     }
     ReleaseDirectDraw();

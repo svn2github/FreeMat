@@ -102,9 +102,9 @@ int arot = 0;
 //    xticklabel - done
 //    yticklabel - done
 //    zticklabel - done
-//    xtickmode
-//    ytickmode
-//    ztickmode
+//    xtickmode - done
+//    ytickmode - done
+//    ztickmode - done
 //    xticklabelmode
 //    yticklabelmode
 //    zticklabelmode
@@ -170,6 +170,115 @@ namespace FreeMat {
     temp.y = (v1.z * v2.x) - (v1.x * v2.z);
     temp.z = (v1.x * v2.y) - (v1.y * v2.x);
     return temp;
+  }
+
+  static std::string TrimPrint(double val, bool scientificNotation) {
+    char buffer[1000];
+    char *p;
+    if (!scientificNotation) {
+      sprintf(buffer,"%f",val);
+      p = buffer + strlen(buffer) - 1;
+      while (*p == '0') {
+	*p = 0;
+	p--;
+      }
+      if ((*p == '.') || (*p == ',')) {
+	*(p+1) = '0';
+	*(p+2) = 0;
+      }
+      return std::string(buffer);
+    } else {
+      sprintf(buffer,"%e",val);
+      std::string label(buffer);
+      unsigned int ePtr;
+      ePtr = label.size() - 1;
+      while ((label[ePtr] != 'e') && (label[ePtr] != 'E'))
+	ePtr--;
+      ePtr--;
+      while (label[ePtr] == '0') {
+	label.erase(ePtr,1);
+	ePtr--;
+      }
+      if ((label[ePtr] == '.') || (label[ePtr] == ','))
+	label.insert(ePtr+1, 1,'0');
+      ePtr = label.size() - 1;
+      while ((label[ePtr] != 'e') && (label[ePtr] != 'E'))
+	ePtr--;
+      ePtr+=2;
+      while ((label[ePtr] == '0') && ePtr < label.size()) {
+	label.erase(ePtr,1);
+      }
+      if (ePtr == label.size())
+	label.append("0");
+      return label;
+    }
+  }
+
+  // Construct an axis 
+  void FormatAxisManual(double t1, double t2, int tickcount,
+			double& tStart, double &tStop,
+			std::vector<double> &tickLocations,
+			std::vector<std::string> &tlabels) {
+    double tBegin, tEnd;
+    double delt = (t2-t1)/tickcount;
+    int n = ceil(log10(delt));
+    double rdelt = delt/pow(10.0,(double)n);
+    int p = floor(log2(rdelt));
+    double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+    tStart = t1;
+    tStop = t2;
+    tBegin = tDelt*ceil(t1/tDelt);
+    tEnd = floor(t2/tDelt)*tDelt;
+    int mprime;
+    mprime = ceil((tEnd-tBegin)/tDelt);
+    if ((tBegin+mprime*tDelt) > t2)
+      mprime--;
+    int tCount = mprime+1;
+    tickLocations.clear();
+    tlabels.clear();
+    bool exponentialForm;
+    exponentialForm = false;
+    for (int i=0;i<tCount;i++) {
+      double tloc = tBegin+i*tDelt;
+      tickLocations.push_back(tloc);
+      if (tloc != 0.0)
+	exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
+    }
+    for (int i=0;i<tCount;i++) 
+      tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
+  }
+  
+  void FormatAxisAuto(double tMin, double tMax, int tickcount,
+		      double& tStart, double &tStop,
+		      std::vector<double> &tickLocations,
+		      std::vector<std::string> &tlabels) {
+    double tBegin, tEnd;
+    double delt = (tMax-tMin)/tickcount;
+    int n = ceil(log10(delt));
+    double rdelt = delt/pow(10.0,(double)n);
+    int p = floor(log2(rdelt));
+    double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+    tStart = floor(tMin/tDelt)*tDelt;
+    tStop = ceil(tMax/tDelt)*tDelt;
+    tBegin = tStart;
+    tEnd = tStop;
+    int mprime;
+    mprime = ceil((tEnd-tBegin)/tDelt);
+    if ((tBegin+(mprime-1)*tDelt) > tMax)
+      mprime--;
+    int tCount = mprime+1;
+    tickLocations.clear();
+    tlabels.clear();
+    bool exponentialForm;
+    exponentialForm = false;
+    for (int i=0;i<tCount;i++) {
+      double tloc = tBegin+i*tDelt;
+      tickLocations.push_back(tloc);
+      if (tloc != 0.0)
+	exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
+    }
+    for (int i=0;i<tCount;i++) 
+      tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
   }
 
   void HandleAxis::Transform(double x, double y, double z, 
@@ -563,8 +672,8 @@ namespace FreeMat {
     wx /= ww;
     wy /= ww;
     wz /= ww;
-    a = (wx+1)*(1.0/2)*position[2] + position[0] - 1;
-    b = (wy+1)*(1.0/2)*position[3] + position[1] - 1;
+    a = (wx+1)*(1.0/2)*position[2] + position[0] - 0.5;
+    b = (wy+1)*(1.0/2)*position[3] + position[1] - 0.5;
   }
 
   static void GetDirection(float model[16], float proj[16], double x1, double y1,
@@ -811,6 +920,7 @@ namespace FreeMat {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
+    glTranslatef(0.375,0.375,0.0);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -1024,8 +1134,8 @@ namespace FreeMat {
     m_font = fnt;
   }
 
-  std::vector<double> GetTickSet(double x1, double y1, double z1,
-				 double x2, double y2, double z2) {
+  int HandleAxis::GetTickCount(double x1, double y1, double z1,
+			       double x2, double y2, double z2) {
     // Retrieve the transformation matrix
     float model[16];
     glGetFloatv(GL_MODELVIEW_MATRIX,model);
@@ -1038,23 +1148,87 @@ namespace FreeMat {
     ToPixels(model,proj,x2,y2,z2,u2,v2,position);
     double axlen;
     axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
-    int numtics = min(2,axlen/50);
-    FINISHME
-    
+    int numtics = QMAX(2.0,axlen/100.0);
+    return numtics;
   }
 
   void HandleAxis::RecalculateTicks() {
     // We have to calculate the tick sets for each axis...
     std::vector<double> limits(GetAxisLimits());
     std::vector<double> xticks;
+    std::vector<std::string> xlabels;
     std::vector<double> yticks;
+    std::vector<std::string> ylabels;
     std::vector<double> zticks;
-    xticks = GetTickSet(limits[0],xyval,xzval,
+    std::vector<std::string> zlabels;
+    int xcnt, ycnt, zcnt;
+    xcnt = GetTickCount(limits[0],xyval,xzval,
 			limits[1],xyval,xzval);
-    yticks = GetTickSet(yxval,limits[2],yzval,
+    ycnt = GetTickCount(yxval,limits[2],yzval,
 			yxval,limits[3],yzval);
-    zticks = GetTickSet(zxval,zyval,limits[4],
+    zcnt = GetTickCount(zxval,zyval,limits[4],
 			zxval,zyval,limits[5]);
+    double xStart, xStop;
+    double yStart, yStop;
+    double zStart, zStop;
+    HPTwoVector *tp;
+    if (IsAuto("xlimmode")) {
+      FormatAxisAuto(limits[0],limits[1],xcnt,xStart,xStop,xticks,xlabels);
+      tp = (HPTwoVector*) LookupProperty("xlim");
+      std::vector<double> lims; 
+      lims.push_back(xStart);
+      lims.push_back(xStop);
+      tp->Data(lims);
+    } else
+      FormatAxisManual(limits[0],limits[1],xcnt,xStart,xStop,xticks,xlabels);
+
+    if (IsAuto("ylimmode")) {
+      FormatAxisAuto(limits[2],limits[3],ycnt,yStart,yStop,yticks,ylabels);
+      tp = (HPTwoVector*) LookupProperty("ylim");
+      std::vector<double> lims; 
+      lims.push_back(yStart);
+      lims.push_back(yStop);
+      tp->Data(lims);
+    } else
+      FormatAxisManual(limits[2],limits[3],ycnt,yStart,yStop,yticks,ylabels);
+
+    if (IsAuto("zlimmode")) {
+      FormatAxisAuto(limits[4],limits[5],zcnt,zStart,zStop,zticks,zlabels);
+      tp = (HPTwoVector*) LookupProperty("zlim");
+      std::vector<double> lims; 
+      lims.push_back(zStart);
+      lims.push_back(zStop);
+      tp->Data(lims);
+    } else
+      FormatAxisManual(limits[4],limits[5],zcnt,zStart,zStop,zticks,zlabels);
+    // Update the limits...
+    
+    HPVector *hp;
+    HPStringSet *qp;
+    if (IsAuto("xtickmode")) {
+      hp = (HPVector*) LookupProperty("xtick");
+      hp->Data(xticks);
+    }
+    if (IsAuto("xticklabelmode")) {
+      qp = (HPStringSet*) LookupProperty("xticklabel");
+      qp->Data(xlabels);
+    }
+    if (IsAuto("ytickmode")) {
+      hp = (HPVector*) LookupProperty("ytick");
+      hp->Data(yticks);
+    }
+    if (IsAuto("yticklabelmode")) {
+      qp = (HPStringSet*) LookupProperty("yticklabel");
+      qp->Data(xlabels);
+    }
+    if (IsAuto("ztickmode")) {
+      hp = (HPVector*) LookupProperty("ztick");
+      hp->Data(zticks);
+    }
+    if (IsAuto("zticklabelmode")) {
+      qp = (HPStringSet*) LookupProperty("zticklabel");
+      qp->Data(xlabels);
+    }
   }
 
   void HandleAxis::UpdateState() {
@@ -1075,9 +1249,13 @@ namespace FreeMat {
     // if resize || position chng && tickmode = auto --> recalculate tick marks
     // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
     HandleFigure* fig = GetParentFigure();
-    if ((fig->resized() || HasChanged("position")) && IsAuto("tickmode")) {
+    if (fig->Resized() || HasChanged("position")) {
       RecalculateTicks();
+      GenerateLabels();
     }
+    // Need to to test for camera position here...
+    RecalculateTicks();
+    GenerateLabels();
   }
 
   void HandleAxis::GenerateLabels() {
@@ -1108,10 +1286,8 @@ namespace FreeMat {
 
   // The orientation of the label depends on the angle of the
   // tick
-  void HandleAxis::DrawLabel(double x1, double y1, 
+  void HandleAxis::DrawLabel(double dx, double dy, 
 			     double x2, double y2, GLLabel& a) {
-    double dx = x2 - x1;
-    double dy = y2 - y1;
     double angle = atan2(dy,dx)*180.0/M_PI;
     GLLabel::AlignmentFlag xalign;
     GLLabel::AlignmentFlag yalign;
@@ -1199,27 +1375,43 @@ namespace FreeMat {
     // Next step - calculate the tick directions...
     // We have to draw the tics in flat space
     SetupDirectDraw();
+    
+    std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+    glBegin(GL_LINES);
+    glVertex2f(0,0);
+    glVertex2f(0,10);
+    glVertex2f(0,0);
+    glVertex2f(10,0);
+    glVertex2f(outerpos[2]-1,outerpos[3]-1);
+    glVertex2f(outerpos[2]-10,outerpos[3]-1);
+    glVertex2f(outerpos[2]-1,outerpos[3]-1);
+    glVertex2f(outerpos[2]-1,outerpos[3]-10);
+    glEnd();
+
     if (xvisible) {
       glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
       for (int i=0;i<xticks.size();i++) {
 	GLfloat t = xticks[i];
 	// Map the coords ourselves
-	double x1, y1, x2, y2;
+	double x1, y1, x2, y2, delx, dely;
 	double norm;
 	ToPixels(model,proj,t,xyval,xzval,x1,y1,position);
 	ToPixels(model,proj,t,xyval_opposite,xzval,x2,y2,position);
+	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
-	norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-	x2 = (x2-x1)/norm*ticlen*ticdir + x1;
-	y2 = (y2-y1)/norm*ticlen*ticdir + y1;
+	norm = sqrt(delx*delx + dely*dely);
+	delx /= norm; dely /= norm;
+	x2 = delx*ticlen*ticdir + x1;
+	y2 = dely*ticlen*ticdir + y1;
 	glBegin(GL_LINES);
 	glVertex2f(x1,y1);
 	glVertex2f(x2,y2);
 	glEnd();
-	if (ticdir < 0)
-	  DrawLabel(x1,y1,x2,y2,xlabels[i % xlabels.size()]);
-	else
-	  DrawLabel(x2,y2,x1,y1,xlabels[i % xlabels.size()]);	    
+	double x3, y3;
+	x3 = -delx*ticlen*1.25 + x1;
+	y3 = -dely*ticlen*1.25 + y1;
+	if (~xlabels.empty())
+	  DrawLabel(-delx,-dely,x3,y3,xlabels[i % xlabels.size()]);
       }
     }
     if (yvisible) {
@@ -1227,45 +1419,51 @@ namespace FreeMat {
       for (int i=0;i<yticks.size();i++) {
 	GLfloat t = yticks[i];
 	// Map the coords ourselves
-	double x1, y1, x2, y2;
+	double x1, y1, x2, y2, delx, dely;
 	double norm;
 	ToPixels(model,proj,yxval,t,yzval,x1,y1,position);
 	ToPixels(model,proj,yxval_opposite,t,yzval,x2,y2,position);
+	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
-	norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-	x2 = (x2-x1)/norm*ticlen*ticdir + x1;
-	y2 = (y2-y1)/norm*ticlen*ticdir + y1;
+	norm = sqrt(delx*delx + dely*dely);
+	delx /= norm; dely /= norm;
+	x2 = delx*ticlen*ticdir + x1;
+	y2 = dely*ticlen*ticdir + y1;
 	glBegin(GL_LINES);
 	glVertex2f(x1,y1);
 	glVertex2f(x2,y2);
 	glEnd();
-	// put the label here...
-	if (ticdir < 0)
-	  DrawLabel(x1,y1,x2,y2,ylabels[i % ylabels.size()]);
-	else
-	  DrawLabel(x2,y2,x1,y1,ylabels[i % ylabels.size()]);
+	double x3, y3;
+	x3 = -delx*ticlen*1.25 + x1;
+	y3 = -dely*ticlen*1.25 + y1;
+	if (~ylabels.empty())
+	  DrawLabel(-delx,-dely,x3,y3,ylabels[i % ylabels.size()]);
+      }
     }
     if (zvisible) {
       glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
       for (int i=0;i<zticks.size();i++) {
 	GLfloat t = zticks[i];
 	// Map the coords ourselves
-	double x1, y1, x2, y2;
+	double x1, y1, x2, y2, delx, dely;
 	double norm;
 	ToPixels(model,proj,zxval,zyval,t,x1,y1,position);
 	ToPixels(model,proj,zxval_opposite,zyval_opposite,t,x2,y2,position);
+	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
-	norm = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-	x2 = (x2-x1)/norm*ticlen*ticdir + x1;
-	y2 = (y2-y1)/norm*ticlen*ticdir + y1;
+	norm = sqrt(delx*delx + dely*dely);
+	delx /= norm; dely /= norm;
+	x2 = delx*ticlen*ticdir + x1;
+	y2 = dely*ticlen*ticdir + y1;
 	glBegin(GL_LINES);
 	glVertex2f(x1,y1);
 	glVertex2f(x2,y2);
 	glEnd();
-	if (ticdir < 0)
-	  DrawLabel(x1,y1,x2,y2,zlabels[i % zlabels.size()]);
-	else
-	  DrawLabel(x2,y2,x1,y1,zlabels[i % zlabels.size()]);
+	double x3, y3;
+	x3 = -delx*ticlen*1.25 + x1;
+	y3 = -dely*ticlen*1.25 + y1;
+	if (~zlabels.empty())
+	  DrawLabel(-delx,-dely,x3,y3,zlabels[i % zlabels.size()]);
       }
     }
     ReleaseDirectDraw();

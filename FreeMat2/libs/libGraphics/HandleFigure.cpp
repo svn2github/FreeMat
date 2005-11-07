@@ -32,6 +32,7 @@ namespace FreeMat {
       fp->paintGL();
     }
     glFlush();
+    resized = false;
   }
 
   void HandleFigure::resizeGL(int width, int height) {
@@ -40,7 +41,7 @@ namespace FreeMat {
     resized = true;
   }
 
-  bool HandleFigure::resized() {
+  bool HandleFigure::Resized() {
     return resized;
   }
 

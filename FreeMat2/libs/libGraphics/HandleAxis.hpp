@@ -28,6 +28,9 @@ namespace FreeMat {
     void SetupAxis();
     bool Is2DView();
     void GenerateLabels();
+    void RecalculateTicks();
+    int GetTickCount(double x1, double y1, double z1, 
+		     double x2, double y2, double z2);
   public:
     std::vector<GLLabel> xlabels;
     std::vector<GLLabel> ylabels;

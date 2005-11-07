@@ -19,7 +19,7 @@ namespace FreeMat {
     HandleFigure();
     virtual ~HandleFigure() {}
     virtual void ConstructProperties();
-    bool resized();
+    bool Resized();
     int GetWidth() {return m_width;}
     int GetHeight() {return m_height;}
     //    virtual void UpdateState();

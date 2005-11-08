@@ -667,8 +667,19 @@ namespace FreeMat {
 		       std::vector<double> position) {
     double qx, qy, qz, qw;
     double wx, wy, wz, ww;
+    double gmodel[16];
+    double gproj[16];
+    int viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX,gmodel);
+    glGetDoublev(GL_PROJECTION_MATRIX,gproj);
+    double c1, c2, c3;
+    gluProject(x,y,z,gmodel,gproj,viewport,&c1,&c2,&c3);
+    
+
     MapPoint4(model,x,y,z,1,qx,qy,qz,qw);
     MapPoint4(proj,qx,qy,qz,qw,wx,wy,wz,ww);
+    
     wx /= ww;
     wy /= ww;
     wz /= ww;

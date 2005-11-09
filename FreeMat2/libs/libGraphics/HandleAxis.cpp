@@ -9,7 +9,7 @@
 #include <qpainter.h>
 #include "GLLabel.hpp"
 
-// Tick direction still doesn't work right...
+// Minor grid... 
 
 // These are globals for now... ultimately, they need to be handled
 // differently...
@@ -75,9 +75,9 @@ int arot = 0;
 //    xcolor - done
 //    ycolor - done
 //    zcolor - done
-//    xdir
-//    ydir
-//    zdir
+//    xdir - done
+//    ydir - done
+//    zdir - done
 //    xgrid - done
 //    ygrid - done
 //    zgrid - done
@@ -87,9 +87,9 @@ int arot = 0;
 //    xlim - done
 //    ylim - done
 //    zlim - done
-//    xlimmode
-//    ylimmode
-//    zlimmode
+//    xlimmode - done
+//    ylimmode - done
+//    zlimmode - done
 //    xminorgrid
 //    yminorgrid
 //    zminorgrid
@@ -105,9 +105,9 @@ int arot = 0;
 //    xtickmode - done
 //    ytickmode - done
 //    ztickmode - done
-//    xticklabelmode
-//    yticklabelmode
-//    zticklabelmode
+//    xticklabelmode - done
+//    yticklabelmode - done
+//    zticklabelmode - done
  
 
 // Need to build the transformation matrix...
@@ -670,20 +670,6 @@ namespace FreeMat {
     b = c2;
   }
 
-  static void GetDirection(double model[16], double proj[16], double x1, double y1,
-			   double z1, double x2, double y2, double z2, 
-			   int viewp, double &xdir, double &ydir,
-			   double ticlen) {
-    double qx1, qy1, qx2, qy2;
-    ToPixels(model,proj,x1,y1,z1,qx1,qy1,viewp);
-    ToPixels(model,proj,x2,y2,z2,qx2,qy2,viewp);
-    xdir = (x2-x1);
-    ydir = (y2-y1);
-    double norm = sqrt(xdir*xdir+ydir*ydir);
-    xdir *= ticlen/norm;
-    ydir *= ticlen/norm;
-  }
-
   static void MapPoint(double m[16], double x, double y, double z, 
 		       double *tx, double *ty, double *tz) {
     *tx = m[0]*x+m[4]*y+m[8]*z+m[12];
@@ -698,6 +684,53 @@ namespace FreeMat {
       vmax = (vals[i] > vmax) ? vals[i] : vmax;
     }
   }
+  
+  // x in [a,b]
+  // a->b
+  // b->a
+  // y = a-x+b = (a+b) - x
+  double HandleAxis::MapX(double x) {
+    HPNormalReverse *hp;    
+    hp = (HPNormalReverse*) LookupProperty("xdir");
+    HPTwoVector *xlim;
+    xlim = (HPTwoVector*) LookupProperty("xlim");
+    std::vector<double> lims(xlim->Data());
+    double xmin(lims[0]);
+    double xmax(lims[1]);
+    if (hp->Is("reverse")) 
+      return(xmin+xmax-x);
+    else
+      return(x);
+  }
+
+  double HandleAxis::MapY(double y) {
+    HPNormalReverse *hp;    
+    hp = (HPNormalReverse*) LookupProperty("ydir");
+    HPTwoVector *ylim;
+    ylim = (HPTwoVector*) LookupProperty("ylim");
+    std::vector<double> lims(ylim->Data());
+    double ymin(lims[0]);
+    double ymax(lims[1]);
+    if (hp->Is("reverse")) 
+      return(ymin+ymax-y);
+    else
+      return(y);
+  }
+
+  double HandleAxis::MapZ(double z) {
+    HPNormalReverse *hp;    
+    hp = (HPNormalReverse*) LookupProperty("zdir");
+    HPTwoVector *zlim;
+    zlim = (HPTwoVector*) LookupProperty("zlim");
+    std::vector<double> lims(zlim->Data());
+    double zmin(lims[0]);
+    double zmax(lims[1]);
+    if (hp->Is("reverse")) 
+      return(zmin+zmax-z);
+    else
+      return(z);
+  }
+
   void HandleAxis::SetupProjection() {
     // Build the modelview matrix
     glMatrixMode(GL_MODELVIEW);
@@ -1230,6 +1263,18 @@ namespace FreeMat {
 
   void HandleAxis::UpdateState() {
     std::vector<std::string> tset;
+    if (HasChanged("xticklabel")) {
+      HPAutoManual *qp = (HPAutoManual*) LookupProperty("xticklabelmode");
+      qp->Data("manual");
+    }
+    if (HasChanged("yticklabel")) {
+      HPAutoManual *qp = (HPAutoManual*) LookupProperty("yticklabelmode");
+      qp->Data("manual");
+    }
+    if (HasChanged("zticklabel")) {
+      HPAutoManual *qp = (HPAutoManual*) LookupProperty("zticklabelmode");
+      qp->Data("manual");
+    }
     tset.push_back("fontangle");  tset.push_back("fontname");
     tset.push_back("fontsize");   tset.push_back("fontunits");
     tset.push_back("fontweight"); tset.push_back("xticklabel");
@@ -1390,7 +1435,7 @@ namespace FreeMat {
     if (xvisible) {
       glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
       for (int i=0;i<xticks.size();i++) {
-	GLfloat t = xticks[i];
+	GLfloat t = MapX(xticks[i]);
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
@@ -1407,8 +1452,13 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	double x3, y3;
-	x3 = -delx*0.01*1.25 + x1;
-	y3 = -dely*0.01*1.25 + y1;
+	if (ticdir > 0) {
+	  x3 = -delx*0.01*1.25 + x1;
+	  y3 = -dely*0.01*1.25 + y1;
+	} else {
+	  x3 = -delx*0.01*1.25 + x2;
+	  y3 = -dely*0.01*1.25 + y2;
+	}
 	if (~xlabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,xlabels[i % xlabels.size()]);
       }
@@ -1416,7 +1466,7 @@ namespace FreeMat {
     if (yvisible) {
       glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
       for (int i=0;i<yticks.size();i++) {
-	GLfloat t = yticks[i];
+	GLfloat t = MapY(yticks[i]);
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
@@ -1433,8 +1483,13 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	double x3, y3;
-	x3 = -delx*0.01*1.25 + x1;
-	y3 = -dely*0.01*1.25 + y1;
+	if (ticdir > 0) {
+	  x3 = -delx*0.01*1.25 + x1;
+	  y3 = -dely*0.01*1.25 + y1;
+	} else {
+	  x3 = -delx*0.01*1.25 + x2;
+	  y3 = -dely*0.01*1.25 + y2;
+	}
 	if (~ylabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,ylabels[i % ylabels.size()]);
       }
@@ -1442,7 +1497,7 @@ namespace FreeMat {
     if (zvisible) {
       glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
       for (int i=0;i<zticks.size();i++) {
-	GLfloat t = zticks[i];
+	GLfloat t = MapZ(zticks[i]);
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
@@ -1459,8 +1514,13 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	double x3, y3;
-	x3 = -delx*0.01*1.25 + x1;
-	y3 = -dely*0.01*1.25 + y1;
+	if (ticdir > 0) {
+	  x3 = -delx*0.01*1.25 + x1;
+	  y3 = -dely*0.01*1.25 + y1;
+	} else {
+	  x3 = -delx*0.01*1.25 + x2;
+	  y3 = -dely*0.01*1.25 + y2;
+	}
 	if (~zlabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,zlabels[i % zlabels.size()]);
       }

@@ -49,6 +49,9 @@ namespace FreeMat {
     std::vector<double> UnitsReinterpret(std::vector<double> a);
     std::vector<double> GetPropertyVectorAsPixels(std::string name);
     std::vector<double> GetAxisLimits();
+    double MapX(double x);
+    double MapY(double y);
+    double MapZ(double z);
     bool IsVisibleLine(float nx1, float nx2, float nx3, 
 		       float ny1, float ny2, float ny3);
     void SetLineStyle(std::string style);

@@ -653,7 +653,7 @@ namespace FreeMat {
     return (UnitsReinterpret(hp->Data()));
   }
 
-  static void MapPoint4(float m[16], double x, double y, 
+  static void MapPoint4(double m[16], double x, double y, 
 		       double z, double w, double &tx,
 		       double &ty, double &tz, double &tw) {
     tx = m[0]*x+m[4]*y+m[8]*z+m[12];
@@ -662,38 +662,21 @@ namespace FreeMat {
     tw = m[3]*x+m[7]*y+m[11]*z+m[15];
   }
 
-  static void ToPixels(float model[16], float proj[16], double x, double y,
-		       double z, double &a, double &b, 
-		       std::vector<double> position) {
-    double qx, qy, qz, qw;
-    double wx, wy, wz, ww;
-    double gmodel[16];
-    double gproj[16];
-    int viewport[4];
-    glGetIntegerv(GL_VIEWPORT,viewport);
-    glGetDoublev(GL_MODELVIEW_MATRIX,gmodel);
-    glGetDoublev(GL_PROJECTION_MATRIX,gproj);
+  static void ToPixels(double model[16], double proj[16], double x, double y,
+		       double z, double &a, double &b, int viewp[4]) {
     double c1, c2, c3;
-    gluProject(x,y,z,gmodel,gproj,viewport,&c1,&c2,&c3);
-    
-
-    MapPoint4(model,x,y,z,1,qx,qy,qz,qw);
-    MapPoint4(proj,qx,qy,qz,qw,wx,wy,wz,ww);
-    
-    wx /= ww;
-    wy /= ww;
-    wz /= ww;
-    a = (wx+1)*(1.0/2)*position[2] + position[0] - 0.5;
-    b = (wy+1)*(1.0/2)*position[3] + position[1] - 0.5;
+    gluProject(x,y,z,model,proj,viewp,&c1,&c2,&c3);
+    a = c1;
+    b = c2;
   }
 
-  static void GetDirection(float model[16], float proj[16], double x1, double y1,
+  static void GetDirection(double model[16], double proj[16], double x1, double y1,
 			   double z1, double x2, double y2, double z2, 
-			   std::vector<double> position, double &xdir, double &ydir,
+			   int viewp, double &xdir, double &ydir,
 			   double ticlen) {
     double qx1, qy1, qx2, qy2;
-    ToPixels(model,proj,x1,y1,z1,qx1,qy1,position);
-    ToPixels(model,proj,x2,y2,z2,qx2,qy2,position);
+    ToPixels(model,proj,x1,y1,z1,qx1,qy1,viewp);
+    ToPixels(model,proj,x2,y2,z2,qx2,qy2,viewp);
     xdir = (x2-x1);
     ydir = (y2-y1);
     double norm = sqrt(xdir*xdir+ydir*ydir);
@@ -701,7 +684,7 @@ namespace FreeMat {
     ydir *= ticlen/norm;
   }
 
-  static void MapPoint(float m[16], double x, double y, double z, 
+  static void MapPoint(double m[16], double x, double y, double z, 
 		       double *tx, double *ty, double *tz) {
     *tx = m[0]*x+m[4]*y+m[8]*z+m[12];
     *ty = m[1]*x+m[5]*y+m[9]*z+m[13];
@@ -723,8 +706,8 @@ namespace FreeMat {
     glRotatef(elev,1,0,0);
     glRotatef(azim,0,0,1);
     // Retrieve it
-    float m[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,m);
+    double m[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,m);
     // Get the axis limits
     std::vector<double> limits(GetAxisLimits());
     // Map the 8 corners of the clipping cube to rotated space
@@ -827,8 +810,8 @@ namespace FreeMat {
     std::vector<double> limits(GetAxisLimits());
     glDisable(GL_DEPTH_TEST);
     // Retrieve the current transformation matrix
-    float m[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,m);
+    double m[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,m);
     // The normals of interest are 
     // [0,0,1],[0,0,-1],
     // [0,1,0],[0,-1,0],
@@ -931,7 +914,6 @@ namespace FreeMat {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-    glTranslatef(0.375,0.375,0.0);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -945,8 +927,8 @@ namespace FreeMat {
   bool HandleAxis::IsVisibleLine(float nx1, float ny1, float nz1,
 				 float nx2, float ny2, float nz2) {
     // Retrieve the modelview matrix
-    float model[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    double model[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,model);
     // Transform the normals, and take the z component
     double tx, ty, tz, tw;
     bool plane1visible;
@@ -961,8 +943,8 @@ namespace FreeMat {
   void HandleAxis::SetupAxis() {
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
    // Project the visible axis positions
-    float model[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    double model[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,model);
     std::vector<double> limits(GetAxisLimits());
     // Query the axisproperties to set the z-position of the
     // x and y axis
@@ -1073,17 +1055,19 @@ namespace FreeMat {
       zxval_opposite = limits[1];
       zyval_opposite = limits[3];
     }
-    float proj[16];
-    glGetFloatv(GL_PROJECTION_MATRIX,proj);
+    double proj[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,proj);
+    int viewp[4];
+    glGetIntegerv(GL_VIEWPORT,viewp);
     double x1, y1, x2, y2;
-    ToPixels(model,proj,limits[0],xyval,xzval,x1,y1,position);
-    ToPixels(model,proj,limits[1],xyval,xzval,x2,y2,position);
+    ToPixels(model,proj,limits[0],xyval,xzval,x1,y1,viewp);
+    ToPixels(model,proj,limits[1],xyval,xzval,x2,y2,viewp);
     xvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
-    ToPixels(model,proj,yxval,limits[2],yzval,x1,y1,position);
-    ToPixels(model,proj,yxval,limits[3],yzval,x2,y2,position);
+    ToPixels(model,proj,yxval,limits[2],yzval,x1,y1,viewp);
+    ToPixels(model,proj,yxval,limits[3],yzval,x2,y2,viewp);
     yvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
-    ToPixels(model,proj,zxval,zyval,limits[4],x1,y1,position);
-    ToPixels(model,proj,zxval,zyval,limits[5],x2,y2,position);
+    ToPixels(model,proj,zxval,zyval,limits[4],x1,y1,viewp);
+    ToPixels(model,proj,zxval,zyval,limits[5],x2,y2,viewp);
     zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
   }
 
@@ -1148,15 +1132,17 @@ namespace FreeMat {
   int HandleAxis::GetTickCount(double x1, double y1, double z1,
 			       double x2, double y2, double z2) {
     // Retrieve the transformation matrix
-    float model[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    double model[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,model);
     // Map the points from the grid...
-    float proj[16];
-    glGetFloatv(GL_PROJECTION_MATRIX,proj);
+    double proj[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,proj);
+    int viewp[4];
+    glGetIntegerv(GL_VIEWPORT,viewp);
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
     double u1, v1, u2, v2;
-    ToPixels(model,proj,x1,y1,z1,u1,v1,position);
-    ToPixels(model,proj,x2,y2,z2,u2,v2,position);
+    ToPixels(model,proj,x1,y1,z1,u1,v1,viewp);
+    ToPixels(model,proj,x2,y2,z2,u2,v2,viewp);
     double axlen;
     axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
     int numtics = QMAX(2.0,axlen/100.0);
@@ -1375,11 +1361,13 @@ namespace FreeMat {
     }
     // Draw the ticks
     // Retrieve the transformation matrix
-    float model[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX,model);
+    double model[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,model);
     // Map the points from the grid...
-    float proj[16];
-    glGetFloatv(GL_PROJECTION_MATRIX,proj);
+    double proj[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,proj);
+    int viewp[4];
+    glGetIntegerv(GL_VIEWPORT,viewp);
     std::vector<double> limits(GetAxisLimits());
     // Assemble the font we need to draw the labels
     QFont fnt(m_font);
@@ -1406,8 +1394,8 @@ namespace FreeMat {
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,t,xyval,xzval,x1,y1,position);
-	ToPixels(model,proj,t,xyval_opposite,xzval,x2,y2,position);
+	ToPixels(model,proj,t,xyval,xzval,x1,y1,viewp);
+	ToPixels(model,proj,t,xyval_opposite,xzval,x2,y2,viewp);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
@@ -1419,8 +1407,8 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	double x3, y3;
-	x3 = -delx*ticlen*1.25 + x1;
-	y3 = -dely*ticlen*1.25 + y1;
+	x3 = -delx*0.01*1.25 + x1;
+	y3 = -dely*0.01*1.25 + y1;
 	if (~xlabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,xlabels[i % xlabels.size()]);
       }
@@ -1432,8 +1420,8 @@ namespace FreeMat {
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,yxval,t,yzval,x1,y1,position);
-	ToPixels(model,proj,yxval_opposite,t,yzval,x2,y2,position);
+	ToPixels(model,proj,yxval,t,yzval,x1,y1,viewp);
+	ToPixels(model,proj,yxval_opposite,t,yzval,x2,y2,viewp);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
@@ -1445,8 +1433,8 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	double x3, y3;
-	x3 = -delx*ticlen*1.25 + x1;
-	y3 = -dely*ticlen*1.25 + y1;
+	x3 = -delx*0.01*1.25 + x1;
+	y3 = -dely*0.01*1.25 + y1;
 	if (~ylabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,ylabels[i % ylabels.size()]);
       }
@@ -1458,8 +1446,8 @@ namespace FreeMat {
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,zxval,zyval,t,x1,y1,position);
-	ToPixels(model,proj,zxval_opposite,zyval_opposite,t,x2,y2,position);
+	ToPixels(model,proj,zxval,zyval,t,x1,y1,viewp);
+	ToPixels(model,proj,zxval_opposite,zyval_opposite,t,x2,y2,viewp);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
@@ -1471,8 +1459,8 @@ namespace FreeMat {
 	glVertex2f(x2,y2);
 	glEnd();
 	double x3, y3;
-	x3 = -delx*ticlen*1.25 + x1;
-	y3 = -dely*ticlen*1.25 + y1;
+	x3 = -delx*0.01*1.25 + x1;
+	y3 = -dely*0.01*1.25 + y1;
 	if (~zlabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,zlabels[i % zlabels.size()]);
       }

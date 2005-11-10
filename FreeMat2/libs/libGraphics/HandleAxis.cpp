@@ -50,7 +50,7 @@ int arot = 0;
 //    layer
 //    //    linestyleorder
 //    linewidth
-//    minorgridlinestyle 
+//    minorgridlinestyle - done
 //    nextplot
 //    outerposition - done - need linkage to position
 //    parent - done
@@ -90,9 +90,9 @@ int arot = 0;
 //    xlimmode - done
 //    ylimmode - done
 //    zlimmode - done
-//    xminorgrid
-//    yminorgrid
-//    zminorgrid
+//    xminorgrid - done
+//    yminorgrid - done
+//    zminorgrid - done
 //    xscale
 //    yscale
 //    zscale
@@ -214,8 +214,16 @@ namespace FreeMat {
     }
   }
 
+  double tlog(double x) {
+    if (x>0) 
+      return log10(x);
+    else
+      return -10;
+  }
+
   // Construct an axis 
   void FormatAxisManual(double t1, double t2, int tickcount,
+			bool isLogarithmic,
 			double& tStart, double &tStop,
 			std::vector<double> &tickLocations,
 			std::vector<std::string> &tlabels) {
@@ -225,6 +233,8 @@ namespace FreeMat {
     double rdelt = delt/pow(10.0,(double)n);
     int p = floor(log2(rdelt));
     double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+    if (isLogarithmic)
+      tDelt = ceil(tDelt);
     tStart = t1;
     tStop = t2;
     tBegin = tDelt*ceil(t1/tDelt);
@@ -249,6 +259,7 @@ namespace FreeMat {
   }
   
   void FormatAxisAuto(double tMin, double tMax, int tickcount,
+		      bool isLogarithmic,
 		      double& tStart, double &tStop,
 		      std::vector<double> &tickLocations,
 		      std::vector<std::string> &tlabels) {
@@ -258,6 +269,8 @@ namespace FreeMat {
     double rdelt = delt/pow(10.0,(double)n);
     int p = floor(log2(rdelt));
     double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+    if (isLogarithmic) 
+      tDelt = ceil(tDelt);
     tStart = floor(tMin/tDelt)*tDelt;
     tStop = ceil(tMax/tDelt)*tDelt;
     tBegin = tStart;
@@ -273,12 +286,18 @@ namespace FreeMat {
     exponentialForm = false;
     for (int i=0;i<tCount;i++) {
       double tloc = tBegin+i*tDelt;
-      tickLocations.push_back(tloc);
+      if (!isLogarithmic)
+	tickLocations.push_back(tloc);
+      else
+	tickLocations.push_back(pow(10.0,tloc));
       if (tloc != 0.0)
 	exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
     }
     for (int i=0;i<tCount;i++) 
-      tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
+      if (!isLogarithmic)
+	tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
+      else
+	tlabels.push_back(TrimPrint(pow(10.0,tBegin+i*tDelt),true));
   }
 
   void HandleAxis::Transform(double x, double y, double z, 
@@ -608,15 +627,34 @@ namespace FreeMat {
   std::vector<double> HandleAxis::GetAxisLimits() {
     HPTwoVector *hp;
     std::vector<double> lims;
+    HPLinearLog *sp;
     hp = (HPTwoVector*) LookupProperty("xlim");
-    lims.push_back(hp->Data()[0]);
-    lims.push_back(hp->Data()[1]);
+    sp = (HPLinearLog*) LookupProperty("xscale");
+    if (sp->Is("linear")) {
+      lims.push_back(hp->Data()[0]);
+      lims.push_back(hp->Data()[1]);
+    } else {
+      lims.push_back(tlog(hp->Data()[0]));
+      lims.push_back(tlog(hp->Data()[1]));
+    }
     hp = (HPTwoVector*) LookupProperty("ylim");
-    lims.push_back(hp->Data()[0]);
-    lims.push_back(hp->Data()[1]);
+    sp = (HPLinearLog*) LookupProperty("yscale");
+    if (sp->Is("linear")) {
+      lims.push_back(hp->Data()[0]);
+      lims.push_back(hp->Data()[1]);
+    } else {
+      lims.push_back(tlog(hp->Data()[0]));
+      lims.push_back(tlog(hp->Data()[1]));
+    }
     hp = (HPTwoVector*) LookupProperty("zlim");
-    lims.push_back(hp->Data()[0]);
-    lims.push_back(hp->Data()[1]);
+    sp = (HPLinearLog*) LookupProperty("zscale");
+    if (sp->Is("linear")) {
+      lims.push_back(hp->Data()[0]);
+      lims.push_back(hp->Data()[1]);
+    } else {
+      lims.push_back(tlog(hp->Data()[0]));
+      lims.push_back(tlog(hp->Data()[1]));
+    }
     return lims;
   }
 
@@ -695,6 +733,10 @@ namespace FreeMat {
     HPTwoVector *xlim;
     xlim = (HPTwoVector*) LookupProperty("xlim");
     std::vector<double> lims(xlim->Data());
+    HPLinearLog *sp;
+    sp = (HPLinearLog*) LookupProperty("xscale");
+    if (sp->Is("log"))
+      x = tlog(x);
     double xmin(lims[0]);
     double xmax(lims[1]);
     if (hp->Is("reverse")) 
@@ -709,6 +751,10 @@ namespace FreeMat {
     HPTwoVector *ylim;
     ylim = (HPTwoVector*) LookupProperty("ylim");
     std::vector<double> lims(ylim->Data());
+    HPLinearLog *sp;
+    sp = (HPLinearLog*) LookupProperty("yscale");
+    if (sp->Is("log"))
+      y = tlog(y);
     double ymin(lims[0]);
     double ymax(lims[1]);
     if (hp->Is("reverse")) 
@@ -723,6 +769,10 @@ namespace FreeMat {
     HPTwoVector *zlim;
     zlim = (HPTwoVector*) LookupProperty("zlim");
     std::vector<double> lims(zlim->Data());
+    HPLinearLog *sp;
+    sp = (HPLinearLog*) LookupProperty("zscale");
+    if (sp->Is("log"))
+      z = tlog(z);
     double zmin(lims[0]);
     double zmax(lims[1]);
     if (hp->Is("reverse")) 
@@ -871,61 +921,148 @@ namespace FreeMat {
     if (((HPOnOff*) LookupProperty("xgrid"))->AsBool()) {
       glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
       for (int i=0;i<xticks.size();i++) {
-	GLfloat t = xticks[i];
-	if (m[10] > 0) {
-	  glVertex3f(t,limits[2],limits[4]);
-	  glVertex3f(t,limits[3],limits[4]);
-	} else if (m[10] < 0) {
-	  glVertex3f(t,limits[2],limits[5]);
-	  glVertex3f(t,limits[3],limits[5]);
-	}
-	if (m[6] > 0) {
-	  glVertex3f(t,limits[2],limits[4]);
-	  glVertex3f(t,limits[2],limits[5]);
-	} else if (m[6] < 0) {
-	  glVertex3f(t,limits[3],limits[4]);
-	  glVertex3f(t,limits[3],limits[5]);
-	}
+	GLfloat t = MapX(xticks[i]);
+	DrawXGridLine(m,t,limits);
       }
     }
     if (((HPOnOff*) LookupProperty("ygrid"))->AsBool()) {
       glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
       for (int i=0;i<yticks.size();i++) {
-	GLfloat t = yticks[i];
-	if (m[10] > 0) {
-	  glVertex3f(limits[0],t,limits[4]);
-	  glVertex3f(limits[1],t,limits[4]);
-	} else if (m[10] < 0) {
-	  glVertex3f(limits[0],t,limits[5]);
-	  glVertex3f(limits[1],t,limits[5]);
-	}
-	if (m[2] > 0) {
-	  glVertex3f(limits[0],t,limits[4]);
-	  glVertex3f(limits[0],t,limits[5]);
-	} else if (m[2] < 0) {
-	  glVertex3f(limits[1],t,limits[4]);
-	  glVertex3f(limits[1],t,limits[5]);
-	}
+	GLfloat t = MapY(yticks[i]);
+	DrawYGridLine(m,t,limits);
       }
     }
     if (((HPOnOff*) LookupProperty("zgrid"))->AsBool()) {
       glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
       for (int i=0;i<zticks.size();i++) {
-	GLfloat t = zticks[i];
-	if (m[6] > 0) {
-	  glVertex3f(limits[0],limits[2],t);
-	  glVertex3f(limits[1],limits[2],t);
-	} else if (m[6] < 0) {
-	  glVertex3f(limits[0],limits[3],t);
-	  glVertex3f(limits[1],limits[3],t);
+	GLfloat t = MapZ(zticks[i]);
+	DrawZGridLine(m,t,limits);
+      }
+    }
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_LINE_STIPPLE);
+  }
+
+  void HandleAxis::DrawXGridLine(double m[16], double t, 
+				 std::vector<double> limits) {
+    if (m[10] > 0) {
+      glVertex3f(t,limits[2],limits[4]);
+      glVertex3f(t,limits[3],limits[4]);
+    } else if (m[10] < 0) {
+      glVertex3f(t,limits[2],limits[5]);
+      glVertex3f(t,limits[3],limits[5]);
+    }
+    if (m[6] > 0) {
+      glVertex3f(t,limits[2],limits[4]);
+      glVertex3f(t,limits[2],limits[5]);
+    } else if (m[6] < 0) {
+      glVertex3f(t,limits[3],limits[4]);
+      glVertex3f(t,limits[3],limits[5]);
+    }
+  }
+  
+  void HandleAxis::DrawYGridLine(double m[16], double t,
+				 std::vector<double> limits) {
+    if (m[10] > 0) {
+      glVertex3f(limits[0],t,limits[4]);
+      glVertex3f(limits[1],t,limits[4]);
+    } else if (m[10] < 0) {
+      glVertex3f(limits[0],t,limits[5]);
+      glVertex3f(limits[1],t,limits[5]);
+    }
+    if (m[2] > 0) {
+      glVertex3f(limits[0],t,limits[4]);
+      glVertex3f(limits[0],t,limits[5]);
+    } else if (m[2] < 0) {
+      glVertex3f(limits[1],t,limits[4]);
+      glVertex3f(limits[1],t,limits[5]);
+    }
+  }
+
+  void HandleAxis::DrawZGridLine(double m[16], double t,
+				 std::vector<double> limits) {
+    if (m[6] > 0) {
+      glVertex3f(limits[0],limits[2],t);
+      glVertex3f(limits[1],limits[2],t);
+    } else if (m[6] < 0) {
+      glVertex3f(limits[0],limits[3],t);
+      glVertex3f(limits[1],limits[3],t);
+    }
+    if (m[2] > 0) {
+      glVertex3f(limits[0],limits[2],t);
+      glVertex3f(limits[0],limits[3],t);
+    } else if (m[2] < 0) {
+      glVertex3f(limits[1],limits[2],t);
+      glVertex3f(limits[1],limits[3],t);
+    }
+  }				 
+
+  void HandleAxis::DrawMinorGridLines() {
+    std::vector<double> limits(GetAxisLimits());
+    glDisable(GL_DEPTH_TEST);
+    // Retrieve the current transformation matrix
+    double m[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,m);
+    // The normals of interest are 
+    // [0,0,1],[0,0,-1],
+    // [0,1,0],[0,-1,0],
+    // [1,0,0],[-1,0,0]
+    // We will multiply the transformation matrix 
+    // by a directional vector.  Then we test the
+    // sign of the z component.  This sequence of
+    // operations is equivalent to simply taking the
+    // 2, 6, 10 elements of m, and drawing the corresponding
+    // Select the set of grids to draw based on these elements
+    // Draw the grid
+    SetLineStyle(((HPLineStyle*) LookupProperty("minorgridlinestyle"))->Data());
+    glBegin(GL_LINES);
+    HPVector *hp;
+    hp = (HPVector*) LookupProperty("xtick");
+    std::vector<double> xticks(hp->Data());
+    hp = (HPVector*) LookupProperty("ytick");
+    std::vector<double> yticks(hp->Data());
+    hp = (HPVector*) LookupProperty("ztick");
+    std::vector<double> zticks(hp->Data());
+    HPColor *xc = (HPColor*) LookupProperty("xcolor");
+    HPColor *yc = (HPColor*) LookupProperty("ycolor");
+    HPColor *zc = (HPColor*) LookupProperty("zcolor");
+    HPLinearLog *sp;
+    if (((HPOnOff*) LookupProperty("xminorgrid"))->AsBool()) {
+      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      sp = (HPLinearLog*) LookupProperty("xscale");
+      if (sp->Is("linear")) {
+	for (int i=0;i<xticks.size()-1;i++) {
+	  GLfloat t = MapX((xticks[i]+xticks[i+1])/2);
+	  DrawXGridLine(m,t,limits);
 	}
-	if (m[2] > 0) {
-	  glVertex3f(limits[0],limits[2],t);
-	  glVertex3f(limits[0],limits[3],t);
-	} else if (m[2] < 0) {
-	  glVertex3f(limits[1],limits[2],t);
-	  glVertex3f(limits[1],limits[3],t);
+      } else {
+	for (int i=0;i<xticks.size()-1;i++) {
+	  // Ticks should be in integer divisions
+	  double t1 = xticks[i];
+	  double t2 = xticks[i+1];
+	  int n = 2;
+	  while ((t1*n)<t2) {
+	    GLfloat t = MapX(n*t1);
+	    n++;
+	    DrawXGridLine(m,t,limits);
+	  }
 	}
+      }
+    }
+
+    if (((HPOnOff*) LookupProperty("yminorgrid"))->AsBool()) {
+      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+      for (int i=0;i<yticks.size()-1;i++) {
+	GLfloat t = MapY((yticks[i]+yticks[i+1])/2);
+	DrawYGridLine(m,t,limits);
+      }
+    }
+    if (((HPOnOff*) LookupProperty("zminorgrid"))->AsBool()) {
+      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+      for (int i=0;i<zticks.size()-1;i++) {
+	GLfloat t = MapZ((zticks[i]+zticks[i+1])/2);
+	DrawZGridLine(m,t,limits);
       }
     }
     glEnd();
@@ -1202,35 +1339,60 @@ namespace FreeMat {
     double yStart, yStop;
     double zStart, zStop;
     HPTwoVector *tp;
+    HPLinearLog *lp;
+    lp = (HPLinearLog*)LookupProperty("xscale");
     if (IsAuto("xlimmode")) {
-      FormatAxisAuto(limits[0],limits[1],xcnt,xStart,xStop,xticks,xlabels);
+      FormatAxisAuto(limits[0],limits[1],xcnt,
+		     lp->Is("log"),xStart,xStop,xticks,xlabels);
       tp = (HPTwoVector*) LookupProperty("xlim");
       std::vector<double> lims; 
-      lims.push_back(xStart);
-      lims.push_back(xStop);
+      if (lp->Is("linear")) {
+	lims.push_back(xStart);
+	lims.push_back(xStop);
+      } else {
+	lims.push_back(pow(10.0,xStart));
+	lims.push_back(pow(10.0,xStop));
+      }
       tp->Data(lims);
     } else
-      FormatAxisManual(limits[0],limits[1],xcnt,xStart,xStop,xticks,xlabels);
+      FormatAxisManual(limits[0],limits[1],xcnt,
+		       lp->Is("log"),xStart,xStop,xticks,xlabels);
 
+    lp = (HPLinearLog*)LookupProperty("yscale");
     if (IsAuto("ylimmode")) {
-      FormatAxisAuto(limits[2],limits[3],ycnt,yStart,yStop,yticks,ylabels);
+      FormatAxisAuto(limits[2],limits[3],ycnt,
+		     lp->Is("log"),yStart,yStop,yticks,ylabels);
       tp = (HPTwoVector*) LookupProperty("ylim");
       std::vector<double> lims; 
-      lims.push_back(yStart);
-      lims.push_back(yStop);
+      if (lp->Is("linear")) {
+	lims.push_back(yStart);
+	lims.push_back(yStop);
+      } else {
+	lims.push_back(pow(10.0,yStart));
+	lims.push_back(pow(10.0,yStop));
+      }
       tp->Data(lims);
     } else
-      FormatAxisManual(limits[2],limits[3],ycnt,yStart,yStop,yticks,ylabels);
+      FormatAxisManual(limits[2],limits[3],ycnt,
+		       lp->Is("log"),yStart,yStop,yticks,ylabels);
 
+    lp = (HPLinearLog*)LookupProperty("zscale");
     if (IsAuto("zlimmode")) {
-      FormatAxisAuto(limits[4],limits[5],zcnt,zStart,zStop,zticks,zlabels);
+      FormatAxisAuto(limits[4],limits[5],zcnt,
+		     lp->Is("log"),zStart,zStop,zticks,zlabels);
       tp = (HPTwoVector*) LookupProperty("zlim");
       std::vector<double> lims; 
-      lims.push_back(zStart);
-      lims.push_back(zStop);
+      if (lp->Is("linear")) {
+	lims.push_back(zStart);
+	lims.push_back(zStop);
+      } else {
+	lims.push_back(pow(10.0,zStart));
+	lims.push_back(pow(10.0,zStop));
+      }
       tp->Data(lims);
     } else
-      FormatAxisManual(limits[4],limits[5],zcnt,zStart,zStop,zticks,zlabels);
+      FormatAxisManual(limits[4],limits[5],zcnt,
+		       lp->Is("log"),zStart,zStop,zticks,zlabels);
     // Update the limits...
     
     HPVector *hp;
@@ -1249,7 +1411,7 @@ namespace FreeMat {
     }
     if (IsAuto("yticklabelmode")) {
       qp = (HPStringSet*) LookupProperty("yticklabel");
-      qp->Data(xlabels);
+      qp->Data(ylabels);
     }
     if (IsAuto("ztickmode")) {
       hp = (HPVector*) LookupProperty("ztick");
@@ -1257,7 +1419,7 @@ namespace FreeMat {
     }
     if (IsAuto("zticklabelmode")) {
       qp = (HPStringSet*) LookupProperty("zticklabel");
-      qp->Data(xlabels);
+      qp->Data(zlabels);
     }
   }
 
@@ -1545,6 +1707,7 @@ namespace FreeMat {
     UpdateState();
     DrawBox();
     DrawGridLines();
+    DrawMinorGridLines();
     DrawAxisLines();
     DrawTickMarks();
     DrawTickLabels();

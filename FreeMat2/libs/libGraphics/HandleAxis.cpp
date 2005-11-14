@@ -9,7 +9,13 @@
 #include <qpainter.h>
 #include "GLLabel.hpp"
 
-// Minor grid... 
+// Need camera values.
+
+// For 2D...
+// Default cameratarget is [xmean,ymean,zmean]
+// Default cameraposition is [xmean,ymean,zmin]
+// Default cameraupvector is [0,1,0]
+
 
 // These are globals for now... ultimately, they need to be handled
 // differently...
@@ -93,9 +99,9 @@ int arot = 0;
 //    xminorgrid - done
 //    yminorgrid - done
 //    zminorgrid - done
-//    xscale
-//    yscale
-//    zscale
+//    xscale - done
+//    yscale - done
+//    zscale - done
 //    xtick - done
 //    ytick - done
 //    ztick - done
@@ -322,6 +328,7 @@ namespace FreeMat {
     AddProperty(new HPThreeVector,"cameratarget");
     AddProperty(new HPAutoManual,"cameratargetmode");
     AddProperty(new HPThreeVector,"cameraupvector");
+    AddProperty(new HPThreeVector,"cameraupvectormode");
     AddProperty(new HPScalar,"cameraviewangle");
     AddProperty(new HPAutoManual,"cameraviewanglemode");
     AddProperty(new HPHandles,"children");
@@ -456,6 +463,7 @@ namespace FreeMat {
     SetThreeVectorDefault("cameratarget",0,0,0);
     SetConstrainedStringDefault("cameratargetmode","auto");
     SetThreeVectorDefault("cameraupvector",0,1,0);
+    SetConstrainedStringDefault("cameraupvectormode","auto");
     SetConstrainedStringDefault("cameraviewanglemode","auto");
     SetConstrainedStringDefault("climmode","auto");
     SetConstrainedStringDefault("clipping","on");
@@ -580,7 +588,7 @@ namespace FreeMat {
   void BaseFigure::initializeGL() {
     glShadeModel(GL_SMOOTH);
     glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
-    glClearDepth(1e10f);
+    glClearDepth(6.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -708,11 +716,39 @@ namespace FreeMat {
     b = c2;
   }
 
-  static void MapPoint(double m[16], double x, double y, double z, 
+
+  static void gluMultMatrixVecd(const double matrix[16], const double in[4], double out[4])
+  {
+    int i;
+    
+    for (i=0; i<4; i++) {
+      out[i] = 
+	in[0] * matrix[0*4+i] +
+	in[1] * matrix[1*4+i] +
+	in[2] * matrix[2*4+i] +
+	in[3] * matrix[3*4+i];
+    }
+  }
+
+  static void MapPoint(double model[16], double x, double y, double z, 
 		       double *tx, double *ty, double *tz) {
-    *tx = m[0]*x+m[4]*y+m[8]*z+m[12];
-    *ty = m[1]*x+m[5]*y+m[9]*z+m[13];
-    *tz = m[2]*x+m[6]*y+m[10]*z+m[14];
+    double out[4];
+    double in[4];
+    in[0] = x;
+    in[1] = y;
+    in[2] = z;
+    in[3] = 1.0;
+    gluMultMatrixVecd(model,in,out);
+    *tx = out[0];
+    *ty = out[1];
+    *tz = out[2];
+    //     gluMultMatrixVecd(proj,out,int);
+    //     *tx = m[0]*x+m[1]*y+m[2]*z-m[12];
+    //     *ty = m[4]*x+m[5]*y+m[6]*z-m[13];
+    //     *tz = m[8]*x+m[9]*y+m[10]*z-m[14];
+    //     *tx = m[0]*x+m[1]*y+m[2]*z-m[12];
+    //     *ty = m[1]*x+m[5]*y+m[6]*z-m[13];
+    //     *tz = m[2]*x+m[9]*y+m[10]*z-m[14];
   }
 
   static void MinMaxVector(double *vals, int len, double &vmin, double &vmax) {
@@ -783,12 +819,19 @@ namespace FreeMat {
 
   void HandleAxis::SetupProjection() {
     // Build the modelview matrix
-    glMatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_MODELVIEW);    
     glLoadIdentity();
-    glRotatef(arot,0,0,1);
-    glRotatef(elev,1,0,0);
-    glRotatef(azim,0,0,1);
-    // Retrieve it
+    HPThreeVector *tv1, *tv2, *tv3;
+    tv1 = (HPThreeVector*) LookupProperty("cameraposition");
+    tv2 = (HPThreeVector*) LookupProperty("cameratarget");
+    tv3 = (HPThreeVector*) LookupProperty("cameraupvector");
+    gluLookAt(tv1->Data()[0],tv1->Data()[1],tv1->Data()[2],
+	      tv2->Data()[0],tv2->Data()[1],tv2->Data()[2],
+	      tv3->Data()[0],tv3->Data()[1],tv3->Data()[2]);
+    // camera norm
+    double camdist = sqrt(tv1->Data()[0]*tv1->Data()[0]+
+			  tv1->Data()[1]*tv1->Data()[1]+
+			  tv1->Data()[2]*tv1->Data()[2]);
     double m[16];
     glGetDoublev(GL_MODELVIEW_MATRIX,m);
     // Get the axis limits
@@ -810,12 +853,14 @@ namespace FreeMat {
     MinMaxVector(xvals,8,xmin,xmax);
     MinMaxVector(yvals,8,ymin,ymax);
     MinMaxVector(zvals,8,zmin,zmax);
-    // Get the position vector
-    std::vector<double> position(GetPropertyVectorAsPixels("position"));
-    glViewport(position[0],position[1],position[2],position[3]);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(xmin,xmax,ymin,ymax,zmin,zmax);
+    // Invert the signs of zmin and zmax
+    glOrtho(xmin,xmax,ymin,ymax,-zmax,-zmin);
+    //   glFrustum(xmin,xmax,ymin,ymax,zmin,zmax);
+    std::vector<double> position(GetPropertyVectorAsPixels("position"));
+    glViewport(position[0],position[1],position[2],position[3]);
+    return;
   }
 
   void HandleAxis::DrawBox() {
@@ -824,7 +869,7 @@ namespace FreeMat {
     HPColor *hp = (HPColor*) LookupProperty("color");
     if (hp->IsNone()) return;
     std::vector<double> limits(GetAxisLimits());
-    glEnable(GL_CULL_FACE);
+    //    glEnable(GL_CULL_FACE);
     glBegin(GL_QUADS);
     glColor3f(hp->Data()[0],hp->Data()[1],hp->Data()[2]);
 
@@ -1110,84 +1155,145 @@ namespace FreeMat {
     return (plane1visible ^ plane2visible);
   }
 
+  double HandleAxis::flipX(double t) {
+    std::vector<double> limits(GetAxisLimits());
+    if (t == limits[0])
+      return limits[1];
+    return limits[0];
+  }
+
+  double HandleAxis::flipY(double t) {
+    std::vector<double> limits(GetAxisLimits());
+    if (t == limits[2])
+      return limits[3];
+    return limits[2];
+  }
+
+  double HandleAxis::flipZ(double t) {
+    std::vector<double> limits(GetAxisLimits());
+    if (t == limits[4])
+      return limits[5];
+    return limits[4];
+  }
+
   void HandleAxis::SetupAxis() {
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
    // Project the visible axis positions
     double model[16];
     glGetDoublev(GL_MODELVIEW_MATRIX,model);
+    // Map the points from the grid...
+    double proj[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,proj);
+    int viewp[4];
+    glGetIntegerv(GL_VIEWPORT,viewp);
     std::vector<double> limits(GetAxisLimits());
     // Query the axisproperties to set the z-position of the
     // x and y axis
     if (((HPTopBottom*)LookupProperty("xaxislocation"))->Is("bottom")) {
-      xzval = limits[4];
+      x1pos[2] = limits[4];
     } else
-      xzval = limits[5];
+      x1pos[2] = limits[5];
     if (((HPLeftRight*)LookupProperty("yaxislocation"))->Is("left")) {
-      yzval = limits[4];
+      y1pos[2] = limits[4];
     } else
-      yzval = limits[5];
+      y1pos[2] = limits[5];
+
+    qDebug("model signs - %f %f %f",model[2],model[6],model[10]);
+
     if ((model[10] > 0) && (model[6] > 0)) {
-      if (xzval == limits[4])
-	xyval = limits[3];
+      if (x1pos[2] == limits[4])
+	x1pos[1] = limits[3];
       else
-	xyval = limits[2];
-    } else if ((model[10] > 0) && (model[6] < 0)) {
-      if (xzval == limits[4])
-	xyval = limits[2];
+	x1pos[1] = limits[2];
+    } else if ((model[10] > 0) && (model[6] <= 0)) {
+      if (x1pos[2] == limits[4])
+	x1pos[1] = limits[2];
       else
-	xyval = limits[3];
-    } else if ((model[10] < 0) && (model[6] > 0)) {
-      if (xzval == limits[4])
-	xyval = limits[2];
+	x1pos[1] = limits[3];
+    } else if ((model[10] <= 0) && (model[6] > 0)) {
+      if (x1pos[2] == limits[4])
+	x1pos[1] = limits[2];
       else
-	xyval = limits[3];
-    } else if ((model[10] < 0) && (model[6] < 0)) {
-      if (xzval == limits[4])
-	xyval = limits[3];
+	x1pos[1] = limits[3];
+    } else if ((model[10] <= 0) && (model[6] <= 0)) {
+      if (x1pos[2] == limits[4])
+	x1pos[1] = limits[3];
       else
-	xyval = limits[2];
+	x1pos[1] = limits[2];
     } 
 
-    if (xyval == limits[3])
-      xyval_opposite = limits[2];
-    else if (xyval == limits[2])
-      xyval_opposite = limits[3];
+    // There are two possibilities for where the opposite x axis is
+    //   - one option is to use the opposite axis in the y direction
+    //   - the other option is to use the opposite position in the z direction
+    //   - we have to decide which one to use.  What we can do is take
+    //   - the longer axis
+    double px0, py0, px1, py1, px2, py2;
+
+    ToPixels(model,proj,limits[0],x1pos[1],x1pos[2],px0,py0,viewp);
+    ToPixels(model,proj,limits[0],flipY(x1pos[1]),x1pos[2],px1,py1,viewp);
+    ToPixels(model,proj,limits[0],x1pos[1],flipZ(x1pos[2]),px2,py2,viewp);
+    if (((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0)) >
+	((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0))) {
+      x2pos[1] = flipY(x1pos[1]);
+      x2pos[2] = x1pos[2];
+    } else {
+      x2pos[1] = x1pos[1];
+      x2pos[2] = flipZ(x1pos[2]);
+    }
+
+    //     if (x1pos[1] == limits[3])
+    //       x2pos[1] = limits[2];
+    //     else if (x1pos[1] == limits[2])
+    //       x2pos[1] = limits[3];
 
     if ((model[10] > 0) && (model[2] > 0)) {
-      if (yzval == limits[4])
-	yxval = limits[1];
+      if (y1pos[2] == limits[4])
+	y1pos[0] = limits[1];
       else
-	yxval = limits[0];
-    } else if ((model[10] < 0) && (model[2] > 0)) {
-      if (yzval == limits[4])
-	yxval = limits[0];
+	y1pos[0] = limits[0];
+    } else if ((model[10] <= 0) && (model[2] > 0)) {
+      if (y1pos[2] == limits[4])
+	y1pos[0] = limits[0];
       else
-	yxval = limits[1];
-    } else if ((model[10] > 0) && (model[2] < 0)) {
-      if (yzval == limits[4])
-	yxval = limits[0];
+	y1pos[0] = limits[1];
+    } else if ((model[10] > 0) && (model[2] <= 0)) {
+      if (y1pos[2] == limits[4])
+	y1pos[0] = limits[0];
       else
-	yxval = limits[1];
-    } else if ((model[10] < 0) && (model[2] < 0)) {
-      if (yzval == limits[4])
-	yxval = limits[1];
+	y1pos[0] = limits[1];
+    } else if ((model[10] <= 0) && (model[2] <= 0)) {
+      if (y1pos[2] == limits[4])
+	y1pos[0] = limits[1];
       else
-	yxval = limits[0];
+	y1pos[0] = limits[0];
     } 
 
-    if (yxval == limits[1])
-      yxval_opposite = limits[0];
-    else if (yxval == limits[0])
-      yxval_opposite = limits[1];
+    ToPixels(model,proj,y1pos[0],limits[2],y1pos[2],px0,py0,viewp);
+    ToPixels(model,proj,flipX(y1pos[0]),limits[2],y1pos[2],px1,py1,viewp);
+    ToPixels(model,proj,y1pos[0],limits[2],flipZ(y1pos[2]),px2,py2,viewp);
 
-    if (model[6]>0)
-      zxval = limits[1];
-    else if (model[6]<0)
-      zxval = limits[0];
-    if (model[2]>0)
-      zyval = limits[2];
-    else if (model[2]<0)
-      zyval = limits[3];
+    if (((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0)) >
+	((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0))) {
+      y2pos[0] = flipX(y1pos[0]);
+      y2pos[2] = y1pos[2];
+    } else {
+      y2pos[0] = y1pos[0];
+      y2pos[2] = flipZ(y1pos[2]);
+    }
+
+    //     if (y1pos[0] == limits[1])
+    //       y2pos[0] = limits[0];
+    //     else if (y1pos[0] == limits[0])
+    //       y2pos[0] = limits[1];
+    
+    if (model[6] > 0)
+      z1pos[0] = limits[1];
+    else if (model[6] <= 0)
+      z1pos[0] = limits[0];
+    if (model[2] > 0)
+      z1pos[1] = limits[2];
+    else if (model[2] <= 0)
+      z1pos[1] = limits[3];
 
     //sgn - x - y
     //111 - H - H
@@ -1201,43 +1307,46 @@ namespace FreeMat {
     //
     // so, x=H if (!10 ^ 2), and y = H if (!10 ^ 6)
     if ((model[10] > 0) && (model[6] > 0) && (model[2] > 0)) {
-      zxval_opposite = limits[1];
-      zyval_opposite = limits[3];
+      z2pos[0] = limits[1];
+      z2pos[1] = limits[3];
     } else if ((model[10] > 0) && (model[6] > 0) && (model[2] < 0)) {
-      zxval_opposite = limits[0];
-      zyval_opposite = limits[3];
+      z2pos[0] = limits[0];
+      z2pos[1] = limits[3];
     } else if ((model[10] > 0) && (model[6] < 0) && (model[2] > 0)) {
-      zxval_opposite = limits[1];
-      zyval_opposite = limits[2];
+      z2pos[0] = limits[1];
+      z2pos[1] = limits[2];
     } else if ((model[10] > 0) && (model[6] < 0) && (model[2] < 0)) {
-      zxval_opposite = limits[0];
-      zyval_opposite = limits[2];
+      z2pos[0] = limits[0];
+      z2pos[1] = limits[2];
     } else if ((model[10] < 0) && (model[6] > 0) && (model[2] > 0)) {
-      zxval_opposite = limits[0];
-      zyval_opposite = limits[2];
+      z2pos[0] = limits[0];
+      z2pos[1] = limits[2];
     } else if ((model[10] < 0) && (model[6] > 0) && (model[2] < 0)) {
-      zxval_opposite = limits[1];
-      zyval_opposite = limits[2];
+      z2pos[0] = limits[1];
+      z2pos[1] = limits[2];
     } else if ((model[10] < 0) && (model[6] < 0) && (model[2] > 0)) {
-      zxval_opposite = limits[0];
-      zyval_opposite = limits[3];
+      z2pos[0] = limits[0];
+      z2pos[1] = limits[3];
     } else if ((model[10] < 0) && (model[6] < 0) && (model[2] < 0)) {
-      zxval_opposite = limits[1];
-      zyval_opposite = limits[3];
+      z2pos[0] = limits[1];
+      z2pos[1] = limits[3];
     }
-    double proj[16];
-    glGetDoublev(GL_PROJECTION_MATRIX,proj);
-    int viewp[4];
-    glGetIntegerv(GL_VIEWPORT,viewp);
+
+    // What about conflicts?  A conflict is where the tick direction 
+    // is the same for two adjoining axes
+
+    qDebug("x1pos[1] = %f x1pos[2] = %f x2pos[1] = %f", x1pos[1], x1pos[2], x2pos[1]);
+    qDebug("y1pos[2] = %f y1pos[2] = %f y2pos[0] = %f",y1pos[2], y1pos[2], y2pos[0]);
+    qDebug("z1pos[0] = %f z1pos[1] = %f z2pos[0] = %f z2pos[1] = %f",z1pos[0], z1pos[1], z2pos[0], z2pos[1]);
     double x1, y1, x2, y2;
-    ToPixels(model,proj,limits[0],xyval,xzval,x1,y1,viewp);
-    ToPixels(model,proj,limits[1],xyval,xzval,x2,y2,viewp);
+    ToPixels(model,proj,limits[0],x1pos[1],x1pos[2],x1,y1,viewp);
+    ToPixels(model,proj,limits[1],x1pos[1],x1pos[2],x2,y2,viewp);
     xvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
-    ToPixels(model,proj,yxval,limits[2],yzval,x1,y1,viewp);
-    ToPixels(model,proj,yxval,limits[3],yzval,x2,y2,viewp);
+    ToPixels(model,proj,y1pos[0],limits[2],y1pos[2],x1,y1,viewp);
+    ToPixels(model,proj,y1pos[0],limits[3],y1pos[2],x2,y2,viewp);
     yvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
-    ToPixels(model,proj,zxval,zyval,limits[4],x1,y1,viewp);
-    ToPixels(model,proj,zxval,zyval,limits[5],x2,y2,viewp);
+    ToPixels(model,proj,z1pos[0],z1pos[1],limits[4],x1,y1,viewp);
+    ToPixels(model,proj,z1pos[0],z1pos[1],limits[5],x2,y2,viewp);
     zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
   }
 
@@ -1254,18 +1363,18 @@ namespace FreeMat {
     glBegin(GL_LINES);
     if (xvisible) {
       glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
-      glVertex3f(limits[0],xyval,xzval);
-      glVertex3f(limits[1],xyval,xzval);
+      glVertex3f(limits[0],x1pos[1],x1pos[2]);
+      glVertex3f(limits[1],x1pos[1],x1pos[2]);
     }
     if (yvisible) {
       glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
-      glVertex3f(yxval,limits[2],yzval);
-      glVertex3f(yxval,limits[3],yzval);
+      glVertex3f(y1pos[0],limits[2],y1pos[2]);
+      glVertex3f(y1pos[0],limits[3],y1pos[2]);
     } 
     if (zvisible) {
       glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
-      glVertex3f(zxval,zyval,limits[4]);
-      glVertex3f(zxval,zyval,limits[5]);
+      glVertex3f(z1pos[0],z1pos[1],limits[4]);
+      glVertex3f(z1pos[0],z1pos[1],limits[5]);
     }
     glEnd();
   }
@@ -1329,12 +1438,12 @@ namespace FreeMat {
     std::vector<double> zticks;
     std::vector<std::string> zlabels;
     int xcnt, ycnt, zcnt;
-    xcnt = GetTickCount(limits[0],xyval,xzval,
-			limits[1],xyval,xzval);
-    ycnt = GetTickCount(yxval,limits[2],yzval,
-			yxval,limits[3],yzval);
-    zcnt = GetTickCount(zxval,zyval,limits[4],
-			zxval,zyval,limits[5]);
+    xcnt = GetTickCount(limits[0],x1pos[1],x1pos[2],
+			limits[1],x1pos[1],x1pos[2]);
+    ycnt = GetTickCount(y1pos[0],limits[2],y1pos[2],
+			y1pos[0],limits[3],y1pos[2]);
+    zcnt = GetTickCount(z1pos[0],z1pos[1],limits[4],
+			z1pos[0],z1pos[1],limits[5]);
     double xStart, xStop;
     double yStart, yStop;
     double zStart, zStop;
@@ -1423,20 +1532,19 @@ namespace FreeMat {
     }
   }
 
+  void HandleAxis::ToManual(std::string name) {
+    HPAutoManual *qp = (HPAutoManual*) LookupProperty(name);
+    qp->Data("manual");
+  }
+
   void HandleAxis::UpdateState() {
     std::vector<std::string> tset;
-    if (HasChanged("xticklabel")) {
-      HPAutoManual *qp = (HPAutoManual*) LookupProperty("xticklabelmode");
-      qp->Data("manual");
-    }
-    if (HasChanged("yticklabel")) {
-      HPAutoManual *qp = (HPAutoManual*) LookupProperty("yticklabelmode");
-      qp->Data("manual");
-    }
-    if (HasChanged("zticklabel")) {
-      HPAutoManual *qp = (HPAutoManual*) LookupProperty("zticklabelmode");
-      qp->Data("manual");
-    }
+    if (HasChanged("xticklabel")) 
+      ToManual("xticklabelmode");
+    if (HasChanged("yticklabel"))
+      ToManual("yticklabelmode");
+    if (HasChanged("zticklabel")) 
+      ToManual("zticklabelmode");
     tset.push_back("fontangle");  tset.push_back("fontname");
     tset.push_back("fontsize");   tset.push_back("fontunits");
     tset.push_back("fontweight"); tset.push_back("xticklabel");
@@ -1457,7 +1565,42 @@ namespace FreeMat {
       RecalculateTicks();
       GenerateLabels();
     }
-    // Need to to test for camera position here...
+    // Camera properties...
+    if (HasChanged("cameratarget")) 
+      ToManual("cameratargetmode");
+    if (IsAuto("cameratargetmode")) {
+      // Default to 2D
+      HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameratarget");
+      std::vector<double> limits(GetAxisLimits());
+      std::vector<double> center;
+      center.push_back((limits[0]+limits[1])/2.0);
+      center.push_back((limits[2]+limits[3])/2.0);
+      center.push_back((limits[4]+limits[5])/2.0);
+      tv->Data(center);
+    }
+    if (HasChanged("cameraposition"))
+      ToManual("camerapositionmode");
+    if (IsAuto("camerapositionmode")) {
+      // Default to 2D
+      HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraposition");
+      std::vector<double> limits(GetAxisLimits());
+      std::vector<double> center;
+      center.push_back((limits[0]+limits[1])/2.0);
+      center.push_back((limits[2]+limits[3])/2.0);
+      center.push_back(limits[5]+1);
+      tv->Data(center);
+    }
+    if (HasChanged("cameraupvector"))
+      ToManual("cameraupvectormode");
+    if (IsAuto("cameraupvectormode")) {
+      // Default to 2D
+      HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraupvector");
+      std::vector<double> center;
+      center.push_back(0);
+      center.push_back(1);
+      center.push_back(0);
+      tv->Data(center);      
+    }
     RecalculateTicks();
     GenerateLabels();
   }
@@ -1520,6 +1663,19 @@ namespace FreeMat {
       xalign = GLLabel::Max;
       yalign = GLLabel::Max;
     }
+    qDebug("Label %s at %f %f",a.Text().c_str(),x2,y2);
+    if (xalign == GLLabel::Min)
+      qDebug("  xalign = min");
+    if (xalign == GLLabel::Mean)
+      qDebug("  xalign = mean");
+    if (xalign == GLLabel::Max)
+      qDebug("  xalign = max");
+    if (yalign == GLLabel::Min)
+      qDebug("  yalign = min");
+    if (yalign == GLLabel::Mean)
+      qDebug("  yalign = mean");
+    if (yalign == GLLabel::Max)
+      qDebug("  yalign = max");
     a.DrawMe(x2,y2,xalign,yalign);
   }
 
@@ -1583,16 +1739,6 @@ namespace FreeMat {
     SetupDirectDraw();
     
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
-    glBegin(GL_LINES);
-    glVertex2f(0,0);
-    glVertex2f(0,10);
-    glVertex2f(0,0);
-    glVertex2f(10,0);
-    glVertex2f(outerpos[2]-1,outerpos[3]-1);
-    glVertex2f(outerpos[2]-10,outerpos[3]-1);
-    glVertex2f(outerpos[2]-1,outerpos[3]-1);
-    glVertex2f(outerpos[2]-1,outerpos[3]-10);
-    glEnd();
 
     if (xvisible) {
       glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
@@ -1601,8 +1747,8 @@ namespace FreeMat {
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,t,xyval,xzval,x1,y1,viewp);
-	ToPixels(model,proj,t,xyval_opposite,xzval,x2,y2,viewp);
+	ToPixels(model,proj,t,x1pos[1],x1pos[2],x1,y1,viewp);
+	ToPixels(model,proj,t,x2pos[1],x2pos[2],x2,y2,viewp);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
@@ -1632,8 +1778,8 @@ namespace FreeMat {
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,yxval,t,yzval,x1,y1,viewp);
-	ToPixels(model,proj,yxval_opposite,t,yzval,x2,y2,viewp);
+	ToPixels(model,proj,y1pos[0],t,y1pos[2],x1,y1,viewp);
+	ToPixels(model,proj,y2pos[0],t,y2pos[2],x2,y2,viewp);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
@@ -1663,8 +1809,8 @@ namespace FreeMat {
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,zxval,zyval,t,x1,y1,viewp);
-	ToPixels(model,proj,zxval_opposite,zyval_opposite,t,x2,y2,viewp);
+	ToPixels(model,proj,z1pos[0],z1pos[1],t,x1,y1,viewp);
+	ToPixels(model,proj,z2pos[0],z2pos[1],t,x2,y2,viewp);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);

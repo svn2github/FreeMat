@@ -16,6 +16,7 @@ namespace FreeMat {
     GLubyte red, green, blue;
     std::string text;
   public:
+    std::string Text();
     enum AlignmentFlag {Min, Mean, Max};
     GLLabel(const GLLabel& copy);
     GLLabel(QFont fnt, std::string txt, GLubyte r, GLubyte g, GLubyte b);

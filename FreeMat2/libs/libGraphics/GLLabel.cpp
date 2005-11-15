@@ -18,9 +18,14 @@ namespace FreeMat {
     blue = arg.blue;
     bits = new GLubyte[width*height*4];
     memcpy(bits,arg.bits,width*height*4);
+    text = arg.text;
     return *this;
   }
 
+  std::string GLLabel::Text() {
+    return text;
+  }
+  
   GLLabel::GLLabel(const GLLabel& copy) {
     width = copy.width;
     height = copy.height;
@@ -31,6 +36,7 @@ namespace FreeMat {
     blue = copy.blue;
     bits = new GLubyte[width*height*4];
     memcpy(bits,copy.bits,width*height*4);
+    text = copy.text;
   }
 
   GLLabel::GLLabel() {

@@ -9,12 +9,7 @@
 #include <qpainter.h>
 #include "GLLabel.hpp"
 
-// Need camera values.
-
-// For 2D...
-// Default cameratarget is [xmean,ymean,zmean]
-// Default cameraposition is [xmean,ymean,zmin]
-// Default cameraupvector is [0,1,0]
+// Need to add the labels...
 
 
 // These are globals for now... ultimately, they need to be handled
@@ -29,12 +24,12 @@ int arot = 0;
 //    alimmode
 //    ambientlightcolor
 //    box
-//    cameraposition
-//    camerapositionmode
-//    cameratarget
-//    cameratargetmode
-//    cameraupvector
-//    cameraviewangle
+//    cameraposition - done
+//    camerapositionmode  - done
+//    cameratarget - done
+//    cameratargetmode - done
+//    cameraupvector - done
+//    cameraviewangle 
 //    cameraviewanglemode
 //    childrenint
 //    clim
@@ -1198,8 +1193,6 @@ namespace FreeMat {
     } else
       y1pos[2] = limits[5];
 
-    qDebug("model signs - %f %f %f",model[2],model[6],model[10]);
-
     if ((model[10] > 0) && (model[6] > 0)) {
       if (x1pos[2] == limits[4])
 	x1pos[1] = limits[3];
@@ -1228,12 +1221,13 @@ namespace FreeMat {
     //   - we have to decide which one to use.  What we can do is take
     //   - the longer axis
     double px0, py0, px1, py1, px2, py2;
-
     ToPixels(model,proj,limits[0],x1pos[1],x1pos[2],px0,py0,viewp);
     ToPixels(model,proj,limits[0],flipY(x1pos[1]),x1pos[2],px1,py1,viewp);
     ToPixels(model,proj,limits[0],x1pos[1],flipZ(x1pos[2]),px2,py2,viewp);
-    if (((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0)) >
-	((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0))) {
+    double len1, len2;
+    len1 = ((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0));
+    len2 = ((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0));
+    if ((len1 > len2) && (len1 > 0)) {
       x2pos[1] = flipY(x1pos[1]);
       x2pos[2] = x1pos[2];
     } else {
@@ -1267,18 +1261,17 @@ namespace FreeMat {
       else
 	y1pos[0] = limits[0];
     } 
-
     ToPixels(model,proj,y1pos[0],limits[2],y1pos[2],px0,py0,viewp);
     ToPixels(model,proj,flipX(y1pos[0]),limits[2],y1pos[2],px1,py1,viewp);
     ToPixels(model,proj,y1pos[0],limits[2],flipZ(y1pos[2]),px2,py2,viewp);
-
-    if (((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0)) >
-	((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0))) {
-      y2pos[0] = flipX(y1pos[0]);
-      y2pos[2] = y1pos[2];
-    } else {
+    len1 = ((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0));
+    len2 = ((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0));
+    if ((len1 > len2) && (len1 > 0)) {
       y2pos[0] = y1pos[0];
       y2pos[2] = flipZ(y1pos[2]);
+    } else {
+      y2pos[0] = flipX(y1pos[0]);
+      y2pos[2] = y1pos[2];
     }
 
     //     if (y1pos[0] == limits[1])
@@ -1332,12 +1325,29 @@ namespace FreeMat {
       z2pos[1] = limits[3];
     }
 
-    // What about conflicts?  A conflict is where the tick direction 
-    // is the same for two adjoining axes
+    // Check for ordinal views
+    // Z axis isn't visible
+    if ((model[2] == 0) && (model[6] == 0)) {
+      x2pos[1] = flipY(x1pos[1]);
+      x2pos[2] = x1pos[2];
+      y2pos[0] = flipX(y1pos[0]);
+      y2pos[2] = y2pos[2];
+    }
+    // X axis isn't visible
+    if ((model[6] == 0) && (model[10] == 0)) {
+      y2pos[0] = y1pos[0];
+      y2pos[2] = flipZ(y1pos[2]);
+      z2pos[0] = z1pos[0];
+      z2pos[1] = flipY(z1pos[1]);
+    }
+    // Y axis isn't visible
+    if ((model[2] == 0) && (model[10] == 0)) {
+      x2pos[1] = x1pos[1];
+      x2pos[2] = flipZ(x1pos[2]);
+      z2pos[0] = flipX(z1pos[0]);
+      z2pos[1] = z1pos[1];
+    }
 
-    qDebug("x1pos[1] = %f x1pos[2] = %f x2pos[1] = %f", x1pos[1], x1pos[2], x2pos[1]);
-    qDebug("y1pos[2] = %f y1pos[2] = %f y2pos[0] = %f",y1pos[2], y1pos[2], y2pos[0]);
-    qDebug("z1pos[0] = %f z1pos[1] = %f z2pos[0] = %f z2pos[1] = %f",z1pos[0], z1pos[1], z2pos[0], z2pos[1]);
     double x1, y1, x2, y2;
     ToPixels(model,proj,limits[0],x1pos[1],x1pos[2],x1,y1,viewp);
     ToPixels(model,proj,limits[1],x1pos[1],x1pos[2],x2,y2,viewp);
@@ -1347,7 +1357,7 @@ namespace FreeMat {
     yvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
     ToPixels(model,proj,z1pos[0],z1pos[1],limits[4],x1,y1,viewp);
     ToPixels(model,proj,z1pos[0],z1pos[1],limits[5],x2,y2,viewp);
-    zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+    zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);  
   }
 
   bool HandleAxis::Is2DView() {
@@ -1603,6 +1613,7 @@ namespace FreeMat {
     }
     RecalculateTicks();
     GenerateLabels();
+    //    drawing->updateGL();
   }
 
   void HandleAxis::GenerateLabels() {
@@ -1663,19 +1674,6 @@ namespace FreeMat {
       xalign = GLLabel::Max;
       yalign = GLLabel::Max;
     }
-    qDebug("Label %s at %f %f",a.Text().c_str(),x2,y2);
-    if (xalign == GLLabel::Min)
-      qDebug("  xalign = min");
-    if (xalign == GLLabel::Mean)
-      qDebug("  xalign = mean");
-    if (xalign == GLLabel::Max)
-      qDebug("  xalign = max");
-    if (yalign == GLLabel::Min)
-      qDebug("  yalign = min");
-    if (yalign == GLLabel::Mean)
-      qDebug("  yalign = mean");
-    if (yalign == GLLabel::Max)
-      qDebug("  yalign = max");
     a.DrawMe(x2,y2,xalign,yalign);
   }
 

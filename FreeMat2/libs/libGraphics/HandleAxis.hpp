@@ -17,9 +17,9 @@ namespace FreeMat {
     //The HandleAxis class encapsulates a 3D axis object, and is
   //manipulated through the Set/Get interface.
   class HandleAxis : public HandleObject {
-    double xzval, yzval;
-    double xyval, yxval, zxval, zyval;
-    double xyval_opposite, yxval_opposite, zxval_opposite, zyval_opposite;
+    double x1pos[3], x2pos[3];
+    double y1pos[3], y2pos[3];
+    double z1pos[3], z2pos[3];
     bool xvisible, yvisible, zvisible;
     QFont m_font;
     void UpdateAxisFont();
@@ -37,6 +37,10 @@ namespace FreeMat {
 		       std::vector<double> limits);
     void DrawZGridLine(double m[16], double t, 
 		       std::vector<double> limits);
+    void ToManual(std::string name);
+    double flipX(double t);
+    double flipY(double t);
+    double flipZ(double t);
   public:
     std::vector<GLLabel> xlabels;
     std::vector<GLLabel> ylabels;

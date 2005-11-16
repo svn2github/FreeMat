@@ -24,6 +24,10 @@ namespace FreeMat {
     ~GLLabel();
     void DrawMe(int x, int y, AlignmentFlag xflag, AlignmentFlag yflag);
     const GLLabel& operator=(const GLLabel& arg);
+    int twidth();
+    int theight();
+    int xoffset(AlignmentFlag);
+    int yoffset(AlignmentFlag);
   };
 
 }

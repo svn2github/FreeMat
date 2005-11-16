@@ -22,7 +22,8 @@ HandleAxis.hpp \
 HandleObject.hpp \
 HandleProperty.hpp \
 HandleFigure.hpp \
-GLLabel.hpp
+GLLabel.hpp \
+HandleText.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -42,16 +43,9 @@ HandleAxis.cpp \
 HandleObject.cpp \
 HandleProperty.cpp \
 HandleFigure.cpp \
-GLLabel.cpp
+GLLabel.cpp \
+HandleText.cpp
 
 DEPENDPATH += INCLUDEPATH
-
-win32 {
-QT += qt3support
-}
-
-mac {
-QT += qt3support
-}
 
 QT += opengl

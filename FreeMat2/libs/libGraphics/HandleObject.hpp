@@ -18,6 +18,7 @@ namespace FreeMat {
     void ClearChanged(std::vector<std::string> names);
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);
+    double ScalarPropertyLookup(std::string name);
     void SetConstrainedStringDefault(std::string name, std::string value);
     void SetTwoVectorDefault(std::string name, double x, double y);
     void SetThreeVectorDefault(std::string name, double x, double y, double z);

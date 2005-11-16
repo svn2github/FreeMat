@@ -64,6 +64,7 @@ namespace FreeMat {
     double MapZ(double z);
     bool IsVisibleLine(float nx1, float nx2, float nx3, 
 		       float ny1, float ny2, float ny3);
+    void ToPixels(double x, double y, double z, int &x, int &y);
     void SetLineStyle(std::string style);
     void SetupDirectDraw();
     void ReleaseDirectDraw();

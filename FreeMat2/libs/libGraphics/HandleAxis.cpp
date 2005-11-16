@@ -575,7 +575,7 @@ namespace FreeMat {
   };
 
   BaseFigure::BaseFigure(QWidget* parent, const char *name) :
-    QGLWidget(parent,name) {
+    QGLWidget(parent) {
       hfig = new HandleFigure;
       handleset.assignHandle(hfig);
   }
@@ -867,7 +867,7 @@ namespace FreeMat {
     HPColor *hp = (HPColor*) LookupProperty("color");
     if (hp->IsNone()) return;
     std::vector<double> limits(GetAxisLimits());
-    //    glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     glBegin(GL_QUADS);
     glColor3f(hp->Data()[0],hp->Data()[1],hp->Data()[2]);
 
@@ -1437,7 +1437,7 @@ namespace FreeMat {
     ToPixels(model,proj,x2,y2,z2,u2,v2,viewp);
     double axlen;
     axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
-    int numtics = QMAX(2.0,axlen/100.0);
+    int numtics = qMax(2.0,axlen/100.0);
     return numtics;
   }
 

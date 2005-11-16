@@ -36,6 +36,11 @@ namespace FreeMat {
     return *hp;
   }
 
+  double HandleObject::ScalarPropertyLookup(std::string name) {
+    HPScalar* sp = (HPScalar*) LookupProperty(name);
+    return (sp->Data()[0]);
+  }
+
   void HandleObject::AddProperty(HandleProperty* hp, std::string name) {
     m_properties.insertSymbol(name,hp);
   }

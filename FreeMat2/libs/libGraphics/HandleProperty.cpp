@@ -41,8 +41,8 @@ namespace FreeMat {
   HPInOut::HPInOut() : HPConstrainedString(in_out_dict) {}
   HPUnits::HPUnits() : HPConstrainedString(units_dict) {}
   HPPosition::HPPosition() : HPConstrainedString(position_dict) {}
-  HPAlignHoriz::HPAlignHoriz() : HPConstainedString(horiz_dict) {}
-  HPAlignVert::HPAlignVert() : HPConstainedString(vert_dict) {}
+  HPAlignHoriz::HPAlignHoriz() : HPConstrainedString(horiz_dict) {}
+  HPAlignVert::HPAlignVert() : HPConstrainedString(vert_dict) {}
 
   HPHandles::HPHandles(int len) {
     m_len = len;

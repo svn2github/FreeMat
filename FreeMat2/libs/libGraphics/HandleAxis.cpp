@@ -667,6 +667,9 @@ namespace FreeMat {
     if (parent->Data().empty()) return NULL;
     unsigned parent_handle = parent->Data()[0];
     HandleObject *fp = handleset.lookupHandle(parent_handle);
+    HPString *name = (HPString*) fp->LookupProperty("type");
+    if (!name) return NULL;
+    if (!name->Is("figure")) return NULL;
     HandleFigure *fig = (HandleFigure*) fp;
     return fig;
   }

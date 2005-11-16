@@ -252,6 +252,18 @@ namespace FreeMat {
     virtual ~HPPosition() {}
   };
 
+  class HPAlignHoriz : public HPConstrainedString {
+  public:
+    HPAlignHoriz();
+    virtual ~HPAlignHoriz() {}
+  };
+
+  class HPAlignVert : public HPConstrainedString {
+  public:
+    HPAlignVert();
+    virtual ~HPAlignVert() {}
+  };
+
 }
 
 #endif

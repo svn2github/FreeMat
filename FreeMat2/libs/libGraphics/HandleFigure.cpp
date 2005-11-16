@@ -16,9 +16,11 @@ namespace FreeMat {
     AddProperty(new HPHandles,"children");
     AddProperty(new HPHandles,"parent");
     AddProperty(new HPFourVector,"position");
+    AddProperty(new HPString,"type");
   }
 
   void HandleFigure::SetupDefaults() {
+    SetStringDefault("type","figure");
     resized = false;
   }
 

@@ -10,7 +10,7 @@ namespace FreeMat {
   static const char *on_off_dict[3] = {"on","off",0};
   static const char *font_angle_dict[4] = {"normal","italic","oblique",0};
   static const char *font_units_dict[6] = {"points","normalized","inches",
-				    "centimeters","pixels",0};
+					   "centimeters","pixels",0};
   static const char *font_weight_dict[5] = {"normal","bold","light","demi",0};
   static const char *line_style_dict[6] = {"-","--",":","-.","none",0};
   static const char *top_bottom_dict[3] = {"top","bottom",0};
@@ -20,10 +20,12 @@ namespace FreeMat {
   static const char *next_plot_dict[4] = {"add","replace","replacechildren",0};
   static const char *projection_mode_dict[3] = {"orthographic","perspective",0};
   static const char *in_out_dict[3] = {"in","out",0};
-  static const char *units_dict[7] = {"inches","centimeters","normalized",
-			       "points","pixels","characters",0};
+  static const char *units_dict[8] = {"inches","centimeters","normalized",
+				      "points","pixels","characters","data",0};
   static const char *position_dict[3] = {"outerposition","position",0};
-
+  static const char *horiz_dict[4] = {"left","center","right",0};
+  static const char *vert_dict[6] = {"top","cap","middle","baseline","bottom",0};
+  
   HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
   HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
   HPFontAngle::HPFontAngle() : HPConstrainedString(font_angle_dict) {}
@@ -39,6 +41,8 @@ namespace FreeMat {
   HPInOut::HPInOut() : HPConstrainedString(in_out_dict) {}
   HPUnits::HPUnits() : HPConstrainedString(units_dict) {}
   HPPosition::HPPosition() : HPConstrainedString(position_dict) {}
+  HPAlignHoriz::HPAlignHoriz() : HPConstainedString(horiz_dict) {}
+  HPAlignVert::HPAlignVert() : HPConstainedString(vert_dict) {}
 
   HPHandles::HPHandles(int len) {
     m_len = len;

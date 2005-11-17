@@ -476,7 +476,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("hittest","on");
     SetConstrainedStringDefault("interruptible","on");
     SetConstrainedStringDefault("layer","bottom");
-    SetScalarDefault("linewidth",0.5);
+    SetScalarDefault("linewidth",1.0);
     SetConstrainedStringDefault("minorgridlinestyle",":");
     SetFourVectorDefault("outerposition",0,0,1,1);
     SetConstrainedStringDefault("nextplot","replace");
@@ -979,6 +979,7 @@ namespace FreeMat {
     // 2, 6, 10 elements of m, and drawing the corresponding
     // Select the set of grids to draw based on these elements
     // Draw the grid
+    glLineWidth(ScalarPropertyLookup("linewidth"));
     SetLineStyle(((HPLineStyle*) LookupProperty("gridlinestyle"))->Data());
     glBegin(GL_LINES);
     HPVector *hp;
@@ -1402,6 +1403,7 @@ namespace FreeMat {
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
+    glLineWidth(ScalarPropertyLookup("linewidth"));
     glDisable(GL_DEPTH_TEST);
     glBegin(GL_LINES);
     if (xvisible) {
@@ -1646,7 +1648,6 @@ namespace FreeMat {
     }
     RecalculateTicks();
     GenerateLabels();
-    glLineWidth(ScalarPropertyLookup("linewidth"));
     //    drawing->updateGL();
   }
 
@@ -1729,6 +1730,7 @@ namespace FreeMat {
     std::vector<double> yticks(hp->Data());
     hp = (HPVector*) LookupProperty("ztick");
     std::vector<double> zticks(hp->Data());
+    glLineWidth(ScalarPropertyLookup("linewidth"));
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");

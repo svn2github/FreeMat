@@ -598,7 +598,7 @@ namespace FreeMat {
   void BaseFigure::initializeGL() {
     glShadeModel(GL_SMOOTH);
     glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
-    glClearDepth(6.0f);
+    glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1730,7 +1730,7 @@ namespace FreeMat {
     std::vector<double> yticks(hp->Data());
     hp = (HPVector*) LookupProperty("ztick");
     std::vector<double> zticks(hp->Data());
-    glLineWidth(ScalarPropertyLookup("linewidth"));
+    //    glLineWidth(ScalarPropertyLookup("linewidth"));
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
@@ -1795,11 +1795,11 @@ namespace FreeMat {
 	glEnd();
 	double x3, y3;
 	if (ticdir > 0) {
-	  x3 = -delx*0.01*1.25 + x1;
-	  y3 = -dely*0.01*1.25 + y1;
+	  x3 = -delx*0.015*norm + x1;
+	  y3 = -dely*0.015*norm + y1;
 	} else {
-	  x3 = -delx*0.01*1.25 + x2;
-	  y3 = -dely*0.01*1.25 + y2;
+	  x3 = -delx*0.015*norm + x2;
+	  y3 = -dely*0.015*norm + y2;
 	}
 	if (~xlabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,xlabels[i % xlabels.size()]);
@@ -1826,11 +1826,11 @@ namespace FreeMat {
 	glEnd();
 	double x3, y3;
 	if (ticdir > 0) {
-	  x3 = -delx*0.01*1.25 + x1;
-	  y3 = -dely*0.01*1.25 + y1;
+	  x3 = -delx*0.015*norm + x1;
+	  y3 = -dely*0.015*norm + y1;
 	} else {
-	  x3 = -delx*0.01*1.25 + x2;
-	  y3 = -dely*0.01*1.25 + y2;
+	  x3 = -delx*0.015*norm + x2;
+	  y3 = -dely*0.015*norm + y2;
 	}
 	if (~ylabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,ylabels[i % ylabels.size()]);
@@ -1857,11 +1857,11 @@ namespace FreeMat {
 	glEnd();
 	double x3, y3;
 	if (ticdir > 0) {
-	  x3 = -delx*0.01*1.25 + x1;
-	  y3 = -dely*0.01*1.25 + y1;
+	  x3 = -delx*0.015*norm + x1;
+	  y3 = -dely*0.015*norm + y1;
 	} else {
-	  x3 = -delx*0.01*1.25 + x2;
-	  y3 = -dely*0.01*1.25 + y2;
+	  x3 = -delx*0.015*norm + x2;
+	  y3 = -dely*0.015*norm + y2;
 	}
 	if (~zlabels.empty())
 	  DrawLabel(-delx,-dely,x3,y3,zlabels[i % zlabels.size()]);
@@ -1888,6 +1888,7 @@ namespace FreeMat {
   void HandleAxis::paintGL() {
     if (GetParentFigure() == NULL) return;
     // Time to draw the axis...  
+    drawing->initializeGL();
     SetupProjection();
     SetupAxis();
     UpdateState();
@@ -1898,6 +1899,6 @@ namespace FreeMat {
     DrawTickMarks();
     //    DrawTickLabels();
     //    DrawAxisLabels();
-    DrawChildren();
+    //    DrawChildren();
   }
 }

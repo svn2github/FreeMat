@@ -123,10 +123,7 @@ void HandleText::paintGL() {
     glVertex2f(x1,y1);
     glEnd();
   }
-  // draw text label
-  HPColor *col = (HPColor*) LookupProperty("color");
-//   if (!col->IsNone()) 
-//     glab.DrawMe(x,y,xalign,yalign);
+  glab.DrawMe(x,y,xalign,yalign);
 }
 
 void HandleText::SetupDefaults() {

@@ -51,10 +51,11 @@ namespace FreeMat {
     // the transparency
     for (int i=0;i<height;i++) {
       QRgb* ibits = (QRgb*) img.scanLine(i);
-      QRgb* obits = (QRgb*) pic.scanLine(i);
+      QRgb* obits = (QRgb*) pic.scanLine(height-1-i);
       for (int j=0;j<width;j++) 
   	obits[j] = qRgba(red,green,blue,255-qRed(ibits[j]));
     }
+    pic = QGLWidget::convertToGLFormat(pic);
   }
 
   int GLLabel::twidth() {
@@ -94,22 +95,22 @@ namespace FreeMat {
       y -= height/2;
     else if (yflag == Max)
       y -= height;
-    glRasterPos2i(x,y);
-    widget->bindTexture(pic);
+    int txid = widget->bindTexture(pic);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glBegin(GL_QUADS);
     glTexCoord2d(0,0);
     glVertex2d(x,y);
     glTexCoord2d(1,0);
-    glVertex2d(x+width-1,y);
+    glVertex2d(x+width+1,y);
     glTexCoord2d(1,1);
-    glVertex2d(x+width-1,y+height-1);
+    glVertex2d(x+width+1,y+height+1);
     glTexCoord2d(0,1);
-    glVertex2d(x,y+height-1);
+    glVertex2d(x,y+height+1);
     glEnd();
-    //    glDrawPixels(width,height,GL_RGBA,GL_UNSIGNED_BYTE,bits);
+    widget->deleteTexture(txid);
   }
 
   GLLabel::~GLLabel() {
-    delete bits;
   }
 }

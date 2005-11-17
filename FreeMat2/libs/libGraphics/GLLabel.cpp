@@ -5,40 +5,10 @@
 
 namespace FreeMat {
   
-  const GLLabel& GLLabel::operator=(const GLLabel& arg) {
-    if (this != &arg) {
-      delete bits;
-    }
-    width = arg.width;
-    height = arg.height;
-    x0 = arg.x0;
-    y0 = arg.y0;
-    red = arg.red;
-    green = arg.green;
-    blue = arg.blue;
-    bits = new GLubyte[width*height*4];
-    memcpy(bits,arg.bits,width*height*4);
-    text = arg.text;
-    return *this;
-  }
-
   std::string GLLabel::Text() {
     return text;
   }
   
-  GLLabel::GLLabel(const GLLabel& copy) {
-    width = copy.width;
-    height = copy.height;
-    x0 = copy.x0;
-    y0 = copy.y0;
-    red = copy.red;
-    green = copy.green;
-    blue = copy.blue;
-    bits = new GLubyte[width*height*4];
-    memcpy(bits,copy.bits,width*height*4);
-    text = copy.text;
-  }
-
   GLLabel::GLLabel() {
     bits = NULL;
   }
@@ -75,24 +45,46 @@ namespace FreeMat {
     }
     width = newwidth+1;
     // Now, we generate a synthetic image that is of the same size
-    bits = new GLubyte[width*height*4];
-    GLubyte *ibits = img.bits();
+    pic = QImage(width,height,QImage::Format_ARGB32);
     // Set the color bits to all be the same color as specified
     // in the argument list, and use the grey scale to modulate
     // the transparency
     for (int i=0;i<height;i++) {
-      QRgb* ibits = (QRgb*) img.scanLine(height-1-i);
-      for (int j=0;j<width;j++) {
-	int dptr = 4*(i*width+j);
-  	bits[dptr] = red;
-  	bits[dptr+1] = green;
-  	bits[dptr+2] = blue;
-  	bits[dptr+3] = 255-qRed(ibits[j]);
-      }
+      QRgb* ibits = (QRgb*) img.scanLine(i);
+      QRgb* obits = (QRgb*) pic.scanLine(i);
+      for (int j=0;j<width;j++) 
+  	obits[j] = qRgba(red,green,blue,255-qRed(ibits[j]));
     }
   }
 
-  void GLLabel::DrawMe(int x, int y, AlignmentFlag xflag, AlignmentFlag yflag) {
+  int GLLabel::twidth() {
+    return width;
+  }
+  
+  int GLLabel::theight() {
+    return height;
+  }
+
+  int GLLabel::xoffset(AlignmentFlag xflag) {
+    if (xflag == Mean)
+      return -width/2;
+    else if (xflag == Max)
+      return -width;
+    else
+      return 0;
+  }
+
+  int GLLabel::yoffset(AlignmentFlag yflag) {
+    if (yflag == Mean)
+      return -height/2;
+    else if (yflag == Max)
+      return -height;
+    else
+      return 0;
+  }
+
+  void GLLabel::DrawMe(QGLWidget *widget, int x, int y, 
+		       AlignmentFlag xflag, AlignmentFlag yflag) {
     y -= y0;
     if (xflag == Mean)
       x -= width/2;
@@ -103,7 +95,18 @@ namespace FreeMat {
     else if (yflag == Max)
       y -= height;
     glRasterPos2i(x,y);
-    glDrawPixels(width,height,GL_RGBA,GL_UNSIGNED_BYTE,bits);
+    widget->bindTexture(pic);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0,0);
+    glVertex2d(x,y);
+    glTexCoord2d(1,0);
+    glVertex2d(x+width-1,y);
+    glTexCoord2d(1,1);
+    glVertex2d(x+width-1,y+height-1);
+    glTexCoord2d(0,1);
+    glVertex2d(x,y+height-1);
+    glEnd();
+    //    glDrawPixels(width,height,GL_RGBA,GL_UNSIGNED_BYTE,bits);
   }
 
   GLLabel::~GLLabel() {

@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib debug opengl
+CONFIG += staticlib debug opengl warn_off
 
 INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
 

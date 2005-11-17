@@ -1,6 +1,7 @@
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
 #include "HandleFigure.hpp"
+#include "HandleText.hpp"
 #include "Core.hpp"
 #include <qgl.h>
 #include <QMouseEvent>
@@ -566,9 +567,23 @@ namespace FreeMat {
     fp->show();
     return ArrayVector();
   }
+
+  ArrayVector TextFunction(int nargout, const ArrayVector& arg) {
+    HandleObject *fp = new HandleText;
+    unsigned int handle = handleset.assignHandle(fp);
+    ArrayVector t(arg);
+    while (t.size() >= 2) {
+      std::string propname(ArrayToString(t[0]));
+      fp->LookupProperty(propname)->Set(t[1]);
+      t.erase(t.begin(),t.begin()+2);
+    }
+    //    fp->UpdateState();
+    return singleArrayVector(Array::uint32Constructor(handle));
+  }
   
   void LoadHandleGraphicsFunctions(Context* context) {
     context->addFunction("axes",AxesFunction,-1,1);
+    context->addFunction("text",TextFunction,-1,1);
     context->addFunction("set",SetFunction,-1,0);
     context->addFunction("get",GetFunction,2,1,"handle","propname");
     context->addFunction("dmo",DmoFunction,0,0);
@@ -588,6 +603,7 @@ namespace FreeMat {
     glDepthFunc(GL_LEQUAL);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
   }
 
   void BaseFigure::paintGL() {
@@ -706,12 +722,26 @@ namespace FreeMat {
     tw = m[3]*x+m[7]*y+m[11]*z+m[15];
   }
 
+
   static void ToPixels(double model[16], double proj[16], double x, double y,
 		       double z, double &a, double &b, int viewp[4]) {
     double c1, c2, c3;
     gluProject(x,y,z,model,proj,viewp,&c1,&c2,&c3);
     a = c1;
     b = c2;
+  }
+
+  void HandleAxis::ToPixelPos(double x, double y, double z, int &p, int &q) {
+    double m[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX,m);
+    double proj[16];
+    glGetDoublev(GL_PROJECTION_MATRIX,proj);
+    int viewp[4];
+    glGetIntegerv(GL_VIEWPORT,viewp);
+    double xx, yy;
+    ToPixels(m,proj,x,y,z,xx,yy,viewp);
+    p = (int) xx;
+    q = (int) yy;
   }
 
 
@@ -1616,6 +1646,7 @@ namespace FreeMat {
     }
     RecalculateTicks();
     GenerateLabels();
+    glLineWidth(ScalarPropertyLookup("linewidth"));
     //    drawing->updateGL();
   }
 
@@ -1677,7 +1708,7 @@ namespace FreeMat {
       xalign = GLLabel::Max;
       yalign = GLLabel::Max;
     }
-    a.DrawMe(x2,y2,xalign,yalign);
+    a.DrawMe(drawing,x2,y2,xalign,yalign);
   }
 
   //
@@ -1844,6 +1875,12 @@ namespace FreeMat {
   }
 
   void HandleAxis::DrawChildren() {
+    HPHandles *children = (HPHandles*) LookupProperty("children");
+    std::vector<unsigned> handles(children->Data());
+    for (int i=0;i<handles.size();i++) {
+      HandleObject *fp = handleset.lookupHandle(handles[i]);
+      fp->paintGL();
+    }
   }
 
   void HandleAxis::paintGL() {
@@ -1857,8 +1894,8 @@ namespace FreeMat {
     DrawMinorGridLines();
     DrawAxisLines();
     DrawTickMarks();
-    DrawTickLabels();
-    DrawAxisLabels();
+    //    DrawTickLabels();
+    //    DrawAxisLabels();
     DrawChildren();
   }
 }

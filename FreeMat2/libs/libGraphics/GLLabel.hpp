@@ -4,6 +4,7 @@
 // A low-level interface to describe a text label in OpenGL-ish.
 #include <qfont.h>
 #include <qgl.h>
+#include <qimage.h>
 
 namespace FreeMat {
 
@@ -15,15 +16,14 @@ namespace FreeMat {
     int y0;
     GLubyte red, green, blue;
     std::string text;
+    QImage pic;
   public:
     std::string Text();
     enum AlignmentFlag {Min, Mean, Max};
-    GLLabel(const GLLabel& copy);
     GLLabel(QFont fnt, std::string txt, GLubyte r, GLubyte g, GLubyte b);
     GLLabel();
     ~GLLabel();
-    void DrawMe(int x, int y, AlignmentFlag xflag, AlignmentFlag yflag);
-    const GLLabel& operator=(const GLLabel& arg);
+    void DrawMe(QGLWidget *widget, int x, int y, AlignmentFlag xflag, AlignmentFlag yflag);
     int twidth();
     int theight();
     int xoffset(AlignmentFlag);

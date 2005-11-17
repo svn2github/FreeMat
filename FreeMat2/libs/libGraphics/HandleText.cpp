@@ -67,13 +67,29 @@ void HandleText::paintGL() {
   // Map position -> pixel location
   int x, y;
   HPThreeVector* hp = (HPThreeVector*) LookupProperty("position");
-  axis->ToPixels(hp->Data()[0],hp->Data()[1],hp->Data()[2],x,y);
+  axis->ToPixelPos(hp->Data()[0],hp->Data()[1],hp->Data()[2],x,y);
   axis->SetupDirectDraw();
   // Retrieve the margin...
   double margin(ScalarPropertyLookup("margin"));
+  margin = margin + 1;
   // Get the width and height of the label
   int textwidth = glab.twidth();
   int textheight = glab.theight();
+  GLLabel::AlignmentFlag xalign, yalign;
+  HPAlignVert *hv = (HPAlignVert*) LookupProperty("verticalalignment");
+  if (hv->Is("top"))
+    yalign = GLLabel::Min;
+  else if (hv->Is("middle"))
+    yalign = GLLabel::Mean;
+  else
+    yalign = GLLabel::Max;
+  HPAlignHoriz *hh = (HPAlignHoriz*) LookupProperty("horizontalalignment");
+  if (hh->Is("left"))
+    xalign = GLLabel::Min;
+  else if (hh->Is("center"))
+    xalign = GLLabel::Mean;
+  else
+    xalign = GLLabel::Max;
   // Get the corner offsets for the label
   int textxoffset = glab.xoffset(xalign);
   int textyoffset = glab.yoffset(yalign);
@@ -85,26 +101,32 @@ void HandleText::paintGL() {
   y2 = y1 + textheight + 2*margin;
   // fill background rectangle
   HPColor *bc = (HPColor*) LookupProperty("backgroundcolor");
-  glColor3f(bc->Data()[0],bc->Data()[1],bc->Data()[2]);
-  glRectf(x1,y1,x2,y2);
+  if (!bc->IsNone()) {
+    glColor3f(bc->Data()[0],bc->Data()[1],bc->Data()[2]);
+    glRectf(x1,y1,x2,y2);
+  }
   // draw bounding rectangle
-  axis->SetLineStyle(((HPLineStyle*) LookupProperty("linestyle"))->Data());
   HPColor *ec = (HPColor*) LookupProperty("edgecolor");
-  glColor3f(ec->Data()[0],ec->Data()[1],ec->Data()[2]);
-  glLineWidth(ScalarPropertyLookup("linewidth"));
-  // draw bounding rectangle
-  glBegin(GL_LINES);
-  glVertex2f(x1,y1);
-  glVertex2f(x1,y2);
-  glVertex2f(x1,y2);
-  glVertex2f(x2,y2);
-  glVertex2f(x2,y2);
-  glVertex2f(x2,y1);
-  glVertex2f(x2,y1);
-  glVertex2f(x1,y1);
-  glEnd();
+  if (!ec->IsNone()) {
+    glColor3f(ec->Data()[0],ec->Data()[1],ec->Data()[2]);
+    axis->SetLineStyle(((HPLineStyle*) LookupProperty("linestyle"))->Data());
+    glLineWidth(ScalarPropertyLookup("linewidth"));
+    // draw bounding rectangle
+    glBegin(GL_LINES);
+    glVertex2f(x1,y1);
+    glVertex2f(x1,y2);
+    glVertex2f(x1,y2);
+    glVertex2f(x2,y2);
+    glVertex2f(x2,y2);
+    glVertex2f(x2,y1);
+    glVertex2f(x2,y1);
+    glVertex2f(x1,y1);
+    glEnd();
+  }
   // draw text label
-  glab.DrawMe(x,y,xalign,yalign);
+  HPColor *col = (HPColor*) LookupProperty("color");
+//   if (!col->IsNone()) 
+//     glab.DrawMe(x,y,xalign,yalign);
 }
 
 void HandleText::SetupDefaults() {
@@ -152,4 +174,5 @@ void HandleText::ConstructProperties() {
   AddProperty(new HPString,"tag");
   //    AddProperty(new Array,"userdata");
 }
+
 }

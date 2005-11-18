@@ -10,7 +10,7 @@
 #include "SymbolTable.hpp"
 #include "HandleObject.hpp"
 #include "HandleFigure.hpp"
-#include "GLLabel.hpp"
+#include "RenderEngine.hpp"
 
 namespace FreeMat {
 
@@ -22,39 +22,35 @@ namespace FreeMat {
     double z1pos[3], z2pos[3];
     bool xvisible, yvisible, zvisible;
     QFont m_font;
+
     void UpdateAxisFont();
-    void DrawLabel(double x1, double y1, 
-		   double x2, double y2, GLLabel& a);
-    void SetupAxis();
+    void DrawLabel(RenderEngine& gc,
+		   double dx, double dy, 
+		   double x2, double y2, 
+		   std::vector<double> color,
+		   std::string txt);
+    void SetupAxis(RenderEngine& gc);
     bool Is2DView();
-    void GenerateLabels();
-    void RecalculateTicks();
-    int GetTickCount(double x1, double y1, double z1, 
+    void RecalculateTicks(RenderEngine& gc);
+    int GetTickCount(RenderEngine& gc,double x1, double y1, double z1, 
 		     double x2, double y2, double z2);
-    void DrawXGridLine(double m[16], double t, 
+    void DrawXGridLine(RenderEngine& gc, double t, 
 		       std::vector<double> limits);
-    void DrawYGridLine(double m[16], double t, 
+    void DrawYGridLine(RenderEngine& gc, double t, 
 		       std::vector<double> limits);
-    void DrawZGridLine(double m[16], double t, 
+    void DrawZGridLine(RenderEngine& gc, double t, 
 		       std::vector<double> limits);
-    void ToManual(std::string name);
     double flipX(double t);
     double flipY(double t);
     double flipZ(double t);
-  public:
-    std::vector<GLLabel> xlabels;
-    std::vector<GLLabel> ylabels;
-    std::vector<GLLabel> zlabels;
     SymbolTable<HandleProperty*> properties;
-    double camera[4][4];
-
+  public:
     HandleAxis();
     virtual ~HandleAxis();
     virtual void ConstructProperties();
-    virtual void UpdateState();
+    virtual void UpdateState(RenderEngine& gc);
     void SetupDefaults();
-    void Transform(double x, double y, double z, double &i, double &j);
-    virtual void paintGL();
+    virtual void PaintMe(RenderEngine &gc);
     HandleFigure* GetParentFigure();
     std::vector<double> UnitsReinterpret(std::vector<double> a);
     std::vector<double> GetPropertyVectorAsPixels(std::string name);
@@ -62,22 +58,16 @@ namespace FreeMat {
     double MapX(double x);
     double MapY(double y);
     double MapZ(double z);
-    bool IsVisibleLine(float nx1, float nx2, float nx3, 
-		       float ny1, float ny2, float ny3);
-    void ToPixelPos(double x, double y, double z, int &x, int &y);
-    void SetLineStyle(std::string style);
-    void SetupDirectDraw();
-    void ReleaseDirectDraw();
-    void SetupProjection();
-    void ClearAxes();
-    void DrawBox();
-    void DrawMinorGridLines();
-    void DrawGridLines();
-    void DrawAxisLines();
-    void DrawTickMarks();
+    std::vector<double> ReMap(std::vector<double>);
+    void SetupProjection(RenderEngine& gc);
+    void DrawBox(RenderEngine& gc);
+    void DrawMinorGridLines(RenderEngine& gc);
+    void DrawGridLines(RenderEngine& gc);
+    void DrawAxisLines(RenderEngine& gc);
+    void DrawTickMarks(RenderEngine& gc);
     void DrawTickLabels();
     void DrawAxisLabels();
-    void DrawChildren();
+    void DrawChildren(RenderEngine& gc);
   };
 
 

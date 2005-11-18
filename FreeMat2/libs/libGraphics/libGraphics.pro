@@ -23,7 +23,9 @@ HandleObject.hpp \
 HandleProperty.hpp \
 HandleFigure.hpp \
 GLLabel.hpp \
-HandleText.hpp
+GLRenderEngine.hpp \
+HandleText.hpp \
+RenderEngine.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -43,8 +45,9 @@ HandleAxis.cpp \
 HandleObject.cpp \
 HandleProperty.cpp \
 HandleFigure.cpp \
+HandleText.cpp \
 GLLabel.cpp \
-HandleText.cpp
+GLRenderEngine.cpp \
 
 DEPENDPATH += INCLUDEPATH
 

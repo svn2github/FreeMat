@@ -37,13 +37,11 @@ void HandleText::UpdateState() {
   if (fontweight->Is("demi"))
     fweight = QFont::DemiBold;
   // Lookup the font
-  QFont fnt(fontname->Data().c_str(),fontsize->Data()[0]);
+  fnt = QFont(fontname->Data().c_str(),fontsize->Data()[0]);
   fnt.setStyle(fstyle);
   fnt.setWeight(fweight);
-  HPColor *col = (HPColor*) LookupProperty("color");
   HPString *txt = (HPString*) LookupProperty("string");
-  std::string text = txt->Data();
-  glab = GLLabel(fnt,text,col->Data()[0]*255,col->Data()[1]*255,col->Data()[2]*255);
+  text = txt->Data();
 }
 
 HandleAxis* HandleText::GetParentAxis() {
@@ -59,7 +57,7 @@ HandleAxis* HandleText::GetParentAxis() {
   return axis;
 }
 
-void HandleText::paintGL() {
+void HandleText::PaintMe(RenderEngine& gc) {
   UpdateState();
   // Get handleaxis parent
   HandleAxis* axis = GetParentAxis();
@@ -67,32 +65,33 @@ void HandleText::paintGL() {
   // Map position -> pixel location
   int x, y;
   HPThreeVector* hp = (HPThreeVector*) LookupProperty("position");
-  axis->ToPixelPos(hp->Data()[0],hp->Data()[1],hp->Data()[2],x,y);
-  axis->SetupDirectDraw();
+  std::vector<double> mapped(axis->ReMap(hp->Data()));
+  gc.setupDirectDraw();
   // Retrieve the margin...
   double margin(ScalarPropertyLookup("margin"));
   margin = margin + 1;
-  // Get the width and height of the label
-  int textwidth = glab.twidth();
-  int textheight = glab.theight();
-  GLLabel::AlignmentFlag xalign, yalign;
+  RenderEngine::AlignmentFlag xalign, yalign;
   HPAlignVert *hv = (HPAlignVert*) LookupProperty("verticalalignment");
   if (hv->Is("top"))
-    yalign = GLLabel::Min;
+    yalign = RenderEngine::Min;
   else if (hv->Is("middle"))
-    yalign = GLLabel::Mean;
+    yalign = RenderEngine::Mean;
   else
-    yalign = GLLabel::Max;
+    yalign = RenderEngine::Max;
   HPAlignHoriz *hh = (HPAlignHoriz*) LookupProperty("horizontalalignment");
   if (hh->Is("left"))
-    xalign = GLLabel::Min;
+    xalign = RenderEngine::Min;
   else if (hh->Is("center"))
-    xalign = GLLabel::Mean;
+    xalign = RenderEngine::Mean;
   else
-    xalign = GLLabel::Max;
+    xalign = RenderEngine::Max;
+  // Get the width and height of the label
+  int textwidth;
+  int textheight;
   // Get the corner offsets for the label
-  int textxoffset = glab.xoffset(xalign);
-  int textyoffset = glab.yoffset(yalign);
+  int textxoffset;
+  int textyoffset;
+  gc.measureText(text,fnt,xalign,yalign,textwidth,textheight,textxoffset,textyoffset);
   // Construct the coordinates of the text rectangle
   int x1, y1, x2, y2;
   x1 = x + textxoffset - margin;
@@ -102,28 +101,21 @@ void HandleText::paintGL() {
   // fill background rectangle
   HPColor *bc = (HPColor*) LookupProperty("backgroundcolor");
   if (!bc->IsNone()) {
-    glColor3f(bc->Data()[0],bc->Data()[1],bc->Data()[2]);
-    glRectf(x1,y1,x2,y2);
+    gc.color(bc->Data());
+    gc.rectFill(x1,y1,x2,y2);
   }
   // draw bounding rectangle
   HPColor *ec = (HPColor*) LookupProperty("edgecolor");
   if (!ec->IsNone()) {
-    glColor3f(ec->Data()[0],ec->Data()[1],ec->Data()[2]);
-    axis->SetLineStyle(((HPLineStyle*) LookupProperty("linestyle"))->Data());
-    glLineWidth(ScalarPropertyLookup("linewidth"));
+    gc.color(ec->Data());
+    gc.setLineStyle(((HPLineStyle*) LookupProperty("linestyle"))->Data());
+    gc.lineWidth(ScalarPropertyLookup("linewidth"));
     // draw bounding rectangle
-    glBegin(GL_LINES);
-    glVertex2f(x1,y1);
-    glVertex2f(x1,y2);
-    glVertex2f(x1,y2);
-    glVertex2f(x2,y2);
-    glVertex2f(x2,y2);
-    glVertex2f(x2,y1);
-    glVertex2f(x2,y1);
-    glVertex2f(x1,y1);
-    glEnd();
+    gc.rect(x1,y1,x2,y2);
   }
-  glab.DrawMe(x,y,xalign,yalign);
+  // draw the text
+  HPColor *tc = (HPColor*) LookupProperty("color");
+  gc.putText(x,y,text,tc->Data(),xalign,yalign,fnt,0);
 }
 
 void HandleText::SetupDefaults() {

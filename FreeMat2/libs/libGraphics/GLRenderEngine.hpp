@@ -8,14 +8,16 @@ namespace FreeMat {
   class GLRenderEngine : public RenderEngine {
     double model[16];
     double proj[16];
-    int viewport[4];
+    int viewp[4];
     double m_x1, m_y1, m_width, m_height;
+    QGLWidget *m_widget;
   public:
     GLRenderEngine(QGLWidget *widget, double x1, double y1, 
 		   double width, double height);
     ~GLRenderEngine();
-    virtual void initialize();
+    virtual void clear();
     virtual void toPixels(double x, double y, double z, int &a, int &b);
+    virtual void toPixels(double x, double y, double z, double &a, double &b);
     virtual void lookAt(double px, double py, double pz,
 			double tx, double ty, double tz,
 			double ux, double uy, double uz);
@@ -38,7 +40,14 @@ namespace FreeMat {
     virtual void setupDirectDraw();
     virtual void releaseDirectDraw();
     virtual void getModelviewMatrix(double amodel[16]);
-    virtual void setFont(QFont fnt);
+    virtual void putText(double x, double y, std::string txt, 
+			 std::vector<double> color, 
+			 AlignmentFlag xflag, AlignmentFlag yflag,
+			 QFont fnt, double rotation);
+    virtual void measureText(std::string txt, QFont fnt, AlignmentFlag xflag, 
+			     AlignmentFlag yflag,int &width, int &height,
+			     int &xoffset, int &yoffset);
+    virtual void depth(bool);
   };
 };
 

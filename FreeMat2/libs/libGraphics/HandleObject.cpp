@@ -2,6 +2,11 @@
 
 namespace FreeMat {
 
+  void HandleObject::ToManual(std::string name) {
+    HPAutoManual *qp = (HPAutoManual*) LookupProperty(name);
+    qp->Data("manual");
+  }
+
   bool HandleObject::HasChanged(std::vector<std::string> names) {
     HandleProperty *hp;
     for (int i=0;i<names.size();i++) {

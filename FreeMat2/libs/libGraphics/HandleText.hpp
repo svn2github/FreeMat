@@ -4,7 +4,8 @@
 
 namespace FreeMat {
   class HandleText : public HandleObject {
-    GLLabel glab;
+    QFont fnt;
+    std::string text;
     HandleAxis* GetParentAxis();
   public:
     HandleText();
@@ -12,6 +13,6 @@ namespace FreeMat {
     virtual void ConstructProperties();
     virtual void SetupDefaults();
     virtual void UpdateState();
-    virtual void paintGL();
+    virtual void PaintMe(RenderEngine& gc);
   };
 }

@@ -4,6 +4,7 @@
 #include <string>
 #include "SymbolTable.hpp"
 #include "HandleProperty.hpp"
+#include "RenderEngine.hpp"
 
 namespace FreeMat {
 
@@ -15,6 +16,7 @@ namespace FreeMat {
     virtual void RegisterProperties() {}
     bool HasChanged(std::vector<std::string> names);
     bool HasChanged(std::string name);
+    void ToManual(std::string name);
     void ClearChanged(std::vector<std::string> names);
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);
@@ -27,7 +29,7 @@ namespace FreeMat {
     void SetStringDefault(std::string name, std::string value);
     void SetScalarDefault(std::string name, double value);
     bool IsAuto(std::string mode);
-    virtual void paintGL() = 0;
+    virtual void PaintMe(RenderEngine &gc) = 0;
   };
 }
 

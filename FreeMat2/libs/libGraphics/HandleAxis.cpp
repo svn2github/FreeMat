@@ -3,12 +3,11 @@
 #include "HandleFigure.hpp"
 #include "HandleText.hpp"
 #include "Core.hpp"
-#include <qgl.h>
 #include <QMouseEvent>
 #include <qapplication.h>
 #include <math.h>
 #include <qpainter.h>
-#include "GLLabel.hpp"
+#include "GLRenderEngine.hpp"
 
 // Need to add the labels...
 
@@ -152,8 +151,6 @@ namespace FreeMat {
   };
 
   // Probably a better way to do this...
-  BaseFigure *drawing;
-
   HandleList<HandleObject*> handleset;
 
   class pt3d {
@@ -302,16 +299,6 @@ namespace FreeMat {
 	tlabels.push_back(TrimPrint(pow(10.0,tBegin+i*tDelt),true));
   }
 
-  void HandleAxis::Transform(double x, double y, double z, 
-			     double &i, double &j) {
-    // multiply the point by the transformation matrix
-    i = camera[0][0]*x + camera[0][1]*y + camera[0][2]*z + camera[0][3];
-    j = camera[1][0]*x + camera[1][1]*y + camera[1][2]*z + camera[1][3];
-    HPFourVector *Position = (HPFourVector*) LookupProperty("position");
-    i = Position->At(0) + (Position->At(2)/2.0) + i*50;
-    j = Position->At(1) + (Position->At(3)/2.0) + j*50;
-  }
-  
   void HandleAxis::ConstructProperties() {
     // These are all the properties of the axis
     AddProperty(new HPPosition, "activepositionproperty");
@@ -607,8 +594,9 @@ namespace FreeMat {
   }
 
   void BaseFigure::paintGL() {
-    drawing = this;
-    hfig->paintGL();
+    GLRenderEngine gc(this,0,0,width(),height());
+    gc.clear();
+    hfig->PaintMe(gc);
   }
 
   void BaseFigure::resizeGL(int width, int height) {
@@ -713,78 +701,22 @@ namespace FreeMat {
     return (UnitsReinterpret(hp->Data()));
   }
 
-  static void MapPoint4(double m[16], double x, double y, 
-		       double z, double w, double &tx,
-		       double &ty, double &tz, double &tw) {
-    tx = m[0]*x+m[4]*y+m[8]*z+m[12];
-    ty = m[1]*x+m[5]*y+m[9]*z+m[13];
-    tz = m[2]*x+m[6]*y+m[10]*z+m[14];
-    tw = m[3]*x+m[7]*y+m[11]*z+m[15];
-  }
-
-
-  static void ToPixels(double model[16], double proj[16], double x, double y,
-		       double z, double &a, double &b, int viewp[4]) {
-    double c1, c2, c3;
-    gluProject(x,y,z,model,proj,viewp,&c1,&c2,&c3);
-    a = c1;
-    b = c2;
-  }
-
-  void HandleAxis::ToPixelPos(double x, double y, double z, int &p, int &q) {
-    double m[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,m);
-    double proj[16];
-    glGetDoublev(GL_PROJECTION_MATRIX,proj);
-    int viewp[4];
-    glGetIntegerv(GL_VIEWPORT,viewp);
-    double xx, yy;
-    ToPixels(m,proj,x,y,z,xx,yy,viewp);
-    p = (int) xx;
-    q = (int) yy;
-  }
-
-
-  static void gluMultMatrixVecd(const double matrix[16], const double in[4], double out[4])
-  {
-    int i;
-    
-    for (i=0; i<4; i++) {
-      out[i] = 
-	in[0] * matrix[0*4+i] +
-	in[1] * matrix[1*4+i] +
-	in[2] * matrix[2*4+i] +
-	in[3] * matrix[3*4+i];
-    }
-  }
-
-  static void MapPoint(double model[16], double x, double y, double z, 
-		       double *tx, double *ty, double *tz) {
-    double out[4];
-    double in[4];
-    in[0] = x;
-    in[1] = y;
-    in[2] = z;
-    in[3] = 1.0;
-    gluMultMatrixVecd(model,in,out);
-    *tx = out[0];
-    *ty = out[1];
-    *tz = out[2];
-    //     gluMultMatrixVecd(proj,out,int);
-    //     *tx = m[0]*x+m[1]*y+m[2]*z-m[12];
-    //     *ty = m[4]*x+m[5]*y+m[6]*z-m[13];
-    //     *tz = m[8]*x+m[9]*y+m[10]*z-m[14];
-    //     *tx = m[0]*x+m[1]*y+m[2]*z-m[12];
-    //     *ty = m[1]*x+m[5]*y+m[6]*z-m[13];
-    //     *tz = m[2]*x+m[9]*y+m[10]*z-m[14];
-  }
-
   static void MinMaxVector(double *vals, int len, double &vmin, double &vmax) {
     vmin = vmax = vals[0];
     for (int i=0;i<len;i++) {
       vmin = (vals[i] < vmin) ? vals[i] : vmin;
       vmax = (vals[i] > vmax) ? vals[i] : vmax;
     }
+  }
+
+  std::vector<double> HandleAxis::ReMap(std::vector<double> t) {
+    std::vector<double> s;
+    for (int i=0;i<t.size();i+=3) {
+      s.push_back(MapX(t[i]));
+      s.push_back(MapY(t[i+1]));
+      s.push_back(MapZ(t[i+2]));
+    }
+    return s;
   }
   
   // x in [a,b]
@@ -845,129 +777,76 @@ namespace FreeMat {
       return(z);
   }
 
-  void HandleAxis::SetupProjection() {
-    // Build the modelview matrix
-    glMatrixMode(GL_MODELVIEW);    
-    glLoadIdentity();
+  void HandleAxis::SetupProjection(RenderEngine &gc) {
     HPThreeVector *tv1, *tv2, *tv3;
     tv1 = (HPThreeVector*) LookupProperty("cameraposition");
     tv2 = (HPThreeVector*) LookupProperty("cameratarget");
     tv3 = (HPThreeVector*) LookupProperty("cameraupvector");
-    gluLookAt(tv1->Data()[0],tv1->Data()[1],tv1->Data()[2],
+    gc.lookAt(tv1->Data()[0],tv1->Data()[1],tv1->Data()[2],
 	      tv2->Data()[0],tv2->Data()[1],tv2->Data()[2],
 	      tv3->Data()[0],tv3->Data()[1],tv3->Data()[2]);
-    // camera norm
-    double camdist = sqrt(tv1->Data()[0]*tv1->Data()[0]+
-			  tv1->Data()[1]*tv1->Data()[1]+
-			  tv1->Data()[2]*tv1->Data()[2]);
-    double m[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,m);
     // Get the axis limits
     std::vector<double> limits(GetAxisLimits());
     // Map the 8 corners of the clipping cube to rotated space
     double xvals[8];
     double yvals[8];
     double zvals[8];
-    MapPoint(m,limits[0],limits[2],limits[4],xvals+0,yvals+0,zvals+0);
-    MapPoint(m,limits[0],limits[2],limits[5],xvals+1,yvals+1,zvals+1);
-    MapPoint(m,limits[0],limits[3],limits[4],xvals+2,yvals+2,zvals+2);
-    MapPoint(m,limits[0],limits[3],limits[5],xvals+3,yvals+3,zvals+3);
-    MapPoint(m,limits[1],limits[2],limits[4],xvals+4,yvals+4,zvals+4);
-    MapPoint(m,limits[1],limits[2],limits[5],xvals+5,yvals+5,zvals+5);
-    MapPoint(m,limits[1],limits[3],limits[4],xvals+6,yvals+6,zvals+6);
-    MapPoint(m,limits[1],limits[3],limits[5],xvals+7,yvals+7,zvals+7);
+    gc.mapPoint(limits[0],limits[2],limits[4],xvals[0],yvals[0],zvals[0]);
+    gc.mapPoint(limits[0],limits[2],limits[5],xvals[1],yvals[1],zvals[1]);
+    gc.mapPoint(limits[0],limits[3],limits[4],xvals[2],yvals[2],zvals[2]);
+    gc.mapPoint(limits[0],limits[3],limits[5],xvals[3],yvals[3],zvals[3]);
+    gc.mapPoint(limits[1],limits[2],limits[4],xvals[4],yvals[4],zvals[4]);
+    gc.mapPoint(limits[1],limits[2],limits[5],xvals[5],yvals[5],zvals[5]);
+    gc.mapPoint(limits[1],limits[3],limits[4],xvals[6],yvals[6],zvals[6]);
+    gc.mapPoint(limits[1],limits[3],limits[5],xvals[7],yvals[7],zvals[7]);
     // Get the min and max x, y and z coordinates
     double xmin, xmax, ymin, ymax, zmin, zmax;
     MinMaxVector(xvals,8,xmin,xmax);
     MinMaxVector(yvals,8,ymin,ymax);
     MinMaxVector(zvals,8,zmin,zmax);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
     // Invert the signs of zmin and zmax
-    glOrtho(xmin,xmax,ymin,ymax,-zmax,-zmin);
-    //   glFrustum(xmin,xmax,ymin,ymax,zmin,zmax);
+    gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
-    glViewport(position[0],position[1],position[2],position[3]);
-    return;
+    gc.viewport(position[0],position[1],position[2],position[3]);
   }
 
-  void HandleAxis::DrawBox() {
+  void HandleAxis::DrawBox(RenderEngine &gc) {
     // Q: Is this outerposition that's supposed to be colored?
     // Get the limits
     HPColor *hp = (HPColor*) LookupProperty("color");
     if (hp->IsNone()) return;
     std::vector<double> limits(GetAxisLimits());
-    glEnable(GL_CULL_FACE);
-    glBegin(GL_QUADS);
-    glColor3f(hp->Data()[0],hp->Data()[1],hp->Data()[2]);
-
-    glVertex3f( limits[0], limits[2], limits[4]);
-    glVertex3f( limits[1], limits[2], limits[4]);
-    glVertex3f( limits[1], limits[3], limits[4]);
-    glVertex3f( limits[0], limits[3], limits[4]);
-    
-    glVertex3f( limits[0], limits[2], limits[5]);
-    glVertex3f( limits[0], limits[3], limits[5]);
-    glVertex3f( limits[1], limits[3], limits[5]);
-    glVertex3f( limits[1], limits[2], limits[5]);
-
-    glVertex3f(limits[0], limits[2], limits[4]);
-    glVertex3f(limits[0], limits[3], limits[4]);
-    glVertex3f(limits[0], limits[3], limits[5]);
-    glVertex3f(limits[0], limits[2], limits[5]);
-
-    glVertex3f(limits[1], limits[2], limits[4]);
-    glVertex3f(limits[1], limits[2], limits[5]);
-    glVertex3f(limits[1], limits[3], limits[5]);
-    glVertex3f(limits[1], limits[3], limits[4]);
-
-    glVertex3f(limits[0], limits[2], limits[4]);
-    glVertex3f(limits[0], limits[2], limits[5]);
-    glVertex3f(limits[1], limits[2], limits[5]);
-    glVertex3f(limits[1], limits[2], limits[4]);
-
-    glVertex3f(limits[0], limits[3], limits[4]);
-    glVertex3f(limits[1], limits[3], limits[4]);
-    glVertex3f(limits[1], limits[3], limits[5]);
-    glVertex3f(limits[0], limits[3], limits[5]);
-
-    glEnd();
-    glDisable(GL_CULL_FACE);
+    gc.color(hp->Data());
+    gc.quad( limits[0], limits[2], limits[4],
+	     limits[1], limits[2], limits[4],
+	     limits[1], limits[3], limits[4],
+	     limits[0], limits[3], limits[4]);
+    gc.quad( limits[0], limits[2], limits[5],
+	     limits[0], limits[3], limits[5],
+	     limits[1], limits[3], limits[5],
+	     limits[1], limits[2], limits[5]);
+    gc.quad( limits[0], limits[2], limits[4],
+	     limits[0], limits[3], limits[4],
+	     limits[0], limits[3], limits[5],
+	     limits[0], limits[2], limits[5]);
+    gc.quad( limits[1], limits[2], limits[4],
+	     limits[1], limits[2], limits[5],
+	     limits[1], limits[3], limits[5],
+	     limits[1], limits[3], limits[4]);
+    gc.quad( limits[0], limits[2], limits[4],
+	     limits[0], limits[2], limits[5],
+	     limits[1], limits[2], limits[5],
+	     limits[1], limits[2], limits[4]);
+    gc.quad( limits[0], limits[3], limits[4],
+	     limits[1], limits[3], limits[4],
+	     limits[1], limits[3], limits[5],
+	     limits[0], limits[3], limits[5]);
   }
 
-  void HandleAxis::SetLineStyle(std::string style) {
-    if (style == "-") {
-      glDisable(GL_LINE_STIPPLE);
-      return;
-    }
-    if (style == "--") {
-      glEnable(GL_LINE_STIPPLE);
-      glLineStipple(1,0x00FF);
-      return;
-    }
-    if (style == ":") {
-      glEnable(GL_LINE_STIPPLE);
-      glLineStipple(1,0xDDDD);
-      return;
-    }
-    if (style == "-.") {
-      glEnable(GL_LINE_STIPPLE);
-      glLineStipple(1,0xF0D0);
-      return;
-    }
-    if (style == "none") {
-      glEnable(GL_LINE_STIPPLE);
-      glLineStipple(1,0x0000);
-      return;
-    }
-  }
 
-  void HandleAxis::DrawGridLines() {
+  void HandleAxis::DrawGridLines(RenderEngine &gc) {
     std::vector<double> limits(GetAxisLimits());
-    glDisable(GL_DEPTH_TEST);
-    // Retrieve the current transformation matrix
-    double m[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,m);
+    gc.depth(false);
     // The normals of interest are 
     // [0,0,1],[0,0,-1],
     // [0,1,0],[0,-1,0],
@@ -979,9 +858,8 @@ namespace FreeMat {
     // 2, 6, 10 elements of m, and drawing the corresponding
     // Select the set of grids to draw based on these elements
     // Draw the grid
-    glLineWidth(ScalarPropertyLookup("linewidth"));
-    SetLineStyle(((HPLineStyle*) LookupProperty("gridlinestyle"))->Data());
-    glBegin(GL_LINES);
+    gc.lineWidth(ScalarPropertyLookup("linewidth"));
+    gc.setLineStyle(((HPLineStyle*) LookupProperty("gridlinestyle"))->Data());
     HPVector *hp;
     hp = (HPVector*) LookupProperty("xtick");
     std::vector<double> xticks(hp->Data());
@@ -993,104 +871,93 @@ namespace FreeMat {
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
     if (((HPOnOff*) LookupProperty("xgrid"))->AsBool()) {
-      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      gc.color(xc->Data());
       for (int i=0;i<xticks.size();i++) {
 	GLfloat t = MapX(xticks[i]);
-	DrawXGridLine(m,t,limits);
+	DrawXGridLine(gc,t,limits);
       }
     }
     if (((HPOnOff*) LookupProperty("ygrid"))->AsBool()) {
-      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+      gc.color(yc->Data());
       for (int i=0;i<yticks.size();i++) {
 	GLfloat t = MapY(yticks[i]);
-	DrawYGridLine(m,t,limits);
+	DrawYGridLine(gc,t,limits);
       }
     }
     if (((HPOnOff*) LookupProperty("zgrid"))->AsBool()) {
-      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+      gc.color(zc->Data());
       for (int i=0;i<zticks.size();i++) {
 	GLfloat t = MapZ(zticks[i]);
-	DrawZGridLine(m,t,limits);
+	DrawZGridLine(gc,t,limits);
       }
     }
-    glEnd();
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_LINE_STIPPLE);
+    gc.depth(true);
   }
 
-  void HandleAxis::DrawXGridLine(double m[16], double t, 
+  void HandleAxis::DrawXGridLine(RenderEngine &gc, double t, 
 				 std::vector<double> limits) {
+    double m[16];
+    gc.getModelviewMatrix(m);
     if (m[10] > 0) {
-      glVertex3f(t,limits[2],limits[4]);
-      glVertex3f(t,limits[3],limits[4]);
+      gc.line(t,limits[2],limits[4],
+	      t,limits[3],limits[4]);
     } else if (m[10] < 0) {
-      glVertex3f(t,limits[2],limits[5]);
-      glVertex3f(t,limits[3],limits[5]);
+      gc.line(t,limits[2],limits[5],
+	      t,limits[3],limits[5]);
     }
     if (m[6] > 0) {
-      glVertex3f(t,limits[2],limits[4]);
-      glVertex3f(t,limits[2],limits[5]);
+      gc.line(t,limits[2],limits[4],
+	      t,limits[2],limits[5]);
     } else if (m[6] < 0) {
-      glVertex3f(t,limits[3],limits[4]);
-      glVertex3f(t,limits[3],limits[5]);
+      gc.line(t,limits[3],limits[4],
+	      t,limits[3],limits[5]);
     }
   }
   
-  void HandleAxis::DrawYGridLine(double m[16], double t,
+  void HandleAxis::DrawYGridLine(RenderEngine &gc, double t,
 				 std::vector<double> limits) {
+    double m[16];
+    gc.getModelviewMatrix(m);
     if (m[10] > 0) {
-      glVertex3f(limits[0],t,limits[4]);
-      glVertex3f(limits[1],t,limits[4]);
+      gc.line(limits[0],t,limits[4],
+	      limits[1],t,limits[4]);
     } else if (m[10] < 0) {
-      glVertex3f(limits[0],t,limits[5]);
-      glVertex3f(limits[1],t,limits[5]);
+      gc.line(limits[0],t,limits[5],
+	      limits[1],t,limits[5]);
     }
     if (m[2] > 0) {
-      glVertex3f(limits[0],t,limits[4]);
-      glVertex3f(limits[0],t,limits[5]);
+      gc.line(limits[0],t,limits[4],
+	      limits[0],t,limits[5]);
     } else if (m[2] < 0) {
-      glVertex3f(limits[1],t,limits[4]);
-      glVertex3f(limits[1],t,limits[5]);
+      gc.line(limits[1],t,limits[4],
+	      limits[1],t,limits[5]);
     }
   }
 
-  void HandleAxis::DrawZGridLine(double m[16], double t,
+  void HandleAxis::DrawZGridLine(RenderEngine &gc, double t,
 				 std::vector<double> limits) {
+    double m[16];
+    gc.getModelviewMatrix(m);
     if (m[6] > 0) {
-      glVertex3f(limits[0],limits[2],t);
-      glVertex3f(limits[1],limits[2],t);
+      gc.line(limits[0],limits[2],t,
+	      limits[1],limits[2],t);
     } else if (m[6] < 0) {
-      glVertex3f(limits[0],limits[3],t);
-      glVertex3f(limits[1],limits[3],t);
+      gc.line(limits[0],limits[3],t,
+	      limits[1],limits[3],t);
     }
     if (m[2] > 0) {
-      glVertex3f(limits[0],limits[2],t);
-      glVertex3f(limits[0],limits[3],t);
+      gc.line(limits[0],limits[2],t,
+	      limits[0],limits[3],t);
     } else if (m[2] < 0) {
-      glVertex3f(limits[1],limits[2],t);
-      glVertex3f(limits[1],limits[3],t);
+      gc.line(limits[1],limits[2],t,
+	      limits[1],limits[3],t);
     }
   }				 
 
-  void HandleAxis::DrawMinorGridLines() {
+  void HandleAxis::DrawMinorGridLines(RenderEngine &gc) {
     std::vector<double> limits(GetAxisLimits());
-    glDisable(GL_DEPTH_TEST);
-    // Retrieve the current transformation matrix
-    double m[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,m);
-    // The normals of interest are 
-    // [0,0,1],[0,0,-1],
-    // [0,1,0],[0,-1,0],
-    // [1,0,0],[-1,0,0]
-    // We will multiply the transformation matrix 
-    // by a directional vector.  Then we test the
-    // sign of the z component.  This sequence of
-    // operations is equivalent to simply taking the
-    // 2, 6, 10 elements of m, and drawing the corresponding
-    // Select the set of grids to draw based on these elements
-    // Draw the grid
-    SetLineStyle(((HPLineStyle*) LookupProperty("minorgridlinestyle"))->Data());
-    glBegin(GL_LINES);
+    gc.setLineStyle(((HPLineStyle*) LookupProperty("minorgridlinestyle"))->Data());
+    gc.depth(false);
     HPVector *hp;
     hp = (HPVector*) LookupProperty("xtick");
     std::vector<double> xticks(hp->Data());
@@ -1103,87 +970,80 @@ namespace FreeMat {
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
     HPLinearLog *sp;
     if (((HPOnOff*) LookupProperty("xminorgrid"))->AsBool()) {
-      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      gc.color(xc->Data());
       sp = (HPLinearLog*) LookupProperty("xscale");
       if (sp->Is("linear")) {
 	for (int i=0;i<xticks.size()-1;i++) {
-	  GLfloat t = MapX((xticks[i]+xticks[i+1])/2);
-	  DrawXGridLine(m,t,limits);
+	  double t = MapX((xticks[i]+xticks[i+1])/2);
+	  DrawXGridLine(gc,t,limits);
 	}
       } else {
 	for (int i=0;i<xticks.size()-1;i++) {
 	  // Ticks should be in integer divisions
 	  double t1 = xticks[i];
 	  double t2 = xticks[i+1];
-	  int n = 2;
-	  while ((t1*n)<t2) {
-	    GLfloat t = MapX(n*t1);
-	    n++;
-	    DrawXGridLine(m,t,limits);
+	  if (t2 == (t1 + 1)) {
+	    int n = 2;
+	    while ((t1*n)<t2) {
+	      double t = MapX(n*t1);
+	      n++;
+	      DrawXGridLine(gc,t,limits);
+	    }
 	  }
 	}
       }
     }
-
     if (((HPOnOff*) LookupProperty("yminorgrid"))->AsBool()) {
-      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
-      for (int i=0;i<yticks.size()-1;i++) {
-	GLfloat t = MapY((yticks[i]+yticks[i+1])/2);
-	DrawYGridLine(m,t,limits);
+      gc.color(yc->Data());
+      sp = (HPLinearLog*) LookupProperty("yscale");
+      if (sp->Is("linear")) {
+	for (int i=0;i<yticks.size()-1;i++) {
+	  GLfloat t = MapY((yticks[i]+yticks[i+1])/2);
+	  DrawYGridLine(gc,t,limits);
+	}
+      } else {
+	for (int i=0;i<yticks.size()-1;i++) {
+	  // Ticks should be in integer divisions
+	  double t1 = yticks[i];
+	  double t2 = yticks[i+1];
+	  if (t2 == (t1 + 1)) {
+	    int n = 2;
+	    while ((t1*n)<t2) {
+	      double t = MapY(n*t1);
+	      n++;
+	      DrawYGridLine(gc,t,limits);
+	    }
+	  }
+	}
       }
     }
     if (((HPOnOff*) LookupProperty("zminorgrid"))->AsBool()) {
-      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
-      for (int i=0;i<zticks.size()-1;i++) {
-	GLfloat t = MapZ((zticks[i]+zticks[i+1])/2);
-	DrawZGridLine(m,t,limits);
+      gc.color(zc->Data());
+      sp = (HPLinearLog*) LookupProperty("zscale");
+      if (sp->Is("linear")) {
+	for (int i=0;i<zticks.size()-1;i++) {
+	  GLfloat t = MapZ((zticks[i]+zticks[i+1])/2);
+	  DrawZGridLine(gc,t,limits);
+	}
+      } else {
+	for (int i=0;i<zticks.size()-1;i++) {
+	  // Ticks should be in integer divisions
+	  double t1 = zticks[i];
+	  double t2 = zticks[i+1];
+	  if (t2 == (t1 + 1)) {
+	    int n = 2;
+	    while ((t1*n)<t2) {
+	      double t = MapZ(n*t1);
+	      n++;
+	      DrawZGridLine(gc,t,limits);
+	    }
+	  }
+	}
       }
     }
-    glEnd();
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_LINE_STIPPLE);
+    gc.depth(true);
   }
   
-  void HandleAxis::ReleaseDirectDraw() {
-    glEnable(GL_DEPTH_TEST);
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();    
-    std::vector<double> position(GetPropertyVectorAsPixels("position"));
-    glViewport(position[0],position[1],position[2],position[3]);
-  }
-
-  void HandleAxis::SetupDirectDraw() {
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
-    glViewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
-    glOrtho(outerpos[0],outerpos[0]+outerpos[2],
-	    outerpos[1],outerpos[1]+outerpos[3],-1,1);
-    glDisable(GL_DEPTH_TEST);
-  }
-
-  bool HandleAxis::IsVisibleLine(float nx1, float ny1, float nz1,
-				 float nx2, float ny2, float nz2) {
-    // Retrieve the modelview matrix
-    double model[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,model);
-    // Transform the normals, and take the z component
-    double tx, ty, tz, tw;
-    bool plane1visible;
-    bool plane2visible;
-    MapPoint4(model,nx1,ny1,nz1,0,tx,ty,tz,tw);
-    plane1visible = (tz > 0);
-    MapPoint4(model,nx2,ny2,nz2,0,tx,ty,tz,tw);
-    plane2visible = (tz > 0);
-    return (plane1visible ^ plane2visible);
-  }
-
   double HandleAxis::flipX(double t) {
     std::vector<double> limits(GetAxisLimits());
     if (t == limits[0])
@@ -1205,16 +1065,9 @@ namespace FreeMat {
     return limits[4];
   }
 
-  void HandleAxis::SetupAxis() {
-    std::vector<double> position(GetPropertyVectorAsPixels("position"));
-   // Project the visible axis positions
+  void HandleAxis::SetupAxis(RenderEngine &gc) {
     double model[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,model);
-    // Map the points from the grid...
-    double proj[16];
-    glGetDoublev(GL_PROJECTION_MATRIX,proj);
-    int viewp[4];
-    glGetIntegerv(GL_VIEWPORT,viewp);
+    gc.getModelviewMatrix(model);
     std::vector<double> limits(GetAxisLimits());
     // Query the axisproperties to set the z-position of the
     // x and y axis
@@ -1255,9 +1108,9 @@ namespace FreeMat {
     //   - we have to decide which one to use.  What we can do is take
     //   - the longer axis
     double px0, py0, px1, py1, px2, py2;
-    ToPixels(model,proj,limits[0],x1pos[1],x1pos[2],px0,py0,viewp);
-    ToPixels(model,proj,limits[0],flipY(x1pos[1]),x1pos[2],px1,py1,viewp);
-    ToPixels(model,proj,limits[0],x1pos[1],flipZ(x1pos[2]),px2,py2,viewp);
+    gc.toPixels(limits[0],x1pos[1],x1pos[2],px0,py0);
+    gc.toPixels(limits[0],flipY(x1pos[1]),x1pos[2],px1,py1);
+    gc.toPixels(limits[0],x1pos[1],flipZ(x1pos[2]),px2,py2);
     double len1, len2;
     len1 = ((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0));
     len2 = ((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0));
@@ -1295,9 +1148,9 @@ namespace FreeMat {
       else
 	y1pos[0] = limits[0];
     } 
-    ToPixels(model,proj,y1pos[0],limits[2],y1pos[2],px0,py0,viewp);
-    ToPixels(model,proj,flipX(y1pos[0]),limits[2],y1pos[2],px1,py1,viewp);
-    ToPixels(model,proj,y1pos[0],limits[2],flipZ(y1pos[2]),px2,py2,viewp);
+    gc.toPixels(y1pos[0],limits[2],y1pos[2],px0,py0);
+    gc.toPixels(flipX(y1pos[0]),limits[2],y1pos[2],px1,py1);
+    gc.toPixels(y1pos[0],limits[2],flipZ(y1pos[2]),px2,py2);
     len1 = ((px1-px0)*(px1-px0) + (py1-py0)*(py1-py0));
     len2 = ((px2-px0)*(px2-px0) + (py2-py0)*(py2-py0));
     if ((len1 > len2) && (len1 > 0)) {
@@ -1383,14 +1236,14 @@ namespace FreeMat {
     }
 
     double x1, y1, x2, y2;
-    ToPixels(model,proj,limits[0],x1pos[1],x1pos[2],x1,y1,viewp);
-    ToPixels(model,proj,limits[1],x1pos[1],x1pos[2],x2,y2,viewp);
+    gc.toPixels(limits[0],x1pos[1],x1pos[2],x1,y1);
+    gc.toPixels(limits[1],x1pos[1],x1pos[2],x2,y2);
     xvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
-    ToPixels(model,proj,y1pos[0],limits[2],y1pos[2],x1,y1,viewp);
-    ToPixels(model,proj,y1pos[0],limits[3],y1pos[2],x2,y2,viewp);
+    gc.toPixels(y1pos[0],limits[2],y1pos[2],x1,y1);
+    gc.toPixels(y1pos[0],limits[3],y1pos[2],x2,y2);
     yvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
-    ToPixels(model,proj,z1pos[0],z1pos[1],limits[4],x1,y1,viewp);
-    ToPixels(model,proj,z1pos[0],z1pos[1],limits[5],x2,y2,viewp);
+    gc.toPixels(z1pos[0],z1pos[1],limits[4],x1,y1);
+    gc.toPixels(z1pos[0],z1pos[1],limits[5],x2,y2);
     zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);  
   }
 
@@ -1398,30 +1251,32 @@ namespace FreeMat {
     return (!(xvisible && yvisible && zvisible));
   }
 
-  void HandleAxis::DrawAxisLines() { 
+  void HandleAxis::DrawAxisLines(RenderEngine &gc) { 
     std::vector<double> limits(GetAxisLimits());
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
-    glLineWidth(ScalarPropertyLookup("linewidth"));
+    gc.setLineStyle("-");
+    gc.lineWidth(ScalarPropertyLookup("linewidth"));
+    gc.depth(false);
     glDisable(GL_DEPTH_TEST);
     glBegin(GL_LINES);
     if (xvisible) {
-      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
-      glVertex3f(limits[0],x1pos[1],x1pos[2]);
-      glVertex3f(limits[1],x1pos[1],x1pos[2]);
+      gc.color(xc->Data());
+      gc.line(limits[0],x1pos[1],x1pos[2],
+	      limits[1],x1pos[1],x1pos[2]);
     }
     if (yvisible) {
-      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
-      glVertex3f(y1pos[0],limits[2],y1pos[2]);
-      glVertex3f(y1pos[0],limits[3],y1pos[2]);
+      gc.color(yc->Data());
+      gc.line(y1pos[0],limits[2],y1pos[2],
+	      y1pos[0],limits[3],y1pos[2]);
     } 
     if (zvisible) {
-      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
-      glVertex3f(z1pos[0],z1pos[1],limits[4]);
-      glVertex3f(z1pos[0],z1pos[1],limits[5]);
+      gc.color(zc->Data());
+      gc.line(z1pos[0],z1pos[1],limits[4],
+	      z1pos[0],z1pos[1],limits[5]);
     }
-    glEnd();
+    gc.depth(true);
   }
 
   // Assemble a font for the axis
@@ -1453,27 +1308,19 @@ namespace FreeMat {
     m_font = fnt;
   }
 
-  int HandleAxis::GetTickCount(double x1, double y1, double z1,
+  int HandleAxis::GetTickCount(RenderEngine &gc,
+			       double x1, double y1, double z1,
 			       double x2, double y2, double z2) {
-    // Retrieve the transformation matrix
-    double model[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,model);
-    // Map the points from the grid...
-    double proj[16];
-    glGetDoublev(GL_PROJECTION_MATRIX,proj);
-    int viewp[4];
-    glGetIntegerv(GL_VIEWPORT,viewp);
-    std::vector<double> position(GetPropertyVectorAsPixels("position"));
     double u1, v1, u2, v2;
-    ToPixels(model,proj,x1,y1,z1,u1,v1,viewp);
-    ToPixels(model,proj,x2,y2,z2,u2,v2,viewp);
+    gc.toPixels(x1,y1,z1,u1,v1);
+    gc.toPixels(x2,y2,z2,u2,v2);
     double axlen;
     axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
     int numtics = qMax(2.0,axlen/100.0);
     return numtics;
   }
 
-  void HandleAxis::RecalculateTicks() {
+  void HandleAxis::RecalculateTicks(RenderEngine &gc) {
     // We have to calculate the tick sets for each axis...
     std::vector<double> limits(GetAxisLimits());
     std::vector<double> xticks;
@@ -1483,11 +1330,11 @@ namespace FreeMat {
     std::vector<double> zticks;
     std::vector<std::string> zlabels;
     int xcnt, ycnt, zcnt;
-    xcnt = GetTickCount(limits[0],x1pos[1],x1pos[2],
+    xcnt = GetTickCount(gc,limits[0],x1pos[1],x1pos[2],
 			limits[1],x1pos[1],x1pos[2]);
-    ycnt = GetTickCount(y1pos[0],limits[2],y1pos[2],
+    ycnt = GetTickCount(gc,y1pos[0],limits[2],y1pos[2],
 			y1pos[0],limits[3],y1pos[2]);
-    zcnt = GetTickCount(z1pos[0],z1pos[1],limits[4],
+    zcnt = GetTickCount(gc,z1pos[0],z1pos[1],limits[4],
 			z1pos[0],z1pos[1],limits[5]);
     double xStart, xStop;
     double yStart, yStop;
@@ -1577,12 +1424,7 @@ namespace FreeMat {
     }
   }
 
-  void HandleAxis::ToManual(std::string name) {
-    HPAutoManual *qp = (HPAutoManual*) LookupProperty(name);
-    qp->Data("manual");
-  }
-
-  void HandleAxis::UpdateState() {
+  void HandleAxis::UpdateState(RenderEngine &gc) {
     std::vector<std::string> tset;
     if (HasChanged("xticklabel")) 
       ToManual("xticklabelmode");
@@ -1598,7 +1440,6 @@ namespace FreeMat {
     tset.push_back("zcolor"); 
     if (HasChanged(tset)) {
       UpdateAxisFont();
-      GenerateLabels();
       ClearChanged(tset);
     }
     // if ticklabels changed --> tickmode = manual
@@ -1607,8 +1448,7 @@ namespace FreeMat {
     // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
     HandleFigure* fig = GetParentFigure();
     if (fig->Resized() || HasChanged("position")) {
-      RecalculateTicks();
-      GenerateLabels();
+      RecalculateTicks(gc);
     }
     // Camera properties...
     if (HasChanged("cameratarget")) 
@@ -1646,77 +1486,52 @@ namespace FreeMat {
       center.push_back(0);
       tv->Data(center);      
     }
-    RecalculateTicks();
-    GenerateLabels();
-    //    drawing->updateGL();
-  }
-
-  void HandleAxis::GenerateLabels() {
-    HPStringSet *qp;
-    qp = (HPStringSet*) LookupProperty("xticklabel");
-    std::vector<std::string> xlabeltxt(qp->Data());
-    qp = (HPStringSet*) LookupProperty("yticklabel");
-    std::vector<std::string> ylabeltxt(qp->Data());
-    qp = (HPStringSet*) LookupProperty("zticklabel");
-    std::vector<std::string> zlabeltxt(qp->Data());
-    QFont fnt(m_font);
-    HPColor *xc = (HPColor*) LookupProperty("xcolor");
-    HPColor *yc = (HPColor*) LookupProperty("ycolor");
-    HPColor *zc = (HPColor*) LookupProperty("zcolor");
-    xlabels.clear();
-    for (int i=0;i<xlabeltxt.size();i++)
-      xlabels.push_back(GLLabel(fnt,xlabeltxt[i],xc->Data()[0]*255,
-				xc->Data()[1]*255,xc->Data()[2]*255));
-    ylabels.clear();
-    for (int i=0;i<ylabeltxt.size();i++)
-      ylabels.push_back(GLLabel(fnt,ylabeltxt[i],yc->Data()[0]*255,
-				yc->Data()[1]*255,yc->Data()[2]*255));
-    zlabels.clear();
-    for (int i=0;i<zlabeltxt.size();i++)
-      zlabels.push_back(GLLabel(fnt,zlabeltxt[i],zc->Data()[0]*255,
-				zc->Data()[1]*255,zc->Data()[2]*255));
+    RecalculateTicks(gc);
   }
 
   // The orientation of the label depends on the angle of the
   // tick
-  void HandleAxis::DrawLabel(double dx, double dy, 
-			     double x2, double y2, GLLabel& a) {
+  void HandleAxis::DrawLabel(RenderEngine& gc,
+			     double dx, double dy, 
+			     double x2, double y2, 
+			     std::vector<double> color,
+			     std::string txt) {
     double angle = atan2(dy,dx)*180.0/M_PI;
-    GLLabel::AlignmentFlag xalign;
-    GLLabel::AlignmentFlag yalign;
+    RenderEngine::AlignmentFlag xalign;
+    RenderEngine::AlignmentFlag yalign;
     if (fabs(angle) < 10) {
-      xalign = GLLabel::Min;
-      yalign = GLLabel::Mean;
+      xalign = RenderEngine::Min;
+      yalign = RenderEngine::Mean;
     } else if (fabs(angle) > 170) {
-      xalign = GLLabel::Max;
-      yalign = GLLabel::Mean;
+      xalign = RenderEngine::Max;
+      yalign = RenderEngine::Mean;
     } else if ((angle >= 10) && (angle < 80)) {
-      xalign = GLLabel::Min;
-      yalign = GLLabel::Min;
+      xalign = RenderEngine::Min;
+      yalign = RenderEngine::Min;
     } else if ((angle >= 80) && (angle < 100)) {
-      xalign = GLLabel::Mean;
-      yalign = GLLabel::Min;
+      xalign = RenderEngine::Mean;
+      yalign = RenderEngine::Min;
     } else if ((angle >= 100) && (angle < 170)) {
-      xalign = GLLabel::Max;
-      yalign = GLLabel::Min;
+      xalign = RenderEngine::Max;
+      yalign = RenderEngine::Min;
     } else if ((angle <= -10) && (angle > -80)) {
-      xalign = GLLabel::Min;
-      yalign = GLLabel::Max;
+      xalign = RenderEngine::Min;
+      yalign = RenderEngine::Max;
     } else if ((angle <= -80) && (angle > -100)) {
-      xalign = GLLabel::Mean;
-      yalign = GLLabel::Max;
+      xalign = RenderEngine::Mean;
+      yalign = RenderEngine::Max;
     } else if ((angle <= -100) && (angle > -170)) {
-      xalign = GLLabel::Max;
-      yalign = GLLabel::Max;
+      xalign = RenderEngine::Max;
+      yalign = RenderEngine::Max;
     }
-    a.DrawMe(drawing,x2,y2,xalign,yalign);
+    gc.putText(x2,y2,txt,color,xalign,yalign,m_font,0);
   }
 
   //
   // Look at the z axis... if T*[0;0;1;0] y component is positive,
   // put x and y axis at the bottom.  otherwise, put them at the top.
   //
-  void HandleAxis::DrawTickMarks() {
+  void HandleAxis::DrawTickMarks(RenderEngine &gc) {
     // The trick here is to determine where to attach the 
     // three axes - there should be two possibilities for
     // each axis.  We start with four possibilities for
@@ -1730,7 +1545,7 @@ namespace FreeMat {
     std::vector<double> yticks(hp->Data());
     hp = (HPVector*) LookupProperty("ztick");
     std::vector<double> zticks(hp->Data());
-    //    glLineWidth(ScalarPropertyLookup("linewidth"));
+    gc.lineWidth(ScalarPropertyLookup("linewidth"));
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
@@ -1756,43 +1571,36 @@ namespace FreeMat {
       else
 	ticdir = -1;
     }
+    HPStringSet *qp;
+    qp = (HPStringSet*) LookupProperty("xticklabel");
+    std::vector<std::string> xlabeltxt(qp->Data());
+    qp = (HPStringSet*) LookupProperty("yticklabel");
+    std::vector<std::string> ylabeltxt(qp->Data());
+    qp = (HPStringSet*) LookupProperty("zticklabel");
+    std::vector<std::string> zlabeltxt(qp->Data());
     // Draw the ticks
-    // Retrieve the transformation matrix
-    double model[16];
-    glGetDoublev(GL_MODELVIEW_MATRIX,model);
-    // Map the points from the grid...
-    double proj[16];
-    glGetDoublev(GL_PROJECTION_MATRIX,proj);
-    int viewp[4];
-    glGetIntegerv(GL_VIEWPORT,viewp);
     std::vector<double> limits(GetAxisLimits());
-    // Assemble the font we need to draw the labels
-    QFont fnt(m_font);
     // Next step - calculate the tick directions...
     // We have to draw the tics in flat space
-    SetupDirectDraw();
-    
+    gc.setupDirectDraw();
+    gc.setLineStyle("-");
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
-
     if (xvisible) {
-      glColor3f(xc->Data()[0],xc->Data()[1],xc->Data()[2]);
+      gc.color(xc->Data());
       for (int i=0;i<xticks.size();i++) {
-	GLfloat t = MapX(xticks[i]);
+	double t = MapX(xticks[i]);
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,t,x1pos[1],x1pos[2],x1,y1,viewp);
-	ToPixels(model,proj,t,x2pos[1],x2pos[2],x2,y2,viewp);
+	gc.toPixels(t,x1pos[1],x1pos[2],x1,y1);
+	gc.toPixels(t,x2pos[1],x2pos[2],x2,y2);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
 	delx /= norm; dely /= norm;
 	x2 = delx*ticlen*ticdir + x1;
 	y2 = dely*ticlen*ticdir + y1;
-	glBegin(GL_LINES);
-	glVertex2f(x1,y1);
-	glVertex2f(x2,y2);
-	glEnd();
+	gc.line(x1,y1,x2,y2);
 	double x3, y3;
 	if (ticdir > 0) {
 	  x3 = -delx*0.015*norm + x1;
@@ -1801,29 +1609,26 @@ namespace FreeMat {
 	  x3 = -delx*0.015*norm + x2;
 	  y3 = -dely*0.015*norm + y2;
 	}
-	if (~xlabels.empty())
-	  DrawLabel(-delx,-dely,x3,y3,xlabels[i % xlabels.size()]);
+	if (~xlabeltxt.empty())
+	  DrawLabel(gc,-delx,-dely,x3,y3,xc->Data(),xlabeltxt[i % xlabeltxt.size()]);
       }
     }
     if (yvisible) {
-      glColor3f(yc->Data()[0],yc->Data()[1],yc->Data()[2]);
+      gc.color(yc->Data());
       for (int i=0;i<yticks.size();i++) {
-	GLfloat t = MapY(yticks[i]);
+	double t = MapY(yticks[i]);
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,y1pos[0],t,y1pos[2],x1,y1,viewp);
-	ToPixels(model,proj,y2pos[0],t,y2pos[2],x2,y2,viewp);
+	gc.toPixels(y1pos[0],t,y1pos[2],x1,y1);
+	gc.toPixels(y2pos[0],t,y2pos[2],x2,y2);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
 	delx /= norm; dely /= norm;
 	x2 = delx*ticlen*ticdir + x1;
 	y2 = dely*ticlen*ticdir + y1;
-	glBegin(GL_LINES);
-	glVertex2f(x1,y1);
-	glVertex2f(x2,y2);
-	glEnd();
+	gc.line(x1,y1,x2,y2);
 	double x3, y3;
 	if (ticdir > 0) {
 	  x3 = -delx*0.015*norm + x1;
@@ -1832,29 +1637,26 @@ namespace FreeMat {
 	  x3 = -delx*0.015*norm + x2;
 	  y3 = -dely*0.015*norm + y2;
 	}
-	if (~ylabels.empty())
-	  DrawLabel(-delx,-dely,x3,y3,ylabels[i % ylabels.size()]);
+	if (~ylabeltxt.empty())
+	  DrawLabel(gc,-delx,-dely,x3,y3,yc->Data(),ylabeltxt[i % ylabeltxt.size()]);
       }
     }
     if (zvisible) {
-      glColor3f(zc->Data()[0],zc->Data()[1],zc->Data()[2]);
+      gc.color(zc->Data());
       for (int i=0;i<zticks.size();i++) {
-	GLfloat t = MapZ(zticks[i]);
+	double t = MapZ(zticks[i]);
 	// Map the coords ourselves
 	double x1, y1, x2, y2, delx, dely;
 	double norm;
-	ToPixels(model,proj,z1pos[0],z1pos[1],t,x1,y1,viewp);
-	ToPixels(model,proj,z2pos[0],z2pos[1],t,x2,y2,viewp);
+	gc.toPixels(z1pos[0],z1pos[1],t,x1,y1);
+	gc.toPixels(z2pos[0],z2pos[1],t,x2,y2);
 	delx = x2-x1; dely = y2-y1;
 	// normalize the tick length
 	norm = sqrt(delx*delx + dely*dely);
 	delx /= norm; dely /= norm;
 	x2 = delx*ticlen*ticdir + x1;
 	y2 = dely*ticlen*ticdir + y1;
-	glBegin(GL_LINES);
-	glVertex2f(x1,y1);
-	glVertex2f(x2,y2);
-	glEnd();
+	gc.line(x1,y1,x2,y2);
 	double x3, y3;
 	if (ticdir > 0) {
 	  x3 = -delx*0.015*norm + x1;
@@ -1863,11 +1665,11 @@ namespace FreeMat {
 	  x3 = -delx*0.015*norm + x2;
 	  y3 = -dely*0.015*norm + y2;
 	}
-	if (~zlabels.empty())
-	  DrawLabel(-delx,-dely,x3,y3,zlabels[i % zlabels.size()]);
+	if (~zlabeltxt.empty())
+	  DrawLabel(gc,-delx,-dely,x3,y3,zc->Data(),zlabeltxt[i % zlabeltxt.size()]);
       }
     }
-    ReleaseDirectDraw();
+    gc.releaseDirectDraw();
   }
 
   void HandleAxis::DrawTickLabels() {
@@ -1876,29 +1678,26 @@ namespace FreeMat {
   void HandleAxis::DrawAxisLabels() {
   }
 
-  void HandleAxis::DrawChildren() {
+  void HandleAxis::DrawChildren(RenderEngine& gc) {
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {
       HandleObject *fp = handleset.lookupHandle(handles[i]);
-      fp->paintGL();
+      fp->PaintMe(gc);
     }
   }
 
-  void HandleAxis::paintGL() {
+  void HandleAxis::PaintMe(RenderEngine& gc) {
     if (GetParentFigure() == NULL) return;
-    // Time to draw the axis...  
-    drawing->initializeGL();
-    SetupProjection();
-    SetupAxis();
-    UpdateState();
-    DrawBox();
-    DrawGridLines();
-    DrawMinorGridLines();
-    DrawAxisLines();
-    DrawTickMarks();
-    //    DrawTickLabels();
-    //    DrawAxisLabels();
-    //    DrawChildren();
+    SetupProjection(gc);
+    SetupAxis(gc);
+    UpdateState(gc);
+    DrawBox(gc);
+    DrawGridLines(gc);
+    DrawMinorGridLines(gc);
+    DrawAxisLines(gc);
+    DrawTickMarks(gc);
+    DrawAxisLabels();
+    DrawChildren(gc);
   }
 }

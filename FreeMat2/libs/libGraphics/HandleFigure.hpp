@@ -23,7 +23,7 @@ namespace FreeMat {
     int GetWidth() {return m_width;}
     int GetHeight() {return m_height;}
     //    virtual void UpdateState();
-    virtual void paintGL();
+    virtual void PaintMe(RenderEngine &gc);
     virtual void resizeGL(int width, int height);
     void SetupDefaults();
   };

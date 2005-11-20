@@ -12,6 +12,10 @@ namespace FreeMat {
     m_widget = widget;
   }
 
+  QGLWidget* GLRenderEngine::widget() {
+    return m_widget;
+  }
+
   GLRenderEngine::~GLRenderEngine() {
   }
 
@@ -170,6 +174,13 @@ namespace FreeMat {
     glPopMatrix();    
     glViewport(viewp[0],viewp[1],viewp[2],viewp[3]);
   }
+  
+  static int NextPowerTwo(int w) {
+    int x = 1;
+    while (x < w)
+      x <<= 1;
+    return x;
+  }
 
   void GLRenderEngine::getModelviewMatrix(double amodel[16]) {
     for (int i=0;i<16;i++)
@@ -184,63 +195,90 @@ namespace FreeMat {
     QRect sze(fm.boundingRect(txt.c_str()));
     int x0 = sze.left();
     int y0 = sze.bottom();
-    int width = sze.width()+fm.width("W");
+    int width = sze.width();
     int height = sze.height();
-    QImage img(width,height,QImage::Format_RGB32);
+    // We now now the width and height.  From this,
+    // we can compute the radial length
+    int radlength = (int) sqrt(width*width+height*height)*2;
+    // We need a bitmap surface that is 2X this size.
+    QImage img(radlength,radlength,QImage::Format_RGB32);
     QPainter pnt(&img);
     pnt.setRenderHint(QPainter::TextAntialiasing);
     pnt.setRenderHint(QPainter::Antialiasing);
     pnt.setBackground(QColor(255,255,255));
-    pnt.eraseRect(0,0,width,height);
+    pnt.eraseRect(0,0,radlength,radlength);
     pnt.setFont(fnt);
     pnt.setPen(QColor(0,0,0));
-    pnt.drawText(x0,height-y0-1,txt.c_str());
+    // We translate to the center of the bitmap
+    pnt.translate(radlength/2,radlength/2);
+    pnt.rotate(-rotation);
+    //    pnt.drawText(-width/2,height/2,txt.c_str());
+    pnt.drawText(0,0,txt.c_str());
     pnt.end();
-    // Figure out what the minimum bounding box is...
-    int newwidth = 0;
-    for (int j=0;j<height;j++) {
-      QRgb* ibits = (QRgb*) img.scanLine(j);
-      int k=width-1;
-      while ((qRed(ibits[k])==255) && (k>=0)) 
-	k--;
-      newwidth = (newwidth < k) ? k : newwidth;
+
+    // The next step is to trim the bitmap from the bottom up
+    bool allempty = true;
+    int row_offset = 0;
+    while (allempty && (row_offset < (radlength/2-1))) {
+      QRgb* dbits = (QRgb*) img.scanLine(radlength-1-row_offset);
+      allempty = true;
+      for (int i=0;allempty && (i<radlength);i++) 
+	allempty = (qRed(dbits[i]) == 255);
+      row_offset++;
     }
-    width = newwidth+1;
-    // Now, we generate a synthetic image that is of the same size
-    QImage pic = QImage(width,height,QImage::Format_ARGB32);
+    row_offset--;
+    row_offset = qMax(row_offset,0);
+
+    // Now we trim from the left side
+    allempty = true;
+    int col_offset = 0;
+    while (allempty && (col_offset < (radlength/2-1))) {
+      allempty = true;
+      for (int i=0;allempty && (i<radlength);i++)
+	allempty = (qRed(((QRgb*)img.scanLine(i))[col_offset]) == 255);
+      col_offset++;
+    }
+    col_offset--;
+    col_offset = qMax(col_offset,0);
+    
+    int newwidth = radlength-col_offset;
+    int newheight = radlength-row_offset;
+    // Copy the text into an openGL bitmap
+    QImage pic = QImage(newwidth,newheight,QImage::Format_ARGB32);
     // Set the color bits to all be the same color as specified
     // in the argument list, and use the grey scale to modulate
     // the transparency
-    for (int i=0;i<height;i++) {
+    int cred, cgreen, cblue;
+    cred = color[0]*255;
+    cgreen = color[1]*255;
+    cblue = color[2]*255;
+    for (int i=0;i<newheight;i++) {
       QRgb* ibits = (QRgb*) img.scanLine(i);
-      QRgb* obits = (QRgb*) pic.scanLine(height-1-i);
-      for (int j=0;j<width;j++) 
-  	obits[j] = qRgba(color[0]*255,color[1]*255,color[2]*255,255-qRed(ibits[j]));
+      QRgb* obits = (QRgb*) pic.scanLine(i);
+      for (int j=0;j<newwidth;j++) 
+  	obits[j] = qRgba(cred,cgreen,cblue,255-qRed(ibits[j+col_offset]));
     }
     pic = QGLWidget::convertToGLFormat(pic);
-    y -= y0;
+    // Adjust the raster position based on the alignment offsets
+    double xdelta, ydelta;
+    xdelta = 0;
+    ydelta = 0;
     if (xflag == Mean)
-      x -= width/2;
-    else if (xflag == Max)
-      x -= width;
+      xdelta = -width/2.0;
+    if (xflag == Max)
+      xdelta = -width;
     if (yflag == Mean)
-      y -= height/2;
-    else if (yflag == Max)
-      y -= height;
-    int txid = m_widget->bindTexture(pic);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glBegin(GL_QUADS);
-    glTexCoord2d(0,0);
-    glVertex2d(x,y);
-    glTexCoord2d(1,0);
-    glVertex2d(x+width+1,y);
-    glTexCoord2d(1,1);
-    glVertex2d(x+width+1,y+height+1);
-    glTexCoord2d(0,1);
-    glVertex2d(x,y+height+1);
-    glEnd();
-    m_widget->deleteTexture(txid);
+      ydelta = -height/2.0;
+    if (yflag == Max)
+      ydelta = -height;
+    double costhet, sinthet;
+    costhet = cos(rotation*M_PI/180.0);
+    sinthet = sin(rotation*M_PI/180.0);
+    double xpos, ypos;
+    xpos = x-radlength/2.0+xdelta*costhet-ydelta*sinthet+col_offset;
+    ypos = y-radlength/2.0+xdelta*sinthet+ydelta*costhet+row_offset;
+    glRasterPos2d(xpos,ypos);
+    glDrawPixels(newwidth,newheight,GL_RGBA,GL_UNSIGNED_BYTE,pic.bits());
   }
 
   void GLRenderEngine::depth(bool flag) {
@@ -253,5 +291,32 @@ namespace FreeMat {
   void GLRenderEngine::measureText(std::string txt, QFont fnt, AlignmentFlag xflag, 
 				   AlignmentFlag yflag,int &width, int &height,
 				   int &xoffset, int &yoffset) {
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(txt.c_str()));
+    width = sze.width();
+    height = sze.height();
+    yoffset = -height;
+    xoffset = 0;
+    if (xflag == Mean)
+      xoffset -= width/2;
+    else if (xflag == Max)
+      xoffset -= width;
+    if (yflag == Mean)
+      yoffset -= height/2;
+    else if (yflag == Max)
+      yoffset -= height;
+  }
+
+  void GLRenderEngine::rect(double x1, double y1, double x2, double y2) {
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x1,y1);
+    glVertex2f(x1,y2);
+    glVertex2f(x2,y2);
+    glVertex2f(x2,y1);
+    glEnd();
+  }
+
+  void GLRenderEngine::rectFill(double x1, double y1, double x2, double y2) {
+    glRectf(x1,y1,x2,y2);
   }
 }

@@ -15,6 +15,7 @@ namespace FreeMat {
     GLRenderEngine(QGLWidget *widget, double x1, double y1, 
 		   double width, double height);
     ~GLRenderEngine();
+    QGLWidget* widget();
     virtual void clear();
     virtual void toPixels(double x, double y, double z, int &a, int &b);
     virtual void toPixels(double x, double y, double z, double &a, double &b);
@@ -48,6 +49,8 @@ namespace FreeMat {
 			     AlignmentFlag yflag,int &width, int &height,
 			     int &xoffset, int &yoffset);
     virtual void depth(bool);
+    virtual void rect(double x1, double y1, double x2, double y2);
+    virtual void rectFill(double x1, double y1, double x2, double y2);
   };
 };
 

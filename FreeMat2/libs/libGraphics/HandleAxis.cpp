@@ -311,7 +311,7 @@ namespace FreeMat {
     AddProperty(new HPThreeVector,"cameratarget");
     AddProperty(new HPAutoManual,"cameratargetmode");
     AddProperty(new HPThreeVector,"cameraupvector");
-    AddProperty(new HPThreeVector,"cameraupvectormode");
+    AddProperty(new HPAutoManual,"cameraupvectormode");
     AddProperty(new HPScalar,"cameraviewangle");
     AddProperty(new HPAutoManual,"cameraviewanglemode");
     AddProperty(new HPHandles,"children");
@@ -1673,9 +1673,43 @@ namespace FreeMat {
   }
 
   void HandleAxis::DrawTickLabels() {
+    
   }
 
-  void HandleAxis::DrawAxisLabels() {
+  void HandleAxis::DrawAxisLabels(RenderEngine& gc) {
+    // Set up the "annotation axis"
+    gc.lookAt(0,0,1,0.0,0.0,0,0,1,0);
+    gc.project(0,1,0,1,-1,1);
+    std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+    gc.viewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
+    HPHandle *lbl;
+    if (xvisible) {
+      lbl = (HPHandle*) LookupProperty("xlabel");
+      if (!lbl->Data().empty()) {
+	HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+	fp->PaintMe(gc);
+      }
+    }
+    if (yvisible) {
+      lbl = (HPHandle*) LookupProperty("ylabel");
+      if (!lbl->Data().empty()) {
+	HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+	fp->PaintMe(gc);
+      }      
+    }
+    if (zvisible) {
+      lbl = (HPHandle*) LookupProperty("zlabel");
+      if (!lbl->Data().empty()) {
+	HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+	fp->PaintMe(gc);
+      }      
+    }
+    lbl = (HPHandle*) LookupProperty("title");
+    if (!lbl->Data().empty()) {
+      HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+      fp->PaintMe(gc);
+    }      
+    SetupProjection(gc);
   }
 
   void HandleAxis::DrawChildren(RenderEngine& gc) {
@@ -1697,7 +1731,7 @@ namespace FreeMat {
     DrawMinorGridLines(gc);
     DrawAxisLines(gc);
     DrawTickMarks(gc);
-    DrawAxisLabels();
+    DrawAxisLabels(gc);
     DrawChildren(gc);
   }
 }

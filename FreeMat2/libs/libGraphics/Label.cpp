@@ -28,9 +28,9 @@ namespace FreeMat {
   int depth = 0;
 
   void FormulaTree::PrintMe() {
-    for (int i=0;i<depth;i++)
-      std::cout << "  ";
-    std::cout << (const char*) m_text << "(" << m_size << "," << m_ascent << ")\n";
+//     for (int i=0;i<depth;i++)
+//       std::cout << "  ";
+//     std::cout << (const char*) m_text << "(" << m_size << "," << m_ascent << ")\n";
     if (m_supertree) {
       depth++;
       m_supertree->PrintMe();

@@ -5,7 +5,7 @@
 namespace FreeMat {
 
 QPWidget::QPWidget(QWidget* parent, const char *Name) :
-  QWidget(parent,Name) {
+  QWidget(parent) {
 }
 
 void QPWidget::paintEvent(QPaintEvent* e) {

@@ -104,6 +104,18 @@ namespace FreeMat {
     glEnd();
   }
 
+  void GLRenderEngine::quadline(double x1, double y1, double z1,
+			    double x2, double y2, double z2,
+			    double x3, double y3, double z3,
+			    double x4, double y4, double z4) {
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x2,y2,z2);
+    glVertex3f(x3,y3,z3);
+    glVertex3f(x4,y4,z4);
+    glEnd();
+  }
+
   void GLRenderEngine::color(std::vector<double> col) {
     glColor3f(col[0],col[1],col[2]);
   }
@@ -187,6 +199,11 @@ namespace FreeMat {
       amodel[i] = model[i];
   }
   
+  void GLRenderEngine::getViewport(int aviewp[4]) {
+    for (int i=0;i<4;i++)
+      aviewp[i] = viewp[i];
+  }
+
   void GLRenderEngine::putText(double x, double y, std::string txt, 
 			       std::vector<double> color, 
 			       AlignmentFlag xflag, AlignmentFlag yflag,
@@ -302,9 +319,9 @@ namespace FreeMat {
     else if (xflag == Max)
       xoffset -= width;
     if (yflag == Mean)
-      yoffset -= height/2;
-    else if (yflag == Max)
-      yoffset -= height;
+      yoffset += height/2;
+    else if (yflag == Min)
+      yoffset += height;
   }
 
   void GLRenderEngine::rect(double x1, double y1, double x2, double y2) {

@@ -54,7 +54,7 @@ namespace FreeMat {
   }
   
   Figure::Figure(int fignum) : 
-    QWidget(NULL,"figureWindow") {
+    QWidget(NULL) {
     m_num = fignum;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
@@ -84,7 +84,7 @@ namespace FreeMat {
   
   QWidget* Figure::GetChildWidget() {
     if (m_type[m_active_slot] == fignone) {
-      QWidget *w = new QWidget(this,"container");
+      QWidget *w = new QWidget(this);
       QGridLayout *l = new QGridLayout(w);
       l->addWidget(new QWidget(w),1,1);
 #ifdef QT3

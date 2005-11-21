@@ -121,7 +121,7 @@ namespace FreeMat {
   }
 
   SurfPlot::SurfPlot(QWidget* parent) : 
-    QWidget(parent,"surfplot",0) {
+    QWidget(parent) {
     xvals = NULL;
     yvals = NULL;
     zvals = NULL;

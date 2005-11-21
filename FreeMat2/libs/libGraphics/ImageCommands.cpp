@@ -59,7 +59,7 @@ namespace FreeMat {
 #endif
     }
     // Outer level container
-    QWidget *w = new QWidget(fig,"container");
+    QWidget *w = new QWidget(fig);
     QGridLayout *l = new QGridLayout(w);
     ScalarImage* p = new ScalarImage(w);
     l->addWidget(p,1,1);

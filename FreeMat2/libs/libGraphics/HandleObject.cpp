@@ -35,9 +35,17 @@ namespace FreeMat {
 
   HandleProperty* HandleObject::LookupProperty(std::string name) {
     std::transform(name.begin(),name.end(),name.begin(),tolower);
+    // First look for the property to match (avoids the problem
+    // with prefix names)
     HandleProperty** hp = m_properties.findSymbol(name);
-    if (!hp)
+    if (hp) return (*hp);
+    //complete it
+    stringVector completes(m_properties.getCompletions(name));
+    if (completes.empty())
       throw Exception("invalid property " + name);
+    if (completes.size() != 1)
+      throw Exception("ambiguous property name " + name);
+    hp = m_properties.findSymbol(completes[0]);
     return *hp;
   }
 

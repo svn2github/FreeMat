@@ -58,7 +58,7 @@ namespace FreeMat {
       }
 #endif
     }
-    QWidget *w = new QWidget(fig,"container");
+    QWidget *w = new QWidget(fig);
     QGridLayout *l = new QGridLayout(w);
     Plot2D* p = new Plot2D(w);
     l->addWidget(p,1,1);

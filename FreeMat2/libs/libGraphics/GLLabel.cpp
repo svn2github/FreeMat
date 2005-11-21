@@ -55,7 +55,7 @@ namespace FreeMat {
       for (int j=0;j<width;j++) 
   	obits[j] = qRgba(red,green,blue,255-qRed(ibits[j]));
     }
-    pic = QGLWidget::convertToGLFormat(pic);
+    //    pic = QGLWidget::convertToGLFormat(pic);
   }
 
   int GLLabel::twidth() {

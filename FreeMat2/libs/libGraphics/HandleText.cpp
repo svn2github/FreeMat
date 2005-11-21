@@ -66,6 +66,7 @@ void HandleText::PaintMe(RenderEngine& gc) {
   int x, y;
   HPThreeVector* hp = (HPThreeVector*) LookupProperty("position");
   std::vector<double> mapped(axis->ReMap(hp->Data()));
+  gc.toPixels(mapped[0],mapped[1],mapped[2],x,y);
   gc.setupDirectDraw();
   // Retrieve the margin...
   double margin(ScalarPropertyLookup("margin"));
@@ -73,11 +74,11 @@ void HandleText::PaintMe(RenderEngine& gc) {
   RenderEngine::AlignmentFlag xalign, yalign;
   HPAlignVert *hv = (HPAlignVert*) LookupProperty("verticalalignment");
   if (hv->Is("top"))
-    yalign = RenderEngine::Min;
+    yalign = RenderEngine::Max;
   else if (hv->Is("middle"))
     yalign = RenderEngine::Mean;
   else
-    yalign = RenderEngine::Max;
+    yalign = RenderEngine::Min;
   HPAlignHoriz *hh = (HPAlignHoriz*) LookupProperty("horizontalalignment");
   if (hh->Is("left"))
     xalign = RenderEngine::Min;
@@ -93,29 +94,42 @@ void HandleText::PaintMe(RenderEngine& gc) {
   int textyoffset;
   gc.measureText(text,fnt,xalign,yalign,textwidth,textheight,textxoffset,textyoffset);
   // Construct the coordinates of the text rectangle
-  int x1, y1, x2, y2;
-  x1 = x + textxoffset - margin;
-  y1 = y + textyoffset - margin;
-  x2 = x1 + textwidth + 2*margin;
-  y2 = y1 + textheight + 2*margin;
+  int x1, y1;
+  double costheta, sintheta;
+  double rotation = ScalarPropertyLookup("rotation");
+  costheta = cos(-rotation*M_PI/180.0);
+  sintheta = sin(-rotation*M_PI/180.0);
+  x1 = x + (textxoffset-margin)*costheta + (textyoffset-margin)*sintheta;
+  y1 = y - (textxoffset-margin)*sintheta + (textyoffset-margin)*costheta;
+  double hdelx, hdely, vdelx, vdely;
+  hdelx = (textwidth+2*margin)*costheta;
+  hdely = -(textwidth+2*margin)*sintheta;
+  vdelx = (textheight+2*margin)*sintheta;
+  vdely = (textheight+2*margin)*costheta;
   // fill background rectangle
   HPColor *bc = (HPColor*) LookupProperty("backgroundcolor");
   if (!bc->IsNone()) {
     gc.color(bc->Data());
-    gc.rectFill(x1,y1,x2,y2);
+    gc.quad(x1,y1,0,
+	    x1+hdelx,y1+hdely,0,
+	    x1+hdelx+vdelx,y1+hdely+vdely,0,
+	    x1+vdelx,y1+vdely,0);
   }
   // draw bounding rectangle
-  HPColor *ec = (HPColor*) LookupProperty("edgecolor");
-  if (!ec->IsNone()) {
-    gc.color(ec->Data());
-    gc.setLineStyle(((HPLineStyle*) LookupProperty("linestyle"))->Data());
-    gc.lineWidth(ScalarPropertyLookup("linewidth"));
-    // draw bounding rectangle
-    gc.rect(x1,y1,x2,y2);
-  }
+   HPColor *ec = (HPColor*) LookupProperty("edgecolor");
+   if (!ec->IsNone()) {
+     gc.color(ec->Data());
+     gc.setLineStyle(((HPLineStyle*) LookupProperty("linestyle"))->Data());
+     gc.lineWidth(ScalarPropertyLookup("linewidth"));
+     // draw bounding rectangle
+     gc.quadline(x1,y1,0,
+		 x1+hdelx,y1+hdely,0,
+		 x1+hdelx+vdelx,y1+hdely+vdely,0,
+		 x1+vdelx,y1+vdely,0);
+   }
   // draw the text
   HPColor *tc = (HPColor*) LookupProperty("color");
-  gc.putText(x,y,text,tc->Data(),xalign,yalign,fnt,0);
+  gc.putText(x,y,text,tc->Data(),xalign,yalign,fnt,rotation);
 }
 
 void HandleText::SetupDefaults() {

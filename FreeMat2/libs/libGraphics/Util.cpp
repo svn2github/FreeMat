@@ -194,10 +194,10 @@ namespace FreeMat {
     const QObjectList children = w->children();
     for (int i = 0; i < children.size(); ++i) {
       QWidget *p = dynamic_cast<QWidget*>(children.at(i));
-      if (p && (strcmp(p->name(),name)==0)) {
-	delete p;
-	break;
-      }
+//       if (p && (strcmp(p->name(),name)==0)) {
+// 	delete p;
+// 	break;
+//      }
     }
 #endif
   }

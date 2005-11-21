@@ -26,6 +26,10 @@ namespace FreeMat {
 		      double x2, double y2, double z2,
 		      double x3, double y3, double z3,
 		      double x4, double y4, double z4) = 0;
+    virtual void quadline(double x1, double y1, double z1,
+			  double x2, double y2, double z2,
+			  double x3, double y3, double z3,
+			  double x4, double y4, double z4) = 0;
     virtual void color(std::vector<double>) = 0;
     virtual void setLineStyle(std::string style) = 0;
     virtual void lineWidth(double n) = 0;
@@ -35,6 +39,7 @@ namespace FreeMat {
 		      double x2, double y2) = 0;
     virtual void setupDirectDraw() = 0;
     virtual void releaseDirectDraw() = 0;
+    virtual void getViewport(int viewp[4]) = 0;
     virtual void getModelviewMatrix(double model[16]) = 0;
     virtual void putText(double x, double y, std::string txt, 
 			 std::vector<double> color, 

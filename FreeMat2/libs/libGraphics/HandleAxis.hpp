@@ -66,7 +66,7 @@ namespace FreeMat {
     void DrawAxisLines(RenderEngine& gc);
     void DrawTickMarks(RenderEngine& gc);
     void DrawTickLabels();
-    void DrawAxisLabels();
+    void DrawAxisLabels(RenderEngine& gc);
     void DrawChildren(RenderEngine& gc);
   };
 

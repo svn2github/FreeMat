@@ -1,6 +1,7 @@
 #include "GLRenderEngine.hpp"
 #include <qimage.h>
 #include <qpainter.h>
+#include <math.h>
 
 namespace FreeMat {
   GLRenderEngine::GLRenderEngine(QGLWidget *widget, double x1, double y1,

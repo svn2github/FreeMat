@@ -24,6 +24,9 @@ namespace FreeMat {
     QFont m_font;
 
     void UpdateAxisFont();
+    void GetMaxTickMetric(RenderEngine& gc,
+			  std::vector<std::string> labs,
+			  double &maxx, double &maxy);
     void DrawLabel(RenderEngine& gc,
 		   double dx, double dy, 
 		   double x2, double y2, 
@@ -44,6 +47,7 @@ namespace FreeMat {
     double flipY(double t);
     double flipZ(double t);
     SymbolTable<HandleProperty*> properties;
+    void RePackFigure();
   public:
     HandleAxis();
     virtual ~HandleAxis();
@@ -65,7 +69,16 @@ namespace FreeMat {
     void DrawGridLines(RenderEngine& gc);
     void DrawAxisLines(RenderEngine& gc);
     void DrawTickMarks(RenderEngine& gc);
-    void DrawTickLabels();
+    void DrawTickLabels(RenderEngine& gc,
+			std::vector<double> color,
+			double px1, double py1, double pz1,
+			double px2, double py2, double pz2,
+			double limmin, double limmax,
+			double unitx, double unity, double unitz,
+			std::vector<double>  maptics,
+			std::vector<std::string> labels,
+			std::string labelname,
+			int ticlen, double ticdir);
     void DrawAxisLabels(RenderEngine& gc);
     void DrawChildren(RenderEngine& gc);
   };

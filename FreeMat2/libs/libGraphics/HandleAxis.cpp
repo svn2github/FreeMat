@@ -31,7 +31,7 @@ int arot = 0;
 //    cameraupvector - done
 //    cameraviewangle 
 //    cameraviewanglemode
-//    childrenint
+//    children
 //    clim
 //    climmode
 //    clipping
@@ -299,6 +299,21 @@ namespace FreeMat {
 	tlabels.push_back(TrimPrint(pow(10.0,tBegin+i*tDelt),true));
   }
 
+  void HandleAxis::GetMaxTickMetric(RenderEngine &gc,
+				    std::vector<std::string> labs,
+				    double &maxx, double &maxy) {
+    maxx = 0;
+    maxy = 0;
+    for (int i=0;i<labs.size();i++) {
+      int width, height, xoffset, yoffset;
+      gc.measureText(labs[i],m_font,
+		     RenderEngine::Min,RenderEngine::Min,
+		     width, height, xoffset, yoffset);
+      maxx = qMax(maxx,(double)width);
+      maxy = qMax(maxy,(double)height);
+    }      
+  }
+  
   void HandleAxis::ConstructProperties() {
     // These are all the properties of the axis
     AddProperty(new HPPosition, "activepositionproperty");
@@ -455,7 +470,7 @@ namespace FreeMat {
     //    SetConstrainedStringDefault("drawmode","normal");
     SetConstrainedStringDefault("fontangle","normal");
     SetStringDefault("fontname","helvetica");
-    SetScalarDefault("fontsize",12);
+    SetScalarDefault("fontsize",10);
     SetConstrainedStringDefault("fontunits","points");
     SetConstrainedStringDefault("fontweight","normal");
     SetConstrainedStringDefault("gridlinestyle",":");
@@ -870,21 +885,21 @@ namespace FreeMat {
     HPColor *xc = (HPColor*) LookupProperty("xcolor");
     HPColor *yc = (HPColor*) LookupProperty("ycolor");
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
-    if (((HPOnOff*) LookupProperty("xgrid"))->AsBool()) {
+    if (xvisible && ((HPOnOff*) LookupProperty("xgrid"))->AsBool()) {
       gc.color(xc->Data());
       for (int i=0;i<xticks.size();i++) {
 	GLfloat t = MapX(xticks[i]);
 	DrawXGridLine(gc,t,limits);
       }
     }
-    if (((HPOnOff*) LookupProperty("ygrid"))->AsBool()) {
+    if (yvisible && ((HPOnOff*) LookupProperty("ygrid"))->AsBool()) {
       gc.color(yc->Data());
       for (int i=0;i<yticks.size();i++) {
 	GLfloat t = MapY(yticks[i]);
 	DrawYGridLine(gc,t,limits);
       }
     }
-    if (((HPOnOff*) LookupProperty("zgrid"))->AsBool()) {
+    if (zvisible && ((HPOnOff*) LookupProperty("zgrid"))->AsBool()) {
       gc.color(zc->Data());
       for (int i=0;i<zticks.size();i++) {
 	GLfloat t = MapZ(zticks[i]);
@@ -1424,6 +1439,83 @@ namespace FreeMat {
     }
   }
 
+  void HandleAxis::RePackFigure() {
+    int titleHeight = 0;
+    int xlabelHeight = 0;
+    int ylabelHeight = 0;
+    int zlabelHeight = 0;
+    int maxLabelHeight = 0;
+    int tickHeight = 0;
+    HPHandle *lbl;
+    if (xvisible) {
+      lbl = (HPHandle*) LookupProperty("xlabel");
+      if (!lbl->Data().empty()) {
+	HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+	xlabelHeight = fp->GetTextHeightInPixels();
+      }
+    }
+    if (yvisible) {
+      lbl = (HPHandle*) LookupProperty("ylabel");
+      if (!lbl->Data().empty()) {
+	HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+	ylabelHeight = fp->GetTextHeightInPixels();
+      }
+    }
+    if (zvisible) {
+      lbl = (HPHandle*) LookupProperty("zlabel");
+      if (!lbl->Data().empty()) {
+	HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+	zlabelHeight = fp->GetTextHeightInPixels();
+      }
+    }
+    lbl = (HPHandle*) LookupProperty("title");
+    if (!lbl->Data().empty()) {
+      HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+      titleHeight = fp->GetTextHeightInPixels();
+    }
+    QFontMetrics fm(m_font);
+    QRect sze(fm.boundingRect("|"));
+    tickHeight =  sze.height();
+    // Take the maximum of the title, and label sizes to compute
+    // the padding...
+    maxLabelHeight = qMax(titleHeight,xlabelHeight);
+    maxLabelHeight = qMax(maxLabelHeight,ylabelHeight);
+    maxLabelHeight = qMax(maxLabelHeight,zlabelHeight);
+    // Get the outer position vector...
+    std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+    // Generate a candidate position vector based on the default
+    double posx0,posy0,poswidth,posheight;
+    poswidth = 0.775*outerpos[2];
+    posheight = 0.815*outerpos[3];
+    posx0 = 0.13*outerpos[2];
+    posy0 = 0.11*outerpos[3];
+    // Pad the label height
+    maxLabelHeight = maxLabelHeight*1.2 + tickHeight;
+    // Check posx0 against maxLabelHeight..
+    if (posx0 < maxLabelHeight)
+      posx0 = maxLabelHeight;
+    // Check posy0 against maxLabelHeight...
+    if (posy0 < maxLabelHeight)
+      posy0 = maxLabelHeight;
+    // Check the width against maxLabelHeight...
+    if ((outerpos[2] - poswidth) < 2*maxLabelHeight) {
+      poswidth = outerpos[2] - 2*maxLabelHeight;
+    }
+    if ((outerpos[3] - posheight) < 2*maxLabelHeight) {
+      posheight = outerpos[3] - 2*maxLabelHeight;
+    }
+    HandleFigure *fig = GetParentFigure();
+    unsigned width = fig->GetWidth();
+    unsigned height = fig->GetHeight();
+    // Normalize
+    poswidth = poswidth/width;
+    posheight = posheight/height;
+    posx0 = (posx0+outerpos[0])/width;
+    posy0 = (posy0+outerpos[1])/height;
+    HPFourVector *hp = (HPFourVector*) LookupProperty("position");
+    hp->Value(posx0,posy0,poswidth,posheight);
+  }
+
   void HandleAxis::UpdateState(RenderEngine &gc) {
     std::vector<std::string> tset;
     if (HasChanged("xticklabel")) 
@@ -1442,6 +1534,10 @@ namespace FreeMat {
       UpdateAxisFont();
       ClearChanged(tset);
     }
+    // Repack the figure...
+    // To repack the figure, we get the heights of the
+    // three labels (title, xlabel and ylabel)
+    RePackFigure();
     // if ticklabels changed --> tickmode = manual
     // if tickdir set --> tickdirmode = manual
     // if resize || position chng && tickmode = auto --> recalculate tick marks
@@ -1457,11 +1553,9 @@ namespace FreeMat {
       // Default to 2D
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameratarget");
       std::vector<double> limits(GetAxisLimits());
-      std::vector<double> center;
-      center.push_back((limits[0]+limits[1])/2.0);
-      center.push_back((limits[2]+limits[3])/2.0);
-      center.push_back((limits[4]+limits[5])/2.0);
-      tv->Data(center);
+      tv->Value((limits[0]+limits[1])/2.0,
+		(limits[2]+limits[3])/2.0,
+		(limits[4]+limits[5])/2.0);
     }
     if (HasChanged("cameraposition"))
       ToManual("camerapositionmode");
@@ -1469,22 +1563,16 @@ namespace FreeMat {
       // Default to 2D
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraposition");
       std::vector<double> limits(GetAxisLimits());
-      std::vector<double> center;
-      center.push_back((limits[0]+limits[1])/2.0);
-      center.push_back((limits[2]+limits[3])/2.0);
-      center.push_back(limits[5]+1);
-      tv->Data(center);
+      tv->Value((limits[0]+limits[1])/2.0,
+		(limits[2]+limits[3])/2.0,
+		limits[5]+1);
     }
     if (HasChanged("cameraupvector"))
       ToManual("cameraupvectormode");
     if (IsAuto("cameraupvectormode")) {
       // Default to 2D
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraupvector");
-      std::vector<double> center;
-      center.push_back(0);
-      center.push_back(1);
-      center.push_back(0);
-      tv->Data(center);      
+      tv->Value(0,1,0);
     }
     RecalculateTicks(gc);
   }
@@ -1538,6 +1626,9 @@ namespace FreeMat {
     // each axis.  Now each axis sits on the boundary of
     // two facets.  If exactly one of the two facets is
     // visible, then the axis line is visible.
+    HandleFigure *fig = GetParentFigure();
+    unsigned width = fig->GetWidth();
+    unsigned height = fig->GetHeight();    
     HPVector *hp;
     hp = (HPVector*) LookupProperty("xtick");
     std::vector<double> xticks(hp->Data());
@@ -1582,98 +1673,206 @@ namespace FreeMat {
     std::vector<double> limits(GetAxisLimits());
     // Next step - calculate the tick directions...
     // We have to draw the tics in flat space
+    //
+    // To keep the label from touching the tick labels, we need
+    // that the tick label box (x0,y0) --> (x0+maxx,y0+maxy)
+    // and we need to advance by (x0+n*dx,y0+n*dy) so that
+    // n = max(maxx/dx,maxy/dy)
+    //
     gc.setupDirectDraw();
     gc.setLineStyle("-");
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     if (xvisible) {
-      gc.color(xc->Data());
-      for (int i=0;i<xticks.size();i++) {
-	double t = MapX(xticks[i]);
-	// Map the coords ourselves
-	double x1, y1, x2, y2, delx, dely;
-	double norm;
-	gc.toPixels(t,x1pos[1],x1pos[2],x1,y1);
-	gc.toPixels(t,x2pos[1],x2pos[2],x2,y2);
-	delx = x2-x1; dely = y2-y1;
-	// normalize the tick length
-	norm = sqrt(delx*delx + dely*dely);
-	delx /= norm; dely /= norm;
-	x2 = delx*ticlen*ticdir + x1;
-	y2 = dely*ticlen*ticdir + y1;
-	gc.line(x1,y1,x2,y2);
-	double x3, y3;
-	if (ticdir > 0) {
-	  x3 = -delx*0.015*norm + x1;
-	  y3 = -dely*0.015*norm + y1;
-	} else {
-	  x3 = -delx*0.015*norm + x2;
-	  y3 = -dely*0.015*norm + y2;
-	}
-	if (~xlabeltxt.empty())
-	  DrawLabel(gc,-delx,-dely,x3,y3,xc->Data(),xlabeltxt[i % xlabeltxt.size()]);
-      }
+      std::vector<double> mapticks;
+      for (int i=0;i<xticks.size();i++)
+	mapticks.push_back(MapX(xticks[i]));
+      DrawTickLabels(gc,xc->Data(),
+		     0,x1pos[1],x1pos[2],
+		     0,x2pos[1],x2pos[2],
+		     limits[0],limits[1],
+		     1,0,0,
+		     mapticks,xlabeltxt,
+		     "xlabel",ticlen,ticdir);
     }
     if (yvisible) {
-      gc.color(yc->Data());
-      for (int i=0;i<yticks.size();i++) {
-	double t = MapY(yticks[i]);
-	// Map the coords ourselves
-	double x1, y1, x2, y2, delx, dely;
-	double norm;
-	gc.toPixels(y1pos[0],t,y1pos[2],x1,y1);
-	gc.toPixels(y2pos[0],t,y2pos[2],x2,y2);
-	delx = x2-x1; dely = y2-y1;
-	// normalize the tick length
-	norm = sqrt(delx*delx + dely*dely);
-	delx /= norm; dely /= norm;
-	x2 = delx*ticlen*ticdir + x1;
-	y2 = dely*ticlen*ticdir + y1;
-	gc.line(x1,y1,x2,y2);
-	double x3, y3;
-	if (ticdir > 0) {
-	  x3 = -delx*0.015*norm + x1;
-	  y3 = -dely*0.015*norm + y1;
-	} else {
-	  x3 = -delx*0.015*norm + x2;
-	  y3 = -dely*0.015*norm + y2;
-	}
-	if (~ylabeltxt.empty())
-	  DrawLabel(gc,-delx,-dely,x3,y3,yc->Data(),ylabeltxt[i % ylabeltxt.size()]);
-      }
+      std::vector<double> mapticks;
+      for (int i=0;i<yticks.size();i++)
+	mapticks.push_back(MapY(yticks[i]));
+      DrawTickLabels(gc,yc->Data(),
+		     y1pos[0],0,y1pos[2],
+		     y2pos[0],0,y2pos[2],
+		     limits[2],limits[3],
+		     0,1,0,
+		     mapticks,ylabeltxt,
+		     "ylabel",ticlen,ticdir);
     }
     if (zvisible) {
-      gc.color(zc->Data());
-      for (int i=0;i<zticks.size();i++) {
-	double t = MapZ(zticks[i]);
-	// Map the coords ourselves
-	double x1, y1, x2, y2, delx, dely;
-	double norm;
-	gc.toPixels(z1pos[0],z1pos[1],t,x1,y1);
-	gc.toPixels(z2pos[0],z2pos[1],t,x2,y2);
-	delx = x2-x1; dely = y2-y1;
-	// normalize the tick length
-	norm = sqrt(delx*delx + dely*dely);
-	delx /= norm; dely /= norm;
-	x2 = delx*ticlen*ticdir + x1;
-	y2 = dely*ticlen*ticdir + y1;
-	gc.line(x1,y1,x2,y2);
-	double x3, y3;
-	if (ticdir > 0) {
-	  x3 = -delx*0.015*norm + x1;
-	  y3 = -dely*0.015*norm + y1;
-	} else {
-	  x3 = -delx*0.015*norm + x2;
-	  y3 = -dely*0.015*norm + y2;
-	}
-	if (~zlabeltxt.empty())
-	  DrawLabel(gc,-delx,-dely,x3,y3,zc->Data(),zlabeltxt[i % zlabeltxt.size()]);
-      }
+      std::vector<double> mapticks;
+      for (int i=0;i<zticks.size();i++)
+	mapticks.push_back(MapZ(zticks[i]));
+      DrawTickLabels(gc,zc->Data(),
+		     z1pos[0],z1pos[1],0,
+		     z2pos[0],z2pos[1],0,
+		     limits[4],limits[5],
+		     0,0,1,
+		     mapticks,zlabeltxt,
+		     "zlabel",ticlen,ticdir);
     }
+    HPHandle *lbl = (HPHandle*) LookupProperty("title");
+//     if (!lbl->Data().empty()) {
+//       HandleText *fp = handleset.lookupHandle(lbl->Data()[0]);
+//       HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
+//       // Put the title in the right spot
+//       //      fp->PaintMe(gc);
+//     }
     gc.releaseDirectDraw();
   }
 
-  void HandleAxis::DrawTickLabels() {
-    
+  void HandleAxis::DrawTickLabels(RenderEngine& gc,
+				  std::vector<double> color,
+				  double px1, double py1, double pz1,
+				  double px2, double py2, double pz2,
+				  double limmin, double limmax,
+				  double unitx, double unity, double unitz,
+				  std::vector<double>  maptics,
+				  std::vector<std::string> labels,
+				  std::string labelname,
+				  int ticlen, double ticdir) {
+    gc.color(color);
+    // Calculate the tick direction vector
+    double dx1, dy1, dx2, dy2;
+    gc.toPixels(limmin*unitx+px1,
+		limmin*unity+py1,
+		limmin*unitz+pz1,dx1,dy1);
+    gc.toPixels(limmin*unitx+px2,
+		limmin*unity+py2,
+		limmin*unitz+pz2,dx2,dy2);
+    double delx, dely;
+    delx = dx2-dx1; dely = dy2-dy1;
+    // normalize the tick length
+    double norm = sqrt(delx*delx + dely*dely);
+    delx /= norm; dely /= norm;
+    for (int i=0;i<maptics.size();i++) {
+      double t = maptics[i];
+      // Map the coords ourselves
+      double x1, y1, x2, y2;
+      gc.toPixels(t*unitx+px1,
+		  t*unity+py1,
+		    t*unitz+pz1,x1,y1);
+      x2 = delx*ticlen*ticdir + x1;
+      y2 = dely*ticlen*ticdir + y1;
+      gc.line(x1,y1,x2,y2);
+      double x3, y3;
+      if (ticdir > 0) {
+	x3 = -delx*0.015*norm + x1;
+	y3 = -dely*0.015*norm + y1;
+      } else {
+	x3 = -delx*0.015*norm + x2;
+	y3 = -dely*0.015*norm + y2;
+      }
+      if (~labels.empty())
+	DrawLabel(gc,-delx,-dely,x3,y3,color,
+		  labels[i % labels.size()]);
+    }
+    // Get the maximum tick metric
+    double maxx, maxy;
+    GetMaxTickMetric(gc,labels,maxx,maxy);
+    // Draw the x label
+    // Calculate the center of the x axis...
+    double x1, x2, x3, y1, y2, y3;
+    double meanval;
+    meanval = (limmin+limmax)/2.0;
+    gc.toPixels(meanval*unitx+px1,
+		meanval*unity+py1,
+		meanval*unitz+pz1,x1,y1);
+    // Calculate the tick offset
+    x2 = delx*ticlen*ticdir + x1;
+    y2 = dely*ticlen*ticdir + y1;
+    // Offset by the top of the label
+    if (ticdir > 0) {
+      x3 = -delx*0.015*norm + x1;
+      y3 = -dely*0.015*norm + y1;
+    } else {
+      x3 = -delx*0.015*norm + x2;
+      y3 = -dely*0.015*norm + y2;
+    }
+    double lx, ly;
+    if (delx != 0)
+      lx = fabs(maxx/delx);
+    else
+      lx = 1e10;
+    if (dely != 0)
+      ly = fabs(maxy/dely);
+    else
+      ly = 1e10;
+    double lmax;
+    lmax = qMin(lx,ly);
+    // Set the position of the label
+    HPHandle *lbl = (HPHandle*) LookupProperty(labelname);
+    if (!lbl->Data().empty()) {
+      HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+      // To calculate the angle, we have to look at the axis
+      // itself.  The direction of the axis is determined by
+      // the projection of [1,0,0] onto the screen plane
+      double axx1, axy1, axx2,axy2;
+      gc.toPixels(0,0,0,axx1,axy1);
+      gc.toPixels(unitx,unity,unitz,axx2,axy2);
+      double angle = atan2(axy2-axy1,axx2-axx1)*180.0/M_PI;
+      if (angle < -90) angle += 180;
+      if (angle > 90) angle -= 180;
+      HPScalar *sp = (HPScalar*) fp->LookupProperty("rotation");
+      // The angle we want is no the rotation angle of the axis, but
+      // the angle of the origin to label position.  We get this
+      // taking the mean limit along the unit direction, and the
+      // average of the two projected axes.
+      double origx, origy;
+      gc.toPixels(meanval*unitx+(px1+px2)/2.0,
+		  meanval*unity+(py1+py2)/2.0,
+		  meanval*unitz+(pz1+pz2)/2.0,origx,origy);
+      double meanx, meany;
+      gc.toPixels(meanval*unitx+px1,
+		  meanval*unity+py1,
+		  meanval*unitz+pz1,meanx,meany); 
+     
+      //       int pixpad = 1.5*fp->GetTextHeightInPixels();
+      //       // Offset by the labelsize
+      //       if (lmax == lx)
+      // 	lmax += fabs(pixpad/delx);
+      //       else
+      // 	lmax += fabs(pixpad/dely);
+      double xl1, yl1;
+      xl1 = x3 - lmax*delx;
+      yl1 = y3 - lmax*dely;
+      double angle2 = atan2(y3-origy,x3-origx)*180.0/M_PI;
+      if ((angle == 90) && (angle2 > -90)) {
+ 	angle = -90;
+      }
+      if (angle2 == 180)
+	angle2 = -180;
+      if (angle2 < 0)
+	if (fabs(angle) != 90)
+	  ((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("top");
+	else
+	  ((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("bottom");
+      else
+	((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("bottom");
+      if ((angle == -90) && (angle2 == -180))
+	angle = 90;
+      sp->Value(angle);
+      // Move another couple of percent along the radial line
+      xl1 += (x3-origx)*0.04;
+      yl1 += (y3-origy)*0.04;
+      HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
+      // We now have the position of the label in absolute (pixel)
+      // coordinates.  Need to translate this to normalized coordinates
+      // relative to outerposition.
+      std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+      double xnorm, ynorm;
+      xnorm = (xl1-outerpos[0])/outerpos[2];
+      ynorm = (yl1-outerpos[1])/outerpos[3];
+      HandleFigure *fig = GetParentFigure();
+      gp->Value(xnorm,ynorm,0.0);
+    }      
   }
 
   void HandleAxis::DrawAxisLabels(RenderEngine& gc) {

@@ -63,6 +63,12 @@ namespace FreeMat {
     double MapY(double y);
     double MapZ(double z);
     std::vector<double> ReMap(std::vector<double>);
+    void ReMap(std::vector<double>,
+	       std::vector<double>,
+	       std::vector<double>,
+	       std::vector<double>&,
+	       std::vector<double>&,
+	       std::vector<double>&);
     void SetupProjection(RenderEngine& gc);
     void DrawBox(RenderEngine& gc);
     void DrawMinorGridLines(RenderEngine& gc);

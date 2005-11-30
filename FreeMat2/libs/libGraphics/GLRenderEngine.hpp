@@ -19,6 +19,7 @@ namespace FreeMat {
     virtual void clear();
     virtual void toPixels(double x, double y, double z, int &a, int &b);
     virtual void toPixels(double x, double y, double z, double &a, double &b);
+    virtual void toPixels(double x, double y, double z, double &a, double &b, bool &clipped);
     virtual void lookAt(double px, double py, double pz,
 			double tx, double ty, double tz,
 			double ux, double uy, double uz);
@@ -35,6 +36,12 @@ namespace FreeMat {
 			  double x2, double y2, double z2,
 			  double x3, double y3, double z3,
 			  double x4, double y4, double z4);
+    virtual void tri(double x1, double y1, double z1,
+		     double x2, double y2, double z2,
+		     double x3, double y3, double z3);
+    virtual void triLine(double x1, double y1, double z1,
+			 double x2, double y2, double z2,
+			 double x3, double y3, double z3);
     virtual void color(std::vector<double>);
     virtual void setLineStyle(std::string style);
     virtual void lineWidth(double n);
@@ -42,6 +49,9 @@ namespace FreeMat {
 		      double x2, double y2, double z2);
     virtual void line(double x1, double y1,
 		      double x2, double y2);
+    virtual void lineSeries(std::vector<double> xs, 
+			    std::vector<double> ys,
+			    std::vector<double> zs);
     virtual void setupDirectDraw();
     virtual void releaseDirectDraw();
     virtual void getModelviewMatrix(double amodel[16]);
@@ -56,6 +66,8 @@ namespace FreeMat {
     virtual void depth(bool);
     virtual void rect(double x1, double y1, double x2, double y2);
     virtual void rectFill(double x1, double y1, double x2, double y2);
+    virtual void circle(double x1, double y1, double radius);
+    virtual void circleFill(double x1, double y1, double radius);
   };
 };
 

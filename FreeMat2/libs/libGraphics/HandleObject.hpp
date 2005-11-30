@@ -8,6 +8,8 @@
 
 namespace FreeMat {
 
+  class HandleAxis;
+
   class HandleObject {
     SymbolTable<HandleProperty*> m_properties;
   public:
@@ -21,6 +23,8 @@ namespace FreeMat {
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);
     double ScalarPropertyLookup(std::string name);
+    std::vector<double> VectorPropertyLookup(std::string name);
+    std::string StringPropertyLookup(std::string name);
     void SetConstrainedStringDefault(std::string name, std::string value);
     void SetTwoVectorDefault(std::string name, double x, double y);
     void SetThreeVectorDefault(std::string name, double x, double y, double z);
@@ -30,6 +34,7 @@ namespace FreeMat {
     void SetScalarDefault(std::string name, double value);
     bool IsAuto(std::string mode);
     virtual void PaintMe(RenderEngine &gc) = 0;
+    HandleAxis* GetParentAxis();
   };
 }
 

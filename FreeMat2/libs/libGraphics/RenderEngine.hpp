@@ -9,11 +9,13 @@ namespace FreeMat {
   class RenderEngine {
   public:
     enum AlignmentFlag {Min, Mean, Max};
+    enum SymbolType {Plus,Circle,Star,Dot,Times,Square,Diamond,Up,Down,Right,Left,Pentagram,Hexagram,None};
     RenderEngine() {};
     virtual ~RenderEngine() {};
     virtual void clear() = 0;
     virtual void toPixels(double x, double y, double z, int &a, int &b) = 0;
     virtual void toPixels(double x, double y, double z, double &a, double &b) = 0;
+    virtual void toPixels(double x, double y, double z, double &a, double &b, bool &clipped) = 0;
     virtual void lookAt(double px, double py, double pz,
 			double tx, double ty, double tz,
 			double ux, double uy, double uz) = 0;
@@ -30,6 +32,12 @@ namespace FreeMat {
 			  double x2, double y2, double z2,
 			  double x3, double y3, double z3,
 			  double x4, double y4, double z4) = 0;
+    virtual void tri(double x1, double y1, double z1,
+		     double x2, double y2, double z2,
+		     double x3, double y3, double z3) = 0;
+    virtual void triLine(double x1, double y1, double z1,
+			 double x2, double y2, double z2,
+			 double x3, double y3, double z3) = 0;
     virtual void color(std::vector<double>) = 0;
     virtual void setLineStyle(std::string style) = 0;
     virtual void lineWidth(double n) = 0;
@@ -37,6 +45,9 @@ namespace FreeMat {
 		      double x2, double y2, double z2) = 0;
     virtual void line(double x1, double y1,
 		      double x2, double y2) = 0;
+    virtual void lineSeries(std::vector<double> xs, 
+			    std::vector<double> ys,
+			    std::vector<double> zs) = 0;
     virtual void setupDirectDraw() = 0;
     virtual void releaseDirectDraw() = 0;
     virtual void getViewport(int viewp[4]) = 0;
@@ -51,7 +62,17 @@ namespace FreeMat {
     virtual void depth(bool) = 0;
     virtual void rect(double x1, double y1, double x2, double y2) = 0;
     virtual void rectFill(double x1, double y1, double x2, double y2) = 0;
+    virtual void circle(double x1, double y1, double radius) = 0;
+    virtual void circleFill(double x1, double y1, double radius) = 0;
   };
+  
+  void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
+		  double x, double y, double sze,
+		  std::vector<double> edgecolor, 
+		  std::vector<double> fillcolor, 
+		  double width);
+
+  RenderEngine::SymbolType StringToSymbol(std::string);
 }
 
 #endif

@@ -5,8 +5,6 @@
 
 namespace FreeMat {
 
-  extern HandleList<HandleObject*> handleset;
-
   HandleText::HandleText() {
     ConstructProperties();
     SetupDefaults();
@@ -44,19 +42,6 @@ namespace FreeMat {
     text = txt->Data();
   }
 
-  HandleAxis* HandleText::GetParentAxis() {
-    // Get our parent - must be an axis
-    HPHandle *parent = (HPHandle*) LookupProperty("parent");
-    if (parent->Data().empty()) return NULL;
-    unsigned parent_handle = parent->Data()[0];
-    HandleObject *fp = handleset.lookupHandle(parent_handle);
-    HPString *name = (HPString*) fp->LookupProperty("type");
-    if (!name) return NULL;
-    if (!name->Is("axes")) return NULL;
-    HandleAxis *axis = (HandleAxis*) fp;
-    return axis;
-  }
-
   int HandleText::GetTextHeightInPixels() {
     QFontMetrics fm(fnt);
     QRect sze(fm.boundingRect("|"));
@@ -70,8 +55,9 @@ namespace FreeMat {
     if (!axis) return;
     // Map position -> pixel location
     int x, y;
-    HPThreeVector* hp = (HPThreeVector*) LookupProperty("position");
-    std::vector<double> mapped(axis->ReMap(hp->Data()));
+    std::vector<double> pos(VectorPropertyLookup("position"));
+    // remap it
+    std::vector<double> mapped(axis->ReMap(pos));
     gc.toPixels(mapped[0],mapped[1],mapped[2],x,y);
     gc.setupDirectDraw();
     // Retrieve the margin...

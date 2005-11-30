@@ -1,3 +1,6 @@
+#ifndef __HandleText_hpp__
+#define __HandleText_hpp__
+
 #include "HandleObject.hpp"
 #include "GLLabel.hpp"
 #include "HandleAxis.hpp"
@@ -6,7 +9,6 @@ namespace FreeMat {
   class HandleText : public HandleObject {
     QFont fnt;
     std::string text;
-    HandleAxis* GetParentAxis();
   public:
     HandleText();
     virtual ~HandleText();
@@ -17,3 +19,5 @@ namespace FreeMat {
     int GetTextHeightInPixels();
   };
 }
+
+#endif

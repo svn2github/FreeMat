@@ -1,5 +1,6 @@
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
+#include "HandleLineSeries.hpp"
 #include "HandleFigure.hpp"
 #include "HandleText.hpp"
 #include "Core.hpp"
@@ -570,6 +571,19 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  ArrayVector LineFunction(int nargout, const ArrayVector& arg) {
+    HandleObject *fp = new HandleLineSeries;
+    unsigned int handle = handleset.assignHandle(fp);
+    ArrayVector t(arg);
+    while (t.size() >= 2) {
+      std::string propname(ArrayToString(t[0]));
+      fp->LookupProperty(propname)->Set(t[1]);
+      t.erase(t.begin(),t.begin()+2);
+    }
+    //    fp->UpdateState();
+    return singleArrayVector(Array::uint32Constructor(handle));
+  }
+  
   ArrayVector TextFunction(int nargout, const ArrayVector& arg) {
     HandleObject *fp = new HandleText;
     unsigned int handle = handleset.assignHandle(fp);
@@ -585,6 +599,7 @@ namespace FreeMat {
   
   void LoadHandleGraphicsFunctions(Context* context) {
     context->addFunction("axes",AxesFunction,-1,1);
+    context->addFunction("line",LineFunction,-1,1);
     context->addFunction("text",TextFunction,-1,1);
     context->addFunction("set",SetFunction,-1,0);
     context->addFunction("get",GetFunction,2,1,"handle","propname");
@@ -732,6 +747,16 @@ namespace FreeMat {
       s.push_back(MapZ(t[i+2]));
     }
     return s;
+  }
+
+  void HandleAxis::ReMap(std::vector<double> xs, std::vector<double> ys,
+			 std::vector<double> zs, std::vector<double> &ax,
+			 std::vector<double> &ay, std::vector<double> &az) {
+    for (int i=0;i<xs.size();i++) {
+      ax.push_back(MapX(xs[i]));
+      ay.push_back(MapY(ys[i]));
+      az.push_back(MapZ(zs[i]));
+    }    
   }
   
   // x in [a,b]
@@ -1915,6 +1940,7 @@ namespace FreeMat {
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {
+      qDebug("Drawing child %d\n",i);
       HandleObject *fp = handleset.lookupHandle(handles[i]);
       fp->PaintMe(gc);
     }

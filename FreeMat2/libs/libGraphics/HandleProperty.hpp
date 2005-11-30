@@ -264,6 +264,12 @@ namespace FreeMat {
     virtual ~HPAlignVert() {}
   };
 
+  class HPSymbol : public HPConstrainedString {
+  public:
+    HPSymbol();
+    virtual ~HPSymbol() {}
+  };
+
 }
 
 #endif

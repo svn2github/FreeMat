@@ -25,6 +25,7 @@ namespace FreeMat {
   static const char *position_dict[3] = {"outerposition","position",0};
   static const char *horiz_dict[4] = {"left","center","right",0};
   static const char *vert_dict[6] = {"top","cap","middle","baseline","bottom",0};
+  static const char *symb_dict[19] = {"+","o","*",".","x","square","s","diamond","d","^","v",">","<","pentagram","p","hexagram","h","none",0};
   
   HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
   HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
@@ -43,6 +44,7 @@ namespace FreeMat {
   HPPosition::HPPosition() : HPConstrainedString(position_dict) {}
   HPAlignHoriz::HPAlignHoriz() : HPConstrainedString(horiz_dict) {}
   HPAlignVert::HPAlignVert() : HPConstrainedString(vert_dict) {}
+  HPSymbol::HPSymbol() : HPConstrainedString(symb_dict) {}
 
   HPHandles::HPHandles(int len) {
     m_len = len;

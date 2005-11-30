@@ -25,6 +25,13 @@ namespace FreeMat {
   }
 
   void GLRenderEngine::toPixels(double x, double y, double z, 
+				double &a, double &b, bool &clipped) {
+    toPixels(x,y,z,a,b);
+    clipped = ((a < viewp[0]) || (a > (viewp[0] + viewp[2])) ||
+	       (b < viewp[1]) || (b > (viewp[1] + viewp[3])));
+  }
+
+  void GLRenderEngine::toPixels(double x, double y, double z, 
 				double &a, double &b) {
     double c1, c2, c3;
     gluProject(x,y,z,model,proj,viewp,&c1,&c2,&c3);
@@ -164,6 +171,15 @@ namespace FreeMat {
     glBegin(GL_LINES);
     glVertex2f(x1,y1);
     glVertex2f(x2,y2);
+    glEnd();
+  }
+
+  void GLRenderEngine::lineSeries(std::vector<double> xs, 
+				  std::vector<double> ys, 
+				  std::vector<double> zs) {
+    glBegin(GL_LINE_STRIP);
+    for (int i=0;i<xs.size();i++)
+      glVertex3f(xs[i],ys[i],zs[i]);
     glEnd();
   }
 
@@ -336,5 +352,31 @@ namespace FreeMat {
 
   void GLRenderEngine::rectFill(double x1, double y1, double x2, double y2) {
     glRectf(x1,y1,x2,y2);
+  }
+
+  void GLRenderEngine::tri(double x1, double y1, double z1,
+			   double x2, double y2, double z2,
+			   double x3, double y3, double z3) {
+    glBegin(GL_TRIANGLES);
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x2,y2,z2);
+    glVertex3f(x3,y3,z3);
+    glEnd();
+  }
+
+  void GLRenderEngine::triLine(double x1, double y1, double z1,
+			       double x2, double y2, double z2,
+			       double x3, double y3, double z3) {
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x2,y2,z2);
+    glVertex3f(x3,y3,z3);
+    glEnd();
+  }
+
+  void GLRenderEngine::circle(double x, double y, double radius) {
+  }
+
+  void GLRenderEngine::circleFill(double x, double y, double radius) {
   }
 }

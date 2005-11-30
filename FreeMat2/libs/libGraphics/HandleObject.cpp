@@ -1,6 +1,9 @@
 #include "HandleObject.hpp"
-
+#include "HandleAxis.hpp"
+#include "HandleList.hpp"
 namespace FreeMat {
+
+  extern HandleList<HandleObject*> handleset;
 
   void HandleObject::ToManual(std::string name) {
     HPAutoManual *qp = (HPAutoManual*) LookupProperty(name);
@@ -49,6 +52,29 @@ namespace FreeMat {
     return *hp;
   }
 
+  HandleAxis* HandleObject::GetParentAxis() {
+    // Get our parent - must be an axis
+    HPHandle *parent = (HPHandle*) LookupProperty("parent");
+    if (parent->Data().empty()) return NULL;
+    unsigned parent_handle = parent->Data()[0];
+    HandleObject *fp = handleset.lookupHandle(parent_handle);
+    HPString *name = (HPString*) fp->LookupProperty("type");
+    if (!name) return NULL;
+    if (!name->Is("axes")) return NULL;
+    HandleAxis *axis = (HandleAxis*) fp;
+    return axis;
+  }
+
+  std::string HandleObject::StringPropertyLookup(std::string name) {
+    HPString* sp = (HPString*) LookupProperty(name);
+    return (sp->Data());
+  }
+
+  std::vector<double> HandleObject::VectorPropertyLookup(std::string name) {
+    HPVector* sp = (HPVector*) LookupProperty(name);
+    return (sp->Data());
+  }
+  
   double HandleObject::ScalarPropertyLookup(std::string name) {
     HPScalar* sp = (HPScalar*) LookupProperty(name);
     return (sp->Data()[0]);

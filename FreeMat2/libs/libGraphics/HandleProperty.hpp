@@ -102,6 +102,18 @@ namespace FreeMat {
     virtual void Set(Array);    
   };
 
+  class HPConstrainedStringSet : public HPStringSet {
+    std::vector<std::string> m_dictionary;
+  public:
+    HPConstrainedStringSet(const char **dict) {
+      while (*dict) {
+	m_dictionary.push_back(*dict);
+	dict++;
+      }
+    }
+    virtual ~HPConstrainedStringSet() {}
+    virtual void Set(Array);
+  };
   
   class HPTwoVector : public HPFixedVector {
   public:
@@ -268,6 +280,12 @@ namespace FreeMat {
   public:
     HPSymbol();
     virtual ~HPSymbol() {}
+  };
+
+  class HPLineStyleOrder : public HPConstrainedStringSet {
+  public:
+    HPLineStyleOrder();
+    virtual ~HPLineStyleOrder() {}
   };
 
 }

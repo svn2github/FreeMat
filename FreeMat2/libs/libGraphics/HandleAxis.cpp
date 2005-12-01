@@ -335,7 +335,7 @@ namespace FreeMat {
     AddProperty(new HPAutoManual,"climmode");
     AddProperty(new HPOnOff,"clipping");
     AddProperty(new HPColor,"color");
-    AddProperty(new HPColorVector,"colororder");
+    //    AddProperty(new HPColorVector,"colororder");
     AddProperty(new HPThreeVector,"dataaspectratio");
     AddProperty(new HPAutoManual,"dataaspectratiomode");
     AddProperty(new HPFontAngle,"fontangle");
@@ -348,7 +348,7 @@ namespace FreeMat {
     AddProperty(new HPOnOff,"hittest");
     AddProperty(new HPOnOff,"interruptible");
     AddProperty(new HPTopBottom,"layer");
-    //    AddProperty(new HPLineStyleSet,"linestyleorder");
+    AddProperty(new HPLineStyleOrder,"linestyleorder");
     AddProperty(new HPScalar,"linewidth");
     AddProperty(new HPLineStyle,"minorgridlinestyle");
     AddProperty(new HPNextPlotMode,"nextplot");
@@ -480,6 +480,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("interruptible","on");
     SetConstrainedStringDefault("layer","bottom");
     SetScalarDefault("linewidth",1.0);
+    SetConstrainedStringSetDefault("linestyleorder","-|--|:|-.");
     SetConstrainedStringDefault("minorgridlinestyle",":");
     SetFourVectorDefault("outerposition",0,0,1,1);
     SetConstrainedStringDefault("nextplot","replace");
@@ -535,7 +536,7 @@ namespace FreeMat {
       fp->LookupProperty(propname)->Set(t[1]);
       t.erase(t.begin(),t.begin()+2);
     }
-    //    fp->UpdateState();
+    fp->UpdateState();
     return singleArrayVector(Array::uint32Constructor(handle));
   }
 
@@ -548,7 +549,7 @@ namespace FreeMat {
     HandleObject *fp = handleset.lookupHandle(handle);
     // Use the address and property name to lookup the Get/Set handler
     fp->LookupProperty(propname)->Set(arg[2]);
-    //    fp->UpdateState();
+    fp->UpdateState();
     return ArrayVector();
   }
 
@@ -580,7 +581,7 @@ namespace FreeMat {
       fp->LookupProperty(propname)->Set(t[1]);
       t.erase(t.begin(),t.begin()+2);
     }
-    //    fp->UpdateState();
+    fp->UpdateState();
     return singleArrayVector(Array::uint32Constructor(handle));
   }
   
@@ -593,7 +594,7 @@ namespace FreeMat {
       fp->LookupProperty(propname)->Set(t[1]);
       t.erase(t.begin(),t.begin()+2);
     }
-    //    fp->UpdateState();
+    fp->UpdateState();
     return singleArrayVector(Array::uint32Constructor(handle));
   }
   
@@ -1305,16 +1306,25 @@ namespace FreeMat {
       gc.color(xc->Data());
       gc.line(limits[0],x1pos[1],x1pos[2],
 	      limits[1],x1pos[1],x1pos[2]);
+      if (Is2DView()) 
+	gc.line(limits[0],x2pos[1],x2pos[2],
+		limits[1],x2pos[1],x2pos[2]);
     }
     if (yvisible) {
       gc.color(yc->Data());
       gc.line(y1pos[0],limits[2],y1pos[2],
 	      y1pos[0],limits[3],y1pos[2]);
+      if (Is2DView()) 
+	gc.line(y2pos[0],limits[2],y2pos[2],
+		y2pos[0],limits[3],y2pos[2]);
     } 
     if (zvisible) {
       gc.color(zc->Data());
       gc.line(z1pos[0],z1pos[1],limits[4],
 	      z1pos[0],z1pos[1],limits[5]);
+      if (Is2DView()) 
+	gc.line(z2pos[0],z2pos[1],limits[4],
+		z2pos[0],z2pos[1],limits[5]);
     }
     gc.depth(true);
   }
@@ -1798,6 +1808,15 @@ namespace FreeMat {
       if (~labels.empty())
 	DrawLabel(gc,-delx,-dely,x3,y3,color,
 		  labels[i % labels.size()]);
+      // For a 2D view, draw the opposite tick marks too
+      if (Is2DView()) {
+	gc.toPixels(t*unitx+px2,
+		    t*unity+py2,
+		    t*unitz+pz2,x1,y1);
+	x2 = -delx*ticlen*ticdir + x1;
+	y2 = -dely*ticlen*ticdir + y1;
+	gc.line(x1,y1,x2,y2);
+      }
     }
     // Get the maximum tick metric
     double maxx, maxy;
@@ -1940,7 +1959,6 @@ namespace FreeMat {
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {
-      qDebug("Drawing child %d\n",i);
       HandleObject *fp = handleset.lookupHandle(handles[i]);
       fp->PaintMe(gc);
     }

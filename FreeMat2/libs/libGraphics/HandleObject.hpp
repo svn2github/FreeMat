@@ -16,6 +16,7 @@ namespace FreeMat {
     HandleObject();
     virtual ~HandleObject() {}
     virtual void RegisterProperties() {}
+    virtual void UpdateState() {}
     bool HasChanged(std::vector<std::string> names);
     bool HasChanged(std::string name);
     void ToManual(std::string name);
@@ -26,6 +27,7 @@ namespace FreeMat {
     std::vector<double> VectorPropertyLookup(std::string name);
     std::string StringPropertyLookup(std::string name);
     void SetConstrainedStringDefault(std::string name, std::string value);
+    void SetConstrainedStringSetDefault(std::string name, std::string value);
     void SetTwoVectorDefault(std::string name, double x, double y);
     void SetThreeVectorDefault(std::string name, double x, double y, double z);
     void SetFourVectorDefault(std::string name, double x, double y, 

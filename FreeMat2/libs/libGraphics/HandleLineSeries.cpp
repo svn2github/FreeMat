@@ -18,6 +18,22 @@ namespace FreeMat {
   void HandleLineSeries::UpdateState() {
     // Check that x, y and z data are the same size
     // Generate the x coordinates if necessary
+    std::vector<double> xs(VectorPropertyLookup("xdata"));
+    std::vector<double> ys(VectorPropertyLookup("ydata"));
+    std::vector<double> zs(VectorPropertyLookup("zdata"));
+    if (IsAuto("xdatamode")) {
+      xs.clear();
+      for (int i=0;i<ys.size();i++)
+	xs.push_back(i+1.0);
+    }
+    if (zs.size() == 0)
+      for (int i=0;i<ys.size();i++)
+	zs.push_back(0.0);
+    HPVector *sp;
+    sp = (HPVector*) LookupProperty("xdata");
+    sp->Data(xs);
+    sp = (HPVector*) LookupProperty("zdata");
+    sp->Data(zs);
   }
 
   void HandleLineSeries::PaintMe(RenderEngine& gc) {
@@ -29,6 +45,8 @@ namespace FreeMat {
     std::vector<double> xs(VectorPropertyLookup("xdata"));
     std::vector<double> ys(VectorPropertyLookup("ydata"));
     std::vector<double> zs(VectorPropertyLookup("zdata"));
+    if (!((xs.size() == ys.size()) && (ys.size() == zs.size())))
+      return;
     std::vector<double> mxs, mys, mzs;
     HandleAxis *parent = (HandleAxis*) GetParentAxis();
     parent->ReMap(xs,ys,zs,mxs,mys,mzs);

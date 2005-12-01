@@ -1,6 +1,7 @@
 #include "HandleObject.hpp"
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
+#include "Core.hpp"
 namespace FreeMat {
 
   extern HandleList<HandleObject*> handleset;
@@ -87,6 +88,13 @@ namespace FreeMat {
   void HandleObject::SetConstrainedStringDefault(std::string name, std::string value) {
     HPConstrainedString *hp = (HPConstrainedString*) LookupProperty(name);
     hp->Value(value);
+  }
+
+  void HandleObject::SetConstrainedStringSetDefault(std::string name, std::string values) {
+    HPConstrainedStringSet *hp = (HPConstrainedStringSet*) LookupProperty(name);
+    std::vector<std::string> data;
+    Tokenize(values,data,"|");
+    ((HPStringSet*)hp)->Data(data);
   }
 
   void HandleObject::SetThreeVectorDefault(std::string name, double x, double y, double z) {

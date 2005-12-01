@@ -45,6 +45,7 @@ namespace FreeMat {
   HPAlignHoriz::HPAlignHoriz() : HPConstrainedString(horiz_dict) {}
   HPAlignVert::HPAlignVert() : HPConstrainedString(vert_dict) {}
   HPSymbol::HPSymbol() : HPConstrainedString(symb_dict) {}
+  HPLineStyleOrder::HPLineStyleOrder() : HPConstrainedStringSet(line_style_dict) {}
 
   HPHandles::HPHandles(int len) {
     m_len = len;
@@ -113,9 +114,11 @@ namespace FreeMat {
   
   void HPFixedVector::Set(Array num) {
     HandleProperty::Set(num);
-    if (num.getLength() != m_len)
-      throw Exception("expecting a vector argument of a specific length for property");
-    HPVector::Set(num);
+    num.promoteType(FM_DOUBLE);
+    const double *dp = (const double*) num.getDataPointer();
+    data.clear();
+    for (int i=0;i<qMin(m_len,(unsigned int)num.getLength());i++)
+      data.push_back(dp[i]);
   }
 
   double& HPVector::At(int ndx) {
@@ -217,6 +220,15 @@ namespace FreeMat {
     if (find(m_dictionary.begin(),m_dictionary.end(),tst) == m_dictionary.end())
       throw Exception("illegal selection for property");
     HPString::Set(arg);
+  }
+
+  void HPConstrainedStringSet::Set(Array arg) {
+    HandleProperty::Set(arg);
+    HPStringSet::Set(arg);
+    // Validate the result
+    for (int i=0;i<data.size();i++)
+      if (find(m_dictionary.begin(),m_dictionary.end(),data[i]) == m_dictionary.end())
+	throw Exception("illegal selection for property");
   }
 
   void HPScalar::Value(double x) {

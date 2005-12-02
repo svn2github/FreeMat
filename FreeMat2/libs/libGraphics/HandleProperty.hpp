@@ -156,7 +156,7 @@ namespace FreeMat {
     HPColorVector() : HPVector() {}
     virtual ~HPColorVector() {}
     virtual void Set(Array);    
-    Array Get();    
+    Array Get();
   };
 
   class HPOnOff : public HPConstrainedString {

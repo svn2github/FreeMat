@@ -5,8 +5,6 @@
 
 namespace FreeMat {
 
-  extern HandleList<HandleObject*> handleset;
-
   HandleLineSeries::HandleLineSeries() {
     ConstructProperties();
     SetupDefaults();

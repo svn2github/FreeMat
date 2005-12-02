@@ -4,7 +4,6 @@
 #include <qgl.h>
 
 namespace FreeMat {
-  extern HandleList<HandleObject*> handleset;
   
 
   HandleFigure::HandleFigure() {
@@ -29,7 +28,7 @@ namespace FreeMat {
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {
-      HandleObject *fp = handleset.lookupHandle(handles[i]);
+      HandleObject *fp = LookupHandleObject(handles[i]);
       fp->PaintMe(gc);
     }
     resized = false;

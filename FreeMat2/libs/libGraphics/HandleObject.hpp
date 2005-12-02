@@ -6,9 +6,13 @@
 #include "HandleProperty.hpp"
 #include "RenderEngine.hpp"
 
+#define HANDLE_OFFSET_OBJECT 100000
+#define HANDLE_OFFSET_FIGURE 0
+
 namespace FreeMat {
 
   class HandleAxis;
+  class HandleFigure;
 
   class HandleObject {
     SymbolTable<HandleProperty*> m_properties;
@@ -38,6 +42,14 @@ namespace FreeMat {
     virtual void PaintMe(RenderEngine &gc) = 0;
     HandleAxis* GetParentAxis();
   };
+
+  HandleObject* LookupHandleObject(unsigned handle);
+  HandleFigure* LookupHandleFigure(unsigned handle);
+  unsigned AssignHandleObject(HandleObject*);
+  unsigned AssignHandleFigure(HandleFigure*);
+  void FreeHandleObject(unsigned handle);
+  void FreeHandleFigure(unsigned handle);
+  void ValidateHandle(unsigned handle);
 }
 
 #endif

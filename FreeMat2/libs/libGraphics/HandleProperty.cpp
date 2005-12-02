@@ -4,8 +4,6 @@
 #include "Core.hpp"
 
 namespace FreeMat {
-  extern HandleList<HandleObject*> handleset;
-
   static const char *auto_manual_dict[3] = {"auto","manual",0};
   static const char *on_off_dict[3] = {"on","off",0};
   static const char *font_angle_dict[4] = {"normal","italic","oblique",0};
@@ -77,7 +75,7 @@ namespace FreeMat {
       throw Exception("incorrect number of handles in property assignment");
     // make sure they are all valid handles
     for (int i=0;i<arg.getLength();i++) 
-      handleset.lookupHandle(dp[i]);
+      ValidateHandle(dp[i]);
     data.clear();
     for (int i=0;i<arg.getLength();i++) 
       data.push_back(dp[i]);
@@ -130,11 +128,26 @@ namespace FreeMat {
   }
 
   void HPColorVector::Set(Array arg) {
-    // TODO...
+    HandleProperty::Set(arg);
+    arg.promoteType(FM_DOUBLE);
+    if ((!arg.is2D()) || (arg.getDimensionLength(1) != 3))
+      throw Exception("Expect an m x 3 matrix for color orders");
+    const double *dp = (const double *) arg.getDataPointer();
+    int n = arg.getLength();
+    for (int i=0;i<n;i++) 
+      if ((dp[i] < 0) || (dp[i] > 1.0))
+	throw Exception("Color vector must be between 0 and 1");
+    for (int i=0;i<n;i++) 
+      data.push_back(dp[i]);
   }
 
   Array HPColorVector::Get() {
-    // TODO...
+    int count = data.size();
+    int rows = count/3;
+    double *rp = (double*) Array::allocateArray(FM_DOUBLE,count);
+    for (int i=0;i<count;i++)
+      rp[i] = data[i];
+    return Array::Array(FM_DOUBLE,Dimensions(rows,3),rp);
   }
   
   void HPColor::Set(Array arg) {

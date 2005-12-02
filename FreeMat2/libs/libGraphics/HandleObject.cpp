@@ -1,10 +1,45 @@
 #include "HandleObject.hpp"
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
+#include "HandleFigure.hpp"
 #include "Core.hpp"
 namespace FreeMat {
 
-  extern HandleList<HandleObject*> handleset;
+  // Magic constant - limits the number of figures you can have...
+  
+  HandleList<HandleObject*> objectset;
+  HandleList<HandleFigure*> figureset;
+  
+  HandleObject* LookupHandleObject(unsigned handle) {
+    return (objectset.lookupHandle(handle-HANDLE_OFFSET_OBJECT));
+  }
+
+  HandleFigure* LookupHandleFigure(unsigned handle) {
+    return (figureset.lookupHandle(handle-HANDLE_OFFSET_FIGURE));
+  }
+
+  void ValidateHandle(unsigned handle) {
+    if (handle >= HANDLE_OFFSET_OBJECT)
+      LookupHandleObject(handle);
+    else
+      LookupHandleFigure(handle);
+  }
+
+  unsigned AssignHandleObject(HandleObject* hp) {
+    return (objectset.assignHandle(hp)+HANDLE_OFFSET_OBJECT);
+  }
+
+  unsigned AssignHandleFigure(HandleFigure* hp) {
+    return (figureset.assignHandle(hp)+HANDLE_OFFSET_FIGURE);
+  }
+
+  void FreeHandleObject(unsigned handle) {
+    objectset.deleteHandle(handle-HANDLE_OFFSET_OBJECT);
+  }
+
+  void FreeHandleFigure(unsigned handle) {
+    figureset.deleteHandle(handle-HANDLE_OFFSET_FIGURE);
+  }
 
   void HandleObject::ToManual(std::string name) {
     HPAutoManual *qp = (HPAutoManual*) LookupProperty(name);
@@ -58,7 +93,7 @@ namespace FreeMat {
     HPHandle *parent = (HPHandle*) LookupProperty("parent");
     if (parent->Data().empty()) return NULL;
     unsigned parent_handle = parent->Data()[0];
-    HandleObject *fp = handleset.lookupHandle(parent_handle);
+    HandleObject *fp = LookupHandleObject(parent_handle);
     HPString *name = (HPString*) fp->LookupProperty("type");
     if (!name) return NULL;
     if (!name->Is("axes")) return NULL;

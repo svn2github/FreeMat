@@ -37,7 +37,7 @@ int arot = 0;
 //    climmode
 //    clipping
 //    color - done (does 'none' work?)
-//    colororder
+//    colororder - done
 //    dataaspectratio
 //    dataaspectratiomode
 //    fontangle - done
@@ -83,9 +83,9 @@ int arot = 0;
 //    xgrid - done
 //    ygrid - done
 //    zgrid - done
-//    xlabel
-//    ylabel
-//    zlabel
+//    xlabel - done
+//    ylabel - done
+//    zlabel - done
 //    xlim - done
 //    ylim - done
 //    zlim - done
@@ -139,9 +139,11 @@ namespace FreeMat {
   class BaseFigure : public QGLWidget {
     float beginx, beginy;
     bool elevazim;
+    unsigned handle;
   public:
     HandleFigure *hfig;
     BaseFigure(QWidget* parent, const char *Name);
+    unsigned Handle();
     virtual void initializeGL();
     virtual void paintGL();
     virtual void resizeGL(int width, int height);
@@ -152,7 +154,6 @@ namespace FreeMat {
   };
 
   // Probably a better way to do this...
-  HandleList<HandleObject*> handleset;
 
   class pt3d {
   public:
@@ -335,7 +336,7 @@ namespace FreeMat {
     AddProperty(new HPAutoManual,"climmode");
     AddProperty(new HPOnOff,"clipping");
     AddProperty(new HPColor,"color");
-    //    AddProperty(new HPColorVector,"colororder");
+    AddProperty(new HPColorVector,"colororder");
     AddProperty(new HPThreeVector,"dataaspectratio");
     AddProperty(new HPAutoManual,"dataaspectratiomode");
     AddProperty(new HPFontAngle,"fontangle");
@@ -467,6 +468,17 @@ namespace FreeMat {
     SetConstrainedStringDefault("climmode","auto");
     SetConstrainedStringDefault("clipping","on");
     SetThreeVectorDefault("color",-1,-1,-1);
+    // Set up the default color order
+    std::vector<double> colors;
+    colors.push_back(1.0); colors.push_back(0.0); colors.push_back(0.0); 
+    colors.push_back(1.0); colors.push_back(1.0); colors.push_back(0.0); 
+    colors.push_back(0.0); colors.push_back(0.0); colors.push_back(1.0);
+    colors.push_back(0.0); colors.push_back(1.0); colors.push_back(0.0);
+    colors.push_back(1.0); colors.push_back(0.0); colors.push_back(0.0);
+    colors.push_back(0.0); colors.push_back(1.0); colors.push_back(0.0);
+    colors.push_back(1.0); colors.push_back(1.0); colors.push_back(0.0);
+    HPVector *hp = (HPVector*) LookupProperty("colororder");
+    hp->Data(colors);
     SetConstrainedStringDefault("dataaspectratiomode","auto");
     //    SetConstrainedStringDefault("drawmode","normal");
     SetConstrainedStringDefault("fontangle","normal");
@@ -529,7 +541,7 @@ namespace FreeMat {
   // Construct an axis object 
   ArrayVector AxesFunction(int nargout, const ArrayVector& arg) {
     HandleObject *fp = new HandleAxis;
-    unsigned int handle = handleset.assignHandle(fp);
+    unsigned int handle = AssignHandleObject(fp);
     ArrayVector t(arg);
     while (t.size() >= 2) {
       std::string propname(ArrayToString(t[0]));
@@ -546,7 +558,11 @@ namespace FreeMat {
     int handle = ArrayToInt32(arg[0]);
     std::string propname = ArrayToString(arg[1]);
     // Lookup the handle
-    HandleObject *fp = handleset.lookupHandle(handle);
+    HandleObject *fp;
+    if (handle >= HANDLE_OFFSET_OBJECT)
+      fp = LookupHandleObject(handle);
+    else
+      fp = (HandleObject*) LookupHandleFigure(handle);
     // Use the address and property name to lookup the Get/Set handler
     fp->LookupProperty(propname)->Set(arg[2]);
     fp->UpdateState();
@@ -559,7 +575,11 @@ namespace FreeMat {
     int handle = ArrayToInt32(arg[0]);
     std::string propname = ArrayToString(arg[1]);
     // Lookup the handle
-    HandleObject *fp = handleset.lookupHandle(handle);
+    HandleObject *fp;
+    if (handle >= HANDLE_OFFSET_OBJECT)
+      fp = LookupHandleObject(handle);
+    else
+      fp = (HandleObject*) LookupHandleFigure(handle);
     // Use the address and property name to lookup the Get/Set handler
     return singleArrayVector(fp->LookupProperty(propname)->Get());
   }
@@ -569,12 +589,12 @@ namespace FreeMat {
     BaseFigure* fp = new BaseFigure(NULL,NULL);
     // Show it
     fp->show();
-    return ArrayVector();
+    return singleArrayVector(Array::uint32Constructor(fp->Handle()));
   }
 
   ArrayVector LineFunction(int nargout, const ArrayVector& arg) {
     HandleObject *fp = new HandleLineSeries;
-    unsigned int handle = handleset.assignHandle(fp);
+    unsigned int handle = AssignHandleObject(fp);
     ArrayVector t(arg);
     while (t.size() >= 2) {
       std::string propname(ArrayToString(t[0]));
@@ -587,7 +607,7 @@ namespace FreeMat {
   
   ArrayVector TextFunction(int nargout, const ArrayVector& arg) {
     HandleObject *fp = new HandleText;
-    unsigned int handle = handleset.assignHandle(fp);
+    unsigned int handle = AssignHandleObject(fp);
     ArrayVector t(arg);
     while (t.size() >= 2) {
       std::string propname(ArrayToString(t[0]));
@@ -604,13 +624,20 @@ namespace FreeMat {
     context->addFunction("text",TextFunction,-1,1);
     context->addFunction("set",SetFunction,-1,0);
     context->addFunction("get",GetFunction,2,1,"handle","propname");
-    context->addFunction("dmo",DmoFunction,0,0);
+    context->addFunction("dmo",DmoFunction,0,1);
   };
 
   BaseFigure::BaseFigure(QWidget* parent, const char *name) :
     QGLWidget(parent) {
       hfig = new HandleFigure;
-      handleset.assignHandle(hfig);
+      handle = AssignHandleFigure(hfig);
+      char buffer[1000];
+      sprintf(buffer,"Figure %d",handle);
+      setWindowTitle(buffer);
+  }
+
+  unsigned BaseFigure::Handle() {
+    return handle;
   }
 
   void BaseFigure::initializeGL() {
@@ -701,11 +728,7 @@ namespace FreeMat {
     HPHandle *parent = (HPHandle*) LookupProperty("parent");
     if (parent->Data().empty()) return NULL;
     unsigned parent_handle = parent->Data()[0];
-    HandleObject *fp = handleset.lookupHandle(parent_handle);
-    HPString *name = (HPString*) fp->LookupProperty("type");
-    if (!name) return NULL;
-    if (!name->Is("figure")) return NULL;
-    HandleFigure *fig = (HandleFigure*) fp;
+    HandleFigure *fig = LookupHandleFigure(parent_handle);
     return fig;
   }
 
@@ -1485,27 +1508,27 @@ namespace FreeMat {
     if (xvisible) {
       lbl = (HPHandle*) LookupProperty("xlabel");
       if (!lbl->Data().empty()) {
-	HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	xlabelHeight = fp->GetTextHeightInPixels();
       }
     }
     if (yvisible) {
       lbl = (HPHandle*) LookupProperty("ylabel");
       if (!lbl->Data().empty()) {
-	HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	ylabelHeight = fp->GetTextHeightInPixels();
       }
     }
     if (zvisible) {
       lbl = (HPHandle*) LookupProperty("zlabel");
       if (!lbl->Data().empty()) {
-	HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	zlabelHeight = fp->GetTextHeightInPixels();
       }
     }
     lbl = (HPHandle*) LookupProperty("title");
     if (!lbl->Data().empty()) {
-      HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+      HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
       titleHeight = fp->GetTextHeightInPixels();
     }
     QFontMetrics fm(m_font);
@@ -1854,7 +1877,7 @@ namespace FreeMat {
     // Set the position of the label
     HPHandle *lbl = (HPHandle*) LookupProperty(labelname);
     if (!lbl->Data().empty()) {
-      HandleText *fp = (HandleText*) handleset.lookupHandle(lbl->Data()[0]);
+      HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
       // To calculate the angle, we have to look at the axis
       // itself.  The direction of the axis is determined by
       // the projection of [1,0,0] onto the screen plane
@@ -1929,27 +1952,27 @@ namespace FreeMat {
     if (xvisible) {
       lbl = (HPHandle*) LookupProperty("xlabel");
       if (!lbl->Data().empty()) {
-	HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+	HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
 	fp->PaintMe(gc);
       }
     }
     if (yvisible) {
       lbl = (HPHandle*) LookupProperty("ylabel");
       if (!lbl->Data().empty()) {
-	HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+	HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
 	fp->PaintMe(gc);
       }      
     }
     if (zvisible) {
       lbl = (HPHandle*) LookupProperty("zlabel");
       if (!lbl->Data().empty()) {
-	HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+	HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
 	fp->PaintMe(gc);
       }      
     }
     lbl = (HPHandle*) LookupProperty("title");
     if (!lbl->Data().empty()) {
-      HandleObject *fp = handleset.lookupHandle(lbl->Data()[0]);
+      HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
       fp->PaintMe(gc);
     }      
     SetupProjection(gc);
@@ -1959,7 +1982,7 @@ namespace FreeMat {
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {
-      HandleObject *fp = handleset.lookupHandle(handles[i]);
+      HandleObject *fp = LookupHandleObject(handles[i]);
       fp->PaintMe(gc);
     }
   }

@@ -1,0 +1,3 @@
+
+function rescan
+  cd(pwd);

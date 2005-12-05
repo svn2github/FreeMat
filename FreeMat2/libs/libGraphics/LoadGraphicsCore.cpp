@@ -26,15 +26,15 @@ namespace FreeMat {
 
   void LoadGraphicsCoreFunctions(Context* context) {
     LoadHandleGraphicsFunctions(context);
-    context->addFunction("figure",FigureFunction,1,1,"n");
+    //    context->addFunction("figure",FigureFunction,1,1,"n");
     context->addFunction("close",CloseFunction,1,0,"handle");
-    context->addFunction("plot",PlotFunction,-1,0);
+    //    context->addFunction("plot",PlotFunction,-1,0);
     context->addFunction("sizefig",SizeFigFunction,2,0,"height","width");
-    context->addFunction("xlabel",XLabelFunction,1,0,"label");
-    context->addFunction("ylabel",YLabelFunction,1,0,"label");
-    context->addFunction("title",TitleFunction,1,0,"label"); 
-    context->addFunction("grid",GridFunction,1,0,"state");
-    context->addFunction("hold",HoldFunction,1,0,"state");
+    //    context->addFunction("xlabel",XLabelFunction,1,0,"label");
+    //    context->addFunction("ylabel",YLabelFunction,1,0,"label");
+    //    context->addFunction("title",TitleFunction,1,0,"label"); 
+    //    context->addFunction("grid",GridFunction,1,0,"state");
+    //    context->addFunction("hold",HoldFunction,1,0,"state");
     context->addFunction("ishold",IsHoldFunction,0,1);
     context->addFunction("image",ImageFunction,2,0,"x","zoom");
     context->addFunction("winlev",WinLevFunction,2,-1,"window","level");
@@ -46,9 +46,9 @@ namespace FreeMat {
     context->addFunction("legend",LegendFunction,-1,0);
     context->addFunction("demo",DemoFunction,-1,0);
     context->addFunction("copy",CopyFunction,0,0);
-    context->addFunction("addtxt",AddTxtFunction,3,1,"x","y","label");
-    context->addFunction("subplot",SubPlotFunction,3,0,"x","y","n");
-    context->addFunction("colorbar",ColorbarFunction,1,0,"orientation");
-    context->addFunction("clf",ClearFigureFunction,0,0);
+    //    context->addFunction("addtxt",AddTxtFunction,3,1,"x","y","label");
+    //    context->addFunction("subplot",SubPlotFunction,3,0,"x","y","n");
+    //    context->addFunction("colorbar",ColorbarFunction,1,0,"orientation");
+    //    context->addFunction("clf",ClearFigureFunction,0,0);
   }
 }

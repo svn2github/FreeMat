@@ -12,7 +12,7 @@ namespace FreeMat {
     enum SymbolType {Plus,Circle,Star,Dot,Times,Square,Diamond,Up,Down,Right,Left,Pentagram,Hexagram,None};
     RenderEngine() {};
     virtual ~RenderEngine() {};
-    virtual void clear() = 0;
+    virtual void clear(std::vector<double>) = 0;
     virtual void toPixels(double x, double y, double z, int &a, int &b) = 0;
     virtual void toPixels(double x, double y, double z, double &a, double &b) = 0;
     virtual void toPixels(double x, double y, double z, double &a, double &b, bool &clipped) = 0;

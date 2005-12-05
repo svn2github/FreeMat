@@ -2,43 +2,13 @@
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
 #include "HandleFigure.hpp"
+#include "HandleCommands.hpp"
 #include "Core.hpp"
 namespace FreeMat {
 
-  // Magic constant - limits the number of figures you can have...
-  
-  HandleList<HandleObject*> objectset;
-  HandleList<HandleFigure*> figureset;
-  
-  HandleObject* LookupHandleObject(unsigned handle) {
-    return (objectset.lookupHandle(handle-HANDLE_OFFSET_OBJECT));
-  }
-
-  HandleFigure* LookupHandleFigure(unsigned handle) {
-    return (figureset.lookupHandle(handle-HANDLE_OFFSET_FIGURE));
-  }
-
-  void ValidateHandle(unsigned handle) {
-    if (handle >= HANDLE_OFFSET_OBJECT)
-      LookupHandleObject(handle);
-    else
-      LookupHandleFigure(handle);
-  }
-
-  unsigned AssignHandleObject(HandleObject* hp) {
-    return (objectset.assignHandle(hp)+HANDLE_OFFSET_OBJECT);
-  }
-
-  unsigned AssignHandleFigure(HandleFigure* hp) {
-    return (figureset.assignHandle(hp)+HANDLE_OFFSET_FIGURE);
-  }
-
-  void FreeHandleObject(unsigned handle) {
-    objectset.deleteHandle(handle-HANDLE_OFFSET_OBJECT);
-  }
-
-  void FreeHandleFigure(unsigned handle) {
-    figureset.deleteHandle(handle-HANDLE_OFFSET_FIGURE);
+  bool HandleObject::IsType(std::string name) {
+    HPString* sp = (HPString*) LookupProperty("type");
+    return (sp->Is(name));
   }
 
   void HandleObject::ToManual(std::string name) {
@@ -88,9 +58,16 @@ namespace FreeMat {
     return *hp;
   }
 
+  void HandleObject::SetPropertyHandle(std::string name, unsigned value) {
+    HPHandles* hp = (HPHandles*) LookupProperty(name);
+    std::vector<unsigned> newval;
+    newval.push_back(value);
+    hp->Data(newval);
+  }
+
   HandleAxis* HandleObject::GetParentAxis() {
     // Get our parent - must be an axis
-    HPHandle *parent = (HPHandle*) LookupProperty("parent");
+    HPHandles *parent = (HPHandles*) LookupProperty("parent");
     if (parent->Data().empty()) return NULL;
     unsigned parent_handle = parent->Data()[0];
     HandleObject *fp = LookupHandleObject(parent_handle);
@@ -114,6 +91,14 @@ namespace FreeMat {
   double HandleObject::ScalarPropertyLookup(std::string name) {
     HPScalar* sp = (HPScalar*) LookupProperty(name);
     return (sp->Data()[0]);
+  }
+
+  unsigned HandleObject::HandlePropertyLookup(std::string name) {
+    HPHandles* sp = (HPHandles*) LookupProperty(name);
+    if (sp->Data().empty())
+      return 0;
+    else
+      return (sp->Data()[0]);
   }
 
   void HandleObject::AddProperty(HandleProperty* hp, std::string name) {

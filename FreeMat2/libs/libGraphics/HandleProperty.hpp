@@ -19,22 +19,14 @@ namespace FreeMat {
 
   class HPHandles : public HandleProperty {
   protected:
-    int m_len;
     std::vector<unsigned> data;
   public:
-    HPHandles(int len);
     HPHandles();
     virtual ~HPHandles() {}
     virtual Array Get();
     virtual void Set(Array);
     std::vector<unsigned> Data() {return data;}
     void Data(std::vector<unsigned> m) {data = m;}
-  };
-
-  class HPHandle : public HPHandles {
-  public:
-    HPHandle() : HPHandles(1) {}
-    ~HPHandle() {}
   };
 
   class HPVector : public HandleProperty {

@@ -16,7 +16,7 @@ namespace FreeMat {
 		   double width, double height);
     ~GLRenderEngine();
     QGLWidget* widget();
-    virtual void clear();
+    virtual void clear(std::vector<double>);
     virtual void toPixels(double x, double y, double z, int &a, int &b);
     virtual void toPixels(double x, double y, double z, double &a, double &b);
     virtual void toPixels(double x, double y, double z, double &a, double &b, bool &clipped);

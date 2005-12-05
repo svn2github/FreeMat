@@ -6,8 +6,6 @@
 #include "HandleProperty.hpp"
 #include "RenderEngine.hpp"
 
-#define HANDLE_OFFSET_OBJECT 100000
-#define HANDLE_OFFSET_FIGURE 0
 
 namespace FreeMat {
 
@@ -24,10 +22,12 @@ namespace FreeMat {
     bool HasChanged(std::vector<std::string> names);
     bool HasChanged(std::string name);
     void ToManual(std::string name);
+    bool IsType(std::string name);
     void ClearChanged(std::vector<std::string> names);
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);
     double ScalarPropertyLookup(std::string name);
+    unsigned HandlePropertyLookup(std::string name);
     std::vector<double> VectorPropertyLookup(std::string name);
     std::string StringPropertyLookup(std::string name);
     void SetConstrainedStringDefault(std::string name, std::string value);
@@ -38,18 +38,12 @@ namespace FreeMat {
 			      double z, double w);
     void SetStringDefault(std::string name, std::string value);
     void SetScalarDefault(std::string name, double value);
+    void SetPropertyHandle(std::string name, unsigned value);
     bool IsAuto(std::string mode);
     virtual void PaintMe(RenderEngine &gc) = 0;
     HandleAxis* GetParentAxis();
   };
 
-  HandleObject* LookupHandleObject(unsigned handle);
-  HandleFigure* LookupHandleFigure(unsigned handle);
-  unsigned AssignHandleObject(HandleObject*);
-  unsigned AssignHandleFigure(HandleFigure*);
-  void FreeHandleObject(unsigned handle);
-  void FreeHandleFigure(unsigned handle);
-  void ValidateHandle(unsigned handle);
 }
 
 #endif

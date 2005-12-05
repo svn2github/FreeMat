@@ -1,23 +1,13 @@
 #include "HandleAxis.hpp"
 #include "HandleList.hpp"
-#include "HandleLineSeries.hpp"
 #include "HandleFigure.hpp"
 #include "HandleText.hpp"
 #include "Core.hpp"
-#include <QMouseEvent>
 #include <qapplication.h>
 #include <math.h>
 #include <qpainter.h>
 #include "GLRenderEngine.hpp"
-
-// Need to add the labels...
-
-
-// These are globals for now... ultimately, they need to be handled
-// differently...
-int azim = 0;
-int elev = 0;
-int arot = 0;
+#include "HandleCommands.hpp"
 
 // Property list & status
 //    activepositionproperty
@@ -136,22 +126,6 @@ int arot = 0;
 // in x, y, z, and then map the clipped volume to viewer
 // space.
 namespace FreeMat {
-  class BaseFigure : public QGLWidget {
-    float beginx, beginy;
-    bool elevazim;
-    unsigned handle;
-  public:
-    HandleFigure *hfig;
-    BaseFigure(QWidget* parent, const char *Name);
-    unsigned Handle();
-    virtual void initializeGL();
-    virtual void paintGL();
-    virtual void resizeGL(int width, int height);
-    // Support dragging...
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
-  };
 
   // Probably a better way to do this...
 
@@ -366,7 +340,7 @@ namespace FreeMat {
     AddProperty(new HPAutoManual,"tickdirmode");
     AddProperty(new HPTwoVector,"ticklength");
     AddProperty(new HPFourVector,"tightinset");
-    AddProperty(new HPHandle,"title");
+    AddProperty(new HPHandles,"title");
     AddProperty(new HPString,"type");
     AddProperty(new HPUnits,"units");
     //    AddProperty(new Array,"userdata");
@@ -382,9 +356,9 @@ namespace FreeMat {
     AddProperty(new HPOnOff,"xgrid");
     AddProperty(new HPOnOff,"ygrid");
     AddProperty(new HPOnOff,"zgrid");
-    AddProperty(new HPHandle,"xlabel");
-    AddProperty(new HPHandle,"ylabel");
-    AddProperty(new HPHandle,"zlabel");
+    AddProperty(new HPHandles,"xlabel");
+    AddProperty(new HPHandles,"ylabel");
+    AddProperty(new HPHandles,"zlabel");
     AddProperty(new HPTwoVector,"xlim");
     AddProperty(new HPTwoVector,"ylim");
     AddProperty(new HPTwoVector,"zlim");
@@ -538,156 +512,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("zticklabelmode","auto");
   }
 
-  // Construct an axis object 
-  ArrayVector AxesFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleAxis;
-    unsigned int handle = AssignHandleObject(fp);
-    ArrayVector t(arg);
-    while (t.size() >= 2) {
-      std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
-    }
-    fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));
-  }
-
-  ArrayVector SetFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 3)
-      throw Exception("set doesn't handle all cases yet!");
-    int handle = ArrayToInt32(arg[0]);
-    std::string propname = ArrayToString(arg[1]);
-    // Lookup the handle
-    HandleObject *fp;
-    if (handle >= HANDLE_OFFSET_OBJECT)
-      fp = LookupHandleObject(handle);
-    else
-      fp = (HandleObject*) LookupHandleFigure(handle);
-    // Use the address and property name to lookup the Get/Set handler
-    fp->LookupProperty(propname)->Set(arg[2]);
-    fp->UpdateState();
-    return ArrayVector();
-  }
-
-  ArrayVector GetFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 2)
-      throw Exception("get doesn't handle all cases yet!");
-    int handle = ArrayToInt32(arg[0]);
-    std::string propname = ArrayToString(arg[1]);
-    // Lookup the handle
-    HandleObject *fp;
-    if (handle >= HANDLE_OFFSET_OBJECT)
-      fp = LookupHandleObject(handle);
-    else
-      fp = (HandleObject*) LookupHandleFigure(handle);
-    // Use the address and property name to lookup the Get/Set handler
-    return singleArrayVector(fp->LookupProperty(propname)->Get());
-  }
-
-  ArrayVector DmoFunction(int nargout, const ArrayVector& arg) {
-    // Create a figure...
-    BaseFigure* fp = new BaseFigure(NULL,NULL);
-    // Show it
-    fp->show();
-    return singleArrayVector(Array::uint32Constructor(fp->Handle()));
-  }
-
-  ArrayVector LineFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleLineSeries;
-    unsigned int handle = AssignHandleObject(fp);
-    ArrayVector t(arg);
-    while (t.size() >= 2) {
-      std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
-    }
-    fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));
-  }
   
-  ArrayVector TextFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleText;
-    unsigned int handle = AssignHandleObject(fp);
-    ArrayVector t(arg);
-    while (t.size() >= 2) {
-      std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
-    }
-    fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));
-  }
-  
-  void LoadHandleGraphicsFunctions(Context* context) {
-    context->addFunction("axes",AxesFunction,-1,1);
-    context->addFunction("line",LineFunction,-1,1);
-    context->addFunction("text",TextFunction,-1,1);
-    context->addFunction("set",SetFunction,-1,0);
-    context->addFunction("get",GetFunction,2,1,"handle","propname");
-    context->addFunction("dmo",DmoFunction,0,1);
-  };
-
-  BaseFigure::BaseFigure(QWidget* parent, const char *name) :
-    QGLWidget(parent) {
-      hfig = new HandleFigure;
-      handle = AssignHandleFigure(hfig);
-      char buffer[1000];
-      sprintf(buffer,"Figure %d",handle);
-      setWindowTitle(buffer);
-  }
-
-  unsigned BaseFigure::Handle() {
-    return handle;
-  }
-
-  void BaseFigure::initializeGL() {
-    glShadeModel(GL_SMOOTH);
-    glClearColor(0.6f, 0.6f, 0.6f, 0.0f);
-    glClearDepth(1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
-  }
-
-  void BaseFigure::paintGL() {
-    GLRenderEngine gc(this,0,0,width(),height());
-    gc.clear();
-    hfig->PaintMe(gc);
-  }
-
-  void BaseFigure::resizeGL(int width, int height) {
-    hfig->resizeGL(width,height);
-  }
-
-  void BaseFigure::mousePressEvent(QMouseEvent* e) {
-    if (e->button() & Qt::LeftButton)
-      elevazim = true;
-    else
-      elevazim = false;
-    beginx = e->x();
-    beginy = e->y();
-  }
-
-  void BaseFigure::mouseMoveEvent(QMouseEvent* e) {
-    if (elevazim) {
-      elev -= (e->y() - beginy);
-      azim += (e->x() - beginx);
-      elev = (elev + 360) % 360;
-      azim = (azim + 360) % 360;
-    } else {
-      arot += (e->y() - beginy);
-      arot = (arot + 360) % 360;
-    }
-    beginx = e->x();
-    beginy = e->y();
-    updateGL();
-  }
-  
-  void BaseFigure::mouseReleaseEvent(QMouseEvent* e) {
-  }
-
 
   std::vector<double> HandleAxis::GetAxisLimits() {
     HPTwoVector *hp;
@@ -725,7 +550,7 @@ namespace FreeMat {
 
   HandleFigure* HandleAxis::GetParentFigure() {
     // Get our parent - should be a figure
-    HPHandle *parent = (HPHandle*) LookupProperty("parent");
+    HPHandles *parent = (HPHandles*) LookupProperty("parent");
     if (parent->Data().empty()) return NULL;
     unsigned parent_handle = parent->Data()[0];
     HandleFigure *fig = LookupHandleFigure(parent_handle);
@@ -881,6 +706,7 @@ namespace FreeMat {
     if (hp->IsNone()) return;
     std::vector<double> limits(GetAxisLimits());
     gc.color(hp->Data());
+    gc.depth(false);
     gc.quad( limits[0], limits[2], limits[4],
 	     limits[1], limits[2], limits[4],
 	     limits[1], limits[3], limits[4],
@@ -905,6 +731,7 @@ namespace FreeMat {
 	     limits[1], limits[3], limits[4],
 	     limits[1], limits[3], limits[5],
 	     limits[0], limits[3], limits[5]);
+    gc.depth(true);
   }
 
 
@@ -1504,29 +1331,29 @@ namespace FreeMat {
     int zlabelHeight = 0;
     int maxLabelHeight = 0;
     int tickHeight = 0;
-    HPHandle *lbl;
+    HPHandles *lbl;
     if (xvisible) {
-      lbl = (HPHandle*) LookupProperty("xlabel");
+      lbl = (HPHandles*) LookupProperty("xlabel");
       if (!lbl->Data().empty()) {
 	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	xlabelHeight = fp->GetTextHeightInPixels();
       }
     }
     if (yvisible) {
-      lbl = (HPHandle*) LookupProperty("ylabel");
+      lbl = (HPHandles*) LookupProperty("ylabel");
       if (!lbl->Data().empty()) {
 	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	ylabelHeight = fp->GetTextHeightInPixels();
       }
     }
     if (zvisible) {
-      lbl = (HPHandle*) LookupProperty("zlabel");
+      lbl = (HPHandles*) LookupProperty("zlabel");
       if (!lbl->Data().empty()) {
 	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	zlabelHeight = fp->GetTextHeightInPixels();
       }
     }
-    lbl = (HPHandle*) LookupProperty("title");
+    lbl = (HPHandles*) LookupProperty("title");
     if (!lbl->Data().empty()) {
       HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
       titleHeight = fp->GetTextHeightInPixels();
@@ -1576,12 +1403,12 @@ namespace FreeMat {
 
   void HandleAxis::UpdateState(RenderEngine &gc) {
     std::vector<std::string> tset;
-    if (HasChanged("xticklabel")) 
-      ToManual("xticklabelmode");
-    if (HasChanged("yticklabel"))
-      ToManual("yticklabelmode");
-    if (HasChanged("zticklabel")) 
-      ToManual("zticklabelmode");
+    if (HasChanged("xtick")) ToManual("xtickmode");
+    if (HasChanged("ytick")) ToManual("ytickmode");
+    if (HasChanged("ztick")) ToManual("ztickmode");
+    if (HasChanged("xticklabel")) ToManual("xticklabelmode");
+    if (HasChanged("yticklabel")) ToManual("yticklabelmode");
+    if (HasChanged("zticklabel")) ToManual("zticklabelmode");
     tset.push_back("fontangle");  tset.push_back("fontname");
     tset.push_back("fontsize");   tset.push_back("fontunits");
     tset.push_back("fontweight"); tset.push_back("xticklabel");
@@ -1776,7 +1603,7 @@ namespace FreeMat {
 		     mapticks,zlabeltxt,
 		     "zlabel",ticlen,ticdir);
     }
-    HPHandle *lbl = (HPHandle*) LookupProperty("title");
+    HPHandles *lbl = (HPHandles*) LookupProperty("title");
 //     if (!lbl->Data().empty()) {
 //       HandleText *fp = handleset.lookupHandle(lbl->Data()[0]);
 //       HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
@@ -1828,7 +1655,7 @@ namespace FreeMat {
 	x3 = -delx*0.015*norm + x2;
 	y3 = -dely*0.015*norm + y2;
       }
-      if (~labels.empty())
+      if (!labels.empty())
 	DrawLabel(gc,-delx,-dely,x3,y3,color,
 		  labels[i % labels.size()]);
       // For a 2D view, draw the opposite tick marks too
@@ -1875,7 +1702,7 @@ namespace FreeMat {
     double lmax;
     lmax = qMin(lx,ly);
     // Set the position of the label
-    HPHandle *lbl = (HPHandle*) LookupProperty(labelname);
+    HPHandles *lbl = (HPHandles*) LookupProperty(labelname);
     if (!lbl->Data().empty()) {
       HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
       // To calculate the angle, we have to look at the axis
@@ -1948,29 +1775,29 @@ namespace FreeMat {
     gc.project(0,1,0,1,-1,1);
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     gc.viewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
-    HPHandle *lbl;
+    HPHandles *lbl;
     if (xvisible) {
-      lbl = (HPHandle*) LookupProperty("xlabel");
+      lbl = (HPHandles*) LookupProperty("xlabel");
       if (!lbl->Data().empty()) {
 	HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
 	fp->PaintMe(gc);
       }
     }
     if (yvisible) {
-      lbl = (HPHandle*) LookupProperty("ylabel");
+      lbl = (HPHandles*) LookupProperty("ylabel");
       if (!lbl->Data().empty()) {
 	HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
 	fp->PaintMe(gc);
       }      
     }
     if (zvisible) {
-      lbl = (HPHandle*) LookupProperty("zlabel");
+      lbl = (HPHandles*) LookupProperty("zlabel");
       if (!lbl->Data().empty()) {
 	HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
 	fp->PaintMe(gc);
       }      
     }
-    lbl = (HPHandle*) LookupProperty("title");
+    lbl = (HPHandles*) LookupProperty("title");
     if (!lbl->Data().empty()) {
       HandleObject *fp = LookupHandleObject(lbl->Data()[0]);
       fp->PaintMe(gc);
@@ -1979,6 +1806,7 @@ namespace FreeMat {
   }
 
   void HandleAxis::DrawChildren(RenderEngine& gc) {
+    glClearDepth(1.0f);
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {

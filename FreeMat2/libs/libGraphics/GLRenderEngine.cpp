@@ -20,8 +20,12 @@ namespace FreeMat {
   GLRenderEngine::~GLRenderEngine() {
   }
 
-  void GLRenderEngine::clear() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  void GLRenderEngine::clear(std::vector<double> color) {
+    if (color[0] != -1) {
+      glClearColor(color[0], color[1], color[2], 0.0f);
+      glClearDepth(1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
   }
 
   void GLRenderEngine::toPixels(double x, double y, double z, 

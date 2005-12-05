@@ -1,6 +1,7 @@
 #include "HandleProperty.hpp"
 #include "HandleList.hpp"
 #include "HandleObject.hpp"
+#include "HandleCommands.hpp"
 #include "Core.hpp"
 
 namespace FreeMat {
@@ -45,12 +46,7 @@ namespace FreeMat {
   HPSymbol::HPSymbol() : HPConstrainedString(symb_dict) {}
   HPLineStyleOrder::HPLineStyleOrder() : HPConstrainedStringSet(line_style_dict) {}
 
-  HPHandles::HPHandles(int len) {
-    m_len = len;
-  }
-  
   HPHandles::HPHandles() {
-    m_len = 1;
   }
   
   Array HPHandles::Get() {
@@ -67,12 +63,10 @@ namespace FreeMat {
       HandleProperty::Set(arg);
       return;
     }
-    if (!(arg.isScalar() && arg.isReal()))
+    if (!arg.isReal())
       throw Exception("expecting handle for property");
     arg.promoteType(FM_UINT32);
     const unsigned *dp = (const unsigned*) arg.getDataPointer();
-    if (m_len > 0 && arg.getLength() != m_len)
-      throw Exception("incorrect number of handles in property assignment");
     // make sure they are all valid handles
     for (int i=0;i<arg.getLength();i++) 
       ValidateHandle(dp[i]);

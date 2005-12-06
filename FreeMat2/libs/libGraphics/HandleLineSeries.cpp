@@ -106,6 +106,7 @@ namespace FreeMat {
     AddProperty(new HPOnOff,"visible");
     AddProperty(new HPVector,"xdata");
     AddProperty(new HPAutoManual,"xdatamode");
+    AddProperty(new HPArray,"userdata");
     AddProperty(new HPVector,"ydata");
     AddProperty(new HPVector,"zdata");
   }

@@ -87,6 +87,11 @@ namespace FreeMat {
     HPVector* sp = (HPVector*) LookupProperty(name);
     return (sp->Data());
   }
+
+  Array HandleObject::ArrayPropertyLookup(std::string name) {
+    HPArray* hp = (HPArray*) LookupProperty(name);
+    return (hp->Data());
+  }
   
   double HandleObject::ScalarPropertyLookup(std::string name) {
     HPScalar* sp = (HPScalar*) LookupProperty(name);

@@ -28,7 +28,8 @@ HandleText.hpp \
 RenderEngine.hpp \
 HandleLineSeries.hpp \
 RenderEngine.hpp \
-HandleCommands.hpp
+HandleCommands.hpp \
+HandleImage.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -53,7 +54,8 @@ GLLabel.cpp \
 GLRenderEngine.cpp \
 HandleLineSeries.cpp \
 RenderEngine.cpp \
-HandleCommands.cpp
+HandleCommands.cpp \
+HandleImage.cpp
 
 DEPENDPATH += INCLUDEPATH
 

@@ -16,6 +16,18 @@ namespace FreeMat {
     void ClearModified() {modified = false;}
     bool isModified() {return modified;}
   };
+  
+  class HPArray : public HandleProperty {
+  protected:
+    Array data;
+  public:
+    HPArray() {}
+    virtual ~HPArray() {}
+    virtual Array Get() {return data;}
+    virtual void Set(Array m) {data = m;}
+    Array Data() {return data;}
+    void Data(Array m) {data = m;}    
+  };
 
   class HPHandles : public HandleProperty {
   protected:
@@ -278,6 +290,18 @@ namespace FreeMat {
   public:
     HPLineStyleOrder();
     virtual ~HPLineStyleOrder() {}
+  };
+
+  class HPMappingMode : public HPConstrainedStringSet {
+  public:
+    HPMappingMode();
+    virtual ~HPMappingMode() {}
+  };
+
+  class HPDataMappingMode : public HPConstrainedStringSet {
+  public:
+    HPDataMappingMode();
+    virtual ~HPDataMappingMode() {}
   };
 
 }

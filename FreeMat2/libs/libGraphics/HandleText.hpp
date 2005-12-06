@@ -3,7 +3,6 @@
 
 #include "HandleObject.hpp"
 #include "GLLabel.hpp"
-#include "HandleAxis.hpp"
 
 namespace FreeMat {
   class HandleText : public HandleObject {

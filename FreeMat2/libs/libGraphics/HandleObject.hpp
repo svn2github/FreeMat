@@ -29,6 +29,7 @@ namespace FreeMat {
     double ScalarPropertyLookup(std::string name);
     unsigned HandlePropertyLookup(std::string name);
     std::vector<double> VectorPropertyLookup(std::string name);
+    Array ArrayPropertyLookup(std::string name);
     std::string StringPropertyLookup(std::string name);
     void SetConstrainedStringDefault(std::string name, std::string value);
     void SetConstrainedStringSetDefault(std::string name, std::string value);

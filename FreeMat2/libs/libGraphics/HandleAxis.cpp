@@ -343,7 +343,7 @@ namespace FreeMat {
     AddProperty(new HPHandles,"title");
     AddProperty(new HPString,"type");
     AddProperty(new HPUnits,"units");
-    //    AddProperty(new Array,"userdata");
+    AddProperty(new HPArray,"userdata");
     AddProperty(new HPOnOff,"visible");
     AddProperty(new HPTopBottom,"xaxislocation");
     AddProperty(new HPLeftRight,"yaxislocation");

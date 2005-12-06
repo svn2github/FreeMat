@@ -25,6 +25,8 @@ namespace FreeMat {
   static const char *horiz_dict[4] = {"left","center","right",0};
   static const char *vert_dict[6] = {"top","cap","middle","baseline","bottom",0};
   static const char *symb_dict[19] = {"+","o","*",".","x","square","s","diamond","d","^","v",">","<","pentagram","p","hexagram","h","none",0};
+  static const char *mapmode_dict[4] = {"none","direct","scaled",0};
+  static const char *datamapmode_dict[3] = {"scaled","direct",0};
   
   HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
   HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
@@ -45,6 +47,8 @@ namespace FreeMat {
   HPAlignVert::HPAlignVert() : HPConstrainedString(vert_dict) {}
   HPSymbol::HPSymbol() : HPConstrainedString(symb_dict) {}
   HPLineStyleOrder::HPLineStyleOrder() : HPConstrainedStringSet(line_style_dict) {}
+  HPMappingMode::HPMappingMode() : HPConstrainedStringSet(mapmode_dict) {}
+  HPDataMappingMode::HPDataMappingMode() : HPConstrainedStringSet(datamapmode_dict) {}
 
   HPHandles::HPHandles() {
   }

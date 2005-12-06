@@ -1,4 +1,5 @@
 #include "HandleText.hpp"
+#include "HandleAxis.hpp"
 #include "HandleProperty.hpp"
 #include "HandleList.hpp"
 #include <math.h>
@@ -142,6 +143,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("fontweight","normal");
     SetConstrainedStringDefault("visible","on");
     SetThreeVectorDefault("color",0,0,0);
+    SetStringDefault("type","text");
   }
 
   void HandleText::ConstructProperties() {
@@ -163,10 +165,11 @@ namespace FreeMat {
     AddProperty(new HPFontUnits,"fontunits");
     AddProperty(new HPFontWeight,"fontweight");
     AddProperty(new HPOnOff,"visible");
-    AddProperty(new HPColor,"color");
+    AddProperty(new HPColor,"color"); 
     AddProperty(new HPHandles,"children");
     AddProperty(new HPHandles,"parent");
     AddProperty(new HPString,"tag");
-    //    AddProperty(new Array,"userdata");
+    AddProperty(new HPString,"type");
+    AddProperty(new HPArray,"userdata");
   }
 }

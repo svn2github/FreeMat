@@ -1,0 +1,16 @@
+x = linspace(0,1,256);
+red = x'*x;
+green = (fliplr(x)')*fliplr(x);
+blue = ones(256,1)*x;
+k(:,:,1) = red;
+k(:,:,2) = green;
+k(:,:,3) = blue;
+xdata = [1,256];
+ydata = [1,256];
+a = gca;
+set(a,'xlim',[1,256]);
+set(a,'xlimmode','manual');
+set(a,'ylim',[1,256]);
+set(a,'ylimmode','manual');
+h = image('cdata',k,'xdata',xdata,'ydata',ydata,'parent',a);
+set(a,'children',[get(a,'children'),h]);

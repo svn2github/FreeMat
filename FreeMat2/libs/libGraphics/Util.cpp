@@ -178,28 +178,10 @@ namespace FreeMat {
     // Look for a child widget in the position (row,col)
     QGridLayout *l = dynamic_cast<QGridLayout*>(w->layout());
     if (!l) throw Exception("ClearGridWidget failed... this is unexpected - please file a bug report at http://freemat.sf.net detailing what happened");
-#ifdef QT3
-    const QObjectList* children = w->children();
-    QObjectListIt it(*children);
-    QObject *child;
-    while ((child=it.current()) != 0) {
-      ++it;
-      QWidget* p = dynamic_cast<QWidget*>(child);
-      if (p && (strcmp(p->name(),name)==0)) {
-	delete p;
-	break;
-      }
-    }
-#else
     const QObjectList children = w->children();
     for (int i = 0; i < children.size(); ++i) {
       QWidget *p = dynamic_cast<QWidget*>(children.at(i));
-//       if (p && (strcmp(p->name(),name)==0)) {
-// 	delete p;
-// 	break;
-//      }
     }
-#endif
   }
 
   void SetGridWidget(QWidget* w, QPWidget* m, int row, int col) {

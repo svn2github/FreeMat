@@ -15,12 +15,8 @@
 #include <qimage.h>
 #include <qclipboard.h>
 
-#ifndef QT3
 #include <QMouseEvent>
 #include <QImageWriter>
-#else
-#include <qobjectlist.h>
-#endif
 
 #include "PSDrawEngine.hpp"
 
@@ -58,11 +54,7 @@ namespace FreeMat {
     m_num = fignum;
     char buffer[1000];
     sprintf(buffer,"Figure %d",fignum+1);
-#ifdef QT3
-    setCaption(buffer);
-#else
     setWindowTitle(buffer);
-#endif
     m_layout = new QGridLayout(this);
     //    setLayout(m_layout);
     m_type = new figType[1];
@@ -87,11 +79,7 @@ namespace FreeMat {
       QWidget *w = new QWidget(this);
       QGridLayout *l = new QGridLayout(w);
       l->addWidget(new QWidget(w),1,1);
-#ifdef QT3
-      l->setColStretch(1,1);
-#else
       l->setColumnStretch(1,1);
-#endif
       l->setRowStretch(1,1);
       m_type[m_active_slot] = figblank;
       m_wid[m_active_slot] = w;
@@ -199,21 +187,6 @@ namespace FreeMat {
       w->DrawMe(gc);
       gc.restore();
     }
-#ifdef QT3
-    const QObjectList * children = g->children();
-    if ( children ) {
-      QObjectListIt it( *children );
-      QObject * child;
-      while( (child=it.current()) != 0 ) {
- 	++it;
- 	if ( child->isWidgetType() &&
- 	     !((QWidget *)child)->isHidden() &&
- 	     ((QWidget *)child)->geometry().intersects( g->rect() ) ) {
- 	  PrintWidgetHelper((QWidget*) child, gc);
- 	}
-       }
-    }
-#else
     const QObjectList children = g->children();
     for (int i = 0; i < children.size(); ++i) {
         QWidget *child = static_cast<QWidget*>(children.at(i));
@@ -222,7 +195,6 @@ namespace FreeMat {
             continue;
 	PrintWidgetHelper((QWidget*) child, gc);
     }
-#endif
    }
     
 
@@ -234,11 +206,7 @@ namespace FreeMat {
     } else {
       // Binary print - use grabWidget
       QPixmap pxmap(QPixmap::grabWidget(g));
-#ifdef QT3
-      QImage img(pxmap.convertToImage());
-#else
       QImage img(pxmap.toImage());
-#endif
       return img.save(filename.c_str(),type.c_str());
     }
   }

@@ -30,43 +30,25 @@
 #include "Figure.hpp"
 #include "Label.hpp"
 #include "Util.hpp"
-#ifdef QT3
-#include <qobjectlist.h>
-#endif
+#include <QWidget>
 
 namespace FreeMat {
   Plot2D* GetCurrentPlot() {
     Figure* fig = GetCurrentFig();
     if (fig->getType() == figplot) {
       QWidget *w = (QWidget *) fig->GetChildWidget();
-#ifdef QT3
-      const QObjectList* children = w->children();
-      QObjectListIt it(*children);
-      QObject *child;
-      while ((child=it.current()) != 0) {
-	++it;
-	Plot2D* p = dynamic_cast<Plot2D*>(child);
-	if (p)
-	  return p;
-      }
-#else
       const QObjectList children = w->children();
       for (int i = 0; i < children.size(); ++i) {
 	Plot2D* p = dynamic_cast<Plot2D*>(children.at(i));
 	if (p)
 	  return p;
       }
-#endif
     }
     QWidget *w = new QWidget(fig);
     QGridLayout *l = new QGridLayout(w);
     Plot2D* p = new Plot2D(w);
     l->addWidget(p,1,1);
-#ifdef QT3
-    l->setColStretch(1,1);
-#else
     l->setColumnStretch(1,1);
-#endif
     l->setRowStretch(1,1);
     fig->SetFigureChild(w,figplot);
     return p;

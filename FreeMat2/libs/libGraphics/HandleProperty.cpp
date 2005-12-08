@@ -46,9 +46,9 @@ namespace FreeMat {
   HPAlignHoriz::HPAlignHoriz() : HPConstrainedString(horiz_dict) {}
   HPAlignVert::HPAlignVert() : HPConstrainedString(vert_dict) {}
   HPSymbol::HPSymbol() : HPConstrainedString(symb_dict) {}
+  HPMappingMode::HPMappingMode() : HPConstrainedString(mapmode_dict) {}
+  HPDataMappingMode::HPDataMappingMode() : HPConstrainedString(datamapmode_dict) {}
   HPLineStyleOrder::HPLineStyleOrder() : HPConstrainedStringSet(line_style_dict) {}
-  HPMappingMode::HPMappingMode() : HPConstrainedStringSet(mapmode_dict) {}
-  HPDataMappingMode::HPDataMappingMode() : HPConstrainedStringSet(datamapmode_dict) {}
 
   HPHandles::HPHandles() {
   }

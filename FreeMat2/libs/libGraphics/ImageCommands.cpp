@@ -30,44 +30,25 @@
 #include "qlabel.h"
 #include "Label.hpp"
 #include "Util.hpp"
-#ifdef QT3
-#include <qobjectlist.h>
-#endif
 
 namespace FreeMat {
   ScalarImage* GetCurrentImage() {
     Figure *fig = GetCurrentFig();
     if (fig->getType() == figscimg) {
       QWidget *w = (QWidget *) fig->GetChildWidget();
-#ifdef QT3
-      const QObjectList* children = w->children();
-      QObjectListIt it(*children);
-      QObject *child;
-      while ((child=it.current()) != 0) {
-	++it;
-	ScalarImage* p = dynamic_cast<ScalarImage*>(child);
-	if (p)
-	  return p;
-      }
-#else
       const QObjectList children = w->children();
       for (int i = 0; i < children.size(); ++i) {
 	ScalarImage* p = dynamic_cast<ScalarImage*>(children.at(i));
 	if (p)
 	  return p;
       }
-#endif
     }
     // Outer level container
     QWidget *w = new QWidget(fig);
     QGridLayout *l = new QGridLayout(w);
     ScalarImage* p = new ScalarImage(w);
     l->addWidget(p,1,1);
-#ifdef QT3
-    l->setColStretch(1,1);
-#else
     l->setColumnStretch(1,1);
-#endif
     l->setRowStretch(1,1);
     fig->SetFigureChild(w,figscimg);
     return p;

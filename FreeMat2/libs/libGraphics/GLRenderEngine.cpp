@@ -11,6 +11,8 @@ namespace FreeMat {
     m_width = width;
     m_height = height;
     m_widget = widget;
+    glEnable(GL_TEXTURE_2D);
+
   }
 
   QGLWidget* GLRenderEngine::widget() {
@@ -21,6 +23,7 @@ namespace FreeMat {
   }
 
   void GLRenderEngine::clear(std::vector<double> color) {
+    qDebug("clear");
     if (color[0] != -1) {
       glClearColor(color[0], color[1], color[2], 0.0f);
       glClearDepth(1.0f);
@@ -383,17 +386,26 @@ namespace FreeMat {
 
   void GLRenderEngine::circleFill(double x, double y, double radius) {
   }
-
+  
   void GLRenderEngine::drawImage(double x1, double y1, double x2,
 				 double y2, QImage pic) {
-    pic = QGLWidget::convertToGLFormat(pic);
-    m_widget->bindTexture(pic);
+    //    pic = QGLWidget::convertToGLFormat(pic);
+    //     glRasterPos2d(x1,y1);
+    //     glDrawPixels(pic.width(),pic.height(),GL_RGBA,GL_UNSIGNED_BYTE,pic.bits());
+    //     return;
+    qDebug("blit");
+    int texid = m_widget->bindTexture(pic);
+    glColor3f(1,1,1);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glDisable(GL_LIGHTING);
     glBegin(GL_QUADS);
     glTexCoord2d(0,0); glVertex2f(x1,y1);
     glTexCoord2d(1,0); glVertex2f(x2,y1);
     glTexCoord2d(1,1); glVertex2f(x2,y2);
     glTexCoord2d(0,1); glVertex2f(x1,y2);
     glEnd();
+    //    glEnable(GL_LIGHTING);
+    m_widget->deleteTexture(texid);
   }
-				 
 }

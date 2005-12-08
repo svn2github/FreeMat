@@ -441,7 +441,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("cameraviewanglemode","auto");
     SetConstrainedStringDefault("climmode","auto");
     SetConstrainedStringDefault("clipping","on");
-    SetThreeVectorDefault("color",-1,-1,-1);
+    SetThreeVectorDefault("color",1,1,1);
     // Set up the default color order
     std::vector<double> colors;
     colors.push_back(1.0); colors.push_back(0.0); colors.push_back(0.0); 
@@ -1149,34 +1149,45 @@ namespace FreeMat {
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
     gc.setLineStyle("-");
     gc.lineWidth(ScalarPropertyLookup("linewidth"));
-    gc.depth(false);
-    glDisable(GL_DEPTH_TEST);
+    gc.setupDirectDraw();
     glBegin(GL_LINES);
     if (xvisible) {
       gc.color(xc->Data());
-      gc.line(limits[0],x1pos[1],x1pos[2],
-	      limits[1],x1pos[1],x1pos[2]);
-      if (Is2DView()) 
-	gc.line(limits[0],x2pos[1],x2pos[2],
-		limits[1],x2pos[1],x2pos[2]);
+      double px0, py0, px1, py1;
+      gc.toPixels(limits[0],x1pos[1],x1pos[2],px0,py0);
+      gc.toPixels(limits[1],x1pos[1],x1pos[2],px1,py1);
+      gc.line(px0,py0,px1,py1);
+      if (Is2DView()) {
+	gc.toPixels(limits[0],x2pos[1],x2pos[2],px0,py0);
+	gc.toPixels(limits[1],x2pos[1],x2pos[2],px1,py1);
+	gc.line(px0,py0,px1,py1);
+      }
     }
     if (yvisible) {
       gc.color(yc->Data());
-      gc.line(y1pos[0],limits[2],y1pos[2],
-	      y1pos[0],limits[3],y1pos[2]);
-      if (Is2DView()) 
-	gc.line(y2pos[0],limits[2],y2pos[2],
-		y2pos[0],limits[3],y2pos[2]);
+      double px0, py0, px1, py1;
+      gc.toPixels(y1pos[0],limits[2],y1pos[2],px0,py0);
+      gc.toPixels(y1pos[0],limits[3],y1pos[2],px1,py1);
+      gc.line(px0,py0,px1,py1);
+      if (Is2DView()) {
+	gc.toPixels(y2pos[0],limits[2],y2pos[2],px0,py0);
+	gc.toPixels(y2pos[0],limits[3],y2pos[2],px1,py1);
+	gc.line(px0,py0,px1,py1);
+      }
     } 
     if (zvisible) {
       gc.color(zc->Data());
-      gc.line(z1pos[0],z1pos[1],limits[4],
-	      z1pos[0],z1pos[1],limits[5]);
-      if (Is2DView()) 
-	gc.line(z2pos[0],z2pos[1],limits[4],
-		z2pos[0],z2pos[1],limits[5]);
+      double px0, py0, px1, py1;
+      gc.toPixels(z1pos[0],z1pos[1],limits[4],px0,py0);
+      gc.toPixels(z1pos[0],z1pos[1],limits[5],px1,py1);
+      gc.line(px0,py0,px1,py1);
+      if (Is2DView()) {
+	gc.toPixels(z2pos[0],z2pos[1],limits[4],px0,py0);
+	gc.toPixels(z2pos[0],z2pos[1],limits[5],px1,py1);
+	gc.line(px0,py0,px1,py1);
+      }
     }
-    gc.depth(true);
+    gc.releaseDirectDraw();
   }
 
   // Assemble a font for the axis

@@ -292,13 +292,13 @@ namespace FreeMat {
     virtual ~HPLineStyleOrder() {}
   };
 
-  class HPMappingMode : public HPConstrainedStringSet {
+  class HPMappingMode : public HPConstrainedString {
   public:
     HPMappingMode();
     virtual ~HPMappingMode() {}
   };
 
-  class HPDataMappingMode : public HPConstrainedStringSet {
+  class HPDataMappingMode : public HPConstrainedString {
   public:
     HPDataMappingMode();
     virtual ~HPDataMappingMode() {}

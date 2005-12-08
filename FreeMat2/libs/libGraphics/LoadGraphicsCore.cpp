@@ -36,7 +36,7 @@ namespace FreeMat {
     //    context->addFunction("grid",GridFunction,1,0,"state");
     //    context->addFunction("hold",HoldFunction,1,0,"state");
     context->addFunction("ishold",IsHoldFunction,0,1);
-    context->addFunction("image",ImageFunction,2,0,"x","zoom");
+    //    context->addFunction("image",ImageFunction,2,0,"x","zoom");
     context->addFunction("winlev",WinLevFunction,2,-1,"window","level");
     context->addFunction("colormap",ColormapFunction,1,0,"map");
     context->addFunction("axis",AxisFunction,1,-1,"x");

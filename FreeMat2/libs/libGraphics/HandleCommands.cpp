@@ -6,6 +6,7 @@
 #include "HandleLineSeries.hpp"
 #include "HandleText.hpp"
 #include "HandleAxis.hpp"
+#include "HandleImage.hpp"
 #include <qapplication.h>
 #include "HandleList.hpp"
 
@@ -317,6 +318,19 @@ namespace FreeMat {
     return singleArrayVector(Array::uint32Constructor(handle));
   }
   
+  ArrayVector HImageFunction(int nargout, const ArrayVector& arg) {
+    HandleObject *fp = new HandleImage;
+    unsigned int handle = AssignHandleObject(fp);
+    ArrayVector t(arg);
+    while (t.size() >= 2) {
+      std::string propname(ArrayToString(t[0]));
+      fp->LookupProperty(propname)->Set(t[1]);
+      t.erase(t.begin(),t.begin()+2);
+    }
+    fp->UpdateState();
+    return singleArrayVector(Array::uint32Constructor(handle));    
+  }
+
   ArrayVector HTextFunction(int nargout, const ArrayVector& arg) {
     HandleObject *fp = new HandleText;
     unsigned int handle = AssignHandleObject(fp);
@@ -403,6 +417,7 @@ namespace FreeMat {
     context->addFunction("axes",HAxesFunction,-1,1);
     context->addFunction("line",HLineFunction,-1,1);
     context->addFunction("text",HTextFunction,-1,1);
+    context->addFunction("image",HImageFunction,-1,1);
     context->addFunction("set",HSetFunction,-1,0);
     context->addFunction("get",HGetFunction,2,1,"handle","propname");
     context->addFunction("figure",HFigureFunction,1,1);

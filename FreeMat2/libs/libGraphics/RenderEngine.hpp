@@ -64,6 +64,8 @@ namespace FreeMat {
     virtual void rectFill(double x1, double y1, double x2, double y2) = 0;
     virtual void circle(double x1, double y1, double radius) = 0;
     virtual void circleFill(double x1, double y1, double radius) = 0;
+    virtual void drawImage(double x1, double y1, double x2, double y2,
+			   QImage pic) = 0;
   };
   
   void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,

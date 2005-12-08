@@ -7,6 +7,8 @@
 namespace FreeMat {
   class HandleImage : public HandleObject {
     QImage img;
+    void PrepImageRGBNoAlphaMap(const double *dp, int rows, int cols,
+				std::vector<double> alpha);
   public:
     HandleImage();
     virtual ~HandleImage();

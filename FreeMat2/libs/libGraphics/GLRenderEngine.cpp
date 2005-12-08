@@ -383,4 +383,17 @@ namespace FreeMat {
 
   void GLRenderEngine::circleFill(double x, double y, double radius) {
   }
+
+  void GLRenderEngine::drawImage(double x1, double y1, double x2,
+				 double y2, QImage pic) {
+    pic = QGLWidget::convertToGLFormat(pic);
+    m_widget->bindTexture(pic);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0,0); glVertex2f(x1,y1);
+    glTexCoord2d(1,0); glVertex2f(x2,y1);
+    glTexCoord2d(1,1); glVertex2f(x2,y2);
+    glTexCoord2d(0,1); glVertex2f(x1,y2);
+    glEnd();
+  }
+				 
 }

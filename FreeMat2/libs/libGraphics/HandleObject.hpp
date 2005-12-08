@@ -31,6 +31,7 @@ namespace FreeMat {
     std::vector<double> VectorPropertyLookup(std::string name);
     Array ArrayPropertyLookup(std::string name);
     std::string StringPropertyLookup(std::string name);
+    bool StringCheck(std::string name, std::string value);
     void SetConstrainedStringDefault(std::string name, std::string value);
     void SetConstrainedStringSetDefault(std::string name, std::string value);
     void SetTwoVectorDefault(std::string name, double x, double y);

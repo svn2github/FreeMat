@@ -67,7 +67,9 @@ namespace FreeMat {
     virtual void rect(double x1, double y1, double x2, double y2);
     virtual void rectFill(double x1, double y1, double x2, double y2);
     virtual void circle(double x1, double y1, double radius);
-    virtual void circleFill(double x1, double y1, double radius);
+    virtual void circleFill(double x1, double y1, double radius); 
+    virtual void drawImage(double x1, double y1, double x2, double y2,
+			   QImage pic);
   };
 };
 

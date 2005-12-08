@@ -112,6 +112,8 @@ namespace FreeMat {
 
   void HandleObject::SetConstrainedStringDefault(std::string name, std::string value) {
     HPConstrainedString *hp = (HPConstrainedString*) LookupProperty(name);
+    if (!hp)
+      throw Exception("set constrained string default failed lookup of <" + name + ">");
     hp->Value(value);
   }
 
@@ -152,4 +154,10 @@ namespace FreeMat {
     HPAutoManual *hp = (HPAutoManual*) LookupProperty(mode);
     return hp->Is("auto");
   }
+  
+  bool HandleObject::StringCheck(std::string name, std::string value) {
+    HPString *hp = (HPString*) LookupProperty(name);
+    return hp->Is(value);
+  }
+
 }

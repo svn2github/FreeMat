@@ -44,6 +44,7 @@ namespace FreeMat {
     bool IsAuto(std::string mode);
     virtual void PaintMe(RenderEngine &gc) = 0;
     HandleAxis* GetParentAxis();
+    HandleFigure* GetParentFigure();
   };
 
 }

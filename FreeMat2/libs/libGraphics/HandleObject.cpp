@@ -78,6 +78,19 @@ namespace FreeMat {
     return axis;
   }
 
+  HandleFigure* HandleObject::GetParentFigure() {
+    HandleAxis* hp;
+    if (StringCheck("type","axes")) 
+      hp = this;
+    else
+      hp = GetParentAxis();
+    // Get our parent - must be an axis
+    HPHandles *parent = (HPHandles*) hp->LookupProperty("parent");
+    if (parent->Data().empty()) return NULL;
+    unsigned parent_handle = parent->Data()[0];
+    return LookupHandleFigure(parent_handle);
+  }
+
   std::string HandleObject::StringPropertyLookup(std::string name) {
     HPString* sp = (HPString*) LookupProperty(name);
     return (sp->Data());

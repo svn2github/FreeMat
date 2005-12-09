@@ -9,6 +9,7 @@ namespace FreeMat {
     QImage img;
     void PrepImageRGBNoAlphaMap(const double *dp, int rows, int cols,
 				std::vector<double> alpha);
+    double* RGBExpandImage(const double *dp, int rows, int cols);
   public:
     HandleImage();
     virtual ~HandleImage();

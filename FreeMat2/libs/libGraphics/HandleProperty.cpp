@@ -135,16 +135,20 @@ namespace FreeMat {
     for (int i=0;i<n;i++) 
       if ((dp[i] < 0) || (dp[i] > 1.0))
 	throw Exception("Color vector must be between 0 and 1");
-    for (int i=0;i<n;i++) 
-      data.push_back(dp[i]);
+    data.clear();
+    int rows = n/3;
+    for (int i=0;i<rows;i++) 
+      for (int j=0;j<3;j++)
+	data.push_back(dp[i+j*rows]);
   }
 
   Array HPColorVector::Get() {
     int count = data.size();
     int rows = count/3;
     double *rp = (double*) Array::allocateArray(FM_DOUBLE,count);
-    for (int i=0;i<count;i++)
-      rp[i] = data[i];
+    for (int i=0;i<rows;i++)
+      for (int j=0;j<3;j++)
+	rp[i+j*rows] = data[3*i+j];
     return Array::Array(FM_DOUBLE,Dimensions(rows,3),rp);
   }
   

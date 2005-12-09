@@ -158,8 +158,9 @@ namespace FreeMat {
 	p--;
       }
       if ((*p == '.') || (*p == ',')) {
-	*(p+1) = '0';
-	*(p+2) = 0;
+	*p = 0;
+	//	*(p+1) = '0';
+	//	*(p+2) = 0;
       }
       return std::string(buffer);
     } else {
@@ -1834,9 +1835,9 @@ namespace FreeMat {
     DrawBox(gc);
     DrawGridLines(gc);
     DrawMinorGridLines(gc);
+    DrawChildren(gc);
     DrawAxisLines(gc);
     DrawTickMarks(gc);
     DrawAxisLabels(gc);
-    DrawChildren(gc);
   }
 }

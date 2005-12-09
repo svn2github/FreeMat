@@ -15,6 +15,7 @@ namespace FreeMat {
   class HandleFigure : public HandleObject {
     int m_width, m_height;
     bool resized;
+    void LoadDefaultColorMap();
   public:
     HandleFigure();
     virtual ~HandleFigure() {}

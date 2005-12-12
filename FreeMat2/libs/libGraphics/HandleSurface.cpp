@@ -146,17 +146,18 @@ namespace FreeMat {
     double *ydp = (double*) ydata.getDataPointer();
     double *zdp = (double*) zdata.getDataPointer();
     int rows = zdata.rows();   int cols = zdata.columns();
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glBegin(GL_QUAD_STRIP);
+//     glPolygonMode(GL_FRONT, GL_LINE);
+//     glPolygonMode(GL_BACK, GL_LINE);
     for (int i=0;i<rows-1;i++) {
       QRgb *ibits = (QRgb*) img.scanLine(i);
+      glBegin(GL_QUAD_STRIP);
       for (int j=0;j<cols;j++) {
 	glColor4f(qRed(ibits[j]),qGreen(ibits[j]),
 		  qBlue(ibits[j]),qAlpha(ibits[j]));
 	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);
 	glVertex3f(xdp[i+1+j*rows],ydp[i+1+j*rows],zdp[i+1+j*rows]);
       }
+      glEnd();
     }
-    glEnd();
   }
 }

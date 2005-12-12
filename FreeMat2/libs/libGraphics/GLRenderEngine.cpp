@@ -389,10 +389,10 @@ namespace FreeMat {
   
   void GLRenderEngine::drawImage(double x1, double y1, double x2,
 				 double y2, QImage pic) {
-    //    pic = QGLWidget::convertToGLFormat(pic);
-    //     glRasterPos2d(x1,y1);
-    //     glDrawPixels(pic.width(),pic.height(),GL_RGBA,GL_UNSIGNED_BYTE,pic.bits());
-    //     return;
+    pic = QGLWidget::convertToGLFormat(pic);
+    glRasterPos2d(x1,y1);
+    glDrawPixels(pic.width(),pic.height(),GL_RGBA,GL_UNSIGNED_BYTE,pic.bits());
+    return;
     qDebug("blit");
     int texid = m_widget->bindTexture(pic);
     glColor3f(1,1,1);

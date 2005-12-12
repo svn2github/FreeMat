@@ -24,7 +24,7 @@ namespace FreeMat {
     HPArray() {}
     virtual ~HPArray() {}
     virtual Array Get() {return data;}
-    virtual void Set(Array m) {data = m;}
+    virtual void Set(Array m) {HandleProperty::Set(m); data = m;}
     Array Data() {return data;}
     void Data(Array m) {data = m;}    
   };
@@ -304,6 +304,74 @@ namespace FreeMat {
     virtual ~HPDataMappingMode() {}
   };
 
+  class HPRowColumns : public HPConstrainedString {
+  public:
+    HPRowColumns();
+    virtual ~HPRowColumns() {}
+  };
+
+  class HPLightingMode : public HPConstrainedString {
+  public:
+    HPLightingMode();
+    virtual ~HPLightingMode() {}
+  };
+
+  class HPConstrainedStringScalar : public HPConstrainedString {
+    double scalar;
+  public:
+    HPConstrainedStringScalar(const char **dict) : 
+      HPConstrainedString(dict) {}
+    virtual ~HPConstrainedStringScalar() {}
+    virtual void Set(Array);
+    Array Get();
+    double Scalar();
+    void Scalar(double val);
+  };
+
+  class HPConstrainedStringColor : public HPConstrainedString {
+    std::vector<double> colorspec;
+  public:
+    HPConstrainedStringColor(const char **dict) : 
+      HPConstrainedString(dict) {}
+    virtual ~HPConstrainedStringColor() {}
+    virtual void Set(Array);
+    Array Get();
+    std::vector<double> ColorSpec();
+    void ColorSpec(std::vector<double> col);
+    void ColorSpec(double r, double g, double b);
+  };
+
+  class HPAutoFlatColor : public HPConstrainedStringColor {
+  public:
+    HPAutoFlatColor();
+    virtual ~HPAutoFlatColor() {}
+  };
+  
+  class HPColorInterp : public HPConstrainedStringColor {
+  public:
+    HPColorInterp();
+    virtual ~HPColorInterp() {}
+  };
+
+  class HPFaceAlpha : public HPConstrainedStringScalar {
+  public:
+    HPFaceAlpha();
+    virtual ~HPFaceAlpha() {}
+  };
+
+  class HPBackFaceLighting : public HPConstrainedString {
+  public:
+    HPBackFaceLighting();
+    virtual ~HPBackFaceLighting() {}
+  };
+  
+  class HPEdgeAlpha : public HPConstrainedStringScalar {
+  public:
+    HPEdgeAlpha();
+    virtual ~HPEdgeAlpha() {}
+  };
+  
+  
 }
 
 #endif

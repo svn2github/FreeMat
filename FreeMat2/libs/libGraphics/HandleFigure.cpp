@@ -12,6 +12,7 @@ namespace FreeMat {
   }
   
   void HandleFigure::ConstructProperties() {
+    AddProperty(new HPVector,"alphamap");
     AddProperty(new HPColor,"color");
     AddProperty(new HPColorVector,"colormap");
     AddProperty(new HPHandles,"children");
@@ -85,6 +86,10 @@ namespace FreeMat {
     }
     HPColorVector *hcv = (HPColorVector*) LookupProperty("colormap");
     hcv->Data(cmap);
+    cmap.clear();
+    cmap.push_back(1.0);
+    HPVector *hv = (HPVector*) LookupProperty("alphamap");
+    hv->Data(cmap);
   }
 
   void HandleFigure::SetupDefaults() {

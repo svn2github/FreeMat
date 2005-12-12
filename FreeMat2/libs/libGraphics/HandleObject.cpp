@@ -123,6 +123,33 @@ namespace FreeMat {
     m_properties.insertSymbol(name,hp);
   }
 
+  void HandleObject::SetConstrainedStringScalarDefault(std::string name,
+						       std::string value,
+						       double sval) {
+    HPConstrainedStringScalar *hp = 
+      (HPConstrainedStringScalar*) LookupProperty(name);
+    if (!hp)
+      throw Exception("constrained string/scalar default failed lookup of <" + 
+		      name + ">");
+    hp->Value(value);
+    hp->Scalar(sval);
+  }
+
+  void HandleObject::SetConstrainedStringColorDefault(std::string name,
+						      std::string value,
+						      double red, 
+						      double green,
+						      double blue) {
+    HPConstrainedStringColor *hp = 
+      (HPConstrainedStringColor*) LookupProperty(name);
+    if (!hp)
+      throw Exception("constrained string/color default failed lookup of <" +
+		      name + ">");
+    hp->Value(value);
+    hp->ColorSpec(red,green,blue);
+  }
+						     
+
   void HandleObject::SetConstrainedStringDefault(std::string name, std::string value) {
     HPConstrainedString *hp = (HPConstrainedString*) LookupProperty(name);
     if (!hp)

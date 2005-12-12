@@ -34,6 +34,8 @@ namespace FreeMat {
     bool StringCheck(std::string name, std::string value);
     void SetConstrainedStringDefault(std::string name, std::string value);
     void SetConstrainedStringSetDefault(std::string name, std::string value);
+    void SetConstrainedStringScalarDefault(std::string name, std::string value, double scalar);
+    void SetConstrainedStringColorDefault(std::string name, std::string value, double r, double g, double b);
     void SetTwoVectorDefault(std::string name, double x, double y);
     void SetThreeVectorDefault(std::string name, double x, double y, double z);
     void SetFourVectorDefault(std::string name, double x, double y, 

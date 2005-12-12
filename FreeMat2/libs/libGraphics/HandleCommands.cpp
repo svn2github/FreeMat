@@ -9,6 +9,7 @@
 #include "HandleImage.hpp"
 #include <qapplication.h>
 #include "HandleList.hpp"
+#include "HandleSurface.hpp"
 
 // Subplot
 // labels don't always appear properly.
@@ -344,6 +345,19 @@ namespace FreeMat {
     return singleArrayVector(Array::uint32Constructor(handle));
   }
 
+  ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg) {
+    HandleObject *fp = new HandleSurface;
+    unsigned int handle = AssignHandleObject(fp);
+    ArrayVector t(arg);
+    while (t.size() >= 2) {
+      std::string propname(ArrayToString(t[0]));
+      fp->LookupProperty(propname)->Set(t[1]);
+      t.erase(t.begin(),t.begin()+2);
+    }
+    fp->UpdateState();
+    return singleArrayVector(Array::uint32Constructor(handle));
+  }
+
   ArrayVector HGCFFunction(int nargout, const ArrayVector& arg) {
     if (HcurrentFig == -1)
       NewFig();      
@@ -418,6 +432,7 @@ namespace FreeMat {
     context->addFunction("line",HLineFunction,-1,1);
     context->addFunction("text",HTextFunction,-1,1);
     context->addFunction("image",HImageFunction,-1,1);
+    context->addFunction("surface",HSurfaceFunction,-1,1);
     context->addFunction("set",HSetFunction,-1,0);
     context->addFunction("get",HGetFunction,2,1,"handle","propname");
     context->addFunction("figure",HFigureFunction,1,1);

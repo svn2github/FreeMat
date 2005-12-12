@@ -27,6 +27,13 @@ namespace FreeMat {
   static const char *symb_dict[19] = {"+","o","*",".","x","square","s","diamond","d","^","v",">","<","pentagram","p","hexagram","h","none",0};
   static const char *mapmode_dict[4] = {"none","direct","scaled",0};
   static const char *datamapmode_dict[3] = {"scaled","direct",0};
+  static const char *rowcols_dict[4] = {"both","rows","cols",0};
+  static const char *autoflat_dict[5] = {"none","auto","flat","colorspec",0};
+  static const char *lightingmode_dict[5] = {"none","flat","gouraud","phong",0};
+  static const char *interpmode_dict[5] = {"none","flat","interp","colorspec",0};
+  static const char *facealpha_dict[5] = {"flat","interp","texturemap","scalar",0};
+  static const char *backface_dict[4] = {"unlit","lit","reverselit",0};
+  static const char *edgealpha_dict[4] = {"flat","interp","scalar",0};
   
   HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
   HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
@@ -49,6 +56,13 @@ namespace FreeMat {
   HPMappingMode::HPMappingMode() : HPConstrainedString(mapmode_dict) {}
   HPDataMappingMode::HPDataMappingMode() : HPConstrainedString(datamapmode_dict) {}
   HPLineStyleOrder::HPLineStyleOrder() : HPConstrainedStringSet(line_style_dict) {}
+  HPRowColumns::HPRowColumns() : HPConstrainedString(rowcols_dict) {}
+  HPLightingMode::HPLightingMode() : HPConstrainedString(lightingmode_dict) {}
+  HPAutoFlatColor::HPAutoFlatColor() : HPConstrainedStringColor(autoflat_dict) {}
+  HPColorInterp::HPColorInterp() : HPConstrainedStringColor(interpmode_dict) {}
+  HPFaceAlpha::HPFaceAlpha() : HPConstrainedStringScalar(facealpha_dict) {}
+  HPBackFaceLighting::HPBackFaceLighting() : HPConstrainedString(backface_dict) {}
+  HPEdgeAlpha::HPEdgeAlpha() : HPConstrainedStringScalar(edgealpha_dict) {}
 
   HPHandles::HPHandles() {
   }
@@ -152,8 +166,7 @@ namespace FreeMat {
     return Array::Array(FM_DOUBLE,Dimensions(rows,3),rp);
   }
   
-  void HPColor::Set(Array arg) {
-    HandleProperty::Set(arg);
+  bool ParseColorSpec(Array arg, std::vector<double> &data) {
     if (arg.isString()) {
       char *cp = arg.getContentsAsCString();
       if (strcmp(cp,"none")==0) {
@@ -184,21 +197,28 @@ namespace FreeMat {
 	data.clear(); data.push_back(0); 
 	data.push_back(0); data.push_back(0);
       } else
-	throw Exception("unrecognized color spec");
+	return false;
     } else {
       if (arg.getLength() != 3)
-	throw Exception("color spec must be a length 3 array (or a string 'none','white',etc)");
+	return false;
       arg.promoteType(FM_DOUBLE);
       const double *dp = (const double*) arg.getDataPointer();
       if (((dp[0] < 0) || (dp[0] > 1)) ||
 	  ((dp[1] < 0) || (dp[1] > 1)) ||
 	  ((dp[2] < 0) || (dp[2] > 1)))
-	throw Exception("color spec must be a length 3 array of values between 0 and 1");
+	return false;
       data.clear();
       data.push_back(dp[0]);
       data.push_back(dp[1]);
       data.push_back(dp[2]);
     }
+    return true;
+  }
+
+  void HPColor::Set(Array arg) {
+    HandleProperty::Set(arg);
+    if (!ParseColorSpec(arg,data))
+      throw Exception("Expecting a color spec: either a color name or a 3-vector or RGB values");
   }
   
   Array HPColor::Get() {
@@ -225,6 +245,60 @@ namespace FreeMat {
     std::string args(ArrayToString(arg));
     data.clear();
     Tokenize(args,data,"|");
+  }
+
+  double HPConstrainedStringScalar::Scalar() {
+    return scalar;
+  }
+
+  void HPConstrainedStringScalar::Scalar(double scal) {
+    scalar = scal;
+  }
+
+  void HPConstrainedStringScalar::Set(Array arg) {
+    HandleProperty::Set(arg);
+    if (arg.isString())
+      HPConstrainedString::Set(arg);
+    else
+      scalar = ArrayToDouble(arg);
+  }
+
+
+  void HPConstrainedStringColor::ColorSpec(std::vector<double> col) {
+    colorspec = col;
+  }
+
+  void HPConstrainedStringColor::ColorSpec(double r, double g, double b) {
+    std::vector<double> data;
+    data.push_back(r);
+    data.push_back(g);
+    data.push_back(b);
+    colorspec = data;
+  }
+
+  void HPConstrainedStringColor::Set(Array arg) {
+    HandleProperty::Set(arg);
+    if (!ParseColorSpec(arg,colorspec))
+      HPConstrainedString::Set(arg);
+    else
+      throw Exception("Illegal argument to constrained string/color property");
+  }
+
+  Array HPConstrainedStringColor::Get() {
+    if (!Is("colorspec"))
+      return HPConstrainedString::Get();
+    Array ret(Array::doubleVectorConstructor(3));
+    double *dp = (double*) ret.getReadWriteDataPointer();
+    dp[0] = colorspec[0];
+    dp[1] = colorspec[1];
+    dp[2] = colorspec[2];
+    return ret;
+  }
+
+  Array HPConstrainedStringScalar::Get() {
+    if (!Is("scalar"))
+      return HPConstrainedString::Get();
+    return Array::doubleConstructor(scalar);
   }
 
   void HPConstrainedString::Set(Array arg) {

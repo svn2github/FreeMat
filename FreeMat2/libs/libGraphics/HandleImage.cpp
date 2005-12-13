@@ -30,7 +30,7 @@ namespace FreeMat {
     gp.push_back(1.0);
     hp->Data(gp);
     SetConstrainedStringDefault("alphadatamapping","none");
-    SetConstrainedStringDefault("cdatamapping","direct");
+    SetConstrainedStringDefault("cdatamapping","scaled");
     SetStringDefault("type","image");
     SetConstrainedStringDefault("visible","on");
   }

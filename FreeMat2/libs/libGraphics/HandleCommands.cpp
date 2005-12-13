@@ -306,8 +306,7 @@ namespace FreeMat {
     return singleArrayVector(fp->LookupProperty(propname)->Get());
   }
 
-  ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleLineSeries;
+  unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg) {
     unsigned int handle = AssignHandleObject(fp);
     ArrayVector t(arg);
     while (t.size() >= 2) {
@@ -315,47 +314,40 @@ namespace FreeMat {
       fp->LookupProperty(propname)->Set(t[1]);
       t.erase(t.begin(),t.begin()+2);
     }
+    HandleFigure *fig = CurrentFig();
+    unsigned current = fig->HandlePropertyLookup("currentaxes");
+    if (current == 0) {
+      ArrayVector arg2;
+      HAxesFunction(0,arg2);
+      current = fig->HandlePropertyLookup("currentaxes");
+    }
+    HandleAxis *axis = (HandleAxis*) LookupHandleObject(current);
+    HPHandles *cp = (HPHandles*) axis->LookupProperty("children");
+    std::vector<unsigned> children(cp->Data());
+    children.push_back(handle);
+    cp->Data(children);
+    cp = (HPHandles*) fp->LookupProperty("parent");
+    std::vector<unsigned> parent;
+    parent.push_back(current);
+    cp->Data(parent);
     fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));
+    return handle;
+  }
+
+  ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
+    return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleLineSeries,arg)));
   }
   
   ArrayVector HImageFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleImage;
-    unsigned int handle = AssignHandleObject(fp);
-    ArrayVector t(arg);
-    while (t.size() >= 2) {
-      std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
-    }
-    fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));    
+    return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleImage,arg)));
   }
 
   ArrayVector HTextFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleText;
-    unsigned int handle = AssignHandleObject(fp);
-    ArrayVector t(arg);
-    while (t.size() >= 2) {
-      std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
-    }
-    fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));
+    return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleText,arg)));
   }
 
   ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg) {
-    HandleObject *fp = new HandleSurface;
-    unsigned int handle = AssignHandleObject(fp);
-    ArrayVector t(arg);
-    while (t.size() >= 2) {
-      std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
-    }
-    fp->UpdateState();
-    return singleArrayVector(Array::uint32Constructor(handle));
+    return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleSurface,arg)));
   }
 
   ArrayVector HGCFFunction(int nargout, const ArrayVector& arg) {

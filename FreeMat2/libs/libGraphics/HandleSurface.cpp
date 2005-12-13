@@ -146,18 +146,49 @@ namespace FreeMat {
     double *ydp = (double*) ydata.getDataPointer();
     double *zdp = (double*) zdata.getDataPointer();
     int rows = zdata.rows();   int cols = zdata.columns();
-//     glPolygonMode(GL_FRONT, GL_LINE);
-//     glPolygonMode(GL_BACK, GL_LINE);
+
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1.0,-1.0);
+
+    glColor3f(0,0,0);
+    glPolygonMode(GL_FRONT, GL_LINE);
+    glPolygonMode(GL_BACK, GL_LINE);
+    glShadeModel(GL_FLAT);
     for (int i=0;i<rows-1;i++) {
       QRgb *ibits = (QRgb*) img.scanLine(i);
       glBegin(GL_QUAD_STRIP);
       for (int j=0;j<cols;j++) {
-	glColor4f(qRed(ibits[j]),qGreen(ibits[j]),
-		  qBlue(ibits[j]),qAlpha(ibits[j]));
 	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);
 	glVertex3f(xdp[i+1+j*rows],ydp[i+1+j*rows],zdp[i+1+j*rows]);
       }
       glEnd();
     }
+
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glPolygonMode(GL_BACK, GL_FILL);
+    glShadeModel(GL_FLAT);
+    for (int i=0;i<rows-1;i++) {
+      QRgb *ibits = (QRgb*) img.scanLine(i);
+      glBegin(GL_QUAD_STRIP);
+      for (int j=0;j<cols;j++) {
+	glColor4f(qRed(ibits[j])/255.0,qGreen(ibits[j])/255.0,
+		  qBlue(ibits[j])/255.0,qAlpha(ibits[j])/255.0);
+	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);
+	glVertex3f(xdp[i+1+j*rows],ydp[i+1+j*rows],zdp[i+1+j*rows]);
+      }
+      glEnd();
+    }
+
+//       glColor3f(0,0,0);
+//       glBegin(GL_LINE_LOOP);
+//       for (int j=0;j<cols-1;j++) {
+// 	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);
+// 	glVertex3f(xdp[i+1+j*rows],ydp[i+1+j*rows],zdp[i+1+j*rows]);
+// 	glVertex3f(xdp[i+1+(j+1)*rows],ydp[i+1+(j+1)*rows],
+// 		   zdp[i+1+(j+1)*rows]);
+// 	glVertex3f(xdp[i+(j+1)*rows],ydp[i+(j+1)*rows],zdp[i+(j+1)*rows]);
+//       }
+//       glEnd();
+//    }
   }
 }

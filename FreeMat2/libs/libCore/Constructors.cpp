@@ -146,7 +146,7 @@ namespace FreeMat {
   //   y = zeros(d1,d2,...,dn,classname)
   //@]
   //where @|classname| is one of 'double', 'single', 'int8', 'uint8',
-  //'int16', 'uint16', 'int32', 'uint32', 'float'.  
+  //'int16', 'uint16', 'int32', 'uint32', 'float', 'logical'.  
   //    
   //The second syntax specifies the array dimensions as a vector,
   //where each element in the vector specifies a dimension length:
@@ -219,6 +219,8 @@ namespace FreeMat {
 	  cls = FM_INT32;
 	else if (strcmp(cp,"uint32")==0)
 	  cls = FM_UINT32;
+	else if (strcmp(cp,"logical")==0)
+	  cls = FM_LOGICAL;
 	else
 	  throw Exception(std::string("Unsupported type ") + cp + std::string(" as classname argument to zeros function"));
 	// Remove the classspec

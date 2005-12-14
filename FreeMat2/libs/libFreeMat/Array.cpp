@@ -1705,6 +1705,14 @@ break;
     return Array(FM_DOUBLE,dim,data);
   }
 
+  Array Array::doubleMatrixConstructor(int rows, int cols) {
+    Dimensions dim(2);
+    dim[0] = rows;
+    dim[1] = cols;
+    double *data = (double *) allocateArray(FM_DOUBLE,rows*cols);
+    return Array(FM_DOUBLE,dim,data);
+  }
+
   Array Array::floatVectorConstructor(int len) {
     Dimensions dim;
     dim.makeScalar();
@@ -3754,6 +3762,14 @@ break;
     }
   }
 
+  int Array::rows() const {
+    return getDimensionLength(0);
+  }
+
+  int Array::columns() const {
+    return getDimensionLength(1);
+  }
+
   /**
    * Display this variable on the given output stream.
    */
@@ -4117,8 +4133,15 @@ break;
     return b.getContentsAsCString();
   }
 
+  double ArrayToDouble(const Array& a) {
+    Array b(a);
+    return b.getContentsAsDoubleScalar();
+  }
+
   uint32 TypeSize(Class cls) {
     switch (cls) {
+    case FM_LOGICAL:
+      return sizeof(logical);
     case FM_UINT8:
     case FM_INT8:
       return sizeof(int8);

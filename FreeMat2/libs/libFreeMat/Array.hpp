@@ -445,6 +445,11 @@ namespace FreeMat {
      */
     static Array doubleConstructor(double aval);
     /**
+     * Double matrix constructor - Construct an FM_DOUBLE object with the
+     * specified dimenstions.
+     */
+    static Array doubleMatrixConstructor(int rows, int cols);
+    /**
      * Complex constructor - Construct an FM_COMPLEX object with a 
      * complex scalar value.
      */
@@ -653,6 +658,14 @@ namespace FreeMat {
      */
     void printMe(int printLimit, int termWidth = 80) const;
     /**
+     * Return the number of rows.
+     */
+    int rows() const;
+    /**
+     * Return the number of columns.
+     */
+    int columns() const;
+    /**
      * Get our contents as a C-string.  Only works for _STRING types.
      * Throws an exception for non-string types.
      */
@@ -695,6 +708,7 @@ namespace FreeMat {
 
   bool isColonOperator(Array& a);
   int32 ArrayToInt32(const Array& a);
+  double ArrayToDouble(const Array& a);
   const char* ArrayToString(const Array& a);
 
   void printObjectBalance();

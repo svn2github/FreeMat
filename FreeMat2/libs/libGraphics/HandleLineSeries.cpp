@@ -13,6 +13,27 @@ namespace FreeMat {
   HandleLineSeries::~HandleLineSeries() {
   }
 
+  // Calculate the limits - should return a vector of the
+  // form...
+  // [xmin, xmax, ymin, ymax, zmin, zmax, cmin, cmax, amin, amax]
+  std::vector<double> HandleLineSeries::GetLimits() {
+    std::vector<double> xs(VectorPropertyLookup("xdata"));
+    std::vector<double> ys(VectorPropertyLookup("ydata"));
+    std::vector<double> zs(VectorPropertyLookup("zdata"));
+    std::vector<double> limits;
+    limits.push_back(VecMin(xs));
+    limits.push_back(VecMax(xs));
+    limits.push_back(VecMin(ys));
+    limits.push_back(VecMax(ys));
+    limits.push_back(VecMin(zs));
+    limits.push_back(VecMax(zs));
+    limits.push_back(0);
+    limits.push_back(0);
+    limits.push_back(0);
+    limits.push_back(0);    
+    return limits;
+  }
+
   void HandleLineSeries::UpdateState() {
     // Check that x, y and z data are the same size
     // Generate the x coordinates if necessary

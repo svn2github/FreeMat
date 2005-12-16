@@ -48,6 +48,7 @@ namespace FreeMat {
     double flipZ(double t);
     SymbolTable<HandleProperty*> properties;
     void RePackFigure();
+    void UpdateLimits(bool x, bool y, bool z, bool a, bool c);
   public:
     HandleAxis();
     virtual ~HandleAxis();

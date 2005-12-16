@@ -1,4 +1,6 @@
 #include "HandleImage.hpp"
+#include "HandleAxis.hpp"
+#include <QMatrix>
 
 namespace FreeMat {
   HandleImage::HandleImage() {
@@ -8,6 +10,29 @@ namespace FreeMat {
 
   HandleImage::~HandleImage() {
   }
+  
+  std::vector<double> HandleImage::GetLimits() {
+    HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
+    HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
+
+    std::vector<double> limits;
+    limits.push_back(xp->Data()[0]);
+    limits.push_back(xp->Data()[1]);
+    limits.push_back(yp->Data()[0]);
+    limits.push_back(yp->Data()[1]);
+    limits.push_back(0);
+    limits.push_back(0);
+    // The clim limit is just the min and max values of cdata
+    Array cdata(ArrayPropertyLookup("cdata"));
+    cdata.promoteType(FM_DOUBLE);
+    limits.push_back(ArrayMin(cdata));
+    limits.push_back(ArrayMax(cdata));
+    std::vector<double> alphadata(VectorPropertyLookup("alphadata"));
+    limits.push_back(VecMin(alphadata));
+    limits.push_back(VecMax(alphadata));
+    return limits;
+  }
+
 
   void HandleImage::ConstructProperties() {
     AddProperty(new HPVector, "alphadata");
@@ -32,6 +57,8 @@ namespace FreeMat {
     SetConstrainedStringDefault("alphadatamapping","none");
     SetConstrainedStringDefault("cdatamapping","scaled");
     SetStringDefault("type","image");
+    SetTwoVectorDefault("xdata",0,1);
+    SetTwoVectorDefault("ydata",0,1);
     SetConstrainedStringDefault("visible","on");
   }
 
@@ -133,7 +160,7 @@ namespace FreeMat {
     return alphaout;
   }
 
-  void HandleImage::UpdateState() {
+  void HandleImage::UpdateCAlphaData() {
     // Calculate the QImage
     Array cdata(ArrayPropertyLookup("cdata"));
     cdata.promoteType(FM_DOUBLE);
@@ -159,6 +186,36 @@ namespace FreeMat {
     }
   }
 
+  void HandleImage::UpdateState() {
+    UpdateCAlphaData();
+    Array cdata(ArrayPropertyLookup("cdata"));
+    HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
+    if (xp->Data().empty())
+      SetTwoVectorDefault("xdata",1,cdata.getDimensionLength(1));
+    HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
+    if (yp->Data().empty())
+      SetTwoVectorDefault("ydata",1,cdata.getDimensionLength(0));
+    // Need to check reverse flags for x and y axis... and flip the image appropriately
+    HandleAxis *ax = GetParentAxis();
+    bool xflip = false;
+    bool yflip = false;
+    xflip = (ax->StringCheck("xdir","reverse"));
+    yflip = (ax->StringCheck("ydir","reverse"));
+    if (xflip || yflip) {
+      double m11, m22;
+      if (xflip)
+	m11 = -1;
+      else
+	m11 = 1;
+      if (yflip)
+	m22 = -1;
+      else
+	m22 = 1;
+      QMatrix m(m11,0,0,m22,0,0);
+      img = img.transformed(m);
+    }
+  }
+
   void HandleImage::PaintMe(RenderEngine& gc) {
     UpdateState();
     HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
@@ -167,7 +224,8 @@ namespace FreeMat {
     int x1, y1, x2, y2;
     gc.toPixels(xp->Data()[0],yp->Data()[0],0,x1,y1);
     gc.toPixels(xp->Data()[1],yp->Data()[1],0,x2,y2);
-    img = img.scaled(abs(x2-x1)-1,abs(y2-y1)-1);
+    if ((abs(x2-x1)> 4096) || (abs(y2-y1) > 4096)) return;
+    img = img.scaled(abs(x2-x1)+1,abs(y2-y1)+1);
     gc.drawImage(xp->Data()[0],yp->Data()[0],xp->Data()[1],yp->Data()[1],img);
   }
 }

@@ -10,6 +10,26 @@ namespace FreeMat {
   HandleSurface::~HandleSurface() {
   }
 
+  std::vector<double> HandleSurface::GetLimits() {
+    std::vector<double> limits;
+    Array xdata(ArrayPropertyLookup("xdata"));
+    Array ydata(ArrayPropertyLookup("ydata"));
+    Array zdata(ArrayPropertyLookup("zdata"));
+    Array cdata(ArrayPropertyLookup("cdata"));
+    limits.push_back(ArrayMin(xdata));
+    limits.push_back(ArrayMax(xdata));
+    limits.push_back(ArrayMin(ydata));
+    limits.push_back(ArrayMax(ydata));
+    limits.push_back(ArrayMin(zdata));
+    limits.push_back(ArrayMax(zdata));
+    limits.push_back(ArrayMin(cdata));
+    limits.push_back(ArrayMax(cdata));
+    std::vector<double> alphadata(VectorPropertyLookup("alphadata"));
+    limits.push_back(VecMin(alphadata));
+    limits.push_back(VecMax(alphadata));
+    return limits;
+  }
+
   void HandleSurface::ConstructProperties() {
     AddProperty(new HPVector, "alphadata");
     AddProperty(new HPMappingMode, "alphadatamapping");
@@ -130,7 +150,7 @@ namespace FreeMat {
       DoAutoYMode();
     if (IsAuto("cdatamode"))
       DoAutoCMode();
-    HandleImage::UpdateState();
+    HandleImage::UpdateCAlphaData();
   }
 
 
@@ -147,25 +167,10 @@ namespace FreeMat {
     double *zdp = (double*) zdata.getDataPointer();
     int rows = zdata.rows();   int cols = zdata.columns();
 
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glPolygonOffset(-1.0,-1.0);
-
-    glColor3f(0,0,0);
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glPolygonMode(GL_BACK, GL_LINE);
-    glShadeModel(GL_FLAT);
-    for (int i=0;i<rows-1;i++) {
-      QRgb *ibits = (QRgb*) img.scanLine(i);
-      glBegin(GL_QUAD_STRIP);
-      for (int j=0;j<cols;j++) {
-	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);
-	glVertex3f(xdp[i+1+j*rows],ydp[i+1+j*rows],zdp[i+1+j*rows]);
-      }
-      glEnd();
-    }
-
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glPolygonMode(GL_BACK, GL_FILL);
+    gc.setLineStyle("-");
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(2,2);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glShadeModel(GL_FLAT);
     for (int i=0;i<rows-1;i++) {
       QRgb *ibits = (QRgb*) img.scanLine(i);
@@ -178,8 +183,24 @@ namespace FreeMat {
       }
       glEnd();
     }
+    glDisable(GL_POLYGON_OFFSET_FILL);
 
-//       glColor3f(0,0,0);
+    glColor3f(0,0,0);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glShadeModel(GL_FLAT);
+    for (int i=0;i<rows-1;i++) {
+      QRgb *ibits = (QRgb*) img.scanLine(i);
+      glBegin(GL_QUAD_STRIP);
+      for (int j=0;j<cols;j++) {
+	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);
+	glVertex3f(xdp[i+1+j*rows],ydp[i+1+j*rows],zdp[i+1+j*rows]);
+      }
+      glEnd();
+    }
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    //       glColor3f(0,0,0);
 //       glBegin(GL_LINE_LOOP);
 //       for (int j=0;j<cols-1;j++) {
 // 	glVertex3f(xdp[i+j*rows],ydp[i+j*rows],zdp[i+j*rows]);

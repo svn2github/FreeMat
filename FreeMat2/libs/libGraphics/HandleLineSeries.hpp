@@ -12,6 +12,7 @@ namespace FreeMat {
     virtual void SetupDefaults();
     virtual void UpdateState();
     virtual void PaintMe(RenderEngine& gc);    
+    std::vector<double> GetLimits();
   };
 }
 

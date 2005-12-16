@@ -23,7 +23,6 @@ namespace FreeMat {
   }
 
   void GLRenderEngine::clear(std::vector<double> color) {
-    qDebug("clear");
     if (color[0] != -1) {
       glClearColor(color[0], color[1], color[2], 0.0f);
       glClearDepth(1.0f);
@@ -393,7 +392,6 @@ namespace FreeMat {
     glRasterPos2d(x1,y1);
     glDrawPixels(pic.width(),pic.height(),GL_RGBA,GL_UNSIGNED_BYTE,pic.bits());
     return;
-    qDebug("blit");
     int texid = m_widget->bindTexture(pic);
     glColor3f(1,1,1);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

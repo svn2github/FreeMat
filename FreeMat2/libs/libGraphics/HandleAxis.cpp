@@ -694,6 +694,8 @@ namespace FreeMat {
     MinMaxVector(xvals,8,xmin,xmax);
     MinMaxVector(yvals,8,ymin,ymax);
     MinMaxVector(zvals,8,zmin,zmax);
+    if (zmin == zmax)
+      zmax = zmin+1;   
     // Invert the signs of zmin and zmax
     gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
@@ -1413,8 +1415,55 @@ namespace FreeMat {
     hp->Value(posx0,posy0,poswidth,posheight);
   }
 
+  void HandleAxis::UpdateLimits(bool x, bool y, bool z, bool a, bool c) {
+    if (!x && !y && !z && !a && !c) return;
+    // Get our set of children
+    std::vector<double> limits;
+    bool first = true;
+    HPHandles *children = (HPHandles*) LookupProperty("children");
+    std::vector<unsigned> handles(children->Data());
+    for (int i=0;i<handles.size();i++) {
+      HandleObject *fp = LookupHandleObject(handles[i]);
+      std::vector<double> child_limits(fp->GetLimits());
+      if (!child_limits.empty()) {
+	if (first) {
+	  limits = child_limits;
+	  first = false;
+	} else {
+	  for (int i=0;i<qMin(limits.size(),child_limits.size());i+=2) {
+	    limits[i] = qMin(limits[i],child_limits[i]);
+	    limits[i+1] = qMax(limits[i+1],child_limits[i+1]);
+	  }
+	}
+      }
+    }
+    if (first) return;
+    if (limits[1] == limits[0]) {
+      limits[0] = limits[0] - 0.5;
+      limits[1] = limits[0] + 1;
+    }
+    if (limits[3] == limits[2]) {
+      limits[2] = limits[2] - 0.5;
+      limits[5] = limits[2] + 1;
+    }
+    if (limits[5] == limits[4]) {
+      limits[4] = limits[4] - 0.5;
+      limits[5] = limits[4] + 1;
+    }
+    if (x) SetTwoVectorDefault("xlim",limits[0],limits[1]);
+    if (y) SetTwoVectorDefault("ylim",limits[2],limits[3]);
+    if (z) SetTwoVectorDefault("zlim",limits[4],limits[5]);
+    if (c) SetTwoVectorDefault("clim",limits[6],limits[7]);
+    if (a) SetTwoVectorDefault("alim",limits[8],limits[9]);
+  }
+
   void HandleAxis::UpdateState(RenderEngine &gc) {
     std::vector<std::string> tset;
+    if (HasChanged("xlim")) ToManual("xlimmode");
+    if (HasChanged("ylim")) ToManual("ylimmode");
+    if (HasChanged("zlim")) ToManual("zlimmode");
+    if (HasChanged("alim")) ToManual("alimmode");
+    if (HasChanged("clim")) ToManual("climmode");
     if (HasChanged("xtick")) ToManual("xtickmode");
     if (HasChanged("ytick")) ToManual("ytickmode");
     if (HasChanged("ztick")) ToManual("ztickmode");
@@ -1443,6 +1492,14 @@ namespace FreeMat {
     if (fig->Resized() || HasChanged("position")) {
       RecalculateTicks(gc);
     }
+    // Limits
+    bool xflag, yflag, zflag, aflag, cflag;
+    xflag = IsAuto("xlimmode");
+    yflag = IsAuto("ylimmode");
+    zflag = IsAuto("zlimmode");
+    aflag = IsAuto("alimmode");
+    cflag = IsAuto("climmode");
+    UpdateLimits(xflag,yflag,zflag,aflag,cflag);
     // Camera properties...
     if (HasChanged("cameratarget")) 
       ToManual("cameratargetmode");
@@ -1818,7 +1875,6 @@ namespace FreeMat {
   }
 
   void HandleAxis::DrawChildren(RenderEngine& gc) {
-    glClearDepth(1.0f);
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {

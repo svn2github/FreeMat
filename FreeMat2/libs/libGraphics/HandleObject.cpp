@@ -4,6 +4,8 @@
 #include "HandleFigure.hpp"
 #include "HandleCommands.hpp"
 #include "Core.hpp"
+#include "IEEEFP.hpp"
+
 namespace FreeMat {
 
   bool HandleObject::IsType(std::string name) {
@@ -81,7 +83,7 @@ namespace FreeMat {
   HandleFigure* HandleObject::GetParentFigure() {
     HandleAxis* hp;
     if (StringCheck("type","axes")) 
-      hp = this;
+      hp = (HandleAxis*) this;
     else
       hp = GetParentAxis();
     // Get our parent - must be an axis
@@ -200,4 +202,67 @@ namespace FreeMat {
     return hp->Is(value);
   }
 
+  double VecMin(std::vector<double> &v) {
+    double min = 0;
+    bool first = true;
+    for (int i=0;i<v.size();i++) {
+      if (!IsNaN(v[i]))
+	if (!first) {
+	  first = true;
+	  min = v[i];
+	} else if (v[i] < min) {
+	  min = v[i];
+	}
+    }
+    return min;
+  }
+
+  double VecMax(std::vector<double> &v) {
+    double max = 0;
+    bool first = true;
+    for (int i=0;i<v.size();i++) {
+      if (!IsNaN(v[i]))
+	if (!first) {
+	  first = true;
+	  max = v[i];
+	} else if (v[i] > max) {
+	  max = v[i];
+	}
+    }
+    return max;
+  }
+
+  double ArrayMin(Array a) {
+    const double* v = (const double *) a.getDataPointer();
+    int len = a.getLength();
+    double min = 0;
+    bool first = true;
+    for (int i=0;i<len;i++) {
+      if (!IsNaN(v[i]))
+	if (!first) {
+	  first = true;
+	  min = v[i];
+	} else if (v[i] < min) {
+	  min = v[i];
+	}
+    }
+    return min;
+  }
+
+  double ArrayMax(Array a) {
+    const double* v = (const double *) a.getDataPointer();
+    int len = a.getLength();
+    double max = 0;
+    bool first = true;
+    for (int i=0;i<len;i++) {
+      if (!IsNaN(v[i]))
+	if (!first) {
+	  first = true;
+	  max = v[i];
+	} else if (v[i] > max) {
+	  max = v[i];
+	}
+    }
+    return max;
+  }
 }

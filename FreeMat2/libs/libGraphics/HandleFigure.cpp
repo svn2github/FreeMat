@@ -3,6 +3,7 @@
 #include "HandleCommands.hpp"
 
 #include <qgl.h>
+#include <math.h>
 
 namespace FreeMat {
   

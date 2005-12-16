@@ -12,6 +12,11 @@ namespace FreeMat {
   class HandleAxis;
   class HandleFigure;
 
+  double VecMin(std::vector<double> &v);
+  double VecMax(std::vector<double> &v);
+  double ArrayMin(Array x);
+  double ArrayMax(Array x);
+
   class HandleObject {
     SymbolTable<HandleProperty*> m_properties;
   public:
@@ -19,6 +24,7 @@ namespace FreeMat {
     virtual ~HandleObject() {}
     virtual void RegisterProperties() {}
     virtual void UpdateState() {}
+    virtual std::vector<double> GetLimits() {return std::vector<double>();};
     bool HasChanged(std::vector<std::string> names);
     bool HasChanged(std::string name);
     void ToManual(std::string name);

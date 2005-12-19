@@ -1,3 +1,15 @@
+1.  Finish properties for surface plots - markers & texture mapping?
+2.  Add remaining characteristics for axis (dataaspectratio, plotbox aspect)
+3.  Add non-GL based renderer
+4.  Rewrite legend function to use multiple axes
+5.  Fix nextplot behavior to work correctly.
+6.  Fix axis limits so that objects aren't truncated...
+7.  view - command doesn't work right
+8.  axis annotation for view 2
+9.  axis command
+10. Handle graphics documentation/class documentation
+11. prebuilt packaging
+
 A few notes on what needs to still be fixed:
 
 Replace XERBLA

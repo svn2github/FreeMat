@@ -6,6 +6,20 @@
 #include <qfont.h>
 
 namespace FreeMat {
+  class cpoint {
+  public:
+    double x;
+    double y;
+    double z;
+    double r;
+    double g;
+    double b;
+    double a;
+    cpoint(double ax, double ay, double az, double ar, double ag, double ab, double aa) {
+      x = ax; y = ay; z = az; r = ar; g = ag; b = ab; a = aa;
+    }
+  };
+
   class RenderEngine {
   public:
     enum AlignmentFlag {Min, Mean, Max};
@@ -66,10 +80,13 @@ namespace FreeMat {
     virtual void circleFill(double x1, double y1, double radius) = 0;
     virtual void drawImage(double x1, double y1, double x2, double y2,
 			   QImage pic) = 0;
+    virtual void quadFills(std::vector<std::vector<cpoint> > quads) = 0;
+    virtual void quadLines(std::vector<std::vector<cpoint> > quads) = 0;
+    virtual void flatshade(bool flag) = 0;
   };
   
   void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
-		  double x, double y, double sze,
+		  double x, double y, double z, double sze,
 		  std::vector<double> edgecolor, 
 		  std::vector<double> fillcolor, 
 		  double width);

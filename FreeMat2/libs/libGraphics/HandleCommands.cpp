@@ -275,18 +275,22 @@ namespace FreeMat {
   }
 
   ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 3)
+    if (arg.size() < 3)
       throw Exception("set doesn't handle all cases yet!");
     int handle = ArrayToInt32(arg[0]);
-    std::string propname = ArrayToString(arg[1]);
     // Lookup the handle
     HandleObject *fp;
     if (handle >= HANDLE_OFFSET_OBJECT)
       fp = LookupHandleObject(handle);
     else
       fp = (HandleObject*) LookupHandleFigure(handle);
-    // Use the address and property name to lookup the Get/Set handler
-    fp->LookupProperty(propname)->Set(arg[2]);
+    int ptr = 1;
+    while (arg.size() >= (ptr+2)) {
+      // Use the address and property name to lookup the Get/Set handler
+      std::string propname = ArrayToString(arg[ptr]);
+      fp->LookupProperty(propname)->Set(arg[ptr+1]);
+      ptr+=2;
+    }
     fp->UpdateState();
     return ArrayVector();
   }

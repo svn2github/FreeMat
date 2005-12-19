@@ -9,6 +9,8 @@ namespace FreeMat {
     void DoAutoXMode();
     void DoAutoYMode();
     void DoAutoCMode();
+    std::vector<std::vector<cpoint> > BuildQuadsNoTexMap(HPConstrainedStringColor* cp,
+							 HPConstrainedStringScalar* ap);
   public:
     HandleSurface();
     virtual ~HandleSurface();

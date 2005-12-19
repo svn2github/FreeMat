@@ -94,7 +94,7 @@ namespace FreeMat {
       }
       gc.setupDirectDraw();
       for (int i=0;i<uc.size();i++) 
-	DrawSymbol(gc,typ,uc[i],vc[i],sze,ec->Data(),fc->Data(),width);
+	DrawSymbol(gc,typ,uc[i],vc[i],0,sze,ec->Data(),fc->Data(),width);
       gc.releaseDirectDraw();
     }
   }

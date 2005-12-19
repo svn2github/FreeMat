@@ -233,6 +233,7 @@ namespace FreeMat {
   }
 
   double ArrayMin(Array a) {
+    a.promoteType(FM_DOUBLE);
     const double* v = (const double *) a.getDataPointer();
     int len = a.getLength();
     double min = 0;
@@ -250,6 +251,7 @@ namespace FreeMat {
   }
 
   double ArrayMax(Array a) {
+    a.promoteType(FM_DOUBLE);
     const double* v = (const double *) a.getDataPointer();
     int len = a.getLength();
     double max = 0;

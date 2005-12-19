@@ -110,6 +110,7 @@ namespace FreeMat {
 			    double x2, double y2, double z2,
 			    double x3, double y3, double z3,
 			    double x4, double y4, double z4) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_QUADS);
     glVertex3f(x1,y1,z1);
     glVertex3f(x2,y2,z2);
@@ -405,5 +406,41 @@ namespace FreeMat {
     glEnd();
     //    glEnable(GL_LIGHTING);
     m_widget->deleteTexture(texid);
+  }
+
+  void GLRenderEngine::quadFills(std::vector<std::vector<cpoint> > quads) {
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(2,2);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    for (int i=0;i<quads.size();i++) {
+      std::vector<cpoint> qlist(quads[i]);
+      glBegin(GL_QUAD_STRIP);
+      for (int j=0;j<qlist.size();j++) {
+	glColor4f(qlist[j].r,qlist[j].g,qlist[j].b,qlist[j].a);
+	glVertex3f(qlist[j].x,qlist[j].y,qlist[j].z);
+      }
+      glEnd();
+    }
+    glDisable(GL_POLYGON_OFFSET_FILL);
+  }
+
+  void GLRenderEngine::quadLines(std::vector<std::vector<cpoint> > quads) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    for (int i=0;i<quads.size();i++) {
+      std::vector<cpoint> qlist(quads[i]);
+      glBegin(GL_QUAD_STRIP);
+      for (int j=0;j<qlist.size();j++) {
+	glColor4f(qlist[j].r,qlist[j].g,qlist[j].b,qlist[j].a);
+	glVertex3f(qlist[j].x,qlist[j].y,qlist[j].z);
+      }
+      glEnd();
+    }
+  }
+
+  void GLRenderEngine::flatshade(bool flag) {
+    if (flag)
+      glShadeModel(GL_FLAT);
+    else
+      glShadeModel(GL_SMOOTH);
   }
 }

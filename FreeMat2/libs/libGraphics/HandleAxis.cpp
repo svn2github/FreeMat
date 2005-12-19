@@ -695,7 +695,9 @@ namespace FreeMat {
     MinMaxVector(yvals,8,ymin,ymax);
     MinMaxVector(zvals,8,zmin,zmax);
     if (zmin == zmax)
-      zmax = zmin+1;   
+      zmax = zmin+1;
+    double mzmin = qMin(fabs(zmin),fabs(zmax));
+    double mzmax = qMax(fabs(zmin),fabs(zmax));
     // Invert the signs of zmin and zmax
     gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
@@ -1888,12 +1890,16 @@ namespace FreeMat {
     SetupProjection(gc);
     SetupAxis(gc);
     UpdateState(gc);
-    DrawBox(gc);
-    DrawGridLines(gc);
-    DrawMinorGridLines(gc);
+    if (StringCheck("visible","on")) {
+      DrawBox(gc);
+      DrawGridLines(gc);
+      DrawMinorGridLines(gc);
+    }
     DrawChildren(gc);
-    DrawAxisLines(gc);
-    DrawTickMarks(gc);
-    DrawAxisLabels(gc);
+    if (StringCheck("visible","on")) {
+      DrawAxisLines(gc);
+      DrawTickMarks(gc);
+      DrawAxisLabels(gc);
+    }
   }
 }

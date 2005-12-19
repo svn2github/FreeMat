@@ -263,6 +263,9 @@ namespace FreeMat {
       scalar = ArrayToDouble(arg);
   }
 
+  std::vector<double> HPConstrainedStringColor::ColorSpec() {
+    return colorspec;
+  }
 
   void HPConstrainedStringColor::ColorSpec(std::vector<double> col) {
     colorspec = col;
@@ -278,10 +281,13 @@ namespace FreeMat {
 
   void HPConstrainedStringColor::Set(Array arg) {
     HandleProperty::Set(arg);
-    if (!ParseColorSpec(arg,colorspec))
+    if (!ParseColorSpec(arg,colorspec)) {
       HPConstrainedString::Set(arg);
-    else
-      throw Exception("Illegal argument to constrained string/color property");
+    } else {
+      data = "colorspec";
+    }
+    if (colorspec.size() > 1 && (colorspec[0] == -1))
+      data = "none";
   }
 
   Array HPConstrainedStringColor::Get() {

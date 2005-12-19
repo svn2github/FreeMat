@@ -28,7 +28,7 @@ namespace FreeMat {
   }
   
   void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
-		  double x, double y, double sze,
+		  double x, double y, double z, double sze,
 		  std::vector<double> edgecolor, 
 		  std::vector<double> fillcolor, 
 		  double width) {
@@ -41,8 +41,8 @@ namespace FreeMat {
     case RenderEngine:: Plus:
       if (stroke) {
 	gc.color(edgecolor);
-	gc.line(x-sze,y,x+sze,y);
-	gc.line(x,y-sze,x,y+sze);
+	gc.line(x-sze,y,z,x+sze,y,z);
+	gc.line(x,y-sze,z,x,y+sze,z);
       }
       break;
     case RenderEngine:: Circle:
@@ -58,10 +58,10 @@ namespace FreeMat {
     case RenderEngine:: Star:
       if (stroke) {
 	gc.color(edgecolor);
-	gc.line(x-sze,y-sze,x+sze,y+sze);
-	gc.line(x+sze,y-sze,x-sze,y+sze);
-	gc.line(x-sze,y,x+sze,y);
-	gc.line(x,y-sze,x,y+sze);
+	gc.line(x-sze,y-sze,z,x+sze,y+sze,z);
+	gc.line(x+sze,y-sze,z,x-sze,y+sze,z);
+	gc.line(x-sze,y,z,x+sze,y,z);
+	gc.line(x,y-sze,z,x,y+sze,z);
       }
       break;
     case RenderEngine:: Dot:
@@ -73,8 +73,8 @@ namespace FreeMat {
     case RenderEngine:: Times:
       if (stroke) {
 	gc.color(edgecolor);
-	gc.line(x-sze,y-sze,x+sze,y+sze);
-	gc.line(x+sze,y-sze,x-sze,y+sze);
+	gc.line(x-sze,y-sze,z,x+sze,y+sze,z);
+	gc.line(x+sze,y-sze,z,x-sze,y+sze,z);
       }
       break;
     case RenderEngine:: Square:

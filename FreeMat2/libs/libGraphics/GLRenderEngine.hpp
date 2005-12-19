@@ -70,6 +70,9 @@ namespace FreeMat {
     virtual void circleFill(double x1, double y1, double radius); 
     virtual void drawImage(double x1, double y1, double x2, double y2,
 			   QImage pic);
+    virtual void quadFills(std::vector<std::vector<cpoint> > quads);
+    virtual void quadLines(std::vector<std::vector<cpoint> > quads);
+    virtual void flatshade(bool flag);
   };
 };
 

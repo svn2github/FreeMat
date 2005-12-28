@@ -284,6 +284,7 @@ namespace FreeMat {
     gc.flatshade(StringCheck("edgecolor","flat"));
     gc.quadLines(edgequads);
     bool flatedgeflag(StringCheck("edgecolor","flat"));
+#if 0
     HPAutoFlatColor *ec = (HPAutoFlatColor*) LookupProperty("markeredgecolor");
     HPAutoFlatColor *fc = (HPAutoFlatColor*) LookupProperty("markerfacecolor");
     std::vector<double> edgecolor;
@@ -317,8 +318,8 @@ namespace FreeMat {
       //       gc.depth(true);
       //       for (int i=0;i<uc.size();i++) 
       // 	DrawSymbol(gc,typ,uc[i],vc[i],zc[i],sze,edgecolor,facecolor,width);
-//       for (int i=0;i<uc.size();i++) 
-// 	DrawSymbol(gc,typ,xdp[i],ydp[i],zdp[i],sze,edgecolor,facecolor,width);
+      //       for (int i=0;i<uc.size();i++) 
+      // 	DrawSymbol(gc,typ,xdp[i],ydp[i],zdp[i],sze,edgecolor,facecolor,width);
       //       gc.releaseDirectDraw();
     }    
     
@@ -333,5 +334,6 @@ namespace FreeMat {
     //       }
     //       glEnd();
     //    }
+#endif
   }
 }

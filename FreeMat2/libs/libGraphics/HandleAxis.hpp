@@ -60,6 +60,7 @@ namespace FreeMat {
     std::vector<double> UnitsReinterpret(std::vector<double> a);
     std::vector<double> GetPropertyVectorAsPixels(std::string name);
     std::vector<double> GetAxisLimits();
+    void SetAxisLimits(std::vector<double>);
     double MapX(double x);
     double MapY(double y);
     double MapZ(double z);

@@ -239,6 +239,7 @@ namespace FreeMat {
 		      double& tStart, double &tStop,
 		      std::vector<double> &tickLocations,
 		      std::vector<std::string> &tlabels) {
+    bool integerMode = false;
     double tBegin, tEnd;
     double delt = (tMax-tMin)/tickcount;
     int n = ceil(log10(delt));
@@ -249,6 +250,13 @@ namespace FreeMat {
       tDelt = ceil(tDelt);
     tStart = floor(tMin/tDelt)*tDelt;
     tStop = ceil(tMax/tDelt)*tDelt;
+    // Recheck for integer limits...
+    if ((tMin == rint(tMin)) && (tMax == rint(tMax))) {
+      tStart = tMin;
+      tStop = tMax;
+      tDelt = (tStop - tStart)/tickcount;
+      if ((tMax-tMin) > 4) integerMode = true;
+    }
     tBegin = tStart;
     tEnd = tStop;
     int mprime;
@@ -262,6 +270,8 @@ namespace FreeMat {
     exponentialForm = false;
     for (int i=0;i<tCount;i++) {
       double tloc = tBegin+i*tDelt;
+      if (integerMode)
+	tloc = rint(tloc);
       if (!isLogarithmic)
 	tickLocations.push_back(tloc);
       else
@@ -269,11 +279,15 @@ namespace FreeMat {
       if (tloc != 0.0)
 	exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
     }
-    for (int i=0;i<tCount;i++) 
+    for (int i=0;i<tCount;i++) {
+      double tloc = tBegin+i*tDelt;
+      if (integerMode)
+	tloc = rint(tloc);
       if (!isLogarithmic)
-	tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
+	tlabels.push_back(TrimPrint(tloc,exponentialForm));
       else
-	tlabels.push_back(TrimPrint(pow(10.0,tBegin+i*tDelt),true));
+	tlabels.push_back(TrimPrint(pow(10.0,tloc),true));
+    }
   }
 
   void HandleAxis::GetMaxTickMetric(RenderEngine &gc,
@@ -454,6 +468,7 @@ namespace FreeMat {
     colors.push_back(1.0); colors.push_back(1.0); colors.push_back(0.0);
     HPVector *hp = (HPVector*) LookupProperty("colororder");
     hp->Data(colors);
+    SetThreeVectorDefault("dataaspectratio",1,1,1);
     SetConstrainedStringDefault("dataaspectratiomode","auto");
     //    SetConstrainedStringDefault("drawmode","normal");
     SetConstrainedStringDefault("fontangle","normal");
@@ -471,6 +486,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("minorgridlinestyle",":");
     SetFourVectorDefault("outerposition",0,0,1,1);
     SetConstrainedStringDefault("nextplot","replace");
+    SetThreeVectorDefault("plotboxaspectratio",1,1,1);
     SetConstrainedStringDefault("plotboxaspectratiomode","auto");
     SetFourVectorDefault("position",0.13,0.11,0.775,0.815);
     SetConstrainedStringDefault("projection","orthographic");
@@ -513,7 +529,26 @@ namespace FreeMat {
     SetConstrainedStringDefault("zticklabelmode","auto");
   }
 
-  
+  void HandleAxis::SetAxisLimits(std::vector<double> lims) {
+    qDebug("Set Limits %f %f %f %f %f %f",
+	   lims[0],lims[1],lims[2],lims[3],lims[4],lims[5]);
+    HPLinearLog *sp;
+    sp = (HPLinearLog*) LookupProperty("xscale");
+    if (sp->Is("linear")) 
+      SetTwoVectorDefault("xlim",lims[0],lims[1]);
+    else 
+      SetTwoVectorDefault("xlim",pow(10.0,lims[0]),pow(10.0,lims[1]));
+    sp = (HPLinearLog*) LookupProperty("yscale");
+    if (sp->Is("linear")) 
+      SetTwoVectorDefault("ylim",lims[2],lims[3]);
+    else 
+      SetTwoVectorDefault("ylim",pow(10.0,lims[2]),pow(10.0,lims[3]));
+    sp = (HPLinearLog*) LookupProperty("zscale");
+    if (sp->Is("linear")) 
+      SetTwoVectorDefault("zlim",lims[4],lims[5]);
+    else 
+      SetTwoVectorDefault("zlim",pow(10.0,lims[4]),pow(10.0,lims[5]));
+  }
 
   std::vector<double> HandleAxis::GetAxisLimits() {
     HPTwoVector *hp;
@@ -546,6 +581,8 @@ namespace FreeMat {
       lims.push_back(tlog(hp->Data()[0]));
       lims.push_back(tlog(hp->Data()[1]));
     }
+    qDebug("Get Limits %f %f %f %f %f %f",
+	   lims[0],lims[1],lims[2],lims[3],lims[4],lims[5]);    
     return lims;
   }
 
@@ -667,6 +704,18 @@ namespace FreeMat {
       return(z);
   }
 
+  void rescale(double& amin, double &amax, double &ascale) {
+    double amean = (amin+amax)/2.0;
+    amin = amean-ascale*(amean-amin);
+    amax = amean+ascale*(amax-amean);
+  }
+
+  void rerange(double& amin, double& amax, double arange) {
+    double amean = (amin+amax)/2.0;
+    amin = amean-arange/2.0;
+    amax = amean+arange/2.0;
+  }
+
   void HandleAxis::SetupProjection(RenderEngine &gc) {
     HPThreeVector *tv1, *tv2, *tv3;
     tv1 = (HPThreeVector*) LookupProperty("cameraposition");
@@ -675,6 +724,9 @@ namespace FreeMat {
     gc.lookAt(tv1->Data()[0],tv1->Data()[1],tv1->Data()[2],
 	      tv2->Data()[0],tv2->Data()[1],tv2->Data()[2],
 	      tv3->Data()[0],tv3->Data()[1],tv3->Data()[2]);
+    // Scale using the data aspect ratio
+    std::vector<double> dar(VectorPropertyLookup("dataaspectratio"));
+    gc.scale(1.0/dar[0],1.0/dar[1],1.0/dar[2]);
     // Get the axis limits
     std::vector<double> limits(GetAxisLimits());
     // Map the 8 corners of the clipping cube to rotated space
@@ -694,13 +746,25 @@ namespace FreeMat {
     MinMaxVector(xvals,8,xmin,xmax);
     MinMaxVector(yvals,8,ymin,ymax);
     MinMaxVector(zvals,8,zmin,zmax);
-    if (zmin == zmax)
-      zmax = zmin+1;
     double mzmin = qMin(fabs(zmin),fabs(zmax));
     double mzmax = qMax(fabs(zmin),fabs(zmax));
-    // Invert the signs of zmin and zmax
-    gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
+    if (zmin == zmax) {
+      zmin = zmax-1;
+      zmax = zmax+1;
+    }
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
+    if (StringCheck("plotboxaspectratiomode","manual") ||
+ 	StringCheck("dataaspectratiomode","manual")) {
+      // Now we have to deal with the scale-to-fit issue.  If we
+      // have scale-to-fit disabled, we get a single scale factor
+      // to zoom
+      double xratio = (xmax-xmin)/position[2];
+      double yratio = (ymax-ymin)/position[3];
+      double maxratio = qMax(xratio,yratio);
+      rerange(xmin,xmax,maxratio*position[2]);
+      rerange(ymin,ymax,maxratio*position[3]);
+    }
+    gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
     gc.viewport(position[0],position[1],position[2],position[3]);
   }
 
@@ -1405,6 +1469,17 @@ namespace FreeMat {
     if ((outerpos[3] - posheight) < 2*maxLabelHeight) {
       posheight = outerpos[3] - 2*maxLabelHeight;
     }
+    // Check for non-stretch-to-fit
+//     if (StringCheck("plotboxaspectratiomode","manual") ||
+// 	StringCheck("dataaspectratiomode","manual")) {
+//       if (poswidth < posheight) {
+// 	posy0 += (posheight-poswidth)/2.0;
+// 	posheight = poswidth;
+//       } else {
+// 	posx0 += (poswidth-posheight)/2.0;
+// 	poswidth = posheight;
+//       }
+//     }
     HandleFigure *fig = GetParentFigure();
     unsigned width = fig->GetWidth();
     unsigned height = fig->GetHeight();
@@ -1502,6 +1577,80 @@ namespace FreeMat {
     aflag = IsAuto("alimmode");
     cflag = IsAuto("climmode");
     UpdateLimits(xflag,yflag,zflag,aflag,cflag);
+
+    if (HasChanged("dataaspectratio")) ToManual("dataaspectratiomode");
+    if (HasChanged("plotboxaspectratio")) ToManual("plotboxaspectratiomode");
+
+    // Check for the various cases
+    bool axesauto = xflag && yflag && zflag;
+    bool darauto = IsAuto("dataaspectratiomode");
+    bool pbaauto = IsAuto("plotboxaspectratiomode");
+    bool onemanual = (!xflag && yflag && zflag) || (xflag && !yflag && zflag) || 
+      (xflag && yflag && !zflag);
+    qDebug("axesauto = %d darauto = %d pbauto = %d onemanual = %d",
+	   axesauto,darauto,pbaauto,onemanual);
+
+    std::vector<double> limits(GetAxisLimits());
+    double xrange = limits[1] - limits[0];
+    double yrange = limits[3] - limits[2];
+    double zrange = limits[5] - limits[4];
+    double minrange = qMin(xrange,qMin(yrange,zrange));
+    double maxrange = qMax(xrange,qMax(yrange,zrange));
+    std::vector<double> pba(VectorPropertyLookup("plotboxaspectratio"));
+    double xratio = pba[0];
+    double yratio = pba[1];
+    double zratio = pba[2];
+    double minratio = qMin(xratio,qMin(yratio,zratio));
+    xratio/=minratio;
+    yratio/=minratio;
+    zratio/=minratio;
+    std::vector<double> dar(VectorPropertyLookup("dataaspectratio"));
+    double xscale = dar[0];
+    double yscale = dar[1];
+    double zscale = dar[2];
+    double minscale = qMin(xscale,qMin(yscale,zscale));
+    xscale /= minscale;
+    yscale /= minscale;
+    zscale /= minscale;
+    
+    if (darauto && pbaauto) {
+      SetThreeVectorDefault("dataaspectratio",1,1,1);
+      SetThreeVectorDefault("plotboxaspectratio",xrange/minrange,yrange/minrange,zrange/minrange);
+    } else if (darauto && !pbaauto) {
+      // Use calculated limits, set data aspect ratio to achieve the desired plot box ratio
+      SetThreeVectorDefault("plotboxaspectratio",xratio,yratio,zratio);
+      // xratio = xrange/xscale, so if xscale is changable, and xrange is fixed,
+      SetThreeVectorDefault("dataaspectratio",xrange/xratio,yrange/yratio,zrange/zratio);
+    } else if (!darauto && pbaauto) {
+      SetThreeVectorDefault("dataaspectratio",xscale,yscale,zscale);
+    } else {
+      if (axesauto) {
+	// Plot box aspect ratio has been specified, but the dataaspect ratio is
+	// fixed...  Collect the various quantities...
+	// PBA = xratio = xrange/xscale --> xrange = xratio/xscale
+	rerange(limits[0],limits[1],xratio/xscale*maxrange);
+	rerange(limits[2],limits[3],yratio/yscale*maxrange);
+	rerange(limits[4],limits[5],zratio/zscale*maxrange);
+	SetAxisLimits(limits);
+      } else if (onemanual) {
+	if (!xflag) {
+	  rerange(limits[2],limits[3],yratio/yscale*xrange);
+	  rerange(limits[4],limits[5],zratio/zscale*xrange);
+	  SetAxisLimits(limits);
+	} else if (!yflag) {
+	  rerange(limits[0],limits[1],xratio/xscale*yrange);
+	  rerange(limits[4],limits[5],zratio/zscale*yrange);
+	  SetAxisLimits(limits);
+	} else if (!zflag) {
+	  rerange(limits[0],limits[1],xratio/xscale*zrange);
+	  rerange(limits[2],limits[3],yratio/yscale*zrange);
+	  SetAxisLimits(limits);
+	}
+      } else {
+	// Ignore plotboxaspectratio...
+      }
+    }
+
     // Camera properties...
     if (HasChanged("cameratarget")) 
       ToManual("cameratargetmode");
@@ -1531,6 +1680,7 @@ namespace FreeMat {
       tv->Value(0,1,0);
     }
     RecalculateTicks(gc);
+    ClearAllChanged();
   }
 
   // The orientation of the label depends on the angle of the

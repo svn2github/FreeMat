@@ -45,6 +45,21 @@ namespace FreeMat {
     b = c2;
   }
 
+  void GLRenderEngine::unitx(double &x, double &y, double &z) {
+    // we need a unitvector such that model*v = [1;0;0]
+    double m00, m01, m02;
+    double m10, m11, m12;
+    double m20, m21, m22;
+    double det;
+    det = m00*(m11*m22-m12*m21) - m01*(m10*m22-m12*m21) + m02*(m10*m21-m11*m20);
+    x = (m11*m21-m12*m21)/det;
+    y = -(m10*m22-m12*m21)/det;
+    z = (m10*m21-m11*m20)/det;
+  }
+
+  void GLRenderEngine::unity(double &x, double &y, double &z) {
+  }
+
   void GLRenderEngine::toPixels(double x, double y, double z, 
 				int &a, int &b) {
     double c1, c2;
@@ -53,7 +68,11 @@ namespace FreeMat {
     b = (int) c2;
   }
 
-
+  void GLRenderEngine::scale(double sx, double sy, double sz) {
+    glMatrixMode(GL_MODELVIEW);
+    glScaled(sx,sy,sz);
+    glGetDoublev(GL_MODELVIEW_MATRIX,model);
+  }
 
   void GLRenderEngine::lookAt(double px, double py, double pz,
 			      double tx, double ty, double tz,
@@ -409,6 +428,7 @@ namespace FreeMat {
   }
 
   void GLRenderEngine::quadFills(std::vector<std::vector<cpoint> > quads) {
+    glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(2,2);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

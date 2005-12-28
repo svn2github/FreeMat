@@ -33,6 +33,9 @@ namespace FreeMat {
     virtual void lookAt(double px, double py, double pz,
 			double tx, double ty, double tz,
 			double ux, double uy, double uz) = 0;
+    virtual void scale(double sx, double sy, double sz) = 0;
+    virtual void unitx(double &x, double &y, double &z) = 0;
+    virtual void unity(double &x, double &y, double &z)  = 0;
     virtual void mapPoint(double x, double y, double z,
 			  double &a, double &b, double &c) = 0;
     virtual void project(double xmin, double xmax, double ymin, double ymax,

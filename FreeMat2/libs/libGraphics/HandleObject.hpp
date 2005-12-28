@@ -30,6 +30,7 @@ namespace FreeMat {
     void ToManual(std::string name);
     bool IsType(std::string name);
     void ClearChanged(std::vector<std::string> names);
+    void ClearAllChanged();
     void AddProperty(HandleProperty* prop, std::string name);
     HandleProperty* LookupProperty(std::string name);
     double ScalarPropertyLookup(std::string name);

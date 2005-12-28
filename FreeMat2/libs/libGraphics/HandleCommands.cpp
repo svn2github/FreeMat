@@ -264,9 +264,9 @@ namespace FreeMat {
       int i=0;
       while (i<children.size()) {
 	if (children[i] == handle)
-	  children.erase(children.begin()+i);
-	else
-	  i++;
+       	  children.erase(children.begin()+i);
+       	else
+       	  i++;
       }
       children.insert(children.begin(),1,handle);
       cp->Data(children);

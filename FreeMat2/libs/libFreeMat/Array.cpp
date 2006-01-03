@@ -4128,6 +4128,24 @@ break;
     return b.getContentsAsIntegerScalar();
   }
 
+  double ArrayToDouble(const Array& a) {
+    Array b(a);
+    return b.getContentsAsDoubleScalar();
+  }
+
+  int32 Array::rows() const {
+    return getDimensionLength(0);
+  }
+
+  int32 Array::columns() const {
+    return getDimensionLength(1);
+  }
+  
+  Array  Array::doubleMatrixConstructor(int rows, int cols) {
+    Dimensions dim(rows,cols);
+    double *data = (double*) allocateArray(FM_DOUBLE,rows*cols);
+  }
+
   const char* ArrayToString(const Array& a) {
     Array b(a);
     return b.getContentsAsCString();

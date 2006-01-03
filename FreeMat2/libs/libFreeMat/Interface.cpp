@@ -306,8 +306,6 @@ namespace FreeMat {
     char *fnamec;
 
     fnamec = strdup(fname.c_str());
-    sprintf(buffer,"%s . %s",fname.c_str(),fullname.c_str());
-    qDebug(buffer);
     stat(fullname.c_str(),&filestat);
     if (S_ISREG(filestat.st_mode)) {
       int namelen;

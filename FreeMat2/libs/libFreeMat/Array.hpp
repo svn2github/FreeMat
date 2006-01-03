@@ -469,6 +469,7 @@ namespace FreeMat {
      * that is a (row) vector with the given length.
      */
     static Array doubleVectorConstructor(int len);
+    static Array doubleMatrixConstructor(int rows, int cols);
     /**
      * Float vector constructor - Construct an FM_FLOAT object
      * that is a (row) vector with the given length.
@@ -704,6 +705,8 @@ namespace FreeMat {
      * types, this is a best-guess.
      */
     int32 nnz();
+    int32 rows() const;
+    int32 columns() const;
   };
 
   bool isColonOperator(Array& a);

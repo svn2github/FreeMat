@@ -1,6 +1,6 @@
 #include "RenderEngine.hpp"
 
-namespace FreeMat {
+//namespace FreeMat {
   RenderEngine::SymbolType StringToSymbol(std::string name) {
     if (name == "+")
       return RenderEngine::Plus;
@@ -164,4 +164,4 @@ namespace FreeMat {
       break;
     }
   }
-}
+//}

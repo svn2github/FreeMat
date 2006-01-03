@@ -178,10 +178,10 @@ namespace FreeMat {
     double *ydp = (double*) ydata.getDataPointer();
     double *zdp = (double*) zdata.getDataPointer();
     int rows = zdata.rows();   int cols = zdata.columns();
-    if (cp->Is("interp") && ((img.height() < rows) || (img.width() < cols))) return;
-    if (ap->Is("interp") && ((img.height() < rows) || (img.width() < cols))) return;
-    if (cp->Is("flat") && ((img.height() < rows-1) || (img.width() < cols-1))) return;
-    if (ap->Is("flat") && ((img.height() < rows-1) || (img.width() < cols-1))) return;
+    if (cp->Is("interp") && ((img.height() < rows) || (img.width() < cols))) return retval;
+    if (ap->Is("interp") && ((img.height() < rows) || (img.width() < cols))) return retval;
+    if (cp->Is("flat") && ((img.height() < rows-1) || (img.width() < cols-1))) return retval;
+    if (ap->Is("flat") && ((img.height() < rows-1) || (img.width() < cols-1))) return retval;
     if (cp->Is("none")) return retval;
     QRgb *dummyline;
     if (cp->Is("colorspec") || ap->Is("scalar")) {
@@ -278,12 +278,8 @@ namespace FreeMat {
 								   LookupProperty("edgecolor"),
 								   (HPConstrainedStringScalar*)
 								   LookupProperty("edgealpha")));
-    
-    gc.flatshade(StringCheck("facecolor","flat"));
-    gc.quadFills(surfquads);
-    gc.flatshade(StringCheck("edgecolor","flat"));
-    gc.quadLines(edgequads);
-    bool flatedgeflag(StringCheck("edgecolor","flat"));
+    gc.quadStrips(surfquads,StringCheck("facecolor","flat"),
+		  edgequads,StringCheck("edgecolor","flat"));
 #if 0
     HPAutoFlatColor *ec = (HPAutoFlatColor*) LookupProperty("markeredgecolor");
     HPAutoFlatColor *fc = (HPAutoFlatColor*) LookupProperty("markerfacecolor");

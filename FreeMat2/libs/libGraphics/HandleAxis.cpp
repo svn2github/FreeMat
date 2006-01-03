@@ -257,6 +257,7 @@ namespace FreeMat {
       tDelt = (tStop - tStart)/tickcount;
       if ((tMax-tMin) > 4) integerMode = true;
     }
+//     qDebug("tmin = %f tmax = %f integer mode = %d",tMin,tMax,integerMode);
     tBegin = tStart;
     tEnd = tStop;
     int mprime;
@@ -530,8 +531,8 @@ namespace FreeMat {
   }
 
   void HandleAxis::SetAxisLimits(std::vector<double> lims) {
-    qDebug("Set Limits %f %f %f %f %f %f",
-	   lims[0],lims[1],lims[2],lims[3],lims[4],lims[5]);
+//     qDebug("Set Limits %f %f %f %f %f %f",
+// 	   lims[0],lims[1],lims[2],lims[3],lims[4],lims[5]);
     HPLinearLog *sp;
     sp = (HPLinearLog*) LookupProperty("xscale");
     if (sp->Is("linear")) 
@@ -581,8 +582,8 @@ namespace FreeMat {
       lims.push_back(tlog(hp->Data()[0]));
       lims.push_back(tlog(hp->Data()[1]));
     }
-    qDebug("Get Limits %f %f %f %f %f %f",
-	   lims[0],lims[1],lims[2],lims[3],lims[4],lims[5]);    
+//     qDebug("Get Limits %f %f %f %f %f %f",
+// 	   lims[0],lims[1],lims[2],lims[3],lims[4],lims[5]);    
     return lims;
   }
 
@@ -724,6 +725,12 @@ namespace FreeMat {
     gc.lookAt(tv1->Data()[0],tv1->Data()[1],tv1->Data()[2],
 	      tv2->Data()[0],tv2->Data()[1],tv2->Data()[2],
 	      tv3->Data()[0],tv3->Data()[1],tv3->Data()[2]);
+    
+    double model[16];
+    gc.getModelviewMatrix(model);
+    for (int i=0;i<4;i++)
+      qDebug("%f %f %f %f",
+	     model[i*4],model[i*4+4],model[i*4+8],model[i*4+12]);
     // Scale using the data aspect ratio
     std::vector<double> dar(VectorPropertyLookup("dataaspectratio"));
     gc.scale(1.0/dar[0],1.0/dar[1],1.0/dar[2]);
@@ -1218,18 +1225,20 @@ namespace FreeMat {
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
     gc.setLineStyle("-");
     gc.lineWidth(ScalarPropertyLookup("linewidth"));
-    gc.setupDirectDraw();
-    glBegin(GL_LINES);
     if (xvisible) {
       gc.color(xc->Data());
       double px0, py0, px1, py1;
       gc.toPixels(limits[0],x1pos[1],x1pos[2],px0,py0);
       gc.toPixels(limits[1],x1pos[1],x1pos[2],px1,py1);
+      gc.setupDirectDraw();
       gc.line(px0,py0,px1,py1);
+      gc.releaseDirectDraw();
       if (Is2DView()) {
 	gc.toPixels(limits[0],x2pos[1],x2pos[2],px0,py0);
 	gc.toPixels(limits[1],x2pos[1],x2pos[2],px1,py1);
+	gc.setupDirectDraw();
 	gc.line(px0,py0,px1,py1);
+	gc.releaseDirectDraw();
       }
     }
     if (yvisible) {
@@ -1237,11 +1246,15 @@ namespace FreeMat {
       double px0, py0, px1, py1;
       gc.toPixels(y1pos[0],limits[2],y1pos[2],px0,py0);
       gc.toPixels(y1pos[0],limits[3],y1pos[2],px1,py1);
+      gc.setupDirectDraw();
       gc.line(px0,py0,px1,py1);
+      gc.releaseDirectDraw();
       if (Is2DView()) {
 	gc.toPixels(y2pos[0],limits[2],y2pos[2],px0,py0);
 	gc.toPixels(y2pos[0],limits[3],y2pos[2],px1,py1);
+	gc.setupDirectDraw();
 	gc.line(px0,py0,px1,py1);
+	gc.releaseDirectDraw();
       }
     } 
     if (zvisible) {
@@ -1249,14 +1262,17 @@ namespace FreeMat {
       double px0, py0, px1, py1;
       gc.toPixels(z1pos[0],z1pos[1],limits[4],px0,py0);
       gc.toPixels(z1pos[0],z1pos[1],limits[5],px1,py1);
+      gc.setupDirectDraw();
       gc.line(px0,py0,px1,py1);
+      gc.releaseDirectDraw();
       if (Is2DView()) {
 	gc.toPixels(z2pos[0],z2pos[1],limits[4],px0,py0);
 	gc.toPixels(z2pos[0],z2pos[1],limits[5],px1,py1);
+	gc.setupDirectDraw();
 	gc.line(px0,py0,px1,py1);
+	gc.releaseDirectDraw();
       }
     }
-    gc.releaseDirectDraw();
   }
 
   // Assemble a font for the axis
@@ -1300,7 +1316,7 @@ namespace FreeMat {
     return numtics;
   }
 
-  void HandleAxis::RecalculateTicks(RenderEngine &gc) {
+  void HandleAxis::RecalculateTicks() {
     // We have to calculate the tick sets for each axis...
     std::vector<double> limits(GetAxisLimits());
     std::vector<double> xticks;
@@ -1309,13 +1325,15 @@ namespace FreeMat {
     std::vector<std::string> ylabels;
     std::vector<double> zticks;
     std::vector<std::string> zlabels;
+    // FIXME
     int xcnt, ycnt, zcnt;
-    xcnt = GetTickCount(gc,limits[0],x1pos[1],x1pos[2],
-			limits[1],x1pos[1],x1pos[2]);
-    ycnt = GetTickCount(gc,y1pos[0],limits[2],y1pos[2],
-			y1pos[0],limits[3],y1pos[2]);
-    zcnt = GetTickCount(gc,z1pos[0],z1pos[1],limits[4],
-			z1pos[0],z1pos[1],limits[5]);
+    //     xcnt = GetTickCount(gc,limits[0],x1pos[1],x1pos[2],
+    // 			limits[1],x1pos[1],x1pos[2]);
+    //     ycnt = GetTickCount(gc,y1pos[0],limits[2],y1pos[2],
+    // 			y1pos[0],limits[3],y1pos[2]);
+    //     zcnt = GetTickCount(gc,z1pos[0],z1pos[1],limits[4],
+    // 			z1pos[0],z1pos[1],limits[5]);
+    xcnt = 3; ycnt = 3; zcnt = 3;
     double xStart, xStop;
     double yStart, yStop;
     double zStart, zStop;
@@ -1502,6 +1520,10 @@ namespace FreeMat {
     for (int i=0;i<handles.size();i++) {
       HandleObject *fp = LookupHandleObject(handles[i]);
       std::vector<double> child_limits(fp->GetLimits());
+//       qDebug("child %d says limits are %f %f %f %f %f %f",
+// 	     handles[i],child_limits[0],child_limits[1],
+// 	     child_limits[2],child_limits[3],child_limits[4],
+// 	     child_limits[5]);
       if (!child_limits.empty()) {
 	if (first) {
 	  limits = child_limits;
@@ -1534,7 +1556,7 @@ namespace FreeMat {
     if (a) SetTwoVectorDefault("alim",limits[8],limits[9]);
   }
 
-  void HandleAxis::UpdateState(RenderEngine &gc) {
+  void HandleAxis::UpdateState() {
     std::vector<std::string> tset;
     if (HasChanged("xlim")) ToManual("xlimmode");
     if (HasChanged("ylim")) ToManual("ylimmode");
@@ -1567,7 +1589,7 @@ namespace FreeMat {
     // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
     HandleFigure* fig = GetParentFigure();
     if (fig->Resized() || HasChanged("position")) {
-      RecalculateTicks(gc);
+      RecalculateTicks();
     }
     // Limits
     bool xflag, yflag, zflag, aflag, cflag;
@@ -1587,9 +1609,8 @@ namespace FreeMat {
     bool pbaauto = IsAuto("plotboxaspectratiomode");
     bool onemanual = (!xflag && yflag && zflag) || (xflag && !yflag && zflag) || 
       (xflag && yflag && !zflag);
-    qDebug("axesauto = %d darauto = %d pbauto = %d onemanual = %d",
-	   axesauto,darauto,pbaauto,onemanual);
-
+//     qDebug("axesauto = %d darauto = %d pbauto = %d onemanual = %d",
+// 	   axesauto,darauto,pbaauto,onemanual);
     std::vector<double> limits(GetAxisLimits());
     double xrange = limits[1] - limits[0];
     double yrange = limits[3] - limits[2];
@@ -1679,7 +1700,7 @@ namespace FreeMat {
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraupvector");
       tv->Value(0,1,0);
     }
-    RecalculateTicks(gc);
+    RecalculateTicks();
     ClearAllChanged();
   }
 
@@ -1718,7 +1739,9 @@ namespace FreeMat {
       xalign = RenderEngine::Max;
       yalign = RenderEngine::Max;
     }
+    gc.setupDirectDraw();    
     gc.putText(x2,y2,txt,color,xalign,yalign,m_font,0);
+    gc.releaseDirectDraw();
   }
 
   //
@@ -1785,7 +1808,6 @@ namespace FreeMat {
     // and we need to advance by (x0+n*dx,y0+n*dy) so that
     // n = max(maxx/dx,maxy/dy)
     //
-    gc.setupDirectDraw();
     gc.setLineStyle("-");
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     if (xvisible) {
@@ -1831,7 +1853,6 @@ namespace FreeMat {
 //       // Put the title in the right spot
 //       //      fp->PaintMe(gc);
 //     }
-    gc.releaseDirectDraw();
   }
 
   void HandleAxis::DrawTickLabels(RenderEngine& gc,
@@ -1864,10 +1885,12 @@ namespace FreeMat {
       double x1, y1, x2, y2;
       gc.toPixels(t*unitx+px1,
 		  t*unity+py1,
-		    t*unitz+pz1,x1,y1);
+		  t*unitz+pz1,x1,y1);
       x2 = delx*ticlen*ticdir + x1;
       y2 = dely*ticlen*ticdir + y1;
+      gc.setupDirectDraw();
       gc.line(x1,y1,x2,y2);
+      gc.releaseDirectDraw();
       double x3, y3;
       if (ticdir > 0) {
 	x3 = -delx*0.015*norm + x1;
@@ -1876,9 +1899,10 @@ namespace FreeMat {
 	x3 = -delx*0.015*norm + x2;
 	y3 = -dely*0.015*norm + y2;
       }
-      if (!labels.empty())
+      if (!labels.empty()) {
 	DrawLabel(gc,-delx,-dely,x3,y3,color,
 		  labels[i % labels.size()]);
+      }
       // For a 2D view, draw the opposite tick marks too
       if (Is2DView()) {
 	gc.toPixels(t*unitx+px2,
@@ -1886,7 +1910,9 @@ namespace FreeMat {
 		    t*unitz+pz2,x1,y1);
 	x2 = -delx*ticlen*ticdir + x1;
 	y2 = -dely*ticlen*ticdir + y1;
+	gc.setupDirectDraw();
 	gc.line(x1,y1,x2,y2);
+	gc.releaseDirectDraw();
       }
     }
     // Get the maximum tick metric
@@ -2039,7 +2065,7 @@ namespace FreeMat {
     if (GetParentFigure() == NULL) return;
     SetupProjection(gc);
     SetupAxis(gc);
-    UpdateState(gc);
+    UpdateState();
     if (StringCheck("visible","on")) {
       DrawBox(gc);
       DrawGridLines(gc);

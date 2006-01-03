@@ -3,7 +3,7 @@
 #include <qpainter.h>
 #include <math.h>
 
-namespace FreeMat {
+//namespace FreeMat {
   GLRenderEngine::GLRenderEngine(QGLWidget *widget, double x1, double y1,
 				 double width, double height) {
     m_x1 = x1;
@@ -209,7 +209,28 @@ namespace FreeMat {
     glEnd();
   }
 
-  void GLRenderEngine::setupDirectDraw() {
+void GLRenderEngine::debug() {
+  double tmodel[16];
+  double tproj[16];
+  int tviewp[4];
+  glGetDoublev(GL_MODELVIEW_MATRIX,tmodel);
+  glGetDoublev(GL_PROJECTION_MATRIX,tproj);
+  glGetIntegerv(GL_VIEWPORT,tviewp);
+  qDebug("GL Modelview matrix (before setupdirect)");
+  qDebug("%f %f %f %f",tmodel[0],tmodel[4],tmodel[8],tmodel[12]);
+  qDebug("%f %f %f %f",tmodel[1],tmodel[5],tmodel[9],tmodel[13]);
+  qDebug("%f %f %f %f",tmodel[2],tmodel[6],tmodel[10],tmodel[14]);
+  qDebug("%f %f %f %f",tmodel[3],tmodel[7],tmodel[11],tmodel[15]);
+  qDebug("GL Projection matrix (before setupdirect)");
+  qDebug("%f %f %f %f",tproj[0],tproj[4],tproj[8],tproj[12]);
+  qDebug("%f %f %f %f",tproj[1],tproj[5],tproj[9],tproj[13]);
+  qDebug("%f %f %f %f",tproj[2],tproj[6],tproj[10],tproj[14]);
+  qDebug("%f %f %f %f",tproj[3],tproj[7],tproj[11],tproj[15]);
+  qDebug("GL Viewport (before setupdirect)");
+  qDebug("%d %d %d %d",tviewp[0],tviewp[1],tviewp[2],tviewp[3]);  
+}
+
+void GLRenderEngine::setupDirectDraw() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -427,13 +448,19 @@ namespace FreeMat {
     m_widget->deleteTexture(texid);
   }
 
-  void GLRenderEngine::quadFills(std::vector<std::vector<cpoint> > quads) {
+void GLRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
+				std::vector<std::vector<cpoint> > edges, bool flatedges) {
+    qDebug("Begin quad strips");
     glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
+    if (flatfaces)
+      glShadeModel(GL_FLAT);
+    else
+      glShadeModel(GL_SMOOTH);
     glPolygonOffset(2,2);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    for (int i=0;i<quads.size();i++) {
-      std::vector<cpoint> qlist(quads[i]);
+    for (int i=0;i<faces.size();i++) {
+      std::vector<cpoint> qlist(faces[i]);
       glBegin(GL_QUAD_STRIP);
       for (int j=0;j<qlist.size();j++) {
 	glColor4f(qlist[j].r,qlist[j].g,qlist[j].b,qlist[j].a);
@@ -442,12 +469,13 @@ namespace FreeMat {
       glEnd();
     }
     glDisable(GL_POLYGON_OFFSET_FILL);
-  }
-
-  void GLRenderEngine::quadLines(std::vector<std::vector<cpoint> > quads) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    for (int i=0;i<quads.size();i++) {
-      std::vector<cpoint> qlist(quads[i]);
+    if (flatedges)
+      glShadeModel(GL_FLAT);
+    else
+      glShadeModel(GL_SMOOTH);
+    for (int i=0;i<edges.size();i++) {
+      std::vector<cpoint> qlist(edges[i]);
       glBegin(GL_QUAD_STRIP);
       for (int j=0;j<qlist.size();j++) {
 	glColor4f(qlist[j].r,qlist[j].g,qlist[j].b,qlist[j].a);
@@ -455,12 +483,6 @@ namespace FreeMat {
       }
       glEnd();
     }
+    qDebug("End quad strips");
   }
-
-  void GLRenderEngine::flatshade(bool flag) {
-    if (flag)
-      glShadeModel(GL_FLAT);
-    else
-      glShadeModel(GL_SMOOTH);
-  }
-}
+//}

@@ -1,13 +1,15 @@
 #include "HandleFigure.hpp"
 #include "HandleList.hpp"
 #include "HandleCommands.hpp"
-
+#include <math.h>
 #include <qgl.h>
 #include <math.h>
 
 namespace FreeMat {
   
   HandleFigure::HandleFigure() {
+    m_width = 640;
+    m_height = 480;
     ConstructProperties();
     SetupDefaults();
   }
@@ -22,17 +24,12 @@ namespace FreeMat {
     AddProperty(new HPFourVector,"position");
     AddProperty(new HPString,"type");
     AddProperty(new HPArray,"userdata");
+    AddProperty(new HPNextPlotMode,"nextplot");
   }
 
-  void HSVTORGB(double h, double s, double v,
-		double &r, double &g, double &b) {
+  void HSVRAMP(double h, double &r, double &g, double &b) {
     int i;
     double f, p, q, t;
-    if( s == 0 ) {
-      // achromatic (grey)
-      r = g = b = v;
-      return;
-    }
     h *= 6;                        // sector 0 to 5
     i = floor( h );
     f = h - i;                    // fractional part of h
@@ -41,34 +38,22 @@ namespace FreeMat {
     t = f ;
     switch( i ) {
     case 0:
-      r = v;
-      g = t;
-      b = p;
+      r = 1;      g = t;      b = p;
       break;
     case 1:
-      r = q;
-      g = v;
-      b = p;
+      r = q;      g = 1;      b = p;
       break;
     case 2:
-      r = p;
-      g = v;
-      b = t;
+      r = p;      g = 1;      b = t;
       break;
     case 3:
-      r = p;
-      g = q;
-      b = v;
+      r = p;      g = q;      b = 1;
       break;
     case 4:
-      r = t;
-      g = p;
-      b = v;
+      r = t;      g = p;      b = 1;
       break;
     default:                // case 5:
-      r = v;
-      g = p;
-      b = q;
+      r = 1;      g = p;      b = q;
       break;
     }
   }
@@ -77,10 +62,8 @@ namespace FreeMat {
     std::vector<double> cmap;
     for (int i=0;i<64;i++) {
       double h = i/(64.0);
-      double s = 1;
-      double v = 1;
       double r, g, b;
-      HSVTORGB(h,s,v,r,g,b);
+      HSVRAMP(h,r,g,b);
       cmap.push_back(r);
       cmap.push_back(g);
       cmap.push_back(b);

@@ -123,6 +123,7 @@ namespace FreeMat {
     // draw the text
     HPColor *tc = (HPColor*) LookupProperty("color");
     gc.putText(x,y,text,tc->Data(),xalign,yalign,fnt,rotation);
+    gc.releaseDirectDraw();
   }
 
   void HandleText::SetupDefaults() {

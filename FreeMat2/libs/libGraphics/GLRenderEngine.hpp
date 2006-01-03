@@ -4,7 +4,7 @@
 #include "RenderEngine.hpp"
 #include <qgl.h>
 
-namespace FreeMat {
+//namespace FreeMat {
   class GLRenderEngine : public RenderEngine {
     double model[16];
     double proj[16];
@@ -12,6 +12,7 @@ namespace FreeMat {
     double m_x1, m_y1, m_width, m_height;
     QGLWidget *m_widget;
   public:
+    void debug();
     GLRenderEngine(QGLWidget *widget, double x1, double y1, 
 		   double width, double height);
     ~GLRenderEngine();
@@ -73,10 +74,9 @@ namespace FreeMat {
     virtual void circleFill(double x1, double y1, double radius); 
     virtual void drawImage(double x1, double y1, double x2, double y2,
 			   QImage pic);
-    virtual void quadFills(std::vector<std::vector<cpoint> > quads);
-    virtual void quadLines(std::vector<std::vector<cpoint> > quads);
-    virtual void flatshade(bool flag);
+    virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
+			    std::vector<std::vector<cpoint> > edges, bool flatedges);
   };
-};
+//};
 
 #endif

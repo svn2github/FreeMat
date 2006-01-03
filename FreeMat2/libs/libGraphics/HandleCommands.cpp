@@ -2,7 +2,9 @@
 #include "HandleFigure.hpp"
 #include <qgl.h>
 #include "GLRenderEngine.hpp"
+#include "QTRenderEngine.hpp"
 #include <QMouseEvent>
+#include <QPainter>
 #include "HandleLineSeries.hpp"
 #include "HandleText.hpp"
 #include "HandleAxis.hpp"
@@ -46,16 +48,58 @@ namespace FreeMat {
       save->setFocus();
   }
 
-
-
-  class BaseFigure : public QGLWidget {
-    float beginx, beginy;
-    bool elevazim;
+  class BaseFigure {
+  protected:
     unsigned handle;
   public:
     HandleFigure *hfig;
     BaseFigure(unsigned ahandle);
     unsigned Handle();
+    virtual void Show() = 0;
+  };
+
+  BaseFigure::BaseFigure(unsigned ahandle) {
+    handle = ahandle;
+    hfig = new HandleFigure;
+  }
+
+  unsigned BaseFigure::Handle() {
+    return handle;
+  }
+  
+  class BaseFigureQt : public BaseFigure, public QWidget {
+  public:
+    BaseFigureQt(unsigned ahandle);
+    void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
+    virtual void Show() {QWidget::show();};
+  };
+
+  void BaseFigureQt::resizeEvent(QResizeEvent *e) {
+    QWidget::resizeEvent(e);
+    hfig->resizeGL(width(),height());
+  }
+
+  void BaseFigureQt::paintEvent(QPaintEvent *e) {
+    QWidget::paintEvent(e);
+    QPainter pnt(this);
+    QTRenderEngine gc(&pnt,0,0,width(),height());
+    hfig->PaintMe(gc);
+  }
+
+  BaseFigureQt::BaseFigureQt(unsigned ahandle) :
+    BaseFigure(ahandle), QWidget() {
+    hfig->resizeGL(width(),height());
+    char buffer[1000];
+    sprintf(buffer,"Figure %d",handle+1);
+    setWindowTitle(buffer);
+  }
+
+  class BaseFigureGL : public BaseFigure, public QGLWidget {
+    float beginx, beginy;
+    bool elevazim;
+  public:
+    BaseFigureGL(unsigned ahandle);
     virtual void initializeGL();
     virtual void paintGL();
     virtual void resizeGL(int width, int height);
@@ -63,8 +107,8 @@ namespace FreeMat {
     void mousePressEvent(QMouseEvent* e);
     void mouseMoveEvent(QMouseEvent* e);
     void mouseReleaseEvent(QMouseEvent* e);
+    virtual void Show() {QWidget::show();};
   };
-
 
   static void NewFig() {
     // First search for an unused fig number
@@ -77,9 +121,9 @@ namespace FreeMat {
     if (!figFree) {
       throw Exception("No more fig handles available!  Close some figs...");
     }
-    Hfigs[figNum] = new BaseFigure(figNum);
+    Hfigs[figNum] = new BaseFigureQt(figNum);
     SaveFocus();
-    Hfigs[figNum]->show();
+    Hfigs[figNum]->Show();
     RestoreFocus();
     HcurrentFig = figNum;
   }
@@ -92,29 +136,23 @@ namespace FreeMat {
 
 
   static void SelectFig(int fignum) {
-    if (Hfigs[fignum] == NULL) {
-      Hfigs[fignum] = new BaseFigure(fignum);
-    }
+    if (Hfigs[fignum] == NULL)
+      Hfigs[fignum] = new BaseFigureQt(fignum);
     SaveFocus();
-    Hfigs[fignum]->show();
+    Hfigs[fignum]->Show();
     RestoreFocus();
     HcurrentFig = fignum;
   }
 
-  BaseFigure::BaseFigure(unsigned ahandle) :
-    QGLWidget() {
-      hfig = new HandleFigure;
-      handle = ahandle;
-      char buffer[1000];
-      sprintf(buffer,"Figure %d",handle+1);
-      setWindowTitle(buffer);
+  BaseFigureGL::BaseFigureGL(unsigned ahandle) :
+    BaseFigure(ahandle), QGLWidget() {
+    hfig->resizeGL(width(),height());
+    char buffer[1000];
+    sprintf(buffer,"Figure %d",handle+1);
+    setWindowTitle(buffer);
   }
 
-  unsigned BaseFigure::Handle() {
-    return handle;
-  }
-
-  void BaseFigure::initializeGL() {
+  void BaseFigureGL::initializeGL() {
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -123,16 +161,16 @@ namespace FreeMat {
     glEnable(GL_TEXTURE_2D);
   }
 
-  void BaseFigure::paintGL() {
+  void BaseFigureGL::paintGL() {
     GLRenderEngine gc(this,0,0,width(),height());
     hfig->PaintMe(gc);
   }
 
-  void BaseFigure::resizeGL(int width, int height) {
+  void BaseFigureGL::resizeGL(int width, int height) {
     hfig->resizeGL(width,height);
   }
 
-  void BaseFigure::mousePressEvent(QMouseEvent* e) {
+  void BaseFigureGL::mousePressEvent(QMouseEvent* e) {
     if (e->button() & Qt::LeftButton)
       elevazim = true;
     else
@@ -141,7 +179,7 @@ namespace FreeMat {
     beginy = e->y();
   }
 
-  void BaseFigure::mouseMoveEvent(QMouseEvent* e) {
+  void BaseFigureGL::mouseMoveEvent(QMouseEvent* e) {
     if (elevazim) {
       elev -= (e->y() - beginy);
       azim += (e->x() - beginx);
@@ -153,12 +191,11 @@ namespace FreeMat {
     }
     beginx = e->x();
     beginy = e->y();
-    updateGL();
+    //    updateGL();
   }
   
-  void BaseFigure::mouseReleaseEvent(QMouseEvent* e) {
+  void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
   }
-
   
   HandleObject* LookupHandleObject(unsigned handle) {
     return (objectset.lookupHandle(handle-HANDLE_OFFSET_OBJECT));
@@ -239,7 +276,6 @@ namespace FreeMat {
 	fp->LookupProperty(propname)->Set(t[1]);
 	t.erase(t.begin(),t.begin()+2);
       }
-      fp->UpdateState();
       // Get the current figure
       HandleFigure *fig = CurrentFig();
       fp->SetPropertyHandle("parent",HcurrentFig+1);
@@ -249,6 +285,7 @@ namespace FreeMat {
       std::vector<unsigned> children(hp->Data());
       children.push_back(handle);
       hp->Data(children);
+      fp->UpdateState();
       return singleArrayVector(Array::uint32Constructor(handle));
     } else {
       unsigned int handle = (unsigned int) ArrayToInt32(arg[0]);

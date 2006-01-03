@@ -30,7 +30,8 @@ HandleLineSeries.hpp \
 RenderEngine.hpp \
 HandleCommands.hpp \
 HandleImage.hpp \
-HandleSurface.hpp
+HandleSurface.hpp \
+QTRenderEngine.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -57,7 +58,8 @@ HandleLineSeries.cpp \
 RenderEngine.cpp \
 HandleCommands.cpp \
 HandleImage.cpp \
-HandleSurface.cpp
+HandleSurface.cpp \
+QTRenderEngine.cpp
 
 DEPENDPATH += INCLUDEPATH
 

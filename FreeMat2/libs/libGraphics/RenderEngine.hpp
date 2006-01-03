@@ -5,7 +5,7 @@
 #include <string>
 #include <qfont.h>
 
-namespace FreeMat {
+//namespace FreeMat {
   class cpoint {
   public:
     double x;
@@ -22,6 +22,7 @@ namespace FreeMat {
 
   class RenderEngine {
   public:
+    virtual void debug() = 0;
     enum AlignmentFlag {Min, Mean, Max};
     enum SymbolType {Plus,Circle,Star,Dot,Times,Square,Diamond,Up,Down,Right,Left,Pentagram,Hexagram,None};
     RenderEngine() {};
@@ -34,8 +35,6 @@ namespace FreeMat {
 			double tx, double ty, double tz,
 			double ux, double uy, double uz) = 0;
     virtual void scale(double sx, double sy, double sz) = 0;
-    virtual void unitx(double &x, double &y, double &z) = 0;
-    virtual void unity(double &x, double &y, double &z)  = 0;
     virtual void mapPoint(double x, double y, double z,
 			  double &a, double &b, double &c) = 0;
     virtual void project(double xmin, double xmax, double ymin, double ymax,
@@ -57,6 +56,7 @@ namespace FreeMat {
 			 double x3, double y3, double z3) = 0;
     virtual void color(std::vector<double>) = 0;
     virtual void setLineStyle(std::string style) = 0;
+    void color(double r, double g, double b) {std::vector<double> t; t.push_back(r); t.push_back(g); t.push_back(b); color(t);}
     virtual void lineWidth(double n) = 0;
     virtual void line(double x1, double y1, double z1,
 		      double x2, double y2, double z2) = 0;
@@ -83,9 +83,8 @@ namespace FreeMat {
     virtual void circleFill(double x1, double y1, double radius) = 0;
     virtual void drawImage(double x1, double y1, double x2, double y2,
 			   QImage pic) = 0;
-    virtual void quadFills(std::vector<std::vector<cpoint> > quads) = 0;
-    virtual void quadLines(std::vector<std::vector<cpoint> > quads) = 0;
-    virtual void flatshade(bool flag) = 0;
+    virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
+			    std::vector<std::vector<cpoint> > edges, bool flatedges) = 0;
   };
   
   void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
@@ -95,6 +94,6 @@ namespace FreeMat {
 		  double width);
 
   RenderEngine::SymbolType StringToSymbol(std::string);
-}
+//}
 
 #endif

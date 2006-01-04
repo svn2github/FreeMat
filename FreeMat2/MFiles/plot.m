@@ -7,7 +7,7 @@ function h = plot(varargin)
        varargin(1) = [];
        nargin = nargin - 1;
     else   
-       handle = gca;
+       handle = newplot;
     end
   end
   % search for the propertyname/value pairs
@@ -95,20 +95,7 @@ function k = tplotvector(handle,x,y,lineprops)
   colororder = get(handle,'colororder');
   % select the row using a modulo
   ndxmod = uint32(mod(ndx-1,size(colororder,1))+1);
-  k = line('xdata',x,'ydata',y,'parent',handle,'color',colororder(ndxmod,:),lineprops{:});
-  set(handle,'children',[get(handle,'children'),k]);
-  if (strcmp(get(handle,'xlimmode'),'auto'))
-    xlim = get(handle,'xlim');
-    xlim(1) = min(xlim(1),min(x));
-    xlim(2) = max(xlim(2),max(x));
-    set(handle,'xlim',xlim);
-  end
-  if (strcmp(get(handle,'ylimmode'),'auto'))
-    ylim = get(handle,'ylim');
-    ylim(1) = min(ylim(1),min(y));
-    ylim(2) = max(ylim(2),max(y));
-    set(handle,'ylim',ylim);
-  end
+  k = line('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
 
 function b = islinespec(t,&colorspec,&markerspec,&linespec)
 % try to parse a string out as a linespec

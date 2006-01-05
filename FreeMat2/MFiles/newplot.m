@@ -10,7 +10,6 @@ if (strcomp(ax_mode,'replace'))
      cla;
 end
 h = gca;
-return;
 
 
 

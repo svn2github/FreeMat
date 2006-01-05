@@ -91,7 +91,7 @@ namespace FreeMat {
     BaseFigure(ahandle), QWidget() {
     hfig->resizeGL(width(),height());
     char buffer[1000];
-    sprintf(buffer,"Figure %d",handle+1);
+    sprintf(buffer,"Figure %d",Handle()+1);
     setWindowTitle(buffer);
   }
 
@@ -148,7 +148,7 @@ namespace FreeMat {
     BaseFigure(ahandle), QGLWidget() {
     hfig->resizeGL(width(),height());
     char buffer[1000];
-    sprintf(buffer,"Figure %d",handle+1);
+    sprintf(buffer,"Figure %d",ahandle+1);
     setWindowTitle(buffer);
   }
 
@@ -464,7 +464,7 @@ namespace FreeMat {
     context->addFunction("axes",HAxesFunction,-1,1);
     context->addFunction("line",HLineFunction,-1,1);
     context->addFunction("text",HTextFunction,-1,1);
-    context->addFunction("image",HImageFunction,-1,1);
+    context->addFunction("himage",HImageFunction,-1,1);
     context->addFunction("surface",HSurfaceFunction,-1,1);
     context->addFunction("set",HSetFunction,-1,0);
     context->addFunction("get",HGetFunction,2,1,"handle","propname");

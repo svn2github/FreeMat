@@ -140,6 +140,18 @@ namespace FreeMat {
     void Value(double x, double y, double z, double w) {At(0) = x; At(1) = y; At(2) = z; At(3) = w;}
   };
 
+  class HPSixVector : public HPFixedVector {
+  public:
+    HPSixVector() : HPFixedVector(6) {}
+    virtual ~HPSixVector() {}
+    void Value(double x1, double x2,
+	       double y1, double y2,
+	       double z1, double z2) {
+      At(0) = x1; At(1) = x2; 
+      At(2) = y1; At(3) = y2;
+      At(4) = z1; At(5) = z2;}
+  };
+
   class HPAutoManual : public HPConstrainedString {
   public:
     HPAutoManual();

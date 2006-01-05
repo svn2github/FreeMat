@@ -25,6 +25,7 @@ namespace FreeMat {
     AddProperty(new HPString,"type");
     AddProperty(new HPArray,"userdata");
     AddProperty(new HPNextPlotMode,"nextplot");
+    AddProperty(new HPTwoVector,"figsize");
   }
 
   void HSVRAMP(double h, double &r, double &g, double &b) {
@@ -100,6 +101,7 @@ namespace FreeMat {
   void HandleFigure::resizeGL(int width, int height) {
     m_width = width;
     m_height = height;
+    SetTwoVectorDefault("figsize",width,height);
     resized = true;
   }
 

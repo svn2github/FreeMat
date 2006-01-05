@@ -327,6 +327,7 @@ namespace FreeMat {
     AddProperty(new HPOnOff,"clipping");
     AddProperty(new HPColor,"color");
     AddProperty(new HPColorVector,"colororder");
+    AddProperty(new HPSixVector,"datalimits");
     AddProperty(new HPThreeVector,"dataaspectratio");
     AddProperty(new HPAutoManual,"dataaspectratiomode");
     AddProperty(new HPFontAngle,"fontangle");
@@ -1549,6 +1550,8 @@ namespace FreeMat {
       limits[4] = limits[4] - 0.5;
       limits[5] = limits[4] + 1;
     }
+    HPSixVector *hp = (HPSixVector*) LookupProperty("datalimits");
+    hp->Value(limits[0],limits[1],limits[2],limits[3],limits[4],limits[5]);
     if (x) SetTwoVectorDefault("xlim",limits[0],limits[1]);
     if (y) SetTwoVectorDefault("ylim",limits[2],limits[3]);
     if (z) SetTwoVectorDefault("zlim",limits[4],limits[5]);

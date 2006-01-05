@@ -225,7 +225,7 @@ namespace FreeMat {
     gc.toPixels(xp->Data()[0],yp->Data()[0],0,x1,y1);
     gc.toPixels(xp->Data()[1],yp->Data()[1],0,x2,y2);
     if ((abs(x2-x1)> 4096) || (abs(y2-y1) > 4096)) return;
-    img = img.scaled(abs(x2-x1)+1,abs(y2-y1)+1);
+    img = img.scaled(abs(x2-x1),abs(y2-y1));
     gc.drawImage(xp->Data()[0],yp->Data()[0],xp->Data()[1],yp->Data()[1],img);
   }
 }

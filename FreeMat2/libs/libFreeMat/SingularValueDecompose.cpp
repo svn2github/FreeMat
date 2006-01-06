@@ -202,11 +202,9 @@ namespace FreeMat {
     //*
     int INFO;
     // LWORK Calculation does not work in Lapack3
-    if (JOBZ == 'N')
-      LWORK = 3*min(M,N) + max(max(M,N),6*min(M,N));
-    else
-      LWORK = 3*min(M,N)*min(M,N) +
-	max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N));
+    LWORK = max(3*min(M,N) + max(max(M,N),6*min(M,N)),
+		3*min(M,N)*min(M,N) +
+		max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N)));
     WORK = (float*) Malloc(LWORK*sizeof(float));
     sgesdd_( &JOBZ, &M, &N, A, &LDA, S, U, &LDU, VT, &LDVT, 
 	     WORK, &LWORK, IWORK,&INFO);
@@ -250,11 +248,9 @@ namespace FreeMat {
     IWORK = (int*) Malloc(8*minMN*sizeof(int));
     int INFO;
     // LWORK Calculation does not work in Lapack3
-    if (JOBZ == 'N')
-      LWORK = 3*min(M,N) + max(max(M,N),6*min(M,N));
-    else
-      LWORK = 3*min(M,N)*min(M,N) +
-	max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N));
+    LWORK = max(3*min(M,N) + max(max(M,N),6*min(M,N)),
+		3*min(M,N)*min(M,N) +
+		max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N)));
     WORK = (double*) Malloc(LWORK*sizeof(double));
     dgesdd_( &JOBZ, &M, &N, A, &LDA, S, U, &LDU, VT, &LDVT, 
 	     WORK, &LWORK, IWORK,&INFO);

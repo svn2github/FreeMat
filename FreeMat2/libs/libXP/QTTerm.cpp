@@ -232,6 +232,8 @@ void QTTerm::BeginDraw() {
   paint = new QPainter(&surface);
   paint->setFont(QWidget::font());
   paint->setPen(Qt::black);
+  paint->setRenderHint(QPainter::TextAntialiasing);
+  paint->setRenderHint(QPainter::Antialiasing);
 #ifndef QT3
   paint->setBackground(QBrush(Qt::white));
 #endif

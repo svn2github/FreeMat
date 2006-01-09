@@ -40,14 +40,14 @@ QTTerm.cpp \
 QPainterDrawEngine.cpp \
 PSDrawEngine.cpp
 
-win32 {
 QT += qt3support
+
+win32 {
 SOURCES += qprintengine_ps.cpp qpsprinter.cpp
 HEADERS += qprintengine_ps_p.h qpsprinter.h 
 }
 
 mac {
-QT += qt3support
 HEADERS += qprintengine_ps_p.h qpsprinter.h 
 SOURCES += qprintengine_ps.cpp qpsprinter.cpp
 }

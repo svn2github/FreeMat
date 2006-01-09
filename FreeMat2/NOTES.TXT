@@ -1,22 +1,37 @@
-1.  Finish properties for surface plots - markers & texture mapping?
+ACTIVE
+
+IDEAS - auto tick calculation --> paint code
+
 4.  Rewrite legend function to use multiple axes
 6.  Fix axis limits so that objects aren't truncated...
 7.  view - command doesn't work right (also, camera target mode/etc.)
 8.  axis annotation for view 2
 10. Handle graphics documentation/class documentation
 11. prebuilt packaging
-12. prod(svd(rand(3))) --> core dump
-13. Need refresh on set
-14. plot3
 15. What about rotation buttons
 16. User control of figure sizes
-17. Image sizes
-18. OpenGL activation
 19. Colormap
 20. Colorbar
 21. Clim
 22. Surf/Surfc, imagesc
+23. Printing
+27. builtin function masking (ala surface.m, for example)
+29. Surface gaps
+30. Handle axis packing
+
+CLOSED
+24. Tick counts
+1.  Finish properties for surface plots - markers & texture mapping?
 23. subplot --> area of intersection
+12. prod(svd(rand(3))) --> core dump
+14. plot3
+18. OpenGL activation
+25. Close notification for figures
+26. Raise/show/activate figures
+13. Need refresh on set
+17. Image sizes
+28. Spacing aroung figure
+
 
 A few notes on what needs to still be fixed:
 

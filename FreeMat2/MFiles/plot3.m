@@ -1,4 +1,4 @@
-function h = plot(varargin)
+function h = plot3(varargin)
   % Check for an axes handle
   if (nargin>=2)
     if (isnumeric(varargin{1}) & (length(varargin{1})==1) & ...
@@ -9,8 +9,6 @@ function h = plot(varargin)
     else   
        handle = newplot;
     end
-  else
-    handle = newplot;
   end
   % search for the propertyname/value pairs
   propstart = 0;
@@ -29,59 +27,41 @@ function h = plot(varargin)
   h = [];
   while (~isempty(varargin))
     cs = ''; ms = ''; ps = '';
-    if (length(varargin) == 1)
-      h = [h,plot_single(varargin{1},handle,propset)];
-      varargin(1) = [];
-    elseif (islinespec(varargin{2},cs,ms,ps))
-      h = [h,plot_single(varargin{1},handle,CompleteProps(cs,ms,ps,propset))];
-      varargin(1:2) = [];
-    elseif (length(varargin) ==2)
-      h = [h,plot_double(varargin{1},varargin{2},handle,propset)];
-      varargin(1:2) = [];
-    elseif (islinespec(varargin{3},cs,ms,ps))
-      h = [h,plot_double(varargin{1},varargin{2},handle,...
-           CompleteProps(cs,ms,ps,propset))];
+    if (length(varargin) < 3)
+      error('plot3 requires triplets of x, y, z coordinates');
+    end;
+    if (length(varargin) == 3 | (length(varargin) > 3) & ~islinespec(varargin{4},cs,ms,ps))
+      h = [h,plot_triplet(varargin{1},varargin{2},varargin{3},handle,propset)];
       varargin(1:3) = [];
-    else
-      h = [h,plot_double(varargin{1},varargin{2},handle,propset)];
-      varargin(1:2) = [];
-    end
-end
+    elseif ((length(varargin) >= 4) & islinespec(varargin{4},cs,ms,ps))
+      h = [h,plot_triplet(varargin{1},varargin{2},varargin{3},handle,propset)];
+      varargin(1:4) = [];
+    end;
+  end
     
-function h = plot_single(Y,handle,lineprops)
+function h = plot_triplet(X,Y,Z,handle,lineprops)
     h = [];
-    if (isvec(Y)) Y = Y(:); end;
-    if (isreal(Y))
-      n = 1:size(Y,1);
-      for i=1:size(Y,2)
-	h = [h,tplotvector(handle,n,Y(:,i),lineprops)];
-      end
-    else
-      for i=1:size(Y,2)
-	h = [h,tplotvector(handle,real(Y(:,i)),imag(Y(:,i)),lineprops)];
-      end      
-    end
-
-function h = plot_double(X,Y,handle,lineprops)
-    h = [];
-    if (isvec(X) & ~isvec(Y))
-      X = matchmat(Y,X);
-    elseif (~isvec(X) & isvec(Y))
-      Y = matchmat(X,Y);
+    if ((isvec(X) | isvec(Y) | isvec(Z)) & (~isvec(X) | ~isvec(Y) | ~isvec(Z)))
+      rows = max([size(X,1),size(Y,1),size(Z,1)]);
+      cols = max([size(X,2),size(Y,2),size(Z,2)]);
+      X = expandmat(X,rows,cols);
+      Y = expandmat(Y,rows,cols);
+      Z = expandmat(Z,rows,cols);
     end
     if (isvec(X)), X = X(:); end;
     if (isvec(Y)), Y = Y(:); end;
-    for i=1:size(Y,2)
-      h = [h,tplotvector(handle,X(:,i),Y(:,i),lineprops)];
+    if (isvec(Z)), Z = Z(:); end;
+    for i=1:size(Z,2)
+      h = [h,tplotvector(handle,X(:,i),Y(:,i),Z(:,i),lineprops)];
     end
 
-function x = matchmat(a,b)
-if (length(b) == size(a,1))
-  x = repmat(b(:),[1,size(a,2)]);
-elseif (length(b) == size(a,2))
-  x = repmat(b(:)',[size(a,1),1]);
+function x = expandmat(a,rows,cols)
+if (length(b) == rows)
+  x = repmat(b(:),[1,cols]);
+elseif (length(b) == cols)
+  x = repmat(b(:)',[rows,1]);
 else
-  error('plot(X,Y) where one argument is a vector requires the other argument to have a matching dimension');
+  error('plot3(X,Y,Z) where one or more arguments are vectors requires the other arguments to have a matching dimension');
 end
 
 function q = CompleteProps(cs,ms,ps,p)
@@ -90,13 +70,14 @@ q = {'color',cs,'marker',ms,'linestyle',ps,'markeredgecolor',cs,'markerfacecolor
 function p = isvec(x)
 p = (ndims(x) == 2) & ((size(x,1) == numel(x)) | (size(x,2) == numel(x)));
 
-function k = tplotvector(handle,x,y,lineprops)
+function k = tplotvector(handle,x,y,z,lineprops)
+  set(handle,'color','w');
   ndx = length(get(handle,'children'))+1;
   % Get the colororder
   colororder = get(handle,'colororder');
   % select the row using a modulo
   ndxmod = uint32(mod(ndx-1,size(colororder,1))+1);
-  k = line('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
+  k = line('xdata',x,'ydata',y,'zdata',z,'color',colororder(ndxmod,:),lineprops{:});
 
 function b = islinespec(t,&colorspec,&markerspec,&linespec)
 % try to parse a string out as a linespec

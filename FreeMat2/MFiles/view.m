@@ -23,8 +23,16 @@ function T = view(varargin)
   el = el*pi/180;
   % The view point is first calculated by transforming to
   % spherical coordinates
-  z = sin(el);
-  y = -cos(el)*cos(az);
-  x = cos(el)*sin(az);
+  % Calculate the radius of the cube
+  xlim = get(gca,'xlim'); xmean = mean(xlim);
+  ylim = get(gca,'ylim'); ymean = mean(ylim);
+  zlim = get(gca,'zlim'); zmean = mean(zlim);
+  xmax = max(abs(xlim-xmean));
+  ymax = max(abs(ylim-ymean));
+  zmax = max(abs(zlim-zmean));
+  r = sqrt(xmax^2+ymax^2+zmax^2);
+  z = sin(el)*r + zmean;
+  y = -cos(el)*cos(az)*r + ymean;
+  x = cos(el)*sin(az)*r + xmean;
   set(gca,'cameraposition',[x,y,z],'cameraupvector',[0,0,1]);
   T = [];

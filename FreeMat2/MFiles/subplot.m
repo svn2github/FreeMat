@@ -16,7 +16,7 @@ function h = subplot(varargin)
     if (nargin >= 2), n = int32(varargin{2}(1)); end
     if (nargin >= 3), p = int32(varargin{3}); p = p(:); end
   end
-  row = int32(idiv(p-1,n)+1);
+  row = n+1-int32(idiv(p-1,n)+1);
   col = int32(mod(p-1,n)+1);
   width = 1.0/n;
   height = 1.0/m;
@@ -51,21 +51,13 @@ function h = subplot(varargin)
   end
 
 function b = intersects(rect1,rect2)
-  b = inside(rect1,rect2(1),rect2(2)) | ...
-      inside(rect1,rect2(1),rect2(2)+rect2(4)) | ...
-      inside(rect1,rect2(1)+rect2(3),rect2(2)) | ...
-      inside(rect1,rect2(1)+rect2(3),rect2(2)+rect2(4));
-%   printf('%1.1f %1.1f %1.1f %1.1f, %1.1f %1.1f %1.1f %1.1f, %d\n',...
-% 	 rect1(1),rect1(2),rect1(3),rect1(4),...
-% 	 rect2(1),rect2(2),rect2(3),rect2(4),...
-% 	 b);
-%   printf('%d %d %d %d\n',...
-% 	 inside(rect1,rect2(1),rect2(2)), ...
-% 	 inside(rect1,rect2(1),rect2(2)+rect2(4)), ...
-% 	 inside(rect1,rect2(1)+rect2(3),rect2(2)), ...
-% 	 inside(rect1,rect2(1)+rect2(3),rect2(2)+rect2(4)));
-%   keyboard
-	 
-function b = inside(rect,x,y)
-  b = (x>=rect(1)) & (x<(rect(1)+rect(3))) & ...
-      (y>=rect(2)) & (y<(rect(2)+rect(4)));
+  nleft = max(rect1(1),rect2(1));
+  nbottom = max(rect1(2),rect2(2));
+  nright = min(rect1(1)+rect1(3),rect2(1)+rect2(3));
+  ntop = min(rect1(2)+rect1(4),rect2(2)+rect2(4));
+  if ((nright <= nleft) | (ntop <= nbottom))
+    b = 0;
+  else
+    area = (nright-nleft)*(ntop-nbottom);
+    b = area > .01;
+  end

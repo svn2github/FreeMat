@@ -1705,14 +1705,6 @@ break;
     return Array(FM_DOUBLE,dim,data);
   }
 
-  Array Array::doubleMatrixConstructor(int rows, int cols) {
-    Dimensions dim(2);
-    dim[0] = rows;
-    dim[1] = cols;
-    double *data = (double *) allocateArray(FM_DOUBLE,rows*cols);
-    return Array(FM_DOUBLE,dim,data);
-  }
-
   Array Array::floatVectorConstructor(int len) {
     Dimensions dim;
     dim.makeScalar();
@@ -3762,14 +3754,6 @@ break;
     }
   }
 
-  int Array::rows() const {
-    return getDimensionLength(0);
-  }
-
-  int Array::columns() const {
-    return getDimensionLength(1);
-  }
-
   /**
    * Display this variable on the given output stream.
    */
@@ -4126,11 +4110,6 @@ break;
   int32 ArrayToInt32(const Array& a) {
     Array b(a);
     return b.getContentsAsIntegerScalar();
-  }
-
-  double ArrayToDouble(const Array& a) {
-    Array b(a);
-    return b.getContentsAsDoubleScalar();
   }
 
   int32 Array::rows() const {

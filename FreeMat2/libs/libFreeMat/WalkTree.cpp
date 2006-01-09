@@ -2839,6 +2839,7 @@ namespace FreeMat {
   }
 
   void WalkTree::pushDebug(std::string fname, std::string detail) {
+    char buffer[4096];
     cstack.push_back(stackentry(ip_funcname,ip_detailname,ip_context));
     ip_funcname = fname;
     ip_detailname = detail;

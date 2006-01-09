@@ -7,6 +7,7 @@
 #include <QImage>
 #include <QImageWriter>
 #include "HandleLineSeries.hpp"
+#include "HandleObject.hpp"
 #include "HandleText.hpp"
 #include "HandleAxis.hpp"
 #include "HandleImage.hpp"
@@ -381,7 +382,7 @@ namespace FreeMat {
   bool PrintBaseFigure(HandleWindow* g, std::string filename, 
 		       std::string type) {
     bool retval;
-    HPColor *color = (HPColor*) LookupProperty("color");
+    HPColor *color = (HPColor*) g->HFig()->LookupProperty("color");
     g->HFig()->SetThreeVectorDefault("color",1,1,1);
     if ((type == "PDF") || (type == "PS") || (type == "EPS")){
       QPrinter prnt;

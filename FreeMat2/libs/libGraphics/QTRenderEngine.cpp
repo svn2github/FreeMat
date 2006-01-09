@@ -269,6 +269,7 @@ void QTRenderEngine::project(double left, double right,
   
 void QTRenderEngine::viewport(double x0, double y0, double width, double height) {
   viewp[0] = x0; viewp[1] = y0; viewp[2] = width; viewp[3] = height;
+  pnt->setClipRect(x0,m_height-(y0+height),width,height);
 }
 
 void QTRenderEngine::quad(double x1, double y1, double z1,

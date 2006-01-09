@@ -241,7 +241,7 @@ namespace FreeMat {
 		      std::vector<std::string> &tlabels) {
     bool integerMode = false;
     double tBegin, tEnd;
-    double delt = (tMax-tMin)/tickcount;
+    double delt = (tMax-tMin)/(tickcount);
     int n = ceil(log10(delt));
     double rdelt = delt/pow(10.0,(double)n);
     int p = floor(log2(rdelt));
@@ -254,10 +254,17 @@ namespace FreeMat {
     if ((tMin == rint(tMin)) && (tMax == rint(tMax))) {
       tStart = tMin;
       tStop = tMax;
-      tDelt = (tStop - tStart)/tickcount;
-      if ((tMax-tMin) > 4) integerMode = true;
+      if ((((int)(tMax-tMin)) % 2) == 0) {
+	if ((tickcount % 2) == 0)
+	  tickcount++;
+      } else {
+	if ((tickcount % 2) == 1)
+	  tickcount++;
+      }
+      tDelt = (tStop - tStart)/(tickcount);
+      //      if ((tMax-tMin) > 4) integerMode = true;
     }
-//     qDebug("tmin = %f tmax = %f integer mode = %d",tMin,tMax,integerMode);
+    //    qDebug("tmin = %f tmax = %f integer mode = %d, count = %d",tMin,tMax,integerMode,tickcount);
     tBegin = tStart;
     tEnd = tStop;
     int mprime;
@@ -269,10 +276,10 @@ namespace FreeMat {
     tlabels.clear();
     bool exponentialForm;
     exponentialForm = false;
+    qDebug("Format %f %f %d %d",tMin,tMax,tickcount,tCount);
     for (int i=0;i<tCount;i++) {
       double tloc = tBegin+i*tDelt;
-      if (integerMode)
-	tloc = rint(tloc);
+      qDebug("  Point %f",tloc);
       if (!isLogarithmic)
 	tickLocations.push_back(tloc);
       else
@@ -282,8 +289,6 @@ namespace FreeMat {
     }
     for (int i=0;i<tCount;i++) {
       double tloc = tBegin+i*tDelt;
-      if (integerMode)
-	tloc = rint(tloc);
       if (!isLogarithmic)
 	tlabels.push_back(TrimPrint(tloc,exponentialForm));
       else
@@ -726,12 +731,6 @@ namespace FreeMat {
     gc.lookAt(tv1->Data()[0],tv1->Data()[1],tv1->Data()[2],
 	      tv2->Data()[0],tv2->Data()[1],tv2->Data()[2],
 	      tv3->Data()[0],tv3->Data()[1],tv3->Data()[2]);
-    
-    double model[16];
-    gc.getModelviewMatrix(model);
-    for (int i=0;i<4;i++)
-      qDebug("%f %f %f %f",
-	     model[i*4],model[i*4+4],model[i*4+8],model[i*4+12]);
     // Scale using the data aspect ratio
     std::vector<double> dar(VectorPropertyLookup("dataaspectratio"));
     gc.scale(1.0/dar[0],1.0/dar[1],1.0/dar[2]);
@@ -774,6 +773,13 @@ namespace FreeMat {
     }
     gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
     gc.viewport(position[0],position[1],position[2],position[3]);
+
+    gc.getModelviewMatrix(model);
+    gc.getProjectionMatrix(proj);
+    gc.getViewport(viewp);
+//     for (int i=0;i<4;i++)
+//       qDebug("%f %f %f %f",
+// 	     model[i*4],model[i*4+4],model[i*4+8],model[i*4+12]);
   }
 
   void HandleAxis::DrawBox(RenderEngine &gc) {
@@ -1317,7 +1323,7 @@ namespace FreeMat {
     return numtics;
   }
 
-  void HandleAxis::RecalculateTicks() {
+  void HandleAxis::RecalculateTicks(RenderEngine &gc) {
     // We have to calculate the tick sets for each axis...
     std::vector<double> limits(GetAxisLimits());
     std::vector<double> xticks;
@@ -1326,15 +1332,13 @@ namespace FreeMat {
     std::vector<std::string> ylabels;
     std::vector<double> zticks;
     std::vector<std::string> zlabels;
-    // FIXME
     int xcnt, ycnt, zcnt;
-    //     xcnt = GetTickCount(gc,limits[0],x1pos[1],x1pos[2],
-    // 			limits[1],x1pos[1],x1pos[2]);
-    //     ycnt = GetTickCount(gc,y1pos[0],limits[2],y1pos[2],
-    // 			y1pos[0],limits[3],y1pos[2]);
-    //     zcnt = GetTickCount(gc,z1pos[0],z1pos[1],limits[4],
-    // 			z1pos[0],z1pos[1],limits[5]);
-    xcnt = 3; ycnt = 3; zcnt = 3;
+    xcnt = GetTickCount(gc,limits[0],x1pos[1],x1pos[2],
+			limits[1],x1pos[1],x1pos[2]);
+    ycnt = GetTickCount(gc,y1pos[0],limits[2],y1pos[2],
+			y1pos[0],limits[3],y1pos[2]);
+    zcnt = GetTickCount(gc,z1pos[0],z1pos[1],limits[4],
+			z1pos[0],z1pos[1],limits[5]);
     double xStart, xStop;
     double yStart, yStop;
     double zStart, zStop;
@@ -1521,10 +1525,6 @@ namespace FreeMat {
     for (int i=0;i<handles.size();i++) {
       HandleObject *fp = LookupHandleObject(handles[i]);
       std::vector<double> child_limits(fp->GetLimits());
-//       qDebug("child %d says limits are %f %f %f %f %f %f",
-// 	     handles[i],child_limits[0],child_limits[1],
-// 	     child_limits[2],child_limits[3],child_limits[4],
-// 	     child_limits[5]);
       if (!child_limits.empty()) {
 	if (first) {
 	  limits = child_limits;
@@ -1592,7 +1592,7 @@ namespace FreeMat {
     // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
     HandleFigure* fig = GetParentFigure();
     if (fig->Resized() || HasChanged("position")) {
-      RecalculateTicks();
+      //      RecalculateTicks();
     }
     // Limits
     bool xflag, yflag, zflag, aflag, cflag;
@@ -1703,8 +1703,9 @@ namespace FreeMat {
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraupvector");
       tv->Value(0,1,0);
     }
-    RecalculateTicks();
+    //    RecalculateTicks();
     ClearAllChanged();
+    fig->Repaint();
   }
 
   // The orientation of the label depends on the angle of the
@@ -2068,7 +2069,7 @@ namespace FreeMat {
     if (GetParentFigure() == NULL) return;
     SetupProjection(gc);
     SetupAxis(gc);
-    UpdateState();
+    RecalculateTicks(gc);
     if (StringCheck("visible","on")) {
       DrawBox(gc);
       DrawGridLines(gc);

@@ -1,10 +1,11 @@
 #include "HandleCommands.hpp"
 #include "HandleFigure.hpp"
 #include <qgl.h>
-#include "GLRenderEngine.hpp"
-#include "QTRenderEngine.hpp"
 #include <QMouseEvent>
 #include <QPainter>
+#include <QPrinter>
+#include <QImage>
+#include <QImageWriter>
 #include "HandleLineSeries.hpp"
 #include "HandleText.hpp"
 #include "HandleAxis.hpp"
@@ -12,6 +13,9 @@
 #include <qapplication.h>
 #include "HandleList.hpp"
 #include "HandleSurface.hpp"
+#include "HandleWindow.hpp"
+#include "QTRenderEngine.hpp"
+#include "Util.hpp"
 
 // Subplot
 // labels don't always appear properly.
@@ -23,92 +27,18 @@ namespace FreeMat {
 #define HANDLE_OFFSET_OBJECT 100000
 #define HANDLE_OFFSET_FIGURE 1
   
-  class BaseFigure;
-  
-  BaseFigure* Hfigs[MAX_FIGS];
+  HandleWindow* Hfigs[MAX_FIGS];
   int HcurrentFig = -1;
   
   // Magic constant - limits the number of figures you can have...
   
   HandleList<HandleObject*> objectset;
-  // These are globals for now... ultimately, they need to be handled
-  // differently...
-  int azim = 0;
-  int elev = 0;
-  int arot = 0;
 
-  static QWidget *save;
-
-  static void SaveFocus() {
-    save = qApp->focusWidget();
+  void NotifyFigureClosed(unsigned figNum) {
+    Hfigs[figNum] = NULL;
+    if (figNum == HcurrentFig)
+      HcurrentFig = -1;
   }
-  
-  static void RestoreFocus() {
-    if (save)
-      save->setFocus();
-  }
-
-  class BaseFigure {
-  protected:
-    unsigned handle;
-  public:
-    HandleFigure *hfig;
-    BaseFigure(unsigned ahandle);
-    unsigned Handle();
-    virtual void Show() = 0;
-  };
-
-  BaseFigure::BaseFigure(unsigned ahandle) {
-    handle = ahandle;
-    hfig = new HandleFigure;
-  }
-
-  unsigned BaseFigure::Handle() {
-    return handle;
-  }
-  
-  class BaseFigureQt : public BaseFigure, public QWidget {
-  public:
-    BaseFigureQt(unsigned ahandle);
-    void paintEvent(QPaintEvent *e);
-    void resizeEvent(QResizeEvent *e);
-    virtual void Show() {QWidget::show();};
-  };
-
-  void BaseFigureQt::resizeEvent(QResizeEvent *e) {
-    QWidget::resizeEvent(e);
-    hfig->resizeGL(width(),height());
-  }
-
-  void BaseFigureQt::paintEvent(QPaintEvent *e) {
-    QWidget::paintEvent(e);
-    QPainter pnt(this);
-    QTRenderEngine gc(&pnt,0,0,width(),height());
-    hfig->PaintMe(gc);
-  }
-
-  BaseFigureQt::BaseFigureQt(unsigned ahandle) :
-    BaseFigure(ahandle), QWidget() {
-    hfig->resizeGL(width(),height());
-    char buffer[1000];
-    sprintf(buffer,"Figure %d",Handle()+1);
-    setWindowTitle(buffer);
-  }
-
-  class BaseFigureGL : public BaseFigure, public QGLWidget {
-    float beginx, beginy;
-    bool elevazim;
-  public:
-    BaseFigureGL(unsigned ahandle);
-    virtual void initializeGL();
-    virtual void paintGL();
-    virtual void resizeGL(int width, int height);
-    // Support dragging...
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
-    void mouseReleaseEvent(QMouseEvent* e);
-    virtual void Show() {QWidget::show();};
-  };
 
   static void NewFig() {
     // First search for an unused fig number
@@ -121,9 +51,9 @@ namespace FreeMat {
     if (!figFree) {
       throw Exception("No more fig handles available!  Close some figs...");
     }
-    Hfigs[figNum] = new BaseFigureQt(figNum);
+    Hfigs[figNum] = new HandleWindow(figNum);
     SaveFocus();
-    Hfigs[figNum]->Show();
+    Hfigs[figNum]->show();
     RestoreFocus();
     HcurrentFig = figNum;
   }
@@ -131,82 +61,30 @@ namespace FreeMat {
   static HandleFigure* CurrentFig() {
     if (HcurrentFig == -1)
       NewFig();
-    return (Hfigs[HcurrentFig]->hfig);
+    return (Hfigs[HcurrentFig]->HFig());
   }
 
 
   static void SelectFig(int fignum) {
     if (Hfigs[fignum] == NULL)
-      Hfigs[fignum] = new BaseFigureQt(fignum);
+      Hfigs[fignum] = new HandleWindow(fignum);
     SaveFocus();
-    Hfigs[fignum]->Show();
+    Hfigs[fignum]->show();
+    Hfigs[fignum]->raise();
     RestoreFocus();
     HcurrentFig = fignum;
   }
 
-  BaseFigureGL::BaseFigureGL(unsigned ahandle) :
-    BaseFigure(ahandle), QGLWidget() {
-    hfig->resizeGL(width(),height());
-    char buffer[1000];
-    sprintf(buffer,"Figure %d",ahandle+1);
-    setWindowTitle(buffer);
-  }
-
-  void BaseFigureGL::initializeGL() {
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glEnable(GL_TEXTURE_2D);
-  }
-
-  void BaseFigureGL::paintGL() {
-    GLRenderEngine gc(this,0,0,width(),height());
-    hfig->PaintMe(gc);
-  }
-
-  void BaseFigureGL::resizeGL(int width, int height) {
-    hfig->resizeGL(width,height);
-  }
-
-  void BaseFigureGL::mousePressEvent(QMouseEvent* e) {
-    if (e->button() & Qt::LeftButton)
-      elevazim = true;
-    else
-      elevazim = false;
-    beginx = e->x();
-    beginy = e->y();
-  }
-
-  void BaseFigureGL::mouseMoveEvent(QMouseEvent* e) {
-    if (elevazim) {
-      elev -= (e->y() - beginy);
-      azim += (e->x() - beginx);
-      elev = (elev + 360) % 360;
-      azim = (azim + 360) % 360;
-    } else {
-      arot += (e->y() - beginy);
-      arot = (arot + 360) % 360;
-    }
-    beginx = e->x();
-    beginy = e->y();
-    //    updateGL();
-  }
-  
-  void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
-  }
-  
   HandleObject* LookupHandleObject(unsigned handle) {
     return (objectset.lookupHandle(handle-HANDLE_OFFSET_OBJECT));
   }
 
   HandleFigure* LookupHandleFigure(unsigned handle) {
     if (Hfigs[handle-HANDLE_OFFSET_FIGURE] != NULL)
-      return Hfigs[handle-HANDLE_OFFSET_FIGURE]->hfig;
+      return Hfigs[handle-HANDLE_OFFSET_FIGURE]->HFig();
     else {
       SelectFig(handle-HANDLE_OFFSET_FIGURE);
-      return Hfigs[handle-HANDLE_OFFSET_FIGURE]->hfig;
+      return Hfigs[handle-HANDLE_OFFSET_FIGURE]->HFig();
     }
   }
 
@@ -372,6 +250,7 @@ namespace FreeMat {
     parent.push_back(current);
     cp->Data(parent);
     fp->UpdateState();
+    axis->UpdateState();
     return handle;
   }
 
@@ -440,8 +319,6 @@ namespace FreeMat {
     HandleObject *fp;
     if (objectname == "axes")
       fp = new HandleAxis;
-    else if (objectname == "figure")
-      fp = new HandleFigure;
     else if (objectname == "line")
       fp = new HandleLineSeries;
     else if (objectname == "text")
@@ -460,6 +337,97 @@ namespace FreeMat {
     return singleArrayVector(Array::logicalConstructor(isvalid));
   }
 
+    //!
+  //@Module PRINT Print a Figure To A File
+  //@@Section FIGURE
+  //@@Usage
+  //This function ``prints'' the currently active fig to a file.  The 
+  //generic syntax for its use is
+  //@[
+  //  print(filename)
+  //@]
+  //or, alternately,
+  //@[
+  //  print filename
+  //@]
+  //where @|filename| is the (string) filename of the destined file.  The current
+  //fig is then saved to the output file using a format that is determined
+  //by the extension of the filename.  The exact output formats may vary on
+  //different platforms, but generally speaking, the following extensions
+  //should be supported cross-platform:
+  //\begin{itemize}
+  //\item @|jpg|, @|jpeg| -- JPEG file 
+  //\item @|pdf| -- Portable Document File
+  //\item @|png| -- Portable Net Graphics file
+  //\end{itemize}
+  //Note that only the fig is printed, not the window displaying
+  //the fig.  If you want something like that (essentially a window-capture)
+  //use a seperate utility or your operating system's built in screen
+  //capture ability.
+  //@@Example
+  //Here is a simple example of how the figures in this manual are generated.
+  //@<
+  //x = linspace(-1,1);
+  //y = cos(5*pi*x);
+  //plot(x,y,'r-');
+  //print printfig1.pdf
+  //print printfig1.jpg
+  //@>
+  //which creates two plots @|printfig1.pdf|, which is a Portable
+  //Document Format file, and @|printfig1.jpg| which is a JPEG file.
+  //@figure printfig1
+  //!
+
+  bool PrintBaseFigure(HandleWindow* g, std::string filename, 
+		       std::string type) {
+    bool retval;
+    HPColor *color = (HPColor*) LookupProperty("color");
+    g->HFig()->SetThreeVectorDefault("color",1,1,1);
+    if ((type == "PDF") || (type == "PS") || (type == "EPS")){
+      QPrinter prnt;
+      if (type == "PDF")
+	prnt.setOutputFormat(QPrinter::PdfFormat);
+      prnt.setOutputFileName(filename.c_str());
+      QPainter pnt(&prnt);
+      QTRenderEngine gc(&pnt,0,0,g->width(),g->height());
+      g->HFig()->PaintMe(gc);
+      retval = true;
+    } else {
+      // Binary print - use grabWidget
+      QPixmap pxmap(QPixmap::grabWidget(g));
+      QImage img(pxmap.toImage());
+      retval = img.save(filename.c_str(),type.c_str());
+    }
+    g->HFig()->SetThreeVectorDefault("color",color->At(0),
+				     color->At(1),color->At(2));
+    return retval;
+  }
+
+  ArrayVector HPrintFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() != 1)
+      throw Exception("print function takes a single, string argument");
+    if (!(arg[0].isString()))
+      throw Exception("print function takes a single, string argument");
+    Array t(arg[0]);
+    if (HcurrentFig == -1)
+      return ArrayVector();
+    HandleWindow *f = Hfigs[HcurrentFig];
+    std::string outname(t.getContentsAsCString());
+    int pos = outname.rfind(".");
+    if (pos < 0)
+      throw Exception("print function argument must contain an extension - which is used to determine the format for the output");
+    std::string original_extension(outname.substr(pos+1,outname.size()));
+    std::string modified_extension = 
+      NormalizeImageExtension(original_extension);
+    if (modified_extension.empty())
+      throw Exception(std::string("unsupported output format ") + 
+		      original_extension + " for print.\n" + 
+		      FormatListAsString());
+    if (!PrintBaseFigure(f,outname,modified_extension))
+      throw Exception("Printing failed!");
+    return ArrayVector();
+  }
+
   void LoadHandleGraphicsFunctions(Context* context) {
     context->addFunction("axes",HAxesFunction,-1,1);
     context->addFunction("line",HLineFunction,-1,1);
@@ -472,5 +440,6 @@ namespace FreeMat {
     context->addFunction("gca",HGCAFunction,0,1);
     context->addFunction("gcf",HGCFFunction,0,1);
     context->addFunction("pvalid",HPropertyValidateFunction,2,1);
+    context->addFunction("print",HPrintFunction,-1,0);
   };
 }

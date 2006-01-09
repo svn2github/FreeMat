@@ -216,18 +216,18 @@ void GLRenderEngine::debug() {
   glGetDoublev(GL_MODELVIEW_MATRIX,tmodel);
   glGetDoublev(GL_PROJECTION_MATRIX,tproj);
   glGetIntegerv(GL_VIEWPORT,tviewp);
-  qDebug("GL Modelview matrix (before setupdirect)");
-  qDebug("%f %f %f %f",tmodel[0],tmodel[4],tmodel[8],tmodel[12]);
-  qDebug("%f %f %f %f",tmodel[1],tmodel[5],tmodel[9],tmodel[13]);
-  qDebug("%f %f %f %f",tmodel[2],tmodel[6],tmodel[10],tmodel[14]);
-  qDebug("%f %f %f %f",tmodel[3],tmodel[7],tmodel[11],tmodel[15]);
-  qDebug("GL Projection matrix (before setupdirect)");
-  qDebug("%f %f %f %f",tproj[0],tproj[4],tproj[8],tproj[12]);
-  qDebug("%f %f %f %f",tproj[1],tproj[5],tproj[9],tproj[13]);
-  qDebug("%f %f %f %f",tproj[2],tproj[6],tproj[10],tproj[14]);
-  qDebug("%f %f %f %f",tproj[3],tproj[7],tproj[11],tproj[15]);
-  qDebug("GL Viewport (before setupdirect)");
-  qDebug("%d %d %d %d",tviewp[0],tviewp[1],tviewp[2],tviewp[3]);  
+//   qDebug("GL Modelview matrix (before setupdirect)");
+//   qDebug("%f %f %f %f",tmodel[0],tmodel[4],tmodel[8],tmodel[12]);
+//   qDebug("%f %f %f %f",tmodel[1],tmodel[5],tmodel[9],tmodel[13]);
+//   qDebug("%f %f %f %f",tmodel[2],tmodel[6],tmodel[10],tmodel[14]);
+//   qDebug("%f %f %f %f",tmodel[3],tmodel[7],tmodel[11],tmodel[15]);
+//   qDebug("GL Projection matrix (before setupdirect)");
+//   qDebug("%f %f %f %f",tproj[0],tproj[4],tproj[8],tproj[12]);
+//   qDebug("%f %f %f %f",tproj[1],tproj[5],tproj[9],tproj[13]);
+//   qDebug("%f %f %f %f",tproj[2],tproj[6],tproj[10],tproj[14]);
+//   qDebug("%f %f %f %f",tproj[3],tproj[7],tproj[11],tproj[15]);
+//   qDebug("GL Viewport (before setupdirect)");
+//   qDebug("%d %d %d %d",tviewp[0],tviewp[1],tviewp[2],tviewp[3]);  
 }
 
 void GLRenderEngine::setupDirectDraw() {
@@ -263,6 +263,11 @@ void GLRenderEngine::setupDirectDraw() {
       amodel[i] = model[i];
   }
   
+void GLRenderEngine::getProjectionMatrix(double aproj[16]) {
+  for (int i=0;i<16;i++)
+    aproj[i] = proj[16];
+}
+
   void GLRenderEngine::getViewport(int aviewp[4]) {
     for (int i=0;i<4;i++)
       aviewp[i] = viewp[i];
@@ -450,7 +455,6 @@ void GLRenderEngine::setupDirectDraw() {
 
 void GLRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
 				std::vector<std::vector<cpoint> > edges, bool flatedges) {
-    qDebug("Begin quad strips");
     glDisable(GL_CULL_FACE);
     glEnable(GL_POLYGON_OFFSET_FILL);
     if (flatfaces)
@@ -483,6 +487,5 @@ void GLRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool fl
       }
       glEnd();
     }
-    qDebug("End quad strips");
   }
 //}

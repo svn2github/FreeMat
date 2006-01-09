@@ -38,7 +38,7 @@ QPointF QTRenderEngine::Map(double x, double y, double z) {
   double a, b;
   toPixels(x,y,z,a,b);
   b = m_height-1-b;
-  return QPointF(a,b);
+  return QPointF(rint(a),rint(b));
 }
 
 QVector<QPointF> QTRenderEngine::Map(std::vector<double> xs, 
@@ -363,18 +363,18 @@ void QTRenderEngine::lineSeries(std::vector<double> xs,
 }
   
 void QTRenderEngine::debug() {
-  qDebug("QT Modelview matrix (before setupdirect)");
-  qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
-  qDebug("%f %f %f %f",model[1],model[5],model[9],model[13]);
-  qDebug("%f %f %f %f",model[2],model[6],model[10],model[14]);
-  qDebug("%f %f %f %f",model[3],model[7],model[11],model[15]);
-  qDebug("QT Projection matrix (before setupdirect)");
-  qDebug("%f %f %f %f",proj[0],proj[4],proj[8],proj[12]);
-  qDebug("%f %f %f %f",proj[1],proj[5],proj[9],proj[13]);
-  qDebug("%f %f %f %f",proj[2],proj[6],proj[10],proj[14]);
-  qDebug("%f %f %f %f",proj[3],proj[7],proj[11],proj[15]);
-  qDebug("QT Viewport (before setupdirect)");
-  qDebug("%d %d %d %d",viewp[0],viewp[1],viewp[2],viewp[3]);  
+//   qDebug("QT Modelview matrix (before setupdirect)");
+//   qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
+//   qDebug("%f %f %f %f",model[1],model[5],model[9],model[13]);
+//   qDebug("%f %f %f %f",model[2],model[6],model[10],model[14]);
+//   qDebug("%f %f %f %f",model[3],model[7],model[11],model[15]);
+//   qDebug("QT Projection matrix (before setupdirect)");
+//   qDebug("%f %f %f %f",proj[0],proj[4],proj[8],proj[12]);
+//   qDebug("%f %f %f %f",proj[1],proj[5],proj[9],proj[13]);
+//   qDebug("%f %f %f %f",proj[2],proj[6],proj[10],proj[14]);
+//   qDebug("%f %f %f %f",proj[3],proj[7],proj[11],proj[15]);
+//   qDebug("QT Viewport (before setupdirect)");
+//   qDebug("%d %d %d %d",viewp[0],viewp[1],viewp[2],viewp[3]);  
 }
 
 void QTRenderEngine::setupDirectDraw() {
@@ -403,6 +403,11 @@ void QTRenderEngine::releaseDirectDraw() {
   for (int i=0;i<4;i++)
     viewp[i] = save_viewp[i];
   inDirect = false;
+}
+
+void QTRenderEngine::getProjectionMatrix(double aproj[16]) {
+  for (int i=0;i<16;i++)
+    aproj[i] = proj[16];
 }
 
 void QTRenderEngine::getModelviewMatrix(double amodel[16]) {

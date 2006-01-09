@@ -2,20 +2,30 @@
 #define __HandleWindow_hpp__
 
 #include <QWidget>
+#include "HandleFigure.hpp"
+#include <QStackedWidget>
+#include <QTabWidget>
+#include <QGLWidget>
 
-class HandleWindow : QWidget {
+namespace FreeMat {
+
+class HandleWindow : public QWidget {
  protected:
   unsigned handle;
-  bool GLActive;
-  QWidget *child;
+  bool glActive;
+  QGLWidget *glchild;
+  QWidget *qtchild;
   HandleFigure *hfig;
+  QStackedWidget *layout;
+  //  QTabWidget *layout;
  public:
-  HandleFigure(unsigned ahandle);
+  HandleWindow(unsigned ahandle);
   unsigned Handle();
   HandleFigure *HFig();
   void UpdateState();
+  void closeEvent(QCloseEvent* e);
 };
 
-
+}
 
 #endif

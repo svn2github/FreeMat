@@ -68,6 +68,7 @@
     virtual void setupDirectDraw() = 0;
     virtual void releaseDirectDraw() = 0;
     virtual void getViewport(int viewp[4]) = 0;
+    virtual void getProjectionMatrix(double proj[16]) = 0;
     virtual void getModelviewMatrix(double model[16]) = 0;
     virtual void putText(double x, double y, std::string txt, 
 			 std::vector<double> color, 

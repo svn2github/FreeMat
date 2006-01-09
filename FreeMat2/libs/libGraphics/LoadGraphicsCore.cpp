@@ -40,7 +40,7 @@ namespace FreeMat {
     context->addFunction("winlev",WinLevFunction,2,-1,"window","level");
     context->addFunction("colormap",ColormapFunction,1,0,"map");
     context->addFunction("axis",AxisFunction,1,-1,"x");
-    context->addFunction("print",PrintFunction,1,0,"filename");
+    //    context->addFunction("print",PrintFunction,1,0,"filename");
     context->addFunction("zoom",ZoomFunction,1,0,"x");
     context->addFunction("point",PointFunction,0,1);
     context->addFunction("legend",LegendFunction,-1,0);

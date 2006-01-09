@@ -3,6 +3,7 @@
 #include "HandleObject.hpp"
 
 namespace FreeMat {
+  class HandleWindow;
   //Figure
   //   contains one or more axes
   //   to redraw the figure, we proxy our draws to the axes
@@ -16,17 +17,19 @@ namespace FreeMat {
     int m_width, m_height;
     bool resized;
     void LoadDefaultColorMap();
+    HandleWindow *m_win;
   public:
-    HandleFigure();
+    HandleFigure(HandleWindow *win);
     virtual ~HandleFigure() {}
     virtual void ConstructProperties();
     bool Resized();
     int GetWidth() {return m_width;}
     int GetHeight() {return m_height;}
-    //    virtual void UpdateState();
+    virtual void UpdateState();
     virtual void PaintMe(RenderEngine &gc);
     virtual void resizeGL(int width, int height);
     void SetupDefaults();
+    void Repaint();
   };
 }
 

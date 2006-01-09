@@ -328,6 +328,12 @@ namespace FreeMat {
     virtual ~HPLightingMode() {}
   };
 
+  class HPRenderMode : public HPConstrainedString {
+  public:
+    HPRenderMode();
+    virtual ~HPRenderMode() {}
+  };
+
   class HPConstrainedStringScalar : public HPConstrainedString {
     double scalar;
   public:

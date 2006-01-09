@@ -101,7 +101,7 @@ namespace FreeMat {
     std::transform(upperext.begin(),upperext.end(),upperext.begin(),toupper);
     std::transform(lowerext.begin(),lowerext.end(),lowerext.begin(),tolower);
     if (upperext == "JPG") return std::string("JPEG");
-    if ((upperext == "PS") || (upperext == "EPS")) return upperext;
+    if ((upperext == "PDF") || (upperext == "PS") || (upperext == "EPS")) return upperext;
 #ifdef QT3
     QStrList formats(QImage::outputFormats());
     for (int i=0;i<formats.count();i++) {

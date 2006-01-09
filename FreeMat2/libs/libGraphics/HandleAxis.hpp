@@ -22,6 +22,9 @@ namespace FreeMat {
     double z1pos[3], z2pos[3];
     bool xvisible, yvisible, zvisible;
     QFont m_font;
+    double model[16];
+    double proj[16];
+    int viewp[4];
 
     void UpdateAxisFont();
     void GetMaxTickMetric(RenderEngine& gc,
@@ -33,10 +36,10 @@ namespace FreeMat {
 		   std::vector<double> color,
 		   std::string txt);
     void SetupAxis(RenderEngine& gc);
-    bool Is2DView();
-    void RecalculateTicks();
-    int GetTickCount(RenderEngine& gc,double x1, double y1, double z1, 
-		     double x2, double y2, double z2);
+    bool Is2DView(); 
+    void RecalculateTicks(RenderEngine& gc);
+    int GetTickCount(RenderEngine& gc, double x1, double y1, 
+		     double z1, double x2, double y2, double z2);
     void DrawXGridLine(RenderEngine& gc, double t, 
 		       std::vector<double> limits);
     void DrawYGridLine(RenderEngine& gc, double t, 

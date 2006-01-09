@@ -1,17 +1,23 @@
 #include "HandleFigure.hpp"
 #include "HandleList.hpp"
 #include "HandleCommands.hpp"
+#include "HandleWindow.hpp"
 #include <math.h>
 #include <qgl.h>
 #include <math.h>
 
 namespace FreeMat {
-  
-  HandleFigure::HandleFigure() {
+
+  HandleFigure::HandleFigure(HandleWindow *win) {
     m_width = 640;
     m_height = 480;
+    m_win = win;
     ConstructProperties();
     SetupDefaults();
+  }
+
+  void HandleFigure::Repaint() {
+    m_win->update();
   }
   
   void HandleFigure::ConstructProperties() {
@@ -26,6 +32,7 @@ namespace FreeMat {
     AddProperty(new HPArray,"userdata");
     AddProperty(new HPNextPlotMode,"nextplot");
     AddProperty(new HPTwoVector,"figsize");
+    AddProperty(new HPRenderMode,"renderer");
   }
 
   void HSVRAMP(double h, double &r, double &g, double &b) {
@@ -59,6 +66,10 @@ namespace FreeMat {
     }
   }
 
+  void HandleFigure::UpdateState() {
+    m_win->UpdateState();
+  }
+
   void HandleFigure::LoadDefaultColorMap() {
     std::vector<double> cmap;
     for (int i=0;i<64;i++) {
@@ -78,6 +89,7 @@ namespace FreeMat {
   }
 
   void HandleFigure::SetupDefaults() {
+    SetStringDefault("renderer","painters");
     SetStringDefault("type","figure");
     SetThreeVectorDefault("color",0.6,0.6,0.6);
     // Set a default colormap to hsv(64) - this matches
@@ -86,6 +98,7 @@ namespace FreeMat {
   }
 
   void HandleFigure::PaintMe(RenderEngine &gc) {
+    qDebug("size = %d %d",m_width,m_height);
     // draw the children...
     HPColor *color = (HPColor*) LookupProperty("color");
     gc.clear(color->Data());

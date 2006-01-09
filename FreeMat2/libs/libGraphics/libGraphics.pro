@@ -31,7 +31,8 @@ RenderEngine.hpp \
 HandleCommands.hpp \
 HandleImage.hpp \
 HandleSurface.hpp \
-QTRenderEngine.hpp
+QTRenderEngine.hpp \
+HandleWindow.hpp
 
 SOURCES += DataSet2D.cpp \
 LoadGraphicsCore.cpp \
@@ -59,7 +60,8 @@ RenderEngine.cpp \
 HandleCommands.cpp \
 HandleImage.cpp \
 HandleSurface.cpp \
-QTRenderEngine.cpp
+QTRenderEngine.cpp \
+HandleWindow.cpp
 
 DEPENDPATH += INCLUDEPATH
 

@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QTextEdit>
+#include <QTextStream>
 #include <QDir>
 #include "KeyManager.hpp"
 #include "Module.hpp"
@@ -14,6 +15,8 @@ QTextEdit *m_text;
 
 void OutputText(QString str) {
   m_text->insertPlainText(str);
+  //  m_text->setCursor(m_text->textCursor().movePosition(QCursor::End));
+  m_text->ensureCursorVisible();
   qDebug(str);
 }
 
@@ -61,6 +64,7 @@ WalkTree* Setup() {
   m_term = new HelpTerminal;
 
   m_text = new QTextEdit;
+  m_text->setReadOnly(true);
   m_text->resize(400,400);
   m_text->show();
   m_text->setFontFamily("Courier");
@@ -83,9 +87,19 @@ WalkTree* Setup() {
   return twalk;
 }
 
-void ProcessFile(QFileInfo file) {
-  if (file.suffix() == "mpp")
-    OutputText("Processing File " + file.absoluteFilePath() + "...\n");
+void ProcessFile(QFileInfo fileinfo) {
+  if (fileinfo.suffix() == "mpp") {
+    OutputText("Processing File " + fileinfo.absoluteFilePath() + "...\n");
+    QFile file(fileinfo.absoluteFilePath());
+    if (file.open(QFile::ReadOnly)) {
+      QTextStream fstr(&file);
+      while (!fstr.atEnd()) {
+	QString line(fstr.readLine(0));
+	OutputText(line);
+      }
+    }
+  }
+  qApp->processEvents();
 }
 
 void ProcessDir(QDir dir) {
@@ -99,6 +113,7 @@ void ProcessDir(QDir dir) {
     else
       ProcessFile(fileInfo);
   }
+  qApp->processEvents();
 }
 
 int main(int argc, char *argv[]) {

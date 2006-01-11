@@ -3224,6 +3224,9 @@ namespace FreeMat {
     processguievents = true;
   }
 
+  WalkTree::~WalkTree() {
+  }
+
   bool WalkTree::GUIEventFlag() {
     return(processguievents);
   }

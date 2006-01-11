@@ -88,6 +88,10 @@ WalkTree* Setup() {
 }
 
 void ProcessFile(QFileInfo fileinfo) {
+  QRegExp cmstrt("^\\s*//!");
+  QRegExp modulename("^\\s*//@Module\\s*(\\b\\w+\\b)");
+  QRegExp moduledesc("^\\s*//@Module\\s*(\\b.*)");
+  QRegExp sectioname("^\\s*//@@Section\\s*(\\b\\w+\\b)");
   if (fileinfo.suffix() == "mpp") {
     OutputText("Processing File " + fileinfo.absoluteFilePath() + "...\n");
     QFile file(fileinfo.absoluteFilePath());
@@ -95,7 +99,30 @@ void ProcessFile(QFileInfo fileinfo) {
       QTextStream fstr(&file);
       while (!fstr.atEnd()) {
 	QString line(fstr.readLine(0));
-	OutputText(line);
+	if (cmstrt.indexIn(line) >= 0) {
+	  QString line(fstr.readLine(0));
+	  OutputText("Analyze:" + line + "\n");
+	  QString modname(Match(modulename,line));
+	  QString moddesc(Match(moduledesc,line));
+	  line = fstr.readLine(0);
+	  QString secname(Match(sectionname,line));
+	  // This should contain the module name
+	  if (modulename.indexIn(line) < 0)
+	    exit(1);
+	  else 
+	    OutputText("Module Name " + modulename.cap(1) + "\n");
+	  if (moduledesc.indexIn(line) < 0)
+	    exit(1);
+	  else
+	    OutputText("Module Description " + moduledesc.cap(1) + "\n");
+	  while ((!fstr.atEnd()) && (cmstrt.indexIn(line) < 0)) {
+	    OutputText(line);
+	    OutputText("\n");
+	    line = fstr.readLine(0);
+	  }
+	  OutputText(line);
+	  OutputText("\n");
+	}
       }
     }
   }
@@ -119,7 +146,7 @@ void ProcessDir(QDir dir) {
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   WalkTree* twalk = Setup();
-  QDir dir("../../");
+  QDir dir("../../MFiles");
   ProcessDir(dir);
   m_term->outputMessage(" Freemat v2.0");
   m_term->outputMessage("\n");

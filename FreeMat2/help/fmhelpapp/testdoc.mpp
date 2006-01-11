@@ -1,0 +1,26 @@
+//!
+//@Module TESTDOC Documentation Process Code Test
+//@@Section TEST
+//@@Usage
+//Does nothing particularly useful.
+//@[
+//  y = testdoc
+//@]
+//@@Example
+//@<
+//a = 1:32
+//b = a + 3
+//printf('Hello\n')
+//@>
+//Here is another example of using testdoc.
+//@<
+//a = rand(3)
+//[u,s,v] = svd(a)
+//@>
+//And now we generate a plot
+//@<
+//plot(rand(1,100));
+//print example.png
+//@>
+//!
+

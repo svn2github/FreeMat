@@ -1,6 +1,9 @@
 #include <QApplication>
 #include <QTextEdit>
 #include <QTextStream>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QtDebug>
 #include <QDir>
 #include "KeyManager.hpp"
 #include "Module.hpp"
@@ -13,12 +16,16 @@
 
 QTextEdit *m_text;
 
+QString output;
+QStringList input;
+
 void OutputText(QString str) {
   m_text->insertPlainText(str);
   //  m_text->setCursor(m_text->textCursor().movePosition(QCursor::End));
   m_text->ensureCursorVisible();
-  qDebug(str);
+  qDebug() << str;
 }
+
 
 namespace FreeMat {
   class HelpTerminal : public KeyManager {
@@ -28,23 +35,30 @@ namespace FreeMat {
     virtual void Initialize() {}
     virtual void RestoreOriginalMode() {}
     virtual void OutputRawString(std::string txt) {
-      OutputText(txt.c_str());
+      output += txt.c_str();
     }
     virtual void ResizeEvent() {}
     virtual void MoveDown() {
-      OutputText("\n");
+      output += "\n";
     }
     virtual char* getLine(std::string aprompt) {
-      static int count = 0;
-      if (count == 0) {
-	OutputText(aprompt.c_str());
-	OutputText("a = 1:32\n");
-	count++;
-	return strdup("a = 1:32\n");
-      } else {
-	QEventLoop m_loop;
-	m_loop.exec();
-      }
+      qDebug("In GetLine\n");
+      if (input.empty()) return 0;
+      QString txt(input[0]);
+      input.removeFirst();
+      char *rettxt = strdup(qPrintable(txt));
+      output += aprompt.c_str() + txt;
+      return (strdup(qPrintable(txt)));      
+      //       static int count = 0;
+      //       if (count == 0) {
+      // 	OutputText(aprompt.c_str());
+      // 	OutputText("a = 1:32\n");
+      // 	count++;
+      // 	return strdup("a = 1:32\n");
+      //       } 
+      //       QEventLoop m_loop;
+      //       m_loop.exec();
+      //       exit(0);
     }
     virtual void MoveUp() {};
     virtual void MoveRight() {};
@@ -58,24 +72,17 @@ namespace FreeMat {
 
 HelpTerminal *m_term;
 using namespace FreeMat;
+Context *context;
 
-WalkTree* Setup() {
-  Context *context = new Context;
+WalkTree* GetInterpreter() {
+  context = new Context;
   m_term = new HelpTerminal;
-
-  m_text = new QTextEdit;
-  m_text->setReadOnly(true);
-  m_text->resize(400,400);
-  m_text->show();
-  m_text->setFontFamily("Courier");
-
   LoadModuleFunctions(context);
   LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadGraphicsCoreFunctions(context);  
   InitializeFigureSubsystem();
-
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");
   m_term->setContext(context);
@@ -83,15 +90,102 @@ WalkTree* Setup() {
     m_term->setPath(std::string(envPtr));
   else 
     m_term->setPath(std::string(""));
+  m_term->setPath("../../MFiles");
   WalkTree *twalk = new WalkTree(context,m_term);
   return twalk;
 }
 
+QString EvaluateCommands(QStringList cmds) {
+  input = cmds;
+  WalkTree* twalk = GetInterpreter();
+  try {
+    while (!input.empty()) {
+      try {
+	twalk->evalCLI();
+      } catch (WalkTreeRetallException) {
+	twalk->clearStacks();
+      } catch (WalkTreeReturnException &e) {
+      } catch (WalkTreeQuitException) {
+      }
+    }
+  } catch (WalkTreeQuitException &e) {
+  } catch (std::exception& e) {
+    std::cout << "Exception caught: " << e.what() << "\n";
+  }
+  delete twalk;
+  delete m_term;
+  delete context;
+  return output;
+}
+
+void GUISetup() {
+  QWidget *m_main = new QWidget;
+  m_text = new QTextEdit;
+  m_text->setReadOnly(true);
+  m_text->resize(400,400);
+  m_text->show();
+  m_text->setFontFamily("Courier");
+  QPushButton *quit = new QPushButton("Quit");
+  QWidget::connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->addWidget(m_text);
+  layout->addWidget(quit);
+  m_main->setLayout(layout);
+  m_main->show();
+}
+
+void Halt(QString emsg) {
+  OutputText(emsg);
+  QEventLoop m_loop;
+  m_loop.exec();  
+  exit(0);
+}
+
+QString MustMatch(QRegExp re, QString source) {
+  if (re.indexIn(source) < 0)
+    Halt("Bad line: " + source);
+  return re.cap(1);
+}
+
+bool TestMatch(QRegExp re, QString source) {
+  return (re.indexIn(source) >= 0);
+}
+
+void StripFile(QFileInfo fileinfo) {
+  QRegExp ccomment_pattern("^\\s*//(.*)");
+  if (fileinfo.suffix() == "mpp") {
+    OutputText("Stripping File " + fileinfo.absoluteFilePath() + "...\n");
+    QFile file(fileinfo.absoluteFilePath());
+    if (file.open(QFile::ReadOnly)) {
+      QFile ofile(fileinfo.baseName() + ".m");
+      if (!ofile.open(QFile::WriteOnly))
+	Halt("Cannot open file " + fileinfo.baseName() + ".m for writing ");
+      QTextStream instream(&file);
+      QTextStream outstream(&ofile);
+      while (!instream.atEnd()) {
+	QString line(instream.readLine(0));
+	if (!TestMatch(ccomment_pattern,line))
+	  outstream << line << "\n";
+      }
+    }
+  }
+}
+
+
 void ProcessFile(QFileInfo fileinfo) {
-  QRegExp cmstrt("^\\s*//!");
-  QRegExp modulename("^\\s*//@Module\\s*(\\b\\w+\\b)");
-  QRegExp moduledesc("^\\s*//@Module\\s*(\\b.*)");
-  QRegExp sectioname("^\\s*//@@Section\\s*(\\b\\w+\\b)");
+  QRegExp docblock_pattern("^\\s*//!");
+  QRegExp modulename_pattern("^\\s*//@Module\\s*(\\b\\w+\\b)");
+  QRegExp moduledesc_pattern("^\\s*//@Module\\s*(\\b.*)");
+  QRegExp sectioname_pattern("^\\s*//@@Section\\s*(\\b\\w+\\b)");
+  QRegExp groupname_pattern("^\\s*//@@(.*)");
+  QRegExp execin_pattern("^\\s*//@<");
+  QRegExp execout_pattern("^\\s*//@>");
+  QRegExp ccomment_pattern("^\\s*//(.*)");
+  
+  modulename_pattern.setCaseSensitivity(Qt::CaseInsensitive);
+  moduledesc_pattern.setCaseSensitivity(Qt::CaseInsensitive);
+  sectioname_pattern.setCaseSensitivity(Qt::CaseInsensitive);
+  groupname_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   if (fileinfo.suffix() == "mpp") {
     OutputText("Processing File " + fileinfo.absoluteFilePath() + "...\n");
     QFile file(fileinfo.absoluteFilePath());
@@ -99,29 +193,45 @@ void ProcessFile(QFileInfo fileinfo) {
       QTextStream fstr(&file);
       while (!fstr.atEnd()) {
 	QString line(fstr.readLine(0));
-	if (cmstrt.indexIn(line) >= 0) {
+	if (TestMatch(docblock_pattern,line)) {
 	  QString line(fstr.readLine(0));
-	  OutputText("Analyze:" + line + "\n");
-	  QString modname(Match(modulename,line));
-	  QString moddesc(Match(moduledesc,line));
+	  QString modname(MustMatch(modulename_pattern,line));
+	  OutputText("Module Name " + modname + "\n");
+	  QString moddesc(MustMatch(moduledesc_pattern,line));
+	  OutputText("Module Description " + moddesc + "\n");
 	  line = fstr.readLine(0);
-	  QString secname(Match(sectionname,line));
-	  // This should contain the module name
-	  if (modulename.indexIn(line) < 0)
-	    exit(1);
-	  else 
-	    OutputText("Module Name " + modulename.cap(1) + "\n");
-	  if (moduledesc.indexIn(line) < 0)
-	    exit(1);
-	  else
-	    OutputText("Module Description " + moduledesc.cap(1) + "\n");
-	  while ((!fstr.atEnd()) && (cmstrt.indexIn(line) < 0)) {
-	    OutputText(line);
-	    OutputText("\n");
+	  QString secname(MustMatch(sectioname_pattern,line));
+	  OutputText("Section Name " + secname + "\n");
+	  line = fstr.readLine(0);
+	  while (!fstr.atEnd() && !TestMatch(docblock_pattern,line)) {
+	    QString groupname(MustMatch(groupname_pattern,line));
+	    OutputText("Group Name " + groupname + "\n");
 	    line = fstr.readLine(0);
+	    while (!fstr.atEnd() && !TestMatch(groupname_pattern,line) && !TestMatch(docblock_pattern,line)) {
+	      if (TestMatch(execin_pattern,line)) {
+		QStringList cmdlist;
+		line = fstr.readLine(0);
+		while (!fstr.atEnd() && !TestMatch(execout_pattern,line)) {
+		  if (TestMatch(ccomment_pattern,line)) 
+		    cmdlist.push_back(MustMatch(ccomment_pattern,line)+"\n");
+		  line = fstr.readLine(0);
+		}
+		cmdlist.push_back("quit;\n");
+		QString resp(EvaluateCommands(cmdlist));
+		OutputText("ExecBlock: " + resp);
+		if (fstr.atEnd())
+		  Halt("Unmatched docblock detected!");
+		line = fstr.readLine(0);
+	      } else {
+		OutputText(groupname + ":" + line + "\n");
+		line = fstr.readLine(0);
+	      }
+	    }
+	    if (fstr.atEnd())
+	      Halt("Unmatched docblock detected!");
 	  }
-	  OutputText(line);
-	  OutputText("\n");
+	  if (fstr.atEnd())
+	    Halt("Unmatched docblock detected!");
 	}
       }
     }
@@ -143,28 +253,23 @@ void ProcessDir(QDir dir) {
   qApp->processEvents();
 }
 
+void StripDir(QDir dir) {
+  OutputText("Stripping .mpp files in directory " + dir.absolutePath() + "...\n");
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (int i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir())
+      StripDir(QDir(fileInfo.absoluteFilePath()));
+    else
+      StripFile(fileInfo);
+  }
+  qApp->processEvents();
+}
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
-  WalkTree* twalk = Setup();
-  QDir dir("../../MFiles");
-  ProcessDir(dir);
-  m_term->outputMessage(" Freemat v2.0");
-  m_term->outputMessage("\n");
-  m_term->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
-  try {
-    while (1) {
-      try {
-	twalk->evalCLI();
-      } catch (WalkTreeRetallException) {
-	m_term->outputMessage("retall\n");
-	twalk->clearStacks();
-      } catch (WalkTreeReturnException &e) {
-      }
-    }
-  } catch (WalkTreeQuitException &e) {
-  } catch (std::exception& e) {
-    std::cout << "Exception caught: " << e.what() << "\n";
-  }
-  m_term->RestoreOriginalMode();
-  return 0;
+  GUISetup();
+  StripDir(QDir("../../MFiles"));
+  ProcessDir(QDir("."));
+  return app.exec();
 }

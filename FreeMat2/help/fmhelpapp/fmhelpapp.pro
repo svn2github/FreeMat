@@ -20,6 +20,11 @@ QT += qt3support
 LIBS +=  -framework vecLib -L/sw/lib -lg2c
 }
 
+!mac {
+unix {
+LIBS += -lblas -llapack -lcurses -lg2c
+}
+}
 
 CONFIG += assistant 
 QT += opengl

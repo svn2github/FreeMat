@@ -1,4 +1,22 @@
-
+%!
+%@Module FLIPDIM Reverse a Matrix Along a Given Dimension
+%@@Section ARRAY
+%@@USAGE
+%Reverses an array along the given dimension.  The syntax for its use is
+%@[
+%   y = flipdim(x,n)
+%@]
+%where @|x| is matrix, and @|n| is the dimension to reverse.
+%@@Example
+%The following examples show some uses of @|flipdim| on N-dimensional
+%arrays.
+%@<
+%x = int32(rand(4,5,3)*10)
+%flipdim(x,1)
+%flipdim(x,2)
+%flipdim(x,3)
+%@>
+%!
 % Copyright (c) 2005 Samit Basu
 function x = flipdim(y,n)
   szey = size(y);

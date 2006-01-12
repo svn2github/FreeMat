@@ -1,4 +1,7 @@
-%
+%!
+%@Module AXIS Setup Axis Behavior
+%@@Section HANDLE
+%@@Usage
 %Control the axis behavior.  There are several versions of the
 %axis command based on what you would like the axis command to
 %do.  The first versions set scalings for the current plot.
@@ -101,6 +104,7 @@
 %@[
 %  axis(M,...)
 %@]
+%!
 function retvec = axis(varargin);
 if (length(varargin) > 0)
   if (ishandle(varargin{1},'axes'))

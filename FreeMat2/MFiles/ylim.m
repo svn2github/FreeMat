@@ -1,4 +1,40 @@
-
+%!
+%@Module YLIM Adjust Y Limits of plot
+%@@Section PLOT
+%@@Usage
+%There are several ways to use @|ylim| to adjust the y limits of
+%a plot.  The x-axis retains its current limits.  The four
+%syntaxes are
+%@[
+%   ylim([lo,hi])   
+%   ylim(lo,hi)
+%   ylim('auto')
+%   ylim auto
+%@]
+%where in the first two forms, the new y-limits on the plot are
+%@|[lo,hi]|.  In the second two forms, the axes limits are 
+%automatically selected by FreeMat.
+%@@Example
+%Here is an example of using @|ylim| to zoom in on the y axis of a
+%plot without changing the x limits.  First, the plot with default
+%limits
+%@<
+%x = linspace(-1,1);
+%y = sin(2*pi*x);
+%plot(x,y,'r-');
+%mprintplot ylim1
+%@>
+%which results in
+%@figure ylim1
+%Next, we zoom in on the plot using the @|ylim| function
+%@<
+%plot(x,y,'r-')
+%ylim(-0.2,0.2)
+%mprintplot ylim2
+%@>
+%which results in
+%@figure ylim2
+%!
 %Copyright (c) 2004,2005 Brian Yanoff, Samit Basu
 function ylim(lim1, lim2)
   if isa(lim1,'string') && strcmp(lim1,'auto')

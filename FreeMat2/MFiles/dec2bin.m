@@ -1,4 +1,29 @@
-
+%!
+%@Module DEC2BIN Convert Decimal to Binary String
+%@@Section ARRAY
+%@@USAGE
+%Converts an integer to a binary string.  The syntax for its
+%use is
+%@[
+%   y = dec2bin(x,n)
+%@]
+%where @|x| is the positive integer, and @|n| is the number of
+%bits to use in the representation.  Alternately, if you leave
+%@|n| unspecified, 
+%@[
+%   y = dec2bin(x)
+%@]
+%the minimum number of bits needed to represent @|x| are used.
+%If @|x| is a vector, then the resulting @|y| is a character
+%matrix.
+%@@Example
+%Here we convert some numbers to bits
+%@<
+%dec2bin(56)
+%dec2bin(1039456)
+%dec2bin([63,73,32],5)
+%@>
+%!
 function t = dec2bin(x,n)
   x = x(:); 
   if (~exist('n') && max(x) > 0)

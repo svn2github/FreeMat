@@ -1,4 +1,30 @@
-
+%!
+%@Module CIRCSHIFT Circularly Shift an Array
+%@@Section ARRAY
+%@@USAGE
+%Applies a circular shift along each dimension of a given array.  The
+%syntax for its use is
+%@[
+%   y = circshift(x,shiftvec)
+%@]
+%where @|x| is an n-dimensional array, and @|shiftvec| is a vector of
+%integers, each of which specify how much to shift @|x| along the
+%corresponding dimension.  
+%@@Example
+%The following examples show some uses of @|circshift| on N-dimensional
+%arrays.
+%@<
+%x = int32(rand(4,5)*10)
+%circshift(x,[1,0])
+%circshift(x,[0,-1])
+%circshift(x,[2,2])
+%x = int32(rand(4,5,3)*10)
+%circshift(x,[1,0,0])
+%circshift(x,[0,-1,0])
+%circshift(x,[0,0,-1])
+%circshift(x,[2,-3,1])
+%@>
+%!
 % Copyright (c) 2005 Samit Basu
 function x = circshift(y,shiftvec)
   szey = size(y);

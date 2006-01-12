@@ -378,11 +378,12 @@ namespace FreeMat {
   //Document Format file, and @|printfig1.jpg| which is a JPEG file.
   //@figure printfig1
   //!
-
   bool PrintBaseFigure(HandleWindow* g, std::string filename, 
 		       std::string type) {
     bool retval;
     HPColor *color = (HPColor*) g->HFig()->LookupProperty("color");
+    double cr, cg, cb;
+    cr = color->At(0); cg = color->At(1); cb = color->At(2);
     g->HFig()->SetThreeVectorDefault("color",1,1,1);
     if ((type == "PDF") || (type == "PS") || (type == "EPS")){
       QPrinter prnt;
@@ -399,8 +400,7 @@ namespace FreeMat {
       QImage img(pxmap.toImage());
       retval = img.save(filename.c_str(),type.c_str());
     }
-    g->HFig()->SetThreeVectorDefault("color",color->At(0),
-				     color->At(1),color->At(2));
+    g->HFig()->SetThreeVectorDefault("color",cr,cg,cb);
     return retval;
   }
 
@@ -437,10 +437,10 @@ namespace FreeMat {
     context->addFunction("surface",HSurfaceFunction,-1,1);
     context->addFunction("set",HSetFunction,-1,0);
     context->addFunction("get",HGetFunction,2,1,"handle","propname");
-    context->addFunction("figure",HFigureFunction,1,1);
+    context->addFunction("figure",HFigureFunction,1,1,"number");
     context->addFunction("gca",HGCAFunction,0,1);
     context->addFunction("gcf",HGCFFunction,0,1);
-    context->addFunction("pvalid",HPropertyValidateFunction,2,1);
+    context->addFunction("pvalid",HPropertyValidateFunction,2,1,"type","property");
     context->addFunction("print",HPrintFunction,-1,0);
   };
 }

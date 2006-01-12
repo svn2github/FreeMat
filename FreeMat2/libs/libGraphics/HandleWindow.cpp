@@ -127,6 +127,7 @@ HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
   layout->addWidget(glchild);
   layout->show();
   box->addWidget(layout);
+  resize(600,400);
 }
 
 unsigned HandleWindow::Handle() {

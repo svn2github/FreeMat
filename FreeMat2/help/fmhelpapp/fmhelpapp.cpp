@@ -42,23 +42,13 @@ namespace FreeMat {
       output += "\n";
     }
     virtual char* getLine(std::string aprompt) {
-      qDebug("In GetLine\n");
       if (input.empty()) return 0;
       QString txt(input[0]);
       input.removeFirst();
       char *rettxt = strdup(qPrintable(txt));
-      output += aprompt.c_str() + txt;
+      if (!input.empty())
+	output += aprompt.c_str() + txt;
       return (strdup(qPrintable(txt)));      
-      //       static int count = 0;
-      //       if (count == 0) {
-      // 	OutputText(aprompt.c_str());
-      // 	OutputText("a = 1:32\n");
-      // 	count++;
-      // 	return strdup("a = 1:32\n");
-      //       } 
-      //       QEventLoop m_loop;
-      //       m_loop.exec();
-      //       exit(0);
     }
     virtual void MoveUp() {};
     virtual void MoveRight() {};
@@ -75,7 +65,6 @@ using namespace FreeMat;
 Context *context;
 
 WalkTree* GetInterpreter() {
-  context = new Context;
   m_term = new HelpTerminal;
   LoadModuleFunctions(context);
   LoadClassFunction(context);
@@ -114,7 +103,6 @@ QString EvaluateCommands(QStringList cmds) {
   }
   delete twalk;
   delete m_term;
-  delete context;
   return output;
 }
 
@@ -151,26 +139,9 @@ bool TestMatch(QRegExp re, QString source) {
   return (re.indexIn(source) >= 0);
 }
 
-void StripFile(QFileInfo fileinfo) {
-  QRegExp ccomment_pattern("^\\s*//(.*)");
-  if (fileinfo.suffix() == "mpp") {
-    OutputText("Stripping File " + fileinfo.absoluteFilePath() + "...\n");
-    QFile file(fileinfo.absoluteFilePath());
-    if (file.open(QFile::ReadOnly)) {
-      QFile ofile(fileinfo.baseName() + ".m");
-      if (!ofile.open(QFile::WriteOnly))
-	Halt("Cannot open file " + fileinfo.baseName() + ".m for writing ");
-      QTextStream instream(&file);
-      QTextStream outstream(&ofile);
-      while (!instream.atEnd()) {
-	QString line(instream.readLine(0));
-	if (!TestMatch(ccomment_pattern,line))
-	  outstream << line << "\n";
-      }
-    }
-  }
+void CloseAllHandleWindows() {
+  
 }
-
 
 void ProcessFile(QFileInfo fileinfo) {
   QRegExp docblock_pattern("^\\s*//!");
@@ -182,6 +153,7 @@ void ProcessFile(QFileInfo fileinfo) {
   QRegExp execout_pattern("^\\s*//@>");
   QRegExp ccomment_pattern("^\\s*//(.*)");
   
+  context = new Context;
   modulename_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   moduledesc_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   sectioname_pattern.setCaseSensitivity(Qt::CaseInsensitive);
@@ -223,6 +195,8 @@ void ProcessFile(QFileInfo fileinfo) {
 		  Halt("Unmatched docblock detected!");
 		line = fstr.readLine(0);
 	      } else {
+		if (TestMatch(ccomment_pattern,line)) 
+		  line = MustMatch(ccomment_pattern,line);
 		OutputText(groupname + ":" + line + "\n");
 		line = fstr.readLine(0);
 	      }
@@ -237,6 +211,8 @@ void ProcessFile(QFileInfo fileinfo) {
     }
   }
   qApp->processEvents();
+  CloseAllHandleWindows();
+  delete context;
 }
 
 void ProcessDir(QDir dir) {
@@ -253,23 +229,9 @@ void ProcessDir(QDir dir) {
   qApp->processEvents();
 }
 
-void StripDir(QDir dir) {
-  OutputText("Stripping .mpp files in directory " + dir.absolutePath() + "...\n");
-  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-  QFileInfoList list = dir.entryInfoList();
-  for (int i=0;i<list.size();i++) {
-    QFileInfo fileInfo = list.at(i);
-    if (fileInfo.isDir())
-      StripDir(QDir(fileInfo.absoluteFilePath()));
-    else
-      StripFile(fileInfo);
-  }
-  qApp->processEvents();
-}
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   GUISetup();
-  StripDir(QDir("../../MFiles"));
   ProcessDir(QDir("."));
   return app.exec();
 }

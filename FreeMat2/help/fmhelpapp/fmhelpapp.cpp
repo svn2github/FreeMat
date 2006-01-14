@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QDir>
+#include <QProcess>
 #include "KeyManager.hpp"
 #include "Module.hpp"
 #include "Class.hpp"
@@ -113,6 +114,7 @@ class HTMLWriter : public HelpWriter {
   QMultiMap<QString, QString> sectables;
   QStringList eqnlist;
   bool verbatim;
+  QString modulename;
  public:
   HTMLWriter() {myfile = NULL; mystream = NULL;}
   virtual ~HTMLWriter() {}
@@ -125,6 +127,7 @@ class HTMLWriter : public HelpWriter {
   void EndVerbatim();
   void EndModule();
   void DoEquation(QString eqn);
+  void GenerateEquations();
 };
 
 #if 0
@@ -152,6 +155,7 @@ void FormulaList::generateBitmaps(const char *path)
     QTextStream t(&f);
     if (Config_getBool("LATEX_BATCHMODE")) t << "\\batchmode" << endl;
     t << "\\documentclass{article}" << endl;
+    t << "\\usepackage{amsmath}\n";
     t << "\\usepackage{epsfig}" << endl; // for those who want to include images
     const char *s=Config_getList("EXTRA_PACKAGES").first();
     while (s)
@@ -420,15 +424,38 @@ void FormulaList::generateBitmaps(const char *path)
 }
 #endif
 
+void HTMLWriter::GenerateEquations() {
+  QFile file(modulename+"_eqn.tex");
+  if (!file.open(QFile::WriteOnly)) 
+    Halt("Unable to open " + modulename + "_eqn.tex for output");
+  QTextStream f(&file);
+  f << "\\documentclass{article}\n";
+  f << "\\usepackage{amsmath}\n";
+  f << "\\pagestyle{empty}\n";
+  f << "\\begin{document}\n";
+  for (unsigned i=0;i<eqnlist.size();i++) {
+    f << "\\[\n" << eqnlist[i] << "\\]\n";
+    f << "\\pagebreak\n";
+  }
+  f << "\\end{document}\n";
+  file.close();
+  QProcess latex;
+  latex.start("latex",QStringList() << (" " + modulename + "_eqn.tex"));
+  latex.waitForFinished();
+}
+
 void HTMLWriter::EndModule() {
   *mystream << "</BODY>\n";
   *mystream << "</HTML>\n";
   if (myfile) delete myfile;
   if (mystream) delete mystream;
+  GenerateEquations();
 }
 
 void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) {
-  myfile = new QFile(modname.toLower() + ".html");
+  modulename = modname.toLower();
+  eqnlist.clear();
+  myfile = new QFile(modulename + ".html");
   if (!myfile->open(QFile::WriteOnly))
     Halt("Unable to open " + modname + ".html for output");
   mystream = new QTextStream(myfile);
@@ -487,7 +514,12 @@ void HTMLWriter::DoFigure(QString name) {
   *mystream << "</DIV>\n";
 }
 
-void HTMLWriter::DoEquation(QString name) {
+void HTMLWriter::DoEquation(QString eqn) {
+  eqnlist << eqn;
+  *mystream << "<P>\n";
+  *mystream << "<DIV ALIGN=\"CENTER\">\n";
+  *mystream << "<IMG SRC=\"" << modulename << "_eqn" << eqnlist.count() << ".png\">\n";
+  *mystream << "</DIV>\n";  
 }
 
 class LatexWriter : public HelpWriter {
@@ -740,7 +772,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		line = fstr.readLine(0);
 	      } else if (TestMatch(eqnin_pattern,line)) {
 		line = fstr.readLine(0);
-		QString eqn = line + "\n";
+		QString eqn = MustMatch(ccomment_pattern,line) + "\n";
 		while (!fstr.atEnd() && !TestMatch(eqnout_pattern,line)) {
 		  eqn += MustMatch(ccomment_pattern,line)+"\n";
 		  line = fstr.readLine(0);

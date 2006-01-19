@@ -106,6 +106,10 @@ c     **********
       integer maxfev,mode,mp5n,nfev,nprint
       double precision epsfcn,factor,ftol,gtol,xtol,zero
       data factor,zero /1.0d2,0.0d0/
+c     Not sure why this is necessary - skb
+      factor = 100
+      zero = 0
+
       info = 0
 c
 c     check the input parameters for errors.

@@ -105,37 +105,6 @@ namespace FreeMat {
   }
 
 
-  //!
-  //@Module LEGEND Add Legend to Plot
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a legent to the current plot.  The general
-  //syntax for its use is
-  //@[
-  //  legend(x,y,boxstyle,linestyle1,label1,linestyle2,label2,...)
-  //@]
-  //where @|x| and @|y| are the coordinates of the upper left 
-  //corner of the legend box, @|boxstyle| is the style in which 
-  //to draw the box around the legend (or empty quotes '' for no
-  //box).  These mandatory parameters are followed by alternating
-  //lists of linestyles and labels.  Each linestyle argument must
-  //be a valid linestyle as taken by the @|plot| command.  The
-  //label must be a string to place next to the linestyle.  This format
-  //for the @|legend| command allows you to assemble a plot in various
-  //ways (e.g., using the @|hold| command), and then add a legend with
-  //the labels in the order you choose.  Of course, if you choose to
-  //use @|plot| to automatically assign line colors, you will need to
-  //know that colors are are assigned round-robin in the order:
-  // 'r','g','b','k','c','m','y','r','g','b',etc...
-  //@<
-  //x = linspace(-1,1);
-  //plot(x,cos(x*2*pi),'rx-',x,sin(x*4*pi),'go');
-  //legend(0.25,0.60,'b-','rx-','First Harmonic','go','Second Harmonic');
-  //mprintplot legend1
-  //@>
-  //which results in the following plot.
-  //@figure legend1
-  //!
   ArrayVector LegendFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 5)
       throw Exception("legend requires at least 5 arguments to be useful");
@@ -174,42 +143,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
-  //@Module GRID Plot Grid Toggle Function
-  //@@Section PLOT
-  //@@Usage
-  //Toggles the drawing of grid lines on the currently active plot.  The
-  //general syntax for its use is
-  //@[
-  //   grid(state)
-  //@]
-  //where @|state| is either
-  //@[
-  //   grid('on')
-  //@]
-  //to activate the grid lines, or
-  //@[
-  //   grid('off')
-  //@]
-  //to deactivate the grid lines.
-  //@@Example
-  //Here is a simple plot without grid lines.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(3*pi*x);
-  //plot(x,y,'r-');
-  //mprintplot grid1
-  //@>
-  //@figure grid1
-  //
-  //Next, we activate the grid lines.
-  //@<
-  //plot(x,y,'r-');
-  //grid on
-  //mprintplot grid2
-  //@>
-  //@figure grid2
-  //!
   ArrayVector GridFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Grid function takes only a single, string argument");
@@ -228,55 +161,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
-  //@Module HOLD Plot Hold Toggle Function
-  //@@Section PLOT
-  //@@Usage
-  //Toggles the hold state on the currently active plot.  The
-  //general syntax for its use is
-  //@[
-  //   grid(state)
-  //@]
-  //where @|state| is either
-  //@[
-  //   hold('on')
-  //@]
-  //to turn hold on, or
-  //@[
-  //   hold('off')
-  //@]
-  //to turn hold off.
-  //@@Function Internals
-  //The @|hold| function allows one to construct a plot sequence
-  //incrementally, instead of issuing all of the plots simultaneously
-  //using the @|plot| command.
-  //@@Example
-  //Here is an example of using both the @|hold| command and the
-  //multiple-argument @|plot| command to construct a plot composed
-  //of three sets of data.  The first is a plot of a modulated Gaussian.
-  //@<
-  //x = linspace(-5,5,500);
-  //t = exp(-x.^2);
-  //y = t.*cos(2*pi*x*3);
-  //plot(x,y);
-  //mprintplot hold1
-  //@>
-  //@figure hold1
-  //
-  //We now turn the hold state to @|'on'|, and add another plot
-  //sequence, this time composed of the top and bottom envelopes of
-  //the modulated Gaussian.  We add the two envelopes simultaneously
-  //using a single @|plot| command.  The fact that @|hold| is
-  //@|'on'| means that these two envelopes are added to (instead of
-  //replace) the current contents of the plot.
-  //@<
-  //plot(x,y);
-  //hold on
-  //plot(x,t,'g-',x,-t,'b-')
-  //mprintplot hold2
-  //@>
-  //@figure hold2
-  //!
   ArrayVector HoldFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("Hold function takes only a single, string argument");
@@ -294,18 +178,6 @@ namespace FreeMat {
     return ArrayVector();  
   }
 
-  //!
-  //@Module ISHOLD Test Hold Status
-  //@@Section PLOT
-  //@@Usage
-  //Returns the state of the @|hold| flag on the currently active
-  //plot.  The general syntax for its use is
-  //@[
-  //   ishold
-  //@]
-  //and it returns a logical 1 if @|hold| is @|on|, and a logical
-  //0 otherwise.
-  //!
   ArrayVector IsHoldFunction(int nargout, const ArrayVector& arg) {
     Plot2D* f = GetCurrentPlot();
     return singleArrayVector(Array::logicalConstructor(f->GetHoldFlag()));
@@ -335,137 +207,6 @@ namespace FreeMat {
     return(Array::cellConstructor(smat));
   }
 
-  //!
-  //@Module PLOT Plot Function
-  //@@Section PLOT
-  //@@Usage
-  //This is the basic plot command for FreeMat.  The general syntax for its
-  //use is
-  //@[
-  //  plot(<data 1>,{linespec 1},<data 2>,{linespec 2}...)
-  //@]
-  //where the @|<data>| arguments can have various forms, and the
-  //@|linespec| arguments are optional.  We start with the
-  //@|<data>| term, which can take on one of multiple forms:
-  //\begin{itemize}
-  //  \item \emph{Vector Matrix Case} -- In this case the argument data is a pair
-  //    of variables.  A set of @|x| coordinates in a numeric vector, and a 
-  //    set of @|y| coordinates in the columns of the second, numeric matrix.
-  //    @|x| must have as many elements as @|y| has columns (unless @|y|
-  //    is a vector, in which case only the number of elements must match).  Each
-  //    column of @|y| is plotted sequentially against the common vector @|x|.
-  //  \item \emph{Unpaired Matrix Case} -- In this case the argument data is a 
-  //    single numeric matrix @|y| that constitutes the @|y|-values
-  //    of the plot.  An @|x| vector is synthesized as @|x = 1:length(y)|,
-  //    and each column of @|y| is plotted sequentially against this common @|x|
-  //    axis.
-  //  \item \emph{Complex Matrix Case} -- Here the argument data is a complex
-  //    matrix, in which case, the real part of each column is plotted against
-  //    the imaginary part of each column.  All columns receive the same line
-  //    styles.
-  //\end{itemize}
-  //Multiple data arguments in a single plot command are treated as a \emph{sequence}, meaning
-  //that all of the plots are overlapped on the same set of axes.
-  //The @|linespec| is a string used to change the characteristics of the line.  In general,
-  //the @|linespec| is composed of three optional parts, the @|colorspec|, the 
-  //@|symbolspec| and the @|linestylespec| in any order.  Each of these specifications
-  //is a single character that determines the corresponding characteristic.  First, the 
-  //@|colorspec|:
-  //\begin{itemize}
-  //  \item @|'r'| - Color Red
-  //  \item @|'g'| - Color Green
-  //  \item @|'b'| - Color Blue
-  //  \item @|'k'| - Color Black
-  //  \item @|'c'| - Color Cyan
-  //  \item @|'m'| - Color Magenta
-  //  \item @|'y'| - Color Yellow
-  //\end{itemize}
-  //The @|symbolspec| specifies the (optional) symbol to be drawn at each data point:
-  //\begin{itemize}
-  //  \item @|'.'| - Dot symbol
-  //  \item @|'o'| - Circle symbol
-  //  \item @|'x'| - Times symbol
-  //  \item @|'+'| - Plus symbol
-  //  \item @|'*'| - Asterisk symbol
-  //  \item @|'s'| - Square symbol
-  //  \item @|'d'| - Diamond symbol
-  //  \item @|'v'| - Downward-pointing triangle symbol
-  //  \item @|'^'| - Upward-pointing triangle symbol
-  //  \item @|'<'| - Left-pointing triangle symbol
-  //  \item @|'>'| - Right-pointing triangle symbol
-  //\end{itemize}
-  //The @|linestylespec| specifies the (optional) line style to use for each data series:
-  //\begin{itemize}
-  //  \item @|'-'| - Solid line style
-  //  \item @|':'| - Dotted line style
-  //  \item @|';'| - Dot-Dash-Dot-Dash line style
-  //  \item @|'||'| - Dashed line style
-  //\end{itemize}
-  //For sequences of plots, the @|linespec| is recycled with colors taken sequentially from
-  //the palette.
-  //@@Example
-  //The most common use of the @|plot| command probably involves the vector-matrix
-  //paired case.  Here, we generate a simple cosine, and plot it using a red line, with
-  //no symbols (i.e., a @|linespec| of @|'r-'|).
-  //@<
-  //x = linspace(-pi,pi);
-  //y = cos(x);
-  //plot(x,y,'r-');
-  //mprintplot plot1
-  //@>
-  //which results in the following plot.
-  //@figure plot1
-  //
-  //Next, we plot multiple sinusoids (at different frequencies).  First, we construct
-  //a matrix, in which each column corresponds to a different sinusoid, and then plot
-  //them all at once.
-  //@<
-  //x = linspace(-pi,pi);
-  //y = [cos(x(:)),cos(3*x(:)),cos(5*x(:))];
-  //plot(x,y);
-  //mprintplot plot2
-  //@>
-  //In this case, we do not specify a @|linespec|, so that we cycle through the
-  //colors automatically (in the order listed in the previous section).
-  //@figure plot2
-  //
-  //This time, we produce the same plot, but as we want to assign individual
-  //@|linespec|s to each line, we use a sequence of arguments in a single plot
-  //command, which has the effect of plotting all of the data sets on a common 
-  //axis, but which allows us to control the @|linespec| of each plot. In 
-  //the following example, the first line (harmonic) has red, solid lines with 
-  //times symbols
-  //marking the data points, the second line (third harmonic) has blue, solid lines
-  //with right-pointing triangle symbols, and the third line (fifth harmonic) has
-  //green, dotted lines with asterisk symbols.
-  //@<
-  //plot(x,y(:,1),'rx-',x,y(:,2),'b>-',x,y(:,3),'g*:');
-  //mprintplot plot3
-  //@>
-  //@figure plot3
-  //
-  //The second most frequently used case is the unpaired matrix case.  Here, we need
-  //to provide only one data component, which will be automatically plotted against
-  //a vector of natural number of the appropriate length.  Here, we use a plot sequence
-  //to change the style of each line to be dotted, dot-dashed, and dashed.
-  //@<
-  //plot(y(:,1),'r:',y(:,2),'b;',y(:,3),'g|');
-  //mprintplot plot4
-  //@>
-  //Note in the resulting plot that the @|x|-axis no longer runs from @|[-pi,pi]|, but 
-  //instead runs from @|[1,100]|.
-  //@figure plot4
-  //
-  //The final case is for complex matrices.  For complex arguments, the real part is
-  //plotted against the imaginary part.  Hence, we can generate a 2-dimensional plot
-  //from a vector as follows.
-  //@<
-  //y = cos(2*x) + i * cos(3*x);
-  //plot(y);
-  //mprintplot plot5
-  //@>
-  //@figure plot5
-  //!
 
   // The plot command - 
   //   A plot command consists of a sequence of plot triplets.
@@ -625,7 +366,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
   //@Module AXIS Plot Axis Set/Get Function
   //@@Section PLOT
   //@@Usage
@@ -678,7 +418,7 @@ namespace FreeMat {
   //y = sqrt(2)*sin(3*x);
   //plot(x,y,'r-');
   //grid on
-  //mprintplot axis1
+  //mprint axis1
   //@>
   //@figure axis1
   //
@@ -688,7 +428,7 @@ namespace FreeMat {
   //plot(x,y,'r-');
   //grid on
   //axis tight
-  //mprintplot axis2
+  //mprint axis2
   //@>
   //@figure axis2
   //
@@ -701,7 +441,7 @@ namespace FreeMat {
   //a = axis
   //a(1) = -pi/3; a(2) = pi/3;
   //axis(a);
-  //mprintplot axis3
+  //mprint axis3
   //@>
   //@figure axis3
   //
@@ -710,10 +450,9 @@ namespace FreeMat {
   //@<
   //plot(x,y,'r-');
   //axis auto
-  //mprintplot axis4
+  //mprint axis4
   //@>
   //@figure axis4
-  //!
   ArrayVector AxisFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() > 1)
       throw Exception("Axis function takes at most one argument: the strings 'tight', 'auto' or a 4-tuple of coordinates.");

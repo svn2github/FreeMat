@@ -169,3 +169,7 @@ HEADERS += ../UMFPACK/Include/umfpack_col_to_triplet.h \
 ../UMFPACK/Source/umf_valid_numeric.h \
 ../UMFPACK/Source/umf_valid_symbolic.h \
 ../UMFPACK/Source/umf_version.h \
+
+win32 {
+DEFINES += USE_NO_BLAS
+}

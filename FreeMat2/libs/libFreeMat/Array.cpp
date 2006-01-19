@@ -1779,7 +1779,7 @@ break;
   //operate on cell-arrays of strings instead of string arrays.
   //Just to make the example concrete, here is the old way of
   //storing several strings in an array:
-  //@<
+  //@<1
   //% This is an error
   //A = ['hello';'bye']
   //% This is OK, but awkward

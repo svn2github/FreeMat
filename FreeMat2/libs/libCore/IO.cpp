@@ -622,7 +622,7 @@ namespace FreeMat {
   //end of file, and somewhat counter-intuitively, the answer is @|false|.
   //We then attempt to read past the end of the file, which causes an
   //error.  An @|feof| test now returns the expected value of @|true|.
-  //@<
+  //@<1
   //fp = fopen('test.dat','rb');
   //x = fread(fp,[512,inf],'float');
   //feof(fp)
@@ -673,13 +673,25 @@ namespace FreeMat {
   //The first example reads a file and then ``rewinds'' the file pointer by seeking to the beginning.
   //The next example seeks forward by 2048 bytes from the files current position, and then reads a line of 512 floats.
   //@<
+  //% First we create the file
+  //fp = fopen('test.dat','wb');
+  //fwrite(fp,float(rand(4096,1)));
+  //fclose(fp);
+  //% Now we open it
   //fp = fopen('test.dat','rb');
+  //% Read the whole thing
   //x = fread(fp,[1,inf],'float');
+  //% Rewind to the beginning
   //fseek(fp,0,'bof');
-  //y = fread(fp,[1,inf],'float');
+  //% Read part of the file
+  //y = fread(fp,[1,1024],'float');
   //who x y
+  //% Seek 2048 bytes into the file
   //fseek(fp,2048,'cof');
+  //% Read 512 floats from the file
   //x = fread(fp,[512,1],'float');
+  //% Close the file
+  //fclose(fp);
   //@>
   //!
   ArrayVector FseekFunction(int nargout, const ArrayVector& arg) {

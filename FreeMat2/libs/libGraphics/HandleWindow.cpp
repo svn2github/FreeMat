@@ -16,13 +16,13 @@ class BaseFigureQt : public QWidget {
 };
 
 void BaseFigureQt::resizeEvent(QResizeEvent *e) {
-  qDebug("Qtsize");
+  //qDebug("Qtsize");
   QWidget::resizeEvent(e);
   hfig->resizeGL(width(),height());
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
-  qDebug("Qtpaint");
+  //  qDebug("Qtpaint");
   QWidget::paintEvent(e);
   QPainter pnt(this);
   QTRenderEngine gc(&pnt,0,0,width(),height());
@@ -65,13 +65,13 @@ class BaseFigureGL : public QGLWidget {
   }
   
   void BaseFigureGL::paintGL() {
-    qDebug("GLpaint");
+    //    qDebug("GLpaint");
     GLRenderEngine gc(this,0,0,width(),height());
     hfig->PaintMe(gc);
   }
 
   void BaseFigureGL::resizeGL(int width, int height) {
-    qDebug("GLsize");
+    //    qDebug("GLsize");
     hfig->resizeGL(width,height);
   }
 
@@ -139,6 +139,8 @@ HandleFigure* HandleWindow::HFig() {
 }
 
   void HandleWindow::UpdateState() {
+    HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
+    resize(htv->Data()[0],htv->Data()[1]);
     if (hfig->StringCheck("renderer","opengl")) {
       if (layout->currentWidget() != glchild) {
 	layout->setCurrentWidget(glchild);
@@ -146,7 +148,7 @@ HandleFigure* HandleWindow::HFig() {
 	glchild->updateGeometry();
 	//      layout->removeWidget(qtchild);
 	//      qtchild->hide();
-	qDebug("GLactive");
+	//	qDebug("GLactive");
 	//     glchild->show();
 	repaint();
 	glchild->updateGL();

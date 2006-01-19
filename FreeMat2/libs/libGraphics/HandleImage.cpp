@@ -214,10 +214,11 @@ namespace FreeMat {
       QMatrix m(m11,0,0,m22,0,0);
       img = img.transformed(m);
     }
+    HandleAxis* parent = GetParentAxis();
+    parent->UpdateState();
   }
 
   void HandleImage::PaintMe(RenderEngine& gc) {
-    UpdateState();
     HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
     HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
     // Rescale the image

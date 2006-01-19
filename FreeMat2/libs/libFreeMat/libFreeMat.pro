@@ -6,6 +6,10 @@ CONFIG += staticlib warn_off debug
 
 INCLUDEPATH = ../libffi/include ../libXP ../libUMFPACK/UMFPACK/Include ../..
 
+win32 {
+  INCLUDEPATH += ../libffi/msvc_build
+}
+
 
 DEFINES -= UNICODE
 

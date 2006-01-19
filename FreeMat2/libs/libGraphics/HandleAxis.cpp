@@ -262,7 +262,7 @@ namespace FreeMat {
 	  tickcount++;
       }
       tDelt = (tStop - tStart)/(tickcount);
-      //      if ((tMax-tMin) > 4) integerMode = true;
+      if ((tMax-tMin) > 4) integerMode = true;
     }
     //    qDebug("tmin = %f tmax = %f integer mode = %d, count = %d",tMin,tMax,integerMode,tickcount);
     tBegin = tStart;
@@ -276,10 +276,10 @@ namespace FreeMat {
     tlabels.clear();
     bool exponentialForm;
     exponentialForm = false;
-    qDebug("Format %f %f %d %d",tMin,tMax,tickcount,tCount);
+    //    qDebug("Format %f %f %d %d",tMin,tMax,tickcount,tCount);
     for (int i=0;i<tCount;i++) {
       double tloc = tBegin+i*tDelt;
-      qDebug("  Point %f",tloc);
+      //      qDebug("  Point %f",tloc);
       if (!isLogarithmic)
 	tickLocations.push_back(tloc);
       else
@@ -1469,6 +1469,7 @@ namespace FreeMat {
     maxLabelHeight = qMax(titleHeight,xlabelHeight);
     maxLabelHeight = qMax(maxLabelHeight,ylabelHeight);
     maxLabelHeight = qMax(maxLabelHeight,zlabelHeight);
+    //    qDebug("titleHeight = %d, maxLabelHeight = %d",titleHeight,maxLabelHeight);
     // Get the outer position vector...
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     // Generate a candidate position vector based on the default
@@ -1492,17 +1493,6 @@ namespace FreeMat {
     if ((outerpos[3] - posheight) < 2*maxLabelHeight) {
       posheight = outerpos[3] - 2*maxLabelHeight;
     }
-    // Check for non-stretch-to-fit
-//     if (StringCheck("plotboxaspectratiomode","manual") ||
-// 	StringCheck("dataaspectratiomode","manual")) {
-//       if (poswidth < posheight) {
-// 	posy0 += (posheight-poswidth)/2.0;
-// 	posheight = poswidth;
-//       } else {
-// 	posx0 += (poswidth-posheight)/2.0;
-// 	poswidth = posheight;
-//       }
-//     }
     HandleFigure *fig = GetParentFigure();
     unsigned width = fig->GetWidth();
     unsigned height = fig->GetHeight();
@@ -2027,6 +2017,10 @@ namespace FreeMat {
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
     gc.viewport(outerpos[0],outerpos[1],outerpos[2],outerpos[3]);
     HPHandles *lbl;
+    std::string xdir(StringPropertyLookup("xdir"));
+    std::string ydir(StringPropertyLookup("xdir"));
+    SetStringDefault("xdir","normal");
+    SetStringDefault("ydir","normal");
     if (xvisible) {
       lbl = (HPHandles*) LookupProperty("xlabel");
       if (!lbl->Data().empty()) {
@@ -2054,6 +2048,8 @@ namespace FreeMat {
       fp->PaintMe(gc);
     }      
     SetupProjection(gc);
+    SetStringDefault("xdir",xdir);
+    SetStringDefault("ydir",ydir);
   }
 
   void HandleAxis::DrawChildren(RenderEngine& gc) {

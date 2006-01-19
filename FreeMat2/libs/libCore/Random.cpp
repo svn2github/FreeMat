@@ -96,7 +96,7 @@ namespace FreeMat {
   //x = (0:100)/100; t = x.^(a-1).*(1-x).^(b-1); 
   //t = t/(sum(t)*.01);
   //plot(x,t);
-  //mprintplot betapdf
+  //mprint betapdf
   //@>
   //which is plotted as
   //@figure betapdf
@@ -221,11 +221,11 @@ namespace FreeMat {
   //@@Example
   //First, a plot of the PDF for a family of chi-square random variables
   //@<
-  //f = [];
+  //f = zeros(7,100);
   //x = (1:100)/10;
-  //for n=1:7;t=x.^(n/2-1).*exp(-x/2);f(n,:)=10*t/sum(t);;end
+  //for n=1:7;t=x.^(n/2-1).*exp(-x/2);f(n,:)=10*t/sum(t);end
   //plot(x,f');
-  //mprintplot chipdf
+  //mprint chipdf
   //@>
   //The PDF is below:
   //@figure chipdf

@@ -3201,8 +3201,13 @@ namespace FreeMat {
       return ClassRHSExpression(r,t->down,this);
     return subsref(r,t->down);
   }
+  
+  int WalkTree::getErrorCount() {
+    return errorCount;
+  }
 
   WalkTree::WalkTree(Context* aContext, Interface* aInterface) {
+    errorCount = 0;
     lasterr = NULL;
     context = aContext;
     endValStackLength = 0;
@@ -3277,6 +3282,7 @@ namespace FreeMat {
     try{
       parserState = parseString(line);
     } catch(Exception &e) {
+      errorCount++;
       e.printMe(io);
       return;
     }
@@ -3306,6 +3312,7 @@ namespace FreeMat {
 	popDebug();
 	throw;
       }
+      errorCount++;
       e.printMe(io);
     }
     popDebug();
@@ -3378,6 +3385,7 @@ namespace FreeMat {
 	  line = dataline;
 	}
       } catch (Exception &e) {
+	errorCount++;
 	e.printMe(io);
 	line = NULL;
       }

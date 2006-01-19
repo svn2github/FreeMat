@@ -156,14 +156,12 @@ namespace FreeMat {
   //@[
   //   p = strrep(source,pattern,replace)
   //@]
-  //where @|source|, @|pattern| and @|replace| are all strings.  Optionally
-  //they can be cell arrays of strings or scalar cell arrays.  
+  //where @|source|, @|pattern| and @|replace| are all strings. 
   //@@Example
   //Here are some simple examples
   //@<
-  //strrep({'hello','hohew'},'he','be')
-  //strrep({'hello','hohew'},'he',{'be'})
-  //strrep({'hello','hohew'},'he',{'be','ce'})
+  //strrep('hello','he','be')
+  //strrep(strrep('matlab is nice','matlab','freemat'),'nice','better')
   //@>
   //!
   ArrayVector StrRepFunction(int nargout, const ArrayVector& arg) {

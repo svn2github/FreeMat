@@ -41,6 +41,8 @@ namespace FreeMat {
     fnt.setWeight(fweight);
     HPString *txt = (HPString*) LookupProperty("string");
     text = txt->Data();
+    HandleAxis* parent = GetParentAxis();
+    parent->UpdateState();
   }
 
   int HandleText::GetTextHeightInPixels() {

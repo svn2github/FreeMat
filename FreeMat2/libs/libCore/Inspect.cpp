@@ -282,7 +282,7 @@ namespace FreeMat {
   //a = 53
   //@>
   //Next, we clear @|a| using the @|clear| function, and verify that it is deleted.
-  //@<
+  //@<1
   //clear a
   //a
   //@>

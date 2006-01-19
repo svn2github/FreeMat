@@ -332,8 +332,8 @@ namespace FreeMat {
   //a = sparse([1,0,0,4;3,2,0,0;0,0,0,1;4,3,2,4])
   //[l,u,p,q,r] = lu(a)
   //full(l*a)
-  //b = R*a
-  //full(b(P,Q))
+  //b = r*a
+  //full(b(p,q))
   //@>
   //!
   ArrayVector LUFunction(int nargout, const ArrayVector& arg) {

@@ -211,46 +211,6 @@ namespace FreeMat {
     }
   }
 
-  //!
-  //@Module PRINT Print a Figure To A File
-  //@@Section FIGURE
-  //@@Usage
-  //This function ``prints'' the currently active fig to a file.  The 
-  //generic syntax for its use is
-  //@[
-  //  print(filename)
-  //@]
-  //or, alternately,
-  //@[
-  //  print filename
-  //@]
-  //where @|filename| is the (string) filename of the destined file.  The current
-  //fig is then saved to the output file using a format that is determined
-  //by the extension of the filename.  The exact output formats may vary on
-  //different platforms, but generally speaking, the following extensions
-  //should be supported cross-platform:
-  //\begin{itemize}
-  //\item @|jpg|, @|jpeg|  --  JPEG file 
-  //\item @|ps|, @|eps| -- Encapsulated Postscript file 
-  //\item @|png| -- Portable Net Graphics file
-  //\end{itemize}
-  //Note that only the fig is printed, not the window displaying
-  //the fig.  If you want something like that (essentially a window-capture)
-  //use a seperate utility or your operating system's built in screen
-  //capture ability.
-  //@@Example
-  //Here is a simple example of how the figures in this manual are generated.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(5*pi*x);
-  //plot(x,y,'r-');
-  //print printfig1.eps
-  //print printfig1.jpg
-  //@>
-  //which creates two plots @|printfig1.eps|, which is an Encapsulated
-  //Postscript file, and @|printfig1.jpg| which is a JPEG file.
-  //@figure printfig1
-  //!
   ArrayVector PrintFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("print function takes a single, string argument");
@@ -439,36 +399,6 @@ namespace FreeMat {
   }
 #endif
 
-  //!
-  //@Module XLABEL Plot X-axis Label Function
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a label to the x-axis of the plot.  The general syntax
-  //for its use is
-  //@[
-  //  xlabel('label')
-  //@]
-  //or in the alternate form
-  //@[
-  //  xlabel 'label'
-  //@]
-  //or simply
-  //@[
-  //  xlabel label
-  //@]
-  //Here @|label| is a string variable.
-  //@@Example
-  //Here is an example of a simple plot with a label on the @|x|-axis.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(2*pi*x);
-  //plot(x,y,'r-');
-  //xlabel('time');
-  //mprintplot xlabel1
-  //@>
-  //which results in the following plot.
-  //@figure xlabel1
-  //!
   ArrayVector XLabelFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("xlabel function takes only a single, string argument");
@@ -485,36 +415,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
-  //@Module YLABEL Plot Y-axis Label Function
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a label to the y-axis of the plot.  The general syntax
-  //for its use is
-  //@[
-  //  ylabel('label')
-  //@]
-  //or in the alternate form
-  //@[
-  //  ylabel 'label'
-  //@]
-  //or simply
-  //@[
-  //  ylabel label
-  //@]
-  //Here @|label| is a string variable.
-  //@@Example
-  //Here is an example of a simple plot with a label on the @|y|-axis.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(2*pi*x);
-  //plot(x,y,'r-');
-  //ylabel('cost');
-  //mprintplot ylabel1
-  //@>
-  //which results in the following plot.
-  //@figure ylabel1
-  //!
   ArrayVector YLabelFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("ylabel function takes only a single, string argument");
@@ -531,36 +431,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
-  //@Module TITLE Plot Title Function
-  //@@Section PLOT
-  //@@Usage
-  //This command adds a title to the plot.  The general syntax
-  //for its use is
-  //@[
-  //  title('label')
-  //@]
-  //or in the alternate form
-  //@[
-  //  title 'label'
-  //@]
-  //or simply
-  //@[
-  //  title label
-  //@]
-  //Here @|label| is a string variable.
-  //@@Example
-  //Here is an example of a simple plot with a title.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(2*pi*x);
-  //plot(x,y,'r-');
-  //title('cost over time');
-  //mprintplot title1
-  //@>
-  //which results in the following plot.
-  //@figure title1
-  //!
   ArrayVector TitleFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("title function takes only a single, string argument");
@@ -613,18 +483,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
-  //@Module SIZEFIG Set Size of an Fig Window
-  //@@Section FIGURE
-  //@@Usage
-  //The @|sizefig| function changes the size of the currently
-  //selected fig window.  The general syntax for its use is
-  //@[
-  //   sizefig(width,height)
-  //@]
-  //where @|width| and @|height| are the dimensions of the fig
-  //window.
-  //!
   ArrayVector SizeFigFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("sizefig function takes two arguments: height and width");
@@ -649,20 +507,6 @@ namespace FreeMat {
       currentFig = -1;
   }
 
-  //!
-  //@Module FIGURE Figure Window Select and Create Function
-  //@@Section FIGURE
-  //@@Usage
-  //Changes the active figure window to the specified handle 
-  //(or figure number).  The general syntax for its use is 
-  //@[
-  //  figure(handle)
-  //@]
-  //where @|handle| is the handle to use. If the figure window 
-  //corresponding to @|handle| does not already exist, a new 
-  //window with this handle number is created.  If it does exist
-  //then it is brought to the forefront and made active.
-  //!  
   ArrayVector FigureFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() == 0) {
       NewFig();
@@ -677,47 +521,12 @@ namespace FreeMat {
     }
   }
   
-  //!
-  //@Module COPY Copy Figure Window
-  //@@Section FIGURE
-  //@@Usage
-  //Copies the currently active figure window to the clipboard on 
-  //Windows systems.  The syntax for its use is:
-  //@[
-  //   copy
-  //@]
-  //The resulting figure is copied as an Enhanced MetaFile (EMF)
-  //to the clipboard, and can then be pasted into any suitable
-  //application.
-  //!
   ArrayVector CopyFunction(int nargout, const ArrayVector& arg) {
     Figure* f = GetCurrentFig();
     f->Copy();
     return ArrayVector();
   }
 
-  //!
-  //@Module CLOSE Close Figure Window
-  //@@Section FIGURE
-  //@@Usage
-  //Closes a figure window, either the currently active window, a 
-  //window with a specific handle, or all figure windows.  The general
-  //syntax for its use is
-  //@[
-  //   close(handle)
-  //@]
-  //in which case the figure window with the speicified @|handle| is
-  //closed.  Alternately, issuing the command with no argument
-  //@[
-  //   close
-  //@]
-  //is equivalent to closing the currently active figure window.  Finally
-  //the command
-  //@[
-  //   close('all')
-  //@]
-  //closes all figure windows currently open.
-  //!
   ArrayVector CloseFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() > 1)
       throw Exception("close takes at most one argument - either the string 'all' to close all figures, or a scalar integer indicating which figure is to be closed.");
@@ -752,16 +561,6 @@ namespace FreeMat {
     return ArrayVector();
   }
 
-  //!
-  //@Module CLF Clear Figure
-  //@@Section PLOT
-  //@@Usage
-  //This function clears the contents of the current figure.  The
-  //syntax for its use is
-  //@[
-  //   clf
-  //@]
-  //!
   ArrayVector ClearFigureFunction(int nargout, const ArrayVector& arg) {
     Figure* fig = GetCurrentFig();
     fig->ReconfigurePlotMatrix(1,1);
@@ -769,20 +568,6 @@ namespace FreeMat {
     return ArrayVector();
   }
   
-  //!
-  //@Module SUBPLOT Subplot Function
-  //@@Section PLOT
-  //@@Usage
-  //This function divides the current figure into a 2-dimensional
-  //grid, each of which can contain a plot of some kind.  The
-  //syntax for its use is
-  //@[
-  //   subplot(row,col,num)
-  //@]
-  //which either activates subplot number @|num|, or 
-  //sets up a subplot grid of size @|row x col|, and then
-  //activates @|num|. 
-  //!
   ArrayVector SubPlotFunction(int nargout, const ArrayVector& arg) {
     int row;
     int col;

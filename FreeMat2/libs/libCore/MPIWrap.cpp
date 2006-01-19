@@ -1090,6 +1090,7 @@ namespace FreeMat {
   //!
   //@Module MPIFINALIZE MPI Finalize
   //@@Section MPI
+  //@@usage
   //This routine will shut down the MPI interface.  Once called,
   //no more MPI calls can be made (except for @|mpiinitialized|).
   //The syntax for its use is

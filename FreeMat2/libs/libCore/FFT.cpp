@@ -278,7 +278,7 @@ namespace FreeMat {
   //x = cos(15*t);
   //y = fft(x);
   //plot(t,abs(y));
-  //mprintplot('fft1');
+  //mprint('fft1');
   //@>
   //The resulting plot is:
   //@figure fft1
@@ -301,7 +301,7 @@ namespace FreeMat {
   //plot((0:255)/256*pi*2,real(fft(delta,256)),'r-');
   //hold on
   //plot((0:9)/10*pi*2,real(fft(delta)),'go');
-  //mprintplot('fft2');
+  //mprint('fft2');
   //@>
   //The resulting plot is:
   //@figure fft2

@@ -1,4 +1,5 @@
 #include "HandleSurface.hpp"
+#include "HandleAxis.hpp"
 #include <qgl.h>
 
 namespace FreeMat {
@@ -151,6 +152,8 @@ namespace FreeMat {
     if (IsAuto("cdatamode"))
       DoAutoCMode();
     HandleImage::UpdateCAlphaData();
+    HandleAxis* parent = GetParentAxis();
+    parent->UpdateState();
   }
 
   /*

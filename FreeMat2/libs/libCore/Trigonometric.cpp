@@ -58,7 +58,7 @@ namespace FreeMat {
   //@<
   //x = linspace(0,1);
   //plot(x,cos(2*pi*x))
-  //mprintplot('cosplot');
+  //mprint('cosplot');
   //@>
   //@figure cosplot
   //!
@@ -157,7 +157,7 @@ namespace FreeMat {
   //@<
   //x = linspace(0,1);
   //plot(x,sin(2*pi*x))
-  //mprintplot('sinplot')
+  //mprint('sinplot')
   //@>
   //@figure sinplot
   //!
@@ -260,7 +260,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1);
   //plot(t,tan(t))
-  //mprintplot('tanplot');
+  //mprint('tanplot');
   //@>
   //@figure tanplot
   //!
@@ -359,7 +359,7 @@ namespace FreeMat {
   //t = linspace(-1,1,1000);
   //plot(t,csc(2*pi*t))
   //axis([-1,1,-10,10]);
-  //mprintplot('cscplot');
+  //mprint('cscplot');
   //@>
   //@figure cscplot
   //!
@@ -460,7 +460,7 @@ namespace FreeMat {
   //t = linspace(-1,1,1000);
   //plot(t,sec(2*pi*t))
   //axis([-1,1,-10,10]);
-  //mprintplot('secplot');
+  //mprint('secplot');
   //@>
   //@figure secplot
   //!
@@ -565,7 +565,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1);
   //plot(t,cot(t))
-  //mprintplot('cotplot');
+  //mprint('cotplot');
   //@>
   //@figure cotplot
   //!
@@ -670,7 +670,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1);
   //plot(t,acos(t))
-  //mprintplot('acosplot');
+  //mprint('acosplot');
   //@>
   //@figure acosplot
   //!
@@ -866,7 +866,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1);
   //plot(t,asin(t))
-  //mprintplot('asinplot');
+  //mprint('asinplot');
   //@>
   //@figure asinplot
   //!
@@ -1061,7 +1061,7 @@ namespace FreeMat {
   //@<
   //t = linspace(-1,1);
   //plot(t,atan(t))
-  //mprintplot('atanplot');
+  //mprint('atanplot');
   //@>
   //@figure atanplot
   //!
@@ -1198,7 +1198,7 @@ namespace FreeMat {
   //x = linspace(-pi,pi);
   //sx = sin(x); cx = cos(x);
   //plot(x,atan(sx./cx),x,atan2(sx,cx))
-  //mprintplot('atan2plot');
+  //mprint('atan2plot');
   //@>
   //@figure atan2plot
   //Note how the two-argument @|atan2| function (green line) 

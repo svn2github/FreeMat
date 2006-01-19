@@ -62,7 +62,7 @@ namespace FreeMat {
   //plot(x,log(x))
   //xlabel('x');
   //ylabel('log(x)');
-  //mprintplot('logplot');
+  //mprint('logplot');
   //@>
   //@figure logplot
   //!
@@ -190,7 +190,7 @@ namespace FreeMat {
   //@<
   //x = linspace(-1,1);
   //plot(x,exp(x))
-  //mprintplot('expplot1');
+  //mprint('expplot1');
   //@>
   //@figure expplot1
   //In the second example, we plot the unit circle in the 
@@ -198,7 +198,7 @@ namespace FreeMat {
   //@<
   //x = linspace(-1,1);
   //plot(exp(-i*x*2*pi))
-  //mprintplot('expplot2');
+  //mprint('expplot2');
   //@>
   //@figure expplot2
   //!

@@ -60,6 +60,7 @@ namespace FreeMat {
    * operates on abstract syntax trees (ASTs).
    */
   class WalkTree {
+    int errorCount;
     std::string classPrefix;
     /**
      * The context that the intepreter operates in.
@@ -123,6 +124,7 @@ namespace FreeMat {
     void doDebugCycle();
     bool processguievents;
   public:
+    int getErrorCount();
     bool inMethodCall(std::string classname);
 
     bool getStopOverload();

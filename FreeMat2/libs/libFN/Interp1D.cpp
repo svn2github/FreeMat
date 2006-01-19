@@ -292,7 +292,7 @@ namespace FreeMat {
   //x = linspace(-pi*7/8,pi*7/8,15);
   //y = cos(x);
   //plot(x,y,'ro');
-  //mprintplot interplin1_1
+  //mprint interplin1_1
   //@>
   //which is shown here
   //@figure interplin1_1
@@ -306,7 +306,7 @@ namespace FreeMat {
   //yi_endpoint = interplin1(x,y,xi,'endpoint');
   //yi_extrap = interplin1(x,y,xi,'extrap');
   //plot(x,y,'ro',xi,yi_nan,'g-x',xi,yi_zero,'g-x',xi,yi_endpoint,'g-x',xi,yi_extrap,'g-x');
-  //mprintplot interplin1_2
+  //mprint interplin1_2
   //@>
   //which is shown here
   //@figure interplin1_2

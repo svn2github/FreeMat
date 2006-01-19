@@ -69,7 +69,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = expei(x);
   //plot(x,y); xlabel('x'); ylabel('expei(x)');
-  //mprintplot expei1
+  //mprint expei1
   //@>
   //which results in the following plot.
   //@figure expei1
@@ -126,7 +126,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = eone(x);
   //plot(x,y); xlabel('x'); ylabel('eone(x)');
-  //mprintplot eone1
+  //mprint eone1
   //@>
   //which results in the following plot.
   //@figure eone1
@@ -183,7 +183,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = ei(x);
   //plot(x,y); xlabel('x'); ylabel('ei(x)');
-  //mprintplot ei1
+  //mprint ei1
   //@>
   //which results in the following plot.
   //@figure ei1
@@ -241,7 +241,7 @@ namespace FreeMat {
   //x = linspace(0,5);
   //y = erfcx(x);
   //plot(x,y); xlabel('x'); ylabel('erfcx(x)');
-  //mprintplot erfcx1
+  //mprint erfcx1
   //@>
   //which results in the following plot.
   //@figure erfcx1
@@ -299,7 +299,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = erfc(x);
   //plot(x,y); xlabel('x'); ylabel('erfc(x)');
-  //mprintplot erfc1
+  //mprint erfc1
   //@>
   //which results in the following plot.
   //@figure erfc1
@@ -357,7 +357,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = erf(x);
   //plot(x,y); xlabel('x'); ylabel('erf(x)');
-  //mprintplot erf1
+  //mprint erf1
   //@>
   //which results in the following plot.
   //@figure erf1
@@ -414,7 +414,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = dawson(x);
   //plot(x,y); xlabel('x'); ylabel('dawson(x)');
-  //mprintplot dawson1
+  //mprint dawson1
   //@>
   //which results in the following plot.
   //@figure dawson1
@@ -472,7 +472,7 @@ namespace FreeMat {
   //x = linspace(-5,5);
   //y = psi(x);
   //plot(x,y); xlabel('x'); ylabel('psi(x)');
-  //mprintplot psi1
+  //mprint psi1
   //@>
   //which results in the following plot.
   //@figure psi1
@@ -545,7 +545,7 @@ namespace FreeMat {
   //y = gamma(x);
   //plot(x,y); xlabel('x'); ylabel('gamma(x)');
   //axis([-5,5,-5,5]);
-  //mprintplot gamma1
+  //mprint gamma1
   //@>
   //which results in the following plot.
   //@figure gamma1
@@ -607,7 +607,7 @@ namespace FreeMat {
   //x = linspace(0,10);
   //y = gammaln(x);
   //plot(x,y); xlabel('x'); ylabel('gammaln(x)');
-  //mprintplot gammaln1
+  //mprint gammaln1
   //@>
   //which results in the following plot.
   //@figure gammaln1

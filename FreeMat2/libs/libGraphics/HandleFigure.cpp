@@ -98,7 +98,7 @@ namespace FreeMat {
   }
 
   void HandleFigure::PaintMe(RenderEngine &gc) {
-    qDebug("size = %d %d",m_width,m_height);
+    //    qDebug("size = %d %d",m_width,m_height);
     // draw the children...
     HPColor *color = (HPColor*) LookupProperty("color");
     gc.clear(color->Data());

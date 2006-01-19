@@ -36,6 +36,8 @@
 #endif
 
 namespace FreeMat {
+  #if 0
+  This causes fmhelp app to stop... not sure why
 
   //!
   //@Module CD Change Working Directory Function
@@ -54,26 +56,34 @@ namespace FreeMat {
   //  cd dirname
   //@]
   //Examples of all three usages are given below.
-  //Generally speaking, @|dirname| is any string that would be accepted by the underlying OS as a valid directory name.  For example, on most systems, @|'.'| refers to the current directory, and @|'..'| refers to the parent directory.  Also, depending on the OS, it may be necessary to ``escape'' the directory seperators.  In particular, if directories are seperated with the backwards-slash character @|'\\'|, then the path specification must use double-slashes @|'\\\\'|. Note: to get file-name completion to work at this time, you must use one of the first two forms of the command.
+  //Generally speaking, @|dirname| is any string that would be accepted 
+  //by the underlying OS as a valid directory name.  For example, on most 
+  //systems, @|'.'| refers to the current directory, and @|'..'| refers 
+  //to the parent directory.  Also, depending on the OS, it may be necessary 
+  //to ``escape'' the directory seperators.  In particular, if directories 
+  //are seperated with the backwards-slash character @|'\\'|, then the 
+  //path specification must use double-slashes @|'\\\\'|. Note: to get 
+  //file-name completion to work at this time, you must use one of the 
+  //first two forms of the command.
+  //
   //@@Example
-  //The @|pwd| command returns the current directory location.  First, we use the simplest form of the @|cd| command, in which the directory name argument is given unquoted.
+  //The @|pwd| command returns the current directory location.  First, 
+  //we use the simplest form of the @|cd| command, in which the directory 
+  //name argument is given unquoted.
   //@<
   //pwd
-  //cd ..
+  cd ..
   //pwd
   //@>
-  //Next, we use the ``traditional'' form of the function call, using both the parenthesis and a variable to store the quoted string.
+  //Next, we use the ``traditional'' form of the function call, using 
+  //both the parenthesis and a variable to store the quoted string.
   //@<
   //a = pwd;
   //cd(a)
   //pwd
   //@>
-  //In the third version, we use only the quoted string argument without parenthesis.
-  //@<
-  //cd '..'
-  //pwd
-  //@>
   //!
+#endif
   ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     if (arg.size() != 1)
       throw Exception("cd function requires exactly one argument");
@@ -86,7 +96,37 @@ namespace FreeMat {
   }
 
   //!
-  //@Module LS/DIR List Files Function
+  //@Module DIR List Files Function
+  //@@Section OS
+  //@@Usage
+  //An alias for the @|ls| function.  The general syntax for its use is
+  //@[
+  //  dir('dirname1','dirname2',...,'dirnameN')
+  //@]
+  //but this can also be expressed as
+  //@[
+  //  dir 'dirname1' 'dirname2' ... 'dirnameN'
+  //@]
+  //or 
+  //@[
+  //  dir dirname1 dirname2 ... dirnameN
+  //@]
+  //For compatibility with some environments, the function @|ls| can also be used 
+  //instead of @|dir|.  Generally speaking, @|dirname| is any string that would be 
+  //accepted by the underlying OS as a valid directory name.  For example, on 
+  //most systems, @|'.'| refers to the current directory, and @|'..'| refers to 
+  //the parent directory.  Two points worth mentioning about the @|dir| function:
+  //\begin{itemize}
+  //  \item To get file-name completion to work at this time, you must use 
+  //one of the first two forms of the command.
+  //  \item If you want to capture the output of the @|ls| command, use 
+  //the @|system| function instead.
+  //\end{itemize}
+  //For examples, see the @|ls| function.
+  //!
+
+  //!
+  //@Module LS List Files Function
   //@@Section OS
   //@@Usage
   //Lists the files in a directory or directories.  The general syntax for its use is

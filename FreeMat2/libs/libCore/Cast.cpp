@@ -120,7 +120,7 @@ namespace FreeMat {
   //uint8('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //uint8({4})
   //@>
   //!
@@ -174,7 +174,7 @@ namespace FreeMat {
   //uint16('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //uint16({4})
   //@>
   //!
@@ -228,7 +228,7 @@ namespace FreeMat {
   //uint32('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //uint32({4})
   //@>
   //!
@@ -279,7 +279,7 @@ namespace FreeMat {
   //int8('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //int8({4})
   //@>
   //!
@@ -330,7 +330,7 @@ namespace FreeMat {
   //int16('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //int16({4})
   //@>
   //!
@@ -381,7 +381,7 @@ namespace FreeMat {
   //int32('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //int32({4})
   //@>
   //!
@@ -438,7 +438,7 @@ namespace FreeMat {
   //float('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //float({4})
   //@>
   //!
@@ -480,7 +480,7 @@ namespace FreeMat {
   //double('helo')
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //double({4})
   //@>
   //!
@@ -526,7 +526,7 @@ namespace FreeMat {
   //complex(nan)
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //complex({4})
   //@>
   //!
@@ -572,7 +572,7 @@ namespace FreeMat {
   //dcomplex(nan)
   //@>
   //In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
-  //@<
+  //@<1
   //dcomplex({4})
   //@>
   //!

@@ -16,6 +16,9 @@ namespace FreeMat {
   void FreeHandleFigure(unsigned handle);
   void ValidateHandle(unsigned handle);
   void NotifyFigureClosed(unsigned handle);
+  
+  void InitializeHandleGraphics();
+  void ShutdownHandleGraphics();
 }
 
 #endif

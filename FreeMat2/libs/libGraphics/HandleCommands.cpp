@@ -1,6 +1,7 @@
 #include "HandleCommands.hpp"
 #include "HandleFigure.hpp"
 #include <qgl.h>
+#include <QClipboard>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPrinter>
@@ -31,6 +32,22 @@ namespace FreeMat {
   HandleWindow* Hfigs[MAX_FIGS];
   int HcurrentFig = -1;
   
+
+  void InitializeHandleGraphics() {
+    for (int i=0;i<MAX_FIGS;i++) Hfigs[i] = NULL;
+    HcurrentFig = -1;
+  }
+
+  void ShutdownHandleGraphics() {
+    for (int i=0;i<MAX_FIGS;i++) {
+      if  (Hfigs[i]) {
+	Hfigs[i]->hide();
+	delete Hfigs[i];
+      }
+      Hfigs[i] = NULL;
+    }
+  }
+
   // Magic constant - limits the number of figures you can have...
   
   HandleList<HandleObject*> objectset;
@@ -104,6 +121,21 @@ namespace FreeMat {
     objectset.deleteHandle(handle-HANDLE_OFFSET_OBJECT);
   }
 
+
+  //!
+  //@Module FIGURE Figure Window Select and Create Function
+  //@@Section FIGURE
+  //@@Usage
+  //Changes the active figure window to the specified handle 
+  //(or figure number).  The general syntax for its use is 
+  //@[
+  //  figure(handle)
+  //@]
+  //where @|handle| is the handle to use. If the figure window 
+  //corresponding to @|handle| does not already exist, a new 
+  //window with this handle number is created.  If it does exist
+  //then it is brought to the forefront and made active.
+  //!
   ArrayVector HFigureFunction(int nargout,const ArrayVector& arg) {
     if (arg.size() == 0) {
       NewFig();
@@ -204,7 +236,11 @@ namespace FreeMat {
     while (arg.size() >= (ptr+2)) {
       // Use the address and property name to lookup the Get/Set handler
       std::string propname = ArrayToString(arg[ptr]);
-      fp->LookupProperty(propname)->Set(arg[ptr+1]);
+      try {
+	fp->LookupProperty(propname)->Set(arg[ptr+1]);
+      } catch (Exception &e) {
+	throw Exception(std::string("Got error ") + std::string(e.getMessageCopy()) + std::string(" for property ") + propname);
+      }
       ptr+=2;
     }
     fp->UpdateState();
@@ -228,30 +264,42 @@ namespace FreeMat {
 
   unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg) {
     unsigned int handle = AssignHandleObject(fp);
+    bool autoParentGiven = true;
     ArrayVector t(arg);
     while (t.size() >= 2) {
       std::string propname(ArrayToString(t[0]));
-      fp->LookupProperty(propname)->Set(t[1]);
+      if (propname == "autoparent") {
+	std::string pval(ArrayToString(t[1]));
+	autoParentGiven = (pval == "on");
+      }	else {
+	try {
+	  fp->LookupProperty(propname)->Set(t[1]);
+	} catch (Exception &e) {
+	  throw Exception(std::string("Got error ") + std::string(e.getMessageCopy()) + std::string(" for property ") + propname);
+	}
+      }
       t.erase(t.begin(),t.begin()+2);
     }
-    HandleFigure *fig = CurrentFig();
-    unsigned current = fig->HandlePropertyLookup("currentaxes");
-    if (current == 0) {
-      ArrayVector arg2;
-      HAxesFunction(0,arg2);
-      current = fig->HandlePropertyLookup("currentaxes");
+    if (autoParentGiven) {
+      HandleFigure *fig = CurrentFig();
+      unsigned current = fig->HandlePropertyLookup("currentaxes");
+      if (current == 0) {
+	ArrayVector arg2;
+	HAxesFunction(0,arg2);
+	current = fig->HandlePropertyLookup("currentaxes");
+      }
+      HandleAxis *axis = (HandleAxis*) LookupHandleObject(current);
+      HPHandles *cp = (HPHandles*) axis->LookupProperty("children");
+      std::vector<unsigned> children(cp->Data());
+      children.push_back(handle);
+      cp->Data(children);
+      cp = (HPHandles*) fp->LookupProperty("parent");
+      std::vector<unsigned> parent;
+      parent.push_back(current);
+      cp->Data(parent);
+      axis->UpdateState();
     }
-    HandleAxis *axis = (HandleAxis*) LookupHandleObject(current);
-    HPHandles *cp = (HPHandles*) axis->LookupProperty("children");
-    std::vector<unsigned> children(cp->Data());
-    children.push_back(handle);
-    cp->Data(children);
-    cp = (HPHandles*) fp->LookupProperty("parent");
-    std::vector<unsigned> parent;
-    parent.push_back(current);
-    cp->Data(parent);
     fp->UpdateState();
-    axis->UpdateState();
     return handle;
   }
 
@@ -338,46 +386,6 @@ namespace FreeMat {
     return singleArrayVector(Array::logicalConstructor(isvalid));
   }
 
-    //!
-  //@Module PRINT Print a Figure To A File
-  //@@Section FIGURE
-  //@@Usage
-  //This function ``prints'' the currently active fig to a file.  The 
-  //generic syntax for its use is
-  //@[
-  //  print(filename)
-  //@]
-  //or, alternately,
-  //@[
-  //  print filename
-  //@]
-  //where @|filename| is the (string) filename of the destined file.  The current
-  //fig is then saved to the output file using a format that is determined
-  //by the extension of the filename.  The exact output formats may vary on
-  //different platforms, but generally speaking, the following extensions
-  //should be supported cross-platform:
-  //\begin{itemize}
-  //\item @|jpg|, @|jpeg| -- JPEG file 
-  //\item @|pdf| -- Portable Document File
-  //\item @|png| -- Portable Net Graphics file
-  //\end{itemize}
-  //Note that only the fig is printed, not the window displaying
-  //the fig.  If you want something like that (essentially a window-capture)
-  //use a seperate utility or your operating system's built in screen
-  //capture ability.
-  //@@Example
-  //Here is a simple example of how the figures in this manual are generated.
-  //@<
-  //x = linspace(-1,1);
-  //y = cos(5*pi*x);
-  //plot(x,y,'r-');
-  //print printfig1.pdf
-  //print printfig1.jpg
-  //@>
-  //which creates two plots @|printfig1.pdf|, which is a Portable
-  //Document Format file, and @|printfig1.jpg| which is a JPEG file.
-  //@figure printfig1
-  //!
   bool PrintBaseFigure(HandleWindow* g, std::string filename, 
 		       std::string type) {
     bool retval;
@@ -403,7 +411,136 @@ namespace FreeMat {
     g->HFig()->SetThreeVectorDefault("color",cr,cg,cb);
     return retval;
   }
+  
+  static void CloseHelper(int fig) {
+    if (fig == -1) return;
+    if (Hfigs[fig] == NULL) return;
+    Hfigs[fig]->hide();
+    delete Hfigs[fig];
+    Hfigs[fig] = NULL;
+    if (HcurrentFig == fig)
+      HcurrentFig = -1;
+  }  
 
+  //!
+  //@Module CLOSE Close Figure Window
+  //@@Section FIGURE
+  //@@Usage
+  //Closes a figure window, either the currently active window, a 
+  //window with a specific handle, or all figure windows.  The general
+  //syntax for its use is
+  //@[
+  //   close(handle)
+  //@]
+  //in which case the figure window with the speicified @|handle| is
+  //closed.  Alternately, issuing the command with no argument
+  //@[
+  //   close
+  //@]
+  //is equivalent to closing the currently active figure window.  Finally
+  //the command
+  //@[
+  //   close('all')
+  //@]
+  //closes all figure windows currently open.
+  //!
+  ArrayVector HCloseFunction(int nargout, const ArrayVector& arg) {
+    if (arg.size() > 1)
+      throw Exception("close takes at most one argument - either the string 'all' to close all figures, or a scalar integer indicating which figure is to be closed.");
+    int action;
+    if (arg.size() == 0) 
+      action = 0;
+    else {
+      Array t(arg[0]);
+      if (t.isString()) {
+	char *allflag = t.getContentsAsCString();
+	if (strcmp(allflag,"all") == 0) 
+	  action = -1;
+	else
+	  throw Exception("string argument to close function must be 'all'");
+      } else {
+	int handle = t.getContentsAsIntegerScalar();
+	if (handle < 1)
+	  throw Exception("Invalid figure number argument to close function");
+	action = handle;
+      }
+    }
+    if (action == 0) {
+      if (HcurrentFig != -1) 
+	CloseHelper(HcurrentFig);
+    } else if (action == -1) {
+      for (int i=0;i<MAX_FIGS;i++)
+	CloseHelper(i);
+    } else {
+      if ((action < MAX_FIGS) && (action >= 1))
+	CloseHelper(action-1);
+    }
+    return ArrayVector();
+  }
+
+  //!
+  //@Module COPY Copy Figure Window
+  //@@Section FIGURE
+  //@@Usage
+  //Copies the currently active figure window to the clipboard.
+  //The syntax for its use is:
+  //@[
+  //   copy
+  //@]
+  //The resulting figure is copied as a bitmap to the clipboard, 
+  //and can then be pasted into any suitable application.
+  //!
+  ArrayVector HCopyFunction(int nargout, const ArrayVector& arg) {
+    if (HcurrentFig == -1)
+      return ArrayVector();
+    HandleWindow *f = Hfigs[HcurrentFig];
+    // use grabWidget - doesnt work for openGL yet
+    QClipboard *cb = QApplication::clipboard();
+    cb->setPixmap(QPixmap::grabWidget(f));
+    return ArrayVector();
+  }
+  
+  //!
+  //@Module PRINT Print a Figure To A File
+  //@@Section FIGURE
+  //@@Usage
+  //This function ``prints'' the currently active fig to a file.  The 
+  //generic syntax for its use is
+  //@[
+  //  print(filename)
+  //@]
+  //or, alternately,
+  //@[
+  //  print filename
+  //@]
+  //where @|filename| is the (string) filename of the destined file.  The current
+  //fig is then saved to the output file using a format that is determined
+  //by the extension of the filename.  The exact output formats may vary on
+  //different platforms, but generally speaking, the following extensions
+  //should be supported cross-platform:
+  //\begin{itemize}
+  //\item @|jpg|, @|jpeg|  --  JPEG file 
+  //\item @|pdf| -- Portable Document Format file
+  //\item @|png| -- Portable Net Graphics file
+  //\end{itemize}
+  //Postscript (PS, EPS) is supported on non-Mac-OSX Unix only.
+  //Note that only the fig is printed, not the window displaying
+  //the fig.  If you want something like that (essentially a window-capture)
+  //use a seperate utility or your operating system's built in screen
+  //capture ability.
+  //@@Example
+  //Here is a simple example of how the figures in this manual are generated.
+  //@<
+  //x = linspace(-1,1);
+  //y = cos(5*pi*x);
+  //plot(x,y,'r-');
+  //print printfig1.pdf
+  //print printfig1.jpg
+  //@>
+  //which creates two plots @|printfig1.pdf|, which is a Portable
+  //Document Format file, and @|printfig1.jpg| which is a JPEG file.
+  //@figure printfig1
+  //!
   ArrayVector HPrintFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 1)
       throw Exception("print function takes a single, string argument");
@@ -432,7 +569,7 @@ namespace FreeMat {
   void LoadHandleGraphicsFunctions(Context* context) {
     context->addFunction("axes",HAxesFunction,-1,1);
     context->addFunction("line",HLineFunction,-1,1);
-    context->addFunction("text",HTextFunction,-1,1);
+    context->addFunction("htext",HTextFunction,-1,1);
     context->addFunction("himage",HImageFunction,-1,1);
     context->addFunction("surface",HSurfaceFunction,-1,1);
     context->addFunction("set",HSetFunction,-1,0);
@@ -442,5 +579,9 @@ namespace FreeMat {
     context->addFunction("gcf",HGCFFunction,0,1);
     context->addFunction("pvalid",HPropertyValidateFunction,2,1,"type","property");
     context->addFunction("print",HPrintFunction,-1,0);
+    context->addFunction("close",HCloseFunction,1,0,"handle");
+    context->addFunction("copy",HCopyFunction,-1,0);
+    // Need colormap, zoom, colorbar, addtxt, sizefig, winlev, point, legend
+    InitializeHandleGraphics();
   };
 }

@@ -27,9 +27,9 @@ namespace FreeMat {
   void LoadGraphicsCoreFunctions(Context* context) {
     LoadHandleGraphicsFunctions(context);
     //    context->addFunction("figure",FigureFunction,1,1,"n");
-    context->addFunction("close",CloseFunction,1,0,"handle");
+    //    context->addFunction("close",CloseFunction,1,0,"handle");
     //    context->addFunction("plot",PlotFunction,-1,0);
-    context->addFunction("sizefig",SizeFigFunction,2,0,"height","width");
+    //    context->addFunction("sizefig",SizeFigFunction,2,0,"height","width");
     //    context->addFunction("xlabel",XLabelFunction,1,0,"label");
     //    context->addFunction("ylabel",YLabelFunction,1,0,"label");
     //    context->addFunction("title",TitleFunction,1,0,"label"); 
@@ -37,15 +37,15 @@ namespace FreeMat {
     //    context->addFunction("hold",HoldFunction,1,0,"state");
     //    context->addFunction("ishold",IsHoldFunction,0,1);
     //    context->addFunction("image",ImageFunction,2,0,"x","zoom");
-    context->addFunction("winlev",WinLevFunction,2,-1,"window","level");
-    context->addFunction("colormap",ColormapFunction,1,0,"map");
-    context->addFunction("axis",AxisFunction,1,-1,"x");
+    //    context->addFunction("winlev",WinLevFunction,2,-1,"window","level");
+    //    context->addFunction("colormap",ColormapFunction,1,0,"map");
+    //    context->addFunction("axis",AxisFunction,1,-1,"x");
     //    context->addFunction("print",PrintFunction,1,0,"filename");
-    context->addFunction("zoom",ZoomFunction,1,0,"x");
-    context->addFunction("point",PointFunction,0,1);
-    context->addFunction("legend",LegendFunction,-1,0);
-    context->addFunction("demo",DemoFunction,-1,0);
-    context->addFunction("copy",CopyFunction,0,0);
+    //    context->addFunction("zoom",ZoomFunction,1,0,"x");
+    //    context->addFunction("point",PointFunction,0,1);
+    //    context->addFunction("legend",LegendFunction,-1,0);
+    //    context->addFunction("demo",DemoFunction,-1,0);
+    //    context->addFunction("copy",CopyFunction,0,0);
     //    context->addFunction("addtxt",AddTxtFunction,3,1,"x","y","label");
     //    context->addFunction("subplot",SubPlotFunction,3,0,"x","y","n");
     //    context->addFunction("colorbar",ColorbarFunction,1,0,"orientation");

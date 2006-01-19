@@ -238,6 +238,7 @@ namespace FreeMat {
   }
 
   double ArrayMin(Array a) {
+    if (a.isEmpty()) return 0;
     a.promoteType(FM_DOUBLE);
     const double* v = (const double *) a.getDataPointer();
     int len = a.getLength();
@@ -256,6 +257,7 @@ namespace FreeMat {
   }
 
   double ArrayMax(Array a) {
+    if (a.isEmpty()) return 0;
     a.promoteType(FM_DOUBLE);
     const double* v = (const double *) a.getDataPointer();
     int len = a.getLength();

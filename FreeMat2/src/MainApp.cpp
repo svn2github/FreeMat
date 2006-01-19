@@ -7,7 +7,7 @@ using namespace FreeMat;
 #include "Class.hpp"
 #include "LoadCore.hpp"
 #include "LoadFN.hpp"
-#include "GraphicsCore.hpp"
+#include "HandleCommands.hpp"
 #include "File.hpp"
 
 MainApp::MainApp() {
@@ -31,8 +31,7 @@ int MainApp::Run() {
   LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
-  LoadGraphicsCoreFunctions(context);  
-  InitializeFigureSubsystem();
+  LoadHandleGraphicsFunctions(context);  
 
   const char *envPtr;
   envPtr = getenv("FREEMAT_PATH");

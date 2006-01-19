@@ -4,7 +4,7 @@
 %@@Usage
 %The @|gausfit| routine has the following syntax
 %@[
-/   [mu,sigma,dc,gain,yhat] = gausfit(t,y,w,mug,sigmag,dcg,gaing).
+%  [mu,sigma,dc,gain,yhat] = gausfit(t,y,w,mug,sigmag,dcg,gaing).
 %@]
 %where the required inputs are
 %\begin{itemize}
@@ -45,7 +45,7 @@
 %y = cos(t);
 %[mu,sigma,dc,gain,yhat] = gausfit(t,y);
 %plot(t,y,'rx',t,yhat,'g-');
-%mprintplot gausfit1
+%mprint gausfit1
 %@>
 %Which results in the following plot
 %@figure gausfit1

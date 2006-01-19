@@ -1,3 +1,81 @@
+%!
+%@Module SUBPLOT Subplot Function
+%@@Section HANDLE
+%@@Usage
+%This function divides the current figure into a 2-dimensional
+%grid, each of which can contain a plot of some kind.  The function
+%has a number of syntaxes.  The first version 
+%@[
+%   subplot(row,col,num)
+%@]
+%which either activates subplot number @|num|, or 
+%sets up a subplot grid of size @|row x col|, and then
+%activates @|num|. You can also set up subplots that cover multiple
+%grid elements
+%@[
+%   subplot(row,col,[vec])
+%@]
+%where @|vec| is a set of indexes covered by the new subplot.
+%Finally, as a shortcut, you can specify a string with three
+%components
+%@[
+%   subplot('mnp')
+%@]
+%or using the alternate notation
+%@[
+%   subplot mnp
+%@]
+%where @|m| is the number of rows, @|n| is the number of columns
+%and @|p| is the index.
+%@@Example
+%Here is the use of @|subplot| to set up a @|2 x 2| grid of plots
+%@<
+%t = linspace(-pi,pi);
+%subplot(2,2,1)
+%plot(t,cos(t).*exp(-2*t));
+%subplot(2,2,2);
+%plot(t,cos(t*2).*exp(-2*t));
+%subplot(2,2,3);
+%plot(t,cos(t*3).*exp(-2*t));
+%subplot(2,2,4);
+%plot(t,cos(t*4).*exp(-2*t));
+%mprint subplot1
+%@>
+%@figure subplot1
+%Here we use the second form of @|subplot| to generate one subplot
+%that is twice as large.
+%@<
+%t = linspace(-pi,pi);
+%subplot(2,2,[1,2])
+%plot(t,cos(t).*exp(-2*t));
+%subplot(2,2,3);
+%plot(t,cos(t*3).*exp(-2*t));
+%subplot(2,2,4);
+%plot(t,cos(t*4).*exp(-2*t));
+%mprint subplot2
+%@>
+%@figure subplot2
+%Note that the subplots can contain any handle graphics objects,
+%not only simple plots.
+%@<
+%t=0:(2*pi/100):(2*pi);
+%x=cos(t*2).*(2+sin(t*3)*.3);
+%y=sin(t*2).*(2+sin(t*3)*.3);
+%z=cos(t*3)*.3;
+%subplot(2,2,1)
+%plot(t,x);
+%subplot(2,2,2);
+%plot(t,y);
+%subplot(2,2,3);
+%plot(t,z);
+%subplot(2,2,4);
+%tubeplot(x,y,z,0.14*sin(t*5)+.29,t,10)
+%axis equal
+%view(3)
+%mprint subplot3
+%@>
+%@figure subplot3
+%!
 function h = subplot(varargin)
   m = 1; n = 1; p = 1;
   if (nargin == 1)

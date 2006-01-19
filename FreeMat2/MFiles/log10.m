@@ -21,7 +21,7 @@
 %plot(x,log10(x))
 %xlabel('x');
 %ylabel('log10(x)');
-%mprintplot('log10plot');
+%mprint('log10plot');
 %@>
 %@figure log10plot
 %!

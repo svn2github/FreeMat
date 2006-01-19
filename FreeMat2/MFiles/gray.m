@@ -15,7 +15,7 @@
 %Z = exp(-(x.^2+y.^2)/0.3);
 %image(Z);
 %colormap(gray);
-%mprintimage gray1
+%mprint gray1
 %@>
 %which results in the following image
 %@figure gray1

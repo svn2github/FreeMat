@@ -17,12 +17,6 @@
 %@]
 %in which case the text entered by the user is copied verbatim to the
 %output.
-%@@Examples
-%Suppose that the variable @|t| is already defined in the current
-%workspace, and we use the first form of the @|input| command:
-%@[
-%
-%@]
 %!
 function y = input(prompt,stringflag)
   if (isset('stringflag') && ischar(stringflag) && (strcmp(stringflag,'s') | strcmp(stringflag,'S')))

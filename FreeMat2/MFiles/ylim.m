@@ -22,7 +22,7 @@
 %x = linspace(-1,1);
 %y = sin(2*pi*x);
 %plot(x,y,'r-');
-%mprintplot ylim1
+%mprint ylim1
 %@>
 %which results in
 %@figure ylim1
@@ -30,7 +30,7 @@
 %@<
 %plot(x,y,'r-')
 %ylim(-0.2,0.2)
-%mprintplot ylim2
+%mprint ylim2
 %@>
 %which results in
 %@figure ylim2
@@ -38,12 +38,7 @@
 %Copyright (c) 2004,2005 Brian Yanoff, Samit Basu
 function ylim(lim1, lim2)
   if isa(lim1,'string') && strcmp(lim1,'auto')
-      axis_limits = axis;
-      axis('auto');
-      auto_limits = axis; 
-      axis_limits(3) = auto_limits(3);
-      axis_limits(4) = auto_limits(4);
-      axis(axis_limits);
+     set(gca,'ylimmode','auto');
   elseif isa(lim1,'string')
       error('do not understand arguments to ylim function');
   end
@@ -57,10 +52,6 @@ function ylim(lim1, lim2)
     lo_lim = lim1;
     hi_lim = lim2(1);
   end
-  
-  axis_limits = axis;
-  axis_limits(3) = lo_lim;
-  axis_limits(4) = hi_lim;
-  axis(axis_limits);
+  set(gca,'ylim',[lo_lim,hi_lim]);
 
   

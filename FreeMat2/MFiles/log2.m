@@ -21,7 +21,7 @@
 %plot(x,log2(x))
 %xlabel('x');
 %ylabel('log2(x)');
-%mprintplot('log2plot');
+%mprint('log2plot');
 %@>
 %@figure log2plot
 %!

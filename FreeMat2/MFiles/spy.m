@@ -16,7 +16,7 @@
 %@<
 %y = sprand(1000,1000,.001)
 %spy(y,'ro')
-%mprintplot spy1
+%mprint spy1
 %@>
 %which is shown here
 %@figure spy1
@@ -27,10 +27,7 @@
 %A = sparse(1000,1000);
 %for i=1:25; A((1:40) + 40*(i-1),(1:40) + 40*(i-1)) = 1; end;
 %spy(A,'gx')
-%hold on
-%y = sprand(A);
-%spy(y,'ro');
-%mprintplot spy2
+%mprint spy2
 %@>
 %with the result shown here
 %@figure spy2
@@ -42,5 +39,7 @@ end
 [i,j] = find(A);
 plot(i,j,colspec)
 xlabel(sprintf('nz = %d',int32(nnz(A))));
+set(gca,'ydir','reverse');
+
 
 

@@ -14,7 +14,7 @@
 %The second form allows you to specify a subindex into a
 %structure array, and has the following syntax
 %@[
-/    y = getfield(x, {m,n}, 'fieldname')
+%    y = getfield(x, {m,n}, 'fieldname')
 %@]
 %and is equivalent to @|y = x(m,n).fieldname|.  You can chain multiple
 %references together using this syntax.

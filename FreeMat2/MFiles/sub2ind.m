@@ -30,7 +30,7 @@
 %To calculate which elements of @|A| this corresponds to, we can use
 %@|sub2ind| as
 %@<
-%n = sub2ind(size(A),1:3,2:3)
+%n = sub2ind(size(A),1:3,2:4)
 %A(n)
 %@>
 %!

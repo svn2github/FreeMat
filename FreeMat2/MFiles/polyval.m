@@ -27,7 +27,7 @@
 %x = linspace(-1,1);
 %y = polyval(p,x);
 %plot(x,y,'r-')
-%mprintplot polyval1
+%mprint polyval1
 %@>
 %Here is the resulting plot
 %@figure polyval1

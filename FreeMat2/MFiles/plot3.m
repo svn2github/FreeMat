@@ -1,3 +1,34 @@
+%!
+%@Module PLOT3 Plot 3D Function
+%@@Section HANDLE
+%@@Usage
+%This is the 3D plot command.  The general syntax for its use is
+%@[
+%  plot3(X,Y,Z,{linespec 1},X,Y,Z,{linespec 2},...,properties...)
+%@]
+%where @|X| @|Y| and @|Z| are the coordinates of the points on the
+%3D line.  Note that in general, all three should be vectors.  If
+%some or all of the quantities are matrices, then FreeMat will attempt
+%to expand the vector arguments to the same size, and then generate
+%multiple plots, one for each column of the matrices.  The linespec
+%is optional, see @|plot| for details.  You can specify @|properties|
+%for the generated line plots.  You can also specify a handle as an
+%axes to target
+%@[
+%  plot3(handle,...)
+%@]
+%@@Example
+%Here is a simple example of a 3D helix.
+%@<
+%t = linspace(0,5*pi,200);
+%x = cos(t); y = sin(t); z = t;
+%plot3(x,y,z);
+%view(3);
+%mprint plt3
+%@>
+%Shown here
+%@figure plt3
+%!
 function h = plot3(varargin)
   % Check for an axes handle
   if (nargin>=2)

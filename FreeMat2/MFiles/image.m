@@ -1,3 +1,60 @@
+%!
+%@Module IMAGE Image Display Function
+%@@Section IMAGE
+%@@Usage
+%The @|image| command has the following general syntax
+%@[
+%  handle = image(x,y,C,properties...)
+%@]
+%where @|x| is a two vector containing the @|x| coordinates
+%of the first and last pixels along a column, and @|y| is a
+%two vector containing the @|y| coordinates of the first and
+%last pixels along a row.  The matrix @|C| constitutes the
+%image data.  It must either be a scalar matrix, in which case
+%the image is colormapped using the  @|colormap| for the current
+%figure.  If the matrix is @|M x N x 3|, then @|C| is intepreted
+%as RGB data, and the image is not colormapped.  The @|properties|
+%argument is a set of @|property/value| pairs that affect the
+%final image.  You can also omit the @|x| and @|y|, 
+%@[
+%  handle = image(C, properties...)
+%@]
+%in which case they default to @|x = [1,size(C,2)]| and 
+%@|y = [1,size(C,1)]|.  Finally, you can use the @|image| function
+%with only formal arguments
+%@[
+%  handle = image(properties...)
+%@]
+%@@Example
+%In this example, we create an image that is @|512 x 512| pixels
+%square, and set the background to a noise pattern.  We set the central
+%@|128 x 256| pixels to be white.
+%@<
+%x = rand(512);
+%x((-64:63)+256,(-128:127)+256) = 1.0;
+%figure
+%image(x)
+%colormap(gray)
+%mprint image1
+%@>
+%
+%The resulting image looks like:
+%@figure image1
+%Here is an example of an RGB image 
+%@<
+%t = linspace(0,1);
+%red = t'*t;
+%green = t'*(t.^2);
+%blue = t'*(0*t+1);
+%A(:,:,1) = red; 
+%A(:,:,2) = green; 
+%A(:,:,3) = blue;
+%image(A);
+%mprint image2
+%@>
+%The resulting image looks like:
+%@figure image2
+%!
 function handle = image(varargin)
   ax = newplot;
   if (length(varargin) == 0), return; end

@@ -33,7 +33,7 @@
 %x = linspace(0,1,20);
 %y = sin(2*pi*x);
 %plot(x,y,'r-')
-%mprintplot polyfit1
+%mprint polyfit1
 %@>
 %The resulting plot is shown here
 %@figure polyfit1
@@ -43,7 +43,7 @@
 %p = polyfit(x,y,3)
 %f = polyval(p,x);
 %plot(x,y,'r-',x,f,'ko');
-%mprintplot polyfit2
+%mprint polyfit2
 %@>
 %The resulting plot is shown here
 %@figure polyfit2
@@ -52,7 +52,7 @@
 %p = polyfit(x,y,11)
 %f = polyval(p,x);
 %plot(x,y,'r-',x,f,'ko');
-%mprintplot polyfit3
+%mprint polyfit3
 %@>
 %The resulting plot is shown here
 %@figure polyfit3

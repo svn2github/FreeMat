@@ -15,7 +15,7 @@
 %Z = exp(-(x.^2+y.^2)/0.3);
 %image(Z);
 %colormap(copper);
-%mprintimage copper1
+%mprint copper1
 %@>
 %which results in the following image
 %@figure copper1

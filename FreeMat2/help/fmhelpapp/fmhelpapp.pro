@@ -11,13 +11,29 @@ INCLUDEPATH += . ../../libs/libFreeMat ../../libs/libCore ../../libs/libFN ../..
 DEPENDPATH += . INCLUDEPATH
 
 # Input
-SOURCES += fmhelpapp.cpp
+SOURCES += fmhelpapp.cpp helpwidget.cpp
+HEADERS += helpwidget.hpp fmhelpapp.hpp
 
+win32 {
+LIBS += -L../../libs/libCore/Debug -lCore -L../../libs/libFN/Debug -lFN -L../../libs/libGraphics/Debug -lGraphics   -L../../libs/libFFTPack/Debug -lFFTPack  -L../../libs/libFreeMat/Debug -lFreeMatLib -L../../libs/libffi/Debug -lffi -L../../libs/libXP/Debug -lXP -L../../libs/libARPACK/UTIL/Debug -L../../libs/libARPACK/SRC/Debug -lARPACKMain -lARPACKUtil -L../../libs/libUMFPACK/UMFPACKdi/Debug -lUMFPACKdi -L../../libs/libUMFPACK/UMFPACKzi/Debug -lUMFPACKzi -L../../libs/libUMFPACK/AMD/Debug -lAMD
+}
+
+!win32 {
 LIBS += -L../../libs/libCore -lCore -L../../libs/libFN -lFN -L../../libs/libGraphics -lGraphics   -L../../libs/libFFTPack -lFFTPack  -L../../libs/libFreeMat -lFreeMatLib -L../../libs/libffi -lffi -L../../libs/libXP -lXP -L../../libs/libARPACK/UTIL -L../../libs/libARPACK/SRC -lARPACKMain -lARPACKUtil -L../../libs/libUMFPACK/UMFPACKdi -lUMFPACKdi -L../../libs/libUMFPACK/UMFPACKzi -lUMFPACKzi -L../../libs/libUMFPACK/AMD -lAMD
+}
 
 mac {
 QT += qt3support
 LIBS +=  -framework vecLib -L/sw/lib -lg2c
+}
+
+win32 {
+QT += qt3support
+
+LIBS += ../../extern/LAPACK/debug/liblapack.a ../../extern/LAPACK/BLAS/debug/libblas.a -lg2c -lws2_32 -lopengl32 -lglu32 -lgdi32
+
+#TARGETDEPS += ../extern/LAPACK/lapack_MINGW.a ../extern/blas/libblas.a
+
 }
 
 !mac {

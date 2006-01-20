@@ -11,24 +11,29 @@
 #include "Class.hpp"
 #include "LoadCore.hpp"
 #include "LoadFN.hpp"
-#include "GraphicsCore.hpp"
+#include "HandleCommands.hpp"
 #include "File.hpp"
 #include "Context.hpp"
+#include "HelpWidget.hpp"
+#include "fmhelpapp.hpp"
 
 QTextEdit *m_text;
 
 QString output;
 QStringList input;
+QMap<QString, QString> section_descriptors;
+int moduledepth = 0;
 
-void OutputText(QString str) {
+void TermOutputText(QString str) {
+  //  m_text->textCursor().movePosition(QTextCursor::End);
   m_text->insertPlainText(str);
-  //  m_text->setCursor(m_text->textCursor().movePosition(QCursor::End));
   m_text->ensureCursorVisible();
-  qDebug() << str;
+  //  qDebug() << str;
+  qApp->processEvents();
 }
 
 void Halt(QString emsg) {
-  OutputText(emsg);
+  TermOutputText(emsg);
   QEventLoop m_loop;
   m_loop.exec();  
   exit(0);
@@ -47,6 +52,10 @@ class HelpWriter {
   virtual void EndModule() {}
   virtual void DoFigure(QString figname) {};
   virtual void DoEquation(QString eqn) {};
+  virtual void DoFile(QString filename, QString filetext) {};
+  virtual void DoEnumerate(QStringList) {};
+  virtual void DoItemize(QStringList) {};
+  virtual void WriteIndex() {};
 };
 
 class GroupWriter : public HelpWriter {
@@ -63,6 +72,10 @@ class GroupWriter : public HelpWriter {
   virtual void EndModule();
   virtual void DoFigure(QString figname);
   virtual void DoEquation(QString eqn);
+  virtual void DoFile(QString filename, QString filetext);
+  virtual void DoEnumerate(QStringList);
+  virtual void DoItemize(QStringList);
+  virtual void WriteIndex();
 };
 
 void GroupWriter::RegisterWriter(HelpWriter*ptr) {
@@ -71,6 +84,11 @@ void GroupWriter::RegisterWriter(HelpWriter*ptr) {
 
 void GroupWriter::EndModule() {
   for (unsigned i=0;i<cast.size();i++) cast[i]->EndModule();
+}
+
+void GroupWriter::WriteIndex() {
+  for (unsigned i=0;i<cast.size();i++)
+    cast[i]->WriteIndex();
 }
 
 void GroupWriter::BeginModule(QString modname, QString moddesc, QString secname) {
@@ -108,10 +126,25 @@ void GroupWriter::DoEquation(QString eqn) {
     cast[i]->DoEquation(eqn);
 }
 
+void GroupWriter::DoFile(QString filename, QString filetext) {
+  for (unsigned i=0;i<cast.size();i++) 
+    cast[i]->DoFile(filename,filetext);
+}
+
+void GroupWriter::DoEnumerate(QStringList lst) {
+  for (unsigned i=0;i<cast.size();i++) 
+    cast[i]->DoEnumerate(lst);
+}
+
+void GroupWriter::DoItemize(QStringList lst) {
+  for (unsigned i=0;i<cast.size();i++) 
+    cast[i]->DoItemize(lst);
+}
+
 class HTMLWriter : public HelpWriter {
   QFile *myfile;
   QTextStream *mystream;
-  QMultiMap<QString, QString> sectables;
+  QMultiMap<QString, QStringList> sectables;
   QStringList eqnlist;
   bool verbatim;
   QString modulename;
@@ -127,305 +160,105 @@ class HTMLWriter : public HelpWriter {
   void EndVerbatim();
   void EndModule();
   void DoEquation(QString eqn);
+  void DoFile(QString filename, QString filetext);
+  void DoEnumerate(QStringList);
+  void DoItemize(QStringList);
   void GenerateEquations();
+  void WriteIndex();
+  void WriteSectionTable(QString secname, QList<QStringList> modinfo);
 };
 
-#if 0
-// NOTE - GPL'ed code from doxygen. 
-void FormulaList::generateBitmaps(const char *path)
-{
-  int x1,y1,x2,y2;
-  QDir d(path);
-  // store the original directory
-  if (!d.exists()) { err("Error: Output dir %s does not exist!\n",path); exit(1); }
-  QCString oldDir = convertToQCString(QDir::currentDirPath());
-  // go to the html output directory (i.e. path)
-  QDir::setCurrent(d.absPath());
-  QDir thisDir;
-  // generate a latex file containing one formula per page.
-  QCString texName="_formulas.tex";
-  QList<int> pagesToGenerate;
-  pagesToGenerate.setAutoDelete(TRUE);
-  FormulaListIterator fli(*this);
-  Formula *formula;
-  QFile f(texName);
-  bool formulaError=FALSE;
-  if (f.open(IO_WriteOnly))
-  {
-    QTextStream t(&f);
-    if (Config_getBool("LATEX_BATCHMODE")) t << "\\batchmode" << endl;
-    t << "\\documentclass{article}" << endl;
-    t << "\\usepackage{amsmath}\n";
-    t << "\\usepackage{epsfig}" << endl; // for those who want to include images
-    const char *s=Config_getList("EXTRA_PACKAGES").first();
-    while (s)
-    {
-      t << "\\usepackage{" << s << "}\n";
-      s=Config_getList("EXTRA_PACKAGES").next();
-    }
-    t << "\\pagestyle{empty}" << endl; 
-    t << "\\begin{document}" << endl;
-    int page=0;
-    for (fli.toFirst();(formula=fli.current());++fli)
-    {
-      QCString resultName;
-      resultName.sprintf("form_%d.png",formula->getId());
-      // only formulas for which no image exists are generated
-      QFileInfo fi(resultName);
-      if (!fi.exists())
-      {
-        // we force a pagebreak after each formula
-        t << formula->getFormulaText() << endl << "\\pagebreak\n\n";
-        pagesToGenerate.append(new int(page));
-      }
-      page++;
-    }
-    t << "\\end{document}" << endl;
-    f.close();
-  }
-  if (pagesToGenerate.count()>0) // there are new formulas
-  {
-    //printf("Running latex...\n");
-    //system("latex _formulas.tex </dev/null >/dev/null");
-    QCString latexCmd = Config_getString("LATEX_CMD_NAME");
-    if (latexCmd.isEmpty()) latexCmd="latex";
-    if (iSystem(latexCmd,"_formulas.tex")!=0)
-    {
-      err("Problems running latex. Check your installation or look for typos in _formulas.tex!\n");
-      formulaError=TRUE;
-      //return;
-    }
-    //printf("Running dvips...\n");
-    QListIterator<int> pli(pagesToGenerate);
-    int *pagePtr;
-    int pageIndex=1;
-    for (;(pagePtr=pli.current());++pli,++pageIndex)
-    {
-      int pageNum=*pagePtr;
-      msg("Generating image form_%d.png for formula\n",pageNum);
-      char dviArgs[4096];
-      QCString formBase;
-      formBase.sprintf("_form%d",pageNum);
-      // run dvips to convert the page with number pageIndex to an
-      // encapsulated postscript.
-      sprintf(dviArgs,"-q -D 600 -E -n 1 -p %d -o %s.eps _formulas.dvi",
-          pageIndex,formBase.data());
-      if (iSystem("dvips",dviArgs)!=0)
-      {
-        err("Problems running dvips. Check your installation!\n");
-        return;
-      }
-      // now we read the generated postscript file to extract the bounding box
-      QFileInfo fi(formBase+".eps");
-      if (fi.exists())
-      {
-        QCString eps = fileToString(formBase+".eps");
-        int i=eps.find("%%BoundingBox:");
-        if (i!=-1)
-        {
-          sscanf(eps.data()+i,"%%%%BoundingBox:%d %d %d %d",&x1,&y1,&x2,&y2);
-        }
-        else
-        {
-          err("Error: Couldn't extract bounding box!\n");
-        }
-      } 
-      // next we generate a postscript file which contains the eps
-      // and displays it in the right colors and the right bounding box
-      f.setName(formBase+".ps");
-      if (f.open(IO_WriteOnly))
-      {
-        QTextStream t(&f);
-        t << "1 1 1 setrgbcolor" << endl;  // anti-alias to white background
-        t << "newpath" << endl;
-        t << "-1 -1 moveto" << endl;
-        t << (x2-x1+2) << " -1 lineto" << endl;
-        t << (x2-x1+2) << " " << (y2-y1+2) << " lineto" << endl;
-        t << "-1 " << (y2-y1+2) << " lineto" <<endl;
-        t << "closepath" << endl;
-        t << "fill" << endl;
-        t << -x1 << " " << -y1 << " translate" << endl;
-        t << "0 0 0 setrgbcolor" << endl;
-        t << "(" << formBase << ".eps) run" << endl;
-        f.close();
-      }
-      // scale the image so that it is four times larger than needed.
-      // and the sizes are a multiple of four.
-      const double scaleFactor = 16.0/3.0; 
-      int gx = (((int)((x2-x1)*scaleFactor))+3)&~2;
-      int gy = (((int)((y2-y1)*scaleFactor))+3)&~2;
-      // Then we run ghostscript to convert the postscript to a pixmap
-      // The pixmap is a truecolor image, where only black and white are
-      // used.  
-#if defined(_WIN32) && !defined(__CYGWIN__)
-      char gsArgs[256];
-      sprintf(gsArgs,"-q -g%dx%d -r%dx%dx -sDEVICE=ppmraw "
-                     "-sOutputFile=%s.pnm -dNOPAUSE -dBATCH -- %s.ps",
-                     gx,gy,(int)(scaleFactor*72),(int)(scaleFactor*72),
-                     formBase.data(),formBase.data()
-             );
-      // gswin32 is a GUI api which will pop up a window and run
-      // asynchronously. To prevent both, we use ShellExecuteEx and
-      // WaitForSingleObject (thanks to Robert Golias for the code)
-      SHELLEXECUTEINFO sInfo = {
-        sizeof(SHELLEXECUTEINFO),   /* structure size */
-        SEE_MASK_NOCLOSEPROCESS,    /* leave the process running */
-        NULL,                       /* window handle */
-        NULL,                       /* action to perform: open */
-        "gswin32.exe",              /* file to execute */
-        gsArgs,                     /* argument list */ 
-        NULL,                       /* use current working dir */
-        SW_HIDE,                    /* minimize on start-up */
-        0,                          /* application instance handle */
-        NULL,                       /* ignored: id list */
-        NULL,                       /* ignored: class name */
-        NULL,                       /* ignored: key class */
-        0,                          /* ignored: hot key */
-        NULL,                       /* ignored: icon */
-        NULL                        /* resulting application handle */
-      };
-      if (!ShellExecuteEx(&sInfo))
-      {
-        err("Problem running ghostscript. Check your installation!\n");
-        return;
-      }
-      else if (sInfo.hProcess)      /* executable was launched, wait for it to finish */
-      {
-        WaitForSingleObject(sInfo.hProcess,INFINITE); 
-      }
-#else
-      char gsArgs[4096];
-      sprintf(gsArgs,"-q -g%dx%d -r%dx%dx -sDEVICE=ppmraw "
-                    "-sOutputFile=%s.pnm -dNOPAUSE -dBATCH -- %s.ps",
-                    gx,gy,(int)(scaleFactor*72),(int)(scaleFactor*72),
-                    formBase.data(),formBase.data()
-             );
-      if (iSystem("gs",gsArgs)!=0)
-      {
-        err("Problem running ghostscript. Check your installation!\n");
-        return;
-      }
-#endif
-      f.setName(formBase+".pnm");
-      uint imageX=0,imageY=0;
-      // we read the generated image again, to obtain the pixel data.
-      if (f.open(IO_ReadOnly))
-      {
-        QTextStream t(&f);
-        QCString s;
-        if (!t.eof())
-          s=t.readLine();
-        if (s.length()<2 || s.left(2)!="P6")
-          err("Error: ghostscript produced an illegal image format!");
-        else
-        {
-          // assume the size if after the first line that does not start with
-          // # excluding the first line of the file.
-          while (!t.eof() && (s=t.readLine()) && !s.isEmpty() && s.at(0)=='#');
-          sscanf(s,"%d %d",&imageX,&imageY);
-        }
-        if (imageX>0 && imageY>0)
-        {
-          //printf("Converting image...\n");
-          char *data = new char[imageX*imageY*3]; // rgb 8:8:8 format
-          uint i,x,y,ix,iy;
-          f.readBlock(data,imageX*imageY*3);
-          Image srcImage(imageX,imageY),
-                filteredImage(imageX,imageY),
-                dstImage(imageX/4,imageY/4);
-          uchar *ps=srcImage.getData();
-          // convert image to black (1) and white (0) index.
-          for (i=0;i<imageX*imageY;i++) *ps++= (data[i*3]==0 ? 1 : 0);
-          // apply a simple box filter to the image 
-          static int filterMask[]={1,2,1,2,8,2,1,2,1};
-          for (y=0;y<srcImage.getHeight();y++)
-          {
-            for (x=0;x<srcImage.getWidth();x++)
-            {
-              int s=0;
-              for (iy=0;iy<2;iy++)
-              {
-                for (ix=0;ix<2;ix++)
-                {
-                  s+=srcImage.getPixel(x+ix-1,y+iy-1)*filterMask[iy*3+ix];
-                }
-              }
-              filteredImage.setPixel(x,y,s);
-            }
-          }
-          // down-sample the image to 1/16th of the area using 16 gray scale
-          // colors.
-          // TODO: optimize this code.
-          for (y=0;y<dstImage.getHeight();y++)
-          {
-            for (x=0;x<dstImage.getWidth();x++)
-            {
-              int xp=x<<2;
-              int yp=y<<2;
-              int c=filteredImage.getPixel(xp+0,yp+0)+
-                    filteredImage.getPixel(xp+1,yp+0)+
-                    filteredImage.getPixel(xp+2,yp+0)+
-                    filteredImage.getPixel(xp+3,yp+0)+
-                    filteredImage.getPixel(xp+0,yp+1)+
-                    filteredImage.getPixel(xp+1,yp+1)+
-                    filteredImage.getPixel(xp+2,yp+1)+
-                    filteredImage.getPixel(xp+3,yp+1)+
-                    filteredImage.getPixel(xp+0,yp+2)+
-                    filteredImage.getPixel(xp+1,yp+2)+
-                    filteredImage.getPixel(xp+2,yp+2)+
-                    filteredImage.getPixel(xp+3,yp+2)+
-                    filteredImage.getPixel(xp+0,yp+3)+
-                    filteredImage.getPixel(xp+1,yp+3)+
-                    filteredImage.getPixel(xp+2,yp+3)+
-                    filteredImage.getPixel(xp+3,yp+3);
-              // here we scale and clip the color value so the
-              // resulting image has a reasonable contrast
-              dstImage.setPixel(x,y,QMIN(15,(c*15)/(16*10)));
-            }
-          }
-          // save the result as a png
-          QCString resultName;
-          resultName.sprintf("form_%d.png",pageNum);
-          // the option parameter 1 is used here as a temporary hack
-          // to select the right color palette! 
-          dstImage.save(resultName,1);
-          delete[] data;
-        }
-        f.close();
-      } 
-      // remove intermediate image files
-      thisDir.remove(formBase+".eps");
-      thisDir.remove(formBase+".pnm");
-      thisDir.remove(formBase+".ps");
-    }
-    // remove intermediate files produced by latex
-    thisDir.remove("_formulas.dvi");
-    thisDir.remove("_formulas.log");
-    thisDir.remove("_formulas.aux");
-  }
-  // remove the latex file itself
-  if (!formulaError) thisDir.remove("_formulas.tex");
-  // write/update the formula repository so we know what text the 
-  // generated pngs represent (we use this next time to avoid regeneration
-  // of the pngs, and to avoid forcing the user to delete all pngs in order
-  // to let a browser refresh the images).
-  f.setName("formula.repository");
-  if (f.open(IO_WriteOnly))
-  {
-    QTextStream t(&f);
-    for (fli.toFirst();(formula=fli.current());++fli)
-    {
-      t << "\\form#" << formula->getId() << ":" << formula->getFormulaText() << endl;
-    }
-    f.close();
-  }
-  // reset the directory to the original location.
-  QDir::setCurrent(oldDir);
+void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) {
+  secname = secname.toLower();
+  QString secdesc(section_descriptors.value(secname));
+  if (secdesc.isEmpty())
+    TermOutputText("Warning: No section descriptor for " + secname + "!\n");
+  QFile file("html\\" + secname + ".html");
+  if (!file.open(QFile::WriteOnly))
+    Halt("Unable to open html\\" + secname + ".html for output");
+  QTextStream f(&file);
+  f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
+  f << "\n";
+  f << "<HTML>\n";
+  f << "<HEAD>\n";
+  f << "<TITLE>" << secdesc << "</TITLE>\n";
+  f << "</HEAD>\n";
+  f << "<BODY>\n";
+  f << "<H2>" << secdesc << "</H2>\n";
+  f << "<P>\n";
+  f << "<A HREF=index.html> Main Index </A>\n";
+  f << "<P>\n";
+  f << "<UL>\n";
+  for (unsigned i=0;i<modinfo.size();i++)
+    f << "<LI> <A HREF=" << modinfo[i][0] << ".html> " << modinfo[i][0] << "</A> " << modinfo[i][1] << "</LI>\n";
+  f << "</UL>\n";
+  f << "</BODY>\n";
+  f << "</HTML>\n";
 }
-#endif
+
+void HTMLWriter::WriteIndex() {
+  TermOutputText("Writing index\n");
+  // Write the section pages
+  QList<QString> sections(sectables.keys());
+  for (int i=0;i<sections.size();i++) {
+    QString secname(sections[i]);
+    QList<QStringList> modules(sectables.values(secname));
+    WriteSectionTable(secname,modules);
+  }
+  QFile file("html\\index.html");
+  if (!file.open(QFile::WriteOnly))
+    Halt("Unable to open html\\index.html for output");
+  QTextStream f(&file);
+  f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
+  f << "\n";
+  f << "<HTML>\n";
+  f << "<HEAD>\n";
+  f << "<TITLE>" << "FreeMat v2.0 Documentation" << "</TITLE>\n";
+  f << "</HEAD>\n";
+  f << "<BODY>\n";
+  f << "<H2>" << "FreeMat v2.0 Documentation" << "</H2>\n";
+  f << "<P>\n";
+  f << "<H1> Documentation Sections </H1>\n";
+  f << "<UL>\n";
+  QList<QString> secnames(section_descriptors.keys());
+  for (unsigned i=0;i<secnames.size();i++)
+    f << "<LI> <A HREF=" << secnames[i] << ".html> " << 
+      section_descriptors.value(secnames[i]) << "</A> </LI>\n";
+  f << "</UL>\n";
+  f << "</BODY>\n";
+  f << "</HTML>\n";
+  // Build the module list
+  QFile file2("html\\modules.txt");
+  if (!file2.open(QFile::WriteOnly))
+    Halt("Unable to open html\\modules.txt for output");
+  QList<QStringList> moduledlist(sectables.values());
+  QStringList modulenames;
+  for (unsigned k=0;k<moduledlist.size();k++)
+    modulenames << moduledlist[k][0].toLower();
+  modulenames.sort();
+  QTextStream f2(&file2);
+  for (unsigned k=0;k<modulenames.size();k++) {
+    f2 << modulenames[k] << endl;
+  }
+}
+
+void HTMLWriter::DoItemize(QStringList lst) {
+  *mystream << "<UL>\n";
+  for (int i=0;i<lst.size();i++)
+    *mystream << "<LI> " << ExpandCodes(lst[i]) << " </LI>\n";
+  *mystream << "</UL>\n";
+}
+
+void HTMLWriter::DoEnumerate(QStringList lst) {
+  *mystream << "<OL>\n";
+  for (int i=0;i<lst.size();i++)
+    *mystream << "<LI> " << ExpandCodes(lst[i]) << " </LI>\n";
+  *mystream << "</OL>\n";
+}
 
 void HTMLWriter::GenerateEquations() {
-  QFile file(modulename+"_eqn.tex");
+  if (eqnlist.empty()) return;
+  QFile file("tmp\\" + modulename+"_eqn.tex");
   if (!file.open(QFile::WriteOnly)) 
     Halt("Unable to open " + modulename + "_eqn.tex for output");
   QTextStream f(&file);
@@ -439,9 +272,17 @@ void HTMLWriter::GenerateEquations() {
   }
   f << "\\end{document}\n";
   file.close();
+  TermOutputText("Generating equations for " + modulename + "\n");
   QProcess latex;
-  latex.start("latex",QStringList() << (" " + modulename + "_eqn.tex"));
-  latex.waitForFinished();
+  latex.setWorkingDirectory("tmp");
+  latex.start("latex",QStringList() << (modulename + "_eqn.tex"));
+  if (!latex.waitForFinished())
+    Halt("LaTeX for " + modulename + "_eqn.tex never returned");
+  QProcess dvipng;
+  dvipng.setWorkingDirectory("tmp");
+  dvipng.start("dvipng",QStringList() << "-T tight" << (modulename + "_eqn.dvi"));
+  if (!dvipng.waitForFinished())
+    Halt("dvipng for " + modulename + "_eqn.dvi never returned");
 }
 
 void HTMLWriter::EndModule() {
@@ -455,7 +296,7 @@ void HTMLWriter::EndModule() {
 void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   modulename = modname.toLower();
   eqnlist.clear();
-  myfile = new QFile(modulename + ".html");
+  myfile = new QFile("html\\" + modulename + ".html");
   if (!myfile->open(QFile::WriteOnly))
     Halt("Unable to open " + modname + ".html for output");
   mystream = new QTextStream(myfile);
@@ -468,7 +309,9 @@ void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) 
   *mystream << "</HEAD>\n";
   *mystream << "<BODY>\n";
   *mystream << "<H2>" << moddesc << "</H2>\n";
-  sectables.insert(secname,modname);
+  sectables.insert(secname,QStringList() << modname << moddesc);
+  *mystream << "<P>\n";
+  *mystream << "Section: <A HREF=" << secname.toLower() << ".html> " << section_descriptors.value(secname.toLower()) << "</A>\n";
   verbatim = false;
 }
 
@@ -504,7 +347,7 @@ void HTMLWriter::OutputText(QString text) {
 
 void HTMLWriter::EndVerbatim() {
   verbatim = false;
-  *mystream << "</PRE>\n";
+  *mystream << "</PRE>\n<P>\n";
 }
 
 void HTMLWriter::DoFigure(QString name) {
@@ -520,6 +363,13 @@ void HTMLWriter::DoEquation(QString eqn) {
   *mystream << "<DIV ALIGN=\"CENTER\">\n";
   *mystream << "<IMG SRC=\"" << modulename << "_eqn" << eqnlist.count() << ".png\">\n";
   *mystream << "</DIV>\n";  
+}
+
+void HTMLWriter::DoFile(QString fname, QString ftxt) {
+  *mystream << "<P>\n<PRE>\n";
+  *mystream << "     " << fname << "\n";
+  *mystream << ftxt << "\n";
+  *mystream << "</PRE>\n";
 }
 
 class LatexWriter : public HelpWriter {
@@ -539,17 +389,38 @@ class LatexWriter : public HelpWriter {
   void EndVerbatim();
   void EndModule();
   void DoEquation(QString eqn);
+  void DoFile(QString filename, QString filetext);
+  void DoEnumerate(QStringList);
+  void DoItemize(QStringList);
 };
+
+
+void LatexWriter::DoItemize(QStringList lst) {
+  *mystream << "\\begin{itemize}\n";
+  for (int i=0;i<lst.size();i++)
+    *mystream << "\\item " << ExpandCodes(lst[i]);
+  *mystream << "\\end{itemize}\n";
+}
+
+void LatexWriter::DoEnumerate(QStringList lst) {
+  *mystream << "\\begin{enumerate}\n";
+  for (int i=0;i<lst.size();i++)
+    *mystream << "\\item " << ExpandCodes(lst[i]);
+  *mystream << "\\end{enumerate}\n";
+}
 
 void LatexWriter::EndModule() {
   if (myfile) delete myfile;
   if (mystream) delete mystream;
+  moduledepth--;
 }
 
 void LatexWriter::BeginModule(QString modname, QString moddesc, QString secname) {
-  myfile = new QFile(modname.toLower() + ".tex");
-  if (!myfile->open(QFile::WriteOnly))
-    Halt("Unable to open " + modname + ".tex for output");
+  moduledepth++;
+  myfile = new QFile("latex/" + modname.toLower() + ".tex");
+  if (!myfile->open(QFile::WriteOnly)) {
+    Halt("Unable to open " + modname + ".tex for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
+  }
   mystream = new QTextStream(myfile);
   *mystream << "\\subsection{" + moddesc + "}\n\n";
   sectables.insert(secname,modname);
@@ -588,6 +459,13 @@ void LatexWriter::DoFigure(QString name) {
 
 void LatexWriter::DoEquation(QString eqn) {
   *mystream << "\\[\\n" << eqn << "\\]\\n";
+}
+
+void LatexWriter::DoFile(QString filename, QString ftext) {
+  *mystream << "\\begin{verbatim}\n";
+  *mystream << "     " << filename << "\n";
+  *mystream << ftext;
+  *mystream << "\\end{verbatim}\n";
 }
 
 namespace FreeMat {
@@ -633,22 +511,22 @@ WalkTree* GetInterpreter() {
   LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
-  LoadGraphicsCoreFunctions(context);  
-  InitializeFigureSubsystem();
-  const char *envPtr;
-  envPtr = getenv("FREEMAT_PATH");
+  LoadHandleGraphicsFunctions(context);  
+  //   const char *envPtr;
+  //   envPtr = getenv("FREEMAT_PATH");
   m_term->setContext(context);
-  if (envPtr)
-    m_term->setPath(std::string(envPtr));
-  else 
-    m_term->setPath(std::string(""));
+  //   if (envPtr)
+  //     m_term->setPath(std::string(envPtr));
+  //   else 
+  //     m_term->setPath(std::string(""));
   m_term->setPath("../../MFiles");
   WalkTree *twalk = new WalkTree(context,m_term);
   return twalk;
 }
 
-QString EvaluateCommands(QStringList cmds) {
+QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename, QString file) {
   input = cmds;
+  output.clear();
   WalkTree* twalk = GetInterpreter();
   try {
     while (!input.empty()) {
@@ -664,25 +542,47 @@ QString EvaluateCommands(QStringList cmds) {
   } catch (std::exception& e) {
     std::cout << "Exception caught: " << e.what() << "\n";
   }
+  if (twalk->getErrorCount() != expectedCount) 
+    Halt("Error: Got " + QString().sprintf("%d",twalk->getErrorCount()) + ", expected " + QString().sprintf("%d",expectedCount) + " in module " + modulename + " in file " + file + "\n\nOutput Follows:\n"+output);
+  ShutdownHandleGraphics();
   delete twalk;
   delete m_term;
+  QRegExp mprintre("(--> mprint[^\\n]*)");
+  output = output.replace(mprintre,"");
   return output;
 }
 
-void GUISetup() {
-  QWidget *m_main = new QWidget;
+void ConsoleWidget::exitNow() {
+  exit(1);
+}
+
+void ConsoleWidget::LaunchHelpWindow() {
+  HelpWindow *m_helpwin = new HelpWindow("/sandbox/freemat2/help/fmhelpapp/html");
+  m_helpwin->show();
+}
+
+
+ConsoleWidget::ConsoleWidget() : QWidget() {
   m_text = new QTextEdit;
   m_text->setReadOnly(true);
-  m_text->resize(400,400);
-  m_text->show();
+  resize(600,400);
   m_text->setFontFamily("Courier");
+  QPushButton *run = new QPushButton("Run");
   QPushButton *quit = new QPushButton("Quit");
-  QWidget::connect(quit,SIGNAL(clicked()),qApp,SLOT(quit()));
+  QPushButton *test = new QPushButton("Test");
+  QWidget::connect(quit,SIGNAL(clicked()),this,SLOT(exitNow()));
+  QWidget::connect(test,SIGNAL(clicked()),this,SLOT(LaunchHelpWindow()));
+  QWidget::connect(run,SIGNAL(clicked()),this,SLOT(Run()));
   QVBoxLayout *layout = new QVBoxLayout;
   layout->addWidget(m_text);
-  layout->addWidget(quit);
-  m_main->setLayout(layout);
-  m_main->show();
+  QWidget *buttons = new QWidget;
+  QHBoxLayout *hlayout = new QHBoxLayout;
+  hlayout->addWidget(run);
+  hlayout->addWidget(test);
+  hlayout->addWidget(quit);
+  buttons->setLayout(hlayout);
+  layout->addWidget(buttons);
+  setLayout(layout);
 }
 
 QString MustMatch(QRegExp re, QString source) {
@@ -695,33 +595,86 @@ bool TestMatch(QRegExp re, QString source) {
   return (re.indexIn(source) >= 0);
 }
 
-void CloseAllHandleWindows() {
-  
-}
 
 void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
-  QRegExp docblock_pattern("^\\s*//!");
-  QRegExp modulename_pattern("^\\s*//@Module\\s*(\\b\\w+\\b)");
-  QRegExp moduledesc_pattern("^\\s*//@Module\\s*(\\b.*)");
-  QRegExp sectioname_pattern("^\\s*//@@Section\\s*(\\b\\w+\\b)");
-  QRegExp groupname_pattern("^\\s*//@@(.*)");
-  QRegExp execin_pattern("^\\s*//@<");
-  QRegExp execout_pattern("^\\s*//@>");
-  QRegExp verbatimin_pattern("^\\s*//@\\[");
-  QRegExp verbatimout_pattern("^\\s*//@\\]");
-  QRegExp ccomment_pattern("^\\s*//(.*)");
-  QRegExp figure_pattern("^\\s*//@figure\\s*(\\b\\w+\\b)");
-  QRegExp eqnin_pattern("^\\s*//\\s*\\\\\\[");
-  QRegExp eqnout_pattern("^\\s*//\\s*\\\\\\]");
-    
+  QRegExp docblock_pattern;
+  QRegExp modulename_pattern;
+  QRegExp moduledesc_pattern;
+  QRegExp sectioname_pattern;
+  QRegExp groupname_pattern;
+  QRegExp execin_pattern;
+  QRegExp execout_pattern;
+  QRegExp verbatimin_pattern;
+  QRegExp verbatimout_pattern;
+  QRegExp ccomment_pattern;
+  QRegExp figure_pattern;
+  QRegExp eqnin_pattern;
+  QRegExp eqnout_pattern;
+  QRegExp fnin_pattern;
+  QRegExp fnout_pattern;
+  QRegExp enumeratein_pattern;
+  QRegExp enumerateout_pattern;
+  QRegExp itemizein_pattern;
+  QRegExp itemizeout_pattern;
+  QRegExp item_pattern;
+
+  if (fileinfo.suffix() == "cpp") { 
+    docblock_pattern = QRegExp("^\\s*//!");
+    modulename_pattern = QRegExp("^\\s*//@Module\\s*(\\b\\w+\\b)");
+    moduledesc_pattern = QRegExp("^\\s*//@Module\\s*(\\b.*)");
+    sectioname_pattern = QRegExp("^\\s*//@@Section\\s*(\\b\\w+\\b)");
+    groupname_pattern = QRegExp("^\\s*//@@(.*)");
+    execin_pattern = QRegExp("^\\s*//@<(.*)?");
+    execout_pattern = QRegExp("^\\s*//@>");
+    verbatimin_pattern = QRegExp("^\\s*//@\\[");
+    verbatimout_pattern = QRegExp("^\\s*//@\\]");
+    ccomment_pattern = QRegExp("^\\s*//(.*)");
+    figure_pattern = QRegExp("^\\s*//@figure\\s*(\\b\\w+\\b)");
+    // \s*//\s*\\\[
+    eqnin_pattern = QRegExp("^\\s*//\\s*\\\\\\[");
+    eqnout_pattern = QRegExp("^\\s*//\\s*\\\\\\]");
+    fnin_pattern = QRegExp("^\\s*//@\\{\\s*(\\b[\\w\\.]+\\b)");
+    fnout_pattern = QRegExp("^\\s*//@\\}");
+    // \s*//\\begin\{enumerate\}
+    enumeratein_pattern = QRegExp("^\\s*//\\\\begin\\{enumerate\\}");
+    enumerateout_pattern = QRegExp("^\\s*//\\\\end\\{enumerate\\}");
+    itemizein_pattern = QRegExp("^\\s*//\\\\begin\\{itemize\\}");
+    itemizeout_pattern = QRegExp("^\\s*//\\\\end\\{itemize\\}");
+    item_pattern = QRegExp("^\\s*//\\s*\\\\item(.*)");
+  } else {
+    docblock_pattern = QRegExp("^\\s*%!");
+    modulename_pattern = QRegExp("^\\s*%@Module\\s*(\\b\\w+\\b)");
+    moduledesc_pattern = QRegExp("^\\s*%@Module\\s*(\\b.*)");
+    sectioname_pattern = QRegExp("^\\s*%@@Section\\s*(\\b\\w+\\b)");
+    groupname_pattern = QRegExp("^\\s*%@@(.*)");
+    execin_pattern = QRegExp("^\\s*%@<(.*)?");
+    execout_pattern = QRegExp("^\\s*%@>");
+    verbatimin_pattern = QRegExp("^\\s*%@\\[");
+    verbatimout_pattern = QRegExp("^\\s*%@\\]");
+    ccomment_pattern = QRegExp("^\\s*%(.*)");
+    figure_pattern = QRegExp("^\\s*%@figure\\s*(\\b\\w+\\b)");
+    eqnin_pattern = QRegExp("^\\s*%\\s*\\\\\\[");
+    eqnout_pattern = QRegExp("^\\s*%\\s*\\\\\\]");
+    fnin_pattern = QRegExp("^\\s*%@\\{\\s*(\\b[\\w\\.]+\\b)");
+    fnout_pattern = QRegExp("^\\s*%@\\}");
+    enumeratein_pattern = QRegExp("^\\s*%\\\\begin\\{enumerate\\}");
+    enumerateout_pattern = QRegExp("^\\s*%\\\\end\\{enumerate\\}");
+    itemizein_pattern = QRegExp("^\\s*%\\\\begin\\{itemize\\}");
+    itemizeout_pattern = QRegExp("^\\s*%\\\\end\\{itemize\\}");
+    item_pattern = QRegExp("^\\s*%\\s*\\\\item(.*)");
+  }
   context = new Context;
   modulename_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   moduledesc_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   sectioname_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   groupname_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   figure_pattern.setCaseSensitivity(Qt::CaseInsensitive);
-  if (fileinfo.suffix() == "mpp") {
-    OutputText("Processing File " + fileinfo.absoluteFilePath() + "...\n");
+  if (fileinfo.suffix() == "cpp" | fileinfo.suffix() == "m") {
+    TermOutputText("Processing File " + fileinfo.absoluteFilePath() + "...\n");
+    if (fileinfo.baseName() == "MPIWrap") {
+      TermOutputText("...Skipping MPI routines...\n");
+      return;
+    }
     QFile file(fileinfo.absoluteFilePath());
     if (file.open(QFile::ReadOnly)) {
       QTextStream fstr(&file);
@@ -733,6 +686,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 	  QString moddesc(MustMatch(moduledesc_pattern,line));
 	  line = fstr.readLine(0);
 	  QString secname(MustMatch(sectioname_pattern,line));
+	  qDebug("Module " + modname + " " + moddesc + " " + secname);
 	  out->BeginModule(modname,moddesc,secname);
 	  line = fstr.readLine(0);
 	  while (!fstr.atEnd() && !TestMatch(docblock_pattern,line)) {
@@ -741,6 +695,10 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 	    line = fstr.readLine(0);
 	    while (!fstr.atEnd() && !TestMatch(groupname_pattern,line) && !TestMatch(docblock_pattern,line)) {
 	      if (TestMatch(execin_pattern,line)) {
+		line = MustMatch(execin_pattern,line);
+		int ErrorsExpected = 0;
+		if (!line.isEmpty())
+		  ErrorsExpected = line.toInt();
 		QStringList cmdlist;
 		line = fstr.readLine(0);
 		while (!fstr.atEnd() && !TestMatch(execout_pattern,line)) {
@@ -749,7 +707,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		  line = fstr.readLine(0);
 		}
 		cmdlist.push_back("quit;\n");
-		QString resp(EvaluateCommands(cmdlist));
+		QString resp(EvaluateCommands(cmdlist,ErrorsExpected,modname,fileinfo.absoluteFilePath()));
 		out->BeginVerbatim();
 		out->OutputText(resp);
 		out->EndVerbatim();
@@ -772,7 +730,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		line = fstr.readLine(0);
 	      } else if (TestMatch(eqnin_pattern,line)) {
 		line = fstr.readLine(0);
-		QString eqn = MustMatch(ccomment_pattern,line) + "\n";
+		QString eqn; 
 		while (!fstr.atEnd() && !TestMatch(eqnout_pattern,line)) {
 		  eqn += MustMatch(ccomment_pattern,line)+"\n";
 		  line = fstr.readLine(0);
@@ -780,6 +738,62 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		out->DoEquation(eqn);
 		if (fstr.atEnd())
 		  Halt("Unmatched equation block detected!");
+		line = fstr.readLine(0);
+	      } else if (TestMatch(fnin_pattern,line)) {
+		QString fname(MustMatch(fnin_pattern,line));
+		line = fstr.readLine(0);
+		QString fn;
+		while (!fstr.atEnd() && !TestMatch(fnout_pattern,line)) {
+		  fn += MustMatch(ccomment_pattern,line)+"\n";
+		  line = fstr.readLine(0);
+		}
+		QFile *myfile = new QFile(fname);
+		if (!myfile->open(QFile::WriteOnly))
+		  Halt("Unable to open "+fname+" for output");
+		QTextStream *t = new QTextStream(myfile);
+		*t << fn;
+		delete t;
+		delete myfile;
+		out->DoFile(fname,fn);
+		if (fstr.atEnd())
+		  Halt("Unmatched function block detected!");
+	      } else if (TestMatch(enumeratein_pattern,line)) {
+		line = fstr.readLine(0);
+		QStringList itemlist;
+		while(!fstr.atEnd() && !TestMatch(enumerateout_pattern,line)) {
+		  QString item(MustMatch(item_pattern,line));
+		  line = fstr.readLine(0);
+		  while (!TestMatch(item_pattern,line) && 
+			 !TestMatch(enumerateout_pattern,line) && 
+			 !fstr.atEnd()) {
+		    item += MustMatch(ccomment_pattern,line);
+		    line = fstr.readLine(0);
+		  }
+		  item += "\n";
+		  itemlist << item;
+		}
+		if (fstr.atEnd())
+		  Halt("Unmatched enumeration block");
+		out->DoEnumerate(itemlist);
+		line = fstr.readLine(0);
+	      } else if (TestMatch(itemizein_pattern,line)) {
+		line = fstr.readLine(0);
+		QStringList itemlist;
+		while(!fstr.atEnd() && !TestMatch(itemizeout_pattern,line)) {
+		  QString item(MustMatch(item_pattern,line));
+		  line = fstr.readLine(0);
+		  while (!TestMatch(item_pattern,line) && 
+			 !TestMatch(itemizeout_pattern,line) && 
+			 !fstr.atEnd()) {
+		    item += MustMatch(ccomment_pattern,line);
+		    line = fstr.readLine(0);
+		  }
+		  item += "\n";
+		  itemlist << item;
+		}
+		if (fstr.atEnd())
+		  Halt("Unmatched itemize block");
+		out->DoItemize(itemlist);
 		line = fstr.readLine(0);
 	      } else {
 		if (TestMatch(ccomment_pattern,line)) 
@@ -793,18 +807,17 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 	  }
 	  if (fstr.atEnd())
 	    Halt("Unmatched docblock detected!");
+	  out->EndModule();
 	}
       }
-      out->EndModule();
     }
   }
   qApp->processEvents();
-  CloseAllHandleWindows();
   delete context;
 }
 
 void ProcessDir(QDir dir, HelpWriter *out) {
-  OutputText("Processing Directory " + dir.absolutePath() + "...\n");
+  TermOutputText("Processing Directory " + dir.absolutePath() + "...\n");
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
   for (unsigned i=0;i<list.size();i++) {
@@ -817,15 +830,41 @@ void ProcessDir(QDir dir, HelpWriter *out) {
   qApp->processEvents();
 }
 
-int main(int argc, char *argv[]) {
-  QApplication app(argc, argv);
-  GUISetup();
+void ReadSectionDescriptors() {
+  QRegExp re("(\\b\\w+\\b)\\s*(.*)");
+  TermOutputText("Reading section descriptors...\n");
+  QFile file("section_descriptors.txt");
+  if (!file.open(QFile::ReadOnly))
+    Halt("Unable to open section descriptors file for reading");
+  QTextStream f(&file);
+  while (!f.atEnd()) {
+    QString line(f.readLine(0));
+    if (re.indexIn(line) < 0)
+      Halt("Bad line: " + line);
+    section_descriptors.insert(re.cap(1),re.cap(2));
+    TermOutputText("Section Descriptor: " + re.cap(1) + " : " + re.cap(2) + "\n");
+  }
+}
+
+void ConsoleWidget::Run() {
+  ReadSectionDescriptors();
   LatexWriter texout;
   HTMLWriter htmlout;
   GroupWriter out;
   out.RegisterWriter(&texout);
   out.RegisterWriter(&htmlout);
-  ProcessDir(QDir("."),&out);
-  //  return app.exec();
+  ProcessDir(QDir("..\\..\\MFiles"),&out); 
+  ProcessDir(QDir("..\\..\\libs"),&out); 
+  //  ProcessDir(QDir("."),&out); 
+  out.WriteIndex();
+  TermOutputText("\n\nDone!\n");
+}
+
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  ConsoleWidget *m_main = new ConsoleWidget;
+  m_main->show();
+  // Get the section table
+  return app.exec();
   return 0;
 }

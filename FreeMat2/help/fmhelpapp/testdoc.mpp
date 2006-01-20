@@ -6,6 +6,13 @@
 //@[
 //  y = testdoc
 //@]
+//\begin{enumerate}
+//  \item Hello
+//  \item Landyacht that is pretty funny
+//  \item Too short to do
+// anything about it
+//\end{enumerate}
+//Here is some more information.
   //@@Function Internals
   //In the general version of the @|min| function which is applied to
   //a single array (using the @|min(x,[],d)| or @|min(x)| syntaxes),

@@ -55,6 +55,16 @@ void HelpWinManager::activateModule(QListWidgetItem* item) {
   tb->setSource("file://"+m_url+"/"+item->text()+".html");
 }
 
+void HelpWinManager::activateModule(QTreeWidgetItem* item, int) {
+  QTextBrowser *tb = qobject_cast<QTextBrowser*>(currentWidget());
+  QString fulltext(item->text(0));
+  QRegExp modname("^\\s*(\\b[\\w]+\\b)");
+  if (modname.indexIn(fulltext) < 0)
+    return;
+  QString module(modname.cap(1).toLower());
+  tb->setSource("file://"+m_url+"/"+module+".html");
+}
+
 HelpWidget::HelpWidget(QString url, HelpWinManager *mgr) {
   m_browser = new QTabWidget(this);
   setWidget(m_browser);
@@ -75,18 +85,29 @@ HelpWidget::HelpWidget(QString url, HelpWinManager *mgr) {
 	  mgr,SLOT(activateModule(QListWidgetItem*)));
   m_browser->addTab(m_flist,"Topic List");
   QTreeWidget *m_tindex = new QTreeWidget;
+  connect(m_tindex,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+	  mgr,SLOT(activateModule(QTreeWidgetItem*,int)));
   m_tindex->setColumnCount(1);
   m_tindex->setHeaderLabels(QStringList() << "FreeMat 2.0");
-  QTreeWidgetItem *cities = new QTreeWidgetItem(m_tindex);
-  cities->setText(0, tr("Cities"));
-  QTreeWidgetItem *osloItem = new QTreeWidgetItem(cities);
-  osloItem->setText(0, tr("Oslo"));
-  QTreeWidgetItem *yorkItem = new QTreeWidgetItem(cities);
-  yorkItem->setText(0, "New York");
-  QTreeWidgetItem *planb = new QTreeWidgetItem(cities);
+  file = new QFile(url + "/sectable.txt");
+  if (!file->open(QFile::ReadOnly | QIODevice::Text))
+    QMessageBox::warning(this,"Cannot Find Section Index","The file sectable.txt is missing from the directory "+url+" where I think help files should be.  The Index widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
+  else {
+    QTextStream t(file);
+    QTreeWidgetItem *prev;
+    while (!t.atEnd()) {
+      QString line(t.readLine());
+      if (line[0] != QChar('+')) {
+	prev = new QTreeWidgetItem(m_tindex,QStringList() << line);
+      } else {
+	new QTreeWidgetItem(prev,QStringList() << line.remove(0,1));
+      }
+    }
+  }
+  delete file;
   //  planb->setText(0, "Hello");
   m_browser->addTab(m_tindex,"Index");
-  m_tindex->setItemExpanded(cities,true);
+  //  m_tindex->setItemExpanded(cities,true);
   //  m_browser = new QTextBrowser(this);
   //  m_browser->setSource(QUrl("file:///qt/4.1.0/doc/html/index.html"));
   //  setWidget(m_browser);

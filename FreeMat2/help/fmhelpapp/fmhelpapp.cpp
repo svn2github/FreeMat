@@ -250,9 +250,13 @@ void HTMLWriter::WriteIndex() {
   foreach (QString secname, sections) {
     QString secdesc(section_descriptors.value(secname));
     QList<QStringList> modules(sectables.values(secname));
+    QStringList moduleList;
+    for (unsigned m=0;m<modules.size();m++)
+      moduleList << modules[m][1];
+    moduleList.sort();
     f3 << secdesc << "\n";
-    for (unsigned m=0;m<modules.size();m++) {
-      f3 << "+" << modules[m][1] << "\n";
+    for (unsigned m=0;m<moduleList.size();m++) {
+      f3 << "+" << moduleList[m] << "\n";
     }
   }
 }
@@ -370,6 +374,7 @@ void HTMLWriter::DoFigure(QString name) {
   *mystream << "<DIV ALIGN=\"CENTER\">\n";
   *mystream << "<IMG SRC=\"" << name << ".png\">\n";
   *mystream << "</DIV>\n";
+  *mystream << "<P>\n";
 }
 
 void HTMLWriter::DoEquation(QString eqn) {
@@ -377,7 +382,8 @@ void HTMLWriter::DoEquation(QString eqn) {
   *mystream << "<P>\n";
   *mystream << "<DIV ALIGN=\"CENTER\">\n";
   *mystream << "<IMG SRC=\"" << modulename << "_eqn" << eqnlist.count() << ".png\">\n";
-  *mystream << "</DIV>\n";  
+  *mystream << "</DIV>\n";
+  *mystream << "<P>\n";
 }
 
 void HTMLWriter::DoFile(QString fname, QString ftxt) {
@@ -385,6 +391,7 @@ void HTMLWriter::DoFile(QString fname, QString ftxt) {
   *mystream << "     " << fname << "\n";
   *mystream << ftxt << "\n";
   *mystream << "</PRE>\n";
+  *mystream << "<P>\n";
 }
 
 class LatexWriter : public HelpWriter {

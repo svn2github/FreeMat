@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QTabWidget>
 #include <QListWidget>
+#include <QTreeWidget>
 
 
 class HelpWinManager : public QTabWidget {
@@ -28,6 +29,7 @@ private slots:
   void backwardFlag(bool avail);
   void activeChanged(int nim);
   void activateModule(QListWidgetItem*);
+  void activateModule(QTreeWidgetItem*,int);
 };
 
 class HelpWidget : public QDockWidget {

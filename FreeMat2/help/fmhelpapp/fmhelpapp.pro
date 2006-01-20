@@ -30,7 +30,7 @@ LIBS +=  -framework vecLib -L/sw/lib -lg2c
 win32 {
 QT += qt3support
 
-LIBS += ../../extern/LAPACK/debug/liblapack.a ../../extern/LAPACK/BLAS/debug/libblas.a -lg2c -lws2_32 -lopengl32 -lglu32 -lgdi32
+LIBS += ../../extern/LAPACK/debug/liblapack.a ../../extern/LAPACK/BLAS/debug/libblas.a -lg2c -lws2_32 -lopengl32 -lglu32 -lgdi32 -g
 
 #TARGETDEPS += ../extern/LAPACK/lapack_MINGW.a ../extern/blas/libblas.a
 

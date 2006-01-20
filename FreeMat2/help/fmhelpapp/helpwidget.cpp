@@ -2,7 +2,9 @@
 #include <QtGui>
 #include <QDebug>
 
-HelpWinManager::HelpWinManager(QWidget *parent) : QTabWidget(parent) {
+HelpWinManager::HelpWinManager(QWidget *parent, QString url) : 
+  QTabWidget(parent) {
+  m_url = url;
   connect(this,SIGNAL(currentChanged(int)),this,SLOT(activeChanged(int)));
 }
 
@@ -48,27 +50,29 @@ void HelpWinManager::activeChanged(int num) {
   emit backwardAvailable(m_backwardFlag);
 }
 
-HelpWidget::HelpWidget(QString url) {
+void HelpWinManager::activateModule(QListWidgetItem* item) {
+  QTextBrowser *tb = qobject_cast<QTextBrowser*>(currentWidget());
+  tb->setSource("file://"+m_url+"/"+item->text()+".html");
+}
+
+HelpWidget::HelpWidget(QString url, HelpWinManager *mgr) {
   m_browser = new QTabWidget(this);
   setWidget(m_browser);
   QListWidget *m_flist = new QListWidget;
   // Populate the list widget
-  QFile *file = new QFile(url + "\\modules.txt");
+  QFile *file = new QFile(url + "/modules.txt");
   if (!file->open(QFile::ReadOnly | QIODevice::Text))
     QMessageBox::warning(this,"Cannot Find Module List","The file modules.txt is missing from the directory "+url+" where I think help files should be.  The Topic List widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else {
     QTextStream t(file);
-    while (!file->atEnd()) {
+    while (!t.atEnd()) {
       QString line(t.readLine());
-      qDebug() << line;
       new QListWidgetItem(line,m_flist);
     }
   }
   delete file;
-  new QListWidgetItem("atan",m_flist);
-  new QListWidgetItem("cos",m_flist);
-//   new QListWidgetItem("sin",m_flist);
-//   new QListWidgetItem("asin",m_flist);
+  connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+	  mgr,SLOT(activateModule(QListWidgetItem*)));
   m_browser->addTab(m_flist,"Topic List");
   QTreeWidget *m_tindex = new QTreeWidget;
   m_tindex->setColumnCount(1);
@@ -90,9 +94,9 @@ HelpWidget::HelpWidget(QString url) {
 
 HelpWindow::HelpWindow(QString url) {
   m_initial = url;
-  m_tabs = new HelpWinManager(this);
+  m_tabs = new HelpWinManager(this,url);
   setCentralWidget(m_tabs);
-  m_helpwidget = new HelpWidget(url);
+  m_helpwidget = new HelpWidget(url,m_tabs);
   addDockWidget(Qt::LeftDockWidgetArea,m_helpwidget);
   //  setCentralWidget(m_helpwidget);
   //  m_helpwidget->show();

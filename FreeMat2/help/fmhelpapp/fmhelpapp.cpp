@@ -16,6 +16,7 @@
 #include "Context.hpp"
 #include "HelpWidget.hpp"
 #include "fmhelpapp.hpp"
+#include <QtGui>
 
 QTextEdit *m_text;
 
@@ -173,9 +174,9 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
   QString secdesc(section_descriptors.value(secname));
   if (secdesc.isEmpty())
     TermOutputText("Warning: No section descriptor for " + secname + "!\n");
-  QFile file("html\\" + secname + ".html");
+  QFile file("html/" + secname + ".html");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open html\\" + secname + ".html for output");
+    Halt("Unable to open html/" + secname + ".html for output");
   QTextStream f(&file);
   f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
   f << "\n";
@@ -199,15 +200,17 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
 void HTMLWriter::WriteIndex() {
   TermOutputText("Writing index\n");
   // Write the section pages
-  QList<QString> sections(sectables.keys());
-  for (int i=0;i<sections.size();i++) {
-    QString secname(sections[i]);
+  QList<QString> sections_multi(sectables.keys());
+  QSet<QString> sections;
+  for (int i=0;i<sections_multi.size();i++)
+    sections << sections_multi[i];
+  foreach (QString secname, sections) {
     QList<QStringList> modules(sectables.values(secname));
     WriteSectionTable(secname,modules);
   }
-  QFile file("html\\index.html");
+  QFile file("html/index.html");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open html\\index.html for output");
+    Halt("Unable to open html/index.html for output");
   QTextStream f(&file);
   f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
   f << "\n";
@@ -220,17 +223,16 @@ void HTMLWriter::WriteIndex() {
   f << "<P>\n";
   f << "<H1> Documentation Sections </H1>\n";
   f << "<UL>\n";
-  QList<QString> secnames(section_descriptors.keys());
-  for (unsigned i=0;i<secnames.size();i++)
-    f << "<LI> <A HREF=" << secnames[i] << ".html> " << 
-      section_descriptors.value(secnames[i]) << "</A> </LI>\n";
+  foreach (QString secname, sections) 
+    f << "<LI> <A HREF=" << secname << ".html> " << 
+      section_descriptors.value(secname) << "</A> </LI>\n";
   f << "</UL>\n";
   f << "</BODY>\n";
   f << "</HTML>\n";
   // Build the module list
-  QFile file2("html\\modules.txt");
-  if (!file2.open(QFile::WriteOnly))
-    Halt("Unable to open html\\modules.txt for output");
+  QFile file2("html/modules.txt");
+  if (!file2.open(QFile::WriteOnly | QIODevice::Text))
+    Halt("Unable to open html/modules.txt for output");
   QList<QStringList> moduledlist(sectables.values());
   QStringList modulenames;
   for (unsigned k=0;k<moduledlist.size();k++)
@@ -239,6 +241,19 @@ void HTMLWriter::WriteIndex() {
   QTextStream f2(&file2);
   for (unsigned k=0;k<modulenames.size();k++) {
     f2 << modulenames[k] << endl;
+  }
+  // Build the section index
+  QFile file3("html/sectable.txt");
+  if (!file3.open(QFile::WriteOnly | QIODevice::Text))
+    Halt("Unable to open html/sectable.txt for output");
+  QTextStream f3(&file3);
+  foreach (QString secname, sections) {
+    QString secdesc(section_descriptors.value(secname));
+    QList<QStringList> modules(sectables.values(secname));
+    f3 << secdesc << "\n";
+    for (unsigned m=0;m<modules.size();m++) {
+      f3 << "+" << modules[m][1] << "\n";
+    }
   }
 }
 
@@ -258,7 +273,7 @@ void HTMLWriter::DoEnumerate(QStringList lst) {
 
 void HTMLWriter::GenerateEquations() {
   if (eqnlist.empty()) return;
-  QFile file("tmp\\" + modulename+"_eqn.tex");
+  QFile file("tmp/" + modulename+"_eqn.tex");
   if (!file.open(QFile::WriteOnly)) 
     Halt("Unable to open " + modulename + "_eqn.tex for output");
   QTextStream f(&file);
@@ -296,7 +311,7 @@ void HTMLWriter::EndModule() {
 void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   modulename = modname.toLower();
   eqnlist.clear();
-  myfile = new QFile("html\\" + modulename + ".html");
+  myfile = new QFile("html/" + modulename + ".html");
   if (!myfile->open(QFile::WriteOnly))
     Halt("Unable to open " + modname + ".html for output");
   mystream = new QTextStream(myfile);
@@ -687,6 +702,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 	  line = fstr.readLine(0);
 	  QString secname(MustMatch(sectioname_pattern,line));
 	  qDebug("Module " + modname + " " + moddesc + " " + secname);
+	  secname = secname.toLower();
 	  out->BeginModule(modname,moddesc,secname);
 	  line = fstr.readLine(0);
 	  while (!fstr.atEnd() && !TestMatch(docblock_pattern,line)) {
@@ -853,11 +869,21 @@ void ConsoleWidget::Run() {
   GroupWriter out;
   out.RegisterWriter(&texout);
   out.RegisterWriter(&htmlout);
-  ProcessDir(QDir("..\\..\\MFiles"),&out); 
-  ProcessDir(QDir("..\\..\\libs"),&out); 
-  //  ProcessDir(QDir("."),&out); 
+  ProcessDir(QDir("../../MFiles"),&out); 
+  ProcessDir(QDir("../../libs"),&out); 
   out.WriteIndex();
   TermOutputText("\n\nDone!\n");
+}
+
+void ReadModuleNames() {
+  QFile file("html/modules.txt");
+  if (!file.open(QFile::ReadOnly))
+    Halt("Unable to open module list");
+  QTextStream f(&file);
+  while (!f.atEnd()) {
+    QString line(f.readLine(0));
+    qDebug(line);
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -865,6 +891,7 @@ int main(int argc, char *argv[]) {
   ConsoleWidget *m_main = new ConsoleWidget;
   m_main->show();
   // Get the section table
+  ReadModuleNames();
   return app.exec();
   return 0;
 }

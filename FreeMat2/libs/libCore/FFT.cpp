@@ -23,77 +23,78 @@
 #include "Array.hpp"
 #include "Malloc.hpp"
 #include <math.h>
+#include "fftw3.h"
 
 namespace FreeMat {
 
-#ifdef WIN32
-  extern "C" {
-    int cffti_(int*,float*);
-    int cfftf_(int*,float*,float*);
-    int cfftb_(int*,float*,float*);
-    int zffti_(int*,double*);
-    int zfftf_(int*,double*,double*);
-    int zfftb_(int*,double*,double*);
-  };
-#else
-  extern "C" {
-    void cffti_(int*,float*);
-    void cfftf_(int*,float*,float*);
-    void cfftb_(int*,float*,float*);
-    void zffti_(int*,double*);
-    void zfftf_(int*,double*,double*);
-    void zfftb_(int*,double*,double*);
-  };
-#endif
-
-  static float *cwp = NULL;
+  static fftwf_complex *inf, *outf;
+  static fftwf_plan pf_forward;
+  static fftwf_plan pf_backward;
   static int cN = 0;
-  static double *zwp = NULL;
+  static fftw_complex *in, *out;
+  static fftw_plan p_forward;
+  static fftw_plan p_backward;
   static int zN = 0;
 
   void complex_fft_init(int Narg) {
     if (cN == Narg) return;
+    if (cN != 0) {
+      fftwf_destroy_plan(pf_forward);
+      fftwf_destroy_plan(pf_backward);
+      fftwf_free(inf);
+      fftwf_free(outf);
+    }
+    inf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
+    outf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
+    pf_forward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_MEASURE);
+    pf_backward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_MEASURE);
     cN = Narg;
-    if (cwp) free(cwp);
-    cwp = (float*) malloc(sizeof(float)*(4*cN+15));
-    memset(cwp,0,sizeof(float)*(4*cN+15));
-    cffti_(&cN,cwp);
   }
 
   void complex_fft_forward(int Narg, float *dp) {
     if (cN != Narg) complex_fft_init(Narg);
-    cfftf_(&cN,dp,cwp);
+    memcpy(inf,dp,sizeof(float)*Narg*2);
+    fftwf_execute(pf_forward);
+    memcpy(dp,outf,sizeof(float)*Narg*2);
   }
-
+  
   void complex_fft_backward(int Narg, float *dp) {
-    int i;
-
     if (cN != Narg) complex_fft_init(Narg);
-    cfftb_(&cN,dp,cwp);
-    for (i=0;i<(2*cN);i++)
+    memcpy(inf,dp,sizeof(float)*Narg*2);
+    fftwf_execute(pf_backward);
+    memcpy(dp,outf,sizeof(float)*Narg*2);
+    for (int i=0;i<(2*cN);i++)
       dp[i] /= ((float) Narg);
   }
 
   void dcomplex_fft_init(int Narg) {
     if (zN == Narg) return;
+    if (zN != 0) {
+      fftw_destroy_plan(p_forward);
+      fftw_destroy_plan(p_backward);
+      fftw_free(in);
+      fftw_free(out);
+    }
+    in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
+    out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
+    p_forward = fftw_plan_dft_1d(Narg,in,out,FFTW_FORWARD,FFTW_MEASURE);
+    p_backward = fftw_plan_dft_1d(Narg,in,out,FFTW_BACKWARD,FFTW_MEASURE);
     zN = Narg;
-    if (zwp) free(zwp);
-    zwp = (double*) malloc(sizeof(double)*(4*zN+15));
-    memset(zwp,0,sizeof(double)*(4*zN+15));
-    zffti_(&zN,zwp);
   }
 
   void dcomplex_fft_forward(int Narg, double *dp) {
     if (zN != Narg) dcomplex_fft_init(Narg);
-    zfftf_(&zN,dp,zwp);
+    memcpy(in,dp,sizeof(double)*Narg*2);
+    fftw_execute(p_forward);
+    memcpy(dp,out,sizeof(double)*Narg*2);
   }
 
   void dcomplex_fft_backward(int Narg, double *dp) {
-    int i;
-
     if (zN != Narg) dcomplex_fft_init(Narg);
-    zfftb_(&zN,dp,zwp);
-    for (i=0;i<(2*zN);i++)
+    memcpy(inf,dp,sizeof(double)*Narg*2);
+    fftw_execute(p_backward);
+    memcpy(dp,outf,sizeof(double)*Narg*2);
+    for (int i=0;i<(2*cN);i++)
       dp[i] /= ((double) Narg);
   }
 

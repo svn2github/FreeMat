@@ -17,10 +17,12 @@ void cross(double ux, double uy, double uz,
 QTRenderEngine::QTRenderEngine(QPainter *painter, double x1, double y1,
 			       double width, double height) {
   pnt = painter;
+  pnt->setRenderHint(QPainter::TextAntialiasing);
   m_x1 = x1; m_y1 = y1; m_width = width; m_height = height;
   inDirect = false;
   pnt->setPen(QColor(0,0,0));
   pnt->setBrush(QColor(0,0,0));
+  debugFlag = false;
 }
 
 QTRenderEngine::~QTRenderEngine() {
@@ -265,6 +267,8 @@ void QTRenderEngine::project(double left, double right,
   proj[14] = tz;
   //    proj[15] = -1;
   proj[15] = 1; // To match GL
+  if (left != 0)
+    qDebug("Project %f %f %f %f %f %f",left,right,bottom,top,near,far);
 }
   
 void QTRenderEngine::viewport(double x0, double y0, double width, double height) {
@@ -360,25 +364,32 @@ void QTRenderEngine::line(double x1, double y1,
 void QTRenderEngine::lineSeries(std::vector<double> xs, 
 				std::vector<double> ys,
 				std::vector<double> zs) {
+  if (xs.size() < 2) return;
   pnt->drawPolyline(Map(xs,ys,zs));
 }
   
 void QTRenderEngine::debug() {
-//   qDebug("QT Modelview matrix (before setupdirect)");
-//   qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
-//   qDebug("%f %f %f %f",model[1],model[5],model[9],model[13]);
-//   qDebug("%f %f %f %f",model[2],model[6],model[10],model[14]);
-//   qDebug("%f %f %f %f",model[3],model[7],model[11],model[15]);
-//   qDebug("QT Projection matrix (before setupdirect)");
-//   qDebug("%f %f %f %f",proj[0],proj[4],proj[8],proj[12]);
-//   qDebug("%f %f %f %f",proj[1],proj[5],proj[9],proj[13]);
-//   qDebug("%f %f %f %f",proj[2],proj[6],proj[10],proj[14]);
-//   qDebug("%f %f %f %f",proj[3],proj[7],proj[11],proj[15]);
-//   qDebug("QT Viewport (before setupdirect)");
-//   qDebug("%d %d %d %d",viewp[0],viewp[1],viewp[2],viewp[3]);  
+  debugFlag = !debugFlag;
+  qDebug("Projection diagonal: %f %f %f %f",
+	 proj[0],proj[5],proj[10],proj[15]);
+  return;
+  qDebug("QT Modelview matrix (before setupdirect)");
+  qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
+  qDebug("%f %f %f %f",model[1],model[5],model[9],model[13]);
+  qDebug("%f %f %f %f",model[2],model[6],model[10],model[14]);
+  qDebug("%f %f %f %f",model[3],model[7],model[11],model[15]);
+  qDebug("QT Projection matrix (before setupdirect)");
+  qDebug("%f %f %f %f",proj[0],proj[4],proj[8],proj[12]);
+  qDebug("%f %f %f %f",proj[1],proj[5],proj[9],proj[13]);
+  qDebug("%f %f %f %f",proj[2],proj[6],proj[10],proj[14]);
+  qDebug("%f %f %f %f",proj[3],proj[7],proj[11],proj[15]);
+  qDebug("QT Viewport (before setupdirect)");
+  qDebug("%d %d %d %d",viewp[0],viewp[1],viewp[2],viewp[3]);  
 }
 
 void QTRenderEngine::setupDirectDraw() {
+  if (inDirect)
+    qDebug("DirectDraw is not reentrant!!!");
   // save the relevant matrices
   for (int i=0;i<16;i++) {
     save_model[i] = model[i];
@@ -397,6 +408,8 @@ void QTRenderEngine::setupDirectDraw() {
 }
 
 void QTRenderEngine::releaseDirectDraw() {
+  if (!inDirect)
+    qDebug("releaseDirectDraw called unmatched!!!");
   for (int i=0;i<16;i++) {
     model[i] = save_model[i];
     proj[i] = save_proj[i];
@@ -443,6 +456,7 @@ void QTRenderEngine::putText(double x, double y, std::string txt,
     ydelta = -height/2.0;
   if (yflag == Max)
     ydelta = -height;
+  ydelta += fm.descent();
   double costhet, sinthet;
   costhet = cos(rotation*M_PI/180.0);
   sinthet = sin(rotation*M_PI/180.0);

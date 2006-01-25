@@ -20,6 +20,7 @@ class HandleWindow : public QWidget {
   //  QTabWidget *layout;
  public:
   HandleWindow(unsigned ahandle);
+  ~HandleWindow() {delete hfig;}
   unsigned Handle();
   HandleFigure *HFig();
   void UpdateState();

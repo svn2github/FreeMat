@@ -41,6 +41,10 @@ namespace FreeMat {
     fnt.setWeight(fweight);
     HPString *txt = (HPString*) LookupProperty("string");
     text = txt->Data();
+    QFontMetrics fm(fnt);
+    QRect sze(fm.boundingRect(text.c_str()));
+    SetFourVectorDefault("boundingbox",sze.left(),sze.bottom(),
+			 sze.width(),sze.height());
     HandleAxis* parent = GetParentAxis();
     parent->UpdateState();
   }
@@ -53,6 +57,8 @@ namespace FreeMat {
 
   void HandleText::PaintMe(RenderEngine& gc) {
     UpdateState();
+    if (StringCheck("visible","off"))
+      return;
     // Get handleaxis parent
     HandleAxis* axis = GetParentAxis();
     if (!axis) return;
@@ -150,6 +156,8 @@ namespace FreeMat {
   }
 
   void HandleText::ConstructProperties() {
+    AddProperty(new HPFourVector,"boundingbox");
+    AddProperty(new HPHandles,"children");
     AddProperty(new HPString,"string");
     AddProperty(new HPFourVector,"extent");
     AddProperty(new HPAlignHoriz,"horizontalalignment");

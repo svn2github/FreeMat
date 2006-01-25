@@ -259,7 +259,7 @@ namespace FreeMat {
   //The delimiter between the paths depends on the system being used.  For Win32, the
   //delimiter is a semicolon.  For all other systems, the delimiter is a colon.
   //
-  //@Example
+  //@@Example
   //The @|getpath| function is straightforward.
   //@<
   //getpath

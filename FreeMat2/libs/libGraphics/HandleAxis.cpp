@@ -6,7 +6,7 @@
 #include <qapplication.h>
 #include <math.h>
 #include <qpainter.h>
-#include "GLRenderEngine.hpp"
+#include "QTRenderEngine.hpp"
 #include "HandleCommands.hpp"
 
 // Property list & status
@@ -251,20 +251,15 @@ namespace FreeMat {
     tStart = floor(tMin/tDelt)*tDelt;
     tStop = ceil(tMax/tDelt)*tDelt;
     // Recheck for integer limits...
+    //   qDebug("tickcount = %d",tickcount);
     if ((tMin == rint(tMin)) && (tMax == rint(tMax))) {
       tStart = tMin;
       tStop = tMax;
-      if ((((int)(tMax-tMin)) % 2) == 0) {
-	if ((tickcount % 2) == 0)
-	  tickcount++;
-      } else {
-	if ((tickcount % 2) == 1)
-	  tickcount++;
-      }
+      if ((tickcount % 2) == 1)
+	tickcount++;
       tDelt = (tStop - tStart)/(tickcount);
-      if ((tMax-tMin) > 4) integerMode = true;
+      if ((tMax-tMin) > 1) integerMode = true;
     }
-    //    qDebug("tmin = %f tmax = %f integer mode = %d, count = %d",tMin,tMax,integerMode,tickcount);
     tBegin = tStart;
     tEnd = tStop;
     int mprime;
@@ -358,6 +353,7 @@ namespace FreeMat {
     AddProperty(new HPOnOff,"selected");
     AddProperty(new HPOnOff,"selectionhighlight");
     AddProperty(new HPString,"tag");
+    AddProperty(new HPScalar,"textheight");
     AddProperty(new HPInOut,"tickdir");
     AddProperty(new HPAutoManual,"tickdirmode");
     AddProperty(new HPTwoVector,"ticklength");
@@ -405,41 +401,6 @@ namespace FreeMat {
     AddProperty(new HPAutoManual,"xticklabelmode");
     AddProperty(new HPAutoManual,"yticklabelmode");
     AddProperty(new HPAutoManual,"zticklabelmode");
-  }
-
-  GLubyte* GetTextAsBits(QFont fnt, std::string text, int &width, 
-			 int &height, GLubyte red, GLubyte green, 
-			 GLubyte blue) {
-    // Get the font
-    QFontMetrics fm(fnt);
-    QRect sze(fm.boundingRect(text.c_str()));
-    width = sze.width();
-    height = sze.height();
-    QImage img(width,height,QImage::Format_RGB32);
-    QPainter pnt(&img);
-    pnt.setBackground(QColor(255,255,255));
-    pnt.eraseRect(0,0,width,height);
-    pnt.setFont(fnt);
-    pnt.setPen(QColor(0,0,0));
-    pnt.drawText(0,height,text.c_str());
-    pnt.end();
-    // Now, we generate a synthetic image that is of the same size
-    GLubyte *bits = new GLubyte[width*height*4];
-    unsigned char *ibits = img.bits();
-    // Set the color bits to all be the same color as specified
-    // in the argument list, and use the grey scale to modulate
-    // the transparency
-    for (int i=0;i<height;i++) {
-      for (int j=0;j<width;j++) {
-	int dptr = 4*(i*width+j);
-	int sptr = 4*((height-1-i)*width+j);
-	bits[dptr] = red;
-	bits[dptr+1] = green;
-	bits[dptr+2] = blue;
-	bits[dptr+3] = 255-ibits[sptr];
-      }
-    }
-    return bits;
   }
 
   HandleAxis::HandleAxis() {
@@ -534,6 +495,7 @@ namespace FreeMat {
     SetConstrainedStringDefault("xticklabelmode","auto");
     SetConstrainedStringDefault("yticklabelmode","auto");
     SetConstrainedStringDefault("zticklabelmode","auto");
+    UpdateAxisFont();
   }
 
   void HandleAxis::SetAxisLimits(std::vector<double> lims) {
@@ -771,6 +733,8 @@ namespace FreeMat {
       rerange(xmin,xmax,maxratio*position[2]);
       rerange(ymin,ymax,maxratio*position[3]);
     }
+    //    qDebug("Limits %f %f %f %f %f %f",
+    //	   xmin,xmax,ymin,ymax,zmin,zmax);
     gc.project(xmin,xmax,ymin,ymax,-zmax,-zmin);
     gc.viewport(position[0],position[1],position[2],position[3]);
 
@@ -1309,6 +1273,9 @@ namespace FreeMat {
     fnt.setStyle(fstyle);
     fnt.setWeight(fweight);
     m_font = fnt;
+    QFontMetrics fm(m_font);
+    QRect sze(fm.boundingRect("|"));
+    SetScalarDefault("textheight",sze.height());
   }
 
   int HandleAxis::GetTickCount(RenderEngine &gc,
@@ -1323,7 +1290,14 @@ namespace FreeMat {
     return numtics;
   }
 
-  void HandleAxis::RecalculateTicks(RenderEngine &gc) {
+  void HandleAxis::RecalculateTicks() {
+    QImage img(1,1,QImage::Format_RGB32);
+    QPainter pnt(&img);
+    HandleFigure *fig = GetParentFigure();
+    unsigned width = fig->GetWidth();
+    unsigned height = fig->GetHeight();
+    QTRenderEngine gc(&pnt,0,0,width,height);
+    SetupProjection(gc);
     // We have to calculate the tick sets for each axis...
     std::vector<double> limits(GetAxisLimits());
     std::vector<double> xticks;
@@ -1435,25 +1409,49 @@ namespace FreeMat {
     int maxLabelHeight = 0;
     int tickHeight = 0;
     HPHandles *lbl;
-    if (xvisible) {
+    int maxTickWidth = 0;
+    int maxTickHeight = 0;
+    QFontMetrics fm(m_font);
+    {
       lbl = (HPHandles*) LookupProperty("xlabel");
       if (!lbl->Data().empty()) {
 	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	xlabelHeight = fp->GetTextHeightInPixels();
       }
+      HPStringSet *hp = (HPStringSet*) LookupProperty("xticklabel");
+      std::vector<std::string> xlabels(hp->Data());
+      for (int i=0;i<xlabels.size();i++) {
+	QRect sze(fm.boundingRect(xlabels[i].c_str()));
+	maxTickWidth = qMax(maxTickWidth,sze.width());
+	maxTickHeight = qMax(maxTickHeight,sze.height());
+      }
     }
-    if (yvisible) {
+    {
       lbl = (HPHandles*) LookupProperty("ylabel");
       if (!lbl->Data().empty()) {
 	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	ylabelHeight = fp->GetTextHeightInPixels();
       }
+      HPStringSet *hp = (HPStringSet*) LookupProperty("yticklabel");
+      std::vector<std::string> ylabels(hp->Data());
+      for (int i=0;i<ylabels.size();i++) {
+	QRect sze(fm.boundingRect(ylabels[i].c_str()));
+	maxTickWidth = qMax(maxTickWidth,sze.width());
+	maxTickHeight = qMax(maxTickHeight,sze.height());
+      }
     }
-    if (zvisible) {
+    {
       lbl = (HPHandles*) LookupProperty("zlabel");
       if (!lbl->Data().empty()) {
 	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
 	zlabelHeight = fp->GetTextHeightInPixels();
+      }
+      HPStringSet *hp = (HPStringSet*) LookupProperty("zticklabel");
+      std::vector<std::string> zlabels(hp->Data());
+      for (int i=0;i<zlabels.size();i++) {
+	QRect sze(fm.boundingRect(zlabels[i].c_str()));
+	maxTickWidth = qMax(maxTickWidth,sze.width());
+	maxTickHeight = qMax(maxTickHeight,sze.height());
       }
     }
     lbl = (HPHandles*) LookupProperty("title");
@@ -1461,7 +1459,6 @@ namespace FreeMat {
       HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
       titleHeight = fp->GetTextHeightInPixels();
     }
-    QFontMetrics fm(m_font);
     QRect sze(fm.boundingRect("|"));
     tickHeight =  sze.height();
     // Take the maximum of the title, and label sizes to compute
@@ -1472,12 +1469,27 @@ namespace FreeMat {
     //    qDebug("titleHeight = %d, maxLabelHeight = %d",titleHeight,maxLabelHeight);
     // Get the outer position vector...
     std::vector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+    // Special case - no labels at all --> super tight packing
+    HandleFigure *fig = GetParentFigure();
+    unsigned width = fig->GetWidth();
+    unsigned height = fig->GetHeight();
+    //    qDebug("maxtickwidth = %d maxtickheight = %d maxlabelheight = %d",
+    //	   maxTickWidth,maxTickHeight,maxLabelHeight);
+    if ((maxTickWidth == 0) && (maxTickHeight == 0) && (maxLabelHeight == 0)) {
+      //      qDebug("tight pack...\n");
+      HPFourVector *hp = (HPFourVector*) LookupProperty("position");
+      hp->Value(outerpos[0]/width,outerpos[1]/height,
+		outerpos[2]/width,outerpos[3]/height);
+      return;
+    }
     // Generate a candidate position vector based on the default
     double posx0,posy0,poswidth,posheight;
-    poswidth = 0.775*outerpos[2];
-    posheight = 0.815*outerpos[3];
-    posx0 = 0.13*outerpos[2];
-    posy0 = 0.11*outerpos[3];
+    posx0 = qMax(0.1*outerpos[2]+maxTickWidth,0.13*outerpos[2]);
+    posy0 = qMax(0.1*outerpos[3]+maxTickHeight,0.11*outerpos[2]);
+    poswidth = outerpos[2]-2*posx0;
+    posheight = outerpos[3]-2*posy0;
+//     poswidth = qMin(0.9*outerpos[2]-2*maxTickWidth,0.775*outerpos[2]);
+//     posheight = qMin(0.815*outerpos[2],0.9*outerpos[3]-2*maxTickHeight);
     // Pad the label height
     maxLabelHeight = maxLabelHeight*1.2 + tickHeight;
     // Check posx0 against maxLabelHeight..
@@ -1493,9 +1505,6 @@ namespace FreeMat {
     if ((outerpos[3] - posheight) < 2*maxLabelHeight) {
       posheight = outerpos[3] - 2*maxLabelHeight;
     }
-    HandleFigure *fig = GetParentFigure();
-    unsigned width = fig->GetWidth();
-    unsigned height = fig->GetHeight();
     // Normalize
     poswidth = poswidth/width;
     posheight = posheight/height;
@@ -1503,6 +1512,7 @@ namespace FreeMat {
     posy0 = (posy0+outerpos[1])/height;
     HPFourVector *hp = (HPFourVector*) LookupProperty("position");
     hp->Value(posx0,posy0,poswidth,posheight);
+    //    qDebug("Pack %f %f %f %f",posx0,posy0,poswidth,posheight);
   }
 
   void HandleAxis::UpdateLimits(bool x, bool y, bool z, bool a, bool c) {
@@ -1549,52 +1559,13 @@ namespace FreeMat {
     if (a) SetTwoVectorDefault("alim",limits[8],limits[9]);
   }
 
-  void HandleAxis::UpdateState() {
-    std::vector<std::string> tset;
-    if (HasChanged("xlim")) ToManual("xlimmode");
-    if (HasChanged("ylim")) ToManual("ylimmode");
-    if (HasChanged("zlim")) ToManual("zlimmode");
-    if (HasChanged("alim")) ToManual("alimmode");
-    if (HasChanged("clim")) ToManual("climmode");
-    if (HasChanged("xtick")) ToManual("xtickmode");
-    if (HasChanged("ytick")) ToManual("ytickmode");
-    if (HasChanged("ztick")) ToManual("ztickmode");
-    if (HasChanged("xticklabel")) ToManual("xticklabelmode");
-    if (HasChanged("yticklabel")) ToManual("yticklabelmode");
-    if (HasChanged("zticklabel")) ToManual("zticklabelmode");
-    tset.push_back("fontangle");  tset.push_back("fontname");
-    tset.push_back("fontsize");   tset.push_back("fontunits");
-    tset.push_back("fontweight"); tset.push_back("xticklabel");
-    tset.push_back("yticklabel"); tset.push_back("zticklabel");
-    tset.push_back("xcolor");     tset.push_back("ycolor"); 
-    tset.push_back("zcolor"); 
-    if (HasChanged(tset)) {
-      UpdateAxisFont();
-      ClearChanged(tset);
-    }
-    // Repack the figure...
-    // To repack the figure, we get the heights of the
-    // three labels (title, xlabel and ylabel)
-    RePackFigure();
-    // if ticklabels changed --> tickmode = manual
-    // if tickdir set --> tickdirmode = manual
-    // if resize || position chng && tickmode = auto --> recalculate tick marks
-    // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
-    HandleFigure* fig = GetParentFigure();
-    if (fig->Resized() || HasChanged("position")) {
-      //      RecalculateTicks();
-    }
-    // Limits
+  void HandleAxis::HandlePlotBoxFlags() {
     bool xflag, yflag, zflag, aflag, cflag;
     xflag = IsAuto("xlimmode");
     yflag = IsAuto("ylimmode");
     zflag = IsAuto("zlimmode");
     aflag = IsAuto("alimmode");
     cflag = IsAuto("climmode");
-    UpdateLimits(xflag,yflag,zflag,aflag,cflag);
-
-    if (HasChanged("dataaspectratio")) ToManual("dataaspectratiomode");
-    if (HasChanged("plotboxaspectratio")) ToManual("plotboxaspectratiomode");
 
     // Check for the various cases
     bool axesauto = xflag && yflag && zflag;
@@ -1664,6 +1635,58 @@ namespace FreeMat {
 	// Ignore plotboxaspectratio...
       }
     }
+  }
+  
+  void HandleAxis::UpdateState() {
+    std::vector<std::string> tset;
+    if (HasChanged("xlim")) ToManual("xlimmode");
+    if (HasChanged("ylim")) ToManual("ylimmode");
+    if (HasChanged("zlim")) ToManual("zlimmode");
+    if (HasChanged("alim")) ToManual("alimmode");
+    if (HasChanged("clim")) ToManual("climmode");
+    if (HasChanged("xtick")) ToManual("xtickmode");
+    if (HasChanged("ytick")) ToManual("ytickmode");
+    if (HasChanged("ztick")) ToManual("ztickmode");
+    if (HasChanged("xticklabel")) ToManual("xticklabelmode");
+    if (HasChanged("yticklabel")) ToManual("yticklabelmode");
+    if (HasChanged("zticklabel")) ToManual("zticklabelmode");
+    tset.push_back("fontangle");  tset.push_back("fontname");
+    tset.push_back("fontsize");   tset.push_back("fontunits");
+    tset.push_back("fontweight"); tset.push_back("xticklabel");
+    tset.push_back("yticklabel"); tset.push_back("zticklabel");
+    tset.push_back("xcolor");     tset.push_back("ycolor"); 
+    tset.push_back("zcolor"); 
+    if (HasChanged(tset)) {
+      UpdateAxisFont();
+      ClearChanged(tset);
+    }
+    
+
+    // Repack the figure...
+    // To repack the figure, we get the heights of the
+    // three labels (title, xlabel and ylabel)
+    //    RePackFigure();
+    // if ticklabels changed --> tickmode = manual
+    // if tickdir set --> tickdirmode = manual
+    // if resize || position chng && tickmode = auto --> recalculate tick marks
+    // if resize || position chng && ticlabelmode = auto --> recalculate tick labels
+    HandleFigure* fig = GetParentFigure();
+    if (fig->Resized() || HasChanged("position")) {
+      //      RecalculateTicks();
+    }
+    // Limits
+    bool xflag, yflag, zflag, aflag, cflag;
+    xflag = IsAuto("xlimmode");
+    yflag = IsAuto("ylimmode");
+    zflag = IsAuto("zlimmode");
+    aflag = IsAuto("alimmode");
+    cflag = IsAuto("climmode");
+    UpdateLimits(xflag,yflag,zflag,aflag,cflag);
+
+    if (HasChanged("dataaspectratio")) ToManual("dataaspectratiomode");
+    if (HasChanged("plotboxaspectratio")) ToManual("plotboxaspectratiomode");
+
+    HandlePlotBoxFlags();
 
     // Camera properties...
     if (HasChanged("cameratarget")) 
@@ -1693,7 +1716,11 @@ namespace FreeMat {
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraupvector");
       tv->Value(0,1,0);
     }
-    //    RecalculateTicks();
+    RePackFigure();
+    RecalculateTicks();
+    RePackFigure();
+    RecalculateTicks();
+    RePackFigure();
     ClearAllChanged();
     fig->Repaint();
   }
@@ -1862,12 +1889,14 @@ namespace FreeMat {
     gc.color(color);
     // Calculate the tick direction vector
     double dx1, dy1, dx2, dy2;
+    gc.debug();
     gc.toPixels(limmin*unitx+px1,
 		limmin*unity+py1,
 		limmin*unitz+pz1,dx1,dy1);
     gc.toPixels(limmin*unitx+px2,
 		limmin*unity+py2,
 		limmin*unitz+pz2,dx2,dy2);
+    //    qDebug("Axis %s start %f,%f --> %f,%f",labelname.c_str(),dx1,dy1,dx2,dy2);
     double delx, dely;
     delx = dx2-dx1; dely = dy2-dy1;
     // normalize the tick length
@@ -2065,7 +2094,6 @@ namespace FreeMat {
     if (GetParentFigure() == NULL) return;
     SetupProjection(gc);
     SetupAxis(gc);
-    RecalculateTicks(gc);
     if (StringCheck("visible","on")) {
       DrawBox(gc);
       DrawGridLines(gc);

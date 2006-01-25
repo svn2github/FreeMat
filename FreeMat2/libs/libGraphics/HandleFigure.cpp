@@ -92,6 +92,7 @@ namespace FreeMat {
     SetStringDefault("renderer","painters");
     SetStringDefault("type","figure");
     SetThreeVectorDefault("color",0.6,0.6,0.6);
+    SetStringDefault("nextplot","replace");
     // Set a default colormap to hsv(64) - this matches
     LoadDefaultColorMap();
     resized = false;

@@ -191,7 +191,7 @@ namespace FreeMat {
 	data.push_back(1); data.push_back(0);
       } else if ((strcmp(cp,"b") == 0) || (strcmp(cp,"blue")==0)) {
 	data.clear(); data.push_back(0); 
-	data.push_back(1); data.push_back(1);
+	data.push_back(0); data.push_back(1);
       } else if ((strcmp(cp,"w") == 0) || (strcmp(cp,"white")==0)) {
 	data.clear(); data.push_back(1); 
 	data.push_back(1); data.push_back(1);
@@ -231,6 +231,8 @@ namespace FreeMat {
   }
   
   Array HPStringSet::Get() {
+    if (data.size() == 0)
+      return Array::stringConstructor("");
     std::string retval;
     for (unsigned i=0;i<data.size()-1;i++) {
       retval.append(data[i]);

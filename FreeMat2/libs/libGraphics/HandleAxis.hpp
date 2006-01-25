@@ -27,6 +27,7 @@ namespace FreeMat {
     int viewp[4];
 
     void UpdateAxisFont();
+    void HandlePlotBoxFlags();
     void GetMaxTickMetric(RenderEngine& gc,
 			  std::vector<std::string> labs,
 			  double &maxx, double &maxy);
@@ -37,7 +38,7 @@ namespace FreeMat {
 		   std::string txt);
     void SetupAxis(RenderEngine& gc);
     bool Is2DView(); 
-    void RecalculateTicks(RenderEngine& gc);
+    void RecalculateTicks();
     int GetTickCount(RenderEngine& gc, double x1, double y1, 
 		     double z1, double x2, double y2, double z2);
     void DrawXGridLine(RenderEngine& gc, double t, 

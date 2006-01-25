@@ -24,9 +24,14 @@ namespace FreeMat {
     limits.push_back(0);
     // The clim limit is just the min and max values of cdata
     Array cdata(ArrayPropertyLookup("cdata"));
-    cdata.promoteType(FM_DOUBLE);
-    limits.push_back(ArrayMin(cdata));
-    limits.push_back(ArrayMax(cdata));
+    if (!cdata.isEmpty()) {
+      cdata.promoteType(FM_DOUBLE);
+      limits.push_back(ArrayMin(cdata));
+      limits.push_back(ArrayMax(cdata));
+    } else {
+      limits.push_back(0);
+      limits.push_back(1);
+    }
     std::vector<double> alphadata(VectorPropertyLookup("alphadata"));
     limits.push_back(VecMin(alphadata));
     limits.push_back(VecMax(alphadata));
@@ -74,6 +79,7 @@ namespace FreeMat {
   //
   double* HandleImage::RGBExpandImage(const double *dp, 
 				      int rows, int cols) {
+    qDebug("RGBExpand");
     // Allocate an output array of the right size
     double *ret = new double[rows*cols*3];
     // Retrieve the colormap
@@ -163,6 +169,7 @@ namespace FreeMat {
   void HandleImage::UpdateCAlphaData() {
     // Calculate the QImage
     Array cdata(ArrayPropertyLookup("cdata"));
+    if (cdata.isEmpty()) return;
     cdata.promoteType(FM_DOUBLE);
     // Retrieve alpha map
     std::vector<double> alphas(GetAlphaMap(cdata.getDimensionLength(0),
@@ -219,6 +226,8 @@ namespace FreeMat {
   }
 
   void HandleImage::PaintMe(RenderEngine& gc) {
+    if (StringCheck("visible","off"))
+      return;
     HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
     HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
     // Rescale the image
@@ -226,7 +235,7 @@ namespace FreeMat {
     gc.toPixels(xp->Data()[0],yp->Data()[0],0,x1,y1);
     gc.toPixels(xp->Data()[1],yp->Data()[1],0,x2,y2);
     if ((abs(x2-x1)> 4096) || (abs(y2-y1) > 4096)) return;
-    img = img.scaled(abs(x2-x1),abs(y2-y1));
-    gc.drawImage(xp->Data()[0],yp->Data()[0],xp->Data()[1],yp->Data()[1],img);
+    gc.drawImage(xp->Data()[0],yp->Data()[0],xp->Data()[1],
+		 yp->Data()[1],img.scaled(abs(x2-x1),abs(y2-y1)));
   }
 }

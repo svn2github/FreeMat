@@ -258,7 +258,7 @@ namespace FreeMat {
   //e^{\frac{2\pi(k-1)l}{n}}.
   //\]
   //The FFT is computed using the FFTPack library, available from 
-  //netlib at \href{http://www.netlib.org}.  Generally speaking, the 
+  //netlib at @|http://www.netlib.org|.  Generally speaking, the 
   //computational cost for a FFT is (in worst case) @|O(n^2)|.
   //However, if @|n| is composite, and can be factored as
   //\[

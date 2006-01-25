@@ -47,6 +47,27 @@ namespace FreeMat {
   }
 
   HandleObject::HandleObject() {
+    ref_count = 1;
+  }
+
+  HandleObject::~HandleObject() {
+    // Loop through our children
+    HPHandles *hp = (HPHandles*) LookupProperty("children");
+    HandleObject *gp;
+    std::vector<unsigned> my_children(hp->Data());
+    for (int i=0;i<my_children.size();i++) {
+      unsigned handle = my_children[i];
+      if (handle >= HANDLE_OFFSET_OBJECT) {
+	gp = LookupHandleObject(handle);
+	gp->Dereference();
+	if (gp->RefCount() <= 0) {
+	  qDebug("Deleting handle %d\n",handle);
+	  FreeHandleObject(handle);
+	  delete gp;
+	}
+      }
+    }
+    
   }
 
   HandleProperty* HandleObject::LookupProperty(std::string name) {

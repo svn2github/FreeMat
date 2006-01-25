@@ -4,6 +4,9 @@
 #include "Context.hpp"
 #include "HandleObject.hpp"
 #include "HandleFigure.hpp"
+#define MAX_FIGS 100
+#define HANDLE_OFFSET_OBJECT 100000
+#define HANDLE_OFFSET_FIGURE 1
 
 namespace FreeMat {
   void LoadHandleGraphicsFunctions(Context* context);

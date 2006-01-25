@@ -25,9 +25,6 @@
 // images
 
 namespace FreeMat {
-#define MAX_FIGS 100
-#define HANDLE_OFFSET_OBJECT 100000
-#define HANDLE_OFFSET_FIGURE 1
   
   HandleWindow* Hfigs[MAX_FIGS];
   int HcurrentFig = -1;
@@ -53,6 +50,7 @@ namespace FreeMat {
   HandleList<HandleObject*> objectset;
 
   void NotifyFigureClosed(unsigned figNum) {
+    delete Hfigs[figNum];
     Hfigs[figNum] = NULL;
     if (figNum == HcurrentFig)
       HcurrentFig = -1;
@@ -107,6 +105,7 @@ namespace FreeMat {
   }
 
   void ValidateHandle(unsigned handle) {
+    if (handle == 0) return;
     if (handle >= HANDLE_OFFSET_OBJECT)
       LookupHandleObject(handle);
     else
@@ -124,7 +123,7 @@ namespace FreeMat {
 
   //!
   //@Module FIGURE Figure Window Select and Create Function
-  //@@Section FIGURE
+  //@@Section HANDLE
   //@@Usage
   //Changes the active figure window to the specified handle 
   //(or figure number).  The general syntax for its use is 
@@ -222,6 +221,48 @@ namespace FreeMat {
     }
   }
 
+  void HSetChildrenFunction(HandleObject *fp, Array children) {
+    children.promoteType(FM_UINT32);
+    const unsigned *dp = (const unsigned*) children.getDataPointer();
+    // make sure they are all valid handles
+    for (int i=0;i<children.getLength();i++) 
+      ValidateHandle(dp[i]);
+    // Retrieve the current list of children
+    HandleObject *gp;
+    HPHandles *hp = (HPHandles*) fp->LookupProperty("children");
+    std::vector<unsigned> my_children(hp->Data());
+    for (int i=0;i<my_children.size();i++) {
+      unsigned handle = my_children[i];
+      if (handle >= HANDLE_OFFSET_OBJECT) {
+	gp = LookupHandleObject(handle);
+	gp->Dereference();
+      }
+    }
+    // Loop through the new list of children
+    for (int i=0;i<children.getLength();i++) {
+      unsigned handle = dp[i];
+      if (handle >= HANDLE_OFFSET_OBJECT) {
+	gp = LookupHandleObject(handle);
+	gp->Reference();
+      }
+    }
+    // Check for anyone with a zero reference count - it should
+    // be deleted
+    for (int i=0;i<my_children.size();i++) {
+      unsigned handle = my_children[i];
+      if (handle >= HANDLE_OFFSET_OBJECT) {
+	gp = LookupHandleObject(handle);
+	if (gp->RefCount() <= 0) {
+	  qDebug("Deleting handle %d\n",handle);
+	  FreeHandleObject(handle);
+	  delete gp;
+	}
+      }
+    }
+    // Call the generic set function now
+    hp->Set(children);
+  }
+
   ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 3)
       throw Exception("set doesn't handle all cases yet!");
@@ -236,10 +277,15 @@ namespace FreeMat {
     while (arg.size() >= (ptr+2)) {
       // Use the address and property name to lookup the Get/Set handler
       std::string propname = ArrayToString(arg[ptr]);
-      try {
-	fp->LookupProperty(propname)->Set(arg[ptr+1]);
-      } catch (Exception &e) {
-	throw Exception(std::string("Got error ") + std::string(e.getMessageCopy()) + std::string(" for property ") + propname);
+      // Special case 'set' for 'children' - this can change reference counts
+      if (propname == "children")
+	HSetChildrenFunction(fp,arg[ptr+1]);
+      else {
+	try {
+	  fp->LookupProperty(propname)->Set(arg[ptr+1]);
+	} catch (Exception &e) {
+	  throw Exception(std::string("Got error ") + std::string(e.getMessageCopy()) + std::string(" for property ") + propname);
+	}
       }
       ptr+=2;
     }
@@ -424,7 +470,7 @@ namespace FreeMat {
 
   //!
   //@Module CLOSE Close Figure Window
-  //@@Section FIGURE
+  //@@Section HANDLE
   //@@Usage
   //Closes a figure window, either the currently active window, a 
   //window with a specific handle, or all figure windows.  The general
@@ -480,7 +526,7 @@ namespace FreeMat {
 
   //!
   //@Module COPY Copy Figure Window
-  //@@Section FIGURE
+  //@@Section HANDLE
   //@@Usage
   //Copies the currently active figure window to the clipboard.
   //The syntax for its use is:
@@ -502,7 +548,7 @@ namespace FreeMat {
   
   //!
   //@Module PRINT Print a Figure To A File
-  //@@Section FIGURE
+  //@@Section HANDLE
   //@@Usage
   //This function ``prints'' the currently active fig to a file.  The 
   //generic syntax for its use is
@@ -534,11 +580,11 @@ namespace FreeMat {
   //x = linspace(-1,1);
   //y = cos(5*pi*x);
   //plot(x,y,'r-');
-  //print printfig1.pdf
-  //print printfig1.jpg
+  //print latex/printfig1.jpg
+  //print html/printfig1.png
   //@>
-  //which creates two plots @|printfig1.pdf|, which is a Portable
-  //Document Format file, and @|printfig1.jpg| which is a JPEG file.
+  //which creates two plots @|printfig1.png|, which is a Portable
+  //Net Graphics file, and @|printfig1.jpg| which is a JPEG file.
   //@figure printfig1
   //!
   ArrayVector HPrintFunction(int nargout, const ArrayVector& arg) {

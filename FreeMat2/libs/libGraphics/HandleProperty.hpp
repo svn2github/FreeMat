@@ -21,7 +21,7 @@ namespace FreeMat {
   protected:
     Array data;
   public:
-    HPArray() {}
+    HPArray() : data(Array::emptyConstructor()) {}
     virtual ~HPArray() {}
     virtual Array Get() {return data;}
     virtual void Set(Array m) {HandleProperty::Set(m); data = m;}

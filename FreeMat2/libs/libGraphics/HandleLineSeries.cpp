@@ -58,6 +58,8 @@ namespace FreeMat {
   }
 
   void HandleLineSeries::PaintMe(RenderEngine& gc) {
+    if (StringCheck("visible","off"))
+      return;
     // Draw the line...
     double width(ScalarPropertyLookup("linewidth"));
     gc.lineWidth(width);
@@ -116,6 +118,7 @@ namespace FreeMat {
   
   void HandleLineSeries::ConstructProperties() {
     AddProperty(new HPColor,"color");
+    AddProperty(new HPHandles,"children");
     AddProperty(new HPString,"displayname");
     AddProperty(new HPLineStyle,"linestyle");
     AddProperty(new HPScalar,"linewidth");

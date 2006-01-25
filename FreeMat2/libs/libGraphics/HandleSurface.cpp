@@ -254,6 +254,8 @@ namespace FreeMat {
  
   void HandleSurface::PaintMe(RenderEngine& gc) {
     UpdateState();
+    if (StringCheck("visible","off"))
+      return;
     // Get the x,y,z & color data points
     Array xdata(ArrayPropertyLookup("xdata"));
     xdata.promoteType(FM_DOUBLE);

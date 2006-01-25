@@ -19,9 +19,13 @@ namespace FreeMat {
 
   class HandleObject {
     SymbolTable<HandleProperty*> m_properties;
+    unsigned ref_count;
   public:
     HandleObject();
-    virtual ~HandleObject() {}
+    virtual ~HandleObject();
+    void Reference() {ref_count++;}
+    void Dereference() {ref_count--;}
+    unsigned RefCount() {return ref_count;}
     virtual void RegisterProperties() {}
     virtual void UpdateState() {}
     virtual std::vector<double> GetLimits() {return std::vector<double>();};

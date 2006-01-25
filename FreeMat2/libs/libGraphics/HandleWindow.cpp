@@ -174,7 +174,7 @@ HandleFigure* HandleWindow::HFig() {
 	qDebug("QTactive");
 	//      glchild->updateGL();
       }
-      repaint();
+      update();
     }
   }
 }

@@ -43,6 +43,7 @@ class QTRenderEngine : public RenderEngine {
   std::vector<quad3d> MapQuadsFacesOnly(std::vector<std::vector<cpoint> > &faces);
   std::vector<quad3d> MapQuadsEdgesOnly(std::vector<std::vector<cpoint> > &edges);
   bool inDirect;
+  bool debugFlag;
 public:
   void debug();
   QTRenderEngine(QPainter *painter, double x1, double y1, 

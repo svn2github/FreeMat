@@ -1,6 +1,6 @@
 
 %@Module ZOOM Image Zoom Function
-%@@Section IMAGE
+%@@Section HANDLE
 %@@Usage
 %This function changes the zoom factor associated with the currently active
 %image.  The generic syntax for its use is

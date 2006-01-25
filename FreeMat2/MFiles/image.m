@@ -1,6 +1,6 @@
 %!
 %@Module IMAGE Image Display Function
-%@@Section IMAGE
+%@@Section HANDLE
 %@@Usage
 %The @|image| command has the following general syntax
 %@[

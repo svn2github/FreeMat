@@ -156,6 +156,8 @@ function h = plot(varargin)
   else
     handle = newplot;
   end
+  saveca = gca;
+  axes(handle);
   % search for the propertyname/value pairs
   propstart = 0;
   if (nargin > 2)
@@ -191,6 +193,7 @@ function h = plot(varargin)
       varargin(1:2) = [];
     end
 end
+axes(saveca);
     
 function h = plot_single(Y,handle,lineprops)
     h = [];

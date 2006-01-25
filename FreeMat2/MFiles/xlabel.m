@@ -1,6 +1,6 @@
 %!
 %@Module XLABEL Plot X-axis Label Function
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %This command adds a label to the x-axis of the plot.  The general syntax
 %for its use is

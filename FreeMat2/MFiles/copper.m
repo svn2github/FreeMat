@@ -1,6 +1,6 @@
 %!
 %@Module COPPER Copper Colormap
-%@@Section Image
+%@@Section HANDLE
 %@@Usage
 %Returns a copper colormap.  The syntax for its use is
 %@[

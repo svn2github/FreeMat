@@ -1,6 +1,6 @@
 %!
 %@Module HOLD Plot Hold Toggle Function
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %Toggles the hold state on the currently active plot.  The
 %general syntax for its use is

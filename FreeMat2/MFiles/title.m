@@ -1,6 +1,6 @@
 %!
 %@Module TITLE Plot Title Function
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %This command adds a title to the plot.  The general syntax
 %for its use is
@@ -54,6 +54,8 @@ function o = title(varargin)
   else
    handle = gca;
   end
+  saveca = gca;
+  axes(handle);
   if (length(varargin) == 0)
     error('must specify title text');
   end
@@ -62,3 +64,4 @@ function o = title(varargin)
   nargin = nargin - 1;
   o = htext('string',mtext,'horiz','center','vert','top','position',[0.5,1,0],'parent',handle,'autoparent','off',varargin{:});
   set(handle,'title',o);
+  axes(saveca);

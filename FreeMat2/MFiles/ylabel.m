@@ -1,6 +1,6 @@
 %!
 %@Module YLABEL Plot Y-axis Label Function
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %This command adds a label to the y-axis of the plot.  The general syntax
 %for its use is

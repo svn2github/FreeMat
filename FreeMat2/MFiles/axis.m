@@ -116,7 +116,8 @@ if (length(varargin) > 0)
 else
   ax = gca;
 end
-
+saveca = gca;
+axes(ax);
 if (length(varargin) == 0)
   % no args, just return the limits
   if (is2Dview(ax))
@@ -158,6 +159,7 @@ else
     error(['Unrecognized mode ' mode ' argument to axis command']);
   end
 end
+axes(saveca);
 
 % axis autoxz --> xlimmod->auto, zlimmode->auto, ylimmode->manual
 % axis manual --> xyzlimmode->manual

@@ -1,6 +1,6 @@
 %!
 %@Module GRAY Gray Colormap
-%@@Section Image
+%@@Section HANDLE
 %@@Usage
 %Returns a gray colormap.  The syntax for its use is
 %@[

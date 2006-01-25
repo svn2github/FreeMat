@@ -1,6 +1,6 @@
 %!
 %@Module YLIM Adjust Y Limits of plot
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %There are several ways to use @|ylim| to adjust the y limits of
 %a plot.  The x-axis retains its current limits.  The four

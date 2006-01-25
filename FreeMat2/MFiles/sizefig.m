@@ -1,6 +1,6 @@
 %!
 %@Module SIZEFIG Set Size of an Fig Window
-%@@Section FIGURE
+%@@Section HANDLE
 %@@Usage
 %The @|sizefig| function changes the size of the currently
 %selected fig window.  The general syntax for its use is

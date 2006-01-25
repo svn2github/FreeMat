@@ -1,3 +1,3 @@
 function mprint(namebase)
-print(sprintf('%s.pdf',namebase));
-print(sprintf('%s.png',namebase));
+print(sprintf('latex/%s.jpg',namebase));
+print(sprintf('html/%s.png',namebase));

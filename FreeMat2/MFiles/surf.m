@@ -66,6 +66,8 @@ function h = surf(varargin)
        handle = newplot;
     end
   end
+  saveca = gca;
+  axes(handle);
   % search for the propertyname/value pairs
   propstart = 0;
   if (nargin > 2)
@@ -94,4 +96,5 @@ function h = surf(varargin)
   else
     error('Unrecognized arguments to surf command');
   end
+axes(saveca);
 

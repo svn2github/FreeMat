@@ -1,6 +1,6 @@
 %!
 %@Module ISHOLD Test Hold Status
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %Returns the state of the @|hold| flag on the currently active
 %plot.  The general syntax for its use is

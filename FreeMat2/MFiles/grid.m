@@ -1,6 +1,6 @@
 %!
 %@Module GRID Plot Grid Toggle Function
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %Toggles the drawing of grid lines on the currently active plot.  The
 %general syntax for its use is

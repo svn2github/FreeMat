@@ -1,6 +1,6 @@
 %!
 %@Module COLORMAP Image Colormap Function
-%@@Section IMAGE
+%@@Section HANDLE
 %@@Usage
 %Changes the colormap for the current figure.  The generic syntax 
 %for its use is
@@ -110,5 +110,13 @@ if (nargin == 0)
   cmap = get(gcf,'colormap');
 else
   set(gcf,'colormap',A);
+end
+% Force a refresh of children
+force_refresh(get(gcf,'children'));
+
+function force_refresh(children)
+for i = 1:numel(children)
+  set(children(i),'tag',get(children(i),'tag'));
+  force_refresh(get(children(i),'children'));
 end
 

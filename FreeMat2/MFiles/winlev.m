@@ -1,6 +1,6 @@
 %!
 %@Module WINLEV Image Window-Level Function
-%@@Section IMAGE
+%@@Section HANDLE
 %@@Usage
 %Adjusts the data range used to map the current image to the current
 %colormap.  The general syntax for its use is

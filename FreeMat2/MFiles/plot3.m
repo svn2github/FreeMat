@@ -41,6 +41,8 @@ function h = plot3(varargin)
        handle = newplot;
     end
   end
+  saveca = gca;
+  axes(handle);
   % search for the propertyname/value pairs
   propstart = 0;
   if (nargin > 2)
@@ -69,6 +71,7 @@ function h = plot3(varargin)
       varargin(1:4) = [];
     end;
   end
+axes(saveca);
     
 function h = plot_triplet(X,Y,Z,handle,lineprops)
     h = [];

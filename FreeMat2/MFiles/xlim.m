@@ -1,6 +1,6 @@
 %!
 %@Module XLIM Adjust X Limits of plot
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %There are several ways to use @|xlim| to adjust the x limits of
 %a plot.  The y-axis retains its current limits.  The four

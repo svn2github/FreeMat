@@ -1,6 +1,6 @@
 %!
 %@Module CLF Clear Figure
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %This function clears the contents of the current figure.  The
 %syntax for its use is

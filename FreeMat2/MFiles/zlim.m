@@ -1,6 +1,6 @@
 %!
 %@Module ZLIM Adjust Z Limits of plot
-%@@Section PLOT
+%@@Section HANDLE
 %@@Usage
 %There are several ways to use @|zlim| to adjust the z limits of
 %a plot.  The other axes retain their current limits.  The four

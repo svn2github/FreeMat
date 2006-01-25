@@ -127,6 +127,7 @@ function h = subplot(varargin)
   if (~found)
     h = axes('outerposition',position);
   end
+  set(fig,'nextplot','add');
 
 function b = intersects(rect1,rect2)
   nleft = max(rect1(1),rect2(1));

@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 
-#include "ffi.h"
+#include "avcall.h"
 #include "FunctionDef.hpp"
 #include "WalkTree.hpp"
 #include "ParserInterface.hpp"
@@ -44,25 +44,7 @@ namespace FreeMat {
 #define MSGBUFLEN 2048
   static char msgBuffer[MSGBUFLEN];
 
-  class CType {
-  public:
-    ffi_type* FFIType;
-    Class FMClass;
-    CType();
-    CType(ffi_type* baseType, Class baseClass);
-  };
 
-  CType::CType() {
-  }
-
-  CType::CType(ffi_type* baseType, Class baseClass) {
-    FFIType = baseType;
-    FMClass = baseClass;
-  }
-
-  typedef SymbolTable<CType> FFITypeTable;
-  static bool ImportTablesInitialized = false;
-  FFITypeTable ffiTypes;
 
   MFunctionDef::MFunctionDef() {
     functionCompiled = false;
@@ -525,44 +507,12 @@ namespace FreeMat {
   FunctionDef::~FunctionDef() {
   }
 
-  static Class mapTypeNameToClass(std::string type) {
-    CType *ret = ffiTypes.findSymbol(type);
-    if (!ret)
-      throw Exception("import type " + type + " not defined in type table");
-    return ret->FMClass;
-  }
-
-  static ffi_type* mapTypeNameToFFTType(std::string type) {
-    CType *ret = ffiTypes.findSymbol(type);
-    if (!ret)
-      throw Exception("import type " + type + " not defined in type table");
-    return ret->FFIType;
-  }
-
-  void SetupImportTables() {
-    ffiTypes.insertSymbol("logical",CType(&ffi_type_uint8,FM_LOGICAL));
-    ffiTypes.insertSymbol("uint8",CType(&ffi_type_uint8,FM_UINT8));
-    ffiTypes.insertSymbol("int8",CType(&ffi_type_sint8,FM_INT8));
-    ffiTypes.insertSymbol("uint16",CType(&ffi_type_uint16,FM_UINT16));
-    ffiTypes.insertSymbol("int16",CType(&ffi_type_sint16,FM_INT16));
-    ffiTypes.insertSymbol("uint32",CType(&ffi_type_uint32,FM_UINT32));
-    ffiTypes.insertSymbol("int32",CType(&ffi_type_sint32,FM_INT32));
-    ffiTypes.insertSymbol("float",CType(&ffi_type_float,FM_FLOAT));
-    ffiTypes.insertSymbol("complex",CType(&ffi_type_float,FM_COMPLEX));    
-    ffiTypes.insertSymbol("double",CType(&ffi_type_double,FM_DOUBLE));
-    ffiTypes.insertSymbol("dcomplex",CType(&ffi_type_double,FM_DCOMPLEX));
-    ffiTypes.insertSymbol("string",CType(&ffi_type_pointer,FM_STRING));
-    ffiTypes.insertSymbol("void",CType(&ffi_type_void,FM_UINT32));
-    ImportTablesInitialized = true;
-  }
 
   ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
 					   stringVector types_arg,
 					   stringVector arguments_arg,
 					   ASTPtrVector sizeChecks,
 					   std::string retType_arg) {
-    if (!ImportTablesInitialized)
-      SetupImportTables();
     address = address_arg;
     types = types_arg;
     arguments = arguments_arg;
@@ -572,20 +522,6 @@ namespace FreeMat {
      * Set up the cif...
      */
     argCount = types_arg.size();
-    ffi_type **args;
-    args = (ffi_type**) malloc(sizeof(ffi_type*)*argCount);
-    for (int i=0;i<argCount;i++) {
-      if (arguments[i][0] == '&' || types[i] == "string" ||
-	  sizeCheckExpressions[i] != NULL)
-	args[i] = &ffi_type_pointer;
-      else {
-	args[i] = mapTypeNameToFFTType(types[i]);
-      }
-    }
-    cif = (ffi_cif*) new ffi_cif;
-    if (ffi_prep_cif((ffi_cif*) cif, FFI_DEFAULT_ABI, argCount,
-		     mapTypeNameToFFTType(retType), args) != FFI_OK)
-      throw Exception("unable to import function through fft!");
     if (retType == "void") 
       retCount = 0;
     else
@@ -596,6 +532,23 @@ namespace FreeMat {
   }
 
   void ImportedFunctionDef::printMe(Interface *) {
+  }
+
+  Class mapTypeNameToClass(std::string name) {
+    if (name == "logical") return FM_LOGICAL;
+    if (name == "uint8") return FM_UINT8;
+    if (name == "int8") return FM_INT8;
+    if (name == "uint16") return FM_UINT16;
+    if (name == "int16") return FM_INT16;
+    if (name == "uint32") return FM_UINT32;
+    if (name == "int32") return FM_INT32;
+    if (name == "float") return FM_FLOAT;
+    if (name == "complex") return FM_COMPLEX;  
+    if (name == "double") return FM_DOUBLE;
+    if (name == "dcomplex") return FM_DCOMPLEX;
+    if (name == "string") return FM_STRING;
+    if (name == "void") return FM_UINT32;
+    throw Exception("unrecognized type " + name + " in imported function setup");
   }
 
   ArrayVector ImportedFunctionDef::evaluateFunction(WalkTree *walker,
@@ -697,44 +650,86 @@ namespace FreeMat {
 
 
     Array retArray;
-    /*
-     * Based on the return type, we call the function...
-     */
+    // The argument list object
+    av_alist alist;
+    // Holders for the return values
+    uint8 ret_uint8;
+    int8 ret_int8;
+    uint16 ret_uint16;
+    int16 ret_int16;
+    uint32 ret_uint32;
+    int32 ret_int32;
+    float ret_float;
+    double ret_double;
+
+    // First pass - based on the return type, call the right version of av_start_*
     if ((retType == "uint8") || (retType == "logical")) {
-      uint8 retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::uint8Constructor(retval);
-    } else if (retType == "int8") {
-      int8 retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::int8Constructor(retval);
+      av_start_uchar(alist,address,&ret_uint8);
+    } else if (retType == "int8") {      
+      av_start_schar(alist,address,&ret_int8);
     } else if (retType == "uint16") {
-      uint16 retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::uint16Constructor(retval);
+      av_start_ushort(alist,address,&ret_uint16);
     } else if (retType == "int16") {
-      int16 retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::int16Constructor(retval);
-    } else if (retType== "uint32") {
-      uint32 retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::uint32Constructor(retval);
+      av_start_short(alist,address,&ret_int16);
+    } else if (retType == "uint32") {
+      av_start_uint(alist,address,&ret_uint32);
     } else if (retType == "int32") {
-      int32 retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::int32Constructor(retval);
+      av_start_int(alist,address,&ret_int32);
+    } else if (retType == "float") {
+      av_start_float(alist,address,&ret_float);
+    } else if (retType == "double") {
+      av_start_double(alist,address,&ret_double);
+    } else if (retType == "void") {
+      av_start_void(alist,address);
+    } else
+      throw Exception("Unsupported return type " + retType + " in imported function call");
+    
+    // Second pass - Loop through the arguments
+    for (int i=0;i<types.size();i++) {
+      if (arguments[i][0] == '&' || types[i] == "string" ||
+	  sizeCheckExpressions[i] != NULL)
+	av_ptr(alist,void*,*((void**)values[i]));
+      else {
+	if ((types[i] == "logical") || (types[i] == "uint8"))
+	  av_uchar(alist,*((uint8*)values[i]));
+	else if (types[i] == "int8")
+	  av_char(alist,*((int8*)values[i]));
+	else if (types[i] == "uint16")
+	  av_ushort(alist,*((uint16*)values[i]));
+	else if (types[i] == "int16")
+	  av_short(alist,*((int16*)values[i]));
+	else if (types[i] == "uint32")
+	  av_uint(alist,*((uint32*)values[i]));
+	else if (types[i] == "int32")
+	  av_int(alist,*((int32*)values[i]));
+	else if ((types[i] == "float") || (types[i] == "complex"))
+	  av_float(alist,*((float*)values[i]));
+	else if ((types[i] == "double") || (types[i] == "dcomplex"))
+	  av_double(alist,*((double*)values[i]));
+      }
+    }
+
+    // Call the function
+    av_call(alist);
+
+    // Extract the return value
+    if ((retType == "uint8") || (retType == "logical")) {
+      retArray = Array::uint8Constructor(ret_uint8);
+    } else if (retType == "int8") {
+      retArray = Array::int8Constructor(ret_int8);
+    } else if (retType == "uint16") {
+      retArray = Array::uint16Constructor(ret_uint16);
+    } else if (retType == "int16") {
+      retArray = Array::int16Constructor(ret_int16);
+    } else if (retType== "uint32") {
+      retArray = Array::uint32Constructor(ret_uint32);
+    } else if (retType == "int32") {
+      retArray = Array::int32Constructor(ret_int32);
     } else if ((retType == "float") || (retType == "complex")) {
-      float retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::floatConstructor(retval);
+      retArray = Array::floatConstructor(ret_float);
     } else if ((retType == "double") || (retType == "dcomplex")) {
-      double retval;					   
-      ffi_call((ffi_cif*) cif, address, &retval, values);
-      retArray = Array::doubleConstructor(retval);
+      retArray = Array::doubleConstructor(ret_double);
     } else {
-      int dummy;
-      ffi_call((ffi_cif*) cif, address, &dummy, values);
       retArray = Array::emptyConstructor();
     }
     
@@ -755,36 +750,4 @@ namespace FreeMat {
     return singleArrayVector(retArray);
   }
 
-#if 0
-  void RegisterImportStruct(std::string structName, 
-			    stringVector types_arg,
-			    stringVector arguments_arg) {
-    if (!ImportTablesInitialized)
-      SetupImportTables();
-    ffi_type *stype;
-    ffi_type **elements;
-    stype = (ffi_type *) malloc(sizeof(ffi_type));
-    stype->size = 0;
-    stype->alignment = 0;
-    stype->elements = (ffi_type **) malloc(sizeof(ffi_type*)*(types_arg.size()+1));
-    for (int i=0;i<types_arg.size();i++) {
-      if (arguments_arg[i][0] == '&')
-	stype->elements[i] = &ffi_type_pointer;
-      else {
-	CType lookup;
-	if (!ffiTypes.findSymbol(types_arg[i],lookup))
-	  throw Exception("struct definition requires type " + types_arg[i] + " which is undefined!");
-	stype->elements[i] = lookup.FFIType;
-      }
-    }
-    stype->elements[types_arg.size()] = NULL;
-    CType newtype;
-    newtype.isStructure = true;
-    newtype.types = types_arg;
-    newtype.names = arguments_arg;
-    newtype.FFIType = stype;
-    newtype.FMClass = FM_STRUCT_ARRAY;
-    ffiTypes.insertSymbol(structName,newtype);
-  }
-#endif
 }

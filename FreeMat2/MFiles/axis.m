@@ -98,7 +98,12 @@
 %@[
 %  axis off
 %@]
-%
+%The next mode is similar to @|axis off|, but also repacks the
+%figure as tightly as possible.  The result is a plot box that
+%takes up the entire @|outerposition| vector.
+%@[
+%  axis maximal
+%@]
 %The @|axis| command can also be applied to a particular axis
 %(as opposed to the current axis as returned by @|gca|) handle
 %@[
@@ -155,6 +160,8 @@ else
     HandleOffMode(ax);
   elseif (strcmp(mode,'on'))
     HandleOnMode(ax);
+  elseif (strcmp(mode,'maximal'))
+    HandleMaximalMode(ax);
   else
     error(['Unrecognized mode ' mode ' argument to axis command']);
   end
@@ -217,6 +224,9 @@ function HandleTightMode(ax)
 
 function HandleManualMode(ax)
   set(ax,'xlimmode','manual','ylimmode','manual','zlimmode','manual');
+
+function HandleMaximalMode(ax)
+  set(ax,'xtick',[],'ytick',[],'ztick',[],'xticklabel','','yticklabel','','zticklabel','');
 
 function HandleAutoMode(ax,mode)
   allactive = strcmp(mode,'auto');

@@ -25,6 +25,16 @@
 %@[
 %  handle = image(properties...)
 %@]
+%
+%To support legacy FreeMat code, you can also use the following
+%form of @|image|
+%@[
+%  image(C, zoomfactor)
+%@]
+%which is equivalent to @|image(C)| with the axes removed so that
+%the image takes up the full figure window, and the size of the
+%figure window adjusted to achieve the desired zoom factor using the
+%@|zoom| command.
 %@@Example
 %In this example, we create an image that is @|512 x 512| pixels
 %square, and set the background to a noise pattern.  We set the central
@@ -66,6 +76,11 @@ function handle = image(varargin)
     handle = himage('cdata',C,'xdata',[1,size(C,2)],'ydata',...
                     [1,size(C,1)],varargin{:});
     axis(ax,'image');
+  elseif (numel(varargin) == 2)
+    C = varargin{1};
+    axis maximal;
+    handle = himage('cdata',C,'xdata',[1,size(C,2)],'ydata',[1,size(C,1)]);
+    zoom(varargin{2});
   elseif (length(varargin) >= 3)
     x = varargin{1};
     y = varargin{2};

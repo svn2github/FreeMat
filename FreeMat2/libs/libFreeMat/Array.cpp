@@ -1129,7 +1129,7 @@ namespace FreeMat {
     if (isReferenceType())
       throw Exception("Switch argument cannot be a reference type (struct or cell array)");
     // If x is a scalar, we just need to call the scalar version
-    if (x.isScalar() || x.isString())
+    if (((x.dp->dataClass != FM_CELL_ARRAY) && x.isScalar()) || x.isString())
       return testCaseMatchScalar(x);
     if (x.dp->dataClass != FM_CELL_ARRAY)
       throw Exception("Case arguments must either be a scalar or a cell array");
@@ -1149,7 +1149,7 @@ namespace FreeMat {
    * Returns TRUE if we are empty (we have no elements).
    */
   const bool Array::isEmpty() const {
-    return ((getLength() == 0) || (dp == NULL) || 
+    return ((dp == NULL) || (getLength() == 0) || 
 	    (!dp->getData()));
   }
 
@@ -1157,6 +1157,7 @@ namespace FreeMat {
    * Returns TRUE if we have only a single element.
    */
   const bool Array::isScalar() const {
+    if (isEmpty()) return false;
     return dp->dimensions.isScalar();
   }
 
@@ -1179,6 +1180,8 @@ namespace FreeMat {
    * struct array).
    */
   const bool Array::isReferenceType() const {
+    if (isEmpty())
+      return false;
     return ((dp->dataClass == FM_CELL_ARRAY) ||
 	    (dp->dataClass == FM_STRUCT_ARRAY) ||
 	    (dp->dataClass == FM_FUNCPTR_ARRAY));

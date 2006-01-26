@@ -156,9 +156,7 @@ public:
   int prompt_len;
   // Are we waiting for input?
   int loopactive;
-#ifndef QT3
-  QEventLoop *m_loop;
-#endif
+  QEventLoop m_loop;
 };
 
   

@@ -124,6 +124,9 @@ namespace FreeMat {
     void doDebugCycle();
     bool processguievents;
   public:
+    void run();
+    void sendGreeting(); // Say hello
+    static std::string getVersionString();
     int getErrorCount();
     bool inMethodCall(std::string classname);
 

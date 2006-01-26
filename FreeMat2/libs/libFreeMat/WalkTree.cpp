@@ -86,6 +86,33 @@ namespace FreeMat {
     return cfunc + "private:" + fname;
   }
 
+  std::string WalkTree::getVersionString() {
+    return std::string("FreeMat v2.0");
+  }
+
+  void WalkTree::run() {
+    try {
+      while (1) {
+	try {
+	  evalCLI();
+	} catch (WalkTreeRetallException) {
+	  clearStacks();
+	} catch (WalkTreeReturnException &e) {
+	}
+      }
+    } catch (WalkTreeQuitException &e) {
+    } catch (std::exception& e) {
+    }
+  }
+
+  void WalkTree::sendGreeting() {
+    io->outputMessage(" " + getVersionString() + "\n");
+    io->outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
+    io->outputMessage(" Licensed under the GNU Public License (GPL)\n");
+    io->outputMessage(" Type <license> to find out more\n");
+    io->outputMessage(" Type <helpwin> for online help\n");
+  }
+
   std::string WalkTree::getPrivateMangledName(std::string fname) {
     std::string ret;
     char buff[4096];
@@ -1549,13 +1576,8 @@ namespace FreeMat {
     ArrayVector m;
     FunctionDef *fdef;
 
-    if (processguievents) {
-#ifdef QT3
-      qApp->eventLoop()->processEvents(QEventLoop::AllEvents);    
-#else
-      qApp->processEvents(QEventLoop::AllEvents);
-#endif
-    }
+    if (processguievents) 
+      qApp->processEvents();
     SetContext(t->context());
     // check the debug flag
     if (t->isEmpty()) {

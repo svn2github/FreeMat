@@ -43,7 +43,7 @@ namespace FreeMat {
   Scope* Context::getGlobalScope() {
     return scopestack.front();
   }
-
+  
   void Context::pushScope(std::string name) {
     if (scopestack.size() > 100)
       throw Exception("Allowable stack depth exceeded...");

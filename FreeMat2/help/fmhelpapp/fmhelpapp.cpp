@@ -33,6 +33,55 @@ void TermOutputText(QString str) {
   qApp->processEvents();
 }
 
+
+  class HelpTerminal : public KeyManager {
+  public:
+    HelpTerminal() {}
+    virtual ~HelpTerminal() {}
+    virtual void Initialize() {}
+    virtual void RestoreOriginalMode() {}
+    virtual void OutputRawString(std::string txt) {
+      output += txt.c_str();
+    }
+    virtual void ResizeEvent() {}
+    virtual void MoveDown() {
+      output += "\n";
+    }
+    virtual char* getLine(std::string aprompt) {
+      if (input.empty()) return 0;
+      QString txt(input[0]);
+      input.removeFirst();
+      char *rettxt = strdup(qPrintable(txt));
+      if (!input.empty())
+	output += aprompt.c_str() + txt;
+      return (strdup(qPrintable(txt)));      
+    }
+    virtual void MoveUp() {};
+    virtual void MoveRight() {};
+    virtual void MoveLeft() {};
+    virtual void ClearEOL() {};
+    virtual void ClearEOD() {};
+    virtual void MoveBOL() {};
+    virtual int getTerminalWidth() {return 80;}
+  };
+
+HelpTerminal *m_term;
+using namespace FreeMat;
+Context *context;
+
+WalkTree* GetInterpreter() {
+  m_term = new HelpTerminal;
+  LoadModuleFunctions(context);
+  LoadClassFunction(context);
+  LoadCoreFunctions(context);
+  LoadFNFunctions(context);
+  LoadHandleGraphicsFunctions(context);  
+  m_term->setContext(context);
+  m_term->setPath("../../MFiles");
+  WalkTree *twalk = new WalkTree(context,m_term);
+  return twalk;
+}
+
 void Halt(QString emsg) {
   TermOutputText(emsg);
   QEventLoop m_loop;
@@ -174,9 +223,9 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
   QString secdesc(section_descriptors.value(secname));
   if (secdesc.isEmpty())
     TermOutputText("Warning: No section descriptor for " + secname + "!\n");
-  QFile file("html/" + secname + ".html");
+  QFile file("html/sec_" + secname + ".html");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open html/" + secname + ".html for output");
+    Halt("Unable to open html/sec_" + secname + ".html for output");
   QTextStream f(&file);
   f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
   f << "\n";
@@ -216,15 +265,17 @@ void HTMLWriter::WriteIndex() {
   f << "\n";
   f << "<HTML>\n";
   f << "<HEAD>\n";
-  f << "<TITLE>" << "FreeMat v2.0 Documentation" << "</TITLE>\n";
+  f << "<TITLE>" << WalkTree::getVersionString().c_str();
+  f << " Documentation" << "</TITLE>\n";
   f << "</HEAD>\n";
   f << "<BODY>\n";
-  f << "<H2>" << "FreeMat v2.0 Documentation" << "</H2>\n";
+  f << "<H1>" << WalkTree::getVersionString().c_str();
+  f << " Documentation" << "</H1>\n";
   f << "<P>\n";
-  f << "<H1> Documentation Sections </H1>\n";
+  f << "<H2> Documentation Sections </H2>\n";
   f << "<UL>\n";
   foreach (QString secname, sections) 
-    f << "<LI> <A HREF=" << secname << ".html> " << 
+    f << "<LI> <A HREF=sec_" << secname << ".html> " << 
       section_descriptors.value(secname) << "</A> </LI>\n";
   f << "</UL>\n";
   f << "</BODY>\n";
@@ -330,7 +381,7 @@ void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) 
   *mystream << "<H2>" << moddesc << "</H2>\n";
   sectables.insert(secname,QStringList() << modname << moddesc);
   *mystream << "<P>\n";
-  *mystream << "Section: <A HREF=" << secname.toLower() << ".html> " << section_descriptors.value(secname.toLower()) << "</A>\n";
+  *mystream << "Section: <A HREF=sec_" << secname.toLower() << ".html> " << section_descriptors.value(secname.toLower()) << "</A>\n";
   verbatim = false;
 }
 
@@ -389,15 +440,155 @@ void HTMLWriter::DoEquation(QString eqn) {
 void HTMLWriter::DoFile(QString fname, QString ftxt) {
   *mystream << "<P>\n<PRE>\n";
   *mystream << "     " << fname << "\n";
-  *mystream << ftxt << "\n";
+  *mystream << LatinFilter(ftxt) << "\n";
   *mystream << "</PRE>\n";
   *mystream << "<P>\n";
+}
+
+class TextWriter : public HelpWriter {
+  QFile *myfile;
+  QTextStream *mystream;
+  QMultiMap<QString, QStringList> sectables;
+  bool verbatim;
+  bool ignore;
+ public:
+  TextWriter() {myfile = NULL; mystream = NULL;}
+  virtual ~TextWriter() {}
+  void BeginModule(QString modname, QString moddesc, QString secname);
+  void BeginGroup(QString groupname);
+  void BeginVerbatim();
+  void OutputText(QString text);
+  QString ExpandCodes(QString text);
+  void DoFigure(QString figname);
+  void EndVerbatim();
+  void EndModule();
+  void DoEquation(QString eqn);
+  void DoFile(QString filename, QString filetext);
+  void DoEnumerate(QStringList);
+  void DoItemize(QStringList);
+  void WriteIndex();
+};
+
+void TextWriter::WriteIndex() {
+#if 0
+  QFile file("latex/main.mdc");
+  if (!file.open(QFile::WriteOnly))
+    Halt("Unable to open latex/main.tex for output");
+  QTextStream f(&file);
+  f << "\\documentclass{book}\n";
+  f << "\\usepackage{graphicx}\n";
+  f << "\\usepackage{amsmath}\n";
+  f << "\\renewcommand{\\topfraction}{0.9}\n";
+  f << "\\renewcommand{\\floatpagefraction}{0.9}\n";
+  f << "\\oddsidemargin 0.0in\n";
+  f << "\\evensidemargin 1.0in\n";
+  f << "\\textwidth 6.0in\n";
+  f << "\\title{" << WalkTree::getVersionString().c_str() << " Documentation}\n";
+  f << "\\author{Samit Basu}\n";
+  f << "\\begin{document}\n";
+  f << "\\maketitle\n";
+  f << "\\tableofcontents\n";
+  QList<QString> sections_multi(sectables.keys());
+  QSet<QString> sections;
+  for (int i=0;i<sections_multi.size();i++)
+    sections << sections_multi[i];
+  foreach (QString secname, sections) {
+    QList<QStringList> modules(sectables.values(secname));
+    QString secdesc(section_descriptors.value(secname));
+    QStringList moduleList;
+    for (unsigned m=0;m<modules.size();m++)
+      moduleList << modules[m][0].toLower();
+    moduleList.sort();
+    f << "\\chapter{" << secdesc << "}\n";
+    for (unsigned m=0;m<moduleList.size();m++) {
+      f << "\\input{" << moduleList[m] << "}\n";
+    }
+  }
+  f << "\\end{document}\n";
+#endif
+}
+
+void TextWriter::DoItemize(QStringList lst) {
+  if (ignore) return;
+  for (int i=0;i<lst.size();i++)
+    *mystream << "  - " << ExpandCodes(lst[i]);
+}
+
+void TextWriter::DoEnumerate(QStringList lst) {
+  if (ignore) return;
+  for (int i=0;i<lst.size();i++)
+    *mystream << "  " << (i+1) << ". " << ExpandCodes(lst[i]);
+}
+
+void TextWriter::EndModule() {
+  if (myfile) delete myfile;
+  if (mystream) delete mystream;
+  moduledepth--;
+}
+
+void TextWriter::BeginModule(QString modname, QString moddesc, QString secname) {
+  moduledepth++;
+  myfile = new QFile("text/" + modname.toLower() + ".mdc");
+  if (!myfile->open(QFile::WriteOnly)) {
+    Halt("Unable to open " + modname + ".mdc for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
+  }
+  mystream = new QTextStream(myfile);
+  *mystream << "% " << modname << " " << moddesc << "\n";
+  *mystream << "%\n";
+  *mystream << "%\n";
+  sectables.insert(secname,QStringList() << modname << moddesc);
+  verbatim = false;
+  ignore = true;
+}
+
+void TextWriter::BeginGroup(QString groupname) {
+  if (groupname.toLower() != "usage") {
+    ignore = true;
+  } else {
+    ignore = false;
+  }
+  OutputText("% Usage\n\n");
+}
+
+void TextWriter::BeginVerbatim() {
+  verbatim = true;
+  OutputText("\n");
+}
+
+QString TextWriter::ExpandCodes(QString text) {
+  QRegExp code_pattern("@\\|([^\\|]*)\\|");
+  QRegExp ret_pattern("\\n");
+  text = text.replace(code_pattern,"\\1");
+  text = text.replace(ret_pattern,"\n% ");
+  return text;
+}
+
+void TextWriter::OutputText(QString text) {
+  if (ignore) return;
+  *mystream << ExpandCodes(text);
+}
+
+void TextWriter::EndVerbatim() {
+  OutputText("\n");
+  verbatim = false;
+}
+
+void TextWriter::DoFigure(QString name) {
+  //  OutputText("<Figure Skipped>\n");
+}
+
+void TextWriter::DoEquation(QString eqn) {
+  //  OutputText("<Equation Skipped>\n");
+}
+
+void TextWriter::DoFile(QString filename, QString ftext) {
+  //  OutputText("<File Skipped>\n");
 }
 
 class LatexWriter : public HelpWriter {
   QFile *myfile;
   QTextStream *mystream;
-  QMultiMap<QString, QString> sectables;
+  QMultiMap<QString, QStringList> sectables;
   bool verbatim;
  public:
   LatexWriter() {myfile = NULL; mystream = NULL;}
@@ -414,8 +605,45 @@ class LatexWriter : public HelpWriter {
   void DoFile(QString filename, QString filetext);
   void DoEnumerate(QStringList);
   void DoItemize(QStringList);
+  void WriteIndex();
 };
 
+void LatexWriter::WriteIndex() {
+  QFile file("latex/main.tex");
+  if (!file.open(QFile::WriteOnly))
+    Halt("Unable to open latex/main.tex for output");
+  QTextStream f(&file);
+  f << "\\documentclass{book}\n";
+  f << "\\usepackage{graphicx}\n";
+  f << "\\usepackage{amsmath}\n";
+  f << "\\renewcommand{\\topfraction}{0.9}\n";
+  f << "\\renewcommand{\\floatpagefraction}{0.9}\n";
+  f << "\\oddsidemargin 0.0in\n";
+  f << "\\evensidemargin 1.0in\n";
+  f << "\\textwidth 6.0in\n";
+  f << "\\title{" << WalkTree::getVersionString().c_str() << " Documentation}\n";
+  f << "\\author{Samit Basu}\n";
+  f << "\\begin{document}\n";
+  f << "\\maketitle\n";
+  f << "\\tableofcontents\n";
+  QList<QString> sections_multi(sectables.keys());
+  QSet<QString> sections;
+  for (int i=0;i<sections_multi.size();i++)
+    sections << sections_multi[i];
+  foreach (QString secname, sections) {
+    QList<QStringList> modules(sectables.values(secname));
+    QString secdesc(section_descriptors.value(secname));
+    QStringList moduleList;
+    for (unsigned m=0;m<modules.size();m++)
+      moduleList << modules[m][0].toLower();
+    moduleList.sort();
+    f << "\\chapter{" << secdesc << "}\n";
+    for (unsigned m=0;m<moduleList.size();m++) {
+      f << "\\input{" << moduleList[m] << "}\n";
+    }
+  }
+  f << "\\end{document}\n";
+}
 
 void LatexWriter::DoItemize(QStringList lst) {
   *mystream << "\\begin{itemize}\n";
@@ -444,13 +672,13 @@ void LatexWriter::BeginModule(QString modname, QString moddesc, QString secname)
     Halt("Unable to open " + modname + ".tex for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
   mystream = new QTextStream(myfile);
-  *mystream << "\\subsection{" + moddesc + "}\n\n";
-  sectables.insert(secname,modname);
+  *mystream << "\\section{" + moddesc + "}\n\n";
+  sectables.insert(secname,QStringList() << modname << moddesc);
   verbatim = false;
 }
 
 void LatexWriter::BeginGroup(QString groupname) {
-  *mystream << "\\subsubsection{" + groupname + "}\n\n";
+  *mystream << "\\subsection{" + groupname + "}\n\n";
 }
 
 void LatexWriter::BeginVerbatim() {
@@ -476,11 +704,11 @@ void LatexWriter::EndVerbatim() {
 }
 
 void LatexWriter::DoFigure(QString name) {
-  *mystream << "\\centerline{\\includegraphics[width=8cm]{name}}\n";
+  *mystream << "\n\n\\centerline{\\includegraphics[width=8cm]{" << name << "}}\n\n";
 }
 
 void LatexWriter::DoEquation(QString eqn) {
-  *mystream << "\\[\\n" << eqn << "\\]\\n";
+  *mystream << "\\[\n" << eqn << "\\]\n";
 }
 
 void LatexWriter::DoFile(QString filename, QString ftext) {
@@ -490,61 +718,8 @@ void LatexWriter::DoFile(QString filename, QString ftext) {
   *mystream << "\\end{verbatim}\n";
 }
 
-namespace FreeMat {
-  class HelpTerminal : public KeyManager {
-  public:
-    HelpTerminal() {}
-    virtual ~HelpTerminal() {}
-    virtual void Initialize() {}
-    virtual void RestoreOriginalMode() {}
-    virtual void OutputRawString(std::string txt) {
-      output += txt.c_str();
-    }
-    virtual void ResizeEvent() {}
-    virtual void MoveDown() {
-      output += "\n";
-    }
-    virtual char* getLine(std::string aprompt) {
-      if (input.empty()) return 0;
-      QString txt(input[0]);
-      input.removeFirst();
-      char *rettxt = strdup(qPrintable(txt));
-      if (!input.empty())
-	output += aprompt.c_str() + txt;
-      return (strdup(qPrintable(txt)));      
-    }
-    virtual void MoveUp() {};
-    virtual void MoveRight() {};
-    virtual void MoveLeft() {};
-    virtual void ClearEOL() {};
-    virtual void ClearEOD() {};
-    virtual void MoveBOL() {};
-    virtual int getTerminalWidth() {return 80;}
-  };
-};
-
-HelpTerminal *m_term;
 using namespace FreeMat;
-Context *context;
 
-WalkTree* GetInterpreter() {
-  m_term = new HelpTerminal;
-  LoadModuleFunctions(context);
-  LoadClassFunction(context);
-  LoadCoreFunctions(context);
-  LoadFNFunctions(context);
-  LoadHandleGraphicsFunctions(context);  
-  //   const char *envPtr;
-  //   envPtr = getenv("FREEMAT_PATH");
-  m_term->setContext(context);
-  //   if (envPtr)
-  //     m_term->setPath(std::string(envPtr));
-  //   else 
-  //     m_term->setPath(std::string(""));
-  m_term->setPath("../../MFiles");
-  WalkTree *twalk = new WalkTree(context,m_term);
-  return twalk;
-}
 
 QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename, QString file) {
   input = cmds;
@@ -778,6 +953,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		delete t;
 		delete myfile;
 		out->DoFile(fname,fn);
+		line = fstr.readLine(0);
 		if (fstr.atEnd())
 		  Halt("Unmatched function block detected!");
 	      } else if (TestMatch(enumeratein_pattern,line)) {
@@ -839,18 +1015,72 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
   delete context;
 }
 
-void ProcessDir(QDir dir, HelpWriter *out) {
-  TermOutputText("Processing Directory " + dir.absolutePath() + "...\n");
+void MergeFile(QFileInfo fileinfo) {
+  if (fileinfo.suffix() != "m")
+    return;
+  // It is a .m file...  Read in the documentation for it
+  // from the text directory
+  QString headerdocs;
+  QFile f("text/" + fileinfo.baseName() + ".mdc");
+  if (f.open(QFile::ReadOnly)) {
+    QTextStream s(&f);
+    while (!s.atEnd())
+      headerdocs += s.readLine(0) + "\n";
+  }
+  // Open the file
+  QFile h(fileinfo.absoluteFilePath());
+  QString newname(fileinfo.absoluteFilePath());
+  int p = newname.indexOf("mfiles",0,Qt::CaseInsensitive);
+  newname = newname.remove(0,p);
+  newname = "text/" + newname;
+  // Create the directory structure if necessary
+  QFileInfo fi(newname);
+  QDir dir;
+  dir.mkpath(fi.absolutePath());
+  QFile g(newname);
+  if (!h.open(QFile::ReadOnly))
+    Halt("Unable to open " + fileinfo.absoluteFilePath() + " for read...\n");
+  if (!g.open(QFile::WriteOnly))
+    Halt("Unable to open " + newname + " for write...\n");
+  QRegExp docblock_pattern("^\\s*%!");
+  QTextStream s(&h);
+  QTextStream t(&g);
+  while (!s.atEnd()) {
+    QString line(s.readLine(0));
+    if (TestMatch(docblock_pattern,line)) {
+      QString line(s.readLine(0));
+      while (!TestMatch(docblock_pattern,line))
+	line = s.readLine(0);
+      t << headerdocs << "\n";
+    } else
+      t << line << "\n";
+  }
+}
+
+void MergeMFiles(QDir dir) {
+  TermOutputText("Merging M Files in Directory " + dir.absolutePath() + "...\n");
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
   for (unsigned i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     if (fileInfo.isDir())
-      ProcessDir(QDir(fileInfo.absoluteFilePath()),out);
+      MergeMFiles(QDir(fileInfo.absoluteFilePath()));
+    else
+      MergeFile(fileInfo);
+  }
+}
+
+void ProcessDir(QDir dir, HelpWriter *out, bool recurse) {
+  TermOutputText("Processing Directory " + dir.absolutePath() + "...\n");
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir() && recurse)
+      ProcessDir(QDir(fileInfo.absoluteFilePath()),out,recurse);
     else
       ProcessFile(fileInfo,out);
   }
-  qApp->processEvents();
 }
 
 void ReadSectionDescriptors() {
@@ -874,31 +1104,22 @@ void ConsoleWidget::Run() {
   LatexWriter texout;
   HTMLWriter htmlout;
   GroupWriter out;
+  TextWriter txtout;
   out.RegisterWriter(&texout);
   out.RegisterWriter(&htmlout);
-  ProcessDir(QDir("../../MFiles"),&out); 
-  ProcessDir(QDir("../../libs"),&out); 
+  out.RegisterWriter(&txtout);
+  ProcessDir(QDir("."),&out,false); 
+  ProcessDir(QDir("../../MFiles"),&out,true); 
+  ProcessDir(QDir("../../libs"),&out,true); 
+  MergeMFiles(QDir("../../MFiles"));
   out.WriteIndex();
   TermOutputText("\n\nDone!\n");
-}
-
-void ReadModuleNames() {
-  QFile file("html/modules.txt");
-  if (!file.open(QFile::ReadOnly))
-    Halt("Unable to open module list");
-  QTextStream f(&file);
-  while (!f.atEnd()) {
-    QString line(f.readLine(0));
-    qDebug(line);
-  }
 }
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   ConsoleWidget *m_main = new ConsoleWidget;
   m_main->show();
-  // Get the section table
-  ReadModuleNames();
   return app.exec();
   return 0;
 }

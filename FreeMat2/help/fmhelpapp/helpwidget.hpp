@@ -11,31 +11,12 @@
 #include <QListWidget>
 #include <QTreeWidget>
 
-
-class HelpWinManager : public QTabWidget {
-  Q_OBJECT
-  bool m_forwardFlag, m_backwardFlag;
-  QString m_url;
-public:
-  HelpWinManager(QWidget *parent, QString url);
-signals:
-  void forwardAvailable(bool avail);
-  void backwardAvailable(bool avail);
-private slots:
-  void forward();
-  void back();
-  void home();
-  void forwardFlag(bool avail);
-  void backwardFlag(bool avail);
-  void activeChanged(int nim);
-  void activateModule(QListWidgetItem*);
-  void activateModule(QTreeWidgetItem*,int);
-};
+class HelpWindow;
 
 class HelpWidget : public QDockWidget {
   Q_OBJECT
 public:
-  HelpWidget(QString url, HelpWinManager *mgr);
+  HelpWidget(QString url, HelpWindow *mgr);
 private:
   QTabWidget *m_browser;
 };
@@ -46,22 +27,22 @@ class HelpWindow : public QMainWindow {
 public:
   HelpWindow(QString baseURL);
 private slots:
-  void newTab();
-  void closeTab();
+  void activateModule(QListWidgetItem* item);
+  void activateModule(QTreeWidgetItem* item, int);
 private:
   void createActions();
   void createMenus();
   void createToolBars();
   void createStatusBar();
 
-  HelpWinManager *m_tabs;
+  QTextBrowser *tb;
   HelpWidget *m_helpwidget;
   QMenu *fileMenu, *editMenu, *goMenu, *helpMenu;
-  QToolBar *fileToolBar;
   QToolBar *editToolBar;
   QToolBar *goToolBar;
-  QAction *newAct, *closeAct, *copyAct, *pasteAct, *exitAct;
+  QAction *copyAct, *exitAct;
   QAction *backAct, *forwardAct, *homeAct;
+  QAction *zoominAct, *zoomoutAct;
   QString m_initial;
 };
 

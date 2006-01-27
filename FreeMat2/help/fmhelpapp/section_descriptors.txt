@@ -1,3 +1,4 @@
+introduction Introduction and Getting Started
 variables Variables and Arrays
 functions Functions and Scripts
 operators Mathematical Operators
@@ -18,8 +19,5 @@ transforms Transforms/Decompositions
 signal Signal Processing Functions
 os Operating System Functions
 curvefit Optimization and Curve Fitting
-figure Figure Functions
-image Image Display Functions
-plot Plot Functions
 mpi MPI Functions
 handle Handle Graphics

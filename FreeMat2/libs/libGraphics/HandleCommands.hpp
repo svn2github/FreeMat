@@ -9,6 +9,8 @@
 #define HANDLE_OFFSET_FIGURE 1
 
 namespace FreeMat {
+  void SaveFocus();
+  void RestoreFocus();
   void LoadHandleGraphicsFunctions(Context* context);
 
   HandleObject* LookupHandleObject(unsigned handle);

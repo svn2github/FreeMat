@@ -7,6 +7,8 @@
 
 namespace FreeMat {
 
+#include "../libXP/freemat-2.xpm"
+
 class BaseFigureQt : public QWidget {
   HandleFigure *hfig;
  public:
@@ -109,6 +111,8 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
   }
 
 HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
+  QPixmap myIcon = QPixmap(freemat_2);
+  setWindowIcon(myIcon);
   handle = ahandle;
   hfig = new HandleFigure(this);
   char buffer[1000];

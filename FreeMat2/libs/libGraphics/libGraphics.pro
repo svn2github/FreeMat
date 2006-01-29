@@ -2,9 +2,9 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib debug opengl warn_off
+CONFIG += staticlib opengl warn_off
 
-INCLUDEPATH = ../libFreeMat ../libXP ../.. ../libCore
+INCLUDEPATH = ../libFreeMat ../libXP ../libCore
 
 HEADERS += Util.hpp \
 HandleAxis.hpp \

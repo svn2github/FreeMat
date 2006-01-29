@@ -25,7 +25,18 @@
 // images
 
 namespace FreeMat {
+
+  QWidget *save = NULL;
+
+  void SaveFocus() {
+    save = qApp->focusWidget();
+  }
   
+  void RestoreFocus() {
+    if (save)
+      save->setFocus();
+  }
+
   HandleWindow* Hfigs[MAX_FIGS];
   int HcurrentFig = -1;
   
@@ -546,6 +557,29 @@ namespace FreeMat {
     return ArrayVector();
   }
   
+  std::string NormalizeImageExtension(std::string ext) {
+    std::string upperext(ext);
+    std::string lowerext(ext);
+    std::transform(upperext.begin(),upperext.end(),upperext.begin(),toupper);
+    std::transform(lowerext.begin(),lowerext.end(),lowerext.begin(),tolower);
+    if (upperext == "JPG") return std::string("JPEG");
+    if ((upperext == "PDF") || (upperext == "PS") || (upperext == "EPS")) return upperext;
+    QList<QByteArray> formats(QImageWriter::supportedImageFormats());
+    for (int i=0;i<formats.count();i++) {
+      if (formats.at(i).data() == upperext) return upperext;
+      if (formats.at(i).data() == lowerext) return lowerext;
+    }
+    return std::string();
+  }
+
+  std::string FormatListAsString() {
+    std::string ret_text = "Supported Formats: ";
+    QList<QByteArray> formats(QImageWriter::supportedImageFormats());
+    for (int i=0;i<formats.count();i++)
+      ret_text = ret_text + formats.at(i).data() + " ";
+    return ret_text;
+  }
+
   //!
   //@Module PRINT Print a Figure To A File
   //@@Section HANDLE

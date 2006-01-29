@@ -2715,7 +2715,11 @@ break;
       if (data.isScalar()) {
 	index = Array::int32RangeConstructor(1,1,getLength(),true);
       } else {
-	Dimensions myDims(dp->dimensions);
+	Dimensions myDims;
+	if (!isEmpty())
+	  myDims = dp->dimensions;
+	else
+	  myDims = data.getDimensions();
 	if (myDims.getElementCount() != data.getLength())
 	  throw Exception("assignment A(:) = B requires A and B to be the same size");
 	dp = data.dp->getCopy();

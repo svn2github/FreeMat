@@ -2,18 +2,13 @@ TEMPLATE = lib
 
 TARGET = FreeMatLib
 
-CONFIG += staticlib warn_off debug
+CONFIG += staticlib warn_off
 
-INCLUDEPATH = ../libffi/include ../libXP ../libUMFPACK/UMFPACK/Include ../..
-
-win32 {
-  INCLUDEPATH += ../libffi/msvc_build
-}
-
-
-DEFINES -= UNICODE
+INCLUDEPATH = ../../extern/ffcall-1.10/avcall ../../extern/UMFPACK/Include ../../extern/AMD/Include ../libXP ../libUMFPACK/UMFPACK/Include ../..
 
 DEPENDPATH += INCLUDEPATH
+
+DEFINES -= UNICODE
 
 HEADERS += Array.hpp \
 AST.hpp \

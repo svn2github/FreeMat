@@ -30,6 +30,7 @@ namespace FreeMat {
   class Interface {
     Context *m_context;
     std::string m_path;
+    std::string app_path;
     std::vector<std::string> dirTab;    
     void scanDirectory(std::string scdir, bool, std::string prefixo);
     void procFile(std::string fname, std::string fullname, bool);
@@ -38,6 +39,11 @@ namespace FreeMat {
     virtual ~Interface();
     std::vector<std::string> GetCompletions(std::string line, int word_end, 
 					    std::string &matchString);
+    /**
+     *  Get/Set the application path 
+     */
+    virtual std::string getAppPath();
+    virtual void setAppPath(std::string);
     /**
      *  Get the current path set for the interface.
      */

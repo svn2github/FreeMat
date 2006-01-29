@@ -74,6 +74,14 @@ namespace FreeMat {
     m_context = ctxt;
   }
 
+  void Interface::setAppPath(std::string path) {
+    app_path = path;
+  }
+
+  std::string Interface::getAppPath() {
+    return app_path;
+  }
+
   void Interface::setPath(std::string path) {
     char* pathdata = strdup(path.c_str());
     // Search through the path
@@ -95,6 +103,7 @@ namespace FreeMat {
   }
   
   void Interface::rescanPath() {
+    if (!m_context) return;
     m_context->flushTemporaryGlobalFunctions();
     int i;
     for (i=0;i<dirTab.size();i++)

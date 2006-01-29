@@ -32,7 +32,7 @@
 %Z = exp(-(x.^2+y.^2)/0.3);
 %image(Z);
 %zoom(1.0);
-%mprintimage zoom1
+%mprint zoom1
 %@>
 %@figure zoom1
 %
@@ -45,7 +45,7 @@
 %@<
 %image(Z);
 %zoom(0.6);
-%mprintimage zoom3
+%mprint zoom3
 %@>
 %@figure zoom3
 %
@@ -53,7 +53,7 @@
 %@<
 %image(Z)
 %zoom(1.3);
-%mprintimage zoom4
+%mprint zoom4
 %@>
 %@figure zoom4
 %
@@ -64,7 +64,7 @@
 %image(Z);
 %zoom(0);
 %sizefig(200,400);
-%mprintimage zoom5
+%mprint zoom5
 %@>
 %@figure zoom5
 %
@@ -74,7 +74,7 @@
 %image(Z);
 %zoom(-1);
 %sizefig(200,400);
-%mprintimage zoom6
+%mprint zoom6
 %@>
 %@figure zoom6
 %!

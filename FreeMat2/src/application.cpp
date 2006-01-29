@@ -8,20 +8,12 @@
 #include <iostream>
 #include <qfontdialog.h>
 #include <qsettings.h>
-#include "Core.hpp"
+#include "WalkTree.hpp"
+#include "highlighter.hpp"
+#include <QtGui>
 
-#ifdef QT3
-#define MAKEASCII(x) x.ascii()
-#define QPM QPopupMenu
-#define QK(x) x
-#include <qpopupmenu.h>
-#else
 #define MAKEASCII(x) x.toAscii().constData()
-#define QPM Q3PopupMenu
-#define QK(x) Qt::x
-#include <QCloseEvent>
-#include <Q3PopupMenu>
-#endif
+#include <QtGui>
 
 #include "filesave.xpm"
 #include "../libs/libXP/freemat-2.xpm"
@@ -29,38 +21,57 @@
 ApplicationWindow::~ApplicationWindow() {
 }
 
-ApplicationWindow::ApplicationWindow() :
-#ifdef QT3
-  QMainWindow(0,NULL, WDestructiveClose | WGroupLeader) {
-#else
-  Q3MainWindow(0,NULL, Qt::WDestructiveClose | Qt::WGroupLeader) {
-#endif
+void ApplicationWindow::createActions() {
+  saveAct = new QAction("&Save Transcript",this);
+  connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
+  quitAct = new QAction("&Quit",this);
+  connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
+  copyAct = new QAction("&Copy",this);
+  connect(copyAct,SIGNAL(triggered()),this,SLOT(copy()));
+  pasteAct = new QAction("&Paste",this);
+  connect(pasteAct,SIGNAL(triggered()),this,SLOT(paste()));
+  fontAct = new QAction("&Font",this);
+  connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
+  aboutAct = new QAction("&About",this);
+  connect(aboutAct,SIGNAL(triggered()),this,SLOT(about()));
+  manualAct = new QAction("Online &Manual",this);
+  connect(manualAct,SIGNAL(triggered()),this,SLOT(manual()));
+  aboutQt = new QAction("About &Qt",this);
+  connect(aboutQt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
+}
+
+void ApplicationWindow::createMenus() {
+  fileMenu = menuBar()->addMenu("&File");
+  fileMenu->addAction(saveAct);
+  fileMenu->addAction(quitAct);
+  editMenu = menuBar()->addMenu("&Edit");
+  editMenu->addAction(copyAct);
+  editMenu->addAction(pasteAct);
+  editMenu->addAction(fontAct);
+  helpMenu = menuBar()->addMenu("&Help");
+  helpMenu->addAction(aboutAct);
+  helpMenu->addAction(manualAct);
+  helpMenu->addAction(aboutQt);
+}
+
+void ApplicationWindow::createToolBars() {
+  editToolBar = addToolBar("Edit");
+  editToolBar->addAction(copyAct);
+  editToolBar->addAction(pasteAct);
+}
+
+void ApplicationWindow::createStatusBar() {
+  statusBar()->showMessage("Ready");
+}
+
+ApplicationWindow::ApplicationWindow() : QMainWindow() {
   QPixmap myIcon = QPixmap(freemat_2);
-  setIcon(myIcon);
-
-#ifdef QT3
-  setCaption("FreeMat v2.0 Command Window");
-#else
-  setWindowTitle("FreeMat v2.0 Command Window");
-#endif
-
-  QPixmap saveIcon;
-  saveIcon = QPixmap(filesave);
-  QPM *file = new QPM(this);
-  menuBar()->insertItem("&File", file);
-  file->insertItem(saveIcon,"&Save Transcript",this,SLOT(save()),QK(CTRL)+QK(Key_S));
-  file->insertItem("&Quit",qApp,SLOT(closeAllWindows()),QK(CTRL)+QK(Key_Q));
-  QPM *edit = new QPM(this);
-  menuBar()->insertItem("&Edit", edit);
-  edit->insertItem("&Copy",this,SLOT(copy()),QK(CTRL)+QK(Key_C));
-  edit->insertItem("&Paste",this,SLOT(paste()),QK(CTRL)+QK(Key_V));
-  edit->insertSeparator();
-  edit->insertItem("&Font",this,SLOT(font()),QK(CTRL)+QK(Key_F));
-  QPM *help = new QPM(this);
-  menuBar()->insertItem("&Help", help);
-  help->insertItem("&About",this,SLOT(about()));
-  help->insertItem("Online &Manual",this,SLOT(manual()),QK(Key_F1));
-  help->insertItem("About &Qt", this, SLOT(aboutQt()));
+  setWindowIcon(myIcon);
+  setWindowTitle(QString(WalkTree::getVersionString().c_str()) + " Command Window");
+  createActions();
+  createMenus();
+  createToolBars();
+  createStatusBar();
 }
 
 void ApplicationWindow::closeEvent(QCloseEvent* ce) {
@@ -73,14 +84,8 @@ void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
   m_term = term;
   setCentralWidget(term);
   setMinimumSize(400,300);
-#ifdef QT3
-  QSettings settings;
-  settings.setPath("FreeMat","FreeMat");
-  QString font = settings.readEntry("/terminal/font");
-#else
   QSettings settings("FreeMat","FreeMat");
   QString font = settings.value("terminal/font").toString();
-#endif
   if (!font.isNull()) {
     QFont new_font;
     new_font.fromString(font);
@@ -90,12 +95,7 @@ void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
 }
 
 void ApplicationWindow::save() {
-#ifdef QT3
-  QString fn = QFileDialog::getSaveFileName(QString::null, 
-					    QString::null, this);
-#else
   QString fn = QFileDialog::getSaveFileName();
-#endif
   if (!fn.isEmpty()) {
     FILE *fp;
     fp = fopen(MAKEASCII(fn),"w");
@@ -157,26 +157,32 @@ void ApplicationWindow::font() {
   bool ok;
   QFont new_font = QFontDialog::getFont(&ok, old_font, this);
   if (ok) {
-#ifdef QT3
-    QSettings settings;
-    settings.setPath("FreeMat","FreeMat");
-    settings.writeEntry("/terminal/font",new_font.toString());
-#else
     QSettings settings("FreeMat","FreeMat");
     settings.setValue("terminal/font",new_font.toString());
-#endif
     m_term->setFont(new_font);
   }
 }
 
+
+class FMIndent {
+  Q_OBJECT
+public:
+  FMIndent();
+  virtual ~FMIndent();
+  void setDocument(QTextDocument *doc);
+  QTextDocument *document() const;
+};
+
+
 void ApplicationWindow::about() {
+  QTextEdit* t = new QTextEdit;
+  t->show();
+  Highlighter *n = new Highlighter(t->document());
 }
 
 void ApplicationWindow::manual() {
-  ArrayVector dummy;
-  HelpWinFunction(0,dummy);
+  emit startHelp();
 }
 
-void ApplicationWindow::aboutQt() {
-  QMessageBox::aboutQt(this, "FreeMat");
+void ApplicationWindow::editor() {
 }

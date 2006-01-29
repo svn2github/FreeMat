@@ -1,42 +1,38 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
-#ifdef QT3
-#include <qmainwindow.h>
-#else
-#include <q3mainwindow.h>
-#endif
-
+#include <QMainWindow>
 #include "GUITerminal.hpp"
 
-#ifdef QT3
-#define MainWin QMainWindow
-#else
-#define MainWin Q3MainWindow
-#endif
-
-class ApplicationWindow: public MainWin
-{
+class ApplicationWindow : public QMainWindow {
   Q_OBJECT
-
-  GUITerminal* m_term;
+    
+    GUITerminal* m_term;
+  QMenu *fileMenu, *editMenu, *helpMenu;
+  QToolBar *editToolBar;
+  QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
+  QAction *aboutAct, *manualAct, *aboutQt;
 public:
   ApplicationWindow();
   ~ApplicationWindow();
   void SetGUITerminal(GUITerminal* term);
-
+private:
+  void createActions();
+  void createMenus();
+  void createToolBars();
+  void createStatusBar();
 protected:
   void closeEvent(QCloseEvent*);
-
+signals:
+  void startHelp();
 private slots:
- void save();
- void copy();
- void paste();
- void font();
- void about();
- void manual();
- void aboutQt();
+  void save();
+  void copy();
+  void paste();
+  void font();
+  void about();
+  void editor();
+  void manual();
 }; 
-
 
 #endif

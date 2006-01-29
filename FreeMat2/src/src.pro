@@ -4,7 +4,7 @@ TARGET = FreeMat
 
 CONFIG += assistant debug
 
-INCLUDEPATH += . ../libs/libFreeMat ../libs/libCore ../libs/libFN ../libs/libGraphics ../libs/libffi/include ../libs/libXP  ../..
+INCLUDEPATH += . ../libs/libFreeMat ../libs/libCore ../libs/libFN ../libs/libGraphics ../libs/libXP  ../..
 
 DEPENDPATH += INCLUDEPATH
 

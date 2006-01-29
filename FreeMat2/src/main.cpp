@@ -84,8 +84,7 @@ int main(int argc, char *argv[]) {
   if (scriptMode) nogui = 1;
 
   MainApp m_app;
-  QTimer *m_start;
-  ApplicationWindow *m_win;
+  ApplicationWindow *m_win = NULL;
 
   if (!nogui) {
     m_win = new ApplicationWindow;
@@ -121,8 +120,8 @@ int main(int argc, char *argv[]) {
 #endif
   }
   m_app.SetTerminal(term);
-  m_start = new QTimer;
-  QObject::connect(m_start,SIGNAL(timeout()),&m_app,SLOT(Run()));
-  m_start->start(0,TRUE);
+  QTimer::singleShot(0,&m_app,SLOT(Run()));
+  if (m_win != NULL);
+  QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
   return app.exec();
 }

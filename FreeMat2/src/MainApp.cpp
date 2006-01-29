@@ -1,14 +1,16 @@
 #include <qapplication.h>
+#include <QDir>
 #include "MainApp.hpp"
 using namespace FreeMat;
 
 #include "KeyManager.hpp"
+#include "File.hpp"
 #include "Module.hpp"
 #include "Class.hpp"
 #include "LoadCore.hpp"
 #include "LoadFN.hpp"
 #include "HandleCommands.hpp"
-#include "File.hpp"
+#include "Core.hpp"
 
 MainApp::MainApp() {
 }
@@ -24,40 +26,39 @@ void MainApp::SetHelpPath(std::string helpPath) {
   m_helpPath = helpPath;
 }
 
+void MainApp::HelpWin() {
+  ArrayVector dummy;
+  HelpWinFunction(0,dummy,eval);
+}
+
 int MainApp::Run() {
   Context *context = new Context;
-  
   LoadModuleFunctions(context);
   LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadHandleGraphicsFunctions(context);  
-
-  const char *envPtr;
-  envPtr = getenv("FREEMAT_PATH");
   m_term->setContext(context);
-  if (envPtr)
-    m_term->setPath(std::string(envPtr));
-  else 
-    m_term->setPath(std::string(""));
-  WalkTree *twalk = new WalkTree(context,m_term);
-  m_term->outputMessage(" Freemat v2.0");
-  m_term->outputMessage("\n");
-  m_term->outputMessage(" Copyright (c) 2002-2005 by Samit Basu\n");
-  try {
-    while (1) {
-      try {
-	twalk->evalCLI();
-      } catch (WalkTreeRetallException) {
-	m_term->outputMessage("retall\n");
-	twalk->clearStacks();
-      } catch (WalkTreeReturnException &e) {
-      }
-    }
-  } catch (WalkTreeQuitException &e) {
-  } catch (std::exception& e) {
-    std::cout << "Exception caught: " << e.what() << "\n";
-  }
+  QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
+  QString path1(dir1.canonicalPath());
+  QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
+  QString path2(dir2.canonicalPath());
+#ifdef WIN32
+  QString synthpath(path1 + ";" + path2);
+#else
+  QString synthpath(path1 + ":" + path2);
+#endif
+  m_term->setPath(synthpath.toStdString());
+//   const char *envPtr;
+//   envPtr = getenv("FREEMAT_PATH");
+//   if (envPtr)
+//     m_term->setPath(std::string(envPtr));
+//   else 
+//     m_term->setPath(std::string(""));
+  m_term->setAppPath(qApp->applicationDirPath().toStdString());
+  eval = new WalkTree(context,m_term);
+  eval->sendGreeting();
+  eval->run();
   m_term->RestoreOriginalMode();
   qApp->quit();
   return 0;

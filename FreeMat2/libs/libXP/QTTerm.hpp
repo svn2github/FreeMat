@@ -28,6 +28,7 @@ public:
   virtual void SetupScrollBar(int minval, int maxval, 
 			      int step, int page, int val);
   virtual void BeginDraw();
+  virtual void DrawTagChar(QPainter* paint, int x, int y, tagChar g);
   virtual void PutTagChar(int x, int y, tagChar g);
   virtual void EndDraw();
   virtual void setFont(int size);
@@ -51,7 +52,7 @@ protected:
   void mouseReleaseEvent( QMouseEvent *e );
   void focusOutEvent(QFocusEvent *e);
   void focusInEvent(QFocusEvent *e);
-  void markDirty(QRect &rect);
+  void PaintRectangle(QPainter *paint, QRect rect);
  public slots:
   void scrollBack(int val);
   void blink();

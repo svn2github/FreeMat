@@ -5,17 +5,11 @@
 #include <qpainter.h>
 #include <qclipboard.h>
 #include <math.h>
-#ifndef QT3
 #include <QKeyEvent>
-#include <Q3MemArray>
-#endif
+#include <QDebug>
 
 QTTerm::QTTerm(QWidget *parent, const char *name) : 
-#ifdef QT3
-  QWidget(parent,name,WRepaintNoErase) {
-#else
-  QWidget(parent,name,Qt::WNoAutoErase) {
-#endif
+  QWidget(parent) {
   m_scrollbar = new QScrollBar(Qt::Vertical,this);
   m_scrollbar->setRange(0,0);
   QObject::connect(m_scrollbar,SIGNAL(valueChanged(int)), this, SLOT(scrollBack(int)));
@@ -23,22 +17,12 @@ QTTerm::QTTerm(QWidget *parent, const char *name) :
   setFont(12);
   cursorOn = false;
   blinkEnable = true;
-#ifdef QT3
-  setBackgroundColor(Qt::white);
-#else
-  setBackgroundRole(QPalette::Base);
-  setAttribute(Qt::WA_NoBackground);
-#endif
-#ifdef QT3
-  setFocusPolicy(QWidget::ClickFocus);
-#else
+  //  setBackgroundRole(QPalette::Base);
+  setAttribute(Qt::WA_OpaquePaintEvent);
+  //  setAttribute(Qt::WA_NoBackground);
   setFocusPolicy(Qt::ClickFocus);  
-#endif
   InstallEventTimers();
 }
-#if 0
-}
-#endif
 
 QTTerm::~QTTerm() {
 }
@@ -117,16 +101,6 @@ char* QTTerm::getTextSurface(int &count, int &width) {
 
 void QTTerm::adjustScrollbarPosition() {
   m_scrollbar->hide();
-#ifdef QT3
-#ifdef __APPLE__
-  m_scrollbar->resize(QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent),
-		      contentsRect().height() - 
-		      QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent));
-#else
-  m_scrollbar->resize(QApplication::style().pixelMetric(QStyle::PM_ScrollBarExtent),
-		      height());
-#endif
-#else
 #ifdef __APPLE__
   m_scrollbar->resize(QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent),
 		      contentsRect().height() - 
@@ -134,7 +108,6 @@ void QTTerm::adjustScrollbarPosition() {
 #else
   m_scrollbar->resize(QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent),
 		      contentsRect().height());
-#endif
 #endif
   m_active_width = width() - 2 - m_scrollbar->width();
   m_scrollbar->move(QPoint(width()-m_scrollbar->width(),0));
@@ -160,22 +133,15 @@ void QTTerm::scrollBack(int val) {
 
 void QTTerm::SetupScrollBar(int minval, int maxval, int step, int page, int val) {
   m_scrollbar->setRange(minval,maxval);
-#ifdef QT3
-  if (maxval == minval)
-    m_scrollbar->setSteps(0,0);
-  else
-    m_scrollbar->setSteps(step,page);
-#else
   if (maxval == minval)
     m_scrollbar->setPageStep(0);
   else
     m_scrollbar->setPageStep(page);
-#endif
   m_scrollbar->setValue(val);
 }
 
 void QTTerm::ScrollLineUp() {
-  m_scrollbar->setValue(QMAX(0,m_scrollbar->value()-1));
+  m_scrollbar->setValue(qMax(0,m_scrollbar->value()-1));
 }
 
 void QTTerm::ScrollLineDown() {
@@ -193,7 +159,7 @@ int QTTerm::GetHeight() {
 void QTTerm::InstallEventTimers() {
   m_timer_refresh = new QTimer;
   QObject::connect(m_timer_refresh, SIGNAL(timeout()), this, SLOT(refresh()));
-  m_timer_refresh->start(30,false);
+  m_timer_refresh->start(30);
   m_timer_blink = new QTimer;
   QObject::connect(m_timer_blink, SIGNAL(timeout()), this, SLOT(blink()));
   m_timer_blink->start(1000);
@@ -201,100 +167,132 @@ void QTTerm::InstallEventTimers() {
 
 
 void QTTerm::resizeEvent(QResizeEvent *e) {
-  surface = QPixmap(width(),height());
-  QPainter *paint = new QPainter(&surface);
-  paint->fillRect(0,0,width(),height(),QBrush(Qt::white));
-  delete paint;
   QWidget::resizeEvent(e);
   OnResize();
   adjustScrollbarPosition();
 }
 
 
-void QTTerm::paintEvent(QPaintEvent *e) {
-  // QWidget::paintEvent(e);
-#ifndef QT3
-  Q3MemArray<QRect> rects = e->region().rects();
-#else
-  QMemArray<QRect> rects = e->region().rects();
-#endif
-  QPainter painter(this);
-  for ( uint i = 0; i < rects.count(); i++ ) {
-#ifndef QT3
-    painter.drawPixmap(rects[(int) i],surface,rects[(int) i]);
-#else
-    painter.drawPixmap(QPoint(rects[(int) i].left(),rects[(int) i].top()),surface,rects[(int) i]);
-#endif
+// Paint the given rectangle... We do this by erasing it
+void QTTerm::PaintRectangle(QPainter *paint, QRect rect) {
+  paint->setBackground(QBrush(Qt::white));
+  paint->eraseRect(rect);
+  int col_start, col_stop;
+  int row_start, row_stop;
+  col_start = (int)floor(rect.left()/m_char_w);
+  col_stop = (int)ceil(rect.right()/m_char_w);
+  col_stop = qMin(col_stop,m_width-1);
+  row_start = (int)ceil(rect.top()/m_char_h);
+  row_stop = (int)floor(rect.bottom()/m_char_h);
+  row_stop = qMin(row_stop,m_height-1);
+
+
+  // Need to optimize this code to draw faster...
+
+//   QString todraw;
+//   for (int row=row_start;row<=row_stop;row++) {
+//     for (int col=col_start;col<=col_stop;col++) {
+//       tagChar g(m_onscreen[row*m_width+col]);
+//       todraw.append(g.v);
+//     }
+//     todraw.append('\n');
+//   }
+//   QRect txtrect(col_start*m_char_w,row_start*m_char_h,(col_stop-col_start+1)*m_char_w,
+// 		(row_stop-row_start+1)*m_char_h);
+//   paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+    
+  for (int row=row_start;row<=row_stop;row++) {
+    for (int col=col_start;col<col_stop;col++) {
+      tagChar g(m_onscreen[row*m_width+col]);
+      int x = col*m_char_w;
+      int y = row*m_char_h;
+      QString todraw;
+      todraw.append(g.v);
+      QRect txtrect(x,y,m_char_w+1,m_char_h);
+      if (g.noflags()) {
+	paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+      } else if (g.cursor()) {
+	paint->setPen(Qt::white);
+	paint->setBackground(QBrush(Qt::black));
+	paint->eraseRect(txtrect);
+	paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+	paint->setPen(Qt::black);
+	paint->setBackground(QBrush(Qt::white));
+      } else {
+	paint->setPen(Qt::white);
+	paint->setBackground(QBrush(Qt::blue));
+	paint->eraseRect(txtrect);
+	paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+	paint->setPen(Qt::black);
+	paint->setBackground(QBrush(Qt::white));
+      }
+    }
   }
+      //      DrawTagChar(paint,col*m_char_w,row*m_char_h,m_onscreen[row*m_width+col]);
+}
+
+void QTTerm::paintEvent(QPaintEvent *e) {
+  QVector<QRect> rects = e->region().rects();
+  QPainter painter(this);
+  painter.setFont(QWidget::font());
+  painter.setPen(Qt::black);
+  //  painter.setRenderHint(QPainter::TextAntialiasing);
+  //  painter.setRenderHint(QPainter::Antialiasing);
+  painter.setBackground(QBrush(Qt::white));
+  // Loop over the regions in the paint event
+  //  for ( uint i = 0; i < rects.size(); i++ ) 
+  //    PaintRectangle(&painter,rects[i]);
+  PaintRectangle(&painter,e->region().boundingRect());
 }
 
 void QTTerm::BeginDraw() {
-  paint = new QPainter(&surface);
-  paint->setFont(QWidget::font());
-  paint->setPen(Qt::black);
-  paint->setRenderHint(QPainter::TextAntialiasing);
-  paint->setRenderHint(QPainter::Antialiasing);
-#ifndef QT3
-  paint->setBackground(QBrush(Qt::white));
-#endif
-  paint->setBackgroundMode(Qt::OpaqueMode);
+//   paint = new QPainter(&surface);
+//   paint->setFont(QWidget::font());
+//   paint->setPen(Qt::black);
+//   paint->setRenderHint(QPainter::TextAntialiasing);
+//   paint->setRenderHint(QPainter::Antialiasing);
+//   paint->setBackground(QBrush(Qt::white));
 }
 
 void QTTerm::EndDraw() {
-  delete paint;
+//   delete paint;
 }
 
-void QTTerm::PutTagChar(int x, int y, tagChar g) {
-  char buffer[1000];
+void QTTerm::DrawTagChar(QPainter *paint, int x, int y, tagChar g) {
   QString todraw;
   todraw.append(g.v);
   QRect txtrect(x,y,m_char_w+1,m_char_h);
-  update(txtrect);
   if (g.noflags()) {
     paint->eraseRect(txtrect);
     paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
   } else if (g.cursor()) {
     paint->setPen(Qt::white);
-#ifdef QT3
-    paint->setBackgroundColor(Qt::black);
-#else
     paint->setBackground(QBrush(Qt::black));
-#endif
     paint->eraseRect(txtrect);
     paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
     paint->setPen(Qt::black);
-#ifdef QT3
-    paint->setBackgroundColor(Qt::white);
-#else
     paint->setBackground(QBrush(Qt::white));
-#endif
   } else {
     paint->setPen(Qt::white);
-#ifdef QT3
-    paint->setBackgroundColor(Qt::blue);
-#else
     paint->setBackground(QBrush(Qt::blue));
-#endif
     paint->eraseRect(txtrect);
     paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
     paint->setPen(Qt::black);
-#ifdef QT3
-    paint->setBackgroundColor(Qt::white);
-#else
     paint->setBackground(QBrush(Qt::white));
-#endif
   }
 }
 
+// Just marks the area as needing a repaint
+void QTTerm::PutTagChar(int x, int y, tagChar g) {
+  QRect txtrect(x,y,m_char_w+1,m_char_h);
+  update(txtrect);
+}
+
 #ifndef __APPLE__
-#define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::ControlButton))
+#define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() & Qt::ControlModifier))
 #else
-#define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::MetaButton))
+#define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() & Qt::MetaModifier))
 #endif
-//#ifdef QT3
-//#else
-//#define CTRLKEY(x)  else if ((keycode == x) && (e->state() & Qt::ControlModifier))
-//#endif
 
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   int keycode = e->key(); 
@@ -332,11 +330,7 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
   else if (keycode == Qt::Key_Backspace)
     ProcessChar(KM_BACKSPACE);
   else {
-#ifdef QT3
-    const char *p(e->text().ascii());
-#else
     QByteArray p(e->text().toAscii());
-#endif
     char key;
     if (!e->text().isEmpty())
       key = p[0];
@@ -378,11 +372,7 @@ void QTTerm::mousePressEvent( QMouseEvent *e ) {
 }
 
 void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
-#ifndef QT3
   if (e->buttons())
-#else
-    if (e->state() & (LeftButton | RightButton | MidButton))
-#endif
     OnMouseDrag(e->x(),e->y());
 }
 
@@ -400,9 +390,13 @@ void QTTerm::mouseReleaseEvent( QMouseEvent *e ) {
 void QTTerm::focusOutEvent(QFocusEvent *e) {
   QWidget::focusOutEvent(e);
   DisableBlink();
+  m_timer_blink->stop();
+  m_timer_refresh->setInterval(1000);
 }
 
 void QTTerm::focusInEvent(QFocusEvent *e) {
   QWidget::focusInEvent(e);
   EnableBlink();
+  m_timer_blink->start(1000);
+  m_timer_refresh->setInterval(30);
 }

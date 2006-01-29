@@ -24,6 +24,7 @@
 #include "PathSearch.hpp"
 #include "IEEEFP.hpp"
 #include "Sparse.hpp"
+#include "helpwidget.hpp"
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
@@ -34,6 +35,7 @@
 #include <unistd.h>
 #endif
 #include <qapplication.h>
+#include <QDir>
 #ifdef WIN32
 #include <direct.h>
 #define getcwd _getcwd
@@ -41,14 +43,6 @@
 #define P_DELIM ";"
 #else
 #define P_DELIM ":"
-#endif
-
-#ifdef QT3
-#include <qassistantclient.h>
-#include <qmessagebox.h>
-#else
-#include <QTAssistant/qassistantclient.h>
-#include <QMessageBox>
 #endif
 
 namespace FreeMat {
@@ -142,11 +136,11 @@ namespace FreeMat {
   //  helpwin
   //@]
   //!
-  ArrayVector HelpWinFunction(int natgout, const ArrayVector& arg) {
-    QMessageBox::information(NULL,"Hello","Starting help 3",QMessageBox::Ok);
-    //    QAssistantClient *client = new QAssistantClient("assistant");
-    QAssistantClient *client = new QAssistantClient("c:/qt/4.0.0/bin/assistant");
-    client->showPage("c:/sandbox/html/index.html");
+  ArrayVector HelpWinFunction(int natgout, const ArrayVector& arg, WalkTree* eval) {
+    Interface *io = eval->getInterface();
+    QDir dir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
+    HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
+    m_helpwin->show();
     return ArrayVector();
   }
 

@@ -2,9 +2,9 @@ TEMPLATE = lib
 
 TARGET = Core
 
-CONFIG += staticlib
+CONFIG += staticlib warn_off
 
-INCLUDEPATH = ../libFreeMat ../libXP ../..
+INCLUDEPATH = ../libFreeMat ../libXP ../../extern/fftw-3.0.1/api
 
 DEPENDPATH += INCLUDEPATH
 
@@ -31,10 +31,4 @@ Random.cpp \
 LoadCore.cpp \
 MPIWrap.cpp \
 RanLib.cpp 
-
-win32 {
-QT += qt3support
-}
-
-CONFIG += assistant
 

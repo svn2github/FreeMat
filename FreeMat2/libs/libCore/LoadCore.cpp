@@ -176,7 +176,7 @@ namespace FreeMat {
      context->addFunction("clock",ClockFunction,0,1);
      context->addFunction("clocktotime",ClockToTimeFunction,1,1,"x");
      context->addSpecialFunction("help",HelpFunction,1,0,"function");
-     context->addFunction("helpwin",HelpWinFunction,0,0);
+     context->addSpecialFunction("helpwin",HelpWinFunction,0,0);
      context->addSpecialFunction("pcode",PCodeFunction,-1,0);
      context->addSpecialFunction("getline",GetLineFunction,1,1,"prompt");
      context->addSpecialFunction("sparse",SparseFunction,-1,1,"x");

@@ -6,9 +6,13 @@ TEMPLATE = app
 
 TARGET = helpgen
 
-INCLUDEPATH += . ../../libs/libFreeMat ../../libs/libCore ../../libs/libFN ../../libs/libGraphics ../../libs/libXP ../../extern/ffcall-1.10/avcall ../../extern/UMFPACK/Include ../../extern/AMD/Include extern/fftw-3.0.1/api
+INCLUDEPATH += . ../../libs/libFreeMat ../../libs/libCore ../../libs/libFN ../../libs/libGraphics ../../libs/libXP ../../extern/ffcall-1.10/avcall ../../extern/UMFPACK/Include ../../extern/AMD/Include ../../extern/fftw-3.0.1/api
 
-LIBS +=  ../../extern/fftw-3.0.1/libfftfw.a ../../extern/fftw-3.0.1/libfftw.a ../../extern/ffcall-1.10/avcall/.libs/libavcall.a ../../extern/UMFPACK/Lib/libumfpack.a ../../extern/AMD/Lib/libamd.a ../../extern/ARPACK/libarpack.a ../../extern/LAPACK/liblapack.a ../../extern/blas/blas.lib -lg2c
+LIBS +=  ../../extern/fftw-3.0.1/libfftfw.a ../../extern/fftw-3.0.1/libfftw.a ../../extern/ffcall-1.10/avcall/.libs/libavcall.a ../../extern/UMFPACK/Lib/libumfpack.a ../../extern/AMD/Lib/libamd.a ../../extern/ARPACK/libarpack.a ../../extern/LAPACK/liblapack.a ../../extern/blas/reference/libblas.a -lg2c
+
+win32 {
+LIBS += -lws2_32
+}
 
 DEPENDPATH += . INCLUDEPATH
 
@@ -188,3 +192,6 @@ SOURCES += helpgen.cpp
 HEADERS += helpgen.hpp
 
 QT += opengl
+CONFIG += warn_off
+DEFINES -= UNICODE
+

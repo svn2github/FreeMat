@@ -1,5 +1,5 @@
-#ifndef __fmhelpapp_hpp__
-#define __fmhelpapp_hpp__
+#ifndef __helpgen_hpp__
+#define __helpgen_hpp__
 
 #include <QWidget>
 

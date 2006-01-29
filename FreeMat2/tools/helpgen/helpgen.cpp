@@ -15,13 +15,14 @@
 #include "File.hpp"
 #include "Context.hpp"
 #include "HelpWidget.hpp"
-#include "fmhelpapp.hpp"
+#include "helpgen.hpp"
 #include <QtGui>
 
 QTextEdit *m_text;
 
 QString output;
 QStringList input;
+QStringList generatedFileList;
 QMap<QString, QString> section_descriptors;
 int moduledepth = 0;
 
@@ -78,6 +79,7 @@ WalkTree* GetInterpreter() {
   LoadHandleGraphicsFunctions(context);  
   m_term->setContext(context);
   m_term->setPath("../../MFiles");
+  m_term->setAppPath(qApp->applicationDirPath().toStdString());
   WalkTree *twalk = new WalkTree(context,m_term);
   return twalk;
 }
@@ -350,7 +352,7 @@ void HTMLWriter::GenerateEquations() {
     Halt("LaTeX for " + modulename + "_eqn.tex never returned");
   QProcess dvipng;
   dvipng.setWorkingDirectory("tmp");
-  dvipng.start("dvipng",QStringList() << "-T tight" << (modulename + "_eqn.dvi"));
+  dvipng.start("dvipng",QStringList() << "-T tight" << ("../html/" + modulename + "_eqn.dvi"));
   if (!dvipng.waitForFinished())
     Halt("dvipng for " + modulename + "_eqn.dvi never returned");
 }
@@ -883,7 +885,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 	  QString moddesc(MustMatch(moduledesc_pattern,line));
 	  line = fstr.readLine(0);
 	  QString secname(MustMatch(sectioname_pattern,line));
-	  qDebug("Module " + modname + " " + moddesc + " " + secname);
+	  //	  qDebug("Module " + modname + " " + moddesc + " " + secname);
 	  secname = secname.toLower();
 	  out->BeginModule(modname,moddesc,secname);
 	  line = fstr.readLine(0);
@@ -952,6 +954,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		*t << fn;
 		delete t;
 		delete myfile;
+		generatedFileList << fname;
 		out->DoFile(fname,fn);
 		line = fstr.readLine(0);
 		if (fstr.atEnd())
@@ -1032,7 +1035,6 @@ void MergeFile(QFileInfo fileinfo) {
   QString newname(fileinfo.absoluteFilePath());
   int p = newname.indexOf("mfiles",0,Qt::CaseInsensitive);
   newname = newname.remove(0,p);
-  newname = "text/" + newname;
   // Create the directory structure if necessary
   QFileInfo fi(newname);
   QDir dir;
@@ -1100,6 +1102,11 @@ void ReadSectionDescriptors() {
 }
 
 void ConsoleWidget::Run() {
+  QDir dir;
+  dir.mkpath("html");
+  dir.mkpath("tmp");
+  dir.mkpath("latex");
+  dir.mkpath("text");
   ReadSectionDescriptors();
   LatexWriter texout;
   HTMLWriter htmlout;
@@ -1113,6 +1120,19 @@ void ConsoleWidget::Run() {
   ProcessDir(QDir("../../libs"),&out,true); 
   MergeMFiles(QDir("../../MFiles"));
   out.WriteIndex();
+  std::string version(WalkTree::getVersionString());
+  QString verstring(QString::fromStdString(version));
+  int ndx = verstring.indexOf("v");
+  verstring.remove(0,ndx+1);
+  QFile file("version.txt");
+  if (!file.open(QFile::WriteOnly))
+    Halt("Unable to open version.txt for output");
+  QTextStream f(&file);
+  f << verstring << "\n";
+  for (int i=0;i<generatedFileList.size();i++) {
+    QFile tmp(generatedFileList[i]);
+    tmp.remove();
+  }
   TermOutputText("\n\nDone!\n");
 }
 

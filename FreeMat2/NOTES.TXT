@@ -1,7 +1,102 @@
+Installer:
+  Win   - nsis script
+  Mac   - essentially done
+  Linux - ??
+
+
+Before release:
+
+  Installer & packaging
+  Missing quads?
+  Source release
+  Icon
+  setpath
+  GPL
+
+
+  100% CPU problem on Win32
+
+FreeMat will be distributed as a bundle.  A bundle contains the following directory structure:
+
+freemat
+   \
+    bin
+    libs
+    help
+    mfiles
+
+On Mac OS X, the bundle structure is
+freemat
+   \
+    Contents
+    \
+    Frameworks
+    MacOS
+    Resources
+    PlugIns
+
+We can use a common structure via:
+
+freemat
+  \
+  Contents
+   \
+   bin
+   lib
+   Resources
+    \
+     mfiles
+     help
+       \
+        html
+        pdf
+	text
+   PlugIns
+
+This means that on any platform, the path to system-included mfiles is
+appDir+"../Resources/mfiles"
+and that the path to system-included help is
+appDir+"../Resources/help"
+
+I like it.
+
+extern dependencies:
+  ffcall
+  lapack
+  atlas
+  mkl
+  
+
+
+With Help - 
+  Icons
+
+packaging
+handle documentation
+
+1. Printing
+2. SVD
+3. Off-by-one errors in axis drawing
+4. Ditto in bitmap painting.
+5. Need axis command
+sca
+colorbar
+integer limits  
+Legend
+handleobjects deletion
+zoom
+.m file help
+
+
+=======
+1.  Finish properties for surface plots - markers & texture mapping?
+=======
 ACTIVE
 
 IDEAS - auto tick calculation --> paint code
+wierdness with plots drawing
 
+>>>>>>> 1.13
 4.  Rewrite legend function to use multiple axes
 6.  Fix axis limits so that objects aren't truncated...
 7.  view - command doesn't work right (also, camera target mode/etc.)
@@ -33,6 +128,7 @@ CLOSED
 28. Spacing aroung figure
 
 
+>>>>>>> 1.12
 A few notes on what needs to still be fixed:
 
 Replace XERBLA

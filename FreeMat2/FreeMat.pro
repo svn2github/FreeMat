@@ -8,19 +8,50 @@ DEFINES -= UNICODE
 
 TARGET = FreeMat
 
+PRE_TARGETDEPS += extern/fftw-3.0.1/.libs/libfftw3.a extern/fftw-3.0.1/.libs/libfftw3f.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/AMD/Lib/libamd.a extern/UMFPACK/Lib/libumfpack.a  extern/ARPACK/libarpack.a
+
+#fftw_float avcall amd umfpack arpack lapack atlas
+
+fftw_double.target = extern/fftw-3.0.1/.libs/libfftw3.a
+fftw_double.commands = cd extern && tar xfz fftw-3.0.1.tar.gz && cd fftw-3.0.1 && configure && make
+
+fftw_single.target = extern/fftw-3.0.1/.libs/libfftw3f.a
+fftw_single.commands = cd extern/fftw-3.0.1 && configure --enable-single && make
+
+avcall.target = extern/ffcall-1.10/avcall/.libs/libavcall.a
+avcall.commands = cd extern && tar xfz ffcall-1.10_freemat_patch.tar.gz && cd ffcall-1.10 && configure && make
+
+amd.target = extern/AMD/Lib/libamd.a
+amd.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz &&  cd AMD && make
+
+umfpack.target = extern/UMFPACK/Lib/libumfpack.a
+umfpack.commands = cd extern && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK && make
+
+arpack.target = extern/ARPACK/libarpack.a
+arpack.commands = cd extern && tar xfz arpack96_freemat_patch.tar.gz && cd ARPACK && make
+
+lapack.target = extern/LAPACK/liblapack.a
+lapack.commands = cd extern && tar xfz lapak-3.0_freemat_patch.tgz && cd LAPACK/SRC && make -f Makefile_freemat
+
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack atlas
+
+#POST_TARGETDEPS += HELPGEN DISTTOOL
+
 INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP extern/ffcall-1.10/avcall extern/UMFPACK/Include extern/AMD/Include extern/fftw-3.0.1/api
 
+LIBS += extern/fftw-3.0.1/.libs/libfftw3f.a extern/fftw-3.0.1/.libs/libfftw3.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/ARPACK/libarpack.a
 
 macx {
-LIBS +=  extern/fftw-3.0.1/.libs/libfftw3f.a extern/fftw-3.0.1/.libs/libfftw3.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/ARPACK/libarpack.a -framework vecLib -L/sw/lib -lg2c
+LIBS += -framework vecLib -L/sw/lib -lg2c
 }
 
-!macx {
-LIBS +=  extern/fftw-3.0.1/libfftfw.a extern/fftw-3.0.1/libfftw.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/ARPACK/libarpack.a extern/LAPACK/liblapack.a extern/blas/atlas_prebuilt_win32/libf77blas.a extern/blas/atlas_prebuilt_win32/libatlas.a -lg2c
+!macx:unix {
+#LIBS +=  extern/LAPACK/liblapack.a -lblas -lg2c -lcurses
+LIBS +=  extern/LAPACK/liblapack.a libmkl_p4.so libguide.so -lg2c -lcurses
 }
 
 win32 {
-LIBS += -lws2_32
+LIBS +=  extern/blas/atlas_prebuilt_win32/libf77blas.a extern/blas/atlas_prebuilt_win32/libatlas.a -lws2_32 -lg2c
 }
 
 DEPENDPATH += INCLUDEPATH
@@ -205,18 +236,27 @@ cbundle.files = release/FreeMat.exe
 
 INSTALLS += cbundle
 
+!mac:unix {
+  HEADERS += src/Terminal.hpp src/DumbTerminal.hpp
+  SOURCES += src/Terminal.cpp src/DumbTerminal.cpp
+}
+
 F77 = g77
 
-ff77.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}.o
-ff77.commands = $$F77 -c ${QMAKE_FILE_NAME} -o ${OBJECTS_DIR}${QMAKE_FILE_OUT}
+ff77.output = ${QMAKE_FILE_BASE}.o
+ff77.commands = $$F77 -c ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
 ff77.input = F77_SOURCES
 QMAKE_EXTRA_COMPILERS += ff77
+
 
 win32 {
 RC_FILE = src/freemat.rc
 }
 
+!win32 {
+OBJECTS_DIR = build
+}
+
 mac {
 RC_FILE = src/appIcon.icns
-OBJECTS_DIR = build
 }

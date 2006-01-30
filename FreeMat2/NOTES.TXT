@@ -1,6 +1,6 @@
 Installer:
-  Win   - nsis script
-  Mac   - essentially done
+  Win   - nsis script done & works
+  Mac   - essentially done & works
   Linux - ??
 
 
@@ -9,10 +9,11 @@ Before release:
   Installer & packaging
   Missing quads?
   Source release
-  Icon
+  Icons
   setpath
-  GPL
+  GPL 
 
+  framework...
 
   100% CPU problem on Win32
 

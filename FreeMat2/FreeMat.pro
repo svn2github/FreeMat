@@ -10,7 +10,14 @@ TARGET = FreeMat
 
 INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP extern/ffcall-1.10/avcall extern/UMFPACK/Include extern/AMD/Include extern/fftw-3.0.1/api
 
+
+macx {
+LIBS +=  extern/fftw-3.0.1/.libs/libfftw3f.a extern/fftw-3.0.1/.libs/libfftw3.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/ARPACK/libarpack.a -framework vecLib -L/sw/lib -lg2c
+}
+
+!macx {
 LIBS +=  extern/fftw-3.0.1/libfftfw.a extern/fftw-3.0.1/libfftw.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/ARPACK/libarpack.a extern/LAPACK/liblapack.a extern/blas/atlas_prebuilt_win32/libf77blas.a extern/blas/atlas_prebuilt_win32/libatlas.a -lg2c
+}
 
 win32 {
 LIBS += -lws2_32
@@ -145,8 +152,9 @@ libs/libCore/helpwidget.cpp
 SOURCES += libs/libFN/OptFun.cpp \
 libs/libFN/LoadFN.cpp \
 libs/libFN/Interp1D.cpp  \
-libs/libFN/FNFun.cpp \
-libs/libFN/lmdif1.f \ 
+libs/libFN/FNFun.cpp 
+
+F77_SOURCES = libs/libFN/lmdif1.f \ 
 libs/libFN/lmdif.f \  
 libs/libFN/lmpar.f \  
 libs/libFN/qrfac.f \
@@ -197,6 +205,18 @@ cbundle.files = release/FreeMat.exe
 
 INSTALLS += cbundle
 
+F77 = g77
+
+ff77.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}.o
+ff77.commands = $$F77 -c ${QMAKE_FILE_NAME} -o ${OBJECTS_DIR}${QMAKE_FILE_OUT}
+ff77.input = F77_SOURCES
+QMAKE_EXTRA_COMPILERS += ff77
+
 win32 {
 RC_FILE = src/freemat.rc
+}
+
+mac {
+RC_FILE = src/appIcon.icns
+OBJECTS_DIR = build
 }

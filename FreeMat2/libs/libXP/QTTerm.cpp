@@ -101,14 +101,8 @@ char* QTTerm::getTextSurface(int &count, int &width) {
 
 void QTTerm::adjustScrollbarPosition() {
   m_scrollbar->hide();
-#ifdef __APPLE__
-  m_scrollbar->resize(QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent),
-		      contentsRect().height() - 
-		      QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent));
-#else
   m_scrollbar->resize(QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent),
 		      contentsRect().height());
-#endif
   m_active_width = width() - 2 - m_scrollbar->width();
   m_scrollbar->move(QPoint(width()-m_scrollbar->width(),0));
   m_scrollbar->show();

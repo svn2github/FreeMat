@@ -23,7 +23,9 @@ void MakeDir(QString dir) {
 }
 
 void CopyFile(QString src, QString dest) {
-  TermOutputText("Copying " + src + " to " + dest + "\n");
+  QFileInfo fi(dest);
+  QDir dir;
+  dir.mkpath(fi.absolutePath());
   QFile::copy(src,dest);
 }
 
@@ -87,6 +89,74 @@ QStringList GetFileList(QString src,QStringList lst) {
     }
   }
   return lst;
+}
+
+void Execute(QString fname, QStringList args) {
+  QProcess exec;
+  exec.start(fname,args);
+  if (!exec.waitForFinished(60000))
+    Halt(fname + " did not finish");
+}
+
+void Relink(QString frame, QString file) {
+  QString qtdir(getenv("QTDIR"));
+  Execute("install_name_tool",QStringList() << "-change" << qtdir+"/lib/"+frame+".framework/Versions/4.0/"+frame << "@executable_path/../Frameworks/"+frame+".framework/Versions/4.0/"+frame << file);
+}
+
+void InstallFramework(QString frame) {
+  QString qtdir(getenv("QTDIR"));
+  TermOutputText("Installing Framework: "+frame+"\n");
+  Execute("cp",QStringList() << "-R" << qtdir+"/lib/"+frame+".framework" << "../../FreeMat.app/Contents/Frameworks/"+frame+".framework");
+  //  CopyDirectory(qtdir+"/lib/"+frame+".framework","../../FreeMat.app/Contents/Frameworks/"+frame+".framework");
+  Execute("install_name_tool",QStringList() << "-id" << "@executable_path/../Frameworks/"+frame+".framework/Versions/4.0/"+frame << "../../FreeMat.app/Contents/Frameworks/"+frame+".framework/Versions/4.0/"+frame);
+  Relink(frame,"../../FreeMat.app/Contents/MacOs/FreeMat");
+}
+
+void CrossLinkFramework(QString dframe, QString lframe) {
+  QString qtdir(getenv("QTDIR"));
+  TermOutputText("Crosslink Frameworks: " + dframe + " and " + lframe + "\n");
+  Relink(lframe,"../../FreeMat.app/Contents/Frameworks/"+dframe+".framework/Versions/4.0/"+dframe);
+}
+
+void RelinkPlugin(QString plugin, QString frame) {
+  TermOutputText("Relinking plugin: " + plugin + " to framework " + frame + "\n");
+  Relink(frame,plugin);
+}
+
+void RelinkPlugins() {
+  QDir dir("../../FreeMat.app/Contents/Plugins/imageformats");
+  dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo(list[i]);
+    RelinkPlugin(fileInfo.absoluteFilePath(),"QtGui");
+    RelinkPlugin(fileInfo.absoluteFilePath(),"QtCore");
+    RelinkPlugin(fileInfo.absoluteFilePath(),"QtOpenGL");
+  }
+}
+
+void ConsoleWidget::MacBundle() {
+  QString qtdir(getenv("QTDIR"));
+  MakeDir("../../FreeMat.app/Contents/Frameworks");
+  InstallFramework("QtGui");
+  InstallFramework("QtCore");
+  InstallFramework("QtOpenGL");
+  CrossLinkFramework("QtGui","QtCore");
+  CrossLinkFramework("QtOpenGL","QtGui");
+  CrossLinkFramework("QtOpenGL","QtCore");
+  CopyDirectory("../helpgen/html","../../FreeMat.app/Contents/Resources/help/html");
+  CopyDirectory("../helpgen/text","../../FreeMat.app/Contents/Resources/help/text");
+  CopyDirectory("../helpgen/MFiles","../../FreeMat.app/Contents/Resources/mfiles");
+  CopyDirectory(qtdir+"/plugins/imageformats","../../FreeMat.app/Contents/Plugins/imageformats");
+  RelinkPlugins();
+  TermOutputText("\nBuilding .dmg file...\n");
+  QFile vfile("../helpgen/version.txt");
+  if (!vfile.open(QFile::ReadOnly))
+    Halt("Unable to open ../helpgen/version.txt for input\n");
+  QTextStream g(&vfile);
+  QString versionnum(g.readLine(0));
+  Execute("hdiutil",QStringList() << "create" << "-fs" << "HFS+" << "-srcfolder" << "../../FreeMat.app" << "../../FreeMat_" + versionnum + ".dmg");
+  TermOutputText("\n\nDone\n");
 }
 
 void ConsoleWidget::WinBundle() {
@@ -156,9 +226,6 @@ void ConsoleWidget::WinBundle() {
 }
 
 void ConsoleWidget::LinuxBundle() {
-}
-
-void ConsoleWidget::MacBundle() {
 }
 
 void ConsoleWidget::exitNow() {

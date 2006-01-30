@@ -1,3 +1,5 @@
+#include <QDir>
+#include <QDebug>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,11 +75,17 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
 }
 
 int main(int argc, char *argv[]) {
-#ifdef QT3
-  QApplication app(argc, argv, TRUE);
-#else
   QApplication app(argc, argv);
-#endif
+  foreach (QString path, app.libraryPaths())
+    qDebug() << "Current path set to : " << path << "\n";
+  QDir dir(QApplication::applicationDirPath());
+  dir.cdUp();
+  dir.cd("Plugins");
+  QString dummy(dir.absolutePath());
+  qDebug() << "Plugin path set to : " << dummy << "\n";
+  QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+
+
   int nogui = parseFlagArg(argc,argv,"-nogui",false);
   int scriptMode = parseFlagArg(argc,argv,"-e",false); 
 

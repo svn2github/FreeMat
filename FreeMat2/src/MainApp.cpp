@@ -1,5 +1,6 @@
 #include <qapplication.h>
 #include <QDir>
+#include <QDebug>
 #include "MainApp.hpp"
 using namespace FreeMat;
 
@@ -39,6 +40,10 @@ int MainApp::Run() {
   LoadFNFunctions(context);
   LoadHandleGraphicsFunctions(context);  
   m_term->setContext(context);
+
+  //   QDir dirp(qApp->applicationDirPath() + "/../Plugins");
+  //   QString path0(dirp.canonicalPath());
+  //   qApp->addLibraryPath(path0);
   QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
   QString path1(dir1.canonicalPath());
   QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");

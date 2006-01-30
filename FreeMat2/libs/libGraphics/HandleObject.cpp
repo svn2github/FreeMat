@@ -232,7 +232,7 @@ namespace FreeMat {
     double min = 0;
     bool first = true;
     for (int i=0;i<v.size();i++) {
-      if (!IsNaN(v[i]))
+      if (IsFinite(v[i]))
 	if (first) {
 	  first = false;
 	  min = v[i];
@@ -247,7 +247,7 @@ namespace FreeMat {
     double max = 0;
     bool first = true;
     for (int i=0;i<v.size();i++) {
-      if (!IsNaN(v[i]))
+      if (IsFinite(v[i]))
 	if (first) {
 	  first = false;
 	  max = v[i];
@@ -266,7 +266,7 @@ namespace FreeMat {
     double min = 0;
     bool first = true;
     for (int i=0;i<len;i++) {
-      if (!IsNaN(v[i]))
+      if (IsFinite(v[i]))
 	if (first) {
 	  first = false;
 	  min = v[i];
@@ -285,7 +285,7 @@ namespace FreeMat {
     double max = 0;
     bool first = true;
     for (int i=0;i<len;i++) {
-      if (!IsNaN(v[i]))
+      if (IsFinite(v[i]))
 	if (first) {
 	  first = false;
 	  max = v[i];

@@ -2,6 +2,7 @@
 #include "HandleList.hpp"
 #include "HandleObject.hpp"
 #include "HandleAxis.hpp"
+#include "IEEEFP.hpp"
 
 namespace FreeMat {
 
@@ -76,7 +77,19 @@ namespace FreeMat {
     if (!lc->IsNone()) {
       gc.color(lc->Data());
       gc.setLineStyle(StringPropertyLookup("linestyle"));
-      gc.lineSeries(mxs,mys,mzs);
+      // Partition it into segments of finite entries..
+      int n = 0;
+      while (n < mxs.size()) {
+	std::vector<double> local_mxs, local_mys, local_mzs;
+	while ((n < mxs.size()) && IsFinite(mxs[n]) && IsFinite(mys[n]) && (IsFinite(mzs[n]))) {
+	  local_mxs.push_back(mxs[n]);
+	  local_mys.push_back(mys[n]);
+	  local_mzs.push_back(mzs[n]);
+	  n++;
+	}
+	gc.lineSeries(local_mxs,local_mys,local_mzs);
+	while ((n < mxs.size()) && !(IsFinite(mxs[n]) && IsFinite(mys[n]) && (IsFinite(mzs[n])))) n++;
+      }
     }
     // Draw the symbols
     HPColor *ec = (HPColor*) LookupProperty("markeredgecolor");

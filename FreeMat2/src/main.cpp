@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
   }
   m_app.SetTerminal(term);
   QTimer::singleShot(0,&m_app,SLOT(Run()));
-  if (m_win != NULL);
-  QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
+  if (m_win != NULL)
+    QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
   return app.exec();
 }

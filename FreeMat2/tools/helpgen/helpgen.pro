@@ -8,13 +8,22 @@ TARGET = helpgen
 
 INCLUDEPATH += . ../../libs/libFreeMat ../../libs/libCore ../../libs/libFN ../../libs/libGraphics ../../libs/libXP ../../extern/ffcall-1.10/avcall ../../extern/UMFPACK/Include ../../extern/AMD/Include ../../extern/fftw-3.0.1/api
 
-LIBS +=  ../../extern/fftw-3.0.1/libfftfw.a ../../extern/fftw-3.0.1/libfftw.a ../../extern/ffcall-1.10/avcall/.libs/libavcall.a ../../extern/UMFPACK/Lib/libumfpack.a ../../extern/AMD/Lib/libamd.a ../../extern/ARPACK/libarpack.a ../../extern/LAPACK/liblapack.a ../../extern/blas/reference/libblas.a -lg2c
+macx {
+LIBS +=  ../../extern/fftw-3.0.1/.libs/libfftw3f.a ../../extern/fftw-3.0.1/.libs/libfftw3.a ../../extern/ffcall-1.10/avcall/.libs/libavcall.a ../../extern/UMFPACK/Lib/libumfpack.a ../../extern/AMD/Lib/libamd.a ../../extern/ARPACK/libarpack.a -framework vecLib -L/sw/lib -lg2c
+}
+
+!macx {
+LIBS +=  ../../extern/fftw-3.0.1/libfftfw.a ../../extern/fftw-3.0.1/libfftw.a ../../extern/ffcall-1.10/avcall/.libs/libavcall.a ../../extern/UMFPACK/Lib/libumfpack.a ../../extern/AMD/Lib/libamd.a ../../extern/ARPACK/libarpack.a ../../extern/LAPACK/liblapack.a ../../extern/blas/atlas_prebuilt_win32/libf77blas.a ../../extern/blas/atlas_prebuilt_win32/libatlas.a -lg2c
+}
+
 
 win32 {
 LIBS += -lws2_32
 }
 
 DEPENDPATH += . INCLUDEPATH
+
+OBJECTS_DIR = ../../build
 
 # Input
 

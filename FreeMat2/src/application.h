@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "GUITerminal.hpp"
+#include <QTextDocument>
+#include <QTextEdit>
 
 class ApplicationWindow : public QMainWindow {
   Q_OBJECT
@@ -34,5 +36,27 @@ private slots:
   void editor();
   void manual();
 }; 
+
+class FMTextEdit : public QTextEdit {
+  Q_OBJECT
+public:
+  FMTextEdit();
+  virtual ~FMTextEdit();
+  void keyPressEvent(QKeyEvent*e);
+signals:
+  void indent();
+};
+
+class FMIndent : public QObject {
+  Q_OBJECT
+  FMTextEdit *m_te;
+public:
+  FMIndent();
+  virtual ~FMIndent();
+  void setDocument(FMTextEdit *te);
+  FMTextEdit *document() const;
+private slots:
+  void update();
+};
 
 #endif

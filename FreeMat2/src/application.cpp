@@ -163,21 +163,66 @@ void ApplicationWindow::font() {
   }
 }
 
+FMTextEdit::FMTextEdit() : QTextEdit() {
+}
 
-class FMIndent {
-  Q_OBJECT
-public:
-  FMIndent();
-  virtual ~FMIndent();
-  void setDocument(QTextDocument *doc);
-  QTextDocument *document() const;
-};
+FMTextEdit::~FMTextEdit() {
+}
 
+void FMTextEdit::keyPressEvent(QKeyEvent*e) {
+  bool tab = false;
+  int keycode = e->key();
+  if (keycode) {
+    QByteArray p(e->text().toAscii());
+    char key;
+    if (!e->text().isEmpty())
+      key = p[0];
+    else
+      key = 0;
+    if (key == 0x09) {
+      tab = true;
+      emit indent();
+    }
+  }
+  if (!tab)
+    QTextEdit::keyPressEvent(e);
+  else
+    e->ignore();
+}
+
+
+FMIndent::FMIndent() {
+}
+
+FMIndent::~FMIndent() {
+}
+
+void FMIndent::setDocument(FMTextEdit *te) {
+  m_te = te;
+}
+
+FMTextEdit* FMIndent::document() const {
+  return m_te;
+}
+
+void FMIndent::update() {
+  QTextCursor cursor(m_te->textCursor());
+  cursor.movePosition(QTextCursor::StartOfLine);
+  cursor.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor);
+  qDebug() << "Indent line: " << cursor.selectedText();
+  cursor.movePosition(QTextCursor::Up);
+  cursor.movePosition(QTextCursor::EndOfLine);
+  cursor.movePosition(QTextCursor::Start,QTextCursor::KeepAnchor);
+  qDebug() << "Prior text: " <<  cursor.selectedText();
+}
 
 void ApplicationWindow::about() {
-  QTextEdit* t = new QTextEdit;
-  t->show();
+  FMIndent *ind = new FMIndent;
+  FMTextEdit* t = new FMTextEdit;
+  connect(t,SIGNAL(indent()),ind,SLOT(update()));
   Highlighter *n = new Highlighter(t->document());
+  ind->setDocument(t);
+  t->show();
 }
 
 void ApplicationWindow::manual() {

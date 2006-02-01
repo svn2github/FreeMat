@@ -47,7 +47,8 @@ LIBS += -framework vecLib -L/sw/lib -lg2c
 
 !macx:unix {
 #LIBS +=  extern/LAPACK/liblapack.a -lblas -lg2c -lcurses
-LIBS +=  extern/LAPACK/liblapack.a libmkl_p4.so libguide.so -lg2c -lcurses
+#LIBS +=  libmkl_p4.so extern/LAPACK/liblapack.a libmkl_p4.so libguide.so extern/LAPACK/liblapack.a -lg2c -lcurses
+LIBS +=  extern/LAPACK/liblapack.a libblas.so -lg2c -lcurses -static-libgcc /usr/lib/gcc/i386-redhat-linux/3.4.3/libstdc++.a
 }
 
 win32 {

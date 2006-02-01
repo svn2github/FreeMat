@@ -1,8 +1,10 @@
+
+
 Installer:
   Win   - nsis script done & works
   Mac   - essentially done & works
-  Linux - ??
-
+  Linux - essentially done & works
+  Source - needs work
 
 Before release:
 
@@ -12,6 +14,13 @@ Before release:
   Icons
   setpath
   GPL 
+  point function?
+  Finish editor
+  Title text
+  xlabels under linux
+  colormap wrapping for images
+  JPG plugins
+  BLAS setup
 
   framework...
 
@@ -67,7 +76,6 @@ extern dependencies:
   atlas
   mkl
   
-
 
 With Help - 
   Icons
@@ -176,6 +184,18 @@ image --> causes a figure resize (even when zoom = -1)
 svd --> causes a seg fault
 
 P N   Desc
+Capital Letters?
+
+
+Graphics issues:
+//copy
+//print
+//resize
+flicker
+//point function
+drag(?)
+//close & new figure numbering
+
 H 21. Online Help
 H 20. Application Icon
 H 25. Port to ATLAS?

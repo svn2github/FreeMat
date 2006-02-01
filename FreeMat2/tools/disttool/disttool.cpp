@@ -23,6 +23,7 @@ void MakeDir(QString dir) {
 }
 
 void CopyFile(QString src, QString dest) {
+  QChar last(src.at(src.size()-1));
   QFileInfo fi(dest);
   QDir dir;
   dir.mkpath(fi.absolutePath());
@@ -30,7 +31,6 @@ void CopyFile(QString src, QString dest) {
 }
 
 void CopyDirectory(QString src, QString dest) {
-  TermOutputText("Copying Directory " + src + " to " + dest + "\n");
   QDir dir(src);
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
@@ -96,6 +96,17 @@ void Execute(QString fname, QStringList args) {
   exec.start(fname,args);
   if (!exec.waitForFinished(60000))
     Halt(fname + " did not finish");
+  TermOutputText(exec.readAllStandardOutput());
+}
+
+QString ExecuteAndCapture(QString fname, QStringList args) {
+  QProcess exec;
+  exec.start(fname,args);
+  if (!exec.waitForFinished(60000))
+    Halt(fname + " did not finish");
+  QByteArray outtxt(exec.readAllStandardOutput());
+  QString outtxt_string(outtxt);
+  return outtxt_string;
 }
 
 void Relink(QString frame, QString file) {
@@ -156,6 +167,73 @@ void ConsoleWidget::MacBundle() {
   QTextStream g(&vfile);
   QString versionnum(g.readLine(0));
   Execute("hdiutil",QStringList() << "create" << "-fs" << "HFS+" << "-srcfolder" << "../../FreeMat.app" << "../../FreeMat_" + versionnum + ".dmg");
+  TermOutputText("\n\nDone\n");
+}
+
+QString stripWhiteSpace(QString a) {
+  QRegExp whitespace(" ");
+  int k;
+  while ((k = a.indexOf(whitespace,0)) != -1)
+    a.remove(k,whitespace.matchedLength());
+  return a;
+}
+
+bool allWhiteSpace(QString a) {
+  a = stripWhiteSpace(a);
+  return (a.isEmpty());
+}
+
+void ConsoleWidget::LinuxBundle() {
+  QFile vfile("../helpgen/version.txt");
+  if (!vfile.open(QFile::ReadOnly))
+    Halt("Unable to open ../helpgen/version.txt for input\n");
+  QTextStream g(&vfile);
+  QString versionnum(g.readLine(0));
+  MakeDir("FreeMat");
+  MakeDir("FreeMat/Contents");
+  MakeDir("FreeMat/Contents/bin");
+  MakeDir("FreeMat/Contents/Resources");
+  MakeDir("FreeMat/Contents/Resources/help");
+  MakeDir("FreeMat/Contents/Resources/help/html");
+  MakeDir("FreeMat/Contents/Resources/help/text");
+  MakeDir("FreeMat/Contents/Resources/mfiles");
+  CopyFile("../../FreeMat","FreeMat/Contents/bin/FreeMatMain");
+  // Copy the required libraries
+  MakeDir("FreeMat/Contents/lib");
+  QString lddOutput(ExecuteAndCapture("ldd",QStringList() << "../../FreeMat"));
+  // Regular Expression to parse output of ldd...
+  QRegExp lddlib("=>\\s*([^(]*)");
+  QRegExp Xlib("X11R6");
+  int k=0;
+  while ((k = lddOutput.indexOf(lddlib,k)) != -1) {
+    QString lib(stripWhiteSpace(lddlib.cap(1)));
+    if (!allWhiteSpace(lib)) {
+      TermOutputText("Lib :" + lib);
+      if ((lib.indexOf("X11R6") == -1) && (lib.indexOf("/tls/") == -1) && 
+	  (lib.indexOf("ncurses") == -1) && (lib.indexOf("libz") == -1) &&
+	  (lib.indexOf("libdl") == -1) && (lib.indexOf("libGL") == -1)) {
+ 	QFileInfo file(lib);
+	CopyFile(lib,"FreeMat/Contents/lib/"+file.fileName());
+// 	Execute("/bin/cp",QStringList() << "-v" << "-R" << lib << file.fileName());
+	TermOutputText(" <copy> to FreeMat/Contents/lib/" + file.fileName() + "\n");
+      } else
+	TermOutputText(" <skip>\n");
+    }
+    k += lddlib.matchedLength();
+  }
+  // Write out the run script
+  QFile script("FreeMat/Contents/bin/FreeMat");
+  if (!script.open(QFile::WriteOnly))
+    Halt("Unable to open FreeMat/Contents/bin/FreeMat for output\n");
+  QTextStream h(&script);
+  h << "#!/bin/bash\n";
+  h << "mypath=`which $0`\n";
+  h << "mypath=${mypath%/*}\n";
+  h << "declare -x LD_LIBRARY_PATH=$mypath/../lib\n";
+  h << "$mypath/FreeMatMain $*\n";
+  CopyDirectory("../helpgen/html","FreeMat/Contents/Resources/help/html");
+  CopyDirectory("../helpgen/text","FreeMat/Contents/Resources/help/text");
+  CopyDirectory("../helpgen/MFiles","FreeMat/Contents/Resources/mfiles");
   TermOutputText("\n\nDone\n");
 }
 
@@ -223,9 +301,6 @@ void ConsoleWidget::WinBundle() {
   delete file_in;
   delete file_out;
   TermOutputText("\n\nDone\n");
-}
-
-void ConsoleWidget::LinuxBundle() {
 }
 
 void ConsoleWidget::exitNow() {

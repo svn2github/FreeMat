@@ -14,7 +14,6 @@
 #include "HandleCommands.hpp"
 #include "File.hpp"
 #include "Context.hpp"
-#include "HelpWidget.hpp"
 #include "helpgen.hpp"
 #include <QtGui>
 
@@ -30,7 +29,7 @@ void TermOutputText(QString str) {
   //  m_text->textCursor().movePosition(QTextCursor::End);
   m_text->insertPlainText(str);
   m_text->ensureCursorVisible();
-  //  qDebug() << str;
+  qDebug() << str;
   qApp->processEvents();
 }
 
@@ -351,8 +350,8 @@ void HTMLWriter::GenerateEquations() {
   if (!latex.waitForFinished())
     Halt("LaTeX for " + modulename + "_eqn.tex never returned");
   QProcess dvipng;
-  dvipng.setWorkingDirectory("tmp");
-  dvipng.start("dvipng",QStringList() << "-T tight" << ("../html/" + modulename + "_eqn.dvi"));
+  dvipng.setWorkingDirectory("html");
+  dvipng.start("dvipng",QStringList() << "-T tight" << "../tmp/" + modulename + "_eqn.dvi");
   if (!dvipng.waitForFinished())
     Halt("dvipng for " + modulename + "_eqn.dvi never returned");
 }
@@ -756,8 +755,6 @@ void ConsoleWidget::exitNow() {
 }
 
 void ConsoleWidget::LaunchHelpWindow() {
-  HelpWindow *m_helpwin = new HelpWindow("/sandbox/freemat2/help/fmhelpapp/html");
-  m_helpwin->show();
 }
 
 
@@ -1115,9 +1112,9 @@ void ConsoleWidget::Run() {
   out.RegisterWriter(&texout);
   out.RegisterWriter(&htmlout);
   out.RegisterWriter(&txtout);
+  ProcessDir(QDir("../../libs"),&out,true); 
   ProcessDir(QDir("."),&out,false); 
   ProcessDir(QDir("../../MFiles"),&out,true); 
-  ProcessDir(QDir("../../libs"),&out,true); 
   MergeMFiles(QDir("../../MFiles"));
   out.WriteIndex();
   std::string version(WalkTree::getVersionString());

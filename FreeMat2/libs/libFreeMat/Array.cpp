@@ -2349,7 +2349,6 @@ break;
       return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames,
 		   dp->className);
     } catch (Exception &e) {
-      Free(qp);
       throw;
     }
   }

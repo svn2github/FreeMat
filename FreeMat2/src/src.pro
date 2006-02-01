@@ -11,6 +11,9 @@ DEPENDPATH += INCLUDEPATH
 HEADERS =  MainApp.hpp SocketCB.hpp application.h
 SOURCES =  MainApp.cpp SocketCB.cpp application.cpp main.cpp
 
+<<<<<<< src.pro
+LIBS += -L../libs/libCore -lCore -L../libs/libFN -lFN -L../libs/libGraphics -lGraphics   -L../libs/libFFTPack -lFFTPack  -L../libs/libFreeMat -lFreeMatLib -L../extern/ffcall-1.10/avcall/.libs -lavcall -L../extern/fftw-3.0.1/.libs -lfftw3 -lfftw3f -L../libs/libXP -lXP -L../libs/libARPACK/UTIL -L../libs/libARPACK/SRC -lARPACKMain -lARPACKUtil -L../libs/libUMFPACK/UMFPACKdi -lUMFPACKdi -L../libs/libUMFPACK/UMFPACKzi -lUMFPACKzi -L../libs/libUMFPACK/AMD -lAMD
+=======
 
 win32 {
 
@@ -27,6 +30,7 @@ TARGETDEPS += ../libs/libCore/Debug/libCore.a ../libs/libFN/Debug/libFN.a ../lib
 
 !win32 {
 LIBS += -L../libs/libCore -lCore -L../libs/libFN -lFN -L../libs/libGraphics -lGraphics   -L../libs/libFFTPack -lFFTPack  -L../libs/libFreeMat -lFreeMatLib -L../libs/libffi -lffi -L../libs/libXP -lXP -L../libs/libARPACK/UTIL -L../libs/libARPACK/SRC -lARPACKMain -lARPACKUtil -L../libs/libUMFPACK/UMFPACKdi -lUMFPACKdi -L../libs/libUMFPACK/UMFPACKzi -lUMFPACKzi -L../libs/libUMFPACK/AMD -lAMD
+>>>>>>> 1.8
 
 TARGETDEPS += ../libs/libCore/libCore.a ../libs/libFN/libFN.a ../libs/libGraphics/libGraphics.a ../libs/libFFTPack/libFFTPack.a ../libs/libFreeMat/libFreeMatLib.a ../libs/libffi/libffi.a ../libs/libXP/libXP.a ../libs/libARPACK/SRC/libARPACKMain.a  ../libs/libARPACK/UTIL/libARPACKUtil.a ../libs/libUMFPACK/UMFPACKdi/libUMFPACKdi.a ../libs/libUMFPACK/UMFPACKzi/libUMFPACKzi.a ../libs/libUMFPACK/AMD/libAMD.a
 }
@@ -56,6 +60,12 @@ LIBS += ../extern/LAPACK/debug/liblapack.a ../extern/LAPACK/BLAS/debug/libblas.a
 RC_FILE = freemat.rc
 }
 
+<<<<<<< src.pro
+CONFIG += assistant opengl static
+CONFIG -= shared
+=======
+>>>>>>> 1.8
 QT += opengl
 
+QT += qt3support
 

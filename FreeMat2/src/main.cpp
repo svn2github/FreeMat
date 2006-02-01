@@ -11,6 +11,8 @@
 #include "application.h"
 #include "KeyManager.hpp"
 
+#include "LinearEqSolver.hpp"
+
 using namespace FreeMat;
 
 KeyManager *term;
@@ -76,13 +78,10 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
-  foreach (QString path, app.libraryPaths())
-    qDebug() << "Current path set to : " << path << "\n";
   QDir dir(QApplication::applicationDirPath());
   dir.cdUp();
   dir.cd("Plugins");
   QString dummy(dir.absolutePath());
-  qDebug() << "Plugin path set to : " << dummy << "\n";
   QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 
 
@@ -119,6 +118,19 @@ int main(int argc, char *argv[]) {
       QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
     } else
       term = new DumbTerminal;
+
+    double *a, *b, *c;
+    int m, n;
+    m = 20; n = 20;
+    b = new double[20*20];
+    a = new double[20*20];
+    for (int i=0;i<20*20;i++) {
+      a[i] = drand48();
+      b[i] = drand48();
+    }
+    c = new double[20*20];
+    doubleSolveLinEq(term,m,n,c,a,b);
+
     signal_suspend_default = signal(SIGTSTP,signal_suspend);
     signal_resume_default = signal(SIGCONT,signal_resume);
     signal(SIGWINCH, signal_resize);

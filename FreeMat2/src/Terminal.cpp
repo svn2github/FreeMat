@@ -1,4 +1,5 @@
 #include <qapplication.h>
+#include "Serialize.hpp"
 #include "Terminal.hpp"
 #include <errno.h>
 #include <unistd.h>
@@ -15,7 +16,6 @@
 #include <dirent.h>
 #include <glob.h>
 #include "File.hpp"
-#include "Serialize.hpp"
 
 #define KM_ESC       0x1b
 

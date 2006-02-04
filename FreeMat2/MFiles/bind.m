@@ -1,4 +1,4 @@
-%!
+%
 %@Module BIND Bind Standalone Executable
 %@@Section FREEMAT
 %@@Usage
@@ -41,7 +41,7 @@
 %system('chmod +x hello_bind');
 %system('./hello_bind world!')
 %@>
-%!
+%
 function bind(output,mainexe,startcommand,varargin)
 % Open up the output stream
 fpo = fopen(output,'wb');

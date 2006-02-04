@@ -64,6 +64,14 @@
 %winlev
 %@>
 %!
-function winlev(window,level)
+function [win,lev] = winlev(window,level)
 g = gca;
-set(g,'clim',[level-window/2,level+window/2]);
+if (nargin == 2)
+  set(g,'clim',[level-window/2,level+window/2]);
+else
+  clim = get(g,'clim');
+  win = clim(2)-clim(1);
+  lev = clim(2)+clim(1);
+end
+
+  

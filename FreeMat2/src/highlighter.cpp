@@ -38,6 +38,7 @@
 
     void Highlighter::highlightBlock(const QString &text)
     {
+      if (text.isEmpty()) return;
         foreach (QString pattern, mappings.keys()) {
             QRegExp expression(pattern);
             int index = text.indexOf(expression);

@@ -3,17 +3,18 @@
 
 #include <QMainWindow>
 #include "GUITerminal.hpp"
-#include <QTextDocument>
-#include <QTextEdit>
+#include "Editor.hpp"
 
 class ApplicationWindow : public QMainWindow {
   Q_OBJECT
     
-    GUITerminal* m_term;
-  QMenu *fileMenu, *editMenu, *helpMenu;
+  GUITerminal* m_term;
+  QMenu *fileMenu, *editMenu, *toolsMenu, *helpMenu;
   QToolBar *editToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
-  QAction *aboutAct, *manualAct, *aboutQt;
+  QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
+  QAction *historyAct, *pathAct;
+  FMEditor *edit;
 public:
   ApplicationWindow();
   ~ApplicationWindow();
@@ -23,10 +24,15 @@ private:
   void createMenus();
   void createToolBars();
   void createStatusBar();
+  void readSettings();
+  //  void writeSettings();
+  void initializeTools();
 protected:
   void closeEvent(QCloseEvent*);
 signals:
   void startHelp();
+public slots:
+  void writeSettings();
 private slots:
   void save();
   void copy();
@@ -34,29 +40,10 @@ private slots:
   void font();
   void about();
   void editor();
+  void history();
+  void path();
   void manual();
+  void tclose();
 }; 
-
-class FMTextEdit : public QTextEdit {
-  Q_OBJECT
-public:
-  FMTextEdit();
-  virtual ~FMTextEdit();
-  void keyPressEvent(QKeyEvent*e);
-signals:
-  void indent();
-};
-
-class FMIndent : public QObject {
-  Q_OBJECT
-  FMTextEdit *m_te;
-public:
-  FMIndent();
-  virtual ~FMIndent();
-  void setDocument(FMTextEdit *te);
-  FMTextEdit *document() const;
-private slots:
-  void update();
-};
 
 #endif

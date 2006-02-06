@@ -98,7 +98,6 @@ int main(int argc, char *argv[]) {
     QObject::connect(qApp,SIGNAL(lastWindowClosed()),qApp,SLOT(quit()));
     term = new GUITerminal(m_win);
     m_win->SetGUITerminal((GUITerminal*)term);
-    m_win->resize(400,300);
     m_win->show();
     ((GUITerminal*)term)->resizeTextSurface();
     ((GUITerminal*)term)->setFocus();
@@ -118,19 +117,6 @@ int main(int argc, char *argv[]) {
       QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
     } else
       term = new DumbTerminal;
-
-    double *a, *b, *c;
-    int m, n;
-    m = 20; n = 20;
-    b = new double[20*20];
-    a = new double[20*20];
-    for (int i=0;i<20*20;i++) {
-      a[i] = drand48();
-      b[i] = drand48();
-    }
-    c = new double[20*20];
-    doubleSolveLinEq(term,m,n,c,a,b);
-
     signal_suspend_default = signal(SIGTSTP,signal_suspend);
     signal_resume_default = signal(SIGCONT,signal_resume);
     signal(SIGWINCH, signal_resize);

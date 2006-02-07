@@ -1691,7 +1691,7 @@ namespace FreeMat {
   //function evenoddtest(n)
   //  if (n==0)
   //    error('zero is neither even nor odd');
-  //  elseif (typeof(n) ~= 'int32')
+  //  elseif (~isa(n,'int32'))
   //    error('expecting integer argument');
   //  end;
   //  if (n==int32(n/2)*2)
@@ -1702,7 +1702,7 @@ namespace FreeMat {
   //@}
   //The normal command line prompt @|-->| simply prints the error
   //that occured.
-  //@<
+  //@<2
   //evenoddtest(4)
   //evenoddtest(5)
   //evenoddtest(0)

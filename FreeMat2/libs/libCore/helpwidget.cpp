@@ -3,8 +3,6 @@
 #include <QtGui>
 #include <QDebug>
 
-#include "../libXP/freemat-2.xpm"
-
 void HelpWindow::activateModule(QListWidgetItem* item) {
   tb->setSource("file://"+m_initial+"/"+item->text()+".html");
 }
@@ -70,7 +68,7 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
 }
 
 HelpWindow::HelpWindow(QString url) {
-  setWindowIcon(QPixmap(freemat_2));
+  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
   setWindowTitle(QString(FreeMat::WalkTree::getVersionString().c_str()) + " Online Help");
   m_initial = url;
   tb = new QTextBrowser(this);
@@ -86,19 +84,19 @@ HelpWindow::HelpWindow(QString url) {
 
 
 void HelpWindow::createActions() {
-  zoominAct = new QAction("Zoom In",this);
+  zoominAct = new QAction(QIcon(":/images/zoomin.png"),"Zoom In",this);
   connect(zoominAct,SIGNAL(triggered()),tb,SLOT(zoomIn()));
-  zoomoutAct = new QAction("Zoom Out",this);
+  zoomoutAct = new QAction(QIcon(":/images/zoomout.png"),"Zoom Out",this);
   connect(zoomoutAct,SIGNAL(triggered()),tb,SLOT(zoomOut()));
-  copyAct = new QAction("&Copy Text",this);
+  copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy Text",this);
   connect(copyAct,SIGNAL(triggered()),tb,SLOT(copy()));
-  exitAct = new QAction("&Exit Help",this);
+  exitAct = new QAction(QIcon(":/images/quit.png"),"&Exit Help",this);
   connect(exitAct,SIGNAL(triggered()),this,SLOT(close()));
-  forwardAct = new QAction("Next",this);
+  forwardAct = new QAction(QIcon(":/images/next.png"),"Next",this);
   connect(forwardAct,SIGNAL(triggered()),tb,SLOT(forward()));
-  backAct = new QAction("Previous",this);
+  backAct = new QAction(QIcon(":/images/previous.png"),"Previous",this);
   connect(backAct,SIGNAL(triggered()),tb,SLOT(backward()));
-  homeAct = new QAction("Home",this);
+  homeAct = new QAction(QIcon(":/images/home.png"),"Home",this);
   connect(homeAct,SIGNAL(triggered()),tb,SLOT(home()));
   connect(tb,SIGNAL(forwardAvailable(bool)),forwardAct,SLOT(setEnabled(bool)));
   connect(tb,SIGNAL(backwardAvailable(bool)),backAct,SLOT(setEnabled(bool)));

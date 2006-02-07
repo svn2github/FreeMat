@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Core
 
-CONFIG += staticlib warn_off
+CONFIG += staticlib warn_off create_prl
 
 INCLUDEPATH = ../libFreeMat ../libXP ../../extern/fftw-3.0.1/api
 

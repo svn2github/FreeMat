@@ -25,5 +25,6 @@
 
 namespace FreeMat {
   void LoadCoreFunctions(Context* context);
+  void LoadGUICoreFunctions(Context* context);
 }
 #endif

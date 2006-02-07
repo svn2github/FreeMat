@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = FreeMatLib
 
-CONFIG += staticlib warn_off
+CONFIG += staticlib warn_off create_prl
 
 INCLUDEPATH = ../../extern/ffcall-1.10/avcall ../../extern/UMFPACK/Include ../../extern/AMD/Include ../libXP ../libUMFPACK/UMFPACK/Include ../..
 

@@ -34,10 +34,11 @@
 
 #include "FunctionDef.hpp"
 #include "NumericArray.hpp"
+#include "LAPACK.hpp"
 
 namespace FreeMat {
 
-  static int objectBalance;
+static int objectBalance;
 #define MSGBUFLEN 2048
   static char msgBuffer[MSGBUFLEN];
   static Interface *io;
@@ -1880,7 +1881,9 @@ break;
     Dimensions dim;
     float *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = (int) floor((maxval-minval)/stepsize) + 1;
+    char CMACH = 'E';
+    float eps = slamch_(&CMACH);
+    int scount = (int) (floor((maxval*(1+eps)-minval)/stepsize) + 1);
     if (scount<=0) 
       dim.reset();
     else {
@@ -1903,7 +1906,11 @@ break;
     Dimensions dim;
     double *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = (int) floor((maxval-minval)/stepsize) + 1;
+    // We want minval+(scount-1)*stepsize < maxval*(1+eps)
+    // or (scount-1) < (maxval*(1+eps) - minval)/stepsize
+    char CMACH = 'E';
+    double eps = dlamch_(&CMACH);
+    int scount = (int) (floor((maxval*(1+eps)-minval)/stepsize) + 1);
     if (scount<=0) 
       dim.reset();
     else {

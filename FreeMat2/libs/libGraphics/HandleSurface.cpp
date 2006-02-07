@@ -246,7 +246,12 @@ namespace FreeMat {
       }
       retval.push_back(linequads);
     }
-    qDebug("retval size is %d",retval.size());
+    // 0
+    // 1
+    // 2
+
+
+    //    qDebug("retval size is %d",retval.size());
     if (cp->Is("colorspec") || ap->Is("scalar")) 
       delete[] dummyline;
     return retval;

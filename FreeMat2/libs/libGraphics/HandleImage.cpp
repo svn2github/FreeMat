@@ -75,11 +75,11 @@ namespace FreeMat {
   //
   //  If cdatamapping == direct, outputRGB = colormap[(int)(dp[i]-1)]
   //  If cdatamapping == scaled, outputRGB = colormap[rescale(dp[i])]
-  //    where rescale(x) = (x-min(clim))/(max(clim)-min(clim))*colormap_count
+  //    where rescale(x) = (x-min(clim))/(max(clim)-min(clim))*(colormap_count-1)
   //
   double* HandleImage::RGBExpandImage(const double *dp, 
 				      int rows, int cols) {
-    qDebug("RGBExpand");
+    //    qDebug("RGBExpand");
     // Allocate an output array of the right size
     double *ret = new double[rows*cols*3];
     // Retrieve the colormap

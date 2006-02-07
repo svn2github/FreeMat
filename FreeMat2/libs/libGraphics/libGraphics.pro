@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = Graphics
 
-CONFIG += staticlib opengl warn_off
+CONFIG += staticlib opengl warn_off create_prl
 
 INCLUDEPATH = ../libFreeMat ../libXP ../libCore
 

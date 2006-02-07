@@ -4,10 +4,9 @@
 #include "QTRenderEngine.hpp"
 #include <QStackedLayout>
 #include "HandleCommands.hpp"
+#include <QtGui>
 
 namespace FreeMat {
-
-#include "../libXP/freemat-2.xpm"
 
 class BaseFigureQt : public QWidget {
   HandleFigure *hfig;
@@ -109,10 +108,9 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
   void HandleWindow::closeEvent(QCloseEvent* e) {
     NotifyFigureClosed(handle);
   }
-
-HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
-  QPixmap myIcon = QPixmap(freemat_2);
-  setWindowIcon(myIcon);
+  
+  HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
+  setWindowIcon(QPixmap(":/imags/freemat-2.xpm"));
   handle = ahandle;
   hfig = new HandleFigure(this);
   char buffer[1000];
@@ -141,6 +139,22 @@ unsigned HandleWindow::Handle() {
 HandleFigure* HandleWindow::HFig() {
   return hfig;
 }
+
+  void HandleWindow::GetClick(int &x, int &y) {
+    // Set the cross cursor
+    QApplication::setOverrideCursor(Qt::CrossCursor);
+    // Run the event loop
+    m_loop.exec();
+    x = click_x;
+    y = click_y;
+    QApplication::restoreOverrideCursor();
+  }
+
+  void HandleWindow::mousePressEvent(QMouseEvent* e) {
+    click_x = e->x();
+    click_y = e->y();
+    m_loop.exit();
+  }
 
   void HandleWindow::UpdateState() {
     HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");

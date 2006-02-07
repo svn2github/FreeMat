@@ -6,6 +6,7 @@
 #include <QStackedWidget>
 #include <QTabWidget>
 #include <QGLWidget>
+#include <QEventLoop>
 
 namespace FreeMat {
 
@@ -18,6 +19,8 @@ class HandleWindow : public QWidget {
   HandleFigure *hfig;
   QStackedWidget *layout;
   //  QTabWidget *layout;
+  QEventLoop m_loop;
+  int click_x, click_y;
  public:
   HandleWindow(unsigned ahandle);
   ~HandleWindow() {delete hfig;}
@@ -25,6 +28,8 @@ class HandleWindow : public QWidget {
   HandleFigure *HFig();
   void UpdateState();
   void closeEvent(QCloseEvent* e);
+  void GetClick(int &x, int &y);
+  void mousePressEvent(QMouseEvent* e);
 };
 
 }

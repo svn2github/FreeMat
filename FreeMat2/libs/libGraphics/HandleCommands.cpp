@@ -61,7 +61,7 @@ namespace FreeMat {
   HandleList<HandleObject*> objectset;
 
   void NotifyFigureClosed(unsigned figNum) {
-    delete Hfigs[figNum];
+    //    delete Hfigs[figNum];
     Hfigs[figNum] = NULL;
     if (figNum == HcurrentFig)
       HcurrentFig = -1;
@@ -264,7 +264,7 @@ namespace FreeMat {
       if (handle >= HANDLE_OFFSET_OBJECT) {
 	gp = LookupHandleObject(handle);
 	if (gp->RefCount() <= 0) {
-	  qDebug("Deleting handle %d\n",handle);
+	  //	  qDebug("Deleting handle %d\n",handle);
 	  FreeHandleObject(handle);
 	  delete gp;
 	}
@@ -469,7 +469,7 @@ namespace FreeMat {
     return retval;
   }
   
-  static void CloseHelper(int fig) {
+  void CloseHelper(int fig) {
     if (fig == -1) return;
     if (Hfigs[fig] == NULL) return;
     Hfigs[fig]->hide();
@@ -477,7 +477,7 @@ namespace FreeMat {
     Hfigs[fig] = NULL;
     if (HcurrentFig == fig)
       HcurrentFig = -1;
-  }  
+  }
 
   //!
   //@Module CLOSE Close Figure Window
@@ -614,8 +614,8 @@ namespace FreeMat {
   //x = linspace(-1,1);
   //y = cos(5*pi*x);
   //plot(x,y,'r-');
-  //print latex/printfig1.jpg
-  //print html/printfig1.png
+  //print help/latex/printfig1.jpg
+  //print help/html/printfig1.png
   //@>
   //which creates two plots @|printfig1.png|, which is a Portable
   //Net Graphics file, and @|printfig1.jpg| which is a JPEG file.
@@ -646,6 +646,23 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
+    if (HcurrentFig == -1)
+      return ArrayVector();
+    HandleWindow *f = Hfigs[HcurrentFig];
+    f->raise();
+    f->activateWindow();
+    f->setFocus(Qt::OtherFocusReason);
+    int x, y;
+    f->GetClick(x,y);
+    Array retval(Array::doubleVectorConstructor(2));
+    double *d_ip;
+    d_ip = (double*) retval.getReadWriteDataPointer();
+    d_ip[0] = (double) x;
+    d_ip[1] = (double) y;
+    return singleArrayVector(retval);
+  }
+
   void LoadHandleGraphicsFunctions(Context* context) {
     context->addFunction("axes",HAxesFunction,-1,1);
     context->addFunction("line",HLineFunction,-1,1);
@@ -660,7 +677,8 @@ namespace FreeMat {
     context->addFunction("pvalid",HPropertyValidateFunction,2,1,"type","property");
     context->addFunction("print",HPrintFunction,-1,0);
     context->addFunction("close",HCloseFunction,1,0,"handle");
-    context->addFunction("copy",HCopyFunction,-1,0);
+    context->addFunction("copy",HCopyFunction,0,0);
+    context->addFunction("hpoint",HPointFunction,0,1);
     // Need colormap, zoom, colorbar, addtxt, sizefig, winlev, point, legend
     InitializeHandleGraphics();
   };

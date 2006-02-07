@@ -1868,12 +1868,12 @@ namespace FreeMat {
 		     "zlabel",ticlen,ticdir);
     }
     HPHandles *lbl = (HPHandles*) LookupProperty("title");
-//     if (!lbl->Data().empty()) {
-//       HandleText *fp = handleset.lookupHandle(lbl->Data()[0]);
-//       HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
-//       // Put the title in the right spot
-//       //      fp->PaintMe(gc);
-//     }
+    //     if (!lbl->Data().empty()) {
+    //       HandleText *fp = handleset.lookupHandle(lbl->Data()[0]);
+    //       HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
+    //       // Put the title in the right spot
+    //       //      fp->PaintMe(gc);
+    //     }
   }
 
   void HandleAxis::DrawTickLabels(RenderEngine& gc,

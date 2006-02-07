@@ -61,7 +61,7 @@ namespace FreeMat {
 	gp = LookupHandleObject(handle);
 	gp->Dereference();
 	if (gp->RefCount() <= 0) {
-	  qDebug("Deleting handle %d\n",handle);
+	  //	  qDebug("Deleting handle %d\n",handle);
 	  FreeHandleObject(handle);
 	  delete gp;
 	}

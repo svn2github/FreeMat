@@ -56,7 +56,7 @@ std::vector<quad3d> QTRenderEngine::MapQuadsFacesOnly(std::vector<std::vector<cp
   std::vector<quad3d> retval;
   for (int i=0;i<faces.size();i++) {
     std::vector<cpoint> qlist(faces[i]);
-    for (int j=2;j<qlist.size()-2;j+=2){ 
+    for (int j=2;j<qlist.size();j+=2){ 
       quad3d qx;
       bool anyclipped = false;
       double zmean = 0;
@@ -91,7 +91,7 @@ std::vector<quad3d> QTRenderEngine::MapQuadsEdgesOnly(std::vector<std::vector<cp
   std::vector<quad3d> retval;
   for (int i=0;i<edges.size();i++) {
     std::vector<cpoint> elist(edges[i]);
-    for (int j=2;j<elist.size()-2;j+=2){ 
+    for (int j=2;j<elist.size();j+=2){ 
       quad3d qx;
       bool anyclipped = false;
       double zmean = 0;
@@ -131,7 +131,7 @@ std::vector<quad3d> QTRenderEngine::MapQuads(std::vector<std::vector<cpoint> > &
   for (int i=0;i<faces.size();i++) {
     std::vector<cpoint> qlist(faces[i]);
     std::vector<cpoint> elist(edges[i]);
-    for (int j=2;j<qlist.size()-2;j+=2){ 
+    for (int j=2;j<qlist.size();j+=2){ 
       quad3d qx;
       bool anyclipped = false;
       double zmean = 0;
@@ -267,8 +267,8 @@ void QTRenderEngine::project(double left, double right,
   proj[14] = tz;
   //    proj[15] = -1;
   proj[15] = 1; // To match GL
-  if (left != 0)
-    qDebug("Project %f %f %f %f %f %f",left,right,bottom,top,near,far);
+//   if (left != 0)
+//     qDebug("Project %f %f %f %f %f %f",left,right,bottom,top,near,far);
 }
   
 void QTRenderEngine::viewport(double x0, double y0, double width, double height) {
@@ -370,8 +370,8 @@ void QTRenderEngine::lineSeries(std::vector<double> xs,
   
 void QTRenderEngine::debug() {
   debugFlag = !debugFlag;
-  qDebug("Projection diagonal: %f %f %f %f",
-	 proj[0],proj[5],proj[10],proj[15]);
+//   qDebug("Projection diagonal: %f %f %f %f",
+// 	 proj[0],proj[5],proj[10],proj[15]);
   return;
   qDebug("QT Modelview matrix (before setupdirect)");
   qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
@@ -388,8 +388,8 @@ void QTRenderEngine::debug() {
 }
 
 void QTRenderEngine::setupDirectDraw() {
-  if (inDirect)
-    qDebug("DirectDraw is not reentrant!!!");
+//   if (inDirect)
+//     qDebug("DirectDraw is not reentrant!!!");
   // save the relevant matrices
   for (int i=0;i<16;i++) {
     save_model[i] = model[i];
@@ -408,8 +408,8 @@ void QTRenderEngine::setupDirectDraw() {
 }
 
 void QTRenderEngine::releaseDirectDraw() {
-  if (!inDirect)
-    qDebug("releaseDirectDraw called unmatched!!!");
+//   if (!inDirect)
+//     qDebug("releaseDirectDraw called unmatched!!!");
   for (int i=0;i<16;i++) {
     model[i] = save_model[i];
     proj[i] = save_proj[i];
@@ -456,7 +456,13 @@ void QTRenderEngine::putText(double x, double y, std::string txt,
     ydelta = -height/2.0;
   if (yflag == Max)
     ydelta = -height;
+  // I don't understand this...
+#ifdef WIN32 
   ydelta += fm.descent();
+#endif
+#ifdef __APPLE__
+  ydelta += fm.descent();
+#endif
   double costhet, sinthet;
   costhet = cos(rotation*M_PI/180.0);
   sinthet = sin(rotation*M_PI/180.0);

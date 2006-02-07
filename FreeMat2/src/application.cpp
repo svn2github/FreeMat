@@ -13,12 +13,11 @@
 #include "Editor.hpp"
 #include <QtGui>
 #include <QDebug>
+#include "PathTool.hpp"
+#include "ToolDock.hpp"
 
 #define MAKEASCII(x) x.toAscii().constData()
 #include <QtGui>
-
-#include "filesave.xpm"
-#include "../libs/libXP/freemat-2.xpm"
 
 ApplicationWindow::~ApplicationWindow() {
 }
@@ -30,13 +29,13 @@ void ApplicationWindow::createActions() {
   connect(historyAct,SIGNAL(triggered()),this,SLOT(history()));
   pathAct = new QAction("&Path Tool",this);
   connect(pathAct,SIGNAL(triggered()),this,SLOT(path()));
-  saveAct = new QAction("&Save Transcript",this);
+  saveAct = new QAction(QIcon(":/images/save.png"),"&Save Transcript",this);
   connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
-  quitAct = new QAction("&Quit",this);
-  connect(quitAct,SIGNAL(triggered()),this,SLOT(tclose()));
-  copyAct = new QAction("&Copy",this);
+  quitAct = new QAction(QIcon(":/images/quit.png"),"&Quit",this);
+  connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
+  copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
   connect(copyAct,SIGNAL(triggered()),this,SLOT(copy()));
-  pasteAct = new QAction("&Paste",this);
+  pasteAct = new QAction(QIcon(":/images/paste.png"),"&Paste",this);
   connect(pasteAct,SIGNAL(triggered()),this,SLOT(paste()));
   fontAct = new QAction("&Font",this);
   connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
@@ -77,8 +76,7 @@ void ApplicationWindow::createStatusBar() {
 }
 
 ApplicationWindow::ApplicationWindow() : QMainWindow() {
-  QPixmap myIcon = QPixmap(freemat_2);
-  setWindowIcon(myIcon);
+  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
   setWindowTitle(QString(WalkTree::getVersionString().c_str()) + " Command Window");
   createActions();
   createMenus();
@@ -86,6 +84,12 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
   createStatusBar();
   readSettings();
   initializeTools();
+  createToolBox();
+}
+
+void ApplicationWindow::createToolBox() {
+  m_tool = new ToolDock(this);
+  addDockWidget(Qt::LeftDockWidgetArea, m_tool);
 }
 
 void ApplicationWindow::initializeTools() {
@@ -94,6 +98,7 @@ void ApplicationWindow::initializeTools() {
 
 void ApplicationWindow::closeEvent(QCloseEvent* ce) {
   writeSettings();
+  delete m_tool;
   ce->accept();
   exit(0);
 }
@@ -104,8 +109,6 @@ void ApplicationWindow::readSettings() {
   QSize gsize = settings.value("mainwindow/size", QSize(600, 400)).toSize();
   resize(gsize);
   move(gpos);
-  qDebug() << "READI Pos = " << gpos << " size = " << gsize << "\n";
-  qDebug() << "READ Pos = " << pos() << " size = " << size() << "\n";
 }
 
 void ApplicationWindow::writeSettings() {
@@ -113,11 +116,9 @@ void ApplicationWindow::writeSettings() {
   settings.setValue("mainwindow/pos", pos());
   settings.setValue("mainwindow/size", size());
   settings.sync();
-  qDebug() << "WRITE Pos = " << pos() << " size = " << size() << "\n";
 }
 
 void ApplicationWindow::tclose() {
-  writeSettings();
   close();
 }
 
@@ -132,7 +133,8 @@ void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
     m_term->setFont(new_font);
   }
   term->show();
-  writeSettings();
+  connect(term,SIGNAL(CommandLine(QString)),
+	  m_tool->getHistoryWidget(),SLOT(addCommand(QString)));
 }
 
 void ApplicationWindow::save() {
@@ -204,9 +206,6 @@ void ApplicationWindow::font() {
   }
 }
 
-void ApplicationWindow::about() {
-}
-
 void ApplicationWindow::manual() {
   emit startHelp();
 }
@@ -220,5 +219,11 @@ void ApplicationWindow::history() {
 }
 
 void ApplicationWindow::path() {
+  PathTool *p = new PathTool;
+  p->exec();
 }
+
+void ApplicationWindow::about() {
+}
+
 

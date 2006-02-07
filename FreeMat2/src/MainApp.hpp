@@ -12,11 +12,15 @@ class MainApp : public QObject
   KeyManager* m_term;
   std::string m_helpPath;
   WalkTree* eval;
+  bool guimode;
+  bool skipGreeting;
 public:
   MainApp();
   ~MainApp();
   void SetTerminal(KeyManager* term);
   void SetHelpPath(std::string helpPath);
+  void SetGUIMode(bool mode);
+  void SetSkipGreeting(bool skip);
 public slots:
   int Run();
   void HelpWin();

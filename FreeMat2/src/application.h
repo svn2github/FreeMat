@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "GUITerminal.hpp"
 #include "Editor.hpp"
+#include "ToolDock.hpp"
 
 class ApplicationWindow : public QMainWindow {
   Q_OBJECT
@@ -15,6 +16,7 @@ class ApplicationWindow : public QMainWindow {
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
   QAction *historyAct, *pathAct;
   FMEditor *edit;
+  ToolDock *m_tool;
 public:
   ApplicationWindow();
   ~ApplicationWindow();
@@ -27,6 +29,7 @@ private:
   void readSettings();
   //  void writeSettings();
   void initializeTools();
+  void createToolBox();
 protected:
   void closeEvent(QCloseEvent*);
 signals:

@@ -12,8 +12,15 @@ using namespace FreeMat;
 #include "LoadFN.hpp"
 #include "HandleCommands.hpp"
 #include "Core.hpp"
+#include "DumbTerminal.hpp"
+#include "Terminal.hpp"
+#include <fcntl.h>
+#include <qsocketnotifier.h>
+#include "SocketCB.hpp"
 
 MainApp::MainApp() {
+  guimode = true;
+  skipGreeting = false;
 }
 
 MainApp::~MainApp() {
@@ -32,18 +39,25 @@ void MainApp::HelpWin() {
   HelpWinFunction(0,dummy,eval);
 }
 
+void MainApp::SetGUIMode(bool mode) {
+  guimode = mode;
+}
+
+void MainApp::SetSkipGreeting(bool skip) {
+  skipGreeting = skip;
+}
+
 int MainApp::Run() {
   Context *context = new Context;
   LoadModuleFunctions(context);
   LoadClassFunction(context);
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
-  LoadHandleGraphicsFunctions(context);  
+  if (guimode) {
+    LoadGUICoreFunctions(context);
+    LoadHandleGraphicsFunctions(context);  
+  }
   m_term->setContext(context);
-
-  //   QDir dirp(qApp->applicationDirPath() + "/../Plugins");
-  //   QString path0(dirp.canonicalPath());
-  //   qApp->addLibraryPath(path0);
   QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
   QString path1(dir1.canonicalPath());
   QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
@@ -54,15 +68,16 @@ int MainApp::Run() {
   QString synthpath(path1 + ":" + path2);
 #endif
   m_term->setPath(synthpath.toStdString());
-//   const char *envPtr;
-//   envPtr = getenv("FREEMAT_PATH");
-//   if (envPtr)
-//     m_term->setPath(std::string(envPtr));
-//   else 
-//     m_term->setPath(std::string(""));
+  //   const char *envPtr;
+  //   envPtr = getenv("FREEMAT_PATH");
+  //   if (envPtr)
+  //     m_term->setPath(std::string(envPtr));
+  //   else 
+  //     m_term->setPath(std::string(""));
   m_term->setAppPath(qApp->applicationDirPath().toStdString());
   eval = new WalkTree(context,m_term);
-  eval->sendGreeting();
+  if (!skipGreeting)
+    eval->sendGreeting();
   eval->run();
   m_term->RestoreOriginalMode();
   qApp->quit();

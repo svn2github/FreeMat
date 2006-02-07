@@ -1,4 +1,5 @@
 #include <QDir>
+#include <QtGui>
 #include <QDebug>
 #include <unistd.h>
 #include <stdio.h>
@@ -12,12 +13,14 @@
 #include "KeyManager.hpp"
 
 #include "LinearEqSolver.hpp"
+#include "helpgen.hpp"
 
 using namespace FreeMat;
 
 KeyManager *term;
 
 #ifdef Q_WS_X11
+#include "FuncTerminal.hpp"
 #include "DumbTerminal.hpp"
 #include "Terminal.hpp"
 #include "SocketCB.hpp"
@@ -54,6 +57,27 @@ void stdincb() {
 }
 #endif
 
+void usage() {
+  printf("%s\n  Command Line Help\n",WalkTree::getVersionString().c_str());
+  printf(" You can invoke FreeMat with the following command line options:\n");
+  printf("     -f <command>  Runs FreeMat in command mode.  FreeMat will \n");
+  printf("                   startup, run the given command, and then quit.\n");
+  printf("                   Note that this option uses the remainder of the\n");
+  printf("                   command line, so use it last.\n");
+#ifdef Q_WS_X11
+  printf("     -nogui        Suppress the GUI for FreeMat.\n");
+#endif
+  printf("     -noX          Disables the graphics subsystem.\n");
+  printf("     -e            uses a dumb terminal interface \n");
+  printf("                   (no command line editing, etc.)\n");
+  printf("                   This flag is primarily used when \n");
+  printf("                   you want to capture input/output\n");
+  printf("                   to FreeMat from another application.\n");
+  printf("     -help         Get this help text\n");
+  exit(0);
+}
+
+
 // Search through the arguments to freemat... look for the given
 // flag.  if the flagarg variable is true, then an argument must
 // be provided to the flag.  If the flag is not found, then a 
@@ -76,23 +100,49 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
   return ndx;
 }
 
+
 int main(int argc, char *argv[]) {
-  QApplication app(argc, argv);
+  QCoreApplication *app;
+  
+  int nogui = parseFlagArg(argc,argv,"-nogui",false);
+  int scriptMode = parseFlagArg(argc,argv,"-e",false); 
+  int helpgen = parseFlagArg(argc,argv,"-helpgen",false);
+  int noX = parseFlagArg(argc,argv,"-noX",false);
+  int help = parseFlagArg(argc,argv,"-help",false);
+  int funcMode = parseFlagArg(argc,argv,"-f",true);
+  
+  if (help) usage();
+  
+  if (!noX)
+    app = new QApplication(argc, argv);
+  else {
+    app = new QCoreApplication(argc, argv);
+    nogui = true;
+    helpgen = false;
+  }
+  
+  if (helpgen) {
+    DoHelpGen();
+    return 0;
+  }
+  
   QDir dir(QApplication::applicationDirPath());
   dir.cdUp();
   dir.cd("Plugins");
   QString dummy(dir.absolutePath());
   QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
 
-
-  int nogui = parseFlagArg(argc,argv,"-nogui",false);
-  int scriptMode = parseFlagArg(argc,argv,"-e",false); 
-
+  if (funcMode) {
+    scriptMode = 0;
+    nogui = 1;
+    helpgen = 0;
+  }
+  
   if (scriptMode) nogui = 1;
-
+  
   MainApp m_app;
   ApplicationWindow *m_win = NULL;
-
+  
   if (!nogui) {
     m_win = new ApplicationWindow;
     QObject::connect(qApp,SIGNAL(lastWindowClosed()),qApp,SLOT(quit()));
@@ -103,7 +153,11 @@ int main(int argc, char *argv[]) {
     ((GUITerminal*)term)->setFocus();
   } else {
 #ifdef Q_WS_X11
-    if (!scriptMode) {
+    if (!scriptMode && !funcMode) {
+      QWidget *wid = new QWidget(0,Qt::FramelessWindowHint);
+      wid->setGeometry(2000,2000,1,1);
+      wid->setWindowIcon(QIcon(":/images/freemat-2.xpm"));
+      wid->show();
       term = new Terminal;
       fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
       try {
@@ -115,8 +169,10 @@ int main(int argc, char *argv[]) {
       QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
       SocketCB *socketcb = new SocketCB(stdincb);
       QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
-    } else
+    } else if (!funcMode)
       term = new DumbTerminal;
+    else
+      term = new FuncTerminal(argv,argc,funcMode);
     signal_suspend_default = signal(SIGTSTP,signal_suspend);
     signal_resume_default = signal(SIGCONT,signal_resume);
     signal(SIGWINCH, signal_resize);
@@ -126,8 +182,10 @@ int main(int argc, char *argv[]) {
 #endif
   }
   m_app.SetTerminal(term);
+  m_app.SetGUIMode(!noX);
+  m_app.SetSkipGreeting(funcMode);
   QTimer::singleShot(0,&m_app,SLOT(Run()));
   if (m_win != NULL)
     QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
-  return app.exec();
+  return app->exec();
 }

@@ -21,6 +21,10 @@ class GUITerminal : public QTTerm, public KeyManager {
   void MoveBOL();
   int getTerminalWidth() {return getTextWidth();};
   void ProcessChar(int c) {OnChar(c);};
+  virtual char* getLine(std::string aprompt);
+signals:
+  void CommandLine(QString);
+
 };
 
 #endif

@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = XP
 
-CONFIG += staticlib debug
+CONFIG += staticlib debug create_prl
 
 INCLUDEPATH = ../libFreeMat ../.. ../libCore ../libFN ../libGraphics
 

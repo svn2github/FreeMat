@@ -43,3 +43,9 @@ void GUITerminal::ClearEOD() {
 void GUITerminal::OutputRawString(std::string txt) {
   PutString(txt);
 }
+
+char* GUITerminal::getLine(std::string aprompt) {
+  char *ret = KeyManager::getLine(aprompt);
+  emit CommandLine(QString(ret));
+  return ret;
+}

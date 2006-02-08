@@ -32,13 +32,15 @@ Installer:
   Source - needs work
 
 Before release:
-  setpath
   GPL 
-  Finish editor
   BLAS setup (override)
   JPG plugins (Win32)
+  Handle docs
+  save/restore settings for main app window
 
 Done:
+  Quit signaling
+  Finish editor
   colormap wrapping for images
   Installer & packaging
   Source release
@@ -49,6 +51,8 @@ Done:
   Icons
   Missing quads?
   point function?
+  setpath
+  tab completion
 
   framework...
 

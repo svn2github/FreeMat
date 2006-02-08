@@ -88,26 +88,31 @@ namespace FreeMat {
     char *saveptr = (char*) malloc(sizeof(char)*1024);
     char* token;
     token = strtok(pathdata,PATH_DELIM);
-    dirTab.clear();
+    m_userPath.clear();
     while (token != NULL) {
       if (strcmp(token,".") != 0)
-	dirTab.push_back(std::string(TildeExpand(token)));
+	m_userPath << QString(TildeExpand(token));
       token = strtok(NULL,PATH_DELIM);
     }
-    m_path = path;
     rescanPath();
   }
 
   std::string Interface::getPath() {
-    return m_path;
+    std::string retpath;
+    for (int i=0;i<m_userPath.size()-1;i++) 
+      retpath = retpath + m_userPath[i].toStdString() + PATH_DELIM;
+    if (m_userPath.size() > 0) 
+      retpath = retpath + m_userPath[m_userPath.size()-1].toStdString();
+    return retpath;
   }
   
   void Interface::rescanPath() {
     if (!m_context) return;
     m_context->flushTemporaryGlobalFunctions();
-    int i;
-    for (i=0;i<dirTab.size();i++)
-      scanDirectory(dirTab[dirTab.size()-1-i],false,"");
+    for (int i=0;i<m_basePath.size();i++)
+      scanDirectory(m_basePath[i].toStdString(),false,"");
+    for (int i=0;i<m_userPath.size();i++)
+      scanDirectory(m_userPath[i].toStdString(),false,"");
     // Scan the current working directory.
     char cwd[1024];
     getcwd(cwd,1024);
@@ -232,6 +237,14 @@ namespace FreeMat {
       return completions;
 #endif
     }
+  }
+
+  void Interface::setBasePath(QStringList pth) {
+    m_basePath = pth;
+  }
+
+  void Interface::setUserPath(QStringList pth) {
+    m_userPath = pth;
   }
 
   void Interface::scanDirectory(std::string scdir, bool tempfunc,

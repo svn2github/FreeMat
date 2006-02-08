@@ -23,17 +23,18 @@
 
 #include <string>
 #include <vector>
+#include <QStringList>
 
 namespace FreeMat {
   class Context;
 
   class Interface {
     Context *m_context;
-    std::string m_path;
-    std::string app_path;
-    std::vector<std::string> dirTab;    
+    QStringList m_basePath;
+    QStringList m_userPath;
     void scanDirectory(std::string scdir, bool, std::string prefixo);
     void procFile(std::string fname, std::string fullname, bool);
+    std::string app_path;
   public:
     Interface();
     virtual ~Interface();
@@ -45,11 +46,19 @@ namespace FreeMat {
     virtual std::string getAppPath();
     virtual void setAppPath(std::string);
     /**
-     *  Get the current path set for the interface.
+     *  The Base Path is the one that contains .m files in the current app bundle
+     */
+    virtual void setBasePath(QStringList);
+    /**
+     *  The User Path is the one that the user can tinker with.
+     */
+    virtual void setUserPath(QStringList);
+    /**
+     *  Get the current path set for the interface. (user path - legacy interface)
      */
     virtual std::string getPath();
     /**
-     *  Set the path for the interface.
+     *  Set the path for the interface. (user path - legacy interface)
      */
     virtual void setPath(std::string);
     /**

@@ -54,7 +54,8 @@ class FMEditor : public QMainWindow {
   Q_OBJECT
   QMenu *fileMenu, *editMenu;
   QToolBar *editToolBar, *fileToolBar;
-  QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct, *openAct, *saveAsAct, *closeAct;
+  QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
+  QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;

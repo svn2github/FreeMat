@@ -13,11 +13,12 @@ class PathTool : public QDialog {
   QDirModel *model;
   QTreeView *tree;
   QSplitter *splitter;
+  bool modified;
 public:
   PathTool();
-  ~PathTool();
 private slots:
   void add();
+  void addsub();
   void remove();
   void done();
   void save();

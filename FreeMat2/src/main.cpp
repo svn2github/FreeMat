@@ -189,6 +189,7 @@ int main(int argc, char *argv[]) {
     QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
     QObject::connect(m_win,SIGNAL(startEditor()),&m_app,SLOT(Editor()));
     QObject::connect(m_win,SIGNAL(startPathTool()),&m_app,SLOT(PathTool()));
+    QObject::connect(app,SIGNAL(aboutToQuit()),m_win,SLOT(writeSettings()));
   }
   return app->exec();
 }

@@ -1,6 +1,8 @@
 #include <qapplication.h>
 #include <QDir>
 #include <QDebug>
+#include <QtCore>
+#include "Common.hpp"
 #include "MainApp.hpp"
 using namespace FreeMat;
 
@@ -72,18 +74,11 @@ int MainApp::Run() {
   QString path1(dir1.canonicalPath());
   QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
   QString path2(dir2.canonicalPath());
-#ifdef WIN32
-  QString synthpath(path1 + ";" + path2);
-#else
-  QString synthpath(path1 + ":" + path2);
-#endif
-  m_term->setPath(synthpath.toStdString());
-  //   const char *envPtr;
-  //   envPtr = getenv("FREEMAT_PATH");
-  //   if (envPtr)
-  //     m_term->setPath(std::string(envPtr));
-  //   else 
-  //     m_term->setPath(std::string(""));
+  QStringList basePath(GetRecursiveDirList(path1) + GetRecursiveDirList(path2));
+  m_term->setBasePath(basePath);
+  QSettings settings("FreeMat","FreeMat");
+  QStringList userPath = settings.value("interpreter/path").toStringList();
+  m_term->setUserPath(userPath);
   m_term->setAppPath(qApp->applicationDirPath().toStdString());
   eval = new WalkTree(context,m_term);
   if (!skipGreeting)

@@ -1,4 +1,5 @@
 #include "PathTool.hpp"
+#include "Common.hpp"
 #include <QtGui>
 
 PathTool::PathTool() {
@@ -21,12 +22,14 @@ PathTool::PathTool() {
   QWidget *buttonpane = new QWidget;
   QVBoxLayout *blayout = new QVBoxLayout(buttonpane);
   QPushButton *add = new QPushButton("Add");
+  QPushButton *addsub = new QPushButton("Add With Subfolders");
   QPushButton *remove = new QPushButton("Remove");
   QPushButton *up = new QPushButton("Move Up");
   QPushButton *down = new QPushButton("Move Down");
   QPushButton *save = new QPushButton("Save");
   QPushButton *done = new QPushButton("Done");
   blayout->addWidget(add);
+  blayout->addWidget(addsub);
   blayout->addWidget(remove);
   blayout->addWidget(up);
   blayout->addWidget(down);
@@ -38,6 +41,7 @@ PathTool::PathTool() {
   setLayout(lay);
 
   connect(add,SIGNAL(clicked()),this,SLOT(add()));
+  connect(addsub,SIGNAL(clicked()),this,SLOT(addsub()));
   connect(remove,SIGNAL(clicked()),this,SLOT(remove()));
   connect(up,SIGNAL(clicked()),this,SLOT(up()));
   connect(down,SIGNAL(clicked()),this,SLOT(down()));
@@ -49,6 +53,7 @@ PathTool::PathTool() {
   for (int i=0;i<path.size();i++)
     new QListWidgetItem(path[i],m_flist);
   readSettings();
+  modified = false;
 }
 
 void PathTool::readSettings() {
@@ -76,6 +81,16 @@ void PathTool::writeSettings() {
 void PathTool::add() {
   QItemSelectionModel *select = tree->selectionModel();
   new QListWidgetItem(model->filePath(select->currentIndex()),m_flist);
+  modified = true;
+}
+
+void PathTool::addsub() {
+  QItemSelectionModel *select = tree->selectionModel();
+  QString basePath(model->filePath(select->currentIndex()));
+  QStringList dirlist(GetRecursiveDirList(basePath));
+  for(int i=0;i<dirlist.size();i++) 
+    new QListWidgetItem(dirlist[i],m_flist);
+  modified = true;
 }
 
 void PathTool::remove() {
@@ -84,6 +99,7 @@ void PathTool::remove() {
     m_flist->takeItem(m_flist->row(todelete[i]));
     delete todelete[i];
   }
+  modified = true;
 }
 
 void PathTool::up() {
@@ -94,6 +110,7 @@ void PathTool::up() {
     m_flist->insertItem(qMax(0,rownum-1),todelete[0]);
     m_flist->setCurrentItem(todelete[0]);
   }
+  modified = true;
 }
 
 void PathTool::down() {
@@ -104,6 +121,7 @@ void PathTool::down() {
     m_flist->insertItem(qMin(m_flist->count(),rownum+1),todelete[0]);
     m_flist->setCurrentItem(todelete[0]);
   }
+  modified = true;
 }
 
 void PathTool::save() {
@@ -114,12 +132,23 @@ void PathTool::save() {
     pathList << item->text();
   }
   settings.setValue("interpreter/path",pathList);
+  modified = false;
 }
 
 void PathTool::done() {
+  if (modified) {
+    int ret = QMessageBox::warning(this, tr("FreeMat"),
+				   "The path list has been modified.\n"
+				   "Do you want to save your changes?",
+				   QMessageBox::Yes | QMessageBox::Default,
+				   QMessageBox::No,
+				   QMessageBox::Cancel | QMessageBox::Escape);
+    if (ret == QMessageBox::Yes)
+      save();
+    else if (ret == QMessageBox::Cancel)
+      return;
+  }
   writeSettings();
   close();
 }
 
-PathTool::~PathTool() {
-}

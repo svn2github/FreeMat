@@ -309,6 +309,7 @@ void FMEditor::updateTitles() {
 void FMEditor::tabChanged(int newslot) {
   disconnect(copyAct,SIGNAL(triggered()),0,0);
   disconnect(copyAct,SIGNAL(triggered()),0,0);
+  connect(cutAct,SIGNAL(triggered()),currentEditor(),SLOT(cut()));
   connect(copyAct,SIGNAL(triggered()),currentEditor(),SLOT(copy()));
   connect(pasteAct,SIGNAL(triggered()),currentEditor(),SLOT(paste()));
   // Disconnect each of the contents changed signals
@@ -329,20 +330,21 @@ void FMEditor::documentWasModified() {
 }
 
 void FMEditor::createActions() {
-  newAct = new QAction("&New Tab",this);
+  newAct = new QAction(QIcon(":/images/new.png"),"&New Tab",this);
   connect(newAct,SIGNAL(triggered()),this,SLOT(addTab()));
-  openAct = new QAction("&Open",this);
+  openAct = new QAction(QIcon(":/images/open.png"),"&Open",this);
   connect(openAct,SIGNAL(triggered()),this,SLOT(open()));
-  saveAct = new QAction("&Save",this);
+  saveAct = new QAction(QIcon(":/images/save.png"),"&Save",this);
   connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
   saveAsAct = new QAction("Save &As",this);
   connect(saveAsAct,SIGNAL(triggered()),this,SLOT(saveAs()));
-  quitAct = new QAction("&Quit Editor",this);
+  quitAct = new QAction(QIcon(":/images/quit.png"),"&Quit Editor",this);
   connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
-  closeAct = new QAction("&Close Tab",this);
+  closeAct = new QAction(QIcon(":/images/close.png"),"&Close Tab",this);
   connect(closeAct,SIGNAL(triggered()),this,SLOT(closeTab()));
-  copyAct = new QAction("&Copy",this);
-  pasteAct = new QAction("&Paste",this);
+  copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
+  cutAct = new QAction(QIcon(":/images/cut.png"),"Cu&t",this);
+  pasteAct = new QAction(QIcon(":/images/paste.png"),"&Paste",this);
   fontAct = new QAction("&Font",this);
   connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
 }
@@ -357,6 +359,7 @@ void FMEditor::createMenus() {
   fileMenu->addAction(quitAct);
   editMenu = menuBar()->addMenu("&Edit");
   editMenu->addAction(copyAct);
+  editMenu->addAction(cutAct);
   editMenu->addAction(pasteAct);
   editMenu->addAction(fontAct);
 }
@@ -369,6 +372,7 @@ void FMEditor::createToolBars() {
   fileToolBar->addAction(closeAct);
   editToolBar = addToolBar("Edit");
   editToolBar->addAction(copyAct);
+  editToolBar->addAction(cutAct);
   editToolBar->addAction(pasteAct);
 }
 

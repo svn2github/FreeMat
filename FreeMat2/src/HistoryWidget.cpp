@@ -24,8 +24,10 @@ void HistoryWidget::closeEvent(QCloseEvent *ce) {
 
 void HistoryWidget::addCommand(QString t) {
   t.chop(1);
-  if (!t.isEmpty())
-    new QListWidgetItem(t,m_flist);
+  if (!t.isEmpty()) {
+    QListWidgetItem *d = new QListWidgetItem(t,m_flist);
+    m_flist->setCurrentItem(d);
+  }
 }
 
 void HistoryWidget::readSettings() {

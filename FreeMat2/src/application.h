@@ -14,7 +14,7 @@ class ApplicationWindow : public QMainWindow {
   QToolBar *editToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
-  QAction *historyAct, *pathAct;
+  QAction *pathAct;
   FMEditor *edit;
   ToolDock *m_tool;
 public:
@@ -27,13 +27,14 @@ private:
   void createToolBars();
   void createStatusBar();
   void readSettings();
-  //  void writeSettings();
   void initializeTools();
   void createToolBox();
 protected:
   void closeEvent(QCloseEvent*);
 signals:
   void startHelp();
+  void startEditor();
+  void startPathTool();
 public slots:
   void writeSettings();
 private slots:
@@ -43,7 +44,6 @@ private slots:
   void font();
   void about();
   void editor();
-  void history();
   void path();
   void manual();
   void tclose();

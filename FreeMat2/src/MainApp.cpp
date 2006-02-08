@@ -39,6 +39,16 @@ void MainApp::HelpWin() {
   HelpWinFunction(0,dummy,eval);
 }
 
+void MainApp::PathTool() {
+  ArrayVector dummy;
+  PathToolFunction(0,dummy,eval);
+}
+
+void MainApp::Editor() {
+  ArrayVector dummy;
+  EditorFunction(0,dummy,eval);
+}
+
 void MainApp::SetGUIMode(bool mode) {
   guimode = mode;
 }

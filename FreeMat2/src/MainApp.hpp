@@ -24,6 +24,8 @@ public:
 public slots:
   int Run();
   void HelpWin();
+  void PathTool();
+  void Editor();
 };
 
 #endif

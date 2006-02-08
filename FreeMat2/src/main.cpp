@@ -185,7 +185,10 @@ int main(int argc, char *argv[]) {
   m_app.SetGUIMode(!noX);
   m_app.SetSkipGreeting(funcMode);
   QTimer::singleShot(0,&m_app,SLOT(Run()));
-  if (m_win != NULL)
+  if (m_win != NULL) {
     QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
+    QObject::connect(m_win,SIGNAL(startEditor()),&m_app,SLOT(Editor()));
+    QObject::connect(m_win,SIGNAL(startPathTool()),&m_app,SLOT(PathTool()));
+  }
   return app->exec();
 }

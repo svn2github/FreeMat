@@ -15,6 +15,9 @@ protected:
   void closeEvent(QCloseEvent*);
 protected slots:
   void addCommand(QString t);
+  void doubleClicked(QListWidgetItem* item);
+signals:
+  void sendCommand(QString t);
 };
 
 #endif

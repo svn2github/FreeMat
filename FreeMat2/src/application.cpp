@@ -25,8 +25,6 @@ ApplicationWindow::~ApplicationWindow() {
 void ApplicationWindow::createActions() {
   editorAct = new QAction("&Editor",this);
   connect(editorAct,SIGNAL(triggered()),this,SLOT(editor()));
-  historyAct = new QAction("&History",this);
-  connect(historyAct,SIGNAL(triggered()),this,SLOT(history()));
   pathAct = new QAction("&Path Tool",this);
   connect(pathAct,SIGNAL(triggered()),this,SLOT(path()));
   saveAct = new QAction(QIcon(":/images/save.png"),"&Save Transcript",this);
@@ -57,7 +55,6 @@ void ApplicationWindow::createMenus() {
   editMenu->addAction(fontAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(editorAct);
-  toolsMenu->addAction(historyAct);
   toolsMenu->addAction(pathAct);
   helpMenu = menuBar()->addMenu("&Help");
   helpMenu->addAction(aboutAct);
@@ -89,7 +86,7 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
 
 void ApplicationWindow::createToolBox() {
   m_tool = new ToolDock(this);
-  addDockWidget(Qt::LeftDockWidgetArea, m_tool);
+  addDockWidget(Qt::RightDockWidgetArea, m_tool);
 }
 
 void ApplicationWindow::initializeTools() {
@@ -135,6 +132,10 @@ void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
   term->show();
   connect(term,SIGNAL(CommandLine(QString)),
 	  m_tool->getHistoryWidget(),SLOT(addCommand(QString)));
+  connect(m_tool->getHistoryWidget(),SIGNAL(sendCommand(QString)),
+	  term,SLOT(QueueString(QString)));
+  connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),
+	  term,SLOT(QueueString(QString)));
 }
 
 void ApplicationWindow::save() {
@@ -211,16 +212,11 @@ void ApplicationWindow::manual() {
 }
 
 void ApplicationWindow::editor() {
-  edit->showNormal();
-  edit->raise();
-}
-
-void ApplicationWindow::history() {
+  emit startEditor();
 }
 
 void ApplicationWindow::path() {
-  PathTool *p = new PathTool;
-  p->exec();
+  emit startPathTool();
 }
 
 void ApplicationWindow::about() {

@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QDebug>
 #include "HistoryWidget.hpp"
 
 HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
@@ -7,6 +8,13 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   layout->addWidget(m_flist);
   setLayout(layout);
   readSettings();
+  new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
+  connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+	  this,SLOT(doubleClicked(QListWidgetItem*)));
+}
+
+void HistoryWidget::doubleClicked(QListWidgetItem* item) {
+  emit sendCommand(item->text()+"\n");
 }
 
 void HistoryWidget::closeEvent(QCloseEvent *ce) {

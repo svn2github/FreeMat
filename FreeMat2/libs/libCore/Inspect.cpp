@@ -30,7 +30,7 @@
 #include <algorithm>
 #include "Editor.hpp"
 #include "PathTool.hpp"
-
+#include <QtCore>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifndef WIN32
@@ -176,10 +176,11 @@ namespace FreeMat {
   //@]
   //!
   ArrayVector PathToolFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    static PathTool *p = NULL;
-    if (p == NULL)
-      p = new PathTool;
-    p->exec();
+    PathTool p;
+    p.exec();
+    QSettings settings("FreeMat","FreeMat");
+    QStringList userPath = settings.value("interpreter/path").toStringList();
+    eval->getInterface()->setUserPath(userPath);
     eval->getInterface()->rescanPath();
     return ArrayVector();
   }

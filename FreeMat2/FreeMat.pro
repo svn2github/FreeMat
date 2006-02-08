@@ -43,7 +43,7 @@ package.commands = cd tools/disttool && qmake && make && ./disttool -linux
 
 QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack atlas package help
 
-INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP 
+INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP src
 
 macx {
 LIBS += -framework vecLib -L/sw/lib -lg2c
@@ -126,7 +126,7 @@ libs/libXP/TermWidget.hpp \
 libs/libXP/GUITerminal.hpp \
 libs/libXP/QTTerm.hpp 
 
-HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp
+HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp
 
 FMSOURCES += libs/libFreeMat/NewLex.cpp \
 libs/libFreeMat/Array.cpp \
@@ -228,7 +228,7 @@ libs/libXP/KeyManager.cpp \
 libs/libXP/GUITerminal.cpp \
 libs/libXP/QTTerm.cpp 
 
-SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp
+SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp src/FileTool.cpp
 
 !mac:unix {
   HEADERS += src/Terminal.hpp src/DumbTerminal.hpp src/FuncTerminal.hpp

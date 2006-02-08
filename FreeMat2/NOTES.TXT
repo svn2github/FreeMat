@@ -1,4 +1,29 @@
+What about the help compiler?  I could just include it in FreeMat...
+`
 
+What is the deal with the source release?
+  1. Dependency on ATLAS? There appear to be several BLAS options:
+       A. Use a prebuilt ATLAS BLAS
+       B. Use a custom ATLAS BLAS
+       C. Use the system BLAS
+       D. Use the reference BLAS
+  2. UMFPACK/AMD/UFconfig - Just build these, I think
+  3. LAPACK
+       A. Use the system LAPACK
+       B. Use the included LAPACK
+  4. FFCall
+       A. Use the system ffcall
+       B. Use the included ffcall
+  5. FFTW
+       A. Use the system fftw
+       B. Use the included fftw
+  6. Fortran compiler identification (g77 versus gfortran)
+       A. Use gfortran
+       B. Use g77
+  7. Fortran linking (libg2c versus libgfortran)
+
+
+So we need a configure interface that will handle these various options.
 
 Installer:
   Win   - nsis script done & works
@@ -7,20 +32,23 @@ Installer:
   Source - needs work
 
 Before release:
-
-  Installer & packaging
-  Missing quads?
-  Source release
-  Icons
   setpath
   GPL 
-  point function?
   Finish editor
-  Title text
-  xlabels under linux
+  BLAS setup (override)
+  JPG plugins (Win32)
+
+Done:
   colormap wrapping for images
-  JPG plugins
-  BLAS setup
+  Installer & packaging
+  Source release
+  xlabels under linux
+  Title text
+  Non-X11 version
+  non-gui version - with "x" click
+  Icons
+  Missing quads?
+  point function?
 
   framework...
 

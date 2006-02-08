@@ -288,6 +288,17 @@ void QTTerm::PutTagChar(int x, int y, tagChar g) {
 #define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() & Qt::MetaModifier))
 #endif
 
+bool QTTerm::event(QEvent *e) {
+  if (e->type() == QEvent::KeyPress) {
+    QKeyEvent* ke = static_cast<QKeyEvent *>(e);
+    if (ke->key() == Qt::Key_Tab) {
+      ProcessChar(KM_TAB);
+      return true;
+    }
+  }
+  return QWidget::event(e);
+}
+
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   int keycode = e->key(); 
   if (!keycode) return;

@@ -53,6 +53,7 @@ protected:
   void focusOutEvent(QFocusEvent *e);
   void focusInEvent(QFocusEvent *e);
   void PaintRectangle(QPainter *paint, QRect rect);
+  bool event(QEvent *e);
  public slots:
   void scrollBack(int val);
   void blink();

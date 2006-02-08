@@ -126,7 +126,7 @@ libs/libXP/TermWidget.hpp \
 libs/libXP/GUITerminal.hpp \
 libs/libXP/QTTerm.hpp 
 
-HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp
+HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp src/Common.hpp
 
 FMSOURCES += libs/libFreeMat/NewLex.cpp \
 libs/libFreeMat/Array.cpp \
@@ -228,7 +228,7 @@ libs/libXP/KeyManager.cpp \
 libs/libXP/GUITerminal.cpp \
 libs/libXP/QTTerm.cpp 
 
-SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp src/FileTool.cpp
+SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp src/FileTool.cpp src/Common.cpp
 
 !mac:unix {
   HEADERS += src/Terminal.hpp src/DumbTerminal.hpp src/FuncTerminal.hpp
@@ -255,3 +255,5 @@ ff77.input = F77_SOURCES
 QMAKE_EXTRA_COMPILERS += ff77
 
 RESOURCES = FreeMat.qrc
+
+RCC_DIR = build

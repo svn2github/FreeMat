@@ -204,6 +204,7 @@ QString FMEditPane::getFileName() {
 }
 
 FMEditor::FMEditor() : QMainWindow() {
+  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
   prevEdit = NULL;
   tab = new QTabWidget(this);
   setCentralWidget(tab);

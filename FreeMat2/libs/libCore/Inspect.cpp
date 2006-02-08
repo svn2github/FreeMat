@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
+#include "Editor.hpp"
+#include "PathTool.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -136,7 +138,7 @@ namespace FreeMat {
   //  helpwin
   //@]
   //!
-  ArrayVector HelpWinFunction(int natgout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     Interface *io = eval->getInterface();
     QDir dir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
     HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
@@ -144,6 +146,44 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module EDITOR Open Editor Window
+  //@@Section FREEMAT
+  //@@Usage
+  //Brings up the editor window.  The @|editor| function takes no
+  //arguments:
+  //@[
+  //  editor
+  //@]
+  //!
+  ArrayVector EditorFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    static FMEditor *edit = NULL;
+    if (edit == NULL)
+      edit = new FMEditor;
+    edit->showNormal();
+    edit->raise();
+    return ArrayVector();
+  }
+
+  //!
+  //@Module PATHTOOL Open Path Setting Tool
+  //@@Section FREEMAT
+  //@@Usage
+  //Brings up the pathtool dialog.  The @|pathtool| function takes
+  //no arguments:
+  //@[
+  //  pathtool
+  //@]
+  //!
+  ArrayVector PathToolFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    static PathTool *p = NULL;
+    if (p == NULL)
+      p = new PathTool;
+    p->exec();
+    eval->getInterface()->rescanPath();
+    return ArrayVector();
+  }
+  
   //!
   //@Module HELP Help
   //@@Section FREEMAT

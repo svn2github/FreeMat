@@ -2,7 +2,7 @@ TEMPLATE = lib
 
 TARGET = FN
 
-CONFIG += staticlib
+CONFIG += staticlib create_prl
 
 INCLUDEPATH = ../libFreeMat
 

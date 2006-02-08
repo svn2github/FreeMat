@@ -7,6 +7,7 @@
 class GUITerminal : public QTTerm, public KeyManager {
   Q_OBJECT
 
+  std::vector<std::string> cmd_list;
  protected:
   void resizeEvent( QResizeEvent *e );
  public:
@@ -24,7 +25,8 @@ class GUITerminal : public QTTerm, public KeyManager {
   virtual char* getLine(std::string aprompt);
 signals:
   void CommandLine(QString);
-
+protected slots:
+  void QueueString(QString t);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "GUITerminal.hpp"
+#include <QDebug>
 #include <qapplication.h>
 
 void GUITerminal::resizeEvent( QResizeEvent *e ) {
@@ -48,4 +49,11 @@ char* GUITerminal::getLine(std::string aprompt) {
   char *ret = KeyManager::getLine(aprompt);
   emit CommandLine(QString(ret));
   return ret;
+}
+
+void GUITerminal::QueueString(QString t) {
+  const char *cp = t.toAscii().constData();
+  while (*cp) {
+    ProcessChar(*cp++);
+  }
 }

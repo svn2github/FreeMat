@@ -147,6 +147,8 @@ namespace FreeMat {
   ArrayVector FindFunction(int, const ArrayVector& arg);
   ArrayVector HelpFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector HelpWinFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector EditorFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector PathToolFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SleepFunction(int, const ArrayVector& arg);
   ArrayVector SetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector GetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);

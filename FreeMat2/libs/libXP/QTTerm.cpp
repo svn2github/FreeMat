@@ -330,9 +330,10 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
       key = p[0];
     else
       key = 0;
-    if (key) 
+    if (key) {
       ProcessChar(key);
-    else
+      e->accept();
+    } else
       e->ignore();
   }
 }

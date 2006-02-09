@@ -1,8 +1,0 @@
-More stuff:
-11. Command line help
-5.  Help?
-8.  OpenGL?
-9.  Resize of plot doesn't fill in background...  - not on XP - X11?
-10. Robustify plot-style handler
-
-

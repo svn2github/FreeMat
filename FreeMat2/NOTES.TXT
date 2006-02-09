@@ -35,12 +35,14 @@ Before release:
   GPL 
   BLAS setup (override)
   JPG plugins (Win32)
+  About dialog
   Handle docs
   save/restore settings for main app window
 
 Done:
   Quit signaling
   Finish editor
+  GUI Console + completions
   colormap wrapping for images
   Installer & packaging
   Source release

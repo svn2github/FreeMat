@@ -260,3 +260,5 @@ RCC_DIR = build
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png
 DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz
+DISTFILES += help/section_descriptors.txt
+DISTFILES += $$system(find MFiles -name '*.m')

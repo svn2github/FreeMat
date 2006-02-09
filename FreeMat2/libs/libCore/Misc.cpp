@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Malloc.hpp"
-#include "Command.hpp"
 #include "SingularValueDecompose.hpp"
 #include "QRDecompose.hpp"
 #include "System.hpp"

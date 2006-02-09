@@ -35,7 +35,6 @@
 #include "HandleSurface.hpp"
 #include "HandleWindow.hpp"
 #include "QTRenderEngine.hpp"
-#include "Util.hpp"
 
 // Subplot
 // labels don't always appear properly.

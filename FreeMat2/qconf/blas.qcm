@@ -49,8 +49,9 @@ public:
     return true;
 #else
     QString blaspath;
+    QString blasheader;
     if (conf->getenv("QC_ENABLE_REFERENCE_BLAS") == "") {
-      if (!conf->findLibrary("blas",&blaspath)) {
+      if (!conf->findSimpleLibrary("","","","blas",&blasheader,&blaspath)) {
         system = false;
         reference = false;
         conf->addExtra("PRE_TARGETDEPS += extern/ATLAS/lib/BLAS_FreeMat/libatlas.a");

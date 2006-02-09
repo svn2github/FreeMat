@@ -41,8 +41,8 @@ public:
   QString resultString() const {if (system) return "system"; return "local";}
   bool exec()
   {
-    QString arpackpath;
-    if (!conf->findLibrary("arpack",&arpackpath)) {
+    QString arpackpath, arpackheader;
+    if (!conf->findSimpleLibrary("","","","arpack",&arpackheader,&arpackpath)) {
       system = false;
       conf->addExtra("PRE_TARGETDEPS += extern/ARPACK/libarpack.a");
       conf->addLib("extern/ARPACK/libarpack.a");

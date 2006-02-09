@@ -45,8 +45,8 @@ public:
     system = true;
     return true;
 #else
-    QString lapackpath;
-    if (!conf->findLibrary("lapack",&lapackpath)) {
+    QString lapackpath, lapackheader;
+    if (!conf->findSimpleLibrary("","","","lapack",&lapackheader,&lapackpath)) {
       system = false;
       conf->addExtra("PRE_TARGETDEPS += extern/LAPACK/liblapack.a");
       conf->addLib("extern/LAPACK/liblapack.a");

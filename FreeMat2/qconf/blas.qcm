@@ -29,31 +29,43 @@ QCM (QConf Module) Howto:
 
 -----BEGIN QCMOD-----
 name: BLAS
+arg: enable-reference-blas, Force FreeMat to build with the reference BLAS
 -----END QCMOD-----
 */
 class qc_blas : public ConfObj
 {
   bool system;
+  bool reference;
 public:
   qc_blas(Conf *c) : ConfObj(c) {}
   QString name() const { return "blas"; }
   QString shortname() const { return "blas"; }
-  QString resultString() const {if (system) return "system"; return "local";}
+  QString resultString() const {if (reference) return "reference"; if (system) return "system"; return "local";}
   bool exec()
   {
 #ifdef Q_OS_MACX
     system = true;
+    reference = false;
     return true;
 #else
     QString blaspath;
-    if (!conf->findLibrary("blas",&blaspath)) {
-      system = false;
-      conf->addExtra("PRE_TARGETDEPS += extern/ATLAS/lib/BLAS_FreeMat/libatlas.a");
-      conf->addLib("extern/ATLAS/lib/BLAS_FreeMat/libf77blas.a");
-      conf->addLib("extern/ATLAS/lib/BLAS_FreeMat/libatlas.a");
+    if (conf->getenv("QC_ENABLE_REFERENCE_BLAS") == "") {
+      if (!conf->findLibrary("blas",&blaspath)) {
+        system = false;
+        reference = false;
+        conf->addExtra("PRE_TARGETDEPS += extern/ATLAS/lib/BLAS_FreeMat/libatlas.a");
+        conf->addLib("extern/ATLAS/lib/BLAS_FreeMat/libf77blas.a");
+        conf->addLib("extern/ATLAS/lib/BLAS_FreeMat/libatlas.a");
+      } else {
+        system = true;
+        reference = false;
+        conf->addLib(blaspath);
+      }
     } else {
-      system = true;
-      conf->addLib(blaspath);
+       system = false;
+       reference = true;
+       conf->addExtra("PRE_TARGETDEPS += extern/LAPACK/BLAS/libblas.a");
+       conf->addLib("extern/LAPACK/BLAS/libblas.a");
     }
     return true;
 #endif

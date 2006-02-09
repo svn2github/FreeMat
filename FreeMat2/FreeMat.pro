@@ -10,8 +10,11 @@ TARGET = FreeMat
 
 include($$OUT_PWD/conf.pri)
 
+blas.target = extern/LAPACK/BLAS/libblas.a
+blas.commands = cd extern/LAPACK/BLAS/SRC && make -f Makefile_freemat FC=$$F77
+
 atlas.target = extern/ATLAS/lib/BLAS_FreeMat/libatlas.a
-atlas.commands = cd ATLAS && make < chat && make install arch=BLAS_FreeMat
+atlas.commands = cd extern/ATLAS && make < ../chat && make install arch=BLAS_FreeMat
 
 fftw_double.target = extern/fftw-3.0.1/.libs/libfftw3.a
 fftw_double.commands = cd extern && tar xfz fftw-3.0.1.tar.gz && cd fftw-3.0.1 && ./configure && make
@@ -23,10 +26,10 @@ avcall.target = extern/ffcall-1.10/avcall/.libs/libavcall.a
 avcall.commands = cd extern && tar xfz ffcall-1.10_freemat_patch.tar.gz && cd ffcall-1.10 && ./configure && make
 
 amd.target = extern/AMD/Lib/libamd.a
-amd.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz &&  cd AMD && make
+amd.commands = cd extern && tar xfz AMD-1.2.tar.gz &&  cd AMD && make
 
 umfpack.target = extern/UMFPACK/Lib/libumfpack.a
-umfpack.commands = cd extern && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK && make
+umfpack.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK/Source && make
 
 arpack.target = extern/ARPACK/libarpack.a
 arpack.commands = cd extern && tar xfz arpack96_freemat_patch.tar.gz && cd ARPACK && make FC=$$F77
@@ -41,7 +44,7 @@ help.commands = ./$$TARGET -helpgen
 package.target = package
 package.commands = cd tools/disttool && qmake && make && ./disttool -linux
 
-QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack atlas package help
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help
 
 INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP src
 
@@ -110,7 +113,6 @@ libs/libGraphics/GLRenderEngine.hpp \
 libs/libGraphics/HandleText.hpp \
 libs/libGraphics/RenderEngine.hpp \
 libs/libGraphics/HandleLineSeries.hpp \
-libs/libGraphics/RenderEngine.hpp \
 libs/libGraphics/HandleCommands.hpp \
 libs/libGraphics/HandleImage.hpp \
 libs/libGraphics/HandleSurface.hpp \
@@ -255,3 +257,6 @@ QMAKE_EXTRA_COMPILERS += ff77
 RESOURCES = FreeMat.qrc
 
 RCC_DIR = build
+
+DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png
+DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz

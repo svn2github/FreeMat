@@ -32,7 +32,6 @@ Installer:
   Source - needs work
 
 Before release:
-  GPL 
   BLAS setup (override)
   JPG plugins (Win32)
   About dialog
@@ -40,6 +39,7 @@ Before release:
   save/restore settings for main app window
 
 Done:
+  GPL 
   Quit signaling
   Finish editor
   GUI Console + completions

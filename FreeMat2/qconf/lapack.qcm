@@ -29,16 +29,18 @@ QCM (QConf Module) Howto:
 
 -----BEGIN QCMOD-----
 name: LAPACK
+arg: enable-reference-lapack, Force FreeMat to build with the reference LAPACK
 -----END QCMOD-----
 */
 class qc_lapack : public ConfObj
 {
   bool system;
+  bool reference;
 public:
   qc_lapack(Conf *c) : ConfObj(c) {}
   QString name() const { return "lapack"; }
   QString shortname() const { return "lapack"; }
-  QString resultString() const {if (system) return "system"; return "local";}
+  QString resultString() const {if (reference) return "reference"; if (system) return "system"; return "local";}
   bool exec()
   {
 #ifdef Q_OS_MACX
@@ -46,7 +48,8 @@ public:
     return true;
 #else
     QString lapackpath, lapackheader;
-    if (!conf->findSimpleLibrary("","","","lapack",&lapackheader,&lapackpath)) {
+    reference = (conf->getenv("QC_ENABLE_REFERENCE_LAPACK") != "");
+    if (reference || !conf->findSimpleLibrary("","","","lapack",&lapackheader,&lapackpath)) {
       system = false;
       conf->addExtra("PRE_TARGETDEPS += extern/LAPACK/liblapack.a");
       conf->addLib("extern/LAPACK/liblapack.a");

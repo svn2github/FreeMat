@@ -24,7 +24,6 @@
 #include <map>
 #include <algorithm>
 #include "Array.hpp"
-#include "QPWidget.hpp"
 #include "SymbolTable.hpp"
 #include "HandleObject.hpp"
 #include "HandleFigure.hpp"

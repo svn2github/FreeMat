@@ -58,7 +58,6 @@ DEPENDPATH += INCLUDEPATH
 HEADERS += libs/libFreeMat/Array.hpp \
 libs/libFreeMat/AST.hpp \
 libs/libFreeMat/Math.hpp \
-libs/libFreeMat/Command.hpp \
 libs/libFreeMat/Context.hpp \
 libs/libFreeMat/Data.hpp \
 libs/libFreeMat/Dimensions.hpp \
@@ -132,7 +131,6 @@ FMSOURCES += libs/libFreeMat/NewLex.cpp \
 libs/libFreeMat/Array.cpp \
 libs/libFreeMat/AST.cpp \
 libs/libFreeMat/Math.cpp \
-libs/libFreeMat/Command.cpp \
 libs/libFreeMat/Context.cpp \
 libs/libFreeMat/Data.cpp \
 libs/libFreeMat/Dimensions.cpp \

@@ -20,7 +20,6 @@
 #include "Array.hpp"
 #include "WalkTree.hpp"
 #include "Utils.hpp"
-#include "Command.hpp"
 #include "Interface.hpp"
 #ifndef WIN32
 #include <unistd.h>

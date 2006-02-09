@@ -41,6 +41,10 @@ public:
   QString resultString() const {if (system) return "system"; return "local";}
   bool exec()
   {
+#ifdef Q_OS_MACX
+    system = true;
+    return true;
+#else
     QString blaspath;
     if (!conf->findLibrary("blas",&blaspath)) {
       system = false;
@@ -52,5 +56,6 @@ public:
       conf->addLib(blaspath);
     }
     return true;
+#endif
   }
 };

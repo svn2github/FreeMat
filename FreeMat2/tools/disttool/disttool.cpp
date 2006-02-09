@@ -48,24 +48,24 @@ ConsoleWidget::ConsoleWidget() : QWidget() {
   m_text->setReadOnly(true);
   resize(600,400);
   m_text->setFontFamily("Courier");
-  QPushButton *winb = new QPushButton("Win32");
-  QWidget::connect(winb,SIGNAL(clicked()),this,SLOT(WinBundle()));
-  QPushButton *linuxb = new QPushButton("Linux");
-  QWidget::connect(linuxb,SIGNAL(clicked()),this,SLOT(LinuxBundle()));
-  QPushButton *macb = new QPushButton("Mac");
-  QWidget::connect(macb,SIGNAL(clicked()),this,SLOT(MacBundle()));
-  QPushButton *quit = new QPushButton("Quit");
-  QWidget::connect(quit,SIGNAL(clicked()),this,SLOT(exitNow()));
+  //   QPushButton *winb = new QPushButton("Win32");
+  //   QWidget::connect(winb,SIGNAL(clicked()),this,SLOT(WinBundle()));
+  //   QPushButton *linuxb = new QPushButton("Linux");
+  //   QWidget::connect(linuxb,SIGNAL(clicked()),this,SLOT(LinuxBundle()));
+  //   QPushButton *macb = new QPushButton("Mac");
+  //   QWidget::connect(macb,SIGNAL(clicked()),this,SLOT(MacBundle()));
+  //   QPushButton *quit = new QPushButton("Quit");
+  //   QWidget::connect(quit,SIGNAL(clicked()),this,SLOT(exitNow()));
   QVBoxLayout *layout = new QVBoxLayout;
+  //   QWidget *buttons = new QWidget;
+  //   QHBoxLayout *hlayout = new QHBoxLayout;
+  //   hlayout->addWidget(winb);
+  //   hlayout->addWidget(linuxb);
+  //   hlayout->addWidget(macb);
+  //   hlayout->addWidget(quit);
+  //   buttons->setLayout(hlayout);
+  //   layout->addWidget(buttons);
   layout->addWidget(m_text);
-  QWidget *buttons = new QWidget;
-  QHBoxLayout *hlayout = new QHBoxLayout;
-  hlayout->addWidget(winb);
-  hlayout->addWidget(linuxb);
-  hlayout->addWidget(macb);
-  hlayout->addWidget(quit);
-  buttons->setLayout(hlayout);
-  layout->addWidget(buttons);
   setLayout(layout);
 }
 
@@ -83,7 +83,9 @@ QStringList GetFileList(QString src,QStringList lst) {
 	QString fname(fileInfo.absoluteFilePath());
 	int n = fname.indexOf("Contents/",Qt::CaseInsensitive);
 	fname.remove(0,n);
+#ifdef WIN32
 	fname.replace("/","\\");
+#endif
 	lst += fname;
       }
     }
@@ -155,15 +157,15 @@ void ConsoleWidget::MacBundle() {
   CrossLinkFramework("QtGui","QtCore");
   CrossLinkFramework("QtOpenGL","QtGui");
   CrossLinkFramework("QtOpenGL","QtCore");
-  CopyDirectory("../helpgen/html","../../FreeMat.app/Contents/Resources/help/html");
-  CopyDirectory("../helpgen/text","../../FreeMat.app/Contents/Resources/help/text");
-  CopyDirectory("../helpgen/MFiles","../../FreeMat.app/Contents/Resources/mfiles");
+  CopyDirectory("../../help/html","../../FreeMat.app/Contents/Resources/help/html");
+  CopyDirectory("../../help/text","../../FreeMat.app/Contents/Resources/help/text");
+  CopyDirectory("../../help/MFiles","../../FreeMat.app/Contents/Resources/mfiles");
   CopyDirectory(qtdir+"/plugins/imageformats","../../FreeMat.app/Contents/Plugins/imageformats");
   RelinkPlugins();
   TermOutputText("\nBuilding .dmg file...\n");
-  QFile vfile("../helpgen/version.txt");
+  QFile vfile("../../help/version.txt");
   if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../helpgen/version.txt for input\n");
+    Halt("Unable to open ../../help/version.txt for input\n");
   QTextStream g(&vfile);
   QString versionnum(g.readLine(0));
   Execute("hdiutil",QStringList() << "create" << "-fs" << "HFS+" << "-srcfolder" << "../../FreeMat.app" << "../../FreeMat_" + versionnum + ".dmg");
@@ -183,10 +185,36 @@ bool allWhiteSpace(QString a) {
   return (a.isEmpty());
 }
 
+void ImportLibs(QString program) {
+  QString lddOutput(ExecuteAndCapture("ldd",QStringList() << program));
+  // Regular Expression to parse output of ldd...
+  QRegExp lddlib("=>\\s*([^(]*)");
+  QRegExp Xlib("X11R6");
+  int k=0;
+  while ((k = lddOutput.indexOf(lddlib,k)) != -1) {
+    QString lib(stripWhiteSpace(lddlib.cap(1)));
+    if (!allWhiteSpace(lib)) {
+      TermOutputText("Lib :" + lib);
+      if ((lib.indexOf("X11R6") == -1) && (lib.indexOf("/tls/") == -1) && 
+	  (lib.indexOf("ncurses") == -1) && (lib.indexOf("libz") == -1) &&
+	  (lib.indexOf("libdl") == -1) && (lib.indexOf("libGL") == -1) &&
+	  (lib.indexOf("libc.") == -1) && (lib.indexOf("libm.") == -1) &&
+	  (lib.indexOf("libpthread.") == -1)) {
+ 	QFileInfo file(lib);
+	CopyFile(lib,"FreeMat/Contents/lib/"+file.fileName());
+	// 	Execute("/bin/cp",QStringList() << "-v" << "-R" << lib << file.fileName());
+	TermOutputText(" <copy> to FreeMat/Contents/lib/" + file.fileName() + "\n");
+      } else
+	TermOutputText(" <skip>\n");
+    }
+    k += lddlib.matchedLength();
+  }
+}
+
 void ConsoleWidget::LinuxBundle() {
-  QFile vfile("../helpgen/version.txt");
+  QFile vfile("../../help/version.txt");
   if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../helpgen/version.txt for input\n");
+    Halt("Unable to open ../../help/version.txt for input\n");
   QTextStream g(&vfile);
   QString versionnum(g.readLine(0));
   MakeDir("FreeMat");
@@ -200,47 +228,37 @@ void ConsoleWidget::LinuxBundle() {
   CopyFile("../../FreeMat","FreeMat/Contents/bin/FreeMatMain");
   // Copy the required libraries
   MakeDir("FreeMat/Contents/lib");
-  QString lddOutput(ExecuteAndCapture("ldd",QStringList() << "../../FreeMat"));
-  // Regular Expression to parse output of ldd...
-  QRegExp lddlib("=>\\s*([^(]*)");
-  QRegExp Xlib("X11R6");
-  int k=0;
-  while ((k = lddOutput.indexOf(lddlib,k)) != -1) {
-    QString lib(stripWhiteSpace(lddlib.cap(1)));
-    if (!allWhiteSpace(lib)) {
-      TermOutputText("Lib :" + lib);
-      if ((lib.indexOf("X11R6") == -1) && (lib.indexOf("/tls/") == -1) && 
-	  (lib.indexOf("ncurses") == -1) && (lib.indexOf("libz") == -1) &&
-	  (lib.indexOf("libdl") == -1) && (lib.indexOf("libGL") == -1)) {
- 	QFileInfo file(lib);
-	CopyFile(lib,"FreeMat/Contents/lib/"+file.fileName());
-// 	Execute("/bin/cp",QStringList() << "-v" << "-R" << lib << file.fileName());
-	TermOutputText(" <copy> to FreeMat/Contents/lib/" + file.fileName() + "\n");
-      } else
-	TermOutputText(" <skip>\n");
-    }
-    k += lddlib.matchedLength();
-  }
-  // Write out the run script
-  QFile script("FreeMat/Contents/bin/FreeMat");
-  if (!script.open(QFile::WriteOnly))
+  ImportLibs("../../FreeMat");
+   // Write out the run script
+  QFile *script = new QFile("FreeMat/Contents/bin/FreeMat");
+  if (!script->open(QFile::WriteOnly))
     Halt("Unable to open FreeMat/Contents/bin/FreeMat for output\n");
-  QTextStream h(&script);
-  h << "#!/bin/bash\n";
-  h << "mypath=`which $0`\n";
-  h << "mypath=${mypath%/*}\n";
-  h << "declare -x LD_LIBRARY_PATH=$mypath/../lib\n";
-  h << "$mypath/FreeMatMain $*\n";
-  CopyDirectory("../helpgen/html","FreeMat/Contents/Resources/help/html");
-  CopyDirectory("../helpgen/text","FreeMat/Contents/Resources/help/text");
-  CopyDirectory("../helpgen/MFiles","FreeMat/Contents/Resources/mfiles");
+  QTextStream *h = new QTextStream(script);
+  *h << "#!/bin/bash\n";
+  *h << "mypath=`which $0`\n";
+  *h << "mypath=${mypath%/*}\n";
+  *h << "declare -x LD_LIBRARY_PATH=$mypath/../lib\n";
+  *h << "$mypath/FreeMatMain $*\n";
+  delete h;
+  delete script;
+  Execute("/bin/chmod",QStringList() << "+x" << "FreeMat/Contents/bin/FreeMat");
+  CopyDirectory("../../help/html","FreeMat/Contents/Resources/help/html");
+  CopyDirectory("../../help/text","FreeMat/Contents/Resources/help/text");
+  CopyDirectory("../../help/MFiles","FreeMat/Contents/Resources/mfiles");
+  QString qtdir(getenv("QTDIR"));
+  CopyDirectory(qtdir+"/plugins/imageformats","FreeMat/Contents/Plugins/imageformats");
+  QStringList plugs(GetFileList("FreeMat/Contents/Plugins/imageformats",
+				QStringList()));
+  for (int i=0;i<plugs.size();i++)
+    ImportLibs("FreeMat/"+plugs[i]);
   TermOutputText("\n\nDone\n");
+  //  qApp->exit();
 }
 
 void ConsoleWidget::WinBundle() {
-  QFile vfile("../helpgen/version.txt");
+  QFile vfile("../../help/version.txt");
   if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../helpgen/version.txt for input\n");
+    Halt("Unable to open ../../help/version.txt for input\n");
   QTextStream g(&vfile);
   QString versionnum(g.readLine(0));
   MakeDir("FreeMat");
@@ -307,10 +325,42 @@ void ConsoleWidget::exitNow() {
   exit(1);
 }
 
+int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
+  bool flagFound = false;
+  int ndx;
+  ndx = 1;
+  while (!flagFound && ndx < argc) {
+    flagFound = strcmp(argv[ndx],flagstring) == 0;
+    if (!flagFound) ndx++;
+  }
+  if (flagFound && flagarg && (ndx == argc-1)) {
+    fprintf(stderr,"Error: flag %s requires an argument!\n",flagstring);
+    exit(1);
+  }
+  if (!flagFound)
+    ndx = 0;
+  return ndx;
+}
+
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   ConsoleWidget *m_main = new ConsoleWidget;
+  int linuxflag;
+  int macflag;
+  int pcflag;
+  linuxflag = parseFlagArg(argc,argv,"-linux",false);
+  macflag = parseFlagArg(argc,argv,"-mac",false);
+  pcflag = parseFlagArg(argc,argv,"-win",false);
+  if (!linuxflag && !macflag && !pcflag)
+    return 0;
   m_main->show();
+  if (linuxflag) {
+    QTimer::singleShot(0,m_main,SLOT(LinuxBundle()));
+  } else if (macflag) {
+    QTimer::singleShot(0,m_main,SLOT(MacBundle()));
+  } else if (pcflag) {
+    QTimer::singleShot(0,m_main,SLOT(WinBundle()));
+  }
   return app.exec();
   return 0;
 }

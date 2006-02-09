@@ -43,6 +43,9 @@
 %all(A,2)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = all(A,dim)
   if (nargin == 0)
     error 'all function requires at least one argument'

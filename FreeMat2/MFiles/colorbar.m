@@ -14,6 +14,9 @@
 %  colorbar(properties...)
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function handle = colorbar(varargin)
 axhan = gca;
 % Check for an existing colorbar for the current axis

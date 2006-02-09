@@ -22,6 +22,9 @@
 %isfield(pi,'round')
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = isfield(x,field)
   if (isa(x,'struct'))
     y = any(strcmp(fieldnames(x),field));

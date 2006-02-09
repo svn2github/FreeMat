@@ -33,6 +33,9 @@
 %p = strncmp(x,'ast',3)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = strncmp(source,pattern,n)
   patlen = length(pattern);
   if (isa(source,'string'))

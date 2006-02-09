@@ -25,6 +25,9 @@
 %@>
 %@figure log2plot
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = log2(x)
   if (isa(x,'float') | isa(x,'complex'))
     y = log(x)/log(2.0f);

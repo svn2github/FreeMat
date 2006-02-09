@@ -57,6 +57,9 @@
 %The resulting plot is shown here
 %@figure polyfit3
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function p = polyfit(x,y,n)
 x = x(:);
 y = y(:);

@@ -105,6 +105,9 @@
 %@>
 %@figure colormap7
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function cmap = colormap(A)
 if (nargin == 0)
   cmap = get(gcf,'colormap');

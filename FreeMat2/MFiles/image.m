@@ -65,6 +65,9 @@
 %The resulting image looks like:
 %@figure image2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function handle = image(varargin)
   ax = newplot;
   if (length(varargin) == 0), return; end

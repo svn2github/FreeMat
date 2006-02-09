@@ -40,6 +40,9 @@
 %any(A,2)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = any(A,dim)
   if (nargin == 0)
     error 'any function requires at least one argument'

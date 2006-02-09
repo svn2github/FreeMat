@@ -23,6 +23,9 @@
 %full(I(1:10,1:10))
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function a = speye(n,m)
 if (nargin == 1)
   m = n;

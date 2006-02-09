@@ -15,6 +15,9 @@
 %@|[lo,hi]|.  In the second two forms, the axes limits are 
 %automatically selected by FreeMat.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function zlim(lim1, lim2)
   if isa(lim1,'string') && strcmp(lim1,'auto')
      set(gca,'zlimmode','auto');

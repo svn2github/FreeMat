@@ -64,6 +64,9 @@
 %winlev
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function [win,lev] = winlev(window,level)
 g = gca;
 if (nargin == 2)

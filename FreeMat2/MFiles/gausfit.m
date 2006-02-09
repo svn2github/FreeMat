@@ -50,6 +50,9 @@
 %Which results in the following plot
 %@figure gausfit1
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function [mu,sigma,dc,gain,yhat] = gausfit(t,y,w,mug,sigmag,dcg,gaing)
 if (~isset('w')) 
   w = y*0+1; 

@@ -32,6 +32,9 @@
 %with the result shown here
 %@figure spy2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function spy(A,colspec)
 if (nargin==1)
   colspec = 'r.';

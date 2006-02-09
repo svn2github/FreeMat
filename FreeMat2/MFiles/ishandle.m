@@ -11,6 +11,9 @@
 %and returns a logical @|1| if @|x| is a handle of type @|type|
 %and a logical @|0| if not.  
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function b = ishandle(handle,type)
   b = logical(0);
   try

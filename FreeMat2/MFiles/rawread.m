@@ -35,6 +35,9 @@
 %   \item @|'be','ieee-be','big-endian','bigEndian','big'|
 %\end{itemize}
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function x = rawread(fname,size,precision,byteorder)
   try 
     if (isset('byteorder'))

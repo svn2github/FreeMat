@@ -20,6 +20,9 @@
 %  path('newpath',path)
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function x = path(a,b)
 if (strcmp(computer,'PCWIN'))
   pathdiv = ';';

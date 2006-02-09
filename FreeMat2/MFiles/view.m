@@ -45,6 +45,9 @@
 %@>
 %@figure view3
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function view(varargin)
   if (nargin == 0)
     error('Expected an argument to view function');

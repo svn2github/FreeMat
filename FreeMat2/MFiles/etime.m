@@ -20,6 +20,9 @@
 %etime(x2,x1);
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = etime(x1,x2)
   if (~exist('x1') | ~exist('x2'))
      error 'etime expects two arguments'

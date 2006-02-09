@@ -21,6 +21,9 @@
 %multiple entries (non-scalar), where field dereferencing has been
 %applied.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function varargout = deal(varargin)
   if (nargin ~= nargout) && (nargin ~= 1)
     error('number of outputs must match number of inputs');

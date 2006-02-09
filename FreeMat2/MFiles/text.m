@@ -37,6 +37,9 @@
 %@>
 %@figure text2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function text(varargin)
 if (nargin < 3)
   error 'text requires at least three arguments, the x and y location vectors and the strings'

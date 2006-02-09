@@ -15,6 +15,9 @@
 %function has changed since FreeMat 1.10.  If the click is not inside the
 %active area of any set of axes, a pair of NaNs are returned.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function t = point
 p = hpoint;
 % Convert p to a fractional coordinate

@@ -29,6 +29,9 @@
 %numel(x,1:3,1:2,2)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function len = numel(x,varargin)
 if (nargin==1)
   len = prod(size(x));

@@ -32,6 +32,9 @@
 %which results in the following plot.
 %@figure xlabel1
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = xlabel(varargin)
   if (nargin < 1) 
     error('xlabel needs at least one argument')

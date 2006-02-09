@@ -8,4 +8,7 @@
 %@]
 %Quits FreeMat.  This script is a simple synonym for @|quit|.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 quit

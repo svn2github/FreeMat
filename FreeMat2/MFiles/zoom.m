@@ -78,6 +78,9 @@
 %@>
 %@figure zoom6
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function zoom(factor)
 % Get the current axis handle
 ax = gca;

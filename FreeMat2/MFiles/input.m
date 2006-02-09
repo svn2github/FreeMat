@@ -18,6 +18,9 @@
 %in which case the text entered by the user is copied verbatim to the
 %output.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = input(prompt,stringflag)
   if (isset('stringflag') && ischar(stringflag) && (strcmp(stringflag,'s') | strcmp(stringflag,'S')))
     y = getline(prompt);

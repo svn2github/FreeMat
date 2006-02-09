@@ -36,6 +36,9 @@
 %nnz(y)/10000^2
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = sprandn(x,n,density)
 if (nargin == 1)
   [i,j] = find(x);

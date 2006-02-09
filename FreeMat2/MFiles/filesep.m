@@ -9,6 +9,9 @@
 %  x = filesep
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function x = filesep
 if (strcmp(computer,'PCWIN'))
   x = '\';

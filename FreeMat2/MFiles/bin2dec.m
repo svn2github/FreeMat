@@ -16,5 +16,8 @@
 %bin2dec('010')
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function t = bin2dec(x)
   t = bin2int(x == '1');

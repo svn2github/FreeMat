@@ -34,6 +34,9 @@
 %A(n)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function n = sub2ind(sizevec,varargin)
   if (length(varargin) == 0)
     n = [];

@@ -15,6 +15,9 @@
 %rad2deg(2*pi)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = rad2deg(x)
   y = x * 180/pi;
   

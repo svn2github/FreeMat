@@ -10,5 +10,8 @@
 %  rescan
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function rescan
   cd(pwd);

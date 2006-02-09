@@ -11,6 +11,9 @@
 %The @|conv| function calls @|conv2| to do the calculation.  See its
 %help for more details.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function z = conv(x,y)
 % is x a column vector
 xiscol = size(x,1) > size(x,2);

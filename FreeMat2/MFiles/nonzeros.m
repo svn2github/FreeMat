@@ -17,6 +17,9 @@
 %nonzeros(A)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 % Copyright (c) 2005 Samit Basu
 function x = nonzeros(y)
 [i,j,x] = find(y);

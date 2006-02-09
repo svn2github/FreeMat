@@ -110,6 +110,9 @@
 %  axis(M,...)
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function retvec = axis(varargin);
 if (length(varargin) > 0)
   if (ishandle(varargin{1},'axes'))

@@ -18,5 +18,8 @@
 %sqrt(x)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = sqrt(x)
   y = x.^(0.5f);

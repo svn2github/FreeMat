@@ -9,6 +9,9 @@
 %  x = pathsep
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function x = pathsep
 if (strcmp(computer,'PCWIN'))
   x = ';';

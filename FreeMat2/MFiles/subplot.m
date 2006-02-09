@@ -76,6 +76,9 @@
 %@>
 %@figure subplot3
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = subplot(varargin)
   m = 1; n = 1; p = 1;
   if (nargin == 1)

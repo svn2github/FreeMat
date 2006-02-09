@@ -19,6 +19,9 @@
 %and is equivalent to @|y = x(m,n).fieldname|.  You can chain multiple
 %references together using this syntax.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = getfield(x,varargin)
 if (isempty(varargin))
   error('Need at least one additional input to getfield');

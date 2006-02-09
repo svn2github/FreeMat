@@ -6,6 +6,9 @@
 %to execute functions remotely.  More documentation on how to
 %use this function will be written later...
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 mpiinit
 % Enter a process loop
 quitflag = 0;

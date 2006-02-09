@@ -18,5 +18,8 @@
 %length(x)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function len = length(x)
 len = max(size(x));

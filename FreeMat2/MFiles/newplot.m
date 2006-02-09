@@ -13,6 +13,9 @@
 %figure is cleared.  If the axes @|nextplot| property is set to
 %@|replace| then the axes are cleared for the next operation.  
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = newplot
 fig = gcf;
 fg_mode = get(fig,'nextplot');

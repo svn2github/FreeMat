@@ -66,6 +66,9 @@
 %MATLAB API.  The functionality will be improved in future versions
 %of FreeMat.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function handle = legend(varargin)
   axhan = gca;
   % Check the form of the command

@@ -35,6 +35,9 @@
 %which results in
 %@figure ylim2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 %Copyright (c) 2004,2005 Brian Yanoff, Samit Basu
 function ylim(lim1, lim2)
   if isa(lim1,'string') && strcmp(lim1,'auto')

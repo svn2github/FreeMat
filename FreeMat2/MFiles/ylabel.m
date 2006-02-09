@@ -31,6 +31,9 @@
 %which results in the following plot.
 %@figure ylabel1
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = ylabel(varargin)
   if (nargin < 1) 
     error('ylabel needs at least one argument')

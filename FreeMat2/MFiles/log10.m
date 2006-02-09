@@ -25,6 +25,9 @@
 %@>
 %@figure log10plot
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = log10(x)
   if (isa(x,'float') | isa(x,'complex'))
     y = log(x)/log(10.0f);

@@ -15,6 +15,9 @@
 %     y = fftshift(x,dim).
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = fftshift(x,dim)
 if (nargin > 1)
   if (numel(dim) ~= 1 | dim ~= floor(dim(1)) | dim < 1)

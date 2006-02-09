@@ -29,6 +29,9 @@
 %Shown here
 %@figure plt3
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = plot3(varargin)
   % Check for an axes handle
   if (nargin>=2)

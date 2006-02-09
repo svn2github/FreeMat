@@ -10,5 +10,8 @@
 %@]
 %and is equivalent to @|length(size(x))|.
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function n = ndims(x)
 n = length(size(x));

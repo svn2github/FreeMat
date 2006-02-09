@@ -31,6 +31,9 @@
 %p = strcmp(x,'astring')
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = strcmp(source,pattern)
   patlen = length(pattern);
   if (isa(source,'string'))

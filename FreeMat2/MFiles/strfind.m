@@ -27,6 +27,9 @@
 %b = strfind(a,'ow')
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = strfind(source,pattern)
   patlen = length(pattern);
   if (isa(source,'string'))

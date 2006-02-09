@@ -54,6 +54,9 @@
 %@>
 %@figure surf2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = surf(varargin)
   % Check for an axes handle
   if (nargin>=2)

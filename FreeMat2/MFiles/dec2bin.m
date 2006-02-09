@@ -24,6 +24,9 @@
 %dec2bin([63,73,32],5)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function t = dec2bin(x,n)
   x = x(:); 
   if (~exist('n') && max(x) > 0)

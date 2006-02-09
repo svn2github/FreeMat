@@ -32,6 +32,9 @@
 %Here is the resulting plot
 %@figure polyval1
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = polyval(p,x)
 y = p(1);
 n = prod(size(p));

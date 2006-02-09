@@ -15,6 +15,9 @@
 %deg2rad(360) - 2*pi
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function y = deg2rad(x)
   y = x * pi/180;
   

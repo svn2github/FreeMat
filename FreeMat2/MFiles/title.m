@@ -40,6 +40,9 @@
 %@>
 %@figure title2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function o = title(varargin)
   % Check for an axes handle
   if (nargin>=2)

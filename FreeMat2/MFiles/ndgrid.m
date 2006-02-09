@@ -31,6 +31,9 @@
 %[a,b,c] = ndgrid(1:3)
 %@>
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function varargout = ndgrid(varargin)
   if (nargin == 0)
     error('ndgrid requires at least one argument');

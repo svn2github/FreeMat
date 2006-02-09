@@ -35,6 +35,9 @@
 %which results in the following plot.
 %@figure zlabel1
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = zlabel(varargin)
   if (nargin < 1) 
     error('zlabel needs at least one argument')

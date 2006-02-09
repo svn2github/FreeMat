@@ -142,6 +142,9 @@
 %plot(cos(5*t).*exp(-t),'r-','linewidth',3);
 %@]
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = plot(varargin)
   % Check for an axes handle
   if (nargin>=2)

@@ -20,6 +20,9 @@
 %which results in the following image
 %@figure gray1
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function map = gray(m)
 r = linspace(0,1,256)';
 map = [r,r,r];

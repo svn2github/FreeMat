@@ -43,6 +43,9 @@
 %@>
 %@figure grid2
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+
 function h = grid(varargin)
 if (nargin == 0)
      grid_toggle(gca);

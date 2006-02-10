@@ -24,6 +24,7 @@ extern "C" {
 #include "umfpack.h"
 }
 #include "LAPACK.hpp"
+#include "MemPtr.hpp"
 #include "Math.hpp"
 #include <math.h>
 
@@ -52,7 +53,7 @@ extern "C" {
   int dnaupd_(int *ido, char *bmat, int *n, char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
 	      double *v, int *ldv, int *iparam, int *ipntr, 
-	      double *workd, double *workl, int *lworkl, int *info);
+	      double *workd, double *workl, int *lworkl, int *info, int len1, int len2);
   int dneupd_(int *rvec, char *howmny, int *select, 
 	double *dr, double *di, double *z__, int *ldz, 
 	double *sigmar, double *sigmai, double *workev, char *
@@ -70,6 +71,13 @@ extern "C" {
 	double *resid, int *ncv, double *v, int *ldv, int 
 	*iparam, int *ipntr, double *workd, double *workl, 
 	int *lworkl, int *info);
+}
+
+void DePr(double *p, int n) {
+  std::cout << "< ";
+  for (int i=0;i<n;i++)
+    std::cout << p[i] << " ";
+  std::cout << ">\n";
 }
 
 template <class T>
@@ -343,7 +351,6 @@ public:
   }
 };
 
-
 // The following ops are O(N^2) instead of O(nnz^2):
 //
 //  GetSparseNDimSubsets - If the rowindex is sorted into an IJV type list, it can be done without the Decompress step.  Although it is really not too bad, since the vector being recompressed is of the subset size.
@@ -402,20 +409,20 @@ namespace FreeMat {
   template <class T>
   T** ConvertDenseToSparseComplex(const T* src, int rows, int cols) {
     T** dp = new T*[cols];
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = bufferBlock.Pointer();
     for (int i=0;i<cols;i++)
       dp[i] = CompressComplexVector<T>(buffer,src+i*rows*2, rows);
-    delete buffer;
     return dp;
   }
   
   template <class T>
   T** ConvertDenseToSparseReal(const T* src, int rows, int cols) {
     T** dp = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = bufferBlock.Pointer();
     for (int i=0;i<cols;i++) 
       dp[i] = CompressRealVector<T>(buffer,src+i*rows, rows);
-    delete buffer;
     return dp;
   }
   
@@ -588,10 +595,10 @@ namespace FreeMat {
     // Get an integer pointer into the IJV list
     int ptr = 0;
     // Stringify...
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = bufferBlock.Pointer();
     for (int col=0;col<cols;col++)
       op[col] = CompressRealIJV<T>(buffer,mlist,nnz,ptr,col,rows);
-    delete[] buffer;
     // Free the space
     delete[] mlist;
     // Return the array
@@ -621,10 +628,10 @@ namespace FreeMat {
     // Get an integer pointer into the IJV list
     int ptr = 0;
     // Stringify...
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = bufferBlock.Pointer();
     for (int col=0;col<cols;col++)
       op[col] = CompressRealIJV<uint32>(buffer,mlist,nnz,ptr,col,rows);
-    delete[] buffer;
     // Free the space
     delete[] mlist;
     // Return the array
@@ -781,10 +788,10 @@ namespace FreeMat {
     // Get an integer pointer into the IJV list
     int ptr = 0;
     // Stringify...
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = bufferBlock.Pointer();
     for (int col=0;col<cols;col++)
       op[col] = CompressComplexIJV<T>(buffer,mlist,nnz,ptr,col,rows);
-    delete[] buffer;
     // Free the space
     delete[] mlist;
     // Return the array
@@ -855,7 +862,8 @@ namespace FreeMat {
   S** TypeConvertSparseRealReal(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    S* buffer = new S[rows*2];
+    MemBlock<S> bufferBlock(rows*2);
+    S* buffer = bufferBlock.Pointer();
     for (int p=0;p<cols;p++) {
       RLEEncoder<S> B(buffer,rows);
       RLEDecoder<T> A(src[p],rows);
@@ -868,7 +876,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -876,7 +883,8 @@ namespace FreeMat {
   S** TypeConvertSparseComplexComplex(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    S* buffer = new S[rows*4];
+    MemBlock<S> bufferBlock(rows*4);
+    S* buffer = bufferBlock.Pointer();
     for (int p=0;p<cols;p++) {
       RLEEncoderComplex<S> B(buffer,rows);
       RLEDecoderComplex<T> A(src[p],rows);
@@ -889,7 +897,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -897,7 +904,8 @@ namespace FreeMat {
   S** TypeConvertSparseRealComplex(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    S* buffer = new S[rows*4];
+    MemBlock<S> bufferBlock(rows*4);
+    S* buffer = bufferBlock.Pointer();
     for (int p=0;p<cols;p++) {
       RLEEncoderComplex<S> B(buffer,rows);
       RLEDecoder<T> A(src[p],rows);
@@ -910,7 +918,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -918,7 +925,8 @@ namespace FreeMat {
   S** TypeConvertSparseComplexReal(T** src, int rows, int cols) {
     S** dp;
     dp = new S*[cols];
-    S* buffer = new S[rows*2];
+    MemBlock<S> bufferBlock(rows*2);
+    S* buffer = bufferBlock.Pointer();
     for (int p=0;p<cols;p++) {
       RLEEncoder<S> B(buffer,rows);
       RLEDecoderComplex<T> A(src[p],rows);
@@ -931,7 +939,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -939,7 +946,8 @@ namespace FreeMat {
   uint32** TypeConvertSparseRealLogical(T** src, int rows, int cols) {
     uint32** dp;
     dp = new uint32*[cols];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = bufferBlock.Pointer();
     for (int p=0;p<cols;p++) {
       RLEEncoder<uint32> B(buffer,rows);
       RLEDecoder<T> A(src[p],rows);
@@ -955,7 +963,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -963,7 +970,8 @@ namespace FreeMat {
   uint32** TypeConvertSparseComplexLogical(T** src, int rows, int cols) {
     uint32** dp;
     dp = new uint32*[cols];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = bufferBlock.Pointer();
     for (int p=0;p<cols;p++) {
       RLEEncoder<uint32> B(buffer,rows);
       RLEDecoderComplex<T> A(src[p],rows);
@@ -979,7 +987,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -1183,11 +1190,13 @@ namespace FreeMat {
   template <class T>
   void DiagSparseRealMultiply(T** A, int A_rows, int A_cols,
 			      T** B, int B_cols, T**C) {
-    T* Aweights = new T[A_rows];
+    MemBlock<T> AweightsBlock(A_rows);
+    T* Aweights = AweightsBlock.Pointer();
     for (int i=0;i<A_cols;i++)
       RealStringExtract(A[i],i,Aweights+i);
     // Setup the output matrix
-    T* buffer = new T[2*A_rows];
+    MemBlock<T> bufferBlock(2*A_rows);
+    T* buffer = bufferBlock.Pointer();
     for (int i=0;i<B_cols;i++) {
       RLEDecoder<T> Bcol(B[i],A_cols);
       RLEEncoder<T> Ccol(buffer,A_rows);
@@ -1200,19 +1209,20 @@ namespace FreeMat {
       Ccol.end();
       C[i] = Ccol.copyout();
     }
-    delete[] Aweights;
-    delete[] buffer;
   }
 
 
   template <class T>
   void DiagSparseComplexMultiply(T** A, int A_rows, int A_cols,
 				 T** B, int B_cols, T**C) {
-    T* Aweights = new T[2*A_rows];
+
+    MemBlock<T> AweightsBlock(2*A_rows);
+    T* Aweights = AweightsBlock.Pointer();
     for (int i=0;i<A_cols;i++)
       ComplexStringExtract(A[i],i,Aweights+i);
     // Setup the output matrix
-    T* buffer = new T[4*A_rows];
+    MemBlock<T> bufferBlock(4*A_rows);
+    T* buffer = bufferBlock.Pointer();
     for (int i=0;i<B_cols;i++) {
       RLEDecoderComplex<T> Bcol(B[i],A_cols);
       RLEEncoderComplex<T> Ccol(buffer,A_rows);
@@ -1228,8 +1238,6 @@ namespace FreeMat {
       Ccol.end();
       C[i] = Ccol.copyout();
     }
-    delete[] Aweights;
-    delete[] buffer;
   }
 
   // Multiply a sparse matrix by a sparse matrix (result is sparse)
@@ -1248,8 +1256,11 @@ namespace FreeMat {
     if (IsSparseMatrixDiagonalReal<T>(A,A_rows,A_cols)) 
       return DiagSparseRealMultiply<T>(A,A_rows,A_cols,
 				       B,B_cols,C);
-    T* abuff = new T[2*A_rows];
-    T* dbuff = new T[A_rows];
+
+    MemBlock<T> abuffBlock(2*A_rows);
+    T* abuff = abuffBlock.Pointer();
+    MemBlock<T> dbuffBlock(A_rows);
+    T* dbuff = dbuffBlock.Pointer();
     for (int j=0;j<B_cols;j++) {
       // Put a decoder on this column of B
       RLEDecoder<T> Bcol(B[j],A_cols);
@@ -1268,8 +1279,6 @@ namespace FreeMat {
       }
       C[j] = CompressRealVector(abuff,dbuff,A_rows);
     }
-    delete abuff;
-    delete dbuff;
   }
   
   // Multiply a sparse matrix by a sparse matrix (result is sparse)
@@ -1288,8 +1297,10 @@ namespace FreeMat {
 					  B,B_cols,C);
     // This new version of the sparse-sparse matrix multiply works
     // as follows.  The outer loop is over the columns of B
-    T* abuff = new T[4*A_rows];
-    T* dbuff = new T[2*A_rows];
+    MemBlock<T> abuffBlock(4*A_rows);
+    T* abuff = abuffBlock.Pointer();
+    MemBlock<T> dbuffBlock(2*A_rows);
+    T* dbuff = dbuffBlock.Pointer();
     for (int j=0;j<B_cols;j++) {
       // Put a decoder on this column of B
       RLEDecoderComplex<T> Bcol(B[j],A_cols);
@@ -1310,8 +1321,6 @@ namespace FreeMat {
       }
       C[j] = CompressComplexVector(abuff,dbuff,A_rows);
     }
-    delete abuff;
-    delete dbuff;
   }
   
   // Multiply a sparse matrix by a dense matrix (result is dense)
@@ -1678,10 +1687,12 @@ namespace FreeMat {
     dst = new T*[cols];
     // The blockindx array tracks which "block" within each 
     // row is active
-    int *blockindx = new int[m.size()];
+    MemBlock<int> blockindxBlock(m.size());
+    int *blockindx = blockindxBlock.Pointer();
     // The colindx array tracks which column within each block
     // is active
-    int *colindx = new int[m.size()];
+    MemBlock<int> colindxBlock(m.size());
+    int *colindx = colindxBlock.Pointer();
     unsigned int j;
     for (j=0;j<m.size();j++) {
       blockindx[j] = 0;
@@ -1720,8 +1731,6 @@ namespace FreeMat {
 	}
       }
     }
-    delete blockindx;
-    delete colindx;
     return dst;
   } 
 
@@ -1858,11 +1867,11 @@ namespace FreeMat {
   void* ConvertIJVtoRLEReal(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
     T** B;
     B = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = bufferBlock.Pointer();
     int ptr = 0;
     for (int col=0;col<cols;col++)
       B[col] = CompressRealIJV<T>(buffer,mlist,nnz,ptr,col,rows);
-    delete buffer;
     return B;
   }
 
@@ -1870,11 +1879,11 @@ namespace FreeMat {
   void* ConvertIJVtoRLEComplex(IJVEntry<T>* mlist, int nnz, int rows, int cols) {
     T** B;
     B = new T*[cols];
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = bufferBlock.Pointer();
     int ptr = 0;
     for (int col=0;col<cols;col++)
       B[col] = CompressComplexIJV<T>(buffer,mlist,nnz,ptr,col,rows);
-    delete buffer;
     return B;
   }
 
@@ -2267,7 +2276,8 @@ namespace FreeMat {
     std::sort(mlist,mlist+irows);
     IJVEntry<T>* ilist = new IJVEntry<T>[irows];
     T** dp = new T*[icols];
-    T* buffer = new T[2*irows];
+    MemBlock<T> bufferBlock(2*irows);
+    T* buffer = bufferBlock.Pointer();
     for (int n=0;n<icols;n++) {
       // For this column, we take a decoder
       RLEDecoder<T> Acol(A[cindx[n]-1],rows);
@@ -2286,7 +2296,6 @@ namespace FreeMat {
       int ptr = 0;
       dp[n] = CompressRealIJV<T>(buffer,ilist,irows,ptr,1,irows);
     }
-    delete[] buffer;
     delete[] ilist;
     delete[] mlist;
     return dp;
@@ -2308,7 +2317,8 @@ namespace FreeMat {
     std::sort(mlist,mlist+irows);
     IJVEntry<T>* ilist = new IJVEntry<T>[irows];
     T** dp = new T*[icols];
-    T* buffer = new T[4*irows];
+    MemBlock<T> bufferBlock(4*irows);
+    T* buffer = bufferBlock.Pointer();
     for (int n=0;n<icols;n++) {
       // For this column, we take a decoder
       RLEDecoderComplex<T> Acol(A[cindx[n]-1],rows);
@@ -2330,7 +2340,6 @@ namespace FreeMat {
       int ptr = 0;
       dp[n] = CompressComplexIJV<T>(buffer,ilist,irows,ptr,1,irows);
     }
-    delete[] buffer;
     delete[] ilist;
     delete[] mlist;
     return dp;
@@ -2347,10 +2356,10 @@ namespace FreeMat {
   void* GetSparseNDimSubsets(Class dclass, int rows, int cols, const void* src,
 			     const indexType* rindx, int irows,
 			     const indexType* cindx, int icols) {
+    MemBlock<indexType> cptrBlock(icols);
     indexType* cptr;
     if (cindx == NULL) {
-      // Memory leak!
-      cptr = new indexType[icols];
+      cptr = cptrBlock.Pointer();
       for (int i=0;i<icols;i++) cptr[i] = i+1;
     } else
       cptr = (indexType*) cindx;
@@ -2530,12 +2539,15 @@ namespace FreeMat {
 				const indexType* cindx, int icols,
 				const T* data, int advance) {
     // For each column...
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = bufferBlock.Pointer();
     // The data buffer
-    T* databuf = new T[irows];
+    MemBlock<T> databufBlock(irows);
+    T* databuf = databufBlock.Pointer();
     // We have to unscramble the rindx order
     IJVEntry<T>* mlist = new IJVEntry<T>[irows];
-    bool* keepval = new bool[irows];
+    MemBlock<bool> keepvalBlock(irows);
+    bool* keepval = &keepvalBlock;
     for (int i=0;i<irows;i++) {
       mlist[i].I = i;
       mlist[i].J = rindx[i] - 1;
@@ -2577,9 +2589,6 @@ namespace FreeMat {
       Anew.end();
       dp[m] = Anew.copyout();
     }
-    delete[] buffer;
-    delete[] databuf;
-    delete[] keepval;
   }
 
 
@@ -2589,12 +2598,15 @@ namespace FreeMat {
 				   const indexType* cindx, int icols,
 				   const T* data, int advance) {
     // For each column...
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = bufferBlock.Pointer();
     // The data buffer
-    T* databuf = new T[irows*2];
+    MemBlock<T> databufBlock(irows*2);
+    T* databuf = databufBlock.Pointer();
     // We have to unscramble the rindx order
     IJVEntry<T>* mlist = new IJVEntry<T>[irows];
-    bool* keepval = new bool[irows];
+    MemBlock<bool> keepvalBlock(irows);
+    bool* keepval = keepvalBlock.Pointer();
     for (int i=0;i<irows;i++) {
       mlist[i].I = i;
       mlist[i].J = rindx[i] - 1;
@@ -2638,16 +2650,16 @@ namespace FreeMat {
       Anew.end();
       dp[m] = Anew.copyout();
     }
-    delete[] buffer;
-    delete[] databuf;
   }
 
   template <class T>
   void SetSparseColumnSubsetReal(int rows, T** dp,
 				 const indexType* cindx, int icols,
 				 const T* data, int advance) {
-    T* Acol = new T[rows];
-    T* buffer = new T[2*rows];
+    MemBlock<T> AcolBuffer(rows);
+    T* Acol = &AcolBuffer;
+    MemBlock<T> bufferBlock(2*rows);
+    T* buffer = &bufferBlock;
     for (int i=0;i<icols;i++) {
       memset(Acol,0,rows*sizeof(T));
       for (int j=0;j<rows;j++) {
@@ -2655,19 +2667,19 @@ namespace FreeMat {
 	data += advance;
       }
       int n = cindx[i] - 1;
-      delete dp[n];
+      delete[] dp[n];
       dp[n] = CompressRealVector<T>(buffer,Acol,rows);
     }
-    delete buffer;
-    delete Acol;
   }
 
   template <class T>
   void SetSparseColumnSubsetComplex(int rows, T** dp,
 				    const indexType* cindx, int icols,
 				    const T* data, int advance) {
-    T* Acol = new T[2*rows];
-    T* buffer = new T[4*rows];
+    MemBlock<T> AcolBlock(2*rows);
+    T* Acol = &AcolBlock;
+    MemBlock<T> bufferBlock(4*rows);
+    T* buffer = &bufferBlock;
     for (int i=0;i<icols;i++) {
       memset(Acol,0,2*rows*sizeof(T));
       for (int j=0;j<rows;j++) {
@@ -2676,11 +2688,9 @@ namespace FreeMat {
 	data += (2*advance);
       }
       int n = cindx[i] - 1;
-      delete dp[n];
+      delete[] dp[n];
       dp[n] = CompressComplexVector<T>(buffer,Acol,rows);
     }
-    delete buffer;
-    delete Acol;
   }
 
   void SetSparseColumnSubset(Class dclass, int rows, 
@@ -2716,46 +2726,46 @@ namespace FreeMat {
 			      const indexType* rindx, int irows,
 			      const indexType* cindx, int icols,
 			      const void *data, int advance) {
-      indexType* cptr;
-      if (cindx == NULL) {
-	// Memory leak!
-	cptr = new indexType[icols];
-	for (int i=0;i<icols;i++) cptr[i] = i+1;
-      } else {
-	cptr = (indexType*) cindx;
-      }
-      if ((rindx == NULL) || ((irows == rows) && 
-			      CheckAllRowsReference(rindx,rows))) 
-	return SetSparseColumnSubset(dclass,rows,src,cptr,icols,data,advance);
-      switch(dclass) {
-      case FM_LOGICAL:
-	return SetSparseNDimSubsetsReal<uint32>(rows, (uint32**) src,
+    MemBlock<indexType> cptrBlock(icols);
+    indexType* cptr;
+    if (cindx == NULL) {
+      cptr = &cptrBlock;
+      for (int i=0;i<icols;i++) cptr[i] = i+1;
+    } else {
+      cptr = (indexType*) cindx;
+    }
+    if ((rindx == NULL) || ((irows == rows) && 
+			    CheckAllRowsReference(rindx,rows))) 
+      return SetSparseColumnSubset(dclass,rows,src,cptr,icols,data,advance);
+    switch(dclass) {
+    case FM_LOGICAL:
+      return SetSparseNDimSubsetsReal<uint32>(rows, (uint32**) src,
+					      rindx, irows, cptr, icols,
+					      (const uint32*) data, advance);
+    case FM_INT32:
+      return SetSparseNDimSubsetsReal<int32>(rows, (int32**) src,
+					     rindx, irows, cptr, icols,
+					     (const int32*) data, advance);
+    case FM_FLOAT:
+      return SetSparseNDimSubsetsReal<float>(rows, (float**) src,
+					     rindx, irows, cptr, icols,
+					     (const float*) data, advance);
+    case FM_DOUBLE:
+      return SetSparseNDimSubsetsReal<double>(rows, (double**) src,
+					      rindx, irows, cptr, icols,
+					      (const double*) data, advance);
+    case FM_COMPLEX:
+      return SetSparseNDimSubsetsComplex<float>(rows, (float**) src,
 						rindx, irows, cptr, icols,
-						(const uint32*) data, advance);
-      case FM_INT32:
-	return SetSparseNDimSubsetsReal<int32>(rows, (int32**) src,
-					       rindx, irows, cptr, icols,
-					       (const int32*) data, advance);
-      case FM_FLOAT:
-	return SetSparseNDimSubsetsReal<float>(rows, (float**) src,
-					       rindx, irows, cptr, icols,
-					       (const float*) data, advance);
-      case FM_DOUBLE:
-	return SetSparseNDimSubsetsReal<double>(rows, (double**) src,
-						rindx, irows, cptr, icols,
-						(const double*) data, advance);
-      case FM_COMPLEX:
-	return SetSparseNDimSubsetsComplex<float>(rows, (float**) src,
-						  rindx, irows, cptr, icols,
-						  (const float*) data, advance);
-      case FM_DCOMPLEX:
-	return SetSparseNDimSubsetsComplex<double>(rows, (double**) src,
-						   rindx, irows, cptr, icols,
-						   (const double*) data, 
-						   advance);
-      default:
-	throw Exception("unsupported type for SetSparseNDimSubsets");
-      }
+						(const float*) data, advance);
+    case FM_DCOMPLEX:
+      return SetSparseNDimSubsetsComplex<double>(rows, (double**) src,
+						 rindx, irows, cptr, icols,
+						 (const double*) data, 
+						 advance);
+    default:
+      throw Exception("unsupported type for SetSparseNDimSubsets");
+    }
   }
   
   template <class T>
@@ -2769,9 +2779,12 @@ namespace FreeMat {
     T** dest;
     dest = new T*[cols];
     // Allocate a buffer array
-    T* NBuf = new T[newrow*2];
-    T* OBuf = new T[rows*2];
-    T* buffer = new T[newrow*4];
+    MemBlock<T> NBufBlock(newrow*2);
+    T* NBuf = &NBufBlock;
+    MemBlock<T> OBufBlock(rows*2);
+    T* OBuf = &OBufBlock;
+    MemBlock<T> bufferBlock(newrow*4);
+    T* buffer = &bufferBlock;
     // Allocate the output array
     for (i=0;i<cols;i++) {
       // Decompress this column
@@ -2787,7 +2800,6 @@ namespace FreeMat {
       // Recompress it
       dest[i] = CompressComplexVector<T>(buffer,NBuf,newrow);
     }
-    delete buffer;
     return dest;
   }
 
@@ -2802,9 +2814,12 @@ namespace FreeMat {
     T** dest;
     dest = new T*[cols];
     // Allocate a buffer array
-    T* NBuf = new T[newrow];
-    T* OBuf = new T[rows];
-    T* buffer = new T[newrow*2];
+    MemBlock<T> NBufBlock(newrow);
+    T* NBuf = &NBufBlock;
+    MemBlock<T> OBufBlock(rows);
+    T* OBuf = &OBufBlock;
+    MemBlock<T> bufferBlock(newrow*2);
+    T* buffer = &bufferBlock;
     // Allocate the output array
     for (i=0;i<cols;i++) {
       // Decompress this column
@@ -2817,9 +2832,6 @@ namespace FreeMat {
       // Recompress it
       dest[i] = CompressRealVector<T>(buffer,NBuf,newrow);
     }
-    delete buffer;
-    delete NBuf;
-    delete OBuf;
     return dest;
   }
 
@@ -2909,7 +2921,8 @@ namespace FreeMat {
     }
     rows = rows*cols;
     cols = 1;
-    int* ilist = new int[delete_len];
+    MemBlock<int> ilistBlock(delete_len);
+    int* ilist = &ilistBlock;
     // Copy the index info in
     for (i=0;i<delete_len;i++)
       ilist[i] = ndx[i]-1;
@@ -2955,7 +2968,6 @@ namespace FreeMat {
     rows -= delete_len;
     T** dst = (T**) ConvertIJVtoRLEReal<T>(mlist,nnz,rows,1);
     delete mlist;
-    delete ilist;
     return dst;
   }
 
@@ -2973,7 +2985,8 @@ namespace FreeMat {
     }
     rows = rows*cols;
     cols = 1;
-    int* ilist = new int[delete_len];
+    MemBlock<int> ilistBlock(delete_len);
+    int* ilist = &ilistBlock;
     // Copy the index info in
     for (i=0;i<delete_len;i++)
       ilist[i] = ndx[i]-1;
@@ -3019,7 +3032,6 @@ namespace FreeMat {
     rows -= delete_len;
     T** dst = (T**) ConvertIJVtoRLEComplex<T>(mlist,nnz,rows,1);
     delete mlist;
-    delete ilist;
     return dst;
   }
 
@@ -3060,20 +3072,22 @@ namespace FreeMat {
     int outLen;
     if (diagonalOrder < 0) {
       outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
-      T* buffer = new T[outLen];
-      T* abuf = new T[outLen*2];
+      MemBlock<T> bufferBlock(outLen);
+      T* buffer = &bufferBlock;
+      MemBlock<T> abufBlock(outLen*2);
+      T* abuf = &abufBlock;
       for (int j=0;j<outLen;j++) 
 	RealStringExtract<T>(src[j],j-diagonalOrder,buffer+j);
       dst[0] = CompressRealVector<T>(abuf,buffer,outLen);
-      delete abuf;      
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
-      T* buffer = new T[outLen];
-      T* abuf = new T[outLen*2];
+      MemBlock<T> bufferBlock(outLen);
+      T* buffer = &bufferBlock;
+      MemBlock<T> abufBlock(outLen*2);
+      T* abuf = &abufBlock;
       for (int j=0;j<outLen;j++) 
 	RealStringExtract<T>(src[diagonalOrder+j],j,buffer+j);
       dst[0] = CompressRealVector<T>(abuf,buffer,outLen);
-      delete abuf;
     }      
     return dst;
   }
@@ -3085,20 +3099,22 @@ namespace FreeMat {
     int outLen;
     if (diagonalOrder < 0) {
       outLen = (rows+diagonalOrder) < cols ? (rows+diagonalOrder) : cols;
-      T* buffer = new T[2*outLen];
-      T* abuf = new T[4*outLen];
+      MemBlock<T> bufferBlock(2*outLen);
+      T* buffer = &bufferBlock;
+      MemBlock<T> abufBlock(4*outLen);
+      T* abuf = &abufBlock;
       for (int j=0;j<outLen;j++) 
 	ComplexStringExtract(src[j],j-diagonalOrder,buffer+2*j);
       dst[0] = CompressComplexVector(abuf,buffer,outLen);
-      delete abuf;
     } else {
       outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
-      T* buffer = new T[2*outLen];
-      T* abuf = new T[4*outLen];
+      MemBlock<T> bufferBlock(2*outLen);
+      T* buffer = &bufferBlock;
+      MemBlock<T> abufBlock(4*outLen);
+      T* abuf = &abufBlock;
       for (int j=0;j<outLen;j++) 
 	ComplexStringExtract(src[diagonalOrder+j],j,buffer+2*j);
       dst[0] = CompressComplexVector(abuf,buffer,outLen);
-      delete abuf;
     }      
     return dst;    
   }
@@ -3230,7 +3246,8 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = &bufferBlock;
     for (i=0;i<cols;i++) {
       RLEDecoder<T> A(Amat[i],rows);
       RLEDecoder<T> B(Bmat[i],rows);
@@ -3256,7 +3273,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3265,7 +3281,8 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = &bufferBlock;
     for (i=0;i<cols;i++) {
       RLEDecoderComplex<T> A(Amat[i],rows);
       RLEDecoderComplex<T> B(Bmat[i],rows);
@@ -3292,7 +3309,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3325,7 +3341,8 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = &bufferBlock;
     for (i=0;i<cols;i++) {
       RLEDecoder<T> A(Amat[i],rows);
       RLEDecoder<T> B(Bmat[i],rows);
@@ -3351,7 +3368,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3360,7 +3376,8 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = &bufferBlock;
     for (i=0;i<cols;i++) {
       RLEDecoderComplex<T> A(Amat[i],rows);
       RLEDecoderComplex<T> B(Bmat[i],rows);
@@ -3387,7 +3404,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3419,7 +3435,8 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = &bufferBlock;
     for (i=0;i<cols;i++) {
       RLEDecoder<T> A(Amat[i],rows);
       RLEDecoder<T> B(Bmat[i],rows);
@@ -3441,7 +3458,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3450,7 +3466,8 @@ namespace FreeMat {
     int i;
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = &bufferBlock;
     for (i=0;i<cols;i++) {
       RLEDecoderComplex<T> A(Amat[i],rows);
       RLEDecoderComplex<T> B(Bmat[i],rows);
@@ -3475,7 +3492,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3507,7 +3523,8 @@ namespace FreeMat {
 				 const T* Bval) {
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = &bufferBlock;
     for (int i=0;i<cols;i++) {
       RLEDecoder<T> A(Amat[i],rows);
       RLEEncoder<T> C(buffer,rows);
@@ -3520,7 +3537,6 @@ namespace FreeMat {
       C.end();
       Cmat[i] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -3529,7 +3545,8 @@ namespace FreeMat {
 				    const T* Bval) {
     T** Cmat;
     Cmat = new T*[cols];
-    T* buffer = new T[rows*4];
+    MemBlock<T> bufferBlock(rows*4);
+    T* buffer = &bufferBlock;
     for (int i=0;i<cols;i++) {
       RLEDecoderComplex<T> A(Amat[i],rows);
       RLEEncoderComplex<T> C(buffer,rows);
@@ -3550,7 +3567,8 @@ namespace FreeMat {
   float** SparseOnesFuncReal(int rows, int cols, const T** Amat) {
     float** Cmat;
     Cmat = new float*[cols];
-    float* buffer = new float[rows*2];
+    MemBlock<float> bufferBlock(rows*2);
+    float* buffer = &bufferBlock;
     for (int i=0;i<cols;i++) {
       RLEDecoder<T> A(Amat[i],rows);
       RLEEncoder<float> C(buffer,rows);
@@ -3570,7 +3588,8 @@ namespace FreeMat {
   float** SparseOnesFuncComplex(int rows, int cols, const T** Amat) {
     float** Cmat;
     Cmat = new float*[cols];
-    float* buffer = new float[rows*2];
+    MemBlock<float> bufferBlock(rows*2);
+    float* buffer = &bufferBlock;
     for (int i=0;i<cols;i++) {
       RLEDecoderComplex<T> A(Amat[i],rows);
       RLEEncoder<float> C(buffer,rows);
@@ -4115,10 +4134,12 @@ namespace FreeMat {
     // How many eigenvalues to compute
     char cmach = 'E';
     double tol = dlamch_(&cmach);
-    double *resid = new double[n];
+    MemBlock<double> residBlock(n);
+    double *resid = &residBlock;
     int ncv = 2*nev+1;
     if (ncv > n) ncv = n;
-    double *v = new double[n*ncv];
+    MemBlock<double> vBlock(n*ncv);
+    double *v = &vBlock;
     int ldv = n;
     int iparam[11];
     iparam[0] = 1;
@@ -4132,21 +4153,27 @@ namespace FreeMat {
     iparam[8] = 0;
     iparam[9] = 0;
     iparam[10] = 0;
-    double *workd = new double[3*n];
+    MemBlock<double> workdBlock(3*n);
+    double *workd = &workdBlock;
     int lworkl = 3*ncv*ncv+6*ncv;
-    double *workl = new double[lworkl];
+    MemBlock<double> worklBlock(lworkl);
+    double *workl = &worklBlock;
     int info = 0;
-    int ipntr[14];
+    MemBlock<int> ipntrBlock(14);
+    int *ipntr = &ipntrBlock;
     while (1) {
       dnaupd_(&ido, &bmat, &n , which, &nev, &tol, resid, 
 	      &ncv, v, &ldv, iparam, ipntr, workd, workl, &lworkl, 
-	      &info);
-      if ((ido == -1) || (ido == 1)) 
+	      &info,1,strlen(which));
+      if ((ido == -1) || (ido == 1)) {
 	SparseDenseRealMultiply<double>((double**)ap,rows,cols,
 					workd+ipntr[0]-1, 1,
 					workd+ipntr[1]-1);
+      }
       else
 	break;
+DePr(workd+ipntr[0]-1,rows);
+DePr(workd+ipntr[1]-1,rows);
     }
     if (info < 0)
       DNAUPARPACKError(info);
@@ -4157,7 +4184,8 @@ namespace FreeMat {
     else
       rvec = 1;
     char howmny = 'A';
-    int *select = new int[ncv];
+    MemBlock<int> selectBlock(ncv);
+    int *select = &selectBlock;
     double *dr = (double*) Malloc(sizeof(double)*(nev+1));
     double *di = (double*) Malloc(sizeof(double)*(nev+1));
     double *z;
@@ -4167,8 +4195,10 @@ namespace FreeMat {
       z = (double*) Malloc(sizeof(double)*(n*(nev+1)));
     double sigmar;
     double sigmai;
-    double *workev = new double[3*ncv];
+    MemBlock<double> workevBlock(3*ncv);
+    double *workev = &workevBlock;
     int ierr;
+    std::cout << "DNEUPD\n";
     dneupd_(&rvec, &howmny, select, dr, di, z, &ldv, 
 	    &sigmar, &sigmai, workev, &bmat, &n, which, &nev, &tol, 
 	    resid, &ncv, v, &ldv, iparam, ipntr, workd, workl,
@@ -4183,18 +4213,6 @@ namespace FreeMat {
 	swap(di[i],di[nconv-1-i]);
       }
     }
-//     if (rvec == 1) {
-//       // Reverse the columns of z...
-//       for (int i=0;i<(nconv)/2;i++) 
-// 	for (int j=0;j<n;j++)
-// 	  swap(z[i*n+j],z[(nconv-1-i)*n+j]);
-//     }
-    delete[] resid;
-    delete[] v;
-    delete[] workd;
-    delete[] workl;
-    delete[] select;
-    delete[] workev;
     // Check for complex eigenvalues
     bool anycomplex = false;
     for (int i=0;(!anycomplex) && (i<nconv);i++,anycomplex = (di[i] != 0));
@@ -4262,10 +4280,12 @@ namespace FreeMat {
     // How many eigenvalues to compute
     char cmach = 'E';
     double tol = dlamch_(&cmach);
-    double *resid = new double[n];
+    MemBlock<double> residBlock(n);
+    double *resid = &residBlock;
     int ncv = 2*nev+1;
     if (ncv > n) ncv = n;
-    double *v = new double[n*ncv];
+    MemBlock<double> vBlock(n*ncv);
+    double *v = &vBlock;
     int ldv = n;
     int iparam[11];
     iparam[0] = 1;
@@ -4279,9 +4299,11 @@ namespace FreeMat {
     iparam[8] = 0;
     iparam[9] = 0;
     iparam[10] = 0;
-    double *workd = new double[3*n];
+    MemBlock<double> workdBlock(3*n);
+    double *workd = &workdBlock;
     int lworkl = ncv*ncv+8*ncv;
-    double *workl = new double[lworkl];
+    MemBlock<double> worklBlock(lworkl);
+    double *workl = &worklBlock;
     int info = 0;
     int ipntr[11];
     while (1) {
@@ -4304,7 +4326,8 @@ namespace FreeMat {
     else
       rvec = 1;
     char howmny = 'A';
-    int *select = new int[ncv];
+    MemBlock<int> selectBlock(ncv);
+    int *select = &selectBlock;
     double *d = (double*) Malloc(sizeof(double)*nev);
     double *z;
     if (nargout <= 1)
@@ -4328,11 +4351,6 @@ namespace FreeMat {
  	for (int j=0;j<n;j++)
  	  swap(z[i*n+j],z[(nconv-1-i)*n+j]);
     }
-    delete[] resid;
-    delete[] v;
-    delete[] workd;
-    delete[] workl;
-    delete[] select;
     ArrayVector retval;
     // I know that technically this is a bad thing... dr and z are larger than
     // they need to be, but I don't think this will cause any problems.
@@ -4355,10 +4373,12 @@ namespace FreeMat {
     // How many eigenvalues to compute
     char cmach = 'E';
     double tol = dlamch_(&cmach);
-    double *resid = new double[2*n];
+    MemBlock<double> residBlock(2*n);
+    double *resid = &residBlock;
     int ncv = 2*nev+1;
     if (ncv > n) ncv = n;
-    double *v = new double[2*n*ncv];
+    MemBlock<double> vBlock(2*n*ncv);
+    double *v = &vBlock;
     int ldv = n;
     int iparam[11];
     iparam[0] = 1;
@@ -4372,10 +4392,13 @@ namespace FreeMat {
     iparam[8] = 0;
     iparam[9] = 0;
     iparam[10] = 0;
-    double *workd = new double[2*3*n];
+    MemBlock<double> workdBlock(2*3*n);
+    double *workd = &workdBlock;
     int lworkl = 3*ncv*ncv+5*ncv;
-    double *workl = new double[2*lworkl];
-    double *rwork = new double[ncv];
+    MemBlock<double> worklBlock(2*lworkl);
+    double *workl = &worklBlock;
+    MemBlock<double> rworkBlock(ncv);
+    double *rwork = &rworkBlock;
     int info = 0;
     int ipntr[14];
     while (1) {
@@ -4398,7 +4421,8 @@ namespace FreeMat {
     else
       rvec = 1;
     char howmny = 'A';
-    int *select = new int[ncv];
+    MemBlock<int> selectBlock(ncv);
+    int *select = &selectBlock;
     double *d = (double*) Malloc(2*sizeof(double)*(nev+1));
     double *z;
     if (nargout <= 1)
@@ -4406,7 +4430,8 @@ namespace FreeMat {
     else
       z = (double*) Malloc(2*sizeof(double)*(n*(nev+1)));
     double sigma[2];
-    double *workev = new double[2*2*ncv];
+    MemBlock<double> workevBlock(2*2*ncv);
+    double *workev = &workevBlock;
     int ierr;
     zneupd_(&rvec, &howmny, select, d, z, &ldv, 
 	    sigma, workev, &bmat, &n, which, &nev, &tol, 
@@ -4422,12 +4447,6 @@ namespace FreeMat {
 	swap(d[2*i+1],d[2*(nconv-1-i)+1]);
       }
     }
-    delete[] resid;
-    delete[] v;
-    delete[] workd;
-    delete[] workl;
-    delete[] select;
-    delete[] workev;
     double *eigvals = (double*) Malloc(nev*sizeof(double)*2);
     for (int i=0;i<min(nev,nconv);i++) {
       eigvals[2*i] = d[2*i];
@@ -4484,10 +4503,12 @@ namespace FreeMat {
     // How many eigenvalues to compute
     char cmach = 'E';
     double tol = dlamch_(&cmach);
-    double *resid = new double[n];
+    MemBlock<double> residBlock(n);
+    double *resid = &residBlock;
     int ncv = 2*nev+1;
     if (ncv > n) ncv = n;
-    double *v = new double[n*ncv];
+    MemBlock<double> vBlock(n*ncv);
+    double *v = &vBlock;
     int ldv = n;
     int iparam[11];
     iparam[0] = 1;
@@ -4501,17 +4522,30 @@ namespace FreeMat {
     iparam[8] = 0;
     iparam[9] = 0;
     iparam[10] = 0;
-    double *workd = new double[3*n];
+    MemBlock<double> workdBlock(3*n);
+    double *workd = &workdBlock;
     int lworkl = 3*ncv*ncv+6*ncv;
-    double *workl = new double[lworkl];
+    MemBlock<double> worklBlock(lworkl);
+    double *workl = &worklBlock;
     int info = 0;
     int ipntr[14];
     while (1) {
       dnaupd_(&ido, &bmat, &n , which, &nev, &tol, resid, 
 	      &ncv, v, &ldv, iparam, ipntr, workd, workl, &lworkl, 
-	      &info);
-      if ((ido == -1) || (ido == 1)) 
+	      &info,1,strlen(which));
+      if ((ido == -1) || (ido == 1)) {
 	res = umfpack_di_solve(UMFPACK_A, Ccolstart, Crowindx, Cdata, workd+ipntr[1]-1,workd+ipntr[0]-1,Numeric, null, null);
+	// Check the result
+	MemBlock<double> g(cols);
+	double *gp = &g;
+	MemBlock<double> r(rows);
+	double *rp = &r;
+	memcpy(rp,workd+ipntr[1]-1,sizeof(double)*rows);
+	memcpy(gp,workd+ipntr[0]-1,sizeof(double)*cols);
+	MemBlock<double> c(rows);
+	SparseDenseRealMultiply(C,rows,cols,rp,1,&c);
+	std::cout << "Hello\n";
+      }
       else if (ido == 2)
 	memcpy( workd+ipntr[1]-1, workd+ipntr[0]-1, sizeof(double)*rows);
       else
@@ -4529,7 +4563,8 @@ namespace FreeMat {
     else
       rvec = 1;
     char howmny = 'A';
-    int *select = new int[ncv];
+    MemBlock<int> selectBlock(ncv);
+    int *select = &selectBlock;
 	//lambda_a = 1/lambda_c + sigma
     double *dr = (double*) Malloc(sizeof(double)*(nev+1));
     double *di = (double*) Malloc(sizeof(double)*(nev+1));
@@ -4542,7 +4577,8 @@ namespace FreeMat {
     double sigmai;
     sigmar = shift;
     sigmai = 0.0;
-    double *workev = new double[3*ncv];
+    MemBlock<double> workevBlock(3*ncv);
+    double *workev = &workevBlock;
     int ierr;
     dneupd_(&rvec, &howmny, select, dr, di, z, &ldv, 
 	    &sigmar, &sigmai, workev, &bmat, &n, which, &nev, &tol, 
@@ -4558,12 +4594,6 @@ namespace FreeMat {
 	swap(di[i],di[nconv-1-i]);
       }
     }
-    delete[] resid;
-    delete[] v;
-    delete[] workd;
-    delete[] workl;
-    delete[] select;
-    delete[] workev;
     // Check for complex eigenvalues
     bool anycomplex = false;
     for (int i=0;(!anycomplex) && (i<nconv);i++,anycomplex = (di[i] != 0));
@@ -4655,10 +4685,12 @@ namespace FreeMat {
     // How many eigenvalues to compute
     char cmach = 'E';
     double tol = dlamch_(&cmach);
-    double *resid = new double[2*n];
+    MemBlock<double> residBlock(2*n);
+    double *resid = &residBlock;
     int ncv = 2*nev+1;
     if (ncv > n) ncv = n;
-    double *v = new double[2*n*ncv];
+    MemBlock<double> vBlock(2*n*ncv);
+    double *v = &vBlock;
     int ldv = n;
     int iparam[11];
     iparam[0] = 1;
@@ -4672,14 +4704,21 @@ namespace FreeMat {
     iparam[8] = 0;
     iparam[9] = 0;
     iparam[10] = 0;
-    double *workd = new double[2*3*n];
+    MemBlock<double> workdBlock(2*3*n);
+    double *workd = &workdBlock;
     int lworkl = 3*ncv*ncv+5*ncv;
-    double *workl = new double[2*lworkl];
-    double *rwork = new double[ncv];
-    double *xr = new double[rows];
-    double *xi = new double[rows];
-    double *yr = new double[rows];
-    double *yi = new double[rows];
+    MemBlock<double> worklBlock(2*lworkl);
+    double *workl = &worklBlock;
+    MemBlock<double> rworkBlock(ncv);
+    double *rwork = &rworkBlock;
+    MemBlock<double> xrBlock(rows);
+    double *xr = &xrBlock;
+    MemBlock<double> xiBlock(rows);
+    double *xi = &xiBlock;
+    MemBlock<double> yrBlock(rows);
+    double *yr = &yrBlock;
+    MemBlock<double> yiBlock(rows);
+    double *yi = &yiBlock;
     int info = 0;
     int ipntr[14];
     while (1) {
@@ -4715,7 +4754,8 @@ namespace FreeMat {
     else
       rvec = 1;
     char howmny = 'A';
-    int *select = new int[ncv];
+    MemBlock<int> selectBlock(ncv);
+    int *select = &selectBlock;
 	//lambda_a = 1/lambda_c + sigma
     double *d = (double*) Malloc(2*sizeof(double)*(nev+1));
     double *z;
@@ -4726,7 +4766,8 @@ namespace FreeMat {
     double sigma[2];
     sigma[0] = shift[0];
     sigma[1] = shift[1];
-    double *workev = new double[2*2*ncv];
+    MemBlock<double> workevBlock(2*2*ncv);
+    double *workev = &workevBlock;
     int ierr;
     zneupd_(&rvec, &howmny, select, d, z, &ldv, 
 	    sigma, workev, &bmat, &n, which, &nev, &tol, 
@@ -4742,12 +4783,6 @@ namespace FreeMat {
 	swap(d[2*i+1],d[2*(nconv-1-i)+1]);
       }
     }
-    delete[] resid;
-    delete[] v;
-    delete[] workd;
-    delete[] workl;
-    delete[] select;
-    delete[] workev;
     double *eigvals = (double*) Malloc(nev*sizeof(double)*2);
     for (int i=0;i<min(nev,nconv);i++) {
       eigvals[2*i] = d[2*i];
@@ -4820,7 +4855,8 @@ namespace FreeMat {
     cols = A.getDimensionLength(1);
     const double *bval = (const double *) B.getDataPointer();
     double **dp = new double*[cols];
-    double *buffer = new double[4*rows];
+    MemBlock<double> bufferBlock(4*rows);
+    double *buffer = &bufferBlock;
     const double **ap = (const double **) A.getSparseDataPointer();
     for (int p=0;p<cols;p++) {
       RLEDecoderComplex<double> Adecoder(ap[p],rows);
@@ -4839,7 +4875,6 @@ namespace FreeMat {
       Cencoder.end();
       dp[p] = Cencoder.copyout();
     }
-    delete [] buffer;
     return Array(FM_DCOMPLEX,Dimensions(rows,cols),dp,true);
   }
   
@@ -4852,7 +4887,8 @@ namespace FreeMat {
     cols = A.getDimensionLength(1);
     int32 bval = *((const int32 *) B.getDataPointer());
     double **dp = new double*[cols];
-    double *buffer = new double[4*rows];
+    MemBlock<double> bufferBlock(4*rows);
+    double *buffer = &bufferBlock;
     const double **ap = (const double **) A.getSparseDataPointer();
     for (int p=0;p<cols;p++) {
       RLEDecoderComplex<double> Adecoder(ap[p],rows);
@@ -4871,7 +4907,6 @@ namespace FreeMat {
       Cencoder.end();
       dp[p] = Cencoder.copyout();
     }
-    delete [] buffer;
     return Array(FM_DCOMPLEX,Dimensions(rows,cols),dp,true);
   }
 
@@ -4884,7 +4919,8 @@ namespace FreeMat {
     cols = A.getDimensionLength(1);
     double bval = *((const double *) B.getDataPointer());
     double **dp = new double*[cols];
-    double *buffer = new double[2*rows];
+    MemBlock<double> bufferBlock(2*rows);
+    double *buffer = &bufferBlock;
     const double **ap = (const double **) A.getSparseDataPointer();
     for (int p=0;p<cols;p++) {
       RLEDecoder<double> Adecoder(ap[p],rows);
@@ -4898,7 +4934,6 @@ namespace FreeMat {
       Cencoder.end();
       dp[p] = Cencoder.copyout();
     }
-    delete [] buffer;
     return Array(FM_DOUBLE,Dimensions(rows,cols),dp,true);
   }
   
@@ -4911,7 +4946,8 @@ namespace FreeMat {
     cols = A.getDimensionLength(1);
     int32 bval = *((const int32 *) B.getDataPointer());
     double **dp = new double*[cols];
-    double *buffer = new double[2*rows];
+    MemBlock<double> bufferBlock(2*rows);
+    double *buffer = &bufferBlock;
     const double **ap = (const double **) A.getSparseDataPointer();
     for (int p=0;p<cols;p++) {
       RLEDecoder<double> Adecoder(ap[p],rows);
@@ -4925,7 +4961,6 @@ namespace FreeMat {
       Cencoder.end();
       dp[p] = Cencoder.copyout();
     }
-    delete [] buffer;
     return Array(FM_DOUBLE,Dimensions(rows,cols),dp,true);
   }
 
@@ -4994,7 +5029,8 @@ namespace FreeMat {
   template <class T>
   void* SparseMatrixSumColumnsReal(int rows, int cols, const T** A) {
     T **out = (T**) new T*[cols];
-    T* buffer = new T[3];
+    MemBlock<T> bufferBlock(3);
+    T* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       T accum = 0;
       RLEDecoder<T> Acmp(A[col], rows);
@@ -5008,14 +5044,14 @@ namespace FreeMat {
       Bcmp.end();
       out[col] = Bcmp.copyout();
     }
-    delete[] buffer;
     return out;
   }
 
   template <class T>
   void* SparseMatrixSumColumnsComplex(int rows, int cols, const T** A) {
     T **out = (T**) new T*[cols];
-    T* buffer = new T[5];
+    MemBlock<T> bufferBlock(5);
+    T* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       T accum_real = 0;
       T accum_imag = 0;
@@ -5031,15 +5067,14 @@ namespace FreeMat {
       Bcmp.end();
       out[col] = Bcmp.copyout();
     }
-    delete[] buffer;
     return out;
   }
 
   template <class T>
   void* SparseMatrixSumRowsReal(int rows, int cols, const T** A) {
     T** out = (T**) new T*[1];
-    T* buffer = new T[rows];
-    memset(buffer,0,sizeof(T)*rows);
+    MemBlock<T> bufferBlock(rows);
+    T* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       RLEDecoder<T> Acmp(A[col], rows);
       Acmp.update();
@@ -5048,18 +5083,17 @@ namespace FreeMat {
 	Acmp.advance();
       }
     }
-    T* cbuf = new T[rows*2];
+    MemBlock<T> cbufBlock(rows*2);
+    T* cbuf = &cbufBlock;
     out[0] = CompressRealVector<T>(cbuf, buffer, rows);
-    delete[] cbuf;
-    delete[] buffer;
     return out;
   }
 
   template <class T>
   void* SparseMatrixSumRowsComplex(int rows, int cols, const T** A) {
     T** out = (T**) new T*[1];
-    T* buffer = new T[2*rows];
-    memset(buffer,0,sizeof(T)*rows*2);
+    MemBlock<T> bufferBlock(2*rows);
+    T* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       RLEDecoderComplex<T> Acmp(A[col], rows);
       Acmp.update();
@@ -5069,10 +5103,9 @@ namespace FreeMat {
 	Acmp.advance();
       }
     }
-    T* cbuf = new T[rows*4];
+    MemBlock<T> cbufBlock(rows*4);
+    T* cbuf = &cbufBlock;
     out[0] = CompressComplexVector(cbuf, buffer, rows);
-    delete[] cbuf;
-    delete[] buffer;
     return out;
   }
 
@@ -5252,8 +5285,8 @@ namespace FreeMat {
 				    const T** Asrc, const T** Bsrc, 
 				    uint32 (*fnop)(T,T,T,T)) {
     uint32** Cmat = new uint32*[cols];
-    uint32* buffer = new uint32[rows*2];
-    memset(buffer,0,sizeof(uint32)*rows*2);
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       RLEDecoderComplex<T> A(Asrc[col],rows);
       RLEDecoderComplex<T> B(Bsrc[col],rows);
@@ -5280,7 +5313,6 @@ namespace FreeMat {
       C.end();
       Cmat[col] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -5289,8 +5321,8 @@ namespace FreeMat {
 				 const T** Asrc, const T** Bsrc, 
 				 uint32 (*fnop)(T,T)) {
     uint32** Cmat = new uint32*[cols];
-    uint32* buffer = new uint32[rows*2];
-    memset(buffer,0,sizeof(uint32)*rows*2);
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       RLEDecoder<T> A(Asrc[col],rows);
       RLEDecoder<T> B(Bsrc[col],rows);
@@ -5316,7 +5348,6 @@ namespace FreeMat {
       C.end();
       Cmat[col] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -5326,10 +5357,14 @@ namespace FreeMat {
 				 const T** Asrc, const T** Bsrc, 
 				 uint32 (*fnop)(T,T)) {
     uint32** Cmat = new uint32*[cols];
-    T* Abuf = new T[rows];
-    T* Bbuf = new T[rows];
-    uint32* Cbuf = new uint32[rows];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<T> AbufBlock(rows);
+    T* Abuf = &AbufBlock;
+    MemBlock<T> BbufBlock(rows);
+    T* Bbuf = &BbufBlock;
+    MemBlock<uint32> CbufBlock(rows);
+    uint32* Cbuf = &CbufBlock;
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       memset(Abuf,0,rows*sizeof(T));
       memset(Bbuf,0,rows*sizeof(T));
@@ -5339,9 +5374,6 @@ namespace FreeMat {
 	Cbuf[row] = fnop(Abuf[row],Bbuf[row]);
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
-    delete buffer;
-    delete Abuf;
-    delete Bbuf;
     return Cmat;
   }
 
@@ -5351,10 +5383,14 @@ namespace FreeMat {
 				   const T** Asrc, const T** Bsrc, 
 				   uint32 (*fnop)(T,T,T,T)) {
     uint32** Cmat = new uint32*[cols];
-    T* Abuf = new T[2*rows];
-    T* Bbuf = new T[2*rows];
-    uint32* Cbuf = new uint32[rows];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<T> AbufBlock(2*rows);
+    T* Abuf = &AbufBlock;
+    MemBlock<T> BbufBlock(2*rows);
+    T* Bbuf = &BbufBlock;
+    MemBlock<uint32> CbufBlock(rows);
+    uint32* Cbuf = &CbufBlock;
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       memset(Abuf,0,2*rows*sizeof(T));
       memset(Bbuf,0,2*rows*sizeof(T));
@@ -5367,9 +5403,6 @@ namespace FreeMat {
 			 Bbuf[2*row+1]);
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
-    delete buffer;
-    delete Abuf;
-    delete Bbuf;
     return Cmat;
   }
   template <class T>
@@ -5377,7 +5410,8 @@ namespace FreeMat {
 					 const T** Asrc, const T* Bsrc, 
 					 uint32 (*fnop)(T,T,T,T)) {
     uint32** Cmat = new uint32*[cols];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       RLEDecoderComplex<T> A(Asrc[col],rows);
       RLEEncoder<uint32> C(buffer,rows);
@@ -5392,7 +5426,6 @@ namespace FreeMat {
       C.end();
       Cmat[col] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -5401,7 +5434,8 @@ namespace FreeMat {
 				      const T** Asrc, const T* Bsrc, 
 				      uint32 (*fnop)(T,T)) {
     uint32** Cmat = new uint32*[cols];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       RLEDecoder<T> A(Asrc[col],rows);
       RLEEncoder<uint32> C(buffer,rows);
@@ -5415,7 +5449,6 @@ namespace FreeMat {
       C.end();
       Cmat[col] = C.copyout();
     }
-    delete buffer;
     return Cmat;
   }
 
@@ -5425,9 +5458,11 @@ namespace FreeMat {
 				      const T** Asrc, const T* Bsrc, 
 				      uint32 (*fnop)(T,T)) {
     uint32** Cmat = new uint32*[cols];
-    T* Abuf = new T[rows];
+    MemBlock<T> AbufBlock(rows);
+    T* Abuf = &AbufBlock;
     uint32* Cbuf = new uint32[rows];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       memset(Abuf,0,rows*sizeof(T));
       DecompressRealString<T>(Asrc[col],Abuf,rows);
@@ -5435,8 +5470,6 @@ namespace FreeMat {
 	Cbuf[row] = fnop(Abuf[row],Bsrc[0]);
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
-    delete buffer;
-    delete Abuf;
     return Cmat;
   }
   
@@ -5446,9 +5479,12 @@ namespace FreeMat {
 					 const T** Asrc, const T* Bsrc, 
 					 uint32 (*fnop)(T,T,T,T)) {
     uint32** Cmat = new uint32*[cols];
-    T* Abuf = new T[2*rows];
-    uint32* Cbuf = new uint32[rows];
-    uint32* buffer = new uint32[rows*2];
+    MemBlock<T> AbufBlock(2*rows);
+    T* Abuf = &AbufBlock;
+    MemBlock<uint32> CbufBlock(rows);
+    uint32* Cbuf = &CbufBlock;
+    MemBlock<uint32> bufferBlock(rows*2);
+    uint32* buffer = &bufferBlock;
     for (int col=0;col<cols;col++) {
       memset(Abuf,0,2*rows*sizeof(T));
       DecompressComplexString<T>(Asrc[col],Abuf,rows);
@@ -5459,8 +5495,6 @@ namespace FreeMat {
 			 Bsrc[1]);
       Cmat[col] = CompressRealVector<uint32>(buffer,Cbuf,rows);
     }
-    delete buffer;
-    delete Abuf;
     return Cmat;
   }
   
@@ -5651,7 +5685,8 @@ namespace FreeMat {
   T** SparseAbsFunctionReal(int rows, int cols, const T**src) {
     T** dp;
     dp = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = &bufferBlock;
     for (int p=0;p<cols;p++) {
       RLEEncoder<T> B(buffer,rows);
       RLEDecoder<T> A(src[p],rows);
@@ -5664,7 +5699,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 
@@ -5672,7 +5706,8 @@ namespace FreeMat {
   T** SparseAbsFunctionComplex(int rows, int cols, const T**src) {
     T** dp;
     dp = new T*[cols];
-    T* buffer = new T[rows*2];
+    MemBlock<T> bufferBlock(rows*2);
+    T* buffer = &bufferBlock;
     for (int p=0;p<cols;p++) {
       RLEEncoder<T> B(buffer,rows);
       RLEDecoderComplex<T> A(src[p],rows);
@@ -5685,7 +5720,6 @@ namespace FreeMat {
       B.end();
       dp[p] = B.copyout();
     }
-    delete[] buffer;
     return dp;
   }
 

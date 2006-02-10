@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
     ((GUITerminal*)term)->setFocus();
   } else {
 #ifdef Q_WS_X11
-    if (!scriptMode && !funcMode) {
+    if (!scriptMode && !funcMode && !noX) {
       QWidget *wid = new QWidget(0,Qt::FramelessWindowHint);
       wid->setGeometry(2000,2000,1,1);
       wid->setWindowIcon(QIcon(":/images/freemat-2.xpm"));

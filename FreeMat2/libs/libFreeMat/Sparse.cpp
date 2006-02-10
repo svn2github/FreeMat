@@ -73,13 +73,6 @@ extern "C" {
 	int *lworkl, int *info);
 }
 
-void DePr(double *p, int n) {
-  std::cout << "< ";
-  for (int i=0;i<n;i++)
-    std::cout << p[i] << " ";
-  std::cout << ">\n";
-}
-
 template <class T>
 T* RLEDuplicate(const T*src) {
   int blen = (int) (src[0]+1);
@@ -4165,15 +4158,12 @@ namespace FreeMat {
       dnaupd_(&ido, &bmat, &n , which, &nev, &tol, resid, 
 	      &ncv, v, &ldv, iparam, ipntr, workd, workl, &lworkl, 
 	      &info,1,strlen(which));
-      if ((ido == -1) || (ido == 1)) {
+      if ((ido == -1) || (ido == 1)) 
 	SparseDenseRealMultiply<double>((double**)ap,rows,cols,
 					workd+ipntr[0]-1, 1,
 					workd+ipntr[1]-1);
-      }
       else
 	break;
-DePr(workd+ipntr[0]-1,rows);
-DePr(workd+ipntr[1]-1,rows);
     }
     if (info < 0)
       DNAUPARPACKError(info);
@@ -4198,7 +4188,6 @@ DePr(workd+ipntr[1]-1,rows);
     MemBlock<double> workevBlock(3*ncv);
     double *workev = &workevBlock;
     int ierr;
-    std::cout << "DNEUPD\n";
     dneupd_(&rvec, &howmny, select, dr, di, z, &ldv, 
 	    &sigmar, &sigmai, workev, &bmat, &n, which, &nev, &tol, 
 	    resid, &ncv, v, &ldv, iparam, ipntr, workd, workl,
@@ -4544,7 +4533,6 @@ DePr(workd+ipntr[1]-1,rows);
 	memcpy(gp,workd+ipntr[0]-1,sizeof(double)*cols);
 	MemBlock<double> c(rows);
 	SparseDenseRealMultiply(C,rows,cols,rp,1,&c);
-	std::cout << "Hello\n";
       }
       else if (ido == 2)
 	memcpy( workd+ipntr[1]-1, workd+ipntr[0]-1, sizeof(double)*rows);

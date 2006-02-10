@@ -44,16 +44,31 @@ arpack.commands = cd extern && tar xfz arpack96_freemat_patch.tar.gz && cd ARPAC
 lapack.target = extern/LAPACK/liblapack.a
 lapack.commands = cd extern && tar xfz lapack-3.0_freemat_patch.tgz && cd LAPACK/SRC && make -f Makefile_freemat FC=$$F77
 
+
+!macx {
+RUNTARGET = $$DESTDIR/$$TARGET
+}
+
+macx {
+RUNTARGET = $$DESTDIR/$$TARGET/Contents/MacOS/FreeMat
+}
+
 help.target = help
 help.depends = FORCE
-help.commands = $$DESTDIR/$$TARGET -helpgen
+help.commands = $$RUNTARGET -helpgen
 
 check.target = check
 check.depends = FORCE
-check.commands = $$DESTDIR/$$TARGET -f "cd tests/core; test_core"
+check.commands = $$RUNTARGET -f "cd tests/core; test_core"
 
 install.target = install
+!macx {
 install.commands = cd tools/disttool && qmake && make && rm -rf FreeMat && ./disttool -linux && cd ../.. && rm -rf FreeMat && mv tools/disttool/FreeMat .
+}
+
+macx {
+install.commands = cd tools/disttool && qmake && make && ./disttool -mac && cd ../../ &&  mv build/FreeMat.app . && find FreeMat.app -name '*debug' -exec rm \{\} \;
+}
 
 QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help check install
 

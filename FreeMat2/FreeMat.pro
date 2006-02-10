@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += opengl
 
-CONFIG += warn_off
+CONFIG += warn_off release
 
 DEFINES -= UNICODE
 
@@ -10,11 +10,18 @@ TARGET = FreeMat
 
 include($$OUT_PWD/conf.pri)
 
+!win32 {
+OBJECTS_DIR = build
+}
+MOC_DIR = build
+RCC_DIR = build
+DESTDIR = build
+
 blas.target = extern/LAPACK/BLAS/libblas.a
 blas.commands = cd extern/LAPACK/BLAS/SRC && make -f Makefile_freemat FC=$$F77
 
 atlas.target = extern/ATLAS/lib/BLAS_FreeMat/libatlas.a
-atlas.commands = cd extern/ATLAS && make < ../chat && make install arch=BLAS_FreeMat
+atlas.commands = cd extern && tar xfz atlas3.6.0.tar.gz && cd ATLAS && make < ../chat && make install arch=BLAS_FreeMat
 
 fftw_double.target = extern/fftw-3.0.1/.libs/libfftw3.a
 fftw_double.commands = cd extern && tar xfz fftw-3.0.1.tar.gz && cd fftw-3.0.1 && ./configure && make
@@ -38,13 +45,17 @@ lapack.target = extern/LAPACK/liblapack.a
 lapack.commands = cd extern && tar xfz lapack-3.0_freemat_patch.tgz && cd LAPACK/SRC && make -f Makefile_freemat FC=$$F77
 
 help.target = help
-help.depends = $$TARGET
-help.commands = ./$$TARGET -helpgen
+help.depends = FORCE
+help.commands = $$DESTDIR/$$TARGET -helpgen
 
-package.target = package
-package.commands = cd tools/disttool && qmake && make && ./disttool -linux
+check.target = check
+check.depends = FORCE
+check.commands = $$DESTDIR/$$TARGET -f "cd tests/core; test_core"
 
-QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help
+install.target = install
+install.commands = cd tools/disttool && qmake && make && ./disttool -linux && cd ../.. && mv tools/disttool/FreeMat .
+
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help check install
 
 INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP src
 
@@ -239,15 +250,11 @@ win32 {
 RC_FILE = src/freemat.rc
 }
 
-!win32 {
-OBJECTS_DIR = build
-}
 
 mac {
 RC_FILE = src/appIcon.icns
 }
 
-MOC_DIR = build
 
 ff77.output = ${OBJECTS_DIR}${QMAKE_FILE_BASE}.o
 ff77.commands = $$F77 -c ${QMAKE_FILE_NAME} -o ${OBJECTS_DIR}${QMAKE_FILE_BASE}.o
@@ -256,9 +263,10 @@ QMAKE_EXTRA_COMPILERS += ff77
 
 RESOURCES = FreeMat.qrc
 
-RCC_DIR = build
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png
 DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz
 DISTFILES += help/section_descriptors.txt
 DISTFILES += $$system(find MFiles -name '*.m')
+DISTFILES += $$system(find tests -name '*.m')
+DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp tools/disttool/disttool.pro tools/disttool/freemat_nsi.in

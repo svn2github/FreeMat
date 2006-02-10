@@ -8,6 +8,6 @@ x = testeq3(yd1\yd2,zd1\zd2) & testeq3(yz1\yz2,zz1\zz2);
 
 function x = testeq3(a,b)
   k = abs(a-b);
-  x = max(k(:)) < (size(a,2)*size(a,1)*eps);
+  x = max(k(:)) < (size(a,2)*size(a,1)*eps*4);
 
 

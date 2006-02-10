@@ -18,8 +18,9 @@ Main options:
   --help              This help text.
 
 Dependency options:
-  --with-fortran=[name]       name of Fortran compiler to use
-  --enable-reference-blas     Force FreeMat to build with the reference BLAS
+  --with-fortran=[name]         name of Fortran compiler to use
+  --enable-reference-lapack     Force FreeMat to build with the reference LAPACK
+  --enable-reference-blas       Force FreeMat to build with the reference BLAS
 
 EOT
 }
@@ -140,6 +141,11 @@ while [ $# -gt 0 ]; do
 			shift
 			;;
 
+		--enable-reference-lapack)
+			QC_ENABLE_REFERENCE_LAPACK="Y"
+			shift
+			;;
+
 		--enable-reference-blas)
 			QC_ENABLE_REFERENCE_BLAS="Y"
 			shift
@@ -167,6 +173,7 @@ echo BINDIR=$BINDIR
 echo DATADIR=$DATADIR
 echo EX_QTDIR=$EX_QTDIR
 echo QC_WITH_FORTRAN=$QC_WITH_FORTRAN
+echo QC_ENABLE_REFERENCE_LAPACK=$QC_ENABLE_REFERENCE_LAPACK
 echo QC_ENABLE_REFERENCE_BLAS=$QC_ENABLE_REFERENCE_BLAS
 echo
 fi
@@ -643,8 +650,8 @@ public:
   QString resultString() const {if (system) return "system"; return "local";}
   bool exec()
   {
-    QString arpackpath;
-    if (!conf->findLibrary("arpack",&arpackpath)) {
+    QString arpackpath, arpackheader;
+    if (!conf->findSimpleLibrary("","","","arpack",&arpackheader,&arpackpath)) {
       system = false;
       conf->addExtra("PRE_TARGETDEPS += extern/ARPACK/libarpack.a");
       conf->addLib("extern/ARPACK/libarpack.a");
@@ -687,24 +694,27 @@ QCM (QConf Module) Howto:
 
 -----BEGIN QCMOD-----
 name: LAPACK
+arg: enable-reference-lapack, Force FreeMat to build with the reference LAPACK
 -----END QCMOD-----
 */
 class qc_lapack : public ConfObj
 {
   bool system;
+  bool reference;
 public:
   qc_lapack(Conf *c) : ConfObj(c) {}
   QString name() const { return "lapack"; }
   QString shortname() const { return "lapack"; }
-  QString resultString() const {if (system) return "system"; return "local";}
+  QString resultString() const {if (reference) return "reference"; if (system) return "system"; return "local";}
   bool exec()
   {
 #ifdef Q_OS_MACX
     system = true;
     return true;
 #else
-    QString lapackpath;
-    if (!conf->findLibrary("lapack",&lapackpath)) {
+    QString lapackpath, lapackheader;
+    reference = (conf->getenv("QC_ENABLE_REFERENCE_LAPACK") != "");
+    if (reference || !conf->findSimpleLibrary("","","","lapack",&lapackheader,&lapackpath)) {
       system = false;
       conf->addExtra("PRE_TARGETDEPS += extern/LAPACK/liblapack.a");
       conf->addLib("extern/LAPACK/liblapack.a");
@@ -768,8 +778,9 @@ public:
     return true;
 #else
     QString blaspath;
+    QString blasheader;
     if (conf->getenv("QC_ENABLE_REFERENCE_BLAS") == "") {
-      if (!conf->findLibrary("blas",&blaspath)) {
+      if (!conf->findSimpleLibrary("","","","blas",&blasheader,&blaspath)) {
         system = false;
         reference = false;
         conf->addExtra("PRE_TARGETDEPS += extern/ATLAS/lib/BLAS_FreeMat/libatlas.a");
@@ -1714,6 +1725,7 @@ export BINDIR
 export DATADIR
 export EX_QTDIR
 export QC_WITH_FORTRAN
+export QC_ENABLE_REFERENCE_LAPACK
 export QC_ENABLE_REFERENCE_BLAS
 export QC_DEBUG
 rm -rf .qconftemp

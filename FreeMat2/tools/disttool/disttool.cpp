@@ -170,6 +170,7 @@ void ConsoleWidget::MacBundle() {
   QString versionnum(g.readLine(0));
   Execute("hdiutil",QStringList() << "create" << "-fs" << "HFS+" << "-srcfolder" << "../../FreeMat.app" << "../../FreeMat_" + versionnum + ".dmg");
   TermOutputText("\n\nDone\n");
+  qApp->exit();
 }
 
 QString stripWhiteSpace(QString a) {
@@ -225,7 +226,7 @@ void ConsoleWidget::LinuxBundle() {
   MakeDir("FreeMat/Contents/Resources/help/html");
   MakeDir("FreeMat/Contents/Resources/help/text");
   MakeDir("FreeMat/Contents/Resources/mfiles");
-  CopyFile("../../FreeMat","FreeMat/Contents/bin/FreeMatMain");
+  CopyFile("../../build/FreeMat","FreeMat/Contents/bin/FreeMatMain");
   // Copy the required libraries
   MakeDir("FreeMat/Contents/lib");
   ImportLibs("../../FreeMat");
@@ -252,7 +253,7 @@ void ConsoleWidget::LinuxBundle() {
   for (int i=0;i<plugs.size();i++)
     ImportLibs("FreeMat/"+plugs[i]);
   TermOutputText("\n\nDone\n");
-  //  qApp->exit();
+  qApp->exit();
 }
 
 void ConsoleWidget::WinBundle() {
@@ -264,7 +265,7 @@ void ConsoleWidget::WinBundle() {
   MakeDir("FreeMat");
   MakeDir("FreeMat/Contents");
   MakeDir("FreeMat/Contents/bin");
-  MakeDir("FreeMat/Contents/Resources");
+  MakeDir("FreeMat\/Contents/Resources");
   MakeDir("FreeMat/Contents/Resources/help");
   MakeDir("FreeMat/Contents/Resources/help/html");
   MakeDir("FreeMat/Contents/Resources/help/text");
@@ -319,6 +320,7 @@ void ConsoleWidget::WinBundle() {
   delete file_in;
   delete file_out;
   TermOutputText("\n\nDone\n");
+  qApp->exit();
 }
 
 void ConsoleWidget::exitNow() {

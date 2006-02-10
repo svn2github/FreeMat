@@ -1438,14 +1438,12 @@ namespace FreeMat {
 
   void* SparseDenseMatrixMultiply(Class dclass, int rows, int cols, int bcols,
 				  const void* ap, const void* bp) {
-    std::cout << "sparse dense mult\r\n";
     switch (dclass) {
     case FM_FLOAT: 
       {
 	float *C = (float*) Malloc(rows*bcols*sizeof(float));
 	SparseDenseRealMultiply<float>((float**)ap,rows,cols,
 				       (float*)bp,bcols,C);
-    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     case FM_DOUBLE: 
@@ -1453,7 +1451,6 @@ namespace FreeMat {
 	double *C = (double*) Malloc(rows*bcols*sizeof(double));
 	SparseDenseRealMultiply<double>((double**)ap,rows,cols,
 					(double*)bp,bcols,C);
-    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     case FM_COMPLEX: 
@@ -1461,7 +1458,6 @@ namespace FreeMat {
 	float *C = (float*) Malloc(2*rows*bcols*sizeof(float));
 	SparseDenseComplexMultiply<float>((float**)ap,rows,cols,
 					  (float*)bp,bcols,C);
-    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     case FM_DCOMPLEX: 
@@ -1469,7 +1465,6 @@ namespace FreeMat {
 	double *C = (double*) Malloc(2*rows*bcols*sizeof(double));
 	SparseDenseComplexMultiply<double>((double**)ap,rows,cols,
 					   (double*)bp,bcols,C);
-    std::cout << "sparse dense mult\r\n";
 	return C;
       }
     default:

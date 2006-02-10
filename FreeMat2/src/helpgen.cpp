@@ -259,7 +259,7 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
   f << "<P>\n";
   f << "<UL>\n";
   for (unsigned i=0;i<modinfo.size();i++)
-    f << "<LI> <A HREF=" << modinfo[i][0] << ".html> " << modinfo[i][0] << "</A> " << modinfo[i][1] << "</LI>\n";
+    f << "<LI> <A HREF=" << modinfo[i][0].toLower() << ".html> " << modinfo[i][0] << "</A> " << modinfo[i][1] << "</LI>\n";
   f << "</UL>\n";
   f << "</BODY>\n";
   f << "</HTML>\n";
@@ -294,7 +294,7 @@ void HTMLWriter::WriteIndex() {
   f << "<H2> Documentation Sections </H2>\n";
   f << "<UL>\n";
   foreach (QString secname, sections) 
-    f << "<LI> <A HREF=sec_" << secname << ".html> " << 
+    f << "<LI> <A HREF=sec_" << secname.toLower() << ".html> " << 
       section_descriptors.value(secname) << "</A> </LI>\n";
   f << "</UL>\n";
   f << "</BODY>\n";
@@ -1151,6 +1151,7 @@ void ConsoleWidget::Run() {
     tmp.remove();
   }
   TermOutputText("\n\nDone!\n");
+  qApp->exit();
 }
 
 void DoHelpGen() {

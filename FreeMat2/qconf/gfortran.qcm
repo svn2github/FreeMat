@@ -43,11 +43,11 @@ public:
     if (conf->getenv("QC_WITH_FORTRAN") == "") {
       if (!conf->findProgram("g77").isEmpty()) {
 	conf->addExtra("F77 = g77");
-	conf->addLib("-lg2c");
+	conf->addExtra("FLIB = -lg2c");
 	return true;
       } else if (!conf->findProgram("gfortran").isEmpty()) {
 	conf->addExtra("F77 = gfortran");
-	conf->addLib("-lgfortran");
+	conf->addExtra("FLIB = -lgfortran");
 	return true;
       }
       return false;

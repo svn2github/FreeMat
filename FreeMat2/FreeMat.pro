@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += opengl
 
-CONFIG += warn_off release
+CONFIG += warn_off
 
 DEFINES -= UNICODE
 
@@ -10,9 +10,9 @@ TARGET = FreeMat
 
 include($$OUT_PWD/conf.pri)
 
-!win32 {
+LIBS += $$FLIB
+
 OBJECTS_DIR = build
-}
 MOC_DIR = build
 RCC_DIR = build
 DESTDIR = build
@@ -118,7 +118,8 @@ libs/libFreeMat/SymbolTable.hpp \
 libs/libFreeMat/Sparse.hpp \
 libs/libFreeMat/Class.hpp \
 libs/libFreeMat/NumericArray.hpp \
-libs/libFreeMat/Parser.h 
+libs/libFreeMat/Parser.h \
+libs/libFreeMat/MemPtr.hpp
 
 HEADERS += libs/libCore/Utils.hpp \
 libs/libCore/LoadCore.hpp \

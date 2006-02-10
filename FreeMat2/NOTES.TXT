@@ -2,7 +2,12 @@ What about the help compiler?  I could just include it in FreeMat...
 
 - Source build appears to work on Linux...  
 - about dialog
-- cross linking
+- Mac
+- Need finite command recall window
+- Locks up after command appears in history window
+- Save restore state of main window & help window.
+- Enable function mode (-f "code") in gui versions.
+
 
 What is the deal with the source release?
   1. Dependency on ATLAS? There appear to be several BLAS options:

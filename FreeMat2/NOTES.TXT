@@ -1,6 +1,10 @@
 What about the help compiler?  I could just include it in FreeMat...
 
 - Source build appears to work on Linux...  
+
+Before release:
+- JPG plugins (Win32)
+- Handle docs
 - about dialog
 - Mac
 - Need finite command recall window
@@ -39,15 +43,10 @@ Installer:
   Linux - essentially done & works
   Source - needs work
 
-Before release:
-  BLAS setup (override)
-  JPG plugins (Win32)
-  About dialog
-  Handle docs
-  save/restore settings for main app window
 
 Done:
   GPL 
+  BLAS setup (override)
   Quit signaling
   Finish editor
   GUI Console + completions

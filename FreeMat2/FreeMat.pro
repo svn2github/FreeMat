@@ -53,7 +53,7 @@ check.depends = FORCE
 check.commands = $$DESTDIR/$$TARGET -f "cd tests/core; test_core"
 
 install.target = install
-install.commands = cd tools/disttool && qmake && make && ./disttool -linux && cd ../.. && mv tools/disttool/FreeMat .
+install.commands = cd tools/disttool && qmake && make && rm -rf FreeMat && ./disttool -linux && cd ../.. && rm -rf FreeMat && mv tools/disttool/FreeMat .
 
 QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help check install
 

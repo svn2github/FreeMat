@@ -98,6 +98,7 @@ int MainApp::Run() {
   QStringList userPath = settings.value("interpreter/path").toStringList();
   m_term->setUserPath(userPath);
   m_term->setAppPath(qApp->applicationDirPath().toStdString());
+  m_term->rescanPath();
   eval = new WalkTree(context,m_term);
   if (!skipGreeting)
     eval->sendGreeting();

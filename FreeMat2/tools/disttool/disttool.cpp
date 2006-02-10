@@ -229,7 +229,7 @@ void ConsoleWidget::LinuxBundle() {
   CopyFile("../../build/FreeMat","FreeMat/Contents/bin/FreeMatMain");
   // Copy the required libraries
   MakeDir("FreeMat/Contents/lib");
-  ImportLibs("../../FreeMat");
+  ImportLibs("../../build/FreeMat");
    // Write out the run script
   QFile *script = new QFile("FreeMat/Contents/bin/FreeMat");
   if (!script->open(QFile::WriteOnly))
@@ -247,7 +247,8 @@ void ConsoleWidget::LinuxBundle() {
   CopyDirectory("../../help/text","FreeMat/Contents/Resources/help/text");
   CopyDirectory("../../help/MFiles","FreeMat/Contents/Resources/mfiles");
   QString qtdir(getenv("QTDIR"));
-  CopyDirectory(qtdir+"/plugins/imageformats","FreeMat/Contents/Plugins/imageformats");
+  CopyFile(qtdir+"/plugins/imageformats/libqjpeg.so","FreeMat/Contents/Plugins/imageformats/libqjpeg.so");
+  CopyFile(qtdir+"/plugins/imageformats/libqmng.so","FreeMat/Contents/Plugins/imageformats/libqmng.so");
   QStringList plugs(GetFileList("FreeMat/Contents/Plugins/imageformats",
 				QStringList()));
   for (int i=0;i<plugs.size();i++)

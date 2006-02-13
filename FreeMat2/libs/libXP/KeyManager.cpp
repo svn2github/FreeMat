@@ -294,7 +294,7 @@ void KeyManager::AddCharToLine(char c) {
   /*
    * Are we adding characters to the line (ie. inserting or appending)?
    */
-  //  if(insert || sbuff_curpos >= ntotal) {
+  if(insert || sbuff_curpos >= ntotal) {
     /*
      * If inserting, make room for the new character.
      */
@@ -320,63 +320,62 @@ void KeyManager::AddCharToLine(char c) {
     /*
      * Are we overwriting an existing character?
      */
-
-//   } else {
-//     /*
-//      * Get the widths of the character to be overwritten and the character
-//      * that is going to replace it.
-//      */
-//     int old_width = DisplayedCharWidth(line[sbuff_curpos],
-// 				       sterm_curpos);
-//     /*
-//      * Overwrite the character in the buffer.
-//      */
-//     SetChar(sbuff_curpos,c);
-//     /*
-//      * If we are replacing with a narrower character, we need to
-//      * redraw the terminal string to the end of the line, then
-//      * overwrite the trailing old_width - width characters
-//      * with spaces.
-//      */
-//     if(old_width > width) {
-//       OutputString(std::string(line,sbuff_curpos), '\0');
-//       /*
-//        * Clear to the end of the terminal.
-//        */
-//       TruncateDisplay();
-//       /*
-//        * Move the cursor to the end of the new character.
-//        */
-//       SetTermCurpos(sterm_curpos + width);
-//       buff_curpos++;
-//       /*
-//        * If we are replacing with a wider character, then we will be
-//        * inserting new characters, and thus extending the line.
-//        */
-//     } else if(width > old_width) {
-//       /*
-//        * Redraw the line from the cursor position to the end of the line,
-//        * and move the cursor to just after the added character.
-//        */
-//       OutputString(std::string(line,sbuff_curpos), '\0');
-//       SetTermCurpos(sterm_curpos + width);
-//       buff_curpos++;
-//       /*
-//        * The original and replacement characters have the same width,
-//        * so simply overwrite.
-//        */
-//     } else {
-//       /*
-//        * Copy the character into the buffer.
-//        */
-//       SetChar(sbuff_curpos,c);
-//       buff_curpos++;
-//       /*
-//        * Overwrite the original character.
-//        */
-//       OutputChar(c, line.at(buff_curpos));
-//     };
-//   };
+   } else {
+     /*
+     * Get the widths of the character to be overwritten and the character
+     * that is going to replace it.
+     */
+    int old_width = DisplayedCharWidth(line[sbuff_curpos],
+				       sterm_curpos);
+    /*
+     * Overwrite the character in the buffer.
+     */
+    SetChar(sbuff_curpos,c);
+    /*
+     * If we are replacing with a narrower character, we need to
+     * redraw the terminal string to the end of the line, then
+     * overwrite the trailing old_width - width characters
+     * with spaces.
+     */
+    if(old_width > width) {
+      OutputString(std::string(line,sbuff_curpos), '\0');
+      /*
+       * Clear to the end of the terminal.
+       */
+      TruncateDisplay();
+      /*
+       * Move the cursor to the end of the new character.
+       */
+      SetTermCurpos(sterm_curpos + width);
+      buff_curpos++;
+      /*
+       * If we are replacing with a wider character, then we will be
+       * inserting new characters, and thus extending the line.
+       */
+    } else if(width > old_width) {
+      /*
+       * Redraw the line from the cursor position to the end of the line,
+       * and move the cursor to just after the added character.
+       */
+      OutputString(std::string(line,sbuff_curpos), '\0');
+      SetTermCurpos(sterm_curpos + width);
+      buff_curpos++;
+      /*
+       * The original and replacement characters have the same width,
+       * so simply overwrite.
+       */
+    } else {
+      /*
+       * Copy the character into the buffer.
+       */
+      SetChar(sbuff_curpos,c);
+      buff_curpos++;
+      /*
+       * Overwrite the original character.
+       */
+      OutputChar(c, line.at(buff_curpos));
+    };
+   };
 }
 
 int KeyManager::DisplayPrompt() {
@@ -488,16 +487,14 @@ void KeyManager::ResetLineBuffer() {
   term_curpos = 0;
   term_len = 0;
   insert_curpos = 0;
-  std::cout << "buffer reset\n";
 }
 
 void KeyManager::NewLine() {
-  std::cout << "line: " << line << "\n";
   AddHistory(line);
   line.append("\n");
   PlaceCursor(ntotal);
   emit OutputRawString("\r\n");
-  //ExecuteLine(line);
+  ExecuteLine(line);
   ResetLineBuffer();
   DisplayPrompt();
 }
@@ -506,6 +503,7 @@ extern bool InterruptPending;
 
 void KeyManager::RegisterInterrupt() {
   InterruptPending  = true;
+  emit Interrupt();
 }
 
 void KeyManager::CursorLeft() {
@@ -613,6 +611,7 @@ void KeyManager::AddHistory(std::string mline) {
   prefix = "";
   prefix_len = 0;
   history.push_back(mline);
+  emit SendCommand(QString::fromStdString(mline));
   return;
 }
 
@@ -994,7 +993,6 @@ void KeyManager::warningMessage(std::string msg) {
 }
 
 void KeyManager::ExecuteLine(std::string mline) {
-  std::cout << "Executing line: " << mline << "\n";
   enteredLines.push_back(mline);
   ReplacePrompt("");
   enteredLinesEmpty = false;
@@ -1002,6 +1000,19 @@ void KeyManager::ExecuteLine(std::string mline) {
     loopactive--;
     m_loop->exit();
   }
+}
+
+void KeyManager::QueueString(QString t) {
+  std::string g(t.toStdString());
+  AddStringToLine(g);
+}
+
+void KeyManager::QueueCommand(QString t) {
+  QueueString(t);
+  emit OutputRawString("\r\n");
+  ExecuteLine(line);
+  ResetLineBuffer();
+  DisplayPrompt();
 }
 
 char* KeyManager::getLine(std::string aprompt) {
@@ -1017,4 +1028,17 @@ char* KeyManager::getLine(std::string aprompt) {
   char *cp;
   cp = strdup(theline.c_str());
   return cp;
+}
+
+void KeyManager::RegisterTerm(QObject* term) {
+  connect(this,SIGNAL(MoveDown()),term,SLOT(MoveDown()));
+  connect(this,SIGNAL(MoveUp()),term,SLOT(MoveUp()));
+  connect(this,SIGNAL(MoveRight()),term,SLOT(MoveRight()));
+  connect(this,SIGNAL(MoveLeft()),term,SLOT(MoveLeft()));
+  connect(this,SIGNAL(ClearEOL()),term,SLOT(ClearEOL()));
+  connect(this,SIGNAL(ClearEOD()),term,SLOT(ClearEOD()));
+  connect(this,SIGNAL(MoveBOL()),term,SLOT(MoveBOL()));
+  connect(this,SIGNAL(OutputRawString(std::string)),term,SLOT(OutputRawString(std::string)));
+  connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
+  connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  
 }

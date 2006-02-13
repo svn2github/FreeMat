@@ -92,7 +92,7 @@ void ApplicationWindow::createStatusBar() {
 
 ApplicationWindow::ApplicationWindow() : QMainWindow() {
   setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
-  setWindowTitle(QString(WalkTree::getVersionString().c_str()) + " Command Window");
+  setWindowTitle(QString(FreeMat::WalkTree::getVersionString().c_str()) + " Command Window");
   createActions();
   createMenus();
   createToolBars();
@@ -137,7 +137,7 @@ void ApplicationWindow::tclose() {
   close();
 }
 
-void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
+void ApplicationWindow::SetGUITerminal(QTTerm* term) {
   m_term = term;
   setCentralWidget(term);
   QSettings settings("FreeMat","FreeMat");
@@ -148,12 +148,16 @@ void ApplicationWindow::SetGUITerminal(GUITerminal* term) {
     m_term->setFont(new_font);
   }
   term->show();
-  connect(term,SIGNAL(CommandLine(QString)),
-	  m_tool->getHistoryWidget(),SLOT(addCommand(QString)));
+}
+
+void ApplicationWindow::SetKeyManager(KeyManager *keys) {
+  m_keys = keys;
+  connect(keys,SIGNAL(SendCommand(QString)),
+ 	  m_tool->getHistoryWidget(),SLOT(addCommand(QString)));
   connect(m_tool->getHistoryWidget(),SIGNAL(sendCommand(QString)),
-	  term,SLOT(QueueString(QString)));
+ 	  keys,SLOT(QueueCommand(QString)));
   connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),
-	  term,SLOT(QueueString(QString)));
+ 	  keys,SLOT(QueueString(QString)));
 }
 
 void ApplicationWindow::save() {
@@ -207,11 +211,11 @@ void ApplicationWindow::paste() {
     text = cb->text(QClipboard::Selection);
   if (text.isNull())
     text = cb->text(QClipboard::Clipboard);
-  if (!text.isNull()) {
-    const char *cp = MAKEASCII(text);
-    while (*cp) 
-      m_term->ProcessChar(*cp++);
-  }
+//   if (!text.isNull()) {
+//     const char *cp = MAKEASCII(text);
+//     while (*cp) 
+//       m_term->ProcessChar(*cp++);
+//   }
 }
 
 void ApplicationWindow::font() {

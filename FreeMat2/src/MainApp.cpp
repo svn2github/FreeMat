@@ -46,7 +46,7 @@ MainApp::MainApp() {
 MainApp::~MainApp() {
 }
 
-void MainApp::SetTerminal(KeyManager* term) {
+void MainApp::SetKeyManager(KeyManager* term) {
   m_term = term;
 }
 
@@ -88,6 +88,11 @@ int MainApp::Run() {
     LoadHandleGraphicsFunctions(context);  
   }
   m_term->setContext(context);
+  QDir dir(QApplication::applicationDirPath());
+  dir.cdUp();
+  dir.cd("Plugins");
+  QString dummy(dir.absolutePath());
+  QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
   QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
   QString path1(dir1.canonicalPath());
   QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
@@ -103,7 +108,7 @@ int MainApp::Run() {
   if (!skipGreeting)
     eval->sendGreeting();
   eval->run();
-  m_term->RestoreOriginalMode();
+  //  m_term->RestoreOriginalMode();
   qApp->quit();
   return 0;
 }

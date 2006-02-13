@@ -33,7 +33,7 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
 }
 
 void HistoryWidget::doubleClicked(QListWidgetItem* item) {
-  emit sendCommand(item->text()+"\n");
+  emit sendCommand(item->text());
 }
 
 void HistoryWidget::closeEvent(QCloseEvent *ce) {
@@ -42,7 +42,6 @@ void HistoryWidget::closeEvent(QCloseEvent *ce) {
 }
 
 void HistoryWidget::addCommand(QString t) {
-  t.chop(1);
   if (!t.isEmpty()) {
     if (m_flist->count() >= 1000) {
       QListWidgetItem *p = m_flist->takeItem(0);

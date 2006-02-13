@@ -35,7 +35,7 @@ class MainApp : public QObject
 public:
   MainApp();
   ~MainApp();
-  void SetTerminal(KeyManager* term);
+  void SetKeyManager(KeyManager* term);
   void SetHelpPath(std::string helpPath);
   void SetGUIMode(bool mode);
   void SetSkipGreeting(bool skip);

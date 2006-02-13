@@ -20,14 +20,16 @@
 #define __APPLICATION_H__
 
 #include <QMainWindow>
-#include "GUITerminal.hpp"
+#include "QTTerm.hpp"
 #include "Editor.hpp"
 #include "ToolDock.hpp"
+#include "KeyManager.hpp"
 
 class ApplicationWindow : public QMainWindow {
   Q_OBJECT
     
-  GUITerminal* m_term;
+  QTTerm* m_term;
+  KeyManager* m_keys;
   QMenu *fileMenu, *editMenu, *toolsMenu, *helpMenu;
   QToolBar *editToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
@@ -38,7 +40,8 @@ class ApplicationWindow : public QMainWindow {
 public:
   ApplicationWindow();
   ~ApplicationWindow();
-  void SetGUITerminal(GUITerminal* term);
+  void SetGUITerminal(QTTerm* term);
+  void SetKeyManager(KeyManager* keys);
 private:
   void createActions();
   void createMenus();

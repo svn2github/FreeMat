@@ -65,12 +65,6 @@ public:
   virtual void errorMessage(std::string msg);
   virtual void warningMessage(std::string msg);
 
-  virtual void RestoreOriginalMode() {};
-  virtual void SetRawMode() {};
-  virtual void Initialize() {};
-  virtual void ResizeEvent() {};
-  virtual void RegisterInterrupt();
-
   void Redisplay();
   void setTerminalWidth(int w);
   void AddCharToLine(char c);
@@ -90,6 +84,7 @@ public:
   void EndOfLine();
   void KillLine();
   int getTerminalWidth();
+  void RegisterTerm(QObject* term);
  private:
   void CursorLeft();
   void CursorRight();
@@ -107,6 +102,7 @@ public:
   void Yank();
   void ListCompletions(std::vector<std::string> completions);
   void CompleteWord();
+  void RegisterInterrupt();
  protected:
   void NewLine();
   void ResetLineBuffer();
@@ -156,9 +152,13 @@ signals:
   void ClearEOD();
   void MoveBOL();
   void OutputRawString(std::string txt);
+  void SendCommand(QString);
+  void Interrupt();
 protected slots:
   void OnChar( int c );
   void SetTermWidth(int w);
+  void QueueString(QString);
+  void QueueCommand(QString);
 };
 
   

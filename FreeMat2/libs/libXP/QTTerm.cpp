@@ -68,9 +68,6 @@ QTTerm::QTTerm(QWidget *parent, const char *name) :
 QTTerm::~QTTerm() {
 }
 
-void QTTerm::Erase() {
-}
-
 char* QTTerm::getSelectionText() {
   int start;
   int stop;
@@ -195,8 +192,10 @@ void QTTerm::InstallEventTimers() {
 
 void QTTerm::resizeEvent(QResizeEvent *e) {
   QWidget::resizeEvent(e);
-  OnResize();
+  m_active_width = GetWidth();
+  resizeTextSurface();
   adjustScrollbarPosition();
+  update();
 }
 
 
@@ -465,7 +464,6 @@ void QTTerm::ClearEOD() {
 }
 
 void QTTerm::OutputRawString(std::string txt) {
-  std::cout << "WRiting :" << txt << "\n";
   PutString(txt);
 }
 
@@ -564,6 +562,7 @@ void QTTerm::resizeTextSurface() {
     setScrollbar(m_history_lines);
   }
   m_scroll_offset = (m_scrollback - m_height)*m_width;
+  emit SetTextWidth(m_width);
 }
 
 void QTTerm::setScrollbar(int val) {
@@ -597,14 +596,6 @@ void QTTerm::PutString(std::string txt) {
     }
   }
   m_blink_skip = true;
-}
-
-void QTTerm::OnResize() {
-  //  XPWindow::OnResize();
-  m_active_width = GetWidth();
-  Erase();
-  resizeTextSurface();
-  emit SetTextWidth(m_active_width);
 }
 
 void QTTerm::SetCursor(int x, int y) {

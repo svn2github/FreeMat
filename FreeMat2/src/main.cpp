@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include "GUITerminal.hpp"
+#include "QTTerm.hpp"
 #include "MainApp.hpp"
 #include <qapplication.h>
 #include "Exception.hpp"
@@ -35,7 +35,11 @@
 
 using namespace FreeMat;
 
-KeyManager *term;
+KeyManager *keys;
+QObject *term;
+QCoreApplication *app;
+ApplicationWindow *m_win;
+MainApp *m_app;
 
 #ifdef Q_WS_X11
 #include "FuncTerminal.hpp"
@@ -50,7 +54,9 @@ sig_t signal_suspend_default;
 sig_t signal_resume_default;
 
 void signal_suspend(int a) {
-  term->RestoreOriginalMode();
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr)
+    tptr->RestoreOriginalMode();
   printf("Suspending FreeMat...\n");
   fflush(stdout);
   signal(SIGTSTP,signal_suspend_default);
@@ -60,19 +66,20 @@ void signal_suspend(int a) {
 void signal_resume(int a) {
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   printf("Resuming FreeMat...\n");
-  term->SetRawMode();
-  term->Redisplay();
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr) {
+    tptr->SetRawMode();
+    keys->Redisplay();
+  }
 }
 
 void signal_resize(int a) {
-  term->ResizeEvent();
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr) {
+    tptr->ResizeEvent();
+  }
 }
 
-void stdincb() {
-  char c;
-  while (read(STDIN_FILENO, &c, 1) == 1)
-    ((Terminal*)term)->ProcessChar(c);
-}
 #endif
 
 void usage() {
@@ -118,19 +125,64 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
   return ndx;
 }
 
+void SetupGUICase() {
+  m_win = new ApplicationWindow;
+  QTTerm *gui = new QTTerm(m_win,"terminal");
+  keys->RegisterTerm(gui);
+  m_win->SetGUITerminal(gui);
+  m_win->SetKeyManager(keys);
+  m_win->show();
+  gui->resizeTextSurface();
+  gui->setFocus();
+  QObject::connect(m_win,SIGNAL(startHelp()),m_app,SLOT(HelpWin()));
+  QObject::connect(m_win,SIGNAL(startEditor()),m_app,SLOT(Editor()));
+  QObject::connect(m_win,SIGNAL(startPathTool()),m_app,SLOT(PathTool()));
+  QObject::connect(app,SIGNAL(aboutToQuit()),m_win,SLOT(writeSettings()));
+  QObject::connect(app,SIGNAL(lastWindowClosed()),app,SLOT(quit()));
+  term = gui;
+}
 
-int main(int argc, char *argv[]) {
-  QCoreApplication *app;
-  
+void SetupInteractiveTerminalCase() {
+  Terminal *myterm = new Terminal;
+  keys->RegisterTerm(myterm);
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  try {
+    myterm->Initialize();
+  } catch(Exception &e) {
+    fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
+    exit(1);
+  }
+  QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+  QObject::connect(notify, SIGNAL(activated(int)), myterm, SLOT(DoRead()));
+  myterm->ResizeEvent();
+  signal_suspend_default = signal(SIGTSTP,signal_suspend);
+  signal_resume_default = signal(SIGCONT,signal_resume);
+  signal(SIGWINCH, signal_resize);
+  term = myterm;
+}
+
+void SetupDumbTerminalCase() {
+  DumbTerminal *myterm = new DumbTerminal;
+  keys->RegisterTerm(myterm);
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+  QObject::connect(notify, SIGNAL(activated(int)), myterm, SLOT(DoRead()));
+  signal_suspend_default = signal(SIGTSTP,signal_suspend);
+  signal_resume_default = signal(SIGCONT,signal_resume);
+  signal(SIGWINCH, signal_resize);
+  term = myterm;  
+}
+
+int main(int argc, char *argv[]) {  
   int nogui = parseFlagArg(argc,argv,"-nogui",false);
   int scriptMode = parseFlagArg(argc,argv,"-e",false); 
   int helpgen = parseFlagArg(argc,argv,"-helpgen",false);
   int noX = parseFlagArg(argc,argv,"-noX",false);
   int help = parseFlagArg(argc,argv,"-help",false);
   int funcMode = parseFlagArg(argc,argv,"-f",true);
+  int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
   
   if (help) usage();
-  
   if (!noX)
     app = new QApplication(argc, argv);
   else {
@@ -144,70 +196,27 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   
-  QDir dir(QApplication::applicationDirPath());
-  dir.cdUp();
-  dir.cd("Plugins");
-  QString dummy(dir.absolutePath());
-  QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-
   if (funcMode) {
     scriptMode = 0;
     nogui = 1;
     helpgen = 0;
   }
-  
+
   if (scriptMode) nogui = 1;
-  
-  MainApp m_app;
-  ApplicationWindow *m_win = NULL;
-  
-  if (!nogui) {
-    m_win = new ApplicationWindow;
-    QObject::connect(qApp,SIGNAL(lastWindowClosed()),qApp,SLOT(quit()));
-    term = new GUITerminal(m_win);
-    m_win->SetGUITerminal((GUITerminal*)term);
-    m_win->show();
-    ((GUITerminal*)term)->resizeTextSurface();
-    ((GUITerminal*)term)->setFocus();
-  } else {
-#ifdef Q_WS_X11
-    if (!scriptMode && !funcMode && !noX) {
-      QWidget *wid = new QWidget(0,Qt::FramelessWindowHint);
-      wid->setGeometry(2000,2000,1,1);
-      wid->setWindowIcon(QIcon(":/images/freemat-2.xpm"));
-      wid->show();
-      term = new Terminal;
-      fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
-      try {
-	term->Initialize();
-      } catch(Exception &e) {
-	fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
-	exit(1);
-      }
-      QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
-      SocketCB *socketcb = new SocketCB(stdincb);
-      QObject::connect(notify, SIGNAL(activated(int)), socketcb, SLOT(activated(int)));
-    } else if (!funcMode)
-      term = new DumbTerminal;
-    else
-      term = new FuncTerminal(argv,argc,funcMode);
-    signal_suspend_default = signal(SIGTSTP,signal_suspend);
-    signal_resume_default = signal(SIGCONT,signal_resume);
-    signal(SIGWINCH, signal_resize);
-#else
-    fprintf(stderr,"-nogui flag is unsupported on win32/macosx\n");
-    exit(1);
-#endif
-  }
-  m_app.SetTerminal(term);
-  m_app.SetGUIMode(!noX);
-  m_app.SetSkipGreeting(funcMode);
-  QTimer::singleShot(0,&m_app,SLOT(Run()));
-  if (m_win != NULL) {
-    QObject::connect(m_win,SIGNAL(startHelp()),&m_app,SLOT(HelpWin()));
-    QObject::connect(m_win,SIGNAL(startEditor()),&m_app,SLOT(Editor()));
-    QObject::connect(m_win,SIGNAL(startPathTool()),&m_app,SLOT(PathTool()));
-    QObject::connect(app,SIGNAL(aboutToQuit()),m_win,SLOT(writeSettings()));
-  }
+
+  keys = new KeyManager;
+  m_app = new MainApp;
+
+  if (!nogui)
+    SetupGUICase();
+  else if (!scriptMode) 
+    SetupInteractiveTerminalCase();
+  else
+    SetupDumbTerminalCase();
+
+  m_app->SetKeyManager(keys);
+  m_app->SetGUIMode(!noX);
+  m_app->SetSkipGreeting(nogreet);
+  QTimer::singleShot(0,m_app,SLOT(Run()));
   return app->exec();
 }

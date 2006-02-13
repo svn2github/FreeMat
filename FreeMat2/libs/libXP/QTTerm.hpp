@@ -72,7 +72,6 @@ public:
   //TK dependant functions
 public:
   void setScrollbar(int val);
-  void OnResize();
   void DrawContent();
   void EnableBlink();
   void DisableBlink();
@@ -88,7 +87,6 @@ public:
   virtual void DrawFragment(QPainter*, QString text, char flags, int row, int col);
   virtual void PutTagChar(int x, int y, tagChar g);
   virtual void setFont(int size);
-  virtual void Erase();
   void adjustScrollbarPosition();
 
   char *getSelectionText();
@@ -123,7 +121,7 @@ protected:
   void OutputRawString(std::string txt);
 signals:
  void OnChar(int c);
-  void SetTextWidth(int);
+ void SetTextWidth(int);
 protected:
   int m_height;        // height of terminal in characters
   int m_width;         // width of terminal in characters

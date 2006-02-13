@@ -19,27 +19,27 @@
 #ifndef __DumbTerminal_hpp__
 #define __DumbTerminal_hpp__
 
-#include "KeyManager.hpp"
+#include <QObject>
+#include <string>
 
-namespace FreeMat {
-  class DumbTerminal : public KeyManager {
-  public:
-    DumbTerminal();
-    virtual ~DumbTerminal();
-    virtual void Initialize();
-    virtual void RestoreOriginalMode();
-    virtual void OutputRawString(std::string txt); 
-    virtual char* getLine(std::string prompt);
-    virtual void ResizeEvent();
-    virtual void MoveDown();
-    virtual void MoveUp();
-    virtual void MoveRight();
-    virtual void MoveLeft();
-    virtual void ClearEOL();
-    virtual void ClearEOD();
-    virtual void MoveBOL();
-    virtual int getTerminalWidth();
-  };
-}
+class DumbTerminal : public QObject {
+  Q_OBJECT
+public:
+  DumbTerminal();
+  virtual ~DumbTerminal();
+public slots:
+  void MoveDown();
+  void MoveUp();
+  void MoveRight();
+  void MoveLeft();
+  void ClearEOL();
+  void ClearEOD();
+  void MoveBOL();
+  void OutputRawString(std::string txt);
+  void DoRead();
+signals:
+  void OnChar(int c);
+  void SetTextWidth(int);
+};
 
 #endif

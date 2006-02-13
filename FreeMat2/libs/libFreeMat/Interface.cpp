@@ -80,7 +80,7 @@ namespace FreeMat {
 #endif
   }
   
-  Interface::Interface() {
+  Interface::Interface() : QObject() {
     m_context = NULL;
   }
 

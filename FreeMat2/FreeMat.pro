@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += opengl
 
-CONFIG += warn_off 
+CONFIG += warn_off release
 
 DEFINES -= UNICODE
 
@@ -62,8 +62,9 @@ check.depends = FORCE
 check.commands = $$RUNTARGET -f "cd tests/core; test_core"
 
 install.target = install
-!macx {
-install.commands = cd tools/disttool && qmake && make && rm -rf FreeMat && ./disttool -linux && cd ../.. && rm -rf FreeMat && mv tools/disttool/FreeMat .
+
+!unix:macx {
+install.commands = tools/make_linux_bundle
 }
 
 macx {
@@ -281,4 +282,4 @@ DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/a
 DISTFILES += help/section_descriptors.txt
 DISTFILES += $$system(find MFiles -name '*.m')
 DISTFILES += $$system(find tests -name '*.m')
-DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
+DISTFILES += tools/make_linux_bundle disttool/disttool.cpp tools/disttool/disttool.hpp tools/disttool/disttool.pro tools/disttool/freemat_nsi.in

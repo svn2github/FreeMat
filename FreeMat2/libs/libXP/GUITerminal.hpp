@@ -21,8 +21,9 @@
 
 #include "QTTerm.hpp"
 #include "KeyManager.hpp"
+#include "BaseTerminal.hpp"
 
-class GUITerminal : public QTTerm, public KeyManager {
+class GUITerminal : public QTTerm {
   Q_OBJECT
 
   std::vector<std::string> cmd_list;
@@ -30,6 +31,12 @@ class GUITerminal : public QTTerm, public KeyManager {
   void resizeEvent( QResizeEvent *e );
  public:
   GUITerminal(QWidget *parent);
+  int getTerminalWidth() {return getTextWidth();};
+  virtual char* getLine(std::string aprompt);
+signals:
+  void CommandLine(QString);
+protected slots:
+  void QueueString(QString t);
   void OutputRawString(std::string txt);
   void MoveDown();
   void MoveUp();
@@ -38,13 +45,6 @@ class GUITerminal : public QTTerm, public KeyManager {
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
-  int getTerminalWidth() {return getTextWidth();};
-  void ProcessChar(int c) {OnChar(c);};
-  virtual char* getLine(std::string aprompt);
-signals:
-  void CommandLine(QString);
-protected slots:
-  void QueueString(QString t);
 };
 
 #endif

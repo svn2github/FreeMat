@@ -49,8 +49,8 @@ v * The following macro returns non-zero if a character is
 // KeyManager
 // ----------------------------------------------------------------------------
 
-KeyManager::KeyManager() {
-  cutbuf[0] = '\0';
+KeyManager::KeyManager() : Interface() {
+  cutbuf = "";
   linelen = 1000;
   ntotal = 0;
   buff_curpos = 0;
@@ -60,11 +60,21 @@ KeyManager::KeyManager() {
   ncolumn = 80;
   nline = 24;
   insert = true;
-  ReplacePrompt("");
-  ResetLineBuffer();
   history.push_back("");
   enteredLinesEmpty = true;
+  ReplacePrompt("");
+  ResetLineBuffer();
   loopactive = 0;
+  m_loop = new QEventLoop;
+}
+
+int KeyManager::getTerminalWidth() {
+  return ncolumn;
+}
+
+void KeyManager::SetTermWidth(int w) {
+  ncolumn = w;
+  Redisplay();
 }
 
 void KeyManager::SetTermCurpos(int n) {
@@ -121,6 +131,7 @@ int KeyManager::DisplayedStringWidth(std::string s, int nc, int aterm_curpos) {
     slen += DisplayedCharWidth(s[i], aterm_curpos + slen);
   return slen;
 }
+
 int KeyManager::BuffCurposToTermCurpos(int n) {
   return prompt_len + DisplayedStringWidth(line, n, prompt_len);
 }
@@ -135,7 +146,7 @@ void KeyManager::Redisplay() {
     * to the end of the display.
     */
    SetTermCurpos(0);
-   ClearEOD();
+   emit ClearEOD();
    /*
     * Nothing is displayed yet.
     */
@@ -184,19 +195,19 @@ void KeyManager::TerminalMove(int n) {
    * Move down to the next line.
    */
   for(; cur_row < new_row; cur_row++) 
-    MoveDown();
+    emit MoveDown();
   /*
    * Move up to the previous line.
    */
   for(; cur_row > new_row; cur_row--)
-    MoveUp();
+    emit MoveUp();
   /*
    * Move to the right within the target line?
    */
   if(cur_col < new_col) {
     {
       for(; cur_col < new_col; cur_col++)
-	MoveRight();
+	emit MoveRight();
     };
     /*
      * Move to the left within the target line?
@@ -204,7 +215,7 @@ void KeyManager::TerminalMove(int n) {
   } else if(cur_col > new_col) {
     {
       for(; cur_col > new_col; cur_col--)
-	MoveLeft();
+	emit MoveLeft();
     };
   }
   /*
@@ -221,7 +232,7 @@ void KeyManager::TruncateDisplay() {
   /*
    * First clear from the cursor to the end of the current input line.
    */
-  ClearEOL();
+  emit ClearEOL();
   /*
    * If there is more than one line displayed, go to the start of the
    * next line and clear from there to the end of the display. Note that
@@ -233,9 +244,9 @@ void KeyManager::TruncateDisplay() {
    * position).
    */
   if(term_len / ncolumn > term_curpos / ncolumn) {
-    MoveDown();
-    MoveBOL();
-    ClearEOD();
+    emit MoveDown();
+    emit MoveBOL();
+    emit ClearEOD();
     /*
      * Where is the cursor now?
      */
@@ -252,6 +263,10 @@ void KeyManager::TruncateDisplay() {
 }
 
 void KeyManager::SetChar(unsigned int p, char c) {
+  if (line.size() == 0) {
+    line.append(1,c);
+    return;
+  }
   if (line.size() <= p)
     line.insert(p,1,c);
   else
@@ -279,12 +294,12 @@ void KeyManager::AddCharToLine(char c) {
   /*
    * Are we adding characters to the line (ie. inserting or appending)?
    */
-  if(insert || sbuff_curpos >= ntotal) {
+  //  if(insert || sbuff_curpos >= ntotal) {
     /*
      * If inserting, make room for the new character.
      */
     if(sbuff_curpos < ntotal) {
-      line.insert(sbuff_curpos," ");
+      line.insert(sbuff_curpos,1,' ');
     };    
     /*
      * Copy the character into the buffer.
@@ -305,68 +320,69 @@ void KeyManager::AddCharToLine(char c) {
     /*
      * Are we overwriting an existing character?
      */
-  } else {
-    /*
-     * Get the widths of the character to be overwritten and the character
-     * that is going to replace it.
-     */
-    int old_width = DisplayedCharWidth(line[sbuff_curpos],
-				       sterm_curpos);
-    /*
-     * Overwrite the character in the buffer.
-     */
-    SetChar(sbuff_curpos,c);
-    /*
-     * If we are replacing with a narrower character, we need to
-     * redraw the terminal string to the end of the line, then
-     * overwrite the trailing old_width - width characters
-     * with spaces.
-     */
-    if(old_width > width) {
-      OutputString(std::string(line,sbuff_curpos), '\0');
-      /*
-       * Clear to the end of the terminal.
-       */
-      TruncateDisplay();
-      /*
-       * Move the cursor to the end of the new character.
-       */
-      SetTermCurpos(sterm_curpos + width);
-      buff_curpos++;
-      /*
-       * If we are replacing with a wider character, then we will be
-       * inserting new characters, and thus extending the line.
-       */
-    } else if(width > old_width) {
-      /*
-       * Redraw the line from the cursor position to the end of the line,
-       * and move the cursor to just after the added character.
-       */
-      OutputString(std::string(line,sbuff_curpos), '\0');
-      SetTermCurpos(sterm_curpos + width);
-      buff_curpos++;
-      /*
-       * The original and replacement characters have the same width,
-       * so simply overwrite.
-       */
-    } else {
-      /*
-       * Copy the character into the buffer.
-       */
-      SetChar(sbuff_curpos,c);
-      buff_curpos++;
-      /*
-       * Overwrite the original character.
-       */
-      OutputChar(c, line.at(buff_curpos));
-    };
-  };
+
+//   } else {
+//     /*
+//      * Get the widths of the character to be overwritten and the character
+//      * that is going to replace it.
+//      */
+//     int old_width = DisplayedCharWidth(line[sbuff_curpos],
+// 				       sterm_curpos);
+//     /*
+//      * Overwrite the character in the buffer.
+//      */
+//     SetChar(sbuff_curpos,c);
+//     /*
+//      * If we are replacing with a narrower character, we need to
+//      * redraw the terminal string to the end of the line, then
+//      * overwrite the trailing old_width - width characters
+//      * with spaces.
+//      */
+//     if(old_width > width) {
+//       OutputString(std::string(line,sbuff_curpos), '\0');
+//       /*
+//        * Clear to the end of the terminal.
+//        */
+//       TruncateDisplay();
+//       /*
+//        * Move the cursor to the end of the new character.
+//        */
+//       SetTermCurpos(sterm_curpos + width);
+//       buff_curpos++;
+//       /*
+//        * If we are replacing with a wider character, then we will be
+//        * inserting new characters, and thus extending the line.
+//        */
+//     } else if(width > old_width) {
+//       /*
+//        * Redraw the line from the cursor position to the end of the line,
+//        * and move the cursor to just after the added character.
+//        */
+//       OutputString(std::string(line,sbuff_curpos), '\0');
+//       SetTermCurpos(sterm_curpos + width);
+//       buff_curpos++;
+//       /*
+//        * The original and replacement characters have the same width,
+//        * so simply overwrite.
+//        */
+//     } else {
+//       /*
+//        * Copy the character into the buffer.
+//        */
+//       SetChar(sbuff_curpos,c);
+//       buff_curpos++;
+//       /*
+//        * Overwrite the original character.
+//        */
+//       OutputChar(c, line.at(buff_curpos));
+//     };
+//   };
 }
 
 int KeyManager::DisplayPrompt() {
   term_curpos = 0;
-  MoveBOL();
-  ClearEOL();
+  emit MoveBOL();
+  emit ClearEOL();
   OutputString(prompt, '\0');
   return 0;
 }
@@ -429,7 +445,7 @@ void KeyManager::OutputChar(char c, char pad) {
   /*
    * Write the string to the terminal.
    */
-  OutputRawString(string);
+  emit OutputRawString(string);
   /*
    * Except for one exception to be described in a moment, the cursor should
    * now have been positioned after the character that was just output.
@@ -472,14 +488,16 @@ void KeyManager::ResetLineBuffer() {
   term_curpos = 0;
   term_len = 0;
   insert_curpos = 0;
+  std::cout << "buffer reset\n";
 }
 
 void KeyManager::NewLine() {
+  std::cout << "line: " << line << "\n";
   AddHistory(line);
   line.append("\n");
   PlaceCursor(ntotal);
-  OutputRawString("\r\n");
-  ExecuteLine(line);
+  emit OutputRawString("\r\n");
+  //ExecuteLine(line);
   ResetLineBuffer();
   DisplayPrompt();
 }
@@ -591,10 +609,10 @@ void KeyManager::SearchPrefix(std::string aline, int aprefix_len) {
   startsearch = history.size();
 }
 
-void KeyManager::AddHistory(std::string line) {
+void KeyManager::AddHistory(std::string mline) {
   prefix = "";
   prefix_len = 0;
-  history.push_back(line);
+  history.push_back(mline);
   return;
 }
 
@@ -748,9 +766,9 @@ void KeyManager::ListCompletions(std::vector<std::string> completions) {
 	sprintf(buffer, "%s%-*s%s", completions[m].c_str(),
 		(int) (ncol > 1 ? maxlen - completions[m].length():0),
 		"", col<ncol-1 ? "  " : "\r\n");
-	OutputRawString(buffer);
+	emit OutputRawString(buffer);
       } else {
-	OutputRawString("\r\n");
+	emit OutputRawString("\r\n");
 	break;
       };
     };
@@ -807,7 +825,7 @@ void KeyManager::CompleteWord() {
   std::string tempstring;
   matches = GetCompletions(line, buff_curpos, tempstring);
   if(matches.size() == 0) {
-    OutputRawString("\r\n");
+    emit OutputRawString("\r\n");
     term_curpos = 0;
     redisplay = 1;
     /*
@@ -818,7 +836,7 @@ void KeyManager::CompleteWord() {
      * If there any ambiguous matches, report them, starting on a new line.
      */
     if(matches.size() > 1) {
-      OutputRawString("\r\n");
+      emit OutputRawString("\r\n");
       ListCompletions(matches);
       redisplay = 1;
     };
@@ -882,7 +900,6 @@ void KeyManager::CompleteWord() {
   };
   return;
 }
-
 
 void KeyManager::OnChar( int c ) {
   keyseq_count++;
@@ -963,38 +980,40 @@ std::string TranslateString(std::string x) {
 
 void KeyManager::outputMessage(std::string msg) {
   std::string msg2(TranslateString(msg));
-  OutputRawString(msg2);
+  emit OutputRawString(msg2);
 }
 
 void KeyManager::errorMessage(std::string msg) {
   std::string msg2(TranslateString(msg));
-  OutputRawString("Error: " + msg2 + "\r\n");
+  emit OutputRawString("Error: " + msg2 + "\r\n");
 }
 
 void KeyManager::warningMessage(std::string msg) {
   std::string msg2(TranslateString(msg));
-  OutputRawString("Warning: " + msg2 + "\r\n");
+  emit OutputRawString("Warning: " + msg2 + "\r\n");
 }
 
-void KeyManager::ExecuteLine(std::string line) {
-  enteredLines.push_back(line);
+void KeyManager::ExecuteLine(std::string mline) {
+  std::cout << "Executing line: " << mline << "\n";
+  enteredLines.push_back(mline);
   ReplacePrompt("");
   enteredLinesEmpty = false;
   if (loopactive) {
     loopactive--;
-    m_loop.exit();
+    m_loop->exit();
   }
 }
 
 char* KeyManager::getLine(std::string aprompt) {
   ReplacePrompt(aprompt);
   DisplayPrompt();
-  while (enteredLines.empty()) {
+  while (enteredLinesEmpty) {
     loopactive++;
-    m_loop.exec();
+    m_loop->exec();
   }
   std::string theline(enteredLines.front());
   enteredLines.pop_front();
+  enteredLinesEmpty = (enteredLines.empty());
   char *cp;
   cp = strdup(theline.c_str());
   return cp;

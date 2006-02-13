@@ -52,21 +52,12 @@ using namespace FreeMat;
 
 class KeyManager : public Interface
 {
+  Q_OBJECT
   std::list<std::string> enteredLines;  
   bool enteredLinesEmpty;  
 public:
   KeyManager();
   virtual ~KeyManager();
-
-  // Predefined control sequence
-  virtual void MoveDown() = 0;
-  virtual void MoveUp() = 0;
-  virtual void MoveRight() = 0;
-  virtual void MoveLeft() = 0;
-  virtual void ClearEOL() = 0;
-  virtual void ClearEOD() = 0;
-  virtual void MoveBOL() = 0;
-  virtual void OutputRawString(std::string txt) = 0;
 
   virtual void ExecuteLine(std::string line);
   virtual char* getLine(std::string aprompt);
@@ -85,7 +76,6 @@ public:
   void AddCharToLine(char c);
   void ReplacePrompt(std::string prmt);
   int DisplayPrompt();
-  void OnChar( int c );
   void OutputChar(char c, char pad);
   void OutputString(std::string msg, char c);
   void TerminalMove(int n);
@@ -99,6 +89,7 @@ public:
   void SetChar(unsigned int p, char c);
   void EndOfLine();
   void KillLine();
+  int getTerminalWidth();
  private:
   void CursorLeft();
   void CursorRight();
@@ -155,7 +146,19 @@ public:
   int prompt_len;
   // Are we waiting for input?
   int loopactive;
-  QEventLoop m_loop;
+  QEventLoop *m_loop;
+signals:
+  void MoveDown();
+  void MoveUp();
+  void MoveRight();
+  void MoveLeft();
+  void ClearEOL();
+  void ClearEOD();
+  void MoveBOL();
+  void OutputRawString(std::string txt);
+protected slots:
+  void OnChar( int c );
+  void SetTermWidth(int w);
 };
 
   

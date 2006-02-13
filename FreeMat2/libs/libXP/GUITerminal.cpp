@@ -25,8 +25,8 @@ void GUITerminal::resizeEvent( QResizeEvent *e ) {
   setTerminalWidth(getTextWidth());
 }
 
-GUITerminal::GUITerminal(QWidget *parent) :
-  QTTerm(parent,NULL) {
+GUITerminal::GUITerminal(QWidget *parent, KeyManager *sink) :
+  QTTerm(parent,NULL), BaseTerminal(sink) {
 }
 
 void GUITerminal::MoveDown() {
@@ -74,4 +74,9 @@ void GUITerminal::QueueString(QString t) {
   while (*cp) {
     ProcessChar(*cp++);
   }
+}
+
+
+void GUITermianl::ProcessChar(int c) {
+  
 }

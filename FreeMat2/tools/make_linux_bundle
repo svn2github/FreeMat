@@ -1,0 +1,38 @@
+#!/bin/sh
+
+import_libs() {
+  echo "    Importing libs for $1"
+  liblist=`ldd $1 | sed "s,[^=]*=> \([^(]*\).*,\1,g; s, *,,g; s,\([^)]*)\),,g;s,\(.*X11R6.*\),,g;s,\(.*ncurses.*\),,g;s,\(.*libz.*\),,g;s,\(.*libdl.*\),,g;s,\(.*libGL.*\),,g;s,\(.*libc.*\),,g;s,\(.*libm.*\),,g;s,\(.*libpthread.*\),,g;s,\(.*tls.*\),,g"`
+  cp $liblist $2/.
+}
+
+version=`cat help/version.txt`
+echo "Building FreeMat Version $version Bundle..."
+basedir=FreeMat_$version
+mkdir -p $basedir
+mkdir -p $basedir/Contents
+mkdir -p $basedir/Contents/bin
+mkdir -p $basedir/Contents/Resources
+mkdir -p $basedir/Contents/Resources/help
+mkdir -p $basedir/Contents/Resources/help/html
+mkdir -p $basedir/Contents/Resources/help/text
+mkdir -p $basedir/Contents/Resources/mfiles
+mkdir -p $basedir/Contents/lib
+mkdir -p $basedir/Contents/Plugins/imageformats
+cp build/FreeMat $basedir/Contents/bin/FreeMatMain
+cat >$basedir/Contents/bin/FreeMat <<EOT
+#!/bin/bash
+mypath=\`which \$0\`
+mypath=\${mypath%/*}
+declare -x LD_LIBRARY_PATH=\$mypath/../lib
+\$mypath/FreeMatMain \$*
+EOT
+chmod +x $basedir/Contents/bin/FreeMat
+cp -R help/html $basedir/Contents/Resources/help/html
+cp -R help/text $basedir/Contents/Resources/help/text
+cp -R help/MFiles $basedir/Contents/Resources/mfiles
+cp $QTDIR/plugins/imageformats/libqjpeg.so $basedir/Contents/Plugins/imageformats/libqjpeg.so
+cp $QTDIR/plugins/imageformats/libqmng.so $basedir/Contents/Plugins/imageformats/libqmng.so
+import_libs $basedir/Contents/bin/FreeMatMain $basedir/Contents/lib
+import_libs $basedir/Contents/Plugins/imageformats/libqjpeg.so $basedir/Contents/lib
+import_libs $basedir/Contents/Plugins/imageformats/libqmng.so $basedir/Contents/lib

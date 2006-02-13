@@ -19,9 +19,11 @@
 
 #include "LAPACK.hpp"
 
+#ifndef __APPLE__
 int xerbla_(char *srname, int *info) {
   return 0;
 }
+#endif
 
 namespace FreeMat {
 

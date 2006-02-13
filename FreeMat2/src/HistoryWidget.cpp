@@ -29,6 +29,7 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
   connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 	  this,SLOT(doubleClicked(QListWidgetItem*)));
+  setObjectName("history");
 }
 
 void HistoryWidget::doubleClicked(QListWidgetItem* item) {
@@ -43,6 +44,10 @@ void HistoryWidget::closeEvent(QCloseEvent *ce) {
 void HistoryWidget::addCommand(QString t) {
   t.chop(1);
   if (!t.isEmpty()) {
+    if (m_flist->count() >= 1000) {
+      QListWidgetItem *p = m_flist->takeItem(0);
+      delete p;
+    }
     QListWidgetItem *d = new QListWidgetItem(t,m_flist);
     m_flist->setCurrentItem(d);
   }

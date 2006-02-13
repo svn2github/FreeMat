@@ -28,6 +28,7 @@ FileTool::FileTool(QWidget *parent) : QWidget(parent) {
   tree->setModel(model);
   connect(tree,SIGNAL(doubleClicked(const QModelIndex&)), 
 	  this,SLOT(doubleClicked(const QModelIndex&)));
+  setObjectName("filetool");
 }
 
 void FileTool::doubleClicked(const QModelIndex& index) {

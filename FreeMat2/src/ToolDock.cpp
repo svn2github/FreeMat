@@ -26,6 +26,7 @@ ToolDock::ToolDock(QWidget *parent) : QDockWidget(parent) {
   m_filetool = new FileTool(tb);
   tb->addItem(m_filetool,"Files");
   setWidget(tb);
+  setObjectName("tooldock");
 }
 
 ToolDock::~ToolDock() {

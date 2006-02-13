@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += opengl
 
-CONFIG += warn_off
+CONFIG += warn_off 
 
 DEFINES -= UNICODE
 
@@ -150,8 +150,6 @@ HEADERS+=libs/libXP/DynLib.hpp \
 libs/libXP/System.hpp \
 libs/libXP/PathSearch.hpp \
 libs/libXP/KeyManager.hpp \
-libs/libXP/TermWidget.hpp \
-libs/libXP/GUITerminal.hpp \
 libs/libXP/QTTerm.hpp 
 
 HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp src/Common.hpp
@@ -248,11 +246,9 @@ libs/libGraphics/QTRenderEngine.cpp \
 libs/libGraphics/HandleWindow.cpp
 
 FMSOURCES += libs/libXP/DynLib.cpp \
-libs/libXP/TermWidget.cpp \
 libs/libXP/System.cpp \
 libs/libXP/PathSearch.cpp \
 libs/libXP/KeyManager.cpp \
-libs/libXP/GUITerminal.cpp \
 libs/libXP/QTTerm.cpp 
 
 SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp src/FileTool.cpp src/Common.cpp

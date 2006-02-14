@@ -84,6 +84,7 @@ void ApplicationWindow::createToolBars() {
   editToolBar = addToolBar("Edit");
   editToolBar->addAction(copyAct);
   editToolBar->addAction(pasteAct);
+  editToolBar->setObjectName("edittoolbar");
 }
 
 void ApplicationWindow::createStatusBar() {
@@ -97,9 +98,11 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
   createMenus();
   createToolBars();
   createStatusBar();
-  readSettings();
   initializeTools();
   createToolBox();
+  setObjectName("appwindow");
+  resize(QSize(300,200));
+  readSettings();
 }
 
 void ApplicationWindow::createToolBox() {
@@ -120,16 +123,13 @@ void ApplicationWindow::closeEvent(QCloseEvent* ce) {
 
 void ApplicationWindow::readSettings() {
   QSettings settings("FreeMat", "FreeMat");
-  QPoint gpos = settings.value("mainwindow/pos", QPoint(200, 200)).toPoint();
-  QSize gsize = settings.value("mainwindow/size", QSize(600, 400)).toSize();
-  resize(gsize);
-  move(gpos);
+  QByteArray state = settings.value("mainwindow/state").toByteArray();
+  restoreState(state);
 }
 
 void ApplicationWindow::writeSettings() {
   QSettings settings("FreeMat", "FreeMat");
-  settings.setValue("mainwindow/pos", pos());
-  settings.setValue("mainwindow/size", size());
+  settings.setValue("mainwindow/state",saveState());
   settings.sync();
 }
 
@@ -242,6 +242,47 @@ void ApplicationWindow::path() {
 }
 
 void ApplicationWindow::about() {
+  QMessageBox mb(this);
+  mb.setWindowTitle(QString("About FreeMat"));
+  mb.setText(QString("<h3>About FreeMat</h3>"
+		     "<p>This is %1.</p>"
+		     "<p>FreeMat is licensed under the GNU Public License"
+		     " version 2.  Type <code>license</code> at the prompt"
+		     " to get details.  The source code for FreeMat is"
+		     " downloadable at <tt>http://freemat.sf.net</tt>."
+		     "<p>FreeMat is written and maintained by Samit Basu"
+		     " and uses contributions from the following people"
+		     " and projects:"
+		     " <ul>"
+		     " <li> Bruno De Man - General suggestions and support </li>"
+		     " <li> Brian Yanoff - Scripts </li>"
+		     " <li> Jeff Fessler - Support and test code </li>"
+		     " <li> ATLAS - For optimized BLAS "
+		     " <tt>http://math-atlas.sourceforge.net</tt></li>"
+		     " <li> LAPACK - For linear algebra  "
+		     " <tt>http://www.netlib.org/lapack</tt></li>"
+		     " <li> Umfpack - Sparse linear equations "
+		     " <tt>http://www.cise.ufl.edu/research/sparse/umfpack</tt></li>"
+		     " <li> ARPACK - Sparse eigenvalue problems  "
+		     " <tt>http://www.caam.rice.edu/software/ARPACK</tt></li>"
+		     " <li> FFTW - Fast Fourier Transforms  "
+		     " <tt>http://www.fftw.org</tt></li>"
+		     " <li> ffcall - Foreign Function interface "
+		     " <tt>http://www.haible.de/bruno/packages-ffcall.html</tt></li>"
+		     " <li> Qt4 - Cross platform GUI and API "
+		     " <tt>http://www.trolltech.com</tt></li>"
+		     " <li> qconf - Configure script generator"
+		     " <tt>http://delta.affinix.com/qconf</tt></li>"
+		     " <li> libtecla - The console interface uses code"
+		     " from this library <tt>http://www.astro.caltech.edu/"
+		     "~mcs/tecla/</tt></li>"
+		     " <li> wxbasic - Inspiration for the layout of the"
+		     " interpreter <tt>http://wxbasic.sourceforge.net</tt></li>"
+		     " <li> nsis - Installer on Win32"
+		     " </ul>").arg(QString::fromStdString(FreeMat::WalkTree::getVersionString())));
+  mb.setIconPixmap(QPixmap(":/images/freemat-2.xpm"));
+  mb.setButtonText(0, "OK");
+  mb.exec();
 }
 
 

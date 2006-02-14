@@ -143,6 +143,7 @@ void SetupGUICase() {
 }
 
 void SetupInteractiveTerminalCase() {
+#ifdef Q_WS_X11
   Terminal *myterm = new Terminal;
   keys->RegisterTerm(myterm);
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
@@ -159,9 +160,11 @@ void SetupInteractiveTerminalCase() {
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
   term = myterm;
+#endif
 }
 
 void SetupDumbTerminalCase() {
+#ifdef Q_WS_X11
   DumbTerminal *myterm = new DumbTerminal;
   keys->RegisterTerm(myterm);
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
@@ -171,6 +174,7 @@ void SetupDumbTerminalCase() {
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
   term = myterm;  
+#endif
 }
 
 int main(int argc, char *argv[]) {  

@@ -24,9 +24,7 @@
 #include <vector>
 #include <list>
 #include "Interface.hpp"
-#ifndef QT3
 #include <QEventLoop>
-#endif
 
 #define KM_CTRLA     0x01
 #define KM_CTRLC     0x03
@@ -53,8 +51,6 @@ using namespace FreeMat;
 class KeyManager : public Interface
 {
   Q_OBJECT
-  std::list<std::string> enteredLines;  
-  bool enteredLinesEmpty;  
 public:
   KeyManager();
   virtual ~KeyManager();
@@ -80,7 +76,6 @@ public:
   int BuffCurposToTermCurpos(int n);
   void DeleteChars(int nc, int cut);
   void TruncateDisplay();
-  void SetChar(unsigned int p, char c);
   void EndOfLine();
   void KillLine();
   int getTerminalWidth();
@@ -104,15 +99,22 @@ public:
   void CompleteWord();
   void RegisterInterrupt();
  protected:
+  void EraseCharacters(int pos, int count);
+  void InsertCharacter(int pos, char c);
+  void SetCharacter(int pos, char c);
+  void InsertString(int pos, std::string s);
+  
   void NewLine();
   void ResetLineBuffer();
+  std::list<std::string> enteredLines;  
+  bool enteredLinesEmpty;  
   // the size (in text coords) of the window
   int nline;
   int ncolumn;
   // the text
   std::vector<std::string> history;
-  // The line buffer
-  std::string line;
+  // The new line buffer
+  char *lineData;
   // The maximum allowed line length
   int linelen;
   // The cut buffer

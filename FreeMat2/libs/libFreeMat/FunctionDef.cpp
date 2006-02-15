@@ -105,7 +105,8 @@ namespace FreeMat {
     Context* context;
     bool warningIssued;
     int minCount;
-
+    
+    if (!code) return outputs;
     context = walker->getContext();
     context->pushScope(name);
     walker->pushDebug(fileName,name);
@@ -267,14 +268,14 @@ namespace FreeMat {
       commentsOnly = true;
       helpText.clear();
       char buffer[1000];
-      while (commentsOnly) {
+      while (!feof(fp) && commentsOnly) {
 	fgets(buffer,1000,fp);
 	char *cp;
 	cp = buffer;
 	while ((*cp == ' ') || (*cp == '\t'))
 	  cp++;
 	if (*cp == '\n')
-	  break;
+	  continue;
 	if (*cp != '%') 
 	  commentsOnly = false;
 	else
@@ -282,6 +283,11 @@ namespace FreeMat {
       }
       if (helpText.size() == 0)
 	helpText.push_back(buffer);
+      if (feof(fp)) {
+	functionCompiled = true;
+	code = NULL;
+	return;
+      }
       rewind(fp);
       try {
 	ParserState pstate = parseFile(fp,fileName.c_str());

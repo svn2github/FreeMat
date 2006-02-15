@@ -19,6 +19,7 @@
 #ifndef __QTTerm_hpp__
 #define __QTTerm_hpp__
 
+#include <QWidget>
 #include <qscrollbar.h>
 #include <qtimer.h>
 #include <qpixmap.h>
@@ -61,7 +62,7 @@ class QTTerm :  public QWidget {
   QTimer *m_timer_blink;
   QPainter *paint;
 public:
-  QTTerm(QWidget *parent, const char *name);
+  QTTerm(QWidget *parent);
   ~QTTerm();
 
   void resizeTextSurface();

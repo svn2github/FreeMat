@@ -48,13 +48,14 @@ tagChar& tagArray::operator[](int pos) {
   return m_buffer[pos];
 }
 
-QTTerm::QTTerm(QWidget *parent, const char *name) : 
+QTTerm::QTTerm(QWidget *parent) : 
   QWidget(parent), cursorOn(false), m_scrollback(1000), m_history_lines(0), 
   m_cursor_x(0), m_cursor_y(0), m_clearall(true), m_blink_skip(true),
   blinkEnable(true), m_scrolling(false), m_scroll_offset(0), m_mousePressed(false),
   m_firsttime(true), selectionStart(0), selectionStop(0), m_scrollmin(0), m_scrollmax(0),
   m_scrollline(1), m_scrollpage(0), m_surface_initialized(false), m_history_initialized(false)
 {
+  setObjectName("qtterm");
   m_scrollbar = new QScrollBar(Qt::Vertical,this);
   m_scrollbar->setRange(0,0);
   QObject::connect(m_scrollbar,SIGNAL(valueChanged(int)), this, SLOT(scrollBack(int)));
@@ -385,6 +386,8 @@ void QTTerm::mousePressEvent( QMouseEvent *e ) {
 }
 
 void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
+  if (e->button() == Qt::NoButton)
+    return;
   int x = e->x();
   int y = e->y();
   if (y < 0) 

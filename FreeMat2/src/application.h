@@ -30,11 +30,12 @@ class ApplicationWindow : public QMainWindow {
     
   QTTerm* m_term;
   KeyManager* m_keys;
-  QMenu *fileMenu, *editMenu, *toolsMenu, *helpMenu;
-  QToolBar *editToolBar;
+  QMenu *fileMenu, *editMenu, *toolsMenu, *helpMenu, *debugMenu;
+  QToolBar *editToolBar, *debugToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
-  QAction *pathAct;
+  QAction *pathAct, *filetoolAct, *historyAct;
+  QAction *pauseAct, *continueAct, *stopAct;
   FMEditor *edit;
   ToolDock *m_tool;
 public:
@@ -42,12 +43,12 @@ public:
   ~ApplicationWindow();
   void SetGUITerminal(QTTerm* term);
   void SetKeyManager(KeyManager* keys);
+  void readSettings();
 private:
   void createActions();
   void createMenus();
   void createToolBars();
   void createStatusBar();
-  void readSettings();
   void initializeTools();
   void createToolBox();
 protected:
@@ -68,6 +69,8 @@ private slots:
   void path();
   void manual();
   void tclose();
+  void filetool();
+  void history();
 }; 
 
 #endif

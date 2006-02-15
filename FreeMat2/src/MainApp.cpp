@@ -97,8 +97,8 @@ int MainApp::Run() {
   QString path1(dir1.canonicalPath());
   QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
   QString path2(dir2.canonicalPath());
-  QStringList basePath(GetRecursiveDirList(path1) + GetRecursiveDirList(path2));
-  m_term->setBasePath(basePath);
+//   QStringList basePath(GetRecursiveDirList(path1) + GetRecursiveDirList(path2));
+//   m_term->setBasePath(basePath);
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();
   m_term->setUserPath(userPath);
@@ -108,7 +108,6 @@ int MainApp::Run() {
   if (!skipGreeting)
     eval->sendGreeting();
   eval->run();
-  //  m_term->RestoreOriginalMode();
-  qApp->quit();
+  emit Shutdown();
   return 0;
 }

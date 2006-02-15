@@ -29,8 +29,7 @@
 #include "Exception.hpp"
 #include "application.h"
 #include "KeyManager.hpp"
-
-#include "LinearEqSolver.hpp"
+#include "FuncMode.hpp"
 #include "helpgen.hpp"
 
 using namespace FreeMat;
@@ -40,6 +39,7 @@ QObject *term;
 QCoreApplication *app;
 ApplicationWindow *m_win;
 MainApp *m_app;
+FuncMode *m_func;
 
 #ifdef Q_WS_X11
 #include "FuncTerminal.hpp"
@@ -131,6 +131,7 @@ void SetupGUICase() {
   keys->RegisterTerm(gui);
   m_win->SetGUITerminal(gui);
   m_win->SetKeyManager(keys);
+  m_win->readSettings();
   m_win->show();
   gui->resizeTextSurface();
   gui->setFocus();
@@ -139,6 +140,7 @@ void SetupGUICase() {
   QObject::connect(m_win,SIGNAL(startPathTool()),m_app,SLOT(PathTool()));
   QObject::connect(app,SIGNAL(aboutToQuit()),m_win,SLOT(writeSettings()));
   QObject::connect(app,SIGNAL(lastWindowClosed()),app,SLOT(quit()));
+  QObject::connect(m_app,SIGNAL(Shutdown()),m_win,SLOT(close()));
   term = gui;
 }
 
@@ -160,6 +162,7 @@ void SetupInteractiveTerminalCase() {
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
   term = myterm;
+  QObject::connect(m_app,SIGNAL(Shutdown()),app,SLOT(quit()));
 #endif
 }
 
@@ -174,6 +177,7 @@ void SetupDumbTerminalCase() {
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
   term = myterm;  
+  QObject::connect(m_app,SIGNAL(Shutdown()),app,SLOT(quit()));
 #endif
 }
 
@@ -200,12 +204,6 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   
-  if (funcMode) {
-    scriptMode = 0;
-    nogui = 1;
-    helpgen = 0;
-  }
-
   if (scriptMode) nogui = 1;
 
   keys = new KeyManager;
@@ -222,5 +220,12 @@ int main(int argc, char *argv[]) {
   m_app->SetGUIMode(!noX);
   m_app->SetSkipGreeting(nogreet);
   QTimer::singleShot(0,m_app,SLOT(Run()));
+  // In function mode, we need to send a command to the GUI
+  if (funcMode) {
+    m_func = new FuncMode(argv[funcMode+1]);
+    QObject::connect(m_func,SIGNAL(SendCommand(QString)),
+		     keys,SLOT(QueueSilent(QString)));
+    QTimer::singleShot(0,m_func,SLOT(Fire()));
+  }
   return app->exec();
 }

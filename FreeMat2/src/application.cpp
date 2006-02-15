@@ -65,6 +65,9 @@ void ApplicationWindow::createActions() {
   connect(manualAct,SIGNAL(triggered()),this,SLOT(manual()));
   aboutQt = new QAction("About &Qt",this);
   connect(aboutQt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
+  pauseAct = new QAction(QIcon(":/images/player_pause.png"),"&Pause",this);
+  continueAct = new QAction(QIcon(":/images/player_play.png"),"&Continue",this);
+  stopAct = new QAction(QIcon(":/images/player_stop.png"),"&Stop",this);
 }
 
 void ApplicationWindow::createMenus() {
@@ -75,6 +78,10 @@ void ApplicationWindow::createMenus() {
   editMenu->addAction(copyAct);
   editMenu->addAction(pasteAct);
   editMenu->addAction(fontAct);
+  debugMenu = menuBar()->addMenu("&Debug");
+  debugMenu->addAction(pauseAct);
+  debugMenu->addAction(continueAct);
+  debugMenu->addAction(stopAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(editorAct);
   toolsMenu->addAction(pathAct);
@@ -91,6 +98,11 @@ void ApplicationWindow::createToolBars() {
   editToolBar->addAction(copyAct);
   editToolBar->addAction(pasteAct);
   editToolBar->setObjectName("edittoolbar");
+  debugToolBar = addToolBar("Debug");
+  debugToolBar->addAction(pauseAct);
+  debugToolBar->addAction(continueAct);
+  debugToolBar->addAction(stopAct);
+  debugToolBar->setObjectName("debugtoolbar");
 }
 
 void ApplicationWindow::createStatusBar() {
@@ -107,8 +119,6 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
   initializeTools();
   createToolBox();
   setObjectName("appwindow");
-  resize(QSize(300,200));
-  readSettings();
 }
 
 void ApplicationWindow::createToolBox() {
@@ -170,6 +180,9 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
  	  keys,SLOT(QueueCommand(QString)));
   connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),
  	  keys,SLOT(QueueString(QString)));
+  connect(pauseAct,SIGNAL(triggered()),m_keys,SLOT(RegisterInterrupt()));
+  connect(continueAct,SIGNAL(triggered()),m_keys,SLOT(ContinueAction()));
+  connect(stopAct,SIGNAL(triggered()),m_keys,SLOT(StopAction()));
 }
 
 void ApplicationWindow::save() {
@@ -223,11 +236,8 @@ void ApplicationWindow::paste() {
     text = cb->text(QClipboard::Selection);
   if (text.isNull())
     text = cb->text(QClipboard::Clipboard);
-//   if (!text.isNull()) {
-//     const char *cp = MAKEASCII(text);
-//     while (*cp) 
-//       m_term->ProcessChar(*cp++);
-//   }
+  if (!text.isNull())
+    m_keys->QueueMultiString(text);
 }
 
 void ApplicationWindow::font() {

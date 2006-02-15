@@ -16,36 +16,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __MainApp_hpp__
-#define __MainApp_hpp__
+#ifndef __FuncMode_hpp__
+#define __FuncMode_hpp__
 
-#include <string>
-#include <qobject.h>
-#include "KeyManager.hpp"
-#include "WalkTree.hpp"
+#include <QObject>
+#include <QString>
 
-class MainApp : public QObject
-{
+class FuncMode : public QObject {
   Q_OBJECT
-  KeyManager* m_term;
-  std::string m_helpPath;
-  WalkTree* eval;
-  bool guimode;
-  bool skipGreeting;
 public:
-  MainApp();
-  ~MainApp();
-  void SetKeyManager(KeyManager* term);
-  void SetHelpPath(std::string helpPath);
-  void SetGUIMode(bool mode);
-  void SetSkipGreeting(bool skip);
+  FuncMode(QString todo);
 public slots:
-  int Run();
-  void HelpWin();
-  void PathTool();
-  void Editor();
+  void Fire();
 signals:
-  void Shutdown();
+  void SendCommand(QString);
+private:
+  QString cmd;
 };
 
 #endif

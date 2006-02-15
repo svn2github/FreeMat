@@ -127,7 +127,7 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
 
 void SetupGUICase() {
   m_win = new ApplicationWindow;
-  QTTerm *gui = new QTTerm(m_win,"terminal");
+  QTTerm *gui = new QTTerm(NULL);
   keys->RegisterTerm(gui);
   m_win->SetGUITerminal(gui);
   m_win->SetKeyManager(keys);

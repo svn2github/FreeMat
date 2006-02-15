@@ -53,6 +53,9 @@ private:
   void createMenus();
   void createToolBars();
   void createStatusBar();
+  void writeSettings();
+  void readSettings();
+  void closeEvent(QCloseEvent* ce);
 
   QTextBrowser *tb;
   HelpWidget *m_helpwidget;

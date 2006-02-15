@@ -36,6 +36,7 @@ void HelpWindow::activateModule(QTreeWidgetItem* item, int) {
 }
 
 HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
+  setObjectName("helpwidget");
   m_browser = new QTabWidget(this);
   setWidget(m_browser);
   QWidget *m_listdoc = new QWidget;
@@ -99,8 +100,30 @@ HelpWindow::HelpWindow(QString url) {
   createMenus();
   createToolBars();
   createStatusBar();
+  readSettings();
 }
 
+void HelpWindow::closeEvent(QCloseEvent* ce) {
+  writeSettings();
+  ce->accept();
+}
+
+void HelpWindow::writeSettings() {
+  QSettings settings("FreeMat", "FreeMat");
+  settings.setValue("helpwindow/state",saveState());
+  settings.setValue("helpwindow/pos", pos());
+  settings.setValue("helpwindow/size", size());
+}
+
+void HelpWindow::readSettings() {
+  QSettings settings("FreeMat", "FreeMat");
+  QPoint pos = settings.value("helpwindow/pos", QPoint(200, 200)).toPoint();
+  QSize size = settings.value("helpwindow/size", QSize(500, 300)).toSize();
+  resize(size);
+  move(pos);
+  QByteArray state = settings.value("helpwindow/state").toByteArray();
+  restoreState(state);  
+}
 
 void HelpWindow::createActions() {
   zoominAct = new QAction(QIcon(":/images/zoomin.png"),"Zoom In",this);

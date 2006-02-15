@@ -97,7 +97,6 @@ public:
   void Yank();
   void ListCompletions(std::vector<std::string> completions);
   void CompleteWord();
-  void RegisterInterrupt();
  protected:
   void EraseCharacters(int pos, int count);
   void InsertCharacter(int pos, char c);
@@ -156,11 +155,16 @@ signals:
   void OutputRawString(std::string txt);
   void SendCommand(QString);
   void Interrupt();
-protected slots:
+public slots:
   void OnChar( int c );
   void SetTermWidth(int w);
   void QueueString(QString);
+  void QueueMultiString(QString);
   void QueueCommand(QString);
+  void QueueSilent(QString);
+  void RegisterInterrupt();
+  void ContinueAction();
+  void StopAction();
 };
 
   

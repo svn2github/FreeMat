@@ -74,7 +74,6 @@ int KeyManager::getTerminalWidth() {
 }
 
 void KeyManager::SetTermWidth(int w) {
-  std::cout << "Width is " << w << "\n";
   ncolumn = w;
   Redisplay();
 }
@@ -1024,12 +1023,40 @@ void KeyManager::QueueString(QString t) {
   AddStringToLine(g);
 }
 
+void KeyManager::QueueMultiString(QString t) {
+  if (t.indexOf("\n") < 0) {
+    QueueString(t);
+    return;
+  }
+  QStringList tlist(t.split("\n"));
+  if (tlist.size() > 0)
+    AddStringToLine(tlist[0].toStdString()); 
+  emit OutputRawString("\r\n");
+  ResetLineBuffer();
+  ReplacePrompt("");
+  for (int i=1;i<tlist.size();i++)
+    emit OutputRawString(tlist[i].toStdString() + "\r\n");
+  for (int i=0;i<tlist.size();i++) {
+    enteredLines.push_back(tlist[i].toStdString());
+    AddHistory(tlist[i].toStdString());
+  }
+  enteredLinesEmpty = false;
+  if (loopactive) {
+    loopactive--;
+    m_loop->exit();
+  }
+}
+
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   emit OutputRawString("\r\n");
-  ExecuteLine(lineData);
+  ExecuteLine(std::string(lineData)+"\n");
   ResetLineBuffer();
   DisplayPrompt();
+}
+
+void KeyManager::QueueSilent(QString t) {
+  ExecuteLine(t.toStdString()+"\n");
 }
 
 char* KeyManager::getLine(std::string aprompt) {
@@ -1058,4 +1085,12 @@ void KeyManager::RegisterTerm(QObject* term) {
   connect(this,SIGNAL(OutputRawString(std::string)),term,SLOT(OutputRawString(std::string)));
   connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
   connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  
+}
+
+void KeyManager::ContinueAction() {
+  ExecuteLine("return\n");
+}
+
+void KeyManager::StopAction() {
+  ExecuteLine("retall\n");  
 }

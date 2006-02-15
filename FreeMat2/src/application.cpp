@@ -41,6 +41,10 @@ ApplicationWindow::~ApplicationWindow() {
 }
 
 void ApplicationWindow::createActions() {
+  filetoolAct = new QAction("&File Browser",this);
+  connect(filetoolAct,SIGNAL(triggered()),this,SLOT(filetool()));
+  historyAct = new QAction("&History",this);
+  connect(historyAct,SIGNAL(triggered()),this,SLOT(history()));
   editorAct = new QAction("&Editor",this);
   connect(editorAct,SIGNAL(triggered()),this,SLOT(editor()));
   pathAct = new QAction("&Path Tool",this);
@@ -74,6 +78,8 @@ void ApplicationWindow::createMenus() {
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(editorAct);
   toolsMenu->addAction(pathAct);
+  toolsMenu->addAction(filetoolAct);
+  toolsMenu->addAction(historyAct);
   helpMenu = menuBar()->addMenu("&Help");
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(manualAct);
@@ -123,6 +129,10 @@ void ApplicationWindow::closeEvent(QCloseEvent* ce) {
 
 void ApplicationWindow::readSettings() {
   QSettings settings("FreeMat", "FreeMat");
+  QPoint pos = settings.value("mainwindow/pos", QPoint(200, 200)).toPoint();
+  QSize size = settings.value("mainwindow/size", QSize(600, 400)).toSize();
+  resize(size);
+  move(pos);
   QByteArray state = settings.value("mainwindow/state").toByteArray();
   restoreState(state);
 }
@@ -130,6 +140,8 @@ void ApplicationWindow::readSettings() {
 void ApplicationWindow::writeSettings() {
   QSettings settings("FreeMat", "FreeMat");
   settings.setValue("mainwindow/state",saveState());
+  settings.setValue("mainwindow/pos", pos());
+  settings.setValue("mainwindow/size", size());
   settings.sync();
 }
 
@@ -241,7 +253,36 @@ void ApplicationWindow::path() {
   emit startPathTool();
 }
 
+void ApplicationWindow::filetool() {
+  m_tool->show();
+  m_tool->getFileTool()->show();
+}
+
+void ApplicationWindow::history() {
+  m_tool->show();
+  m_tool->getHistoryWidget()->show();
+}
+
+class AboutWindow : public QWidget {
+ public:
+  AboutWindow() : QWidget() {}
+  void paintEvent(QPaintEvent *e);
+};
+
+void AboutWindow::paintEvent(QPaintEvent * e) {
+  QWidget::paintEvent(e);
+  QPainter painter(this);
+  QLinearGradient grad1(0,0,100,100);
+  grad1.setColorAt(0, QColor(255,0,0,127));
+  grad1.setColorAt(1, QColor(0,0,255,0));
+  painter.setPen(QPen(grad1,0));
+  for (int y=12;y < 100; y += 12)
+    painter.drawText(0, y, "Thanks to you!!!");
+}
+
 void ApplicationWindow::about() {
+  AboutWindow *win = new AboutWindow;
+  win->show();
   QMessageBox mb(this);
   mb.setWindowTitle(QString("About FreeMat"));
   mb.setText(QString("<h3>About FreeMat</h3>"

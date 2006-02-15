@@ -14,5 +14,8 @@
     <file>images/open.png</file>
     <file>images/quit.png</file>
     <file>images/close.png</file>
+    <file>images/player_pause.png</file>
+    <file>images/player_stop.png</file>
+    <file>images/player_play.png</file>
 </qresource>
 </RCC>

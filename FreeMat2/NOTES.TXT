@@ -7,10 +7,8 @@ Before release:
 - JPG plugins (Win32)
 - Handle docs
 - about dialog
-- Mac
-- Save restore state of main window & help window.
-- Enable function mode (-f "code") in gui versions.
 - Test packaging
+- Closing of only figure window
 
 What is the deal with the source release?
   1. Dependency on ATLAS? There appear to be several BLAS options:
@@ -48,6 +46,9 @@ Done:
 - What about the help compiler?  I could just include it in FreeMat...
 - Locks up after command appears in history window
 - Need finite command recall window
+- Save restore state of main window & help window.
+- Mac
+- Enable function mode (-f "code") in gui versions.
   GPL 
   BLAS setup (override)
   Quit signaling

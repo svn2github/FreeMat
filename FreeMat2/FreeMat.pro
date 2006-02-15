@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += opengl
 
-CONFIG += warn_off release
+CONFIG += warn_off debug
 
 DEFINES -= UNICODE
 
@@ -68,7 +68,7 @@ install.commands = tools/make_linux_bundle
 }
 
 macx {
-install.commands = cd tools/disttool && qmake && make && ./disttool -mac && cd ../../ &&  mv build/FreeMat.app . && find FreeMat.app -name '*debug' -exec rm \{\} \;
+install.commands = rm -rf FreeMat.app && cd tools/disttool && qmake && make && ./disttool -mac && cd ../../ &&  mv build/FreeMat.app . && find FreeMat.app -name '*debug' -exec rm \{\} \; && hdiutil create -fs HFS+ -srcfolder FreeMat.app FreeMat.dmg
 }
 
 QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help check install

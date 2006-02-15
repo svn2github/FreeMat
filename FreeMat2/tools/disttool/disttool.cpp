@@ -166,6 +166,7 @@ void ConsoleWidget::MacBundle() {
   if (!vfile.open(QFile::ReadOnly))
     Halt("Unable to open ../../help/version.txt for input\n");
   TermOutputText("\n\nDone\n");
+  qApp->exit();
 }
 
 QString stripWhiteSpace(QString a) {

@@ -1,4 +1,5 @@
-What about the help compiler?  I could just include it in FreeMat...
+
+
 
 - Source build appears to work on Linux...  
 
@@ -7,11 +8,9 @@ Before release:
 - Handle docs
 - about dialog
 - Mac
-- Need finite command recall window
-- Locks up after command appears in history window
 - Save restore state of main window & help window.
 - Enable function mode (-f "code") in gui versions.
-
+- Test packaging
 
 What is the deal with the source release?
   1. Dependency on ATLAS? There appear to be several BLAS options:
@@ -45,6 +44,10 @@ Installer:
 
 
 Done:
+- Add license.mpp file
+- What about the help compiler?  I could just include it in FreeMat...
+- Locks up after command appears in history window
+- Need finite command recall window
   GPL 
   BLAS setup (override)
   Quit signaling

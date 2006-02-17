@@ -19,9 +19,9 @@
 #ifndef __VariablesTool_hpp__
 #define __VariablesTool_hpp__
 
-#include <QListWidget>
+#include <QTableWidget>
 #include <QWidget>
-#include "Scope.hpp"
+#include "Context.hpp"
 
 class VariablesTool : public QWidget {
   Q_OBJECT
@@ -29,10 +29,11 @@ public:
   VariablesTool(QWidget *parent);
 protected slots:
   void refresh();
-  void setScope(FreeMat::Scope *watch);
+public:
+  void setContext(FreeMat::Context *watch);
 private:
-  FreeMat::Scope *scope;
-  QListWidget *m_flist;
+  FreeMat::Context *context;
+  QTableWidget *m_flist;
 };
 
 #endif

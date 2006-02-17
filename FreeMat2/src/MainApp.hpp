@@ -46,6 +46,7 @@ public slots:
   void Editor();
 signals:
   void Shutdown();
+  void Initialize();
 };
 
 #endif

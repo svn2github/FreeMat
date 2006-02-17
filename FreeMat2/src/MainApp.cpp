@@ -110,6 +110,7 @@ int MainApp::Run() {
   m_term->setUserPath(userPath);
   m_term->setAppPath(qApp->applicationDirPath().toStdString());
   m_term->rescanPath();
+  emit Initialize();
   eval = new WalkTree(context,m_term);
   if (!skipGreeting)
     eval->sendGreeting();

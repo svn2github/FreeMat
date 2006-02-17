@@ -180,8 +180,8 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
  	  keys,SLOT(QueueCommand(QString)));
   connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),
  	  keys,SLOT(QueueString(QString)));
-  connect(keys,SIGNAL(UpdateVariables(FreeMat::Scope*)),
-	  m_tool->getVariablesTool(),SLOT(setScope(FreeMat::Scope*)));
+  connect(keys,SIGNAL(UpdateVariables()),
+	  m_tool->getVariablesTool(),SLOT(refresh()));
   connect(pauseAct,SIGNAL(triggered()),m_keys,SLOT(RegisterInterrupt()));
   connect(continueAct,SIGNAL(triggered()),m_keys,SLOT(ContinueAction()));
   connect(stopAct,SIGNAL(triggered()),m_keys,SLOT(StopAction()));
@@ -339,3 +339,6 @@ void ApplicationWindow::about() {
 }
 
 
+void ApplicationWindow::init() {
+  m_tool->getVariablesTool()->setContext(m_keys->getContext());
+}

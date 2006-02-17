@@ -141,6 +141,7 @@ void SetupGUICase() {
   QObject::connect(app,SIGNAL(aboutToQuit()),m_win,SLOT(writeSettings()));
   QObject::connect(app,SIGNAL(lastWindowClosed()),app,SLOT(quit()));
   QObject::connect(m_app,SIGNAL(Shutdown()),m_win,SLOT(close()));
+  QObject::connect(m_app,SIGNAL(Initialize()),m_win,SLOT(init()));
   term = gui;
 }
 

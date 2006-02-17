@@ -71,6 +71,7 @@ private slots:
   void tclose();
   void filetool();
   void history();
+  void init();
 }; 
 
 #endif

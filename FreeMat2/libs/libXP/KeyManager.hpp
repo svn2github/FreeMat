@@ -156,7 +156,7 @@ signals:
   void OutputRawString(std::string txt);
   void SendCommand(QString);
   void Interrupt();
-  void UpdateVariables(FreeMat::Scope*);
+  void UpdateVariables();
 public slots:
   void OnChar( int c );
   void SetTermWidth(int w);

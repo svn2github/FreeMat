@@ -92,6 +92,10 @@ namespace FreeMat {
     m_context = ctxt;
   }
 
+  Context* Interface::getContext() {
+    return m_context;
+  }
+
   void Interface::setAppPath(std::string path) {
     app_path = path;
   }

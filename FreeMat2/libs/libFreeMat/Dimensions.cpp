@@ -205,6 +205,21 @@ namespace FreeMat {
     return retval;
   }
 
+  std::string Dimensions::asString() const {
+    std::string output;
+    output.append("[");
+    for (int i=0;i<length-1;i++) {
+      snprintf(msgBuffer,MSGBUFLEN,"%d ",data[i]);
+      output.append(msgBuffer);;
+    }
+    if (length >= 1)
+      snprintf(msgBuffer,MSGBUFLEN,"%d]",data[length-1]);
+    else
+      snprintf(msgBuffer,MSGBUFLEN,"]");
+    output.append(msgBuffer);
+    return output;
+  }
+
   void Dimensions::printMe(Interface*io) const {
     snprintf(msgBuffer,MSGBUFLEN,"[");
     io->outputMessage(msgBuffer);

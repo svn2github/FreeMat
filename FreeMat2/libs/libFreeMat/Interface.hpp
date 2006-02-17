@@ -66,6 +66,10 @@ namespace FreeMat {
      */
     virtual void setContext(Context *ctxt);
     /**
+     *  Get the context for the interface.
+     */
+    virtual Context* getContext();
+    /**
      *  Force a rescan of the current path to look for 
      *  new function files.
      */

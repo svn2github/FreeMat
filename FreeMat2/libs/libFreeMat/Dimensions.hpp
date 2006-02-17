@@ -159,6 +159,10 @@ namespace FreeMat {
      */
     void printMe(Interface *io) const;
     /**
+     * Returns a string containing the dimensions as a row vector.
+     */
+    std::string asString() const;
+    /**
      * Reset the number of allocated dimensions to zero, and reset the
      * data pointer to NULL.
      */

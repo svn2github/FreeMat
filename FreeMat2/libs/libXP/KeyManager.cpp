@@ -1061,7 +1061,7 @@ void KeyManager::QueueSilent(QString t) {
 }
 
 char* KeyManager::getLine(std::string aprompt) {
-  emit UpdateVariables(m_context->getCurrentScope());
+  emit UpdateVariables();
   ReplacePrompt(aprompt);
   DisplayPrompt();
   while (enteredLinesEmpty) {

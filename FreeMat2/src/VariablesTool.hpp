@@ -16,35 +16,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "ToolDock.hpp"
-#include <QtGui>
+#ifndef __VariablesTool_hpp__
+#define __VariablesTool_hpp__
 
-ToolDock::ToolDock(QWidget *parent) : QDockWidget(parent) {
-  QToolBox *tb = new QToolBox(this);
-  m_history = new HistoryWidget(tb);
-  tb->addItem(m_history,"History");
-  m_filetool = new FileTool(tb);
-  tb->addItem(m_filetool,"Files");
-  m_variables = new VariablesTool(tb);
-  tb->addItem(m_variables,"Workspace");
-  setWidget(tb);
-  setObjectName("tooldock");
-}
+#include <QListWidget>
+#include <QWidget>
+#include "Scope.hpp"
 
-ToolDock::~ToolDock() {
-  m_history->close();
-  m_filetool->close();
-  m_variables->close();
-}
+class VariablesTool : public QWidget {
+  Q_OBJECT
+public:
+  VariablesTool(QWidget *parent);
+protected slots:
+  void refresh();
+  void setScope(FreeMat::Scope *watch);
+private:
+  FreeMat::Scope *scope;
+  QListWidget *m_flist;
+};
 
-HistoryWidget* ToolDock::getHistoryWidget() {
-  return m_history;
-}
-  
-FileTool* ToolDock::getFileTool() {
-  return m_filetool;
-}
-
-VariablesTool* ToolDock::getVariablesTool() {
-  return m_variables;
-}
+#endif

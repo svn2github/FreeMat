@@ -22,16 +22,19 @@
 #include <QDockWidget>
 #include "HistoryWidget.hpp"
 #include "FileTool.hpp"
+#include "VariablesTool.hpp"
 
 class ToolDock : public QDockWidget {
   Q_OBJECT
   HistoryWidget *m_history;
   FileTool *m_filetool;
+  VariablesTool *m_variables;
 public:
   ToolDock(QWidget *parent);
   ~ToolDock();
   HistoryWidget* getHistoryWidget();
   FileTool* getFileTool();
+  VariablesTool* getVariablesTool();
 };
 
 #endif

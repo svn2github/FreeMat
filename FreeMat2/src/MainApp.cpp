@@ -94,11 +94,17 @@ int MainApp::Run() {
   QString dummy(dir.absolutePath());
   QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
   QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
-  QString path1(dir1.canonicalPath());
+  QStringList basePath;
+  if (dir1.exists()) {
+    QString path1(dir1.canonicalPath());
+    basePath += GetRecursiveDirList(path1);
+  }
   QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
-  QString path2(dir2.canonicalPath());
-//   QStringList basePath(GetRecursiveDirList(path1) + GetRecursiveDirList(path2));
-//   m_term->setBasePath(basePath);
+  if (dir2.exists()) {
+    QString path2(dir2.canonicalPath());
+    basePath += GetRecursiveDirList(path2);
+  }
+  m_term->setBasePath(basePath);
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();
   m_term->setUserPath(userPath);

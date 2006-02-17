@@ -24,6 +24,7 @@
 #include <vector>
 #include <list>
 #include "Interface.hpp"
+#include "Scope.hpp"
 #include <QEventLoop>
 
 #define KM_CTRLA     0x01
@@ -155,6 +156,7 @@ signals:
   void OutputRawString(std::string txt);
   void SendCommand(QString);
   void Interrupt();
+  void UpdateVariables(FreeMat::Scope*);
 public slots:
   void OnChar( int c );
   void SetTermWidth(int w);

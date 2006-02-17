@@ -28,6 +28,7 @@ namespace FreeMat {
   class Context;
 
   class Interface : public QObject {
+  protected:
     Context *m_context;
     QStringList m_basePath;
     QStringList m_userPath;

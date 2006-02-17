@@ -16,35 +16,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "ToolDock.hpp"
+#include "VariablesTool.hpp"
+#include "Scope.hpp"
 #include <QtGui>
 
-ToolDock::ToolDock(QWidget *parent) : QDockWidget(parent) {
-  QToolBox *tb = new QToolBox(this);
-  m_history = new HistoryWidget(tb);
-  tb->addItem(m_history,"History");
-  m_filetool = new FileTool(tb);
-  tb->addItem(m_filetool,"Files");
-  m_variables = new VariablesTool(tb);
-  tb->addItem(m_variables,"Workspace");
-  setWidget(tb);
-  setObjectName("tooldock");
+VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
+  QVBoxLayout *layout = new QVBoxLayout;
+  m_flist = new QListWidget;
+  layout->addWidget(m_flist);
+  setLayout(layout);
+  setObjectName("variables");
 }
 
-ToolDock::~ToolDock() {
-  m_history->close();
-  m_filetool->close();
-  m_variables->close();
+void VariablesTool::refresh() {
+  int cnt = m_flist->count();
+  for (int i=0;i<cnt;i++)
+    delete m_flist->takeItem(cnt-1-i);
+  FreeMat::stringVector varnames(scope->listAllVariables());
+  for (int i=0;i<varnames.size();i++)
+    new QListWidgetItem(QString::fromStdString(varnames[i]),m_flist);
 }
 
-HistoryWidget* ToolDock::getHistoryWidget() {
-  return m_history;
-}
-  
-FileTool* ToolDock::getFileTool() {
-  return m_filetool;
-}
-
-VariablesTool* ToolDock::getVariablesTool() {
-  return m_variables;
+void VariablesTool::setScope(FreeMat::Scope *watch) {
+  scope = watch;
+  refresh();
 }

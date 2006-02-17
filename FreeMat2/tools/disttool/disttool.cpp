@@ -162,9 +162,6 @@ void ConsoleWidget::MacBundle() {
   CopyDirectory("../../help/MFiles","../../build/FreeMat.app/Contents/Resources/mfiles");
   CopyDirectory(qtdir+"/plugins/imageformats","../../build/FreeMat.app/Contents/Plugins/imageformats");
   RelinkPlugins();
-  QFile vfile("../../help/version.txt");
-  if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../../help/version.txt for input\n");
   TermOutputText("\n\nDone\n");
   qApp->exit();
 }

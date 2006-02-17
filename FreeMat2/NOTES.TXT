@@ -7,6 +7,10 @@ Before release:
 - JPG plugins (Win32)
 - Handle docs
 - about dialog
+- Mac
+- Save restore state of main window & help window.
+- Enable function mode (-f "code") in gui versions.
+- paste, ctrl-c/z
 - Test packaging
 - Closing of only figure window
 

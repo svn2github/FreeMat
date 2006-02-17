@@ -155,7 +155,7 @@ libs/libXP/PathSearch.hpp \
 libs/libXP/KeyManager.hpp \
 libs/libXP/QTTerm.hpp 
 
-HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp src/Common.hpp src/FuncMode.hpp
+HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp src/Common.hpp src/FuncMode.hpp src/VariablesTool.hpp
 
 FMSOURCES += libs/libFreeMat/NewLex.cpp \
 libs/libFreeMat/Array.cpp \
@@ -254,7 +254,7 @@ libs/libXP/PathSearch.cpp \
 libs/libXP/KeyManager.cpp \
 libs/libXP/QTTerm.cpp 
 
-SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp src/FileTool.cpp src/Common.cpp src/FuncMode.cpp
+SOURCES += $$FMSOURCES src/MainApp.cpp src/SocketCB.cpp src/application.cpp src/main.cpp src/highlighter.cpp src/helpgen.cpp src/PathTool.cpp src/Editor.cpp src/ToolDock.cpp src/HistoryWidget.cpp src/FileTool.cpp src/Common.cpp src/FuncMode.cpp src/VariablesTool.cpp
 
 !mac:unix {
   HEADERS += src/Terminal.hpp src/DumbTerminal.hpp src/FuncTerminal.hpp

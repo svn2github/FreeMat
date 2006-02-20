@@ -44,6 +44,7 @@ namespace FreeMat {
   void ShutdownHandleGraphics();
   void CloseHelper(int fig);
   void IndirectWindowClose(int handle);
+  void SetNonGUIHack();
 }
 
 #endif

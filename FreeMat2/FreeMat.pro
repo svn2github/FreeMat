@@ -2,9 +2,9 @@ TEMPLATE = app
 
 VERSION = 2.0
 
-QT += opengl
+QT += opengl release
 
-CONFIG += warn_off debug
+CONFIG += warn_off
 
 DEFINES -= UNICODE
 
@@ -23,7 +23,7 @@ blas.target = extern/LAPACK/BLAS/libblas.a
 blas.commands = cd extern/LAPACK/BLAS/SRC && make -f Makefile_freemat FC=$$F77
 
 atlas.target = extern/ATLAS/lib/BLAS_FreeMat/libatlas.a
-atlas.commands = cd extern && tar xfz atlas3.6.0.tar.gz && cd ATLAS && make < ../chat && make install arch=BLAS_FreeMat
+atlas.commands = cd extern && tar xfz atlas3.6.0.tar.gz && cd ATLAS && make < ../chat_$${F77} && make install arch=BLAS_FreeMat
 
 fftw_double.target = extern/fftw-3.0.1/.libs/libfftw3.a
 fftw_double.commands = cd extern && tar xfz fftw-3.0.1.tar.gz && cd fftw-3.0.1 && ./configure && make
@@ -64,9 +64,10 @@ check.depends = FORCE
 check.commands = $$RUNTARGET -f "cd tests/core; test_core"
 
 install.target = install
+install.depends = FORCE
 
-!unix:macx {
-install.commands = tools/make_linux_bundle
+unix:!macx {
+install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && ./disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && tar cfz FreeMat$${VERSION}.tar.gz FreeMat$${VERSION}
 }
 
 macx {
@@ -156,6 +157,10 @@ libs/libXP/KeyManager.hpp \
 libs/libXP/QTTerm.hpp 
 
 HEADERS+=src/MainApp.hpp src/SocketCB.hpp src/application.h src/highlighter.hpp src/helpgen.hpp src/PathTool.hpp src/Editor.hpp src/ToolDock.hpp src/HistoryWidget.hpp src/FileTool.hpp src/Common.hpp src/FuncMode.hpp src/VariablesTool.hpp
+
+HEADERS+=libs/libMex/MexInterface.hpp libs/libMex/mex.h
+
+FMSOURCES+=libs/libMex/mxArray.cpp libs/libMex/MexInterface.cpp
 
 FMSOURCES += libs/libFreeMat/NewLex.cpp \
 libs/libFreeMat/Array.cpp \
@@ -279,9 +284,11 @@ QMAKE_EXTRA_COMPILERS += ff77
 RESOURCES = FreeMat.qrc
 
 
-DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png
+DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png images/player_pause.png images/player_stop.png images/player_play.png
 DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz
 DISTFILES += help/section_descriptors.txt
 DISTFILES += $$system(find MFiles -name '*.m')
 DISTFILES += $$system(find tests -name '*.m')
-DISTFILES += tools/make_linux_bundle disttool/disttool.cpp tools/disttool/disttool.hpp tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
+DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp 
+DISTFILES += tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
+DISTFILES += extern/chat_g77 extern/chat_gfortran

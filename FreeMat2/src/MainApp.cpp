@@ -37,26 +37,136 @@ using namespace FreeMat;
 #include <fcntl.h>
 #include <qsocketnotifier.h>
 #include "SocketCB.hpp"
+#include "HandleCommands.hpp"
+#include "QTTerm.hpp"
+
+QObject *term;
+KeyManager *keys;
+
+#ifdef Q_WS_X11
+#include "FuncTerminal.hpp"
+#include "DumbTerminal.hpp"
+#include "Terminal.hpp"
+#include "SocketCB.hpp"
+#include <unistd.h>
+#include <fcntl.h>
+#include <qsocketnotifier.h>
+#include <signal.h>
+
+sig_t signal_suspend_default;
+sig_t signal_resume_default;
+
+void signal_suspend(int a) {
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr)
+    tptr->RestoreOriginalMode();
+  printf("Suspending FreeMat...\n");
+  fflush(stdout);
+  signal(SIGTSTP,signal_suspend_default);
+  raise(SIGTSTP);
+}
+
+void signal_resume(int a) {
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  printf("Resuming FreeMat...\n");
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr) {
+    tptr->SetRawMode();
+    keys->Redisplay();
+  }
+}
+
+void signal_resize(int a) {
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr) {
+    tptr->ResizeEvent();
+  }
+}
+#endif
+
+void MainApp::TerminalReset() {
+  Terminal *tptr = dynamic_cast<Terminal*>(term);
+  if (tptr) {
+    tptr->RestoreOriginalMode();
+  }
+}
 
 MainApp::MainApp() {
   guimode = true;
   skipGreeting = false;
+  m_keys = new KeyManager;
 }
 
 MainApp::~MainApp() {
 }
 
-void MainApp::SetKeyManager(KeyManager* term) {
-  m_term = term;
-}
-
-void MainApp::SetHelpPath(std::string helpPath) {
-  m_helpPath = helpPath;
-}
-
 void MainApp::HelpWin() {
   ArrayVector dummy;
   HelpWinFunction(0,dummy,eval);
+}
+
+void MainApp::SetupGUICase() {
+  m_win = new ApplicationWindow;
+  QTTerm *gui = new QTTerm(NULL);
+  m_keys->RegisterTerm(gui);
+  gui->resizeTextSurface();
+  gui->show();
+  m_win->SetGUITerminal(gui);
+  m_win->SetKeyManager(m_keys);
+  m_win->readSettings();
+  m_win->show();
+  gui->setFocus();
+  QObject::connect(m_win,SIGNAL(startHelp()),this,SLOT(HelpWin()));
+  QObject::connect(m_win,SIGNAL(startEditor()),this,SLOT(Editor()));
+  QObject::connect(m_win,SIGNAL(startPathTool()),this,SLOT(PathTool()));
+  QObject::connect(qApp,SIGNAL(aboutToQuit()),m_win,SLOT(writeSettings()));
+  QObject::connect(qApp,SIGNAL(lastWindowClosed()),qApp,SLOT(quit()));
+  QObject::connect(this,SIGNAL(Shutdown()),m_win,SLOT(close()));
+  QObject::connect(this,SIGNAL(Initialize()),m_win,SLOT(init()));
+  m_term = gui;
+}
+
+void MainApp::SetupInteractiveTerminalCase() {
+#ifdef Q_WS_X11
+  FreeMat::SetNonGUIHack();
+  Terminal *myterm = new Terminal;
+  m_keys->RegisterTerm(myterm);
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  try {
+    myterm->Initialize();
+  } catch(Exception &e) {
+    fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
+    exit(1);
+  }
+  QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+  QObject::connect(notify, SIGNAL(activated(int)), myterm, SLOT(DoRead()));
+  myterm->ResizeEvent();
+  signal_suspend_default = signal(SIGTSTP,signal_suspend);
+  signal_resume_default = signal(SIGCONT,signal_resume);
+  signal(SIGWINCH, signal_resize);
+  m_term = myterm;
+  QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
+#endif
+}
+
+KeyManager* MainApp::GetKeyManager() {
+  return m_keys;
+}
+
+void MainApp::SetupDumbTerminalCase() {
+#ifdef Q_WS_X11
+  FreeMat::SetNonGUIHack();
+  DumbTerminal *myterm = new DumbTerminal;
+  m_keys->RegisterTerm(myterm);
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+  QObject::connect(notify, SIGNAL(activated(int)), myterm, SLOT(DoRead()));
+  signal_suspend_default = signal(SIGTSTP,signal_suspend);
+  signal_resume_default = signal(SIGCONT,signal_resume);
+  signal(SIGWINCH, signal_resize);
+  m_term = term;
+  QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
+#endif
 }
 
 void MainApp::PathTool() {
@@ -87,7 +197,7 @@ int MainApp::Run() {
     LoadGUICoreFunctions(context);
     LoadHandleGraphicsFunctions(context);  
   }
-  m_term->setContext(context);
+  m_keys->setContext(context);
   QDir dir(QApplication::applicationDirPath());
   dir.cdUp();
   dir.cd("Plugins");
@@ -104,17 +214,18 @@ int MainApp::Run() {
     QString path2(dir2.canonicalPath());
     basePath += GetRecursiveDirList(path2);
   }
-  m_term->setBasePath(basePath);
+  m_keys->setBasePath(basePath);
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();
-  m_term->setUserPath(userPath);
-  m_term->setAppPath(qApp->applicationDirPath().toStdString());
-  m_term->rescanPath();
+  m_keys->setUserPath(userPath);
+  m_keys->setAppPath(qApp->applicationDirPath().toStdString());
+  m_keys->rescanPath();
+  eval = new WalkTree(context,m_keys);
   emit Initialize();
-  eval = new WalkTree(context,m_term);
   if (!skipGreeting)
     eval->sendGreeting();
   eval->run();
+  TerminalReset();
   emit Shutdown();
   return 0;
 }

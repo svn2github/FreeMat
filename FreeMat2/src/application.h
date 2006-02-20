@@ -25,6 +25,19 @@
 #include "ToolDock.hpp"
 #include "KeyManager.hpp"
 
+class AboutWindow : public QWidget {
+  Q_OBJECT
+ private:
+  int linenumber;
+  int phase;
+  QTimer* refresh;
+ public:
+  AboutWindow();
+  void paintEvent(QPaintEvent *e);
+public slots:
+   void Refresh();
+};
+
 class ApplicationWindow : public QMainWindow {
   Q_OBJECT
     

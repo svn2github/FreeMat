@@ -1,6 +1,4 @@
 
-
-
 - Source build appears to work on Linux...  
 
 Before release:
@@ -12,7 +10,6 @@ Before release:
 - Enable function mode (-f "code") in gui versions.
 - paste, ctrl-c/z
 - Test packaging
-- Closing of only figure window
 
 What is the deal with the source release?
   1. Dependency on ATLAS? There appear to be several BLAS options:
@@ -53,6 +50,7 @@ Done:
 - Save restore state of main window & help window.
 - Mac
 - Enable function mode (-f "code") in gui versions.
+- Closing of only figure window
   GPL 
   BLAS setup (override)
   Quit signaling

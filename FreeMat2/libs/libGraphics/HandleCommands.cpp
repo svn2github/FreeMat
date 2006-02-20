@@ -76,12 +76,38 @@ namespace FreeMat {
   // Magic constant - limits the number of figures you can have...
   
   HandleList<HandleObject*> objectset;
+  static bool NonGUIModeHack = false;
+
+  class NonClosable : public QWidget {
+  public:
+    NonClosable() : QWidget(0,Qt::FramelessWindowHint) {};
+    void closeEvent(QCloseEvent *ce) {ce->ignore();}
+  };
+
+  static NonClosable *wid = NULL;
+
+  void SetNonGUIHack() {
+    NonGUIModeHack = true;
+  }
 
   void NotifyFigureClosed(unsigned figNum) {
     //    delete Hfigs[figNum];
     Hfigs[figNum] = NULL;
     if (figNum == HcurrentFig)
       HcurrentFig = -1;
+    // Check for all figures closed
+    bool allClosed = true;
+    for (int i=0;allClosed && i<MAX_FIGS;i++)
+      allClosed = Hfigs[i] == NULL;
+    if (allClosed && NonGUIModeHack) {
+      if (!wid) {
+	wid = new NonClosable;
+	wid->setGeometry(0,0,1,1);
+	wid->setWindowIcon(QIcon(":/images/freemat-2.xpm"));
+	wid->show();
+      } else
+	wid->show();
+    }
   }
 
   static void NewFig() {

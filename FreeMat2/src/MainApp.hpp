@@ -23,22 +23,30 @@
 #include <qobject.h>
 #include "KeyManager.hpp"
 #include "WalkTree.hpp"
+#include "application.h"
+
+using namespace FreeMat;
 
 class MainApp : public QObject
 {
   Q_OBJECT
-  KeyManager* m_term;
-  std::string m_helpPath;
+  KeyManager* m_keys;
+  QObject *m_term;
   WalkTree* eval;
   bool guimode;
   bool skipGreeting;
+  ApplicationWindow *m_win;
 public:
   MainApp();
   ~MainApp();
   void SetKeyManager(KeyManager* term);
-  void SetHelpPath(std::string helpPath);
-  void SetGUIMode(bool mode);
   void SetSkipGreeting(bool skip);
+  void SetupGUICase();
+  void SetupInteractiveTerminalCase();
+  void SetupDumbTerminalCase();
+  KeyManager* GetKeyManager();
+  void SetGUIMode(bool mode);
+  void TerminalReset();
 public slots:
   int Run();
   void HelpWin();

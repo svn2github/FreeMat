@@ -4,7 +4,7 @@ VERSION = 2.0
 
 QT += opengl 
 
-CONFIG += warn_off debug
+CONFIG += warn_off release
 
 DEFINES -= UNICODE
 

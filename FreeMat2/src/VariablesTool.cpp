@@ -29,6 +29,7 @@ VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
   layout->addWidget(m_flist);
   setLayout(layout);
   setObjectName("variables");
+  context = NULL;
 }
 
 void VariablesTool::refresh() {

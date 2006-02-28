@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
   if (funcMode) {
     m_func = new FuncMode(argv[funcMode+1]);
     QObject::connect(m_func,SIGNAL(SendCommand(QString)),
-		     m_app->GetKeyManager(),SLOT(QueueSilent(QString)));
+ 		     m_app->GetKeyManager(),SLOT(QueueSilent(QString)));
     QTimer::singleShot(0,m_func,SLOT(Fire()));
   }
   return app->exec();

@@ -41,6 +41,7 @@ QString output;
 QStringList input;
 QStringList generatedFileList;
 QMap<QString, QString> section_descriptors;
+QStringList sectionOrdered;
 int moduledepth = 0;
 
 void TermOutputText(QString str) {
@@ -52,43 +53,42 @@ void TermOutputText(QString str) {
 }
 
 
-  class HelpTerminal : public KeyManager {
-  public:
-    HelpTerminal() {}
-    virtual ~HelpTerminal() {}
-    virtual void Initialize() {}
-    virtual void RestoreOriginalMode() {}
-    virtual void OutputRawString(std::string txt) {
-      output += txt.c_str();
-    }
-    virtual void ResizeEvent() {}
-    virtual void MoveDown() {
-      output += "\n";
-    }
-    virtual char* getLine(std::string aprompt) {
-      if (input.empty()) return 0;
-      QString txt(input[0]);
-      input.removeFirst();
-      char *rettxt = strdup(qPrintable(txt));
-      if (!input.empty())
-	output += aprompt.c_str() + txt;
-      return (strdup(qPrintable(txt)));      
-    }
-    virtual void MoveUp() {};
-    virtual void MoveRight() {};
-    virtual void MoveLeft() {};
-    virtual void ClearEOL() {};
-    virtual void ClearEOD() {};
-    virtual void MoveBOL() {};
-    virtual int getTerminalWidth() {return 80;}
-  };
+void OutputHelper::AddOutputString(std::string txt) {
+  output += QString::fromStdString(txt);
+}
+
+void OutputHelper::MoveDown() {
+  output += "\n";
+}
+
+
+class HelpTerminal : public KeyManager {
+public:
+  HelpTerminal() {}
+  virtual ~HelpTerminal() {}
+  virtual char* getLine(std::string aprompt) {
+    if (input.empty()) return 0;
+    QString txt(input[0]);
+    input.removeFirst();
+    char *rettxt = strdup(qPrintable(txt));
+    if (!input.empty())
+      output += aprompt.c_str() + txt;
+    return (strdup(qPrintable(txt)));      
+  }
+};
 
 HelpTerminal *m_term;
 using namespace FreeMat;
 Context *context;
+OutputHelper *m_hlp;
 
 WalkTree* GetInterpreter() {
   m_term = new HelpTerminal;
+  m_hlp = new OutputHelper;
+  QObject::connect(m_term,SIGNAL(MoveDown()),
+		   m_hlp,SLOT(MoveDown()));
+  QObject::connect(m_term,SIGNAL(OutputRawString(std::string)),
+		   m_hlp,SLOT(AddOutputString(std::string)));
   LoadModuleFunctions(context);
   LoadClassFunction(context);
   LoadCoreFunctions(context);
@@ -244,7 +244,7 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
     TermOutputText("Warning: No section descriptor for " + secname + "!\n");
   QFile file("help/html/sec_" + secname + ".html");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open help/html/sec_" + secname + ".html for output");
+    Halt("Unable to open help/html/" + secname + ".html for output");
   QTextStream f(&file);
   f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
   f << "\n";
@@ -258,8 +258,15 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
   f << "<A HREF=index.html> Main Index </A>\n";
   f << "<P>\n";
   f << "<UL>\n";
-  for (unsigned i=0;i<modinfo.size();i++)
-    f << "<LI> <A HREF=" << modinfo[i][0].toLower() << ".html> " << modinfo[i][0] << "</A> " << modinfo[i][1] << "</LI>\n";
+  QMap<QString, QString> modmap;
+  QStringList moduleList;
+  for (unsigned m=0;m<modinfo.size();m++) {
+    moduleList << modinfo[m][0].toLower();
+    modmap[modinfo[m][0].toLower()] = modinfo[m][1];
+  }
+  moduleList.sort();
+  for (unsigned i=0;i<moduleList.size();i++)
+    f << "<LI> <A HREF=" << secname.toLower() + "_" + moduleList[i] << ".html> " << moduleList[i] << "</A> " << modmap[moduleList[i]] << "</LI>\n";
   f << "</UL>\n";
   f << "</BODY>\n";
   f << "</HTML>\n";
@@ -293,9 +300,9 @@ void HTMLWriter::WriteIndex() {
   f << "<P>\n";
   f << "<H2> Documentation Sections </H2>\n";
   f << "<UL>\n";
-  foreach (QString secname, sections) 
+  foreach (QString secname, sectionOrdered) 
     f << "<LI> <A HREF=sec_" << secname.toLower() << ".html> " << 
-      section_descriptors.value(secname) << "</A> </LI>\n";
+    section_descriptors.value(secname) << "</A> </LI>\n";
   f << "</UL>\n";
   f << "</BODY>\n";
   f << "</HTML>\n";
@@ -303,10 +310,14 @@ void HTMLWriter::WriteIndex() {
   QFile file2("help/html/modules.txt");
   if (!file2.open(QFile::WriteOnly | QIODevice::Text))
     Halt("Unable to open help/html/modules.txt for output");
-  QList<QStringList> moduledlist(sectables.values());
+  // Loop over the sections
   QStringList modulenames;
-  for (unsigned k=0;k<moduledlist.size();k++)
-    modulenames << moduledlist[k][0].toLower();
+  foreach (QString secname, sections) {
+    // Get the modules for this section
+    QList<QStringList> moduledlist(sectables.values(secname));
+    for (unsigned k=0;k<moduledlist.size();k++)
+      modulenames << moduledlist[k][0].toLower() + " (" + secname + ")";
+  }
   modulenames.sort();
   QTextStream f2(&file2);
   for (unsigned k=0;k<modulenames.size();k++) {
@@ -317,7 +328,7 @@ void HTMLWriter::WriteIndex() {
   if (!file3.open(QFile::WriteOnly | QIODevice::Text))
     Halt("Unable to open help/html/sectable.txt for output");
   QTextStream f3(&file3);
-  foreach (QString secname, sections) {
+  foreach (QString secname, sectionOrdered) {
     QString secdesc(section_descriptors.value(secname));
     QList<QStringList> modules(sectables.values(secname));
     QStringList moduleList;
@@ -326,7 +337,7 @@ void HTMLWriter::WriteIndex() {
     moduleList.sort();
     f3 << secdesc << "\n";
     for (unsigned m=0;m<moduleList.size();m++) {
-      f3 << "+" << moduleList[m] << "\n";
+      f3 << "+" << " (" << secname << ")" << moduleList[m] << "\n";
     }
   }
 }
@@ -385,7 +396,7 @@ void HTMLWriter::EndModule() {
 void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   modulename = modname.toLower();
   eqnlist.clear();
-  myfile = new QFile("help/html/" + modulename + ".html");
+  myfile = new QFile("help/html/" + secname + "_" + modulename + ".html");
   if (!myfile->open(QFile::WriteOnly))
     Halt("Unable to open " + modname + ".html for output");
   mystream = new QTextStream(myfile);
@@ -548,7 +559,7 @@ void TextWriter::EndModule() {
 void TextWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   moduledepth++;
   myfile = new QFile("help/text/" + modname.toLower() + ".mdc");
-  if (!myfile->open(QFile::WriteOnly)) {
+  if (!myfile->open(QFile::Append)) {
     Halt("Unable to open " + modname + ".mdc for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
   mystream = new QTextStream(myfile);
@@ -658,7 +669,7 @@ void LatexWriter::WriteIndex() {
     moduleList.sort();
     f << "\\chapter{" << secdesc << "}\n";
     for (unsigned m=0;m<moduleList.size();m++) {
-      f << "\\input{" << moduleList[m] << "}\n";
+      f << "\\input{" << secname + "_" + moduleList[m] << "}\n";
     }
   }
   f << "\\end{document}\n";
@@ -686,7 +697,7 @@ void LatexWriter::EndModule() {
 
 void LatexWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   moduledepth++;
-  myfile = new QFile("help/latex/" + modname.toLower() + ".tex");
+  myfile = new QFile("help/latex/" + secname.toLower() + "_" + modname.toLower() + ".tex");
   if (!myfile->open(QFile::WriteOnly)) {
     Halt("Unable to open " + modname + ".tex for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
@@ -763,6 +774,8 @@ QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename
   ShutdownHandleGraphics();
   delete twalk;
   delete m_term;
+  delete m_hlp;
+  //  qDebug() << output;
   QRegExp mprintre("(--> mprint[^\\n]*)");
   output = output.replace(mprintre,"");
   return output;
@@ -809,6 +822,15 @@ bool TestMatch(QRegExp re, QString source) {
   return (re.indexIn(source) >= 0);
 }
 
+QString GetLine(QTextStream &strm) {
+  QString wrk = strm.readLine(0);
+  std::string version(WalkTree::getVersionString());
+  QString verstring(QString::fromStdString(version));
+  int ndx = verstring.indexOf("v");
+  verstring.remove(0,ndx+1);
+  wrk.replace("<VERSION_NUMBER>",verstring);
+  return wrk;
+}
 
 void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
   QRegExp docblock_pattern;
@@ -831,6 +853,11 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
   QRegExp itemizein_pattern;
   QRegExp itemizeout_pattern;
   QRegExp item_pattern;
+
+  std::string version(WalkTree::getVersionString());
+  QString verstring(QString::fromStdString(version));
+  int ndx = verstring.indexOf("v");
+  verstring.remove(0,ndx+1);
 
   if (fileinfo.suffix() == "cpp") { 
     docblock_pattern = QRegExp("^\\s*//!");
@@ -893,21 +920,21 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
     if (file.open(QFile::ReadOnly)) {
       QTextStream fstr(&file);
       while (!fstr.atEnd()) {
-	QString line(fstr.readLine(0));
+	QString line(GetLine(fstr));
 	if (TestMatch(docblock_pattern,line)) {
-	  QString line(fstr.readLine(0));
+	  QString line(GetLine(fstr));
 	  QString modname(MustMatch(modulename_pattern,line));
 	  QString moddesc(MustMatch(moduledesc_pattern,line));
-	  line = fstr.readLine(0);
+	  line = GetLine(fstr);
 	  QString secname(MustMatch(sectioname_pattern,line));
 	  //	  qDebug("Module " + modname + " " + moddesc + " " + secname);
 	  secname = secname.toLower();
 	  out->BeginModule(modname,moddesc,secname);
-	  line = fstr.readLine(0);
+	  line = GetLine(fstr);
 	  while (!fstr.atEnd() && !TestMatch(docblock_pattern,line)) {
 	    QString groupname(MustMatch(groupname_pattern,line));
 	    out->BeginGroup(groupname);
-	    line = fstr.readLine(0);
+	    line = GetLine(fstr);
 	    while (!fstr.atEnd() && !TestMatch(groupname_pattern,line) && !TestMatch(docblock_pattern,line)) {
 	      if (TestMatch(execin_pattern,line)) {
 		line = MustMatch(execin_pattern,line);
@@ -915,11 +942,11 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		if (!line.isEmpty())
 		  ErrorsExpected = line.toInt();
 		QStringList cmdlist;
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		while (!fstr.atEnd() && !TestMatch(execout_pattern,line)) {
 		  if (TestMatch(ccomment_pattern,line)) 
 		    cmdlist.push_back(MustMatch(ccomment_pattern,line)+"\n");
-		  line = fstr.readLine(0);
+		  line = GetLine(fstr);
 		}
 		cmdlist.push_back("quit;\n");
 		QString resp(EvaluateCommands(cmdlist,ErrorsExpected,modname,fileinfo.absoluteFilePath()));
@@ -928,39 +955,39 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		out->EndVerbatim();
 		if (fstr.atEnd())
 		  Halt("Unmatched docblock detected!");
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      } else if (TestMatch(verbatimin_pattern,line)) {
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		out->BeginVerbatim();
 		while (!fstr.atEnd() && !TestMatch(verbatimout_pattern,line)) {
 		  out->OutputText(MustMatch(ccomment_pattern,line)+"\n");
-		  line = fstr.readLine(0);
+		  line = GetLine(fstr);
 		}
 		out->EndVerbatim();
 		if (fstr.atEnd())
 		  Halt("Unmatched verbatim block detected!");
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      } else if (TestMatch(figure_pattern,line)) {
 		out->DoFigure(MustMatch(figure_pattern,line));
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      } else if (TestMatch(eqnin_pattern,line)) {
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		QString eqn; 
 		while (!fstr.atEnd() && !TestMatch(eqnout_pattern,line)) {
 		  eqn += MustMatch(ccomment_pattern,line)+"\n";
-		  line = fstr.readLine(0);
+		  line = GetLine(fstr);
 		}
 		out->DoEquation(eqn);
 		if (fstr.atEnd())
 		  Halt("Unmatched equation block detected!");
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      } else if (TestMatch(fnin_pattern,line)) {
 		QString fname(MustMatch(fnin_pattern,line));
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		QString fn;
 		while (!fstr.atEnd() && !TestMatch(fnout_pattern,line)) {
 		  fn += MustMatch(ccomment_pattern,line)+"\n";
-		  line = fstr.readLine(0);
+		  line = GetLine(fstr);
 		}
 		QFile *myfile = new QFile(fname);
 		if (!myfile->open(QFile::WriteOnly))
@@ -971,20 +998,20 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		delete myfile;
 		generatedFileList << fname;
 		out->DoFile(fname,fn);
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		if (fstr.atEnd())
 		  Halt("Unmatched function block detected!");
 	      } else if (TestMatch(enumeratein_pattern,line)) {
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		QStringList itemlist;
 		while(!fstr.atEnd() && !TestMatch(enumerateout_pattern,line)) {
 		  QString item(MustMatch(item_pattern,line));
-		  line = fstr.readLine(0);
+		  line = GetLine(fstr);
 		  while (!TestMatch(item_pattern,line) && 
 			 !TestMatch(enumerateout_pattern,line) && 
 			 !fstr.atEnd()) {
 		    item += MustMatch(ccomment_pattern,line);
-		    line = fstr.readLine(0);
+		    line = GetLine(fstr);
 		  }
 		  item += "\n";
 		  itemlist << item;
@@ -992,18 +1019,18 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		if (fstr.atEnd())
 		  Halt("Unmatched enumeration block");
 		out->DoEnumerate(itemlist);
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      } else if (TestMatch(itemizein_pattern,line)) {
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 		QStringList itemlist;
 		while(!fstr.atEnd() && !TestMatch(itemizeout_pattern,line)) {
 		  QString item(MustMatch(item_pattern,line));
-		  line = fstr.readLine(0);
+		  line = GetLine(fstr);
 		  while (!TestMatch(item_pattern,line) && 
 			 !TestMatch(itemizeout_pattern,line) && 
 			 !fstr.atEnd()) {
 		    item += MustMatch(ccomment_pattern,line);
-		    line = fstr.readLine(0);
+		    line = GetLine(fstr);
 		  }
 		  item += "\n";
 		  itemlist << item;
@@ -1011,18 +1038,18 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		if (fstr.atEnd())
 		  Halt("Unmatched itemize block");
 		out->DoItemize(itemlist);
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      } else {
 		if (TestMatch(ccomment_pattern,line)) 
 		  line = MustMatch(ccomment_pattern,line);
 		out->OutputText(line+"\n");
-		line = fstr.readLine(0);
+		line = GetLine(fstr);
 	      }
 	    }
-	    if (fstr.atEnd())
+	    if (!TestMatch(docblock_pattern,line) && fstr.atEnd())
 	      Halt("Unmatched docblock detected!");
 	  }
-	  if (fstr.atEnd())
+	  if (!TestMatch(docblock_pattern,line) && fstr.atEnd())
 	    Halt("Unmatched docblock detected!");
 	  out->EndModule();
 	}
@@ -1113,12 +1140,32 @@ void ReadSectionDescriptors() {
     if (re.indexIn(line) < 0)
       Halt("Bad line: " + line);
     section_descriptors.insert(re.cap(1),re.cap(2));
+    sectionOrdered << re.cap(1);
     TermOutputText("Section Descriptor: " + re.cap(1) + " : " + re.cap(2) + "\n");
   }
 }
 
+void DeleteDirectory(QString dirname) {
+  QDir dir(dirname);
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir())
+      DeleteDirectory(fileInfo.absoluteFilePath());
+    else
+      dir.remove(fileInfo.absoluteFilePath());
+  }
+  dir.rmdir(dirname);
+}
+
 void ConsoleWidget::Run() {
   QDir dir;
+  DeleteDirectory("help/html");
+  DeleteDirectory("help/tmp");
+  DeleteDirectory("help/latex");
+  DeleteDirectory("help/text");
+  DeleteDirectory("help/mfiles");
   dir.mkpath("help/html");
   dir.mkpath("help/tmp");
   dir.mkpath("help/latex");
@@ -1161,12 +1208,3 @@ void DoHelpGen() {
   qApp->exec();
 }
 
-#if 0
-int main(int argc, char *argv[]) {
-  QApplication app(argc, argv);
-  ConsoleWidget *m_main = new ConsoleWidget;
-  m_main->show();
-  return app.exec();
-  return 0;
-}
-#endif

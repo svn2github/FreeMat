@@ -32,6 +32,15 @@ public:
   virtual ~ConsoleWidget() {};
 };
 
+class OutputHelper : public QObject {
+  Q_OBJECT
+public:
+  OutputHelper() : QObject() {}
+private slots:
+  void AddOutputString(std::string);
+  void MoveDown();
+};
+
 void DoHelpGen();
 
 #endif

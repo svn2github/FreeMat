@@ -34,10 +34,11 @@
 #include "PathTool.hpp"
 #include "ToolDock.hpp"
 
-const int about_linecount = 18;
+const int about_linecount = 20;
 const char *about_strings[] = {"Julie Basu - Spousal support",
 			       "Maya Basu - Age 2 - Official laptop power button tester (it works!)",
 			       "Bruno De Man - General suggestions, support and FreeMat advocate",
+			       "Thomas Beutlich - MAT file support",
 			       "Brian Yanoff - Compatibility scripts",
 			       "Jeff Fessler - Support and test code, motivation for class support",
 			       "Al Danial - Sparse matrix support motivation and ideas",
@@ -49,6 +50,7 @@ const char *about_strings[] = {"Julie Basu - Spousal support",
 			       "ffcall - Foreign Function interface",
 			       "Qt4 - Cross platform GUI and API",
 			       "qconf - Configure script generator",
+			       "libmatio - MAT file interface library",
 			       "libtecla - Inspiration for console interface code",
 			       "wxbasic - Inspiration for interpreter layout",
 			       "kde/konsole - Inspiration for QTTerm (GUI Console)",
@@ -139,6 +141,7 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
   initializeTools();
   createToolBox();
   setObjectName("appwindow");
+  Aboutwin = new AboutWindow;
 }
 
 void ApplicationWindow::createToolBox() {
@@ -296,104 +299,74 @@ void ApplicationWindow::history() {
 }
 
 
-AboutWindow::AboutWindow() : QWidget() {
+AboutWidget::AboutWidget() : QWidget() {
   linenumber = 0;
   phase = 0;
-  refresh = new QTimer;
-  QObject::connect(refresh,SIGNAL(timeout()),this,SLOT(Refresh()));
-  refresh->start(100);
-  //  setIconPixmap(QPixmap(":/images/freemat-2.xpm"));
+  setMinimumSize(150,100);
 }
 
-void AboutWindow::Refresh() {
+void AboutWidget::Refresh() {
   if ((phase+3) > 255)
     linenumber = (linenumber + 1) % about_linecount;
-  phase = (phase + 3) % 256;
+  phase = (phase+3) % 256;
   update();
 }
 
-void AboutWindow::paintEvent(QPaintEvent * e) {
+void AboutWidget::paintEvent(QPaintEvent *e) {
   QWidget::paintEvent(e);
   QPainter painter(this);
-  painter.drawPixmap(30,30,QPixmap(":/images/freemat-2.xpm"));
   QFont fnt("Helvetica",16);
-  QFontMetrics fm(fnt);
-  QString txt("About FreeMat v2.0");
-  QRect sze(fm.boundingRect(txt));
   painter.setFont(fnt);
-  painter.drawText(width()/2-sze.width()/2.0,30+sze.height(),"About FreeMat v2.0");
-  fnt = QFont("Helvetica",10);
-  QRect rct(50,75,width()-100,height()-150);
-  txt = QString("FreeMat is licensed under the GNU Public License"
-		" version 2.  The source code for FreeMat is available"
-		" at http://freemat.sf.net.  FreeMat is primarily written and"
-		" maintained by Samit Basu, but relies heavily on the following people and"
-		" projects for their contributions to FreeMat:");
-  painter.setFont(fnt);
-  painter.drawText(rct,txt);
-  fnt = QFont("Helvetica",16);
-  painter.setFont(fnt);
-  QRect rct2(50,height()-125,width()-50,height()-25);
+  int phaseA;
   if (phase < 128)
-    painter.setPen(QColor(0,0,0,qMin(255,qMax(0,phase*2))));
+    phaseA = qMin(255,qMax(0,phase*2));
   else
-    painter.setPen(QColor(0,0,0,qMin(255,qMax(0,2*(256-phase)+5))));
-  //  painter.drawText(rct2,Qt::AlignHCenter | Qt::AlignVCenter, "Thanks to you for every thing");
-  painter.drawText(rct2, about_strings[linenumber]);
-  //   QLinearGradient grad1(0,0,100,100);
-  //   grad1.setColorAt(0, QColor(255,0,0,127));
-  //   grad1.setColorAt(1, QColor(0,0,255,0));
-  //   painter.setPen(QPen(grad1,0));
-  //   for (int y=12;y < 100; y += 12)
-  //     painter.drawText(0, y, "Thanks to you!!!");
+    phaseA = qMin(255,qMax(0,2*(256-phase)+5));
+  painter.setPen(QColor(0,0,0,phaseA));
+  painter.drawText(0,0,width(),height(),Qt::TextWordWrap | Qt::AlignCenter,about_strings[linenumber]);
+}
+
+void AboutWindow::showEvent(QShowEvent* event) {
+  refresh->start(100);
+  QWidget::showEvent(event);
+}
+
+void AboutWindow::hideEvent(QHideEvent* event) {
+  refresh->stop();
+  QWidget::hideEvent(event);
+}
+
+AboutWindow::AboutWindow() : QWidget() {
+  refresh = new QTimer;
+  QVBoxLayout *layout = new QVBoxLayout;
+  QLabel *txt = new QLabel("FreeMat is licensed under the GNU Public License"
+			   " version 2.  The source code for FreeMat is available"
+			   " at http://freemat.sf.net.  FreeMat is primarily written and"
+			   " maintained by Samit Basu, but relies heavily on the following people and"
+			   " projects for their contributions to FreeMat:");
+  txt->setAlignment(Qt::AlignHCenter);
+  QFont def(txt->font());
+  def.setPointSize(12);
+  txt->setFont(def);
+  txt->setWordWrap(true);
+  layout->addWidget(txt);
+  thanks = new AboutWidget;
+  layout->addWidget(thanks);
+  QObject::connect(refresh,SIGNAL(timeout()),thanks,SLOT(Refresh()));
+  QWidget *click = new QWidget;
+  QHBoxLayout *layout2 = new QHBoxLayout;
+  QPushButton *ok = new QPushButton("OK");
+  layout2->addWidget(ok);
+  click->setLayout(layout2);
+  layout->addWidget(click);
+  setLayout(layout);
+  connect(ok,SIGNAL(clicked()),this,SLOT(close()));
+  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
 }
 
 void ApplicationWindow::about() {
-  AboutWindow *win = new AboutWindow;
-  win->show();
-  QMessageBox mb(this);
-  mb.setWindowTitle(QString("About FreeMat"));
-  mb.setText(QString("<h3>About FreeMat</h3>"
-		     "<p>This is %1.</p>"
-		     "<p>FreeMat is licensed under the GNU Public License"
-		     " version 2.  Type <code>license</code> at the prompt"
-		     " to get details.  The source code for FreeMat is"
-		     " downloadable at <tt>http://freemat.sf.net</tt>."
-		     "<p>FreeMat is written and maintained by Samit Basu"
-		     " and uses contributions from the following people"
-		     " and projects:"
-		     " <ul>"
-		     " <li> Bruno De Man - General suggestions and support </li>"
-		     " <li> Brian Yanoff - Scripts </li>"
-		     " <li> Jeff Fessler - Support and test code </li>"
-		     " <li> ATLAS - For optimized BLAS "
-		     " <tt>http://math-atlas.sourceforge.net</tt></li>"
-		     " <li> LAPACK - For linear algebra  "
-		     " <tt>http://www.netlib.org/lapack</tt></li>"
-		     " <li> Umfpack - Sparse linear equations "
-		     " <tt>http://www.cise.ufl.edu/research/sparse/umfpack</tt></li>"
-		     " <li> ARPACK - Sparse eigenvalue problems  "
-		     " <tt>http://www.caam.rice.edu/software/ARPACK</tt></li>"
-		     " <li> FFTW - Fast Fourier Transforms  "
-		     " <tt>http://www.fftw.org</tt></li>"
-		     " <li> ffcall - Foreign Function interface "
-		     " <tt>http://www.haible.de/bruno/packages-ffcall.html</tt></li>"
-		     " <li> Qt4 - Cross platform GUI and API "
-		     " <tt>http://www.trolltech.com</tt></li>"
-		     " <li> qconf - Configure script generator"
-		     " <tt>http://delta.affinix.com/qconf</tt></li>"
-		     " <li> libtecla - The console interface uses code"
-		     " from this library <tt>http://www.astro.caltech.edu/"
-		     "~mcs/tecla/</tt></li>"
-		     " <li> wxbasic - Inspiration for the layout of the"
-		     " interpreter <tt>http://wxbasic.sourceforge.net</tt></li>"
-		     " <li> nsis - Installer on Win32"
-		     " </ul>").arg(QString::fromStdString(FreeMat::WalkTree::getVersionString())));
-  mb.setIconPixmap(QPixmap(":/images/freemat-2.xpm"));
-  mb.setButtonText(0, "OK");
-  mb.exec();
+  Aboutwin->show();
 }
-
 
 void ApplicationWindow::init() {
   m_tool->getVariablesTool()->setContext(m_keys->getContext());

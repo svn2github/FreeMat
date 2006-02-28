@@ -24,18 +24,32 @@
 #include "Editor.hpp"
 #include "ToolDock.hpp"
 #include "KeyManager.hpp"
+#include <QLabel>
+
+
+class AboutWidget : public QWidget {
+  Q_OBJECT
+private:
+  int linenumber;
+  int phase;
+public:
+  AboutWidget();
+  void paintEvent(QPaintEvent *e);
+public slots:
+  void Refresh();
+};
 
 class AboutWindow : public QWidget {
   Q_OBJECT
- private:
+private:
   int linenumber;
   int phase;
   QTimer* refresh;
- public:
+  AboutWidget* thanks;
+public:
   AboutWindow();
-  void paintEvent(QPaintEvent *e);
-public slots:
-   void Refresh();
+  void showEvent(QShowEvent* event);
+  void hideEvent(QHideEvent* event);
 };
 
 class ApplicationWindow : public QMainWindow {
@@ -51,6 +65,7 @@ class ApplicationWindow : public QMainWindow {
   QAction *pauseAct, *continueAct, *stopAct;
   FMEditor *edit;
   ToolDock *m_tool;
+  AboutWindow *Aboutwin;
 public:
   ApplicationWindow();
   ~ApplicationWindow();

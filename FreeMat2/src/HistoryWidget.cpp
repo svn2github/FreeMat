@@ -55,7 +55,7 @@ void HistoryWidget::addCommand(QString t) {
 void HistoryWidget::readSettings() {
   QSettings settings("FreeMat", "FreeMat");
   QStringList historyList = settings.value("interpreter/history").toStringList();
-  for (int i=0;i<historyList.size();i++)
+  for (int i=0;i<historyList.size();i++) 
     new QListWidgetItem(historyList[i],m_flist);
 }
 

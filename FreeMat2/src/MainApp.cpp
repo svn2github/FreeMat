@@ -32,64 +32,6 @@ using namespace FreeMat;
 #include "LoadFN.hpp"
 #include "HandleCommands.hpp"
 #include "Core.hpp"
-#include "DumbTerminal.hpp"
-#include "Terminal.hpp"
-#include <fcntl.h>
-#include <qsocketnotifier.h>
-#include "SocketCB.hpp"
-#include "HandleCommands.hpp"
-#include "QTTerm.hpp"
-
-QObject *term;
-KeyManager *keys;
-
-#ifdef Q_WS_X11
-#include "FuncTerminal.hpp"
-#include "DumbTerminal.hpp"
-#include "Terminal.hpp"
-#include "SocketCB.hpp"
-#include <unistd.h>
-#include <fcntl.h>
-#include <qsocketnotifier.h>
-#include <signal.h>
-
-sig_t signal_suspend_default;
-sig_t signal_resume_default;
-
-void signal_suspend(int a) {
-  Terminal *tptr = dynamic_cast<Terminal*>(term);
-  if (tptr)
-    tptr->RestoreOriginalMode();
-  printf("Suspending FreeMat...\n");
-  fflush(stdout);
-  signal(SIGTSTP,signal_suspend_default);
-  raise(SIGTSTP);
-}
-
-void signal_resume(int a) {
-  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
-  printf("Resuming FreeMat...\n");
-  Terminal *tptr = dynamic_cast<Terminal*>(term);
-  if (tptr) {
-    tptr->SetRawMode();
-    keys->Redisplay();
-  }
-}
-
-void signal_resize(int a) {
-  Terminal *tptr = dynamic_cast<Terminal*>(term);
-  if (tptr) {
-    tptr->ResizeEvent();
-  }
-}
-#endif
-
-void MainApp::TerminalReset() {
-  Terminal *tptr = dynamic_cast<Terminal*>(term);
-  if (tptr) {
-    tptr->RestoreOriginalMode();
-  }
-}
 
 MainApp::MainApp() {
   guimode = true;
@@ -185,6 +127,9 @@ void MainApp::SetGUIMode(bool mode) {
 
 void MainApp::SetSkipGreeting(bool skip) {
   skipGreeting = skip;
+}
+
+void MainApp::TerminalReset() {
 }
 
 int MainApp::Run() {

@@ -66,5 +66,14 @@
                 index = text.indexOf(expression, index + length);
             }
         }
+        QTextCharFormat singleLineCommentFormat;
+        singleLineCommentFormat.setForeground(Qt::red);
+	QRegExp comment("\\%[^\n]*");
+	int index = text.indexOf(comment);
+	while (index >= 0) {
+	  int length = comment.matchedLength();
+	  setFormat(index, length, singleLineCommentFormat);
+	  index = text.indexOf(comment, index + length);
+	}
     }
 

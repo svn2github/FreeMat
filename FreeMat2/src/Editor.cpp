@@ -124,7 +124,7 @@ int computeIndexIncrement(QString a) {
   // 5.  Compute the incremental index level - this is the number of
   //     matches to: if, else, elseif, for, function, try, catch, while, switch
   //     minus the number of matches to 'end'.
-  QRegExp keyword_in("\\b(if|else|for|function|try|catch|while|switch)\\b");
+  QRegExp keyword_in("\\b(if|for|function|try|while|switch)\\b");
   QRegExp keyword_out("\\bend\\b");
   int indent_in_count = countMatches(a,keyword_in);
   int indent_out_count = countMatches(a,keyword_out);
@@ -148,11 +148,19 @@ QString indentLine(QString toIndent, QStringList priorText) {
   // Strip the prior line of confusing constructs...
   a = stripLine(a);
   int indent_increment = computeIndexIncrement(a);
-  // Adjust this for the case that our current line is an "end" command
   QString b = stripLine(toIndent);
-  QRegExp end_only("^\\s*\\bend\\b");
-  if (b.indexOf(end_only) >= 0)
+  // Some lines require an adjustment: "catch,elseif,else,end"
+  QRegExp keyword_adjust("^\\s*\\b(end|else|elseif|catch)\\b");
+  if (b.indexOf(keyword_adjust) >= 0) {
     indent_increment--;
+  }
+  if (a.indexOf(keyword_adjust) >= 0) {
+    indent_increment++;
+  }
+  QRegExp function_det("^\\s*\\b(function)\\b");
+  if (b.indexOf(function_det) >= 0) {
+    return setIndentSpace(toIndent,0);
+  }
   // 6.  Find the start of non-white text in <a>, add incremental index*tab size - this 
   //     is the amount of white space at the beginning of the current line.
   QRegExp whitespace("^\\s*");
@@ -165,6 +173,8 @@ QString indentLine(QString toIndent, QStringList priorText) {
   // Indenting is simpler for us than for QSA or for C++.  We simply
   // apply the following rules:
   // 7.  Adjust the current line.
+  //    if ((b.indexOf(else_only) >= 0)) 
+  //     indent_increment++;
   return setIndentSpace(toIndent,leading_space);
 }
 

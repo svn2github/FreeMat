@@ -26,9 +26,9 @@
 #include "WalkTree.hpp"
 #include "File.hpp"
 #include "Serialize.hpp"
-// #include "Socket.hpp"
-// #include "ServerSocket.hpp"
 #include "IEEEFP.hpp"
+#include "matio.h"
+#include "Sparse.hpp"
 
 namespace FreeMat {
   class FilePtr {
@@ -37,15 +37,7 @@ namespace FreeMat {
     bool swapflag;
   };
   
-//   class SockPtr {
-//   public:
-//     Socket *sock;
-//     Serialize *ser;
-//   };
-
   HandleList<FilePtr*> fileHandles;
-  //  HandleList<ServerSocket*> servers;
-//   HandleList<SockPtr*> sockets;
 
   void InitializeFileSubsystem() {
     FilePtr *fptr = new FilePtr();
@@ -709,10 +701,10 @@ namespace FreeMat {
 	  (strcmp(styleflag,"BOF") == 0))
 	style = -1;
       else if ((strcmp(styleflag,"cof") == 0) ||
-	  (strcmp(styleflag,"COF") == 0))
+	       (strcmp(styleflag,"COF") == 0))
 	style = 0;
       else if ((strcmp(styleflag,"eof") == 0) ||
-	  (strcmp(styleflag,"EOF") == 0))
+	       (strcmp(styleflag,"EOF") == 0))
 	style = 1;
       else
 	throw Exception("unrecognized style format for fseek");
@@ -1269,439 +1261,1047 @@ namespace FreeMat {
 	  }
 	}
       }
-    return values;
-  }
+      return values;
+    }
 #endif
 
-  //!
-  //@Module FSCANF Formatted File Input Function (C-Style)
-  //@@Section IO
-  //@@Usage
-  //Reads values from a file.  The general syntax for its use is
-  //@[
-  //  [a1,...,an] = fscanf(handle,format)
-  //@]
-  //Here @|format| is the format string, which is a string that
-  //controls the format of the input.  Each value that is parsed from
-  //the file described by @|handle| occupies one output slot.
-  //See @|printf| for a description of the format.  Note that if
-  //the file is at the end-of-file, the fscanf will return 
-  //!
-  ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() != 2)
-      throw Exception("fscanf takes two arguments, the file handle and the format string");
-    Array tmp(arg[0]);
-    int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
-    Array format(arg[1]);
-    if (!format.isString())
-      throw Exception("fscanf format argument must be a string");
-    if (feof(fptr->fp))
-      return singleArrayVector(Array::emptyConstructor());
-    char *frmt = format.getContentsAsCString();
-    char *buff = (char*) malloc(strlen(frmt)+1);
-    strcpy(buff,frmt);
-    // Search for the start of a format subspec
-    char *dp = buff;
-    char *np;
-    char sv;
-    int nextArg = 2;
-    bool shortarg;
-    bool doublearg;
-    // Scan the string
-    ArrayVector values;
-    while (*dp) {
-      np = dp;
-      while ((*dp) && (*dp != '%')) dp++;
-      // Print out the formatless segment
-      sv = *dp;
-      *dp = 0;
-      fscanf(fptr->fp,np);
+    //!
+    //@Module FSCANF Formatted File Input Function (C-Style)
+    //@@Section IO
+    //@@Usage
+    //Reads values from a file.  The general syntax for its use is
+    //@[
+    //  [a1,...,an] = fscanf(handle,format)
+    //@]
+    //Here @|format| is the format string, which is a string that
+    //controls the format of the input.  Each value that is parsed from
+    //the file described by @|handle| occupies one output slot.
+    //See @|printf| for a description of the format.  Note that if
+    //the file is at the end-of-file, the fscanf will return 
+    //!
+    ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
+      if (arg.size() != 2)
+	throw Exception("fscanf takes two arguments, the file handle and the format string");
+      Array tmp(arg[0]);
+      int handle = tmp.getContentsAsIntegerScalar();
+      FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
+      Array format(arg[1]);
+      if (!format.isString())
+	throw Exception("fscanf format argument must be a string");
       if (feof(fptr->fp))
-	values.push_back(Array::emptyConstructor());
-      *dp = sv;
-      // Process the format spec
-      if (*dp) {
-	np = validateScanFormatSpec(dp+1);
-	if (!np)
-	  throw Exception("erroneous format specification " + std::string(dp));
-	else {
-	  if (*(np-1) == '%') {
-	    fscanf(fptr->fp,"%%");
-	    dp+=2;
-	  } else {
-	    shortarg = false;
-	    doublearg = false;
-	    if (*(np-1) == 'h') {
-	      shortarg = true;
-	      np++;
-	    } else if (*(np-1) == 'l') {
-	      doublearg = true;
-	      np++;
-	    } 
-	    sv = *np;
-	    *np = 0;
-	    switch (*(np-1)) {
-	    case 'd':
-	    case 'i':
-	      if (shortarg) {
-		short sdumint;
-		fscanf(fptr->fp,dp,&sdumint);
+	return singleArrayVector(Array::emptyConstructor());
+      char *frmt = format.getContentsAsCString();
+      char *buff = (char*) malloc(strlen(frmt)+1);
+      strcpy(buff,frmt);
+      // Search for the start of a format subspec
+      char *dp = buff;
+      char *np;
+      char sv;
+      int nextArg = 2;
+      bool shortarg;
+      bool doublearg;
+      // Scan the string
+      ArrayVector values;
+      while (*dp) {
+	np = dp;
+	while ((*dp) && (*dp != '%')) dp++;
+	// Print out the formatless segment
+	sv = *dp;
+	*dp = 0;
+	fscanf(fptr->fp,np);
+	if (feof(fptr->fp))
+	  values.push_back(Array::emptyConstructor());
+	*dp = sv;
+	// Process the format spec
+	if (*dp) {
+	  np = validateScanFormatSpec(dp+1);
+	  if (!np)
+	    throw Exception("erroneous format specification " + std::string(dp));
+	  else {
+	    if (*(np-1) == '%') {
+	      fscanf(fptr->fp,"%%");
+	      dp+=2;
+	    } else {
+	      shortarg = false;
+	      doublearg = false;
+	      if (*(np-1) == 'h') {
+		shortarg = true;
+		np++;
+	      } else if (*(np-1) == 'l') {
+		doublearg = true;
+		np++;
+	      } 
+	      sv = *np;
+	      *np = 0;
+	      switch (*(np-1)) {
+	      case 'd':
+	      case 'i':
+		if (shortarg) {
+		  short sdumint;
+		  fscanf(fptr->fp,dp,&sdumint);
+		  if (feof(fptr->fp))
+		    values.push_back(Array::emptyConstructor());
+		  else
+		    values.push_back(Array::int16Constructor(sdumint));
+		} else {
+		  int sdumint;
+		  fscanf(fptr->fp,dp,&sdumint);
+		  if (feof(fptr->fp))
+		    values.push_back(Array::emptyConstructor());
+		  else
+		    values.push_back(Array::int32Constructor(sdumint));
+		}
+		break;
+	      case 'o':
+	      case 'u':
+	      case 'x':
+	      case 'X':
+	      case 'c':
+		if (shortarg) {
+		  int sdumint;
+		  fscanf(fptr->fp,dp,&sdumint);
+		  if (feof(fptr->fp))
+		    values.push_back(Array::emptyConstructor());
+		  else
+		    values.push_back(Array::int32Constructor(sdumint));
+		} else {
+		  unsigned int dumint;
+		  fscanf(fptr->fp,dp,&dumint);
+		  if (feof(fptr->fp))
+		    values.push_back(Array::emptyConstructor());
+		  else
+		    values.push_back(Array::uint32Constructor(dumint));
+		}
+		break;
+	      case 'e':
+	      case 'E':
+	      case 'f':
+	      case 'F':
+	      case 'g':
+	      case 'G':
+		if (doublearg) {
+		  double dumfloat;
+		  fscanf(fptr->fp,dp,&dumfloat);
+		  if (feof(fptr->fp))
+		    values.push_back(Array::emptyConstructor());
+		  else
+		    values.push_back(Array::doubleConstructor(dumfloat));
+		} else {
+		  float dumfloat;
+		  fscanf(fptr->fp,dp,&dumfloat);
+		  if (feof(fptr->fp))
+		    values.push_back(Array::emptyConstructor());
+		  else
+		    values.push_back(Array::floatConstructor(dumfloat));
+		}
+		break;
+	      case 's':
+		char stbuff[4096];
+		fscanf(fptr->fp,dp,stbuff);
 		if (feof(fptr->fp))
 		  values.push_back(Array::emptyConstructor());
 		else
-		  values.push_back(Array::int16Constructor(sdumint));
-	      } else {
-		int sdumint;
-		fscanf(fptr->fp,dp,&sdumint);
-		if (feof(fptr->fp))
-		  values.push_back(Array::emptyConstructor());
-		else
-		  values.push_back(Array::int32Constructor(sdumint));
+		  values.push_back(Array::stringConstructor(stbuff));
+		break;
+	      default:
+		throw Exception("unsupported fscanf configuration");
 	      }
-	      break;
-	    case 'o':
-	    case 'u':
-	    case 'x':
-	    case 'X':
-	    case 'c':
-	      if (shortarg) {
-		int sdumint;
-		fscanf(fptr->fp,dp,&sdumint);
-		if (feof(fptr->fp))
-		  values.push_back(Array::emptyConstructor());
-		else
-		  values.push_back(Array::int32Constructor(sdumint));
-	      } else {
-		unsigned int dumint;
-		fscanf(fptr->fp,dp,&dumint);
-		if (feof(fptr->fp))
-		  values.push_back(Array::emptyConstructor());
-		else
-		  values.push_back(Array::uint32Constructor(dumint));
-	      }
-	      break;
-	    case 'e':
-	    case 'E':
-	    case 'f':
-	    case 'F':
-	    case 'g':
-	    case 'G':
-	      if (doublearg) {
-		double dumfloat;
-		fscanf(fptr->fp,dp,&dumfloat);
-		if (feof(fptr->fp))
-		  values.push_back(Array::emptyConstructor());
-		else
-		  values.push_back(Array::doubleConstructor(dumfloat));
-	      } else {
-		float dumfloat;
-		fscanf(fptr->fp,dp,&dumfloat);
-		if (feof(fptr->fp))
-		  values.push_back(Array::emptyConstructor());
-		else
-		  values.push_back(Array::floatConstructor(dumfloat));
-	      }
-	      break;
-	    case 's':
-	      char stbuff[4096];
-	      fscanf(fptr->fp,dp,stbuff);
-	      if (feof(fptr->fp))
-		values.push_back(Array::emptyConstructor());
-	      else
-		values.push_back(Array::stringConstructor(stbuff));
-	      break;
-	    default:
-	      throw Exception("unsupported fscanf configuration");
+	      *np = sv;
+	      dp = np;
 	    }
-	    *np = sv;
-	    dp = np;
 	  }
 	}
       }
+      return values;
     }
-    return values;
-  }
 
-  //!
-  //@Module FPRINTF Formated File Output Function (C-Style)
-  //@@Section IO
-  //@@Usage
-  //Prints values to a file.  The general syntax for its use is
-  //@[
-  //  fprintf(fp,format,a1,a2,...).
-  //@]
-  //Here @|format| is the format string, which is a string that
-  //controls the format of the output.  The values of the variables
-  //@|ai| are substituted into the output as required.  It is
-  //an error if there are not enough variables to satisfy the format
-  //string.  Note that this @|fprintf| command is not vectorized!  Each
-  //variable must be a scalar.  The value @|fp| is the file handle.  For
-  //more details on the format string, see @|printf|.  Note also 
-  //that @|fprintf| to the file handle @|1| is effectively equivalent to @|printf|.
-  //@@Examples
-  //A number of examples are present in the Examples section of the @|printf| command.
-  //!
-  ArrayVector FprintfFunction(int nargout, const ArrayVector& arg) {
-    if (arg.size() < 2)
-      throw Exception("fprintf requires at least two arguments, the file handle and theformat string");
-    Array tmp(arg[0]);
-    int handle = tmp.getContentsAsIntegerScalar();
-    FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
-    Array format(arg[1]);
-    if (!format.isString())
-      throw Exception("fprintf format argument must be a string");
-    ArrayVector argcopy(arg);
-    argcopy.erase(argcopy.begin());
-    char *op = xprintfFunction(nargout,argcopy);
-    char *buff = (char*) malloc(strlen(op)+1);
-    convertEscapeSequences(buff,op);
-    fprintf(fptr->fp,"%s",buff);
-    free(buff);
-    free(op);
-    return ArrayVector();
-  }
+    //!
+    //@Module FPRINTF Formated File Output Function (C-Style)
+    //@@Section IO
+    //@@Usage
+    //Prints values to a file.  The general syntax for its use is
+    //@[
+    //  fprintf(fp,format,a1,a2,...).
+    //@]
+    //Here @|format| is the format string, which is a string that
+    //controls the format of the output.  The values of the variables
+    //@|ai| are substituted into the output as required.  It is
+    //an error if there are not enough variables to satisfy the format
+    //string.  Note that this @|fprintf| command is not vectorized!  Each
+    //variable must be a scalar.  The value @|fp| is the file handle.  For
+    //more details on the format string, see @|printf|.  Note also 
+    //that @|fprintf| to the file handle @|1| is effectively equivalent to @|printf|.
+    //@@Examples
+    //A number of examples are present in the Examples section of the @|printf| command.
+    //!
+    ArrayVector FprintfFunction(int nargout, const ArrayVector& arg) {
+      if (arg.size() < 2)
+	throw Exception("fprintf requires at least two arguments, the file handle and theformat string");
+      Array tmp(arg[0]);
+      int handle = tmp.getContentsAsIntegerScalar();
+      FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
+      Array format(arg[1]);
+      if (!format.isString())
+	throw Exception("fprintf format argument must be a string");
+      ArrayVector argcopy(arg);
+      argcopy.erase(argcopy.begin());
+      char *op = xprintfFunction(nargout,argcopy);
+      char *buff = (char*) malloc(strlen(op)+1);
+      convertEscapeSequences(buff,op);
+      fprintf(fptr->fp,"%s",buff);
+      free(buff);
+      free(op);
+      return ArrayVector();
+    }
 
-  //!
-  //@Module SAVE Save Variables To A File
-  //@@Section IO
-  //@@Usage
-  //Saves a set of variables to a file in a machine independent format.
-  //There are two formats for the function call.  The first is the explicit
-  //form, in which a list of variables are provided to write to the file:
-  //@[
-  //  save filename a1 a2 ...
-  //@]
-  //In the second form,
-  //@[
-  //  save filename
-  //@]
-  //all variables in the current context are written to the file.  The 
-  //format of the file is a simple binary encoding (raw) of the data
-  //with enough information to restore the variables with the @|load|
-  //command.  The endianness of the machine is encoded in the file, and
-  //the resulting file should be portable between machines of similar
-  //types (in particular, machines that support IEEE floating point 
-  //representation).
-  //
-  //You can also specify both the filename as a string, in which case
-  //you also have to specify the names of the variables to save.  In
-  //particular
-  //@[
-  //   save('filename','a1','a2')
-  //@]
-  //will save variables @|a1| and @|a2| to the file.
-  //@@Example
-  //Here is a simple example of @|save|/@|load|.  First, we save some variables to a file.
-  //@< 
-  //D = {1,5,'hello'};
-  //s = 'test string';
-  //x = randn(512,1);
-  //z = zeros(512);
-  //who
-  //save loadsave.dat
-  //@>
-  //Next, we clear all of the variables, and then load them back from the file.
-  //@<
-  //clear all
-  //who
-  //load loadsave.dat
-  //who
-  //@>
-  //!
-  ArrayVector SaveFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    if (arg.size() == 0)
-      throw Exception("save requires at least one argument (the filename)");
-    Array filename(arg[0]);
-    char *fname = filename.getContentsAsCString();
-    File ofile(fname,"wb");
-    Serialize output(&ofile);
-    output.handshakeServer();
-    Context *cntxt;
-    cntxt = eval->getContext();
-    stringVector names;
-    int i;
-    if (arg.size() == 1)
-      names = cntxt->getCurrentScope()->listAllVariables();
-    else {
-      for (i=1;i<arg.size();i++) {
-	Array varName(arg[i]);
-	names.push_back(varName.getContentsAsCString());
+    matvar_t * Mat_VarCreateHandling(const Array& toWrite, char * varName, 
+				     int isGlobal) {
+      matvar_t *matvar;
+      int flags = MEM_CONSERVE;
+      if (isGlobal) {
+	flags |= MAT_F_GLOBAL;
+      }
+      Class dclass(toWrite.getDataClass());
+      Dimensions dims = toWrite.getDimensions();
+      switch (dclass) {
+      case FM_CELL_ARRAY: {
+	const Array *dp = ((const Array *) toWrite.getDataPointer());
+	matvar_t **matsubvar = (matvar_t **) Malloc((toWrite.getLength()) * 
+						    sizeof(matvar_t *));
+	for (int j = 0; j < toWrite.getLength(); j++) {
+	  matsubvar[j] = Mat_VarCreateHandling(dp[j], "dummy", isGlobal);
+	}
+	matvar = Mat_VarCreate(varName, MAT_C_CELL, MAT_T_CELL, dims.getLength(), 
+			       dims.getDimensionData(), (void *) matsubvar, flags);
+	break;
+      }
+      case FM_STRUCT_ARRAY: {
+	stringVector fieldNames(toWrite.getFieldNames());
+	int ncount(fieldNames.size());
+	const Array *dp = ((const Array *) toWrite.getDataPointer());
+	matvar_t **matsubvar = (matvar_t **) Malloc((toWrite.getLength() * ncount + 1) * sizeof(matvar_t *));
+	for (int j = 0; j < toWrite.getLength(); j++) {
+	  for (int k = 0; k < ncount; k++) {
+	    matsubvar[j * ncount + k] = Mat_VarCreateHandling(dp[j * ncount + k], 
+							      (char*) fieldNames[k].c_str(), 
+							      isGlobal);
+	  }
+	}
+	matsubvar[toWrite.getLength() * ncount] = NULL;
+	matvar = Mat_VarCreate(varName, MAT_C_STRUCT, MAT_T_STRUCT, 
+			       dims.getLength(), dims.getDimensionData(), 
+			       (void *) matsubvar, flags);
+	break;
+      }
+      case FM_LOGICAL: {
+	flags |= MAT_F_LOGICAL;
+	const logical *dp = ((const logical *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_UINT8, MAT_T_UINT8, 
+			       dims.getLength(), dims.getDimensionData(), 
+			       (void *) dp, flags);
+	break;
+      }
+      case FM_STRING: {
+	const uint8 *dp = ((const uint8 *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_CHAR, MAT_T_UINT8, dims.getLength(), 
+			       dims.getDimensionData(), (void *) dp, flags);
+	break;
+      }
+      case FM_UINT8: {
+	const uint8 *dp = ((const uint8 *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_UINT8, MAT_T_UINT8, dims.getLength(), 
+			       dims.getDimensionData(), (void *) dp, flags);
+	break;
+      }
+      case FM_UINT16: {
+	const uint16 *dp = ((const uint16 *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_UINT16, MAT_T_UINT16, dims.getLength(), 
+			       dims.getDimensionData(), (void *) dp, flags);
+	break;
+      }
+      case FM_UINT32: {
+	const uint32 *dp = ((const uint32 *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_UINT32, MAT_T_UINT32, dims.getLength(), 
+			       dims.getDimensionData(), (void *) dp, flags);
+	break;
+      }
+      case FM_INT8: {
+	const int8 *dp = ((const int8 *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_INT8, MAT_T_INT8, dims.getLength(), 
+			       dims.getDimensionData(), (void *) dp, flags);
+	break;
+      }
+      case FM_INT16: {
+	const int16 *dp = ((const int16 *) toWrite.getDataPointer());
+	matvar = Mat_VarCreate(varName, MAT_C_INT16, MAT_T_INT16, dims.getLength(), 
+			       dims.getDimensionData(), (void *) dp, flags);
+	break;
+      }
+      case FM_INT32: {
+	if (!toWrite.isSparse()) {
+	  const int32 *dp = ((const int32 *) toWrite.getDataPointer());
+	  matvar = Mat_VarCreate(varName, MAT_C_INT32, MAT_T_INT32, dims.getLength(), 
+				 dims.getDimensionData(), (void *) dp, flags);
+	}
+	else {
+	  int32 *dp;
+	  uint32 *ir;
+	  uint32 *jc;
+	  int nnz;
+	  dp = (int32 *) SparseToIJV2(FM_INT32, toWrite.getDimensionLength(0), 
+				      toWrite.getDimensionLength(1), 
+				      toWrite.getSparseDataPointer(), ir, jc, nnz);
+	  sparse_t * sparse = (sparse_t *) Malloc(sizeof(sparse_t));
+	  sparse->nzmax = nnz;
+	  sparse->nir   = nnz;
+	  sparse->ir    = (int32 *) ir;
+	  sparse->njc   = toWrite.getDimensionLength(1) + 1;
+	  sparse->jc    = (int32 *) jc;
+	  sparse->ndata = nnz;
+	  sparse->data  = dp;
+	  matvar = Mat_VarCreate(varName, MAT_C_SPARSE, MAT_T_INT32, dims.getLength(), 
+				 dims.getDimensionData(), (void *) sparse, flags);
+	}
+	break;
+      }
+      case FM_FLOAT: {
+	if (!toWrite.isSparse()) {
+	  const float *dp = ((const float *) toWrite.getDataPointer());
+	  matvar = Mat_VarCreate(varName, MAT_C_SINGLE, MAT_T_SINGLE, dims.getLength(), 
+				 dims.getDimensionData(), (void *) dp, flags);
+	}
+	else {
+	  float *dp;
+	  uint32 *ir;
+	  uint32 *jc;
+	  int nnz;
+	  dp = (float *) SparseToIJV2(FM_FLOAT, toWrite.getDimensionLength(0), 
+				      toWrite.getDimensionLength(1), 
+				      toWrite.getSparseDataPointer(), ir, jc, nnz);
+	  sparse_t * sparse = (sparse_t *) Malloc(sizeof(sparse_t));
+	  sparse->nzmax = nnz;
+	  sparse->nir   = nnz;
+	  sparse->ir    = (int32 *) ir;
+	  sparse->njc   = toWrite.getDimensionLength(1) + 1;
+	  sparse->jc    = (int32 *) jc;
+	  sparse->ndata = nnz;
+	  sparse->data  = dp;
+	  matvar = Mat_VarCreate(varName, MAT_C_SPARSE, MAT_T_SINGLE, dims.getLength(), 
+				 dims.getDimensionData(), (void *) sparse, flags);
+	}
+	break;
+      }
+      case FM_DOUBLE: {
+	if (!toWrite.isSparse()) {
+	  const double *dp = ((const double *) toWrite.getDataPointer());
+	  matvar = Mat_VarCreate(varName, MAT_C_DOUBLE, MAT_T_DOUBLE, dims.getLength(), 
+				 dims.getDimensionData(), (void *) dp, flags);
+	}
+	else {
+	  double *dp;
+	  uint32 *ir;
+	  uint32 *jc;
+	  int nnz;
+	  dp = (double *) SparseToIJV2(FM_DOUBLE, toWrite.getDimensionLength(0), 
+				       toWrite.getDimensionLength(1), 
+				       toWrite.getSparseDataPointer(), ir, jc, nnz);
+	  sparse_t * sparse = (sparse_t *) Malloc(sizeof(sparse_t));
+	  sparse->nzmax = nnz;
+	  sparse->nir   = nnz;
+	  sparse->ir    = (int32 *) ir;
+	  sparse->njc   = toWrite.getDimensionLength(1) + 1;
+	  sparse->jc    = (int32 *) jc;
+	  sparse->ndata = nnz;
+	  sparse->data  = dp;
+	  matvar = Mat_VarCreate(varName, MAT_C_SPARSE, MAT_T_DOUBLE, 
+				 dims.getLength(), dims.getDimensionData(), (void *) sparse, flags);
+	}
+	break;
+      }
+      case FM_COMPLEX: {
+	flags |= MAT_F_COMPLEX;
+	if (!toWrite.isSparse()) {
+	  const float *dp = ((const float *) toWrite.getDataPointer());
+	  int length = toWrite.getLength();
+	  int length2= length + length;
+	  float *dstPtr = (float *) Malloc(sizeof(double) * length2);
+	  int j, k = 0;
+	  // unfortunately need to convert data from interleaved to split storage
+	  for (j = 0; j < length2; j++) {
+	    dstPtr[k] = dp[j++];
+	    dstPtr[length + k++] = dp[j];
+	  }
+	  matvar = Mat_VarCreate(varName, MAT_C_SINGLE, MAT_T_SINGLE, 
+				 dims.getLength(), dims.getDimensionData(), (void *) dstPtr, flags);
+	}
+	else {
+	  float *dp;
+	  uint32 *ir;
+	  uint32 *jc;
+	  int nnz;
+	  dp = (float *) SparseToIJV2(FM_COMPLEX, toWrite.getDimensionLength(0), 
+				      toWrite.getDimensionLength(1), 
+				      toWrite.getSparseDataPointer(), ir, jc, nnz);
+	  sparse_t * sparse = (sparse_t *) malloc(sizeof(sparse_t));
+	  sparse->nzmax = 2 * nnz;
+	  sparse->nir   = nnz;
+	  sparse->ir    = (int32 *) ir;
+	  sparse->njc   = toWrite.getDimensionLength(1) + 1;
+	  sparse->jc    = (int32 *) jc;
+	  sparse->ndata = nnz;
+	  sparse->data  = dp;
+	  matvar = Mat_VarCreate(varName, MAT_C_SPARSE, MAT_T_SINGLE, dims.getLength(), 
+				 dims.getDimensionData(), (void *) sparse, flags);
+	}
+	break;
+      }
+      case FM_DCOMPLEX: {
+	flags |= MAT_F_COMPLEX;
+	if (!toWrite.isSparse()) {
+	  const double *dp = ((const double *) toWrite.getDataPointer());
+	  int length = toWrite.getLength();
+	  int length2= length + length;
+	  double *dstPtr = (double *) Malloc(sizeof(double) * length2);
+	  int j, k = 0;
+	  // unfortunately need to convert data from interleaved to split storage
+	  for (j = 0; j < length2; j++) {
+	    dstPtr[k] = dp[j++];
+	    dstPtr[length + k++] = dp[j];
+	  }
+	  matvar = Mat_VarCreate(varName, MAT_C_DOUBLE, MAT_T_DOUBLE, dims.getLength(), 
+				 dims.getDimensionData(), (void *) dstPtr, flags);
+	}
+	else {
+	  double *dp;
+	  uint32 *ir;
+	  uint32 *jc;
+	  int nnz;
+	  dp = (double *) SparseToIJV2(FM_DCOMPLEX, toWrite.getDimensionLength(0), 
+				       toWrite.getDimensionLength(1), 
+				       toWrite.getSparseDataPointer(), ir, jc, nnz);
+	  sparse_t * sparse = (sparse_t *) Malloc(sizeof(sparse_t));
+	  sparse->nzmax = 2 * nnz;
+	  sparse->nir   = nnz;
+	  sparse->ir    = (int32 *) ir;
+	  sparse->njc   = toWrite.getDimensionLength(1) + 1;
+	  sparse->jc    = (int32 *) jc;
+	  sparse->ndata = nnz;
+	  sparse->data  = dp;
+	  matvar = Mat_VarCreate(varName, MAT_C_SPARSE, MAT_T_DOUBLE, dims.getLength(), 
+				 dims.getDimensionData(), (void *) sparse, flags);
+	}
+	break;
+      }
+      }
+      return matvar;
+    }
+
+    void Mat_VarFreeHandling(const Array& toWrite, matvar_t *matvar) {
+      Class dclass(toWrite.getDataClass());
+      switch (dclass) {
+      case FM_CELL_ARRAY: {
+	const Array *dp = ((const Array *) toWrite.getDataPointer());
+	matvar_t **fields = (matvar_t **) matvar->data;
+	for (int j = 0; j < toWrite.getLength(); j++) {
+	  Mat_VarFreeHandling(dp[j], fields[j]);
+	}
+	Free((void *) matvar->data);
+	matvar->data = NULL;
+	break;
+      }
+      case FM_STRUCT_ARRAY: {
+	stringVector fieldNames(toWrite.getFieldNames());
+	int ncount(fieldNames.size());
+	const Array *dp = ((const Array *) toWrite.getDataPointer());
+	matvar_t **fields = (matvar_t **) matvar->data;
+	for (int j = 0; j < toWrite.getLength() * ncount; j++) {
+	  Mat_VarFreeHandling(dp[j], fields[j]);
+	}
+	Free((void *) matvar->data);
+	matvar->data = NULL;
+	break;
+      }
+      case FM_INT32:
+      case FM_FLOAT:
+      case FM_DOUBLE: {
+	if (toWrite.isSparse()) {
+	  sparse_t *sparse = (sparse_t *) matvar->data;
+	  Free((void *) sparse->data);
+	  Free((void *) sparse->ir);
+	  Free((void *) sparse->jc);
+	  Free((void *) sparse);
+	  sparse = NULL;
+	}
+	break;
+      }
+      case FM_COMPLEX:
+      case FM_DCOMPLEX: {
+	if (!toWrite.isSparse()) {
+	  Free((void *) matvar->data);
+	  matvar->data = NULL;
+	}
+	else {
+	  sparse_t *sparse = (sparse_t *) matvar->data;
+	  Free((void *) sparse->data);
+	  Free((void *) sparse->ir);
+	  Free((void *) sparse->jc);
+	  Free((void *) sparse);
+	  sparse = NULL;
+	}
+	break;
+      }
       }
     }
-    for (i=0;i<names.size();i++) {
-      Array *toWrite;
-      char flags;
-      if (!(names[i].compare("ans") == 0)) {
-	toWrite = cntxt->lookupVariable(names[i]);
-	if (!toWrite)
-	  throw Exception(std::string("unable to find variable ")+
-			names[i]+" to save to file "+fname);
-	flags = 'n';
-	if (cntxt->isVariableGlobal(names[i]))
-	  flags = 'g';
-	if (cntxt->isVariablePersistent(names[i]))	
-	  flags = 'p';
-	output.putString(names[i].c_str());
-	output.putByte(flags);
-	output.putArray(*toWrite);
-      }
-    }
-    output.putString("__eof");
-    return ArrayVector();
-  }
 
-  //!
-  //@Module LOAD Load Variables From A File
-  //@@Section IO
-  //@@Usage
-  //Loads a set of variables from a file in a machine independent format.
-  //The @|load| function takes one argument:
-  //@[
-  //  load filename,
-  //@]
-  //or alternately,
-  //@[
-  //  load('filename')
-  //@]
-  //This command is the companion to @|save|.  It loads the contents of the
-  //file generated by @|save| back into the current context.  Global and 
-  //persistent variables are also loaded and flagged appropriately.
-  //@@Example
-  //Here is a simple example of @|save|/@|load|.  First, we save some variables to a file.
-  //@<
-  //D = {1,5,'hello'};
-  //s = 'test string';
-  //x = randn(512,1);
-  //z = zeros(512);
-  //who
-  //save loadsave.dat
-  //@>
-  //Next, we clear all of the variables, and then load them back from the file.
-  //@<
-  //clear all
-  //who
-  //load loadsave.dat
-  //who
-  //@>
-  //!
-  ArrayVector LoadFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    if (arg.size() != 1)
-      throw Exception("load requires exactly one argument (the filename)");
-    Array filename(arg[0]);
-    char *fname = filename.getContentsAsCString();
-    File ofile(fname,"rb");
-    Serialize input(&ofile);
-    input.handshakeClient();
-    char *arrayName;
-    arrayName = input.getString();
-    while (strcmp(arrayName,"__eof") != 0) {
-      Array toRead;
-      char flag;
-      flag = input.getByte();
-      input.getArray(toRead);
-      switch (flag) {
-      case 'n':
+
+    ArrayVector SaveMatFunction(int nargout, const ArrayVector& arg,
+				WalkTree* eval) {
+      if (arg.size() == 0) {
+	throw Exception("save requires at least one argument (the filename)");
+      }
+      Array filename(arg[0]);
+      char *fname = filename.getContentsAsCString();
+      Context *cntxt = eval->getContext();
+      stringVector names;
+      int i;
+      if (arg.size() == 1) {
+	names = cntxt->getCurrentScope()->listAllVariables();
+      } else {
+	for (i = 1; i < arg.size(); i++) {
+	  Array varName(arg[i]);
+	  names.push_back(varName.getContentsAsCString());
+	}
+      }
+      char header[116];
+      time_t t = time(NULL);
+      mat_snprintf(header, 116, 
+		   "MATLAB 5.0 MAT-file, Platform: %s, Created on: %s by %s", 
+		   MATIO_PLATFORM, ctime(&t), 
+		   WalkTree::getVersionString().c_str());
+      mat_t *mat = Mat_Create(fname, header);
+      if (mat) {
+	for (i = 0; i < names.size(); i++) {
+	  if (!(names[i].compare("ans") == 0)) {
+	    Array *toWrite = cntxt->lookupVariable(names[i]);
+	    int isGlobal = (cntxt->isVariableGlobal(names[i])) ? 1 : 0;
+	    matvar_t *matvar = Mat_VarCreateHandling(*toWrite, (char*) names[i].c_str(), isGlobal);
+	    if (matvar) {
+	      Mat_VarWrite(mat, matvar, 0);
+	      Mat_VarFreeHandling(*toWrite, matvar);
+	      Mat_VarFree(matvar);
+	    }
+	    else {
+	      throw Exception(std::string("unable to create MAT-file variable ") + names[i]);
+	    }
+	  }
+	}
+	Mat_Close(mat);
+	Free((void *) fname);
+	names.clear();
+      }
+      else {
+	throw Exception(std::string("unable to create MAT-file ") + fname);
+      }
+      return ArrayVector();
+    }
+  
+    ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg, 
+				   WalkTree* eval) {
+      if (arg.size() == 0)
+	throw Exception("save requires at least one argument (the filename)");
+      Array filename(arg[0]);
+      char *fname = filename.getContentsAsCString();
+      File ofile(fname,"wb");
+      Serialize output(&ofile);
+      output.handshakeServer();
+      Context *cntxt;
+      cntxt = eval->getContext();
+      stringVector names;
+      int i;
+      if (arg.size() == 1)
+	names = cntxt->getCurrentScope()->listAllVariables();
+      else {
+	for (i=1;i<arg.size();i++) {
+	  Array varName(arg[i]);
+	  names.push_back(varName.getContentsAsCString());
+	}
+      }
+      for (i=0;i<names.size();i++) {
+	Array *toWrite;
+	char flags;
+	if (!(names[i].compare("ans") == 0)) {
+	  toWrite = cntxt->lookupVariable(names[i]);
+	  if (!toWrite)
+	    throw Exception(std::string("unable to find variable ")+
+			    names[i]+" to save to file "+fname);
+	  flags = 'n';
+	  if (cntxt->isVariableGlobal(names[i]))
+	    flags = 'g';
+	  if (cntxt->isVariablePersistent(names[i]))	
+	    flags = 'p';
+	  output.putString(names[i].c_str());
+	  output.putByte(flags);
+	  output.putArray(*toWrite);
+	}
+      }
+      output.putString("__eof");
+      return ArrayVector();
+    }
+  
+
+    //!
+    //@Module SAVE Save Variables To A File
+    //@@Section IO
+    //@@Usage
+    //Saves a set of variables to a file in a machine independent format.
+    //There are two formats for the function call.  The first is the explicit
+    //form, in which a list of variables are provided to write to the file:
+    //@[
+    //  save filename a1 a2 ...
+    //@]
+    //In the second form,
+    //@[
+    //  save filename
+    //@]
+    //all variables in the current context are written to the file.  The 
+    //format of the file is a simple binary encoding (raw) of the data
+    //with enough information to restore the variables with the @|load|
+    //command.  The endianness of the machine is encoded in the file, and
+    //the resulting file should be portable between machines of similar
+    //types (in particular, machines that support IEEE floating point 
+    //representation).
+    //
+    //You can also specify both the filename as a string, in which case
+    //you also have to specify the names of the variables to save.  In
+    //particular
+    //@[
+    //   save('filename','a1','a2')
+    //@]
+    //will save variables @|a1| and @|a2| to the file.
+    //
+    //Starting with version 2.0, FreeMat can also read and write MAT
+    //files (the file format used by MATLAB) thanks to substantial 
+    //work by Thomas Beutlich.  Support for MAT files
+    //is still in the alpha stages, so please be cautious with using
+    //it to store critical data.  Also, things like objects wont be
+    //saved properly, as will variables that dont exist in MATLAB
+    //such as single-precision sparse types.  The file format is triggered
+    //by the extension.  To save files with a MAT format, simply
+    //use a filename with a ".mat" ending.
+    //@@Example
+    //Here is a simple example of @|save|/@|load|.  First, we save some variables to a file.
+    //@< 
+    //D = {1,5,'hello'};
+    //s = 'test string';
+    //x = randn(512,1);
+    //z = zeros(512);
+    //who
+    //save loadsave.dat
+    //@>
+    //Next, we clear all of the variables, and then load them back from the file.
+    //@<
+    //clear all
+    //who
+    //load loadsave.dat
+    //who
+    //@>
+    //!
+    ArrayVector SaveFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+      if (arg.size() == 0)
+	throw Exception("save requires at least one argument (the filename)");
+      Array filename(arg[0]);
+      char *fname = filename.getContentsAsCString();
+      int len = strlen(fname);
+      if ((len >= 4) && (fname[len-4] == '.') &&
+	  ((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
+	  ((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
+	  ((fname[len-1] == 'T') || (fname[len-1] == 't')))
+	return SaveMatFunction(nargout,arg,eval);
+      return SaveNativeFunction(nargout,arg,eval);
+    }
+
+    void Mat_VarGetSparseArray(Array& toRead, matvar_t * matvar, const Dimensions& dims, Class dclass) {
+      sparse_t * sparse = (sparse_t *) matvar->data;
+      int i;
+      uint32 * ir = (uint32 *) Malloc(sizeof(uint32) * sparse->nzmax);
+      uint32 * jc = (uint32 *) Malloc(sizeof(uint32) * sparse->nzmax);
+      memset(ir, 0, sizeof(uint32) * sparse->nzmax);
+      memset(jc, 0, sizeof(uint32) * sparse->nzmax);
+      for (i = 0; i < sparse->nzmax; i++) {
+	ir[i] = (uint32) sparse->ir[i] + 1;
+      }
+      int k = 0;
+      for (int col = 0; col < sparse->njc; col++) {
+	int starting_row_index = sparse->jc[col];
+	int stopping_row_index = sparse->jc[col + 1];
+	if (starting_row_index == stopping_row_index) {
+	  continue;
+	}
+	else {
+	  for (int current_row_index = starting_row_index; 
+	       current_row_index < stopping_row_index; current_row_index++) {
+	    jc[k++] = (uint32) col + 1;
+	  }
+	}
+      }
+      k = sparse->nzmax;
+      for (i = sparse->nzmax - 1; i>= 0; i--) {
+	if (jc[i] == 0) k--;
+      }
+
+      switch (dclass) {
+      case FM_COMPLEX:
+	{
+	  int elCount = 2 * sparse->nzmax, k = 0;
+	  float *dp = (float *) Malloc(elCount * sizeof(float));
+	  // unfortunately need to convert data from split to interleaved storage
+	  for (int j = 0; j < elCount; j++) {
+	    dp[j++] = ((float *) sparse->data)[k];
+	    dp[j] = ((float *) sparse->data)[elCount / 2 + k++];
+	  }
+	  toRead = Array(dclass, dims, makeSparseFromIJV(dclass, matvar->dims[0], matvar->dims[1], k, ir, 1, jc, 1, dp, 1), true);
+	}
 	break;
-      case 'g':
-	eval->getContext()->addGlobalVariable(arrayName);
-	break;
-      case 'p':
-	eval->getContext()->addPersistentVariable(arrayName);
+      case FM_DCOMPLEX:
+	{
+	  int elCount = 2 * sparse->nzmax, k = 0;
+	  double *dp = (double *) Malloc(elCount * sizeof(double));
+	  // unfortunately need to convert data from split to interleaved storage
+	  for (int j = 0; j < elCount; j++) {
+	    dp[j++] = ((double *) sparse->data)[k];
+	    dp[j] = ((double *) sparse->data)[elCount / 2 + k++];
+	  }
+	  toRead = Array(dclass, dims, makeSparseFromIJV(dclass, matvar->dims[0], matvar->dims[1], k, ir, 1, jc, 1, dp, 1), true);
+	}
 	break;
       default:
-	throw Exception(std::string("unrecognized variable flag ") + flag + 
-			std::string(" on variable ") + arrayName);
+	{
+	  if (matvar->isLogical) {
+	    int elCount = sparse->nzmax;
+	    int32 *dp = (int32 *) Malloc(elCount * sizeof(int32));
+	    for (int j = 0; j < elCount; j++) { // convert from logical to int32
+	      dp[j] = ((int32) ((uint8 *) sparse->data)[j]);
+	    }
+	    toRead = Array(FM_INT32, dims, makeSparseFromIJV(FM_INT32, matvar->dims[0], matvar->dims[1], k, ir, 1, jc, 1, dp, 1), true);
+	  }
+	  else {
+	    toRead = Array(dclass, dims, makeSparseFromIJV(dclass, matvar->dims[0], matvar->dims[1], k, ir, 1, jc, 1, sparse->data, 1), true);
+	  }
+	}
       }
-      eval->getContext()->insertVariable(arrayName,toRead);
-      arrayName = input.getString();
+      Free((void *) ir);
+      Free((void *) jc);
     }
-    return ArrayVector();
-  } 
 
-//   ArrayVector SendFunction(int nargout, const ArrayVector& arg) {
-//     if (arg.size() != 2)
-//       throw Exception("send requires two arguments - the socket handle and the array to send");
-//     Array tmp(arg[0]);
-//     int sockHandle = tmp.getContentsAsIntegerScalar();
-//     SockPtr *p = sockets.lookupHandle(sockHandle);
-//     p->ser->putArray(arg[1]);
-//     return ArrayVector();
-//   }
+    void Mat_VarGetHandling(Array& toRead, matvar_t *matvar) {
+      int i;
+      Dimensions dims;
+      for (i = 0; i < matvar->rank; i++) {
+	dims[i] = matvar->dims[i];
+      }
+      switch (matvar->class_type) {
+      case MAT_C_CELL: {
+	int elCount = matvar->nbytes / matvar->data_size;
+	Array *dp = new Array[elCount];
+	matvar_t **cells = (matvar_t **) matvar->data;
+	for (i = 0; i < elCount; i++) {
+	  Mat_VarGetHandling(dp[i], cells[i]);
+	}
+	toRead = Array(FM_CELL_ARRAY, dims, dp);
+	break;
+      }
+      case MAT_C_STRUCT: {
+	stringVector fieldNames;
+	int elCount = 1;
+	for (i = 0; i < matvar->rank; i++) {
+	  elCount *= matvar->dims[i];
+	}
+	int nfields = matvar->nbytes / matvar->data_size / elCount;
+	matvar_t **fields = (matvar_t **) matvar->data;
+	Array *dp = new Array[nfields * elCount];
+	for (i = 0; i < nfields; i++) {
+	  fieldNames.push_back((fields[i])->name);
+	}
+	for (i = 0; i < nfields * elCount; i++) {
+	  Mat_VarGetHandling(dp[i], fields[i]);
+	}
+	toRead = Array(FM_STRUCT_ARRAY, dims, dp, false, fieldNames);
+	break;
+      }
+      case MAT_C_CHAR: {
+	char *dp = (char *) Malloc(matvar->nbytes);
+	memcpy((void *) dp, matvar->data, matvar->nbytes);
+	toRead = Array(FM_STRING, dims, dp);
+	break;
+      }
+      case MAT_C_UINT8: {
+	uint8 *dp = (uint8 *) Malloc(matvar->nbytes);
+	memcpy((void *) dp, matvar->data, matvar->nbytes);
+	if (matvar->isLogical) {
+	  toRead = Array(FM_LOGICAL, dims, dp);
+	}
+	else {
+	  toRead = Array(FM_UINT8, dims, dp);
+	}
+	break;
+      }
+      case MAT_C_UINT16: {
+	uint16 *dp = (uint16 *) Malloc(matvar->nbytes);
+	memcpy((void *) dp, matvar->data, matvar->nbytes);
+	toRead = Array(FM_UINT16, dims, dp);
+	break;
+      }
+      case MAT_C_UINT32: {
+	uint32 *dp = (uint32 *) Malloc(matvar->nbytes);
+	memcpy((void *) dp, matvar->data, matvar->nbytes);
+	toRead = Array(FM_UINT32, dims, dp);
+	break;
+      }
+      case MAT_C_INT8: {
+	int8 *dp = (int8 *) Malloc(matvar->nbytes);
+	memcpy((void *) dp, matvar->data, matvar->nbytes);
+	toRead = Array(FM_INT8, dims, dp);
+	break;
+      }
+      case MAT_C_INT16: {
+	int16 *dp = (int16 *) Malloc(matvar->nbytes);
+	memcpy((void *) dp, matvar->data, matvar->nbytes);
+	toRead = Array(FM_INT16, dims, dp);
+	break;
+      }
+      case MAT_C_INT32: {
+	if (matvar->class_type != MAT_C_SPARSE) {
+	  int32 *dp = (int32 *) Malloc(matvar->nbytes);
+	  memcpy((void *) dp, matvar->data, matvar->nbytes);
+	  toRead = Array(FM_INT32, dims, dp);
+	}
+	else {
+	  Mat_VarGetSparseArray(toRead, matvar, dims, FM_INT32);
+	}
+	break;
+      }
+      case MAT_C_SINGLE: {
+	float *dp = (float *) Malloc(matvar->nbytes);
+	if (matvar->isComplex) {
+	  int elCount = matvar->nbytes / matvar->data_size, k = 0;
+	  // unfortunately need to convert data from split to interleaved storage
+	  for (int j = 0; j < elCount; j++) {
+	    dp[j++] = ((float *) matvar->data)[k];
+	    dp[j] = ((float *) matvar->data)[elCount / 2 + k++];
+	  }
+	  toRead = Array(FM_COMPLEX, dims, dp);
+	}
+	else {
+	  memcpy((void *) dp, matvar->data, matvar->nbytes);
+	  toRead = Array(FM_FLOAT, dims, dp);
+	}
+	break;
+      }
+      case MAT_C_DOUBLE: {
+	double *dp = (double *) Malloc(matvar->nbytes);
+	if (matvar->isComplex) {
+	  int elCount = matvar->nbytes / matvar->data_size, k = 0;
+	  // unfortunately need to convert data from split to interleaved storage
+	  for (int j = 0; j < elCount; j++) {
+	    dp[j++] = ((double *) matvar->data)[k];
+	    dp[j] = ((double *) matvar->data)[elCount / 2 + k++];
+	  }
+	  toRead = Array(FM_DCOMPLEX, dims, dp);
+	}
+	else {
+	  memcpy((void *) dp, matvar->data, matvar->nbytes);
+	  toRead = Array(FM_DOUBLE, dims, dp);
+	}
+	break;
+      }
+      case MAT_C_SPARSE: {
+	if (matvar->isComplex) {
+	  switch (matvar->data_type) {
+	  case MAT_T_SINGLE:
+	    Mat_VarGetSparseArray(toRead, matvar, dims, FM_COMPLEX);
+	    break;
+	  case MAT_T_DOUBLE:
+	    Mat_VarGetSparseArray(toRead, matvar, dims, FM_DCOMPLEX);
+	    break;
+	  default:
+	    throw Exception("unknown data type of sparse MAT-file variable " + std::string(matvar->name));
+	    break;
+	  }
+	}
+	else {
+	  switch (matvar->data_type) {
+	  case MAT_T_INT32:
+	    Mat_VarGetSparseArray(toRead, matvar, dims, FM_INT32);
+	    break;
+	  case MAT_T_SINGLE:
+	    Mat_VarGetSparseArray(toRead, matvar, dims, FM_FLOAT);
+	    break;
+	  case MAT_T_DOUBLE:
+	    Mat_VarGetSparseArray(toRead, matvar, dims, FM_DOUBLE);
+	    break;
+	  case MAT_T_UINT8:
+	    if (matvar->isLogical) {
+	      Mat_VarGetSparseArray(toRead, matvar, dims, FM_INT32);
+	    }
+	    break;
+	  default:
+	    throw Exception("unknown data type of sparse MAT-file variable " + std::string(matvar->name));
+	    break;
+	  }
+	}
+	break;
+      }
+      case MAT_C_OBJECT:
+      case MAT_C_FUNCTION:
+	// do nothing
+	break;
+      default:
+	if (matvar->nbytes == 0 && matvar->class_type <= MAT_C_FUNCTION) {
+	  double *dp = (double *) Malloc(0);
+	  memcpy((void *) dp, matvar->data, 0);
+	  toRead = Array(FM_DOUBLE, dims, dp);
+	}
+	else {
+	  throw Exception("unknown class type of variable " + std::string(matvar->name));
+	}
+	break;
+      }
+    }
 
-//   ArrayVector ReceiveFunction(int nargout, const ArrayVector& arg) {
-//     if (arg.size() != 1)
-//       throw Exception("receive requires one argument - the socket handle to receive from");
-//     Array tmp(arg[0]);
-//     int sockHandle = tmp.getContentsAsIntegerScalar();
-//     SockPtr *p = sockets.lookupHandle(sockHandle);
-//     ArrayVector retval;
-//     Array arr;
-//     p->ser->getArray(arr);
-//     retval.push_back(arr);
-//     return retval;
-//   }
+    ArrayVector LoadMatFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+      if (arg.size() != 1)
+	throw Exception("load requires exactly one argument (the filename)");
+      Array filename(arg[0]);
+      char *fname = filename.getContentsAsCString();
+      if (arg.size() != 1) {
+	throw Exception("load requires exactly one argument (the filename)");
+      }
+      Mat_LogInit("dummy");
+      mat_t *mat = Mat_Open(fname, MAT_ACC_RDONLY);
+      if (!mat) {
+	mat = Mat_Open(fname, MAT_ACC_RDONLY | MAT_V4);
+      }
+      if (mat) {
+	matvar_t *matvar;
+	stringVector invalidmatvars;
+	while (NULL != (matvar = Mat_VarReadNext(mat))) {
+	  char *arrayName = strdup(matvar->name);
+	  if (NULL == arrayName || (0 == strcmp(arrayName, ""))) {
+	    continue;
+	  }
+	  Array toRead;
+	  Mat_VarGetHandling(toRead, matvar);
+	  if (NULL != toRead.getSparseDataPointer()) {
+	    if (matvar->isGlobal) {
+	      eval->getContext()->addGlobalVariable(arrayName);
+	    }
+	    eval->getContext()->insertVariable(arrayName, toRead);
+	  }
+	  else {
+	    invalidmatvars.push_back(arrayName);
+	  }
+	}
+	Mat_Close(mat);
+	Free((void *) fname);
+	if (invalidmatvars.size() > 0) {
+	  char buffer[250];
+	  Interface *io = eval->getInterface();
+	  io->outputMessage("Warning: Ignored MAT-file variable(s): ");
+	  for (int i = 0; i < invalidmatvars.size() - 1; i++) {
+	    io->outputMessage(invalidmatvars[i].c_str());
+	    io->outputMessage(", ");
+	  }
+	  io->outputMessage(invalidmatvars[invalidmatvars.size() - 1].c_str());
+	  io->outputMessage("\n");
+	  invalidmatvars.clear();
+	}
+      }
+      else {
+	throw Exception(std::string("unable to open MAT-file ") + fname);
+      }
+      return ArrayVector();
+    }
 
-//   ArrayVector ConnectFunction(int nargout, const ArrayVector& arg) {
-//     if (arg.size() != 2)
-//       throw Exception("connect requires two arguments, the machine name and the portnumber");
-//     char *hostname;
-//     Array tmp(arg[0]);
-//     hostname = tmp.getContentsAsCString();
-//     Array tmp2(arg[1]);
-//     int portNum;
-//     portNum = tmp2.getContentsAsIntegerScalar();
-//     Socket *sock = new Socket(hostname, portNum);
-//     Serialize *t = new Serialize(sock);
-//     t->handshakeClient();
-//     SockPtr *c = new SockPtr;
-//     c->sock = sock;
-//     c->ser = t;
-//     unsigned int rethan = sockets.assignHandle(c);
-//     ArrayVector retval;
-//     retval.push_back(Array::uint32Constructor(rethan));
-//     return retval;    
-//   }
+    ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+      if (arg.size() != 1)
+	throw Exception("load requires exactly one argument (the filename)");
+      Array filename(arg[0]);
+      char *fname = filename.getContentsAsCString();
+      File ofile(fname,"rb");
+      Serialize input(&ofile);
+      input.handshakeClient();
+      char *arrayName;
+      arrayName = input.getString();
+      while (strcmp(arrayName,"__eof") != 0) {
+	Array toRead;
+	char flag;
+	flag = input.getByte();
+	input.getArray(toRead);
+	switch (flag) {
+	case 'n':
+	  break;
+	case 'g':
+	  eval->getContext()->addGlobalVariable(arrayName);
+	  break;
+	case 'p':
+	  eval->getContext()->addPersistentVariable(arrayName);
+	  break;
+	default:
+	  throw Exception(std::string("unrecognized variable flag ") + flag + 
+			  std::string(" on variable ") + arrayName);
+	}
+	eval->getContext()->insertVariable(arrayName,toRead);
+	arrayName = input.getString();
+      }
+      return ArrayVector();
+    }
 
-//   ArrayVector AcceptFunction(int nargout, const ArrayVector& arg) {
-//     int servHandle;
-//     ServerSocket *t;
-//     if (arg.size() == 0)
-//       throw Exception("must supply a server handle to acceptconnection");
-//     Array tmp(arg[0]);
-//     servHandle = tmp.getContentsAsIntegerScalar();
-//     t = servers.lookupHandle(servHandle);
-//     Socket *s = t->AcceptConnection();
-//     Serialize *z = new Serialize(s);
-//     z->handshakeServer();
-//     SockPtr *c = new SockPtr;
-//     c->sock = s;
-//     c->ser = z;
-//     unsigned int rethan = sockets.assignHandle(c);
-//     ArrayVector retval;
-//     retval.push_back(Array::uint32Constructor(rethan));
-//     return retval;
-//   }
+    //!
+    //@Module LOAD Load Variables From A File
+    //@@Section IO
+    //@@Usage
+    //Loads a set of variables from a file in a machine independent format.
+    //The @|load| function takes one argument:
+    //@[
+    //  load filename,
+    //@]
+    //or alternately,
+    //@[
+    //  load('filename')
+    //@]
+    //This command is the companion to @|save|.  It loads the contents of the
+    //file generated by @|save| back into the current context.  Global and 
+    //persistent variables are also loaded and flagged appropriately.
+    //@@Example
+    //Here is a simple example of @|save|/@|load|.  First, we save some variables to a file.
+    //@<
+    //D = {1,5,'hello'};
+    //s = 'test string';
+    //x = randn(512,1);
+    //z = zeros(512);
+    //who
+    //save loadsave.dat
+    //@>
+    //Next, we clear all of the variables, and then load them back from the file.
+    //@<
+    //clear all
+    //who
+    //load loadsave.dat
+    //who
+    //@>
+    //!
+    ArrayVector LoadFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+      if (arg.size() != 1)
+	throw Exception("load requires exactly one argument (the filename)");
+      Array filename(arg[0]);
+      char *fname = filename.getContentsAsCString();
+      int len = strlen(fname);
+      if ((len >= 4) && (fname[len-4] == '.') &&
+	  ((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
+	  ((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
+	  ((fname[len-1] == 'T') || (fname[len-1] == 't')))
+	return LoadMatFunction(nargout,arg,eval);
+      return LoadNativeFunction(nargout,arg,eval);
+    }
+  }
 
-//   ArrayVector ServerFunction(int nargout, const ArrayVector& arg) {
-//     int portNumber;
-//     // Retrieve the portnumber
-//     portNumber = 0;
-//     if (arg.size() == 1) {
-//       Array tmp(arg[0]);
-//       portNumber = tmp.getContentsAsIntegerScalar();
-//     }
-//     // Get a new socket server
-//     ServerSocket *t = new ServerSocket(portNumber);
-//     // Assign a handle
-//     unsigned int rethan = servers.assignHandle(t);
-//     // Query it to find out what portnumber it got...
-//     unsigned int outPortNum;
-//     outPortNum = t->getPortNumber();
-//     // Return the two values...
-//     ArrayVector retval;
-//     retval.push_back(Array::uint32Constructor(rethan));
-//     retval.push_back(Array::uint32Constructor(outPortNum));
-//     return retval;
-//   }
-}

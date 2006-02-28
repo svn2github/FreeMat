@@ -23,7 +23,11 @@
 #include <QDebug>
 
 void HelpWindow::activateModule(QListWidgetItem* item) {
-  tb->setSource("file://"+m_initial+"/"+item->text()+".html");
+  QString name_and_section(item->text());
+  QRegExp modname_pattern("^\\s*(\\b\\w+\\b)\\s*\\((\\b\\w+\\b)\\)");
+  if (modname_pattern.indexIn(name_and_section) < 0)
+    return;
+  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
 }
 
 void HelpWindow::activateModule(QTreeWidgetItem* item, int) {
@@ -32,7 +36,7 @@ void HelpWindow::activateModule(QTreeWidgetItem* item, int) {
   if (modname.indexIn(fulltext) < 0)
     return;
   QString module(modname.cap(1).toLower());
-  tb->setSource("file://"+m_initial+"/"+module+".html");
+  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+item->text(1)+"_"+module+".html"));
 }
 
 HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
@@ -64,6 +68,7 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
   m_tindex->setColumnCount(1);
   m_tindex->setHeaderLabels(QStringList() << FreeMat::WalkTree::getVersionString().c_str());
   file = new QFile(url + "/sectable.txt");
+  QRegExp reg("\\+\\s*\\((\\b\\w+\\b)\\)\\s*(\\b.*)");
   if (!file->open(QFile::ReadOnly | QIODevice::Text))
     QMessageBox::warning(this,"Cannot Find Section Index","The file sectable.txt is missing from the directory "+url+" where I think help files should be.  The Index widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else {
@@ -71,20 +76,14 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
     QTreeWidgetItem *prev;
     while (!t.atEnd()) {
       QString line(t.readLine());
-      if (line[0] != QChar('+')) {
+      if (reg.indexIn(line) < 0)
 	prev = new QTreeWidgetItem(m_tindex,QStringList() << line);
-      } else {
-	new QTreeWidgetItem(prev,QStringList() << line.remove(0,1));
-      }
+      else
+	new QTreeWidgetItem(prev,QStringList() << reg.cap(2) << reg.cap(1));
     }
   }
   delete file;
-  //  planb->setText(0, "Hello");
   m_browser->addTab(m_tindex,"Index");
-  //  m_tindex->setItemExpanded(cities,true);
-  //  m_browser = new QTextBrowser(this);
-  //  m_browser->setSource(QUrl("file:///qt/4.1.0/doc/html/index.html"));
-  //  setWidget(m_browser);
 }
 
 HelpWindow::HelpWindow(QString url) {

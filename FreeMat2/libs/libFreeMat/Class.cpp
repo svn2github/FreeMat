@@ -222,7 +222,552 @@ namespace FreeMat {
       }
     }
   }
+
+  //!
+  //@Module CLASS Class Support Function
+  //@@Section CLASS
+  //@@Usage
+  //There are several uses for the @|class| function.  The first
+  //version takes a single argument, and returns the class of
+  //that variable.  The syntax for this form is
+  //@[
+  //  classname = class(variable)
+  //@]
+  //and it returns a string containing the name of the class for
+  //@|variable|.  The second form of the class function is used
+  //to construct an object of a specific type based on a structure
+  //which contains data elements for the class.  The syntax for
+  //this version is
+  //@[
+  //  classvar = class(template, classname, parent1, parent2,...)
+  //@]
+  //This should be called inside the constructor for the class.
+  //The resulting class will be of the type @|classname|, and will
+  //be derived from @|parent1|, @|parent2|, etc.  The @|template|
+  //argument should be a structure array that contains the members
+  //of the class.  See the @|constructors| help for some details
+  //on how to use the @|class| function.  Note that if the
+  //@|template| argument is an empty structure matrix, then the
+  //resulting variable has no fields beyond those inherited from
+  //the parent classes.
+  //!
+
+  //!
+  //@Module CONSTRUCTORS Class Constructors
+  //@@Section CLASS
+  //@@Usage
+  //When designing a constructor for a FreeMat class, you should
+  //design the constructor to take a certain form.  The following
+  //is the code for the sample @|mat| object 
+  //@[
+  //function p = mat(a)
+  //  if (nargin == 0)
+  //    p.c = [];
+  //    p = class(p,'mat');
+  //  elseif isa(a,'mat')
+  //    p = a;
+  //  else
+  //    p.c = a;
+  //    p = class(p,'mat');
+  //  end
+  //@]
+  //Generally speaking when it is provided with zero arguments, the
+  //constructor returns a default version of the class using a template
+  //structure with the right fields populated with default values.  If
+  //the constructor is given a single argument that matches the class
+  //we are trying to construct, the constructor passes through the
+  //argument.  This form of the constructor is used for type conversion.
+  //In particular, 
+  //@[
+  //   p = mat(a)
+  //@] 
+  //guarantees that @|p| is an array of class @|mat|.  The last form
+  //of the constructor builds a class object given the input.  The
+  //meaning of this form depends on what makes sense for your class.
+  //For example, for a polynomial class, you may want to pass in the
+  //coefficients of the polynomial.
+  //!
+
+  //!
+  //@Module HORZCAT Overloaded Horizontal Concatenation
+  //@@Section CLASS
+  //@@Usage
+  //This is a method for a class that is invoked to concatenate two or more
+  //variables of the same class type together.  Besides being called
+  //when you invoke
+  //@[
+  //   c = horzcat(a,b,c)
+  //@]
+  //when @|a| is a class, it is also called for 
+  //@[
+  //   c = [a,b,c]
+  //@]
+  //when one of these variables is a class.  The exact meaning of
+  //horizontal concatenation depends on the class you have designed.
+  //!
+
+  //!
+  //@Module VERTCAT Overloaded Vertical Concatenation
+  //@@Section CLASS
+  //@@Usage
+  //This is a method for a class that is invoked to concatenate two or more
+  //variables of the same class type together.  Besides being called when
+  //you invoke
+  //@[
+  //   c = vertcat(a,b,c)
+  //@]
+  //when @|a| is a class, it is also called for
+  //@[
+  //   c = [a;b;c]
+  //@]
+  //when one of the variables is a class.  The exact meaning of 
+  //vertical concatenation depends on the class you have designed.
+  //!
   
+  //!
+  //@Module OR Overloaded Logical Or Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to combine two variables using a
+  //logical or operator, and is invoked when you call
+  //@[
+  //   c = or(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a | b
+  //@]
+  //!
+
+  //!
+  //@Module AND Overloaded Logical And Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to combine two variables using a
+  //logical and operator, and is invoked when you call
+  //@[
+  //   c = and(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a & b
+  //@]
+  //!
+
+  //!
+  //@Module LT Overloaded Less Than Comparison Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to compare two variables using a
+  //less than comparison operator, and is invoked when you call
+  //@[
+  //   c = lt(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a < b
+  //@]
+  //!
+
+  //!
+  //@Module GT Overloaded Greater Than Comparison Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to combine two variables using a
+  //greater than comparison operator, and is invoked when you call
+  //@[
+  //   c = gt(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a > b
+  //@]
+  //!
+  
+  //!
+  //@Module LE Overloaded Less-Than-Equals Comparison Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to compare two variables using a
+  //less than or equals comparison operator, and is invoked when you call
+  //@[
+  //   c = le(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a <= b
+  //@]
+  //!
+
+  //!
+  //@Module GE Overloaded Greater-Than-Equals Comparison Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to combine two variables using a
+  //greater than or equals comparison operator, and is invoked when you call
+  //@[
+  //   c = ge(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a >= b
+  //@]
+  //!
+  
+  //!
+  //@Module EQ Overloaded Equals Comparison Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to combine two variables using an
+  //equals comparison operator, and is invoked when you call
+  //@[
+  //   c = eq(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a == b
+  //@]
+  //!
+
+  //!
+  //@Module NE Overloaded Not-Equals Comparison Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked to combine two variables using a
+  //not-equals comparison operator, and is invoked when you call
+  //@[
+  //   c = ne(a,b)
+  //@]
+  //or for 
+  //@[
+  //   c = a != b
+  //@]
+  //!
+
+  //!
+  //@Module PLUS Overloaded Addition Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are added
+  //and is invoked when you call
+  //@[
+  //   c = plus(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a + b
+  //@]
+  //!
+
+  //!
+  //@Module MINUS Overloaded Addition Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are subtracted
+  //and is invoked when you call
+  //@[
+  //   c = minus(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a - b
+  //@]
+  //!
+
+  //!
+  //@Module MTIMES Overloaded Matrix Multiplication Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are multiplied
+  //using the matrix operator and is invoked when you call
+  //@[
+  //   c = mtimes(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a * b
+  //@]
+  //!
+
+  //!
+  //@Module TIMES Overloaded Multiplication Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are multiplied
+  //and is invoked when you call
+  //@[
+  //   c = times(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a .* b
+  //@]
+  //!
+  
+  //!
+  //@Module RDIVIDE Overloaded Right Divide Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are divided
+  //and is invoked when you call
+  //@[
+  //   c = rdivide(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a ./ b
+  //@]
+  //!
+
+  //!
+  //@Module LDIVIDE Overloaded Left Divide Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are divided
+  //and is invoked when you call
+  //@[
+  //   c = ldivide(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a .\ b
+  //@]
+  //!
+
+  //!
+  //@Module MRDIVIDE Overloaded Matrix Right Divide Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are divided
+  //using the matrix divide operator, and is invoked when you call
+  //@[
+  //   c = mrdivide(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a / b
+  //@]
+  //!
+
+  //!
+  //@Module MLDIVIDE Overloaded Matrix Left Divide Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when two variables are divided
+  //using the matrix (left) divide operator, and is invoked when
+  //you call
+  //@[
+  //   c = mldivide(a,b)
+  //@]
+  //or for
+  //@[
+  //   c = a \ b
+  //@]
+  //!
+
+
+  //!
+  //@Module UMINUS Overloaded Unary Minus Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when a variable is negated,
+  //and is invoked when you call
+  //@[
+  //   c = uminus(a)
+  //@]
+  //or for 
+  //@[
+  //   c = -a
+  //@]
+  //!
+
+  //!
+  //@Module NOT Overloaded Logical Not Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when a variable is logically
+  //inverted, and is invoked when you call
+  //@[
+  //   c = not(a)
+  //@]
+  //or for
+  //@[
+  //   c = ~a
+  //@]
+  //!
+
+  //!
+  //@Module MPOWER Overloaded Matrix Power Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when one variable is raised
+  //to another variable using the matrix power operator, and
+  //is invoked when you call
+  //@[
+  //  c = mpower(a,b)
+  //@]
+  //or
+  //@[
+  //  c = a^b
+  //@]
+  //!
+
+  //!
+  //@Module POWER Overloaded Power Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when one variable is raised
+  //to another variable using the dot-power operator, and is
+  //invoked when you call
+  //@[
+  //   c = power(a,b)
+  //@]
+  //or
+  //@[
+  //   c = a.^b
+  //@]
+  //!
+
+  //!
+  //@Module CTRANSPOSE Overloaded Conjugate Transpose Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when a variable has the
+  //conjugate transpose operator method applied, and is invoked
+  //when you call
+  //@[
+  //   c = ctranspose(a)
+  //@]
+  //or
+  //@[
+  ///  c = a'
+  //@]
+  //!
+
+  //!
+  //@Module TRANSPOSE Overloaded Transpose Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when a variable has the
+  //transpose operator method applied, and is invoked
+  //when you call
+  //@[
+  //   c = transpose(a)
+  //@]
+  //or
+  //@[
+  ///  c = a.'
+  //@]
+  //!
+
+  //!
+  //@Module COLON Overloaded Colon Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked in one of two forms, either
+  //the two argument version
+  //@[
+  //  c = colon(a,b)
+  //@]
+  //which is also called using the notation
+  //@[
+  //  c = a:b
+  //@]
+  //and the three argument version
+  //@[
+  //  d = colon(a,b,c)
+  //@]
+  //which is also called using the notation
+  //@[
+  //  d = a:b:c
+  //@]
+  //!
+
+  //!
+  //@Module SUBSREF Overloaded Class Indexing
+  //@@Section CLASS
+  //@@Usage
+  //This method is called for expressions of the form
+  //@[
+  //  c = a(b), c = a{b}, c = a.b
+  //@]
+  //and overloading the @|subsref| method allows you
+  //to define the meaning of these expressions for
+  //objects of class @|a|.  These expressions are
+  //mapped to a call of the form
+  //@[
+  //  b = subsref(a,s)
+  //@]
+  //where @|s| is a structure array with two fields. The
+  //first field is
+  //\begin{itemize}
+  //\item @|type|  is a string containing either @|'()'| or
+  // @|'{}'| or @|'.'| depending on the form of the call.
+  //\item @|subs| is a cell array or string containing the
+  // the subscript information.
+  //\end{itemize}
+  //When multiple indexing experssions are combined together
+  //such as @|b = a(5).foo{:}|, the @|s| array contains
+  //the following entries
+  //@[
+  //  s(1).type = '()'  s(1).subs = {5}
+  //  s(2).type = '.'   s(2).subs = 'foo'
+  //  s(3).type = '{}'  s(3).subs = ':'
+  //@]
+  //!
+
+  //!
+  //@Module SUBSASGN Overloaded Class Assignment
+  //@@Section CLASS
+  //@@Usage
+  //This method is called for expressions of the form
+  //@[
+  //  a(b) = c, a{b} = c, a.b = c
+  //@]
+  //and overloading the @|subsasgn| method can allow you
+  //to define the meaning of these expressions for
+  //objects of class @|a|.  These expressions are mapped
+  //to a call of the form
+  //@[
+  //  a = subsasgn(a,s,b)
+  //@]
+  //where @|s| is a structure array with two fields.  The
+  //first field is
+  //\begin{itemize}
+  //\item @|type|  is a string containing either @|'()'| or
+  // @|'{}'| or @|'.'| depending on the form of the call.
+  //\item @|subs| is a cell array or string containing the
+  // the subscript information.
+  //\end{itemize}
+  //When multiple indexing experssions are combined together
+  //such as @|a(5).foo{:} = b|, the @|s| array contains
+  //the following entries
+  //@[
+  //  s(1).type = '()'  s(1).subs = {5}
+  //  s(2).type = '.'   s(2).subs = 'foo'
+  //  s(3).type = '{}'  s(3).subs = ':'
+  //@]
+  //!
+
+  //!
+  //@Module SUBSINDEX Overloaded Class Indexing
+  //@@Section CLASS
+  //@@Usage
+  //This method is called for classes in the expressions
+  //of the form
+  //@[
+  //  c = subsindex(a)
+  //@]
+  //where @|a| is an object, and @|c| is an index vector.
+  //It is also called for
+  //@[
+  //  c = b(a)
+  //@]
+  //in which case @|subsindex(a)| must return a vector containing
+  //integers between @|0| and @|N-1| where @|N| is the number
+  //of elements in the vector @|b|.
+  //!
+
   ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
 			    WalkTree* eval) {
     if (arg.size() == 0)

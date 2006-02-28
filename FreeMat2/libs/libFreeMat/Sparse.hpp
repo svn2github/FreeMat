@@ -84,6 +84,8 @@ namespace FreeMat {
   // Test 68
   void* SparseToIJV(Class dclass, int rows, int cols, const void* cp,
 		    uint32* &I, uint32* &J, int &nnz);
+  void* SparseToIJV2(Class dclass, int rows, int cols, const void* cp,
+		    uint32* &I, uint32* &J, int &nnz);
   // Test 69
   void* SparseFloatZeros(int rows, int cols);
   // Test 70

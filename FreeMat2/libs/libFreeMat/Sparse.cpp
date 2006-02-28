@@ -1036,6 +1036,29 @@ namespace FreeMat {
   }
 
   template <class T>
+  T* SparseToIJVComplex2(const T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
+    nnz = CountNonzerosComplex<T>(src,rows,cols);
+    I = (uint32*) Malloc(sizeof(uint32)*nnz);
+    J = (uint32*) Malloc(sizeof(uint32)*(cols + 1));
+    T* V = (T*) Malloc(sizeof(T)*nnz*2);
+    int ptr = 0;
+    J[0] = 0;
+    for (int i=0;i<cols;i++) {
+      RLEDecoderComplex<T> A(src[i],rows);
+      A.update();
+      while (A.more()) {
+	I[ptr] = A.row();
+	V[ptr] = A.value_real();
+	V[ptr+nnz] = A.value_imag();
+	ptr++;
+	A.advance();
+      }
+      J[i+1] = ptr;
+    }
+    return V;
+  }
+
+  template <class T>
   T* SparseToIJVReal(const T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
     nnz = CountNonzerosReal<T>(src,rows,cols);
     I = (uint32*) Malloc(sizeof(uint32)*nnz);
@@ -1052,6 +1075,28 @@ namespace FreeMat {
 	ptr++;
 	A.advance();
       }
+    }
+    return V;
+  }
+
+  template <class T>
+  T* SparseToIJVReal2(const T**src, int rows, int cols, uint32* &I, uint32* &J, int &nnz) {
+    nnz = CountNonzerosReal<T>(src,rows,cols);
+    I = (uint32*) Malloc(sizeof(uint32)*nnz);
+    J = (uint32*) Malloc(sizeof(uint32)*(cols + 1));
+    T* V = (T*) Malloc(sizeof(T)*nnz);
+    int ptr = 0;
+    J[0] = 0;
+    for (int i=0;i<cols;i++) {
+      RLEDecoder<T> A(src[i],rows);
+      A.update();
+      while (A.more()) {
+	I[ptr] = A.row();
+	V[ptr] = A.value();
+	ptr++;
+	A.advance();
+      }
+      J[i+1] = ptr;
     }
     return V;
   }
@@ -1074,6 +1119,28 @@ namespace FreeMat {
       return SparseToIJVComplex<double>((const double**)cp,rows,cols,I,J,nnz);
     default:
       throw Exception("unsupported type for SparseToIJV");
+    }
+  }
+
+  
+  // Convert a sparse matrix to IJV in MATLAB format
+  void* SparseToIJV2(Class dclass, int rows, int cols, const void* cp,
+		    uint32* &I, uint32* &J, int &nnz) {
+    switch (dclass) {
+    case FM_LOGICAL:
+      return SparseToIJVReal2<uint32>((const uint32**)cp,rows,cols,I,J,nnz);
+    case FM_INT32:
+      return SparseToIJVReal2<int32>((const int32**)cp,rows,cols,I,J,nnz);
+    case FM_FLOAT:
+      return SparseToIJVReal2<float>((const float**)cp,rows,cols,I,J,nnz);
+    case FM_DOUBLE:
+      return SparseToIJVReal2<double>((const double**)cp,rows,cols,I,J,nnz);
+    case FM_COMPLEX:
+      return SparseToIJVComplex2<float>((const float**)cp,rows,cols,I,J,nnz); 
+    case FM_DCOMPLEX:
+      return SparseToIJVComplex2<double>((const double**)cp,rows,cols,I,J,nnz);
+    default:
+      throw Exception("unsupported type for SparseToIJV2");
     }
   }
 

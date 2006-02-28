@@ -937,12 +937,12 @@ namespace FreeMat {
 							int outDimsInt[maxDims], 
 							int srcDimsInt[maxDims], 
 							constIndexPtr* indx, int L);
-//  template void getNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
-//							const logical* srcptr, 
-//							logical* destptr, 
-//							int outDimsInt[maxDims], 
-//							int srcDimsInt[maxDims], 
-//							constIndexPtr* indx, int L);
+//   template void getNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
+// 							const logical* srcptr, 
+// 							logical* destptr, 
+// 							int outDimsInt[maxDims], 
+// 							int srcDimsInt[maxDims], 
+// 							constIndexPtr* indx, int L);
   template void getNDimSubsetNumericDispatchReal<double>(int colonIndex, 
 							const double* srcptr, 
 							double* destptr, 
@@ -955,12 +955,12 @@ namespace FreeMat {
 							int outDimsInt[maxDims], 
 							int srcDimsInt[maxDims], 
 							constIndexPtr* indx, int L);
-//   template void getNDimSubsetNumericDispatchReal<int8>(int colonIndex, 
-// 							const int8* srcptr, 
-// 							int8* destptr, 
-// 							int outDimsInt[maxDims], 
-// 							int srcDimsInt[maxDims], 
-// 							constIndexPtr* indx, int L);
+   template void getNDimSubsetNumericDispatchReal<int8>(int colonIndex, 
+ 							const int8* srcptr, 
+ 							int8* destptr, 
+ 							int outDimsInt[maxDims], 
+ 							int srcDimsInt[maxDims], 
+ 							constIndexPtr* indx, int L);
   template void getNDimSubsetNumericDispatchReal<uint8>(int colonIndex, 
 							const uint8* srcptr, 
 							uint8* destptr, 
@@ -1032,12 +1032,12 @@ namespace FreeMat {
 							int outDimsInt[maxDims], 
 							int srcDimsInt[maxDims], 
 							constIndexPtr* indx, int L,int advance);
-//  template void setNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
-//							logical* srcptr, 
-//							const logical* destptr, 
-//							int outDimsInt[maxDims], 
-//							int srcDimsInt[maxDims], 
-//							constIndexPtr* indx, int L,int advance);
+//   template void setNDimSubsetNumericDispatchReal<logical>(int colonIndex, 
+// 							  logical* srcptr, 
+// 							  const logical* destptr, 
+// 							  int outDimsInt[maxDims], 
+// 							  int srcDimsInt[maxDims], 
+// 							  constIndexPtr* indx, int L,int advance);
   template void setNDimSubsetNumericDispatchReal<double>(int colonIndex, 
 							double* srcptr, 
 							const double* destptr, 
@@ -1050,12 +1050,12 @@ namespace FreeMat {
 							int outDimsInt[maxDims], 
 							int srcDimsInt[maxDims], 
 							constIndexPtr* indx, int L,int advance);
-//   template void setNDimSubsetNumericDispatchReal<int8>(int colonIndex, 
-// 							int8* srcptr, 
-// 							const int8* destptr, 
-// 							int outDimsInt[maxDims], 
-// 							int srcDimsInt[maxDims], 
-// 							constIndexPtr* indx, int L,int advance);
+  template void setNDimSubsetNumericDispatchReal<int8>(int colonIndex, 
+						       int8* srcptr, 
+						       const int8* destptr, 
+						       int outDimsInt[maxDims], 
+						       int srcDimsInt[maxDims], 
+						       constIndexPtr* indx, int L,int advance);
   template void setNDimSubsetNumericDispatchReal<uint8>(int colonIndex, 
 							uint8* srcptr, 
 							const uint8* destptr, 

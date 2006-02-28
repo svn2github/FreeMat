@@ -54,6 +54,5 @@ public:
       conf->addIncludePath(matioheader);
     }
     return true;
-#endif
   }
 };

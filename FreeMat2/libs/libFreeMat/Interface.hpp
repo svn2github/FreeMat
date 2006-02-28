@@ -33,7 +33,9 @@ namespace FreeMat {
     QStringList m_basePath;
     QStringList m_userPath;
     void scanDirectory(std::string scdir, bool, std::string prefixo);
-    void procFile(std::string fname, std::string fullname, bool);
+    void procFileM(std::string fname, std::string fullname, bool);
+    void procFileP(std::string fname, std::string fullname, bool);
+    void procFileMex(std::string fname, std::string fullname, bool);
     std::string app_path;
   public:
     Interface();

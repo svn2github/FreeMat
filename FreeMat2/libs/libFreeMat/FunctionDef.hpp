@@ -23,6 +23,8 @@
 #include "Array.hpp"
 #include "AST.hpp"
 #include "Interface.hpp"
+#include "DynLib.hpp"
+#include "mex.h"
 #include <sys/stat.h>
 
 namespace FreeMat {
@@ -31,7 +33,8 @@ namespace FreeMat {
     FM_M_FUNCTION,
     FM_BUILT_IN_FUNCTION,
     FM_SPECIAL_FUNCTION,
-    FM_IMPORTED_FUNCTION
+    FM_IMPORTED_FUNCTION,
+    FM_MEX_FUNCTION
   } FunctionType;
 
   class WalkTree;
@@ -348,12 +351,6 @@ namespace FreeMat {
      */
     GenericFuncPointer address;
     /**
-     * The call interface object - changed to a void* to 
-     * decouple the ffi lib from libFreeMat.  Should be
-     * a better way to do this...
-     */
-    void *cif;
-    /**
      * The types of each argument
      */
     stringVector types;
@@ -398,5 +395,55 @@ namespace FreeMat {
     virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector& , int);    
   };
 
+  typedef void (*mexFuncPtr)(int, mxArray**, int, const mxArray**);
+
+  class MexFunctionDef : public FunctionDef {
+  public:
+    /**
+     * The full name of the library to link to
+     */
+    std::string fullname;
+    /**
+     * The dynamic library object
+     */
+    DynLib *lib;
+    /**
+     * The following flag is set to true if the library is
+     * successfully imported
+     */
+    bool importSuccess;
+    /**
+     * The pointer to the function to be called.
+     */
+    mexFuncPtr address;
+    /**
+     * Default constructor
+     */
+    MexFunctionDef(std::string fullpathname);
+    /**
+     * Default destructor
+     */
+    ~MexFunctionDef();
+    bool LoadSuccessful();
+    /**
+     * The type of the function is FM_MEX_FUNCTION.
+     */
+    virtual const FunctionType type() {return FM_MEX_FUNCTION;}
+    /** Print a description of the function
+     */
+    virtual void printMe(Interface *);
+    /**
+     * The number of inputs required by this function.
+     */
+    virtual int inputArgCount() {return -1;}
+    /**
+     * The number of outputs returned by this function.
+     */
+    virtual int outputArgCount() {return -1;}
+    /** 
+     * Evaluate the function and return the values.
+     */
+    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector& , int);    
+  };
 }
 #endif

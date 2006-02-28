@@ -31,7 +31,7 @@
 #include "Context.hpp"
 #include "File.hpp"
 #include <algorithm>
-
+#include <QtCore>
 #include <qglobal.h>
 
 #ifdef WIN32
@@ -268,163 +268,82 @@ namespace FreeMat {
   void Interface::setUserPath(QStringList pth) {
     m_userPath = pth;
   }
-
+  
+  static QString mexExtension() {
+#ifdef Q_OS_LINUX
+    return "fmxglx";
+#endif
+#ifdef Q_OS_MACX
+    return "fmxmac";
+#endif
+#ifdef Q_OS_WIN32
+    return "fmxw32";
+#endif
+    return "fmx";
+  }
+  
   void Interface::scanDirectory(std::string scdir, bool tempfunc,
 				std::string prefix) {
-#ifdef WIN32
-    HANDLE hSearch;
-    WIN32_FIND_DATA FileData;
-    std::string searchpat(scdir + "\\*.m");
-    hSearch = FindFirstFile(searchpat.c_str(), &FileData);
-    if (hSearch != INVALID_HANDLE_VALUE) {
-      if (prefix.empty())
-	procFile(std::string(FileData.cFileName),
-		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
-      else
-	procFile(prefix + ":" + std::string(FileData.cFileName),
-		 scdir + "\\" + std::string(FileData.cFileName),tempfunc);
-      while (FindNextFile(hSearch, &FileData)) {
+    QDir dir(QString::fromStdString(scdir));
+    dir.setFilter(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
+    dir.setNameFilters(QStringList() << "*.m" << "*.p" 
+		       << "@*" << "private" << "*."+mexExtension());
+    QFileInfoList list(dir.entryInfoList());
+    for (unsigned i=0;i<list.size();i++) {
+      QFileInfo fileInfo(list.at(i));
+      std::string fileSuffix(fileInfo.suffix().toStdString());
+      std::string fileBaseName(fileInfo.baseName().toStdString());
+      std::string fileAbsoluteFilePath(fileInfo.absoluteFilePath().toStdString());
+      if (fileSuffix == "m" || fileSuffix == "M") 
 	if (prefix.empty())
-	  procFile(std::string(FileData.cFileName),
-		   scdir + "\\" + std::string(FileData.cFileName),tempfunc);
+	  procFileM(fileBaseName,fileAbsoluteFilePath,tempfunc);
 	else
-	  procFile(prefix + ":" + std::string(FileData.cFileName),
-		   scdir + "\\" + std::string(FileData.cFileName),tempfunc);
-      }
-      FindClose(hSearch);
-    }    
-    searchpat = std::string(scdir+"\\@*");
-    hSearch = FindFirstFile(searchpat.c_str(), &FileData);
-    if (hSearch != INVALID_HANDLE_VALUE) {
-      scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,
-		    std::string(FileData.cFileName));
-      while (FindNextFile(hSearch, &FileData)) {
-	scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,
-		      std::string(FileData.cFileName));
-      }
-      FindClose(hSearch);
-    }
-    searchpat = std::string(scdir+"\\private");
-    hSearch = FindFirstFile(searchpat.c_str(), &FileData);
-    if (hSearch != INVALID_HANDLE_VALUE) {
-      scanDirectory(scdir + "\\" + std::string(FileData.cFileName),tempfunc,
-		    scdir + "\\" + std::string(FileData.cFileName));
-      FindClose(hSearch);
-    }
-#else
-    // Open the directory
-    DIR *dir;
-  
-    dir = opendir(scdir.c_str());
-    if (dir == NULL) return;
-    // Scan through the directory..
-    struct dirent *fspec;
-    char *fname;
-    std::string fullname;
-    while (fspec = readdir(dir)) {
-      // Get the name of the entry
-      fname = fspec->d_name;
-      // Check for '.' and '..'
-      if ((strcmp(fname,".") == 0) || (strcmp(fname,"..") == 0)) 
-	continue;
-      // Stat the file...
-      fullname = std::string(scdir + std::string(DELIM) + fname);
-      if (fname[0] == '@')
-	scanDirectory(fullname,tempfunc,fname);
-      if (strcmp(fname,"private")==0)
-	scanDirectory(fullname,tempfunc,fullname);
-      if (prefix.empty())
-	procFile(fname,fullname,tempfunc);
+	  procFileM(prefix + ":" + fileBaseName,fileAbsoluteFilePath,tempfunc);
+      else if (fileSuffix == "p" || fileSuffix == "P")
+	if (prefix.empty())
+	  procFileP(fileBaseName,fileAbsoluteFilePath,tempfunc);
+	else
+	  procFileP(prefix + ":" + fileBaseName,fileAbsoluteFilePath,tempfunc);
+      else if (fileBaseName[0] == '@')
+	scanDirectory(fileAbsoluteFilePath,tempfunc,fileBaseName);
+      else if (fileBaseName == "private") 
+	scanDirectory(fileAbsoluteFilePath,tempfunc,fileAbsoluteFilePath);
       else
-	// Class name mangling here...
-	procFile(prefix + ":" + fname,fullname,tempfunc);
+	procFileMex(fileBaseName,fileAbsoluteFilePath,tempfunc);
     }
-    closedir(dir);
-#endif
+  }
+  
+  void Interface::procFileM(std::string fname, std::string fullname, bool tempfunc) {
+    MFunctionDef *adef;
+    adef = new MFunctionDef();
+    adef->name = fname;
+    adef->fileName = fullname;
+    m_context->insertFunctionGlobally(adef, tempfunc);
+  }
+  
+  void Interface::procFileP(std::string fname, std::string fullname, bool tempfunc) {
+    MFunctionDef *adef;
+    // Open the file
+    try {
+      File *f = new File(fullname.c_str(),"rb");
+      Serialize *s = new Serialize(f);
+      s->handshakeClient();
+      s->checkSignature('p',1);
+      adef = ThawMFunction(s);
+      adef->pcodeFunction = true;
+      delete f;
+      m_context->insertFunctionGlobally(adef, tempfunc);
+    } catch (Exception &e) {
+    }
   }
 
-  void Interface::procFile(std::string fname, std::string fullname, bool tempfunc) {
-#ifdef WIN32
-    struct stat filestat;
-    char buffer[1024];
-    char *fnamec;
-
-    fnamec = strdup(fname.c_str());
-    stat(fullname.c_str(),&filestat);
-    if (S_ISREG(filestat.st_mode)) {
-      int namelen;
-      namelen = strlen(fnamec);
-      if (fnamec[namelen-2] == '.' && 
-	  (fnamec[namelen-1] == 'm' ||
-	   fnamec[namelen-1] == 'M')) {
-	fnamec[namelen-2] = 0;
-	MFunctionDef *adef;
-	adef = new MFunctionDef();
-	adef->name = std::string(fnamec);
-	adef->fileName = fullname;
-	m_context->insertFunctionGlobally(adef, tempfunc);
-      } else if (fnamec[namelen-2] == '.' && 
-		 (fnamec[namelen-1] == 'p' ||
-		  fnamec[namelen-1] == 'P')) {
-	fnamec[namelen-2] = 0;
-	MFunctionDef *adef;
-	// Open the file
-	try {
-	  File *f = new File(fullname.c_str(),"rb");
-	  Serialize *s = new Serialize(f);
-	  s->handshakeClient();
-	  s->checkSignature('p',1);
-	  adef = ThawMFunction(s);
-	  adef->pcodeFunction = true;
-	  delete f;
-	  m_context->insertFunctionGlobally(adef, tempfunc);
-	} catch (Exception &e) {
-	}
-      }
-    }
-    free(fnamec);
-#else
-    struct stat filestat;
-    char buffer[1024];
-    char fnamec[1024];
-    strcpy(fnamec,fname.c_str());
-    stat(fullname.c_str(),&filestat);
-    if (S_ISREG(filestat.st_mode)) {
-      int namelen;
-      namelen = strlen(fnamec);
-      if ((namelen > 2) && 
-	  fnamec[namelen-2] == '.' && 
-	  (fnamec[namelen-1] == 'm' ||
-	   fnamec[namelen-1] == 'M')) {
-	fnamec[namelen-2] = 0;
-	MFunctionDef *adef;
-	adef = new MFunctionDef();
-	adef->name = std::string(fnamec);
-	adef->fileName = fullname;
-	m_context->insertFunctionGlobally(adef, tempfunc);
-      } else if (fnamec[namelen-2] == '.' && 
-		 (fnamec[namelen-1] == 'p' ||
-		  fnamec[namelen-1] == 'P')) {
-	fnamec[namelen-2] = 0;
-	MFunctionDef *adef;
-	try {
-	  // Open the file
-	  File *f = new File(fullname.c_str(),"rb");
-	  Serialize *s = new Serialize(f);
-	  s->handshakeClient();
-	  s->checkSignature('p',1);
-	  adef = ThawMFunction(s);
-	  adef->pcodeFunction = true;
-	  delete f;
-	  m_context->insertFunctionGlobally(adef, tempfunc);
-	} catch (Exception &e) {
-	}
-      }
-    } else if (S_ISLNK(filestat.st_mode)) {
-      int lncnt = readlink(fullname.c_str(),buffer,1024);
-      buffer[lncnt] = 0;
-      procFile(fnamec, std::string(buffer),tempfunc);
-    }
-#endif
+  void Interface::procFileMex(std::string fname, std::string fullname, bool tempfunc) {
+    MexFunctionDef *adef;
+    adef = new MexFunctionDef(fullname);
+    adef->name = fname;
+    if (adef->LoadSuccessful())
+      m_context->insertFunctionGlobally((MFunctionDef*)adef,tempfunc);
+    else
+      delete adef;
   }
 }

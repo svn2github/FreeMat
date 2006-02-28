@@ -32,6 +32,7 @@
 #include <signal.h>
 #include "SymbolTable.hpp"
 #include "Types.hpp"
+#include "MexInterface.hpp"
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -755,4 +756,49 @@ namespace FreeMat {
     return singleArrayVector(retArray);
   }
 
+  MexFunctionDef::MexFunctionDef(std::string fullpathname) {
+    fullname = fullpathname;
+    importSuccess = false;
+    lib = new DynLib(fullname);
+    try {
+      address = (mexFuncPtr) lib->GetSymbol("mexFunction");  
+      importSuccess = true;
+    } catch (Exception& e) {
+    }
+  }
+
+  bool MexFunctionDef::LoadSuccessful() {
+    return importSuccess;
+  }
+  
+  MexFunctionDef::~MexFunctionDef() {
+  }
+
+  void MexFunctionDef::printMe(Interface *) {
+  }
+  
+  ArrayVector MexFunctionDef::evaluateFunction(WalkTree *walker, 
+					       ArrayVector& inputs, 
+					       int nargout) {
+    // Convert arguments to mxArray
+    mxArray** args = new mxArray*[inputs.size()];
+    for (int i=0;i<inputs.size();i++)
+      args[i] = MexArrayFromArray(inputs[i]);
+    // Allocate output array vector
+    int lhsCount = nargout;
+    lhsCount = (lhsCount < 1) ? 1 : lhsCount;
+    mxArray** rets = new mxArray*[lhsCount];
+    try {
+      address(lhsCount,rets,inputs.size(),(const mxArray**)args);
+    } catch (std::string &e) {
+      throw Exception(e);
+    }
+    ArrayVector retvec;
+    for (int i=0;i<lhsCount;i++) {
+      retvec.push_back(ArrayFromMexArray(rets[i]));
+      mxDestroyArray(rets[i]);
+    }
+    delete[] rets;
+    return retvec;
+  }
 }

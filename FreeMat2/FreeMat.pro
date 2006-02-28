@@ -42,6 +42,8 @@ amd.target = extern/AMD/Lib/libamd.a
 amd.commands = cd extern && tar xfz AMD-1.2.tar.gz &&  cd AMD && make
 umfpack.target = extern/UMFPACK/Lib/libumfpack.a
 umfpack.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK/Source && make
+matio.target = extern/libMATIO/libMATIO.a
+matio.commands = cd extern && tar xfz libMATIO_freemat_patch.tar.gz && cd libMATIO && make
 }
 
 win32 {
@@ -97,7 +99,7 @@ win32 {
 install.commands = cd tools/disttool && qmake && make && release\disttool -win
 }
 
-QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas package help check install
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install
 
 INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP src libs/libMex
 
@@ -309,7 +311,7 @@ RESOURCES = FreeMat.qrc
 
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png images/player_pause.png images/player_stop.png images/player_play.png
-DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz
+DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz extern/libMATIO_freemat_patch.tar.gz
 DISTFILES += help/section_descriptors.txt
 !win32 {
 DISTFILES += $$system(find MFiles -name '*.m')

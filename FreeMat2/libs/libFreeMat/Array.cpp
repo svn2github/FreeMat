@@ -1857,7 +1857,7 @@ break;
     Dimensions dim;
     int32 *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = (int) floor((float)((maxval-minval)/stepsize)) + 1;
+    int scount = (int) ceil((float)((maxval-minval)/stepsize)) + 1;
     if (scount<=0) 
       dim.reset();
     else {
@@ -1882,7 +1882,7 @@ break;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
     char CMACH = 'E';
     float eps = slamch_(&CMACH);
-    int scount = (int) (floor((maxval*(1+eps)-minval)/stepsize) + 1);
+    int scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
     if (scount<=0) 
       dim.reset();
     else {
@@ -1900,6 +1900,11 @@ break;
     return Array(FM_FLOAT,dim,rp);
   }
 
+  // Want (1-eps)*maxval < minval+N*stepsize < (1+eps)*maxval
+  //      (1-eps)*maxval-minval < N*stepsize < (1+eps)*maxval-minval
+  //      
+  // N > (maxval - minval - eps*maxval)/stepsize
+
   Array Array::doubleRangeConstructor(double minval, double stepsize, 
 				       double maxval, bool vert) {
     Dimensions dim;
@@ -1909,7 +1914,7 @@ break;
     // or (scount-1) < (maxval*(1+eps) - minval)/stepsize
     char CMACH = 'E';
     double eps = dlamch_(&CMACH);
-    int scount = (int) (floor((maxval*(1+eps)-minval)/stepsize) + 1);
+    int scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
     if (scount<=0) 
       dim.reset();
     else {
@@ -4135,6 +4140,7 @@ break;
   Array  Array::doubleMatrixConstructor(int rows, int cols) {
     Dimensions dim(rows,cols);
     double *data = (double*) allocateArray(FM_DOUBLE,rows*cols);
+    return Array(FM_DOUBLE,dim,data,false);
   }
 
   const char* ArrayToString(const Array& a) {

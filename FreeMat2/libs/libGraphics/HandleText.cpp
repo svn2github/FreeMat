@@ -174,6 +174,52 @@ namespace FreeMat {
   }
 
   void HandleText::ConstructProperties() {
+    //!
+    //@Module TEXTPROPERTIES Text Object Properties
+    //@@Section HANDLE
+    //@@Usage
+    //Below is a summary of the properties for a text object.
+    //\begin{itemize}
+    //  \item @|boundingbox| - @|four vector| - The size of the bounding
+    // box containing the text (in pixels).  May contain negative values
+    // if the text is slanted.
+    //  \item @|children| - Not used.
+    //  \item @|string| - @|string| - The text contained in the label.
+    //  \item @|extent| - Not used.
+    //  \item @|horizontalalignment| - @|{'left','center','right'}| - Controls the 
+    // alignment of the text relative to the specified position point.
+    //  \item @|position| - @|three vector| - The position of the label in axis
+    // coordinates.
+    //  \item @|rotation| - @|scalar| - The rotation angle (in degrees) of the label.
+    //  \item @|units| - Not used.
+    //  \item @|verticalalignment| - @|{'top','bottom','middle'}| - Controls the
+    // alignment fo the text relative to the specified position point in the
+    // vertical position.
+    //  \item @|backgroundcolor| - @|colorspec| - The color used to fill in the background
+    // rectangle for the label.  Normally this is @|none|.
+    //  \item @|edgecolor| - @|colorspec| - The color used to draw the bounding rectangle
+    // for the label.  Normally this is @|none|.
+    //  \item @|linewidth| - @|scalar| - The width of the line used to draw the border.
+    //  \item @|linestyle| - @|{'-','--',':','-.','none'}| - The style of the line used
+    // to draw the border.
+    //  \item @|margin| - @|scalar| - The amount of spacing to place around the text as
+    // padding when drawing the rectangle.
+    //  \item @|fontangle| - @|{'normal','italic','oblique'}| - The angle of the fonts used
+    // for the labels.
+    //  \item @|fontsize| - @|scalar| - The size of fonts used for the text.
+    //  \item @|fontunits| - Not used.
+    //  \item @|fontweight| - @|{'normal','bold','light','demi'}| - The weight of the font used
+    // for the label
+    //  \item @|visible| - @|{'on','off'}| - Controls visibility of the the line.
+    //  \item @|color| - @|colorspec| - The color of the text of the label.
+    //  \item @|children| - Not used.
+    //  \item @|parent| - The handle of the axis that owns this label.
+    //  \item @|tag| - @|string| - A string that can be used to tag the object.
+    //  \item @|type| - @|string| - Returns the string @|'text'|.
+    //  \item @|userdata| - @|array| - Available to store any variable you
+    // want in the handle object.
+    //\end{itemize}
+    //!
     AddProperty(new HPFourVector,"boundingbox");
     AddProperty(new HPHandles,"children");
     AddProperty(new HPString,"string");

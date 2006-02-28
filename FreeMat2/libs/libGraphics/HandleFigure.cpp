@@ -39,6 +39,44 @@ namespace FreeMat {
   }
   
   void HandleFigure::ConstructProperties() {
+    //!
+    //@Module FIGUREPROPERTIES Figure Object Properties
+    //@@Section HANDLE
+    //@@Usage
+    //Below is a summary of the properties for the axis.
+    //\begin{itemize}
+    //  \item @|alphamap| - @|vector| - Contains the alpha (transparency) map for the
+    // figure.  If this is set to a scalar, then all values are mapped to the same 
+    // transparency.  It defaults to @|1|, which is all values being fully opaque.  
+    // If you set this to a vector, the values of graphics objects will be mapped to 
+    // different transparency values, based on the setting of their @|alphadatamapping|
+    // property.
+    //  \item @|color| - @|colorspec| - The background color of the figure (defaults to a
+    // gray @|[0.6,0.6,0.6]|).  During printing, this color is set to white, and then
+    // is restored.
+    //  \item @|colormap| - @|color vector| - an @|N x 3| matrix of RGB values that
+    // specifies the colormap for the figure.  Defaults to an @|HSV| map.  
+    //  \item @|children| - @|handle vector| - the handles for objects that are children
+    // of this figure.  These should be axis objects.
+    //  \item @|currentaxes| - @|handle| - the handle for the current axes.  Also returned
+    // by @|gca|.
+    //  \item @|parent| -  Not used.
+    //  \item @|position| - Not used.
+    //  \item @|type| - @|string| - returns the string @|'figure'|.
+    //  \item @|userdata| - @|array| - arbitrary array you can use to store data associated
+    // with the figure.
+    //  \item @|nextplot| - @|{'add','replace','replacechildren'}| - If set to @|'add'| then
+    // additional axes are added to the list of children for the current figure.  If set to 
+    // @|'replace'|, then a new axis replaces all of the existing children.
+    //  \item @|figsize| - @|two vector| - the size of the figure window in pixels (width x height).
+    //  \item @|renderer| - @|{'painters','opengl'}| - When set to @|'painters'| drawing is based
+    // on the Qt drawing methods (which can handle flat shading of surfaces with transparency).
+    // If you set the renderer to @|'opengl'| then OpenGL is used for rendering.  Support for 
+    // OpenGL is currently in the alpha stage, and FreeMat does not enable it automatically.
+    // You can set the renderer mode to @|'opengl'| manually to experiment.  Also, OpenGL 
+    // figures cannot be printed yet.
+    //\end{itemize}
+    //!
     AddProperty(new HPVector,"alphamap");
     AddProperty(new HPColor,"color");
     AddProperty(new HPColorVector,"colormap");

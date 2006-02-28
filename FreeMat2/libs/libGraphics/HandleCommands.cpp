@@ -317,6 +317,21 @@ namespace FreeMat {
     hp->Set(children);
   }
 
+  //!
+  //@Module SET Set Object Property
+  //@@Section HANDLE
+  //@@Usage
+  //This function allows you to change the value associated
+  //with a property.  The syntax for its use is
+  //@[
+  //  set(handle,property,value,property,value,...)
+  //@]
+  //where @|property| is a string containing the name of the
+  //property, and @|value| is the value for that property. The
+  //type of the variable @|value| depends on the property being
+  //set.  See the help for the properties to see what values
+  //you can set.
+  //!
   ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() < 3)
       throw Exception("set doesn't handle all cases yet!");
@@ -347,6 +362,21 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module GET Get Object Property
+  //@@Section HANDLE
+  //@@Usage
+  //This function allows you to retrieve the value associated
+  //with a property.  The syntax for its use is
+  //@[
+  //  value = get(handle,property)
+  //@]
+  //where @|property| is a string containing the name of the
+  //property, and @|value| is the value for that property. The
+  //type of the variable @|value| depends on the property being
+  //set.  See the help for the properties to see what values
+  //you can set.
+  //!
   ArrayVector HGetFunction(int nargout, const ArrayVector& arg) {
     if (arg.size() != 2)
       throw Exception("get doesn't handle all cases yet!");
@@ -403,28 +433,104 @@ namespace FreeMat {
     return handle;
   }
 
+
+  //!
+  //@Module HLINE Create a line object
+  //@@Section HANDLE
+  //@@Usage
+  //Creates a line object and parents it to the current axis.  The
+  //syntax for its use is 
+  //@[
+  //  handle = hline(property,value,property,value,...)
+  //@]
+  //where @|property| and @|value| are set.  The handle ID for the
+  //resulting object is returned.  It is automatically added to
+  //the children of the current axis.
+  //!
   ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleLineSeries,arg)));
   }
   
+  //!
+  //@Module HIMAGE Create a image object
+  //@@Section HANDLE
+  //@@Usage
+  //Creates a image object and parents it to the current axis.  The
+  //syntax for its use is 
+  //@[
+  //  handle = himage(property,value,property,value,...)
+  //@]
+  //where @|property| and @|value| are set.  The handle ID for the
+  //resulting object is returned.  It is automatically added to
+  //the children of the current axis.
+  //!
   ArrayVector HImageFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleImage,arg)));
   }
 
+  //!
+  //@Module HTEXT Create a text object
+  //@@Section HANDLE
+  //@@Usage
+  //Creates a text object and parents it to the current axis.  The
+  //syntax for its use is 
+  //@[
+  //  handle = htext(property,value,property,value,...)
+  //@]
+  //where @|property| and @|value| are set.  The handle ID for the
+  //resulting object is returned.  It is automatically added to
+  //the children of the current axis.
+  //!
   ArrayVector HTextFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleText,arg)));
   }
 
+  //!
+  //@Module HSURFACE Create a surface object
+  //@@Section HANDLE
+  //@@Usage
+  //Creates a surface object and parents it to the current axis.  The
+  //syntax for its use is 
+  //@[
+  //  handle = hsurface(property,value,property,value,...)
+  //@]
+  //where @|property| and @|value| are set.  The handle ID for the
+  //resulting object is returned.  It is automatically added to
+  //the children of the current axis.
+  //!
   ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleSurface,arg)));
   }
 
+  //!
+  //@Module GCF Get Current Figure
+  //@@Section HANDLE
+  //@@Usage
+  //Returns the handle for the current figure.  The syntax for its use
+  //is
+  //@[
+  //  handle = gcf
+  //@]
+  //where @|handle| is the number of the active figure (also its handle).
+  //!
   ArrayVector HGCFFunction(int nargout, const ArrayVector& arg) {
     if (HcurrentFig == -1)
       NewFig();      
     return singleArrayVector(Array::uint32Constructor(HcurrentFig+1));
   }
 
+  //!
+  //@Module GCA Get Current Axis
+  //@@Section HANDLE
+  //@@Usage
+  //Returns the handle for the current axis.  The syntax for its use
+  //is
+  //@[
+  //  handle = gca
+  //@]
+  //where @|handle| is the handle of the active axis.  All object
+  //creation functions will be children of this axis.
+  //!
   ArrayVector HGCAFunction(int nargout, const ArrayVector& arg) {
     // Get the current figure...
     if (HcurrentFig == -1)
@@ -689,6 +795,17 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  //!
+  //@Module HPOINT Get Point From Window
+  //@@Section HANDLE
+  //@@Usage
+  //This function waits for the user to click on the current figure
+  //window, and then returns the coordinates of that click.  The
+  //generic syntax for its use is
+  //@[
+  //  [x,y] = hpoint
+  //@]
+  //!
   ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
     if (HcurrentFig == -1)
       return ArrayVector();
@@ -722,7 +839,6 @@ namespace FreeMat {
     context->addFunction("close",HCloseFunction,1,0,"handle");
     context->addFunction("copy",HCopyFunction,0,0);
     context->addFunction("hpoint",HPointFunction,0,1);
-    // Need colormap, zoom, colorbar, addtxt, sizefig, winlev, point, legend
     InitializeHandleGraphics();
   };
 }

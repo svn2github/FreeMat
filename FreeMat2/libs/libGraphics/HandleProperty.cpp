@@ -185,7 +185,32 @@ namespace FreeMat {
 	rp[i+j*rows] = data[3*i+j];
     return Array::Array(FM_DOUBLE,Dimensions(rows,3),rp);
   }
-  
+
+  //!
+  //@Module COLORSPEC Color Property Description
+  //@@Section HANDLE
+  //@@Usage
+  //There are a number of ways of specifying a color value for
+  //a color-based property.  Examples include line colors, 
+  //marker colors, and the like.  One option is to specify
+  //color as an RGB triplet
+  //@[
+  //   set(h,'color',[r,g,b])
+  //@]
+  //where @|r,g,b| are between @[0,1]@.  Alternately, you can
+  //use color names to specify a color.
+  //\begin{itemize}
+  //  \item @|'none'| - No color.
+  //  \item @|'y','yellow'| - The color @[1,1,0]@ in RGB space.
+  //  \item @|'m','magenta'| - The color @[1,0,1]@ in RGB space.
+  //  \item @|'c','cyan'| - The color @[0,1,1]@ in RGB space.
+  //  \item @|'r','red'| - The color @[1,0,0]@ in RGB space.
+  //  \item @|'g','green'| - The color @[0,1,0]@ in RGB space.
+  //  \item @|'b','blue'| - The color @[0,0,1]@ in RGB space.
+  //  \item @|'w','white'| - The color @[1,1,1]@ in RGB space.
+  //  \item @|'k','black'| - The color @[0,0,0]@ in RGB space.
+  //\end{itemize}
+  //!
   bool ParseColorSpec(Array arg, std::vector<double> &data) {
     if (arg.isString()) {
       char *cp = arg.getContentsAsCString();

@@ -148,6 +148,47 @@ namespace FreeMat {
   }
   
   void HandleLineSeries::ConstructProperties() {
+    //!
+    //@Module LINEPROPERTIES Line Series Object Properties
+    //@@Section HANDLE
+    //@@Usage
+    //Below is a summary of the properties for a line series.
+    //\begin{itemize}
+    //  \item @|color| - @|colorspec| - The color that is used to 
+    // draw the line.
+    //  \item @|children| - Not used.
+    //  \item @|displayname| - The name of this line series as it
+    // appears in a legend.
+    //  \item @|linestyle| - @|{'-','--',':','-.','none'}| - The style of the line.
+    //  \item @|linewidth| - @|scalar| - The width of the line.
+    //  \item @|marker| - @|{'+','o','*','.','x','square','s','diamond','d','^','v','>','<'}| - 
+    // The marker for data points on the line.  Some of these are redundant, as @|'square'| 
+    // @|'s'| are synonyms, and @|'diamond'| and @|'d'| are also synonyms.
+    //  \item @|markeredgecolor| - @|colorspec| - The color used to draw the marker.  For some
+    // of the markers (circle, square, etc.) there are two colors used to draw the marker.
+    // This property controls the edge color (which for unfilled markers) is the primary
+    // color of the marker.
+    //  \item @|markerfacecolor| - @|colorspec| - The color used to fill the marker.  For some
+    // of the markers (circle, square, etc.) there are two colors used to fill the marker.
+    //  \item @|markersize| - @|scalar| - Control the size of the marker.  Defaults to 6, which
+    // is effectively the radius (in pixels) of the markers.
+    //  \item @|parent| - @|handle| - The axis that contains this object.
+    //  \item @|tag| - @|string| - A string that can be used to tag the object.
+    //  \item @|type| - @|string| - Returns the string @|'line'|.
+    //  \item @|visible| - @|{'on','off'}| - Controls visibility of the the line.
+    //  \item @|xdata| - @|vector| - Vector of x coordinates of points on the line.  Must be
+    // the same size as the @|ydata| and @|zdata| vectors.
+    //  \item @|ydata| - @|vector| - Vector of y coordinates of points on the line.  Must be
+    // the same size as the @|xdata| and @|zdata| vectors.
+    //  \item @|zdata| - @|vector| - Vector of z coordinates of points on the line.  Must be
+    // the same size as the @|xdata| and @|ydata| vectors.
+    //  \item @|xdatamode| - @|{'auto','manual'}| - When set to @|'auto'| FreeMat will autogenerate
+    // the x coordinates for the points on the line.  These values will be @|1,..,N| where
+    // @|N| is the number of points in the line.
+    //  \item @|userdata| - @|array| - Available to store any variable you
+    // want in the handle object.
+    //\end{itemize}
+    //!
     AddProperty(new HPColor,"color");
     AddProperty(new HPHandles,"children");
     AddProperty(new HPString,"displayname");

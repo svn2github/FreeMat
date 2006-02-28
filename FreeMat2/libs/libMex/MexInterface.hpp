@@ -20,8 +20,8 @@
 #ifndef __MexInterface_hpp__
 #define __MexInterface_hpp__
 
+#include "mex.h"
 #include "Array.hpp"
-
 using namespace FreeMat;
 
 Array ArrayFromMexArray(mxArray *array_ptr);

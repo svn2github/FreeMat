@@ -19,7 +19,10 @@
 #include "mex.h"
 #include <string.h>
 #include <stdlib.h>
+#include <set>
+#include <string>
 
+static std::set<void*> memlist;
 static int m_alloc = 0;
 static int m_count = 0;
 static void* m_dict = NULL;
@@ -37,7 +40,7 @@ static bool endianDetected = false;
 static bool bigEndian = false;
 
 
-void CheckBigEndian() {
+static void CheckBigEndian() {
   union {
     long l;
     char c[sizeof (long)];
@@ -49,9 +52,11 @@ void CheckBigEndian() {
 }
 
 void RegisterPointer(void *ptr) {
+  memlist.insert(ptr);
 }
 
 void DeregisterPointer(void *ptr) {
+  memlist.erase(ptr);
 }
 
 int CountElements(int ndim, const int *dims) {
@@ -689,9 +694,12 @@ void mxSetPr(mxArray *array_ptr, double *pr) {
 int mexAtExit(void (*ExitFcn)(void));
 int mexCallMATLAB(int nlhs, mxArray *plhs[], int nrhs,  mxArray *prhs[], const char *command_name);
 void mexErrMsgIdAndTxt(const char *identifier, const char *error_msg, ...);
-void mexErrMsgTxt(const char *error_msg);
+
+void mexErrMsgTxt(const char *error_msg) {
+  throw std::string(error_msg);
+}
+
 int mexEvalString(const char *command);
-//void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 const char *mexFunctionName(void);
 const mxArray *mexGet(double handle, const char *property);
 mxArray *mexGetVariable(const char *workspace, const char *var_name);

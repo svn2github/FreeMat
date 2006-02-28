@@ -20,6 +20,10 @@
 #ifndef __mex_h__
 #define __mex_h__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 
 // Define a mex interface into FreeMat...
@@ -68,7 +72,9 @@ typedef struct {
   int refID;
 } mxArray;
 
-//typedef char bool;
+#ifndef __cplusplus
+typedef int bool;
+#endif
 
 typedef bool mxLogical;
 
@@ -175,7 +181,7 @@ int mexCallMATLAB(int nlhs, mxArray *plhs[], int nrhs,  mxArray *prhs[], const c
 void mexErrMsgIdAndTxt(const char *identifier, const char *error_msg, ...);
 void mexErrMsgTxt(const char *error_msg);
 int mexEvalString(const char *command);
-//void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 const char *mexFunctionName(void);
 const mxArray *mexGet(double handle, const char *property);
 mxArray *mexGetVariable(const char *workspace, const char *var_name);
@@ -192,5 +198,9 @@ void mexSetTrapFlag(int trap_flag);
 void mexUnlock(void); 
 void mexWarnMsgIdAndTxt(const char *identifier, const char *warning_msg, ...);
 void mexWarnMsgTxt(const char *warning_msg);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

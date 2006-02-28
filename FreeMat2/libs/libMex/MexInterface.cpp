@@ -60,49 +60,49 @@ Array ArrayFromMexArrayReal(mxArray *array_ptr) {
   case mxUINT32_CLASS:
     cls = FM_UINT32;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<uint32,uint32>(array_ptr->realdata,
+    MexRealToArrayReal<uint32,uint32>((uint32*)array_ptr->realdata,
 				      (uint32*)dp,count);
     break;
   case mxINT32_CLASS:
     cls = FM_INT32;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<int32,int32>(array_ptr->realdata,
+    MexRealToArrayReal<int32,int32>((int32*)array_ptr->realdata,
 				    (int32*)dp,count);
     break;
   case mxUINT16_CLASS:
     cls = FM_UINT16;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<uint16,uint16>(array_ptr->realdata,
+    MexRealToArrayReal<uint16,uint16>((uint16*)array_ptr->realdata,
 				      (uint16*)dp,count);
     break;
   case mxINT16_CLASS:
     cls = FM_INT16;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<int16,int16>(array_ptr->realdata,
+    MexRealToArrayReal<int16,int16>((int16*)array_ptr->realdata,
 				    (int16*)dp,count);
     break;
   case mxUINT8_CLASS:
     cls = FM_UINT8;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<uint8,uint8>(array_ptr->realdata,
+    MexRealToArrayReal<uint8,uint8>((uint8*)array_ptr->realdata,
 				    (uint8*)dp,count);
     break;
   case mxINT8_CLASS:
     cls = FM_INT8;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<int8,int8>(array_ptr->realdata,
-				      (int8*)dp,count);
+    MexRealToArrayReal<int8,int8>((int8*)array_ptr->realdata,
+				  (int8*)dp,count);
     break;
   case mxSINGLE_CLASS:
     cls = FM_FLOAT;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<float,float>(array_ptr->realdata,
+    MexRealToArrayReal<float,float>((float*)array_ptr->realdata,
 				    (float*)dp,count);
     break;
   case mxDOUBLE_CLASS:
     cls = FM_DOUBLE;
     dp = Array::allocateArray(cls,count);
-    MexRealToArrayReal<double,double>(array_ptr->realdata,
+    MexRealToArrayReal<double,double>((double*)array_ptr->realdata,
 				      (double*)dp,count);
   }
   return Array::Array(cls,dim,dp);
@@ -120,50 +120,50 @@ Array ArrayFromMexArrayComplex(mxArray *array_ptr) {
     switch(array_ptr->classID) {
     case mxUINT32_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<uint32,float>(array_ptr->realdata,
-					     array_ptr->imagdata,
+      MexComplexToArrayComplex<uint32,float>((uint32*)array_ptr->realdata,
+					     (uint32*)array_ptr->imagdata,
 					     (float*)dp,count);
       break;
     case mxINT32_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<int32,float>(array_ptr->realdata,
-					    array_ptr->imagdata,
+      MexComplexToArrayComplex<int32,float>((int32*)array_ptr->realdata,
+					    (int32*)array_ptr->imagdata,
 					    (float*)dp,count);
     case mxUINT16_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<uint16,float>(array_ptr->realdata,
-					     array_ptr->imagdata,
+      MexComplexToArrayComplex<uint16,float>((uint16*)array_ptr->realdata,
+					     (uint16*)array_ptr->imagdata,
 					     (float*)dp,count);
       break;
     case mxINT16_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<int16,float>(array_ptr->realdata,
-					    array_ptr->imagdata,
+      MexComplexToArrayComplex<int16,float>((int16*)array_ptr->realdata,
+					    (int16*)array_ptr->imagdata,
 					    (float*)dp,count);
     case mxUINT8_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<uint8,float>(array_ptr->realdata,
-					    array_ptr->imagdata,
+      MexComplexToArrayComplex<uint8,float>((uint8*)array_ptr->realdata,
+					    (uint8*)array_ptr->imagdata,
 					    (float*)dp,count);
       break;
     case mxINT8_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<int8,float>(array_ptr->realdata,
-					   array_ptr->imagdata,
+      MexComplexToArrayComplex<int8,float>((int8*)array_ptr->realdata,
+					   (int8*)array_ptr->imagdata,
 					   (float*)dp,count);
       break;
-    case mxFLOAT_CLASS:
+    case mxSINGLE_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
-      MexComplexToArrayComplex<float,float>(array_ptr->realdata,
-					    array_ptr->imagdata,
+      MexComplexToArrayComplex<float,float>((float*)array_ptr->realdata,
+					    (float*)array_ptr->imagdata,
 					    (float*)dp,count);
     }
   } else {
     cls = FM_DCOMPLEX;
     dp = Array::allocateArray(FM_DCOMPLEX,count);
-    MexComplexToArrayComplex<double,double>(array_ptr->realdata,
-					    array_ptr->imagdata,
-					    (float*)dp,count);
+    MexComplexToArrayComplex<double,double>((double*)array_ptr->realdata,
+					    (double*)array_ptr->imagdata,
+					    (double*)dp,count);
   }
   return Array::Array(cls,dim,dp);
 }
@@ -174,13 +174,13 @@ Array ArrayFromMexArray(mxArray *array_ptr) {
     for (int i=0;i<array_ptr->number_of_dims;i++)
       dim[array_ptr->dims[i]];
     int N = mxGetNumberOfElements(array_ptr);
-    mxArray** dp = array_ptr->realdata;
+    mxArray** dp = (mxArray**) array_ptr->realdata;
     Array* cp = new Array[N];
     for (int i=0;i<N;i++)
       cp[i] = ArrayFromMexArray(dp[i]);
-    return Array(FM_CELL,dim,cp);
+    return Array(FM_CELL_ARRAY,dim,cp);
   } else {
-    if (array_ptr->isComplex) {
+    if (array_ptr->iscomplex) {
       return ArrayFromMexArrayComplex(array_ptr);
     } else {
       return ArrayFromMexArrayReal(array_ptr);
@@ -188,6 +188,92 @@ Array ArrayFromMexArray(mxArray *array_ptr) {
   }
 }
 
+template <class mxType, class fmType>
+mxArray* MexArrayFromRealArray(Array array, mxClassID classID) {
+  // Convert array dimensions into a simple integer array
+  int num_dim = array.getDimensions().getLength();
+  int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
+  for (int i=0;i<num_dim;i++)
+    dim_vec[i] = array.getDimensions()[i];
+  mxArray *ret = mxCreateNumericArray(num_dim,dim_vec,classID,mxREAL);
+  fmType *sp = (fmType*) array.getDataPointer();
+  mxType *dp = (mxType*) ret->realdata;
+  int N = mxGetNumberOfElements(ret);
+  for (int i=0;i<N;i++)
+    dp[i] = (mxType) sp[i];
+  free(dim_vec);
+  return ret;
+}
+
+template <class mxType, class fmType>
+mxArray* MexArrayFromComplexArray(Array array, mxClassID classID) {
+  // Convert array dimensions into a simple integer array
+  int num_dim = array.getDimensions().getLength();
+  int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
+  for (int i=0;i<num_dim;i++)
+    dim_vec[i] = array.getDimensions()[i];
+  mxArray *ret = mxCreateNumericArray(num_dim,dim_vec,classID,mxCOMPLEX);
+  fmType *sp = (fmType*) array.getDataPointer();
+  mxType *dp_r = (mxType*) ret->realdata;
+  mxType *dp_i = (mxType*) ret->imagdata;
+  int N = mxGetNumberOfElements(ret);
+  for (int i=0;i<N;i++) {
+    dp_r[i] = (mxType) sp[2*i];
+    dp_i[i] = (mxType) sp[2*i+1];
+  }
+  free(dim_vec);
+  return ret;
+}
+
+mxArray* MexArrayFromCellArray(Array array) {
+  // Convert array dimensions into a simple integer array
+  int num_dim = array.getDimensions().getLength();
+  int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
+  for (int i=0;i<num_dim;i++)
+    dim_vec[i] = array.getDimensions()[i];
+  mxArray *ret = mxCreateCellArray(num_dim,dim_vec);
+  Array *sp = (Array*) array.getDataPointer();
+  mxArray **dp = (mxArray **) ret->realdata;
+  int N = mxGetNumberOfElements(ret);
+  for (int i=0;i<N;i++) 
+    dp[i] = MexArrayFromArray(sp[i]);
+  free(dim_vec);
+  return ret;
+}
+
 mxArray* MexArrayFromArray(Array array) {
+  switch(array.getDataClass()) {
+  case FM_FUNCPTR_ARRAY:
+    return NULL;
+  case FM_CELL_ARRAY:
+    return MexArrayFromCellArray(array);
+  case FM_STRUCT_ARRAY:
+    return NULL;
+  case FM_LOGICAL:
+    return MexArrayFromRealArray<mxLogical,logical>(array,mxLOGICAL_CLASS);
+  case FM_UINT8:
+    return MexArrayFromRealArray<uint8,uint8>(array,mxUINT8_CLASS);
+  case FM_INT8:
+    return MexArrayFromRealArray<int8,int8>(array,mxINT8_CLASS);
+  case FM_UINT16:
+    return MexArrayFromRealArray<uint16,uint16>(array,mxUINT16_CLASS);
+  case FM_INT16:
+    return MexArrayFromRealArray<int16,int16>(array,mxINT16_CLASS);
+  case FM_UINT32:
+    return MexArrayFromRealArray<uint32,uint32>(array,mxUINT32_CLASS);
+  case FM_INT32:
+    return MexArrayFromRealArray<int32,int32>(array,mxINT32_CLASS);
+  case FM_FLOAT:
+    return MexArrayFromRealArray<float,float>(array,mxSINGLE_CLASS);
+  case FM_DOUBLE:
+    return MexArrayFromRealArray<double,double>(array,mxDOUBLE_CLASS);
+  case FM_COMPLEX:
+    return MexArrayFromComplexArray<float,float>(array,mxSINGLE_CLASS);
+  case FM_DCOMPLEX:
+    return MexArrayFromComplexArray<double,double>(array,mxDOUBLE_CLASS);
+  case FM_STRING:
+    return MexArrayFromRealArray<mxChar,char>(array,mxCHAR_CLASS);
+  }
+  return NULL;
 }
 

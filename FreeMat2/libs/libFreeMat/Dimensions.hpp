@@ -81,6 +81,10 @@ namespace FreeMat {
      */
     int getLength() const;
     /**
+     * Get the pointer to the dimension data.
+     */
+    int* getDimensionData() const;
+    /**
      * Return the total number of elements in the associated Array object.
      * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
      * of length, and $$a_i$$ is equivalent to data[i].

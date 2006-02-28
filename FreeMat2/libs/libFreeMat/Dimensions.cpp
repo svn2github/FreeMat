@@ -75,6 +75,10 @@ namespace FreeMat {
     return length;
   }
 
+  int* Dimensions::getDimensionData() const{
+    return (int *) &data[0];
+  }
+
   int Dimensions::getElementCount() const {
     int retval;
 

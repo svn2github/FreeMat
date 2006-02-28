@@ -108,8 +108,9 @@ namespace FreeMat {
     io->outputMessage(" " + getVersionString() + "\n");
     io->outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
     io->outputMessage(" Licensed under the GNU Public License (GPL)\n");
-    io->outputMessage(" Type <license> to find out more\n");
-    io->outputMessage(" Type <helpwin> for online help\n");
+    io->outputMessage(" Type <help license> to find out more\n");
+    io->outputMessage("      <helpwin> for online help\n");
+    io->outputMessage("      <pathtool> to set or change your path\n");
   }
 
   std::string WalkTree::getPrivateMangledName(std::string fname) {
@@ -1667,7 +1668,7 @@ namespace FreeMat {
 	    b = Array::emptyConstructor();
 	  else 
 	    b = m[0];
-	  if (printIt && !b.isEmpty()) {
+	  if (printIt) {
 	    io->outputMessage(std::string("ans = \n"));
 	    displayArray(b);
 	    SetContext(t->context());

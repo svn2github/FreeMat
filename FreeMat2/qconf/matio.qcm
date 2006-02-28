@@ -43,11 +43,11 @@ public:
   {
     QString matiopath;
     QString matioheader;
-    if (!conf->findSimpleLibrary("","","","matio",&matioheader,&matiopath)) {
+    if (!conf->findSimpleLibrary("","","","MATIO",&matioheader,&matiopath)) {
       system = false;
-      conf->addExtra("PRE_TARGETDEPS += extern/libMatIO/libmatio.a");
-      conf->addLib("extern/libMatIO/libmatio.a");
-      conf->addIncludePath("extern/libMatIO");
+      conf->addExtra("PRE_TARGETDEPS += extern/libMATIO/libMATIO.a");
+      conf->addLib("extern/libMATIO/libMATIO.a");
+      conf->addIncludePath("extern/libMATIO");
     } else {
       system = true;
       conf->addLib(matiopath);

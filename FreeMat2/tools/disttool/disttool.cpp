@@ -31,16 +31,31 @@ void CopyFile(QString src, QString dest) {
 }
 
 void CopyDirectory(QString src, QString dest) {
+  TermOutputText("Copying Directory " + src + "\n");
   QDir dir(src);
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
   for (unsigned i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     if (fileInfo.isDir())
-      CopyDirectory(fileInfo.absoluteFilePath(),dest);
+      CopyDirectory(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
     else
       CopyFile(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
   }
+}
+
+void DeleteDirectory(QString dirname) {
+  QDir dir(dirname);
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir())
+      DeleteDirectory(fileInfo.absoluteFilePath());
+    else
+      dir.remove(fileInfo.absoluteFilePath());
+  }
+  dir.rmdir(dirname);
 }
 
 ConsoleWidget::ConsoleWidget() : QWidget() {
@@ -256,30 +271,36 @@ void ConsoleWidget::WinBundle() {
     Halt("Unable to open ../../help/version.txt for input\n");
   QTextStream g(&vfile);
   QString versionnum(g.readLine(0));
-  MakeDir("FreeMat");
-  MakeDir("FreeMat/Contents");
-  MakeDir("FreeMat/Contents/bin");
-  MakeDir("FreeMat\/Contents/Resources");
-  MakeDir("FreeMat/Contents/Resources/help");
-  MakeDir("FreeMat/Contents/Resources/help/html");
-  MakeDir("FreeMat/Contents/Resources/help/text");
-  MakeDir("FreeMat/Contents/Resources/mfiles");
-  CopyFile("../../Release/FreeMat.exe","FreeMat/Contents/bin/FreeMat.exe");
-  CopyFile("c:/Qt/4.1.0/bin/QtCore4.dll","FreeMat/Contents/bin/QtCore4.dll");
-  CopyFile("c:/Qt/4.1.0/bin/QtGui4.dll","FreeMat/Contents/bin/QtGui4.dll");
-  CopyFile("c:/Qt/4.1.0/bin/QtOpenGL4.dll","FreeMat/Contents/bin/QtOpenGL4.dll");
-  CopyFile("../../extern/blas/atlas_prebuilt_win32/atlas_blas_P4SSE2.dll",
-	   "FreeMat/Contents/bin/blas.dll");
-  CopyFile("c:/MinGW/bin/mingwm10.dll","FreeMat/Contents/bin/mingwm10.dll");
-  CopyDirectory("../helpgen/html","FreeMat/Contents/Resources/help/html");
-  CopyDirectory("../helpgen/text","FreeMat/Contents/Resources/help/text");
-  CopyDirectory("../helpgen/MFiles","FreeMat/Contents/Resources/mfiles");
+  QString baseDir("FreeMat" + versionnum);
+  DeleteDirectory(baseDir);
+  MakeDir(baseDir);
+  MakeDir(baseDir+"/Contents");
+  MakeDir(baseDir+"/Contents/bin");
+  MakeDir(baseDir+"/Contents/Resources");
+  MakeDir(baseDir+"/Contents/Resources/help");
+  MakeDir(baseDir+"/Contents/Resources/help/html");
+  MakeDir(baseDir+"/Contents/Resources/help/text");
+  MakeDir(baseDir+"/Contents/Resources/mfiles");
+  MakeDir(baseDir+"/Contents/Plugins/imageformats");
+  QString qtdir(getenv("QTDIR"));
+  CopyFile(qtdir+"/plugins/imageformats/qjpeg1.dll",baseDir+"/Contents/Plugins/imageformats/qjpeg1.dll");
+  CopyFile(qtdir+"/plugins/imageformats/qmng1.dll",baseDir+"/Contents/Plugins/imageformats/qmng1.dll");
+  CopyFile("../../build/FreeMat.exe",baseDir+"/Contents/bin/FreeMat.exe");
+  CopyFile(qtdir+"/bin/QtCore4.dll",baseDir+"/Contents/bin/QtCore4.dll");
+  CopyFile(qtdir+"/bin/QtGui4.dll",baseDir+"/Contents/bin/QtGui4.dll");
+  CopyFile(qtdir+"/bin/QtOpenGL4.dll",baseDir+"/Contents/bin/QtOpenGL4.dll");
+  //  CopyFile("../../extern/blas/atlas_prebuilt_win32/atlas_blas_P4SSE2.dll",
+  //	   baseDir+"/Contents/bin/blas.dll");
+  CopyFile("c:/MinGW/bin/mingwm10.dll",baseDir+"/Contents/bin/mingwm10.dll");
+  CopyDirectory("../../help/html",baseDir+"/Contents/Resources/help/html");
+  CopyDirectory("../../help/text",baseDir+"/Contents/Resources/help/text");
+  CopyDirectory("../../help/MFiles",baseDir+"/Contents/Resources/mfiles");
   TermOutputText("Generating NSI file...\n");
-  QStringList flist(GetFileList("FreeMat",QStringList()));
+  QStringList flist(GetFileList(baseDir+"",QStringList()));
   QFile *file_in = new QFile("freemat_nsi.in");
   if (!file_in->open(QFile::ReadOnly))
     Halt("Unable to open FreeMat NSIS template file freemat_nsi.in\n");
-  QFile *file_out = new QFile("FreeMat/freemat.nsi");
+  QFile *file_out = new QFile(baseDir+"/freemat.nsi");
   if (!file_out->open(QFile::WriteOnly))
     Halt("Unable to open FreeMat NSIS file freemat.nsi for output\n");
   QTextStream *g_in = new QTextStream(file_in);

@@ -29,7 +29,7 @@ SetCompressor lzma
 ; Start menu page
 var ICONS_GROUP
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "FreeMat2"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "FreeMat<VERSION_NUMBER>"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${PRODUCT_STARTMENU_REGVAL}"
@@ -61,8 +61,8 @@ var ICONS_GROUP
 
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup.exe"
-InstallDir "$PROGRAMFILES\FreeMat2"
+OutFile "FreeMat<VERSION>_Setup.exe"
+InstallDir "$PROGRAMFILES\FreeMat<VERSION_NUMBER>"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
@@ -79,7 +79,7 @@ Section "Shortcuts" SEC02
   SetOverwrite ifnewer
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\FreeMat.lnk" "$INSTDIR\Contents\bin\FreeMat.exe"
-  CreateShortCut "$DESKTOP\FreeMat2.lnk" "$INSTDIR\Contents\bin\FreeMat.exe"
+  CreateShortCut "$DESKTOP\FreeMat<VERSION_NUMBER>.lnk" "$INSTDIR\Contents\bin\FreeMat.exe"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Help.lnk" "$INSTDIR\Contents\Resources\help\html\index.html"
 SectionEnd
 
@@ -91,7 +91,7 @@ Section -AdditionalIcons
 SectionEnd
 
 Section -EnvironmentVariables
-  MessageBox MB_OK "FreeMat Version 2.0 and higher do not use the FREEMAT_PATH environment variable anymore.  Type 'pathsetup' in FreeMat to setup your path."
+  MessageBox MB_OK "FreeMat Version 2.0 and higher do not use the FREEMAT_PATH environment variable anymore.  Type 'pathtool' in FreeMat to setup your path."
 SectionEnd
 
 Section -Post

@@ -1,6 +1,7 @@
 TEMPLATE = app
 
 CONFIG -= app_bundle
+CONFIG += release
 
 TARGET = disttool
 

@@ -20,4 +20,5 @@ signal Signal Processing Functions
 os Operating System Functions
 curvefit Optimization and Curve Fitting
 mpi MPI Functions
-handle Handle Graphics
+handle Handle-Based Graphics
+class Object Oriented Programming

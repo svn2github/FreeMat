@@ -30,18 +30,20 @@ namespace FreeMat {
   std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
     QProcess toRun;
     std::vector<std::string> ret;
+    bool runDetached = (cmd[cmd.size()-1] == '&');
+
+    if (runDetached)
+      cmd.erase(cmd.size()-1,1);
 #ifdef Q_OS_WIN32
     char shellCmd[_MAX_PATH];
     if( !GetEnvironmentVariable("ComSpec", shellCmd, _MAX_PATH) )
       throw Exception("Unable to find command shell!");
     cmd = std::string(shellCmd) + " /a /c " + std::string(cmd);
 #else
-    cmd = std::string("sh -c ") + cmd;
+    cmd = std::string("sh -c \"") + cmd + std::string("\"");
 #endif
-    if (cmd[cmd.size()-1] == '&') {
-      QString cmd2(QString::fromStdString(cmd));
-      cmd2.chop(1);
-      QProcess::startDetached(cmd2);
+    if (runDetached) {
+      QProcess::startDetached(QString::fromStdString(cmd));
       return ret;
     }
     toRun.start(QString::fromStdString(cmd));

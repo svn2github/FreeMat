@@ -4,7 +4,7 @@ VERSION = 2.0
 
 QT += opengl 
 
-CONFIG += warn_off release
+CONFIG += warn_off debug
 
 DEFINES -= UNICODE
 
@@ -311,7 +311,7 @@ RESOURCES = FreeMat.qrc
 
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png images/player_pause.png images/player_stop.png images/player_play.png
-DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz extern/libMATIO_freemat_patch.tar.gz
+DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz extern/matio_freemat_patch.tar.gz
 DISTFILES += help/section_descriptors.txt
 !win32 {
 DISTFILES += $$system(find MFiles -name '*.m')

@@ -33,6 +33,50 @@ using namespace FreeMat;
 #include "HandleCommands.hpp"
 #include "Core.hpp"
 
+#ifdef Q_WS_X11
+#include "FuncTerminal.hpp"
+#include "DumbTerminal.hpp"
+#include "Terminal.hpp"
+#include "SocketCB.hpp"
+#include <unistd.h>
+#include <fcntl.h>
+#include <qsocketnotifier.h>
+#include <signal.h>
+#include <unistd.h>
+
+sig_t signal_suspend_default;
+sig_t signal_resume_default;
+
+Terminal* gterm;
+
+void signal_suspend(int a) {
+  Terminal *tptr = dynamic_cast<Terminal*>(gterm);
+  if (tptr)
+    tptr->RestoreOriginalMode();
+  printf("Suspending FreeMat...\n");
+  fflush(stdout);
+  signal(SIGTSTP,signal_suspend_default);
+  raise(SIGTSTP);
+}
+
+void signal_resume(int a) {
+  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  printf("Resuming FreeMat...\n");
+  Terminal *tptr = dynamic_cast<Terminal*>(gterm);
+  if (tptr) {
+    tptr->SetRawMode();
+  }
+}
+
+void signal_resize(int a) {
+  Terminal *tptr = dynamic_cast<Terminal*>(gterm);
+  if (tptr) {
+    tptr->ResizeEvent();
+  }
+}
+
+#endif
+
 MainApp::MainApp() {
   guimode = true;
   skipGreeting = false;
@@ -72,6 +116,7 @@ void MainApp::SetupInteractiveTerminalCase() {
 #ifdef Q_WS_X11
   FreeMat::SetNonGUIHack();
   Terminal *myterm = new Terminal;
+  gterm = myterm;
   m_keys->RegisterTerm(myterm);
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   try {
@@ -106,7 +151,7 @@ void MainApp::SetupDumbTerminalCase() {
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
-  m_term = term;
+  m_term = myterm;
   QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
 #endif
 }
@@ -130,6 +175,11 @@ void MainApp::SetSkipGreeting(bool skip) {
 }
 
 void MainApp::TerminalReset() {
+#ifdef Q_WS_X11
+  Terminal *tptr = dynamic_cast<Terminal*>(gterm);
+  if (tptr)
+    tptr->RestoreOriginalMode();
+#endif  
 }
 
 int MainApp::Run() {

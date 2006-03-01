@@ -58,17 +58,19 @@
 % Copyright (c) 2002-2006 Samit Basu
 
 function h = surf(varargin)
-  % Check for an axes handle
-  if (nargin>=2)
-    if (isnumeric(varargin{1}) & (length(varargin{1})==1) & ...
-    ishandle(varargin{1},'axes'))
-       handle = varargin{1}(1);
-       varargin(1) = [];
-       nargin = nargin - 1;
-    else   
-       handle = newplot;
-    end
-  end
+   % Check for an axes handle
+   if (nargin>=2)
+      if (isnumeric(varargin{1}) & (length(varargin{1})==1) & ...
+         ishandle(varargin{1},'axes'))
+         handle = varargin{1}(1);
+         varargin(1) = [];
+         nargin = nargin - 1;
+      else   
+         handle = newplot;
+      end
+else
+   handle = newplot;
+end
   saveca = gca;
   axes(handle);
   % search for the propertyname/value pairs

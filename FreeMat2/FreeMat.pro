@@ -42,8 +42,8 @@ amd.target = extern/AMD/Lib/libamd.a
 amd.commands = cd extern && tar xfz AMD-1.2.tar.gz &&  cd AMD && make
 umfpack.target = extern/UMFPACK/Lib/libumfpack.a
 umfpack.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK/Source && make
-matio.target = extern/libMATIO/libMATIO.a
-matio.commands = cd extern && tar xfz libMATIO_freemat_patch.tar.gz && cd libMATIO && make
+matio.target = extern/matio/src/libmatio.a
+matio.commands = cd extern && tar xfz matio_freemat_patch.tar.gz && cd matio && ./configure && make
 }
 
 win32 {

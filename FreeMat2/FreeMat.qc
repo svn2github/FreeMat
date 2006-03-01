@@ -28,5 +28,8 @@
   </dep>
   <dep type='blas'>
     <required/>
-  </dep>	
+  </dep>
+  <dep type='matio'>
+    <required/>
+  </dep>
 </qconf>

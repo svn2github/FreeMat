@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2002-2006 Samit Basu
+ * Copyright (c) 2006 Thomas Beutlich
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

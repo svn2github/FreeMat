@@ -4,7 +4,7 @@ VERSION = 2.0
 
 QT += opengl 
 
-CONFIG += warn_off debug
+CONFIG += warn_off release
 
 DEFINES -= UNICODE
 
@@ -43,8 +43,17 @@ amd.target = extern/AMD/Lib/libamd.a
 amd.commands = cd extern && tar xfz AMD-1.2.tar.gz &&  cd AMD && make
 umfpack.target = extern/UMFPACK/Lib/libumfpack.a
 umfpack.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK/Source && make
+}
+
+unix:!macx {
 matio.target = extern/matio/src/libmatio.a
 matio.commands = cd extern && tar xfz matio_freemat_patch.tar.gz && cd matio && ./configure && make
+}
+
+macx {
+matio.target = extern/matio/src/libmatio.a
+matio.commands = cd extern && tar xfz matio_freemat_patch.tar.gz && cd matio/zlib && CFLAGS=-DZ_PREFIX ./configure && make && cd ../src && cp matioConfig.h.macosX matioConfig.h && cd .. && make -f Makefile.macosx 
+LIBS += extern/matio/zlib/libz.a
 }
 
 win32 {

@@ -1,4 +1,8 @@
 
+- ls/dir system doesn't work right
+- Need to verify system function on Win32
+- win32 build of matio
+
 - Source build appears to work on Linux...  
 
 Before release:

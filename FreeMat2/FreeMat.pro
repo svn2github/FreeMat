@@ -111,7 +111,6 @@ win32 {
 install.commands = cd tools/disttool && qmake && make && release\disttool -win
 }
 
-QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install
 
 INCLUDEPATH += libs/libFreeMat libs/libCore libs/libFN libs/libGraphics libs/libXP src libs/libMex
 
@@ -332,3 +331,11 @@ DISTFILES += $$system(find tests -name '*.m')
 DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp 
 DISTFILES += tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
 DISTFILES += extern/chat_g77 extern/chat_gfortran
+DISTFILES += COPYING README
+DISTFILES += src/appIcon.icns
+
+distprep.target = distprep
+distprep.depends = FORCE
+distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clean && cd ../ARPACK && make clean && cd ../ffcall-1.10 && make clean && cd ../LAPACK/SRC && make -f Makefile_freemat clean && cd ../../matio && make clean && cd ../UMFPACK && make clean 
+
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install distprep

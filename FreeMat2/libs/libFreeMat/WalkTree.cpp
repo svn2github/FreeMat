@@ -86,7 +86,7 @@ namespace FreeMat {
   }
 
   std::string WalkTree::getVersionString() {
-    return std::string("FreeMat v2.0");
+    return std::string("FreeMat v2.0RC1");
   }
 
   void WalkTree::run() {

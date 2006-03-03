@@ -331,7 +331,7 @@ DISTFILES += $$system(find tests -name '*.m')
 DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp 
 DISTFILES += tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
 DISTFILES += extern/chat_g77 extern/chat_gfortran
-DISTFILES += COPYING README
+DISTFILES += COPYING README ChangeLog
 DISTFILES += src/appIcon.icns
 
 distprep.target = distprep

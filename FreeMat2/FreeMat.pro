@@ -104,7 +104,7 @@ install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && ma
 }
 
 macx {
-install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake && make && ./disttool -mac && cd ../../ &&  mv build/FreeMat.app FreeMat$${VERSION}.app && find FreeMat$${VERSION}.app -name '*debug' -exec rm \{\} \; && hdiutil create -fs HFS+ -srcfolder FreeMat$${VERSION}.app FreeMat$${VERSION}.dmg
+install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake && make && ./disttool -mac && cd ../../ &&  mv build/FreeMat.app FreeMat$${VERSION}.app && find FreeMat$${VERSION}.app -name '*debug' -exec rm \{\} \; && cd help/latex && pdflatex main.tex && pdflatex main.tex && cd ../../ && rm -rf FreeMat$${VERSION} && mkdir FreeMat$${VERSION} && mv FreeMat$${VERSION}.app FreeMat$${VERSION} && mv help/latex/main.pdf FreeMat$${VERSION} && rm -rf FreeMat$${VERSION}.dmg && hdiutil create -fs HFS+ -srcfolder FreeMat$${VERSION} FreeMat$${VERSION}.dmg
 }
 
 win32 {

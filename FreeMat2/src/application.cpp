@@ -34,14 +34,16 @@
 #include "PathTool.hpp"
 #include "ToolDock.hpp"
 
-const int about_linecount = 20;
-const char *about_strings[] = {"Julie Basu - Spousal support",
+const int about_linecount = 23;
+const char *about_strings[] = {"Julie Basu - Worlds greatest spouse",
 			       "Maya Basu - Age 2 - Official laptop power button tester (it works!)",
 			       "Bruno De Man - General suggestions, support and FreeMat advocate",
 			       "Thomas Beutlich - MAT file support",
 			       "Brian Yanoff - Compatibility scripts",
 			       "Jeff Fessler - Support and test code, motivation for class support",
 			       "Al Danial - Sparse matrix support motivation and ideas",
+			       "MT19937 - Takuji Nishimura and Makoto Matsumoto's random number generator",
+			       "RANLIB - Random number generator library",
 			       "ATLAS - Optimized BLAS",
 			       "LAPACK - Linear algebra",
 			       "UMFPACK - Sparse linear equation solver",
@@ -54,6 +56,7 @@ const char *about_strings[] = {"Julie Basu - Spousal support",
 			       "libtecla - Inspiration for console interface code",
 			       "wxbasic - Inspiration for interpreter layout",
 			       "kde/konsole - Inspiration for QTTerm (GUI Console)",
+			       "tubeplot - Written by Anders Sandberg",
 			       "nsis - Installer on Win32"};
 
 #define MAKEASCII(x) x.toAscii().constData()

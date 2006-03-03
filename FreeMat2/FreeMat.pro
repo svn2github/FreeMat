@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-VERSION = 2.0
+VERSION = 2.0RC1
 
 QT += opengl 
 
@@ -30,29 +30,29 @@ blas.target = extern/LAPACK/BLAS/libblas.a
 blas.commands = cd extern/LAPACK/BLAS/SRC && make -f Makefile_freemat FC=$$F77
 
 atlas.target = extern/ATLAS/lib/BLAS_FreeMat/libatlas.a
-atlas.commands = cd extern && tar xfz atlas3.6.0.tar.gz && cd ATLAS && make < ../chat_$${F77} && make install arch=BLAS_FreeMat
+atlas.commands = cd extern/ATLAS && make < ../chat_$${F77} && make install arch=BLAS_FreeMat
 
 !win32 {
 fftw_double.target = extern/fftw-3.0.1/.libs/libfftw3.a
-fftw_double.commands = cd extern && tar xfz fftw-3.0.1.tar.gz && cd fftw-3.0.1 && ./configure && make
+fftw_double.commands = cd extern/fftw-3.0.1 && ./configure && make
 fftw_single.target = extern/fftw-3.0.1/.libs/libfftw3f.a
 fftw_single.commands = cd extern/fftw-3.0.1 && ./configure --enable-single && make
 avcall.target = extern/ffcall-1.10/avcall/.libs/libavcall.a
-avcall.commands = cd extern && tar xfz ffcall-1.10_freemat_patch.tar.gz && cd ffcall-1.10 && ./configure && make
+avcall.commands = cd extern/ffcall-1.10 && ./configure && make
 amd.target = extern/AMD/Lib/libamd.a
-amd.commands = cd extern && tar xfz AMD-1.2.tar.gz &&  cd AMD && make
+amd.commands = cd extern/AMD && make
 umfpack.target = extern/UMFPACK/Lib/libumfpack.a
-umfpack.commands = cd extern && tar xfz UFconfig-1.0_freemat_patch.tar.gz &&  tar xfz AMD-1.2.tar.gz && tar xfz UMFPACK-4.6.tar.gz && cd UMFPACK/Source && make
+umfpack.commands = cd extern/UMFPACK/Source && make
 }
 
 unix:!macx {
 matio.target = extern/matio/src/libmatio.a
-matio.commands = cd extern && tar xfz matio_freemat_patch.tar.gz && cd matio && ./configure && make
+matio.commands = cd extern/matio && ./configure && make
 }
 
 macx {
 matio.target = extern/matio/src/libmatio.a
-matio.commands = cd extern && tar xfz matio_freemat_patch.tar.gz && cd matio/zlib && CFLAGS=-DZ_PREFIX ./configure && make && cd ../src && cp matioConfig.h.macosX matioConfig.h && cd .. && make -f Makefile.macosx 
+matio.commands = cd extern/matio/zlib && CFLAGS=-DZ_PREFIX ./configure && make && cd ../src && cp matioConfig.h.macosX matioConfig.h && cd .. && make -f Makefile.macosx 
 LIBS += extern/matio/zlib/libz.a
 }
 
@@ -74,10 +74,10 @@ LIBS += -lws2_32
 
 
 arpack.target = extern/ARPACK/libarpack.a
-arpack.commands = cd extern && tar xfz arpack96_freemat_patch.tar.gz && cd ARPACK && make FC=$$F77
+arpack.commands = cd extern/ARPACK && make FC=$$F77
 
 lapack.target = extern/LAPACK/liblapack.a
-lapack.commands = cd extern && tar xfz lapack-3.0_freemat_patch.tgz && cd LAPACK/SRC && make -f Makefile_freemat FC=$$F77
+lapack.commands = cd extern/LAPACK/SRC && make -f Makefile_freemat FC=$$F77
 
 
 !macx {
@@ -85,7 +85,7 @@ RUNTARGET = $$DESTDIR/$$TARGET
 }
 
 macx {
-RUNTARGET = $$DESTDIR/$$TARGET/Contents/MacOS/FreeMat
+RUNTARGET = $$DESTDIR/$${TARGET}.app/Contents/MacOS/FreeMat
 }
 
 help.target = help
@@ -338,4 +338,8 @@ distprep.target = distprep
 distprep.depends = FORCE
 distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clean && cd ../ARPACK && make clean && cd ../ffcall-1.10 && make clean && cd ../LAPACK/SRC && make -f Makefile_freemat clean && cd ../../matio && make clean && cd ../UMFPACK && make clean 
 
-QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install distprep
+distrepack.target = distrepack
+distrepack.depends = FORCE
+distrepack.commands = rm -rf $${TARGET}$${VERSION} && tar xfz $${TARGET}$${VERSION}.tar.gz && cd $${TARGET}$${VERSION}/extern && tar xfz AMD-1.2.tar.gz && rm AMD-1.2.tar.gz && tar xfz arpack96_freemat_patch.tar.gz && rm arpack96_freemat_patch.tar.gz && tar xfz atlas3.6.0.tar.gz && rm atlas3.6.0.tar.gz && tar xfz ffcall-1.10_freemat_patch.tar.gz && rm ffcall-1.10_freemat_patch.tar.gz && tar xfz fftw-3.0.1.tar.gz && rm fftw-3.0.1.tar.gz && tar xfz matio_freemat_patch.tar.gz && rm matio_freemat_patch.tar.gz && tar xfz UFconfig-1.0_freemat_patch.tar.gz && rm UFconfig-1.0_freemat_patch.tar.gz && tar xfz UMFPACK-4.6.tar.gz && rm UMFPACK-4.6.tar.gz && tar xfz lapack-3.0_freemat_patch.tgz && rm lapack-3.0_freemat_patch.tgz && cd ../.. && tar cfz $${TARGET}$${VERSION}.tar.gz $${TARGET}$${VERSION} && zip -r $${TARGET}$${VERSION}.zip $${TARGET}$${VERSION}
+
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install distprep distrepack

@@ -2,8 +2,8 @@
 
 #### Start of system configuration section. ####
 
-HOST = powerpc-apple-darwin7.9.0
-CPU = rs6000
+HOST = i686-pc-linux-gnu
+CPU = i386
 
 # Directories used by "make":
 srcdir = .

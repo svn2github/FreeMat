@@ -25,17 +25,11 @@ cross:
 
 # remove object files, but keep the compiled programs and library archives
 clean:
-	( cd Source ; make clean )
-	( cd Demo   ; make clean )
-	( cd MATLAB ; make clean )
-	( cd Doc    ; make clean )
+	( cd Source ; make purge )
 
 # clean, and then remove compiled programs and library archives
 purge:
 	( cd Source ; make purge )
-	( cd Demo   ; make purge )
-	( cd MATLAB ; make purge )
-	( cd Doc    ; make purge )
 
 distclean: purge
 

@@ -2,9 +2,9 @@
 
 #### Start of system configuration section. ####
 
-HOST = powerpc-apple-darwin7.9.0
-CPU = rs6000
-OS = darwin7.9.0
+HOST = i686-pc-linux-gnu
+CPU = i386
+OS = linux-gnu
 
 # Directories used by "make":
 srcdir = .
@@ -24,7 +24,7 @@ CC = gcc
 CFLAGS = -g -O2
 CPP = gcc -E
 INCLUDES = -I. -I$(srcdir)
-ASPFLAGS = `if test true = true; then echo '-DASM_UNDERSCORE'; fi`
+ASPFLAGS = `if test false = true; then echo '-DASM_UNDERSCORE'; fi`
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
 LIBTOOL_LINK = $(LIBTOOL) --mode=link
@@ -49,7 +49,7 @@ SHELL = /bin/sh
 # Needed by $(LIBTOOL).
 top_builddir = .
 
-OBJECTS = trampoline.lo  cache-$(CPU).lo
+OBJECTS = trampoline.lo 
 
 all : $(OBJECTS) libtrampoline.la trampoline_r.h $(srcdir)/trampoline_r.3 $(srcdir)/trampoline_r.html
 

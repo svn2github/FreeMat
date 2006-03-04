@@ -2,9 +2,9 @@
 
 #### Start of system configuration section. ####
 
-HOST = powerpc-apple-darwin7.9.0
-CPU = rs6000
-OS = darwin7.9.0
+HOST = i686-pc-linux-gnu
+CPU = i386
+OS = linux-gnu
 
 # Directories used by "make":
 srcdir = .
@@ -24,7 +24,7 @@ CC = gcc
 CFLAGS = -g -O2
 CPP = gcc -E
 INCLUDES = -I. -I$(srcdir)
-ASPFLAGS = `if test true = true; then echo '-DASM_UNDERSCORE'; fi`
+ASPFLAGS = `if test false = true; then echo '-DASM_UNDERSCORE'; fi`
 AR = ar
 AR_FLAGS = rc
 RANLIB = ranlib
@@ -41,7 +41,7 @@ INSTALL_DATA = $(INSTALL) -m 644
 
 SHELL = /bin/sh
 
-OBJECTS = trampoline.o  cache-$(CPU).o
+OBJECTS = trampoline.o 
 
 all : $(OBJECTS) libtrampoline.a trampoline.h $(srcdir)/trampoline.3 $(srcdir)/trampoline.html
 

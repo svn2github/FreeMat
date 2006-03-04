@@ -481,7 +481,7 @@ s,@CPP@,gcc -E,;t t
 s,@EGREP@,grep -E,;t t
 s,@CC_GCC@,true,;t t
 s,@GCC_X_NONE@,-x none,;t t
-s,@AS_UNDERSCORE@,true,;t t
+s,@AS_UNDERSCORE@,false,;t t
 s,@RANLIB@,ranlib,;t t
 s,@SET_MAKE@,,;t t
 s,@INSTALL@,/usr/bin/install -c,;t t
@@ -489,14 +489,14 @@ s,@INSTALL_PROGRAM@,$(INSTALL),;t t
 s,@INSTALL_DATA@,$(INSTALL) -m 644,;t t
 s,@CP@,cp -p,;t t
 s,@LN@,ln,;t t
-s,@build@,powerpc-apple-darwin7.9.0,;t t
-s,@build_cpu@,powerpc,;t t
-s,@build_vendor@,apple,;t t
-s,@build_os@,darwin7.9.0,;t t
-s,@host@,powerpc-apple-darwin7.9.0,;t t
-s,@host_cpu@,rs6000,;t t
-s,@host_vendor@,apple,;t t
-s,@host_os@,darwin7.9.0,;t t
+s,@build@,i686-pc-linux-gnu,;t t
+s,@build_cpu@,i686,;t t
+s,@build_vendor@,pc,;t t
+s,@build_os@,linux-gnu,;t t
+s,@host@,i686-pc-linux-gnu,;t t
+s,@host_cpu@,i386,;t t
+s,@host_vendor@,pc,;t t
+s,@host_os@,linux-gnu,;t t
 s,@LN_S@,ln -s,;t t
 s,@ECHO@,echo,;t t
 s,@ac_ct_RANLIB@,,;t t
@@ -813,8 +813,7 @@ ${ac_dA}PACKAGE_TARNAME${ac_dB}PACKAGE_TARNAME${ac_dC}""${ac_dD}
 ${ac_dA}PACKAGE_VERSION${ac_dB}PACKAGE_VERSION${ac_dC}""${ac_dD}
 ${ac_dA}PACKAGE_STRING${ac_dB}PACKAGE_STRING${ac_dC}""${ac_dD}
 ${ac_dA}PACKAGE_BUGREPORT${ac_dB}PACKAGE_BUGREPORT${ac_dC}""${ac_dD}
-${ac_dA}ASM_UNDERSCORE${ac_dB}ASM_UNDERSCORE${ac_dC}${ac_dD}
-${ac_dA}__rs6000__${ac_dB}__rs6000__${ac_dC}1${ac_dD}
+${ac_dA}__i386__${ac_dB}__i386__${ac_dC}1${ac_dD}
 ${ac_dA}STDC_HEADERS${ac_dB}STDC_HEADERS${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_SYS_TYPES_H${ac_dB}HAVE_SYS_TYPES_H${ac_dC}1${ac_dD}
 ${ac_dA}HAVE_SYS_STAT_H${ac_dB}HAVE_SYS_STAT_H${ac_dC}1${ac_dD}
@@ -844,8 +843,7 @@ ${ac_uA}PACKAGE_TARNAME${ac_uB}PACKAGE_TARNAME${ac_uC}""${ac_uD}
 ${ac_uA}PACKAGE_VERSION${ac_uB}PACKAGE_VERSION${ac_uC}""${ac_uD}
 ${ac_uA}PACKAGE_STRING${ac_uB}PACKAGE_STRING${ac_uC}""${ac_uD}
 ${ac_uA}PACKAGE_BUGREPORT${ac_uB}PACKAGE_BUGREPORT${ac_uC}""${ac_uD}
-${ac_uA}ASM_UNDERSCORE${ac_uB}ASM_UNDERSCORE${ac_uC}${ac_uD}
-${ac_uA}__rs6000__${ac_uB}__rs6000__${ac_uC}1${ac_uD}
+${ac_uA}__i386__${ac_uB}__i386__${ac_uC}1${ac_uD}
 ${ac_uA}STDC_HEADERS${ac_uB}STDC_HEADERS${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_SYS_TYPES_H${ac_uB}HAVE_SYS_TYPES_H${ac_uC}1${ac_uD}
 ${ac_uA}HAVE_SYS_STAT_H${ac_uB}HAVE_SYS_STAT_H${ac_uC}1${ac_uD}

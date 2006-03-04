@@ -2,9 +2,9 @@
 
 #### Start of system configuration section. ####
 
-HOST = powerpc-apple-darwin7.9.0
-CPU = rs6000
-OS = darwin7.9.0
+HOST = i686-pc-linux-gnu
+CPU = i386
+OS = linux-gnu
 
 # Directories used by "make":
 srcdir = .
@@ -24,7 +24,7 @@ CC = gcc
 CFLAGS = -g -O2
 CPP = gcc -E
 INCLUDES = -I. -I$(srcdir)
-ASPFLAGS = `if test true = true; then echo '-DASM_UNDERSCORE'; fi`
+ASPFLAGS = `if test false = true; then echo '-DASM_UNDERSCORE'; fi`
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBTOOL_COMPILE = $(LIBTOOL) --mode=compile
 LIBTOOL_LINK = $(LIBTOOL) --mode=link
@@ -81,7 +81,7 @@ avcall-m68k.lo : avcall-m68k.s
 	$(LIBTOOL_COMPILE) $(CC) -x none -c avcall-m68k.s
 
 avcall-m68k.s : $(srcdir)/avcall-m68k.mit.S $(srcdir)/avcall-m68k.mot.s
-	$(CPP) $(ASPFLAGS) $(srcdir)/avcall-m68k.mit.S | grep -v '^ *#line' | grep -v '^#' | sed -e 's,% ,%,g' -e 's,//.*$$,,' | if test true = true; then sed -e 's/\$$//g'; else sed -e 's/\$$/%/g'; fi > avcall-m68k.s
+	$(CPP) $(ASPFLAGS) $(srcdir)/avcall-m68k.mit.S | grep -v '^ *#line' | grep -v '^#' | sed -e 's,% ,%,g' -e 's,//.*$$,,' | if test false = true; then sed -e 's/\$$//g'; else sed -e 's/\$$/%/g'; fi > avcall-m68k.s
 
 avcall-mips.lo : avcall-mips.s
 	$(LIBTOOL_COMPILE) $(CC) -x none -c avcall-mips.s

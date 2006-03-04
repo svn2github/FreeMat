@@ -2,9 +2,9 @@
 
 #### Start of system configuration section. ####
 
-HOST = powerpc-apple-darwin7.9.0
-CPU = rs6000
-OS = darwin7.9.0
+HOST = i686-pc-linux-gnu
+CPU = i386
+OS = linux-gnu
 
 # Directories used by "make":
 srcdir = .
@@ -24,7 +24,7 @@ CC = gcc
 CFLAGS = -g -O2
 CPP = gcc -E
 INCLUDES = -I. -I$(srcdir)
-ASPFLAGS = `if test true = true; then echo '-DASM_UNDERSCORE'; fi`
+ASPFLAGS = `if test false = true; then echo '-DASM_UNDERSCORE'; fi`
 AR = ar
 AR_FLAGS = rc
 RANLIB = ranlib
@@ -72,7 +72,7 @@ vacall-m68k.o : vacall-m68k.s
 	$(CC) -x none -c vacall-m68k.s
 
 vacall-m68k.s : $(srcdir)/vacall-m68k.mit.S $(srcdir)/vacall-m68k.mot.s
-	$(CPP) $(ASPFLAGS) $(srcdir)/vacall-m68k.mit.S | grep -v '^ *#line' | grep -v '^#' | sed -e 's,% ,%,g' -e 's,//.*$$,,' | if test true = true; then sed -e 's/\$$//g'; else sed -e 's/\$$/%/g'; fi > vacall-m68k.s
+	$(CPP) $(ASPFLAGS) $(srcdir)/vacall-m68k.mit.S | grep -v '^ *#line' | grep -v '^#' | sed -e 's,% ,%,g' -e 's,//.*$$,,' | if test false = true; then sed -e 's/\$$//g'; else sed -e 's/\$$/%/g'; fi > vacall-m68k.s
 
 vacall-mips.o : vacall-mips.s
 	$(CC) -x none -c vacall-mips.s

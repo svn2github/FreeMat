@@ -12,16 +12,11 @@ all:
 	( cd ../AMD ; make )
 	( cd ../AMD/MATLAB ; make )
 	( cd Source ; make )
-	( cd Demo   ; make )
-	( cd MATLAB ; make )
-	- cat Doc/License
 
 # compile just the C-callable libraries and demo programs (not mexFunctions)
 library:
 	( cd ../AMD ; make )
 	( cd Source ; make )
-	( cd Demo   ; make )
-	- cat Doc/License
 
 # compile the FORTRAN interface and demo program
 fortran:
@@ -37,19 +32,12 @@ hb:
 
 # remove object files, but keep the compiled programs and library archives
 clean:
-	( cd ../AMD ; make clean )
-	( cd Source ; make clean )
-	( cd Demo   ; make clean )
-	( cd MATLAB ; make clean )
-	( cd Doc    ; make clean )
+	( cd Source ; make purge )
 
 # clean, and then remove compiled programs and library archives
 purge:
 	( cd ../AMD ; make purge )
 	( cd Source ; make purge )
-	( cd Demo   ; make purge )
-	( cd MATLAB ; make purge )
-	( cd Doc    ; make purge )
 
 # create PDF documents for the original distribution
 doc:

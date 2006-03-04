@@ -1,0 +1,14 @@
+Changes in 1.1.4 (9 February 2006)
+* Changed Licensing from the GNU General Public License to the GNU Lesser
+  General Public License.
+* Added support for reading numeric version 4 MAT files
+* Added support for sparse datatypes other than double.  Although Matlab does
+  not support these types, other free software does.
+* Writing compressed variables is supported for Numeric arrays.  Future versions
+  will implement character,sparse,cell, and structure arrays.
+* A fortran 90/95 interface has been incorporated.  Not all functions are
+  implemented yet, but more will come and it is at least functional now.
+  Hopefully feedback will help guide the fortran interface development.
+* Replaced preprocessor defines for types,classes,etc. with enum's.
+Bug Fixes in 1.1.4 (9 January 2006)
+* Mat_VarReadData did not handle complex data

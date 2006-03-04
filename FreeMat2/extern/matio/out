@@ -1,0 +1,468 @@
+
+c:\cygwin\home\chulbert\matio>set CC=cl 
+
+c:\cygwin\home\chulbert\matio>set FC=ifort 
+
+c:\cygwin\home\chulbert\matio>set LD=LINK 
+
+c:\cygwin\home\chulbert\matio>set AR=LIB 
+
+c:\cygwin\home\chulbert\matio>set prefix=c:\cygwin\home\chulbert\matio_v1.1.4 
+
+c:\cygwin\home\chulbert\matio>set exec_prefix=c:\cygwin\home\chulbert\matio_v1.1.4 
+
+c:\cygwin\home\chulbert\matio>set CFLAGS="-showIncludes" 
+
+c:\cygwin\home\chulbert\matio>REM Set to 1 to build the fortran interface, otherwise set to 0 
+
+c:\cygwin\home\chulbert\matio>set build_fortran=1 
+
+c:\cygwin\home\chulbert\matio>REM Set build_zlib to 1 to build the zlib with matio, or set to 0 and uncomment 
+
+c:\cygwin\home\chulbert\matio>REM the ZLIB_CFLAGS and ZLIB_LIBS if zlib has already been built 
+
+c:\cygwin\home\chulbert\matio>set build_zlib=1 
+
+c:\cygwin\home\chulbert\matio>REM set ZLIB_CFLAGS=-Ic:\include 
+
+c:\cygwin\home\chulbert\matio>REM set ZLIB_LIBS=-LIBPATH:"c:\lib" zlib.lib 
+
+c:\cygwin\home\chulbert\matio>cd build-windows 
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	for %d in (zlib libmatio test) do nmake sub THIS=%d
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake sub THIS=zlib 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd zlib
+	nmake -e
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	for %f in (adler32.c compress.c crc32.c deflate.c gzio.c infback.c  inffast.c inflate.c inftrees.c trees.c uncompr.c zutil.c) do cl -c "-showIncludes" ..\..\zlib\%f
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\adler32.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+adler32.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zconf.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\compress.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+compress.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zconf.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\crc32.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+crc32.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: C:\VS2003\VC7\INCLUDE\limits.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\crc32.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\deflate.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+deflate.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\deflate.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:    c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\errno.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\gzio.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+gzio.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdarg.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\infback.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+infback.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inftrees.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inflate.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inffast.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inffixed.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\inffast.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+inffast.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inftrees.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inflate.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inffast.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\inflate.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+inflate.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inftrees.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inflate.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inffast.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inffixed.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\inftrees.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+inftrees.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\inftrees.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\trees.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+trees.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\deflate.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:    c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:   C:\VS2003\VC7\INCLUDE\errno.h
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\trees.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\uncompr.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+uncompr.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zconf.h
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>cl -c "-showIncludes" ..\..\zlib\zutil.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+zutil.c
+Note: including file: c:\cygwin\home\chulbert\matio\zlib\zutil.h
+Note: including file:  c:\cygwin\home\chulbert\matio\zlib\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\matio\zlib\zconf.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stddef.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\string.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\errno.h
+	LIB -nologo -out:zlib.lib adler32.obj compress.obj crc32.obj deflate.obj gzio.obj infback.obj  inffast.obj inflate.obj inftrees.obj trees.obj uncompr.obj zutil.obj 
+	cd ..
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake sub THIS=libmatio 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd libmatio
+	nmake -e
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	for %f in (snprintf.c endian.c io.c read_data.c inflate.c  mat5.c mat4.c mat.c) do cl -c "-showIncludes" ..\..\src\%f
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\snprintf.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+snprintf.c
+..\..\src\snprintf.c(90) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\endian.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+endian.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: c:\cygwin\home\chulbert\matio\src\matio.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdio.h
+c:\cygwin\home\chulbert\matio\src\matio.h(28) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\io.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+io.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdarg.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: C:\VS2003\VC7\INCLUDE\string.h
+Note: including file: c:\cygwin\home\chulbert\include\matio.h
+Note: including file:  c:\cygwin\home\chulbert\include\config.h
+Note: including file:  c:\cygwin\home\chulbert\include\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\include\zconf.h
+..\..\src\io.c(355) : warning C4028: formal parameter 1 different from declaration
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\read_data.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+read_data.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: C:\VS2003\VC7\INCLUDE\string.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: C:\VS2003\VC7\INCLUDE\math.h
+Note: including file: C:\VS2003\VC7\INCLUDE\time.h
+Note: including file: c:\cygwin\home\chulbert\matio\src\matio.h
+c:\cygwin\home\chulbert\matio\src\matio.h(28) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\inflate.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+inflate.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: c:\cygwin\home\chulbert\include\zlib.h
+Note: including file:  c:\cygwin\home\chulbert\include\zconf.h
+Note: including file: c:\cygwin\home\chulbert\matio\src\matio.h
+Note: including file:  C:\VS2003\VC7\INCLUDE\stdio.h
+c:\cygwin\home\chulbert\matio\src\matio.h(28) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\mat5.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+mat5.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: C:\VS2003\VC7\INCLUDE\string.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: C:\VS2003\VC7\INCLUDE\math.h
+Note: including file: C:\VS2003\VC7\INCLUDE\time.h
+Note: including file: c:\cygwin\home\chulbert\matio\src\matio.h
+c:\cygwin\home\chulbert\matio\src\matio.h(28) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\mat4.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+mat4.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: C:\VS2003\VC7\INCLUDE\math.h
+Note: including file: c:\cygwin\home\chulbert\matio\src\matio.h
+c:\cygwin\home\chulbert\matio\src\matio.h(28) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+
+C:\cygwin\home\chulbert\matio\build-windows\libmatio>cl -c "-showIncludes" ..\..\src\mat.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+mat.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: C:\VS2003\VC7\INCLUDE\string.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: C:\VS2003\VC7\INCLUDE\math.h
+Note: including file: C:\VS2003\VC7\INCLUDE\time.h
+Note: including file: c:\cygwin\home\chulbert\matio\src\matio.h
+c:\cygwin\home\chulbert\matio\src\matio.h(28) : fatal error C1083: Cannot open include file: 'matioConfig.h': No such file or directory
+NMAKE : fatal error U1077: 'for' : return code '0x2'
+Stop.
+NMAKE : fatal error U1077: 'c:\VS2003\VC7\BIN\nmake.exe' : return code '0x2'
+Stop.
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake sub THIS=test 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd test
+	nmake -e
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	for %f in (test_mat.c) do cl -c "-showIncludes" ..\..\test\%f
+
+C:\cygwin\home\chulbert\matio\build-windows\test>cl -c "-showIncludes" ..\..\test\test_mat.c 
+Microsoft (R) 32-bit C/C++ Standard Compiler Version 13.10.3077 for 80x86
+Copyright (C) Microsoft Corporation 1984-2002. All rights reserved.
+
+test_mat.c
+Note: including file: C:\VS2003\VC7\INCLUDE\stdlib.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdarg.h
+Note: including file: C:\VS2003\VC7\INCLUDE\stdio.h
+Note: including file: C:\VS2003\VC7\INCLUDE\string.h
+Note: including file: C:\VS2003\VC7\INCLUDE\math.h
+Note: including file: c:\cygwin\home\chulbert\include\matio.h
+Note: including file:  c:\cygwin\home\chulbert\include\config.h
+Note: including file:  c:\cygwin\home\chulbert\include\zlib.h
+Note: including file:   c:\cygwin\home\chulbert\include\zconf.h
+..\..\test\test_mat.c(321) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(323) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(325) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(327) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(329) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(331) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(333) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(335) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(337) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(339) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(341) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(343) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(345) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(347) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(349) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(351) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(394) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(395) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(467) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(469) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(490) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(492) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(647) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(693) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(695) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(720) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(722) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(903) : warning C4090: 'function' : different 'const' qualifiers
+..\..\test\test_mat.c(905) : warning C4090: 'function' : different 'const' qualifiers
+	LINK -out:test_mat.exe *.obj ..\libmatio\libmatio.lib ..\zlib\zlib.lib
+Microsoft (R) Incremental Linker Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+LINK : fatal error LNK1181: cannot open input file '..\libmatio\libmatio.lib'
+NMAKE : fatal error U1077: 'LINK' : return code '0x49d'
+Stop.
+NMAKE : fatal error U1077: 'c:\VS2003\VC7\BIN\nmake.exe' : return code '0x2'
+Stop.
+NMAKE : fatal error U1077: 'for' : return code '0x2'
+Stop.
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake install 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	for %d in (zlib libmatio test) do nmake install-sub THIS=%d
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake install-sub THIS=zlib 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd zlib
+	nmake -e install
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	if not exist c:\cygwin\home\chulbert\matio_v1.1.4\lib mkdir c:\cygwin\home\chulbert\matio_v1.1.4\lib
+	copy *.lib c:\cygwin\home\chulbert\matio_v1.1.4\lib
+zlib.lib
+        1 file(s) copied.
+	if not exist c:\cygwin\home\chulbert\matio_v1.1.4\include mkdir c:\cygwin\home\chulbert\matio_v1.1.4\include
+	for %f in (..\..\zlib\zconf.h ..\..\zlib\zlib.h) do copy %f c:\cygwin\home\chulbert\matio_v1.1.4\include
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>copy ..\..\zlib\zconf.h c:\cygwin\home\chulbert\matio_v1.1.4\include 
+        1 file(s) copied.
+
+C:\cygwin\home\chulbert\matio\build-windows\zlib>copy ..\..\zlib\zlib.h c:\cygwin\home\chulbert\matio_v1.1.4\include 
+        1 file(s) copied.
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake install-sub THIS=libmatio 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd libmatio
+	nmake -e install
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	if not exist c:\cygwin\home\chulbert\matio_v1.1.4\lib mkdir c:\cygwin\home\chulbert\matio_v1.1.4\lib
+	copy *.lib c:\cygwin\home\chulbert\matio_v1.1.4\lib
+*.lib 
+The system cannot find the file specified.
+        0 file(s) copied.
+NMAKE : fatal error U1077: 'copy' : return code '0x1'
+Stop.
+NMAKE : fatal error U1077: 'c:\VS2003\VC7\BIN\nmake.exe' : return code '0x2'
+Stop.
+
+C:\cygwin\home\chulbert\matio\build-windows>nmake install-sub THIS=test 
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	cd test
+	nmake -e install
+
+Microsoft (R) Program Maintenance Utility Version 7.10.3077
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+	if not exist c:\cygwin\home\chulbert\matio_v1.1.4\bin mkdir c:\cygwin\home\chulbert\matio_v1.1.4\bin
+	copy *.exe c:\cygwin\home\chulbert\matio_v1.1.4\bin
+*.exe 
+The system cannot find the file specified.
+        0 file(s) copied.
+NMAKE : fatal error U1077: 'copy' : return code '0x1'
+Stop.
+NMAKE : fatal error U1077: 'c:\VS2003\VC7\BIN\nmake.exe' : return code '0x2'
+Stop.
+NMAKE : fatal error U1077: 'for' : return code '0x2'
+Stop.
+
+C:\cygwin\home\chulbert\matio\build-windows>cd .. 

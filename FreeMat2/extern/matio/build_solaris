@@ -1,0 +1,36 @@
+#! /bin/sh
+#  reconfig
+#    Runs configure scripts
+
+DEFAULT_OPTS="--prefix=$HOME/matio_v1.1.2 --exec-prefix=$HOME/matio_v1.1.2"
+
+cd zlib
+CC=gcc \
+CFLAGS='-DZ_PREFIX -v -g -fPIC -fexceptions' \
+LDFLAGS='-fexceptions' \
+./configure $DEFAULT_OPTS
+make
+make install
+make clean
+cd ..
+
+cd build-solaris
+
+ZLIB_OPTS="--with-zlib-prefix=$HOME/matio_v1.1.2"
+DOCS_OPTS="--with-docs=no"
+CC=gcc \
+CFLAGS='-DZ_PREFIX -v -O3 -g -ffast-math -Wall -pedantic -fPIC -fexceptions' \
+LDFLAGS='-fexceptions' \
+../configure $DEFAULT_OPTS $ZLIB_OPTS $DOCS_OPTS
+
+if test $? = 0
+then
+    make
+fi
+
+if test $? = 0
+then
+    make install
+fi
+
+cd ..

@@ -1,0 +1,6 @@
+DEBUG_FCFLAGS="-O0 -Wall -g"
+PROFILE_FCFLAGS="-g -p"
+FCFLAGS="$FCFLAGS"
+REL_FCFLAGS="-O3 -ffast-math -Wl,-s"
+FC_ARCH32="-m32"
+FC_ARCH64="-m64"

@@ -1,0 +1,46 @@
+#! /bin/sh
+#  reconfig
+#    Runs configure scripts
+
+# DEFAULT_OPTS="--prefix=$HOME/matio_v1.1.2 --exec-prefix=$HOME/matio_v1.1.2 --enable-debug --enable-32bit --disable-64bit"
+m=`uname -m`
+case $m in
+    x86_64)
+        ARCH=64
+        ;;
+    *)
+        ARCH=32
+        ;;
+esac
+
+if test "$ARCH" = "64"
+then
+    DEFAULT_OPTS="--prefix=/apps --exec-prefix=/apps --enable-debug --disable-32bit --enable-64bit --libdir=/apps/lib64 --with-pic"
+else
+    DEFAULT_OPTS="--prefix=/apps --exec-prefix=/apps --enable-debug --with-pic"
+fi
+
+cd zlib
+./configure CC=gcc CFLAGS="-m$ARCH -O3 -ffast-math -fPIC" LDFLAGS='-fexceptions'  --prefix=$HOME
+make;make install;make clean
+cd ..
+
+cd build-linux
+
+ZLIB_OPTS="--with-zlib-prefix=$HOME/matio_v1.1.4"
+#ZLIB_OPTS="--with-zlib=no"
+DOCS_OPTS="--enable-docs=no"
+FORTRAN="--enable-fortran=no"
+../configure CFLAGS= CC=gcc FC=ifort $DEFAULT_OPTS $FORTRAN $ZLIB_OPTS $DOCS_OPTS
+
+if test $? = 0
+then
+    make > matio.build 2>&1
+fi
+
+if test $? = 0
+then
+    make install > matio.instl 2>&1
+fi
+
+cd ..

@@ -1,0 +1,26 @@
+CC = gcc
+
+all: libavcall.a avcall.h tests.exe
+
+OBJECTS = avcall-i386.o structcpy.o
+
+libavcall.a : $(OBJECTS)
+	ar crs libavcall.a $(OBJECTS)
+	mkdir .libs
+	copy libavcall.a .libs
+	
+avcall-i386.o : avcall-i386.asm
+	$(CC) -c -x assembler avcall-i386.asm
+
+structcpy.o : structcpy.c
+	$(CC) $(CFLAGS) -c structcpy.c
+
+avcall.h :
+	copy avcall.h.mingw32 avcall.h
+
+	
+clean:
+	del *.o avcall.h
+
+tests.exe : tests.o
+	$(CC) -o tests.exe tests.o -lavcall -L.

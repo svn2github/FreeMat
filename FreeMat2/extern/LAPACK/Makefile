@@ -11,7 +11,7 @@ all: install lib testing blas_testing timing blas_timing
 lib: lapacklib tmglib
 #lib: blaslib lapacklib tmglib
 
-clean: cleanlib cleantesting cleantiming
+clean: cleanlib 
 
 install:
 	( cd INSTALL; $(MAKE); ./testlsame; ./testslamch; \
@@ -74,6 +74,7 @@ cleanlib:
 	( cd BLAS/SRC; $(MAKE) clean )
 	( cd SRC; $(MAKE) clean )
 	( cd TESTING/MATGEN; $(MAKE) clean )
+	( rm -rf liblapack.a )
 
 cleantesting:
 	( cd TESTING/LIN; $(MAKE) clean )

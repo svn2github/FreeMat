@@ -8,8 +8,6 @@ default: library
 # Do not compile the FORTRAN versions.
 all:
 	( cd Source ; make )
-	( cd Demo   ; make )
-	( cd MATLAB ; make )
 
 # compile just the C-callable libraries and demo programs (not mexFunctions)
 library:

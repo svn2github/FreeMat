@@ -12,7 +12,6 @@ all:
 # compile just the C-callable libraries and demo programs (not mexFunctions)
 library:
 	( cd Source ; make )
-	( cd Demo   ; make )
 
 # compile the FORTRAN libraries and demo programs (not compiled by "make all")
 fortran:

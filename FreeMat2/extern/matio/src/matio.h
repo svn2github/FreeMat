@@ -53,7 +53,7 @@
         typedef          long   mat_int32_t;
         typedef unsigned long   mat_uint32_t;
 #   else
-        #error Can't find a suitable type for 32-bit integers
+        #error Cant find a suitable type for 32-bit integers
 #   endif
 #   if SIZEOF_SHORT == 2
         typedef          short  mat_int16_t;
@@ -62,7 +62,7 @@
         typedef          int    mat_int16_t;
         typedef unsigned int    mat_uint16_t;
 #   else
-        #error Can't find a suitable type for 16-bit integers
+        #error Cant find a suitable type for 16-bit integers
 #   endif
 typedef   signed char   mat_int8_t;
 typedef unsigned char   mat_uint8_t;

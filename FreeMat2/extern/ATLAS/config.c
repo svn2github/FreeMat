@@ -3162,6 +3162,8 @@ enum MACHTYPE GetArch(FILE *fpout, FILE *fplog, enum OSTYPE OS, char *targ,
       return(mach);
    }
 
+   return (mach);
+
    switch(OS)
    {
    case OSFreeBSD:
@@ -3439,12 +3441,13 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
    assert(fplog);
    assert(tmpnam(tnam));
    ATL_mprintf(2, fplog, stdout, "ATLAS3.6.0 configure started.\n\n");
-   NLINES = GetScreenHeight();
+   //   NLINES = GetScreenHeight();
+   NLINES = 25;
 
    DisplayFile("CONFIG/errata.txt", stdout, NLINES);
-   if (!IsYes('y', "", "Have you scoped the errata file?")) exit(-1);
+   //   if (!IsYes('y', "", "Have you scoped the errata file?")) exit(-1);
    DisplayFile("CONFIG/init.txt", stdout, NLINES);
-   if (!IsYes('y', "", "Are you ready to continue?")) exit(-1);
+   //   if (!IsYes('y', "", "Are you ready to continue?")) exit(-1);
 
 /*
  * It doesn't seem to quite work right anymore, rsh is no longer available,
@@ -3498,19 +3501,20 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
    if (ISAX == ISA_3DNow1 || ISAX == ISA_3DNow2)
    {
       DisplayFile("CONFIG/3DNow.txt", stdout, NLINES);
-      Use3DNow = IsYes('n', "   ", "Use 3DNow! for computation?");
+      Use3DNow = 1; // IsYes('n', "   ", "Use 3DNow! for computation?");
    }
    i = ncpu;
    if (!ncpu) ncpu = ProbeNCPU(OS, mach, targ, TOPdir);
    if (ncpu != 1) /* user may want to thread */
    {
       DisplayFile("CONFIG/pthread.txt", stdout, NLINES);
-      if ( IsYes(ncpu > 1 ? 'y' : 'n', "   ", "enable Posix threads support?") )
-      {
-         THREADS=1;
-         if (!i) ncpu = GetNCPU(OS, mach, targ, TOPdir);
-      }
-      else ncpu = 1;
+/*       if ( IsYes(ncpu > 1 ? 'y' : 'n', "   ", "enable Posix threads support?") ) */
+/*       { */
+/*          THREADS=1; */
+/*          if (!i) ncpu = GetNCPU(OS, mach, targ, TOPdir); */
+/*       } */
+/*       else ncpu = 1; */
+      ncpu = 1;
    }
    if (ncpu) ATL_mprintf(2, fplog, stdout, "Number of CPUs: %d\n\n", ncpu);
    else ATL_mprintf(2, fplog, stdout,
@@ -3529,26 +3533,26 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
    L1SIZE = GetCacheSize(OS,  mach, targ, TOPdir, 1, &i);
    if (!i) L1SIZE = -1;
 
-/*
- * Linux paging may screw up L1 cache on 604e, so force detection
- */
+   /*
+    * Linux paging may screw up L1 cache on 604e, so force detection
+    */
    if (OS == OSLinux && mach == PPC604e) L1SIZE = -1;
-
+   
    L2SIZE = GetCacheSize(OS,  mach, targ, TOPdir, -2, &L2IsKnown) * 1024;
    if (L2IsKnown)
-      ATL_mprintf(2, fplog, stdout,
-                  "Required cache flush detected as : %d bytes\n", L2SIZE);
+     ATL_mprintf(2, fplog, stdout,
+		 "Required cache flush detected as : %d bytes\n", L2SIZE);
    i = GetCompInfo(stdout, fplog, OS, mach, ISAX, targ, redir, TOPdir,
                    F77, F77FLAGS, FLINKER, FLINKFLAGS, FCLINKFLAGS,
                    GOODGCC, CC, CCFLAGS, CLINKER, CLINKFLAGS,
                    MCC, MMFLAGS, BLASlib);
    if (!i) /* no good gcc is found, issue warning */
-   {
-      if (MachIsX86(mach)) /* bad gcc warnings */
-      {
-         BADMCC = 1;
-         DisplayFile("CONFIG/gcc3x86.txt", stdout, NLINES);
-         if (IsYes('y', "   ", "Stop ATLAS install?")) exit(-1);
+     {
+       if (MachIsX86(mach)) /* bad gcc warnings */
+	 {
+	   BADMCC = 1;
+	   DisplayFile("CONFIG/gcc3x86.txt", stdout, NLINES);
+	   if (IsYes('y', "   ", "Stop ATLAS install?")) exit(-1);
       }
       else if (MachIsUS(mach))
       {
@@ -3625,12 +3629,14 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
 "If you want to just trust these default values, you can use express setup,\n");
       fprintf(stdout,
 "drastically reducing the amount of questions you are required to answer\n\n");
-      GOGO = IsYes('y', "   ", "use express setup?");
+      //      GOGO = IsYes('y', "   ", "use express setup?");
+      GOGO = 1;
       fprintf(stdout, "\n\n");
    }
 
    ierr = 0;
    DisplayFile("CONFIG/arch.txt", stdout, NLINES);
+   strcpy(ARCH,"BLAS_FreeMat");
    if (*ARCH == '\0')
    {
       if (OS == OSOther) strcpy(ARCH, "UNKNOWN");
@@ -3663,20 +3669,11 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
 
    if (!L2IsKnown)
    {
-      DisplayFile("CONFIG/l2size.txt", stdout, NLINES);
-      L2SIZE = GetIntRange(L2SIZE/1024, 64, 16*1024, "   ",
-                           "Maximum cache size (KB)");
-      L2SIZE *= 1024;
-   }
-   else if (L2SIZE > MAXL2SIZE)
-   {
-      DisplayFile("CONFIG/l2sizemax.txt", stdout, NLINES);
-      L2SIZE = GetIntRange(L2SIZE/1024, 64, 16*1024, "   ",
-                           "Maximum cache size (KB)");
-      L2SIZE *= 1024;
+     L2SIZE = 4096*1024;
    }
    DisplayFile("CONFIG/nfsdelay.txt", stdout, NLINES);
-   delay = GetIntRange(delay, 0, 600, "   ", "File creation delay in seconds");
+   //   delay = GetIntRange(delay, 0, 600, "   ", "File creation delay in seconds");
+   delay = 0;
    if (!GOGO)
    {
       GetString(stdin, TOPdir, "   ", "Top level ATLAS directory", 255, TOPdir);
@@ -3704,22 +3701,18 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
    ierr = 0;
    do
    {
-      if (ierr != 0)
-      {
-         if (GOGO) DisplayFile("CONFIG/f77exp.txt", stdout, NLINES);
-         GetString(stdin, F77, "   ", "f77 compiler", 127, F77);
-         GetString(stdin, F77FLAGS, "   ", "F77 Flags", 511, F77FLAGS);
-      }
-      sprintf(ln, "%s -c CONFIG/tst.f %s\n", F77, redir);
-      ierr = system(ln);
-      if (ierr)
-      {
-         if (GOGO) DisplayFile("CONFIG/f77exp.txt", stdout, NLINES);
-         fprintf(stderr, "F77 = \'%s %s\' doesn't seem to work for me.\n",
-                 F77, F77FLAGS);
-         ierr = GetIntRange(1, 0, 1, "   ",
-                   "1 to enter a different F77, 0 to continue with none");
-      }
+     sprintf(ln, "%s -c CONFIG/tst.f %s\n", F77, redir);
+     ierr = system(ln);
+     if (ierr != 0) {
+       strcpy(F77,"gfortran");
+       sprintf(ln, "%s -c CONFIG/tst.f %s\n", F77, redir);
+       ierr = system(ln);
+     }
+     if (ierr != 0) {
+       if (GOGO) DisplayFile("CONFIG/f77exp.txt", stdout, NLINES);
+       GetString(stdin, F77, "   ", "f77 compiler", 127, F77);
+       GetString(stdin, F77FLAGS, "   ", "F77 Flags", 511, F77FLAGS);
+     }
    }
    while (ierr);
    if (!GOGO)
@@ -3936,7 +3929,8 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
    if (j && (flag & CF_ARCHDEF))
    {
       DisplayFile("CONFIG/l1def.txt", stdout, NLINES);
-      USEDEFL1 = !IsYes('y', "", "Tune the Level 1 BLAS?");
+      //      USEDEFL1 = !IsYes('y', "", "Tune the Level 1 BLAS?");
+      USEDEFL1 = 1;
    }
 
    ATL_mprintf(2, fplog, stdout,"\nCreating make include file Make.%s\n", ARCH);
@@ -4198,7 +4192,8 @@ void GoToTown(int flag, enum MACHTYPE mach, int ncpu, char *TOPdir, char *ARCH,
       if (system(ln) == 0)
       {
          fprintf(stdout, "...... found!\n");
-         i = IsYes('y', "", "kill old subdirectories?");
+	 //         i = IsYes('y', "", "kill old subdirectories?");
+	 i = 1;
       }
       else fprintf(stdout, "... no\n");
       if (i)

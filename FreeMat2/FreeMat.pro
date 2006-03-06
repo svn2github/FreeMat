@@ -30,7 +30,7 @@ blas.target = extern/LAPACK/BLAS/libblas.a
 blas.commands = cd extern/LAPACK/BLAS/SRC && make -f Makefile_freemat FC=$$F77
 
 atlas.target = extern/ATLAS/lib/BLAS_FreeMat/libatlas.a
-atlas.commands = cd extern/ATLAS && make < ../chat_$${F77} && make install arch=BLAS_FreeMat
+atlas.commands = cd extern/ATLAS && make && make install arch=BLAS_FreeMat
 
 !win32 {
 fftw_double.target = extern/fftw-3.0.1/.libs/libfftw3.a
@@ -100,7 +100,7 @@ install.target = install
 install.depends = FORCE
 
 unix:!macx {
-install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && ./disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && tar cfz FreeMat$${VERSION}.tar.gz FreeMat$${VERSION}
+install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && ./disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && tar cfz FreeMat$${VERSION}_Linux_Binary.tar.gz FreeMat$${VERSION}
 }
 
 macx {
@@ -322,7 +322,6 @@ RESOURCES = FreeMat.qrc
 
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png images/player_pause.png images/player_stop.png images/player_play.png
-DISTFILES += extern/AMD-1.2.tar.gz extern/arpack96_freemat_patch.tar.gz extern/atlas3.6.0.tar.gz extern/ffcall-1.10_freemat_patch.tar.gz extern/fftw-3.0.1.tar.gz extern/lapack-3.0_freemat_patch.tgz extern/UFconfig-1.0_freemat_patch.tar.gz extern/UMFPACK-4.6.tar.gz extern/matio_freemat_patch.tar.gz
 DISTFILES += help/section_descriptors.txt
 !win32 {
 DISTFILES += $$system(find MFiles -name '*.m')
@@ -330,16 +329,17 @@ DISTFILES += $$system(find tests -name '*.m')
 }
 DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp 
 DISTFILES += tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
-DISTFILES += extern/chat_g77 extern/chat_gfortran
+DISTFILES += extern/ATLAS/chat_g77 extern/ATLAS/chat_gfortran
 DISTFILES += COPYING README ChangeLog
 DISTFILES += src/appIcon.icns
 
 distprep.target = distprep
 distprep.depends = FORCE
-distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clean && cd ../ARPACK && make clean && cd ../ffcall-1.10 && make clean && cd ../LAPACK/SRC && make -f Makefile_freemat clean && cd ../../matio && make clean && cd ../UMFPACK && make clean 
+distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clean && cd ../ARPACK && make clean && cd ../ffcall-1.10 && make clean && cd ../LAPACK/SRC && make -f Makefile_freemat clean && cd ../../matio && make clean && cd ../UMFPACK && make clean && cd ../ATLAS && find . -name '*BLAS_FreeMat*' -exec rm -rf \{\} \; && find . -name '*.o' -exec rm -rf \{\} \;
+
 
 distrepack.target = distrepack
 distrepack.depends = FORCE
-distrepack.commands = rm -rf $${TARGET}$${VERSION} && tar xfz $${TARGET}$${VERSION}.tar.gz && cd $${TARGET}$${VERSION}/extern && tar xfz AMD-1.2.tar.gz && rm AMD-1.2.tar.gz && tar xfz arpack96_freemat_patch.tar.gz && rm arpack96_freemat_patch.tar.gz && tar xfz atlas3.6.0.tar.gz && rm atlas3.6.0.tar.gz && tar xfz ffcall-1.10_freemat_patch.tar.gz && rm ffcall-1.10_freemat_patch.tar.gz && tar xfz fftw-3.0.1.tar.gz && rm fftw-3.0.1.tar.gz && tar xfz matio_freemat_patch.tar.gz && rm matio_freemat_patch.tar.gz && tar xfz UFconfig-1.0_freemat_patch.tar.gz && rm UFconfig-1.0_freemat_patch.tar.gz && tar xfz UMFPACK-4.6.tar.gz && rm UMFPACK-4.6.tar.gz && tar xfz lapack-3.0_freemat_patch.tgz && rm lapack-3.0_freemat_patch.tgz && cd ../.. && tar cfz $${TARGET}$${VERSION}.tar.gz $${TARGET}$${VERSION} && zip -r $${TARGET}$${VERSION}.zip $${TARGET}$${VERSION}
+distrepack.commands = rm -rf $${TARGET}$${VERSION} && tar xfz $${TARGET}$${VERSION}.tar.gz && cd extern && cp -R AMD ../$${TARGET}$${VERSION}/extern && cp -R ARPACK ../$${TARGET}$${VERSION}/extern && cp -R ATLAS ../$${TARGET}$${VERSION}/extern && cp -R ffcall-1.10 ../$${TARGET}$${VERSION}/extern && cp -R fftw-3.0.1 ../$${TARGET}$${VERSION}/extern && cp -R LAPACK ../$${TARGET}$${VERSION}/extern && cp -R UFconfig ../$${TARGET}$${VERSION}/extern && cp -R UMFPACK ../$${TARGET}$${VERSION}/extern && cp -R matio ../$${TARGET}$${VERSION}/extern && cd .. && tar cfz $${TARGET}$${VERSION}.tar.gz $${TARGET}$${VERSION} && zip -r $${TARGET}$${VERSION}.zip $${TARGET}$${VERSION}
 
 QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install distprep distrepack

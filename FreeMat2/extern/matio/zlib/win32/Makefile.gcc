@@ -57,7 +57,7 @@ OBJS = adler32.o compress.o crc32.o deflate.o gzio.o infback.o \
        inffast.o inflate.o inftrees.o trees.o uncompr.o zutil.o
 OBJA =
 
-all: $(STATICLIB) $(SHAREDLIB) $(IMPLIB) example minigzip example_d minigzip_d
+all: $(STATICLIB) 
 
 test: example minigzip
 	./example

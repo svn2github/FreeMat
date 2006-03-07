@@ -1,0 +1,10 @@
+CC = gcc
+
+all: src/libmatio.a
+
+OBJECTS = src/snprintf.o src/endian.o src/io.o src/inflate.o src/read_data.o src/mat5.o src/mat4.o src/mat.o
+
+CFLAGS += -Izlib -Isrc
+
+src/libmatio.a: $(OBJECTS)
+	ar crs src/libmatio.a $(OBJECTS)

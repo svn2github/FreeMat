@@ -347,5 +347,9 @@ config.h: config.h.mingw32
 	copy config.h.mingw32 config.h
 
 clean:
-	del $(OBJECTS)
+	del /S *.o
+	del .libs\libfftw3.a
+	del .libs\libfftw3f.a
 	del config.h
+	rmdir .libs
+

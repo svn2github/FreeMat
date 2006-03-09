@@ -105,11 +105,11 @@ install.target = install
 install.depends = FORCE
 
 unix:!macx {
-install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && ./disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && tar cfz FreeMat$${VERSION}_Linux_Binary.tar.gz FreeMat$${VERSION}
+install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && build/disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && tar cfz FreeMat$${VERSION}_Linux_Binary.tar.gz FreeMat$${VERSION}
 }
 
 macx {
-install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake && make && ./disttool -mac && cd ../../ &&  mv build/FreeMat.app FreeMat$${VERSION}.app && find FreeMat$${VERSION}.app -name '*debug' -exec rm \{\} \; && cd help/latex && pdflatex main.tex && pdflatex main.tex && cd ../../ && rm -rf FreeMat$${VERSION} && mkdir FreeMat$${VERSION} && mv FreeMat$${VERSION}.app FreeMat$${VERSION} && mv help/latex/main.pdf FreeMat$${VERSION} && rm -rf FreeMat$${VERSION}.dmg && hdiutil create -fs HFS+ -srcfolder FreeMat$${VERSION} FreeMat$${VERSION}.dmg
+install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake && make && build/disttool -mac && cd ../../ &&  mv build/FreeMat.app FreeMat$${VERSION}.app && find FreeMat$${VERSION}.app -name '*debug' -exec rm \{\} \; && cd help/latex && pdflatex main.tex && pdflatex main.tex && cd ../../ && rm -rf FreeMat$${VERSION} && mkdir FreeMat$${VERSION} && mv FreeMat$${VERSION}.app FreeMat$${VERSION} && mv help/latex/main.pdf FreeMat$${VERSION} && rm -rf FreeMat$${VERSION}.dmg && hdiutil create -fs HFS+ -srcfolder FreeMat$${VERSION} FreeMat$${VERSION}.dmg
 }
 
 win32 {
@@ -325,6 +325,9 @@ QMAKE_EXTRA_COMPILERS += ff77
 
 RESOURCES = FreeMat.qrc
 
+dist.target = dist
+dist.depends = FORCE
+dist.commands = cd tools/disttool && qmake && make && build/disttool -src
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png images/player_pause.png images/player_stop.png images/player_play.png
 DISTFILES += help/section_descriptors.txt
@@ -334,7 +337,6 @@ DISTFILES += $$system(find tests -name '*.m')
 }
 DISTFILES += tools/disttool/disttool.cpp tools/disttool/disttool.hpp 
 DISTFILES += tools/disttool/disttool.pro tools/disttool/freemat_nsi.in
-DISTFILES += extern/ATLAS/chat_g77 extern/ATLAS/chat_gfortran
 DISTFILES += COPYING README ChangeLog
 DISTFILES += src/appIcon.icns
 
@@ -345,6 +347,6 @@ distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clea
 
 distrepack.target = distrepack
 distrepack.depends = FORCE
-distrepack.commands = rm -rf $${TARGET}$${VERSION} && tar xfz $${TARGET}$${VERSION}.tar.gz && cd extern && cp -R AMD ../$${TARGET}$${VERSION}/extern && cp -R ARPACK ../$${TARGET}$${VERSION}/extern && cp -R ATLAS ../$${TARGET}$${VERSION}/extern && cp -R ffcall-1.10 ../$${TARGET}$${VERSION}/extern && cp -R fftw-3.0.1 ../$${TARGET}$${VERSION}/extern && cp -R LAPACK ../$${TARGET}$${VERSION}/extern && cp -R UFconfig ../$${TARGET}$${VERSION}/extern && cp -R UMFPACK ../$${TARGET}$${VERSION}/extern && cp -R matio ../$${TARGET}$${VERSION}/extern && cd .. && tar cfz $${TARGET}$${VERSION}.tar.gz $${TARGET}$${VERSION} && zip -r $${TARGET}$${VERSION}.zip $${TARGET}$${VERSION}
+distrepack.commands = rm -rf $${TARGET}$${VERSION} && tar xfz $${TARGET}$${VERSION}.tar.gz && cd extern && cp -R AMD ../$${TARGET}$${VERSION}/extern && cp -R ARPACK ../$${TARGET}$${VERSION}/extern && cp -R ATLAS ../$${TARGET}$${VERSION}/extern && cp -R ffcall-1.10 ../$${TARGET}$${VERSION}/extern && cp -R fftw-3.0.1 ../$${TARGET}$${VERSION}/extern && cp -R LAPACK ../$${TARGET}$${VERSION}/extern && cp -R UFconfig ../$${TARGET}$${VERSION}/extern && cp -R UMFPACK ../$${TARGET}$${VERSION}/extern && cp -R matio ../$${TARGET}$${VERSION}/extern && cd .. && find  $${TARGET}$${VERSION} -name '.svn' -exec rm -rf \{\} \; && tar cfz $${TARGET}$${VERSION}.tar.gz $${TARGET}$${VERSION} && zip -r $${TARGET}$${VERSION}.zip $${TARGET}$${VERSION}
 
-QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install distprep distrepack
+QMAKE_EXTRA_TARGETS += fftw_double fftw_single avcall amd umfpack arpack lapack blas atlas matio package help check install distprep distrepack dist

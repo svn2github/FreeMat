@@ -16,6 +16,25 @@ void Halt(QString emsg) {
   exit(0);
 }
 
+QString GetVersionString() {
+  QFile tfile("../../libs/libFreeMat/WalkTree.cpp");
+  if (!tfile.open(QFile::ReadOnly))
+    Halt("Unable to open ../../libs/libFreeMat/WalkTree.cpp for input\n");
+  QTextStream g(&tfile);
+  QRegExp versionMatch("\\s*//@");
+  while (!g.atEnd()) {
+    QString line(g.readLine(0));
+    if (line.indexOf(versionMatch) >= 0) {
+      QString line2(g.readLine(0));
+      QRegExp vString("\\s*\"FreeMat v(.*)\"");
+      if (vString.indexIn(line2) < 0)
+	Halt("Unable to determine version number from the source code\n");
+      return vString.cap(1);
+    }
+  }
+  Halt("Unable to determine version number from the source code\n");
+}
+
 void MakeDir(QString dir) {
   QDir d;
   //  TermOutputText("Making Directory " + dir + "\n");
@@ -226,7 +245,7 @@ void ImportLibs(QString program) {
 	  (lib.indexOf("libc.") == -1) && (lib.indexOf("libm.") == -1) &&
 	  (lib.indexOf("libpthread.") == -1)) {
  	QFileInfo file(lib);
-	CopyFile(lib,"FreeMat/Contents/lib/"+file.fileName());
+	CopyFile(lib,"FreeMat"+GetVersionString()+"/Contents/lib/"+file.fileName());
 	// 	Execute("/bin/cp",QStringList() << "-v" << "-R" << lib << file.fileName());
 	TermOutputText(" <copy> to FreeMat/Contents/lib/" + file.fileName() + "\n");
       } else
@@ -236,26 +255,24 @@ void ImportLibs(QString program) {
   }
 }
 
+
 void ConsoleWidget::LinuxBundle() {
-  QFile vfile("../../help/version.txt");
-  if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../../help/version.txt for input\n");
-  QTextStream g(&vfile);
-  QString versionnum(g.readLine(0));
-  MakeDir("FreeMat");
-  MakeDir("FreeMat/Contents");
-  MakeDir("FreeMat/Contents/bin");
-  MakeDir("FreeMat/Contents/Resources");
-  MakeDir("FreeMat/Contents/Resources/help");
-  MakeDir("FreeMat/Contents/Resources/help/html");
-  MakeDir("FreeMat/Contents/Resources/help/text");
-  MakeDir("FreeMat/Contents/Resources/mfiles");
-  CopyFile("../../build/FreeMat","FreeMat/Contents/bin/FreeMatMain");
+  QString versionnum(GetVersionString());
+  QString baseDir("FreeMat" + versionnum);
+  MakeDir(baseDir);
+  MakeDir(baseDir+"/Contents");
+  MakeDir(baseDir+"/Contents/bin");
+  MakeDir(baseDir+"/Contents/Resources");
+  MakeDir(baseDir+"/Contents/Resources/help");
+  MakeDir(baseDir+"/Contents/Resources/help/html");
+  MakeDir(baseDir+"/Contents/Resources/help/text");
+  MakeDir(baseDir+"/Contents/Resources/mfiles");
+  CopyFile("../../build/FreeMat",baseDir+"/Contents/bin/FreeMatMain");
   // Copy the required libraries
-  MakeDir("FreeMat/Contents/lib");
+  MakeDir(baseDir+"/Contents/lib");
   ImportLibs("../../build/FreeMat");
    // Write out the run script
-  QFile *script = new QFile("FreeMat/Contents/bin/FreeMat");
+  QFile *script = new QFile(baseDir+"/Contents/bin/FreeMat");
   if (!script->open(QFile::WriteOnly))
     Halt("Unable to open FreeMat/Contents/bin/FreeMat for output\n");
   QTextStream *h = new QTextStream(script);
@@ -266,27 +283,23 @@ void ConsoleWidget::LinuxBundle() {
   *h << "$mypath/FreeMatMain $*\n";
   delete h;
   delete script;
-  Execute("/bin/chmod",QStringList() << "+x" << "FreeMat/Contents/bin/FreeMat");
-  CopyDirectory("../../help/html","FreeMat/Contents/Resources/help/html");
-  CopyDirectory("../../help/text","FreeMat/Contents/Resources/help/text");
-  CopyDirectory("../../help/MFiles","FreeMat/Contents/Resources/mfiles");
+  Execute("/bin/chmod",QStringList() << "+x" << baseDir+"/Contents/bin/FreeMat");
+  CopyDirectory("../../help/html",baseDir+"/Contents/Resources/help/html");
+  CopyDirectory("../../help/text",baseDir+"/Contents/Resources/help/text");
+  CopyDirectory("../../help/MFiles",baseDir+"/Contents/Resources/mfiles");
   QString qtdir(getenv("QTDIR"));
-  CopyFile(qtdir+"/plugins/imageformats/libqjpeg.so","FreeMat/Contents/Plugins/imageformats/libqjpeg.so");
-  CopyFile(qtdir+"/plugins/imageformats/libqmng.so","FreeMat/Contents/Plugins/imageformats/libqmng.so");
-  QStringList plugs(GetFileList("FreeMat/Contents/Plugins/imageformats",
+  CopyFile(qtdir+"/plugins/imageformats/libqjpeg.so",baseDir+"/Contents/Plugins/imageformats/libqjpeg.so");
+  CopyFile(qtdir+"/plugins/imageformats/libqmng.so",baseDir+"/Contents/Plugins/imageformats/libqmng.so");
+  QStringList plugs(GetFileList(baseDir+"/Contents/Plugins/imageformats",
 				QStringList()));
   for (int i=0;i<plugs.size();i++)
-    ImportLibs("FreeMat/"+plugs[i]);
+    ImportLibs(baseDir+"/"+plugs[i]);
   TermOutputText("\n\nDone\n");
   qApp->exit();
 }
 
 void ConsoleWidget::SrcBundle() {
-  QFile vfile("../../help/version.txt");
-  if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../../help/version.txt for input\n");
-  QTextStream g(&vfile);
-  QString versionnum(g.readLine(0));
+  QString versionnum(GetVersionString());
   QString baseDir("FreeMat" + versionnum);
   DeleteDirectory(baseDir);
   MakeDir(baseDir);
@@ -305,15 +318,12 @@ void ConsoleWidget::SrcBundle() {
   CopyDirectory("../../qconf",baseDir+"/qconf");
   CopyDirectory("../../tests",baseDir+"/tests");
   CopyDirectoryNoRecurse("../../tools",baseDir+"/tools");
+  CopyDirectoryNoRecurse("../../tools/disttool",baseDir+"/tools/disttool");
   qApp->exit();
 }
 
 void ConsoleWidget::WinBundle() {
-  QFile vfile("../../help/version.txt");
-  if (!vfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../../help/version.txt for input\n");
-  QTextStream g(&vfile);
-  QString versionnum(g.readLine(0));
+  QString versionnum(GetVersionString());
   QString baseDir("FreeMat" + versionnum);
   DeleteDirectory(baseDir);
   MakeDir(baseDir);

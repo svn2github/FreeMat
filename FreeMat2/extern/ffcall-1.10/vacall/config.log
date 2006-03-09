@@ -209,7 +209,7 @@ conftest.c: In function 'main':
 conftest.c:16: warning: incompatible implicit declaration of built-in function 'exit'
 configure:3063: $? = 0
 configure:3065: ./conftest
-./configure: line 3066:  7628 Segmentation fault      ./conftest$ac_exeext
+./configure: line 3066: 23298 Segmentation fault      ./conftest$ac_exeext
 configure:3068: $? = 139
 configure: program exited with status 139
 configure: failed program was:
@@ -241,7 +241,7 @@ conftest.c:16: note: if this code is reached, the program will abort
 conftest.c:17: warning: incompatible implicit declaration of built-in function 'exit'
 configure:3121: $? = 0
 configure:3123: ./conftest
-./configure: line 3124:  7648 Segmentation fault      ./conftest$ac_exeext
+./configure: line 3124: 23318 Segmentation fault      ./conftest$ac_exeext
 configure:3126: $? = 139
 configure: program exited with status 139
 configure: failed program was:

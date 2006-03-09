@@ -866,7 +866,6 @@ config.status:744: creating src/Makefile
 config.status:744: creating test/Makefile
 config.status:744: creating doxygen/Makefile
 config.status:848: creating src/matioConfig.h
-config.status:1022: src/matioConfig.h is unchanged
 config.status:1202: executing depfiles commands
 configure:26805: result: 
 configure:26807: result:    MATIO Configuration Summary       
@@ -1005,15 +1004,15 @@ lt_lt_cv_sys_global_symbol_to_cdecl='"sed -n -e '\''s/^. .* \\(.*\\)\$/extern in
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/basu/FreeMat2/extern/matio/config/missing --run aclocal-1.9'
+ACLOCAL='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/matio/config/missing --run aclocal-1.9'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
-AMTAR='${SHELL} /home/basu/FreeMat2/extern/matio/config/missing --run tar'
+AMTAR='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/matio/config/missing --run tar'
 AR='ar'
-AUTOCONF='${SHELL} /home/basu/FreeMat2/extern/matio/config/missing --run autoconf'
-AUTOHEADER='${SHELL} /home/basu/FreeMat2/extern/matio/config/missing --run autoheader'
-AUTOMAKE='${SHELL} /home/basu/FreeMat2/extern/matio/config/missing --run automake-1.9'
+AUTOCONF='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/matio/config/missing --run autoconf'
+AUTOHEADER='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/matio/config/missing --run autoheader'
+AUTOMAKE='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/matio/config/missing --run automake-1.9'
 AWK='gawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
@@ -1060,7 +1059,7 @@ LTLIBOBJS=''
 MAINT='#'
 MAINTAINER_MODE_FALSE=''
 MAINTAINER_MODE_TRUE='#'
-MAKEINFO='${SHELL} /home/basu/FreeMat2/extern/matio/config/missing --run makeinfo'
+MAKEINFO='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/matio/config/missing --run makeinfo'
 OBJEXT='o'
 PACKAGE='matio'
 PACKAGE_BUGREPORT='cch@isl-inc.com'
@@ -1114,7 +1113,7 @@ host_os='linux-gnu'
 host_vendor='pc'
 includedir='${prefix}/include'
 infodir='${prefix}/info'
-install_sh='/home/basu/FreeMat2/extern/matio/config/install-sh'
+install_sh='/home/basu/Dev/freemat/FreeMat2/extern/matio/config/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localstatedir='${prefix}/var'

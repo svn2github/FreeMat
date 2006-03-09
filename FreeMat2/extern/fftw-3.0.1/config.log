@@ -888,9 +888,9 @@ configure:14714: result: yes
 configure:14721: checking for _doprnt
 configure:14779: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/ccwCT2Np.o(.text+0x14): In function `main':
+/tmp/ccio89vw.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `_doprnt'
-/tmp/ccwCT2Np.o(.data+0x0): undefined reference to `_doprnt'
+/tmp/ccio89vw.o(.data+0x0): undefined reference to `_doprnt'
 collect2: ld returned 1 exit status
 configure:14782: $? = 1
 configure: failed program was:
@@ -995,9 +995,9 @@ configure:14866: result: yes
 configure:14893: checking for BSDgettimeofday
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/cciu4Chj.o(.text+0x14): In function `main':
+/tmp/cc82yBSI.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `BSDgettimeofday'
-/tmp/cciu4Chj.o(.data+0x0): undefined reference to `BSDgettimeofday'
+/tmp/cc82yBSI.o(.data+0x0): undefined reference to `BSDgettimeofday'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1102,9 +1102,9 @@ configure:14971: result: yes
 configure:14893: checking for gethrtime
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/ccQOL7Sw.o(.text+0x14): In function `main':
+/tmp/ccOKFHz4.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `gethrtime'
-/tmp/ccQOL7Sw.o(.data+0x0): undefined reference to `gethrtime'
+/tmp/ccOKFHz4.o(.data+0x0): undefined reference to `gethrtime'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1203,9 +1203,9 @@ configure:14971: result: no
 configure:14893: checking for read_real_time
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/cc2wJZaU.o(.text+0x14): In function `main':
+/tmp/cckZuhsa.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `read_real_time'
-/tmp/cc2wJZaU.o(.data+0x0): undefined reference to `read_real_time'
+/tmp/cckZuhsa.o(.data+0x0): undefined reference to `read_real_time'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1304,9 +1304,9 @@ configure:14971: result: no
 configure:14893: checking for time_base_to_time
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/ccE8wjDi.o(.text+0x14): In function `main':
+/tmp/ccq8xEPf.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `time_base_to_time'
-/tmp/ccE8wjDi.o(.data+0x0): undefined reference to `time_base_to_time'
+/tmp/ccq8xEPf.o(.data+0x0): undefined reference to `time_base_to_time'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1442,9 +1442,9 @@ configure:14971: result: yes
 configure:14893: checking for _mm_malloc
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/cc4BWVA4.o(.text+0x14): In function `main':
+/tmp/ccUwTccL.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `_mm_malloc'
-/tmp/cc4BWVA4.o(.data+0x0): undefined reference to `_mm_malloc'
+/tmp/ccUwTccL.o(.data+0x0): undefined reference to `_mm_malloc'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1548,9 +1548,9 @@ configure:14971: result: no
 configure:14893: checking for _mm_free
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/ccgqRiga.o(.text+0x14): In function `main':
+/tmp/cc4zIm7S.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `_mm_free'
-/tmp/ccgqRiga.o(.data+0x0): undefined reference to `_mm_free'
+/tmp/cc4zIm7S.o(.data+0x0): undefined reference to `_mm_free'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1654,9 +1654,9 @@ configure:14971: result: no
 configure:14893: checking for clock_gettime
 configure:14951: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/cc8Jxh8g.o(.text+0x14): In function `main':
+/tmp/ccy3fBx5.o(.text+0x14): In function `main':
 conftest.c: undefined reference to `clock_gettime'
-/tmp/cc8Jxh8g.o(.data+0x0): undefined reference to `clock_gettime'
+/tmp/ccy3fBx5.o(.data+0x0): undefined reference to `clock_gettime'
 collect2: ld returned 1 exit status
 configure:14954: $? = 1
 configure: failed program was:
@@ -1982,7 +1982,7 @@ configure:15148: result: no
 configure:15167: checking for _rtc intrinsic
 configure:15189: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm  >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/ccIkydqq.o(.text+0xd): In function `main':
+/tmp/ccgOmC2A.o(.text+0xd): In function `main':
 conftest.c: undefined reference to `_rtc'
 collect2: ld returned 1 exit status
 configure:15192: $? = 1
@@ -2142,13 +2142,13 @@ Target: i386-redhat-linux
 Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-libgcj-multifile --enable-languages=c,c++,objc,java,f95,ada --enable-java-awt=gtk --with-java-home=/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre --host=i386-redhat-linux
 Thread model: posix
 gcc version 4.0.2 20051125 (Red Hat 4.0.2-8)
- /usr/libexec/gcc/i386-redhat-linux/4.0.2/f951 conftest.f -ffixed-form -quiet -dumpbase conftest.f -auxbase conftest -g -O2 -version -o /tmp/cc3HsZ0B.s
+ /usr/libexec/gcc/i386-redhat-linux/4.0.2/f951 conftest.f -ffixed-form -quiet -dumpbase conftest.f -auxbase conftest -g -O2 -version -o /tmp/cc3H69be.s
 GNU F95 version 4.0.2 20051125 (Red Hat 4.0.2-8) (i386-redhat-linux)
 	compiled by GNU C version 4.0.2 20051125 (Red Hat 4.0.2-8).
 GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
- as -V -Qy -o /tmp/ccQYh971.o /tmp/cc3HsZ0B.s
+ as -V -Qy -o /tmp/cckQ92Hi.o /tmp/cc3H69be.s
 GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux) using BFD version 2.15.94.0.2.2 20041220
- /usr/libexec/gcc/i386-redhat-linux/4.0.2/collect2 --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o conftest /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crt1.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crti.o /usr/lib/gcc/i386-redhat-linux/4.0.2/crtbegin.o -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. /tmp/ccQYh971.o -lgfortranbegin -lgfortran -lm -lgfortran -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/i386-redhat-linux/4.0.2/crtend.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crtn.o
+ /usr/libexec/gcc/i386-redhat-linux/4.0.2/collect2 --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o conftest /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crt1.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crti.o /usr/lib/gcc/i386-redhat-linux/4.0.2/crtbegin.o -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. /tmp/cckQ92Hi.o -lgfortranbegin -lgfortran -lm -lgfortran -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/i386-redhat-linux/4.0.2/crtend.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crtn.o
 configure:15829: result: -v
 configure:15831: checking for Fortran 77 libraries
 configure:15857: f95 -o conftest -g -O2 -v  conftest.f -lm  >&5
@@ -2157,13 +2157,13 @@ Target: i386-redhat-linux
 Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-libgcj-multifile --enable-languages=c,c++,objc,java,f95,ada --enable-java-awt=gtk --with-java-home=/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre --host=i386-redhat-linux
 Thread model: posix
 gcc version 4.0.2 20051125 (Red Hat 4.0.2-8)
- /usr/libexec/gcc/i386-redhat-linux/4.0.2/f951 conftest.f -ffixed-form -quiet -dumpbase conftest.f -auxbase conftest -g -O2 -version -o /tmp/ccPOaMSC.s
+ /usr/libexec/gcc/i386-redhat-linux/4.0.2/f951 conftest.f -ffixed-form -quiet -dumpbase conftest.f -auxbase conftest -g -O2 -version -o /tmp/cc3J67Lj.s
 GNU F95 version 4.0.2 20051125 (Red Hat 4.0.2-8) (i386-redhat-linux)
 	compiled by GNU C version 4.0.2 20051125 (Red Hat 4.0.2-8).
 GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
- as -V -Qy -o /tmp/cccstfT8.o /tmp/ccPOaMSC.s
+ as -V -Qy -o /tmp/ccreqNhl.o /tmp/cc3J67Lj.s
 GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux) using BFD version 2.15.94.0.2.2 20041220
- /usr/libexec/gcc/i386-redhat-linux/4.0.2/collect2 --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o conftest /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crt1.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crti.o /usr/lib/gcc/i386-redhat-linux/4.0.2/crtbegin.o -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. /tmp/cccstfT8.o -lgfortranbegin -lgfortran -lm -lgfortran -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/i386-redhat-linux/4.0.2/crtend.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crtn.o
+ /usr/libexec/gcc/i386-redhat-linux/4.0.2/collect2 --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o conftest /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crt1.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crti.o /usr/lib/gcc/i386-redhat-linux/4.0.2/crtbegin.o -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. /tmp/ccreqNhl.o -lgfortranbegin -lgfortran -lm -lgfortran -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/i386-redhat-linux/4.0.2/crtend.o /usr/lib/gcc/i386-redhat-linux/4.0.2/../../../crtn.o
 configure:16015: result:  -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. -lgfortranbegin -lgfortran -lm -lgcc_s
 configure:16026: checking for dummy main to link with Fortran 77 libraries
 configure:16063: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c -lm   -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. -lgfortranbegin -lgfortran -lm -lgcc_s >&5
@@ -2179,7 +2179,7 @@ configure:16182: test -s conftest.o
 configure:16185: $? = 0
 configure:16232: gcc -o conftest -O3 -fomit-frame-pointer -fno-schedule-insns -malign-double -fstrict-aliasing -mpreferred-stack-boundary=4 -mcpu=pentiumpro   conftest.c cf77_test.o -lm   -L/usr/lib/gcc/i386-redhat-linux/4.0.2 -L/usr/lib/gcc/i386-redhat-linux/4.0.2/../../.. -lgfortranbegin -lgfortran -lm -lgcc_s >&5
 `-mcpu=' is deprecated. Use `-mtune=' or '-march=' instead.
-/tmp/ccgOHCCr.o(.text+0xd): In function `main':
+/tmp/ccMNeMmv.o(.text+0xd): In function `main':
 conftest.c: undefined reference to `foobar'
 collect2: ld returned 1 exit status
 configure:16235: $? = 1
@@ -2454,17 +2454,17 @@ lt_cv_sys_global_symbol_pipe='sed -n -e '\''s/^.*[ 	]\([ABCDGISTW][ABCDGISTW]*\)
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/basu/FreeMat2/extern/fftw-3.0.1/missing --run aclocal-1.7'
+ACLOCAL='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/missing --run aclocal-1.7'
 ALLOCA=''
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
-AMTAR='${SHELL} /home/basu/FreeMat2/extern/fftw-3.0.1/missing --run tar'
+AMTAR='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/missing --run tar'
 AS='gcc'
 ASFLAGS=''
-AUTOCONF='${SHELL} /home/basu/FreeMat2/extern/fftw-3.0.1/missing --run autoconf'
-AUTOHEADER='${SHELL} /home/basu/FreeMat2/extern/fftw-3.0.1/missing --run autoheader'
-AUTOMAKE='${SHELL} /home/basu/FreeMat2/extern/fftw-3.0.1/missing --run automake-1.7'
+AUTOCONF='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/missing --run autoconf'
+AUTOHEADER='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/missing --run autoheader'
+AUTOMAKE='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/missing --run automake-1.7'
 AWK='gawk'
 CC='gcc'
 CCAS='gcc'
@@ -2508,7 +2508,7 @@ LTLIBOBJS=''
 MAINT='#'
 MAINTAINER_MODE_FALSE=''
 MAINTAINER_MODE_TRUE='#'
-MAKEINFO='${SHELL} /home/basu/FreeMat2/extern/fftw-3.0.1/missing --run makeinfo'
+MAKEINFO='${SHELL} /home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/missing --run makeinfo'
 OBJEXT='o'
 OCAMLC=''
 OCAMLCFLAGS=''
@@ -2569,7 +2569,7 @@ host_os='linux-gnu'
 host_vendor='pc'
 includedir='${prefix}/include'
 infodir='${prefix}/info'
-install_sh='/home/basu/FreeMat2/extern/fftw-3.0.1/install-sh'
+install_sh='/home/basu/Dev/freemat/FreeMat2/extern/fftw-3.0.1/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localstatedir='${prefix}/var'

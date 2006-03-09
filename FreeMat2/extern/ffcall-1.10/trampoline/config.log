@@ -309,9 +309,9 @@ configure:3531: result:
          extern int getpagesize (void);
 configure:3693: checking for vm_allocate
 configure:3715: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccitlz2V.o(.text+0xd): In function `main':
-/home/basu/FreeMat2/extern/ffcall-1.10/trampoline/conftest.c:28: undefined reference to `vm_allocate'
-/tmp/ccitlz2V.o(.text+0x12):/home/basu/FreeMat2/extern/ffcall-1.10/trampoline/conftest.c:28: undefined reference to `task_self'
+/tmp/ccgwpzQ8.o(.text+0xd): In function `main':
+/home/basu/Dev/freemat/FreeMat2/extern/ffcall-1.10/trampoline/conftest.c:28: undefined reference to `vm_allocate'
+/tmp/ccgwpzQ8.o(.text+0x12):/home/basu/Dev/freemat/FreeMat2/extern/ffcall-1.10/trampoline/conftest.c:28: undefined reference to `task_self'
 collect2: ld returned 1 exit status
 configure:3721: $? = 1
 configure: failed program was:
@@ -426,7 +426,7 @@ configure:4665: $? = 0
 configure:4699: gcc -o conftest -g -O2   conftest.c  >&5
 configure:4702: $? = 0
 configure:4704: ./conftest
-./configure: line 4705:  9400 Segmentation fault      ./conftest$ac_exeext
+./configure: line 4705: 25069 Segmentation fault      ./conftest$ac_exeext
 configure:4707: $? = 139
 configure: program exited with status 139
 configure: failed program was:
@@ -497,7 +497,7 @@ configure: failed program was:
 configure:4738: gcc -o conftest -g -O2   conftest.c  >&5
 configure:4741: $? = 0
 configure:4743: ./conftest
-./configure: line 4744:  9420 Segmentation fault      ./conftest$ac_exeext
+./configure: line 4744: 25089 Segmentation fault      ./conftest$ac_exeext
 configure:4746: $? = 139
 configure: program exited with status 139
 configure: failed program was:
@@ -568,7 +568,7 @@ configure: failed program was:
 configure:4777: gcc -o conftest -g -O2   conftest.c  >&5
 configure:4780: $? = 0
 configure:4782: ./conftest
-./configure: line 4783:  9440 Segmentation fault      ./conftest$ac_exeext
+./configure: line 4783: 25109 Segmentation fault      ./conftest$ac_exeext
 configure:4785: $? = 139
 configure: program exited with status 139
 configure: failed program was:
@@ -702,7 +702,7 @@ configure:5575: checking whether code in malloc'ed memory is executable
 configure:5611: gcc -o conftest -g -O2   conftest.c  >&5
 configure:5614: $? = 0
 configure:5616: ./conftest
-./configure: line 5617:  9707 Segmentation fault      ./conftest$ac_exeext
+./configure: line 5617: 25376 Segmentation fault      ./conftest$ac_exeext
 configure:5619: $? = 139
 configure: program exited with status 139
 configure: failed program was:

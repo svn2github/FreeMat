@@ -8,3 +8,6 @@ CFLAGS += -Izlib -Isrc
 
 src/libmatio.a: $(OBJECTS)
 	ar crs src/libmatio.a $(OBJECTS)
+
+clean:
+	cd src && del *.o && del libmatio.a

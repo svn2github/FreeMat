@@ -9,6 +9,7 @@ private slots:
   void WinBundle();
   void LinuxBundle();
   void MacBundle();
+  void SrcBundle();
   void exitNow();
 public:
   ConsoleWidget();

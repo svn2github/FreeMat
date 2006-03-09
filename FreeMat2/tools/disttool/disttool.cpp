@@ -18,7 +18,7 @@ void Halt(QString emsg) {
 
 void MakeDir(QString dir) {
   QDir d;
-  TermOutputText("Making Directory " + dir + "\n");
+  //  TermOutputText("Making Directory " + dir + "\n");
   d.mkpath(dir);
 }
 
@@ -28,6 +28,18 @@ void CopyFile(QString src, QString dest) {
   QDir dir;
   dir.mkpath(fi.absolutePath());
   QFile::copy(src,dest);
+  qApp->processEvents();
+}
+
+void CopyDirectoryNoRecurse(QString src, QString dest) {
+  TermOutputText("Copying Directory " + src + "\n");
+  QDir dir(src);
+  dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    CopyFile(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
+  }
 }
 
 void CopyDirectory(QString src, QString dest) {
@@ -37,14 +49,18 @@ void CopyDirectory(QString src, QString dest) {
   QFileInfoList list = dir.entryInfoList();
   for (unsigned i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
-    if (fileInfo.isDir())
-      CopyDirectory(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
-    else
+    if (fileInfo.isDir()) {
+      if (fileInfo.fileName() != ".svn") {
+	MakeDir(dest+"/"+fileInfo.fileName());
+	CopyDirectory(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
+      }
+    } else
       CopyFile(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
   }
 }
 
 void DeleteDirectory(QString dirname) {
+  TermOutputText("Deleting Directory " + dirname + "\n");
   QDir dir(dirname);
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
@@ -265,6 +281,33 @@ void ConsoleWidget::LinuxBundle() {
   qApp->exit();
 }
 
+void ConsoleWidget::SrcBundle() {
+  QFile vfile("../../help/version.txt");
+  if (!vfile.open(QFile::ReadOnly))
+    Halt("Unable to open ../../help/version.txt for input\n");
+  QTextStream g(&vfile);
+  QString versionnum(g.readLine(0));
+  QString baseDir("FreeMat" + versionnum);
+  DeleteDirectory(baseDir);
+  MakeDir(baseDir);
+  CopyFile("../../configure",baseDir+"/configure");
+  CopyFile("../../FreeMat.pro",baseDir+"/FreeMat.pro");
+  CopyFile("../../FreeMat.qrc",baseDir+"/FreeMat.qrc");
+  CopyFile("../../FreeMat.qc",baseDir+"/FreeMat.qc");
+  CopyFile("../../README",baseDir+"/README");
+  CopyFile("../../ChangeLog",baseDir+"/ChangeLog");
+  CopyDirectory("../../MFiles",baseDir+"/MFiles");
+  CopyDirectory("../../extern",baseDir+"/extern");
+  CopyDirectory("../../help",baseDir+"/help");
+  CopyDirectory("../../images",baseDir+"/images");
+  CopyDirectory("../../libs",baseDir+"/libs");
+  CopyDirectory("../../src",baseDir+"/src");
+  CopyDirectory("../../qconf",baseDir+"/qconf");
+  CopyDirectory("../../tests",baseDir+"/tests");
+  CopyDirectoryNoRecurse("../../tools",baseDir+"/tools");
+  qApp->exit();
+}
+
 void ConsoleWidget::WinBundle() {
   QFile vfile("../../help/version.txt");
   if (!vfile.open(QFile::ReadOnly))
@@ -365,10 +408,12 @@ int main(int argc, char *argv[]) {
   int linuxflag;
   int macflag;
   int pcflag;
+  int srcflag;
   linuxflag = parseFlagArg(argc,argv,"-linux",false);
   macflag = parseFlagArg(argc,argv,"-mac",false);
   pcflag = parseFlagArg(argc,argv,"-win",false);
-  if (!linuxflag && !macflag && !pcflag)
+  srcflag = parseFlagArg(argc,argv,"-src",false);
+  if (!linuxflag && !macflag && !pcflag && !srcflag)
     return 0;
   m_main->show();
   if (linuxflag) {
@@ -377,6 +422,8 @@ int main(int argc, char *argv[]) {
     QTimer::singleShot(0,m_main,SLOT(MacBundle()));
   } else if (pcflag) {
     QTimer::singleShot(0,m_main,SLOT(WinBundle()));
+  } else if (srcflag) {
+    QTimer::singleShot(0,m_main,SLOT(SrcBundle()));
   }
   return app.exec();
   return 0;

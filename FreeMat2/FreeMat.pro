@@ -15,7 +15,7 @@ include($$OUT_PWD/conf.pri)
 win32 {
 PRE_TARGETDEPS += extern/fftw-3.0.1/.libs/libfftw3.a extern/fftw-3.0.1/.libs/libfftw3f.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/ARPACK/libarpack.a extern/AMD/Lib/libamd.a extern/UMFPACK/Lib/libumfpack.a extern/LAPACK/liblapack.a extern/matio/src/libmatio.a
 
-LIBS += extern/fftw-3.0.1/.libs/libfftw3f.a extern/fftw-3.0.1/.libs/libfftw3.a  extern/ffcall-1.10/avcall/.libs/libavcall.a extern/ARPACK/libarpack.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/LAPACK/liblapack.a extern/blas/libf77blas.a extern/blas/libatlas.a extern/matio/src/libmatio.a extern/matio/zlib/libz.a -lg2c 
+LIBS += extern/fftw-3.0.1/.libs/libfftw3f.a extern/fftw-3.0.1/.libs/libfftw3.a  extern/ffcall-1.10/avcall/.libs/libavcall.a extern/ARPACK/libarpack.a extern/UMFPACK/Lib/libumfpack.a extern/AMD/Lib/libamd.a extern/LAPACK/liblapack.a extern/ATLAS/win32_prebuilt/libf77blas.a extern/ATLAS/win32_prebuilt/libatlas.a extern/matio/src/libmatio.a extern/matio/zlib/libz.a -lg2c 
 INCLUDEPATH += extern/fftw-3.0.1/api extern/ffcall-1.10/avcall extern/AMD/Include extern/UMFPACK/Include extern/matio/src extern/matio/zlib
 }
 
@@ -64,20 +64,25 @@ fftw_single.commands = cd extern/fftw-3.0.1 && make -f Makefile.mingw32
 avcall.target = extern\ffcall-1.10\avcall\.libs\libavcall.a
 avcall.commands = cd extern && cd ffcall-1.10/avcall && make -f Makefile_freemat.mingw32
 amd.target = extern\AMD\Lib\libamd.a
-amd.commands = cd extern/AMD/Source && make
+amd.commands = cd extern/AMD && mkdir Lib && cd Source && make
 umfpack.target = extern\UMFPACK\Lib\libumfpack.a
-umfpack.commands = cd extern/UMFPACK/Source && make
+umfpack.commands = cd extern/UMFPACK && mkdir Lib && cd Source && make
 matio.target = extern\matio\src\libmatio.a
-matio.commands = cd extern/matio/zlib && make -f win32/Makefile.gcc && cd .. && make -f Makefile.mingw32
+matio.commands = cd extern/matio/zlib && make -f win32/Makefile.gcc && cd .. && copy build-windows\matioConfig.h src\. && make -f Makefile.mingw32
 LIBS += -lws2_32
+arpack.target = extern\ARPACK\libarpack.a
+arpack.commands = cd extern/ARPACK && make FC=g77
+lapack.target = extern\LAPACK\liblapack.a
+lapack.commands = cd extern/LAPACK/SRC && make -f Makefile_freemat FC=g77
 }
 
-
+!win32 {
 arpack.target = extern/ARPACK/libarpack.a
 arpack.commands = cd extern/ARPACK && make FC=$$F77
 
 lapack.target = extern/LAPACK/liblapack.a
 lapack.commands = cd extern/LAPACK/SRC && make -f Makefile_freemat FC=$$F77
+}
 
 
 !macx {

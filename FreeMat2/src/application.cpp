@@ -135,7 +135,7 @@ void ApplicationWindow::createStatusBar() {
 }
 
 ApplicationWindow::ApplicationWindow() : QMainWindow() {
-  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
+  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
   setWindowTitle(QString(FreeMat::WalkTree::getVersionString().c_str()) + " Command Window");
   createActions();
   createMenus();
@@ -364,7 +364,7 @@ AboutWindow::AboutWindow() : QWidget() {
   layout->addWidget(click);
   setLayout(layout);
   connect(ok,SIGNAL(clicked()),this,SLOT(close()));
-  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
+  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
 }
 
 void ApplicationWindow::about() {

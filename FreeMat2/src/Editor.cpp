@@ -232,7 +232,7 @@ QString FMEditPane::getFileName() {
 }
 
 FMEditor::FMEditor() : QMainWindow() {
-  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
+  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
   prevEdit = NULL;
   tab = new QTabWidget(this);
   setCentralWidget(tab);

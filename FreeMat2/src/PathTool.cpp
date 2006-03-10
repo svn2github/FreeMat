@@ -24,7 +24,7 @@ PathTool::PathTool() {
   QHBoxLayout *lay = new QHBoxLayout(this);
   splitter = new QSplitter(this);
   lay->addWidget(splitter);
-  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
+  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
 
   model = new QDirModel;
   model->setFilter(QDir::AllDirs);

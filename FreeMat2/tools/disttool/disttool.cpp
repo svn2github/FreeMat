@@ -300,7 +300,7 @@ void ConsoleWidget::LinuxBundle() {
 
 void ConsoleWidget::SrcBundle() {
   QString versionnum(GetVersionString());
-  QString baseDir("FreeMat" + versionnum);
+  QString baseDir("FreeMat" + versionnum + "_src");
   DeleteDirectory(baseDir);
   MakeDir(baseDir);
   CopyFile("../../configure",baseDir+"/configure");

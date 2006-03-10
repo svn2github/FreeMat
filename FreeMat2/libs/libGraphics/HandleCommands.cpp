@@ -103,7 +103,7 @@ namespace FreeMat {
       if (!wid) {
 	wid = new NonClosable;
 	wid->setGeometry(0,0,1,1);
-	wid->setWindowIcon(QIcon(":/images/freemat-2.xpm"));
+	wid->setWindowIcon(QIcon(":/images/freemat_small_mod_64.png"));
 	wid->show();
       } else
 	wid->show();

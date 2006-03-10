@@ -128,7 +128,7 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
   }
   
   HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
-  setWindowIcon(QPixmap(":/images/freemat-2.xpm"));
+  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
   handle = ahandle;
   hfig = new HandleFigure(this);
   char buffer[1000];

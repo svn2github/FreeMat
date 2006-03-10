@@ -61,7 +61,7 @@ var ICONS_GROUP
 
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "FreeMat<VERSION>_Setup.exe"
+OutFile "FreeMat<VERSION_NUMBER>_Setup.exe"
 InstallDir "$PROGRAMFILES\FreeMat<VERSION_NUMBER>"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show

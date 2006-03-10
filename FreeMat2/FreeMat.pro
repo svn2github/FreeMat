@@ -113,7 +113,7 @@ install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake &
 }
 
 win32 {
-install.commands = cd tools/disttool && qmake && make && release\disttool -win
+install.commands = cd tools/disttool && qmake && make && build\disttool -win
 }
 
 
@@ -327,7 +327,12 @@ RESOURCES = FreeMat.qrc
 
 dist.target = dist
 dist.depends = FORCE
+!win32 {
 dist.commands = cd tools/disttool && qmake && make && build/disttool -src
+}
+win32 {
+dist.commands = cd tools/disttool && qmake && make && build\disttool -src
+}
 
 DISTFILES += configure images/close.png images/copy.png images/cut.png images/freemat-2.xpm images/home.png images/new.png images/next.png images/open.png images/paste.png images/previous.png images/quit.png images/save.png images/zoomin.png images/zoomout.png images/player_pause.png images/player_stop.png images/player_play.png
 DISTFILES += help/section_descriptors.txt

@@ -6754,7 +6754,6 @@ src/PathTool.cpp
 src/freematv2.ico
 src/DumbTerminal.cpp
 src/Common.hpp
-conf.pri
 freemat.spec
 Makefile
 images

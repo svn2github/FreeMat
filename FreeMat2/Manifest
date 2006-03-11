@@ -4153,7 +4153,6 @@ extern/filelist
 extern/UFconfig
 extern/UFconfig/README.txt
 extern/UFconfig/UFconfig.mk
-extern/Makefile_freemat.mingw32
 extern/UMFPACK
 extern/UMFPACK/Makefile
 extern/UMFPACK/Source

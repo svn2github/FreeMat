@@ -307,6 +307,7 @@ void ConsoleWidget::SrcBundle() {
   CopyFile("../../FreeMat.pro",baseDir+"/FreeMat.pro");
   CopyFile("../../FreeMat.qrc",baseDir+"/FreeMat.qrc");
   CopyFile("../../FreeMat.qc",baseDir+"/FreeMat.qc");
+  CopyFile("../../COPYING",baseDir+"/COPYING");
   CopyFile("../../README",baseDir+"/README");
   CopyFile("../../ChangeLog",baseDir+"/ChangeLog");
   CopyDirectory("../../MFiles",baseDir+"/MFiles");

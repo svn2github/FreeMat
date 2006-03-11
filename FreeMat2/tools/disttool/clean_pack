@@ -1,0 +1,12 @@
+#!/bin/sh
+echo 'Cleaning and packing source tree'
+find $1 -name '*.o' -exec rm \{\} \;
+find $1 -name '*.a' -exec rm \{\} \;
+find $1 -name '.deps' -exec rm \{\} \;
+find $1 -name '*.dat' -exec rm \{\} \;
+find $1 -name '*.so' -exec rm \{\} \;
+find $1 -name 'testtext' -exec rm \{\} \;
+find $1 -name 'test_text.txt' -exec rm \{\} \;
+find $1 -name '*~' -exec rm \{\} \;
+tar cfz $1.tar.gz $1
+zip -q -r $1.zip $1

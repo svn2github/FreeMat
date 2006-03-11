@@ -60,9 +60,9 @@ LIBS += extern/matio/zlib/libz.a
 
 win32 {
 fftw_double.target = extern\fftw-3.0.1\.libs\libfftw3.a
-fftw_double.commands = cd extern/fftw-3.0.1 && make -f Makefile.mingw32
+fftw_double.commands = cd extern/fftw-3.0.1 && copy config.h.mingw32 config.h && make -f Makefile.mingw32
 fftw_single.target = extern\fftw-3.0.1\.libs\libfftw3f.a
-fftw_single.commands = cd extern/fftw-3.0.1 && make -f Makefile.mingw32
+fftw_single.commands = cd extern/fftw-3.0.1 && copy config.h.mingw32 config.h && make -f Makefile.mingw32
 avcall.target = extern\ffcall-1.10\avcall\.libs\libavcall.a
 avcall.commands = cd extern && cd ffcall-1.10/avcall && make -f Makefile_freemat.mingw32
 amd.target = extern\AMD\Lib\libamd.a

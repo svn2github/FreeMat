@@ -298,28 +298,37 @@ void ConsoleWidget::LinuxBundle() {
   qApp->exit();
 }
 
+QStringList ReadManifest() {
+  QFile man("../../Manifest");
+  if (!man.open(QFile::ReadOnly))
+    Halt("Unable to open Manifest file");
+  QTextStream g(&man);
+  QStringList ret;
+  while (!g.atEnd()) {
+    ret << g.readLine(0);
+  }
+  return ret;
+}
+
 void ConsoleWidget::SrcBundle() {
   QString versionnum(GetVersionString());
   QString baseDir("FreeMat" + versionnum + "_src");
   DeleteDirectory(baseDir);
   MakeDir(baseDir);
-  CopyFile("../../configure",baseDir+"/configure");
-  CopyFile("../../FreeMat.pro",baseDir+"/FreeMat.pro");
-  CopyFile("../../FreeMat.qrc",baseDir+"/FreeMat.qrc");
-  CopyFile("../../FreeMat.qc",baseDir+"/FreeMat.qc");
-  CopyFile("../../COPYING",baseDir+"/COPYING");
-  CopyFile("../../README",baseDir+"/README");
-  CopyFile("../../ChangeLog",baseDir+"/ChangeLog");
-  CopyDirectory("../../MFiles",baseDir+"/MFiles");
-  CopyDirectory("../../extern",baseDir+"/extern");
-  CopyDirectory("../../help",baseDir+"/help");
-  CopyDirectory("../../images",baseDir+"/images");
-  CopyDirectory("../../libs",baseDir+"/libs");
-  CopyDirectory("../../src",baseDir+"/src");
-  CopyDirectory("../../qconf",baseDir+"/qconf");
-  CopyDirectory("../../tests",baseDir+"/tests");
-  CopyDirectoryNoRecurse("../../tools",baseDir+"/tools");
-  CopyDirectoryNoRecurse("../../tools/disttool",baseDir+"/tools/disttool");
+  // Read the manifest file
+  QStringList manifest(ReadManifest());
+  int numFiles = manifest.size();
+  QProgressDialog progress("Copying files...","Abort Copy", 0, numFiles, this);
+  for (int i=0;i<numFiles;i++) {
+    progress.setValue(i);
+    if (progress.wasCanceled()) 
+      Halt("Source build cancelled");
+    QFileInfo fileInfo("../../"+manifest[i]);
+    if (fileInfo.isDir())
+      MakeDir(baseDir+"/"+manifest[i]);
+    else
+      CopyFile("../../"+manifest[i],baseDir+"/"+manifest[i]);
+  }
   qApp->exit();
 }
 

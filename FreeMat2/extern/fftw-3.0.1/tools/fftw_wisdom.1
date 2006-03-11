@@ -18,14 +18,14 @@
 .\"
 .TH FFTW-WISDOM 1 "February, 2003" "fftw" "fftw"
 .SH NAME
-fftwf-wisdom \- create wisdom (pre-optimized FFTs)
+fftw-wisdom \- create wisdom (pre-optimized FFTs)
 .SH SYNOPSIS
-.B fftwf-wisdom
+.B fftw-wisdom
 [\fIOPTION\fR]... [\fISIZE\fR]...
 .SH DESCRIPTION
 .PP
 ." Add any additional description here
-.I fftwf-wisdom
+.I fftw-wisdom
 is a utility to generate FFTW
 .B wisdom
 files, which contain saved information about how to optimally compute
@@ -39,35 +39,35 @@ home page:
 Programs using FFTW can be written to load wisdom from an arbitrary file,
 string, or other source.  Moreover, it is likely that many FFTW-using
 programs will load the \fBsystem wisdom\fR file, which is stored in
-.I /etc/fftw/wisdomf
+.I /etc/fftw/wisdom
 by default.
-.I fftwf-wisdom
+.I fftw-wisdom
 can be used to create or add to such wisdom files.  In its most
 typical usage, the wisdom file can be created to pre-plan a canonical
 set of sizes (see below) via:
 
 .ce
-fftwf-wisdom -v -c -o wisdomf
+fftw-wisdom -v -c -o wisdom
 
 (this will take many hours, which can be limited by the 
 .B -t
 option) and the output
-.I wisdomf
+.I wisdom
 file can then be copied (as root) to
 .I /etc/fftw/
 or whatever.
 
 The
-.I fftwf-wisdom
+.I fftw-wisdom
 program normally writes the wisdom directly to standard output, but this
 can be changed via the
 .B -o
 option, as in the example above.
 
 If the system wisdom file
-.I /etc/fftw/wisdomf
+.I /etc/fftw/wisdom
 already exists, then
-.I fftwf-wisdom
+.I fftw-wisdom
 reads this existing wisdom (unless the
 .B -n
 option is specified) and outputs both the old wisdom and any
@@ -151,7 +151,7 @@ rather than to standard output (the default).
 .TP
 \fB\-i\fR, \fB\--impatient\fR; \fB\-e\fR, \fB\--estimate\fR; \fB\-x\fR, \fB\--exhaustive\fR
 Normally, 
-.I fftwf-wisdom
+.I fftw-wisdom
 creates plans in FFTW_PATIENT mode, but with these options you can instead
 use FFTW_IMPATIENT, FFTW_ESTIMATE, or FFTW_EXHAUSTIVE modes, respectively,
 as described in more detail by the FFTW manual.
@@ -165,7 +165,7 @@ mode).
 .TP
 \fB\-n\fR, \fB\--no-system-wisdom\fR
 Do not import the system wisdom from
-.I /etc/fftw/wisdomf
+.I /etc/fftw/wisdom
 (which is normally read by default).
 .TP
 \fB\-w\fR \fIfile\fR, \fB\--wisdom-file\fR=\fIfile\fR

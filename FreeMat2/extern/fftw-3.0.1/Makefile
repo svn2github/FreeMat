@@ -106,8 +106,8 @@ PACKAGE_TARNAME = fftw
 PACKAGE_VERSION = 3.0.1
 PATH_SEPARATOR = :
 POW_LIB = 
-PRECISION = s
-PREC_SUFFIX = f
+PRECISION = d
+PREC_SUFFIX = 
 PTHREAD_CC = 
 PTHREAD_CFLAGS = 
 PTHREAD_LIBS = 
@@ -116,8 +116,8 @@ SET_MAKE =
 SHARED_VERSION_INFO = 3:1:0
 SHELL = /bin/sh
 SIMD_CFLAGS = 
-SINGLE_FALSE = #
-SINGLE_TRUE = 
+SINGLE_FALSE = 
+SINGLE_TRUE = #
 STRIP = strip
 TARGET_OCAMLBIN = /usr/local//bin
 TARGET_OCAMLLIB = /usr/local//lib/fftw
@@ -163,7 +163,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 OPTIONS_AUTOMAKE = gnu
-lib_LTLIBRARIES = libfftw3f.la
+lib_LTLIBRARIES = libfftw3.la
 GENFFT = 
 
 # recompile genfft if maintainer mode is true
@@ -174,9 +174,9 @@ libbench2 . tests doc tools
 
 EXTRA_DIST = COPYRIGHT bootstrap.sh CONVENTIONS fftw.pc.in acx_pthread.m4
 
-libfftw3f_la_SOURCES = 
+libfftw3_la_SOURCES = 
 
-libfftw3f_la_LIBADD = \
+libfftw3_la_LIBADD = \
 	kernel/libkernel.la				\
 	simd/libsimd.la					\
 	dft/libdft.la					\
@@ -196,12 +196,12 @@ libfftw3f_la_LIBADD = \
 	api/libapi.la
 
 
-libfftw3f_la_LDFLAGS = -version-info 3:1:0
+libfftw3_la_LDFLAGS = -version-info 3:1:0
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = fftw3f.pc
+pkgconfig_DATA = fftw3.pc
 
 WISDOM_DIR = /etc/fftw
-WISDOM = wisdomf
+WISDOM = wisdom
 
 WISDOM_TIME = 12 # default to 12-hour limit, i.e. overnight
 WISDOM_FLAGS = --verbose --canonical --time-limit=$(WISDOM_TIME)
@@ -212,7 +212,7 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = fftw.pc
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-libfftw3f_la_DEPENDENCIES = kernel/libkernel.la \
+libfftw3_la_DEPENDENCIES = kernel/libkernel.la \
 	simd/libsimd.la dft/libdft.la dft/codelets/libdft_codelets.la \
 	dft/codelets/standard/libdft_standard.la \
 	dft/codelets/inplace/libdft_inplace.la dft/k7/libdft_k7.la \
@@ -223,9 +223,9 @@ libfftw3f_la_DEPENDENCIES = kernel/libkernel.la \
 	rdft/codelets/hc2r/librdft_codelets_hc2r.la \
 	rdft/codelets/r2r/librdft_codelets_r2r.la reodft/libreodft.la \
 	api/libapi.la
-am_libfftw3f_la_OBJECTS =
-libfftw3f_la_OBJECTS = \
-	$(am_libfftw3f_la_OBJECTS)
+am_libfftw3_la_OBJECTS =
+libfftw3_la_OBJECTS = \
+	$(am_libfftw3_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -235,7 +235,7 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libfftw3f_la_SOURCES)
+DIST_SOURCES = $(libfftw3_la_SOURCES)
 DATA = $(pkgconfig_DATA)
 
 
@@ -250,7 +250,7 @@ DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 	fftw.pc.in install-sh ltmain.sh missing mkinstalldirs
 DIST_SUBDIRS = support genfft genfft-k7 kernel simd dft rdft reodft \
 	threads api libbench2 . tests doc tools
-SOURCES = $(libfftw3f_la_SOURCES)
+SOURCES = $(libfftw3_la_SOURCES)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -319,8 +319,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libfftw3f.la: $(libfftw3f_la_OBJECTS) $(libfftw3f_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libfftw3f_la_LDFLAGS) $(libfftw3f_la_OBJECTS) $(libfftw3f_la_LIBADD) $(LIBS)
+libfftw3.la: $(libfftw3_la_OBJECTS) $(libfftw3_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libfftw3_la_LDFLAGS) $(libfftw3_la_OBJECTS) $(libfftw3_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -703,11 +703,11 @@ uninstall-info: uninstall-info-recursive
 	uninstall-pkgconfigDATA uninstall-recursive
 
 
-fftw3f.pc: fftw.pc
-	cp -f fftw.pc fftw3f.pc
+fftw3.pc: fftw.pc
+	cp -f fftw.pc fftw3.pc
 
 wisdom:
-	tools/fftwf-wisdom -o $@ $(WISDOM_FLAGS)
+	tools/fftw-wisdom -o $@ $(WISDOM_FLAGS)
 
 install-wisdom: wisdom
 	$(mkinstalldirs) $(WISDOM_DIR)

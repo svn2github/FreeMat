@@ -106,8 +106,8 @@ PACKAGE_TARNAME = fftw
 PACKAGE_VERSION = 3.0.1
 PATH_SEPARATOR = :
 POW_LIB = 
-PRECISION = s
-PREC_SUFFIX = f
+PRECISION = d
+PREC_SUFFIX = 
 PTHREAD_CC = 
 PTHREAD_CFLAGS = 
 PTHREAD_LIBS = 
@@ -116,8 +116,8 @@ SET_MAKE =
 SHARED_VERSION_INFO = 3:1:0
 SHELL = /bin/sh
 SIMD_CFLAGS = 
-SINGLE_FALSE = #
-SINGLE_TRUE = 
+SINGLE_FALSE = 
+SINGLE_TRUE = #
 STRIP = strip
 TARGET_OCAMLBIN = /usr/local//bin
 TARGET_OCAMLLIB = /usr/local//lib/fftw
@@ -165,42 +165,42 @@ target_alias =
 AM_CPPFLAGS = -I$(top_srcdir)/libbench2 -I$(top_srcdir)/api 
 
 bin_SCRIPTS = fftw-wisdom-to-conf
-bin_PROGRAMS = fftwf-wisdom
+bin_PROGRAMS = fftw-wisdom
 
-BUILT_SOURCES = fftw-wisdom-to-conf fftwf-wisdom.1
+BUILT_SOURCES = fftw-wisdom-to-conf fftw-wisdom.1
 EXTRA_DIST = fftw-wisdom-to-conf.in
 
-dist_man_MANS = fftw-wisdom-to-conf.1 fftwf-wisdom.1
+dist_man_MANS = fftw-wisdom-to-conf.1 fftw-wisdom.1
 EXTRA_MANS = fftw_wisdom.1.in
 LIBFFTWTHREADS = 
 
-#LIBFFTWTHREADS = $(top_builddir)/threads/libfftw3f_threads.la
+#LIBFFTWTHREADS = $(top_builddir)/threads/libfftw3_threads.la
 
-fftwf_wisdom_SOURCES = fftw-wisdom.c
-fftwf_wisdom_LDADD = $(top_builddir)/tests/bench.o	\
-$(LIBFFTWTHREADS) $(top_builddir)/libfftw3f.la	\
+fftw_wisdom_SOURCES = fftw-wisdom.c
+fftw_wisdom_LDADD = $(top_builddir)/tests/bench.o	\
+$(LIBFFTWTHREADS) $(top_builddir)/libfftw3.la	\
 $(top_builddir)/libbench2/libbench2.a $(THREADLIBS)
 
 subdir = tools
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = fftw_wisdom.1 fftw-wisdom-to-conf
-bin_PROGRAMS = fftwf-wisdom$(EXEEXT)
+bin_PROGRAMS = fftw-wisdom$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_fftwf_wisdom_OBJECTS = fftw-wisdom.$(OBJEXT)
-fftwf_wisdom_OBJECTS = \
-	$(am_fftwf_wisdom_OBJECTS)
-#fftwf_wisdom_DEPENDENCIES = \
+am_fftw_wisdom_OBJECTS = fftw-wisdom.$(OBJEXT)
+fftw_wisdom_OBJECTS = \
+	$(am_fftw_wisdom_OBJECTS)
+#fftw_wisdom_DEPENDENCIES = \
 #	$(top_builddir)/tests/bench.o \
-#	$(top_builddir)/threads/libfftw3f_threads.la \
-#	$(top_builddir)/libfftw3f.la \
+#	$(top_builddir)/threads/libfftw3_threads.la \
+#	$(top_builddir)/libfftw3.la \
 #	$(top_builddir)/libbench2/libbench2.a
-fftwf_wisdom_DEPENDENCIES = \
+fftw_wisdom_DEPENDENCIES = \
 	$(top_builddir)/tests/bench.o \
-	$(top_builddir)/libfftw3f.la \
+	$(top_builddir)/libfftw3.la \
 	$(top_builddir)/libbench2/libbench2.a
-fftwf_wisdom_LDFLAGS =
+fftw_wisdom_LDFLAGS =
 SCRIPTS = $(bin_SCRIPTS)
 
 
@@ -215,13 +215,13 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(fftwf_wisdom_SOURCES)
+DIST_SOURCES = $(fftw_wisdom_SOURCES)
 
 NROFF = nroff
 MANS = $(dist_man_MANS)
 DIST_COMMON = $(dist_man_MANS) Makefile.am Makefile.in \
 	fftw-wisdom-to-conf.in fftw_wisdom.1.in
-SOURCES = $(fftwf_wisdom_SOURCES)
+SOURCES = $(fftw_wisdom_SOURCES)
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -266,9 +266,9 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-fftwf-wisdom$(EXEEXT): $(fftwf_wisdom_OBJECTS) $(fftwf_wisdom_DEPENDENCIES) 
-	@rm -f fftwf-wisdom$(EXEEXT)
-	$(LINK) $(fftwf_wisdom_LDFLAGS) $(fftwf_wisdom_OBJECTS) $(fftwf_wisdom_LDADD) $(LIBS)
+fftw-wisdom$(EXEEXT): $(fftw_wisdom_OBJECTS) $(fftw_wisdom_DEPENDENCIES) 
+	@rm -f fftw-wisdom$(EXEEXT)
+	$(LINK) $(fftw_wisdom_LDFLAGS) $(fftw_wisdom_OBJECTS) $(fftw_wisdom_LDADD) $(LIBS)
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
@@ -572,7 +572,7 @@ uninstall-man: uninstall-man1
 	uninstall-binSCRIPTS uninstall-info-am uninstall-man \
 	uninstall-man1
 
-fftwf-wisdom.1: fftw_wisdom.1
+fftw-wisdom.1: fftw_wisdom.1
 	rm -f $@
 	cp fftw_wisdom.1 $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

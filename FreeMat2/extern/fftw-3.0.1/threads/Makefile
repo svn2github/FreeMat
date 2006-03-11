@@ -106,8 +106,8 @@ PACKAGE_TARNAME = fftw
 PACKAGE_VERSION = 3.0.1
 PATH_SEPARATOR = :
 POW_LIB = 
-PRECISION = s
-PREC_SUFFIX = f
+PRECISION = d
+PREC_SUFFIX = 
 PTHREAD_CC = 
 PTHREAD_CFLAGS = 
 PTHREAD_LIBS = 
@@ -116,8 +116,8 @@ SET_MAKE =
 SHARED_VERSION_INFO = 3:1:0
 SHELL = /bin/sh
 SIMD_CFLAGS = 
-SINGLE_FALSE = #
-SINGLE_TRUE = 
+SINGLE_FALSE = 
+SINGLE_TRUE = #
 STRIP = strip
 TARGET_OCAMLBIN = /usr/local//bin
 TARGET_OCAMLLIB = /usr/local//lib/fftw
@@ -166,26 +166,26 @@ AM_CPPFLAGS = -I$(top_srcdir)/kernel -I$(top_srcdir)/dft	\
 -I$(top_srcdir)/rdft -I$(top_srcdir)/api
 
 
-#lib_LTLIBRARIES = libfftw3f_threads.la
+#lib_LTLIBRARIES = libfftw3_threads.la
 
-libfftw3f_threads_la_SOURCES = api.c conf.c threads.c	\
+libfftw3_threads_la_SOURCES = api.c conf.c threads.c	\
 threads.h dft-vrank-geq1.c ct-dit.c rdft-vrank-geq1.c hc2hc-dit.c	\
 hc2hc-dif.c vrank-geq1-rdft2.c f77api.c f77funcs.h
 
 
-libfftw3f_threads_la_LDFLAGS = -version-info 3:1:0
+libfftw3_threads_la_LDFLAGS = -version-info 3:1:0
 subdir = threads
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-libfftw3f_threads_la_LIBADD =
-am_libfftw3f_threads_la_OBJECTS = api.lo conf.lo threads.lo \
+libfftw3_threads_la_LIBADD =
+am_libfftw3_threads_la_OBJECTS = api.lo conf.lo threads.lo \
 	dft-vrank-geq1.lo ct-dit.lo rdft-vrank-geq1.lo hc2hc-dit.lo \
 	hc2hc-dif.lo vrank-geq1-rdft2.lo f77api.lo
-libfftw3f_threads_la_OBJECTS = \
-	$(am_libfftw3f_threads_la_OBJECTS)
+libfftw3_threads_la_OBJECTS = \
+	$(am_libfftw3_threads_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -205,9 +205,9 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libfftw3f_threads_la_SOURCES)
+DIST_SOURCES = $(libfftw3_threads_la_SOURCES)
 DIST_COMMON = Makefile.am Makefile.in
-SOURCES = $(libfftw3f_threads_la_SOURCES)
+SOURCES = $(libfftw3_threads_la_SOURCES)
 
 all: all-am
 
@@ -246,8 +246,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libfftw3f_threads.la: $(libfftw3f_threads_la_OBJECTS) $(libfftw3f_threads_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libfftw3f_threads_la_LDFLAGS) $(libfftw3f_threads_la_OBJECTS) $(libfftw3f_threads_la_LIBADD) $(LIBS)
+libfftw3_threads.la: $(libfftw3_threads_la_OBJECTS) $(libfftw3_threads_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libfftw3_threads_la_LDFLAGS) $(libfftw3_threads_la_OBJECTS) $(libfftw3_threads_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core

@@ -106,8 +106,8 @@ PACKAGE_TARNAME = fftw
 PACKAGE_VERSION = 3.0.1
 PATH_SEPARATOR = :
 POW_LIB = 
-PRECISION = s
-PREC_SUFFIX = f
+PRECISION = d
+PREC_SUFFIX = 
 PTHREAD_CC = 
 PTHREAD_CFLAGS = 
 PTHREAD_LIBS = 
@@ -116,8 +116,8 @@ SET_MAKE =
 SHARED_VERSION_INFO = 3:1:0
 SHELL = /bin/sh
 SIMD_CFLAGS = 
-SINGLE_FALSE = #
-SINGLE_TRUE = 
+SINGLE_FALSE = 
+SINGLE_TRUE = #
 STRIP = strip
 TARGET_OCAMLBIN = /usr/local//bin
 TARGET_OCAMLLIB = /usr/local//lib/fftw
@@ -171,11 +171,11 @@ noinst_PROGRAMS = bench
 EXTRA_DIST = check.pl README
 LIBFFTWTHREADS = 
 
-#LIBFFTWTHREADS = $(top_builddir)/threads/libfftw3f_threads.la
+#LIBFFTWTHREADS = $(top_builddir)/threads/libfftw3_threads.la
 
 bench_SOURCES = bench.c hook.c
 bench_LDADD = $(LIBFFTWTHREADS)				\
-$(top_builddir)/libfftw3f.la		\
+$(top_builddir)/libfftw3.la		\
 $(top_builddir)/libbench2/libbench2.a $(THREADLIBS)
 
 subdir = tests
@@ -188,11 +188,11 @@ PROGRAMS = $(noinst_PROGRAMS)
 am_bench_OBJECTS = bench.$(OBJEXT) hook.$(OBJEXT)
 bench_OBJECTS = $(am_bench_OBJECTS)
 #bench_DEPENDENCIES = \
-#	$(top_builddir)/threads/libfftw3f_threads.la \
-#	$(top_builddir)/libfftw3f.la \
+#	$(top_builddir)/threads/libfftw3_threads.la \
+#	$(top_builddir)/libfftw3.la \
 #	$(top_builddir)/libbench2/libbench2.a
 bench_DEPENDENCIES = \
-	$(top_builddir)/libfftw3f.la \
+	$(top_builddir)/libfftw3.la \
 	$(top_builddir)/libbench2/libbench2.a
 bench_LDFLAGS =
 

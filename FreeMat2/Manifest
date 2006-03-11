@@ -5365,6 +5365,11 @@ extern/fftw-3.0.1/doc/f77_wisdom.f
 extern/fftw-3.0.1/doc/rfftwnd.fig
 extern/fftw-3.0.1/acinclude.m4
 extern/fftw-3.0.1/AUTHORS
+extern/fftw-3.0.1/rdft/codelets/r2r/codlist.c
+extern/fftw-3.0.1/rdft/codelets/r2hc/codlist.c
+extern/fftw-3.0.1/rdft/codelets/hc2r/codlist.c
+extern/fftw-3.0.1/dft/codelets/inplace/codlist.c
+extern/fftw-3.0.1/dft/codelets/standard/codlist.c
 extern/matio
 extern/matio/aclocal.m4
 extern/matio/patches

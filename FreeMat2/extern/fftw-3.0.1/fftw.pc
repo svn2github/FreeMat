@@ -6,5 +6,5 @@ includedir=${prefix}/include
 Name: FFTW
 Description: fast Fourier transform library
 Version: 3.0.1
-Libs: -L${libdir} -lfftw3f -lm
+Libs: -L${libdir} -lfftw3 -lm
 Cflags: -I${includedir}

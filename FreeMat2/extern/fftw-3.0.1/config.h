@@ -5,7 +5,7 @@
 /* #undef BENCHFFT_LDOUBLE */
 
 /* Define to compile in single precision. */
-#define BENCHFFT_SINGLE 1
+/* #undef BENCHFFT_SINGLE */
 
 /* extra CFLAGS for codelets */
 #define CODELET_OPTIM "-O"
@@ -52,7 +52,7 @@
 /* #undef FFTW_LDOUBLE */
 
 /* Define to compile in single precision. */
-#define FFTW_SINGLE 1
+/* #undef FFTW_SINGLE */
 
 /* Define to enable 3DNow! optimizations. */
 /* #undef HAVE_3DNOW */

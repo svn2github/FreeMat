@@ -61,7 +61,6 @@ api\rdft2-pad.c \
 api\the-planner.c \
 api\version.c \
 dft\buffered.c \
-dft\codelets\inplace\codlist.c \
 dft\codelets\inplace\q1_2.c \
 dft\codelets\inplace\q1_3.c \
 dft\codelets\inplace\q1_4.c \
@@ -69,7 +68,6 @@ dft\codelets\inplace\q1_5.c \
 dft\codelets\inplace\q1_6.c \
 dft\codelets\inplace\q1_8.c \
 dft\codelets\n.c \
-dft\codelets\standard\codlist.c \
 dft\codelets\standard\m1_16.c \
 dft\codelets\standard\m1_32.c \
 dft\codelets\standard\m1_64.c \
@@ -174,7 +172,6 @@ kernel\twiddle.c \
 rdft\buffered.c \
 rdft\buffered2.c \
 rdft\codelets\hc2r.c \
-rdft\codelets\hc2r\codlist.c \
 rdft\codelets\hc2r\hb_10.c \
 rdft\codelets\hc2r\hb_12.c \
 rdft\codelets\hc2r\hb_15.c \
@@ -224,7 +221,6 @@ rdft\codelets\hc2r\mhc2r_32.c \
 rdft\codelets\hc2r\mhc2r_64.c \
 rdft\codelets\hfb.c \
 rdft\codelets\r2hc.c \
-rdft\codelets\r2hc\codlist.c \
 rdft\codelets\r2hc\hf2_16.c \
 rdft\codelets\r2hc\hf2_32.c \
 rdft\codelets\r2hc\hf2_4.c \
@@ -279,7 +275,6 @@ rdft\codelets\r2hc\r2hc_7.c \
 rdft\codelets\r2hc\r2hc_8.c \
 rdft\codelets\r2hc\r2hc_9.c \
 rdft\codelets\r2r.c \
-rdft\codelets\r2r\codlist.c \
 rdft\codelets\r2r\e01_8.c \
 rdft\codelets\r2r\e10_8.c \
 rdft\conf.c \

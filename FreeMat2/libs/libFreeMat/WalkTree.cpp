@@ -108,7 +108,7 @@ namespace FreeMat {
   }
 
   void WalkTree::sendGreeting() {
-    io->outputMessage(" " + getVersionString() + " build ($Rev$)\n");
+    io->outputMessage(" " + getVersionString() + "\n");
     io->outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
     io->outputMessage(" Licensed under the GNU Public License (GPL)\n");
     io->outputMessage(" Type <help license> to find out more\n");

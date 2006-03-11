@@ -656,11 +656,7 @@ void LatexWriter::WriteIndex() {
   f << "\\begin{document}\n";
   f << "\\maketitle\n";
   f << "\\tableofcontents\n";
-  QList<QString> sections_multi(sectables.keys());
-  QSet<QString> sections;
-  for (int i=0;i<sections_multi.size();i++)
-    sections << sections_multi[i];
-  foreach (QString secname, sections) {
+  foreach (QString secname, sectionOrdered) {
     QList<QStringList> modules(sectables.values(secname));
     QString secdesc(section_descriptors.value(secname));
     QStringList moduleList;

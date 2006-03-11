@@ -34,14 +34,13 @@
 #include "PathTool.hpp"
 #include "ToolDock.hpp"
 
-const int about_linecount = 23;
-const char *about_strings[] = {"Julie Basu - Worlds greatest spouse",
-			       "Maya Basu - Age 2 - Official laptop power button tester (it works!)",
+const int about_linecount = 22;
+const char *about_strings[] = {"Julie & Maya - My Fan Club",
 			       "Bruno De Man - General suggestions, support and FreeMat advocate",
 			       "Thomas Beutlich - MAT file support",
 			       "Brian Yanoff - Compatibility scripts",
-			       "Jeff Fessler - Support and test code, motivation for class support",
-			       "Al Danial - Sparse matrix support motivation and ideas",
+			       "Jeff Fessler - Support and test code, help with  class support",
+			       "Al Danial - Help with sparse matrix support",
 			       "MT19937 - Takuji Nishimura and Makoto Matsumoto's random number generator",
 			       "RANLIB - Random number generator library",
 			       "ATLAS - Optimized BLAS",

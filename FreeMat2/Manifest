@@ -4149,7 +4149,6 @@ extern/ATLAS/makes/Make.cblastst
 extern/ATLAS/makes/Make.l2ptblas
 extern/ATLAS/makes/Make.tstsrc
 extern/ATLAS/makes/Make.l2src
-extern/filelist
 extern/UFconfig
 extern/UFconfig/README.txt
 extern/UFconfig/UFconfig.mk
@@ -5701,7 +5700,6 @@ extern/AMD/Include
 extern/AMD/Include/amd.h
 extern/AMD/README.txt
 extern/AMD/Lib
-extern/qconf_cvs.zip
 extern/ffcall-1.10
 extern/ffcall-1.10/NEWS
 extern/ffcall-1.10/config.log

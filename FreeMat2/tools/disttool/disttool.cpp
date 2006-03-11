@@ -324,6 +324,8 @@ void ConsoleWidget::SrcBundle() {
     if (progress.wasCanceled()) 
       Halt("Source build cancelled");
     QFileInfo fileInfo("../../"+manifest[i]);
+    if (!fileInfo.exists())
+      Halt("Unable to find source file "+manifest[i]);
     if (fileInfo.isDir())
       MakeDir(baseDir+"/"+manifest[i]);
     else

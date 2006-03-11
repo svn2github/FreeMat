@@ -10,7 +10,9 @@ DEFINES -= UNICODE
 
 TARGET = FreeMat
 
+!win32 {
 include($$OUT_PWD/conf.pri)
+}
 
 win32 {
 PRE_TARGETDEPS += extern/fftw-3.0.1/.libs/libfftw3.a extern/fftw-3.0.1/.libs/libfftw3f.a extern/ffcall-1.10/avcall/.libs/libavcall.a extern/ARPACK/libarpack.a extern/AMD/Lib/libamd.a extern/UMFPACK/Lib/libumfpack.a extern/LAPACK/liblapack.a extern/matio/src/libmatio.a

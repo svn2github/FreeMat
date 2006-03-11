@@ -322,7 +322,12 @@ reodft\reodft11e-r2hc-odd.c \
 reodft\reodft11e-r2hc.c \
 reodft\reodft11e-radix2.c \
 reodft\rodft00e-r2hc-pad.c \
-reodft\rodft00e-r2hc.c 
+reodft\rodft00e-r2hc.c \
+rdft\codelets\r2r\codlist.c \
+rdft\codelets\r2hc\codlist.c \
+rdft\codelets\hc2r\codlist.c \
+dft\codelets\inplace\codlist.c \
+dft\codelets\standard\codlist.c 
 
 SINGLE = $(subst .c,_float.o,$(SRC))
 DOUBLE = $(subst .c,_double.o,$(SRC))

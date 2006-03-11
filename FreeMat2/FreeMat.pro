@@ -105,11 +105,11 @@ install.target = install
 install.depends = FORCE
 
 unix:!macx {
-install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && build/disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && tar cfz FreeMat$${VERSION}_Linux_Binary.tar.gz FreeMat$${VERSION}
+install.commands = rm -rf FreeMat$${VERSION} && cd tools/disttool && qmake && make && build/disttool -linux && cd ../../ &&  mv tools/disttool/FreeMat$${VERSION} FreeMat$${VERSION} && find FreeMat$${VERSION} -name '*debug' -exec rm \{\} \; && cp COPYING FreeMat$${VERSION}/. && tar cfz FreeMat$${VERSION}_Linux_Binary.tar.gz FreeMat$${VERSION}
 }
 
 macx {
-install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake && make && build/disttool -mac && cd ../../ &&  mv build/FreeMat.app FreeMat$${VERSION}.app && find FreeMat$${VERSION}.app -name '*debug' -exec rm \{\} \; && cd help/latex && pdflatex main.tex && pdflatex main.tex && cd ../../ && rm -rf FreeMat$${VERSION} && mkdir FreeMat$${VERSION} && mv FreeMat$${VERSION}.app FreeMat$${VERSION} && mv help/latex/main.pdf FreeMat$${VERSION} && rm -rf FreeMat$${VERSION}.dmg && hdiutil create -fs HFS+ -srcfolder FreeMat$${VERSION} FreeMat$${VERSION}.dmg
+install.commands = rm -rf FreeMat$${VERSION}.app && cd tools/disttool && qmake && make && build/disttool -mac && cd ../../ &&  mv build/FreeMat.app FreeMat$${VERSION}.app && find FreeMat$${VERSION}.app -name '*debug' -exec rm \{\} \; && cd help/latex && pdflatex main.tex && pdflatex main.tex && cd ../../ && rm -rf FreeMat$${VERSION} && mkdir FreeMat$${VERSION} && mv FreeMat$${VERSION}.app FreeMat$${VERSION} && mv help/latex/main.pdf FreeMat$${VERSION}/FreeMat$${VERSION}.pdf && rm -rf FreeMat$${VERSION}.dmg && hdiutil create -fs HFS+ -srcfolder FreeMat$${VERSION} FreeMat$${VERSION}.dmg
 }
 
 win32 {
@@ -347,7 +347,8 @@ DISTFILES += src/appIcon.icns
 
 distprep.target = distprep
 distprep.depends = FORCE
-distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clean && cd ../ARPACK && make clean && cd ../ffcall-1.10 && make clean && cd ../LAPACK/SRC && make -f Makefile_freemat clean && cd ../../matio && make clean && cd ../UMFPACK && make clean && cd ../ATLAS && find . -name '*BLAS_FreeMat*' -exec rm -rf \{\} \; && find . -name '*.o' -exec rm -rf \{\} \;
+distprep.commands = cd extern/fftw-3.0.1 && make clean && cd ../AMD && make clean && cd ../ARPACK && make clean && cd ../ffcall-1.10 && make clean && cd ../LAPACK/SRC && make -f Makefile_freemat clean && cd ../../matio && make clean && cd ../UMFPACK && make clean && cd ../ATLAS && find . -name '*BLAS_FreeMat*' -exec rm -rf \{\} \; && find . -name '*.o' -exec rm -rf \{\} \; && cd .. && find . -name '.deps' -exec rm -rf \{\} \;
+
 
 
 distrepack.target = distrepack

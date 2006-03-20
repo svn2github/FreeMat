@@ -119,12 +119,26 @@ namespace FreeMat {
     rescanPath();
   }
 
+  std::string Interface::getTotalPath() {
+    std::string retpath;
+    QStringList totalPath();
+    totalPath += m_basePath;
+    totalPath += m_userPath;
+    for (int i=0;i<totalPath.size()-1;i++) 
+      retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
+    if (totalPath.size() > 0) 
+      retpath = retpath + totalPath[totalPath.size()-1].toStdString();
+    return retpath;
+  }
+  
   std::string Interface::getPath() {
     std::string retpath;
-    for (int i=0;i<m_userPath.size()-1;i++) 
-      retpath = retpath + m_userPath[i].toStdString() + PATH_DELIM;
-    if (m_userPath.size() > 0) 
-      retpath = retpath + m_userPath[m_userPath.size()-1].toStdString();
+    QStringList totalPath();
+    totalPath += m_userPath;
+    for (int i=0;i<totalPath.size()-1;i++) 
+      retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
+    if (totalPath.size() > 0) 
+      retpath = retpath + totalPath[totalPath.size()-1].toStdString();
     return retpath;
   }
   

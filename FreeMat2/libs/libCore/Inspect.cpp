@@ -202,7 +202,7 @@ namespace FreeMat {
   {
     Interface *io;
     io = eval->getInterface();
-    PathSearcher psearch(io->getPath());
+    PathSearcher psearch(io->getTotalPath());
 
     if (arg.size() != 1)
       throw Exception("help function requires a single argument (the function or script name)");

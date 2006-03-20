@@ -60,6 +60,10 @@ namespace FreeMat {
      */
     virtual std::string getPath();
     /**
+     *  Get the current path set for the interface (base path + user path)
+     */
+    virtual std::string getTotalPath();
+    /**
      *  Set the path for the interface. (user path - legacy interface)
      */
     virtual void setPath(std::string);

@@ -121,9 +121,7 @@ namespace FreeMat {
 
   std::string Interface::getTotalPath() {
     std::string retpath;
-    QStringList totalPath();
-    totalPath += m_basePath;
-    totalPath += m_userPath;
+    QStringList totalPath(QStringList() << m_basePath << m_userPath);
     for (int i=0;i<totalPath.size()-1;i++) 
       retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
     if (totalPath.size() > 0) 
@@ -133,8 +131,7 @@ namespace FreeMat {
   
   std::string Interface::getPath() {
     std::string retpath;
-    QStringList totalPath();
-    totalPath += m_userPath;
+    QStringList totalPath(m_userPath);
     for (int i=0;i<totalPath.size()-1;i++) 
       retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
     if (totalPath.size() > 0) 

@@ -351,8 +351,8 @@ namespace FreeMat {
      * Returns TRUE if we are a string.
      */
     const bool isString() const;
-    const bool isColumnVector() const;
-    const bool isRowVector() const;
+    bool isColumnVector() const;
+    bool isRowVector() const;
     /**
      * Copy data from our data array to the specified array.  This is a 
      * deep copy, in the sense that pointers are copied by creating 

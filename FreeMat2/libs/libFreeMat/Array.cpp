@@ -45,6 +45,15 @@ static int objectBalance;
   typedef std::set<uint32, std::less<uint32> > intSet;
   intSet addresses;
 
+
+  bool Array::isColumnVector() const {
+    return (is2D() && columns() == 1);
+  }
+
+  bool Array::isRowVector() const {
+    return (is2D() && rows() == 1);
+  }
+
   bool isColonOperator(Array& a) {
     return ((a.getDataClass() == FM_STRING) && 
 	    (a.getLength() == 1) &&
@@ -2314,7 +2323,11 @@ break;
 	return ret;
       }
       index.toOrdinalType();
-      Dimensions retdims(index.dp->dimensions);
+      Dimensions retdims;
+      if (isColumnVector() && index.isRowVector())
+	retdims = Dimensions(index.getLength(),1);
+      else
+	retdims = index.dp->dimensions;
       retdims.simplify();
       if (isSparse()) {
 	if (index.getLength() == 1) {
@@ -2345,6 +2358,12 @@ break;
       // The output is the same size as the _index_, not the
       // source variable (neat, huh?).  But it inherits the
       // type of the source variable.
+      //
+      // Bug 1221845 - there is an anomaly in the treatment of vectors
+      // If the source is a column vector, and the index is a row vector
+      // then the output is a column vector.  This behaviour is an 
+      // inconsistency in M that we will reproduce here.
+      //
       int length = index.getLength();
       qp = allocateArray(dp->dataClass,index.getLength(),dp->fieldNames);
       // Get a pointer to the index data set

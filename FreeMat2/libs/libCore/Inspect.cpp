@@ -553,9 +553,11 @@ namespace FreeMat {
     if (arg.size() < 1)
       throw Exception("size function requires either one or two arguments");
     Dimensions sze;
-    if (arg[0].isEmpty())
+    if (arg[0].isEmpty()) {
       sze = Dimensions(0,0);
-    else
+      for (int i=2;i<maxDims;i++)
+	sze[i] = 0;
+    } else
       sze = arg[0].getDimensions();
     if (arg.size() == 1) {
       if (nargout > 1) {

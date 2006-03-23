@@ -441,6 +441,11 @@ int lexNumber() {
   cp = 0;
   intonly = 1;
   while (state != 7) {
+    // Check for ".*"
+    if ((datap[cp] == '.') && ((datap[cp+1] == '*') || (datap[cp+1] == '/') ||
+			       (datap[cp+1] == '\\'))) {
+      state = 7;
+    }
     switch (state) {
     case 0:
       if (datap[cp] == '.') {

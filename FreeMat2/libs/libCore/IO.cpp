@@ -367,6 +367,15 @@ namespace FreeMat {
       char *allflag = arg[0].getContentsAsCString();
       if (strcmp(allflag,"all") == 0) {
 	closingAll = true;
+	int maxHandle(fileHandles.maxHandle());
+	for (int i=3;i<maxHandle;i++) {
+	  try {
+	    FilePtr* fptr = fileHandles.lookupHandle(i+1);
+	    fclose(fptr->fp);
+	    fileHandles.deleteHandle(i+1);
+	  } catch (Exception & e) {
+	  }
+	}
       } else
 	throw Exception("Fclose must have one argument, either 'all' or a file handle");
     } else {

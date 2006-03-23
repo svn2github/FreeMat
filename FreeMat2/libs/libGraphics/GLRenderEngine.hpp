@@ -26,7 +26,7 @@
   class GLRenderEngine : public RenderEngine {
     double model[16];
     double proj[16];
-    int viewp[4];
+    GLint viewp[4];
     double m_x1, m_y1, m_width, m_height;
     QGLWidget *m_widget;
   public:

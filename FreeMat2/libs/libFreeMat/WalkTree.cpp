@@ -2674,7 +2674,17 @@ namespace FreeMat {
 	  collectKeywords(s,keyvals,keyexpr,keywords);
 	  SetContext(ctxt);
 	  // Evaluate function arguments
-	  m = expressionList(s);
+	  try {
+	    m = expressionList(s);
+	  } catch (Exception &e) {
+	    // Transmute the error message about illegal use of ':'
+	    // into one about undefined variables.  Its crufty,
+	    // but it works.
+	    if (e.matches("Illegal use of the ':' operator"))
+	      throw Exception("Undefined variable " + std::string(t->text));
+	    else
+	      throw;
+	  }
 	  SetContext(ctxt);
 	} else
 	  throw Exception(std::string("Unknown function or variable ") + t->text);

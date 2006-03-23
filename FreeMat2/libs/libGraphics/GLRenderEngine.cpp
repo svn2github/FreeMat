@@ -230,7 +230,7 @@
 void GLRenderEngine::debug() {
   double tmodel[16];
   double tproj[16];
-  int tviewp[4];
+  GLint tviewp[4];
   glGetDoublev(GL_MODELVIEW_MATRIX,tmodel);
   glGetDoublev(GL_PROJECTION_MATRIX,tproj);
   glGetIntegerv(GL_VIEWPORT,tviewp);

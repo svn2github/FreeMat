@@ -3404,14 +3404,14 @@ namespace FreeMat {
   
 
   //!
-  //@Module TOC Start Stopwatch Timer
+  //@Module TOC Stop Stopwatch Timer
   //@@Section FREEMAT
   //@@Usage
-  //Starts the stopwatch timer, which can be used to time tasks in FreeMat.
-  //The @|tic| takes no arguments, and returns no outputs.  You must use
+  //Stop the stopwatch timer, which can be used to time tasks in FreeMat.
+  //The @|toc| function takes no arguments, and returns no outputs.  You must use
   //@|toc| to get the elapsed time.  The usage is
   //@[
-  //  tic
+  //  toc
   //@]
   //@@Example
   //Here is an example of timing the solution of a large matrix equation.

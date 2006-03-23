@@ -994,6 +994,10 @@ std::string TranslateString(std::string x) {
   return y;
 }
 
+void KeyManager::CWDChanged() {
+  emit UpdateCWD();
+}
+
 void KeyManager::outputMessage(std::string msg) {
   std::string msg2(TranslateString(msg));
   emit OutputRawString(msg2);

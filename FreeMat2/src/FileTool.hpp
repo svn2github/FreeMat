@@ -31,6 +31,7 @@ public:
   FileTool(QWidget *parent);
 protected slots:
   void doubleClicked(const QModelIndex& index);
+  void updateCWD();
 signals:
   void sendCommand(QString t);
 };

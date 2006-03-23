@@ -31,6 +31,10 @@ FileTool::FileTool(QWidget *parent) : QWidget(parent) {
   setObjectName("filetool");
 }
 
+void FileTool::updateCWD() {
+  tree->setRootIndex(model->index(QDir::currentPath()));
+}
+
 void FileTool::doubleClicked(const QModelIndex& index) {
   emit sendCommand("'"+model->filePath(index)+"'");
 }

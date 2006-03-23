@@ -40,6 +40,7 @@ namespace FreeMat {
   public:
     Interface();
     virtual ~Interface();
+    virtual void CWDChanged() {};
     std::vector<std::string> GetCompletions(std::string line, int word_end, 
 					    std::string &matchString);
     /**

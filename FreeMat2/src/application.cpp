@@ -205,6 +205,8 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
  	  keys,SLOT(QueueCommand(QString)));
   connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),
  	  keys,SLOT(QueueString(QString)));
+  connect(keys,SIGNAL(UpdateCWD()),
+	  m_tool->getFileTool(),SLOT(updateCWD()));
   connect(keys,SIGNAL(UpdateVariables()),
 	  m_tool->getVariablesTool(),SLOT(refresh()));
   connect(pauseAct,SIGNAL(triggered()),m_keys,SLOT(RegisterInterrupt()));

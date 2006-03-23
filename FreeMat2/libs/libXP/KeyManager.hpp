@@ -81,6 +81,7 @@ public:
   void KillLine();
   int getTerminalWidth();
   void RegisterTerm(QObject* term);
+  virtual void CWDChanged();
  private:
   void CursorLeft();
   void CursorRight();
@@ -157,6 +158,7 @@ signals:
   void SendCommand(QString);
   void Interrupt();
   void UpdateVariables();
+  void UpdateCWD();
 public slots:
   void OnChar( int c );
   void SetTermWidth(int w);

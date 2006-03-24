@@ -386,7 +386,7 @@ void QTTerm::mousePressEvent( QMouseEvent *e ) {
 }
 
 void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
-  if (e->button() == Qt::NoButton)
+  if (!e->buttons())
     return;
   int x = e->x();
   int y = e->y();

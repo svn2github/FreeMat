@@ -598,7 +598,7 @@ static int objectBalance;
     if (dp)
       return dp->dimensions;
     else
-      return Dimensions();
+      return Dimensions(0,0);
   }
 
   stringVector Array::getFieldNames() const {
@@ -1760,7 +1760,7 @@ break;
   }
 
   Array Array::emptyConstructor() {
-    Dimensions dim;
+    Dimensions dim(0,0);
     return Array(FM_DOUBLE,dim,NULL);
   }
 
@@ -2851,12 +2851,27 @@ break;
       return;
     }
     // If we are empty, then fill in the colon dimensions with the corresponding
-    // sizes of data
+    // sizes of data - the problem is that which dimension to take isn't obvious.
+    // Need some more clarity here...
+    //
+    // If the rhs is a vector, we let the first colon operator map to the length
+    // of the vector.  Otherwise, we map each colon operator to the corresponding
+    // dimension of the RHS.
     if (isEmpty()) {
-      int m = 0;
-      for (int i=0;i<index.size();i++)
-	if (isColonOperator(index[i]))
-	  index[i] = Array::int32RangeConstructor(1,1,data.getDimensionLength(m++),true);
+      if (data.isVector()) {
+	bool firstcolon = true;
+	for (int i=0;i<index.size();i++)
+	  if (isColonOperator(index[i]))
+	    if (firstcolon) {
+	      index[i] = Array::int32RangeConstructor(1,1,data.getLength(),true);
+	      firstcolon = false;
+	    } else
+	      index[i] = Array::int32RangeConstructor(1,1,1,true);
+      } else {
+	for (int i=0;i<index.size();i++)
+	  if (isColonOperator(index[i]))
+	    index[i] = Array::int32RangeConstructor(1,1,data.getDimensionLength(i),true);
+      }
     }
     try {
       int L = index.size();

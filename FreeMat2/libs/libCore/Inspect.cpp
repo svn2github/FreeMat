@@ -555,8 +555,6 @@ namespace FreeMat {
     Dimensions sze;
     if (arg[0].isEmpty()) {
       sze = Dimensions(0,0);
-      for (int i=2;i<maxDims;i++)
-	sze[i] = 0;
     } else
       sze = arg[0].getDimensions();
     if (arg.size() == 1) {

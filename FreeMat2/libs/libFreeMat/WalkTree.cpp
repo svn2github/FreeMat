@@ -3589,6 +3589,7 @@ namespace FreeMat {
       r->setVectorSubset(m[0],value[0]);
     else 
       r->setNDimSubset(m,value[0]);
+    value.erase(value.begin());
     return;
   }
 

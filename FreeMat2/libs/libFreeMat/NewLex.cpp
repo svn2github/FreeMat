@@ -441,9 +441,9 @@ int lexNumber() {
   cp = 0;
   intonly = 1;
   while (state != 7) {
-    // Check for ".*"
+    // Check for ".*" or ".."
     if ((datap[cp] == '.') && ((datap[cp+1] == '*') || (datap[cp+1] == '/') ||
-			       (datap[cp+1] == '\\'))) {
+			       (datap[cp+1] == '\\') || (datap[cp+1] == '.'))) {
       state = 7;
     }
     switch (state) {
@@ -581,8 +581,10 @@ void lexScanningState() {
   if (match("...")) {
     while (!isNewline())
       discardChar();
+    setTokenType(WS);
     NextLine();
     continuationCount++;
+    return;
   }
   if (match("%")) {
     while (!isNewline())

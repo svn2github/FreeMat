@@ -3295,8 +3295,8 @@ namespace FreeMat {
   }
 
   static std::string EvalPrep(char *line) {
-    char buffer1[4096];
-    char buffer2[4096];
+    char buffer1[40960];
+    char buffer2[40960];
     strcpy(buffer1,line);
     if (buffer1[strlen(buffer1)-1] == '\n')
       buffer1[strlen(buffer1)-1] = 0;
@@ -3368,7 +3368,7 @@ namespace FreeMat {
 
   void WalkTree::evalCLI() {
     char *line;
-    char dataline[4096];
+    char dataline[40960];
     char prompt[150];
     int lastCount;
 

@@ -563,9 +563,9 @@ void TextWriter::BeginModule(QString modname, QString moddesc, QString secname) 
     Halt("Unable to open " + modname + ".mdc for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
   mystream = new QTextStream(myfile);
-  *mystream << "% " << modname << " " << moddesc << "\n";
-  *mystream << "%\n";
-  *mystream << "%\n";
+  *mystream << modname << " " << moddesc << "\n";
+  *mystream << "\n";
+  *mystream << "\n";
   sectables.insert(secname,QStringList() << modname << moddesc);
   verbatim = false;
   ignore = true;
@@ -577,7 +577,7 @@ void TextWriter::BeginGroup(QString groupname) {
   } else {
     ignore = false;
   }
-  OutputText("% Usage\n\n");
+  OutputText("Usage\n\n");
 }
 
 void TextWriter::BeginVerbatim() {
@@ -589,7 +589,7 @@ QString TextWriter::ExpandCodes(QString text) {
   QRegExp code_pattern("@\\|([^\\|]*)\\|");
   QRegExp ret_pattern("\\n");
   text = text.replace(code_pattern,"\\1");
-  text = text.replace(ret_pattern,"\n% ");
+  text = text.replace(ret_pattern,"\n ");
   return text;
 }
 

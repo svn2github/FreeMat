@@ -42,6 +42,7 @@
 function ylim(lim1, lim2)
   if isa(lim1,'string') && strcmp(lim1,'auto')
      set(gca,'ylimmode','auto');
+     return;
   elseif isa(lim1,'string')
       error('do not understand arguments to ylim function');
   end

@@ -21,6 +21,7 @@
 function zlim(lim1, lim2)
   if isa(lim1,'string') && strcmp(lim1,'auto')
      set(gca,'zlimmode','auto');
+     return;
   elseif isa(lim1,'string')
       error('do not understand arguments to zlim function');
   end

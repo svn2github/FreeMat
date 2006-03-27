@@ -2211,9 +2211,9 @@ namespace FreeMat {
   //@}
   //Note that it is now illegal to pass a literal value for @|a| when
   //calling @|addtest3|:
-  //@<
-  //addtest(3,4)
-  //addtest(arg1,arg2)
+  //@<1
+  //addtest3(3,4)
+  //addtest3(arg1,arg2)
   //arg1
   //arg2
   //@>

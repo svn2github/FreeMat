@@ -235,29 +235,10 @@ namespace FreeMat {
 	std::vector<std::string> helplines;
 	std::string workingline;
 	char buffer[4096];
-	bool verbatimMode = false;
 	while (!feof(fp)) {
 	  fgets(buffer,sizeof(buffer),fp);
 	  //is this line only a $ sign?
-	  if ((buffer[0] == '$') && strlen(buffer)<3)
-	    verbatimMode = !verbatimMode;
-	  else {
-	    if (verbatimMode) {
-	      helplines.push_back(buffer);
-	      workingline.erase();
-	    } else {
-	      //is this line empty? if so, push
-	      //workingline to helplines and clear it.
-	      if (strlen(buffer)<2) {
-		helplines.push_back(workingline);
-		helplines.push_back("\n");
-		workingline.erase();
-	      } else {
-		buffer[strlen(buffer)-1] = 0;
-		workingline = workingline + " " + buffer;
-	      }
-	    }
-	  }
+	  helplines.push_back(buffer);
 	}
 	// Write the lines out...
 	// Get the output width (in characters)

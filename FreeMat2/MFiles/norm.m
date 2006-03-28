@@ -62,6 +62,8 @@ if (p == inf)
   y = max(abs(A));
 elseif (p == -inf)
   y = min(abs(A));
+elseif (p == 2)
+  y = xnrm2(A);
 else
   y = sum(abs(A).^p)^(1/p);
 end
@@ -76,7 +78,7 @@ switch p
   case inf
      y = max(sum(abs(A')));
   case 'fro'
-     y = sqrt(sum(diag(A'*A)));
+     y = xnrm2(A);
   otherwise
      error('unrecognized norm p-argument');
 end

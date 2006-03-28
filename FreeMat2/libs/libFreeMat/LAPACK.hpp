@@ -207,6 +207,14 @@ extern "C" {
   void zgetrf_(int *M, int *N, double *A, int *LDA, int *IPIV, int *INFO);
 
   int xerbla_(char *srname, int *info);
+
+  float snrm2_(int *N, float *X, int *INCX);
+  
+  float dnrm2_(int *N, double *X, int *INCX);
+
+  float scnrm2_(int *N, float *X, int *INCX);
+  
+  float dznrm2_(int *N, double *X, int *INCX);
 }
 
 namespace FreeMat {

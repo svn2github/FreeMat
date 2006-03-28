@@ -53,6 +53,7 @@ double getcurrenttime() {
 #include <algorithm>
 #include "Sparse.hpp"
 #include "Math.hpp"
+#include "LAPACK.hpp"
 
 
 namespace FreeMat {
@@ -3425,6 +3426,60 @@ namespace FreeMat {
   ArrayVector TocFunction(int nargout, const ArrayVector& arg) {
     double outtime = (getcurrenttime() - ticvalue)/1e6;
     return singleArrayVector(Array::doubleConstructor(outtime));
+  }
+
+  //!
+  //@Module XNRM2 BLAS Norm Calculation
+  //@@Section ARRAY
+  //@@Usage
+  //Calculates the 2-norm of a vector.  The syntax for its use
+  //is
+  //@[
+  //   y = xnrm2(A)
+  //@]
+  //where @|A| is the n-dimensional array to analyze.  This form
+  //uses the underlying BLAS implementation to compute the 2-norm.
+  //!
+  ArrayVector XNrm2Function(int nargout, const ArrayVector& arg) {
+    if (arg.size() < 1)
+      throw Exception("xnrm2 requires at least one argument");
+    Array input(arg[0]);
+    Class argType(input.getDataClass());
+    if (input.isReferenceType())
+      throw Exception("xnrm2 does not apply to reference types");
+    if ((argType < FM_FLOAT) || (argType == FM_STRING)) {
+      input.promoteType(FM_DOUBLE);
+      argType = input.getDataClass();
+    }
+    switch (argType) {
+    case FM_FLOAT: {
+      float *ptr = (float*) input.getDataPointer();
+      int len = input.getLength();
+      int one = 1;
+      return singleArrayVector(Array::floatConstructor(snrm2_(&len,ptr,&one)));
+    }
+    case FM_DOUBLE:  {
+      double *ptr = (double*) input.getDataPointer();
+      int len = input.getLength();
+      int one = 1;
+      return singleArrayVector(Array::doubleConstructor(dnrm2_(&len,ptr,&one)));
+    }
+    case FM_COMPLEX:  {
+      float *ptr = (float*) input.getDataPointer();
+      int len = input.getLength();
+      int one = 1;
+      return singleArrayVector(Array::floatConstructor(scnrm2_(&len,ptr,&one)));
+    }
+    case FM_DCOMPLEX: {
+      double *ptr = (double*) input.getDataPointer();
+      int len = input.getLength();
+      int one = 1;
+      return singleArrayVector(Array::doubleConstructor(dznrm2_(&len,ptr,&one)));
+    }
+    default:
+      throw Exception("unhandled type in argument to xnrm2");
+    }
+    return ArrayVector();
   }
 
   //!

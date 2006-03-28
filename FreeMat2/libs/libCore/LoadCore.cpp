@@ -178,6 +178,7 @@ namespace FreeMat {
     context->addFunction("repmat",RepMatFunction,3,1,"x","rows","cols");
     context->addFunction("tic",TicFunction,0,0);
     context->addFunction("toc",TocFunction,0,1);
+    context->addFunction("xnrm2",XNrm2Function,1,1,"x");
     context->addFunction("clock",ClockFunction,0,1);
     context->addFunction("clocktotime",ClockToTimeFunction,1,1,"x");
     context->addSpecialFunction("help",HelpFunction,1,0,"function");

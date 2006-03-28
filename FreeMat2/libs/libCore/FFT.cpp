@@ -90,10 +90,10 @@ namespace FreeMat {
 
   void dcomplex_fft_backward(int Narg, double *dp) {
     if (zN != Narg) dcomplex_fft_init(Narg);
-    memcpy(inf,dp,sizeof(double)*Narg*2);
+    memcpy(in,dp,sizeof(double)*Narg*2);
     fftw_execute(p_backward);
-    memcpy(dp,outf,sizeof(double)*Narg*2);
-    for (int i=0;i<(2*cN);i++)
+    memcpy(dp,out,sizeof(double)*Narg*2);
+    for (int i=0;i<(2*zN);i++)
       dp[i] /= ((double) Narg);
   }
 

@@ -128,27 +128,29 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
   }
   
   HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
-  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
-  handle = ahandle;
-  hfig = new HandleFigure(this);
-  char buffer[1000];
-  sprintf(buffer,"Figure %d",ahandle+1);
-  setWindowTitle(buffer);
-  qtchild = new BaseFigureQt(NULL,hfig);
-  glchild = new BaseFigureGL(NULL,hfig);
-  layout = new QStackedWidget(this);
-  QHBoxLayout *box = new QHBoxLayout(this);
-  box->setMargin(0);
-  setLayout(box);
-  //   layout = new QTabWidget;
-  //   layout->addTab(qtchild,"QT");
-  //   layout->addTab(glchild,"GL");
-  layout->addWidget(qtchild);
-  layout->addWidget(glchild);
-  layout->show();
-  box->addWidget(layout);
-  resize(600,400);
-}
+    initialized = false;
+    setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
+    handle = ahandle;
+    hfig = new HandleFigure(this);
+    char buffer[1000];
+    sprintf(buffer,"Figure %d",ahandle+1);
+    setWindowTitle(buffer);
+    qtchild = new BaseFigureQt(NULL,hfig);
+    glchild = new BaseFigureGL(NULL,hfig);
+    layout = new QStackedWidget(this);
+    QHBoxLayout *box = new QHBoxLayout(this);
+    box->setMargin(0);
+    setLayout(box);
+    //   layout = new QTabWidget;
+    //   layout->addTab(qtchild,"QT");
+    //   layout->addTab(glchild,"GL");
+    layout->addWidget(qtchild);
+    layout->addWidget(glchild);
+    layout->show();
+    box->addWidget(layout);
+    resize(600,400);
+    initialized = true;
+  }
 
 unsigned HandleWindow::Handle() {
   return handle;
@@ -175,6 +177,7 @@ HandleFigure* HandleWindow::HFig() {
   }
 
   void HandleWindow::UpdateState() {
+    if (!initialized) return;
     HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
     resize(htv->Data()[0],htv->Data()[1]);
     if (hfig->StringCheck("renderer","opengl")) {

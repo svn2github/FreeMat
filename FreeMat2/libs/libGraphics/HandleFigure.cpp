@@ -173,6 +173,13 @@ namespace FreeMat {
     m_height = height;
     SetTwoVectorDefault("figsize",width,height);
     resized = true;
+    UpdateState();
+    HPHandles *children = (HPHandles*) LookupProperty("children");
+    std::vector<unsigned> handles(children->Data());
+    for (int i=0;i<handles.size();i++) {
+      HandleObject *fp = LookupHandleObject(handles[i]);
+      fp->UpdateState();
+    }
   }
 
   bool HandleFigure::Resized() {

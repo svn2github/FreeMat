@@ -30,6 +30,7 @@ namespace FreeMat {
 
 class HandleWindow : public QWidget {
  protected:
+  bool initialized;
   unsigned handle;
   bool glActive;
   QGLWidget *glchild;

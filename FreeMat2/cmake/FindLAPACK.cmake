@@ -1,0 +1,112 @@
+## 
+## Try to find Lapack library  
+## Once run this will define: 
+## 
+## LAPACK_FOUND
+## LAPACK_LIBRARIES
+## LAPACK_LINK_DIRECTORIES
+## LAPCK_INCLUDE_DIRECTORIES
+## 
+## Friso, Jan Woetzel 05/2004
+## www.mip.informatik.uni-kiel.de/~jw
+##
+## TODO, FIXME: WIN32 is work in progress... 
+## 
+## --------------------------------
+
+SET(LAPACK_POSSIBLE_LIBRARY_PATHS
+  ${LAPACK_HOME}
+  ${LAPACK_HOME}/lib
+  $ENV{LAPACK_HOME}
+  $ENV{LAPACK_HOME}/lib
+  ${LAPACK_DIR}
+  ${LAPACK_DIR}/lib
+  $ENV{LAPACK_DIR}
+  $ENV{LAPACK_DIR}/lib
+  $ENV{EXTRA}/lib
+  /usr/lib
+  /usr/local/lib
+  )
+
+SET(LAPACK_POSSIBLE_INCLUDE_PATHS
+  ${LAPACK_DIR}
+  ${LAPACK_DIR}/include
+  $ENV{LAPACK_DIR}
+  $ENV{LAPACK_DIR}/include
+  ${LAPACK_HOME}
+  ${LAPACK_HOME}/include
+  $ENV{LAPACK_HOME}
+  $ENV{LAPACK_HOME}/include
+  $ENV{EXTRA}/include
+  )
+
+
+
+IF (WIN32)
+  FIND_PATH(LAPACK_INCLUDE_DIRECTORIES Lapack.h
+    PATHS ${LAPACK_POSSIBLE_INCLUDE_PATHS}
+    )
+ENDIF (WIN32)
+#MESSAGE("DBG LAPACK_INCLUDE_DIRECTORIES=${LAPACK_INCLUDE_DIRECTORIES}")
+
+
+FIND_LIBRARY(LAPACK_LIBRARY
+  NAMES lapack LAPACK 
+  # mkl_lapack
+  PATHS ${LAPACK_POSSIBLE_LIBRARY_PATHS}
+  )
+#MESSAGE("DBG LAPACK_LIBRARY=${LAPACK_LIBRARY}")
+
+
+IF (UNIX)
+  # f2c or g2c are needed on Linux because lapack was is f2c compiled
+  # and we link "EXTERN C" without a valid c++ header (JW)
+  FIND_LIBRARY(LAPACK_FORTRAN_TO_C_LIBRARY
+    NAMES gfortran g2c f2c   # added gfortran for gcc4 (jkollmann)
+    PATHS ${LAPACK_POSSIBLE_LIBRARY_PATHS}
+    )
+  MARK_AS_ADVANCED(LAPACK_FORTRAN_TO_C_LIBRARY)
+  #MESSAGE("DBG LAPACK_FORTRAN_TO_C_LIBRARY=${LAPACK_FORTRAN_TO_C_LIBRARY}")
+ENDIF(UNIX)
+IF(WIN32)
+  # lapack for windows needs f2c header for various declarations
+  FIND_FILE(LAPACK_FORTRAN_TO_C_HEADER f2c.h
+    NAMES f2c.h
+    PATHS ${LAPACK_POSSIBLE_INCLUDE_PATHS}
+    )
+  MARK_AS_ADVANCED(LAPACK_FORTRAN_TO_C_HEADER)
+  #MESSAGE("DBG LAPACK_FORTRAN_TO_C_HEADER=${LAPACK_FORTRAN_TO_C_HEADER}")
+ENDIF(WIN32)
+
+
+## --------------------------------
+
+IF(LAPACK_LIBRARY)
+
+  ## OK, we've got the main" library"  
+  GET_FILENAME_COMPONENT(LAPACK_LINK_DIRECTORIES ${LAPACK_LIBRARY} PATH)
+  # TODO: add link directory of f2/g2 for Linux here, too? (JW)
+  
+  IF (UNIX AND LAPACK_FORTRAN_TO_C_LIBRARY)
+    # additional g2c/f2c/... is required  on Unix (see above)
+    SET(LAPACK_FOUND TRUE)
+    SET(LAPACK_LIBRARIES ${LAPACK_LIBRARY} ${LAPACK_FORTRAN_TO_C_LIBRARY})
+  ENDIF (UNIX AND LAPACK_FORTRAN_TO_C_LIBRARY)
+
+  IF (WIN32 AND LAPACK_INCLUDE_DIRECTORIES AND LAPACK_FORTRAN_TO_C_HEADER)
+    ## On Windows mkl or VCLapack is sufficient
+    SET(LAPACK_FOUND TRUE)
+    SET(LAPACK_LIBRARIES ${LAPACK_LIBRARY})
+  ENDIF (WIN32 AND LAPACK_INCLUDE_DIRECTORIES AND LAPACK_FORTRAN_TO_C_HEADER)
+
+ELSE(LAPACK_LIBRARY)
+  MESSAGE(SEND_ERROR "FindLapack.cmake: Could not find LAPACK_INCLUDE_DIR")
+ENDIF(LAPACK_LIBRARY)
+
+
+MARK_AS_ADVANCED(
+  #  LAPACK_INCLUDE_DIR
+  LAPACK_LIBRARY
+  LAPACK_LIBRARIES
+  LAPACK_INCLUDE_DIRECTORIES
+  )

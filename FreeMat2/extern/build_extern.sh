@@ -5,7 +5,7 @@ FetchFile()
   if [ ! -f $2 ] 
   then
     echo "Fetching $2 from $1..."
-    wget $1/$2
+    curl $1/$2 -o $2 --disable-epsv
   fi
   if [ ! -f $2 ] 
   then
@@ -25,10 +25,12 @@ ConfigureBuildAutoConf()
   echo "Configuring and building $1..."
   if [ ! -f build_$1 ]
   then
+      cdir=`pwd`
       cd $1
-      ./configure --prefix=`pwd`/tmp $2
+      ./configure --prefix=$cdir/tmp $2
       make
-      make install 
+      make install
+      cd $cdir
   fi
   touch build_$1
 }
@@ -38,10 +40,12 @@ ConfigureBuildUMFPACK()
   echo "Configuring and building $1..."
   if [ ! -f build_$1 ]
   then
+      cdir=`pwd`
       cd $1/AMD
       make lib
       cd ../UMFPACK
       make lib
+      cd $cdir
   fi
   touch build_$1
 }

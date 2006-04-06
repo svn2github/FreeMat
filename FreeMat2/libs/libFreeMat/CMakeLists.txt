@@ -18,7 +18,7 @@ Parser.cxx
 )
 
 add_library(FM STATIC ${FM_SRCS})
-target_link_libraries ( FM ${QT_LIBRARIES} 
+target_link_libraries ( FM Mex ${QT_LIBRARIES} 
 ${AVCALL_LIBRARY} ${FFTW_LIBRARY} ${ARPACK_LIBRARY}
 ${FFTWF_LIBRARY}  ${UMFPACK_LIBRARY} ${AMD_LIBRARY}
 ${LAPACK_LIBRARY} ${BLAS_LIBRARY}) 

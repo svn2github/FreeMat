@@ -63,9 +63,11 @@ ConfigureBuildUMFPACK()
       cd Build/$1/AMD/Source
       make
       cp ../Lib/libamd.a $cdir/Root/lib/.
+      cp ../Include/amd.h $cdir/Root/include/.
       cd ../../UMFPACK/Source
       make 
       cp ../Lib/libumfpack.a $cdir/Root/lib/.
+      cp ../Include/*.h $cdir/Root/include/.
       cd $cdir
   fi
   if [ -f Build/$1/UMFPACK/Lib/libumfpack.a ]

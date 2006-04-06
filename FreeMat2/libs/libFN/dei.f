@@ -21,7 +21,7 @@ C                 Y = EXPEI(X),         where  X .NE. 0,
 C
 C  and where the entry points correspond to the functions Ei(x),
 C  E1(x), and exp(-x)*Ei(x), respectively.  The routine DCALCEI
-C  is intended for internal packet use only, all computations within
+C  is intended for internal packet use_ only, all computations within
 C  the packet being concentrated in this routine.  The function
 C  subprograms invoke DCALCEI with the Fortran statement
 C         CALL DCALCEI(ARG,RESULT,INT)
@@ -106,7 +106,7 @@ C
 C     UNDERFLOW  (-)X .GT. XBIG     0        -         0
 C     OVERFLOW      X .GE. XMAX    XINF      -         -
 C     ILLEGAL X       X = 0       -XINF    -XINF     XINF
-C     ILLEGAL X      X .LT. 0       -        -     USE ABS(X)
+C     ILLEGAL X      X .LT. 0       -        -     USE_ ABS(X)
 C
 C Intrinsic functions required are:
 C

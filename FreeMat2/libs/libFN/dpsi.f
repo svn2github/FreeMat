@@ -158,8 +158,8 @@ C----------------------------------------------------------------------
          ELSE IF (X .GE. HALF) THEN
             GO TO 200
 C----------------------------------------------------------------------
-C  X < 0.5, use reflection formula: psi(1-x) = psi(x) + pi * cot(pi*x)
-C     Use 1/X for PI*COTAN(PI*X)  when  XMIN1 < |X| <= XSMALL.  
+C  X < 0.5, use_ reflection formula: psi(1-x) = psi(x) + pi * cot(pi*x)
+C     Use_ 1/X for PI*COTAN(PI*X)  when  XMIN1 < |X| <= XSMALL.  
 C----------------------------------------------------------------------
          ELSE IF (W .LE. XSMALL) THEN
             AUG = -ONE / X

@@ -13,7 +13,7 @@ C                   Y=ERFC(X)    (or   Y=DERFC(X)),
 C   and
 C                   Y=ERFCX(X)   (or   Y=DERFCX(X)).
 C
-C   The routine  CALERF  is intended for internal packet use only,
+C   The routine  CALERF  is intended for internal packet use 
 C   all computations within the packet being concentrated in this
 C   routine.  The function subprograms invoke  CALERF  with the
 C   statement

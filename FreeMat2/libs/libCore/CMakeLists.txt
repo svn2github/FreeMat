@@ -15,7 +15,7 @@ qt4_wrap_cpp(Core_MOC_SRCS ${Core_MOCS})
 
 # build sources, moc'd sources, and rcc'd sources
 add_library(Core STATIC ${Core_SRCS} ${Core_MOC_SRCS})
-target_link_libraries ( Core FM ${QT_LIBRARIES} 
+target_link_libraries ( Core XP FM ${QT_LIBRARIES} 
 ${AVCALL_LIBRARY} ${FFTW_LIBRARY} ${ARPACK_LIBRARY}
 ${FFTWF_LIBRARY}  ${UMFPACK_LIBRARY} ${AMD_LIBRARY}
 ${LAPACK_LIBRARY} ${BLAS_LIBRARY}) 

@@ -43,12 +43,12 @@ ConfigureBuildAutoConf()
   then
       cdir=`pwd`
       cd Build/$1
-      ./configure --prefix=$cdir/Root $3
+      ./configure --prefix=$cdir/Root $4
       make
       make install
       cd $cdir
   fi
-  if [ -f Root/lib/$4 ]
+  if [ -f Root/lib/$3 ]
   then
     touch State/build_$2
   fi
@@ -174,9 +174,9 @@ UnpackTarball UMFPACKv4.1.tar.gz UMFPACKv4.1
 UnpackTarball lapack.tgz LAPACK
 UnpackTarball arpack96.tar.gz ARPACK
 UnpackZip matio.zip matio
-ConfigureBuildAutoConf ffcall-1.10 ffcall $MAKEOPTS libavcall.a
-ConfigureBuildAutoConf fftw-3.1.1 fftw $MAKEOPTS libfftw3.a
-ConfigureBuildAutoConf fftw-3.1.1 fftwf --enable-single libfftw3f.a
+ConfigureBuildAutoConf ffcall-1.10 ffcall libavcall.a $MAKEOPTS 
+ConfigureBuildAutoConf fftw-3.1.1 fftw libfftw3.a $MAKEOPTS 
+ConfigureBuildAutoConf fftw-3.1.1 fftwf libfftw3f.a --enable-single
 ConfigureBuildUMFPACK UMFPACKv4.1 $MAKEOPTS
 ConfigureBuildLAPACK LAPACK $MAKEOPTS
 ConfigureBuildBLAS BLAS $MAKEOPTS

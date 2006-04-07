@@ -1,8 +1,9 @@
+
 MESSAGE(STATUS "Looking for avcall")
 SET(AVCALL_FOUND 0)
 
-FIND_PATH(AVCALL_INCLUDE_DIR avcall.h /usr/include /usr/local/include ${PROJECT_SOURCE_DIR}/extern/tmp/include)
-FIND_LIBRARY(AVCALL_LIBRARY NAMES avcall PATHS /usr/lib /usr/local/lib ${PROJECT_SOURCE_DIR}/extern/tmp/lib)
+FIND_PATH(AVCALL_INCLUDE_DIR avcall.h /usr/include /usr/local/include ${PROJECT_SOURCE_DIR}/extern/Root/include)
+FIND_LIBRARY(AVCALL_LIBRARY NAMES avcall PATHS /usr/lib /usr/local/lib ${PROJECT_SOURCE_DIR}/extern/Root/lib)
 
 IF (AVCALL_INCLUDE_DIR AND AVCALL_LIBRARY)
   SET(AVCALL_FOUND 1)

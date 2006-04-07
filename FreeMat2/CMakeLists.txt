@@ -1,6 +1,5 @@
 project(FreeMat CXX)
 enable_language( C )
-enable_language( Fortran )
 
 include(${CMAKE_ROOT}/Modules/FindQt4.cmake)
 set(CMAKE_MODULE_PATH ./cmake)
@@ -14,7 +13,7 @@ find_package(AMD)
 find_package(UMFPACK)
 find_package(ARPACK)
 find_package(MATIO)
-find_package(FORTRANLIB)
+
 message(STATUS "Looking for curses library")
 find_package(Curses)
 

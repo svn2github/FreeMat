@@ -169,7 +169,7 @@ C
 C-------------------------------------------------------------------
       INTEGER IZE,K,L,MAGX,N,NB,NBMX,NCALC,NEND,NSIG,NSTART
 CS    REAL              GAMMA,
-CD    DOUBLE PRECISION DGAMMA,             
+      DOUBLE PRECISION DGAMMA,             
      1 ALPHA,B,CONST,CONV,EM,EMPAL,EMP2AL,EN,ENMTEN,ENSIG,
      2 ENTEN,EXPARG,FUNC,HALF,HALFX,ONE,P,PLAST,POLD,PSAVE,PSAVEL,
      3 RTNSIG,SUM,TEMPA,TEMPB,TEMPC,TEST,TOVER,TWO,X,XLARGE,ZERO
@@ -178,23 +178,23 @@ C-------------------------------------------------------------------
 C  Mathematical constants
 C-------------------------------------------------------------------
 CS    DATA ONE,TWO,ZERO,HALF,CONST/1.0E0,2.0E0,0.0E0,0.5E0,1.585E0/
-CD    DATA ONE,TWO,ZERO,HALF,CONST/1.0D0,2.0D0,0.0D0,0.5D0,1.585D0/
+      DATA ONE,TWO,ZERO,HALF,CONST/1.0D0,2.0D0,0.0D0,0.5D0,1.585D0/
 C-------------------------------------------------------------------
 C  Machine-dependent parameters
 C-------------------------------------------------------------------
 CS    DATA NSIG,XLARGE,EXPARG /8,1.0E4,88.0E0/
 CS    DATA ENTEN,ENSIG,RTNSIG/1.0E38,1.0E8,1.0E-2/
 CS    DATA ENMTEN/4.7E-38/
-CD    DATA NSIG,XLARGE,EXPARG /16,1.0D4,709.0D0/
-CD    DATA ENTEN,ENSIG,RTNSIG/1.0D308,1.0D16,1.0D-4/
-CD    DATA ENMTEN/8.9D-308/
+      DATA NSIG,XLARGE,EXPARG /16,1.0D4,709.0D0/
+      DATA ENTEN,ENSIG,RTNSIG/1.0D308,1.0D16,1.0D-4/
+      DATA ENMTEN/8.9D-308/
 C-------------------------------------------------------------------
 C  Statement functions for conversion
 C-------------------------------------------------------------------
 CS    CONV(N) = REAL(N)
 CS    FUNC(X) = GAMMA(X)
-CD    CONV(N) = DBLE(N)
-CD    FUNC(X) = DGAMMA(X)
+      CONV(N) = DBLE(N)
+      FUNC(X) = DGAMMA(X)
 C-------------------------------------------------------------------
 C Check for X, NB, OR IZE out of range.
 C-------------------------------------------------------------------

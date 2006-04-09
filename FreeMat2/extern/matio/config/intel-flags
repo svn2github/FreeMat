@@ -1,1 +1,0 @@
-CFLAGS="-i-static -fPIC -debug all $FCFLAGS"

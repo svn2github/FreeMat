@@ -1205,3 +1205,14 @@ void DoHelpGen(QString sourcep, QString destp) {
   qApp->exec();
 }
 
+void usage() {
+  std::cerr << "Usage: FMHelpGen <path_to_source> <path_to_build>\n";
+  exit(1);
+}
+
+int main(int argc, char *argv[]) {
+  QApplication a(argc,argv);
+  if (argc != 3) usage();
+  DoHelpGen(argv[1],argv[2]);
+  return 0;
+}

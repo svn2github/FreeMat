@@ -1,0 +1,24 @@
+introduction Introduction and Getting Started
+variables Variables and Arrays
+functions Functions and Scripts
+operators Mathematical Operators
+flow Flow Control
+freemat FreeMat Functions
+debug Debugging FreeMat Code
+sparse Sparse Matrix Support
+mathfunctions Mathematical Functions
+constants Base Constants
+elementary Elementary Functions
+inspection Inspection Functions
+typecast Type Cast Functions
+array Array Generation and Manipulations
+random Random Number Generation
+io Input/Ouput Functions
+string String Functions
+transforms Transforms/Decompositions
+signal Signal Processing Functions
+os Operating System Functions
+curvefit Optimization and Curve Fitting
+mpi MPI Functions
+handle Handle-Based Graphics
+class Object Oriented Programming

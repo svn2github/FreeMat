@@ -3,7 +3,7 @@ highlighter.hpp HistoryWidget.hpp VariablesTool.hpp FileTool.hpp
 Editor.hpp)
 set(XP_SRCS DynLib.cpp System.cpp PathSearch.cpp KeyManager.cpp
 QTTerm.cpp  highlighter.cpp  PathTool.cpp Editor.cpp ToolDock.cpp
-HistoryWidget.cpp FileTool.cpp VariablesTool.cpp)
+HistoryWidget.cpp FileTool.cpp VariablesTool.cpp Common.cpp)
 
 # generate rules for building source files that moc generates
 qt4_wrap_cpp(XP_MOC_SRCS ${XP_MOCS})

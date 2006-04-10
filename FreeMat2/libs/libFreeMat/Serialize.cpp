@@ -483,7 +483,7 @@ namespace FreeMat {
 	const float **dp = ((const float **) dat.getSparseDataPointer());
 	for (int i=0;i<dat.getDimensionLength(1);i++) {
 	  putFloat(1+dp[i][0]);
-	  putFloats((const float*) dp[i],1+dp[i][0]);
+	  putFloats((const float*) dp[i],(int)(1+dp[i][0]));
 	}
       }
       return;
@@ -496,7 +496,7 @@ namespace FreeMat {
 	const double **dp = ((const double **) dat.getSparseDataPointer());
 	for (int i=0;i<dat.getDimensionLength(1);i++) {
 	  putDouble(1+dp[i][0]);
-	  putDoubles((const double*) dp[i],1+dp[i][0]);
+	  putDoubles((const double*) dp[i],(int)(1+dp[i][0]));
 	}
       }
       return;
@@ -509,7 +509,7 @@ namespace FreeMat {
 	const float **dp = ((const float **) dat.getSparseDataPointer());
 	for (int i=0;i<dat.getDimensionLength(1);i++) {
 	  putFloat(1+dp[i][0]);
-	  putFloats((const float*) dp[i],1+dp[i][0]);
+	  putFloats((const float*) dp[i],(int)(1+dp[i][0]));
 	}
       }
       return;
@@ -522,7 +522,7 @@ namespace FreeMat {
 	const double **dp = ((const double **) dat.getSparseDataPointer());
 	for (int i=0;i<dat.getDimensionLength(1);i++) {
 	  putDouble(1+dp[i][0]);
-	  putDoubles((const double*) dp[i],1+dp[i][0]);
+	  putDoubles((const double*) dp[i],(int)(1+dp[i][0]));
 	}
       }
       return;

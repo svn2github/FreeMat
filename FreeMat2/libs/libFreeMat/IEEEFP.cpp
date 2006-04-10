@@ -21,7 +21,7 @@
 static bool endianDetected = false;
 static bool bigEndian = false;
 
-union {
+union lc_t {
   long l;
   char c[sizeof (long)];
 } u;

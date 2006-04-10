@@ -1,7 +1,10 @@
 #include "disttool.hpp"
+#include <iostream>
 #include <QtGui>
 
 QTextEdit *m_text;
+QString sourcepath;
+QString buildpath;
 
 void TermOutputText(QString str) {
   m_text->insertPlainText(str);
@@ -17,9 +20,9 @@ void Halt(QString emsg) {
 }
 
 QString GetVersionString() {
-  QFile tfile("../../libs/libFreeMat/WalkTree.cpp");
+  QFile tfile(sourcepath + "/libs/libFreeMat/WalkTree.cpp");
   if (!tfile.open(QFile::ReadOnly))
-    Halt("Unable to open ../../libs/libFreeMat/WalkTree.cpp for input\n");
+    Halt("Unable to open "+sourcepath+"/libs/libFreeMat/WalkTree.cpp for input\n");
   QTextStream g(&tfile);
   QRegExp versionMatch("\\s*//@");
   while (!g.atEnd()) {
@@ -98,23 +101,7 @@ ConsoleWidget::ConsoleWidget() : QWidget() {
   m_text->setReadOnly(true);
   resize(600,400);
   m_text->setFontFamily("Courier");
-  //   QPushButton *winb = new QPushButton("Win32");
-  //   QWidget::connect(winb,SIGNAL(clicked()),this,SLOT(WinBundle()));
-  //   QPushButton *linuxb = new QPushButton("Linux");
-  //   QWidget::connect(linuxb,SIGNAL(clicked()),this,SLOT(LinuxBundle()));
-  //   QPushButton *macb = new QPushButton("Mac");
-  //   QWidget::connect(macb,SIGNAL(clicked()),this,SLOT(MacBundle()));
-  //   QPushButton *quit = new QPushButton("Quit");
-  //   QWidget::connect(quit,SIGNAL(clicked()),this,SLOT(exitNow()));
   QVBoxLayout *layout = new QVBoxLayout;
-  //   QWidget *buttons = new QWidget;
-  //   QHBoxLayout *hlayout = new QHBoxLayout;
-  //   hlayout->addWidget(winb);
-  //   hlayout->addWidget(linuxb);
-  //   hlayout->addWidget(macb);
-  //   hlayout->addWidget(quit);
-  //   buttons->setLayout(hlayout);
-  //   layout->addWidget(buttons);
   layout->addWidget(m_text);
   setLayout(layout);
 }
@@ -169,16 +156,16 @@ void Relink(QString frame, QString file) {
 void InstallFramework(QString frame) {
   QString qtdir(getenv("QTDIR"));
   TermOutputText("Installing Framework: "+frame+"\n");
-  Execute("cp",QStringList() << "-R" << qtdir+"/lib/"+frame+".framework" << "../../build/FreeMat.app/Contents/Frameworks/"+frame+".framework");
+  Execute("cp",QStringList() << "-R" << qtdir+"/lib/"+frame+".framework" << buildpath+"/FreeMat.app/Contents/Frameworks/"+frame+".framework");
   //  CopyDirectory(qtdir+"/lib/"+frame+".framework","../../FreeMat.app/Contents/Frameworks/"+frame+".framework");
-  Execute("install_name_tool",QStringList() << "-id" << "@executable_path/../Frameworks/"+frame+".framework/Versions/4.0/"+frame << "../../build/FreeMat.app/Contents/Frameworks/"+frame+".framework/Versions/4.0/"+frame);
-  Relink(frame,"../../build/FreeMat.app/Contents/MacOs/FreeMat");
+  Execute("install_name_tool",QStringList() << "-id" << "@executable_path/../Frameworks/"+frame+".framework/Versions/4.0/"+frame << buildpath+"/FreeMat.app/Contents/Frameworks/"+frame+".framework/Versions/4.0/"+frame);
+  Relink(frame,buildpath+"/FreeMat.app/Contents/MacOs/FreeMat");
 }
 
 void CrossLinkFramework(QString dframe, QString lframe) {
   QString qtdir(getenv("QTDIR"));
   TermOutputText("Crosslink Frameworks: " + dframe + " and " + lframe + "\n");
-  Relink(lframe,"../../build/FreeMat.app/Contents/Frameworks/"+dframe+".framework/Versions/4.0/"+dframe);
+  Relink(lframe,buildpath+"/FreeMat.app/Contents/Frameworks/"+dframe+".framework/Versions/4.0/"+dframe);
 }
 
 void RelinkPlugin(QString plugin, QString frame) {
@@ -187,7 +174,7 @@ void RelinkPlugin(QString plugin, QString frame) {
 }
 
 void RelinkPlugins() {
-  QDir dir("../../build/FreeMat.app/Contents/Plugins/imageformats");
+  QDir dir(buildpath+"/FreeMat.app/Contents/Plugins/imageformats");
   dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
   for (unsigned i=0;i<list.size();i++) {
@@ -200,17 +187,17 @@ void RelinkPlugins() {
 
 void ConsoleWidget::MacBundle() {
   QString qtdir(getenv("QTDIR"));
-  MakeDir("../../build/FreeMat.app/Contents/Frameworks");
+  MakeDir(buildpath+"/FreeMat.app/Contents/Frameworks");
   InstallFramework("QtGui");
   InstallFramework("QtCore");
   InstallFramework("QtOpenGL");
   CrossLinkFramework("QtGui","QtCore");
   CrossLinkFramework("QtOpenGL","QtGui");
   CrossLinkFramework("QtOpenGL","QtCore");
-  CopyDirectory("../../help/html","../../build/FreeMat.app/Contents/Resources/help/html");
-  CopyDirectory("../../help/text","../../build/FreeMat.app/Contents/Resources/help/text");
-  CopyDirectory("../../help/MFiles","../../build/FreeMat.app/Contents/Resources/mfiles");
-  CopyDirectory(qtdir+"/plugins/imageformats","../../build/FreeMat.app/Contents/Plugins/imageformats");
+  CopyDirectory(buildpath+"/help/html",buildpath+"/FreeMat.app/Contents/Resources/help/html");
+  CopyDirectory(buildpath+"/help/text",buildpath+"/FreeMat.app/Contents/Resources/help/text");
+  CopyDirectory(buildpath+"/help/MFiles",buildpath+"/FreeMat.app/Contents/Resources/mfiles");
+  CopyDirectory(qtdir+"/plugins/imageformats",buildpath+"/FreeMat.app/Contents/Plugins/imageformats");
   RelinkPlugins();
   TermOutputText("\n\nDone\n");
   qApp->exit();
@@ -245,9 +232,9 @@ void ImportLibs(QString program) {
 	  (lib.indexOf("libc.") == -1) && (lib.indexOf("libm.") == -1) &&
 	  (lib.indexOf("libpthread.") == -1)) {
  	QFileInfo file(lib);
-	CopyFile(lib,"FreeMat"+GetVersionString()+"/Contents/lib/"+file.fileName());
+	CopyFile(lib,buildpath+"/FreeMat"+GetVersionString()+"/Contents/lib/"+file.fileName());
 	// 	Execute("/bin/cp",QStringList() << "-v" << "-R" << lib << file.fileName());
-	TermOutputText(" <copy> to FreeMat/Contents/lib/" + file.fileName() + "\n");
+	TermOutputText(" <copy> to "+buildpath+"/FreeMat/Contents/lib/" + file.fileName() + "\n");
       } else
 	TermOutputText(" <skip>\n");
     }
@@ -258,7 +245,7 @@ void ImportLibs(QString program) {
 
 void ConsoleWidget::LinuxBundle() {
   QString versionnum(GetVersionString());
-  QString baseDir("FreeMat" + versionnum);
+  QString baseDir(buildpath+"/FreeMat" + versionnum);
   MakeDir(baseDir);
   MakeDir(baseDir+"/Contents");
   MakeDir(baseDir+"/Contents/bin");
@@ -266,11 +253,12 @@ void ConsoleWidget::LinuxBundle() {
   MakeDir(baseDir+"/Contents/Resources/help");
   MakeDir(baseDir+"/Contents/Resources/help/html");
   MakeDir(baseDir+"/Contents/Resources/help/text");
+  MakeDir(baseDir+"/Contents/Resources/help/pdf");
   MakeDir(baseDir+"/Contents/Resources/mfiles");
-  CopyFile("../../build/FreeMat",baseDir+"/Contents/bin/FreeMatMain");
+  CopyFile(buildpath+"/src/FreeMat",baseDir+"/Contents/bin/FreeMatMain");
   // Copy the required libraries
   MakeDir(baseDir+"/Contents/lib");
-  ImportLibs("../../build/FreeMat");
+  ImportLibs(buildpath+"/src/FreeMat");
    // Write out the run script
   QFile *script = new QFile(baseDir+"/Contents/bin/FreeMat");
   if (!script->open(QFile::WriteOnly))
@@ -284,9 +272,10 @@ void ConsoleWidget::LinuxBundle() {
   delete h;
   delete script;
   Execute("/bin/chmod",QStringList() << "+x" << baseDir+"/Contents/bin/FreeMat");
-  CopyDirectory("../../help/html",baseDir+"/Contents/Resources/help/html");
-  CopyDirectory("../../help/text",baseDir+"/Contents/Resources/help/text");
-  CopyDirectory("../../help/MFiles",baseDir+"/Contents/Resources/mfiles");
+  CopyDirectory(buildpath+"/help/html",baseDir+"/Contents/Resources/help/html");
+  CopyDirectory(buildpath+"/help/text",baseDir+"/Contents/Resources/help/text");
+  CopyDirectory(buildpath+"/help/MFiles",baseDir+"/Contents/Resources/mfiles");
+  CopyFile(buildpath+"/help/latex/main.pdf",baseDir+"/Contents/Resources/pdf/FreeMat"+versionnum+".pdf");
   QString qtdir(getenv("QTDIR"));
   CopyFile(qtdir+"/plugins/imageformats/libqjpeg.so",baseDir+"/Contents/Plugins/imageformats/libqjpeg.so");
   CopyFile(qtdir+"/plugins/imageformats/libqmng.so",baseDir+"/Contents/Plugins/imageformats/libqmng.so");
@@ -424,6 +413,16 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
   return ndx;
 }
 
+void usage() {
+  std::cerr << "Usage: DistTool <platform> <path_to_source> <path_to_build> \n";
+  std::cerr << "        where <platform> is:\n";
+  std::cerr << "           -linux\n";
+  std::cerr << "           -mac\n";
+  std::cerr << "           -win\n";
+  std::cerr << "           -src\n";
+  exit(1);
+}
+
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   ConsoleWidget *m_main = new ConsoleWidget;
@@ -436,7 +435,10 @@ int main(int argc, char *argv[]) {
   pcflag = parseFlagArg(argc,argv,"-win",false);
   srcflag = parseFlagArg(argc,argv,"-src",false);
   if (!linuxflag && !macflag && !pcflag && !srcflag)
-    return 0;
+    usage();
+  if (argc < 4) usage();
+  sourcepath = argv[2];
+  buildpath = argv[3];
   m_main->show();
   if (linuxflag) {
     QTimer::singleShot(0,m_main,SLOT(LinuxBundle()));

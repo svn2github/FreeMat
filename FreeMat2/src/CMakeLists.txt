@@ -1,6 +1,6 @@
 set(FreeMat_MOCS application.h  SocketCB.hpp FuncMode.hpp  MainApp.hpp) 
 set(FreeMat_RCCS FreeMat.qrc)      
-set(FreeMat_SRCS MainApp.cpp SocketCB.cpp application.cpp main.cpp  Common.cpp FuncMode.cpp
+set(FreeMat_SRCS MainApp.cpp SocketCB.cpp application.cpp main.cpp  FuncMode.cpp
 )
 
 IF(UNIX AND NOT CYGWIN AND NOT APPLE)

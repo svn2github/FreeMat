@@ -1309,7 +1309,7 @@ S20:
     nsave = n;
     if(xnp < 30.0) goto S140;
     ffm = xnp+p;
-    m = ffm;
+    m = (long int) ffm;
     fm = m;
     xnpq = xnp*q;
     p1 = (long) (2.195*sqrt(xnpq)-4.6*q)+0.5;
@@ -1334,7 +1334,7 @@ S30:
      TRIANGULAR REGION
 */
     if(u > p1) goto S40;
-    ix = xm-p1*v+u;
+    ix = (long int) (xm-p1*v+u);
     goto S170;
 S40:
 /*
@@ -1344,14 +1344,14 @@ S40:
     x = xl+(u-p1)/c;
     v = v*c+1.0-ABS(xm-x)/p1;
     if(v > 1.0 || v <= 0.0) goto S30;
-    ix = x;
+    ix = (long int) x;
     goto S70;
 S50:
 /*
      LEFT TAIL
 */
     if(u > p3) goto S60;
-    ix = xl+log(v)/xll;
+    ix = (long int) (xl+log(v)/xll);
     if(ix < 0) goto S30;
     v *= ((u-p2)*xll);
     goto S70;
@@ -1359,7 +1359,7 @@ S60:
 /*
      RIGHT TAIL
 */
-    ix = xr-log(v)/xlr;
+    ix = (long int) (xr-log(v)/xlr);
     if(ix > n) goto S30;
     v *= ((u-p3)*xlr);
 S70:

@@ -3391,11 +3391,11 @@ namespace FreeMat {
       throw Exception("clocktotime expects 1 argument - a vector in clock format: [year month day hour minute seconds]");
     const double *dp = (const double*) targ.getDataPointer();
     struct tm breakdown;
-    breakdown.tm_year = dp[0] - 1900;
-    breakdown.tm_mon = dp[1] - 1;
-    breakdown.tm_mday = dp[2] - 1;
-    breakdown.tm_hour = dp[3];
-    breakdown.tm_min = dp[4];
+    breakdown.tm_year = (int) (dp[0] - 1900);
+    breakdown.tm_mon = (int) (dp[1] - 1);
+    breakdown.tm_mday = (int) (dp[2] - 1);
+    breakdown.tm_hour = (int) (dp[3]);
+    breakdown.tm_min = (int) (dp[4]);
     breakdown.tm_sec = (int) dp[5];
     time_t qtime = mktime(&breakdown);
     double retval;

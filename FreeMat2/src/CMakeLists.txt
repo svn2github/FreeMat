@@ -2,7 +2,7 @@ set(FreeMat_MOCS application.h PathTool.hpp ToolDock.hpp helpgen.hpp
  SocketCB.hpp highlighter.hpp
 FuncMode.hpp HistoryWidget.hpp VariablesTool.hpp
  FileTool.hpp MainApp.hpp Editor.hpp) 
-set(FreeMat_RCCS ../FreeMat.qrc)
+set(FreeMat_RCCS ../FreeMat.qrc)      
 set(FreeMat_SRCS MainApp.cpp
 SocketCB.cpp application.cpp main.cpp highlighter.cpp
 helpgen.cpp PathTool.cpp Editor.cpp ToolDock.cpp
@@ -11,8 +11,8 @@ VariablesTool.cpp
 )
 
 IF(UNIX AND NOT CYGWIN AND NOT APPLE)
-set (FreeMat_SRCS ${${FreeMat_SRCS}} Terminal.cpp DumbTerminal.cpp )
-set (FreeMat_MOCS ${${FreeMat_MOCS}} DumbTerminal.hpp Terminal.hpp )
+set ( FreeMat_SRCS ${FreeMat_SRCS} Terminal.cpp DumbTerminal.cpp )
+set ( FreeMat_MOCS ${FreeMat_MOCS} DumbTerminal.hpp Terminal.hpp )
 ENDIF(UNIX AND NOT CYGWIN AND NOT APPLE)
 
 # generate rules for building source files from the resources

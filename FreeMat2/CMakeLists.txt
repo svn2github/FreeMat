@@ -3,7 +3,7 @@ project(FreeMat)
 include(${CMAKE_ROOT}/Modules/FindQt4.cmake)
 include(${CMAKE_ROOT}/Modules/FindOpenGL.cmake)
 
-set(CMAKE_MODULE_PATH ./cmake)
+set(CMAKE_MODULE_PATH ${FreeMat_SOURCE_DIR}/cmake)
 
 find_package(AVCALL)
 find_package(FFTW)
@@ -23,8 +23,11 @@ ENDIF(NOT WIN32)
 
 include(${QT_USE_FILE})
 
-include_directories(libs/libFreeMat libs/libCore libs/libFN
-libs/libGraphics libs/libXP src libs/libMex ${AMD_INCLUDE_DIR}
+include_directories(${FreeMat_SOURCE_DIR}/libs/libFreeMat 
+${FreeMat_SOURCE_DIR}/libs/libCore ${FreeMat_SOURCE_DIR}/libs/libFN
+${FreeMat_SOURCE_DIR}/libs/libGraphics ${FreeMat_SOURCE_DIR}/libs/libXP 
+${FreeMat_SOURCE_DIR}/src ${FreeMat_SOURCE_DIR}/libs/libMex 
+${AMD_INCLUDE_DIR}
 ${AVCALL_INCLUDE_DIR} ${FFTW_INCLUDE_DIR} ${FFTWF_INCLUDE_DIR}
 ${MATIO_INCLUDE_DIR} ${UMFPACK_INCLUDE_DIR} ${QT_INCLUDES}) 
 

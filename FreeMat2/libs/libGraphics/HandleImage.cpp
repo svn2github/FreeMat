@@ -185,9 +185,10 @@ namespace FreeMat {
     for (int i=0;i<rows;i++) {
       QRgb *ibits = (QRgb*) img.scanLine(i);
       for (int j=0;j<cols;j++)
- 	ibits[j] = qRgba(255*dp[(i+j*rows)],255*dp[(i+j*rows)+rows*cols],
- 			 255*dp[(i+j*rows)+2*rows*cols],
-			 255*alpha[i+j*rows]);
+ 	ibits[j] = qRgba((int)(255*dp[(i+j*rows)]),
+			 (int)(255*dp[(i+j*rows)+rows*cols]),
+ 			 (int)(255*dp[(i+j*rows)+2*rows*cols]),
+			 (int)(255*alpha[i+j*rows]));
     }
   }
 

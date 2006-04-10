@@ -317,7 +317,10 @@ namespace FreeMat {
 	r = p[0]; g = p[1]; b = p[2];
       }
       for (int i=0;i<cols;i++)
-	dummyline[i] = qRgba(255*r,255*g,255*b,255*alphaval);
+	dummyline[i] = qRgba((int)(255*r),
+			     (int)(255*g),
+			     (int)(255*b),
+			     (int)(255*alphaval));
     }
     for (int i=0;i<rows-1;i++) {
       QRgb *cbits1, *cbits2, *abits1, *abits2;

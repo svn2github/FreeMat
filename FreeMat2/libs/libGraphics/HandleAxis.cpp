@@ -223,9 +223,9 @@ namespace FreeMat {
 			std::vector<std::string> &tlabels) {
     double tBegin, tEnd;
     double delt = (t2-t1)/tickcount;
-    int n = ceil(log10(delt));
+    int n = (int) ceil(log10(delt));
     double rdelt = delt/pow(10.0,(double)n);
-    int p = floor(log2(rdelt));
+    int p = (int) floor(log2(rdelt));
     double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
     if (isLogarithmic)
       tDelt = ceil(tDelt);
@@ -234,7 +234,7 @@ namespace FreeMat {
     tBegin = tDelt*ceil(t1/tDelt);
     tEnd = floor(t2/tDelt)*tDelt;
     int mprime;
-    mprime = ceil((tEnd-tBegin)/tDelt);
+    mprime = (int) ceil((tEnd-tBegin)/tDelt);
     if ((tBegin+mprime*tDelt) > t2)
       mprime--;
     int tCount = mprime+1;
@@ -260,9 +260,9 @@ namespace FreeMat {
     bool integerMode = false;
     double tBegin, tEnd;
     double delt = (tMax-tMin)/(tickcount);
-    int n = ceil(log10(delt));
+    int n = (int) ceil(log10(delt));
     double rdelt = delt/pow(10.0,(double)n);
-    int p = floor(log2(rdelt));
+    int p = (int) floor(log2(rdelt));
     double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
     if (isLogarithmic) 
       tDelt = ceil(tDelt);
@@ -281,7 +281,7 @@ namespace FreeMat {
     tBegin = tStart;
     tEnd = tStop;
     int mprime;
-    mprime = ceil((tEnd-tBegin)/tDelt);
+    mprime = (int) ceil((tEnd-tBegin)/tDelt);
     if ((tBegin+(mprime-1)*tDelt) > tMax)
       mprime--;
     int tCount = mprime+1;
@@ -1424,13 +1424,13 @@ namespace FreeMat {
     double x1, y1, x2, y2;
     gc.toPixels(limits[0],x1pos[1],x1pos[2],x1,y1);
     gc.toPixels(limits[1],x1pos[1],x1pos[2],x2,y2);
-    xvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+    xvisible = (fabs(x1-x2) > 2) || (fabs(y1-y2) > 2);
     gc.toPixels(y1pos[0],limits[2],y1pos[2],x1,y1);
     gc.toPixels(y1pos[0],limits[3],y1pos[2],x2,y2);
-    yvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);
+    yvisible = (fabs(x1-x2) > 2) || (fabs(y1-y2) > 2);
     gc.toPixels(z1pos[0],z1pos[1],limits[4],x1,y1);
     gc.toPixels(z1pos[0],z1pos[1],limits[5],x2,y2);
-    zvisible = (abs(x1-x2) > 2) || (abs(y1-y2) > 2);  
+    zvisible = (fabs(x1-x2) > 2) || (fabs(y1-y2) > 2);  
   }
 
   bool HandleAxis::Is2DView() {
@@ -1517,7 +1517,7 @@ namespace FreeMat {
     if (fontweight->Is("demi"))
       fweight = QFont::DemiBold;
     // Lookup the font
-    QFont fnt(fontname->Data().c_str(),fontsize->Data()[0]);
+    QFont fnt(fontname->Data().c_str(),(int)(fontsize->Data()[0]));
     fnt.setStyle(fstyle);
     fnt.setWeight(fweight);
     m_font = fnt;
@@ -1534,7 +1534,7 @@ namespace FreeMat {
     gc.toPixels(x2,y2,z2,u2,v2);
     double axlen;
     axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
-    int numtics = qMax(2.0,axlen/100.0);
+    int numtics = (int)(qMax(2.0,axlen/100.0));
     return numtics;
   }
 
@@ -1739,7 +1739,7 @@ namespace FreeMat {
 //     poswidth = qMin(0.9*outerpos[2]-2*maxTickWidth,0.775*outerpos[2]);
 //     posheight = qMin(0.815*outerpos[2],0.9*outerpos[3]-2*maxTickHeight);
     // Pad the label height
-    maxLabelHeight = maxLabelHeight*1.2 + tickHeight;
+    maxLabelHeight = (int)(maxLabelHeight*1.2 + tickHeight);
     // Check posx0 against maxLabelHeight..
     if (posx0 < maxLabelHeight)
       posx0 = maxLabelHeight;
@@ -2040,7 +2040,7 @@ namespace FreeMat {
     HPColor *zc = (HPColor*) LookupProperty("zcolor");
     // Compute the longest 
     std::vector<double> position(GetPropertyVectorAsPixels("position"));
-    int maxlen = (position[2] > position[3]) ? position[2] : position[3];
+    int maxlen = (int)((position[2] > position[3]) ? position[2] : position[3]);
     HPTwoVector *kp = (HPTwoVector*) LookupProperty("ticklength");
     std::vector<double> ticklen(kp->Data());
     int ticlen;

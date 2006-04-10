@@ -72,7 +72,8 @@ void CopyDirectory(QString src, QString dest) {
   for (unsigned i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     if (fileInfo.isDir()) {
-      if (fileInfo.fileName() != ".svn") {
+      if ((fileInfo.fileName() != ".svn") &&
+	  (!fileInfo.fileName().endsWith("~"))) {
 	MakeDir(dest+"/"+fileInfo.fileName());
 	CopyDirectory(fileInfo.absoluteFilePath(),dest+"/"+fileInfo.fileName());
       }
@@ -301,25 +302,25 @@ QStringList ReadManifest() {
 
 void ConsoleWidget::SrcBundle() {
   QString versionnum(GetVersionString());
-  QString baseDir("FreeMat" + versionnum + "_src");
+  QString baseDir(buildpath+"/FreeMat" + versionnum + "_src");
   DeleteDirectory(baseDir);
   MakeDir(baseDir);
-  // Read the manifest file
-  QStringList manifest(ReadManifest());
-  int numFiles = manifest.size();
-  QProgressDialog progress("Copying files...","Abort Copy", 0, numFiles, this);
-  for (int i=0;i<numFiles;i++) {
-    progress.setValue(i);
-    if (progress.wasCanceled()) 
-      Halt("Source build cancelled");
-    QFileInfo fileInfo("../../"+manifest[i]);
-    if (!fileInfo.exists())
-      Halt("Unable to find source file "+manifest[i]);
-    if (fileInfo.isDir())
-      MakeDir(baseDir+"/"+manifest[i]);
-    else
-      CopyFile("../../"+manifest[i],baseDir+"/"+manifest[i]);
-  }
+  // Copy the source code directories
+  CopyDirectory(sourcepath+"/src",baseDir+"/src");
+  CopyDirectory(sourcepath+"/libs",baseDir+"/libs");
+  CopyDirectory(sourcepath+"/tools",baseDir+"/tools");
+  CopyDirectory(sourcepath+"/MFiles",baseDir+"/MFiles");
+  CopyDirectory(sourcepath+"/images",baseDir+"/images");
+  CopyDirectory(sourcepath+"/cmake",baseDir+"/cmake");
+  CopyDirectory(sourcepath+"/tests",baseDir+"/tests");
+  MakeDir(baseDir+"/extern");
+  CopyFile(sourcepath+"/extern/build_extern.sh",baseDir+"/extern/build_extern.sh");
+  CopyFile(sourcepath+"/extern/build_extern_mingw.sh",baseDir+"/extern/build_extern_mingw.sh");
+  CopyFile(sourcepath+"/CMakeLists.txt",baseDir+"/CMakeLists.txt");
+  CopyFile(sourcepath+"/COPYING",baseDir+"/COPYING");
+  CopyFile(sourcepath+"/INSTALL",baseDir+"/INSTALL");
+  CopyFile(sourcepath+"/ChangeLog",baseDir+"/ChangeLog");
+  CopyFile(sourcepath+"/README",baseDir+"/README");
   qApp->exit();
 }
 

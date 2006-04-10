@@ -33,3 +33,4 @@ ${MATIO_INCLUDE_DIR} ${UMFPACK_INCLUDE_DIR} ${QT_INCLUDES})
 
 add_subdirectory(libs)
 add_subdirectory(src)
+add_subdirectory(tools)

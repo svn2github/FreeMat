@@ -54,7 +54,7 @@ namespace FreeMat {
     if (fontweight->Is("demi"))
       fweight = QFont::DemiBold;
     // Lookup the font
-    fnt = QFont(fontname->Data().c_str(),fontsize->Data()[0]);
+    fnt = QFont(fontname->Data().c_str(),(int)(fontsize->Data()[0]));
     fnt.setStyle(fstyle);
     fnt.setWeight(fweight);
     HPString *txt = (HPString*) LookupProperty("string");
@@ -118,8 +118,8 @@ namespace FreeMat {
     double rotation = ScalarPropertyLookup("rotation");
     costheta = cos(-rotation*M_PI/180.0);
     sintheta = sin(-rotation*M_PI/180.0);
-    x1 = x + (textxoffset-margin)*costheta + (textyoffset-margin)*sintheta;
-    y1 = y - (textxoffset-margin)*sintheta + (textyoffset-margin)*costheta;
+    x1 = (int)(x + (textxoffset-margin)*costheta + (textyoffset-margin)*sintheta);
+    y1 = (int)(y - (textxoffset-margin)*sintheta + (textyoffset-margin)*costheta);
     double hdelx, hdely, vdelx, vdely;
     hdelx = (textwidth+2*margin)*costheta;
     hdely = -(textwidth+2*margin)*sintheta;

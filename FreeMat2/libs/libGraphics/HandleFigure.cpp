@@ -95,7 +95,7 @@ namespace FreeMat {
     int i;
     double f, p, q, t;
     h *= 6;                        // sector 0 to 5
-    i = floor( h );
+    i = (int) floor( h );
     f = h - i;                    // fractional part of h
     p = 0;
     q = 1 - f ;

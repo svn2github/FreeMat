@@ -48,9 +48,9 @@ QTRenderEngine::~QTRenderEngine() {
 
 void QTRenderEngine::clear(std::vector<double> col) {
   pnt->save();
-  pnt->setPen(QColor(col[0]*255,col[1]*255,col[2]*255));
-  pnt->setBrush(QColor(col[0]*255,col[1]*255,col[2]*255));
-  pnt->drawRect(m_x1,m_y1,m_width,m_height);
+  pnt->setPen(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
+  pnt->setBrush(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
+  pnt->drawRect((int)m_x1,(int)m_y1,(int)m_width,(int)m_height);
   pnt->restore();
 }
 
@@ -290,8 +290,8 @@ void QTRenderEngine::project(double left, double right,
 }
   
 void QTRenderEngine::viewport(double x0, double y0, double width, double height) {
-  viewp[0] = x0; viewp[1] = y0; viewp[2] = width; viewp[3] = height;
-  pnt->setClipRect(x0,m_height-(y0+height),width,height);
+  viewp[0] = (int)x0; viewp[1] = (int)y0; viewp[2] = (int)width; viewp[3] = (int)height;
+  pnt->setClipRect((int)x0,(int)(m_height-(y0+height)),(int)width,(int)height);
 }
 
 void QTRenderEngine::quad(double x1, double y1, double z1,
@@ -342,8 +342,8 @@ void QTRenderEngine::triLine(double x1, double y1, double z1,
 void QTRenderEngine::color(std::vector<double> col) {
   QPen pen(pnt->pen());
   QBrush brush(pnt->brush());
-  pen.setColor(QColor(col[0]*255,col[1]*255,col[2]*255));
-  brush.setColor(QColor(col[0]*255,col[1]*255,col[2]*255));
+  pen.setColor(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
+  brush.setColor(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
   pnt->setPen(pen);
   pnt->setBrush(brush);
 }
@@ -489,7 +489,7 @@ void QTRenderEngine::putText(double x, double y, std::string txt,
   ypos = y+xdelta*sinthet+ydelta*costhet;
   QPointF pos(Map(xpos,ypos,0));
   QPen pen(pnt->pen());
-  pnt->setPen(QColor(color[0]*255,color[1]*255,color[2]*255));
+  pnt->setPen(QColor((int)(color[0]*255),(int)(color[1]*255),(int)(color[2]*255)));
   pnt->setFont(fnt);
   pnt->save();
   pnt->translate(pos);
@@ -577,10 +577,12 @@ void QTRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool fl
     poly.push_back(QPointF(mapqds[i].pts[1].x,mapqds[i].pts[1].y));
     poly.push_back(QPointF(mapqds[i].pts[3].x,mapqds[i].pts[3].y));
     poly.push_back(QPointF(mapqds[i].pts[2].x,mapqds[i].pts[2].y));
-    pnt->setBrush(QColor(mapqds[i].r*255,mapqds[i].g*255,
-			 mapqds[i].b*255,mapqds[i].a*255));
-    pnt->setPen(QColor(mapqds[i].er*255,mapqds[i].eg*255,
-		       mapqds[i].eb*255,mapqds[i].ea*255));
+    pnt->setBrush(QColor((int)(mapqds[i].r*255),
+			 (int)(mapqds[i].g*255),
+			 (int)(mapqds[i].b*255),
+			 (int)(mapqds[i].a*255)));
+    pnt->setPen(QColor((int)(mapqds[i].er*255),(int)(mapqds[i].eg*255),
+		       (int)(mapqds[i].eb*255),(int)(mapqds[i].ea*255)));
     pnt->drawPolygon(poly);
   }
 }

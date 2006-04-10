@@ -179,7 +179,7 @@ HandleFigure* HandleWindow::HFig() {
   void HandleWindow::UpdateState() {
     if (!initialized) return;
     HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
-    resize(htv->Data()[0],htv->Data()[1]);
+    resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
     if (hfig->StringCheck("renderer","opengl")) {
       if (layout->currentWidget() != glchild) {
 	layout->setCurrentWidget(glchild);

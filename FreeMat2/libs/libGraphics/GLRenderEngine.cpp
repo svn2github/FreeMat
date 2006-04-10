@@ -139,7 +139,7 @@
 
   void GLRenderEngine::viewport(double x0, double y0, 
 				double width, double height) {
-    glViewport(x0,y0,width,height);
+    glViewport((int)x0,(int)y0,(int)width,(int)height);
     glGetIntegerv(GL_VIEWPORT,viewp);
   }
 
@@ -255,7 +255,7 @@ void GLRenderEngine::setupDirectDraw() {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    glViewport(m_x1,m_y1,m_width,m_height);
+    glViewport((int)m_x1,(int)m_y1,(int)m_width,(int)m_height);
     glOrtho(m_x1,m_x1+m_width,m_y1,m_y1+m_height,-1,1);
     glDisable(GL_DEPTH_TEST);
   }
@@ -353,9 +353,9 @@ void GLRenderEngine::getProjectionMatrix(double aproj[16]) {
     // in the argument list, and use the grey scale to modulate
     // the transparency
     int cred, cgreen, cblue;
-    cred = color[0]*255;
-    cgreen = color[1]*255;
-    cblue = color[2]*255;
+    cred = (int)(color[0]*255);
+    cgreen = (int)(color[1]*255);
+    cblue = (int)(color[2]*255);
     for (int i=0;i<newheight;i++) {
       QRgb* ibits = (QRgb*) img.scanLine(i);
       QRgb* obits = (QRgb*) pic.scanLine(i);

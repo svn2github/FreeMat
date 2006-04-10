@@ -34,3 +34,24 @@ ${MATIO_INCLUDE_DIR} ${UMFPACK_INCLUDE_DIR} ${QT_INCLUDES})
 add_subdirectory(libs)
 add_subdirectory(src)
 add_subdirectory(tools)
+
+add_custom_target(help 
+		  COMMAND ${FreeMat_BINARY_DIR}/tools/helpgen/FMHelpGen
+		  ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
+		  DEPENDS ${FreeMat_BINARY_DIR}/tools/helpgen/FMHelpGen
+		   ${FreeMat_BINARY_DIR}/src/FreeMat)
+add_custom_target(install
+		  COMMAND
+		  ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		  -linux ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
+		  DEPENDS ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		   ${FreeMat_BINARY_DIR}/src/FreeMat)
+add_custom_target(dist
+		  ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		  -src ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
+		  DEPENDS ${FreeMat_BINARY_DIR}/tools/disttool/DistTool)
+add_custom_target(check
+		  ${FreeMat_BINARY_DIR}/src/FreeMat -f 
+		  "cd ${FreeMat_SOURCE_DIR}/tests/core\; test_core"
+		  DEPENDS ${FreeMat_BINARY_DIR}/src/FreeMat)
+

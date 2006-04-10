@@ -27,7 +27,6 @@
 #include "Exception.hpp"
 #include "application.h"
 #include "FuncMode.hpp"
-#include "helpgen.hpp"
 
 using namespace FreeMat;
 
@@ -81,7 +80,6 @@ int main(int argc, char *argv[]) {
   QCoreApplication *app;
   int nogui = parseFlagArg(argc,argv,"-nogui",false);
   int scriptMode = parseFlagArg(argc,argv,"-e",false); 
-  int helpgen = parseFlagArg(argc,argv,"-helpgen",false);
   int noX = parseFlagArg(argc,argv,"-noX",false);
   int help = parseFlagArg(argc,argv,"-help",false);
   int help2 = parseFlagArg(argc,argv,"--help",false);
@@ -94,13 +92,6 @@ int main(int argc, char *argv[]) {
   else {
     app = new QCoreApplication(argc, argv);
     nogui = true;
-    helpgen = false;
-  }
-  
-  if (helpgen) {
-    if (argc < helpgen+3) usage();
-    DoHelpGen(argv[helpgen+1],argv[helpgen+2]);
-    return 0;
   }
   
   if (scriptMode) nogui = 1;

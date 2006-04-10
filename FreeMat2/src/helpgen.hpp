@@ -41,6 +41,6 @@ private slots:
   void MoveDown();
 };
 
-void DoHelpGen();
+void DoHelpGen(QString src, QString dst);
 
 #endif

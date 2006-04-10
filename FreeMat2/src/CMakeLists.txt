@@ -1,13 +1,6 @@
-set(FreeMat_MOCS application.h PathTool.hpp ToolDock.hpp helpgen.hpp
- SocketCB.hpp highlighter.hpp
-FuncMode.hpp HistoryWidget.hpp VariablesTool.hpp
- FileTool.hpp MainApp.hpp Editor.hpp) 
-set(FreeMat_RCCS ../FreeMat.qrc)      
-set(FreeMat_SRCS MainApp.cpp
-SocketCB.cpp application.cpp main.cpp highlighter.cpp
-helpgen.cpp PathTool.cpp Editor.cpp ToolDock.cpp
-HistoryWidget.cpp FileTool.cpp Common.cpp FuncMode.cpp
-VariablesTool.cpp
+set(FreeMat_MOCS application.h  SocketCB.hpp FuncMode.hpp  MainApp.hpp) 
+set(FreeMat_RCCS FreeMat.qrc)      
+set(FreeMat_SRCS MainApp.cpp SocketCB.cpp application.cpp main.cpp  Common.cpp FuncMode.cpp
 )
 
 IF(UNIX AND NOT CYGWIN AND NOT APPLE)

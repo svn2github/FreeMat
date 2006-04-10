@@ -84,10 +84,11 @@ int main(int argc, char *argv[]) {
   int helpgen = parseFlagArg(argc,argv,"-helpgen",false);
   int noX = parseFlagArg(argc,argv,"-noX",false);
   int help = parseFlagArg(argc,argv,"-help",false);
+  int help2 = parseFlagArg(argc,argv,"--help",false);
   int funcMode = parseFlagArg(argc,argv,"-f",true);
   int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
   
-  if (help) usage();
+  if (help || help2) usage();
   if (!noX)
     app = new QApplication(argc, argv);
   else {
@@ -97,7 +98,8 @@ int main(int argc, char *argv[]) {
   }
   
   if (helpgen) {
-    DoHelpGen();
+    if (argc < helpgen+3) usage();
+    DoHelpGen(argv[helpgen+1],argv[helpgen+2]);
     return 0;
   }
   

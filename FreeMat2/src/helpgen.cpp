@@ -43,6 +43,9 @@ QStringList generatedFileList;
 QMap<QString, QString> section_descriptors;
 QStringList sectionOrdered;
 int moduledepth = 0;
+QString sourcepath;
+QString buildpath;
+
 
 void TermOutputText(QString str) {
   //  m_text->textCursor().movePosition(QTextCursor::End);
@@ -95,7 +98,8 @@ WalkTree* GetInterpreter() {
   LoadFNFunctions(context);
   LoadHandleGraphicsFunctions(context);  
   m_term->setContext(context);
-  m_term->setPath("MFiles");
+  QString pth(sourcepath+"/MFiles");
+  m_term->setPath(pth.toStdString());
   m_term->setAppPath(qApp->applicationDirPath().toStdString());
   WalkTree *twalk = new WalkTree(context,m_term);
   return twalk;
@@ -242,9 +246,9 @@ void HTMLWriter::WriteSectionTable(QString secname, QList<QStringList> modinfo) 
   QString secdesc(section_descriptors.value(secname));
   if (secdesc.isEmpty())
     TermOutputText("Warning: No section descriptor for " + secname + "!\n");
-  QFile file("help/html/sec_" + secname + ".html");
+  QFile file(buildpath+"/help/html/sec_" + secname + ".html");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open help/html/" + secname + ".html for output");
+    Halt("Unable to open "+buildpath+"/help/html/" + secname + ".html for output");
   QTextStream f(&file);
   f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
   f << "\n";
@@ -283,9 +287,9 @@ void HTMLWriter::WriteIndex() {
     QList<QStringList> modules(sectables.values(secname));
     WriteSectionTable(secname,modules);
   }
-  QFile file("help/html/index.html");
+  QFile file(buildpath+"/help/html/index.html");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open help/html/index.html for output");
+    Halt("Unable to open "+buildpath+"/help/html/index.html for output");
   QTextStream f(&file);
   f << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
   f << "\n";
@@ -307,9 +311,9 @@ void HTMLWriter::WriteIndex() {
   f << "</BODY>\n";
   f << "</HTML>\n";
   // Build the module list
-  QFile file2("help/html/modules.txt");
+  QFile file2(buildpath+"/help/html/modules.txt");
   if (!file2.open(QFile::WriteOnly | QIODevice::Text))
-    Halt("Unable to open help/html/modules.txt for output");
+    Halt("Unable to open "+buildpath+"/help/html/modules.txt for output");
   // Loop over the sections
   QStringList modulenames;
   foreach (QString secname, sections) {
@@ -324,9 +328,9 @@ void HTMLWriter::WriteIndex() {
     f2 << modulenames[k] << endl;
   }
   // Build the section index
-  QFile file3("help/html/sectable.txt");
+  QFile file3(buildpath+"/help/html/sectable.txt");
   if (!file3.open(QFile::WriteOnly | QIODevice::Text))
-    Halt("Unable to open help/html/sectable.txt for output");
+    Halt("Unable to open "+buildpath+"/help/html/sectable.txt for output");
   QTextStream f3(&file3);
   foreach (QString secname, sectionOrdered) {
     QString secdesc(section_descriptors.value(secname));
@@ -358,7 +362,7 @@ void HTMLWriter::DoEnumerate(QStringList lst) {
 
 void HTMLWriter::GenerateEquations() {
   if (eqnlist.empty()) return;
-  QFile file("help/tmp/" + modulename+"_eqn.tex");
+  QFile file(buildpath+"/help/tmp/" + modulename+"_eqn.tex");
   if (!file.open(QFile::WriteOnly)) 
     Halt("Unable to open " + modulename + "_eqn.tex for output");
   QTextStream f(&file);
@@ -374,12 +378,12 @@ void HTMLWriter::GenerateEquations() {
   file.close();
   TermOutputText("Generating equations for " + modulename + "\n");
   QProcess latex;
-  latex.setWorkingDirectory("help/tmp");
+  latex.setWorkingDirectory(buildpath+"/help/tmp");
   latex.start("latex",QStringList() << (modulename + "_eqn.tex"));
   if (!latex.waitForFinished())
     Halt("LaTeX for " + modulename + "_eqn.tex never returned");
   QProcess dvipng;
-  dvipng.setWorkingDirectory("help/html");
+  dvipng.setWorkingDirectory(buildpath+"/help/html");
   dvipng.start("dvipng",QStringList() << "-T tight" << "../tmp/" + modulename + "_eqn.dvi");
   if (!dvipng.waitForFinished())
     Halt("dvipng for " + modulename + "_eqn.dvi never returned");
@@ -396,7 +400,7 @@ void HTMLWriter::EndModule() {
 void HTMLWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   modulename = modname.toLower();
   eqnlist.clear();
-  myfile = new QFile("help/html/" + secname + "_" + modulename + ".html");
+  myfile = new QFile(buildpath+"/help/html/" + secname + "_" + modulename + ".html");
   if (!myfile->open(QFile::WriteOnly))
     Halt("Unable to open " + modname + ".html for output");
   mystream = new QTextStream(myfile);
@@ -558,7 +562,7 @@ void TextWriter::EndModule() {
 
 void TextWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   moduledepth++;
-  myfile = new QFile("help/text/" + modname.toLower() + ".mdc");
+  myfile = new QFile(buildpath+"/help/text/" + modname.toLower() + ".mdc");
   if (!myfile->open(QFile::Append)) {
     Halt("Unable to open " + modname + ".mdc for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
@@ -639,9 +643,9 @@ class LatexWriter : public HelpWriter {
 };
 
 void LatexWriter::WriteIndex() {
-  QFile file("help/latex/main.tex");
+  QFile file(buildpath+"/help/latex/main.tex");
   if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open latex/main.tex for output");
+    Halt("Unable to open "+buildpath+"/latex/main.tex for output");
   QTextStream f(&file);
   f << "\\documentclass{book}\n";
   f << "\\usepackage{graphicx}\n";
@@ -693,7 +697,7 @@ void LatexWriter::EndModule() {
 
 void LatexWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   moduledepth++;
-  myfile = new QFile("help/latex/" + secname.toLower() + "_" + modname.toLower() + ".tex");
+  myfile = new QFile(buildpath+"/help/latex/" + secname.toLower() + "_" + modname.toLower() + ".tex");
   if (!myfile->open(QFile::WriteOnly)) {
     Halt("Unable to open " + modname + ".tex for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
@@ -1062,7 +1066,7 @@ void MergeFile(QFileInfo fileinfo) {
   // It is a .m file...  Read in the documentation for it
   // from the text directory
   QString headerdocs;
-  QFile f("help/text/" + fileinfo.baseName() + ".mdc");
+  QFile f(sourcepath+"/help/text/" + fileinfo.baseName() + ".mdc");
   if (f.open(QFile::ReadOnly)) {
     QTextStream s(&f);
     while (!s.atEnd())
@@ -1073,7 +1077,7 @@ void MergeFile(QFileInfo fileinfo) {
   QString newname(fileinfo.absoluteFilePath());
   int p = newname.indexOf("mfiles",0,Qt::CaseInsensitive);
   newname = newname.remove(0,p);
-  newname = "help/"+newname;
+  newname = buildpath+"/help/"+newname;
   // Create the directory structure if necessary
   QFileInfo fi(newname);
   QDir dir;
@@ -1127,7 +1131,7 @@ void ProcessDir(QDir dir, HelpWriter *out, bool recurse) {
 void ReadSectionDescriptors() {
   QRegExp re("(\\b\\w+\\b)\\s*(.*)");
   TermOutputText("Reading section descriptors...\n");
-  QFile file("help/section_descriptors.txt");
+  QFile file(sourcepath+"/help/section_descriptors.txt");
   if (!file.open(QFile::ReadOnly))
     Halt("Unable to open section descriptors file for reading");
   QTextStream f(&file);
@@ -1157,16 +1161,16 @@ void DeleteDirectory(QString dirname) {
 
 void ConsoleWidget::Run() {
   QDir dir;
-  DeleteDirectory("help/html");
-  DeleteDirectory("help/tmp");
-  DeleteDirectory("help/latex");
-  DeleteDirectory("help/text");
-  DeleteDirectory("help/mfiles");
-  dir.mkpath("help/html");
-  dir.mkpath("help/tmp");
-  dir.mkpath("help/latex");
-  dir.mkpath("help/text");
-  dir.mkpath("help/mfiles");
+  DeleteDirectory(buildpath+"/help/html");
+  DeleteDirectory(buildpath+"/help/tmp");
+  DeleteDirectory(buildpath+"/help/latex");
+  DeleteDirectory(buildpath+"/help/text");
+  DeleteDirectory(buildpath+"/help/mfiles");
+  dir.mkpath(buildpath+"/help/html");
+  dir.mkpath(buildpath+"/help/tmp");
+  dir.mkpath(buildpath+"/help/latex");
+  dir.mkpath(buildpath+"/help/text");
+  dir.mkpath(buildpath+"/help/mfiles");
   ReadSectionDescriptors();
   LatexWriter texout;
   HTMLWriter htmlout;
@@ -1175,20 +1179,15 @@ void ConsoleWidget::Run() {
   out.RegisterWriter(&texout);
   out.RegisterWriter(&htmlout);
   out.RegisterWriter(&txtout);
-  ProcessDir(QDir("libs"),&out,true); 
-  ProcessDir(QDir("help"),&out,false); 
-  ProcessDir(QDir("MFiles"),&out,true); 
-  MergeMFiles(QDir("MFiles"));
+  ProcessDir(QDir(sourcepath+"/libs"),&out,true); 
+  ProcessDir(QDir(sourcepath+"/help"),&out,false); 
+  ProcessDir(QDir(sourcepath+"/MFiles"),&out,true); 
+  MergeMFiles(QDir(sourcepath+"/MFiles"));
   out.WriteIndex();
   std::string version(WalkTree::getVersionString());
   QString verstring(QString::fromStdString(version));
   int ndx = verstring.indexOf("v");
   verstring.remove(0,ndx+1);
-  QFile file("help/version.txt");
-  if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open version.txt for output");
-  QTextStream f(&file);
-  f << verstring << "\n";
   for (int i=0;i<generatedFileList.size();i++) {
     QFile tmp(generatedFileList[i]);
     tmp.remove();
@@ -1197,7 +1196,9 @@ void ConsoleWidget::Run() {
   qApp->exit();
 }
 
-void DoHelpGen() {
+void DoHelpGen(QString sourcep, QString destp) {
+  sourcepath = sourcep;
+  buildpath = destp;
   ConsoleWidget *m_main = new ConsoleWidget;
   m_main->show();
   QTimer::singleShot(0,m_main,SLOT(Run()));

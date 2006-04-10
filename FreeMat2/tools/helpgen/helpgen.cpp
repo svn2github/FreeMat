@@ -1131,7 +1131,7 @@ void ProcessDir(QDir dir, HelpWriter *out, bool recurse) {
 void ReadSectionDescriptors() {
   QRegExp re("(\\b\\w+\\b)\\s*(.*)");
   TermOutputText("Reading section descriptors...\n");
-  QFile file(sourcepath+"/help/section_descriptors.txt");
+  QFile file(sourcepath+"/tools/helpgen/section_descriptors.txt");
   if (!file.open(QFile::ReadOnly))
     Halt("Unable to open section descriptors file for reading");
   QTextStream f(&file);

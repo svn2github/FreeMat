@@ -1159,6 +1159,17 @@ void DeleteDirectory(QString dirname) {
   dir.rmdir(dirname);
 }
 
+void MakePDF() {
+  QProcess dopdf;
+  dopdf.setWorkingDirectory(buildpath+"/help/latex");
+  dopdf.start("pdflatex",QStringList() << "main.tex");
+  while (!dopdf.waitForFinished()) {
+  }
+  dopdf.start("pdflatex",QStringList() << "main.tex");
+  while (!dopdf.waitForFinished()) {
+  }
+}
+
 void ConsoleWidget::Run() {
   QDir dir;
   DeleteDirectory(buildpath+"/help/html");
@@ -1192,6 +1203,8 @@ void ConsoleWidget::Run() {
     QFile tmp(generatedFileList[i]);
     tmp.remove();
   }
+  // Make the pdf
+  MakePDF();
   TermOutputText("\n\nDone!\n");
   qApp->exit();
 }

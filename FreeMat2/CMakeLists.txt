@@ -41,12 +41,33 @@ add_custom_target(help
 		  ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
 		  DEPENDS ${FreeMat_BINARY_DIR}/tools/helpgen/FMHelpGen
 		   ${FreeMat_BINARY_DIR}/src/FreeMat)
-add_custom_target(install
+IF (WIN32)
+add_custom_target(binpkg
+		  COMMAND
+		  ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		  -win ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
+		  DEPENDS ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		   ${FreeMat_BINARY_DIR}/src/FreeMat)
+ENDIF (WIN32)
+
+IF (APPLE)
+add_custom_target(binpkg
+		  COMMAND
+		  ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		  -mac ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
+		  DEPENDS ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
+		   ${FreeMat_BINARY_DIR}/src/FreeMat)
+ENDIF (APPLE)
+
+IF (NOT WIN32 AND NOT APPLE)
+add_custom_target(binpkg
 		  COMMAND
 		  ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
 		  -linux ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}
 		  DEPENDS ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
 		   ${FreeMat_BINARY_DIR}/src/FreeMat)
+ENDIF (NOT WIN32 AND NOT APPLE)
+
 add_custom_target(dist
 		  ${FreeMat_BINARY_DIR}/tools/disttool/DistTool
 		  -src ${FreeMat_SOURCE_DIR} ${FreeMat_BINARY_DIR}

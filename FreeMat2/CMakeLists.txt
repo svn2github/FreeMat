@@ -1,7 +1,27 @@
 project(FreeMat)
 
+enable_language( C)
+enable_language( CXX)
+enable_language( Fortran)
+
 include(${CMAKE_ROOT}/Modules/FindQt4.cmake)
 include(${CMAKE_ROOT}/Modules/FindOpenGL.cmake)
+
+
+message(STATUS "FORTRAN is ${CMAKE_Fortran_COMPILER}")
+
+file(WRITE ${FreeMat_BINARY_DIR}/test.f "      program main\n\n      end\n")
+exec_program(${CMAKE_Fortran_COMPILER} ARGS --verbose ${FreeMat_BINARY_DIR}/test.f
+OUTPUT_VARIABLE GOUT)
+string(REGEX MATCHALL "-L[^ ]*" GLIBDIRS ${GOUT})
+string(REGEX REPLACE "-L" " " GLIBDIRS_PATHS ${GLIBDIRS})
+SEPARATE_ARGUMENTS(GLIBDIRS_PATHS)
+FIND_LIBRARY(FORTRAN_TO_C_LIBRARY
+   NAMES gfortran g2c f2c 
+   PATHS /usr/lib /usr/local/lib /sw/lib /opt/lib ${GLIBDIRS_PATHS}
+ )
+
+message(STATUS "Fortran link library is ${FORTRAN_TO_C_LIBRARY}")
 
 set(CMAKE_MODULE_PATH ${FreeMat_SOURCE_DIR}/cmake)
 

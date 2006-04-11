@@ -326,7 +326,7 @@ void ConsoleWidget::SrcBundle() {
 
 void ConsoleWidget::WinBundle() {
   QString versionnum(GetVersionString());
-  QString baseDir("FreeMat" + versionnum);
+  QString baseDir(buildpath+"/FreeMat" + versionnum);
   DeleteDirectory(baseDir);
   MakeDir(baseDir);
   MakeDir(baseDir+"/Contents");
@@ -340,19 +340,19 @@ void ConsoleWidget::WinBundle() {
   QString qtdir(getenv("QTDIR"));
   CopyFile(qtdir+"/plugins/imageformats/qjpeg1.dll",baseDir+"/Contents/Plugins/imageformats/qjpeg1.dll");
   CopyFile(qtdir+"/plugins/imageformats/qmng1.dll",baseDir+"/Contents/Plugins/imageformats/qmng1.dll");
-  CopyFile("../../build/FreeMat.exe",baseDir+"/Contents/bin/FreeMat.exe");
+  CopyFile(buildpath+"/src/FreeMat.exe",baseDir+"/Contents/bin/FreeMat.exe");
   CopyFile(qtdir+"/bin/QtCore4.dll",baseDir+"/Contents/bin/QtCore4.dll");
   CopyFile(qtdir+"/bin/QtGui4.dll",baseDir+"/Contents/bin/QtGui4.dll");
   CopyFile(qtdir+"/bin/QtOpenGL4.dll",baseDir+"/Contents/bin/QtOpenGL4.dll");
   //  CopyFile("../../extern/blas/atlas_prebuilt_win32/atlas_blas_P4SSE2.dll",
   //	   baseDir+"/Contents/bin/blas.dll");
   CopyFile("c:/MinGW/bin/mingwm10.dll",baseDir+"/Contents/bin/mingwm10.dll");
-  CopyDirectory("../../help/html",baseDir+"/Contents/Resources/help/html");
-  CopyDirectory("../../help/text",baseDir+"/Contents/Resources/help/text");
-  CopyDirectory("../../help/MFiles",baseDir+"/Contents/Resources/mfiles");
+  CopyDirectory(buildpath+"/help/html",baseDir+"/Contents/Resources/help/html");
+  CopyDirectory(buildpath+"/help/text",baseDir+"/Contents/Resources/help/text");
+  CopyDirectory(buildpath+"/help/MFiles",baseDir+"/Contents/Resources/mfiles");
   TermOutputText("Generating NSI file...\n");
   QStringList flist(GetFileList(baseDir+"",QStringList()));
-  QFile *file_in = new QFile("freemat_nsi.in");
+  QFile *file_in = new QFile(sourcepath+"/tools/disttool/freemat_nsi.in");
   if (!file_in->open(QFile::ReadOnly))
     Halt("Unable to open FreeMat NSIS template file freemat_nsi.in\n");
   QFile *file_out = new QFile(baseDir+"/freemat.nsi");

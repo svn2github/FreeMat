@@ -8,8 +8,8 @@
 MESSAGE(STATUS "Looking for zlib")
 SET(ZLIB_FOUND 0)
 
-FIND_PATH(ZLIB_INCLUDE_DIR zlib.h /usr/local/include /usr/include /sw/include)
-FIND_LIBRARY(ZLIB_LIBRARY z /usr/lib /usr/local/lib /sw/lib)
+FIND_PATH(ZLIB_INCLUDE_DIR zlib.h /usr/local/include /usr/include /sw/include ${PROJECT_SOURCE_DIR}/extern/Root/include)
+FIND_LIBRARY(ZLIB_LIBRARY z /usr/lib /usr/local/lib /sw/lib ${PROJECT_SOURCE_DIR}/extern/Root/lib)
 
 IF (ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
   SET(ZLIB_FOUND 1)

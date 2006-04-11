@@ -4,7 +4,7 @@ SET(FORT_LIBRARY_FOUND 0)
 MESSAGE(STATUS "Fortran compiler is ${CMAKE_Fortran_COMPILER}")
 
 IF(${CMAKE_Fortran_COMPILER} STREQUAL "g77")
-   FIND_LIBRARY(FORT_LIBRARY NAMES g2c PATHS /usr/lib /usr/local/lib /sw/lib)
+   FIND_LIBRARY(FORT_LIBRARY NAMES g2c PATHS /usr/lib /usr/local/lib /sw/lib c:/mingw/lib)
    IF (NOT FORT_LIBRARY)
       FIND_FILE(FORT_LIBRARY libg2c.so PATHS /usr/lib /usr/local/lib /sw/lib)
    ENDIF (NOT FORT_LIBRARY)

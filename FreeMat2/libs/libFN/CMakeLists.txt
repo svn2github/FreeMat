@@ -23,11 +23,10 @@ dlgama.o )
 
 find_program(GNUFORTRAN NAMES g77 gfortran)
 message(STATUS "Fortran compiler ${GNUFORTRAN}")
-
 IF(GNUFORTRAN MATCHES "g77")
-  set(GNUFLIB "g2c")
+  find_library(GNUFLIB NAMES g2c PATHS /usr/lib /usr/local/lib /sw/lib)
 ELSE(GNUFORTRAN MATCHES "g77")
-  set(GNUFLIB "gfortran")
+  find_library(GNUFLIB NAMES gfortran PATHS /usr/lib /usr/local/lib /sw/lib)
 ENDIF(GNUFORTRAN MATCHES "g77")
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lmdif1.o COMMAND ${GNUFORTRAN} -c ${CMAKE_CURRENT_SOURCE_DIR}/lmdif1.f -o ${CMAKE_CURRENT_BINARY_DIR}/lmdif1.o)

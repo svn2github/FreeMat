@@ -208,7 +208,7 @@ functionDef:
    FUNCTION  returnDeclaration IDENT error {yyxpt(std::string("argument list or statement list following function name :") + 
 	$3.v.p->text,$3);} |
    FUNCTION  returnDeclaration IDENT '('  error {yyxpt("(possibly empty) argument list after '('",$4);} |
-   FUNCTION  returnDeclaration IDENT '(' argumentList ')' error {yyxpt("statement list after ')'",$6);}
+   FUNCTION  returnDeclaration IDENT '(' argumentList ')' error {yyxpt("statement list after ')'",$6);} 
   ;
 
 functionDefList:
@@ -244,7 +244,7 @@ argument:
 
 statementList:
    statement {$$.v.p = new AST(OP_BLOCK,$1.v.p,$1.v.p->context());} | 
-   statementList statement {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);}
+   statementList statement {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);} 
    ;
 
 statement:
@@ -259,7 +259,7 @@ statement:
 	 | statementType ',' {
 	    $$.v.p = new AST(OP_RSTATEMENT,NULL,$2.v.i);
 	    $$.v.p->down = $1.v.p;
-	 } 
+	 }
 	 ;
 
 statementType:
@@ -279,7 +279,8 @@ statementType:
 	 | globalStatement
 	 | persistentStatement
 	 | specialCall
-	 | QUIT | RETALL 
+	 | QUIT 
+	 | RETALL 
          ;
 
 specialCall:

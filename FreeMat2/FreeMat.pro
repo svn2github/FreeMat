@@ -7,6 +7,7 @@ QT += opengl
 CONFIG += warn_off debug
 
 DEFINES -= UNICODE
+DEFINES += LEXDEBUG
 
 TARGET = FreeMat
 

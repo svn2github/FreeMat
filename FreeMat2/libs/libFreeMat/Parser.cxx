@@ -53,33 +53,24 @@
 
 #line 1 "Parser.yxx"
 
-// Copyright (c) 2002, 2003 Samit Basu
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a 
-// copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
-// Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included 
-// in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-// DEALINGS IN THE SOFTWARE.
-
-    /*************************************************************
-     * $Source$
-     * $Revision$
-     * $Date$
-     * $Author$
-     *************************************************************/
-
+/*
+ * Copyright (c) 2002-2006 Samit Basu
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -336,29 +327,29 @@ static const short yyrhs[] = {    80,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   151,   152,   153,   154,   157,   167,   176,   185,   193,   202,
-   210,   211,   213,   214,   215,   216,   218,   219,   223,   224,
-   228,   229,   230,   231,   232,   233,   234,   238,   240,   243,
-   244,   254,   255,   259,   264,   268,   274,   276,   277,   278,
-   279,   280,   281,   282,   283,   284,   285,   286,   287,   288,
-   289,   290,   291,   291,   294,   295,   296,   297,   298,   299,
-   300,   313,   314,   318,   319,   323,   324,   325,   329,   333,
-   337,   340,   344,   347,   351,   353,   356,   361,   367,   368,
-   368,   368,   368,   371,   372,   376,   377,   381,   384,   390,
-   396,   399,   405,   408,   413,   414,   415,   417,   418,   419,
-   420,   421,   422,   426,   429,   430,   435,   439,   440,   444,
-   447,   450,   454,   455,   459,   462,   468,   471,   474,   477,
-   478,   482,   483,   487,   491,   495,   497,   499,   501,   506,
-   508,   509,   510,   511,   512,   513,   514,   515,   516,   517,
-   518,   519,   520,   521,   522,   523,   524,   525,   526,   527,
-   528,   529,   530,   531,   532,   533,   534,   535,   536,   537,
-   538,   539,   540,   541,   542,   543,   544,   545,   546,   547,
-   548,   549,   550,   551,   552,   553,   554,   555,   556,   557,
-   558,   561,   563,   564,   565,   566,   567,   568,   569,   570,
-   571,   572,   573,   574,   575,   576,   577,   578,   580,   582,
-   585,   587,   588,   589,   590,   591,   592,   595,   597,   598,
-   599,   600,   601,   604,   605,   609,   610,   614,   615,   619,
-   620,   623,   624,   627,   628
+   142,   143,   144,   145,   148,   158,   167,   176,   184,   193,
+   201,   202,   204,   205,   206,   207,   209,   210,   214,   215,
+   219,   220,   221,   222,   223,   224,   225,   229,   231,   234,
+   235,   245,   246,   250,   255,   259,   265,   267,   268,   269,
+   270,   271,   272,   273,   274,   275,   276,   277,   278,   279,
+   280,   281,   282,   283,   286,   287,   288,   289,   290,   291,
+   292,   305,   306,   310,   311,   315,   316,   317,   321,   325,
+   329,   332,   336,   339,   343,   345,   348,   353,   359,   360,
+   360,   360,   360,   363,   364,   368,   369,   373,   376,   382,
+   388,   391,   397,   400,   405,   406,   407,   409,   410,   411,
+   412,   413,   414,   418,   421,   422,   427,   431,   432,   436,
+   439,   442,   446,   447,   451,   454,   460,   463,   466,   469,
+   470,   474,   475,   479,   483,   487,   489,   491,   493,   498,
+   500,   501,   502,   503,   504,   505,   506,   507,   508,   509,
+   510,   511,   512,   513,   514,   515,   516,   517,   518,   519,
+   520,   521,   522,   523,   524,   525,   526,   527,   528,   529,
+   530,   531,   532,   533,   534,   535,   536,   537,   538,   539,
+   540,   541,   542,   543,   544,   545,   546,   547,   548,   549,
+   550,   553,   555,   556,   557,   558,   559,   560,   561,   562,
+   563,   564,   565,   566,   567,   568,   569,   570,   572,   574,
+   577,   579,   580,   581,   582,   583,   584,   587,   589,   590,
+   591,   592,   593,   596,   597,   601,   602,   606,   607,   611,
+   612,   615,   616,   619,   620
 };
 #endif
 
@@ -1612,15 +1603,15 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 152 "Parser.yxx"
+#line 143 "Parser.yxx"
 {mainAST = yyvsp[0].v.p;;
     break;}
 case 4:
-#line 154 "Parser.yxx"
+#line 145 "Parser.yxx"
 {yyxpt("statement list or function definition",yyvsp[0]);;
     break;}
 case 5:
-#line 158 "Parser.yxx"
+#line 149 "Parser.yxx"
 {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1633,7 +1624,7 @@ case 5:
    ;
     break;}
 case 6:
-#line 168 "Parser.yxx"
+#line 159 "Parser.yxx"
 {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1645,7 +1636,7 @@ case 6:
    ;
     break;}
 case 7:
-#line 177 "Parser.yxx"
+#line 168 "Parser.yxx"
 {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1657,7 +1648,7 @@ case 7:
    ;
     break;}
 case 8:
-#line 186 "Parser.yxx"
+#line 177 "Parser.yxx"
 {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1668,7 +1659,7 @@ case 8:
    ;
     break;}
 case 9:
-#line 194 "Parser.yxx"
+#line 185 "Parser.yxx"
 {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1680,7 +1671,7 @@ case 9:
    ;
     break;}
 case 10:
-#line 203 "Parser.yxx"
+#line 194 "Parser.yxx"
 {
      MFunctionDef *r;
      r = new MFunctionDef();
@@ -1691,77 +1682,77 @@ case 10:
    ;
     break;}
 case 11:
-#line 211 "Parser.yxx"
+#line 202 "Parser.yxx"
 {yyxpt("legal function name or return declaration after 'function'",yyvsp[-1]);;
     break;}
 case 12:
-#line 212 "Parser.yxx"
+#line 203 "Parser.yxx"
 {yyxpt(std::string("argument list or statement list after identifier '") + 
 	yyvsp[-1].v.p->text + "'",yyvsp[-1]);;
     break;}
 case 13:
-#line 214 "Parser.yxx"
+#line 205 "Parser.yxx"
 {yyxpt("(possibly empty) argument list after '('",yyvsp[-1]);;
     break;}
 case 14:
-#line 215 "Parser.yxx"
+#line 206 "Parser.yxx"
 {yyxpt("statement list after ')'",yyvsp[-1]);;
     break;}
 case 15:
-#line 216 "Parser.yxx"
+#line 207 "Parser.yxx"
 {yyxpt("function name for function declared",yyvsp[-2]);;
     break;}
 case 16:
-#line 217 "Parser.yxx"
+#line 208 "Parser.yxx"
 {yyxpt(std::string("argument list or statement list following function name :") + 
 	yyvsp[-1].v.p->text,yyvsp[-1]);;
     break;}
 case 17:
-#line 219 "Parser.yxx"
+#line 210 "Parser.yxx"
 {yyxpt("(possibly empty) argument list after '('",yyvsp[-1]);;
     break;}
 case 18:
-#line 220 "Parser.yxx"
+#line 211 "Parser.yxx"
 {yyxpt("statement list after ')'",yyvsp[-1]);;
     break;}
 case 21:
-#line 229 "Parser.yxx"
+#line 220 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 22:
-#line 230 "Parser.yxx"
+#line 221 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 23:
-#line 231 "Parser.yxx"
+#line 222 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p;;
     break;}
 case 24:
-#line 232 "Parser.yxx"
+#line 223 "Parser.yxx"
 {yyxpt("an '=' symbol after identifier in return declaration",yyvsp[-1]);;
     break;}
 case 25:
-#line 233 "Parser.yxx"
+#line 224 "Parser.yxx"
 {yyxpt("a valid list of return arguments in return declaration",yyvsp[-1]);;
     break;}
 case 26:
-#line 234 "Parser.yxx"
+#line 225 "Parser.yxx"
 {yyxpt("matching ']' in return declaration for '['",yyvsp[-2]);;
     break;}
 case 27:
-#line 235 "Parser.yxx"
+#line 226 "Parser.yxx"
 {yyxpt("an '=' symbol after return declaration",yyvsp[-1]);;
     break;}
 case 28:
-#line 239 "Parser.yxx"
+#line 230 "Parser.yxx"
 {yyval.v.p = yyvsp[0].v.p;;
     break;}
 case 29:
-#line 240 "Parser.yxx"
+#line 231 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 31:
-#line 244 "Parser.yxx"
+#line 235 "Parser.yxx"
 {
 	yyval.v.p = yyvsp[0].v.p;
 	char *b = (char*) malloc(strlen(yyvsp[0].v.p->text)+2);
@@ -1771,108 +1762,108 @@ case 31:
   ;
     break;}
 case 32:
-#line 255 "Parser.yxx"
+#line 246 "Parser.yxx"
 {yyval.v.p = new AST(OP_BLOCK,yyvsp[0].v.p,yyvsp[0].v.p->context());;
     break;}
 case 33:
-#line 256 "Parser.yxx"
+#line 247 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 34:
-#line 260 "Parser.yxx"
+#line 251 "Parser.yxx"
 {
   	    yyval.v.p = new AST(OP_QSTATEMENT,NULL,yyvsp[0].v.i);
 	    yyval.v.p->down = yyvsp[-1].v.p;
 	 ;
     break;}
 case 35:
-#line 264 "Parser.yxx"
+#line 255 "Parser.yxx"
 {
 	    yyval.v.p = new AST(OP_RSTATEMENT,NULL,yyvsp[0].v.i);
             yyval.v.p->down = yyvsp[-1].v.p;
 	 ;
     break;}
 case 36:
-#line 268 "Parser.yxx"
+#line 259 "Parser.yxx"
 {
 	    yyval.v.p = new AST(OP_RSTATEMENT,NULL,yyvsp[0].v.i);
 	    yyval.v.p->down = yyvsp[-1].v.p;
 	 ;
     break;}
 case 39:
-#line 277 "Parser.yxx"
+#line 268 "Parser.yxx"
 {yyval.v.p = new AST(null_node,"",-1);;
     break;}
 case 55:
-#line 295 "Parser.yxx"
+#line 287 "Parser.yxx"
 {yyval.v.p = new AST(OP_SCALL,yyvsp[-1].v.p,yyvsp[0].v.p,yyvsp[-1].v.p->context());;
     break;}
 case 56:
-#line 296 "Parser.yxx"
+#line 288 "Parser.yxx"
 {yyval.v.p = new AST(OP_SCALL,yyvsp[-1].v.p,yyvsp[0].v.p,yyvsp[-1].v.p->context());;
     break;}
 case 57:
-#line 297 "Parser.yxx"
+#line 289 "Parser.yxx"
 {yyval.v.p = new AST(OP_SCALL,yyvsp[-1].v.p,yyvsp[0].v.p,yyvsp[-1].v.p->context());;
     break;}
 case 58:
-#line 298 "Parser.yxx"
+#line 290 "Parser.yxx"
 {yyval.v.p = new AST(OP_SCALL,yyvsp[-1].v.p,yyvsp[0].v.p,yyvsp[-1].v.p->context()); ;
     break;}
 case 59:
-#line 299 "Parser.yxx"
+#line 291 "Parser.yxx"
 {yyvsp[-1].v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 60:
-#line 300 "Parser.yxx"
+#line 292 "Parser.yxx"
 {yyvsp[-1].v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 61:
-#line 301 "Parser.yxx"
+#line 293 "Parser.yxx"
 {yyvsp[-1].v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 62:
-#line 314 "Parser.yxx"
+#line 306 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p); ;
     break;}
 case 63:
-#line 315 "Parser.yxx"
+#line 307 "Parser.yxx"
 {yyxpt("list of variables to be tagged as persistent",yyvsp[-1]);;
     break;}
 case 64:
-#line 319 "Parser.yxx"
+#line 311 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 65:
-#line 320 "Parser.yxx"
+#line 312 "Parser.yxx"
 {yyxpt("list of variables to be tagged as global",yyvsp[-1]);;
     break;}
 case 67:
-#line 325 "Parser.yxx"
+#line 317 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 68:
-#line 326 "Parser.yxx"
+#line 318 "Parser.yxx"
 {yyxpt("list of valid identifiers",yyvsp[0]);;
     break;}
 case 73:
-#line 346 "Parser.yxx"
+#line 338 "Parser.yxx"
 { yyval.v.p = yyvsp[-3].v.p; yyval.v.p->addChild(yyvsp[-2].v.p); if (yyvsp[-1].v.p != NULL) yyval.v.p->addChild(yyvsp[-1].v.p);;
     break;}
 case 74:
-#line 348 "Parser.yxx"
+#line 340 "Parser.yxx"
 {yyxpt(std::string("matching 'end' to 'try' clause from line ") + decodeline(yyvsp[-3]),yyvsp[0]);;
     break;}
 case 75:
-#line 352 "Parser.yxx"
+#line 344 "Parser.yxx"
 {yyval.v.p = yyvsp[0].v.p;;
     break;}
 case 76:
-#line 353 "Parser.yxx"
+#line 345 "Parser.yxx"
 {yyval.v.p = NULL;;
     break;}
 case 77:
-#line 357 "Parser.yxx"
+#line 349 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-5].v.p; yyval.v.p->addChild(yyvsp[-4].v.p); 
 	  if (yyvsp[-2].v.p != NULL) yyval.v.p->addChild(yyvsp[-2].v.p); 
@@ -1880,553 +1871,553 @@ case 77:
 	;
     break;}
 case 78:
-#line 362 "Parser.yxx"
+#line 354 "Parser.yxx"
 {
           yyxpt(std::string("matching 'end' to 'switch' clause from line ") + decodeline(yyvsp[-5]),yyvsp[0]);
         ;
     break;}
 case 86:
-#line 377 "Parser.yxx"
+#line 369 "Parser.yxx"
 {yyval.v.p = NULL;;
     break;}
 case 88:
-#line 382 "Parser.yxx"
+#line 374 "Parser.yxx"
 {
 	  yyval.v.p = new AST(OP_CASEBLOCK,yyvsp[0].v.p,yyvsp[0].v.p->context());
 	;
     break;}
 case 89:
-#line 385 "Parser.yxx"
+#line 377 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);
 	;
     break;}
 case 90:
-#line 391 "Parser.yxx"
+#line 383 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-3].v.p; yyval.v.p->addChild(yyvsp[-2].v.p); yyval.v.p->addChild(yyvsp[0].v.p);
 	;
     break;}
 case 91:
-#line 397 "Parser.yxx"
+#line 389 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[0].v.p;
 	;
     break;}
 case 92:
-#line 400 "Parser.yxx"
+#line 392 "Parser.yxx"
 {
 	  yyval.v.p = NULL;
 	;
     break;}
 case 93:
-#line 406 "Parser.yxx"
+#line 398 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-4].v.p; yyval.v.p->addChild(yyvsp[-3].v.p); yyval.v.p->addChild(yyvsp[-1].v.p);
 	;
     break;}
 case 94:
-#line 410 "Parser.yxx"
+#line 402 "Parser.yxx"
 {yyxpt(std::string("'end' to match 'for' statement from line ") + decodeline(yyvsp[-4]),yyvsp[0]);;
     break;}
 case 95:
-#line 414 "Parser.yxx"
+#line 406 "Parser.yxx"
 {yyval.v.p = yyvsp[-3].v.p; yyval.v.p->addChild(yyvsp[-1].v.p);;
     break;}
 case 96:
-#line 415 "Parser.yxx"
+#line 407 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 97:
-#line 416 "Parser.yxx"
+#line 408 "Parser.yxx"
 {yyval.v.p = yyvsp[0].v.p; 
 	      yyval.v.p->addChild(new AST(OP_RHS,new AST(id_node,yyvsp[0].v.p->text,yyvsp[0].v.p->context()),yyvsp[0].v.p->context())); ;
     break;}
 case 98:
-#line 418 "Parser.yxx"
+#line 410 "Parser.yxx"
 {yyxpt("matching right parenthesis",yyvsp[-4]);;
     break;}
 case 99:
-#line 419 "Parser.yxx"
+#line 411 "Parser.yxx"
 {yyxpt("indexing expression",yyvsp[-1]);;
     break;}
 case 100:
-#line 420 "Parser.yxx"
+#line 412 "Parser.yxx"
 {yyxpt("equals operator after loop index",yyvsp[-1]);;
     break;}
 case 101:
-#line 421 "Parser.yxx"
+#line 413 "Parser.yxx"
 {yyxpt("identifier that is the loop variable",yyvsp[-1]);;
     break;}
 case 102:
-#line 422 "Parser.yxx"
+#line 414 "Parser.yxx"
 {yyxpt("indexing expression",yyvsp[-1]);;
     break;}
 case 103:
-#line 423 "Parser.yxx"
+#line 415 "Parser.yxx"
 {yyxpt("identifier or assignment (id = expr) after 'for' ",yyvsp[0]);;
     break;}
 case 104:
-#line 427 "Parser.yxx"
+#line 419 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-4].v.p; yyval.v.p->addChild(yyvsp[-3].v.p); yyval.v.p->addChild(yyvsp[-1].v.p);
 	;
     break;}
 case 105:
-#line 430 "Parser.yxx"
+#line 422 "Parser.yxx"
 {yyxpt("test expression after 'while'",yyvsp[-1]);;
     break;}
 case 106:
-#line 432 "Parser.yxx"
+#line 424 "Parser.yxx"
 {yyxpt(std::string("'end' to match 'while' statement from line ") + decodeline(yyvsp[-4]),yyvsp[0]);;
     break;}
 case 107:
-#line 436 "Parser.yxx"
+#line 428 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-4].v.p; yyval.v.p->addChild(yyvsp[-3].v.p); if (yyvsp[-2].v.p != NULL) yyval.v.p->addChild(yyvsp[-2].v.p); 
 	  if (yyvsp[-1].v.p != NULL) yyval.v.p->addChild(yyvsp[-1].v.p);
 	;
     break;}
 case 108:
-#line 440 "Parser.yxx"
+#line 432 "Parser.yxx"
 {yyxpt("condition expression for 'if'",yyvsp[-1]);;
     break;}
 case 109:
-#line 441 "Parser.yxx"
+#line 433 "Parser.yxx"
 {yyxpt(std::string("'end' to match 'if' statement from line ") + decodeline(yyvsp[-4]),yyvsp[0]);;
     break;}
 case 110:
-#line 445 "Parser.yxx"
+#line 437 "Parser.yxx"
 {
 	  yyval.v.p = new AST(OP_CSTAT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-2].v.p->context());
 	;
     break;}
 case 111:
-#line 448 "Parser.yxx"
+#line 440 "Parser.yxx"
 {
 	  yyval.v.p = new AST(OP_CSTAT,yyvsp[-1].v.p,yyvsp[-1].v.p->context());
 	;
     break;}
 case 112:
-#line 451 "Parser.yxx"
+#line 443 "Parser.yxx"
 {yyxpt("valid list of statements after condition",yyvsp[0]);;
     break;}
 case 113:
-#line 455 "Parser.yxx"
+#line 447 "Parser.yxx"
 {yyval.v.p = NULL;;
     break;}
 case 115:
-#line 460 "Parser.yxx"
+#line 452 "Parser.yxx"
 {
 	  yyval.v.p = new AST(OP_ELSEIFBLOCK,yyvsp[0].v.p,yyvsp[0].v.p->context());
 	;
     break;}
 case 116:
-#line 463 "Parser.yxx"
+#line 455 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);
 	;
     break;}
 case 117:
-#line 469 "Parser.yxx"
+#line 461 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[0].v.p;
 	;
     break;}
 case 118:
-#line 472 "Parser.yxx"
+#line 464 "Parser.yxx"
 {yyxpt("test condition for 'elseif' clause",yyvsp[-1]);;
     break;}
 case 119:
-#line 475 "Parser.yxx"
+#line 467 "Parser.yxx"
 {
 	  yyval.v.p = yyvsp[0].v.p;
 	;
     break;}
 case 120:
-#line 478 "Parser.yxx"
+#line 470 "Parser.yxx"
 {yyval.v.p = NULL;;
     break;}
 case 121:
-#line 479 "Parser.yxx"
+#line 471 "Parser.yxx"
 {yyxpt("statement list for 'else' clause",yyvsp[-1]);;
     break;}
 case 122:
-#line 483 "Parser.yxx"
+#line 475 "Parser.yxx"
 {yyval.v.p = new AST(OP_ASSIGN,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 123:
-#line 484 "Parser.yxx"
+#line 476 "Parser.yxx"
 {yyxpt("expression in assignment",yyvsp[-1]);;
     break;}
 case 124:
-#line 488 "Parser.yxx"
+#line 480 "Parser.yxx"
 {
 	  yyvsp[-3].v.p->addChild(new AST(OP_PARENS,yyvsp[-1].v.p,yyvsp[-2].v.i));
 	  yyval.v.p = new AST(OP_MULTICALL,yyvsp[-6].v.p,yyvsp[-3].v.p,yyvsp[-7].v.i);
 	;
     break;}
 case 125:
-#line 492 "Parser.yxx"
+#line 484 "Parser.yxx"
 {
 	  yyvsp[0].v.p->addChild(new AST(OP_PARENS,NULL,-1));
 	  yyval.v.p = new AST(OP_MULTICALL,yyvsp[-3].v.p,yyvsp[0].v.p,yyvsp[-4].v.i);
 	;
     break;}
 case 126:
-#line 497 "Parser.yxx"
+#line 489 "Parser.yxx"
 {yyxpt("matching right parenthesis",yyvsp[-2]);;
     break;}
 case 127:
-#line 499 "Parser.yxx"
+#line 491 "Parser.yxx"
 {yyxpt("indexing list",yyvsp[-1]);;
     break;}
 case 128:
-#line 501 "Parser.yxx"
+#line 493 "Parser.yxx"
 {yyxpt("left parenthesis",yyvsp[-1]);;
     break;}
 case 129:
-#line 503 "Parser.yxx"
+#line 495 "Parser.yxx"
 {yyxpt("identifier",yyvsp[-1]);;
     break;}
 case 130:
-#line 507 "Parser.yxx"
+#line 499 "Parser.yxx"
 {yyval.v.p = new AST(OP_COLON,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 131:
-#line 508 "Parser.yxx"
+#line 500 "Parser.yxx"
 {yyxpt("an expression after ':'",yyvsp[-1]);;
     break;}
 case 133:
-#line 510 "Parser.yxx"
+#line 502 "Parser.yxx"
 {yyval.v.p = new AST(OP_PLUS,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 134:
-#line 511 "Parser.yxx"
+#line 503 "Parser.yxx"
 {yyxpt("an expression after '+'",yyvsp[-1]);;
     break;}
 case 135:
-#line 512 "Parser.yxx"
+#line 504 "Parser.yxx"
 {yyval.v.p = new AST(OP_SUBTRACT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 136:
-#line 513 "Parser.yxx"
+#line 505 "Parser.yxx"
 {yyxpt("an expression after '-'",yyvsp[-1]);;
     break;}
 case 137:
-#line 514 "Parser.yxx"
+#line 506 "Parser.yxx"
 {yyval.v.p = new AST(OP_TIMES,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 138:
-#line 515 "Parser.yxx"
+#line 507 "Parser.yxx"
 {yyxpt("an expression after '*'",yyvsp[-1]);;
     break;}
 case 139:
-#line 516 "Parser.yxx"
+#line 508 "Parser.yxx"
 {yyval.v.p = new AST(OP_RDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 140:
-#line 517 "Parser.yxx"
+#line 509 "Parser.yxx"
 {yyxpt("an expression after '/'",yyvsp[-1]);;
     break;}
 case 141:
-#line 518 "Parser.yxx"
+#line 510 "Parser.yxx"
 {yyval.v.p = new AST(OP_LDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 142:
-#line 519 "Parser.yxx"
+#line 511 "Parser.yxx"
 {yyxpt("an expression after '\\'",yyvsp[-1]);;
     break;}
 case 143:
-#line 520 "Parser.yxx"
+#line 512 "Parser.yxx"
 {yyval.v.p = new AST(OP_OR,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 144:
-#line 521 "Parser.yxx"
+#line 513 "Parser.yxx"
 {yyxpt("an expression after '|'",yyvsp[-1]);;
     break;}
 case 145:
-#line 522 "Parser.yxx"
+#line 514 "Parser.yxx"
 {yyval.v.p = new AST(OP_AND,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 146:
-#line 523 "Parser.yxx"
+#line 515 "Parser.yxx"
 {yyxpt("an expression after '&'",yyvsp[-1]);;
     break;}
 case 147:
-#line 524 "Parser.yxx"
+#line 516 "Parser.yxx"
 {yyval.v.p = new AST(OP_SOR,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 148:
-#line 525 "Parser.yxx"
+#line 517 "Parser.yxx"
 {yyxpt("an expression after '||'",yyvsp[-1]);;
     break;}
 case 149:
-#line 526 "Parser.yxx"
+#line 518 "Parser.yxx"
 {yyval.v.p = new AST(OP_SAND,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 150:
-#line 527 "Parser.yxx"
+#line 519 "Parser.yxx"
 {yyxpt("an expression after '&&'",yyvsp[-1]);;
     break;}
 case 151:
-#line 528 "Parser.yxx"
+#line 520 "Parser.yxx"
 {yyval.v.p = new AST(OP_LT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 152:
-#line 529 "Parser.yxx"
+#line 521 "Parser.yxx"
 {yyxpt("an expression after '<'",yyvsp[-1]);;
     break;}
 case 153:
-#line 530 "Parser.yxx"
+#line 522 "Parser.yxx"
 {yyval.v.p = new AST(OP_LEQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 154:
-#line 531 "Parser.yxx"
+#line 523 "Parser.yxx"
 {yyxpt("an expression after '<='",yyvsp[-1]);;
     break;}
 case 155:
-#line 532 "Parser.yxx"
+#line 524 "Parser.yxx"
 {yyval.v.p = new AST(OP_GT,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 156:
-#line 533 "Parser.yxx"
+#line 525 "Parser.yxx"
 {yyxpt("an expression after '>'",yyvsp[-1]);;
     break;}
 case 157:
-#line 534 "Parser.yxx"
+#line 526 "Parser.yxx"
 {yyval.v.p = new AST(OP_GEQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 158:
-#line 535 "Parser.yxx"
+#line 527 "Parser.yxx"
 {yyxpt("an expression after '>='",yyvsp[-1]);;
     break;}
 case 159:
-#line 536 "Parser.yxx"
+#line 528 "Parser.yxx"
 {yyval.v.p = new AST(OP_EQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 160:
-#line 537 "Parser.yxx"
+#line 529 "Parser.yxx"
 {yyxpt("an expression after '=='",yyvsp[-1]);;
     break;}
 case 161:
-#line 538 "Parser.yxx"
+#line 530 "Parser.yxx"
 {yyval.v.p = new AST(OP_NEQ,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 162:
-#line 539 "Parser.yxx"
+#line 531 "Parser.yxx"
 {yyxpt("an expression after '~='",yyvsp[-1]);;
     break;}
 case 163:
-#line 540 "Parser.yxx"
+#line 532 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOT_TIMES,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 164:
-#line 541 "Parser.yxx"
+#line 533 "Parser.yxx"
 {yyxpt("an expression after '.*'",yyvsp[-1]);;
     break;}
 case 165:
-#line 542 "Parser.yxx"
+#line 534 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOT_RDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 166:
-#line 543 "Parser.yxx"
+#line 535 "Parser.yxx"
 {yyxpt("an expression after './'",yyvsp[-1]);;
     break;}
 case 167:
-#line 544 "Parser.yxx"
+#line 536 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOT_LDIV,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 168:
-#line 545 "Parser.yxx"
+#line 537 "Parser.yxx"
 {yyxpt("an expression after '.\\'",yyvsp[-1]);;
     break;}
 case 169:
-#line 546 "Parser.yxx"
+#line 538 "Parser.yxx"
 {yyval.v.p = new AST(OP_NEG,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 170:
-#line 547 "Parser.yxx"
+#line 539 "Parser.yxx"
 {yyval.v.p = yyvsp[0].v.p;;
     break;}
 case 171:
-#line 548 "Parser.yxx"
+#line 540 "Parser.yxx"
 {yyval.v.p = new AST(OP_NOT,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 172:
-#line 549 "Parser.yxx"
+#line 541 "Parser.yxx"
 {yyxpt("an expression after logical not",yyvsp[0]);;
     break;}
 case 173:
-#line 550 "Parser.yxx"
+#line 542 "Parser.yxx"
 {yyval.v.p = new AST(OP_POWER,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 174:
-#line 551 "Parser.yxx"
+#line 543 "Parser.yxx"
 {yyxpt("an expression after '^'",yyvsp[-1]);;
     break;}
 case 175:
-#line 552 "Parser.yxx"
+#line 544 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOT_POWER,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 176:
-#line 553 "Parser.yxx"
+#line 545 "Parser.yxx"
 {yyxpt("an expression after '.^'",yyvsp[-1]);;
     break;}
 case 177:
-#line 554 "Parser.yxx"
+#line 546 "Parser.yxx"
 {yyval.v.p = new AST(OP_TRANSPOSE,yyvsp[-1].v.p,yyvsp[0].v.i);;
     break;}
 case 178:
-#line 555 "Parser.yxx"
+#line 547 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOT_TRANSPOSE,yyvsp[-1].v.p,yyvsp[0].v.i);;
     break;}
 case 179:
-#line 556 "Parser.yxx"
+#line 548 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 180:
-#line 557 "Parser.yxx"
+#line 549 "Parser.yxx"
 {yyxpt("a right parenthesis after expression to match this one",yyvsp[-2]);;
     break;}
 case 181:
-#line 558 "Parser.yxx"
+#line 550 "Parser.yxx"
 {yyxpt("an expression after left parenthesis",yyvsp[-1]);;
     break;}
 case 185:
-#line 565 "Parser.yxx"
+#line 557 "Parser.yxx"
 {yyval.v.p = new AST(OP_ADDRESS,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 186:
-#line 566 "Parser.yxx"
+#line 558 "Parser.yxx"
 {yyval.v.p = new AST(OP_RHS,yyvsp[0].v.p,yyvsp[0].v.p->context());;
     break;}
 case 187:
-#line 567 "Parser.yxx"
+#line 559 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 188:
-#line 568 "Parser.yxx"
+#line 560 "Parser.yxx"
 {yyxpt("a matrix definition followed by a right bracket",yyvsp[-1]);;
     break;}
 case 189:
-#line 569 "Parser.yxx"
+#line 561 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 190:
-#line 570 "Parser.yxx"
+#line 562 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p;;
     break;}
 case 191:
-#line 571 "Parser.yxx"
+#line 563 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p;;
     break;}
 case 192:
-#line 572 "Parser.yxx"
+#line 564 "Parser.yxx"
 {yyval.v.p = new AST(OP_EMPTY,NULL,yyvsp[-1].v.i);;
     break;}
 case 193:
-#line 573 "Parser.yxx"
+#line 565 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 194:
-#line 574 "Parser.yxx"
+#line 566 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p;;
     break;}
 case 195:
-#line 575 "Parser.yxx"
+#line 567 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p;;
     break;}
 case 196:
-#line 576 "Parser.yxx"
+#line 568 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p;;
     break;}
 case 197:
-#line 577 "Parser.yxx"
+#line 569 "Parser.yxx"
 {yyval.v.p = new AST(OP_EMPTY_CELL,NULL,yyvsp[-1].v.i);;
     break;}
 case 198:
-#line 578 "Parser.yxx"
+#line 570 "Parser.yxx"
 {yyxpt("a cell-array definition followed by a right brace",yyvsp[-1]);;
     break;}
 case 200:
-#line 582 "Parser.yxx"
+#line 574 "Parser.yxx"
 {yyval.v.p = yyvsp[-1].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 201:
-#line 586 "Parser.yxx"
+#line 578 "Parser.yxx"
 {yyval.v.p = new AST(OP_PARENS,yyvsp[-1].v.p,yyvsp[-2].v.i); ;
     break;}
 case 202:
-#line 587 "Parser.yxx"
+#line 579 "Parser.yxx"
 {yyval.v.p = new AST(OP_PARENS,NULL,yyvsp[-1].v.i); ;
     break;}
 case 203:
-#line 588 "Parser.yxx"
+#line 580 "Parser.yxx"
 {yyxpt("matching right parenthesis",yyvsp[-2]);;
     break;}
 case 204:
-#line 589 "Parser.yxx"
+#line 581 "Parser.yxx"
 {yyval.v.p = new AST(OP_BRACES,yyvsp[-1].v.p,yyvsp[-2].v.i); ;
     break;}
 case 205:
-#line 590 "Parser.yxx"
+#line 582 "Parser.yxx"
 {yyxpt("matching right brace",yyvsp[-2]);;
     break;}
 case 206:
-#line 591 "Parser.yxx"
+#line 583 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOT,yyvsp[0].v.p,yyvsp[-1].v.i); ;
     break;}
 case 207:
-#line 592 "Parser.yxx"
+#line 584 "Parser.yxx"
 {yyval.v.p = new AST(OP_DOTDYN,yyvsp[-1].v.p,yyvsp[-3].v.i);;
     break;}
 case 209:
-#line 597 "Parser.yxx"
+#line 589 "Parser.yxx"
 {yyval.v.p = new AST(OP_ALL,NULL,yyvsp[0].v.i);;
     break;}
 case 210:
-#line 598 "Parser.yxx"
+#line 590 "Parser.yxx"
 {yyval.v.p = new AST(OP_KEYWORD,yyvsp[-2].v.p,yyvsp[0].v.p,yyvsp[-3].v.i);;
     break;}
 case 211:
-#line 599 "Parser.yxx"
+#line 591 "Parser.yxx"
 {yyxpt("expecting expression after '=' in keyword assignment",yyvsp[-1]);;
     break;}
 case 212:
-#line 600 "Parser.yxx"
+#line 592 "Parser.yxx"
 {yyval.v.p = new AST(OP_KEYWORD,yyvsp[0].v.p,yyvsp[-1].v.i);;
     break;}
 case 213:
-#line 601 "Parser.yxx"
+#line 593 "Parser.yxx"
 {yyxpt("expecting keyword identifier after '/' in keyword assignment",yyvsp[-1]);;
     break;}
 case 215:
-#line 606 "Parser.yxx"
+#line 598 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addPeer(yyvsp[0].v.p);;
     break;}
 case 216:
-#line 610 "Parser.yxx"
+#line 602 "Parser.yxx"
 {yyval.v.p = new AST(OP_BRACES,yyvsp[0].v.p,yyvsp[0].v.p->context());;
     break;}
 case 217:
-#line 611 "Parser.yxx"
+#line 603 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 218:
-#line 615 "Parser.yxx"
+#line 607 "Parser.yxx"
 {yyval.v.p = new AST(OP_BRACKETS,yyvsp[0].v.p,yyvsp[0].v.p->context());;
     break;}
 case 219:
-#line 616 "Parser.yxx"
+#line 608 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 case 224:
-#line 628 "Parser.yxx"
+#line 620 "Parser.yxx"
 {yyval.v.p = new AST(OP_SEMICOLON,yyvsp[0].v.p,yyvsp[0].v.p->context());;
     break;}
 case 225:
-#line 629 "Parser.yxx"
+#line 621 "Parser.yxx"
 {yyval.v.p = yyvsp[-2].v.p; yyval.v.p->addChild(yyvsp[0].v.p);;
     break;}
 }
@@ -2651,7 +2642,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 632 "Parser.yxx"
+#line 624 "Parser.yxx"
 
 
 namespace FreeMat {

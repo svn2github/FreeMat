@@ -13,6 +13,7 @@ find_package(BLAS)
 find_package(AMD)
 find_package(UMFPACK)
 find_package(ARPACK)
+find_package(Z)
 find_package(MATIO)
 
 IF(NOT WIN32)

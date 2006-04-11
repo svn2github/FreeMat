@@ -1,7 +1,7 @@
 set(FreeMat_MOCS application.h  SocketCB.hpp FuncMode.hpp  MainApp.hpp) 
 set(FreeMat_RCCS FreeMat.qrc)      
-set(FreeMat_SRCS MainApp.cpp SocketCB.cpp application.cpp main.cpp  FuncMode.cpp
-)
+set(FreeMat_SRCS MainApp.cpp SocketCB.cpp application.cpp main.cpp  
+		 FuncMode.cpp )
 
 IF(UNIX AND NOT CYGWIN AND NOT APPLE)
 set ( FreeMat_SRCS ${FreeMat_SRCS} Terminal.cpp DumbTerminal.cpp )
@@ -14,7 +14,7 @@ qt4_add_resources(FreeMat_RCC_SRCS ${FreeMat_RCCS})
 qt4_wrap_cpp(FreeMat_MOC_SRCS ${FreeMat_MOCS})
 
 # build sources, moc'd sources, and rcc'd sources
-add_executable(  FreeMat MACOSX_BUNDLE ${FreeMat_SRCS} ${FreeMat_MOC_SRCS} ${FreeMat_RCC_SRCS})
+add_executable(  FreeMat WIN32 MACOSX_BUNDLE ${FreeMat_SRCS} ${FreeMat_MOC_SRCS} ${FreeMat_RCC_SRCS})
 
 IF(WIN32)
 set(WINSOCK "-lws2_32")

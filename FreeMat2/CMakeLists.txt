@@ -18,7 +18,7 @@ string(REGEX REPLACE "-L" " " GLIBDIRS_PATHS ${GLIBDIRS})
 SEPARATE_ARGUMENTS(GLIBDIRS_PATHS)
 FIND_LIBRARY(FORTRAN_TO_C_LIBRARY
    NAMES gfortran g2c f2c 
-   PATHS /usr/lib /usr/local/lib /sw/lib /opt/lib ${GLIBDIRS_PATHS}
+   PATHS ${GLIBDIRS_PATHS} /usr/lib /usr/local/lib /sw/lib /opt/lib 
  )
 
 message(STATUS "Fortran link library is ${FORTRAN_TO_C_LIBRARY}")

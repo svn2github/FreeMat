@@ -178,9 +178,9 @@ void usage() {
   exit(1);
 }
 
-void FillMatrixRandom(double *a, int m, int n) {
+void FillMatrix(double *a, int m, int n) {
   for (int i=0;i<m*n;i++)
-    a[i] = drand48();
+    a[i] = (i/((float) m*n));
 }
 
 void TestDGEMM(int n, int reps, dgemmptr ptr) {
@@ -188,8 +188,8 @@ void TestDGEMM(int n, int reps, dgemmptr ptr) {
   a = new double[n*n];
   b = new double[n*n];
   c = new double[n*n];
-  FillMatrixRandom(a,n,n);
-  FillMatrixRandom(b,n,n);
+  FillMatrix(a,n,n);
+  FillMatrix(b,n,n);
   for (int i=0;i<reps;i++) {
     doubleMatrixMatrixMultiply(n,n,n,c,a,b,ptr);
   }

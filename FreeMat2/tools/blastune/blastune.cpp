@@ -201,10 +201,8 @@ int main(int argc, char *argv[]) {
   QLibrary blaslib(argv[1]);
   dgemmptr ptr = (dgemmptr) blaslib.resolve("dgemm_");
   if (!ptr) {
-    std::cerr << "Failed to resolve dgemm call\n";
-    return 1;
+    exit(-1);
   }
   TestDGEMM(500,10,ptr);
-  std::cout << "Success\n";
   return 0;
 }

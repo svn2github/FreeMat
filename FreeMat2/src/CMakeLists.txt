@@ -3,6 +3,11 @@ set(FreeMat_RCCS FreeMat.qrc)
 set(FreeMat_SRCS MainApp.cpp SocketCB.cpp application.cpp main.cpp  
 		 FuncMode.cpp )
 
+IF(WIN32)
+  set(FreeMat_SRCS ${FreeMat_SRCS} freemat.o)
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/freemat.o COMMAND windres ARGS -i ${CMAKE_CURRENT_SOURCE_DIR}/freemat.rc -o ${CMAKE_CURRENT_BINARY_DIR}/freemat.o --include-dir=${CMAKE_CURRENT_SOURCE_DIR})
+ENDIF(WIN32)
+
 IF(UNIX AND NOT CYGWIN AND NOT APPLE)
 set ( FreeMat_SRCS ${FreeMat_SRCS} Terminal.cpp DumbTerminal.cpp )
 set ( FreeMat_MOCS ${FreeMat_MOCS} DumbTerminal.hpp Terminal.hpp )

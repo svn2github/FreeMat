@@ -179,6 +179,7 @@ ConfigureBuildATLAS()
      RepackATLASDLL atlas3.6.0_WinNT_PIII PIII
      RepackATLASDLL atlas3.6.0_WinNT_PII PII
      cd $cdir
+     rm Root/lib/libblas.a
    fi
    if [ -f Root/lib/blas_P4.dll ]
    then
@@ -246,11 +247,13 @@ BuildMATIO()
   then
     cdir=`pwd`
     cd Build/matio/zlib
-    ./configure --prefix=$cdir/Root
+    CFLAGS='-O3 -DZ_PREFIX' \
+    ./configure --prefix=$cdir/Root 
     make
     make install
     cd ..
-    ./configure --with-zlib-prefix=$cdir/Root --prefix=$cdir/Root
+    CFLAGS='-O3 -DZ_PREFIX' \
+    ./configure --with-zlib=$cdir/Root --prefix=$cdir/Root 
     make
     make install
     cd $cdir

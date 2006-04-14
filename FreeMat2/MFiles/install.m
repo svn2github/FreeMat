@@ -65,18 +65,20 @@
 %\item Build and install Qt 4.1 or later - @|http://www.trolltech.com/download/opensource.html|
 %\item Install g77 or gfortran (use fink for Mac OS X, use @|gcc-g77| package for MinGW)
 %\item Download the source code @|FreeMat-<VERSION_NUMBER>-src.tar.gz|.
-%\item Unpack the source code: @|tar xvfz FreeMat-<VERSION_NUMBER>-src.tar.gz|
-%\item Configure the source (not required on Windows): @|./configure|  For help with
-%configuring the source, do @|./configure -help|.
+%\item Unpack the source code: @|tar xvfz FreeMat-<VERSION_NUMBER>-src.tar.gz|.
+%\item For Windows, you will need to install MSYS as well as MINGW to build the external dependencies.  You will also need to install @|curl| - download from @|http://curl.haxx.se/latest.cgi?curl=win32-nossl-sspi| and put the executable where msys can find it (e.g., /usr/local/bin).
+%\item Build the extern dependencies: @|cd extern && ./build_extern.sh| for Linux and MacOSX, or (from an MSYS prompt) @|cd extern && ./build_extern_mingw.sh| for Windows.
+%\item Check the output of the build script to make sure all external dependencies built OK.  
+%\item Install cmake (you will need cmake-cvs for Windows) from @|www.cmake.org|.
+%\item Create a build directory @|mkdir build && cd build|
+%\item Run CMake on the source. @|cmake ..|. Note that on Windows, you must run CMake and make from a Windows command prompt.  You cannot run cmake and make from within MSYS or things will not work properly.
+%\item If all goes well build the source: @|make|
 %\item Build the source: @|make|
 %\item Build the help files: @|make help|.  You will need a functional installation of
 %@|LaTeX| and @|dvipng| for the help files to build properly.
 %\item Test the result @|make check|
-%\item Build a package: @|make install|
+%\item Build a binary installation package: @|make binpkg|
 %\item The result is a directory @|FreeMat-<VERSION_NUMBER>| that contains the newly built
 %installation.  Follow the directions listed above to install the new version.
 %\end{enumerate}
-%Note that currently a number of prerequisites exist. These prerequisites are currently
-%bundled with FreeMat in the @|extern| subdirectory.  Ideally, in the future, the packages
-%listed there would be contained in the major Linux distros.
 %!

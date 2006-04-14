@@ -341,9 +341,12 @@ void ConsoleWidget::WinBundle() {
   CopyFile(qtdir+"/plugins/imageformats/qjpeg1.dll",baseDir+"/Contents/Plugins/imageformats/qjpeg1.dll");
   CopyFile(qtdir+"/plugins/imageformats/qmng1.dll",baseDir+"/Contents/Plugins/imageformats/qmng1.dll");
   CopyFile(buildpath+"/src/FreeMat.exe",baseDir+"/Contents/bin/FreeMat.exe");
+  CopyFile(buildpath+"/tools/blastune/BlasTuneApp.exe",baseDir+"/Contents/bin/BlasTuneApp.exe");
+  CopyFile(buildpath+"/tools/blastune/BlasTune.exe",baseDir+"/Contents/bin/BlasTune.exe");
   CopyFile(qtdir+"/bin/QtCore4.dll",baseDir+"/Contents/bin/QtCore4.dll");
   CopyFile(qtdir+"/bin/QtGui4.dll",baseDir+"/Contents/bin/QtGui4.dll");
   CopyFile(qtdir+"/bin/QtOpenGL4.dll",baseDir+"/Contents/bin/QtOpenGL4.dll");
+  CopyFile(sourcepath+"/extern/Root/lib/blas.dll",baseDir+"/Contents/bin/blas.dll");
   //  CopyFile("../../extern/blas/atlas_prebuilt_win32/atlas_blas_P4SSE2.dll",
   //	   baseDir+"/Contents/bin/blas.dll");
   CopyFile("c:/MinGW/bin/mingwm10.dll",baseDir+"/Contents/bin/mingwm10.dll");

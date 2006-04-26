@@ -93,7 +93,6 @@ if test x"$found_z" == xyes; then
 fi
 AC_CHECK_LIB(matio,Mat_Open,found_matio="yes",found_matio="no")
 
->>>>>>> .r1904
 if test x"$found_avcall" != xyes; then
   need_extern="yes"
   extern_flags="$extern_flags --with-ffcall"

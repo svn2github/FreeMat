@@ -1,6 +1,0 @@
-add_subdirectory(libFreeMat)
-add_subdirectory(libXP)
-add_subdirectory(libCore)
-add_subdirectory(libFN)
-add_subdirectory(libGraphics)
-add_subdirectory(libMex)

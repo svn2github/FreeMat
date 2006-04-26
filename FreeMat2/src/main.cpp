@@ -25,7 +25,7 @@
 #include "MainApp.hpp"
 #include <qapplication.h>
 #include "Exception.hpp"
-#include "application.h"
+#include "application.hpp"
 #include "FuncMode.hpp"
 
 using namespace FreeMat;

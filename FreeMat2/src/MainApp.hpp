@@ -23,7 +23,7 @@
 #include <qobject.h>
 #include "KeyManager.hpp"
 #include "WalkTree.hpp"
-#include "application.h"
+#include "application.hpp"
 
 using namespace FreeMat;
 

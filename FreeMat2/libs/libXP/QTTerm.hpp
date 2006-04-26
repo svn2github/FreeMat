@@ -91,7 +91,7 @@ public:
   void adjustScrollbarPosition();
 
   char *getSelectionText();
-  char* QTTerm::getTextSurface(int &count, int &width);
+  char *getTextSurface(int &count, int &width);
 
   // The QT interface goes here
   void setFont(QFont font);

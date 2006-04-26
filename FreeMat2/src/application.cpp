@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include "application.h"
+#include "application.hpp"
 #include <qapplication.h>
 #include <qmenubar.h>
 #include <qmessagebox.h>

@@ -1,0 +1,283 @@
+#! /bin/sh
+
+FetchFile()
+{
+    echo "Looking for $2..."
+    if [ ! -f Packages/$2 ] 
+	then
+	echo "Fetching $2 from $1..."
+	curl $1/$2 -o Packages/$2 --disable-epsv
+    fi
+    if [ ! -f Packages/$2 ] 
+	then
+	echo "ERROR: Unable to retrieve $2 from $1... please download manually into the Packages directory and rerun the build script"
+	exit 1
+    fi
+}
+
+UnpackTarball()
+{
+    if [ ! -d Build/$2 ]
+	then
+	echo "Unpacking $1..."
+	cd Build
+	tar xfz ../Packages/$1
+	cd ..
+    fi
+}
+
+UnpackZip()
+{
+    if [ ! -d Build/$2 ]
+	then
+	echo "Unpacking $1..."
+	cd Build
+	unzip -q ../Packages/$1
+	cd ..
+    fi
+}
+
+ConfigureBuildAutoConf()
+{
+    echo "Configuring and building $1..."
+    cdir=`pwd`
+    cd Build/$1
+    mkdir -p $4
+    cd $4
+    ../configure --prefix=$cdir/Root $5
+    make
+    make install
+    cd $cdir
+}
+
+ConfigureBuildAMD() 
+{
+    echo "Configuring and building $1..."
+    cdir=`pwd`
+    cd Build/$1/Source
+    make CC=gcc
+    cp ../Lib/libamd.a $cdir/Root/lib/.
+    cp ../Include/amd.h $cdir/Root/include/.
+    cd $cdir
+}
+
+ConfigureBuildUMFPACK() 
+{
+    echo "Configuring and building $1..."
+    cdir=`pwd`
+    cd Build/$1/Source
+    make CC=gcc
+    cp ../Lib/libumfpack.a $cdir/Root/lib/.
+    cp ../Include/*.h $cdir/Root/include/.
+    cd $cdir
+}
+
+ConfigureBuildLAPACK()
+{
+    echo "Configuring and building $1..."
+    cdir=`pwd`
+    cp @abs_top_srcdir@/extern/patches/LAPACK/Makefile_freemat @abs_top_builddir@/extern/Build/$1/SRC/.
+    cd Build/$1/SRC
+    make -f Makefile_freemat FC=@F77@
+    cd $cdir
+    cp Build/LAPACK/liblapack.a $cdir/Root/lib/.
+}
+
+ConfigureBuildBLAS()
+{
+    echo "Configure and building $1..."
+    cdir=`pwd`
+    cp @abs_top_srcdir@/extern/patches/BLAS/Makefile_freemat @abs_top_builddir@/extern/Build/LAPACK/BLAS/SRC/.
+    cd Build/LAPACK/BLAS/SRC
+    make -f Makefile_freemat FC=@F77@
+    cd $cdir
+    cp Build/LAPACK/BLAS/libblas.a $cdir/Root/lib/.
+}
+
+ConfigureBuildARPACK()
+{
+    echo "Configuring and building $1..."
+    cdir=`pwd`
+    cp @abs_top_srcdir@/extern/patches/ARPACK/Makefile_freemat @abs_top_builddir@/extern/Build/$1/.
+    cp @abs_top_srcdir@/extern/patches/ARPACK/stat.h @abs_top_builddir@/extern/Build/$1/SRC/.
+    cd Build/$1
+    make -f Makefile_freemat FC=@F77@
+    cd $cdir
+    cp Build/ARPACK/libarpack.a $cdir/Root/lib/.
+}
+
+SetupDirs()
+{
+    cd extern
+    echo "Setting up for builds..."
+    mkdir -p Packages
+    mkdir -p Build
+    mkdir -p Root
+    mkdir -p Root/include
+    mkdir -p Root/lib
+    mkdir -p State
+}
+
+BuildFFCallMINGW()
+{
+    echo "Configure and building $1..."
+    cdir=`pwd`
+    cd Build/$1
+    make -f Makefile.mingw32
+    cp avcall/avcall.h $cdir/Root/include/.
+    cp avcall/libavcall.a $cdir/Root/lib/.
+    cd $cdir
+}
+
+BuildMATIO()
+{
+    echo "Configure and building libmatio..."
+    cdir=`pwd`
+    cd Build/matio/zlib
+    ./configure --prefix=$cdir/Root
+    make
+    make install
+    cd ..
+    ./configure --with-zlib-prefix=$cdir/Root --prefix=$cdir/Root
+    make
+    make install
+    cd $cdir
+}
+
+
+Usage()
+{
+    echo \
+"FreeMat External Dependencies Build Script
+
+This script will attempt to build the missing dependencies as identified
+by the configure script.  It requires some tools (like curl) to be present
+to work correctly.  Currently, the supported arguments are:
+
+      --with-ffcall    Build the Foreign Function Call library
+      --with-fftw      Build the FFTW library 
+      --with-umfpack   Build the UMFPACK library (also implies --with-amd)
+      --with-lapack    Build the LAPACK library
+      --with-blas      Build the BLAS library
+      --with-arpack    Build the ARPACK library for sparse eigenvalue problems
+      --with-matio     Build the MAT IO library
+      --mingw          Assume a MINGW/MSYS/Win32 environment"
+      exit
+}
+
+# Parse the input arguments
+build_ffcall="no"
+build_fftw="no"
+build_umfpack="no"
+build_lapack="no"
+build_blas="no"
+build_arpack="no"
+build_matio="no"
+is_ming="no"
+
+for arg
+  do
+  case $arg in 
+      --with-ffcall)   build_ffcall="yes" ;;
+      --with-fftw)     build_fftw="yes" ;;
+      --with-umfpack)  build_umfpack="yes" ;;
+      --with-lapack)   build_lapack="yes" ;;
+      --with-blas)     build_blas="yes" ;;
+      --with-arpack)   build_arpack="yes" ;;
+      --with-matio)    build_matio="yes" ;;
+      --mingw)         is_ming="yes" ;;
+      *)               Usage;
+  esac
+done
+
+# Setup the build directories
+SetupDirs
+
+if test x"$build_ffcall" == xyes; then
+    if [ ! -f Root/lib/libavcall.a ]
+	then
+	FetchFile ftp://ftp.santafe.edu/pub/gnu ffcall-1.10.tar.gz
+	UnpackTarball ffcall-1.10.tar.gz ffcall-1.10
+	if test x"$is_ming" == xyes; then
+	    BuildFFCallMINGW ffcall-1.10
+	else
+	    ConfigureBuildAutoConf ffcall-1.10 ffcall libavcall.a build
+	fi
+    else
+	echo "Skipped build of ffcall (it appears to have succeeded already)"
+    fi
+fi
+
+if test x"$build_fftw" == xyes; then
+    if [ ! -f Root/lib/libfftw3.a ]
+	then
+	FetchFile http://www.fftw.org fftw-3.1.1.tar.gz
+	UnpackTarball fftw-3.1.1.tar.gz fftw-3.1.1
+	ConfigureBuildAutoConf fftw-3.1.1 fftw libfftw3.a build_double
+	ConfigureBuildAutoConf fftw-3.1.1 fftw libfftw3f.a build_single --enable-single
+    else
+	echo "Skipped build of fftw (it appears to have succeeded already)"
+    fi
+fi
+
+if test x"$build_umfpack" == xyes; then
+    if [ ! -f Root/lib/libumfpack.a ]
+	then
+	FetchFile http://www.cise.ufl.edu/research/sparse/umfpack/current UMFPACK.tar.gz
+	FetchFile http://www.cise.ufl.edu/research/sparse/UFconfig/current UFconfig.tar.gz
+	FetchFile http://www.cise.ufl.edu/research/sparse/amd/current AMD.tar.gz
+	UnpackTarball UFconfig.tar.gz UFconfig
+	UnpackTarball AMD.tar.gz AMD
+	UnpackTarball UMFPACK.tar.gz UMFPACK
+	ConfigureBuildAMD AMD 
+	ConfigureBuildUMFPACK UMFPACK 
+    else
+	echo "Skipped build of umfpack (it appears to have succeeded already)"
+    fi
+fi
+
+if test x"$build_lapack" == xyes; then
+    if [ ! -f Root/lib/liblapack.a ]
+	then
+	FetchFile http://www.netlib.org/lapack lapack.tgz
+	UnpackTarball lapack.tgz LAPACK
+	ConfigureBuildLAPACK LAPACK
+    else
+	echo "Skipped build of lapack (it appears to have succeeded already)"
+    fi
+fi
+
+if test x"$build_blas" == xyes; then
+    if [ ! -f Root/lib/libblas.a ]
+	then
+	FetchFile http://www.netlib.org/lapack lapack.tgz
+	UnpackTarball lapack.tgz LAPACK
+	ConfigureBuildBLAS BLAS
+    else
+	echo "Skipped build of blas (it appears to have succeeded already)"
+    fi
+fi
+
+if test x"$build_arpack" == xyes; then
+    if [ ! -f Root/lib/libarpack.a ]
+	then
+	FetchFile http://www.caam.rice.edu/software/ARPACK/SRC arpack96.tar.gz
+	UnpackTarball arpack96.tar.gz ARPACK
+	ConfigureBuildARPACK ARPACK
+    else
+	echo "Skipped build of arpack (it appears to have succeeded already)"
+    fi
+fi
+
+if test x"$build_matio" == xyes; then
+    if [ ! -f Root/lib/libmatio.a ]
+	then
+	FetchFile http://www.mathworks.com/matlabcentral/files/8187 matio.zip
+	UnpackZip matio.zip matio
+	BuildMATIO
+    else
+	echo "Skipped build of matio (it appears to have succeeded already)"
+    fi
+fi
+
+

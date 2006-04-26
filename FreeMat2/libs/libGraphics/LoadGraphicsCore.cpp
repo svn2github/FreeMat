@@ -17,7 +17,6 @@
  *
  */
 
-#include "GraphicsCore.hpp"
 #include "Context.hpp"
 #include "HandleAxis.hpp"
 

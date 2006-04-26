@@ -20,22 +20,7 @@ void Halt(QString emsg) {
 }
 
 QString GetVersionString() {
-  QFile tfile(sourcepath + "/libs/libFreeMat/WalkTree.cpp");
-  if (!tfile.open(QFile::ReadOnly))
-    Halt("Unable to open "+sourcepath+"/libs/libFreeMat/WalkTree.cpp for input\n");
-  QTextStream g(&tfile);
-  QRegExp versionMatch("\\s*//@");
-  while (!g.atEnd()) {
-    QString line(g.readLine(0));
-    if (line.indexOf(versionMatch) >= 0) {
-      QString line2(g.readLine(0));
-      QRegExp vString("\\s*\"FreeMat v(.*)\"");
-      if (vString.indexIn(line2) < 0)
-	Halt("Unable to determine version number from the source code\n");
-      return vString.cap(1);
-    }
-  }
-  Halt("Unable to determine version number from the source code\n");
+  return QString(VERSION);
 }
 
 void MakeDir(QString dir) {

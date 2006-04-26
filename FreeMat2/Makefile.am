@@ -1,3 +1,3 @@
-SUBDIRS = libs src images MFiles tools
+SUBDIRS = libs src images tools
 
 DESTDIR = src

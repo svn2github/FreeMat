@@ -6,7 +6,12 @@ libXP_a_MOC = KeyManager.moc.cpp \
 QTTerm.moc.cpp \
 Editor.moc.cpp \
 PathTool.moc.cpp \
-highlighter.moc.cpp
+highlighter.moc.cpp \
+VariablesTool.moc.cpp \
+FileTool.moc.cpp \
+HistoryWidget.moc.cpp \
+ToolDock.moc.cpp \
+VariablesTool.moc.cpp
 
 BUILT_SOURCES = $(libXP_a_MOC)
 
@@ -18,6 +23,9 @@ System.hpp \
 Editor.hpp \
 PathTool.hpp \
 highlighter.hpp \
+HistoryWidget.hpp \
+ToolDock.hpp \
+VariablesTool.hpp \
 Common.hpp
 
 libXP_a_SOURCES = DynLib.cpp \
@@ -28,7 +36,11 @@ System.cpp \
 Editor.cpp \
 PathTool.cpp \
 highlighter.cpp \
+FileTool.cpp \
 Common.cpp \
+ToolDock.cpp \
+VariablesTool.cpp \
+HistoryWidget.cpp \
 $(libXP_a_MOC) \
 $(libXP_a_HFILES)
 

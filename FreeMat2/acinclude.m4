@@ -365,6 +365,7 @@ AC_DEFUN([BNV_HAVE_QT],
           QT_UIC=
         fi
       QT_MOC="$bnv_qt_dir/bin/moc"
+      QT_RCC="$bnv_qt_dir/bin/rcc"
     else
       # Or maybe we are told where to look for the utilities
       if test x"$bnv_qt_bin_dir" != x; then
@@ -375,22 +376,22 @@ AC_DEFUN([BNV_HAVE_QT],
           QT_UIC=
         fi
         QT_MOC="$bnv_qt_bin_dir/moc"
+	QT_RCC="$bnv_qt_bin_dir/rcc"
       else
       # Last possibility is that they are in $PATH
         QT_UIC="`which uic`"
         QT_MOC="`which moc`"
+	QT_RCC="`which rcc`"
       fi
     fi
     # All variables are defined, report the result
-    if test x"$bnv_is_qt4" = xyes; then
-      QT_UIC="$QT_UIC"3
-    fi
     AC_MSG_RESULT([$have_qt:
     QT_CXXFLAGS=$QT_CXXFLAGS
     QT_DIR=$QT_DIR
     QT_LIBS=$QT_LIBS
     QT_UIC=$QT_UIC
-    QT_MOC=$QT_MOC])
+    QT_MOC=$QT_MOC
+    QT_RCC=$QT_RCC])
   else
     # Qt was not found
     QT_CXXFLAGS=
@@ -398,6 +399,7 @@ AC_DEFUN([BNV_HAVE_QT],
     QT_LIBS=
     QT_UIC=
     QT_MOC=
+    QT_RCC=
     AC_MSG_RESULT($have_qt)
   fi
   if test x"$bnv_is_qt4" = xyes; then
@@ -410,6 +412,7 @@ AC_DEFUN([BNV_HAVE_QT],
   AC_SUBST(QT_LIBS)
   AC_SUBST(QT_UIC)
   AC_SUBST(QT_MOC)
+  AC_SUBST(QT_RCC)
 
 
   #### Being paranoid:

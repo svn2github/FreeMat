@@ -108,6 +108,7 @@ ConfigureBuildARPACK()
 
 SetupDirs()
 {
+    mkdir -p extern
     cd extern
     echo "Setting up for builds..."
     mkdir -p Packages

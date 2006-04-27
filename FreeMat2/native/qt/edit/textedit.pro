@@ -2,6 +2,7 @@ TEMPLATE	= app
 TARGET		= textedit
 
 CONFIG		+= qt warn_on release
+QT           += opengl
 
 
 

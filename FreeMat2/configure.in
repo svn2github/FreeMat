@@ -41,11 +41,33 @@ if test x"$ismingw" = x"yes"; then
    QT_UIC=$QT_UIC
    QT_MOC=$QT_MOC])
 else
-    BNV_HAVE_QT
+    KSW_IS_OSX
+    if test x"$is_osx" = xyes; then
+       QT_CXXFLAGS="-F/usr/local/Trolltech/Qt-4.1.1/lib -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DQT_OPENGL_LIB -I/usr/local/Trolltech/Qt-4.1.1/lib/QtCore.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtCore -I/usr/local/Trolltech/Qt-4.1.1/lib/QtGui.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtGui -I/usr/local/Trolltech/Qt-4.1.1/lib/QtOpenGL.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtOpenGL -I/usr/local/Trolltech/Qt-4.1.1/include -I/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers -I/System/Library/Frameworks/AGL.framework/Headers"
+       QT_DIR="/usr/local/Trolltech/Qt-4.1.1"
+       QT_LIBS="-F/usr/local/Trolltech/Qt-4.1.1/lib -L/usr/local/Trolltech/Qt-4.1.1/lib -framework QtOpenGL -F/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -L/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -framework QtGui -framework Carbon -framework QuickTime -framework QtCore -lz -lm -framework ApplicationServices -framework OpenGL -framework AGL"
+       QT_UIC="/usr/local/Trolltech/Qt-4.1.1/bin/uic"
+       QT_MOC="/usr/local/Trolltech/Qt-4.1.1/bin/moc"
+       QT_RCC="/usr/local/Trolltech/Qt-4.1.1/bin/rcc"
+       bnv_is_qt4=yes
+   AC_MSG_RESULT([yes:
+   QT_CXXFLAGS=$QT_CXXFLAGS
+   QT_DIR=$QT_DIR
+   QT_LIBS=$QT_LIBS
+   QT_UIC=$QT_UIC
+   QT_MOC=$QT_MOC])
+    else
+       BNV_HAVE_QT
+    fi
 fi
 
 AC_PROG_F77
-AC_F77_LIBRARY_LDFLAGS
+if test x"$is_osx" = xyes; then
+  LDFLAGS="-L/sw/lib"
+  FLIBS="-lg2c"
+else
+  AC_F77_LIBRARY_LDFLAGS
+fi
 LIBS="$LIBS $FLIBS"
 
 if test x"${QT_LIBS}" = x; then
@@ -89,6 +111,11 @@ AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
 if test x"$found_fftw3" == xyes; then
   LIBS="-lfftw3 $LIBS"
 fi
+if test x"$is_osx" == xyes; then
+   LIBS="$LIBS -framework vecLib"
+   found_blas="yes"
+   found_lapack="yes"
+else
 ACX_BLAS(found_blas="yes",found_blas="no")
 if test x"$found_blas" == xyes; then
    LIBS="$BLAS_LIBS $LIBS"
@@ -97,7 +124,12 @@ ACX_LAPACK(found_lapack="yes",found_lapack="no")
 if test x"$found_blas" == xyes; then
    LIBS="$LAPACK_LIBS $LIBS"
 fi
+fi
 AC_F77_FUNC(znaupd)
+if test x"$znaupd" == x"unknown"; then
+  znaupd="znaupd_"
+fi
+
 AC_CHECK_LIB(arpack,$znaupd,found_arpack="yes",found_arpack="no")
 if test x"$found_arpack" == xyes; then
   LIBS="-larpack $LIBS"

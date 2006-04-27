@@ -704,3 +704,25 @@ dnl      fi
   fi dnl Done setting up for non-traditional Trolltech installation
 
 ])
+
+AC_DEFUN([KSW_IS_OSX],
+[
+  AC_REQUIRE([AC_PROG_CC])
+
+  AC_CACHE_CHECK([for OS X], ksw_cv_is_osx,
+  [
+    if test -e /System/Library/Frameworks/Carbon.framework; then
+       is_osx=yes
+    else
+       is_osx=no
+    fi
+
+   rm -f ksw_is_osx*
+
+    ksw_cv_is_osx="$is_osx"
+  ])
+  is_osx="$ksw_cv_is_osx"
+  if test x"$is_osx" = "xyes"; then
+    AC_DEFINE( IS_OSX )
+  fi
+])

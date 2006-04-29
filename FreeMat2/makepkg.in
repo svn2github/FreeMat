@@ -1,0 +1,89 @@
+#!/bin/sh
+# A tool to build a relocatable package file.  This is the distribution method
+# of choice, and FreeMat currently assumes it is inside a structured package.
+# The format for the package is:
+#   BaseDir
+#     |
+#     Contents
+#         |
+#         Resources
+#            |
+#            help
+#              |
+#              html
+#              text
+#              pdf
+#            |
+#            mfiles
+# On different platforms, additional subdirectories (e.g., bin on Linux/Win32, 
+# MacOS on OS X, Frameworks on MacOS X, lib on Linux, etc..) are present.
+
+MakeDir()
+{
+  echo "Making directory $1"
+  test -d $1 || mkdir -p $1
+}
+
+CopyFile()
+{
+  echo "Copying file $1 to $2"
+  cp $1 $2
+}
+
+CopyDirectory()
+{
+  echo "Copying directory $1 to $2"
+  test -d $2 && rm -rf $2
+  cp -R $1 $2
+}
+
+
+ImportLibs()
+{
+    libset=`ldd $1 | awk '{print $3}'`
+    for lib in $libset
+      do
+      isX11Lib=`expr match $lib ".*X11R6.*"`
+      if [[ $isX11ib ]]
+	  then
+	  echo "X11Lib $lib"
+      fi
+    done
+}
+
+MakeLinuxBundle()
+{
+    buildDir=$1
+    srcDir=$2
+    baseDir="$buildDir/FreeMat@VERSION@"
+    MakeDir "$baseDir"
+    MakeDir "$baseDir/Contents"
+    MakeDir "$baseDir/Contents/bin"
+    MakeDir "$baseDir/Contents/Resources"
+    MakeDir "$baseDir/Contents/Resources/help"
+    MakeDir "$baseDir/Contents/Resources/help/html"
+    MakeDir "$baseDir/Contents/Resources/help/text"
+    MakeDir "$baseDir/Contents/Resources/help/pdf"
+    MakeDir "$baseDir/Contents/Resources/mfiles"
+    CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/bin/FreeMatMain"
+    MakeDir "$baseDir/Contents/lib"
+    ImportLibs "$baseDir/Contents/bin/FreeMatMain" "$baseDir/Contents/lib"
+    echo    "Making run script"
+    cat > "$baseDir/Contents/bin/FreeMat" <<EOF
+#!/bin/bash
+mypath=`which $0`
+mypath=${mypath%/*}
+declare -x LD_LIBRARY_PATH=$mypath/../lib
+$mypath/FreeMatMain $*
+EOF
+    chmod +x "$baseDir/Contents/bin/FreeMat"
+    CopyDirectory "$buildDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$buildDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$buildDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
+    CopyFile "$buildDir/help/latex/main.pdf"
+    CopyFile "$QTDIR/plugins/imageformats/libqjpeg.so" "$baseDir/Contents/Plugins/imageformats/libqjpeg.so"
+    CopyFile "$QTDIR/plugins/imageformats/libqmng.so" "$baseDir/Contents/Plugins/imageformats/libqmng.so"
+}
+
+
+MakeLinuxBundle $1 $2

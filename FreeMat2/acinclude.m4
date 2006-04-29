@@ -311,7 +311,7 @@ AC_DEFUN([BNV_HAVE_QT],
         fi
       fi
       if test x"$bnv_is_qt4" = xyes; then
-         bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork -lQt3Support $QT_XLIBS "
+         bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork $QT_XLIBS "
       else
          bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib $QT_XLIBS"
       fi
@@ -349,7 +349,7 @@ AC_DEFUN([BNV_HAVE_QT],
   fi   # $have_qt reflects the system status
   if test x"$have_qt" = xyes; then
     if test x"$bnv_is_qt4" = xyes; then
-      QT_CXXFLAGS="-DQT3_SUPPORT -I$bnv_qt_include_dir -I$bnv_qt_include_dir/QtCore -I$bnv_qt_include_dir/QtGui -I$bnv_qt_include_dir/QtOpenGL -I$bnv_qt_include_dir/QtNetwork -I$bnv_qt_include_dir/Qt3Support "
+      QT_CXXFLAGS="-I$bnv_qt_include_dir -I$bnv_qt_include_dir/QtCore -I$bnv_qt_include_dir/QtGui -I$bnv_qt_include_dir/QtOpenGL -I$bnv_qt_include_dir/QtNetwork "
     else
       QT_CXXFLAGS="-I$bnv_qt_include_dir"
     fi
@@ -586,7 +586,7 @@ dnl      fi
       bnv_qt_lib="`ls $bnv_qt_lib_dir/libQtCore.* 2> /dev/null | sed -n 1p |
                    sed s@$bnv_qt_lib_dir/lib@@ | [sed s@[.].*@@]`"
     fi
-    bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork -lQt3Support $QT_XLIBS"
+    bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork $QT_XLIBS"
     bnv_found_traditional=yes
   fi
   if test $bnv_found_traditional = no; then
@@ -601,7 +601,7 @@ dnl      fi
                      sed s@$bnv_qt_lib_dir/lib@@ | [sed s@[.].*@@]`"
       fi
       if test x"$bnv_is_qt4" = xyes; then
-         bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork -lQt3Support $QT_XLIBS"
+         bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork $QT_XLIBS"
       else
          bnv_qt_LIBS="-L$bnv_qt_lib_dir -l$bnv_qt_lib $QT_XLIBS"
       fi
@@ -628,8 +628,8 @@ dnl      fi
       bnv_save_LIBS="$LIBS"
       bnv_save_CXXFLAGS="$CXXFLAGS"
       if test x"$bnv_is_qt4" = xyes; then
-        CXXFLAGS="-I$bnv_qt_include_dir -I$bnv_qt_include_dir/QtCore -I$bnv_qt_include_dir/QtGui -I$bnv_qt_include_dir/QtOpenGL -I$bnv_qt_include_dir/QtNetwork -I$bnv_qt_include_dir/Qt3Support "
-        LIBS="-l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork -lQt3Support $QT_XLIBS"
+        CXXFLAGS="-I$bnv_qt_include_dir -I$bnv_qt_include_dir/QtCore -I$bnv_qt_include_dir/QtGui -I$bnv_qt_include_dir/QtOpenGL -I$bnv_qt_include_dir/QtNetwork"
+        LIBS="-l$bnv_qt_lib -lQtGui -lQtOpenGL -lQtNetwork $QT_XLIBS"
       else
         CXXFLAGS="-I$bnv_qt_include_dir"
         LIBS="-l$bnv_qt_lib $QT_XLIBS"

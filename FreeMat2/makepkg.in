@@ -40,21 +40,24 @@ CopyDirectory()
 
 ImportLibs()
 {
-    libset=`ldd $1 | awk '{print $3}'`
+    libset=`LD_LIBRARY_PATH=$QTDIR/lib:$LD_LIBRARY_PATH  ldd $1 | awk '{print $3}'`
     for lib in $libset
       do
-      isX11Lib=`expr match $lib ".*X11R6.*"`
-      if [[ $isX11ib ]]
+      isXlib=`expr match $lib ".*libX\|.*libSM\|.*libICE\|.*libGL\|.*linux"`
+      if [ $isXlib == 0 ]
 	  then
-	  echo "X11Lib $lib"
+	  if [ -f $lib ]
+	      then
+	      CopyFile $lib $2
+	  fi
+      else
+	  echo "Ignored $lib"
       fi
     done
 }
 
 MakeLinuxBundle()
 {
-    buildDir=$1
-    srcDir=$2
     baseDir="$buildDir/FreeMat@VERSION@"
     MakeDir "$baseDir"
     MakeDir "$baseDir/Contents"
@@ -65,25 +68,66 @@ MakeLinuxBundle()
     MakeDir "$baseDir/Contents/Resources/help/text"
     MakeDir "$baseDir/Contents/Resources/help/pdf"
     MakeDir "$baseDir/Contents/Resources/mfiles"
+    MakeDir "$baseDir/Contents/Plugins/imageformats"
     CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/bin/FreeMatMain"
     MakeDir "$baseDir/Contents/lib"
     ImportLibs "$baseDir/Contents/bin/FreeMatMain" "$baseDir/Contents/lib"
     echo    "Making run script"
     cat > "$baseDir/Contents/bin/FreeMat" <<EOF
 #!/bin/bash
-mypath=`which $0`
-mypath=${mypath%/*}
-declare -x LD_LIBRARY_PATH=$mypath/../lib
-$mypath/FreeMatMain $*
+mypath=\`which \$0\`
+mypath=\${mypath%/*}
+declare -x LD_LIBRARY_PATH=\$mypath/../lib
+\$mypath/FreeMatMain \$*
 EOF
     chmod +x "$baseDir/Contents/bin/FreeMat"
     CopyDirectory "$buildDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$buildDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$buildDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
-    CopyFile "$buildDir/help/latex/main.pdf"
+    CopyFile "$buildDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf"
     CopyFile "$QTDIR/plugins/imageformats/libqjpeg.so" "$baseDir/Contents/Plugins/imageformats/libqjpeg.so"
     CopyFile "$QTDIR/plugins/imageformats/libqmng.so" "$baseDir/Contents/Plugins/imageformats/libqmng.so"
+    ImportLibs "$baseDir/Contents/Plugins/imageformats/libqjpeg.so" "$baseDir/Contents/lib"
+    ImportLibs "$baseDir/Contents/Plugins/imageformats/libqmng.so" "$baseDir/Contents/lib"
 }
 
+Relink()
+{
+    echo "Relinking $1 --> $2"
+    install_name_tool -change "$QTDIR/lib/$1.framework/Versions/4.0/$1" "@executable_path/../Frameworks/$1.framework/Versions/4.0/$1" "$2"
+}
 
-MakeLinuxBundle $1 $2
+InstallFramework()
+{
+    echo "Installing framework $1"
+    cp -R "$QTDIR/lib/$1.framework" "$baseDir/Contents/Frameworks/$1.framework"
+    install_name_tool -id "@executable_path../Frameworks/$1.framework/Versions/4.0/$1" "$baseDir/Contents/Frameworks/$1.framework/Versions/4.0/$1"
+    Relink $1 "$baseDir/Contents/MacOS/FreeMat"
+}
+
+MakeMacBundle()
+{
+    baseDir="$buildDir/FreeMat.app"
+    MakeDir "$baseDir/Contents/Frameworks"
+    InstallFramework "QtGui"
+    InstallFramework "QtCore"
+    InstallFramework "QtOpenGL"
+#    CrossLinkFramework "QtGui" "QtCore"
+#    CrossLinkFramework "QtOpenGL" "QtGui"
+#    CrossLinkFramework "QtOpenGL" "QtCore"
+    CopyDirectory "$buildDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$buildDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$buildDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
+    CopyDirectory "$QTDIR/plugins/imageformats" "$baseDir/Contents/Plugins/imageformats"
+#    RelinkPlugins
+}
+
+buildDir=$2
+srcDir=$3
+if test x"$1" == x"--linux"; then
+    MakeLinuxBundle 
+fi
+
+if test x"$1" == x"--mac"; then
+    MakeMacBundle 
+fi

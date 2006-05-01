@@ -42,26 +42,77 @@ if test x"$ismingw" = x"yes"; then
    QT_LIBS=$QT_LIBS
    QT_UIC=$QT_UIC
    QT_MOC=$QT_MOC])
-else
-    KSW_IS_OSX
-    if test x"$is_osx" = xyes; then
-       QT_CXXFLAGS="-F/usr/local/Trolltech/Qt-4.1.1/lib -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DQT_OPENGL_LIB -I/usr/local/Trolltech/Qt-4.1.1/lib/QtCore.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtCore -I/usr/local/Trolltech/Qt-4.1.1/lib/QtGui.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtGui -I/usr/local/Trolltech/Qt-4.1.1/lib/QtOpenGL.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtOpenGL -I/usr/local/Trolltech/Qt-4.1.1/include -I/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers -I/System/Library/Frameworks/AGL.framework/Headers"
-       QT_DIR="/usr/local/Trolltech/Qt-4.1.1"
-       QT_LIBS="-F/usr/local/Trolltech/Qt-4.1.1/lib -L/usr/local/Trolltech/Qt-4.1.1/lib -framework QtOpenGL -F/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -L/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -framework QtGui -framework Carbon -framework QuickTime -framework QtCore -lz -lm -framework ApplicationServices -framework OpenGL -framework AGL"
-       QT_UIC="/usr/local/Trolltech/Qt-4.1.1/bin/uic"
-       QT_MOC="/usr/local/Trolltech/Qt-4.1.1/bin/moc"
-       QT_RCC="/usr/local/Trolltech/Qt-4.1.1/bin/rcc"
-       bnv_is_qt4=yes
-   AC_MSG_RESULT([yes:
-   QT_CXXFLAGS=$QT_CXXFLAGS
-   QT_DIR=$QT_DIR
-   QT_LIBS=$QT_LIBS
-   QT_UIC=$QT_UIC
-   QT_MOC=$QT_MOC])
-    else
-       BNV_HAVE_QT
-    fi
 fi
+#else
+#
+#    KSW_IS_OSX
+#    if test x"$is_osx" = xyes; then
+#       QT_CXXFLAGS="-F/usr/local/Trolltech/Qt-4.1.1/lib -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DQT_OPENGL_LIB -I/usr/local/Trolltech/Qt-4.1.1/lib/QtCore.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtCore -I/usr/local/Trolltech/Qt-4.1.1/lib/QtGui.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtGui -I/usr/local/Trolltech/Qt-4.1.1/lib/QtOpenGL.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtOpenGL -I/usr/local/Trolltech/Qt-4.1.1/include -I/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers -I/System/Library/Frameworks/AGL.framework/Headers"
+#       QT_DIR="/usr/local/Trolltech/Qt-4.1.1"
+#       QT_LIBS="-F/usr/local/Trolltech/Qt-4.1.1/lib -L/usr/local/Trolltech/Qt-4.1.1/lib -framework QtOpenGL -F/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -L/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -framework QtGui -framework Carbon -framework QuickTime -framework QtCore -lz -lm -framework ApplicationServices -framework OpenGL -framework AGL"
+#       QT_UIC="/usr/local/Trolltech/Qt-4.1.1/bin/uic"
+#       QT_MOC="/usr/local/Trolltech/Qt-4.1.1/bin/moc"
+#       QT_RCC="/usr/local/Trolltech/Qt-4.1.1/bin/rcc"
+#       bnv_is_qt4=yes
+#   AC_MSG_RESULT([yes:
+#   QT_CXXFLAGS=$QT_CXXFLAGS
+#   QT_DIR=$QT_DIR
+#   QT_LIBS=$QT_LIBS
+#   QT_UIC=$QT_UIC
+#   QT_MOC=$QT_MOC])
+#    else
+#       BNV_HAVE_QT
+#    fi
+#     PKG_CHECK_MODULES(QT, QtGUI >= 4.1.0)
+#fi
+	
+dnl Check for AWT related Qt4
+PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
+if test "x$HAVE_QT4" = "xyes"; then
+   dnl Check needed because in some cases the QtGui includedir
+   dnl doesn't contain the subsystem dir.
+   QT_INCLUDE_DIR=$($PKG_CONFIG --variable=includedir QtGui)
+   EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
+   AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
+   AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
+   AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
+   QT_CFLAGS="$QT_CFLAGS -I$EXTRA_QT_INCLUDE_DIR",
+   AC_MSG_WARN([QWidget not found])))
+   AC_CHECK_PROG(MOC, [moc], [moc])
+fi
+
+if test "x$HAVE_QT4" = "xno"; then
+   AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
+   case "$host_os" in
+    darwin*)
+      AC_ARG_WITH([qt4dir],
+        [AS_HELP_STRING([--with-qt4dir=DIR],
+        [Qt4 installation directory used for OS-X.
+        For other systems use pkg-config.])],
+        [QT4DIR=$withval]
+        )
+      if test x"$QT4DIR" = x ; then
+        AC_MSG_ERROR([*** No path for Qt4 --with-qt4dir option given])
+      fi
+      AC_MSG_RESULT([QT4DIR... $QT4DIR])
+      AC_CHECK_PROG(MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
+      if test x"$MOC" = x; then
+        AC_MSG_ERROR([*** This is not the right Qt installation])
+      fi
+      QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
+      QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtGui.framework/Headers"
+      QT_LIBS="-Xlinker -F$QT4DIR/lib -Xlinker -framework -Xlinker QtCore"
+      QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtGui"
+      ;;
+    *)
+      AC_MSG_ERROR([*** Please check PKG_CONFIG_PATH or the version
+      of your installed Qt4 installation.])
+      ;;
+  esac
+fi
+AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
+AC_SUBST(QT_CFLAGS)
+AC_SUBST(QT_LIBS)
 
 AC_PROG_F77
 if test x"$is_osx" = xyes; then

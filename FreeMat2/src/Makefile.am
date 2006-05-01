@@ -4,34 +4,44 @@ INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcd
 
 EXTRA_DIST = appIcon.icns freemat.ico freemat.rc freematv2.ico
 
-FreeMat_HFILES = DumbTerminal.hpp \
+FreeMat_HFILES = \
 FuncMode.hpp \
 FuncTerminal.hpp \
 MainApp.hpp \
-SocketCB.hpp \
-Terminal.hpp 
+SocketCB.hpp 
+
+if USECLI
+FreeMat_HFILES += Terminal.hpp \
+ DumbTerminal.hpp
+endif
 
 FreeMat_MOC = application.moc.cpp \
-DumbTerminal.moc.cpp \
 FuncMode.moc.cpp \
 MainApp.moc.cpp \
-SocketCB.moc.cpp \
-Terminal.moc.cpp 
+SocketCB.moc.cpp 
+
+if USECLI
+FreeMat_MOC += Terminal.moc.cpp \
+DumbTerminal.moc.cpp 
+endif
 
 FreeMat_QRC = FreeMat.qrc.cpp
 
 BUILT_SOURCES = $(FreeMat_MOC) $(FreeMat_QRC)
 
 FreeMat_SOURCES = application.cpp \
-DumbTerminal.cpp \
 FuncMode.cpp \
 FuncTerminal.cpp \
 MainApp.cpp \
 main.cpp \
 SocketCB.cpp \
-Terminal.cpp \
 $(FreeMat_MOC) \
 $(FreeMat_QRC)
+
+if USECLI
+FreeMat_SOURCES += DumbTerminal.cpp \
+Terminal.cpp 
+endif
 
 FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libMex/libMex.a $(QGL_LIBS) $(QT_LIBS) $(FLIBS)
 FreeMat_LDFLAGS = $(QT_CXXFLAGS)

@@ -1,3 +1,9 @@
+- Add "help" target to build system and make it work
+- Check build on mac os X
+- Add regression tests to make check target
+- Add win32 package to makepkg tool
+- Fix "install" target on linux.
+
 
 - ls/dir system doesn't work right
 - Need to verify system function on Win32

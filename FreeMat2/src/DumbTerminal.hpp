@@ -19,8 +19,6 @@
 #ifndef __DumbTerminal_hpp__
 #define __DumbTerminal_hpp__
 
-#ifdef Q_WS_X11 
-
 #include <QObject>
 #include <string>
 
@@ -44,5 +42,4 @@ signals:
   void SetTextWidth(int);
 };
 
-#endif
 #endif

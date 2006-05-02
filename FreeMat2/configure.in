@@ -78,7 +78,8 @@ if test "x$HAVE_QT4" = "xyes"; then
    AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
    QT_CFLAGS="$QT_CFLAGS -I$EXTRA_QT_INCLUDE_DIR",
    AC_MSG_WARN([QWidget not found])))
-   AC_CHECK_PROG(MOC, [moc], [moc])
+   AC_CHECK_PROG(QT_MOC, [moc], [moc])
+   AC_CHECK_PROG(QT_RCC, [rcc], [rcc])
 fi
 
 if test "x$HAVE_QT4" = "xno"; then
@@ -116,6 +117,8 @@ CXXFLAGS="$CXXFLAGS $QT_CFLAGS"
 
 AC_SUBST(QT_CXXFLAGS)
 AC_SUBST(QT_LIBS)
+AC_SUBST(QT_MOC)
+AC_SUBST(QT_RCC)
 
 AC_PROG_F77
 

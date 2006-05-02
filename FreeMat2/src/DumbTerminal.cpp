@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef Q_WS_X11 
 #include "DumbTerminal.hpp"
 #include <qapplication.h>
 #include <qeventloop.h>
@@ -61,3 +62,4 @@ void DumbTerminal::DoRead() {
   while (read(STDIN_FILENO, &c, 1) == 1)
     emit OnChar(c);
 }
+#endif

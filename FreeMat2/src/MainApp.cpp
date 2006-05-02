@@ -33,7 +33,7 @@ using namespace FreeMat;
 #include "HandleCommands.hpp"
 #include "Core.hpp"
 
-#ifdef Q_WS_X11
+#ifdef Q_WS_X11 
 #include "FuncTerminal.hpp"
 #include "DumbTerminal.hpp"
 #include "Terminal.hpp"

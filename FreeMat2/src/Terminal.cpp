@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifdef Q_WS_X11 
 #include <qapplication.h>
 #include "Serialize.hpp"
 #include "Terminal.hpp"
@@ -274,3 +275,5 @@ void Terminal::DoRead() {
   while (read(STDIN_FILENO, &c, 1) == 1)
     ProcessChar(c);
 }
+
+#endif

@@ -105,6 +105,29 @@ InstallFramework()
     Relink $1 "$baseDir/Contents/MacOS/FreeMat"
 }
 
+CrossLinkFramework()
+{
+    echo "Cross Linking $2 -> $1"
+    Relink "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/4.0/$1"
+}
+
+RelinkPlugin() {
+    echo "Relinking plugin $1 to framework $2"
+    Relink $2 "$baseDir/Contents/Plugins/imageformats/$1"
+}
+
+RelinkPlugins() {
+    list=`ls $baseDir/Contents/Plugins/imageformats`
+    for plugin in $list
+    do
+	RelinkPlugin $plugin "QtGui"
+	RelinkPlugin $plugin "QtCore"
+	RelinkPlugin $plugin "QtOpenGL"
+    done
+}
+
+#basically works - need to prune debug libs, get app icon working, move bundle creation to this script.
+
 MakeMacBundle()
 {
     baseDir="$buildDir/FreeMat.app"
@@ -112,14 +135,15 @@ MakeMacBundle()
     InstallFramework "QtGui"
     InstallFramework "QtCore"
     InstallFramework "QtOpenGL"
-#    CrossLinkFramework "QtGui" "QtCore"
-#    CrossLinkFramework "QtOpenGL" "QtGui"
-#    CrossLinkFramework "QtOpenGL" "QtCore"
+    CrossLinkFramework "QtGui" "QtCore"
+    CrossLinkFramework "QtOpenGL" "QtGui"
+    CrossLinkFramework "QtOpenGL" "QtCore"
     CopyDirectory "$buildDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$buildDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$buildDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
-    CopyDirectory "$QTDIR/plugins/imageformats" "$baseDir/Contents/Plugins/imageformats"
-#    RelinkPlugins
+    MakeDir "$baseDir/Contents/Plugins/imageformats"
+    CopyDirectory "$QTDIR/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
+    RelinkPlugins
 }
 
 buildDir=$2

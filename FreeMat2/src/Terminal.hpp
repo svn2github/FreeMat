@@ -19,6 +19,7 @@
 #ifndef __Terminal_hpp__
 #define __Terminal_hpp__
 
+#ifdef Q_WS_X11 
 #include <QObject>
 #include <termios.h>
 #include <vector>
@@ -75,4 +76,5 @@ signals:
   void SetTextWidth(int);
 };
 
+#endif
 #endif

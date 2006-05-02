@@ -95,8 +95,8 @@ if test "x$HAVE_QT4" = "xno"; then
         AC_MSG_ERROR([*** No path for Qt4 --with-qt4dir option given])
       fi
       AC_MSG_RESULT([QT4DIR... $QT4DIR])
-      AC_CHECK_PROG(MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
-      if test x"$MOC" = x; then
+      AC_CHECK_PROG(QT_MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
+      if test x"$QT_MOC" = x; then
         AC_MSG_ERROR([*** This is not the right Qt installation])
       fi
       QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
@@ -115,23 +115,22 @@ AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 
 AC_PROG_F77
-if test x"$is_osx" = xyes; then
-  LDFLAGS="-L/sw/lib"
-  FLIBS="-lg2c"
-else
-  AC_F77_LIBRARY_LDFLAGS
-fi
+
+case "$host_os" in
+     darwin*)
+	LDFLAGS="-L/sw/lib"
+	FLIBS="-lg2c"
+        ;;
+     *)
+        AC_F77_LIBRARY_LDFLAGS
+        ;;
+esac
+
 LIBS="$LIBS $FLIBS"
 
 if test x"${QT_LIBS}" = x; then
    echo ""
    AC_MSG_ERROR([Qt4 is required.  If you have Qt installed see --help for more options])
-   echo ""
-fi
-
-if test x"$bnv_is_qt4" != xyes; then
-   echo ""
-   AC_MSG_ERROR([Qt was detected, but not version 4 or later.  If you have Qt 4 installed see --help for more options])
    echo ""
 fi
 

@@ -30,3 +30,7 @@ $(MAC_APP)/Contents/Info.plist:
 	@echo "</dict>" >> $(MAC_APP)/Contents/Info.plist
 	@echo "</plist>" >> $(MAC_APP)/Contents/Info.plist
 
+help: FORCE
+	@abs_top_builddir@/tools/helpgen/helpgen @abs_top_srcdir@ @abs_top_builddir@
+
+FORCE:

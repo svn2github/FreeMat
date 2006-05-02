@@ -8,4 +8,4 @@ libMex_a_SOURCES = MexInterface.cpp mxArray.cpp
 
 AUTOMAKE_OPTIONS = foreign
 
-AM_CPPFLAGS = $(QT_CXXFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) 

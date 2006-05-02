@@ -48,7 +48,7 @@ AUTOMAKE_OPTIONS 	= foreign
 
 CLEANFILES = $(libXP_a_MOC)
 
-AM_CPPFLAGS = $(QT_CXXFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) 
 
 %.moc.cpp: %.hpp
 	$(QT_MOC) -o $@ $<

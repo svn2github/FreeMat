@@ -1,1 +1,1 @@
-SUBDIRS = disttool helpgen
+SUBDIRS = helpgen

@@ -20,7 +20,7 @@ AUTOMAKE_OPTIONS 	= foreign
 
 CLEANFILES = $(FreeMat_MOC)
 
-AM_CPPFLAGS = $(QT_CXXFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) 
 
 %.moc.cpp: %.hpp
 	$(QT_MOC) -o $@ $<

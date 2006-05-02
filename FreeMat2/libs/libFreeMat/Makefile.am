@@ -73,4 +73,4 @@ $(libFreeMat_a_HFILES)
 
 AUTOMAKE_OPTIONS 	= foreign
 
-AM_CPPFLAGS = $(QT_CXXFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) 

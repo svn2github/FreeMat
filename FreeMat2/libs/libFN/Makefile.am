@@ -50,6 +50,6 @@ OptFun.cpp \
 $(libFN_a_HFILES)
 
 
-AM_CPPFLAGS = $(QT_CXXFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) 
 
 AUTOMAKE_OPTIONS 	= foreign

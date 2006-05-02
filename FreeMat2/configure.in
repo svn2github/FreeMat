@@ -102,8 +102,11 @@ if test "x$HAVE_QT4" = "xno"; then
       fi
       QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
       QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtGui.framework/Headers"
+      QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtOpenGL.framework/Headers"
       QT_LIBS="-Xlinker -F$QT4DIR/lib -Xlinker -framework -Xlinker QtCore"
       QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtGui"
+      QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtOpenGL"
+      QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker OpenGL"
       ;;
     *)
       AC_MSG_ERROR([*** Please check PKG_CONFIG_PATH or the version

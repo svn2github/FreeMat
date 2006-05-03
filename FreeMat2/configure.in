@@ -140,13 +140,13 @@ if test x"${QT_LIBS}" = x; then
    AC_MSG_ERROR([Qt4 is required.  If you have Qt installed see --help for more options])
    echo ""
 fi
-
-LIBS="$LIBS $FLIBS"
 cdir=`pwd`
 CFLAGS="$CFLAGS -I$cdir/extern/Root/include"
 CXXFLAGS="$CXXFLAGS -I$cdir/extern/Root/include"
 CPPFLAGS="$CPPFLAGS -I$cdir/extern/Root/include"
-LDFLAGS="$LDFLAGS -L$cdir/extern/Root/lib"
+FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g' | sed -e 's/-l\w*//g'`
+AC_MSG_NOTICE([Extra lib flags added $FOO])
+LDFLAGS="$LDFLAGS -L$cdir/extern/Root/lib $FOO"
 
 extern_flags=""
 need_extern="no"

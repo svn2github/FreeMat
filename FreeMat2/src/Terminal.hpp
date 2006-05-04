@@ -21,7 +21,9 @@
 
 #include <qglobal.h>
 #include <QObject>
+#ifdef Q_WS_X11
 #include <termios.h>
+#endif
 #include <vector>
 #include <list>
 #include <string>
@@ -31,7 +33,11 @@ typedef struct {
   int keycode;
 } mapping;
 
+#ifdef Q_WS_X11
 typedef struct termios Termios;
+#else
+typedef int Termios;
+#endif
 
 class Terminal : public QObject {
   Q_OBJECT

@@ -30,7 +30,12 @@ $(MAC_APP)/Contents/Info.plist:
 	@echo "</dict>" >> $(MAC_APP)/Contents/Info.plist
 	@echo "</plist>" >> $(MAC_APP)/Contents/Info.plist
 
-help: FORCE
+help-mingw: FORCE
+	declare -x PATH="$(PATH):@QT4DIR@/bin" && @abs_top_builddir@/tools/helpgen/helpgen @abs_top_srcdir@ @abs_top_builddir@
+
+help-unix: FORCE
 	@abs_top_builddir@/tools/helpgen/helpgen @abs_top_srcdir@ @abs_top_builddir@
+
+help: @help_target@
 
 FORCE:

@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef Q_WS_X11
 #include <term.h>
 #include <curses.h>
 #include <string>
@@ -33,6 +34,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <glob.h>
+#endif
 #include "File.hpp"
 
 #define KM_ESC       0x1b
@@ -43,6 +45,10 @@
 #define DELIM "/"
 #endif
 
+
+// Automake on OS X does not support conditionals in sources... so we
+// have the braindead solution of ifdef-ing out all the stuff that
+// will choke. Sigh.
 
 // Set up the terminal in raw mode, and initialize the control
 // strings.
@@ -62,6 +68,7 @@ Terminal::~Terminal() {
 }
 
 void Terminal::SetRawMode() {
+#ifdef Q_WS_X11
   tcgetattr(STDIN_FILENO, &oldattr);
   newattr = oldattr;
   newattr.c_lflag &= ~(ECHO | ICANON | IEXTEN);
@@ -75,33 +82,41 @@ void Terminal::SetRawMode() {
     if (errno != EINTR) 
       throw FreeMat::Exception(std::string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
   }
+#endif
 }
   
 void Terminal::RestoreOriginalMode() {
+#ifdef Q_WS_X11
   // Restore the original terminal setttings
   while (tcsetattr(STDIN_FILENO, TCSADRAIN, &oldattr)) {
     if (errno != EINTR)
       throw FreeMat::Exception(std::string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
   }
+#endif
 }
 
 void Terminal::RetrieveTerminalName() {
+#ifdef Q_WS_X11
   term = getenv("TERM");
   if (!term)
     throw FreeMat::Exception("Unable to retrieve terminal name!");
   if (setupterm((char*) term, STDIN_FILENO, NULL) == ERR)
     throw FreeMat::Exception(std::string("Unable to retrieve terminal info for ") + term);
+#endif
 }
 
 const char* Terminal::LookupControlString(const char *name) {
+#ifdef Q_WS_X11
   const char* value = tigetstr((char*)name);
   if (!value || value == (char*) -1)
     return NULL;
   else
     return strdup(value);
+#endif
 }
 
 void Terminal::SetupControlStrings() {
+#ifdef Q_WS_X11
   left = LookupControlString("cub1");
   right = LookupControlString("cuf1");
   up = LookupControlString("cuu1");
@@ -147,6 +162,7 @@ void Terminal::SetupControlStrings() {
   // The delete character...
   esc_seq_array[12].sequence = delstr;
   esc_seq_array[12].keycode = 0x108;
+#endif
 }
 
 // Translate the given character (which is a raw
@@ -196,6 +212,7 @@ void Terminal::ProcessChar(char c) {
 
 // The terminal has been resized - calculate the 
 void Terminal::ResizeEvent() {
+#ifdef Q_WS_X11
   int lines_used;       /* The number of lines currently in use */
   struct winsize size;  /* The new size information */
   int ncolumns;
@@ -209,45 +226,61 @@ void Terminal::ResizeEvent() {
     ncolumns = size.ws_col;
   };
   emit SetTextWidth(ncolumns);
+#endif
 }
 
 void Terminal::MoveDown() {
+#ifdef Q_WS_X11
   tputs(down,1,putchar);
   fflush(stdout);
+#endif
 }
 
 void Terminal::MoveUp() {
+#ifdef Q_WS_X11
   tputs(up,1,putchar);
   fflush(stdout);
+#endif
 }
 
 void Terminal::MoveRight() {
+#ifdef Q_WS_X11
   tputs(right,1,putchar);
   fflush(stdout);
+#endif
 }
 
 void Terminal::MoveLeft() {
+#ifdef Q_WS_X11
   tputs(left,1,putchar);
   fflush(stdout);
+#endif
 }
 
 void Terminal::ClearEOL() {
+#ifdef Q_WS_X11
   tputs(clear_eol,1,putchar);
   fflush(stdout);
+#endif
 }
 
 void Terminal::ClearEOD() {
+#ifdef Q_WS_X11
   tputs(clear_eod,nline,putchar);
   fflush(stdout);
+#endif
 }
 
 void Terminal::MoveBOL() {
+#ifdef Q_WS_X11
   //  tputs(home,1,putchar);
   putchar('\r');
   fflush(stdout);
+#endif
 }
 
 void Terminal::OutputRawString(std::string txt) {
+#ifdef Q_WS_X11
   int ndone = 0;   /* The number of characters written so far */
   /*
    * How long is the string to be written?
@@ -267,11 +300,14 @@ void Terminal::OutputRawString(std::string txt) {
       throw FreeMat::Exception("stop");
     }
   }
+#endif
 }
 
 void Terminal::DoRead() {
+#ifdef Q_WS_X11
   char c;
   while (read(STDIN_FILENO, &c, 1) == 1)
     ProcessChar(c);
+#endif
 }
 

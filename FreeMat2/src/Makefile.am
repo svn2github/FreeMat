@@ -2,7 +2,7 @@ bin_PROGRAMS = FreeMat
 
 INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libFN -I@top_srcdir@/src
 
-EXTRA_DIST = appIcon.icns freemat.ico freemat.rc freematv2.ico
+EXTRA_DIST = appIcon.icns freemat.ico freematv2.ico
 
 FreeMat_HFILES = \
 FuncMode.hpp \
@@ -31,6 +31,12 @@ Terminal.cpp \
 $(FreeMat_MOC) \
 $(FreeMat_QRC) 
 
+SUFFIXES = .rc
+
+if WIN32
+FreeMat_SOURCES += freemat.rc
+endif
+
 FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libMex/libMex.a $(QGL_LIBS) $(QT_LIBS) $(FLIBS)
 FreeMat_LDFLAGS = $(QT_CXXFLAGS)
 
@@ -46,5 +52,6 @@ AM_CPPFLAGS = $(QT_CFLAGS)
 %.qrc.cpp: %.qrc
 	$(QT_RCC) -o $@ $<
 
-
+%.o : %.rc
+	$(WINDRES) $< $@
 

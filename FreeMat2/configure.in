@@ -9,62 +9,6 @@ AC_PROG_CXX
 AM_PROG_LEX
 AC_PROG_YACC
 AC_PROG_RANLIB
-
-AC_MSG_CHECKING(system name)
-uname=`uname`
-uversion=`uname -r | sed -e '1,$s/[[^0-9]]//g'`
-if test "x$uname" = xIRIX64; then
-    uname="IRIX"
-fi
-AC_MSG_RESULT([$uname])
-
-AC_MSG_CHECKING(for msys)
-ismingw="no"
-case $uname in 
-     MINGW*)
-       ismingw="yes"
-       ;;
-esac
-AC_MSG_RESULT([$ismingw])
-
-if test x"$ismingw" = x"yes"; then
-   AC_MSG_CHECKING(for Qt4)
-   QT_CXXFLAGS="-I/c/Qt/4.1.0/include -I/c/Qt/4.1.0/include/QtCore -I/c/Qt/4.1.0/include/QtGui -I/c/Qt/4.1.0/include/QtNetwork -I/c/Qt/4.1.0/include/QtOpenGL"
-   QT_DIR="/c/Qt/4.1.0"
-   QT_LIBS="-L/c/Qt/4.1.0/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
-   LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-s -Wl,-subsystem,windows"
-   QT_MOC="/c/Qt/4.1.0/bin/moc"
-   QT_RCC="/c/Qt/4.1.0/bin/rcc"
-   bnv_is_qt4="yes"
-   AC_MSG_RESULT([yes:
-   QT_CXXFLAGS=$QT_CXXFLAGS
-   QT_DIR=$QT_DIR
-   QT_LIBS=$QT_LIBS
-   QT_UIC=$QT_UIC
-   QT_MOC=$QT_MOC])
-fi
-#else
-#
-#    KSW_IS_OSX
-#    if test x"$is_osx" = xyes; then
-#       QT_CXXFLAGS="-F/usr/local/Trolltech/Qt-4.1.1/lib -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DQT_OPENGL_LIB -I/usr/local/Trolltech/Qt-4.1.1/lib/QtCore.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtCore -I/usr/local/Trolltech/Qt-4.1.1/lib/QtGui.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtGui -I/usr/local/Trolltech/Qt-4.1.1/lib/QtOpenGL.framework/Versions/4.0/Headers -I/usr/local/Trolltech/Qt-4.1.1/include/QtOpenGL -I/usr/local/Trolltech/Qt-4.1.1/include -I/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers -I/System/Library/Frameworks/AGL.framework/Headers"
-#       QT_DIR="/usr/local/Trolltech/Qt-4.1.1"
-#       QT_LIBS="-F/usr/local/Trolltech/Qt-4.1.1/lib -L/usr/local/Trolltech/Qt-4.1.1/lib -framework QtOpenGL -F/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -L/Users/samitbasu/Dev/qt-mac-opensource-src-4.1.1/lib -framework QtGui -framework Carbon -framework QuickTime -framework QtCore -lz -lm -framework ApplicationServices -framework OpenGL -framework AGL"
-#       QT_UIC="/usr/local/Trolltech/Qt-4.1.1/bin/uic"
-#       QT_MOC="/usr/local/Trolltech/Qt-4.1.1/bin/moc"
-#       QT_RCC="/usr/local/Trolltech/Qt-4.1.1/bin/rcc"
-#       bnv_is_qt4=yes
-#   AC_MSG_RESULT([yes:
-#   QT_CXXFLAGS=$QT_CXXFLAGS
-#   QT_DIR=$QT_DIR
-#   QT_LIBS=$QT_LIBS
-#   QT_UIC=$QT_UIC
-#   QT_MOC=$QT_MOC])
-#    else
-#       BNV_HAVE_QT
-#    fi
-#     PKG_CHECK_MODULES(QT, QtGUI >= 4.1.0)
-#fi
 	
 dnl Check for AWT related Qt4
 PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
@@ -82,24 +26,46 @@ if test "x$HAVE_QT4" = "xyes"; then
    AC_CHECK_PROG(QT_RCC, [rcc], [rcc])
 fi
 
+AC_ARG_WITH([qt4dir],
+	     [AC_HELP_STRING([--with-qt4dir=DIR],
+	     [Qt4 installation directory used for OS-X or Win32.
+	      For other systems use pkg-config.])],
+	      [QT4DIR=$withval]
+	      )
+
+help_target="help-unix"
+is_win32="false"
+
 if test "x$HAVE_QT4" = "xno"; then
    AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
+   if test x"$QT4DIR" = x ; then
+      AC_MSG_ERROR([*** No path for Qt4 --with-qt4dir option given])
+   fi
+   AC_CHECK_PROG(QT_MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
+   if test x"$QT_MOC" = x; then
+      AC_MSG_ERROR([*** This is not the right Qt installation])
+   fi
+   AC_CHECK_PROG(QT_RCC, [rcc], [$QT4DIR/bin/rcc], [], $QT4DIR/bin)
+   if test x"$QT_RCC" = x; then
+      AC_MSG_ERROR([*** This is not the right Qt installation])
+   fi
    case "$host_os" in
+    mingw*)
+      QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
+      QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
+      AC_SUBST(QT4DIR)
+      help_target="help-mingw"
+      is_win32="true"
+      AC_CHECK_PROG(QT_RCC, [rcc], [$QT4DIR/bin/rcc], [], $QT4DIR/bin)
+      if test x"$QT_RCC" = x; then
+	 AC_MSG_ERROR([*** This is not the right Qt installation])
+      fi
+      AC_CHECK_PROG(WINDRES, [windres], [windres], [])
+      if test x"$WINDRES" = x; then
+	 AC_MSG_ERROR([*** Unable to find windres - please try reinstalling msys and mingw])
+      fi
+      ;;
     darwin*)
-      AC_ARG_WITH([qt4dir],
-        [AS_HELP_STRING([--with-qt4dir=DIR],
-        [Qt4 installation directory used for OS-X.
-        For other systems use pkg-config.])],
-        [QT4DIR=$withval]
-        )
-      if test x"$QT4DIR" = x ; then
-        AC_MSG_ERROR([*** No path for Qt4 --with-qt4dir option given])
-      fi
-      AC_MSG_RESULT([QT4DIR... $QT4DIR])
-      AC_CHECK_PROG(QT_MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
-      if test x"$QT_MOC" = x; then
-        AC_MSG_ERROR([*** This is not the right Qt installation])
-      fi
       QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
       QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtGui.framework/Headers"
       QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtOpenGL.framework/Headers"
@@ -116,6 +82,10 @@ if test "x$HAVE_QT4" = "xno"; then
 fi
 AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
 
+AC_MSG_NOTICE([Win32 flag is $is_win32])
+AM_CONDITIONAL(WIN32, test x"$is_win32" = x"true")
+
+AC_SUBST(help_target)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MOC)

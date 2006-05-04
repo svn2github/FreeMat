@@ -17,10 +17,11 @@
  *
  */
 #include <qglobal.h>
-#ifdef Q_WS_X11 
 #include "DumbTerminal.hpp"
 #include <qapplication.h>
 #include <qeventloop.h>
+#include <stdio.h>
+#include <unistd.h>
 
 DumbTerminal::DumbTerminal() {
 }
@@ -63,4 +64,3 @@ void DumbTerminal::DoRead() {
   while (read(STDIN_FILENO, &c, 1) == 1)
     emit OnChar(c);
 }
-#endif

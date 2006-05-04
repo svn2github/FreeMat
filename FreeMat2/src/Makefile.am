@@ -21,6 +21,10 @@ FreeMat_QRC = FreeMat.qrc.cpp
 
 BUILT_SOURCES = $(FreeMat_MOC) $(FreeMat_QRC)
 
+SUFFIXES = .rc
+.rc.o :
+	$(WINDRES) $< $@
+
 FreeMat_SOURCES = application.cpp \
 FuncMode.cpp \
 FuncTerminal.cpp \
@@ -30,8 +34,6 @@ DumbTerminal.cpp \
 Terminal.cpp \
 $(FreeMat_MOC) \
 $(FreeMat_QRC) 
-
-SUFFIXES = .rc
 
 if WIN32
 FreeMat_SOURCES += freemat.rc
@@ -52,6 +54,4 @@ AM_CPPFLAGS = $(QT_CFLAGS)
 %.qrc.cpp: %.qrc
 	$(QT_RCC) -o $@ $<
 
-%.o : %.rc
-	$(WINDRES) $< $@
 

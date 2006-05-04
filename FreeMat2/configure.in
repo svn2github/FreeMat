@@ -53,6 +53,7 @@ if test "x$HAVE_QT4" = "xno"; then
     mingw*)
       QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
       QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
+      LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-s -Wl,-subsystem,windows"
       AC_SUBST(QT4DIR)
       help_target="help-mingw"
       is_win32="true"

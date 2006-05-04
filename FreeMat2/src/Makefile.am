@@ -23,7 +23,7 @@ BUILT_SOURCES = $(FreeMat_MOC) $(FreeMat_QRC)
 
 SUFFIXES = .rc
 .rc.o :
-	$(WINDRES) $< $@
+	$(WINDRES) -I@top_srcdir@/src $< $@
 
 FreeMat_SOURCES = application.cpp \
 FuncMode.cpp \

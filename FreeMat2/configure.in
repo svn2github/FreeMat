@@ -36,6 +36,12 @@ AC_ARG_WITH([qt4dir],
 help_target="help-unix"
 is_win32="false"
 
+case "$host_os" in
+     mingw*)
+      is_win32="true"
+      ;;
+esac     
+
 if test "x$HAVE_QT4" = "xno"; then
    AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
    if test x"$QT4DIR" = x ; then
@@ -56,7 +62,6 @@ if test "x$HAVE_QT4" = "xno"; then
       LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-s -Wl,-subsystem,windows"
       AC_SUBST(QT4DIR)
       help_target="help-mingw"
-      is_win32="true"
       AC_CHECK_PROG(QT_RCC, [rcc], [$QT4DIR/bin/rcc], [], $QT4DIR/bin)
       if test x"$QT_RCC" = x; then
 	 AC_MSG_ERROR([*** This is not the right Qt installation])
@@ -104,7 +109,7 @@ case "$host_os" in
         ;;
 esac
 
-LIBS="$LIBS $FLIBS"
+dnl LIBS="$LIBS $FLIBS"
 
 if test x"${QT_LIBS}" = x; then
    echo ""
@@ -224,7 +229,7 @@ if test x"$found_matio" != xyes; then
    extern_flags="$extern_flags --with-matio"
 fi
 
-if test x"$ismingw" != xno; then
+if test x"$is_win32" != xfalse; then
    extern_flags="$extern_flags --mingw"
 fi
 
@@ -236,13 +241,13 @@ MP_WITH_CURSES
 LIBS="$LIBS $CURSES_LIB"
 
 if test x"$need_extern" != xno; then
-AC_OUTPUT([builddeps])
+AC_OUTPUT([tools/disttool/builddeps])
 
-chmod +x builddeps
+chmod +x tools/disttool/builddeps
 
 echo \
 "#!/bin/sh
-./builddeps $extern_flags" > build_extern
+tools/disttool/builddeps $extern_flags" > build_extern
 
 chmod +x build_extern
 
@@ -274,8 +279,8 @@ AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 
 		    libs/libGraphics/Makefile images/Makefile
 		    tools/Makefile tools/disttool/Makefile
-		    tools/helpgen/Makefile makepkg])
+		    tools/helpgen/Makefile tools/disttool/makepkg])
 
-chmod +x makepkg
+chmod +x tools/disttool/makepkg
 
 fi

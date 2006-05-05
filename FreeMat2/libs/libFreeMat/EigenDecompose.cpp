@@ -977,7 +977,8 @@ namespace FreeMat {
     //*          size for the WORK array is calculated and stored in WORK(1),
     //*          and no other work except argument checking is performed.
   
-    int LWORK;
+    int maxN = (N < 6) ? 6 : N;
+    int LWORK = maxN*maxN*2;
 
     //*  IWORK   (workspace) INTEGER array, dimension (2*N-2)
     //*          If SENSE = 'N' or 'E', not referenced.
@@ -995,12 +996,12 @@ namespace FreeMat {
     int INFO;
     double WORKSZE;
 
-    LWORK = -1;
-    dgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, WR, WI,
-	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, SCALE, &ABNRM,
-	     RCONDE, RCONDV, &WORKSZE, &LWORK, IWORK, &INFO );
-
-    LWORK = (int) WORKSZE;
+    //     LWORK = -1;
+    //     dgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, WR, WI,
+    // 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, SCALE, &ABNRM,
+    // 	     RCONDE, RCONDV, &WORKSZE, &LWORK, IWORK, &INFO );
+    
+    //     LWORK = (int) WORKSZE;
     double *WORK = (double*) Malloc(LWORK*sizeof(double));
 
     dgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, WR, WI,

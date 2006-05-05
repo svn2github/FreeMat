@@ -181,7 +181,7 @@ MakeWinBundle()
   find -type f -printf "  SetOutPath \"\$INSTDIR/%h\"\n  FILE \"%p\"\n" | sed -e 's@/@\\@g' > /tmp/blist
   find -type f -printf "  Delete \"\$INSTDIR/%p\"\n" | sed -e 's@/@\\@g' > /tmp/elist
   cd $cdir
-  sed -e '/<BUNDLE FILES>/r /tmp/blist' -e '/<DELLIST>/r /tmp/elist' -e 's/<VERSION_NUMBER>/@VERSION@/g' -e 's/<BUNDLE FILES>//g' -e 's/<DELLIST>//g' < $srcDir/tools/disttool/freemat_nsi.in > $baseDir/freemat.nsi
+  sed -e '/<BUNDLE FILES>/r /tmp/blist' -e '/<DELLIST>/r /tmp/elist' -e 's/<VERSION_NUMBER>/@VERSION@/g' -e 's/<BUNDLE FILES>//g' -e 's/<DELLIST>//g' < $srcDir/freemat_nsi.in > $baseDir/freemat.nsi
   cd $baseDir
   /c/Program\ Files/NSIS/makensis freemat.nsi
 }

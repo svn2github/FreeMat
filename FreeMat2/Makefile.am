@@ -4,6 +4,12 @@ DESTDIR = src
 
 MAC_APP = $(PACKAGE).app
 
+EXTRA_DIST = MFiles
+
+dist-hook:
+	rm -rf `find $(distdir)/MFiles -name .svn`
+	rm -rf `find $(distdir)/MFiles -name '*~'`
+
 $(MAC_APP): $(MAC_APP)/Contents/PkgInfo $(MAC_APP)/Contents/Info.plist
 	@cp $(DESTDIR)/$(PACKAGE) $(MAC_APP)/Contents/MacOS/$(PACKAGE)
 	@test -d $(MAC_APP)/Contents/Resources/ || mkdir -p $(MAC_APP)/Contents/Resources/

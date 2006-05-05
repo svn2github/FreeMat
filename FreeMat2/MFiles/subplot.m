@@ -97,7 +97,7 @@ function h = subplot(varargin)
     if (nargin >= 2), n = int32(varargin{2}(1)); end
     if (nargin >= 3), p = int32(varargin{3}); p = p(:); end
   end
-  row = n+1-int32(idiv(p-1,n)+1);
+  row = m+1-int32(idiv(p-1,n)+1);
   col = int32(mod(p-1,n)+1);
   width = 1.0/n;
   height = 1.0/m;

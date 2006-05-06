@@ -273,3 +273,112 @@ AC_DEFUN([PKG_CHECK_MODULES], [
      ifelse([$4], , AC_MSG_ERROR([Library requirements ($2) not met; consider adjusting the PKG_CONFIG_PATH environment variable if your libraries are in a nonstandard prefix so pkg-config can find them.]), [$4])
   fi
 ])
+
+AC_DEFUN([FREEMAT_CHECK_DEPENDS], [
+extern_flags=""
+need_extern="no"
+AC_CHECK_LIB(avcall,__structcpy,found_avcall="yes",found_avcall="no")
+if test x"$found_avcall" == xyes; then
+      LIBS="-lavcall $LIBS"
+fi    
+AC_CHECK_LIB(amd,amd_postorder,found_amd="yes",found_amd="no")
+if test x"$found_amd" == xyes; then
+  LIBS="-lamd $LIBS"
+fi
+AC_CHECK_LIB(umfpack,umfpack_zl_solve,found_umfpack="yes",found_umfpack="no")
+if test x"$found_umfpack" == xyes; then
+  LIBS="-lumfpack $LIBS"
+fi
+AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
+if test x"$found_fftw3f" == xyes; then
+  LIBS="-lfftw3f $LIBS"
+fi
+AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
+if test x"$found_fftw3" == xyes; then
+  LIBS="-lfftw3 $LIBS"
+fi
+if test x"$is_osx" == xyes; then
+   LIBS="$LIBS -framework vecLib"
+   found_blas="yes"
+   found_lapack="yes"
+else
+ACX_BLAS(found_blas="yes",found_blas="no")
+if test x"$found_blas" == xyes; then
+   LIBS="$BLAS_LIBS $LIBS"
+fi
+ACX_LAPACK(found_lapack="yes",found_lapack="no")
+if test x"$found_blas" == xyes; then
+   LIBS="$LAPACK_LIBS $LIBS"
+fi
+fi
+AC_F77_FUNC(znaupd)
+if test x"$znaupd" == x"unknown"; then
+  znaupd="znaupd_"
+fi
+
+AC_CHECK_LIB(arpack,$znaupd,found_arpack="yes",found_arpack="no",$FLIBS)
+if test x"$found_arpack" == xyes; then
+  LIBS="-larpack $LIBS"
+fi
+AC_CHECK_LIB(z,inflate,found_z="yes",found_z="no")
+if test x"$found_z" == xyes; then
+   LIBS="-lz $LIBS"
+fi
+AC_CHECK_LIB(matio,Mat_Open,found_matio="yes",found_matio="no")
+if test x"$found_matio" == xyes; then
+   LIBS="-lmatio $LIBS"
+fi
+
+if test x"$found_avcall" != xyes; then
+  need_extern="yes"
+  extern_flags="$extern_flags --with-ffcall"
+fi
+
+if test x"$found_amd" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-umfpack"
+fi
+
+if test x"$found_umfpack" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-umfpack"
+fi
+
+if test x"$found_fftw3f" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-fftw"
+fi
+
+if test x"$found_fftw3" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-fftw"
+fi
+
+if test x"$found_blas" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-blas"
+fi
+
+if test x"$found_lapack" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-lapack"
+fi
+
+if test x"$found_arpack" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-arpack"
+fi
+
+if test x"$found_z" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-matio"
+fi
+
+if test x"$found_matio" != xyes; then
+   need_extern="yes"
+   extern_flags="$extern_flags --with-matio"
+fi
+
+if test x"$is_win32" != xfalse; then
+   extern_flags="$extern_flags --mingw"
+fi

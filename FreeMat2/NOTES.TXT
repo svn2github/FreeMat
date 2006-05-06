@@ -2,13 +2,12 @@
 Current state:
 
 Platform/target     all      help      bundle      install      dist
-Linux              done     broken(*)   done       broken     untested
-Mac OS X           done     untested    done(+)    n/a       untested
-Win32              done     done        done        n/a       untested
+Linux              done     done        done       broken      broken(*)
+Mac OS X           done     untested    done(+)    n/a        untested
+Win32              done     done        done       n/a        untested
 
-* - the help build fails on FC4 because of a LAPACK problem with eig.
 + - works with help from automake.  Need to move packaging routine into makepkg - see comments in makepkg.in for this one
-
+* - dist doesn't pick up the generated files.
 
 - subplots of 1xn don't work
 - prod with complex args returns 0
@@ -19,13 +18,13 @@ Win32              done     done        done        n/a       untested
 - blas tuning
 - extern dependency packaging
 - for loop speed
-- Add "help" target to build system and make it work
 - Check build on mac os X
 - Add regression tests to make check target
-- Add win32 package to makepkg tool
 - Fix "install" target on linux.
 
 
+- Add win32 package to makepkg tool
+- Add "help" target to build system and make it work
 - ls/dir system doesn't work right
 - Need to verify system function on Win32
 - win32 build of matio

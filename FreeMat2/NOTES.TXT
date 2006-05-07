@@ -7,9 +7,7 @@ Mac OS X           done     untested    done(+)    n/a        untested
 Win32              done     done        done       n/a        untested
 
 + - works with help from automake.  Need to move packaging routine into makepkg - see comments in makepkg.in for this one
-* - dist doesn't pick up the generated files.
 
-- subplots of 1xn don't work
 - prod with complex args returns 0
 - images and subplots don't work?
 - does text help work?
@@ -23,6 +21,8 @@ Win32              done     done        done       n/a        untested
 - Fix "install" target on linux.
 
 
+- subplots of 1xn don't work
+- dist doesn't pick up the generated files.
 - Add win32 package to makepkg tool
 - Add "help" target to build system and make it work
 - ls/dir system doesn't work right

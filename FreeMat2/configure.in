@@ -35,6 +35,11 @@ AC_ARG_WITH([qt4dir],
 	      [QT4DIR=$withval]
 	      )
 
+AC_ARG_ENABLE([stdbuild],
+	      [AC_HELP_STRING([--enable-stdbuild],
+	      [Do not allow configure to download and build any missing
+	      dependencies.])],[AUTOBUILD="no"],[AUTOBUILD="yes"])
+
 help_target="help-unix"
 is_win32="false"
 
@@ -138,7 +143,93 @@ dnl     Try to run the external build script
 dnl     Recheck external dependencies
 dnl        Fail? --> abort
 
+ac_save_libs=$LIBS
+
 AC_LIB_FREEMAT_CHECK
+
+
+if test x"$need_extern" != xno; then
+echo \
+"**********************************************************************
+One or more of the following external dependencies was not
+found:
+  AVCALL                    ${found_avcall}
+  AMD                       ${found_amd}
+  UMFPACK                   ${found_umfpack}
+  FFTW3 (Single Precision)  ${found_fftw3f}
+  FFTW3 (Double Precision)  ${found_fftw3}
+  BLAS                      ${found_blas}
+  LAPACK                    ${found_lapack}
+  ARPACK                    ${found_arpack}
+  ZLIB                      ${found_z}
+  MATIO                     ${found_matio}
+**********************************************************************"
+
+if test x"$AUTOBUILD" != xyes; then
+   AC_MSG_ERROR([*** This is a fatal configuration problem.  However, the configure script supports the option --enable-autobuild, which will attempt to download the missing packages and build them.  Please rerun configure with --enable-autobuild.])
+fi
+
+echo \
+"The configure script build will attempt to build these missing
+dependencies.  The following steps are highly experimental. If
+the script fails, please check the installation instructions."
+
+AC_CHECK_PROG(CURL, [curl], [curl])
+AC_CHECK_PROG(TAR, [tar], [tar])
+AC_CHECK_PROG(GUNZIP, [gunzip], [gunzip])
+AC_CHECK_PROG(ZIP, [zip], [zip])
+
+AC_OUTPUT([tools/disttool/builddeps])
+chmod +x tools/disttool/builddeps
+
+tools/disttool/builddeps $extern_flags
+
+dnl clear the cache variables
+unset ac_cv_lib_amd_amd_postorder
+unset ac_cv_lib_arpack__znaupd
+unset ac_cv_lib_arpack_znaupd
+unset ac_cv_lib_arpack_znaupd_
+unset ac_cv_lib_atlas_ATL_xerbla
+unset ac_cv_lib_avcall___structcpy
+unset ac_cv_lib_blas_sgemm_
+unset ac_cv_lib_complib_sgimath_sgemm_
+unset ac_cv_lib_cxml_sgemm_
+unset ac_cv_lib_dxml_sgemm_
+unset ac_cv_lib_fftw3_fftw_malloc
+unset ac_cv_lib_fftw3f_fftwf_malloc
+unset ac_cv_lib_m_sgemm_
+unset ac_cv_lib_matio_Mat_Open
+unset ac_cv_lib_scs_sgemm_
+unset ac_cv_lib_umfpack_umfpack_zl_solve
+unset ac_cv_lib_z_inflate
+
+LIBS=$ac_save_libs
+
+AC_LIB_FREEMAT_CHECK
+
+if test x"$need_extern" != xno; then
+echo \
+"**********************************************************************
+One or more of the following external dependencies was not
+found and could not be built
+  AVCALL                    ${found_avcall}
+  AMD                       ${found_amd}
+  UMFPACK                   ${found_umfpack}
+  FFTW3 (Single Precision)  ${found_fftw3f}
+  FFTW3 (Double Precision)  ${found_fftw3}
+  BLAS                      ${found_blas}
+  LAPACK                    ${found_lapack}
+  ARPACK                    ${found_arpack}
+  ZLIB                      ${found_z}
+  MATIO                     ${found_matio}
+Please check the installation instructions for manual installation
+instructions."
+   AC_MSG_ERROR([*** Unable to build required external dependencies.  Consult the installation instructions in the manual for more information. ***])
+fi
+
+fi
+
+AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 
 MP_WITH_CURSES
 
@@ -146,15 +237,14 @@ LIBS="$LIBS $CURSES_LIB"
 
 echo \
 "**********************************************************************
-Generating makefiles...
+All external dependencies satisfied.  Generating makefiles.
 **********************************************************************"
 AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 
 		    libs/libGraphics/Makefile images/Makefile
 		    tools/Makefile tools/disttool/Makefile
-		    tools/helpgen/Makefile tools/disttool/makepkg
-		    extern/Makefile])
+		    tools/helpgen/Makefile tools/disttool/makepkg])
 
 chmod +x tools/disttool/makepkg
 

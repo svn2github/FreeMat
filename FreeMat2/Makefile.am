@@ -1,4 +1,4 @@
-SUBDIRS = extern libs src images tools
+SUBDIRS = libs src images tools
 
 DESTDIR = src
 

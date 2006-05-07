@@ -274,7 +274,7 @@ AC_DEFUN([PKG_CHECK_MODULES], [
   fi
 ])
 
-AC_DEFUN([FREEMAT_CHECK_DEPENDS], [
+AC_DEFUN([AC_LIB_FREEMAT_CHECK], [
 extern_flags=""
 need_extern="no"
 AC_CHECK_LIB(avcall,__structcpy,found_avcall="yes",found_avcall="no")
@@ -382,3 +382,4 @@ fi
 if test x"$is_win32" != xfalse; then
    extern_flags="$extern_flags --mingw"
 fi
+])

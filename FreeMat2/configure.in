@@ -14,8 +14,6 @@ dnl Check for AWT related Qt4
 PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
 foo=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g'`
 
-AC_MSG_NOTICE([Set foo ... $foo])
-
 if test "x$HAVE_QT4" = "xyes"; then
    dnl Check needed because in some cases the QtGui includedir
    dnl doesn't contain the subsystem dir.
@@ -140,54 +138,23 @@ dnl     Try to run the external build script
 dnl     Recheck external dependencies
 dnl        Fail? --> abort
 
-
-AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
+AC_LIB_FREEMAT_CHECK
 
 MP_WITH_CURSES
 
 LIBS="$LIBS $CURSES_LIB"
 
-if test x"$need_extern" != xno; then
-AC_OUTPUT([tools/disttool/builddeps])
-
-chmod +x tools/disttool/builddeps
-
-echo \
-"#!/bin/sh
-tools/disttool/builddeps $extern_flags" > build_extern
-
-chmod +x build_extern
-
 echo \
 "**********************************************************************
-One or more of the following external dependencies was not
-found:
-  AVCALL                    ${found_avcall}
-  AMD                       ${found_amd}
-  UMFPACK                   ${found_umfpack}
-  FFTW3 (Single Precision)  ${found_fftw3f}
-  FFTW3 (Double Precision)  ${found_fftw3}
-  BLAS                      ${found_blas}
-  LAPACK                    ${found_lapack}
-  ARPACK                    ${found_arpack}
-  ZLIB                      ${found_z}
-  MATIO                     ${found_matio}
-The script build_extern will attempt to build these missing
-dependencies.  If it succeeds, rerun configure.  If not, install
-the missing packages and try again.
-**********************************************************************"
-else
-echo \
-"**********************************************************************
-All external dependencies satisfied.  Generating makefiles.
+Generating makefiles...
 **********************************************************************"
 AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 
 		    libs/libGraphics/Makefile images/Makefile
 		    tools/Makefile tools/disttool/Makefile
-		    tools/helpgen/Makefile tools/disttool/makepkg])
+		    tools/helpgen/Makefile tools/disttool/makepkg
+		    extern/Makefile])
 
 chmod +x tools/disttool/makepkg
 
-fi

@@ -1,27 +1,12 @@
 #! /bin/sh
 
-FetchFile()
-{
-    echo "Looking for $2..."
-    if [ ! -f Packages/$2 ] 
-	then
-	echo "Fetching $2 from $1..."
-	curl $1/$2 -o Packages/$2 --disable-epsv
-    fi
-    if [ ! -f Packages/$2 ] 
-	then
-	echo "ERROR: Unable to retrieve $2 from $1... please download manually into the Packages directory and rerun the build script"
-	exit 1
-    fi
-}
-
 UnpackTarball()
 {
     if [ ! -d Build/$2 ]
 	then
 	echo "Unpacking $1..."
 	cd Build
-	tar xfz ../Packages/$1
+	tar xfz @abs_top_srcdir@/extern/Packages/$1
 	cd ..
     fi
 }
@@ -32,7 +17,7 @@ UnpackZip()
 	then
 	echo "Unpacking $1..."
 	cd Build
-	unzip -q ../Packages/$1
+	unzip -q @abs_top_srcdir@/extern/Packages/$1
 	cd ..
     fi
 }
@@ -197,7 +182,6 @@ SetupDirs
 if test x"$build_ffcall" == xyes; then
     if [ ! -f Root/lib/libavcall.a ]
 	then
-	FetchFile ftp://ftp.santafe.edu/pub/gnu ffcall-1.10.tar.gz
 	UnpackTarball ffcall-1.10.tar.gz ffcall-1.10
 	if test x"$is_ming" == xyes; then
 	    BuildFFCallMINGW ffcall-1.10
@@ -212,7 +196,6 @@ fi
 if test x"$build_fftw" == xyes; then
     if [ ! -f Root/lib/libfftw3.a ]
 	then
-	FetchFile http://www.fftw.org fftw-3.1.1.tar.gz
 	UnpackTarball fftw-3.1.1.tar.gz fftw-3.1.1
 	ConfigureBuildAutoConf fftw-3.1.1 fftw libfftw3.a build_double
 	ConfigureBuildAutoConf fftw-3.1.1 fftw libfftw3f.a build_single --enable-single
@@ -224,9 +207,6 @@ fi
 if test x"$build_umfpack" == xyes; then
     if [ ! -f Root/lib/libumfpack.a ]
 	then
-	FetchFile http://www.cise.ufl.edu/research/sparse/umfpack/current UMFPACK.tar.gz
-	FetchFile http://www.cise.ufl.edu/research/sparse/UFconfig/current UFconfig.tar.gz
-	FetchFile http://www.cise.ufl.edu/research/sparse/amd/current AMD.tar.gz
 	UnpackTarball UFconfig.tar.gz UFconfig
 	UnpackTarball AMD.tar.gz AMD
 	UnpackTarball UMFPACK.tar.gz UMFPACK
@@ -240,7 +220,6 @@ fi
 if test x"$build_lapack" == xyes; then
     if [ ! -f Root/lib/liblapack.a ]
 	then
-	FetchFile http://www.netlib.org/lapack lapack.tgz
 	UnpackTarball lapack.tgz LAPACK
 	ConfigureBuildLAPACK LAPACK
     else
@@ -251,7 +230,6 @@ fi
 if test x"$build_blas" == xyes; then
     if [ ! -f Root/lib/libblas.a ]
 	then
-	FetchFile http://www.netlib.org/lapack lapack.tgz
 	UnpackTarball lapack.tgz LAPACK
 	ConfigureBuildBLAS BLAS
     else
@@ -262,7 +240,6 @@ fi
 if test x"$build_arpack" == xyes; then
     if [ ! -f Root/lib/libarpack.a ]
 	then
-	FetchFile http://www.caam.rice.edu/software/ARPACK/SRC arpack96.tar.gz
 	UnpackTarball arpack96.tar.gz ARPACK
 	ConfigureBuildARPACK ARPACK
     else
@@ -273,7 +250,6 @@ fi
 if test x"$build_matio" == xyes; then
     if [ ! -f Root/lib/libmatio.a ]
 	then
-	FetchFile http://www.mathworks.com/matlabcentral/files/8187 matio.zip
 	UnpackZip matio.zip matio
 	BuildMATIO
     else

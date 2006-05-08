@@ -22,6 +22,7 @@ QTTerm.hpp \
 System.hpp \
 Editor.hpp \
 PathTool.hpp \
+FileTool.hpp \
 highlighter.hpp \
 HistoryWidget.hpp \
 ToolDock.hpp \

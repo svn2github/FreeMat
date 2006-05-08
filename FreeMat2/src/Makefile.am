@@ -9,7 +9,8 @@ FuncMode.hpp \
 FuncTerminal.hpp \
 MainApp.hpp \
 Terminal.hpp \
-DumbTerminal.hpp
+DumbTerminal.hpp \
+application.hpp
 
 FreeMat_MOC = application.moc.cpp \
 FuncMode.moc.cpp \
@@ -33,7 +34,8 @@ main.cpp \
 DumbTerminal.cpp \
 Terminal.cpp \
 $(FreeMat_MOC) \
-$(FreeMat_QRC) 
+$(FreeMat_QRC) \
+$(FreeMat_HFILES)
 
 if WIN32
 FreeMat_SOURCES += freemat.rc

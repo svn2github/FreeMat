@@ -37,7 +37,6 @@ using namespace FreeMat;
 #include "FuncTerminal.hpp"
 #include "DumbTerminal.hpp"
 #include "Terminal.hpp"
-#include "SocketCB.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <qsocketnotifier.h>

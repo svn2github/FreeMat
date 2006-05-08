@@ -20,7 +20,6 @@
 #define __HandleText_hpp__
 
 #include "HandleObject.hpp"
-#include "GLLabel.hpp"
 
 namespace FreeMat {
   class HandleText : public HandleObject {

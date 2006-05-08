@@ -26,6 +26,7 @@
 #include <qpainter.h>
 #include "QTRenderEngine.hpp"
 #include "HandleCommands.hpp"
+#include <qgl.h>
 
 // Property list & status
 //    activepositionproperty

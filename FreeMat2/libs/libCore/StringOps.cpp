@@ -23,28 +23,6 @@
 #include "Malloc.hpp"
 
 namespace FreeMat {
-  //!
-  //@Module STRCMP String Compare Function
-  //@@Section STRING
-  //@@Usage
-  //Compares two strings for equality.  The general
-  //syntax for its use is
-  //@[
-  //  p = strcmp(x,y)
-  //@]
-  //where @|x| and @|y| are two strings.  Returns @|true| if @|x|
-  //and @|y| are the same size, and are equal (as strings).  Otherwise,
-  //it returns @|false|.
-  //@@Example
-  //The following piece of code compares two strings:
-  //@<
-  //x1 = 'astring';
-  //x2 = 'bstring';
-  //x3 = 'astring';
-  //strcmp(x1,x2)
-  //strcmp(x1,x3)
-  //@>
-  //!
   ArrayVector StrCmpFunction(int nargout, const ArrayVector& arg) {
     Array retval, arg1, arg2;
     if (arg.size() != 2)

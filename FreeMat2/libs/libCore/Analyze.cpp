@@ -559,7 +559,7 @@ namespace FreeMat {
 	  t2 = accum_r*sp[2*(i*planesize*linesize + j + k*planesize)+1] + 
 	    accum_i*sp[2*(i*planesize*linesize + j + k*planesize)];
 	  accum_r = t1;
-	  accum_r = t2;
+	  accum_i = t2;
 	}
 	dp[2*(i*planesize + j)] = accum_r;
 	dp[2*(i*planesize + j)+1] = accum_i;

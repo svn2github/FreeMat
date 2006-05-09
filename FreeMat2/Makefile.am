@@ -30,21 +30,21 @@ help_set = `cd $(top_builddir)/help/html && find . -type f -print`
 text_set = `cd $(top_builddir)/help/text && find . -type f -print`
 
 install-data-local: 
-	mkdir -p $(prefix)/share/FreeMat-$(VERSION)/MFiles
+	$(mkinstalldirs) $(prefix)/share/FreeMat-$(VERSION)/MFiles
 	for dirname in $(mfiledir_set); do \
 	  $(mkinstalldirs) $(prefix)/share/FreeMat-$(VERSION)/MFiles/$$dirname;\
 	done;
 	for scriptname in $(mfile_set); do \
 	  $(INSTALL) $(srcdir)/MFiles/$$scriptname $(prefix)/share/FreeMat-$(VERSION)/MFiles/$$scriptname;\
 	done;
-	mkdir -p $(prefix)/share/FreeMat-$(VERSION)/help
-	mkdir -p $(prefix)/share/FreeMat-$(VERSION)/help/pdf
+	$(mkinstalldirs) $(prefix)/share/FreeMat-$(VERSION)/help
+	$(mkinstalldirs) $(prefix)/share/FreeMat-$(VERSION)/help/pdf
 	$(INSTALL) $(top_builddir)/help/latex/main.pdf $(prefix)/share/FreeMat-$(VERSION)/help/pdf/FreeMat-Manual-$(VERSION).pdf
-	mkdir -p $(prefix)/share/FreeMat-$(VERSION)/help/html
+	$(mkinstalldirs) $(prefix)/share/FreeMat-$(VERSION)/help/html
 	for fname in $(help_set); do \
 	  $(INSTALL) $(top_builddir)/help/html/$$fname $(prefix)/share/FreeMat-$(VERSION)/help/html/$$fname;\
 	done;
-	mkdir -p $(prefix)/share/FreeMat-$(VERSION)/help/text
+	$(mkinstalldirs) $(prefix)/share/FreeMat-$(VERSION)/help/text
 	for fname in $(text_set); do \
 	  $(INSTALL) $(top_builddir)/help/text/$$fname $(prefix)/share/FreeMat-$(VERSION)/help/text/$$fname;\
 	done;

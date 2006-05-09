@@ -126,7 +126,10 @@ fi
 cdir=`pwd`
 CFLAGS="$CFLAGS -I$cdir/extern/Root/include"
 CXXFLAGS="$CXXFLAGS -I$cdir/extern/Root/include"
-CPPFLAGS="$CPPFLAGS -I$cdir/extern/Root/include"
+
+adl_COMPUTE_RELATIVE_PATHS([bindir:datadir:bin_to_data])
+
+CPPFLAGS="$CPPFLAGS -I$cdir/extern/Root/include -DBASEPATH=\\\"$bin_to_data/FreeMat-$VERSION\\\""
 FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g' | sed -e 's/-l\w*//g'`
 AC_MSG_NOTICE([Extra lib flags added $FOO])
 LDFLAGS="$LDFLAGS -L$cdir/extern/Root/lib $FOO"
@@ -233,7 +236,7 @@ AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 
 MP_WITH_CURSES
 
-LIBS="$LIBS $CURSES_LIB"
+LIBS="$LIBS $CURSES_LIB $FLIBS"
 
 echo \
 "**********************************************************************

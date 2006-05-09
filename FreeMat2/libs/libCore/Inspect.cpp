@@ -142,7 +142,7 @@ namespace FreeMat {
 #ifdef BUNDLE_MODE
     QDir dir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
 #else
-    QDir dir(BASEPATH+"/html");
+    QDir dir(QString(BASEPATH)+"/html");
 #endif
     HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
     m_helpwin->show();

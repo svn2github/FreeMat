@@ -1,1 +1,3 @@
-SUBDIRS = helpgen disttool
+SUBDIRS = helpgen 
+
+EXTRA_DIST = disttool/builddeps.in disttool/freemat_nsi.in disttool/makepkg.in

@@ -1,6 +1,0 @@
-#!/bin/sh
-echo 'Packing source tree'
-echo 'Building tar file...'
-tar cfz $1.tar.gz $1
-echo 'Building zip file...'
-zip -q -r $1.zip $1

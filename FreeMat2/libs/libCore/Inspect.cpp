@@ -139,7 +139,11 @@ namespace FreeMat {
   //!
   ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     Interface *io = eval->getInterface();
+#ifdef BUNDLE_MODE
     QDir dir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
+#else
+    QDir dir(BASEPATH+"/html");
+#endif
     HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
     m_helpwin->show();
     return ArrayVector();

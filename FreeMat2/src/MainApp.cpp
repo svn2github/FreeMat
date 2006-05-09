@@ -192,6 +192,7 @@ int MainApp::Run() {
     LoadHandleGraphicsFunctions(context);  
   }
   m_keys->setContext(context);
+#ifdef BUNDLE_MODE
   QDir dir(QApplication::applicationDirPath());
   dir.cdUp();
   dir.cd("Plugins");
@@ -208,6 +209,19 @@ int MainApp::Run() {
     QString path2(dir2.canonicalPath());
     basePath += GetRecursiveDirList(path2);
   }
+#else
+  QDir dir1(BASEPATH + "/MFiles");  
+  QStringList basePath;
+  if (dir1.exists()) {
+    QString path1(dir1.canonicalPath());
+    basePath += GetRecursiveDirList(path1);
+  }
+  QDir dir2(BASEPATH + "/help/text");
+  if (dir2.exists()) {
+    QString path2(dir2.canonicalPath());
+    basePath += GetRecursiveDirList(path2);
+  }
+#endiif
   m_keys->setBasePath(basePath);
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();

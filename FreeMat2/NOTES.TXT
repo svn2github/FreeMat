@@ -1,15 +1,16 @@
 
 Current state:
 
-Platform/target     all      help      bundle      install      dist
-Linux              done     done        done       broken      broken(*)
-Mac OS X           done     untested    done(+)    n/a        untested
-Win32              done     done        done       n/a        untested
+Platform/target     all      help      bundle      install      dist     check
+Linux              done     done        done       broken      broken(*) untest
+Mac OS X           done     untested    done(+)    n/a        untested   untest
+Win32              done     done        done       n/a        untested   untest
 
 + - works with help from automake.  Need to move packaging routine into makepkg - see comments in makepkg.in for this one
 
 - prod with complex args returns 0
 - images and subplots don't work?
+- Add bundle mode to code - where does this go?
 - does text help work?
 - Check on "@[" in text help
 - plot axis rounding

@@ -1,4 +1,4 @@
-noinst_PROGRAMS = helpgen
+check_PROGRAMS = helpgen
 
 EXTRA_DIST = section_descriptors.txt
 

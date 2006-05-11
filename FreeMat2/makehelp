@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Script to regenerate the contents of the help
+# directory, and then update the filelist for 
+# automake.  It takes three arguments:
+#   makehelp <path_to_helpgen> <src_dir> <mingwflag>
+echo "Removing current help directory"
+rm -rf help
+rm -rf tmp
+mkdir tmp
+cd tmp
+echo "Building help files"
+../$1 ..
+echo "Cleaning up"
+cd ..
+rm -rf tmp
+rm manifest.am
+echo "Writing manifest"
+htmlhelpfiles=`find help/html -type f -printf "%p "`
+texthelpfiles=`find help/text -type f -printf "%p "`
+helpmfiles=`find help/MFiles -type f -printf "%p "`
+coremfiles=`find MFiles -not -wholename '*.svn*' -printf "%p "`
+pkgfiles=`find extern -type f -and -not -wholename '*.svn*' -printf "%p "`
+echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > manifest.am 
+echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $mfiles " >> manifest.am

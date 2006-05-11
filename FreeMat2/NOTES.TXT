@@ -1,3 +1,9 @@
+1. Path fixups for bundle mode
+2. Check icon for various platforms
+3. Update build number in WalkTree.cpp
+4. Text help 
+5. Make check
+6. Error trapping in makerelease script
 
 Current state:
 

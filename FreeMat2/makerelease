@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# Improvements to this script:
+#   1. Update build number in WalkTree.cpp
+#   2. Reconfigure and remake for bundle installations?
 rm -rf build
 ./bootstrap
 mkdir build

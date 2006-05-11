@@ -1,0 +1,14 @@
+#!/bin/sh
+rm -rf build
+./bootstrap
+mkdir build
+cd build
+../configure
+make
+make check
+cd ..
+./makehelp build/tools/helpgen/helpgen .
+cd build
+make
+make distcheck
+tools/disttool/makepkg --linux . .. $QTDIR

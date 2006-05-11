@@ -1,4 +1,5 @@
 #!/bin/sh
 aclocal
+touch extras_manifest.am
 automake --add-missing --copy
 autoconf

@@ -19,7 +19,7 @@ echo "Writing manifest"
 htmlhelpfiles=`find help/html -type f -printf "%p "`
 texthelpfiles=`find help/text -type f -printf "%p "`
 helpmfiles=`find help/MFiles -type f -printf "%p "`
-coremfiles=`find MFiles -not -wholename '*.svn*' -printf "%p "`
+coremfiles=`find MFiles -type f -not -wholename '*.svn*' -printf "%p "`
 pkgfiles=`find extern -type f -and -not -wholename '*.svn*' -printf "%p "`
 echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > manifest.am 
 echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $mfiles " >> manifest.am

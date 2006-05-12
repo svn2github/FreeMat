@@ -127,6 +127,12 @@ namespace FreeMat {
     return ArrayVector();
   }
 
+  bool inBundleMode() {
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    return (dir.dirName() == "Contents");
+  }
+
   //!
   //@Module HELPWIN Online Help Window
   //@@Section FREEMAT
@@ -139,11 +145,12 @@ namespace FreeMat {
   //!
   ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
     Interface *io = eval->getInterface();
-#ifdef BUNDLE_MODE
-    QDir dir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
-#else
-    QDir dir(QString(BASEPATH)+"/html");
-#endif
+    QDir dir;
+    if (inBundleMode()) {
+      dir = QDir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
+    } else {
+      dir = QDir(QString(BASEPATH)+"/html");
+    }
     HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
     m_helpwin->show();
     return ArrayVector();

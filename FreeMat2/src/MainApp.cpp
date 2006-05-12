@@ -192,36 +192,35 @@ int MainApp::Run() {
     LoadHandleGraphicsFunctions(context);  
   }
   m_keys->setContext(context);
-#ifdef BUNDLE_MODE
-  QDir dir(QApplication::applicationDirPath());
-  dir.cdUp();
-  dir.cd("Plugins");
-  QString dummy(dir.absolutePath());
-  QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-  QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
   QStringList basePath;
-  if (dir1.exists()) {
-    QString path1(dir1.canonicalPath());
-    basePath += GetRecursiveDirList(path1);
+  if (inBundleMode()) {
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    dir.cd("Plugins");
+    QString dummy(dir.absolutePath());
+    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
+    if (dir1.exists()) {
+      QString path1(dir1.canonicalPath());
+      basePath += GetRecursiveDirList(path1);
+    }
+    QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
+    if (dir2.exists()) {
+      QString path2(dir2.canonicalPath());
+      basePath += GetRecursiveDirList(path2);
+    }
+  } else {
+    QDir dir1(QString(BASEPATH) + "/MFiles");  
+    if (dir1.exists()) {
+      QString path1(dir1.canonicalPath());
+      basePath += GetRecursiveDirList(path1);
+    }
+    QDir dir2(QString(BASEPATH) + "/help/text");
+    if (dir2.exists()) {
+      QString path2(dir2.canonicalPath());
+      basePath += GetRecursiveDirList(path2);
+    }
   }
-  QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
-  if (dir2.exists()) {
-    QString path2(dir2.canonicalPath());
-    basePath += GetRecursiveDirList(path2);
-  }
-#else
-  QDir dir1(QString(BASEPATH) + "/MFiles");  
-  QStringList basePath;
-  if (dir1.exists()) {
-    QString path1(dir1.canonicalPath());
-    basePath += GetRecursiveDirList(path1);
-  }
-  QDir dir2(QString(BASEPATH) + "/help/text");
-  if (dir2.exists()) {
-    QString path2(dir2.canonicalPath());
-    basePath += GetRecursiveDirList(path2);
-  }
-#endif
   m_keys->setBasePath(basePath);
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();

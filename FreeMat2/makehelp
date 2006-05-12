@@ -3,7 +3,7 @@
 # Script to regenerate the contents of the help
 # directory, and then update the filelist for 
 # automake.  It takes three arguments:
-#   makehelp <path_to_helpgen> <src_dir> <mingwflag>
+#   makehelp <path_to_helpgen>
 echo "Removing current help directory"
 rm -rf help
 rm -rf tmp
@@ -19,7 +19,9 @@ echo "Writing manifest"
 htmlhelpfiles=`find help/html -type f -printf "%p "`
 texthelpfiles=`find help/text -type f -printf "%p "`
 helpmfiles=`find help/MFiles -type f -printf "%p "`
-coremfiles=`find MFiles -type f -not -wholename '*.svn*' -printf "%p "`
-pkgfiles=`find extern -type f -and -not -wholename '*.svn*' -printf "%p "`
+coremfiles=`find MFiles -type f -printf "%p "`
+pkgfiles=`find extern -type f -printf "%p "`
+coremfiles=`echo $coremfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
+pkgfiles=`echo $pkgfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
 echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > manifest.am 
 echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $mfiles " >> manifest.am

@@ -1,18 +1,44 @@
 #!/bin/sh
 #
+# Usage: makerelease  <platform> <buildpath> <pathtoqt4> 
+# where <platform> is 
+#               --linux
+#               --mac
+#               --win
+#
 # Improvements to this script:
 #   1. Update build number in WalkTree.cpp
 #   2. Reconfigure and remake for bundle installations?
-rm -rf build
+mkdir -p $2
+echo "Running autotools..."
 ./bootstrap
-mkdir build
-cd build
-../configure
+cd $2
+echo "Configuring source..."
+if test x"$1" == x"--linux"; then
+    ../configure
+else
+    CPPFLAGS="-I/usr/local/include" \
+    LDFLAGS="-L/usr/local/lib" \
+    ../configure --with-qt4dir=$3
+fi
+echo "Building FreeMat..."
 make
+echo "Running checks..."
 make check
 cd ..
-./makehelp build/tools/helpgen/helpgen .
-cd build
+echo "Building help files..."
+if test x"$1" == x"--linux"; then
+    ./makehelp $2/tools/helpgen/helpgen .
+else
+    declare -x PATH="$PATH:$3/bin"
+    ./makehelp $2/tools/helpgen/helpgen .
+fi
+srcpath=`pwd`
+cd $2
+echo "Rerunning make to update install list..."
 make
-make distcheck
-tools/disttool/makepkg --linux . .. $QTDIR
+if test x"$1" == x"--linux"; then
+  make distcheck
+fi
+echo "Running packager..."
+tools/disttool/makepkg $1 . $srcpath $3

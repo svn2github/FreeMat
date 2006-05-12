@@ -202,7 +202,7 @@ fi
 # Generic LAPACK library?
 for lapack in lapack lapack_rs6k; do
         if test $acx_lapack_ok = no; then
-                save_LIBS="$LIBS"; LIBS="$BLAS_LIBS $LIBS"
+                save_LIBS="$LIBS"; LIBS="$LIBS $FLIBS"
                 AC_CHECK_LIB($lapack, $cheev,
                     [acx_lapack_ok=yes; LAPACK_LIBS="-l$lapack"], [], [$FLIBS])
                 LIBS="$save_LIBS"
@@ -277,6 +277,8 @@ AC_DEFUN([PKG_CHECK_MODULES], [
 AC_DEFUN([AC_LIB_FREEMAT_CHECK], [
 extern_flags=""
 need_extern="no"
+LIBS="$LIBS $FLIBS"
+
 AC_CHECK_LIB(avcall,__structcpy,found_avcall="yes",found_avcall="no")
 if test x"$found_avcall" == xyes; then
       LIBS="-lavcall $LIBS"
@@ -302,21 +304,21 @@ if test x"$is_osx" == xyes; then
    found_blas="yes"
    found_lapack="yes"
 else
-ACX_BLAS(found_blas="yes",found_blas="no")
-if test x"$found_blas" == xyes; then
-   LIBS="$BLAS_LIBS $LIBS"
-fi
-ACX_LAPACK(found_lapack="yes",found_lapack="no")
-if test x"$found_blas" == xyes; then
-   LIBS="$LAPACK_LIBS $LIBS"
-fi
+   ACX_BLAS(found_blas="yes",found_blas="no")
+   if test x"$found_blas" == xyes; then
+      LIBS="$BLAS_LIBS $LIBS"
+   fi
+   ACX_LAPACK(found_lapack="yes",found_lapack="no")
+   if test x"$found_lapack" == xyes; then
+      LIBS="$LAPACK_LIBS $LIBS"
+   fi
 fi
 AC_F77_FUNC(znaupd)
 if test x"$znaupd" == x"unknown"; then
   znaupd="znaupd_"
 fi
 
-AC_CHECK_LIB(arpack,$znaupd,found_arpack="yes",found_arpack="no",$FLIBS)
+AC_CHECK_LIB(arpack,$znaupd,found_arpack="yes",found_arpack="no",[$FLIBS])
 if test x"$found_arpack" == xyes; then
   LIBS="-larpack $LIBS"
 fi

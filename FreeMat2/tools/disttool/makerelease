@@ -28,10 +28,10 @@ make check
 cd ..
 echo "Building help files..."
 if test x"$1" == x"--linux"; then
-    ./makehelp $2/tools/helpgen/helpgen .
+    tools/disttool/makehelp $2/tools/helpgen/helpgen .
 else
     declare -x PATH="$PATH:$3/bin"
-    ./makehelp $2/tools/helpgen/helpgen .
+    tools/disttool/makehelp $2/tools/helpgen/helpgen .
 fi
 srcpath=`pwd`
 cd $2

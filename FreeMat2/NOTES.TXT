@@ -12,13 +12,12 @@ Linux              done     done        done       broken      broken(*) untest
 Mac OS X           done     untested    done(+)    n/a        untested   untest
 Win32              done     done        done       n/a        untested   untest
 
-- build instructions from SVN
+build instructions from SVN:
 - bootstrap
 - make
-- make check 
-- run makehelp script in source dir
-- make
+- make help
 - make distcheck
+
 
 
 + - works with help from automake.  Need to move packaging routine into makepkg - see comments in makepkg.in for this one

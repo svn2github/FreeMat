@@ -37,12 +37,18 @@ AC_ARG_WITH([qt4dir],
 
 help_target="help-unix"
 is_win32="false"
-
+platform="--linux"
 case "$host_os" in
      mingw*)
       is_win32="true"
+      platform="--win"
+      ;;
+     darwin*)
+      platform="--mac"
       ;;
 esac     
+
+AC_SUBST(platform)
 
 if test "x$HAVE_QT4" = "xno"; then
    AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])

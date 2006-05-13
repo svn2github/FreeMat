@@ -3,25 +3,46 @@
 # Script to regenerate the contents of the help
 # directory, and then update the filelist for 
 # automake.  It takes three arguments:
-#   makehelp <path_to_helpgen>
+#   makehelp <buildpath> <sourcepath>
+if test x"$1" == x"--help"; then
+  echo "makehelp <buildpath> <sourcepath>"
+  exit
+fi
+buildpath=$1
+sourcepath=$2
+cwd=`pwd`;
+cd $buildpath
+buildpath=`pwd`
+cd $cwd
+cd $sourcepath
+sourcepath=`pwd`
+cd $cwd
 echo "Removing current help directory"
-rm -rf help
+rm -rf $sourcepath/help
 rm -rf tmp
 mkdir tmp
 cd tmp
 echo "Building help files"
-../$1 ..
+$buildpath/tools/helpgen/helpgen $sourcepath
+cp *.jpg $sourcepath/help/html/.
+cp *.png $sourcepath/help/html/.
+cp *.jpg $sourcepath/help/latex/.
+cp *.png $sourcepath/help/latex/.
+cdir=`pwd`
+cd $sourcepath/help/latex
+pdflatex main.tex
+pdflatex main.tex
+cd $cwd
 echo "Cleaning up"
-cd ..
 rm -rf tmp
-rm manifest.am
+rm $sourcepath/manifest.am
 echo "Writing manifest"
-htmlhelpfiles=`find help/html -type f -printf "%p "`
-texthelpfiles=`find help/text -type f -printf "%p "`
-helpmfiles=`find help/MFiles -type f -printf "%p "`
-coremfiles=`find MFiles -type f -printf "%p "`
-pkgfiles=`find extern -type f -printf "%p "`
+htmlhelpfiles=`cd $sourcepath && find help/html -type f -printf "%p "`
+texthelpfiles=`cd $sourcepath && find help/text -type f -printf "%p "`
+helpmfiles=`cd $sourcepath && find help/MFiles -type f -printf "%p "`
+coremfiles=`cd $sourcepath && find MFiles -type f -printf "%p "`
+pkgfiles=`cd $sourcepath && find extern -type f -printf "%p "`
 coremfiles=`echo $coremfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
 pkgfiles=`echo $pkgfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
-echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > manifest.am 
-echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $mfiles " >> manifest.am
+echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > $sourcepath/manifest.am 
+echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $mfiles " >> $sourcepath/manifest.am

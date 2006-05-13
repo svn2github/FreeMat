@@ -763,8 +763,8 @@ namespace FreeMat {
   //x = linspace(-1,1);
   //y = cos(5*pi*x);
   //plot(x,y,'r-');
-  //print('../help/latex/printfig1.jpg')
-  //print('../help/html/printfig1.png')
+  //print('printfig1.jpg')
+  //print('printfig1.png')
   //@>
   //which creates two plots @|printfig1.png|, which is a Portable
   //Net Graphics file, and @|printfig1.jpg| which is a JPEG file.

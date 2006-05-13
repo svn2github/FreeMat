@@ -1069,7 +1069,7 @@ void MergeFile(QFileInfo fileinfo) {
   if (f.open(QFile::ReadOnly)) {
     QTextStream s(&f);
     while (!s.atEnd())
-      headerdocs += s.readLine(0) + "\n";
+      headerdocs += "% " + s.readLine(0) + "\n";
   }
   // Open the file
   QFile h(fileinfo.absoluteFilePath());
@@ -1203,7 +1203,8 @@ void ConsoleWidget::Run() {
     tmp.remove();
   }
   // Make the pdf
-  MakePDF();
+  // TermOutputText("\nBuilding PDF\n");
+  //  MakePDF();
   TermOutputText("\n\nDone!\n");
   qApp->exit();
 }

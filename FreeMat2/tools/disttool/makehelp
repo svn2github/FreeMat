@@ -45,4 +45,4 @@ pkgfiles=`cd $sourcepath && find extern -type f -printf "%p "`
 coremfiles=`echo $coremfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
 pkgfiles=`echo $pkgfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
 echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > $sourcepath/manifest.am 
-echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $mfiles " >> $sourcepath/manifest.am
+echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $helpmfiles " >> $sourcepath/manifest.am

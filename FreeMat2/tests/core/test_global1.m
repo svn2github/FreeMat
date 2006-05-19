@@ -1,6 +1,6 @@
 % Test the global variable declaration
 function test_val = test_global1
-global shared;
+global shared shared2
 shared = 55;
 test_val = test(test_global1_assist == 110);
 

@@ -210,12 +210,14 @@ int MainApp::Run() {
       basePath += GetRecursiveDirList(path2);
     }
   } else {
-    QDir dir1(QString(BASEPATH) + "/MFiles");  
+    QDir dir1(QApplication::applicationDirPath()+"/"+
+	      QString(BASEPATH)+"/mfiles");   
     if (dir1.exists()) {
       QString path1(dir1.canonicalPath());
       basePath += GetRecursiveDirList(path1);
     }
-    QDir dir2(QString(BASEPATH) + "/help/text");
+    QDir dir2(QApplication::applicationDirPath()+"/"+
+	      QString(BASEPATH) + "/help/text");
     if (dir2.exists()) {
       QString path2(dir2.canonicalPath());
       basePath += GetRecursiveDirList(path2);

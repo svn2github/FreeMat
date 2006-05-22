@@ -20,6 +20,9 @@
 // So inside a bracket, the behavior is different than outside a bracket.
 // Outside a bracket, the default behavior appears to be ignore_ws = true.
 //
+// Comment in ASU - "unary if following parenthesis, =, comma, operator"
+// Not quitetrue, as 
+// [1 -2] would yield the wrong answer.
 
 // Issues: ":", transposes
 

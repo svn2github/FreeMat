@@ -220,22 +220,6 @@
 //	IDENT | 
 //	identList IDENT {$$.v.p = $1.v.p; $$.v.p->addChild($2.v.p);} |
 //	identList error {yyxpt("list of valid identifiers",$2);}
-//	;
-//
-//returnStatement:
-//	RETURN
-//	;
-//
-//keyboardStatement:
-//	KEYBOARD
-//	;
-//
-//continueStatement:
-//	 CONTINUE
-//	 ;
-//breakStatement:
-//	 BREAK
-//	 ;
 //
 //tryStatement:
 //	TRY  statementList optionalCatch END 
@@ -685,6 +669,37 @@ tree mkNode(string txt, tree arg1) {
 tree addChild(tree root, tree child) {
   root->children.push_back(child);
 }
+
+
+class Token {
+  char m_tok;
+  unsigned m_line;
+  unsigned m_col;
+  unsigned m_pos;
+  string m_text;
+public:
+  Token(char tok, unsigned line, unsigned col, unsigned pos, string text = string());
+  bool Is(char tok) const {return m_tok == tok;}
+  unsigned Line()  const {return m_line;}
+  unsigned Column()  const {return m_col;}
+  unsigned Position()  const {return m_pos;}
+  string Text()  const {return m_text;}
+};
+
+class Scanner {
+public:
+  Scanner(string buf);
+  // Methods accessed by the parser
+  const Token& Next();
+  void Consume();
+  bool Match(char tok);
+  void PushWSFlag(bool ignoreWS);
+  void PopWSFlag();
+  void Save();
+  void Restore();
+  void Continue();
+};
+
 
 typedef int op_prec;
 

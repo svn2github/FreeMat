@@ -145,7 +145,7 @@
 
 % Copyright (c) 2002-2006 Samit Basu
 
-function h = plot(varargin)
+function ohandle = plot(varargin)
    % Check for an axes handle
    if (nargin>=2)
       if (isnumeric(varargin{1}) & (length(varargin{1})==1) & ...
@@ -197,6 +197,9 @@ function h = plot(varargin)
       end
    end
    axes(saveca);
+   if (nargout > 0)
+     ohandle = h;
+   end
    
 function h = plot_single(Y,handle,lineprops)
    h = [];
@@ -235,7 +238,11 @@ function x = matchmat(a,b)
    end
    
 function q = CompleteProps(cs,ms,ps,p)
-   q = {'color',cs,'marker',ms,'linestyle',ps,'markeredgecolor',cs,'markerfacecolor',cs,p{:}};
+   if (strcmp(cs,'none'))
+     q = {'marker',ms,'linestyle',ps,p{:}};
+   else
+     q = {'color',cs,'marker',ms,'linestyle',ps,'markeredgecolor',cs,'markerfacecolor',cs,p{:}};
+   end
    
 function p = isvec(x)
    p = (ndims(x) == 2) & ((size(x,1) == numel(x)) | (size(x,2) == numel(x)));
@@ -246,6 +253,9 @@ function k = tplotvector(handle,x,y,lineprops)
    colororder = get(handle,'colororder');
    % select the row using a modulo
    ndxmod = uint32(mod(ndx-1,size(colororder,1))+1);
+   if (~any(strcmp(lineprops,'color')))
+     lineprops = [lineprops,{'markeredgecolor',colororder(ndxmod,:),'markerfacecolor',colororder(ndxmod,:)}];
+   end
    k = line('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
    
 function b = islinespec(t,&colorspec,&markerspec,&linespec)

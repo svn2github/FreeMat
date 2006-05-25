@@ -137,7 +137,7 @@ namespace FreeMat {
   void HandleLineSeries::SetupDefaults() {
     SetThreeVectorDefault("color",0,0,0);
     SetConstrainedStringDefault("linestyle","-");
-    SetScalarDefault("linewidth",0.5);
+    SetScalarDefault("linewidth",1.0);
     SetConstrainedStringDefault("marker","none");
     SetThreeVectorDefault("markeredgecolor",0,0,0);
     SetThreeVectorDefault("markerfacecolor",0,0,0);

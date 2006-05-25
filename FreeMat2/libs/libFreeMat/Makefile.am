@@ -61,7 +61,7 @@ MatrixMultiply.cpp \
 Module.cpp \
 NewLex.cpp \
 NumericArray.cpp \
-Parser.cxx \
+Parser.yxx \
 QRDecompose.cpp \
 Reserved.cpp \
 Scope.cpp \

@@ -1891,7 +1891,11 @@ break;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
     char CMACH = 'E';
     float eps = slamch_(&CMACH);
-    int scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
+    int scount;
+    if (stepsize > 0)
+      scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
+    else
+      scount = (int) (floor((maxval*(1-eps)-minval)/stepsize) + 1);
     if (scount<=0) 
       dim.reset();
     else {
@@ -1921,9 +1925,15 @@ break;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
     // We want minval+(scount-1)*stepsize < maxval*(1+eps)
     // or (scount-1) < (maxval*(1+eps) - minval)/stepsize
+    // if stepsize < 0
+    //    (scount-1) > (maxval*(1+eps) - minval)/stepsize
     char CMACH = 'E';
     double eps = dlamch_(&CMACH);
-    int scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
+    int scount;
+    if (stepsize > 0)
+      scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
+    else
+      scount = (int) (floor((maxval*(1-eps)-minval)/stepsize) + 1);
     if (scount<=0) 
       dim.reset();
     else {

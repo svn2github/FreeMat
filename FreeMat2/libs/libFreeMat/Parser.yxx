@@ -228,7 +228,7 @@ returnDeclaration:
 
 argumentList:
   argument {$$.v.p = $1.v.p;}
-  | argumentList ',' argument {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);}
+  | argumentList columnSep argument {$$.v.p = $1.v.p; $$.v.p->addChild($3.v.p);}
   ;
 
 argument:

@@ -44,5 +44,5 @@ coremfiles=`cd $sourcepath && find MFiles -type f -printf "%p "`
 pkgfiles=`cd $sourcepath && find extern -type f -printf "%p "`
 coremfiles=`echo $coremfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
 pkgfiles=`echo $pkgfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
-echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles " > $sourcepath/manifest.am 
-echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $helpmfiles " >> $sourcepath/manifest.am
+echo "EXTRA_DIST = $pkgfiles $htmlhelpfiles $texthelpfiles $helpmfiles $coremfiles help/latex/main.pdf " > $sourcepath/manifest.am 
+echo "nobase_resource_DATA = $htmlhelpfiles $texthelpfiles $helpmfiles help/latex/main.pdf " >> $sourcepath/manifest.am

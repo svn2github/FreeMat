@@ -84,7 +84,7 @@ EOF
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$srcDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
-    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf"
+    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/FreeMat-@VERSION@.pdf"
     CopyFile "$QTDIR/plugins/imageformats/libqjpeg.so" "$baseDir/Contents/Plugins/imageformats/libqjpeg.so"
     CopyFile "$QTDIR/plugins/imageformats/libqmng.so" "$baseDir/Contents/Plugins/imageformats/libqmng.so"
     ImportLibs "$baseDir/Contents/Plugins/imageformats/libqjpeg.so" "$baseDir/Contents/lib"

@@ -1664,11 +1664,13 @@ namespace FreeMat {
 	if (ptr == NULL) {
 	  m = functionExpression(t->down,0,true);
 	  SetContext(t->context());
-	  if (m.size() == 0) 
+	  bool emptyOutput = false;
+	  if (m.size() == 0) {
 	    b = Array::emptyConstructor();
-	  else 
+	    emptyOutput = true;
+	  } else 
 	    b = m[0];
-	  if (printIt) {
+	  if (printIt && (!emptyOutput)) {
 	    io->outputMessage(std::string("ans = \n"));
 	    displayArray(b);
 	    SetContext(t->context());

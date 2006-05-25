@@ -66,6 +66,7 @@ int bracketStackSize;
 int vcStack[256];
 int vcStackSize;
 int vcFlag;
+bool skipSpecialCallSyntax;
 
 /*
  * These variables capture the token information
@@ -401,6 +402,11 @@ void lexIdentifier() {
 	    compareReservedWord);
   if (p != NULL) {
     setTokenType(p->token);
+    // Incredibly ugly hack...  Need to replace NewLex+Parser (see
+    // native/rdparse for a start).
+    if ((p->token == GLOBAL) ||
+	(p->token == PERSISTENT)) 
+      skipSpecialCallSyntax = true;
     if (strcmp(ident,"end") == 0) {
       if (bracketStackSize==0) {
 	setTokenType(END);
@@ -617,6 +623,7 @@ void lexScanningState() {
     tokenValue.v.i = ContextInt();
     NextLine();
     lexState = Initial;
+    skipSpecialCallSyntax = false;
     if (bracketStackSize == 0)
       vcFlag = 0;
     return;
@@ -626,11 +633,13 @@ void lexScanningState() {
     if (bracketStackSize == 0)
       vcFlag = 0;
     lexState = Initial;
+    skipSpecialCallSyntax = false;
     return;
   }
   if (match("\r\n") || match("\n")) {
     NextLine();
     setTokenType(ENDSTMNT);
+    skipSpecialCallSyntax = false;
     lexState = Initial;
     if (bracketStackSize == 0)
       vcFlag = 0;
@@ -688,7 +697,7 @@ void lexScanningState() {
     // No, so... munch the whitespace
     while (isWhitespace());
     // How do you know ident /ident is not ident/ident and is ident('/ident')?
-    if (testAlphaChar())
+    if (testAlphaChar() && (!skipSpecialCallSyntax))
       lexState = SpecScan;
     return;
   }
@@ -829,6 +838,7 @@ namespace FreeMat {
     inBlock = 0;
     lexState = Initial;
     vcStackSize = 0;
+    skipSpecialCallSyntax = false;
     if (buffer)
       free(buffer);
     buffer = (char*) calloc(strlen(buf)+1,sizeof(char));
@@ -846,6 +856,7 @@ namespace FreeMat {
     bracketStackSize = 0;
     lexState = Initial;
     vcStackSize = 0;
+    skipSpecialCallSyntax = false;
     lineNumber = 0;
     long cpos = st.st_size;
     if (buffer)

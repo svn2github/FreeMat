@@ -174,18 +174,28 @@ namespace FreeMat {
       }
       warningIssued = false;
       if (outputArgCount() != -1) {
-	outputs = ArrayVector(returnVals.size());
-	for (int i=0;i<returnVals.size();i++) {
+	// special case - if nargout == 0, and none of the
+	// outputs are predefined, we don't do anything
+	bool nonpredefed = true;
+	for (int i=0;i<returnVals.size()&&nonpredefed;i++) {
 	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
-	  if (!ptr)
-	    outputs[i] = Array::emptyConstructor();
-	  else
-	    outputs[i] = *ptr;
-	  if (!ptr && (i < nargout))
-	    if (!warningIssued) {
-	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (1)");
-	      warningIssued = true;
-	    }
+	  nonpredefed = nonpredefed && (!ptr);
+	}
+	if ((nargout > 0) || 
+	    ((nargout == 0) && (!nonpredefed))) {
+	  outputs = ArrayVector(returnVals.size());
+	  for (int i=0;i<returnVals.size();i++) {
+	    Array *ptr = context->lookupVariableLocally(returnVals[i]);
+	    if (!ptr)
+	      outputs[i] = Array::emptyConstructor();
+	    else
+	      outputs[i] = *ptr;
+	    if (!ptr && (i < nargout))
+	      if (!warningIssued) {
+		walker->getInterface()->warningMessage("one or more outputs not assigned in call (1)");
+		warningIssued = true;
+	      }
+	  }
 	}
       } else {
 	outputs = ArrayVector(nargout);

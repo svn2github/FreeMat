@@ -187,6 +187,9 @@ AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 
 MP_WITH_CURSES
 
+YFLAGS="$YFLAGS -d"
+AC_SUBST(YFLAGS)
+
 LIBS="$LIBS $CURSES_LIB $FLIBS"
 
 echo \

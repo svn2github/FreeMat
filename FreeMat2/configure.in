@@ -171,8 +171,8 @@ found:
   MATIO                     ${found_matio}
 **********************************************************************
 A script to build these external dependencies has been created
-in the current directory.  To build the missing dependencies, and
-install them somewhere run the script via:
+in the current directory.  To build the missing dependencies,
+run the script via:
 
 ./builddeps ${extern_flags}
 

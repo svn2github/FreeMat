@@ -187,7 +187,7 @@ namespace FreeMat {
   ArrayVector ComputerFunction(int nargout, const ArrayVector& arg);
   ArrayVector StrStrFunction(int nargout, const ArrayVector& arg);
   ArrayVector CellFunction(int nargout, const ArrayVector& arg);
-  ArrayVector StrRepFunction(int nargout, const ArrayVector& arg);
+  ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg);
   ArrayVector Conv2Function(int nargout, const ArrayVector& arg);
   ArrayVector InvFunction(int nargout, const ArrayVector& arg);
   void Tokenize(const std::string& str, std::vector<std::string>& tokens,

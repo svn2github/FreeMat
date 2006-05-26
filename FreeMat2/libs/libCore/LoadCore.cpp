@@ -193,7 +193,7 @@ namespace FreeMat {
     context->addSpecialFunction("mfilename",MFilenameFunction,-1,1);
     context->addFunction("computer",ComputerFunction,0,1);
     context->addFunction("strstr",StrStrFunction,2,1,"x","y");
-    context->addFunction("strrep",StrRepFunction,3,1,"source","pattern","replace");
+    context->addFunction("strrep_string",StrRepStringFunction,3,1,"source","pattern","replace");
     context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep");
     context->addFunction("inv",InvFunction,1,1,"A");
     InitializeFileSubsystem();

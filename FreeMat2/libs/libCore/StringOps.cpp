@@ -124,36 +124,19 @@ namespace FreeMat {
     return op;
   }
 
-  //!
-  //@Module STRREP String Substitute Function
-  //@@Section STRING
-  //@@Usage
-  //Replaces instances of one string in another string.  The general
-  //syntax for its use is
-  //@[
-  //   p = strrep(source,pattern,replace)
-  //@]
-  //where @|source|, @|pattern| and @|replace| are all strings. 
-  //@@Example
-  //Here are some simple examples
-  //@<
-  //strrep('hello','he','be')
-  //strrep(strrep('matlab is nice','matlab','freemat'),'nice','better')
-  //@>
-  //!
-  ArrayVector StrRepFunction(int nargout, const ArrayVector& arg) {
+  ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
     Array arg1, arg2, arg3;
     if (arg.size() != 3)
-      throw Exception("strrep function requires three string arguments");
+      throw Exception("strrep_string function requires three string arguments");
     arg1 = arg[0];
     arg2 = arg[1];
     arg3 = arg[2];
     if (!(arg1.isString()))
-      throw Exception("strrep function requires three string arguments");
+      throw Exception("strrep_string function requires three string arguments");
     if (!(arg2.isString()))
-      throw Exception("strrep function requires three string arguments");
+      throw Exception("strrep_string function requires three string arguments");
     if (!(arg3.isString()))
-      throw Exception("strrep function requires three string arguments");
+      throw Exception("strrep_string function requires three string arguments");
     char *s1 = arg1.getContentsAsCString();
     char *s2 = arg2.getContentsAsCString();
     char *s3 = arg3.getContentsAsCString();

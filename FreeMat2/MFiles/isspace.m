@@ -14,7 +14,9 @@
 %tab.
 %@@Example
 %A simple example of @|isspace|:
-
+%@<
+%isspace('  hello there world ')
+%@>
 %!
 
 function x = isspace(s)

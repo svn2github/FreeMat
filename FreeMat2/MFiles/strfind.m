@@ -1,7 +1,7 @@
 %!
 %@Module STRFIND Find Substring in a String
 %@@Section STRING
-%@@USAGE
+%@@Usage
 %Searches through a string for a pattern, and returns the starting
 %positions of the pattern in an array.  There are two forms for 
 %the @|strfind| function.  The first is for single strings
@@ -34,7 +34,7 @@ function y = strfind(source,pattern)
   patlen = length(pattern);
   if (isa(source,'string'))
     y = strfind_string(source,pattern);
-  elseif (isa(source,'cell'))
+  elseif (iscellstr(source))
     y = cell(size(source));
     for (i=1:numel(source))
       y{i} = strfind_string(source{i},pattern);

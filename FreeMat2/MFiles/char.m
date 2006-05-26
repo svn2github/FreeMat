@@ -52,8 +52,8 @@ function y = char(varargin)
   end
   
 function y = char_block(x)
-  if (~iscell(x))
-    error('char_block requires a cell-array argument');
+  if (~iscellstr(x))
+    error('char_block requires a cell-array of strings as an argument');
   end
   allstrings = 1;
   maxlen = 0;

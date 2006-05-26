@@ -54,7 +54,7 @@ end
 
 if (isa(labels,'string'))
   labelarray = repmat({labels},[length(xvec),1]);
-elseif (isa(labels,'cell'))
+elseif (iscellstr(labels))
   labelarray = labels;
   if (length(labelarray) ~= length(xvec))
     error 'number of labels much match the length of the x and y vectors'

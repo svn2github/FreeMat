@@ -15,9 +15,13 @@
 %In the second form, @|strncmp| can be applied to a cell array of
 %strings.  The syntax for this form is
 %@[
-%  p = strncmp(cellstr,y,n)
+%  p = strncmp(cellstra,cellstrb,n)
 %@]
-%where @|cellstr| is a cell array of a strings.
+%where @|cellstra| and @|cellstrb| are cell arrays of a strings
+%to compare.  Also, you can also supply a character matrix as
+%an argument to @|strcmp|, in which case it will be converted
+%via @|cellstr| (so that trailing spaces are removed), before being
+%compared.
 %@@Example
 %The following piece of code compares two strings:
 %@<
@@ -32,24 +36,42 @@
 %x = {'ast','bst',43,'astr'}
 %p = strncmp(x,'ast',3)
 %@>
+%Here we compare two cell arrays of strings
+%@<
+%strncmp({'this','is','a','pickle'},{'think','is','to','pickle'},3)
+%@>
+%Finally, the case where one of the arguments is a matrix
+%string
+%@<
+%strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4);
+%@>
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
-
 function y = strncmp(source,pattern,n)
-  patlen = length(pattern);
-  if (isa(source,'string'))
-    y = strncmp_string(source,pattern,n);
-  elseif (isa(source,'cell'))
-    y = logical(zeros(size(source)));
-    for (i=1:numel(source))
-      y(i) = strncmp_string(source{i},pattern,n);
-    end
+  if (isstr(source) & isstr(pattern))
+    y = strncmp_string_string(source,pattern,n);
   else
-    error('strncmp expects string arguments or a cell array of strings');
+    y = strncmp_cell_cell(cellstr(source),cellstr(pattern),n);
   end
 
-function z = strncmp_string(x,y,n)
+
+function y = strncmp_cell_cell(source,pattern,n)
+  if (isscalar(source))
+    source = repmat(source,size(pattern));
+  end
+  if (isscalar(pattern))
+    pattern = repmat(pattern,size(source));
+  end
+  if (numel(source) ~= numel(pattern))
+    error('cell array arguments must be the same size')
+  end
+  y = logical(zeros(size(source)));
+  for (i=1:numel(source))
+    y(i) = strncmp_string_string(source{i},pattern{i},n);
+  end
+
+function z = strncmp_string_string(x,y,n)
   if ((length(x) < n) | (length(y) < n))
     z = logical(0);
   else

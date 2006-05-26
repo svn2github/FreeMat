@@ -13,9 +13,13 @@
 %In the second form, @|strcmp| can be applied to a cell array of
 %strings.  The syntax for this form is
 %@[
-%  p = strcmp(cellstr,y)
+%  p = strcmp(cellstra,cellstrb)
 %@]
-%where @|cellstr| is a cell array of a strings.
+%where @|cellstra| and @|cellstrb| are cell arrays of a strings
+%to compare.  Also, you can also supply a character matrix as
+%an argument to @|strcmp|, in which case it will be converted
+%via @|cellstr| (so that trailing spaces are removed), before being
+%compared.
 %@@Example
 %The following piece of code compares two strings:
 %@<
@@ -30,19 +34,41 @@
 %x = {'astring','bstring',43,'astring'}
 %p = strcmp(x,'astring')
 %@>
+%Here we compare two cell arrays of strings
+%@<
+%strcmp({'this','is','a','pickle'},{'what','is','to','pickle'})
+%@>
+%Finally, the case where one of the arguments is a matrix
+%string
+%@<
+%strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle']);
+%@>
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
 
 function y = strcmp(source,pattern)
-  patlen = length(pattern);
-  if (isa(source,'string'))
-    y = strcomp(source,pattern);
-  elseif (isa(source,'cell'))
-    y = logical(zeros(size(source)));
-    for (i=1:numel(source))
-      y(i) = strcomp(source{i},pattern);
-    end
+  if (isstr(source) & isstr(pattern))
+    y = strcmp_string_string(source,pattern);
   else
-    error('strcmp expects string arguments or a cell array of strings');
+    y = strcmp_cell_cell(cellstr(source),cellstr(pattern));
+  end
+
+
+function y = strcmp_string_string(source,pattern)
+  y = strcomp(source,pattern);
+
+function y = strcmp_cell_cell(source,pattern)
+  if (isscalar(source))
+    source = repmat(source,size(pattern));
+  end
+  if (isscalar(pattern))
+    pattern = repmat(pattern,size(source));
+  end
+  if (numel(source) ~= numel(pattern))
+    error('cell array arguments must be the same size')
+  end
+  y = logical(zeros(size(source)));
+  for (i=1:numel(source))
+    y(i) = strcomp(source{i},pattern{i});
   end

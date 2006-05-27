@@ -26,7 +26,12 @@ function A = cellstr(x)
     error('Argument to cellstr must be a string matrix');
   end
   n = size(x,1);
-  A = cell(n,1);
-  for i=1:n
-    A{i} = deblank(x(i));
+  if (n == 1)
+      A = {x};
+  else
+      A = cell(n,1);
+      for i=1:n
+          A{i} = deblank(x(i));
+      end
   end
+  

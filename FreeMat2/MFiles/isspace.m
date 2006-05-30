@@ -1,6 +1,6 @@
 %!
 %@Module ISSPACE Test for Space Characters in a String
-%@@Section ARRAY
+%@@Section STRING
 %@@Usage
 %The @|isspace| functions returns a logical array that is 1 
 %for characters in the argument string that are spaces, and 

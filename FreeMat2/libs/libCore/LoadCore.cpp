@@ -196,6 +196,7 @@ namespace FreeMat {
     context->addFunction("strrep_string",StrRepStringFunction,3,1,"source","pattern","replace");
     context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep");
     context->addFunction("inv",InvFunction,1,1,"A");
+    context->addFunction("rcond",RcondFunction,1,1,"A");
     InitializeFileSubsystem();
 #ifdef USE_MPI
     LoadMPIFunctions(context);

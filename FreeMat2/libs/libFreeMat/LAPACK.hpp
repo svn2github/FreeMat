@@ -215,6 +215,31 @@ extern "C" {
   float scnrm2_(int *N, float *X, int *INCX);
   
   float dznrm2_(int *N, double *X, int *INCX);
+
+  void dgecon_(char *norm, int *N, double *A, int *LDA, double *Anorm,
+	       double *rcond, double *work, int *iwork, int *info);
+
+  void sgecon_(char *norm, int *N, float *A, int *LDA, float *Anorm,
+	       float *rcond, float *work, int *iwork, int *info);
+
+  void cgecon_(char *norm, int *N, float *A, int *LDA, float *Anorm,
+	       float *rcond, float *work, float *rwork, int *info);
+
+  void zgecon_(char *norm, int *N, double *A, int *LDA, double *Anorm,
+	       double *rcond, double *work, double *rwork, int *info);
+
+  double dlange_(char *norm, int *M, int *N, double *A, int *LDA,
+	       double *work);
+
+  float slange_(char *norm, int *M, int *N, float *A, int *LDA,
+	       float *work);
+
+  float clange_(char *norm, int *M, int *N, float *A, int *LDA,
+	       float *work);
+
+  double zlange_(char *norm, int *M, int *N, double *A, int *LDA,
+	       double *work);
+
 }
 
 namespace FreeMat {

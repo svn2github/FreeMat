@@ -46,6 +46,8 @@
 #define DELIM "/"
 #endif
 
+#define MAXSTRING 65535
+
 /**
  * Pending control-C
  */
@@ -3294,8 +3296,8 @@ namespace FreeMat {
   }
 
   static std::string EvalPrep(char *line) {
-    char buffer1[40960];
-    char buffer2[40960];
+    char buffer1[MAXSTRING];
+    char buffer2[MAXSTRING];
     strcpy(buffer1,line);
     if (buffer1[strlen(buffer1)-1] == '\n')
       buffer1[strlen(buffer1)-1] = 0;
@@ -3317,6 +3319,8 @@ namespace FreeMat {
     try{
       parserState = parseString(line);
     } catch(Exception &e) {
+      if (propogateExceptions)
+	throw;
       errorCount++;
       e.printMe(io);
       return;
@@ -3367,7 +3371,7 @@ namespace FreeMat {
 
   void WalkTree::evalCLI() {
     char *line;
-    char dataline[40960];
+    char dataline[MAXSTRING];
     char prompt[150];
     int lastCount;
 

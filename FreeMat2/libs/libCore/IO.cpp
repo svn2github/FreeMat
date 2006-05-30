@@ -1083,7 +1083,7 @@ namespace FreeMat {
     Array tmp(arg[0]);
     int handle = tmp.getContentsAsIntegerScalar();
     FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
-    char buffer[4096];
+    char buffer[65535];
     fgets(buffer,sizeof(buffer),fptr->fp);
     if (feof(fptr->fp))
       return singleArrayVector(Array::emptyConstructor());

@@ -136,7 +136,8 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
     sprintf(buffer,"Figure %d",ahandle+1);
     setWindowTitle(buffer);
     qtchild = new BaseFigureQt(NULL,hfig);
-    glchild = new BaseFigureGL(NULL,hfig);
+    if (QGLFormat::hasOpenGL())
+      glchild = new BaseFigureGL(NULL,hfig);
     layout = new QStackedWidget(this);
     QHBoxLayout *box = new QHBoxLayout(this);
     box->setMargin(0);
@@ -145,7 +146,8 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
     //   layout->addTab(qtchild,"QT");
     //   layout->addTab(glchild,"GL");
     layout->addWidget(qtchild);
-    layout->addWidget(glchild);
+    if (QGLFormat::hasOpenGL())
+      layout->addWidget(glchild);
     layout->show();
     box->addWidget(layout);
     resize(600,400);
@@ -180,7 +182,7 @@ HandleFigure* HandleWindow::HFig() {
     if (!initialized) return;
     HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
     resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
-    if (hfig->StringCheck("renderer","opengl")) {
+    if (hfig->StringCheck("renderer","opengl") && (QGLFormat::hasOpenGL())) {
       if (layout->currentWidget() != glchild) {
 	layout->setCurrentWidget(glchild);
 	glchild->show();
@@ -198,7 +200,8 @@ HandleFigure* HandleWindow::HFig() {
       update();
     } else if (hfig->StringCheck("renderer","painters")) {
       if (layout->currentWidget() != qtchild) {
-	glchild->setGeometry(0,0,1,1);
+	if (QGLFormat::hasOpenGL())
+	  glchild->setGeometry(0,0,1,1);
 	//      glchild->makeCurrent();
 	//glchild->resizeGL(1,1);
 	//       glClearColor(1,1,1,1);

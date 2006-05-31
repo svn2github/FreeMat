@@ -105,6 +105,7 @@ namespace FreeMat {
 			double limmin, double limmax,
 			double unitx, double unity, double unitz,
 			std::vector<double>  maptics,
+			std::vector<double>  minortics,
 			std::vector<std::string> labels,
 			std::string labelname,
 			int ticlen, double ticdir);

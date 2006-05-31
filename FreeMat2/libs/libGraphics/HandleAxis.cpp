@@ -271,7 +271,7 @@ namespace FreeMat {
     tStop = ceil(tMax/tDelt)*tDelt;
     // Recheck for integer limits...
     //   qDebug("tickcount = %d",tickcount);
-    if ((tMin == rint(tMin)) && (tMax == rint(tMax))) {
+    if ((tMin == rint(tMin)) && (tMax == rint(tMax)) && (!isLogarithmic)) {
       tStart = tMin;
       tStop = tMax;
       if ((tickcount % 2) == 1)
@@ -1169,7 +1169,7 @@ namespace FreeMat {
 	  // Ticks should be in integer divisions
 	  double t1 = xticks[i];
 	  double t2 = xticks[i+1];
-	  if (t2 == (t1 + 1)) {
+	  if (t2 > t1) {
 	    int n = 2;
 	    while ((t1*n)<t2) {
 	      double t = MapX(n*t1);
@@ -1193,7 +1193,7 @@ namespace FreeMat {
 	  // Ticks should be in integer divisions
 	  double t1 = yticks[i];
 	  double t2 = yticks[i+1];
-	  if (t2 == (t1 + 1)) {
+	  if (t2 > t1) {
 	    int n = 2;
 	    while ((t1*n)<t2) {
 	      double t = MapY(n*t1);
@@ -1217,7 +1217,7 @@ namespace FreeMat {
 	  // Ticks should be in integer divisions
 	  double t1 = zticks[i];
 	  double t2 = zticks[i+1];
-	  if (t2 == (t1 + 1)) {
+	  if (t2 > t1) {
 	    int n = 2;
 	    while ((t1*n)<t2) {
 	      double t = MapZ(n*t1);
@@ -2084,36 +2084,78 @@ namespace FreeMat {
       std::vector<double> mapticks;
       for (int i=0;i<xticks.size();i++)
 	mapticks.push_back(MapX(xticks[i]));
+      std::vector<double> minorticks;
+      HPLinearLog *sp;
+      sp = (HPLinearLog*) LookupProperty("xscale");
+      if (sp->Is("log")) {
+	for (int i=0;i<xticks.size()-1;i++) {
+	  double t1 = xticks[i];
+	  double t2 = xticks[i+1];
+	  int n = 2;
+	  while ((t1*n) < t2) {
+	    minorticks.push_back(MapX(n*t1));
+	    n++;
+	  }
+	}
+      }
       DrawTickLabels(gc,xc->Data(),
 		     0,x1pos[1],x1pos[2],
 		     0,x2pos[1],x2pos[2],
 		     limits[0],limits[1],
 		     1,0,0,
-		     mapticks,xlabeltxt,
+		     mapticks,minorticks,xlabeltxt,
 		     "xlabel",ticlen,ticdir);
     }
     if (yvisible) {
       std::vector<double> mapticks;
       for (int i=0;i<yticks.size();i++)
 	mapticks.push_back(MapY(yticks[i]));
+      std::vector<double> minorticks;
+      HPLinearLog *sp;
+      sp = (HPLinearLog*) LookupProperty("yscale");
+      if (sp->Is("log")) {
+	for (int i=0;i<yticks.size()-1;i++) {
+	  double t1 = yticks[i];
+	  double t2 = yticks[i+1];
+	  int n = 2;
+	  while ((t1*n) < t2) {
+	    minorticks.push_back(MapY(n*t1));
+	    n++;
+	  }
+	}
+      }
       DrawTickLabels(gc,yc->Data(),
 		     y1pos[0],0,y1pos[2],
 		     y2pos[0],0,y2pos[2],
 		     limits[2],limits[3],
 		     0,1,0,
-		     mapticks,ylabeltxt,
+		     mapticks,minorticks,ylabeltxt,
 		     "ylabel",ticlen,ticdir);
     }
     if (zvisible) {
       std::vector<double> mapticks;
       for (int i=0;i<zticks.size();i++)
 	mapticks.push_back(MapZ(zticks[i]));
+      std::vector<double> minorticks;
+      HPLinearLog *sp;
+      sp = (HPLinearLog*) LookupProperty("zscale");
+      if (sp->Is("log")) {
+	for (int i=0;i<zticks.size()-1;i++) {
+	  double t1 = zticks[i];
+	  double t2 = zticks[i+1];
+	  int n = 2;
+	  while ((t1*n) < t2) {
+	    minorticks.push_back(MapZ(n*t1));
+	    n++;
+	  }
+	}
+      }
       DrawTickLabels(gc,zc->Data(),
 		     z1pos[0],z1pos[1],0,
 		     z2pos[0],z2pos[1],0,
 		     limits[4],limits[5],
 		     0,0,1,
-		     mapticks,zlabeltxt,
+		     mapticks,minorticks,zlabeltxt,
 		     "zlabel",ticlen,ticdir);
     }
     HPHandles *lbl = (HPHandles*) LookupProperty("title");
@@ -2132,6 +2174,7 @@ namespace FreeMat {
 				  double limmin, double limmax,
 				  double unitx, double unity, double unitz,
 				  std::vector<double>  maptics,
+				  std::vector<double>  minortics,
 				  std::vector<std::string> labels,
 				  std::string labelname,
 				  int ticlen, double ticdir) {
@@ -2151,6 +2194,20 @@ namespace FreeMat {
     // normalize the tick length
     double norm = sqrt(delx*delx + dely*dely);
     delx /= norm; dely /= norm;
+    // Draw the minor ticks
+    for (int i=0;i<minortics.size();i++) {
+      double t = minortics[i];
+      // Map the coords ourselves
+      double x1, y1, x2, y2;
+      gc.toPixels(t*unitx+px1,
+		  t*unity+py1,
+		  t*unitz+pz1,x1,y1);
+      x2 = delx*ticlen*ticdir*0.6 + x1;
+      y2 = dely*ticlen*ticdir*0.6 + y1;
+      gc.setupDirectDraw();
+      gc.line(x1,y1,x2,y2);
+      gc.releaseDirectDraw();
+    }
     for (int i=0;i<maptics.size();i++) {
       double t = maptics[i];
       // Map the coords ourselves

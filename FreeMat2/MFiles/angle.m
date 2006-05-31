@@ -16,7 +16,7 @@
 %\]
 %and we can compute 
 %\[
-%  \theta = \mathrm{atan2}(\imag x, \real x)
+%  \theta = \mathrm{atan2}(\Im x, \Re x)
 %\]
 %@@Example
 %Here are some examples of the use of @|angle| in the polar decomposition

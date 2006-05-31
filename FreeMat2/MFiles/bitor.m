@@ -1,5 +1,5 @@
 %!
-%Module BITOR Bitwise Boolean Or Operation
+%@Module BITOR Bitwise Boolean Or Operation
 %@@Section BINARY
 %@@Usage
 %Performs a bitwise binary or operation on the two arguments and

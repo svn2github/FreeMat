@@ -43,12 +43,18 @@
 %21, 33, 14, 44, 01, 00
 %@}
 %We start by reading the entire file
+%@<
 %csvread('sample_data.csv')
+%@>
 %Next, we read everything starting with the second row, and third column
+%@<
 %csvread('sample_data.csv',1,2)
+%@>
 %Finally, we specify that we only want the @|3 x 3| submatrix starting
 %with the second row, and third column
+%@<
 %csvread('sample_data.csv',1,2,[1,2,3,4])
+%@>
 %!
 function x = csvread(filename,firstrow,firstcol,range)
 %A good test file:

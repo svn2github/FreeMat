@@ -43,7 +43,7 @@
 %Finally, the case where one of the arguments is a matrix
 %string
 %@<
-%strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4);
+%strncmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4);
 %@>
 %!
 

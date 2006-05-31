@@ -1,5 +1,5 @@
 %!
-%Module BITAND Bitwise Boolean And Operation
+%@Module BITAND Bitwise Boolean And Operation
 %@@Section BINARY
 %@@Usage
 %Performs a bitwise binary and operation on the two arguments and

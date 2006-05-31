@@ -1,5 +1,5 @@
 %!
-%Module BITXOR Bitwise Boolean Exclusive-Or (XOR) Operation
+%@Module BITXOR Bitwise Boolean Exclusive-Or (XOR) Operation
 %@@Section BINARY
 %@@Usage
 %Performs a bitwise binary xor operation on the two arguments and

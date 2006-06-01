@@ -81,6 +81,7 @@ Section "Shortcuts" SEC02
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\FreeMat.lnk" "$INSTDIR\Contents\bin\FreeMat.exe"
   CreateShortCut "$DESKTOP\FreeMat<VERSION_NUMBER>.lnk" "$INSTDIR\Contents\bin\FreeMat.exe"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Help.lnk" "$INSTDIR\Contents\Resources\help\html\index.html"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Manual.lnk" "$INSTDIR\Contents\Resources\help\pdf\FreeMat-<VERSION_NUMBER>.pdf"
 SectionEnd
 
 
@@ -125,6 +126,7 @@ Section Uninstall
   Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Website.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Help.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\Manual.lnk"
   Delete "$DESKTOP\FreeMat.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\FreeMat.lnk"
 

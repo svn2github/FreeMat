@@ -43,7 +43,7 @@ ImportLibs()
     libset=`LD_LIBRARY_PATH=$QTDIR/lib:$LD_LIBRARY_PATH  ldd $1 | awk '{print $3}'`
     for lib in $libset
       do
-      isXlib=`expr match $lib ".*libX\|.*libSM\|.*libICE\|.*libGL\|.*linux"`
+      isXlib=`expr match $lib ".*libc\|.*libm\|.*libdl\|.*libpthread\|.*libX\|.*libSM\|.*libICE\|.*libGL\|.*linux"`
       if [ $isXlib == 0 ]
 	  then
 	  if [ -f $lib ]
@@ -59,6 +59,7 @@ ImportLibs()
 MakeLinuxBundle()
 {
     baseDir="$buildDir/FreeMat-@VERSION@-Binary"
+    rm -rf "$baseDir"
     MakeDir "$baseDir"
     MakeDir "$baseDir/Contents"
     MakeDir "$baseDir/Contents/bin"
@@ -89,6 +90,9 @@ EOF
     CopyFile "$QTDIR/plugins/imageformats/libqmng.so" "$baseDir/Contents/Plugins/imageformats/libqmng.so"
     ImportLibs "$baseDir/Contents/Plugins/imageformats/libqjpeg.so" "$baseDir/Contents/lib"
     ImportLibs "$baseDir/Contents/Plugins/imageformats/libqmng.so" "$baseDir/Contents/lib"
+    echo "Making tar file"
+    rm FreeMat-@VERSION@-Binary.tgz
+    tar cfz FreeMat-@VERSION@-Binary.tgz FreeMat-@VERSION@-Binary
 }
 
 Relink()
@@ -130,17 +134,44 @@ RelinkPlugins() {
 
 MakeMacBundle()
 {
-    baseDir="$buildDir/FreeMat.app"
+    baseDir="$buildDir/FreeMat-@VERSION@.app"
+    MakeDir "$baseDir"
+    MakeDir "$baseDir/Contents"
+    MakeDir "$baseDir/Contents/MacOS"
+    MakeDir "$baseDir/Contents/Resources"
+    MakeDir "$baseDir/Contents/Resources/help"
+    MakeDir "$baseDir/Contents/Resources/help/html"
+    MakeDir "$baseDir/Contents/Resources/help/text"
+    MakeDir "$baseDir/Contents/Resources/help/pdf"
+    MakeDir "$baseDir/Contents/Resources/mfiles"
     MakeDir "$baseDir/Contents/Frameworks"
+    CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
+    CopyFile "$srcDir/src/appIcon.icns" "$baseDir/Contents/Resources/appIcon.icns"
+    echo "APPL????" > "$baseDir/Contents/PkgInfo"
+    cat > "$baseDir/Contents/Info.plist" <<EOF
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+ <plist version="0.9">
+ <dict>
+ <key>CFBundleIconFile</key>
+ <string>appIcon.icns</string>
+ <key>CFBundlePackageType</key>
+ <string>APPL</string>
+ <key>CFBundleExecutable</key>
+ <string>FreeMat</string>
+ </dict>
+ </plist>
+EOF
     InstallFramework "QtGui"
     InstallFramework "QtCore"
     InstallFramework "QtOpenGL"
     CrossLinkFramework "QtGui" "QtCore"
     CrossLinkFramework "QtOpenGL" "QtGui"
     CrossLinkFramework "QtOpenGL" "QtCore"
-    CopyDirectory "$buildDir/help/html" "$baseDir/Contents/Resources/help/html"
-    CopyDirectory "$buildDir/help/text" "$baseDir/Contents/Resources/help/text"
-    CopyDirectory "$buildDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
+    CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$srcDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
+    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/FreeMat-@VERSION@.pdf"
     MakeDir "$baseDir/Contents/Plugins/imageformats"
     CopyDirectory "$QTDIR/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
     RelinkPlugins
@@ -175,6 +206,7 @@ MakeWinBundle()
   CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
   CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
   CopyDirectory "$srcDir/help/MFiles" "$baseDir/Contents/Resources/mfiles"
+  CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/FreeMat-@VERSION@.pdf"
   echo "Generating NSI file..."
   cdir=`pwd`
   cd $baseDir

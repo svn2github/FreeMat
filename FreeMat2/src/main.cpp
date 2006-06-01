@@ -42,6 +42,7 @@ void usage() {
   printf("                   command line, so use it last.\n");
 #ifdef Q_WS_X11
   printf("     -nogui        Suppress the GUI for FreeMat.\n");
+  printf("     -noplastique  Do not force the plastique style for GUI.\n");
 #endif
   printf("     -noX          Disables the graphics subsystem.\n");
   printf("     -e            uses a dumb terminal interface \n");
@@ -85,11 +86,17 @@ int main(int argc, char *argv[]) {
   int help2 = parseFlagArg(argc,argv,"--help",false);
   int funcMode = parseFlagArg(argc,argv,"-f",true);
   int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
+  int noplastique = parseFlagArg(argc,argv,"-noplastique",false);
   
+
   if (help || help2) usage();
-  if (!noX)
+  if (!noX) {
     app = new QApplication(argc, argv);
-  else {
+#ifdef Q_WS_X11
+    if (!noplastique)
+      QApplication::setStyle(new QPlastiqueStyle);
+#endif
+  } else {
     app = new QCoreApplication(argc, argv);
     nogui = true;
   }

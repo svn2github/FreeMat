@@ -3670,360 +3670,11 @@ break;
     }
   }
 
-  void emitElement(char *msgBuffer, const void *dp, int num, Class dcls) {
-    switch (dcls) {
-    case FM_INT8: {
-      const int8 *ap;
-      ap = (const int8*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"% 4d",ap[num]);
-      io->outputMessage(msgBuffer);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_UINT8: {
-      const uint8 *ap;
-      ap = (const uint8*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%3u",ap[num]);
-      io->outputMessage(msgBuffer);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_INT16: {
-      const int16 *ap;
-      ap = (const int16*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"% 6d",ap[num]);
-      io->outputMessage(msgBuffer);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_UINT16: {
-      const uint16 *ap;
-      ap = (const uint16*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%5u",ap[num]);
-      io->outputMessage(msgBuffer);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_INT32: {
-      const int32 *ap;
-      ap = (const int32*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%13d",ap[num]);
-      io->outputMessage(msgBuffer);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_UINT32: {
-      const uint32 *ap;
-      ap = (const uint32*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%12u",ap[num]);
-      io->outputMessage(msgBuffer);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_LOGICAL: {
-      const logical *ap;
-      ap = (const logical*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%d  ",ap[num]);
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_STRING: {
-      const char *ap;
-      ap = (const char*) dp;
-      snprintf(msgBuffer,MSGBUFLEN,"%c\0",ap[num]);
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_FLOAT: {
-      const float *ap;
-      ap = (const float*) dp;
-      outputSinglePrecisionFloat(msgBuffer,ap[num]);
-      io->outputMessage(msgBuffer);
-      memset(msgBuffer,0,MSGBUFLEN); 
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_DOUBLE: {
-      const double *ap;
-      ap = (const double*) dp;
-      outputDoublePrecisionFloat(msgBuffer,ap[num]);
-      io->outputMessage(msgBuffer);
-      memset(msgBuffer,0,MSGBUFLEN);
-      snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_COMPLEX: {
-      const float *ap;
-      ap = (const float*) dp;
-      outputSinglePrecisionFloat(msgBuffer,ap[2*num]);
-      io->outputMessage(msgBuffer);
-      memset(msgBuffer,0,MSGBUFLEN);
-      snprintf(msgBuffer,MSGBUFLEN," ");
-      io->outputMessage(msgBuffer);
-      outputSinglePrecisionFloat(msgBuffer,ap[2*num+1]);
-      io->outputMessage(msgBuffer);
-      memset(msgBuffer,0,MSGBUFLEN);      
-      snprintf(msgBuffer,MSGBUFLEN,"i  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_DCOMPLEX: {
-      const double *ap;
-      ap = (const double*) dp;
-      outputDoublePrecisionFloat(msgBuffer,ap[2*num]);
-      io->outputMessage(msgBuffer);
-      memset(msgBuffer,0,MSGBUFLEN);
-      snprintf(msgBuffer,MSGBUFLEN," ");
-      io->outputMessage(msgBuffer);
-      outputDoublePrecisionFloat(msgBuffer,ap[2*num+1]);
-      io->outputMessage(msgBuffer);
-      memset(msgBuffer,0,MSGBUFLEN);      
-      snprintf(msgBuffer,MSGBUFLEN,"i  ");
-      io->outputMessage(msgBuffer);
-      break;
-    }
-    case FM_CELL_ARRAY: {
-      Array *ap;
-      ap = (Array*) dp;
-      if (ap == NULL)
-	io->outputMessage("[]");
-      else
-	ap[num].summarizeCellEntry();
-      io->outputMessage("  ");
-      break;
-    }
-    case FM_FUNCPTR_ARRAY: {
-      const FunctionDef** ap;
-      ap = (const FunctionDef**) dp;
-      if (!ap[num]) {
-	io->outputMessage("[]  ");
-      } else {
-	io->outputMessage("@");
-	io->outputMessage(ap[num]->name.c_str());
-	snprintf(msgBuffer,MSGBUFLEN,"  ");
-	io->outputMessage(msgBuffer);
-      }
-    }
-    }
-  }
 
   /**
    * Display this variable on the given output stream.
    */
   void Array::printMe(int printLimit, int termWidth) const {
-    int nominalWidth;
-    // Print the class...
-    switch(dp->dataClass) {
-    case FM_UINT8:
-      io->outputMessage("  <uint8>  ");
-      nominalWidth = 5;
-      break;
-    case FM_INT8:
-      io->outputMessage("  <int8>  ");
-      nominalWidth = 6;
-      break;
-    case FM_UINT16:
-      io->outputMessage("  <uint16>  ");
-      nominalWidth = 7;
-      break;
-    case FM_INT16:
-      io->outputMessage("  <int16>  ");
-      nominalWidth = 8;
-      break;
-    case FM_UINT32:
-      io->outputMessage("  <uint32>  ");
-      nominalWidth = 14;
-      break;
-    case FM_INT32:
-      io->outputMessage("  <int32>  ");
-      nominalWidth = 15;
-      break;
-    case FM_FLOAT:
-      io->outputMessage("  <float>  ");
-      nominalWidth = 20;
-      break;
-    case FM_DOUBLE:
-      io->outputMessage("  <double>  ");
-      nominalWidth = 30;
-      break;
-    case FM_LOGICAL:
-      io->outputMessage("  <logical>  ");
-      nominalWidth = 2;
-      break;
-    case FM_STRING:
-      io->outputMessage("  <string>  ");
-      nominalWidth = 1;
-      break;
-    case FM_COMPLEX:
-      io->outputMessage("  <complex>  ");
-      nominalWidth = 36;
-      break;
-    case FM_DCOMPLEX:
-      io->outputMessage("  <dcomplex>  ");
-      nominalWidth = 54;
-      break;
-    case FM_CELL_ARRAY:
-      io->outputMessage("  <cell array> ");
-      nominalWidth = 10;
-      break;
-    case FM_STRUCT_ARRAY:
-	if (isUserClass()) {
-	  io->outputMessage(" ");
-	  io->outputMessage(getClassName().back().c_str());
-	  io->outputMessage(" object");
-	} else
-	  io->outputMessage("  <structure array> ");
-      nominalWidth = 10;
-      break;
-    case FM_FUNCPTR_ARRAY:
-      io->outputMessage("  <function ptr array>  ");
-      nominalWidth = 20;
-    }
-    io->outputMessage("- size: ");
-    dp->dimensions.printMe(io);
-    io->outputMessage("\n");
-    if (isUserClass())
-      return;
-    if (isEmpty()) {
-      io->outputMessage("  []\n");
-      return;
-    }
-    if (isSparse()) {
-      sprintf(msgBuffer,"\tMatrix is sparse with %d nonzeros\n",
-	      getNonzeros());
-      io->outputMessage(msgBuffer);
-      return;
-    }
-    if (dp->dataClass == FM_STRUCT_ARRAY) {
-      if (dp->dimensions.isScalar()) {
-	Array *ap;
-	ap = (Array *) dp->getData();
-	for (int n=0;n<dp->fieldNames.size();n++) {
-	  io->outputMessage("    ");
-	  io->outputMessage(dp->fieldNames[n].c_str());
-	  io->outputMessage(": ");
-	  ap[n].summarizeCellEntry();
-	  io->outputMessage("\n");
-	}
-      } else {
-	io->outputMessage("  Fields\n");
-	for (int n=0;n<dp->fieldNames.size();n++) {
-	  io->outputMessage("    ");
-	  io->outputMessage(dp->fieldNames[n].c_str());
-	  io->outputMessage("\n");
-	}
-      }
-    } else {
-      const void *ap = dp->getData();
-      if (dp->dimensions.getLength() == 2) {
-	int rows = dp->dimensions.getRows();
-	int columns = dp->dimensions.getColumns();
-	int items_printed;
-	items_printed = 0;
-	// Determine how many columns will fit across
-	// the terminal width
-	int colsPerPage;
-	colsPerPage = (int) floor((termWidth-1)/((float) nominalWidth));
-	colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
-	int pageCount;
-	pageCount = (int) ceil(columns/((float)colsPerPage));
-	for (int k=0;k<pageCount && (items_printed<printLimit);k++) {
-	  int colsInThisPage;
-	  colsInThisPage = columns - colsPerPage*k;
-	  colsInThisPage = (colsInThisPage > colsPerPage) ? 
-	    colsPerPage : colsInThisPage;
-	  if (dp->dimensions.getElementCount() > 1 && 
-	      dp->dataClass != FM_STRING) {
-	    snprintf(msgBuffer,MSGBUFLEN," \nColumns %d to %d\n",
-		     k*colsPerPage+1,k*colsPerPage+colsInThisPage);
-	    io->outputMessage(msgBuffer);
-	  }
-	  memset(msgBuffer,0,MSGBUFLEN);
-	  for (int i=0;i<rows && (items_printed<printLimit);i++) {
-	    snprintf(msgBuffer,MSGBUFLEN," ");
-	    io->outputMessage(msgBuffer);
-	    memset(msgBuffer,0,MSGBUFLEN);
-	    for (int j=0;j<colsInThisPage && (items_printed<printLimit);j++) {
-	      emitElement(msgBuffer,
-			  ap,i+(k*colsPerPage+j)*rows,
-			  dp->dataClass);
-	      items_printed++;
-	    }
-	    snprintf(msgBuffer,MSGBUFLEN,"\n");
-	    io->outputMessage(msgBuffer);
-	    memset(msgBuffer,0,MSGBUFLEN);
-	  }
-	}
-	if (items_printed >= printLimit) 
-	  io->outputMessage("\n... Output truncated - use setprintlimit function to see more of the output ...\n");
-      } else if (dp->dimensions.getLength() > 2) {
-	/**
-	 * For N-ary arrays, data slice  -  start with 
-	 * [1,1,1,...,1].  We keep doing the matrix
-	 * print , incrementing from the highest dimension,
-	 * and rolling downwards.
-	 */
-	Dimensions wdims(dp->dimensions.getLength());
-	int rows(dp->dimensions.getRows());
-	int columns(dp->dimensions.getColumns());
-	int items_printed;
-	items_printed = 0;
-	int offset = 0;
-	while (wdims.inside(dp->dimensions) && (items_printed<printLimit)) {
-	  snprintf(msgBuffer,MSGBUFLEN,"(:,:");
-	  io->outputMessage(msgBuffer);
-	  for (int m=2;m<dp->dimensions.getLength();m++) {
-	    snprintf(msgBuffer,MSGBUFLEN,",%d",wdims[m]+1);
-	    io->outputMessage(msgBuffer);
-	  }
-	  snprintf(msgBuffer,MSGBUFLEN,") = \n");
-	  io->outputMessage(msgBuffer);
-	  // Determine how many columns will fit across
-	  // the terminal width
-	  int colsPerPage;
-	  colsPerPage = (int) floor((termWidth-1)/((float) nominalWidth));
-	  colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
-	  int pageCount;
-	  pageCount = (int) ceil(columns/((float)colsPerPage));
-	  for (int k=0;k<pageCount && (items_printed<printLimit);k++) {
-	    int colsInThisPage;
-	    colsInThisPage = columns - colsPerPage*k;
-	    colsInThisPage = (colsInThisPage > colsPerPage) ? 
-	      colsPerPage : colsInThisPage;
-	    snprintf(msgBuffer,MSGBUFLEN," \nColumns %d to %d\n",
-		     k*colsPerPage+1,k*colsPerPage+colsInThisPage);
-	    io->outputMessage(msgBuffer);
-	    memset(msgBuffer,0,MSGBUFLEN);
-	    for (int i=0;i<rows && (items_printed<printLimit);i++) {
-	      snprintf(msgBuffer,MSGBUFLEN," ");
-	      io->outputMessage(msgBuffer);
-	      memset(msgBuffer,0,MSGBUFLEN);
-	      for (int j=0;j<colsInThisPage && (items_printed<printLimit);j++) {
-		emitElement(msgBuffer,
-			    ap,i+(k*colsPerPage+j)*rows+offset,
-			    dp->dataClass);
-		items_printed++;
-	      }
-	      snprintf(msgBuffer,MSGBUFLEN,"\n");
-	      io->outputMessage(msgBuffer);
-	      memset(msgBuffer,0,MSGBUFLEN);
-	    }
-	  }
-	  offset += rows*columns;
-	  wdims.incrementModulo(dp->dimensions,2);
-	}
-	if (items_printed >= printLimit) 
-	  io->outputMessage("\n... Output truncated - use setprintlimit function to see more of the output ...\n");
-      }
-    }
   }
 
   char* Array::getContentsAsCString() const  {
@@ -4217,4 +3868,417 @@ break;
     }
     throw Exception("Unsupported class as argument to TypeSize");
   }
+
+  
+  void emitElement(char *msgBuffer, const void *dp, int num, Class dcls) {
+    switch (dcls) {
+    case FM_INT8: {
+      const int8 *ap;
+      ap = (const int8*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"% 4d",ap[num]);
+      io->outputMessage(msgBuffer);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_UINT8: {
+      const uint8 *ap;
+      ap = (const uint8*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"%3u",ap[num]);
+      io->outputMessage(msgBuffer);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_INT16: {
+      const int16 *ap;
+      ap = (const int16*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"% 6d",ap[num]);
+      io->outputMessage(msgBuffer);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_UINT16: {
+      const uint16 *ap;
+      ap = (const uint16*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"%5u",ap[num]);
+      io->outputMessage(msgBuffer);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_INT32: {
+      const int32 *ap;
+      ap = (const int32*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"%13d",ap[num]);
+      io->outputMessage(msgBuffer);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_UINT32: {
+      const uint32 *ap;
+      ap = (const uint32*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"%12u",ap[num]);
+      io->outputMessage(msgBuffer);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_LOGICAL: {
+      const logical *ap;
+      ap = (const logical*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"%d  ",ap[num]);
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_STRING: {
+      const char *ap;
+      ap = (const char*) dp;
+      snprintf(msgBuffer,MSGBUFLEN,"%c\0",ap[num]);
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_FLOAT: {
+      const float *ap;
+      ap = (const float*) dp;
+      outputSinglePrecisionFloat(msgBuffer,ap[num]);
+      io->outputMessage(msgBuffer);
+      memset(msgBuffer,0,MSGBUFLEN); 
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_DOUBLE: {
+      const double *ap;
+      ap = (const double*) dp;
+      outputDoublePrecisionFloat(msgBuffer,ap[num]);
+      io->outputMessage(msgBuffer);
+      memset(msgBuffer,0,MSGBUFLEN);
+      snprintf(msgBuffer,MSGBUFLEN,"  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_COMPLEX: {
+      const float *ap;
+      ap = (const float*) dp;
+      outputSinglePrecisionFloat(msgBuffer,ap[2*num]);
+      io->outputMessage(msgBuffer);
+      memset(msgBuffer,0,MSGBUFLEN);
+      snprintf(msgBuffer,MSGBUFLEN," ");
+      io->outputMessage(msgBuffer);
+      outputSinglePrecisionFloat(msgBuffer,ap[2*num+1]);
+      io->outputMessage(msgBuffer);
+      memset(msgBuffer,0,MSGBUFLEN);      
+      snprintf(msgBuffer,MSGBUFLEN,"i  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_DCOMPLEX: {
+      const double *ap;
+      ap = (const double*) dp;
+      outputDoublePrecisionFloat(msgBuffer,ap[2*num]);
+      io->outputMessage(msgBuffer);
+      memset(msgBuffer,0,MSGBUFLEN);
+      snprintf(msgBuffer,MSGBUFLEN," ");
+      io->outputMessage(msgBuffer);
+      outputDoublePrecisionFloat(msgBuffer,ap[2*num+1]);
+      io->outputMessage(msgBuffer);
+      memset(msgBuffer,0,MSGBUFLEN);      
+      snprintf(msgBuffer,MSGBUFLEN,"i  ");
+      io->outputMessage(msgBuffer);
+      break;
+    }
+    case FM_CELL_ARRAY: {
+      Array *ap;
+      ap = (Array*) dp;
+      if (ap == NULL)
+	io->outputMessage("[]");
+      else
+	ap[num].summarizeCellEntry();
+      io->outputMessage("  ");
+      break;
+    }
+    case FM_FUNCPTR_ARRAY: {
+      const FunctionDef** ap;
+      ap = (const FunctionDef**) dp;
+      if (!ap[num]) {
+	io->outputMessage("[]  ");
+      } else {
+	io->outputMessage("@");
+	io->outputMessage(ap[num]->name.c_str());
+	snprintf(msgBuffer,MSGBUFLEN,"  ");
+	io->outputMessage(msgBuffer);
+      }
+    }
+    }
+  }
+  
+  
+  template <class T>
+  int GetNominalWidthInteger(const T*array, int count) {
+    char buffer[100];
+    
+    int maxdigit = 0;
+    for (int i=0;i<count;i++) {
+      memset(buffer,0,100);
+      sprintf(buffer,"%d",array[i]);
+      int j = maxdigit;
+      while (buffer[j] && j>maxdigit)
+	j++;
+      maxdigit = j;
+    }
+    return maxdigit;
+  }
+
+  template <class T>
+  int GetNominalWidthFloat(const T*array, int count) {
+    char buffer[100];
+    
+    int maxdigit = 0;
+    for (int i=0;i<count;i++) {
+      memset(buffer,0,100);
+      sprintf(buffer,"%d",array[i]);
+      int j = maxdigit;
+      while (buffer[j] && j>maxdigit)
+	j++;
+      maxdigit = j;
+    }
+    return maxdigit;
+  }
+  
+  // Calculate how many characters are needed to display the given array
+  int GetNominalWidth(Array A) {
+    switch(A.getDataClass) {
+    case FM_UINT8:
+      return GetNominalWidthInteger<uint8>((const uint8*) A.getDataPointer(),A.getElementCount());
+    case FM_INT8:
+      return GetNominalWidthInteger<int8>((const int8*) A.getDataPointer(),A.getElementCount());
+    case FM_UINT16:
+      return GetNominalWidthInteger<uint16>((const uint16*) A.getDataPointer(),A.getElementCount());
+    case FM_INT16:
+      return GetNominalWidthInteger<int16>((const int16*) A.getDataPointer(),A.getElementCount());
+    case FM_UINT32:
+      return GetNominalWidthInteger<uint32>((const uint32*) A.getDataPointer(),A.getElementCount());
+    case FM_INT32:
+      return GetNominalWidthInteger<int32>((const int32*) A.getDataPointer(),A.getElementCount());
+    case FM_LOGICAL:
+      return GetNominalWidthInteger<logical>((const logical*) A.getDataPointer(),A.getElementCount());
+    case FM_FLOAT:
+      return GetNominalWidthFloat<float>((const float*) A.getDataPointer(),A.getElementCount());
+    case FM_DOUBLE:
+      return GetNominalWidthFloat<double>((const double*) A.getDataPointer(),A.getElementCount());
+    case FM_STRING:
+      return 1;
+    case FM_COMPLEX:
+      return GetNominalWidthFloat<float>((const float*) A.getDataPointer(),A.getElementCount()*2);
+    case FM_DCOMPLEX:
+      return GetNominalWidthFloat<double>((const double*) A.getDataPointer(),A.getElementCount()*2);
+    case FM_CELL_ARRAY:
+    case FM_STRUCT_ARRAY:
+    case FM_FUNCPTR_ARRAY:
+      return 20;
+    }
+    return 20;
+  }
+
+  // Print the class type and size information for the array
+  void PrintArrayClassAndSize(Array A, Interface* io) {
+    switch(A.getDataClass) {
+    case FM_UINT8:
+      io->outputMessage("  <uint8>  ");
+      break;
+    case FM_INT8:
+      io->outputMessage("  <int8>  ");
+      break;
+    case FM_UINT16:
+      io->outputMessage("  <uint16>  ");
+      break;
+    case FM_INT16:
+      io->outputMessage("  <int16>  ");
+      break;
+    case FM_UINT32:
+      io->outputMessage("  <uint32>  ");
+      break;
+    case FM_INT32:
+      io->outputMessage("  <int32>  ");
+      break;
+    case FM_FLOAT:
+      io->outputMessage("  <float>  ");
+      break;
+    case FM_DOUBLE:
+      io->outputMessage("  <double>  ");
+      break;
+    case FM_LOGICAL:
+      io->outputMessage("  <logical>  ");
+      break;
+    case FM_STRING:
+      io->outputMessage("  <string>  ");
+      break;
+    case FM_COMPLEX:
+      io->outputMessage("  <complex>  ");
+      break;
+    case FM_DCOMPLEX:
+      io->outputMessage("  <dcomplex>  ");
+      break;
+    case FM_CELL_ARRAY:
+      io->outputMessage("  <cell array> ");
+      break;
+    case FM_STRUCT_ARRAY:
+      if (isUserClass()) {
+	io->outputMessage(" ");
+	io->outputMessage(A.getClassName().back().c_str());
+	io->outputMessage(" object");
+      } else
+	io->outputMessage("  <structure array> ");
+      break;
+    case FM_FUNCPTR_ARRAY:
+      io->outputMessage("  <function ptr array>  ");
+    }
+    io->outputMessage("- size: ");
+    A.getDimensions().printMe(io);
+    io->outputMessage("\n");
+  }
+
+  // Helper function - print an array using "classic" notation
+  void PrintArrayClassic(Array A, int printLimit, Interface* io, int termWidth) {
+    PrintArrayClassAndSize(A,io);
+    if (A.isUserClass())
+      return;
+    if (A.isEmpty()) {
+      io->outputMessage("  []\n");
+      return;
+    }
+    if (A.isSparse()) {
+      sprintf(msgBuffer,"\tMatrix is sparse with %d nonzeros\n",
+	      getNonzeros());
+      io->outputMessage(msgBuffer);
+      return;
+    }
+    int nominalWidth = GetNominalWidth(A);
+    if (dp->dataClass == FM_STRUCT_ARRAY) {
+      if (dp->dimensions.isScalar()) {
+	Array *ap;
+	ap = (Array *) dp->getData();
+	for (int n=0;n<dp->fieldNames.size();n++) {
+	  io->outputMessage("    ");
+	  io->outputMessage(dp->fieldNames[n].c_str());
+	  io->outputMessage(": ");
+	  ap[n].summarizeCellEntry();
+	  io->outputMessage("\n");
+	}
+      } else {
+	io->outputMessage("  Fields\n");
+	for (int n=0;n<dp->fieldNames.size();n++) {
+	  io->outputMessage("    ");
+	  io->outputMessage(dp->fieldNames[n].c_str());
+	  io->outputMessage("\n");
+	}
+      }
+    } else {
+      const void *ap = dp->getData();
+      if (dp->dimensions.getLength() == 2) {
+	int rows = dp->dimensions.getRows();
+	int columns = dp->dimensions.getColumns();
+	int items_printed;
+	items_printed = 0;
+	// Determine how many columns will fit across
+	// the terminal width
+	int colsPerPage;
+	colsPerPage = (int) floor((termWidth-1)/((float) nominalWidth));
+	colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
+	int pageCount;
+	pageCount = (int) ceil(columns/((float)colsPerPage));
+	for (int k=0;k<pageCount && (items_printed<printLimit);k++) {
+	  int colsInThisPage;
+	  colsInThisPage = columns - colsPerPage*k;
+	  colsInThisPage = (colsInThisPage > colsPerPage) ? 
+	    colsPerPage : colsInThisPage;
+	  if (dp->dimensions.getElementCount() > 1 && 
+	      dp->dataClass != FM_STRING) {
+	    snprintf(msgBuffer,MSGBUFLEN," \nColumns %d to %d\n",
+		     k*colsPerPage+1,k*colsPerPage+colsInThisPage);
+	    io->outputMessage(msgBuffer);
+	  }
+	  memset(msgBuffer,0,MSGBUFLEN);
+	  for (int i=0;i<rows && (items_printed<printLimit);i++) {
+	    snprintf(msgBuffer,MSGBUFLEN," ");
+	    io->outputMessage(msgBuffer);
+	    memset(msgBuffer,0,MSGBUFLEN);
+	    for (int j=0;j<colsInThisPage && (items_printed<printLimit);j++) {
+	      emitElement(msgBuffer,
+			  ap,i+(k*colsPerPage+j)*rows,
+			  dp->dataClass);
+	      items_printed++;
+	    }
+	    snprintf(msgBuffer,MSGBUFLEN,"\n");
+	    io->outputMessage(msgBuffer);
+	    memset(msgBuffer,0,MSGBUFLEN);
+	  }
+	}
+	if (items_printed >= printLimit) 
+	  io->outputMessage("\n... Output truncated - use setprintlimit function to see more of the output ...\n");
+      } else if (dp->dimensions.getLength() > 2) {
+	/**
+	 * For N-ary arrays, data slice  -  start with 
+	 * [1,1,1,...,1].  We keep doing the matrix
+	 * print , incrementing from the highest dimension,
+	 * and rolling downwards.
+	 */
+	Dimensions wdims(dp->dimensions.getLength());
+	int rows(dp->dimensions.getRows());
+	int columns(dp->dimensions.getColumns());
+	int items_printed;
+	items_printed = 0;
+	int offset = 0;
+	while (wdims.inside(dp->dimensions) && (items_printed<printLimit)) {
+	  snprintf(msgBuffer,MSGBUFLEN,"(:,:");
+	  io->outputMessage(msgBuffer);
+	  for (int m=2;m<dp->dimensions.getLength();m++) {
+	    snprintf(msgBuffer,MSGBUFLEN,",%d",wdims[m]+1);
+	    io->outputMessage(msgBuffer);
+	  }
+	  snprintf(msgBuffer,MSGBUFLEN,") = \n");
+	  io->outputMessage(msgBuffer);
+	  // Determine how many columns will fit across
+	  // the terminal width
+	  int colsPerPage;
+	  colsPerPage = (int) floor((termWidth-1)/((float) nominalWidth));
+	  colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
+	  int pageCount;
+	  pageCount = (int) ceil(columns/((float)colsPerPage));
+	  for (int k=0;k<pageCount && (items_printed<printLimit);k++) {
+	    int colsInThisPage;
+	    colsInThisPage = columns - colsPerPage*k;
+	    colsInThisPage = (colsInThisPage > colsPerPage) ? 
+	      colsPerPage : colsInThisPage;
+	    snprintf(msgBuffer,MSGBUFLEN," \nColumns %d to %d\n",
+		     k*colsPerPage+1,k*colsPerPage+colsInThisPage);
+	    io->outputMessage(msgBuffer);
+	    memset(msgBuffer,0,MSGBUFLEN);
+	    for (int i=0;i<rows && (items_printed<printLimit);i++) {
+	      snprintf(msgBuffer,MSGBUFLEN," ");
+	      io->outputMessage(msgBuffer);
+	      memset(msgBuffer,0,MSGBUFLEN);
+	      for (int j=0;j<colsInThisPage && (items_printed<printLimit);j++) {
+		emitElement(msgBuffer,
+			    ap,i+(k*colsPerPage+j)*rows+offset,
+			    dp->dataClass);
+		items_printed++;
+	      }
+	      snprintf(msgBuffer,MSGBUFLEN,"\n");
+	      io->outputMessage(msgBuffer);
+	      memset(msgBuffer,0,MSGBUFLEN);
+	    }
+	  }
+	  offset += rows*columns;
+	  wdims.incrementModulo(dp->dimensions,2);
+	}
+	if (items_printed >= printLimit) 
+	  io->outputMessage("\n... Output truncated - use setprintlimit function to see more of the output ...\n");
+      }
+    }
+
+
 }

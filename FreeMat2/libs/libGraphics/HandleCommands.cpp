@@ -359,6 +359,10 @@ namespace FreeMat {
       ptr+=2;
     }
     fp->UpdateState();
+    if (!fp->IsType("figure")) {
+      HandleFigure *fig = fp->GetParentFigure();
+      fig->Repaint();
+    }
     return ArrayVector();
   }
 

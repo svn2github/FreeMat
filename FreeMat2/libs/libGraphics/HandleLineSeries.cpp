@@ -72,8 +72,6 @@ namespace FreeMat {
     sp->Data(xs);
     sp = (HPVector*) LookupProperty("zdata");
     sp->Data(zs);
-    HandleAxis* parent = GetParentAxis();
-    parent->UpdateState();
   }
 
   void HandleLineSeries::PaintMe(RenderEngine& gc) {

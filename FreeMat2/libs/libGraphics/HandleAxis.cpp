@@ -1965,6 +1965,14 @@ namespace FreeMat {
       HPThreeVector *tv = (HPThreeVector*) LookupProperty("cameraupvector");
       tv->Value(0,1,0);
     }
+
+    HPHandles *children = (HPHandles*) LookupProperty("children");
+    std::vector<unsigned> handles(children->Data());
+    for (int i=0;i<handles.size();i++) {
+      HandleObject *fp = LookupHandleObject(handles[i]);
+      fp->UpdateState();
+    }    
+
     RePackFigure();
     RecalculateTicks();
     RePackFigure();

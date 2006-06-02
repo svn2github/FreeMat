@@ -187,10 +187,6 @@ HandleFigure* HandleWindow::HFig() {
 	layout->setCurrentWidget(glchild);
 	glchild->show();
 	glchild->updateGeometry();
-	//      layout->removeWidget(qtchild);
-	//      qtchild->hide();
-	//	qDebug("GLactive");
-	//     glchild->show();
 	repaint();
 	glchild->updateGL();
 	update();
@@ -202,19 +198,7 @@ HandleFigure* HandleWindow::HFig() {
       if (layout->currentWidget() != qtchild) {
 	if (QGLFormat::hasOpenGL())
 	  glchild->setGeometry(0,0,1,1);
-	//      glchild->makeCurrent();
-	//glchild->resizeGL(1,1);
-	//       glClearColor(1,1,1,1);
-	//       glClearDepth(1.0f);
-	//       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//       glchild->swapBuffers();
-	//       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	layout->setCurrentWidget(qtchild);
-	//      qtchild->show();
-	//      glchild->hide();
-	//     qtchild->show();
-	qDebug("QTactive");
-	//      glchild->updateGL();
       }
       update();
     }

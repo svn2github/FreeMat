@@ -64,8 +64,6 @@ namespace FreeMat {
     QRect sze(fm.boundingRect(text.c_str()));
     SetFourVectorDefault("boundingbox",sze.left(),sze.bottom(),
 			 sze.width(),sze.height());
-    HandleAxis* parent = GetParentAxis();
-    parent->UpdateState();
   }
 
   int HandleText::GetTextHeightInPixels() {

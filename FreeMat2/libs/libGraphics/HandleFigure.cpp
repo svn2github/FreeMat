@@ -174,6 +174,7 @@ namespace FreeMat {
     SetTwoVectorDefault("figsize",width,height);
     resized = true;
     UpdateState();
+    // Change to be recursive...
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {

@@ -268,8 +268,6 @@ namespace FreeMat {
     if (IsAuto("cdatamode"))
       DoAutoCMode();
     HandleImage::UpdateCAlphaData();
-    HandleAxis* parent = GetParentAxis();
-    parent->UpdateState();
   }
 
   /*

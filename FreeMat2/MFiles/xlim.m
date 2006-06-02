@@ -1,27 +1,30 @@
 %!
-%@Module XLIM Adjust X Limits of plot
+%@Module XLIM Adjust X Axis limits of plot
 %@@Section HANDLE
 %@@Usage
-%There are several ways to use @|xlim| to adjust the x limits of
-%a plot.  The y-axis retains its current limits.  The four
-%syntaxes are
+%There are several ways to use @|xlim| to adjust the X axis limits of
+%a plot.  The various syntaxes are
 %@[
+%   xlim
 %   xlim([lo,hi])   
-%   xlim(lo,hi)
 %   xlim('auto')
-%   xlim auto
+%   xlim('manual')
+%   xlim('mode')
+%   xlim(handle,...)
 %@]
-%where in the first two forms, the new x-limits on the plot are
-%@|[lo,hi]|.  In the second two forms, the axes limits are 
-%automatically selected by FreeMat.
+%The first form (without arguments), returns a 2-vector containing the
+%current limits.  The second form sets the limits on the plot to @|[lo,hi]|.
+%The third and fourth form set the mode for the limit to @|auto| and @|manual|
+%respectively.  In @|auto| mode, FreeMat chooses the range for the axis 
+%automatically.  The @|xlim('mode')| form returns the current mode for the axis
+%(either @|'auto'| or @|'manual'|).  Finally, you can specify the handle of an
+%axis to manipulate instead of using the current one.
 %@@Example
-%Here is an example of using @|xlim| to zoom in on the x axis of a
-%plot without changing the y limits.  First, the plot with default
-%limits
 %@<
 %x = linspace(-1,1);
 %y = sin(2*pi*x);
 %plot(x,y,'r-');
+%xlim  % what are the current limits?
 %mprint xlim1
 %@>
 %which results in
@@ -29,31 +32,42 @@
 %Next, we zoom in on the plot using the @|xlim| function
 %@<
 %plot(x,y,'r-')
-%xlim(-0.2,0.2)
+%xlim([-0.2,0.2])
 %mprint xlim2
 %@>
 %which results in
 %@figure xlim2
 %!
 
-% Copyright (c) 2002-2006 Samit Basu
-
-%Copyright (c) 2004,2005 Brian Yanoff, Samit Basu
-function xlim(lim1, lim2)
-  if isa(lim1,'string') && strcmp(lim1,'auto')
-      set(gca,'xlimmode','auto');
+%Copyright (c) 2004,2006 Brian Yanoff, Samit Basu
+function ret = xlim(varargin)
+  if ((nargin > 0) && isnumeric(varargin{1}) && isscalar(varargin{1}) && ishandle(varargin{1}))
+    handle = varargin{1};
+    varargin(1) = [];
+    nargin = nargin - 1;
+  else
+    handle = gca;
+  end
+  if (nargin == 0)
+    ret = get(handle,'xlim');
+    return;
+  end
+  if (isstr(varargin{1}))
+    if (strcmp(varargin{1},'mode'))
+      ret = get(handle,'xlimmode');
       return;
-  elseif isa(lim1,'string')
-      error('do not understand arguments to xlim function');
+    end
+    if (strcmp(varargin{1},'auto'))
+      set(handle,'xlimmode','auto');
+      return;
+    end
+    if (strcmp(varargin{1},'manual'))
+      set(handle,'xlimmode','manual');
+      return;
+    end
+    error('Unrecognized argument to xlim');
+  elseif (isnumeric(varargin{1}) && numel(varargin{1})==2)
+    set(gca,'xlim',varargin{1});
+  else
+    error('Unrecognized argument to xlim');
   end
-
-  if prod(size(lim1))==2
-    lo_lim = lim1(1);
-    hi_lim = lim1(2);
-  elseif ~isset('lim2')
-    error('xlim requires a 2-vector or two scalar parameters');
-  elseif prod(size(lim1))==1
-    lo_lim = lim1;
-    hi_lim = lim2(1);
-  end
-  set(gca,'xlim',[lo_lim,hi_lim]);

@@ -386,7 +386,9 @@ namespace FreeMat {
   }
 
   void PrintSheet(ArrayFormat format, Interface*io, int rows, int columns, 
-		  int offset, const void* data, Class aclass, int termWidth) {
+		  int offset, const void* data, Class aclass, int termWidth,
+		  int &printlimit) {
+    if (printlimit == 0) return;
     // Determine how many columns will fit across
     // the terminal width
     int colsPerPage;
@@ -418,6 +420,8 @@ namespace FreeMat {
 			       data,
 			       i+(k*colsPerPage+j)*rows+offset,
 			       aclass);
+	  printlimit--;
+	  if (printlimit <= 0) return;
 	  if (aclass != FM_STRING)
 	    io->outputMessage("  ");
 	}
@@ -429,8 +433,9 @@ namespace FreeMat {
   }
 
   // Helper function - print an array using "classic" notation
-  void PrintArrayClassic(Array A, int printLimit, Interface* io,  
+  void PrintArrayClassic(Array A, int printlimit, Interface* io,  
 			 bool showClassSize) {
+    if (printlimit == 0) return;
     int termWidth = io->getTerminalWidth();
     if (showClassSize)
       PrintArrayClassAndSize(A,io);
@@ -468,11 +473,12 @@ namespace FreeMat {
 	}
       }
     } else {
-      ArrayFormat format(ScanFormatArray(A.getDataPointer(),Aclass,A.getLength()));
+      ArrayFormat format(ScanFormatArray(A.getDataPointer(),Aclass,
+					 std::min(printlimit,A.getLength())));
       if (Adims.getLength() == 2) {
 	int rows = Adims.getRows();
 	int columns = Adims.getColumns();
-	PrintSheet(format,io,rows,columns,0,A.getDataPointer(),Aclass,termWidth);
+	PrintSheet(format,io,rows,columns,0,A.getDataPointer(),Aclass,termWidth,printlimit);
       } else if (Adims.getLength() > 2) {
 	/**
 	 * For N-ary arrays, data slice  -  start with 
@@ -493,11 +499,13 @@ namespace FreeMat {
 	  }
 	  snprintf(msgBuffer,MSGBUFLEN,") = \n");
 	  io->outputMessage(msgBuffer);
-	  PrintSheet(format,io,rows,columns,offset,A.getDataPointer(),Aclass,termWidth);
+	  PrintSheet(format,io,rows,columns,offset,A.getDataPointer(),Aclass,termWidth,printlimit);
 	  offset += rows*columns;
 	  wdims.incrementModulo(Adims,2);
 	}
       }
     }
+    if (printlimit == 0)
+      io->outputMessage("\nPrint limit has been reached.  Use setprintlimit function to enable longer printouts\n");
   }
 }

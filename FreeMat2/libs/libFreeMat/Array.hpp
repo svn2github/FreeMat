@@ -657,7 +657,7 @@ namespace FreeMat {
      * Print some reasonable representation of this array to the
      * the supplied stream.
      */
-    void printMe(int printLimit, int termWidth = 80) const;
+    //    void printMe(int printLimit, int termWidth = 80) const;
     /**
      * Return the number of rows.
      */

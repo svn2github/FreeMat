@@ -35,6 +35,7 @@
 #include <signal.h>
 #include <errno.h>
 #include "Class.hpp"
+#include "Print.hpp"
 #include <qapplication.h>
 #include <qeventloop.h>
 
@@ -1571,7 +1572,8 @@ namespace FreeMat {
       ArrayVector args(singleArrayVector(b));
       ArrayVector retvec(val->evaluateFunction(this,args,1));
     } else
-      b.printMe(printLimit,io->getTerminalWidth());
+      //      b.printMe(printLimit,io->getTerminalWidth());
+      PrintArrayClassic(b,printLimit,io,true);
   }
 
   void WalkTree::statementType(ASTPtr t, bool printIt) {

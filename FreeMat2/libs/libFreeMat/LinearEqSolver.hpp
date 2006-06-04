@@ -51,6 +51,14 @@ namespace FreeMat {
    * LAPACK function cgesvx.
    */
   void complexSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b);
+
+  /**
+   * Return the 1-norm condition number estimate for A.
+   */
+  float floatRecipCond(Interface* io, int m, int n, float *a);
+  double doubleRecipCond(Interface* io, int m, int n, double *a);
+  float complexRecipCond(Interface* io, int m, int n, float *a);
+  double dcomplexRecipCond(Interface* io, int m, int n, double *a);
 }
 
 #endif

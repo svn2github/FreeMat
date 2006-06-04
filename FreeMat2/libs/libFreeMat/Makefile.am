@@ -37,7 +37,8 @@ Sparse.hpp \
 Stream.hpp \
 SymbolTable.hpp \
 Types.hpp \
-WalkTree.hpp
+WalkTree.hpp \
+Print.hpp
 
 libFreeMat_a_SOURCES = Array.cpp \
 AST.cpp \
@@ -69,6 +70,7 @@ Serialize.cpp \
 SingularValueDecompose.cpp \
 Sparse.cpp \
 WalkTree.cpp \
+Print.cpp \
 $(libFreeMat_a_HFILES)
 
 AUTOMAKE_OPTIONS 	= foreign

@@ -366,7 +366,10 @@ namespace FreeMat {
     // Determine how many columns will fit across
     // the terminal width
     int colsPerPage;
-    colsPerPage = (int) floor((termWidth-1)/((float) format.width + 3));
+    if (aclass != FM_STRING)
+      colsPerPage = (int) floor((termWidth-1)/((float) format.width + 3));
+    else
+      colsPerPage = termWidth;
     colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
     int pageCount;
     pageCount = (int) ceil(columns/((float)colsPerPage));

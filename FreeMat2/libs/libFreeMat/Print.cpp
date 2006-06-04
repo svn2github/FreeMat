@@ -175,28 +175,52 @@ namespace FreeMat {
     case FM_COMPLEX: {
       const float *ap;
       ap = (const float*) dp;
-      if (!format.expformat)
-	snprintf(msgBuffer,MSGBUFLEN,"%*.*f + %*.*f i",
-		 format.digits+format.decimals+1,format.decimals,ap[2*num],
-		 format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
-      else
-	snprintf(msgBuffer,MSGBUFLEN,"%0.*e + %0.*e i",
-		 format.decimals,ap[2*num],
-		 format.decimals,ap[2*num+1]);
+      if (!format.expformat) {
+	if (ap[2*num+1] > 0)
+	  snprintf(msgBuffer,MSGBUFLEN,"%*.*f+%*.*f i",
+		   format.digits+format.decimals+1,format.decimals,ap[2*num],
+		   format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
+	else
+	  snprintf(msgBuffer,MSGBUFLEN,"%*.*f%*.*f i",
+		   format.digits+format.decimals+1,format.decimals,ap[2*num],
+		   format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
+      }
+      else {
+	if (ap[2*num+1] > 0)
+	  snprintf(msgBuffer,MSGBUFLEN,"%0.*e+%0.*e i",
+		   format.decimals,ap[2*num],
+		   format.decimals,ap[2*num+1]);
+	else
+	  snprintf(msgBuffer,MSGBUFLEN,"%0.*e%0.*e i",
+		   format.decimals,ap[2*num],
+		   format.decimals,ap[2*num+1]);
+      }
       io->outputMessage(msgBuffer);
       break;
     }
     case FM_DCOMPLEX: {
       const double *ap;
       ap = (const double*) dp;
-      if (!format.expformat)
-	snprintf(msgBuffer,MSGBUFLEN,"%*.*f+%*.*fi",
-		 format.digits+format.decimals+1,format.decimals,ap[2*num],
-		 format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
-      else
-	snprintf(msgBuffer,MSGBUFLEN,"%0.*e+%0.*ei",
-		 format.decimals,ap[2*num],
-		 format.decimals,ap[2*num+1]);
+      if (!format.expformat) {
+	if (ap[2*num+1] > 0) 
+	  snprintf(msgBuffer,MSGBUFLEN,"%*.*f+%*.*fi",
+		   format.digits+format.decimals+1,format.decimals,ap[2*num],
+		   format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
+	else
+	  snprintf(msgBuffer,MSGBUFLEN,"%*.*f%*.*fi",
+		   format.digits+format.decimals+1,format.decimals,ap[2*num],
+		   format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
+      }
+      else {
+	if (ap[2*num+1] > 0) 
+	  snprintf(msgBuffer,MSGBUFLEN,"%0.*e+%0.*ei",
+		   format.decimals,ap[2*num],
+		   format.decimals,ap[2*num+1]);
+	else
+	  snprintf(msgBuffer,MSGBUFLEN,"%0.*e%0.*ei",
+		   format.decimals,ap[2*num],
+		   format.decimals,ap[2*num+1]);
+      }
       io->outputMessage(msgBuffer);
       break;
     }

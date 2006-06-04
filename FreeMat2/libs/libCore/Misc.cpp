@@ -35,6 +35,7 @@
 #include "System.hpp"
 #include "Sparse.hpp"
 #include "LUDecompose.hpp"
+#include "Print.hpp"
 
 #include <algorithm>
 #undef max
@@ -69,7 +70,8 @@ namespace FreeMat {
     length = arg.size();
     for (int i=0;i<length;i++) {
       C = arg[i];
-      C.printMe(eval->getPrintLimit());
+      PrintArrayClassic(C,eval->getPrintLimit(),
+			eval->getInterface(),false);
     }
     //    retval.push_back(C);
     return retval;

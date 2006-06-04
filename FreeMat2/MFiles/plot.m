@@ -137,11 +137,11 @@
 %
 %Here is an example of using the handle properties to influence the behavior
 %of the generated lines.
-%@[
+%@<
 %t = linspace(-3,3);
 %plot(cos(5*t).*exp(-t),'r-','linewidth',3);
 %mprint plot6
-%@]
+%@>
 %@figure plot6
 %!
 

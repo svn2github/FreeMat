@@ -74,7 +74,9 @@
 %because of the somewhat esoteric dependencies of FreeMat.  The configure
 %step will probably fail and indicate what external dependencies are
 %still needed.  It will also create a script that you can run to build
-%the missing dependencies.  For example, on my machine, a @|configure|
+%the missing dependencies.  
+%\end{enumerate}
+%For example, on my machine, a @|configure|
 %step yields the following result:
 %@[
 %checking for amd_postorder in -lamd... no
@@ -125,26 +127,14 @@
 %@]
 %After you run the @|builddeps| script, the configure succeeds, and the
 %usual @|configure && make && make install| should work.
-%\item For Linux, the location of Qt4 is highly system dependent.  The
-%way to tell @|configure| the whereabouts of Qt4, you need to make sure
+%Note that for Linux, the location of Qt4 is highly system dependent.  For
+% @|configure| to find the whereabouts of Qt4, you need to make sure
 %that @|pkg-config| can find Qt4.  For example, if you installed Qt4
 %yourself, you would set
 %@[
 %declare -x PKG_CONFIG_PATH=/usr/local/Trolltech/Qt-4.1.0/lib
 %@]
-%
-%\item Build the extern dependencies: @|cd extern && ./build_extern.sh| for Linux and MacOSX, or (from an MSYS prompt) @|cd extern && ./build_extern_mingw.sh| for Windows.
-%\item Check the output of the build script to make sure all external dependencies built OK.  
-%\item Install cmake (you will need cmake-cvs for Windows) from @|www.cmake.org|.
-%\item Create a build directory @|mkdir build && cd build|
-%\item Run CMake on the source. @|cmake ..|. Note that on Windows, you must run CMake and make from a Windows command prompt.  You cannot run cmake and make from within MSYS or things will not work properly.
-%\item If all goes well build the source: @|make|
-%\item Build the source: @|make|
-%\item Build the help files: @|make help|.  You will need a functional installation of
-%@|LaTeX| and @|dvipng| for the help files to build properly.
-%\item Test the result @|make check|
-%\item Build a binary installation package: @|make binpkg|
-%\item The result is a directory @|FreeMat-<VERSION_NUMBER>| that contains the newly built
-%installation.  Follow the directions listed above to install the new version.
-%\end{enumerate}
+%Also, to build a binary distributable (app bundle on the Mac, setup
+%installer on win32, and a binary distribution on Linux), you will
+%need to run @|make package| instead of @|make install|.
 %!

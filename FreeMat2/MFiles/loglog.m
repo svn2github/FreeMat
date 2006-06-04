@@ -12,8 +12,8 @@
 %Here is an example of a doubly exponential signal plotted first on a linear
 %plot:
 %@<
-%x = linspace(0,2);
-%y = (10).^x;
+%x = linspace(1,100);
+%y = x;
 %plot(x,y,'r-');
 %mprint loglog1
 %@>

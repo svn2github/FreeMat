@@ -140,7 +140,9 @@
 %@[
 %t = linspace(-3,3);
 %plot(cos(5*t).*exp(-t),'r-','linewidth',3);
+%mprint plot6
 %@]
+%@figure plot6
 %!
 
 % Copyright (c) 2002-2006 Samit Basu

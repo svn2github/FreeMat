@@ -1877,42 +1877,76 @@ break;
     return Array(FM_INT32,dim,rp);
   }
 
+  void do_single_sided_algo_float(float a, float b,float *pvec, int adder, int count) {
+    double d = a;
+    for (int i=0;i<count;i++) {
+      pvec[i*adder] = (float) d;
+      d += b;
+    }
+  }
+  
+  void do_double_sided_algo_float(float a, float b, float c, float *pvec, int adder, int count) {
+    if (count%2) {
+      do_single_sided_algo_float(a,b,pvec,adder,count/2);
+      do_single_sided_algo_float(c,-b,pvec+(count-1)*adder,-adder,count/2+1);
+    } else {
+      do_single_sided_algo_float(a,b,pvec,adder,count/2);
+      do_single_sided_algo_float(c,-b,pvec+(count-1)*adder,-adder,count/2);
+    }
+  }
+
   Array Array::floatRangeConstructor(float minval, float stepsize, 
 				     float maxval, bool vert) {
     Dimensions dim;
     float *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = 0;
-    double accum = minval;
-    if (stepsize > 0) {
-      while (accum <= nextafterf(maxval,maxval+stepsize)) {
-	accum += stepsize;
-	scount++;
-      }
-    } else {
-      while (accum >= nextafterf(maxval,maxval+stepsize)) {
-	accum += stepsize;
-	scount++;
-      }
-    }
-    if (scount <= 0)
+
+    //ideally, n = (c-a)/b
+    // But this really defines an interval... we let
+    // n_min = min(c-a)/max(b)
+    // n_max = max(c-a)/min(b)
+    // where min(x) = {y \in fp | |y| is max, |y| < |x|, sign(y) = sign(x)}
+    //       max(x) = {y \in fp | |y| is min, |y| > |x|, sign(y) = sign(x)}
+    float ntest_min = nextafterf(maxval-minval,0)/nextafterf(stepsize,stepsize+stepsize);
+    float ntest_max = nextafterf(maxval-minval,maxval-minval+stepsize)/nextafterf(stepsize,0);
+    int npts = (int) floor(ntest_max);
+    bool use_double_sided = (ntest_min <= npts) && (npts <= ntest_max);
+    npts++;
+    if (npts <= 0)
       dim.reset();
     else {
       if (vert) {
-	dim[0] = scount;
+	dim[0] = npts;
 	dim[1] = 1;
       } else {
 	dim[0] = 1;
-	dim[1] = scount;
+	dim[1] = npts;
       }
-      rp = (float *) allocateArray(FM_FLOAT,scount);
-      accum = minval;
-      for (int i=0;i<scount;i++) {
-	rp[i] = accum;
-	accum += stepsize;
-      }
+      rp = (float *) allocateArray(FM_FLOAT,npts);
+      if (use_double_sided)
+	do_double_sided_algo_float(minval,stepsize,maxval,rp,1,npts);
+      else
+	do_single_sided_algo_float(minval,stepsize,rp,1,npts);
     }
     return Array(FM_FLOAT,dim,rp);
+  }
+
+  void do_single_sided_algo_double(double a, double b,double *pvec, int adder, int count) {
+    double d = a;
+    for (int i=0;i<count;i++) {
+      pvec[i*adder] = (double) d;
+      d += b;
+    }
+  }
+  
+  void do_double_sided_algo_double(double a, double b, double c, double *pvec, int adder, int count) {
+    if (count%2) {
+      do_single_sided_algo_double(a,b,pvec,adder,count/2);
+      do_single_sided_algo_double(c,-b,pvec+(count-1)*adder,-adder,count/2+1);
+    } else {
+      do_single_sided_algo_double(a,b,pvec,adder,count/2);
+      do_single_sided_algo_double(c,-b,pvec+(count-1)*adder,-adder,count/2);
+    }
   }
 
   Array Array::doubleRangeConstructor(double minval, double stepsize, 
@@ -1920,35 +1954,33 @@ break;
     Dimensions dim;
     double *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = 0;
-    double accum = minval;
-    if (stepsize > 0) {
-      while (accum <= nextafter(maxval,maxval+stepsize)) {
-	accum += stepsize;
-	scount++;
-      }
-    } else {
-      while (accum >= nextafter(maxval,maxval+stepsize)) {
-	accum += stepsize;
-	scount++;
-      }
-    }
-    if (scount <= 0)
+
+    //ideally, n = (c-a)/b
+    // But this really defines an interval... we let
+    // n_min = min(c-a)/max(b)
+    // n_max = max(c-a)/min(b)
+    // where min(x) = {y \in fp | |y| is max, |y| < |x|, sign(y) = sign(x)}
+    //       max(x) = {y \in fp | |y| is min, |y| > |x|, sign(y) = sign(x)}
+    double ntest_min = nextafter(maxval-minval,0)/nextafter(stepsize,stepsize+stepsize);
+    double ntest_max = nextafter(maxval-minval,maxval-minval+stepsize)/nextafter(stepsize,0);
+    int npts = (int) floor(ntest_max);
+    bool use_double_sided = (ntest_min <= npts) && (npts <= ntest_max);
+    npts++;
+    if (npts <= 0)
       dim.reset();
     else {
       if (vert) {
-	dim[0] = scount;
+	dim[0] = npts;
 	dim[1] = 1;
       } else {
 	dim[0] = 1;
-	dim[1] = scount;
+	dim[1] = npts;
       }
-      rp = (double *) allocateArray(FM_DOUBLE,scount);
-      accum = minval;
-      for (int i=0;i<scount;i++) {
-	rp[i] = accum;
-	accum += stepsize;
-      }
+      rp = (double *) allocateArray(FM_DOUBLE,npts);
+      if (use_double_sided)
+	do_double_sided_algo_double(minval,stepsize,maxval,rp,1,npts);
+      else
+	do_single_sided_algo_double(minval,stepsize,rp,1,npts);
     }
     return Array(FM_DOUBLE,dim,rp);
   }

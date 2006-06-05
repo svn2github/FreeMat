@@ -32,6 +32,7 @@ cdir=`pwd`
 cd $sourcepath/help/latex
 pdflatex main.tex
 pdflatex main.tex
+pdflatex main.tex
 cd $cwd
 echo "Cleaning up"
 rm -rf tmp

@@ -132,7 +132,7 @@ namespace FreeMat {
     context->addSpecialFunction("who",WhoFunction,-1,0);
     context->addSpecialFunction("exist",ExistFunction,2,1,"name","type");
     context->addSpecialFunction("isset",IsSetFunction,1,1,"name");
-    context->addSpecialFunction("which",WhichFunction,1,0,"fname");
+    context->addSpecialFunction("which",WhichFunction,1,1,"fname");
     context->addSpecialFunction("where",WhereFunction,0,0);
     context->addFunction("fopen",FopenFunction,3,1,"fname","mode","byteorder");
     context->addFunction("fclose",FcloseFunction,1,1,"handle");

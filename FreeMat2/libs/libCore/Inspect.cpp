@@ -1020,7 +1020,12 @@ namespace FreeMat {
   //where @|fname| is a @|string| argument that contains the name of the 
   //function.  For functions and scripts defined
   //via @|.m| files, the @|which| command returns the location of the source
-  //file.  
+  //file:
+  //@[
+  //   y = which(fname)
+  //@]
+  //will return the filename for the @|.m| file corresponding to the given
+  //function, and an empty string otherwise.
   //@@Example
   //First, we apply the @|which| command to a built in function.
   //@<
@@ -1041,6 +1046,7 @@ namespace FreeMat {
     isFun = eval->getContext()->lookupFunction(fname,val);
     Interface *io = eval->getInterface();
     char buffer[1000];
+    Array ret(Array::emptyConstructor());
     if (isFun) {
       if (val->type() == FM_M_FUNCTION) {
 	MFunctionDef *mptr;
@@ -1048,33 +1054,52 @@ namespace FreeMat {
 	mptr->updateCode();
 	if (mptr->pcodeFunction) {
 	  if (mptr->scriptFlag) {
-	    sprintf(buffer,"Function %s, P-code script\n",fname);
-	    io->outputMessage(buffer);
+	    if (nargout == 0) {
+	      sprintf(buffer,"Function %s, P-code script\n",fname);
+	      io->outputMessage(buffer);
+	    }
 	  } else {
-	    sprintf(buffer,"Function %s, P-code function\n",fname);
-	    io->outputMessage(buffer);
+	    if (nargout == 0) {
+	      sprintf(buffer,"Function %s, P-code function\n",fname);
+	      io->outputMessage(buffer);
+	    }
 	  }
 	} else {
 	  if (mptr->scriptFlag) {
-	    sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
-	    io->outputMessage(buffer);
+	    if (nargout == 0) {
+	      sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
+	      io->outputMessage(buffer);
+	    } else 
+	      ret = Array::stringConstructor(mptr->fileName.c_str());
 	  } else {
-	    sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
-	    io->outputMessage(buffer);
+	    if (nargout == 0) {
+	      sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
+	      io->outputMessage(buffer);
+	    } else
+	      ret = Array::stringConstructor(mptr->fileName.c_str());
 	  }
 	}
       } else if ((val->type() == FM_BUILT_IN_FUNCTION) || (val->type() == FM_SPECIAL_FUNCTION) ) {
-	sprintf(buffer,"Function %s is a built in function\n",fname);
-	io->outputMessage(buffer);
+	if (nargout == 0) {
+	  sprintf(buffer,"Function %s is a built in function\n",fname);
+	  io->outputMessage(buffer);
+	}
       } else {
-	sprintf(buffer,"Function %s is an imported function\n",fname);
-	io->outputMessage(buffer);
+	if (nargout == 0) {
+	  sprintf(buffer,"Function %s is an imported function\n",fname);
+	  io->outputMessage(buffer);
+	}
       }
     } else {
-      sprintf(buffer,"Function %s is unknown!\n",fname);
-      io->outputMessage(buffer);
+      if (nargout == 0) {
+	sprintf(buffer,"Function %s is unknown!\n",fname);
+	io->outputMessage(buffer);
+      }
     }
-    return ArrayVector();
+    if (nargout > 0)
+      return singleArrayVector(ret);
+    else
+      return ArrayVector();
   }
 
   ArrayVector SingleFindModeFull(Array x) {

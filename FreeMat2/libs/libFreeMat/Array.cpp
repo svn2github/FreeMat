@@ -1847,8 +1847,20 @@ break;
     Dimensions dim;
     int32 *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    int scount = (int) ceil((float)((maxval-minval)/stepsize)) + 1;
-    if (scount<=0) 
+    int scount = 0;
+    int accum = minval;
+    if (stepsize > 0) {
+      while (accum <= maxval) {
+	accum += stepsize;
+	scount++;
+      }
+    } else {
+      while (accum >= maxval) {
+	accum += stepsize;
+	scount++;
+      }
+    }
+    if (scount <= 0)
       dim.reset();
     else {
       if (vert) {
@@ -1870,14 +1882,20 @@ break;
     Dimensions dim;
     float *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    char CMACH = 'E';
-    float eps = slamch_(&CMACH);
-    int scount;
-    if (stepsize > 0)
-      scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
-    else
-      scount = (int) (floor((maxval*(1-eps)-minval)/stepsize) + 1);
-    if (scount<=0) 
+    int scount = 0;
+    double accum = minval;
+    if (stepsize > 0) {
+      while (accum <= nextafterf(maxval,maxval+stepsize)) {
+	accum += stepsize;
+	scount++;
+      }
+    } else {
+      while (accum >= nextafterf(maxval,maxval+stepsize)) {
+	accum += stepsize;
+	scount++;
+      }
+    }
+    if (scount <= 0)
       dim.reset();
     else {
       if (vert) {
@@ -1888,34 +1906,34 @@ break;
 	dim[1] = scount;
       }
       rp = (float *) allocateArray(FM_FLOAT,scount);
-      for (int i=0;i<scount;i++)
-	rp[i] = minval + i*stepsize;
+      accum = minval;
+      for (int i=0;i<scount;i++) {
+	rp[i] = accum;
+	accum += stepsize;
+      }
     }
     return Array(FM_FLOAT,dim,rp);
   }
-
-  // Want (1-eps)*maxval < minval+N*stepsize < (1+eps)*maxval
-  //      (1-eps)*maxval-minval < N*stepsize < (1+eps)*maxval-minval
-  //      
-  // N > (maxval - minval - eps*maxval)/stepsize
 
   Array Array::doubleRangeConstructor(double minval, double stepsize, 
 				       double maxval, bool vert) {
     Dimensions dim;
     double *rp = NULL;
     if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
-    // We want minval+(scount-1)*stepsize < maxval*(1+eps)
-    // or (scount-1) < (maxval*(1+eps) - minval)/stepsize
-    // if stepsize < 0
-    //    (scount-1) > (maxval*(1+eps) - minval)/stepsize
-    char CMACH = 'E';
-    double eps = dlamch_(&CMACH);
-    int scount;
-    if (stepsize > 0)
-      scount = (int) (ceil((maxval*(1-eps)-minval)/stepsize) + 1);
-    else
-      scount = (int) (floor((maxval*(1-eps)-minval)/stepsize) + 1);
-    if (scount<=0) 
+    int scount = 0;
+    double accum = minval;
+    if (stepsize > 0) {
+      while (accum <= nextafter(maxval,maxval+stepsize)) {
+	accum += stepsize;
+	scount++;
+      }
+    } else {
+      while (accum >= nextafter(maxval,maxval+stepsize)) {
+	accum += stepsize;
+	scount++;
+      }
+    }
+    if (scount <= 0)
       dim.reset();
     else {
       if (vert) {
@@ -1926,8 +1944,11 @@ break;
 	dim[1] = scount;
       }
       rp = (double *) allocateArray(FM_DOUBLE,scount);
-      for (int i=0;i<scount;i++)
-	rp[i] = minval + i*stepsize;
+      accum = minval;
+      for (int i=0;i<scount;i++) {
+	rp[i] = accum;
+	accum += stepsize;
+      }
     }
     return Array(FM_DOUBLE,dim,rp);
   }

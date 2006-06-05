@@ -321,9 +321,9 @@ namespace FreeMat {
   ArrayFormat ScanFormatArrayFloat(const T* data, int count) {
     ArrayFormat ret;
     int leading;
-    int decimals = GetNominalWidthFloat<T>(data,count,20,leading);
+    int decimals = GetNominalWidthFloat<T>(data,count,19,leading);
     if (decimals < 0) {
-      decimals = GetNominalWidthFloatE<T>(data,count,20);
+      decimals = GetNominalWidthFloatE<T>(data,count,19);
       ret.digits = 1;
       ret.decimals = decimals;
       ret.expformat = true;

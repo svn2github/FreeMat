@@ -53,7 +53,7 @@ AM_CPPFLAGS = $(QT_CFLAGS)
 %.moc.cpp: %.hpp
 	$(QT_MOC) -o $@ $<
 
-#%.qrc.cpp: %.qrc
-#	$(QT_RCC) -o $@ $<
+%.qrc.cpp: %.qrc
+	$(QT_RCC) -o $@ $<
 
 

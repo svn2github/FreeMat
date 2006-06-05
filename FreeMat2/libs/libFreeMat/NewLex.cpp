@@ -211,6 +211,11 @@ inline int currentChar() {
   return datap[0];
 }
 
+inline int nextChar() {
+  return datap[1];
+}
+
+
 inline void discardChar() {
   datap++;
 }
@@ -768,6 +773,13 @@ void yylexDoLex() {
   }
 }
 
+bool expressionStarter(char *dp) {
+  return ((*dp == '(') || (*dp == '+') || (*dp == '-') ||
+	  ((*dp == '~')  && (datap[1] != '=')) || (*dp == '[') || (*dp == '{') ||
+	  (*dp == '\'') || (isalnum(*dp)) || ((*dp == '.') && (isdigit(dp[1])))  
+	  || (strncmp(dp,"...",3) == 0));
+}
+
 int yylexScreen() {
   static int previousToken = 0;
   tokenActive = 0;
@@ -779,9 +791,7 @@ int yylexScreen() {
 	(previousToken == STRING) || (previousToken == ']') || (previousToken == '}') ||
 	(previousToken == IDENT) || (previousToken == MAGICEND)) {
       /* Test if next character indicates the start of an expression */
-      if ((currentChar() == '(') || (currentChar() == '+') || (currentChar() == '-') ||
-	  ((currentChar() == '~')  && (datap[1] != '=')) || (currentChar() == '[') || (currentChar() == '{') ||
-	  (currentChar() == '\'') || (isalnum(currentChar())) || ((currentChar() == '.') && (isdigit(datap[1])))  || (strncmp(datap,"...",3) == 0) ){
+      if (expressionStarter(datap)) {
 	/* 
 	   OK - now we have to decide if the "+/-" are infix or prefix operators...
 	   In fact, this decision alone is the reason for this whole lexer.
@@ -797,6 +807,11 @@ int yylexScreen() {
 	      tokenType = '#';
 	  }
 	} else
+	  tokenType = '#';
+      } else if (currentChar() == ' ') {
+	int i = 0;
+	while (datap[i] == ' ') i++;
+	if (expressionStarter(datap+i))
 	  tokenType = '#';
       }
     }

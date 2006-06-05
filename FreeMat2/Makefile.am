@@ -15,6 +15,4 @@ help: all check
 install-data-hook:
 	@ln -s $(DESTDIR)$(resourcedir)/help/MFiles $(DESTDIR)$(resourcedir)/mfiles
 
-dist-hook:
-	buildnum=`svn info $(top_srcdir)| sed -n -e "/Revision: \([0-9]*\)/p" | sed "s/Revision: //g"`;\
-	sed "s/SVN/$$buildnum/g" < $(top_srcdir)/libs/libFreeMat/WalkTree.cpp > $(distdir)/libs/libFreeMat/WalkTree.cpp
+

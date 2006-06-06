@@ -146,7 +146,7 @@ MakeMacBundle()
     MakeDir "$baseDir/Contents/Resources/mfiles"
     MakeDir "$baseDir/Contents/Frameworks"
     CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
-    ln -s "$baseDir/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
+    ln -s "$baseDir/Contents/MacOS/FreeMat" "$baseDir/FreeMat"
     CopyFile "$srcDir/src/appIcon.icns" "$baseDir/Contents/Resources/appIcon.icns"
     echo "APPL????" > "$baseDir/Contents/PkgInfo"
     cat > "$baseDir/Contents/Info.plist" <<EOF

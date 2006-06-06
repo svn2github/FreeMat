@@ -34,10 +34,11 @@
 #include "PathTool.hpp"
 #include "ToolDock.hpp"
 
-const int about_linecount = 22;
-const char *about_strings[] = {"Julie & Maya - My Fan Club",
-			       "Bruno De Man - General suggestions, support and FreeMat advocate",
+const int about_linecount = 23;
+const char *about_strings[] = {"Julie Maya & Neil - My Fan Club",
+			       "Bruno De Man - New icon, general suggestions, support and FreeMat advocate",
 			       "Thomas Beutlich - MAT file support",
+			       "M. Vogel - Matlab compatibility scripts",
 			       "Brian Yanoff - Compatibility scripts",
 			       "Jeff Fessler - Support and test code, help with  class support",
 			       "Al Danial - Help with sparse matrix support",

@@ -670,23 +670,107 @@ tree addChild(tree root, tree child) {
   root->children.push_back(child);
 }
 
+typedef enum {
+  TOK_IDENT = 130,
+  TOK_NUMBER,
+  TOK_SPACE,
+  TOK_STRING
+};
+
+string reserved[20] = {
+  "break",
+  "case",
+  "catch",
+  "continue",
+  "else",
+  "elseif",
+  "end",
+  "for",
+  "function",
+  "global",
+  "if",
+  "keyboard",
+  "otherwise",
+  "persistent",
+  "quit",
+  "retall",
+  "return",
+  "switch",
+  "try",
+  "while"
+};
+
+
+typedef unsigned char byte;
 
 class Token {
-  char m_tok;
+  byte m_tok;
   unsigned m_line;
   unsigned m_col;
   unsigned m_pos;
   string m_text;
 public:
+  Token();
   Token(char tok, unsigned line, unsigned col, unsigned pos, string text = string());
   bool Is(char tok) const {return m_tok == tok;}
   unsigned Line()  const {return m_line;}
   unsigned Column()  const {return m_col;}
   unsigned Position()  const {return m_pos;}
   string Text()  const {return m_text;}
+  void Print(ostream& o) const;
 };
 
+Token::Token(char tok, unsigned line, unsigned col, unsigned pos, string text) :
+  m_tok(tok), m_line(line), m_col(col), m_pos(pos), m_text(text) {
+}
+
+Token::Token() {
+}
+
+void Token::Print(ostream& o) const {
+  if (m_tok < TOK_IDENT)
+    o << " Token " << m_tok << "(" << (int) m_tok << ")\n";
+  else {
+    switch (m_tok) {
+    case TOK_IDENT:
+      o << " Ident " << m_text << "\n";
+      break;
+    case TOK_NUMBER:
+      o << " Number " << m_text << "\n";
+      break;
+    case TOK_SPACE:
+      o << " Space\n";
+      break;
+    case TOK_STRING:
+      o << " String " << m_text << "\n";
+      break;
+    }
+  }
+}
+
+ostream& operator<<(ostream& o, const Token& b) {
+  b.Print(o);
+  return o;
+}
+
+bool isalnumus(char a) {
+  return (isalnum(a) || (a=='_'));
+}
+
 class Scanner {
+  string m_text;
+  int m_ptr;
+  Token m_tok;
+  bool m_tokValid;
+  char current();
+  char previous();
+  char ahead(int n);
+  void Fetch();
+  void FetchWhitespace();
+  void FetchIdentifier();
+  void FetchNumber();
+  void FetchString();
+  void FetchOther();
 public:
   Scanner(string buf);
   // Methods accessed by the parser
@@ -698,8 +782,98 @@ public:
   void Save();
   void Restore();
   void Continue();
+  bool Done();
 };
 
+bool Scanner::Done() {
+  return (m_ptr >= m_text.size());
+}
+
+Scanner::Scanner(string buf) {
+  m_text = buf;
+  m_ptr = 0;
+  m_tokValid = false;
+}
+
+void Scanner::Fetch() {
+  if (isalpha(current()))
+    FetchIdentifier();
+  else if (isdigit(current()))
+    FetchNumber();
+  else if (isblank(current()))
+    FetchWhitespace();
+  else if ((current() == '\'') && !((previous() == ')') ||
+				    (previous() == ']') ||
+				    (previous() == '}') ||
+				    (isalnumus(previous())))) {
+    FetchString();
+  } else
+    FetchOther();
+  m_tokValid = true;
+}
+
+void Scanner::FetchOther() {
+  m_tok = Token(m_text[m_ptr],0,0,0);
+  m_ptr++;
+}
+
+void Scanner::FetchString() {
+  int len = 0;
+  while (!(ahead(len+1) == '\'')) len++;
+  m_tok = Token(TOK_STRING,0,0,0,string(m_text,m_ptr+1,len));
+  m_ptr += len+2;
+}
+
+void Scanner::FetchWhitespace() {
+  int len = 0;
+  while (isblank(ahead(len))) len++;
+  m_tok = Token(TOK_SPACE,0,0,0);
+  m_ptr += len;
+}
+
+void Scanner::FetchNumber() {
+  int len = 0;
+  while (isdigit(ahead(len))) len++;
+  m_tok = Token(TOK_NUMBER,0,0,0,string(m_text,m_ptr,len));
+  m_ptr += len;
+}
+
+void Scanner::FetchIdentifier() {
+  int len = 0;
+  while (isalnumus(ahead(len))) len++;
+  // Collect the identifier into a string
+  string ident(string(m_text,m_ptr,len));
+  int indx = binary_search(reserved,reserved+20,ident);
+  m_tok = Token(TOK_IDENT,0,0,0,string(m_text,m_ptr,len));
+  m_ptr += len;
+}
+
+const Token& Scanner::Next() {
+  if (!m_tokValid) Fetch();
+  return m_tok;
+}
+
+void Scanner::Consume() {
+  m_tokValid = false;
+}
+
+char Scanner::current() {
+  return m_text.at(m_ptr);
+}
+
+char Scanner::previous() {
+  if (m_ptr)
+    return m_text.at(m_ptr-1);
+  else
+    return 0;
+}
+
+char Scanner::ahead(int n) {
+  if ((m_ptr+n) >= m_text.size()) 
+    return 0;
+  else
+    return m_text.at(m_ptr+n);
+}
 
 typedef int op_prec;
 
@@ -822,7 +996,7 @@ tree Parser::ParseSingletonStatement(string keyword) {
 
 tree Parser::ParseMultiFunctionCall() {
   tree root = mkLeaf("multi");
-  addChild(root,ParseMatrixDefinition());
+  //  addChild(root,ParseMatrixDefinition());
   flushws();
   expect("=");
   flushws();
@@ -1310,6 +1484,12 @@ void Parser::Expression() {
 }
 
 int main(int argc, char *argv[]) {
+  Scanner S(argv[1]);
+  while (!S.Done()) {
+    cout << S.Next();
+    S.Consume();
+  }
+  return 0;
   Parser G(argv[1]);
   try {
     tree a = G.ParseStatementList();

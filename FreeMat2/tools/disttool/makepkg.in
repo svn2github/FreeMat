@@ -176,6 +176,8 @@ EOF
     MakeDir "$baseDir/Contents/Plugins/imageformats"
     CopyDirectory "$QTDIR/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
     RelinkPlugins
+    rm -rf `find $baseDir/Contents/Frameworks -name '*debug*'`
+    rm -rf `find $baseDir/Contents/Plugins -name '*debug*'`
     hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/FreeMat-@VERSION@.dmg"
 }
 

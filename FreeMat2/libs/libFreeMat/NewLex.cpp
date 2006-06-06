@@ -454,7 +454,8 @@ int lexNumber() {
   while (state != 7) {
     // Check for ".*" or ".."
     if ((datap[cp] == '.') && ((datap[cp+1] == '*') || (datap[cp+1] == '/') ||
-			       (datap[cp+1] == '\\') || (datap[cp+1] == '.'))) {
+			       (datap[cp+1] == '\\') || (datap[cp+1] == '.')
+			       || (datap[cp+1] == '^'))) {
       state = 7;
     }
     switch (state) {

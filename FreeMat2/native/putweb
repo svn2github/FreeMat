@@ -1,5 +1,7 @@
 #!/bin/sh
 echo "Uploading web site..."
-scp website/*.html samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
-scp website/main.pdf samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
-scp website/main.ps.gz samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
+scp www/*.html samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
+scp www/*.pdf samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
+scp www/*.gif samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
+scp www/*.png samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs
+scp www/*.css samitbasu@shell.sf.net:/home/groups/f/fr/freemat/htdocs

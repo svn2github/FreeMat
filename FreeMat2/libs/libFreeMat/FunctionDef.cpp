@@ -464,8 +464,10 @@ namespace FreeMat {
     io->outputMessage(msgBuffer);
     snprintf(msgBuffer,MSGBUFLEN," Argument count: %d\n",argCount);
     io->outputMessage(msgBuffer);
+/*
     snprintf(msgBuffer,MSGBUFLEN," Address of function: %08x\n",
 	     ((int) fptr));
+*/
     io->outputMessage(msgBuffer);
   }
 

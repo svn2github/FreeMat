@@ -5,9 +5,9 @@ function mcompat
   found = 0;
   total = 0;
   while (~feof(fp))
-%    g = fgetline(fp);
-    g = fgets(fp);
-    g(end) = [];
+    g = fgetline(fp);
+%    g = fgets(fp);
+%    g(end) = [];
     if (~feof(fp))
       test_out{ptr,1} = deblank(g);
       test_out{ptr,2} = exist(deblank(g));

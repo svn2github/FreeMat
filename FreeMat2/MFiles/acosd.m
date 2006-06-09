@@ -22,4 +22,4 @@ function y = acosd(x)
   if (nargin == 0 || ~isnumeric(x))
     error('acosd expects a numeric input');
   end
-  y = radtodeg(acos(x));
+  y = rad2deg(acos(x));

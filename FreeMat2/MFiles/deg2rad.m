@@ -19,5 +19,9 @@
 % Copyright (c) 2002-2006 Samit Basu
 
 function y = deg2rad(x)
-  y = x * pi/180;
+  if (isa(x,'float') || isa(x,'complex'))
+    y = x*float(pi/180);
+  else
+    y = x*pi/180;
+  end
   

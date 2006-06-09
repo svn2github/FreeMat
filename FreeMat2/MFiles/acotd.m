@@ -14,6 +14,6 @@ function y = acotd(x)
   if (nargin == 0 || ~isnumeric(x))
     error('acot expects a single, numeric input');
   end
-  y = radtodeg(acot(x));
+  y = rad2deg(acot(x));
   
   

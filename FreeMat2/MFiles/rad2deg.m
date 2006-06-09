@@ -1,23 +1,25 @@
 %!
-%@Module RAD2DEG Convert From Degrees To Radians
+%@Module RAD2DEG Radians To Degrees Conversion Function
 %@@Section MATHFUNCTIONS
 %@@Usage
-%Converts the argument from radians to degrees.  The
+%Converts the argument array from radians to degrees.  The general
 %syntax for its use is
 %@[
 %   y = rad2deg(x)
 %@]
-%where @|x| is a numeric array.  Conversion is done by
-%simply multiplying @|x| by @|180/pi|.
-%@@Example
-%How many degrees in a circle:
+%Note that the output type will be the same as the input type, and that
+%complex arguments are allowed.  The output is not wrapped to @|[0,360)|.
+%@@Examples
+%Some known conversion factors
 %@<
-%rad2deg(2*pi)
+%rad2deg(1) % one radian is about 57 degrees
+%rad2deg(pi/4) % should be 45 degrees
+%rad2deg(2*pi) % Note that this is 360 not 0 degrees
 %@>
 %!
-
-% Copyright (c) 2002-2006 Samit Basu
-
 function y = rad2deg(x)
-  y = x * 180/pi;
-  
+  if (isa(x,'float') || isa(x,'complex'))
+    y = x*float(180/pi);
+  else
+    y = x*180/pi;
+  end

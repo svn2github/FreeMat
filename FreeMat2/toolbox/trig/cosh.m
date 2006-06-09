@@ -20,6 +20,11 @@
 %mprint('coshplot');
 %@>
 %@figure coshplot
+%@@Tests
+%@{"y=cosh(0.5)","1.12762596520638","close"}
+%@{"y=cosh(2.1324)","4.27681958616421","close"}
+%@{"y=cosh(3-4i)","-6.58066304055116+7.58155274274654i","close"}
+%@{"y=cosh(2.12f)","4.2255840f","close"}
 %!
 function y = cosh(x)
   if (nargin == 0 || ~isnumeric(x))

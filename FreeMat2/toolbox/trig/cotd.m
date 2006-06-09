@@ -13,9 +13,15 @@
 %@<
 %cotd(45)
 %@>
+%@@Tests
+%@{"y=cotd(0.5)","1.145886501293096e+02","close"}
+%@{"y=cotd(2.1324)","26.85674495465909","close"}
+%@{"y=cotd(-3)","-19.08113668772821","close"}
+%@{"y=cotd(2.12f)","27.0139790f","close"}
+%@{"y=cotd(45)","1","exact"}
 %!
 function y = cotd(x)
-  if (nargin == 0 || ~isnumeric(x))
-    error('cotd expects a numeric input');
+  if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
+    error('cotd expects a real numeric input');
   end
   y = cot(deg2rad(x));

@@ -20,6 +20,11 @@
 %mprint('tanhplot');
 %@>
 %@figure tanhplot
+%@@Tests
+%@{"y=tanh(0.5)","0.46211715726001","close"}
+%@{"y=tanh(2.1324)","0.97228023676555","close"}
+%@{"y=tanh(3-4i)","1.00070953606723-0.00490825806750i","close"}
+%@{"y=tanh(2.12f)","0.9715941","close"}
 %!
 function y = tanh(x)
   if (nargin == 0 || ~isnumeric(x))

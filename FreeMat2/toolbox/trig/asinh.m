@@ -22,11 +22,17 @@
 %mprint('asinhplot');
 %@>
 %@figure asinhplot
+%@@Tests
+%@{"y=asinh(0.342)","0.33566131926355","close"}
+%@{"y=asinh(0.342+0.532i)","0.38409830421438+0.51787212574567i","close"}
+%@{"y=asinh(1)","0.88137358701954","close"}
+%@{"y=asinh(-1)","-0.88137358701954","close"}
+%@{"y=asinh(0.543f)","0.5193379","close"}
 %!
 
 function y = asinh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('asinh expects a single, numeric input');
   end
-  y = log(x+(x.*x+1).^(0.5));
+  y = log(x+(x.*x+1.0f).^(0.5f));
   

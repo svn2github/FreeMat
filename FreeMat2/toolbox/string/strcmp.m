@@ -41,8 +41,14 @@
 %Finally, the case where one of the arguments is a matrix
 %string
 %@<
-%strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle']);
+%strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'])
 %@>
+%@@Tests
+%@{"y=strcmp('astring','astring')","1","exact"}
+%@{"y=strcmp('astring','bstring')","0","exact"}
+%@{"x={'astring','bstring',43,'astring'};y=strcmp(x,'astring')","[1,0,0,1]","exact"}
+%@{"y=strcmp({'this','is','a','pickle'},{'what','is','to','pickle'})","[0,1,0,1],"exact"}
+%@{"y=strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'])","[0,0,0,1]","exact"}
 %!
 
 % Copyright (c) 2002-2006 Samit Basu

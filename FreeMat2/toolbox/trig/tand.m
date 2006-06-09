@@ -13,6 +13,12 @@
 %@<
 %tand(45)
 %@>
+%@@Tests
+%@{"y=tand(0.5)","0.00872686779076","close"}
+%@{"y=tand(2.1324)","0.03723459420299","close"}
+%@{"y=tand(-3)","-0.05240777928304","close"}
+%@{"y=tand(2.12f)","0.0370179f","close"}
+%@{"y=tand(45)","1","exact"}
 %!
 function y = tand(x)
   if (nargin == 0 || ~isnumeric(x))

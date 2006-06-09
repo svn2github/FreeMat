@@ -22,6 +22,10 @@
 %mprint('acotplot');
 %@>
 %@figure acotplot
+%@{"y=acot(0.342)","1.24126615675785","close"}
+%@{"y=acot(0.342+0.532i)","1.14543846762527 - 0.49811525236799i","close"}
+%@{"y=acot(inf)","0","exact"}
+%@{"y=acot(0.523f)","1.0889184","close"}
 %!
 
 function y = acot(x)

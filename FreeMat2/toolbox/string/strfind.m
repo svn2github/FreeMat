@@ -26,6 +26,9 @@
 %a = {'how now brown cow','quick brown fox','coffee anyone?'}
 %b = strfind(a,'ow')
 %@>
+%@@Tests
+%@{"a = 'how now brown cow?';y=strfind(a,'ow')","[2,6,11,16]","exact"}
+%@{"a = {'how now brown cow','quick brown fox','coffee anyone?'};y=strfind(a,'ow')","{[2,6,11,16],9,[]}","exact"}
 %!
 
 % Copyright (c) 2002-2006 Samit Basu

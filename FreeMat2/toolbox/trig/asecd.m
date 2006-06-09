@@ -15,8 +15,13 @@
 %@>
 %and the inverse secant of @|2| should be 60 degrees:
 %@<
-%asecd(0.5)
+%asecd(2)
 %@>
+%@@Tests
+%@{"y=asecd(0.342)","0+99.43555562312426i","close"}
+%@{"y=asecd(2)","60","close"}
+%@{"y=asecd(2.523f)","66.6495819f","close"}
+%@{"y=asecd(inf)","90","close"}
 %!
 function y = asecd(x)
   if (nargin == 0 || ~isnumeric(x))

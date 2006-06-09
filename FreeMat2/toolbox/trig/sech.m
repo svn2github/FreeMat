@@ -20,10 +20,15 @@
 %mprint('sechplot');
 %@>
 %@figure sechplot
+%@@Tests
+%@{"y=sech(3)","0.09932792741943","close"}
+%@{"y=sech(-3.5)","0.06033974412017","close"}
+%@{"y=sech(1+3*i)","-0.64698003387259-0.07023784378464i","close"}
+%@{"y=sech(5.234f)","0.0106640f","close"}
 %!
 function y = sech(x)
   if (nargin == 0 || ~isnumeric(x))
     error('sech expects a numeric input');
   end
-  y = 1.0./sinh(x);
+  y = 1.0f./sinh(x);
   

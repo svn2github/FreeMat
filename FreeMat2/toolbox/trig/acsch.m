@@ -22,6 +22,11 @@
 %mprint('acschplot');
 %@>
 %@figure acschplot
+%@@Tests
+%@{"y=acsch(0.342)","1.79412760639059","close"}
+%@{"y=acsch(0.342+0.532i)","1.12267740551487-0.89903500983626i","close"}
+%@{"y=acsch(inf)","0","exact"}
+%@{"y=acsch(0.523f)","1.4035949f","close"}
 %!
 
 function y = acsch(x)

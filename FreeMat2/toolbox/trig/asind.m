@@ -17,9 +17,14 @@
 %@<
 %asind(0.5)
 %@>
+%@@Tests
+%@{"y=asind(sqrt(2)/2)","45","close"}
+%@{"y=asind(0.5)","30","close"}
+%@{"y=asind(2.0)","90.0-75.45612929021689i","close"}
+%@{"y=asind(-0.9f)","-64.1580658","close"}
 %!
 function y = asind(x)
-  if (nargin == 0 || ~isnumeric(x))
-    error('asind expects a numeric input');
+  if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
+    error('asind expects a real numeric input');
   end
   y = rad2deg(asin(x));

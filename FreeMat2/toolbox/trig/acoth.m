@@ -21,6 +21,11 @@
 %mprint('acothplot');
 %@>
 %@figure acothplot
+%@@Tests
+%@{"y=acoth(0.342)","0.35635569310316+1.57079632679490i","close"}
+%@{"y=acoth(0.342+0.532i)","0.26709380941391-1.04213231279336i","close"}
+%@{"y=acoth(inf)","0","exact"}
+%@{"y=acoth(0.523f)","0.5804604f+1.5707964fi","close"}
 %!
 
 function y = acoth(x)

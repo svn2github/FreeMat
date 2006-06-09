@@ -21,10 +21,15 @@
 %mprint('cothplot');
 %@>
 %@figure cothplot
+%@@Tests
+%@{"y=coth(0.5)","2.16395341373865","close"}
+%@{"y=coth(2.1324)","1.02851005521481","close"}
+%@{"y=coth(3-4i)","0.99926692780590+0.00490118239430i","close"}
+%@{"y=coth(2.12f)","1.0292364f","close"}
 %!
 function y = coth(x)
   if (nargin == 0 || ~isnumeric(x))
     error('coth expects a numeric input');
   end
-  y = 1./tanh(x);
+  y = 1.0f./tanh(x);
   

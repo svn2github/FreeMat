@@ -16,6 +16,10 @@
 %idiv(4,-2)
 %idiv(15,3)
 %@>
+%@@Tests
+%@{"y=idiv(27,6)","4","exact"}
+%@{"y=idiv(4,-2)","-2","exact"}
+%@{"y=idiv(15,3)","5","exact"}
 %!
 % Copyright (c) 2005 Samit Basu
 function y = idiv(a,b)

@@ -31,6 +31,7 @@ namespace FreeMat {
   ArrayVector DoubleFunction(int, const ArrayVector& arg);
   ArrayVector EFunction(int, const ArrayVector& arg);
   ArrayVector ExpFunction(int, const ArrayVector& arg);
+  ArrayVector ExpM1Function(int, const ArrayVector& arg);
   ArrayVector FFTFunction(int, const ArrayVector& arg);
   ArrayVector FloatFunction(int, const ArrayVector& arg);
   ArrayVector IFFTFunction(int, const ArrayVector& arg);
@@ -41,6 +42,7 @@ namespace FreeMat {
   ArrayVector Int8Function(int, const ArrayVector& arg);
   ArrayVector LogicalFunction(int, const ArrayVector& arg);
   ArrayVector LogFunction(int, const ArrayVector& arg);
+  ArrayVector Log1PFunction(int, const ArrayVector& arg);
   ArrayVector NaNFunction(int, const ArrayVector& arg);
   ArrayVector OnesFunction(int, const ArrayVector& arg);
   ArrayVector PiFunction(int, const ArrayVector& arg);
@@ -115,6 +117,7 @@ namespace FreeMat {
   ArrayVector FdumpFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector EvalFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector EvalInFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector AssignInFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector SourceFunction(int, const ArrayVector& arg, WalkTree* eval);
   ArrayVector ConnectFunction(int, const ArrayVector& arg);  
   ArrayVector AcceptFunction(int, const ArrayVector& arg);  

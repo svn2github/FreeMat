@@ -1936,6 +1936,43 @@ namespace FreeMat {
   }
 
   //!
+  //@Module ASSIGNIN Assign Variable in Workspace
+  //@@Section FREEMAT
+  //@@Usage
+  //The @|assignin| function allows you to assign a value to a variable
+  //in either the callers work space or the base work space.  The syntax
+  //for @|assignin| is
+  //@[
+  //   assignin(workspace,variablename,value)
+  //@]
+  //The argument @|workspace| must be either 'caller' or 'base'.  If it is
+  //'caller' then the variable is assigned in the caller's work space.
+  //That does not mean the caller of @|assignin|, but the caller of the
+  //current function or script.  On the other hand if the argument is 'base',
+  //then the assignment is done in the base work space.  Note that the
+  //variable is created if it does not already exist.
+  //!
+  ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    if (arg.size() < 3)
+      throw Exception("assignin function requires a workspace (scope) specifier (either 'caller' or 'base') a variable name and a value to assign");
+    Array spec(arg[0]);
+    char *spec_str = spec.getContentsAsCString();
+    int popspec = 0;
+    if (strcmp(spec_str,"base")==0) 
+      popspec = -1;
+    else if (strcmp(spec_str,"caller")==0) 
+      popspec = 1;
+    else
+      throw Exception("evalin function requires the first argument to be either 'caller' or 'base'");
+    const char *varname = ArrayToString(arg[1]);
+    Array varvalue = arg[2];
+    eval->getContext()->bypassScope(popspec);
+    eval->getContext()->insertVariable(varname,varvalue);
+    eval->getContext()->restoreBypassedScopes();
+    return ArrayVector();
+  }
+
+  //!
   //@Module SOURCE Execute an Arbitrary File
   //@@Section FREEMAT
   //@@Usage

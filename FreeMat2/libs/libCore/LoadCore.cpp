@@ -50,7 +50,9 @@ namespace FreeMat {
     context->addFunction("atan2",Arctan2Function,2,1,"y","x");
     context->addFunction("cot",CotFunction,1,1,"x");
     context->addFunction("exp",ExpFunction,1,1,"x");
+    context->addFunction("expm1",ExpM1Function,1,1,"x");
     context->addFunction("log",LogFunction,1,1,"x");
+    context->addFunction("log1p",Log1PFunction,1,1,"x");
     context->addFunction("min",MinFunction,3,2,"x","z","n");
     context->addFunction("max",MaxFunction,3,2,"x","z","n");
     context->addFunction("sum",SumFunction,2,1,"x","d");
@@ -128,6 +130,7 @@ namespace FreeMat {
     context->addSpecialFunction("fdump",FdumpFunction,1,0,"function");
     context->addSpecialFunction("eval",EvalFunction,-1,-1);
     context->addSpecialFunction("evalin",EvalInFunction,-1,-1);
+    context->addSpecialFunction("assignin",AssignInFunction,3,0,"workspace","name","value");
     context->addSpecialFunction("source",SourceFunction,1,0,"filename");
     context->addSpecialFunction("who",WhoFunction,-1,0);
     context->addSpecialFunction("exist",ExistFunction,2,1,"name","type");

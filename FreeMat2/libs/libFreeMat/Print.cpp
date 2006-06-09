@@ -23,11 +23,11 @@ namespace FreeMat {
   
   template <class T>
   int GetNominalWidthInteger(const T*array, int count) {
-    char buffer[100];
+    char buffer[MSGBUFLEN];
     
     int maxdigit = 0;
     for (int i=0;i<count;i++) {
-      memset(buffer,0,100);
+      memset(buffer,0,MSGBUFLEN);
       sprintf(buffer,"%d",array[i]);
       int j = maxdigit;
       while (buffer[j] && j>=maxdigit)
@@ -45,7 +45,7 @@ namespace FreeMat {
   
   template <class T>
   int GetNominalWidthFloat(const T*array, int count, int maxdigits_try, int &leading) {
-    char buffer[100];
+    char buffer[MSGBUFLEN];
   
     int maxdigit = 0;
     leading = 0;
@@ -60,11 +60,12 @@ namespace FreeMat {
 	dig = 3;
       }
       while ((j < maxdigits_try)  && (!match)) {
-	memset(buffer,0,100);
+	memset(buffer,0,MSGBUFLEN);
 	sprintf(buffer,"%0.*f",j,array[i]);
 	match = (((T) atof(buffer)) == array[i]);
 	if (!match) j++;
       }
+      if (match && (strlen(buffer) > maxdigits_try+5)) return -1;
       if (!match) return -1;
       maxdigit = std::max(maxdigit,j);
       while (buffer[dig] && buffer[dig] != '.') dig++;
@@ -75,7 +76,7 @@ namespace FreeMat {
 
   template <class T>
   int GetNominalWidthFloatE(const T*array, int count, int maxdigits_try) {
-    char buffer[100];
+    char buffer[MSGBUFLEN];
   
     int maxdigit = 0;
     for (int i=0;i<count;i++) {
@@ -83,7 +84,7 @@ namespace FreeMat {
       int j = 0;
       bool match = false;
       while ((j < maxdigits_try)  && (!match)) {
-	memset(buffer,0,100);
+	memset(buffer,0,MSGBUFLEN);
 	sprintf(buffer,"%0.*e",j,array[i]);
 	match = (((T) atof(buffer)) == array[i]);
 	if (!match) j++;

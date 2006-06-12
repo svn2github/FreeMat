@@ -19,12 +19,7 @@
 #include "HandleCommands.hpp"
 #include "HandleFigure.hpp"
 #include <qgl.h>
-#include <QClipboard>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QPrinter>
-#include <QImage>
-#include <QImageWriter>
+#include <QtGui>
 #include "HandleLineSeries.hpp"
 #include "HandleObject.hpp"
 #include "HandleText.hpp"
@@ -126,6 +121,12 @@ namespace FreeMat {
     Hfigs[figNum]->show();
     RestoreFocus();
     HcurrentFig = figNum;
+  }
+
+  static HandleWindow* CurrentWindow() {
+    if (HcurrentFig == -1)
+      NewFig();
+    return (Hfigs[HcurrentFig]);
   }
 
   static HandleFigure* CurrentFig() {
@@ -827,6 +828,16 @@ namespace FreeMat {
     return singleArrayVector(retval);
   }
 
+  ArrayVector HDemoFunction(int nargout, const ArrayVector& arg) {
+    HandleWindow *f = CurrentWindow();
+    // Create a button
+    QPushButton *t = new QPushButton("&Download",f->GetQtWidget());
+    //    f->GetQtWidget()->addWidget(t);
+    t->setGeometry(10,10,80,30);
+    t->show();
+    return ArrayVector();
+  }
+
   void LoadHandleGraphicsFunctions(Context* context) {
     context->addFunction("axes",HAxesFunction,-1,1);
     context->addFunction("line",HLineFunction,-1,1);
@@ -843,6 +854,7 @@ namespace FreeMat {
     context->addFunction("close",HCloseFunction,1,0,"handle");
     context->addFunction("copy",HCopyFunction,0,0);
     context->addFunction("hpoint",HPointFunction,0,1);
+    context->addFunction("demo",HDemoFunction,0,0);
     InitializeHandleGraphics();
   };
 }

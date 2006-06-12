@@ -41,11 +41,10 @@ void BaseFigureQt::resizeEvent(QResizeEvent *e) {
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
-  //  qDebug("Qtpaint");
-  QWidget::paintEvent(e);
   QPainter pnt(this);
   QTRenderEngine gc(&pnt,0,0,width(),height());
   hfig->PaintMe(gc);
+  QWidget::paintEvent(e);
 }
 
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 

@@ -41,6 +41,7 @@ class HandleWindow : public QWidget {
   QEventLoop m_loop;
   int click_x, click_y;
  public:
+  QWidget *GetQtWidget() {return qtchild;}
   HandleWindow(unsigned ahandle);
   ~HandleWindow() {delete hfig;}
   unsigned Handle();

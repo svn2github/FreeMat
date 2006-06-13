@@ -25,6 +25,7 @@
 namespace FreeMat {
   static const char *auto_manual_dict[3] = {"auto","manual",0};
   static const char *on_off_dict[3] = {"on","off",0};
+  static const char *on_inactive_off_dict[4] = {"on","active","off",0};
   static const char *font_angle_dict[4] = {"normal","italic","oblique",0};
   static const char *font_units_dict[6] = {"points","normalized","inches",
 					   "centimeters","pixels",0};
@@ -56,6 +57,7 @@ namespace FreeMat {
   
   HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
   HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
+  HPOnOffInactive::HPOnOffInactive() : HPConstrainedString(on_inactive_off_dict) {}
   HPFontAngle::HPFontAngle() : HPConstrainedString(font_angle_dict) {}
   HPFontUnits::HPFontUnits() : HPConstrainedString(font_units_dict) {}
   HPFontWeight::HPFontWeight() : HPConstrainedString(font_weight_dict) {}

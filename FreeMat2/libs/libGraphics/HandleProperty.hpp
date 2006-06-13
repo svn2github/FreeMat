@@ -334,6 +334,12 @@ namespace FreeMat {
     virtual ~HPDataMappingMode() {}
   };
 
+  class HPOnOffInactive : public HPConstrainedString {
+  public:
+    HPOnOffInactive();
+    virtual ~HPOnOffInactive() {}
+  };
+
   class HPRowColumns : public HPConstrainedString {
   public:
     HPRowColumns();

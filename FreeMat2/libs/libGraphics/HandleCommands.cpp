@@ -204,6 +204,16 @@ namespace FreeMat {
     }
   }
 
+  ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
+    // Get the current window
+    if (HcurrentFig == -1)
+      return ArrayVector();
+    HandleWindow *f = Hfigs[HcurrentFig];
+    // Add a button
+    
+    
+  }
+
   //!
   //@Module AXES Create Handle Axes
   //@@Section HANDLE
@@ -456,6 +466,23 @@ namespace FreeMat {
     return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleLineSeries,arg)));
   }
   
+  //!
+  //@Module UICONTROL Create a UI Control object
+  //@@Section HANDLE
+  //@@Usage
+  //Creates a UI control object and parents it to the current figure.  The
+  //syntax for its use is
+  //@[
+  //  handle = uicontrol(property,value,property,value,...)
+  //@]
+  //where @|property| and @|value| are set.  The handle ID for the
+  //resulting object is returned.  It is automatically added to
+  //the children of the current figure.
+  //!
+  ArrayVector UIControlFunction(int nargout, const ArrayVector& arg) {
+    return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleUIControl,arg)));
+  }
+
   //!
   //@Module HIMAGE Create a image object
   //@@Section HANDLE
@@ -847,6 +874,7 @@ namespace FreeMat {
     context->addFunction("set",HSetFunction,-1,0);
     context->addFunction("get",HGetFunction,2,1,"handle","propname");
     context->addFunction("figure",HFigureFunction,1,1,"number");
+    context->addFunction("uicontrol",HUIControlFunction,-1,1);
     context->addFunction("gca",HGCAFunction,0,1);
     context->addFunction("gcf",HGCFFunction,0,1);
     context->addFunction("pvalid",HPropertyValidateFunction,2,1,"type","property");

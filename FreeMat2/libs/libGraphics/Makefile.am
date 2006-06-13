@@ -14,7 +14,8 @@ HandleSurface.hpp \
 HandleText.hpp \
 HandleWindow.hpp \
 QTRenderEngine.hpp \
-RenderEngine.hpp
+RenderEngine.hpp \
+HandleUIControl.hpp
 
 libGraphics_a_SOURCES = GLRenderEngine.cpp \
 HandleAxis.cpp \
@@ -30,8 +31,8 @@ HandleWindow.cpp \
 LoadGraphicsCore.cpp \
 QTRenderEngine.cpp \
 RenderEngine.cpp \
+HandleUIControl.cpp \
 $(libGraphics_a_HFILES)
-
 
 AUTOMAKE_OPTIONS 	= foreign
 

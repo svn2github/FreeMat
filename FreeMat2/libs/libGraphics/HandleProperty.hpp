@@ -395,6 +395,12 @@ namespace FreeMat {
     virtual ~HPColorInterp() {}
   };
 
+  class HPWidgetString : public HPConstrainedString {
+  public:
+    HPWidgetString();
+    virtual ~HPWidgetString() {}
+  };
+
   class HPFaceAlpha : public HPConstrainedStringScalar {
   public:
     HPFaceAlpha();

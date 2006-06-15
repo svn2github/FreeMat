@@ -54,6 +54,8 @@ namespace FreeMat {
   static const char *backface_dict[4] = {"unlit","lit","reverselit",0};
   static const char *edgealpha_dict[4] = {"flat","interp","scalar",0};
   static const char *render_dict[3] = {"painters","opengl",0};
+  static const char *widget_dict[11] = {"pushbutton","togglebutton","radiobutton","checkbox",
+					"edit","text","slider","frame","listbox","popupmenu",0};
   
   HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
   HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
@@ -83,6 +85,7 @@ namespace FreeMat {
   HPColorInterp::HPColorInterp() : HPConstrainedStringColor(interpmode_dict) {}
   HPFaceAlpha::HPFaceAlpha() : HPConstrainedStringScalar(facealpha_dict) {}
   HPBackFaceLighting::HPBackFaceLighting() : HPConstrainedString(backface_dict) {}
+  HPWidgetString::HPWidgetString() : HPConstrainedString(widget_dict) {}
   HPEdgeAlpha::HPEdgeAlpha() : HPConstrainedStringScalar(edgealpha_dict) {}
   HPRenderMode::HPRenderMode() : HPConstrainedString(render_dict) {}
 

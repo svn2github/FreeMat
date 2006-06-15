@@ -29,6 +29,7 @@
 #include "HandleList.hpp"
 #include "HandleSurface.hpp"
 #include "HandleWindow.hpp"
+#include "HandleUIControl.hpp"
 #include "QTRenderEngine.hpp"
 
 // Subplot
@@ -204,14 +205,20 @@ namespace FreeMat {
     }
   }
 
-  ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
-    // Get the current window
-    if (HcurrentFig == -1)
-      return ArrayVector();
-    HandleWindow *f = Hfigs[HcurrentFig];
-    // Add a button
-    
-    
+  void AddToCurrentFigChildren(unsigned handle) {
+    HandleFigure *fig = CurrentFig();
+    HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
+    std::vector<unsigned> children(cp->Data());
+    // Check to make sure that children does not contain our handle already
+    int i=0;
+    while (i<children.size()) {
+      if (children[i] == handle)
+	children.erase(children.begin()+i);
+      else
+	i++;
+    }
+    children.insert(children.begin(),1,handle);
+    cp->Data(children);
   }
 
   //!
@@ -256,10 +263,7 @@ namespace FreeMat {
       fp->SetPropertyHandle("parent",HcurrentFig+1);
       fig->SetPropertyHandle("currentaxes",handle);
       // Add us to the children...
-      HPHandles *hp = (HPHandles*) fig->LookupProperty("children");
-      std::vector<unsigned> children(hp->Data());
-      children.push_back(handle);
-      hp->Data(children);
+      AddToCurrentFigChildren(handle);
       fp->UpdateState();
       return singleArrayVector(Array::uint32Constructor(handle));
     } else {
@@ -267,21 +271,10 @@ namespace FreeMat {
       HandleObject* hp = LookupHandleObject(handle);
       if (!hp->IsType("axes"))
 	throw Exception("single argument to axes function must be handle for an axes"); 
+      AddToCurrentFigChildren(handle);
       // Get the current figure
-      HandleFigure *fig = CurrentFig();
-      fig->SetPropertyHandle("currentaxes",handle);     
-      HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
-      std::vector<unsigned> children(cp->Data());
-      // Check to make sure that children does not contain our handle already
-      int i=0;
-      while (i<children.size()) {
-	if (children[i] == handle)
-       	  children.erase(children.begin()+i);
-       	else
-       	  i++;
-      }
-      children.insert(children.begin(),1,handle);
-      cp->Data(children);
+      CurrentFig()->SetPropertyHandle("currentaxes",handle);     
+      CurrentFig()->UpdateState();
       return ArrayVector();
     }
   }
@@ -479,8 +472,14 @@ namespace FreeMat {
   //resulting object is returned.  It is automatically added to
   //the children of the current figure.
   //!
-  ArrayVector UIControlFunction(int nargout, const ArrayVector& arg) {
-    return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleUIControl,arg)));
+  ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, WalkTree *eval) {
+    HandleUIControl *o = new HandleUIControl;
+    unsigned handleID = GenericConstructor(o,arg);
+    o->ConstructWidget(CurrentWindow());
+    o->SetEvalEngine(eval);
+    // Parent the control to the current figure
+    AddToCurrentFigChildren(handleID);
+    return singleArrayVector(Array::uint32Constructor(handleID));
   }
 
   //!
@@ -874,7 +873,7 @@ namespace FreeMat {
     context->addFunction("set",HSetFunction,-1,0);
     context->addFunction("get",HGetFunction,2,1,"handle","propname");
     context->addFunction("figure",HFigureFunction,1,1,"number");
-    context->addFunction("uicontrol",HUIControlFunction,-1,1);
+    context->addSpecialFunction("uicontrol",HUIControlFunction,-1,1);
     context->addFunction("gca",HGCAFunction,0,1);
     context->addFunction("gcf",HGCFFunction,0,1);
     context->addFunction("pvalid",HPropertyValidateFunction,2,1,"type","property");

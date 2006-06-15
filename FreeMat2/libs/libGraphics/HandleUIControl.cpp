@@ -1,12 +1,40 @@
 #include "HandleUIControl.hpp"
+#include "HandleWindow.hpp"
+#include "WalkTree.hpp"
+#include <QtGui>
 
 namespace FreeMat {
   HandleUIControl::HandleUIControl() {
     ConstructProperties();
     SetupDefaults();
+    widget = NULL;
   }
   
   HandleUIControl::~HandleUIControl() {
+  }
+
+  void HandleUIControl::SetEvalEngine(WalkTree *eval) {
+    m_eval = eval;
+  }
+
+  void HandleUIControl::ConstructWidget(HandleWindow *f) {
+    if (widget) delete widget;
+    widget = NULL;
+    if (StringCheck("style","pushbutton")) {
+      widget = new QPushButton(QString::fromStdString(StringPropertyLookup("string")),
+			       f->GetQtWidget());
+      connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
+    }
+    std::vector<double> bgcolor(VectorPropertyLookup("backgroundcolor"));
+    if (!widget) return;
+    std::vector<double> sizevec(VectorPropertyLookup("position"));
+    widget->setGeometry(sizevec[0],sizevec[1],sizevec[2],sizevec[3]);
+    widget->show();
+  }
+
+  void HandleUIControl::clicked() {
+    char *tmp = strdup(StringPropertyLookup("callback").c_str());
+    m_eval->evaluateString(tmp,false);
   }
 
   void HandleUIControl::ConstructProperties() {
@@ -41,6 +69,7 @@ namespace FreeMat {
     // for text labels (e.g., tick labels).
     //\item @|fontsize| - @|scalar| - The size of fonts used for text labels (tick labels).
     //\item @|fontunits| - Not used.
+    //\item @|fontname| - @|string| - The name of the font to use for the widget.
     //\item @|fontweight| - @|{'normal','bold','light','demi'}| - The weight of the font used
     //\item @|foregroundcolor| - @|colorspec| - the foreground color for text.
     //  \item @|handlevisibility| - Not used.
@@ -138,6 +167,7 @@ namespace FreeMat {
     AddProperty(new HPString,"deletefcn");
     AddProperty(new HPOnOffInactive,"enable");
     AddProperty(new HPFontAngle,"fontangle");
+    AddProperty(new HPString,"fontname");
     AddProperty(new HPScalar,"fontsize");
     AddProperty(new HPFontUnits,"fontunits");
     AddProperty(new HPFontWeight,"fontweight");
@@ -156,7 +186,7 @@ namespace FreeMat {
     AddProperty(new HPOnOff,"selectionhighlight");
     AddProperty(new HPTwoVector,"sliderstep");
     AddProperty(new HPString,"string");
-    AddProperty(new HPString,"style");
+    AddProperty(new HPWidgetString,"style");
     AddProperty(new HPString,"tag");
     AddProperty(new HPString,"tooltipstring");
     AddProperty(new HPString,"type");
@@ -175,12 +205,13 @@ namespace FreeMat {
     SetConstrainedStringDefault("fontunits","points");
     SetConstrainedStringDefault("fontweight","normal");
     SetThreeVectorDefault("foregroundcolor",0,0,0);
-    AddProperty(new HPAlignment,"horizontalalignment");
+    SetConstrainedStringDefault("horizontalalignment","left");
     SetScalarDefault("listboxtop",1);
     SetScalarDefault("max",1);
     SetScalarDefault("min",1);
     SetFourVectorDefault("position",0,0,10,10);
     SetTwoVectorDefault("sliderstep",0.01,0.1);
     SetStringDefault("type","uicontrol");
+    SetStringDefault("style","pushbutton");
   }
 }

@@ -369,18 +369,6 @@ namespace FreeMat {
      */
     void specialFunctionCall(tree t, bool printIt);
     /**
-     * Test a conditional expression, and if its true, evaluate
-     * the associated block of code.  Used by a number of control
-     * constructs.  The AST looks like:
-     *     cstat
-     *      |
-     *     expr->codeBlock
-     * The expression output is treated as false if the real part
-     * is all zeros.  Throws an Exception if the head of the 
-     * AST is not a cstat.
-     */
-    bool conditionedStatement(tree t);
-    /**
      * Handles an if statement, corresponding to an if, a number
      * of elseif blocks and an optional else statement.  The AST looks
      * like

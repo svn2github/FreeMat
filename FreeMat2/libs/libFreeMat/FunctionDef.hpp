@@ -21,9 +21,10 @@
 #define __FunctionDef_hpp__
 
 #include "Array.hpp"
-#include "AST.hpp"
+#include "Tree.hpp"
 #include "Interface.hpp"
 #include "DynLib.hpp"
+#include "Serialize.hpp"
 #include "mex.h"
 #include <sys/stat.h>
 
@@ -39,9 +40,8 @@ namespace FreeMat {
 
   class WalkTree;
 
-  typedef ArrayVector APtr;
-  typedef APtr (*BuiltInFuncPtr) (int,const APtr&);
-  typedef APtr (*SpecialFuncPtr) (int,const APtr&,WalkTree*);
+  typedef ArrayVector (*BuiltInFuncPtr) (int,const ArrayVector&);
+  typedef ArrayVector (*SpecialFuncPtr) (int,const ArrayVector&,WalkTree*);
 
   /** Base class for the function types
    * A FunctionDef class is a base class for the different types
@@ -139,7 +139,7 @@ namespace FreeMat {
      * The AST for the code that defines the function (only the body of the
      * function is contained in this AST, not the function declaration itself).
      */
-    ASTPtr code;
+    tree code;
     /**
      * Flag to indicate if the function has been compiled.
      */
@@ -357,7 +357,7 @@ namespace FreeMat {
     /**
      * The guard expressions associated with each argument
      */
-    ASTPtrVector sizeCheckExpressions;
+    treeVector sizeCheckExpressions;
     /**
      * The return type of the function
      */
@@ -368,7 +368,7 @@ namespace FreeMat {
     ImportedFunctionDef(GenericFuncPointer address_arg,
 			stringVector types_arg,
 			stringVector arguments_arg,
-			ASTPtrVector sizeChecks,
+			treeVector sizeChecks,
 			std::string retType_arg);
     /**
      * Default destructor

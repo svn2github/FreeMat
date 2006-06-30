@@ -40,6 +40,9 @@ public:
   tree first();
   tree second();
   bool is(byte tok);
+  byte token() {if (tptr) return tptr->node.Value(); else return 0;}
+  unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
+  string text() {if (tptr) return tptr->node.Text(); else return std::string();}
 };
 
 tree mkLeaf(const Token& tok);

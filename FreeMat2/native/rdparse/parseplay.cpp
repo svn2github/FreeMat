@@ -1,6 +1,7 @@
 // spaces work - what about transposes?
 //
 // Some observations:
+// [1 -2] --> [1 -2]
 // [1 - 2] --> [-1]
 // [1 - - 2] --> [3]
 // [1 - 2 - 3 -4] --> [-4]
@@ -674,7 +675,28 @@ typedef enum {
   TOK_IDENT = 130,
   TOK_NUMBER,
   TOK_SPACE,
-  TOK_STRING
+  TOK_STRING,
+  TOK_KEYWORD,
+  TOK_BREAK,
+  TOK_CASE,
+  TOK_CATCH,
+  TOK_CONTINUE,
+  TOK_ELSE,
+  TOK_ELSEIF,
+  TOK_END,
+  TOK_FOR,
+  TOK_FUNCTION,
+  TOK_GLOBAL,
+  TOK_IF,
+  TOK_KEYBOARD,
+  TOK_OTHERWISE,
+  TOK_PERSISTENT,
+  TOK_QUIT,
+  TOK_RETALL,
+  TOK_RETURN,
+  TOK_SWITCH,
+  TOK_TRY,
+  TOK_WHILE
 };
 
 string reserved[20] = {
@@ -744,6 +766,8 @@ void Token::Print(ostream& o) const {
     case TOK_STRING:
       o << " String " << m_text << "\n";
       break;
+    default:
+      o << " Keyword " << reserved[m_tok-TOK_KEYWORD] << "\n";
     }
   }
 }
@@ -760,6 +784,7 @@ bool isalnumus(char a) {
 class Scanner {
   string m_text;
   int m_ptr;
+  stack<int> m_checkpoints;
   Token m_tok;
   bool m_tokValid;
   char current();
@@ -784,6 +809,19 @@ public:
   void Continue();
   bool Done();
 };
+
+void Scanner::Save() {
+  m_checkpoints.push(m_ptr);
+}
+
+void Scanner::Restore() {
+  m_ptr = m_checkpoints.top();
+  m_checkpoints.pop();
+}
+
+void Scanner::Continue() {
+  m_checkpoints.pop();
+}
 
 bool Scanner::Done() {
   return (m_ptr >= m_text.size());
@@ -843,8 +881,11 @@ void Scanner::FetchIdentifier() {
   while (isalnumus(ahead(len))) len++;
   // Collect the identifier into a string
   string ident(string(m_text,m_ptr,len));
-  int indx = binary_search(reserved,reserved+20,ident);
-  m_tok = Token(TOK_IDENT,0,0,0,string(m_text,m_ptr,len));
+  string *p = lower_bound(reserved,reserved+20,ident);
+  if ((p!= reserved+20) && (*p == ident))
+    m_tok = Token(TOK_KEYWORD + (p-reserved),0,0,0);
+  else
+    m_tok = Token(TOK_IDENT,0,0,0,string(m_text,m_ptr,len));
   m_ptr += len;
 }
 
@@ -877,40 +918,11 @@ char Scanner::ahead(int n) {
 
 typedef int op_prec;
 
-class ParserState {
-public:
-  tok *text;
-  int textlen;
-  int ptr;
-  stack<op> operators;
-  stack<tree> operands;
-  stack<bool> ignore_ws;  
-};
-
 class Parser {
-  ParserState state;
-  stack<ParserState> checkpoints;
-private:
-  tok next();
-  tok ahead(int a);
-  bool match(char a);
-  bool match(const char *str);
-  bool match(string str);
-  void consumenext();
-  void consume(int count = 1);
-  void flushws();
+  Scanner &m_lex;
   void serror(string);
-  void popOperator();
-  void pushOperator(op);
-  void PartialExpression();
-  void Expression();
-  void expect(tok a);
-  void expect(string a);
-  void CheckpointParser();
-  void DeleteCheckpoint();
-  void RestoreCheckpoint();
 public:
-  Parser(tok *text);
+  Parser(Scanner& lex);
   void Dump(); 
   tree ParseForStatement();
   tree ParseSingletonStatement(string keyword);
@@ -942,38 +954,6 @@ void Parser::Dump() {
   txt[state.ptr] = '*';
   txt[state.ptr+1] = 0;
   cout << txt << "\n";
-}
-
-void Parser::CheckpointParser() {
-  checkpoints.push(state);
-}
-
-void Parser::DeleteCheckpoint() {
-  checkpoints.pop();
-}
-
-void Parser::RestoreCheckpoint() {
-  state = checkpoints.top();
-  checkpoints.pop();
-}
-
-bool Parser::match(char a) {
-  return (next() == a);
-}
-
-bool Parser::match(const char *str) {
-  int n = strlen(str);
-  return ((strncmp(str,state.text+state.ptr,n)==0) &&
-	  (!isalnum(state.text[state.ptr+n])));
-}
-
-bool Parser::match(string str) {
-  return (match(str.c_str()));
-}
-
-void Parser::FlushWhitespace() {
-  while (next() == ' ')
-    consumenext();
 }
 
 tree Parser::ParseStatementSeperator() {
@@ -1013,30 +993,21 @@ tree Parser::ParseSpecialFunctionCall() {
 }
 
 tree Parser::ParseForStatement() {
-  expect("for");
-  flushws();
+  m_lex.Expect(TOK_FOR);
   //  tree index = ParseForIndexExpression();
   tree term = ParseStatementSeperator();
   tree block = ParseStatementList();
   flushws();
-  expect("end");
+  m_lex.Expect(TOK_FOR);
   return mkNode("for",term,block);
 }
 
 tree Parser::ParseWhileStatement() {
-  expect("while");
-  flushws();
+  m_lex.Expect(TOK_WHILE);
   tree warg = ParseExpression();
-  cout << "warg:\n";
-  warg->print();
-  flushws();
   tree term = ParseStatementSeperator();
-  flushws();
   tree block = ParseStatementList();
-  cout << "block:\n";
-  block->print();
-  flushws();
-  expect("end");
+  m_lex.Expect(TOK_END);
   return mkNode("while",warg,block);
 }
 
@@ -1173,7 +1144,7 @@ tree Parser::ParseSwitchStatement() {
 }
 
 tree Parser::ParseStatement() {
-  if (match("for"))
+  if (m_lex.MatchKeyword("for"))
     return ParseForStatement();
   if (match("break"))
     return ParseSingletonStatement("break");
@@ -1201,36 +1172,36 @@ tree Parser::ParseStatement() {
     return ParseDeclarationStatement("persistent");
   // Now come the tentative parses
   try {
-    CheckpointParser();
+    m_lex.Save();
     tree retval = ParseAssignmentStatement();
-    DeleteCheckpoint();
+    m_lex.Continue();
     return retval;
   } catch (string e) {
-    RestoreCheckpoint();
+    m_lex.Restore();
   }
   try {
-    CheckpointParser();
+    m_lex.Save();
     tree retval = ParseMultiFunctionCall();
-    DeleteCheckpoint();
+    m_lex.Continue();
     return retval;
   } catch (string e) {
-    RestoreCheckpoint();
+    m_lex.Restore();
   }
   try {
-    CheckpointParser();
+    m_lex.Save();
     tree retval = ParseSpecialFunctionCall();
-    DeleteCheckpoint();
+    m_lex.Continue();
     return retval;
   } catch (string e) {
-    RestoreCheckpoint();
+    m_lex.Restore();
   }
   try {
-    CheckpointParser();
+    m_lex.Save();
     tree retval = ParseExpression();
-    DeleteCheckpoint();
+    m_lex.Continue();
     return retval;
   } catch (string e) {
-    RestoreCheckpoint();
+    m_lex.Restore();
   }
   return NULL;
 }
@@ -1247,17 +1218,10 @@ tree Parser::ParseStatementList() {
 }
 
 tree Parser::ParseExpression() {
-  //  state.operators.push(op_sentinel);
-  //  Expression();
-  //  return state.operands.top();
   return Exp(0);
 }
 
-Parser::Parser(tok *txt) {
-  state.ignore_ws.push(true);
-  state.text = strdup(txt);
-  state.textlen = strlen(state.text);
-  state.ptr = 0;
+Parser::Parser(Scanner& lex) : m_lex(lex) {
 }
 
 tok Parser::next() {
@@ -1427,37 +1391,6 @@ tree Parser::Exp(op_prec p) {
   return t;
 }
 
-void Parser::PartialExpression() {
-  if (is_value(next())) {
-    state.operands.push(mkLeaf(next()));
-    consume();
-  } else if (next() == '[') {
-    consume();
-    state.ignore_ws.push(false);
-    tree root = mkLeaf("[]");
-    while (!match(']')) {
-      addChild(root,ParseExpression());
-      flushws();
-    }
-    expect(']');
-    state.operands.push(root);
-    state.ignore_ws.pop();
-  } else if (next() == '(') {
-    consume();
-    state.ignore_ws.push(true);
-    state.operators.push(op_sentinel);
-    Expression();
-    state.ignore_ws.pop();
-    expect(')');
-    state.operators.pop();
-  } else if (is_unary_operator(next())) {
-    pushOperator(unary(next()));
-    consume();
-    flushws();
-    PartialExpression();
-  } else
-    serror("unrecognized token");
-}
 
 void Parser::CheckWSFlush() {
   if (next() == ' ') {
@@ -1469,22 +1402,21 @@ void Parser::CheckWSFlush() {
   }
 }
 
-void Parser::Expression() {
-  PartialExpression();
-  CheckWSFlush();
-  while (is_binary_operator(next())) {
-    pushOperator(binary(next()));
-    consume();
-    flushws();
-    PartialExpression();
-  }
-  while (state.operators.top() != op_sentinel)
-    popOperator();
-  state.operators.pop();
-}
 
 int main(int argc, char *argv[]) {
   Scanner S(argv[1]);
+  for  (int i=0;i<3;i++) {
+    cout << S.Next();
+    S.Consume();
+  }
+  S.Save();
+  cout << "save\n";
+  for  (int i=0;i<3;i++) {
+    cout << S.Next();
+    S.Consume();
+  }
+  S.Restore();
+  cout << "restore\n";
   while (!S.Done()) {
     cout << S.Next();
     S.Consume();

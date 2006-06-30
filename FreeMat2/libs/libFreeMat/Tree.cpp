@@ -77,6 +77,14 @@ tree mkLeaf(byte a) {
   return tree(ret);
 }
 
+tree first(tree root) {
+  return root->ptr()->children.at(0);
+}
+
+tree second(tree root) {
+  return root->ptr()->children.at(1);
+}
+
 tree mkNode(const Token& tok, tree arg1, tree arg2) {
   tree ret(mkLeaf(tok));
   addChild(ret,arg1,arg2);

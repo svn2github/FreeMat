@@ -11,11 +11,13 @@ using namespace std;
 
 class tree;
 
+typedef vector<tree> treeVector;
+
 class tree_node {
 public:
   Token node;
   int owners;
-  vector<tree> children;
+  treeVector children;
   void print();
   void Rename(byte newtok);
   tree_node* getCopy();
@@ -34,12 +36,18 @@ public:
   void Rename(byte newtok) {if (tptr) tptr->Rename(newtok);}
   bool valid() {return (tptr != NULL);}
   void operator=(const tree &copy);
+  unsigned context();
+  tree first();
+  tree second();
+  bool is(byte tok);
 };
 
 tree mkLeaf(const Token& tok);
 tree mkLeaf(byte a);
 tree mkNode(const Token& tok, tree arg1, tree arg2);
 tree mkNode(const Token& tok, tree arg1);
+tree first(tree root);
+tree second(tree root); 
 void addChild(tree &root, tree child);
 void addChild(tree &root, tree child1, tree child2);
 

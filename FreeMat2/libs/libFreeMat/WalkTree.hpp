@@ -20,9 +20,8 @@
 #ifndef __WalkTree_h__
 #define __WalkTree_h__
 
-#include "AST.hpp"
+#include "Tree.hpp"
 #include "Context.hpp"
-// #include "LeftHandSide.hpp"
 #include "FunctionDef.hpp"
 #include "Array.hpp"
 #include <stack>
@@ -108,16 +107,16 @@ namespace FreeMat {
     std::string ignoreBPName;
     // This data structure stores the class records
     SymbolTable<UserClass> classTable;
-    void collectKeywords(ASTPtr q, ArrayVector &keyvals,
-			 ASTPtrVector &keyexpr, stringVector &keywords);
+    void collectKeywords(tree q, ArrayVector &keyvals,
+			 treeVector &keyexpr, stringVector &keywords);
     int* sortKeywords(ArrayVector &m, stringVector &keywords,
 		      stringVector arguments, ArrayVector keyvals);
-    void handlePassByReference(ASTPtr q, stringVector arguments,
+    void handlePassByReference(tree q, stringVector arguments,
 			       ArrayVector m,stringVector keywords,
-			       ASTPtrVector keyexpr, int* argTypeMap);
-    Array DoBinaryOperator(ASTPtr t, BinaryFunc fnc, std::string fname);
-    Array DoUnaryOperator(ASTPtr t, UnaryFunc fnc, std::string fname);
-    ArrayVector FunctionPointerDispatch(Array r, ASTPtr args, int narg_out);
+			       treeVector keyexpr, int* argTypeMap);
+    Array DoBinaryOperator(tree t, BinaryFunc fnc, std::string fname);
+    Array DoUnaryOperator(tree t, UnaryFunc fnc, std::string fname);
+    ArrayVector FunctionPointerDispatch(Array r, tree args, int narg_out);
     // Set this flag to stop overloading of functions
     bool stopoverload;
     void doDebugCycle();
@@ -190,7 +189,7 @@ namespace FreeMat {
     /**
      * Convert an expression list into a vector of Array variables.
      */
-    ArrayVector rowDefinition(ASTPtr t);
+    ArrayVector rowDefinition(tree t);
     /**
      * Convert a matrix definition of the form: [expr1,expr2;expr3;expr4] into
      * a vector of row definitions.  The first row is the vector [expr1,expr2], and
@@ -202,7 +201,7 @@ namespace FreeMat {
      *   |   rowDef
      *   rowDef
      */
-    Array matrixDefinition(ASTPtr t);
+    Array matrixDefinition(tree t);
     /**
      * Convert a cell defintion of the form: {expr1,expr2;expr3;expr4} into
      * a vector of row definitions.  The first row is the vector {expr1,expr2}, and
@@ -214,11 +213,11 @@ namespace FreeMat {
      *   |   rowDef
      *   rowDef
      */
-    Array cellDefinition(ASTPtr t);
+    Array cellDefinition(tree t);
     /**
      * Evaluate the expression pointed to by the AST t into a variable.
      */
-    Array expression(ASTPtr t);
+    Array expression(tree t);
     /**
      * Evaluate a unit colon expression.  The AST input should look like:
      *   :
@@ -229,7 +228,7 @@ namespace FreeMat {
      * [expr1,expr1+1,expr1+2,...,expr1+n], where n is the largest 
      * integer such that expr1+n <= expr2.
      */
-    Array unitColon(ASTPtr t);
+    Array unitColon(tree t);
     /**
      * Evaluate a double colon expression.  The AST input should look like:
      *   :
@@ -241,7 +240,7 @@ namespace FreeMat {
      * vector [expr1,expr1+expr2,expr1+2*expr2,...,expr1+n*expr2], where
      * n is the largest integer such that expr1+n*expr2 <= expr3.
      */
-    Array doubleColon(ASTPtr t);
+    Array doubleColon(tree t);
     /**
      * Process a sequence of expressions into a vector of Arrays.
      * The input AST must be:
@@ -256,10 +255,10 @@ namespace FreeMat {
      * valid if we are a subindexing expression list (i.e., 
      * VAR(exprssionlist)), in which case dim != NULL.
      */
-    ArrayVector expressionList(ASTPtr t);
+    ArrayVector expressionList(tree t);
     Array EndReference(Array v, int index, int count);
     Array AllColonReference(Array v, int index, int count);
-    ArrayVector varExpressionList(ASTPtr t, Array subroot);
+    ArrayVector varExpressionList(tree t, Array subroot);
     /**
      * The RHS expression is used to represent an rvalue in an
      * assignment statement (or an implicit assignment such as 
@@ -286,7 +285,7 @@ namespace FreeMat {
      *      either a variable or function.  
      *    - 
      */
-    ArrayVector rhsExpression(ASTPtr t);
+    ArrayVector rhsExpression(tree t);
     /**
      * Look up an identifier as a potential function name, using a
      * rescan if the identifier is not found on the first pass.
@@ -296,7 +295,7 @@ namespace FreeMat {
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */
-    inline Array rhsExpressionSimple(ASTPtr t);
+    inline Array rhsExpressionSimple(tree t);
     Interface* getInterface();
     /**
      * Process an AST to form an lvalue in an assignment statement.
@@ -314,10 +313,10 @@ namespace FreeMat {
      * are empty.
      */
 
-    int countLeftHandSides(ASTPtr t);
+    int countLeftHandSides(tree t);
     
-    Array assignExpression(ASTPtr t, Array &value);
-    Array assignExpression(ASTPtr t, ArrayVector &value, bool multipleLHS = true);
+    Array assignExpression(tree t, Array &value);
+    Array assignExpression(tree t, ArrayVector &value, bool multipleLHS = true);
 
     /**
      * Evaluate a function and return the results of the function as
@@ -338,7 +337,7 @@ namespace FreeMat {
      *    - if too many arguments are passed to the function.
      *    - too many outputs are requested from the function.
      */
-    ArrayVector functionExpression(ASTPtr t, int narg_out, bool outputOptional);
+    ArrayVector functionExpression(tree t, int narg_out, bool outputOptional);
     /**
      * A multifunction call is an expression of the sort
      * [expr1,expr2,...,exprn] = func(args).  The AST is
@@ -359,7 +358,7 @@ namespace FreeMat {
      * Throws an exception if the AST is malformed (i.e., the '[]' is
      * missing, or there are multiple rows in the left hand side.).
      */
-    void multiFunctionCall(ASTPtr t, bool printIt);
+    void multiFunctionCall(tree t, bool printIt);
     /**
      * A special function call is an expression of the form
      * >> func arg1 arg2 arg3
@@ -368,7 +367,7 @@ namespace FreeMat {
      *       |
      *       fname->arg
      */
-    void specialFunctionCall(ASTPtr t, bool printIt);
+    void specialFunctionCall(tree t, bool printIt);
     /**
      * Test a conditional expression, and if its true, evaluate
      * the associated block of code.  Used by a number of control
@@ -380,7 +379,7 @@ namespace FreeMat {
      * is all zeros.  Throws an Exception if the head of the 
      * AST is not a cstat.
      */
-    bool conditionedStatement(ASTPtr t);
+    bool conditionedStatement(tree t);
     /**
      * Handles an if statement, corresponding to an if, a number
      * of elseif blocks and an optional else statement.  The AST looks
@@ -392,7 +391,7 @@ namespace FreeMat {
      * where each of the elseIf blocks are tested sequentially until
      * one of them succeeds.
      */
-    void ifStatement(ASTPtr t);
+    void ifStatement(tree t);
     /**
      * Handle a switch statement.  The switch statement tests
      * an expression against a number of case blocks.  If a 
@@ -412,7 +411,7 @@ namespace FreeMat {
      * Throws an Exception if the switch expression is not
      * either a scalar or a string.
      */
-    void switchStatement(ASTPtr t);
+    void switchStatement(tree t);
     /**
      * Implements the for control statement.  The AST looks like
      *     ident->codeBlock
@@ -423,21 +422,21 @@ namespace FreeMat {
      * on each of the values in the expression.  For each such
      * assignment, the code in the codeBlock is executed.
      */
-    void forStatement(ASTPtr t);
+    void forStatement(tree t);
     /**
      * Implements the while control statement.  The AST looks like
      *     expr->codeBlock
      * The test expression is evaluated until it fails, and for each
      * successful expression, the codeBlock is executed.
      */
-    void whileStatement(ASTPtr t);
+    void whileStatement(tree t);
     /**
      * Implements the try statement.  The AST looks like
      *     block->catchBlock
      * The code in block is executed.  If an exception occurs, then
      * the code in catchBlock is executed.
      */
-    void tryStatement(ASTPtr t);
+    void tryStatement(tree t);
     /**
      * Implements the global statement (really a global declaration).
      * The AST looks like:
@@ -449,7 +448,7 @@ namespace FreeMat {
      * Each identifier is added to the global variable list of
      * the current context.
      */
-    void globalStatement(ASTPtr t);
+    void globalStatement(tree t);
     /**
      * Implements the persistent statement (really a persistent declaration).
      * The AST looks like:
@@ -461,7 +460,7 @@ namespace FreeMat {
      * Each identifier is added to the persistent variable list of
      * the current context.
      */
-    void persistentStatement(ASTPtr t);
+    void persistentStatement(tree t);
     /**
      * This somewhat strange test is used by the switch statement.
      * If x is a scalar, and we are a scalar, this is an equality
@@ -479,7 +478,7 @@ namespace FreeMat {
      * the test is returned.  Throws an exception if the AST is
      * malformed.
      */
-    bool testCaseStatement(ASTPtr t, Array x);
+    bool testCaseStatement(tree t, Array x);
     /**
      * Execute the statement described by the AST - the printIt flag
      * determines if the result of the statement should be printed to
@@ -542,7 +541,7 @@ namespace FreeMat {
      * the special variable "ans".
      * Throws an Exception if the statement type is not recognized.
      */
-    void statementType(ASTPtr t, bool printIt);
+    void statementType(tree t, bool printIt);
     /**
      * The statement method simply screens out the need for the
      * printIt flag.  It also retrieves the statement context
@@ -561,7 +560,7 @@ namespace FreeMat {
      * The context data is supplied by the parse (indicates the
      * line number and filename if necessary).
      */
-    void statement(ASTPtr t);
+    void statement(tree t);
     /**
      * Executes a sequence of statements, trapping exceptions
      * as necessary.  The AST looks like
@@ -572,7 +571,7 @@ namespace FreeMat {
      * lasterr string is also set to the contents of the exception.
      *
      */
-    void block(ASTPtr t);
+    void block(tree t);
     /**
      * Start a command line interface.  Statements are retrieved
      * from the console, and executed sequentially until a "return"
@@ -600,8 +599,8 @@ namespace FreeMat {
     /**
      * Handles the logistics of shortcut evaluation
      */
-    Array ShortCutOr(ASTPtr t);
-    Array ShortCutAnd(ASTPtr t);
+    Array ShortCutOr(tree t);
+    Array ShortCutAnd(tree t);
     /**
      * Display an array - added so user classes divert to "display" function
      */
@@ -615,19 +614,19 @@ namespace FreeMat {
      */
     std::string getPrivateMangledName(std::string fname);
     ArrayVector subsindex(ArrayVector m);
-    ArrayVector subsrefParen(Array r, ASTPtr t);
-    ArrayVector subsrefBrace(Array r, ASTPtr t);
-    ArrayVector subsrefDot(Array r, ASTPtr t);
-    ArrayVector subsrefDotDyn(Array r, ASTPtr t);
-    ArrayVector subsrefSingle(Array r, ASTPtr t);
-    ArrayVector subsref(Array r, ASTPtr t);
-    void subsassignParen(Array *r, ASTPtr t, ArrayVector& value);
-    void subsassignBrace(Array *r, ASTPtr t, ArrayVector& value);
-    void subsassignDot(Array *r, ASTPtr t, ArrayVector& value);
-    void subsassignDotDyn(Array *r, ASTPtr t, ArrayVector& value);
-    void subassignSingle(Array *r, ASTPtr t, ArrayVector& value);
-    void subassign(Array *r, ASTPtr t, ArrayVector& value);
-    int countSubExpressions(ASTPtr t);
+    ArrayVector subsrefParen(Array r, tree t);
+    ArrayVector subsrefBrace(Array r, tree t);
+    ArrayVector subsrefDot(Array r, tree t);
+    ArrayVector subsrefDotDyn(Array r, tree t);
+    ArrayVector subsrefSingle(Array r, tree t);
+    ArrayVector subsref(Array r, tree t);
+    void subsassignParen(Array *r, tree t, ArrayVector& value);
+    void subsassignBrace(Array *r, tree t, ArrayVector& value);
+    void subsassignDot(Array *r, tree t, ArrayVector& value);
+    void subsassignDotDyn(Array *r, tree t, ArrayVector& value);
+    void subassignSingle(Array *r, tree t, ArrayVector& value);
+    void subassign(Array *r, tree t, ArrayVector& value);
+    int countSubExpressions(tree t);
   };
   void sigInterrupt(int arg);
 

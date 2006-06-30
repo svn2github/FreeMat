@@ -26,8 +26,9 @@
 #include "Reserved.hpp"
 #include "Array.hpp"
 #include "Malloc.hpp"
-#include "ParserInterface.hpp"
-#include "LexerInterface.hpp"
+#include "Parser.hpp"
+#include "Scanner.hpp"
+#include "Token.hpp"
 #include "Module.hpp"
 #include "Interface.hpp"
 #include "File.hpp"
@@ -170,18 +171,18 @@ namespace FreeMat {
     InterruptPending = true;
   }
 
-  Array WalkTree::DoBinaryOperator(ASTPtr t, BinaryFunc fnc, 
+  Array WalkTree::DoBinaryOperator(tree t, BinaryFunc fnc, 
 				   std::string funcname) {
-    Array a(expression(t->down));
-    Array b(expression(t->down->right));
+    Array a(expression(t.first()));
+    Array b(expression(t.second()));
     if (!(a.isUserClass() || b.isUserClass())) 
        return fnc(a,b);
     return ClassBinaryOperator(a,b,funcname,this);
   }
 
-  Array WalkTree::DoUnaryOperator(ASTPtr t, UnaryFunc fnc, 
+  Array WalkTree::DoUnaryOperator(tree t, UnaryFunc fnc, 
 				  std::string funcname) {
-    Array a(expression(t->down));
+    Array a(expression(t.first()));
     if (!a.isUserClass())
        return fnc(a);
     return ClassUnaryOperator(a,funcname,this);
@@ -206,11 +207,9 @@ namespace FreeMat {
     //    gstack.push_back(cname);
   }
 
-  ArrayVector WalkTree::rowDefinition(ASTPtr t) {
-    SetContext(t->context());
-    if (t->opNum != OP_SEMICOLON) throw Exception("AST - syntax error!");
-    ASTPtr s = t->down;
-    ArrayVector retval(expressionList(s));
+  ArrayVector WalkTree::rowDefinition(tree t) {
+    SetContext(t.context());
+    ArrayVector retval(expressionList(t.children()));
     return retval;
   }
 
@@ -274,14 +273,12 @@ namespace FreeMat {
   //F = ['hello';'there']
   //@>
   //!
-  Array WalkTree::matrixDefinition(ASTPtr t) {
+  Array WalkTree::matrixDefinition(tree t) {
     ArrayMatrix m;
-    if (t->opNum != OP_BRACKETS) throw Exception("AST - syntax error!");
-    ASTPtr s = t->down;
-    while (s != NULL) {
-      SetContext(s->context());
+    treeVector s(children(t));
+    for (int i=0;i<s.size();i++) {
+      SetContext(s[i]);
       m.push_back(rowDefinition(s));
-      s = s->right;
     }
     // Check if any of the elements are user defined classes
     bool anyuser = false;
@@ -336,23 +333,21 @@ namespace FreeMat {
   //C = {A,B}
   //@>
   //!
-  Array WalkTree::cellDefinition(ASTPtr t) {
+  Array WalkTree::cellDefinition(tree t) {
     ArrayMatrix m;
-    if (t->opNum != OP_BRACES) throw Exception("AST - syntax error!");
-    ASTPtr s = t->down;
-    while (s != NULL) {
-      SetContext(s->context());
+    treeVector s(t.children());
+    for (int i=0;i<s.size();i++) {
+      SetContext(s[i]);
       m.push_back(rowDefinition(s));
-      s = s->right;
     }
     Array retval(Array::cellConstructor(m));
     return retval;
   }
 
-  Array WalkTree::ShortCutOr(ASTPtr t) {
-    SetContext(t->context());
-    Array a(expression(t->down));
-    SetContext(t->context());
+  Array WalkTree::ShortCutOr(tree t) {
+    SetContext(t.context());
+    Array a(expression(first(t)));
+    SetContext(t.context());
     Array retval;
     if (!a.isScalar()) {
       retval = DoBinaryOperator(t,Or,"or");
@@ -367,10 +362,10 @@ namespace FreeMat {
     return retval;
   }
 
-  Array WalkTree::ShortCutAnd(ASTPtr t) {
-    SetContext(t->context());
-    Array a(expression(t->down));
-    SetContext(t->context());
+  Array WalkTree::ShortCutAnd(tree t) {
+    SetContext(t.context());
+    Array a(expression(t.first()));
+    SetContext(t.context());
     Array retval;
     if (!a.isScalar()) {
       retval = DoBinaryOperator(t,And,"and");
@@ -385,45 +380,41 @@ namespace FreeMat {
     return retval;
   }
 
-  Array WalkTree::expression(ASTPtr t) {
-    SetContext(t->context());
+  Array WalkTree::expression(tree t) {
+    SetContext(t.context());
     Array retval;
-    if (t->type == const_int_node) {
+    if (t.is(TOK_INTEGER)) {
       int iv;
       double fv;
-      iv = strtol(t->text,NULL,10);
+      iv = strtol(t.text,NULL,10);
       if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
-	fv = strtod(t->text,NULL);
+	fv = strtod(t.text().c_str(),NULL);
 	retval = Array::doubleConstructor(fv);
       } else {
 	retval = Array::int32Constructor(iv);
       }
     }
-    else if (t->type == const_float_node) {
-      retval = Array::floatConstructor(atof(t->text));
+    else if (t.is(TOK_FLOAT)) {
+      retval = Array::floatConstructor(atof(t.text().c_str()));
     }
-    else if (t->type == const_double_node) {
-      retval = Array::doubleConstructor(atof(t->text));
+    else if (t.is(TOK_DOUBLE)) {
+      retval = Array::doubleConstructor(atof(t.text().c_str()));
     }
-    else if (t->type == const_complex_node) {
-      retval = Array::complexConstructor(0,atof(t->text));
+    else if (t.is(TOK_COMPLEX)) {
+      retval = Array::complexConstructor(0,atof(t.text().c_str()));
     }
-    else if (t->type == const_dcomplex_node) {
-      retval = Array::dcomplexConstructor(0,atof(t->text));
+    else if (t.is(TOK_DCOMPLEX)) {
+      retval = Array::dcomplexConstructor(0,atof(t.text().c_str()));
     }
-    else if (t->type == string_const_node) {
-      retval = Array::stringConstructor(std::string(t->text));
+    else if (t.is(TOK_STRING)) {
+      retval = Array::stringConstructor(t.text());
     }
-    else if (t->type == reserved_node) {
-      if (t->tokenNumber == FM_END) {
-	if (endStack.empty())
-	  throw Exception("END keyword illegal (end stack underflow)!");
-	endData t(endStack.back());
-	retval = EndReference(t.endArray,t.index,t.count);
-      } else 
-	throw Exception("Unrecognized reserved node in expression tree!");
-    }
-    else {
+    else if (t.is(TOK_END)) {
+      if (endStack.empty())
+	throw Exception("END keyword illegal (end stack underflow)!");
+      endData t(endStack.back());
+      retval = EndReference(t.endArray,t.index,t.count);
+    } else {
       switch (t->opNum) {
       case OP_COLON:
 	if ((t->down != NULL) && (t->down->opNum ==(OP_COLON))) {
@@ -444,142 +435,139 @@ namespace FreeMat {
 	  retval = a;
 	}
 	break;
-      case OP_BRACKETS: 
+      case TOK_MATDEF: 
 	{ 
 	  retval = matrixDefinition(t); 
 	}
 	break;
-      case OP_BRACES: 
+      case TOK_CELLDEF: 
 	{ 
 	  retval = cellDefinition(t); 
 	}
 	break;
-      case OP_PLUS: 
+      case '+': 
 	{  
 	  retval = DoBinaryOperator(t,Add,"plus"); 
 	}
 	break;
-      case OP_SUBTRACT: 
+      case '-': 
 	{  
 	  retval = DoBinaryOperator(t,Subtract,"minus"); 
 	}
 	break;
-      case OP_TIMES: 
+      case '*': 
 	{  
 	  retval = DoBinaryOperator(t,Multiply,"mtimes"); 
 	}
 	break;
-      case OP_RDIV: 
+      case '/': 
 	{  
 	  retval = DoBinaryOperator(t,RightDivide,"mrdivide");
 	}
 	break;
-      case OP_LDIV: 
+      case '\\': 
 	{  
 	  retval = DoBinaryOperator(t,LeftDivide,"mldivide"); 
 	}
 	break;
-      case OP_SOR: 
-      case OP_OR: 
+      case TOK_SOR: 
+      case '|': 
 	{  
 	  retval = ShortCutOr(t); 
 	}
 	break;
-      case OP_AND: 
-      case OP_SAND: 
+      case TOK_SAND: 
+      case '&': 
 	{  
 	  retval = ShortCutAnd(t); 
 	}
 	break;
-	{  
-	  retval = DoBinaryOperator(t,Or,"or"); 
-	}
-	break;
-	{  
-	  retval = DoBinaryOperator(t,And,"and"); 
-	}
-	break;
-      case OP_LT: 
+      case '<': 
 	{  
 	  retval = DoBinaryOperator(t,LessThan,"lt"); 
 	}
 	break;
-      case OP_LEQ: 
+      case TOK_LEQ: 
 	{ 
 	  retval = DoBinaryOperator(t,LessEquals,"le"); 
 	}
 	break;
-      case OP_GT: 
+      case '>': 
 	{  
 	  retval = DoBinaryOperator(t,GreaterThan,"gt"); 
 	}
 	break;
-      case OP_GEQ: 
+      case TOK_GEQ: 
 	{ 
 	  retval = DoBinaryOperator(t,GreaterEquals,"ge"); 
 	}
 	break;
-      case OP_EQ: 
+      case TOK_EQ: 
 	{ 
 	  retval = DoBinaryOperator(t,Equals,"eq"); 
 	}
 	break;
-      case OP_NEQ: 
+      case TOK_NEQ: 
 	{ 
 	  retval = DoBinaryOperator(t,NotEquals,"ne"); 
 	}
 	break;
-      case OP_DOT_TIMES: 
+      case TOK_DOTTIMES: 
 	{ 
 	  retval = DoBinaryOperator(t,DotMultiply,"times"); 
 	}
 	break;
-      case OP_DOT_RDIV: 
+      case TOK_DOTRDIV: 
 	{ 
 	  retval = DoBinaryOperator(t,DotRightDivide,"rdivide"); 
 	}
 	break;
-      case OP_DOT_LDIV: 
+      case TOK_DOTLDIV: 
 	{ 
 	  retval = DoBinaryOperator(t,DotLeftDivide,"ldivide"); 
 	}
 	break;
-      case OP_NEG: 
+      case TOK_UNARY_MINUS: 
 	{ 
 	  retval = DoUnaryOperator(t,Negate,"uminus"); 
 	}
 	break;
-      case OP_NOT: 
+      case TOK_UNARY_PLUS: 
+	{ 
+	  retval = DoUnaryOperator(t,Plus,"uplus"); 
+	}
+	break;
+      case '~': 
 	{ 
 	  retval = DoUnaryOperator(t,Not,"not"); 
 	}
 	break;
-      case OP_POWER: 
+      case '^': 
 	{ 
 	  retval = DoBinaryOperator(t,Power,"mpower"); 
 	}
 	break;
-      case OP_DOT_POWER: 
+      case TOK_DOTPOWER: 
 	{ 
 	  retval = DoBinaryOperator(t,DotPower,"power"); 
 	}
 	break;
-      case OP_TRANSPOSE: 
+      case '\'': 
 	{ 
 	  retval = DoUnaryOperator(t,Transpose,"ctranspose"); 
 	}
 	break;
-      case OP_DOT_TRANSPOSE: 
+      case TOK_DOTTRANSPOSE: 
 	{ 
 	  retval = DoUnaryOperator(t,DotTranspose,"transpose"); 
 	}
 	break;
-      case OP_ADDRESS:
+      case '@':
 	{
 	  FuncPtr val;
 	  ArrayVector dummy;
-	  if (!lookupFunction(t->down->text,val,dummy))
-	    throw Exception("unable to resolve " + std::string(t->down->text) + 
+	  if (!lookupFunction(t.first().text(),val,dummy))
+	    throw Exception("unable to resolve " + t.first().text() + 
 			    " to a function call");
 	  retval = Array::funcPtrConstructor(val);
 	  break;
@@ -713,28 +701,28 @@ namespace FreeMat {
   //y = 5:4
   //@>
   //!
-  Array WalkTree::unitColon(ASTPtr t) {
+  Array WalkTree::unitColon(tree t) {
     Array a, b;
-    SetContext(t->context());
-    a = expression(t->down);
-    SetContext(t->context());
-    b = expression(t->down->right);
-    SetContext(t->context());
+    SetContext(t.context());
+    a = expression(t.first());
+    SetContext(t.context());
+    b = expression(t.second());
+    SetContext(t.context());
     if (!(a.isUserClass() || b.isUserClass()))
       return UnitColon(a,b);
     else
       return ClassBinaryOperator(a,b,"colon",this);
   }
 
-  Array WalkTree::doubleColon(ASTPtr t) {
+  Array WalkTree::doubleColon(tree t) {
     Array a, b, c;
-    SetContext(t->context());
-    a = expression(t->down->down);
-    SetContext(t->context());
-    b = expression(t->down->down->right);
-    SetContext(t->context());
-    c = expression(t->down->right);
-    SetContext(t->context());
+    SetContext(t.context());
+    a = expression(t.first().first());
+    SetContext(t.context());
+    b = expression(t.first().second());
+    SetContext(t.context());
+    c = expression(t.second());
+    SetContext(t.context());
     if (!(a.isUserClass() || b.isUserClass() || c.isUserClass()))
       return DoubleColon(a,b,c);
     else
@@ -752,10 +740,10 @@ namespace FreeMat {
    * called to resolve var(expr,expr) = someval or
    *                   someval = var(expr,expr)
    */
-  ArrayVector WalkTree::varExpressionList(ASTPtr t, Array subroot) {
+  ArrayVector WalkTree::varExpressionList(tree t, Array subroot) {
     ArrayVector m, n;
     if (t == NULL) return m;
-    SetContext(t->context());
+    SetContext(t.context());
     // Count the number of expressions
     int count = countSubExpressions(t);
     int index = 0;
@@ -767,9 +755,9 @@ namespace FreeMat {
       if (t->type == non_terminal && t->opNum ==(OP_RHS)) {
 	try {
 	  n = rhsExpression(t->down);
-	  SetContext(t->context());
+	  SetContext(t.context());
 	} catch (Exception& e) {
-	  SetContext(t->context());
+	  SetContext(t.context());
 	  if (!e.matches("Empty expression!"))
 	    throw;
 	  else
@@ -779,12 +767,12 @@ namespace FreeMat {
 	  m.push_back(n[i]);
       } else if (t->type == non_terminal && t->opNum ==(OP_ALL)) {
 	m.push_back(AllColonReference(subroot,index,count));
-	SetContext(t->context());
+	SetContext(t.context());
       } else {
 	endStack.push_back(endData(subroot,index,count));
 	// Call the expression
 	m.push_back(expression(t));
-	SetContext(t->context());
+	SetContext(t.context());
 	endStack.pop_back();
       }
       index++;
@@ -796,10 +784,10 @@ namespace FreeMat {
   /*
    * 
    */
-  ArrayVector WalkTree::expressionList(ASTPtr t) {
+  ArrayVector WalkTree::expressionList(tree t) {
     ArrayVector m, n;
     if (t == NULL) return m;
-    SetContext(t->context());
+    SetContext(t.context());
     while (t != NULL) {
       if (t->opNum == OP_KEYWORD) {
 	t = t->right;
@@ -808,9 +796,9 @@ namespace FreeMat {
       if (t->type == non_terminal && t->opNum ==(OP_RHS)) {
 	try {
 	  n = rhsExpression(t->down);
-	  SetContext(t->context());
+	  SetContext(t.context());
 	} catch (Exception& e) {
-	  SetContext(t->context());
+	  SetContext(t.context());
 	  if (!e.matches("Empty expression!"))
 	    throw;
 	  else
@@ -823,25 +811,25 @@ namespace FreeMat {
       } else {
 	//FIXME - so what happens if we use 'end' here?
 	m.push_back(expression(t));
-	SetContext(t->context());
+	SetContext(t.context());
       }
       t = t->right;
     }
     return m;
   }
 
-  bool WalkTree::conditionedStatement(ASTPtr t) {
+  bool WalkTree::conditionedStatement(tree t) {
     bool conditionState;
     if (t->opNum != OP_CSTAT)
       throw Exception("AST - syntax error!");
-    ASTPtr s = t->down;
-    SetContext(s->context());
+    tree s = t->down;
+    SetContext(s.context());
     bool conditionTrue;
     Array condVar;
     condVar = expression(s);
-    SetContext(s->context());
+    SetContext(s.context());
     conditionState = !condVar.isRealAllZeros();
-    ASTPtr codeBlock = s->right;
+    tree codeBlock = s->right;
     if (conditionState) 
       block(codeBlock);
     return conditionState;
@@ -856,10 +844,10 @@ namespace FreeMat {
    * any matches.  If x is a string and we are a cell-array, then
    * this is applied on an element-by-element basis also.
    */
-  bool WalkTree::testCaseStatement(ASTPtr t, Array s) {
+  bool WalkTree::testCaseStatement(tree t, Array s) {
     bool caseMatched;
     Array r;
-    int ctxt = t->context();
+    int ctxt = t.context();
     SetContext(ctxt);
     if (t->type != reserved_node || t->tokenNumber != FM_CASE) 
       throw Exception("AST- syntax error!");
@@ -915,7 +903,7 @@ namespace FreeMat {
   //read_file('test_text.txt')
   //@>
   //!
-  void WalkTree::tryStatement(ASTPtr t) {
+  void WalkTree::tryStatement(tree t) {
     // Turn off autostop for this statement block
     bool autostop_save = autostop;
     autostop = false;
@@ -924,14 +912,12 @@ namespace FreeMat {
     int stackdepth;
     stackdepth = cstack.size();
     try {
-      block(t);
+      block(t.first());
     } catch (Exception &e) {
       while (cstack.size() > stackdepth) popDebug();
-      //      cname = cstack.back().cname;
-      t = t->right;
-      if (t != NULL) {
+      if (t.numchildren() > 1) {
 	autostop = autostop_save;
-	block(t);
+	block(t.second().first());
       }
     } 
     autostop = autostop_save;
@@ -995,9 +981,9 @@ namespace FreeMat {
   //switch_test('carpet')
   //@>
   //!
-  void WalkTree::switchStatement(ASTPtr t) {
+  void WalkTree::switchStatement(tree t) {
     Array switchVal;
-    int ctxt = t->context();
+    int ctxt = t.context();
     SetContext(ctxt);
     // First, extract the value to perform the switch on.
     switchVal = expression(t);
@@ -1012,7 +998,7 @@ namespace FreeMat {
     if (t!=NULL) {
       bool caseMatched = false;
       if (t->opNum ==(OP_CASEBLOCK)) {
-	ASTPtr s = t->down;
+	tree s = t->down;
 	while (!caseMatched && s != NULL) {
 	  caseMatched = testCaseStatement(s,switchVal);
 	  SetContext(ctxt);
@@ -1072,9 +1058,9 @@ namespace FreeMat {
   //if_test(pi)
   //@>
   //!
-  void WalkTree::ifStatement(ASTPtr t) {
+  void WalkTree::ifStatement(tree t) {
     bool elseifMatched;
-    int ctxt = t->context();
+    int ctxt = t.context();
     SetContext(ctxt);
     bool condStat = conditionedStatement(t);
     SetContext(ctxt);
@@ -1084,7 +1070,7 @@ namespace FreeMat {
       if (t != NULL) {
 	elseifMatched = false;
 	if (t->opNum ==(OP_ELSEIFBLOCK)) {
-	  ASTPtr s = t->down;
+	  tree s = t->down;
 	  while (!elseifMatched && s != NULL) {
 	    elseifMatched = conditionedStatement(s);
 	    SetContext(ctxt);
@@ -1124,13 +1110,13 @@ namespace FreeMat {
   //accum
   //@>
   //!
-  void WalkTree::whileStatement(ASTPtr t) {
-    ASTPtr testCondition;
+  void WalkTree::whileStatement(tree t) {
+    tree testCondition;
     Array condVar;
-    ASTPtr codeBlock;
+    tree codeBlock;
     bool conditionTrue;
     bool breakEncountered;
-    int ctxt = t->context();
+    int ctxt = t.context();
     
     SetContext(ctxt);
     testCondition = t;
@@ -1212,15 +1198,15 @@ namespace FreeMat {
   //In the third example, we pre-initialize the loop variable
   //with the values it is to take
   //!
-  void WalkTree::forStatement(ASTPtr t) {
-    ASTPtr  codeBlock;
+  void WalkTree::forStatement(tree t) {
+    tree  codeBlock;
     Array indexSet;
     Array indexNum;
     char    *indexVarName;
     Array indexVar;
     int     elementNumber;
     int     elementCount;
-    int ctxt = t->context();
+    int ctxt = t.context();
 
     SetContext(ctxt);
     /* Get the name of the indexing variable */
@@ -1288,9 +1274,9 @@ namespace FreeMat {
   //get_global
   //@>
   //!
-  void WalkTree::globalStatement(ASTPtr t) {
+  void WalkTree::globalStatement(tree t) {
     if (t) {
-      SetContext(t->context());
+      SetContext(t.context());
       context->addGlobalVariable(t->text);
       t = t->down;
       while (t) {
@@ -1327,9 +1313,9 @@ namespace FreeMat {
   //for i=1:10; count_calls; end
   //@>
   //!
-  void WalkTree::persistentStatement(ASTPtr t) {
+  void WalkTree::persistentStatement(tree t) {
     if (t) {
-      SetContext(t->context());
+      SetContext(t.context());
       context->addPersistentVariable(t->text);
       t = t->down;
       while (t) {
@@ -1646,20 +1632,20 @@ namespace FreeMat {
       PrintArrayClassic(b,printLimit,io,true);
   }
 
-  void WalkTree::statementType(ASTPtr t, bool printIt) {
+  void WalkTree::statementType(tree t, bool printIt) {
     ArrayVector m;
     FunctionDef *fdef;
 
     if (processguievents) 
       qApp->processEvents();
-    SetContext(t->context());
+    SetContext(t.context());
     // check the debug flag
     if (t->isEmpty()) {
       /* Empty statement */
     } else if (t->opNum ==(OP_ASSIGN)) {
       if (t->down->down == NULL) {
 	Array b(expression(t->down->right));
-	SetContext(t->context());
+	SetContext(t.context());
 	context->insertVariable(t->down->text,b);
 	if (printIt) {
 	  io->outputMessage(t->down->text);
@@ -1668,9 +1654,9 @@ namespace FreeMat {
 	}	  
       } else {
 	Array expr(expression(t->down->right));
-	SetContext(t->context());
+	SetContext(t.context());
 	Array c(assignExpression(t->down,expr));
-	SetContext(t->context());
+	SetContext(t.context());
 	context->insertVariable(t->down->text,c);
 	if (printIt) {
 	  io->outputMessage(t->down->text);
@@ -1708,7 +1694,7 @@ namespace FreeMat {
 	switchStatement(t->down);
 	break;
       case FM_TRY:
-	tryStatement(t->down);
+	tryStatement(t);
 	break;
       case FM_QUIT:
 	throw WalkTreeQuitException();
@@ -1737,7 +1723,7 @@ namespace FreeMat {
 	ptr = context->lookupVariable(t->down->text);
 	if (ptr == NULL) {
 	  m = functionExpression(t->down,0,true);
-	  SetContext(t->context());
+	  SetContext(t.context());
 	  bool emptyOutput = false;
 	  if (m.size() == 0) {
 	    b = Array::emptyConstructor();
@@ -1747,11 +1733,11 @@ namespace FreeMat {
 	  if (printIt && (!emptyOutput)) {
 	    io->outputMessage(std::string("ans = \n"));
 	    displayArray(b);
-	    SetContext(t->context());
+	    SetContext(t.context());
 	  }
 	} else {
 	  m = rhsExpression(t->down);
-	  SetContext(t->context());
+	  SetContext(t.context());
 	  if (m.size() == 0)
 	    b = Array::emptyConstructor();
 	  else {
@@ -1765,7 +1751,7 @@ namespace FreeMat {
 		  io->outputMessage(std::string(buffer));
 		}
 		displayArray(m[j]);
-		SetContext(t->context());
+		SetContext(t.context());
 	      }
 	    }
 	  }
@@ -1775,7 +1761,7 @@ namespace FreeMat {
 	if (printIt) {
 	  io->outputMessage(std::string("ans = \n"));
 	  displayArray(b);
-	  SetContext(t->context());
+	  SetContext(t.context());
 	} 
       }
       context->insertVariable("ans",b);
@@ -1799,9 +1785,9 @@ namespace FreeMat {
   //
 
   // 
-  void WalkTree::statement(ASTPtr t) {
+  void WalkTree::statement(tree t) {
     try {
-      SetContext(t->context());
+      SetContext(t.context());
       switch (t->opNum) {
       case OP_QSTATEMENT:
 	statementType(t->down,false);
@@ -1831,10 +1817,10 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::block(ASTPtr t) {
+  void WalkTree::block(tree t) {
     try {
       if (!t) return;
-      ASTPtr s;
+      tree s;
       s = t->down;
       while (s != NULL) {
 	if (InterruptPending) {
@@ -1858,20 +1844,20 @@ namespace FreeMat {
     return context;
   }
 
-  int WalkTree::countLeftHandSides(ASTPtr t) {
+  int WalkTree::countLeftHandSides(tree t) {
     Array lhs, *ptr;
     ptr = context->lookupVariable(t->text);
     if (ptr == NULL)
       lhs = Array::emptyConstructor();
     else
       lhs = *ptr;
-    ASTPtr s = t->down;
+    tree s = t->down;
     if (s == NULL) {
       return 1;
     }
-    int ctxt = s->context();
+    int ctxt = s.context();
     while (s->right != NULL) {
-      SetContext(s->context());
+      SetContext(s.context());
       if (!lhs.isEmpty()) {
 	try {
 	  ArrayVector n(subsrefSingle(lhs,s));
@@ -1890,7 +1876,7 @@ namespace FreeMat {
     ArrayVector m;
     if (s->opNum == (OP_PARENS)) {
 	m = varExpressionList(s->down,lhs);
-	SetContext(s->context());
+	SetContext(s.context());
 	if (m.size() == 0)
 	  throw Exception("Expected indexing expression!");
 	if (m.size() == 1) {
@@ -1921,7 +1907,7 @@ namespace FreeMat {
     }
     if (s->opNum ==(OP_BRACES)) {
       m = varExpressionList(s->down,lhs);
-      SetContext(s->context());
+      SetContext(s.context());
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       if (m.size() == 1) {
@@ -1980,15 +1966,15 @@ namespace FreeMat {
 //       return Array::int32RangeConstructor(1,1,dim.getDimensionLength(index),true);
   }
   
-  Array WalkTree::assignExpression(ASTPtr t, Array &value) {
+  Array WalkTree::assignExpression(tree t, Array &value) {
     ArrayVector tmp;
     tmp.push_back(value);
     return assignExpression(t,tmp,false);
   }
 
   // If we got this far, we must have at least one subindex
-  Array WalkTree::assignExpression(ASTPtr t, ArrayVector &value, bool multipleLHS) {
-    int ctxt = t->context();
+  Array WalkTree::assignExpression(tree t, ArrayVector &value, bool multipleLHS) {
+    int ctxt = t.context();
     SetContext(ctxt);
     if (t->down == NULL) {
       if ((value.size() > 1) && !multipleLHS)
@@ -2009,18 +1995,18 @@ namespace FreeMat {
     return *ptr;
   }
 
-  void WalkTree::specialFunctionCall(ASTPtr t, bool printIt) {
-    ASTPtr fAST;
+  void WalkTree::specialFunctionCall(tree t, bool printIt) {
+    tree fAST;
     ArrayVector m;
     stringVector args;
     args.push_back(t->text);
-    ASTPtr s = t->right;
+    tree s = t->right;
     while (s) {
       args.push_back(s->text);
       s = s->right;
     }
     if (args.empty()) return;
-    SetContext(t->context());
+    SetContext(t.context());
     ArrayVector n;
     for (int i=1;i<args.size();i++)
       n.push_back(Array::stringConstructor(args[i].c_str()));
@@ -2083,15 +2069,15 @@ namespace FreeMat {
   //Where this will fail is in one case.  If expr_i is a cell reference for a variable that does not exist, and has a sized argument, something like
   //[eg{1:3}]
   //in which case the lhscount += 3, even though eg does not exist. 
-  void WalkTree::multiFunctionCall(ASTPtr t, bool printIt) {
+  void WalkTree::multiFunctionCall(tree t, bool printIt) {
     ArrayVector m;
-    ASTPtr s, fAST, saveLHS;
+    tree s, fAST, saveLHS;
     Array c;
     int lhsSize;
     int lhsCounter;
 
     fAST = t->right;
-    int ctxt = fAST->context();
+    int ctxt = fAST.context();
     SetContext(ctxt);
 
     if (t->opNum != OP_BRACKETS)
@@ -2110,7 +2096,7 @@ namespace FreeMat {
     saveLHS = s;
     // Get the lhs objects into rset
     int lhsCount = 0;
-    ASTPtr mptr = s;
+    tree mptr = s;
     while (mptr != NULL) {
       int dmp = countLeftHandSides(mptr->down);
       SetContext(ctxt);
@@ -2588,8 +2574,8 @@ namespace FreeMat {
   //@>
   //!
 
-  void WalkTree::collectKeywords(ASTPtr q, ArrayVector &keyvals,
-				 ASTPtrVector &keyexpr, stringVector &keywords) {
+  void WalkTree::collectKeywords(tree q, ArrayVector &keyvals,
+				 treeVector &keyexpr, stringVector &keywords) {
     // Search for the keyword uses - 
     // To handle keywords, we make one pass through the arguments,
     // recording a list of keywords used and using ::expression to
@@ -2677,10 +2663,10 @@ namespace FreeMat {
     return argTypeMap;
   }
 
-  void WalkTree::handlePassByReference(ASTPtr q, stringVector arguments,
+  void WalkTree::handlePassByReference(tree q, stringVector arguments,
 				       ArrayVector m,stringVector keywords, 
-				       ASTPtrVector keyexpr, int* argTypeMap) {
-    ASTPtr p;
+				       treeVector keyexpr, int* argTypeMap) {
+    tree p;
     // M functions can modify their arguments
     int maxsearch = m.size(); 
     if (maxsearch > arguments.size()) maxsearch = arguments.size();
@@ -2716,21 +2702,21 @@ namespace FreeMat {
     return a;
   }
 
-  ArrayVector WalkTree::functionExpression(ASTPtr t, 
+  ArrayVector WalkTree::functionExpression(tree t, 
 					   int narg_out, 
 					   bool outputOptional) {
     ArrayVector m, n;
-    ASTPtr s;
+    tree s;
     stringVector keywords;
     ArrayVector keyvals;
-    ASTPtrVector keyexpr;
+    treeVector keyexpr;
     int i;
     char buffer[2048];
     FuncPtr funcDef;
     int* argTypeMap;
     bool CLIFlagsave;
     CLIFlagsave = InCLI;
-    int ctxt = t->context();
+    int ctxt = t.context();
     
     SetContext(ctxt);
     try {
@@ -2831,11 +2817,11 @@ namespace FreeMat {
 
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
-  int GetClosestLineNumber(ASTPtr t, int lineno) {
+  int GetClosestLineNumber(tree t, int lineno) {
     if (t == NULL) return 10000;
     int linedwn = GetClosestLineNumber(t->down,lineno);
     int linerght = GetClosestLineNumber(t->right,lineno);
-    int retval = (t->context() & 0xffff);;
+    int retval = (t.context() & 0xffff);;
     int costthis = COST(retval,lineno);
     return(MIN(linedwn,MIN(linerght,costthis)));
   }
@@ -2883,7 +2869,7 @@ namespace FreeMat {
       int clinenum = 10000;
       int nxt;
       while (mptr) {
-	ASTPtr code = mptr->code;
+	tree code = mptr->code;
 	nxt = GetClosestLineNumber(code,bp.tokid & 0xffff);
 	clinenum = MIN(clinenum,nxt);
 	mptr = mptr->nextFunction;
@@ -3053,7 +3039,7 @@ namespace FreeMat {
   //   [x,y] = handle(arg1,arg2)
   //@]
   //!
-  ArrayVector WalkTree::FunctionPointerDispatch(Array r, ASTPtr args, 
+  ArrayVector WalkTree::FunctionPointerDispatch(Array r, tree args, 
 						int narg_out) {
     const FunctionDef** dp;
     bool CLIFlagsave;
@@ -3269,8 +3255,8 @@ namespace FreeMat {
   //'foo' with two double elements, the second of which is assigned
   //a value of pi.
   //!
-  ArrayVector WalkTree::rhsExpression(ASTPtr t) {
-    ASTPtr s;
+  ArrayVector WalkTree::rhsExpression(tree t) {
+    tree s;
     Array r, q, *ptr;
     Array n, p;
     ArrayVector m;
@@ -3280,7 +3266,7 @@ namespace FreeMat {
     bool isVar;
     bool isFun;
     Dimensions rhsDimensions;
-    int ctxt(t->context());
+    int ctxt(t.context());
     SetContext(ctxt);
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
@@ -3384,7 +3370,7 @@ namespace FreeMat {
   }
 
   void WalkTree::evaluateString(char *line, bool propogateExceptions) {
-    ASTPtr tree;
+    tree tree;
     ParserState parserState;
     
     InterruptPending = false;
@@ -3580,9 +3566,9 @@ namespace FreeMat {
   //  In the first case, there is no "mother" object, and in the second case there is.  So the
   //  context dependent symbols 'end' and ':' make a difference here.  
   
-  ArrayVector WalkTree::subsrefParen(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefParen(Array r, tree t) {
     ArrayVector m = varExpressionList(t->down,r);
-    SetContext(t->context());
+    SetContext(t.context());
     if (m.size() == 0) 
       throw Exception("Expected indexing expression!");
     else if (m.size() == 1) 
@@ -3591,9 +3577,9 @@ namespace FreeMat {
       return singleArrayVector(r.getNDimSubset(m));
   }
   
-  ArrayVector WalkTree::subsrefBrace(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefBrace(Array r, tree t) {
     ArrayVector m = varExpressionList(t->down,r);
-    SetContext(t->context());
+    SetContext(t.context());
     if (m.size() == 0) 
       throw Exception("Expected indexing expression!");
     else if (m.size() == 1)
@@ -3602,15 +3588,15 @@ namespace FreeMat {
       return(r.getNDimContentsAsList(m));
   }
   
-  ArrayVector WalkTree::subsrefDot(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefDot(Array r, tree t) {
     return r.getFieldAsList(t->down->text);
   }
   
-  ArrayVector WalkTree::subsrefDotDyn(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefDotDyn(Array r, tree t) {
     char *field;
     try {
       Array fname(expression(t->down));
-      SetContext(t->context());
+      SetContext(t.context());
       field = fname.getContentsAsCString();
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
@@ -3618,7 +3604,7 @@ namespace FreeMat {
     return r.getFieldAsList(field);
   }
 
-  ArrayVector WalkTree::subsrefSingle(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsrefSingle(Array r, tree t) {
     if (t->opNum ==(OP_PARENS))
       return(subsrefParen(r,t));
     else if (t->opNum ==(OP_BRACES)) 
@@ -3629,9 +3615,9 @@ namespace FreeMat {
       return(subsrefDotDyn(r,t));
   }
   
-  ArrayVector WalkTree::subsref(Array r, ASTPtr t) {
+  ArrayVector WalkTree::subsref(Array r, tree t) {
     ArrayVector rv;
-    SetContext(t->context());
+    SetContext(t.context());
     // Special case - r is an empty cell array, t is an all-deref
     if ((r.getDataClass() == FM_CELL_ARRAY) && t &&
 	(t->opNum == OP_BRACES) && (t->down) && (t->down->opNum == OP_ALL) &&
@@ -3655,9 +3641,9 @@ namespace FreeMat {
     return rv;
   }
 
-  void WalkTree::subsassignParen(Array *r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subsassignParen(Array *r, tree t, ArrayVector& value) {
     ArrayVector m = varExpressionList(t->down,*r);
-    SetContext(t->context());
+    SetContext(t.context());
     if (m.size() == 0)
       throw Exception("Expected indexing expression!");
     else if (m.size() == 1) 
@@ -3668,9 +3654,9 @@ namespace FreeMat {
     return;
   }
 
-  void WalkTree::subsassignBrace(Array *r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subsassignBrace(Array *r, tree t, ArrayVector& value) {
     ArrayVector m = varExpressionList(t->down,*r);
-    SetContext(t->context());
+    SetContext(t.context());
     if (m.size() == 0)
       throw Exception("Expected indexing expression!");
     else if (m.size() == 1) 
@@ -3680,15 +3666,15 @@ namespace FreeMat {
     return;
   }
   
-  void WalkTree::subsassignDot(Array *r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subsassignDot(Array *r, tree t, ArrayVector& value) {
     r->setFieldAsList(t->down->text,value);
   }
   
-  void WalkTree::subsassignDotDyn(Array *r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
     char *field;
     try {
       Array fname(expression(t->down));
-      SetContext(t->context());
+      SetContext(t.context());
       field = fname.getContentsAsCString();
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
@@ -3697,9 +3683,9 @@ namespace FreeMat {
   }
   
   // Does foo(exprlist) = val, foo{exprlist} = vals, foo.field = vals, or foo.(fieldname) = vals
-  void WalkTree::subassignSingle(Array *r, ASTPtr t, ArrayVector& value) {
+  void WalkTree::subassignSingle(Array *r, tree t, ArrayVector& value) {
     ArrayVector m;
-    SetContext(t->context());
+    SetContext(t.context());
     if (t->opNum ==(OP_PARENS)) 
       subsassignParen(r,t,value);
     else if (t->opNum ==(OP_BRACES)) 
@@ -3725,8 +3711,8 @@ namespace FreeMat {
   //    t2.fname2 = t3
   //    t1.fname1 = t2
   //    a(xpr1) = t1
-  void WalkTree::subassign(Array *r, ASTPtr t, ArrayVector& value) {
-    int ctxt = t->context();
+  void WalkTree::subassign(Array *r, tree t, ArrayVector& value) {
+    int ctxt = t.context();
     // Check for a class assignment
     if (r && r->isUserClass() && !inMethodCall(r->getClassName().back()) && !stopoverload) {
       ClassAssignExpression(r,t,value,this);
@@ -3734,8 +3720,8 @@ namespace FreeMat {
     }
     // Set up a stack
     ArrayVector stack;
-    ASTPtrVector ref;
-    ASTPtr s = t->down;
+    treeVector ref;
+    tree s = t->down;
     if (s->right == NULL) {
       subassignSingle(r,s,value);
       return;
@@ -3788,7 +3774,7 @@ namespace FreeMat {
       *r = tmp;
   }
   
-  int WalkTree::countSubExpressions(ASTPtr t) {
+  int WalkTree::countSubExpressions(tree t) {
     int count = 0;
     while (t != NULL) {
       t = t->right;

@@ -42,7 +42,11 @@ public:
   bool is(byte tok);
   byte token() {if (tptr) return tptr->node.Value(); else return 0;}
   unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
+  bool haschildren() {return numchildren() > 0;}
   string text() {if (tptr) return tptr->node.Text(); else return std::string();}
+  treeVector children() {if (tptr) return tptr->children; else return treeVector();}
+  tree last() {if (tptr) return tptr->children.back(); else return tree();}
+  tree child(unsigned n) {if (tptr) return tptr->children[n]; else return tree();}
 };
 
 tree mkLeaf(const Token& tok);

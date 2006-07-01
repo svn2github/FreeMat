@@ -48,9 +48,9 @@ namespace FreeMat {
   ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
 			    WalkTree* eval);
 
-  ArrayVector ClassRHSExpression(Array a, ASTPtr t, WalkTree* eval);
+  ArrayVector ClassRHSExpression(Array a, tree t, WalkTree* eval);
 
-  void ClassAssignExpression(Array* r, ASTPtr t, ArrayVector& value, WalkTree* eval);
+  void ClassAssignExpression(Array* r, tree t, ArrayVector& value, WalkTree* eval);
   
   bool ClassResolveFunction(WalkTree* eval, Array &args, std::string funcName, FuncPtr& val);
   

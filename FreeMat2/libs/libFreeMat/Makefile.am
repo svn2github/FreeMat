@@ -41,6 +41,7 @@ Scanner.hpp \
 Tree.hpp
 
 libFreeMat_a_SOURCES = Array.cpp \
+WalkTree.cpp \
 Context.cpp \
 Data.cpp \
 Dimensions.cpp \
@@ -64,7 +65,6 @@ Scope.cpp \
 Serialize.cpp \
 SingularValueDecompose.cpp \
 Sparse.cpp \
-WalkTree.cpp \
 Class.cpp \
 Print.cpp \
 Token.cpp \

@@ -255,10 +255,11 @@ namespace FreeMat {
      * valid if we are a subindexing expression list (i.e., 
      * VAR(exprssionlist)), in which case dim != NULL.
      */
-    ArrayVector expressionList(tree t);
+    ArrayVector expressionList(treeVector t);
     Array EndReference(Array v, int index, int count);
     Array AllColonReference(Array v, int index, int count);
-    ArrayVector varExpressionList(tree t, Array subroot);
+    void expressionStatement(tree t);
+    ArrayVector varExpressionList(treeVector t, Array subroot);
     /**
      * The RHS expression is used to represent an rvalue in an
      * assignment statement (or an implicit assignment such as 
@@ -295,6 +296,7 @@ namespace FreeMat {
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */
+    void assignmentStatement(tree t);
     inline Array rhsExpressionSimple(tree t);
     Interface* getInterface();
     /**

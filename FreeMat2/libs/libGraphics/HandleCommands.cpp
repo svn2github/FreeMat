@@ -20,6 +20,8 @@
 #include "HandleFigure.hpp"
 #include <qgl.h>
 #include <QtGui>
+#include <ctype.h>
+#include <algorithm>
 #include "HandleLineSeries.hpp"
 #include "HandleObject.hpp"
 #include "HandleText.hpp"
@@ -740,8 +742,10 @@ namespace FreeMat {
   std::string NormalizeImageExtension(std::string ext) {
     std::string upperext(ext);
     std::string lowerext(ext);
-    std::transform(upperext.begin(),upperext.end(),upperext.begin(),toupper);
-    std::transform(lowerext.begin(),lowerext.end(),lowerext.begin(),tolower);
+    std::transform(upperext.begin(),upperext.end(),upperext.begin(),
+		   (int(*)(int))toupper);
+    std::transform(lowerext.begin(),lowerext.end(),lowerext.begin(),
+		   (int(*)(int))tolower);
     if (upperext == "JPG") return std::string("JPEG");
     if ((upperext == "PDF") || (upperext == "PS") || (upperext == "EPS")) return upperext;
     QList<QByteArray> formats(QImageWriter::supportedImageFormats());

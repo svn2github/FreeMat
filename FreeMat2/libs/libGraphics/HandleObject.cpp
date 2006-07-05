@@ -89,7 +89,8 @@ namespace FreeMat {
   }
 
   HandleProperty* HandleObject::LookupProperty(std::string name) {
-    std::transform(name.begin(),name.end(),name.begin(),tolower);
+    std::transform(name.begin(),name.end(),name.begin(),
+		   (int(*)(int))tolower);
     // First look for the property to match (avoids the problem
     // with prefix names)
     HandleProperty** hp = m_properties.findSymbol(name);

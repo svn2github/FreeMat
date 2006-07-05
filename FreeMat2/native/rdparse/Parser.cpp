@@ -118,11 +118,15 @@ tree Parser::FunctionDefinition() {
     // Two possible parses here
     tree save = Identifier();
     if (Match('=')) {
-      addChild(root,save);
+      tree lhs = mkLeaf(TOK_BRACKETS);
+      addChild(lhs,save);
+      addChild(root,lhs);
       Expect('=');
       addChild(root,Identifier());
-    } else
+    } else {
+      addChild(root,mkLeaf(TOK_BRACKETS));
       addChild(root,save);
+    }
   }
   // Process (optional) args
   if (Match('(')) {
@@ -140,6 +144,8 @@ tree Parser::FunctionDefinition() {
     }
     Expect(')');
     addChild(root,args);
+  } else {
+    addChild(root,mkLeaf(TOK_PARENS));
   }
   StatementSeperator();
   addChild(root,StatementList());
@@ -432,9 +438,7 @@ tree Parser::StatementList() {
   tree statement = Statement();
   while (statement.valid()) {
     tree sep = StatementSeperator();
-    if (!sep.valid())
-      serror("Expecting valid statement");
-    //    if (!sep.valid()) return stlist;
+    if (!sep.valid()) return stlist;
     addChild(sep,statement);
     addChild(stlist,sep);
     while (StatementSeperator().valid());
@@ -607,6 +611,8 @@ void Parser::Consume() {
 tree Parser::Process() {
   lastpos = 0;
   tree root;
+  while (Match('\n'))
+    Consume();
   if (Match(TOK_FUNCTION)) {
     root = mkLeaf(TOK_FUNCTION_DEFS);
     while (Match(TOK_FUNCTION))

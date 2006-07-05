@@ -302,15 +302,22 @@ byte Scanner::ahead(int n) {
     return m_text.at(m_ptr+n);
 }
 
+
 string Scanner::Context(unsigned pos) {
   string::size_type line_start = 0;
+  int linenumber = 1;
   string::size_type line_stop = m_text.find("\n");
   while (pos > line_stop) {
     line_start = line_stop+1;
     line_stop = m_text.find("\n",line_start);
+    linenumber++;
   }
   string retstring(string(m_text,line_start,line_stop-line_start));
   retstring += "\n" + string(pos-line_start-1,' ') + "^";
   retstring += "\n" + string(pos-line_start-1,' ') + "|\n";
+  retstring += "Line number: ";
+  char buffer[1000];
+  sprintf(buffer,"%d\n",linenumber);
+  retstring += string(buffer);
   return(retstring);
 }

@@ -39,7 +39,8 @@ bool Token::IsBinaryOperator() const {
 	  (m_tok == ':') || (m_tok == TOK_LE) ||
 	  (m_tok == TOK_GE) || (m_tok == TOK_EQ) ||
 	  (m_tok == TOK_NE) || (m_tok == TOK_SOR) ||
-	  (m_tok == TOK_SAND));
+	  (m_tok == TOK_SAND) || (m_tok == '&') ||
+	  (m_tok == '|'));
 }
 
 bool Token::IsUnaryOperator() const {

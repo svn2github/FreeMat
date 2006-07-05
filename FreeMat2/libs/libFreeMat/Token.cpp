@@ -39,7 +39,10 @@ bool Token::IsBinaryOperator() const {
 	  (m_tok == ':') || (m_tok == TOK_LE) ||
 	  (m_tok == TOK_GE) || (m_tok == TOK_EQ) ||
 	  (m_tok == TOK_NE) || (m_tok == TOK_SOR) ||
-	  (m_tok == TOK_SAND));
+	  (m_tok == TOK_SAND) || (m_tok == TOK_DOTTIMES) ||
+	  (m_tok == TOK_DOTRDIV) || (m_tok == TOK_DOTLDIV) ||
+	  (m_tok == TOK_DOTPOWER) || (m_tok == '|') ||
+	  (m_tok == '&'));
 }
 
 bool Token::IsUnaryOperator() const {
@@ -54,7 +57,7 @@ bool Token::IsRightAssociative() const {
 }
 
 ostream& operator<<(ostream& o, const Token& b) {
-  o << TokenToString(b) << "\n";
+  o << TokenToString(b) << "\r\n";
   return o;
 }
 

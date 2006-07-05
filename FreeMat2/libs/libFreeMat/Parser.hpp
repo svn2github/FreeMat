@@ -32,7 +32,6 @@ private:
   tree Statement();
   tree DeclarationStatement();
   tree StatementSeperator();
-  tree StatementList();
   tree Identifier();
   tree AssignmentStatement();
   tree VariableDereference();
@@ -49,7 +48,10 @@ public:
   tree Process();
   string LastErr() {return lasterr;}
   unsigned LastPos() {return lastpos;}
+  tree StatementList();
   void Dump(); 
 };
+
+tree ParseString(string arg);
 
 #endif

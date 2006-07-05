@@ -25,7 +25,7 @@
 
 typedef std::string key_type;
 
-#define SYMTAB 4096
+#define SYMTAB 128
 
 namespace FreeMat {
   template<class T>

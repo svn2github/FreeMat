@@ -258,7 +258,7 @@ namespace FreeMat {
     ArrayVector expressionList(treeVector t);
     Array EndReference(Array v, int index, int count);
     Array AllColonReference(Array v, int index, int count);
-    void expressionStatement(tree t);
+    void expressionStatement(tree t, bool printIt);
     ArrayVector varExpressionList(treeVector t, Array subroot);
     /**
      * The RHS expression is used to represent an rvalue in an
@@ -296,7 +296,7 @@ namespace FreeMat {
     /**
      * Special case the single assignment statement 'A = B' for speed.
      */
-    void assignmentStatement(tree t);
+    void assignmentStatement(tree t, bool printIt);
     inline Array rhsExpressionSimple(tree t);
     Interface* getInterface();
     /**
@@ -577,7 +577,7 @@ namespace FreeMat {
      * and execute it.  The flag indicates whether or not exceptions
      * are propogated or printed.
      */
-    void evaluateString(char *line, bool propogateExceptions = false);
+    void evaluateString(string line, bool propogateExceptions = false);
     /**
      * Get the last error that occurred.
      */
@@ -609,7 +609,7 @@ namespace FreeMat {
     ArrayVector subsrefDot(Array r, tree t);
     ArrayVector subsrefDotDyn(Array r, tree t);
     ArrayVector subsrefSingle(Array r, tree t);
-    ArrayVector subsref(Array r, tree t);
+    ArrayVector subsref(Array r, treeVector t);
     void subsassignParen(Array *r, tree t, ArrayVector& value);
     void subsassignBrace(Array *r, tree t, ArrayVector& value);
     void subsassignDot(Array *r, tree t, ArrayVector& value);

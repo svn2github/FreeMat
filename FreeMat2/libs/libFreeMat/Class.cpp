@@ -979,31 +979,26 @@ namespace FreeMat {
     }
   }
 
-  void AdjustColonCalls(ArrayVector& m, ASTPtr t) {
-    int ndx = 0;
-    while (t) {
-      if ((t->type == non_terminal) && (t->opNum == OP_ALL))
-	m[ndx] = Array::stringConstructor(":");
-      ndx++;
-      t = t->right;
-    }
+  void AdjustColonCalls(ArrayVector& m, treeVector t) {
+    for (unsigned index=0;index < t.size();index++) 
+      if (t[index].is(':'))
+	m[index] = Array::stringConstructor(":");
   }
 
-  Array IndexExpressionToStruct(WalkTree* eval, ASTPtr t, Array r) {
+  Array IndexExpressionToStruct(WalkTree* eval, treeVector t, Array r) {
     ArrayVector struct_args, m;
     ArrayVector rv;
     Array rsave(r);
     stringVector fNames;
     fNames.push_back("type");
     fNames.push_back("subs");
-    
-    while (t != NULL) {
+    for (unsigned index=0;index < t.size();index++) {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
-      if (t->opNum ==(OP_PARENS)) {
-	m = eval->varExpressionList(t->down,r);
+      if (t[index].is(TOK_PARENS)) {
+	m = eval->varExpressionList(t[index].children(),r);
 	// Scan through the expressions... adjust for "colon" calls
-	AdjustColonCalls(m,t->down);
+	AdjustColonCalls(m,t[index].children());
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
@@ -1011,9 +1006,9 @@ namespace FreeMat {
 	struct_args.push_back(Array::stringConstructor("()"));
 	struct_args.push_back(Array::cellConstructor(q));
       }
-      if (t->opNum ==(OP_BRACES)) {
-	m = eval->varExpressionList(t->down,r);
-	AdjustColonCalls(m,t->down);
+      if (t[index].is(TOK_BRACES)) {
+	m = eval->varExpressionList(t[index].children(),r);
+	AdjustColonCalls(m,t[index].children());
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	// Take the arguments and push them into a cell array...
@@ -1021,11 +1016,10 @@ namespace FreeMat {
 	struct_args.push_back(Array::stringConstructor("{}"));
 	struct_args.push_back(Array::cellConstructor(q));
       }
-      if (t->opNum ==(OP_DOT)) {
+      if (t[index].is('.')) {
 	struct_args.push_back(Array::stringConstructor("."));
-	struct_args.push_back(Array::stringConstructor(t->down->text));
+	struct_args.push_back(Array::stringConstructor(t[index].first().text()));
       }
-      t = t->right;
     }
     int cnt = struct_args.size()/2;
     Array *cp = (Array*) Array::allocateArray(FM_STRUCT_ARRAY,cnt,fNames);
@@ -1034,7 +1028,7 @@ namespace FreeMat {
     return Array(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
   }
   
-  ArrayVector ClassSubsrefCall(WalkTree* eval, ASTPtr t, Array r, FuncPtr val) {
+  ArrayVector ClassSubsrefCall(WalkTree* eval, treeVector t, Array r, FuncPtr val) {
     ArrayVector p;
     p.push_back(r);
     p.push_back(IndexExpressionToStruct(eval,t, r));
@@ -1045,8 +1039,8 @@ namespace FreeMat {
 
   // What is special here...  Need to be able to do field indexing
   // 
-  ArrayVector ClassRHSExpression(Array r, ASTPtr t, WalkTree* eval) {
-    ASTPtr s;
+  ArrayVector ClassRHSExpression(Array r, treeVector t, WalkTree* eval) {
+    tree s;
     Array q;
     Array n, p;
     ArrayVector m;
@@ -1063,13 +1057,12 @@ namespace FreeMat {
 	// Overloaded subsref case
 	return ClassSubsrefCall(eval,t,r,val);
       }
-
     ArrayVector rv;
-    while (t != NULL) {
+    for (unsigned index=0;index < t.size();index++) {
       if (!rv.empty()) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
-      if (t->opNum ==(OP_PARENS)) {
-	m = eval->varExpressionList(t->down,r);
+      if (t[index].is(TOK_PARENS)) {
+	m = eval->varExpressionList(t[index].children(),r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1) {
@@ -1080,8 +1073,8 @@ namespace FreeMat {
 	  r = q;
 	}
       }
-      if (t->opNum ==(OP_BRACES)) {
-	m = eval->varExpressionList(t->down,r);
+      if (t[index].is(TOK_BRACES)) {
+	m = eval->varExpressionList(t[index].children(),r);
 	if (m.size() == 0) 
 	  throw Exception("Expected indexing expression!");
 	else if (m.size() == 1)
@@ -1096,23 +1089,23 @@ namespace FreeMat {
 	  r = Array::emptyConstructor();
 	}
       }
-      if (t->opNum ==(OP_DOT)) {
+      if (t[index].is('.')) {
 	// This is where the classname chain comes into being.
 	stringVector className = r.getClassName();
 	for (int i=1;i<className.size();i++) {
 	  rv = r.getFieldAsList(className[i]);
 	  r = rv[0];
 	}
-	rv = r.getFieldAsList(t->down->text);
+	rv = r.getFieldAsList(t[index].first().text());
 	if (rv.size() <= 1) {
 	  r = rv[0];
 	  rv = ArrayVector();
 	}
       }
-      if (t->opNum == (OP_DOTDYN)) {
+      if (t[index].is(TOK_DYN)) {
 	char *field;
 	try {
-	  Array fname(eval->expression(t->down));
+	  Array fname(eval->expression(t[index].first()));
 	  field = fname.getContentsAsCString();
 	} catch (Exception &e) {
 	  throw Exception("dynamic field reference to structure requires a string argument");
@@ -1123,21 +1116,20 @@ namespace FreeMat {
 	  rv = ArrayVector();
 	}      
       }
-      t = t->right;
     }
     if (rv.empty())
       rv.push_back(r);
     return rv;
   }
 
-  void ClassAssignExpression(Array *dst, ASTPtr t, ArrayVector& value, WalkTree* eval) {
+  void ClassAssignExpression(Array *dst, tree t, ArrayVector& value, WalkTree* eval) {
     FuncPtr val;
     if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
       throw Exception("The method 'subsasgn' is not defined for objects of class " + 
 		      dst->getClassName().back());
     ArrayVector p;
     p.push_back(*dst);
-    p.push_back(IndexExpressionToStruct(eval,t->down, *dst));
+    p.push_back(IndexExpressionToStruct(eval,t.children(), *dst));
     for (unsigned i=0;i<value.size();i++)
       p.push_back(value[i]);
     val->updateCode();

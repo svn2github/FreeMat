@@ -86,7 +86,7 @@ namespace FreeMat {
   /**
    * Element-wise negate of argument: $$C_n = - A_n$$.
    */
-  Array Negate(Array A) throw(Exception);
+  Array Negate(Array A);
   /**
    * Element-wise power: $$C_n = A_n ^ {B_n}$$.
    */

@@ -48,7 +48,7 @@ namespace FreeMat {
   ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
 			    WalkTree* eval);
 
-  ArrayVector ClassRHSExpression(Array a, tree t, WalkTree* eval);
+  ArrayVector ClassRHSExpression(Array a, treeVector t, WalkTree* eval);
 
   void ClassAssignExpression(Array* r, tree t, ArrayVector& value, WalkTree* eval);
   

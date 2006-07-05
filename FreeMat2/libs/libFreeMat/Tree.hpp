@@ -21,6 +21,7 @@ public:
   void print();
   void Rename(byte newtok);
   tree_node* getCopy();
+  unsigned context() {return node.Position();}
   tree_node();
 };
 
@@ -36,10 +37,10 @@ public:
   void Rename(byte newtok) {if (tptr) tptr->Rename(newtok);}
   bool valid() {return (tptr != NULL);}
   void operator=(const tree &copy);
-  unsigned context();
-  tree first();
-  tree second();
-  bool is(byte tok);
+  unsigned context() {if (tptr) return tptr->context(); else return 0;}
+  tree first() {return child(0);}
+  tree second() {return child(1);}
+  bool is(byte tok) {return (token()==tok);}
   byte token() {if (tptr) return tptr->node.Value(); else return 0;}
   unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
   bool haschildren() {return numchildren() > 0;}

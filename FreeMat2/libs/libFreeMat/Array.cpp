@@ -3165,14 +3165,22 @@ break;
       // We also get pointers to each of the index pointers.
       int i;
       for (i=0;i<L;i++)
-	a[i] = index[i].getMaxAsIndex();
+	if (isColonOperator(index[i])) 
+	  a[i] = myDims[i];
+	else
+	  a[i] = index[i].getMaxAsIndex();
       // Next, we compute the number of entries in each component.
       Dimensions argLengths(L);
       Dimensions argPointer(L);
       int dataCount = 1;
       for (i=0;i<L;i++) {
-	argLengths[i] = index[i].getLength();
-	dataCount *= argLengths[i];
+	if (isColonOperator(index[i])) {
+	  argLengths[i] = myDims[i];
+	  dataCount *= myDims[i];
+	} else {
+	  argLengths[i] = index[i].getLength();
+	  dataCount *= argLengths[i];
+	}
       }
       if (data.size() < dataCount)
 	throw Exception("Not enough right hand side values to satisfy left hand side expression");

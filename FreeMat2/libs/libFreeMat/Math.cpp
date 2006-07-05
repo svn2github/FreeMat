@@ -2654,11 +2654,15 @@ namespace FreeMat {
     return C;
   }
 
+  Array Plus(Array A) {
+    return A;
+  }
+
   /**
    * Element-wise negate - this one is a custom job, so to speak.
    * 
    */
-  Array Negate(Array A) throw(Exception){
+  Array Negate(Array A){
     Array C;
     Class Aclass;
 

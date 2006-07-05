@@ -23,7 +23,7 @@
 #include "WalkTree.hpp"
 #include "Exception.hpp"
 #include "Context.hpp"
-#include "ParserInterface.hpp"
+#include "Parser.hpp"
 #include "PathSearch.hpp"
 
 #ifdef WIN32
@@ -393,7 +393,7 @@ namespace FreeMat {
     func = lib->GetSymbol(symbolname);
     stringVector types;
     stringVector arguments;
-    ASTPtrVector checks;
+    treeVector checks;
     /**
      * Parse the arglist...
      */
@@ -411,13 +411,11 @@ namespace FreeMat {
 			std::string(" prototype (argument list) - ") + 
 			std::string("expecting a valid type name"));
       types.push_back(tn);
-      char *bc;
-      bc = parseBoundsCheck(cp);
+      char *bc = parseBoundsCheck(cp);
       if (bc != NULL) {
-	parseString(bc);
-	checks.push_back(getParsedScriptBlock()->down->down);
+	checks.push_back(ParseString(bc));
       } else
-	checks.push_back(NULL);
+	checks.push_back(tree(NULL));
       char *ar;
       ar = parseArgumentName(cp);
       arguments.push_back(ar);

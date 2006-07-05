@@ -20,7 +20,7 @@
 #include "avcall.h"
 #include "FunctionDef.hpp"
 #include "WalkTree.hpp"
-#include "ParserInterface.hpp"
+#include "Parser.hpp"
 #include "Exception.hpp"
 #include <stdio.h>
 #include <sys/stat.h>
@@ -96,7 +96,7 @@ namespace FreeMat {
       io->outputMessage(msgBuffer);
     }
     io->outputMessage("\ncode: \n");
-    printAST(code);
+    code.print();
   }
 
   ArrayVector MFunctionDef::evaluateFunction(WalkTree *walker, 
@@ -107,7 +107,7 @@ namespace FreeMat {
     bool warningIssued;
     int minCount;
     
-    if (!code) return outputs;
+    if (!code.valid()) return outputs;
     context = walker->getContext();
     context->pushScope(name);
     walker->pushDebug(fileName,name);
@@ -259,7 +259,56 @@ namespace FreeMat {
       throw;
     }
   }
+  
+  static string ReadFileIntoString(FILE *fp) {
+    struct stat st;
+    clearerr(fp);
+    fstat(fileno(fp),&st);
+    long cpos = st.st_size;
+    // Allocate enough for the text, an extra newline, and null
+    char *buffer = (char*) calloc(cpos+2,sizeof(char));
+    int n = fread(buffer,sizeof(char),cpos,fp);
+    buffer[n]='\n';
+    buffer[n+1]=0;
+    string retval(buffer);
+    free(buffer);
+    return retval;
+  }
 
+  stringVector IdentifierList(tree t) {
+    stringVector retval;
+    for (unsigned index=0;index<t.numchildren();index++) 
+      retval.push_back(t.child(index).text());
+    return retval;
+  }
+
+  MFunctionDef* ConvertParseTreeToMFunctionDef(tree t, string fileName) {
+    MFunctionDef *fp = new MFunctionDef;
+    fp->returnVals = IdentifierList(t.first());
+    fp->name = t.second().text();
+    fp->arguments = IdentifierList(t.child(2));
+    fp->code = t.child(3);
+    fp->fileName = fileName;
+    return fp;
+  }
+
+  MFunctionDef* ConvertParseTreeToMFunctionDefs(treeVector t, 
+						string fileName) {
+    MFunctionDef* last = NULL;
+    for (int index = t.size()-1;index>=0;index--) {
+      MFunctionDef* rp = ConvertParseTreeToMFunctionDef(t[index],fileName);
+      if (index>0)
+	rp->localFunction = true;
+      else
+	rp->localFunction = false;
+      rp->nextFunction = last;
+      if (last)
+	last->prevFunction = rp;
+      last = rp;
+    }
+    return last;
+  }
+  
   // Compile the function...
   void MFunctionDef::updateCode() {
     if (localFunction) return;
@@ -301,29 +350,30 @@ namespace FreeMat {
       }
       rewind(fp);
       try {
-	ParserState pstate = parseFile(fp,fileName.c_str());
-	fclose(fp);
-	fp = NULL;
-	// If pstate is a FuncDef, then get the parsed data
-	if (pstate == FuncDef) {
-	  MFunctionDef *cp = getParsedFunctionDef();
+	// Read the file into a string
+	string fileText = ReadFileIntoString(fp);
+	Scanner S(fileText);
+	//	S.SetDebug(true);
+	Parser P(S);
+	tree pcode = P.Process();
+	if (pcode.is(TOK_FUNCTION_DEFS)) {
 	  scriptFlag = false;
-	  returnVals = cp->returnVals;
-	  arguments = cp->arguments;
-	  code = cp->code;
+	  MFunctionDef *fp = ConvertParseTreeToMFunctionDefs(pcode.children(),
+							     fileName);
+	  returnVals = fp->returnVals;
+	  code = fp->code;
+	  nextFunction = fp->nextFunction;
+	  if (nextFunction)
+	    fp->nextFunction->prevFunction = this;
+	  prevFunction = false;
+	  localFunction = false;
+	  arguments = fp->arguments;
 	  functionCompiled = true;
-	  nextFunction = cp->nextFunction;
-	  prevFunction = cp->prevFunction;
-	  RestoreBreakpoints();
-	  return;
-	} else if (pstate == ScriptBlock) {
-	  code = getParsedScriptBlock();
+	} else {
 	  scriptFlag = true;
 	  functionCompiled = true;
-	  RestoreBreakpoints();
-	  return;
-	} else
-	  throw Exception(std::string("Syntax error parsing file:") + fileName + ", expecting a script or function definition");
+	  code = pcode.first();
+	}
       } catch (Exception &e) {
 	if (fp) fclose(fp);
 	functionCompiled = false;
@@ -341,104 +391,105 @@ namespace FreeMat {
   }
 
   void MFunctionDef::RemoveBreakpoint(int bpline) {
-    // The way this function works...  We have to
-    // find which subfunction to set the breakpoint in.
-    // Build a vector of the function defs
-    std::vector<ASTPtr> codes;
-    codes.push_back(code);
-    MFunctionDef *ptr = nextFunction;
-    while (ptr) {
-      codes.push_back(ptr->code);
-      ptr = ptr->nextFunction;
-    }
-    // Search backward through the subfunction definitions
-    int i=codes.size()-1;
-    bool found = false;
-    while ((i>=0) && !found) {
-      found = CheckASTBreakPoint(codes[i],bpline);
-      if (!found)
-	i--;
-    }
-    if (!found)
-      throw Exception("Unable to clear breakpoint...");
-    ClearASTBreakPoint(codes[i],bpline);
+
+//     // The way this function works...  We have to
+//     // find which subfunction to set the breakpoint in.
+//     // Build a vector of the function defs
+//     std::vector<ASTPtr> codes;
+//     codes.push_back(code);
+//     MFunctionDef *ptr = nextFunction;
+//     while (ptr) {
+//       codes.push_back(ptr->code);
+//       ptr = ptr->nextFunction;
+//     }
+//     // Search backward through the subfunction definitions
+//     int i=codes.size()-1;
+//     bool found = false;
+//     while ((i>=0) && !found) {
+//       found = CheckASTBreakPoint(codes[i],bpline);
+//       if (!found)
+// 	i--;
+//     }
+//     if (!found)
+//       throw Exception("Unable to clear breakpoint...");
+//     ClearASTBreakPoint(codes[i],bpline);
   }
   
   void MFunctionDef::AddBreakpoint(int bpline) {
-    // The way this function works...  We have to
-    // find which subfunction to set the breakpoint in.
-    // Build a vector of the function defs
-    std::vector<ASTPtr> codes;
-    codes.push_back(code);
-    MFunctionDef *ptr = nextFunction;
-    while (ptr) {
-      codes.push_back(ptr->code);
-      ptr = ptr->nextFunction;
-    }
-    // Search backward through the subfunction definitions
-    int i=codes.size()-1;
-    bool found = false;
-    while ((i>=0) && !found) {
-      found = CheckASTBreakPoint(codes[i],bpline);
-      if (!found)
-	i--;
-    }
-    if (!found) {
-      char buffer[1000];
-      sprintf(buffer,"Unable to set a breakpoint at line %d of routine %s",bpline,name.c_str());
-      throw Exception(buffer);
-    }
-    SetASTBreakPoint(codes[i],bpline);
+//     // The way this function works...  We have to
+//     // find which subfunction to set the breakpoint in.
+//     // Build a vector of the function defs
+//     std::vector<ASTPtr> codes;
+//     codes.push_back(code);
+//     MFunctionDef *ptr = nextFunction;
+//     while (ptr) {
+//       codes.push_back(ptr->code);
+//       ptr = ptr->nextFunction;
+//     }
+//     // Search backward through the subfunction definitions
+//     int i=codes.size()-1;
+//     bool found = false;
+//     while ((i>=0) && !found) {
+//       found = CheckASTBreakPoint(codes[i],bpline);
+//       if (!found)
+// 	i--;
+//     }
+//     if (!found) {
+//       char buffer[1000];
+//       sprintf(buffer,"Unable to set a breakpoint at line %d of routine %s",bpline,name.c_str());
+//       throw Exception(buffer);
+//     }
+//     SetASTBreakPoint(codes[i],bpline);
   }
 
   void MFunctionDef::SetBreakpoint(int bpline) {
-    // Add it to the list of breakpoints for this function
-    AddBreakpoint(bpline);
-    breakPoints.push_back(bpline);
+//     // Add it to the list of breakpoints for this function
+//     AddBreakpoint(bpline);
+//     breakPoints.push_back(bpline);
   }
 
   void MFunctionDef::DeleteBreakpoint(int bpline) {
-    for (std::vector<int>::iterator i=breakPoints.begin();
-	 i!=breakPoints.end();i++)
-      if (*i == bpline)
-	breakPoints.erase(i);
-    RemoveBreakpoint(bpline);
+//     for (std::vector<int>::iterator i=breakPoints.begin();
+// 	 i!=breakPoints.end();i++)
+//       if (*i == bpline)
+// 	breakPoints.erase(i);
+//     RemoveBreakpoint(bpline);
   }
 
   void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {
-    s->putString(fptr->name.c_str());
-    s->putBool(fptr->scriptFlag);
-    s->putStringVector(fptr->arguments);
-    s->putStringVector(fptr->returnVals);
-    s->putBool(fptr->functionCompiled);
-    s->putBool(fptr->localFunction);
-    s->putStringVector(fptr->helpText);
-    FreezeAST(fptr->code,s);
-    if (fptr->nextFunction) {
-      s->putBool(true);
-      FreezeMFunction(fptr->nextFunction,s);
-    } else {
-      s->putBool(false);
-    }
+//     s->putString(fptr->name.c_str());
+//     s->putBool(fptr->scriptFlag);
+//     s->putStringVector(fptr->arguments);
+//     s->putStringVector(fptr->returnVals);
+//     s->putBool(fptr->functionCompiled);
+//     s->putBool(fptr->localFunction);
+//     s->putStringVector(fptr->helpText);
+//     FreezeAST(fptr->code,s);
+//     if (fptr->nextFunction) {
+//       s->putBool(true);
+//       FreezeMFunction(fptr->nextFunction,s);
+//     } else {
+//       s->putBool(false);
+//     }
   }
 
   MFunctionDef* ThawMFunction(Serialize *s) {
-    MFunctionDef *t = new MFunctionDef();
-    t->name = std::string(s->getString());
-    t->scriptFlag = s->getBool();
-    t->arguments = s->getStringVector();
-    t->returnVals = s->getStringVector();
-    t->functionCompiled = s->getBool();
-    t->localFunction = s->getBool();
-    t->helpText = s->getStringVector();
-    t->code = ThawAST(s);
-    bool nextFun = s->getBool();
-    if (nextFun) {
-      t->nextFunction = ThawMFunction(s);
-      t->nextFunction->prevFunction = t;
-    } else
-      t->nextFunction = NULL;
-    return t;
+//     MFunctionDef *t = new MFunctionDef();
+//     t->name = std::string(s->getString());
+//     t->scriptFlag = s->getBool();
+//     t->arguments = s->getStringVector();
+//     t->returnVals = s->getStringVector();
+//     t->functionCompiled = s->getBool();
+//     t->localFunction = s->getBool();
+//     t->helpText = s->getStringVector();
+//     t->code = ThawAST(s);
+//     bool nextFun = s->getBool();
+//     if (nextFun) {
+//       t->nextFunction = ThawMFunction(s);
+//       t->nextFunction->prevFunction = t;
+//     } else
+//       t->nextFunction = NULL;
+//     return t;
   }
 
   BuiltInFunctionDef::BuiltInFunctionDef() {
@@ -529,7 +580,7 @@ namespace FreeMat {
   ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
 					   stringVector types_arg,
 					   stringVector arguments_arg,
-					   ASTPtrVector sizeChecks,
+					   treeVector sizeChecks,
 					   std::string retType_arg) {
     address = address_arg;
     types = types_arg;
@@ -587,7 +638,7 @@ namespace FreeMat {
     int passByReference = 0;
     for (int j=0;j<inputs.size();j++)
       if ((arguments[j][0] == '&') || (types[j] == "string") ||
-	  (sizeCheckExpressions[j] != NULL))
+	  (sizeCheckExpressions[j].valid()))
 	passByReference++;
     /**
      * Next, we check to see if any bounds-checking expressions are
@@ -596,7 +647,7 @@ namespace FreeMat {
     bool boundsCheckActive = false;
     int m=0;
     while (m < inputs.size() && !boundsCheckActive)
-      boundsCheckActive = (sizeCheckExpressions[m++] != NULL);
+      boundsCheckActive = (sizeCheckExpressions[m++].valid());
     if (boundsCheckActive) {
       /**
        * If the bounds-checking is active, we have to create a 
@@ -614,8 +665,7 @@ namespace FreeMat {
 	 * Next, evaluate each size check expression
 	 */
 	for (i=0;i<inputs.size();i++) {
-	  if (sizeCheckExpressions[i] != NULL) {
-	    //	    printAST(sizeCheckExpressions[i]);
+	  if (sizeCheckExpressions[i].valid()) {
 	    Array ret(walker->expression(sizeCheckExpressions[i]));
 	    ret.promoteType(FM_INT32);
 	    int len;
@@ -652,7 +702,7 @@ namespace FreeMat {
     int ptr = 0;
     for (i=0;i<inputs.size();i++) {
       if (types[i] != "string") {
-	if ((arguments[i][0] == '&') || (sizeCheckExpressions[i] != NULL)) {
+	if ((arguments[i][0] == '&') || (sizeCheckExpressions[i].valid())) {
 	  refPointers[ptr] = inputs[i].getReadWriteDataPointer();
 	  values[i] = &refPointers[ptr];
 	  ptr++;
@@ -705,7 +755,7 @@ namespace FreeMat {
     // Second pass - Loop through the arguments
     for (int i=0;i<types.size();i++) {
       if (arguments[i][0] == '&' || types[i] == "string" ||
-	  sizeCheckExpressions[i] != NULL)
+	  sizeCheckExpressions[i].valid())
 	av_ptr(alist,void*,*((void**)values[i]));
       else {
 	if ((types[i] == "logical") || (types[i] == "uint8"))

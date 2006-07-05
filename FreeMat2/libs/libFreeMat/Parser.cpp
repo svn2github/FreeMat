@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "Exception.hpp"
 // This one is still a question:
 //    [1 3' + 5]
 // Need: 
@@ -87,17 +88,7 @@ tree Parser::MultiFunctionCall() {
   Expect(']');
   addChild(root,lhs);
   Expect('=');
-  addChild(root,Identifier());
-  if (Match('(')) {
-    Consume();
-    tree sub = mkLeaf(TOK_PARENS);
-    while (!Match(')')) {
-      addChild(sub,Expression());
-      if (Match(',')) Consume();
-    }
-    Expect(')');
-    addChild(root,sub);
-  }
+  addChild(root,VariableDereference());
   return root;
 }
 
@@ -118,11 +109,15 @@ tree Parser::FunctionDefinition() {
     // Two possible parses here
     tree save = Identifier();
     if (Match('=')) {
-      addChild(root,save);
+      tree lhs = mkLeaf(TOK_BRACKETS);
+      addChild(lhs,save);
+      addChild(root,lhs);
       Expect('=');
       addChild(root,Identifier());
-    } else
+    } else {
+      addChild(root,mkLeaf(TOK_BRACKETS));
       addChild(root,save);
+    }
   }
   // Process (optional) args
   if (Match('(')) {
@@ -140,6 +135,8 @@ tree Parser::FunctionDefinition() {
     }
     Expect(')');
     addChild(root,args);
+  } else {
+    addChild(root,mkLeaf(TOK_PARENS));
   }
   StatementSeperator();
   addChild(root,StatementList());
@@ -262,6 +259,7 @@ tree Parser::TryStatement() {
 
 tree Parser::Keyword() {
   tree root(mkLeaf(Expect('/')));
+  root.Rename(TOK_KEYWORD);
   addChild(root,Identifier());
   if (Match('=')) {
     Consume();
@@ -295,7 +293,10 @@ tree Parser::VariableDereference() {
       Consume();
       tree sub = mkLeaf(TOK_BRACES);
       while (!Match('}')) {
-	addChild(sub,Expression());
+	if (Match(':'))
+	  addChild(sub,mkLeaf(Expect(':')));
+	else
+	  addChild(sub,Expression());
 	if (Match(',')) Consume();
       }
       Expect('}');
@@ -306,7 +307,7 @@ tree Parser::VariableDereference() {
       if (Match('(')) {
 	Consume();
 	dynroot.Rename(TOK_DYN);
-	addChild(dynroot,Identifier());
+	addChild(dynroot,Expression());
 	addChild(root,dynroot);
 	Expect(')');
       } else {
@@ -391,7 +392,7 @@ tree Parser::Statement() {
       tree retval = AssignmentStatement();
       m_lex.Continue();
       return retval;
-    } catch (ParseException &e) {
+    } catch (FreeMat::Exception &e) {
       m_lex.Restore();
     } 
   }
@@ -401,7 +402,7 @@ tree Parser::Statement() {
       tree retval = MultiFunctionCall();
       m_lex.Continue();
       return retval;
-    } catch (ParseException &e) {
+    } catch (FreeMat::Exception &e) {
       m_lex.Restore();
     }
   }
@@ -411,16 +412,17 @@ tree Parser::Statement() {
       tree retval = SpecialFunctionCall();
       m_lex.Continue();
       return retval;
-    } catch (ParseException &e) {
+    } catch (FreeMat::Exception &e) {
       m_lex.Restore();
     } 
   }
   try {
     m_lex.Save();
-    tree retval = Expression();
+    tree retval(mkLeaf(TOK_EXPR));
+    addChild(retval,Expression());
     m_lex.Continue();
     return retval;
-  } catch (ParseException &e) {
+  } catch (FreeMat::Exception &e) {
     m_lex.Restore();
   }
   return NULL;
@@ -432,9 +434,7 @@ tree Parser::StatementList() {
   tree statement = Statement();
   while (statement.valid()) {
     tree sep = StatementSeperator();
-    if (!sep.valid())
-      serror("Expecting valid statement");
-    //    if (!sep.valid()) return stlist;
+    if (!sep.valid()) return stlist;
     addChild(sep,statement);
     addChild(stlist,sep);
     while (StatementSeperator().valid());
@@ -445,9 +445,7 @@ tree Parser::StatementList() {
 
 tree Parser::Expression() {
   if (Match(TOK_SPACE)) Consume();
-  tree root(mkLeaf(TOK_EXPR));
-  addChild(root,Exp(0));
-  return root;
+  return Exp(0);
 }
 
 Parser::Parser(Scanner& lex) : m_lex(lex) {
@@ -462,7 +460,8 @@ void Parser::serror(string errmsg) {
     lasterr = errmsg;
     lastpos = m_lex.Position();
   }
-  throw ParseException(m_lex.Position(),errmsg);
+  //  throw ParseException(m_lex.Position(),errmsg);
+  throw FreeMat::Exception(errmsg);
 }
 
 const Token & Parser::Expect(byte a) {
@@ -607,6 +606,8 @@ void Parser::Consume() {
 tree Parser::Process() {
   lastpos = 0;
   tree root;
+  while (Match('\n'))
+    Consume();
   if (Match(TOK_FUNCTION)) {
     root = mkLeaf(TOK_FUNCTION_DEFS);
     while (Match(TOK_FUNCTION))
@@ -620,4 +621,10 @@ tree Parser::Process() {
       serror("expected a valid statement or expression");
   }
   return root;
+}
+
+tree ParseString(string arg) {
+  Scanner S(arg);
+  Parser P(S);
+  return P.StatementList();
 }

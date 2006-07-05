@@ -273,6 +273,7 @@ namespace FreeMat {
   //F = ['hello';'there']
   //@>
   //!
+  //Works
   Array WalkTree::matrixDefinition(tree t) {
     ArrayMatrix m;
     treeVector s(t.children());
@@ -335,6 +336,7 @@ namespace FreeMat {
   //C = {A,B}
   //@>
   //!
+  //Works
   Array WalkTree::cellDefinition(tree t) {
     ArrayMatrix m;
     treeVector s(t.children());
@@ -353,7 +355,7 @@ namespace FreeMat {
 
   Array WalkTree::ShortCutOr(tree t) {
     SetContext(t.context());
-    Array a(expression(first(t)));
+    Array a(expression(t.first()));
     SetContext(t.context());
     Array retval;
     if (!a.isScalar()) {
@@ -387,6 +389,7 @@ namespace FreeMat {
     return retval;
   }
 
+  //Works
   Array WalkTree::expression(tree t) {
     SetContext(t.context());
     Array retval;
@@ -647,6 +650,7 @@ namespace FreeMat {
   //y = 5:4
   //@>
   //!
+  //Works
   Array WalkTree::unitColon(tree t) {
     Array a, b;
     SetContext(t.context());
@@ -660,6 +664,7 @@ namespace FreeMat {
       return ClassBinaryOperator(a,b,"colon",this);
   }
 
+  //Works
   Array WalkTree::doubleColon(tree t) {
     Array a, b, c;
     SetContext(t.context());
@@ -693,7 +698,7 @@ namespace FreeMat {
     if (!count) return m;
     for (unsigned index = 0;index < count;index++) {
       SetContext(t[index].context());
-      if (t[index].is('/')) {
+      if (t[index].is(TOK_KEYWORD)) {
 	continue;
       }
       if (t[index].is(TOK_VARIABLE)) {
@@ -709,7 +714,7 @@ namespace FreeMat {
 	}
 	for (int i=0;i<n.size();i++)
 	  m.push_back(n[i]);
-      } else if (t[index].is(':')) {
+      } else if (t[index].is(':') && (!t[index].haschildren())) {
 	m.push_back(AllColonReference(subroot,index,count));
 	SetContext(t[index].context());
       } else {
@@ -733,7 +738,7 @@ namespace FreeMat {
     if (!count) return m;
     for (unsigned index = 0;index < count;index++) {
       SetContext(t[index].context());
-      if (t[index].is('/')) {
+      if (t[index].is(TOK_KEYWORD)) {
 	continue;
       }
       if (t[index].is(TOK_VARIABLE)) {
@@ -749,7 +754,7 @@ namespace FreeMat {
 	}
 	for (int i=0;i<n.size();i++)
 	  m.push_back(n[i]);
-      } else if (t[index].is(':')) {
+      } else if (t[index].is(':') && (!t[index].haschildren())) {
 	throw Exception("Illegal use of the ':' operator");
       } else {
 	//FIXME - so what happens if we use 'end' here?
@@ -826,6 +831,7 @@ namespace FreeMat {
   //read_file('test_text.txt')
   //@>
   //!
+  //Works
   void WalkTree::tryStatement(tree t) {
     // Turn off autostop for this statement block
     bool autostop_save = autostop;
@@ -838,7 +844,7 @@ namespace FreeMat {
       block(t.first());
     } catch (Exception &e) {
       while (cstack.size() > stackdepth) popDebug();
-      if (t.haschildren()) {
+      if (t.numchildren()>1) {
 	autostop = autostop_save;
 	block(t.second().first());
       }
@@ -904,6 +910,7 @@ namespace FreeMat {
   //switch_test('carpet')
   //@>
   //!
+  //Works
   void WalkTree::switchStatement(tree t) {
     Array switchVal;
     int ctxt = t.context();
@@ -971,6 +978,7 @@ namespace FreeMat {
   //if_test(pi)
   //@>
   //!
+  //Works
   void WalkTree::ifStatement(tree t) {
     bool elseifMatched;
     int ctxt = t.context();
@@ -1019,6 +1027,7 @@ namespace FreeMat {
   //accum
   //@>
   //!
+  //Works
   void WalkTree::whileStatement(tree t) {
     tree testCondition;
     Array condVar;
@@ -1109,6 +1118,7 @@ namespace FreeMat {
   //@<
   //@>
   //!
+  //Works
   void WalkTree::forStatement(tree t) {
     tree  codeBlock;
     Array indexSet;
@@ -1535,16 +1545,19 @@ namespace FreeMat {
       PrintArrayClassic(b,printLimit,io,true);
   }
 
-  //PORT
-  void WalkTree::expressionStatement(tree t) {
+  //Works
+  void WalkTree::expressionStatement(tree s, bool printIt) {
+    ArrayVector m;
+    if (!s.is(TOK_EXPR)) throw Exception("Unexpected statement type!");
+    tree t(s.first());
     // There is a special case to consider here - when a 
     // function call is made as a statement, we do not require
     // that the function have an output.
     Array b, *ptr;
-    if (t->opNum == (OP_RHS)) {
-      ptr = context->lookupVariable(t->down->text);
+    if (t.is(TOK_VARIABLE)) {
+      ptr = context->lookupVariable(t.first().text());
       if (ptr == NULL) {
-	m = functionExpression(t->down,0,true);
+	m = functionExpression(t,0,true);
 	SetContext(t.context());
 	bool emptyOutput = false;
 	if (m.size() == 0) {
@@ -1558,7 +1571,7 @@ namespace FreeMat {
 	  SetContext(t.context());
 	}
       } else {
-	m = rhsExpression(t->down);
+	m = rhsExpression(t);
 	SetContext(t.context());
 	if (m.size() == 0)
 	  b = Array::emptyConstructor();
@@ -1589,13 +1602,14 @@ namespace FreeMat {
     context->insertVariable("ans",b);
   }
 
-  void WalkTree::assignmentStatement(tree t) {
-    if (!t.first().haschildren()) {
+  //Works
+  void WalkTree::assignmentStatement(tree t, bool printIt) {
+    if (t.first().numchildren() == 1) {
       Array b(expression(t.second()));
       SetContext(t.context());
-      context->insertVariable(t.first().text(),b);
+      context->insertVariable(t.first().first().text(),b);
       if (printIt) {
-	io->outputMessage(t.first().text());
+	io->outputMessage(t.first().first().text());
 	io->outputMessage(std::string(" = \n"));
 	displayArray(b);
       }	  
@@ -1604,9 +1618,9 @@ namespace FreeMat {
       SetContext(t.context());
       Array c(assignExpression(t.first(),expr));
       SetContext(t.context());
-      context->insertVariable(t.first().text(),c);
+      context->insertVariable(t.first().first().text(),c);
       if (printIt) {
-	io->outputMessage(t.first().text());
+	io->outputMessage(t.first().first().text());
 	io->outputMessage(std::string(" = \n"));
 	displayArray(c);
       }
@@ -1614,16 +1628,13 @@ namespace FreeMat {
   }
   
   void WalkTree::statementType(tree t, bool printIt) {
-    ArrayVector m;
-    FunctionDef *fdef;
-    
     if (processguievents) 
       qApp->processEvents();
     SetContext(t.context());
     // check the debug flag
     switch(t.token()) {
     case '=':
-      assignmentStatement(t);
+      assignmentStatement(t,printIt);
       break;
     case TOK_MULTI:
       multiFunctionCall(t,printIt);
@@ -1672,7 +1683,7 @@ namespace FreeMat {
       persistentStatement(t);
       break;
     case TOK_EXPR:
-      expressionStatement(t);
+      expressionStatement(t,printIt);
       break;
     default:
       throw Exception("Unrecognized statement type");
@@ -1696,6 +1707,7 @@ namespace FreeMat {
   //
 
   // 
+  //Works
   void WalkTree::statement(tree t) {
     try {
       SetContext(t.context());
@@ -1718,6 +1730,7 @@ namespace FreeMat {
     }
   }
 
+  //Works
   void WalkTree::block(tree t) {
     try {
       for (unsigned i=0;i<t.numchildren();i++) {
@@ -1740,71 +1753,65 @@ namespace FreeMat {
     return context;
   }
 
-  //PORT
+  // I think this is too complicated.... there should be an easier way
+  // Works
   int WalkTree::countLeftHandSides(tree t) {
     Array lhs, *ptr;
-    ptr = context->lookupVariable(t->text);
+    ptr = context->lookupVariable(t.first().text());
     if (ptr == NULL)
       lhs = Array::emptyConstructor();
     else
       lhs = *ptr;
-    tree s = t->down;
-    if (s == NULL) {
-      return 1;
-    }
-    int ctxt = s.context();
-    while (s->right != NULL) {
-      SetContext(s.context());
+    treeVector s(t.children());
+    s.erase(s.begin());
+    if (s.size() == 0) return 1;
+    for (unsigned index=0;index < (s.size()-1);index++) {
       if (!lhs.isEmpty()) {
 	try {
-	  ArrayVector n(subsrefSingle(lhs,s));
+	  ArrayVector n(subsrefSingle(lhs,s[index]));
 	  if (n.size() > 0)
 	    lhs = n[0];
 	  else
 	    lhs = Array::emptyConstructor();
 	} catch (Exception& e) {
-	    lhs = Array::emptyConstructor();	  
+	  lhs = Array::emptyConstructor();	  
 	}
       }
-      s = s->right;
     }
     // We are down to the last subindexing expression...
     // We have to special case this one
     ArrayVector m;
-    if (s->opNum == (OP_PARENS)) {
-	m = varExpressionList(s->down,lhs);
-	SetContext(s.context());
-	if (m.size() == 0)
-	  throw Exception("Expected indexing expression!");
-	if (m.size() == 1) {
-	  // m[0] should have only one element...
-	  if (isColonOperator(m[0]))
-	    return(lhs.getLength());
-	  m[0].toOrdinalType();
-	  if (m[0].getLength() > 1)
-	    throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
-	  return (m[0].getLength());
-	}
-	else {
-	  int i=0;
-	  int outputCount=1;
-	  while (i<m.size()) {
-	    if (isColonOperator(m[i])) {
-	      outputCount *= lhs.getDimensionLength(i);
-	    } else {
-	      m[i].toOrdinalType();
-	      outputCount *= m[i].getLength();
-	    }
-	    i++;
+    if (s.back().is(TOK_PARENS)) {
+      m = varExpressionList(s.back().children(),lhs);
+      if (m.size() == 0)
+	throw Exception("Expected indexing expression!");
+      if (m.size() == 1) {
+	// m[0] should have only one element...
+	if (isColonOperator(m[0]))
+	  return(lhs.getLength());
+	m[0].toOrdinalType();
+	if (m[0].getLength() > 1)
+	  throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
+	return (m[0].getLength());
+      }	else {
+	int i=0;
+	int outputCount=1;
+	while (i<m.size()) {
+	  if (isColonOperator(m[i])) {
+	    outputCount *= lhs.getDimensionLength(i);
+	  } else {
+	    m[i].toOrdinalType();
+	    outputCount *= m[i].getLength();
 	  }
-	  if (outputCount > 1)
-	    throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
-	  return (outputCount);
+	  i++;
 	}
+	if (outputCount > 1)
+	  throw Exception("Parenthetical expression in the left hand side of a function call must resolve to a single element.");
+	return (outputCount);
+      }
     }
-    if (s->opNum ==(OP_BRACES)) {
-      m = varExpressionList(s->down,lhs);
-      SetContext(s.context());
+    if (s.back().is(TOK_BRACES)) {
+      m = varExpressionList(s.back().children(),lhs);
       if (m.size() == 0)
 	throw Exception("Expected indexing expression!");
       if (m.size() == 1) {
@@ -1829,7 +1836,7 @@ namespace FreeMat {
 	return (outputCount);
       }
     }
-    if (s->opNum ==(OP_DOT)) {
+    if (s.back().is('.')) {
       return std::max(1,lhs.getLength());
     }
     return 1;
@@ -1858,6 +1865,7 @@ namespace FreeMat {
     return Array::stringConstructor(":");
   }
   
+  // Works
   Array WalkTree::assignExpression(tree t, Array &value) {
     ArrayVector tmp;
     tmp.push_back(value);
@@ -1865,10 +1873,11 @@ namespace FreeMat {
   }
 
   // If we got this far, we must have at least one subindex
+  // Works
   Array WalkTree::assignExpression(tree t, ArrayVector &value, bool multipleLHS) {
     int ctxt = t.context();
     SetContext(ctxt);
-    if (!t.haschildren()) {
+    if (t.numchildren() == 1) {
       if ((value.size() > 1) && !multipleLHS)
 	throw Exception("to many values in the rhs to match the left hand side assignment");
       Array retval(value[0]);
@@ -1876,7 +1885,7 @@ namespace FreeMat {
       return retval;
     }
     // Get the variable in question
-    Array *ptr = context->lookupVariable(t.text());
+    Array *ptr = context->lookupVariable(t.first().text());
     Array ltmp;
     if (!ptr) {
       ltmp = Array::emptyConstructor();
@@ -1886,13 +1895,14 @@ namespace FreeMat {
     subassign(ptr,t,value);
     return *ptr;
   }
-  
+
+  //test
   void WalkTree::specialFunctionCall(tree t, bool printIt) {
     tree fAST;
     ArrayVector m;
     stringVector args;
     for (unsigned index=0;index < t.numchildren();index++) 
-      args.push_back(t.child[index].text());
+      args.push_back(t.child(index).text());
     if (args.empty()) return;
     SetContext(t.context());
     ArrayVector n;
@@ -1957,64 +1967,50 @@ namespace FreeMat {
   //Where this will fail is in one case.  If expr_i is a cell reference for a variable that does not exist, and has a sized argument, something like
   //[eg{1:3}]
   //in which case the lhscount += 3, even though eg does not exist. 
-  //PORT
+  // WORKS
   void WalkTree::multiFunctionCall(tree t, bool printIt) {
     ArrayVector m;
-    tree s, fAST, saveLHS;
+    tree fAST, saveLHS;
+    treeVector s;
     Array c;
-    int lhsSize;
-    int lhsCounter;
+    int lhsCount;
 
-    fAST = t->right;
+    fAST = t.second();
     int ctxt = fAST.context();
     SetContext(ctxt);
 
-    if (t->opNum != OP_BRACKETS)
+    if (!t.first().is(TOK_BRACKETS))
       throw Exception("Illegal left hand side in multifunction expression");
-    s = t->down;
-    if (s->opNum != OP_SEMICOLON)
-      throw Exception("Illegal left hand side in multifunction expression");
-    if (s->right != NULL)
-      throw Exception("Multiple rows not allowed in left hand side of multifunction expression");
+    s = t.first().children();
     // We have to make multiple passes through the LHS part of the AST.
     // The first pass is to count how many function outputs are actually
     // being requested. 
     // Calculate how many lhs objects there are
-    lhsSize = s->peerCount();
-    s = s->down;
-    saveLHS = s;
-    // Get the lhs objects into rset
-    int lhsCount = 0;
-    tree mptr = s;
-    while (mptr != NULL) {
-      int dmp = countLeftHandSides(mptr->down);
-      SetContext(ctxt);
-      lhsCount += dmp;
-      mptr = mptr->right;
-    }
+    lhsCount = 0;
+    for (unsigned index=0;index<s.size();index++) 
+      lhsCount += countLeftHandSides(s[index]);
     // Trap the special case where function pointers are used
     Array r, *ptr;
-    ptr = context->lookupVariable(fAST->text);
+    ptr = context->lookupVariable(fAST.first().text());
     if (ptr) r = *ptr;
     if (ptr && (r.getDataClass() == FM_FUNCPTR_ARRAY) &&
 	r.isScalar()) 
-      m = FunctionPointerDispatch(r,fAST->down,lhsCount);
+      m = FunctionPointerDispatch(r,fAST.second(),lhsCount);
     else
       m = functionExpression(fAST,lhsCount,false);
     SetContext(ctxt);
-    s = saveLHS;
-    while ((s != NULL) && (m.size() > 0)) {
-      Array c(assignExpression(s->down,m));
+    unsigned index;
+    for (index=0;(index<s.size()) && (m.size() > 0);index++) {
+      Array c(assignExpression(s[index],m));
       SetContext(ctxt);
-      context->insertVariable(s->down->text,c);
+      context->insertVariable(s[index].first().text(),c);
       if (printIt) {
-	io->outputMessage(s->down->text);
+	io->outputMessage(s[index].first().text());
 	io->outputMessage(" = \n");
 	displayArray(c);
       }
-      s = s->right;
     }
-    if (s != NULL)
+    if (index < s.size())
       io->warningMessage("one or more outputs not assigned in call.");
   }
 
@@ -2463,6 +2459,7 @@ namespace FreeMat {
   //@>
   //!
 
+  //Test
   void WalkTree::collectKeywords(tree q, ArrayVector &keyvals,
 				 treeVector &keyexpr, stringVector &keywords) {
     // Search for the keyword uses - 
@@ -2470,7 +2467,7 @@ namespace FreeMat {
     // recording a list of keywords used and using ::expression to
     // evaluate their values. 
     for (unsigned index=0;index < q.numchildren();index++) {
-      if (q.child(index).is('/')) {
+      if (q.child(index).is(TOK_KEYWORD)) {
 	keywords.push_back(q.child(index).first().text());
 	if (q.child(index).numchildren() > 1) {
 	  keyvals.push_back(expression(q.child(index).second()));
@@ -2483,7 +2480,7 @@ namespace FreeMat {
     }
   }
 					
-
+  //Test
   int* WalkTree::sortKeywords(ArrayVector &m, stringVector &keywords,
 			      stringVector arguments, ArrayVector keyvals) {
     // If keywords were used, we have to permute the
@@ -2554,37 +2551,41 @@ namespace FreeMat {
   }
 
   //PORT
+  //Can this be cleaned up?
+  //Test
   void WalkTree::handlePassByReference(tree q, stringVector arguments,
 				       ArrayVector m,stringVector keywords, 
 				       treeVector keyexpr, int* argTypeMap) {
-    tree p;
-    // M functions can modify their arguments
-    int maxsearch = m.size(); 
-    if (maxsearch > arguments.size()) maxsearch = arguments.size();
-    for (int i=0;i<maxsearch;i++) {
-      // Was this argument passed out of order?
-      if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
-      if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
-	p = keyexpr[argTypeMap[i]];
-      } else {
-	p = q;
-	if (q != NULL)
-	  q = q->right;
-      }
-      std::string args(arguments[i]);
-      if (args[0] == '&') {
-	args.erase(0,1);
-	// This argument was passed by reference
-	if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
-	  throw Exception("Must have lvalue in argument passed by reference");
-	if (p->down->down == NULL && p->down->type == id_node) {
-	  context->insertVariable(p->down->text,m[i]);
-	} else {
-	  Array c(assignExpression(p->down,m[i]));
-	  context->insertVariable(p->down->text,c);
-	}
-      }
-    }
+    return;
+
+//     tree p;
+//     // M functions can modify their arguments
+//     int maxsearch = m.size(); 
+//     if (maxsearch > arguments.size()) maxsearch = arguments.size();
+//     for (int i=0;i<maxsearch;i++) {
+//       // Was this argument passed out of order?
+//       if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
+//       if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
+// 	p = keyexpr[argTypeMap[i]];
+//       } else {
+// 	p = q;
+// 	if (q != NULL)
+// 	  q = q->right;
+//       }
+//       std::string args(arguments[i]);
+//       if (args[0] == '&') {
+// 	args.erase(0,1);
+// 	// This argument was passed by reference
+// 	if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
+// 	  throw Exception("Must have lvalue in argument passed by reference");
+// 	if (p->down->down == NULL && p->down->type == id_node) {
+// 	  context->insertVariable(p->down->text,m[i]);
+// 	} else {
+// 	  Array c(assignExpression(p->down,m[i]));
+// 	  context->insertVariable(p->down->text,c);
+// 	}
+//       }
+//     }
   }
 
   static ArrayVector mergeVecs(ArrayVector a, ArrayVector b) {
@@ -2593,6 +2594,7 @@ namespace FreeMat {
     return a;
   }
 
+  //Test
   ArrayVector WalkTree::functionExpression(tree t, 
 					   int narg_out, 
 					   bool outputOptional) {
@@ -2614,13 +2616,13 @@ namespace FreeMat {
       // first evaluate the keywords and the arguments, before we know
       // which function to call.
       // First, check for arguments
-      if (t.haschildren() && t.first().is(TOK_PARENS)) {
+      if ((t.numchildren()>=2) && t.second().is(TOK_PARENS)) {
 	// Collect keywords
-	collectKeywords(t.first(),keyvals,keyexpr,keywords);
+	collectKeywords(t.second(),keyvals,keyexpr,keywords);
 	SetContext(ctxt);
 	// Evaluate function arguments
 	try {
-	  m = expressionList(t.first().children());
+	  m = expressionList(t.second().children());
 	} catch (Exception &e) {
 	  // Transmute the error message about illegal use of ':'
 	  // into one about undefined variables.  Its crufty,
@@ -2631,17 +2633,16 @@ namespace FreeMat {
 	    throw;
 	}
 	SetContext(ctxt);
-      } else
-	throw Exception("Unknown function or variable " + t.text());
+      } 
       // Now that the arguments have been evaluated, we have to 
       // find the dominant class
-      if (!lookupFunction(t.text(),funcDef,m))
+      if (!lookupFunction(t.first().text(),funcDef,m))
 	throw Exception("Undefined function or variable " + 
-			t.text());
+			t.first().text());
       SetContext(ctxt);
       funcDef->updateCode();
       if (funcDef->scriptFlag) {
-	if (t.haschildren())
+	if (t.numchildren()>=2)
 	  throw Exception(std::string("Cannot use arguments in a call to a script."));
 	if ((narg_out > 0) && !outputOptional)
 	  throw Exception(std::string("Cannot assign outputs in a call to a script."));
@@ -2665,10 +2666,10 @@ namespace FreeMat {
 	SetContext(ctxt);
 	if ((funcDef->inputArgCount() >= 0) && 
 	    (m.size() > funcDef->inputArgCount()))
-	  throw Exception(std::string("Too many inputs to function ")+t.text());
+	  throw Exception(std::string("Too many inputs to function ")+t.first().text());
 	if ((funcDef->outputArgCount() >= 0) && 
 	    (narg_out > funcDef->outputArgCount() && !outputOptional))
-	  throw Exception(std::string("Too many outputs to function ")+t.text());
+	  throw Exception(std::string("Too many outputs to function ")+t.first().text());
 	CLIFlagsave = InCLI;
 	InCLI = false;
 	n = funcDef->evaluateFunction(this,m,narg_out);
@@ -2704,12 +2705,13 @@ namespace FreeMat {
 
   //PORT
   int GetClosestLineNumber(tree t, int lineno) {
-    if (t == NULL) return 10000;
-    int linedwn = GetClosestLineNumber(t->down,lineno);
-    int linerght = GetClosestLineNumber(t->right,lineno);
-    int retval = (t.context() & 0xffff);;
-    int costthis = COST(retval,lineno);
-    return(MIN(linedwn,MIN(linerght,costthis)));
+    return 1;
+//     if (t == NULL) return 10000;
+//     int linedwn = GetClosestLineNumber(t->down,lineno);
+//     int linerght = GetClosestLineNumber(t->right,lineno);
+//     int retval = (t.context() & 0xffff);;
+//     int costthis = COST(retval,lineno);
+//     return(MIN(linedwn,MIN(linerght,costthis)));
   }
 
   void WalkTree::listBreakpoints() {
@@ -2925,6 +2927,7 @@ namespace FreeMat {
   //   [x,y] = handle(arg1,arg2)
   //@]
   //!
+  //Works
   ArrayVector WalkTree::FunctionPointerDispatch(Array r, tree args, 
 						int narg_out) {
     const FunctionDef** dp;
@@ -2932,9 +2935,9 @@ namespace FreeMat {
     dp = (const FunctionDef**) r.getDataPointer();
     FunctionDef* fun = (FunctionDef*) dp[0];
     if (!fun) return ArrayVector();
-    if (args->opNum != OP_PARENS)
+    if (!args.is(TOK_PARENS))
       throw Exception("Expected either '()' or function arguments inside parenthesis");
-    ArrayVector m = expressionList(args->down);
+    ArrayVector m = expressionList(args.children());
     ArrayVector n;
     fun->updateCode();
     if (fun->scriptFlag) {
@@ -3141,9 +3144,9 @@ namespace FreeMat {
   //'foo' with two double elements, the second of which is assigned
   //a value of pi.
   //!
-  //PORT
+
+  //Works
   ArrayVector WalkTree::rhsExpression(tree t) {
-    tree s;
     Array r, q, *ptr;
     Array n, p;
     ArrayVector m;
@@ -3157,13 +3160,13 @@ namespace FreeMat {
     SetContext(ctxt);
     // Try to satisfy the rhs expression with what functions we have already
     // loaded.
-    ptr = context->lookupVariable(t->text);
+    ptr = context->lookupVariable(t.first().text());
     if (ptr) {
       r = *ptr;
       isVar = true;
     } else
       isVar = false;
-    if (isVar && (t->down == NULL)) {
+    if (isVar && (t.numchildren() == 1)) {
       ArrayVector rv;
       rv.push_back(r);
       return rv;
@@ -3175,13 +3178,15 @@ namespace FreeMat {
     // Check for a scalar function pointer element
     if (r.getDataClass() == FM_FUNCPTR_ARRAY &&
 	r.isScalar()) {
-      return FunctionPointerDispatch(r,t->down,1);
+      return FunctionPointerDispatch(r,t.second(),1);
     }
     // If r is a user defined object, we have to divert to the
     // class function... (unless overloading is turned off)
+    treeVector indexExpr(t.children());
+    indexExpr.erase(indexExpr.begin());
     if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName().back())) 
-      return ClassRHSExpression(r,t->down,this);
-    return subsref(r,t->down);
+      return ClassRHSExpression(r,indexExpr,this);
+    return subsref(r,indexExpr);
   }
   
   int WalkTree::getErrorCount() {
@@ -3256,29 +3261,29 @@ namespace FreeMat {
     return std::string(buffer2);
   }
 
-  void WalkTree::evaluateString(char *line, bool propogateExceptions) {
-    tree tree;
-    ParserState parserState;
+  //PORT
+  void WalkTree::evaluateString(string line, bool propogateExceptions) {
+    tree t;
     
     InterruptPending = false;
+    Scanner S(line);
+    //    S.SetDebug(true);
+    Parser P(S);
     try{
-      parserState = parseString(line);
+      t = P.StatementList();
+      t.print();
     } catch(Exception &e) {
       if (propogateExceptions)
 	throw;
       errorCount++;
-      e.printMe(io);
+      //      e.printMe(io);
       return;
     }
-
-    if (parserState != ScriptBlock)
-      return;
-
-    tree = getParsedScriptBlock();
     try {
-      pushDebug("Eval",EvalPrep(line));
+      //      pushDebug("Eval",EvalPrep(line));
+      pushDebug("Eval",line);
       try {
-	block(tree);
+	block(t);
       } catch (WalkTreeReturnException& e) {
 	if (depth > 0) {
 	  popDebug();
@@ -3315,8 +3320,6 @@ namespace FreeMat {
   }
 
   void WalkTree::evalCLI() {
-    char *line;
-    char dataline[MAXSTRING];
     char prompt[150];
     int lastCount;
 
@@ -3333,46 +3336,9 @@ namespace FreeMat {
 	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
 		ip_context & 0xffff);
     while(1) {
-      line = io->getLine(prompt);
+      char* line = io->getLine(prompt);
       if (!line)
 	continue;
-      // scan the line and tokenize it
-      setLexBuffer(line);
-      lastCount = 0;
-      try {
-	if (lexCheckForMoreInput(0)) {
-	  lastCount = getContinuationCount();
-	  // Need multiple lines..  This code is _really_ bad - I need
-	  // a better interface...
-	  strcpy(dataline,line);
-	  bool enoughInput = false;
-	  // Loop until we have enough input
-	  while (!enoughInput) {
-	    // Get more text
-	    line = io->getLine("");
-	    // User pressed ctrl-D (or equivalent) - stop looking for
-	    // input
-	    if (!line) 
-	      enoughInput = true;
-	    else {
-	      // User didn't press ctrl-D - 
-	      // tack the new text onto the dataline
-	      strcat(dataline,line);
-	      setLexBuffer(dataline);
-	      // Update the check
-	      enoughInput = !lexCheckForMoreInput(lastCount);
-	      lastCount = getContinuationCount();
-	      //	    strcat(dataline,line);
-	      if (enoughInput) strcat(dataline,"\n");
-	    }
-	  }
-	  line = dataline;
-	}
-      } catch (Exception &e) {
-	errorCount++;
-	e.printMe(io);
-	line = NULL;
-      }
       InCLI = true;
       if (line && (strlen(line) > 0)) {
 	int stackdepth;
@@ -3382,7 +3348,75 @@ namespace FreeMat {
       }
     }
   }
-
+//  void WalkTree::evalCLI() {
+//    char *line;
+//    char dataline[MAXSTRING];
+//    char prompt[150];
+//    int lastCount;
+//
+//    if ((depth == 0) || (cstack.size() == 0))
+//      if (bpActive)
+//	sprintf(prompt,"D-> ");
+//      else
+//	sprintf(prompt,"--> ");
+//    else
+//      if (bpActive)	
+//	sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
+//		ip_context & 0xffff);
+//      else
+//	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
+//		ip_context & 0xffff);
+//    while(1) {
+//      line = io->getLine(prompt);
+//      if (!line)
+//	continue;
+//      // scan the line and tokenize it
+//      setLexBuffer(line);
+//      lastCount = 0;
+//      try {
+//	if (lexCheckForMoreInput(0)) {
+//	  lastCount = getContinuationCount();
+//	  // Need multiple lines..  This code is _really_ bad - I need
+//	  // a better interface...
+//	  strcpy(dataline,line);
+//	  bool enoughInput = false;
+//	  // Loop until we have enough input
+//	  while (!enoughInput) {
+//	    // Get more text
+//	    line = io->getLine("");
+//	    // User pressed ctrl-D (or equivalent) - stop looking for
+//	    // input
+//	    if (!line) 
+//	      enoughInput = true;
+//	    else {
+//	      // User didn't press ctrl-D - 
+//	      // tack the new text onto the dataline
+//	      strcat(dataline,line);
+//	      setLexBuffer(dataline);
+//	      // Update the check
+//	      enoughInput = !lexCheckForMoreInput(lastCount);
+//	      lastCount = getContinuationCount();
+//	      //	    strcat(dataline,line);
+//	      if (enoughInput) strcat(dataline,"\n");
+//	    }
+//	  }
+//	  line = dataline;
+//	}
+//      } catch (Exception &e) {
+//	errorCount++;
+//	e.printMe(io);
+//	line = NULL;
+//      }
+//      InCLI = true;
+//      if (line && (strlen(line) > 0)) {
+//	int stackdepth;
+//	stackdepth = cstack.size();
+//	evaluateString(line);
+//	while (cstack.size() > stackdepth) cstack.pop_back();
+//      }
+//    }
+//  }
+//
   // Convert a list of variable into indexing expressions
   //  - for user defined classes, we call subsindex for 
   //  - the object
@@ -3453,6 +3487,9 @@ namespace FreeMat {
   //  In the first case, there is no "mother" object, and in the second case there is.  So the
   //  context dependent symbols 'end' and ':' make a difference here.  
   
+  // Works
+  // a = {1,2,3;4,5,6}
+  // b = a(2,end)
   ArrayVector WalkTree::subsrefParen(Array r, tree t) {
     ArrayVector m = varExpressionList(t.children(),r);
     SetContext(t.context());
@@ -3464,6 +3501,9 @@ namespace FreeMat {
       return singleArrayVector(r.getNDimSubset(m));
   }
   
+  // Works
+  // a = {1,2,3;4,5,6}
+  // b = a{2,end}
   ArrayVector WalkTree::subsrefBrace(Array r, tree t) {
     ArrayVector m = varExpressionList(t.children(),r);
     SetContext(t.context());
@@ -3475,10 +3515,17 @@ namespace FreeMat {
       return(r.getNDimContentsAsList(m));
   }
   
+  // Works
+  //a.foo = 32
+  //g = a.foo
   ArrayVector WalkTree::subsrefDot(Array r, tree t) {
     return r.getFieldAsList(t.first().text());
   }
   
+  // Works
+  //a.foo = 34
+  //h = 'foo'
+  //g = a.(h)
   ArrayVector WalkTree::subsrefDotDyn(Array r, tree t) {
     char *field;
     try {
@@ -3491,6 +3538,7 @@ namespace FreeMat {
     return r.getFieldAsList(field);
   }
 
+  // Works
   ArrayVector WalkTree::subsrefSingle(Array r, tree t) {
     if (t.is(TOK_PARENS))
       return(subsrefParen(r,t));
@@ -3498,23 +3546,25 @@ namespace FreeMat {
       return(subsrefBrace(r,t));
     else if (t.is('.'))
       return(subsrefDot(r,t));
-    else if (t.is(TOK_DOTDYN))
+    else if (t.is(TOK_DYN))
       return(subsrefDotDyn(r,t));
   }
   
-
+  //  Works
+  // p(5).foo{2} = 'hello'
+  // b = p(5).foo{2}(2:end)
   ArrayVector WalkTree::subsref(Array r, treeVector t) {
     ArrayVector rv;
-    SetContext(t.context());
     // Special case - r is an empty cell array, t is an all-deref
     if ((r.getDataClass() == FM_CELL_ARRAY) && t.size() == 1 &&
 	t[0].is(TOK_BRACES) && r.isEmpty()) 
       return ArrayVector();
-    for (unsigned index = 0;index < t.size();i++) {
+    for (unsigned index = 0;index < t.size();index++) {
       if (rv.size()>1) 
 	throw Exception("Cannot reindex an expression that returns multiple values.");
       if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName().back()))
-	return ClassRHSExpression(r,t[index],this);
+	//CHECK
+	return ClassRHSExpression(r,t,this);
       rv = subsrefSingle(r,t[index]);
       if (rv.size() == 1) {
 	r = rv[0];
@@ -3525,6 +3575,12 @@ namespace FreeMat {
     return rv;
   }
 
+  // Works
+  // a = [];
+  // a(3,3) = 3;
+  // a(2,2) = 2;
+  // a(1,:) = 1;
+  // a(:,end) = 5;
   void WalkTree::subsassignParen(Array *r, tree t, ArrayVector& value) {
     ArrayVector m = varExpressionList(t.children(),*r);
     SetContext(t.context());
@@ -3538,6 +3594,12 @@ namespace FreeMat {
     return;
   }
 
+  // Works
+  // a = {};
+  // a{3,3} = 3;
+  // a{2,2} = 2;
+  // a{1,:} = 1;
+  // a{:,end} = 5;
   void WalkTree::subsassignBrace(Array *r, tree t, ArrayVector& value) {
     ArrayVector m = varExpressionList(t.children(),*r);
     SetContext(t.context());
@@ -3550,10 +3612,16 @@ namespace FreeMat {
     return;
   }
   
+  // Works
+  //g.foo = 32
   void WalkTree::subsassignDot(Array *r, tree t, ArrayVector& value) {
     r->setFieldAsList(t.first().text(),value);
   }
   
+  // Works
+  //g.foo = 32;
+  //h = 'foo'
+  //g.(h) = 50
   void WalkTree::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
     char *field;
     try {
@@ -3567,6 +3635,7 @@ namespace FreeMat {
   }
   
   // Does foo(exprlist) = val, foo{exprlist} = vals, foo.field = vals, or foo.(fieldname) = vals
+  // Works
   void WalkTree::subassignSingle(Array *r, tree t, ArrayVector& value) {
     ArrayVector m;
     SetContext(t.context());
@@ -3576,7 +3645,7 @@ namespace FreeMat {
       subsassignBrace(r,t,value);
     else if (t.is('.'))
       subsassignDot(r,t,value);
-    else if (t.is(TOK_DOTDYN))
+    else if (t.is(TOK_DYN))
       subsassignDotDyn(r,t,value);
   }
   
@@ -3595,6 +3664,7 @@ namespace FreeMat {
   //    t2.fname2 = t3
   //    t1.fname1 = t2
   //    a(xpr1) = t1
+  // Works
   void WalkTree::subassign(Array *r, tree t, ArrayVector& value) {
     int ctxt = t.context();
     // Check for a class assignment
@@ -3606,13 +3676,14 @@ namespace FreeMat {
     ArrayVector stack;
     treeVector ref;
     treeVector s = t.children();
+    s.erase(s.begin());
     if (s.size() == 1) {
       subassignSingle(r,s[0],value);
       return;
     }
     Array data(*r);
     // Subindex
-    for (unsigned index=0;index < s.size();index++) {
+    for (unsigned index=0;index < (s.size()-1);index++) {
       SetContext(ctxt);
       if (!data.isEmpty()) {
 	try {
@@ -3631,6 +3702,7 @@ namespace FreeMat {
     subassignSingle(&tmp,s.back(),value);
     SetContext(ctxt);
     Array rhs(tmp);
+    displayArray(rhs);
     if (stack.size() > 0) {
       stack.pop_back();
       // Now we have to "unwind" the stack
@@ -3640,6 +3712,7 @@ namespace FreeMat {
 	// Make the assignment
 	ArrayVector m(singleArrayVector(rhs));
 	subassignSingle(&tmp,ref.back(),m);
+	displayArray(tmp);
 	SetContext(ctxt);
 	// Assign this temporary to be the RHS of the next temporary
 	rhs = tmp;

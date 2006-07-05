@@ -922,8 +922,8 @@ namespace FreeMat {
     // or a string switch.
     if (!switchVal.isScalar() && !switchVal.isString())
       throw Exception("Switch statements support scalar and string arguments only.");
-    unsigned n=2;
-    while (n <= t.numchildren() && t.child(n).is(TOK_CASE)) {
+    unsigned n=1;
+    while (n < t.numchildren() && t.child(n).is(TOK_CASE)) {
       if (testCaseStatement(t.child(n),switchVal))
 	return;
       n++;
@@ -988,8 +988,8 @@ namespace FreeMat {
     if (condtest)
       block(t.second());
     else {
-      unsigned n=3;
-      while (n <= t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
+      unsigned n=2;
+      while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
 	if (!(expression(t.child(n).first()).isRealAllZeros())) {
 	  block(t.child(n).second());
 	  return;

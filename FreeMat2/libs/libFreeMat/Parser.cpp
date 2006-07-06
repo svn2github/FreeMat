@@ -152,11 +152,20 @@ bool Parser::MatchNumber() {
 tree Parser::SpecialFunctionCall() {
   tree root = mkLeaf(TOK_SPECIAL);
   addChild(root,Identifier());
-  if (!(Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)))
-    serror("Not special call");
-  while (Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)) {
+  // Special case "cd, dir, ls"... these commands eat all remaining text
+  if ((root.first().text() == "cd") ||
+      (root.first().text() == "dir") ||
+      (root.first().text() == "ls")) {
+    m_lex.Gobble();
     addChild(root,mkLeaf(Next()));
     Consume();
+  } else {
+    if (!(Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)))
+      serror("Not special call");
+    while (Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)) {
+      addChild(root,mkLeaf(Next()));
+      Consume();
+    }
   }
   return root;
 }

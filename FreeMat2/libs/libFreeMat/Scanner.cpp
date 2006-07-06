@@ -262,6 +262,19 @@ void Scanner::FetchIdentifier() {
   m_ptr += len;
 }
 
+void Scanner::Gobble() {
+  int len = 0;
+  while (isblank(current())) m_ptr++;
+  if (current() == '\'')
+    FetchString();
+  else {
+    while ((ahead(len) != '\n') && (ahead(len) != '%')) len++;
+    SetToken(TOK_STRING,string(m_text,m_ptr,len));
+    m_ptr += len;
+  }
+  m_tokValid = true;
+}
+
 const Token& Scanner::Next() {
   while (!m_tokValid) {
     m_ptr_save = m_ptr;

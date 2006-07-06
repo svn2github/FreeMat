@@ -1642,6 +1642,7 @@ namespace FreeMat {
       break;
     case TOK_SPECIAL:
       specialFunctionCall(t,printIt);
+      break;
     case TOK_FOR:
       forStatement(t);
       break;

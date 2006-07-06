@@ -45,6 +45,7 @@ public:
   // Methods accessed by the parser
   const Token& Next();
   void Consume();
+  void Gobble();
   bool Match(byte tok);
   void SetDebug(bool debugFlag) {m_debugFlag = debugFlag;}
   void PushWSFlag(bool ignoreWS);

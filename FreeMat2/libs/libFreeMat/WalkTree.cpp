@@ -985,9 +985,10 @@ namespace FreeMat {
     SetContext(ctxt);
     
     bool condtest = !(expression(t.first()).isRealAllZeros());
-    if (condtest)
+    if (condtest) {
       block(t.second());
-    else {
+      return;
+    } else {
       unsigned n=2;
       while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
 	if (!(expression(t.child(n).first()).isRealAllZeros())) {
@@ -2458,8 +2459,6 @@ namespace FreeMat {
   //strcattest hi ho
   //@>
   //!
-
-  //Test
   void WalkTree::collectKeywords(tree q, ArrayVector &keyvals,
 				 treeVector &keyexpr, stringVector &keywords) {
     // Search for the keyword uses - 
@@ -2479,8 +2478,7 @@ namespace FreeMat {
       }
     }
   }
-					
-  //Test
+
   int* WalkTree::sortKeywords(ArrayVector &m, stringVector &keywords,
 			      stringVector arguments, ArrayVector keyvals) {
     // If keywords were used, we have to permute the
@@ -2550,42 +2548,37 @@ namespace FreeMat {
     return argTypeMap;
   }
 
-  //PORT
-  //Can this be cleaned up?
-  //Test
+  // arguments is exactly what it should be - the vector of arguments
+  // m is vector of argument values
+  // keywords is the list of values passed as keywords
+  // keyexpr is the   
   void WalkTree::handlePassByReference(tree q, stringVector arguments,
 				       ArrayVector m,stringVector keywords, 
 				       treeVector keyexpr, int* argTypeMap) {
-    return;
-
-//     tree p;
-//     // M functions can modify their arguments
-//     int maxsearch = m.size(); 
-//     if (maxsearch > arguments.size()) maxsearch = arguments.size();
-//     for (int i=0;i<maxsearch;i++) {
-//       // Was this argument passed out of order?
-//       if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
-//       if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
-// 	p = keyexpr[argTypeMap[i]];
-//       } else {
-// 	p = q;
-// 	if (q != NULL)
-// 	  q = q->right;
-//       }
-//       std::string args(arguments[i]);
-//       if (args[0] == '&') {
-// 	args.erase(0,1);
-// 	// This argument was passed by reference
-// 	if (p == NULL || !(p->type == non_terminal && p->opNum == OP_RHS))
-// 	  throw Exception("Must have lvalue in argument passed by reference");
-// 	if (p->down->down == NULL && p->down->type == id_node) {
-// 	  context->insertVariable(p->down->text,m[i]);
-// 	} else {
-// 	  Array c(assignExpression(p->down,m[i]));
-// 	  context->insertVariable(p->down->text,c);
-// 	}
-//       }
-//     }
+    tree p;
+    // M functions can modify their arguments
+    int maxsearch = m.size(); 
+    if (maxsearch > arguments.size()) maxsearch = arguments.size();
+    int qindx = 0;
+    for (int i=0;i<maxsearch;i++) {
+      // Was this argument passed out of order?
+      if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
+      if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
+	p = keyexpr[argTypeMap[i]];
+      } else {
+	p = q.second().child(qindx);
+	qindx++;
+      }
+      std::string args(arguments[i]);
+      if (args[0] == '&') {
+	args.erase(0,1);
+	// This argument was passed by reference
+	if (!p.valid() || !(p.is(TOK_VARIABLE)))
+	  throw Exception("Must have lvalue in argument passed by reference");
+	Array c(assignExpression(p.first(),m[i]));
+	context->insertVariable(p.first().first().text(),c);
+      }
+    }
   }
 
   static ArrayVector mergeVecs(ArrayVector a, ArrayVector b) {

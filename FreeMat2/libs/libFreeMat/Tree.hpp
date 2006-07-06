@@ -47,7 +47,7 @@ public:
   string text() {if (tptr) return tptr->node.Text(); else return std::string();}
   treeVector children() {if (tptr) return tptr->children; else return treeVector();}
   tree last() {if (tptr) return tptr->children.back(); else return tree();}
-  tree child(unsigned n) {if (tptr) return tptr->children[n]; else return tree();}
+  tree child(unsigned n) {if (tptr) return tptr->children.at(n); else return tree();}
 };
 
 tree mkLeaf(const Token& tok);

@@ -82,7 +82,7 @@ void Scanner::Fetch() {
     return;
   } else if (isalpha(current()))
     FetchIdentifier();
-  else if (isdigit(current()))
+  else if (isdigit(current()) || ((current() == '.') && isdigit(ahead(1))))
     FetchNumber();
   else if (isblank(current())) {
     FetchWhitespace();

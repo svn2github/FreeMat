@@ -277,11 +277,12 @@ namespace FreeMat {
 
   stringVector IdentifierList(tree t) {
     stringVector retval;
-    for (unsigned index=0;index<t.numchildren();index++) 
-      if (t.child(index).is('&')) 
+    for (unsigned index=0;index<t.numchildren();index++) {
+      if (t.child(index).is('&'))
 	retval.push_back("&" + t.child(index).first().text());
       else
 	retval.push_back(t.child(index).text());
+    }
     return retval;
   }
 
@@ -360,6 +361,7 @@ namespace FreeMat {
 	tree pcode = P.Process();
 	if (pcode.is(TOK_FUNCTION_DEFS)) {
 	  scriptFlag = false;
+	  //	  pcode.print();
 	  MFunctionDef *fp = ConvertParseTreeToMFunctionDefs(pcode.children(),
 							     fileName);
 	  returnVals = fp->returnVals;

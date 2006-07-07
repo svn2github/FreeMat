@@ -183,7 +183,6 @@ namespace FreeMat {
   Array ClassOneArgFunction(Array x) {
     if (x.isUserClass()) {
       std::string p(x.getClassName().back());
-      std::cerr << " class query: " << p << "\n";
       return Array::stringConstructor(x.getClassName().back());
     } else {
       switch (x.getDataClass()) {
@@ -578,6 +577,21 @@ namespace FreeMat {
   //or for 
   //@[
   //   c = -a
+  //@]
+  //!
+
+  //!
+  //@Module UPLUS Overloaded Unary Plus Operator
+  //@@Section CLASS
+  //@@Usage
+  //This is a method that is invoked when a variable is preceeded by a "+",
+  //and is invoked when you call
+  //@[
+  //   c = uplus(a)
+  //@]
+  //or for 
+  //@[
+  //   c = +a
   //@]
   //!
 

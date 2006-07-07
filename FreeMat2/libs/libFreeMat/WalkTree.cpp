@@ -2569,6 +2569,8 @@ namespace FreeMat {
       } else {
 	p = q.second().child(qindx);
 	qindx++;
+	if (qindx >= q.second().numchildren())
+	  qindx = q.second().numchildren()-1;
       }
       std::string args(arguments[i]);
       if (args[0] == '&') {
@@ -2576,8 +2578,8 @@ namespace FreeMat {
 	// This argument was passed by reference
 	if (!p.valid() || !(p.is(TOK_VARIABLE)))
 	  throw Exception("Must have lvalue in argument passed by reference");
-	Array c(assignExpression(p.first(),m[i]));
-	context->insertVariable(p.first().first().text(),c);
+	Array c(assignExpression(p,m[i]));
+	context->insertVariable(p.first().text(),c);
       }
     }
   }
@@ -3260,17 +3262,19 @@ namespace FreeMat {
     tree t;
     
     InterruptPending = false;
-    Scanner S(line);
-    //    S.SetDebug(true);
+    Scanner S(line,"");
     Parser P(S);
     try{
-      t = P.StatementList();
+      t = P.Process();
+      if (!t.is(TOK_SCRIPT))
+	throw Exception("Function definition unexpected!");
+      t = t.first();
       t.print();
     } catch(Exception &e) {
       if (propogateExceptions)
 	throw;
       errorCount++;
-      //      e.printMe(io);
+      e.printMe(io);
       return;
     }
     try {
@@ -3696,7 +3700,6 @@ namespace FreeMat {
     subassignSingle(&tmp,s.back(),value);
     SetContext(ctxt);
     Array rhs(tmp);
-    displayArray(rhs);
     if (stack.size() > 0) {
       stack.pop_back();
       // Now we have to "unwind" the stack
@@ -3706,7 +3709,6 @@ namespace FreeMat {
 	// Make the assignment
 	ArrayVector m(singleArrayVector(rhs));
 	subassignSingle(&tmp,ref.back(),m);
-	displayArray(tmp);
 	SetContext(ctxt);
 	// Assign this temporary to be the RHS of the next temporary
 	rhs = tmp;

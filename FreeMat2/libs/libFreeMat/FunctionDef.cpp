@@ -278,7 +278,10 @@ namespace FreeMat {
   stringVector IdentifierList(tree t) {
     stringVector retval;
     for (unsigned index=0;index<t.numchildren();index++) 
-      retval.push_back(t.child(index).text());
+      if (t.child(index).is('&')) 
+	retval.push_back("&" + t.child(index).first().text());
+      else
+	retval.push_back(t.child(index).text());
     return retval;
   }
 
@@ -352,8 +355,7 @@ namespace FreeMat {
       try {
 	// Read the file into a string
 	string fileText = ReadFileIntoString(fp);
-	Scanner S(fileText);
-	//	S.SetDebug(true);
+	Scanner S(fileText,fileName);
 	Parser P(S);
 	tree pcode = P.Process();
 	if (pcode.is(TOK_FUNCTION_DEFS)) {

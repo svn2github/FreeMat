@@ -18,6 +18,7 @@ public:
 };
 
 class Scanner {
+  string m_filename;
   string m_text;
   int m_ptr, m_ptr_save;
   int m_strlen;
@@ -41,7 +42,7 @@ class Scanner {
   bool TryFetchBinary(const char* op, byte tok);
   void SetToken(byte tok, string text = string());
 public:
-  Scanner(string buf);
+  Scanner(string buf, string fname);
   // Methods accessed by the parser
   const Token& Next();
   void Consume();
@@ -57,6 +58,7 @@ public:
   bool Peek(int chars, byte tok);
   unsigned Position() {return m_ptr;}
   string Context(unsigned pos);
+  string Context();
 };
 
 #endif

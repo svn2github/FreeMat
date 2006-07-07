@@ -401,7 +401,7 @@ tree Parser::Statement() {
       tree retval = AssignmentStatement();
       m_lex.Continue();
       return retval;
-    } catch (FreeMat::Exception &e) {
+    } catch (ParseException &e) {
       m_lex.Restore();
     } 
   }
@@ -411,7 +411,7 @@ tree Parser::Statement() {
       tree retval = MultiFunctionCall();
       m_lex.Continue();
       return retval;
-    } catch (FreeMat::Exception &e) {
+    } catch (ParseException &e) {
       m_lex.Restore();
     }
   }
@@ -421,7 +421,7 @@ tree Parser::Statement() {
       tree retval = SpecialFunctionCall();
       m_lex.Continue();
       return retval;
-    } catch (FreeMat::Exception &e) {
+    } catch (ParseException &e) {
       m_lex.Restore();
     } 
   }
@@ -431,7 +431,7 @@ tree Parser::Statement() {
     addChild(retval,Expression());
     m_lex.Continue();
     return retval;
-  } catch (FreeMat::Exception &e) {
+  } catch (ParseException &e) {
     m_lex.Restore();
   }
   return NULL;
@@ -469,8 +469,7 @@ void Parser::serror(string errmsg) {
     lasterr = errmsg;
     lastpos = m_lex.Position();
   }
-  //  throw ParseException(m_lex.Position(),errmsg);
-  throw FreeMat::Exception(errmsg);
+  throw ParseException(m_lex.Position(),errmsg);
 }
 
 const Token & Parser::Expect(byte a) {
@@ -517,12 +516,12 @@ tree Parser::MatDef(byte basetok, byte closebracket) {
   tree matdef(mkLeaf(basetok));
   while (!Match(closebracket)) {
     tree rowdef(mkLeaf(TOK_ROWDEF));
-    while (!Match(';') && !Match(closebracket)) {
+    while (!Match(';') && !Match('\n') && !Match(closebracket)) {
       addChild(rowdef,Expression());
       if (Match(',') || Match(TOK_SPACE))
 	Consume();
     }
-    if (Match(';'))
+    if (Match(';') || Match('\n'))
       Consume();
     addChild(matdef,rowdef);
   }
@@ -617,23 +616,25 @@ tree Parser::Process() {
   tree root;
   while (Match('\n'))
     Consume();
-  if (Match(TOK_FUNCTION)) {
-    root = mkLeaf(TOK_FUNCTION_DEFS);
-    while (Match(TOK_FUNCTION))
-      addChild(root,FunctionDefinition());
-    if (!Match(TOK_EOF))
-      serror("expected a valid statement or expression");
-  } else {
-    root = mkLeaf(TOK_SCRIPT);
-    addChild(root,StatementList());
-    if (!Match(TOK_EOF))
-      serror("expected a valid statement or expression");
+  try {
+    if (Match(TOK_FUNCTION)) {
+      root = mkLeaf(TOK_FUNCTION_DEFS);
+      while (Match(TOK_FUNCTION))
+	addChild(root,FunctionDefinition());
+      Expect(TOK_EOF);
+    } else {
+      root = mkLeaf(TOK_SCRIPT);
+      addChild(root,StatementList());
+      Expect(TOK_EOF);
+    }
+  } catch(ParseException &e) {
+    throw FreeMat::Exception(LastErr() + " at " + m_lex.Context(LastPos()));
   }
   return root;
 }
 
 tree ParseString(string arg) {
-  Scanner S(arg);
+  Scanner S(arg,"");
   Parser P(S);
   return P.StatementList();
 }

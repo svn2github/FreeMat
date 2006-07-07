@@ -343,10 +343,11 @@ string Scanner::Context(unsigned pos) {
     line_stop = m_text.find("\n",line_start);
     linenumber++;
   }
-  string retstring("line number: " + stringFromNumber(linenumber));
-  if (m_filename.size() > 0)
+  string retstring;
+  if (m_filename.size() > 0) {
+    retstring = " at line number: " + stringFromNumber(linenumber);
     retstring += " of file " + m_filename + "\n";
-  else
+  }  else
     retstring += "\n";
   retstring += "     " + prevline + "\n";
   retstring += "     " + string(m_text,line_start,line_stop-line_start);

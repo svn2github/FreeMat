@@ -582,8 +582,12 @@ tree Parser::PrimaryExpression() {
     tree t = MatDef(TOK_CELLDEF,'}');
     Expect('}');
     return TransposeFixup(t);
-  } else
-    serror("unrecognized token");
+  } else {
+    if (Match(')') || Match(']') || Match('}'))
+      serror("mismatched parenthesis");
+    else
+      serror("unrecognized token");
+  }
 }
 
 tree Parser::Exp(unsigned p) {
@@ -628,7 +632,7 @@ tree Parser::Process() {
       Expect(TOK_EOF);
     }
   } catch(ParseException &e) {
-    throw FreeMat::Exception(LastErr() + " at " + m_lex.Context(LastPos()));
+    throw FreeMat::Exception(LastErr() + m_lex.Context(LastPos()));
   }
   return root;
 }

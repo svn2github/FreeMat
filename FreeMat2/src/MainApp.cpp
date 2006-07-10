@@ -191,7 +191,7 @@ int MainApp::Run() {
     LoadGUICoreFunctions(context);
     LoadHandleGraphicsFunctions(context);  
   }
-  m_keys->setContext(context);
+  //  m_keys->setContext(context);
   QStringList basePath;
   if (inBundleMode()) {
     QDir dir(QApplication::applicationDirPath());
@@ -199,7 +199,7 @@ int MainApp::Run() {
     dir.cd("Plugins");
     QString dummy(dir.absolutePath());
     QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-    QDir dir1(qApp->applicationDirPath() + "/../Resources/mfiles");
+    QDir dir1(qApp->applicationDirPath() + "/../Resources/toolbox");
     if (dir1.exists()) {
       QString path1(dir1.canonicalPath());
       basePath += GetRecursiveDirList(path1);
@@ -211,7 +211,7 @@ int MainApp::Run() {
     }
   } else {
     QDir dir1(QApplication::applicationDirPath()+"/"+
-	      QString(BASEPATH)+"/mfiles");   
+	      QString(BASEPATH)+"/toolbox");   
     if (dir1.exists()) {
       QString path1(dir1.canonicalPath());
       basePath += GetRecursiveDirList(path1);
@@ -223,13 +223,13 @@ int MainApp::Run() {
       basePath += GetRecursiveDirList(path2);
     }
   }
-  m_keys->setBasePath(basePath);
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();
-  m_keys->setUserPath(userPath);
-  m_keys->setAppPath(qApp->applicationDirPath().toStdString());
-  m_keys->rescanPath();
-  eval = new WalkTree(context,m_keys);
+  eval = new Interpreter(context);
+  eval->setBasePath(basePath);
+  eval->setUserPath(userPath);
+  eval->setAppPath(qApp->applicationDirPath().toStdString());
+  eval->rescanPath();
   emit Initialize();
   if (!skipGreeting)
     eval->sendGreeting();

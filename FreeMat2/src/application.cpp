@@ -26,7 +26,7 @@
 #include <iostream>
 #include <qfontdialog.h>
 #include <qsettings.h>
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "highlighter.hpp"
 #include "Editor.hpp"
 #include <QtGui>
@@ -136,7 +136,7 @@ void ApplicationWindow::createStatusBar() {
 
 ApplicationWindow::ApplicationWindow() : QMainWindow() {
   setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
-  setWindowTitle(QString(FreeMat::WalkTree::getVersionString().c_str()) + " Command Window");
+  setWindowTitle(QString(FreeMat::Interpreter::getVersionString().c_str()) + " Command Window");
   createActions();
   createMenus();
   createToolBars();
@@ -374,5 +374,6 @@ void ApplicationWindow::about() {
 }
 
 void ApplicationWindow::init() {
-  m_tool->getVariablesTool()->setContext(m_keys->getContext());
+  //FIXME
+  //  m_tool->getVariablesTool()->setContext(m_keys->getContext());
 }

@@ -22,7 +22,7 @@
 #include <string>
 #include <qobject.h>
 #include "KeyManager.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "application.hpp"
 
 using namespace FreeMat;
@@ -32,7 +32,7 @@ class MainApp : public QObject
   Q_OBJECT
   KeyManager* m_keys;
   QObject *m_term;
-  WalkTree* eval;
+  Interpreter* eval;
   bool guimode;
   bool skipGreeting;
   ApplicationWindow *m_win;

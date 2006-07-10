@@ -34,7 +34,7 @@ MainApp *m_app;
 FuncMode *m_func;
 
 void usage() {
-  printf("%s\n  Command Line Help\n",WalkTree::getVersionString().c_str());
+  printf("%s\n  Command Line Help\n",Interpreter::getVersionString().c_str());
   printf(" You can invoke FreeMat with the following command line options:\n");
   printf("     -f <command>  Runs FreeMat in command mode.  FreeMat will \n");
   printf("                   startup, run the given command, and then quit.\n");

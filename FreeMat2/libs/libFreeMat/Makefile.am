@@ -13,7 +13,6 @@ File.hpp \
 FunctionDef.hpp \
 HandleList.hpp \
 IEEEFP.hpp \
-Interface.hpp \
 LAPACK.hpp \
 LeastSquaresSolver.hpp \
 LinearEqSolver.hpp \
@@ -49,7 +48,6 @@ EigenDecompose.cpp \
 Exception.cpp \
 File.cpp \
 IEEEFP.cpp \
-Interface.cpp \
 LAPACK.cpp \
 LeastSquaresSolver.cpp \
 LinearEqSolver.cpp \

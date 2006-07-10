@@ -30,12 +30,12 @@ namespace FreeMat {
    * symbol is not present.
    */
   ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg,
-	  WalkTree* eval) throw(Exception);
+	  Interpreter* eval) throw(Exception);
   /**
    * import a C function 
    */
   ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
-			     WalkTree* eval) throw(Exception);
+			     Interpreter* eval) throw(Exception);
   /**
    *  Add the loadlib and import functions to the given context.
    */

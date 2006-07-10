@@ -129,7 +129,7 @@ namespace FreeMat {
   }
 
   Array ClassAux(Array s, std::string classname, stringVector parentNames, 
-		 ArrayVector parents, WalkTree* eval) {
+		 ArrayVector parents, Interpreter* eval) {
     UserClass newclass(s.getFieldNames(),parentNames);
     if (s.getDataClass() != FM_STRUCT_ARRAY) 
       throw Exception("first argument to 'class' function must be a structure");
@@ -783,7 +783,7 @@ namespace FreeMat {
   //!
 
   ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
-			    WalkTree* eval) {
+			    Interpreter* eval) {
     if (arg.size() == 0)
       throw Exception("class function requires at least one argument");
     if (arg.size() == 1) 
@@ -819,7 +819,7 @@ namespace FreeMat {
     return set;
   }
  
-  bool ClassSearchOverload(WalkTree* eval, ArrayVector t, 
+  bool ClassSearchOverload(Interpreter* eval, ArrayVector t, 
 			   std::vector<int> userset, FuncPtr &val,
 			   std::string name) {
     bool overload = false;
@@ -832,7 +832,7 @@ namespace FreeMat {
       throw Exception(std::string("Unable to find overloaded '") + name + "' for user defined classes");
   }
 
-  Array ClassMatrixConstructor(ArrayMatrix m, WalkTree* eval) {
+  Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
     // Process the rows...
     // If a row has no user defined classes, then
     // use the standard matrixConstructor
@@ -894,7 +894,7 @@ namespace FreeMat {
   }
 
   Array ClassUnaryOperator(Array a, std::string funcname,
-			   WalkTree* eval) {
+			   Interpreter* eval) {
     FuncPtr val;
     ArrayVector m, n;
     if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) {
@@ -909,7 +909,7 @@ namespace FreeMat {
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
   }
 
-  bool ClassResolveFunction(WalkTree* eval, Array& args, std::string funcName, FuncPtr& val) {
+  bool ClassResolveFunction(Interpreter* eval, Array& args, std::string funcName, FuncPtr& val) {
     Context *context = eval->getContext();
     // First try to resolve to a method of the base class
     if (context->lookupFunction(ClassMangleName(args.getClassName().back(),funcName),val)) {
@@ -939,7 +939,7 @@ namespace FreeMat {
 
   // TODO - add "inferiorto", etc and class precedence
 
-  Array ClassBiOp(Array a, Array b, FuncPtr val, WalkTree *eval) {
+  Array ClassBiOp(Array a, Array b, FuncPtr val, Interpreter *eval) {
     val->updateCode();
     ArrayVector m, n;
     m.push_back(a); m.push_back(b);
@@ -950,7 +950,7 @@ namespace FreeMat {
       return Array::emptyConstructor();
   }
 
-  Array ClassTriOp(Array a, Array b, Array c, FuncPtr val, WalkTree *eval) {
+  Array ClassTriOp(Array a, Array b, Array c, FuncPtr val, Interpreter *eval) {
     val->updateCode();
     ArrayVector m, n;
     m.push_back(a); m.push_back(b); m.push_back(c);
@@ -962,7 +962,7 @@ namespace FreeMat {
   }
 
   Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname,
-			     WalkTree* eval) {
+			     Interpreter* eval) {
     FuncPtr val;
     if (a.isUserClass()) {
       if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) 
@@ -980,7 +980,7 @@ namespace FreeMat {
   }
 
   Array ClassBinaryOperator(Array a, Array b, std::string funcname,
-			    WalkTree* eval) {
+			    Interpreter* eval) {
     FuncPtr val;
     if (a.isUserClass()) {
       if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) 
@@ -999,7 +999,7 @@ namespace FreeMat {
 	m[index] = Array::stringConstructor(":");
   }
 
-  Array IndexExpressionToStruct(WalkTree* eval, treeVector t, Array r) {
+  Array IndexExpressionToStruct(Interpreter* eval, treeVector t, Array r) {
     ArrayVector struct_args, m;
     ArrayVector rv;
     Array rsave(r);
@@ -1042,7 +1042,7 @@ namespace FreeMat {
     return Array(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
   }
   
-  ArrayVector ClassSubsrefCall(WalkTree* eval, treeVector t, Array r, FuncPtr val) {
+  ArrayVector ClassSubsrefCall(Interpreter* eval, treeVector t, Array r, FuncPtr val) {
     ArrayVector p;
     p.push_back(r);
     p.push_back(IndexExpressionToStruct(eval,t, r));
@@ -1053,7 +1053,7 @@ namespace FreeMat {
 
   // What is special here...  Need to be able to do field indexing
   // 
-  ArrayVector ClassRHSExpression(Array r, treeVector t, WalkTree* eval) {
+  ArrayVector ClassRHSExpression(Array r, treeVector t, Interpreter* eval) {
     tree s;
     Array q;
     Array n, p;
@@ -1136,7 +1136,7 @@ namespace FreeMat {
     return rv;
   }
 
-  void ClassAssignExpression(Array *dst, tree t, ArrayVector& value, WalkTree* eval) {
+  void ClassAssignExpression(Array *dst, tree t, ArrayVector& value, Interpreter* eval) {
     FuncPtr val;
     if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
       throw Exception("The method 'subsasgn' is not defined for objects of class " + 

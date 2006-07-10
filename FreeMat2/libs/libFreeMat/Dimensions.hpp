@@ -22,10 +22,10 @@
 
 #include <iostream>
 #include "Exception.hpp"
-#include "Interface.hpp"
 
 namespace FreeMat {
 
+  class Interpreter;
   const unsigned int maxDims = 6;
 
   /**
@@ -161,7 +161,7 @@ namespace FreeMat {
      * Print some representation of this object as a row vector, i.e., 
      * $$[a_1 a_2 \ldots a_n]$$.
      */
-    void printMe(Interface *io) const;
+    void printMe(Interpreter *io) const;
     /**
      * Returns a string containing the dimensions as a row vector.
      */

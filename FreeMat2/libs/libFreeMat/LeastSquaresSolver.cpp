@@ -41,7 +41,7 @@ static char msgBuffer[MSGBUFLEN];
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void doubleSolveLeastSq(Interface* io,int m, int n, int k, double *c,
+void doubleSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
 		      double *a, double *b) {
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE DGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
@@ -222,13 +222,13 @@ void doubleSolveLeastSq(Interface* io,int m, int n, int k, double *c,
     // Problem should be overdetermined, rank should be N
     if (RANK < N) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   } else
     // Problem should be underderemined, rank should be M
     if (RANK < M) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   changeStrideDouble(c,n,B,Bsize,n,k);
   // Free the allocated arrays
@@ -245,7 +245,7 @@ void doubleSolveLeastSq(Interface* io,int m, int n, int k, double *c,
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void dcomplexSolveLeastSq(Interface* io,int m, int n, int k, double *c,
+void dcomplexSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
 			  double *a, double *b) {
   //	SUBROUTINE ZGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //     $                   WORK, LWORK, RWORK, INFO )
@@ -430,12 +430,12 @@ void dcomplexSolveLeastSq(Interface* io,int m, int n, int k, double *c,
     // Problem should be overdetermined, rank should be N
     if (RANK < N)
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
   } else
     // Problem should be underderemined, rank should be M
     if (RANK < M) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   changeStrideDouble(c,2*n,B,2*Bsize,2*n,k);
   // Free the allocated arrays
@@ -453,7 +453,7 @@ void dcomplexSolveLeastSq(Interface* io,int m, int n, int k, double *c,
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void floatSolveLeastSq(Interface* io,int m, int n, int k, float *c,
+void floatSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
 		       float *a, float *b) {
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE SGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
@@ -634,13 +634,13 @@ void floatSolveLeastSq(Interface* io,int m, int n, int k, float *c,
     // Problem should be overdetermined, rank should be N
     if (RANK < N) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   } else
     // Problem should be underderemined, rank should be M
     if (RANK < M) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   changeStrideFloat(c,n,B,Bsize,n,k);
   // Free the allocated arrays
@@ -657,7 +657,7 @@ void floatSolveLeastSq(Interface* io,int m, int n, int k, float *c,
  * Solve A * X = B in a least-squares sense, where A is m x n, and B is m x k.
  * C is n x k.
  */
-void complexSolveLeastSq(Interface* io,int m, int n, int k, float *c,
+void complexSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
 			 float *a, float *b) {
   //	SUBROUTINE CGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //     $                   WORK, LWORK, RWORK, INFO )
@@ -842,13 +842,13 @@ void complexSolveLeastSq(Interface* io,int m, int n, int k, float *c,
     // Problem should be overdetermined, rank should be N
     if (RANK < N) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   } else
     // Problem should be underderemined, rank should be M
     if (RANK < M) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
   changeStrideFloat(c,2*n,B,2*Bsize,2*n,k);
   // Free the allocated arrays

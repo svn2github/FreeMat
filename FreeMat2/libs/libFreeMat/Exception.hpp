@@ -20,9 +20,10 @@
 #ifndef __Exception_hpp__
 #define __Exception_hpp__
 
-#include "Interface.hpp"
 #include <string>
 namespace FreeMat {
+
+class Interpreter;
 
 /**
  * The exception class.  This is a minimal class for now that
@@ -56,7 +57,7 @@ namespace FreeMat {
     /**
      * Output the contents of the exception to the console.
      */
-    void printMe(Interface *io);
+    void printMe(Interpreter *eval);
     /**
      *
      */

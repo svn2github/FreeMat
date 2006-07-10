@@ -18,7 +18,6 @@
  */
 
 #include "LinearEqSolver.hpp"
-//#include "RecipCond.hpp"
 #include "LAPACK.hpp"
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,7 +38,7 @@ namespace FreeMat {
    ***************************************************************************/
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void doubleSolveLinEq(Interface* io, int m, int n, double *c, double* a, double *b) {
+  void doubleSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE DGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -343,7 +342,7 @@ namespace FreeMat {
 	    &LDB, X, &LDX, &RCOND, FERR, BERR, WORK, IWORK, &INFO);
     if ((INFO == N) || (INFO == N+1) || (RCOND < getEPS())) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is singular to working precision.  RCOND = %e\n",RCOND);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
     // Free the allocated arrays...
     Free(AF);
@@ -357,7 +356,7 @@ namespace FreeMat {
   }
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void dcomplexSolveLinEq(Interface* io, int m, int n, double *c, double* a, double *b) {
+  void dcomplexSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE ZGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -661,7 +660,7 @@ namespace FreeMat {
 	    &LDB, X, &LDX, &RCOND, FERR, BERR, WORK, RWORK, &INFO);
     if ((INFO == N) || (INFO == N+1) || (RCOND < getEPS())) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is singular to working precision.  RCOND = %e\n",RCOND);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
     // Free the allocated arrays...
     Free(AF);
@@ -679,7 +678,7 @@ namespace FreeMat {
    ***************************************************************************/
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void floatSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b) {
+  void floatSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE SGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -983,7 +982,7 @@ namespace FreeMat {
 	    &LDB, X, &LDX, &RCOND, FERR, BERR, WORK, IWORK, &INFO);
     if ((INFO == N) || (INFO == N+1) || (RCOND < getFloatEPS())) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is singular to working (single) precision.  RCOND = %e\n",RCOND);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
     // Free the allocated arrays...
     Free(AF);
@@ -995,7 +994,7 @@ namespace FreeMat {
   }
 
   // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
-  void complexSolveLinEq(Interface* io, int m, int n, float *c, float* a, float *b) {
+  void complexSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b) {
     // Here are the comments from the LAPACK routine used:
     //SUBROUTINE CGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
     //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -1299,7 +1298,7 @@ namespace FreeMat {
 	    &LDB, X, &LDX, &RCOND, FERR, BERR, WORK, RWORK, &INFO);
     if ((INFO == N) || (INFO == N+1) || (RCOND < getFloatEPS())) {
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is singular to working (single) precision.  RCOND = %e\n",RCOND);
-      io->warningMessage(msgBuffer);
+      eval->warningMessage(msgBuffer);
     }
     // Free the allocated arrays...
     Free(IPIV);

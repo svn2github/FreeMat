@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include "Exception.hpp"
 #include "Math.hpp"
-#include "Reserved.hpp"
 #include "Array.hpp"
 #include "Malloc.hpp"
 #include "Parser.hpp"
@@ -37,7 +36,10 @@
 #include "Class.hpp"
 #include "Print.hpp"
 #include <qapplication.h>
+#include <pwd.h>
+#include <sys/types.h>
 #include <qeventloop.h>
+#include <QtCore>
 
 #ifdef WIN32
 #define DELIM "\\"
@@ -45,6 +47,7 @@
 #define getcwd _getcwd
 #else
 #define DELIM "/"
+#include <glob.h>
 #endif
 
 #ifdef WIN32
@@ -1884,7 +1887,7 @@ namespace FreeMat {
       ArrayVector args(singleArrayVector(b));
       ArrayVector retvec(val->evaluateFunction(this,args,1));
     } else
-      PrintArrayClassic(b,printLimit,io,true);
+      PrintArrayClassic(b,printLimit,this,true);
   }
 
   //Works
@@ -2064,7 +2067,7 @@ namespace FreeMat {
       if (autostop && !InCLI) {
 	errorCount++;
 	char buffer[4096];
-	e.printMe(io);
+	e.printMe(this);
 	stackTrace(true);
 	debugCLI();
       } else  {
@@ -3609,7 +3612,7 @@ namespace FreeMat {
       if (propogateExceptions)
 	throw;
       errorCount++;
-      e.printMe(io);
+      e.printMe(this);
       return;
     }
     try {
@@ -3635,7 +3638,7 @@ namespace FreeMat {
 	throw;
       }
       errorCount++;
-      e.printMe(io);
+      e.printMe(this);
     }
     popDebug();
   }

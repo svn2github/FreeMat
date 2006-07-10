@@ -24,7 +24,6 @@ MemPtr.hpp \
 Module.hpp \
 NumericArray.hpp \
 QRDecompose.hpp \
-Reserved.hpp \
 Scope.hpp \
 Serialize.hpp \
 SingularValueDecompose.hpp \
@@ -58,7 +57,6 @@ MatrixMultiply.cpp \
 Module.cpp \
 NumericArray.cpp \
 QRDecompose.cpp \
-Reserved.cpp \
 Scope.cpp \
 Serialize.cpp \
 SingularValueDecompose.cpp \

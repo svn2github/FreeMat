@@ -25,7 +25,7 @@
 #include "FunctionDef.hpp"
 #include "Array.hpp"
 #include <stack>
-#include "Interface.hpp"
+#include <QStringList>
 
 extern "C" char* lasterr;
 
@@ -69,10 +69,6 @@ namespace FreeMat {
      * via a keyboard command, the debug depth is increased.
      */
     int depth;  
-    /**
-     * The interface for I/O
-     */
-    Interface* io;
     /**
      * The print limit (how many elements get printed before output 
      * stops).
@@ -180,6 +176,7 @@ namespace FreeMat {
      *  Set the width of the current "terminal" in characters
      */
     void setTerminalWidth(int ncols);
+  public:
     /**
      *  Output the following text message.
      */
@@ -230,7 +227,7 @@ namespace FreeMat {
      * Construct a WalkTree object with the given context to operate
      * in.
      */
-    WalkTree(Context* aContext, Interface* aInterface);
+    WalkTree(Context* aContext);
     /**
      * Destruct the WalkTree object.
      */
@@ -374,7 +371,6 @@ namespace FreeMat {
      */
     void assignmentStatement(tree t, bool printIt);
     inline Array rhsExpressionSimple(tree t);
-    Interface* getInterface();
     /**
      * Process an AST to form an lvalue in an assignment statement.
      * The AST looks like:
@@ -644,10 +640,6 @@ namespace FreeMat {
      * statement is executed or the user presses 'CTRL-D'.
      */
     //    void evalCLI();
-    /**
-     * Get the context we are running with.
-     */
-    Context* getContext();
     /**
      * The workhorse routine - "evaluate" the contents of a string
      * and execute it.  The flag indicates whether or not exceptions

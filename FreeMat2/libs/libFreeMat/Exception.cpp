@@ -23,6 +23,7 @@
 #include <iostream>
 #include "Exception.hpp"
 #include "Malloc.hpp"
+#include "Interpreter.hpp"
 
 namespace FreeMat {
 
@@ -54,8 +55,8 @@ namespace FreeMat {
     msg = strdup(copy.msg);
   }
 
-  void Exception::printMe(Interface *io) {
-    io->errorMessage(msg);
+  void Exception::printMe(Interpreter *eval) {
+    eval->errorMessage(msg);
   }
   
   bool Exception::matches(const char *tst_msg) {

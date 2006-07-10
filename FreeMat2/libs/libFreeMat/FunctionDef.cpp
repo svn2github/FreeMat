@@ -19,7 +19,7 @@
 
 #include "avcall.h"
 #include "FunctionDef.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "Parser.hpp"
 #include "Exception.hpp"
 #include <stdio.h>
@@ -76,30 +76,30 @@ namespace FreeMat {
       return returnVals.size();
   }
 
-  void MFunctionDef::printMe(Interface*io) {
+  void MFunctionDef::printMe(Interpreter*eval) {
     stringVector tmp;
     snprintf(msgBuffer,MSGBUFLEN,"Function name:%s\n",name.c_str());
-    io->outputMessage(msgBuffer);
-    io->outputMessage("Function class: Compiled M function\n");
-    io->outputMessage("returnVals: ");
+    eval->outputMessage(msgBuffer);
+    eval->outputMessage("Function class: Compiled M function\n");
+    eval->outputMessage("returnVals: ");
     tmp = returnVals;
 	int i;
     for (i=0;i<tmp.size();i++) {
       snprintf(msgBuffer,MSGBUFLEN,"%s ",tmp[i].c_str());
-      io->outputMessage(msgBuffer);
+      eval->outputMessage(msgBuffer);
     }
-    io->outputMessage("\n");
-    io->outputMessage("arguments: ");
+    eval->outputMessage("\n");
+    eval->outputMessage("arguments: ");
     tmp = arguments;
     for (i=0;i<tmp.size();i++) {
       snprintf(msgBuffer,MSGBUFLEN,"%s ",tmp[i].c_str());
-      io->outputMessage(msgBuffer);
+      eval->outputMessage(msgBuffer);
     }
-    io->outputMessage("\ncode: \n");
+    eval->outputMessage("\ncode: \n");
     code.print();
   }
 
-  ArrayVector MFunctionDef::evaluateFunction(WalkTree *walker, 
+  ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker, 
 					     ArrayVector& inputs, 
 					     int nargout) {
     ArrayVector outputs;
@@ -168,9 +168,9 @@ namespace FreeMat {
     try {
       try {
 	walker->block(code);
-      } catch (WalkTreeBreakException& e) {
-      } catch (WalkTreeContinueException& e) {
-      } catch (WalkTreeReturnException& e) {
+      } catch (InterpreterBreakException& e) {
+      } catch (InterpreterContinueException& e) {
+      } catch (InterpreterReturnException& e) {
       }
       warningIssued = false;
       if (outputArgCount() != -1) {
@@ -192,7 +192,7 @@ namespace FreeMat {
 	      outputs[i] = *ptr;
 	    if (!ptr && (i < nargout))
 	      if (!warningIssued) {
-		walker->getInterface()->warningMessage("one or more outputs not assigned in call (1)");
+		walker->getInterpreter()->warningMessage("one or more outputs not assigned in call (1)");
 		warningIssued = true;
 	      }
 	  }
@@ -210,7 +210,7 @@ namespace FreeMat {
 	    outputs[i] = *ptr;
 	  if (!ptr  && (i < nargout)) 
 	    if (!warningIssued) {
-	      walker->getInterface()->warningMessage("one or more outputs not assigned in call (2)");
+	      walker->getInterpreter()->warningMessage("one or more outputs not assigned in call (2)");
 	      warningIssued = true;
 	    }
 	}
@@ -253,7 +253,7 @@ namespace FreeMat {
       walker->popDebug();
       throw;
     }
-    catch (WalkTreeRetallException& e) {
+    catch (InterpreterRetallException& e) {
       context->popScope();
       walker->popDebug();
       throw;
@@ -510,24 +510,24 @@ namespace FreeMat {
     return retCount;
   }
 
-  void BuiltInFunctionDef::printMe(Interface *io) {
+  void BuiltInFunctionDef::printMe(Interpreter *eval) {
     stringVector tmp;
     snprintf(msgBuffer,MSGBUFLEN," Function name:%s\n",name.c_str());
-    io->outputMessage(msgBuffer);
-    io->outputMessage(" Function class: Built in\n");
+    eval->outputMessage(msgBuffer);
+    eval->outputMessage(" Function class: Built in\n");
     snprintf(msgBuffer,MSGBUFLEN," Return count: %d\n",retCount);
-    io->outputMessage(msgBuffer);
+    eval->outputMessage(msgBuffer);
     snprintf(msgBuffer,MSGBUFLEN," Argument count: %d\n",argCount);
-    io->outputMessage(msgBuffer);
+    eval->outputMessage(msgBuffer);
 /*
     snprintf(msgBuffer,MSGBUFLEN," Address of function: %08x\n",
 	     ((int) fptr));
 */
-    io->outputMessage(msgBuffer);
+    eval->outputMessage(msgBuffer);
   }
 
 
-  ArrayVector BuiltInFunctionDef::evaluateFunction(WalkTree *walker, ArrayVector& inputs, 
+  ArrayVector BuiltInFunctionDef::evaluateFunction(Interpreter *walker, ArrayVector& inputs, 
 						   int nargout) {
     ArrayVector outputs;
     int i;
@@ -540,7 +540,7 @@ namespace FreeMat {
       walker->popDebug();
       throw;
     }
-    catch (WalkTreeRetallException& e) {
+    catch (InterpreterRetallException& e) {
       walker->popDebug();
       throw;
     }
@@ -552,7 +552,7 @@ namespace FreeMat {
   SpecialFunctionDef::~SpecialFunctionDef() {
   }
 
-  ArrayVector SpecialFunctionDef::evaluateFunction(WalkTree *walker, 
+  ArrayVector SpecialFunctionDef::evaluateFunction(Interpreter *walker, 
 						   ArrayVector& inputs, int nargout) {
     ArrayVector outputs;
     walker->pushDebug(name,"built in");
@@ -564,13 +564,13 @@ namespace FreeMat {
       walker->popDebug();
       throw;
     }
-    catch (WalkTreeRetallException& e) {
+    catch (InterpreterRetallException& e) {
       walker->popDebug();
       throw;
     }
   }
 
-  void SpecialFunctionDef::printMe(Interface *io) {
+  void SpecialFunctionDef::printMe(Interpreter *eval) {
   }
 
   FunctionDef::FunctionDef() {
@@ -604,7 +604,7 @@ namespace FreeMat {
   ImportedFunctionDef::~ImportedFunctionDef() {
   }
 
-  void ImportedFunctionDef::printMe(Interface *) {
+  void ImportedFunctionDef::printMe(Interpreter *) {
   }
 
   Class mapTypeNameToClass(std::string name) {
@@ -624,7 +624,7 @@ namespace FreeMat {
     throw Exception("unrecognized type " + name + " in imported function setup");
   }
 
-  ArrayVector ImportedFunctionDef::evaluateFunction(WalkTree *walker,
+  ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
 						    ArrayVector& inputs,
 						    int nargout) {
     walker->pushDebug(name,"imported");
@@ -684,7 +684,7 @@ namespace FreeMat {
       } catch (Exception& e) {
 	context->popScope();
 	throw;
-      } catch (WalkTreeRetallException& e) {
+      } catch (InterpreterRetallException& e) {
 	context->popScope();
 	throw;
       }
@@ -840,10 +840,10 @@ namespace FreeMat {
   MexFunctionDef::~MexFunctionDef() {
   }
 
-  void MexFunctionDef::printMe(Interface *) {
+  void MexFunctionDef::printMe(Interpreter *) {
   }
   
-  ArrayVector MexFunctionDef::evaluateFunction(WalkTree *walker, 
+  ArrayVector MexFunctionDef::evaluateFunction(Interpreter *walker, 
 					       ArrayVector& inputs, 
 					       int nargout) {
     // Convert arguments to mxArray

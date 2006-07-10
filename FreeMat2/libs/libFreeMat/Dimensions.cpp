@@ -23,6 +23,7 @@
 #include <string>
 #include <stdio.h>
 #include "Malloc.hpp"
+#include "Interpreter.hpp"
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -224,18 +225,18 @@ namespace FreeMat {
     return output;
   }
 
-  void Dimensions::printMe(Interface*io) const {
+  void Dimensions::printMe(Interpreter* eval) const {
     snprintf(msgBuffer,MSGBUFLEN,"[");
-    io->outputMessage(msgBuffer);
+    eval->outputMessage(msgBuffer);
     for (int i=0;i<length-1;i++) {
       snprintf(msgBuffer,MSGBUFLEN,"%d ",data[i]);
-      io->outputMessage(msgBuffer);
+      eval->outputMessage(msgBuffer);
     }
     if (length >= 1)
       snprintf(msgBuffer,MSGBUFLEN,"%d]",data[length-1]);
     else
       snprintf(msgBuffer,MSGBUFLEN,"]");
-    io->outputMessage(msgBuffer);
+    eval->outputMessage(msgBuffer);
   }
 
   void Dimensions::reset() {

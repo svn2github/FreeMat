@@ -25,11 +25,11 @@
 #include <string>
 #include <stdlib.h>
 #include <stdio.h>
-#include "Interface.hpp"
 #include "Array.hpp"
 
 namespace FreeMat {
-  void PrintArrayClassic(Array A, int printLimit, Interface* io, bool showClassSize);
+  class Interpreter;
+  void PrintArrayClassic(Array A, int printLimit, Interpreter *eval, bool showClassSize);
 };
 
 #endif

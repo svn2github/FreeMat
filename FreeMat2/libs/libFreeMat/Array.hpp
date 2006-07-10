@@ -26,12 +26,12 @@
 #include "Dimensions.hpp"
 #include "Types.hpp"
 #include "Exception.hpp"
-#include "Interface.hpp"
 
 namespace FreeMat {
 
 
   class Array;
+  class Interpreter;
 
   typedef std::vector<Array> ArrayVector;
   ArrayVector singleArrayVector(Array);
@@ -690,11 +690,11 @@ namespace FreeMat {
     /**
      * Sets the IO interface used by instances of the Array class.
      */
-    static void setArrayIOInterface(Interface *io);
+    static void setArrayInterpreter(Interpreter* eval);
     /**
      * Returns the IO interface being used by instances of the Array class.
      */
-    static Interface* getArrayIOInterface();
+    static Interpreter* getArrayInterpreter();
     /**
      * Returns true if any of the entries in the array are not finite
      * (always false for reference and integer types)

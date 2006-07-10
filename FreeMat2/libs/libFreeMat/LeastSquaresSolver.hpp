@@ -20,7 +20,7 @@
 #ifndef __LeastSquaresSolver_hpp__
 #define __LeastSquaresSolver_hpp__
 
-#include "Interface.hpp"
+#include "Interpreter.hpp"
 
 namespace FreeMat {
   /**
@@ -28,28 +28,28 @@ namespace FreeMat {
    * and $$B$$ is $$m \times k$$. $$C$$ is $$n \times k$$, and all of the terms 
    * are double precision.  Uses the LAPACK routine dgelsy.
    */
-  void doubleSolveLeastSq(Interface* io, int m, int n, int k, double *c,
+  void doubleSolveLeastSq(Interpreter* eval, int m, int n, int k, double *c,
 			  double *a, double *b);
   /**
    * Solve $$A  X = B$$ in a least-squares sense, where $$A$$ is $$m \times n$$, 
    * and $$B$$ is $$m \times k$$. $$C$$ is $$n \times k$$, and all of the terms 
    * are dcomplex precision.  Uses the LAPACK routine zgelsy.
    */
-  void dcomplexSolveLeastSq(Interface* io,int m, int n, int k, double *c,
+  void dcomplexSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
 			    double *a, double *b);
   /**
    * Solve $$A  X = B$$ in a least-squares sense, where $$A$$ is $$m \times n$$, 
    * and $$B$$ is $$m \times k$$. $$C$$ is $$n \times k$$, and all of the terms 
    * are float precision.  Uses the LAPACK routine sgelsy.
    */
-  void floatSolveLeastSq(Interface* io,int m, int n, int k, float *c,
+  void floatSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
 			 float *a, float *b);
   /**
    * Solve $$A  X = B$$ in a least-squares sense, where $$A$$ is $$m \times n$$, 
    * and $$B$$ is $$m \times k$$. $$C$$ is $$n \times k$$, and all of the terms 
    * are complex precision.  Uses the LAPACK routine cgelsy.
    */
-  void complexSolveLeastSq(Interface* io,int m, int n, int k, float *c,
+  void complexSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
 			   float *a, float *b);
 }
 #endif

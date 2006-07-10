@@ -20,7 +20,7 @@
 #include "DynLib.hpp"
 #include "Module.hpp"
 #include "FunctionDef.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "Exception.hpp"
 #include "Context.hpp"
 #include "Parser.hpp"
@@ -60,7 +60,7 @@ namespace FreeMat {
   //set the corresponding argument to @|-1|.
   //!
   ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
-	  WalkTree* eval) throw(Exception){
+	  Interpreter* eval) throw(Exception){
     char *libfile;
     char *symbolName;
     char *funcName;
@@ -347,7 +347,7 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
-			     WalkTree* eval) throw(Exception) {
+			     Interpreter* eval) throw(Exception) {
     char *libfile;
     char *symbolname;
     char *funcname;

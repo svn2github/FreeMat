@@ -22,7 +22,6 @@
 
 #include "Array.hpp"
 #include "Tree.hpp"
-#include "Interface.hpp"
 #include "DynLib.hpp"
 #include "Serialize.hpp"
 #include "mex.h"
@@ -38,10 +37,10 @@ namespace FreeMat {
     FM_MEX_FUNCTION
   } FunctionType;
 
-  class WalkTree;
+  class Interpreter;
 
   typedef ArrayVector (*BuiltInFuncPtr) (int,const ArrayVector&);
-  typedef ArrayVector (*SpecialFuncPtr) (int,const ArrayVector&,WalkTree*);
+  typedef ArrayVector (*SpecialFuncPtr) (int,const ArrayVector&,Interpreter*);
 
   /** Base class for the function types
    * A FunctionDef class is a base class for the different types
@@ -91,7 +90,7 @@ namespace FreeMat {
     /**
      * Print a description of the function
      */
-    virtual void printMe(Interface* io) = 0;
+    virtual void printMe(Interpreter* io) = 0;
     /**
      * The number of inputs required by this function (-1 if variable).
      */
@@ -103,7 +102,7 @@ namespace FreeMat {
     /**
      * Evaluate the function and return its output.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector& , int) = 0;
+    virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector& , int) = 0;
     /**
      * Compile the function (if it is required).  We guarantee that this
      * function will be called at least once before evaluateFunction is called.
@@ -186,7 +185,7 @@ namespace FreeMat {
     virtual const FunctionType type() {return FM_M_FUNCTION;}
     /** Print a description of the function
      */
-    virtual void printMe(Interface* io);
+    virtual void printMe(Interpreter* io);
     /** 
      * The number of inputs required by this function, which is the number of 
      * elements in arguments unless the last element is the keyword "varargin"
@@ -208,7 +207,7 @@ namespace FreeMat {
      *     number of return values in the call
      *   - the variable 'varargout' is the wrong type.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector &, int);
+    virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector &, int);
     /**
      * Check the timestamp on the file, and if necessary, recompile the 
      * function.  Throws an exception if a syntax error occurs in the
@@ -275,7 +274,7 @@ namespace FreeMat {
     virtual const FunctionType type() {return FM_BUILT_IN_FUNCTION;}
     /** Print a description of the function
      */
-    virtual void printMe(Interface *io);
+    virtual void printMe(Interpreter *io);
     /**
      * The number of inputs required by this function.
      */
@@ -287,7 +286,7 @@ namespace FreeMat {
     /** 
      * Evaluate the function and return the values.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector &, int);
+    virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector &, int);
   };
 
   typedef FunctionDef* FuncPtr;
@@ -319,7 +318,7 @@ namespace FreeMat {
     virtual const FunctionType type() {return FM_SPECIAL_FUNCTION;}
     /** Print a description of the function
      */
-    virtual void printMe(Interface *);
+    virtual void printMe(Interpreter *);
     /**
      * The number of inputs required by this function.
      */
@@ -331,7 +330,7 @@ namespace FreeMat {
     /** 
      * Evaluate the function and return the values.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector& , int);
+    virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector& , int);
   };
 
   typedef void (*GenericFuncPointer)();
@@ -380,7 +379,7 @@ namespace FreeMat {
     virtual const FunctionType type() {return FM_IMPORTED_FUNCTION;}
     /** Print a description of the function
      */
-    virtual void printMe(Interface *);
+    virtual void printMe(Interpreter *);
     /**
      * The number of inputs required by this function.
      */
@@ -392,7 +391,7 @@ namespace FreeMat {
     /** 
      * Evaluate the function and return the values.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector& , int);    
+    virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector& , int);    
   };
 
   typedef void (*mexFuncPtr)(int, mxArray**, int, const mxArray**);
@@ -431,7 +430,7 @@ namespace FreeMat {
     virtual const FunctionType type() {return FM_MEX_FUNCTION;}
     /** Print a description of the function
      */
-    virtual void printMe(Interface *);
+    virtual void printMe(Interpreter *);
     /**
      * The number of inputs required by this function.
      */
@@ -443,7 +442,7 @@ namespace FreeMat {
     /** 
      * Evaluate the function and return the values.
      */
-    virtual ArrayVector evaluateFunction(WalkTree *, ArrayVector& , int);    
+    virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector& , int);    
   };
 }
 #endif

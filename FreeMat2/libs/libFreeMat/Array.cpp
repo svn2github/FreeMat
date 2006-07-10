@@ -22,6 +22,7 @@
 #include "Data.hpp"
 #include "Malloc.hpp"
 #include "IEEEFP.hpp"
+#include "Interpreter.hpp"
 #include "Sparse.hpp"
 #include <math.h>
 #include <stdio.h>
@@ -40,7 +41,7 @@ namespace FreeMat {
 static int objectBalance;
 #define MSGBUFLEN 2048
   static char msgBuffer[MSGBUFLEN];
-  static Interface *io;
+  static Interpreter *m_eval;
 
   typedef std::set<uint32, std::less<uint32> > intSet;
   intSet addresses;
@@ -66,12 +67,12 @@ static int objectBalance;
     return retval;
   }
 
-  void Array::setArrayIOInterface(Interface *a_io) {
-    io = a_io;
+  void Array::setArrayInterpreter(Interpreter *eval) {
+    m_eval = eval;
   }
 
-  Interface* Array::getArrayIOInterface() {
-    return io;
+  Interpreter* Array::getArrayInterpreter() {
+    return m_eval;
   }
 
   void outputDoublePrecisionFloat(char *buf, double num) {
@@ -275,7 +276,7 @@ static int objectBalance;
       break;
     case FM_DCOMPLEX:
       {
-	io->warningMessage("Imaginary part of complex index ignored.\n");
+	m_eval->warningMessage("Imaginary part of complex index ignored.\n");
 	// We convert complex values into real values
 	const double *rp = (const double *) dp->getData();
 	int len = getLength();
@@ -286,7 +287,7 @@ static int objectBalance;
 	for (int i=0;i<len;i++) {
 	  ndx = (indexType) rp[i<<1];
 	  if (!fractionalWarning && (double) ndx != rp[i<<1]) {
-	    io->warningMessage("Fractional part of index ignored.\n");
+	    m_eval->warningMessage("Fractional part of index ignored.\n");
 	    fractionalWarning = true;
 	  }
 	  if (ndx <= 0)
@@ -298,7 +299,7 @@ static int objectBalance;
       break;
     case FM_COMPLEX:
       {
-	io->warningMessage("Imaginary part of complex index ignored.\n");
+	m_eval->warningMessage("Imaginary part of complex index ignored.\n");
 	// We convert complex values into real values
 	const float *rp = (const float *) dp->getData();
 	int len = getLength();
@@ -309,7 +310,7 @@ static int objectBalance;
 	for (int i=0;i<len;i++) {
 	  ndx = (indexType) rp[i<<1];
 	  if (!fractionalWarning && (double) ndx != rp[i<<1]) {
-	    io->warningMessage("Fractional part of index ignored.\n");
+	    m_eval->warningMessage("Fractional part of index ignored.\n");
 	    fractionalWarning = true;
 	  }
 	  if (ndx <= 0)
@@ -330,7 +331,7 @@ static int objectBalance;
 	for (int i=0;i<len;i++) {
 	  ndx = (indexType) rp[i];
 	  if (!fractionalWarning && (double) ndx != rp[i]) {
-	    io->warningMessage("Fractional part of index ignored.\n");
+	    m_eval->warningMessage("Fractional part of index ignored.\n");
 	    fractionalWarning = true;
 	  }
 	  if (ndx <= 0)
@@ -351,7 +352,7 @@ static int objectBalance;
 	for (int i=0;i<len;i++) {
 	  ndx = (indexType) rp[i];
 	  if (!fractionalWarning && (double) ndx != rp[i]) {
-	    io->warningMessage("Fractional part of index ignored.\n");
+	    m_eval->warningMessage("Fractional part of index ignored.\n");
 	    fractionalWarning = true;
 	  }
 	  if (ndx <= 0)
@@ -631,7 +632,7 @@ static int objectBalance;
 
   void* Array::getReadWriteDataPointer() {
     if (isSparse()) {
-      io->warningMessage("Warning: sparse matrix converted to full for operation.");
+      m_eval->warningMessage("Warning: sparse matrix converted to full for operation.");
       makeDense();
     }
     ensureSingleOwner();
@@ -3548,28 +3549,28 @@ break;
    */
   void Array::summarizeCellEntry() const {
     if (isEmpty()) 
-      io->outputMessage("[]");
+      m_eval->outputMessage("[]");
     else {
       switch(dp->dataClass) {
       case FM_FUNCPTR_ARRAY:
-	io->outputMessage("{");
-	dp->dimensions.printMe(io);
-	io->outputMessage(" function pointer array }");
+	m_eval->outputMessage("{");
+	dp->dimensions.printMe(m_eval);
+	m_eval->outputMessage(" function pointer array }");
 	break;
       case FM_CELL_ARRAY:
-	io->outputMessage("{");
-	dp->dimensions.printMe(io);
-	io->outputMessage(" cell }");
+	m_eval->outputMessage("{");
+	dp->dimensions.printMe(m_eval);
+	m_eval->outputMessage(" cell }");
 	break;
       case FM_STRUCT_ARRAY:
-	io->outputMessage(" ");
-	dp->dimensions.printMe(io);
+	m_eval->outputMessage(" ");
+	dp->dimensions.printMe(m_eval);
 	if (isUserClass()) {
-	  io->outputMessage(" ");
-	  io->outputMessage(getClassName().back().c_str());
-	  io->outputMessage(" object");
+	  m_eval->outputMessage(" ");
+	  m_eval->outputMessage(getClassName().back().c_str());
+	  m_eval->outputMessage(" object");
 	} else
-	  io->outputMessage(" struct array");
+	  m_eval->outputMessage(" struct array");
 	break;
       case FM_STRING:
 	{
@@ -3578,134 +3579,134 @@ break;
 	    int columns(dp->dimensions.getColumns());
 		memcpy(msgBuffer,ap,columns);
 		msgBuffer[columns] = 0;
-	    io->outputMessage(msgBuffer);
+	    m_eval->outputMessage(msgBuffer);
 	  } else {
-	    io->outputMessage("[");
-	    dp->dimensions.printMe(io);
-	    io->outputMessage(" string ]");
+	    m_eval->outputMessage("[");
+	    dp->dimensions.printMe(m_eval);
+	    m_eval->outputMessage(" string ]");
 	  }
 	}
 	break;
       case FM_LOGICAL:
 	if (dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const logical*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
-	  io->outputMessage(" logical]");	  
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
+	  m_eval->outputMessage(" logical]");	  
 	}
 	break;
       case FM_UINT8:
 	if (dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint8*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
-	  io->outputMessage(" uint8]");
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
+	  m_eval->outputMessage(" uint8]");
 	}
 	break;
       case FM_INT8:
 	if (dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int8*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
-	  io->outputMessage(" int8]");
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
+	  m_eval->outputMessage(" int8]");
 	}
 	break;
       case FM_UINT16:
 	if (dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint16*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
-	  io->outputMessage(" uint16]");
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
+	  m_eval->outputMessage(" uint16]");
 	}
 	break;
       case FM_INT16:
 	if (dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int16*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
-	  io->outputMessage(" int16]");
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
+	  m_eval->outputMessage(" int16]");
 	}
 	break;
       case FM_UINT32:
 	if (dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint32*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
-	  io->outputMessage(" uint32]");
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
+	  m_eval->outputMessage(" uint32]");
 	}
 	break;
       case FM_INT32:
 	if (!isSparse() && dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int32*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
 	  if (isSparse())
-	    io->outputMessage(" sparse");
-	  io->outputMessage(" int32]");
+	    m_eval->outputMessage(" sparse");
+	  m_eval->outputMessage(" int32]");
 	}
 	break;
       case FM_DOUBLE:
 	if (!isSparse() && dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%lf]",*((const double*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
 	  if (isSparse())
-	    io->outputMessage(" sparse");
-	  io->outputMessage(" double]");
+	    m_eval->outputMessage(" sparse");
+	  m_eval->outputMessage(" double]");
 	}
 	break;
       case FM_DCOMPLEX:
 	if (!isSparse() && dp->dimensions.isScalar()) {
 	  const double *ap = (const double*) dp->getData();
 	  snprintf(msgBuffer,MSGBUFLEN,"[%lf+%lfi]",ap[0],ap[1]);
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
 	  if (isSparse())
-	    io->outputMessage(" sparse");
-	  io->outputMessage(" dcomplex]");
+	    m_eval->outputMessage(" sparse");
+	  m_eval->outputMessage(" dcomplex]");
 	}
 	break;
       case FM_FLOAT:
 	if (!isSparse() && dp->dimensions.isScalar()) {
 	  snprintf(msgBuffer,MSGBUFLEN,"[%f]",*((const float*) dp->getData()));
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
 	  if (isSparse())
-	    io->outputMessage(" sparse");
-	  io->outputMessage(" float]");
+	    m_eval->outputMessage(" sparse");
+	  m_eval->outputMessage(" float]");
 	}
 	break;
       case FM_COMPLEX:
 	if (!isSparse() && dp->dimensions.isScalar()) {
 	  const float *ap = (const float*) dp->getData();
 	  snprintf(msgBuffer,MSGBUFLEN,"[%f+%fi]",ap[0],ap[1]);
-	  io->outputMessage(msgBuffer);
+	  m_eval->outputMessage(msgBuffer);
 	} else {
-	  io->outputMessage("[");
-	  dp->dimensions.printMe(io);
+	  m_eval->outputMessage("[");
+	  dp->dimensions.printMe(m_eval);
 	  if (isSparse())
-	    io->outputMessage(" sparse");
-	  io->outputMessage(" complex]");
+	    m_eval->outputMessage(" sparse");
+	  m_eval->outputMessage(" complex]");
 	}
 	break;
       }
@@ -3912,140 +3913,140 @@ break;
       const int8 *ap;
       ap = (const int8*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"% 4d",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_UINT8: {
       const uint8 *ap;
       ap = (const uint8*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"%3u",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_INT16: {
       const int16 *ap;
       ap = (const int16*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"% 6d",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_UINT16: {
       const uint16 *ap;
       ap = (const uint16*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"%5u",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_INT32: {
       const int32 *ap;
       ap = (const int32*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"%13d",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_UINT32: {
       const uint32 *ap;
       ap = (const uint32*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"%12u",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_LOGICAL: {
       const logical *ap;
       ap = (const logical*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"%d  ",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_STRING: {
       const char *ap;
       ap = (const char*) dp;
       snprintf(msgBuffer,MSGBUFLEN,"%c\0",ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_FLOAT: {
       const float *ap;
       ap = (const float*) dp;
       outputSinglePrecisionFloat(msgBuffer,ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       memset(msgBuffer,0,MSGBUFLEN); 
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_DOUBLE: {
       const double *ap;
       ap = (const double*) dp;
       outputDoublePrecisionFloat(msgBuffer,ap[num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       memset(msgBuffer,0,MSGBUFLEN);
       snprintf(msgBuffer,MSGBUFLEN,"  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_COMPLEX: {
       const float *ap;
       ap = (const float*) dp;
       outputSinglePrecisionFloat(msgBuffer,ap[2*num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       memset(msgBuffer,0,MSGBUFLEN);
       snprintf(msgBuffer,MSGBUFLEN," ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       outputSinglePrecisionFloat(msgBuffer,ap[2*num+1]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       memset(msgBuffer,0,MSGBUFLEN);      
       snprintf(msgBuffer,MSGBUFLEN,"i  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_DCOMPLEX: {
       const double *ap;
       ap = (const double*) dp;
       outputDoublePrecisionFloat(msgBuffer,ap[2*num]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       memset(msgBuffer,0,MSGBUFLEN);
       snprintf(msgBuffer,MSGBUFLEN," ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       outputDoublePrecisionFloat(msgBuffer,ap[2*num+1]);
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       memset(msgBuffer,0,MSGBUFLEN);      
       snprintf(msgBuffer,MSGBUFLEN,"i  ");
-      io->outputMessage(msgBuffer);
+      m_eval->outputMessage(msgBuffer);
       break;
     }
     case FM_CELL_ARRAY: {
       Array *ap;
       ap = (Array*) dp;
       if (ap == NULL)
-	io->outputMessage("[]");
+	m_eval->outputMessage("[]");
       else
 	ap[num].summarizeCellEntry();
-      io->outputMessage("  ");
+      m_eval->outputMessage("  ");
       break;
     }
     case FM_FUNCPTR_ARRAY: {
       const FunctionDef** ap;
       ap = (const FunctionDef**) dp;
       if (!ap[num]) {
-	io->outputMessage("[]  ");
+	m_eval->outputMessage("[]  ");
       } else {
-	io->outputMessage("@");
-	io->outputMessage(ap[num]->name.c_str());
+	m_eval->outputMessage("@");
+	m_eval->outputMessage(ap[num]->name.c_str());
 	snprintf(msgBuffer,MSGBUFLEN,"  ");
-	io->outputMessage(msgBuffer);
+	m_eval->outputMessage(msgBuffer);
       }
     }
     }

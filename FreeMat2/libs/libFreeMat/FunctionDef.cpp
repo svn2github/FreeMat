@@ -192,7 +192,7 @@ namespace FreeMat {
 	      outputs[i] = *ptr;
 	    if (!ptr && (i < nargout))
 	      if (!warningIssued) {
-		walker->getInterpreter()->warningMessage("one or more outputs not assigned in call (1)");
+		walker->warningMessage("one or more outputs not assigned in call (1)");
 		warningIssued = true;
 	      }
 	  }
@@ -210,7 +210,7 @@ namespace FreeMat {
 	    outputs[i] = *ptr;
 	  if (!ptr  && (i < nargout)) 
 	    if (!warningIssued) {
-	      walker->getInterpreter()->warningMessage("one or more outputs not assigned in call (2)");
+	      walker->warningMessage("one or more outputs not assigned in call (2)");
 	      warningIssued = true;
 	    }
 	}

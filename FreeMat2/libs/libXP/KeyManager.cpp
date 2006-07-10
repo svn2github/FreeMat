@@ -23,9 +23,10 @@
 
 #include <algorithm>
 #include "KeyManager.hpp"
-#include "Interface.hpp"
 #include "Context.hpp"
 #include <qapplication.h>
+#include "Interpreter.hpp"
+#include <QtCore>
 #include <iostream>
 
 #define TAB_WIDTH 8
@@ -50,7 +51,7 @@
 // KeyManager
 // ----------------------------------------------------------------------------
 
-KeyManager::KeyManager() : Interface() {
+KeyManager::KeyManager()  {
   cutbuf = "";
   linelen = 1000;
   ntotal = 0;
@@ -510,7 +511,7 @@ void KeyManager::NewLine() {
   AddHistory(lineData);
   PlaceCursor(ntotal);
   emit OutputRawString("\r\n");
-  ExecuteLine(std::string(lineData) + "\n");
+  m_eval->ExecuteLine(std::string(lineData) + "\n");
   ResetLineBuffer();
   DisplayPrompt();
 }
@@ -821,6 +822,10 @@ std::string GetCommonPrefix(std::vector<std::string> matches,
     return(templ.substr(tempstring.length(),prefixlength-tempstring.length()));
 }
 
+void KeyManager::SetInterpreter(Interpreter* eval) {
+  m_eval = eval;
+}
+
 void KeyManager::CompleteWord() {
   int redisplay=0;        /* True if the whole line needs to be redrawn */
   int suffix_len;         /* The length of the completion extension */
@@ -839,7 +844,7 @@ void KeyManager::CompleteWord() {
    * Perform the completion.
    */
   std::string tempstring;
-  matches = GetCompletions(lineData, buff_curpos, tempstring);
+  matches = m_eval->GetCompletions(lineData, buff_curpos, tempstring);
   if(matches.size() == 0) {
     emit OutputRawString("\r\n");
     term_curpos = 0;
@@ -982,46 +987,16 @@ void KeyManager::OnChar( int c ) {
   }
 }
 
-std::string TranslateString(std::string x) {
-  std::string y(x);
-  unsigned int n;
-  n = 0;
-  while (n<y.size()) {
-    if (y[n] == '\n') 
-      y.insert(n++,"\r");
-    n++;
-  }
-  return y;
-}
 
-void KeyManager::CWDChanged() {
-  emit UpdateCWD();
-}
-
-void KeyManager::outputMessage(std::string msg) {
-  std::string msg2(TranslateString(msg));
-  emit OutputRawString(msg2);
-}
-
-void KeyManager::errorMessage(std::string msg) {
-  std::string msg2(TranslateString(msg));
-  emit OutputRawString("Error: " + msg2 + "\r\n");
-}
-
-void KeyManager::warningMessage(std::string msg) {
-  std::string msg2(TranslateString(msg));
-  emit OutputRawString("Warning: " + msg2 + "\r\n");
-}
-
-void KeyManager::ExecuteLine(std::string mline) {
-  enteredLines.push_back(mline);
-  ReplacePrompt("");
-  enteredLinesEmpty = false;
-  if (loopactive) {
-    loopactive--;
-    m_loop->exit();
-  }
-}
+//void KeyManager::ExecuteLine(std::string mline) {
+//  enteredLines.push_back(mline);
+//  ReplacePrompt("");
+//  enteredLinesEmpty = false;
+//  if (loopactive) {
+//    loopactive--;
+//    m_loop->exit();
+//  }
+//}
 
 void KeyManager::QueueString(QString t) {
   std::string g(t.toStdString());
@@ -1055,30 +1030,30 @@ void KeyManager::QueueMultiString(QString t) {
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   emit OutputRawString("\r\n");
-  ExecuteLine(std::string(lineData)+"\n");
+  m_eval->ExecuteLine(std::string(lineData)+"\n");
   ResetLineBuffer();
   DisplayPrompt();
 }
 
 void KeyManager::QueueSilent(QString t) {
-  ExecuteLine(t.toStdString()+"\n");
+  m_eval->ExecuteLine(t.toStdString()+"\n");
 }
 
-char* KeyManager::getLine(std::string aprompt) {
-  emit UpdateVariables();
-  ReplacePrompt(aprompt);
-  DisplayPrompt();
-  while (enteredLinesEmpty) {
-    loopactive++;
-    m_loop->exec();
-  }
-  std::string theline(enteredLines.front());
-  enteredLines.pop_front();
-  enteredLinesEmpty = (enteredLines.empty());
-  char *cp;
-  cp = strdup(theline.c_str());
-  return cp;
-}
+//char* KeyManager::getLine(std::string aprompt) {
+//  emit UpdateVariables();
+//  ReplacePrompt(aprompt);
+//  DisplayPrompt();
+//  while (enteredLinesEmpty) {
+//    loopactive++;
+//    m_loop->exec();
+//  }
+//  std::string theline(enteredLines.front());
+//  enteredLines.pop_front();
+//  enteredLinesEmpty = (enteredLines.empty());
+//  char *cp;
+//  cp = strdup(theline.c_str());
+//  return cp;
+//}
 
 void KeyManager::RegisterTerm(QObject* term) {
   connect(this,SIGNAL(MoveDown()),term,SLOT(MoveDown()));
@@ -1094,9 +1069,9 @@ void KeyManager::RegisterTerm(QObject* term) {
 }
 
 void KeyManager::ContinueAction() {
-  ExecuteLine("return\n");
+  m_eval->ExecuteLine("return\n");
 }
 
 void KeyManager::StopAction() {
-  ExecuteLine("retall\n");  
+  m_eval->ExecuteLine("retall\n");  
 }

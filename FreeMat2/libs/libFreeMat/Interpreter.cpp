@@ -17,7 +17,7 @@
  *
  */
 
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include <stack>
 #include <math.h>
 #include <stdio.h>
@@ -102,15 +102,15 @@ namespace FreeMat {
 #endif
   }
 
-  void WalkTree::setAppPath(std::string path) {
+  void Interpreter::setAppPath(std::string path) {
     app_path = path;
   }
 
-  std::string WalkTree::getAppPath() {
+  std::string Interpreter::getAppPath() {
     return app_path;
   }
 
-  void WalkTree::setPath(std::string path) {
+  void Interpreter::setPath(std::string path) {
     char* pathdata = strdup(path.c_str());
     // Search through the path
     char *saveptr = (char*) malloc(sizeof(char)*1024);
@@ -125,7 +125,7 @@ namespace FreeMat {
     rescanPath();
   }
 
-  std::string WalkTree::getTotalPath() {
+  std::string Interpreter::getTotalPath() {
     std::string retpath;
     QStringList totalPath(QStringList() << m_basePath << m_userPath);
     for (int i=0;i<totalPath.size()-1;i++) 
@@ -135,7 +135,7 @@ namespace FreeMat {
     return retpath;
   }
   
-  std::string WalkTree::getPath() {
+  std::string Interpreter::getPath() {
     std::string retpath;
     QStringList totalPath(m_userPath);
     for (int i=0;i<totalPath.size()-1;i++) 
@@ -145,7 +145,7 @@ namespace FreeMat {
     return retpath;
   }
   
-  void WalkTree::rescanPath() {
+  void Interpreter::rescanPath() {
     if (!m_context) return;
     m_context->flushTemporaryGlobalFunctions();
     for (int i=0;i<m_basePath.size();i++)
@@ -207,7 +207,7 @@ namespace FreeMat {
     return (char *)string + i + 1;
   }
 
-  std::vector<std::string> WalkTree::GetCompletions(std::string line, 
+  std::vector<std::string> Interpreter::GetCompletions(std::string line, 
 						     int word_end, 
 						     std::string &matchString) {
     std::vector<std::string> completions;
@@ -279,11 +279,11 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::setBasePath(QStringList pth) {
+  void Interpreter::setBasePath(QStringList pth) {
     m_basePath = pth;
   }
 
-  void WalkTree::setUserPath(QStringList pth) {
+  void Interpreter::setUserPath(QStringList pth) {
     m_userPath = pth;
   }
   
@@ -300,7 +300,7 @@ namespace FreeMat {
     return "fmx";
   }
   
-  void WalkTree::scanDirectory(std::string scdir, bool tempfunc,
+  void Interpreter::scanDirectory(std::string scdir, bool tempfunc,
 				std::string prefix) {
     QDir dir(QString::fromStdString(scdir));
     dir.setFilter(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
@@ -331,7 +331,7 @@ namespace FreeMat {
     }
   }
   
-  void WalkTree::procFileM(std::string fname, std::string fullname, bool tempfunc) {
+  void Interpreter::procFileM(std::string fname, std::string fullname, bool tempfunc) {
     MFunctionDef *adef;
     adef = new MFunctionDef();
     adef->name = fname;
@@ -339,7 +339,7 @@ namespace FreeMat {
     m_context->insertFunctionGlobally(adef, tempfunc);
   }
   
-  void WalkTree::procFileP(std::string fname, std::string fullname, bool tempfunc) {
+  void Interpreter::procFileP(std::string fname, std::string fullname, bool tempfunc) {
     MFunctionDef *adef;
     // Open the file
     try {
@@ -355,7 +355,7 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::procFileMex(std::string fname, std::string fullname, bool tempfunc) {
+  void Interpreter::procFileMex(std::string fname, std::string fullname, bool tempfunc) {
     MexFunctionDef *adef;
     adef = new MexFunctionDef(fullname);
     adef->name = fname;
@@ -365,11 +365,11 @@ namespace FreeMat {
       delete adef;
   }
 
-  void WalkTree::setTerminalWidth(int ncols) {
+  void Interpreter::setTerminalWidth(int ncols) {
     m_ncols = ncols;
   }
 
-  int WalkTree::getTerminalWidth() {
+  int Interpreter::getTerminalWidth() {
     return m_ncols;
   }
 
@@ -385,20 +385,20 @@ namespace FreeMat {
     return y;
   }
 
-  void WalkTree::outputMessage(std::string msg) {
+  void Interpreter::outputMessage(std::string msg) {
     emit outputMsg(TranslateString(msg));
   }
 
-  void WalkTree::errorMessage(std::string msg) {
+  void Interpreter::errorMessage(std::string msg) {
     emit errorMsg(TranslateString("Error: " + msg + "\r\n"));
   }
 
-  void WalkTree::warningMessage(std::string msg) {
+  void Interpreter::warningMessage(std::string msg) {
     emit warningMsg(TranslateString("Warning: " +msg + "\r\n"));
   }
 
 
-  void WalkTree::SetContext(int a) {
+  void Interpreter::SetContext(int a) {
     ip_context = a;
   }
 
@@ -431,28 +431,28 @@ namespace FreeMat {
     return cfunc + "private:" + fname;
   }
 
-  std::string WalkTree::getVersionString() {
+  std::string Interpreter::getVersionString() {
     return std::string("FreeMat v" VERSION);
   }
 
 
 
-  void WalkTree::run() {
+  void Interpreter::run() {
 //     try {
 //       while (1) {
 // 	try {
 // 	  evalCLI();
-// 	} catch (WalkTreeRetallException) {
+// 	} catch (InterpreterRetallException) {
 // 	  clearStacks();
-// 	} catch (WalkTreeReturnException &e) {
+// 	} catch (InterpreterReturnException &e) {
 // 	}
 //       }
-//     } catch (WalkTreeQuitException &e) {
+//     } catch (InterpreterQuitException &e) {
 //     } catch (std::exception& e) {
 //     }
   }
 
-  void WalkTree::sendGreeting() {
+  void Interpreter::sendGreeting() {
     outputMessage(" " + getVersionString() + " (build 2030)\n");
     outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
     outputMessage(" Licensed under the GNU Public License (GPL)\n");
@@ -461,7 +461,7 @@ namespace FreeMat {
     outputMessage("      <pathtool> to set or change your path\n");
   }
 
-  std::string WalkTree::getPrivateMangledName(std::string fname) {
+  std::string Interpreter::getPrivateMangledName(std::string fname) {
     std::string ret;
     char buff[4096];
     if (isMFile(ip_funcname)) 
@@ -473,7 +473,7 @@ namespace FreeMat {
     return ret; 
   }
 
-  std::string WalkTree::getMFileName() {
+  std::string Interpreter::getMFileName() {
     if (isMFile(ip_funcname)) 
       return TrimFilename(TrimExtension(ip_funcname));
     for (int i=cstack.size()-1;i>=0;i--)
@@ -515,7 +515,7 @@ namespace FreeMat {
     InterruptPending = true;
   }
 
-  Array WalkTree::DoBinaryOperator(tree t, BinaryFunc fnc, 
+  Array Interpreter::DoBinaryOperator(tree t, BinaryFunc fnc, 
 				   std::string funcname) {
     Array a(expression(t.first()));
     Array b(expression(t.second()));
@@ -524,7 +524,7 @@ namespace FreeMat {
     return ClassBinaryOperator(a,b,funcname,this);
   }
 
-  Array WalkTree::DoUnaryOperator(tree t, UnaryFunc fnc, 
+  Array Interpreter::DoUnaryOperator(tree t, UnaryFunc fnc, 
 				  std::string funcname) {
     Array a(expression(t.first()));
     if (!a.isUserClass())
@@ -532,15 +532,15 @@ namespace FreeMat {
     return ClassUnaryOperator(a,funcname,this);
   }
 
-  void WalkTree::setPrintLimit(int lim) {
+  void Interpreter::setPrintLimit(int lim) {
     printLimit = lim;
   }
   
-  int WalkTree::getPrintLimit() {
+  int Interpreter::getPrintLimit() {
     return(printLimit);
   }
  
-  void WalkTree::clearStacks() {
+  void Interpreter::clearStacks() {
     //    cname = "base";
     cstack.clear();
     ip_funcname = "base";
@@ -551,7 +551,7 @@ namespace FreeMat {
     //    gstack.push_back(cname);
   }
 
-  ArrayVector WalkTree::rowDefinition(tree t) {
+  ArrayVector Interpreter::rowDefinition(tree t) {
     SetContext(t.context());
     ArrayVector retval(expressionList(t.children()));
     return retval;
@@ -618,7 +618,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  Array WalkTree::matrixDefinition(tree t) {
+  Array Interpreter::matrixDefinition(tree t) {
     ArrayMatrix m;
     treeVector s(t.children());
     if (s.size() == 0) 
@@ -681,7 +681,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  Array WalkTree::cellDefinition(tree t) {
+  Array Interpreter::cellDefinition(tree t) {
     ArrayMatrix m;
     treeVector s(t.children());
     if (s.size() == 0) {
@@ -697,7 +697,7 @@ namespace FreeMat {
     return retval;
   }
 
-  Array WalkTree::ShortCutOr(tree t) {
+  Array Interpreter::ShortCutOr(tree t) {
     SetContext(t.context());
     Array a(expression(t.first()));
     SetContext(t.context());
@@ -715,7 +715,7 @@ namespace FreeMat {
     return retval;
   }
 
-  Array WalkTree::ShortCutAnd(tree t) {
+  Array Interpreter::ShortCutAnd(tree t) {
     SetContext(t.context());
     Array a(expression(t.first()));
     SetContext(t.context());
@@ -734,7 +734,7 @@ namespace FreeMat {
   }
 
   //Works
-  Array WalkTree::expression(tree t) {
+  Array Interpreter::expression(tree t) {
     SetContext(t.context());
     Array retval;
     switch(t.token()) {
@@ -995,7 +995,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  Array WalkTree::unitColon(tree t) {
+  Array Interpreter::unitColon(tree t) {
     Array a, b;
     SetContext(t.context());
     a = expression(t.first());
@@ -1009,7 +1009,7 @@ namespace FreeMat {
   }
 
   //Works
-  Array WalkTree::doubleColon(tree t) {
+  Array Interpreter::doubleColon(tree t) {
     Array a, b, c;
     SetContext(t.context());
     a = expression(t.first().first());
@@ -1035,7 +1035,7 @@ namespace FreeMat {
    * called to resolve var(expr,expr) = someval or
    *                   someval = var(expr,expr)
    */
-  ArrayVector WalkTree::varExpressionList(treeVector t, Array subroot) {
+  ArrayVector Interpreter::varExpressionList(treeVector t, Array subroot) {
     ArrayVector m, n;
     // Count the number of expressions
     unsigned count = t.size(); 
@@ -1075,7 +1075,7 @@ namespace FreeMat {
   /*
    * 
    */
-  ArrayVector WalkTree::expressionList(treeVector t) {
+  ArrayVector Interpreter::expressionList(treeVector t) {
     ArrayVector m, n;
     // Count the number of expressions
     unsigned count = t.size(); 
@@ -1119,7 +1119,7 @@ namespace FreeMat {
    * any matches.  If x is a string and we are a cell-array, then
    * this is applied on an element-by-element basis also.
    */
-  bool WalkTree::testCaseStatement(tree t, Array s) {
+  bool Interpreter::testCaseStatement(tree t, Array s) {
     bool caseMatched;
     Array r;
     int ctxt = t.context();
@@ -1176,7 +1176,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  void WalkTree::tryStatement(tree t) {
+  void Interpreter::tryStatement(tree t) {
     // Turn off autostop for this statement block
     bool autostop_save = autostop;
     autostop = false;
@@ -1197,12 +1197,12 @@ namespace FreeMat {
   }
 
 
-  bool WalkTree::AutoStop() {
+  bool Interpreter::AutoStop() {
     return autostop;
   }
   
 
-  void WalkTree::AutoStop(bool a) {
+  void Interpreter::AutoStop(bool a) {
     autostop = a;
   }
 
@@ -1255,7 +1255,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  void WalkTree::switchStatement(tree t) {
+  void Interpreter::switchStatement(tree t) {
     Array switchVal;
     int ctxt = t.context();
     SetContext(ctxt);
@@ -1323,7 +1323,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  void WalkTree::ifStatement(tree t) {
+  void Interpreter::ifStatement(tree t) {
     bool elseifMatched;
     int ctxt = t.context();
     SetContext(ctxt);
@@ -1373,7 +1373,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  void WalkTree::whileStatement(tree t) {
+  void Interpreter::whileStatement(tree t) {
     tree testCondition;
     Array condVar;
     tree codeBlock;
@@ -1394,13 +1394,13 @@ namespace FreeMat {
       try {
 	block(codeBlock);
 	SetContext(ctxt);
-      } catch (WalkTreeContinueException& e) {
-      } catch (WalkTreeBreakException& e) {
+      } catch (InterpreterContinueException& e) {
+      } catch (InterpreterBreakException& e) {
 	breakEncountered = true;
-      } catch (WalkTreeReturnException& e) {
+      } catch (InterpreterReturnException& e) {
 	context->exitLoop();
 	throw;
-      } catch (WalkTreeRetallException& e) {
+      } catch (InterpreterRetallException& e) {
 	context->exitLoop();
 	throw;
       }
@@ -1464,7 +1464,7 @@ namespace FreeMat {
   //@>
   //!
   //Works
-  void WalkTree::forStatement(tree t) {
+  void Interpreter::forStatement(tree t) {
     tree  codeBlock;
     Array indexSet;
     Array indexNum;
@@ -1498,13 +1498,13 @@ namespace FreeMat {
       try {
 	block(codeBlock);
 	SetContext(ctxt);
-      } catch (WalkTreeContinueException &e) {
-      } catch (WalkTreeBreakException &e) {
+      } catch (InterpreterContinueException &e) {
+      } catch (InterpreterBreakException &e) {
 	break;
-      } catch (WalkTreeReturnException& e) {
+      } catch (InterpreterReturnException& e) {
 	context->exitLoop();
 	throw;
-      } catch (WalkTreeRetallException& e) {
+      } catch (InterpreterRetallException& e) {
 	context->exitLoop();
 	throw;
       }
@@ -1547,7 +1547,7 @@ namespace FreeMat {
   //get_global
   //@>
   //!
-  void WalkTree::globalStatement(tree t) {
+  void Interpreter::globalStatement(tree t) {
     for (unsigned i=0;i<t.numchildren();i++)
       context->addGlobalVariable(t.child(i).text());
   }
@@ -1579,7 +1579,7 @@ namespace FreeMat {
   //for i=1:10; count_calls; end
   //@>
   //!
-  void WalkTree::persistentStatement(tree t) {
+  void Interpreter::persistentStatement(tree t) {
     for (unsigned i=0;i<t.numchildren();i++)
       context->addPersistentVariable(t.child(i).text());
   }
@@ -1837,19 +1837,19 @@ namespace FreeMat {
   //@>
   //!
 
-  void WalkTree::debugCLI() {
+  void Interpreter::debugCLI() {
 //     depth++;
 //     bpActive = true;
 //     try {
 //       evalCLI();
-//     } catch(WalkTreeReturnException& e) {
+//     } catch(InterpreterReturnException& e) {
 //     }
 //     bpActive = false;
 //     depth--;
   }
 
 
-  void WalkTree::doDebugCycle() {
+  void Interpreter::doDebugCycle() {
     if (inStepMode) {
       // We have to clear the dbstep trap...
       // We check the list of break points - if one of them matches the
@@ -1872,14 +1872,14 @@ namespace FreeMat {
     depth++;
 //     try {
 //       evalCLI();
-//     } catch (WalkTreeContinueException& e) {
-//     } catch (WalkTreeBreakException& e) {
-//     } catch (WalkTreeReturnException& e) {
+//     } catch (InterpreterContinueException& e) {
+//     } catch (InterpreterBreakException& e) {
+//     } catch (InterpreterReturnException& e) {
 //     }
     depth--;
   }
 
-  void WalkTree::displayArray(Array b) {
+  void Interpreter::displayArray(Array b) {
     // Check for a user defined class
     FuncPtr val;
     if (b.isUserClass() && ClassResolveFunction(this,b,"display",val)) {
@@ -1891,7 +1891,7 @@ namespace FreeMat {
   }
 
   //Works
-  void WalkTree::expressionStatement(tree s, bool printIt) {
+  void Interpreter::expressionStatement(tree s, bool printIt) {
     ArrayVector m;
     if (!s.is(TOK_EXPR)) throw Exception("Unexpected statement type!");
     tree t(s.first());
@@ -1948,7 +1948,7 @@ namespace FreeMat {
   }
 
   //Works
-  void WalkTree::assignmentStatement(tree t, bool printIt) {
+  void Interpreter::assignmentStatement(tree t, bool printIt) {
     if (t.first().numchildren() == 1) {
       Array b(expression(t.second()));
       SetContext(t.context());
@@ -1972,7 +1972,7 @@ namespace FreeMat {
     }
   }
   
-  void WalkTree::statementType(tree t, bool printIt) {
+  void Interpreter::statementType(tree t, bool printIt) {
     if (processguievents) 
       qApp->processEvents();
     SetContext(t.context());
@@ -1998,14 +1998,14 @@ namespace FreeMat {
       break;
     case TOK_BREAK:
       if (context->inLoop()) 
-	throw WalkTreeBreakException();
+	throw InterpreterBreakException();
       break;
     case TOK_CONTINUE:
       if (context->inLoop()) 
-	throw WalkTreeContinueException();
+	throw InterpreterContinueException();
       break;
     case TOK_RETURN:
-      throw WalkTreeReturnException();
+      throw InterpreterReturnException();
       break;
     case TOK_SWITCH:
       switchStatement(t);
@@ -2014,10 +2014,10 @@ namespace FreeMat {
       tryStatement(t);
       break;
     case TOK_QUIT:
-      throw WalkTreeQuitException();
+      throw InterpreterQuitException();
       break;
     case TOK_RETALL:
-      throw WalkTreeRetallException();
+      throw InterpreterRetallException();
       break;
     case TOK_KEYBOARD:
       doDebugCycle();
@@ -2054,7 +2054,7 @@ namespace FreeMat {
 
   // 
   //Works
-  void WalkTree::statement(tree t) {
+  void Interpreter::statement(tree t) {
     try {
       SetContext(t.context());
       if (t.is(TOK_QSTATEMENT))
@@ -2077,7 +2077,7 @@ namespace FreeMat {
   }
 
   //Works
-  void WalkTree::block(tree t) {
+  void Interpreter::block(tree t) {
     try {
       for (unsigned i=0;i<t.numchildren();i++) {
 	if (InterruptPending) {
@@ -2095,13 +2095,13 @@ namespace FreeMat {
     }
   }
 
-  Context* WalkTree::getContext() {
+  Context* Interpreter::getContext() {
     return context;
   }
 
   // I think this is too complicated.... there should be an easier way
   // Works
-  int WalkTree::countLeftHandSides(tree t) {
+  int Interpreter::countLeftHandSides(tree t) {
     Array lhs, *ptr;
     ptr = context->lookupVariable(t.first().text());
     if (ptr == NULL)
@@ -2188,7 +2188,7 @@ namespace FreeMat {
     return 1;
   }
 
-  Array WalkTree::EndReference(Array v, int index, int count) {
+  Array Interpreter::EndReference(Array v, int index, int count) {
     FuncPtr val;
     if (v.isUserClass() && ClassResolveFunction(this,v,"end",val)) {
       // User has overloaded "end" operator
@@ -2206,13 +2206,13 @@ namespace FreeMat {
       return Array::int32Constructor(dim.getDimensionLength(index));
   }
 
-  Array WalkTree::AllColonReference(Array v, int index, int count) {
+  Array Interpreter::AllColonReference(Array v, int index, int count) {
     if (v.isUserClass()) return Array::emptyConstructor();
     return Array::stringConstructor(":");
   }
   
   // Works
-  Array WalkTree::assignExpression(tree t, Array &value) {
+  Array Interpreter::assignExpression(tree t, Array &value) {
     ArrayVector tmp;
     tmp.push_back(value);
     return assignExpression(t,tmp,false);
@@ -2220,7 +2220,7 @@ namespace FreeMat {
 
   // If we got this far, we must have at least one subindex
   // Works
-  Array WalkTree::assignExpression(tree t, ArrayVector &value, bool multipleLHS) {
+  Array Interpreter::assignExpression(tree t, ArrayVector &value, bool multipleLHS) {
     int ctxt = t.context();
     SetContext(ctxt);
     if (t.numchildren() == 1) {
@@ -2243,7 +2243,7 @@ namespace FreeMat {
   }
 
   //test
-  void WalkTree::specialFunctionCall(tree t, bool printIt) {
+  void Interpreter::specialFunctionCall(tree t, bool printIt) {
     tree fAST;
     ArrayVector m;
     stringVector args;
@@ -2269,7 +2269,7 @@ namespace FreeMat {
     InCLI = CLIFlagsave;
   }
   
-  void WalkTree::addBreakpoint(stackentry bp, bool registerIt) {
+  void Interpreter::addBreakpoint(stackentry bp, bool registerIt) {
     char *cname = strdup(bp.detail.c_str());
     bool isFun;
     FuncPtr val;
@@ -2314,7 +2314,7 @@ namespace FreeMat {
   //[eg{1:3}]
   //in which case the lhscount += 3, even though eg does not exist. 
   // WORKS
-  void WalkTree::multiFunctionCall(tree t, bool printIt) {
+  void Interpreter::multiFunctionCall(tree t, bool printIt) {
     ArrayVector m;
     tree fAST, saveLHS;
     treeVector s;
@@ -2804,7 +2804,7 @@ namespace FreeMat {
   //strcattest hi ho
   //@>
   //!
-  void WalkTree::collectKeywords(tree q, ArrayVector &keyvals,
+  void Interpreter::collectKeywords(tree q, ArrayVector &keyvals,
 				 treeVector &keyexpr, stringVector &keywords) {
     // Search for the keyword uses - 
     // To handle keywords, we make one pass through the arguments,
@@ -2824,7 +2824,7 @@ namespace FreeMat {
     }
   }
 
-  int* WalkTree::sortKeywords(ArrayVector &m, stringVector &keywords,
+  int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
 			      stringVector arguments, ArrayVector keyvals) {
     // If keywords were used, we have to permute the
     // entries of the arrayvector to the correct order.
@@ -2897,7 +2897,7 @@ namespace FreeMat {
   // m is vector of argument values
   // keywords is the list of values passed as keywords
   // keyexpr is the   
-  void WalkTree::handlePassByReference(tree q, stringVector arguments,
+  void Interpreter::handlePassByReference(tree q, stringVector arguments,
 				       ArrayVector m,stringVector keywords, 
 				       treeVector keyexpr, int* argTypeMap) {
     tree p;
@@ -2935,7 +2935,7 @@ namespace FreeMat {
   }
 
   //Test
-  ArrayVector WalkTree::functionExpression(tree t, 
+  ArrayVector Interpreter::functionExpression(tree t, 
 					   int narg_out, 
 					   bool outputOptional) {
     ArrayVector m, n;
@@ -2995,7 +2995,7 @@ namespace FreeMat {
 	InCLI = CLIFlagsave;
 	// Special case - dbstep acts like "return"
 	if (funcDef->name == "dbstep")
-	  throw WalkTreeReturnException();
+	  throw InterpreterReturnException();
       } else {
 	// We can now adjust the keywords (because we know the argument list)
 	// Apply keyword mapping
@@ -3027,12 +3027,12 @@ namespace FreeMat {
 	n.pop_back();
       // Special case - dbstep acts like "return"
       if (funcDef->name == "dbstep")
-	throw WalkTreeReturnException();
+	throw InterpreterReturnException();
       return n;
     } catch (Exception& e) {
       InCLI = CLIFlagsave;
       throw;
-    } catch (WalkTreeRetallException& e) {
+    } catch (InterpreterRetallException& e) {
       throw;
     }
   }
@@ -3054,7 +3054,7 @@ namespace FreeMat {
 //     return(MIN(linedwn,MIN(linerght,costthis)));
   }
 
-  void WalkTree::listBreakpoints() {
+  void Interpreter::listBreakpoints() {
     for (int i=0;i<bpStack.size();i++) {
       char buffer[2048];
       sprintf(buffer,"%d   %s line %d\n",i+1,bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
@@ -3062,7 +3062,7 @@ namespace FreeMat {
     }
   }
 
-  void WalkTree::deleteBreakpoint(int number) {
+  void Interpreter::deleteBreakpoint(int number) {
     if ((number < 1) || (number > bpStack.size())) {
       warningMessage("Unable to delete specified breakpoint (does not exist)");
       return;
@@ -3082,7 +3082,7 @@ namespace FreeMat {
     ((MFunctionDef*)val)->RemoveBreakpoint(bp.tokid);
   }
 
-  bool WalkTree::adjustBreakpoint(stackentry& bp, bool dbstep) {
+  bool Interpreter::adjustBreakpoint(stackentry& bp, bool dbstep) {
     char *cname = strdup(bp.detail.c_str());
     bool isFun;
     FuncPtr val;
@@ -3121,7 +3121,7 @@ namespace FreeMat {
     return true;
   }
   
-  void WalkTree::adjustBreakpoints() {
+  void Interpreter::adjustBreakpoints() {
     std::vector<stackentry>::iterator i=bpStack.begin();
     while (i!=bpStack.end()) {
       if (!adjustBreakpoint(*i,false))
@@ -3133,7 +3133,7 @@ namespace FreeMat {
       adjustBreakpoint(stepTrap,true);
   }
 
-  void WalkTree::stackTrace(bool includeCurrent) {
+  void Interpreter::stackTrace(bool includeCurrent) {
     char buffer[4096];
     for (int i=0;i<cstack.size();i++) {
       std::string cname_trim(TrimExtension(TrimFilename(cstack[i].cname)));
@@ -3155,13 +3155,13 @@ namespace FreeMat {
     }
   }
 
-  bool WalkTree::inMethodCall(std::string classname) {
+  bool Interpreter::inMethodCall(std::string classname) {
     if (ip_detailname.empty()) return false;
     if (ip_detailname[0] != '@') return false;
     return (ip_detailname.compare(1,classname.size(),classname)==0);
   }
 
-  void WalkTree::pushDebug(std::string fname, std::string detail) {
+  void Interpreter::pushDebug(std::string fname, std::string detail) {
     char buffer[4096];
     cstack.push_back(stackentry(ip_funcname,ip_detailname,ip_context));
     ip_funcname = fname;
@@ -3169,7 +3169,7 @@ namespace FreeMat {
     ip_context = 0;
   }
 
-  void WalkTree::popDebug() {
+  void Interpreter::popDebug() {
     if (!cstack.empty()) {
       ip_funcname = cstack.back().cname;
       ip_detailname = cstack.back().detail;
@@ -3179,30 +3179,30 @@ namespace FreeMat {
       outputMessage("IDERROR\n");
  }
 
-  bool WalkTree::isUserClassDefined(std::string classname) {
+  bool Interpreter::isUserClassDefined(std::string classname) {
     UserClass *ret;
     return (classTable.findSymbol(classname)!=NULL);
   }
   
-  UserClass WalkTree::lookupUserClass(std::string classname) {
+  UserClass Interpreter::lookupUserClass(std::string classname) {
     return(*(classTable.findSymbol(classname)));
   }
 
-  void WalkTree::registerUserClass(std::string classname, UserClass cdata) {
+  void Interpreter::registerUserClass(std::string classname, UserClass cdata) {
     classTable.insertSymbol(classname,cdata);
   }
 
-  void WalkTree::setClassPrefix(std::string prefix) {
+  void Interpreter::setClassPrefix(std::string prefix) {
     classPrefix = prefix;
   }
 
-  std::string WalkTree::getClassPrefix() {
+  std::string Interpreter::getClassPrefix() {
     return classPrefix;
   }
 
   // Look up a function by name.  Use the arguments (if available) to assist
   // in resolving method calls for objects
-  bool WalkTree::lookupFunction(std::string funcName, FuncPtr& val, 
+  bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val, 
 				ArrayVector &args, bool disableOverload) {
     int passcount = 0;
     while(passcount < 2) {
@@ -3264,7 +3264,7 @@ namespace FreeMat {
   //@]
   //!
   //Works
-  ArrayVector WalkTree::FunctionPointerDispatch(Array r, tree args, 
+  ArrayVector Interpreter::FunctionPointerDispatch(Array r, tree args, 
 						int narg_out) {
     const FunctionDef** dp;
     bool CLIFlagsave;
@@ -3285,7 +3285,7 @@ namespace FreeMat {
 		((MFunctionDef*)fun)->name);
       try {
 	block(((MFunctionDef*)fun)->code);
-      } catch (WalkTreeReturnException& e) {
+      } catch (InterpreterReturnException& e) {
       }
       popDebug();
       InCLI = CLIFlagsave;
@@ -3482,7 +3482,7 @@ namespace FreeMat {
   //!
 
   //Works
-  ArrayVector WalkTree::rhsExpression(tree t) {
+  ArrayVector Interpreter::rhsExpression(tree t) {
     Array r, q, *ptr;
     Array n, p;
     ArrayVector m;
@@ -3525,11 +3525,11 @@ namespace FreeMat {
     return subsref(r,indexExpr);
   }
   
-  int WalkTree::getErrorCount() {
+  int Interpreter::getErrorCount() {
     return errorCount;
   }
 
-  WalkTree::WalkTree(Context* aContext) {
+  Interpreter::Interpreter(Context* aContext) {
     errorCount = 0;
     lasterr = NULL;
     context = aContext;
@@ -3550,26 +3550,26 @@ namespace FreeMat {
     processguievents = true;
   }
 
-  WalkTree::~WalkTree() {
+  Interpreter::~Interpreter() {
   }
 
-  bool WalkTree::GUIEventFlag() {
+  bool Interpreter::GUIEventFlag() {
     return(processguievents);
   }
 
-  void WalkTree::GUIEventFlag(bool t) {
+  void Interpreter::GUIEventFlag(bool t) {
     processguievents = t;
   }
 
-  bool WalkTree::getStopOverload() {
+  bool Interpreter::getStopOverload() {
     return stopoverload;
   }
 
-  void WalkTree::setStopOverload(bool flag) {
+  void Interpreter::setStopOverload(bool flag) {
     stopoverload = flag;
   }
 
-  void WalkTree::dbstep(int linecount) {
+  void Interpreter::dbstep(int linecount) {
     // Get the current function
     if (cstack.size() < 2) throw Exception("cannot dbstep unless inside an M-function");
     stackentry bp(cstack[cstack.size()-2]);
@@ -3596,7 +3596,7 @@ namespace FreeMat {
   }
 
   //PORT
-  void WalkTree::evaluateString(string line, bool propogateExceptions) {
+  void Interpreter::evaluateString(string line, bool propogateExceptions) {
     tree t;
     
     InterruptPending = false;
@@ -3620,15 +3620,15 @@ namespace FreeMat {
       pushDebug("Eval",line);
       try {
 	block(t);
-      } catch (WalkTreeReturnException& e) {
+      } catch (InterpreterReturnException& e) {
 	if (depth > 0) {
 	  popDebug();
 	  throw;
 	}
-      } catch (WalkTreeQuitException& e) {
+      } catch (InterpreterQuitException& e) {
 	popDebug();
 	throw;
-      } catch (WalkTreeRetallException& e) {
+      } catch (InterpreterRetallException& e) {
 	popDebug();
 	throw;
       }
@@ -3643,19 +3643,19 @@ namespace FreeMat {
     popDebug();
   }
   
-  char* WalkTree::getLastErrorString() {
+  char* Interpreter::getLastErrorString() {
     if (lasterr)
       return lasterr;
     else
       return "";
   }
 
-  void WalkTree::setLastErrorString(char* txt) {
+  void Interpreter::setLastErrorString(char* txt) {
     if (lasterr) free(lasterr);
     lasterr = txt;
   }
 
-//  void WalkTree::evalCLI() {
+//  void Interpreter::evalCLI() {
 //    char prompt[150];
 //    int lastCount;
 //
@@ -3685,7 +3685,7 @@ namespace FreeMat {
 //    }
 //  }
 
-//  void WalkTree::evalCLI() {
+//  void Interpreter::evalCLI() {
 //    char *line;
 //    char dataline[MAXSTRING];
 //    char prompt[150];
@@ -3757,7 +3757,7 @@ namespace FreeMat {
   // Convert a list of variable into indexing expressions
   //  - for user defined classes, we call subsindex for 
   //  - the object
-  ArrayVector WalkTree::subsindex(ArrayVector m) {
+  ArrayVector Interpreter::subsindex(ArrayVector m) {
     ArrayVector n;
     for (int i=0;i<m.size();i++) {
       if (m[i].isUserClass() && !stopoverload) {
@@ -3827,7 +3827,7 @@ namespace FreeMat {
   // Works
   // a = {1,2,3;4,5,6}
   // b = a(2,end)
-  ArrayVector WalkTree::subsrefParen(Array r, tree t) {
+  ArrayVector Interpreter::subsrefParen(Array r, tree t) {
     ArrayVector m = varExpressionList(t.children(),r);
     SetContext(t.context());
     if (m.size() == 0) 
@@ -3841,7 +3841,7 @@ namespace FreeMat {
   // Works
   // a = {1,2,3;4,5,6}
   // b = a{2,end}
-  ArrayVector WalkTree::subsrefBrace(Array r, tree t) {
+  ArrayVector Interpreter::subsrefBrace(Array r, tree t) {
     ArrayVector m = varExpressionList(t.children(),r);
     SetContext(t.context());
     if (m.size() == 0) 
@@ -3855,7 +3855,7 @@ namespace FreeMat {
   // Works
   //a.foo = 32
   //g = a.foo
-  ArrayVector WalkTree::subsrefDot(Array r, tree t) {
+  ArrayVector Interpreter::subsrefDot(Array r, tree t) {
     return r.getFieldAsList(t.first().text());
   }
   
@@ -3863,7 +3863,7 @@ namespace FreeMat {
   //a.foo = 34
   //h = 'foo'
   //g = a.(h)
-  ArrayVector WalkTree::subsrefDotDyn(Array r, tree t) {
+  ArrayVector Interpreter::subsrefDotDyn(Array r, tree t) {
     char *field;
     try {
       Array fname(expression(t.first()));
@@ -3876,7 +3876,7 @@ namespace FreeMat {
   }
 
   // Works
-  ArrayVector WalkTree::subsrefSingle(Array r, tree t) {
+  ArrayVector Interpreter::subsrefSingle(Array r, tree t) {
     if (t.is(TOK_PARENS))
       return(subsrefParen(r,t));
     else if (t.is(TOK_BRACES))
@@ -3890,7 +3890,7 @@ namespace FreeMat {
   //  Works
   // p(5).foo{2} = 'hello'
   // b = p(5).foo{2}(2:end)
-  ArrayVector WalkTree::subsref(Array r, treeVector t) {
+  ArrayVector Interpreter::subsref(Array r, treeVector t) {
     ArrayVector rv;
     // Special case - r is an empty cell array, t is an all-deref
     if ((r.getDataClass() == FM_CELL_ARRAY) && t.size() == 1 &&
@@ -3918,7 +3918,7 @@ namespace FreeMat {
   // a(2,2) = 2;
   // a(1,:) = 1;
   // a(:,end) = 5;
-  void WalkTree::subsassignParen(Array *r, tree t, ArrayVector& value) {
+  void Interpreter::subsassignParen(Array *r, tree t, ArrayVector& value) {
     ArrayVector m = varExpressionList(t.children(),*r);
     SetContext(t.context());
     if (m.size() == 0)
@@ -3937,7 +3937,7 @@ namespace FreeMat {
   // a{2,2} = 2;
   // a{1,:} = 1;
   // a{:,end} = 5;
-  void WalkTree::subsassignBrace(Array *r, tree t, ArrayVector& value) {
+  void Interpreter::subsassignBrace(Array *r, tree t, ArrayVector& value) {
     ArrayVector m = varExpressionList(t.children(),*r);
     SetContext(t.context());
     if (m.size() == 0)
@@ -3951,7 +3951,7 @@ namespace FreeMat {
   
   // Works
   //g.foo = 32
-  void WalkTree::subsassignDot(Array *r, tree t, ArrayVector& value) {
+  void Interpreter::subsassignDot(Array *r, tree t, ArrayVector& value) {
     r->setFieldAsList(t.first().text(),value);
   }
   
@@ -3959,7 +3959,7 @@ namespace FreeMat {
   //g.foo = 32;
   //h = 'foo'
   //g.(h) = 50
-  void WalkTree::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
+  void Interpreter::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
     char *field;
     try {
       Array fname(expression(t.first()));
@@ -3973,7 +3973,7 @@ namespace FreeMat {
   
   // Does foo(exprlist) = val, foo{exprlist} = vals, foo.field = vals, or foo.(fieldname) = vals
   // Works
-  void WalkTree::subassignSingle(Array *r, tree t, ArrayVector& value) {
+  void Interpreter::subassignSingle(Array *r, tree t, ArrayVector& value) {
     ArrayVector m;
     SetContext(t.context());
     if (t.is(TOK_PARENS)) 
@@ -4002,7 +4002,7 @@ namespace FreeMat {
   //    t1.fname1 = t2
   //    a(xpr1) = t1
   // Works
-  void WalkTree::subassign(Array *r, tree t, ArrayVector& value) {
+  void Interpreter::subassign(Array *r, tree t, ArrayVector& value) {
     int ctxt = t.context();
     // Check for a class assignment
     if (r && r->isUserClass() && !inMethodCall(r->getClassName().back()) && !stopoverload) {

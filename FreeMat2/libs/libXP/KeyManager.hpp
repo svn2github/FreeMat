@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 #include <list>
-#include "Interface.hpp"
 #include "Scope.hpp"
 #include <QEventLoop>
 
@@ -49,19 +48,14 @@
 
 using namespace FreeMat;
 
-class KeyManager : public Interface
+class KeyManager : public QObject
 {
   Q_OBJECT
+  Interpreter *m_eval;
 public:
   KeyManager();
   virtual ~KeyManager();
-
-  virtual void ExecuteLine(std::string line);
-  virtual char* getLine(std::string aprompt);
-  virtual void outputMessage(std::string msg);
-  virtual void errorMessage(std::string msg);
-  virtual void warningMessage(std::string msg);
-
+  void SetInterpreter(Interpreter *eval);
   void Redisplay();
   void setTerminalWidth(int w);
   void AddCharToLine(char c);
@@ -158,7 +152,6 @@ signals:
   void SendCommand(QString);
   void Interrupt();
   void UpdateVariables();
-  void UpdateCWD();
 public slots:
   void OnChar( int c );
   void SetTermWidth(int w);

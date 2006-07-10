@@ -2958,22 +2958,22 @@ namespace FreeMat {
       // linear equation solver.  Output is N x K.
       Cp = Malloc(Arows*Bcols*A.getElementSize());
       if (A.getDataClass() == FM_FLOAT)
-	floatSolveLinEq(Array::getArrayIOInterface(),
+	floatSolveLinEq(Array::getArrayInterpreter(),
 			Arows,Bcols,(float*)Cp,
 			(float*)A.getReadWriteDataPointer(),
 			(float*)B.getReadWriteDataPointer());
       else if (A.getDataClass() == FM_COMPLEX)
-	complexSolveLinEq(Array::getArrayIOInterface(),
+	complexSolveLinEq(Array::getArrayInterpreter(),
 			  Arows,Bcols,(float*)Cp,
 			  (float*)A.getReadWriteDataPointer(),
 			  (float*)B.getReadWriteDataPointer());
       else if (A.getDataClass() == FM_DOUBLE)
-	doubleSolveLinEq(Array::getArrayIOInterface(),
+	doubleSolveLinEq(Array::getArrayInterpreter(),
 			 Arows,Bcols,(double*)Cp,
 			 (double*)A.getReadWriteDataPointer(),
 			 (double*)B.getReadWriteDataPointer());
       else if (A.getDataClass() == FM_DCOMPLEX)
-	dcomplexSolveLinEq(Array::getArrayIOInterface(),
+	dcomplexSolveLinEq(Array::getArrayInterpreter(),
 			   Arows,Bcols,(double*)Cp,
 			   (double*)A.getReadWriteDataPointer(),
 			   (double*)B.getReadWriteDataPointer());
@@ -2984,22 +2984,22 @@ namespace FreeMat {
       // lease squares equation solver.  Output is N x K.
       Cp = Malloc(Acols*Bcols*A.getElementSize());
       if (A.getDataClass() == FM_FLOAT)
-	floatSolveLeastSq(Array::getArrayIOInterface(),
+	floatSolveLeastSq(Array::getArrayInterpreter(),
 			  Arows,Acols,Bcols,(float*)Cp,
 			  (float*)A.getReadWriteDataPointer(),
 			  (float*)B.getReadWriteDataPointer());
       else if (A.getDataClass() == FM_COMPLEX)
-	complexSolveLeastSq(Array::getArrayIOInterface(),
+	complexSolveLeastSq(Array::getArrayInterpreter(),
 			    Arows,Acols,Bcols,(float*)Cp,
 			    (float*)A.getReadWriteDataPointer(),
 			    (float*)B.getReadWriteDataPointer());
       else if (A.getDataClass() == FM_DOUBLE)
-	doubleSolveLeastSq(Array::getArrayIOInterface(),
+	doubleSolveLeastSq(Array::getArrayInterpreter(),
 			   Arows,Acols,Bcols,(double*)Cp,
 			   (double*)A.getReadWriteDataPointer(),
 			   (double*)B.getReadWriteDataPointer());
       else if (A.getDataClass() == FM_DCOMPLEX)
-	dcomplexSolveLeastSq(Array::getArrayIOInterface(),
+	dcomplexSolveLeastSq(Array::getArrayInterpreter(),
 			     Arows,Acols,Bcols,(double*)Cp,
 			     (double*)A.getReadWriteDataPointer(),
 			     (double*)B.getReadWriteDataPointer());

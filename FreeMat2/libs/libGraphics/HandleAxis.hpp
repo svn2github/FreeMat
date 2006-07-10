@@ -28,6 +28,7 @@
 #include "HandleObject.hpp"
 #include "HandleFigure.hpp"
 #include "RenderEngine.hpp"
+#include "Context.hpp"
 
 namespace FreeMat {
 

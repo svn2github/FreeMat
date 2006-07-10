@@ -17,7 +17,7 @@
  *
  */
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "FunctionDef.hpp"
 #include "Exception.hpp"
 #include "Malloc.hpp"
@@ -28,7 +28,7 @@ static ArrayVector params;
 static Array xval;
 static Array yval;
 static Array wval;
-static WalkTree *a_eval;
+static Interpreter *a_eval;
 static FunctionDef *a_funcDef;
 static double *xbuffer;
 static double *ybuffer;
@@ -93,13 +93,13 @@ namespace FreeMat {
   //Note that both @|x| and @|y| (and the output of the function) must all
   //be real variables.  Complex variables are not handled yet.
   //!
-  ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size()<4) 
       throw Exception("fitfun requires at least four arguments");
     if (!(arg[0].isString()))
       throw Exception("first argument to fitfun must be the name of a function (i.e., a string)");
     char *fname = arg[0].getContentsAsCString();
-    eval->getInterface()->rescanPath();
+    eval->rescanPath();
     Context *context = eval->getContext();
     FunctionDef *funcDef;
     if (!context->lookupFunction(fname,funcDef))
@@ -154,11 +154,11 @@ namespace FreeMat {
     if (info == 0)
       throw Exception("Illegal input parameters to lmdif (most likely more variables than functions?)");
     if (info == 5)
-      eval->getInterface()->warningMessage("number of calls to the supplied function has reached or exceeded the limit (200*(number of variables + 1)");
+      eval->warningMessage("number of calls to the supplied function has reached or exceeded the limit (200*(number of variables + 1)");
     if (info == 6)
-      eval->getInterface()->warningMessage("tolerance is too small - no further reduction in the sum of squares is possible");
+      eval->warningMessage("tolerance is too small - no further reduction in the sum of squares is possible");
     if (info == 7)
-      eval->getInterface()->warningMessage("tolerance is too small - no further improvement in the approximate solution x is possible");
+      eval->warningMessage("tolerance is too small - no further improvement in the approximate solution x is possible");
     Free(wa);
     Free(iwa);
     memcpy(xval.getReadWriteDataPointer(),xbuffer,sizeof(double)*n);

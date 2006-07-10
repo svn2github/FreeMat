@@ -31,7 +31,7 @@ Sparse.hpp \
 Stream.hpp \
 SymbolTable.hpp \
 Types.hpp \
-WalkTree.hpp \
+Interpreter.hpp \
 Print.hpp \
 Token.hpp \
 Parser.hpp \
@@ -39,7 +39,7 @@ Scanner.hpp \
 Tree.hpp
 
 libFreeMat_a_SOURCES = Array.cpp \
-WalkTree.cpp \
+Interpreter.cpp \
 Context.cpp \
 Data.cpp \
 Dimensions.cpp \

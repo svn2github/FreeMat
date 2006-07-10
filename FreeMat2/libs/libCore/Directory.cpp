@@ -18,9 +18,8 @@
  */
 
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "Utils.hpp"
-#include "Interface.hpp"
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -82,14 +81,14 @@ namespace FreeMat {
   //@>
   //!
 #endif
-  ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() != 1)
       throw Exception("cd function requires exactly one argument");
     char* cdir = TildeExpand(arg[0].getContentsAsCString());
     if (chdir(cdir) != 0)
       throw Exception(std::string("Unable to change to specified directory:") + 
 		      cdir);
-    eval->getInterface()->rescanPath();
+    eval->rescanPath();
     return ArrayVector();
   }
 
@@ -159,7 +158,7 @@ namespace FreeMat {
   //ls 'm*.m'
   //@>
   //!
-  ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     stringVector sysresult;
     char buffer[4096];
     char *bp;
@@ -174,12 +173,10 @@ namespace FreeMat {
       bp = buffer + strlen(buffer);
     }
     sysresult = DoSystemCallCaptured(buffer);
-	Interface *io;
-	io = eval->getInterface();
-	for (i=0;i<sysresult.size();i++) {
-		io->outputMessage(sysresult[i].c_str());
-		io->outputMessage("\n");
-	}
+    for (i=0;i<sysresult.size();i++) {
+      eval->outputMessage(sysresult[i].c_str());
+      eval->outputMessage("\n");
+    }
 #else
     sprintf(buffer,"ls ");
     bp = buffer + strlen(buffer);
@@ -197,9 +194,7 @@ namespace FreeMat {
     }
     // Calculate the number of columns that fit..
     int outcolumns;
-    Interface *io;
-    io = eval->getInterface();
-    int termwidth = io->getTerminalWidth()-1;
+    int termwidth = eval->getTerminalWidth()-1;
     outcolumns = termwidth/(maxlen+1);
     if (outcolumns < 1) outcolumns = 1;
     int colwidth = termwidth/outcolumns;
@@ -212,12 +207,12 @@ namespace FreeMat {
       for (int j=wlen;j<colwidth;j++)
 	buffer[j] = ' ';
       buffer[colwidth] = 0;
-      io->outputMessage(buffer);
+      eval->outputMessage(buffer);
       entryCount++;
       if (entryCount % outcolumns == 0)
-	io->outputMessage("\n");
+	eval->outputMessage("\n");
     }
-    io->outputMessage("\n");
+    eval->outputMessage("\n");
 #endif
     return ArrayVector();
   }
@@ -263,11 +258,9 @@ namespace FreeMat {
   //getpath
   //@>
   //!
-  ArrayVector GetPathFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    Interface *io;
-    io = eval->getInterface();
+  ArrayVector GetPathFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     ArrayVector retval;
-    retval.push_back(Array::stringConstructor(io->getPath()));
+    retval.push_back(Array::stringConstructor(eval->getPath()));
     return retval;
   }
 
@@ -293,13 +286,11 @@ namespace FreeMat {
   //getpath
   //@>
   //!
-  ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() != 1)
       throw Exception("setpath function requires exactly one string argument");
     char *cdir = arg[0].getContentsAsCString();
-    Interface *io;
-    io = eval->getInterface();
-    io->setPath(cdir);
+    eval->setPath(cdir);
     return ArrayVector();
   }
 

@@ -21,7 +21,7 @@
 #define __Core_hpp__
 
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 
 namespace FreeMat {
   ArrayVector ComplexFunction(int, const ArrayVector& arg);
@@ -54,7 +54,7 @@ namespace FreeMat {
   ArrayVector UInt8Function(int, const ArrayVector& arg);
   ArrayVector StringFunction(int, const ArrayVector& arg);
   ArrayVector ZerosFunction(int, const ArrayVector& arg);
-  ArrayVector DispFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector DispFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector LengthFunction(int, const ArrayVector& arg);
   ArrayVector QRDFunction(int, const ArrayVector& arg);
   ArrayVector EigFunction(int, const ArrayVector& arg);
@@ -63,12 +63,12 @@ namespace FreeMat {
   ArrayVector DiagFunction(int, const ArrayVector& arg);
   ArrayVector IsEmptyFunction(int, const ArrayVector& arg);
   ArrayVector ErrorFunction(int, const ArrayVector& arg);
-  ArrayVector WarningFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector LasterrFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector SaveFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector LoadFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector ChangeDirFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector ListFilesFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector WarningFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector LasterrFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector SaveFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector LoadFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector ChangeDirFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector ListFilesFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector SystemFunction(int, const ArrayVector& arg);
   ArrayVector PrintWorkingDirectoryFunction(int, const ArrayVector& arg);
   ArrayVector FieldNamesFunction(int, const ArrayVector& arg);
@@ -97,7 +97,7 @@ namespace FreeMat {
   ArrayVector VarFunction(int, const ArrayVector& arg);
   ArrayVector ProdFunction(int, const ArrayVector& arg);
   ArrayVector ReshapeFunction(int, const ArrayVector& arg);
-  ArrayVector PrintfFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector PrintfFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector SprintfFunction(int, const ArrayVector& arg);
   ArrayVector FprintfFunction(int, const ArrayVector& arg);
   ArrayVector FscanfFunction(int, const ArrayVector& arg);
@@ -108,17 +108,17 @@ namespace FreeMat {
   ArrayVector Arctan2Function(int, const ArrayVector& arg);
   ArrayVector CscFunction(int, const ArrayVector& arg);  
   ArrayVector SecFunction(int, const ArrayVector& arg);  
-  ArrayVector WhoFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector ExistFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector IsSetFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector ClearFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector FevalFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector BuiltinFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector FdumpFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector EvalFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector EvalInFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector AssignInFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector SourceFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector WhoFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector ExistFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector IsSetFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector ClearFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector FevalFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector BuiltinFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector FdumpFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector EvalFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector EvalInFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector AssignInFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector SourceFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector ConnectFunction(int, const ArrayVector& arg);  
   ArrayVector AcceptFunction(int, const ArrayVector& arg);  
   ArrayVector ServerFunction(int, const ArrayVector& arg);  
@@ -147,18 +147,18 @@ namespace FreeMat {
   ArrayVector RoundFunction(int, const ArrayVector& arg);
   ArrayVector AbsFunction(int, const ArrayVector& arg);
   ArrayVector FindFunction(int, const ArrayVector& arg);
-  ArrayVector HelpFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector HelpWinFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector EditorFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector PathToolFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector HelpFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector HelpWinFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector EditorFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector PathToolFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector SleepFunction(int, const ArrayVector& arg);
-  ArrayVector SetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector GetPrintLimitFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector SetPrintLimitFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector GetPrintLimitFunction(int, const ArrayVector& arg, Interpreter* eval);
   void InitializeFileSubsystem();
-  ArrayVector GetPathFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector SetPathFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector WhichFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector WhereFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector GetPathFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector SetPathFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector WhichFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector WhereFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector IsSparseFunction(int, const ArrayVector& arg);
   ArrayVector SponesFunction(int, const ArrayVector& arg);
   ArrayVector NNZFunction(int, const ArrayVector& arg);
@@ -169,14 +169,14 @@ namespace FreeMat {
   ArrayVector FepsFunction(int, const ArrayVector& arg);
   ArrayVector Int2BinFunction(int, const ArrayVector& arg);
   ArrayVector Bin2IntFunction(int, const ArrayVector& arg);
-  ArrayVector PCodeFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector GetLineFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector DbAutoFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector DbStopFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector DbDeleteFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector DbListFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector DbStepFunction(int, const ArrayVector& arg, WalkTree* eval);
-  ArrayVector SparseFunction(int, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector PCodeFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector GetLineFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector DbAutoFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector DbStopFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector DbDeleteFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector DbListFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector DbStepFunction(int, const ArrayVector& arg, Interpreter* eval);
+  ArrayVector SparseFunction(int, const ArrayVector& arg, Interpreter* eval);
   ArrayVector FullFunction(int, const ArrayVector& arg);
   ArrayVector LUFunction(int, const ArrayVector& arg);
   ArrayVector SortFunction(int nargout, const ArrayVector& arg);
@@ -186,7 +186,7 @@ namespace FreeMat {
   ArrayVector XNrm2Function(int nargout, const ArrayVector& arg);
   ArrayVector ClockFunction(int nargout, const ArrayVector& arg);
   ArrayVector ClockToTimeFunction(int nargout, const ArrayVector& arg);
-  ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
   ArrayVector ComputerFunction(int nargout, const ArrayVector& arg);
   ArrayVector StrStrFunction(int nargout, const ArrayVector& arg);
   ArrayVector CellFunction(int nargout, const ArrayVector& arg);

@@ -20,7 +20,7 @@
 #define __Class_hpp__
 
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "Types.hpp"
 
 namespace FreeMat {
@@ -35,24 +35,24 @@ namespace FreeMat {
     ~UserClass();
   };
 
-  Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname, WalkTree* eval);
+  Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname, Interpreter* eval);
 
   Array ClassBinaryOperator(Array a, Array b, std::string funcname,
-			    WalkTree* eval);
+			    Interpreter* eval);
 
   Array ClassUnaryOperator(Array a, std::string funcname,
-			   WalkTree* eval);
+			   Interpreter* eval);
 
-  Array ClassMatrixConstructor(ArrayMatrix m, WalkTree* eval);
+  Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval);
 
   ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
-			    WalkTree* eval);
+			    Interpreter* eval);
 
-  ArrayVector ClassRHSExpression(Array a, treeVector t, WalkTree* eval);
+  ArrayVector ClassRHSExpression(Array a, treeVector t, Interpreter* eval);
 
-  void ClassAssignExpression(Array* r, tree t, ArrayVector& value, WalkTree* eval);
+  void ClassAssignExpression(Array* r, tree t, ArrayVector& value, Interpreter* eval);
   
-  bool ClassResolveFunction(WalkTree* eval, Array &args, std::string funcName, FuncPtr& val);
+  bool ClassResolveFunction(Interpreter* eval, Array &args, std::string funcName, FuncPtr& val);
   
   std::string ClassMangleName(std::string className, std::string funcName);
 

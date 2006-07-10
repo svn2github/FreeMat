@@ -62,7 +62,7 @@ namespace FreeMat {
   //disp(a,b,pi)
   //@>
   //!
-  ArrayVector DispFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DispFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     int length;
     Array C;
     ArrayVector retval;
@@ -70,8 +70,7 @@ namespace FreeMat {
     length = arg.size();
     for (int i=0;i<length;i++) {
       C = arg[i];
-      PrintArrayClassic(C,eval->getPrintLimit(),
-			eval->getInterface(),false);
+      PrintArrayClassic(C,eval->getPrintLimit(),eval,false);
     }
     //    retval.push_back(C);
     return retval;
@@ -104,7 +103,7 @@ namespace FreeMat {
   //   y = sparse(i,j,v,m,n)
   //@]
   //!
-  ArrayVector SparseFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() == 1) {
       Array r(arg[0]);
       if ((r.getDataClass() != FM_LOGICAL) && (r.getDataClass() < FM_INT32))
@@ -178,7 +177,7 @@ namespace FreeMat {
 				     true));
     } else if (arg.size() >= 5) {
       if (arg.size() > 5)
-	eval->getInterface()->warningMessage("extra arguments to sparse (nnz to reserve) ignored");
+	eval->warningMessage("extra arguments to sparse (nnz to reserve) ignored");
       Array i_arg(arg[0]);
       Array j_arg(arg[1]);
       Array v_arg(arg[2]);
@@ -375,7 +374,7 @@ namespace FreeMat {
   //cross-platform, do not use this function (unless you include
   //the FreeMat console in the final application).
   //!
-  ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     char *prompt, *text;
     if (arg.size() < 1)
       prompt = "";
@@ -385,7 +384,8 @@ namespace FreeMat {
 	throw Exception("getline requires a string prompt");
       prompt = A.getContentsAsCString();
     }
-    text = eval->getInterface()->getLine(prompt);
+    //FIXME
+    //    text = eval->getLine(prompt);
     return singleArrayVector(Array::stringConstructor(text));
   }
 
@@ -1485,7 +1485,7 @@ namespace FreeMat {
   //@>
   //!
   ArrayVector LasterrFunction(int nargout, const ArrayVector& arg,
-			      WalkTree* eval) {
+			      Interpreter* eval) {
      ArrayVector retval;
      if (arg.size() == 0) {
        Array A = Array::stringConstructor(eval->getLastErrorString());
@@ -1663,12 +1663,12 @@ namespace FreeMat {
   //@]
   //where @|s| is the string message containing the warning.
   //!
-  ArrayVector WarningFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector WarningFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() == 0)
       throw Exception("Not enough inputs to warning function");
     if (!(arg[0].isString()))
       throw Exception("Input to error function must be a string");
-    eval->getInterface()->warningMessage(arg[0].getContentsAsCString());
+    eval->warningMessage(arg[0].getContentsAsCString());
     return ArrayVector();
   }
 
@@ -1797,7 +1797,7 @@ namespace FreeMat {
     return buf;
   }
 
-  static ArrayVector RetrieveCallVars(WalkTree *eval, int nargout) {
+  static ArrayVector RetrieveCallVars(Interpreter *eval, int nargout) {
     ArrayVector retval;
     for (int i=0;i<nargout;i++) {
       char tname[4096];
@@ -1814,7 +1814,7 @@ namespace FreeMat {
     return retval;
   }
 
-  ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, WalkTree* eval, int popSpec) {
+  ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* eval, int popSpec) {
     if (nargout > 0) {
       char *try_line = arg[0].getContentsAsCString();
       char *try_buf = PrePendCallVars(try_line,nargout);
@@ -1863,7 +1863,7 @@ namespace FreeMat {
     }
   }
 
-  ArrayVector EvalNoTryFunction(int nargout, const ArrayVector& arg, WalkTree* eval, int popSpec) {
+  ArrayVector EvalNoTryFunction(int nargout, const ArrayVector& arg, Interpreter* eval, int popSpec) {
     if (nargout > 0) {
       char *line = arg[0].getContentsAsCString();
       char *buf = PrePendCallVars(line,nargout);
@@ -1885,7 +1885,7 @@ namespace FreeMat {
     }
   }
 
-  ArrayVector EvalFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+  ArrayVector EvalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
     if (arg.size() == 0)
       throw Exception("eval function takes at least one argument - the string to execute");
     if (arg.size() == 2)
@@ -1915,7 +1915,7 @@ namespace FreeMat {
   //the expression is evaluated in the base work space.   See @|eval| for
   //details on the use of each variation.
   //!
-  ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 2)
       throw Exception("evalin function requires a workspace (scope) specifier (either 'caller' or 'base') and an expression to evaluate");
     Array spec(arg[0]);
@@ -1952,7 +1952,7 @@ namespace FreeMat {
   //then the assignment is done in the base work space.  Note that the
   //variable is created if it does not already exist.
   //!
-  ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 3)
       throw Exception("assignin function requires a workspace (scope) specifier (either 'caller' or 'base') a variable name and a value to assign");
     Array spec(arg[0]);
@@ -2000,7 +2000,7 @@ namespace FreeMat {
   //who
   //@>
   //!
-  ArrayVector SourceFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() != 1)
       throw Exception("source function takes exactly one argument - the filename of the script to execute");
     char *line = arg[0].getContentsAsCString();
@@ -2029,7 +2029,7 @@ namespace FreeMat {
   //@]
   //where @|num| is the number of the breakpoint to delete.
   //!
-  ArrayVector DbDeleteFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DbDeleteFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 1)
       throw Exception("dbdelete requires an argument (number of breakpoint to delete)");
     Array tmp(arg[0]);
@@ -2049,7 +2049,7 @@ namespace FreeMat {
   //  dblist
   //@]
   //!
-  ArrayVector DbListFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DbListFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     eval->listBreakpoints();
     return ArrayVector();
   }
@@ -2069,7 +2069,7 @@ namespace FreeMat {
   //@]
   //to step one statement.
   //!
-  ArrayVector DbStepFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DbStepFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     int linesToSkip;
     if (arg.size() == 0)
       linesToSkip = 1;
@@ -2092,7 +2092,7 @@ namespace FreeMat {
   //where @|funcname| is the name of the function where we want
   //to set the breakpoint, and @|linenumber| is the line number.
   //!
-  ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 2)
       throw Exception("dbstop function requires at least two arguments");
     if (!(arg[0].isString()))
@@ -2101,7 +2101,6 @@ namespace FreeMat {
     bool isFun;
     FuncPtr val;
     isFun = eval->getContext()->lookupFunction(cname,val);
-    Interface *io = eval->getInterface();
     char buffer[1000];
     if (!isFun)
       throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
@@ -2120,7 +2119,7 @@ namespace FreeMat {
     return ArrayVector();
   }
   
-   ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+   ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
      if (arg.size() == 0)
        throw Exception("fdump function requires at least one argument");
      if (!(arg[0].isString()))
@@ -2131,7 +2130,7 @@ namespace FreeMat {
      if (!context->lookupFunction(fname,funcDef))
        throw Exception(std::string("function ") + fname + " undefined!");
      funcDef->updateCode();
-     funcDef->printMe(eval->getInterface());
+     funcDef->printMe(eval);
      return ArrayVector();
    }
 
@@ -2153,7 +2152,7 @@ namespace FreeMat {
   //evaluation to an actual compiled function.  It simply subverts
   //the activation of overloaded method calls.
   //!
-  ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+  ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
     if (arg.size() == 0)
       throw Exception("builtin function requires at least one argument");
     if (!(arg[0].isString()))
@@ -2203,7 +2202,7 @@ namespace FreeMat {
   //feval(c,pi/4)
   //@>
   //!
-  ArrayVector FevalFunction(int nargout, const ArrayVector& arg,WalkTree* eval){
+  ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
     if (arg.size() == 0)
       throw Exception("feval function requires at least one argument");
     if (!(arg[0].isString()) && (arg[0].getDataClass() != FM_FUNCPTR_ARRAY))

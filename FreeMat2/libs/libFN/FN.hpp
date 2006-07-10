@@ -20,10 +20,10 @@
 #define __FN_hpp__
 
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 
 namespace FreeMat {
-  ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, WalkTree* eval);
+  ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
   ArrayVector ExpeiFunction(int nargout, const ArrayVector& arg);
   ArrayVector EoneFunction(int nargout, const ArrayVector& arg);
   ArrayVector EiFunction(int nargout, const ArrayVector& arg);

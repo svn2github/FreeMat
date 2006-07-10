@@ -1,6 +1,6 @@
 #include "HandleUIControl.hpp"
 #include "HandleWindow.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include <QtGui>
 
 namespace FreeMat {
@@ -13,7 +13,7 @@ namespace FreeMat {
   HandleUIControl::~HandleUIControl() {
   }
 
-  void HandleUIControl::SetEvalEngine(WalkTree *eval) {
+  void HandleUIControl::SetEvalEngine(Interpreter *eval) {
     m_eval = eval;
   }
 

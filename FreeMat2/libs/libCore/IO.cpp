@@ -24,7 +24,7 @@
 #include <math.h>
 #include "Malloc.hpp"
 #include "HandleList.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "File.hpp"
 #include "Serialize.hpp"
 #include "IEEEFP.hpp"
@@ -76,7 +76,7 @@ namespace FreeMat {
   //A
   //@>
   //!
-  ArrayVector SetPrintLimitFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector SetPrintLimitFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() != 1)
       throw Exception("setprintlimit requires one, scalar integer argument");
     Array tmp(arg[0]);
@@ -109,7 +109,7 @@ namespace FreeMat {
   //setprintlimit(n)
   //@>
   //!
-  ArrayVector GetPrintLimitFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector GetPrintLimitFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     Array tmp(Array::uint32Constructor(eval->getPrintLimit()));
     ArrayVector retval;
     retval.push_back(tmp);
@@ -1031,7 +1031,7 @@ namespace FreeMat {
   //printf('float value is %+018.12f\n',pi);
   //@>
   //!
-  ArrayVector PrintfFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector PrintfFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() == 0)
       throw Exception("printf requires at least one (string) argument");
     Array format(arg[0]);
@@ -1040,7 +1040,7 @@ namespace FreeMat {
     char *op = xprintfFunction(nargout,arg);
     char *buff = (char*) malloc(strlen(op)+1);
     convertEscapeSequences(buff,op);
-    eval->getInterface()->outputMessage(buff);
+    eval->outputMessage(buff);
     free(buff);
     free(op);
     return ArrayVector();
@@ -1765,7 +1765,7 @@ namespace FreeMat {
 
 
     ArrayVector SaveMatFunction(int nargout, const ArrayVector& arg,
-				WalkTree* eval) {
+				Interpreter* eval) {
       if (arg.size() == 0) {
 	throw Exception("save requires at least one argument (the filename)");
       }
@@ -1787,7 +1787,7 @@ namespace FreeMat {
       mat_snprintf(header, 116, 
 		   "MATLAB 5.0 MAT-file, Platform: %s, Created on: %s by %s", 
 		   MATIO_PLATFORM, ctime(&t), 
-		   WalkTree::getVersionString().c_str());
+		   Interpreter::getVersionString().c_str());
       mat_t *mat = Mat_Create(fname, header);
       if (mat) {
 	for (i = 0; i < names.size(); i++) {
@@ -1816,7 +1816,7 @@ namespace FreeMat {
     }
   
     ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg, 
-				   WalkTree* eval) {
+				   Interpreter* eval) {
       if (arg.size() == 0)
 	throw Exception("save requires at least one argument (the filename)");
       Array filename(arg[0]);
@@ -1916,7 +1916,7 @@ namespace FreeMat {
     //who
     //@>
     //!
-    ArrayVector SaveFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
       if (arg.size() == 0)
 	throw Exception("save requires at least one argument (the filename)");
       Array filename(arg[0]);
@@ -2178,7 +2178,7 @@ namespace FreeMat {
       }
     }
 
-    ArrayVector LoadMatFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    ArrayVector LoadMatFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
       if (arg.size() != 1)
 	throw Exception("load requires exactly one argument (the filename)");
       Array filename(arg[0]);
@@ -2215,14 +2215,13 @@ namespace FreeMat {
 	Free((void *) fname);
 	if (invalidmatvars.size() > 0) {
 	  char buffer[250];
-	  Interface *io = eval->getInterface();
-	  io->outputMessage("Warning: Ignored MAT-file variable(s): ");
+	  eval->outputMessage("Warning: Ignored MAT-file variable(s): ");
 	  for (int i = 0; i < invalidmatvars.size() - 1; i++) {
-	    io->outputMessage(invalidmatvars[i].c_str());
-	    io->outputMessage(", ");
+	    eval->outputMessage(invalidmatvars[i].c_str());
+	    eval->outputMessage(", ");
 	  }
-	  io->outputMessage(invalidmatvars[invalidmatvars.size() - 1].c_str());
-	  io->outputMessage("\n");
+	  eval->outputMessage(invalidmatvars[invalidmatvars.size() - 1].c_str());
+	  eval->outputMessage("\n");
 	  invalidmatvars.clear();
 	}
       }
@@ -2232,7 +2231,7 @@ namespace FreeMat {
       return ArrayVector();
     }
 
-    ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
       if (arg.size() != 1)
 	throw Exception("load requires exactly one argument (the filename)");
       Array filename(arg[0]);
@@ -2300,7 +2299,7 @@ namespace FreeMat {
     //who
     //@>
     //!
-    ArrayVector LoadFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+    ArrayVector LoadFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
       if (arg.size() != 1)
 	throw Exception("load requires exactly one argument (the filename)");
       Array filename(arg[0]);

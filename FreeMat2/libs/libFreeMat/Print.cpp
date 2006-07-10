@@ -1,6 +1,7 @@
 #include "Print.hpp"
 #include "IEEEFP.hpp"
 #include "FunctionDef.hpp"
+#include "Interpreter.hpp"
 #include <math.h>
 
 namespace FreeMat {
@@ -95,7 +96,7 @@ namespace FreeMat {
     return maxdigit;
   }
   
-  void emitFormattedElement(Interface* io, char *msgBuffer, ArrayFormat format, const void *dp, int num, Class dcls) {
+  void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, const void *dp, int num, Class dcls) {
     switch (dcls) {
     case FM_INT8: {
       const int8 *ap;
@@ -251,7 +252,7 @@ namespace FreeMat {
   }
 
   // Print the class type and size information for the array
-  void PrintArrayClassAndSize(Array A, Interface* io) {
+  void PrintArrayClassAndSize(Array A, Interpreter* io) {
     switch(A.getDataClass()) {
     case FM_UINT8:
       io->outputMessage("  <uint8>  ");
@@ -386,7 +387,7 @@ namespace FreeMat {
       return ArrayFormat(20,0,false,20);
   }
 
-  void PrintSheet(ArrayFormat format, Interface*io, int rows, int columns, 
+  void PrintSheet(ArrayFormat format, Interpreter*io, int rows, int columns, 
 		  int offset, const void* data, Class aclass, int termWidth,
 		  int &printlimit) {
     if (printlimit == 0) return;
@@ -434,7 +435,7 @@ namespace FreeMat {
   }
 
   // Helper function - print an array using "classic" notation
-  void PrintArrayClassic(Array A, int printlimit, Interface* io,  
+  void PrintArrayClassic(Array A, int printlimit, Interpreter* io,  
 			 bool showClassSize) {
     if (printlimit == 0) return;
     int termWidth = io->getTerminalWidth();

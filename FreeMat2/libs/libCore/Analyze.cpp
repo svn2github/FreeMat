@@ -47,7 +47,6 @@ double getcurrenttime() {
 #include "IEEEFP.hpp"
 #include "File.hpp"
 #include "Serialize.hpp"
-#include "AST.hpp"
 #include <math.h>
 #include "Types.hpp"
 #include <algorithm>
@@ -2700,7 +2699,7 @@ namespace FreeMat {
   //The compiled functions are written to the current
   //directory.
   //!
-  ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     int i;
     for (i=0;i<arg.size();i++) {
       Array func(arg[i]);
@@ -2722,14 +2721,14 @@ namespace FreeMat {
       }
       if (!isFun) {
 	sprintf(buffer,"could not find definition for %s",fname);
-	eval->getInterface()->warningMessage(buffer);
+	eval->warningMessage(buffer);
       } else {
 	sprintf(buffer,"Translating %s to P-Code\n",fname);
-	eval->getInterface()->outputMessage(buffer);
+	eval->outputMessage(buffer);
 	funcDef->updateCode();
 	if (funcDef->type() != FM_M_FUNCTION) {
 	  sprintf(buffer,"function %s is not an M-file",fname);
-	  eval->getInterface()->warningMessage(buffer);
+	  eval->warningMessage(buffer);
 	}
 	sprintf(buffer2,"%s.p",fname);
 	File *stream = new File(buffer2,"wb");

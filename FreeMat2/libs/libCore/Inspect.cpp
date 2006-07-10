@@ -18,7 +18,7 @@
  */
 
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "Malloc.hpp"
 #include "PathSearch.hpp"
 #include "IEEEFP.hpp"
@@ -106,7 +106,7 @@ namespace FreeMat {
   //to turn dbauto on or off (respectively).  Entering @|dbauto| with no arguments
   //returns the current state (either 'on' or 'off').
   //!
-  ArrayVector DbAutoFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector DbAutoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 1) {
       if (eval->AutoStop()) 
 	return singleArrayVector(Array::stringConstructor("on"));
@@ -143,11 +143,10 @@ namespace FreeMat {
   //  helpwin
   //@]
   //!
-  ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
-    Interface *io = eval->getInterface();
+  ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     QDir dir;
     if (inBundleMode()) {
-      dir = QDir(QString(io->getAppPath().c_str()) + "/../Resources/help/html");
+      dir = QDir(QString(eval->getAppPath().c_str()) + "/../Resources/help/html");
     } else {
       dir = QDir(QString(BASEPATH)+"/html");
     }
@@ -166,7 +165,7 @@ namespace FreeMat {
   //  editor
   //@]
   //!
-  ArrayVector EditorFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     static FMEditor *edit = NULL;
     if (edit == NULL)
       edit = new FMEditor;
@@ -185,13 +184,13 @@ namespace FreeMat {
   //  pathtool
   //@]
   //!
-  ArrayVector PathToolFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector PathToolFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     PathTool p;
     p.exec();
     QSettings settings("FreeMat","FreeMat");
     QStringList userPath = settings.value("interpreter/path").toStringList();
-    eval->getInterface()->setUserPath(userPath);
-    eval->getInterface()->rescanPath();
+    eval->setUserPath(userPath);
+    eval->rescanPath();
     return ArrayVector();
   }
   
@@ -209,11 +208,9 @@ namespace FreeMat {
   //of the file.  If FreeMat finds no comments, then it simply displays
   //the function declaration.
   //!
-  ArrayVector HelpFunction(int nargout, const ArrayVector& arg, WalkTree* eval)
+  ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   {
-    Interface *io;
-    io = eval->getInterface();
-    PathSearcher psearch(io->getTotalPath());
+    PathSearcher psearch(eval->getTotalPath());
 
     if (arg.size() != 1)
       throw Exception("help function requires a single argument (the function or script name)");
@@ -228,7 +225,7 @@ namespace FreeMat {
       mptr = (MFunctionDef *) val;
       mptr->updateCode();
       for (int i=0;i<mptr->helpText.size();i++)
-	io->outputMessage(mptr->helpText[i].c_str());
+	eval->outputMessage(mptr->helpText[i].c_str());
       return ArrayVector();
     } else {
       // Check for a mdc file with the given name
@@ -253,7 +250,7 @@ namespace FreeMat {
 	}
 	// Write the lines out...
 	// Get the output width (in characters)
-	int outputWidth = io->getTerminalWidth() - 20;
+	int outputWidth = eval->getTerminalWidth() - 20;
 	for (int p=0;p<helplines.size();p++) {
 	  std::vector<std::string> tokens;
 	  // Tokenize the help line
@@ -261,18 +258,18 @@ namespace FreeMat {
 	  // Output words..
 	  int outlen = 0;
 	  int tokencount = 0;
-	  io->outputMessage("\n          ");
+	  eval->outputMessage("\n          ");
 	  while ((tokens.size() > 0) && (tokencount < tokens.size())) {
 	    // Can the next token be output without wrapping?
 		int tsize;
 		tsize = tokens[tokencount].size();
 	    if ((outlen == 0) || ((outlen + tsize) < outputWidth)) {
 	      // Yes... send it and move on
-	      io->outputMessage(tokens[tokencount].c_str());
-	      io->outputMessage(" ");
+	      eval->outputMessage(tokens[tokencount].c_str());
+	      eval->outputMessage(" ");
 	      outlen += tokens[tokencount++].size()+1;
 	    } else {
-	      io->outputMessage("\n          ");
+	      eval->outputMessage("\n          ");
 	      outlen = 0;
 	    }
 	  }
@@ -313,7 +310,7 @@ namespace FreeMat {
   //a
   //@>
   //!
-  ArrayVector ClearFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     int i;
     stringVector names;
     char * singleArgC;
@@ -379,11 +376,10 @@ namespace FreeMat {
   //who('c')
   //@>
   //!
-  ArrayVector WhoFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     int i;
     stringVector names;
     char buffer[1000];
-    Interface *io;
     if (arg.size() == 0) {
       names = eval->getContext()->getCurrentScope()->listAllVariables();
     } else {
@@ -393,16 +389,15 @@ namespace FreeMat {
       }
     }
     std::sort(names.begin(),names.end());
-    io = eval->getInterface();
     sprintf(buffer,"  Variable Name      Type   Flags             Size\n");
-    io->outputMessage(buffer);
+    eval->outputMessage(buffer);
     for (i=0;i<names.size();i++) {
       Array lookup, *ptr;
       sprintf(buffer,"% 15s",names[i].c_str());
-      io->outputMessage(buffer);
+      eval->outputMessage(buffer);
       ptr = eval->getContext()->lookupVariable(names[i]);
       if (!ptr)
-	io->outputMessage("   <undefined>");
+	eval->outputMessage("   <undefined>");
       else {
 	lookup = *ptr;
 	Class t = lookup.getDataClass();
@@ -456,25 +451,25 @@ namespace FreeMat {
 	  sprintf(buffer,"% 10s","func ptr");
 	  break;
 	}
-	io->outputMessage(buffer);
+	eval->outputMessage(buffer);
 	if (lookup.isSparse())
-	  io->outputMessage("   sparse");
+	  eval->outputMessage("   sparse");
 	else
-	  io->outputMessage("         ");	  
+	  eval->outputMessage("         ");	  
 	if (eval->getContext()->isVariableGlobal(names[i])) {
 	  sprintf(buffer,"  global ");
-	  io->outputMessage(buffer);
+	  eval->outputMessage(buffer);
 	} else if (eval->getContext()->isVariablePersistent(names[i])) {
 	  sprintf(buffer," persist ");
-	  io->outputMessage(buffer);
+	  eval->outputMessage(buffer);
 	} else {
 	  sprintf(buffer,"         ");
-	  io->outputMessage(buffer);
+	  eval->outputMessage(buffer);
 	}
-	io->outputMessage("  ");
-	lookup.getDimensions().printMe(io);
+	eval->outputMessage("  ");
+	lookup.getDimensions().printMe(eval);
       }
-      io->outputMessage("\n");
+      eval->outputMessage("\n");
     }
     return ArrayVector();
   }
@@ -584,7 +579,7 @@ namespace FreeMat {
   //     return retval;
   //   }
 
-  int ExistBuiltinFunction(char* fname, WalkTree* eval) {    
+  int ExistBuiltinFunction(char* fname, Interpreter* eval) {    
     bool isDefed;
     FuncPtr d;
     isDefed = eval->getContext()->lookupFunction(fname,d);
@@ -596,7 +591,7 @@ namespace FreeMat {
     return 0;
   }
 
-  int ExistDirFunction(char* fname, WalkTree* eval) {
+  int ExistDirFunction(char* fname, Interpreter* eval) {
     struct stat filestat;
     // Check for extra termination
     if ((fname[strlen(fname)-1] == '/') ||
@@ -607,8 +602,8 @@ namespace FreeMat {
     return 0;
   }
 
-  int ExistFileFunction(char* fname, WalkTree* eval) {
-    PathSearcher src(eval->getInterface()->getPath());
+  int ExistFileFunction(char* fname, Interpreter* eval) {
+    PathSearcher src(eval->getPath());
     try {
       src.ResolvePath(fname);
       return 2;
@@ -622,7 +617,7 @@ namespace FreeMat {
     return 0;
   }
 
-  int ExistVariableFunction(char* fname, WalkTree* eval) {
+  int ExistVariableFunction(char* fname, Interpreter* eval) {
     bool isDefed = (eval->getContext()->lookupVariable(fname) != NULL);
     if (isDefed)
       return 1;
@@ -630,7 +625,7 @@ namespace FreeMat {
       return 0;
   }
 
-  int ExistAllFunction(char* fname, WalkTree* eval) {
+  int ExistAllFunction(char* fname, Interpreter* eval) {
     int ret;
     ret = ExistVariableFunction(fname,eval);
     if (ret) return ret;
@@ -671,7 +666,7 @@ namespace FreeMat {
   //isset('a')
   //@>
   //!
-  ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 1)
       throw Exception("isset function takes at least one argument - the name of the variable to check for");
     Array tmp(arg[0]);
@@ -744,7 +739,7 @@ namespace FreeMat {
   //exist('c')
   //@>
   //!
-  ArrayVector ExistFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector ExistFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() < 1)
       throw Exception("exist function takes at least one argument - the name of the object to check for");
     Array tmp(arg[0]);
@@ -1003,7 +998,7 @@ namespace FreeMat {
   //where
   //@>
   //!
-  ArrayVector WhereFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector WhereFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
 //    eval->stackTrace(false);
     eval->stackTrace(true);
     return ArrayVector();
@@ -1036,7 +1031,7 @@ namespace FreeMat {
   //which fliplr
   //@>
   //!
-  ArrayVector WhichFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     if (arg.size() != 1)
       throw Exception("which function takes one string argument (the name of the function to look up)");
     char *fname;
@@ -1044,7 +1039,6 @@ namespace FreeMat {
     bool isFun;
     FuncPtr val;
     isFun = eval->getContext()->lookupFunction(fname,val);
-    Interface *io = eval->getInterface();
     char buffer[1000];
     Array ret(Array::emptyConstructor());
     if (isFun) {
@@ -1056,25 +1050,25 @@ namespace FreeMat {
 	  if (mptr->scriptFlag) {
 	    if (nargout == 0) {
 	      sprintf(buffer,"Function %s, P-code script\n",fname);
-	      io->outputMessage(buffer);
+	      eval->outputMessage(buffer);
 	    }
 	  } else {
 	    if (nargout == 0) {
 	      sprintf(buffer,"Function %s, P-code function\n",fname);
-	      io->outputMessage(buffer);
+	      eval->outputMessage(buffer);
 	    }
 	  }
 	} else {
 	  if (mptr->scriptFlag) {
 	    if (nargout == 0) {
 	      sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
-	      io->outputMessage(buffer);
+	      eval->outputMessage(buffer);
 	    } else 
 	      ret = Array::stringConstructor(mptr->fileName.c_str());
 	  } else {
 	    if (nargout == 0) {
 	      sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
-	      io->outputMessage(buffer);
+	      eval->outputMessage(buffer);
 	    } else
 	      ret = Array::stringConstructor(mptr->fileName.c_str());
 	  }
@@ -1082,18 +1076,18 @@ namespace FreeMat {
       } else if ((val->type() == FM_BUILT_IN_FUNCTION) || (val->type() == FM_SPECIAL_FUNCTION) ) {
 	if (nargout == 0) {
 	  sprintf(buffer,"Function %s is a built in function\n",fname);
-	  io->outputMessage(buffer);
+	  eval->outputMessage(buffer);
 	}
       } else {
 	if (nargout == 0) {
 	  sprintf(buffer,"Function %s is an imported function\n",fname);
-	  io->outputMessage(buffer);
+	  eval->outputMessage(buffer);
 	}
       }
     } else {
       if (nargout == 0) {
 	sprintf(buffer,"Function %s is unknown!\n",fname);
-	io->outputMessage(buffer);
+	eval->outputMessage(buffer);
       }
     }
     if (nargout > 0)
@@ -1403,7 +1397,7 @@ namespace FreeMat {
     return name;
   }
 
-  ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, WalkTree* eval) {
+  ArrayVector MFilenameFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
     return singleArrayVector(Array::stringConstructor(fname_only(eval->getMFileName())));
   }
 

@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef __WalkTree_h__
-#define __WalkTree_h__
+#ifndef __Interpreter_h__
+#define __Interpreter_h__
 
 #include "Tree.hpp"
 #include "Context.hpp"
@@ -31,11 +31,11 @@ extern "C" char* lasterr;
 
 namespace FreeMat {
 
-  class WalkTreeContinueException : public std::exception {};
-  class WalkTreeBreakException : public std::exception {};
-  class WalkTreeReturnException : public std::exception {};
-  class WalkTreeRetallException : public std::exception {};
-  class WalkTreeQuitException : public std::exception {};
+  class InterpreterContinueException : public std::exception {};
+  class InterpreterBreakException : public std::exception {};
+  class InterpreterReturnException : public std::exception {};
+  class InterpreterRetallException : public std::exception {};
+  class InterpreterQuitException : public std::exception {};
 
   class stackentry {
   public:
@@ -57,7 +57,7 @@ namespace FreeMat {
    * This is the class that implements the interpreter - it generally
    * operates on abstract syntax trees (ASTs).
    */
-  class WalkTree {
+  class Interpreter {
     int errorCount;
     std::string classPrefix;
     /**
@@ -127,6 +127,7 @@ namespace FreeMat {
     void procFileMex(std::string fname, std::string fullname, bool);
     std::string app_path;
     int m_ncols;
+  public:
     std::vector<std::string> GetCompletions(std::string line, int word_end, 
 					    std::string &matchString);
     /**
@@ -158,10 +159,6 @@ namespace FreeMat {
      *  Set the context for the interface.
      */
     void setContext(Context *ctxt);
-    /**
-     *  Get the context for the interface.
-     */
-    Context* getContext();
     /**
      *  Force a rescan of the current path to look for 
      *  new function files.
@@ -197,6 +194,10 @@ namespace FreeMat {
   public:
     void run();
     void sendGreeting(); // Say hello
+    /**
+     *  Get the context for the interface.
+     */
+    Context* getContext();
     static std::string getVersionString();
     int getErrorCount();
     bool inMethodCall(std::string classname);
@@ -224,14 +225,14 @@ namespace FreeMat {
     void registerUserClass(std::string classname, UserClass cdata);
 
     /**
-     * Construct a WalkTree object with the given context to operate
+     * Construct a Interpreter object with the given context to operate
      * in.
      */
-    WalkTree(Context* aContext);
+    Interpreter(Context* aContext);
     /**
-     * Destruct the WalkTree object.
+     * Destruct the Interpreter object.
      */
-    ~WalkTree();
+    ~Interpreter();
     inline void SetContext(int id);
     /**
      * Set the autostop flag - this flag determines what happens when
@@ -685,10 +686,14 @@ namespace FreeMat {
     void subassignSingle(Array *r, tree t, ArrayVector& value);
     void subassign(Array *r, tree t, ArrayVector& value);
     int countSubExpressions(tree t);
+
+    void ExecuteLine(std::string txt);
   };
   void sigInterrupt(int arg);
 
   std::string TrimFilename(std::string);
+
+  char* TildeExpand(char* path);
 
 }
 

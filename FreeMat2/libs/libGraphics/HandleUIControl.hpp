@@ -6,12 +6,12 @@
 
 namespace FreeMat {
   class HandleWindow;
-  class WalkTree;
+  class Interpreter;
 
   class HandleUIControl : public QObject, public HandleObject {
     Q_OBJECT
     QWidget *widget;
-    WalkTree *m_eval;
+    Interpreter *m_eval;
   public:
     HandleUIControl();
     virtual ~HandleUIControl();
@@ -19,7 +19,7 @@ namespace FreeMat {
     virtual void SetupDefaults();
     virtual void PaintMe(RenderEngine&) {};
     void ConstructWidget(HandleWindow *f);
-    void SetEvalEngine(WalkTree *eval);
+    void SetEvalEngine(Interpreter *eval);
   private slots:
     void clicked();
   };

@@ -857,7 +857,7 @@ namespace FreeMat {
 	if (!p.empty())
 	  rows.push_back(p[0]);
 	else {
-	  eval->getInterface()->warningMessage("'horzcat' called for user defined class and it returned nothing.  Substituting empty array for result.");
+	  eval->warningMessage("'horzcat' called for user defined class and it returned nothing.  Substituting empty array for result.");
 	  rows.push_back(Array::emptyConstructor());
 	}
       }
@@ -1154,7 +1154,7 @@ namespace FreeMat {
     if (!n.empty())
       *dst = n[0];
     else
-      eval->getInterface()->warningMessage(std::string("'subsasgn' for class ") + dst->getClassName().back() + std::string(" did not return a value... operation has no effect."));
+      eval->warningMessage(std::string("'subsasgn' for class ") + dst->getClassName().back() + std::string(" did not return a value... operation has no effect."));
   }
 
   // Ideally, this would be the only place where the class name is mangled.

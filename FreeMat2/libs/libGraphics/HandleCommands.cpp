@@ -474,7 +474,7 @@ namespace FreeMat {
   //resulting object is returned.  It is automatically added to
   //the children of the current figure.
   //!
-  ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, WalkTree *eval) {
+  ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
     HandleUIControl *o = new HandleUIControl;
     unsigned handleID = GenericConstructor(o,arg);
     o->ConstructWidget(CurrentWindow());

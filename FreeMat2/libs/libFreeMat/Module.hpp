@@ -23,6 +23,9 @@
 #include "Scope.hpp"
 
 namespace FreeMat {
+
+  class Context;
+
   /**
    * Load a function dynamically.  Throws an Exception if 
    * there are not at least two arguments to the function,

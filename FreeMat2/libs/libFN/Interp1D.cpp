@@ -17,7 +17,7 @@
  *
  */
 #include "Array.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "FunctionDef.hpp"
 #include "Exception.hpp"
 #include "Malloc.hpp"

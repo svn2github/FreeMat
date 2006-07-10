@@ -17,7 +17,7 @@
  *
  */
 #include "Editor.hpp"
-#include "WalkTree.hpp"
+#include "Interpreter.hpp"
 #include "highlighter.hpp"
 #include <QtGui>
 
@@ -329,7 +329,7 @@ QString FMEditor::shownName() {
 
 void FMEditor::updateTitles() {
   tab->setTabText(tab->currentIndex(),shownName());
-  setWindowTitle(QString("%1[*]").arg(shownName()) + " - " + QString::fromStdString(FreeMat::WalkTree::getVersionString()) + " Editor");
+  setWindowTitle(QString("%1[*]").arg(shownName()) + " - " + QString::fromStdString(FreeMat::Interpreter::getVersionString()) + " Editor");
   documentWasModified();
 }
 

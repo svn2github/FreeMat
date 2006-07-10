@@ -30,7 +30,6 @@
 #include "Scanner.hpp"
 #include "Token.hpp"
 #include "Module.hpp"
-#include "Interface.hpp"
 #include "File.hpp"
 #include "Serialize.hpp"
 #include <signal.h>
@@ -48,6 +47,16 @@
 #define DELIM "/"
 #endif
 
+#ifdef WIN32
+#define DELIM "\\"
+#define S_ISREG(x) (x & _S_IFREG)
+#include <direct.h>
+#define PATH_DELIM ";"
+#else
+#define DELIM "/"
+#define PATH_DELIM ":"
+#endif
+
 #define MAXSTRING 65535
 
 /**
@@ -56,6 +65,336 @@
 bool InterruptPending;
 
 namespace FreeMat {
+  char* TildeExpand(char* path) {
+#ifdef WIN32
+    return path;
+#else
+    char *newpath = path;
+    if (path[0] == '~' && (path[1] == '/') || (path[1] == 0)) {
+      char *home;
+      home = getenv("HOME");
+      if (home) {
+	newpath = (char*) malloc(strlen(path) + strlen(home));
+	strcpy(newpath,home);
+	strcat(newpath,path+1);
+      }
+    } else if (path[0] == '~' && isalpha(path[1])) {
+      char username[4096];
+      char *cp, *dp;
+      // Extract the user name
+      cp = username;
+      dp = path+1;
+      while (*dp != '/')
+	*cp++ = *dp++;
+      *cp = 0;
+      // Call getpwnam...
+      struct passwd *dat = getpwnam(cp);
+      if (dat) {
+	newpath = (char*) malloc(strlen(path) + strlen(dat->pw_dir));
+	strcpy(newpath,dat->pw_dir);
+	strcat(newpath,dp);
+      }
+    }
+    return newpath;
+#endif
+  }
+
+  void WalkTree::setAppPath(std::string path) {
+    app_path = path;
+  }
+
+  std::string WalkTree::getAppPath() {
+    return app_path;
+  }
+
+  void WalkTree::setPath(std::string path) {
+    char* pathdata = strdup(path.c_str());
+    // Search through the path
+    char *saveptr = (char*) malloc(sizeof(char)*1024);
+    char* token;
+    token = strtok(pathdata,PATH_DELIM);
+    m_userPath.clear();
+    while (token != NULL) {
+      if (strcmp(token,".") != 0)
+	m_userPath << QString(TildeExpand(token));
+      token = strtok(NULL,PATH_DELIM);
+    }
+    rescanPath();
+  }
+
+  std::string WalkTree::getTotalPath() {
+    std::string retpath;
+    QStringList totalPath(QStringList() << m_basePath << m_userPath);
+    for (int i=0;i<totalPath.size()-1;i++) 
+      retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
+    if (totalPath.size() > 0) 
+      retpath = retpath + totalPath[totalPath.size()-1].toStdString();
+    return retpath;
+  }
+  
+  std::string WalkTree::getPath() {
+    std::string retpath;
+    QStringList totalPath(m_userPath);
+    for (int i=0;i<totalPath.size()-1;i++) 
+      retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
+    if (totalPath.size() > 0) 
+      retpath = retpath + totalPath[totalPath.size()-1].toStdString();
+    return retpath;
+  }
+  
+  void WalkTree::rescanPath() {
+    if (!m_context) return;
+    m_context->flushTemporaryGlobalFunctions();
+    for (int i=0;i<m_basePath.size();i++)
+      scanDirectory(m_basePath[i].toStdString(),false,"");
+    for (int i=0;i<m_userPath.size();i++)
+      scanDirectory(m_userPath[i].toStdString(),false,"");
+    // Scan the current working directory.
+    char cwd[1024];
+    getcwd(cwd,1024);
+    scanDirectory(std::string(cwd),true,"");
+    emit CWDChanged();
+  }
+  
+  /*.......................................................................
+   * Search backwards for the potential start of a filename. This
+   * looks backwards from the specified index in a given string,
+   * stopping at the first unescaped space or the start of the line.
+   *
+   * Input:
+   *  string  const char *  The string to search backwards in.
+   *  back_from      int    The index of the first character in string[]
+   *                        that follows the pathname.
+   * Output:
+   *  return        char *  The pointer to the first character of
+   *                        the potential pathname, or NULL on error.
+   */
+  static char *start_of_path(const char *string, int back_from)
+  {
+    int i, j;
+    /*
+     * Search backwards from the specified index.
+     */
+    for(i=back_from-1; i>=0; i--) {
+      int c = string[i];
+      /*
+       * Stop on unescaped spaces.
+       */
+      if(isspace((int)(unsigned char)c)) {
+	/*
+	 * The space can't be escaped if we are at the start of the line.
+	 */
+	if(i==0)
+	  break;
+	/*
+	 * Find the extent of the escape characters which precedes the space.
+	 */
+	for(j=i-1; j>=0 && string[j]=='\\'; j--)
+	  ;
+	/*
+	 * If there isn't an odd number of escape characters before the space,
+	 * then the space isn't escaped.
+	 */
+	if((i - 1 - j) % 2 == 0)
+	  break;
+      } 
+      else if (!isalpha(c) && !isdigit(c) && (c != '_') && (c != '.') && (c != '\\') && (c != '/'))
+	break;
+    };
+    return (char *)string + i + 1;
+  }
+
+  std::vector<std::string> WalkTree::GetCompletions(std::string line, 
+						     int word_end, 
+						     std::string &matchString) {
+    std::vector<std::string> completions;
+    /*
+     * Find the start of the filename prefix to be completed, searching
+     * backwards for the first unescaped space, or the start of the line.
+     */
+    char *start = start_of_path(line.c_str(), word_end);
+    char *tmp;
+    int mtchlen;
+    mtchlen = word_end - (start-line.c_str());
+    tmp = (char*) malloc(mtchlen+1);
+    memcpy(tmp,start,mtchlen);
+    tmp[mtchlen] = 0;
+    matchString = std::string(tmp);
+    
+    /*
+     *  the preceeding character was not a ' (quote), then
+     * do a command expansion, otherwise, do a filename expansion.
+     */
+    if (start[-1] != '\'') {
+      std::vector<std::string> local_completions;
+      std::vector<std::string> global_completions;
+      int i;
+      local_completions = m_context->getCurrentScope()->getCompletions(std::string(start));
+      global_completions = m_context->getGlobalScope()->getCompletions(std::string(start));
+      for (i=0;i<local_completions.size();i++)
+	completions.push_back(local_completions[i]);
+      for (i=0;i<global_completions.size();i++)
+	completions.push_back(global_completions[i]);
+      std::sort(completions.begin(),completions.end());
+      return completions;
+    } else {
+#ifdef WIN32
+      HANDLE hSearch;
+      WIN32_FIND_DATA FileData;
+      std::string pattern(tmp);
+      pattern.append("*");
+      hSearch = FindFirstFile(pattern.c_str(),&FileData);
+      if (hSearch != INVALID_HANDLE_VALUE) {
+	// Windows does not return any part of the path in the completion,
+	// So we need to find the base part of the pattern.
+	int lastslash;
+	std::string prefix;
+	lastslash = pattern.find_last_of("/");
+	if (lastslash == -1) {
+	  lastslash = pattern.find_last_of("\\");
+	}
+	if (lastslash != -1)
+	  prefix = pattern.substr(0,lastslash+1);
+	completions.push_back(prefix + FileData.cFileName);
+	while (FindNextFile(hSearch, &FileData))
+	  completions.push_back(prefix + FileData.cFileName);
+      }
+      FindClose(hSearch);
+      return completions;
+#else
+      glob_t names;
+      std::string pattern(tmp);
+      pattern.append("*");
+      glob(pattern.c_str(), GLOB_MARK, NULL, &names);
+      int i;
+      for (i=0;i<names.gl_pathc;i++) 
+	completions.push_back(names.gl_pathv[i]);
+      globfree(&names);
+      free(tmp);
+      return completions;
+#endif
+    }
+  }
+
+  void WalkTree::setBasePath(QStringList pth) {
+    m_basePath = pth;
+  }
+
+  void WalkTree::setUserPath(QStringList pth) {
+    m_userPath = pth;
+  }
+  
+  static QString mexExtension() {
+#ifdef Q_OS_LINUX
+    return "fmxglx";
+#endif
+#ifdef Q_OS_MACX
+    return "fmxmac";
+#endif
+#ifdef Q_OS_WIN32
+    return "fmxw32";
+#endif
+    return "fmx";
+  }
+  
+  void WalkTree::scanDirectory(std::string scdir, bool tempfunc,
+				std::string prefix) {
+    QDir dir(QString::fromStdString(scdir));
+    dir.setFilter(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
+    dir.setNameFilters(QStringList() << "*.m" << "*.p" 
+		       << "@*" << "private" << "*."+mexExtension());
+    QFileInfoList list(dir.entryInfoList());
+    for (unsigned i=0;i<list.size();i++) {
+      QFileInfo fileInfo(list.at(i));
+      std::string fileSuffix(fileInfo.suffix().toStdString());
+      std::string fileBaseName(fileInfo.baseName().toStdString());
+      std::string fileAbsoluteFilePath(fileInfo.absoluteFilePath().toStdString());
+      if (fileSuffix == "m" || fileSuffix == "M") 
+	if (prefix.empty())
+	  procFileM(fileBaseName,fileAbsoluteFilePath,tempfunc);
+	else
+	  procFileM(prefix + ":" + fileBaseName,fileAbsoluteFilePath,tempfunc);
+      else if (fileSuffix == "p" || fileSuffix == "P")
+	if (prefix.empty())
+	  procFileP(fileBaseName,fileAbsoluteFilePath,tempfunc);
+	else
+	  procFileP(prefix + ":" + fileBaseName,fileAbsoluteFilePath,tempfunc);
+      else if (fileBaseName[0] == '@')
+	scanDirectory(fileAbsoluteFilePath,tempfunc,fileBaseName);
+      else if (fileBaseName == "private") 
+	scanDirectory(fileAbsoluteFilePath,tempfunc,fileAbsoluteFilePath);
+      else
+	procFileMex(fileBaseName,fileAbsoluteFilePath,tempfunc);
+    }
+  }
+  
+  void WalkTree::procFileM(std::string fname, std::string fullname, bool tempfunc) {
+    MFunctionDef *adef;
+    adef = new MFunctionDef();
+    adef->name = fname;
+    adef->fileName = fullname;
+    m_context->insertFunctionGlobally(adef, tempfunc);
+  }
+  
+  void WalkTree::procFileP(std::string fname, std::string fullname, bool tempfunc) {
+    MFunctionDef *adef;
+    // Open the file
+    try {
+      File *f = new File(fullname.c_str(),"rb");
+      Serialize *s = new Serialize(f);
+      s->handshakeClient();
+      s->checkSignature('p',1);
+      adef = ThawMFunction(s);
+      adef->pcodeFunction = true;
+      delete f;
+      m_context->insertFunctionGlobally(adef, tempfunc);
+    } catch (Exception &e) {
+    }
+  }
+
+  void WalkTree::procFileMex(std::string fname, std::string fullname, bool tempfunc) {
+    MexFunctionDef *adef;
+    adef = new MexFunctionDef(fullname);
+    adef->name = fname;
+    if (adef->LoadSuccessful())
+      m_context->insertFunctionGlobally((MFunctionDef*)adef,tempfunc);
+    else
+      delete adef;
+  }
+
+  void WalkTree::setTerminalWidth(int ncols) {
+    m_ncols = ncols;
+  }
+
+  int WalkTree::getTerminalWidth() {
+    return m_ncols;
+  }
+
+  std::string TranslateString(std::string x) {
+    std::string y(x);
+    unsigned int n;
+    n = 0;
+    while (n<y.size()) {
+      if (y[n] == '\n') 
+	y.insert(n++,"\r");
+      n++;
+    }
+    return y;
+  }
+
+  void WalkTree::outputMessage(std::string msg) {
+    emit outputMsg(TranslateString(msg));
+  }
+
+  void WalkTree::errorMessage(std::string msg) {
+    emit errorMsg(TranslateString("Error: " + msg + "\r\n"));
+  }
+
+  void WalkTree::warningMessage(std::string msg) {
+    emit warningMsg(TranslateString("Warning: " +msg + "\r\n"));
+  }
+
+
   void WalkTree::SetContext(int a) {
     ip_context = a;
   }
@@ -93,28 +432,30 @@ namespace FreeMat {
     return std::string("FreeMat v" VERSION);
   }
 
+
+
   void WalkTree::run() {
-    try {
-      while (1) {
-	try {
-	  evalCLI();
-	} catch (WalkTreeRetallException) {
-	  clearStacks();
-	} catch (WalkTreeReturnException &e) {
-	}
-      }
-    } catch (WalkTreeQuitException &e) {
-    } catch (std::exception& e) {
-    }
+//     try {
+//       while (1) {
+// 	try {
+// 	  evalCLI();
+// 	} catch (WalkTreeRetallException) {
+// 	  clearStacks();
+// 	} catch (WalkTreeReturnException &e) {
+// 	}
+//       }
+//     } catch (WalkTreeQuitException &e) {
+//     } catch (std::exception& e) {
+//     }
   }
 
   void WalkTree::sendGreeting() {
-    io->outputMessage(" " + getVersionString() + " (build 2030)\n");
-    io->outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
-    io->outputMessage(" Licensed under the GNU Public License (GPL)\n");
-    io->outputMessage(" Type <help license> to find out more\n");
-    io->outputMessage("      <helpwin> for online help\n");
-    io->outputMessage("      <pathtool> to set or change your path\n");
+    outputMessage(" " + getVersionString() + " (build 2030)\n");
+    outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
+    outputMessage(" Licensed under the GNU Public License (GPL)\n");
+    outputMessage(" Type <help license> to find out more\n");
+    outputMessage("      <helpwin> for online help\n");
+    outputMessage("      <pathtool> to set or change your path\n");
   }
 
   std::string WalkTree::getPrivateMangledName(std::string fname) {
@@ -529,7 +870,7 @@ namespace FreeMat {
 	  retval = Array::emptyConstructor();
 	} else {
 	  if (m.size() > 1) 
-	    io->warningMessage("discarding one or more outputs from an expression");
+	    warningMessage("discarding one or more outputs from an expression");
 	  retval = m[0];
 	}
       }
@@ -1494,14 +1835,14 @@ namespace FreeMat {
   //!
 
   void WalkTree::debugCLI() {
-    depth++;
-    bpActive = true;
-    try {
-      evalCLI();
-    } catch(WalkTreeReturnException& e) {
-    }
-    bpActive = false;
-    depth--;
+//     depth++;
+//     bpActive = true;
+//     try {
+//       evalCLI();
+//     } catch(WalkTreeReturnException& e) {
+//     }
+//     bpActive = false;
+//     depth--;
   }
 
 
@@ -1526,12 +1867,12 @@ namespace FreeMat {
       inStepMode = false;
     }
     depth++;
-    try {
-      evalCLI();
-    } catch (WalkTreeContinueException& e) {
-    } catch (WalkTreeBreakException& e) {
-    } catch (WalkTreeReturnException& e) {
-    }
+//     try {
+//       evalCLI();
+//     } catch (WalkTreeContinueException& e) {
+//     } catch (WalkTreeBreakException& e) {
+//     } catch (WalkTreeReturnException& e) {
+//     }
     depth--;
   }
 
@@ -1567,7 +1908,7 @@ namespace FreeMat {
 	} else 
 	  b = m[0];
 	if (printIt && (!emptyOutput)) {
-	  io->outputMessage(std::string("ans = \n"));
+	  outputMessage(std::string("ans = \n"));
 	  displayArray(b);
 	  SetContext(t.context());
 	}
@@ -1579,12 +1920,12 @@ namespace FreeMat {
 	else {
 	  b = m[0];
 	  if (printIt) {
-	    io->outputMessage(std::string("ans = \n"));
+	    outputMessage(std::string("ans = \n"));
 	    for (int j=0;j<m.size();j++) {
 	      char buffer[1000];
 	      if (m.size() > 1) {
 		sprintf(buffer,"\n%d of %d:\n",j+1,m.size());
-		io->outputMessage(std::string(buffer));
+		outputMessage(std::string(buffer));
 	      }
 	      displayArray(m[j]);
 	      SetContext(t.context());
@@ -1595,7 +1936,7 @@ namespace FreeMat {
     } else {
       b = expression(t);
       if (printIt) {
-	io->outputMessage(std::string("ans = \n"));
+	outputMessage(std::string("ans = \n"));
 	displayArray(b);
 	SetContext(t.context());
       } 
@@ -1610,8 +1951,8 @@ namespace FreeMat {
       SetContext(t.context());
       context->insertVariable(t.first().first().text(),b);
       if (printIt) {
-	io->outputMessage(t.first().first().text());
-	io->outputMessage(std::string(" = \n"));
+	outputMessage(t.first().first().text());
+	outputMessage(std::string(" = \n"));
 	displayArray(b);
       }	  
     } else {
@@ -1621,8 +1962,8 @@ namespace FreeMat {
       SetContext(t.context());
       context->insertVariable(t.first().first().text(),c);
       if (printIt) {
-	io->outputMessage(t.first().first().text());
-	io->outputMessage(std::string(" = \n"));
+	outputMessage(t.first().first().text());
+	outputMessage(std::string(" = \n"));
 	displayArray(c);
       }
     }
@@ -1737,7 +2078,7 @@ namespace FreeMat {
     try {
       for (unsigned i=0;i<t.numchildren();i++) {
 	if (InterruptPending) {
-	  io->outputMessage("Interrupt (ctrl-c) encountered\n");
+	  outputMessage("Interrupt (ctrl-c) encountered\n");
 	  stackTrace(true);
 	  InterruptPending = false;
 	  debugCLI();
@@ -1934,12 +2275,12 @@ namespace FreeMat {
     char buffer[1000];
     if (!isFun) {
       sprintf(buffer,"unable to find function %s to set breakpoint",bp.detail.c_str());
-      io->warningMessage(buffer);
+      warningMessage(buffer);
       return;
     }
     if (val->type() != FM_M_FUNCTION) {
       sprintf(buffer,"function %s is not an m-file, and does not support breakpoints",bp.detail.c_str());
-      io->warningMessage(buffer);
+      warningMessage(buffer);
       return;
     }
     if (registerIt) {
@@ -2007,13 +2348,13 @@ namespace FreeMat {
       SetContext(ctxt);
       context->insertVariable(s[index].first().text(),c);
       if (printIt) {
-	io->outputMessage(s[index].first().text());
-	io->outputMessage(" = \n");
+	outputMessage(s[index].first().text());
+	outputMessage(" = \n");
 	displayArray(c);
       }
     }
     if (index < s.size())
-      io->warningMessage("one or more outputs not assigned in call.");
+      warningMessage("one or more outputs not assigned in call.");
   }
 
   int getArgumentIndex(stringVector list, std::string t) {
@@ -2714,13 +3055,13 @@ namespace FreeMat {
     for (int i=0;i<bpStack.size();i++) {
       char buffer[2048];
       sprintf(buffer,"%d   %s line %d\n",i+1,bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
-      io->outputMessage(buffer);
+      outputMessage(buffer);
     }
   }
 
   void WalkTree::deleteBreakpoint(int number) {
     if ((number < 1) || (number > bpStack.size())) {
-      io->warningMessage("Unable to delete specified breakpoint (does not exist)");
+      warningMessage("Unable to delete specified breakpoint (does not exist)");
       return;
     }
     stackentry bp(bpStack[number-1]);
@@ -2766,7 +3107,7 @@ namespace FreeMat {
 	} else 
 	  sprintf(buffer,"Failed to set breakpoint in %s at line %d - breakpoint is disabled\n",
 		  cname, bp.tokid & 0xffff);
-	io->warningMessage(buffer);
+	warningMessage(buffer);
 	return false;
       } else 
 	if (clinenum != 0)
@@ -2798,7 +3139,7 @@ namespace FreeMat {
 	      cstack[i].detail.c_str(),
 	      cstack[i].tokid & 0x0000FFFF,
 	      cstack[i].tokid >> 16);
-      io->outputMessage(buffer);
+      outputMessage(buffer);
     }
     if (includeCurrent) {
       std::string ip_trim(TrimExtension(TrimFilename(ip_funcname)));
@@ -2807,7 +3148,7 @@ namespace FreeMat {
 	      ip_detailname.c_str(),
 	      ip_context & 0x0000FFFF,
 	      ip_context >> 16);
-      io->outputMessage(buffer);
+      outputMessage(buffer);
     }
   }
 
@@ -2832,12 +3173,8 @@ namespace FreeMat {
       ip_context = cstack.back().tokid;
       cstack.pop_back();
     } else
-      io->outputMessage("IDERROR\n");
+      outputMessage("IDERROR\n");
  }
-
-  Interface* WalkTree::getInterface() {
-    return io;
-  }
 
   bool WalkTree::isUserClassDefined(std::string classname) {
     UserClass *ret;
@@ -2894,7 +3231,7 @@ namespace FreeMat {
       if (context->lookupFunction(funcName,val))
 	return true;
       if (passcount == 0)
-	io->rescanPath();
+	rescanPath();
       passcount++;
     }
     return false;
@@ -3189,15 +3526,13 @@ namespace FreeMat {
     return errorCount;
   }
 
-  WalkTree::WalkTree(Context* aContext, Interface* aInterface) {
+  WalkTree::WalkTree(Context* aContext) {
     errorCount = 0;
     lasterr = NULL;
     context = aContext;
     endValStackLength = 0;
     endValStack[endValStackLength] = 0;
     depth = 0;
-    io = aInterface;
-    Array::setArrayIOInterface(io);
     InterruptPending = false;
     signal(SIGINT,sigInterrupt);
     printLimit = 1000;
@@ -3317,35 +3652,36 @@ namespace FreeMat {
     lasterr = txt;
   }
 
-  void WalkTree::evalCLI() {
-    char prompt[150];
-    int lastCount;
+//  void WalkTree::evalCLI() {
+//    char prompt[150];
+//    int lastCount;
+//
+//    if ((depth == 0) || (cstack.size() == 0))
+//      if (bpActive)
+//	sprintf(prompt,"D-> ");
+//      else
+//	sprintf(prompt,"--> ");
+//    else
+//      if (bpActive)	
+//	sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
+//		ip_context & 0xffff);
+//      else
+//	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
+//		ip_context & 0xffff);
+//    while(1) {
+//      char* line = getLine(prompt);
+//      if (!line)
+//	continue;
+//      InCLI = true;
+//      if (line && (strlen(line) > 0)) {
+//	int stackdepth;
+//	stackdepth = cstack.size();
+//	evaluateString(line);
+//	while (cstack.size() > stackdepth) cstack.pop_back();
+//      }
+//    }
+//  }
 
-    if ((depth == 0) || (cstack.size() == 0))
-      if (bpActive)
-	sprintf(prompt,"D-> ");
-      else
-	sprintf(prompt,"--> ");
-    else
-      if (bpActive)	
-	sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
-		ip_context & 0xffff);
-      else
-	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
-		ip_context & 0xffff);
-    while(1) {
-      char* line = io->getLine(prompt);
-      if (!line)
-	continue;
-      InCLI = true;
-      if (line && (strlen(line) > 0)) {
-	int stackdepth;
-	stackdepth = cstack.size();
-	evaluateString(line);
-	while (cstack.size() > stackdepth) cstack.pop_back();
-      }
-    }
-  }
 //  void WalkTree::evalCLI() {
 //    char *line;
 //    char dataline[MAXSTRING];
@@ -3365,7 +3701,7 @@ namespace FreeMat {
 //	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
 //		ip_context & 0xffff);
 //    while(1) {
-//      line = io->getLine(prompt);
+//      line = getLine(prompt);
 //      if (!line)
 //	continue;
 //      // scan the line and tokenize it
@@ -3381,7 +3717,7 @@ namespace FreeMat {
 //	  // Loop until we have enough input
 //	  while (!enoughInput) {
 //	    // Get more text
-//	    line = io->getLine("");
+//	    line = getLine("");
 //	    // User pressed ctrl-D (or equivalent) - stop looking for
 //	    // input
 //	    if (!line) 

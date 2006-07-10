@@ -121,6 +121,82 @@ namespace FreeMat {
     bool stopoverload;
     void doDebugCycle();
     bool processguievents;
+  protected:
+    Context *m_context;
+    QStringList m_basePath;
+    QStringList m_userPath;
+    void scanDirectory(std::string scdir, bool, std::string prefixo);
+    void procFileM(std::string fname, std::string fullname, bool);
+    void procFileP(std::string fname, std::string fullname, bool);
+    void procFileMex(std::string fname, std::string fullname, bool);
+    std::string app_path;
+    int m_ncols;
+    std::vector<std::string> GetCompletions(std::string line, int word_end, 
+					    std::string &matchString);
+    /**
+     *  Get/Set the application path 
+     */
+    std::string getAppPath();
+    void setAppPath(std::string);
+    /**
+     *  The Base Path is the one that contains .m files in the current app bundle
+     */
+    void setBasePath(QStringList);
+    /**
+     *  The User Path is the one that the user can tinker with.
+     */
+    void setUserPath(QStringList);
+    /**
+     *  Get the current path set for the interface. (user path - legacy interface)
+     */
+    std::string getPath();
+    /**
+     *  Get the current path set for the interface (base path + user path)
+     */
+    std::string getTotalPath();
+    /**
+     *  Set the path for the interface. (user path - legacy interface)
+     */
+    void setPath(std::string);
+    /**
+     *  Set the context for the interface.
+     */
+    void setContext(Context *ctxt);
+    /**
+     *  Get the context for the interface.
+     */
+    Context* getContext();
+    /**
+     *  Force a rescan of the current path to look for 
+     *  new function files.
+     */
+    void rescanPath();
+    /**
+     *  Return the width of the current "terminal" in
+     *  characters.
+     */
+    int getTerminalWidth();
+    /**
+     *  Set the width of the current "terminal" in characters
+     */
+    void setTerminalWidth(int ncols);
+    /**
+     *  Output the following text message.
+     */
+    void outputMessage(std::string msg);
+    /**
+     *  Output the following error message.
+     */
+    void errorMessage(std::string msg);
+    /**
+     *  Output the following warning message.
+     */
+    void warningMessage(std::string msg);
+  signals:
+    void outputMsg(std::string);
+    void errorMsg(std::string);
+    void warningMsg(std::string);
+    void CWDChanged();
   public:
     void run();
     void sendGreeting(); // Say hello
@@ -567,7 +643,7 @@ namespace FreeMat {
      * from the console, and executed sequentially until a "return"
      * statement is executed or the user presses 'CTRL-D'.
      */
-    void evalCLI();
+    //    void evalCLI();
     /**
      * Get the context we are running with.
      */

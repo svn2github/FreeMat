@@ -2,6 +2,10 @@ noinst_LIBRARIES = libFreeMat.a
 
 INCLUDES = -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libMex 
 
+libFreeMat_a_MOC = Interpreter.moc.cpp
+
+BUILT_SOURCES = $(libFreeMat_a_MOC)
+
 libFreeMat_a_HFILES = Array.hpp \
 Class.hpp \
 Context.hpp \
@@ -68,8 +72,14 @@ Parser.cpp \
 Scanner.cpp \
 Tree.cpp \
 FunctionDef.cpp \
-$(libFreeMat_a_HFILES)
+$(libFreeMat_a_HFILES) \
+$(libFreeMat_a_MOC)
+
+CLEANFILES = $(libFreeMat_a_MOC)
 
 AUTOMAKE_OPTIONS 	= foreign
 
 AM_CPPFLAGS = $(QT_CFLAGS) 
+
+%.moc.cpp: %.hpp
+	$(QT_MOC) -o $@ $<

@@ -1,4 +1,7 @@
-Continuation and array definitions
+The new parser/scanner are now set in place, with nearly all of the functionality working.
+Some remaining items:
+1.  Continuations
+2.  Debugger
 
 semilog, loglog
 isequal

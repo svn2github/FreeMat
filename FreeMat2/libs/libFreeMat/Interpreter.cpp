@@ -146,8 +146,8 @@ namespace FreeMat {
   }
   
   void Interpreter::rescanPath() {
-    if (!m_context) return;
-    m_context->flushTemporaryGlobalFunctions();
+    if (!context) return;
+    context->flushTemporaryGlobalFunctions();
     for (int i=0;i<m_basePath.size();i++)
       scanDirectory(m_basePath[i].toStdString(),false,"");
     for (int i=0;i<m_userPath.size();i++)
@@ -232,8 +232,8 @@ namespace FreeMat {
       std::vector<std::string> local_completions;
       std::vector<std::string> global_completions;
       int i;
-      local_completions = m_context->getCurrentScope()->getCompletions(std::string(start));
-      global_completions = m_context->getGlobalScope()->getCompletions(std::string(start));
+      local_completions = context->getCurrentScope()->getCompletions(std::string(start));
+      global_completions = context->getGlobalScope()->getCompletions(std::string(start));
       for (i=0;i<local_completions.size();i++)
 	completions.push_back(local_completions[i]);
       for (i=0;i<global_completions.size();i++)
@@ -336,7 +336,7 @@ namespace FreeMat {
     adef = new MFunctionDef();
     adef->name = fname;
     adef->fileName = fullname;
-    m_context->insertFunctionGlobally(adef, tempfunc);
+    context->insertFunctionGlobally(adef, tempfunc);
   }
   
   void Interpreter::procFileP(std::string fname, std::string fullname, bool tempfunc) {
@@ -350,7 +350,7 @@ namespace FreeMat {
       adef = ThawMFunction(s);
       adef->pcodeFunction = true;
       delete f;
-      m_context->insertFunctionGlobally(adef, tempfunc);
+      context->insertFunctionGlobally(adef, tempfunc);
     } catch (Exception &e) {
     }
   }
@@ -360,7 +360,7 @@ namespace FreeMat {
     adef = new MexFunctionDef(fullname);
     adef->name = fname;
     if (adef->LoadSuccessful())
-      m_context->insertFunctionGlobally((MFunctionDef*)adef,tempfunc);
+      context->insertFunctionGlobally((MFunctionDef*)adef,tempfunc);
     else
       delete adef;
   }
@@ -386,15 +386,15 @@ namespace FreeMat {
   }
 
   void Interpreter::outputMessage(std::string msg) {
-    emit outputMsg(TranslateString(msg));
+    emit outputRawText(TranslateString(msg));
   }
 
   void Interpreter::errorMessage(std::string msg) {
-    emit errorMsg(TranslateString("Error: " + msg + "\r\n"));
+    emit outputRawText(TranslateString("Error: " + msg + "\r\n"));
   }
 
   void Interpreter::warningMessage(std::string msg) {
-    emit warningMsg(TranslateString("Warning: " +msg + "\r\n"));
+    emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
   }
 
 
@@ -3593,6 +3593,10 @@ namespace FreeMat {
       buffer2[23] = 0;
     }
     return std::string(buffer2);
+  }
+
+  void Interpreter::ExecuteLine(std::string txt) {
+    evaluateString(txt,false);
   }
 
   //PORT

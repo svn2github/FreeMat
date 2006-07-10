@@ -10,13 +10,15 @@ FuncTerminal.hpp \
 MainApp.hpp \
 Terminal.hpp \
 DumbTerminal.hpp \
-application.hpp
+application.hpp \
+InterpreterThread.hpp
 
 FreeMat_MOC = application.moc.cpp \
 FuncMode.moc.cpp \
 MainApp.moc.cpp \
 Terminal.moc.cpp \
-DumbTerminal.moc.cpp 
+DumbTerminal.moc.cpp \
+InterpreterThread.moc.cpp
 
 FreeMat_QRC = FreeMat.qrc.cpp
 
@@ -33,6 +35,7 @@ MainApp.cpp \
 main.cpp \
 DumbTerminal.cpp \
 Terminal.cpp \
+InterpreterThread.cpp \
 $(FreeMat_MOC) \
 $(FreeMat_QRC) \
 $(FreeMat_HFILES)

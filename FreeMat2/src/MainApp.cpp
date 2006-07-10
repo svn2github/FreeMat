@@ -31,6 +31,7 @@ using namespace FreeMat;
 #include "LoadCore.hpp"
 #include "LoadFN.hpp"
 #include "HandleCommands.hpp"
+#include "InterpreterThread.hpp"
 #include "Core.hpp"
 
 #ifdef Q_WS_X11 
@@ -182,59 +183,11 @@ void MainApp::TerminalReset() {
 }
 
 int MainApp::Run() {
-  Context *context = new Context;
-  LoadModuleFunctions(context);
-  LoadClassFunction(context);
-  LoadCoreFunctions(context);
-  LoadFNFunctions(context);
-  if (guimode) {
-    LoadGUICoreFunctions(context);
-    LoadHandleGraphicsFunctions(context);  
-  }
-  //  m_keys->setContext(context);
-  QStringList basePath;
-  if (inBundleMode()) {
-    QDir dir(QApplication::applicationDirPath());
-    dir.cdUp();
-    dir.cd("Plugins");
-    QString dummy(dir.absolutePath());
-    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-    QDir dir1(qApp->applicationDirPath() + "/../Resources/toolbox");
-    if (dir1.exists()) {
-      QString path1(dir1.canonicalPath());
-      basePath += GetRecursiveDirList(path1);
-    }
-    QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
-    if (dir2.exists()) {
-      QString path2(dir2.canonicalPath());
-      basePath += GetRecursiveDirList(path2);
-    }
-  } else {
-    QDir dir1(QApplication::applicationDirPath()+"/"+
-	      QString(BASEPATH)+"/toolbox");   
-    if (dir1.exists()) {
-      QString path1(dir1.canonicalPath());
-      basePath += GetRecursiveDirList(path1);
-    }
-    QDir dir2(QApplication::applicationDirPath()+"/"+
-	      QString(BASEPATH) + "/help/text");
-    if (dir2.exists()) {
-      QString path2(dir2.canonicalPath());
-      basePath += GetRecursiveDirList(path2);
-    }
-  }
-  QSettings settings("FreeMat","FreeMat");
-  QStringList userPath = settings.value("interpreter/path").toStringList();
-  eval = new Interpreter(context);
-  eval->setBasePath(basePath);
-  eval->setUserPath(userPath);
-  eval->setAppPath(qApp->applicationDirPath().toStdString());
-  eval->rescanPath();
-  emit Initialize();
-  if (!skipGreeting)
-    eval->sendGreeting();
-  eval->run();
-  TerminalReset();
-  emit Shutdown();
+  qDebug("Starting interpreter...\n");
+  InterpreterThread *irun = new InterpreterThread;
+  irun->Setup();
+  connect(m_keys,SIGNAL(ExecuteLine(std::string)),irun,SLOT(ExecuteLine(std::string)));
+  connect(irun->GetInterpreter(),SIGNAL(outputRawText(std::string)),m_term,SLOT(OutputRawString(std::string)));
+  irun->start();
   return 0;
 }

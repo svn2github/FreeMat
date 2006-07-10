@@ -51,11 +51,9 @@ using namespace FreeMat;
 class KeyManager : public QObject
 {
   Q_OBJECT
-  Interpreter *m_eval;
 public:
   KeyManager();
   virtual ~KeyManager();
-  void SetInterpreter(Interpreter *eval);
   void Redisplay();
   void setTerminalWidth(int w);
   void AddCharToLine(char c);
@@ -75,7 +73,6 @@ public:
   void KillLine();
   int getTerminalWidth();
   void RegisterTerm(QObject* term);
-  virtual void CWDChanged();
  private:
   void CursorLeft();
   void CursorRight();
@@ -141,6 +138,8 @@ public:
   int loopactive;
   QEventLoop *m_loop;
 signals:
+  void CWDChanged();
+  void UpdateCWD();
   void MoveDown();
   void MoveUp();
   void MoveRight();
@@ -152,6 +151,7 @@ signals:
   void SendCommand(QString);
   void Interrupt();
   void UpdateVariables();
+  void ExecuteLine(std::string txt);
 public slots:
   void OnChar( int c );
   void SetTermWidth(int w);

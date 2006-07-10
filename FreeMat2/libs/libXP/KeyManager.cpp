@@ -25,7 +25,6 @@
 #include "KeyManager.hpp"
 #include "Context.hpp"
 #include <qapplication.h>
-#include "Interpreter.hpp"
 #include <QtCore>
 #include <iostream>
 
@@ -70,6 +69,7 @@ KeyManager::KeyManager()  {
   lineData = new char[4096];
   ResetLineBuffer();
 }
+
 
 int KeyManager::getTerminalWidth() {
   return ncolumn;
@@ -511,7 +511,9 @@ void KeyManager::NewLine() {
   AddHistory(lineData);
   PlaceCursor(ntotal);
   emit OutputRawString("\r\n");
-  m_eval->ExecuteLine(std::string(lineData) + "\n");
+  qDebug("sending command...\n");
+  emit ExecuteLine(std::string(lineData) + "\n");
+  qDebug("completed command...\n");
   ResetLineBuffer();
   DisplayPrompt();
 }
@@ -822,9 +824,6 @@ std::string GetCommonPrefix(std::vector<std::string> matches,
     return(templ.substr(tempstring.length(),prefixlength-tempstring.length()));
 }
 
-void KeyManager::SetInterpreter(Interpreter* eval) {
-  m_eval = eval;
-}
 
 void KeyManager::CompleteWord() {
   int redisplay=0;        /* True if the whole line needs to be redrawn */
@@ -844,7 +843,8 @@ void KeyManager::CompleteWord() {
    * Perform the completion.
    */
   std::string tempstring;
-  matches = m_eval->GetCompletions(lineData, buff_curpos, tempstring);
+  //FIXME
+  //  matches = m_eval->GetCompletions(lineData, buff_curpos, tempstring);
   if(matches.size() == 0) {
     emit OutputRawString("\r\n");
     term_curpos = 0;
@@ -1030,13 +1030,13 @@ void KeyManager::QueueMultiString(QString t) {
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   emit OutputRawString("\r\n");
-  m_eval->ExecuteLine(std::string(lineData)+"\n");
+  emit ExecuteLine(std::string(lineData)+"\n");
   ResetLineBuffer();
   DisplayPrompt();
 }
 
 void KeyManager::QueueSilent(QString t) {
-  m_eval->ExecuteLine(t.toStdString()+"\n");
+  emit ExecuteLine(t.toStdString()+"\n");
 }
 
 //char* KeyManager::getLine(std::string aprompt) {
@@ -1069,9 +1069,9 @@ void KeyManager::RegisterTerm(QObject* term) {
 }
 
 void KeyManager::ContinueAction() {
-  m_eval->ExecuteLine("return\n");
+  emit ExecuteLine("return\n");
 }
 
 void KeyManager::StopAction() {
-  m_eval->ExecuteLine("retall\n");  
+  emit ExecuteLine("retall\n");  
 }

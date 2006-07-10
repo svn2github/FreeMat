@@ -26,6 +26,7 @@
 #include "Array.hpp"
 #include <stack>
 #include <QStringList>
+#include <QObject>
 
 extern "C" char* lasterr;
 
@@ -57,7 +58,9 @@ namespace FreeMat {
    * This is the class that implements the interpreter - it generally
    * operates on abstract syntax trees (ASTs).
    */
-  class Interpreter {
+  class Interpreter : public QObject {
+    Q_OBJECT
+
     int errorCount;
     std::string classPrefix;
     /**
@@ -118,7 +121,6 @@ namespace FreeMat {
     void doDebugCycle();
     bool processguievents;
   protected:
-    Context *m_context;
     QStringList m_basePath;
     QStringList m_userPath;
     void scanDirectory(std::string scdir, bool, std::string prefixo);
@@ -187,13 +189,13 @@ namespace FreeMat {
      */
     void warningMessage(std::string msg);
   signals:
-    void outputMsg(std::string);
-    void errorMsg(std::string);
-    void warningMsg(std::string);
+    void outputRawText(std::string);
     void CWDChanged();
   public:
     void run();
+  public slots:
     void sendGreeting(); // Say hello
+  public:
     /**
      *  Get the context for the interface.
      */

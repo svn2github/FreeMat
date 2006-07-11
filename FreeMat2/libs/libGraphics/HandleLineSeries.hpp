@@ -21,17 +21,15 @@
 
 #include "HandleObject.hpp"
 
-namespace FreeMat {
-  class HandleLineSeries : public HandleObject {
-  public:
-    HandleLineSeries();
-    virtual ~HandleLineSeries();
-    virtual void ConstructProperties();
-    virtual void SetupDefaults();
-    virtual void UpdateState();
-    virtual void PaintMe(RenderEngine& gc);    
-    std::vector<double> GetLimits();
-  };
-}
+class HandleLineSeries : public HandleObject {
+public:
+  HandleLineSeries();
+  virtual ~HandleLineSeries();
+  virtual void ConstructProperties();
+  virtual void SetupDefaults();
+  virtual void UpdateState();
+  virtual void PaintMe(RenderEngine& gc);    
+  std::vector<double> GetLimits();
+};
 
 #endif

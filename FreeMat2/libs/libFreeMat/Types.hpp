@@ -24,36 +24,35 @@
 #include <vector>
 #include <QtGlobal>
 
-namespace FreeMat {
-  typedef quint8    logical;
-  typedef qint8     int8;
-  typedef quint8    uint8;
-  typedef qint16    int16;
-  typedef quint16   uint16;
-  typedef qint32    int32;
-  typedef quint32   uint32;
-  typedef qint64    int64;
-  typedef quint64   uint64;
-  typedef unsigned int   indexType;
-  typedef const indexType * constIndexPtr;
+typedef quint8    logical;
+typedef qint8     int8;
+typedef quint8    uint8;
+typedef qint16    int16;
+typedef quint16   uint16;
+typedef qint32    int32;
+typedef quint32   uint32;
+typedef qint64    int64;
+typedef quint64   uint64;
+typedef unsigned int   indexType;
+typedef const indexType * constIndexPtr;
 
-  typedef enum {
-    FM_FUNCPTR_ARRAY,
-    FM_CELL_ARRAY,
-    FM_STRUCT_ARRAY,
-    FM_LOGICAL,
-    FM_UINT8,
-    FM_INT8,
-    FM_UINT16,
-    FM_INT16,
-    FM_UINT32,
-    FM_INT32,
-    FM_FLOAT,
-    FM_DOUBLE,
-    FM_COMPLEX,
-    FM_DCOMPLEX,
-    FM_STRING,
-  } Class;
-  typedef std::vector<std::string> stringVector;
-}
+typedef enum {
+  FM_FUNCPTR_ARRAY,
+  FM_CELL_ARRAY,
+  FM_STRUCT_ARRAY,
+  FM_LOGICAL,
+  FM_UINT8,
+  FM_INT8,
+  FM_UINT16,
+  FM_INT16,
+  FM_UINT32,
+  FM_INT32,
+  FM_FLOAT,
+  FM_DOUBLE,
+  FM_COMPLEX,
+  FM_DCOMPLEX,
+  FM_STRING,
+} Class;
+typedef std::vector<std::string> stringVector;
+
 #endif

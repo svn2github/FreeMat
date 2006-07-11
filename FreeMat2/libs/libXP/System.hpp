@@ -23,7 +23,5 @@
 #include <string>
 #include <vector>
 
-namespace FreeMat {
-  std::vector<std::string> DoSystemCallCaptured(std::string cmd);
-}
+std::vector<std::string> DoSystemCallCaptured(std::string cmd);
 #endif

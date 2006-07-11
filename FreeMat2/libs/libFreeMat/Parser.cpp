@@ -632,7 +632,7 @@ tree Parser::Process() {
       Expect(TOK_EOF);
     }
   } catch(ParseException &e) {
-    throw FreeMat::Exception(LastErr() + m_lex.Context(LastPos()));
+    throw Exception(LastErr() + m_lex.Context(LastPos()));
   }
   return root;
 }

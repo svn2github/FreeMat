@@ -22,30 +22,28 @@
 #include <string>
 #include <iostream>
 
-namespace FreeMat {
-  DynLib::DynLib(std::string filename) {
+DynLib::DynLib(std::string filename) {
 #ifdef WIN32
-    lib = LoadLibrary(filename.c_str());
-    if (!lib)
-      throw FreeMat::Exception(std::string("Unable to open module: ") + filename);
+  lib = LoadLibrary(filename.c_str());
+  if (!lib)
+    throw Exception(std::string("Unable to open module: ") + filename);
 #else
-    lib = dlopen(filename.c_str(),RTLD_LAZY);
-    if (!lib)
-      throw FreeMat::Exception(std::string("Unable to open module: ") + filename + ", operating system reported error: " + dlerror());
+  lib = dlopen(filename.c_str(),RTLD_LAZY);
+  if (!lib)
+    throw Exception(std::string("Unable to open module: ") + filename + ", operating system reported error: " + dlerror());
 #endif
-  }
-  void* DynLib::GetSymbol(const char*symbolName) {
+}
+void* DynLib::GetSymbol(const char*symbolName) {
 #ifdef WIN32
-    void *func;
-    func = (void*) GetProcAddress(lib,symbolName);
-    if (func == NULL)
-      throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
-    return func;
+  void *func;
+  func = (void*) GetProcAddress(lib,symbolName);
+  if (func == NULL)
+    throw Exception(std::string("Unable to find symbol ") + ((const char*) symbolName));
+  return func;
 #else
-    void *func = dlsym(lib,symbolName);
-    if (func == NULL)
-      throw FreeMat::Exception(std::string("Unable to find symbol ") + ((const char*) symbolName) + " : " + dlerror());
-    return func;
+  void *func = dlsym(lib,symbolName);
+  if (func == NULL)
+    throw Exception(std::string("Unable to find symbol ") + ((const char*) symbolName) + " : " + dlerror());
+  return func;
 #endif
-  }
 }

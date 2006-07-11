@@ -20,16 +20,14 @@
 #ifndef __Utils_hpp__
 #define __Utils_hpp__
 
-namespace FreeMat {
-  float complex_abs(float, float);
-  double complex_abs(double, double);
-  void clog(float real, float imag, float *re, float *im);
-  void cexp(float real, float imag, float *re, float *im);
-  void csqrt(float real, float imag, float *re, float *im);
-  void csqr(float real, float imag, float *re, float *im);
-  void zlog(double real, double imag, double *re, double *im);
-  void zexp(double real, double imag, double *re, double *im);
-  void zsqrt(double real, double imag, double *re, double *im);
-  void zsqr(double real, double imag, double *re, double *im);
-}
+float complex_abs(float, float);
+double complex_abs(double, double);
+void clog(float real, float imag, float *re, float *im);
+void cexp(float real, float imag, float *re, float *im);
+void csqrt(float real, float imag, float *re, float *im);
+void csqr(float real, float imag, float *re, float *im);
+void zlog(double real, double imag, double *re, double *im);
+void zexp(double real, double imag, double *re, double *im);
+void zsqrt(double real, double imag, double *re, double *im);
+void zsqr(double real, double imag, double *re, double *im);
 #endif

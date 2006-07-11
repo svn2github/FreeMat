@@ -20,30 +20,28 @@
 #include "File.hpp"
 #include "Exception.hpp"
 
-namespace FreeMat {
-  File::File(const char *filename, const char *accessmode) {
-    fp = fopen(filename,accessmode);
-    if (fp == NULL)
-      throw Exception(std::string("unable to open file ") + filename + 
-		      std::string(" with file mode ") + accessmode);
-    autoclose = true;
-  }
+File::File(const char *filename, const char *accessmode) {
+  fp = fopen(filename,accessmode);
+  if (fp == NULL)
+    throw Exception(std::string("unable to open file ") + filename + 
+		    std::string(" with file mode ") + accessmode);
+  autoclose = true;
+}
 
-  File::File(FILE*afp) {
-    fp = afp;
-    autoclose = false;
-  }
+File::File(FILE*afp) {
+  fp = afp;
+  autoclose = false;
+}
 
-  File::~File() {
-    if (autoclose)
-      fclose(fp);
-  }
+File::~File() {
+  if (autoclose)
+    fclose(fp);
+}
 
-  void File::writeBytes(const void* data, int len) {
-    fwrite(data,sizeof(char),len,fp);
-  }
+void File::writeBytes(const void* data, int len) {
+  fwrite(data,sizeof(char),len,fp);
+}
 
-  void File::readBytes(void* data, int len) {
-    fread(data,sizeof(char),len,fp);
-  }
+void File::readBytes(void* data, int len) {
+  fread(data,sizeof(char),len,fp);
 }

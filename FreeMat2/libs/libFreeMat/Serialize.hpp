@@ -25,59 +25,57 @@
 
 // This is the cross-platform serialization object...
 
-namespace FreeMat {
-  class Serialize {
-    Stream *s;
-    bool endianSwap;
-  public:
-    Serialize(Stream*);
-    ~Serialize();
-    // Handshake between two serialize objects
-    void handshakeServer();
-    void handshakeClient();
-    // Send a signature
-    void sendSignature(char sig, int count);
-    // Check a signature
-    void checkSignature(char sig, int count);
-    // Send a stream of base objects
-    void putBytes(const char* ptr, int count);
-    void putShorts(const short* ptr, int count);
-    void putInts(const int* ptr, int count);
-    void putFloats(const float* ptr, int count);
-    void putDoubles(const double* ptr, int count);
-    // Send a scalar object
-    void putString(const char* ptr);
-    void putByte(char t);
-    void putShort(short t);
-    void putInt(int t);
-    void putFloat(float t);
-    void putDouble(double t);
-    void putBool(bool t);
-    void putStringVector(stringVector t);
-    // Receive a stream of base objects
-    void getBytes(char* ptr, int count);
-    void getShorts(short* ptr, int count);
-    void getInts(int* ptr, int count);
-    void getFloats(float* ptr, int count);
-    void getDoubles(double* ptr, int count);
-    // Get a scalar object
-    char*  getString();
-    char   getByte();
-    short  getShort();
-    int    getInt();
-    float  getFloat();
-    double getDouble();
-    bool   getBool();
-    stringVector getStringVector();
-    // Put an array
-    void putDataClass(Class cls, bool sparseflag);
-    void putArray(const Array& dat);
-    void putDimensions(const Dimensions& dim);
-    // Get an array
-    Class getDataClass(bool& sparseflag);
-    void getArray(Array& dat);
-    Dimensions getDimensions();
-  };
-}
+class Serialize {
+  Stream *s;
+  bool endianSwap;
+public:
+  Serialize(Stream*);
+  ~Serialize();
+  // Handshake between two serialize objects
+  void handshakeServer();
+  void handshakeClient();
+  // Send a signature
+  void sendSignature(char sig, int count);
+  // Check a signature
+  void checkSignature(char sig, int count);
+  // Send a stream of base objects
+  void putBytes(const char* ptr, int count);
+  void putShorts(const short* ptr, int count);
+  void putInts(const int* ptr, int count);
+  void putFloats(const float* ptr, int count);
+  void putDoubles(const double* ptr, int count);
+  // Send a scalar object
+  void putString(const char* ptr);
+  void putByte(char t);
+  void putShort(short t);
+  void putInt(int t);
+  void putFloat(float t);
+  void putDouble(double t);
+  void putBool(bool t);
+  void putStringVector(stringVector t);
+  // Receive a stream of base objects
+  void getBytes(char* ptr, int count);
+  void getShorts(short* ptr, int count);
+  void getInts(int* ptr, int count);
+  void getFloats(float* ptr, int count);
+  void getDoubles(double* ptr, int count);
+  // Get a scalar object
+  char*  getString();
+  char   getByte();
+  short  getShort();
+  int    getInt();
+  float  getFloat();
+  double getDouble();
+  bool   getBool();
+  stringVector getStringVector();
+  // Put an array
+  void putDataClass(Class cls, bool sparseflag);
+  void putArray(const Array& dat);
+  void putDimensions(const Dimensions& dim);
+  // Get an array
+  Class getDataClass(bool& sparseflag);
+  void getArray(Array& dat);
+  Dimensions getDimensions();
+};
 
 #endif

@@ -25,48 +25,19 @@
 #include "Malloc.hpp"
 #include "Interpreter.hpp"
 
-namespace FreeMat {
-
-  int exceptionCount = 0;
-
-  Exception::Exception(const char*msg_in) { 
-    msg = strdup(msg_in); 
-    exceptionCount++;
-  }
-
-  Exception::Exception(std::string msg_in) {
-    msg = strdup(msg_in.c_str()); 
-    exceptionCount++;
-  }
-
-  Exception::~Exception() {
-    free(msg);
-  }
-
-  Exception::Exception(const Exception& copy) {
-    msg = strdup(copy.msg);
-    exceptionCount++;
-  }
-
-  void Exception::operator=(const Exception &copy) {
-    if (this == &copy) return;
-    if (msg != NULL)
-      free(msg);
-    msg = strdup(copy.msg);
-  }
-
-  void Exception::printMe(Interpreter *eval) {
-    eval->errorMessage(msg);
-  }
-  
-  bool Exception::matches(const char *tst_msg) {
-    return (strcmp(tst_msg,msg) == 0);
-  }
-
-  char* Exception::getMessageCopy() {
-    char* rp;
-    rp = (char*) malloc(strlen(msg)+1);
-    strcpy(rp,msg);
-    return rp;
-  }
+Exception::Exception(std::string msg_in) {
+  msg = msg_in; 
 }
+
+void Exception::printMe(Interpreter *eval) {
+  eval->errorMessage(msg);
+}
+
+bool Exception::matches(string tst_msg) {
+  return (tst_msg == msg);
+}
+
+string Exception::getMessageCopy() {
+  return msg;
+}
+

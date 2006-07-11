@@ -28,8 +28,6 @@
 #endif
 
 
-namespace FreeMat {
-
 #define MSGBUFLEN 2048
 static char msgBuffer[MSGBUFLEN];
 
@@ -42,7 +40,7 @@ static char msgBuffer[MSGBUFLEN];
  * C is n x k.
  */
 void doubleSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
-		      double *a, double *b) {
+			double *a, double *b) {
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE DGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //                   WORK, LWORK, INFO )
@@ -430,7 +428,7 @@ void dcomplexSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
     // Problem should be overdetermined, rank should be N
     if (RANK < N)
       snprintf(msgBuffer,MSGBUFLEN,"Matrix is rank deficient to machine precision.  RANK = %d\n",RANK);
-      eval->warningMessage(msgBuffer);
+    eval->warningMessage(msgBuffer);
   } else
     // Problem should be underderemined, rank should be M
     if (RANK < M) {
@@ -858,4 +856,3 @@ void complexSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
   Free(RWORK);
 }
 
-}

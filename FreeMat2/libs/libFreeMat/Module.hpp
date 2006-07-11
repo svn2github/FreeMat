@@ -21,28 +21,24 @@
 #define __Module_hpp__
 
 #include "Scope.hpp"
+class Context;
 
-namespace FreeMat {
-
-  class Context;
-
-  /**
-   * Load a function dynamically.  Throws an Exception if 
-   * there are not at least two arguments to the function,
-   * if the file could not be found, or if the requested
-   * symbol is not present.
-   */
-  ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg,
-	  Interpreter* eval) throw(Exception);
-  /**
-   * import a C function 
-   */
-  ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
-			     Interpreter* eval) throw(Exception);
-  /**
-   *  Add the loadlib and import functions to the given context.
-   */
-  void LoadModuleFunctions(Context* context);
-}
+/**
+ * Load a function dynamically.  Throws an Exception if 
+ * there are not at least two arguments to the function,
+ * if the file could not be found, or if the requested
+ * symbol is not present.
+ */
+ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg,
+			    Interpreter* eval) throw(Exception);
+/**
+ * import a C function 
+ */
+ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
+			   Interpreter* eval) throw(Exception);
+/**
+ *  Add the loadlib and import functions to the given context.
+ */
+void LoadModuleFunctions(Context* context);
 
 #endif

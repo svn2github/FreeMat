@@ -21,7 +21,5 @@
 
 #include "Context.hpp"
 
-namespace FreeMat {
-  void LoadFNFunctions(Context* context);
-}
+void LoadFNFunctions(Context* context);
 #endif

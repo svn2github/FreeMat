@@ -68,8 +68,13 @@ KeyManager::KeyManager()  {
   m_loop = new QEventLoop;
   lineData = new char[4096];
   ResetLineBuffer();
+  ctxt = NULL;
 }
 
+
+void KeyManager::SetCompletionContext(Context* ctxt) {
+  context = ctxt;
+}
 
 int KeyManager::getTerminalWidth() {
   return ncolumn;
@@ -164,32 +169,32 @@ int KeyManager::BuffCurposToTermCurpos(int n) {
 }
 
 void KeyManager::Redisplay() {
-   /*
-    * Keep a record of the current cursor position.
-    */
-   int sbuff_curpos = buff_curpos;
-   /*
-    * Move the cursor to the start of the terminal line, and clear from there
-    * to the end of the display.
-    */
-   SetTermCurpos(0);
-   emit ClearEOD();
-   /*
-    * Nothing is displayed yet.
-    */
-   term_len = 0;
-   /*
-    * Display the current prompt.
-    */
-   DisplayPrompt();
-   /*
-    * Render the part of the line that the user has typed in so far.
-    */
-   OutputString(lineData,'\0');
-   /*
-    * Restore the cursor position.
-    */
-   PlaceCursor(sbuff_curpos);
+  /*
+   * Keep a record of the current cursor position.
+   */
+  int sbuff_curpos = buff_curpos;
+  /*
+   * Move the cursor to the start of the terminal line, and clear from there
+   * to the end of the display.
+   */
+  SetTermCurpos(0);
+  emit ClearEOD();
+  /*
+   * Nothing is displayed yet.
+   */
+  term_len = 0;
+  /*
+   * Display the current prompt.
+   */
+  DisplayPrompt();
+  /*
+   * Render the part of the line that the user has typed in so far.
+   */
+  OutputString(lineData,'\0');
+  /*
+   * Restore the cursor position.
+   */
+  PlaceCursor(sbuff_curpos);
 }
 
 void KeyManager::setTerminalWidth(int w) {
@@ -337,8 +342,8 @@ void KeyManager::AddCharToLine(char c) {
     /*
      * Are we overwriting an existing character?
      */
-   } else {
-     /*
+  } else {
+    /*
      * Get the widths of the character to be overwritten and the character
      * that is going to replace it.
      */
@@ -392,7 +397,7 @@ void KeyManager::AddCharToLine(char c) {
        */
       OutputChar(c, lineData[buff_curpos]);
     };
-   };
+  };
 }
 
 int KeyManager::DisplayPrompt() {
@@ -553,8 +558,8 @@ void KeyManager::ForwardDeleteChar() {
   DeleteChars(1,0);
 }
 
-  // Delete nc characters starting from the one under the cursor.
-  // Optionally copy the deleted characters to the cut buffer.
+// Delete nc characters starting from the one under the cursor.
+// Optionally copy the deleted characters to the cut buffer.
 void KeyManager::DeleteChars(int nc, int cut) {
   /*
    * If there are fewer than nc characters following the cursor, limit
@@ -694,8 +699,8 @@ void KeyManager::AddStringToLine(std::string s) {
   int sbuff_curpos; /* The original value of gl->buff_curpos */
   int sterm_curpos; /* The original value of gl->term_curpos */
   /*
- * Keep a record of the current cursor position.
- */
+   * Keep a record of the current cursor position.
+   */
   sbuff_curpos = buff_curpos;
   sterm_curpos = term_curpos;
   /*
@@ -1082,3 +1087,122 @@ void KeyManager::StopAction() {
   emit ExecuteLine("retall\n");  
 }
 
+/*.......................................................................
+ * Search backwards for the potential start of a filename. This
+ * looks backwards from the specified index in a given string,
+ * stopping at the first unescaped space or the start of the line.
+ *
+ * Input:
+ *  string  const char *  The string to search backwards in.
+ *  back_from      int    The index of the first character in string[]
+ *                        that follows the pathname.
+ * Output:
+ *  return        char *  The pointer to the first character of
+ *                        the potential pathname, or NULL on error.
+ */
+static char *start_of_path(const char *string, int back_from)
+{
+  int i, j;
+  /*
+   * Search backwards from the specified index.
+   */
+  for(i=back_from-1; i>=0; i--) {
+    int c = string[i];
+    /*
+     * Stop on unescaped spaces.
+     */
+    if(isspace((int)(unsigned char)c)) {
+      /*
+       * The space can't be escaped if we are at the start of the line.
+       */
+      if(i==0)
+	break;
+      /*
+       * Find the extent of the escape characters which precedes the space.
+       */
+      for(j=i-1; j>=0 && string[j]=='\\'; j--)
+	;
+      /*
+       * If there isn't an odd number of escape characters before the space,
+       * then the space isn't escaped.
+       */
+      if((i - 1 - j) % 2 == 0)
+	break;
+    } 
+    else if (!isalpha(c) && !isdigit(c) && (c != '_') && (c != '.') && (c != '\\') && (c != '/'))
+      break;
+  };
+  return (char *)string + i + 1;
+}
+
+std::vector<std::string> KeyManager::GetCompletions(std::string line, 
+						    int word_end, 
+						    std::string &matchString) {
+  std::vector<std::string> completions;
+  /*
+   * Find the start of the filename prefix to be completed, searching
+   * backwards for the first unescaped space, or the start of the line.
+   */
+  char *start = start_of_path(line.c_str(), word_end);
+  char *tmp;
+  int mtchlen;
+  mtchlen = word_end - (start-line.c_str());
+  tmp = (char*) malloc(mtchlen+1);
+  memcpy(tmp,start,mtchlen);
+  tmp[mtchlen] = 0;
+  matchString = std::string(tmp);
+  
+  /*
+   *  the preceeding character was not a ' (quote), then
+   * do a command expansion, otherwise, do a filename expansion.
+   */
+  if (start[-1] != '\'' && context) {
+    std::vector<std::string> local_completions;
+    std::vector<std::string> global_completions;
+    int i;
+    local_completions = context->getCurrentScope()->getCompletions(std::string(start));
+    global_completions = context->getGlobalScope()->getCompletions(std::string(start));
+    for (i=0;i<local_completions.size();i++)
+      completions.push_back(local_completions[i]);
+    for (i=0;i<global_completions.size();i++)
+      completions.push_back(global_completions[i]);
+    std::sort(completions.begin(),completions.end());
+    return completions;
+  } else {
+#ifdef WIN32
+    HANDLE hSearch;
+    WIN32_FIND_DATA FileData;
+    std::string pattern(tmp);
+    pattern.append("*");
+    hSearch = FindFirstFile(pattern.c_str(),&FileData);
+    if (hSearch != INVALID_HANDLE_VALUE) {
+      // Windows does not return any part of the path in the completion,
+      // So we need to find the base part of the pattern.
+      int lastslash;
+      std::string prefix;
+      lastslash = pattern.find_last_of("/");
+      if (lastslash == -1) {
+	lastslash = pattern.find_last_of("\\");
+      }
+      if (lastslash != -1)
+	prefix = pattern.substr(0,lastslash+1);
+      completions.push_back(prefix + FileData.cFileName);
+      while (FindNextFile(hSearch, &FileData))
+	completions.push_back(prefix + FileData.cFileName);
+    }
+    FindClose(hSearch);
+    return completions;
+#else
+    glob_t names;
+    std::string pattern(tmp);
+    pattern.append("*");
+    glob(pattern.c_str(), GLOB_MARK, NULL, &names);
+    int i;
+    for (i=0;i<names.gl_pathc;i++) 
+      completions.push_back(names.gl_pathv[i]);
+    globfree(&names);
+    free(tmp);
+    return completions;
+#endif
+  }
+}

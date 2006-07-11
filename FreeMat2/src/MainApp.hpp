@@ -25,8 +25,6 @@
 #include "application.hpp"
 #include "InterpreterThread.hpp"
 
-using namespace FreeMat;
-
 class MainApp : public QObject
 {
   Q_OBJECT

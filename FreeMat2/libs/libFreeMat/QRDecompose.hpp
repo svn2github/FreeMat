@@ -20,15 +20,12 @@
 #ifndef __QRDecompose_hpp__
 #define __QRDecompose_hpp__
 
-namespace FreeMat {
-  void floatQRD(int nrows, int ncols, float *q, float *r, float *a);
-  void doubleQRD(int nrows, int ncols, double *q, double *r, double *a);
-  void complexQRD(int nrows, int ncols, float *q, float *r, float *a);
-  void dcomplexQRD(int nrows, int ncols, double *q, double *r, double *a);
-  void floatQRDP(int nrows, int ncols, float *q, float *r, int *p, float *a);
-  void doubleQRDP(int nrows, int ncols, double *q, double *r, int *p, double *a);
-  void complexQRDP(int nrows, int ncols, float *q, float *r, int *p, float *a);
-  void dcomplexQRDP(int nrows, int ncols, double *q, double *r, int *p, double *a);
-}
-
+void floatQRD(int nrows, int ncols, float *q, float *r, float *a);
+void doubleQRD(int nrows, int ncols, double *q, double *r, double *a);
+void complexQRD(int nrows, int ncols, float *q, float *r, float *a);
+void dcomplexQRD(int nrows, int ncols, double *q, double *r, double *a);
+void floatQRDP(int nrows, int ncols, float *q, float *r, int *p, float *a);
+void doubleQRDP(int nrows, int ncols, double *q, double *r, int *p, double *a);
+void complexQRDP(int nrows, int ncols, float *q, float *r, int *p, float *a);
+void dcomplexQRDP(int nrows, int ncols, double *q, double *r, int *p, double *a);
 #endif

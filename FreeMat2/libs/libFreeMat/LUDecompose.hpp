@@ -21,16 +21,14 @@
 
 #include "Array.hpp"
 
-namespace FreeMat {
-  void floatLU(int nrows, int ncols, float *l, float *u,
+void floatLU(int nrows, int ncols, float *l, float *u,
+	     int *p, float *a);
+void complexLU(int nrows, int ncols, float *l, float *u,
 	       int *p, float *a);
-  void complexLU(int nrows, int ncols, float *l, float *u,
-	       int *p, float *a);
-  void doubleLU(int nrows, int ncols, double *l, double *u,
+void doubleLU(int nrows, int ncols, double *l, double *u,
+	      int *p, double *a);
+void dcomplexLU(int nrows, int ncols, double *l, double *u,
 		int *p, double *a);
-  void dcomplexLU(int nrows, int ncols, double *l, double *u,
-		  int *p, double *a);
-  ArrayVector LUDecompose(int nargout, Array A);
-}
+ArrayVector LUDecompose(int nargout, Array A);
 
 #endif

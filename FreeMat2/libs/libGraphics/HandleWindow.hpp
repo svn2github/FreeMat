@@ -26,10 +26,8 @@
 #include <QGLWidget>
 #include <QEventLoop>
 
-namespace FreeMat {
-
 class HandleWindow : public QWidget {
- protected:
+protected:
   bool initialized;
   unsigned handle;
   bool glActive;
@@ -40,7 +38,7 @@ class HandleWindow : public QWidget {
   //  QTabWidget *layout;
   QEventLoop m_loop;
   int click_x, click_y;
- public:
+public:
   QWidget *GetQtWidget() {return qtchild;}
   HandleWindow(unsigned ahandle);
   ~HandleWindow() {delete hfig;}
@@ -52,6 +50,5 @@ class HandleWindow : public QWidget {
   void mousePressEvent(QMouseEvent* e);
 };
 
-}
 
 #endif

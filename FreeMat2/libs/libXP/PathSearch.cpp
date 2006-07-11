@@ -36,35 +36,34 @@
 #define P_DELIM ":"
 #endif
 
-namespace FreeMat {
-  bool FileExists(std::string filename) {
-    struct stat filestat;
-    if (stat(filename.c_str(),&filestat)==-1) return false;
-    return (S_ISREG(filestat.st_mode));
-  }
+bool FileExists(std::string filename) {
+  struct stat filestat;
+  if (stat(filename.c_str(),&filestat)==-1) return false;
+  return (S_ISREG(filestat.st_mode));
+}
 
-  std::string GetFilenameOnly(std::string a) {
-    // Strip off application name
-    int ndx;
-    ndx = a.rfind("/");
-    if (ndx>=0)
-      a.erase(0,ndx);
-    return a;
-  }
+std::string GetFilenameOnly(std::string a) {
+  // Strip off application name
+  int ndx;
+  ndx = a.rfind("/");
+  if (ndx>=0)
+    a.erase(0,ndx);
+  return a;
+}
 
-  std::string GetPathOnly(std::string a) {
-    // Strip off application name
-     int ndx;
-    ndx = a.rfind("/");
-    a.erase(ndx+1,a.size());
-    return a;
-  }
+std::string GetPathOnly(std::string a) {
+  // Strip off application name
+  int ndx;
+  ndx = a.rfind("/");
+  a.erase(ndx+1,a.size());
+  return a;
+}
 
-  std::string CheckEndSlash(std::string a) {
-    if (a[a.size()-1] != '/')
-      a.append("/");
-    return a;
-  }
+std::string CheckEndSlash(std::string a) {
+  if (a[a.size()-1] != '/')
+    a.append("/");
+  return a;
+}
 
 std::string GetApplicationPath(char *argv0) {
   std::string retpath;
@@ -97,35 +96,35 @@ std::string GetApplicationPath(char *argv0) {
   }
 }
 
-  PathSearcher::PathSearcher(std::string mpath) {
-    path = mpath + P_DELIM;
-    std::string tpath;
-    while (!path.empty()) {
-      int ndx;
-      ndx = path.find(P_DELIM);
-      tpath = path.substr(0,ndx);
-      path.erase(0,ndx+1);
-      pathList.push_back(tpath);
-      fflush(stdout);
-    }
-  }
-
-  std::string PathSearcher::ResolvePath(std::string fname) {
-    int ndx = 0;
-    bool found = FileExists(fname);
-    if (found)  
-      return fname;
-    std::string tpath;
-    std::string fullname;
-    while (!found && (ndx < pathList.size())) {
-      tpath = pathList[ndx++];
-      fullname = CheckEndSlash(tpath) + fname;
-      found = FileExists(fullname);
-    }
-    if (found)
-      return(fullname);
-    else {
-      throw Exception("Unable to find file " + fname + " on the current path!");
-    }
+PathSearcher::PathSearcher(std::string mpath) {
+  path = mpath + P_DELIM;
+  std::string tpath;
+  while (!path.empty()) {
+    int ndx;
+    ndx = path.find(P_DELIM);
+    tpath = path.substr(0,ndx);
+    path.erase(0,ndx+1);
+    pathList.push_back(tpath);
+    fflush(stdout);
   }
 }
+
+std::string PathSearcher::ResolvePath(std::string fname) {
+  int ndx = 0;
+  bool found = FileExists(fname);
+  if (found)  
+    return fname;
+  std::string tpath;
+  std::string fullname;
+  while (!found && (ndx < pathList.size())) {
+    tpath = pathList[ndx++];
+    fullname = CheckEndSlash(tpath) + fname;
+    found = FileExists(fullname);
+  }
+  if (found)
+    return(fullname);
+  else {
+    throw Exception("Unable to find file " + fname + " on the current path!");
+  }
+}
+

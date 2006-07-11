@@ -21,8 +21,6 @@
 #include <QtGui>
 #include "Array.hpp"
 
-using namespace FreeMat;
-
 VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
   QVBoxLayout *layout = new QVBoxLayout;
   m_flist = new QTableWidget;

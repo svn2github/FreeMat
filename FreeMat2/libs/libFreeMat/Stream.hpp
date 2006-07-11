@@ -20,11 +20,9 @@
 #ifndef __Stream_hpp__
 #define __Stream_hpp__
 
-namespace FreeMat {
-  class Stream {
-  public:
-    virtual void writeBytes(const void* data, int len) = 0;
-    virtual void readBytes(void* data, int len) = 0;
-  };
-}
+class Stream {
+public:
+  virtual void writeBytes(const void* data, int len) = 0;
+  virtual void readBytes(void* data, int len) = 0;
+};
 #endif

@@ -30,12 +30,11 @@ typedef HMODULE libhandle;
 typedef void* libhandle;
 #endif
 
-namespace FreeMat {
-  class DynLib {
-    libhandle lib;
-  public:
-    DynLib(std::string filename);
-    void* GetSymbol(const char* symbolName);
-  };
-}
+class DynLib {
+  libhandle lib;
+public:
+  DynLib(std::string filename);
+  void* GetSymbol(const char* symbolName);
+};
+
 #endif

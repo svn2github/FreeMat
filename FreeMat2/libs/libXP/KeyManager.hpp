@@ -46,8 +46,6 @@
 #define KM_HOME      0x106
 #define KM_END       0x107
 
-using namespace FreeMat;
-
 class KeyManager : public QObject
 {
   Q_OBJECT
@@ -73,7 +71,11 @@ public:
   void KillLine();
   int getTerminalWidth();
   void RegisterTerm(QObject* term);
+  void SetCompletionContext(Context* ctxt);
  private:
+  Context *context;
+  vector<string> GetCompletions(string line, int word_end, 
+				string &matchString);
   void CursorLeft();
   void CursorRight();
   void BeginningOfLine();
@@ -164,7 +166,5 @@ public slots:
   void ContinueAction();
   void StopAction();
 };
-
-  
 
 #endif

@@ -22,21 +22,19 @@
 #include <stdio.h>
 #include "Stream.hpp"
 
-namespace FreeMat {
-  class File : public Stream{
-    bool autoclose;
-    FILE *fp;
-  public:
-    // Create a file with the given access code
-    File(const char *filename, const char *accessmode);
-    File(FILE*afp);
-    // Close the file
-    virtual ~File();
-    // Write a sequence of bytes to the file
-    virtual void writeBytes(const void* data, int len);
-    // Read a sequence of bytes from the file
-    virtual void readBytes(void* data, int len);
-  };
-}
+class File : public Stream{
+  bool autoclose;
+  FILE *fp;
+public:
+  // Create a file with the given access code
+  File(const char *filename, const char *accessmode);
+  File(FILE*afp);
+  // Close the file
+  virtual ~File();
+  // Write a sequence of bytes to the file
+  virtual void writeBytes(const void* data, int len);
+  // Read a sequence of bytes from the file
+  virtual void readBytes(void* data, int len);
+};
 
 #endif

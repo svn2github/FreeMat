@@ -22,28 +22,25 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-namespace FreeMat {
+static int memoryBalance = 0;
 
-  static int memoryBalance = 0;
-
-  void* Malloc(int count) {
-    void* ptr;
-    try {
-      ptr = malloc(count);
-      if (!ptr) throw Exception("Memory allocation error... You may have run out of memory!");
-      memset(ptr,0,count);
-      return ptr;
-    } catch (...) {
-      throw Exception("Memory allocation error... You may have run out of memory!");
-    }
+void* Malloc(int count) {
+  void* ptr;
+  try {
+    ptr = malloc(count);
+    if (!ptr) throw Exception("Memory allocation error... You may have run out of memory!");
+    memset(ptr,0,count);
+    return ptr;
+  } catch (...) {
+    throw Exception("Memory allocation error... You may have run out of memory!");
   }
+}
 
-  void Free(void *dp) {
-    if (dp == NULL) return;
-    free(dp);
-  }
+void Free(void *dp) {
+  if (dp == NULL) return;
+  free(dp);
+}
 
-  void* Calloc(int count) {
-    return Malloc(count);
-  }
+void* Calloc(int count) {
+  return Malloc(count);
 }

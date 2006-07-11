@@ -20,30 +20,26 @@
 #ifndef __Malloc_hpp__
 #define __Malloc_hpp__
 
-namespace FreeMat {
+/**
+ * Allocate a block of count bytes, and return a pointer.  Stores the
+ * size of the block at the beginning of the block.
+ */
+void* Malloc(int count);
 
-  /**
-   * Allocate a block of count bytes, and return a pointer.  Stores the
-   * size of the block at the beginning of the block.
-   */
-  void* Malloc(int count);
+/**
+ * Free a block allocated by Malloc.
+ */
+void Free(void *dp);
 
-  /**
-   * Free a block allocated by Malloc.
-   */
-  void Free(void *dp);
+/**
+ * Allocate a block of count bytes, and ensure that the contents are
+ * set to the zero byte.
+ */
+void* Calloc(int count);
 
-  /**
-   * Allocate a block of count bytes, and ensure that the contents are
-   * set to the zero byte.
-   */
-  void* Calloc(int count);
-
-  /**
-   * Print the statistics on the memory allocations.
-   */
-  void printMemoryBalance();
-
-}
+/**
+ * Print the statistics on the memory allocations.
+ */
+void printMemoryBalance();
 
 #endif

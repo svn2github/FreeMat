@@ -21,7 +21,8 @@
 #define __Exception_hpp__
 
 #include <string>
-namespace FreeMat {
+
+using namespace std;
 
 class Interpreter;
 
@@ -31,45 +32,27 @@ class Interpreter;
  * on.  Since we simply print most messages to the console,
  * the exception types are not encoded using RTTI...
  */
-  class Exception {
-    char *msg;
-  public:
-    /**
-     * Construct an exception object with a given C-string.
-     */
-    Exception(const char*msg_in);
-    /**
-     * Construct an exception object with a given STL-string.
-     */
-    Exception(std::string msg_in);
-    /**
-     * Copy constructor.
-     */
-    Exception(const Exception& copy);
-    /**
-     * Assignment operator.
-     */
-    void operator=(const Exception &copy);
-    /**
-     * Standard destructor.
-     */
-    ~Exception();
-    /**
-     * Output the contents of the exception to the console.
-     */
-    void printMe(Interpreter *eval);
-    /**
-     *
-     */
-    bool matches(const char *tst_msg);
-    /**
-     * Get a copy of the message member function.  Receiver
-     * is responsibile for Free-ing the array when done.
-     */
-    char* getMessageCopy();
-  };
+class Exception {
+  string msg;
+public:
+  /**
+   * Construct an exception object with a given STL-string.
+   */
+  Exception(std::string msg_in);
+  /**
+   * Output the contents of the exception to the console.
+   */
+  void printMe(Interpreter *eval);
+  /**
+   * Returns true if 
+   */
+  bool matches(string tst_msg);
+  /**
+   * Get a copy of the message 
+   */
+  string getMessageCopy();
+};
 
-  void printExceptionCount();
-}
+void printExceptionCount();
 
 #endif

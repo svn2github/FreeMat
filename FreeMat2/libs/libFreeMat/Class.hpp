@@ -23,39 +23,38 @@
 #include "Interpreter.hpp"
 #include "Types.hpp"
 
-namespace FreeMat {
-  class UserClass {
-    stringVector fieldNames;
-    stringVector parentClasses;
-  public:
-    UserClass();
-    UserClass(stringVector fields, stringVector parents);
-    bool matchClass(UserClass test);
-    stringVector getParentClasses();
-    ~UserClass();
-  };
+class UserClass {
+  stringVector fieldNames;
+  stringVector parentClasses;
+public:
+  UserClass();
+  UserClass(stringVector fields, stringVector parents);
+  bool matchClass(UserClass test);
+  stringVector getParentClasses();
+  ~UserClass();
+};
 
-  Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname, Interpreter* eval);
+Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname, Interpreter* eval);
 
-  Array ClassBinaryOperator(Array a, Array b, std::string funcname,
-			    Interpreter* eval);
+Array ClassBinaryOperator(Array a, Array b, std::string funcname,
+			  Interpreter* eval);
 
-  Array ClassUnaryOperator(Array a, std::string funcname,
-			   Interpreter* eval);
+Array ClassUnaryOperator(Array a, std::string funcname,
+			 Interpreter* eval);
 
-  Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval);
+Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval);
 
-  ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
-			    Interpreter* eval);
+ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
+			  Interpreter* eval);
 
-  ArrayVector ClassRHSExpression(Array a, treeVector t, Interpreter* eval);
+ArrayVector ClassRHSExpression(Array a, treeVector t, Interpreter* eval);
 
-  void ClassAssignExpression(Array* r, tree t, ArrayVector& value, Interpreter* eval);
+void ClassAssignExpression(Array* r, tree t, ArrayVector& value, Interpreter* eval);
   
-  bool ClassResolveFunction(Interpreter* eval, Array &args, std::string funcName, FuncPtr& val);
+bool ClassResolveFunction(Interpreter* eval, Array &args, std::string funcName, FuncPtr& val);
   
-  std::string ClassMangleName(std::string className, std::string funcName);
+std::string ClassMangleName(std::string className, std::string funcName);
 
-  void LoadClassFunction(Context* context);
-}
+void LoadClassFunction(Context* context);
+
 #endif

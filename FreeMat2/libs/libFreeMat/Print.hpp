@@ -27,9 +27,7 @@
 #include <stdio.h>
 #include "Array.hpp"
 
-namespace FreeMat {
-  class Interpreter;
-  void PrintArrayClassic(Array A, int printLimit, Interpreter *eval, bool showClassSize);
-};
+class Interpreter;
+void PrintArrayClassic(Array A, int printLimit, Interpreter *eval, bool showClassSize);
 
 #endif

@@ -25,39 +25,36 @@
 #include <windows.h>
 #endif
 
-namespace FreeMat {
+std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
+  QProcess toRun;
+  std::vector<std::string> ret;
+  bool runDetached = (cmd[cmd.size()-1] == '&');
 
-  std::vector<std::string> DoSystemCallCaptured(std::string cmd) {
-    QProcess toRun;
-    std::vector<std::string> ret;
-    bool runDetached = (cmd[cmd.size()-1] == '&');
-
-    if (runDetached)
-      cmd.erase(cmd.size()-1,1);
+  if (runDetached)
+    cmd.erase(cmd.size()-1,1);
 #ifdef Q_OS_WIN32
-    char shellCmd[_MAX_PATH];
-    if( !GetEnvironmentVariable("ComSpec", shellCmd, _MAX_PATH) )
-      throw Exception("Unable to find command shell!");
-    cmd = std::string(shellCmd) + " /a /c " + std::string(cmd);
+  char shellCmd[_MAX_PATH];
+  if( !GetEnvironmentVariable("ComSpec", shellCmd, _MAX_PATH) )
+    throw Exception("Unable to find command shell!");
+  cmd = std::string(shellCmd) + " /a /c " + std::string(cmd);
 #else
-    cmd = std::string("sh -c \"") + cmd + std::string("\"");
+  cmd = std::string("sh -c \"") + cmd + std::string("\"");
 #endif
-    if (runDetached) {
-      QProcess::startDetached(QString::fromStdString(cmd));
-      return ret;
-    }
-    toRun.start(QString::fromStdString(cmd));
-    if (!toRun.waitForStarted())
-      return ret;
-    toRun.closeWriteChannel();
-    while (!toRun.waitForFinished(100))
-      qApp->processEvents();
-    QByteArray result = toRun.readAll();
-    QTextStream myStream(&result);
-    while (!myStream.atEnd()) {
-      QString line(myStream.readLine(0));
-      ret.push_back(line.toStdString());
-    }
+  if (runDetached) {
+    QProcess::startDetached(QString::fromStdString(cmd));
     return ret;
   }
+  toRun.start(QString::fromStdString(cmd));
+  if (!toRun.waitForStarted())
+    return ret;
+  toRun.closeWriteChannel();
+  while (!toRun.waitForFinished(100))
+    qApp->processEvents();
+  QByteArray result = toRun.readAll();
+  QTextStream myStream(&result);
+  while (!myStream.atEnd()) {
+    QString line(myStream.readLine(0));
+    ret.push_back(line.toStdString());
+  }
+  return ret;
 }

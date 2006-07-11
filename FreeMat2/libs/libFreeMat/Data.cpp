@@ -21,98 +21,95 @@
 #include "Malloc.hpp"
 #include "Sparse.hpp"
 
-namespace FreeMat {
+Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, 
+	   const stringVector& fields, stringVector classname): 
+  cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
+  sparse = sparseflag;
+} 
 
-  Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, 
-	     const stringVector& fields, stringVector classname): 
-    cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
-      sparse = sparseflag;
-  } 
+Data::~Data() { 
+  freeDataBlock(); 
+}
 
-  Data::~Data() { 
-    freeDataBlock(); 
-  }
+Data* Data::getCopy() { 
+  owners++; 
+  return this; 
+}
 
-  Data* Data::getCopy() { 
-    owners++; 
-    return this; 
-  }
-
-  Data* Data::putData(Class aClass, const Dimensions& dims, void *s, 
-		      bool sparseflag, const stringVector& fields, 
-		      stringVector classname) {
-    if ((owners <= 1)) {
-      freeDataBlock();
-      cp = s;
-      dataClass = aClass;
-      dimensions = dims;
-      fieldNames = fields;
-      sparse = sparseflag;
-      className = classname;
-      owners = 1;
-      return this;
-    } else {
-      owners--;
-      return new Data(aClass,dims,s,sparseflag,fields,classname);
-    }
-  }
-
-  int Data::deleteCopy() { 
-    return owners--; 
-  }
-
-  const void* Data::getData() const {
-    return cp;
-  }
-
-  void* Data::getWriteableData() {
-    return cp;
-  }
-
-  const Dimensions& Data::getDimensions() const {
-    return dimensions;
-  }
-
-  const stringVector& Data::getFieldNames() const {
-    return fieldNames;
-  }
-
-  stringVector Data::getClassName() const {
-    return className;
-  }
-
-  bool Data::isUserClass() const {
-    return (!className.empty());
-  }
-
-  void Data::setDimensions(const Dimensions& dim) {
-    dimensions = dim;
-  }
-
-  void Data::setFieldNames(const stringVector& fields) {
+Data* Data::putData(Class aClass, const Dimensions& dims, void *s, 
+		    bool sparseflag, const stringVector& fields, 
+		    stringVector classname) {
+  if ((owners <= 1)) {
+    freeDataBlock();
+    cp = s;
+    dataClass = aClass;
+    dimensions = dims;
     fieldNames = fields;
+    sparse = sparseflag;
+    className = classname;
+    owners = 1;
+    return this;
+  } else {
+    owners--;
+    return new Data(aClass,dims,s,sparseflag,fields,classname);
   }
+}
 
-  int Data::numberOfOwners() const { 
-    return owners; 
-  }
+int Data::deleteCopy() { 
+  return owners--; 
+}
 
-  void Data::freeDataBlock() {
-    if (cp) {
-      if (dataClass == FM_FUNCPTR_ARRAY) {
-	FunctionDef **dp = (FunctionDef**) cp;
-	delete[] dp;
-      } else if (Array::isDataClassReferenceType(dataClass)) {
-	Array* rp = (Array*) cp;
-	delete [] rp;
-      } else if (sparse) {
-	DeleteSparseMatrix(dataClass,dimensions[1],cp);
-      } else 
-	Free(cp);
-    }
+const void* Data::getData() const {
+  return cp;
+}
+
+void* Data::getWriteableData() {
+  return cp;
+}
+
+const Dimensions& Data::getDimensions() const {
+  return dimensions;
+}
+
+const stringVector& Data::getFieldNames() const {
+  return fieldNames;
+}
+
+stringVector Data::getClassName() const {
+  return className;
+}
+
+bool Data::isUserClass() const {
+  return (!className.empty());
+}
+
+void Data::setDimensions(const Dimensions& dim) {
+  dimensions = dim;
+}
+
+void Data::setFieldNames(const stringVector& fields) {
+  fieldNames = fields;
+}
+
+int Data::numberOfOwners() const { 
+  return owners; 
+}
+
+void Data::freeDataBlock() {
+  if (cp) {
+    if (dataClass == FM_FUNCPTR_ARRAY) {
+      FunctionDef **dp = (FunctionDef**) cp;
+      delete[] dp;
+    } else if (Array::isDataClassReferenceType(dataClass)) {
+      Array* rp = (Array*) cp;
+      delete [] rp;
+    } else if (sparse) {
+      DeleteSparseMatrix(dataClass,dimensions[1],cp);
+    } else 
+      Free(cp);
   }
+}
   
-  bool Data::isSparse() {
-    return sparse;
-  }
+bool Data::isSparse() {
+  return sparse;
 }

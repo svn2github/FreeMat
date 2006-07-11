@@ -25,29 +25,26 @@ int xerbla_(char *srname, int *info) {
 }
 #endif
 
-namespace FreeMat {
-
-  double getEPS() {
-    char CMACH = 'E';
-    return dlamch_(&CMACH);
-  }
+double getEPS() {
+  char CMACH = 'E';
+  return dlamch_(&CMACH);
+}
 
 
-  float getFloatEPS() {
-    char CMACH = 'E';
-    return slamch_(&CMACH);
-  }
+float getFloatEPS() {
+  char CMACH = 'E';
+  return slamch_(&CMACH);
+}
 
-  // Utility function used to handle stride changes between columns
-  void changeStrideDouble(double*dst, int dstStride, double*src, int srcStride, int rowCount, int colCount){
-    int i;
-    for (i=0;i<colCount;i++)
-      memcpy(dst + i*dstStride, src + i*srcStride, rowCount*sizeof(double));
-  }
+// Utility function used to handle stride changes between columns
+void changeStrideDouble(double*dst, int dstStride, double*src, int srcStride, int rowCount, int colCount){
+  int i;
+  for (i=0;i<colCount;i++)
+    memcpy(dst + i*dstStride, src + i*srcStride, rowCount*sizeof(double));
+}
 
-  void changeStrideFloat(float*dst, int dstStride, float*src, int srcStride, int rowCount, int colCount){
-    int i;
-    for (i=0;i<colCount;i++)
-      memcpy(dst + i*dstStride, src + i*srcStride, rowCount*sizeof(float));
-  }
+void changeStrideFloat(float*dst, int dstStride, float*src, int srcStride, int rowCount, int colCount){
+  int i;
+  for (i=0;i<colCount;i++)
+    memcpy(dst + i*dstStride, src + i*srcStride, rowCount*sizeof(float));
 }

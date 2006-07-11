@@ -26,39 +26,37 @@
  * Matrix-matrix divides (i.e., equation solvers).
  */
 
-namespace FreeMat {
-  /**
-   * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
-   * $$m \times n$$.  All quantities are double precision.  Uses the
-   * LAPACK function dgesvx.
-   */
-  void doubleSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b);
-  /**
-   * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
-   * $$m \times n$$.  All quantities are double-complex precision.  Uses the
-   * LAPACK function zgesvx.
-   */
-  void dcomplexSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b);
-  /**
-   * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
-   * $$m \times n$$.  All quantities are single precision.  Uses the
-   * LAPACK function sgesvx.
-   */
-  void floatSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b);
-  /**
-   * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
-   * $$m \times n$$.  All quantities are complex precision.  Uses the
-   * LAPACK function cgesvx.
-   */
-  void complexSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b);
+/**
+ * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
+ * $$m \times n$$.  All quantities are double precision.  Uses the
+ * LAPACK function dgesvx.
+ */
+void doubleSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b);
+/**
+ * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
+ * $$m \times n$$.  All quantities are double-complex precision.  Uses the
+ * LAPACK function zgesvx.
+ */
+void dcomplexSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b);
+/**
+ * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
+ * $$m \times n$$.  All quantities are single precision.  Uses the
+ * LAPACK function sgesvx.
+ */
+void floatSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b);
+/**
+ * Solve $$A C = B$$, where $$A$$ is $$m \times m$$, and $$B$$ is
+ * $$m \times n$$.  All quantities are complex precision.  Uses the
+ * LAPACK function cgesvx.
+ */
+void complexSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b);
 
-  /**
-   * Return the 1-norm condition number estimate for A.
-   */
-  float floatRecipCond(Interpreter* eval, int m, int n, float *a);
-  double doubleRecipCond(Interpreter* eval, int m, int n, double *a);
-  float complexRecipCond(Interpreter* eval, int m, int n, float *a);
-  double dcomplexRecipCond(Interpreter* eval, int m, int n, double *a);
-}
+/**
+ * Return the 1-norm condition number estimate for A.
+ */
+float floatRecipCond(Interpreter* eval, int m, int n, float *a);
+double doubleRecipCond(Interpreter* eval, int m, int n, double *a);
+float complexRecipCond(Interpreter* eval, int m, int n, float *a);
+double dcomplexRecipCond(Interpreter* eval, int m, int n, double *a);
 
 #endif

@@ -229,45 +229,42 @@ extern "C" {
 	       double *rcond, double *work, double *rwork, int *info);
 
   double dlange_(char *norm, int *M, int *N, double *A, int *LDA,
-	       double *work);
+		 double *work);
 
   float slange_(char *norm, int *M, int *N, float *A, int *LDA,
-	       float *work);
+		float *work);
 
   float clange_(char *norm, int *M, int *N, float *A, int *LDA,
-	       float *work);
+		float *work);
 
   double zlange_(char *norm, int *M, int *N, double *A, int *LDA,
-	       double *work);
+		 double *work);
 
 }
 
-namespace FreeMat {
-  /**
-   * Call the LAPACK slamch function to get the $$\epsilon$$ value for
-   * a floating point number.
-   */
-  double getEPS();
-  /**
-   * Call the LAPACK dlamch function to get the $$\epsilon$$ value for
-   * a double-precision floating point number.
-   */
-  float getFloatEPS();
-  /**
-   * This function effectively pads each column in the source matrix by a
-   * number of zeros.  It actually allows us to change the stride of the
-   * matrix (amount that must be added to an index to move from one column
-   * to the next).  
-   */
-  void changeStrideDouble(double*dst, int dstStride, double*src, int srcStride, int rowCount, int colCount);
-  /**
-   * This function effectively pads each column in the source matrix by a
-   * number of zeros.  It actually allows us to change the stride of the
-   * matrix (amount that must be added to an index to move from one column
-   * to the next).  
-   */
-  void changeStrideFloat(float*dst, int dstStride, float*src, int srcStride, int rowCount, int colCount);
-
-}
+/**
+ * Call the LAPACK slamch function to get the $$\epsilon$$ value for
+ * a floating point number.
+ */
+double getEPS();
+/**
+ * Call the LAPACK dlamch function to get the $$\epsilon$$ value for
+ * a double-precision floating point number.
+ */
+float getFloatEPS();
+/**
+ * This function effectively pads each column in the source matrix by a
+ * number of zeros.  It actually allows us to change the stride of the
+ * matrix (amount that must be added to an index to move from one column
+ * to the next).  
+ */
+void changeStrideDouble(double*dst, int dstStride, double*src, int srcStride, int rowCount, int colCount);
+/**
+ * This function effectively pads each column in the source matrix by a
+ * number of zeros.  It actually allows us to change the stride of the
+ * matrix (amount that must be added to an index to move from one column
+ * to the next).  
+ */
+void changeStrideFloat(float*dst, int dstStride, float*src, int srcStride, int rowCount, int colCount);
 
 #endif

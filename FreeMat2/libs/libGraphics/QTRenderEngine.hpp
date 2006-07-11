@@ -23,16 +23,14 @@
 #include <qpainter.h>
 #include <QPointF>
 
-//namespace FreeMat {
-
 typedef struct {
   double x;
   double y;
   double z;
-} pt3d;
+} qpt3d;
 
 typedef struct {
-  pt3d pts[4];
+  qpt3d pts[4];
   double meanz;
   double r;
   double g;
@@ -127,6 +125,4 @@ public:
   virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
 			  std::vector<std::vector<cpoint> > edges, bool flatedges);
 };
-//};
-
 #endif

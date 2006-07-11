@@ -22,8 +22,6 @@
 
 #include "Context.hpp"
 
-namespace FreeMat {
-  void LoadCoreFunctions(Context* context);
-  void LoadGUICoreFunctions(Context* context);
-}
+void LoadCoreFunctions(Context* context);
+void LoadGUICoreFunctions(Context* context);
 #endif

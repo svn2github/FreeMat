@@ -22,45 +22,43 @@
 #include <map>
 #include "Exception.hpp"
 
-namespace FreeMat {
-  template<class T>
-  class HandleList {
-    typedef T value_type;
-    std::map<unsigned int, T, std::less<unsigned int> > handles;
-    unsigned int max_handle;
-  public:
-    HandleList() : max_handle(0) {
-    }
-    ~HandleList() {
-    }
+template<class T>
+class HandleList {
+  typedef T value_type;
+  std::map<unsigned int, T, std::less<unsigned int> > handles;
+  unsigned int max_handle;
+public:
+  HandleList() : max_handle(0) {
+  }
+  ~HandleList() {
+  }
 
-    unsigned int maxHandle() {
-      return max_handle;
-    }
+  unsigned int maxHandle() {
+    return max_handle;
+  }
 
-    unsigned int assignHandle(T val) {
-      int nxt = 0;
-      bool freeHandleFound = false;
-      while ((nxt < max_handle) && !freeHandleFound) {
-	freeHandleFound = (handles.count(nxt) == 0);
-	if (!freeHandleFound) nxt++;
-      }
-      handles[nxt] = val;
-      if (nxt >= max_handle) max_handle++;
-      return nxt+1;
+  unsigned int assignHandle(T val) {
+    int nxt = 0;
+    bool freeHandleFound = false;
+    while ((nxt < max_handle) && !freeHandleFound) {
+      freeHandleFound = (handles.count(nxt) == 0);
+      if (!freeHandleFound) nxt++;
     }
+    handles[nxt] = val;
+    if (nxt >= max_handle) max_handle++;
+    return nxt+1;
+  }
 
-    T lookupHandle(unsigned int handle) {
-      if (handles.count(handle-1) == 0)
-	throw Exception("Invalid handle!");
-      return handles[handle-1];
-    }
+  T lookupHandle(unsigned int handle) {
+    if (handles.count(handle-1) == 0)
+      throw Exception("Invalid handle!");
+    return handles[handle-1];
+  }
 
-    void deleteHandle(unsigned int handle) {
-      if ((handle-1) == max_handle) 
-	max_handle--;
-      handles.erase(handle-1);
-    }
-  };
-}
+  void deleteHandle(unsigned int handle) {
+    if ((handle-1) == max_handle) 
+      max_handle--;
+    handles.erase(handle-1);
+  }
+};
 #endif

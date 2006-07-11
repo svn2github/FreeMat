@@ -22,8 +22,8 @@
 #include <string>
 #include <qobject.h>
 #include "KeyManager.hpp"
-#include "Interpreter.hpp"
 #include "application.hpp"
+#include "InterpreterThread.hpp"
 
 using namespace FreeMat;
 
@@ -32,10 +32,10 @@ class MainApp : public QObject
   Q_OBJECT
   KeyManager* m_keys;
   QObject *m_term;
-  Interpreter* eval;
   bool guimode;
   bool skipGreeting;
   ApplicationWindow *m_win;
+  InterpreterThread *irun;
 public:
   MainApp();
   ~MainApp();
@@ -52,6 +52,7 @@ public slots:
   void HelpWin();
   void PathTool();
   void Editor();
+  void ExecuteLine(std::string txt);
 signals:
   void Shutdown();
   void Initialize();

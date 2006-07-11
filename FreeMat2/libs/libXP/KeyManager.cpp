@@ -513,9 +513,15 @@ void KeyManager::NewLine() {
   emit OutputRawString("\r\n");
   qDebug("sending command...\n");
   emit ExecuteLine(std::string(lineData) + "\n");
+  ReplacePrompt("");
   qDebug("completed command...\n");
   ResetLineBuffer();
   DisplayPrompt();
+}
+
+void KeyManager::Ready() {
+  ReplacePrompt("--> ");
+  Redisplay();
 }
 
 extern bool InterruptPending;
@@ -1075,3 +1081,4 @@ void KeyManager::ContinueAction() {
 void KeyManager::StopAction() {
   emit ExecuteLine("retall\n");  
 }
+

@@ -15,7 +15,19 @@ using namespace std;
 
 void InterpreterThread::run() {
   qDebug("interpreter thread on standby...\n");
-  QThread::exec();
+  eval->sendGreeting();
+  emit Ready();
+  forever {
+    std::string cmdline;
+    mutex.lock();
+    if (cmd_buffer.empty())
+      condition.wait(&mutex);
+    cmdline = *cmd_buffer.begin();
+    cmd_buffer.erase(cmd_buffer.begin());
+    mutex.unlock();
+    eval->ExecuteLine(cmdline);
+    emit Ready();
+  }
 }
 
 void InterpreterThread::Setup() {
@@ -68,6 +80,9 @@ void InterpreterThread::Setup() {
   eval->rescanPath();
 }
 
-void InterpreterThread::ExecuteLine(std::string txt) {
-  eval->ExecuteLine(txt);
+void InterpreterThread::ExecuteLine(std::string cmd) {
+  mutex.lock();
+  cmd_buffer.push_back(cmd);
+  condition.wakeAll();
+  mutex.unlock();
 }

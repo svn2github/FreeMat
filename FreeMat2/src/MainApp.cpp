@@ -31,7 +31,6 @@ using namespace FreeMat;
 #include "LoadCore.hpp"
 #include "LoadFN.hpp"
 #include "HandleCommands.hpp"
-#include "InterpreterThread.hpp"
 #include "Core.hpp"
 
 #ifdef Q_WS_X11 
@@ -88,7 +87,7 @@ MainApp::~MainApp() {
 
 void MainApp::HelpWin() {
   ArrayVector dummy;
-  HelpWinFunction(0,dummy,eval);
+  HelpWinFunction(0,dummy,irun->GetInterpreter());
 }
 
 void MainApp::SetupGUICase() {
@@ -158,12 +157,12 @@ void MainApp::SetupDumbTerminalCase() {
 
 void MainApp::PathTool() {
   ArrayVector dummy;
-  PathToolFunction(0,dummy,eval);
+  PathToolFunction(0,dummy,irun->GetInterpreter());
 }
 
 void MainApp::Editor() {
   ArrayVector dummy;
-  EditorFunction(0,dummy,eval);
+  EditorFunction(0,dummy,irun->GetInterpreter());
 }
 
 void MainApp::SetGUIMode(bool mode) {
@@ -182,12 +181,18 @@ void MainApp::TerminalReset() {
 #endif  
 }
 
+void MainApp::ExecuteLine(std::string txt) {
+  irun->ExecuteLine(txt);
+}
+
 int MainApp::Run() {
   qDebug("Starting interpreter...\n");
-  InterpreterThread *irun = new InterpreterThread;
+  irun = new InterpreterThread;
   irun->Setup();
-  connect(m_keys,SIGNAL(ExecuteLine(std::string)),irun,SLOT(ExecuteLine(std::string)));
+  qRegisterMetaType<std::string>("std::string");
+  connect(m_keys,SIGNAL(ExecuteLine(std::string)),this,SLOT(ExecuteLine(std::string)));
   connect(irun->GetInterpreter(),SIGNAL(outputRawText(std::string)),m_term,SLOT(OutputRawString(std::string)));
+  connect(irun,SIGNAL(Ready()),m_keys,SLOT(Ready()));
   irun->start();
   return 0;
 }

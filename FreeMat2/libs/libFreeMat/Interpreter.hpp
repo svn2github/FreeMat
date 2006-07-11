@@ -193,7 +193,6 @@ namespace FreeMat {
     void CWDChanged();
   public:
     void run();
-  public slots:
     void sendGreeting(); // Say hello
   public:
     /**

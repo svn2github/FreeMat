@@ -153,6 +153,7 @@ signals:
   void UpdateVariables();
   void ExecuteLine(std::string txt);
 public slots:
+  void Ready();
   void OnChar( int c );
   void SetTermWidth(int w);
   void QueueString(QString);

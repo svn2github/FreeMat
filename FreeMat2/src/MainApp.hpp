@@ -51,6 +51,7 @@ public slots:
   void PathTool();
   void Editor();
   void ExecuteLine(string txt);
+  void UpdateTermWidth(int);
 signals:
   void Shutdown();
   void Initialize();

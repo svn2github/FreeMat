@@ -56,15 +56,15 @@ public:
   void Redisplay();
   void setTerminalWidth(int w);
   void AddCharToLine(char c);
-  void ReplacePrompt(std::string prmt);
+  void ReplacePrompt(string prmt);
   int DisplayPrompt();
   void OutputChar(char c, char pad);
-  void OutputString(std::string msg, char c);
+  void OutputString(string msg, char c);
   void TerminalMove(int n);
   void SetTermCurpos(int n);
   void PlaceCursor(int n);
   int DisplayedCharWidth(char c, int aterm_curpos);
-  int DisplayedStringWidth(std::string s, int nc, int offset);
+  int DisplayedStringWidth(string s, int nc, int offset);
   int BuffCurposToTermCurpos(int n);
   void DeleteChars(int nc, int cut);
   void TruncateDisplay();
@@ -85,35 +85,35 @@ public:
 
   void HistorySearchBackward();
   void HistorySearchForward();
-  void AddHistory(std::string line);
+  void AddHistory(string line);
   void HistoryFindForwards();
   void HistoryFindBackwards();
-  void AddStringToLine(std::string s);
-  void SearchPrefix(std::string aline, int alen);
+  void AddStringToLine(string s);
+  void SearchPrefix(string aline, int alen);
   void Yank();
-  void ListCompletions(std::vector<std::string> completions);
+  void ListCompletions(vector<string> completions);
   void CompleteWord();
  protected:
   void EraseCharacters(int pos, int count);
   void InsertCharacter(int pos, char c);
   void SetCharacter(int pos, char c);
-  void InsertString(int pos, std::string s);
+  void InsertString(int pos, string s);
   
   void NewLine();
   void ResetLineBuffer();
-  std::list<std::string> enteredLines;  
+  list<string> enteredLines;  
   bool enteredLinesEmpty;  
   // the size (in text coords) of the window
   int nline;
   int ncolumn;
   // the text
-  std::vector<std::string> history;
+  vector<string> history;
   // The new line buffer
   char *lineData;
   // The maximum allowed line length
   int linelen;
   // The cut buffer
-  std::string cutbuf;
+  string cutbuf;
   // number of characters in line
   int ntotal;
   // Current position in the buffer
@@ -128,13 +128,13 @@ public:
   int insert_curpos;
   int keyseq_count;
   int last_search;
-  std::string prefix;
+  string prefix;
   int prefix_len;
   // True in insert mode
   bool insert;
   int startsearch;
   // The prompt
-  std::string prompt;
+  string prompt;
   // length of the prompt string
   int prompt_len;
   // Are we waiting for input?
@@ -150,11 +150,11 @@ signals:
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
-  void OutputRawString(std::string txt);
+  void OutputRawString(string txt);
   void SendCommand(QString);
   void Interrupt();
   void UpdateVariables();
-  void ExecuteLine(std::string txt);
+  void ExecuteLine(string txt);
 public slots:
   void Ready();
   void OnChar( int c );
@@ -166,6 +166,9 @@ public slots:
   void RegisterInterrupt();
   void ContinueAction();
   void StopAction();
+  void SetPrompt(string);
+signals:
+  void UpdateTermWidth(int);
 };
 
 #endif

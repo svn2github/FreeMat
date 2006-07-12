@@ -180,6 +180,10 @@ void MainApp::TerminalReset() {
 #endif  
 }
 
+void MainApp::UpdateTermWidth(int w) {
+  m_eval->setTerminalWidth(w);
+}
+
 void MainApp::ExecuteLine(string txt) {
   m_eval->ExecuteLine(txt);
 }
@@ -234,7 +238,10 @@ int MainApp::Run() {
   m_eval->rescanPath();
   qRegisterMetaType<string>("string");
   connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
+  connect(m_keys,SIGNAL(UpdateTermWidth(int)),this,SLOT(UpdateTermWidth(int)));
   connect(m_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
+  connect(m_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
+  m_eval->setGreetingFlag(skipGreeting);
   m_eval->start();
   return 0;
 }

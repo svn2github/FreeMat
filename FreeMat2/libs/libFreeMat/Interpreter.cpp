@@ -238,7 +238,9 @@ void Interpreter::procFileMex(std::string fname, std::string fullname, bool temp
 }
 
 void Interpreter::setTerminalWidth(int ncols) {
+  mutex.lock();
   m_ncols = ncols;
+  mutex.unlock();
 }
 
 int Interpreter::getTerminalWidth() {
@@ -258,7 +260,6 @@ std::string TranslateString(std::string x) {
 }
 
 void Interpreter::outputMessage(std::string msg) {
-  std::cout << "M" << msg;
   emit outputRawText(TranslateString(msg));
 }
 
@@ -310,6 +311,8 @@ std::string Interpreter::getVersionString() {
 
 void Interpreter::run() {
   qDebug("Interpreter started...\n");
+  if (!m_skipflag)
+    sendGreeting();
   try {
     while (1) {
       try {
@@ -3404,6 +3407,7 @@ Interpreter::Interpreter(Context* aContext) {
   inStepMode = false;
   bpActive = false;
   stopoverload = false;
+  m_skipflag = false;
   clearStacks();
 }
 
@@ -3538,6 +3542,10 @@ void Interpreter::setLastErrorString(string txt) {
 //    }
 //  }
 
+void Interpreter::setGreetingFlag(bool skip) {
+  m_skipflag = skip;
+}
+
 void Interpreter::evalCLI() {
   char prompt[150];
 
@@ -3554,6 +3562,7 @@ void Interpreter::evalCLI() {
       sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
 	      ip_context & 0xffff);
   while(1) {
+    emit SetPrompt(prompt);
     std::string cmdline;
     mutex.lock();
     if (cmd_buffer.empty())

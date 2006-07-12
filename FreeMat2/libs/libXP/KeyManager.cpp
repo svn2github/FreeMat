@@ -82,6 +82,7 @@ int KeyManager::getTerminalWidth() {
 }
 
 void KeyManager::SetTermWidth(int w) {
+  emit UpdateTermWidth(w);
   ncolumn = w;
   Redisplay();
 }
@@ -125,7 +126,7 @@ int KeyManager::DisplayedCharWidth(char c, int aterm_curpos) {
 
 // Return the number of terminal characters needed to display a
 // given substring.
-int KeyManager::DisplayedStringWidth(std::string s, int nc, int aterm_curpos) {
+int KeyManager::DisplayedStringWidth(string s, int nc, int aterm_curpos) {
   int slen=0;   /* The displayed number of characters */
   int i;
   /*
@@ -141,7 +142,7 @@ int KeyManager::DisplayedStringWidth(std::string s, int nc, int aterm_curpos) {
   return slen;
 }
 
-void KeyManager::InsertString(int pos, std::string s) {
+void KeyManager::InsertString(int pos, string s) {
   int len = s.size();
   for (int i=4096-len;i>pos;i--)
     lineData[i] = lineData[i-len];
@@ -199,11 +200,11 @@ void KeyManager::Redisplay() {
 }
 
 void KeyManager::setTerminalWidth(int w) {
-  std::cout << "Set terminal width " << w << "\n";
+  cout << "Set terminal width " << w << "\n";
   ncolumn = w; 
 }
 
-void KeyManager::ReplacePrompt(std::string aprompt) {
+void KeyManager::ReplacePrompt(string aprompt) {
   prompt = aprompt;
   prompt_len = DisplayedStringWidth(aprompt,-1,0);
 }
@@ -338,7 +339,7 @@ void KeyManager::AddCharToLine(char c) {
      * Redraw the line from the cursor position to the end of the line,
      * and move the cursor to just after the added character.
      */
-    OutputString(std::string(lineData+sbuff_curpos), '\0');
+    OutputString(string(lineData+sbuff_curpos), '\0');
     SetTermCurpos(sterm_curpos + width);
     /*
      * Are we overwriting an existing character?
@@ -361,7 +362,7 @@ void KeyManager::AddCharToLine(char c) {
      * with spaces.
      */
     if(old_width > width) {
-      OutputString(std::string(lineData+sbuff_curpos), '\0');
+      OutputString(string(lineData+sbuff_curpos), '\0');
       /*
        * Clear to the end of the terminal.
        */
@@ -380,7 +381,7 @@ void KeyManager::AddCharToLine(char c) {
        * Redraw the line from the cursor position to the end of the line,
        * and move the cursor to just after the added character.
        */
-      OutputString(std::string(lineData+sbuff_curpos), '\0');
+      OutputString(string(lineData+sbuff_curpos), '\0');
       SetTermCurpos(sterm_curpos + width);
       buff_curpos++;
       /*
@@ -492,7 +493,7 @@ void KeyManager::OutputChar(char c, char pad) {
   };
 }
 
-void KeyManager::OutputString(std::string st, char pad) {
+void KeyManager::OutputString(string st, char pad) {
   if (st.size() == 0) return;
   for(unsigned int i=0;i<st.size()-1;i++)
     OutputChar(st[i],st[i+1]);
@@ -518,7 +519,7 @@ void KeyManager::NewLine() {
   PlaceCursor(ntotal);
   emit OutputRawString("\r\n");
   qDebug("sending command...\n");
-  emit ExecuteLine(std::string(lineData) + "\n");
+  emit ExecuteLine(string(lineData) + "\n");
   ReplacePrompt("");
   qDebug("completed command...\n");
   ResetLineBuffer();
@@ -573,7 +574,7 @@ void KeyManager::DeleteChars(int nc, int cut) {
    */
   if(cut) {
     // Fixme
-    //    cutbuf = std::string(line,buff_curpos,nc);
+    //    cutbuf = string(line,buff_curpos,nc);
   }
   /*
    * Nothing to delete?
@@ -590,7 +591,7 @@ void KeyManager::DeleteChars(int nc, int cut) {
   /*
    * Redraw the remaining characters following the cursor.
    */
-  OutputString(std::string(lineData+buff_curpos), '\0');
+  OutputString(string(lineData+buff_curpos), '\0');
   /*
    * Clear to the end of the terminal.
    */
@@ -606,7 +607,7 @@ void KeyManager::EndOfLine() {
 }
 
 void KeyManager::KillLine() {
-  cutbuf = std::string(lineData+buff_curpos);
+  cutbuf = string(lineData+buff_curpos);
   ntotal = buff_curpos;
   memset(lineData+ntotal,0,4096-ntotal);
   TruncateDisplay();
@@ -615,7 +616,7 @@ void KeyManager::KillLine() {
 
 void KeyManager::HistorySearchBackward() {
   if (last_search != keyseq_count-1)
-    SearchPrefix(std::string(lineData),buff_curpos);
+    SearchPrefix(string(lineData),buff_curpos);
   last_search = keyseq_count;
   HistoryFindBackwards();
   ntotal = strlen(lineData);
@@ -625,7 +626,7 @@ void KeyManager::HistorySearchBackward() {
 
 void KeyManager::HistorySearchForward() {
   if (last_search != keyseq_count-1)
-    SearchPrefix(std::string(lineData),buff_curpos);
+    SearchPrefix(string(lineData),buff_curpos);
   last_search = keyseq_count;
   HistoryFindForwards();
   ntotal = strlen(lineData);
@@ -633,13 +634,13 @@ void KeyManager::HistorySearchForward() {
   Redisplay();
 }
 
-void KeyManager::SearchPrefix(std::string aline, int aprefix_len) {
-  prefix = std::string(aline,0,aprefix_len);
+void KeyManager::SearchPrefix(string aline, int aprefix_len) {
+  prefix = string(aline,0,aprefix_len);
   prefix_len = aprefix_len;
   startsearch = history.size();
 }
 
-void KeyManager::AddHistory(std::string mline) {
+void KeyManager::AddHistory(string mline) {
   prefix = "";
   prefix_len = 0;
   history.push_back(mline);
@@ -694,7 +695,7 @@ void KeyManager::HistoryFindBackwards() {
  *  return   int     0 - OK.
  *                   1 - Insufficient room.
  */
-void KeyManager::AddStringToLine(std::string s) {
+void KeyManager::AddStringToLine(string s) {
   int buff_slen;   /* The length of the string being added to line[] */
   int term_slen;   /* The length of the string being written to the terminal */
   int sbuff_curpos; /* The original value of gl->buff_curpos */
@@ -733,7 +734,7 @@ void KeyManager::AddStringToLine(std::string s) {
    * Write the modified part of the line to the terminal, then move
    * the terminal cursor to the end of the displayed input string.
    */
-  OutputString(std::string(lineData+sbuff_curpos), '\0');
+  OutputString(string(lineData+sbuff_curpos), '\0');
   SetTermCurpos(sterm_curpos + term_slen);
 }
 
@@ -744,7 +745,7 @@ void KeyManager::Yank() {
   AddStringToLine(cutbuf);
 }
 
-void KeyManager::ListCompletions(std::vector<std::string> completions) {
+void KeyManager::ListCompletions(vector<string> completions) {
   int maxlen;    /* The length of the longest matching string */
   int width;     /* The width of a column */
   int ncol;      /* The number of columns to list */
@@ -806,12 +807,12 @@ void KeyManager::ListCompletions(std::vector<std::string> completions) {
   };
 }
 
-std::string GetCommonPrefix(std::vector<std::string> matches,
-			    std::string tempstring) {
+string GetCommonPrefix(vector<string> matches,
+			    string tempstring) {
   unsigned int minlength;
   unsigned int prefixlength;
   bool allmatch;
-  std::string templ;
+  string templ;
   unsigned int i, j;
 
   minlength = matches[0].size();
@@ -824,14 +825,14 @@ std::string GetCommonPrefix(std::vector<std::string> matches,
     j = 0;
     allmatch = true;
     while (allmatch && (j<prefixlength)) {
-      std::string mtch(matches[i]);
+      string mtch(matches[i]);
       allmatch = (mtch[j] == templ[j]);
       if (allmatch) j++;
     }
     prefixlength = (j < prefixlength) ? j : prefixlength;
   }
   if (prefixlength <= tempstring.length())
-    return (std::string(""));
+    return (string(""));
   else
     return(templ.substr(tempstring.length(),prefixlength-tempstring.length()));
 }
@@ -845,7 +846,7 @@ void KeyManager::CompleteWord() {
                           /*  total length of the line. */
   int buff_pos;           /* The buffer index at which the completion is */
                           /*  to be inserted. */
-  std::vector<std::string> matches;
+  vector<string> matches;
   redisplay = 1;
   /*
    * Get the cursor position at which the completion is to be inserted.
@@ -854,7 +855,7 @@ void KeyManager::CompleteWord() {
   /*
    * Perform the completion.
    */
-  std::string tempstring;
+  string tempstring;
   //FIXME
   //  matches = m_eval->GetCompletions(lineData, buff_curpos, tempstring);
   if(matches.size() == 0) {
@@ -876,7 +877,7 @@ void KeyManager::CompleteWord() {
     /*
      * Find the common prefix
      */
-    std::string prefix;
+    string prefix;
     prefix = GetCommonPrefix(matches, tempstring);
     /*
      * Get the length of the suffix and any continuation suffix to add to it.
@@ -898,7 +899,7 @@ void KeyManager::CompleteWord() {
 	/*
 	 * Make room to insert the filename extension.
 	 */
-	InsertString(buff_curpos,std::string(prefix,0,nextra));
+	InsertString(buff_curpos,string(prefix,0,nextra));
 	/*
 	 * Record the increased length of the line.
 	 */
@@ -914,7 +915,7 @@ void KeyManager::CompleteWord() {
 	 */
 	if(!redisplay) {
 	  TruncateDisplay();
-	  OutputString(std::string(lineData+buff_pos), '\0');
+	  OutputString(string(lineData+buff_pos), '\0');
 	  PlaceCursor(buff_curpos);
 	  return;
 	};
@@ -1000,7 +1001,7 @@ void KeyManager::OnChar( int c ) {
 }
 
 
-//void KeyManager::ExecuteLine(std::string mline) {
+//void KeyManager::ExecuteLine(string mline) {
 //  enteredLines.push_back(mline);
 //  ReplacePrompt("");
 //  enteredLinesEmpty = false;
@@ -1011,7 +1012,7 @@ void KeyManager::OnChar( int c ) {
 //}
 
 void KeyManager::QueueString(QString t) {
-  std::string g(t.toStdString());
+  string g(t.toStdString());
   AddStringToLine(g);
 }
 
@@ -1042,7 +1043,7 @@ void KeyManager::QueueMultiString(QString t) {
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   emit OutputRawString("\r\n");
-  emit ExecuteLine(std::string(lineData)+"\n");
+  emit ExecuteLine(string(lineData)+"\n");
   ResetLineBuffer();
   DisplayPrompt();
 }
@@ -1051,7 +1052,7 @@ void KeyManager::QueueSilent(QString t) {
   emit ExecuteLine(t.toStdString()+"\n");
 }
 
-//char* KeyManager::getLine(std::string aprompt) {
+//char* KeyManager::getLine(string aprompt) {
 //  emit UpdateVariables();
 //  ReplacePrompt(aprompt);
 //  DisplayPrompt();
@@ -1059,7 +1060,7 @@ void KeyManager::QueueSilent(QString t) {
 //    loopactive++;
 //    m_loop->exec();
 //  }
-//  std::string theline(enteredLines.front());
+//  string theline(enteredLines.front());
 //  enteredLines.pop_front();
 //  enteredLinesEmpty = (enteredLines.empty());
 //  char *cp;
@@ -1075,7 +1076,7 @@ void KeyManager::RegisterTerm(QObject* term) {
   connect(this,SIGNAL(ClearEOL()),term,SLOT(ClearEOL()));
   connect(this,SIGNAL(ClearEOD()),term,SLOT(ClearEOD()));
   connect(this,SIGNAL(MoveBOL()),term,SLOT(MoveBOL()));
-  connect(this,SIGNAL(OutputRawString(std::string)),term,SLOT(OutputRawString(std::string)));
+  connect(this,SIGNAL(OutputRawString(string)),term,SLOT(OutputRawString(string)));
   connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
   connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  
 }
@@ -1086,6 +1087,11 @@ void KeyManager::ContinueAction() {
 
 void KeyManager::StopAction() {
   emit ExecuteLine("retall\n");  
+}
+
+void KeyManager::SetPrompt(string txt) {
+  ReplacePrompt(txt);
+  Redisplay();
 }
 
 /*.......................................................................
@@ -1136,10 +1142,10 @@ static char *start_of_path(const char *string, int back_from)
   return (char *)string + i + 1;
 }
 
-std::vector<std::string> KeyManager::GetCompletions(std::string line, 
+vector<string> KeyManager::GetCompletions(string line, 
 						    int word_end, 
-						    std::string &matchString) {
-  std::vector<std::string> completions;
+						    string &matchString) {
+  vector<string> completions;
   /*
    * Find the start of the filename prefix to be completed, searching
    * backwards for the first unescaped space, or the start of the line.
@@ -1151,27 +1157,27 @@ std::vector<std::string> KeyManager::GetCompletions(std::string line,
   tmp = (char*) malloc(mtchlen+1);
   memcpy(tmp,start,mtchlen);
   tmp[mtchlen] = 0;
-  matchString = std::string(tmp);
+  matchString = string(tmp);
   
   /*
    *  the preceeding character was not a ' (quote), then
    * do a command expansion, otherwise, do a filename expansion.
    */
   if (start[-1] != '\'' && context) {
-    std::vector<std::string> local_completions;
-    std::vector<std::string> global_completions;
+    vector<string> local_completions;
+    vector<string> global_completions;
     int i;
-    local_completions = context->getCurrentScope()->getCompletions(std::string(start));
-    global_completions = context->getGlobalScope()->getCompletions(std::string(start));
+    local_completions = context->getCurrentScope()->getCompletions(string(start));
+    global_completions = context->getGlobalScope()->getCompletions(string(start));
     for (i=0;i<local_completions.size();i++)
       completions.push_back(local_completions[i]);
     for (i=0;i<global_completions.size();i++)
       completions.push_back(global_completions[i]);
-    std::sort(completions.begin(),completions.end());
+    sort(completions.begin(),completions.end());
     return completions;
   } else {
     glob_t names;
-    std::string pattern(tmp);
+    string pattern(tmp);
     pattern.append("*");
     glob(pattern.c_str(), GLOB_MARK, NULL, &names);
     int i;

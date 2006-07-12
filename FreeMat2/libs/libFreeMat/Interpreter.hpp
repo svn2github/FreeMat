@@ -161,6 +161,10 @@ class Interpreter : public QThread {
    * The width of the output in characters
    */
   int m_ncols;
+  /**
+   * This flag controls the greeting
+   */
+  bool m_skipflag;
 
   /******************************************
    *  Public Methods for the Interpreter    *
@@ -326,6 +330,10 @@ public:
    * Set the text for the last error.
    */
   void setLastErrorString(string txt);
+  /**
+   * Set to false to turn off the greeting.
+   */
+  void setGreetingFlag(bool skip);
 
   /******************************************
    *  Signals for the Interpreter           *
@@ -339,6 +347,10 @@ signals:
    * User has changed the current working directory
    */
   void CWDChanged();
+  /**
+   * Change the prompt
+   */
+  void SetPrompt(string);
 
   /******************************************
    *  Private Methods for the Interpreter   *

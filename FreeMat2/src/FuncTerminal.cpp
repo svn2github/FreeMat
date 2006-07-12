@@ -20,7 +20,6 @@
 #include <qapplication.h>
 #include <qeventloop.h>
 
-namespace FreeMat {
   FuncTerminal::FuncTerminal(char *myargv[], int myargc, int funcMode) {
     sprintf(m_buffer,"%s",myargv[funcMode+1]);
     for (int i=funcMode+2;i<myargc;i++) {
@@ -68,12 +67,12 @@ namespace FreeMat {
     fflush(stdout);
   }
 
-  void FuncTerminal::OutputRawString(std::string txt) {
+  void FuncTerminal::OutputRawString(string txt) {
     printf("%s",txt.c_str());
     fflush(stdout);
   }
   
-  char* FuncTerminal::getLine(std::string prompt) {
+  char* FuncTerminal::getLine(string prompt) {
     if (!line_sent) {
       line_sent = true;
       return strdup(m_buffer);
@@ -84,4 +83,3 @@ namespace FreeMat {
   int FuncTerminal::getTerminalWidth() {
     return 80;
   }
-}

@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|acoth| function is computed from the formula
 %\[
-%   \acoth(x) = \tanh^{-1}\left(\frac{1}{x}\right)
+%   \coth^{-1}(x) = \tanh^{-1}\left(\frac{1}{x}\right)
 %\]
 %@@Examples
 %Here is a simple plot of the inverse hyperbolic cotangent function

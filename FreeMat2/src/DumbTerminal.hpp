@@ -22,6 +22,8 @@
 #include <QObject>
 #include <string>
 
+using namespace std;
+
 class DumbTerminal : public QObject {
   Q_OBJECT
 public:
@@ -35,7 +37,7 @@ public slots:
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
-  void OutputRawString(std::string txt);
+  void OutputRawString(string txt);
   void DoRead();
 signals:
   void OnChar(int c);

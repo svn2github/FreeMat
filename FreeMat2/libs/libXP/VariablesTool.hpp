@@ -30,9 +30,9 @@ public:
 protected slots:
   void refresh();
 public:
-  void setContext(FreeMat::Context *watch);
+  void setContext(Context *watch);
 private:
-  FreeMat::Context *context;
+  Context *context;
   QTableWidget *m_flist;
 };
 

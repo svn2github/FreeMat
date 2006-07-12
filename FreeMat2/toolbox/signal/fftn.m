@@ -16,6 +16,7 @@
 %or truncated as necessary in each dimension so that the output
 %is of size @|dims|. The @|fftn| function is implemented by a sequence
 %of calls to @|fft|.
+%@@Tests
 %!
 function y = fftn(x,dims)
   if (nargin == 1)

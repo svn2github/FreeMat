@@ -774,19 +774,19 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
       float x_imag = dp[i+1];
       float xsq_real, xsq_imag;
       // Compute x^2
-      csqr(x_real,x_imag,&xsq_real,&xsq_imag);
+      c_sqr(x_real,x_imag,&xsq_real,&xsq_imag);
       // Compute 1-x^2
       xsq_real = 1.0 - xsq_real;
       xsq_imag = -xsq_imag;
       float xrt_real, xrt_imag;
       // Compute sqrt(1-x^2)
-      csqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
+      c_sqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
       // Add i*x = i*(a+b*i) = -b+i*a
       xrt_real -= x_imag;
       xrt_imag += x_real;
       // Take the complex log
       float xlg_real, xlg_imag;
-      clog(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
+      c_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       // Answer = pi/2
       op[i] = 2.0*atan(1.0f) - xlg_imag;
       op[i+1] = xlg_real;
@@ -804,19 +804,19 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
       double x_imag = dp[i+1];
       double xsq_real, xsq_imag;
       // Compute x^2
-      zsqr(x_real,x_imag,&xsq_real,&xsq_imag);
+      z_sqr(x_real,x_imag,&xsq_real,&xsq_imag);
       // Compute 1-x^2
       xsq_real = 1.0 - xsq_real;
       xsq_imag = -xsq_imag;
       double xrt_real, xrt_imag;
       // Compute sqrt(1-x^2)
-      zsqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
+      z_sqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
       // Add i*x = i*(a+b*i) = -b+i*a
       xrt_real -= x_imag;
       xrt_imag += x_real;
       // Take the complex log
       double xlg_real, xlg_imag;
-      zlog(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
+      z_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       // Answer = pi/2
       op[i] = 2.0*atan(1.0f) - xlg_imag;
       op[i+1] = xlg_real;
@@ -970,19 +970,19 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
       float x_imag = dp[i+1];
       float xsq_real, xsq_imag;
       // Compute x^2
-      csqr(x_real,x_imag,&xsq_real,&xsq_imag);
+      c_sqr(x_real,x_imag,&xsq_real,&xsq_imag);
       // Compute 1-x^2
       xsq_real = 1.0 - xsq_real;
       xsq_imag = -xsq_imag;
       float xrt_real, xrt_imag;
       // Compute sqrt(1-x^2)
-      csqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
+      c_sqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
       // Add i*x = i*(a+b*i) = -b+i*a
       xrt_real -= x_imag;
       xrt_imag += x_real;
       // Take the complex log
       float xlg_real, xlg_imag;
-      clog(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
+      c_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       op[i] = xlg_imag;
       op[i+1] = - xlg_real;
     }
@@ -999,19 +999,19 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
       double x_imag = dp[i+1];
       double xsq_real, xsq_imag;
       // Compute x^2
-      zsqr(x_real,x_imag,&xsq_real,&xsq_imag);
+      z_sqr(x_real,x_imag,&xsq_real,&xsq_imag);
       // Compute 1-x^2
       xsq_real = 1.0 - xsq_real;
       xsq_imag = -xsq_imag;
       double xrt_real, xrt_imag;
       // Compute sqrt(1-x^2)
-      zsqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
+      z_sqrt(xsq_real,xsq_imag,&xrt_real,&xrt_imag);
       // Add i*x = i*(a+b*i) = -b+i*a
       xrt_real -= x_imag;
       xrt_imag += x_real;
       // Take the complex log
       double xlg_real, xlg_imag;
-      zlog(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
+      z_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       // Answer = pi/2
       op[i] = xlg_imag;
       op[i+1] = - xlg_real;
@@ -1116,10 +1116,10 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
       float b_real, b_imag;
       // a = log(1-i*x) = log(1-i*(xr+i*xi))
       //   = log(1 - i*xr -i^2*xi) = log(1+xi-i*xr)
-      clog(1 + x_imag,-x_real,&a_real,&a_imag);
+      c_log(1 + x_imag,-x_real,&a_real,&a_imag);
       // b = log(i*x+1) = log(i*(xr+i*xi)+1)
       //   = log(i*xr + i^2*xi + 1) = log(1-xi + i*xr)
-      clog(1 - x_imag,x_real,&b_real,&b_imag);
+      c_log(1 - x_imag,x_real,&b_real,&b_imag);
       // atan = i/2*(a-b) = i/2*((a_r-b_r)+i*(a_i-b_i))
       //      = -1/2(a_i-b_i) + i/2*(a_r-b_r)
       op[i] = -0.5*(a_imag-b_imag);
@@ -1140,10 +1140,10 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
       double b_real, b_imag;
       // a = log(1-i*x) = log(1-i*(xr+i*xi))
       //   = log(1 - i*xr -i^2*xi) = log(1+xi-i*xr)
-      zlog(1 + x_imag,-x_real,&a_real,&a_imag);
+      z_log(1 + x_imag,-x_real,&a_real,&a_imag);
       // b = log(i*x+1) = log(i*(xr+i*xi)+1)
       //   = log(i*xr + i^2*xi + 1) = log(1-xi + i*xr)
-      zlog(1 - x_imag,x_real,&b_real,&b_imag);
+      z_log(1 - x_imag,x_real,&b_real,&b_imag);
       // atan = i/2*(a-b) = i/2*((a_r-b_r)+i*(a_i-b_i))
       //      = -1/2(a_i-b_i) + i/2*(a_r-b_r)
       op[i] = -0.5*(a_imag-b_imag);
@@ -1308,19 +1308,19 @@ ArrayVector Arctan2Function(int nargout, const ArrayVector& arg) {
       // compute x_squared and y_squared
       float xsqr_real, xsqr_imag;
       float ysqr_real, ysqr_imag;
-      csqr(x_real,x_imag,&xsqr_real,&xsqr_imag);
-      csqr(y_real,y_imag,&ysqr_real,&ysqr_imag);
+      c_sqr(x_real,x_imag,&xsqr_real,&xsqr_imag);
+      c_sqr(y_real,y_imag,&ysqr_real,&ysqr_imag);
       float den_real, den_imag;
       den_real = xsqr_real + ysqr_real;
       den_imag = xsqr_imag + ysqr_imag;
       float den_sqrt_real, den_sqrt_imag;
-      csqrt(den_real,den_imag,&den_sqrt_real,&den_sqrt_imag);
+      c_sqrt(den_real,den_imag,&den_sqrt_real,&den_sqrt_imag);
       // compute the log of the numerator
       float log_num_real, log_num_imag;
-      clog(a_real,a_imag,&log_num_real,&log_num_imag);
+      c_log(a_real,a_imag,&log_num_real,&log_num_imag);
       // compute the log of the denominator
       float log_den_real, log_den_imag;
-      clog(den_sqrt_real,den_sqrt_imag,&log_den_real,&log_den_imag);
+      c_log(den_sqrt_real,den_sqrt_imag,&log_den_real,&log_den_imag);
       // compute the num - den
       log_num_real -= log_den_real;
       log_num_imag -= log_den_imag;
@@ -1350,19 +1350,19 @@ ArrayVector Arctan2Function(int nargout, const ArrayVector& arg) {
       // compute x_squared and y_squared
       double xsqr_real, xsqr_imag;
       double ysqr_real, ysqr_imag;
-      zsqr(x_real,x_imag,&xsqr_real,&xsqr_imag);
-      zsqr(y_real,y_imag,&ysqr_real,&ysqr_imag);
+      z_sqr(x_real,x_imag,&xsqr_real,&xsqr_imag);
+      z_sqr(y_real,y_imag,&ysqr_real,&ysqr_imag);
       double den_real, den_imag;
       den_real = xsqr_real + ysqr_real;
       den_imag = xsqr_imag + ysqr_imag;
       double den_sqrt_real, den_sqrt_imag;
-      zsqrt(den_real,den_imag,&den_sqrt_real,&den_sqrt_imag);
+      z_sqrt(den_real,den_imag,&den_sqrt_real,&den_sqrt_imag);
       // compute the log of the numerator
       double log_num_real, log_num_imag;
-      zlog(a_real,a_imag,&log_num_real,&log_num_imag);
+      z_log(a_real,a_imag,&log_num_real,&log_num_imag);
       // compute the log of the denominator
       double log_den_real, log_den_imag;
-      zlog(den_sqrt_real,den_sqrt_imag,&log_den_real,&log_den_imag);
+      z_log(den_sqrt_real,den_sqrt_imag,&log_den_real,&log_den_imag);
       // compute the num - den
       log_num_real -= log_den_real;
       log_num_imag -= log_den_imag;

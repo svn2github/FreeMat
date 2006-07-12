@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|acosh| function is computed from the formula
 %\[
-%   \asec(x) = \cos^{-1}\left(\frac{1}{x}\right)
+%   \sec^{-1}(x) = \cos^{-1}\left(\frac{1}{x}\right)
 %\]
 %@@Examples
 %Here is a simple plot of the inverse secant function

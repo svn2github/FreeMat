@@ -27,6 +27,7 @@
 #include <qapplication.h>
 #include <QtCore>
 #include <iostream>
+#include <glob.h>
 
 #define TAB_WIDTH 8
 /*
@@ -68,7 +69,7 @@ KeyManager::KeyManager()  {
   m_loop = new QEventLoop;
   lineData = new char[4096];
   ResetLineBuffer();
-  ctxt = NULL;
+  context = NULL;
 }
 
 
@@ -1169,30 +1170,6 @@ std::vector<std::string> KeyManager::GetCompletions(std::string line,
     std::sort(completions.begin(),completions.end());
     return completions;
   } else {
-#ifdef WIN32
-    HANDLE hSearch;
-    WIN32_FIND_DATA FileData;
-    std::string pattern(tmp);
-    pattern.append("*");
-    hSearch = FindFirstFile(pattern.c_str(),&FileData);
-    if (hSearch != INVALID_HANDLE_VALUE) {
-      // Windows does not return any part of the path in the completion,
-      // So we need to find the base part of the pattern.
-      int lastslash;
-      std::string prefix;
-      lastslash = pattern.find_last_of("/");
-      if (lastslash == -1) {
-	lastslash = pattern.find_last_of("\\");
-      }
-      if (lastslash != -1)
-	prefix = pattern.substr(0,lastslash+1);
-      completions.push_back(prefix + FileData.cFileName);
-      while (FindNextFile(hSearch, &FileData))
-	completions.push_back(prefix + FileData.cFileName);
-    }
-    FindClose(hSearch);
-    return completions;
-#else
     glob_t names;
     std::string pattern(tmp);
     pattern.append("*");
@@ -1203,6 +1180,5 @@ std::vector<std::string> KeyManager::GetCompletions(std::string line,
     globfree(&names);
     free(tmp);
     return completions;
-#endif
   }
 }

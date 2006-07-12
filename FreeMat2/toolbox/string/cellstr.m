@@ -17,7 +17,7 @@
 %cellstr(a)
 %@>
 %@@Tests
-%@{"y=cellstr(['quick';'brown';'fox  ';'is   ']","{'quick','brown','fox','is'}","exact"}
+%@{"y=cellstr(['quick';'brown';'fox  ';'is   '])","{'quick';'brown';'fox';'is'}","exact"}
 %!
 function A = cellstr(x)
   if (iscell(x))
@@ -33,7 +33,7 @@ function A = cellstr(x)
   else
       A = cell(n,1);
       for i=1:n
-          A{i} = deblank(x(i));
+          A{i} = deblank(x(i,:));
       end
   end
   

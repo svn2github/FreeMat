@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|acsch| function is computed from the formula
 %\[
-%   \acsch(x) = \sinh^{-1}\left(\frac{1}{x}\right)
+%   \mathrm{csch}^{-1}(x) = \sinh^{-1}\left(\frac{1}{x}\right)
 %\]
 %@@Examples
 %Here is a simple plot of the inverse hyperbolic cosecant function

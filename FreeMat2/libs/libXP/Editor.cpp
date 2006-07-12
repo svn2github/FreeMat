@@ -329,7 +329,7 @@ QString FMEditor::shownName() {
 
 void FMEditor::updateTitles() {
   tab->setTabText(tab->currentIndex(),shownName());
-  setWindowTitle(QString("%1[*]").arg(shownName()) + " - " + QString::fromStdString(FreeMat::Interpreter::getVersionString()) + " Editor");
+  setWindowTitle(QString("%1[*]").arg(shownName()) + " - " + QString::fromStdString(Interpreter::getVersionString()) + " Editor");
   documentWasModified();
 }
 

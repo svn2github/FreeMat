@@ -33,7 +33,7 @@ VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
 void VariablesTool::refresh() {
   if (!context) return;
   m_flist->clear();
-  FreeMat::stringVector varnames(context->getCurrentScope()->listAllVariables());
+  stringVector varnames(context->getCurrentScope()->listAllVariables());
   std::sort(varnames.begin(),varnames.end());
   m_flist->setRowCount(varnames.size());
   m_flist->setColumnCount(4);
@@ -118,7 +118,7 @@ void VariablesTool::refresh() {
   m_flist->verticalHeader()->hide();
 }
 
-void VariablesTool::setContext(FreeMat::Context *watch) {
+void VariablesTool::setContext(Context *watch) {
   context = watch;
   refresh();
 }

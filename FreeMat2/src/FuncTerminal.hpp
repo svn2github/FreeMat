@@ -30,8 +30,8 @@ namespace FreeMat {
     virtual ~FuncTerminal();
     virtual void Initialize();
     virtual void RestoreOriginalMode();
-    virtual void OutputRawString(std::string txt); 
-    virtual char* getLine(std::string prompt);
+    virtual void OutputRawString(string txt); 
+    virtual char* getLine(string prompt);
     virtual void ResizeEvent();
     virtual void MoveDown();
     virtual void MoveUp();

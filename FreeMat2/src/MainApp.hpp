@@ -23,7 +23,7 @@
 #include <qobject.h>
 #include "KeyManager.hpp"
 #include "application.hpp"
-#include "InterpreterThread.hpp"
+#include "Interpreter.hpp"
 
 class MainApp : public QObject
 {
@@ -33,7 +33,7 @@ class MainApp : public QObject
   bool guimode;
   bool skipGreeting;
   ApplicationWindow *m_win;
-  InterpreterThread *irun;
+  Interpreter *m_eval;
 public:
   MainApp();
   ~MainApp();
@@ -50,7 +50,7 @@ public slots:
   void HelpWin();
   void PathTool();
   void Editor();
-  void ExecuteLine(std::string txt);
+  void ExecuteLine(string txt);
 signals:
   void Shutdown();
   void Initialize();

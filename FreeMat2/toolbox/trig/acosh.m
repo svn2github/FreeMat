@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|acosh| function is computed from the formula
 %\[
-%   \acosh(x) = \log\left(x + (x^2 - 1)^0.5\right)
+%   \cosh^{-1}(x) = \log\left(x + (x^2 - 1)^0.5\right)
 %\]
 %where the @|log| (and square root) is taken in its most general sense.
 %@@Examples

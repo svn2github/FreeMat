@@ -161,11 +161,20 @@ bool Parser::MatchNumber() {
 tree Parser::SpecialFunctionCall() {
   tree root = mkLeaf(TOK_SPECIAL);
   addChild(root,Identifier());
-  if (!(Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)))
-    serror("Not special call");
-  while (Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)) {
+  // Special case "cd, dir, ls"
+  if ((root.first().text() == "cd") ||
+      (root.first().text() == "dir") ||
+      (root.first().text() == "ls")) {
+    m_lex.Gobble();
     addChild(root,mkLeaf(Next()));
     Consume();
+  } else {
+    if (!(Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)))
+      serror("Not special call");
+    while (Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)) {
+      addChild(root,mkLeaf(Next()));
+      Consume();
+    }
   }
   return root;
 }
@@ -301,7 +310,10 @@ tree Parser::VariableDereference() {
       Consume();
       tree sub = mkLeaf(TOK_BRACES);
       while (!Match('}')) {
-	addChild(sub,Expression());
+	if (Match(':'))
+	  addChild(sub,mkLeaf(Expect(':')));
+	else
+	  addChild(sub,Expression());
 	if (Match(',')) Consume();
       }
       Expect('}');

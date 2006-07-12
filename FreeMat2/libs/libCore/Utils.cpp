@@ -61,12 +61,12 @@ double complex_abs(double real, double imag) {
   return(temp);
 }
 
-void clog(float real, float imag, float *re, float *im) {
+void c_log(float real, float imag, float *re, float *im) {
   *re = log(complex_abs(real,imag));
   *im = atan2(imag,real);
 }
 
-void cexp(float real, float imag, float *re, float *im) {
+void c_exp(float real, float imag, float *re, float *im) {
   float t;
   t = exp(real);
   *re = t*cos(imag);
@@ -74,26 +74,26 @@ void cexp(float real, float imag, float *re, float *im) {
 }
 
 // Complex square root is defined as exp(0.5*log(a))
-void csqrt(float real, float imag, float *re, float *im) {
+void c_sqrt(float real, float imag, float *re, float *im) {
   float tr, ti;
-  clog(real,imag,&tr,&ti);
+  c_log(real,imag,&tr,&ti);
   tr /= 2.0;
   ti /= 2.0;
-  cexp(tr,ti,re,im);
+  c_exp(tr,ti,re,im);
 }
 
 // Square a complex value: (a+i*b)*(a+i*b) = (a^2-b^2) + 2*i*a*b
-void csqr(float real, float imag, float *re, float *im) {
+void c_sqr(float real, float imag, float *re, float *im) {
   *re = real*real - imag*imag;
   *im = 2.0*real*imag;
 }
 
-void zlog(double real, double imag, double *re, double *im) {
+void z_log(double real, double imag, double *re, double *im) {
   *re = log(complex_abs(real,imag));
   *im = atan2(imag,real);
 }
 
-void zexp(double real, double imag, double *re, double *im) {
+void z_exp(double real, double imag, double *re, double *im) {
   double t;
   t = exp(real);
   *re = t*cos(imag);
@@ -101,16 +101,16 @@ void zexp(double real, double imag, double *re, double *im) {
 }
 
 // Complex square root is defined as exp(0.5*log(a))
-void zsqrt(double real, double imag, double *re, double *im) {
+void z_sqrt(double real, double imag, double *re, double *im) {
   double tr, ti;
-  zlog(real,imag,&tr,&ti);
+  z_log(real,imag,&tr,&ti);
   tr /= 2.0;
   ti /= 2.0;
-  zexp(tr,ti,re,im);
+  z_exp(tr,ti,re,im);
 }
 
 // Square a complex value: (a+i*b)*(a+i*b) = (a^2-b^2) + 2*i*a*b
-void zsqr(double real, double imag, double *re, double *im) {
+void z_sqr(double real, double imag, double *re, double *im) {
   *re = real*real - imag*imag;
   *im = 2.0*real*imag;
 }

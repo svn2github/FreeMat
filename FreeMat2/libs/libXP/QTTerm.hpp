@@ -25,6 +25,8 @@
 #include <qpixmap.h>
 #include <string>
 
+using namespace std;
+
 #define CURSORBIT 1
 #define SELECTBIT 2
 class tagChar
@@ -66,7 +68,7 @@ public:
   ~QTTerm();
 
   void resizeTextSurface();
-  void PutString(std::string txt);
+  void PutString(string txt);
   void SetCursor(int x, int y);
   int  getTextWidth() {return m_width;};
   void Initialize();
@@ -119,7 +121,7 @@ protected:
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
-  void OutputRawString(std::string txt);
+  void OutputRawString(string txt);
 signals:
  void OnChar(int c);
  void SetTextWidth(int);

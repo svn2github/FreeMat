@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|acot| function is computed from the formula
 %\[
-%   \acot(x) = \atan\left(\frac{1}{x}\right)
+%   \cot^{-1}(x) = \tan^{-1}\left(\frac{1}{x}\right)
 %\]
 %@@Examples
 %Here is a simple plot of the inverse cotangent function

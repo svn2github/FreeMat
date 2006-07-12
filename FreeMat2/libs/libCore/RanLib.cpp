@@ -237,7 +237,7 @@ static long qrgnin;
 */
     gsrgs(0L,&qrgnin);
     if(qrgnin) goto S10;
-    throw FreeMat::Exception("RANLIB Error: ADVNST called before random generator initialized - ABORT");
+    throw Exception("RANLIB Error: ADVNST called before random generator initialized - ABORT");
 S10:
     gscgn(0L,&g);
     ib1 = Xa1;
@@ -616,7 +616,7 @@ static long qsame;
     qsame = olda == aa && oldb == bb;
     if(qsame) goto S20;
     if(!(aa <= 0.0 || bb <= 0.0)) goto S10;
-    throw FreeMat::Exception("RANLIB Error: AA or BB <= 0 in GENBET - Abort!");
+    throw Exception("RANLIB Error: AA or BB <= 0 in GENBET - Abort!");
 S10:
     olda = aa;
     oldb = bb;
@@ -765,7 +765,7 @@ float genchi(float df)
 static float genchi;
 
     if(!(df <= 0.0)) goto S10;
-    throw FreeMat::Exception("RANLIB Error:DF <= 0 in GENCHI - ABORT");
+    throw Exception("RANLIB Error:DF <= 0 in GENCHI - ABORT");
 S10:
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
@@ -819,7 +819,7 @@ float genf(float dfn,float dfd)
 static float genf,xden,xnum;
 
     if(!(dfn <= 0.0 || dfd <= 0.0)) goto S10;
-    throw FreeMat::Exception("RANLIB Error:Degrees of freedom nonpositive in GENF - abort!");
+    throw Exception("RANLIB Error:Degrees of freedom nonpositive in GENF - abort!");
 S10:
     xnum = genchi(dfn)/dfn;
 /*
@@ -827,7 +827,7 @@ S10:
 */
     xden = genchi(dfd)/dfd;
     if(!(xden <= 9.999999999998E-39*xnum)) goto S20;
-    throw FreeMat::Exception("RANLIB Error: GENF - generated numbers would cause overflow");
+    throw Exception("RANLIB Error: GENF - generated numbers would cause overflow");
     genf = 1.0E38;
     goto S30;
 S20:
@@ -1008,7 +1008,7 @@ float gennch(float df,float xnonc)
 static float gennch;
 
     if(!(df <= 1.0 || xnonc < 0.0)) goto S10;
-    throw FreeMat::Exception("RANLIB Error:DF <= 1 or XNONC < 0 in GENNCH - ABORT");
+    throw Exception("RANLIB Error:DF <= 1 or XNONC < 0 in GENNCH - ABORT");
 S10:
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0f);
     return gennch;
@@ -1041,7 +1041,7 @@ static long qcond;
 
     qcond = dfn <= 1.0 || dfd <= 0.0 || xnonc < 0.0;
     if(!qcond) goto S10;
-    throw FreeMat::Exception("RANLIB Error:In GENNF - Either (1) Numerator DF <= 1.0 or");
+    throw Exception("RANLIB Error:In GENNF - Either (1) Numerator DF <= 1.0 or");
 S10:
     xnum = gennch(dfn,xnonc)/dfn;
 /*
@@ -1120,7 +1120,7 @@ float genunf(float low,float high)
 static float genunf;
 
     if(!(low > high)) goto S10;
-    throw FreeMat::Exception("RANLIB Error: LOW > HIGH in GENUNF");
+    throw Exception("RANLIB Error: LOW > HIGH in GENUNF");
 S10:
     genunf = low+(high-low)*ranf();
     return genunf;
@@ -1143,7 +1143,7 @@ static long curntg = 1;
     if(getset == 0) *g = curntg;
     else  {
         if(*g < 0 || *g > numg)
-	  throw FreeMat::Exception("RANLIB Error: Generator number out of range in GSCGN");
+	  throw Exception("RANLIB Error: Generator number out of range in GSCGN");
         curntg = *g;
     }
 #undef numg
@@ -1746,11 +1746,11 @@ long ignuin(long low,long high)
 static long ignuin,ign,maxnow,range,ranp1;
 
     if(!(low > high)) goto S10;
-    throw FreeMat::Exception("RANLIB Error: low > high in ignuin - ABORT");
+    throw Exception("RANLIB Error: low > high in ignuin - ABORT");
 S10:
     range = high-low;
     if(!(range > maxnum)) goto S20;
-    throw FreeMat::Exception("RANLIB Error: high - low too large in ignuin - ABORT");
+    throw Exception("RANLIB Error: high - low too large in ignuin - ABORT");
 S20:
     if(!(low == high)) goto S30;
     ignuin = low;
@@ -1809,7 +1809,7 @@ static long mltmod,a0,a1,k,p,q,qh,rh;
       machine. On a different machine recompute H
 */
     if(!(a <= 0 || a >= m || s <= 0 || s >= m)) goto S10;
-    throw FreeMat::Exception("RANLIB Error: mltmod requires: 0 < a < m; 0 < s < m");
+    throw Exception("RANLIB Error: mltmod requires: 0 < a < m; 0 < s < m");
 S10:
     if(!(a < h)) goto S20;
     a0 = a;
@@ -2377,7 +2377,7 @@ Prints msg to standard error and then exits
 void ftnstop(char* msg)
 /* msg - error message */
 {
-  throw FreeMat::Exception(msg);
+  throw Exception(msg);
 }
 
 

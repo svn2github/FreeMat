@@ -86,7 +86,7 @@ MainApp::~MainApp() {
 
 void MainApp::HelpWin() {
   ArrayVector dummy;
-  HelpWinFunction(0,dummy,irun->GetInterpreter());
+  HelpWinFunction(0,dummy,m_eval);
 }
 
 void MainApp::SetupGUICase() {
@@ -112,7 +112,7 @@ void MainApp::SetupGUICase() {
 
 void MainApp::SetupInteractiveTerminalCase() {
 #ifdef Q_WS_X11
-  FreeMat::SetNonGUIHack();
+  SetNonGUIHack();
   Terminal *myterm = new Terminal;
   gterm = myterm;
   m_keys->RegisterTerm(myterm);
@@ -140,7 +140,7 @@ KeyManager* MainApp::GetKeyManager() {
 
 void MainApp::SetupDumbTerminalCase() {
 #ifdef Q_WS_X11
-  FreeMat::SetNonGUIHack();
+  SetNonGUIHack();
   DumbTerminal *myterm = new DumbTerminal;
   m_keys->RegisterTerm(myterm);
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
@@ -156,12 +156,12 @@ void MainApp::SetupDumbTerminalCase() {
 
 void MainApp::PathTool() {
   ArrayVector dummy;
-  PathToolFunction(0,dummy,irun->GetInterpreter());
+  PathToolFunction(0,dummy,m_eval);
 }
 
 void MainApp::Editor() {
   ArrayVector dummy;
-  EditorFunction(0,dummy,irun->GetInterpreter());
+  EditorFunction(0,dummy,m_eval);
 }
 
 void MainApp::SetGUIMode(bool mode) {
@@ -180,19 +180,12 @@ void MainApp::TerminalReset() {
 #endif  
 }
 
-void MainApp::ExecuteLine(std::string txt) {
-  irun->ExecuteLine(txt);
+void MainApp::ExecuteLine(string txt) {
+  m_eval->ExecuteLine(txt);
 }
 
 int MainApp::Run() {
   qDebug("Starting interpreter...\n");
-  irun = new InterpreterThread;
-  irun->Setup();
-  qRegisterMetaType<std::string>("std::string");
-  connect(m_keys,SIGNAL(ExecuteLine(std::string)),this,SLOT(ExecuteLine(std::string)));
-  connect(irun->GetInterpreter(),SIGNAL(outputRawText(std::string)),m_term,SLOT(OutputRawString(std::string)));
-  connect(irun,SIGNAL(Ready()),m_keys,SLOT(Ready()));
-  irun->start();
   Context *context = new Context;
   LoadModuleFunctions(context);
   LoadClassFunction(context);
@@ -235,10 +228,13 @@ int MainApp::Run() {
   }
   QSettings settings("FreeMat","FreeMat");
   QStringList userPath = settings.value("interpreter/path").toStringList();
-  eval = new Interpreter(context);
-  eval->setBasePath(basePath);
-  eval->setUserPath(userPath);
-  eval->setAppPath(qApp->applicationDirPath().toStdString());
-  eval->rescanPath();
+  m_eval = new Interpreter(context);
+  m_eval->setBasePath(basePath);
+  m_eval->setUserPath(userPath);
+  m_eval->rescanPath();
+  qRegisterMetaType<string>("string");
+  connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
+  connect(m_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
+  m_eval->start();
   return 0;
 }

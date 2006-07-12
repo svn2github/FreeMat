@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|acosh| function is computed from the formula
 %\[
-%   \acsc(x) = \sin^{-1}\left(\frac{1}{x}\right)
+%   \csc^{-1}(x) = \sin^{-1}\left(\frac{1}{x}\right)
 %\]
 %@@Examples
 %Here is a simple plot of the inverse cosecant function

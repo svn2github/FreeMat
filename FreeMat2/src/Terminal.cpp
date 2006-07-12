@@ -80,7 +80,7 @@ void Terminal::SetRawMode() {
   newattr.c_cc[VTIME] = 0;
   while (tcsetattr(STDIN_FILENO, TCSADRAIN, &newattr)) {
     if (errno != EINTR) 
-      throw FreeMat::Exception(std::string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
+      throw Exception(string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
   }
 #endif
 }
@@ -90,7 +90,7 @@ void Terminal::RestoreOriginalMode() {
   // Restore the original terminal setttings
   while (tcsetattr(STDIN_FILENO, TCSADRAIN, &oldattr)) {
     if (errno != EINTR)
-      throw FreeMat::Exception(std::string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
+      throw Exception(string("Unable to set up terminal attributes: tcsetattr error:") + strerror(errno));
   }
 #endif
 }
@@ -99,9 +99,9 @@ void Terminal::RetrieveTerminalName() {
 #ifdef Q_WS_X11
   term = getenv("TERM");
   if (!term)
-    throw FreeMat::Exception("Unable to retrieve terminal name!");
+    throw Exception("Unable to retrieve terminal name!");
   if (setupterm((char*) term, STDIN_FILENO, NULL) == ERR)
-    throw FreeMat::Exception(std::string("Unable to retrieve terminal info for ") + term);
+    throw Exception(string("Unable to retrieve terminal info for ") + term);
 #endif
 }
 
@@ -279,7 +279,7 @@ void Terminal::MoveBOL() {
 #endif
 }
 
-void Terminal::OutputRawString(std::string txt) {
+void Terminal::OutputRawString(string txt) {
 #ifdef Q_WS_X11
   int ndone = 0;   /* The number of characters written so far */
   /*
@@ -297,7 +297,7 @@ void Terminal::OutputRawString(std::string txt) {
       ndone += nnew;
     else if(errno != EINTR && errno != EAGAIN) {
       perror("write");
-      throw FreeMat::Exception("stop");
+      throw Exception("stop");
     }
   }
 #endif

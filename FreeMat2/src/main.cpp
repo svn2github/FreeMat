@@ -28,7 +28,6 @@
 #include "application.hpp"
 #include "FuncMode.hpp"
 
-using namespace FreeMat;
 
 MainApp *m_app;
 FuncMode *m_func;

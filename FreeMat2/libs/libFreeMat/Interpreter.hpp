@@ -298,6 +298,34 @@ public:
    * Step the given number of lines
    */
   void dbstep(int linecount);
+  /**
+   * Set the autostop flag - this flag determines what happens when
+   * an exception occurs
+   */
+  bool AutoStop();
+  void AutoStop(bool a);
+  /**
+   * Set the print limit (number of element printed prior to truncation).
+   */
+  void setPrintLimit(int);
+  /**
+   * Get the print limit (number of element printed prior to truncation).
+   */
+  int getPrintLimit();
+  /**
+   * The workhorse routine - "evaluate" the contents of a string
+   * and execute it.  The flag indicates whether or not exceptions
+   * are propogated or printed.
+   */
+  void evaluateString(string line, bool propogateExceptions = false);
+  /**
+   * Get the last error that occurred.
+   */
+  string getLastErrorString();
+  /**
+   * Set the text for the last error.
+   */
+  void setLastErrorString(string txt);
 
   /******************************************
    *  Signals for the Interpreter           *
@@ -350,20 +378,6 @@ private:
    * where in the source file we are.
    */
   inline void SetContext(int id);
-  /**
-   * Set the autostop flag - this flag determines what happens when
-   * an exception occurs
-   */
-  bool AutoStop();
-  void AutoStop(bool a);
-  /**
-   * Set the print limit (number of element printed prior to truncation).
-   */
-  void setPrintLimit(int);
-  /**
-   * Get the print limit (number of element printed prior to truncation).
-   */
-  int getPrintLimit();
   /**
    * Clear the context stacks.
    */
@@ -754,21 +768,7 @@ private:
    * from the console, and executed sequentially until a "return"
    * statement is executed or the user presses 'CTRL-D'.
    */
-  //    void evalCLI();
-  /**
-   * The workhorse routine - "evaluate" the contents of a string
-   * and execute it.  The flag indicates whether or not exceptions
-   * are propogated or printed.
-   */
-  void evaluateString(string line, bool propogateExceptions = false);
-  /**
-   * Get the last error that occurred.
-   */
-  string getLastErrorString();
-  /**
-   * Set the text for the last error.
-   */
-  void setLastErrorString(string txt);
+  void evalCLI();
   /**
    * Handles the logistics of shortcut evaluation
    */
@@ -871,6 +871,7 @@ private:
 
   friend Array IndexExpressionToStruct(Interpreter*, treeVector, Array);
   friend ArrayVector ClassRHSExpression(Array, treeVector, Interpreter*);
+  friend ArrayVector PCodeFunction(int, const ArrayVector&, Interpreter*);
   friend class MFunctionDef;
   friend class ImportedFunctionDef;
 };

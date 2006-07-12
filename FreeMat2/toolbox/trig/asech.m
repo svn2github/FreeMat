@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|asech| function is computed from the formula
 %\[
-%   \asech(x) = \cosh^{-1}\left(\frac{1}{x}\right)
+%   \mathrm{sech}^{-1}(x) = \cosh^{-1}\left(\frac{1}{x}\right)
 %\]
 %@@Examples
 %Here is a simple plot of the inverse hyperbolic secant function

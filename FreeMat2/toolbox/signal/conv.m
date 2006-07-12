@@ -10,8 +10,10 @@
 %where @|x| and @|y| are vectors.  The output is of length @|nx + ny -1|.
 %The @|conv| function calls @|conv2| to do the calculation.  See its
 %help for more details.
+%@@Tests
+%@{"a=[0.5,1];b=[1,2,3];y=conv(a,b)","[0.5,2.0,3.5,3.0]","close"}
+%@{"a=[1];b=[1,2,3];y=conv(a,b)","[1,2,3]","close"}
 %!
-
 % Copyright (c) 2002-2006 Samit Basu
 
 function z = conv(x,y)

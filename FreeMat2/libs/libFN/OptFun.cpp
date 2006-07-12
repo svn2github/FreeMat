@@ -38,14 +38,14 @@ extern "C" {
     yp = (double*) yval.getDataPointer();
     wp = (double*) wval.getDataPointer();
     memcpy(xp,x,sizeof(double)*(*n));
-    FreeMat::ArrayVector tocall(params);
+    ArrayVector tocall(params);
     tocall.insert(tocall.begin(),xval);
-    FreeMat::ArrayVector cval(a_funcDef->evaluateFunction(a_eval,tocall,1));
+    ArrayVector cval(a_funcDef->evaluateFunction(a_eval,tocall,1));
     if (cval.size() == 0)
-      throw FreeMat::Exception("function to be optimized does not return any outputs!");
+      throw Exception("function to be optimized does not return any outputs!");
     if (cval[0].getLength() != (*m))
-      throw FreeMat::Exception("function output does not match size of vector 'y'");
-    FreeMat::Array f(cval[0]);
+      throw Exception("function output does not match size of vector 'y'");
+    Array f(cval[0]);
     f.promoteType(FM_DOUBLE);
     rp = (double*) f.getDataPointer();
     int i;

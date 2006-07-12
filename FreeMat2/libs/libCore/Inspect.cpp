@@ -45,6 +45,7 @@
 #else
 #define P_DELIM ":"
 #endif
+#include <QtGui>
 
 static std::string helppath;
   
@@ -144,7 +145,7 @@ bool inBundleMode() {
 ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   QDir dir;
   if (inBundleMode()) {
-    dir = QDir(QString(eval->getAppPath().c_str()) + "/../Resources/help/html");
+    dir = QDir(QString(qApp->applicationDirPath() + "/../Resources/help/html"));
   } else {
     dir = QDir(QString(BASEPATH)+"/html");
   }

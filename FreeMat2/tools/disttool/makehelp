@@ -40,8 +40,8 @@ rm $sourcepath/manifest.am
 echo "Writing manifest"
 htmlhelpfiles=`cd $sourcepath && find help/html -type f -printf "%p "`
 texthelpfiles=`cd $sourcepath && find help/text -type f -printf "%p "`
-helpmfiles=`cd $sourcepath && find help/MFiles -type f -printf "%p "`
-coremfiles=`cd $sourcepath && find MFiles -type f -printf "%p "`
+helpmfiles=`cd $sourcepath && find help/toolbox -type f -printf "%p "`
+coremfiles=`cd $sourcepath && find toolbox -type f -printf "%p "`
 pkgfiles=`cd $sourcepath && find extern -type f -printf "%p "`
 coremfiles=`echo $coremfiles | sed -e 's/[^ ]*\.svn[^ ]*[ ]*//g'`
 coremfiles=`echo $coremfiles | sed -e 's/[^ ]*~//g'`

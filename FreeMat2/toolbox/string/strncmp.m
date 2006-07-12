@@ -49,8 +49,8 @@
 %@{"y=strncmp('astring','astring',4)","1","exact"}
 %@{"y=strncmp('astring','bstring',4)","0","exact"}
 %@{"x={'astring','bstring',43,'astring'};y=strncmp(x,'astring',3)","[1,0,0,1]","exact"}
-%@{"y=strncmp({'this','is','a','pickle'},{'what','is','to','pickle'},3)","[0,0,0,1],"exact"}
-%@{"y=strncmp({'this','is','a','pickle'},{'think','is','to','pickle'},3)","[1,0,0,1],"exact"}
+%@{"y=strncmp({'this','is','a','pickle'},{'what','is','to','pickle'},3)","[0,0,0,1]","exact"}
+%@{"y=strncmp({'this','is','a','pickle'},{'think','is','to','pickle'},3)","[1,0,0,1]","exact"}
 %@{"y=strncmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4)","[0,0,0,1]","exact"}
 %!
 

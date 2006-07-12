@@ -258,6 +258,7 @@ std::string TranslateString(std::string x) {
 }
 
 void Interpreter::outputMessage(std::string msg) {
+  std::cout << "M" << msg;
   emit outputRawText(TranslateString(msg));
 }
 
@@ -307,21 +308,20 @@ std::string Interpreter::getVersionString() {
   return std::string("FreeMat v" VERSION);
 }
 
-
-
 void Interpreter::run() {
-  //     try {
-  //       while (1) {
-  // 	try {
-  // 	  evalCLI();
-  // 	} catch (InterpreterRetallException) {
-  // 	  clearStacks();
-  // 	} catch (InterpreterReturnException &e) {
-  // 	}
-  //       }
-  //     } catch (InterpreterQuitException &e) {
-  //     } catch (std::exception& e) {
-  //     }
+  qDebug("Interpreter started...\n");
+  try {
+    while (1) {
+      try {
+	evalCLI();
+      } catch (InterpreterRetallException) {
+	clearStacks();
+      } catch (InterpreterReturnException &e) {
+      }
+    }
+  } catch (InterpreterQuitException &e) {
+  } catch (std::exception& e) {
+  }
 }
 
 void Interpreter::sendGreeting() {
@@ -1709,14 +1709,14 @@ void Interpreter::persistentStatement(tree t) {
 //!
 
 void Interpreter::debugCLI() {
-  //     depth++;
-  //     bpActive = true;
-  //     try {
-  //       evalCLI();
-  //     } catch(InterpreterReturnException& e) {
-  //     }
-  //     bpActive = false;
-  //     depth--;
+  depth++;
+  bpActive = true;
+  try {
+    evalCLI();
+  } catch(InterpreterReturnException& e) {
+  }
+  bpActive = false;
+  depth--;
 }
 
 
@@ -1741,12 +1741,12 @@ void Interpreter::doDebugCycle() {
     inStepMode = false;
   }
   depth++;
-  //     try {
-  //       evalCLI();
-  //     } catch (InterpreterContinueException& e) {
-  //     } catch (InterpreterBreakException& e) {
-  //     } catch (InterpreterReturnException& e) {
-  //     }
+  try {
+    evalCLI();
+  } catch (InterpreterContinueException& e) {
+  } catch (InterpreterBreakException& e) {
+  } catch (InterpreterReturnException& e) {
+  }
   depth--;
 }
 
@@ -3446,7 +3446,10 @@ static std::string EvalPrep(char *line) {
 }
 
 void Interpreter::ExecuteLine(std::string txt) {
-  evaluateString(txt,false);
+  mutex.lock();
+  cmd_buffer.push_back(txt);
+  bufferNotEmpty.wakeAll();
+  mutex.unlock();
 }
 
 //PORT
@@ -3535,6 +3538,36 @@ void Interpreter::setLastErrorString(string txt) {
 //    }
 //  }
 
+void Interpreter::evalCLI() {
+  char prompt[150];
+
+  if ((depth == 0) || (cstack.size() == 0))
+    if (bpActive)
+      sprintf(prompt,"D-> ");
+    else
+      sprintf(prompt,"--> ");
+  else
+    if (bpActive)	
+      sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
+	      ip_context & 0xffff);
+    else
+      sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
+	      ip_context & 0xffff);
+  while(1) {
+    std::string cmdline;
+    mutex.lock();
+    if (cmd_buffer.empty())
+      bufferNotEmpty.wait(&mutex);
+    cmdline = cmd_buffer.front();
+    cout << ("executing " + cmdline);
+    cmd_buffer.erase(cmd_buffer.begin());
+    mutex.unlock();
+    int stackdepth = cstack.size();
+    evaluateString(cmdline);
+    while (cstack.size() > stackdepth) cstack.pop_back();
+  }
+}
+
 //  void Interpreter::evalCLI() {
 //    char *line;
 //    char dataline[MAXSTRING];
@@ -3546,7 +3579,7 @@ void Interpreter::setLastErrorString(string txt) {
 //	sprintf(prompt,"D-> ");
 //      else
 //	sprintf(prompt,"--> ");
-//    else
+//    elsed
 //      if (bpActive)	
 //	sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
 //		ip_context & 0xffff);
@@ -3603,6 +3636,7 @@ void Interpreter::setLastErrorString(string txt) {
 //      }
 //    }
 //  }
+
 //
 // Convert a list of variable into indexing expressions
 //  - for user defined classes, we call subsindex for 

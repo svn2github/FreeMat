@@ -69,6 +69,18 @@ void Scanner::FetchContinuation() {
     m_ptr++;
 }
 
+//Path is (on unix)
+//ident/ident/~/~ident/.././.
+//(on windows)
+//c:\ident\ident\
+//\\server\ident\ident
+//
+//The problem is, how do you distinguish
+//--> a /b
+//from 
+//--> a/b
+//
+
 void Scanner::Fetch() {
   if (m_ptr >= m_strlen)
     SetToken(TOK_EOF);

@@ -136,7 +136,7 @@ void ApplicationWindow::createStatusBar() {
 
 ApplicationWindow::ApplicationWindow() : QMainWindow() {
   setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
-  setWindowTitle(QString(FreeMat::Interpreter::getVersionString().c_str()) + " Command Window");
+  setWindowTitle(QString(Interpreter::getVersionString().c_str()) + " Command Window");
   createActions();
   createMenus();
   createToolBars();

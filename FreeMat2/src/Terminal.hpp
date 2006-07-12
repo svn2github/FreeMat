@@ -28,6 +28,8 @@
 #include <list>
 #include <string>
 
+using namespace std;
+
 typedef struct {
   const char *sequence;
   int keycode;
@@ -53,8 +55,8 @@ protected:
   char escseq[50];
   mapping *esc_seq_array;
   int esc_seq_count;
-  std::vector<std::string> flist;
-  std::list<std::string> enteredLines;
+  vector<string> flist;
+  list<string> enteredLines;
   int nline;
 public:
   Terminal();
@@ -75,7 +77,7 @@ public slots:
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
-  void OutputRawString(std::string txt);
+  void OutputRawString(string txt);
   void DoRead();
 signals:
   void OnChar(int c);

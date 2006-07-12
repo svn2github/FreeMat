@@ -10,7 +10,7 @@
 %@@Function Internals
 %The @|csch| function is computed from the formula
 %\[
-%   \csch(x) = \frac{1}{\sinh(x)}
+%   \mathrm{csch}(x) = \frac{1}{\sinh(x)}
 %\]
 %@@Examples
 %Here is a simple plot of the hyperbolic cosecant function

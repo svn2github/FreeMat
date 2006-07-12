@@ -10,13 +10,13 @@
 %@@Function Internals
 %The @|sech| function is computed from the formula
 %\[
-%   \sech(x) = \frac{1}{\cosh(x)}
+%   \mathrm{sech}(x) = \frac{1}{\cosh(x)}
 %\]
 %@@Examples
 %Here is a simple plot of the hyperbolic secant function
 %@<
 %x = -2*pi:.01:2*pi;
-%plot(x,sech(x1)); grid('on');
+%plot(x,sech(x)); grid('on');
 %mprint('sechplot');
 %@>
 %@figure sechplot

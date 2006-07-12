@@ -11,7 +11,7 @@
 %@@Function Internals
 %The @|atanh| function is computed from the formula
 %\[
-%   \atanh(x) = \frac{1}{2}\log\left(\frac{1+x}{1-x}\right)
+%   \tanh^{-1}(x) = \frac{1}{2}\log\left(\frac{1+x}{1-x}\right)
 %\]
 %where the @|log| (and square root) is taken in its most general sense.
 %@@Examples

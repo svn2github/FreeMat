@@ -466,7 +466,7 @@ void QTTerm::ClearEOD() {
     m_surface[i] = tagChar(' ');
 }
 
-void QTTerm::OutputRawString(std::string txt) {
+void QTTerm::OutputRawString(string txt) {
   PutString(txt);
 }
 
@@ -583,7 +583,7 @@ void QTTerm::setScrollbar(int val) {
     SetScrollBarValue(val);
 }
 
-void QTTerm::PutString(std::string txt) {
+void QTTerm::PutString(string txt) {
   m_firsttime = false;
   if (m_scrolling) {
     setScrollbar(m_history_lines);

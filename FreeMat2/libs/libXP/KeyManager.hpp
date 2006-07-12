@@ -25,6 +25,7 @@
 #include <list>
 #include "Scope.hpp"
 #include <QEventLoop>
+#include "Context.hpp"
 
 #define KM_CTRLA     0x01
 #define KM_CTRLC     0x03

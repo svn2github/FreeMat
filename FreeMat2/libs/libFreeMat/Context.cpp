@@ -140,6 +140,28 @@ void Context::addSpecialFunction(char*name,
   scopestack.front()->insertFunction(f2def);
 }
 
+void Context::addGfxSpecialFunction(char*name,
+				    SpecialFuncPtr fptr,
+				    int argc_in, int argc_out,...) {
+  stringVector args;
+  va_list argp;
+  if (argc_in>0) {
+    va_start(argp,argc_out);
+    for (int i=0;i<argc_in;i++)
+      args.push_back(va_arg(argp,const char *));
+    va_end(argp);
+  }
+  SpecialFunctionDef *f2def;
+  f2def = new SpecialFunctionDef;
+  f2def->retCount = argc_out;
+  f2def->argCount = argc_in;
+  f2def->name = strdup(name);
+  f2def->fptr = fptr;
+  f2def->arguments = args;
+  f2def->graphicsFunction = true;
+  scopestack.front()->insertFunction(f2def);
+}
+
 void Context::addFunction(char*name, 
 			  BuiltInFuncPtr fptr, 
 			  int argc_in, int argc_out,...) {
@@ -158,6 +180,28 @@ void Context::addFunction(char*name,
   f2def->name = strdup(name);
   f2def->fptr = fptr;
   f2def->arguments = args;
+  scopestack.front()->insertFunction(f2def);  
+}
+
+void Context::addGfxFunction(char*name, 
+			  BuiltInFuncPtr fptr, 
+			  int argc_in, int argc_out,...) {
+  stringVector args;
+  va_list argp;
+  if (argc_in>0) {
+    va_start(argp,argc_out);
+    for (int i=0;i<argc_in;i++)
+      args.push_back(va_arg(argp,const char *));
+    va_end(argp);
+  }
+  BuiltInFunctionDef *f2def;
+  f2def = new BuiltInFunctionDef;
+  f2def->retCount = argc_out;
+  f2def->argCount = argc_in;
+  f2def->name = strdup(name);
+  f2def->fptr = fptr;
+  f2def->arguments = args;
+  f2def->graphicsFunction = true;
   scopestack.front()->insertFunction(f2def);  
 }
 

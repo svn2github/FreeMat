@@ -57,7 +57,7 @@ bool Token::IsRightAssociative() const {
 }
 
 ostream& operator<<(ostream& o, const Token& b) {
-  o << TokenToString(b) << "\r\n";
+  o << TokenToString(b) << " (" << b.Position() << ")\r\n";
   return o;
 }
 

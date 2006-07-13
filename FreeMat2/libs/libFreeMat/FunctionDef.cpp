@@ -163,6 +163,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
 				 Array::int32Constructor(nargout));
   try {
     try {
+      code.print();
       walker->block(code);
     } catch (InterpreterBreakException& e) {
     } catch (InterpreterContinueException& e) {
@@ -571,6 +572,7 @@ void SpecialFunctionDef::printMe(Interpreter *eval) {
 
 FunctionDef::FunctionDef() {
   scriptFlag = false;
+  graphicsFunction = false;
 }
 
 FunctionDef::~FunctionDef() {

@@ -52,6 +52,7 @@ public slots:
   void Editor();
   void ExecuteLine(string txt);
   void UpdateTermWidth(int);
+  void DoGraphicsCall(FuncPtr f, ArrayVector m, int narg);
 signals:
   void Shutdown();
   void Initialize();

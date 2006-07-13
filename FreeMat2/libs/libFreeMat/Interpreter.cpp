@@ -237,6 +237,24 @@ void Interpreter::procFileMex(std::string fname, std::string fullname, bool temp
     delete adef;
 }
 
+void Interpreter::RegisterGfxResults(ArrayVector m) {
+  mutex.lock();
+  gfx_buffer.push_back(m);
+  gfxBufferNotEmpty.wakeAll();
+  mutex.unlock();
+}
+
+ArrayVector Interpreter::doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_out) {
+  emit doGraphicsCall(f,m,narg_out);
+  mutex.lock();
+  if (gfx_buffer.empty())
+    gfxBufferNotEmpty.wait(&mutex);
+  ArrayVector ret(gfx_buffer.front());
+  gfx_buffer.erase(gfx_buffer.begin());
+  mutex.unlock();
+  return ret;
+}
+
 void Interpreter::setTerminalWidth(int ncols) {
   mutex.lock();
   m_ncols = ncols;
@@ -2883,7 +2901,10 @@ ArrayVector Interpreter::functionExpression(tree t,
 	throw Exception(std::string("Too many outputs to function ")+t.first().text());
       CLIFlagsave = InCLI;
       InCLI = false;
-      n = funcDef->evaluateFunction(this,m,narg_out);
+      if (!funcDef->graphicsFunction)
+	n = funcDef->evaluateFunction(this,m,narg_out);
+      else
+	n = doGraphicsFunction(funcDef,m,narg_out);
       InCLI = CLIFlagsave;
       // Check for any pass by reference
       if (t.haschildren() && (funcDef->arguments.size() > 0)) 

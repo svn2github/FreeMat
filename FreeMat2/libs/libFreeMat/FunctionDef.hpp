@@ -67,6 +67,12 @@ public:
    */
   bool scriptFlag;
   /**
+   * If a function requires access to the graphics subsystem,
+   * it must declare itself as such.  Such functions are executed
+   * through the main thread.
+   */
+  bool graphicsFunction;
+  /**
    * The names of the arguments to the fuction (analogous to returnVals).
    * Should have "varargin" as the last entry for variable argument
    * functions.

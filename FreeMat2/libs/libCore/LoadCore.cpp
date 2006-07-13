@@ -32,9 +32,9 @@
 #endif
 
 void LoadGUICoreFunctions(Context* context) {
-  context->addSpecialFunction("helpwin",HelpWinFunction,0,0);
-  context->addSpecialFunction("editor",EditorFunction,0,0);
-  context->addSpecialFunction("pathtool",PathToolFunction,0,0);
+  context->addGfxSpecialFunction("helpwin",HelpWinFunction,0,0);
+  context->addGfxSpecialFunction("editor",EditorFunction,0,0);
+  context->addGfxSpecialFunction("pathtool",PathToolFunction,0,0);
 }
 
 void LoadCoreFunctions(Context* context) {

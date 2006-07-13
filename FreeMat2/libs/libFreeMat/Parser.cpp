@@ -1,5 +1,7 @@
 #include "Parser.hpp"
 #include "Exception.hpp"
+#include "Tree.hpp"
+
 // This one is still a question:
 //    [1 3' + 5]
 // Need: 
@@ -53,20 +55,23 @@
 // Outside
 // fprintf('%d\n',a (3)) --> works as a(3)
 
-
+tree Parser::mkLeaf(byte a) {
+  Token p(a,m_lex.Position());
+  return mkLeaf(p);
+}
 tree Parser::StatementSeperator() {
   tree root;
   if (Match(';')) {
+    root = mkLeaf(TOK_QSTATEMENT);
     Consume();
     if (Match('\n')) 
       Consume();
-    root = mkLeaf(TOK_QSTATEMENT);
   } else if (Match('\n')) {
-    Consume();
     root = mkLeaf(TOK_STATEMENT);
+    Consume();
   } else if (Match(',')) {
-    Consume();
     root = mkLeaf(TOK_STATEMENT);
+    Consume();
   }
   return root;
 }

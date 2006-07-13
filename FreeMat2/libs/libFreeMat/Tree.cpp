@@ -70,13 +70,6 @@ tree mkLeaf(const Token& tok) {
   return tree(ret);
 }
 
-tree mkLeaf(byte a) {
-  tree_node *ret = new tree_node;
-  ret->node = Token(a);
-  ret->owners = 1;
-  return tree(ret);
-}
-
 tree mkNode(const Token& tok, tree arg1, tree arg2) {
   tree ret(mkLeaf(tok));
   addChild(ret,arg1,arg2);

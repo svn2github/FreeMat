@@ -110,9 +110,17 @@ class Interpreter : public QThread {
    */
   vector<string> cmd_buffer;
   /**
+   * A buffer of return values from graphics calls
+   */
+  vector<ArrayVector> gfx_buffer;
+  /**
    * A synchronization variable to wait on when the command buffer is empty
    */
   QWaitCondition bufferNotEmpty;
+  /**
+   * A synchronization variable to wait on when the gfx buffer is empty
+   */
+  QWaitCondition gfxBufferNotEmpty;
   /**
    * This is the equivalent of an "instruction pointer".  It stores the
    * function name and some detailed information on our location.
@@ -334,6 +342,10 @@ public:
    * Set to false to turn off the greeting.
    */
   void setGreetingFlag(bool skip);
+  /**
+   * Register the result of a gfx call
+   */
+  void RegisterGfxResults(ArrayVector m);
 
   /******************************************
    *  Signals for the Interpreter           *
@@ -351,11 +363,22 @@ signals:
    * Change the prompt
    */
   void SetPrompt(string);
+  /**
+   * Dispatch a graphics call
+   */
+  void doGraphicsCall(FuncPtr, ArrayVector, int);
 
   /******************************************
    *  Private Methods for the Interpreter   *
    ******************************************/
 private:
+  /**
+   * Execute a function that accesses the graphics subsystem.  All such
+   * accesses must be made through the main thread.  So the interpreter
+   * sends a signal out that a graphics call needs to be made, and then
+   * waits for the result.
+   */
+  ArrayVector doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_out);
   /**
    * Collect information about keyword usage and the relevant 
    * expressions from a function call

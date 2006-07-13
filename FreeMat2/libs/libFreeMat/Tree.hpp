@@ -51,7 +51,6 @@ public:
 };
 
 tree mkLeaf(const Token& tok);
-tree mkLeaf(byte a);
 tree mkNode(const Token& tok, tree arg1, tree arg2);
 tree mkNode(const Token& tok, tree arg1);
 tree first(tree root);

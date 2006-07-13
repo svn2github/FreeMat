@@ -134,7 +134,17 @@ public:
    * Add a special function to the global scope with the given name.
    */
   void addSpecialFunction(char*name, SpecialFuncPtr fptr, int argin, int argout, ...);
-
+  /**
+   * Add a built in function to the global scope with the given name
+   * and tag it as a graphics function
+   */
+  void addGfxFunction(char*name, BuiltInFuncPtr fptr, int argin, int argout, ...);
+  /**
+   * Add a special function to the global scope with the given name, and
+   * tag it as a graphics function
+   */
+  void addGfxSpecialFunction(char*name, SpecialFuncPtr fptr, int argin, int argout, ...);
+  
   bool lookupFunction(std::string funcName, FuncPtr& val);
     
   bool lookupFunctionLocally(std::string funcName, FuncPtr& val);

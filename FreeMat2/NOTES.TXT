@@ -4,7 +4,12 @@ B.  Prompt and main routine... how does this work? - seems to work ok
 C.  Debug cycles
 
 Debug cycles... how does this work?
-
+Workspace and files widget.
+Initial terminal width.
+Context stuff
+Breakpoints
+Quit
+Continuations
 
 OK - 2.0 release is done.  Next steps.
 

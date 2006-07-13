@@ -188,6 +188,11 @@ void MainApp::ExecuteLine(string txt) {
   m_eval->ExecuteLine(txt);
 }
 
+void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) { 
+  ArrayVector n(f->evaluateFunction(m_eval,m,narg));
+  m_eval->RegisterGfxResults(n);
+}
+
 int MainApp::Run() {
   qDebug("Starting interpreter...\n");
   Context *context = new Context;
@@ -237,10 +242,14 @@ int MainApp::Run() {
   m_eval->setUserPath(userPath);
   m_eval->rescanPath();
   qRegisterMetaType<string>("string");
+  qRegisterMetaType<FuncPtr>("FuncPtr");
+  qRegisterMetaType<ArrayVector>("ArrayVector");
   connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
   connect(m_keys,SIGNAL(UpdateTermWidth(int)),this,SLOT(UpdateTermWidth(int)));
   connect(m_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
   connect(m_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
+  connect(m_eval,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
+	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
   m_eval->setGreetingFlag(skipGreeting);
   m_eval->start();
   return 0;

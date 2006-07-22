@@ -68,6 +68,10 @@ const byte TOK_COMPLEX = 186;
 const byte TOK_DCOMPLEX = 187;
 const byte TOK_FUNCTION_DEFS = 188;
 const byte TOK_SCRIPT = 189;
+
+const byte FLAG_DEBUG_STATEMENT = 1;
+const byte FLAG_STEPTRAP = 2;
+
 typedef byte tok;
 
 class ParseException {
@@ -83,6 +87,7 @@ class Token {
   byte m_tok;
   unsigned m_pos;
   string m_text;
+  byte m_flags;
 public:
   Token();
   Token(byte tok, unsigned pos = 0, string text = string());
@@ -95,6 +100,8 @@ public:
   void SetValue(byte a) {m_tok = a;}
   unsigned Position()  const {return m_pos;}
   string Text()  const {return m_text;}
+  void SetFlags(byte flags) {m_flags = flags;}
+  byte Flags() const {return m_flags;}
   void Print(ostream& o) const;
 };
 

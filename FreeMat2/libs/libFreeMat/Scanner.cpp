@@ -6,6 +6,7 @@
 
 extern string fm_reserved[20];
 
+
 bool isalnumus(byte a) {
   return (isalnum(a) || (a=='_'));
 }
@@ -14,32 +15,12 @@ bool isblank(byte a) {
   return (a==' ' || a=='\t');
 }
 
+unsigned Scanner::ContextNum() {
+  return (m_ptr << 16 | m_linenumber);
+}
+
 void Scanner::SetToken(byte tok, string text) {
-  m_tok = Token(tok,m_ptr,text);
-}
-
-void Scanner::Save() {
-  if (m_debugFlag)
-    cout << "Saving state...\n";
-  m_checkpoints.push(ScannerState(m_ptr_save,
-				  m_ignorews.size()));
-}
-
-void Scanner::Restore() {
-  if (m_debugFlag)
-    cout << "Restoring state...\n";
-  m_ptr = m_checkpoints.top().m_strlen;
-  while (m_ignorews.size() > m_checkpoints.top().m_ignorews_len)
-    m_ignorews.pop();
-  m_ptr_save = m_ptr;
-  m_checkpoints.pop();
-  m_tokValid = false;
-}
-
-void Scanner::Continue() {
-  if (m_debugFlag)
-    cout << "Continue state...\n";
-  m_checkpoints.pop();
+  m_tok = Token(tok,m_ptr << 16 | m_linenumber,text);
 }
 
 bool Scanner::Done() {
@@ -55,6 +36,7 @@ Scanner::Scanner(string buf, string fname) {
   m_filename = fname;
   m_ptr = 0;
   m_ptr_save = 0;
+  m_linenumber = 1;
   m_tokValid = false;
   m_strlen = buf.size();
   m_ignorews.push(true);
@@ -66,8 +48,10 @@ void Scanner::FetchContinuation() {
   m_ptr += 3;
   while ((current() != '\n') && (m_ptr < m_strlen))
     m_ptr++;
-  if (current() == '\n')
+  if (current() == '\n') {
+    m_linenumber++;
     m_ptr++;
+  }
 }
 
 void Scanner::Fetch() {
@@ -282,12 +266,15 @@ void Scanner::Gobble() {
   m_tokValid = true;
 }
 
+
 const Token& Scanner::Next() {
   while (!m_tokValid) {
     m_ptr_save = m_ptr;
     Fetch();
     if (m_tokValid && m_debugFlag)
       cout << m_tok;
+    if ((m_ptr < m_strlen) && (current() == '\n'))
+      m_linenumber++;
   }
   return m_tok;
 }
@@ -333,6 +320,7 @@ string stringFromNumber(unsigned line) {
 }
 
 string Scanner::Context(unsigned pos) {
+  pos = pos >> 16;
   string::size_type line_start = 0;
   int linenumber = 1;
   string::size_type line_stop = m_text.find("\n");

@@ -163,7 +163,6 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
 				 Array::int32Constructor(nargout));
   try {
     try {
-      code.print();
       walker->block(code);
     } catch (InterpreterBreakException& e) {
     } catch (InterpreterContinueException& e) {
@@ -311,9 +310,9 @@ MFunctionDef* ConvertParseTreeToMFunctionDefs(treeVector t,
 }
   
 // Compile the function...
-void MFunctionDef::updateCode() {
-  if (localFunction) return;
-  if (pcodeFunction) return;
+bool MFunctionDef::updateCode() {
+  if (localFunction) return false;
+  if (pcodeFunction) return false;
   // First, stat the file to get its time stamp
   struct stat filestat;
   stat(fileName.c_str(),&filestat);
@@ -347,18 +346,19 @@ void MFunctionDef::updateCode() {
     if (feof(fp)) {
       functionCompiled = true;
       code = NULL;
-      return;
+      return true;
     }
     rewind(fp);
     try {
       // Read the file into a string
       string fileText = ReadFileIntoString(fp);
       Scanner S(fileText,fileName);
+      S.SetDebug(true);
       Parser P(S);
       tree pcode = P.Process();
+      allCode = pcode;
       if (pcode.is(TOK_FUNCTION_DEFS)) {
 	scriptFlag = false;
-	//	  pcode.print();
 	MFunctionDef *fp = ConvertParseTreeToMFunctionDefs(pcode.children(),
 							   fileName);
 	returnVals = fp->returnVals;
@@ -375,86 +375,53 @@ void MFunctionDef::updateCode() {
 	functionCompiled = true;
 	code = pcode.first();
       }
+      allCode.print();
     } catch (Exception &e) {
       if (fp) fclose(fp);
       functionCompiled = false;
       throw;
     }
+    return true;
+  } 
+  return false;
+}
+
+// Find the smallest line number larger than the argument
+// if our line number is larger than the target, then we
+// 
+void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
+  unsigned best = line;
+  if (!t.valid()) return false;
+  if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
+    best = 
+    if ((t.context() & 0xffff)
   }
 }
 
-void MFunctionDef::RestoreBreakpoints() {
-  for (int i=0;i<breakPoints.size();i++) 
-    try {
-      AddBreakpoint(breakPoints[i]);
-    } catch (Exception &e) {
+bool SetTreeBreakPoint(tree t, int lineNumber, byte flags) {
+  if (!t.valid()) return false;
+  if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
+    cout << "SetBP line: " << ((int)t.context() & 0xffff) << " - " << lineNumber << "\r\n";
+    if ((t.context() & 0xffff) == lineNumber) {
+      t.setflag(flags);
+      return true;
     }
+  }
+  for (int i=0;i<t.numchildren();i++)
+    if (SetTreeBreakPoint(t.child(i),lineNumber,flags)) return true;
+  return false;
 }
 
-void MFunctionDef::RemoveBreakpoint(int bpline) {
-
-  //     // The way this function works...  We have to
-  //     // find which subfunction to set the breakpoint in.
-  //     // Build a vector of the function defs
-  //     std::vector<ASTPtr> codes;
-  //     codes.push_back(code);
-  //     MFunctionDef *ptr = nextFunction;
-  //     while (ptr) {
-  //       codes.push_back(ptr->code);
-  //       ptr = ptr->nextFunction;
-  //     }
-  //     // Search backward through the subfunction definitions
-  //     int i=codes.size()-1;
-  //     bool found = false;
-  //     while ((i>=0) && !found) {
-  //       found = CheckASTBreakPoint(codes[i],bpline);
-  //       if (!found)
-  // 	i--;
-  //     }
-  //     if (!found)
-  //       throw Exception("Unable to clear breakpoint...");
-  //     ClearASTBreakPoint(codes[i],bpline);
-}
+// Find the closest line number to the requested 
+unsigned MFunctionDef::ClosestLine(unsigned line) {
   
-void MFunctionDef::AddBreakpoint(int bpline) {
-  //     // The way this function works...  We have to
-  //     // find which subfunction to set the breakpoint in.
-  //     // Build a vector of the function defs
-  //     std::vector<ASTPtr> codes;
-  //     codes.push_back(code);
-  //     MFunctionDef *ptr = nextFunction;
-  //     while (ptr) {
-  //       codes.push_back(ptr->code);
-  //       ptr = ptr->nextFunction;
-  //     }
-  //     // Search backward through the subfunction definitions
-  //     int i=codes.size()-1;
-  //     bool found = false;
-  //     while ((i>=0) && !found) {
-  //       found = CheckASTBreakPoint(codes[i],bpline);
-  //       if (!found)
-  // 	i--;
-  //     }
-  //     if (!found) {
-  //       char buffer[1000];
-  //       sprintf(buffer,"Unable to set a breakpoint at line %d of routine %s",bpline,name.c_str());
-  //       throw Exception(buffer);
-  //     }
-  //     SetASTBreakPoint(codes[i],bpline);
 }
 
-void MFunctionDef::SetBreakpoint(int bpline) {
-  //     // Add it to the list of breakpoints for this function
-  //     AddBreakpoint(bpline);
-  //     breakPoints.push_back(bpline);
-}
-
-void MFunctionDef::DeleteBreakpoint(int bpline) {
-  //     for (std::vector<int>::iterator i=breakPoints.begin();
-  // 	 i!=breakPoints.end();i++)
-  //       if (*i == bpline)
-  // 	breakPoints.erase(i);
-  //     RemoveBreakpoint(bpline);
+void MFunctionDef::SetBreakpoint(int bpline, byte flags) {
+  cout << "Set bp called with line number " << bpline << " flags = " << flags << "\r\n";
+  if (!SetTreeBreakPoint(allCode,bpline,flags)) 
+    throw Exception(string("Unable to set a breakpoint at line ") + bpline + 
+		    string(" of routine ") + name);
 }
 
 void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {
@@ -515,11 +482,6 @@ void BuiltInFunctionDef::printMe(Interpreter *eval) {
   snprintf(msgBuffer,MSGBUFLEN," Return count: %d\n",retCount);
   eval->outputMessage(msgBuffer);
   snprintf(msgBuffer,MSGBUFLEN," Argument count: %d\n",argCount);
-  eval->outputMessage(msgBuffer);
-  /*
-    snprintf(msgBuffer,MSGBUFLEN," Address of function: %08x\n",
-    ((int) fptr));
-  */
   eval->outputMessage(msgBuffer);
 }
 

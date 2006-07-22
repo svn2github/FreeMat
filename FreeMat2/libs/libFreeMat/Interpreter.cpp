@@ -328,7 +328,6 @@ std::string Interpreter::getVersionString() {
 }
 
 void Interpreter::run() {
-  qDebug("Interpreter started...\n");
   if (!m_skipflag)
     sendGreeting();
   try {
@@ -341,6 +340,7 @@ void Interpreter::run() {
       }
     }
   } catch (InterpreterQuitException &e) {
+    emit QuitSignal();
   } catch (std::exception& e) {
   }
 }
@@ -444,7 +444,6 @@ void Interpreter::clearStacks() {
 }
 
 ArrayVector Interpreter::rowDefinition(tree t) {
-  SetContext(t.context());
   ArrayVector retval(expressionList(t.children()));
   return retval;
 }
@@ -515,10 +514,8 @@ Array Interpreter::matrixDefinition(tree t) {
   treeVector s(t.children());
   if (s.size() == 0) 
     return Array::emptyConstructor();
-  for (int i=0;i<s.size();i++) {
-    SetContext(s[i].context());
+  for (int i=0;i<s.size();i++)
     m.push_back(rowDefinition(s[i]));
-  }
   // Check if any of the elements are user defined classes
   bool anyuser = false;
   for (int i=0;i<m.size() && !anyuser;i++)
@@ -581,22 +578,18 @@ Array Interpreter::cellDefinition(tree t) {
     a.promoteType(FM_CELL_ARRAY);
     return a;
   }
-  for (int i=0;i<s.size();i++) {
-    SetContext(s[i].context());
+  for (int i=0;i<s.size();i++)
     m.push_back(rowDefinition(s[i]));
-  }
   Array retval(Array::cellConstructor(m));
   return retval;
 }
 
 Array Interpreter::ShortCutOr(tree t) {
-  SetContext(t.context());
   Array a(expression(t.first()));
-  SetContext(t.context());
   Array retval;
-  if (!a.isScalar()) {
+  if (!a.isScalar())
     retval = DoBinaryOperator(t,Or,"or");
-  } else {
+  else {
     // A is a scalar - is it true?
     a.promoteType(FM_LOGICAL);
     if (*((const logical*)a.getDataPointer()))
@@ -627,7 +620,6 @@ Array Interpreter::ShortCutAnd(tree t) {
 
 //Works
 Array Interpreter::expression(tree t) {
-  SetContext(t.context());
   Array retval;
   switch(t.token()) {
   case TOK_INTEGER:
@@ -889,11 +881,8 @@ Array Interpreter::expression(tree t) {
 //Works
 Array Interpreter::unitColon(tree t) {
   Array a, b;
-  SetContext(t.context());
   a = expression(t.first());
-  SetContext(t.context());
   b = expression(t.second());
-  SetContext(t.context());
   if (!(a.isUserClass() || b.isUserClass()))
     return UnitColon(a,b);
   else
@@ -903,13 +892,9 @@ Array Interpreter::unitColon(tree t) {
 //Works
 Array Interpreter::doubleColon(tree t) {
   Array a, b, c;
-  SetContext(t.context());
   a = expression(t.first().first());
-  SetContext(t.context());
   b = expression(t.first().second());
-  SetContext(t.context());
   c = expression(t.second());
-  SetContext(t.context());
   if (!(a.isUserClass() || b.isUserClass() || c.isUserClass()))
     return DoubleColon(a,b,c);
   else
@@ -933,16 +918,12 @@ ArrayVector Interpreter::varExpressionList(treeVector t, Array subroot) {
   unsigned count = t.size(); 
   if (!count) return m;
   for (unsigned index = 0;index < count;index++) {
-    SetContext(t[index].context());
-    if (t[index].is(TOK_KEYWORD)) {
+    if (t[index].is(TOK_KEYWORD))
       continue;
-    }
     if (t[index].is(TOK_VARIABLE)) {
       try {
 	n = rhsExpression(t[index]);
-	SetContext(t[index].context());
       } catch (Exception& e) {
-	SetContext(t[index].context());
 	if (!e.matches("Empty expression!"))
 	  throw;
 	else
@@ -952,12 +933,10 @@ ArrayVector Interpreter::varExpressionList(treeVector t, Array subroot) {
 	m.push_back(n[i]);
     } else if (t[index].is(':') && (!t[index].haschildren())) {
       m.push_back(AllColonReference(subroot,index,count));
-      SetContext(t[index].context());
     } else {
       endStack.push_back(endData(subroot,index,count));
       // Call the expression
       m.push_back(expression(t[index]));
-      SetContext(t[index].context());
       endStack.pop_back();
     }
   }
@@ -973,16 +952,13 @@ ArrayVector Interpreter::expressionList(treeVector t) {
   unsigned count = t.size(); 
   if (!count) return m;
   for (unsigned index = 0;index < count;index++) {
-    SetContext(t[index].context());
     if (t[index].is(TOK_KEYWORD)) {
       continue;
     }
     if (t[index].is(TOK_VARIABLE)) {
       try {
 	n = rhsExpression(t[index]);
-	SetContext(t[index].context());
       } catch (Exception& e) {
-	SetContext(t[index].context());
 	if (!e.matches("Empty expression!"))
 	  throw;
 	else
@@ -995,7 +971,6 @@ ArrayVector Interpreter::expressionList(treeVector t) {
     } else {
       //FIXME - so what happens if we use 'end' here?
       m.push_back(expression(t[index]));
-      SetContext(t[index].context());
     }
   }
   return m;
@@ -1015,11 +990,8 @@ bool Interpreter::testCaseStatement(tree t, Array s) {
   bool caseMatched;
   Array r;
   int ctxt = t.context();
-  SetContext(ctxt);
   r = expression(t.first());
-  SetContext(ctxt);
   caseMatched = s.testForCaseMatch(r);
-  SetContext(ctxt);
   if (caseMatched)
     block(t.second());
   return caseMatched;
@@ -1150,10 +1122,8 @@ void Interpreter::AutoStop(bool a) {
 void Interpreter::switchStatement(tree t) {
   Array switchVal;
   int ctxt = t.context();
-  SetContext(ctxt);
   // First, extract the value to perform the switch on.
   switchVal = expression(t.first());
-  SetContext(ctxt);
   // Assess its type to determine if this is a scalar switch
   // or a string switch.
   if (!switchVal.isScalar() && !switchVal.isString())
@@ -1218,7 +1188,6 @@ void Interpreter::switchStatement(tree t) {
 void Interpreter::ifStatement(tree t) {
   bool elseifMatched;
   int ctxt = t.context();
-  SetContext(ctxt);
     
   bool condtest = !(expression(t.first()).isRealAllZeros());
   if (condtest) {
@@ -1273,19 +1242,16 @@ void Interpreter::whileStatement(tree t) {
   bool breakEncountered;
   int ctxt = t.context();
     
-  SetContext(ctxt);
   testCondition = t.first();
   codeBlock = t.second();
   breakEncountered = false;
   condVar = expression(testCondition);
-  SetContext(ctxt);
   conditionTrue = !condVar.isRealAllZeros();
   context->enterLoop();
   breakEncountered = false;
   while (conditionTrue && !breakEncountered) {
     try {
       block(codeBlock);
-      SetContext(ctxt);
     } catch (InterpreterContinueException& e) {
     } catch (InterpreterBreakException& e) {
       breakEncountered = true;
@@ -1298,7 +1264,6 @@ void Interpreter::whileStatement(tree t) {
     }
     if (!breakEncountered) {
       condVar = expression(testCondition);
-      SetContext(ctxt);
       conditionTrue = !condVar.isRealAllZeros();
     } 
   }
@@ -1366,7 +1331,6 @@ void Interpreter::forStatement(tree t) {
   int     elementCount;
   int ctxt = t.context();
 
-  SetContext(ctxt);
   /* Get the name of the indexing variable */
   if (t.first().is('=')) {
     indexVarName = t.first().first().text();
@@ -1378,7 +1342,6 @@ void Interpreter::forStatement(tree t) {
     if (!ptr) throw Exception("index variable " + indexVarName + " used in for statement must be defined");
     indexSet = *ptr;
   }
-  SetContext(ctxt);
   /* Get the code block */
   codeBlock = t.second();
   elementCount = indexSet.getLength();
@@ -1389,7 +1352,6 @@ void Interpreter::forStatement(tree t) {
     context->insertVariable(indexVarName,indexVar);
     try {
       block(codeBlock);
-      SetContext(ctxt);
     } catch (InterpreterContinueException &e) {
     } catch (InterpreterBreakException &e) {
       break;
@@ -1742,25 +1704,6 @@ void Interpreter::debugCLI() {
 
 
 void Interpreter::doDebugCycle() {
-  if (inStepMode) {
-    // We have to clear the dbstep trap...
-    // We check the list of break points - if one of them matches the
-    // steptrap, we just clear the inStepMode flag (that bp belongs
-    // there anyway).  Otherwise, we clear it.
-    bool alreadySet = false;
-    for (int i=0;(i<bpStack.size()) && !alreadySet;i++)
-      alreadySet = (bpStack[i].detail == stepTrap.detail) &&
-	((bpStack[i].tokid & 0xffff) == (stepTrap.tokid & 0xffff));
-    if (!alreadySet) {
-      // we do this by clearing any break points on the line in question
-      FuncPtr val;
-      ArrayVector dummy;
-      bool isFun = lookupFunction(stepTrap.detail,val,dummy);
-      if (isFun && (val->type() == FM_M_FUNCTION))
-	((MFunctionDef*)val)->RemoveBreakpoint(stepTrap.tokid);
-    }
-    inStepMode = false;
-  }
   depth++;
   try {
     evalCLI();
@@ -1775,7 +1718,7 @@ void Interpreter::displayArray(Array b) {
   // Check for a user defined class
   FuncPtr val;
   if (b.isUserClass() && ClassResolveFunction(this,b,"display",val)) {
-    val->updateCode();
+    if (val->updateCode()) refreshBreakpoints();
     ArrayVector args(singleArrayVector(b));
     ArrayVector retvec(val->evaluateFunction(this,args,1));
   } else
@@ -1795,7 +1738,6 @@ void Interpreter::expressionStatement(tree s, bool printIt) {
     ptr = context->lookupVariable(t.first().text());
     if (ptr == NULL) {
       m = functionExpression(t,0,true);
-      SetContext(t.context());
       bool emptyOutput = false;
       if (m.size() == 0) {
 	b = Array::emptyConstructor();
@@ -1805,11 +1747,9 @@ void Interpreter::expressionStatement(tree s, bool printIt) {
       if (printIt && (!emptyOutput)) {
 	outputMessage(std::string("ans = \n"));
 	displayArray(b);
-	SetContext(t.context());
       }
     } else {
       m = rhsExpression(t);
-      SetContext(t.context());
       if (m.size() == 0)
 	b = Array::emptyConstructor();
       else {
@@ -1823,7 +1763,6 @@ void Interpreter::expressionStatement(tree s, bool printIt) {
 	      outputMessage(std::string(buffer));
 	    }
 	    displayArray(m[j]);
-	    SetContext(t.context());
 	  }
 	}
       }
@@ -1833,7 +1772,6 @@ void Interpreter::expressionStatement(tree s, bool printIt) {
     if (printIt) {
       outputMessage(std::string("ans = \n"));
       displayArray(b);
-      SetContext(t.context());
     } 
   }
   context->insertVariable("ans",b);
@@ -1843,7 +1781,6 @@ void Interpreter::expressionStatement(tree s, bool printIt) {
 void Interpreter::assignmentStatement(tree t, bool printIt) {
   if (t.first().numchildren() == 1) {
     Array b(expression(t.second()));
-    SetContext(t.context());
     context->insertVariable(t.first().first().text(),b);
     if (printIt) {
       outputMessage(t.first().first().text());
@@ -1852,9 +1789,7 @@ void Interpreter::assignmentStatement(tree t, bool printIt) {
     }	  
   } else {
     Array expr(expression(t.second()));
-    SetContext(t.context());
     Array c(assignExpression(t.first(),expr));
-    SetContext(t.context());
     context->insertVariable(t.first().first().text(),c);
     if (printIt) {
       outputMessage(t.first().first().text());
@@ -1865,7 +1800,6 @@ void Interpreter::assignmentStatement(tree t, bool printIt) {
 }
   
 void Interpreter::statementType(tree t, bool printIt) {
-  SetContext(t.context());
   // check the debug flag
   switch(t.token()) {
   case '=':
@@ -1947,6 +1881,9 @@ void Interpreter::statementType(tree t, bool printIt) {
 void Interpreter::statement(tree t) {
   try {
     SetContext(t.context());
+    if (t.flagtest(FLAG_DEBUG_STATEMENT) || t.flagtest(FLAG_STEPTRAP))
+      doDebugCycle();
+    if (t.flagtest(FLAG_STEPTRAP)) t.clearflag(FLAG_STEPTRAP);
     if (t.is(TOK_QSTATEMENT))
       statementType(t.first(),false);
     else if (t.is(TOK_STATEMENT))
@@ -2081,7 +2018,7 @@ Array Interpreter::EndReference(Array v, int index, int count) {
   FuncPtr val;
   if (v.isUserClass() && ClassResolveFunction(this,v,"end",val)) {
     // User has overloaded "end" operator
-    val->updateCode();
+    if (val->updateCode()) refreshBreakpoints();
     ArrayVector argvec;
     argvec.push_back(Array::int32Constructor(index+1));
     argvec.push_back(Array::int32Constructor(count));
@@ -2111,7 +2048,6 @@ Array Interpreter::assignExpression(tree t, Array &value) {
 // Works
 Array Interpreter::assignExpression(tree t, ArrayVector &value, bool multipleLHS) {
   int ctxt = t.context();
-  SetContext(ctxt);
   if (t.numchildren() == 1) {
     if ((value.size() > 1) && !multipleLHS)
       throw Exception("to many values in the rhs to match the left hand side assignment");
@@ -2139,14 +2075,13 @@ void Interpreter::specialFunctionCall(tree t, bool printIt) {
   for (unsigned index=0;index < t.numchildren();index++) 
     args.push_back(t.child(index).text());
   if (args.empty()) return;
-  SetContext(t.context());
   ArrayVector n;
   for (int i=1;i<args.size();i++)
     n.push_back(Array::stringConstructor(args[i].c_str()));
   FuncPtr val;
   if (!lookupFunction(args[0],val,n))
     throw Exception("unable to resolve " + args[0] + " to a function call");
-  val->updateCode();
+  if (val->updateCode()) refreshBreakpoints();
   bool CLIFlagsave = InCLI;
   InCLI = false;
   try {
@@ -2158,32 +2093,34 @@ void Interpreter::specialFunctionCall(tree t, bool printIt) {
   InCLI = CLIFlagsave;
 }
   
-void Interpreter::addBreakpoint(stackentry bp, bool registerIt) {
-  char *cname = strdup(bp.detail.c_str());
-  bool isFun;
-  FuncPtr val;
-  ArrayVector dummy;
-  isFun = lookupFunction(cname,val,dummy);
-  char buffer[1000];
-  if (!isFun) {
-    sprintf(buffer,"unable to find function %s to set breakpoint",bp.detail.c_str());
-    warningMessage(buffer);
-    return;
-  }
-  if (val->type() != FM_M_FUNCTION) {
-    sprintf(buffer,"function %s is not an m-file, and does not support breakpoints",bp.detail.c_str());
-    warningMessage(buffer);
-    return;
-  }
-  if (registerIt) {
-    ((MFunctionDef*)val)->SetBreakpoint(bp.tokid);
-    bpStack.push_back(bp);
-  } else {
-    ((MFunctionDef*)val)->AddBreakpoint(bp.tokid);
-  }
+void Interpreter::addBreakpoint(stackentry bp, bool temporary) {
+  bpStack.push_back(bp);
+  refreshBreakpoints();
 }
 
-
+void Interpreter::refreshBreakpoints() {
+  for (int i=0;i<bpStack.size();i++) {
+    warningMessage(string("Setting bp at line ") + bpStack[i].tokid + 
+		   string(" of ") + bpStack[i].cname);
+    FuncPtr val;
+    ArrayVector dummy;
+    bool isFun = lookupFunction(bpStack[i].detail,val,dummy);
+    if (!isFun) {
+      warningMessage(string("unable to find function ") + bpStack[i].detail + " to set breakpoint");
+      continue;
+    }
+    if (val->type() != FM_M_FUNCTION) {
+      warningMessage("function " + bpStack[i].detail + 
+		     " is not an m-file, and does not support breakpoints");
+      continue;
+    }
+    try {
+      ((MFunctionDef*)val)->SetBreakpoint(bpStack[i].tokid,FLAG_DEBUG_STATEMENT);
+    } catch (Exception &e) {
+      e.printMe(this);
+    }
+  }
+}
 
 //Some notes on the multifunction call...  This one is pretty complicated, and the current logic is hardly transparent.  Assume we have an expression of the form:
 //
@@ -2212,7 +2149,6 @@ void Interpreter::multiFunctionCall(tree t, bool printIt) {
 
   fAST = t.second();
   int ctxt = fAST.context();
-  SetContext(ctxt);
 
   if (!t.first().is(TOK_BRACKETS))
     throw Exception("Illegal left hand side in multifunction expression");
@@ -2233,11 +2169,9 @@ void Interpreter::multiFunctionCall(tree t, bool printIt) {
     m = FunctionPointerDispatch(r,fAST.second(),lhsCount);
   else
     m = functionExpression(fAST,lhsCount,false);
-  SetContext(ctxt);
   unsigned index;
   for (index=0;(index<s.size()) && (m.size() > 0);index++) {
     Array c(assignExpression(s[index],m));
-    SetContext(ctxt);
     context->insertVariable(s[index].first().text(),c);
     if (printIt) {
       outputMessage(s[index].first().text());
@@ -2839,7 +2773,6 @@ ArrayVector Interpreter::functionExpression(tree t,
   CLIFlagsave = InCLI;
   int ctxt = t.context();
     
-  SetContext(ctxt);
   try {
     // Because of the introduction of user-defined classes, we have to 
     // first evaluate the keywords and the arguments, before we know
@@ -2848,7 +2781,6 @@ ArrayVector Interpreter::functionExpression(tree t,
     if ((t.numchildren()>=2) && t.second().is(TOK_PARENS)) {
       // Collect keywords
       collectKeywords(t.second(),keyvals,keyexpr,keywords);
-      SetContext(ctxt);
       // Evaluate function arguments
       try {
 	m = expressionList(t.second().children());
@@ -2861,15 +2793,13 @@ ArrayVector Interpreter::functionExpression(tree t,
 	else
 	  throw;
       }
-      SetContext(ctxt);
     } 
     // Now that the arguments have been evaluated, we have to 
     // find the dominant class
     if (!lookupFunction(t.first().text(),funcDef,m))
       throw Exception("Undefined function or variable " + 
 		      t.first().text());
-    SetContext(ctxt);
-    funcDef->updateCode();
+    if (funcDef->updateCode()) refreshBreakpoints();
     if (funcDef->scriptFlag) {
       if (t.numchildren()>=2)
 	throw Exception(std::string("Cannot use arguments in a call to a script."));
@@ -2892,7 +2822,6 @@ ArrayVector Interpreter::functionExpression(tree t,
 	argTypeMap = sortKeywords(m,keywords,funcDef->arguments,keyvals);
       else
 	argTypeMap = NULL;
-      SetContext(ctxt);
       if ((funcDef->inputArgCount() >= 0) && 
 	  (m.size() > funcDef->inputArgCount()))
 	throw Exception(std::string("Too many inputs to function ")+t.first().text());
@@ -2929,23 +2858,6 @@ ArrayVector Interpreter::functionExpression(tree t,
   }
 }
   
-int COST(int a, int b) {
-  return (((a) >= (b)) ? ((a)-(b)) : 10000);
-}
-
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
-//PORT
-int GetClosestLineNumber(tree t, int lineno) {
-  return 1;
-  //     if (t == NULL) return 10000;
-  //     int linedwn = GetClosestLineNumber(t->down,lineno);
-  //     int linerght = GetClosestLineNumber(t->right,lineno);
-  //     int retval = (t.context() & 0xffff);;
-  //     int costthis = COST(retval,lineno);
-  //     return(MIN(linedwn,MIN(linerght,costthis)));
-}
-
 void Interpreter::listBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
     char buffer[2048];
@@ -2971,58 +2883,7 @@ void Interpreter::deleteBreakpoint(int number) {
     return;
   if (val->type() != FM_M_FUNCTION) 
     return;
-  ((MFunctionDef*)val)->RemoveBreakpoint(bp.tokid);
-}
-
-bool Interpreter::adjustBreakpoint(stackentry& bp, bool dbstep) {
-  char *cname = strdup(bp.detail.c_str());
-  bool isFun;
-  FuncPtr val;
-  ArrayVector dummy;
-  isFun = lookupFunction(cname,val,dummy);
-  char buffer[1000];
-  if (!isFun) return false;
-  if (val->type() == FM_M_FUNCTION) {
-    MFunctionDef *mptr;
-    mptr = (MFunctionDef *) val;
-    mptr->updateCode();
-    int clinenum = 10000;
-    int nxt;
-    while (mptr) {
-      tree code = mptr->code;
-      nxt = GetClosestLineNumber(code,bp.tokid & 0xffff);
-      clinenum = MIN(clinenum,nxt);
-      mptr = mptr->nextFunction;
-    }
-    if (clinenum == 10000) {
-      char buffer[2048];
-      if (dbstep) {
-	sprintf(buffer,"Unable to step the specified number of lines, execution will continue\n");
-	inStepMode = false;
-      } else 
-	sprintf(buffer,"Failed to set breakpoint in %s at line %d - breakpoint is disabled\n",
-		cname, bp.tokid & 0xffff);
-      warningMessage(buffer);
-      return false;
-    } else 
-      if (clinenum != 0)
-	bp.tokid = (bp.tokid & 0xffff) + clinenum;
-  } else {
-    return false;
-  }
-  return true;
-}
-  
-void Interpreter::adjustBreakpoints() {
-  std::vector<stackentry>::iterator i=bpStack.begin();
-  while (i!=bpStack.end()) {
-    if (!adjustBreakpoint(*i,false))
-      bpStack.erase(i);
-    else
-      i++;
-  }
-  if (inStepMode)
-    adjustBreakpoint(stepTrap,true);
+  ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,0);
 }
 
 void Interpreter::stackTrace(bool includeCurrent) {
@@ -3159,7 +3020,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, tree args,
     throw Exception("Expected either '()' or function arguments inside parenthesis");
   ArrayVector m = expressionList(args.children());
   ArrayVector n;
-  fun->updateCode();
+  if (fun->updateCode()) refreshBreakpoints();
   if (fun->scriptFlag) {
     if (!m.empty())
       throw Exception(std::string("Cannot use arguments in a call to a script."));
@@ -3377,7 +3238,6 @@ ArrayVector Interpreter::rhsExpression(tree t) {
   bool isFun;
   Dimensions rhsDimensions;
   int ctxt(t.context());
-  SetContext(ctxt);
   // Try to satisfy the rhs expression with what functions we have already
   // loaded.
   ptr = context->lookupVariable(t.first().text());
@@ -3425,7 +3285,6 @@ Interpreter::Interpreter(Context* aContext) {
   printLimit = 1000;
   autostop = true;
   InCLI = false;
-  inStepMode = false;
   bpActive = false;
   stopoverload = false;
   m_skipflag = false;
@@ -3449,25 +3308,18 @@ void Interpreter::dbstep(int linecount) {
   if (cstack.size() < 2) throw Exception("cannot dbstep unless inside an M-function");
   stackentry bp(cstack[cstack.size()-2]);
   // Add a breakpoint
-  addBreakpoint(stackentry(bp.cname,bp.detail,(bp.tokid & 0xffff) + linecount),false);
-  stepTrap = stackentry(bp.cname,bp.detail,(bp.tokid & 0xffff) + linecount);
-  inStepMode = true;
+  addBreakpoint(stackentry(bp.cname,bp.detail,(bp.tokid & 0xffff) + linecount),true);
 }
 
-static std::string EvalPrep(char *line) {
-  char buffer1[MAXSTRING];
-  char buffer2[MAXSTRING];
-  strcpy(buffer1,line);
-  if (buffer1[strlen(buffer1)-1] == '\n')
-    buffer1[strlen(buffer1)-1] = 0;
-  if (buffer1[strlen(buffer1)-1] == '\r')
-    buffer1[strlen(buffer1)-1] = 0;
-  sprintf(buffer2,"%s",buffer1);
-  if (strlen(buffer2) > 20) {
-    buffer2[22] = buffer2[21] = buffer2[20] = '.'; 
-    buffer2[23] = 0;
-  }
-  return std::string(buffer2);
+static string EvalPrep(string line) {
+  string buf1 = line;
+  if (buf1[buf1.size()-1] == '\n')
+    buf1.erase(buf1.end()-1);
+  if (buf1[buf1.size()-1] == '\r')
+    buf1.erase(buf1.end()-1);
+  if (buf1.size() > 20)
+    buf1 = string(buf1,0,20) + "...";
+  return buf1;
 }
 
 void Interpreter::ExecuteLine(std::string txt) {
@@ -3489,7 +3341,6 @@ void Interpreter::evaluateString(string line, bool propogateExceptions) {
     if (!t.is(TOK_SCRIPT))
       throw Exception("Function definition unexpected!");
     t = t.first();
-    t.print();
   } catch(Exception &e) {
     if (propogateExceptions)
       throw;
@@ -3498,8 +3349,7 @@ void Interpreter::evaluateString(string line, bool propogateExceptions) {
     return;
   }
   try {
-    //      pushDebug("Eval",EvalPrep(line));
-    pushDebug("Eval",line);
+    pushDebug("Eval",EvalPrep(line));
     try {
       block(t);
     } catch (InterpreterReturnException& e) {
@@ -3589,10 +3439,10 @@ void Interpreter::evalCLI() {
     if (cmd_buffer.empty())
       bufferNotEmpty.wait(&mutex);
     cmdline = cmd_buffer.front();
-    cout << ("executing " + cmdline);
     cmd_buffer.erase(cmd_buffer.begin());
     mutex.unlock();
     int stackdepth = cstack.size();
+    InCLI = true;
     evaluateString(cmdline);
     while (cstack.size() > stackdepth) cstack.pop_back();
   }
@@ -3743,7 +3593,6 @@ ArrayVector Interpreter::subsindex(ArrayVector m) {
 // b = a(2,end)
 ArrayVector Interpreter::subsrefParen(Array r, tree t) {
   ArrayVector m = varExpressionList(t.children(),r);
-  SetContext(t.context());
   if (m.size() == 0) 
     throw Exception("Expected indexing expression!");
   else if (m.size() == 1) 
@@ -3757,7 +3606,6 @@ ArrayVector Interpreter::subsrefParen(Array r, tree t) {
 // b = a{2,end}
 ArrayVector Interpreter::subsrefBrace(Array r, tree t) {
   ArrayVector m = varExpressionList(t.children(),r);
-  SetContext(t.context());
   if (m.size() == 0) 
     throw Exception("Expected indexing expression!");
   else if (m.size() == 1)
@@ -3781,7 +3629,6 @@ ArrayVector Interpreter::subsrefDotDyn(Array r, tree t) {
   char *field;
   try {
     Array fname(expression(t.first()));
-    SetContext(t.context());
     field = fname.getContentsAsCString();
   } catch (Exception &e) {
     throw Exception("dynamic field reference to structure requires a string argument");
@@ -3834,7 +3681,6 @@ ArrayVector Interpreter::subsref(Array r, treeVector t) {
 // a(:,end) = 5;
 void Interpreter::subsassignParen(Array *r, tree t, ArrayVector& value) {
   ArrayVector m = varExpressionList(t.children(),*r);
-  SetContext(t.context());
   if (m.size() == 0)
     throw Exception("Expected indexing expression!");
   else if (m.size() == 1) 
@@ -3853,7 +3699,6 @@ void Interpreter::subsassignParen(Array *r, tree t, ArrayVector& value) {
 // a{:,end} = 5;
 void Interpreter::subsassignBrace(Array *r, tree t, ArrayVector& value) {
   ArrayVector m = varExpressionList(t.children(),*r);
-  SetContext(t.context());
   if (m.size() == 0)
     throw Exception("Expected indexing expression!");
   else if (m.size() == 1) 
@@ -3877,7 +3722,6 @@ void Interpreter::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
   char *field;
   try {
     Array fname(expression(t.first()));
-    SetContext(t.context());
     field = fname.getContentsAsCString();
   } catch (Exception &e) {
     throw Exception("dynamic field reference to structure requires a string argument");
@@ -3889,7 +3733,6 @@ void Interpreter::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
 // Works
 void Interpreter::subassignSingle(Array *r, tree t, ArrayVector& value) {
   ArrayVector m;
-  SetContext(t.context());
   if (t.is(TOK_PARENS)) 
     subsassignParen(r,t,value);
   else if (t.is(TOK_BRACES))
@@ -3935,7 +3778,6 @@ void Interpreter::subassign(Array *r, tree t, ArrayVector& value) {
   Array data(*r);
   // Subindex
   for (unsigned index=0;index < (s.size()-1);index++) {
-    SetContext(ctxt);
     if (!data.isEmpty()) {
       try {
 	ArrayVector m = subsrefSingle(data,s[index]);
@@ -3951,7 +3793,6 @@ void Interpreter::subassign(Array *r, tree t, ArrayVector& value) {
   // Do the assignment on the last temporary
   Array tmp(data);
   subassignSingle(&tmp,s.back(),value);
-  SetContext(ctxt);
   Array rhs(tmp);
   if (stack.size() > 0) {
     stack.pop_back();
@@ -3962,7 +3803,6 @@ void Interpreter::subassign(Array *r, tree t, ArrayVector& value) {
       // Make the assignment
       ArrayVector m(singleArrayVector(rhs));
       subassignSingle(&tmp,ref.back(),m);
-      SetContext(ctxt);
       // Assign this temporary to be the RHS of the next temporary
       rhs = tmp;
       // Pop the two stacks
@@ -3974,7 +3814,6 @@ void Interpreter::subassign(Array *r, tree t, ArrayVector& value) {
     ArrayVector m;
     m.push_back(tmp);
     subassignSingle(r,ref.back(),m);
-    SetContext(ctxt);
   } else
     *r = tmp;
 }

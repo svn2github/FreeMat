@@ -94,7 +94,7 @@ void MainApp::SetupGUICase() {
   QTTerm *gui = new QTTerm(NULL);
   m_keys->RegisterTerm(gui);
   gui->resizeTextSurface();
-  gui->show();
+  //  gui->show();
   m_win->SetGUITerminal(gui);
   m_win->SetKeyManager(m_keys);
   m_win->readSettings();
@@ -172,6 +172,11 @@ void MainApp::SetSkipGreeting(bool skip) {
   skipGreeting = skip;
 }
 
+void MainApp::Quit() {
+  TerminalReset();
+  qApp->quit();
+}
+
 void MainApp::TerminalReset() {
 #ifdef Q_WS_X11
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);
@@ -194,7 +199,6 @@ void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) {
 }
 
 int MainApp::Run() {
-  qDebug("Starting interpreter...\n");
   Context *context = new Context;
   LoadModuleFunctions(context);
   LoadClassFunction(context);
@@ -250,6 +254,8 @@ int MainApp::Run() {
   connect(m_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
   connect(m_eval,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
 	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
+  connect(m_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
+  m_eval->setTerminalWidth(m_keys->getTerminalWidth());
   m_eval->setGreetingFlag(skipGreeting);
   m_eval->start();
   return 0;

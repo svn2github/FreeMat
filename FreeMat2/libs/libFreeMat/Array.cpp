@@ -4050,3 +4050,14 @@ void emitElement(char *msgBuffer, const void *dp, int num, Class dcls) {
   }
 }
   
+string operator+(string a, int d) {
+  char buf[256];
+  sprintf(buf,"%d",d);
+  return a+string(buf);
+}
+
+string operator+(int d, string a) {
+  char buf[256];
+  sprintf(buf,"%d",d);
+  return a+string(buf);
+}

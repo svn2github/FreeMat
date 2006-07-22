@@ -41,6 +41,9 @@ public:
   tree first() {return child(0);}
   tree second() {return child(1);}
   bool is(byte tok) {return (token()==tok);}
+  bool flagtest(byte pat) {if (tptr) return ((tptr->node.Flags() & pat) != 0); else return false;}
+  void setflag(byte pat) {if (tptr) (tptr->node.SetFlags(tptr->node.Flags() | pat));}
+  void clearflag(byte pat) {if (tptr) (tptr->node.SetFlags(tptr->node.Flags() & ~pat));}
   byte token() {if (tptr) return tptr->node.Value(); else return 0;}
   unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
   bool haschildren() {return numchildren() > 0;}
@@ -51,6 +54,7 @@ public:
 };
 
 tree mkLeaf(const Token& tok);
+tree mkLeaf(byte a, unsigned pos);
 tree mkNode(const Token& tok, tree arg1, tree arg2);
 tree mkNode(const Token& tok, tree arg1);
 tree first(tree root);

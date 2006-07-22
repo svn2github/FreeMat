@@ -267,13 +267,14 @@ public:
    */
   Context* getContext();
   /**
+   * Refresh the breakpoints in the code.  Call this after updating
+   * code for functions, or breakpoints will not work.
+   */
+  void refreshBreakpoints();
+  /**
    * Add a new breakpoint
    */
-  void addBreakpoint(stackentry bp, bool registerIt = true);
-  /**
-   * Adjust a breakpoint
-   */
-  bool adjustBreakpoint(stackentry &bp, bool dbstep);
+  void addBreakpoint(stackentry bp, bool temporary = false);
   /**
    * List all breakpoints
    */
@@ -367,6 +368,10 @@ signals:
    * Dispatch a graphics call
    */
   void doGraphicsCall(FuncPtr, ArrayVector, int);
+  /**
+   * All done.
+   */
+  void QuitSignal();
 
   /******************************************
    *  Private Methods for the Interpreter   *
@@ -895,10 +900,6 @@ private:
    * Add the specified .mex file to the current context
    */
   void procFileMex(string fname, string fullname, bool tempfunc);
-  /**
-   * Adjust the breakpoints
-   */
-  void adjustBreakpoints();
   /**
    * Enter a debug cycle
    */

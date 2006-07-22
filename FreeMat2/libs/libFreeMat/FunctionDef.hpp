@@ -110,8 +110,9 @@ public:
   /**
    * Compile the function (if it is required).  We guarantee that this
    * function will be called at least once before evaluateFunction is called.
+   * Return true if the updateCode call did anything.
    */
-  virtual void updateCode() {}
+  virtual bool updateCode() {return false;}
 };
 
 typedef FunctionDef* FunctionDefPtr;
@@ -129,7 +130,6 @@ class MFunctionDef;
  */
 class MFunctionDef : public FunctionDef {
 public:
-  std::vector<int> breakPoints;
   /**
    * The names of the return values - this is a vector of strings with
    * one entry for each return value in the declared function.  Thus,
@@ -143,6 +143,10 @@ public:
    * function is contained in this AST, not the function declaration itself).
    */
   tree code;
+  /**
+   * The AST for all of the code in the file.
+   */
+  tree allCode;
   /**
    * Flag to indicate if the function has been compiled.
    */
@@ -218,27 +222,11 @@ public:
    * parsing of the file (i.e., it cannot be classified as either a
    * script or a function definition).
    */
-  virtual void updateCode();
+  virtual bool updateCode();
   /**
-   * Set a breakpoint
+   * Activate/remove a breakpoint
    */
-  void SetBreakpoint(int bpline);
-  /**
-   * Delete a breakpoint
-   */
-  void DeleteBreakpoint(int bpline);
-  /**
-   * Activate a breakpoint
-   */
-  void AddBreakpoint(int bpline);
-  /**
-   * Deactivate a breakpoint
-   */
-  void RemoveBreakpoint(int bpline);
-  /**
-   * Reactivate breakpoints for this file
-   */
-  void RestoreBreakpoints();
+  void SetBreakpoint(int bpline, byte flags);
 };
 
 /**

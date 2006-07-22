@@ -18,8 +18,6 @@ class Parser {
   const Token& Next();
   unsigned Precedence(const Token&);
   bool MatchNumber();
-  tree mkLeaf(const Token& a);
-  tree mkLeaf(byte a);
 private:
   tree TransposeFixup(tree base);
   tree ForStatement();

@@ -4,26 +4,19 @@
 #include <string>
 #include "Token.hpp"
 #include <stack>
+#include <vector>
 
 using namespace std;
-
-class ScannerState {
-public:
-  int m_strlen;
-  int m_ignorews_len;
-  ScannerState(int strlen, int ignorews) {
-    m_strlen = strlen;
-    m_ignorews_len = ignorews;
-  }
-};
 
 class Scanner {
   string m_filename;
   string m_text;
   int m_ptr, m_ptr_save;
   int m_strlen;
-  stack<ScannerState> m_checkpoints;
+  int m_linenumber;
   stack<bool> m_ignorews;
+  vector<int> m_breakpoints;
+  vector<int> m_current_breakpoints;
   Token m_tok;
   bool m_tokValid;
   bool m_debugFlag;
@@ -41,6 +34,8 @@ class Scanner {
   void FetchOther();
   bool TryFetchBinary(const char* op, byte tok);
   void SetToken(byte tok, string text = string());
+  bool isBreakpointLine(int num);
+  void deleteBreakpoint(int num);
 public:
   Scanner(string buf, string fname);
   // Methods accessed by the parser
@@ -51,12 +46,11 @@ public:
   void SetDebug(bool debugFlag) {m_debugFlag = debugFlag;}
   void PushWSFlag(bool ignoreWS);
   void PopWSFlag();
-  void Save();
-  void Restore();
-  void Continue();
   bool Done();
   bool Peek(int chars, byte tok);
+  void SetBreakpoints(vector<int> bp);
   unsigned Position() {return m_ptr;}
+  unsigned ContextNum();
   string Context(unsigned pos);
   string Context();
 };

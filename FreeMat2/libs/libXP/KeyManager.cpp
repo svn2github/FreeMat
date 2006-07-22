@@ -518,10 +518,8 @@ void KeyManager::NewLine() {
   AddHistory(lineData);
   PlaceCursor(ntotal);
   emit OutputRawString("\r\n");
-  qDebug("sending command...\n");
   emit ExecuteLine(string(lineData) + "\n");
   ReplacePrompt("");
-  qDebug("completed command...\n");
   ResetLineBuffer();
   DisplayPrompt();
 }

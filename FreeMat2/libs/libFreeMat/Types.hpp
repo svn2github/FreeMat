@@ -53,6 +53,7 @@ typedef enum {
   FM_DCOMPLEX,
   FM_STRING,
 } Class;
+
 typedef std::vector<std::string> stringVector;
 
 #endif

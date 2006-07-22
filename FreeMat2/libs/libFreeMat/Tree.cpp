@@ -70,6 +70,12 @@ tree mkLeaf(const Token& tok) {
   return tree(ret);
 }
 
+tree mkLeaf(byte a, unsigned position) {
+  Token p(a,position);
+  return mkLeaf(p);
+}
+
+
 tree mkNode(const Token& tok, tree arg1, tree arg2) {
   tree ret(mkLeaf(tok));
   addChild(ret,arg1,arg2);

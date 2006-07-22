@@ -5,11 +5,13 @@ C.  Debug cycles
 
 Debug cycles... how does this work?
 Workspace and files widget.
-Initial terminal width.
+>>Initial terminal width.
 Context stuff
 Breakpoints
-Quit
+>>Quit
 Continuations
+Completion
+helpgen
 
 OK - 2.0 release is done.  Next steps.
 
@@ -19,7 +21,7 @@ OK - 2.0 release is done.  Next steps.
 4.  Implement more functions
 5.  String output wrapping
 
-Continuation and array definitions
+Continuation and array definition
 
 The new parser/scanner are now set in place, with nearly all of the functionality working.
 Some remaining items:

@@ -227,6 +227,10 @@ public:
    * Activate/remove a breakpoint
    */
   void SetBreakpoint(int bpline, byte flags);
+  /**
+   * Find the line number closest to the requested one
+   */
+  unsigned ClosestLine(unsigned line);
 };
 
 /**

@@ -390,12 +390,14 @@ bool MFunctionDef::updateCode() {
 // if our line number is larger than the target, then we
 // 
 void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
-  unsigned best = line;
-  if (!t.valid()) return false;
+  if (!t.valid()) return;
   if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
-    best = 
-    if ((t.context() & 0xffff)
+    unsigned myLine = (t.context() & 0xffff);
+    if ((myLine > lineTarget) && (myLine < bestLine))
+      bestLine = myLine;
   }
+  for (int i=0;i<t.numchildren();i++)
+    TreeLine(t.child(i),bestLine,lineTarget);
 }
 
 bool SetTreeBreakPoint(tree t, int lineNumber, byte flags) {
@@ -414,7 +416,10 @@ bool SetTreeBreakPoint(tree t, int lineNumber, byte flags) {
 
 // Find the closest line number to the requested 
 unsigned MFunctionDef::ClosestLine(unsigned line) {
-  
+  unsigned bestline;
+  bestline = 10000;
+  TreeLine(allCode,bestline,line);
+  return bestline;
 }
 
 void MFunctionDef::SetBreakpoint(int bpline, byte flags) {

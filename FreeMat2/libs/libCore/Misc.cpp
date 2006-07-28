@@ -2106,11 +2106,16 @@ ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   std::string resolved_name;
   Array tmp(arg[1]);
   int line = tmp.getContentsAsIntegerScalar();
+  unsigned dline;
   if (val->type() == FM_M_FUNCTION) {
     MFunctionDef *mptr;
     mptr = (MFunctionDef *) val;
     mptr->updateCode();
     resolved_name = mptr->fileName;
+    dline = mptr->ClosestLine(line);
+    if (dline != line)
+      eval->warningMessage(string("Breakpoint moved to line ") + dline + 
+			   " of " + cname);
   } else {
     throw Exception("Cannot set breakpoints in built-in or imported functions");
   }

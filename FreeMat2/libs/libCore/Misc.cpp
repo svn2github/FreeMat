@@ -2119,7 +2119,7 @@ ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   } else {
     throw Exception("Cannot set breakpoints in built-in or imported functions");
   }
-  eval->addBreakpoint(stackentry(resolved_name,cname,line));
+  eval->addBreakpoint(stackentry(resolved_name,cname,dline));
   return ArrayVector();
 }
   

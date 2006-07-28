@@ -393,7 +393,7 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
   if (!t.valid()) return;
   if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
     unsigned myLine = (t.context() & 0xffff);
-    if ((myLine > lineTarget) && (myLine < bestLine))
+    if ((myLine >= lineTarget) && (myLine < bestLine))
       bestLine = myLine;
   }
   for (int i=0;i<t.numchildren();i++)

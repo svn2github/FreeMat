@@ -12,6 +12,7 @@ Breakpoints
 Continuations
 Completion
 helpgen
+pcode
 
 OK - 2.0 release is done.  Next steps.
 

@@ -3726,6 +3726,9 @@ char* Array::getContentsAsCString() const  {
 }
 
 int32 Array::getContentsAsIntegerScalar()  {
+  if (dp->dataClass == FM_STRING) {
+    return atoi((const char*) dp->getData());
+  }
   int32 *qp;
   if (getLength() != 1)
     throw Exception("Expected a scalar!\n");
@@ -3735,6 +3738,9 @@ int32 Array::getContentsAsIntegerScalar()  {
 }
 
 double Array::getContentsAsDoubleScalar()  {
+  if (dp->dataClass == FM_STRING) {
+    return atof((const char*) dp->getData());
+  }
   double *qp;
   if (isComplex() || isReferenceType() || isString())
     throw Exception("Expected a real valued scalar");

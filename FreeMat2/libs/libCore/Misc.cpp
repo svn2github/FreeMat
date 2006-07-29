@@ -2091,6 +2091,8 @@ ArrayVector DbStepFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //where @|funcname| is the name of the function where we want
 //to set the breakpoint, and @|linenumber| is the line number.
 //!
+
+static int bpList = 1;
 ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 2)
     throw Exception("dbstop function requires at least two arguments");
@@ -2119,7 +2121,7 @@ ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   } else {
     throw Exception("Cannot set breakpoints in built-in or imported functions");
   }
-  eval->addBreakpoint(stackentry(resolved_name,cname,dline));
+  eval->addBreakpoint(stackentry(resolved_name,cname,dline,bpList++));
   return ArrayVector();
 }
   

@@ -69,6 +69,7 @@ const byte TOK_DCOMPLEX = 187;
 const byte TOK_FUNCTION_DEFS = 188;
 const byte TOK_SCRIPT = 189;
 
+const byte FLAG_NONE = 0;
 const byte FLAG_DEBUG_STATEMENT = 1;
 const byte FLAG_STEPTRAP = 2;
 

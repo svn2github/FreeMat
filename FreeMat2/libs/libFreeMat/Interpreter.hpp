@@ -48,8 +48,10 @@ public:
   string cname;
   string detail;
   int tokid;
+  int number;
     
-  stackentry(string cntxt, string detail, int id);
+  // A number of -1 corresponds to a temporary breakpoint 
+  stackentry(string cntxt, string detail, int id, int number = 0);
   stackentry();
   ~stackentry();
 };
@@ -274,13 +276,21 @@ public:
   /**
    * Add a new breakpoint
    */
-  void addBreakpoint(stackentry bp, bool temporary = false);
+  void addBreakpoint(stackentry bp);
+  /**
+   * Activate a breakpoint in the code.  If the line number for the
+   * breakpoint is negative, the breakpoint is set as a step trap.  
+   * If the line number is positive, and the enable flag is set 
+   * then a breakpoint is set.  If the enable flag is false then
+   * the breakpoint is cleared.
+   */
+  void setBreakpoint(stackentry bp, bool enableFlag);
   /**
    * List all breakpoints
    */
   void listBreakpoints();
   /**
-   * Delete a breakpoint
+   * Delete a breakpoint from the persistent list
    */
   void deleteBreakpoint(int number);
   /**

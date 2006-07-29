@@ -224,9 +224,13 @@ public:
    */
   virtual bool updateCode();
   /**
-   * Activate/remove a breakpoint
+   * Activate a breakpoint
    */
-  void SetBreakpoint(int bpline, byte flags);
+  void SetBreakpoint(int bpline, byte flags);  
+  /**
+   * Deactivate a breakpoint
+   */
+  void DeleteBreakpoint(int bpline, byte flags);
   /**
    * Find the line number closest to the requested one
    */

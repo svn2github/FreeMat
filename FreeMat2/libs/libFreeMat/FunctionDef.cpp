@@ -403,7 +403,6 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
 bool SetTreeBreakPoint(tree t, int lineNumber, byte flags) {
   if (!t.valid()) return false;
   if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
-    cout << "SetBP line: " << ((int)t.context() & 0xffff) << " - " << lineNumber << "\r\n";
     if ((t.context() & 0xffff) == lineNumber) {
       t.setflag(flags);
       return true;
@@ -414,6 +413,20 @@ bool SetTreeBreakPoint(tree t, int lineNumber, byte flags) {
   return false;
 }
 
+bool ClearTreeBreakPoint(tree t, int lineNumber, byte flags) {
+  if (!t.valid()) return false;
+  if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
+    if ((t.context() & 0xffff) == lineNumber) {
+      t.clearflag(flags);
+      return true;
+    }
+  }
+  for (int i=0;i<t.numchildren();i++)
+    if (ClearTreeBreakPoint(t.child(i),lineNumber,flags)) return true;
+  return false;
+}
+
+
 // Find the closest line number to the requested 
 unsigned MFunctionDef::ClosestLine(unsigned line) {
   unsigned bestline;
@@ -423,10 +436,13 @@ unsigned MFunctionDef::ClosestLine(unsigned line) {
 }
 
 void MFunctionDef::SetBreakpoint(int bpline, byte flags) {
-  cout << "Set bp called with line number " << bpline << " flags = " << flags << "\r\n";
   if (!SetTreeBreakPoint(allCode,bpline,flags)) 
     throw Exception(string("Unable to set a breakpoint at line ") + bpline + 
 		    string(" of routine ") + name);
+}
+
+void MFunctionDef::DeleteBreakpoint(int bpline, byte flags) {
+  ClearTreeBreakPoint(allCode,bpline,flags);
 }
 
 void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {

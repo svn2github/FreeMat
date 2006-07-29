@@ -375,8 +375,8 @@ std::string Interpreter::getMFileName() {
   return std::string("");
 }
 
-stackentry::stackentry(std::string cntxt, std::string det, int id) :
-  cname(cntxt), detail(det), tokid(id) {
+stackentry::stackentry(std::string cntxt, std::string det, int id, int num) :
+  cname(cntxt), detail(det), tokid(id), number(num) {
 }
 
 stackentry::stackentry() {
@@ -2092,8 +2092,36 @@ void Interpreter::specialFunctionCall(tree t, bool printIt) {
   }
   InCLI = CLIFlagsave;
 }
-  
-void Interpreter::addBreakpoint(stackentry bp, bool temporary) {
+ 
+void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
+  FuncPtr val;
+  ArrayVector dummy;
+  bool isFun = lookupFunction(bp.detail,val,dummy);
+  if (!isFun) {
+    warningMessage(string("unable to find function ") + 
+		   bp.detail + " to set breakpoint");
+    return;
+  }
+  if (val->type() != FM_M_FUNCTION) {
+    warningMessage("function " + bp.detail + 
+		   " is not an m-file, and does not support breakpoints");
+    return;
+  }
+  try {
+    if (bp.number < 0)
+      ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,FLAG_STEPTRAP);
+    else {
+      if (enableFlag)
+	((MFunctionDef*)val)->SetBreakpoint(bp.tokid,FLAG_DEBUG_STATEMENT);
+      else
+	((MFunctionDef*)val)->DeleteBreakpoint(bp.tokid,FLAG_DEBUG_STATEMENT);
+    }
+  } catch (Exception &e) {
+    e.printMe(this);
+  }
+}
+ 
+void Interpreter::addBreakpoint(stackentry bp) {
   bpStack.push_back(bp);
   refreshBreakpoints();
 }
@@ -2102,23 +2130,7 @@ void Interpreter::refreshBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
     warningMessage(string("Setting bp at line ") + bpStack[i].tokid + 
 		   string(" of ") + bpStack[i].cname);
-    FuncPtr val;
-    ArrayVector dummy;
-    bool isFun = lookupFunction(bpStack[i].detail,val,dummy);
-    if (!isFun) {
-      warningMessage(string("unable to find function ") + bpStack[i].detail + " to set breakpoint");
-      continue;
-    }
-    if (val->type() != FM_M_FUNCTION) {
-      warningMessage("function " + bpStack[i].detail + 
-		     " is not an m-file, and does not support breakpoints");
-      continue;
-    }
-    try {
-      ((MFunctionDef*)val)->SetBreakpoint(bpStack[i].tokid,FLAG_DEBUG_STATEMENT);
-    } catch (Exception &e) {
-      e.printMe(this);
-    }
+    setBreakpoint(bpStack[i],true);
   }
 }
 
@@ -2860,30 +2872,24 @@ ArrayVector Interpreter::functionExpression(tree t,
   
 void Interpreter::listBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
-    char buffer[2048];
-    sprintf(buffer,"%d   %s line %d\n",i+1,bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
-    outputMessage(buffer);
+    //    if (bpStack[i].number > 0) {
+      char buffer[2048];
+      sprintf(buffer,"%d   %s line %d\n",bpStack[i].number,
+	      bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
+      outputMessage(buffer);
+      //    }
   }
 }
 
 void Interpreter::deleteBreakpoint(int number) {
-  if ((number < 1) || (number > bpStack.size())) {
-    warningMessage("Unable to delete specified breakpoint (does not exist)");
-    return;
-  }
-  stackentry bp(bpStack[number-1]);
-  bpStack.erase(bpStack.begin() + number - 1);
-  char buffer[2048];
-  char *cname = strdup(bp.detail.c_str());
-  bool isFun;
-  FuncPtr val;
-  ArrayVector dummy;
-  isFun = lookupFunction(cname,val,dummy);
-  if (!isFun) 
-    return;
-  if (val->type() != FM_M_FUNCTION) 
-    return;
-  ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,0);
+  for (int i=0;i<bpStack.size();i++) 
+    if (bpStack[i].number == number) {
+      setBreakpoint(bpStack[i],false);
+      bpStack.erase(bpStack.begin()+i);
+      return;
+    } 
+  warningMessage("Unable to delete specified breakpoint (does not exist)");
+  return;
 }
 
 void Interpreter::stackTrace(bool includeCurrent) {
@@ -3307,8 +3313,25 @@ void Interpreter::dbstep(int linecount) {
   // Get the current function
   if (cstack.size() < 2) throw Exception("cannot dbstep unless inside an M-function");
   stackentry bp(cstack[cstack.size()-2]);
-  // Add a breakpoint
-  addBreakpoint(stackentry(bp.cname,bp.detail,(bp.tokid & 0xffff) + linecount),true);
+  FuncPtr val;
+  ArrayVector dummy;
+  if (!lookupFunction(bp.detail,val,dummy)) {
+    warningMessage(string("unable to find function ") + bp.detail + " to single step");
+    return;
+  }
+  int line = (bp.tokid & 0xffff) + linecount;
+  int dline;
+  if (val->type() == FM_M_FUNCTION) {
+    MFunctionDef *mptr;
+    mptr = (MFunctionDef *) val;
+    dline = mptr->ClosestLine(line);
+    if (dline != line)
+      warningMessage(string("Breakpoint moved to line ") + dline + 
+		     " of " + bp.detail);
+  } else {
+    throw Exception("Cannot set breakpoints in built-in or imported functions");
+  }
+  setBreakpoint(stackentry(bp.cname,bp.detail,dline,-1),true);
 }
 
 static string EvalPrep(string line) {

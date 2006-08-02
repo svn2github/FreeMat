@@ -7,7 +7,13 @@ Debug cycles... how does this work?
 Workspace and files widget.
 >>Initial terminal width.
 Context stuff
+Stack trace
 Breakpoints
+	- General bps seem to work.
+	- check bps on scripts - Done
+	- dbstep beyond end of function - Done
+	- bp outside valid line range - Done
+	- simplify interface?
 >>Quit
 Continuations
 Completion

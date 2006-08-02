@@ -353,7 +353,6 @@ bool MFunctionDef::updateCode() {
       // Read the file into a string
       string fileText = ReadFileIntoString(fp);
       Scanner S(fileText,fileName);
-      S.SetDebug(true);
       Parser P(S);
       tree pcode = P.Process();
       allCode = pcode;
@@ -375,7 +374,6 @@ bool MFunctionDef::updateCode() {
 	functionCompiled = true;
 	code = pcode.first();
       }
-      allCode.print();
     } catch (Exception &e) {
       if (fp) fclose(fp);
       functionCompiled = false;
@@ -430,8 +428,11 @@ bool ClearTreeBreakPoint(tree t, int lineNumber, byte flags) {
 // Find the closest line number to the requested 
 unsigned MFunctionDef::ClosestLine(unsigned line) {
   unsigned bestline;
-  bestline = 10000;
+  bestline = 1000000000;
   TreeLine(allCode,bestline,line);
+  if (bestline == 1000000000)
+    throw Exception(string("Unable to find a line close to ") + 
+		    line + string(" in routine ") + name);
   return bestline;
 }
 

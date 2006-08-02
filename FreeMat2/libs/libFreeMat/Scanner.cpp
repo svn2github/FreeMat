@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-extern string fm_reserved[20];
+extern string fm_reserved[21];
 
 
 bool isalnumus(byte a) {
@@ -245,8 +245,8 @@ void Scanner::FetchIdentifier() {
   while (isalnumus(ahead(len))) len++;
   // Collect the identifier into a string
   string ident(string(m_text,m_ptr,len));
-  string *p = lower_bound(fm_reserved,fm_reserved+20,ident);
-  if ((p!= fm_reserved+20) && (*p == ident))
+  string *p = lower_bound(fm_reserved,fm_reserved+21,ident);
+  if ((p!= fm_reserved+21) && (*p == ident))
     SetToken(TOK_KEYWORD+(p-fm_reserved)+1);
   else
     SetToken(TOK_IDENT,string(m_text,m_ptr,len));

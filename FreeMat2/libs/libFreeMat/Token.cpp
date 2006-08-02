@@ -1,11 +1,12 @@
 #include "Token.hpp"
 #include <iostream>
 
-string fm_reserved[20] = {
+string fm_reserved[21] = {
   "break",
   "case",
   "catch",
   "continue",
+  "dbstep",
   "else",
   "elseif",
   "end",
@@ -73,6 +74,7 @@ string TokenToString(const Token& b) {
   case TOK_CASE: return "case";
   case TOK_CATCH: return "catch";
   case TOK_CONTINUE: return "continue";
+  case TOK_DBSTEP: return "dbstep";
   case TOK_ELSE: return "else";
   case TOK_ELSEIF: return "elseif";
   case TOK_END: return "end";

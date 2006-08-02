@@ -66,6 +66,9 @@
  * Pending control-C
  */
 bool InterruptPending;
+static int steptrap = 0;
+static string stepname;
+
 
 char* TildeExpand(char* path) {
 #ifdef WIN32
@@ -743,8 +746,7 @@ Array Interpreter::expression(tree t) {
   case '@':
     {
       FuncPtr val;
-      ArrayVector dummy;
-      if (!lookupFunction(t.first().text(),val,dummy))
+      if (!lookupFunction(t.first().text(),val))
 	throw Exception("unable to resolve " + t.first().text() + 
 			" to a function call");
       retval = Array::funcPtrConstructor(val);
@@ -1828,6 +1830,10 @@ void Interpreter::statementType(tree t, bool printIt) {
     if (context->inLoop()) 
       throw InterpreterContinueException();
     break;
+  case TOK_DBSTEP:
+    dbstepStatement(t);
+    throw InterpreterReturnException();
+    break;
   case TOK_RETURN:
     throw InterpreterReturnException();
     break;
@@ -1907,6 +1913,13 @@ void Interpreter::statement(tree t) {
 void Interpreter::block(tree t) {
   try {
     for (unsigned i=0;i<t.numchildren();i++) {
+      if ((steptrap == 1) && (ip_detailname == stepname)) {
+	steptrap--;
+	SetContext(t.child(i).context());
+	debugCLI();
+      } else if ((ip_detailname == stepname) && (steptrap > 1))
+	steptrap--;
+
       if (InterruptPending) {
 	outputMessage("Interrupt (ctrl-c) encountered\n");
 	stackTrace(true);
@@ -2095,8 +2108,7 @@ void Interpreter::specialFunctionCall(tree t, bool printIt) {
  
 void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
   FuncPtr val;
-  ArrayVector dummy;
-  bool isFun = lookupFunction(bp.detail,val,dummy);
+  bool isFun = lookupFunction(bp.detail,val);
   if (!isFun) {
     warningMessage(string("unable to find function ") + 
 		   bp.detail + " to set breakpoint");
@@ -2127,11 +2139,8 @@ void Interpreter::addBreakpoint(stackentry bp) {
 }
 
 void Interpreter::refreshBreakpoints() {
-  for (int i=0;i<bpStack.size();i++) {
-    warningMessage(string("Setting bp at line ") + bpStack[i].tokid + 
-		   string(" of ") + bpStack[i].cname);
+  for (int i=0;i<bpStack.size();i++)
     setBreakpoint(bpStack[i],true);
-  }
 }
 
 //Some notes on the multifunction call...  This one is pretty complicated, and the current logic is hardly transparent.  Assume we have an expression of the form:
@@ -2822,11 +2831,17 @@ ArrayVector Interpreter::functionExpression(tree t,
       pushDebug(((MFunctionDef*)funcDef)->fileName,
 		((MFunctionDef*)funcDef)->name);
       block(((MFunctionDef*)funcDef)->code);
+      if ((steptrap >= 1) && (ip_detailname == stepname)) {
+	if ((cstack.size() > 0) && (cstack.back().cname != "Eval")) {
+	  warningMessage("dbstep beyond end of script " + stepname +
+			 ".\n Setting single step mode for " + 
+			 cstack.back().detail);
+	  stepname = cstack.back().detail;
+	} else
+	  steptrap = 0;
+      }
       popDebug();
       InCLI = CLIFlagsave;
-      // Special case - dbstep acts like "return"
-      if (funcDef->name == "dbstep")
-	throw InterpreterReturnException();
     } else {
       // We can now adjust the keywords (because we know the argument list)
       // Apply keyword mapping
@@ -2846,6 +2861,15 @@ ArrayVector Interpreter::functionExpression(tree t,
 	n = funcDef->evaluateFunction(this,m,narg_out);
       else
 	n = doGraphicsFunction(funcDef,m,narg_out);
+      if ((steptrap >= 1) && (funcDef->name == stepname)) {
+	if ((cstack.size() > 0) && (ip_funcname != "Eval")) {
+	  warningMessage("dbstep beyond end of function " + stepname +
+			 ".\n Setting single step mode for " + 
+			 ip_detailname);
+	  stepname = ip_detailname;
+	} else
+	  steptrap = 0;
+      }
       InCLI = CLIFlagsave;
       // Check for any pass by reference
       if (t.haschildren() && (funcDef->arguments.size() > 0)) 
@@ -2858,9 +2882,6 @@ ArrayVector Interpreter::functionExpression(tree t,
     if (outputOptional) narg_out = (narg_out == 0) ? 1 : narg_out;
     while (n.size() > narg_out)
       n.pop_back();
-    // Special case - dbstep acts like "return"
-    if (funcDef->name == "dbstep")
-      throw InterpreterReturnException();
     return n;
   } catch (Exception& e) {
     InCLI = CLIFlagsave;
@@ -2949,6 +2970,12 @@ UserClass Interpreter::lookupUserClass(std::string classname) {
 
 void Interpreter::registerUserClass(std::string classname, UserClass cdata) {
   classTable.insertSymbol(classname,cdata);
+}
+
+
+bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val) {
+  ArrayVector dummy;
+  return(lookupFunction(funcName,val,dummy));
 }
 
 // Look up a function by name.  Use the arguments (if available) to assist
@@ -3309,29 +3336,25 @@ void Interpreter::setStopOverload(bool flag) {
   stopoverload = flag;
 }
 
-void Interpreter::dbstep(int linecount) {
+// We want dbstep(n) to cause us to advance n statements and then
+// stop.  we execute statement-->set step trap,
+
+void Interpreter::dbstepStatement(tree t) {
+  int lines = 1;
+  if (t.haschildren()) {
+    Array lval(expression(t.first()));
+    lines = lval.getContentsAsIntegerScalar();
+  }
   // Get the current function
-  if (cstack.size() < 2) throw Exception("cannot dbstep unless inside an M-function");
-  stackentry bp(cstack[cstack.size()-2]);
+  if (cstack.size() < 1) throw Exception("cannot dbstep unless inside an M-function");
+  stackentry bp(cstack[cstack.size()-1]);
   FuncPtr val;
-  ArrayVector dummy;
-  if (!lookupFunction(bp.detail,val,dummy)) {
+  if (!lookupFunction(bp.detail,val)) {
     warningMessage(string("unable to find function ") + bp.detail + " to single step");
     return;
   }
-  int line = (bp.tokid & 0xffff) + linecount;
-  int dline;
-  if (val->type() == FM_M_FUNCTION) {
-    MFunctionDef *mptr;
-    mptr = (MFunctionDef *) val;
-    dline = mptr->ClosestLine(line);
-    if (dline != line)
-      warningMessage(string("Breakpoint moved to line ") + dline + 
-		     " of " + bp.detail);
-  } else {
-    throw Exception("Cannot set breakpoints in built-in or imported functions");
-  }
-  setBreakpoint(stackentry(bp.cname,bp.detail,dline,-1),true);
+  steptrap = lines;
+  stepname = bp.detail;
 }
 
 static string EvalPrep(string line) {

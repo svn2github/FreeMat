@@ -320,7 +320,7 @@ public:
   /**
    * Step the given number of lines
    */
-  void dbstep(int linecount);
+  void dbstepStatement(tree t);
   /**
    * Set the autostop flag - this flag determines what happens when
    * an exception occurs
@@ -357,6 +357,10 @@ public:
    * Register the result of a gfx call
    */
   void RegisterGfxResults(ArrayVector m);
+  /**
+   * Simplified interface for function lookup.
+   */
+  bool lookupFunction(string funcName, FuncPtr& val);
 
   /******************************************
    *  Signals for the Interpreter           *
@@ -550,8 +554,8 @@ private:
    * Look up an identifier as a potential function name, using a
    * rescan if the identifier is not found on the first pass.
    */
-  bool lookupFunction(string funcName, FuncPtr& val, ArrayVector& args, 
-		      bool disableOverload = false);
+  bool lookupFunction(string funcName, FuncPtr& val, 
+		      ArrayVector& args, bool disableOverload = false);
   /**
    * Special case the single assignment statement 'A = B' for speed.
    */

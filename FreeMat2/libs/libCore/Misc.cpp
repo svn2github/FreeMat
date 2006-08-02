@@ -2068,17 +2068,17 @@ ArrayVector DbListFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //@]
 //to step one statement.
 //!
-ArrayVector DbStepFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  int linesToSkip;
-  if (arg.size() == 0)
-    linesToSkip = 1;
-  else {
-    Array tmp(arg[0]);
-    linesToSkip = tmp.getContentsAsIntegerScalar();
-  }
-  eval->dbstep(linesToSkip);
-  return ArrayVector();
-}
+// ArrayVector DbStepFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+//   int linesToSkip;
+//   if (arg.size() == 0)
+//     linesToSkip = 1;
+//   else {
+//     Array tmp(arg[0]);
+//     linesToSkip = tmp.getContentsAsIntegerScalar();
+//   }
+//   eval->dbstep(linesToSkip);
+//   return ArrayVector();
+// }
 
 //!
 //@Module DBSTOP
@@ -2101,7 +2101,7 @@ ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   char *cname = arg[0].getContentsAsCString();
   bool isFun;
   FuncPtr val;
-  isFun = eval->getContext()->lookupFunction(cname,val);
+  isFun = eval->lookupFunction(cname,val);
   char buffer[1000];
   if (!isFun)
     throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));

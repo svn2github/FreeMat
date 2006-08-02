@@ -66,7 +66,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("ifft",IFFTFunction,3,1,"x","n","d");
   context->addSpecialFunction("disp",DispFunction,-1,0,"x");
   context->addSpecialFunction("dbstop",DbStopFunction,2,0,"file","line");
-  context->addSpecialFunction("dbstep",DbStepFunction,1,0,"line");
+  //  context->addSpecialFunction("dbstep",DbStepFunction,1,0,"line");
   context->addSpecialFunction("dblist",DbListFunction,0,0,"dblist");
   context->addSpecialFunction("dbdelete",DbDeleteFunction,1,0,"number");
   context->addFunction("i",IFunction,0,1);

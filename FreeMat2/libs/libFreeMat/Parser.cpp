@@ -82,6 +82,15 @@ tree Parser::SingletonStatement() {
   return root;
 }
 
+tree Parser::DBStepStatement() {
+  tree root(mkLeaf(Next()));
+  Consume();
+  if (Match(',') || Match(';') || Match('\n'))
+    return root;
+  addChild(root,Expression());
+  return root;
+}
+
 tree Parser::MultiFunctionCall() {
   tree root(mkLeaf(Expect('[')));
   root.Rename(TOK_MULTI);
@@ -381,6 +390,8 @@ tree Parser::Statement() {
     return SingletonStatement();
   if (Match(TOK_WHILE))
     return WhileStatement();
+  if (Match(TOK_DBSTEP))
+    return DBStepStatement();
   if (Match(TOK_IF))
     return IfStatement();
   if (Match(TOK_SWITCH))

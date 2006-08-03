@@ -26,7 +26,7 @@ string fm_reserved[21] = {
 };
 
 Token::Token(byte tok, unsigned pos, string text) :
-  m_tok(tok), m_pos(pos), m_text(text), m_flags(0) {
+  m_tok(tok), m_pos(pos), m_text(text), m_bpflag(false) {
 }
 
 Token::Token() {
@@ -59,7 +59,11 @@ bool Token::IsRightAssociative() const {
 
 ostream& operator<<(ostream& o, const Token& b) {
   o << TokenToString(b) << " (" << (b.Position() >> 16)
-    << "," << (b.Position() & 0xffff) << "," << ((int) b.Flags()) << ")\r\n";
+    << "," << (b.Position() & 0xffff);
+  if (b.BPFlag())
+    o << "," << "BP)\r\n";
+  else
+    o << ")\r\n";
   return o;
 }
 

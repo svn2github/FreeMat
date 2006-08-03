@@ -41,9 +41,8 @@ public:
   tree first() {return child(0);}
   tree second() {return child(1);}
   bool is(byte tok) {return (token()==tok);}
-  bool flagtest(byte pat) {if (tptr) return ((tptr->node.Flags() & pat) != 0); else return false;}
-  void setflag(byte pat) {if (tptr) (tptr->node.SetFlags(tptr->node.Flags() | pat));}
-  void clearflag(byte pat) {if (tptr) (tptr->node.SetFlags(tptr->node.Flags() & ~pat));}
+  void setBPflag(bool enable) {if (tptr) (tptr->node.SetBPFlag(enable));}
+  bool getBPflag() {if (tptr) return tptr->node.BPFlag(); return false;}
   byte token() {if (tptr) return tptr->node.Value(); else return 0;}
   unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
   bool haschildren() {return numchildren() > 0;}

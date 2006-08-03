@@ -398,29 +398,16 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
     TreeLine(t.child(i),bestLine,lineTarget);
 }
 
-bool SetTreeBreakPoint(tree t, int lineNumber, byte flags) {
+bool SetTreeBreakPoint(tree t, int lineNumber, bool enable) {
   if (!t.valid()) return false;
   if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
     if ((t.context() & 0xffff) == lineNumber) {
-      t.setflag(flags);
+      t.setBPflag(enable);
       return true;
     }
   }
   for (int i=0;i<t.numchildren();i++)
-    if (SetTreeBreakPoint(t.child(i),lineNumber,flags)) return true;
-  return false;
-}
-
-bool ClearTreeBreakPoint(tree t, int lineNumber, byte flags) {
-  if (!t.valid()) return false;
-  if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
-    if ((t.context() & 0xffff) == lineNumber) {
-      t.clearflag(flags);
-      return true;
-    }
-  }
-  for (int i=0;i<t.numchildren();i++)
-    if (ClearTreeBreakPoint(t.child(i),lineNumber,flags)) return true;
+    if (SetTreeBreakPoint(t.child(i),lineNumber,enable)) return true;
   return false;
 }
 
@@ -436,14 +423,10 @@ unsigned MFunctionDef::ClosestLine(unsigned line) {
   return bestline;
 }
 
-void MFunctionDef::SetBreakpoint(int bpline, byte flags) {
-  if (!SetTreeBreakPoint(allCode,bpline,flags)) 
-    throw Exception(string("Unable to set a breakpoint at line ") + bpline + 
-		    string(" of routine ") + name);
-}
-
-void MFunctionDef::DeleteBreakpoint(int bpline, byte flags) {
-  ClearTreeBreakPoint(allCode,bpline,flags);
+void MFunctionDef::SetBreakpoint(int bpline, bool enable) {
+  if (!SetTreeBreakPoint(allCode,bpline,enable)) 
+    throw Exception(string("Unable to modify a breakpoint at line ") + 
+		    bpline + string(" of routine ") + name);
 }
 
 void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {

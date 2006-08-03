@@ -1887,9 +1887,8 @@ void Interpreter::statementType(tree t, bool printIt) {
 void Interpreter::statement(tree t) {
   try {
     SetContext(t.context());
-    if (t.flagtest(FLAG_DEBUG_STATEMENT) || t.flagtest(FLAG_STEPTRAP))
+    if (t.getBPflag())
       doDebugCycle();
-    if (t.flagtest(FLAG_STEPTRAP)) t.clearflag(FLAG_STEPTRAP);
     if (t.is(TOK_QSTATEMENT))
       statementType(t.first(),false);
     else if (t.is(TOK_STATEMENT))
@@ -2120,14 +2119,7 @@ void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
     return;
   }
   try {
-    if (bp.number < 0)
-      ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,FLAG_STEPTRAP);
-    else {
-      if (enableFlag)
-	((MFunctionDef*)val)->SetBreakpoint(bp.tokid,FLAG_DEBUG_STATEMENT);
-      else
-	((MFunctionDef*)val)->DeleteBreakpoint(bp.tokid,FLAG_DEBUG_STATEMENT);
-    }
+    ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,enableFlag);
   } catch (Exception &e) {
     e.printMe(this);
   }
@@ -3349,6 +3341,7 @@ void Interpreter::dbstepStatement(tree t) {
   if (cstack.size() < 1) throw Exception("cannot dbstep unless inside an M-function");
   stackentry bp(cstack[cstack.size()-1]);
   FuncPtr val;
+  if (bp.detail == "base") return;
   if (!lookupFunction(bp.detail,val)) {
     warningMessage(string("unable to find function ") + bp.detail + " to single step");
     return;

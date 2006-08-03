@@ -2906,24 +2906,17 @@ void Interpreter::deleteBreakpoint(int number) {
 }
 
 void Interpreter::stackTrace(bool includeCurrent) {
-  char buffer[4096];
   for (int i=0;i<cstack.size();i++) {
     std::string cname_trim(TrimExtension(TrimFilename(cstack[i].cname)));
-    sprintf(buffer,"In %s(%s), line %d, column %d\n",
-	    cname_trim.c_str(),
-	    cstack[i].detail.c_str(),
-	    cstack[i].tokid & 0x0000FFFF,
-	    cstack[i].tokid >> 16);
-    outputMessage(buffer);
+    outputMessage(string("In ") + cname_trim + "("
+		  + cstack[i].detail + ") on line " +
+		  (cstack[i].tokid & 0x0000FFFF));
   }
   if (includeCurrent) {
     std::string ip_trim(TrimExtension(TrimFilename(ip_funcname)));
-    sprintf(buffer,"In %s(%s), line %d, column %d\n",
-	    ip_trim.c_str(),
-	    ip_detailname.c_str(),
-	    ip_context & 0x0000FFFF,
-	    ip_context >> 16);
-    outputMessage(buffer);
+    outputMessage(string("In ") + ip_trim + "("
+		  + ip_detailname + ") on line " +
+		  (ip_context & 0x0000FFFF));
   }
 }
 

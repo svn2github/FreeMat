@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "Tree.hpp"
+#include "Serialize.hpp"
 
 tree_node::tree_node() {
   owners = 0;
@@ -99,4 +100,28 @@ void addChild(tree &root, tree child) {
 void addChild(tree &root, tree child1, tree child2) {
   addChild(root,child1);
   addChild(root,child2);
+}
+
+void FreezeTree(tree root, Serialize *s) {
+  if (!root.valid()) {
+    s->putBool(false);
+    return;
+  } else {
+    s->putBool(true);
+  }
+  FreezeToken(root.ptr()->node,s);
+  s->putInt(root.numchildren());
+  for (int i=0;i<root.numchildren();i++)
+    FreezeTree(root.child(i),s);
+}
+
+tree ThawTree(Serialize *s) {
+  bool ValidTree = s->getBool();
+  if (!ValidTree) return tree();
+  Token tok(ThawToken(s));
+  tree root(mkLeaf(tok));
+  int numchildren = s->getInt();
+  for (int i=0;i<numchildren;i++)
+    addChild(root,ThawTree(s));
+  return root;
 }

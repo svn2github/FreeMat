@@ -35,12 +35,12 @@ Scanner::Scanner(string buf, string fname) {
   m_text = buf;
   m_filename = fname;
   m_ptr = 0;
-  m_ptr_save = 0;
   m_linenumber = 1;
   m_tokValid = false;
+  m_inContinuationState = false;
+  m_bracketDepth = 0;
   m_strlen = buf.size();
   m_ignorews.push(true);
-  m_prevws = false;
   m_debugFlag = false;
 }
 
@@ -52,6 +52,7 @@ void Scanner::FetchContinuation() {
     m_linenumber++;
     m_ptr++;
   }
+  m_inContinuationState = true;
 }
 
 void Scanner::Fetch() {
@@ -112,6 +113,10 @@ void Scanner::FetchOther() {
   if (TryFetchBinary("&&",TOK_SAND)) return;
   if (TryFetchBinary("||",TOK_SOR)) return;
   SetToken(m_text[m_ptr]);
+  if (m_text[m_ptr] == '[')
+    m_bracketDepth++;
+  if (m_text[m_ptr] == ']')
+    m_bracketDepth = min(0,m_bracketDepth-1);
   m_ptr++;
 }
 
@@ -139,9 +144,6 @@ void Scanner::FetchString() {
 
 void Scanner::FetchWhitespace() {
   int len = 0;
-  //   while (isblank(ahead(len)) ||
-  // 	 (ahead(len) == '\r') || 
-  // 	 (ahead(len) == '\n')) len++;
   while (isblank(ahead(len))) len++;
   SetToken(TOK_SPACE);
   m_ptr += len;
@@ -269,14 +271,23 @@ void Scanner::Gobble() {
 
 const Token& Scanner::Next() {
   while (!m_tokValid) {
-    m_ptr_save = m_ptr;
     Fetch();
     if (m_tokValid && m_debugFlag)
       cout << m_tok;
     if ((m_ptr < m_strlen) && (current() == '\n'))
       m_linenumber++;
   }
+  if (m_inContinuationState && m_tokValid && !m_tok.Is(TOK_EOF))
+    m_inContinuationState = false;
   return m_tok;
+}
+
+bool Scanner::InContinuationState() {
+  return m_inContinuationState;
+}
+
+bool Scanner::InBracket() {
+  return (m_bracketDepth>0);
 }
 
 void Scanner::Consume() {

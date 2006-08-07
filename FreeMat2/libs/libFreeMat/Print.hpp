@@ -29,5 +29,6 @@
 
 class Interpreter;
 void PrintArrayClassic(Array A, int printLimit, Interpreter *eval, bool showClassSize);
+string ArrayToPrintableString(const Array& a);
 
 #endif

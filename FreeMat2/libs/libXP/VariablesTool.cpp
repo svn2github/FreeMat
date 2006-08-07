@@ -20,6 +20,7 @@
 #include "Scope.hpp"
 #include <QtGui>
 #include "Array.hpp"
+#include "Print.hpp"
 
 VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
   QVBoxLayout *layout = new QVBoxLayout;
@@ -36,13 +37,14 @@ void VariablesTool::refresh() {
   stringVector varnames(context->getCurrentScope()->listAllVariables());
   std::sort(varnames.begin(),varnames.end());
   m_flist->setRowCount(varnames.size());
-  m_flist->setColumnCount(4);
-  m_flist->setHorizontalHeaderLabels(QStringList() << "Name" << "Type" << "Flags" << "Size");
+  m_flist->setColumnCount(5);
+  m_flist->setHorizontalHeaderLabels(QStringList() << "Name" << "Type" << "Flags" << "Size" << "Value");
   for (int i=0;i<varnames.size();i++) {
     QString varname(QString::fromStdString(varnames[i]));
     QString type;
     QString flags;
     QString size;
+    QString value;
     Array lookup, *ptr;
     ptr = context->lookupVariable(varnames[i]);
     if (!ptr) {
@@ -108,11 +110,13 @@ void VariablesTool::refresh() {
 	flags += "Persistent ";
       }
       size = QString::fromStdString(lookup.getDimensions().asString());
+      value = QString::fromStdString(ArrayToPrintableString(lookup));
     }
     m_flist->setItem(i,0,new QTableWidgetItem(varname));
     m_flist->setItem(i,1,new QTableWidgetItem(type));
     m_flist->setItem(i,2,new QTableWidgetItem(flags));
     m_flist->setItem(i,3,new QTableWidgetItem(size));
+    m_flist->setItem(i,4,new QTableWidgetItem(value));
   }
   m_flist->resizeColumnsToContents();
   m_flist->verticalHeader()->hide();

@@ -10,6 +10,7 @@
 using namespace std;
 
 class tree;
+class Serialize;
 
 typedef vector<tree> treeVector;
 
@@ -60,5 +61,8 @@ tree first(tree root);
 tree second(tree root); 
 void addChild(tree &root, tree child);
 void addChild(tree &root, tree child1, tree child2);
+
+void FreezeTree(tree root, Serialize *s);
+tree ThawTree(Serialize *s);
 
 #endif

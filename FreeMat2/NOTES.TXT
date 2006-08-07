@@ -5,17 +5,21 @@ C.  Debug cycles
 
 Debug cycles... how does this work?
 
+Completion introduces a race condition... We need to put a mutex
+to protect the context.
 
-Workspace and files widget.
-Continuations
 Completion
 helpgen
-pcode
 Context stuff
-getline
 
+history widget - feedback into command line history - Done
+Workspace widget - Done
+files widget - Done
+pcode - Done
+getline - Done
 Initial terminal width. - Done
 Stack trace - Done
+Continuations - Done
 Breakpoints
 	- General bps seem to work. - Done
 	- check bps on scripts - Done

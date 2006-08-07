@@ -374,7 +374,7 @@ ArrayVector LUFunction(int nargout, const ArrayVector& arg) {
 //the FreeMat console in the final application).
 //!
 ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  char *prompt, *text;
+  char *prompt;
   if (arg.size() < 1)
     prompt = "";
   else {
@@ -383,9 +383,7 @@ ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       throw Exception("getline requires a string prompt");
     prompt = A.getContentsAsCString();
   }
-  //FIXME
-  //    text = eval->getLine(prompt);
-  return singleArrayVector(Array::stringConstructor(text));
+  return singleArrayVector(Array::stringConstructor(eval->getLine(prompt)));
 }
 
 ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {

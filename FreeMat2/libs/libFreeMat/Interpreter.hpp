@@ -361,6 +361,11 @@ public:
    * Simplified interface for function lookup.
    */
   bool lookupFunction(string funcName, FuncPtr& val);
+  /**
+   * Prompt the user for input, and return the answer.
+   */
+  string getLine(string prompt);
+
 
   /******************************************
    *  Signals for the Interpreter           *

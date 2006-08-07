@@ -71,6 +71,7 @@ const byte TOK_FUNCTION_DEFS = 189;
 const byte TOK_SCRIPT = 190;
 
 typedef byte tok;
+class Serialize;
 
 class ParseException {
   unsigned m_pos;
@@ -101,9 +102,17 @@ public:
   void SetBPFlag(bool flags) {m_bpflag = flags;}
   bool BPFlag() const {return m_bpflag;}
   void Print(ostream& o) const;
+
+  friend void FreezeToken(const Token& a, Serialize *s);
+  friend Token ThawToken(Serialize *s);
 };
 
 string TokenToString(const Token& b);
 
 ostream& operator<<(ostream& o, const Token& b);
+
+void FreezeToken(const Token& a, Serialize *s);
+
+Token ThawToken(Serialize *s);
+
 #endif

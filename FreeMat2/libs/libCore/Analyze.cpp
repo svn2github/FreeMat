@@ -2732,7 +2732,7 @@ ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval
       File *stream = new File(buffer2,"wb");
       Serialize *s = new Serialize(stream);
       s->handshakeServer();
-      s->sendSignature('p',1);
+      s->sendSignature('p',2);
       FreezeMFunction((MFunctionDef*)funcDef,s);
       delete s;
       delete stream;

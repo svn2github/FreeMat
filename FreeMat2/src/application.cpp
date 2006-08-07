@@ -374,6 +374,5 @@ void ApplicationWindow::about() {
 }
 
 void ApplicationWindow::init() {
-  //FIXME
-  //  m_tool->getVariablesTool()->setContext(m_keys->getContext());
+  m_tool->getVariablesTool()->setContext(m_keys->GetCompletionContext());
 }

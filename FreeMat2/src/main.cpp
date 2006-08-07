@@ -110,7 +110,8 @@ int main(int argc, char *argv[]) {
     m_app->SetupDumbTerminalCase();
   m_app->SetGUIMode(!noX);
   m_app->SetSkipGreeting(nogreet);
-  QTimer::singleShot(0,m_app,SLOT(Run()));
+  m_app->Run();
+  //  QTimer::singleShot(0,m_app,SLOT(Run()));
   // In function mode, we need to send a command to the GUI
   if (funcMode) {
     m_func = new FuncMode(argv[funcMode+1]);

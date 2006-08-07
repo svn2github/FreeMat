@@ -221,7 +221,7 @@ void Interpreter::procFileP(std::string fname, std::string fullname, bool tempfu
     File *f = new File(fullname.c_str(),"rb");
     Serialize *s = new Serialize(f);
     s->handshakeClient();
-    s->checkSignature('p',1);
+    s->checkSignature('p',2);
     adef = ThawMFunction(s);
     adef->pcodeFunction = true;
     delete f;
@@ -331,6 +331,7 @@ std::string Interpreter::getVersionString() {
 }
 
 void Interpreter::run() {
+  emit CWDChanged();
   if (!m_skipflag)
     sendGreeting();
   try {
@@ -407,8 +408,11 @@ std::vector<endData> endStack;
 int endValStackLength;
 int endValStack[1000];
 
+static Interpreter* myInterp;
+
 void sigInterrupt(int arg) {
   InterruptPending = true;
+  myInterp->ExecuteLine("");
 }
 
 Array Interpreter::DoBinaryOperator(tree t, BinaryFunc fnc, 
@@ -3299,6 +3303,7 @@ Interpreter::Interpreter(Context* aContext) {
   endValStack[endValStackLength] = 0;
   depth = 0;
   InterruptPending = false;
+  myInterp = this;
   signal(SIGINT,sigInterrupt);
   printLimit = 1000;
   autostop = true;
@@ -3449,6 +3454,25 @@ void Interpreter::setGreetingFlag(bool skip) {
   m_skipflag = skip;
 }
 
+bool NeedsMoreInput(string txt) {
+  Scanner S(txt,"");
+  while (!S.Next().Is(TOK_EOF))
+    S.Consume();
+  return (S.InContinuationState() || S.InBracket());
+}
+
+string Interpreter::getLine(string prompt) {
+  emit SetPrompt(prompt);
+  string retstring;
+  mutex.lock();
+  if (cmd_buffer.empty())
+    bufferNotEmpty.wait(&mutex);
+  retstring = cmd_buffer.front();
+  cmd_buffer.erase(cmd_buffer.begin());
+  mutex.unlock();
+  return retstring;
+}
+
 void Interpreter::evalCLI() {
   char prompt[150];
 
@@ -3466,16 +3490,25 @@ void Interpreter::evalCLI() {
 	      ip_context & 0xffff);
   while(1) {
     emit SetPrompt(prompt);
+    string cmdset;
     std::string cmdline;
     mutex.lock();
-    if (cmd_buffer.empty())
-      bufferNotEmpty.wait(&mutex);
-    cmdline = cmd_buffer.front();
-    cmd_buffer.erase(cmd_buffer.begin());
+    while ((cmdset.empty() || 
+	    NeedsMoreInput(cmdset)) && !InterruptPending) {
+      if (cmd_buffer.empty())
+	bufferNotEmpty.wait(&mutex);
+      cmdline = cmd_buffer.front();
+      cmd_buffer.erase(cmd_buffer.begin());
+      cmdset += cmdline;
+    }
     mutex.unlock();
+    if (InterruptPending) {
+      InterruptPending = false;
+      continue;
+    }
     int stackdepth = cstack.size();
     InCLI = true;
-    evaluateString(cmdline);
+    evaluateString(cmdset);
     while (cstack.size() > stackdepth) cstack.pop_back();
   }
 }

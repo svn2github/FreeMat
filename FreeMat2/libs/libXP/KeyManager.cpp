@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include "KeyManager.hpp"
+#include "Interpreter.hpp"
 #include "Context.hpp"
 #include <qapplication.h>
 #include <QtCore>
@@ -72,6 +73,9 @@ KeyManager::KeyManager()  {
   context = NULL;
 }
 
+Context* KeyManager::GetCompletionContext() {
+  return context;
+}
 
 void KeyManager::SetCompletionContext(Context* ctxt) {
   context = ctxt;
@@ -529,11 +533,8 @@ void KeyManager::Ready() {
   Redisplay();
 }
 
-extern bool InterruptPending;
-
 void KeyManager::RegisterInterrupt() {
-  InterruptPending  = true;
-  emit Interrupt();
+  sigInterrupt(0);
 }
 
 void KeyManager::CursorLeft() {
@@ -854,8 +855,7 @@ void KeyManager::CompleteWord() {
    * Perform the completion.
    */
   string tempstring;
-  //FIXME
-  //  matches = m_eval->GetCompletions(lineData, buff_curpos, tempstring);
+  matches = GetCompletions(lineData, buff_curpos, tempstring);
   if(matches.size() == 0) {
     emit OutputRawString("\r\n");
     term_curpos = 0;
@@ -998,22 +998,12 @@ void KeyManager::OnChar( int c ) {
   }
 }
 
-
-//void KeyManager::ExecuteLine(string mline) {
-//  enteredLines.push_back(mline);
-//  ReplacePrompt("");
-//  enteredLinesEmpty = false;
-//  if (loopactive) {
-//    loopactive--;
-//    m_loop->exit();
-//  }
-//}
-
 void KeyManager::QueueString(QString t) {
   string g(t.toStdString());
   AddStringToLine(g);
 }
 
+//FIXME
 void KeyManager::QueueMultiString(QString t) {
   if (t.indexOf("\n") < 0) {
     QueueString(t);
@@ -1031,15 +1021,11 @@ void KeyManager::QueueMultiString(QString t) {
     enteredLines.push_back(tlist[i].toStdString());
     AddHistory(tlist[i].toStdString());
   }
-  enteredLinesEmpty = false;
-  if (loopactive) {
-    loopactive--;
-    m_loop->exit();
-  }
 }
 
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
+  AddHistory(t.toStdString());
   emit OutputRawString("\r\n");
   emit ExecuteLine(string(lineData)+"\n");
   ResetLineBuffer();
@@ -1090,6 +1076,7 @@ void KeyManager::StopAction() {
 void KeyManager::SetPrompt(string txt) {
   ReplacePrompt(txt);
   Redisplay();
+  emit UpdateVariables();
 }
 
 /*.......................................................................
@@ -1141,8 +1128,8 @@ static char *start_of_path(const char *string, int back_from)
 }
 
 vector<string> KeyManager::GetCompletions(string line, 
-						    int word_end, 
-						    string &matchString) {
+					  int word_end, 
+					  string &matchString) {
   vector<string> completions;
   /*
    * Find the start of the filename prefix to be completed, searching
@@ -1161,7 +1148,8 @@ vector<string> KeyManager::GetCompletions(string line,
    *  the preceeding character was not a ' (quote), then
    * do a command expansion, otherwise, do a filename expansion.
    */
-  if (start[-1] != '\'' && context) {
+  if (!context) return completions;
+  if (start[-1] != '\'') {
     vector<string> local_completions;
     vector<string> global_completions;
     int i;
@@ -1171,18 +1159,15 @@ vector<string> KeyManager::GetCompletions(string line,
       completions.push_back(local_completions[i]);
     for (i=0;i<global_completions.size();i++)
       completions.push_back(global_completions[i]);
-    sort(completions.begin(),completions.end());
-    return completions;
-  } else {
-    glob_t names;
-    string pattern(tmp);
-    pattern.append("*");
-    glob(pattern.c_str(), GLOB_MARK, NULL, &names);
-    int i;
-    for (i=0;i<names.gl_pathc;i++) 
-      completions.push_back(names.gl_pathv[i]);
-    globfree(&names);
-    free(tmp);
-    return completions;
   }
+  glob_t names;
+  string pattern(tmp);
+  pattern.append("*");
+  glob(pattern.c_str(), GLOB_MARK, NULL, &names);
+  for (int i=0;i<names.gl_pathc;i++) 
+    completions.push_back(names.gl_pathv[i]);
+  globfree(&names);
+  free(tmp);
+  sort(completions.begin(),completions.end());
+  return completions;
 }

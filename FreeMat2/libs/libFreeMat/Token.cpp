@@ -1,4 +1,5 @@
 #include "Token.hpp"
+#include "Serialize.hpp"
 #include <iostream>
 
 string fm_reserved[21] = {
@@ -133,4 +134,20 @@ string TokenToString(const Token& b) {
   case TOK_SCRIPT: return "script:";
   }
   return string(1,(char) b.Value());
+}
+
+void FreezeToken(const Token& a, Serialize *s) {
+  s->putByte(a.m_tok);
+  s->putInt(a.m_pos);
+  s->putString(a.m_text.c_str());
+  s->putBool(a.m_bpflag);
+}
+
+Token ThawToken(Serialize *s) {
+  Token a;
+  a.m_tok = s->getByte();
+  a.m_pos = s->getInt();
+  a.m_text = s->getString();
+  a.m_bpflag = s->getBool();
+  return a;
 }

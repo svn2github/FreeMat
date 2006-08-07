@@ -254,9 +254,12 @@ int MainApp::Run() {
   connect(m_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
   connect(m_eval,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
 	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
+  connect(m_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));
   connect(m_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
+  m_keys->SetCompletionContext(context);
   m_eval->setTerminalWidth(m_keys->getTerminalWidth());
   m_eval->setGreetingFlag(skipGreeting);
   m_eval->start();
+  emit Initialize();
   return 0;
 }

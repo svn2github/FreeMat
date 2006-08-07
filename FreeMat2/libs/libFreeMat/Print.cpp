@@ -93,7 +93,7 @@ int GetNominalWidthFloatE(const T*array, int count, int maxdigits_try) {
   }
   return maxdigit;
 }
-  
+
 void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, const void *dp, int num, Class dcls) {
   switch (dcls) {
   case FM_INT8: {
@@ -508,3 +508,92 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
   if (printlimit == 0)
     io->outputMessage("\nPrint limit has been reached.  Use setprintlimit function to enable longer printouts\n");
 }
+
+
+string ArrayToPrintableString(const Array& a) {
+  if (a.isString())
+    return string(ArrayToString(a));
+  if (a.isReferenceType())
+    return string("");
+  if (!a.isScalar() && !a.isString())
+    return string("");
+  ArrayFormat format = ScanFormatArray(a.getDataPointer(),
+				       a.getDataClass(),1);
+  const void *dp = a.getDataPointer();
+  switch (a.getDataClass()) {
+  case FM_INT8: {
+    const int8 *ap;
+    ap = (const int8*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_UINT8: {
+    const uint8 *ap;
+    ap = (const uint8*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_INT16: {
+    const int16 *ap;
+    ap = (const int16*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_UINT16: {
+    const uint16 *ap;
+    ap = (const uint16*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_INT32: {
+    const int32 *ap;
+    ap = (const int32*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_UINT32: {
+    const uint32 *ap;
+    ap = (const uint32*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_LOGICAL: {
+    const logical *ap;
+    ap = (const logical*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_FLOAT: {
+    const float *ap;
+    ap = (const float*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_DOUBLE: {
+    const double *ap;
+    ap = (const double*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_COMPLEX: {
+    const float *ap;
+    ap = (const float*) dp;
+    if (ap[1] > 0)
+      snprintf(msgBuffer,MSGBUFLEN,"%g+%g i",ap[0],ap[1]);
+    else
+      snprintf(msgBuffer,MSGBUFLEN,"%g%g i",ap[0],ap[1]);
+    return string(msgBuffer);
+  }
+  case FM_DCOMPLEX: {
+    const double *ap;
+    ap = (const double*) dp;
+    if (ap[1] > 0)
+      snprintf(msgBuffer,MSGBUFLEN,"%g+%g i",ap[0],ap[1]);
+    else
+      snprintf(msgBuffer,MSGBUFLEN,"%g%g i",ap[0],ap[1]);
+    return string(msgBuffer);
+  }
+  }
+  return string("");
+}
+  

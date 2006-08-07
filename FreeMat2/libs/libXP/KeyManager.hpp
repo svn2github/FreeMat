@@ -73,6 +73,7 @@ public:
   int getTerminalWidth();
   void RegisterTerm(QObject* term);
   void SetCompletionContext(Context* ctxt);
+  Context* GetCompletionContext();
  private:
   Context *context;
   vector<string> GetCompletions(string line, int word_end, 

@@ -8,10 +8,9 @@ Debug cycles... how does this work?
 Completion introduces a race condition... We need to put a mutex
 to protect the context.
 
-Completion
 helpgen
-Context stuff
-
+Completion - Done
+Context stuff - Done
 history widget - feedback into command line history - Done
 Workspace widget - Done
 files widget - Done

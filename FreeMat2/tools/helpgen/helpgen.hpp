@@ -20,6 +20,7 @@
 #define __helpgen_hpp__
 
 #include <QWidget>
+#include "KeyManager.hpp"
 
 class ConsoleWidget : public QWidget {
   Q_OBJECT
@@ -40,6 +41,16 @@ private slots:
   void AddOutputString(std::string);
   void MoveDown();
 };
+
+class HelpTerminal : public KeyManager {
+  Q_OBJECT
+public:
+  HelpTerminal() {}
+  virtual ~HelpTerminal() {}
+public slots:
+  void DoGraphicsCall(FuncPtr f, ArrayVector m, int narg);  
+};
+
 
 void DoHelpGen(QString src, QString dst);
 

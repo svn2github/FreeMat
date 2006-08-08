@@ -3304,6 +3304,7 @@ Interpreter::Interpreter(Context* aContext) {
   depth = 0;
   InterruptPending = false;
   myInterp = this;
+  Array::setArrayInterpreter(this);
   signal(SIGINT,sigInterrupt);
   printLimit = 1000;
   autostop = true;

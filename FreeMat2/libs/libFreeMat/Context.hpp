@@ -27,7 +27,7 @@
 #include "Exception.hpp"
 #include "Types.hpp"
 #include <vector>
-
+#include <QMutex>
 
 /**
  * A Context is a stack of scopes with the (peculiar) property that
@@ -50,6 +50,10 @@ class Context {
    * List of functions that are "temporary" and should be flushed
    */
   stringVector tempFunctions;
+  /**
+   * Mutex to control access to this context class.
+   */
+  QMutex mutex;
 public:
   /**
    * Create a context and initialize it with a global scope and a 

@@ -20,8 +20,9 @@
 #include "Context.hpp"
 #include "Array.hpp"
 #include <stdarg.h>
+#include <QtCore>
 
-Context::Context() {
+Context::Context() : mutex(QMutex::Recursive) {
   pushScope("global");
   pushScope("base");
 }
@@ -34,20 +35,24 @@ Context::~Context() {
 }
 
 Scope* Context::getCurrentScope() {
+  QMutexLocker lock(&mutex);
   return scopestack.back();
 }
 
 Scope* Context::getGlobalScope() {
+  QMutexLocker lock(&mutex);
   return scopestack.front();
 }
   
 void Context::pushScope(std::string name) {
+  QMutexLocker lock(&mutex);
   if (scopestack.size() > 100)
     throw Exception("Allowable stack depth exceeded...");
   scopestack.push_back(new Scope(name));
 }
 
 void Context::popScope() throw(Exception) {
+  QMutexLocker lock(&mutex);
   if (scopestack.size() == 1)
     throw Exception("Attempt to pop global scope off of context stack!");
   delete scopestack.back();
@@ -55,6 +60,7 @@ void Context::popScope() throw(Exception) {
 }
 
 void Context::insertVariableLocally(std::string varName, const Array& var) {
+  QMutexLocker lock(&mutex);
   scopestack.back()->insertVariable(varName,var);
 }
 
@@ -62,6 +68,7 @@ void Context::insertVariable(const std::string& varName, const Array& var) {
   Scope* active;
   std::string mapName;
 
+  QMutexLocker lock(&mutex);
   if (scopestack.back()->isVariablePersistent(varName)) {
     mapName = scopestack.back()->getMangledName(varName);
     active = scopestack.front();
@@ -79,6 +86,7 @@ Array* Context::lookupVariable(const std::string& varName) {
   Scope* active;
   std::string mapName;
     
+  QMutexLocker lock(&mutex);
   if (scopestack.back()->isVariablePersistent(varName)) {
     mapName = scopestack.back()->getMangledName(varName);
     active = scopestack.front();
@@ -92,28 +100,34 @@ Array* Context::lookupVariable(const std::string& varName) {
 }
 
 bool Context::isVariableGlobal(const std::string& varName) {
+  QMutexLocker lock(&mutex);
   return scopestack.back()->isVariableGlobal(varName);
 }
 
 bool Context::isVariablePersistent(const std::string& varName) {
+  QMutexLocker lock(&mutex);
   return scopestack.back()->isVariablePersistent(varName);
 }
 
 Array* Context::lookupVariableLocally(std::string varName) {
+  QMutexLocker lock(&mutex);
   return scopestack.back()->lookupVariable(varName);
 }
 
 void Context::insertFunctionLocally(FuncPtr f) {
+  QMutexLocker lock(&mutex);
   scopestack.back()->insertFunction(f);
 }
 
 void Context::insertFunctionGlobally(FuncPtr f, bool temporary) {
+  QMutexLocker lock(&mutex);
   scopestack.front()->insertFunction(f);
   if (temporary)
     tempFunctions.push_back(f->name);
 }
 
 void Context::flushTemporaryGlobalFunctions() {
+  QMutexLocker lock(&mutex);
   for (int i=0;i<tempFunctions.size();i++)
     scopestack.front()->deleteFunction(tempFunctions[i]);
   tempFunctions.clear();
@@ -122,6 +136,7 @@ void Context::flushTemporaryGlobalFunctions() {
 void Context::addSpecialFunction(char*name,
 				 SpecialFuncPtr fptr,
 				 int argc_in, int argc_out,...) {
+  QMutexLocker lock(&mutex);
   stringVector args;
   va_list argp;
   if (argc_in>0) {
@@ -143,6 +158,7 @@ void Context::addSpecialFunction(char*name,
 void Context::addGfxSpecialFunction(char*name,
 				    SpecialFuncPtr fptr,
 				    int argc_in, int argc_out,...) {
+  QMutexLocker lock(&mutex);
   stringVector args;
   va_list argp;
   if (argc_in>0) {
@@ -165,6 +181,7 @@ void Context::addGfxSpecialFunction(char*name,
 void Context::addFunction(char*name, 
 			  BuiltInFuncPtr fptr, 
 			  int argc_in, int argc_out,...) {
+  QMutexLocker lock(&mutex);
   stringVector args;
   va_list argp;
   if (argc_in>0) {
@@ -186,6 +203,7 @@ void Context::addFunction(char*name,
 void Context::addGfxFunction(char*name, 
 			  BuiltInFuncPtr fptr, 
 			  int argc_in, int argc_out,...) {
+  QMutexLocker lock(&mutex);
   stringVector args;
   va_list argp;
   if (argc_in>0) {
@@ -207,21 +225,25 @@ void Context::addGfxFunction(char*name,
 
 bool Context::lookupFunction(std::string funcName, FuncPtr& val) {
   bool localFunction;
+  QMutexLocker lock(&mutex);
   if (scopestack.back()->lookupFunction(funcName,val))
     return true;
   return scopestack.front()->lookupFunction(funcName,val);
 }
 
 bool Context::lookupFunctionLocally(std::string funcName, FuncPtr& val) {
+  QMutexLocker lock(&mutex);
   return scopestack.back()->lookupFunction(funcName,val);
 }
 
 bool Context::lookupFunctionGlobally(std::string funcName, FuncPtr& val) {
+  QMutexLocker lock(&mutex);
   return scopestack.front()->lookupFunction(funcName,val);
 }
 
 
 void Context::deleteFunctionGlobally(std::string funcName) {
+  QMutexLocker lock(&mutex);
   scopestack.front()->deleteFunction(funcName);
 }
 
@@ -238,19 +260,23 @@ void Context::printMe() {
 }
 
 void Context::enterLoop() {
+  QMutexLocker lock(&mutex);
   scopestack.back()->enterLoop();
 }
 
 void Context::exitLoop() {
+  QMutexLocker lock(&mutex);
   scopestack.back()->exitLoop();
 }
 
 bool Context::inLoop() {
+  QMutexLocker lock(&mutex);
   return scopestack.back()->inLoop();
   //  return false;
 }
 
 void Context::addPersistentVariable(std::string var) {
+  QMutexLocker lock(&mutex);
   // Delete local variables with this name
   scopestack.back()->deleteVariable(var);
   // Delete global variables with this name
@@ -261,6 +287,7 @@ void Context::addPersistentVariable(std::string var) {
 }
 
 void Context::addGlobalVariable(std::string var) {
+  QMutexLocker lock(&mutex);
   // Delete local variables with this name
   scopestack.back()->deleteVariable(var);
   // Delete global persistent variables with this name
@@ -273,6 +300,7 @@ void Context::addGlobalVariable(std::string var) {
 }
 
 void Context::deleteVariable(std::string var) {
+  QMutexLocker lock(&mutex);
   if (isVariableGlobal(var)) {
     scopestack.front()->deleteVariable(var);
     scopestack.back()->deleteGlobalVariablePointer(var);
@@ -287,6 +315,7 @@ void Context::deleteVariable(std::string var) {
 }
 
 void Context::bypassScope(int count) {
+  QMutexLocker lock(&mutex);
   if (count < 0)
     count = scopestack.size();
   while ((count > 0) && (scopestack.back()->getName() != "base")) {
@@ -297,6 +326,7 @@ void Context::bypassScope(int count) {
 }
 
 void Context::restoreBypassedScopes() {
+  QMutexLocker lock(&mutex);
   for (int i=0;i<bypassstack.size();i++)
     scopestack.push_back(bypassstack[i]);
   bypassstack.clear();

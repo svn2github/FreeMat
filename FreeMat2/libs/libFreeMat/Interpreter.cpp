@@ -247,11 +247,24 @@ void Interpreter::RegisterGfxResults(ArrayVector m) {
   mutex.unlock();
 }
 
+void Interpreter::RegisterGfxError(string msg) {
+  mutex.lock();
+  gfxError = msg;
+  gfxErrorOccured = true;
+  gfxBufferNotEmpty.wakeAll();
+  mutex.unlock();
+}
+
 ArrayVector Interpreter::doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_out) {
+  gfxErrorOccured = false;
   emit doGraphicsCall(f,m,narg_out);
   mutex.lock();
-  if (gfx_buffer.empty())
+  if (!gfxErrorOccured && gfx_buffer.empty())
     gfxBufferNotEmpty.wait(&mutex);
+  if (gfxErrorOccured) {
+    mutex.unlock();
+    throw Exception(gfxError);
+  }
   ArrayVector ret(gfx_buffer.front());
   gfx_buffer.erase(gfx_buffer.begin());
   mutex.unlock();
@@ -2914,13 +2927,13 @@ void Interpreter::stackTrace(bool includeCurrent) {
     std::string cname_trim(TrimExtension(TrimFilename(cstack[i].cname)));
     outputMessage(string("In ") + cname_trim + "("
 		  + cstack[i].detail + ") on line " +
-		  (cstack[i].tokid & 0x0000FFFF));
+		  (cstack[i].tokid & 0x0000FFFF) + "\r\n");
   }
   if (includeCurrent) {
     std::string ip_trim(TrimExtension(TrimFilename(ip_funcname)));
     outputMessage(string("In ") + ip_trim + "("
 		  + ip_detailname + ") on line " +
-		  (ip_context & 0x0000FFFF));
+		  (ip_context & 0x0000FFFF) + "\r\n");
   }
 }
 

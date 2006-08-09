@@ -116,6 +116,14 @@ class Interpreter : public QThread {
    */
   vector<ArrayVector> gfx_buffer;
   /**
+   * A flag to indicate that the gfx call failed
+   */
+  bool gfxErrorOccured;
+  /**
+   * The corresponding exception.
+   */
+  string gfxError;
+  /**
    * A synchronization variable to wait on when the command buffer is empty
    */
   QWaitCondition bufferNotEmpty;
@@ -357,6 +365,10 @@ public:
    * Register the result of a gfx call
    */
   void RegisterGfxResults(ArrayVector m);
+  /**
+   * Register an error that occurs with a gfx call
+   */
+  void RegisterGfxError(string msg);
   /**
    * Simplified interface for function lookup.
    */

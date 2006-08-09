@@ -138,6 +138,8 @@ static HandleFigure* CurrentFig() {
 
 
 static void SelectFig(int fignum) {
+  if (fignum < 0)
+    throw Exception("Illegal argument to SelectFig");
   if (Hfigs[fignum] == NULL)
     Hfigs[fignum] = new HandleWindow(fignum);
   SaveFocus();

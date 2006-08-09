@@ -1782,10 +1782,10 @@ static  char* PrePendCallVars(char *line, int nargout) {
   if (nargout > 1)
     *gp++ = '[';
   for (int i=0;i<nargout-1;i++) {
-    sprintf(gp,"_t%d,",i);
+    sprintf(gp,"t___%d,",i);
     gp += strlen(gp);
   }
-  sprintf(gp,"_t%d",nargout-1);
+  sprintf(gp,"t___%d",nargout-1);
   gp += strlen(gp);
   if (nargout > 1)
     sprintf(gp,"] = %s;\n",line);
@@ -1799,7 +1799,7 @@ static ArrayVector RetrieveCallVars(Interpreter *eval, int nargout) {
   for (int i=0;i<nargout;i++) {
     char tname[4096];
     Array tval;
-    sprintf(tname,"_t%d",i);
+    sprintf(tname,"t___%d",i);
     Array *ptr = eval->getContext()->lookupVariable(tname);
     if (!ptr)
       tval = Array::emptyConstructor();

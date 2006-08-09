@@ -510,6 +510,7 @@ unsigned Parser::Precedence(const Token& t) {
   case TOK_DOTLDIV: return 8;
   case TOK_UNARY_PLUS: return 9;
   case TOK_UNARY_MINUS: return 9;
+  case '~': return 9;
   case '^': return 10;
   case TOK_DOTPOWER: return 10;
   }

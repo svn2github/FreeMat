@@ -194,8 +194,12 @@ void MainApp::ExecuteLine(string txt) {
 }
 
 void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) { 
-  ArrayVector n(f->evaluateFunction(m_eval,m,narg));
-  m_eval->RegisterGfxResults(n);
+  try {
+    ArrayVector n(f->evaluateFunction(m_eval,m,narg));
+    m_eval->RegisterGfxResults(n);
+  } catch (Exception& e) {
+    m_eval->RegisterGfxError(e.getMessageCopy());
+  }
 }
 
 int MainApp::Run() {

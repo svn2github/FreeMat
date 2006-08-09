@@ -3,6 +3,9 @@ A.  GUI calls into main thread
 B.  Prompt and main routine... how does this work? - seems to work ok
 C.  Debug cycles
 
+GUI calls that cause errors... these need to be relayed to the 
+interpreter.
+
 Debug cycles... how does this work?
 
 Completion introduces a race condition... We need to put a mutex

@@ -38,13 +38,39 @@
 
 QTextEdit *m_text;
 
-QString output;
 QStringList input;
 QStringList generatedFileList;
 QMap<QString, QString> section_descriptors;
 QStringList sectionOrdered;
 int moduledepth = 0;
 QString sourcepath;
+
+
+HelpHandler::HelpHandler(Interpreter *interp, 
+			 QStringList cmds) {
+  m_interp = interp;
+  m_cmds = cmds;
+}
+
+void HelpHandler::AddOutputString(string txt) {
+  m_text += txt;
+}
+
+void HelpHandler::SetPrompt(string prompt) {
+  m_text += prompt;
+  m_interp->ExecuteLine(m_cmds.front().toStdString());
+  m_text += m_cmds.front().toStdString();
+  m_cmds.erase(m_cmds.begin());
+}
+
+void HelpHandler::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) { 
+  try {
+    ArrayVector n(f->evaluateFunction(m_interp,m,narg));
+    m_interp->RegisterGfxResults(n);
+  } catch (Exception& e) {
+    m_interp->RegisterGfxError(e.getMessageCopy());
+  }
+}
 
 
 void TermOutputText(QString str) {
@@ -56,29 +82,11 @@ void TermOutputText(QString str) {
 }
 
 
-void OutputHelper::AddOutputString(std::string txt) {
-  output += QString::fromStdString(txt);
-}
-
-void OutputHelper::MoveDown() {
-  output += "\n";
-}
-
-
-HelpTerminal *m_term;
 Context *context;
-OutputHelper *m_hlp;
 Interpreter *m_interp;
+HelpHandler *m_hlp;
 
-void HelpTerminal::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) { 
-  ArrayVector n(f->evaluateFunction(m_interp,m,narg));
-  m_interp->RegisterGfxResults(n);
-}
-
-
-Interpreter* GetInterpreter() {
-  m_term = new HelpTerminal;
-  m_hlp = new OutputHelper;
+Interpreter* GetInterpreter(QStringList cmds) {
   LoadModuleFunctions(context);
   LoadClassFunction(context);
   LoadCoreFunctions(context);
@@ -87,19 +95,21 @@ Interpreter* GetInterpreter() {
   QString pth(sourcepath+"/toolbox");
   QStringList pthList(GetRecursiveDirList(pth));
   Interpreter *twalk = new Interpreter(context);
+  m_hlp = new HelpHandler(twalk,cmds);
   twalk->setUserPath(pthList);
   twalk->rescanPath();
+  twalk->AutoStop(false);
+  twalk->setGreetingFlag(false);
   qRegisterMetaType<string>("string");
   qRegisterMetaType<FuncPtr>("FuncPtr");
   qRegisterMetaType<ArrayVector>("ArrayVector");
-  //  connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
-  QObject::connect(twalk,SIGNAL(outputRawText(string)),m_hlp,
-		   SLOT(OutputRawString(string)));
-  //  connect(m_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
+  QObject::connect(twalk,SIGNAL(outputRawText(string)),
+		   m_hlp,SLOT(AddOutputString(string)));
+  QObject::connect(twalk,SIGNAL(SetPrompt(string)),
+		   m_hlp,SLOT(SetPrompt(string)));
   QObject::connect(twalk,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
-		   m_term,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
-  m_term->SetCompletionContext(context);
-  twalk->setTerminalWidth(m_term->getTerminalWidth());
+		   m_hlp,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
+  twalk->setTerminalWidth(80);
   m_interp = twalk;
   return twalk;
 }
@@ -821,21 +831,23 @@ void LatexWriter::DoFile(QString filename, QString ftext) {
   *mystream << "\\end{verbatim}\n";
 }
 
-
 QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename, QString file) {
+  QString output;
   output.clear();
-  Interpreter* twalk = GetInterpreter();
-  twalk->start();
-  for (int i=0;i<cmds.size();i++)
-    twalk->ExecuteLine(cmds[i].toStdString());
-  // Need to 
+  Interpreter* twalk = GetInterpreter(cmds);
+  twalk->start();  
+  //   for (int i=0;i<cmds.size();i++)
+  //     twalk->ExecuteLine(cmds[i].toStdString());
+  //   // Need to 
   while (!twalk->isFinished())
     qApp->processEvents();
+  output = QString::fromStdString(m_hlp->text());
   if (twalk->getErrorCount() != expectedCount) 
     Halt("Error: Got " + QString().sprintf("%d",twalk->getErrorCount()) + ", expected " + QString().sprintf("%d",expectedCount) + " in module " + modulename + " in file " + file + "\n\nOutput Follows:\n"+output);
+  //  cout << "Output: " << output.toStdString();
   ShutdownHandleGraphics();
+  //  cout << "Output: " << m_hlp->text();
   delete twalk;
-  delete m_term;
   delete m_hlp;
   QRegExp mprintre("(--> mprint[^\\n]*)");
   output = output.replace(mprintre,"");

@@ -833,6 +833,8 @@ void LatexWriter::DoFile(QString filename, QString ftext) {
 
 QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename, QString file) {
   QString output;
+  return output;
+
   output.clear();
   Interpreter* twalk = GetInterpreter(cmds);
   twalk->start();  
@@ -1267,6 +1269,7 @@ void ConsoleWidget::Run() {
   out.RegisterWriter(&htmlout);
   out.RegisterWriter(&txtout);
   out.RegisterWriter(&tstout);
+  ProcessDir(QDir(sourcepath+"/toolbox/numerical"),&out,true);
   ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
   ProcessDir(QDir(sourcepath+"/libs"),&out,true); 
   ProcessDir(QDir(sourcepath+"/help"),&out,false); 

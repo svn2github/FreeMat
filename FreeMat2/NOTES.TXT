@@ -11,7 +11,7 @@ Debug cycles... how does this work?
 Completion introduces a race condition... We need to put a mutex
 to protect the context.
 
-helpgen
+helpgen - Done
 Completion - Done
 Context stuff - Done
 history widget - feedback into command line history - Done

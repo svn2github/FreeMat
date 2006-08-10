@@ -54,6 +54,7 @@ public slots:
   void UpdateTermWidth(int);
   void DoGraphicsCall(FuncPtr f, ArrayVector m, int narg);
   void Quit();
+  void Crashed();
 signals:
   void Shutdown();
   void Initialize();

@@ -20,6 +20,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QtCore>
+#include <QtGui>
 #include "Common.hpp"
 #include "MainApp.hpp"
 
@@ -172,6 +173,15 @@ void MainApp::SetSkipGreeting(bool skip) {
   skipGreeting = skip;
 }
 
+void MainApp::Crashed() {
+  TerminalReset();
+  if (guimode)
+    QMessageBox::critical(NULL,"FreeMat Crash","Interpreter thread crashed unexpectedly!\n  This is likely a FreeMat bug of some kind.  \nPlease file a bug report at http://freemat.sf.net.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
+  else
+    cout << "Interpreter thread crashed unexpectedly!  This is likely a FreeMat bug of some kind.  Please file a bug report at http://freemat.sf.net.";
+  qApp->quit();
+}
+
 void MainApp::Quit() {
   TerminalReset();
   qApp->quit();
@@ -260,6 +270,7 @@ int MainApp::Run() {
 	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
   connect(m_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));
   connect(m_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
+  connect(m_eval,SIGNAL(CrashedSignal()),this,SLOT(Crashed()));
   m_keys->SetCompletionContext(context);
   m_eval->setTerminalWidth(m_keys->getTerminalWidth());
   m_eval->setGreetingFlag(skipGreeting);

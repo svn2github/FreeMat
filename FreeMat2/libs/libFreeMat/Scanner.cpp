@@ -12,7 +12,7 @@ bool isalnumus(byte a) {
 }
 
 bool isblank(byte a) {
-  return (a==' ' || a=='\t');
+  return (a==' ' || a=='\t' || a=='\r');
 }
 
 unsigned Scanner::ContextNum() {
@@ -258,6 +258,8 @@ void Scanner::FetchIdentifier() {
 void Scanner::Gobble() {
   int len = 0;
   while (isblank(current())) m_ptr++;
+  if (current() == 0)
+    throw ParseException(m_ptr,"not a special call statement");
   if (current() == '\'')
     FetchString();
   else {
@@ -295,7 +297,10 @@ void Scanner::Consume() {
 }
 
 byte Scanner::current() {
-  return m_text.at(m_ptr);
+  if (m_ptr < m_strlen)
+    return m_text.at(m_ptr);
+  else
+    return 0;
 }
 
 byte Scanner::previous() {

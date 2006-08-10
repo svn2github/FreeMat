@@ -359,6 +359,9 @@ void Interpreter::run() {
   } catch (InterpreterQuitException &e) {
     emit QuitSignal();
   } catch (std::exception& e) {
+    emit CrashedSignal();
+  } catch (...) {
+    emit CrashedSignal();
   }
 }
 

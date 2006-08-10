@@ -403,6 +403,10 @@ signals:
    * All done.
    */
   void QuitSignal();
+  /**
+   * Something went wrong...
+   */
+  void CrashedSignal();
 
   /******************************************
    *  Private Methods for the Interpreter   *

@@ -170,6 +170,7 @@ tree Parser::SpecialFunctionCall() {
   if ((root.first().text() == "cd") ||
       (root.first().text() == "dir") ||
       (root.first().text() == "ls")) {
+    if (Match('(') || Match('=')) serror("Not special call");
     m_lex.Gobble();
     addChild(root,mkLeaf(Next()));
     Consume();
@@ -520,6 +521,7 @@ unsigned Parser::Precedence(const Token& t) {
 tree Parser::MatDef(byte basetok, byte closebracket) {
   m_lex.PushWSFlag(false);
   tree matdef(mkLeaf(basetok));
+  if (Match(TOK_SPACE)) Consume();
   while (!Match(closebracket)) {
     tree rowdef(mkLeaf(TOK_ROWDEF,m_lex.ContextNum()));
     while (!Match(';') && !Match('\n') && !Match(closebracket)) {

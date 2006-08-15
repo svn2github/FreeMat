@@ -1,4 +1,5 @@
 #include "HandleUIControl.hpp"
+#include "HandleMultiEdit.hpp"
 #include "HandleWindow.hpp"
 #include "Interpreter.hpp"
 #include "Core.hpp"
@@ -67,12 +68,13 @@ void HandleUIControl::UpdateState() {
       double min(ScalarPropertyLookup("min"));
       double max(ScalarPropertyLookup("max"));
       if ((max-min) > 1) {
-	widget = new QTextEdit(parentWidget->GetQtWidget());
+	widget = new HandleMultiEdit(parentWidget->GetQtWidget());
 	widget->setObjectName("multiline");
       } else {
 	widget = new QLineEdit(parentWidget->GetQtWidget());
 	widget->setObjectName("singleline");
       }
+      connect(widget,SIGNAL(editingFinished()),this,SLOT(clicked()));
     }
     if (widget)
       widget->show();
@@ -120,8 +122,10 @@ void HandleUIControl::UpdateState() {
     }
     if (StringCheck("style","edit")) {
       if (widget->objectName() == "multiline")
-	((QTextEdit*)widget)->
+	((HandleMultiEdit*)widget)->setPlainText(QString::fromStdString(StringPropertyLookup("string")));
       else
+	((QLineEdit*)widget)->setText(QString::fromStdString(StringPropertyLookup("string")));
+	  
     }
     ClearChanged("string");
   }
@@ -258,6 +262,7 @@ void HandleUIControl::ConstructWidget(HandleWindow *f) {
 }
 
 void HandleUIControl::clicked() {
+  std::cout << "CLICKED\n";
   if (StringCheck("style","slider") && widget) {
     double min(ScalarPropertyLookup("min"));
     double max(ScalarPropertyLookup("max"));
@@ -297,6 +302,14 @@ void HandleUIControl::clicked() {
       ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("max"));
     else
       ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("min"));
+  }
+
+  if (StringCheck("style","edit") && widget) {
+    if (widget->objectName() == "multiline") {
+      SetStringDefault("string",((HandleMultiEdit*)widget)->toPlainText().toStdString());
+    } else {
+      SetStringDefault("string",((QLineEdit*)widget)->text().toStdString());
+    }
   }
 
   m_eval->ExecuteLine(StringPropertyLookup("callback") + "\n");

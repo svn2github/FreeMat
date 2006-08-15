@@ -156,8 +156,8 @@ void HandleFigure::PaintMe(RenderEngine &gc) {
   try {
     //    qDebug("size = %d %d",m_width,m_height);
     // draw the children...
-    HPColor *color = (HPColor*) LookupProperty("color");
-    gc.clear(color->Data());
+    //     HPColor *color = (HPColor*) LookupProperty("color");
+    //     gc.clear(color->Data());
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {

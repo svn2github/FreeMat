@@ -40,7 +40,7 @@ public:
   HandleObject();
   virtual ~HandleObject();
   void Reference() {ref_count++;}
-  void Dereference() {ref_count--;}
+  void Dereference() {if (ref_count > 0) ref_count--;}
   unsigned RefCount() {return ref_count;}
   virtual void RegisterProperties() {}
   virtual void UpdateState() {}
@@ -50,6 +50,7 @@ public:
   void ToManual(std::string name);
   bool IsType(std::string name);
   void ClearChanged(std::vector<std::string> names);
+  void ClearChanged(std::string name);
   void ClearAllChanged();
   void AddProperty(HandleProperty* prop, std::string name);
   HandleProperty* LookupProperty(std::string name);

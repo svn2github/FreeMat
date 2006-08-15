@@ -68,6 +68,7 @@ public:
   virtual void Set(Array);
   std::vector<double> Data() {return data;}
   void Data(std::vector<double> m) {data = m;}
+  void Data(double m) {std::vector<double> n; n.push_back(m); data = n;}
   double& operator[](int ndx);
   double& At(int ndx);
 };

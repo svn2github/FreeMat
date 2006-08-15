@@ -54,7 +54,22 @@
 // [(a (3))] --> [a(3)]
 // Outside
 // fprintf('%d\n',a (3)) --> works as a(3)
-
+// 
+// Special calls are causing more trouble...
+//
+// Consider:
+//  foo /bar
+// Is this treated as an expression? or as a special function
+// call?
+// Also
+//  foo bar.dat
+// causes trouble.
+// Now in general, if we have an identifier (outside a bracket) followed
+// by a character, it must be a special call.  That takes care of the
+// above syntax.
+//
+// The only one missing case is the one described above.  
+//
 unsigned AdjustContextOne(unsigned m) {
   return (((m & 0xffff) - 1) | (m & 0xffff0000));
 }
@@ -164,8 +179,15 @@ bool Parser::MatchNumber() {
 }
 
 tree Parser::SpecialFunctionCall() {
+  m_lex.PushWSFlag(false);
   tree root = mkLeaf(TOK_SPECIAL,m_lex.ContextNum());
   addChild(root,Identifier());
+  // Next must be a whitespace
+  if (!Match(TOK_SPACE)) serror("Not special call");
+  Consume();
+  // If the next thing is a character or a number, we grab "blobs"
+  // 
+  m_lex.PopWSFlag();
   // Special case "cd, dir, ls"... these commands eat all remaining text
   if ((root.first().text() == "cd") ||
       (root.first().text() == "dir") ||

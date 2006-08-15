@@ -11,12 +11,15 @@ class HandleUIControl : public QObject, public HandleObject {
   Q_OBJECT
   QWidget *widget;
   Interpreter *m_eval;
+  HandleWindow *parentWidget;
 public:
   HandleUIControl();
   virtual ~HandleUIControl();
   virtual void ConstructProperties();
   virtual void SetupDefaults();
+  virtual void UpdateState();
   virtual void PaintMe(RenderEngine&) {};
+  void Hide();
   void ConstructWidget(HandleWindow *f);
   void SetEvalEngine(Interpreter *eval);
 private slots:

@@ -62,6 +62,12 @@ void HandleObject::ClearChanged(std::vector<std::string> names) {
   }    
 }
 
+void HandleObject::ClearChanged(std::string name) {
+  HandleProperty *hp;
+  hp = LookupProperty(name);
+  hp->ClearModified();
+}
+
 HandleObject::HandleObject() {
   ref_count = 1;
 }

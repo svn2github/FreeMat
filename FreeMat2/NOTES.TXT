@@ -8,7 +8,7 @@ interpreter.
 
 Debug cycles... how does this work?
 
-Completion introduces a race condition... We need to put a mutex
+    Completion introduces a race condition... We need to put a mutex
 to protect the context.
 
 helpgen - Done

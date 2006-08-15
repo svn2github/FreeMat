@@ -87,11 +87,6 @@ Interpreter *m_interp;
 HelpHandler *m_hlp;
 
 Interpreter* GetInterpreter(QStringList cmds) {
-  LoadModuleFunctions(context);
-  LoadClassFunction(context);
-  LoadCoreFunctions(context);
-  LoadFNFunctions(context);
-  LoadHandleGraphicsFunctions(context);  
   QString pth(sourcepath+"/toolbox");
   QStringList pthList(GetRecursiveDirList(pth));
   Interpreter *twalk = new Interpreter(context);
@@ -774,9 +769,10 @@ void LatexWriter::EndModule() {
 
 void LatexWriter::BeginModule(QString modname, QString moddesc, QString secname) {
   moduledepth++;
-  myfile = new QFile(sourcepath+"/help/latex/" + secname.toLower() + "_" + modname.toLower() + ".tex");
+  QString filename(sourcepath+"/help/latex/" + secname.toLower() + "_" + modname.toLower() + ".tex");
+  myfile = new QFile(filename);
   if (!myfile->open(QFile::WriteOnly)) {
-    Halt("Unable to open " + modname + ".tex for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
+    Halt("Unable to open " + filename + " for output " + QString().sprintf("%d",myfile->error()) + " depth = " + QString().sprintf("%d",moduledepth));
   }
   mystream = new QTextStream(myfile);
   *mystream << "\\section{" + moddesc + "}\n\n";
@@ -833,9 +829,11 @@ void LatexWriter::DoFile(QString filename, QString ftext) {
 
 QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename, QString file) {
   QString output;
-  return output;
 
   output.clear();
+
+  QString cpath(QDir::currentPath());
+
   Interpreter* twalk = GetInterpreter(cmds);
   twalk->start();  
   //   for (int i=0;i<cmds.size();i++)
@@ -843,6 +841,7 @@ QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename
   //   // Need to 
   while (!twalk->isFinished())
     qApp->processEvents();
+  QDir::setCurrent(cpath);
   output = QString::fromStdString(m_hlp->text());
   if (twalk->getErrorCount() != expectedCount) 
     Halt("Error: Got " + QString().sprintf("%d",twalk->getErrorCount()) + ", expected " + QString().sprintf("%d",expectedCount) + " in module " + modulename + " in file " + file + "\n\nOutput Follows:\n"+output);
@@ -980,6 +979,11 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
     item_pattern = QRegExp("^\\s*%\\s*\\\\item(.*)");
   }
   context = new Context;
+  LoadModuleFunctions(context);
+  LoadClassFunction(context);
+  LoadCoreFunctions(context);
+  LoadFNFunctions(context);
+  LoadHandleGraphicsFunctions(context);  
   modulename_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   moduledesc_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   sectioname_pattern.setCaseSensitivity(Qt::CaseInsensitive);
@@ -1269,11 +1273,10 @@ void ConsoleWidget::Run() {
   out.RegisterWriter(&htmlout);
   out.RegisterWriter(&txtout);
   out.RegisterWriter(&tstout);
-  ProcessDir(QDir(sourcepath+"/toolbox/numerical"),&out,true);
   ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
   ProcessDir(QDir(sourcepath+"/libs"),&out,true); 
   ProcessDir(QDir(sourcepath+"/help"),&out,false); 
-  //  ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
+  ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
   MergeMFiles(QDir(sourcepath+"/toolbox"));
   out.WriteIndex();
   std::string version(Interpreter::getVersionString());

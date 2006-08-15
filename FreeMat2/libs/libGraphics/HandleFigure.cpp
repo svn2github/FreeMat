@@ -153,17 +153,21 @@ void HandleFigure::SetupDefaults() {
 }
 
 void HandleFigure::PaintMe(RenderEngine &gc) {
-  //    qDebug("size = %d %d",m_width,m_height);
-  // draw the children...
-  HPColor *color = (HPColor*) LookupProperty("color");
-  gc.clear(color->Data());
-  HPHandles *children = (HPHandles*) LookupProperty("children");
-  std::vector<unsigned> handles(children->Data());
-  for (int i=0;i<handles.size();i++) {
-    HandleObject *fp = LookupHandleObject(handles[i]);
-    fp->PaintMe(gc);
+  try {
+    //    qDebug("size = %d %d",m_width,m_height);
+    // draw the children...
+    HPColor *color = (HPColor*) LookupProperty("color");
+    gc.clear(color->Data());
+    HPHandles *children = (HPHandles*) LookupProperty("children");
+    std::vector<unsigned> handles(children->Data());
+    for (int i=0;i<handles.size();i++) {
+      HandleObject *fp = LookupHandleObject(handles[i]);
+      fp->PaintMe(gc);
+    }
+    resized = false;
+  } catch (Exception& e) {
+    cout << "Warning: Graphics subsystem reports: " << e.getMessageCopy() << "\n";
   }
-  resized = false;
 }
 
 void HandleFigure::resizeGL(int width, int height) {

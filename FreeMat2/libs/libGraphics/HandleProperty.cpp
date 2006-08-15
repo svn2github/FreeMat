@@ -53,7 +53,7 @@ static const char *facealpha_dict[5] = {"flat","interp","texturemap","scalar",0}
 static const char *backface_dict[4] = {"unlit","lit","reverselit",0};
 static const char *edgealpha_dict[4] = {"flat","interp","scalar",0};
 static const char *render_dict[3] = {"painters","opengl",0};
-static const char *widget_dict[11] = {"pushbutton","togglebutton","radiobutton","checkbox",
+static const char *widget_dict[11] = {"pushbutton","toggle","radiobutton","checkbox",
 				      "edit","text","slider","frame","listbox","popupmenu",0};
   
 HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}

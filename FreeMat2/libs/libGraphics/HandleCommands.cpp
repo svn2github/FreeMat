@@ -67,6 +67,7 @@ void ShutdownHandleGraphics() {
     }
     Hfigs[i] = NULL;
   }
+  HcurrentFig = -1;
 }
 
 // Magic constant - limits the number of figures you can have...
@@ -313,10 +314,11 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
       if (gp->RefCount() <= 0) {
-	//	  qDebug("Deleting handle %d\n",handle);
+	if (gp->StringPropertyLookup("type") == "uicontrol")
+	  ((HandleUIControl*) gp)->Hide();
 	FreeHandleObject(handle);
 	delete gp;
-      }
+      } 
     }
   }
   // Call the generic set function now
@@ -365,7 +367,7 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     ptr+=2;
   }
   fp->UpdateState();
-  if (!fp->IsType("figure")) {
+  if (!fp->IsType("figure") && !fp->IsType("uicontrol")) {
     HandleFigure *fig = fp->GetParentFigure();
     fig->Repaint();
   }
@@ -402,9 +404,9 @@ ArrayVector HGetFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(fp->LookupProperty(propname)->Get());
 }
 
-unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg) {
+unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
+			    bool autoParentGiven = true) {
   unsigned int handle = AssignHandleObject(fp);
-  bool autoParentGiven = true;
   ArrayVector t(arg);
   while (t.size() >= 2) {
     std::string propname(ArrayToString(t[0]));
@@ -476,11 +478,15 @@ ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
 //!
 ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   HandleUIControl *o = new HandleUIControl;
-  unsigned handleID = GenericConstructor(o,arg);
-  o->ConstructWidget(CurrentWindow());
   o->SetEvalEngine(eval);
+  o->ConstructWidget(CurrentWindow());
+  unsigned handleID = GenericConstructor(o,arg,false);
   // Parent the control to the current figure
   AddToCurrentFigChildren(handleID);
+  HPHandles* cp = (HPHandles*) o->LookupProperty("parent");
+  std::vector<unsigned> parent;
+  parent.push_back(HcurrentFig+1);
+  cp->Data(parent);
   return singleArrayVector(Array::uint32Constructor(handleID));
 }
 
@@ -710,6 +716,7 @@ ArrayVector HCloseFunction(int nargout, const ArrayVector& arg) {
   } else if (action == -1) {
     for (int i=0;i<MAX_FIGS;i++)
       CloseHelper(i);
+    HcurrentFig = -1;
   } else {
     if ((action < MAX_FIGS) && (action >= 1))
       CloseHelper(action-1);

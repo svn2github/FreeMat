@@ -1,6 +1,7 @@
 #include "HandleUIControl.hpp"
 #include "HandleWindow.hpp"
 #include "Interpreter.hpp"
+#include "Core.hpp"
 #include <QtGui>
 
 HandleUIControl::HandleUIControl() {
@@ -10,29 +11,295 @@ HandleUIControl::HandleUIControl() {
 }
   
 HandleUIControl::~HandleUIControl() {
+  if (widget) delete widget;
 }
 
 void HandleUIControl::SetEvalEngine(Interpreter *eval) {
   m_eval = eval;
 }
 
-void HandleUIControl::ConstructWidget(HandleWindow *f) {
-  if (widget) delete widget;
-  widget = NULL;
-  if (StringCheck("style","pushbutton")) {
-    widget = new QPushButton(QString::fromStdString(StringPropertyLookup("string")),
-			     f->GetQtWidget());
-    connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
+// Need to handle initialization of "value" property
+void HandleUIControl::UpdateState() {
+  bool newwidget = false;
+  if (HasChanged("style")) {
+    if (widget) delete widget;
+    widget = NULL;
+    if (StringCheck("style","pushbutton")) {
+      widget = new QPushButton(parentWidget->GetQtWidget());
+      connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
+    }
+    if (StringCheck("style","radiobutton")) {
+      widget = new QRadioButton(parentWidget->GetQtWidget());
+      ((QRadioButton*) widget)->setAutoExclusive(false);
+      connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
+    }
+    if (StringCheck("style","checkbox")) {
+      widget = new QCheckBox(parentWidget->GetQtWidget());
+      connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
+    }
+    if (StringCheck("style","toggle")) {
+      widget = new QPushButton(parentWidget->GetQtWidget());
+      ((QPushButton*) widget)->setCheckable(true);
+      connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
+    }
+    if (StringCheck("style","slider")) {
+      std::vector<double> sizevec(VectorPropertyLookup("position"));
+      if (sizevec[3] > sizevec[2])
+	widget = new QSlider(Qt::Vertical,parentWidget->GetQtWidget());
+      else
+	widget = new QSlider(Qt::Horizontal,parentWidget->GetQtWidget());
+      ((QSlider*)widget)->setTracking(false);
+      connect(widget,SIGNAL(valueChanged(int)),this,SLOT(clicked()));
+    }
+    if (StringCheck("style","popupmenu")) {
+      widget = new QComboBox(parentWidget->GetQtWidget());
+      connect(widget,SIGNAL(activated(int)),this,SLOT(clicked()));
+      ((QComboBox*) widget)->setEditable(false);
+    }
+    if (StringCheck("style","listbox")) {
+      widget = new QListWidget(parentWidget->GetQtWidget());
+      connect(widget,SIGNAL(itemSelectionChanged()),this,SLOT(clicked()));
+    }
+    if (StringCheck("style","text")) {
+      widget = new QLabel(parentWidget->GetQtWidget());
+    }
+    if (StringCheck("style","edit")) {
+      double min(ScalarPropertyLookup("min"));
+      double max(ScalarPropertyLookup("max"));
+      if ((max-min) > 1) {
+	widget = new QTextEdit(parentWidget->GetQtWidget());
+	widget->setObjectName("multiline");
+      } else {
+	widget = new QLineEdit(parentWidget->GetQtWidget());
+	widget->setObjectName("singleline");
+      }
+    }
+    if (widget)
+      widget->show();
+    ClearChanged("style");
+    newwidget = true;
   }
-  std::vector<double> bgcolor(VectorPropertyLookup("backgroundcolor"));
-  if (!widget) return;
-  std::vector<double> sizevec(VectorPropertyLookup("position"));
-  widget->setGeometry(sizevec[0],sizevec[1],sizevec[2],sizevec[3]);
-  widget->show();
+  if (!widget) {
+    ClearAllChanged();
+    return;
+  }
+  if (HasChanged("position") || newwidget) {
+    std::vector<double> sizevec(VectorPropertyLookup("position"));
+    widget->setGeometry(sizevec[0],sizevec[1],sizevec[2],sizevec[3]);
+    ClearChanged("position");
+  }
+  if (HasChanged("string") || newwidget) {
+    if (StringCheck("style","pushbutton") || 
+	StringCheck("style","toggle")) {
+      ((QPushButton*)widget)->setText(QString::fromStdString(StringPropertyLookup("string")));
+    }
+    if (StringCheck("style","radiobutton")) {
+      ((QRadioButton*)widget)->setText(QString::fromStdString(StringPropertyLookup("string")));
+    }
+    if (StringCheck("style","checkbox")) {
+      ((QCheckBox*)widget)->setText(QString::fromStdString(StringPropertyLookup("string")));
+    }
+    if (StringCheck("style","popupmenu")) {
+      ((QComboBox*)widget)->clear();
+      string txt(StringPropertyLookup("string"));
+      vector<string> data;
+      Tokenize(txt,data,"|");
+      for (int i=0;i<data.size();i++)
+	((QComboBox*)widget)->addItem(QString::fromStdString(data[i]));
+    }
+    if (StringCheck("style","listbox")) {
+      ((QListWidget*)widget)->clear();
+      string txt(StringPropertyLookup("string"));
+      vector<string> data;
+      Tokenize(txt,data,"|");
+      for (int i=0;i<data.size();i++)
+	((QListWidget*)widget)->addItem(QString::fromStdString(data[i]));
+    }
+    if (StringCheck("style","text")) {
+      ((QLabel*)widget)->setText(QString::fromStdString(StringPropertyLookup("string")));
+    }
+    if (StringCheck("style","edit")) {
+      if (widget->objectName() == "multiline")
+	((QTextEdit*)widget)->
+      else
+    }
+    ClearChanged("string");
+  }
+  if (HasChanged("tooltipstring") || newwidget) {
+    widget->setToolTip(QString::fromStdString(StringPropertyLookup("tooltipstring")));
+    ClearChanged("tooltipstring");
+  }
+  if (StringCheck("style","slider") && 
+      (HasChanged("min") || HasChanged("max") || 
+       HasChanged("sliderstep")  || newwidget)) {
+    double min(ScalarPropertyLookup("min"));
+    double max(ScalarPropertyLookup("max"));
+    std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+    ((QSlider*)widget)->setMinimum(0);
+    ((QSlider*)widget)->setMaximum((max-min)/steps[0]);
+    ((QSlider*)widget)->setSingleStep(1);
+    ((QSlider*)widget)->setPageStep(steps[1]);
+    ((HPVector*) LookupProperty("value"))->Data(min+steps[0]*((QSlider*)widget)->value());
+    ClearChanged("min");
+    ClearChanged("max");
+    ClearChanged("sliderstep");
+  }
+  if (StringCheck("style","listbox") &&
+      (HasChanged("min") || HasChanged("max") || newwidget)) {
+    double min(ScalarPropertyLookup("min"));
+    double max(ScalarPropertyLookup("max"));
+    if (max-min > 1)
+      ((QListWidget*)widget)->setSelectionMode(QAbstractItemView::MultiSelection);
+    else
+      ((QListWidget*)widget)->setSelectionMode(QAbstractItemView::SingleSelection);
+    ClearChanged("min");
+    ClearChanged("max");
+  }
+  if (HasChanged("listboxtop") || newwidget) {
+    if (StringCheck("style","listbox")) {
+      double listtop(ScalarPropertyLookup("listboxtop"));
+      ((QListWidget*)widget)->scrollToItem(((QListWidget*)widget)->item(listtop-1),
+					   QAbstractItemView::PositionAtTop);
+    }
+    ClearChanged("listboxtop");
+  }
+
+  if (StringCheck("style","toggle") && 
+      (HasChanged("value") || HasChanged("min") ||
+       HasChanged("max") || newwidget)) {
+    double min(ScalarPropertyLookup("min"));
+    double max(ScalarPropertyLookup("max"));
+    std::vector<double> value(VectorPropertyLookup("value"));
+    if (value.size() > 0) {
+      if (value[0] == min)
+	((QPushButton*) widget)->setChecked(false);
+      else if (value[0] == max) 
+	((QPushButton*) widget)->setChecked(true);
+    }
+    ClearChanged("max");
+    ClearChanged("min");
+    ClearChanged("value");
+  }
+
+  if (StringCheck("style","radiobutton") && 
+      (HasChanged("value") || HasChanged("min") ||
+       HasChanged("max") || newwidget)) {
+    double min(ScalarPropertyLookup("min"));
+    double max(ScalarPropertyLookup("max"));
+    std::vector<double> value(VectorPropertyLookup("value"));
+    if (value.size() > 0) {
+      if (value[0] == min)
+	((QRadioButton*) widget)->setChecked(false);
+      else if (value[0] == max) 
+	((QRadioButton*) widget)->setChecked(true);
+    }
+    ClearChanged("max");
+    ClearChanged("min");
+    ClearChanged("value");
+  }
+
+  if (StringCheck("style","checkbox") && 
+      (HasChanged("value") || HasChanged("min") ||
+       HasChanged("max") || newwidget)) {
+    double min(ScalarPropertyLookup("min"));
+    double max(ScalarPropertyLookup("max"));
+    std::vector<double> value(VectorPropertyLookup("value"));
+    if (value.size() > 0) {
+      if (value[0] == min)
+	((QCheckBox*) widget)->setChecked(false);
+      else if (value[0] == max) 
+	((QCheckBox*) widget)->setChecked(true);
+    }
+    ClearChanged("max");
+    ClearChanged("min");
+    ClearChanged("value");
+  }
+
+  if (HasChanged("value") || newwidget) {
+    if (StringCheck("style","slider")) {
+      double min(ScalarPropertyLookup("min"));
+      double max(ScalarPropertyLookup("max"));
+      std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+      std::vector<double> value(VectorPropertyLookup("value"));
+      if (value.size() > 0)
+	((QSlider*)widget)->setValue((value[0]-min)/steps[0]);
+    }
+    if (StringCheck("style","popupmenu")) {
+      std::vector<double> value(VectorPropertyLookup("value"));
+      ((QComboBox*)widget)->setCurrentIndex(value[0]-1);
+    }
+    if (StringCheck("style","listbox")) {
+      std::vector<double> value(VectorPropertyLookup("value"));
+      ((QListWidget*)widget)->clearSelection();
+      for (int i=0;i<value.size();i++) 
+	((QListWidget*)widget)->setItemSelected(((QListWidget*)widget)->item(value[i]-1),true);
+    }
+    ClearChanged("value");
+  }
+}
+
+void HandleUIControl::ConstructWidget(HandleWindow *f) {
+  parentWidget = f;
+  //   std::vector<double> sizevec(VectorPropertyLookup("position"));
+  //   if (!widget) return;
+  //   widget->setGeometry(sizevec[0],sizevec[1],sizevec[2],sizevec[3]);
+
+  //   if (StringCheck("style","slider")) {
+  //     double min(ScalarPropertyLookup("min"));
+  //     double max(ScalarPropertyLookup("max"));
+  //     std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+  //     ((QSlider*)widget)->setMinimum(0);
+  //     ((QSlider*)widget)->setMaximum((max-min)/steps[0]);
+  //     ((QSlider*)widget)->setSingleStep(1);
+  //     ((QSlider*)widget)->setPageStep(steps[1]);
+  //     ((HPVector*) LookupProperty("value"))->Data(min+steps[0]*((QSlider*)widget)->value());
+  //   }
+  //   widget->show();
 }
 
 void HandleUIControl::clicked() {
-  m_eval->ExecuteLine(StringPropertyLookup("callback"));
+  if (StringCheck("style","slider") && widget) {
+    double min(ScalarPropertyLookup("min"));
+    double max(ScalarPropertyLookup("max"));
+    std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+    ((HPVector*) LookupProperty("value"))->Data(min+steps[0]*((QSlider*)widget)->value());
+    // No infinite loops, please
+    ClearChanged("value");
+  }
+  if (StringCheck("style","popupmenu") && widget) {
+    ((HPVector*) LookupProperty("value"))->Data(((QComboBox*)widget)->currentIndex()+1);
+    ClearChanged("value");
+  }
+  if (StringCheck("style","listbox") && widget) {
+    QList<QListWidgetItem*> selection(((QListWidget*) widget)->selectedItems());
+    std::vector<double> selected;
+    for (int i=0;i<selection.size();i++) 
+      selected.push_back(((QListWidget*) widget)->row(selection[i])+1);
+    ((HPVector*) LookupProperty("value"))->Data(selected);
+    ClearChanged("value");
+  }
+  if (StringCheck("style","toggle") && widget) {
+    if (((QPushButton*) widget)->isChecked())
+      ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("max"));
+    else
+      ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("min"));
+  }
+
+  if (StringCheck("style","radiobutton") && widget) {
+    if (((QRadioButton*) widget)->isChecked())
+      ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("max"));
+    else
+      ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("min"));
+  }
+
+  if (StringCheck("style","checkbox") && widget) {
+    if (((QCheckBox*) widget)->isChecked())
+      ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("max"));
+    else
+      ((HPVector*) LookupProperty("value"))->Data(ScalarPropertyLookup("min"));
+  }
+
+  m_eval->ExecuteLine(StringPropertyLookup("callback") + "\n");
 }
 
 void HandleUIControl::ConstructProperties() {
@@ -127,7 +394,7 @@ void HandleUIControl::ConstructProperties() {
   //Each value must be in the range @|[0,1]|, and is a percentage
   //of the range @|max-min|.
   //\item @|string| - @|string| - the text for the control.
-  //\item @|style| - @|{'pushbutton','togglebutton','radiobutton','checkbox',
+  //\item @|style| - @|{'pushbutton','toggle','radiobutton','checkbox',
   //'edit','text','slider','frame','listbox','popupmenu'}|.
   //\item @|tag| - @|string| - user specified label.
   //\item @|tooltipstring| - @|string| the tooltip for the control.
@@ -143,7 +410,7 @@ void HandleUIControl::ConstructProperties() {
   //\item check box - set to @|max| when checked, and @|min| when off.
   //\item list box - set to a vector of indices corresponding to selected
   //items, with @|1| corresponding to the first item in the list.
-  //\item pop up menu - set to the index of the item selected.
+  //\item pop up menu - set to the index of the item selected (starting with 1)
   //\item radio buttons - set to @|max| when selected, and set to @|min| when
   //not selected.
   //\item sliders - set to the value of the slider
@@ -194,6 +461,10 @@ void HandleUIControl::ConstructProperties() {
   AddProperty(new HPVector,"value");
 }
 
+void HandleUIControl::Hide() {
+  if (widget) widget->hide();
+}
+
 void HandleUIControl::SetupDefaults() {
   SetThreeVectorDefault("backgroundcolor",0.6,0.6,0.6);
   SetStringDefault("enable","on");
@@ -206,7 +477,8 @@ void HandleUIControl::SetupDefaults() {
   SetConstrainedStringDefault("horizontalalignment","left");
   SetScalarDefault("listboxtop",1);
   SetScalarDefault("max",1);
-  SetScalarDefault("min",1);
+  SetScalarDefault("min",0);
+  ((HPVector*) LookupProperty("value"))->Data(0);
   SetFourVectorDefault("position",0,0,10,10);
   SetTwoVectorDefault("sliderstep",0.01,0.1);
   SetStringDefault("type","uicontrol");

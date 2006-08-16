@@ -410,7 +410,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
     types.push_back(tn);
     char *bc = parseBoundsCheck(cp);
     if (bc != NULL) {
-      checks.push_back(ParseString(bc));
+      checks.push_back(ParseExpressionString(bc));
     } else
       checks.push_back(tree(NULL));
     char *ar;

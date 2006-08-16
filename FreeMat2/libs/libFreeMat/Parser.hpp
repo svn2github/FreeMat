@@ -51,8 +51,11 @@ public:
   unsigned LastPos() {return lastpos;}
   tree StatementList();
   void Dump(); 
+
+  friend tree ParseExpressionString(string);
 };
 
 tree ParseString(string arg);
+tree ParseExpressionString(string arg);
 
 #endif

@@ -20,6 +20,7 @@ class Scanner {
   bool m_debugFlag;
   bool m_inContinuationState;
   int  m_bracketDepth;
+  bool m_blobFlag;
   byte current();
   byte previous();
   byte ahead(int n);
@@ -30,6 +31,7 @@ class Scanner {
   void FetchContinuation();
   void FetchNumber();
   void FetchString();
+  void FetchBlob();
   void FetchOther();
   bool TryFetchBinary(const char* op, byte tok);
   void SetToken(byte tok, string text = string());
@@ -40,9 +42,11 @@ public:
   // Methods accessed by the parser
   const Token& Next();
   void Consume();
-  void Gobble();
   bool Match(byte tok);
   void SetDebug(bool debugFlag) {m_debugFlag = debugFlag;}
+  // Warning: Ugly Hack.  When in Special Call mode, the
+  // rules for what constitutes a string change completely.
+  void SetBlobMode(bool blobFlag) {m_blobFlag = blobFlag;}
   void PushWSFlag(bool ignoreWS);
   void PopWSFlag();
   bool Done();

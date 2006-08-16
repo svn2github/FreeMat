@@ -185,25 +185,23 @@ tree Parser::SpecialFunctionCall() {
   // Next must be a whitespace
   if (!Match(TOK_SPACE)) serror("Not special call");
   Consume();
-  // If the next thing is a character or a number, we grab "blobs"
-  // 
-  m_lex.PopWSFlag();
-  // Special case "cd, dir, ls"... these commands eat all remaining text
-  if ((root.first().text() == "cd") ||
-      (root.first().text() == "dir") ||
-      (root.first().text() == "ls")) {
-    if (Match('(') || Match('=')) serror("Not special call");
-    m_lex.Gobble();
-    addChild(root,mkLeaf(Next()));
-    Consume();
-  } else {
-    if (!(Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)))
-      serror("Not special call");
-    while (Match(TOK_IDENT) || MatchNumber() || Match(TOK_STRING)) {
-      addChild(root,mkLeaf(Next()));
-      Consume();
+  {
+    Scanner t_lex(m_lex);
+    if (t_lex.Next().IsBinaryOperator() || 
+	t_lex.Next().IsUnaryOperator()) {
+      t_lex.Consume();
+      if (t_lex.Next().Is(TOK_SPACE)) serror("Not special call");
     }
   }
+  // If the next thing is a character or a number, we grab "blobs"
+  m_lex.SetBlobMode(true);
+  while (!Match(';') && !Match('\n') && !(Match(','))) {
+    addChild(root,mkLeaf(Next()));
+    Consume();
+    if (Match(TOK_SPACE)) Consume();
+  }
+  m_lex.SetBlobMode(false);
+  m_lex.PopWSFlag();
   return root;
 }
 
@@ -671,4 +669,14 @@ tree ParseString(string arg) {
   Scanner S(arg,"");
   Parser P(S);
   return P.StatementList();
+}
+
+tree ParseExpressionString(string arg) {
+  Scanner S(arg,"");
+  Parser P(S);
+  try {
+    return P.Expression();
+  } catch(ParseException &e) {
+    return tree(NULL);
+  }
 }

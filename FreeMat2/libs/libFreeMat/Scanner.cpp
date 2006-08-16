@@ -42,6 +42,7 @@ Scanner::Scanner(string buf, string fname) {
   m_strlen = buf.size();
   m_ignorews.push(true);
   m_debugFlag = false;
+  m_blobFlag = false;
 }
 
 void Scanner::FetchContinuation() {
@@ -66,7 +67,12 @@ void Scanner::Fetch() {
 	     (ahead(2) == '.')) {
     FetchContinuation();
     return;
-  } else if (isalpha(current()))
+  } else if (m_blobFlag && !isblank(current()) && 
+	     (current() != '\n') && (current() != ';') &&
+	     (current() != ',') && (current() != '\'') &&
+	     (current() != '%')) 
+    FetchBlob();
+  else if (isalpha(current()))
     FetchIdentifier();
   else if (isdigit(current()) || ((current() == '.') && isdigit(ahead(1))))
     FetchNumber();
@@ -255,21 +261,26 @@ void Scanner::FetchIdentifier() {
   m_ptr += len;
 }
 
-void Scanner::Gobble() {
-  int len = 0;
-  while (isblank(current())) m_ptr++;
-  if (current() == 0)
-    throw ParseException(m_ptr,"not a special call statement");
-  if (current() == '\'')
+// A Blob is either:
+//   1.  A regular string (with quote delimiters)
+//   2.  A sequence of characters with either a whitespace
+//       a comma or a colon.
+void Scanner::FetchBlob() {
+  if (current() == '\'') {
     FetchString();
-  else {
-    while ((ahead(len) != '\n') && (ahead(len) != '%')) len++;
-    SetToken(TOK_STRING,string(m_text,m_ptr,len));
-    m_ptr += len;
+    m_tokValid = true;
+  } else {
+    int len = 0;
+    while ((ahead(len) != '\n') && (!isblank(ahead(len))) && 
+	   (ahead(len) != '%') && (ahead(len) != ',') &&
+	   (ahead(len) != ';')) len++;
+    if (len > 0) {
+      SetToken(TOK_STRING,string(m_text,m_ptr,len));
+      m_ptr += len;
+      m_tokValid = true;    
+    } 
   }
-  m_tokValid = true;
 }
-
 
 const Token& Scanner::Next() {
   while (!m_tokValid) {

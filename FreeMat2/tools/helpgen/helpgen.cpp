@@ -94,7 +94,7 @@ Interpreter* GetInterpreter(QStringList cmds) {
   twalk->setUserPath(pthList);
   twalk->rescanPath();
   twalk->AutoStop(false);
-  twalk->setGreetingFlag(false);
+  twalk->setGreetingFlag(true);
   qRegisterMetaType<string>("string");
   qRegisterMetaType<FuncPtr>("FuncPtr");
   qRegisterMetaType<ArrayVector>("ArrayVector");
@@ -852,6 +852,8 @@ QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename
   delete m_hlp;
   QRegExp mprintre("(--> mprint[^\\n]*)");
   output = output.replace(mprintre,"");
+  QRegExp quitre("(--> quit;)");
+  output = output.replace(quitre,"");
   return output;
 }
 
@@ -1276,7 +1278,6 @@ void ConsoleWidget::Run() {
   ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
   ProcessDir(QDir(sourcepath+"/libs"),&out,true); 
   ProcessDir(QDir(sourcepath+"/help"),&out,false); 
-  ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
   MergeMFiles(QDir(sourcepath+"/toolbox"));
   out.WriteIndex();
   std::string version(Interpreter::getVersionString());

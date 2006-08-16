@@ -145,7 +145,7 @@ void HandleFigure::LoadDefaultColorMap() {
 void HandleFigure::SetupDefaults() {
   SetStringDefault("renderer","painters");
   SetStringDefault("type","figure");
-  SetThreeVectorDefault("color",0.6,0.6,0.6);
+  SetThreeVectorDefault("color",-1,0,0);
   SetStringDefault("nextplot","replace");
   // Set a default colormap to hsv(64) - this matches
   LoadDefaultColorMap();
@@ -156,8 +156,9 @@ void HandleFigure::PaintMe(RenderEngine &gc) {
   try {
     //    qDebug("size = %d %d",m_width,m_height);
     // draw the children...
-    //     HPColor *color = (HPColor*) LookupProperty("color");
-    //     gc.clear(color->Data());
+    HPColor *color = (HPColor*) LookupProperty("color");
+    if (color->Data()[0] >= 0)
+      gc.clear(color->Data());
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
     for (int i=0;i<handles.size();i++) {

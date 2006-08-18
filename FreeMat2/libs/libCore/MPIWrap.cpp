@@ -162,6 +162,9 @@ int getArrayByteFootPrint(Array &a, MPI_Comm comm) {
     return(overhead+getCanonicalSize(a.getLength()*2,MPI_DOUBLE,comm));
   case FM_STRING:
     return(overhead+getCanonicalSize(a.getLength(),MPI_CHAR,comm));
+  case FM_INT64:
+  case FM_UINT64:
+    throw Exception("MPI support for 64 bit values is still needed!");
   }
 }
 
@@ -228,6 +231,9 @@ int encodeDataClassAsInteger(Class dataClass) {
     return 1036;
   case FM_STRING:
     return 1037;
+  case FM_INT64:
+  case FM_UINT64:
+    throw Exception("MPI support for 64 bit values is still needed!");
   }
 }
   
@@ -306,6 +312,9 @@ void packArrayMPI(Array &a, void *buffer, int bufsize, int *packpos, MPI_Comm co
     case FM_STRING:
       MPI_Pack((void *) a.getDataPointer(),a.getLength(),MPI_CHAR,buffer,bufsize,packpos,comm);
       break;
+    case FM_INT64:
+    case FM_UINT64:
+      throw Exception("MPI support for 64 bit values is still needed!");
     }
   }
 }
@@ -399,6 +408,9 @@ Array unpackArrayMPI(void *buffer, int bufsize, int *packpos, MPI_Comm comm) {
     cp = Malloc(sizeof(char)*outDim.getElementCount());
     MPI_Unpack(buffer,bufsize,packpos,cp,outDim.getElementCount(),MPI_CHAR,comm);
     break;
+  case FM_INT64:
+  case FM_UINT64:
+    throw Exception("MPI support for 64 bit values is still needed!");
   }
   return Array(dataClass,outDim,cp);
 }
@@ -786,6 +798,9 @@ ArrayVector MPIAllReduce(int nargout, const ArrayVector& args) {
   case FM_DCOMPLEX:
     MPI_Allreduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),2*source.getLength(),MPI_DOUBLE,mpiop,comm);
     break;
+  case FM_INT64:
+  case FM_UINT64:
+    throw Exception("MPI support for 64 bit values is still needed!");
   default:
     throw Exception("unsupported array type in argument to allreduce - must be a numerical type");
   }
@@ -887,6 +902,9 @@ ArrayVector MPIReduce(int nargout, const ArrayVector& args) {
   case FM_DCOMPLEX:
     MPI_Reduce((void*)source.getDataPointer(),dest.getReadWriteDataPointer(),2*source.getLength(),MPI_DOUBLE,mpiop,root,comm);
     break;
+  case FM_INT64:
+  case FM_UINT64:
+    throw Exception("MPI support for 64 bit values is still needed!");
   default:
     throw Exception("unsupported array type in argument to reduce - must be a numerical type");
   }

@@ -82,9 +82,11 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("string",StringFunction,1,1,"x");
   context->addFunction("uint16",UInt16Function,1,1,"x");
   context->addFunction("uint32",UInt32Function,1,1,"x");
+  context->addFunction("uint64",UInt64Function,1,1,"x");
   context->addFunction("int8",Int8Function,1,1,"x");
   context->addFunction("int16",Int16Function,1,1,"x");
   context->addFunction("int32",Int32Function,1,1,"x");  
+  context->addFunction("int64",Int64Function,1,1,"x");  
   context->addFunction("logical",LogicalFunction,1,1,"x");  
   context->addFunction("svd",SVDFunction,2,3,"x","flag");
   context->addFunction("diag",DiagFunction,2,1,"x","n");
@@ -199,7 +201,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep");
   context->addFunction("inv",InvFunction,1,1,"A");
   context->addFunction("rcond",RcondFunction,1,1,"A");
-  context->addFunction("matload",MatLoadFunction,-1,0);
+  context->addSpecialFunction("matload",MatLoadFunction,-1,0);
   InitializeFileSubsystem();
 #ifdef USE_MPI
   LoadMPIFunctions(context);

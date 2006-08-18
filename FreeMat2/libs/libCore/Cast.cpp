@@ -241,6 +241,60 @@ ArrayVector UInt32Function(int nargout, const ArrayVector& arg) {
 }
 
 //!
+//@Module UINT64 Convert to Unsigned 64-bit Integer
+//@@Section TYPECAST
+//@@Usage
+//Converts the argument to an unsigned 64-bit Integer.  The syntax
+//for its use is
+//@[
+//   y = uint64(x)
+//@]
+//where @|x| is an @|n|-dimensional numerical array.  Conversion
+//follows the general C rules (e.g., if @|x| is outside the normal
+//range for an unsigned 64-bit integer of @|[0,2^64-1]|, the least 
+//significant 64 bits of @|x| are used after conversion to an integer).  
+//Note that both @|NaN| and @|Inf| both map to 0.
+//@@Example
+//The following piece of code demonstrates several uses of @|uint64|.
+//@<
+//uint64(200)
+//@>
+//In the next example, an integer outside the range  of the type is passed in.  The result is the 64 least significant bits of the argument.
+//@<
+//uint64(40e9)
+//@>
+//In the next example, a negative integer is passed in.  The result is the 64 least significant bits of the argument, \emph{after} taking the 2's complement.
+//@<
+//uint64(-100)
+//@>
+//In the next example, a positive double precision argument is passed in.  The result is the unsigned integer that is closest to the argument.
+//@<
+//uint64(pi)
+//@>
+//In the next example, a complex argument is passed in.  The result is the unsigned integer that is closest to the real part of the argument.
+//@<
+//uint64(5+2*i)
+//@>
+//In the next example, a string argument is passed in.  The string argument is converted into an integer array corresponding to the ASCII values of each character.
+//@<
+//uint64('helo')
+//@>
+//In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
+//@<1
+//uint64({4})
+//@>
+//!
+ArrayVector UInt64Function(int nargout, const ArrayVector& arg) {
+  if (arg.size() != 1) 
+    throw Exception("type conversion function requires one argument");
+  Array A(arg[0]);
+  A.promoteType(FM_UINT64);
+  ArrayVector retval;
+  retval.push_back(A);
+  return retval;
+}
+
+//!
 //@Module INT8 Convert to Signed 8-bit Integer
 //@@Section TYPECAST
 //@@Usage
@@ -388,6 +442,57 @@ ArrayVector Int32Function(int nargout, const ArrayVector& arg) {
     throw Exception("type conversion function requires one argument");
   Array A(arg[0]);
   A.promoteType(FM_INT32);
+  ArrayVector retval;
+  retval.push_back(A);
+  return retval;
+}
+
+//!
+//@Module INT64 Convert to Signed 64-bit Integer
+//@@Section TYPECAST
+//@@Usage
+//Converts the argument to an signed 64-bit Integer.  The syntax
+//for its use is
+//@[
+//   y = int64(x)
+//@]
+//where @|x| is an @|n|-dimensional numerical array.  Conversion
+//follows the general C rules (e.g., if @|x| is outside the normal
+//range for a signed 64-bit integer of @|[-2^63,2^63-1]|, the least significant
+//64 bits of @|x| are used after conversion to a signed integer).  Note that
+//both @|NaN| and @|Inf| both map to 0.
+//@@Example
+//The following piece of code demonstrates several uses of @|int64|.  First, the routine uses
+//@<
+//int64(100)
+//int64(-100)
+//@>
+//In the next example, an integer outside the range  of the type is passed in.  The result is the 64 least significant bits of the argument.
+//@<
+//int64(40e9)
+//@>
+//In the next example, a positive double precision argument is passed in.  The result is the signed integer that is closest to the argument.
+//@<
+//int64(pi)
+//@>
+//In the next example, a complex argument is passed in.  The result is the signed integer that is closest to the real part of the argument.
+//@<
+//int64(5+2*i)
+//@>
+//In the next example, a string argument is passed in.  The string argument is converted into an integer array corresponding to the ASCII values of each character.
+//@<
+//int64('helo')
+//@>
+//In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
+//@<1
+//int64({4})
+//@>
+//!
+ArrayVector Int64Function(int nargout, const ArrayVector& arg) {
+  if (arg.size() != 1) 
+    throw Exception("type conversion function requires one argument");
+  Array A(arg[0]);
+  A.promoteType(FM_INT64);
   ArrayVector retval;
   retval.push_back(A);
   return retval;
@@ -675,6 +780,12 @@ ArrayVector TypeOfFunction(int nargout, const ArrayVector& arg) {
     break;
   case FM_INT32:
     retval = Array::stringConstructor(std::string("int32"));
+    break;
+  case FM_UINT64:
+    retval = Array::stringConstructor(std::string("uint64"));
+    break;
+  case FM_INT64:
+    retval = Array::stringConstructor(std::string("int64"));
     break;
   case FM_FLOAT:
     retval = Array::stringConstructor(std::string("float"));

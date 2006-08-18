@@ -38,6 +38,7 @@ ArrayVector IFunction(int, const ArrayVector& arg);
 ArrayVector InfFunction(int, const ArrayVector& arg);
 ArrayVector Int16Function(int, const ArrayVector& arg);
 ArrayVector Int32Function(int, const ArrayVector& arg);
+ArrayVector Int64Function(int, const ArrayVector& arg);
 ArrayVector Int8Function(int, const ArrayVector& arg);
 ArrayVector LogicalFunction(int, const ArrayVector& arg);
 ArrayVector LogFunction(int, const ArrayVector& arg);
@@ -50,6 +51,7 @@ ArrayVector ArcsinFunction(int, const ArrayVector& arg);
 ArrayVector StrCmpFunction(int, const ArrayVector& arg);
 ArrayVector UInt16Function(int, const ArrayVector& arg);
 ArrayVector UInt32Function(int, const ArrayVector& arg);
+ArrayVector UInt64Function(int, const ArrayVector& arg);
 ArrayVector UInt8Function(int, const ArrayVector& arg);
 ArrayVector StringFunction(int, const ArrayVector& arg);
 ArrayVector ZerosFunction(int, const ArrayVector& arg);
@@ -196,5 +198,5 @@ ArrayVector RcondFunction(int nargout, const ArrayVector& arg);
 void Tokenize(const std::string& str, std::vector<std::string>& tokens,
 	      const std::string& delimiters = " \n");
 bool inBundleMode();
-ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg);
+ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 #endif

@@ -431,6 +431,12 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
       case FM_INT32:
 	sprintf(buffer,"% 10s","int32");
 	break;
+      case FM_UINT64:
+	sprintf(buffer,"% 10s","uint64");
+	break;
+      case FM_INT64:
+	sprintf(buffer,"% 10s","int64");
+	break;
       case FM_FLOAT:
 	sprintf(buffer,"% 10s","float");
 	break;
@@ -860,6 +866,8 @@ ArrayVector IsNaNFunction(int nargout, const ArrayVector& arg) {
   case FM_INT16:
   case FM_UINT32:
   case FM_INT32:
+  case FM_UINT64:
+  case FM_INT64:
     break;
   case FM_FLOAT: {
     const float *dp = (const float *)tmp.getDataPointer();
@@ -931,6 +939,8 @@ ArrayVector IsInfFunction(int nargout, const ArrayVector& arg) {
   case FM_INT16:
   case FM_UINT32:
   case FM_INT32:
+  case FM_UINT64:
+  case FM_INT64:
     break;
   case FM_FLOAT: {
     const float *dp = (const float *)tmp.getDataPointer();
@@ -1252,6 +1262,10 @@ ArrayVector RCVFindModeFull(Array x) {
     return RCVFindModeFullReal<uint32>(x);
   case FM_INT32:
     return RCVFindModeFullReal<int32>(x);
+  case FM_UINT64:
+    return RCVFindModeFullReal<uint64>(x);
+  case FM_INT64:
+    return RCVFindModeFullReal<int64>(x);
   case FM_FLOAT:
     return RCVFindModeFullReal<float>(x);
   case FM_DOUBLE:

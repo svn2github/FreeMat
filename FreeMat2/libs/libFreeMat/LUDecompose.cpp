@@ -426,7 +426,7 @@ ArrayVector LUDecompose(int nargout, Array A) {
   int ncols = A.getDimensionLength(1);
   int p = max(nrows,ncols);
   int q = min(nrows,ncols);
-  if (A.getDataClass() == FM_INT32)
+  if (A.isIntegerClass())
     A.promoteType(FM_DOUBLE);
   ArrayVector retval;
   switch (A.getDataClass()) {

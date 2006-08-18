@@ -66,11 +66,19 @@ bool IsInfinite(double t) {
 
 }
 
-bool IsNaN(int t) {
+bool IsNaN(int32 t) {
   return true;
 }
 
-bool IsNaN(unsigned int t) {
+bool IsNaN(int64 t) {
+  return true;
+}
+
+bool IsNaN(uint32 t) {
+  return true;
+}
+
+bool IsNaN(uint64 t) {
   return true;
 }
 

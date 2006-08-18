@@ -52,6 +52,8 @@ class FunctionDef;
  *   - FM_INT16 - signed, 16-bit integers
  *   - FM_UINT32 - unsigned, 32-bit integers
  *   - FM_INT32 - signed, 32-bit integers
+ *   - FM_UINT64 - unsigned, 64-bit integers
+ *   - FM_INT64 - signed, 64-bit integers
  *   - FM_FLOAT - 32-bit floating point
  *   - FM_DOUBLE - 64-bit floating point
  *   - FM_COMPLEX - 32-bit complex floating point
@@ -348,6 +350,10 @@ public:
    * Returns TRUE if we are a string.
    */
   const bool isString() const;
+  /**
+   * Returns TRUE if we are an integer class.
+   */
+  const bool isIntegerClass() const;
   bool isColumnVector() const;
   bool isRowVector() const;
   /**
@@ -432,6 +438,16 @@ public:
    * value.
    */
   static Array int32Constructor(int32 aval);
+  /**
+   * Scalar constructor - Construct an FM_UINT64 object with a scalar
+   * value.
+   */
+  static Array uint64Constructor(uint64 aval);
+  /**
+   * Scalar constructor - Construct an FM_INT64 object with a scalar
+   * value.
+   */
+  static Array int64Constructor(int64 aval);
   /**
    * Scalar constructor - Construct an FM_FLOAT object with a scalar
    * value.

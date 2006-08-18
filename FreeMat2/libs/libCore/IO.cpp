@@ -163,6 +163,18 @@ void processPrecisionString(char *prec, Class &dataClass, int& elementSize, int&
     swapSize = 4;
     return;
   }
+  if (MATCH("uint64")) {
+    dataClass = FM_UINT64;
+    elementSize = 8;
+    swapSize = 8;
+    return;
+  }
+  if (MATCH("int64") || MATCH("integer*8")) {
+    dataClass = FM_INT64;
+    elementSize = 8;
+    swapSize = 8;
+    return;
+  }
   if (MATCH("single") || MATCH("float32") || MATCH("float") || MATCH("real*4")) {
     dataClass = FM_FLOAT;
     elementSize = 4;

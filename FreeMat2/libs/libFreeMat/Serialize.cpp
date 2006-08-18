@@ -47,13 +47,6 @@ void Serialize::handshakeServer() {
     hand = 'S';
     s->writeBytes(&hand,sizeof(char));
     unsigned short t;
-    //       s->readBytes(&t,sizeof(short));
-    //       if (t == 1)
-    // 	endianSwap = false;
-    //       else if (t == 256)
-    // 	endianSwap = true;
-    //       else
-    // 	throw Exception("Handshaking error! Unable to resolve byte ordering between server/client");
     t = 1;
     s->writeBytes(&t,sizeof(short));
   } catch (Exception& e) {
@@ -301,8 +294,8 @@ double Serialize::getDouble() {
 Class Serialize::getDataClass(bool& sparseflag) {
   checkSignature('a',1);
   char a = getByte();
-  sparseflag = (a & 16) > 0;
-  a = a & 15;
+  sparseflag = (a & 32) > 0;
+  a = a & 31;
   switch (a) {
   case 1:
     return FM_CELL_ARRAY;
@@ -322,6 +315,10 @@ Class Serialize::getDataClass(bool& sparseflag) {
     return FM_UINT32;
   case 9:
     return FM_INT32;
+  case 15:
+    return FM_UINT64;
+  case 16:
+    return FM_INT64;
   case 10:
     return FM_FLOAT;
   case 11:
@@ -339,7 +336,7 @@ Class Serialize::getDataClass(bool& sparseflag) {
 
 void Serialize::putDataClass(Class cls, bool issparse) {
   char sparseval;
-  sparseval = issparse ? 16 : 0;
+  sparseval = issparse ? 32 : 0;
   sendSignature('a',1);
   switch (cls) {
   case FM_CELL_ARRAY:
@@ -368,6 +365,12 @@ void Serialize::putDataClass(Class cls, bool issparse) {
     return;
   case FM_INT32:
     putByte(9 | sparseval);
+    return;
+  case FM_UINT64:
+    putByte(15);
+    return;
+  case FM_INT64:
+    putByte(16 | sparseval);
     return;
   case FM_FLOAT:
     putByte(10 | sparseval);

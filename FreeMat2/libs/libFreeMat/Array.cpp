@@ -190,6 +190,10 @@ void* Array::allocateArray(Class type, uint32 length, const stringVector& names)
     return Malloc(sizeof(uint32)*length);
   case FM_INT32:
     return Malloc(sizeof(int32)*length);
+  case FM_UINT64:
+    return Malloc(sizeof(uint64)*length);
+  case FM_INT64:
+    return Malloc(sizeof(int64)*length);
   case FM_FLOAT:
     return Malloc(sizeof(float)*length);
   case FM_DOUBLE:
@@ -358,6 +362,32 @@ void Array::toOrdinalType()  {
 	lp[i] = ndx;
       }
       dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+    }
+    break;
+  case FM_INT64:
+    {
+      const int64 *rp = (const int64 *) dp->getData();
+      int len = getLength();
+      indexType ndx;
+      // Allocate space to hold the new type
+      indexType *lp = (indexType *) Malloc(len*sizeof(indexType));
+      for (int i=0;i<len;i++) {
+	ndx = rp[i];
+	if (rp[i] <= 0)
+	  throw Exception("Zero or negative index encountered.");
+	lp[i] = ndx;
+      }
+      dp = dp->putData(FM_UINT64,dp->getDimensions(),lp);
+    }
+    break;
+  case FM_UINT64:
+    {
+      const uint64 *rp = (const uint64 *) dp->getData();
+      int len = getLength();
+      // Allocate space to hold the new type
+      for (int i=0;i<len;i++) 
+	if (rp[i] <= 0)
+	  throw Exception("Zero or negative index encountered.");
     }
     break;
   case FM_INT32:
@@ -897,6 +927,10 @@ int Array::getElementSize() const {
     return sizeof(uint32);
   case FM_INT32:
     return sizeof(int32);
+  case FM_UINT64:
+    return sizeof(uint64);
+  case FM_INT64:
+    return sizeof(int64);
   case FM_FLOAT:
     return sizeof(float);
   case FM_DOUBLE:
@@ -959,9 +993,11 @@ const bool Array::isSymmetric() const {
     caseReal(FM_INT8,int8);
     caseReal(FM_INT16,int16);
     caseReal(FM_INT32,int32);
+    caseReal(FM_INT64,int32);
     caseReal(FM_UINT8,uint8);
     caseReal(FM_UINT16,uint16);
     caseReal(FM_UINT32,uint32);
+    caseReal(FM_UINT64,uint32);
     caseReal(FM_FLOAT,float);
     caseReal(FM_DOUBLE,double);
     caseComplex(FM_COMPLEX,float);
@@ -990,7 +1026,7 @@ const bool Array::isSymmetric() const {
    }
 
 const bool Array::isPositive() const {
-  if (dp->dataClass == FM_UINT8 || dp->dataClass == FM_UINT16 || dp->dataClass == FM_UINT32)
+  if (dp->dataClass == FM_UINT8 || dp->dataClass == FM_UINT16 || dp->dataClass == FM_UINT32 || dp->dataClass == FM_UINT64)
     return true;
   if (dp->dataClass == FM_COMPLEX || dp->dataClass == FM_DCOMPLEX)
     return false;
@@ -1005,6 +1041,7 @@ const bool Array::isPositive() const {
     caseMacro(FM_INT8,int8);
     caseMacro(FM_INT16,int16);
     caseMacro(FM_INT32,int32);
+    caseMacro(FM_INT64,int64);
   }
   return false;
 }
@@ -1038,6 +1075,8 @@ const bool Array::isRealAllZeros() const  {
     caseMacro(FM_INT16,int16,qp[i]==0);
     caseMacro(FM_UINT32,uint32,qp[i]==0);
     caseMacro(FM_INT32,int32,qp[i]==0);
+    caseMacro(FM_UINT64,uint64,qp[i]==0);
+    caseMacro(FM_INT64,int64,qp[i]==0);
     caseMacro(FM_FLOAT,float,qp[i]==0.0f);
     caseMacro(FM_DOUBLE,double,qp[i]==0.0);
     caseMacro(FM_COMPLEX,float,qp[i<<1]==0.0f);
@@ -1098,6 +1137,8 @@ const bool Array::testCaseMatchScalar(Array x) const {
     caseMacroReal(FM_INT16,int16);
     caseMacroReal(FM_UINT32,uint32);
     caseMacroReal(FM_INT32,int32);
+    caseMacroReal(FM_UINT64,uint64);
+    caseMacroReal(FM_INT64,int64);
     caseMacroReal(FM_FLOAT,float);
     caseMacroReal(FM_DOUBLE,double);
     caseMacroComplex(FM_COMPLEX,float);
@@ -1181,6 +1222,10 @@ const bool Array::isReferenceType() const {
  */
 const bool Array::isComplex() const {
   return (dp->dataClass == FM_DCOMPLEX || dp->dataClass == FM_COMPLEX);
+}
+
+const bool Array::isIntegerClass() const {
+  return (dp->dataClass < FM_FLOAT);
 }
 
 /**
@@ -1270,6 +1315,7 @@ void Array::promoteType(Class dstClass, stringVector fNames) {
   int elSize;
   void *dstPtr;
 
+  if (!dp) return;
   if (isEmpty()) {
     dp = dp->putData(dstClass,dp->dimensions,NULL,false,fNames);
     return;
@@ -1369,6 +1415,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1387,6 +1435,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1405,6 +1455,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1423,6 +1475,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1441,6 +1495,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1459,6 +1515,8 @@ break;
 	caseMacro(FM_UINT16,uint16,qp[i] = (uint16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1477,6 +1535,8 @@ break;
 	caseMacro(FM_UINT16,uint16,qp[i] = (uint16) sp[i]);
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1495,6 +1555,48 @@ break;
 	caseMacro(FM_UINT16,uint16,qp[i] = (uint16) sp[i]);
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
+	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
+	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
+	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
+	caseMacro(FM_DCOMPLEX,double,qp[i<<1] = (double) sp[i]);	
+      }
+    }
+    break;
+  case FM_UINT64:
+    {
+      const uint64* sp = (const uint64 *) dp->getData();
+      switch (dstClass) {
+	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
+	caseMacro(FM_UINT8,uint8,qp[i] = (uint8) sp[i]);
+	caseMacro(FM_INT8,int8,qp[i] = (int8) sp[i]);
+	caseMacro(FM_UINT16,uint16,qp[i] = (uint16) sp[i]);
+	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
+	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
+	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
+	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
+	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
+	caseMacro(FM_DCOMPLEX,double,qp[i<<1] = (double) sp[i]);	
+      }
+    }
+    break;
+  case FM_INT64:
+    {
+      const int64* sp = (const int64 *) dp->getData();
+      switch (dstClass) {
+	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
+	caseMacro(FM_UINT8,uint8,qp[i] = (uint8) sp[i]);
+	caseMacro(FM_INT8,int8,qp[i] = (int8) sp[i]);
+	caseMacro(FM_UINT16,uint16,qp[i] = (uint16) sp[i]);
+	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
+	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
+	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
@@ -1514,6 +1616,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
 	caseMacro(FM_DCOMPLEX,double,qp[i<<1] = (double) sp[i]);	
@@ -1532,6 +1636,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_COMPLEX,float,qp[i<<1] = (float) sp[i]);
 	caseMacro(FM_DCOMPLEX,double,qp[i<<1] = (double) sp[i]);	
@@ -1550,6 +1656,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i<<1]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i<<1]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i<<1]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i<<1]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i<<1]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i<<1]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i<<1]);
 	caseMacro(FM_DCOMPLEX,double,{qp[i<<1]=(double)sp[i<<1];qp[(i<<1)+1]=(double)sp[(i<<1)+1];});
@@ -1568,6 +1676,8 @@ break;
 	caseMacro(FM_INT16,int16,qp[i] = (int16) sp[i<<1]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i<<1]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i<<1]);
+	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i<<1]);
+	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i<<1]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i<<1]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i<<1]);
 	caseMacro(FM_COMPLEX,float,{qp[i<<1]=(float)sp[i<<1];qp[(i<<1)+1]=(float)sp[(i<<1)+1];});
@@ -1679,6 +1789,22 @@ Array Array::int32Constructor(int32 aval) {
   int32 *data = (int32 *) allocateArray(FM_INT32,1);
   *data = aval;
   return Array(FM_INT32,dim,data);
+}
+
+Array Array::uint64Constructor(uint64 aval) {
+  Dimensions dim;
+  dim.makeScalar();
+  uint64 *data = (uint64 *) allocateArray(FM_UINT64,1);
+  *data = aval;
+  return Array(FM_UINT64,dim,data);
+}
+
+Array Array::int64Constructor(int64 aval) {
+  Dimensions dim;
+  dim.makeScalar();
+  int64 *data = (int64 *) allocateArray(FM_INT64,1);
+  *data = aval;
+  return Array(FM_INT64,dim,data);
 }
 
 Array Array::floatConstructor(float aval) {
@@ -2585,6 +2711,16 @@ Array Array::getNDimSubset(ArrayVector& index)  {
 					       (uint32*) qp,outDimsInt,srcDimsInt,
 					       indx, L);
       break;
+    case FM_INT64: 
+      getNDimSubsetNumericDispatchReal<int64>(colonIndex,(const int64*) getDataPointer(),
+					      (int64*) qp,outDimsInt,srcDimsInt,
+					      indx, L);
+      break;
+    case FM_UINT64: 
+      getNDimSubsetNumericDispatchReal<uint64>(colonIndex,(const uint64*) getDataPointer(),
+					       (uint64*) qp,outDimsInt,srcDimsInt,
+					       indx, L);
+      break;
     case FM_STRING: 
       getNDimSubsetNumericDispatchReal<char>(colonIndex,(const char*) getDataPointer(),
 					     (char*) qp,outDimsInt,srcDimsInt,
@@ -3059,6 +3195,18 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
     case FM_UINT32: 
       setNDimSubsetNumericDispatchReal<uint32>(colonIndex,(uint32*) qp,
 					       (const uint32*) data.getDataPointer(),
+					       outDimsInt,srcDimsInt,
+					       indx, L,advance);
+      break;
+    case FM_INT64: 
+      setNDimSubsetNumericDispatchReal<int64>(colonIndex,(int64*) qp,
+					      (const int64*) data.getDataPointer(),
+					      outDimsInt,srcDimsInt,
+					      indx, L,advance);
+      break;
+    case FM_UINT64: 
+      setNDimSubsetNumericDispatchReal<uint64>(colonIndex,(uint64*) qp,
+					       (const uint64*) data.getDataPointer(),
 					       outDimsInt,srcDimsInt,
 					       indx, L,advance);
       break;
@@ -3657,6 +3805,28 @@ void Array::summarizeCellEntry() const {
 	m_eval->outputMessage(" int32]");
       }
       break;
+    case FM_UINT64:
+      if (dp->dimensions.isScalar()) {
+	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint64*) dp->getData()));
+	m_eval->outputMessage(msgBuffer);
+      } else {
+	m_eval->outputMessage("[");
+	dp->dimensions.printMe(m_eval);
+	m_eval->outputMessage(" uint64]");
+      }
+      break;
+    case FM_INT64:
+      if (!isSparse() && dp->dimensions.isScalar()) {
+	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int64*) dp->getData()));
+	m_eval->outputMessage(msgBuffer);
+      } else {
+	m_eval->outputMessage("[");
+	dp->dimensions.printMe(m_eval);
+	if (isSparse())
+	  m_eval->outputMessage(" sparse");
+	m_eval->outputMessage(" int64]");
+      }
+      break;
     case FM_DOUBLE:
       if (!isSparse() && dp->dimensions.isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%lf]",*((const double*) dp->getData()));
@@ -3796,6 +3966,10 @@ int32 Array::nnz() {
     return DoCountNNZReal<int32>(dp->getData(),getLength());
   case FM_UINT32:
     return DoCountNNZReal<uint32>(dp->getData(),getLength());
+  case FM_INT64:
+    return DoCountNNZReal<int64>(dp->getData(),getLength());
+  case FM_UINT64:
+    return DoCountNNZReal<uint64>(dp->getData(),getLength());
   case FM_FLOAT:
     return DoCountNNZReal<float>(dp->getData(),getLength());
   case FM_DOUBLE:
@@ -3902,6 +4076,9 @@ uint32 TypeSize(Class cls) {
   case FM_UINT32:
   case FM_INT32:
     return sizeof(int32);
+  case FM_UINT64:
+  case FM_INT64:
+    return sizeof(int64);
   case FM_FLOAT:
     return sizeof(float);
   case FM_DOUBLE:
@@ -3962,6 +4139,24 @@ void emitElement(char *msgBuffer, const void *dp, int num, Class dcls) {
     const uint32 *ap;
     ap = (const uint32*) dp;
     snprintf(msgBuffer,MSGBUFLEN,"%12u",ap[num]);
+    m_eval->outputMessage(msgBuffer);
+    snprintf(msgBuffer,MSGBUFLEN,"  ");
+    m_eval->outputMessage(msgBuffer);
+    break;
+  }
+  case FM_INT64: {
+    const int64 *ap;
+    ap = (const int64*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%26d",ap[num]);
+    m_eval->outputMessage(msgBuffer);
+    snprintf(msgBuffer,MSGBUFLEN,"  ");
+    m_eval->outputMessage(msgBuffer);
+    break;
+  }
+  case FM_UINT64: {
+    const uint64 *ap;
+    ap = (const uint64*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%24u",ap[num]);
     m_eval->outputMessage(msgBuffer);
     snprintf(msgBuffer,MSGBUFLEN,"  ");
     m_eval->outputMessage(msgBuffer);

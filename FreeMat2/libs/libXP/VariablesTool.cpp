@@ -83,6 +83,12 @@ void VariablesTool::refresh() {
       case FM_INT32:
 	type = "int32";
 	break;
+      case FM_UINT64:
+	type = "uint64";
+	break;
+      case FM_INT64:
+	type = "int64";
+	break;
       case FM_FLOAT:
 	type = "float";
 	break;

@@ -47,6 +47,8 @@ typedef enum {
   FM_INT16,
   FM_UINT32,
   FM_INT32,
+  FM_UINT64,
+  FM_INT64,
   FM_FLOAT,
   FM_DOUBLE,
   FM_COMPLEX,

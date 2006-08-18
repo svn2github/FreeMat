@@ -2560,6 +2560,18 @@ Array Conv2FunctionDispatch(Array X,Array Y,int Cm,int Cn,
 			 Cm, Cn, Cm_offset, Cn_offset);
     return Array(FM_INT32,Dimensions(Cm,Cn),cp);
   }
+  case FM_INT64: {
+    int64 *cp = (int64*) Array::allocateArray(FM_INT64,Cm*Cn);
+    Conv2MainReal<int64>(cp,
+			 (const int64*) X.getDataPointer(),
+			 (const int64*) Y.getDataPointer(),
+			 X.getDimensionLength(0),
+			 X.getDimensionLength(1),
+			 Y.getDimensionLength(0),
+			 Y.getDimensionLength(1),
+			 Cm, Cn, Cm_offset, Cn_offset);
+    return Array(FM_INT64,Dimensions(Cm,Cn),cp);
+  }
   case FM_COMPLEX: {
     float *cp = (float*) Array::allocateArray(FM_COMPLEX,Cm*Cn);
     Conv2MainComplex<float>(cp,

@@ -80,6 +80,12 @@ ArrayVector HandleEmpty(Array arg) {
   case FM_INT32:
     retArray.push_back(Array::int32Constructor(0));
     break;
+  case FM_UINT64:
+    retArray.push_back(Array::uint64Constructor(0));
+    break;
+  case FM_INT64:
+    retArray.push_back(Array::int64Constructor(0));
+    break;
   case FM_FLOAT:
     retArray.push_back(Array::floatConstructor(0));
     break;
@@ -678,6 +684,24 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
     retval = Array(FM_INT32,outDim,ptr);
     break;
   }
+  case FM_UINT64: {
+    char* ptr = (char *) Malloc(sizeof(uint64)*outDim.getElementCount());
+    TRealLess<uint64>((const uint64 *) x.getDataPointer(),
+		      (const uint64 *) y.getDataPointer(),
+		      (uint64 *) ptr, outDim.getElementCount(),
+		      xStride, yStride);
+    retval = Array(FM_UINT64,outDim,ptr);
+    break;
+  }
+  case FM_INT64: {
+    char* ptr = (char *) Malloc(sizeof(int64)*outDim.getElementCount());
+    TRealLess<int64>((const int64 *) x.getDataPointer(),
+		     (const int64 *) y.getDataPointer(),
+		     (int64 *) ptr, outDim.getElementCount(),
+		     xStride, yStride);
+    retval = Array(FM_INT64,outDim,ptr);
+    break;
+  }
   case FM_FLOAT: {
     char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
     TRealLess<float>((const float *) x.getDataPointer(),
@@ -912,6 +936,20 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
     retval = Array(FM_INT32,outDim,ptr);
     break;
   }
+  case FM_UINT64: {
+    char* ptr = (char *) Malloc(sizeof(uint64)*outDim.getElementCount());
+    TIntMin<uint64>((const uint64 *) input.getDataPointer(),
+		    (uint64 *) ptr, iptr, planecount, planesize, linesize);
+    retval = Array(FM_UINT64,outDim,ptr);
+    break;
+  }
+  case FM_INT64: {
+    char* ptr = (char *) Malloc(sizeof(int64)*outDim.getElementCount());
+    TIntMin<int64>((const int64 *) input.getDataPointer(),
+		   (int64 *) ptr, iptr, planecount, planesize, linesize);
+    retval = Array(FM_INT64,outDim,ptr);
+    break;
+  }
   case FM_FLOAT: {
     char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
     TRealMin<float>((const float *) input.getDataPointer(),
@@ -1059,6 +1097,24 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
 			(int32 *) ptr, outDim.getElementCount(),
 			xStride, yStride);
     retval = Array(FM_INT32,outDim,ptr);
+    break;
+  }
+  case FM_UINT64: {
+    char* ptr = (char *) Malloc(sizeof(uint64)*outDim.getElementCount());
+    TRealGreater<uint64>((const uint64 *) x.getDataPointer(),
+			 (const uint64 *) y.getDataPointer(),
+			 (uint64 *) ptr, outDim.getElementCount(),
+			 xStride, yStride);
+    retval = Array(FM_UINT64,outDim,ptr);
+    break;
+  }
+  case FM_INT64: {
+    char* ptr = (char *) Malloc(sizeof(int64)*outDim.getElementCount());
+    TRealGreater<int64>((const int64 *) x.getDataPointer(),
+			(const int64 *) y.getDataPointer(),
+			(int64 *) ptr, outDim.getElementCount(),
+			xStride, yStride);
+    retval = Array(FM_INT64,outDim,ptr);
     break;
   }
   case FM_FLOAT: {
@@ -1293,6 +1349,20 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
     retval = Array(FM_INT32,outDim,ptr);
     break;
   }
+  case FM_UINT64: {
+    char* ptr = (char *) Malloc(sizeof(uint64)*outDim.getElementCount());
+    TIntMax<uint64>((const uint64 *) input.getDataPointer(),
+		    (uint64 *) ptr, iptr, planecount, planesize, linesize);
+    retval = Array(FM_UINT64,outDim,ptr);
+    break;
+  }
+  case FM_INT64: {
+    char* ptr = (char *) Malloc(sizeof(int64)*outDim.getElementCount());
+    TIntMax<int64>((const int64 *) input.getDataPointer(),
+		   (int64 *) ptr, iptr, planecount, planesize, linesize);
+    retval = Array(FM_INT64,outDim,ptr);
+    break;
+  }
   case FM_FLOAT: {
     char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
     TRealMax<float>((const float *) input.getDataPointer(),
@@ -1381,6 +1451,8 @@ ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
   case FM_INT16:
   case FM_UINT32:
   case FM_INT32: 
+  case FM_UINT64:
+  case FM_INT64: 
     retval = input;
     break;
   case FM_FLOAT: {
@@ -1464,6 +1536,8 @@ ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
   case FM_INT16:
   case FM_UINT32:
   case FM_INT32: 
+  case FM_UINT64:
+  case FM_INT64: 
     retval = input;
     break;
   case FM_FLOAT: {
@@ -1545,6 +1619,8 @@ ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
   case FM_INT16:
   case FM_UINT32:
   case FM_INT32: 
+  case FM_UINT64:
+  case FM_INT64: 
     retval = input;
     break;
   case FM_FLOAT: {
@@ -2358,6 +2434,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
   case FM_UINT8:
   case FM_UINT16:
   case FM_UINT32:
+  case FM_UINT64:
     retval = tmp;
     break;
   case FM_INT8:
@@ -2388,6 +2465,16 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       for (i=0;i<len;i++)
 	op[i] = abs(sp[i]);
       retval = Array(FM_INT32,tmp.getDimensions(),op);
+    }
+    break;
+  case FM_INT64:
+    {
+      int len = tmp.getLength();
+      int64 *sp = (int64*) tmp.getDataPointer();
+      int64 *op = (int64*) Malloc(sizeof(int64)*len);
+      for (i=0;i<len;i++)
+	op[i] = abs(sp[i]);
+      retval = Array(FM_INT64,tmp.getDimensions(),op);
     }
     break;
   case FM_FLOAT:
@@ -3244,6 +3331,10 @@ ArrayVector UniqueFunctionAux(int nargout, Array input, bool rowmode) {
     return UniqueFunctionRowModeReal<int32>(nargout, input);
   case FM_UINT32:
     return UniqueFunctionRowModeReal<uint32>(nargout, input);
+  case FM_INT64: 
+    return UniqueFunctionRowModeReal<int64>(nargout, input);
+  case FM_UINT64:
+    return UniqueFunctionRowModeReal<uint64>(nargout, input);
   case FM_FLOAT: 
     return UniqueFunctionRowModeReal<float>(nargout, input);
   case FM_DOUBLE:
@@ -3658,6 +3749,24 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
     TRealSort<uint32>((const uint32 *) input.getDataPointer(),
 		      (uint32 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
     retval = Array(FM_UINT32,outDim,ptr);
+    ndxval = Array(FM_INT32,outDim,iptr);
+    break;
+  }
+  case FM_INT64: {
+    char* ptr = (char *) Malloc(sizeof(int64)*outDim.getElementCount());
+    char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+    TRealSort<int64>((const int64 *) input.getDataPointer(),
+		     (int64 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+    retval = Array(FM_INT64,outDim,ptr);
+    ndxval = Array(FM_INT32,outDim,iptr);
+    break;
+  }
+  case FM_UINT64: {
+    char* ptr = (char *) Malloc(sizeof(uint64)*outDim.getElementCount());
+    char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+    TRealSort<uint64>((const uint64 *) input.getDataPointer(),
+		     (uint64 *) ptr, (int32 *) iptr, planecount, planesize, linesize);
+    retval = Array(FM_UINT64,outDim,ptr);
     ndxval = Array(FM_INT32,outDim,iptr);
     break;
   }

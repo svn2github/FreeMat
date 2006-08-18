@@ -204,6 +204,10 @@ Array ClassOneArgFunction(Array x) {
       return Array::stringConstructor("uint32");
     case FM_INT32:
       return Array::stringConstructor("int32");
+    case FM_UINT64:
+      return Array::stringConstructor("uint64");
+    case FM_INT64:
+      return Array::stringConstructor("int64");
     case FM_FLOAT:
       return Array::stringConstructor("float");
     case FM_DOUBLE:

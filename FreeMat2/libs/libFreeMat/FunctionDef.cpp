@@ -589,6 +589,8 @@ Class mapTypeNameToClass(std::string name) {
   if (name == "int16") return FM_INT16;
   if (name == "uint32") return FM_UINT32;
   if (name == "int32") return FM_INT32;
+  if (name == "uint64") return FM_UINT64;
+  if (name == "int64") return FM_INT64;
   if (name == "float") return FM_FLOAT;
   if (name == "complex") return FM_COMPLEX;  
   if (name == "double") return FM_DOUBLE;

@@ -1,5 +1,6 @@
 #include "MatIO.hpp"
 #include "Exception.hpp"
+#include "Print.hpp"
 
 // A class to read/write Matlab MAT files.  Implemented based on the Matlab 7.1
 // version of the file matfile_format.pdf from the Mathworks web site.
@@ -12,7 +13,7 @@ enum MatTypes {
   miINT32 = 5,
   miUINT32 = 6,
   miSINGLE = 7,
-  miDOUBLE = 8,
+  miDOUBLE = 9,
   miINT64 = 12,
   miUINT64 = 13,
   miMATRIX = 14,
@@ -50,7 +51,7 @@ uint8 ByteFour(uint32 x) {
   return ((x & 0xff000000) >> 24);
 }
 
-Array SynthesizeNumeric(MatTypes arrayType, bool complex, 
+Array SynthesizeNumeric(MatTypes arrayType, bool isComplex, 
 			Array dims, Array pr, Array pi) {
   // Depending on the type of arrayType, we may need to adjust
   // the types of the data vectors;
@@ -92,8 +93,21 @@ Array SynthesizeNumeric(MatTypes arrayType, bool complex,
     break;
   case miINT64:
   case miUINT64:
-    throw Exception("64 bit integer variables not currently supported");
+    pr.promoteType(FM_INT64);
+    pi.promoteType(FM_UINT64);
+    break;
   }
+  if (!isComplex) {
+    if (dims.getLength() > maxDims)
+      throw Exception(string("MAT Variable has more dimensions than maxDims (currently set to ") + 
+		      maxDims + ")."); // FIXME - more graceful ways to do this
+    Dimensions dm;
+    for (int i=0;i<dims.getLength();i++)
+      dm[i] = ((const int32*) dims.getDataPointer())[i];
+    pr.reshape(dm);
+    return pr;
+  }
+  return pr;
 }
 
 uint16 MatIO::readUint16() {
@@ -117,6 +131,7 @@ template <class T>
 Array readRawArray(Class cls, uint32 len, FILE *m_fp) {
   T* dp = (T*) Array::allocateArray(cls,len);
   fread(dp,sizeof(T),len,m_fp);
+  fseek(m_fp,(8-(ftell(m_fp)&0x7)) % 8,SEEK_CUR);
   return Array(cls,Dimensions(len,1),dp);
 }
 
@@ -156,8 +171,11 @@ Array MatIO::getAtom() {
     if (dims.getDataClass() != FM_INT32)
       throw Exception("Corrupted MAT file - dimensions array");
     Array name(getAtom());
+    name.promoteType(FM_INT8); // Problems with UNICODE names for variables?
     if (name.getDataClass() != FM_INT8)
       throw Exception("Corrupted MAT file - array name");
+    name.promoteType(FM_STRING);
+    cout << " Found array: " << ArrayToString(name) << "\r\n";
     Array pr(getAtom());
     Array pi;
     if (isComplex)
@@ -224,10 +242,14 @@ MatIO::~MatIO() {
   fclose(m_fp);
 }
 
-ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg) {
+ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) throw Exception("Need filename");
   MatIO m(ArrayToString(arg[0]),MatIO::readMode);
   cout << m.getHeader() << "\r\n";
   cout.flush();
-  return singleArrayVector(m.getAtom());
+  while(1) {
+    Array a(m.getAtom());
+    PrintArrayClassic(a,1000,eval,true);
+  }
+  return ArrayVector();
 }

@@ -144,7 +144,7 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
 //   y = zeros(d1,d2,...,dn,classname)
 //@]
 //where @|classname| is one of 'double', 'single', 'int8', 'uint8',
-//'int16', 'uint16', 'int32', 'uint32', 'float', 'logical'.  
+//'int16', 'uint16', 'int32', 'uint32', 'int64', 'uint64', 'float', 'logical'.  
 //    
 //The second syntax specifies the array dimensions as a vector,
 //where each element in the vector specifies a dimension length:
@@ -217,6 +217,10 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
 	cls = FM_INT32;
       else if (strcmp(cp,"uint32")==0)
 	cls = FM_UINT32;
+      else if (strcmp(cp,"int64")==0)
+	cls = FM_INT64;
+      else if (strcmp(cp,"uint64")==0)
+	cls = FM_UINT64;
       else if (strcmp(cp,"logical")==0)
 	cls = FM_LOGICAL;
       else

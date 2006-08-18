@@ -138,6 +138,20 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
     io->outputMessage(msgBuffer);
     break;
   }
+  case FM_INT64: {
+    const int64 *ap;
+    ap = (const int64*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%*d",format.digits,ap[num]);
+    io->outputMessage(msgBuffer);
+    break;
+  }
+  case FM_UINT64: {
+    const uint64 *ap;
+    ap = (const uint64*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%*u",format.digits,ap[num]);
+    io->outputMessage(msgBuffer);
+    break;
+  }
   case FM_LOGICAL: {
     const logical *ap;
     ap = (const logical*) dp;
@@ -270,6 +284,12 @@ void PrintArrayClassAndSize(Array A, Interpreter* io) {
   case FM_INT32:
     io->outputMessage("  <int32>  ");
     break;
+  case FM_UINT64:
+    io->outputMessage("  <uint64>  ");
+    break;
+  case FM_INT64:
+    io->outputMessage("  <int64>  ");
+    break;
   case FM_FLOAT:
     io->outputMessage("  <float>  ");
     break;
@@ -359,6 +379,10 @@ ArrayFormat ScanFormatArray(const void *data, Class aclass, int count) {
     return ScanFormatArrayInteger<uint32>((const uint32*) data,count);
   case FM_INT32:
     return ScanFormatArrayInteger<int32>((const int32*) data,count);
+  case FM_UINT64:
+    return ScanFormatArrayInteger<uint64>((const uint64*) data,count);
+  case FM_INT64:
+    return ScanFormatArrayInteger<int64>((const int64*) data,count);
   case FM_LOGICAL:
     return ScanFormatArrayInteger<logical>((const logical*) data,count);
   case FM_FLOAT:
@@ -554,6 +578,18 @@ string ArrayToPrintableString(const Array& a) {
   case FM_UINT32: {
     const uint32 *ap;
     ap = (const uint32*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_INT64: {
+    const int64 *ap;
+    ap = (const int64*) dp;
+    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    return string(msgBuffer);
+  }
+  case FM_UINT64: {
+    const uint64 *ap;
+    ap = (const uint64*) dp;
     snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
     return string(msgBuffer);
   }

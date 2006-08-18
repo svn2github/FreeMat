@@ -1,3 +1,34 @@
+64 bit - 
+	Analyze.cpp - done
+	Cast.cpp - done
+	Constructors.cpp - done
+	Inspect.cpp - done
+	IO.cpp - done
+	MatIO.cpp - done
+	Misc.cpp - done
+	MPIWrap.cpp - done
+	Random.cpp - done
+	Array.cpp - done
+	Class.cpp - done
+	FunctionDef.cpp - done
+	LUDecompose.cpp - done
+	Math.cpp
+	Print.cpp - done
+	Serialize.cpp
+	Sparse.cpp
+	HandleCommands.cpp
+	HandleProperty.cpp
+	MexInterface.cpp
+	mxArray.cpp
+	VariablesTool.cpp
+
+Still To Do (possibly for 2.1 release):
+
+1.  Packaging issues - Need to remember where I left this.
+2.  libMatIO replacement
+3.  Debugger/Editor integration
+4.  GUI documentation
+
 Threading issues...
 A.  GUI calls into main thread
 B.  Prompt and main routine... how does this work? - seems to work ok

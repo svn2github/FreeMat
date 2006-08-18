@@ -19,10 +19,14 @@
 #ifndef __IEEEFP_HPP__
 #define __IEEEFP_HPP__
 
+#include "Types.hpp"
+
 bool IsInfinite(float t);
 bool IsInfinite(double t);
-bool IsNaN(int t);
-bool IsNaN(unsigned int t);
+bool IsNaN(int32 t);
+bool IsNaN(int64 t);
+bool IsNaN(uint32 t);
+bool IsNaN(uint64 t);
 bool IsNaN(double t);
 bool IsFinite(float t);
 bool IsFinite(double t);

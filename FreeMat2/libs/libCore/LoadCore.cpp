@@ -199,6 +199,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep");
   context->addFunction("inv",InvFunction,1,1,"A");
   context->addFunction("rcond",RcondFunction,1,1,"A");
+  context->addFunction("matload",MatLoadFunction,-1,0);
   InitializeFileSubsystem();
 #ifdef USE_MPI
   LoadMPIFunctions(context);

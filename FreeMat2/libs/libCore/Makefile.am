@@ -11,7 +11,8 @@ helpwidget.hpp \
 LoadCore.hpp \
 MPIWrap.hpp \
 RanLib.hpp \
-Utils.hpp 
+Utils.hpp \
+MatIO.hpp
 
 libCore_a_SOURCES = Analyze.cpp \
 Cast.cpp \
@@ -31,6 +32,7 @@ StringOps.cpp \
 Transcendental.cpp \
 Trigonometric.cpp \
 Utils.cpp \
+MatIO.cpp \
 $(libCore_a_MOC) \
 $(libCore_a_HFILES)
 

@@ -44,11 +44,15 @@ enum mxArrayTypes {
   mxINT16_CLASS = 10,
   mxUINT16_CLASS = 11,
   mxINT32_CLASS = 12,
-  mxUINT32_CLASS = 13
+  mxUINT32_CLASS = 13,
+  mxINT64_CLASS = 14,
+  mxUINT64_CLASS = 15,
+  mxFUNCTION_CLASS = 16
 };
 
 bool isNormalClass(mxArrayTypes type) {
-  return ((type >= mxDOUBLE_CLASS) || (type == mxCHAR_CLASS));
+  return (((type >= mxDOUBLE_CLASS) && (type < mxFUNCTION_CLASS)) 
+	  || (type == mxCHAR_CLASS));
 }
 
 const uint8 complexFlag = 8;
@@ -77,6 +81,13 @@ uint8 ByteThree(int32 x) {
 
 uint8 ByteFour(uint32 x) {
   return ((x & 0xff000000) >> 24);
+}
+
+Array FromDimensions(Dimensions dims) {
+  Array x(Array::int32VectorConstructor(dims.getLength()));
+  for (int i=0;i<dims.getLength();i++)
+    ((int32*) x.getReadWriteDataPointer())[i] = dims[i];
+  return x;
 }
 
 Dimensions ToDimensions(Array dims) {
@@ -150,6 +161,30 @@ Array SynthesizeStruct(MatIO* m, Array dims) {
   return Array(FM_STRUCT_ARRAY,dm,sp,false,names);
 }
 
+void WriteStruct(MatIO* m, Array x) {
+  // Calculate the maximum field name length
+  stringVector fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
+  int fieldNameCount = fnames.size();
+  int maxlen = 0;
+  for (int i=0;i<fieldNameCount;i++)
+    maxlen = max(maxlen,fnames[i].size());
+  // Write it as an int32 
+  Array fieldNameLength(Array::int32Constructor(maxlen));
+  m->putNumeric(fieldNameLength);
+  // Build a character array 
+  Array fieldNameText(FM_INT8,Dimensions(1,fieldNameCount*maxlen));
+  int8* dp = (int8*) fieldNameText.getReadWriteDataPointer();
+  for (int i=0;i<fieldNameCount;i++)
+    for (int j=0;j<fnames[i].size();j++)
+      dp[i*maxlen+j] = fnames[i][j];
+  m->putNumeric(fieldNameText);
+  int num = x.getLength();
+  const Array *sp = (const Array *) x.getDataPointer();
+  for (int j=0;j<fieldNameCount;j++)
+    for (int i=0;i<num;i++)
+      m->putMatrix(sp[i*fieldNameCount+j]);
+}
+
 // Convert from CRS-->IJV
 // Replace the col_ptr array by a new one
 // [1,4,8,10,13,17,20] -->
@@ -159,13 +194,13 @@ Array SynthesizeSparse(MatIO* m, Array dims, bool complexFlag, bool logicalFlag)
   Dimensions dm(ToDimensions(dims));
   bool ateof;
   Array ir(m->getAtom(ateof));
-  int nnz = ir.getLength();
   Array jc(m->getAtom(ateof));
   Array pr(m->getAtom(ateof));
+  int nnz = pr.getLength();
   Array pi;
   ir.promoteType(FM_UINT32);
-  uint32* ir_data = (uint32*) ir.getDataPointer();
-  for (int i=0;i<nnz;i++)
+  uint32* ir_data = (uint32*) ir.getReadWriteDataPointer();
+  for (int i=0;i<ir.getLength();i++)
     ir_data[i]++;
   jc.promoteType(FM_UINT32);
   if (complexFlag) pi = m->getAtom(ateof);
@@ -190,12 +225,12 @@ Array SynthesizeSparse(MatIO* m, Array dims, bool complexFlag, bool logicalFlag)
     return Array(outType,dm,
 		 makeSparseFromIJV(outType,
 				   dm[0],dm[1],nnz,
-				   (const uint32*) ir.getDataPointer(), 1,
+				   ir_data, 1,
 				   jr, 1,
 				   pr.getDataPointer(),1), true);
   else {
     if (outType == FM_COMPLEX) {
-      float *qp = (float*) Malloc(nnz*2);
+      float *qp = (float*) Malloc(nnz*2*sizeof(float));
       const float *qp_real = (const float *) pr.getDataPointer();
       const float *qp_imag = (const float *) pi.getDataPointer();
       for (int i=0;i<nnz;i++) {
@@ -204,9 +239,9 @@ Array SynthesizeSparse(MatIO* m, Array dims, bool complexFlag, bool logicalFlag)
       }
       return Array(outType,dm,
 		   makeSparseFromIJV(outType,dm[0],dm[1],nnz,
-				     (const uint32*) ir.getDataPointer(), 1, jr, 1, qp,1),true);
+				     ir_data, 1, jr, 1, qp,1),true);
     } else {
-      double *qp = (double*) Malloc(nnz*2);
+      double *qp = (double*) Malloc(nnz*2*sizeof(double));
       const double *qp_real = (const double *) pr.getDataPointer();
       const double *qp_imag = (const double *) pi.getDataPointer();
       for (int i=0;i<nnz;i++) {
@@ -215,7 +250,7 @@ Array SynthesizeSparse(MatIO* m, Array dims, bool complexFlag, bool logicalFlag)
       }
       return Array(outType,dm,
 		   makeSparseFromIJV(outType,dm[0],dm[1],nnz,
-				     (const uint32*) ir.getDataPointer(), 1, jr, 1, qp,1),true);
+				     ir_data, 1, jr, 1, qp,1),true);
     }
   }
   throw Exception("Unhandled sparse case");
@@ -230,6 +265,13 @@ Array SynthesizeCell(MatIO* m, Array dims) {
   for (int i=0;i<num;i++)
     dp[i] = m->getAtom(ateof);
   return Array(FM_CELL_ARRAY,dm,dp);
+}
+
+void WriteCell(MatIO*m, Array x) {
+  const Array *dp = (const Array *) x.getDataPointer();
+  int num = x.getLength();
+  for (int i=0;i<num;i++)
+    m->putMatrix(dp[i],false);
 }
 
 void MatIO::FreeDecompressor() {
@@ -292,6 +334,14 @@ Array SynthesizeNumeric(mxArrayTypes arrayType, bool isComplex,
     pr.promoteType(FM_UINT32);
     pi.promoteType(FM_UINT32);
     break;
+  case mxINT64_CLASS:
+    pr.promoteType(FM_INT64);
+    pi.promoteType(FM_INT64);
+    break;
+  case mxUINT64_CLASS:
+    pr.promoteType(FM_UINT64);
+    pi.promoteType(FM_UINT64);
+    break;
   case mxSINGLE_CLASS:
     pr.promoteType(FM_FLOAT);
     pi.promoteType(FM_FLOAT);
@@ -310,6 +360,7 @@ Array SynthesizeNumeric(mxArrayTypes arrayType, bool isComplex,
     pr.reshape(dm);
     return pr;
   }
+  throw Exception("complex types not handled yet??");
   return pr;
 }
 
@@ -396,6 +447,49 @@ void MatIO::ReadCompressedBytes(void *dest, int toread) {
   }
 }
 
+// Write a data element to the stream
+void MatIO::putNumeric(Array x) {
+  // Write out the data tag
+  writeUint32(GetDataType(x));
+  writeUint32(GetByteCount(x));
+  writeRawArray(this,x.getDataPointer(),ByteCount,m_fp);
+  return;
+}
+
+// Write a matrix to the stream
+void MatIO::putMatrix(Array x, bool isGlobal) {
+  Array aFlags(uint32VectorConstructor(2));
+  uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
+  bool isComplex = x.isComplex();
+  bool isLogical = (x.getDataClass() == FM_LOGICAL);
+  mxArrayTypes arrayType = GetArrayType(x);
+  dp[0] = arrayType;
+  if (isGlobal)   dp[0] |= (complexFlag << 8);
+  if (isLogical)  dp[0] |= (logicalFlag << 8);
+  if (isComplex)  dp[0] |= (globalFlag << 8);
+  putNumeric(aFlags);
+  Array dims(FromDimensions(x.getDimensions()));
+  putNumeric(dims);
+  if (isNormalClass(arrayType)) {
+    if (!isComplex)
+      putNumeric(x);
+    else {
+      Array xreal, ximag;
+      ComplexSplit(x,xreal,ximag);
+      putNumeric(xreal);
+      putNumeric(ximag);
+    }
+  } else if  (arrayType == mxCELL_CLASS) 
+    return WriteCell(this,x);
+  else if ((arrayType == mxSTRUCT_CLASS))
+    return WriteStruct(this,x);
+  else if (arrayType == mxOBJECT_CLASS)
+    return WriteObject(this,x);
+  else if (arrayType == mxSPARSE_CLASS)
+    return WriteSparse(this,x);
+  else throw Exception(string("Unable to do this one :") + arrayType);
+}
+
 Array MatIO::getAtom(bool &ateof) {
   uint32 tag1 = readUint32();
   ateof = false;
@@ -443,7 +537,7 @@ Array MatIO::getAtom(bool &ateof) {
     if (name.getDataClass() != FM_INT8)
       throw Exception("Corrupted MAT file - array name");
     name.promoteType(FM_STRING);
-    cout << " Found array: " << ArrayToString(name) << "\r\n";
+    cout << " Found array: " << ArrayToString(name) << " of type " << arrayType << "\r\n";
     if (isNormalClass(arrayType)) {
       Array pr(getAtom(ateof));
       Array pi;
@@ -452,7 +546,7 @@ Array MatIO::getAtom(bool &ateof) {
       return SynthesizeNumeric((mxArrayTypes)arrayType,isComplex,dims,pr,pi);
     } else if (arrayType == mxCELL_CLASS) 
       return SynthesizeCell(this,dims);
-    else if (arrayType == mxSTRUCT_CLASS) 
+    else if ((arrayType == mxSTRUCT_CLASS))
       return SynthesizeStruct(this,dims);
     else if (arrayType == mxOBJECT_CLASS)
       return SynthesizeClass(this,dims);
@@ -476,6 +570,10 @@ Array MatIO::getAtom(bool &ateof) {
     return readRawArray<float>(this,FM_FLOAT,ByteCount>>2,m_fp);
   if (DataType == miDOUBLE)
     return readRawArray<double>(this,FM_DOUBLE,ByteCount>>3,m_fp);
+  if (DataType == miINT64)
+    return readRawArray<int64>(this,FM_INT64,ByteCount>>3,m_fp);
+  if (DataType == miUINT64)
+    return readRawArray<uint64>(this,FM_UINT64,ByteCount>>3,m_fp);
   throw Exception(string("Unhandled data thingy ") + DataType);
 }
 
@@ -513,9 +611,9 @@ void MatIO::putHeader(string hdr) {
   char hdrtxt[124];
   memset(hdrtxt,0,124);
   memcpy(hdrtxt,hdr.c_str(),hdr.size());
-  //   writeBytesRaw(hdrtxt,124);
-  //   writeUint16(0x100);
-  //   writeUint16('M' << 8 | 'I');
+  fwrite(hdrtxt,1,124,m_fp);
+  writeUint16(0x100);
+  writeUint16('M' << 8 | 'I');
 }
 
 MatIO::~MatIO() {

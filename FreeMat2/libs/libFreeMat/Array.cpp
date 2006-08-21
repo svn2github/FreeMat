@@ -536,6 +536,10 @@ Array::Array(Class type, const Dimensions& dims, void* data, bool sparse,
   dp = new Data(type, dims, data, sparse, fnames, classname);
 }
 
+Array::Array(Class type, const Dimensions& dims) {
+  dp = new Data(type, dims, allocateArray(type,dims.getElementCount()), false, stringVector(), stringVector());
+}
+
 Array::Array(Class type) {
   Dimensions dims;
   dp = new Data(type, dims, NULL);

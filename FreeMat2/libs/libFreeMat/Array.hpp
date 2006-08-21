@@ -157,6 +157,10 @@ public:
 	const stringVector& = stringVector(), 
 	const stringVector& classname = stringVector());
   /**
+   * Create an Array with a default allocation of space - only useful for P.O.D. arrays
+   */
+  Array(Class,const Dimensions&);
+  /**
    * Destructor - free the data object.
    */
   ~Array();

@@ -567,7 +567,7 @@ T* CompressComplexIJV(T* buffer, IJVEntry<T> *mlist, int len, int &ptr, int col,
 
 template <class T>
 void* makeSparseFromIJVReal(int rows, int cols, int nnz,
-			    uint32* I, int istride, uint32 *J, int jstride,
+			    const uint32* I, int istride, const uint32 *J, int jstride,
 			    const T* cp, int cpstride) {
   // build an IJV master list
   IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
@@ -599,7 +599,7 @@ void* makeSparseFromIJVReal(int rows, int cols, int nnz,
 }
 
 void* makeSparseFromIJVLogical(int rows, int cols, int nnz,
-			       uint32* I, int istride, uint32 *J, 
+			       const uint32* I, int istride, const uint32 *J, 
 			       int jstride, const logical* cp, 
 			       int cpstride) {
   // build an IJV master list
@@ -759,7 +759,7 @@ void* MakeSparseScaledIdentityComplex(T cp_r, T cp_i, int len) {
 
 template <class T>
 void* makeSparseFromIJVComplex(int rows, int cols, int nnz,
-			       uint32* I, int istride, uint32 *J, int jstride,
+			       const uint32* I, int istride, const uint32 *J, int jstride,
 			       const T* cp, int cpstride) {
   // build an IJV master list
   IJVEntry<T> *mlist = new IJVEntry<T>[nnz];
@@ -793,7 +793,7 @@ void* makeSparseFromIJVComplex(int rows, int cols, int nnz,
 
 
 void* makeSparseFromIJV(Class dclass, int rows, int cols, int nnz, 
-			uint32* I, int istride, uint32 *J, int jstride,
+			const uint32* I, int istride, const uint32 *J, int jstride,
 			const void* cp, int cpstride) {
   switch(dclass) {
   case FM_LOGICAL:

@@ -1,6 +1,13 @@
 #include "MatIO.hpp"
+#include "Sparse.hpp"
 #include "Exception.hpp"
 #include "Print.hpp"
+#include "Malloc.hpp"
+#include "MemPtr.hpp"
+#include "Array.hpp"
+#include <zlib.h>
+
+extern void SwapBuffer(char* cp, int count, int elsize);
 
 // A class to read/write Matlab MAT files.  Implemented based on the Matlab 7.1
 // version of the file matfile_format.pdf from the Mathworks web site.
@@ -22,6 +29,27 @@ enum MatTypes {
   miUTF16 = 17,
   miUTF32 = 18
 };
+// Sparse yet to do..
+
+enum mxArrayTypes {
+  mxCELL_CLASS = 1,
+  mxSTRUCT_CLASS = 2,
+  mxOBJECT_CLASS = 3,
+  mxCHAR_CLASS = 4,
+  mxSPARSE_CLASS = 5,
+  mxDOUBLE_CLASS = 6,
+  mxSINGLE_CLASS = 7,
+  mxINT8_CLASS = 8,
+  mxUINT8_CLASS = 9,
+  mxINT16_CLASS = 10,
+  mxUINT16_CLASS = 11,
+  mxINT32_CLASS = 12,
+  mxUINT32_CLASS = 13
+};
+
+bool isNormalClass(mxArrayTypes type) {
+  return ((type >= mxDOUBLE_CLASS) || (type == mxCHAR_CLASS));
+}
 
 const uint8 complexFlag = 8;
 const uint8 globalFlag = 4;
@@ -51,59 +79,234 @@ uint8 ByteFour(uint32 x) {
   return ((x & 0xff000000) >> 24);
 }
 
-Array SynthesizeNumeric(MatTypes arrayType, bool isComplex, 
+Dimensions ToDimensions(Array dims) {
+  if (dims.getLength() > maxDims)
+    throw Exception(string("MAT Variable has more dimensions than maxDims (currently set to ") + 
+		    maxDims + ")."); // FIXME - more graceful ways to do this
+  Dimensions dm;
+  for (int i=0;i<dims.getLength();i++)
+    dm[i] = ((const int32*) dims.getDataPointer())[i];
+  return dm;
+}
+
+Array SynthesizeClass(MatIO* m, Array dims) {
+  char buffer[100];
+  bool ateof;
+  Array className(m->getAtom(ateof));
+  if (className.getDataClass() != FM_INT8)
+    throw Exception("Corrupted MAT file - invalid class name");
+  stringVector classname;
+  classname.push_back(ArrayToString(className));
+  Array fieldNameLength(m->getAtom(ateof));
+  fieldNameLength.promoteType(FM_INT32);
+  const int32 *qp = (const int32*) fieldNameLength.getDataPointer();
+  int fieldNameLen = qp[0];
+  Array fieldNames(m->getAtom(ateof));
+  fieldNames.promoteType(FM_INT8);
+  int fieldNamesLen = fieldNames.getLength();
+  int fieldNameCount = fieldNamesLen / fieldNameLen;
+  const int8 *dp = (const int8*) fieldNames.getDataPointer();
+  stringVector names;
+  for (int i=0;i<fieldNameCount;i++) {
+    for (int j=0;j<fieldNameLen;j++)
+      buffer[j] = dp[i*fieldNameLen+j];
+    buffer[fieldNameLen] = 0;
+    names.push_back(string(buffer));
+  }
+  Dimensions dm(ToDimensions(dims));
+  int num = dm.getElementCount();
+  Array *sp = new Array[num*fieldNameCount];
+  for (int j=0;j<fieldNameCount;j++)
+    for (int i=0;i<num;i++)
+      sp[i*fieldNameCount+j] = m->getAtom(ateof);
+  return Array(FM_STRUCT_ARRAY,dm,sp,false,names,classname);
+}
+
+Array SynthesizeStruct(MatIO* m, Array dims) {
+  char buffer[100];
+  bool ateof;
+  Array fieldNameLength(m->getAtom(ateof));
+  fieldNameLength.promoteType(FM_INT32);
+  const int32 *qp = (const int32*) fieldNameLength.getDataPointer();
+  int fieldNameLen = qp[0];
+  Array fieldNames(m->getAtom(ateof));
+  fieldNames.promoteType(FM_INT8);
+  int fieldNamesLen = fieldNames.getLength();
+  int fieldNameCount = fieldNamesLen / fieldNameLen;
+  const int8 *dp = (const int8*) fieldNames.getDataPointer();
+  stringVector names;
+  for (int i=0;i<fieldNameCount;i++) {
+    for (int j=0;j<fieldNameLen;j++)
+      buffer[j] = dp[i*fieldNameLen+j];
+    buffer[fieldNameLen] = 0;
+    names.push_back(string(buffer));
+  }
+  Dimensions dm(ToDimensions(dims));
+  int num = dm.getElementCount();
+  Array *sp = new Array[num*fieldNameCount];
+  for (int j=0;j<fieldNameCount;j++)
+    for (int i=0;i<num;i++)
+      sp[i*fieldNameCount+j] = m->getAtom(ateof);
+  return Array(FM_STRUCT_ARRAY,dm,sp,false,names);
+}
+
+// Convert from CRS-->IJV
+// Replace the col_ptr array by a new one
+// [1,4,8,10,13,17,20] -->
+//   [1 1 1, 2 2 2 2, 3 3, 4, 4, 4, 5...]
+
+Array SynthesizeSparse(MatIO* m, Array dims, bool complexFlag, bool logicalFlag) {
+  Dimensions dm(ToDimensions(dims));
+  bool ateof;
+  Array ir(m->getAtom(ateof));
+  int nnz = ir.getLength();
+  Array jc(m->getAtom(ateof));
+  Array pr(m->getAtom(ateof));
+  Array pi;
+  ir.promoteType(FM_UINT32);
+  uint32* ir_data = (uint32*) ir.getDataPointer();
+  for (int i=0;i<nnz;i++)
+    ir_data[i]++;
+  jc.promoteType(FM_UINT32);
+  if (complexFlag) pi = m->getAtom(ateof);
+  if (pr.getDataClass() < FM_INT32) {
+    pr.promoteType(FM_INT32);
+    pi.promoteType(FM_INT32);
+  }
+  Class outType(pr.getDataClass());
+  if (complexFlag)
+    outType = (outType == FM_FLOAT) ? FM_COMPLEX : FM_DCOMPLEX;
+  if (logicalFlag)
+    pr.promoteType(FM_LOGICAL);
+  // Convert jc into jr, the col
+  const uint32 *jc_data = (const uint32*) jc.getDataPointer();
+  MemBlock<uint32> jrBlock(nnz);
+  uint32 *jr = &jrBlock;
+  int outptr = 0;
+  for (int i=0;i<dm[1];i++)
+    for (int j=jc_data[i];j<jc_data[i+1];j++)
+      jr[outptr++] = (i+1);
+  if (!complexFlag)
+    return Array(outType,dm,
+		 makeSparseFromIJV(outType,
+				   dm[0],dm[1],nnz,
+				   (const uint32*) ir.getDataPointer(), 1,
+				   jr, 1,
+				   pr.getDataPointer(),1), true);
+  else {
+    if (outType == FM_COMPLEX) {
+      float *qp = (float*) Malloc(nnz*2);
+      const float *qp_real = (const float *) pr.getDataPointer();
+      const float *qp_imag = (const float *) pi.getDataPointer();
+      for (int i=0;i<nnz;i++) {
+	qp[2*i] = qp_real[i];
+	qp[2*i+1] = qp_imag[i];
+      }
+      return Array(outType,dm,
+		   makeSparseFromIJV(outType,dm[0],dm[1],nnz,
+				     (const uint32*) ir.getDataPointer(), 1, jr, 1, qp,1),true);
+    } else {
+      double *qp = (double*) Malloc(nnz*2);
+      const double *qp_real = (const double *) pr.getDataPointer();
+      const double *qp_imag = (const double *) pi.getDataPointer();
+      for (int i=0;i<nnz;i++) {
+	qp[2*i] = qp_real[i];
+	qp[2*i+1] = qp_imag[i];
+      }
+      return Array(outType,dm,
+		   makeSparseFromIJV(outType,dm[0],dm[1],nnz,
+				     (const uint32*) ir.getDataPointer(), 1, jr, 1, qp,1),true);
+    }
+  }
+  throw Exception("Unhandled sparse case");
+}
+
+Array SynthesizeCell(MatIO* m, Array dims) {
+  // Count how many elements we expect
+  Dimensions dm(ToDimensions(dims));
+  int num = dm.getElementCount();
+  bool ateof;
+  Array *dp = new Array[num];
+  for (int i=0;i<num;i++)
+    dp[i] = m->getAtom(ateof);
+  return Array(FM_CELL_ARRAY,dm,dp);
+}
+
+void MatIO::FreeDecompressor() {
+  inflateEnd(zstream);
+  free(zstream);
+  m_compressed_data = false;
+  Free(m_compression_buffer);
+}
+
+void MatIO::DecompressBytes(uint32 bcount) {
+  // Allocate an array to hold the compressed bytes
+  m_compression_buffer = (uint8*) Malloc(bcount);
+  fread(m_compression_buffer,sizeof(uint8),bcount,m_fp);
+  // Set up the zstream...
+  zstream = (z_streamp) calloc(1,sizeof(z_stream));
+  zstream->zalloc = NULL;
+  zstream->zfree = NULL;
+  zstream->opaque = NULL;
+  zstream->next_in = m_compression_buffer;
+  zstream->next_out = NULL;
+  zstream->avail_in = bcount;
+  zstream->avail_out = 0;
+  int retval;
+  retval = inflateInit(zstream);
+  if (retval) throw Exception("inflateInit didn't work");
+  m_compressed_data = true;
+  //   uint8 *sp = (uint8*) Malloc(100);
+  //   uLongf len;
+  //   len = 100;
+  //   int retval = uncompress(sp,&len,dp,bcount);
+  std::cout << "Retval : " << retval << "\r\n";
+}
+
+Array SynthesizeNumeric(mxArrayTypes arrayType, bool isComplex, 
 			Array dims, Array pr, Array pi) {
   // Depending on the type of arrayType, we may need to adjust
   // the types of the data vectors;
   switch (arrayType) {
-  case miINT8:
+  case mxINT8_CLASS:
     pr.promoteType(FM_INT8);
     pi.promoteType(FM_INT8);
     break;
-  case miUTF8:
-  case miUINT8:
+  case mxUINT8_CLASS:
     pr.promoteType(FM_UINT8);
     pi.promoteType(FM_UINT8);
     break;
-  case miINT16:
+  case mxINT16_CLASS:
     pr.promoteType(FM_INT16);
     pi.promoteType(FM_INT16);
     break;
-  case miUTF16:
-  case miUINT16:
+  case mxUINT16_CLASS:
     pr.promoteType(FM_UINT16);
     pi.promoteType(FM_UINT16);
     break;
-  case miINT32:
+  case mxINT32_CLASS:
     pr.promoteType(FM_INT32);
     pi.promoteType(FM_INT32);
     break;
-  case miUTF32:
-  case miUINT32:
+  case mxUINT32_CLASS:
     pr.promoteType(FM_UINT32);
     pi.promoteType(FM_UINT32);
     break;
-  case miSINGLE:
+  case mxSINGLE_CLASS:
     pr.promoteType(FM_FLOAT);
     pi.promoteType(FM_FLOAT);
     break;
-  case miDOUBLE:
+  case mxDOUBLE_CLASS:
     pr.promoteType(FM_DOUBLE);
     pi.promoteType(FM_DOUBLE);
     break;
-  case miINT64:
-  case miUINT64:
-    pr.promoteType(FM_INT64);
-    pi.promoteType(FM_UINT64);
+  case mxCHAR_CLASS:
+    pr.promoteType(FM_STRING);
+    pi.promoteType(FM_STRING);
     break;
   }
   if (!isComplex) {
-    if (dims.getLength() > maxDims)
-      throw Exception(string("MAT Variable has more dimensions than maxDims (currently set to ") + 
-		      maxDims + ")."); // FIXME - more graceful ways to do this
-    Dimensions dm;
-    for (int i=0;i<dims.getLength();i++)
-      dm[i] = ((const int32*) dims.getDataPointer())[i];
+    Dimensions dm(ToDimensions(dims));
     pr.reshape(dm);
     return pr;
   }
@@ -112,31 +315,94 @@ Array SynthesizeNumeric(MatTypes arrayType, bool isComplex,
 
 uint16 MatIO::readUint16() {
   uint16 x;
-  fread(&x,sizeof(uint16),1,m_fp);
+  if (!m_compressed_data) {
+    fread(&x,sizeof(uint16),1,m_fp);
+  } else 
+    ReadCompressedBytes(&x,sizeof(uint16));
   if (!m_endianSwap) return x;
-  return (ByteOne(x) << 8) | (ByteTwo(x));
+  SwapBuffer((char*)&x,1,sizeof(uint16));
+  return x;
 }
 
 uint32 MatIO::readUint32() {
   uint32 x;
-  fread(&x,sizeof(uint32),1,m_fp);
+  if (!m_compressed_data) {
+    fread(&x,sizeof(uint32),1,m_fp);
+  } else 
+    ReadCompressedBytes(&x,sizeof(uint32));
   if (!m_endianSwap) return x;
-  return ((ByteOne(x) << 24) |
-	  (ByteTwo(x) << 16) |
-	  (ByteThree(x) << 8) | 
-	  ByteFour(x));
+  SwapBuffer((char*)&x,1,sizeof(uint32));
+  return x;
+}
+
+uint32 ElementSize(Class cls) {
+  switch (cls) {
+  case FM_LOGICAL:
+    return sizeof(logical);
+  case FM_UINT8:
+    return sizeof(uint8);
+  case FM_INT8:
+    return sizeof(int8);
+  case FM_UINT16:
+    return sizeof(uint16);
+  case FM_INT16:
+    return sizeof(int16);
+  case FM_UINT32:
+    return sizeof(uint32);
+  case FM_INT32:
+    return sizeof(int32);
+  case FM_UINT64:
+    return sizeof(uint64);
+  case FM_INT64:
+    return sizeof(int64);
+  case FM_FLOAT:
+    return sizeof(float);
+  case FM_DOUBLE:
+    return sizeof(double);
+  }
 }
 
 template <class T>
-Array readRawArray(Class cls, uint32 len, FILE *m_fp) {
+Array readRawArray(MatIO *m, Class cls, uint32 len, FILE *m_fp) {
   T* dp = (T*) Array::allocateArray(cls,len);
-  fread(dp,sizeof(T),len,m_fp);
-  fseek(m_fp,(8-(ftell(m_fp)&0x7)) % 8,SEEK_CUR);
+  uint8 dummy[8];
+  if (!m->inCompressionMode()) {
+    fread(dp,sizeof(T),len,m_fp);
+    fseek(m_fp,m->BytesToAlign64Bit(),SEEK_CUR);
+  } else {
+    m->ReadCompressedBytes(dp,sizeof(T)*len);
+    memset(dummy,0,8);
+    m->ReadCompressedBytes(dummy,m->BytesToAlign64Bit());
+  }
+  if (m->inEndianSwap())
+    SwapBuffer((char*)dp,len,ElementSize(cls));
   return Array(cls,Dimensions(len,1),dp);
 }
 
-Array MatIO::getAtom() {
+uint32 MatIO::BytesToAlign64Bit() {
+  if (!inCompressionMode()) 
+    return ((8-(ftell(m_fp)&0x7)) % 8);
+  else
+    return (8-(zstream->total_out)&0x7);
+}
+
+void MatIO::ReadCompressedBytes(void *dest, int toread) {
+  zstream->next_out = (Bytef*) dest;
+  zstream->avail_out = toread;
+  while (zstream->avail_out) {
+    int ret = inflate(zstream,Z_SYNC_FLUSH);
+    if (ret < 0)
+      throw Exception(string("inflate failed with code: ") + ret);
+  }
+}
+
+Array MatIO::getAtom(bool &ateof) {
   uint32 tag1 = readUint32();
+  ateof = false;
+  if (feof(m_fp)) {
+    ateof = true;
+    return Array();
+  }
   uint32 DataType, ByteCount;
   // Is the upper word of tag1 zero?
   if (UpperWord(tag1) == 0) {
@@ -147,61 +413,74 @@ Array MatIO::getAtom() {
   } else {
     // No, then the upper word of tag1 is the byte count
     // and the lower word of tag1 is the data type
-    DataType = UpperWord(tag1);
-    ByteCount = LowerWord(tag1);
+    DataType = LowerWord(tag1);
+    ByteCount = UpperWord(tag1);
   }
   // Is it a compression flag?
-  //   if (DataType == miCOMPRESSED) {
-  //     DecompressBytes(ByteCount);
-  //     return getAtom();
-  //   } 
+  if (DataType == miCOMPRESSED) {
+    DecompressBytes(ByteCount);
+    Array ret(getAtom(ateof));
+    FreeDecompressor();
+    return ret;
+  } 
   if (DataType == miMATRIX) {
-    Array aFlags(getAtom());
+    int fstart = ftell(m_fp);
+    Array aFlags(getAtom(ateof));
     if (aFlags.getDataClass() != FM_UINT32)
       throw Exception("Corrupted MAT file - array flags");
     if (aFlags.getLength() != 2)
       throw Exception("Corrupted MAT file - array flags");
     const uint32 *dp = (const uint32 *) aFlags.getDataPointer();
-    uint8 arrayType = ByteOne(dp[0]);
+    mxArrayTypes arrayType = (mxArrayTypes) (ByteOne(dp[0]));
     uint8 arrayFlags = ByteTwo(dp[0]);
-    bool isComplex = (arrayType & complexFlag) != 0;
-    bool isGlobal = (arrayType & globalFlag) != 0;
-    bool isLogical = (arrayType & globalFlag) != 0;
-    Array dims(getAtom());
+    bool isComplex = (arrayFlags & complexFlag) != 0;
+    bool isGlobal = (arrayFlags & globalFlag) != 0;
+    bool isLogical = (arrayFlags & globalFlag) != 0;
+    Array dims(getAtom(ateof));
     if (dims.getDataClass() != FM_INT32)
       throw Exception("Corrupted MAT file - dimensions array");
-    Array name(getAtom());
-    name.promoteType(FM_INT8); // Problems with UNICODE names for variables?
+    Array name(getAtom(ateof));
     if (name.getDataClass() != FM_INT8)
       throw Exception("Corrupted MAT file - array name");
     name.promoteType(FM_STRING);
     cout << " Found array: " << ArrayToString(name) << "\r\n";
-    Array pr(getAtom());
-    Array pi;
-    if (isComplex)
-      pi = getAtom();
-    return SynthesizeNumeric((MatTypes) arrayType,isComplex,dims,pr,pi);
+    if (isNormalClass(arrayType)) {
+      Array pr(getAtom(ateof));
+      Array pi;
+      if (isComplex)
+	pi = getAtom(ateof);
+      return SynthesizeNumeric((mxArrayTypes)arrayType,isComplex,dims,pr,pi);
+    } else if (arrayType == mxCELL_CLASS) 
+      return SynthesizeCell(this,dims);
+    else if (arrayType == mxSTRUCT_CLASS) 
+      return SynthesizeStruct(this,dims);
+    else if (arrayType == mxOBJECT_CLASS)
+      return SynthesizeClass(this,dims);
+    else if (arrayType == mxSPARSE_CLASS)
+      return SynthesizeSparse(this,dims,isComplex,isLogical);
+    else throw Exception(string("Unable to do this one :") + arrayType);
   }
   if (DataType == miINT8) 
-    return readRawArray<int8>(FM_INT8,ByteCount,m_fp);
-  if (DataType == miUINT8)
-    return readRawArray<uint8>(FM_UINT8,ByteCount,m_fp);
+    return readRawArray<int8>(this,FM_INT8,ByteCount,m_fp);
+  if ((DataType == miUINT8) || (DataType == miUTF8))
+    return readRawArray<uint8>(this,FM_UINT8,ByteCount,m_fp);
   if (DataType == miINT16) 
-    return readRawArray<int16>(FM_INT16,ByteCount>>1,m_fp);
-  if (DataType == miUINT16)
-    return readRawArray<uint16>(FM_UINT16,ByteCount>>1,m_fp);
+    return readRawArray<int16>(this,FM_INT16,ByteCount>>1,m_fp);
+  if ((DataType == miUINT16) || (DataType == miUTF16))
+    return readRawArray<uint16>(this,FM_UINT16,ByteCount>>1,m_fp);
   if (DataType == miINT32) 
-    return readRawArray<int32>(FM_INT32,ByteCount>>2,m_fp);
-  if (DataType == miUINT32)
-    return readRawArray<uint32>(FM_UINT32,ByteCount>>2,m_fp);
+    return readRawArray<int32>(this,FM_INT32,ByteCount>>2,m_fp);
+  if ((DataType == miUINT32) || (DataType == miUTF32))
+    return readRawArray<uint32>(this,FM_UINT32,ByteCount>>2,m_fp);
   if (DataType == miSINGLE)
-    return readRawArray<float>(FM_FLOAT,ByteCount>>2,m_fp);
+    return readRawArray<float>(this,FM_FLOAT,ByteCount>>2,m_fp);
   if (DataType == miDOUBLE)
-    return readRawArray<double>(FM_FLOAT,ByteCount>>3,m_fp);
+    return readRawArray<double>(this,FM_DOUBLE,ByteCount>>3,m_fp);
+  throw Exception(string("Unhandled data thingy ") + DataType);
 }
 
 MatIO::MatIO(string filename, openMode mode) :
-  m_filename(filename), m_mode(mode) {
+  m_filename(filename), m_mode(mode), m_compressed_data(false) {
   if (m_mode == writeMode) {
     m_fp = fopen(filename.c_str(),"wb");
     if (!m_fp)
@@ -218,7 +497,8 @@ string MatIO::getHeader() {
   // Read the header...
   char hdrtxt[124];
   fread(hdrtxt,1,124,m_fp);
-  if (readUint16() != 0x100) throw Exception("Not a valid MAT file");
+  uint16 val = readUint16();
+  if ((val != 0x100) && (val != 0x1)) throw Exception("Not a valid MAT file");
   uint16 byteOrder = readUint16();
   if (byteOrder == ('M' << 8 | 'I'))
     m_endianSwap = false;
@@ -245,11 +525,12 @@ MatIO::~MatIO() {
 ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) throw Exception("Need filename");
   MatIO m(ArrayToString(arg[0]),MatIO::readMode);
-  cout << m.getHeader() << "\r\n";
-  cout.flush();
-  while(1) {
-    Array a(m.getAtom());
-    PrintArrayClassic(a,1000,eval,true);
+  m.getHeader();
+  bool ateof = false;
+  while(!ateof) {
+    Array a(m.getAtom(ateof));
+    if (!ateof)
+      PrintArrayClassic(a,1000,eval,true);
   }
   return ArrayVector();
 }

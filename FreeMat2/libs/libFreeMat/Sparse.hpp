@@ -89,7 +89,8 @@ void* SparseToIJV2(Class dclass, int rows, int cols, const void* cp,
 void* SparseFloatZeros(int rows, int cols);
 // Test 70
 void* makeSparseFromIJV(Class dclass, int rows, int cols, int nnz, 
-			uint32* I, int istride, uint32 *J, int jstride,
+			const uint32* I, int istride, 
+			const uint32 *J, int jstride,
 			const void* cp, int cpstride);
 // Test 71
 void* DeleteSparseMatrixCols(Class dclass, int cols, const void* cp,

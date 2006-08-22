@@ -422,85 +422,91 @@ void MatIO::Align64Bit() {
   }
 }
 
-void WriteStruct(MatIO* m, Array x) {
-//   // Calculate the maximum field name length
-//   stringVector fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
-//   int fieldNameCount = fnames.size();
-//   int maxlen = 0;
-//   for (int i=0;i<fieldNameCount;i++)
-//     maxlen = max(maxlen,fnames[i].size());
-//   // Write it as an int32 
-//   Array fieldNameLength(Array::int32Constructor(maxlen));
-//   m->putNumeric(fieldNameLength);
-//   // Build a character array 
-//   Array fieldNameText(FM_INT8,Dimensions(1,fieldNameCount*maxlen));
-//   int8* dp = (int8*) fieldNameText.getReadWriteDataPointer();
-//   for (int i=0;i<fieldNameCount;i++)
-//     for (int j=0;j<fnames[i].size();j++)
-//       dp[i*maxlen+j] = fnames[i][j];
-//   m->putNumeric(fieldNameText);
-//   int num = x.getLength();
-//   const Array *sp = (const Array *) x.getDataPointer();
-//   for (int j=0;j<fieldNameCount;j++)
-//     for (int i=0;i<num;i++)
-//       m->putMatrix(sp[i*fieldNameCount+j]);
+void MatIO::putStructArray(const Array &x) {
+  // Calculate the maximum field name length
+  stringVector fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
+  int fieldNameCount = fnames.size();
+  int maxlen = 0;
+  for (int i=0;i<fieldNameCount;i++)
+    maxlen = max(maxlen,fnames[i].size());
+  // Write it as an int32 
+  Array fieldNameLength(Array::int32Constructor(maxlen));
+  putDataElement(fieldNameLength);
+  // Build a character array 
+  Array fieldNameText(FM_INT8,Dimensions(1,fieldNameCount*maxlen));
+  int8* dp = (int8*) fieldNameText.getReadWriteDataPointer();
+  for (int i=0;i<fieldNameCount;i++)
+    for (int j=0;j<fnames[i].size();j++)
+      dp[i*maxlen+j] = fnames[i][j];
+  putDataElement(fieldNameText);
+  int num = x.getLength();
+  const Array *sp = (const Array *) x.getDataPointer();
+  for (int j=0;j<fieldNameCount;j++)
+    for (int i=0;i<num;i++)
+      putArray(sp[i*fieldNameCount+j]);
 }
+
+void MatIO::putClassArray(const Array &x) {
+  string className = x.getClassName().back();
+  Array classNameArray(FM_INT8,Dimensions(1,className.size()));
+  int8* dp = (int8*) classNameArray.getDataPointer();
+  for (int i=0;i<className.size();i++)
+    dp[i] = className[i];
+  putDataElement(classNameArray);
+  putStructArray(x);
+}
+
 
 // Convert from CRS-->IJV
 // Replace the col_ptr array by a new one
 // [1,4,8,10,13,17,20] -->
 //   [1 1 1, 2 2 2 2, 3 3, 4, 4, 4, 5...]
 
-void WriteCell(MatIO*m, Array x) {
-//   const Array *dp = (const Array *) x.getDataPointer();
-//   int num = x.getLength();
-//   for (int i=0;i<num;i++)
-//     m->putMatrix(dp[i],false);
+void MatIO::putCellArray(const Array &x) {
+    // Count how many elements we expect
+  int num = x.getLength();
+  const Array *dp = (const Array *) x.getDataPointer();
+  for (int i=0;i<num;i++)
+    putArray(dp[i]);
 }
 
+//Write a matrix to the stream
+void MatIO::putArray(const Array &x, string &name) {
+  Array aFlags(FM_UINT32,Dimensions(1,2));
+  uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
+  bool isComplex = x.isComplex();
+  bool isLogical = (x.getDataClass() == FM_LOGICAL);
+  bool globalFlag = false;
+  mxArrayTypes arrayType = GetArrayType(x.getDataClass());
+  dp[0] = arrayType;
+  if (isGlobal)   dp[0] |= (complexFlag << 8);
+  if (isLogical)  dp[0] |= (logicalFlag << 8);
+  if (isComplex)  dp[0] |= (globalFlag << 8);
+  putDataElement(aFlags);
+  putDataElement(FromDimensions(x.getDimensions()));
+  if (isNormalClass(arrayType))
+    putNumericArray(x);
+  else if  (arrayType == mxCELL_CLASS) 
+    putCellArray(x);
+  else if (arrayType == mxSTRUCT_CLASS)
+    putStructArray(x);
+  else if (arrayType == mxOBJECT_CLASS)
+    putClassArray(x);
+//   else if (arrayType == mxSPARSE_CLASS)
+//     putSparseArray(x);
+  else throw Exception(string("Unable to do this one :") + arrayType);
+}
 
-// Write a data element to the stream
-// void MatIO::putNumeric(Array x) {
-// //   // Write out the data tag
-// //   writeUint32(GetDataType(x));
-// //   writeUint32(GetByteCount(x));
-// //   writeRawArray(this,x.getDataPointer(),ByteCount,m_fp);
-//   return;
-// }
-
-// Write a matrix to the stream
-// void MatIO::putMatrix(Array x, bool isGlobal) {
-// //   Array aFlags(uint32VectorConstructor(2));
-// //   uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
-// //   bool isComplex = x.isComplex();
-// //   bool isLogical = (x.getDataClass() == FM_LOGICAL);
-// //   mxArrayTypes arrayType = GetArrayType(x);
-// //   dp[0] = arrayType;
-// //   if (isGlobal)   dp[0] |= (complexFlag << 8);
-// //   if (isLogical)  dp[0] |= (logicalFlag << 8);
-// //   if (isComplex)  dp[0] |= (globalFlag << 8);
-// //   putNumeric(aFlags);
-// //   Array dims(FromDimensions(x.getDimensions()));
-// //   putNumeric(dims);
-// //   if (isNormalClass(arrayType)) {
-// //     if (!isComplex)
-// //       putNumeric(x);
-// //     else {
-// //       Array xreal, ximag;
-// //       ComplexSplit(x,xreal,ximag);
-// //       putNumeric(xreal);
-// //       putNumeric(ximag);
-// //     }
-// //   } else if  (arrayType == mxCELL_CLASS) 
-// //     return WriteCell(this,x);
-// //   else if ((arrayType == mxSTRUCT_CLASS))
-// //     return WriteStruct(this,x);
-// //   else if (arrayType == mxOBJECT_CLASS)
-// //     return WriteObject(this,x);
-// //   else if (arrayType == mxSPARSE_CLASS)
-// //     return WriteSparse(this,x);
-// //   else throw Exception(string("Unable to do this one :") + arrayType);
-// }
+void MatIO::putNumericArray(const Array &x) {
+  if (!x.isComplex())
+    putDataElement(x);
+  else {
+    Array xreal, ximag;
+    ComplexSplit(x,xreal,ximag);
+    putDataElement(xreal);
+    putDataElement(ximag);
+  }
+}
 
 Array MatIO::getArray(bool &atEof, string &name) {
   uint32 tag1 = getUint32();
@@ -553,7 +559,7 @@ Array MatIO::getArray(bool &atEof, string &name) {
     return getNumericArray(arrayType,dm,isComplex);
   else if (arrayType == mxCELL_CLASS) 
     return getCellArray(dm);
-  else if ((arrayType == mxSTRUCT_CLASS))
+  else if (arrayType == mxSTRUCT_CLASS)
     return getStructArray(dm);
   else if (arrayType == mxOBJECT_CLASS)
     return getClassArray(dm);
@@ -594,12 +600,12 @@ string MatIO::getHeader() {
 }
 
 void MatIO::putHeader(string hdr) {
-//   char hdrtxt[124];
-//   memset(hdrtxt,0,124);
-//   memcpy(hdrtxt,hdr.c_str(),hdr.size());
-//   fwrite(hdrtxt,1,124,m_fp);
-//   writeUint16(0x100);
-//   writeUint16('M' << 8 | 'I');
+   char hdrtxt[124];
+   memset(hdrtxt,0,124);
+   memcpy(hdrtxt,hdr.c_str(),min(123,hdr.size()));
+   fwrite(hdrtxt,1,124,m_fp);
+   putUint16(0x100);
+   putUint16('M' << 8 | 'I');
 }
 
 MatIO::~MatIO() {

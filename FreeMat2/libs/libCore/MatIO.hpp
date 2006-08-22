@@ -71,10 +71,10 @@ private:
   Array getCellArray(Dimensions dm);
   Array getDataElement();
   // Writes various types of arrays
-  void putSparseArray(uint32 flags, const Array &x);
-  void putNumericArray(uint32 flags, const Array &x);
-  void putClassArray(uint32 flags, const Array &x);
-  void putCellArray(uint32 flags, const Array &x);
+  void putSparseArray(const Array &x);
+  void putNumericArray(const Array &x);
+  void putClassArray(const Array &x);
+  void putCellArray(const Array &x);
   void putDataElement(const Array &x);
   // Align us to the next 64 bit boundary.
   void Align64Bit();
@@ -97,7 +97,7 @@ public:
   ~MatIO();
   // Get/Put for arrays
   Array getArray(bool &atEof, string &name);
-  void putArray(Array x, string name);
+  void putArray(const Array &x, string name = string());
   // Header routines
   string getHeader();
   void putHeader(string header);

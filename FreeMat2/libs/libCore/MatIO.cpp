@@ -558,7 +558,7 @@ Array MatIO::getArray(bool &atEof, string &name) {
   else if (arrayType == mxOBJECT_CLASS)
     return getClassArray(dm);
   else if (arrayType == mxSPARSE_CLASS)
-    return getStructArray(dm);
+    return getSparseArray(dm,isComplex);
   else 
     throw Exception(string("Unable to do this one :") + arrayType);
 }

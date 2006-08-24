@@ -40,6 +40,72 @@ uint32 ElementSize(Class cls) {
   }
 }
 
+
+MatTypes ToMatType(Class x) {
+  switch (x) {
+  case FM_INT8:
+    return miINT8;
+  case FM_UINT8:
+    return miUINT8;
+  case FM_INT16:
+    return miINT16;
+  case FM_UINT16:
+    return miUINT16;
+  case FM_INT32:
+    return miINT32;
+  case FM_UINT32:
+    return miUINT32;
+  case FM_FLOAT:
+    return miSINGLE;
+  case FM_DOUBLE:
+    return miDOUBLE;
+  case FM_INT64:
+    return miINT64;
+  case FM_UINT64:
+    return miUINT64;
+  }
+  throw Exception("Should not be here...");
+}
+
+mxArrayTypes GetArrayType(Class x) {
+  switch(x) {
+  case FM_FUNCPTR_ARRAY:
+    return mxFUNCTION_CLASS;
+  case FM_CELL_ARRAY:
+    return mxCELL_CLASS;
+  case FM_STRUCT_ARRAY:
+    return mxSTRUCT_CLASS;
+  case FM_LOGICAL:
+    return mxINT32_CLASS;
+  case FM_UINT8:
+    return mxUINT8_CLASS;
+  case FM_INT8:
+    return mxINT8_CLASS5
+  case FM_UINT16:
+      return mxUINT16_CLASS;
+  case FM_INT16:
+    return mxINT16_CLASS;
+  case FM_UINT32:
+    return mxUINT32_CLASS;
+  case FM_INT32:
+    return mxINT32_CLASS;
+  case FM_UINT64:
+    return mxUINT64_CLASS;
+  case FM_INT64:
+    return mxINT64_CLASS;
+  case FM_FLOAT:
+    return mxSINGLE_CLASS;
+  case FM_DOUBLE:
+    return mxDOUBLE_CLASS;
+  case FM_COMPLEX:
+    return mxSINGLE_CLASS;
+  case FM_DCOMPLEX:
+    return mxDOUBLE_CLASS;
+  case FM_STRING:
+    return mxCHAR_CLASS;
+  }  
+}
+
 Class ToFreeMatClass(MatTypes x) {
   switch (x) {
   case miINT8:
@@ -345,6 +411,16 @@ Array MatIO::getDataElement() {
   return Array(fmClass,Dimensions(len,1),dp);
 }
 
+void MatIO::putDataElement(const Array &x) {
+  Class fmClass(x.getDataClass());
+  MatTypes DataType(ToMatType(fmClass));
+  uint32 ByteCount(x.getLength()*ElementSize(fmClass));
+  putUint32((uint32)DataType);
+  putUint32(ByteCount);
+  WriteData(x.getDataPointer(),ByteCount);
+  Align64Bit();
+}
+
 void MatIO::InitializeDecompressor(uint32 bcount) {
   // Allocate an array to hold the compressed bytes
   m_compression_buffer = (uint8*) Malloc(bcount);
@@ -383,6 +459,18 @@ void MatIO::CloseDecompressor() {
 
 void MatIO::ReadFileBytes(void *dest, uint32 toread) {
   fread(dest,1,toread,m_fp);
+}
+
+void MatIO::WriteFileBytes(const void *dest, uint32 towrite) {
+  fwrite(dest,1,towrite,m_fp);
+}
+
+void MatIO::WriteData(const void *dest, uint32 towrite) {
+  if (!m_compressed_data)
+    WriteFileBytes(dest,towrite);
+  else
+    throw Exception("Unhandled case of compression writing");
+    //    WriteCompressedBytes(dest,towrite);
 }
 
 void MatIO::ReadData(void *dest, uint32 toread) {
@@ -426,7 +514,7 @@ void MatIO::putStructArray(const Array &x) {
   // Calculate the maximum field name length
   stringVector fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
   int fieldNameCount = fnames.size();
-  int maxlen = 0;
+  size_t maxlen = 0;
   for (int i=0;i<fieldNameCount;i++)
     maxlen = max(maxlen,fnames[i].size());
   // Write it as an int32 
@@ -471,7 +559,7 @@ void MatIO::putCellArray(const Array &x) {
 }
 
 //Write a matrix to the stream
-void MatIO::putArray(const Array &x, string &name) {
+void MatIO::putArray(const Array &x, string name) {
   Array aFlags(FM_UINT32,Dimensions(1,2));
   uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
   bool isComplex = x.isComplex();

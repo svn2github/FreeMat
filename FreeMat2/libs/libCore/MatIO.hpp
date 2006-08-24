@@ -74,6 +74,7 @@ private:
   void putSparseArray(const Array &x);
   void putNumericArray(const Array &x);
   void putClassArray(const Array &x);
+  void putStructArray(const Array &x);
   void putCellArray(const Array &x);
   void putDataElement(const Array &x);
   // Align us to the next 64 bit boundary.
@@ -89,8 +90,12 @@ private:
   void CloseDecompressor();
   // Read data directly from the file
   void ReadFileBytes(void *dest, uint32 toread);
-  // Read data (selects compression if necessary)
+  // Read data (selects decompression if necessary)
   void ReadData(void *dest, uint32 toread);
+  // Write data directly to the file
+  void WriteFileBytes(const void *dest, uint32 towrite);
+  // Write data (selects compression if necessary)
+  void WriteData(const void *dest, uint32 towrite);
 public:
   // Constructor pairs
   MatIO(string filename, MatIO::openMode mode);

@@ -88,6 +88,10 @@ private:
   void InitializeDecompressor(uint32 bcount);
   void ReadCompressedBytes(void *dest, uint32 toread);
   void CloseDecompressor();
+  // Methods that control the compression engine
+  void InitializeCompressor();
+  void WriteCompressedBytes(void *dest, uint32 towrite);
+  void CloseCompressor();
   // Read data directly from the file
   void ReadFileBytes(void *dest, uint32 toread);
   // Read data (selects decompression if necessary)

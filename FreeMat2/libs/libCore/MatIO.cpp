@@ -8,10 +8,39 @@
 #include "Interpreter.hpp"
 #include <zlib.h>
 
+// Things to still look at:
+//  Logical/Global flags
+//  Compressed mode write
+
+
 extern void SwapBuffer(char* cp, int count, int elsize);
 
 // A class to read/write Matlab MAT files.  Implemented based on the Matlab 7.1
 // version of the file matfile_format.pdf from the Mathworks web site.
+
+void ComplexSplit(const Array &x, Array &real, Array &imag) {
+  if (x.getDataClass() == FM_COMPLEX) {
+    real = Array(FM_FLOAT,x.getDimensions());
+    imag = Array(FM_FLOAT,x.getDimensions());
+    const float *dp = (const float *) x.getDataPointer();
+    float *rp = (float *) real.getReadWriteDataPointer();
+    float *ip = (float *) imag.getReadWriteDataPointer();
+    for (unsigned i=0;i<x.getLength();i++) {
+      rp[i] = dp[2*i];
+      ip[i] = dp[2*i+1];
+    }      
+  } else {
+    real = Array(FM_DOUBLE,x.getDimensions());
+    imag = Array(FM_DOUBLE,x.getDimensions());
+    const double *dp = (const double *) x.getDataPointer();
+    double *rp = (double *) real.getReadWriteDataPointer();
+    double *ip = (double *) imag.getReadWriteDataPointer();
+    for (unsigned i=0;i<x.getLength();i++) {
+      rp[i] = dp[2*i];
+      ip[i] = dp[2*i+1];
+    }      
+  }
+}
 
 uint32 ElementSize(Class cls) {
   switch (cls) {
@@ -63,46 +92,48 @@ MatTypes ToMatType(Class x) {
     return miINT64;
   case FM_UINT64:
     return miUINT64;
+  case FM_STRING:
+    return miINT8;
   }
   throw Exception("Should not be here...");
 }
 
-mxArrayTypes GetArrayType(Class x) {
+MatIO::mxArrayTypes GetArrayType(Class x) {
   switch(x) {
   case FM_FUNCPTR_ARRAY:
-    return mxFUNCTION_CLASS;
+    return MatIO::mxFUNCTION_CLASS;
   case FM_CELL_ARRAY:
-    return mxCELL_CLASS;
+    return MatIO::mxCELL_CLASS;
   case FM_STRUCT_ARRAY:
-    return mxSTRUCT_CLASS;
+    return MatIO::mxSTRUCT_CLASS;
   case FM_LOGICAL:
-    return mxINT32_CLASS;
+    return MatIO::mxINT32_CLASS;
   case FM_UINT8:
-    return mxUINT8_CLASS;
+    return MatIO::mxUINT8_CLASS;
   case FM_INT8:
-    return mxINT8_CLASS5
+    return MatIO::mxINT8_CLASS;
   case FM_UINT16:
-      return mxUINT16_CLASS;
+    return MatIO::mxUINT16_CLASS;
   case FM_INT16:
-    return mxINT16_CLASS;
+    return MatIO::mxINT16_CLASS;
   case FM_UINT32:
-    return mxUINT32_CLASS;
+    return MatIO::mxUINT32_CLASS;
   case FM_INT32:
-    return mxINT32_CLASS;
+    return MatIO::mxINT32_CLASS;
   case FM_UINT64:
-    return mxUINT64_CLASS;
+    return MatIO::mxUINT64_CLASS;
   case FM_INT64:
-    return mxINT64_CLASS;
+    return MatIO::mxINT64_CLASS;
   case FM_FLOAT:
-    return mxSINGLE_CLASS;
+    return MatIO::mxSINGLE_CLASS;
   case FM_DOUBLE:
-    return mxDOUBLE_CLASS;
+    return MatIO::mxDOUBLE_CLASS;
   case FM_COMPLEX:
-    return mxSINGLE_CLASS;
+    return MatIO::mxSINGLE_CLASS;
   case FM_DCOMPLEX:
-    return mxDOUBLE_CLASS;
+    return MatIO::mxDOUBLE_CLASS;
   case FM_STRING:
-    return mxCHAR_CLASS;
+    return MatIO::mxCHAR_CLASS;
   }  
 }
 
@@ -143,9 +174,9 @@ bool isNormalClass(MatIO::mxArrayTypes type) {
 	  || (type == MatIO::mxCHAR_CLASS));
 }
 
-const uint8 complexFlag = 8;
-const uint8 globalFlag = 4;
-const uint8 logicalFlag = 2;
+const uint8 bcomplexFlag = 8;
+const uint8 bglobalFlag = 4;
+const uint8 blogicalFlag = 2;
 
 uint32 UpperWord(uint32 x) {
   return x >> 16;
@@ -208,8 +239,6 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
   Class outType(pr.getDataClass());
   if (complexFlag)
     outType = (outType == FM_FLOAT) ? FM_COMPLEX : FM_DCOMPLEX;
-  if (logicalFlag)
-    pr.promoteType(FM_LOGICAL);
   // Convert jc into jr, the col
   const uint32 *jc_data = (const uint32*) jc.getDataPointer();
   MemBlock<uint32> jrBlock(nnz);
@@ -309,7 +338,25 @@ Array MatIO::getNumericArray(mxArrayTypes arrayType, Dimensions dm, bool complex
   if (!complexFlag) {
     pr.reshape(dm);
     return pr;
-  } 
+  } else {
+    if (arrayType == mxSINGLE_CLASS) {
+      pr.promoteType(FM_COMPLEX);
+      pi.promoteType(FM_FLOAT);
+      float *dp = (float *) pr.getReadWriteDataPointer();
+      const float *ip = (const float *) pi.getDataPointer();
+      for (int i=0;i<pr.getLength();i++)
+	dp[2*i+1] = ip[i];
+    } else {
+      pr.promoteType(FM_DCOMPLEX);
+      pi.promoteType(FM_DOUBLE);
+      double *dp = (double *) pr.getReadWriteDataPointer();
+      const double *ip = (const double *) pi.getDataPointer();
+      for (int i=0;i<pr.getLength();i++)
+	dp[2*i+1] = ip[i];
+    }
+    pr.reshape(dm);
+    return pr;
+  }
   throw Exception("complex types not handled yet??");
 }
 
@@ -421,6 +468,36 @@ void MatIO::putDataElement(const Array &x) {
   Align64Bit();
 }
 
+void MatIO::InitializeCompressor() {
+  // Allocate an array to hold the compressed bytes
+  m_compression_buffer = (uint8*) Malloc(32768);
+  // Set up the zstream...
+  zstream = (z_streamp) calloc(1,sizeof(z_stream));
+  zstream->zalloc = NULL;
+  zstream->zfree = NULL;
+  zstream->opaque = NULL;
+  zstream->next_in = m_compression_buffer;
+  zstream->next_out = NULL;
+  zstream->avail_in = 0;
+  zstream->avail_out = 32768;
+  int retval;
+  retval = deflateInit(zstream,9);
+  if (retval) throw Exception("defaultinit didn't work");
+  m_compressed_data = true;
+  
+}
+
+void MatIO::WriteCompressedBytes(void *dest, uint32 towrite) {
+  zstream->next_in = dest;
+  zstream->avail_in = towrite;
+  while (zstream->avail_out && zstream->avail_in) {
+    int ret = inflate(zstream
+  }
+}
+
+void MatIO::CloseCompressor() {
+}
+
 void MatIO::InitializeDecompressor(uint32 bcount) {
   // Allocate an array to hold the compressed bytes
   m_compression_buffer = (uint8*) Malloc(bcount);
@@ -496,6 +573,14 @@ uint32 MatIO::getUint32() {
   return x;
 }
 
+void MatIO::putUint16(uint16 x) {
+  WriteData(&x,sizeof(uint16));
+}
+
+void MatIO::putUint32(uint32 x) {
+  WriteData(&x,sizeof(uint32));
+}
+
 void MatIO::Align64Bit() {
   if (m_mode == readMode) {
     uint32 adjustBytes;
@@ -506,6 +591,15 @@ void MatIO::Align64Bit() {
       uint8 dummy[8];
       adjustBytes = (8-(zstream->total_out) & 0x7);
       ReadCompressedBytes(dummy,adjustBytes);
+    }
+  } else {
+    char buffer[8];
+    uint32 adjustBytes;
+    if (!m_compressed_data) {
+      adjustBytes = ((8-(ftell(m_fp)&0x7)) % 8);
+      WriteFileBytes(buffer,adjustBytes);
+    } else {
+      throw Exception("Need to finish");
     }
   }
 }
@@ -564,14 +658,18 @@ void MatIO::putArray(const Array &x, string name) {
   uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
   bool isComplex = x.isComplex();
   bool isLogical = (x.getDataClass() == FM_LOGICAL);
+  bool isGlobal = false;
   bool globalFlag = false;
   mxArrayTypes arrayType = GetArrayType(x.getDataClass());
   dp[0] = arrayType;
-  if (isGlobal)   dp[0] |= (complexFlag << 8);
-  if (isLogical)  dp[0] |= (logicalFlag << 8);
-  if (isComplex)  dp[0] |= (globalFlag << 8);
+  if (isGlobal)   dp[0] = dp[0] | (bglobalFlag << 8);
+  if (isLogical)  dp[0] = dp[0] | (blogicalFlag << 8);
+  if (isComplex)  dp[0] = dp[0] | (bcomplexFlag << 8);
+  putUint32(miMATRIX);
+  putUint32(0);
   putDataElement(aFlags);
   putDataElement(FromDimensions(x.getDimensions()));
+  putDataElement(Array::stringConstructor(name));
   if (isNormalClass(arrayType))
     putNumericArray(x);
   else if  (arrayType == mxCELL_CLASS) 
@@ -631,9 +729,10 @@ Array MatIO::getArray(bool &atEof, string &name) {
   const uint32 *dp = (const uint32 *) aFlags.getDataPointer();
   mxArrayTypes arrayType = (mxArrayTypes) (ByteOne(dp[0]));
   uint8 arrayFlags = ByteTwo(dp[0]);
-  bool isComplex = (arrayFlags & complexFlag) != 0;
-  bool isGlobal = (arrayFlags & globalFlag) != 0;
-  bool isLogical = (arrayFlags & globalFlag) != 0;
+  bool isComplex = (arrayFlags & bcomplexFlag) != 0;
+  bool isGlobal = (arrayFlags & bglobalFlag) != 0;
+  bool isLogical = (arrayFlags & blogicalFlag) != 0;
+  cout << "complex flag : " << isComplex << "\r\n";
   Array dims(getDataElement());
   if (dims.getDataClass() != FM_INT32)
     throw Exception("Corrupted MAT file - dimensions array");
@@ -643,18 +742,22 @@ Array MatIO::getArray(bool &atEof, string &name) {
     throw Exception("Corrupted MAT file - array name");
   namearray.promoteType(FM_STRING);
   name = ArrayToString(namearray);
+  Array toret;
   if (isNormalClass(arrayType)) 
-    return getNumericArray(arrayType,dm,isComplex);
+    toret = getNumericArray(arrayType,dm,isComplex);
   else if (arrayType == mxCELL_CLASS) 
-    return getCellArray(dm);
+    toret = getCellArray(dm);
   else if (arrayType == mxSTRUCT_CLASS)
-    return getStructArray(dm);
+    toret = getStructArray(dm);
   else if (arrayType == mxOBJECT_CLASS)
-    return getClassArray(dm);
+    toret = getClassArray(dm);
   else if (arrayType == mxSPARSE_CLASS)
-    return getSparseArray(dm,isComplex);
+    toret = getSparseArray(dm,isComplex);
   else 
     throw Exception(string("Unable to do this one :") + arrayType);
+  if (logicalFlag)
+    pr.promoteType(FM_LOGICAL);
+  return pr;
 }
 
 MatIO::MatIO(string filename, openMode mode) :
@@ -690,7 +793,7 @@ string MatIO::getHeader() {
 void MatIO::putHeader(string hdr) {
    char hdrtxt[124];
    memset(hdrtxt,0,124);
-   memcpy(hdrtxt,hdr.c_str(),min(123,hdr.size()));
+   memcpy(hdrtxt,hdr.c_str(),min((size_t)123,hdr.size()));
    fwrite(hdrtxt,1,124,m_fp);
    putUint16(0x100);
    putUint16('M' << 8 | 'I');
@@ -715,3 +818,13 @@ ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *ev
   }
   return ArrayVector();
 }
+
+ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  if (arg.size() == 0) throw Exception("Need filename");
+  MatIO m(ArrayToString(arg[0]),MatIO::writeMode);
+  m.putHeader("FreeMat MAT File Generation");
+  for (int i=1;i<arg.size();i+=2) 
+    m.putArray(arg[i+1],ArrayToString(arg[i]));
+  return ArrayVector();
+}
+

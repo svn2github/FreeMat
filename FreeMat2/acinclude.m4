@@ -326,10 +326,6 @@ AC_CHECK_LIB(z,inflate,found_z="yes",found_z="no")
 if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"
 fi
-AC_CHECK_LIB(matio,Mat_Open,found_matio="yes",found_matio="no")
-if test x"$found_matio" == xyes; then
-   LIBS="-lmatio $LIBS"
-fi
 
 if test x"$found_avcall" != xyes; then
   need_extern="yes"
@@ -369,16 +365,6 @@ fi
 if test x"$found_arpack" != xyes; then
    need_extern="yes"
    extern_flags="$extern_flags --with-arpack"
-fi
-
-if test x"$found_z" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-matio"
-fi
-
-if test x"$found_matio" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-matio"
 fi
 
 if test x"$is_win32" != xfalse; then

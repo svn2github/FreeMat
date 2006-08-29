@@ -9,9 +9,14 @@
 #include <zlib.h>
 
 // Things to still look at:
-//  Logical/Global flags
-//  Compressed mode write
+//  Logical/Global flags - done
+//  Compressed mode write - done
+//  Sparse matrices - done
+//  Matrix size calculation  - done
+//  Load/Save interfacing - done
 
+
+const int CHUNK = 32768;
 
 extern void SwapBuffer(char* cp, int count, int elsize);
 
@@ -66,6 +71,8 @@ uint32 ElementSize(Class cls) {
     return sizeof(float);
   case FM_DOUBLE:
     return sizeof(double);
+  case FM_STRING:
+    return sizeof(char);
   }
 }
 
@@ -218,6 +225,25 @@ Dimensions ToDimensions(Array dims) {
   for (int i=0;i<dims.getLength();i++)
     dm[i] = ((const int32*) dims.getDataPointer())[i];
   return dm;
+}
+
+void MatIO::putSparseArray(const Array &x) {
+  uint32 *I, *J;
+  int nnz;
+  void *dp = SparseToIJV2(x.getDataClass(),x.rows(),x.columns(),
+			  x.getSparseDataPointer(),I,J,nnz);
+  // Wrap I and J into arrays
+  putDataElement(Array(FM_UINT32,Dimensions(nnz,1),I));
+  putDataElement(Array(FM_UINT32,Dimensions(x.columns()+1,1),J));
+  if (!x.isComplex())
+    putDataElement(Array(x.getDataClass(),Dimensions(nnz,1),dp));
+  else {
+    Array vset(x.getDataClass(),Dimensions(nnz,1),dp);
+    Array vset_real, vset_imag;
+    ComplexSplit(vset,vset_real,vset_imag);
+    putDataElement(vset_real);
+    putDataElement(vset_imag);
+  }
 }
 
 Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
@@ -387,8 +413,8 @@ Array MatIO::getClassArray(Dimensions dm) {
   Array *sp = new Array[num*fieldNameCount];
   for (int j=0;j<fieldNameCount;j++)
     for (int i=0;i<num;i++) {
-      bool atEof; string name;
-      sp[i*fieldNameCount+j] = getArray(atEof,name);
+      bool atEof; string name; bool match; bool global;
+      sp[i*fieldNameCount+j] = getArray(atEof,name,match,global);
     }
   return Array(FM_STRUCT_ARRAY,dm,sp,false,names,classname);
 }
@@ -415,8 +441,8 @@ Array MatIO::getStructArray(Dimensions dm) {
   Array *sp = new Array[num*fieldNameCount];
   for (int j=0;j<fieldNameCount;j++)
     for (int i=0;i<num;i++) {
-      bool atEof; string name;
-      sp[i*fieldNameCount+j] = getArray(atEof,name);
+      bool atEof; string name; bool match; bool global;
+      sp[i*fieldNameCount+j] = getArray(atEof,name,match,global);
     }
   return Array(FM_STRUCT_ARRAY,dm,sp,false,names);
 }
@@ -426,8 +452,8 @@ Array MatIO::getCellArray(Dimensions dm) {
   int num = dm.getElementCount();
   Array *dp = new Array[num];
   for (int i=0;i<num;i++) {
-    bool ateof; string name;
-    dp[i] = getArray(ateof,name);
+    bool ateof; string name; bool match; bool global;
+    dp[i] = getArray(ateof,name,match,global);
   }
   return Array(FM_CELL_ARRAY,dm,dp);
 }
@@ -470,16 +496,16 @@ void MatIO::putDataElement(const Array &x) {
 
 void MatIO::InitializeCompressor() {
   // Allocate an array to hold the compressed bytes
-  m_compression_buffer = (uint8*) Malloc(32768);
+  m_compression_buffer = (uint8*) Malloc(CHUNK);
   // Set up the zstream...
   zstream = (z_streamp) calloc(1,sizeof(z_stream));
   zstream->zalloc = NULL;
   zstream->zfree = NULL;
   zstream->opaque = NULL;
-  zstream->next_in = m_compression_buffer;
-  zstream->next_out = NULL;
+  zstream->next_in = NULL;
+  zstream->next_out = m_compression_buffer;
   zstream->avail_in = 0;
-  zstream->avail_out = 32768;
+  zstream->avail_out = CHUNK;
   int retval;
   retval = deflateInit(zstream,9);
   if (retval) throw Exception("defaultinit didn't work");
@@ -487,15 +513,36 @@ void MatIO::InitializeCompressor() {
   
 }
 
-void MatIO::WriteCompressedBytes(void *dest, uint32 towrite) {
-  zstream->next_in = dest;
+void MatIO::WriteCompressedBytes(const void *dest, uint32 towrite) {
+  zstream->next_in = (Bytef*) dest;
   zstream->avail_in = towrite;
-  while (zstream->avail_out && zstream->avail_in) {
-    int ret = inflate(zstream
-  }
+  do {
+    int ret = deflate(zstream,Z_NO_FLUSH);
+    if (ret == Z_STREAM_ERROR)
+      throw Exception("Compression engine failed on write!");
+    if (zstream->avail_out == 0) {
+      WriteFileBytes(m_compression_buffer,CHUNK);
+      zstream->avail_out = CHUNK;
+      zstream->next_out = m_compression_buffer;
+    }
+  } while (zstream->avail_in);
 }
 
 void MatIO::CloseCompressor() {
+  int ret;
+  do {
+    ret = deflate(zstream,Z_FINISH);
+    if (zstream->avail_out == 0) {
+      WriteFileBytes(m_compression_buffer,CHUNK);
+      zstream->avail_out = CHUNK;
+      zstream->next_out = m_compression_buffer;
+    }
+  } while (ret != Z_STREAM_END);
+  WriteFileBytes(m_compression_buffer,CHUNK-zstream->avail_out);
+  deflateEnd(zstream);
+  free(zstream);
+  m_compressed_data = false;
+  Free(m_compression_buffer);
 }
 
 void MatIO::InitializeDecompressor(uint32 bcount) {
@@ -543,11 +590,12 @@ void MatIO::WriteFileBytes(const void *dest, uint32 towrite) {
 }
 
 void MatIO::WriteData(const void *dest, uint32 towrite) {
+  m_writecount += towrite;
+  if (m_phantomWriteMode) return;
   if (!m_compressed_data)
     WriteFileBytes(dest,towrite);
   else
-    throw Exception("Unhandled case of compression writing");
-    //    WriteCompressedBytes(dest,towrite);
+    WriteCompressedBytes(dest,towrite);
 }
 
 void MatIO::ReadData(void *dest, uint32 toread) {
@@ -595,12 +643,8 @@ void MatIO::Align64Bit() {
   } else {
     char buffer[8];
     uint32 adjustBytes;
-    if (!m_compressed_data) {
-      adjustBytes = ((8-(ftell(m_fp)&0x7)) % 8);
-      WriteFileBytes(buffer,adjustBytes);
-    } else {
-      throw Exception("Need to finish");
-    }
+    adjustBytes = ((8-(m_writecount&0x7)) % 8);
+    WriteData(buffer,adjustBytes);
   }
 }
 
@@ -652,21 +696,60 @@ void MatIO::putCellArray(const Array &x) {
     putArray(dp[i]);
 }
 
+void MatIO::putArrayCompressed(const Array &x, string name) {
+  size_t spos, fpos;
+  // Set the write count to zero
+  m_writecount = 0;
+  m_phantomWriteMode = false;
+  // Write out a compression flag
+  putUint32(miCOMPRESSED);
+  // Get the current file position
+  spos = ftell(m_fp);
+  // Put out a dummy 0 place holder
+  putUint32(0);
+  InitializeCompressor();
+  putArray(x,name);
+  CloseCompressor();
+  // Get our current position
+  fpos = ftell(m_fp);
+  // Seek to the place holder and overwrite with a byte count
+  fseek(m_fp,spos,SEEK_SET);
+  putUint32(fpos-spos-sizeof(int32));
+  // Return to the end of the stream
+  fseek(m_fp,fpos,SEEK_SET);
+}
+
 //Write a matrix to the stream
-void MatIO::putArray(const Array &x, string name) {
+void MatIO::putArray(const Array &x, string name, bool isGlobal) {
   Array aFlags(FM_UINT32,Dimensions(1,2));
   uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
   bool isComplex = x.isComplex();
   bool isLogical = (x.getDataClass() == FM_LOGICAL);
-  bool isGlobal = false;
-  bool globalFlag = false;
   mxArrayTypes arrayType = GetArrayType(x.getDataClass());
+  if (x.isSparse())  arrayType = mxSPARSE_CLASS;
   dp[0] = arrayType;
   if (isGlobal)   dp[0] = dp[0] | (bglobalFlag << 8);
   if (isLogical)  dp[0] = dp[0] | (blogicalFlag << 8);
   if (isComplex)  dp[0] = dp[0] | (bcomplexFlag << 8);
   putUint32(miMATRIX);
-  putUint32(0);
+  uint32 bcount = m_writecount;
+  if (!m_phantomWriteMode) {
+    m_phantomWriteMode = true;
+    putUint32(0);
+    putArraySpecific(x,aFlags,name,arrayType);
+    m_phantomWriteMode = false;
+    putUint32(m_writecount-bcount-4);
+    m_writecount = bcount+4;
+    putArraySpecific(x,aFlags,name,arrayType);
+  } else {
+    putUint32(0);
+    putArraySpecific(x,aFlags,name,arrayType);
+  }
+}
+
+
+void MatIO::putArraySpecific(const Array &x, Array aFlags, 
+			     string name, mxArrayTypes arrayType) {
   putDataElement(aFlags);
   putDataElement(FromDimensions(x.getDimensions()));
   putDataElement(Array::stringConstructor(name));
@@ -678,8 +761,8 @@ void MatIO::putArray(const Array &x, string name) {
     putStructArray(x);
   else if (arrayType == mxOBJECT_CLASS)
     putClassArray(x);
-//   else if (arrayType == mxSPARSE_CLASS)
-//     putSparseArray(x);
+  else if (arrayType == mxSPARSE_CLASS)
+    putSparseArray(x);
   else throw Exception(string("Unable to do this one :") + arrayType);
 }
 
@@ -694,7 +777,7 @@ void MatIO::putNumericArray(const Array &x) {
   }
 }
 
-Array MatIO::getArray(bool &atEof, string &name) {
+Array MatIO::getArray(bool &atEof, string &name, bool &match, bool &isGlobal) {
   uint32 tag1 = getUint32();
   atEof = false;
   if (feof(m_fp)) {
@@ -717,12 +800,13 @@ Array MatIO::getArray(bool &atEof, string &name) {
   // Is it a compression flag?
   if (DataType == miCOMPRESSED) {
     InitializeDecompressor(ByteCount);
-    Array ret(getArray(atEof,name));
+    Array ret(getArray(atEof,name,match,isGlobal));
     CloseDecompressor();
     return ret;
   } 
   if (DataType != miMATRIX) 
     throw Exception("Unexpected data tag when looking for an array");
+  uint32 fp(ftell(m_fp));
   Array aFlags(getDataElement());
   if ((aFlags.getDataClass() != FM_UINT32) || (aFlags.getLength() != 2))
     throw Exception("Corrupted MAT file - array flags");
@@ -730,9 +814,8 @@ Array MatIO::getArray(bool &atEof, string &name) {
   mxArrayTypes arrayType = (mxArrayTypes) (ByteOne(dp[0]));
   uint8 arrayFlags = ByteTwo(dp[0]);
   bool isComplex = (arrayFlags & bcomplexFlag) != 0;
-  bool isGlobal = (arrayFlags & bglobalFlag) != 0;
+  isGlobal = (arrayFlags & bglobalFlag) != 0;
   bool isLogical = (arrayFlags & blogicalFlag) != 0;
-  cout << "complex flag : " << isComplex << "\r\n";
   Array dims(getDataElement());
   if (dims.getDataClass() != FM_INT32)
     throw Exception("Corrupted MAT file - dimensions array");
@@ -741,7 +824,19 @@ Array MatIO::getArray(bool &atEof, string &name) {
   if (namearray.getDataClass() != FM_INT8)
     throw Exception("Corrupted MAT file - array name");
   namearray.promoteType(FM_STRING);
-  name = ArrayToString(namearray);
+  string tname = ArrayToString(namearray);
+//   if (tname != name) {
+//     match = false;
+//     if (m_compressed_data)
+//       return Array();
+//     else {
+//       // Take the current position, subtract fp
+//       fseek(m_fp,fp+ByteCount,SEEK_SET);
+//       return Array();
+//     }
+//   }
+  match = true;
+  name = tname;
   Array toret;
   if (isNormalClass(arrayType)) 
     toret = getNumericArray(arrayType,dm,isComplex);
@@ -755,9 +850,9 @@ Array MatIO::getArray(bool &atEof, string &name) {
     toret = getSparseArray(dm,isComplex);
   else 
     throw Exception(string("Unable to do this one :") + arrayType);
-  if (logicalFlag)
-    pr.promoteType(FM_LOGICAL);
-  return pr;
+  if (isLogical)
+    toret.promoteType(FM_LOGICAL);
+  return toret;
 }
 
 MatIO::MatIO(string filename, openMode mode) :
@@ -772,6 +867,8 @@ MatIO::MatIO(string filename, openMode mode) :
       throw Exception("Unable to open file " + filename + " for reading");
   }
   m_endianSwap = false;
+  m_phantomWriteMode = false;
+  m_writecount = 0;
 }
 
 string MatIO::getHeader() {
@@ -797,6 +894,7 @@ void MatIO::putHeader(string hdr) {
    fwrite(hdrtxt,1,124,m_fp);
    putUint16(0x100);
    putUint16('M' << 8 | 'I');
+   m_writecount = 0;
 }
 
 MatIO::~MatIO() {
@@ -810,10 +908,13 @@ ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *ev
   bool ateof = false;
   while(!ateof) {
     string name;
-    Array a(m.getArray(ateof,name));
+    bool globalFlag = false;
+    bool match = false;
+    Array a(m.getArray(ateof,name,match,globalFlag));
     if (!ateof) {
-      eval->outputMessage("Array: "  + name);
-      PrintArrayClassic(a,1000,eval,true);
+      if (globalFlag)
+	eval->getContext()->addGlobalVariable(name);
+      eval->getContext()->insertVariable(name,a);
     }
   }
   return ArrayVector();
@@ -822,9 +923,28 @@ ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *ev
 ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) throw Exception("Need filename");
   MatIO m(ArrayToString(arg[0]),MatIO::writeMode);
-  m.putHeader("FreeMat MAT File Generation");
-  for (int i=1;i<arg.size();i+=2) 
-    m.putArray(arg[i+1],ArrayToString(arg[i]));
+  Context *cntxt = eval->getContext();
+  stringVector names;
+  if (arg.size() == 1)
+    names = cntxt->getCurrentScope()->listAllVariables();
+  else {
+    for (int i=1;i<arg.size();i++) {
+      Array varName(arg[i]);
+      names.push_back(varName.getContentsAsCString());
+    }
+  }
+  char header[116];
+  time_t t = time(NULL);
+  snprintf(header, 116, "MATLAB 5.0 MAT-file, Created on: %s by %s",
+	   ctime(&t), Interpreter::getVersionString().c_str());
+  m.putHeader(header);
+  for (int i=0;i<names.size();i++) {
+    Array *toWrite = cntxt->lookupVariable(names[i]);
+    if (toWrite)
+      m.putArray(*toWrite,names[i],cntxt->isVariableGlobal(names[i]));
+    else
+      eval->warningMessage(string("variable ") + names[i] + " does not exist to save");
+  }
   return ArrayVector();
 }
 

@@ -115,21 +115,6 @@ BuildFFCallMINGW()
     cd $cdir
 }
 
-BuildMATIO()
-{
-    echo "Configure and building libmatio..."
-    cdir=`pwd`
-    cd Build/matio/zlib
-    ./configure --prefix=$cdir/Root
-    make
-    make install
-    cd ..
-    ./configure --with-zlib-prefix=$cdir/Root --prefix=$cdir/Root
-    make
-    make install
-    cd $cdir
-}
-
 
 Usage()
 {
@@ -146,7 +131,6 @@ to work correctly.  Currently, the supported arguments are:
       --with-lapack    Build the LAPACK library
       --with-blas      Build the BLAS library
       --with-arpack    Build the ARPACK library for sparse eigenvalue problems
-      --with-matio     Build the MAT IO library
       --mingw          Assume a MINGW/MSYS/Win32 environment"
       exit
 }
@@ -158,7 +142,6 @@ build_umfpack="no"
 build_lapack="no"
 build_blas="no"
 build_arpack="no"
-build_matio="no"
 is_ming="no"
 
 for arg
@@ -170,7 +153,6 @@ for arg
       --with-lapack)   build_lapack="yes" ;;
       --with-blas)     build_blas="yes" ;;
       --with-arpack)   build_arpack="yes" ;;
-      --with-matio)    build_matio="yes" ;;
       --mingw)         is_ming="yes" ;;
       *)               Usage;
   esac
@@ -247,14 +229,5 @@ if test x"$build_arpack" == xyes; then
     fi
 fi
 
-if test x"$build_matio" == xyes; then
-    if [ ! -f Root/lib/libmatio.a ]
-	then
-	UnpackZip matio.zip matio
-	BuildMATIO
-    else
-	echo "Skipped build of matio (it appears to have succeeded already)"
-    fi
-fi
 
 

@@ -62,6 +62,8 @@ private:
   bool m_compressed_data;
   uint8* m_compression_buffer;
   z_streamp zstream;
+  uint32 m_writecount;
+  bool m_phantomWriteMode;
 private:
   // Reads various types of arrays
   Array getSparseArray(Dimensions dm, bool complexFlag);
@@ -77,6 +79,7 @@ private:
   void putStructArray(const Array &x);
   void putCellArray(const Array &x);
   void putDataElement(const Array &x);
+  void putArraySpecific(const Array &x, Array aFlags, string name, mxArrayTypes arrayType);
   // Align us to the next 64 bit boundary.
   void Align64Bit();
   // Elementary read/write operations
@@ -90,7 +93,7 @@ private:
   void CloseDecompressor();
   // Methods that control the compression engine
   void InitializeCompressor();
-  void WriteCompressedBytes(void *dest, uint32 towrite);
+  void WriteCompressedBytes(const void *dest, uint32 towrite);
   void CloseCompressor();
   // Read data directly from the file
   void ReadFileBytes(void *dest, uint32 toread);
@@ -105,8 +108,9 @@ public:
   MatIO(string filename, MatIO::openMode mode);
   ~MatIO();
   // Get/Put for arrays
-  Array getArray(bool &atEof, string &name);
-  void putArray(const Array &x, string name = string());
+  Array getArray(bool &atEof, string &name, bool &match, bool &isGlobal);
+  void putArray(const Array &x, string name = string(), bool isGlobal = false);
+  void putArrayCompressed(const Array &x, string name);
   // Header routines
   string getHeader();
   void putHeader(string header);

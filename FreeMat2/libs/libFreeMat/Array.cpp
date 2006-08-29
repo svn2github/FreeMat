@@ -3946,7 +3946,7 @@ int32 DoCountNNZComplex(const void* dp, int len) {
   return accum;
 }
 
-int32 Array::nnz() {
+int32 Array::nnz() const {
   if (isEmpty()) return 0;
   if (isSparse())
     return CountNonzeros(dp->dataClass,

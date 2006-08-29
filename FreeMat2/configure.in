@@ -167,7 +167,6 @@ found:
   LAPACK                    ${found_lapack}
   ARPACK                    ${found_arpack}
   ZLIB                      ${found_z}
-  MATIO                     ${found_matio}
 **********************************************************************
 A script to build these external dependencies has been created
 in the current directory.  To build the missing dependencies,

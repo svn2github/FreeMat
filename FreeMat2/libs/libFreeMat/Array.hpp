@@ -721,7 +721,7 @@ public:
    * Returns the number of nonzero elements in the array.  For reference
    * types, this is a best-guess.
    */
-  int32 nnz();
+  int32 nnz() const;
 };
 
 bool isColonOperator(Array& a);

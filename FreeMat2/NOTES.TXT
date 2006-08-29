@@ -1,3 +1,5 @@
+- replacement for libMatIO is nearly complete.
+
 64 bit - 
 	Analyze.cpp - done
 	Cast.cpp - done

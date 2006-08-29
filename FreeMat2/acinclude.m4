@@ -322,6 +322,7 @@ AC_CHECK_LIB(arpack,$znaupd,found_arpack="yes",found_arpack="no",[$FLIBS])
 if test x"$found_arpack" == xyes; then
   LIBS="-larpack $LIBS"
 fi
+
 AC_CHECK_LIB(z,inflate,found_z="yes",found_z="no")
 if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"

@@ -140,7 +140,6 @@ public:
   int prompt_len;
   // Are we waiting for input?
   int loopactive;
-  QEventLoop *m_loop;
 signals:
   void CWDChanged();
   void UpdateCWD();

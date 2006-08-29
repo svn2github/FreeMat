@@ -47,6 +47,7 @@
 // Maximum allowed number of columns in the text window
 #define MAXCOLS 256
 
+#define LINELEN 65536
 
 // ----------------------------------------------------------------------------
 // KeyManager
@@ -67,8 +68,7 @@ KeyManager::KeyManager()  {
   enteredLinesEmpty = true;
   ReplacePrompt("");
   loopactive = 0;
-  m_loop = new QEventLoop;
-  lineData = new char[4096];
+  lineData = new char[LINELEN];
   ResetLineBuffer();
   context = NULL;
 }
@@ -662,6 +662,7 @@ void KeyManager::HistoryFindForwards() {
     ResetLineBuffer();
     return;
   }
+  memset(lineData,0,LINELEN);
   strcpy(lineData,history[i].c_str());
   startsearch = i;
 }
@@ -677,6 +678,7 @@ void KeyManager::HistoryFindBackwards() {
     if (!found) i--;
   }
   if (!found) return;
+  memset(lineData,0,LINELEN);
   strcpy(lineData,history[i].c_str());
   startsearch = i;
 }

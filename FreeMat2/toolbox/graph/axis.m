@@ -128,7 +128,7 @@ saveca = gca;
 axes(ax);
 if (length(varargin) == 0)
   % no args, just return the limits
-  if (is2Dview(ax))
+  if (is2dview(ax))
     retvec = [get(ax,'xlim'),get(ax,'ylim')];
   else 
     retvec = [get(ax,'xlim'),get(ax,'ylim'),get(ax,'zlim')];

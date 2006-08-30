@@ -875,7 +875,30 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
+//!
+//@Module IS2DVIEW Test Axes For 2D View
+//@@Section HANDLE
+//@@Usage
+//This function returns @|true| if the current axes are in a
+//2-D view, and false otherwise.  The generic syntax for its
+//use is
+//@[
+//  y = is2dview(x)
+//@]
+//where @|x| is the handle of an axes object.
+//!
+ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0) throw Exception("is2DView expects a handle to axes");
+  unsigned int handle = (unsigned int) ArrayToInt32(arg[0]);
+  HandleObject* hp = LookupHandleObject(handle);
+  if (!hp->IsType("axes"))
+    throw Exception("single argument to axes function must be handle for an axes"); 
+  HandleAxis *axis = (HandleAxis*) hp;
+  return singleArrayVector(Array::logicalConstructor(axis->Is2DView()));
+}
+
 void LoadHandleGraphicsFunctions(Context* context) {
+  context->addGfxFunction("is2dview",HIs2DViewFunction,1,1);
   context->addGfxFunction("axes",HAxesFunction,-1,1);
   context->addGfxFunction("line",HLineFunction,-1,1);
   context->addGfxFunction("htext",HTextFunction,-1,1);

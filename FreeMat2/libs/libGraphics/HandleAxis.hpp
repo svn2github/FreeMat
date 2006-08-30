@@ -53,7 +53,6 @@ class HandleAxis : public HandleObject {
 		 std::vector<double> color,
 		 std::string txt);
   void SetupAxis(RenderEngine& gc);
-  bool Is2DView(); 
   void RecalculateTicks();
   int GetTickCount(RenderEngine& gc, double x1, double y1, 
 		   double z1, double x2, double y2, double z2);
@@ -72,6 +71,7 @@ class HandleAxis : public HandleObject {
 public:
   HandleAxis();
   virtual ~HandleAxis();
+  bool Is2DView(); 
   virtual void ConstructProperties();
   virtual void UpdateState();
   void SetupDefaults();

@@ -488,11 +488,11 @@ const Token& Parser::Next() {
 }
 
 void Parser::serror(string errmsg) {
-  if (m_lex.Position() > lastpos) {
+  if (m_lex.ContextNum() > lastpos) {
     lasterr = errmsg;
-    lastpos = m_lex.Position();
+    lastpos = m_lex.ContextNum();
   }
-  throw ParseException(m_lex.Position(),errmsg);
+  throw ParseException(m_lex.ContextNum(),errmsg);
 }
 
 const Token & Parser::Expect(byte a) {
@@ -653,14 +653,17 @@ tree Parser::Process() {
       root = mkLeaf(TOK_FUNCTION_DEFS,m_lex.ContextNum());
       while (Match(TOK_FUNCTION))
 	addChild(root,FunctionDefinition());
-      Expect(TOK_EOF);
     } else {
       root = mkLeaf(TOK_SCRIPT,m_lex.ContextNum());
       addChild(root,StatementList());
-      Expect(TOK_EOF);
     }
   } catch(ParseException &e) {
     throw Exception(LastErr() + m_lex.Context(LastPos()));
+  }
+  try {
+    Expect(TOK_EOF);
+  } catch (ParseException &e) {
+    throw Exception("Unexpected input" + m_lex.Context());
   }
   return root;
 }

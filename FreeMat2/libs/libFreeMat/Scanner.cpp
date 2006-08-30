@@ -337,7 +337,7 @@ byte Scanner::ahead(int n) {
 }
 
 string Scanner::Context() {
-  return Context(m_ptr);
+  return Context(ContextNum());
 }
 
 string stringFromNumber(unsigned line) {

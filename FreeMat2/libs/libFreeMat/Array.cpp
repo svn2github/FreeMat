@@ -3489,6 +3489,8 @@ void Array::deleteVectorSubset(Array& arg) {
     int newSize = 0;
     for (i=0;i<N;i++) 
       if (!deletionMap[i]) newSize++;
+    // Special case - if newSize==getLength, the delete is a no-op
+    if (newSize == getLength()) return;
     // Allocate a new space to hold the data.
     qp = allocateArray(dp->dataClass,newSize,dp->fieldNames);
     // Loop through the indices - copy elements in that 

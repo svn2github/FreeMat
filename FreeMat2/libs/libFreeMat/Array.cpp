@@ -966,7 +966,7 @@ int Array::getByteSize() const {
     int N = dp->dimensions[0];\
     int i, j;\
     for (i=0;i<N;i++)\
-      for (j=1;j<N;j++)\
+      for (j=i+1;j<N;j++)\
         if (qp[i+j*N] != qp[j+i*N]) return false;\
     return true;\
     break;\
@@ -980,7 +980,7 @@ int Array::getByteSize() const {
     int N = dp->dimensions[0];\
     int i, j;\
     for (i=0;i<N;i++)\
-      for (j=1;j<N;j++) {\
+      for (j=i+1;j<N;j++) {\
         if (qp[2*(i+j*N)] != qp[2*(j+i*N)]) return false;\
         if (qp[2*(i+j*N)+1] != -qp[2*(j+i*N)+1]) return false;\
       }\
@@ -2004,6 +2004,41 @@ Array Array::int32RangeConstructor(int32 minval, int32 stepsize,
       rp[i] = minval + i*stepsize;
   }
   return Array(FM_INT32,dim,rp);
+}
+
+Array Array::int64RangeConstructor(int64 minval, int64 stepsize, 
+				   int64 maxval, bool vert) {
+  Dimensions dim;
+  int64 *rp = NULL;
+  if (stepsize == 0) throw Exception("step size must be nonzero in colon expression");
+  int scount = 0;
+  int accum = minval;
+  if (stepsize > 0) {
+    while (accum <= maxval) {
+      accum += stepsize;
+      scount++;
+    }
+  } else {
+    while (accum >= maxval) {
+      accum += stepsize;
+      scount++;
+    }
+  }
+  if (scount <= 0)
+    dim.reset();
+  else {
+    if (vert) {
+      dim[0] = scount;
+      dim[1] = 1;
+    } else {
+      dim[0] = 1;
+      dim[1] = scount;
+    }
+    rp = (int64 *) allocateArray(FM_INT64,scount);
+    for (int i=0;i<scount;i++)
+      rp[i] = minval + i*stepsize;
+  }
+  return Array(FM_INT64,dim,rp);
 }
 
 void do_single_sided_algo_float(float a, float b,float *pvec, int adder, int count) {

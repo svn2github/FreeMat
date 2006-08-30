@@ -756,8 +756,13 @@ void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
     A.promoteType(Cclass);
     B.promoteType(Cclass);
   } else if (!isDivOrMatrix) {
-    A.promoteType(FM_INT32);
-    B.promoteType(FM_INT32);
+    if (Cclass == FM_INT64) {
+      A.promoteType(FM_INT64);
+      B.promoteType(FM_INT64);
+    } else {
+      A.promoteType(FM_INT32);
+      B.promoteType(FM_INT32);
+    }
   } else {
     A.promoteType(FM_DOUBLE);
     B.promoteType(FM_DOUBLE);
@@ -1263,6 +1268,11 @@ Array Add(Array A, Array B) {
 			 (int32*) A.getDataPointer(), Astride,
 			 (int32*) B.getDataPointer(), Bstride);
       break;
+    case FM_INT64:
+      addfullreal<int64>(Clen,(int64*) Cp, 
+			 (int64*) A.getDataPointer(), Astride,
+			 (int64*) B.getDataPointer(), Bstride);
+      break;
     case FM_FLOAT:
       addfullreal<float>(Clen,(float*) Cp, 
 			 (float*) A.getDataPointer(), Astride,
@@ -1423,6 +1433,11 @@ Array Subtract(Array A, Array B) {
       subtractfullreal<int32>(Clen,(int32*) Cp, 
 			      (int32*) A.getDataPointer(), Astride,
 			      (int32*) B.getDataPointer(), Bstride);
+      break;
+    case FM_INT64:
+      subtractfullreal<int64>(Clen,(int64*) Cp, 
+			      (int64*) A.getDataPointer(), Astride,
+			      (int64*) B.getDataPointer(), Bstride);
       break;
     case FM_FLOAT:
       subtractfullreal<float>(Clen,(float*) Cp, 
@@ -1592,6 +1607,11 @@ Array DotMultiply(Array A, Array B) {
 				(int32*) A.getDataPointer(), Astride,
 				(int32*) B.getDataPointer(), Bstride);
 	break;
+      case FM_INT64:
+	multiplyfullreal<int64>(Clen,(int64*) Cp, 
+				(int64*) A.getDataPointer(), Astride,
+				(int64*) B.getDataPointer(), Bstride);
+	break;
       case FM_FLOAT:
 	multiplyfullreal<float>(Clen,(float*) Cp, 
 				(float*) A.getDataPointer(), Astride,
@@ -1718,6 +1738,11 @@ Array DotRightDivide(Array A, Array B) {
     dividefullreal<int32>(Clen,(int32*) Cp, 
 			  (int32*) A.getDataPointer(), Astride,
 			  (int32*) B.getDataPointer(), Bstride);
+    break;
+  case FM_INT64:
+    dividefullreal<int64>(Clen,(int64*) Cp, 
+			  (int64*) A.getDataPointer(), Astride,
+			  (int64*) B.getDataPointer(), Bstride);
     break;
   case FM_FLOAT:
     dividefullreal<float>(Clen,(float*) Cp, 
@@ -1976,6 +2001,11 @@ Array LessThan(Array A, Array B) {
 			    (int32*) A.getDataPointer(), Astride,
 			    (int32*) B.getDataPointer(), Bstride);
     break;
+  case FM_INT64:
+    lessthanfuncreal<int64>(Clen,(logical*) Cp, 
+			    (int64*) A.getDataPointer(), Astride,
+			    (int64*) B.getDataPointer(), Bstride);
+    break;
   case FM_FLOAT:
     lessthanfuncreal<float>(Clen,(logical*) Cp, 
 			    (float*) A.getDataPointer(), Astride,
@@ -2064,6 +2094,11 @@ Array LessEquals(Array A, Array B) {
     lessequalsfuncreal<int32>(Clen,(logical*) Cp, 
 			      (int32*) A.getDataPointer(), Astride,
 			      (int32*) B.getDataPointer(), Bstride);
+    break;
+  case FM_INT64:
+    lessequalsfuncreal<int64>(Clen,(logical*) Cp, 
+			      (int64*) A.getDataPointer(), Astride,
+			      (int64*) B.getDataPointer(), Bstride);
     break;
   case FM_FLOAT:
     lessequalsfuncreal<float>(Clen,(logical*) Cp, 
@@ -2154,6 +2189,11 @@ Array GreaterThan(Array A, Array B) {
 			       (int32*) A.getDataPointer(), Astride,
 			       (int32*) B.getDataPointer(), Bstride);
     break;
+  case FM_INT64:
+    greaterthanfuncreal<int64>(Clen,(logical*) Cp, 
+			       (int64*) A.getDataPointer(), Astride,
+			       (int64*) B.getDataPointer(), Bstride);
+    break;
   case FM_FLOAT:
     greaterthanfuncreal<float>(Clen,(logical*) Cp, 
 			       (float*) A.getDataPointer(), Astride,
@@ -2242,6 +2282,11 @@ Array GreaterEquals(Array A, Array B) {
     greaterequalsfuncreal<int32>(Clen,(logical*) Cp, 
 				 (int32*) A.getDataPointer(), Astride,
 				 (int32*) B.getDataPointer(), Bstride);
+    break;
+  case FM_INT64:
+    greaterequalsfuncreal<int64>(Clen,(logical*) Cp, 
+				 (int64*) A.getDataPointer(), Astride,
+				 (int64*) B.getDataPointer(), Bstride);
     break;
   case FM_FLOAT:
     greaterequalsfuncreal<float>(Clen,(logical*) Cp, 
@@ -2332,6 +2377,11 @@ Array Equals(Array A, Array B) {
 			  (int32*) A.getDataPointer(), Astride,
 			  (int32*) B.getDataPointer(), Bstride);
     break;
+  case FM_INT64:
+    equalsfuncreal<int64>(Clen,(logical*) Cp, 
+			  (int64*) A.getDataPointer(), Astride,
+			  (int64*) B.getDataPointer(), Bstride);
+    break;
   case FM_FLOAT:
     equalsfuncreal<float>(Clen,(logical*) Cp, 
 			  (float*) A.getDataPointer(), Astride,
@@ -2420,6 +2470,11 @@ Array NotEquals(Array A, Array B) {
     notequalsfuncreal<int32>(Clen,(logical*) Cp, 
 			     (int32*) A.getDataPointer(), Astride,
 			     (int32*) B.getDataPointer(), Bstride);
+    break;
+  case FM_INT64:
+    notequalsfuncreal<int64>(Clen,(logical*) Cp, 
+			     (int64*) A.getDataPointer(), Astride,
+			     (int64*) B.getDataPointer(), Bstride);
     break;
   case FM_FLOAT:
     notequalsfuncreal<float>(Clen,(logical*) Cp, 
@@ -2680,6 +2735,9 @@ Array Negate(Array A){
   switch (Aclass) {
   case FM_INT32:
     neg<int32>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
+    break;
+  case FM_INT64:
+    neg<int64>(A.getLength(),(int64*)Cp,(int64*)A.getDataPointer());
     break;
   case FM_FLOAT:
     neg<float>(A.getLength(),(float*)Cp,(float*)A.getDataPointer());
@@ -4368,6 +4426,12 @@ Array UnitColon(Array A, Array B) throw(Exception) {
 				     *((int32*)B.getDataPointer()),
 				     false);
     break;
+  case FM_INT64:
+    C = Array::int64RangeConstructor(*((int64*)A.getDataPointer()),
+				     1,
+				     *((int64*)B.getDataPointer()),
+				     false);
+    break;
   case FM_FLOAT: 
     C = Array::floatRangeConstructor(*((float*)A.getDataPointer()),
 				     1,
@@ -4406,6 +4470,12 @@ Array DoubleColon(Array A, Array B, Array C) throw(Exception){
     D = Array::int32RangeConstructor(*((int32*)A.getDataPointer()),
 				     *((int32*)B.getDataPointer()),
 				     *((int32*)C.getDataPointer()),
+				     false);
+    break;
+  case FM_INT64:
+    D = Array::int64RangeConstructor(*((int64*)A.getDataPointer()),
+				     *((int64*)B.getDataPointer()),
+				     *((int64*)C.getDataPointer()),
 				     false);
     break;
   case FM_FLOAT: 

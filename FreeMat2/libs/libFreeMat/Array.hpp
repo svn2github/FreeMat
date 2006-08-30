@@ -503,6 +503,11 @@ public:
    */
   static Array int32RangeConstructor(int32 minval, int32 stepsize, int32 maxval, bool vertical);
   /**
+   * Construct a FM_INT64 vector (either vertical or horizontal) corresponding to 
+   * minval:stepsize:maxval, with an optional transpose.
+   */
+  static Array int64RangeConstructor(int64 minval, int64 stepsize, int64 maxval, bool vertical);
+  /**
    * Construct a FM_FLOAT vector (either vertical or horizontal) corresponding to 
    * minval:stepsize:maxval, with an optional transpose.
    */

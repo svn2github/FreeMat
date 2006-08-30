@@ -21,12 +21,15 @@
 %size(y)
 %@>
 %!
-% Copyright 2004-2005 Brian Yanoff
+% Copyright 2004-2005, 2006 Brian Yanoff, Dirk Beque
 function B = squeeze(A)
   sz = size(A);
   sz(find(sz==1)) = [];
   if length(sz)==1
     sz = [1, sz];
+  end
+  if length(sz)==0
+    sz = [1,1];
   end
   B = reshape(A,sz);
   

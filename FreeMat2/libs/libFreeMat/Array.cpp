@@ -3585,6 +3585,7 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
   bool *indxCovered = NULL;
   bool *deletionMap = NULL;
   void *cp = NULL;
+  if (isEmpty()) return;
   try {
     // Our strategy is as follows.  To make the deletion, we need
     // one piece of information: the dimension to delete.

@@ -332,8 +332,9 @@ void getNDimSubsetNumericFirstColonBurst(const T *sp, T* destp,
       srcadd += ndxval*srcfact[j];
     }
     // Copy the value
-    for (int k=0;k<burstLen;k++)
-      destp[i*burstLen+k] = sp[burstLen*srcadd+k];
+    for (int m=0;m<numrows;m++)
+      for (int k=0;k<burstLen;k++)
+	destp[(i+m)*burstLen+k] = sp[burstLen*srcadd+m*burstLen+k];
     // Update the ndxset
     ndxptr[1]++;
     for (int j=1;j<numDims-1;j++) {
@@ -376,8 +377,9 @@ void setNDimSubsetNumericFirstColonBurst(T *sp, const T* destp,
       srcadd += ndxval*srcfact[j];
     }
     // Copy the value
-    for (int k=0;k<burstLen;k++)
-      sp[burstLen*srcadd+k] = destp[i*burstLen*advance+k];
+    for (int m=0;m<numrows;m++) 
+      for (int k=0;k<burstLen;k++)
+	sp[burstLen*srcadd+m*burstLen+k] = destp[(i+m)*burstLen*advance+k];
     // Update the ndxset
     ndxptr[1]++;
     for (int j=1;j<numDims-1;j++) {

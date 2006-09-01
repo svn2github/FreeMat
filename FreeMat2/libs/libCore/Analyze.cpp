@@ -855,8 +855,12 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
     if (workDim < 0)
       throw Exception("Dimension argument to min should be positive");
   }
-  if (input.isScalar())
-    return singleArrayVector(input);
+  if (input.isScalar()) {
+    ArrayVector ret;
+    ret.push_back(input);
+    ret.push_back(Array::int32Constructor(1));
+    return ret;
+  }
   if (input.isEmpty())
     return HandleEmpty(input);
   // No dimension supplied, look for a non-singular dimension
@@ -1268,8 +1272,12 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
     if (workDim < 0)
       throw Exception("Dimension argument to max should be positive");
   }
-  if (input.isScalar())
-    return singleArrayVector(input);
+  if (input.isScalar()) {
+    ArrayVector ret;
+    ret.push_back(input);
+    ret.push_back(Array::int32Constructor(1));
+    return ret;
+  }
   if (input.isEmpty())
     return HandleEmpty(input);
   // No dimension supplied, look for a non-singular dimension
@@ -2542,7 +2550,8 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
 //    \prod_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
 //\]
 //If @|d| is omitted, then the product is taken along the 
-//first non-singleton dimension of @|x|. 
+//first non-singleton dimension of @|x|. Note that by definition
+//(starting with FreeMat 2.1) @|prod([]) = 1|.
 //@@Example
 //The following piece of code demonstrates various uses of the product
 //function
@@ -2579,7 +2588,7 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
       throw Exception("Dimension argument to prod should be positive");
   }
   if (input.isEmpty())
-    return HandleEmpty(input);
+    return singleArrayVector(Array::int32Constructor(1));
   if (input.isScalar())
     return singleArrayVector(input);
   // No dimension supplied, look for a non-singular dimension
@@ -3630,7 +3639,12 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("sort requires at least one argument");
   Array input(arg[0]);
-  if (input.isScalar()) return singleArrayVector(input);
+  if (input.isScalar()) {
+    ArrayVector ret;
+    ret.push_back(input);
+    ret.push_back(Array::int32Constructor(1));
+    return ret;
+  }
   Class argType(input.getDataClass());
   // Get the dimension argument (if supplied)
   int workDim = -1;

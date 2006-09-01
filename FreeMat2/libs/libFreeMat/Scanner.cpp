@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "Exception.hpp"
 
 extern string fm_reserved[21];
 
@@ -128,16 +129,18 @@ void Scanner::FetchOther() {
 
 void Scanner::FetchString() {
   int len = 0;
-  while (!(((ahead(len+1) == '\'') &&
-	    (ahead(len+2) != '\'')) || 
-	   (ahead(len+1) == '\n'))) {
+  // We want to advance, but skip double quotes
+  //  while ((next() != ') || ((next() == ') && (next(2) == ')) && (next() != '\n')
+  while (((ahead(len+1) != '\'') ||
+	  ((ahead(len+1) == '\'') && (ahead(len+2) == '\''))) &&
+	 (ahead(len+1) != '\n')) {
     if ((ahead(len+1) == '\'') &&
 	(ahead(len+2) == '\'')) len+=2;
     else
       len++;
   }
   if (ahead(len+1) == '\n')
-    throw ParseException(m_ptr,"unterminated string");
+    throw Exception("unterminated string" + Context());
   string ret(m_text,m_ptr+1,len);
   string::size_type ndx = ret.find("''");
   while (ndx != string::npos) {

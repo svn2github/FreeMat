@@ -3472,10 +3472,14 @@ void Interpreter::setGreetingFlag(bool skip) {
 }
 
 bool NeedsMoreInput(string txt) {
-  Scanner S(txt,"");
-  while (!S.Next().Is(TOK_EOF))
-    S.Consume();
-  return (S.InContinuationState() || S.InBracket());
+  try {
+    Scanner S(txt,"");
+    while (!S.Next().Is(TOK_EOF))
+      S.Consume();
+    return (S.InContinuationState() || S.InBracket());
+  } catch (Exception &e) {
+    return false;
+  }
 }
 
 string Interpreter::getLine(string prompt) {

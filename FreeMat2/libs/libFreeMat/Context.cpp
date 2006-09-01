@@ -282,8 +282,6 @@ void Context::addPersistentVariable(std::string var) {
   // Delete global variables with this name
   scopestack.front()->deleteVariable(var);
   scopestack.back()->addPersistentVariablePointer(var);
-  if (!scopestack.front()->lookupVariable(scopestack.back()->getMangledName(var)))
-    scopestack.front()->insertVariable(scopestack.back()->getMangledName(var), Array::emptyConstructor());
 }
 
 void Context::addGlobalVariable(std::string var) {
@@ -295,8 +293,6 @@ void Context::addGlobalVariable(std::string var) {
   // Add a point in the local scope to the global variable
   scopestack.back()->addGlobalVariablePointer(var);
   // Make sure the variable exists
-  if (!scopestack.front()->lookupVariable(var))
-    scopestack.front()->insertVariable(var, Array::emptyConstructor());
 }
 
 void Context::deleteVariable(std::string var) {

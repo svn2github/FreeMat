@@ -147,7 +147,7 @@ ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* ev
   if (inBundleMode()) {
     dir = QDir(QString(qApp->applicationDirPath() + "/../Resources/help/html"));
   } else {
-    dir = QDir(QString(BASEPATH)+"/html");
+    dir = QDir(QString(BASEPATH)+"/help/html");
   }
   HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
   m_helpwin->show();

@@ -74,7 +74,7 @@ if (nargin == 2)
 else
   clim = get(g,'clim');
   win = clim(2)-clim(1);
-  lev = clim(2)+clim(1);
+  lev = (clim(2)+clim(1))/2;
 end
 
   

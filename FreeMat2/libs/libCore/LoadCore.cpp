@@ -101,6 +101,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("reshape",ReshapeFunction,-1,1);
   context->addFunction("ones",OnesFunction,-1,1);
   context->addFunction("pwd",PrintWorkingDirectoryFunction,0,1);
+  context->addFunction("dirsep",DirSepFunction,0,1);
   context->addFunction("error",ErrorFunction,1,0,"x");
   context->addSpecialFunction("warning",WarningFunction,1,0,"x");
   context->addSpecialFunction("lasterr",LasterrFunction,1,1,"x");

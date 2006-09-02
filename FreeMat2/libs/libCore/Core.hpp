@@ -72,6 +72,7 @@ ArrayVector ChangeDirFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ListFilesFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SystemFunction(int, const ArrayVector& arg);
 ArrayVector PrintWorkingDirectoryFunction(int, const ArrayVector& arg);
+ArrayVector DirSepFunction(int, const ArrayVector& arg);
 ArrayVector FieldNamesFunction(int, const ArrayVector& arg);
 ArrayVector SizeFunction(int, const ArrayVector& arg);
 ArrayVector TestFunction(int, const ArrayVector& arg);

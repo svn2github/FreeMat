@@ -213,6 +213,27 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
 }
 
 //!
+//@Module DIRSEP Director Seperator
+//@@Section OS
+//@@Usage
+//Returns the directory seperator character for the current platform.  The 
+//general syntax for its use is
+//@[
+//   y = dirsep
+//@]
+//This function can be used to build up paths (or see @|fullfile| for another
+//way to do this.
+//!
+ArrayVector DirSepFunction(int nargout, const ArrayVector& arg) {
+#ifdef WIN32
+  return singleArrayVector(Array::stringConstructor("\\"));
+#else
+  return singleArrayVector(Array::stringConstructor("/"));
+#endif
+}
+
+
+//!
 //@Module PWD Print Working Directory Function
 //@@Section OS
 //@@Usage

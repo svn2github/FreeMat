@@ -19,6 +19,10 @@
 %@[
 %  path('newpath',path)
 %@]
+%In the final form, the path command prints out the current path
+%@[
+%  path
+%@]
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
@@ -28,6 +32,17 @@ if (strcmp(computer,'PCWIN'))
   pathdiv = ';';
 else
   pathdiv = ':';
+end
+if ((nargout == 0) && (nargin == 0))
+    a = getpath;
+    b = strfind(a,pathsep);
+    n = 1;
+    for i=1:numel(b)
+        printf('%s\n',a(n:(b(i)-1)));
+        n = b(i)+1;
+    end
+    printf('%s\n',a((b(end)+1):end));
+    return;
 end
 if (nargout == 1)
   x = getpath;

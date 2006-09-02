@@ -17,6 +17,8 @@
 %  \item 'int16','short','integer*2' for  signed, 16-bit integers
 %  \item 'uint32','unsigned int' for unsigned, 32-bit integers
 %  \item 'int32','int','integer*4' for signed, 32-bit integers
+%  \item 'uint64','unsigned int' for unsigned, 64-bit integers
+%  \item 'int64','int','integer*8' for signed, 64-bit integers
 %  \item 'single','float32','float','real*4' for 32-bit floating point
 %  \item 'double','float64','real*8' for 64-bit floating point
 %  \item 'complex','complex*8' for  64-bit complex floating point (32 bits 

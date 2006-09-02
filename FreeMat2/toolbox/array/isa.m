@@ -19,6 +19,8 @@
 %\item @|'int16'| for signed 16-bit integers
 %\item @|'uint32'| for unsigned 32-bit integers
 %\item @|'int32'| for signed 32-bit integers
+%\item @|'uint64'| for unsigned 64-bit integers
+%\item @|'int64'| for signed 64-bit integers
 %\item @|'float'| for 32-bit floating point numbers
 %\item @|'double'| for 64-bit floating point numbers
 %\item @|'complex'| for complex floating point numbers with 32-bits per field

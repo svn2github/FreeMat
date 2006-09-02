@@ -50,7 +50,8 @@ function csvwrite(filename,x,firstrow,firstcol)
     if (~isnumeric(x))
         error('csvwrite cannot write non-numerical arrays');
     end
-    if (any(strcmp({'uint8','int8','uint16','int16','uint32','int32'}, ...
+    if (any(strcmp({'uint8','int8','uint16','int16','uint32',...
+                    'int32','uint64','int64'}, ...
             class(x))))
         csvwrite_real(filename,x,firstrow,firstcol,'%d');
     elseif(isreal(x))

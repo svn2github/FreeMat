@@ -1005,24 +1005,27 @@ void KeyManager::QueueString(QString t) {
   AddStringToLine(g);
 }
 
-//FIXME
 void KeyManager::QueueMultiString(QString t) {
   if (t.indexOf("\n") < 0) {
     QueueString(t);
     return;
   }
   QStringList tlist(t.split("\n"));
-  if (tlist.size() > 0)
-    AddStringToLine(tlist[0].toStdString()); 
-  emit OutputRawString("\r\n");
-  ResetLineBuffer();
-  ReplacePrompt("");
-  for (int i=1;i<tlist.size();i++)
-    emit OutputRawString(tlist[i].toStdString() + "\r\n");
-  for (int i=0;i<tlist.size();i++) {
-    enteredLines.push_back(tlist[i].toStdString());
-    AddHistory(tlist[i].toStdString());
+  for (int i=0;i<tlist.size()-1;i++) {
+    string t(tlist[i].toStdString());
+    emit OutputRawString(t+"\r\n");
+    emit ExecuteLine(t+"\n");
+    AddHistory(t);
   }
+  if (t.endsWith('\n')) {
+    string t(tlist.back().toStdString());
+    emit OutputRawString(t+"\r\n");
+    emit ExecuteLine(t+"\n");
+    AddHistory(t);
+  }  else {
+    QueueString(tlist.back());
+  }
+  return;
 }
 
 void KeyManager::QueueCommand(QString t) {

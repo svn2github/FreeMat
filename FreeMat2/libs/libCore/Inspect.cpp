@@ -1126,8 +1126,13 @@ ArrayVector SingleFindModeFull(Array x) {
     if (dp[i])
       op[ndx++] = i + 1;
   Dimensions retDim(2);
-  retDim[0] = nonZero;
-  retDim[1] = 1;
+  if (x.isRowVector()) {
+    retDim[0] = 1;
+    retDim[1] = nonZero;
+  } else {
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+  }
   return singleArrayVector(Array(FM_UINT32,retDim,op));
 }
   
@@ -1158,8 +1163,13 @@ ArrayVector RCFindModeFull(Array x) {
       op_col[ndx++] = (i / rows) + 1;
     }
   Dimensions retDim(2);
-  retDim[0] = nonZero;
-  retDim[1] = 1;
+  if (x.isRowVector()) {
+    retDim[0] = 1;
+    retDim[1] = nonZero;
+  } else {
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+  }
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
   retval.push_back(Array(FM_UINT32,retDim,op_col));
@@ -1196,8 +1206,13 @@ ArrayVector RCVFindModeFullReal(Array x) {
       op_val[ndx++] = dp[i];
     }
   Dimensions retDim(2);
-  retDim[0] = nonZero;
-  retDim[1] = 1;
+  if (x.isRowVector()) {
+    retDim[0] = 1;
+    retDim[1] = nonZero;
+  } else {
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+  }
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
   retval.push_back(Array(FM_UINT32,retDim,op_col));
@@ -1237,8 +1252,13 @@ ArrayVector RCVFindModeFullComplex(Array x) {
       ndx++;
     }
   Dimensions retDim(2);
-  retDim[0] = nonZero;
-  retDim[1] = 1;
+  if (x.isRowVector()) {
+    retDim[0] = 1;
+    retDim[1] = nonZero;
+  } else {
+    retDim[0] = nonZero;
+    retDim[1] = 1;
+  }
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
   retval.push_back(Array(FM_UINT32,retDim,op_col));
@@ -1289,8 +1309,13 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 		   x.getDimensionLength(1), x.getSparseDataPointer(),
 		   rows, cols, nnz);
   Dimensions retDim(2);
-  retDim[0] = nnz;
-  retDim[1] = 1;
+  if (x.isRowVector()) {
+    retDim[0] = 1;
+    retDim[1] = nnz;
+  } else {
+    retDim[0] = nnz;
+    retDim[1] = 1;
+  }
   ArrayVector retval;
   // Decide how to combine the arrays depending on nargout
   if (nargout == 3) {
@@ -1338,8 +1363,24 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 //@[
 //   [r,c,v] = find(x).
 //@]
-//This form is particularly useful for converting sparse matrices
-//into IJV form.
+//Note that if the argument is a row vector, then the returned vectors
+//are also row vectors. This form is particularly useful for converting 
+//sparse matrices into IJV form.
+//
+//The @|find| command also supports some additional arguments.  Each of the
+//above forms can be combined with an integer indicating how many results
+//to return:
+//@[
+//   y = find(x,k)
+//@]
+//where @|k| is the maximum number of results to return.  This form will return
+//the first @|k| results.  You can also specify an optional flag indicating 
+//whether to take the first or last @|k| values:
+//@[
+//   y = find(x,k,'first')
+//   y = find(x,k,'last')
+//@]
+//in the case of the @|'last'| argument, the last @|k| values are returned.
 //@@Example
 //Some simple examples of its usage, and some common uses of @|find| in FreeMat programs.
 //@<
@@ -1368,23 +1409,53 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 //[r,c,v] = find(A)
 //@>
 //!  
+
+ArrayVector FindTrim(ArrayVector a, int cnt, bool first_flag) {
+  if (cnt < 0) return a;
+  if (a.size() == 0) return a;
+  int N = a[0].getLength();
+  if (cnt > N) return a;
+  ArrayVector ret;
+  Array ndx;
+  bool vertflag = !(a[0].isRowVector());
+  if (first_flag)
+    ndx = Array::int32RangeConstructor(1,1,cnt,vertflag);
+  else
+    ndx = Array::int32RangeConstructor((N-cnt)+1,1,N,vertflag);
+  for (int i=0;i<a.size();i++) 
+    ret.push_back(a[i].getVectorSubset(ndx));
+  return ret;
+}
+
 ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
   // Detect the Find mode...
-  if (arg.size() != 1)
-    throw Exception("find function takes one argument");
+  if (arg.size() < 1)
+    throw Exception("find function takes at least one argument");
   Array tmp(arg[0]);
+  int k = -1;
+  bool first_flag = true;
+  if (arg.size() > 1)
+    k  = ArrayToInt32(arg[1]);
+  if (arg.size() == 3) {
+    const char *flag = ArrayToString(arg[2]);
+    if (strcmp(flag,"first") == 0)
+      first_flag = true;
+    else if (strcmp(flag,"last") == 0)
+      first_flag = false;
+    else
+      throw Exception("third option to find must be either 'first' or 'last'");
+  }
   if (tmp.isReferenceType())
     throw Exception("find does not work on reference types (cell-arrays or structure arrays)");
   if ((nargout <= 1) && !tmp.isSparse())
-    return SingleFindModeFull(tmp);
+    return FindTrim(SingleFindModeFull(tmp),k,first_flag);
   if ((nargout == 2) && !tmp.isSparse())
-    return RCFindModeFull(tmp);
+    return FindTrim(RCFindModeFull(tmp),k,first_flag);
   if ((nargout == 3) && !tmp.isSparse())
-    return RCVFindModeFull(tmp);
+    return FindTrim(RCVFindModeFull(tmp),k,first_flag);
   if (nargout > 3)
     throw Exception("Do not understand syntax of find call (too many output arguments).");
-  return FindModeSparse(tmp,nargout);
-  return ArrayVector();
+  return FindTrim(FindModeSparse(tmp,nargout),k,first_flag);
 }
 
 //!

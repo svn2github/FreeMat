@@ -424,8 +424,7 @@ ArrayVector LUDecompose(int nargout, Array A) {
     throw Exception("illegal usage of lu function - for dense matrices, maximum number of outputs is 3");
   int nrows = A.getDimensionLength(0);
   int ncols = A.getDimensionLength(1);
-  int p = max(nrows,ncols);
-  int q = min(nrows,ncols);
+  int p = min(nrows,ncols);
   if (A.isIntegerClass())
     A.promoteType(FM_DOUBLE);
   ArrayVector retval;

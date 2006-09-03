@@ -73,19 +73,6 @@ void ShutdownHandleGraphics() {
 // Magic constant - limits the number of figures you can have...
   
 HandleList<HandleObject*> objectset;
-static bool NonGUIModeHack = false;
-
-class NonClosable : public QWidget {
-public:
-  NonClosable() : QWidget(0,Qt::FramelessWindowHint) {};
-  void closeEvent(QCloseEvent *ce) {ce->ignore();}
-};
-
-static NonClosable *wid = NULL;
-
-void SetNonGUIHack() {
-  NonGUIModeHack = true;
-}
 
 void NotifyFigureClosed(unsigned figNum) {
   //    delete Hfigs[figNum];
@@ -96,15 +83,6 @@ void NotifyFigureClosed(unsigned figNum) {
   bool allClosed = true;
   for (int i=0;allClosed && i<MAX_FIGS;i++)
     allClosed = Hfigs[i] == NULL;
-  if (allClosed && NonGUIModeHack) {
-    if (!wid) {
-      wid = new NonClosable;
-      wid->setGeometry(0,0,1,1);
-      wid->setWindowIcon(QIcon(":/images/freemat_small_mod_64.png"));
-      wid->show();
-    } else
-      wid->show();
-  }
 }
 
 static void NewFig() {

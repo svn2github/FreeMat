@@ -43,6 +43,5 @@ void InitializeHandleGraphics();
 void ShutdownHandleGraphics();
 void CloseHelper(int fig);
 void IndirectWindowClose(int handle);
-void SetNonGUIHack();
 
 #endif

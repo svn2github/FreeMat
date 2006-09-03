@@ -167,7 +167,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("randchi",RandChiFunction,1,1,"dof");
   context->addFunction("randexp",RandExpFunction,1,1,"means");
   context->addFunction("randp",RandPoissonFunction,1,1,"means");
-  context->addFunction("find",FindFunction,1,-1,"x");
+  context->addFunction("find",FindFunction,3,-1,"x");
   context->addFunction("conj",ConjFunction,1,1,"x");
   context->addFunction("real",RealFunction,1,1,"x");
   context->addFunction("imag",ImagFunction,1,1,"x");

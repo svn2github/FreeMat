@@ -78,6 +78,7 @@ void signal_resize(int a) {
 
 MainApp::MainApp() {
   guimode = true;
+  GUIHack = false;
   skipGreeting = false;
   m_keys = new KeyManager;
 }
@@ -113,7 +114,7 @@ void MainApp::SetupGUICase() {
 
 void MainApp::SetupInteractiveTerminalCase() {
 #ifdef Q_WS_X11
-  SetNonGUIHack();
+  GUIHack = true;
   Terminal *myterm = new Terminal;
   gterm = myterm;
   m_keys->RegisterTerm(myterm);
@@ -141,7 +142,7 @@ KeyManager* MainApp::GetKeyManager() {
 
 void MainApp::SetupDumbTerminalCase() {
 #ifdef Q_WS_X11
-  SetNonGUIHack();
+  GUIHack = true;
   DumbTerminal *myterm = new DumbTerminal;
   m_keys->RegisterTerm(myterm);
   fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
@@ -203,7 +204,27 @@ void MainApp::ExecuteLine(string txt) {
   m_eval->ExecuteLine(txt);
 }
 
+static bool NonGUIModeHack = false;
+
+class NonClosable : public QWidget {
+public:
+  NonClosable() : QWidget(0,Qt::FramelessWindowHint) {};
+  void closeEvent(QCloseEvent *ce) {ce->ignore();}
+};
+
+static NonClosable *wid = NULL;
+
+void MainApp::CheckNonClosable() {
+  if (GUIHack && !wid) {
+    wid = new NonClosable;
+    wid->setGeometry(0,0,1,1);
+    wid->setWindowIcon(QIcon(":/images/freemat_small_mod_64.png"));
+    wid->show();
+  }
+}
+
 void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) { 
+  CheckNonClosable();
   try {
     ArrayVector n(f->evaluateFunction(m_eval,m,narg));
     m_eval->RegisterGfxResults(n);

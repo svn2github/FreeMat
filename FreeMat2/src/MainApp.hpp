@@ -34,6 +34,8 @@ class MainApp : public QObject
   bool skipGreeting;
   ApplicationWindow *m_win;
   Interpreter *m_eval;
+  bool GUIHack;
+  void CheckNonClosable();
 public:
   MainApp();
   ~MainApp();

@@ -3871,7 +3871,7 @@ bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D
  */
 void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) {
   int i, j;
-  Class Aclass;
+  Class Aclass, Bclass;
 
   // Test for numeric
   if (A.isReferenceType())
@@ -3890,6 +3890,14 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) 
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
+  }
+  Bclass = B.getDataClass();
+  if (Bclass < Aclass) {
+    B.promoteType(Aclass);
+    Bclass = Aclass;
+  } else {
+    A.promoteType(Bclass);
+    Aclass = Bclass;
   }
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
@@ -4064,7 +4072,7 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) 
  */
 void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
   int i, j;
-  Class Aclass;
+  Class Aclass, Bclass;
 
   // Test for numeric
   if (A.isReferenceType())
@@ -4083,6 +4091,14 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
+  }
+  Bclass = B.getDataClass();
+  if (Bclass < Aclass) {
+    B.promoteType(Aclass);
+    Bclass = Aclass;
+  } else {
+    A.promoteType(Bclass);
+    Aclass = Bclass;
   }
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {

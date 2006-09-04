@@ -71,5 +71,3 @@ function exchange_count = det_exchange_count(pivot)
             exchange_count = exchange_count + 1;
         end
     end
-            
-            

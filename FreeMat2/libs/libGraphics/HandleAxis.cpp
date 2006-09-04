@@ -257,7 +257,7 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
 		    double& tStart, double &tStop,
 		    std::vector<double> &tickLocations,
 		    std::vector<std::string> &tlabels) {
-  bool integerMode = false;
+  //  bool integerMode = false;
   double tBegin, tEnd;
   double delt = (tMax-tMin)/(tickcount);
   int n = (int) ceil(log10(delt));
@@ -270,14 +270,14 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
   tStop = ceil(tMax/tDelt)*tDelt;
   // Recheck for integer limits...
   //   qDebug("tickcount = %d",tickcount);
-  if ((tMin == rint(tMin)) && (tMax == rint(tMax)) && (!isLogarithmic)) {
-    tStart = tMin;
-    tStop = tMax;
-    if ((tickcount % 2) == 1)
-      tickcount++;
-    tDelt = (tStop - tStart)/(tickcount);
-    if ((tMax-tMin) > 1) integerMode = true;
-  }
+  //   if ((tMin == rint(tMin)) && (tMax == rint(tMax)) && (!isLogarithmic)) {
+  //     tStart = tMin;
+  //     tStop = tMax;
+  //     if ((tickcount % 2) == 1)
+  //       tickcount++;
+  //     tDelt = (tStop - tStart)/(tickcount);
+  //     if ((tMax-tMin) > 1) integerMode = true;
+  //   }
   tBegin = tStart;
   tEnd = tStop;
   int mprime;
@@ -1792,7 +1792,7 @@ void HandleAxis::UpdateLimits(bool x, bool y, bool z, bool a, bool c) {
   }
   if (limits[3] == limits[2]) {
     limits[2] = limits[2] - 0.5;
-    limits[5] = limits[2] + 1;
+    limits[3] = limits[2] + 1;
   }
   if (limits[5] == limits[4]) {
     limits[4] = limits[4] - 0.5;

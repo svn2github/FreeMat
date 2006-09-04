@@ -190,7 +190,7 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
     const float *ap;
     ap = (const float*) dp;
     if (!format.expformat) {
-      if (ap[2*num+1] > 0)
+      if (ap[2*num+1] >= 0)
 	snprintf(msgBuffer,MSGBUFLEN,"%*.*f+%*.*f i",
 		 format.digits+format.decimals+1,format.decimals,ap[2*num],
 		 format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
@@ -200,7 +200,7 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
 		 format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
     }
     else {
-      if (ap[2*num+1] > 0)
+      if (ap[2*num+1] >= 0)
 	snprintf(msgBuffer,MSGBUFLEN,"%0.*e+%0.*e i",
 		 format.decimals,ap[2*num],
 		 format.decimals,ap[2*num+1]);
@@ -216,7 +216,7 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
     const double *ap;
     ap = (const double*) dp;
     if (!format.expformat) {
-      if (ap[2*num+1] > 0) 
+      if (ap[2*num+1] >= 0) 
 	snprintf(msgBuffer,MSGBUFLEN,"%*.*f+%*.*fi",
 		 format.digits+format.decimals+1,format.decimals,ap[2*num],
 		 format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
@@ -226,7 +226,7 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
 		 format.digits+format.decimals+1,format.decimals,ap[2*num+1]);
     }
     else {
-      if (ap[2*num+1] > 0) 
+      if (ap[2*num+1] >= 0) 
 	snprintf(msgBuffer,MSGBUFLEN,"%0.*e+%0.*ei",
 		 format.decimals,ap[2*num],
 		 format.decimals,ap[2*num+1]);

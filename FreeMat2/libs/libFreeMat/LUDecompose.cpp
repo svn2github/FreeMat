@@ -23,19 +23,10 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
-// In all cases, l is m x n  and   u is n x n if m > n
-//               l is m x m  and   u is m x n if m < n
-//           or  l is m x p  and   u is p x n
-void floatLUP(int nrows, int ncols, float *l, float *u,
-	      float *pmat, float *a) {
-  int info;
-  int i, j;
-  int *piv;
-  int p = min(nrows,ncols);
-  piv = (int*) malloc(sizeof(int)*p);
-  sgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
+int* FixupPivotVector(int nrows, int *piv, int p) {
   // Adjust the pivot vector
   int *fullpivot = (int*) malloc(sizeof(int)*nrows);
+  int i;
   for (i=0;i<nrows;i++)
     fullpivot[i] = i;
   for (i=0;i<p;i++) 
@@ -44,378 +35,238 @@ void floatLUP(int nrows, int ncols, float *l, float *u,
       fullpivot[i] = fullpivot[piv[i]-1];
       fullpivot[piv[i]-1] = tmp;
     }
+  free(piv);
+  return fullpivot;
+}
+
+// In all cases, l is m x n  and   u is n x n if m > n
+//               l is m x m  and   u is m x n if m < n
+//           or  l is m x p  and   u is p x n
+
+template <class T>
+void RealLUP(int nrows, int ncols, T *l, T *u,
+	     T *pmat, T *a, 
+	     void (*lapack_fn)(int*,int*,T*,int*,int*,int*)) {
+  int info;
+  int i, j;
+  int *piv;
+  int p = min(nrows,ncols);
+  piv = (int*) malloc(sizeof(int)*p);
+  //  sgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
+  lapack_fn(&nrows,&ncols,a,&nrows,piv,&info);
+  int *fullpivot = FixupPivotVector(nrows,piv,p);
   for (i=0;i<nrows;i++)
     pmat[i+fullpivot[i]*nrows] = 1;
-  free(piv);
   free(fullpivot);
+  int lrows, lcols, urows, ucols;
   if (nrows > ncols) {
-    for (i=0;i<ncols;i++)
-      l[i+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++)
-	l[i+j*nrows] = a[i+j*nrows];
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++)
-	u[i+j*nrows] = a[i+j*nrows];
+    lrows = nrows; lcols = ncols; urows = ncols; ucols = ncols;
+    // If A is tall (more rows than columns), then we fill in the 
+    // diagonal of L with 1s
+    for (i=0;i<lcols;i++)
+      l[i+i*lrows] = 1.0;
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal)
+    for (i=1;i<lrows;i++)
+      for (j=0;j<min(i,lcols);j++)
+	l[i+j*lrows] = a[i+j*nrows];
+    // And we copy the U matrix out of A (everything above and 
+    // including the main diagonal).
+    for (i=0;i<urows;i++)
+      for (j=i;j<ucols;j++)
+	u[i+j*urows] = a[i+j*nrows];
   } else {
-    for (i=0;i<nrows;i++)
-      l[i+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
+    lrows = nrows; lcols = nrows; urows = nrows; ucols = ncols;
+    // If A is short (more columns than rows) then L is square
+    // and U is short.  We fill in the main diagonal of L with
+    // 1s.
+    for (i=0;i<lcols;i++)
+      l[i+i*lrows] = 1.0;
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal
+    for (i=1;i<lrows;i++)
       for (j=0;j<i;j++)
-	l[i+j*nrows] = a[i+j*nrows];
+	l[i+j*lrows] = a[i+j*nrows];
+    // Then we copy the remainder (upper trapezoid) out of A into
+    // U
     for (i=0;i<nrows;i++)
       for (j=i;j<ncols;j++)
-	u[i+j*ncols] = a[i+j*nrows];
+	u[i+j*urows] = a[i+j*nrows];
   }
 }
 
-// In all cases, l is m x n  and   u is n x n if m > n
-//               l is m x m  and   u is m x n if m < n
-//           or  l is m x p  and   u is p x n
-void floatLU(int nrows, int ncols, float *l, float *u, float *a) {
+template <class T>
+void RealLU(int nrows, int ncols, T *l, T *u, T*a, 
+	    void (*lapack_fn)(int*,int*,T*,int*,int*,int*)) {
   int info;
   int i, j;
   int *piv;
   int p = min(nrows,ncols);
   piv = (int*) malloc(sizeof(int)*p);
-  sgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
+  lapack_fn(&nrows,&ncols,a,&nrows,piv,&info);
+  //  dgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
   // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
-    }
-  free(piv);
+  int *fullpivot = FixupPivotVector(nrows,piv,p);
+  int lrows, lcols, urows, ucols;
   if (nrows > ncols) {
-    for (i=0;i<ncols;i++)
-      l[fullpivot[i]+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++)
-	l[fullpivot[i]+j*nrows] = a[i+j*nrows];
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++)
-	u[i+j*nrows] = a[i+j*nrows];
+    lrows = nrows; lcols = ncols; urows = ncols; ucols = ncols;
+    // If A is tall (more rows than columns), then we fill in the 
+    // diagonal of L with 1s
+    for (i=0;i<lcols;i++)
+      l[fullpivot[i]+i*lrows] = 1.0;
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal)
+    for (i=1;i<lrows;i++)
+      for (j=0;j<min(i,lcols);j++)
+	l[fullpivot[i]+j*lrows] = a[i+j*nrows];
+    // And we copy the U matrix out of A (everything above and 
+    // including the main diagonal).
+    for (i=0;i<urows;i++)
+      for (j=i;j<ucols;j++)
+	u[i+j*urows] = a[i+j*nrows];
   } else {
-    for (i=0;i<nrows;i++)
-      l[fullpivot[i]+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
+    lrows = nrows; lcols = nrows; urows = nrows; ucols = ncols;
+    // If A is short (more columns than rows) then L is square
+    // and U is short.  We fill in the main diagonal of L with
+    // 1s.
+    for (i=0;i<lcols;i++)
+      l[fullpivot[i]+i*lrows] = 1.0;
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal
+    for (i=1;i<lrows;i++)
       for (j=0;j<i;j++)
-	l[fullpivot[i]+j*nrows] = a[i+j*nrows];
+	l[fullpivot[i]+j*lrows] = a[i+j*nrows];
+    // Then we copy the remainder (upper trapezoid) out of A into
+    // U
     for (i=0;i<nrows;i++)
       for (j=i;j<ncols;j++)
-	u[i+j*ncols] = a[i+j*nrows];
+	u[i+j*urows] = a[i+j*nrows];
   }
   free(fullpivot);
 }
 
-void doubleLUP(int nrows, int ncols, double *l, double *u,
-	       double *pmat, double *a) {
+template <class T>
+void ComplexLUP(int nrows, int ncols, T *l, T *u,
+		T *pmat, T *a, 
+		void (*lapack_fn)(int*,int*,T*,int*,int*,int*)) {
   int info;
   int i, j;
   int *piv;
   int p = min(nrows,ncols);
   piv = (int*) malloc(sizeof(int)*p);
-  dgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
-  // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
-    }
+  lapack_fn(&nrows,&ncols,a,&nrows,piv,&info);
+  int *fullpivot = FixupPivotVector(nrows,piv,p);
   for (i=0;i<nrows;i++)
     pmat[i+fullpivot[i]*nrows] = 1;
-  free(piv);
   free(fullpivot);
+  int lrows, lcols, urows, ucols;
   if (nrows > ncols) {
-    for (i=0;i<ncols;i++)
-      l[i+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++)
-	l[i+j*nrows] = a[i+j*nrows];
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++)
-	u[i+j*nrows] = a[i+j*nrows];
-  } else {
-    for (i=0;i<nrows;i++)
-      l[i+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
-      for (j=0;j<i;j++)
-	l[i+j*nrows] = a[i+j*nrows];
-    for (i=0;i<nrows;i++)
-      for (j=i;j<ncols;j++)
-	u[i+j*ncols] = a[i+j*nrows];
-  }
-}
-
-// In all cases, l is m x n  and   u is n x n if m > n
-//               l is m x m  and   u is m x n if m < n
-//           or  l is m x p  and   u is p x n
-void doubleLU(int nrows, int ncols, double *l, double *u, double *a) {
-  int info;
-  int i, j;
-  int *piv;
-  int p = min(nrows,ncols);
-  piv = (int*) malloc(sizeof(int)*p);
-  dgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
-  // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
+    lrows = nrows; lcols = ncols; urows = ncols; ucols = ncols;
+    // If A is tall (more rows than columns), then we fill in the 
+    // diagonal of L with 1s
+    for (i=0;i<lcols;i++) {
+      l[2*(i+i*lrows)] = 1.0;
+      l[2*(i+i*lrows)+1] = 0.0;
     }
-  free(piv);
-  if (nrows > ncols) {
-    for (i=0;i<ncols;i++)
-      l[fullpivot[i]+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++)
-	l[fullpivot[i]+j*nrows] = a[i+j*nrows];
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++)
-	u[i+j*nrows] = a[i+j*nrows];
-  } else {
-    for (i=0;i<nrows;i++)
-      l[fullpivot[i]+i*nrows] = 1.0;
-    for (i=1;i<nrows;i++)
-      for (j=0;j<i;j++)
-	l[fullpivot[i]+j*nrows] = a[i+j*nrows];
-    for (i=0;i<nrows;i++)
-      for (j=i;j<ncols;j++)
-	u[i+j*ncols] = a[i+j*nrows];
-  }
-  free(fullpivot);
-}
-
-void complexLUP(int nrows, int ncols, float *l, float *u,
-		float *pmat, float *a) {
-  int info;
-  int i, j;
-  int *piv;
-  int p = min(nrows,ncols);
-  piv = (int*) malloc(sizeof(int)*p);
-  cgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
-  // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
-    }
-  for (i=0;i<nrows;i++)
-    pmat[i+fullpivot[i]*nrows] = 1;
-  free(piv);
-  free(fullpivot);
-  if (nrows > ncols) {
-    for (i=0;i<ncols;i++) {
-      l[2*(i+i*nrows)] = 1.0;
-      l[2*(i+i*nrows)+1] = 0.0;
-    }
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++) {
-	l[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal)
+    for (i=1;i<lrows;i++)
+      for (j=0;j<min(i,lcols);j++) {
+	l[2*(i+j*lrows)] = a[2*(i+j*nrows)];
+	l[2*(i+j*lrows)+1] = a[2*(i+j*nrows)+1];
       }
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++) {
-	u[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	u[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
+    // And we copy the U matrix out of A (everything above and 
+    // including the main diagonal).
+    for (i=0;i<urows;i++)
+      for (j=i;j<ucols;j++) {
+	u[2*(i+j*urows)] = a[2*(i+j*nrows)];
+	u[2*(i+j*urows)+1] = a[2*(i+j*nrows)+1];
       }
   } else {
-    for (i=0;i<nrows;i++) {
-      l[2*(i+i*nrows)] = 1.0;
-      l[2*(i+i*nrows)+1] = 0.0;
+    lrows = nrows; lcols = nrows; urows = nrows; ucols = ncols;
+    // If A is short (more columns than rows) then L is square
+    // and U is short.  We fill in the main diagonal of L with
+    // 1s.
+    for (i=0;i<lcols;i++) {
+      l[2*(i+i*lrows)] = 1.0;
+      l[2*(i+i*lrows)+1] = 0.0;
     }
-    for (i=1;i<nrows;i++)
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal
+    for (i=1;i<lrows;i++)
       for (j=0;j<i;j++) {
-	l[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
+	l[2*(i+j*lrows)] = a[2*(i+j*nrows)];
+	l[2*(i+j*lrows)+1] = a[2*(i+j*nrows)+1];
       }
+    // Then we copy the remainder (upper trapezoid) out of A into
+    // U
     for (i=0;i<nrows;i++)
       for (j=i;j<ncols;j++) {
-	u[2*(i+j*ncols)] = a[2*(i+j*nrows)];
-	u[2*(i+j*ncols)+1] = a[2*(i+j*nrows)+1];
+	u[2*(i+j*urows)] = a[2*(i+j*nrows)];
+	u[2*(i+j*urows)+1] = a[2*(i+j*nrows)+1];
       }
   }
 }
 
-// In all cases, l is m x n  and   u is n x n if m > n
-//               l is m x m  and   u is m x n if m < n
-//           or  l is m x p  and   u is p x n
-void complexLU(int nrows, int ncols, float *l, float *u, float *a) {
+template <class T>
+void ComplexLU(int nrows, int ncols, T *l, T *u, T*a, 
+	       void (*lapack_fn)(int*,int*,T*,int*,int*,int*)) {
   int info;
   int i, j;
   int *piv;
   int p = min(nrows,ncols);
   piv = (int*) malloc(sizeof(int)*p);
-  cgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
+  lapack_fn(&nrows,&ncols,a,&nrows,piv,&info);
   // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
-    }
-  // Create the inverse pivot vector
-  free(piv);
+  int *fullpivot = FixupPivotVector(nrows,piv,p);
+  int lrows, lcols, urows, ucols;
   if (nrows > ncols) {
-    for (i=0;i<ncols;i++) {
-      l[2*(fullpivot[i]+i*nrows)] = 1.0;
-      l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
+    lrows = nrows; lcols = ncols; urows = ncols; ucols = ncols;
+    // If A is tall (more rows than columns), then we fill in the 
+    // diagonal of L with 1s
+    for (i=0;i<lcols;i++) {
+      l[2*(fullpivot[i]+i*lrows)] = 1.0;
+      l[2*(fullpivot[i]+i*lrows)+1] = 0.0;
     }
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++) {
-	l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal)
+    for (i=1;i<lrows;i++)
+      for (j=0;j<min(i,lcols);j++) {
+	l[2*(fullpivot[i]+j*lrows)] = a[2*(i+j*nrows)];
+	l[2*(fullpivot[i]+j*lrows)+1] = a[2*(i+j*nrows)+1];
       }
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++){
-	u[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	u[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
+    // And we copy the U matrix out of A (everything above and 
+    // including the main diagonal).
+    for (i=0;i<urows;i++)
+      for (j=i;j<ucols;j++) {
+	u[2*(i+j*urows)] = a[2*(i+j*nrows)];
+	u[2*(i+j*urows)+1] = a[2*(i+j*nrows)+1];
       }
   } else {
-    for (i=0;i<nrows;i++) {
-      l[2*(fullpivot[i]+i*nrows)] = 1.0;
-      l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
+    lrows = nrows; lcols = nrows; urows = nrows; ucols = ncols;
+    // If A is short (more columns than rows) then L is square
+    // and U is short.  We fill in the main diagonal of L with
+    // 1s.
+    for (i=0;i<lcols;i++) {
+      l[2*(fullpivot[i]+i*lrows)] = 1.0;
+      l[2*(fullpivot[i]+i*lrows)+1] = 0.0;
     }
-    for (i=1;i<nrows;i++)
+    // Then we copy the decomposition out of A (everything below
+    // the main diagonal
+    for (i=1;i<lrows;i++)
       for (j=0;j<i;j++) {
-	l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
+	l[2*(fullpivot[i]+j*lrows)] = a[2*(i+j*nrows)];
+	l[2*(fullpivot[i]+j*lrows)+1] = a[2*(i+j*nrows)+1];
       }
+    // Then we copy the remainder (upper trapezoid) out of A into
+    // U
     for (i=0;i<nrows;i++)
       for (j=i;j<ncols;j++) {
-	u[2*(i+j*ncols)] = a[2*(i+j*nrows)];
-	u[2*(i+j*ncols)+1] = a[2*(i+j*nrows)+1];
+	u[2*(i+j*urows)] = a[2*(i+j*nrows)];
+	u[2*(i+j*urows)+1] = a[2*(i+j*nrows)+1];
       }
   }
   free(fullpivot);
-}
-
-void dcomplexLUP(int nrows, int ncols, double *l, double *u,
-		 double *pmat, double *a) {
-  int info;
-  int i, j;
-  int *piv;
-  int p = min(nrows,ncols);
-  piv = (int*) malloc(sizeof(int)*p);
-  zgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
-  // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
-    }
-  for (i=0;i<nrows;i++)
-    pmat[i+fullpivot[i]*nrows] = 1;
-  free(piv);
-  free(fullpivot);
-  if (nrows > ncols) {
-    for (i=0;i<ncols;i++) {
-      l[2*(i+i*nrows)] = 1.0;
-      l[2*(i+i*nrows)+1] = 0.0;
-    }
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++) {
-	l[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
-      }
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++) {
-	u[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	u[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
-      }
-  } else {
-    for (i=0;i<nrows;i++) {
-      l[2*(i+i*nrows)] = 1.0;
-      l[2*(i+i*nrows)+1] = 0.0;
-    }
-    for (i=1;i<nrows;i++)
-      for (j=0;j<i;j++) {
-	l[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
-      }
-    for (i=0;i<nrows;i++)
-      for (j=i;j<ncols;j++) {
-	u[2*(i+j*ncols)] = a[2*(i+j*nrows)];
-	u[2*(i+j*ncols)+1] = a[2*(i+j*nrows)+1];
-      }
-  }
-}
-
-// In all cases, l is m x n  and   u is n x n if m > n
-//               l is m x m  and   u is m x n if m < n
-//           or  l is m x p  and   u is p x n
-void dcomplexLU(int nrows, int ncols, double *l, double *u, double *a) {
-  int info;
-  int i, j;
-  int *piv;
-  int p = min(nrows,ncols);
-  piv = (int*) malloc(sizeof(int)*p);
-  zgetrf_(&nrows,&ncols,a,&nrows,piv,&info);
-  // Adjust the pivot vector
-  int *fullpivot = (int*) malloc(sizeof(int)*nrows);
-  for (i=0;i<nrows;i++)
-    fullpivot[i] = i;
-  for (i=0;i<p;i++) 
-    if (piv[i] != (i+1)) {
-      int tmp = fullpivot[i];
-      fullpivot[i] = fullpivot[piv[i]-1];
-      fullpivot[piv[i]-1] = tmp;
-    }
-  free(piv);
-  if (nrows > ncols) {
-    for (i=0;i<ncols;i++) {
-      l[2*(fullpivot[i]+i*nrows)] = 1.0;
-      l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
-    }
-    for (i=1;i<nrows;i++)
-      for (j=0;j<min(i,ncols);j++) {
-	l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
-      }
-    for (i=0;i<ncols;i++)
-      for (j=i;j<ncols;j++){
-	u[2*(i+j*nrows)] = a[2*(i+j*nrows)];
-	u[2*(i+j*nrows)+1] = a[2*(i+j*nrows)+1];
-      }
-  } else {
-    for (i=0;i<nrows;i++) {
-      l[2*(fullpivot[i]+i*nrows)] = 1.0;
-      l[2*(fullpivot[i]+i*nrows)+1] = 0.0;
-    }
-    for (i=1;i<nrows;i++)
-      for (j=0;j<i;j++) {
-	l[2*(fullpivot[i]+j*nrows)] = a[2*(i+j*nrows)];
-	l[2*(fullpivot[i]+j*nrows)+1] = a[2*(i+j*nrows)+1];
-      }
-    for (i=0;i<nrows;i++)
-      for (j=i;j<ncols;j++) {
-	u[2*(i+j*ncols)] = a[2*(i+j*nrows)];
-	u[2*(i+j*ncols)+1] = a[2*(i+j*nrows)+1];
-      }
-  }
 }
 
 
@@ -433,12 +284,14 @@ ArrayVector LUDecompose(int nargout, Array A) {
     float *l = (float*) Malloc(sizeof(float)*nrows*p);
     float *u = (float*) Malloc(sizeof(float)*p*ncols);
     if (nargout <= 2) {
-      floatLU(nrows,ncols,l,u,(float*) A.getReadWriteDataPointer());
+      RealLU<float>(nrows,ncols,l,u,
+		     (float*) A.getReadWriteDataPointer(),sgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       float *piv = (float*) Malloc(sizeof(float)*nrows*nrows);
-      floatLUP(nrows,ncols,l,u,piv,(float*) A.getReadWriteDataPointer());
+      RealLUP<float>(nrows,ncols,l,u,piv,
+		     (float*) A.getReadWriteDataPointer(),sgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,nrows),piv));
@@ -449,12 +302,14 @@ ArrayVector LUDecompose(int nargout, Array A) {
     double *l = (double*) Malloc(sizeof(double)*nrows*p);
     double *u = (double*) Malloc(sizeof(double)*p*ncols);
     if (nargout <= 2) {
-      doubleLU(nrows,ncols,l,u,(double*) A.getReadWriteDataPointer());
+      RealLU<double>(nrows,ncols,l,u,
+		     (double*) A.getReadWriteDataPointer(),dgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       double *piv = (double*) Malloc(sizeof(double)*nrows*nrows);
-      doubleLUP(nrows,ncols,l,u,piv,(double*) A.getReadWriteDataPointer());
+      RealLUP<double>(nrows,ncols,l,u,piv,
+		      (double*) A.getReadWriteDataPointer(),dgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,nrows),piv));
@@ -465,12 +320,14 @@ ArrayVector LUDecompose(int nargout, Array A) {
     float *l = (float*) Malloc(2*sizeof(float)*nrows*p);
     float *u = (float*) Malloc(2*sizeof(float)*p*ncols);
     if (nargout <= 2) {
-      complexLU(nrows,ncols,l,u,(float*) A.getReadWriteDataPointer());
+      ComplexLU<float>(nrows,ncols,l,u,
+		       (float*) A.getReadWriteDataPointer(),cgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       float *piv = (float*) Malloc(sizeof(float)*nrows*nrows);
-      complexLUP(nrows,ncols,l,u,piv,(float*) A.getReadWriteDataPointer());
+      ComplexLUP<float>(nrows,ncols,l,u,piv,
+			(float*) A.getReadWriteDataPointer(),cgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
       retval.push_back(Array(FM_FLOAT,Dimensions(nrows,nrows),piv));
@@ -481,12 +338,14 @@ ArrayVector LUDecompose(int nargout, Array A) {
     double *l = (double*) Malloc(2*sizeof(double)*nrows*p);
     double *u = (double*) Malloc(2*sizeof(double)*p*ncols);
     if (nargout <= 2) {
-      dcomplexLU(nrows,ncols,l,u,(double*) A.getReadWriteDataPointer());
+      ComplexLU<double>(nrows,ncols,l,u,
+			(double*) A.getReadWriteDataPointer(),zgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       double *piv = (double*) Malloc(sizeof(double)*nrows*nrows);
-      dcomplexLUP(nrows,ncols,l,u,piv,(double*) A.getReadWriteDataPointer());
+      ComplexLUP<double>(nrows,ncols,l,u,piv,
+			 (double*) A.getReadWriteDataPointer(),zgetrf_);
       retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
       retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
       retval.push_back(Array(FM_DOUBLE,Dimensions(nrows,nrows),piv));

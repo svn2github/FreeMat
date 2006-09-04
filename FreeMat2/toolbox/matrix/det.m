@@ -54,9 +54,22 @@ function y = det(A)
     [L,U,P] = lu(A);
     o = (1:N)';
     p = P*o;
-    exchange_count = numel(find(p~=o));
+    exchange_count = det_exchange_count(p);
     y = prod(diag(U));
     if (mod(exchange_count,2) ~= 0)
         y = -y;
     end
     
+function exchange_count = det_exchange_count(pivot)
+    exchange_count = 0;
+    for i=1:numel(pivot)
+        if (pivot(i) ~= i)
+            k = find(pivot == i);
+            p = pivot(i);
+            pivot(i) = i;
+            pivot(k) = p;
+            exchange_count = exchange_count + 1;
+        end
+    end
+            
+            

@@ -46,6 +46,7 @@
 #define P_DELIM ":"
 #endif
 #include <QtGui>
+#include "Module.hpp"
 
 static std::string helppath;
   
@@ -286,7 +287,7 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 //@@Usage
 //Clears a set of variables from the current context, or alternately, 
 //delete all variables defined in the current context.  There are
-//two formats for the function call.  The first is the explicit form
+//several formats for the function call.  The first is the explicit form
 //in which a list of variables are provided:
 //@[
 //   clear a1 a2 ...
@@ -296,8 +297,21 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 //@[
 //   clear 'all'
 //@]
-//clears all variables from the current context.  With no arguments,
-//@|clear| defaults to clearing @|'all'|.
+//clears all variables and libraries from the current context.  Alternately, you can
+//use the form:
+//@[
+//   clear 'libs'
+//@]
+//which will unload any libraries or DLLs that have been @|import|ed. 
+//Optionally, you can specify that persistent variables should be cleared via:
+//@[
+//   clear 'persistent'
+//@]
+//and similarly for global variables:
+//@[
+//   clear 'global'
+//@]
+//With no arguments, @|clear| defaults to clearing @|'all'|.
 //@@Example
 //Here is a simple example of using @|clear| to delete a variable.  First, we create a variable called @|a|:
 //@<
@@ -309,27 +323,51 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 //a
 //@>
 //!
-ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  int i;
-  stringVector names;
-  char * singleArgC;
-  if (arg.size() == 0) 
-    singleArgC = "all";
-  if (arg.size() == 1) {
-    Array singleArg(arg[0]);
-    singleArgC = singleArg.getContentsAsCString();
-    if (strcmp(singleArgC,"all") == 0)
-      names = eval->getContext()->getCurrentScope()->listAllVariables();
-    else
-      names.push_back(singleArgC);
-  } else {
-    for (i=0;i<arg.size();i++) {
-      Array varName(arg[i]);
-      names.push_back(varName.getContentsAsCString());
-    }
+
+void ClearVariable(Interpreter* eval, string name) {
+  eval->getContext()->deleteVariable(name);
+}
+
+void ClearAllFunction(Interpreter* eval) {
+  ClearLibs();
+  stringVector names = eval->getContext()->getCurrentScope()->listAllVariables();
+  for (int i=0;i<names.size();i++)
+    ClearVariable(eval,names[i]);
+}
+
+void ClearPersistent(Interpreter* eval) {
+  stringVector names = eval->getContext()->getGlobalScope()->listAllVariables();
+  for (int i=0;i<names.size();i++) {
+    cout << "Global var: " << names[i] << "\r\n";
+  }  
+}
+
+void ClearGlobal(Interpreter* eval) {
+  stringVector names = eval->getContext()->getGlobalScope()->listAllVariables();
+  for (int i=0;i<names.size();i++) {
+    cout << "Global var: " << names[i] << "\r\n";
   }
-  for (i=0;i<names.size();i++) {
-    eval->getContext()->deleteVariable(names[i]);
+}
+
+ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  stringVector names;
+  if (arg.size() == 0) 
+    names.push_back("all");
+  else
+    for (int i=0;i<arg.size();i++) 
+      names.push_back(ArrayToString(arg[i]));
+  for (int i=0;i<names.size();i++) {
+    cout << "clear " << names[i] << "\r\n";
+    if (names[i] == "all")
+      ClearAllFunction(eval);
+    else if (names[i] == "libs")
+      ClearLibs();
+    else if (names[i] == "persistent")
+      ClearPersistent(eval);
+    else if (names[i] == "global")
+      ClearGlobal(eval);
+    else 
+      ClearVariable(eval,names[i]);
   }
   return ArrayVector();
 }

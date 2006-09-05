@@ -185,6 +185,8 @@ tree Parser::SpecialFunctionCall() {
   // Next must be a whitespace
   if (!Match(TOK_SPACE)) serror("Not special call");
   Consume();
+  if (Match(';') || Match('\n') || Match(','))
+    serror("Not special call");
   {
     Scanner t_lex(m_lex);
     if (t_lex.Next().IsBinaryOperator() || 

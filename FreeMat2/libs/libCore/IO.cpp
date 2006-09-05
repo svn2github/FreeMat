@@ -844,7 +844,8 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
   char *np;
   char sv;
   // Buffer to hold each sprintf result
-  char nbuff[4096];
+#define BUFSIZE 65536
+  char nbuff[BUFSIZE];
   // Buffer to hold the output
   char *op;
   op = (char*) malloc(sizeof(char));
@@ -857,7 +858,7 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
     // Print out the formatless segment
     sv = *dp;
     *dp = 0;
-    sprintf(nbuff,np);
+    snprintf(nbuff,BUFSIZE,np);
     op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
     strcat(op,nbuff);
     *dp = sv;
@@ -868,7 +869,7 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
 	throw Exception("erroneous format specification " + std::string(dp));
       else {
 	if (*(np-1) == '%') {
-	  sprintf(nbuff,"%%");
+	  snprintf(nbuff,BUFSIZE,"%%");
 	  op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
 	  strcat(op,nbuff);
 	  dp+=2;
@@ -891,7 +892,7 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
 	    case 'X':
 	    case 'c':
 	      nextVal.promoteType(FM_INT32);
-	      sprintf(nbuff,dp,*((int32*)nextVal.getDataPointer()));
+	      snprintf(nbuff,BUFSIZE,dp,*((int32*)nextVal.getDataPointer()));
 	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
 	      strcat(op,nbuff);
 	      break;
@@ -902,12 +903,12 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
 	    case 'g':
 	    case 'G':
 	      nextVal.promoteType(FM_DOUBLE);
-	      sprintf(nbuff,dp,*((double*)nextVal.getDataPointer()));
+	      snprintf(nbuff,BUFSIZE,dp,*((double*)nextVal.getDataPointer()));
 	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
 	      strcat(op,nbuff);
 	      break;
 	    case 's':
-	      sprintf(nbuff,dp,nextVal.getContentsAsCString());
+	      snprintf(nbuff,BUFSIZE,dp,nextVal.getContentsAsCString());
 	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
 	      strcat(op,nbuff);
 	    }

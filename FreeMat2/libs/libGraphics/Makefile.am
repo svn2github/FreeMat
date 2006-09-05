@@ -39,8 +39,9 @@ QTRenderEngine.cpp \
 RenderEngine.cpp \
 HandleUIControl.cpp \
 HandleMultiEdit.cpp \
-$(libGraphics_a_MOC) \
 $(libGraphics_a_HFILES)
+
+nodist_libGraphics_a_SOURCES = $(libGraphics_a_MOC) 
 
 AUTOMAKE_OPTIONS 	= foreign
 

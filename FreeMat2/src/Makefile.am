@@ -33,9 +33,10 @@ MainApp.cpp \
 main.cpp \
 DumbTerminal.cpp \
 Terminal.cpp \
-$(FreeMat_MOC) \
-$(FreeMat_QRC) \
 $(FreeMat_HFILES)
+
+nodist_FreeMat_SOURCES = $(FreeMat_MOC) \
+$(FreeMat_QRC) 
 
 if WIN32
 FreeMat_SOURCES += freemat.rc

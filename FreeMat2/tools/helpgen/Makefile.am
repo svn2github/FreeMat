@@ -9,8 +9,9 @@ helpgen_MOC = helpgen.moc.cpp
 BUILT_SOURCES = $(helpgen_MOC)
 
 helpgen_SOURCES = helpgen.cpp \
-$(helpgen_MOC) \
 $(helpgen_HFILES)
+
+nodist_helpgen_SOURCES = $(helpgen_MOC) 
 
 INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libFN -I@top_srcdir@/src
 

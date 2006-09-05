@@ -1,3 +1,17 @@
+Problems:
+  - close all causes Xlib to bork
+  - there is some type of leak in the plot code (when hold is used)
+  - having a variable as the only thing on a line doesn't work right
+  - sscanf is missing
+
+
+p*o = [4 1 2 3]x
+      [1 4 2 3]x 
+      [1 2 4 3]x
+      [1 2 3 4]
+
+- Fix unterminated strings... - done
+
 - replacement for libMatIO is nearly complete.
 
 64 bit - 

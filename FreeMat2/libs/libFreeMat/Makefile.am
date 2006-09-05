@@ -72,8 +72,9 @@ Parser.cpp \
 Scanner.cpp \
 Tree.cpp \
 FunctionDef.cpp \
-$(libFreeMat_a_HFILES) \
-$(libFreeMat_a_MOC)
+$(libFreeMat_a_HFILES) 
+
+nodist_libFreeMat_a_SOURCES = $(libFreeMat_a_MOC)
 
 CLEANFILES = $(libFreeMat_a_MOC)
 

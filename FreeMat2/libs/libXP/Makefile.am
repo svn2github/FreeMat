@@ -42,8 +42,10 @@ Common.cpp \
 ToolDock.cpp \
 VariablesTool.cpp \
 HistoryWidget.cpp \
-$(libXP_a_MOC) \
 $(libXP_a_HFILES)
+
+nodist_libXP_a_SOURCES = $(libXP_a_MOC) 
+
 
 AUTOMAKE_OPTIONS 	= foreign
 

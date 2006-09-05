@@ -33,8 +33,9 @@ Transcendental.cpp \
 Trigonometric.cpp \
 Utils.cpp \
 MatIO.cpp \
-$(libCore_a_MOC) \
 $(libCore_a_HFILES)
+
+nodist_libCore_a_SOURCES = $(libCore_a_MOC) 
 
 AUTOMAKE_OPTIONS 	= foreign
 

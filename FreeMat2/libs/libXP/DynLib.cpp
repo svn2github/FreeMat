@@ -32,7 +32,18 @@ DynLib::DynLib(std::string filename) {
   if (!lib)
     throw Exception(std::string("Unable to open module: ") + filename + ", operating system reported error: " + dlerror());
 #endif
+  cout << "Loaded lib " << filename << "\r\n";
 }
+
+DynLib::~DynLib() {
+#ifdef WIN32
+  FreeLibrary(lib);
+#else
+  dlclose(lib);
+#endif
+  cout << "Unloaded lib \r\n";
+}
+
 void* DynLib::GetSymbol(const char*symbolName) {
 #ifdef WIN32
   void *func;

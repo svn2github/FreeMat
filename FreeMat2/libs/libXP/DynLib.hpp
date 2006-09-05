@@ -35,6 +35,7 @@ class DynLib {
 public:
   DynLib(std::string filename);
   void* GetSymbol(const char* symbolName);
+  ~DynLib();
 };
 
 #endif

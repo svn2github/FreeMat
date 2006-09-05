@@ -41,4 +41,9 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
  */
 void LoadModuleFunctions(Context* context);
 
+/**
+ * Clear all the loaded libraries
+ */
+void ClearLibs();
+
 #endif

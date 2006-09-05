@@ -34,6 +34,14 @@
 
 SymbolTable<DynLib*> libPointers;
 
+void ClearLibs() {
+  stringVector libnames(libPointers.getCompletions(""));
+  for (int i=0;i<libnames.size();i++) {
+    DynLib **ptr = libPointers.findSymbol(libnames[i]);
+    libPointers.deleteSymbol(libnames[i]);
+    delete *ptr;
+  }
+}
 
 //!
 //@Module LOADLIB Load Library Function

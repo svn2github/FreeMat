@@ -133,8 +133,8 @@ HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
   sprintf(buffer,"Figure %d",ahandle+1);
   setWindowTitle(buffer);
   qtchild = new BaseFigureQt(NULL,hfig);
-  if (QGLFormat::hasOpenGL())
-    glchild = new BaseFigureGL(NULL,hfig);
+//   if (QGLFormat::hasOpenGL())
+//     glchild = new BaseFigureGL(NULL,hfig);
   layout = new QStackedWidget(this);
   QHBoxLayout *box = new QHBoxLayout(this);
   box->setMargin(0);
@@ -143,8 +143,8 @@ HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
   //   layout->addTab(qtchild,"QT");
   //   layout->addTab(glchild,"GL");
   layout->addWidget(qtchild);
-  if (QGLFormat::hasOpenGL())
-    layout->addWidget(glchild);
+//   if (QGLFormat::hasOpenGL())
+//     layout->addWidget(glchild);
   layout->show();
   box->addWidget(layout);
   resize(600,400);
@@ -179,24 +179,24 @@ void HandleWindow::UpdateState() {
   if (!initialized) return;
   HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
   resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
-  if (hfig->StringCheck("renderer","opengl") && (QGLFormat::hasOpenGL())) {
-    if (layout->currentWidget() != glchild) {
-      layout->setCurrentWidget(glchild);
-      glchild->show();
-      glchild->updateGeometry();
-      repaint();
-      glchild->updateGL();
-      update();
-      UpdateState();
-    }
-    glchild->updateGL();
-    update();
-  } else if (hfig->StringCheck("renderer","painters")) {
-    if (layout->currentWidget() != qtchild) {
-      if (QGLFormat::hasOpenGL())
-	glchild->setGeometry(0,0,1,1);
-      layout->setCurrentWidget(qtchild);
-    }
-    update();
-  }
+//   if (hfig->StringCheck("renderer","opengl") && (QGLFormat::hasOpenGL())) {
+//     if (layout->currentWidget() != glchild) {
+//       layout->setCurrentWidget(glchild);
+//       glchild->show();
+//       glchild->updateGeometry();
+//       repaint();
+//       glchild->updateGL();
+//       update();
+//       UpdateState();
+//     }
+//     glchild->updateGL();
+//     update();
+//   } else if (hfig->StringCheck("renderer","painters")) {
+//     if (layout->currentWidget() != qtchild) {
+//       if (QGLFormat::hasOpenGL())
+// 	glchild->setGeometry(0,0,1,1);
+  layout->setCurrentWidget(qtchild);
+  //     }
+  update();
+//   }
 }

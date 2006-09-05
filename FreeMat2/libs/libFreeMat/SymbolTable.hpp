@@ -130,15 +130,9 @@ public:
 	Entry *ptr;
 	ptr = hashTable[i];
 	while (ptr != NULL) {
-#if (__GNUG__ == 2)
-	  if ((ptr->key.length() >= prefix.length()) &&
-	      (ptr->key.compare(prefix,0,prefix.length()) == 0))
-	    retlist.push_back(ptr->key);
-#else
 	  if ((ptr->key.length() >= prefix.length()) &&
 	      (ptr->key.compare(0,prefix.length(),prefix) == 0))
 	    retlist.push_back(ptr->key);
-#endif
 	  ptr = ptr->next;
 	}
       }

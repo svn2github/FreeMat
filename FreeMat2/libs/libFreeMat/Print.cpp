@@ -27,7 +27,7 @@ int GetNominalWidthInteger(const T*array, int count) {
   int maxdigit = 0;
   for (int i=0;i<count;i++) {
     memset(buffer,0,MSGBUFLEN);
-    sprintf(buffer,"%d",array[i]);
+    sprintf(buffer,"%lld",array[i]);
     int j = maxdigit;
     while (buffer[j] && j>=maxdigit)
       j++;
@@ -39,7 +39,7 @@ int GetNominalWidthInteger(const T*array, int count) {
 template <class T>
 void PrintIntegers(const T*array, int count, int width) {
   for (int i=0;i<count;i++)
-    printf("%*d\n",width,array[i]);
+    printf("%*lld\n",width,array[i]);
 }
   
 template <class T>
@@ -141,14 +141,14 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
   case FM_INT64: {
     const int64 *ap;
     ap = (const int64*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%*d",format.digits,ap[num]);
+    snprintf(msgBuffer,MSGBUFLEN,"%*lld",format.digits,ap[num]);
     io->outputMessage(msgBuffer);
     break;
   }
   case FM_UINT64: {
     const uint64 *ap;
     ap = (const uint64*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%*u",format.digits,ap[num]);
+    snprintf(msgBuffer,MSGBUFLEN,"%*llu",format.digits,ap[num]);
     io->outputMessage(msgBuffer);
     break;
   }
@@ -548,55 +548,55 @@ string ArrayToPrintableString(const Array& a) {
   case FM_INT8: {
     const int8 *ap;
     ap = (const int8*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%d",ap[0]);
     return string(msgBuffer);
   }
   case FM_UINT8: {
     const uint8 *ap;
     ap = (const uint8*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u",ap[0]);
     return string(msgBuffer);
   }
   case FM_INT16: {
     const int16 *ap;
     ap = (const int16*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%d",ap[0]);
     return string(msgBuffer);
   }
   case FM_UINT16: {
     const uint16 *ap;
     ap = (const uint16*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u",ap[0]);
     return string(msgBuffer);
   }
   case FM_INT32: {
     const int32 *ap;
     ap = (const int32*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%d",ap[0]);
     return string(msgBuffer);
   }
   case FM_UINT32: {
     const uint32 *ap;
     ap = (const uint32*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u",ap[0]);
     return string(msgBuffer);
   }
   case FM_INT64: {
     const int64 *ap;
     ap = (const int64*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%lld",ap[0]);
     return string(msgBuffer);
   }
   case FM_UINT64: {
     const uint64 *ap;
     ap = (const uint64*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%llu",ap[0]);
     return string(msgBuffer);
   }
   case FM_LOGICAL: {
     const logical *ap;
     ap = (const logical*) dp;
-    snprintf(msgBuffer,MSGBUFLEN,"%g",ap[0]);
+    snprintf(msgBuffer,MSGBUFLEN,"%d",ap[0]);
     return string(msgBuffer);
   }
   case FM_FLOAT: {

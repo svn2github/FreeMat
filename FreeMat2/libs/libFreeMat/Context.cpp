@@ -280,7 +280,7 @@ void Context::addPersistentVariable(std::string var) {
   // Delete local variables with this name
   scopestack.back()->deleteVariable(var);
   // Delete global variables with this name
-  scopestack.front()->deleteVariable(var);
+  //  scopestack.front()->deleteVariable(var);
   scopestack.back()->addPersistentVariablePointer(var);
 }
 

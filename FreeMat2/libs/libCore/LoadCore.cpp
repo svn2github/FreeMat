@@ -151,6 +151,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("sprintf",SprintfFunction,-1,1);
   context->addFunction("fprintf",FprintfFunction,-1,0);
   context->addFunction("fscanf",FscanfFunction,2,-1,"handle","format");
+  context->addFunction("sscanf",SscanfFunction,2,-1,"string","format");
   context->addFunction("str2num",Str2NumFunction,1,1,"string");
   context->addFunction("rand",RandFunction,-1,1);
   context->addFunction("randn",RandnFunction,-1,1);

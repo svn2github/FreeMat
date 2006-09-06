@@ -70,10 +70,10 @@ ostream& operator<<(ostream& o, const Token& b) {
 
 string TokenToString(const Token& b) {
   switch(b.Value()) {
-  case TOK_IDENT: return b.Text();
+  case TOK_IDENT: return "(ident)"+b.Text();
   case TOK_NUMBER: return b.Text();
   case TOK_SPACE: return "space";
-  case TOK_STRING: return b.Text();
+  case TOK_STRING: return "(string)"+b.Text();
   case TOK_KEYWORD: return "keyword";
   case TOK_BREAK: return "break";
   case TOK_CASE: return "case";

@@ -187,5 +187,13 @@ public:
    * the variable from the symbol table completely.
    */
   void deleteVariable(std::string var);
+  /**
+   * Clear the list of global variable names
+   */
+  void clearGlobalVariableList();
+  /**
+   * Clear the list of persistent variable names
+   */
+  void clearPersistentVariableList();
 };
 #endif

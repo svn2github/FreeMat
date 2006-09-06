@@ -85,6 +85,14 @@ bool Scope::inLoop() {
   return (loopLevel>0);
 }
 
+void Scope::clearGlobalVariableList() {
+  globalVars.clear();
+}
+
+void Scope::clearPersistentVariableList() {
+  persistentVars.clear();
+}
+
 void Scope::addGlobalVariablePointer(std::string varName) {
   if (!isVariableGlobal(varName))
     globalVars.push_back(varName);

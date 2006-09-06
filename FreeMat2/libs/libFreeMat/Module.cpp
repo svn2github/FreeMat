@@ -33,14 +33,20 @@
 #endif
 
 SymbolTable<DynLib*> libPointers;
+stringVector DynamicFunctions;
 
-void ClearLibs() {
+
+void ClearLibs(Interpreter* eval) {
   stringVector libnames(libPointers.getCompletions(""));
   for (int i=0;i<libnames.size();i++) {
     DynLib **ptr = libPointers.findSymbol(libnames[i]);
     libPointers.deleteSymbol(libnames[i]);
     delete *ptr;
   }
+  for (int i=0;i<DynamicFunctions.size();i++) {
+    eval->getContext()->deleteFunctionGlobally(DynamicFunctions[i]);
+  }
+  DynamicFunctions.clear();
 }
 
 //!
@@ -100,6 +106,7 @@ ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
   fdef->name = strdup((const char*) funcName);
   fdef->fptr = (BuiltInFuncPtr) func;
   eval->getContext()->insertFunctionGlobally(fdef,false);
+  DynamicFunctions.push_back(fdef->name);
   return ArrayVector();
 }
   
@@ -436,6 +443,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 						      rettype);
   fptr->name = funcname;
   eval->getContext()->insertFunctionGlobally(fptr,false);
+  DynamicFunctions.push_back(fptr->name);
   return ArrayVector();
 }
   

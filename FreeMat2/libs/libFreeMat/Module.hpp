@@ -44,6 +44,6 @@ void LoadModuleFunctions(Context* context);
 /**
  * Clear all the loaded libraries
  */
-void ClearLibs();
+void ClearLibs(Interpreter* eval);
 
 #endif

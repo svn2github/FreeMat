@@ -329,7 +329,7 @@ void ClearVariable(Interpreter* eval, string name) {
 }
 
 void ClearAllFunction(Interpreter* eval) {
-  ClearLibs();
+  ClearLibs(eval);
   stringVector names = eval->getContext()->getCurrentScope()->listAllVariables();
   for (int i=0;i<names.size();i++)
     ClearVariable(eval,names[i]);
@@ -338,15 +338,22 @@ void ClearAllFunction(Interpreter* eval) {
 void ClearPersistent(Interpreter* eval) {
   stringVector names = eval->getContext()->getGlobalScope()->listAllVariables();
   for (int i=0;i<names.size();i++) {
-    cout << "Global var: " << names[i] << "\r\n";
-  }  
+    if ((names[i].size() >= 1) && (names[i][0] == '_'))
+      eval->getContext()->getGlobalScope()->deleteVariable(names[i]);
+  }
+  eval->getContext()->getGlobalScope()->clearPersistentVariableList();
+  eval->getContext()->getCurrentScope()->clearPersistentVariableList();
 }
 
 void ClearGlobal(Interpreter* eval) {
   stringVector names = eval->getContext()->getGlobalScope()->listAllVariables();
   for (int i=0;i<names.size();i++) {
-    cout << "Global var: " << names[i] << "\r\n";
+    if ((names[i].size() >= 1) && (names[i][0] != '_')) {
+      eval->getContext()->getGlobalScope()->deleteVariable(names[i]);
+    }
   }
+  eval->getContext()->getGlobalScope()->clearGlobalVariableList();
+  eval->getContext()->getCurrentScope()->clearGlobalVariableList();
 }
 
 ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
@@ -357,11 +364,10 @@ ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval
     for (int i=0;i<arg.size();i++) 
       names.push_back(ArrayToString(arg[i]));
   for (int i=0;i<names.size();i++) {
-    cout << "clear " << names[i] << "\r\n";
     if (names[i] == "all")
       ClearAllFunction(eval);
     else if (names[i] == "libs")
-      ClearLibs();
+      ClearLibs(eval);
     else if (names[i] == "persistent")
       ClearPersistent(eval);
     else if (names[i] == "global")

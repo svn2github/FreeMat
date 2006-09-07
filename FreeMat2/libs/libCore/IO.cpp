@@ -1219,18 +1219,20 @@ ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
 	  case 'i':
 	    if (shortarg) {
 	      short sdumint;
-	      fscanf(fp,dp,&sdumint);
 	      if (feof(fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fp,dp,&sdumint);
 		values.push_back(Array::int16Constructor(sdumint));
+	      }
 	    } else {
 	      int sdumint;
-	      fscanf(fp,dp,&sdumint);
 	      if (feof(fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fp,dp,&sdumint);
 		values.push_back(Array::int32Constructor(sdumint));
+	      }
 	    }
 	    break;
 	  case 'o':
@@ -1240,18 +1242,20 @@ ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
 	  case 'c':
 	    if (shortarg) {
 	      int sdumint;
-	      fscanf(fp,dp,&sdumint);
 	      if (feof(fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fp,dp,&sdumint);
 		values.push_back(Array::int32Constructor(sdumint));
+	      }
 	    } else {
 	      unsigned int dumint;
-	      fscanf(fp,dp,&dumint);
 	      if (feof(fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fp,dp,&dumint);
 		values.push_back(Array::uint32Constructor(dumint));
+	      }
 	    }
 	    break;
 	  case 'e':
@@ -1262,27 +1266,30 @@ ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
 	  case 'G':
 	    if (doublearg) {
 	      double dumfloat;
-	      fscanf(fp,dp,&dumfloat);
 	      if (feof(fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fp,dp,&dumfloat);
 		values.push_back(Array::doubleConstructor(dumfloat));
+	      }
 	    } else {
 	      float dumfloat;
-	      fscanf(fp,dp,&dumfloat);
 	      if (feof(fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fp,dp,&dumfloat);
 		values.push_back(Array::floatConstructor(dumfloat));
+	      }
 	    }
 	    break;
 	  case 's':
 	    char stbuff[4096];
-	    fscanf(fp,dp,stbuff);
 	    if (feof(fp))
 	      values.push_back(Array::emptyConstructor());
-	    else
+	    else {
+	      fscanf(fp,dp,stbuff);
 	      values.push_back(Array::stringConstructor(stbuff));
+	    }
 	    break;
 	  default:
 	    throw Exception("unsupported fscanf configuration");
@@ -1369,18 +1376,20 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
 	  case 'i':
 	    if (shortarg) {
 	      short sdumint;
-	      fscanf(fptr->fp,dp,&sdumint);
 	      if (feof(fptr->fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fptr->fp,dp,&sdumint);
 		values.push_back(Array::int16Constructor(sdumint));
+	      }
 	    } else {
 	      int sdumint;
-	      fscanf(fptr->fp,dp,&sdumint);
 	      if (feof(fptr->fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fptr->fp,dp,&sdumint);
 		values.push_back(Array::int32Constructor(sdumint));
+	      }
 	    }
 	    break;
 	  case 'o':
@@ -1390,18 +1399,20 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
 	  case 'c':
 	    if (shortarg) {
 	      int sdumint;
-	      fscanf(fptr->fp,dp,&sdumint);
 	      if (feof(fptr->fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fptr->fp,dp,&sdumint);
 		values.push_back(Array::int32Constructor(sdumint));
+	      }
 	    } else {
 	      unsigned int dumint;
-	      fscanf(fptr->fp,dp,&dumint);
 	      if (feof(fptr->fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fptr->fp,dp,&dumint);
 		values.push_back(Array::uint32Constructor(dumint));
+	      }
 	    }
 	    break;
 	  case 'e':
@@ -1412,27 +1423,30 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
 	  case 'G':
 	    if (doublearg) {
 	      double dumfloat;
-	      fscanf(fptr->fp,dp,&dumfloat);
 	      if (feof(fptr->fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fptr->fp,dp,&dumfloat);
 		values.push_back(Array::doubleConstructor(dumfloat));
+	      }
 	    } else {
 	      float dumfloat;
-	      fscanf(fptr->fp,dp,&dumfloat);
 	      if (feof(fptr->fp))
 		values.push_back(Array::emptyConstructor());
-	      else
+	      else {
+		fscanf(fptr->fp,dp,&dumfloat);
 		values.push_back(Array::floatConstructor(dumfloat));
+	      }
 	    }
 	    break;
 	  case 's':
 	    char stbuff[4096];
-	    fscanf(fptr->fp,dp,stbuff);
 	    if (feof(fptr->fp))
 	      values.push_back(Array::emptyConstructor());
-	    else
+	    else {
+	      fscanf(fptr->fp,dp,stbuff);
 	      values.push_back(Array::stringConstructor(stbuff));
+	    }
 	    break;
 	  default:
 	    throw Exception("unsupported fscanf configuration");

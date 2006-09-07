@@ -5,7 +5,7 @@ Problems:
   - sscanf is missing - ugh
   - variables tool shows wrong values...- fixed
   - 64 bit quantities do not show up correctly - fixed
-  - clear libs does not release imported functions
+  - clear libs does not release imported functions - fixed
   - backwards compatibility for native-format data files and 64 bit types
 
 p*o = [4 1 2 3]x

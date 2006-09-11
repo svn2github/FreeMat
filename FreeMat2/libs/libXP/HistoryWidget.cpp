@@ -30,6 +30,21 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 	  this,SLOT(doubleClicked(QListWidgetItem*)));
   setObjectName("history");
+  m_popup = new QMenu;
+  m_popup->addAction("Execute");
+  m_popup->addAction("Clear All");
+}
+
+void HistoryWidget::contextMenuEvent(QContextMenuEvent *e) {
+  QAction *p = m_popup->exec(e->globalPos());
+  if (!p) return;
+  if (p->text() == "Execute") {
+    QListWidgetItem *item = m_flist->currentItem();
+    if (item)
+      emit sendCommand(item->text());
+  } else if (p->text() == "Clear All")
+    clear();
+  
 }
 
 void HistoryWidget::doubleClicked(QListWidgetItem* item) {
@@ -57,6 +72,10 @@ void HistoryWidget::readSettings() {
   QStringList historyList = settings.value("interpreter/history").toStringList();
   for (int i=0;i<historyList.size();i++) 
     new QListWidgetItem(historyList[i],m_flist);
+}
+
+void HistoryWidget::clear() {
+  m_flist->clear();
 }
 
 void HistoryWidget::writeSettings() {

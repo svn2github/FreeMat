@@ -25,11 +25,14 @@ class HistoryWidget : public QWidget {
   Q_OBJECT
 public:
   HistoryWidget(QWidget *parent);
+  void clear();
 private:
   QListWidget *m_flist;
+  QMenu *m_popup;
   void readSettings();
   void writeSettings();
 protected:
+  void contextMenuEvent(QContextMenuEvent *e);
   void closeEvent(QCloseEvent*);
 protected slots:
   void addCommand(QString t);

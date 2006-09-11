@@ -40,7 +40,7 @@
 #ifdef WIN32
 #include <direct.h>
 #define getcwd _getcwd
-#define S_ISDIR(x) (x & _S_IFDIR)
+//#define S_ISDIR(x) (x & _S_IFDIR)
 #define P_DELIM ";"
 #else
 #define P_DELIM ":"

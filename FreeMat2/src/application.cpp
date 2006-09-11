@@ -68,8 +68,10 @@ ApplicationWindow::~ApplicationWindow() {
 void ApplicationWindow::createActions() {
   filetoolAct = new QAction("&File Browser",this);
   connect(filetoolAct,SIGNAL(triggered()),this,SLOT(filetool()));
-  historyAct = new QAction("&History",this);
+  historyAct = new QAction("Show &History Tool",this);
   connect(historyAct,SIGNAL(triggered()),this,SLOT(history()));
+  cleanHistoryAct = new QAction("&Clear History Tool",this);
+  connect(cleanHistoryAct,SIGNAL(triggered()),this,SLOT(cleanhistory()));
   editorAct = new QAction("&Editor",this);
   connect(editorAct,SIGNAL(triggered()),this,SLOT(editor()));
   pathAct = new QAction("&Path Tool",this);
@@ -111,7 +113,9 @@ void ApplicationWindow::createMenus() {
   toolsMenu->addAction(editorAct);
   toolsMenu->addAction(pathAct);
   toolsMenu->addAction(filetoolAct);
-  toolsMenu->addAction(historyAct);
+  historyMenu = toolsMenu->addMenu("&History");
+  historyMenu->addAction(historyAct);
+  historyMenu->addAction(cleanHistoryAct);
   helpMenu = menuBar()->addMenu("&Help");
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(manualAct);
@@ -304,6 +308,9 @@ void ApplicationWindow::history() {
   m_tool->getHistoryWidget()->show();
 }
 
+void ApplicationWindow::cleanhistory() {
+  m_tool->getHistoryWidget()->clear();
+}
 
 AboutWidget::AboutWidget() : QWidget() {
   linenumber = 0;

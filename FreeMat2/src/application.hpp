@@ -57,11 +57,11 @@ class ApplicationWindow : public QMainWindow {
     
   QTTerm* m_term;
   KeyManager* m_keys;
-  QMenu *fileMenu, *editMenu, *toolsMenu, *helpMenu, *debugMenu;
+  QMenu *fileMenu, *editMenu, *toolsMenu, *historyMenu, *helpMenu, *debugMenu;
   QToolBar *editToolBar, *debugToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
-  QAction *pathAct, *filetoolAct, *historyAct;
+  QAction *pathAct, *filetoolAct, *historyAct, *cleanHistoryAct;
   QAction *pauseAct, *continueAct, *stopAct;
   FMEditor *edit;
   ToolDock *m_tool;
@@ -99,6 +99,7 @@ private slots:
   void tclose();
   void filetool();
   void history();
+  void cleanhistory();
   void init();
 }; 
 

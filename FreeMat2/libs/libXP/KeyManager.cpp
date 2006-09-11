@@ -24,11 +24,11 @@
 #include <algorithm>
 #include "KeyManager.hpp"
 #include "Interpreter.hpp"
+#include "Common.hpp"
 #include "Context.hpp"
 #include <qapplication.h>
 #include <QtCore>
 #include <iostream>
-#include <glob.h>
 
 #define TAB_WIDTH 8
 /*
@@ -1165,14 +1165,9 @@ vector<string> KeyManager::GetCompletions(string line,
     for (i=0;i<global_completions.size();i++)
       completions.push_back(global_completions[i]);
   }
-  glob_t names;
-  string pattern(tmp);
-  pattern.append("*");
-  glob(pattern.c_str(), GLOB_MARK, NULL, &names);
-  for (int i=0;i<names.gl_pathc;i++) 
-    completions.push_back(names.gl_pathv[i]);
-  globfree(&names);
-  free(tmp);
+  stringVector comp(GetCompletionList(tmp));
+  for (int i=0;i<comp.size();i++)
+    completions.push_back(comp[i]);
   sort(completions.begin(),completions.end());
   return completions;
 }

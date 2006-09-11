@@ -36,7 +36,6 @@
 #include "Class.hpp"
 #include "Print.hpp"
 #include <qapplication.h>
-#include <pwd.h>
 #include <sys/types.h>
 #include <qeventloop.h>
 #include <QtCore>
@@ -46,13 +45,14 @@
 #include <direct.h>
 #define getcwd _getcwd
 #else
+#include <pwd.h>
 #define DELIM "/"
 #include <glob.h>
 #endif
 
 #ifdef WIN32
 #define DELIM "\\"
-#define S_ISREG(x) (x & _S_IFREG)
+//#define S_ISREG(x) (x & _S_IFREG)
 #include <direct.h>
 #define PATH_DELIM ";"
 #else

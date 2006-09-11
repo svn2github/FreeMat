@@ -185,6 +185,7 @@ void MainApp::Crashed() {
 
 void MainApp::Quit() {
   TerminalReset();
+  qApp->closeAllWindows();
   qApp->quit();
 }
 

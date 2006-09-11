@@ -71,14 +71,12 @@ stringVector GetCompletionList(string pattern) {
   return completions;
 #else
   glob_t names;
-  std::string pattern(tmp);
   pattern.append("*");
   glob(pattern.c_str(), GLOB_MARK, NULL, &names);
   int i;
   for (i=0;i<names.gl_pathc;i++) 
     completions.push_back(names.gl_pathv[i]);
   globfree(&names);
-  free(tmp);
   return completions;
 #endif
 }

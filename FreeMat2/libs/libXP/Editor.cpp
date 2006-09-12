@@ -21,6 +21,40 @@
 #include "highlighter.hpp"
 #include <QtGui>
 
+FMFindDialog::FMFindDialog(QWidget *parent) {
+  label = new QLabel("Find:");
+  combo = new QComboBox;
+  combo->setEditable(true);
+  caseCheckBox = new QCheckBox("Case &sensitive");
+  backwardCheckBox = new QCheckBox("Find &backwards");
+  findButton = new QPushButton(QIcon(":/images/find.png"),"&Find");
+  connect(findButton,SIGNAL(clicked()),this,SLOT(find()));
+  closeButton = new QPushButton(QIcon(":/images/close.png"),"&Close");
+  connect(closeButton,SIGNAL(clicked()),this,SLOT(hide()));
+  buttonGroup = new QGroupBox("Options");
+  QHBoxLayout *hlayout = new QHBoxLayout;
+  hlayout->addWidget(caseCheckBox);
+  hlayout->addWidget(backwardCheckBox);
+  buttonGroup->setLayout(hlayout);
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->addWidget(label);
+  layout->addWidget(combo);
+  layout->addWidget(buttonGroup);
+  QWidget *bpanel = new QWidget;
+  hlayout = new QHBoxLayout;
+  hlayout->addWidget(new QWidget);
+  hlayout->addWidget(findButton);
+  hlayout->addWidget(closeButton);
+  bpanel->setLayout(hlayout);
+  layout->addWidget(bpanel);
+  setLayout(layout);
+}
+
+void FMFindDialog::find() {
+  emit doFind(combo->currentText(), backwardCheckBox->checkState() == Qt::Checked,
+	      caseCheckBox->checkState() == Qt::Checked);
+}
+
 FMTextEdit::FMTextEdit() : QTextEdit() {
   setLineWrapMode(QTextEdit::NoWrap);
 }
@@ -243,6 +277,16 @@ FMEditor::FMEditor() : QMainWindow() {
   readSettings();
   connect(tab,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
   addTab();
+  m_find = new FMFindDialog;
+  connect(m_find,SIGNAL(doFind(QString,bool,bool)),
+	  this,SLOT(doFind(QString,bool,bool)));
+}
+
+void FMEditor::doFind(QString text, bool backwards, bool sensitive) {
+  QTextDocument::FindFlags flags;
+  if (backwards) flags = QTextDocument::FindBackward;
+  if (sensitive) flags = flags | QTextDocument::FindCaseSensitively;
+  currentEditor()->find(text,flags);
 }
 
 void FMEditor::readSettings() {
@@ -375,6 +419,12 @@ void FMEditor::createActions() {
   pasteAct = new QAction(QIcon(":/images/paste.png"),"&Paste",this);
   fontAct = new QAction("&Font",this);
   connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
+  findAct = new QAction("Find",this);
+  connect(findAct,SIGNAL(triggered()),this,SLOT(find()));
+}
+
+void FMEditor::find() {
+  m_find->show();
 }
 
 void FMEditor::createMenus() {
@@ -390,6 +440,8 @@ void FMEditor::createMenus() {
   editMenu->addAction(cutAct);
   editMenu->addAction(pasteAct);
   editMenu->addAction(fontAct);
+  toolsMenu = menuBar()->addMenu("&Tools");
+  toolsMenu->addAction(findAct);
 }
 
 void FMEditor::createToolBars() {
@@ -408,11 +460,50 @@ void FMEditor::createStatusBar() {
   statusBar()->showMessage("Ready");
 }
 
+static QString lastfile;
+static bool lastfile_set = false;
+
+static QString GetOpenFileName(QWidget *w) {
+  QString retfile;
+  if (lastfile_set)
+    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",lastfile,
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  else
+    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",QString(),
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  if (!retfile.isEmpty()) {
+    QFileInfo tokeep(retfile);
+    lastfile = tokeep.absolutePath();
+    lastfile_set = true;
+  }
+  return retfile;
+}
+
+static QString GetSaveFileName(QWidget *w) {
+  QString retfile;
+  if (lastfile_set)
+    retfile = QFileDialog::getSaveFileName(w,"Save File",lastfile,
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  else
+    retfile = QFileDialog::getSaveFileName(w,"Save File",QString(),
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  if (!retfile.isEmpty()) {
+    QFileInfo tokeep(retfile);
+    lastfile = tokeep.absolutePath();
+    lastfile_set = true;
+  }
+  return retfile;  
+}
+
 void FMEditor::open() {
-  if (maybeSave()) {
-    QString fileName = QFileDialog::getOpenFileName(this);
-    if (!fileName.isEmpty())
-      loadFile(fileName);
+  if (currentEditor()->document()->isModified() ||
+      (tab->tabText(tab->currentIndex()) != "untitled.m")) {
+    tab->addTab(new FMEditPane,"untitled.m");
+    tab->setCurrentIndex(tab->count()-1);
+  }
+  QString fileName = GetOpenFileName(this);
+  if (!fileName.isEmpty()) {
+    loadFile(fileName);
   }
 }
 
@@ -425,7 +516,7 @@ bool FMEditor::save() {
 }
 
 bool FMEditor::saveAs() {
-  QString fileName = QFileDialog::getSaveFileName(this);
+  QString fileName = GetSaveFileName(this);
   if (fileName.isEmpty())
     return false;
   // Check for a conflict

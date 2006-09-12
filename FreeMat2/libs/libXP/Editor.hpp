@@ -23,7 +23,30 @@
 #include <QTextEdit>
 #include <QMainWindow>
 #include <QTabWidget>
+#include <QLabel>
+#include <QComboBox>
+#include <QDialog>
+#include <QCheckBox>
+#include <QGroupBox>
 #include "highlighter.hpp"
+
+class FMFindDialog : public QDialog {
+  Q_OBJECT
+public:
+  FMFindDialog(QWidget *parent = 0);
+signals:
+  void doFind(QString text, bool backwards, bool sensitive);
+private slots:
+  void find();
+private:
+  QLabel *label;
+  QComboBox *combo;
+  QCheckBox *caseCheckBox;
+  QCheckBox *backwardCheckBox;
+  QPushButton *findButton;
+  QPushButton *closeButton;
+  QGroupBox *buttonGroup;
+};
 
 class FMTextEdit : public QTextEdit {
   Q_OBJECT
@@ -70,13 +93,15 @@ public:
 
 class FMEditor : public QMainWindow {
   Q_OBJECT
-  QMenu *fileMenu, *editMenu;
+  QMenu *fileMenu, *editMenu, *toolsMenu;
   QToolBar *editToolBar, *fileToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
+  QAction *openNewAct, *findAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
+  FMFindDialog *m_find;
 public:
   FMEditor();
   virtual ~FMEditor();
@@ -107,6 +132,8 @@ private slots:
   void closeTab();
   void tabChanged(int);
   void documentWasModified();
+  void find();
+  void doFind(QString text, bool backwards, bool sensitive);
 public:
   void closeEvent(QCloseEvent *event);
 };

@@ -75,7 +75,8 @@ void HistoryWidget::readSettings() {
 }
 
 void HistoryWidget::clear() {
-  m_flist->clear();
+  if (QMessageBox::warning(this,"Clear History","Are you sure you want to clear the history?  There is no undo operation",QMessageBox::Yes,QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
+    m_flist->clear();
 }
 
 void HistoryWidget::writeSettings() {

@@ -13,7 +13,9 @@ HistoryWidget.moc.cpp \
 ToolDock.moc.cpp \
 VariablesTool.moc.cpp
 
-BUILT_SOURCES = $(libXP_a_MOC)
+libXP_a_UI = findform.ui.h
+
+BUILT_SOURCES = $(libXP_a_MOC) $(libXP_a_UI)
 
 libXP_a_HFILES = DynLib.hpp \
 KeyManager.hpp \
@@ -27,7 +29,10 @@ highlighter.hpp \
 HistoryWidget.hpp \
 ToolDock.hpp \
 VariablesTool.hpp \
-Common.hpp
+Common.hpp \
+$(libXP_a_UI)
+
+nodist_libXP_a_SOURCES = $(libXP_a_MOC) $(libXP_a_UI)
 
 libXP_a_SOURCES = DynLib.cpp \
 KeyManager.cpp \
@@ -44,8 +49,6 @@ VariablesTool.cpp \
 HistoryWidget.cpp \
 $(libXP_a_HFILES)
 
-nodist_libXP_a_SOURCES = $(libXP_a_MOC) 
-
 
 AUTOMAKE_OPTIONS 	= foreign
 
@@ -55,3 +58,6 @@ AM_CPPFLAGS = $(QT_CFLAGS)
 
 %.moc.cpp: %.hpp
 	$(QT_MOC) -o $@ $<
+
+%.ui.h: %.ui
+	$(QT_UIC) -o $@ $<

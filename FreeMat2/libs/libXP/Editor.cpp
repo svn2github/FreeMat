@@ -21,38 +21,30 @@
 #include "highlighter.hpp"
 #include <QtGui>
 
-FMFindDialog::FMFindDialog(QWidget *parent) {
-  label = new QLabel("Find:");
-  combo = new QComboBox;
-  combo->setEditable(true);
-  caseCheckBox = new QCheckBox("Case &sensitive");
-  backwardCheckBox = new QCheckBox("Find &backwards");
-  findButton = new QPushButton(QIcon(":/images/find.png"),"&Find");
-  connect(findButton,SIGNAL(clicked()),this,SLOT(find()));
-  closeButton = new QPushButton(QIcon(":/images/close.png"),"&Close");
-  connect(closeButton,SIGNAL(clicked()),this,SLOT(hide()));
-  buttonGroup = new QGroupBox("Options");
-  QHBoxLayout *hlayout = new QHBoxLayout;
-  hlayout->addWidget(caseCheckBox);
-  hlayout->addWidget(backwardCheckBox);
-  buttonGroup->setLayout(hlayout);
-  QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(label);
-  layout->addWidget(combo);
-  layout->addWidget(buttonGroup);
-  QWidget *bpanel = new QWidget;
-  hlayout = new QHBoxLayout;
-  hlayout->addWidget(new QWidget);
-  hlayout->addWidget(findButton);
-  hlayout->addWidget(closeButton);
-  bpanel->setLayout(hlayout);
-  layout->addWidget(bpanel);
-  setLayout(layout);
+FMFindDialog::FMFindDialog(QWidget *parent) : QDialog(parent) {
+  ui.setupUi(this);
+  connect(ui.btFind,SIGNAL(clicked()),this,SLOT(find()));
+  connect(ui.btClose,SIGNAL(clicked()),this,SLOT(hide()));
+  setWindowIcon(QIcon(QString::fromUtf8(":/images/freemat_small_mod_64.png")));
+  setWindowTitle("Find - " + QString::fromStdString(Interpreter::getVersionString()));
+  ui.btFind->setIcon(QIcon(QString::fromUtf8(":/images/find.png")));
+  ui.btClose->setIcon(QIcon(QString::fromUtf8(":/images/close.png")));
 }
 
 void FMFindDialog::find() {
-  emit doFind(combo->currentText(), backwardCheckBox->checkState() == Qt::Checked,
-	      caseCheckBox->checkState() == Qt::Checked);
+  emit doFind(ui.cmFindText->currentText(), ui.cbBackwards->checkState() == Qt::Checked,
+ 	      ui.cbSensitive->checkState() == Qt::Checked);
+}
+
+void FMFindDialog::found() {
+  ui.lbStatus->setText("");
+}
+
+void FMFindDialog::notfound() {
+  if (ui.cbBackwards->checkState())
+    ui.lbStatus->setText("Search reached start of document");
+  else
+    ui.lbStatus->setText("Search reached end of document");
 }
 
 FMTextEdit::FMTextEdit() : QTextEdit() {
@@ -329,33 +321,17 @@ FMEditor::FMEditor() : QMainWindow() {
   addTab();
   m_find = new FMFindDialog;
   connect(m_find,SIGNAL(doFind(QString,bool,bool)),
-	  this,SLOT(doFind(QString,bool,bool)));
+ 	  this,SLOT(doFind(QString,bool,bool)));
 }
 
 void FMEditor::doFind(QString text, bool backwards, bool sensitive) {
   QTextDocument::FindFlags flags;
   if (backwards) flags = QTextDocument::FindBackward;
   if (sensitive) flags = flags | QTextDocument::FindCaseSensitively;
-  if (!currentEditor()->find(text,flags)) {
-    if (backwards) {
-      int ret = 
-	QMessageBox::information(m_find,"Find - FreeMat",
-				 "Beginning of document reached during\n" 
-				 "backwards search. Continue from the\n"
-				 "end of the document?",
-				 QMessageBox::Yes | QMessageBox::Default,
-				 QMessageBox::No);
-      if (ret == QMessageBox::No) {
-	m_find->hide();
-	return;
-      }
-      m_find->raise();
-      QTextCursor cursor(currentEditor()->textCursor());
-      cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
-      currentEditor()->setTextCursor(cursor);
-      emit doFind(text,backwards,sensitive);
-    }
-  }
+  if (!currentEditor()->find(text,flags)) 
+    m_find->notfound();
+  else
+    m_find->found();
 }
 
 void FMEditor::readSettings() {

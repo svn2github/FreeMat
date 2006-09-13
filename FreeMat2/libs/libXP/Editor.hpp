@@ -29,24 +29,23 @@
 #include <QCheckBox>
 #include <QGroupBox>
 #include "highlighter.hpp"
+#include "findform.ui.h"
 
 class FMFindDialog : public QDialog {
   Q_OBJECT
+
 public:
   FMFindDialog(QWidget *parent = 0);
+  void found();
+  void notfound();
+
 signals:
   void doFind(QString text, bool backwards, bool sensitive);
 private slots:
   void find();
+
 private:
-  QLabel *label;
-  QComboBox *combo;
-  QCheckBox *caseCheckBox;
-  QCheckBox *backwardCheckBox;
-  QPushButton *findButton;
-  QPushButton *closeButton;
-  QGroupBox *buttonGroup;
-  QLabel *status;
+  Ui::FMFindDialog ui;
 };
 
 class FMTextEdit : public QTextEdit {

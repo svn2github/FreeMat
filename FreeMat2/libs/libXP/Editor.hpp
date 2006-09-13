@@ -46,6 +46,7 @@ private:
   QPushButton *findButton;
   QPushButton *closeButton;
   QGroupBox *buttonGroup;
+  QLabel *status;
 };
 
 class FMTextEdit : public QTextEdit {
@@ -54,6 +55,8 @@ public:
   FMTextEdit();
   virtual ~FMTextEdit();
   void keyPressEvent(QKeyEvent*e);
+  void comment();
+  void uncomment();
 signals:
   void indent();
 };
@@ -97,11 +100,12 @@ class FMEditor : public QMainWindow {
   QToolBar *editToolBar, *fileToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
-  QAction *openNewAct, *findAct;
+  QAction *openNewAct, *findAct, *commentAct, *uncommentAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
   FMFindDialog *m_find;
+  QMenu *m_popup;
 public:
   FMEditor();
   virtual ~FMEditor();
@@ -123,6 +127,8 @@ private:
   void readSettings();
   void writeSettings();
   void updateFont();
+protected:
+  void contextMenuEvent(QContextMenuEvent *e);
 private slots:
   bool save();
   bool saveAs();
@@ -134,6 +140,8 @@ private slots:
   void documentWasModified();
   void find();
   void doFind(QString text, bool backwards, bool sensitive);
+  void comment();
+  void uncomment();
 public:
   void closeEvent(QCloseEvent *event);
 };

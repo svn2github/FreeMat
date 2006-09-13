@@ -62,9 +62,53 @@ FMTextEdit::FMTextEdit() : QTextEdit() {
 FMTextEdit::~FMTextEdit() {
 }
 
+void FMTextEdit::comment() {
+  QTextCursor cursor(textCursor());
+  QTextCursor line1(cursor);
+  QTextCursor line2(cursor);
+  if (cursor.position() < cursor.anchor()) {
+    line2.setPosition(cursor.anchor());
+  } else {
+    line1.setPosition(cursor.anchor());
+  }
+  line1.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  QTextCursor pos(line1);
+  pos.beginEditBlock();
+  while (pos.position() <= line2.position()) {
+    pos.insertText("%");
+    pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
+  }
+  pos.endEditBlock();
+}
+
+void FMTextEdit::uncomment() {
+  QTextCursor cursor(textCursor());
+  QTextCursor line1(cursor);
+  QTextCursor line2(cursor);
+  if (cursor.position() < cursor.anchor()) {
+    line2.setPosition(cursor.anchor());
+  } else {
+    line1.setPosition(cursor.anchor());
+  }
+  line1.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  QTextCursor pos(line1);
+  pos.beginEditBlock();
+  while (pos.position() <= line2.position()) {
+    pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+    if (pos.selectedText() == "%")
+      pos.deleteChar();
+    pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
+    pos.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  }
+  pos.endEditBlock();
+}
+
 void FMTextEdit::keyPressEvent(QKeyEvent*e) {
   bool tab = false;
   int keycode = e->key();
+  bool delayedIndent = false;
   if (keycode) {
     QByteArray p(e->text().toAscii());
     char key;
@@ -76,11 +120,17 @@ void FMTextEdit::keyPressEvent(QKeyEvent*e) {
       tab = true;
       emit indent();
     }
+    if (key == 13) {
+      delayedIndent = true;
+//       emit indent();
+    }
   }
   if (!tab)
     QTextEdit::keyPressEvent(e);
   else
     e->accept();
+  if (delayedIndent) 
+    emit indent();
 }
 
 
@@ -286,7 +336,26 @@ void FMEditor::doFind(QString text, bool backwards, bool sensitive) {
   QTextDocument::FindFlags flags;
   if (backwards) flags = QTextDocument::FindBackward;
   if (sensitive) flags = flags | QTextDocument::FindCaseSensitively;
-  currentEditor()->find(text,flags);
+  if (!currentEditor()->find(text,flags)) {
+    if (backwards) {
+      int ret = 
+	QMessageBox::information(m_find,"Find - FreeMat",
+				 "Beginning of document reached during\n" 
+				 "backwards search. Continue from the\n"
+				 "end of the document?",
+				 QMessageBox::Yes | QMessageBox::Default,
+				 QMessageBox::No);
+      if (ret == QMessageBox::No) {
+	m_find->hide();
+	return;
+      }
+      m_find->raise();
+      QTextCursor cursor(currentEditor()->textCursor());
+      cursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
+      currentEditor()->setTextCursor(cursor);
+      emit doFind(text,backwards,sensitive);
+    }
+  }
 }
 
 void FMEditor::readSettings() {
@@ -295,7 +364,7 @@ void FMEditor::readSettings() {
   QSize size = settings.value("editor/size", QSize(400, 400)).toSize();
   resize(size);
   move(pos);
-  QString font = settings.value("terminal/font").toString();
+  QString font = settings.value("editor/font").toString();
   if (!font.isNull()) {
     QFont new_font;
     new_font.fromString(font);
@@ -403,24 +472,44 @@ void FMEditor::documentWasModified() {
 
 void FMEditor::createActions() {
   newAct = new QAction(QIcon(":/images/new.png"),"&New Tab",this);
+  newAct->setShortcut(Qt::Key_N | Qt::CTRL);
   connect(newAct,SIGNAL(triggered()),this,SLOT(addTab()));
   openAct = new QAction(QIcon(":/images/open.png"),"&Open",this);
+  openAct->setShortcut(Qt::Key_O | Qt::CTRL);
   connect(openAct,SIGNAL(triggered()),this,SLOT(open()));
   saveAct = new QAction(QIcon(":/images/save.png"),"&Save",this);
+  saveAct->setShortcut(Qt::Key_S | Qt::CTRL);
   connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
   saveAsAct = new QAction("Save &As",this);
   connect(saveAsAct,SIGNAL(triggered()),this,SLOT(saveAs()));
   quitAct = new QAction(QIcon(":/images/quit.png"),"&Quit Editor",this);
+  quitAct->setShortcut(Qt::Key_Q | Qt::CTRL);
   connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
   closeAct = new QAction(QIcon(":/images/close.png"),"&Close Tab",this);
   connect(closeAct,SIGNAL(triggered()),this,SLOT(closeTab()));
   copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
+  copyAct->setShortcut(Qt::Key_C | Qt::CTRL);
   cutAct = new QAction(QIcon(":/images/cut.png"),"Cu&t",this);
+  cutAct->setShortcut(Qt::Key_X | Qt::CTRL);
   pasteAct = new QAction(QIcon(":/images/paste.png"),"&Paste",this);
+  pasteAct->setShortcut(Qt::Key_V | Qt::CTRL);
   fontAct = new QAction("&Font",this);
   connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
   findAct = new QAction("Find",this);
+  findAct->setShortcut(Qt::Key_F | Qt::CTRL);
   connect(findAct,SIGNAL(triggered()),this,SLOT(find()));
+  commentAct = new QAction("Comment Region",this);
+  connect(commentAct,SIGNAL(triggered()),this,SLOT(comment()));
+  uncommentAct = new QAction("Uncomment Region",this);
+  connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
+}
+
+void FMEditor::comment() {
+  currentEditor()->comment();
+}
+
+void FMEditor::uncomment() {
+  currentEditor()->uncomment();
 }
 
 void FMEditor::find() {
@@ -442,6 +531,21 @@ void FMEditor::createMenus() {
   editMenu->addAction(fontAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(findAct);
+  toolsMenu->addAction(commentAct);
+  toolsMenu->addAction(uncommentAct);
+  m_popup = new QMenu;
+  m_popup->addAction(copyAct);
+  m_popup->addAction(cutAct);
+  m_popup->addAction(pasteAct);
+  m_popup->addSeparator();
+  m_popup->addAction(findAct);
+  m_popup->addSeparator();
+  m_popup->addAction(commentAct);
+  m_popup->addAction(uncommentAct);
+}
+
+void FMEditor::contextMenuEvent(QContextMenuEvent *e) {
+  m_popup->exec(e->globalPos());
 }
 
 void FMEditor::createToolBars() {

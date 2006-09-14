@@ -25,6 +25,7 @@ if test "x$HAVE_QT4" = "xyes"; then
    AC_MSG_WARN([QWidget not found])))
    AC_CHECK_PROG(QT_MOC, [moc], [moc])
    AC_CHECK_PROG(QT_RCC, [rcc], [rcc])
+   AC_CHECK_PROG(QT_UIC, [uic], [uic])
 fi
 
 AC_ARG_WITH([qt4dir],
@@ -62,6 +63,10 @@ if test "x$HAVE_QT4" = "xno"; then
    if test x"$QT_RCC" = x; then
       AC_MSG_ERROR([*** This is not the right Qt installation])
    fi
+   AC_CHECK_PROG(QT_UIC, [uic], [$QT4DIR/bin/uic], [], $QT4DIR/bin)
+   if test x"$QT_UIC" = x; then
+      AC_MSG_ERROR([*** This is not the right Qt installation])
+   fi
    case "$host_os" in
     mingw*)
       QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
@@ -71,7 +76,11 @@ if test "x$HAVE_QT4" = "xno"; then
       help_target="help-mingw"
       AC_CHECK_PROG(QT_RCC, [rcc], [$QT4DIR/bin/rcc], [], $QT4DIR/bin)
       if test x"$QT_RCC" = x; then
-	 AC_MSG_ERROR([*** This is not the right Qt installation])
+	 AC_MSG_ERROR([*** This is not the right Qt installation, or you specified the --with-qt4dir with a pathspec that is not right (it should be something like /c/Qt/4.1.4)])
+      fi
+      AC_CHECK_PROG(QT_UIC, [uic], [$QT4DIR/bin/uic], [], $QT4DIR/bin)
+      if test x"$QT_RCC" = x; then
+	 AC_MSG_ERROR([*** This is not the right Qt installation, or you specified the --with-qt4dir with a pathspec that is not right (it should be something like /c/Qt/4.1.4)])
       fi
       AC_CHECK_PROG(WINDRES, [windres], [windres], [])
       if test x"$WINDRES" = x; then
@@ -103,6 +112,7 @@ AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MOC)
 AC_SUBST(QT_RCC)
+AC_SUBST(QT_UIC)
 
 AC_PROG_F77
 

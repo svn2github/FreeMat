@@ -13,7 +13,8 @@ HistoryWidget.moc.cpp \
 ToolDock.moc.cpp \
 VariablesTool.moc.cpp
 
-libXP_a_UI = findform.ui.h
+libXP_a_UI = findform.ui.h \
+replaceform.ui.h
 
 BUILT_SOURCES = $(libXP_a_MOC) $(libXP_a_UI)
 

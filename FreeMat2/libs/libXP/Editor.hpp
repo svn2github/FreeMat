@@ -30,6 +30,7 @@
 #include <QGroupBox>
 #include "highlighter.hpp"
 #include "findform.ui.h"
+#include "replaceform.ui.h"
 
 class FMFindDialog : public QDialog {
   Q_OBJECT
@@ -48,6 +49,29 @@ private:
   Ui::FMFindDialog ui;
 };
 
+class FMReplaceDialog : public QDialog {
+  Q_OBJECT
+
+public:
+  FMReplaceDialog(QWidget *parent = 0);
+  void found();
+  void notfound();
+  void showrepcount(int cnt);
+signals:
+  void doFind(QString text, bool backwards, bool sensitive);
+  void doReplace(QString text, QString replace, bool backwards, 
+		 bool sensitive);
+  void doReplaceAll(QString text, QString replace, bool backwards, 
+		    bool sensitive);
+private slots:
+  void replace();
+  void replaceAll();
+  void find();
+
+private:
+  Ui::FMReplaceDialog ui;
+};
+
 class FMTextEdit : public QTextEdit {
   Q_OBJECT
 public:
@@ -56,6 +80,8 @@ public:
   void keyPressEvent(QKeyEvent*e);
   void comment();
   void uncomment();
+  bool replace(QString text, QString replace, QTextDocument::FindFlags flags);
+  int replaceAll(QString text, QString replace, QTextDocument::FindFlags flags);
 signals:
   void indent();
 };
@@ -99,11 +125,12 @@ class FMEditor : public QMainWindow {
   QToolBar *editToolBar, *fileToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
-  QAction *openNewAct, *findAct, *commentAct, *uncommentAct;
+  QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
   FMFindDialog *m_find;
+  FMReplaceDialog *m_replace;
   QMenu *m_popup;
 public:
   FMEditor();
@@ -138,7 +165,12 @@ private slots:
   void tabChanged(int);
   void documentWasModified();
   void find();
+  void replace();
   void doFind(QString text, bool backwards, bool sensitive);
+  void doReplace(QString text, QString replace, 
+		 bool backwards, bool sensitive);
+  void doReplaceAll(QString text, QString replace, 
+		    bool backwards, bool sensitive);
   void comment();
   void uncomment();
 public:

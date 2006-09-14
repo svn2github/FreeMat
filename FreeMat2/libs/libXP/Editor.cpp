@@ -47,11 +47,92 @@ void FMFindDialog::notfound() {
     ui.lbStatus->setText("Search reached end of document");
 }
 
+FMReplaceDialog::FMReplaceDialog(QWidget *parent) : QDialog(parent) {
+  ui.setupUi(this);
+  connect(ui.btFind,SIGNAL(clicked()),this,SLOT(find()));
+  connect(ui.btClose,SIGNAL(clicked()),this,SLOT(hide()));
+  connect(ui.btReplace,SIGNAL(clicked()),this,SLOT(replace()));
+  connect(ui.btReplaceAll,SIGNAL(clicked()),this,SLOT(replaceAll()));
+  setWindowIcon(QIcon(QString::fromUtf8(":/images/freemat_small_mod_64.png")));
+  setWindowTitle("Find - " + QString::fromStdString(Interpreter::getVersionString()));
+  ui.btFind->setIcon(QIcon(QString::fromUtf8(":/images/find.png")));
+  ui.btClose->setIcon(QIcon(QString::fromUtf8(":/images/close.png")));
+}
+
+void FMReplaceDialog::find() {
+  emit doFind(ui.cmFindText->currentText(), 
+	      ui.cbBackwards->checkState() == Qt::Checked,
+	      ui.cbSensitive->checkState() == Qt::Checked);
+}
+
+void FMReplaceDialog::replace() {
+  emit doReplace(ui.cmFindText->currentText(),
+		 ui.cmReplaceText->currentText(),
+		 ui.cbBackwards->checkState() == Qt::Checked,
+		 ui.cbSensitive->checkState() == Qt::Checked);
+}
+
+void FMReplaceDialog::replaceAll() {
+  emit doReplaceAll(ui.cmFindText->currentText(),
+		    ui.cmReplaceText->currentText(),
+		    ui.cbBackwards->checkState() == Qt::Checked,
+		    ui.cbSensitive->checkState() == Qt::Checked);
+}
+
+void FMReplaceDialog::found() {
+  ui.lbStatus->setText("");
+}
+
+void FMReplaceDialog::notfound() {
+  if (ui.cbBackwards->checkState())
+    ui.lbStatus->setText("Search reached start of document");
+  else
+    ui.lbStatus->setText("Search reached end of document");
+}
+
+void FMReplaceDialog::showrepcount(int cnt) {
+  QString p;
+  if (cnt == 0)
+    p = QString("Found no instances of the search text");
+  else if (cnt == 1)
+    p = QString("Replaced one occurance");
+  else
+    p = QString("Replaced %1 occurances").arg(cnt);
+  ui.lbStatus->setText(p);
+}
+
 FMTextEdit::FMTextEdit() : QTextEdit() {
   setLineWrapMode(QTextEdit::NoWrap);
 }
 
 FMTextEdit::~FMTextEdit() {
+}
+
+bool FMTextEdit::replace(QString text, QString reptext, QTextDocument::FindFlags flag) {
+  if (textCursor().selectedText() == text) {
+    QTextCursor cursor(textCursor());
+    cursor.insertText(reptext);
+    cursor.movePosition(QTextCursor::Left,QTextCursor::KeepAnchor,reptext.size());
+    setTextCursor(cursor);
+    return true;
+  }
+  if (find(text,flag)) {
+    QTextCursor cursor(textCursor());
+    cursor.insertText(reptext);
+    cursor.movePosition(QTextCursor::Left,QTextCursor::KeepAnchor,reptext.size());
+    setTextCursor(cursor);
+    return true;
+  } else
+    return false;
+}
+
+int FMTextEdit::replaceAll(QString text, QString reptext, QTextDocument::FindFlags flag) {
+  textCursor().beginEditBlock();
+  int repcount = 0;
+  while (replace(text,reptext,flag))
+    repcount++;
+  textCursor().endEditBlock();
+  return repcount;
 }
 
 void FMTextEdit::comment() {
@@ -322,16 +403,46 @@ FMEditor::FMEditor() : QMainWindow() {
   m_find = new FMFindDialog;
   connect(m_find,SIGNAL(doFind(QString,bool,bool)),
  	  this,SLOT(doFind(QString,bool,bool)));
+  m_replace = new FMReplaceDialog;
+  connect(m_replace,SIGNAL(doFind(QString,bool,bool)),
+ 	  this,SLOT(doFind(QString,bool,bool)));
+  connect(m_replace,SIGNAL(doReplace(QString,QString,bool,bool)),
+ 	  this,SLOT(doReplace(QString,QString,bool,bool)));
+  connect(m_replace,SIGNAL(doReplaceAll(QString,QString,bool,bool)),
+ 	  this,SLOT(doReplaceAll(QString,QString,bool,bool)));
 }
 
 void FMEditor::doFind(QString text, bool backwards, bool sensitive) {
   QTextDocument::FindFlags flags;
   if (backwards) flags = QTextDocument::FindBackward;
   if (sensitive) flags = flags | QTextDocument::FindCaseSensitively;
-  if (!currentEditor()->find(text,flags)) 
+  if (!currentEditor()->find(text,flags)) {
     m_find->notfound();
-  else
+    m_replace->notfound();
+  }  else {
     m_find->found();
+    m_replace->found();
+  }
+}
+
+void FMEditor::doReplace(QString text, QString replace, 
+			 bool backwards, bool sensitive) {
+  QTextDocument::FindFlags flags;
+  if (backwards) flags = QTextDocument::FindBackward;
+  if (sensitive) flags = flags | QTextDocument::FindCaseSensitively;
+  if (!currentEditor()->replace(text,replace,flags)) 
+    m_replace->notfound();
+  else
+    m_replace->found();
+}
+
+void FMEditor::doReplaceAll(QString text, QString reptxt, 
+			    bool backwards, bool sensitive) {
+  QTextDocument::FindFlags flags;
+  if (backwards) flags = QTextDocument::FindBackward;
+  if (sensitive) flags = flags | QTextDocument::FindCaseSensitively;
+  int repcount = currentEditor()->replaceAll(text,reptxt,flags);
+  m_replace->showrepcount(repcount);
 }
 
 void FMEditor::readSettings() {
@@ -478,6 +589,8 @@ void FMEditor::createActions() {
   connect(commentAct,SIGNAL(triggered()),this,SLOT(comment()));
   uncommentAct = new QAction("Uncomment Region",this);
   connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
+  replaceAct = new QAction("Find and Replace",this);
+  connect(replaceAct,SIGNAL(triggered()),this,SLOT(replace()));
 }
 
 void FMEditor::comment() {
@@ -490,6 +603,12 @@ void FMEditor::uncomment() {
 
 void FMEditor::find() {
   m_find->show();
+  m_find->raise();
+}
+
+void FMEditor::replace() {
+  m_replace->show();
+  m_replace->raise();
 }
 
 void FMEditor::createMenus() {
@@ -507,6 +626,7 @@ void FMEditor::createMenus() {
   editMenu->addAction(fontAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(findAct);
+  toolsMenu->addAction(replaceAct);
   toolsMenu->addAction(commentAct);
   toolsMenu->addAction(uncommentAct);
   m_popup = new QMenu;
@@ -515,6 +635,7 @@ void FMEditor::createMenus() {
   m_popup->addAction(pasteAct);
   m_popup->addSeparator();
   m_popup->addAction(findAct);
+  m_popup->addAction(replaceAct);
   m_popup->addSeparator();
   m_popup->addAction(commentAct);
   m_popup->addAction(uncommentAct);

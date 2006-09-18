@@ -274,6 +274,14 @@ AC_DEFUN([PKG_CHECK_MODULES], [
   fi
 ])
 
+AC_DEFUN([AC_LIB_FREEMAT_DEPEND_PRINT], [
+	if $3; then
+		echo "$1       $2          <Found>"
+	else
+		echo "$1       $2          <Not found>"
+	fi
+])
+
 AC_DEFUN([AC_LIB_FREEMAT_CHECK], [
 extern_flags=""
 need_extern="no"
@@ -281,7 +289,8 @@ LIBS="$LIBS $FLIBS"
 
 AC_CHECK_LIB(avcall,__structcpy,found_avcall="yes",found_avcall="no")
 if test x"$found_avcall" == xyes; then
-      LIBS="-lavcall $LIBS"
+	LIBS="-lavcall $LIBS"
+	AC_DEFINE(HAVE_AVCALL, 1, [Set to 1 if you have libavcall])
 fi    
 AC_CHECK_LIB(amd,amd_postorder,found_amd="yes",found_amd="no")
 if test x"$found_amd" == xyes; then
@@ -291,13 +300,21 @@ AC_CHECK_LIB(umfpack,umfpack_zl_solve,found_umfpack="yes",found_umfpack="no")
 if test x"$found_umfpack" == xyes; then
   LIBS="-lumfpack $LIBS"
 fi
+if test x"$found_amd" == xyes; then
+	if test x"$found_umfpack" == xyes; then
+		AC_DEFINE(HAVE_UMFPACK, 1, [Set to 1 if you have UMFPACK])
+	fi
+fi
+
 AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
 if test x"$found_fftw3f" == xyes; then
-  LIBS="-lfftw3f $LIBS"
+	LIBS="-lfftw3f $LIBS"
+	AC_DEFINE(HAVE_FFTWF, 1, [Set to 1 if you have the single precision version of FFTW installed])
 fi
 AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
 if test x"$found_fftw3" == xyes; then
-  LIBS="-lfftw3 $LIBS"
+	LIBS="-lfftw3 $LIBS"
+  	AC_DEFINE(HAVE_FFTW, 1, [Set to 1 if you have the double precision version of FFTW installed])
 fi
 if test x"$is_osx" == xyes; then
    LIBS="$LIBS -framework vecLib"
@@ -306,7 +323,7 @@ if test x"$is_osx" == xyes; then
 else
    ACX_BLAS(found_blas="yes",found_blas="no")
    if test x"$found_blas" == xyes; then
-      LIBS="$BLAS_LIBS $LIBS"
+	LIBS="$BLAS_LIBS $LIBS"
    fi
    ACX_LAPACK(found_lapack="yes",found_lapack="no")
    if test x"$found_lapack" == xyes; then
@@ -320,56 +337,13 @@ fi
 
 AC_CHECK_LIB(arpack,$znaupd,found_arpack="yes",found_arpack="no",[$FLIBS])
 if test x"$found_arpack" == xyes; then
-  LIBS="-larpack $LIBS"
+	LIBS="-larpack $LIBS"
+	AC_DEFINE(HAVE_ARPACK, 1, [Set to 1 if you have ARPACK installed])
 fi
 
 AC_CHECK_LIB(z,inflate,found_z="yes",found_z="no")
 if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"
-fi
-
-if test x"$found_avcall" != xyes; then
-  need_extern="yes"
-  extern_flags="$extern_flags --with-ffcall"
-fi
-
-if test x"$found_amd" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-umfpack"
-fi
-
-if test x"$found_umfpack" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-umfpack"
-fi
-
-if test x"$found_fftw3f" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-fftw"
-fi
-
-if test x"$found_fftw3" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-fftw"
-fi
-
-if test x"$found_blas" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-blas"
-fi
-
-if test x"$found_lapack" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-lapack"
-fi
-
-if test x"$found_arpack" != xyes; then
-   need_extern="yes"
-   extern_flags="$extern_flags --with-arpack"
-fi
-
-if test x"$is_win32" != xfalse; then
-   extern_flags="$extern_flags --mingw"
 fi
 ])
 

@@ -22,18 +22,26 @@
 #include "Array.hpp"
 #include "Malloc.hpp"
 #include <math.h>
+#if HAVE_FFTW | HAVE_FFTWF
 #include "fftw3.h"
+#endif
 
+#if HAVE_FFTWF
 static fftwf_complex *inf, *outf;
 static fftwf_plan pf_forward;
 static fftwf_plan pf_backward;
+#endif
+
+#if HAVE_FFTW
 static int cN = 0;
 static fftw_complex *in, *out;
 static fftw_plan p_forward;
 static fftw_plan p_backward;
 static int zN = 0;
+#endif
 
 void complex_fft_init(int Narg) {
+#if HAVE_FFTWF
   if (cN == Narg) return;
   if (cN != 0) {
     fftwf_destroy_plan(pf_forward);
@@ -46,25 +54,37 @@ void complex_fft_init(int Narg) {
   pf_forward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_MEASURE);
   pf_backward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_MEASURE);
   cN = Narg;
+#else
+  throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
+#endif
 }
 
 void complex_fft_forward(int Narg, float *dp) {
+#if HAVE_FFTWF
   if (cN != Narg) complex_fft_init(Narg);
   memcpy(inf,dp,sizeof(float)*Narg*2);
   fftwf_execute(pf_forward);
   memcpy(dp,outf,sizeof(float)*Narg*2);
+#else
+  throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
+#endif
 }
   
 void complex_fft_backward(int Narg, float *dp) {
+#if HAVE_FFTWF
   if (cN != Narg) complex_fft_init(Narg);
   memcpy(inf,dp,sizeof(float)*Narg*2);
   fftwf_execute(pf_backward);
   memcpy(dp,outf,sizeof(float)*Narg*2);
   for (int i=0;i<(2*cN);i++)
     dp[i] /= ((float) Narg);
+#else
+  throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
+#endif
 }
 
 void dcomplex_fft_init(int Narg) {
+#if HAVE_FFTW
   if (zN == Narg) return;
   if (zN != 0) {
     fftw_destroy_plan(p_forward);
@@ -77,22 +97,33 @@ void dcomplex_fft_init(int Narg) {
   p_forward = fftw_plan_dft_1d(Narg,in,out,FFTW_FORWARD,FFTW_MEASURE);
   p_backward = fftw_plan_dft_1d(Narg,in,out,FFTW_BACKWARD,FFTW_MEASURE);
   zN = Narg;
+#else
+  throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");
+#endif
 }
 
-void dcomplex_fft_forward(int Narg, double *dp) {
-  if (zN != Narg) dcomplex_fft_init(Narg);
+void dcomplex_fft_forward(int Narg, double *dp) { 
+#if HAVE_FFTW
+ if (zN != Narg) dcomplex_fft_init(Narg);
   memcpy(in,dp,sizeof(double)*Narg*2);
   fftw_execute(p_forward);
   memcpy(dp,out,sizeof(double)*Narg*2);
+#else
+  throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");
+#endif
 }
 
 void dcomplex_fft_backward(int Narg, double *dp) {
+#if HAVE_FFTW
   if (zN != Narg) dcomplex_fft_init(Narg);
   memcpy(in,dp,sizeof(double)*Narg*2);
   fftw_execute(p_backward);
   memcpy(dp,out,sizeof(double)*Narg*2);
   for (int i=0;i<(2*zN);i++)
     dp[i] /= ((double) Narg);
+#else
+  throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");
+#endif
 }
 
 Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
@@ -240,6 +271,10 @@ Array dcomplexFFTFunction(const Array& input, int FFTLen, int FFTDim,
 //non-singleton dimension of @|x|.  If @|n| is omitted, then
 //the DFT length is chosen to match of the length of @|x| along
 //dimension @|d|.  
+//
+//Note that FFT support on Linux builds requires availability
+//of the FFTW libraries at compile time.  On Windows and Mac OS
+//X, single and double precision FFTs are available by default.
 //@@Function Internals
 //The output is computed via
 //\[

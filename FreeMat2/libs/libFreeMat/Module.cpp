@@ -362,6 +362,7 @@ char* parseBoundsCheck(char* &cp) {
 //!
 ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
 			   Interpreter* eval) throw(Exception) {
+#ifdef HAVE_AVCALL
   char *libfile;
   char *symbolname;
   char *funcname;
@@ -445,6 +446,9 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
   eval->getContext()->insertFunctionGlobally(fptr,false);
   DynamicFunctions.push_back(fptr->name);
   return ArrayVector();
+#else
+  throw Exception("Support for the import command requires that the avcall library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable.  To enable imported commands, please install avcall and recompile FreeMat.");
+#endif
 }
   
 void LoadModuleFunctions(Context* context) {

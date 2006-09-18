@@ -132,15 +132,13 @@ if test x"${QT_LIBS}" = x; then
    echo ""
 fi
 cdir=`pwd`
-CFLAGS="$CFLAGS -I$cdir/extern/Root/include"
-CXXFLAGS="$CXXFLAGS -I$cdir/extern/Root/include"
 
 adl_COMPUTE_RELATIVE_PATHS([bindir:datadir:bin_to_data])
 
-CPPFLAGS="$CPPFLAGS -I$cdir/extern/Root/include -DBASEPATH=\\\"$bin_to_data/FreeMat-$VERSION\\\""
+CPPFLAGS="$CPPFLAGS -DBASEPATH=\\\"$bin_to_data/FreeMat-$VERSION\\\""
 FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g' | sed -e 's/-l\w*//g'`
 AC_MSG_NOTICE([Extra lib flags added $FOO])
-LDFLAGS="$LDFLAGS -L$cdir/extern/Root/lib $FOO"
+LDFLAGS="$LDFLAGS $FOO"
 
 dnl Check external dependencies
 dnl   Fail?
@@ -158,37 +156,99 @@ ac_save_libs=$LIBS
 
 AC_LIB_FREEMAT_CHECK
 
-if test x"$need_extern" != xno; then
+dnl print a dependency summary...
+echo \
+"********************************************************************
+Dependancy summary:
 
-AC_OUTPUT([tools/disttool/builddeps])
-chmod +x tools/disttool/builddeps
-cp tools/disttool/builddeps .
+Required Libraries - These libraries are critical to the operation of
+FreeMat.  If any of these libraries are not found, FreeMat will not
+compile.
 
+    Library         Function                              Status
+"
+
+if (test x"$found_blas" == xyes); then
+echo \
+"    BLAS            Matrix and vector operations          Found"
+else
+echo \
+"    BLAS            Matrix and vector operations          Not Found"
+fi
+
+if (test x"$found_lapack" == xyes); then
+echo \
+"    LAPACK          Solving linear systems                Found"
+else
+echo \
+"    LAPACK          Solving linear systems                Not Found"
+fi
+
+if (test x"$found_z" == xyes); then
+echo \
+"    libz            MAT File I/O                          Found"
+else
+echo \
+"    libz            MAT File I/O                          Not Found"
+fi
+
+echo \
+"
+
+Optional Libraries - These libraries are used to provide functionality
+that is not critical to the operation of FreeMat.  If any of these 
+libraries are not found, FreeMat will still compile, but the corresponding
+functionality will not be available in the resulting binary.
+
+    Library         Function                              Status
+"
+
+if (test x"$found_fftw3f" == xyes); then
+echo \
+"    FFTWF           FFT (single precision)                Found"
+else
+echo \
+"    FFTWF           FFT (single precision)                Not Found"
+fi
+
+if (test x"$found_fftw3" == xyes); then
+echo \
+"    FFTW            FFT (double precision)                Found"
+else
+echo \
+"    FFTW            FFT (double precision)                Not Found" 
+fi
+
+if (test x"$found_arpack" == xyes); then
+echo \
+"    ARPACK          Eigenvalues for Sparse Matrices       Found"
+else
+echo \
+"    ARPACK          Eigenvalues for Sparse Matrices       Not Found"
+fi
+
+if (test x"$found_umfpack" == xyes) && (test x"$found_amd" == xyes); then
+echo \
+"    UMFPACK         Solutions of Sparse Linear Equations  Found"
+else
+echo \
+"    UMFPACK         Solutions of Sparse Linear Equations  Not Found"
+fi
+
+if (test x"$found_avcall" == xyes); then
+echo \
+"    AVCALL          Imported functions                    Found"
+else
+echo \
+"    AVCALL          Imported functions                    Not Found"
+fi
+echo \
+"********************************************************************"
+
+if (test x"$found_blas" == xno) || (test x"$found_lapack" == xno) || (test x"$found_z" == xno); then
 AC_MSG_ERROR([
-**********************************************************************
-One or more of the following external dependencies was not
-found:
-
-  AMD                       ${found_amd}
-  UMFPACK                   ${found_umfpack}
-  FFTW3 (Single Precision)  ${found_fftw3f}
-  FFTW3 (Double Precision)  ${found_fftw3}
-  BLAS                      ${found_blas}
-  LAPACK                    ${found_lapack}
-  ARPACK                    ${found_arpack}
-  ZLIB                      ${found_z}
-**********************************************************************
-A script to build these external dependencies has been created
-in the current directory.  To build the missing dependencies,
-run the script via:
-
-./builddeps ${extern_flags}
-
-Note that this will attempt to build and install the libraries 
-and header files in extern/Root/lib and extern/Root/include 
-(respectively).  Once the required libraries have been successfully
-built, rerun configure.])
-
+One or more of the required external dependencies was not found.  Please
+install the missing dependencies (as listed above) and rerun configure.])
 fi
 
 AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
@@ -197,10 +257,6 @@ MP_WITH_CURSES
 
 LIBS="$LIBS $CURSES_LIB $FLIBS"
 
-echo \
-"**********************************************************************
-All external dependencies satisfied.  Generating makefiles.
-**********************************************************************"
 AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 

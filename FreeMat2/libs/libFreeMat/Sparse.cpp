@@ -21,9 +21,11 @@
 #include "Malloc.hpp"
 #include <algorithm>
 #include "IEEEFP.hpp"
+#if HAVE_UMFPACK
 extern "C" {
 #include "umfpack.h"
 }
+#endif
 #include "LAPACK.hpp"
 #include "MemPtr.hpp"
 #include "Math.hpp"
@@ -38,6 +40,7 @@ extern "C" {
 // Need to move resize for sparse matrices back into Array class so that
 // no unnecessary copies get made during the set operations.
 
+#if HAVE_ARPACK
 extern "C" {
   int znaupd_(int *ido, char *bmat, int *n, char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
@@ -73,6 +76,7 @@ extern "C" {
 	      *iparam, int *ipntr, double *workd, double *workl, 
 	      int *lworkl, int *info);
 }
+#endif
 
 template <class T>
 T* RLEDuplicate(const T*src) {
@@ -3765,6 +3769,7 @@ int ConvertSparseCCSComplex(int rows, int cols, const double **Ap,
 
 void* SparseSolveLinEqReal(int Arows, int Acols, const void *Ap, 
 			   int Brows, int Bcols, const void *Bp) {
+#if HAVE_UMFPACK
   // Convert A into CCS form
   int *Acolstart;
   int *Arowindx;
@@ -3790,10 +3795,14 @@ void* SparseSolveLinEqReal(int Arows, int Acols, const void *Ap,
   delete Arowindx;
   delete Adata;
   return x;
+#else
+  throw Exception("Solving sparse systems of linear equations requires UMFPACK support, which was not available at compile time.  You must have UMFPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 }
   
 void* SparseSolveLinEqComplex(int Arows, int Acols, const void *Ap, 
 			      int Brows, int Bcols, const void *Bp) {
+#if HAVE_UMFPACK
   // Convert A into CCS form
   int *Acolstart;
   int *Arowindx;
@@ -3840,6 +3849,9 @@ void* SparseSolveLinEqComplex(int Arows, int Acols, const void *Ap,
   Free(br);
   Free(bi);
   return x;
+#else
+  throw Exception("Solving sparse systems of linear equations requires UMFPACK support, which was not available at compile time.  You must have UMFPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 }
 
 IJVEntry<double>* ConvertCCSToIJVListReal(int *Ap, int *Ai, double *Ax, 
@@ -3884,6 +3896,7 @@ void* SparseSolveLinEq(Class dclass, int Arows, int Acols, const void *Ap,
 }
 
 ArrayVector SparseLUDecomposeReal(int Arows, int Acols, const void *Ap) {
+#if HAVE_UMFPACK
   // Convert A into CCS form
   int *Acolstart;
   int *Arowindx;
@@ -3974,9 +3987,13 @@ ArrayVector SparseLUDecomposeReal(int Arows, int Acols, const void *Ap) {
   delete[] Arowindx;
   delete[] Adata;
   return retval;
+#else
+  throw Exception("LU Decompositions of sparse matrices requires UMFPACK support, which was not available at compile time.  You must have UMFPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 }
 
 ArrayVector SparseLUDecomposeComplex(int Arows, int Acols, const void *Ap) {
+#if HAVE_UMFPACK
   // Convert A into CCS form
   int *Acolstart;
   int *Arowindx;
@@ -4074,6 +4091,9 @@ ArrayVector SparseLUDecomposeComplex(int Arows, int Acols, const void *Ap) {
   delete[] Arowindx;
   delete[] Adata;
   return retval;
+#else
+  throw Exception("LU Decompositions of sparse matrices requires UMFPACK support, which was not available at compile time.  You must have UMFPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 }
 
   
@@ -4187,6 +4207,7 @@ void DNAUPARPACKError(int info) {
 
 ArrayVector SparseEigDecomposeNonsymmetricReal(double **ap, int rows, int cols, 
 					       int nev, int nargout, char* which) {
+#if HAVE_ARPACK
   // Initialization call
   int ido = 0;
   char bmat = 'I';
@@ -4325,10 +4346,15 @@ ArrayVector SparseEigDecomposeNonsymmetricReal(double **ap, int rows, int cols,
     Free(di);
     return retval;
   }
+#else
+  throw Exception("Eigenvalue decomposition problems for sparse matrices requires the ARPACK support library, which was not available at compile time.  You must have ARPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
+
 } 
 
 ArrayVector SparseEigDecomposeSymmetricReal(double **ap, int rows, int cols, 
 					    int nev, int nargout, char *which) {
+#if HAVE_ARPACK
   // Initialization call
   int ido = 0;
   char bmat = 'I';
@@ -4418,10 +4444,14 @@ ArrayVector SparseEigDecomposeSymmetricReal(double **ap, int rows, int cols,
     retval.push_back(Array::diagonalConstructor(Array(FM_DOUBLE,Dimensions(nev,1),d),0));
   }
   return retval;
+#else
+  throw Exception("Eigenvalue decomposition problems for sparse matrices requires the ARPACK support library, which was not available at compile time.  You must have ARPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 } 
 
 ArrayVector SparseEigDecomposeNonsymmetricComplex(double **ap, int rows, int cols, 
 						  int nev, int nargout, char *which) {
+#if HAVE_ARPACK
   // Initialization call
   int ido = 0;
   char bmat = 'I';
@@ -4525,6 +4555,9 @@ ArrayVector SparseEigDecomposeNonsymmetricComplex(double **ap, int rows, int col
   }
   Free(z);
   return retval;
+#else
+  throw Exception("Eigenvalue decomposition problems for sparse matrices requires the ARPACK support library, which was not available at compile time.  You must have ARPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 } 
 
 // For shifted eigendecomposition problems, we have to change the behavior of the
@@ -4534,6 +4567,7 @@ ArrayVector SparseEigDecomposeNonsymmetricComplex(double **ap, int rows, int col
 // UMFPack routines, and then use the result in repeated solutions.
 ArrayVector SparseEigDecomposeNonsymmetricRealShifted(double **ap, int rows, int cols, 
 						      int nev, int nargout, double shift) {
+#if (HAVE_UMFPACK & HAVE_ARPACK)
   // Set up the scaled identity matrix
   double** scI = (double**) MakeSparseScaledIdentityReal<double>(shift, rows);
   // Compute A - scI
@@ -4705,6 +4739,9 @@ ArrayVector SparseEigDecomposeNonsymmetricRealShifted(double **ap, int rows, int
     Free(di);
     return retval;
   }
+#else
+  throw Exception("Shifted eigendecomposition problems for sparse matrices requires UMFPACK and ARPACK support libraries, which were not available at compile time.  You must have UMFPACK and ARPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 } 
 
 // For shifted eigendecomposition problems, we have to change the behavior of the
@@ -4714,6 +4751,7 @@ ArrayVector SparseEigDecomposeNonsymmetricRealShifted(double **ap, int rows, int
 // UMFPack routines, and then use the result in repeated solutions.
 ArrayVector SparseEigDecomposeNonsymmetricComplexShifted(double **ap, int rows, int cols, 
 							 int nev, int nargout, double *shift) {
+#if (HAVE_UMFPACK & HAVE_ARPACK)
   // Set up the scaled identity matrix
   double** scI = (double**) MakeSparseScaledIdentityComplex<double>(shift[0], shift[1], rows);
   // Compute A - scI
@@ -4860,6 +4898,9 @@ ArrayVector SparseEigDecomposeNonsymmetricComplexShifted(double **ap, int rows, 
   }
   Free(z);
   return retval;
+#else
+  throw Exception("Shifted eigendecomposition problems for sparse matrices requires UMFPACK and ARPACK support libraries, which were not available at compile time.  You must have UMFPACK and ARPACK installed at compile time for FreeMat to enable this functionality.");
+#endif
 } 
 
 ArrayVector SparseEigDecompose(int nargout, Array A, int k, char* whichFlag) {

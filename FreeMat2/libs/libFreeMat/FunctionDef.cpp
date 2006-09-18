@@ -17,7 +17,9 @@
  *
  */
 
+#if HAVE_AVCALL
 #include "avcall.h"
+#endif
 #include "FunctionDef.hpp"
 #include "Interpreter.hpp"
 #include "Parser.hpp"
@@ -603,6 +605,7 @@ Class mapTypeNameToClass(std::string name) {
 ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
 						  ArrayVector& inputs,
 						  int nargout) {
+#if HAVE_AVCALL
   walker->pushDebug(name,"imported");
   /**
    * To actually evaluate the function, we have to process each of
@@ -796,6 +799,9 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
   free(values);
   walker->popDebug();
   return singleArrayVector(retArray);
+#else
+  throw Exception("Support for the import command requires that the avcall library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install avcall and recompile FreeMat.");
+#endif
 }
 
 MexFunctionDef::MexFunctionDef(std::string fullpathname) {

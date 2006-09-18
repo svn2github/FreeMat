@@ -11,18 +11,18 @@
 %@|linespec| arguments are optional.  We start with the
 %@|<data>| term, which can take on one of multiple forms:
 %\begin{itemize}
-%  \item \emph{Vector Matrix Case} -- In this case the argument data is a pair
+%  \item Vector Matrix Case -- In this case the argument data is a pair
 %    of variables.  A set of @|x| coordinates in a numeric vector, and a 
 %    set of @|y| coordinates in the columns of the second, numeric matrix.
 %    @|x| must have as many elements as @|y| has columns (unless @|y|
 %    is a vector, in which case only the number of elements must match).  Each
 %    column of @|y| is plotted sequentially against the common vector @|x|.
-%  \item \emph{Unpaired Matrix Case} -- In this case the argument data is a 
+%  \item Unpaired Matrix Case -- In this case the argument data is a 
 %    single numeric matrix @|y| that constitutes the @|y|-values
 %    of the plot.  An @|x| vector is synthesized as @|x = 1:length(y)|,
 %    and each column of @|y| is plotted sequentially against this common @|x|
 %    axis.
-%  \item \emph{Complex Matrix Case} -- Here the argument data is a complex
+%  \item Complex Matrix Case -- Here the argument data is a complex
 %    matrix, in which case, the real part of each column is plotted against
 %    the imaginary part of each column.  All columns receive the same line
 %    styles.
@@ -61,8 +61,8 @@
 %\begin{itemize}
 %  \item @|'-'| - Solid line style
 %  \item @|':'| - Dotted line style
-%  \item @|';'| - Dot-Dash-Dot-Dash line style
-%  \item @|'||'| - Dashed line style
+%  \item @|'-.'| - Dot-Dash-Dot-Dash line style
+%  \item @|'--'| - Dashed line style
 %\end{itemize}
 %For sequences of plots, the @|linespec| is recycled with color order determined
 %by the properties of the current axes.  You can also use the @|properties|

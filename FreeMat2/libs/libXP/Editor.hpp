@@ -83,7 +83,7 @@ public:
   bool replace(QString text, QString replace, QTextDocument::FindFlags flags);
   int replaceAll(QString text, QString replace, QTextDocument::FindFlags flags);
 signals:
-  void indent();
+  void indent(bool tabKey);
 };
 
 class FMIndent : public QObject {
@@ -95,7 +95,7 @@ public:
   void setDocument(FMTextEdit *te);
   FMTextEdit *document() const;
 private slots:
-  void update();
+  void update(bool tabKey);
 };
 
 class LineNumber : public QWidget {

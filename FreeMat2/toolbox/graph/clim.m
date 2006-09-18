@@ -17,7 +17,14 @@
 %The third and fourth form set the mode for the limit to @|auto| and @|manual|
 %respectively.  In @|auto| mode, FreeMat chooses the range for the axis 
 %automatically.  The @|clim('mode')| form returns the current mode for the axis
-%(either @|'auto'| or @|'manual'|).  Finally, you can specify the handle of an
+%(either @|'auto'| or @|'manual'|).  
+%
+%Switching to @|manual| mode does not change the limits, it simply allows
+% you to modify them (and disables the automatic adjustment of the limits
+%as more objects are added to the plot).  Also, if you specify a set of 
+%limits explicitly, the mode is set to @|manual|
+% 
+%Finally, you can specify the handle of an
 %axis to manipulate instead of using the current one.
 %@@Example
 %Here is an example of using @|clim| to change the effective window and
@@ -26,7 +33,9 @@
 %@<
 %x = repmat(linspace(-1,1),[100,1]); y = x';
 %z = exp(-x.^2-y.^2);
-%image(z)
+%image(z);
+%min(z(:))
+%max(z(:))
 %mprint clim1
 %@>
 %which results in
@@ -34,7 +43,8 @@
 %Next, we change the colorscale of the image using the
 % @|clim| function
 %@<
-%clim([0,0.2])
+%image(z);
+%clim([0,0.2]);
 %mprint clim2
 %@>
 %which results in

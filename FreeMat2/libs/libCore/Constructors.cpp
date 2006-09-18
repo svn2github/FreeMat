@@ -458,11 +458,12 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
 //Creates an array of structures from a set of field, value pairs.
 //The syntax is
 //@[
-//   y = struct(n1,v1,n2,v2,...)
+//   y = struct(n_1,v_1,n_2,v_2,...)
 //@]
-//where @|ni| are the names of the fields in the structure array, and
-//@|vi| are the values.  The values @|v_i| must either all be
-//scalars, or be cell-arrays of all the same dimensions.  In the latter case, the
+//where @|n_i| are the names of the fields in the structure array, and
+//@|v_i| are the values.  The values @|v_i| must either all be
+//scalars, or be cell-arrays of all the same dimensions.  In the latter 
+//case, the
 //output structure array will have dimensions dictated by this common
 //size.  Scalar entries for the @|v_i| are replicated to fill out
 //their dimensions. An error is raised if the inputs are not properly matched (i.e., are
@@ -474,14 +475,25 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
 //but removes the class information from the object.
 //
 //@@Example
-//This example creates a 3-element structure array with two fields, @|foo|
-//and @|bar|, where the contents of @|foo| are provided explicitly, and
-//the contents of @|bar| are replicated from a scalar.
+//This example creates a 3-element structure array with three fields, @|foo|
+//@|bar| and @|key|, where the contents of @|foo| and @|bar| are provided 
+//explicitly as cell arrays of the same size, and the contents of @|bar| 
+//are replicated from a scalar.
 //@<
 //y = struct('foo',{1,3,4},'bar',{'cheese','cola','beer'},'key',508)
 //y(1)
 //y(2)
 //y(3)
+//@>
+//
+//An alternate way to create a structure array is to initialize the last
+//element of each field of the structure
+//@<
+//Test(2,3).Type = 'Beer';
+//Test(2,3).Ounces = 12;
+//Test(2,3).Container = 'Can';
+//Test(2,3)
+//Test(1,1)
 //@>
 //!
 ArrayVector StructFunction(int nargout, const ArrayVector& arg) {

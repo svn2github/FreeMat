@@ -570,7 +570,7 @@ private:
    *      either a variable or function.  
    *    - 
    */
-  ArrayVector rhsExpression(tree t);
+  ArrayVector rhsExpression(tree t, int lhsCount = 1);
   /**
    * Look up an identifier as a potential function name, using a
    * rescan if the identifier is not found on the first pass.

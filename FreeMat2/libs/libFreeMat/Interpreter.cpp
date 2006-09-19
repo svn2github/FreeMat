@@ -2193,15 +2193,9 @@ void Interpreter::multiFunctionCall(tree t, bool printIt) {
   lhsCount = 0;
   for (unsigned index=0;index<s.size();index++) 
     lhsCount += countLeftHandSides(s[index]);
-  // Trap the special case where function pointers are used
-  Array r, *ptr;
-  ptr = context->lookupVariable(fAST.first().text());
-  if (ptr) r = *ptr;
-  if (ptr && (r.getDataClass() == FM_FUNCPTR_ARRAY) &&
-      r.isScalar()) 
-    m = FunctionPointerDispatch(r,fAST.second(),lhsCount);
-  else
-    m = functionExpression(fAST,lhsCount,false);
+
+  m = rhsExpression(fAST,lhsCount);
+
   unsigned index;
   for (index=0;(index<s.size()) && (m.size() > 0);index++) {
     Array c(assignExpression(s[index],m));
@@ -3265,7 +3259,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, tree args,
 //!
 
 //Works
-ArrayVector Interpreter::rhsExpression(tree t) {
+ArrayVector Interpreter::rhsExpression(tree t, int lhsCount) {
   Array r, q, *ptr;
   Array n, p;
   ArrayVector m;
@@ -3290,13 +3284,13 @@ ArrayVector Interpreter::rhsExpression(tree t) {
     return rv;
   }
   if (!isVar) {
-    m = functionExpression(t,1,false);
+    m = functionExpression(t,lhsCount,false);
     return m;
   }
   // Check for a scalar function pointer element
   if (r.getDataClass() == FM_FUNCPTR_ARRAY &&
       r.isScalar()) {
-    return FunctionPointerDispatch(r,t.second(),1);
+    return FunctionPointerDispatch(r,t.second(),lhsCount);
   }
   // If r is a user defined object, we have to divert to the
   // class function... (unless overloading is turned off)
@@ -3437,36 +3431,6 @@ void Interpreter::setLastErrorString(string txt) {
   lasterr = txt;
 }
 
-//  void Interpreter::evalCLI() {
-//    char prompt[150];
-//    int lastCount;
-//
-//    if ((depth == 0) || (cstack.size() == 0))
-//      if (bpActive)
-//	sprintf(prompt,"D-> ");
-//      else
-//	sprintf(prompt,"--> ");
-//    else
-//      if (bpActive)	
-//	sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
-//		ip_context & 0xffff);
-//      else
-//	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
-//		ip_context & 0xffff);
-//    while(1) {
-//      char* line = getLine(prompt);
-//      if (!line)
-//	continue;
-//      InCLI = true;
-//      if (line && (strlen(line) > 0)) {
-//	int stackdepth;
-//	stackdepth = cstack.size();
-//	evaluateString(line);
-//	while (cstack.size() > stackdepth) cstack.pop_back();
-//      }
-//    }
-//  }
-
 void Interpreter::setGreetingFlag(bool skip) {
   m_skipflag = skip;
 }
@@ -3533,75 +3497,6 @@ void Interpreter::evalCLI() {
     while (cstack.size() > stackdepth) cstack.pop_back();
   }
 }
-
-//  void Interpreter::evalCLI() {
-//    char *line;
-//    char dataline[MAXSTRING];
-//    char prompt[150];
-//    int lastCount;
-//
-//    if ((depth == 0) || (cstack.size() == 0))
-//      if (bpActive)
-//	sprintf(prompt,"D-> ");
-//      else
-//	sprintf(prompt,"--> ");
-//    elsed
-//      if (bpActive)	
-//	sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
-//		ip_context & 0xffff);
-//      else
-//	sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
-//		ip_context & 0xffff);
-//    while(1) {
-//      line = getLine(prompt);
-//      if (!line)
-//	continue;
-//      // scan the line and tokenize it
-//      setLexBuffer(line);
-//      lastCount = 0;
-//      try {
-//	if (lexCheckForMoreInput(0)) {
-//	  lastCount = getContinuationCount();
-//	  // Need multiple lines..  This code is _really_ bad - I need
-//	  // a better interface...
-//	  strcpy(dataline,line);
-//	  bool enoughInput = false;
-//	  // Loop until we have enough input
-//	  while (!enoughInput) {
-//	    // Get more text
-//	    line = getLine("");
-//	    // User pressed ctrl-D (or equivalent) - stop looking for
-//	    // input
-//	    if (!line) 
-//	      enoughInput = true;
-//	    else {
-//	      // User didn't press ctrl-D - 
-//	      // tack the new text onto the dataline
-//	      strcat(dataline,line);
-//	      setLexBuffer(dataline);
-//	      // Update the check
-//	      enoughInput = !lexCheckForMoreInput(lastCount);
-//	      lastCount = getContinuationCount();
-//	      //	    strcat(dataline,line);
-//	      if (enoughInput) strcat(dataline,"\n");
-//	    }
-//	  }
-//	  line = dataline;
-//	}
-//      } catch (Exception &e) {
-//	errorCount++;
-//	e.printMe(io);
-//	line = NULL;
-//      }
-//      InCLI = true;
-//      if (line && (strlen(line) > 0)) {
-//	int stackdepth;
-//	stackdepth = cstack.size();
-//	evaluateString(line);
-//	while (cstack.size() > stackdepth) cstack.pop_back();
-//      }
-//    }
-//  }
 
 //
 // Convert a list of variable into indexing expressions

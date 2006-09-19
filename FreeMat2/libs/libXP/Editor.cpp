@@ -191,11 +191,11 @@ void FMTextEdit::keyPressEvent(QKeyEvent*e) {
       key = 0;
     if (key == 0x09) {
       tab = true;
-      emit indent(true);
+      emit indent();
     }
     if (key == 13) {
       delayedIndent = true;
-      emit indent(false);
+      emit indent();
     }
   }
   if (!tab)
@@ -203,7 +203,7 @@ void FMTextEdit::keyPressEvent(QKeyEvent*e) {
   else
     e->accept();
   if (delayedIndent) 
-    emit indent(false);
+    emit indent();
 }
 
 
@@ -289,7 +289,7 @@ int computeIndexIncrement(QString a) {
   return indent_increment;
 }
 
-QString indentLine(QString toIndent, QStringList priorText, bool tabKey) {
+QString indentLine(QString toIndent, QStringList priorText) {
   // Two observations:
   //   1.  If the _current_ line contains contains 'end' in excess of 'for', etc., then
   //       the indentation for the current line should be 1 less.
@@ -300,10 +300,7 @@ QString indentLine(QString toIndent, QStringList priorText, bool tabKey) {
   while (!priorText.empty() && allWhiteSpace(priorText.last())) 
     priorText.removeLast();
   if (priorText.empty())
-    if (tabKey)
-      return setIndentSpace(toIndent,0);
-    else
-      return toIndent;
+    return setIndentSpace(toIndent,0);
   a = priorText.last();
   // Strip the prior line of confusing constructs...
   a = stripLine(a);
@@ -338,7 +335,7 @@ QString indentLine(QString toIndent, QStringList priorText, bool tabKey) {
   return setIndentSpace(toIndent,leading_space);
 }
 
-void FMIndent::update(bool tabKey) {
+void FMIndent::update() {
   QTextCursor cursor(m_te->textCursor());
   QTextCursor save(cursor);
   QTextCursor final(cursor);
@@ -348,11 +345,10 @@ void FMIndent::update(bool tabKey) {
   cursor.movePosition(QTextCursor::StartOfLine);
   cursor.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor);
   QString toIndent(cursor.selectedText());
-  cursor.movePosition(QTextCursor::Up);
-  cursor.movePosition(QTextCursor::EndOfLine);
+  cursor.movePosition(QTextCursor::StartOfLine);
   cursor.movePosition(QTextCursor::Start,QTextCursor::KeepAnchor);
   QStringList priorlines(cursor.selection().toPlainText().split("\n"));
-  QString indented(indentLine(toIndent,priorlines,tabKey));
+  QString indented(indentLine(toIndent,priorlines));
   save.movePosition(QTextCursor::StartOfLine);
   save.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor);
   save.insertText(indented);
@@ -374,7 +370,7 @@ FMEditPane::FMEditPane() : QWidget() {
   layout->addWidget(tEditor);
   setLayout(layout);
   FMIndent *ind = new FMIndent;
-  connect(tEditor,SIGNAL(indent(bool)),ind,SLOT(update(bool)));
+  connect(tEditor,SIGNAL(indent()),ind,SLOT(update()));
   Highlighter *highlight = new Highlighter(tEditor->document());
   ind->setDocument(tEditor);
 }

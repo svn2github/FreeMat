@@ -35,6 +35,8 @@ protected:
 private:
   QHash<QString,QTextCharFormat> mappings;
   QTextCharFormat multiLineCommentFormat;
+  QTextCharFormat untermStringFormat;
+  QTextCharFormat stringFormat;
 };
 
 #endif

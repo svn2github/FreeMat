@@ -52,6 +52,11 @@ Highlighter::Highlighter(QTextDocument *parent)
   QTextCharFormat singleLineCommentFormat;
   singleLineCommentFormat.setForeground(Qt::red);
   mappings["\\%[^\n]*"] = singleLineCommentFormat;
+
+  stringFormat.setForeground(Qt::green);
+  untermStringFormat.setForeground(Qt::red);
+
+  //  mappings["[^'\\]\\)\\}A-Za-z0-9]'[^']*'"] = stringFormat;
 }
 
 void Highlighter::highlightBlock(const QString &text)
@@ -66,10 +71,46 @@ void Highlighter::highlightBlock(const QString &text)
       index = text.indexOf(expression, index + length);
     }
   }
+
+  QRegExp sutest("[^'\\]\\)\\}A-Za-z0-9]'[^']*");
+  QRegExp droptest("[\\[\\(\\{A-Za-z0-9]");
+  int index = text.indexOf(sutest);
+  while (index >=0) {
+    int length = sutest.matchedLength();
+    if (length>0) {
+      QString first(text[index]); 
+      int q = first.indexOf(droptest);
+      if (q >= 0) {
+	index++;
+	length--;
+      }
+    }
+    setFormat(index, length, untermStringFormat);
+    index = text.indexOf(sutest, index + length);
+  }
+
+
+  QRegExp sttest("[^'\\]\\)\\}A-Za-z0-9]'[^']*'");
+  index = text.indexOf(sttest);
+  while (index >=0) {
+    int length = sttest.matchedLength();
+    if (length>0) {
+      QString first(text[index]); 
+      int q = first.indexOf(droptest);
+      if (q >= 0) {
+	index++;
+	length--;
+      }
+    }
+    setFormat(index, length, stringFormat);
+    index = text.indexOf(sttest, index + length);
+  }
+
+
   QTextCharFormat singleLineCommentFormat;
   singleLineCommentFormat.setForeground(Qt::red);
   QRegExp comment("\\%[^\n]*");
-  int index = text.indexOf(comment);
+  index = text.indexOf(comment);
   while (index >= 0) {
     int length = comment.matchedLength();
     setFormat(index, length, singleLineCommentFormat);

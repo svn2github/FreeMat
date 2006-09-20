@@ -1292,6 +1292,38 @@ void Interpreter::whileStatement(tree t) {
   context->exitLoop();
 }
 
+//Helper functions for FOR loops.  This template function
+//handles the index variable with the correct type.  Reducing
+//the net loop time
+
+class ContextLoopLocker {
+  Context* m_context;
+public:
+  ContextLoopLocker(Context* a): m_context(a) {m_context->enterLoop();}
+  ~ContextLoopLocker() {m_context->exitLoop();}
+};
+
+template <class T>
+void ForLoopHelper(tree codeBlock, Class indexClass, const T *indexSet, 
+		   int count, string indexName, Interpreter *eval) {
+  Scope *scope = eval->getContext()->getCurrentScope();
+  if (codeBlock.numchildren() == 0) return;
+  for (int m=0;m<count;m++) {
+    Array *vp = scope->lookupVariable(indexName);
+    if ((!vp) || (vp->getDataClass() != indexClass) || (!vp->isScalar())) {
+      scope->insertVariable(indexName,Array(indexClass,Dimensions(1,1)));
+      vp = scope->lookupVariable(indexName);
+    }
+    ((T*) vp->getReadWriteDataPointer())[0] = indexSet[m];
+    try {
+      eval->block(codeBlock);
+    } catch (InterpreterContinueException &e) {
+    } catch (InterpreterBreakException &e) {
+      break;
+    } 
+  }
+}
+
 //!
 //@Module FOR For Loop
 //@@Section FLOW
@@ -1367,25 +1399,24 @@ void Interpreter::forStatement(tree t) {
   /* Get the code block */
   codeBlock = t.second();
   elementCount = indexSet.getLength();
-  context->enterLoop();
-  for (elementNumber=0;elementNumber < elementCount;elementNumber++) {
-    indexNum = Array::int32Constructor(elementNumber+1);
-    indexVar = indexSet.getVectorSubset(indexNum);
-    context->insertVariable(indexVarName,indexVar);
-    try {
-      block(codeBlock);
-    } catch (InterpreterContinueException &e) {
-    } catch (InterpreterBreakException &e) {
-      break;
-    } catch (InterpreterReturnException& e) {
-      context->exitLoop();
-      throw;
-    } catch (InterpreterRetallException& e) {
-      context->exitLoop();
-      throw;
-    }
+
+  Class loopType(indexSet.getDataClass());
+  ContextLoopLocker lock(context);
+  switch(loopType) {
+  case FM_INT32:
+    ForLoopHelper<int32>(codeBlock,loopType,(int32*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
   }
-  context->exitLoop();
+  //   // Create the loop variable
+  //   Array loopVariable(loopType,Dimensions(1,1));
+  //   // Register the loop variable with the current context
+  //   Array context->insertVariable(indexVarName,loopVariable);
+  //   // Get a pointer to the registered variable
+  //   Array *lpVariable = context->lookupVariable(indexVarName);
+  //   switch(loopType) {
+  //   case FM_INT32:
+  //     FoorLoopHelper<int32>(indexSet.getDataPointer(),elementCount,
+  //   }
 }
 
 //!

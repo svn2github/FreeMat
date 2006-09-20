@@ -105,11 +105,10 @@ public:
   }
 
   void insertSymbol(const key_type& key, const value_type& val) {
-    size_t i = hashKey(key)%SYMTAB; // Hash
-    Entry *ptr;
-    ptr = hashTable[i];
+    size_t hash_value = hashKey(key)%SYMTAB; // Hash
+    Entry *ptr = hashTable[hash_value];
     if (!ptr) {
-      hashTable[i] = new Entry(key,val,NULL);
+      hashTable[hash_value] = new Entry(key,val,NULL);
       return;
     }
     while (ptr) {
@@ -119,7 +118,7 @@ public:
       }
       ptr = ptr->next;
     }
-    hashTable[i] = new Entry(key,val,hashTable[i]);
+    hashTable[hash_value] = new Entry(key,val,hashTable[hash_value]);
   }
     
   stringVector getCompletions(const std::string& prefix) {

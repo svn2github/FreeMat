@@ -377,6 +377,17 @@ public:
    * Prompt the user for input, and return the answer.
    */
   string getLine(string prompt);
+  /**
+   * Executes a sequence of statements, trapping exceptions
+   * as necessary.  The AST looks like
+   *   <ignored>
+   *      |
+   *    statement->statement->statement
+   * If an exception occurs, it is caught and rethrown.  The
+   * lasterr string is also set to the contents of the exception.
+   *
+   */
+  void block(tree t);
 
 
   /******************************************
@@ -827,17 +838,6 @@ private:
    * line number and filename if necessary).
    */
   void statement(tree t);
-  /**
-   * Executes a sequence of statements, trapping exceptions
-   * as necessary.  The AST looks like
-   *   <ignored>
-   *      |
-   *    statement->statement->statement
-   * If an exception occurs, it is caught and rethrown.  The
-   * lasterr string is also set to the contents of the exception.
-   *
-   */
-  void block(tree t);
   /**
    * Start a command line interface.  Statements are retrieved
    * from the console, and executed sequentially until a "return"

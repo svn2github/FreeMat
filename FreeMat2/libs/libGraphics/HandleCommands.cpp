@@ -33,6 +33,8 @@
 #include "HandleWindow.hpp"
 #include "HandleUIControl.hpp"
 #include "QTRenderEngine.hpp"
+#include "Interpreter.hpp"
+#include <math.h>
 
 // Subplot
 // labels don't always appear properly.
@@ -843,14 +845,195 @@ ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(retval);
 }
 
-ArrayVector HDemoFunction(int nargout, const ArrayVector& arg) {
-  HandleWindow *f = CurrentWindow();
-  // Create a button
-  QPushButton *t = new QPushButton("&Download",f->GetQtWidget());
-  //    f->GetQtWidget()->addWidget(t);
-  t->setGeometry(10,10,80,30);
-  t->show();
-  return ArrayVector();
+// If the argument vector is numeric, we can
+ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  if (arg.size() == 0) return ArrayVector();
+  int runtype = ArrayToInt32(arg[0]);
+  Array B(FM_FLOAT,Dimensions(500,500));
+  if (runtype == 0) {
+    // Fastest possible run time 
+    float *dp = (float *) B.getReadWriteDataPointer();
+    for (int j=1;j<500;j++) {
+      for (int k=1;k<500;k++) {
+	dp[j+500*(k-1)] = fabs(j-k)+1;
+      }
+    }
+  } else if (runtype == 1) {
+    // Current operational mode
+    float *dp = (float *) B.getReadWriteDataPointer();
+    Array K(FM_INT32,Dimensions(1,1));
+    Array J(FM_INT32,Dimensions(1,1));
+    for (int j=1;j<500;j++) {
+      ((int32 *) J.getReadWriteDataPointer())[0] = j;
+      for (int k=1;k<500;k++) {
+	((int32 *) K.getReadWriteDataPointer())[0] = k;
+	ArrayVector p;
+	p.push_back(J);
+	p.push_back(K);
+	Array c(Array::floatConstructor(fabs(j-k)+1));
+	B.setNDimSubset(p,c);
+      } 
+    } 
+  } else if (runtype == 2) {
+    // Reasonable operational mode
+    float *dp = (float *) B.getReadWriteDataPointer();
+    Array K(FM_INT32,Dimensions(1,1));
+    Array J(FM_INT32,Dimensions(1,1));
+    for (int j=1;j<500;j++) {
+      ((int32 *) J.getReadWriteDataPointer())[0] = j;
+      for (int k=1;k<500;k++) {
+	((int32 *) K.getReadWriteDataPointer())[0] = k;
+	int jval = ArrayToInt32(J);
+	int kval = ArrayToInt32(K);
+	((float *) B.getReadWriteDataPointer())[jval+500*(kval-1)] = fabs(jval-kval)+1;
+      }
+    }
+  } else if (runtype == 3) {
+    // Reasonable operational mode
+    float *dp = (float *) B.getReadWriteDataPointer();
+    Array K(FM_INT32,Dimensions(1,1));
+    Array J(FM_INT32,Dimensions(1,1));
+    for (int j=1;j<500;j++) {
+      ((int32 *) J.getReadWriteDataPointer())[0] = j;
+      for (int k=1;k<500;k++) {
+	((int32 *) K.getReadWriteDataPointer())[0] = k;
+	((float *) B.getReadWriteDataPointer())[j+500*(k-1)] = fabs(j-k)+1;
+      }
+    }
+  } else if (runtype == 4) {
+    // Reasonable operational mode
+    float *dp = (float *) B.getReadWriteDataPointer();
+    Array K(FM_INT32,Dimensions(1,1));
+    Array J(FM_INT32,Dimensions(1,1));
+    for (int j=1;j<500;j++) {
+      ((int32 *) J.getReadWriteDataPointer())[0] = j;
+      int jval = ArrayToInt32(J);
+      for (int k=1;k<500;k++) {
+	((int32 *) K.getReadWriteDataPointer())[0] = k;
+	int kval = ArrayToInt32(K);
+	((float *) B.getReadWriteDataPointer())[jval+500*(kval-1)] = fabs(jval-kval)+1;
+      }
+    }
+  } else if (runtype == 5) {
+    // Try to create a large vector, and page through it using getVectorSubset
+    Array I(Array::int32RangeConstructor(1,1,100000,false));
+    for (int m=0;m<100000;m++) {
+      Array M(Array::int32Constructor(m+1));
+      Array G(I.getVectorSubset(M));
+    }
+  } else if (runtype == 6) {
+    // Try to create a large vector, simulate page through it bypassing getVectorSubset
+    Array I(Array::int32RangeConstructor(1,1,100000,false));
+    for (int m=0;m<100000;m++) {
+      Array M(Array::int32Constructor(m+1));
+      Array G(Array::int32Constructor(m+1));
+    }
+  } else if (runtype == 7) {
+    // Create a large vector, simulate page through it, without int32Constructor
+    Array I(Array::int32RangeConstructor(1,1,100000,false));
+    Array M(Array::int32Constructor(0));
+    for (int m=0;m<100000;m++) {
+      int32 *M_p = (int32*) M.getReadWriteDataPointer();
+      M_p[0] = m+1;
+      Array G(I.getVectorSubset(M));
+    }
+  } else if (runtype == 8) {
+    // Try to create a large vector, simulate page through it bypassing getVectorSubset
+    Array I(Array::int32RangeConstructor(1,1,100000,false));
+    for (int m=0;m<100000;m++) {
+      int32 *mp = (int32*) malloc(sizeof(int32));
+      int32 *gp = (int32*) malloc(sizeof(int32));
+      *mp = m+1;
+      *gp = m+1;
+      Array M(FM_INT32,Dimensions(1,1),mp);
+      Array G(FM_INT32,Dimensions(1,1),gp);
+    }
+  } else if (runtype == 9) {
+    // Create a large vector, simulate page through it, without int32Constructor
+    Array I(Array::int32RangeConstructor(1,1,100000,false));
+    Array M(Array::int32Constructor(0));
+    for (int m=0;m<100000;m++) {
+      int32 *M_p = (int32*) M.getReadWriteDataPointer();
+      M_p[0] = m+1;
+    }
+  } else if (runtype == 10) {
+    // This simulates an empty for loop without the penalty of getVectorSubset
+    // It is still quite slow, and note because of getRWDP call (demo(9) requires
+    // 5 ms to run, this one takes 237 ms.
+    Scope *scope = eval->getContext()->getCurrentScope();
+    Array I(Array::int32Constructor(0));
+    for (int m=0;m<100000;m++) {
+      int32 *I_p = (int32*) I.getReadWriteDataPointer();
+      I_p[0] = m+1;
+      scope->insertVariable("i",I);
+    }
+  } else if (runtype == 11) {
+    // This simulates an empty for loop without the penalty of getVectorSubset
+    // It is still quite slowly, and not because of getRWDP call (demo(9) requires
+    // 5 ms to run, demo(10) takes 237 ms.  This version uses the interface 
+    // provided by Context, instead of Scope.  It requires 253 ms.  So the time
+    // is still dominated by the scope interface.  Clearly I need to revisit
+    // the symbol table code.
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    for (int m=0;m<100000;m++) {
+      int32 *I_p = (int32*) I.getReadWriteDataPointer();
+      I_p[0] = m+1;
+      context->insertVariable("i",I);
+    }
+  } else if (runtype == 12) {
+    //
+    // The symbol table code is not the problem.  The problem is that the
+    // value semantics of assignment are the problem... So consider the
+    // following: it executes in about 62 ms.  
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    for (int m=0;m<100000;m++) {
+      Array *vp = context->lookupVariableLocally("i");
+      int32 *I_p = (int32*) vp->getReadWriteDataPointer();
+      I_p[0] = m+1;
+    }
+  } else if (runtype == 13) {
+    //
+    // The symbol table code is not the problem.  The problem is that the
+    // value semantics of assignment are the problem... So consider the
+    // following: it executes in about 30 ms (just the variable lookup time).
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = context->lookupVariableLocally(name);
+    }
+  } else if (runtype == 14) {    
+    //
+    // In this version, we bypass the context again..  This gets run time
+    // down to 7 ms.  
+    //
+    Context *context = eval->getContext();
+    Scope *scope = context->getCurrentScope();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = scope->lookupVariable(name);
+    }
+  } else if (runtype == 15) {
+    // In this version, we bypass the context, but call RWDP - we are at the
+    // target of 10 ms.
+    Context *context = eval->getContext();
+    Scope *scope = context->getCurrentScope();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = scope->lookupVariable(name);
+      ((int32*) vp->getReadWriteDataPointer())[0] = m+1;
+    }
+  }
+
+  return singleArrayVector(B);
 }
 
 //!
@@ -893,6 +1076,6 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("close",HCloseFunction,1,0,"handle");
   context->addGfxFunction("copy",HCopyFunction,0,0);
   context->addGfxFunction("hpoint",HPointFunction,0,1);
-  context->addGfxFunction("demo",HDemoFunction,0,0);
+  context->addSpecialFunction("demo",HDemoFunction,1,1);
   InitializeHandleGraphics();
 };

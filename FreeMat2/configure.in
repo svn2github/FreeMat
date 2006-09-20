@@ -6,7 +6,6 @@ AM_INIT_AUTOMAKE(FreeMat, 2.1)
 
 AC_PROG_CC
 AC_PROG_CXX
-AM_PROG_LEX
 AC_PROG_RANLIB
 	
 dnl Check for AWT related Qt4

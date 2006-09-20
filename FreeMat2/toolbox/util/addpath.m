@@ -1,5 +1,5 @@
 %!
-%Module ADDPATH Add 
+%@Module ADDPATH Add 
 %@@Section FREEMAT
 %@@Usage
 %The @|addpath| routine adds a set of directories to the current path.

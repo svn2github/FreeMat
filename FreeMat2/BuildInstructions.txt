@@ -1,0 +1,45 @@
+Mac OS X 10.3.9
+
+- Install Developer Tools
+- Install Qt4.1
+- Install fink
+- Install fortran
+- Install libavcall into /usr/local:
+
+mkdir depends
+cd depends
+wget ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz
+tar xvf ffcall-1.10.tar.gz
+cd ffcall-1.10
+./configure
+make && make install
+cd ..
+
+- Install fftw and fftwf into /usr/local - we build these
+in two seperate directories 
+wget http://www.fftw.org/fftw-3.1.2.tar.gz
+cd fftw-3.1.2
+mkdir build_fftw
+cd build_fftw
+../configure
+make && make install
+cd ..
+mkdir build_fftwf
+cd build_fftwf
+../configure --enable-single --enable-altivec
+make && make install
+
+- Install ARPACK into /usr/local
+wget http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.gz
+tar xvfz arpack96.tar.gz
+cd ARPACK
+cd SRC
+g77 -c *.f
+cd ../UTIL
+g77 -c *.f
+cd ..
+ar crs libarpack.a SRC/*.o UTIL/*.o
+cp libarpack.a /usr/local/lib/.
+
+- Install UMFPACK into /usr/local
+

@@ -596,7 +596,7 @@ tree Parser::PrimaryExpression() {
     addChild(root,Identifier());
     return TransposeFixup(root);
   } else if (MatchNumber() || Match(TOK_STRING)) {
-    tree t = mkLeaf(Next());
+    tree t = mkLeafWithLiterals(Next());
     Consume();
     return TransposeFixup(t);
   } else if (Match(TOK_END)) {

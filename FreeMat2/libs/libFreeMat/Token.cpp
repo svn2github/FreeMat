@@ -1,6 +1,7 @@
 #include "Token.hpp"
 #include "Serialize.hpp"
 #include <iostream>
+#include <errno.h>
 
 string fm_reserved[21] = {
   "break",
@@ -149,5 +150,39 @@ Token ThawToken(Serialize *s) {
   a.m_pos = s->getInt();
   a.m_text = s->getString();
   a.m_bpflag = s->getBool();
+  a.FillArray();
   return a;
+}
+
+void Token::FillArray() {
+  Array retval;
+  switch(m_tok) {
+  case TOK_INTEGER:
+    int iv;
+    double fv;
+    iv = strtol(m_text.c_str(),NULL,10);
+    if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
+      fv = strtod(m_text.c_str(),NULL);
+      retval = Array::doubleConstructor(fv);
+    } else {
+      retval = Array::int32Constructor(iv);
+    }
+    break;
+  case TOK_FLOAT:
+    retval = Array::floatConstructor(atof(m_text.c_str()));
+    break;
+  case TOK_DOUBLE:
+    retval = Array::doubleConstructor(atof(m_text.c_str()));
+    break;
+  case TOK_COMPLEX:
+    retval = Array::complexConstructor(0,atof(m_text.c_str()));
+    break;
+  case TOK_DCOMPLEX:
+    retval = Array::dcomplexConstructor(0,atof(m_text.c_str()));
+    break;
+  case TOK_STRING:
+    retval = Array::stringConstructor(m_text);
+    break;
+  }
+  m_array = retval;
 }

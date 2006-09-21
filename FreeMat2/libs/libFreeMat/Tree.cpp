@@ -71,6 +71,14 @@ tree mkLeaf(const Token& tok) {
   return tree(ret);
 }
 
+tree mkLeafWithLiterals(const Token& tok) {
+  tree_node *ret = new tree_node;
+  ret->node = tok;
+  ret->node.FillArray();
+  ret->owners = 1;
+  return tree(ret);
+}
+
 tree mkLeaf(byte a, unsigned position) {
   Token p(a,position);
   return mkLeaf(p);

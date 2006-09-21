@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "Token.hpp"
+#include "Array.hpp"
 
 using namespace std;
 
@@ -48,12 +49,14 @@ public:
   unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
   bool haschildren() {return numchildren() > 0;}
   string text() {if (tptr) return tptr->node.Text(); else return std::string();}
+  Array array() {if (tptr) return tptr->node.GetArray(); else return Array();}
   treeVector children() {if (tptr) return tptr->children; else return treeVector();}
   tree last() {if (tptr) return tptr->children.back(); else return tree();}
   tree child(unsigned n) {if (tptr) return tptr->children.at(n); else return tree();}
 };
 
 tree mkLeaf(const Token& tok);
+tree mkLeafWithLiterals(const Token& tok);
 tree mkLeaf(byte a, unsigned pos);
 tree mkNode(const Token& tok, tree arg1, tree arg2);
 tree mkNode(const Token& tok, tree arg1);

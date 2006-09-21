@@ -2,6 +2,7 @@
 #define __Token_hpp__
 
 #include <string>
+#include "Array.hpp"
 
 using namespace std;
 
@@ -87,6 +88,7 @@ class Token {
   unsigned m_pos;
   string m_text;
   bool m_bpflag;
+  Array m_array;
 public:
   Token();
   Token(byte tok, unsigned pos = 0, string text = string());
@@ -99,6 +101,8 @@ public:
   void SetValue(byte a) {m_tok = a;}
   unsigned Position()  const {return m_pos;}
   string Text()  const {return m_text;}
+  Array GetArray() const {return m_array;}
+  void FillArray();
   void SetBPFlag(bool flags) {m_bpflag = flags;}
   bool BPFlag() const {return m_bpflag;}
   void Print(ostream& o) const;

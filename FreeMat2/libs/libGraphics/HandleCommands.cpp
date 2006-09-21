@@ -845,6 +845,7 @@ ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(retval);
 }
 
+extern int DataMakeCount;
 // If the argument vector is numeric, we can
 ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) return ArrayVector();
@@ -1031,8 +1032,55 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
       Array *vp = scope->lookupVariable(name);
       ((int32*) vp->getReadWriteDataPointer())[0] = m+1;
     }
+  } else if (runtype == 16) {
+    B = Array::int32Constructor(DataMakeCount);
+  } else if (runtype == 17) {
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = context->lookupVariable(name);
+    }
+  } else if (runtype == 18) {
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = context->lookupVariable(name);
+      context->insertVariable("j",*vp);
+    }
+  } else if (runtype == 19) {
+    Context *context = eval->getContext();
+    Scope *scope = context->getCurrentScope();
+    Array I(Array::int32Constructor(0));
+    scope->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = scope->lookupVariable(name);
+      scope->insertVariable("j",*vp);
+    }
+  } else if (runtype == 20) {
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array *vp = context->lookupVariable(name);
+      ArrayVector p(singleArrayVector(*vp));
+      context->insertVariable("j",p[0]);
+    }
+  } else if (runtype == 21) {
+    Context *context = eval->getContext();
+    Array I(Array::int32Constructor(0));
+    context->insertVariable("i",I);
+    string name("i");
+    for (int m=0;m<100000;m++) {
+      Array J(I);
+      Array K(I);
+    }
   }
-
   return singleArrayVector(B);
 }
 

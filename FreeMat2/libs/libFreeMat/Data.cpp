@@ -21,10 +21,13 @@
 #include "Malloc.hpp"
 #include "Sparse.hpp"
 
+int DataMakeCount = 0;
+
 Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, 
 	   const stringVector& fields, stringVector classname): 
   cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
   sparse = sparseflag;
+  DataMakeCount++;
 } 
 
 Data::~Data() { 

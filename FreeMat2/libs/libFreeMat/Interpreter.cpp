@@ -32,7 +32,6 @@
 #include "File.hpp"
 #include "Serialize.hpp"
 #include <signal.h>
-#include <errno.h>
 #include "Class.hpp"
 #include "Print.hpp"
 #include <qapplication.h>
@@ -645,31 +644,42 @@ Array Interpreter::ShortCutAnd(tree t) {
 Array Interpreter::expression(tree t) {
   Array retval;
   switch(t.token()) {
-  case TOK_INTEGER:
-    int iv;
-    double fv;
-    iv = strtol(t.text().c_str(),NULL,10);
-    if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
-      fv = strtod(t.text().c_str(),NULL);
-      retval = Array::doubleConstructor(fv);
-    } else {
-      retval = Array::int32Constructor(iv);
+  case TOK_VARIABLE: 
+    {
+      // Special case expressions of the type <ident>
+      if (t.numchildren() == 1) {
+	Array *ptr = context->lookupVariable(t.first().text());
+	if (ptr) 
+	  retval = *ptr;
+	else {
+	  ArrayVector m(functionExpression(t,1,false));
+	  if (m.empty()) {
+	    retval = Array::emptyConstructor();
+	  } else {
+	    if (m.size() > 1) 
+	      warningMessage("discarding one or more outputs from an expression");
+	    retval = m[0];
+	  }
+	}
+      } else {
+	ArrayVector m(rhsExpression(t));
+	if (m.empty()) {
+	  retval = Array::emptyConstructor();
+	} else {
+	  if (m.size() > 1) 
+	    warningMessage("discarding one or more outputs from an expression");
+	  retval = m[0];
+	}
+      }
     }
     break;
+  case TOK_INTEGER:
   case TOK_FLOAT:
-    retval = Array::floatConstructor(atof(t.text().c_str()));
-    break;
   case TOK_DOUBLE:
-    retval = Array::doubleConstructor(atof(t.text().c_str()));
-    break;
   case TOK_COMPLEX:
-    retval = Array::complexConstructor(0,atof(t.text().c_str()));
-    break;
   case TOK_DCOMPLEX:
-    retval = Array::dcomplexConstructor(0,atof(t.text().c_str()));
-    break;
   case TOK_STRING:
-    retval = Array::stringConstructor(t.text());
+    retval = t.array();
     break;
   case TOK_END:
     {
@@ -772,18 +782,6 @@ Array Interpreter::expression(tree t) {
       retval = Array::funcPtrConstructor(val);
       break;
     }
-  case TOK_VARIABLE: 
-    {
-      ArrayVector m(rhsExpression(t));
-      if (m.empty()) {
-	retval = Array::emptyConstructor();
-      } else {
-	if (m.size() > 1) 
-	  warningMessage("discarding one or more outputs from an expression");
-	retval = m[0];
-      }
-    }
-    break;
   default:
     throw Exception("Unrecognized expression!");
   }
@@ -1307,7 +1305,6 @@ template <class T>
 void ForLoopHelper(tree codeBlock, Class indexClass, const T *indexSet, 
 		   int count, string indexName, Interpreter *eval) {
   Scope *scope = eval->getContext()->getCurrentScope();
-  if (codeBlock.numchildren() == 0) return;
   for (int m=0;m<count;m++) {
     Array *vp = scope->lookupVariable(indexName);
     if ((!vp) || (vp->getDataClass() != indexClass) || (!vp->isScalar())) {
@@ -3309,11 +3306,8 @@ ArrayVector Interpreter::rhsExpression(tree t, int lhsCount) {
     isVar = true;
   } else
     isVar = false;
-  if (isVar && (t.numchildren() == 1)) {
-    ArrayVector rv;
-    rv.push_back(r);
-    return rv;
-  }
+  if (isVar && (t.numchildren() == 1))
+    return singleArrayVector(r);
   if (!isVar) {
     m = functionExpression(t,lhsCount,false);
     return m;

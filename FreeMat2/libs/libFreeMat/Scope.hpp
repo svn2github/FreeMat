@@ -81,6 +81,13 @@ class Scope {
    * file the current token resides.
    */
   std::vector<int> IDstack;
+  /**
+   * On every call to modify the scope, we have to check the global/persistent
+   * variable table.  This is generally expensive, so we cache information
+   * about these tables being empty (the usual case).
+   */
+  bool anyPersistents;
+  bool anyGlobals;
 public:
   /**
    * Construct a scope with the given name.

@@ -28,14 +28,11 @@ static char msgBuffer[MSGBUFLEN];
 Scope::Scope(std::string scopeName) {
   name = scopeName;
   loopLevel = 0;
+  anyPersistents = false;
+  anyGlobals = false;
 }
 
 Scope::~Scope() {
-  //   CodeTable::iterator it2 = codeTab.begin();
-  //   while (it2 != codeTab.end()) {
-  //     delete (it2->second);
-  //     it2++;
-  //   }
 }
 
 void Scope::insertFunction(FuncPtr a) {
@@ -87,15 +84,19 @@ bool Scope::inLoop() {
 
 void Scope::clearGlobalVariableList() {
   globalVars.clear();
+  anyGlobals = false;
 }
 
 void Scope::clearPersistentVariableList() {
   persistentVars.clear();
+  anyPersistents = false;
 }
 
 void Scope::addGlobalVariablePointer(std::string varName) {
-  if (!isVariableGlobal(varName))
+  if (!isVariableGlobal(varName)) {
     globalVars.push_back(varName);
+    anyGlobals = true;
+  }
 }
 
 void Scope::deleteGlobalVariablePointer(std::string varName) {
@@ -104,9 +105,11 @@ void Scope::deleteGlobalVariablePointer(std::string varName) {
 				       varName);
   if (*i == varName)
     globalVars.erase(i);
+  if (globalVars.empty()) anyGlobals = false;
 }
 
 bool Scope::isVariableGlobal(const std::string& varName) {
+  if (!anyGlobals) return false;
   bool foundName = false;
   int i = 0;
   i = 0;
@@ -119,8 +122,10 @@ bool Scope::isVariableGlobal(const std::string& varName) {
 }
 
 void Scope::addPersistentVariablePointer(std::string varName) {
-  if (!isVariablePersistent(varName))
+  if (!isVariablePersistent(varName)) {
     persistentVars.push_back(varName);
+    anyPersistents = true;
+  }
 }
 
 void Scope::deletePersistentVariablePointer(std::string varName) {
@@ -129,9 +134,11 @@ void Scope::deletePersistentVariablePointer(std::string varName) {
 				       varName);
   if (*i == varName)
     persistentVars.erase(i);
+  if (persistentVars.empty()) anyPersistents = false;
 }
 
 bool Scope::isVariablePersistent(const std::string& varName) {
+  if (!anyPersistents) return false;
   bool foundName = false;
   int i = 0;
   i = 0;

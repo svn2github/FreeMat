@@ -1321,6 +1321,27 @@ void ForLoopHelper(tree codeBlock, Class indexClass, const T *indexSet,
   }
 }
 
+template <class T>
+void ForLoopHelperComplex(tree codeBlock, Class indexClass, const T *indexSet, 
+			  int count, string indexName, Interpreter *eval) {
+  Scope *scope = eval->getContext()->getCurrentScope();
+  for (int m=0;m<count;m++) {
+    Array *vp = scope->lookupVariable(indexName);
+    if ((!vp) || (vp->getDataClass() != indexClass) || (!vp->isScalar())) {
+      scope->insertVariable(indexName,Array(indexClass,Dimensions(1,1)));
+      vp = scope->lookupVariable(indexName);
+    }
+    ((T*) vp->getReadWriteDataPointer())[0] = indexSet[2*m];
+    ((T*) vp->getReadWriteDataPointer())[1] = indexSet[2*m+1];
+    try {
+      eval->block(codeBlock);
+    } catch (InterpreterContinueException &e) {
+    } catch (InterpreterBreakException &e) {
+      break;
+    } 
+  }
+}
+
 //!
 //@Module FOR For Loop
 //@@Section FLOW
@@ -1400,20 +1421,71 @@ void Interpreter::forStatement(tree t) {
   Class loopType(indexSet.getDataClass());
   ContextLoopLocker lock(context);
   switch(loopType) {
-  case FM_INT32:
-    ForLoopHelper<int32>(codeBlock,loopType,(int32*)indexSet.getDataPointer(),
+  case FM_FUNCPTR_ARRAY:
+    throw Exception("Function pointer arrays are not supported as for loop index sets");
+  case FM_STRUCT_ARRAY:
+    throw Exception("Structure arrays are not supported as for loop index sets");
+  case FM_CELL_ARRAY:
+    ForLoopHelper<Array>(codeBlock,loopType,(const Array*)indexSet.getDataPointer(),
+			  elementCount,indexVarName,this);
+    break;
+  case FM_LOGICAL:
+    ForLoopHelper<logical>(codeBlock,loopType,(const logical*)indexSet.getDataPointer(),
+			   elementCount,indexVarName,this);
+    break;
+  case FM_UINT8:
+    ForLoopHelper<uint8>(codeBlock,loopType,(const uint8*)indexSet.getDataPointer(),
 			 elementCount,indexVarName,this);
+    break;
+  case FM_INT8:
+    ForLoopHelper<int8>(codeBlock,loopType,(const int8*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
+  case FM_UINT16:
+    ForLoopHelper<uint16>(codeBlock,loopType,(const uint16*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
+  case FM_INT16:
+    ForLoopHelper<int16>(codeBlock,loopType,(const int16*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
+  case FM_UINT32:
+    ForLoopHelper<uint32>(codeBlock,loopType,(const uint32*)indexSet.getDataPointer(),
+			  elementCount,indexVarName,this);
+    break;
+  case FM_INT32:
+    ForLoopHelper<int32>(codeBlock,loopType,(const int32*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
+  case FM_UINT64:
+    ForLoopHelper<uint64>(codeBlock,loopType,(const uint64*)indexSet.getDataPointer(),
+			  elementCount,indexVarName,this);
+    break;
+  case FM_INT64:
+    ForLoopHelper<int64>(codeBlock,loopType,(const int64*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
+  case FM_FLOAT:
+    ForLoopHelper<float>(codeBlock,loopType,(const float*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
+  case FM_DOUBLE:
+    ForLoopHelper<double>(codeBlock,loopType,(const double*)indexSet.getDataPointer(),
+			  elementCount,indexVarName,this);
+    break;
+  case FM_COMPLEX:
+    ForLoopHelperComplex<float>(codeBlock,loopType,(const float*)indexSet.getDataPointer(),
+				elementCount,indexVarName,this);
+    break;
+  case FM_DCOMPLEX:
+    ForLoopHelperComplex<double>(codeBlock,loopType,(const double*)indexSet.getDataPointer(),
+				 elementCount,indexVarName,this);
+    break;
+  case FM_STRING:
+    ForLoopHelper<uint8>(codeBlock,loopType,(const uint8*)indexSet.getDataPointer(),
+			 elementCount,indexVarName,this);
+    break;
   }
-  //   // Create the loop variable
-  //   Array loopVariable(loopType,Dimensions(1,1));
-  //   // Register the loop variable with the current context
-  //   Array context->insertVariable(indexVarName,loopVariable);
-  //   // Get a pointer to the registered variable
-  //   Array *lpVariable = context->lookupVariable(indexVarName);
-  //   switch(loopType) {
-  //   case FM_INT32:
-  //     FoorLoopHelper<int32>(indexSet.getDataPointer(),elementCount,
-  //   }
 }
 
 //!
@@ -3405,7 +3477,7 @@ void Interpreter::ExecuteLine(std::string txt) {
 //PORT
 void Interpreter::evaluateString(string line, bool propogateExceptions) {
   tree t;
-    
+  QMutexLocker lock(context->getMutex());
   InterruptPending = false;
   Scanner S(line,"");
   Parser P(S);

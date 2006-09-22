@@ -54,6 +54,14 @@ class Context {
    * Mutex to control access to this context class.
    */
   QMutex mutex;
+  /**
+   * Pointer to current scope
+   */
+  Scope *bottomScope;
+  /**
+   * Pointer to global scope
+   */
+  Scope *topScope;
 public:
   /**
    * Create a context and initialize it with a global scope and a 
@@ -64,6 +72,13 @@ public:
    * Delete the context
    */
   ~Context();
+  /**
+   * Get the pointer to the mutex that protects this context.
+   * This mutex only needs to be used when the GUI thread wants
+   * to access the context (which is "owned" by the Interpreter
+   * thread).
+   */
+  QMutex* getMutex();
   /**
    * Bypass the prescribed number of scopes.  These scopes are
    * placed on the bypassstack.  This effectively makes a different

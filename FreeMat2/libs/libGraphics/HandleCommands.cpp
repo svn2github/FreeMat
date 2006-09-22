@@ -1047,7 +1047,7 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
     Array I(Array::int32Constructor(0));
     context->insertVariable("i",I);
     string name("i");
-    for (int m=0;m<100000;m++) {
+    for (int m=0;m<10000000;m++) {
       Array *vp = context->lookupVariable(name);
       context->insertVariable("j",*vp);
     }
@@ -1057,7 +1057,7 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
     Array I(Array::int32Constructor(0));
     scope->insertVariable("i",I);
     string name("i");
-    for (int m=0;m<100000;m++) {
+    for (int m=0;m<10000000;m++) {
       Array *vp = scope->lookupVariable(name);
       scope->insertVariable("j",*vp);
     }
@@ -1066,7 +1066,7 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
     Array I(Array::int32Constructor(0));
     context->insertVariable("i",I);
     string name("i");
-    for (int m=0;m<100000;m++) {
+    for (int m=0;m<10000000;m++) {
       Array *vp = context->lookupVariable(name);
       ArrayVector p(singleArrayVector(*vp));
       context->insertVariable("j",p[0]);

@@ -1136,6 +1136,9 @@ vector<string> KeyManager::GetCompletions(string line,
 					  int word_end, 
 					  string &matchString) {
   vector<string> completions;
+  if (!context->getMutex()->tryLock()) return completions;
+  QMutexLocker lock(context->getMutex());
+  context->getMutex()->unlock();
   /*
    * Find the start of the filename prefix to be completed, searching
    * backwards for the first unescaped space, or the start of the line.

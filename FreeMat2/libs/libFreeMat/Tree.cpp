@@ -48,13 +48,13 @@ void tree::operator=(const tree &copy) {
     tptr = copy.tptr->getCopy();
 }
 
-void tree::print() {
+void tree::print() const {
   if (tptr)
     tptr->print();
 }
 
 static int indentlevel = 0;
-void tree_node::print() {
+void tree_node::print() const {
   for (int i=0;i<indentlevel;i++)
     cout << " ";
   cout << node;

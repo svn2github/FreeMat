@@ -328,7 +328,7 @@ public:
   /**
    * Step the given number of lines
    */
-  void dbstepStatement(tree t);
+  void dbstepStatement(const tree &t);
   /**
    * Set the autostop flag - this flag determines what happens when
    * an exception occurs
@@ -387,7 +387,7 @@ public:
    * lasterr string is also set to the contents of the exception.
    *
    */
-  void block(tree t);
+  void block(const tree &t);
 
 
   /******************************************
@@ -434,7 +434,7 @@ private:
    * Collect information about keyword usage and the relevant 
    * expressions from a function call
    */
-  void collectKeywords(tree q, ArrayVector &keyvals,
+  void collectKeywords(const tree &q, ArrayVector &keyvals,
 		       treeVector &keyexpr, stringVector &keywords);
   /**
    * Sort keywords into a proper call order.
@@ -444,21 +444,21 @@ private:
   /**
    * For values passed by reference, update the caller's variables.
    */
-  void handlePassByReference(tree q, stringVector arguments,
+  void handlePassByReference(const tree &q, stringVector arguments,
 			     ArrayVector m,stringVector keywords,
 			     treeVector keyexpr, int* argTypeMap);
   /**
    * Perform a binary operator with the given name
    */
-  Array DoBinaryOperator(tree t, BinaryFunc fnc, string fname);
+  Array DoBinaryOperator(const tree &t, BinaryFunc fnc, string fname);
   /**
    * Perform a unary operator with the given name
    */
-  Array DoUnaryOperator(tree t, UnaryFunc fnc, string fname);
+  Array DoUnaryOperator(const tree &t, UnaryFunc fnc, string fname);
   /**
    * Dispatch a function pointer
    */
-  ArrayVector FunctionPointerDispatch(Array r, tree args, int narg_out);
+  ArrayVector FunctionPointerDispatch(Array r, const tree &args, int narg_out);
   /**
    * Set the context of the interpreter.  This is an integer that indicates
    * where in the source file we are.
@@ -471,7 +471,7 @@ private:
   /**
    * Convert an expression list into a vector of Array variables.
    */
-  ArrayVector rowDefinition(tree t);
+  ArrayVector rowDefinition(const tree &t);
   /**
    * Convert a matrix definition of the form: [expr1,expr2;expr3;expr4] into
    * a vector of row definitions.  The first row is the vector [expr1,expr2], and
@@ -483,7 +483,7 @@ private:
    *   |   rowDef
    *   rowDef
    */
-  Array matrixDefinition(tree t);
+  Array matrixDefinition(const tree &t);
   /**
    * Convert a cell defintion of the form: {expr1,expr2;expr3;expr4} into
    * a vector of row definitions.  The first row is the vector {expr1,expr2}, and
@@ -495,11 +495,11 @@ private:
    *   |   rowDef
    *   rowDef
    */
-  Array cellDefinition(tree t);
+  Array cellDefinition(const tree &t);
   /**
    * Evaluate the expression pointed to by the AST t into a variable.
    */
-  Array expression(tree t);
+  Array expression(const tree &t);
   /**
    * Evaluate a unit colon expression.  The AST input should look like:
    *   :
@@ -510,7 +510,7 @@ private:
    * [expr1,expr1+1,expr1+2,...,expr1+n], where n is the largest 
    * integer such that expr1+n <= expr2.
    */
-  Array unitColon(tree t);
+  Array unitColon(const tree &t);
   /**
    * Evaluate a double colon expression.  The AST input should look like:
    *   :
@@ -522,7 +522,7 @@ private:
    * vector [expr1,expr1+expr2,expr1+2*expr2,...,expr1+n*expr2], where
    * n is the largest integer such that expr1+n*expr2 <= expr3.
    */
-  Array doubleColon(tree t);
+  Array doubleColon(const tree &t);
   /**
    * Process a sequence of expressions into a vector of Arrays.
    * The input AST must be:
@@ -549,7 +549,7 @@ private:
   /**
    * Handle statements that are simply expressions
    */
-  void expressionStatement(tree t, bool printIt);
+  void expressionStatement(const tree &t, bool printIt);
   /**
    * Collect variable indexing references into an array-vector.  For example
    * A(expr1,expr2) --> [expr1,expr2].
@@ -581,7 +581,7 @@ private:
    *      either a variable or function.  
    *    - 
    */
-  ArrayVector rhsExpression(tree t, int lhsCount = 1);
+  ArrayVector rhsExpression(const tree &t, int lhsCount = 1);
   /**
    * Look up an identifier as a potential function name, using a
    * rescan if the identifier is not found on the first pass.
@@ -591,22 +591,22 @@ private:
   /**
    * Special case the single assignment statement 'A = B' for speed.
    */
-  void assignmentStatement(tree t, bool printIt);
+  void assignmentStatement(const tree &t, bool printIt);
   /**
    * Try to figure out how many outputs there should be to a multifunction
    * call.  In particular, logic is used to figure out what to do about
    * undefined variables.
    */
-  int countLeftHandSides(tree t);
+  int countLeftHandSides(const tree &t);
   /**
    * Assign an array to an lvalue.
    */
-  Array assignExpression(tree t, Array &value);
+  Array assignExpression(const tree &t, Array &value);
   /**
    * Assign an array to an lvalue.  Values are extracted from the array as 
    * needed to satisfy the left hand side of the assignment.
    */
-  Array assignExpression(tree t, ArrayVector &value, bool multipleLHS = true);
+  Array assignExpression(const tree &t, ArrayVector &value, bool multipleLHS = true);
   /**
    * Evaluate a function and return the results of the function as
    * an ArrayVector.  For scripts, the body of the function is
@@ -626,7 +626,7 @@ private:
    *    - if too many arguments are passed to the function.
    *    - too many outputs are requested from the function.
    */
-  ArrayVector functionExpression(tree t, int narg_out, bool outputOptional);
+  ArrayVector functionExpression(const tree &t, int narg_out, bool outputOptional);
   /**
    * A multifunction call is an expression of the sort
    * [expr1,expr2,...,exprn] = func(args).  The AST is
@@ -647,7 +647,7 @@ private:
    * Throws an exception if the AST is malformed (i.e., the '[]' is
    * missing, or there are multiple rows in the left hand side.).
    */
-  void multiFunctionCall(tree t, bool printIt);
+  void multiFunctionCall(const tree &t, bool printIt);
   /**
    * A special function call is an expression of the form
    * >> func arg1 arg2 arg3
@@ -656,7 +656,7 @@ private:
    *       |
    *       fname->arg
    */
-  void specialFunctionCall(tree t, bool printIt);
+  void specialFunctionCall(const tree &t, bool printIt);
   /**
    * Handles an if statement, corresponding to an if, a number
    * of elseif blocks and an optional else statement.  The AST looks
@@ -668,7 +668,7 @@ private:
    * where each of the elseIf blocks are tested sequentially until
    * one of them succeeds.
    */
-  void ifStatement(tree t);
+  void ifStatement(const tree &t);
   /**
    * Handle a switch statement.  The switch statement tests
    * an expression against a number of case blocks.  If a 
@@ -688,7 +688,7 @@ private:
    * Throws an Exception if the switch expression is not
    * either a scalar or a string.
    */
-  void switchStatement(tree t);
+  void switchStatement(const tree &t);
   /**
    * Implements the for control statement.  The AST looks like
    *     ident->codeBlock
@@ -699,21 +699,21 @@ private:
    * on each of the values in the expression.  For each such
    * assignment, the code in the codeBlock is executed.
    */
-  void forStatement(tree t);
+  void forStatement(const tree &t);
   /**
    * Implements the while control statement.  The AST looks like
    *     expr->codeBlock
    * The test expression is evaluated until it fails, and for each
    * successful expression, the codeBlock is executed.
    */
-  void whileStatement(tree t);
+  void whileStatement(const tree &t);
   /**
    * Implements the try statement.  The AST looks like
    *     block->catchBlock
    * The code in block is executed.  If an exception occurs, then
    * the code in catchBlock is executed.
    */
-  void tryStatement(tree t);
+  void tryStatement(const tree &t);
   /**
    * Implements the global statement (really a global declaration).
    * The AST looks like:
@@ -725,7 +725,7 @@ private:
    * Each identifier is added to the global variable list of
    * the current context.
    */
-  void globalStatement(tree t);
+  void globalStatement(const tree &t);
   /**
    * Implements the persistent statement (really a persistent declaration).
    * The AST looks like:
@@ -737,7 +737,7 @@ private:
    * Each identifier is added to the persistent variable list of
    * the current context.
    */
-  void persistentStatement(tree t);
+  void persistentStatement(const tree &t);
   /**
    * This somewhat strange test is used by the switch statement.
    * If x is a scalar, and we are a scalar, this is an equality
@@ -755,7 +755,7 @@ private:
    * the test is returned.  Throws an exception if the AST is
    * malformed.
    */
-  bool testCaseStatement(tree t, Array x);
+  bool testCaseStatement(const tree &t, Array x);
   /**
    * Execute the statement described by the AST - the printIt flag
    * determines if the result of the statement should be printed to
@@ -818,7 +818,7 @@ private:
    * the special variable "ans".
    * Throws an Exception if the statement type is not recognized.
    */
-  void statementType(tree t, bool printIt);
+  void statementType(const tree &t, bool printIt);
   /**
    * The statement method simply screens out the need for the
    * printIt flag.  It also retrieves the statement context
@@ -837,7 +837,7 @@ private:
    * The context data is supplied by the parse (indicates the
    * line number and filename if necessary).
    */
-  void statement(tree t);
+  void statement(const tree &t);
   /**
    * Start a command line interface.  Statements are retrieved
    * from the console, and executed sequentially until a "return"
@@ -847,8 +847,8 @@ private:
   /**
    * Handles the logistics of shortcut evaluation
    */
-  Array ShortCutOr(tree t);
-  Array ShortCutAnd(tree t);
+  Array ShortCutOr(const tree &t);
+  Array ShortCutAnd(const tree &t);
   /**
    * Display an array - added so user classes divert to "display" function
    */
@@ -864,23 +864,23 @@ private:
   /**
    * Compute A(expr1,expr2,...)
    */
-  ArrayVector subsrefParen(Array r, tree t);
+  ArrayVector subsrefParen(Array r, const tree &t);
   /**
    * Compute A{expr1,expr2,...}
    */
-  ArrayVector subsrefBrace(Array r, tree t);
+  ArrayVector subsrefBrace(Array r, const tree &t);
   /**
    * Compute A.fname
    */
-  ArrayVector subsrefDot(Array r, tree t);
+  ArrayVector subsrefDot(Array r, const tree &t);
   /**
    * Compute A.(expr)
    */
-  ArrayVector subsrefDotDyn(Array r, tree t);
+  ArrayVector subsrefDotDyn(Array r, const tree &t);
   /**
    * Same as subsref, but for the case of a single dereference
    */
-  ArrayVector subsrefSingle(Array r, tree t);
+  ArrayVector subsrefSingle(Array r, const tree &t);
   /**
    * Compute complicated dereferences of a variable, e.g. A.foo{1:2}(9)
    */
@@ -888,27 +888,27 @@ private:
   /**
    * Assign A(expr1,expr2) = value
    */
-  void subsassignParen(Array *r, tree t, ArrayVector& value);
+  void subsassignParen(Array *r, const tree &t, ArrayVector& value);
   /**
    * Assign A{expr1,expr2} = value
    */
-  void subsassignBrace(Array *r, tree t, ArrayVector& value);
+  void subsassignBrace(Array *r, const tree &t, ArrayVector& value);
   /**
    * Assign A.fname = value
    */
-  void subsassignDot(Array *r, tree t, ArrayVector& value);
+  void subsassignDot(Array *r, const tree &t, ArrayVector& value);
   /**
    * Assign A.(expr) = value
    */
-  void subsassignDotDyn(Array *r, tree t, ArrayVector& value);
+  void subsassignDotDyn(Array *r, const tree &t, ArrayVector& value);
   /**
    * Same as subassign, but for the case of a single dereference
    */
-  void subassignSingle(Array *r, tree t, ArrayVector& value);
+  void subassignSingle(Array *r, const tree &t, ArrayVector& value);
   /**
    * Compute complicated assignments of a variable, e.g., A.foo{1:2}(9) = B
    */
-  void subassign(Array *r, tree t, ArrayVector& value);
+  void subassign(Array *r, const tree &t, ArrayVector& value);
   /**
    * Enter a debug cycle
    */

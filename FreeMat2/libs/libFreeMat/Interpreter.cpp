@@ -430,7 +430,7 @@ void sigInterrupt(int arg) {
   myInterp->ExecuteLine("");
 }
 
-Array Interpreter::DoBinaryOperator(tree t, BinaryFunc fnc, 
+Array Interpreter::DoBinaryOperator(const tree& t, BinaryFunc fnc, 
 				    std::string funcname) {
   Array a(expression(t.first()));
   Array b(expression(t.second()));
@@ -439,7 +439,7 @@ Array Interpreter::DoBinaryOperator(tree t, BinaryFunc fnc,
   return ClassBinaryOperator(a,b,funcname,this);
 }
 
-Array Interpreter::DoUnaryOperator(tree t, UnaryFunc fnc, 
+Array Interpreter::DoUnaryOperator(const tree &t, UnaryFunc fnc, 
 				   std::string funcname) {
   Array a(expression(t.first()));
   if (!a.isUserClass())
@@ -465,7 +465,7 @@ void Interpreter::clearStacks() {
   //    gstack.push_back(cname);
 }
 
-ArrayVector Interpreter::rowDefinition(tree t) {
+ArrayVector Interpreter::rowDefinition(const tree &t) {
   ArrayVector retval(expressionList(t.children()));
   return retval;
 }
@@ -531,7 +531,7 @@ ArrayVector Interpreter::rowDefinition(tree t) {
 //@>
 //!
 //Works
-Array Interpreter::matrixDefinition(tree t) {
+Array Interpreter::matrixDefinition(const tree &t) {
   ArrayMatrix m;
   treeVector s(t.children());
   if (s.size() == 0) 
@@ -592,7 +592,7 @@ Array Interpreter::matrixDefinition(tree t) {
 //@>
 //!
 //Works
-Array Interpreter::cellDefinition(tree t) {
+Array Interpreter::cellDefinition(const tree & t) {
   ArrayMatrix m;
   treeVector s(t.children());
   if (s.size() == 0) {
@@ -606,7 +606,7 @@ Array Interpreter::cellDefinition(tree t) {
   return retval;
 }
 
-Array Interpreter::ShortCutOr(tree t) {
+Array Interpreter::ShortCutOr(const tree & t) {
   Array a(expression(t.first()));
   Array retval;
   if (!a.isScalar())
@@ -622,7 +622,7 @@ Array Interpreter::ShortCutOr(tree t) {
   return retval;
 }
 
-Array Interpreter::ShortCutAnd(tree t) {
+Array Interpreter::ShortCutAnd(const tree &t) {
   SetContext(t.context());
   Array a(expression(t.first()));
   SetContext(t.context());
@@ -641,7 +641,7 @@ Array Interpreter::ShortCutAnd(tree t) {
 }
 
 //Works
-Array Interpreter::expression(tree t) {
+Array Interpreter::expression(const tree &t) {
   Array retval;
   switch(t.token()) {
   case TOK_VARIABLE: 
@@ -899,7 +899,7 @@ Array Interpreter::expression(tree t) {
 //@>
 //!
 //Works
-Array Interpreter::unitColon(tree t) {
+Array Interpreter::unitColon(const tree &t) {
   Array a, b;
   a = expression(t.first());
   b = expression(t.second());
@@ -910,7 +910,7 @@ Array Interpreter::unitColon(tree t) {
 }
 
 //Works
-Array Interpreter::doubleColon(tree t) {
+Array Interpreter::doubleColon(const tree &t) {
   Array a, b, c;
   a = expression(t.first().first());
   b = expression(t.first().second());
@@ -1006,7 +1006,7 @@ ArrayVector Interpreter::expressionList(treeVector t) {
  * any matches.  If x is a string and we are a cell-array, then
  * this is applied on an element-by-element basis also.
  */
-bool Interpreter::testCaseStatement(tree t, Array s) {
+bool Interpreter::testCaseStatement(const tree &t, Array s) {
   bool caseMatched;
   Array r;
   int ctxt = t.context();
@@ -1060,7 +1060,7 @@ bool Interpreter::testCaseStatement(tree t, Array s) {
 //@>
 //!
 //Works
-void Interpreter::tryStatement(tree t) {
+void Interpreter::tryStatement(const tree &t) {
   // Turn off autostop for this statement block
   bool autostop_save = autostop;
   autostop = false;
@@ -1139,7 +1139,7 @@ void Interpreter::AutoStop(bool a) {
 //@>
 //!
 //Works
-void Interpreter::switchStatement(tree t) {
+void Interpreter::switchStatement(const tree &t) {
   Array switchVal;
   int ctxt = t.context();
   // First, extract the value to perform the switch on.
@@ -1205,7 +1205,7 @@ void Interpreter::switchStatement(tree t) {
 //@>
 //!
 //Works
-void Interpreter::ifStatement(tree t) {
+void Interpreter::ifStatement(const tree &t) {
   bool elseifMatched;
   int ctxt = t.context();
     
@@ -1254,7 +1254,7 @@ void Interpreter::ifStatement(tree t) {
 //@>
 //!
 //Works
-void Interpreter::whileStatement(tree t) {
+void Interpreter::whileStatement(const tree &t) {
   tree testCondition;
   Array condVar;
   tree codeBlock;
@@ -1302,7 +1302,7 @@ public:
 };
 
 template <class T>
-void ForLoopHelper(tree codeBlock, Class indexClass, const T *indexSet, 
+void ForLoopHelper(const tree &codeBlock, Class indexClass, const T *indexSet, 
 		   int count, string indexName, Interpreter *eval) {
   Scope *scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
@@ -1322,8 +1322,9 @@ void ForLoopHelper(tree codeBlock, Class indexClass, const T *indexSet,
 }
 
 template <class T>
-void ForLoopHelperComplex(tree codeBlock, Class indexClass, const T *indexSet, 
-			  int count, string indexName, Interpreter *eval) {
+void ForLoopHelperComplex(const tree &codeBlock, Class indexClass, 
+			  const T *indexSet, int count, 
+			  string indexName, Interpreter *eval) {
   Scope *scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
     Array *vp = scope->lookupVariable(indexName);
@@ -1393,7 +1394,7 @@ void ForLoopHelperComplex(tree codeBlock, Class indexClass, const T *indexSet,
 //@>
 //!
 //Works
-void Interpreter::forStatement(tree t) {
+void Interpreter::forStatement(const tree &t) {
   tree  codeBlock;
   Array indexSet;
   Array indexNum;
@@ -1523,7 +1524,7 @@ void Interpreter::forStatement(tree t) {
 //get_global
 //@>
 //!
-void Interpreter::globalStatement(tree t) {
+void Interpreter::globalStatement(const tree &t) {
   for (unsigned i=0;i<t.numchildren();i++)
     context->addGlobalVariable(t.child(i).text());
 }
@@ -1555,7 +1556,7 @@ void Interpreter::globalStatement(tree t) {
 //for i=1:10; count_calls; end
 //@>
 //!
-void Interpreter::persistentStatement(tree t) {
+void Interpreter::persistentStatement(const tree &t) {
   for (unsigned i=0;i<t.numchildren();i++)
     context->addPersistentVariable(t.child(i).text());
 }
@@ -1848,7 +1849,7 @@ void Interpreter::displayArray(Array b) {
 }
 
 //Works
-void Interpreter::expressionStatement(tree s, bool printIt) {
+void Interpreter::expressionStatement(const tree &s, bool printIt) {
   ArrayVector m;
   if (!s.is(TOK_EXPR)) throw Exception("Unexpected statement type!");
   tree t(s.first());
@@ -1900,7 +1901,7 @@ void Interpreter::expressionStatement(tree s, bool printIt) {
 }
 
 //Works
-void Interpreter::assignmentStatement(tree t, bool printIt) {
+void Interpreter::assignmentStatement(const tree &t, bool printIt) {
   if (t.first().numchildren() == 1) {
     Array b(expression(t.second()));
     context->insertVariable(t.first().first().text(),b);
@@ -1921,7 +1922,7 @@ void Interpreter::assignmentStatement(tree t, bool printIt) {
   }
 }
   
-void Interpreter::statementType(tree t, bool printIt) {
+void Interpreter::statementType(const tree &t, bool printIt) {
   // check the debug flag
   switch(t.token()) {
   case '=':
@@ -2004,7 +2005,7 @@ void Interpreter::statementType(tree t, bool printIt) {
 
 // 
 //Works
-void Interpreter::statement(tree t) {
+void Interpreter::statement(const tree &t) {
   try {
     SetContext(t.context());
     if (t.getBPflag())
@@ -2029,12 +2030,14 @@ void Interpreter::statement(tree t) {
 }
 
 //Works
-void Interpreter::block(tree t) {
+void Interpreter::block(const tree &t) {
   try {
-    for (unsigned i=0;i<t.numchildren();i++) {
+    treeVector &statements(t.children());
+    for (treeVector::iterator i=statements.begin();
+	 i!=statements.end();i++) {
       if ((steptrap == 1) && (ip_detailname == stepname)) {
 	steptrap--;
-	SetContext(t.child(i).context());
+	SetContext(i->context());
 	debugCLI();
       } else if ((ip_detailname == stepname) && (steptrap > 1))
 	steptrap--;
@@ -2045,7 +2048,7 @@ void Interpreter::block(tree t) {
 	InterruptPending = false;
 	debugCLI();
       } else 
-	statement(t.child(i));
+	statement(*i);
     }
   } catch (Exception &e) {
     lasterr = e.getMessageCopy();
@@ -2059,7 +2062,7 @@ Context* Interpreter::getContext() {
 
 // I think this is too complicated.... there should be an easier way
 // Works
-int Interpreter::countLeftHandSides(tree t) {
+int Interpreter::countLeftHandSides(const tree &t) {
   Array lhs, *ptr;
   ptr = context->lookupVariable(t.first().text());
   if (ptr == NULL)
@@ -2170,7 +2173,7 @@ Array Interpreter::AllColonReference(Array v, int index, int count) {
 }
   
 // Works
-Array Interpreter::assignExpression(tree t, Array &value) {
+Array Interpreter::assignExpression(const tree &t, Array &value) {
   ArrayVector tmp;
   tmp.push_back(value);
   return assignExpression(t,tmp,false);
@@ -2178,7 +2181,8 @@ Array Interpreter::assignExpression(tree t, Array &value) {
 
 // If we got this far, we must have at least one subindex
 // Works
-Array Interpreter::assignExpression(tree t, ArrayVector &value, bool multipleLHS) {
+Array Interpreter::assignExpression(const tree &t, ArrayVector &value, 
+				    bool multipleLHS) {
   int ctxt = t.context();
   if (t.numchildren() == 1) {
     if ((value.size() > 1) && !multipleLHS)
@@ -2200,7 +2204,7 @@ Array Interpreter::assignExpression(tree t, ArrayVector &value, bool multipleLHS
 }
 
 //test
-void Interpreter::specialFunctionCall(tree t, bool printIt) {
+void Interpreter::specialFunctionCall(const tree &t, bool printIt) {
   tree fAST;
   ArrayVector m;
   stringVector args;
@@ -2273,7 +2277,7 @@ void Interpreter::refreshBreakpoints() {
 //[eg{1:3}]
 //in which case the lhscount += 3, even though eg does not exist. 
 // WORKS
-void Interpreter::multiFunctionCall(tree t, bool printIt) {
+void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
   ArrayVector m;
   tree fAST, saveLHS;
   treeVector s;
@@ -2754,7 +2758,7 @@ int getArgumentIndex(stringVector list, std::string t) {
 //strcattest hi ho
 //@>
 //!
-void Interpreter::collectKeywords(tree q, ArrayVector &keyvals,
+void Interpreter::collectKeywords(const tree &q, ArrayVector &keyvals,
 				  treeVector &keyexpr, stringVector &keywords) {
   // Search for the keyword uses - 
   // To handle keywords, we make one pass through the arguments,
@@ -2847,7 +2851,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
 // m is vector of argument values
 // keywords is the list of values passed as keywords
 // keyexpr is the   
-void Interpreter::handlePassByReference(tree q, stringVector arguments,
+void Interpreter::handlePassByReference(const tree &q, stringVector arguments,
 					ArrayVector m,stringVector keywords, 
 					treeVector keyexpr, int* argTypeMap) {
   tree p;
@@ -2885,7 +2889,7 @@ static ArrayVector mergeVecs(ArrayVector a, ArrayVector b) {
 }
 
 //Test
-ArrayVector Interpreter::functionExpression(tree t, 
+ArrayVector Interpreter::functionExpression(const tree &t, 
 					    int narg_out, 
 					    bool outputOptional) {
   ArrayVector m, n;
@@ -3141,7 +3145,7 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
 //@]
 //!
 //Works
-ArrayVector Interpreter::FunctionPointerDispatch(Array r, tree args, 
+ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args, 
 						 int narg_out) {
   const FunctionDef** dp;
   bool CLIFlagsave;
@@ -3359,7 +3363,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, tree args,
 //!
 
 //Works
-ArrayVector Interpreter::rhsExpression(tree t, int lhsCount) {
+ArrayVector Interpreter::rhsExpression(const tree &t, int lhsCount) {
   Array r, q, *ptr;
   Array n, p;
   ArrayVector m;
@@ -3437,7 +3441,7 @@ void Interpreter::setStopOverload(bool flag) {
 // We want dbstep(n) to cause us to advance n statements and then
 // stop.  we execute statement-->set step trap,
 
-void Interpreter::dbstepStatement(tree t) {
+void Interpreter::dbstepStatement(const tree &t) {
   int lines = 1;
   if (t.haschildren()) {
     Array lval(expression(t.first()));
@@ -3669,7 +3673,7 @@ ArrayVector Interpreter::subsindex(ArrayVector m) {
 // Works
 // a = {1,2,3;4,5,6}
 // b = a(2,end)
-ArrayVector Interpreter::subsrefParen(Array r, tree t) {
+ArrayVector Interpreter::subsrefParen(Array r, const tree &t) {
   ArrayVector m = varExpressionList(t.children(),r);
   if (m.size() == 0) 
     throw Exception("Expected indexing expression!");
@@ -3682,7 +3686,7 @@ ArrayVector Interpreter::subsrefParen(Array r, tree t) {
 // Works
 // a = {1,2,3;4,5,6}
 // b = a{2,end}
-ArrayVector Interpreter::subsrefBrace(Array r, tree t) {
+ArrayVector Interpreter::subsrefBrace(Array r, const tree &t) {
   ArrayVector m = varExpressionList(t.children(),r);
   if (m.size() == 0) 
     throw Exception("Expected indexing expression!");
@@ -3695,7 +3699,7 @@ ArrayVector Interpreter::subsrefBrace(Array r, tree t) {
 // Works
 //a.foo = 32
 //g = a.foo
-ArrayVector Interpreter::subsrefDot(Array r, tree t) {
+ArrayVector Interpreter::subsrefDot(Array r, const tree &t) {
   return r.getFieldAsList(t.first().text());
 }
   
@@ -3703,7 +3707,7 @@ ArrayVector Interpreter::subsrefDot(Array r, tree t) {
 //a.foo = 34
 //h = 'foo'
 //g = a.(h)
-ArrayVector Interpreter::subsrefDotDyn(Array r, tree t) {
+ArrayVector Interpreter::subsrefDotDyn(Array r, const tree &t) {
   char *field;
   try {
     Array fname(expression(t.first()));
@@ -3715,7 +3719,7 @@ ArrayVector Interpreter::subsrefDotDyn(Array r, tree t) {
 }
 
 // Works
-ArrayVector Interpreter::subsrefSingle(Array r, tree t) {
+ArrayVector Interpreter::subsrefSingle(Array r, const tree &t) {
   if (t.is(TOK_PARENS))
     return(subsrefParen(r,t));
   else if (t.is(TOK_BRACES))
@@ -3757,7 +3761,7 @@ ArrayVector Interpreter::subsref(Array r, treeVector t) {
 // a(2,2) = 2;
 // a(1,:) = 1;
 // a(:,end) = 5;
-void Interpreter::subsassignParen(Array *r, tree t, ArrayVector& value) {
+void Interpreter::subsassignParen(Array *r, const tree &t, ArrayVector& value) {
   ArrayVector m = varExpressionList(t.children(),*r);
   if (m.size() == 0)
     throw Exception("Expected indexing expression!");
@@ -3775,7 +3779,7 @@ void Interpreter::subsassignParen(Array *r, tree t, ArrayVector& value) {
 // a{2,2} = 2;
 // a{1,:} = 1;
 // a{:,end} = 5;
-void Interpreter::subsassignBrace(Array *r, tree t, ArrayVector& value) {
+void Interpreter::subsassignBrace(Array *r, const tree &t, ArrayVector& value) {
   ArrayVector m = varExpressionList(t.children(),*r);
   if (m.size() == 0)
     throw Exception("Expected indexing expression!");
@@ -3788,7 +3792,7 @@ void Interpreter::subsassignBrace(Array *r, tree t, ArrayVector& value) {
   
 // Works
 //g.foo = 32
-void Interpreter::subsassignDot(Array *r, tree t, ArrayVector& value) {
+void Interpreter::subsassignDot(Array *r, const tree &t, ArrayVector& value) {
   r->setFieldAsList(t.first().text(),value);
 }
   
@@ -3796,7 +3800,7 @@ void Interpreter::subsassignDot(Array *r, tree t, ArrayVector& value) {
 //g.foo = 32;
 //h = 'foo'
 //g.(h) = 50
-void Interpreter::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
+void Interpreter::subsassignDotDyn(Array *r, const tree &t, ArrayVector& value) {
   char *field;
   try {
     Array fname(expression(t.first()));
@@ -3809,7 +3813,7 @@ void Interpreter::subsassignDotDyn(Array *r, tree t, ArrayVector& value) {
   
 // Does foo(exprlist) = val, foo{exprlist} = vals, foo.field = vals, or foo.(fieldname) = vals
 // Works
-void Interpreter::subassignSingle(Array *r, tree t, ArrayVector& value) {
+void Interpreter::subassignSingle(Array *r, const tree &t, ArrayVector& value) {
   ArrayVector m;
   if (t.is(TOK_PARENS)) 
     subsassignParen(r,t,value);
@@ -3837,7 +3841,7 @@ void Interpreter::subassignSingle(Array *r, tree t, ArrayVector& value) {
 //    t1.fname1 = t2
 //    a(xpr1) = t1
 // Works
-void Interpreter::subassign(Array *r, tree t, ArrayVector& value) {
+void Interpreter::subassign(Array *r, const tree &t, ArrayVector& value) {
   int ctxt = t.context();
   // Check for a class assignment
   if (r && r->isUserClass() && !inMethodCall(r->getClassName().back()) && !stopoverload) {

@@ -20,10 +20,10 @@ public:
   Token node;
   int owners;
   treeVector children;
-  void print();
+  void print() const;
   void Rename(byte newtok);
   tree_node* getCopy();
-  unsigned context() {return node.Position();}
+  unsigned context() const {return node.Position();}
   tree_node();
 };
 
@@ -35,24 +35,24 @@ public:
   tree(const tree& copy);
   ~tree();
   tree_node* ptr() {return tptr;}
-  void print();
+  void print() const;
   void Rename(byte newtok) {if (tptr) tptr->Rename(newtok);}
-  bool valid() {return (tptr != NULL);}
+  bool valid() const {return (tptr != NULL);}
   void operator=(const tree &copy);
-  unsigned context() {if (tptr) return tptr->context(); else return 0;}
-  tree first() {return child(0);}
-  tree second() {return child(1);}
-  bool is(byte tok) {return (token()==tok);}
+  unsigned context() const {if (tptr) return tptr->context(); else return 0;}
+  tree first() const {if (tptr) return tptr->children.front(); else return tree();}
+  tree second() const {return child(1);}
+  bool is(byte tok) const {return (token()==tok);}
   void setBPflag(bool enable) {if (tptr) (tptr->node.SetBPFlag(enable));}
-  bool getBPflag() {if (tptr) return tptr->node.BPFlag(); return false;}
-  byte token() {if (tptr) return tptr->node.Value(); else return 0;}
-  unsigned numchildren() {if (tptr) return tptr->children.size(); else return 0;}
-  bool haschildren() {return numchildren() > 0;}
-  string text() {if (tptr) return tptr->node.Text(); else return std::string();}
-  Array array() {if (tptr) return tptr->node.GetArray(); else return Array();}
-  treeVector children() {if (tptr) return tptr->children; else return treeVector();}
-  tree last() {if (tptr) return tptr->children.back(); else return tree();}
-  tree child(unsigned n) {if (tptr) return tptr->children.at(n); else return tree();}
+  bool getBPflag() const {if (tptr) return tptr->node.BPFlag(); return false;}
+  byte token() const {if (tptr) return tptr->node.Value(); else return 0;}
+  unsigned numchildren() const {if (tptr) return tptr->children.size(); else return 0;}
+  bool haschildren() const {return numchildren() > 0;}
+  string text() const {if (tptr) return tptr->node.Text(); else return std::string();}
+  Array array() const {if (tptr) return tptr->node.GetArray(); else return Array();}
+  treeVector& children() const {return tptr->children;}
+  tree last() const {if (tptr) return tptr->children.back(); else return tree();}
+  tree child(unsigned n) const {if (tptr) return tptr->children.at(n); else return tree();}
 };
 
 tree mkLeaf(const Token& tok);

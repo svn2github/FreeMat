@@ -2035,13 +2035,14 @@ void Interpreter::block(const tree &t) {
     treeVector &statements(t.children());
     for (treeVector::iterator i=statements.begin();
 	 i!=statements.end();i++) {
-      if ((steptrap == 1) && (ip_detailname == stepname)) {
-	steptrap--;
-	SetContext(i->context());
-	debugCLI();
-      } else if ((ip_detailname == stepname) && (steptrap > 1))
-	steptrap--;
-
+      if (steptrap > 0) {
+	if ((steptrap == 1) && (ip_detailname == stepname)) {
+	  steptrap--;
+	  SetContext(i->context());
+	  debugCLI();
+	} else if ((steptrap > 1) && (ip_detailname == stepname))
+	  steptrap--;
+      }
       if (InterruptPending) {
 	outputMessage("Interrupt (ctrl-c) encountered\n");
 	stackTrace(true);

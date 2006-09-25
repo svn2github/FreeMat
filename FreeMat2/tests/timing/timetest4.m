@@ -256,6 +256,140 @@
 % a problem, contributing about 10.4 percent.  This means that 40% of the run time
 % is spent in tree related stuff (at least in this case)!  Totally unacceptable.
 %
+% For now, I have disabled reference counting for trees, and added const& reference
+% passing for most methods in Interpreter
+%
+% 
+%
+% --> timetest4
+% Run time for case 1 is 0.014018 vs 0.010592 , 10.200000 objects copied
+% Run time for case 2 is 0.255559 vs 0.044388 , 100011.000000 objects copied
+% Run time for case 3 is 0.278972 vs 0.055616 , 100011.100000 objects copied
+% Run time for case 4 is 0.503169 vs 0.083225 , 100011.200000 objects copied
+% Run time for case 5 is 0.882688 vs 0.778065 , 200012.000000 objects copied
+% Run time for case 6 is 0.224979 vs 0.126407 , 100013.100000 objects copied
+% Run time for case 7 is 2.414330 vs 0.756268 , 200010.100000 objects copied
+% Run time for case 8 is 0.053312 vs 0.044205 , 11.200000 objects copied
+% Run time for case 9 is 0.091693 vs 0.119176 , 11.100000 objects copied
+% Run time for case 10 is 0.207056 vs 0.051550 , 13.100000 objects copied
+% Run time for case 11 is 0.524458 vs 0.231276 , 100013.100000 objects copied
+% Run time for case 12 is 0.072698 vs 0.048534 , 13.100000 objects copied
+% Run time for case 13 is 0.507487 vs 0.083184 , 100012.100000 objects copied
+% Run time for case 14 is 0.075657 vs 0.055793 , 12.100000 objects copied
+%
+% This is pretty good.  I consider case 14 to be done.  OK - looking at the profile
+% output 
+%
+%26911    19.5473  Scope::lookupVariable(std::string const&)
+%18613    13.5199  Scope::insertVariable(std::string const&, Array const&)
+%12231     8.8842  Interpreter::block(tree const&)
+%10412     7.5630  Interpreter::assignmentStatement(tree const&, bool)
+%8455      6.1415  Dimensions::getElementCount() const
+%6766      4.9146  Scope::isVariableGlobal(std::string const&)
+%4852      3.5243  Context::insertVariable(std::string const&, Array const&)
+%
+% suggests more cycles hiding in Interpreter::block.  A slight tweak (changed the
+% tests for steptrap).
+% yeilds 62.8 msec. woohoo!
+%
+% On to the next test of interest.
+%
+%--> timetest4
+% Run time for case 1 is 0.013820 vs 0.010592 , 10.200000 objects copied
+% Run time for case 2 is 0.230351 vs 0.044388 , 100011.000000 objects copied
+% Run time for case 3 is 0.242330 vs 0.055616 , 100011.100000 objects copied
+% Run time for case 4 is 0.442080 vs 0.083225 , 100011.200000 objects copied
+% Run time for case 5 is 0.757253 vs 0.778065 , 200012.000000 objects copied
+% Run time for case 6 is 0.200452 vs 0.126407 , 100013.100000 objects copied
+% Run time for case 7 is 2.187634 vs 0.756268 , 200010.100000 objects copied
+% Run time for case 8 is 0.049926 vs 0.044205 , 11.200000 objects copied
+% Run time for case 9 is 0.084510 vs 0.119176 , 11.100000 objects copied
+% Run time for case 10 is 0.200774 vs 0.051550 , 13.100000 objects copied
+% Run time for case 11 is 0.459391 vs 0.231276 , 100013.100000 objects copied
+% Run time for case 12 is 0.064036 vs 0.048534 , 13.100000 objects copied
+% Run time for case 13 is 0.447284 vs 0.083184 , 100012.100000 objects copied
+% Run time for case 14 is 0.064714 vs 0.055793 , 12.100000 objects copied
+%
+% Cases 12 and 14 are as good as its going to get.  On to case 13.  To clarify
+% the behavior, I added a new case (15):
+%
+%  G{15} = 'm = 3; n = 0; for i=1:100000; n = m+1; end;';
+%
+% --> timetest4
+% Run time for case 1 is 0.013520 vs 0.010592 , 10.200000 objects copied
+% Run time for case 2 is 0.228841 vs 0.044388 , 100011.000000 objects copied
+% Run time for case 3 is 0.245186 vs 0.055616 , 100011.100000 objects copied
+% Run time for case 4 is 0.445338 vs 0.083225 , 100011.200000 objects copied
+% Run time for case 5 is 0.744549 vs 0.778065 , 200012.000000 objects copied
+% Run time for case 6 is 0.201953 vs 0.126407 , 100013.100000 objects copied
+% Run time for case 7 is 2.149101 vs 0.756268 , 200010.100000 objects copied
+% Run time for case 8 is 0.049095 vs 0.044205 , 11.200000 objects copied
+% Run time for case 9 is 0.081966 vs 0.119176 , 11.100000 objects copied
+% Run time for case 10 is 0.184903 vs 0.051550 , 13.100000 objects copied
+% Run time for case 11 is 0.459388 vs 0.231276 , 100013.100000 objects copied
+% Run time for case 12 is 0.063991 vs 0.048534 , 13.100000 objects copied
+% Run time for case 13 is 0.442942 vs 0.083184 , 100012.100000 objects copied
+% Run time for case 14 is 0.064326 vs 0.055793 , 12.100000 objects copied
+% Run time for case 15 is 0.443490 vs 0.083837 , 100013.100000 objects copied
+% Run time for case 16 is 0.455521 vs 0.295581 , 100015.100000 objects copied
+% Run time for case 17 is 0.623559 vs 0.323746 , 200016.100000 objects copied
+%
+% So what happens with "n=m+1"?
+%
+% There is a copy that occurs, but that copy seems to be special cased.
+% Case 16 is not a special case.  So lets look at the oprofile output.
+%
+%samples  %        symbol name
+%164300   10.6389  Dimensions::getElementCount() const
+%129833    8.4071  Add(Array, Array)
+%54018     3.4978  Interpreter::block(tree const&)
+%50936     3.2983  Interpreter::expression(tree const&)
+%45203     2.9270  Array::isEmpty() const
+%38694     2.5056  Array::getDimensions() const
+%36900     2.3894  std::vector<std::string, std::allocator<std::string> >::vector(std::vector<std::string, std
+%::allocator<std::string> > const&)
+%35072     2.2710  void ForLoopHelper<int>(tree const&, Class, int const*, int, std::string, Interpreter*)
+%34291     2.2204  Dimensions::isScalar() const
+%32317     2.0926  Array::getLength() const
+%28668     1.8563  void addfullreal<int>(int, int*, int const*, int, int const*, int)
+%27381     1.7730  VectorCheck(Array&, Array&, bool, std::string)
+%26402     1.7096  Array::isScalar() const
+%26086     1.6892  Array::getDataPointer() const
+%22826     1.4781  Array::promoteType(Class)
+%22541     1.4596  std::vector<std::string, std::allocator<std::string> >::begin() const
+%
+%If we cache the number of elements in an array, we can introduce a 10% improvement.  The
+%target is to get 30% out.  Possible places we can get the 30% from:
+%
+%  Dimensions::getElementCount() - 10.6%
+%  Add(Array, Array)             -  8.4%
+%  Array::isEmpty()              -  2.9%
+%  Dimensions::isScalar()        -  2.2%
+%  Array::getLength()            -  2.1%
+%  Array::isScalar()             -  1.7%
+%  Interpreter::block()          -  2.6% (treeVector iterator for loop)
+%
+% This yeilds: 30%
+%octave:1> timetest4(0)
+%Run time for case 1 is 0.022592
+%Run time for case 2 is 0.162862
+%Run time for case 3 is 0.208480
+%Run time for case 4 is 0.239034
+%Run time for case 5 is 0.161546
+%Run time for case 6 is 0.207451
+%Run time for case 7 is 0.127532
+%Run time for case 8 is 0.159229
+%Run time for case 9 is 0.131591
+%Run time for case 10 is 0.126735
+%Run time for case 11 is 0.719359
+%Run time for case 12 is 0.210571
+%Run time for case 13 is 0.243342
+%Run time for case 14 is 0.207737
+%Run time for case 15 is 0.244181
+%Run time for case 16 is 0.599329
+%Run time for case 17 is 0.619348
+%Run time for case 18 is 0.443014
+%
 function timetest4(countflag)
   runcount = 10;
   if (~exist('countflag')) countflag = 1; end
@@ -265,7 +399,8 @@ function timetest4(countflag)
   G{4} = 'for i=1:100000; i = i + 1; end;';
   G{5} = 'for i=1:100000; i = [1,1]; end;';
   G{6} = 'm = [1,1]; for i=1:100000; i = m; end;';
-  G{7} = 'for i=1:100000; clear i; end;';
+%  G{7} = 'for i=1:100000; clear i; end;';
+  G{7} = 'for i=1:100000;  i; end;';
   G{8} = 'for i=1:100000; m = 2; end;';
   G{9} = 'for i=1:100000; 2; end;';
   G{10} = 'm = [1,1]; for i=1:100000; m; end;';
@@ -273,8 +408,12 @@ function timetest4(countflag)
   G{12} = 'm = [1,1]; for i=1:100000; m = m; end;';
   G{13} = 'm = 0; for i=1:100000; m = m + 1; end;';
   G{14} = 'm = 3; n = 0; for i=1:100000; n = m; end;';
+  G{15} = 'm = 3; n = 0; for i=1:100000; n = m+1; end;';
+  G{16} = 'm = [1,1]; n = 0; for i=1:100000; n = m+1; end;';
+  G{17} = 'm = zeros(2,2,2); n = 0; for i=1:100000; n = m+1; end;';
+  G{18} = 'm = 3; n = 0; g = [1,1]; for i=1:100000; n = g; n = m+1; end;';
   
-  mperf = [0.010592 0.044388 0.055616 0.083225 0.778065 0.126407 0.756268 0.044205 0.119176 0.051550 0.231276 0.048534 0.083184 0.055793];
+  mperf = [0.010592 0.044388 0.055616 0.083225 0.778065 0.126407 0.756268 0.044205 0.119176 0.051550 0.231276 0.048534 0.083184 0.055793 0.083837 0.295581 0.323746 0.233305];
   for k = 1:numel(G)
     time = 0;
     ogen = 0;

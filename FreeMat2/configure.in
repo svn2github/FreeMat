@@ -117,7 +117,7 @@ AC_PROG_F77
 
 case "$host_os" in
      darwin*)
-	LDFLAGS="-L/sw/lib"
+	LDFLAGS="$LDFLAGS -L/sw/lib"
 	FLIBS="-lg2c"
         ;;
      *)

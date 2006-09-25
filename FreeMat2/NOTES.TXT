@@ -2,7 +2,7 @@ Problems:
   - close all causes Xlib to bork - fixed (disabled OpenGL renderer)
   - there is some type of leak in the plot code (when hold is used) - not verified
   - having a variable as the only thing on a line doesn't work right - fixed
-  - sscanf is missing - ugh
+  - sscanf is missing - fixed
   - variables tool shows wrong values...- fixed
   - 64 bit quantities do not show up correctly - fixed
   - clear libs does not release imported functions - fixed

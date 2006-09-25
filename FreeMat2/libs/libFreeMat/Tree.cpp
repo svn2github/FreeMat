@@ -14,39 +14,22 @@ tree_node* tree_node::getCopy() {
   return this;
 }
 
-tree::tree(const tree& copy) {
-  tptr = NULL;
-  if (copy.tptr)
-    tptr = copy.tptr->getCopy();
+tree::tree(const tree& copy) : tptr(copy.tptr) {
 }
 
-tree::tree() {
-  tptr = NULL;
-}
-
-void FreeTreeNode(tree_node* t) {
-  if (!t) return;
-  t->owners--;
-  if (t->owners<=0) {
-    delete t;
-    t = NULL;
-  }
-}
-
-tree::~tree() {
-  FreeTreeNode(tptr);
+tree::tree() : tptr(NULL) {
 }
 
 void tree_node::Rename(byte a) {
   node.SetValue(a);
 }
 
-void tree::operator=(const tree &copy) {
-  FreeTreeNode(tptr);
-  tptr = NULL;
-  if (copy.tptr)
-    tptr = copy.tptr->getCopy();
-}
+//void tree::operator=(const tree &copy) {
+//  FreeTreeNode(tptr);
+//  tptr = NULL;
+//  if (copy.tptr)
+//    tptr = copy.tptr->getCopy();
+//}
 
 void tree::print() const {
   if (tptr)

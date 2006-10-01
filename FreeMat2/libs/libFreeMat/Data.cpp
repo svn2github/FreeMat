@@ -28,6 +28,7 @@ Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag,
   cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
   sparse = sparseflag;
   DataMakeCount++;
+  refreshDimensionCache();
 } 
 
 Data::~Data() { 
@@ -51,6 +52,7 @@ Data* Data::putData(Class aClass, const Dimensions& dims, void *s,
     sparse = sparseflag;
     className = classname;
     owners = 1;
+    refreshDimensionCache();
     return this;
   } else {
     owners--;
@@ -113,6 +115,15 @@ void Data::freeDataBlock() {
   }
 }
   
-bool Data::isSparse() {
+bool Data::isSparse() const {
   return sparse;
+}
+
+void Data::refreshDimensionCache() {
+  m_cache_getElementCount = dimensions.getElementCount();
+  m_cache_isScalar = dimensions.isScalar();
+  m_cache_getRows = dimensions.getRows();
+  m_cache_getColumns = dimensions.getColumns();
+  m_cache_is2D = dimensions.is2D();
+  m_cache_isVector = dimensions.isVector();
 }

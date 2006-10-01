@@ -63,6 +63,14 @@ private:
    * The class name - only used for user-defined classes
    */
   stringVector className;
+
+  int m_cache_getElementCount;
+  bool m_cache_isScalar;
+  int m_cache_getRows;
+  int m_cache_getColumns;
+  bool m_cache_is2D;
+  bool m_cache_isVector;
+  
   /**
    * Construct a Data object with the given arguments.
    * the owner count is initialized to 1.
@@ -147,7 +155,19 @@ private:
   /**
    * Check sparsity.
    */
-  bool isSparse();
+  bool isSparse() const;
+  /**
+   * The next few functions are cached
+   * from Dimension so that they are more
+   * readily available.
+   */
+  int getElementCount() const {return m_cache_getElementCount;}
+  bool isScalar() const {return m_cache_isScalar;}
+  int getRows() const {return m_cache_getRows;}
+  int getColumns() const {return m_cache_getColumns;}
+  bool is2D() const {return m_cache_is2D;}
+  bool isVector() const {return m_cache_isVector;}
+  void refreshDimensionCache();
 };
 
 #endif

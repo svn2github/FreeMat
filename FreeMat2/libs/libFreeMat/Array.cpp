@@ -603,7 +603,7 @@ void Array::setClassName(stringVector cname) {
 
 int Array::getLength() const {
   if (dp)
-    return dp->dimensions.getElementCount();
+    return dp->getElementCount();
   else
     return 0;
 }
@@ -733,11 +733,11 @@ void Array::resize(Dimensions& a) {
 void Array::vectorResize(int max_index) {
   if (max_index > getLength()) {
     Dimensions newDim;
-    if (isEmpty() || dp->dimensions.isScalar()) {
+    if (isEmpty() || dp->isScalar()) {
       newDim.reset();
       newDim[0] = 1;
       newDim[1] = max_index;
-    } else if (dp->dimensions.isVector()) {
+    } else if (dp->isVector()) {
       newDim = dp->dimensions;
       if (dp->dimensions[0] != 1)
 	newDim[0] = max_index;
@@ -778,6 +778,7 @@ void Array::reshape(Dimensions& a)  {
   } else {
     ensureSingleOwner();
     dp->dimensions = a;
+    dp->refreshDimensionCache();
   }
 }
 
@@ -1192,21 +1193,21 @@ const bool Array::isEmpty() const {
  */
 const bool Array::isScalar() const {
   if (isEmpty()) return false;
-  return dp->dimensions.isScalar();
+  return dp->isScalar();
 }
 
 /**
  * Returns TRUE if we are 2-Dimensional.
  */
 const bool Array::is2D() const {
-  return dp->dimensions.is2D();
+  return dp->is2D();
 }
 
 /**
  * Returns TRUE if we are a vector.
  */
 const bool Array::isVector() const {
-  return dp->dimensions.isVector();
+  return dp->isVector();
 }
 
 /**
@@ -2796,8 +2797,8 @@ Array Array::getNDimSubset(ArrayVector& index)  {
 Array Array::getDiagonal(int diagonalOrder)  {
   if (!is2D()) 
     throw Exception("Cannot take diagonal of N-dimensional array.");
-  int rows = dp->dimensions.getRows();
-  int cols = dp->dimensions.getColumns();
+  int rows = dp->getRows();
+  int cols = dp->getColumns();
   int outLen;
   Dimensions outDims;
   int i;
@@ -3502,11 +3503,11 @@ void Array::deleteVectorSubset(Array& arg) {
     Free(deletionMap);
     deletionMap = NULL;
     Dimensions newDim;
-    if (dp->dimensions.isScalar()) {
+    if (dp->isScalar()) {
       newDim.reset();
       newDim[0] = 1;
       newDim[1] = newSize;
-    } else if (dp->dimensions.isVector()) {
+    } else if (dp->isVector()) {
       newDim = dp->dimensions;
       if (dp->dimensions[0] != 1)
 	newDim[0] = newSize;
@@ -3549,7 +3550,7 @@ void Array::makeSparse() {
 
 int Array::getNonzeros() const {
   if (!isSparse())
-    return (dp->dimensions.getElementCount());
+    return (dp->getElementCount());
   if (isEmpty())
     return 0;
   return CountNonzeros(dp->dataClass,dp->dimensions[0],dp->dimensions[1],
@@ -3763,8 +3764,8 @@ void Array::summarizeCellEntry() const {
     case FM_STRING:
       {
 	const char *ap =(const char*) dp->getData();
-	if (dp->dimensions.getRows() == 1) {
-	  int columns(dp->dimensions.getColumns());
+	if (dp->getRows() == 1) {
+	  int columns(dp->getColumns());
 	  memcpy(msgBuffer,ap,columns);
 	  msgBuffer[columns] = 0;
 	  m_eval->outputMessage(msgBuffer);
@@ -3776,7 +3777,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_LOGICAL:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const logical*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3786,7 +3787,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_UINT8:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint8*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3796,7 +3797,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_INT8:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int8*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3806,7 +3807,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_UINT16:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint16*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3816,7 +3817,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_INT16:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int16*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3826,7 +3827,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_UINT32:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint32*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3836,7 +3837,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_INT32:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int32*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3848,7 +3849,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_UINT64:
-      if (dp->dimensions.isScalar()) {
+      if (dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint64*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3858,7 +3859,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_INT64:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int64*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3870,7 +3871,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_DOUBLE:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%lf]",*((const double*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3882,7 +3883,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_DCOMPLEX:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->isScalar()) {
 	const double *ap = (const double*) dp->getData();
 	snprintf(msgBuffer,MSGBUFLEN,"[%lf+%lfi]",ap[0],ap[1]);
 	m_eval->outputMessage(msgBuffer);
@@ -3895,7 +3896,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_FLOAT:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%f]",*((const float*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
@@ -3907,7 +3908,7 @@ void Array::summarizeCellEntry() const {
       }
       break;
     case FM_COMPLEX:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->isScalar()) {
 	const float *ap = (const float*) dp->getData();
 	snprintf(msgBuffer,MSGBUFLEN,"[%f+%fi]",ap[0],ap[1]);
 	m_eval->outputMessage(msgBuffer);

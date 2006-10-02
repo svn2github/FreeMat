@@ -73,8 +73,6 @@
 %Run time for case 8 is 0.155819
 %Run time for case 9 is 0.128124
 %octave:3>
-
-
 % Looking at test #10, I don't see why this is at 268 ms.  A simple
 % look at demo(17) indicates that the lookup time for a variable
 % should be no more than 30ms, and there are copies being made.
@@ -390,6 +388,61 @@
 %Run time for case 17 is 0.619348
 %Run time for case 18 is 0.443014
 %
+%
+% Here's the current performance (with the update assignmentStatement
+% performance tweak) (note these times are on a D410, not the dual P4.
+%
+%--> timetest4
+% Run time for case 1 is 0.024412 vs 0.010592 , 10.200000 objects copied
+% Run time for case 2 is 0.151345 vs 0.044388 , 11.100000 objects copied
+% Run time for case 3 is 0.082593 vs 0.055616 , 11.200000 objects copied
+% Run time for case 4 is 0.315397 vs 0.083225 , 100011.100000 objects copied
+% Run time for case 5 is 0.509582 vs 0.778065 , 200012.000000 objects copied
+% Run time for case 6 is 0.151175 vs 0.126407 , 100014.000000 objects copied
+% Run time for case 7 is 1.186230 vs 0.756268 , 200010.100000 objects copied
+% Run time for case 8 is 0.061244 vs 0.044205 , 11.300000 objects copied
+% Run time for case 9 is 0.059322 vs 0.119176 , 11.100000 objects copied
+% Run time for case 10 is 0.127254 vs 0.051550 , 13.100000 objects copied
+% Run time for case 11 is 0.326329 vs 0.231276 , 100013.100000 objects copied
+% Run time for case 12 is 0.191671 vs 0.048534 , 100013.100000 objects copied
+% Run time for case 13 is 0.313710 vs 0.083184 , 100012.200000 objects copied
+% Run time for case 14 is 0.072043 vs 0.055793 , 12.200000 objects copied
+%
+% Case 13 and case 12 are interesting.   Here a copy can be avoided
+%
+% I needed to update the test.  Here's the latest numbers:
+%--> timetest4
+% Run time for case 1 is 0.026345 vs 0.010592 , 10.200000 objects copied
+% Run time for case 2 is 0.145332 vs 0.044388 , 11.100000 objects copied
+% Run time for case 3 is 0.132110 vs 0.055616 , 11.200000 objects copied
+% Run time for case 4 is 0.338322 vs 0.083225 , 100011.100000 objects copied
+% Run time for case 5 is 0.510757 vs 0.778065 , 200012.000000 objects copied
+% Run time for case 6 is 0.155246 vs 0.126407 , 100014.000000 objects copied
+% Run time for case 7 is 0.247094 vs 0.756268 , 100009.200000 objects copied
+% Run time for case 8 is 0.061240 vs 0.044205 , 11.200000 objects copied
+% Run time for case 9 is 0.059460 vs 0.119176 , 11.100000 objects copied
+% Run time for case 10 is 0.128537 vs 0.051550 , 13.100000 objects copied
+% Run time for case 11 is 0.322873 vs 0.231276 , 100013.100000 objects copied
+% Run time for case 12 is 0.190352 vs 0.048534 , 100013.100000 objects copied
+% Run time for case 13 is 0.314675 vs 0.083184 , 100012.200000 objects copied
+% Run time for case 14 is 0.071883 vs 0.055793 , 12.200000 objects copied
+% Run time for case 15 is 0.314853 vs 0.083837 , 100013.100000 objects copied
+% Run time for case 16 is 0.322346 vs 0.295581 , 100015.100000 objects copied
+% Run time for case 17 is 0.432502 vs 0.323746 , 200016.100000 objects copied
+% Run time for case 18 is 0.347644 vs 0.233305 , 100016.200000 objects copied
+%
+% The next cases of interest are: 4, 12, 13, 15.
+%
+%  4: i = i + 1;
+% 12: m = m;
+% 13: m = m + 1;
+% 15: n = m + 1;
+%
+% These expressions are all scalar expressions.  Why does 15 take so
+% long? Can the copies be eliminated?  In three of these cases, the 
+% expression is an "+1".  
+%
+%
 function timetest4(countflag)
   runcount = 10;
   if (~exist('countflag')) countflag = 1; end
@@ -412,7 +465,6 @@ function timetest4(countflag)
   G{16} = 'm = [1,1]; n = 0; for i=1:100000; n = m+1; end;';
   G{17} = 'm = zeros(2,2,2); n = 0; for i=1:100000; n = m+1; end;';
   G{18} = 'm = 3; n = 0; g = [1,1]; for i=1:100000; n = g; n = m+1; end;';
-  
   mperf = [0.010592 0.044388 0.055616 0.083225 0.778065 0.126407 0.756268 0.044205 0.119176 0.051550 0.231276 0.048534 0.083184 0.055793 0.083837 0.295581 0.323746 0.233305];
   for k = 1:numel(G)
     time = 0;

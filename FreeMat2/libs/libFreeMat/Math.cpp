@@ -1203,14 +1203,17 @@ Array Add(Array A, Array B) {
     Astride = 0;
     Bstride = 1;
     Cdim = B.getDimensions();
+    Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   }
   if (!Astride || !Bstride) {
     A.makeDense();
@@ -1229,7 +1232,6 @@ Array Add(Array A, Array B) {
 			 B.getSparseDataPointer());
   } else {
     sparse = false;
-    Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*B.getElementSize());
     switch(B.getDataClass()) {
     case FM_INT32:
@@ -1369,14 +1371,17 @@ Array Subtract(Array A, Array B) {
     Astride = 0;
     Bstride = 1;
     Cdim = B.getDimensions();
+    Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   }
   if (!Astride || !Bstride) {
     A.makeDense();
@@ -1395,7 +1400,6 @@ Array Subtract(Array A, Array B) {
 			      B.getSparseDataPointer());
   } else {
     sparse = false;
-    Clen = Cdim.getElementCount();
     Cp = Malloc(Clen*B.getElementSize());
     switch(B.getDataClass()) {
     case FM_INT32:
@@ -1528,14 +1532,17 @@ Array DotMultiply(Array A, Array B) {
     Astride = 0;
     Bstride = 1;
     Cdim = B.getDimensions();
+    Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   }
   //FIXME - these rules don't apply for multiplication!!
   if (A.isSparse() && B.isScalar()) {
@@ -1568,7 +1575,6 @@ Array DotMultiply(Array A, Array B) {
 				B.getSparseDataPointer());
     } else {
       sparse = false;
-      Clen = Cdim.getElementCount();
       Cp = Malloc(Clen*B.getElementSize());
       switch(B.getDataClass()) {
       case FM_INT32:
@@ -1691,16 +1697,18 @@ Array DotRightDivide(Array A, Array B) {
     Astride = 0;
     Bstride = 1;
     Cdim = B.getDimensions();
+    Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
     Cdim = A.getDimensions();
+    Clen = A.getLength();
   }
-  Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*B.getElementSize());
   switch(B.getDataClass()) {
   case FM_INT32:

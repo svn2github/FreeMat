@@ -1903,10 +1903,29 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
 //Works
 void Interpreter::assignmentStatement(const tree &t, bool printIt) {
   if (t.first().numchildren() == 1) {
+    // This is an accelleration trick
     Array b(expression(t.second()));
-    context->insertVariable(t.first().first().text(),b);
+    string lhsname = t.first().first().text();
+    // Get the variable of interest
+    Array *lhs = context->lookupVariable(lhsname);
+    // Does the variable exist?  If not, just do it the slow way
+    // Or is it a reference array?
+    if (lhs == NULL || lhs->isSparse() ||
+	lhs->isReferenceType() || 
+	(lhs->getDataClass() != b.getDataClass()) ||
+	(lhs->getLength() != b.getLength()))
+      context->insertVariable(lhsname,b);
+    else {
+      // Copy the contents
+      memcpy(lhs->getReadWriteDataPointer(),
+	     b.getDataPointer(),b.getByteSize());
+      if (!lhs->isScalar()) {
+	Dimensions d(b.getDimensions());
+	lhs->reshape(d);
+      }
+    }
     if (printIt) {
-      outputMessage(t.first().first().text());
+      outputMessage(lhsname);
       outputMessage(std::string(" = \n"));
       displayArray(b);
     }	  

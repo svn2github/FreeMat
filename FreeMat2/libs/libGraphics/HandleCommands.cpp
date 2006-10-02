@@ -845,6 +845,7 @@ ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(retval);
 }
 
+int refcount = 0;
 extern int DataMakeCount;
 // If the argument vector is numeric, we can
 ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
@@ -1080,7 +1081,44 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
       Array J(I);
       Array K(I);
     }
-  }
+  } else if (runtype == 22) {
+    Array a(Array::int32Constructor(0));
+    for (int m=0;m<10000000;m++) {
+      Array b(a);
+    }
+  } else if (runtype == 23) {
+    struct {
+      int data[10];
+    } a, b;
+    for (int m=0;m<10000000;m++) {
+      b = a;
+    }
+  } else if (runtype == 24) {
+    class foo {
+      int data[10];
+    public:
+      foo() {data[0] = 0; refcount++;}
+      ~foo() {refcount--;}
+    };
+    
+    foo a;
+    for (int m=0;m<10000000;m++) {
+      foo b(a);
+    }
+  } else if (runtype == 25) {
+    class foo {
+      int data[10];
+    public:
+      foo() {data[0] = 0; refcount++;}
+      ~foo() {refcount--;}
+    };
+    
+    foo *a; 
+    for (int m=0;m<10000000;m++) {
+      a = new foo;
+      delete a;
+    }
+  } 
   return singleArrayVector(B);
 }
 

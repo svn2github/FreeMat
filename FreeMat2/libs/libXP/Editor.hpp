@@ -98,6 +98,18 @@ private slots:
   void update();
 };
 
+class BreakPointIndicator : public QWidget {
+  Q_OBJECT
+public:
+  BreakPointIndicator(FMTextEdit *editor);
+protected:
+  virtual void paintEvent(QPaintEvent *);
+  virtual void mousePressEvent(QMouseEvent *);
+  //  virtual void mouseReleaseEvent(QMouseEvent *);
+private:
+  FMTextEdit *tEditor;
+};
+
 class LineNumber : public QWidget {
   Q_OBJECT
 public:

@@ -365,8 +365,10 @@ void FMIndent::update() {
 FMEditPane::FMEditPane() : QWidget() {
   tEditor = new FMTextEdit;
   LineNumber *tLN = new LineNumber(tEditor);
+  BreakPointIndicator *tBP = new BreakPointIndicator(tEditor);
   QHBoxLayout *layout = new QHBoxLayout;
   layout->addWidget(tLN);
+  layout->addWidget(tBP);
   layout->addWidget(tEditor);
   setLayout(layout);
   FMIndent *ind = new FMIndent;
@@ -849,9 +851,60 @@ void FMEditor::font() {
   updateFont();
 }
 
+BreakPointIndicator::BreakPointIndicator(FMTextEdit *editor) : 
+  QWidget(), tEditor(editor) {
+  setFixedWidth(fontMetrics().width(QLatin1String("00")+5));
+  connect(tEditor->document()->documentLayout(), 
+	  SIGNAL(update(const QRectF &)),
+	  this, SLOT(update()));
+  connect(tEditor->verticalScrollBar(), SIGNAL(valueChanged(int)),
+	  this, SLOT(update()));  
+}
+	
+void BreakPointIndicator::mousePressEvent(QMouseEvent *e) {
+  int contentsY = tEditor->verticalScrollBar()->value();
+  qreal pageBottom = contentsY + tEditor->viewport()->height();
+  int lineNumber = 1;
+  for (QTextBlock block = tEditor->document()->begin();
+       block.isValid(); block = block.next(), ++lineNumber) {
+    QTextLayout *layout = block.layout();
+    
+    const QRectF boundingRect = layout->boundingRect();
+    QPointF position = layout->position();
+    if (position.y() + boundingRect.height() < contentsY)
+      continue;
+    if (position.y() > pageBottom)
+      break;
+    if ((e->y() >= (2+qRound(position.y()) - contentsY)) &&
+	(e->y() < (2+qRound(position.y()) - contentsY) + width()))
+      qDebug() << "Click on line " << lineNumber << "\n";
+  }
+}
+						       
+void BreakPointIndicator::paintEvent(QPaintEvent *) {
+  int contentsY = tEditor->verticalScrollBar()->value();
+  qreal pageBottom = contentsY + tEditor->viewport()->height();
+  int lineNumber = 1;
+  QPainter p(this);
+  for (QTextBlock block = tEditor->document()->begin();
+       block.isValid(); block = block.next(), ++lineNumber) {
+    QTextLayout *layout = block.layout();
+    const QRectF boundingRect = layout->boundingRect();
+    QPointF position = layout->position();
+    if (position.y() + boundingRect.height() < contentsY)
+      continue;
+    if (position.y() > pageBottom)
+      break;    
+    p.drawPixmap(2, 2+qRound(position.y()) - contentsY, 
+		 width()-4,width()-4,QPixmap(":/images/stop.png"),
+		 0,0,32,32);
+  }
+}
+
 LineNumber::LineNumber(FMTextEdit *editor) : QWidget(), tEditor(editor) {
   setFixedWidth(fontMetrics().width(QLatin1String("0000")+5));
-  connect(tEditor->document()->documentLayout(), SIGNAL(update(const QRectF &)),
+  connect(tEditor->document()->documentLayout(), 
+	  SIGNAL(update(const QRectF &)),
 	  this, SLOT(update()));
   connect(tEditor->verticalScrollBar(), SIGNAL(valueChanged(int)),
 	  this, SLOT(update()));

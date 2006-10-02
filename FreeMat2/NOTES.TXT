@@ -1,3 +1,6 @@
+Performance is much better now.  I will make a release soon.  I still want to 
+complete the editor/debugger integration.
+
 Problems:
   - close all causes Xlib to bork - fixed (disabled OpenGL renderer)
   - there is some type of leak in the plot code (when hold is used) - not verified

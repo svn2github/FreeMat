@@ -6,6 +6,8 @@ Mac OS X 10.3.9
 - Install fortran
 - Install libavcall into /usr/local:
 
+yum install atlas-sse2-devel.i386
+
 mkdir depends
 cd depends
 wget ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz
@@ -18,6 +20,7 @@ cd ..
 - Install fftw and fftwf into /usr/local - we build these
 in two seperate directories 
 wget http://www.fftw.org/fftw-3.1.2.tar.gz
+tar xvfz fftw-3.1.2.tar.gz
 cd fftw-3.1.2
 mkdir build_fftw
 cd build_fftw
@@ -42,4 +45,16 @@ ar crs libarpack.a SRC/*.o UTIL/*.o
 cp libarpack.a /usr/local/lib/.
 
 - Install UMFPACK into /usr/local
+wget http://www.cise.ufl.edu/research/sparse/umfpack/current/UMFPACK.tar.gz
+wget http://www.cise.ufl.edu/research/sparse/UFconfig/current/UFconfig.tar.gz
+wget http://www.cise.ufl.edu/research/sparse/amd/current/AMD.tar.gz
 
+cd AMD
+make lib
+cd ../UMFPACK
+make library
+cd ..
+cp AMD/Lib/libamd.a /usr/local/lib/.
+cp AMD/Include/*.h /usr/local/include/.
+cp UMFPACK/Lib/libumfpack.a /usr/local/lib/.
+cp UMFPACK/Include/*.h /usr/local/include/.

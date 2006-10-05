@@ -430,21 +430,27 @@ void sigInterrupt(int arg) {
   myInterp->ExecuteLine("");
 }
 
-Array Interpreter::DoBinaryOperator(const tree& t, BinaryFunc fnc, 
-				    std::string funcname) {
-  Array a(expression(t.first()));
-  Array b(expression(t.second()));
-  if (!(a.isUserClass() || b.isUserClass())) 
-    return fnc(a,b);
-  return ClassBinaryOperator(a,b,funcname,this);
+void Interpreter::DoBinaryOperator(const tree& t, BinaryFunc fnc, 
+				    std::string funcname, Array *dest) {
+  Array a, b;
+  expression(t.first(),&a);
+  expression(t.second(),&b);
+  if (!(a.isUserClass() || b.isUserClass())) {
+    fnc(a,b,dest);
+    return;
+  }
+  *dest = ClassBinaryOperator(a,b,funcname,this);
 }
 
-Array Interpreter::DoUnaryOperator(const tree &t, UnaryFunc fnc, 
-				   std::string funcname) {
-  Array a(expression(t.first()));
-  if (!a.isUserClass())
-    return fnc(a);
-  return ClassUnaryOperator(a,funcname,this);
+void Interpreter::DoUnaryOperator(const tree &t, UnaryFunc fnc, 
+				  std::string funcname, Array *dest) {
+  Array a;
+  expression(t.first(),&a);
+  if (!dest->isUserClass()) {
+    fnc(&a,dest);
+    return;
+  }  
+  *dest = ClassUnaryOperator(a,funcname,this);
 }
 
 void Interpreter::setPrintLimit(int lim) {
@@ -641,8 +647,7 @@ Array Interpreter::ShortCutAnd(const tree &t) {
 }
 
 //Works
-Array Interpreter::expression(const tree &t) {
-  Array retval;
+void Interpreter::expression(const tree &t, Array *dest) {
   switch(t.token()) {
   case TOK_VARIABLE: 
     {
@@ -658,17 +663,17 @@ Array Interpreter::expression(const tree &t) {
 	  } else {
 	    if (m.size() > 1) 
 	      warningMessage("discarding one or more outputs from an expression");
-	    retval = m[0];
+	    *dest = m[0];
 	  }
 	}
       } else {
 	ArrayVector m(rhsExpression(t));
 	if (m.empty()) {
-	  retval = Array::emptyConstructor();
+	  *dest = Array::emptyConstructor();
 	} else {
 	  if (m.size() > 1) 
 	    warningMessage("discarding one or more outputs from an expression");
-	  retval = m[0];
+	  *dest = m[0];
 	}
       }
     }
@@ -679,28 +684,28 @@ Array Interpreter::expression(const tree &t) {
   case TOK_COMPLEX:
   case TOK_DCOMPLEX:
   case TOK_STRING:
-    retval = t.array();
+    *dest = t.array();
     break;
   case TOK_END:
     {
       if (endStack.empty())
 	throw Exception("END keyword illegal (end stack underflow)!");
       endData t(endStack.back());
-      retval = EndReference(t.endArray,t.index,t.count);
+      *dest = EndReference(t.endArray,t.index,t.count);
     }
     break;
   case ':':
     if (t.first().is(':')) {
-      retval = doubleColon(t);
+      *dest = doubleColon(t);
     } else {
-      retval = unitColon(t);
+      *dest = unitColon(t);
     }
     break;
   case TOK_MATDEF: 
-    retval = matrixDefinition(t); 
+    *dest = matrixDefinition(t); 
     break;
   case TOK_CELLDEF: 
-    retval = cellDefinition(t); 
+    *dest = cellDefinition(t); 
     break;
   case '+': 
     retval = DoBinaryOperator(t,Add,"plus"); 
@@ -719,59 +724,59 @@ Array Interpreter::expression(const tree &t) {
     break;
   case TOK_SOR: 
   case '|': 
-    retval = ShortCutOr(t); 
+    *dest = ShortCutOr(t); 
     break;
   case TOK_SAND: 
   case '&': 
-    retval = ShortCutAnd(t); 
+    *dest = ShortCutAnd(t); 
     break;
   case '<': 
-    retval = DoBinaryOperator(t,LessThan,"lt"); 
+    DoBinaryOperator(t,LessThan,"lt",dest);
     break;
   case TOK_LE: 
-    retval = DoBinaryOperator(t,LessEquals,"le"); 
+    DoBinaryOperator(t,LessEquals,"le",dest);
     break;
   case '>': 
-    retval = DoBinaryOperator(t,GreaterThan,"gt"); 
+    DoBinaryOperator(t,GreaterThan,"gt",dest); 
     break;
   case TOK_GE: 
-    retval = DoBinaryOperator(t,GreaterEquals,"ge"); 
+    DoBinaryOperator(t,GreaterEquals,"ge",dest); 
     break;
   case TOK_EQ: 
-    retval = DoBinaryOperator(t,Equals,"eq"); 
+    DoBinaryOperator(t,Equals,"eq",dest); 
     break;
   case TOK_NE: 
-    retval = DoBinaryOperator(t,NotEquals,"ne"); 
+    DoBinaryOperator(t,NotEquals,"ne",dest); 
     break;
   case TOK_DOTTIMES: 
-    retval = DoBinaryOperator(t,DotMultiply,"times"); 
+    DoBinaryOperator(t,DotMultiply,"times",dest); 
     break;
   case TOK_DOTRDIV: 
-    retval = DoBinaryOperator(t,DotRightDivide,"rdivide"); 
+    DoBinaryOperator(t,DotRightDivide,"rdivide",dest); 
     break;
   case TOK_DOTLDIV: 
-    retval = DoBinaryOperator(t,DotLeftDivide,"ldivide"); 
+    DoBinaryOperator(t,DotLeftDivide,"ldivide",dest); 
     break;
   case TOK_UNARY_MINUS: 
-    retval = DoUnaryOperator(t,Negate,"uminus"); 
+    DoUnaryOperator(t,Negate,"uminus",dest); 
     break;
   case TOK_UNARY_PLUS: 
-    retval = DoUnaryOperator(t,Plus,"uplus"); 
+    DoUnaryOperator(t,Plus,"uplus",dest); 
     break;
   case '~': 
-    retval = DoUnaryOperator(t,Not,"not"); 
+    DoUnaryOperator(t,Not,"not",dest); 
     break;
   case '^': 
-    retval = DoBinaryOperator(t,Power,"mpower"); 
+    DoBinaryOperator(t,Power,"mpower",dest); 
     break;
   case TOK_DOTPOWER: 
-    retval = DoBinaryOperator(t,DotPower,"power"); 
+    DoBinaryOperator(t,DotPower,"power",dest); 
     break;
   case '\'': 
-    retval = DoUnaryOperator(t,Transpose,"ctranspose"); 
+    DoUnaryOperator(t,Transpose,"ctranspose",dest); 
     break;
   case TOK_DOTTRANSPOSE: 
-    retval = DoUnaryOperator(t,DotTranspose,"transpose"); 
+    DoUnaryOperator(t,DotTranspose,"transpose",dest); 
     break;
   case '@':
     {
@@ -779,13 +784,12 @@ Array Interpreter::expression(const tree &t) {
       if (!lookupFunction(t.first().text(),val))
 	throw Exception("unable to resolve " + t.first().text() + 
 			" to a function call");
-      retval = Array::funcPtrConstructor(val);
+      *dest = Array::funcPtrConstructor(val);
       break;
     }
   default:
     throw Exception("Unrecognized expression!");
   }
-  return retval;
 }
 
 //!

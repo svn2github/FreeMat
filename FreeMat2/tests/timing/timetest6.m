@@ -18,7 +18,38 @@
 % Run time for case 17 is 0.708904 vs 0.323746 , 200016.100000 objects copied
 % Run time for case 18 is 0.526946 vs 0.233305 , 100016.200000 objects copied
 %
-
+%
+%
+% I want to optimize 
+%  X(i,j) = expression
+% If X appears on the right hand side, we have a bit of a problem.
+%
+% So I have concluded:
+%   1. Ref counting is OK
+%   2. Assignment statements need to be improved
+%   3. Expressions need a destination (generally)
+%   4. In (e.g.) an Add expression, we have to check
+%
+%   Add(A, B, *C)
+% 
+%   If (A == C) or (B == C), then we really want an Increment operator.
+%
+%   Should this be detected a level up in the code?
+%
+%   I.e., can we simply do:
+%
+%   M = M + 1 --> Inc(M)
+% 
+%   After all, I suspect that M = 3+4-(7+M) does not map to Inc(M)
+%
+%   Besides, consider:
+%
+%    M = (3 + M) + (5 - M)
+%  
+%   Here we _have_ to make a copy of M. So really the ref counting scheme
+%   is fine.  We just need to do some work to recognize
+%   increment/decrement and other operators.
+%
 function timetest6(countflag)
   runcount = 10;
   if (~exist('countflag')) countflag = 1; end

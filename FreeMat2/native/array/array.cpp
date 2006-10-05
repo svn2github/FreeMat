@@ -4,6 +4,51 @@
 // The new array class would replace Array, and is a "smart" pointer to
 // a memory 
 
+//
+//  One way to improve the performance of things is to have a new paradigm
+//  for functions....
+//
+//   Adds a+b-->c
+//
+//   void add(const array &a, const array &b, array c)
+//
+//   y = x + c - d
+//
+//   Having a destination for the add is nice... but not necessarily practical
+//   for complex expressions.
+//
+//   t = x + c
+//   t = t - d
+//   y = t
+//   
+//   A better way to dice this expression is
+//
+//   t = c - d
+//   y = x + t
+//
+//   Which is nice in that only one temporary array is created.  
+//
+//   But it is still not fully efficient.  
+//
+//   Could the current code be preserved?  What if we had something like:
+//
+//   add(const array &a, const array &b, array *c)
+//
+//   and... hmmmmm...
+//
+//   
+
+//
+//  One idea - each array has an "alias" bit.
+//  No... that won't work.
+//
+//  Each datablock maintains a linked list of arrays that
+// point to it.  If we need to make a modification, we 
+// walk the list.  Anyone who is pointing to this datablock
+// can then be polled.  
+//
+// Suppose we have 
+//  
 #include "array.hpp"
 #include <string.h>
 

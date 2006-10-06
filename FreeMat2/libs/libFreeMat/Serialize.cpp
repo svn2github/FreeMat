@@ -551,12 +551,12 @@ void Serialize::getArray(Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    stringVector fnames;
+    stringVector *fnames = new stringVector;
     int ncount(getInt());
     int i;
     for (i=0;i<ncount;i++) {
       char *dp = getString();
-      fnames.push_back(dp);
+      fnames->push_back(dp);
       free(dp);
     }
     Array *dp = new Array[elCount*ncount];

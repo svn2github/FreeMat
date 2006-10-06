@@ -2881,6 +2881,7 @@ ArrayVector Array::getFieldAsList(std::string fieldName)  {
   if (isSparse())
     throw Exception("getFieldAsList not supported for sparse arrays.");
   if (isEmpty()) return ArrayVector();
+  if (!dp->fieldNames) return ArrayVector();
   ArrayVector m;
   const Array *qp = (const Array*) dp->getData();
   int N = getLength();
@@ -3433,6 +3434,7 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
   if (isSparse())
     throw Exception("setFieldAsList not supported for sparse arrays.");
   Array *rp = NULL;
+  if (!dp->fieldNames) dp->fieldNames = new stringVector();
   if (isEmpty()) {
     stringVector *names(dp->fieldNames);
     names->push_back(fieldName);

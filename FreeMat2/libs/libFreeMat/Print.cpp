@@ -314,7 +314,7 @@ void PrintArrayClassAndSize(Array A, Interpreter* io) {
   case FM_STRUCT_ARRAY:
     if (A.isUserClass()) {
       io->outputMessage(" ");
-      io->outputMessage(A.getClassName().back().c_str());
+      io->outputMessage(A.getClassName()->back().c_str());
       io->outputMessage(" object");
     } else
       io->outputMessage("  <structure array> ");
@@ -481,18 +481,18 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
     if (Adims.isScalar()) {
       Array *ap;
       ap = (Array *) A.getDataPointer();
-      for (int n=0;n<A.getFieldNames().size();n++) {
+      for (int n=0;n<A.getFieldNames()->size();n++) {
 	io->outputMessage("    ");
-	io->outputMessage(A.getFieldNames()[n].c_str());
+	io->outputMessage(A.getFieldNames()->at(n).c_str());
 	io->outputMessage(": ");
 	ap[n].summarizeCellEntry();
 	io->outputMessage("\n");
       }
     } else {
       io->outputMessage("  Fields\n");
-      for (int n=0;n<A.getFieldNames().size();n++) {
+      for (int n=0;n<A.getFieldNames()->size();n++) {
 	io->outputMessage("    ");
-	io->outputMessage(A.getFieldNames()[n].c_str());
+	io->outputMessage(A.getFieldNames()->at(n).c_str());
 	io->outputMessage("\n");
       }
     }

@@ -61,7 +61,7 @@ void VariablesTool::refresh() {
 	break;
       case FM_STRUCT_ARRAY:
 	if (lookup.isUserClass())
-	  type = QString::fromStdString(lookup.getClassName().back());
+	  type = QString::fromStdString(lookup.getClassName()->back());
 	else
 	  type = "struct";
 	break;

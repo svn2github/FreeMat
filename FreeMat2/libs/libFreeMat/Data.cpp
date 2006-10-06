@@ -25,8 +25,17 @@ int DataMakeCount = 0;
 
 Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, 
 	   stringVector* fields, stringVector* classname): 
-  cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
+  cp(s), owners(1), dimensions(dims), dataClass(aClass) {
   sparse = sparseflag;
+  if (fields)
+    fieldNames = new stringVector(*fields);
+  else
+    fieldNames = NULL;
+  sparse = sparseflag;
+  if (classname)
+    className = new stringVector(*classname);
+  else
+    className = NULL;
   DataMakeCount++;
   refreshDimensionCache();
 } 
@@ -48,9 +57,15 @@ Data* Data::putData(Class aClass, const Dimensions& dims, void *s,
     cp = s;
     dataClass = aClass;
     dimensions = dims;
-    fieldNames = fields;
+    if (fields)
+      fieldNames = new stringVector(*fields);
+    else
+      fieldNames = NULL;
     sparse = sparseflag;
-    className = classname;
+    if (classname)
+      className = new stringVector(*classname);
+    else
+      className = NULL;
     owners = 1;
     refreshDimensionCache();
     return this;
@@ -85,7 +100,7 @@ stringVector* Data::getClassName() const {
 }
 
 bool Data::isUserClass() const {
-  return (!className->empty());
+  return (className && (!className->empty()));
 }
 
 void Data::setDimensions(const Dimensions& dim) {

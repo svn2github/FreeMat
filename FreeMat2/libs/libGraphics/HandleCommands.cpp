@@ -925,10 +925,23 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
     }
   } else if (runtype == 6) {
     // Try to create a large vector, simulate page through it bypassing getVectorSubset
+    // The time in this loop is spent as follows:
+    //8343     13.5247  FreeMat                  Data::Data(Class, Dimensions const&, void*, bool, std::vector<std::string, std::allocator<std::string> > const&, std::vector<std::string, std::allocator<std::string> >)
+    //7434     12.0512  FreeMat                  Dimensions::getElementCount() const
+    //7238     11.7334  FreeMat                  std::vector<std::string, std::allocator<std::string> >::~vector()
+    //6621     10.7332  FreeMat                  Array::Array(Class, Dimensions const&, void*, bool, std::vector<std::string, std::allocator<std::string> > const&, std::vector<std::string, std::allocator<std::string> > const&)
+    //4924      7.9822  FreeMat                  Array::int32Constructor(int)
+    //4145      6.7194  FreeMat                  Data::~Data()
+    //3324      5.3885  FreeMat                  Data::refreshDimensionCache()
+    //2529      4.0997  FreeMat                  Array::~Array()
+    //2052      3.3265  FreeMat                  Malloc(int)
+    //2036      3.3005  FreeMat                  .plt
+    //1906      3.0898  FreeMat                  HDemoFunction(int, std::vector<Array, std::allocator<Array> > const&, Interpreter*)
+    //1563      2.5338  FreeMat                  Array::allocateArray(Class, unsigned int, std::vector<std::string, std::allocator<std::string> > const&)
+    //
     Array I(Array::int32RangeConstructor(1,1,100000,false));
-    for (int m=0;m<100000;m++) {
+    for (int m=0;m<5000000;m++) {
       Array M(Array::int32Constructor(m+1));
-      Array G(Array::int32Constructor(m+1));
     }
   } else if (runtype == 7) {
     // Create a large vector, simulate page through it, without int32Constructor

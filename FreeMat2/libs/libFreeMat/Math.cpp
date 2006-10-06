@@ -1190,7 +1190,7 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
 //c = 1 + b
 //@>
 //!
-void Add(Array A, Array B, Array *C) {
+Array Add(Array A, Array B) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"+");
   // Get a pointer to the function we ultimately need to execute
@@ -1232,9 +1232,7 @@ void Add(Array A, Array B, Array *C) {
 			 B.getSparseDataPointer());
   } else {
     sparse = false;
-    if ((C->getLength() != Clen) || (C->getDataClass() != B.getDataClass()))
-      C->Reconfigure(Cdim,B.getDataClass());
-    Cp = C->getReadWriteDataPointer();
+    Cp = Malloc(Clen*B.getElementSize());
     switch(B.getDataClass()) {
     case FM_INT32:
       addfullreal<int32>(Clen,(int32*) Cp, 

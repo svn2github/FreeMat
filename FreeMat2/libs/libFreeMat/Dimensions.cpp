@@ -81,6 +81,7 @@ int Dimensions::getElementCount() const {
   int retval;
 
   if (length == 0) return 0;
+  if ((length == 2) && (data[0] == 1) && (data[1] == 1)) return 1;
   retval = 1;
   for (int i=0;i<length;i++)
     retval *= data[i];

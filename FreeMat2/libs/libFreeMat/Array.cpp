@@ -156,7 +156,7 @@ inline void Array::deleteContents(void) {
   }   
 }
   
-void* Array::allocateArray(Class type, uint32 length, const stringVector& names) {
+void* Array::allocateArray(Class type, uint32 length, stringVector* names) {
   switch(type) {
   case FM_FUNCPTR_ARRAY: {
     FunctionDef **dp = new FunctionDef*[length];
@@ -171,8 +171,8 @@ void* Array::allocateArray(Class type, uint32 length, const stringVector& names)
     return dp;
   }
   case FM_STRUCT_ARRAY: {
-    Array *dp = new Array[length*names.size()];
-    for (int i=0;i<length*names.size();i++)
+    Array *dp = new Array[length*names->size()];
+    for (int i=0;i<length*names->size();i++)
       dp[i] = Array(FM_DOUBLE);
     return dp;
   }
@@ -502,12 +502,12 @@ void Array::toOrdinalType()  {
  * Compute the ordinal index for a given field name from a
  * structure when the list of field names is given.
  */
-int32 getFieldIndexFromList(std::string fName,const stringVector& fieldNames) {
+int32 getFieldIndexFromList(std::string fName,stringVector* fieldNames) {
   bool foundName = false;
   uint32 i;
   i = 0;
-  while (i<fieldNames.size() && !foundName) {
-    foundName = (fieldNames[i] == fName);
+  while (i<fieldNames->size() && !foundName) {
+    foundName = (fieldNames->at(i) == fName);
     if (!foundName) i++;
   }
   if (foundName) 
@@ -524,6 +524,40 @@ int32 Array::getFieldIndex(std::string fName) {
   return getFieldIndexFromList(fName,dp->fieldNames);
 }
 
+static int prev_Data_count = 0;
+static Data *prev_Data[10];
+
+Data* Array::GetDataInstance(Class type, const Dimensions& dims, void* data, bool sparse, 
+			     stringVector* fnames, stringVector* classname) {
+  if (!prev_Data_count)
+    return new Data(type, dims, data, sparse, fnames, classname);
+  else {
+    Data *dp = prev_Data[prev_Data_count-1];
+    dp->dataClass = type;
+    dp->sparse = sparse;
+    dp->dimensions = dims;
+    dp->owners = 1;
+    dp->cp = data;
+    dp->fieldNames = fnames;
+    dp->className = classname;
+    dp->refreshDimensionCache();
+    prev_Data[prev_Data_count-1] = NULL;
+    prev_Data_count--;
+    return dp;
+  }
+  return NULL;
+}
+
+void Array::ReleaseDataInstance(Data *dp) {
+  if (prev_Data_count > 10)
+    delete dp;
+  else {
+    dp->freeDataBlock();
+    prev_Data[prev_Data_count] = dp;
+    prev_Data_count++;
+  }
+}
+
 Array::Array() {
   dp = NULL;
 }
@@ -532,17 +566,16 @@ Array::Array() {
  * Create a variable with the specified contents.
  */
 Array::Array(Class type, const Dimensions& dims, void* data, bool sparse, 
-	     const stringVector& fnames, const stringVector& classname) {
-  dp = new Data(type, dims, data, sparse, fnames, classname);
+	     stringVector* fnames, stringVector* classname) {
+  dp = GetDataInstance(type, dims, data, sparse, fnames, classname);
 }
 
 Array::Array(Class type, const Dimensions& dims) {
-  dp = new Data(type, dims, allocateArray(type,dims.getElementCount()), false, stringVector(), stringVector());
+  dp = GetDataInstance(type, dims, allocateArray(type,dims.getElementCount()), false, NULL, NULL);
 }
 
 Array::Array(Class type) {
-  Dimensions dims;
-  dp = new Data(type, dims, NULL);
+  dp = GetDataInstance(type,Dimensions(),NULL,false,NULL,NULL);
 }
 
 /**
@@ -552,8 +585,8 @@ Array::~Array() {
   if (dp) {
     int m;
     m = dp->deleteCopy();
-    if (m <= 1)
-      delete dp;
+    if (m <= 1) 
+      ReleaseDataInstance(dp);
     dp = NULL;
   }   
 }
@@ -587,14 +620,14 @@ bool Array::isUserClass() const {
     return false;
 }
 
-stringVector Array::getClassName() const {
+stringVector* Array::getClassName() const {
   if (dp)
     return dp->getClassName();
   else
-    return stringVector();
+    return NULL;
 }
 
-void Array::setClassName(stringVector cname) {
+void Array::setClassName(stringVector* cname) {
   if (getDataClass() != FM_STRUCT_ARRAY)
     throw Exception("cannot set class name for non-struct array");
   ensureSingleOwner();
@@ -615,11 +648,11 @@ Dimensions Array::getDimensions() const {
     return Dimensions(0,0);
 }
 
-stringVector Array::getFieldNames() const {
+stringVector* Array::getFieldNames() const {
   if (dp)
     return dp->fieldNames;
   else
-    return stringVector();
+    return NULL;
 }
 
 int Array::getDimensionLength(int t) const {
@@ -917,7 +950,7 @@ int Array::getElementSize() const {
   case FM_CELL_ARRAY:
     return sizeof(Array);
   case FM_STRUCT_ARRAY:
-    return (sizeof(Array)*dp->fieldNames.size());
+    return (sizeof(Array)*dp->fieldNames->size());
   case FM_LOGICAL:
     return sizeof(logical);
   case FM_UINT8:
@@ -1269,7 +1302,7 @@ void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex,
     {
       const Array* sp = (const Array*) dp->getData();
       Array* qp = (Array*) dstPtr;
-      int fieldCount(dp->fieldNames.size());
+      int fieldCount(dp->fieldNames->size());
       for (int i=0;i<count;i++)
 	for (int j=0;j<fieldCount;j++) 
 	  qp[(dstIndex+i)*fieldCount+j] = sp[(srcIndex+i)*fieldCount+j];
@@ -1315,7 +1348,7 @@ void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex,
  *    - logical dest = (real(source) == 0 && imag(source) == 0) ? 0:1
  *    - real dest = real(source)
  */
-void Array::promoteType(Class dstClass, stringVector fNames) {
+void Array::promoteType(Class dstClass, stringVector* fNames) {
   int elCount;
   int elSize;
   void *dstPtr;
@@ -1343,7 +1376,7 @@ void Array::promoteType(Class dstClass, stringVector fNames) {
     if (dstClass == FM_STRUCT_ARRAY) {
       // TODO: Generalize this code to allow for one more field in destination
       // than in source...
-      if (dp->fieldNames.size() >  fNames.size())
+      if (dp->fieldNames->size() >  fNames->size())
 	throw Exception("Cannot combine structures with different fields if the combination requires fields to be deleted from one of the structures.");
       // We are promoting a struct array to a struct array.
       // To do so, we have to make sure that the field names work out.
@@ -1353,25 +1386,25 @@ void Array::promoteType(Class dstClass, stringVector fNames) {
       int matchCount = 0;
       int ndx;
       int i;
-      for (i=0;i<fNames.size();i++) {
-	ndx = getFieldIndex(fNames[i]);
+      for (i=0;i<fNames->size();i++) {
+	ndx = getFieldIndex(fNames->at(i));
 	if (ndx == -1)
 	  extraCount++;
 	else
 	  matchCount++;
       }
       // Now, matchCount should be equal to the size of fieldNames
-      if (matchCount != dp->fieldNames.size())
+      if (matchCount != dp->fieldNames->size())
 	throw Exception("Cannot combine structures with different fields if the combination requires fields to be deleted from one of the structures.");
       void *dstPtr = allocateArray(dp->dataClass,getLength(),fNames);
       const Array *src_rp = (const Array*) dp->getData();
       Array * dst_rp = (Array*) dstPtr;
       int elCount(getLength());
-      int fieldCount(dp->fieldNames.size());
-      int newFieldCount(fNames.size());;
+      int fieldCount(dp->fieldNames->size());
+      int newFieldCount(fNames->size());;
       // Now we have to copy our existing fields into the new order...
       for (i=0;i<fieldCount;i++) {
-	int newNdx = getFieldIndexFromList(dp->fieldNames[i],fNames);
+	int newNdx = getFieldIndexFromList(dp->fieldNames->at(i),fNames);
 	for (int j=0;j<elCount;j++)
 	  dst_rp[j*newFieldCount + newNdx] = src_rp[j*fieldCount + i];
       }
@@ -1696,9 +1729,7 @@ break;
 #undef caseMacro
 
 void Array::promoteType(Class dstClass) {
-  stringVector dummy;
-
-  promoteType(dstClass,dummy);
+  promoteType(dstClass,NULL);
 }
 
 /********************************************************************************
@@ -1789,11 +1820,9 @@ Array Array::uint32Constructor(uint32 aval) {
 }
 
 Array Array::int32Constructor(int32 aval) {
-  Dimensions dim;
-  dim.makeScalar();
   int32 *data = (int32 *) allocateArray(FM_INT32,1);
   *data = aval;
-  return Array(FM_INT32,dim,data);
+  return Array(FM_INT32,Dimensions(1,1),data);
 }
 
 Array Array::uint64Constructor(uint64 aval) {
@@ -2155,7 +2184,7 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
   Dimensions row_dims;
   Class maxType, minType;
   Class retType;
-  stringVector retNames;
+  stringVector *retNames;
   Dimensions retDims;
   void *dstPtr = NULL;
   bool sparseArg = false;
@@ -2423,7 +2452,7 @@ Array Array::cellConstructor(ArrayMatrix& m) {
   }
 }
 
-Array Array::structConstructor(stringVector fNames, ArrayVector& values)  {
+Array Array::structConstructor(stringVector *fNames, ArrayVector& values)  {
   const Array* rptr;
   Dimensions dims;
   bool nonSingularFound;
@@ -2431,7 +2460,7 @@ Array Array::structConstructor(stringVector fNames, ArrayVector& values)  {
   Array *qp = NULL;
     
   try {
-    if (fNames.size() != values.size())
+    if (fNames->size() != values.size())
       throw Exception("Number of field names must match number of values in structure constructor.");
     /**
      * First, we have to make sure that each entry of "values" have 
@@ -2483,7 +2512,7 @@ Array Array::structConstructor(stringVector fNames, ArrayVector& values)  {
     
     offset = 0;
     for (j=0;j<length;j++)
-      for (i=0;i<fNames.size();i++) {
+      for (i=0;i<fNames->size();i++) {
 	Array rval = values[i];
 	if (rval.isSparse())
 	  throw Exception("sparse arrays not supported for struct constructor.");
@@ -2780,7 +2809,7 @@ Array Array::getNDimSubset(ArrayVector& index)  {
     case FM_STRUCT_ARRAY: 
       getNDimSubsetNumericDispatchBurst<Array>(colonIndex,(const Array*) getDataPointer(),
 					       (Array*) qp,outDimsInt,srcDimsInt,
-					       indx, L, dp->fieldNames.size());
+					       indx, L, dp->fieldNames->size());
       break;
     }
     Free(indx);
@@ -2855,7 +2884,7 @@ ArrayVector Array::getFieldAsList(std::string fieldName)  {
   ArrayVector m;
   const Array *qp = (const Array*) dp->getData();
   int N = getLength();
-  int fieldCount = dp->fieldNames.size();
+  int fieldCount = dp->fieldNames->size();
   int ndx = getFieldIndex(fieldName);
   if (ndx < 0)
     throw Exception(std::string("Reference to non-existent field ") + fieldName);
@@ -3002,7 +3031,7 @@ void Array::setVectorSubset(Array& index, Array& data) {
   if (!isEmpty() &&
       (data.getDataClass() == FM_STRUCT_ARRAY) &&
       (getDataClass() == FM_STRUCT_ARRAY)) {
-    if (data.dp->fieldNames.size() > dp->fieldNames.size())
+    if (data.dp->fieldNames->size() > dp->fieldNames->size())
       promoteType(FM_STRUCT_ARRAY,data.dp->fieldNames);
     else
       data.promoteType(FM_STRUCT_ARRAY,dp->fieldNames);
@@ -3132,7 +3161,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
     if (!isEmpty() &&
 	(data.getDataClass() == FM_STRUCT_ARRAY) &&
 	(getDataClass() == FM_STRUCT_ARRAY)) {
-      if (data.dp->fieldNames.size() > dp->fieldNames.size())
+      if (data.dp->fieldNames->size() > dp->fieldNames->size())
 	promoteType(FM_STRUCT_ARRAY,data.dp->fieldNames);
       else
 	data.promoteType(FM_STRUCT_ARRAY,dp->fieldNames);
@@ -3273,7 +3302,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
       setNDimSubsetNumericDispatchBurst<Array>(colonIndex,(Array*) qp,
 					       (const Array*) data.getDataPointer(),
 					       outDimsInt,srcDimsInt,
-					       indx, L, dp->fieldNames.size(),advance);
+					       indx, L, dp->fieldNames->size(),advance);
       break;
     }
     Free(indx);
@@ -3405,8 +3434,8 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
     throw Exception("setFieldAsList not supported for sparse arrays.");
   Array *rp = NULL;
   if (isEmpty()) {
-    stringVector names(dp->fieldNames);
-    names.push_back(fieldName);
+    stringVector *names(dp->fieldNames);
+    names->push_back(fieldName);
     promoteType(FM_STRUCT_ARRAY,names);
     Dimensions a;
     a[0] = 1;
@@ -3423,7 +3452,7 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
   int field_ndx = getFieldIndex(fieldName);
   if (field_ndx == -1)
     field_ndx = insertFieldName(fieldName);
-  int fieldCount = dp->fieldNames.size();
+  int fieldCount = dp->fieldNames->size();
   Array *qp = (Array*) getReadWriteDataPointer();
   for (int i=0;i<indexLength;i++) {
     qp[i*fieldCount+field_ndx] = data.front();
@@ -3439,11 +3468,11 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
 int Array::insertFieldName(std::string fieldName) {
   if (isSparse())
     throw Exception("insertFieldName not supported for sparse arrays.");
-  stringVector names(dp->fieldNames);
-  names.push_back(fieldName);
+  stringVector *names(dp->fieldNames);
+  names->push_back(fieldName);
   const Array* qp = (const Array*) dp->getData();
   Array *rp = (Array*) allocateArray(dp->dataClass,getLength(),names);
-  int fN = names.size();
+  int fN = names->size();
   for (int i=0;i<fN-1;i++)
     rp[i] = qp[i];
   dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,
@@ -3756,7 +3785,7 @@ void Array::summarizeCellEntry() const {
       dp->dimensions.printMe(m_eval);
       if (isUserClass()) {
 	m_eval->outputMessage(" ");
-	m_eval->outputMessage(getClassName().back().c_str());
+	m_eval->outputMessage(getClassName()->back().c_str());
 	m_eval->outputMessage(" object");
       } else
 	m_eval->outputMessage(" struct array");
@@ -4024,7 +4053,7 @@ int32 Array::nnz() const {
   case FM_CELL_ARRAY:
     return DoCountNNZReal<void*>(dp->getData(),getLength());
   case FM_STRUCT_ARRAY:
-    return DoCountNNZReal<void*>(dp->getData(),getLength()*dp->fieldNames.size());
+    return DoCountNNZReal<void*>(dp->getData(),getLength()*dp->fieldNames->size());
   case FM_FUNCPTR_ARRAY:
     return DoCountNNZReal<void*>(dp->getData(),getLength());
   }

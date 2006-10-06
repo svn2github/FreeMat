@@ -56,8 +56,8 @@ public:
   ~stackentry();
 };
 
-typedef void (*BinaryFunc)(Array, Array, Array*);
-typedef void (*UnaryFunc)(Array, Array*);
+typedef Array (*BinaryFunc)(Array, Array);
+typedef Array (*UnaryFunc)(Array);
 
 class UserClass;
 
@@ -499,7 +499,7 @@ private:
   /**
    * Evaluate the expression pointed to by the AST t into a variable.
    */
-  void expression(const tree &t, Array *p);
+  Array expression(const tree &t);
   /**
    * Evaluate a unit colon expression.  The AST input should look like:
    *   :

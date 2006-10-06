@@ -422,12 +422,12 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    stringVector fnames(dat.getFieldNames());
-    int ncount(fnames.size());
+    stringVector *fnames(dat.getFieldNames());
+    int ncount(fnames->size());
     putInt(ncount);
     int i;
     for (i=0;i<ncount;i++)
-      putString(fnames[i].c_str());
+      putString(fnames->at(i).c_str());
     const Array *dp=((const Array *) dat.getDataPointer());
     for (i=0;i<elCount*ncount;i++)
       putArray(dp[i]);

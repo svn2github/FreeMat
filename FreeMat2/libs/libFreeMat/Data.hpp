@@ -58,11 +58,11 @@ private:
   /**
    * The field names of the array - used only for structure array types.
    */
-  stringVector fieldNames;
+  stringVector *fieldNames;
   /**
    * The class name - only used for user-defined classes
    */
-  stringVector className;
+  stringVector *className;
 
   int m_cache_getElementCount;
   bool m_cache_isScalar;
@@ -77,8 +77,8 @@ private:
    */
   Data(Class aClass, const Dimensions& dims, void *s, 
        bool sparseflag = false, 
-       const stringVector& fields = stringVector(), 
-       stringVector classname = stringVector());
+       stringVector* fields = NULL, 
+       stringVector* classname = NULL);
   /**
    * The destructor.  Calls freeDataBlock member function.
    */
@@ -102,8 +102,8 @@ private:
    */
   Data* putData(Class aClass, const Dimensions& dims, void *s, 
 		bool sparseflag = false, 
-		const stringVector& fields = stringVector(),
-		stringVector classname = stringVector());
+		stringVector* fields = NULL,
+		stringVector* classname = NULL);
   /**
    * Decrement the reference count (owners) by one.
    */
@@ -119,7 +119,7 @@ private:
   /**
    * Get the field names for the data block
    */
-  const stringVector& getFieldNames() const;
+  stringVector* getFieldNames() const;
   /**
    * Return true if this is a user-defined class
    */
@@ -127,7 +127,7 @@ private:
   /**
    * Return name of user-defined class
    */
-  stringVector getClassName() const;
+  stringVector* getClassName() const;
   /**
    * Set the dimensions for the data block.
    */
@@ -135,7 +135,7 @@ private:
   /**
    * Set the field names for the data block.
    */
-  void setFieldNames(const stringVector& fields);
+  void setFieldNames(stringVector* fields);
   /**
    * Get a read-write pointer to the data. 
    */

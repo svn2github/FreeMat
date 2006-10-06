@@ -24,7 +24,7 @@
 int DataMakeCount = 0;
 
 Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, 
-	   const stringVector& fields, stringVector classname): 
+	   stringVector* fields, stringVector* classname): 
   cp(s), owners(1), dimensions(dims), fieldNames(fields), dataClass(aClass), className(classname) {
   sparse = sparseflag;
   DataMakeCount++;
@@ -41,8 +41,8 @@ Data* Data::getCopy() {
 }
 
 Data* Data::putData(Class aClass, const Dimensions& dims, void *s, 
-		    bool sparseflag, const stringVector& fields, 
-		    stringVector classname) {
+		    bool sparseflag, stringVector* fields, 
+		    stringVector* classname) {
   if ((owners <= 1)) {
     freeDataBlock();
     cp = s;
@@ -76,23 +76,23 @@ const Dimensions& Data::getDimensions() const {
   return dimensions;
 }
 
-const stringVector& Data::getFieldNames() const {
+stringVector* Data::getFieldNames() const {
   return fieldNames;
 }
 
-stringVector Data::getClassName() const {
+stringVector* Data::getClassName() const {
   return className;
 }
 
 bool Data::isUserClass() const {
-  return (!className.empty());
+  return (!className->empty());
 }
 
 void Data::setDimensions(const Dimensions& dim) {
   dimensions = dim;
 }
 
-void Data::setFieldNames(const stringVector& fields) {
+void Data::setFieldNames(stringVector* fields) {
   fieldNames = fields;
 }
 

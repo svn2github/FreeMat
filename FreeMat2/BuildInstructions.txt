@@ -58,3 +58,4 @@ cp AMD/Lib/libamd.a /usr/local/lib/.
 cp AMD/Include/*.h /usr/local/include/.
 cp UMFPACK/Lib/libumfpack.a /usr/local/lib/.
 cp UMFPACK/Include/*.h /usr/local/include/.
+cp UFconfig/UFconfig.h /usr/local/include/.

@@ -104,6 +104,9 @@ private:
    * Delete our contents.
    */
   void deleteContents(void);
+  Data* GetDataInstance(Class type, const Dimensions& dims, void* data, bool sparse, 
+			stringVector* fnames, stringVector* classname);
+  void ReleaseDataInstance(Data *dp);
 public:
   /** Compute the maximum index.
    * This computes the maximum value of the array as an index (meaning
@@ -116,7 +119,7 @@ public:
   /**
    * Allocate an array.
    */
-  static void* allocateArray(Class, uint32 length,const stringVector& names = stringVector());
+  static void* allocateArray(Class, uint32 length,stringVector* names = NULL);
   /** Convert us to an index type
    * Convert the current object to an ordinal one.  This has different
    * meanings for different data types.  
@@ -154,8 +157,7 @@ public:
    * Create an Array with the specified contents.
    */
   Array(Class,const Dimensions& ,void*,bool sparse = false, 
-	const stringVector& = stringVector(), 
-	const stringVector& classname = stringVector());
+	stringVector* fieldNames = NULL, stringVector* classname = NULL);
   /**
    * Create an Array with a default allocation of space - only useful for P.O.D. arrays
    */
@@ -185,11 +187,11 @@ public:
   /**
    * Return name of user-defined class
    */
-  stringVector getClassName() const;
+  stringVector* getClassName() const;
   /**
    * Set classname tag - implies this is a structure array.
    */
-  void setClassName(stringVector);
+  void setClassName(stringVector*);
   /**
    * Get a copy of our dimensions vector.
    */
@@ -197,7 +199,7 @@ public:
   /**
    * Get the fieldnames.
    */
-  stringVector getFieldNames() const;
+  stringVector* getFieldNames() const;
   /**
    * Get our length along the given dimension.
    */
@@ -387,7 +389,7 @@ public:
    *   - we try to convert a structure-array to a non-structure array type.
    *   - we try to convert any numerical types to a reference type.
    */
-  void promoteType(Class new_type, stringVector fieldNames);
+  void promoteType(Class new_type, stringVector* fieldNames);
   /**
    * Promote our array to a new type.  This is a shortcut for when new_type is not
    * FM_STRUCT_ARRAY, so that the fieldNames argument is not needed.
@@ -563,7 +565,7 @@ public:
    *    the number of entries in the values vector
    *  - the non-scalar values do not agree in dimension
    */
-  static Array structConstructor(stringVector fNames, ArrayVector& values);
+  static Array structConstructor(stringVector* fNames, ArrayVector& values);
   /**
    * Get a subset of an Array.  This is for vector-indexing, meaning that
    * the argument is assumed to refer to the elements in their order as a vector.

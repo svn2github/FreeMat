@@ -13,6 +13,7 @@ private:
   vector<T> data;
   int count;
   friend class RefVec<T>;
+  RefVecNode() : count(0) {}
 };
 
 template <class T>

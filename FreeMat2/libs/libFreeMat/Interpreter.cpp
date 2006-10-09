@@ -2208,7 +2208,7 @@ Array Interpreter::assignExpression(const tree &t, ArrayVector &value,
     if ((value.size() > 1) && !multipleLHS)
       throw Exception("to many values in the rhs to match the left hand side assignment");
     Array retval(value[0]);
-    value.erase(value.begin());
+    value.pop_front();
     return retval;
   }
   // Get the variable in question
@@ -3789,7 +3789,7 @@ void Interpreter::subsassignParen(Array *r, const tree &t, ArrayVector& value) {
     r->setVectorSubset(m[0],value[0]);
   else 
     r->setNDimSubset(m,value[0]);
-  value.erase(value.begin());
+  value.pop_front();
   return;
 }
 

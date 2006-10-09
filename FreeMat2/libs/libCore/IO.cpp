@@ -517,9 +517,9 @@ ArrayVector FreadFunction(int nargout, const ArrayVector& arg) {
   // Convert dp to a Dimensions
   Dimensions dims(dimCount);
   for (int j=0;j<dimCount;j++)
-    dims[j] = (int) dp[j];
+    dims.set(j,(int) dp[j]);
   if (dimCount == 1)
-    dims[1] = 1;
+    dims.set(1,1);
   ArrayVector retval;
   retval.push_back(Array::Array(dataClass,dims,qp));
   return retval;
@@ -1489,7 +1489,7 @@ ArrayVector FprintfFunction(int nargout, const ArrayVector& arg) {
   if (!format.isString())
     throw Exception("fprintf format argument must be a string");
   ArrayVector argcopy(arg);
-  argcopy.erase(argcopy.begin());
+  argcopy.pop_front();
   char *op = xprintfFunction(nargout,argcopy);
   char *buff = (char*) malloc(strlen(op)+1);
   convertEscapeSequences(buff,op);

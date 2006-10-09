@@ -39,7 +39,7 @@ extern "C" {
     wp = (double*) wval.getDataPointer();
     memcpy(xp,x,sizeof(double)*(*n));
     ArrayVector tocall(params);
-    tocall.insert(tocall.begin(),xval);
+    tocall.push_front(xval);
     ArrayVector cval(a_funcDef->evaluateFunction(a_eval,tocall,1));
     if (cval.size() == 0)
       throw Exception("function to be optimized does not return any outputs!");
@@ -126,10 +126,14 @@ ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   double tol = tolc.getContentsAsDoubleScalar();
   // Copy the arg array
   params = arg;
-  params.erase(params.begin(),params.begin()+5);
+  params.pop_front();
+  params.pop_front();
+  params.pop_front();
+  params.pop_front();
+  params.pop_front();
   // Test to make sure the function works....
   ArrayVector tocall(params);
-  tocall.insert(tocall.begin(),xinit);
+  tocall.push_front(xinit);
   ArrayVector cval(funcDef->evaluateFunction(eval,tocall,1));
   if (cval.size() == 0)
     throw Exception("function to be optimized does not return any outputs!");
@@ -162,7 +166,7 @@ ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   Free(xbuffer);
   Free(ybuffer);
   tocall = params;
-  tocall.insert(tocall.begin(),xval);
+  tocall.push_front(xval);
   cval = funcDef->evaluateFunction(eval,tocall,1);
   ArrayVector retval;
   retval.push_back(xval);

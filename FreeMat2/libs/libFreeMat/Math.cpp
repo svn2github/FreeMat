@@ -2804,9 +2804,7 @@ Array Multiply(Array A, Array B) throw(Exception){
   Acols = A.getDimensionLength(1);
   Bcols = B.getDimensionLength(1);
 
-  Dimensions outDim(2);
-  outDim[0] = Arows;
-  outDim[1] = Bcols;
+  Dimensions outDim(Arows,Bcols);
   
   // Check for sparse multiply case
   if (A.isSparse() && !B.isSparse())
@@ -2974,9 +2972,7 @@ Array LeftDivide(Array A, Array B) throw(Exception) {
     // Make sure A is either double or dcomplex
     if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
       throw Exception("FreeMat currently only supports A\\b for double and dcomplex matrices A");
-    Dimensions outDim;
-    outDim[0] = Arows;
-    outDim[1] = Bcols;
+    Dimensions outDim(Arows,Bcols);
     return Array(A.getDataClass(),outDim,
 		 SparseSolveLinEq(A.getDataClass(),Arows,Acols,A.getSparseDataPointer(),
 				  Brows,Bcols,B.getDataPointer()),false);
@@ -3010,8 +3006,7 @@ Array LeftDivide(Array A, Array B) throw(Exception) {
 			 Arows,Bcols,(double*)Cp,
 			 (double*)A.getReadWriteDataPointer(),
 			 (double*)B.getReadWriteDataPointer());
-    outDim[0] = Arows;
-    outDim[1] = Bcols;
+    outDim = Dimensions(Arows,Bcols);
   } else {
     // Rectangular matrix case - A is M x N, B must be M x K - use
     // lease squares equation solver.  Output is N x K.
@@ -3036,8 +3031,7 @@ Array LeftDivide(Array A, Array B) throw(Exception) {
 			   Arows,Acols,Bcols,(double*)Cp,
 			   (double*)A.getReadWriteDataPointer(),
 			   (double*)B.getReadWriteDataPointer());
-    outDim[0] = Acols;
-    outDim[1] = Bcols;
+    outDim = Dimensions(Acols,Bcols);
   }
   return Array(A.getDataClass(),outDim,Cp);
 }
@@ -3124,9 +3118,7 @@ void EigenDecomposeCompactSymmetric(Array A, Array& D) {
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = 1;
+  Dimensions Vdims(N,1);
 
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
@@ -3136,9 +3128,7 @@ void EigenDecomposeCompactSymmetric(Array A, Array& D) {
   }
 
   // Select the eigenvector decomposition routine based on A's type
-  Dimensions VDims(2);
-  VDims[0] = N;
-  VDims[1] = 1;
+  Dimensions VDims(N,1);
   switch (Aclass) {
   case FM_FLOAT: 
     {
@@ -3205,9 +3195,7 @@ void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D) {
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = N;
+  Dimensions Vdims(N,N);
 
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
@@ -3308,9 +3296,7 @@ void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag) {
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = N;
+  Dimensions Vdims(N,N);
 
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
@@ -3507,9 +3493,7 @@ void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag) {
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = 1;
+  Dimensions Vdims(N,1);
 
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
@@ -3622,9 +3606,7 @@ bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D) {
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = 1;
+  Dimensions Vdims(N,1);
 
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
@@ -3642,9 +3624,7 @@ bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D) {
   }
 
   // Select the eigenvector decomposition routine based on A's type
-  Dimensions VDims(2);
-  VDims[0] = N;
-  VDims[1] = 1;
+  Dimensions VDims(N,1);
   switch (Aclass) {
   case FM_FLOAT: 
     {
@@ -3730,9 +3710,7 @@ bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = N;
+  Dimensions Vdims(N,N);
 
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
@@ -3859,9 +3837,7 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) 
     throw Exception("Cannot eigendecompose a non-square matrix.");
   int N = A.getDimensionLength(0);
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = N;
+  Dimensions Vdims(N,N);
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
   if (Aclass < FM_FLOAT) {
@@ -4060,9 +4036,7 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
     throw Exception("Cannot eigendecompose a non-square matrix.");
   int N = A.getDimensionLength(0);
   // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(2);
-  Vdims[0] = N;
-  Vdims[1] = 1;
+  Dimensions Vdims(N,1);
   // Handle the type of A - if it is an integer type, then promote to double
   Aclass = A.getDataClass();
   if (Aclass < FM_FLOAT) {

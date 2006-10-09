@@ -1722,12 +1722,15 @@ void TrimEmpties(ArrayMatrix &m) {
     bool emptiesFound = true;
     while (emptiesFound) {
       emptiesFound = false;
-      for (ArrayVector::iterator j = i->begin(); j != i->end(); j++)
-	if (j->isEmpty()) {
+      int j=0;
+      while (j<i->size()) {
+	if (i->at(j).isEmpty()) {
 	  i->erase(j);
 	  emptiesFound = true;
 	  break;
-	}
+	} else
+	  j++;
+      }
     }
   }
   bool emptiesFound = true;
@@ -1804,9 +1807,9 @@ void* SparseMatrixConstructor(Class dclass, int cols,
   // Precondition the arrays by converting to sparse and to
   // the output type
   for (ArrayMatrix::iterator i=m.begin();i != m.end();i++) {
-    for (ArrayVector::iterator j= i->begin(); j != i->end();j++) {
-      j->promoteType(dclass);
-      j->makeSparse();
+    for (int j=0;j<i->size();j++) {
+      i->at(j).promoteType(dclass);
+      i->at(j).makeSparse();
     }
   }
   // Now, we can construct the output array

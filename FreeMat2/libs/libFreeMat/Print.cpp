@@ -518,7 +518,7 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
 	snprintf(msgBuffer,MSGBUFLEN,"(:,:");
 	io->outputMessage(msgBuffer);
 	for (int m=2;m<Adims.getLength();m++) {
-	  snprintf(msgBuffer,MSGBUFLEN,",%d",wdims[m]+1);
+	  snprintf(msgBuffer,MSGBUFLEN,",%d",wdims.get(m)+1);
 	  io->outputMessage(msgBuffer);
 	}
 	snprintf(msgBuffer,MSGBUFLEN,") = \n");

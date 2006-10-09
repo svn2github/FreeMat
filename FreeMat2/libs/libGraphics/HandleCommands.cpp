@@ -239,7 +239,8 @@ ArrayVector HAxesFunction(int nargout, const ArrayVector& arg) {
     while (t.size() >= 2) {
       std::string propname(ArrayToString(t[0]));
       fp->LookupProperty(propname)->Set(t[1]);
-      t.erase(t.begin(),t.begin()+2);
+      t.pop_front();
+      t.pop_front();
     }
     // Get the current figure
     HandleFigure *fig = CurrentFig();
@@ -400,7 +401,8 @@ unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
 	throw Exception(std::string("Got error ") + std::string(e.getMessageCopy()) + std::string(" for property ") + propname);
       }
     }
-    t.erase(t.begin(),t.begin()+2);
+    t.pop_front();
+    t.pop_front();
   }
   if (autoParentGiven) {
     HandleFigure *fig = CurrentFig();
@@ -940,7 +942,7 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
     //1563      2.5338  FreeMat                  Array::allocateArray(Class, unsigned int, std::vector<std::string, std::allocator<std::string> > const&)
     //
     Array I(Array::int32RangeConstructor(1,1,100000,false));
-    for (int m=0;m<5000000;m++) {
+    for (int m=0;m<1000000;m++) {
       Array M(Array::int32Constructor(m+1));
     }
   } else if (runtype == 7) {

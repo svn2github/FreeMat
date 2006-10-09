@@ -94,13 +94,13 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
     t = arg[1];
     if (arg.size() == 2) {
       // If all scalars and only one argument - we want a square output matrix
-      dims[0] = t.getContentsAsIntegerScalar();
-      dims[1] = dims[0];
+      dims.set(0,t.getContentsAsIntegerScalar());
+      dims.set(1,dims.get(0));
     } else {
       // If all scalars and and multiple arguments, we count dimensions
       for (i=1;i<arg.size();i++) {
 	t = arg[i];
-	dims[i-1] = t.getContentsAsIntegerScalar();
+	dims.set(i-1,t.getContentsAsIntegerScalar());
       }
 
     }
@@ -111,12 +111,12 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
     t.promoteType(FM_UINT32);
     dp = (int*) t.getDataPointer();
     for (i=0;i<t.getLength();i++)
-      dims[i] = dp[i];
+      dims.set(i,dp[i]);
   }
   bool allPositive;
   allPositive = true;
   for (i=0;i<dims.getLength();i++)
-    allPositive &= (dims[i] >= 0);
+    allPositive &= (dims.get(i) >= 0);
   if (!allPositive)
     throw Exception("reshape function requires positive arguments");
   x.reshape(dims);
@@ -241,13 +241,13 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
       t = trim_arg[0];
       if (trim_arg.size() == 1) {
 	// If all scalars and only one argument - we want a square zero matrix
-	dims[0] = t.getContentsAsIntegerScalar();
-	dims[1] = dims[0];
+	dims.set(0,t.getContentsAsIntegerScalar());
+	dims.set(1,dims.get(0));
       } else {
 	// If all scalars and and multiple arguments, we count dimensions
 	for (i=0;i<trim_arg.size();i++) {
 	  t = trim_arg[i];
-	  dims[i] = t.getContentsAsIntegerScalar();
+	  dims.set(i,t.getContentsAsIntegerScalar());
 	}
 	  
       }
@@ -258,12 +258,12 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
       for (i=0;i<t.getLength();i++)
-	dims[i] = dp[i];
+	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
     for (i=0;i<dims.getLength();i++)
-      allPositive &= (dims[i] >= 0);
+      allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Zeros function requires positive arguments");
   }
@@ -324,13 +324,13 @@ ArrayVector CellFunction(int nargout, const ArrayVector& arg) {
       t = arg[0];
       if (arg.size() == 1) {
 	// If all scalars and only one argument - we want a square zero matrix
-	dims[0] = t.getContentsAsIntegerScalar();
-	dims[1] = dims[0];
+	dims.set(0,t.getContentsAsIntegerScalar());
+	dims.set(1,dims.get(0));
       } else {
 	// If all scalars and and multiple arguments, we count dimensions
 	for (i=0;i<arg.size();i++) {
 	  t = arg[i];
-	  dims[i] = t.getContentsAsIntegerScalar();
+	  dims.set(i,t.getContentsAsIntegerScalar());
 	}
 	  
       }
@@ -341,12 +341,12 @@ ArrayVector CellFunction(int nargout, const ArrayVector& arg) {
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
       for (i=0;i<t.getLength();i++)
-	dims[i] = dp[i];
+	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
     for (i=0;i<dims.getLength();i++)
-      allPositive &= (dims[i] >= 0);
+      allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Zeros function requires positive arguments");
   }
@@ -413,13 +413,13 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
       t = arg[0];
       if (arg.size() == 1) {
 	// If all scalars and only one argument - we want a square zero matrix
-	dims[0] = t.getContentsAsIntegerScalar();
-	dims[1] = dims[0];
+	dims.set(0,t.getContentsAsIntegerScalar());
+	dims.set(1,dims.get(0));
       } else {
 	// If all scalars and and multiple arguments, we count dimensions
 	for (i=0;i<arg.size();i++) {
 	  t = arg[i];
-	  dims[i] = t.getContentsAsIntegerScalar();
+	  dims.set(i,t.getContentsAsIntegerScalar());
 	}
 	  
       }
@@ -430,12 +430,12 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
       for (i=0;i<t.getLength();i++)
-	dims[i] = dp[i];
+	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
     for (i=0;i<dims.getLength();i++)
-      allPositive &= (dims[i] >= 0);
+      allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Ones function requires positive arguments");
   }

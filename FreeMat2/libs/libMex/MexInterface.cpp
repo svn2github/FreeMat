@@ -54,7 +54,7 @@ Array ArrayFromMexArrayReal(mxArray *array_ptr) {
   Dimensions dim;
   void *dp;
   for (int i=0;i<array_ptr->number_of_dims;i++)
-    dim[array_ptr->dims[i]];
+    dim.set(i,array_ptr->dims[i]);
   int count = mxGetNumberOfElements(array_ptr);
   switch (array_ptr->classID) {
   case mxUINT32_CLASS:
@@ -113,7 +113,7 @@ Array ArrayFromMexArrayComplex(mxArray *array_ptr) {
   Dimensions dim;
   void *dp;
   for (int i=0;i<array_ptr->number_of_dims;i++)
-    dim[array_ptr->dims[i]];
+    dim.set(i,array_ptr->dims[i]);
   int count = mxGetNumberOfElements(array_ptr);
   if (array_ptr->classID != mxDOUBLE_CLASS) {
     cls = FM_COMPLEX;
@@ -172,7 +172,7 @@ Array ArrayFromMexArray(mxArray *array_ptr) {
   if (array_ptr->classID == mxCELL_CLASS) {
     Dimensions dim;
     for (int i=0;i<array_ptr->number_of_dims;i++)
-      dim[array_ptr->dims[i]];
+      dim.set(i,array_ptr->dims[i]);
     int N = mxGetNumberOfElements(array_ptr);
     mxArray** dp = (mxArray**) array_ptr->realdata;
     Array* cp = new Array[N];
@@ -194,7 +194,7 @@ mxArray* MexArrayFromRealArray(Array array, mxClassID classID) {
   int num_dim = array.getDimensions().getLength();
   int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
   for (int i=0;i<num_dim;i++)
-    dim_vec[i] = array.getDimensions()[i];
+    dim_vec[i] = array.getDimensions().get(i);
   mxArray *ret = mxCreateNumericArray(num_dim,dim_vec,classID,mxREAL);
   fmType *sp = (fmType*) array.getDataPointer();
   mxType *dp = (mxType*) ret->realdata;
@@ -211,7 +211,7 @@ mxArray* MexArrayFromComplexArray(Array array, mxClassID classID) {
   int num_dim = array.getDimensions().getLength();
   int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
   for (int i=0;i<num_dim;i++)
-    dim_vec[i] = array.getDimensions()[i];
+    dim_vec[i] = array.getDimensions().get(i);
   mxArray *ret = mxCreateNumericArray(num_dim,dim_vec,classID,mxCOMPLEX);
   fmType *sp = (fmType*) array.getDataPointer();
   mxType *dp_r = (mxType*) ret->realdata;
@@ -230,7 +230,7 @@ mxArray* MexArrayFromCellArray(Array array) {
   int num_dim = array.getDimensions().getLength();
   int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
   for (int i=0;i<num_dim;i++)
-    dim_vec[i] = array.getDimensions()[i];
+    dim_vec[i] = array.getDimensions().get(i);
   mxArray *ret = mxCreateCellArray(num_dim,dim_vec);
   Array *sp = (Array*) array.getDataPointer();
   mxArray **dp = (mxArray **) ret->realdata;

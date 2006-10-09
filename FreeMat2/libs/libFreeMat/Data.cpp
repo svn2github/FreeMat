@@ -37,7 +37,6 @@ Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag,
   else
     className = NULL;
   DataMakeCount++;
-  refreshDimensionCache();
 } 
 
 Data::~Data() { 
@@ -67,7 +66,6 @@ Data* Data::putData(Class aClass, const Dimensions& dims, void *s,
     else
       className = NULL;
     owners = 1;
-    refreshDimensionCache();
     return this;
   } else {
     owners--;
@@ -124,7 +122,7 @@ void Data::freeDataBlock() {
       Array* rp = (Array*) cp;
       delete [] rp;
     } else if (sparse) {
-      DeleteSparseMatrix(dataClass,dimensions[1],cp);
+      DeleteSparseMatrix(dataClass,dimensions.get(1),cp);
     } else 
       Free(cp);
   }
@@ -134,11 +132,3 @@ bool Data::isSparse() const {
   return sparse;
 }
 
-void Data::refreshDimensionCache() {
-  m_cache_getElementCount = dimensions.getElementCount();
-  m_cache_isScalar = dimensions.isScalar();
-  m_cache_getRows = dimensions.getRows();
-  m_cache_getColumns = dimensions.getColumns();
-  m_cache_is2D = dimensions.is2D();
-  m_cache_isVector = dimensions.isVector();
-}

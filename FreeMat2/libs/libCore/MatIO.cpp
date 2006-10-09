@@ -212,7 +212,7 @@ uint8 ByteFour(uint32 x) {
 Array FromDimensions(Dimensions dims) {
   Array x(FM_INT32,Dimensions(1,dims.getLength()));
   for (int i=0;i<dims.getLength();i++)
-    ((int32*) x.getReadWriteDataPointer())[i] = dims[i];
+    ((int32*) x.getReadWriteDataPointer())[i] = dims.get(i);
   return x;
 }
 
@@ -223,7 +223,7 @@ Dimensions ToDimensions(Array dims) {
 		    maxDims + ")."); // FIXME - more graceful ways to do this
   Dimensions dm;
   for (int i=0;i<dims.getLength();i++)
-    dm[i] = ((const int32*) dims.getDataPointer())[i];
+    dm.set(i,((const int32*) dims.getDataPointer())[i]);
   return dm;
 }
 
@@ -270,13 +270,13 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
   MemBlock<uint32> jrBlock(nnz);
   uint32 *jr = &jrBlock;
   int outptr = 0;
-  for (int i=0;i<dm[1];i++)
+  for (int i=0;i<dm.get(1);i++)
     for (int j=jc_data[i];j<jc_data[i+1];j++)
       jr[outptr++] = (i+1);
   if (!complexFlag)
     return Array(outType,dm,
 		 makeSparseFromIJV(outType,
-				   dm[0],dm[1],nnz,
+				   dm.get(0),dm.get(1),nnz,
 				   ir_data, 1,
 				   jr, 1,
 				   pr.getDataPointer(),1), true);
@@ -290,7 +290,7 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
 	qp[2*i+1] = qp_imag[i];
       }
       return Array(outType,dm,
-		   makeSparseFromIJV(outType,dm[0],dm[1],nnz,
+		   makeSparseFromIJV(outType,dm.get(0),dm.get(1),nnz,
 				     ir_data, 1, jr, 1, qp,1),true);
     } else {
       double *qp = (double*) Malloc(nnz*2*sizeof(double));
@@ -301,7 +301,7 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
 	qp[2*i+1] = qp_imag[i];
       }
       return Array(outType,dm,
-		   makeSparseFromIJV(outType,dm[0],dm[1],nnz,
+		   makeSparseFromIJV(outType,dm.get(0),dm.get(1),nnz,
 				     ir_data, 1, jr, 1, qp,1),true);
     }
   }

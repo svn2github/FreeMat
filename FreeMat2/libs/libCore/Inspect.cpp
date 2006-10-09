@@ -597,16 +597,13 @@ ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
     if (nargout > 1) {
       ArrayVector retval(nargout);
       for (int i=0;i<nargout;i++)
-	retval[i] = Array::uint32Constructor(sze[i]);
+	retval[i] = Array::uint32Constructor(sze.get(i));
       return retval;
     } else {
       uint32 *dims = (uint32 *) Malloc(sizeof(uint32)*sze.getLength());
       for (int i=0;i<sze.getLength();i++)
-	dims[i] = sze[i];
-      Dimensions retDim(2);
-      retDim[0] = 1;
-      retDim[1] = sze.getLength();
-      Array ret = Array(FM_UINT32,retDim,dims);
+	dims[i] = sze.get(i);
+      Array ret = Array(FM_UINT32,Dimensions(1,sze.getLength()),dims);
       retval.push_back(ret);
       return retval;
     } 
@@ -616,7 +613,7 @@ ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
     int dimval = tmp.getContentsAsIntegerScalar();
     if (dimval<1)
       throw Exception("illegal value for dimension argument in call to size function");
-    retval.push_back(Array::uint32Constructor(sze[dimval-1]));
+    retval.push_back(Array::uint32Constructor(sze.get(dimval-1)));
     return retval;
   }
 }
@@ -1171,11 +1168,11 @@ ArrayVector SingleFindModeFull(Array x) {
       op[ndx++] = i + 1;
   Dimensions retDim(2);
   if (x.isRowVector()) {
-    retDim[0] = 1;
-    retDim[1] = nonZero;
+    retDim.set(0,1);
+    retDim.set(1,nonZero);
   } else {
-    retDim[0] = nonZero;
-    retDim[1] = 1;
+    retDim.set(0,nonZero);
+    retDim.set(1,1);
   }
   return singleArrayVector(Array(FM_UINT32,retDim,op));
 }
@@ -1208,11 +1205,11 @@ ArrayVector RCFindModeFull(Array x) {
     }
   Dimensions retDim(2);
   if (x.isRowVector()) {
-    retDim[0] = 1;
-    retDim[1] = nonZero;
+    retDim.set(0,1);
+    retDim.set(1,nonZero);
   } else {
-    retDim[0] = nonZero;
-    retDim[1] = 1;
+    retDim.set(0,nonZero);
+    retDim.set(1,1);
   }
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
@@ -1251,11 +1248,11 @@ ArrayVector RCVFindModeFullReal(Array x) {
     }
   Dimensions retDim(2);
   if (x.isRowVector()) {
-    retDim[0] = 1;
-    retDim[1] = nonZero;
+    retDim.set(0,1);
+    retDim.set(1,nonZero);
   } else {
-    retDim[0] = nonZero;
-    retDim[1] = 1;
+    retDim.set(0,nonZero);
+    retDim.set(1,1);
   }
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
@@ -1297,11 +1294,11 @@ ArrayVector RCVFindModeFullComplex(Array x) {
     }
   Dimensions retDim(2);
   if (x.isRowVector()) {
-    retDim[0] = 1;
-    retDim[1] = nonZero;
+    retDim.set(0,1);
+    retDim.set(1,nonZero);
   } else {
-    retDim[0] = nonZero;
-    retDim[1] = 1;
+    retDim.set(0,nonZero);
+    retDim.set(1,1);
   }
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
@@ -1354,11 +1351,11 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 		   rows, cols, nnz);
   Dimensions retDim(2);
   if (x.isRowVector()) {
-    retDim[0] = 1;
-    retDim[1] = nnz;
+    retDim.set(0,1);
+    retDim.set(1,nnz);
   } else {
-    retDim[0] = nnz;
-    retDim[1] = 1;
+    retDim.set(0,nnz);
+    retDim.set(1,1);
   }
   ArrayVector retval;
   // Decide how to combine the arrays depending on nargout

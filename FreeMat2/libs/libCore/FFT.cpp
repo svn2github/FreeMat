@@ -131,20 +131,20 @@ Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   Dimensions inDim(input.getDimensions());
   // Allocate the output vector...
   Dimensions outDim(inDim);
-  outDim[FFTDim] = FFTLen;
+  outDim.set(FFTDim,FFTLen);
     
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[FFTDim];
+  linesize = inDim.get(FFTDim);
   planesize = 1;
   for (d=0;d<FFTDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=FFTDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
     
   // Allocate the buffer for the FFT
   float *buffer;
@@ -153,8 +153,8 @@ Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   float *ob;
   ob = (float*) Malloc(sizeof(float)*2*outDim.getElementCount());
   int copyIn;
-  if (inDim[FFTDim] < FFTLen)
-    copyIn = inDim[FFTDim];
+  if (inDim.get(FFTDim) < FFTLen)
+    copyIn = inDim.get(FFTDim);
   else
     copyIn = FFTLen;
   // Get the data pointer
@@ -192,20 +192,20 @@ Array dcomplexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   Dimensions inDim(input.getDimensions());
   // Allocate the output vector...
   Dimensions outDim(inDim);
-  outDim[FFTDim] = FFTLen;
+  outDim.set(FFTDim,FFTLen);
     
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[FFTDim];
+  linesize = inDim.get(FFTDim);
   planesize = 1;
   for (d=0;d<FFTDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=FFTDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
     
   // Allocate the buffer for the FFT
   double *buffer;
@@ -214,8 +214,8 @@ Array dcomplexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   double *ob;
   ob = (double*) Malloc(sizeof(double)*2*outDim.getElementCount());
   int copyIn;
-  if (inDim[FFTDim] < FFTLen)
-    copyIn = inDim[FFTDim];
+  if (inDim.get(FFTDim) < FFTLen)
+    copyIn = inDim.get(FFTDim);
   else
     copyIn = FFTLen;
   // Get the data pointer
@@ -374,7 +374,7 @@ ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {
   if (FFTDim == -1) {
     Dimensions inDim(input.getDimensions());
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     FFTDim = d;
   }
@@ -424,7 +424,7 @@ ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
   if (FFTDim == -1) {
     Dimensions inDim(input.getDimensions());
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     FFTDim = d;
   }

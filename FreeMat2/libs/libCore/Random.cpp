@@ -944,13 +944,13 @@ ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
       t = arg[0];
       if (arg.size() == 1) {
 	// If all scalars and only one argument - we want a square zero matrix
-	dims[0] = t.getContentsAsIntegerScalar();
-	dims[1] = dims[0];
+	dims.set(0,t.getContentsAsIntegerScalar());
+	dims.set(1,dims.get(0));
       } else {
 	// If all scalars and and multiple arguments, we count dimensions
 	for (i=0;i<arg.size();i++) {
 	  t = arg[i];
-	  dims[i] = t.getContentsAsIntegerScalar();
+	  dims.set(i,t.getContentsAsIntegerScalar());
 	}
       }
     } else {
@@ -960,12 +960,12 @@ ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
       for (i=0;i<t.getLength();i++)
-	dims[i] = dp[i];
+	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
     for (i=0;i<dims.getLength();i++)
-      allPositive &= (dims[i] >= 0);
+      allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Randn function requires positive arguments");
   }
@@ -1079,13 +1079,13 @@ ArrayVector RandFunction(int nargout, const ArrayVector& arg) {
       t = arg[0];
       if (arg.size() == 1) {
 	// If all scalars and only one argument - we want a square zero matrix
-	dims[0] = t.getContentsAsIntegerScalar();
-	dims[1] = dims[0];
+	dims.set(0,t.getContentsAsIntegerScalar());
+	dims.set(1,dims.get(0));
       } else {
 	// If all scalars and and multiple arguments, we count dimensions
 	for (i=0;i<arg.size();i++) {
 	  t = arg[i];
-	  dims[i] = t.getContentsAsIntegerScalar();
+	  dims.set(i,t.getContentsAsIntegerScalar());
 	}	  
       }
     } else {
@@ -1095,12 +1095,12 @@ ArrayVector RandFunction(int nargout, const ArrayVector& arg) {
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
       for (i=0;i<t.getLength();i++)
-	dims[i] = dp[i];
+	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
     for (i=0;i<dims.getLength();i++)
-      allPositive &= (dims[i] >= 0);
+      allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Rand function requires posItive arguments");
   }

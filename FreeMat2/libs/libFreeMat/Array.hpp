@@ -25,12 +25,14 @@
 #include <string>
 #include "Dimensions.hpp"
 #include "Types.hpp"
-
+#include "RefVec.hpp"
 
 class Array;
 class Interpreter;
 
-typedef std::vector<Array> ArrayVector;
+//typedef std::vector<Array> ArrayVector;
+typedef RefVec<Array> ArrayVector;
+
 ArrayVector singleArrayVector(Array);
 
 typedef std::vector<ArrayVector> ArrayMatrix;

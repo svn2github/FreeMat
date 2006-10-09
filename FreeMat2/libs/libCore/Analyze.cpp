@@ -867,25 +867,25 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
   // Calculate the output size
   Dimensions outDim(inDim);
-  outDim[workDim] = 1;
+  outDim.set(workDim,1);
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the output that contains the indices
   uint32* iptr = (uint32 *) Malloc(sizeof(uint32)*outDim.getElementCount());
   // Allocate the values output, and call the appropriate helper func.
@@ -1284,25 +1284,25 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
   // Calculate the output size
   Dimensions outDim(inDim);
-  outDim[workDim] = 1;
+  outDim.set(workDim,1);
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the output that contains the indices
   uint32* iptr = (uint32 *) Malloc(sizeof(uint32)*outDim.getElementCount());
   // Allocate the values output, and call the appropriate helper func.
@@ -1726,7 +1726,7 @@ ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
@@ -1737,13 +1737,13 @@ ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
@@ -1857,25 +1857,25 @@ ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
   // Calculate the output size
   Dimensions outDim(inDim);
-  outDim[workDim] = 1;
+  outDim.set(workDim,1);
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   // Special case Sparse Matrices
   if (input.isSparse()) {
@@ -2010,25 +2010,25 @@ ArrayVector MeanFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
   // Calculate the output size
   Dimensions outDim(inDim);
-  outDim[workDim] = 1;
+  outDim.set(workDim,1);
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
@@ -2139,25 +2139,25 @@ ArrayVector VarFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
   // Calculate the output size
   Dimensions outDim(inDim);
-  outDim[workDim] = 1;
+  outDim.set(workDim,1);
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
@@ -2595,25 +2595,25 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
   // Calculate the output size
   Dimensions outDim(inDim);
-  outDim[workDim] = 1;
+  outDim.set(workDim,1);
   // Calculate the stride...
   int d;
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
@@ -2694,10 +2694,10 @@ ArrayVector Int2BinFunction(int nargout, const ArrayVector& arg) {
   int slicesize;
   slicesize = xdim.getElementCount();
   xdim.simplify();
-  if (xdim[xdim.getLength()-1] == 1)
-    xdim[xdim.getLength()-1] = numbits;
+  if (xdim.get(xdim.getLength()-1) == 1)
+    xdim.set(xdim.getLength()-1,numbits);
   else
-    xdim[xdim.getLength()] = numbits;
+    xdim.set(xdim.getLength(),numbits);
   logical *dp;
   dp = (logical *) Malloc(sizeof(logical)*xdim.getElementCount());
   int32 *sp;
@@ -2757,10 +2757,10 @@ ArrayVector Bin2IntFunction(int nargout, const ArrayVector& arg) {
   }
   Dimensions xdim(x.getDimensions());
   int numbits;
-  numbits = xdim[xdim.getLength()-1];
+  numbits = xdim.get(xdim.getLength()-1);
   int slicesize;
   slicesize = xdim.getElementCount()/numbits;
-  xdim[xdim.getLength()-1] = 1;
+  xdim.set(xdim.getLength()-1,1);
   xdim.simplify();
   ArrayVector retval;
   uint32 *dp;
@@ -3681,7 +3681,7 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
   Dimensions inDim(input.getDimensions());
   if (workDim == -1) {
     int d = 0;
-    while (inDim[d] == 1) 
+    while (inDim.get(d) == 1) 
       d++;
     workDim = d;      
   }
@@ -3692,13 +3692,13 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
   int planecount;
   int planesize;
   int linesize;
-  linesize = inDim[workDim];
+  linesize = inDim.get(workDim);
   planesize = 1;
   for (d=0;d<workDim;d++)
-    planesize *= inDim[d];
+    planesize *= inDim.get(d);
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
-    planecount *= inDim[d];
+    planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval, ndxval;
   // Sort with index information

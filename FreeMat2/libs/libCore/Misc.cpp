@@ -115,9 +115,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     int m, n;
     m = m_arg.getContentsAsIntegerScalar();
     n = n_arg.getContentsAsIntegerScalar();
-    Dimensions dim;
-    dim[0] = m;
-    dim[1] = n;
+    Dimensions dim(m,n);
     return singleArrayVector(Array(FM_FLOAT,dim,SparseFloatZeros(m,n),true));
   } else if (arg.size() == 3) {
     Array i_arg(arg[0]);
@@ -164,9 +162,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     int cols = 0;
     for (int j=0;j<jlen;j++)
       cols = (jp[j] > cols) ? jp[j] : cols;
-    Dimensions dim;
-    dim[0] = rows;
-    dim[1] = cols;
+    Dimensions dim(rows,cols);
     return singleArrayVector(Array(v_arg.getDataClass(),dim,
 				   makeSparseFromIJV(v_arg.getDataClass(),
 						     rows,cols,olen,
@@ -216,9 +212,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     Array n_arg(arg[4]);
     int rows = m_arg.getContentsAsIntegerScalar();
     int cols = n_arg.getContentsAsIntegerScalar();
-    Dimensions dim;
-    dim[0] = rows;
-    dim[1] = cols; 
+    Dimensions dim(rows,cols);
     uint32 *ip = (uint32*) i_arg.getDataPointer();
     uint32 *jp = (uint32*) j_arg.getDataPointer();
     return singleArrayVector(Array(v_arg.getDataClass(),dim,
@@ -754,9 +748,7 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
   int orows = nrows;
   int ocols = ncols;
   if ((!compactDec) && (nrows > ncols)) {
-    Dimensions newDim(2);
-    newDim[0] = nrows;
-    newDim[1] = nrows;
+    Dimensions newDim(nrows,nrows);
     A.resize(newDim);
     ncols = nrows;
   } else 
@@ -779,17 +771,17 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	float *r2 = (float*) Malloc(orows*ocols*sizeof(float));
 	memcpy(r2,r,orows*ocols*sizeof(float));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_FLOAT,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_FLOAT,dim,r);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_FLOAT,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -803,17 +795,17 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	double *r2 = (double*) Malloc(orows*ocols*sizeof(double));
 	memcpy(r2,r,orows*ocols*sizeof(double));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_DOUBLE,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_DOUBLE,dim,r);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_DOUBLE,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -827,17 +819,17 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	float *r2 = (float*) Malloc(2*orows*ocols*sizeof(float));
 	memcpy(r2,r,2*orows*ocols*sizeof(float));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_COMPLEX,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_COMPLEX,dim,r);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_COMPLEX,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -851,17 +843,17 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	double *r2 = (double*) Malloc(2*orows*ocols*sizeof(double));
 	memcpy(r2,r,2*orows*ocols*sizeof(double));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_DCOMPLEX,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_DCOMPLEX,dim,r);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_DCOMPLEX,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -879,9 +871,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
   int i;
   bool compactSav = compactDec;
   if ((!compactDec) && (nrows > ncols)) {
-    Dimensions newDim(2);
-    newDim[0] = nrows;
-    newDim[1] = nrows;
+    Dimensions newDim(nrows,nrows);
     A.resize(newDim);
     ncols = nrows;
   } else 
@@ -905,30 +895,30 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	float *r2 = (float*) Malloc(orows*ocols*sizeof(float));
 	memcpy(r2,r,orows*ocols*sizeof(float));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_FLOAT,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_FLOAT,dim,r);
       }
       if (!compactSav) {
 	int *p2 = (int*) Malloc(ncols*ncols*sizeof(int));
 	for (i=0;i<ncols;i++) 
 	  p2[p[i] + i*ncols - 1] = 1;
-	dim[0] = ncols;
-	dim[1] = ncols;
+	dim.set(0,ncols);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p2);
 	Free(p);
       } else {
-	dim[0] = 1;
-	dim[1] = ncols;
+	dim.set(0,1);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_FLOAT,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -944,30 +934,30 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	double *r2 = (double*) Malloc(orows*ocols*sizeof(double));
 	memcpy(r2,r,orows*ocols*sizeof(double));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_DOUBLE,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_DOUBLE,dim,r);
       }
       if (!compactSav) {
 	int *p2 = (int*) Malloc(ncols*ncols*sizeof(int));
 	for (i=0;i<ncols;i++) 
 	  p2[p[i] + i*ncols - 1] = 1;
-	dim[0] = ncols;
-	dim[1] = ncols;
+	dim.set(0,ncols);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p2);
 	Free(p);
       } else {
-	dim[0] = 1;
-	dim[1] = ncols;
+	dim.set(0,1);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_DOUBLE,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -983,30 +973,30 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	float *r2 = (float*) Malloc(2*orows*ocols*sizeof(float));
 	memcpy(r2,r,2*orows*ocols*sizeof(float));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_COMPLEX,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_COMPLEX,dim,r);
       }
       if (!compactSav) {
 	int *p2 = (int*) Malloc(ncols*ncols*sizeof(int));
 	for (i=0;i<ncols;i++) 
 	  p2[p[i] + i*ncols - 1] = 1;
-	dim[0] = ncols;
-	dim[1] = ncols;
+	dim.set(0,ncols);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p2);
 	Free(p);
       } else {
-	dim[0] = 1;
-	dim[1] = ncols;
+	dim.set(0,1);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_COMPLEX,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -1022,30 +1012,30 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
       if (!compactDec) {
 	double *r2 = (double*) Malloc(2*orows*ocols*sizeof(double));
 	memcpy(r2,r,2*orows*ocols*sizeof(double));
-	dim[0] = orows;
-	dim[1] = ocols;
+	dim.set(0,orows);
+	dim.set(1,ocols);
 	rmat = Array(FM_DCOMPLEX,dim,r2);
 	Free(r);
       } else {	  
-	dim[0] = minmn;
-	dim[1] = ncols;
+	dim.set(0,minmn);
+	dim.set(1,ncols);
 	rmat = Array(FM_DCOMPLEX,dim,r);
       }
       if (!compactSav) {
 	int *p2 = (int*) Malloc(ncols*ncols*sizeof(int));
 	for (i=0;i<ncols;i++) 
 	  p2[p[i] + i*ncols - 1] = 1;
-	dim[0] = ncols;
-	dim[1] = ncols;
+	dim.set(0,ncols);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p2);
 	Free(p);
       } else {
-	dim[0] = 1;
-	dim[1] = ncols;
+	dim.set(0,1);
+	dim.set(1,ncols);
 	pmat = Array(FM_INT32,dim,p);
       }
-      dim[0] = nrows;
-      dim[1] = minmn;
+      dim.set(0,nrows);
+      dim.set(1,minmn);
       qmat = Array(FM_DCOMPLEX,dim,q);
       retval.push_back(qmat);
       retval.push_back(rmat);
@@ -1239,31 +1229,31 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
       // Always transfer the singular values into an Array
       Dimensions dim;
       if (!computevectors) {
-	dim[0] = mindim; dim[1] = 1;
+	dim.set(0,mindim); dim.set(1,1);
 	retval.push_back(Array(FM_FLOAT,dim,svals));
       } else {
 	if (!compactform) {
-	  dim[0] = nrows; dim[1] = nrows;
+	  dim.set(0,nrows); dim.set(1,nrows);
 	  retval.push_back(Array(FM_FLOAT,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
+	  dim.set(0,nrows); dim.set(1,ncols);
 	  float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*nrows] = svals[i];
 	  retval.push_back(Array(FM_FLOAT,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
+	  dim.set(0,ncols); dim.set(1,ncols);
 	  Array Utrans(FM_FLOAT,dim,vtmat);
 	  Utrans.transpose();
 	  retval.push_back(Utrans);
 	  Free(svals);
 	} else {
-	  dim[0] = nrows; dim[1] = mindim;
+	  dim.set(0,nrows); dim.set(1,mindim);
 	  retval.push_back(Array(FM_FLOAT,dim,umat));
-	  dim[0] = mindim; dim[1] = mindim;
+	  dim.set(0,mindim); dim.set(1,mindim);
 	  float *smat = (float*) Malloc(mindim*mindim*sizeof(float));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*mindim] = svals[i];
 	  retval.push_back(Array(FM_FLOAT,dim,smat));
-	  dim[0] = mindim; dim[1] = ncols;
+	  dim.set(0,mindim); dim.set(1,ncols);
 	  Array Utrans(FM_FLOAT,dim,vtmat);
 	  Utrans.transpose();
 	  retval.push_back(Utrans);
@@ -1296,33 +1286,33 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
       // Always transfer the singular values into an Array
       Dimensions dim;
       if (!computevectors) {
-	dim[0] = mindim; dim[1] = 1;
+	dim.set(0,mindim); dim.set(1,1);
 	retval.push_back(Array(FM_DOUBLE,dim,svals));
 	Free(umat);
 	Free(vtmat);
       } else {
 	if (!compactform) {
-	  dim[0] = nrows; dim[1] = nrows;
+	  dim.set(0,nrows); dim.set(1,nrows);
 	  retval.push_back(Array(FM_DOUBLE,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
+	  dim.set(0,nrows); dim.set(1,ncols);
 	  double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*nrows] = svals[i];
 	  retval.push_back(Array(FM_DOUBLE,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
+	  dim.set(0,ncols); dim.set(1,ncols);
 	  Array Utrans(FM_DOUBLE,dim,vtmat);
 	  Utrans.transpose();
 	  retval.push_back(Utrans);
 	  Free(svals);
 	} else {
-	  dim[0] = nrows; dim[1] = mindim;
+	  dim.set(0,nrows); dim.set(1,mindim);
 	  retval.push_back(Array(FM_DOUBLE,dim,umat));
-	  dim[0] = mindim; dim[1] = mindim;
+	  dim.set(0,mindim); dim.set(1,mindim);
 	  double *smat = (double*) Malloc(mindim*mindim*sizeof(double));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*mindim] = svals[i];
 	  retval.push_back(Array(FM_DOUBLE,dim,smat));
-	  dim[0] = mindim; dim[1] = ncols;
+	  dim.set(0,mindim); dim.set(1,ncols);
 	  Array Utrans(FM_DOUBLE,dim,vtmat);
 	  Utrans.transpose();
 	  retval.push_back(Utrans);
@@ -1355,33 +1345,33 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
       // Always transfer the singular values into an Array
       Dimensions dim;
       if (!computevectors) {
-	dim[0] = mindim; dim[1] = 1;
+	dim.set(0,mindim); dim.set(1,1);
 	retval.push_back(Array(FM_FLOAT,dim,svals));
 	Free(umat);
 	Free(vtmat);
       } else {
 	if (!compactform) {
-	  dim[0] = nrows; dim[1] = nrows;
+	  dim.set(0,nrows); dim.set(1,nrows);
 	  retval.push_back(Array(FM_COMPLEX,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
+	  dim.set(0,nrows); dim.set(1,ncols);
 	  float *smat = (float*) Malloc(nrows*ncols*sizeof(float));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*nrows] = svals[i];
 	  retval.push_back(Array(FM_FLOAT,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
+	  dim.set(0,ncols); dim.set(1,ncols);
 	  Array Utrans(FM_COMPLEX,dim,vtmat);
 	  Utrans.hermitian();
 	  retval.push_back(Utrans);
 	  Free(svals);
 	} else {
-	  dim[0] = nrows; dim[1] = mindim;
+	  dim.set(0,nrows); dim.set(1,mindim);
 	  retval.push_back(Array(FM_COMPLEX,dim,umat));
-	  dim[0] = mindim; dim[1] = mindim;
+	  dim.set(0,mindim); dim.set(1,mindim);
 	  float *smat = (float*) Malloc(mindim*mindim*sizeof(float));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*mindim] = svals[i];
 	  retval.push_back(Array(FM_FLOAT,dim,smat));
-	  dim[0] = mindim; dim[1] = ncols;
+	  dim.set(0,mindim); dim.set(1,ncols);
 	  Array Utrans(FM_COMPLEX,dim,vtmat);
 	  Utrans.hermitian();
 	  retval.push_back(Utrans);
@@ -1414,33 +1404,33 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
       // Always transfer the singular values into an Array
       Dimensions dim;
       if (!computevectors) {
-	dim[0] = mindim; dim[1] = 1;
+	dim.set(0,mindim); dim.set(1,1);
 	retval.push_back(Array(FM_DOUBLE,dim,svals));
 	Free(umat);
 	Free(vtmat);
       } else {
 	if (!compactform) {
-	  dim[0] = nrows; dim[1] = nrows;
+	  dim.set(0,nrows); dim.set(1,nrows);
 	  retval.push_back(Array(FM_DCOMPLEX,dim,umat));
-	  dim[0] = nrows; dim[1] = ncols;
+	  dim.set(0,nrows); dim.set(1,ncols);
 	  double *smat = (double*) Malloc(nrows*ncols*sizeof(double));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*nrows] = svals[i];
 	  retval.push_back(Array(FM_DOUBLE,dim,smat));
-	  dim[0] = ncols; dim[1] = ncols;
+	  dim.set(0,ncols); dim.set(1,ncols);
 	  Array Utrans(FM_DCOMPLEX,dim,vtmat);
 	  Utrans.hermitian();
 	  retval.push_back(Utrans);
 	  Free(svals);
 	} else {
-	  dim[0] = nrows; dim[1] = mindim;
+	  dim.set(0,nrows); dim.set(1,mindim);
 	  retval.push_back(Array(FM_DCOMPLEX,dim,umat));
-	  dim[0] = mindim; dim[1] = mindim;
+	  dim.set(0,mindim); dim.set(1,mindim);
 	  double *smat = (double*) Malloc(mindim*mindim*sizeof(double));
 	  for (int i=0;i<mindim;i++)
 	    smat[i+i*mindim] = svals[i];
 	  retval.push_back(Array(FM_DOUBLE,dim,smat));
-	  dim[0] = mindim; dim[1] = ncols;
+	  dim.set(0,mindim); dim.set(1,ncols);
 	  Array Utrans(FM_DCOMPLEX,dim,vtmat);
 	  Utrans.hermitian();
 	  retval.push_back(Utrans);
@@ -1925,7 +1915,7 @@ ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   else
     throw Exception("evalin function requires the first argument to be either 'caller' or 'base'");
   ArrayVector argcopy(arg);
-  argcopy.erase(argcopy.begin());
+  argcopy.pop_front();
   if (arg.size() == 3)
     return EvalTryFunction(nargout,argcopy,eval,popspec);
   else
@@ -2170,7 +2160,7 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
   if (funcDef->scriptFlag)
     throw Exception("cannot use feval on a script");
   ArrayVector newarg(arg);
-  newarg.erase(newarg.begin());
+  newarg.pop_front();
   bool flagsave = eval->getStopOverload();
   eval->setStopOverload(true);
   ArrayVector tmp(funcDef->evaluateFunction(eval,newarg,nargout));
@@ -2228,8 +2218,7 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
   if (funcDef->scriptFlag)
     throw Exception("cannot use feval on a script");
   ArrayVector newarg(arg);
-  //    newarg.pop_front();
-  newarg.erase(newarg.begin());
+  newarg.pop_front();
   return(funcDef->evaluateFunction(eval,newarg,nargout));
 }
 
@@ -2286,15 +2275,15 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
   // Case 1, look for a scalar second argument
   if ((arg.size() == 2) && (arg[1].isScalar())) {
     Array t(arg[1]);
-    repcount[0] = t.getContentsAsIntegerScalar();
-    repcount[1] = t.getContentsAsIntegerScalar();
+    repcount.set(0,t.getContentsAsIntegerScalar());
+    repcount.set(1,t.getContentsAsIntegerScalar());
   } 
   // Case 2, look for two scalar arguments
   else if ((arg.size() == 3) && (arg[1].isScalar()) && (arg[2].isScalar())) {
     Array t(arg[1]);
-    repcount[0] = t.getContentsAsIntegerScalar();
+    repcount.set(0,t.getContentsAsIntegerScalar());
     t = arg[2];
-    repcount[1] = t.getContentsAsIntegerScalar();
+    repcount.set(1,t.getContentsAsIntegerScalar());
   }
   // Case 3, look for a vector second argument
   else {
@@ -2304,18 +2293,18 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
     if (t.getLength() > maxDims) throw Exception("replication request exceeds maxDims constant - either rebuild FreeMat with a higher maxDims constant, or shorten the requested replication array");
     int32 *dp = (int32*) t.getDataPointer();
     for (i=0;i<t.getLength();i++)
-      repcount[i] = dp[i];
+      repcount.set(i,dp[i]);
   }
   // Check for a valid replication count
   for (i=0;i<repcount.getLength();i++)
-    if (repcount[i] < 0) throw Exception("negative replication counts not allowed in argument to repmat function");
+    if (repcount.get(i) < 0) throw Exception("negative replication counts not allowed in argument to repmat function");
   // All is peachy.  Allocate an output array of sufficient size.
   Dimensions originalSize(x.getDimensions());
   Dimensions outdims;
   int outdim;
   outdim = MAX(repcount.getLength(),originalSize.getLength());
   for (i=0;i<outdim;i++)
-    outdims[i] = originalSize[i]*repcount[i];
+    outdims.set(i,originalSize.get(i)*repcount.get(i));
   outdims.simplify();
   void *dp = Array::allocateArray(x.getDataClass(),
 				  outdims.getElementCount(),
@@ -2323,8 +2312,8 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
   // Copy can work by pushing or by pulling.  I have opted for
   // pushing, because we can push a column at a time, which might
   // be slightly more efficient.
-  int colsize = originalSize[0];
-  int outcolsize = outdims[0];
+  int colsize = originalSize.get(0);
+  int outcolsize = outdims.get(0);
   int colcount = originalSize.getElementCount()/colsize;
   // copySelect stores which copy we are pushing.
   Dimensions copySelect(outdim);
@@ -2344,7 +2333,7 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
       // We can calculate the anchor of this copy by multiplying the source
       // address by the copySelect vector
       for (k=0;k<outdim;k++)
-	anchor[k] = copySelect[k]*originalSize[k]+sourceAddress[k];
+	anchor.set(k,copySelect.get(k)*originalSize.get(k)+sourceAddress.get(k));;
       // Now, we map this to a point in the destination array
       destanchor = outdims.mapPoint(anchor);
       // And copy the elements
@@ -2391,9 +2380,7 @@ ArrayVector SystemFunction(int nargout, const ArrayVector& arg) {
   Array* np = new Array[cp.size()];
   for (int i=0;i<cp.size();i++)
     np[i] = Array::stringConstructor(cp[i]);
-  Dimensions dim(2);
-  dim[0] = cp.size();
-  dim[1] = 1;
+  Dimensions dim(cp.size(),1);
   Array ret(FM_CELL_ARRAY,dim,np);
   retval.push_back(ret);
   return retval;

@@ -40,7 +40,8 @@ Print.hpp \
 Token.hpp \
 Parser.hpp \
 Scanner.hpp \
-Tree.hpp
+Tree.hpp \
+RefVec.hpp
 
 libFreeMat_a_SOURCES = Array.cpp \
 Interpreter.cpp \

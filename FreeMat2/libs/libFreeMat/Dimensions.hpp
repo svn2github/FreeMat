@@ -48,6 +48,16 @@ private:
    * The number of dimensions currently allocated.
    */
   int length;
+  /**
+   * Cache values for frequently called functions.
+   */
+  bool m_cache_valid;
+  int m_cache_getElementCount;
+  bool m_cache_isScalar;
+  int m_cache_getRows;
+  int m_cache_getColumns;
+  bool m_cache_is2D;
+  bool m_cache_isVector;
 public:
   /**
    * The default constructor - length is set to zero.
@@ -58,7 +68,7 @@ public:
    * and all contents set to zero.
    * Throws an Exception if the dimension count is negative.
    */
-  Dimensions(int dimCount) throw(Exception);
+  Dimensions(int dimCount);
   /**
    * Return a 2-D dimension object with the specified number of
    * rows and columns.
@@ -73,21 +83,27 @@ public:
    * our contents to $$[2,3,1]$$.
    * Throws an exception if the argument is negative.
    */
-  int& operator[](unsigned i) throw(Exception);
+  //  int& operator[](unsigned i) throw(Exception);
   /**
    * Get the number of currently allocated dimensions.
    */
   int getLength() const;
   /**
+   * Update the cache variables.  Call this when
+   * finished mucking with dimension data!
+   */
+  void updateCacheVariables();
+  /**
    * Get the pointer to the dimension data.
    */
-  int* getDimensionData() const;
+  //  int* getDimensionData() const;
   /**
    * Return the total number of elements in the associated Array object.
    * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
    * of length, and $$a_i$$ is equivalent to data[i].
    */
-  int getElementCount() const;
+  int getElementCount();
+  int getElementCountConst() const;
   /**
    * Map the given point using the current Dimensions.  If the argument
    * values are denoted as $$b_i$$, and our dimensions are $$a_i$$, then
@@ -97,17 +113,17 @@ public:
    *   - any of the arguments are outside the valid range, i.e., 
    *     $$b_i < 0$$ or $$b_i >= a_i$$.
    */
-  int mapPoint(const Dimensions& point) throw (Exception);
+  int mapPoint(const Dimensions& point);
   /**
    * Returns the first dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  int getRows() const;
+  int getRows();
   /**
    * Returns the second dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  int getColumns() const;
+  int getColumns();
   /**
    * Returns the requested dimension, or a 1 if the requested dimension
    * exceeds the currently allocated number of dimensions.  Unlike
@@ -116,9 +132,17 @@ public:
    */
   int getDimensionLength(int arg) const;
   /**
+   * Less verbose synonym
+   */
+  int get(int arg) const;
+  /**
    * A synonym for (*this)[dim] = len.
    */
   void setDimensionLength(int dim, int len);
+  /**
+   * Less verbose synonym
+   */
+  void set(int dim, int len);  
   /**
    * Expand our dimensions so as to include the given point.  This operation
    * involves a sequence of operations.  Let $$b$$ denote the argument, and
@@ -184,16 +208,16 @@ public:
   /**
    * Returns true if and only if we are equal to $$[1,1]$$.
    */
-  const bool isScalar() const;
+  bool isScalar();
   /**
    * Returns true if and only if we are equal to $$[1,n]$$ or $$[n,1]$$ for
    * some value of $$n$$.
    */
-  const bool isVector() const;
+  bool isVector();
   /**
    * Returns true if we have exactly 2 dimensions allocated.
    */
-  const bool is2D() const;
+  bool is2D();
 };
 
 #endif

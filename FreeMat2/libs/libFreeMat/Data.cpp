@@ -24,18 +24,12 @@
 int DataMakeCount = 0;
 
 Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag, 
-	   stringVector* fields, stringVector* classname): 
+	   rvstring fields, rvstring classname): 
   cp(s), owners(1), dimensions(dims), dataClass(aClass) {
   sparse = sparseflag;
-  if (fields)
-    fieldNames = new stringVector(*fields);
-  else
-    fieldNames = NULL;
+  fieldNames = fields;
   sparse = sparseflag;
-  if (classname)
-    className = new stringVector(*classname);
-  else
-    className = NULL;
+  className = classname;
   DataMakeCount++;
 } 
 
@@ -49,22 +43,16 @@ Data* Data::getCopy() {
 }
 
 Data* Data::putData(Class aClass, const Dimensions& dims, void *s, 
-		    bool sparseflag, stringVector* fields, 
-		    stringVector* classname) {
+		    bool sparseflag, rvstring fields, 
+		    rvstring classname) {
   if ((owners <= 1)) {
     freeDataBlock();
     cp = s;
     dataClass = aClass;
     dimensions = dims;
-    if (fields)
-      fieldNames = new stringVector(*fields);
-    else
-      fieldNames = NULL;
+    fieldNames = fields;
     sparse = sparseflag;
-    if (classname)
-      className = new stringVector(*classname);
-    else
-      className = NULL;
+    className = classname;
     owners = 1;
     return this;
   } else {
@@ -89,23 +77,23 @@ const Dimensions& Data::getDimensions() const {
   return dimensions;
 }
 
-stringVector* Data::getFieldNames() const {
+rvstring Data::getFieldNames() const {
   return fieldNames;
 }
 
-stringVector* Data::getClassName() const {
+rvstring Data::getClassName() const {
   return className;
 }
 
 bool Data::isUserClass() const {
-  return (className && (!className->empty()));
+  return (!className.empty());
 }
 
 void Data::setDimensions(const Dimensions& dim) {
   dimensions = dim;
 }
 
-void Data::setFieldNames(stringVector* fields) {
+void Data::setFieldNames(rvstring fields) {
   fieldNames = fields;
 }
 

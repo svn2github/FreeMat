@@ -107,7 +107,7 @@ private:
    */
   void deleteContents(void);
   Data* GetDataInstance(Class type, const Dimensions& dims, void* data, bool sparse, 
-			stringVector* fnames, stringVector* classname);
+			rvstring fnames, rvstring classname);
   void ReleaseDataInstance(Data *dp);
 public:
   /** Compute the maximum index.
@@ -121,7 +121,7 @@ public:
   /**
    * Allocate an array.
    */
-  static void* allocateArray(Class, uint32 length,stringVector* names = NULL);
+  static void* allocateArray(Class, uint32 length,rvstring names = rvstring());
   /** Convert us to an index type
    * Convert the current object to an ordinal one.  This has different
    * meanings for different data types.  
@@ -159,7 +159,7 @@ public:
    * Create an Array with the specified contents.
    */
   Array(Class,const Dimensions& ,void*,bool sparse = false, 
-	stringVector* fieldNames = NULL, stringVector* classname = NULL);
+	rvstring fieldNames = rvstring(), rvstring classname = rvstring());
   /**
    * Create an Array with a default allocation of space - only useful for P.O.D. arrays
    */
@@ -189,11 +189,11 @@ public:
   /**
    * Return name of user-defined class
    */
-  stringVector* getClassName() const;
+  rvstring getClassName() const;
   /**
    * Set classname tag - implies this is a structure array.
    */
-  void setClassName(stringVector*);
+  void setClassName(rvstring);
   /**
    * Get a copy of our dimensions vector.
    */
@@ -201,7 +201,7 @@ public:
   /**
    * Get the fieldnames.
    */
-  stringVector* getFieldNames() const;
+  rvstring getFieldNames() const;
   /**
    * Get our length along the given dimension.
    */
@@ -391,7 +391,7 @@ public:
    *   - we try to convert a structure-array to a non-structure array type.
    *   - we try to convert any numerical types to a reference type.
    */
-  void promoteType(Class new_type, stringVector* fieldNames);
+  void promoteType(Class new_type, rvstring fieldNames);
   /**
    * Promote our array to a new type.  This is a shortcut for when new_type is not
    * FM_STRUCT_ARRAY, so that the fieldNames argument is not needed.
@@ -567,7 +567,7 @@ public:
    *    the number of entries in the values vector
    *  - the non-scalar values do not agree in dimension
    */
-  static Array structConstructor(stringVector* fNames, ArrayVector& values);
+  static Array structConstructor(rvstring fNames, ArrayVector& values);
   /**
    * Get a subset of an Array.  This is for vector-indexing, meaning that
    * the argument is assumed to refer to the elements in their order as a vector.

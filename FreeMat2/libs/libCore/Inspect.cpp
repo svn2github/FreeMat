@@ -450,7 +450,7 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
 	break;
       case FM_STRUCT_ARRAY:
 	if (lookup.isUserClass())
-	  sprintf(buffer,"% 10s",lookup.getClassName()->back().c_str());
+	  sprintf(buffer,"% 10s",lookup.getClassName().back().c_str());
 	else
 	  sprintf(buffer,"% 10s","struct");
 	break;
@@ -551,10 +551,10 @@ ArrayVector FieldNamesFunction(int nargout, const ArrayVector& arg) {
     ret.promoteType(FM_CELL_ARRAY);
     return singleArrayVector(ret);
   }
-  stringVector *names(a.getFieldNames());
+  rvstring names(a.getFieldNames());
   ArrayMatrix m;
-  for (int i=0;i<names->size();i++)
-    m.push_back(singleArrayVector(Array::stringConstructor(names->at(i))));
+  for (int i=0;i<names.size();i++)
+    m.push_back(singleArrayVector(Array::stringConstructor(names.at(i))));
   return singleArrayVector(Array::cellConstructor(m));
 }
 

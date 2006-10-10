@@ -1133,7 +1133,52 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
       a = new foo;
       delete a;
     }
-  } 
+  } else if (runtype == 26) {
+    Array A(FM_FLOAT,Dimensions(512,512));
+    Array B(FM_FLOAT,Dimensions(512,512));
+    Array I(Array::uint32Constructor(0));
+    Array J(Array::uint32Constructor(0));
+    for (int i=0;i<512;i++)
+      for (int j=0;j<512;j++) {
+	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
+	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
+	ArrayVector T;
+	T.push_back(I);
+	T.push_back(J);
+	Array C(A.getNDimSubset(T));
+	B.setNDimSubset(T,C);
+      }
+  } else if (runtype == 27) {
+    Array A(FM_FLOAT,Dimensions(512,512));
+    Array B(FM_FLOAT,Dimensions(512,512));
+    Array I(Array::uint32Constructor(0));
+    Array J(Array::uint32Constructor(0));
+    for (int i=0;i<512;i++)
+      for (int j=0;j<512;j++) {
+	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
+	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
+	ArrayVector T;
+	T.push_back(I);
+	T.push_back(J);
+	Array C(A.getNDimSubset(T));
+	ArrayVector Q(singleArrayVector(C));
+	B.setNDimSubset(T,Q[0]);
+      }
+  } else if (runtype == 28) {
+    Array A(FM_FLOAT,Dimensions(512,512));
+    Array B(FM_FLOAT,Dimensions(512,512));
+    Array I(Array::uint32Constructor(0));
+    Array J(Array::uint32Constructor(0));
+    for (int i=0;i<512;i++)
+      for (int j=0;j<512;j++) {
+	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
+	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
+	ArrayVector T;
+	T.push_back(I);
+	T.push_back(J);
+	Array C(A.getNDimSubset(T));
+      }
+  }
   return singleArrayVector(B);
 }
 

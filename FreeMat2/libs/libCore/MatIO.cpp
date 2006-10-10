@@ -391,8 +391,8 @@ Array MatIO::getClassArray(Dimensions dm) {
   Array className(getDataElement());
   if (className.getDataClass() != FM_INT8)
     throw Exception("Corrupted MAT file - invalid class name");
-  stringVector *classname = new stringVector;
-  classname->push_back(ArrayToString(className));
+  rvstring classname;
+  classname.push_back(ArrayToString(className));
   Array fieldNameLength(getDataElement());
   fieldNameLength.promoteType(FM_INT32);
   const int32 *qp = (const int32*) fieldNameLength.getDataPointer();
@@ -402,12 +402,12 @@ Array MatIO::getClassArray(Dimensions dm) {
   int fieldNamesLen = fieldNames.getLength();
   int fieldNameCount = fieldNamesLen / fieldNameLen;
   const int8 *dp = (const int8*) fieldNames.getDataPointer();
-  stringVector *names = new stringVector;
+  rvstring names;
   for (int i=0;i<fieldNameCount;i++) {
     for (int j=0;j<fieldNameLen;j++)
       buffer[j] = dp[i*fieldNameLen+j];
     buffer[fieldNameLen] = 0;
-    names->push_back(string(buffer));
+    names.push_back(string(buffer));
   }
   int num = dm.getElementCount();
   Array *sp = new Array[num*fieldNameCount];
@@ -430,12 +430,12 @@ Array MatIO::getStructArray(Dimensions dm) {
   int fieldNamesLen = fieldNames.getLength();
   int fieldNameCount = fieldNamesLen / fieldNameLen;
   const int8 *dp = (const int8*) fieldNames.getDataPointer();
-  stringVector *names = new stringVector;
+  rvstring names;
   for (int i=0;i<fieldNameCount;i++) {
     for (int j=0;j<fieldNameLen;j++)
       buffer[j] = dp[i*fieldNameLen+j];
     buffer[fieldNameLen] = 0;
-    names->push_back(string(buffer));
+    names.push_back(string(buffer));
   }
   int num = dm.getElementCount();
   Array *sp = new Array[num*fieldNameCount];
@@ -650,11 +650,11 @@ void MatIO::Align64Bit() {
 
 void MatIO::putStructArray(const Array &x) {
   // Calculate the maximum field name length
-  stringVector *fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
-  int fieldNameCount = fnames->size();
+  rvstring fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
+  int fieldNameCount = fnames.size();
   size_t maxlen = 0;
   for (int i=0;i<fieldNameCount;i++)
-    maxlen = max(maxlen,fnames->at(i).size());
+    maxlen = max(maxlen,fnames.at(i).size());
   // Write it as an int32 
   Array fieldNameLength(Array::int32Constructor(maxlen));
   putDataElement(fieldNameLength);
@@ -662,8 +662,8 @@ void MatIO::putStructArray(const Array &x) {
   Array fieldNameText(FM_INT8,Dimensions(1,fieldNameCount*maxlen));
   int8* dp = (int8*) fieldNameText.getReadWriteDataPointer();
   for (int i=0;i<fieldNameCount;i++)
-    for (int j=0;j<fnames->at(i).size();j++)
-      dp[i*maxlen+j] = fnames->at(i)[j];
+    for (int j=0;j<fnames.at(i).size();j++)
+      dp[i*maxlen+j] = fnames.at(i)[j];
   putDataElement(fieldNameText);
   int num = x.getLength();
   const Array *sp = (const Array *) x.getDataPointer();
@@ -673,7 +673,7 @@ void MatIO::putStructArray(const Array &x) {
 }
 
 void MatIO::putClassArray(const Array &x) {
-  string className = x.getClassName()->back();
+  string className = x.getClassName().back();
   Array classNameArray(FM_INT8,Dimensions(1,className.size()));
   int8* dp = (int8*) classNameArray.getDataPointer();
   for (int i=0;i<className.size();i++)

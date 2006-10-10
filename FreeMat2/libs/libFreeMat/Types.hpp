@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <QtGlobal>
+#include "RefVec.hpp"
 
 typedef quint8    logical;
 typedef qint8     int8;
@@ -57,5 +58,6 @@ typedef enum {
 } Class;
 
 typedef std::vector<std::string> stringVector;
+typedef RefVec<std::string> rvstring;
 
 #endif

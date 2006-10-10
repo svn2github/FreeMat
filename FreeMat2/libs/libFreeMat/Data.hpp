@@ -58,11 +58,11 @@ private:
   /**
    * The field names of the array - used only for structure array types.
    */
-  stringVector *fieldNames;
+  rvstring fieldNames;
   /**
    * The class name - only used for user-defined classes
    */
-  stringVector *className;
+  rvstring className;
 
   /**
    * Construct a Data object with the given arguments.
@@ -70,8 +70,8 @@ private:
    */
   Data(Class aClass, const Dimensions& dims, void *s, 
        bool sparseflag = false, 
-       stringVector* fields = NULL, 
-       stringVector* classname = NULL);
+       rvstring fields = rvstring(), 
+       rvstring classname = rvstring());
   /**
    * The destructor.  Calls freeDataBlock member function.
    */
@@ -95,8 +95,8 @@ private:
    */
   Data* putData(Class aClass, const Dimensions& dims, void *s, 
 		bool sparseflag = false, 
-		stringVector* fields = NULL,
-		stringVector* classname = NULL);
+		rvstring fields = rvstring(),
+		rvstring classname = rvstring());
   /**
    * Decrement the reference count (owners) by one.
    */
@@ -112,7 +112,7 @@ private:
   /**
    * Get the field names for the data block
    */
-  stringVector* getFieldNames() const;
+  rvstring getFieldNames() const;
   /**
    * Return true if this is a user-defined class
    */
@@ -120,7 +120,7 @@ private:
   /**
    * Return name of user-defined class
    */
-  stringVector* getClassName() const;
+  rvstring getClassName() const;
   /**
    * Set the dimensions for the data block.
    */
@@ -128,7 +128,7 @@ private:
   /**
    * Set the field names for the data block.
    */
-  void setFieldNames(stringVector* fields);
+  void setFieldNames(rvstring fields);
   /**
    * Get a read-write pointer to the data. 
    */

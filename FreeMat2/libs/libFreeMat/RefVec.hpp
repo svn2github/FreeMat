@@ -2,6 +2,7 @@
 #define __RefVec_hpp__
 
 #include <vector>
+#include "Exception.hpp"
 using namespace std;
 
 template <class T>
@@ -56,6 +57,11 @@ public:
     Release();
     p = copy.p;
     if (p) p->count++;
+  }
+  bool operator==(const RefVec& copy) {
+    if ((!p) && (!copy.p)) return true;
+    if ((!p) || (!copy.p)) return false;
+    return (p->data == copy.p->data);
   }
   unsigned size() const {
     if (!p) return 0;

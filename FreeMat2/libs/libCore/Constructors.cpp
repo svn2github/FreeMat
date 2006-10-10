@@ -503,19 +503,19 @@ ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
       return singleArrayVector(t);
     if (!t.isUserClass())
       throw Exception("can only convert objects (user-defined types) into structs");
-    t.setClassName(NULL);
+    t.setClassName(rvstring());
     return singleArrayVector(t);
   }
   if (arg.size() % 2)
     throw Exception("struct function requires pairs of field names and values");
   int pairCount = arg.size() / 2;
-  stringVector *names = new stringVector;
+  rvstring names;
   ArrayVector values(pairCount);
   for (int i=0;i<pairCount*2;i+=2) {
     if (!(arg[i].isString()))
       throw Exception("struct function requires pairs of field names and values");
     char *c = (arg[i].getContentsAsCString());
-    names->push_back(c);
+    names.push_back(c);
     Free(c);
     values[i/2] = arg[i+1];
   }

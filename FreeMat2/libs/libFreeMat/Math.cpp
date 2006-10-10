@@ -1199,7 +1199,12 @@ Array Add(Array A, Array B) {
   int Clen;
   bool sparse;
   Dimensions Cdim;
-  if (A.isScalar()) {
+  if (A.isScalar() && B.isScalar()) {
+    Clen = 1;
+    Astride = 0;
+    Bstride = 0;
+    Cdim = Dimensions(1,1);
+  } else if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
     Cdim = B.getDimensions();

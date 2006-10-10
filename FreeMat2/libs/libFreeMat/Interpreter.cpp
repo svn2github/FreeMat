@@ -1909,7 +1909,7 @@ void Interpreter::assignmentStatement(const tree &t, bool printIt) {
     // Get the variable of interest
     Array *lhs = context->lookupVariable(lhsname);
     // Does the variable exist?  If not, just do it the slow way
-    // Or is it a reference array?
+    // Or is it a referdence array?
     if (lhs == NULL || lhs->isSparse() ||
 	lhs->isReferenceType() || 
 	(lhs->getDataClass() != b.getDataClass()) ||
@@ -2206,7 +2206,7 @@ Array Interpreter::assignExpression(const tree &t, ArrayVector &value,
   int ctxt = t.context();
   if (t.numchildren() == 1) {
     if ((value.size() > 1) && !multipleLHS)
-      throw Exception("to many values in the rhs to match the left hand side assignment");
+      throw Exception("too many values in the rhs to match the left hand side assignment");
     Array retval(value[0]);
     value.pop_front();
     return retval;
@@ -3417,7 +3417,7 @@ ArrayVector Interpreter::rhsExpression(const tree &t, int lhsCount) {
   // class function... (unless overloading is turned off)
   treeVector indexExpr(t.children());
   indexExpr.erase(indexExpr.begin());
-  if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName()->back())) 
+  if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName().back())) 
     return ClassRHSExpression(r,indexExpr,this);
   return subsref(r,indexExpr);
 }
@@ -3762,7 +3762,7 @@ ArrayVector Interpreter::subsref(Array r, treeVector t) {
   for (unsigned index = 0;index < t.size();index++) {
     if (rv.size()>1) 
       throw Exception("Cannot reindex an expression that returns multiple values.");
-    if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName()->back()))
+    if (r.isUserClass() && !stopoverload && !inMethodCall(r.getClassName().back()))
       //CHECK
       return ClassRHSExpression(r,t,this);
     rv = subsrefSingle(r,t[index]);
@@ -3864,7 +3864,7 @@ void Interpreter::subassignSingle(Array *r, const tree &t, ArrayVector& value) {
 void Interpreter::subassign(Array *r, const tree &t, ArrayVector& value) {
   int ctxt = t.context();
   // Check for a class assignment
-  if (r && r->isUserClass() && !inMethodCall(r->getClassName()->back()) && !stopoverload) {
+  if (r && r->isUserClass() && !inMethodCall(r->getClassName().back()) && !stopoverload) {
     ClassAssignExpression(r,t,value,this);
     return;
   }

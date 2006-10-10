@@ -1903,7 +1903,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
 //Works
 void Interpreter::assignmentStatement(const tree &t, bool printIt) {
   if (t.first().numchildren() == 1) {
-    // This is an accelleration trick
+    // This is an acceleration trick
     Array b(expression(t.second()));
     string lhsname = t.first().first().text();
     // Get the variable of interest

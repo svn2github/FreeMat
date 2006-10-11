@@ -37,6 +37,7 @@
 #include <qapplication.h>
 #include <sys/types.h>
 #include <qeventloop.h>
+#include "VM.hpp"
 #include <QtCore>
 
 #ifdef WIN32
@@ -3520,6 +3521,9 @@ void Interpreter::evaluateString(string line, bool propogateExceptions) {
   try {
     pushDebug("Eval",EvalPrep(line));
     try {
+      VMStream vms;
+      CompileToVMStream(t,vms);
+      vms.PrintMe();
       block(t);
     } catch (InterpreterReturnException& e) {
       if (depth > 0) {

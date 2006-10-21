@@ -36,16 +36,17 @@ typedef enum {
   POWER,
   HERMITIAN,
   TRANSPOSE,
-  LOADI,
-  LOADF,  
-  LOADD,
-  LOADS,
-  LOADA,
   MOVE,
   MOVE_DOT,
+  MOVE_DYN,
   MOVE_PARENS,
+  MOVE_BRACES,
   PUSH,
-  POP
+  POP,
+  DCOLON,
+  UCOLON,
+  JIT,
+  RETURN
 } VMOpcode;
 
 /**
@@ -62,47 +63,19 @@ typedef enum {
  */
 typedef enum {
   NONE,
-  LITERALI,
-  LITERALD,
-  LITERALF,
-  LITERALS,
-  LITERALA,
-  ADDRESS,
+  LITERAL,
   REGISTER
 } VMOperandType;
-
-typedef union {
-} VMOperandValue;
 
 class VMOperand {
   friend class VMStream;
   friend class VMInstruction;
+  friend class VM;
   VMOperandType type;
-  union {
-    Array  *address;
-    uint8  uint8_value;
-    uint16 uint16_value;
-    uint32 uint32_value;
-    uint64 uint64_value;
-    int8   int8_value;
-    int16  int16_value;
-    int32  int32_value;
-    int64  int64_value;
-    float  float_value;
-    double double_value;
-    float  complex_value[2];
-    double dcomplex_value[2];
-  } scalar_value;
-  string string_value;
-  Array  array_value;
+  tindex value;
 public:
   VMOperand();
   VMOperand(VMOperandType type_t, tindex value_t);
-  VMOperand(VMOperandType type_t, int32 value_t);
-  VMOperand(VMOperandType type_t, double value_t);
-  VMOperand(VMOperandType type_t, float value_t);
-  VMOperand(VMOperandType type_t, string value_t);
-  VMOperand(VMOperandType type_t, Array value_t);
 };
 
 /**
@@ -114,6 +87,7 @@ public:
  */
 class VMInstruction {
   friend class VMStream;
+  friend class VM;
   VMOpcode op;
   VMOperand src1;
   VMOperand src2;
@@ -123,22 +97,52 @@ public:
 };
 
 class VMStream {
+  friend class VM;
   vector<VMInstruction> instr;
+  vector<Array> literals;
   map<string,tindex> vars;
+  tindex TempCount;
 public:
+  VMStream();
+  tindex GetNewTemporary();
+  uint32 GetLineNumber();
   void EmitOpCode(VMOpcode, tindex src1, tindex src2, tindex dst);
   void EmitOpCode(VMOpcode, tindex src1, VMOperand src2, tindex dst);
   void EmitOpCode(VMOpcode, tindex src1, tindex dst);
+  void EmitOpCode(VMOpcode, tindex src1);
+  void EmitOpCode(VMOpcode);
   void EmitOpCode(VMOpcode, VMOperand value, tindex dst);
   tindex LookupVariable(string name);
+  tindex AllocateLiteral(Array val);
   string GetAliasName(tindex);
+  string GetLiteralString(tindex);
   void PrintTriop(string name, VMInstruction ins);
   void PrintBiop(string name, VMInstruction ins);
+  void PrintUop(string name, VMInstruction ins);
   void PrintInstruction(VMInstruction ins);
   void PrintMe();
   void PrintOperand(VMOperand value);
 };
 
 void CompileToVMStream(const tree &t, VMStream &dst);
+
+void CustomStream(VMStream &dst);
+
+class VM {
+  vector<Array> symtab;
+  vector<Array> vstack;
+  VMStream mycode;
+  int ip;
+
+  VMOpcode OpCode();
+  const Array& Op1();
+  const Array& Op2();
+  const Array& DecodeOperand(const VMOperand&);
+  tindex Dst();
+
+public:
+  void Run(const VMStream &code);
+  void DumpVars();
+};
 
 #endif

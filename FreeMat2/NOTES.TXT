@@ -1,3 +1,7 @@
+The performance bottleneck for expressions like A(i,j) = B(j,i) is the complexity
+of the assign and subsref
+
+
 Performance is much better now.  I will make a release soon.  I still want to 
 complete the editor/debugger integration.
 

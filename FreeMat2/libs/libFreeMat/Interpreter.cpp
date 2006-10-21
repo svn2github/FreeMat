@@ -37,7 +37,6 @@
 #include <qapplication.h>
 #include <sys/types.h>
 #include <qeventloop.h>
-#include "VM.hpp"
 #include <QtCore>
 
 #ifdef WIN32
@@ -3521,9 +3520,6 @@ void Interpreter::evaluateString(string line, bool propogateExceptions) {
   try {
     pushDebug("Eval",EvalPrep(line));
     try {
-      VMStream vms;
-      CompileToVMStream(t,vms);
-      vms.PrintMe();
       block(t);
     } catch (InterpreterReturnException& e) {
       if (depth > 0) {
@@ -3786,7 +3782,7 @@ ArrayVector Interpreter::subsref(Array r, treeVector t) {
 // a(1,:) = 1;
 // a(:,end) = 5;
 void Interpreter::subsassignParen(Array *r, const tree &t, ArrayVector& value) {
-  ArrayVector m = varExpressionList(t.children(),*r);
+  ArrayVector m(varExpressionList(t.children(),*r));
   if (m.size() == 0)
     throw Exception("Expected indexing expression!");
   else if (m.size() == 1) 

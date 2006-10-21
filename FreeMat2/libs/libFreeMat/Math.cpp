@@ -1190,7 +1190,7 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
 //c = 1 + b
 //@>
 //!
-Array Add(Array A, Array B) {
+Array Add(Array A, Array B) { 
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"+");
   // Get a pointer to the function we ultimately need to execute

@@ -886,6 +886,35 @@ private:
    */
   ArrayVector subsref(Array r, treeVector t);
   /**
+   * Compute dereferences of a variable that are single valued
+   */
+
+  /**
+   * Compute A(expr1,expr2,...)
+   */
+  Array subsrefParenSimple(Array r, const tree &t);
+  /**
+   * Compute A{expr1,expr2,...}
+   */
+  Array subsrefBraceSimple(Array r, const tree &t);
+  /**
+   * Compute A.fname
+   */
+  Array subsrefDotSimple(Array r, const tree &t);
+  /**
+   * Compute A.(expr)
+   */
+  Array subsrefDotDynSimple(Array r, const tree &t);
+  /**
+   * Same as subsref, but for the case of a single dereference
+   */
+  Array subsrefSingleSimple(Array r, const tree &t);
+  /**
+   * Compute complicated dereferences of a variable, e.g. A.foo{1:2}(9)
+   */
+  Array subsrefSimple(Array r, const tree &t);
+  
+  /**
    * Assign A(expr1,expr2) = value
    */
   void subsassignParen(Array *r, const tree &t, ArrayVector& value);

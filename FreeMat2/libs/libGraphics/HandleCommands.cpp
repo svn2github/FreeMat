@@ -1168,8 +1168,10 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
 	T.push_back(I);
 	T.push_back(J);
 	Array C(A.getNDimSubset(T));
-	ArrayVector Q(singleArrayVector(C));
-	B.setNDimSubset(T,Q[0]);
+	ArrayVector R;
+	R.push_back(J);
+	R.push_back(I);
+	B.setNDimSubset(R,C);
       }
   } else if (runtype == 28) {
     Array A(FM_FLOAT,Dimensions(512,512));

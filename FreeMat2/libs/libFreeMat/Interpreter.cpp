@@ -3384,10 +3384,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 
 //Works
 ArrayVector Interpreter::rhsExpression(const tree &t, int lhsCount) {
-  Array r, q, *ptr;
-  Array n, p;
-  ArrayVector m;
-  ArrayVector rv;
+  Array r, *ptr;
   int peerCnt;
   int dims;
   bool isVar;
@@ -3404,10 +3401,8 @@ ArrayVector Interpreter::rhsExpression(const tree &t, int lhsCount) {
     isVar = false;
   if (isVar && (t.numchildren() == 1))
     return singleArrayVector(r);
-  if (!isVar) {
-    m = functionExpression(t,lhsCount,false);
-    return m;
-  }
+  if (!isVar) 
+    return functionExpression(t,lhsCount,false);
   // Check for a scalar function pointer element
   if (r.getDataClass() == FM_FUNCPTR_ARRAY &&
       r.isScalar()) {
@@ -3774,6 +3769,73 @@ ArrayVector Interpreter::subsref(Array r, treeVector t) {
   }
   return rv;
 }
+
+Array Interpreter::subsrefParenSimple(Array r, const tree &t) {
+  ArrayVector m = varExpressionList(t.children(),r);
+  if (m.size() == 0) 
+    throw Exception("Expected indexing expression!");
+  else if (m.size() == 1) 
+    return r.getVectorSubset(m[0]);
+  else 
+    return r.getNDimSubset(m);
+}
+  
+// Works
+// a = {1,2,3;4,5,6}
+// b = a{2,end}
+Array Interpreter::subsrefBraceSimple(Array r, const tree &t) {
+  ArrayVector m = varExpressionList(t.children(),r);
+  if (m.size() == 0) 
+    throw Exception("Expected indexing expression!");
+  else if (m.size() == 1)
+    return(r.getVectorContentsAsList(m[0])[0]);
+  else
+    return(r.getNDimContentsAsList(m)[0]);
+}
+  
+// Works
+//a.foo = 32
+//g = a.foo
+Array Interpreter::subsrefDotSimple(Array r, const tree &t) {
+  return r.getFieldAsList(t.first().text())[0];
+}
+  
+// Works
+//a.foo = 34
+//h = 'foo'
+//g = a.(h)
+Array Interpreter::subsrefDotDynSimple(Array r, const tree &t) {
+  char *field;
+  try {
+    Array fname(expression(t.first()));
+    field = fname.getContentsAsCString();
+  } catch (Exception &e) {
+    throw Exception("dynamic field reference to structure requires a string argument");
+  }
+  return r.getFieldAsList(field)[0];
+}
+
+// Works
+Array Interpreter::subsrefSingleSimple(Array r, const tree &t) {
+  if (t.is(TOK_PARENS))
+    return(subsrefParenSimple(r,t));
+  else if (t.is(TOK_BRACES))
+    return(subsrefBraceSimple(r,t));
+  else if (t.is('.'))
+    return(subsrefDotSimple(r,t));
+  else if (t.is(TOK_DYN))
+    return(subsrefDotDynSimple(r,t));
+}
+  
+//  Works
+// p(5).foo{2} = 'hello'
+// b = p(5).foo{2}(2:end)
+Array Interpreter::subsrefSimple(Array r, const tree& t) {
+  for (unsigned index = 1;index < t.numchildren();index++) 
+    r = subsrefSingleSimple(r,t.child(index));
+  return r;
+}
+
 
 // Works
 // a = [];

@@ -130,7 +130,7 @@ void CustomStream(VMStream &dst);
 
 class VM {
   vector<Array> symtab;
-  vector<Array> vstack;
+  ArrayVector vstack;
   VMStream mycode;
   int ip;
 
@@ -139,9 +139,10 @@ class VM {
   const Array& Op2();
   const Array& DecodeOperand(const VMOperand&);
   tindex Dst();
-
+  Array Parens(Array var, const Array &cnt);
 public:
   void Run(const VMStream &code);
+  void Exec();
   void DumpVars();
 };
 

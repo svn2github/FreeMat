@@ -38,7 +38,7 @@ tindex VMStream::LookupVariable(string name) {
 
 void VM::DumpVars() {
   for (map<string,tindex>::iterator i=mycode.vars.begin(); i!= mycode.vars.end(); i++) 
-    cout << "Variable " << i->first << " = " << ArrayToPrintableString(symtab[i->second]) << "\n";
+    cout << "Variable " << i->first << " = " << ArrayToPrintableString(symtab[i->second]) << "\r\n";
 }
 
 string VMStream::GetAliasName(tindex n) {
@@ -90,7 +90,7 @@ void VMStream::PrintTriop(string name, VMInstruction ins) {
   PrintOperand(ins.src2);
   cout << ",";
   PrintOperand(ins.dst);
-  cout << "\n";
+  cout << "\r\n";
 }
 
 void VMStream::PrintBiop(string name, VMInstruction ins) {
@@ -98,13 +98,13 @@ void VMStream::PrintBiop(string name, VMInstruction ins) {
   PrintOperand(ins.src1);
   cout << ",";
   PrintOperand(ins.dst);
-  cout << "\n";
+  cout << "\r\n";
 }
 
 void VMStream::PrintUop(string name, VMInstruction ins) {
   cout << name << "\t";
   PrintOperand(ins.src1);
-  cout << "\n";
+  cout << "\r\n";
 }
 
 void VMStream::PrintInstruction(VMInstruction ins) {
@@ -206,16 +206,16 @@ void VMStream::PrintInstruction(VMInstruction ins) {
     PrintTriop("JIT",ins);
     break;
   case RETURN:
-    cout << "RET\n";
+    cout << "RET\r\n";
     break;
   }
 }
 
 void VMStream::PrintMe() {
-  cout << "****************************\n";
+  cout << "****************************\r\n";
   for (int i=0;i<instr.size();i++)
     PrintInstruction(instr[i]);
-  cout << "****************************\n";
+  cout << "****************************\r\n";
 }
 
 tindex VMStream::AllocateLiteral(Array val) {
@@ -430,7 +430,7 @@ void CompileStatement(const tree &t, VMStream &dst) {
   else if (t.is(TOK_STATEMENT))
     CompileStatementType(t.first(),dst,true);
   else 
-    throw Exception("Unexpected statement type!\n");
+    throw Exception("Unexpected statement type!\r\n");
 }
 
 void CompileBlock(const tree &t, VMStream &dst) {
@@ -440,10 +440,11 @@ void CompileBlock(const tree &t, VMStream &dst) {
 }
 
 void CompileToVMStream(const tree &t, VMStream &dst) {
+  t.print();
   try {
     CompileBlock(t,dst);
   } catch (Exception &e) {
-    cout << "Error: " << e.getMessageCopy() << "\n";
+    cout << "Error: " << e.getMessageCopy() << "\r\n";
   }
   dst.EmitOpCode(RETURN);
 }
@@ -459,7 +460,6 @@ const Array & VM::Op1() {
 const Array & VM::Op2() {
   return DecodeOperand(mycode.instr[ip].src2);
 }
-
 tindex VM::Dst() {
   return mycode.instr[ip].dst.value;
 }
@@ -473,10 +473,24 @@ const Array & VM::DecodeOperand(const VMOperand & op) {
 }
 
 void VM::Run(const VMStream &code) {
-  ip = 0;
   mycode = code;
   for (int i=0;i<100;i++)
     symtab.push_back(Array::emptyConstructor());
+  for (int j=0;j<512*512;j++) {
+    ip = 0;
+    Exec();
+  }
+}
+
+Array VM::Parens(Array var, const Array &cnt) {
+  Array ret(var.getNDimSubset(vstack));
+  int popcount(ArrayToInt32(cnt));
+  for (int k=0;k<popcount;k++)
+    vstack.pop_back();
+  return ret;
+}
+
+void VM::Exec() {
   while (1) {
     switch(OpCode()) {
     case ADD: 
@@ -583,10 +597,10 @@ void VM::Run(const VMStream &code) {
 //       symtab[Dst()] = DYN(Op1(),Op2());
 //       ip++;
 //       break;
-//     case MOVE_PARENS:
-//       symtab[Dst()] = PARENS(Op1(),Op2());
-//       ip++;
-//       break;
+    case MOVE_PARENS:
+      symtab[Dst()] = Parens(Op1(),Op2());
+      ip++;
+       break;
 //     case MOVE_BRACES:
 //       symtab[Dst()] = BRACES(Op1(),Op2());
 //       ip++;

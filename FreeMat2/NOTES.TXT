@@ -1,3 +1,15 @@
+Consider the vector versus scalar issue.  An assignment like:
+
+LHS = RHS
+
+Must always be single valued.  The only time a multivalued assignment can
+be made is 
+
+[LHS] = RHS
+
+in which case the RHS can return multiple values.  It would seem as though
+it is reasonable to have two seperate paths for these expressions.
+
 The performance bottleneck for expressions like A(i,j) = B(j,i) is the complexity
 of the assign and subsref
 

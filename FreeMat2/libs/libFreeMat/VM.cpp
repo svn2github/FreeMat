@@ -30,6 +30,14 @@ void VMStream::EmitOpCode(VMOpcode code, tindex left, VMOperand right, tindex de
   instr.push_back(VMInstruction(code,VMOperand(REGISTER,left),right,VMOperand(REGISTER,dest)));
 }
 
+void VMStream::EmitOpCode(VMOpcode code, VMOperand left, VMOperand right, tindex dest) {
+  instr.push_back(VMInstruction(code,left,right,VMOperand(REGISTER,dest)));
+}
+
+bool VMStream::IsVariableDefined(string name) {
+  return (vars.count(name) != 0);
+}
+
 tindex VMStream::LookupVariable(string name) {
   if (vars.count(name) == 0)
     vars[name] = GetNewTemporary();
@@ -208,6 +216,12 @@ void VMStream::PrintInstruction(VMInstruction ins) {
   case RETURN:
     cout << "RET\r\n";
     break;
+  case NEWFRAME:
+    cout << "NEW\r\n";
+    break;
+  case CALL:
+    PrintTriop("CAL",ins);
+    break;
   }
 }
 
@@ -225,20 +239,36 @@ tindex VMStream::AllocateLiteral(Array val) {
 
 tindex CompileExpression(const tree &t, VMStream &dst);
 
+tindex CompileFunctionCall(const tree &t, VMStream &dst, tindex output) {
+  string fname = t.first().text();
+  const tree &args(t.second());
+  dst.EmitOpCode(NEWFRAME);
+  for (int i=0;i<args.numchildren();i++) 
+    dst.EmitOpCode(PUSH,CompileExpression(args.child(i),dst));
+  dst.EmitOpCode(CALL,
+		 VMOperand(LITERAL,dst.AllocateLiteral(Array::stringConstructor(fname))),
+		 VMOperand(LITERAL,dst.AllocateLiteral(Array::int32Constructor(1))),output);
+}
+
 // If we have something like:
 // b = p(5).goo{2}(1,3)
+//
+// If p is a variable this is a variable dereference
+//
 tindex CompileVariableDereference(const tree &t, VMStream &dst, tindex output) {
   tindex input = dst.LookupVariable(t.first().text());
   for (int i=0;i<t.numchildren()-1;i++) {
     tindex out = dst.GetNewTemporary();
     const tree &s(t.child(i+1));
     if (s.is(TOK_PARENS)) {
+      dst.EmitOpCode(NEWFRAME);
       for (int j=0;j<s.numchildren();j++)
 	dst.EmitOpCode(PUSH,CompileExpression(s.child(j),dst));
       dst.EmitOpCode(MOVE_PARENS,input,
 		     VMOperand(LITERAL,
 			       dst.AllocateLiteral(Array::int32Constructor((int32)s.numchildren()))),out);
     } else if (s.is(TOK_BRACES)) {
+      dst.EmitOpCode(NEWFRAME);
       for (int j=0;j<s.numchildren();j++)
 	dst.EmitOpCode(PUSH,CompileExpression(s.child(j),dst));
       dst.EmitOpCode(MOVE_BRACES,input,
@@ -256,11 +286,17 @@ tindex CompileVariableDereference(const tree &t, VMStream &dst, tindex output) {
   dst.EmitOpCode(MOVE,input,output);
 }
 
+// A variable deref is a variable lookup if:
 tindex CompileExpression(const tree &t, VMStream &dst) {
   tindex retval = dst.GetNewTemporary();
   switch(t.token()) {
   case TOK_VARIABLE:
-    CompileVariableDereference(t,dst,retval);
+    if (dst.IsVariableDefined(t.first().text())) 
+// 	(t.numchildren() > 2) ||
+// 	(!t.second().is(MOVE_PARENS)))
+      CompileVariableDereference(t,dst,retval);
+    else
+      CompileFunctionCall(t,dst,retval);
     break;
   case TOK_INTEGER:
   case TOK_FLOAT:
@@ -343,6 +379,7 @@ tindex CompileExpression(const tree &t, VMStream &dst) {
     break;
   case ':':
     if (t.first().is(':')) {
+      dst.EmitOpCode(NEWFRAME);
       dst.EmitOpCode(PUSH,CompileExpression(t.first().first(),dst));
       dst.EmitOpCode(PUSH,CompileExpression(t.first().second(),dst));
       dst.EmitOpCode(PUSH,CompileExpression(t.second(),dst));
@@ -476,19 +513,42 @@ void VM::Run(const VMStream &code) {
   mycode = code;
   for (int i=0;i<100;i++)
     symtab.push_back(Array::emptyConstructor());
-  for (int j=0;j<512*512;j++) {
-    ip = 0;
-    Exec();
-  }
+  ip = 0;
+  Exec();
 }
 
-Array VM::Parens(Array var, const Array &cnt) {
-  Array ret(var.getNDimSubset(vstack));
-  int popcount(ArrayToInt32(cnt));
-  for (int k=0;k<popcount;k++)
-    vstack.pop_back();
+const Array& VM::Back() {
+  return vstack.back().back();
+}
+
+void VM::Pop() {
+  vstack.back().pop_back();
+}
+
+void VM::Push(const Array & a) {
+  vstack.back().push_back(a);
+}
+
+void VM::NewFrame() {
+  vstack.push_back(ArrayVector());
+}
+
+void VM::DeleteFrame() {
+  vstack.pop_back();
+}
+
+ArrayVector VM::Frame() {
+  return (vstack.back());
+}
+
+Array VM::Parens(Array var) {
+  ArrayVector args(Frame());
+  Array ret(var.getNDimSubset(args));
+  DeleteFrame();
   return ret;
 }
+
+ArrayVector SinFunction(int nargout, const ArrayVector& arg);
 
 void VM::Exec() {
   while (1) {
@@ -598,7 +658,7 @@ void VM::Exec() {
 //       ip++;
 //       break;
     case MOVE_PARENS:
-      symtab[Dst()] = Parens(Op1(),Op2());
+      symtab[Dst()] = Parens(Op1());
       ip++;
        break;
 //     case MOVE_BRACES:
@@ -606,18 +666,18 @@ void VM::Exec() {
 //       ip++;
 //       break;
     case PUSH:
-      vstack.push_back(Op1());
+      Push(Op1());
       ip++;
       break;
     case POP:
-      vstack.pop_back();
+      Pop();
       ip++;
       break;
     case DCOLON: 
       {
-	Array a3(vstack.back()); vstack.pop_back();
-	Array a2(vstack.back()); vstack.pop_back();
-	Array a1(vstack.back()); vstack.pop_back();
+	Array a3(Back()); Pop();
+	Array a2(Back()); Pop();
+	Array a1(Back()); Pop();
 	symtab[Dst()] = DoubleColon(a1,a2,a3);
       }
       ip++;
@@ -634,6 +694,15 @@ void VM::Exec() {
       break;
     case RETURN:
       return;
+    case NEWFRAME:
+      NewFrame();
+      ip++;
+      break;
+    case CALL:
+      ArrayVector n(SinFunction(ArrayToInt32(Op2()),Frame()));
+      DeleteFrame();
+      symtab[Dst()] = n[0];
+      ip++;
     }
    }
 }

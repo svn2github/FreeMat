@@ -46,7 +46,9 @@ typedef enum {
   DCOLON,
   UCOLON,
   JIT,
-  RETURN
+  RETURN,
+  NEWFRAME,
+  CALL
 } VMOpcode;
 
 /**
@@ -108,10 +110,12 @@ public:
   uint32 GetLineNumber();
   void EmitOpCode(VMOpcode, tindex src1, tindex src2, tindex dst);
   void EmitOpCode(VMOpcode, tindex src1, VMOperand src2, tindex dst);
+  void EmitOpCode(VMOpcode, VMOperand src1, VMOperand src2, tindex dst);
   void EmitOpCode(VMOpcode, tindex src1, tindex dst);
   void EmitOpCode(VMOpcode, tindex src1);
   void EmitOpCode(VMOpcode);
   void EmitOpCode(VMOpcode, VMOperand value, tindex dst);
+  bool IsVariableDefined(string name);
   tindex LookupVariable(string name);
   tindex AllocateLiteral(Array val);
   string GetAliasName(tindex);
@@ -130,7 +134,7 @@ void CustomStream(VMStream &dst);
 
 class VM {
   vector<Array> symtab;
-  ArrayVector vstack;
+  vector<ArrayVector> vstack;
   VMStream mycode;
   int ip;
 
@@ -139,7 +143,13 @@ class VM {
   const Array& Op2();
   const Array& DecodeOperand(const VMOperand&);
   tindex Dst();
-  Array Parens(Array var, const Array &cnt);
+  Array Parens(Array var);
+  const Array& Back();
+  void Pop();
+  void Push(const Array & a);
+  void NewFrame();
+  void DeleteFrame();
+  ArrayVector Frame();
 public:
   void Run(const VMStream &code);
   void Exec();

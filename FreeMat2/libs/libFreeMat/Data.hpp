@@ -75,12 +75,18 @@ private:
   /**
    * The destructor.  Calls freeDataBlock member function.
    */
-  ~Data();
+  ~Data() {
+    freeDataBlock();
+  }
+
   /**
    * Get a copy to us - increments the data counter by one, and
    * returns the "this" pointer.
    */
-  Data* getCopy();
+  Data* getCopy() {
+    owners++;
+    return this;
+  }
   /**
    * Change the contents of the Data object.  The data pointer,
    * class and size are given.  The behavior/return value depends
@@ -100,43 +106,43 @@ private:
   /**
    * Decrement the reference count (owners) by one.
    */
-  int deleteCopy();
+  inline int deleteCopy() {return owners--;}
   /**
    * Get a read-only pointer to the data.
    */
-  const void* getData() const;
+  inline const void* getData() const {return cp;}
   /**
    * Get the dimensions for the data block.
    */
-  const Dimensions& getDimensions() const;
+  inline const Dimensions& getDimensions() const {return dimensions;}
   /**
    * Get the field names for the data block
    */
-  rvstring getFieldNames() const;
+  inline rvstring getFieldNames() const {return fieldNames;}
   /**
    * Return true if this is a user-defined class
    */
-  bool isUserClass() const;
+  inline bool isUserClass() const {return (!className.empty());}
   /**
    * Return name of user-defined class
    */
-  rvstring getClassName() const;
+  inline rvstring getClassName() const {return className;}
   /**
    * Set the dimensions for the data block.
    */
-  void setDimensions(const Dimensions&);
+  inline void setDimensions(const Dimensions& dim) {dimensions = dim;}
   /**
    * Set the field names for the data block.
    */
-  void setFieldNames(rvstring fields);
+  inline void setFieldNames(rvstring fields) {fieldNames = fields;}
   /**
    * Get a read-write pointer to the data. 
    */
-  void* getWriteableData();
+  inline void* getWriteableData() {return cp;}
   /**
    * Get the number of owners.
    */
-  int numberOfOwners() const;
+  inline int numberOfOwners() const {return owners;}
   /**
    * If the data pointer is non-null, we take one of
    * the following options:
@@ -148,7 +154,7 @@ private:
   /**
    * Check sparsity.
    */
-  bool isSparse() const;
+  inline bool isSparse() const {return sparse;}
 };
 
 #endif

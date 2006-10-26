@@ -646,31 +646,40 @@ Array Interpreter::expression(const tree &t) {
   switch(t.token()) {
   case TOK_VARIABLE: 
     {
-      // Special case expressions of the type <ident>
-      if (t.numchildren() == 1) {
-	Array *ptr = context->lookupVariable(t.first().text());
-	if (ptr) 
-	  retval = *ptr;
-	else {
-	  ArrayVector m(functionExpression(t,1,false));
-	  if (m.empty()) {
-	    retval = Array::emptyConstructor();
-	  } else {
-	    if (m.size() > 1) 
-	      warningMessage("discarding one or more outputs from an expression");
-	    retval = m[0];
-	  }
-	}
-      } else {
-	ArrayVector m(rhsExpression(t));
-	if (m.empty()) {
-	  retval = Array::emptyConstructor();
-	} else {
-	  if (m.size() > 1) 
-	    warningMessage("discarding one or more outputs from an expression");
-	  retval = m[0];
-	}
-      }
+      return rhs(t);
+//       // Special case expressions of the type <ident>
+//       if (t.numchildren() == 1) {
+// 	Array *ptr = context->lookupVariable(t.first().text());
+// 	if (ptr) 
+// 	  retval = *ptr;
+// 	else {
+// 	  ArrayVector m(functionExpression(t,1,false));
+// 	  if (m.empty()) {
+// 	    retval = Array::emptyConstructor();
+// 	  } else {
+// 	    if (m.size() > 1) 
+// 	      warningMessage("discarding one or more outputs from an expression");
+// 	    retval = m[0];
+// 	  }
+// 	}
+//       } else {
+// 	if (t.first().text() == "C") {
+// 	  Array *ptr = context->lookupVariable(t.first().text());
+// 	  Array ndx(expression(t.second().first()));
+// 	  retval = ptr->getVectorSubset(ndx);
+// 	  //	  retval = subsrefSimple(*ptr,t);
+// 	  //	  return Array::emptyConstructor();
+// 	} else {
+// 	  ArrayVector m(rhsExpression(t));
+// 	  if (m.empty()) {
+// 	    retval = Array::emptyConstructor();
+// 	  } else {
+// 	    if (m.size() > 1) 
+// 	      warningMessage("discarding one or more outputs from an expression");
+// 	    retval = m[0];
+// 	  }
+// 	}
+//       }
     }
     break;
   case TOK_INTEGER:
@@ -3382,6 +3391,59 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 //a value of pi.
 //!
 
+Array Interpreter::rhs(const tree &t) {
+  Array *ptr = context->lookupVariable(t.first().text());
+  if (!ptr) {
+    ArrayVector m(functionExpression(t,1,false));
+    return m[0];
+  }
+  if (t.numchildren() == 1)
+    return *ptr;
+  if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->getClassName().back())) {
+    treeVector indexExpr(t.children());
+    indexExpr.erase(indexExpr.begin());
+    ArrayVector m(ClassRHSExpression(*ptr,indexExpr,this));
+    return m[0];
+  }
+  Array r(*ptr);
+  for (unsigned index = 1;index < t.numchildren();index++) {
+    const tree &s(t.child(index));
+    if (s.is(TOK_PARENS)) {
+      if (s.numchildren() == 1) {
+	Array m(expression(s.first()));
+	r = r.getVectorSubset(m);
+      } else {
+	ArrayVector m;
+	for (unsigned p = 0;p < s.numchildren(); p++)
+	  m.push_back(expression(s.child(p)));
+	r = r.getNDimSubset(m);
+      }
+    } else if (s.is(TOK_BRACES)) {
+      if (s.numchildren() == 1) {
+	Array m(expression(s.first()));
+	r = r.getVectorContents(m);
+      } else {
+// 	ArrayVector m;
+// 	for (unsigned p = 0;p < s.numchildren(); p++)
+// 	  m.push_back(expression(s.child(p)));
+// 	r = r.getNDimContents(m);
+      }
+    } else if (s.is('.')) {
+      r = r.getField(s.first().text());
+    } else if (s.is(TOK_DYN)) {
+      const char *field;
+      try {
+	Array fname(expression(s.first()));
+	field = fname.getContentsAsCString();
+      } catch (Exception &e) {
+	throw Exception("dynamic field reference to structure requires a string argument");
+      }
+      r = r.getField(field);
+    }
+  }
+  return r;
+}
+
 //Works
 ArrayVector Interpreter::rhsExpression(const tree &t, int lhsCount) {
   Array r, *ptr;
@@ -3831,9 +3893,28 @@ Array Interpreter::subsrefSingleSimple(Array r, const tree &t) {
 // p(5).foo{2} = 'hello'
 // b = p(5).foo{2}(2:end)
 Array Interpreter::subsrefSimple(Array r, const tree& t) {
-  for (unsigned index = 1;index < t.numchildren();index++) 
-    r = subsrefSingleSimple(r,t.child(index));
-  return r;
+   for (unsigned index = 1;index < t.numchildren();index++) {
+     const tree &s(t.child(index));
+     if (s.is(TOK_PARENS)) {
+       ArrayVector m(varExpressionList(s.children(),r));
+       if (m.size() == 1)
+	 r = r.getVectorSubset(m[0]);
+       else
+	 r = r.getNDimSubset(m);
+     }
+   }
+   return r;
+//     }      return(subsrefParenSimple(r,t));
+//   else if (t.is(TOK_BRACES))
+//     return(subsrefBraceSimple(r,t));
+//   else if (t.is('.'))
+//     return(subsrefDotSimple(r,t));
+//   else if (t.is(TOK_DYN))
+//     return(subsrefDotDynSimple(r,t));
+    
+//     r = subsrefSingleSimple(r,t.child(index));
+//   }
+//   return r;
 }
 
 

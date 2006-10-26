@@ -87,7 +87,9 @@ public:
   /**
    * Get the number of currently allocated dimensions.
    */
-  int getLength() const;
+  inline int getLength() const {
+    return length;
+  }
   /**
    * Update the cache variables.  Call this when
    * finished mucking with dimension data!
@@ -102,7 +104,11 @@ public:
    * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
    * of length, and $$a_i$$ is equivalent to data[i].
    */
-  int getElementCount();
+  inline int getElementCount() {
+    if (!m_cache_valid) updateCacheVariables();
+    return m_cache_getElementCount;
+  }
+
   int getElementCountConst() const;
   /**
    * Map the given point using the current Dimensions.  If the argument
@@ -118,23 +124,36 @@ public:
    * Returns the first dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  int getRows();
+  inline int getRows() {
+    if (!m_cache_valid) updateCacheVariables();
+    return m_cache_getRows;    
+  }
   /**
    * Returns the second dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  int getColumns();
+  inline int getColumns() {
+    if (!m_cache_valid) updateCacheVariables();
+    return m_cache_getColumns;
+  }
   /**
    * Returns the requested dimension, or a 1 if the requested dimension
    * exceeds the currently allocated number of dimensions.  Unlike
    * the access operator, this call does not modify the contents of
    * the class.
    */
-  int getDimensionLength(int arg) const;
+  inline int getDimensionLength(int arg) const {
+    if (length <= arg)
+      return 1;
+    else
+      return data[arg];
+  }
   /**
    * Less verbose synonym
    */
-  int get(int arg) const;
+  inline int get(int arg) const {
+    return getDimensionLength(arg);
+  }
   /**
    * A synonym for (*this)[dim] = len.
    */
@@ -142,7 +161,9 @@ public:
   /**
    * Less verbose synonym
    */
-  void set(int dim, int len);  
+  inline void set(int dim, int len) {
+    setDimensionLength(dim,len);
+  }
   /**
    * Expand our dimensions so as to include the given point.  This operation
    * involves a sequence of operations.  Let $$b$$ denote the argument, and

@@ -81,14 +81,6 @@ int Dimensions::getMax() {
   return maxL;
 }
 
-int Dimensions::getLength() const{
-  return length;
-}
-
-// int* Dimensions::getDimensionData() const{
-//   return (int *) &data[0];
-// }
-
 void Dimensions::updateCacheVariables() {
   m_cache_getElementCount = 0;
   if (length == 0) 
@@ -116,10 +108,6 @@ void Dimensions::updateCacheVariables() {
   m_cache_valid = true;
 }
 
-int Dimensions::getElementCount() {
-  if (!m_cache_valid) updateCacheVariables();
-  return m_cache_getElementCount;
-}
 
 int Dimensions::getElementCountConst() const {
   int retval = 0;
@@ -133,26 +121,6 @@ int Dimensions::getElementCountConst() const {
   return retval;
 }
 
-int Dimensions::getRows() {
-  if (!m_cache_valid) updateCacheVariables();
-  return m_cache_getRows;
-}
-
-int Dimensions::getColumns() { 
-  if (!m_cache_valid) updateCacheVariables();
-  return m_cache_getColumns;
-}
-
-int Dimensions::getDimensionLength(int arg) const {
-  if (length <= arg)
-    return 1;
-  else
-    return data[arg];
-}
-
-int Dimensions::get(int arg) const {
-  return getDimensionLength(arg);
-}
 
 void Dimensions::setDimensionLength(int dim, int len) {
   if (dim >= maxDims )
@@ -165,10 +133,6 @@ void Dimensions::setDimensionLength(int dim, int len) {
   }
   data[dim] = len;
   m_cache_valid = false;
-}
-
-void Dimensions::set(int dim, int len) {
-  setDimensionLength(dim,len);
 }
 
 int Dimensions::mapPoint(const Dimensions& point) {

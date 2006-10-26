@@ -33,15 +33,6 @@ Data::Data(Class aClass, const Dimensions& dims, void *s, bool sparseflag,
   DataMakeCount++;
 } 
 
-Data::~Data() { 
-  freeDataBlock(); 
-}
-
-Data* Data::getCopy() { 
-  owners++; 
-  return this; 
-}
-
 Data* Data::putData(Class aClass, const Dimensions& dims, void *s, 
 		    bool sparseflag, rvstring fields, 
 		    rvstring classname) {
@@ -61,46 +52,6 @@ Data* Data::putData(Class aClass, const Dimensions& dims, void *s,
   }
 }
 
-int Data::deleteCopy() { 
-  return owners--; 
-}
-
-const void* Data::getData() const {
-  return cp;
-}
-
-void* Data::getWriteableData() {
-  return cp;
-}
-
-const Dimensions& Data::getDimensions() const {
-  return dimensions;
-}
-
-rvstring Data::getFieldNames() const {
-  return fieldNames;
-}
-
-rvstring Data::getClassName() const {
-  return className;
-}
-
-bool Data::isUserClass() const {
-  return (!className.empty());
-}
-
-void Data::setDimensions(const Dimensions& dim) {
-  dimensions = dim;
-}
-
-void Data::setFieldNames(rvstring fields) {
-  fieldNames = fields;
-}
-
-int Data::numberOfOwners() const { 
-  return owners; 
-}
-
 void Data::freeDataBlock() {
   if (cp) {
     if (dataClass == FM_FUNCPTR_ARRAY) {
@@ -116,7 +67,4 @@ void Data::freeDataBlock() {
   }
 }
   
-bool Data::isSparse() const {
-  return sparse;
-}
 

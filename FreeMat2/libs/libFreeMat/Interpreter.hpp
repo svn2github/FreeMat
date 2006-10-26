@@ -582,6 +582,7 @@ private:
    *    - 
    */
   ArrayVector rhsExpression(const tree &t, int lhsCount = 1);
+  Array rhs(const tree &t);
   /**
    * Look up an identifier as a potential function name, using a
    * rescan if the identifier is not found on the first pass.

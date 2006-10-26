@@ -1193,35 +1193,6 @@ const bool Array::testForCaseMatch(Array x) const  {
   return foundMatch;
 }
 
-/**
- * Returns TRUE if we are empty (we have no elements).
- */
-const bool Array::isEmpty() const {
-  return ((dp == NULL) || (getLength() == 0) || 
-	  (!dp->getData()));
-}
-
-/*
- * Returns TRUE if we have only a single element.
- */
-const bool Array::isScalar() const {
-  if (isEmpty()) return false;
-  return dp->dimensions.isScalar();
-}
-
-/**
- * Returns TRUE if we are 2-Dimensional.
- */
-const bool Array::is2D() const {
-  return dp->dimensions.is2D();
-}
-
-/**
- * Returns TRUE if we are a vector.
- */
-const bool Array::isVector() const {
-  return dp->dimensions.isVector();
-}
 
 /**
  * Returns TRUE if we are a reference type (cell array or
@@ -1233,35 +1204,6 @@ const bool Array::isReferenceType() const {
   return ((dp->dataClass == FM_CELL_ARRAY) ||
 	  (dp->dataClass == FM_STRUCT_ARRAY) ||
 	  (dp->dataClass == FM_FUNCPTR_ARRAY));
-}
-
-/**
- * Returns TRUE if we are a complex data type.
- */
-const bool Array::isComplex() const {
-  return (dp->dataClass == FM_DCOMPLEX || dp->dataClass == FM_COMPLEX);
-}
-
-const bool Array::isIntegerClass() const {
-  return (dp->dataClass < FM_FLOAT);
-}
-
-/**
- * Returns TRUE if we are a real data type.
- */
-const bool Array::isReal() const {
-  return (!isComplex());
-}
-
-/**
- * Returns TRUE if we are a string.
- */
-const bool Array::isString() const {
-  return (dp->dataClass == FM_STRING);
-}
-
-const bool Array::isSparse() const {
-  return (dp->sparse);
 }
 
 void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex, 
@@ -2802,6 +2744,23 @@ Array Array::getDiagonal(int diagonalOrder)  {
   }
 }
 
+Array Array::getField(std::string fieldName) {
+  if (dp->dataClass != FM_STRUCT_ARRAY)
+    throw Exception("Attempt to apply field-indexing to non structure-array object.");
+  if (isSparse())
+    throw Exception("getField not supported for sparse arrays.");
+  if (isEmpty()) return Array();
+  if (!isScalar()) 
+    throw Exception("Cannot apply structure indexing to arrays in this context.");
+  const Array *qp = (const Array*) dp->getData();
+  int N = getLength();
+  int fieldCount = dp->fieldNames.size();
+  int ndx = getFieldIndex(fieldName);
+  if (ndx < 0)
+    throw Exception(std::string("Reference to non-existent field ") + fieldName);
+  return qp[ndx];
+}
+
 ArrayVector Array::getFieldAsList(std::string fieldName)  {
   if (dp->dataClass != FM_STRUCT_ARRAY)
     throw Exception("Attempt to apply field-indexing to non structure-array object.");
@@ -2819,6 +2778,30 @@ ArrayVector Array::getFieldAsList(std::string fieldName)  {
   for (i=0;i<N;i++)
     m.push_back(qp[i*fieldCount+ndx]);
   return m;
+}
+
+Array Array::getVectorContents(Array& index)  {
+  if (dp->dataClass != FM_CELL_ARRAY)
+    throw Exception("Attempt to apply contents-indexing to non cell-array object.");
+  if (isSparse())
+    throw Exception("getVectorContents not supported for sparse arrays.");
+  if (index.isEmpty()) return Array();
+  if (isEmpty()) return Array();
+  if (isColonOperator(index)) {
+    if (!isScalar()) throw Exception("Attempt to apply {:} to nonscalar argument in scalar context!");
+    // Get a pointer to our data
+    const Array* qp = (const Array*) dp->getData();
+    return qp[0];
+  }
+  if (!index.isScalar()) throw Exception("Cannot use A{ndx} when ndx is not a scalar in this context (too many right hand sides)");
+  index.toOrdinalType();
+  // Get a pointer to the index data set
+  constIndexPtr index_p = (constIndexPtr) index.dp->getData();
+  if (index_p[0] > getLength())
+    throw Exception("Array index exceeds bounds of cell-array");
+  // Get a pointer to our data
+  const Array* qp = (const Array*) dp->getData();
+  return qp[index_p[0]-1];
 }
 
 /**
@@ -2857,6 +2840,7 @@ ArrayVector Array::getVectorContentsAsList(Array& index)  {
     m.push_back(qp[index_p[i]-1]);
   return m;
 }
+
 
 /**
  * Return the contents of an cell array as a list.

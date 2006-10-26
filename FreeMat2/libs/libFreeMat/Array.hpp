@@ -25,6 +25,7 @@
 #include <string>
 #include "Dimensions.hpp"
 #include "Types.hpp"
+#include "Data.hpp"
 #include "RefVec.hpp"
 
 class Array;
@@ -37,7 +38,6 @@ ArrayVector singleArrayVector(Array);
 
 typedef std::vector<ArrayVector> ArrayMatrix;
 
-class Data;
 class FunctionDef;
 
 /** Ordered data array, the base FreeMat data type.
@@ -306,7 +306,9 @@ public:
    * Throws an exception if we are a string, cell-array or struct-array type.
    */
   const bool isRealAllZeros() const;
-  const bool isSparse() const;
+  inline const bool isSparse() const {
+    return (dp->sparse);
+  }
   void makeSparse();
   void makeDense();
   int getNonzeros() const;
@@ -328,19 +330,29 @@ public:
   /**
    * Returns TRUE if we are empty (we have no elements).
    */
-  const bool isEmpty() const;
+  inline const bool isEmpty() const {
+    return ((dp == NULL) || (getLength() == 0) || 
+	    (!dp->getData()));
+  }
   /**
    * Returns TRUE if we have only a single element.
    */
-  const bool isScalar() const;
+  inline const bool isScalar() const {
+    if (isEmpty()) return false;
+    return dp->dimensions.isScalar();
+  }
   /**
    * Returns TRUE if we are 2-Dimensional.
    */
-  const bool is2D() const;
+  inline const bool is2D() const {
+    return dp->dimensions.is2D();
+  }
   /**
    * Returns TRUE if we are a vector.
    */
-  const bool isVector() const;
+  inline const bool isVector() const {
+    return dp->dimensions.isVector();
+  }
   /**
    * Returns TRUE if we are a reference type (cell array or
    * struct array).
@@ -349,19 +361,27 @@ public:
   /**
    * Returns TRUE if we are a complex data type.
    */
-  const bool isComplex() const;
+  inline const bool isComplex() const {
+    return (dp->dataClass == FM_DCOMPLEX || dp->dataClass == FM_COMPLEX);
+  }
   /**
    * Returns TRUE if we are a real data type.
    */
-  const bool isReal() const;
+  inline const bool isReal() const {
+    return (!isComplex());
+  }
   /**
    * Returns TRUE if we are a string.
    */
-  const bool isString() const;
+  inline const bool isString() const {
+    return (dp->dataClass == FM_STRING);
+  }
   /**
    * Returns TRUE if we are an integer class.
    */
-  const bool isIntegerClass() const;
+  inline const bool isIntegerClass() const {
+    return (dp->dataClass < FM_FLOAT);
+  }
   bool isColumnVector() const;
   bool isRowVector() const;
   /**
@@ -600,6 +620,7 @@ public:
    *   - we are not a structure array
    *   - the field does not exist
    */
+  Array getField(std::string fieldName);
   ArrayVector getFieldAsList(std::string fieldName);
   /**
    * Get a subset of a (cell) Array using contents-addressing.  This is used when a 
@@ -608,12 +629,14 @@ public:
    *   - we are not a cell-array
    *   - the indices exceed the array bounds
    */
+  Array getVectorContents(Array& index);
   ArrayVector getVectorContentsAsList(Array& index);
   /**
    * Get a subset of an Array using contents-addressing.  This is used when a cell array
    * is used to supply a list of expressions.
    * Throws an exception if we are not a cell-array.
    */  
+  //  Array getNDimContents(ArrayVector& index);
   ArrayVector getNDimContentsAsList(ArrayVector& index);
   /**
    * Set a subset of an Array.  Uses vector-indexing, meaning that the

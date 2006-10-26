@@ -641,6 +641,7 @@ Array Interpreter::ShortCutAnd(const tree &t) {
 }
 
 //Works
+// Need to take care
 Array Interpreter::expression(const tree &t) {
   Array retval;
   switch(t.token()) {
@@ -699,7 +700,9 @@ Array Interpreter::expression(const tree &t) {
     }
     break;
   case ':':
-    if (t.first().is(':')) {
+    if (t.numchildren() == 0) {
+      retval = Array::stringConstructor(":");
+    } else if (t.first().is(':')) {
       retval = doubleColon(t);
     } else {
       retval = unitColon(t);
@@ -3391,6 +3394,27 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 //a value of pi.
 //!
 
+
+// This has a few shortcomings that prevent it from being
+// 100% correct.  
+//
+//   1.  subsindex is not called for argument
+//       expressions of user-defined classes.
+//   2.  "end" no longer works.
+//
+// To fix "end", we should use a source transformation technique.
+// The original tree looks like this
+//
+//   variable
+//      -> t
+//      -> ()
+//          -> 2
+//          -> end
+//
+// This should be translated into:
+//
+//   _t = end(t,2)
+//
 Array Interpreter::rhs(const tree &t) {
   Array *ptr = context->lookupVariable(t.first().text());
   if (!ptr) {
@@ -3893,28 +3917,10 @@ Array Interpreter::subsrefSingleSimple(Array r, const tree &t) {
 // p(5).foo{2} = 'hello'
 // b = p(5).foo{2}(2:end)
 Array Interpreter::subsrefSimple(Array r, const tree& t) {
-   for (unsigned index = 1;index < t.numchildren();index++) {
-     const tree &s(t.child(index));
-     if (s.is(TOK_PARENS)) {
-       ArrayVector m(varExpressionList(s.children(),r));
-       if (m.size() == 1)
-	 r = r.getVectorSubset(m[0]);
-       else
-	 r = r.getNDimSubset(m);
-     }
-   }
-   return r;
-//     }      return(subsrefParenSimple(r,t));
-//   else if (t.is(TOK_BRACES))
-//     return(subsrefBraceSimple(r,t));
-//   else if (t.is('.'))
-//     return(subsrefDotSimple(r,t));
-//   else if (t.is(TOK_DYN))
-//     return(subsrefDotDynSimple(r,t));
-    
-//     r = subsrefSingleSimple(r,t.child(index));
-//   }
-//   return r;
+  for (unsigned index = 1;index < t.numchildren();index++) {
+    r = subsrefSingleSimple(r,t.child(index));
+  }
+  return r;
 }
 
 

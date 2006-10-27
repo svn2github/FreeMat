@@ -203,6 +203,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep");
   context->addFunction("inv",InvFunction,1,1,"A");
   context->addFunction("rcond",RcondFunction,1,1,"A");
+  context->addFunction("end",EndFunction,3,1);
   context->addSpecialFunction("matload",MatLoadFunction,-1,0);
   context->addSpecialFunction("matsave",MatSaveFunction,-1,0);
   InitializeFileSubsystem();

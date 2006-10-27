@@ -174,6 +174,17 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   return ArrayVector();
 }
 
+ArrayVector EndFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() != 3)
+    throw Exception("End function requires 3 arguments, the array, the end index, and the number of subindexes");
+  Dimensions t(arg[0].getDimensions());
+  int enddim(ArrayToInt32(arg[1]));
+  int totalndxs(ArrayToInt32(arg[2]));
+  if (totalndxs == 1)
+    return singleArrayVector(Array::int32Constructor(t.getLength()));
+  return singleArrayVector(Array::int32Constructor(t.get(enddim-1)));
+}
+
 //!
 //@Module PATHTOOL Open Path Setting Tool
 //@@Section FREEMAT

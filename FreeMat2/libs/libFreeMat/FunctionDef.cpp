@@ -35,6 +35,7 @@
 #include "SymbolTable.hpp"
 #include "Types.hpp"
 #include "MexInterface.hpp"
+#include "Transform.hpp"
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -358,6 +359,8 @@ bool MFunctionDef::updateCode() {
       Scanner S(fileText,fileName);
       Parser P(S);
       tree pcode = P.Process();
+      pcode = TransformEndReferences(pcode);
+      pcode.print();
       fclose(fp);
       allCode = pcode;
       if (pcode.is(TOK_FUNCTION_DEFS)) {

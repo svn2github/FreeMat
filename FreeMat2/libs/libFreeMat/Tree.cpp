@@ -34,6 +34,7 @@ void tree_node::Rename(byte a) {
 void tree::print() const {
   if (tptr)
     tptr->print();
+  cout.flush();
 }
 
 static int indentlevel = 0;

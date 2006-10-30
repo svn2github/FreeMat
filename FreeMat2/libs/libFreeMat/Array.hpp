@@ -208,7 +208,7 @@ public:
   /**
    * Set classname tag - implies this is a structure array.
    */
-  inline void setClassName(rvstring) {
+  inline void setClassName(rvstring cname) {
     if (getDataClass() != FM_STRUCT_ARRAY)
       throw Exception("cannot set class name for non-struct array");
     ensureSingleOwner();
@@ -235,7 +235,7 @@ public:
   /**
    * Get our length along the given dimension.
    */
-  inline int getDimensionLength(int) const {
+  inline int getDimensionLength(int t) const {
     if (dp)
       return dp->dimensions.get(t);
     else
@@ -701,6 +701,7 @@ public:
    * Throws an exception if there is a size mismatch between the index and the data.
    */
   void setNDimSubset(ArrayVector& index, Array& data);
+  void setNDimSubsetScalars(ArrayVector& index, Array& data);
   /**
    * Set a subset of an Array using contents-indexing, meaning that the
    * argument is assumed to refer to the elements in their order as a vector.

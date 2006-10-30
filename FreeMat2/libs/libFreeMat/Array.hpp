@@ -181,31 +181,66 @@ public:
    * Get the length of the array as a vector.  This is equivalent
    * to computing length(this(:)).
    */
-  int getLength() const;
+  inline int getLength() const {
+    if (dp)
+      return dp->dimensions.getElementCount();
+    else
+      return 0;
+  }
   /**
    * Return true if this is a user-defined class
    */    
-  bool isUserClass() const;
+  inline bool isUserClass() const {
+    if (dp)
+      return dp->isUserClass();
+    else
+      return false;
+  }
   /**
    * Return name of user-defined class
    */
-  rvstring getClassName() const;
+  inline rvstring getClassName() const {
+    if (dp)
+      return dp->getClassName();
+    else
+      return rvstring();
+  }
   /**
    * Set classname tag - implies this is a structure array.
    */
-  void setClassName(rvstring);
+  inline void setClassName(rvstring) {
+    if (getDataClass() != FM_STRUCT_ARRAY)
+      throw Exception("cannot set class name for non-struct array");
+    ensureSingleOwner();
+    dp->className = cname;
+  }
   /**
    * Get a copy of our dimensions vector.
    */
-  Dimensions getDimensions() const;
+  inline Dimensions getDimensions() const {
+    if (dp)
+      return dp->dimensions;
+    else
+      return Dimensions(0,0);
+  }
   /**
    * Get the fieldnames.
    */
-  rvstring getFieldNames() const;
+  inline rvstring getFieldNames() const {
+    if (dp)
+      return dp->fieldNames;
+    else
+      return rvstring();
+  }
   /**
    * Get our length along the given dimension.
    */
-  int getDimensionLength(int) const;
+  inline int getDimensionLength(int) const {
+    if (dp)
+      return dp->dimensions.get(t);
+    else
+      return 0;
+  }
   /** Get the contents of our data block as a (read-only) void* pointer.
    * Get the contents of our data block as a void* pointer.  The
    * resulting pointer is read only, so that no modifications can
@@ -217,8 +252,21 @@ public:
    * Another option is to use getReadWriteDataPointer, which returns a 
    * pointer that is free of object aliases.
    */
-  const void* getDataPointer() const;
-  const void* getSparseDataPointer() const;
+  inline const void* getDataPointer() const {
+    if (isSparse())
+      throw Exception("operation does not support sparse matrix arguments.");
+    if (dp)
+      return dp->getData();
+    else
+      return NULL;
+  }
+
+  inline const void* getSparseDataPointer() const {
+    if (dp)
+      return dp->getData();
+    else
+      return NULL;
+  }
   /** Get the contents of our data block as a read-write void* pointer.
    * Get the contents of our data block as a read-write void*
    * pointer.  It ensures that our data block is not aliased (meaning
@@ -603,6 +651,7 @@ public:
    * Throws an exception if the variable is empty.
    */
   Array getNDimSubset(ArrayVector& index);
+  Array getNDimSubsetScalars(ArrayVector& index);
   /**
    * Get the diagonal elements of an array.  Only applicable to 2-dimensional arrays.
    * The diagonal part of a rectangular matrix
@@ -636,8 +685,9 @@ public:
    * is used to supply a list of expressions.
    * Throws an exception if we are not a cell-array.
    */  
-  //  Array getNDimContents(ArrayVector& index);
+  Array getNDimContents(ArrayVector& index);
   ArrayVector getNDimContentsAsList(ArrayVector& index);
+  void setValue(const Array &x);
   /**
    * Set a subset of an Array.  Uses vector-indexing, meaning that the
    * argument is assumed to refer to the elements in their order as a vector.

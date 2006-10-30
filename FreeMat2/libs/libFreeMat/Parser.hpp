@@ -46,7 +46,7 @@ private:
   tree PrimaryExpression();
 public:
   Parser(Scanner& lex);
-  tree Process();
+  tree Process(); 
   string LastErr() {return lasterr;}
   unsigned LastPos() {return lastpos;}
   tree StatementList();

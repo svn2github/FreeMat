@@ -614,71 +614,6 @@ int Array::getReferenceCount() const {
     return 0;
 }
 
-bool Array::isUserClass() const {
-  if (dp)
-    return dp->isUserClass();
-  else
-    return false;
-}
-
-rvstring Array::getClassName() const {
-  if (dp)
-    return dp->getClassName();
-  else
-    return rvstring();
-}
-
-void Array::setClassName(rvstring cname) {
-  if (getDataClass() != FM_STRUCT_ARRAY)
-    throw Exception("cannot set class name for non-struct array");
-  ensureSingleOwner();
-  dp->className = cname;
-}
-
-int Array::getLength() const {
-  if (dp)
-    return dp->dimensions.getElementCount();
-  else
-    return 0;
-}
-
-Dimensions Array::getDimensions() const {
-  if (dp)
-    return dp->dimensions;
-  else
-    return Dimensions(0,0);
-}
-
-rvstring Array::getFieldNames() const {
-  if (dp)
-    return dp->fieldNames;
-  else
-    return rvstring();
-}
-
-int Array::getDimensionLength(int t) const {
-  if (dp)
-    return dp->dimensions.get(t);
-  else
-    return 0;
-}
-
-const void *Array::getSparseDataPointer() const {
-  if (dp)
-    return dp->getData();
-  else
-    return NULL;
-}
-
-const void *Array::getDataPointer() const {
-  if (isSparse())
-    throw Exception("operation does not support sparse matrix arguments.");
-  if (dp)
-    return dp->getData();
-  else
-    return NULL;
-}
-
 void Array::ensureSingleOwner() {
   if (dp->numberOfOwners() > 1) {
     if (!dp->sparse) {
@@ -2538,6 +2473,30 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
   return outndx;
 }
 
+bool allScalars(ArrayVector& index) {
+  for (int i=0;i<index.size();i++) 
+    if (!(index[i].isScalar() && (!index[i].isReferenceType()) &&
+	  (!index[i].isString())))
+      return false;
+  return true;
+}
+
+Array Array::getNDimSubsetScalars(ArrayVector& index) {
+  int ndx = 0;
+  int pagesize = 1;
+  for (int i=0;i<index.size();i++) {
+    index[i].toOrdinalType();
+    constIndexPtr dp = (constIndexPtr) index[i].getDataPointer();
+    if ((dp[0] < 1) || (dp[0] > getDimensionLength(i)))
+      throw Exception("index exceeds array bounds");
+    ndx += pagesize*(dp[0]-1);
+    pagesize *= getDimensionLength(i);
+  }
+  void *qp = allocateArray(dp->dataClass,1,dp->fieldNames);
+  copyElements(ndx,qp,0,1);
+  return Array(dp->dataClass,Dimensions(1,1),qp,dp->sparse,dp->fieldNames,dp->className);
+}
+
 /**
  * Take the current variable, and return a new array consisting of
  * the elements in source indexed by the index argument.  Indexing
@@ -2550,6 +2509,9 @@ Array Array::getNDimSubset(ArrayVector& index)  {
   bool anyEmpty;
   int colonIndex;
   Dimensions myDims(dp->dimensions);
+
+  if (!isSparse() && allScalars(index)) 
+    return getNDimSubsetScalars(index);
 
   if (isEmpty())
     throw Exception("Cannot index into empty variable.");
@@ -2841,6 +2803,37 @@ ArrayVector Array::getVectorContentsAsList(Array& index)  {
   return m;
 }
 
+/**
+ * Return the contents of an cell array as a list.
+ */
+Array Array::getNDimContents(ArrayVector& index)  {
+  if (dp->dataClass != FM_CELL_ARRAY)
+    throw Exception("Attempt to apply contents-indexing to non cell-array object.");
+  if (isSparse())
+    throw Exception("getNDimContentsAsList not supported for sparse arrays.");
+  // Store the return value here
+  ArrayVector m;
+  // Get the number of indexing dimensions
+  int L = index.size();
+  Dimensions myDims(dp->dimensions);
+  bool anyEmpty;
+  int colonIndex;
+  Dimensions outDims(L);
+  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,true);
+  if (anyEmpty) {
+    Free(indx);
+    return Array::emptyConstructor();
+  }
+  if (!outDims.isScalar()) 
+    throw Exception("Too many values returned by A{N,M,...} expression");
+  Dimensions currentIndex(L);
+  const Array *qp = (const Array*) dp->getData();
+  for (int i=0;i<L;i++)
+    currentIndex.set(i,(int) indx[i][0] - 1);
+  Free(indx);
+  return qp[dp->dimensions.mapPoint(currentIndex)];
+}
+
 
 /**
  * Return the contents of an cell array as a list.
@@ -2881,6 +2874,12 @@ ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
 /********************************************************************************
  * Set functions                                                                *
  ********************************************************************************/
+
+void Array::setValue(const Array &x) {
+  if (dp && (dp->deleteCopy() <= 1))
+    ReleaseDataInstance(dp);
+  dp = x.dp->getCopy();
+}
 
 /**
  * 
@@ -3230,6 +3229,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
  *      length.
  *   2. Deletions do not occur.
  */
+
 void Array::setVectorContentsAsList(Array& index, ArrayVector& data) {
   if (isSparse())
     throw Exception("setVectorContentsAsList not supported for sparse arrays.");

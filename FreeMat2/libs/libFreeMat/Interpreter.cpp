@@ -404,25 +404,6 @@ stackentry::stackentry() {
 stackentry::~stackentry() {
 }
 
-
-/**
- * Stores the current array for which to apply the "end" expression to.
- */
-class endData {
-public:
-  Array endArray;
-  int index;
-  int count;
-  endData(Array p, int ndx, int cnt) {endArray = p; index = ndx; count = cnt;}
-  ~endData() {};
-};
-  
-std::vector<endData> endStack;
-  
-
-int endValStackLength;
-int endValStack[1000];
-
 static Interpreter* myInterp;
 
 void sigInterrupt(int arg) {
@@ -692,13 +673,7 @@ Array Interpreter::expression(const tree &t) {
     retval = t.array();
     break;
   case TOK_END:
-    {
-      if (endStack.empty())
-	throw Exception("END keyword illegal (end stack underflow)!");
-      endData t(endStack.back());
-      retval = EndReference(t.endArray,t.index,t.count);
-    }
-    break;
+    throw Exception("END keyword illegal (end stack underflow)!");
   case ':':
     if (t.numchildren() == 0) {
       retval = Array::stringConstructor(":");
@@ -966,13 +941,12 @@ ArrayVector Interpreter::varExpressionList(treeVector t, Array subroot) {
     } else if (t[index].is(':') && (!t[index].haschildren())) {
       m.push_back(AllColonReference(subroot,index,count));
     } else {
-      endStack.push_back(endData(subroot,index,count));
       // Call the expression
       m.push_back(expression(t[index]));
-      endStack.pop_back();
     }
   }
-  return subsindex(m);
+  return m;
+  //  return subsindex(m);
 }
 
 /*
@@ -1914,6 +1888,62 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
 
 //Works
 void Interpreter::assignmentStatement(const tree &t, bool printIt) {
+  // Evaluate the RHS 
+  const tree &var(t.first());
+  Array b(expression(t.second()));
+  string name(var.first().text());
+  Array *ptr = context->lookupVariable(name);
+  if (!ptr) {
+    context->insertVariable(name,Array::emptyConstructor());
+    ptr = context->lookupVariable(name);
+  }
+  if (var.numchildren() == 1)
+    ptr->setValue(b);
+  else if (var.numchildren() == 2) {
+    const tree &s(var.second());
+    if (s.is(TOK_PARENS)) {
+      if (s.numchildren() == 1) {
+	Array m(subsindex(expression(s.first())));
+	ptr->setVectorSubset(m,b);
+      } else {
+	ArrayVector m;
+	for (unsigned p = 0;p < s.numchildren(); p++)
+	  m.push_back(subsindex(expression(s.child(p))));
+	ptr->setNDimSubset(m,b);
+      }
+    } else if (s.is(TOK_BRACES)) {
+      if (s.numchildren() == 1) {
+	Array m(subsindex(expression(s.first())));
+	ArrayVector bv(singleArrayVector(b));
+	ptr->setVectorContentsAsList(m,bv);
+      } else {
+ 	ArrayVector m;
+	for (unsigned p = 0;p < s.numchildren(); p++)
+ 	  m.push_back(subsindex(expression(s.child(p))));
+	ArrayVector bv(singleArrayVector(b));
+ 	ptr->setNDimContentsAsList(m,bv);
+      }
+    } else if (s.is('.')) {
+      ArrayVector bv(singleArrayVector(b));
+      ptr->setFieldAsList(s.first().text(),bv);
+    } else if (s.is(TOK_DYN)) {
+      const char *field;
+      try {
+	Array fname(expression(s.first()));
+	field = fname.getContentsAsCString();
+      } catch (Exception &e) {
+	throw Exception("dynamic field reference to structure requires a string argument");
+      }
+      ArrayVector bv(singleArrayVector(b));
+      ptr->setFieldAsList(field,bv);
+    }
+  }
+  if (printIt) {
+    outputMessage(name);
+    outputMessage(" = \n");
+    displayArray(*ptr);
+  }
+#if 0
   if (t.first().numchildren() == 1) {
     // This is an acceleration trick
     Array b(expression(t.second()));
@@ -1951,6 +1981,7 @@ void Interpreter::assignmentStatement(const tree &t, bool printIt) {
       displayArray(c);
     }
   }
+#endif
 }
   
 void Interpreter::statementType(const tree &t, bool printIt) {
@@ -2206,9 +2237,27 @@ Array Interpreter::AllColonReference(Array v, int index, int count) {
   
 // Works
 Array Interpreter::assignExpression(const tree &t, Array &value) {
-  ArrayVector tmp;
-  tmp.push_back(value);
-  return assignExpression(t,tmp,false);
+//   int ctxt = t.context();
+//   if (t.numchildren() == 1) {
+//     if ((value.size() > 1) && !multipleLHS)
+//       throw Exception("too many values in the rhs to match the left hand side assignment");
+//     Array retval(value[0]);
+//     value.pop_front();
+//     return retval;
+//   }
+//   // Get the variable in question
+//   Array *ptr = context->lookupVariable(t.first().text());
+//   Array ltmp;
+//   if (!ptr) {
+//     ltmp = Array::emptyConstructor();
+//     ptr = &ltmp;
+//   }
+//   // Make the assignment
+//   subassign(ptr,t,value);
+//   return *ptr;
+//   ArrayVector tmp;
+//   tmp.push_back(value);
+//   return assignExpression(t,tmp,false);
 }
 
 // If we got this far, we must have at least one subindex
@@ -3415,10 +3464,25 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 //
 //   _t = end(t,2)
 //
+// This is done in Transform.cpp...  
+//
+// This does not cover:
+//    Function pointers
+//    subsindex
+//
+// 
 Array Interpreter::rhs(const tree &t) {
   Array *ptr = context->lookupVariable(t.first().text());
   if (!ptr) {
     ArrayVector m(functionExpression(t,1,false));
+    if (m.size() >= 1)
+      return m[0];
+    else
+      return Array::emptyConstructor();
+  }
+  if (ptr->getDataClass() == FM_FUNCPTR_ARRAY &&
+      ptr->isScalar()) {
+    ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
     return m[0];
   }
   if (t.numchildren() == 1)
@@ -3434,23 +3498,23 @@ Array Interpreter::rhs(const tree &t) {
     const tree &s(t.child(index));
     if (s.is(TOK_PARENS)) {
       if (s.numchildren() == 1) {
-	Array m(expression(s.first()));
+	Array m(subsindex(expression(s.first())));
 	r = r.getVectorSubset(m);
       } else {
 	ArrayVector m;
 	for (unsigned p = 0;p < s.numchildren(); p++)
-	  m.push_back(expression(s.child(p)));
+	  m.push_back(subsindex(expression(s.child(p))));
 	r = r.getNDimSubset(m);
       }
     } else if (s.is(TOK_BRACES)) {
       if (s.numchildren() == 1) {
-	Array m(expression(s.first()));
+	Array m(subsindex(expression(s.first())));
 	r = r.getVectorContents(m);
       } else {
-// 	ArrayVector m;
-// 	for (unsigned p = 0;p < s.numchildren(); p++)
-// 	  m.push_back(expression(s.child(p)));
-// 	r = r.getNDimContents(m);
+ 	ArrayVector m;
+	for (unsigned p = 0;p < s.numchildren(); p++)
+ 	  m.push_back(subsindex(expression(s.child(p))));
+ 	r = r.getNDimContents(m);
       }
     } else if (s.is('.')) {
       r = r.getField(s.first().text());
@@ -3468,7 +3532,7 @@ Array Interpreter::rhs(const tree &t) {
   return r;
 }
 
-//Works
+//Works               
 ArrayVector Interpreter::rhsExpression(const tree &t, int lhsCount) {
   Array r, *ptr;
   int peerCnt;
@@ -3511,8 +3575,6 @@ Interpreter::Interpreter(Context* aContext) {
   errorCount = 0;
   lasterr = string("");
   context = aContext;
-  endValStackLength = 0;
-  endValStack[endValStackLength] = 0;
   depth = 0;
   InterruptPending = false;
   myInterp = this;
@@ -3704,21 +3766,13 @@ void Interpreter::evalCLI() {
 // Convert a list of variable into indexing expressions
 //  - for user defined classes, we call subsindex for 
 //  - the object
-ArrayVector Interpreter::subsindex(ArrayVector m) {
-  ArrayVector n;
-  for (int i=0;i<m.size();i++) {
-    if (m[i].isUserClass() && !stopoverload) {
-      Array t(ClassUnaryOperator(m[i],"subsindex",this));
-      t.promoteType(FM_UINT32);
-      int len = t.getLength();
-      uint32 *dp = (uint32*) t.getReadWriteDataPointer();
-      for (int j=0;j<len;j++)
-	dp[j]++;
-      n.push_back(t);
-    } else
-      n.push_back(m[i]);
+Array Interpreter::subsindex(const Array &m) {
+  if (m.isUserClass() && !stopoverload) {
+    Array t(ClassUnaryOperator(m,"subsindex",this));
+    t.promoteType(FM_UINT32);
+    return Add(t,Array::uint32Constructor(1));
   }
-  return n;
+  return m;
 }
 
 
@@ -4017,15 +4071,15 @@ void Interpreter::subassign(Array *r, const tree &t, ArrayVector& value) {
     ClassAssignExpression(r,t,value,this);
     return;
   }
+  if (t.numchildren() == 2) {
+    subassignSingle(r,t.child(1),value);
+    return;
+  }
   // Set up a stack
   ArrayVector stack;
   treeVector ref;
   treeVector s = t.children();
   s.erase(s.begin());
-  if (s.size() == 1) {
-    subassignSingle(r,s[0],value);
-    return;
-  }
   Array data(*r);
   // Subindex
   for (unsigned index=0;index < (s.size()-1);index++) {

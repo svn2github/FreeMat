@@ -861,7 +861,7 @@ private:
   /**
    * Convert variables into indexes, calls "subsindex" for user classes.
    */
-  ArrayVector subsindex(ArrayVector m);
+  Array subsindex(const Array &m);
   /**
    * Compute A(expr1,expr2,...)
    */

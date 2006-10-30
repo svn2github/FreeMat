@@ -359,8 +359,6 @@ bool MFunctionDef::updateCode() {
       Scanner S(fileText,fileName);
       Parser P(S);
       tree pcode = P.Process();
-      pcode = TransformEndReferences(pcode);
-      pcode.print();
       fclose(fp);
       allCode = pcode;
       if (pcode.is(TOK_FUNCTION_DEFS)) {

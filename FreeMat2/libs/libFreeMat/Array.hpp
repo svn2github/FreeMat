@@ -701,7 +701,6 @@ public:
    * Throws an exception if there is a size mismatch between the index and the data.
    */
   void setNDimSubset(ArrayVector& index, Array& data);
-  void setNDimSubsetScalars(ArrayVector& index, Array& data);
   /**
    * Set a subset of an Array using contents-indexing, meaning that the
    * argument is assumed to refer to the elements in their order as a vector.

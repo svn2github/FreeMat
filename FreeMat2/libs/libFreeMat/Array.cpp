@@ -2984,10 +2984,6 @@ void Array::setVectorSubset(Array& index, Array& data) {
   }
 }
 
-void Array::setNDimSubsetScalars(ArrayVector& index, Array& data) {
-  
-}
-
 /**
  * Take the contents of data, and insert this data.
  *
@@ -3031,10 +3027,6 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
 	if (isColonOperator(index[i]))
 	  index[i] = Array::int32RangeConstructor(1,1,data.getDimensionLength(i),true);
     }
-  }
-  if (!isSparse() && allScalars(index)) {
-    setNDimSubsetScalars(ArrayVector& index, Array& data);
-    return;
   }
   try {
     int L = index.size();

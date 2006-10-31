@@ -539,10 +539,6 @@ private:
    */
   ArrayVector expressionList(treeVector t);
   /**
-   * Decode references to "end" inside variable dereferences.
-   */
-  Array EndReference(Array v, int index, int count);
-  /**
    * Decode references to ":" inside variable dereferences.
    */
   Array AllColonReference(Array v, int index, int count);
@@ -582,6 +578,11 @@ private:
    *    - 
    */
   ArrayVector rhsExpression(const tree &t, int lhsCount = 1);
+
+  void assign(Array *r, const tree &s, Array &data);
+
+  void deref(Array &r, const tree &s);
+
   Array rhs(const tree &t);
   /**
    * Look up an identifier as a potential function name, using a

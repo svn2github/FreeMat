@@ -627,42 +627,7 @@ Array Interpreter::expression(const tree &t) {
   Array retval;
   switch(t.token()) {
   case TOK_VARIABLE: 
-    {
-      return rhs(t);
-//       // Special case expressions of the type <ident>
-//       if (t.numchildren() == 1) {
-// 	Array *ptr = context->lookupVariable(t.first().text());
-// 	if (ptr) 
-// 	  retval = *ptr;
-// 	else {
-// 	  ArrayVector m(functionExpression(t,1,false));
-// 	  if (m.empty()) {
-// 	    retval = Array::emptyConstructor();
-// 	  } else {
-// 	    if (m.size() > 1) 
-// 	      warningMessage("discarding one or more outputs from an expression");
-// 	    retval = m[0];
-// 	  }
-// 	}
-//       } else {
-// 	if (t.first().text() == "C") {
-// 	  Array *ptr = context->lookupVariable(t.first().text());
-// 	  Array ndx(expression(t.second().first()));
-// 	  retval = ptr->getVectorSubset(ndx);
-// 	  //	  retval = subsrefSimple(*ptr,t);
-// 	  //	  return Array::emptyConstructor();
-// 	} else {
-// 	  ArrayVector m(rhsExpression(t));
-// 	  if (m.empty()) {
-// 	    retval = Array::emptyConstructor();
-// 	  } else {
-// 	    if (m.size() > 1) 
-// 	      warningMessage("discarding one or more outputs from an expression");
-// 	    retval = m[0];
-// 	  }
-// 	}
-//       }
-    }
+    retval = rhs(t);
     break;
   case TOK_INTEGER:
   case TOK_FLOAT:
@@ -993,11 +958,9 @@ ArrayVector Interpreter::expressionList(treeVector t) {
  * this is applied on an element-by-element basis also.
  */
 bool Interpreter::testCaseStatement(const tree &t, Array s) {
-  bool caseMatched;
-  Array r;
   int ctxt = t.context();
-  r = expression(t.first());
-  caseMatched = s.testForCaseMatch(r);
+  Array r(expression(t.first()));
+  bool caseMatched = s.testForCaseMatch(r);
   if (caseMatched)
     block(t.second());
   return caseMatched;
@@ -1241,18 +1204,12 @@ void Interpreter::ifStatement(const tree &t) {
 //!
 //Works
 void Interpreter::whileStatement(const tree &t) {
-  tree testCondition;
-  Array condVar;
-  tree codeBlock;
-  bool conditionTrue;
-  bool breakEncountered;
   int ctxt = t.context();
-    
-  testCondition = t.first();
-  codeBlock = t.second();
-  breakEncountered = false;
-  condVar = expression(testCondition);
-  conditionTrue = !condVar.isRealAllZeros();
+  tree testCondition(t.first());
+  tree codeBlock(t.second());
+  bool breakEncountered = false;
+  Array condVar(expression(testCondition));
+  bool conditionTrue = !condVar.isRealAllZeros();
   context->enterLoop();
   breakEncountered = false;
   while (conditionTrue && !breakEncountered) {
@@ -1381,13 +1338,8 @@ void ForLoopHelperComplex(const tree &codeBlock, Class indexClass,
 //!
 //Works
 void Interpreter::forStatement(const tree &t) {
-  tree  codeBlock;
   Array indexSet;
-  Array indexNum;
   string indexVarName;
-  Array indexVar;
-  int     elementNumber;
-  int     elementCount;
   int ctxt = t.context();
 
   /* Get the name of the indexing variable */
@@ -1402,8 +1354,8 @@ void Interpreter::forStatement(const tree &t) {
     indexSet = *ptr;
   }
   /* Get the code block */
-  codeBlock = t.second();
-  elementCount = indexSet.getLength();
+  tree codeBlock(t.second());
+  int elementCount = indexSet.getLength();
 
   Class loopType(indexSet.getDataClass());
   ContextLoopLocker lock(context);
@@ -1886,6 +1838,45 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
   context->insertVariable("ans",b);
 }
 
+void Interpreter::assign(Array *r, const tree &s, Array &data) {
+  if (s.is(TOK_PARENS)) {
+    if (s.numchildren() == 1) {
+      Array m(subsindex(expression(s.first())));
+      r->setVectorSubset(m,data);
+    } else {
+      ArrayVector m;
+      for (unsigned p = 0;p < s.numchildren(); p++)
+	m.push_back(subsindex(expression(s.child(p))));
+      r->setNDimSubset(m,data);
+    }
+  } else if (s.is(TOK_BRACES)) {
+    if (s.numchildren() == 1) {
+      Array m(subsindex(expression(s.first())));
+      ArrayVector datav(singleArrayVector(data));
+      r->setVectorContentsAsList(m,datav);
+    } else {
+      ArrayVector m;
+      for (unsigned p = 0;p < s.numchildren(); p++)
+	m.push_back(subsindex(expression(s.child(p))));
+      ArrayVector datav(singleArrayVector(data));
+      r->setNDimContentsAsList(m,datav);
+    }
+  } else if (s.is('.')) {
+    ArrayVector datav(singleArrayVector(data));
+    r->setFieldAsList(s.first().text(),datav);
+  } else if (s.is(TOK_DYN)) {
+    const char *field;
+    try {
+      Array fname(expression(s.first()));
+      field = fname.getContentsAsCString();
+    } catch (Exception &e) {
+      throw Exception("dynamic field reference to structure requires a string argument");
+    }
+    ArrayVector datav(singleArrayVector(data));
+    r->setFieldAsList(field,datav);
+  }
+}
+
 //Works
 void Interpreter::assignmentStatement(const tree &t, bool printIt) {
   // Evaluate the RHS 
@@ -1899,44 +1890,26 @@ void Interpreter::assignmentStatement(const tree &t, bool printIt) {
   }
   if (var.numchildren() == 1)
     ptr->setValue(b);
-  else if (var.numchildren() == 2) {
-    const tree &s(var.second());
-    if (s.is(TOK_PARENS)) {
-      if (s.numchildren() == 1) {
-	Array m(subsindex(expression(s.first())));
-	ptr->setVectorSubset(m,b);
-      } else {
-	ArrayVector m;
-	for (unsigned p = 0;p < s.numchildren(); p++)
-	  m.push_back(subsindex(expression(s.child(p))));
-	ptr->setNDimSubset(m,b);
+  else if (var.numchildren() == 2)
+    assign(ptr,var.second(),b);
+  else {
+#error FINISHME
+    ArrayVector stack;
+    Array data(*ptr);
+    for (int index=1;index < (var.numchildren()-1);index++) {
+      if (!data.isEmpty()) {
+	try {
+	  data = deref(data,var.child[index]);
+	} catch (Exception &e) {
+	  data = Array::emptyConstructor();
+	}
       }
-    } else if (s.is(TOK_BRACES)) {
-      if (s.numchildren() == 1) {
-	Array m(subsindex(expression(s.first())));
-	ArrayVector bv(singleArrayVector(b));
-	ptr->setVectorContentsAsList(m,bv);
-      } else {
- 	ArrayVector m;
-	for (unsigned p = 0;p < s.numchildren(); p++)
- 	  m.push_back(subsindex(expression(s.child(p))));
-	ArrayVector bv(singleArrayVector(b));
- 	ptr->setNDimContentsAsList(m,bv);
-      }
-    } else if (s.is('.')) {
-      ArrayVector bv(singleArrayVector(b));
-      ptr->setFieldAsList(s.first().text(),bv);
-    } else if (s.is(TOK_DYN)) {
-      const char *field;
-      try {
-	Array fname(expression(s.first()));
-	field = fname.getContentsAsCString();
-      } catch (Exception &e) {
-	throw Exception("dynamic field reference to structure requires a string argument");
-      }
-      ArrayVector bv(singleArrayVector(b));
-      ptr->setFieldAsList(field,bv);
+      stack.push_back(data);
     }
+    Array tmp(data);
+    assign(&tmp,var.child(var.numchildren()-1),b);
+    
+    
   }
   if (printIt) {
     outputMessage(name);
@@ -2212,24 +2185,6 @@ int Interpreter::countLeftHandSides(const tree &t) {
   return 1;
 }
 
-Array Interpreter::EndReference(Array v, int index, int count) {
-  FuncPtr val;
-  if (v.isUserClass() && ClassResolveFunction(this,v,"end",val)) {
-    // User has overloaded "end" operator
-    if (val->updateCode()) refreshBreakpoints();
-    ArrayVector argvec;
-    argvec.push_back(Array::int32Constructor(index+1));
-    argvec.push_back(Array::int32Constructor(count));
-    ArrayVector retvec(val->evaluateFunction(this,argvec,1));
-    return retvec[0];
-  }
-  Dimensions dim(v.getDimensions());
-  if (count == 1)
-    return Array::int32Constructor(dim.getElementCount());
-  else
-    return Array::int32Constructor(dim.getDimensionLength(index));
-}
-
 Array Interpreter::AllColonReference(Array v, int index, int count) {
   if (v.isUserClass()) return Array::emptyConstructor();
   return Array::stringConstructor(":");
@@ -2339,6 +2294,8 @@ void Interpreter::refreshBreakpoints() {
   for (int i=0;i<bpStack.size();i++)
     setBreakpoint(bpStack[i],true);
 }
+
+
 
 //Some notes on the multifunction call...  This one is pretty complicated, and the current logic is hardly transparent.  Assume we have an expression of the form:
 //
@@ -3085,11 +3042,11 @@ ArrayVector Interpreter::functionExpression(const tree &t,
 void Interpreter::listBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
     //    if (bpStack[i].number > 0) {
-      char buffer[2048];
-      sprintf(buffer,"%d   %s line %d\n",bpStack[i].number,
-	      bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
-      outputMessage(buffer);
-      //    }
+    char buffer[2048];
+    sprintf(buffer,"%d   %s line %d\n",bpStack[i].number,
+	    bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
+    outputMessage(buffer);
+    //    }
   }
 }
 
@@ -3471,6 +3428,42 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 //    subsindex
 //
 // 
+
+void Interpreter::deref(Array &r, const tree &s) {
+  if (s.is(TOK_PARENS)) {
+    if (s.numchildren() == 1) {
+      Array m(subsindex(expression(s.first())));
+      r = r.getVectorSubset(m);
+    } else {
+      ArrayVector m;
+      for (unsigned p = 0;p < s.numchildren(); p++)
+	m.push_back(subsindex(expression(s.child(p))));
+      r = r.getNDimSubset(m);
+    }
+  } else if (s.is(TOK_BRACES)) {
+    if (s.numchildren() == 1) {
+      Array m(subsindex(expression(s.first())));
+      r = r.getVectorContents(m);
+    } else {
+      ArrayVector m;
+      for (unsigned p = 0;p < s.numchildren(); p++)
+	m.push_back(subsindex(expression(s.child(p))));
+      r = r.getNDimContents(m);
+    }
+  } else if (s.is('.')) {
+    r = r.getField(s.first().text());
+  } else if (s.is(TOK_DYN)) {
+    const char *field;
+    try {
+      Array fname(expression(s.first()));
+      field = fname.getContentsAsCString();
+    } catch (Exception &e) {
+      throw Exception("dynamic field reference to structure requires a string argument");
+    }
+    r = r.getField(field);
+  }
+}
+
 Array Interpreter::rhs(const tree &t) {
   Array *ptr = context->lookupVariable(t.first().text());
   if (!ptr) {
@@ -3494,41 +3487,8 @@ Array Interpreter::rhs(const tree &t) {
     return m[0];
   }
   Array r(*ptr);
-  for (unsigned index = 1;index < t.numchildren();index++) {
-    const tree &s(t.child(index));
-    if (s.is(TOK_PARENS)) {
-      if (s.numchildren() == 1) {
-	Array m(subsindex(expression(s.first())));
-	r = r.getVectorSubset(m);
-      } else {
-	ArrayVector m;
-	for (unsigned p = 0;p < s.numchildren(); p++)
-	  m.push_back(subsindex(expression(s.child(p))));
-	r = r.getNDimSubset(m);
-      }
-    } else if (s.is(TOK_BRACES)) {
-      if (s.numchildren() == 1) {
-	Array m(subsindex(expression(s.first())));
-	r = r.getVectorContents(m);
-      } else {
- 	ArrayVector m;
-	for (unsigned p = 0;p < s.numchildren(); p++)
- 	  m.push_back(subsindex(expression(s.child(p))));
- 	r = r.getNDimContents(m);
-      }
-    } else if (s.is('.')) {
-      r = r.getField(s.first().text());
-    } else if (s.is(TOK_DYN)) {
-      const char *field;
-      try {
-	Array fname(expression(s.first()));
-	field = fname.getContentsAsCString();
-      } catch (Exception &e) {
-	throw Exception("dynamic field reference to structure requires a string argument");
-      }
-      r = r.getField(field);
-    }
-  }
+  for (unsigned index = 1;index < t.numchildren();index++) 
+    deref(r,t.child(index));
   return r;
 }
 

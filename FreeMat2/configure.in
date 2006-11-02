@@ -7,6 +7,7 @@ AM_INIT_AUTOMAKE(FreeMat, 2.1)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
+AC_EXEEXT
 	
 dnl Check for AWT related Qt4
 PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
@@ -54,6 +55,7 @@ if test "x$HAVE_QT4" = "xno"; then
    if test x"$QT4DIR" = x ; then
       AC_MSG_ERROR([*** Qt4 not found. Rerun configure with the --with-qt4dir option])
    fi
+   AC_MSG_NOTICE([Checking for MOC in in $QT4DIR/bin/moc])
    AC_CHECK_PROG(QT_MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
    if test x"$QT_MOC" = x; then
       AC_MSG_ERROR([*** This is not the right Qt installation - also, make sure you use the right notation for a path to --with-qt4dir, e.g. --with-qt4dir=/c/Qt/4.1])

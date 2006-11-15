@@ -1004,6 +1004,7 @@ void AdjustColonCalls(ArrayVector& m, treeVector t) {
 }
 
 Array IndexExpressionToStruct(Interpreter* eval, treeVector t, Array r) {
+#error FIXME
 //   ArrayVector struct_args, m;
 //   ArrayVector rv;
 //   Array rsave(r);
@@ -1047,6 +1048,7 @@ Array IndexExpressionToStruct(Interpreter* eval, treeVector t, Array r) {
 }
   
 ArrayVector ClassSubsrefCall(Interpreter* eval, treeVector t, Array r, FuncPtr val) {
+#error FIXME
   ArrayVector p;
   p.push_back(r);
   p.push_back(IndexExpressionToStruct(eval,t, r));
@@ -1058,6 +1060,7 @@ ArrayVector ClassSubsrefCall(Interpreter* eval, treeVector t, Array r, FuncPtr v
 // What is special here...  Need to be able to do field indexing
 // 
 ArrayVector ClassRHSExpression(Array r, treeVector t, Interpreter* eval) {
+#error FIXME
 //  tree s;
 //  Array q;
 //  Array n, p;
@@ -1141,6 +1144,7 @@ ArrayVector ClassRHSExpression(Array r, treeVector t, Interpreter* eval) {
 }
 
 void ClassAssignExpression(Array *dst, tree t, const Array& value, Interpreter* eval) {
+#error FIXME
   FuncPtr val;
   if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
     throw Exception("The method 'subsasgn' is not defined for objects of class " + 

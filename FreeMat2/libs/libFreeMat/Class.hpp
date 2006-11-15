@@ -49,7 +49,7 @@ ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
 
 ArrayVector ClassRHSExpression(Array a, treeVector t, Interpreter* eval);
 
-void ClassAssignExpression(Array* r, tree t, ArrayVector& value, Interpreter* eval);
+void ClassAssignExpression(Array* r, tree t, const Array& value, Interpreter* eval);
   
 bool ClassResolveFunction(Interpreter* eval, Array &args, std::string funcName, FuncPtr& val);
   

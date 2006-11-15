@@ -1,7 +1,6 @@
 #include "Parser.hpp"
 #include "Exception.hpp"
 #include "Tree.hpp"
-#include "Transform.hpp"
 
 // This one is still a question:
 //    [1 3' + 5]
@@ -118,7 +117,7 @@ tree Parser::MultiFunctionCall() {
   Expect(']');
   addChild(root,lhs);
   Expect('=');
-  addChild(root,VariableDereference());
+  addChild(root,Expression());
   return root;
 }
 
@@ -670,8 +669,6 @@ tree Parser::Process() {
   } catch (ParseException &e) {
     throw Exception("Unexpected input" + m_lex.Context());
   }
-  root = TransformEndReferences(root);
-  root.print();
   return root;
 }
 

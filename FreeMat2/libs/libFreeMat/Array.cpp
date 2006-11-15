@@ -548,13 +548,13 @@ Data* Array::GetDataInstance(Class type, const Dimensions& dims, void* data, boo
 }
 
 void Array::ReleaseDataInstance(Data *dp) {
-  if (prev_Data_count >= 10)
-    delete dp;
-  else {
-    dp->freeDataBlock();
-    prev_Data[prev_Data_count] = dp;
-    prev_Data_count++;
-  }
+  //  if (prev_Data_count >= 10)
+  delete dp;
+  //   else {
+  //     dp->freeDataBlock();
+  //     prev_Data[prev_Data_count] = dp;
+  //   }
+  //     prev_Data_count++;
 }
 
 Array::Array() {

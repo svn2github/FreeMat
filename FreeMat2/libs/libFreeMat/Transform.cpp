@@ -2,6 +2,23 @@
 #include "Token.hpp"
 
 // 
+tree CopyTree(tree root) {
+  if (!root.valid()) return tree();
+  tree newRoot(mkLeaf(root.ptr()->node));
+  for (int i=0;i<root.numchildren();i++)
+    addChild(newRoot,CopyTree(root.child(i)));
+  return newRoot;
+}
+
+tree FindEndReference(tree s) {
+  if (s.is(TOK_END))
+    return s;
+  for (int i=0;i<s.numchildren();i++) {
+    tree t(FindEndReference(s.child(i)));
+    if (t.valid()) return t;
+  }
+  return tree();
+}
 
 tree TransformEndReferencesStatement(tree s) {
   
@@ -113,6 +130,74 @@ tree EndFunctionRewrite2(tree s, int tmpnum) {
   return q;
 }
 
+// Return the parent of the current node
+tree Parent(tree root, tree node) {
+  if (root == node) 
+    throw Exception("cannot find parent of tree node!");
+  for (int i=0;i<root.numchildren();i++) 
+    if (root.child(i) == node) 
+      return root;
+  // We are not the parent of node.  Try our children
+  for (int i=0;i<root.numchildren();i++) {
+    tree s(Parent(root.child(i),node));
+    if (s.valid()) return s;
+  }
+  return tree();
+}
+
+// Returns true if the given root tree is an ancestor of 
+// the given node
+bool IsAncestor(tree root, tree node) {
+  if (!node.valid()) return false;
+  if (!root.valid()) return false;
+  if (root == node) return true;
+  for (int i=0;i<root.numchildren();i++)
+    if (IsAncestor(root.child(i),node)) return true;
+  return false;
+}
+
+void TestParent(tree root) {
+  tree endRef(FindEndReference(root));
+  if (!endRef.valid()) return;
+  cout << ">>*********************************************\r\n";
+  endRef.print();
+  tree varRef(Parent(root,endRef));
+  while (varRef.valid() && !varRef.is(TOK_VARIABLE))
+    varRef = Parent(root,varRef);
+  cout << "<<*********************************************\r\n";
+  varRef.print();  
+  cout << "]]*********************************************\r\n";
+  // Find the child of varRef that has our end Ref
+  int childNum = 0;
+  bool foundEndRef = false;
+  while (!foundEndRef && (childNum < varRef.numchildren())) {
+    foundEndRef = IsAncestor(varRef.child(childNum),endRef);
+    if (!foundEndRef) childNum++;
+  }
+  if (!foundEndRef) throw Exception("Internal error!  Corrupted AST!");
+  // Copy the tree, but clip the children
+  tree outvar = CopyTree(varRef);
+  while (outvar.numchildren() > childNum)
+    outvar.children().pop_back();
+  outvar.print();
+  // For the child of interest, how many entries does it have?
+  // One problem is that what happens in this case:
+  //
+  // Foo(a{:},end)
+  //
+  // ? The end token has to be decided at run time.
+  //
+  // It can be computed with something like this:
+  //
+  // foo.a(32){16}.goo(a{:},end,end,3)
+  //
+  // n = numel([a{:}]);
+  // m = numel([a{:},1,4,3]);
+  // g = foo.a(32){16}.goo;
+  // e = end(g,n,m);
+  // 
+}
+
 static int tmpnum = 0;
 tree RemoveEndReferences(tree s) {
   tree ret(mkLeaf(s.ptr()->node));
@@ -120,9 +205,11 @@ tree RemoveEndReferences(tree s) {
     if ((s.child(i).is(TOK_STATEMENT) || 
 	 s.child(i).is(TOK_QSTATEMENT)) && HasEndReference(s.child(i))) {
       tree ref = FindVariableReferences(s.child(i));
+      //      cout << "####################\r\n";
+      //      ref.print();
       ref = EndFunctionRewrite2(ref,tmpnum);
-      cout << "**************************************\r\n";
-      ref.print();
+      //      cout << "**************************************\r\n";
+      //      ref.print();
       //      addChild(ret,ref);
       //      bool replace = true;
       RenameEndReferences2(s.child(i),ref);
@@ -135,6 +222,9 @@ tree RemoveEndReferences(tree s) {
 }
 
 tree TransformEndReferences(tree s) {
+  return s;
+  cout << "Input tree:\r\n";
+  TestParent(s);
   while (HasEndReference(s))
     s = RemoveEndReferences(s);
   return s;

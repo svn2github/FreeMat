@@ -39,6 +39,7 @@ public:
   void Rename(byte newtok) {if (tptr) tptr->Rename(newtok);}
   bool valid() const {return (tptr != NULL);}
   //  void operator=(const tree &copy);
+  bool operator==(const tree &copy);
   unsigned context() const {if (tptr) return tptr->context(); else return 0;}
   tree first() const {if (tptr) return tptr->children.front(); else return tree();}
   tree second() const {return child(1);}

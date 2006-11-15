@@ -469,10 +469,6 @@ private:
    */
   void clearStacks();
   /**
-   * Convert an expression list into a vector of Array variables.
-   */
-  ArrayVector rowDefinition(const tree &t);
-  /**
    * Convert a matrix definition of the form: [expr1,expr2;expr3;expr4] into
    * a vector of row definitions.  The first row is the vector [expr1,expr2], and
    * the second is the vector [expr3,expr4].  The AST input should look like:
@@ -500,6 +496,12 @@ private:
    * Evaluate the expression pointed to by the AST t into a variable.
    */
   Array expression(const tree &t);
+
+  /**
+   * Evaluate the expression into a variable-array
+   */
+  void multiexpr(const tree &t, ArrayVector& m, int lhsCount = 1);
+
   /**
    * Evaluate a unit colon expression.  The AST input should look like:
    *   :
@@ -524,21 +526,6 @@ private:
    */
   Array doubleColon(const tree &t);
   /**
-   * Process a sequence of expressions into a vector of Arrays.
-   * The input AST must be:
-   *   expr1->expr2->expr3...->NULL
-   * If the dim argument is non-NULL, then before the nth expression
-   * is evaluated, the end value is set to the nth dimension length.
-   * Also, if one of the expressions is a multi-valued RHS expression,
-   * then it is expanded into the result.  Also, if one of
-   * the expressions is the ':' token, then the corresponding
-   * expression is replaced with either 1:length (if the ':' is
-   * a singleton) or 1:dim->getDimensionLength(k).  This is only
-   * valid if we are a subindexing expression list (i.e., 
-   * VAR(exprssionlist)), in which case dim != NULL.
-   */
-  ArrayVector expressionList(treeVector t);
-  /**
    * Decode references to ":" inside variable dereferences.
    */
   Array AllColonReference(Array v, int index, int count);
@@ -546,11 +533,6 @@ private:
    * Handle statements that are simply expressions
    */
   void expressionStatement(const tree &t, bool printIt);
-  /**
-   * Collect variable indexing references into an array-vector.  For example
-   * A(expr1,expr2) --> [expr1,expr2].
-   */
-  ArrayVector varExpressionList(treeVector t, Array subroot);
   /**
    * The RHS expression is used to represent an rvalue in an
    * assignment statement (or an implicit assignment such as 
@@ -570,6 +552,7 @@ private:
    *     ()->{}->.
    *     |   |   |
    *     |   |   field
+
    *     |   expr3->...
    *     expr1->expr2->...
    * Throws an Exception 
@@ -580,6 +563,8 @@ private:
   ArrayVector rhsExpression(const tree &t, int lhsCount = 1);
 
   void assign(Array *r, const tree &s, Array &data);
+
+  void multiassign(Array *r, const tree &s, ArrayVector& m);
 
   void deref(Array &r, const tree &s);
 
@@ -593,22 +578,13 @@ private:
   /**
    * Special case the single assignment statement 'A = B' for speed.
    */
-  void assignmentStatement(const tree &t, bool printIt);
+  void assignment(const tree &t, bool printIt, Array &b);
   /**
    * Try to figure out how many outputs there should be to a multifunction
    * call.  In particular, logic is used to figure out what to do about
    * undefined variables.
    */
   int countLeftHandSides(const tree &t);
-  /**
-   * Assign an array to an lvalue.
-   */
-  Array assignExpression(const tree &t, Array &value);
-  /**
-   * Assign an array to an lvalue.  Values are extracted from the array as 
-   * needed to satisfy the left hand side of the assignment.
-   */
-  Array assignExpression(const tree &t, ArrayVector &value, bool multipleLHS = true);
   /**
    * Evaluate a function and return the results of the function as
    * an ArrayVector.  For scripts, the body of the function is
@@ -628,7 +604,7 @@ private:
    *    - if too many arguments are passed to the function.
    *    - too many outputs are requested from the function.
    */
-  ArrayVector functionExpression(const tree &t, int narg_out, bool outputOptional);
+  void functionExpression(const tree &t, int narg_out, bool outputOptional, ArrayVector &output);
   /**
    * A multifunction call is an expression of the sort
    * [expr1,expr2,...,exprn] = func(args).  The AST is
@@ -863,83 +839,7 @@ private:
    * Convert variables into indexes, calls "subsindex" for user classes.
    */
   Array subsindex(const Array &m);
-  /**
-   * Compute A(expr1,expr2,...)
-   */
-  ArrayVector subsrefParen(Array r, const tree &t);
-  /**
-   * Compute A{expr1,expr2,...}
-   */
-  ArrayVector subsrefBrace(Array r, const tree &t);
-  /**
-   * Compute A.fname
-   */
-  ArrayVector subsrefDot(Array r, const tree &t);
-  /**
-   * Compute A.(expr)
-   */
-  ArrayVector subsrefDotDyn(Array r, const tree &t);
-  /**
-   * Same as subsref, but for the case of a single dereference
-   */
-  ArrayVector subsrefSingle(Array r, const tree &t);
-  /**
-   * Compute complicated dereferences of a variable, e.g. A.foo{1:2}(9)
-   */
-  ArrayVector subsref(Array r, treeVector t);
-  /**
-   * Compute dereferences of a variable that are single valued
-   */
-
-  /**
-   * Compute A(expr1,expr2,...)
-   */
-  Array subsrefParenSimple(Array r, const tree &t);
-  /**
-   * Compute A{expr1,expr2,...}
-   */
-  Array subsrefBraceSimple(Array r, const tree &t);
-  /**
-   * Compute A.fname
-   */
-  Array subsrefDotSimple(Array r, const tree &t);
-  /**
-   * Compute A.(expr)
-   */
-  Array subsrefDotDynSimple(Array r, const tree &t);
-  /**
-   * Same as subsref, but for the case of a single dereference
-   */
-  Array subsrefSingleSimple(Array r, const tree &t);
-  /**
-   * Compute complicated dereferences of a variable, e.g. A.foo{1:2}(9)
-   */
-  Array subsrefSimple(Array r, const tree &t);
-  
-  /**
-   * Assign A(expr1,expr2) = value
-   */
-  void subsassignParen(Array *r, const tree &t, ArrayVector& value);
-  /**
-   * Assign A{expr1,expr2} = value
-   */
-  void subsassignBrace(Array *r, const tree &t, ArrayVector& value);
-  /**
-   * Assign A.fname = value
-   */
-  void subsassignDot(Array *r, const tree &t, ArrayVector& value);
-  /**
-   * Assign A.(expr) = value
-   */
-  void subsassignDotDyn(Array *r, const tree &t, ArrayVector& value);
-  /**
-   * Same as subassign, but for the case of a single dereference
-   */
-  void subassignSingle(Array *r, const tree &t, ArrayVector& value);
-  /**
-   * Compute complicated assignments of a variable, e.g., A.foo{1:2}(9) = B
-   */
-  void subassign(Array *r, const tree &t, ArrayVector& value);
+  void subsindex(ArrayVector& m);
   /**
    * Enter a debug cycle
    */

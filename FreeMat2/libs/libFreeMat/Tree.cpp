@@ -24,6 +24,10 @@ void tree_node::Rename(byte a) {
   node.SetValue(a);
 }
 
+bool tree::operator==(const tree &copy) {
+  return (tptr == copy.tptr);
+}
+
 //void tree::operator=(const tree &copy) {
 //  FreeTreeNode(tptr);
 //  tptr = NULL;

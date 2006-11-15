@@ -72,6 +72,10 @@ public:
     if (p->count > 1) Duplicate();
     p->data.insert(p->data.begin(),x);
   }
+  void append(const RefVec<T>& x) {
+    for (unsigned p=0;p<x.size();p++)
+      push_back(x[p]);
+  }
   void push_back(const T& x) {
     if (!p) Allocate();
     if (p->count > 1) Duplicate();

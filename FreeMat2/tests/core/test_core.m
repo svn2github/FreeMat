@@ -17,6 +17,7 @@ errors = {};
 [succeeded,failed,errors] = runtest('test_call1',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_call2',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_call3',succeeded,failed,errors);
+[succeeded,failed,errors] = runtest('test_call4',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_delete1',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_delete2',succeeded,failed,errors);
 [succeeded,failed,errors] = runtest('test_delete3',succeeded,failed,errors);

@@ -578,7 +578,7 @@ private:
   /**
    * Special case the single assignment statement 'A = B' for speed.
    */
-  void assignment(const tree &t, bool printIt, Array &b);
+  void assignment(const tree &var, bool printIt, Array &b);
   /**
    * Try to figure out how many outputs there should be to a multifunction
    * call.  In particular, logic is used to figure out what to do about

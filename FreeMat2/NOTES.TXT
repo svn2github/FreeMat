@@ -458,8 +458,7 @@ a(3).foo = 3;
 [a.foo] = xargs(3) --> works
 xargs(a.foo) --> 3,0
 
+Time in ArrayVector:
+	5.5+4.5+4.4+3.9+3.4+2.5+2.28+1.6+1.4+1.2+1.2+1.11 ~= 33%
 
-
-
-
-
+So the time could be 1.561 seconds for matcopy3 instead of 2.38 seconds.

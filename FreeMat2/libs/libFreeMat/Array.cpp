@@ -525,11 +525,12 @@ int32 Array::getFieldIndex(std::string fName) {
 }
 
 static int prev_Data_count = 0;
-static Data *prev_Data[10];
+static const int prev_Data_cache = 20;
+static Data *prev_Data[prev_Data_cache];
 
 Data* Array::GetDataInstance(Class type, const Dimensions& dims, void* data, bool sparse, 
 			     rvstring fnames, rvstring classname) {
-  if (!prev_Data_count)
+  if (!prev_Data_count) 
     return new Data(type, dims, data, sparse, fnames, classname);
   else {
     Data *dp = prev_Data[prev_Data_count-1];
@@ -548,13 +549,13 @@ Data* Array::GetDataInstance(Class type, const Dimensions& dims, void* data, boo
 }
 
 void Array::ReleaseDataInstance(Data *dp) {
-  //  if (prev_Data_count >= 10)
-  delete dp;
-  //   else {
-  //     dp->freeDataBlock();
-  //     prev_Data[prev_Data_count] = dp;
-  //   }
-  //     prev_Data_count++;
+  if (prev_Data_count >= (prev_Data_cache-1))
+    delete dp;
+  else {
+    dp->freeDataBlock();
+    prev_Data[prev_Data_count] = dp;
+    prev_Data_count++;
+  }
 }
 
 Array::Array() {

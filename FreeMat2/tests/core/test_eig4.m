@@ -14,7 +14,7 @@ for i=2:4:100
   g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
-  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+  if (~tb) printf('float: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
   t1all = t1all & t1 & tb;
 end
 % Now the double version
@@ -31,7 +31,7 @@ for i=2:4:100
   g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
-  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+  if (~tb) printf('double: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
   t2all = t2all & t1 & tb;
 end
 % Now the complex version
@@ -48,7 +48,7 @@ for i=2:4:100
   g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
-  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+  if (~tb) printf('complex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
   t3all = t3all & t1 & tb;
 end
 % Now the double version
@@ -65,7 +65,7 @@ for i=2:4:100
   g = eig(a,b);
   e2 = max(abs(g-diag(d)));
   tb = e2<bnd;
-  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+  if (~tb) printf('dcomplex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
   t4all = t4all & t1 & tb;
 end
 t = t1all & t2all & t3all & t4all;

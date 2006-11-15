@@ -1966,8 +1966,7 @@ void Interpreter::assign(Array *r, const tree &s, Array &data) {
     //   a2.foo = a3   
     //   id(etc) = a2;
 
-void Interpreter::assignment(const tree &t, bool printIt, Array &b) {
-  const tree &var(t.first());
+void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   string name(var.first().text());
   Array *ptr = context->lookupVariable(name);
   if (!ptr) {
@@ -1977,7 +1976,7 @@ void Interpreter::assignment(const tree &t, bool printIt, Array &b) {
   if (ptr->isUserClass() && 
       !inMethodCall(ptr->getClassName().back()) && 
       !stopoverload) {
-    ClassAssignExpression(ptr,t,b,this);
+    ClassAssignExpression(ptr,var,b,this);
     return;
   }
   if (var.numchildren() == 1)
@@ -2026,7 +2025,7 @@ void Interpreter::statementType(const tree &t, bool printIt) {
   case '=': 
     {
       Array b(expression(t.second()));
-      assignment(t,printIt,b);
+      assignment(t.first(),printIt,b);
     }
     break;
   case TOK_MULTI:

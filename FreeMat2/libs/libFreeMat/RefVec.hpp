@@ -20,18 +20,18 @@ private:
 template <class T>
 class RefVec {
   RefVecNode<T> *p;
-  void Release() {
+  inline void Release() {
     if (p) {
       p->count--;
       if (p->count <=0) 
 	delete p;
     }
   }
-  void Allocate() {
+  inline void Allocate() {
     p = new RefVecNode<T>;
     p->count++;
   }
-  void Duplicate() {
+  inline void Duplicate() {
     RefVecNode<T> *q = new RefVecNode<T>;
     q->data = p->data;
     q->count = 1;
@@ -39,116 +39,116 @@ class RefVec {
     p = q;
   }
 public:
-  RefVec() {
+  inline RefVec() {
     p = NULL;
   }
-  RefVec(int cnt) {
+  inline RefVec(int cnt) {
     Allocate();
     p->data = std::vector<T>(cnt);
   }
-  RefVec(const RefVec& copy) {
+  inline RefVec(const RefVec& copy) {
     p = copy.p;
     if (p) p->count++;
   }
-  ~RefVec() {
+  inline ~RefVec() {
     Release();
   }
-  void operator=(const RefVec& copy) {
+  inline void operator=(const RefVec& copy) {
     Release();
     p = copy.p;
     if (p) p->count++;
   }
-  bool operator==(const RefVec& copy) {
+  inline bool operator==(const RefVec& copy) {
     if ((!p) && (!copy.p)) return true;
     if ((!p) || (!copy.p)) return false;
     return (p->data == copy.p->data);
   }
-  unsigned size() const {
+  inline unsigned size() const {
     if (!p) return 0;
     return p->data.size();
   }
-  void push_front(const T& x) {
+  inline void push_front(const T& x) {
     if (!p) Allocate();
     if (p->count > 1) Duplicate();
     p->data.insert(p->data.begin(),x);
   }
-  void append(const RefVec<T>& x) {
+  inline void append(const RefVec<T>& x) {
     for (unsigned p=0;p<x.size();p++)
       push_back(x[p]);
   }
-  void push_back(const T& x) {
+  inline void push_back(const T& x) {
     if (!p) Allocate();
     if (p->count > 1) Duplicate();
     p->data.push_back(x);
   }
-  void pop_back() {
+  inline void pop_back() {
     if (p) {
       if (p->count > 1) Duplicate();
       p->data.pop_back();
     }
   }
-  void pop_front() {
+  inline void pop_front() {
     if (p) {
       if (p->count > 1) Duplicate();
       p->data.erase(p->data.begin());
     }
   }
-  void clear() {
+  inline void clear() {
     if (p) {
       if (p->count > 1) Duplicate();
       p->data.clear();
     }
   }
-  bool empty() const {
+  inline bool empty() const {
     if (!p) return true;
     return p->data.empty();
   }
-  T& back() {
+  inline T& back() {
     if (!p)
       throw Exception("Illegal internal array access!");
     if (p->count > 1) Duplicate();
     return p->data.back();  
   }
-  T& front() {
+  inline T& front() {
     if (!p)
       throw Exception("Illegal internal array access!");
     if (p->count > 1) Duplicate();
     return p->data.front();  
   }
-  T& operator[] (unsigned n) {
+  inline T& operator[] (unsigned n) {
     if (!p)
       throw Exception("Illegal internal array access!");
     if (p->count > 1) Duplicate();
     return p->data[n];
   }
-  T& at(unsigned n) {
+  inline T& at(unsigned n) {
     if (!p)
       throw Exception("Illegal internal array access!");
     if (p->count > 1) Duplicate();
     return p->data.at(n);
   }
-  void erase(unsigned n) {
+  inline void erase(unsigned n) {
     if (p) {
       if (p->count > 1) Duplicate();
       p->data.erase(p->data.begin()+n);
     }
   }
-  const T& back() const {
+  inline const T& back() const {
     if (!p)
       throw Exception("Illegal internal array access!");
     return p->data.back();  
   }
-  const T& front() const {
+  inline const T& front() const {
     if (!p)
       throw Exception("Illegal internal array access!");
     return p->data.front();  
   }
-  const T& operator[] (unsigned n) const {
+  inline const T& operator[] (unsigned n) const {
     if (!p)
       throw Exception("Illegal internal array access!");
     return p->data[n];
   }
-  const T& at(unsigned n) const {
+  inline const T& at(unsigned n) const {
     if (!p)
       throw Exception("Illegal internal array access!");
     return p->data.at(n);

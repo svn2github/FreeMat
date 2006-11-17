@@ -422,7 +422,7 @@ public:
    * Returns TRUE if we are a string.
    */
   inline const bool isString() const {
-    return (dp->dataClass == FM_STRING);
+    return ((!isEmpty()) && ((dp->dataClass == FM_STRING)));
   }
   /**
    * Returns TRUE if we are an integer class.

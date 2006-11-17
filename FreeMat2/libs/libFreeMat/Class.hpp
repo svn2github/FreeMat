@@ -47,9 +47,9 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval);
 ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
 			  Interpreter* eval);
 
-ArrayVector ClassRHSExpression(Array a, treeVector t, Interpreter* eval);
+ArrayVector ClassRHSExpression(Array a, const tree &t, Interpreter* eval);
 
-void ClassAssignExpression(Array* r, tree t, const Array& value, Interpreter* eval);
+void ClassAssignExpression(Array* r, const tree &t, const Array& value, Interpreter* eval);
   
 bool ClassResolveFunction(Interpreter* eval, Array &args, std::string funcName, FuncPtr& val);
   

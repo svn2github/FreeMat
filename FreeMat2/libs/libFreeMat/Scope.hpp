@@ -92,115 +92,200 @@ public:
   /**
    * Construct a scope with the given name.
    */
-  Scope(std::string scopeName);
-  /**
-   * Default destructor.
-   */
-  ~Scope();
+  Scope(std::string scopeName) : name(scopeName), loopLevel(0), 
+    anyPersistents(false), anyGlobals(false) {}
   /**
    * Insert a variable with the given name.  If the variable
    * already exists in the Scope, then the previous definition
    * is replaced with the given one.
    */
-  void insertVariable(const std::string& varName, const Array& val);
+  inline void insertVariable(const std::string& varName, const Array& val) {
+    symTab.insertSymbol(varName,val);
+  }
   /**
    * Insert a function pointer into the current scope.  The name of
    * of the function is encoded in the FuncPtr.
    */
-  void insertFunction(FuncPtr);
+  inline void insertFunction(FuncPtr a) {
+    codeTab.insertSymbol(a->name,a);
+  }
   /**
    * Delete a function from the current scope.
    */
-  void deleteFunction(const std::string& funcName);
+  inline void deleteFunction(const std::string& funcName) {
+    codeTab.deleteSymbol(funcName);
+  }
   /**
    * Lookup a function.  Return true if the function is defined, and
    * assigns the value of the function pointer to the second argument.
    */
-  bool lookupFunction(std::string funcName, FuncPtr& val);
+  inline bool lookupFunction(std::string funcName, FuncPtr& val) {
+    FuncPtr* ret = codeTab.findSymbol(funcName);
+    if (ret) {
+      val = *ret;
+      return true;
+    }
+    return false;
+  }
   /**
    * Lookup a variable.  Return a pointer to the variable in the symbol 
    * table if found and NULL otherwise.  Different than lookupFunction
    * because in write-back assignments (e.g., A(:,346) = b) it is critical 
    * to manage the number of copies.
    */
-  Array* lookupVariable(const std::string& funcName);
+  inline Array* lookupVariable(const std::string& varName) {
+    return(symTab.findSymbol(varName));
+  }
   /**
    * Add a variable name to the global variables list.
    */
-  void addGlobalVariablePointer(std::string varName);
+  inline void addGlobalVariablePointer(std::string varName) {
+    if (!isVariableGlobal(varName)) {
+      globalVars.push_back(varName);
+      anyGlobals = true;
+    }
+  }
   /**
    * Delete a variable name from the global variables list.
    */
-  void deleteGlobalVariablePointer(std::string varName);
+  inline void deleteGlobalVariablePointer(std::string varName) {
+    stringVector::iterator i = std::find(globalVars.begin(),
+					 globalVars.end(),
+					 varName);
+    if (*i == varName)
+      globalVars.erase(i);
+    if (globalVars.empty()) anyGlobals = false;
+  }
   /**
    * Check to see if a variable is globally defined.
    */
-  bool isVariableGlobal(const std::string& varName);
+  inline bool isVariableGlobal(const std::string& varName) {
+    if (!anyGlobals) return false;
+    bool foundName = false;
+    int i = 0;
+    i = 0;
+    if (globalVars.empty()) return false;
+    while (i<globalVars.size() && !foundName) {
+      foundName = (globalVars[i] == varName);
+      if (!foundName) i++;
+    }
+    return foundName;
+  }
   /**
    * Add a variable name to the persistent variables list.
    */
-  void addPersistentVariablePointer(std::string varName);
+  inline void addPersistentVariablePointer(std::string varName) {
+    if (!isVariablePersistent(varName)) {
+      persistentVars.push_back(varName);
+      anyPersistents = true;
+    }
+  }
   /**
    * Delete a variable name from the persistent variables list.
    */
-  void deletePersistentVariablePointer(std::string varName);
+  inline void deletePersistentVariablePointer(std::string varName) {
+    stringVector::iterator i = std::find(persistentVars.begin(),
+					 persistentVars.end(),
+					 varName);
+    if (*i == varName)
+      persistentVars.erase(i);
+    if (persistentVars.empty()) anyPersistents = false;
+  }
   /**
    * Check to see if a variable is defined in the persistent
    * list.
    */
-  bool isVariablePersistent(const std::string& varName);
+  inline bool isVariablePersistent(const std::string& varName) {
+    if (!anyPersistents) return false;
+    bool foundName = false;
+    int i = 0;
+    i = 0;
+    if (persistentVars.empty()) return false;
+    while (i<persistentVars.size() && !foundName) {
+      foundName = (persistentVars[i] == varName);
+      if (!foundName) i++;
+    }
+    return foundName;
+  }
   /**
    * Mangle the name of a variable by prepending
    * a "_scopename_" to the name of the variable.
    */
-  std::string getMangledName(std::string varName);
-  /**
-   * Dump the scope.
-   */
-  void printMe();
-  /**
-   * Dump only the variables in the scope (not the functions).
-   */
-  void printData();
+  inline std::string getMangledName(std::string varName) {
+    return (std::string("_") + name + std::string("_") + varName);
+  }
   /**
    * Get the name of the scope.
    */
-  std::string getName();
+  inline std::string getName() {
+    return name;
+  }
   /**
    * Increment the loop counter.
    */
-  void enterLoop();
+  inline void enterLoop() {
+    loopLevel++;
+  }
   /**
    * Decrement the loop counter.
    */
-  void exitLoop();
+  inline void exitLoop() {
+    loopLevel--;
+  }
   /**
    * Test the loop counter.
    */
-  bool inLoop();
+  inline bool inLoop() {
+    return (loopLevel>0);
+  }
   /**
    * Get a list of all possible completions of the given
    * string.
    */
-  stringVector getCompletions(const std::string& prefix);
+  inline stringVector getCompletions(const std::string& prefix) {
+    stringVector codecompletions;
+    stringVector varcompletions;
+    codecompletions = codeTab.getCompletions(prefix);
+    varcompletions = symTab.getCompletions(prefix);
+    codecompletions.insert(codecompletions.end(),
+			   varcompletions.begin(),
+			   varcompletions.end());
+    return codecompletions;
+  }
   /**
    * Returns a list of all currently defined variables
    * in the active scope.
    */
-  stringVector listAllVariables();
+  inline stringVector listAllVariables() {
+    stringVector names(symTab.getCompletions(""));
+    int i;
+    for (i=0;i<globalVars.size();i++)
+      names.push_back(globalVars[i]);
+    for (i=0;i<persistentVars.size();i++)
+      names.push_back(persistentVars[i]);
+    return names;
+  }
   /**
    * Delete a variable in this scope.  It does not simply
    * replace the variable with an empty variable, but deletes
    * the variable from the symbol table completely.
    */
-  void deleteVariable(std::string var);
+  inline void deleteVariable(std::string var) {
+    symTab.deleteSymbol(var);
+  }
   /**
    * Clear the list of global variable names
    */
-  void clearGlobalVariableList();
+  inline void clearGlobalVariableList() {
+    globalVars.clear();
+    anyGlobals = false;
+  }
   /**
    * Clear the list of persistent variable names
    */
-  void clearPersistentVariableList();
+  inline void clearPersistentVariableList() {
+    persistentVars.clear();
+    anyPersistents = false;
+  }
 };
 #endif

@@ -871,8 +871,8 @@ private:
    */
   void debugCLI();
 
-  friend Array IndexExpressionToStruct(Interpreter*, treeVector, Array);
-  friend ArrayVector ClassRHSExpression(Array, treeVector, Interpreter*);
+  friend Array IndexExpressionToStruct(Interpreter*, const tree&, Array);
+  friend ArrayVector ClassRHSExpression(Array, const tree&, Interpreter*);
   friend ArrayVector PCodeFunction(int, const ArrayVector&, Interpreter*);
   friend class MFunctionDef;
   friend class ImportedFunctionDef;

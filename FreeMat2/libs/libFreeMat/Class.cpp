@@ -997,58 +997,66 @@ Array ClassBinaryOperator(Array a, Array b, std::string funcname,
   }
 }
 
-void AdjustColonCalls(ArrayVector& m, treeVector t) {
-  for (unsigned index=0;index < t.size();index++) 
-    if (t[index].is(':'))
-      m[index] = Array::stringConstructor(":");
-}
+// void AdjustColonCalls(ArrayVector& m, treeVector t) {
+//   for (unsigned index=0;index < t.size();index++) 
+//     if (t[index].is(':'))
+//       m[index] = Array::stringConstructor(":");
+// }
 
-Array IndexExpressionToStruct(Interpreter* eval, treeVector t, Array r) {
-#error FIXME
-//   ArrayVector struct_args, m;
-//   ArrayVector rv;
-//   Array rsave(r);
-//   rvstring fNames;
-//   fNames.push_back("type");
-//   fNames.push_back("subs");
-//   for (unsigned index=0;index < t.size();index++) {
-//     if (!rv.empty()) 
-//       throw Exception("Cannot reindex an expression that returns multiple values.");
-//     if (t[index].is(TOK_PARENS)) {
-//       m = eval->varExpressionList(t[index].children(),r);
-//       // Scan through the expressions... adjust for "colon" calls
-//       AdjustColonCalls(m,t[index].children());
-//       if (m.size() == 0) 
-// 	throw Exception("Expected indexing expression!");
-//       // Take the arguments and push them into a cell array...
-//       ArrayMatrix q;	q.push_back(m);
-//       struct_args.push_back(Array::stringConstructor("()"));
-//       struct_args.push_back(Array::cellConstructor(q));
-//     }
-//     if (t[index].is(TOK_BRACES)) {
-//       m = eval->varExpressionList(t[index].children(),r);
-//       AdjustColonCalls(m,t[index].children());
-//       if (m.size() == 0) 
-// 	throw Exception("Expected indexing expression!");
-//       // Take the arguments and push them into a cell array...
-//       ArrayMatrix q;	q.push_back(m);
-//       struct_args.push_back(Array::stringConstructor("{}"));
-//       struct_args.push_back(Array::cellConstructor(q));
-//     }
-//     if (t[index].is('.')) {
-//       struct_args.push_back(Array::stringConstructor("."));
-//       struct_args.push_back(Array::stringConstructor(t[index].first().text()));
-//     }
-//   }
-//   int cnt = struct_args.size()/2;
-//   Array *cp = (Array*) Array::allocateArray(FM_STRUCT_ARRAY,cnt,fNames);
-//   for (int i=0;i<2*cnt;i++) 
-//     cp[i] = struct_args[i];
-//   return Array(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
+Array IndexExpressionToStruct(Interpreter* eval, const tree &t, Array r) {
+   ArrayVector struct_args;
+   ArrayVector rv;
+   Array rsave(r);
+   rvstring fNames;
+   fNames.push_back("type");
+   fNames.push_back("subs");
+   for (unsigned index=1;index < t.numchildren();index++) {
+     if (!rv.empty()) 
+       throw Exception("Cannot reindex an expression that returns multiple values.");
+     if (t.child(index).is(TOK_PARENS)) {
+       ArrayVector m;
+       const tree &s(t.child(index));
+       for (unsigned p=0;p<s.numchildren();p++)
+	 eval->multiexpr(s.child(p),m);
+       eval->subsindex(m);
+       //        m = eval->varExpressionList(t[index].children(),r);
+       //        // Scan through the expressions... adjust for "colon" calls
+       //        AdjustColonCalls(m,t[index].children());
+       if (m.size() == 0) 
+	 throw Exception("Expected indexing expression!");
+       // Take the arguments and push them into a cell array...
+       ArrayMatrix q;	q.push_back(m);
+       struct_args.push_back(Array::stringConstructor("()"));
+       struct_args.push_back(Array::cellConstructor(q));
+     }
+     if (t.child(index).is(TOK_BRACES)) {
+       ArrayVector m;
+       const tree &s(t.child(index));
+       for (unsigned p=0;p<s.numchildren();p++)
+	 eval->multiexpr(s.child(p),m);
+       eval->subsindex(m);
+       //        m = eval->varExpressionList(t[index].children(),r);
+       //        AdjustColonCalls(m,t[index].children());
+       if (m.size() == 0) 
+	 throw Exception("Expected indexing expression!");
+       // Take the arguments and push them into a cell array...
+       ArrayMatrix q;	q.push_back(m);
+       struct_args.push_back(Array::stringConstructor("{}"));
+       struct_args.push_back(Array::cellConstructor(q));
+     }
+     if (t.child(index).is('.')) {
+       struct_args.push_back(Array::stringConstructor("."));
+       struct_args.push_back(Array::stringConstructor(t.child(index).first().text()));
+     }
+   }
+   int cnt = struct_args.size()/2;
+   Array *cp = (Array*) Array::allocateArray(FM_STRUCT_ARRAY,cnt,fNames);
+   for (int i=0;i<2*cnt;i++) 
+     cp[i] = struct_args[i];
+   return Array(FM_STRUCT_ARRAY,Dimensions(cnt,1),cp,false,fNames);
 }
   
-ArrayVector ClassSubsrefCall(Interpreter* eval, treeVector t, Array r, FuncPtr val) {
-#error FIXME
+ArrayVector ClassSubsrefCall(Interpreter* eval, const tree &t, Array r, FuncPtr val) {
   ArrayVector p;
   p.push_back(r);
   p.push_back(IndexExpressionToStruct(eval,t, r));
@@ -1059,99 +1067,106 @@ ArrayVector ClassSubsrefCall(Interpreter* eval, treeVector t, Array r, FuncPtr v
 
 // What is special here...  Need to be able to do field indexing
 // 
-ArrayVector ClassRHSExpression(Array r, treeVector t, Interpreter* eval) {
-#error FIXME
-//  tree s;
-//  Array q;
-//  Array n, p;
-//  ArrayVector m;
-//  int peerCnt;
-//  int dims;
-//  bool isVar;
-//  bool isFun;
-//  FuncPtr val;
-//    
-//  // Try and look up subsref, _unless_ we are already in a method 
-//  // of this class
-//  if (!eval->inMethodCall(r.getClassName().back()))
-//    if (ClassResolveFunction(eval,r,"subsref",val)) {
-//      // Overloaded subsref case
-//      return ClassSubsrefCall(eval,t,r,val);
-//    }
-//  ArrayVector rv;
-//  for (unsigned index=0;index < t.size();index++) {
-//    if (!rv.empty()) 
-//      throw Exception("Cannot reindex an expression that returns multiple values.");
-//    if (t[index].is(TOK_PARENS)) {
-//      m = eval->varExpressionList(t[index].children(),r);
-//      if (m.size() == 0) 
-//	throw Exception("Expected indexing expression!");
-//      else if (m.size() == 1) {
-//	q = r.getVectorSubset(m[0]);
-//	r = q;
-//      } else {
-//	q = r.getNDimSubset(m);
-//	r = q;
-//      }
-//    }
-//    if (t[index].is(TOK_BRACES)) {
-//      m = eval->varExpressionList(t[index].children(),r);
-//      if (m.size() == 0) 
-//	throw Exception("Expected indexing expression!");
-//      else if (m.size() == 1)
-//	rv = r.getVectorContentsAsList(m[0]);
-//      else
-//	rv = r.getNDimContentsAsList(m);
-//      if (rv.size() == 1) {
-//	r = rv[0];
-//	rv = ArrayVector();
-//      } else if (rv.size() == 0) {
-//	throw Exception("Empty expression!");
-//	r = Array::emptyConstructor();
-//      }
-//    }
-//    if (t[index].is('.')) {
-//      // This is where the classname chain comes into being.
-//      rvstring className(r.getClassName());
-//      for (int i=1;i<className.size();i++) {
-//	rv = r.getFieldAsList(className.at(i));
-//	r = rv[0];
-//      }
-//      rv = r.getFieldAsList(t[index].first().text());
-//      if (rv.size() <= 1) {
-//	r = rv[0];
-//	rv = ArrayVector();
-//      }
-//    }
-//    if (t[index].is(TOK_DYN)) {
-//      char *field;
-//      try {
-//	Array fname(eval->expression(t[index].first()));
-//	field = fname.getContentsAsCString();
-//      } catch (Exception &e) {
-//	throw Exception("dynamic field reference to structure requires a string argument");
-//      }
-//      rv = r.getFieldAsList(field);
-//      if (rv.size() <= 1) {
-//	r = rv[0];
-//	rv = ArrayVector();
-//      }      
-//    }
-//  }
-//  if (rv.empty())
-//    rv.push_back(r);
-//  return rv;
+ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
+ tree s;
+ Array q;
+ Array n, p;
+ int peerCnt;
+ int dims;
+ bool isVar;
+ bool isFun;
+ FuncPtr val;
+    
+ // Try and look up subsref, _unless_ we are already in a method 
+ // of this class
+ if (!eval->inMethodCall(r.getClassName().back()))
+   if (ClassResolveFunction(eval,r,"subsref",val)) {
+     // Overloaded subsref case
+     return ClassSubsrefCall(eval,t,r,val);
+   }
+ ArrayVector rv;
+ for (unsigned index=1;index < t.numchildren();index++) {
+   if (!rv.empty()) 
+     throw Exception("Cannot reindex an expression that returns multiple values.");
+   if (t.child(index).is(TOK_PARENS)) {
+     ArrayVector m;
+     const tree &s(t.child(index));
+     for (unsigned p=0;p<s.numchildren();p++)
+       eval->multiexpr(s.child(p),m);
+     eval->subsindex(m);
+     //     m = eval->varExpressionList(t.child(index).children(),r);
+     if (m.size() == 0) 
+	throw Exception("Expected indexing expression!");
+     else if (m.size() == 1) {
+	q = r.getVectorSubset(m[0]);
+	r = q;
+     } else {
+	q = r.getNDimSubset(m);
+	r = q;
+     }
+   }
+   if (t.child(index).is(TOK_BRACES)) {
+     ArrayVector m;
+     const tree &s(t.child(index));
+     for (unsigned p=0;p<s.numchildren();p++)
+       eval->multiexpr(s.child(p),m);
+     eval->subsindex(m);
+     //     m = eval->varExpressionList(t.child(index).children(),r);
+     if (m.size() == 0) 
+	throw Exception("Expected indexing expression!");
+     else if (m.size() == 1)
+	rv = r.getVectorContentsAsList(m[0]);
+     else
+	rv = r.getNDimContentsAsList(m);
+     if (rv.size() == 1) {
+	r = rv[0];
+	rv = ArrayVector();
+     } else if (rv.size() == 0) {
+	throw Exception("Empty expression!");
+	r = Array::emptyConstructor();
+     }
+   }
+   if (t.child(index).is('.')) {
+     // This is where the classname chain comes into being.
+     rvstring className(r.getClassName());
+     for (int i=1;i<className.size();i++) {
+	rv = r.getFieldAsList(className.at(i));
+	r = rv[0];
+     }
+     rv = r.getFieldAsList(t.child(index).first().text());
+     if (rv.size() <= 1) {
+	r = rv[0];
+	rv = ArrayVector();
+     }
+   }
+   if (t.child(index).is(TOK_DYN)) {
+     char *field;
+     try {
+	Array fname(eval->expression(t.child(index).first()));
+	field = fname.getContentsAsCString();
+     } catch (Exception &e) {
+	throw Exception("dynamic field reference to structure requires a string argument");
+     }
+     rv = r.getFieldAsList(field);
+     if (rv.size() <= 1) {
+	r = rv[0];
+	rv = ArrayVector();
+     }      
+   }
+ }
+ if (rv.empty())
+   rv.push_back(r);
+ return rv;
 }
 
-void ClassAssignExpression(Array *dst, tree t, const Array& value, Interpreter* eval) {
-#error FIXME
+void ClassAssignExpression(Array *dst, const tree &t, const Array& value, Interpreter* eval) {
   FuncPtr val;
   if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
     throw Exception("The method 'subsasgn' is not defined for objects of class " + 
 		    dst->getClassName().back());
   ArrayVector p;
   p.push_back(*dst);
-  p.push_back(IndexExpressionToStruct(eval,t.children(), *dst));
+  p.push_back(IndexExpressionToStruct(eval,t, *dst));
   p.push_back(value);
   val->updateCode();
   bool overload(eval->getStopOverload());

@@ -1973,15 +1973,13 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
     context->insertVariable(name,Array::emptyConstructor());
     ptr = context->lookupVariable(name);
   }
-  if (ptr->isUserClass() && 
-      !inMethodCall(ptr->getClassName().back()) && 
-      !stopoverload) {
-    ClassAssignExpression(ptr,var,b,this);
-    return;
-  }
-  if (var.numchildren() == 1)
+  if (var.numchildren() == 1) {
     ptr->setValue(b);
-  else if (var.numchildren() == 2)
+  } else if (ptr->isUserClass() && 
+	     !inMethodCall(ptr->getClassName().back()) && 
+	     !stopoverload) {
+    ClassAssignExpression(ptr,var,b,this);
+  } else if (var.numchildren() == 2)
     assign(ptr,var.second(),b);
   else {
     ArrayVector stack;
@@ -3516,15 +3514,19 @@ void Interpreter::deref(Array &r, const tree &s) {
   if (ptr->getDataClass() == FM_FUNCPTR_ARRAY &&
       ptr->isScalar()) {
     ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
-    return m[0];
+    if (m.size() >= 1)
+      return m[0];
+    else
+      return Array::emptyConstructor();
   }
   if (t.numchildren() == 1)
     return *ptr;
   if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->getClassName().back())) {
-    treeVector indexExpr(t.children());
-    indexExpr.erase(indexExpr.begin());
-    ArrayVector m(ClassRHSExpression(*ptr,indexExpr,this));
-    return m[0];
+    ArrayVector m(ClassRHSExpression(*ptr,t,this));
+    if (m.size() >= 1)
+      return m[0];
+    else
+      return Array::emptyConstructor();
   }
   Array r(*ptr);
   for (unsigned index = 1;index < t.numchildren();index++) 

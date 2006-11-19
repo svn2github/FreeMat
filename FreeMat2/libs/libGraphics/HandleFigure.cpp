@@ -147,6 +147,7 @@ void HandleFigure::SetupDefaults() {
   SetStringDefault("type","figure");
   SetThreeVectorDefault("color",-1,0,0);
   SetStringDefault("nextplot","replace");
+  SetTwoVectorDefault("figsize",500,300);
   // Set a default colormap to hsv(64) - this matches
   LoadDefaultColorMap();
   resized = false;

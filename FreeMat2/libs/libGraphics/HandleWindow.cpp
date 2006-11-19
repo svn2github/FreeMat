@@ -30,12 +30,23 @@ public:
   BaseFigureQt(QWidget *parent, HandleFigure *fig);
   void paintEvent(QPaintEvent *e);
   void resizeEvent(QResizeEvent *e);
+  QSize sizeHint() const;
+  QSizePolicy sizePolicy() const;
 };
 
+QSize BaseFigureQt::sizeHint() const {
+  HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
+  return QSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+}
+
+QSizePolicy BaseFigureQt::sizePolicy() const {
+  return QSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+}
+
 void BaseFigureQt::resizeEvent(QResizeEvent *e) {
-  //qDebug("Qtsize");
   QWidget::resizeEvent(e);
-  hfig->resizeGL(width(),height());
+  hfig->resizeGL(qMax(8,width()),
+  		 qMax(8,height()));
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
@@ -48,7 +59,7 @@ void BaseFigureQt::paintEvent(QPaintEvent *e) {
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 
   QWidget(parent) {
   hfig = fig;
-  hfig->resizeGL(width(),height());
+  //  hfig->resizeGL(width(),height());
 }
 
 class BaseFigureGL : public QGLWidget {
@@ -124,7 +135,7 @@ void HandleWindow::closeEvent(QCloseEvent* e) {
   NotifyFigureClosed(handle);
 }
   
-HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
+HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
   initialized = false;
   setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
   handle = ahandle;
@@ -133,22 +144,67 @@ HandleWindow::HandleWindow(unsigned ahandle) : QWidget() {
   sprintf(buffer,"Figure %d",ahandle+1);
   setWindowTitle(buffer);
   qtchild = new BaseFigureQt(NULL,hfig);
-//   if (QGLFormat::hasOpenGL())
-//     glchild = new BaseFigureGL(NULL,hfig);
-  layout = new QStackedWidget(this);
-  QHBoxLayout *box = new QHBoxLayout(this);
-  box->setMargin(0);
-  setLayout(box);
+  //   if (QGLFormat::hasOpenGL())
+  //     glchild = new BaseFigureGL(NULL,hfig);
+  //  layout = new QStackedWidget(this);
+  //  QHBoxLayout *box = new QHBoxLayout(this);
+  //  box->setMargin(0);
+  //  setLayout(box);
   //   layout = new QTabWidget;
   //   layout->addTab(qtchild,"QT");
   //   layout->addTab(glchild,"GL");
-  layout->addWidget(qtchild);
-//   if (QGLFormat::hasOpenGL())
-//     layout->addWidget(glchild);
-  layout->show();
-  box->addWidget(layout);
-  resize(600,400);
+  //  layout->addWidget(qtchild);
+  //   if (QGLFormat::hasOpenGL())
+  //     layout->addWidget(glchild);
+  //  layout->show();
+  //  box->addWidget(layout);
+  createActions();
+  createMenus();
+  createToolBars();
+  setCentralWidget(qtchild);
+  // resize(600,400);
   initialized = true;
+}
+
+void HandleWindow::zoom() {
+}
+
+void HandleWindow::pan() {
+}
+
+void HandleWindow::save() {
+}
+
+void HandleWindow::copy() {
+}
+
+void HandleWindow::createActions() {
+  zoomAct = new QAction(QIcon(":/images/zoomin.png"),"&Zoom",this);
+  connect(zoomAct,SIGNAL(triggered()),this,SLOT(zoom()));
+  panAct = new QAction(QIcon(":/images/pan.png"),"&Pan",this);
+  connect(panAct,SIGNAL(triggered()),this,SLOT(pan()));
+  saveAct = new QAction(QIcon(":/images/save.png"),"&Save",this);
+  connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
+  copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
+  connect(copyAct,SIGNAL(triggered()),this,SLOT(copy()));
+}
+
+void HandleWindow::createMenus() {
+  fileMenu = menuBar()->addMenu("&File");
+  fileMenu->addAction(saveAct);
+  editMenu = menuBar()->addMenu("&Edit");
+  editMenu->addAction(copyAct);
+  editMenu->addAction(zoomAct);
+  editMenu->addAction(panAct);
+}
+
+void HandleWindow::createToolBars() {
+  toolBar = addToolBar("Tools");
+  toolBar->setObjectName("ToolsToolBar");
+  toolBar->addAction(saveAct);
+  toolBar->addAction(copyAct);
+  toolBar->addAction(zoomAct);
+  toolBar->addAction(panAct);
 }
 
 unsigned HandleWindow::Handle() {
@@ -177,25 +233,27 @@ void HandleWindow::mousePressEvent(QMouseEvent* e) {
 
 void HandleWindow::UpdateState() {
   if (!initialized) return;
-  HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
-  resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
-//   if (hfig->StringCheck("renderer","opengl") && (QGLFormat::hasOpenGL())) {
-//     if (layout->currentWidget() != glchild) {
-//       layout->setCurrentWidget(glchild);
-//       glchild->show();
-//       glchild->updateGeometry();
-//       repaint();
-//       glchild->updateGL();
-//       update();
-//       UpdateState();
-//     }
-//     glchild->updateGL();
-//     update();
-//   } else if (hfig->StringCheck("renderer","painters")) {
-//     if (layout->currentWidget() != qtchild) {
-//       if (QGLFormat::hasOpenGL())
-// 	glchild->setGeometry(0,0,1,1);
-  layout->setCurrentWidget(qtchild);
+  //  HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
+  //  qtchild->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+  qtchild->updateGeometry();
+  adjustSize();
+  //   if (hfig->StringCheck("renderer","opengl") && (QGLFormat::hasOpenGL())) {
+  //     if (layout->currentWidget() != glchild) {
+  //       layout->setCurrentWidget(glchild);
+  //       glchild->show();
+  //       glchild->updateGeometry();
+  //       repaint();
+  //       glchild->updateGL();
+  //       update();
+  //       UpdateState();
+  //     }
+  //     glchild->updateGL();
+  //     update();
+  //   } else if (hfig->StringCheck("renderer","painters")) {
+  //     if (layout->currentWidget() != qtchild) {
+  //       if (QGLFormat::hasOpenGL())
+  // 	glchild->setGeometry(0,0,1,1);
+  //  layout->setCurrentWidget(qtchild);
   //     }
   update();
 //   }

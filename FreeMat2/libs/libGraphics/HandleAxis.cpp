@@ -233,17 +233,15 @@ void FormatAxisManual(double t1, double t2, int tickcount,
   tStop = t2;
   tBegin = tDelt*ceil(t1/tDelt);
   tEnd = floor(t2/tDelt)*tDelt;
-  int mprime;
-  mprime = (int) ceil((tEnd-tBegin)/tDelt);
-  if ((tBegin+mprime*tDelt) > t2)
-    mprime--;
-  int tCount = mprime+1;
+  Array trange(Array::doubleRangeConstructor(tBegin,tDelt,tEnd,false));
+  int tCount = trange.getLength();
   tickLocations.clear();
   tlabels.clear();
   bool exponentialForm;
   exponentialForm = false;
+  const double *dp = (const double *) trange.getDataPointer();
   for (int i=0;i<tCount;i++) {
-    double tloc = tBegin+i*tDelt;
+    double tloc = dp[i];
     tickLocations.push_back(tloc);
     if (tloc != 0.0)
       exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
@@ -280,18 +278,16 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
   //   }
   tBegin = tStart;
   tEnd = tStop;
-  int mprime;
-  mprime = (int) ceil((tEnd-tBegin)/tDelt);
-  if ((tBegin+(mprime-1)*tDelt) > tMax)
-    mprime--;
-  int tCount = mprime+1;
+  Array trange(Array::doubleRangeConstructor(tBegin,tDelt,tEnd,false));
+  int tCount = trange.getLength();
   tickLocations.clear();
   tlabels.clear();
   bool exponentialForm;
   exponentialForm = false;
+  const double *dp = (const double *) trange.getDataPointer();
   //    qDebug("Format %f %f %d %d",tMin,tMax,tickcount,tCount);
   for (int i=0;i<tCount;i++) {
-    double tloc = tBegin+i*tDelt;
+    double tloc = dp[i];
     //      qDebug("  Point %f",tloc);
     if (!isLogarithmic)
       tickLocations.push_back(tloc);

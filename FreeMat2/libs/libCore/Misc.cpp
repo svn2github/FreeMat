@@ -2321,7 +2321,7 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
   Dimensions anchor(outdim);
   // sourceAddress is used to track which column we are pushing in the
   // source matrix
-  Dimensions sourceAddress(originalSize.getLength());
+  Dimensions sourceAddress(outdims.getLength());
   int destanchor;
   int copyCount;
   copyCount = repcount.getElementCount();
@@ -2333,7 +2333,7 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
       // We can calculate the anchor of this copy by multiplying the source
       // address by the copySelect vector
       for (k=0;k<outdim;k++)
-	anchor.set(k,copySelect.get(k)*originalSize.get(k)+sourceAddress.get(k));;
+	anchor.set(k,copySelect.get(k)*originalSize.get(k)+sourceAddress.get(k));
       // Now, we map this to a point in the destination array
       destanchor = outdims.mapPoint(anchor);
       // And copy the elements

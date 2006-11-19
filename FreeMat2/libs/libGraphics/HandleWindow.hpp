@@ -25,16 +25,24 @@
 #include <QTabWidget>
 #include <QGLWidget>
 #include <QEventLoop>
+#include <QMenu>
+#include <QAction>
+#include <QToolBar>
+#include <QMainWindow>
 
-class HandleWindow : public QWidget {
+class HandleWindow : public QMainWindow {
+  Q_OBJECT
 protected:
   bool initialized;
   unsigned handle;
   bool glActive;
-  QGLWidget *glchild;
+  //  QGLWidget *glchild;
   QWidget *qtchild;
   HandleFigure *hfig;
-  QStackedWidget *layout;
+  //  QStackedWidget *layout;
+  QToolBar *toolBar;
+  QAction *zoomAct, *panAct, *saveAct, *copyAct;
+  QMenu *fileMenu, *editMenu;
   //  QTabWidget *layout;
   QEventLoop m_loop;
   int click_x, click_y;
@@ -48,6 +56,14 @@ public:
   void closeEvent(QCloseEvent* e);
   void GetClick(int &x, int &y);
   void mousePressEvent(QMouseEvent* e);
+  void createActions();
+  void createMenus();
+  void createToolBars();
+public slots:
+  void zoom();
+  void pan();
+  void save();
+  void copy();
 };
 
 

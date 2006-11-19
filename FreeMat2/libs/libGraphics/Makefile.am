@@ -3,7 +3,8 @@ noinst_LIBRARIES = libGraphics.a
 INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libMex
 
 libGraphics_a_MOC = HandleUIControl.moc.cpp \
-HandleMultiEdit.moc.cpp
+HandleMultiEdit.moc.cpp \
+HandleWindow.moc.cpp
 
 BUILT_SOURCES = $(libGraphics_a_MOC)
 

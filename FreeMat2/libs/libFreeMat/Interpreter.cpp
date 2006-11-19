@@ -369,7 +369,7 @@ void Interpreter::run() {
 }
 
 void Interpreter::sendGreeting() {
-  outputMessage(" " + getVersionString() + " (build 2030)\n");
+  outputMessage(" " + getVersionString() + " (build 2233)\n");
   outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
   outputMessage(" Licensed under the GNU Public License (GPL)\n");
   outputMessage(" Type <help license> to find out more\n");
@@ -631,7 +631,7 @@ Array Interpreter::ShortCutAnd(const tree &t) {
 // Need to take care
 
 void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
-  if (t.token() == TOK_VARIABLE) {
+  if (t.is(TOK_VARIABLE)) {
     Array *ptr = context->lookupVariable(t.first().text());
     if (!ptr) {
       functionExpression(t,lhsCount,false,q);
@@ -698,7 +698,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
     endRef = oldEndRef;
     endCount = oldEndCount;
     endTotal = oldEndTotal;
-  } else
+  } else if (!t.is(TOK_KEYWORD))
     q.push_back(expression(t));
 }
 

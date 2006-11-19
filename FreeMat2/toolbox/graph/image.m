@@ -68,7 +68,7 @@
 
 % Copyright (c) 2002-2006 Samit Basu
 
-function handle = image(varargin)
+function ohandle = image(varargin)
   ax = newplot;
   if (length(varargin) == 0), return; end
   % check for formal syntax
@@ -94,4 +94,6 @@ function handle = image(varargin)
   else
     error('Unrecognized form of image command');
   end
-
+  if (nargout > 0)
+      ohandle = handle;
+  end

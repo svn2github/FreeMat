@@ -171,6 +171,7 @@ void QTTerm::ScrollLineUp() {
 
 void QTTerm::ScrollLineDown() {
   m_scrollbar->setValue(m_scrollbar->value()+1);
+
 }
 
 int QTTerm::GetWidth() {
@@ -455,6 +456,7 @@ void QTTerm::MoveRight() {
 void QTTerm::MoveBOL() {
   SetCursor(0,m_cursor_y);
 }
+
 
 void QTTerm::ClearEOL() {
   for (int i=m_cursor_x;i<m_width;i++)

@@ -2080,36 +2080,14 @@ ArrayVector DbListFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //to set the breakpoint, and @|linenumber| is the line number.
 //!
 
-static int bpList = 1;
 ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 2)
     throw Exception("dbstop function requires at least two arguments");
   if (!(arg[0].isString()))
     throw Exception("first argument to dbstop must be the name of routine where to stop");
-  char *cname = arg[0].getContentsAsCString();
-  bool isFun;
-  FuncPtr val;
-  isFun = eval->lookupFunction(cname,val);
-  char buffer[1000];
-  if (!isFun)
-    throw Exception(std::string("Cannot resolve ")+cname+std::string(" to a function or script "));
-  std::string resolved_name;
-  Array tmp(arg[1]);
-  int line = tmp.getContentsAsIntegerScalar();
-  unsigned dline;
-  if (val->type() == FM_M_FUNCTION) {
-    MFunctionDef *mptr;
-    mptr = (MFunctionDef *) val;
-    mptr->updateCode();
-    resolved_name = mptr->fileName;
-    dline = mptr->ClosestLine(line);
-    if (dline != line)
-      eval->warningMessage(string("Breakpoint moved to line ") + dline + 
-			   " of " + cname);
-  } else {
-    throw Exception("Cannot set breakpoints in built-in or imported functions");
-  }
-  eval->addBreakpoint(stackentry(resolved_name,cname,dline,bpList++));
+  const char *cname = ArrayToString(arg[0]);
+  int line = ArrayToInt32(arg[1]);
+  eval->addBreakpoint(cname,line);
   return ArrayVector();
 }
   

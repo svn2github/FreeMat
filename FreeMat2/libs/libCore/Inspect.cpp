@@ -167,8 +167,11 @@ ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 //!
 ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   static FMEditor *edit = NULL;
-  if (edit == NULL)
-    edit = new FMEditor;
+  if (edit == NULL) {
+    edit = new FMEditor(eval);
+    QObject::connect(eval,SIGNAL(RefreshBPLists()),edit,SLOT(RefreshBPLists()));
+    QObject::connect(eval,SIGNAL(ShowLine(QString,int)),edit,SLOT(showActiveLine(QString,int)));
+  }
   edit->showNormal();
   edit->raise();
   return ArrayVector();

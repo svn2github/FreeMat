@@ -38,10 +38,14 @@ void FreeHandleObject(unsigned handle);
 void FreeHandleFigure(unsigned handle);
 void ValidateHandle(unsigned handle);
 void NotifyFigureClosed(unsigned handle);
+void NotifyFigureActive(unsigned handle);
   
 void InitializeHandleGraphics();
 void ShutdownHandleGraphics();
 void CloseHelper(int fig);
 void IndirectWindowClose(int handle);
+
+ArrayVector HCopyFunction(int nargout, const ArrayVector& arg);
+ArrayVector HPrintFunction(int nargout, const ArrayVector& arg);
 
 #endif

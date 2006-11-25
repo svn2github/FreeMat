@@ -94,6 +94,10 @@ void NotifyFigureClosed(unsigned figNum) {
     allClosed = Hfigs[i] == NULL;
 }
 
+void NotifyFigureActive(unsigned figNum) {
+  HcurrentFig = figNum;
+}
+
 static void NewFig() {
   // First search for an unused fig number
   int figNum = 0;
@@ -313,6 +317,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
   hp->Set(children);
 }
 
+
 //!
 //@Module SET Set Object Property
 //@@Section HANDLE
@@ -343,9 +348,14 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     // Use the address and property name to lookup the Get/Set handler
     std::string propname = ArrayToString(arg[ptr]);
     // Special case 'set' for 'children' - this can change reference counts
+    // Special case 'set' for 'figsize' - this requires help from the OS
     if (propname == "children")
       HSetChildrenFunction(fp,arg[ptr+1]);
-    else {
+    else if ((handle < HANDLE_OFFSET_OBJECT) && (propname == "figsize")) {
+      fp->LookupProperty(propname)->Set(arg[ptr+1]);
+      HandleFigure *fig = (HandleFigure*) fp;
+      fig->SetSize();
+    } else {
       try {
 	fp->LookupProperty(propname)->Set(arg[ptr+1]);
       } catch (Exception &e) {
@@ -638,7 +648,7 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
     retval = true;
   } else {
     // Binary print - use grabWidget
-    QPixmap pxmap(QPixmap::grabWidget(g));
+    QPixmap pxmap(QPixmap::grabWidget(g->GetQtWidget()));
     QImage img(pxmap.toImage());
     retval = img.save(filename.c_str(),type.c_str());
   }

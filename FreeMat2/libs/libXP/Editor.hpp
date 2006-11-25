@@ -31,6 +31,7 @@
 #include "highlighter.hpp"
 #include "findform.ui.h"
 #include "replaceform.ui.h"
+#include "Interpreter.hpp"
 
 class FMFindDialog : public QDialog {
   Q_OBJECT
@@ -98,16 +99,19 @@ private slots:
   void update();
 };
 
+class FMEditPane;
+
 class BreakPointIndicator : public QWidget {
   Q_OBJECT
 public:
-  BreakPointIndicator(FMTextEdit *editor);
+  BreakPointIndicator(FMTextEdit *editor, FMEditPane* pane);
 protected:
   virtual void paintEvent(QPaintEvent *);
   virtual void mousePressEvent(QMouseEvent *);
   //  virtual void mouseReleaseEvent(QMouseEvent *);
 private:
   FMTextEdit *tEditor;
+  FMEditPane *tPane;
 };
 
 class LineNumber : public QWidget {
@@ -124,11 +128,14 @@ class FMEditPane : public QWidget {
   Q_OBJECT
   FMTextEdit *tEditor;
   QString curFile;
+  Interpreter *m_eval;
 public:
-  FMEditPane();
+  FMEditPane(Interpreter* eval);
   FMTextEdit* getEditor();
   void setFileName(QString filename);
   QString getFileName();
+  Interpreter* getInterpreter();
+  void markActive(int line);
 };
 
 class FMEditor : public QMainWindow {
@@ -144,8 +151,9 @@ class FMEditor : public QMainWindow {
   FMFindDialog *m_find;
   FMReplaceDialog *m_replace;
   QMenu *m_popup;
+  Interpreter *m_eval;
 public:
-  FMEditor();
+  FMEditor(Interpreter* eval);
   virtual ~FMEditor();
 private:
   void createActions();
@@ -185,6 +193,8 @@ private slots:
 		    bool backwards, bool sensitive);
   void comment();
   void uncomment();
+  void RefreshBPLists();
+  void showActiveLine(QString filename, int line);
 public:
   void closeEvent(QCloseEvent *event);
 };

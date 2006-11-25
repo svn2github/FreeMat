@@ -2387,6 +2387,7 @@ void HandleAxis::DrawAxisLabels(RenderEngine& gc) {
   }      
   SetupProjection(gc);
   SetStringDefault("xdir",xdir);
+
   SetStringDefault("ydir",ydir);
 }
 

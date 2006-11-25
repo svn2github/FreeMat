@@ -284,7 +284,9 @@ public:
   /**
    * Add a new breakpoint
    */
+  MFunctionDef* lookupFullPath(string name);
   void addBreakpoint(stackentry bp);
+  void addBreakpoint(string name, int line) ;
   /**
    * Activate a breakpoint in the code.  If the line number for the
    * breakpoint is negative, the breakpoint is set as a step trap.  
@@ -389,6 +391,8 @@ public:
    */
   void block(const tree &t);
 
+  bool isBPSet(QString fname, int lineNumber);
+  void toggleBP(QString fname, int lineNumber);
 
   /******************************************
    *  Signals for the Interpreter           *
@@ -418,6 +422,14 @@ signals:
    * Something went wrong...
    */
   void CrashedSignal();
+  /**
+   * Refresh the breakpoints 
+   */
+  void RefreshBPLists();
+  /**
+   * Highlight the specified line in the editor (if open)
+   */
+  void ShowLine(QString filename, int line);
 
   /******************************************
    *  Private Methods for the Interpreter   *

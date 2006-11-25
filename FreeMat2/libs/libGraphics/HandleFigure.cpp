@@ -191,4 +191,11 @@ bool HandleFigure::Resized() {
   return resized;
 }
 
+void HandleFigure::SetSize() {
+   HPTwoVector *htv = (HPTwoVector*) LookupProperty("figsize");
+//   qDebug() << "Size hint " << (htv->Data()[0]) << "," << (htv->Data()[1]) << "\r\n";
+//   return QSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+   m_win->GetQtWidget()->setMinimumSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+   m_win->GetQtWidget()->setMaximumSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+}
 

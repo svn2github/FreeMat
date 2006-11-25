@@ -253,6 +253,14 @@ public:
     return codecompletions;
   }
   /**
+   * Returns a list of all functions
+   *
+   */
+  inline stringVector listAllFunctions() {
+    return codeTab.getCompletions("");
+  }
+
+  /**
    * Returns a list of all currently defined variables
    * in the active scope.
    */

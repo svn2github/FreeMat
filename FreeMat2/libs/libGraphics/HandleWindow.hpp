@@ -29,6 +29,16 @@
 #include <QAction>
 #include <QToolBar>
 #include <QMainWindow>
+#include <QActionGroup>
+#include <QRubberBand>
+
+const int normal_mode = 1;
+const int point_mode = 2;
+const int zoom_mode = 3;
+const int pan_mode = 4;
+const int click_mode = 5;
+const int rotate_mode = 6;
+const int cam_rotate_mode = 7;
 
 class HandleWindow : public QMainWindow {
   Q_OBJECT
@@ -41,11 +51,23 @@ protected:
   HandleFigure *hfig;
   //  QStackedWidget *layout;
   QToolBar *toolBar;
-  QAction *zoomAct, *panAct, *saveAct, *copyAct;
+  QAction *zoomAct, *panAct, *rotateAct, *camRotateAct;
+  QAction *saveAct, *copyAct, *closeAct;
+  QActionGroup *toolGroup;
   QMenu *fileMenu, *editMenu;
   //  QTabWidget *layout;
   QEventLoop m_loop;
   int click_x, click_y;
+  int mode;
+  QRubberBand *band;
+  QPoint origin;
+  bool pan_active;
+  double pan_xrange, pan_xmean;
+  double pan_yrange, pan_ymean;
+  bool zoom_active;
+  bool rotate_active;
+  vector<double> rotate_up, rotate_target, rotate_camera, rotate_forward, rotate_right;
+  double rotate_source_cam_dist;
 public:
   QWidget *GetQtWidget() {return qtchild;}
   HandleWindow(unsigned ahandle);
@@ -54,14 +76,19 @@ public:
   HandleFigure *HFig();
   void UpdateState();
   void closeEvent(QCloseEvent* e);
+  bool event(QEvent* e);
   void GetClick(int &x, int &y);
   void mousePressEvent(QMouseEvent* e);
+  void mouseMoveEvent(QMouseEvent* e);
+  void mouseReleaseEvent(QMouseEvent* e);
   void createActions();
   void createMenus();
   void createToolBars();
 public slots:
-  void zoom();
-  void pan();
+  void zoom(bool);
+  void pan(bool);
+  void rotate(bool);
+  void camRotate(bool);
   void save();
   void copy();
 };

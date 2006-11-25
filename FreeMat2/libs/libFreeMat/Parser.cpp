@@ -669,7 +669,6 @@ tree Parser::Process() {
   } catch (ParseException &e) {
     throw Exception("Unexpected input" + m_lex.Context());
   }
-  root.print();
   return root;
 }
 

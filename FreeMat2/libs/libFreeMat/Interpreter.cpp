@@ -2234,7 +2234,10 @@ void Interpreter::specialFunctionCall(const tree &t, bool printIt) {
   bool CLIFlagsave = InCLI;
   InCLI = false;
   try {
-    m = val->evaluateFunction(this,n,0);
+    if (!val->graphicsFunction)
+      m = val->evaluateFunction(this,n,0);
+    else
+      m = doGraphicsFunction(val,n,0);
   } catch(Exception& e) {
     InCLI = CLIFlagsave;
     throw;
@@ -2265,14 +2268,13 @@ void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
 void Interpreter::addBreakpoint(stackentry bp) {
   bpStack.push_back(bp);
   refreshBreakpoints();
+  emit RefreshBPLists();
 }
 
 void Interpreter::refreshBreakpoints() {
   for (int i=0;i<bpStack.size();i++)
     setBreakpoint(bpStack[i],true);
 }
-
-
 
 //Some notes on the multifunction call...  This one is pretty complicated, and the current logic is hardly transparent.  Assume we have an expression of the form:
 //
@@ -3060,7 +3062,60 @@ void Interpreter::functionExpression(const tree &t,
     throw;
   }
 }
-  
+
+void Interpreter::toggleBP(QString fname, int lineNumber) {
+  if (isBPSet(fname,lineNumber)) {
+    string fname_string(fname.toStdString());
+    for (int i=0;i<bpStack.size();i++) 
+      if ((bpStack[i].cname == fname_string) &&
+	  ((bpStack[i].tokid & 0xffff) == lineNumber)) 
+	deleteBreakpoint(bpStack[i].number);
+  } else {
+    addBreakpoint(fname.toStdString(),lineNumber);
+  }    
+}
+
+MFunctionDef* Interpreter::lookupFullPath(string fname) {
+  stringVector allFuncs(context->listAllFunctions());
+  FuncPtr val;
+  for (int i=0;i<allFuncs.size();i++) {
+    bool isFun = context->lookupFunction(allFuncs[i],val);
+    if (val->type() == FM_M_FUNCTION) {
+      MFunctionDef *mptr;
+      mptr = (MFunctionDef *) val;
+      if (mptr->fileName ==  fname) return mptr;
+    }
+  }
+  return NULL;
+}
+
+static int bpList = 1;
+void Interpreter::addBreakpoint(string name, int line) {
+  FuncPtr val;
+  MFunctionDef *mptr;
+  if (context->lookupFunction(name,val) && (val->type() == FM_M_FUNCTION))
+    mptr = (MFunctionDef*) val;
+  else
+    mptr = lookupFullPath(name);
+  if (!mptr || (mptr->type() != FM_M_FUNCTION)) {
+    warningMessage(std::string("Cannot resolve ")+name+std::string(" to a function or script "));
+    return;
+  }
+  mptr->updateCode();
+  int dline = mptr->ClosestLine(line);
+  if (dline != line)
+    warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
+  addBreakpoint(stackentry(mptr->fileName,mptr->name,dline,bpList++));
+}
+
+bool Interpreter::isBPSet(QString fname, int lineNumber) {
+  string fname_string(fname.toStdString());
+  for (int i=0;i<bpStack.size();i++) 
+    if ((bpStack[i].cname == fname_string) &&
+	((bpStack[i].tokid & 0xffff) == lineNumber)) return true;
+  return false;
+}
+
 void Interpreter::listBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
     //    if (bpStack[i].number > 0) {
@@ -3080,6 +3135,7 @@ void Interpreter::deleteBreakpoint(int number) {
       return;
     } 
   warningMessage("Unable to delete specified breakpoint (does not exist)");
+  emit RefreshBPLists();
   return;
 }
 
@@ -3698,13 +3754,16 @@ void Interpreter::evalCLI() {
       sprintf(prompt,"D-> ");
     else
       sprintf(prompt,"--> ");
-  else
-    if (bpActive)	
+  else {
+    if (bpActive) 
       sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
 	      ip_context & 0xffff);
     else
       sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
 	      ip_context & 0xffff);
+    qDebug() << "Emit! " << QString::fromStdString(ip_funcname) << "," << (ip_context & 0xffff) << "\n";
+    emit ShowLine(QString::fromStdString(ip_funcname),ip_context & 0xffff);
+  }
   while(1) {
     emit SetPrompt(prompt);
     string cmdset;

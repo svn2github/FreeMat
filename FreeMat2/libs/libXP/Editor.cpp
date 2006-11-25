@@ -362,20 +362,27 @@ void FMIndent::update() {
   m_te->setTextCursor(final);
 }
 
-FMEditPane::FMEditPane() : QWidget() {
+Interpreter* FMEditPane::getInterpreter() {
+  return m_eval;
+}
+
+FMEditPane::FMEditPane(Interpreter* eval) : QWidget() {
+  m_eval = eval;
   tEditor = new FMTextEdit;
   LineNumber *tLN = new LineNumber(tEditor);
-  BreakPointIndicator *tBP = new BreakPointIndicator(tEditor);
+  BreakPointIndicator *tBP = new BreakPointIndicator(tEditor,this);
   QHBoxLayout *layout = new QHBoxLayout;
   layout->addWidget(tLN);
   layout->addWidget(tBP);
   layout->addWidget(tEditor);
   setLayout(layout);
   FMIndent *ind = new FMIndent;
+
   connect(tEditor,SIGNAL(indent()),ind,SLOT(update()));
   Highlighter *highlight = new Highlighter(tEditor->document());
   ind->setDocument(tEditor);
 }
+
 
 FMTextEdit* FMEditPane::getEditor() {
   return tEditor;
@@ -389,7 +396,23 @@ QString FMEditPane::getFileName() {
   return curFile;
 }
 
-FMEditor::FMEditor() : QMainWindow() {
+void FMEditPane::markActive(int line) {
+  qDebug() << "markActive " << line << "\r\n";
+  QTextCursor cursor(tEditor->textCursor());
+  cursor.movePosition(QTextCursor::Start);
+  cursor.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor,line-1);
+  cursor.movePosition(QTextCursor::Down,QTextCursor::KeepAnchor,1);
+  //  cursor.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor,1);
+  QTextBlockFormat tformat(cursor.blockFormat());
+  tformat.setBackground(QBrush(QColor(0,255,0)));
+  cursor.setBlockFormat(tformat);
+//   QTextCharFormat tformat(cursor.charFormat());
+//   tformat.setBackground(QBrush(QColor(0,255,0)));
+//   cursor.setCharFormat(tformat);
+}
+
+FMEditor::FMEditor(Interpreter* eval) : QMainWindow() {
+  m_eval = eval;
   setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
   prevEdit = NULL;
   tab = new QTabWidget(this);
@@ -511,7 +534,7 @@ FMTextEdit* FMEditor::currentEditor() {
 }
 
 void FMEditor::addTab() {
-  tab->addTab(new FMEditPane,"untitled.m");
+  tab->addTab(new FMEditPane(m_eval),"untitled.m");
   tab->setCurrentIndex(tab->count()-1);
   updateFont();
 }
@@ -700,7 +723,7 @@ static QString GetSaveFileName(QWidget *w) {
 void FMEditor::open() {
   if (currentEditor()->document()->isModified() ||
       (tab->tabText(tab->currentIndex()) != "untitled.m")) {
-    tab->addTab(new FMEditPane,"untitled.m");
+    tab->addTab(new FMEditPane(m_eval),"untitled.m");
     tab->setCurrentIndex(tab->count()-1);
   }
   QString fileName = GetOpenFileName(this);
@@ -735,6 +758,19 @@ bool FMEditor::saveAs() {
     }
   }
   return saveFile(fileName);
+}
+
+void FMEditor::RefreshBPLists() {
+  update();
+}
+
+void FMEditor::showActiveLine(QString filename, int line) {
+  // Find the tab with this matching filename
+  loadFile(filename);
+  QWidget *p = tab->currentWidget();
+  FMEditPane *te = qobject_cast<FMEditPane*>(p);
+  if (te)
+    te->markActive(line);
 }
 
 void FMEditor::closeTab() {
@@ -851,8 +887,8 @@ void FMEditor::font() {
   updateFont();
 }
 
-BreakPointIndicator::BreakPointIndicator(FMTextEdit *editor) : 
-  QWidget(), tEditor(editor) {
+BreakPointIndicator::BreakPointIndicator(FMTextEdit *editor, FMEditPane* pane) : 
+  QWidget(), tEditor(editor), tPane(pane) {
   setFixedWidth(fontMetrics().width(QLatin1String("00")+5));
   connect(tEditor->document()->documentLayout(), 
 	  SIGNAL(update(const QRectF &)),
@@ -865,6 +901,8 @@ void BreakPointIndicator::mousePressEvent(QMouseEvent *e) {
   int contentsY = tEditor->verticalScrollBar()->value();
   qreal pageBottom = contentsY + tEditor->viewport()->height();
   int lineNumber = 1;
+  QString fname(tPane->getFileName());
+  Interpreter *eval(tPane->getInterpreter());
   for (QTextBlock block = tEditor->document()->begin();
        block.isValid(); block = block.next(), ++lineNumber) {
     QTextLayout *layout = block.layout();
@@ -876,8 +914,9 @@ void BreakPointIndicator::mousePressEvent(QMouseEvent *e) {
     if (position.y() > pageBottom)
       break;
     if ((e->y() >= (2+qRound(position.y()) - contentsY)) &&
-	(e->y() < (2+qRound(position.y()) - contentsY) + width()))
-      qDebug() << "Click on line " << lineNumber << "\n";
+	(e->y() < (2+qRound(position.y()) - contentsY) + width())) {
+      eval->addBreakpoint(fname.toStdString(),lineNumber);
+    }
   }
 }
 						       
@@ -886,6 +925,9 @@ void BreakPointIndicator::paintEvent(QPaintEvent *) {
   qreal pageBottom = contentsY + tEditor->viewport()->height();
   int lineNumber = 1;
   QPainter p(this);
+  // Get the list of breakpoints
+  QString fname(tPane->getFileName());
+  Interpreter *eval(tPane->getInterpreter());
   for (QTextBlock block = tEditor->document()->begin();
        block.isValid(); block = block.next(), ++lineNumber) {
     QTextLayout *layout = block.layout();
@@ -895,8 +937,9 @@ void BreakPointIndicator::paintEvent(QPaintEvent *) {
       continue;
     if (position.y() > pageBottom)
       break;    
-    p.drawPixmap(2, 2+qRound(position.y()) - contentsY, 
-		 width()-4,width()-4,QPixmap(":/images/stop.png"),
+    if (eval->isBPSet(fname,lineNumber))
+      p.drawPixmap(2, 2+qRound(position.y()) - contentsY, 
+		   width()-4,width()-4,QPixmap(":/images/stop.png"),
 		 0,0,32,32);
   }
 }

@@ -46,6 +46,7 @@ public:
   virtual void PaintMe(RenderEngine &gc);
   virtual void resizeGL(int width, int height);
   void SetupDefaults();
+  void SetSize();
   void Repaint();
 };
 

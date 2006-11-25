@@ -26,13 +26,14 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   layout->addWidget(m_flist);
   setLayout(layout);
   readSettings();
-  new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
+  QListWidgetItem *p = new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
   connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 	  this,SLOT(doubleClicked(QListWidgetItem*)));
   setObjectName("history");
   m_popup = new QMenu;
   m_popup->addAction("Execute");
   m_popup->addAction("Clear All");
+  m_flist->setCurrentItem(p);
 }
 
 void HistoryWidget::contextMenuEvent(QContextMenuEvent *e) {

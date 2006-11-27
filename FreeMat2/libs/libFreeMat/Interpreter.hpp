@@ -205,6 +205,7 @@ public:
    * Retrieve data about the current location of the instruction pointer
    */
   string getMFileName();
+  string getInstructionPointerFileName();
   /**
    * The Base Path is the one that contains .m files in the current app bundle
    */
@@ -392,6 +393,7 @@ public:
   void block(const tree &t);
 
   bool isBPSet(QString fname, int lineNumber);
+  bool isInstructionPointer(QString fname, int lineNumber);
   void toggleBP(QString fname, int lineNumber);
 
   /******************************************
@@ -427,9 +429,9 @@ signals:
    */
   void RefreshBPLists();
   /**
-   * Highlight the specified line in the editor (if open)
+   * Show the current active line
    */
-  void ShowLine(QString filename, int line);
+  void ShowActiveLine();
 
   /******************************************
    *  Private Methods for the Interpreter   *

@@ -396,19 +396,15 @@ QString FMEditPane::getFileName() {
   return curFile;
 }
 
-void FMEditPane::markActive(int line) {
-  qDebug() << "markActive " << line << "\r\n";
-  QTextCursor cursor(tEditor->textCursor());
-  cursor.movePosition(QTextCursor::Start);
-  cursor.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor,line-1);
-  cursor.movePosition(QTextCursor::Down,QTextCursor::KeepAnchor,1);
-  //  cursor.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor,1);
-  QTextBlockFormat tformat(cursor.blockFormat());
-  tformat.setBackground(QBrush(QColor(0,255,0)));
-  cursor.setBlockFormat(tformat);
-//   QTextCharFormat tformat(cursor.charFormat());
-//   tformat.setBackground(QBrush(QColor(0,255,0)));
-//   cursor.setCharFormat(tformat);
+int FMEditPane::getLineNumber() {
+  QTextCursor tc(tEditor->textCursor());
+  tc.movePosition(QTextCursor::StartOfLine);
+  int linenumber = 1;
+  while (!tc.atStart()) {
+    tc.movePosition(QTextCursor::Up);
+    linenumber++;
+  }
+  return linenumber;
 }
 
 FMEditor::FMEditor(Interpreter* eval) : QMainWindow() {
@@ -606,7 +602,7 @@ void FMEditor::createActions() {
   pasteAct->setShortcut(Qt::Key_V | Qt::CTRL);
   fontAct = new QAction("&Font",this);
   connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
-  findAct = new QAction("Find",this);
+  findAct = new QAction(QIcon(":/images/find.png"),"&Find",this);
   findAct->setShortcut(Qt::Key_F | Qt::CTRL);
   connect(findAct,SIGNAL(triggered()),this,SLOT(find()));
   commentAct = new QAction("Comment Region",this);
@@ -615,6 +611,14 @@ void FMEditor::createActions() {
   connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
   replaceAct = new QAction("Find and Replace",this);
   connect(replaceAct,SIGNAL(triggered()),this,SLOT(replace()));
+  dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"Single &Step",this);
+  connect(dbStepAct,SIGNAL(triggered()),this,SLOT(dbstep()));
+  dbContinueAct = new QAction(QIcon(":/images/dbgrun.png"),"&Continue",this);
+  connect(dbContinueAct,SIGNAL(triggered()),this,SLOT(dbcontinue()));
+  dbSetClearBPAct = new QAction(QIcon(":/images/stop.png"),"Set/Clear Breakpoint",this);
+  connect(dbSetClearBPAct,SIGNAL(triggered()),this,SLOT(dbsetclearbp()));
+  dbStopAct = new QAction(QIcon(":/images/player_stop.png"),"Stop Debugging",this);
+  connect(dbStopAct,SIGNAL(triggered()),this,SLOT(dbstop()));
 }
 
 void FMEditor::comment() {
@@ -653,6 +657,11 @@ void FMEditor::createMenus() {
   toolsMenu->addAction(replaceAct);
   toolsMenu->addAction(commentAct);
   toolsMenu->addAction(uncommentAct);
+  debugMenu = menuBar()->addMenu("&Debug");
+  debugMenu->addAction(dbStepAct);
+  debugMenu->addAction(dbContinueAct);
+  debugMenu->addAction(dbSetClearBPAct);
+  debugMenu->addAction(dbStopAct);
   m_popup = new QMenu;
   m_popup->addAction(copyAct);
   m_popup->addAction(cutAct);
@@ -663,6 +672,11 @@ void FMEditor::createMenus() {
   m_popup->addSeparator();
   m_popup->addAction(commentAct);
   m_popup->addAction(uncommentAct);
+  m_popup->addSeparator();
+  m_popup->addAction(dbStepAct);
+  m_popup->addAction(dbContinueAct);
+  m_popup->addAction(dbSetClearBPAct);
+  m_popup->addAction(dbStopAct);
 }
 
 void FMEditor::contextMenuEvent(QContextMenuEvent *e) {
@@ -679,6 +693,30 @@ void FMEditor::createToolBars() {
   editToolBar->addAction(copyAct);
   editToolBar->addAction(cutAct);
   editToolBar->addAction(pasteAct);
+  debugToolBar = addToolBar("Debug");
+  debugToolBar->addAction(dbStepAct);
+  debugToolBar->addAction(dbContinueAct);
+  debugToolBar->addAction(dbSetClearBPAct);
+  debugToolBar->addAction(dbStopAct);
+}
+
+
+void FMEditor::dbstep() {
+  m_eval->ExecuteLine("dbstep\n");  
+}
+
+void FMEditor::dbcontinue() {
+  m_eval->ExecuteLine("return\n");
+}
+
+void FMEditor::dbsetclearbp() {
+  QWidget *p = tab->currentWidget();
+  FMEditPane *te = qobject_cast<FMEditPane*>(p);
+  m_eval->toggleBP(te->getFileName(),te->getLineNumber());
+}
+
+void FMEditor::dbstop() {
+  m_eval->ExecuteLine("retall\n");
 }
 
 void FMEditor::createStatusBar() {
@@ -764,13 +802,12 @@ void FMEditor::RefreshBPLists() {
   update();
 }
 
-void FMEditor::showActiveLine(QString filename, int line) {
+void FMEditor::ShowActiveLine() {
   // Find the tab with this matching filename
-  loadFile(filename);
-  QWidget *p = tab->currentWidget();
-  FMEditPane *te = qobject_cast<FMEditPane*>(p);
-  if (te)
-    te->markActive(line);
+  string tname(m_eval->getInstructionPointerFileName());
+  if (tname == "") return;
+  loadFile(QString::fromStdString(tname));
+  update();
 }
 
 void FMEditor::closeTab() {
@@ -889,7 +926,7 @@ void FMEditor::font() {
 
 BreakPointIndicator::BreakPointIndicator(FMTextEdit *editor, FMEditPane* pane) : 
   QWidget(), tEditor(editor), tPane(pane) {
-  setFixedWidth(fontMetrics().width(QLatin1String("00")+5));
+  setFixedWidth(fontMetrics().width(QLatin1String("0000")+5));
   connect(tEditor->document()->documentLayout(), 
 	  SIGNAL(update(const QRectF &)),
 	  this, SLOT(update()));
@@ -914,8 +951,8 @@ void BreakPointIndicator::mousePressEvent(QMouseEvent *e) {
     if (position.y() > pageBottom)
       break;
     if ((e->y() >= (2+qRound(position.y()) - contentsY)) &&
-	(e->y() < (2+qRound(position.y()) - contentsY) + width())) {
-      eval->addBreakpoint(fname.toStdString(),lineNumber);
+	(e->y() < (2+qRound(position.y()) - contentsY) + width()/2)) {
+      eval->toggleBP(fname,lineNumber);
     }
   }
 }
@@ -928,6 +965,7 @@ void BreakPointIndicator::paintEvent(QPaintEvent *) {
   // Get the list of breakpoints
   QString fname(tPane->getFileName());
   Interpreter *eval(tPane->getInterpreter());
+  int w = width()/2;
   for (QTextBlock block = tEditor->document()->begin();
        block.isValid(); block = block.next(), ++lineNumber) {
     QTextLayout *layout = block.layout();
@@ -939,8 +977,12 @@ void BreakPointIndicator::paintEvent(QPaintEvent *) {
       break;    
     if (eval->isBPSet(fname,lineNumber))
       p.drawPixmap(2, 2+qRound(position.y()) - contentsY, 
-		   width()-4,width()-4,QPixmap(":/images/stop.png"),
-		 0,0,32,32);
+		   w-4,w-4,QPixmap(":/images/stop.png"),
+		   0,0,32,32);
+    if (eval->isInstructionPointer(fname,lineNumber))
+      p.drawPixmap(w, 2+qRound(position.y()) - contentsY, 
+		   w-4,w-4,QPixmap(":/images/player_play.png"),
+		   0,0,32,32);
   }
 }
 

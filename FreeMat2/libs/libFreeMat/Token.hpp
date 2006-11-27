@@ -70,7 +70,7 @@ const byte TOK_COMPLEX = 187;
 const byte TOK_DCOMPLEX = 188;
 const byte TOK_FUNCTION_DEFS = 189;
 const byte TOK_SCRIPT = 190;
-
+const byte TOK_DBTRACE = 191;
 typedef byte tok;
 class Serialize;
 

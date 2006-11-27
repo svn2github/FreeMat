@@ -59,6 +59,8 @@ void HistoryWidget::closeEvent(QCloseEvent *ce) {
 
 void HistoryWidget::addCommand(QString t) {
   if (!t.isEmpty()) {
+    if ((m_flist->count() > 0) && (t == m_flist->item(m_flist->count()-1)->text()))
+      return;
     if (m_flist->count() >= 1000) {
       QListWidgetItem *p = m_flist->takeItem(0);
       delete p;

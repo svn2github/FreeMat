@@ -157,7 +157,6 @@ void ApplicationWindow::createToolBox() {
 }
 
 void ApplicationWindow::initializeTools() {
-  edit = new FMEditor;
 }
 
 void ApplicationWindow::closeEvent(QCloseEvent* ce) {

@@ -24,7 +24,7 @@ private:
   tree FunctionDefinition();
   tree ForIndexExpression();
   tree SingletonStatement();
-  tree DBStepStatement();
+  tree DBStepOrTraceStatement();
   tree WhileStatement();
   tree IfStatement();
   tree SwitchStatement();

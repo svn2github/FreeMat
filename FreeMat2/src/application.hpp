@@ -63,7 +63,6 @@ class ApplicationWindow : public QMainWindow {
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
   QAction *pathAct, *filetoolAct, *historyAct, *cleanHistoryAct;
   QAction *pauseAct, *continueAct, *stopAct;
-  FMEditor *edit;
   ToolDock *m_tool;
   AboutWindow *Aboutwin;
 public:

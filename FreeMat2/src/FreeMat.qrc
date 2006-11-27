@@ -21,5 +21,9 @@
         <file>../images/zoomout.png</file>
         <file>../images/stop.png</file>
 	<file>../images/pan.png</file>
+	<file>../images/rotate.png</file>
+	<file>../images/cam_rotate.png</file>
+	<file>../images/dbgnext.png</file>
+	<file>../images/dbgrun.png</file>
     </qresource>
 </RCC>

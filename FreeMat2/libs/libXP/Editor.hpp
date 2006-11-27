@@ -134,17 +134,18 @@ public:
   FMTextEdit* getEditor();
   void setFileName(QString filename);
   QString getFileName();
+  int getLineNumber();
   Interpreter* getInterpreter();
-  void markActive(int line);
 };
 
 class FMEditor : public QMainWindow {
   Q_OBJECT
-  QMenu *fileMenu, *editMenu, *toolsMenu;
-  QToolBar *editToolBar, *fileToolBar;
+  QMenu *fileMenu, *editMenu, *toolsMenu, *debugMenu;
+  QToolBar *editToolBar, *fileToolBar, *debugToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
+  QAction *dbStepAct, *dbContinueAct, *dbSetClearBPAct, *dbStopAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
@@ -194,7 +195,11 @@ private slots:
   void comment();
   void uncomment();
   void RefreshBPLists();
-  void showActiveLine(QString filename, int line);
+  void ShowActiveLine();
+  void dbstep();
+  void dbcontinue();
+  void dbsetclearbp();
+  void dbstop();
 public:
   void closeEvent(QCloseEvent *event);
 };

@@ -3,12 +3,13 @@
 #include <iostream>
 #include <errno.h>
 
-string fm_reserved[21] = {
+string fm_reserved[22] = {
   "break",
   "case",
   "catch",
   "continue",
   "dbstep",
+  "dbtrace",
   "else",
   "elseif",
   "end",
@@ -133,6 +134,7 @@ string TokenToString(const Token& b) {
   case TOK_DCOMPLEX: return "(dcomplex)" + b.Text();
   case TOK_FUNCTION_DEFS: return "functions:";
   case TOK_SCRIPT: return "script:";
+  case TOK_DBTRACE: return "dbtrace";
   }
   return string(1,(char) b.Value());
 }

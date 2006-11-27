@@ -66,6 +66,7 @@
  */
 bool InterruptPending = false;
 static int steptrap = 0;
+static bool tracetrap = false;
 static string stepname;
 
 Array *endRef = NULL;
@@ -396,6 +397,12 @@ std::string Interpreter::getMFileName() {
     if (isMFile(cstack[i].cname)) 
       return TrimFilename(TrimExtension(cstack[i].cname));
   return std::string("");
+}
+
+std::string Interpreter::getInstructionPointerFileName() {
+  if (isMFile(ip_funcname)) 
+    return ip_funcname;
+  return string("");
 }
 
 stackentry::stackentry(std::string cntxt, std::string det, int id, int num) :
@@ -2019,6 +2026,12 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
 
 void Interpreter::statementType(const tree &t, bool printIt) {
   // check the debug flag
+  SetContext(t.context());
+  if (t.getBPflag()) {
+    qDebug() << "Debug trap: \r\n";
+    t.print();
+    doDebugCycle();
+  }
   switch(t.token()) {
   case '=': 
     {
@@ -2051,6 +2064,13 @@ void Interpreter::statementType(const tree &t, bool printIt) {
     break;
   case TOK_DBSTEP:
     dbstepStatement(t);
+    emit RefreshBPLists();
+    throw InterpreterReturnException();
+    break;
+  case TOK_DBTRACE:
+    dbstepStatement(t);
+    tracetrap = true;
+    emit RefreshBPLists();
     throw InterpreterReturnException();
     break;
   case TOK_RETURN:
@@ -2105,9 +2125,6 @@ void Interpreter::statementType(const tree &t, bool printIt) {
 //Works
 void Interpreter::statement(const tree &t) {
   try {
-    SetContext(t.context());
-    if (t.getBPflag())
-      doDebugCycle();
     if (t.is(TOK_QSTATEMENT))
       statementType(t.first(),false);
     else if (t.is(TOK_STATEMENT))
@@ -2134,11 +2151,11 @@ void Interpreter::block(const tree &t) {
     for (treeVector::iterator i=statements.begin();
 	 i!=statements.end();i++) {
       if (steptrap > 0) {
-	if ((steptrap == 1) && (ip_detailname == stepname)) {
+	if ((steptrap == 1) && ((ip_detailname == stepname) || tracetrap) ) {
 	  steptrap--;
 	  SetContext(i->context());
 	  debugCLI();
-	} else if ((steptrap > 1) && (ip_detailname == stepname))
+	} else if ((steptrap > 1) && ((ip_detailname == stepname)||tracetrap))
 	  steptrap--;
       }
       if (InterruptPending) {
@@ -3068,8 +3085,11 @@ void Interpreter::toggleBP(QString fname, int lineNumber) {
     string fname_string(fname.toStdString());
     for (int i=0;i<bpStack.size();i++) 
       if ((bpStack[i].cname == fname_string) &&
-	  ((bpStack[i].tokid & 0xffff) == lineNumber)) 
+	  ((bpStack[i].tokid & 0xffff) == lineNumber)) {
+	qDebug() << "Deleting bp " << i << " w/number " << bpStack[i].number << "\r\n";
 	deleteBreakpoint(bpStack[i].number);
+	return;
+      }
   } else {
     addBreakpoint(fname.toStdString(),lineNumber);
   }    
@@ -3091,6 +3111,7 @@ MFunctionDef* Interpreter::lookupFullPath(string fname) {
 
 static int bpList = 1;
 void Interpreter::addBreakpoint(string name, int line) {
+  qDebug() << "Add bp " << QString::fromStdString(name) << " : " << line << "\r\n";
   FuncPtr val;
   MFunctionDef *mptr;
   if (context->lookupFunction(name,val) && (val->type() == FM_M_FUNCTION))
@@ -3116,6 +3137,10 @@ bool Interpreter::isBPSet(QString fname, int lineNumber) {
   return false;
 }
 
+bool Interpreter::isInstructionPointer(QString fname, int lineNumber) {
+  return ((fname.toStdString() == ip_funcname) && (lineNumber == (ip_context & 0xffff)));
+}
+
 void Interpreter::listBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
     //    if (bpStack[i].number > 0) {
@@ -3132,6 +3157,7 @@ void Interpreter::deleteBreakpoint(int number) {
     if (bpStack[i].number == number) {
       setBreakpoint(bpStack[i],false);
       bpStack.erase(bpStack.begin()+i);
+      emit RefreshBPLists();
       return;
     } 
   warningMessage("Unable to delete specified breakpoint (does not exist)");
@@ -3761,11 +3787,11 @@ void Interpreter::evalCLI() {
     else
       sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
 	      ip_context & 0xffff);
-    qDebug() << "Emit! " << QString::fromStdString(ip_funcname) << "," << (ip_context & 0xffff) << "\n";
-    emit ShowLine(QString::fromStdString(ip_funcname),ip_context & 0xffff);
   }
   while(1) {
     emit SetPrompt(prompt);
+    qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "\r\n";
+    emit ShowActiveLine();
     string cmdset;
     std::string cmdline;
     mutex.lock();

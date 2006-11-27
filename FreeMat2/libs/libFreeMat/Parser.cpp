@@ -97,7 +97,7 @@ tree Parser::SingletonStatement() {
   return root;
 }
 
-tree Parser::DBStepStatement() {
+tree Parser::DBStepOrTraceStatement() {
   tree root(mkLeaf(Next()));
   Consume();
   if (Match(',') || Match(';') || Match('\n'))
@@ -105,6 +105,7 @@ tree Parser::DBStepStatement() {
   addChild(root,Expression());
   return root;
 }
+
 
 tree Parser::MultiFunctionCall() {
   tree root(mkLeaf(Expect('[')));
@@ -415,8 +416,8 @@ tree Parser::Statement() {
     return SingletonStatement();
   if (Match(TOK_WHILE))
     return WhileStatement();
-  if (Match(TOK_DBSTEP))
-    return DBStepStatement();
+  if (Match(TOK_DBSTEP) || Match(TOK_DBTRACE))
+    return DBStepOrTraceStatement();
   if (Match(TOK_IF))
     return IfStatement();
   if (Match(TOK_SWITCH))
@@ -669,6 +670,7 @@ tree Parser::Process() {
   } catch (ParseException &e) {
     throw Exception("Unexpected input" + m_lex.Context());
   }
+  root.print();
   return root;
 }
 

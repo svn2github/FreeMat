@@ -462,3 +462,17 @@ Time in ArrayVector:
 	5.5+4.5+4.4+3.9+3.4+2.5+2.28+1.6+1.4+1.2+1.2+1.11 ~= 33%
 
 So the time could be 1.561 seconds for matcopy3 instead of 2.38 seconds.
+
+bugs
+- plot selection for zoom/pan tools is wrong (when used with subplot)
+- variables created during dbstep do not show up in variable tool
+- dbstep does not step into function calls
+- after "return", IP should go away
+- should have code to zoom editor window to current IP line
+- need controls "step", etc on editor and main window.
+
+fixed
+- "toggle" of breakpoints does not work
+- dbdelete should refresh bp's
+- "step out" works properly
+- should be able to set a bp on a "for" statement

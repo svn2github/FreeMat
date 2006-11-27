@@ -36,6 +36,7 @@
 #include "Types.hpp"
 #include "MexInterface.hpp"
 #include "Transform.hpp"
+#include <QDebug>
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -389,12 +390,21 @@ bool MFunctionDef::updateCode() {
   return false;
 }
 
+bool StatementTypeNode(tree t) {
+  return (t.is('=') || t.is(TOK_MULTI) || t.is(TOK_SPECIAL) ||
+	  t.is(TOK_FOR) || t.is(TOK_WHILE) || t.is(TOK_IF) ||
+	  t.is(TOK_BREAK) || t.is(TOK_CONTINUE) || t.is(TOK_DBSTEP) ||
+	  t.is(TOK_RETURN) || t.is(TOK_SWITCH) || t.is(TOK_TRY) || 
+	  t.is(TOK_QUIT) || t.is(TOK_RETALL) || t.is(TOK_KEYBOARD) ||
+	  t.is(TOK_GLOBAL) || t.is(TOK_PERSISTENT) || t.is(TOK_EXPR));
+}
+
 // Find the smallest line number larger than the argument
 // if our line number is larger than the target, then we
 // 
 void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
   if (!t.valid()) return;
-  if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
+  if (StatementTypeNode(t)) {
     unsigned myLine = (t.context() & 0xffff);
     if ((myLine >= lineTarget) && (myLine < bestLine))
       bestLine = myLine;
@@ -405,7 +415,7 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
 
 bool SetTreeBreakPoint(tree t, int lineNumber, bool enable) {
   if (!t.valid()) return false;
-  if (t.is(TOK_QSTATEMENT) || t.is(TOK_STATEMENT)) {
+  if (StatementTypeNode(t)) {
     if ((t.context() & 0xffff) == lineNumber) {
       t.setBPflag(enable);
       return true;
@@ -429,9 +439,11 @@ unsigned MFunctionDef::ClosestLine(unsigned line) {
 }
 
 void MFunctionDef::SetBreakpoint(int bpline, bool enable) {
+  qDebug() << "Set bp called for line " << bpline << " enable is " << enable << " for function :" << QString::fromStdString(name) << "\r\n";
   if (!SetTreeBreakPoint(allCode,bpline,enable)) 
     throw Exception(string("Unable to modify a breakpoint at line ") + 
 		    bpline + string(" of routine ") + name);
+  allCode.print();
 }
 
 void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {

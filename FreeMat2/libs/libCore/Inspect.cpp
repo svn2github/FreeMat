@@ -170,7 +170,7 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   if (edit == NULL) {
     edit = new FMEditor(eval);
     QObject::connect(eval,SIGNAL(RefreshBPLists()),edit,SLOT(RefreshBPLists()));
-    QObject::connect(eval,SIGNAL(ShowLine(QString,int)),edit,SLOT(showActiveLine(QString,int)));
+    QObject::connect(eval,SIGNAL(ShowActiveLine()),edit,SLOT(ShowActiveLine()));
   }
   edit->showNormal();
   edit->raise();

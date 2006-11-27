@@ -3,6 +3,7 @@
 #include <iostream>
 #include <errno.h>
 
+// These must appear as sequential token numbers
 string fm_reserved[22] = {
   "break",
   "case",
@@ -27,6 +28,8 @@ string fm_reserved[22] = {
   "try",
   "while"
 };
+
+int fm_reserved_count = sizeof(fm_reserved)/sizeof(fm_reserved[0]);
 
 Token::Token(byte tok, unsigned pos, string text) :
   m_tok(tok), m_pos(pos), m_text(text), m_bpflag(false) {

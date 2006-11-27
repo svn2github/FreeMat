@@ -5,7 +5,8 @@
 #include <ctype.h>
 #include "Exception.hpp"
 
-extern string fm_reserved[22];
+extern string fm_reserved[];
+extern int fm_reserved_count;
 
 
 bool isalnumus(byte a) {
@@ -256,8 +257,8 @@ void Scanner::FetchIdentifier() {
   while (isalnumus(ahead(len))) len++;
   // Collect the identifier into a string
   string ident(string(m_text,m_ptr,len));
-  string *p = lower_bound(fm_reserved,fm_reserved+22,ident);
-  if ((p!= fm_reserved+22) && (*p == ident))
+  string *p = lower_bound(fm_reserved,fm_reserved+fm_reserved_count,ident);
+  if ((p!= fm_reserved+fm_reserved_count) && (*p == ident))
     SetToken(TOK_KEYWORD+(p-fm_reserved)+1);
   else
     SetToken(TOK_IDENT,string(m_text,m_ptr,len));

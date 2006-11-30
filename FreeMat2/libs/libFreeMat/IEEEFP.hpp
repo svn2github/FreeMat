@@ -30,7 +30,7 @@ bool IsNaN(uint64 t);
 bool IsNaN(double t);
 bool IsFinite(float t);
 bool IsFinite(double t);
-#ifdef WIN32
+#ifndef M_PI
 #define M_PI 3.141592653589793
 #endif
 

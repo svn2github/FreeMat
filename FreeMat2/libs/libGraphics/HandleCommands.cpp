@@ -22,7 +22,6 @@
 #include "Parser.hpp"
 #include "Scanner.hpp"
 #include "Token.hpp"
-#include "VM.hpp"
 
 
 #include <qgl.h>
@@ -1201,35 +1200,6 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
   return singleArrayVector(B);
 }
 
-ArrayVector VMFunction(int nargout, const ArrayVector& arg) {
-  string line(ArrayToString(arg[0]));
-  Scanner S(line,"");
-  Parser P(S);
-  tree t = P.Process();
-  if (!t.is(TOK_SCRIPT))
-    throw Exception("Function definition unexpected!");
-  t = t.first();
-  VMStream vms;
-  CompileToVMStream(t,vms);
-  vms.PrintMe();
-  VM engine;
-  engine.Run(vms);
-  engine.DumpVars();
-  return ArrayVector();
-}
-
-
-ArrayVector VMCFunction(int nargout, const ArrayVector& arg) {
-  VMStream vms;
-  CustomStream(vms);
-  vms.PrintMe();
-  VM engine;
-  engine.Run(vms);
-  engine.DumpVars();
-  return ArrayVector();
-}
-
-
 
 //!
 //@Module IS2DVIEW Test Axes For 2D View
@@ -1272,7 +1242,5 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("copy",HCopyFunction,0,0);
   context->addGfxFunction("hpoint",HPointFunction,0,1);
   context->addSpecialFunction("demo",HDemoFunction,1,1);
-  context->addGfxFunction("vm",VMFunction,1,1);
-  context->addGfxFunction("vmc",VMCFunction,0,0);
   InitializeHandleGraphics();
 };

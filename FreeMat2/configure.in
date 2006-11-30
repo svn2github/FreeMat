@@ -2,7 +2,7 @@ AC_INIT(src/main.cpp)
 
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 2.1)
+AM_INIT_AUTOMAKE(FreeMat, 3.0)
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -10,23 +10,7 @@ AC_PROG_RANLIB
 AC_EXEEXT
 	
 dnl Check for AWT related Qt4
-PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
-foo=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g'`
-
-if test "x$HAVE_QT4" = "xyes"; then
-   dnl Check needed because in some cases the QtGui includedir
-   dnl doesn't contain the subsystem dir.
-   QT_INCLUDE_DIR=$($PKG_CONFIG --variable=includedir QtGui)
-   EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
-   AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
-   AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
-   AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
-   QT_CFLAGS="$QT_CFLAGS -I$EXTRA_QT_INCLUDE_DIR",
-   AC_MSG_WARN([QWidget not found])))
-   AC_CHECK_PROG(QT_MOC, [moc], [moc])
-   AC_CHECK_PROG(QT_RCC, [rcc], [rcc])
-   AC_CHECK_PROG(QT_UIC, [uic], [uic])
-fi
+HAVE_QT4="no"
 
 AC_ARG_WITH([qt4dir],
 	     [AC_HELP_STRING([--with-qt4dir=DIR],
@@ -34,6 +18,31 @@ AC_ARG_WITH([qt4dir],
 	      For other systems use pkg-config.])],
 	      [QT4DIR=$withval]
 	      )
+
+dnl I have no idea what the "right" way to do this is
+dnl
+dnl 
+dnl 
+if test "x$cross_compiling" = "xno"; then
+
+   PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
+
+   foo=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g'`
+
+   if test "x$HAVE_QT4" = "xyes"; then
+      dnl Check needed because in some cases the QtGui includedir
+      dnl doesn't contain the subsystem dir.
+      QT_INCLUDE_DIR=$($PKG_CONFIG --variable=includedir QtGui)
+      EXTRA_QT_INCLUDE_DIR="$QT_INCLUDE_DIR/Qt"
+      AC_CHECK_FILE([$QT_INCLUDE_DIR/QWidget],
+      AC_MSG_NOTICE([No extra QT_INCLUDE_DIR needed]),
+      AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
+      QT_CFLAGS="$QT_CFLAGS -I$EXTRA_QT_INCLUDE_DIR",
+      AC_MSG_WARN([QWidget not found])))
+      AC_CHECK_PROGS(QT_MOC, [moc moc4 moc-qt4], [])
+      AC_CHECK_PROGS(QT_RCC, [rcc rcc4 rcc-qt4], [])
+      AC_CHECK_PROGS(QT_UIC, [uic rcc4 rcc-qt4], [])
+   fi
 
 help_target="help-unix"
 is_win32="false"
@@ -103,6 +112,20 @@ if test "x$HAVE_QT4" = "xno"; then
       ;;
   esac
 fi
+
+else
+
+AC_MSG_NOTICE([Setting up for Qt cross-compile... must have moc, rcc, and uic tools on the path, qt4dir points to cross build])
+AC_CHECK_PROG(QT_MOC, [moc], [moc])
+AC_CHECK_PROG(QT_RCC, [rcc], [rcc])
+AC_CHECK_PROG(QT_UIC, [uic], [uic])
+QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
+QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
+LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-subsystem,windows"
+AC_SUBST(QT4DIR)
+
+fi
+
 AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
 
 AC_MSG_NOTICE([Win32 flag is $is_win32])

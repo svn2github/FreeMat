@@ -46,7 +46,7 @@ typedef enum {
   DCOLON,
   UCOLON,
   JIT,
-  RETURN,
+  RETRN,
   NEWFRAME,
   CALL
 } VMOpcode;

@@ -75,4 +75,4 @@ for i=(n+1):-1:1
   A(:,i) = xp;
   xp = xp.*x;
 end
-p = (A\y)';
+p = (pinv(A)*y)';

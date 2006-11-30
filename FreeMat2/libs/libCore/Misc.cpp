@@ -1784,7 +1784,10 @@ static  char* PrePendCallVars(char *line, int nargout) {
   return buf;
 }
 
-static ArrayVector RetrieveCallVars(Interpreter *eval, int nargout) {
+//
+//static - having a static here seems to break cross compiling
+//
+ArrayVector RetrieveCallVars(Interpreter *eval, int nargout) {
   ArrayVector retval;
   for (int i=0;i<nargout;i++) {
     char tname[4096];

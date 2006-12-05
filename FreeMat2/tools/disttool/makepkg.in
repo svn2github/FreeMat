@@ -222,6 +222,47 @@ MakeWinBundle()
   /c/Program\ Files/NSIS/makensis freemat.nsi
 }
 
+MakeCrossWinBundle()
+{
+  baseDir="$buildDir/FreeMat-@VERSION@-Win32"
+  MakeDir "$baseDir"
+  MakeDir "$baseDir/Contents"
+  MakeDir "$baseDir/Contents/bin"
+  MakeDir "$baseDir/Contents/Resources"
+  MakeDir "$baseDir/Contents/Resources/help"
+  MakeDir "$baseDir/Contents/Resources/help/html"
+  MakeDir "$baseDir/Contents/Resources/help/text"
+  MakeDir "$baseDir/Contents/Resources/help/pdf"
+  MakeDir "$baseDir/Contents/Resources/toolbox"
+  MakeDir "$baseDir/Contents/Plugins/imageformats"
+  CopyFile "$QTDIR/plugins/imageformats/qjpeg1.dll" "$baseDir/Contents/Plugins/imageformats/qjpeg1.dll"
+  CopyFile "$QTDIR/plugins/imageformats/qmng1.dll" "$baseDir/Contents/Plugins/imageformats/qmng1.dll"
+  CopyFile "$buildDir/src/FreeMat.exe" "$baseDir/Contents/bin/FreeMat.exe"
+#  CopyFile "$buildDir/tools/blastune/BlasTuneApp.exe" "$baseDir/Contents/bin/BlasTuneApp.exe"
+#  CopyFile "$buildDir/tools/blastune/BlasTune.exe" "$baseDir/Contents/bin/BlasTune.exe"
+  CopyFile "$QTDIR/bin/QtCore4.dll" "$baseDir/Contents/bin/QtCore4.dll"
+  CopyFile "$QTDIR/bin/QtGui4.dll" "$baseDir/Contents/bin/QtGui4.dll"
+  CopyFile "$QTDIR/bin/QtOpenGL4.dll" "$baseDir/Contents/bin/QtOpenGL4.dll"
+#  CopyFile(sourcepath+"/extern/Root/lib/blas.dll""$baseDir/Contents/bin/blas.dll");
+#  //  CopyFile("../../extern/blas/atlas_prebuilt_win32/atlas_blas_P4SSE2.dll",
+#  //	   "$baseDir/Contents/bin/blas.dll");
+  CopyFile "/mingw/bin/mingwm10.dll" "$baseDir/Contents/bin/mingwm10.dll"
+  CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
+  CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
+  CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+  CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/FreeMat-@VERSION@.pdf"
+  echo "Generating NSI file..."
+  cdir=`pwd`
+  cd $baseDir
+  find -type f -printf "  SetOutPath \"\$INSTDIR/%h\"\n  FILE \"%p\"\n" | sed -e 's@/@\\@g' > /tmp/blist
+  find -type f -printf "  Delete \"\$INSTDIR/%p\"\n" | sed -e 's@/@\\@g' > /tmp/elist
+  cd $cdir
+  sed -e '/<BUNDLE FILES>/r /tmp/blist' -e '/<DELLIST>/r /tmp/elist' -e 's/<VERSION_NUMBER>/@VERSION@/g' -e 's/<BUNDLE FILES>//g' -e 's/<DELLIST>//g' < $srcDir/tools/disttool/freemat_nsi.in > $baseDir/freemat.nsi
+  cd $baseDir
+  wine ~/.wine/drive_c/Program\ Files/NSIS/makensis.exe freemat.nsi
+}
+
+
 buildDir=$2
 srcDir=$3
 QTDIR=$4
@@ -235,4 +276,8 @@ fi
 
 if test x"$1" == x"--win"; then
     MakeWinBundle
+fi
+
+if test x"$1" == x"--xwin"; then
+    MakeCrossWinBundle
 fi

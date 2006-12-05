@@ -49,9 +49,12 @@ public:
   string detail;
   int tokid;
   int number;
+  int steptrap;
+  int stepcurrentline;
     
   // A number of -1 corresponds to a temporary breakpoint 
-  stackentry(string cntxt, string detail, int id, int number = 0);
+  stackentry(string cntxt, string detail, int id, 
+	     int num = 0, int strp = 0, int stcl = 0);
   stackentry();
   ~stackentry();
 };
@@ -155,10 +158,6 @@ class Interpreter : public QThread {
    * The effective location of the next breakpoint (if single stepping)
    */
   stackentry stepTrap;
-  /**
-   * True if we are inside a breakpoint currently.
-   */
-  bool bpActive;
   /**
    * The class records (store information about each user defined class)
    */
@@ -810,6 +809,7 @@ private:
    * the special variable "ans".
    * Throws an Exception if the statement type is not recognized.
    */
+  void processBreakpoints(const tree &t);
   void statementType(const tree &t, bool printIt);
   /**
    * The statement method simply screens out the need for the
@@ -880,10 +880,6 @@ private:
    * Add the specified .mex file to the current context
    */
   void procFileMex(string fname, string fullname, bool tempfunc);
-  /**
-   * Enter a debug cycle
-   */
-  void debugCLI();
 
   friend Array IndexExpressionToStruct(Interpreter*, const tree&, Array);
   friend ArrayVector ClassRHSExpression(Array, const tree&, Interpreter*);

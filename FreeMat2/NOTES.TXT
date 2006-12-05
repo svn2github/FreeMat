@@ -476,3 +476,25 @@ fixed
 - dbdelete should refresh bp's
 - "step out" works properly
 - should be able to set a bp on a "for" statement
+
+
+comments - 
+- breakpoints work fine.
+- dbstep still does not work right.
+- dbstep(n) should be defined as the line number changing?
+-  Consider this case: 
+
+     for i = 1:100, j = j + i; end
+
+- does a single dbstep go over this?
+- It seems there are two levels of granularity:
+
+1. dbstep - continue execution until the current line number changes
+2. dbtrace - continue execution until the next statement is executed
+
+Also, dbtrace should be _insensitive_ to function call context, while
+dbstep is _sensitive_ to function call context.  That means that
+in a function call, the dbstep state will need to be saved and restored.
+
+
+- OK dbstep works correctly now...  dbtrace still needs work.

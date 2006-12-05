@@ -66,6 +66,7 @@
  */
 bool InterruptPending = false;
 static int steptrap = 0;
+static int stepcurrentline = 0;
 static bool tracetrap = false;
 static string stepname;
 
@@ -311,6 +312,7 @@ void Interpreter::warningMessage(std::string msg) {
 
 
 void Interpreter::SetContext(int a) {
+  qDebug() << "setting context to line " << (a & 0xffff) << "\r\n";
   ip_context = a;
 }
 
@@ -405,8 +407,11 @@ std::string Interpreter::getInstructionPointerFileName() {
   return string("");
 }
 
-stackentry::stackentry(std::string cntxt, std::string det, int id, int num) :
-  cname(cntxt), detail(det), tokid(id), number(num) {
+stackentry::stackentry(std::string cntxt, std::string det, 
+		       int id, int num, int strp, int stcl) :
+  cname(cntxt), detail(det), tokid(id), number(num),
+  steptrap(strp), stepcurrentline(stcl)
+{
 }
 
 stackentry::stackentry() {
@@ -453,8 +458,6 @@ void Interpreter::clearStacks() {
   ip_funcname = "base";
   ip_detailname = "base";
   ip_context = 0;
-  bpActive = false;
-  //    gstack.push_back(cname);
 }
 
 //!
@@ -1768,17 +1771,6 @@ void Interpreter::persistentStatement(const tree &t) {
 //@>
 //!
 
-void Interpreter::debugCLI() {
-  depth++;
-  bpActive = true;
-  try {
-    evalCLI();
-  } catch(InterpreterReturnException& e) {
-  }
-  bpActive = false;
-  depth--;
-}
-
 
 void Interpreter::doDebugCycle() {
   depth++;
@@ -2024,14 +2016,44 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   }
 }
 
-void Interpreter::statementType(const tree &t, bool printIt) {
-  // check the debug flag
-  SetContext(t.context());
+void Interpreter::processBreakpoints(const tree &t) {
+  qDebug() << "Executing statement:\r\n";
+  t.print();
   if (t.getBPflag()) {
     qDebug() << "Debug trap: \r\n";
     t.print();
     doDebugCycle();
+    qDebug() << "Debug cycle complete...\r\n";
+    SetContext(t.context());
+    qDebug() << "Resuming this statement...\r\n";
+    t.print();
   }
+  if (steptrap > 0) {
+    qDebug() << "Step trap active...\r\n";
+    qDebug() << "  Line number " << 
+      ((ip_context) & 0xffff) << "  " << stepcurrentline 
+	     << " trap " << steptrap << "\r\n";
+    if (((ip_context) & 0xffff) != stepcurrentline) {
+      qDebug() << "Current line changed...\r\n";
+      steptrap--;
+      if (steptrap == 0)
+	doDebugCycle();
+    }
+    // 	if ((steptrap == 1) && ((ip_detailname == stepname) || tracetrap) ) {
+    // 	  qDebug() << "Step trap hit...\r\n";
+    // 	  i->print();
+    // 	  steptrap--;
+    // 	  SetContext(i->context());
+    // 	  doDebugCycle();
+    // 	} else if ((steptrap > 1) && ((ip_detailname == stepname)||tracetrap))
+    // 	  steptrap--;
+  }
+}
+
+void Interpreter::statementType(const tree &t, bool printIt) {
+  // check the debug flag
+  SetContext(t.context());
+  processBreakpoints(t);
   switch(t.token()) {
   case '=': 
     {
@@ -2063,6 +2085,7 @@ void Interpreter::statementType(const tree &t, bool printIt) {
       throw InterpreterContinueException();
     break;
   case TOK_DBSTEP:
+    qDebug() << "**********************DBStep\r\n";
     dbstepStatement(t);
     emit RefreshBPLists();
     throw InterpreterReturnException();
@@ -2137,7 +2160,7 @@ void Interpreter::statement(const tree &t) {
       char buffer[4096];
       e.printMe(this);
       stackTrace(true);
-      debugCLI();
+      doDebugCycle();
     } else  {
       throw;
     }
@@ -2150,19 +2173,11 @@ void Interpreter::block(const tree &t) {
     treeVector &statements(t.children());
     for (treeVector::iterator i=statements.begin();
 	 i!=statements.end();i++) {
-      if (steptrap > 0) {
-	if ((steptrap == 1) && ((ip_detailname == stepname) || tracetrap) ) {
-	  steptrap--;
-	  SetContext(i->context());
-	  debugCLI();
-	} else if ((steptrap > 1) && ((ip_detailname == stepname)||tracetrap))
-	  steptrap--;
-      }
       if (InterruptPending) {
 	outputMessage("Interrupt (ctrl-c) encountered\n");
 	stackTrace(true);
 	InterruptPending = false;
-	debugCLI();
+	doDebugCycle();
       } else 
 	statement(*i);
     }
@@ -3138,7 +3153,7 @@ bool Interpreter::isBPSet(QString fname, int lineNumber) {
 }
 
 bool Interpreter::isInstructionPointer(QString fname, int lineNumber) {
-  return ((fname.toStdString() == ip_funcname) && (lineNumber == (ip_context & 0xffff)));
+  return ((fname.toStdString() == ip_funcname) && ((lineNumber == (ip_context & 0xffff)) || ((lineNumber == 1) && ((ip_context & 0xffff) == 0))));
 }
 
 void Interpreter::listBreakpoints() {
@@ -3187,18 +3202,26 @@ bool Interpreter::inMethodCall(std::string classname) {
 }
 
 void Interpreter::pushDebug(std::string fname, std::string detail) {
-  char buffer[4096];
-  cstack.push_back(stackentry(ip_funcname,ip_detailname,ip_context));
+  cstack.push_back(stackentry(ip_funcname,ip_detailname,
+			      ip_context,0,steptrap,
+			      stepcurrentline));
+  qDebug() << "Push Debug: " << QString::fromStdString(fname) << ",";
+  qDebug() << QString::fromStdString(detail) << "\r\n";
   ip_funcname = fname;
   ip_detailname = detail;
   ip_context = 0;
+  steptrap = 0;
+  stepcurrentline = 0;
 }
 
 void Interpreter::popDebug() {
   if (!cstack.empty()) {
+    qDebug() << "Pop Debug\r\n";
     ip_funcname = cstack.back().cname;
     ip_detailname = cstack.back().detail;
     ip_context = cstack.back().tokid;
+    steptrap = cstack.back().steptrap;
+    stepcurrentline = cstack.back().stepcurrentline;
     cstack.pop_back();
   } else
     outputMessage("IDERROR\n");
@@ -3633,7 +3656,6 @@ Interpreter::Interpreter(Context* aContext) {
   printLimit = 1000;
   autostop = true;
   InCLI = false;
-  bpActive = false;
   stopoverload = false;
   m_skipflag = false;
   clearStacks();
@@ -3669,8 +3691,14 @@ void Interpreter::dbstepStatement(const tree &t) {
     warningMessage(string("unable to find function ") + bp.detail + " to single step");
     return;
   }
-  steptrap = lines;
-  stepname = bp.detail;
+  cstack[cstack.size()-1].steptrap = lines;
+  cstack[cstack.size()-1].stepcurrentline = bp.tokid & 0xffff;
+  //   steptrap = lines;
+  //   stepcurrentline = bp.tokid & 0xffff;
+  //  stepname = bp.detail;
+  qDebug() << "setting dbstep trap to current line " << 
+    cstack[cstack.size()-1].stepcurrentline << 
+    " with wait of " << lines << " lines\r\n";
 }
 
 static string EvalPrep(string line) {
@@ -3776,18 +3804,10 @@ void Interpreter::evalCLI() {
   char prompt[150];
 
   if ((depth == 0) || (cstack.size() == 0))
-    if (bpActive)
-      sprintf(prompt,"D-> ");
-    else
-      sprintf(prompt,"--> ");
-  else {
-    if (bpActive) 
-      sprintf(prompt,"[%s,%d] D-> ",ip_detailname.c_str(),
-	      ip_context & 0xffff);
-    else
-      sprintf(prompt,"[%s,%d] --> ",ip_detailname.c_str(),
-	      ip_context & 0xffff);
-  }
+    sprintf(prompt,"--> ");
+  else 
+    sprintf(prompt,"[%s,%d]--> ",ip_detailname.c_str(),
+	    ip_context & 0xffff);
   while(1) {
     emit SetPrompt(prompt);
     qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "\r\n";

@@ -804,9 +804,26 @@ void FMEditor::RefreshBPLists() {
 
 void FMEditor::ShowActiveLine() {
   // Find the tab with this matching filename
-  string tname(m_eval->getInstructionPointerFileName());
+  QString tname(QString::fromStdString(m_eval->getInstructionPointerFileName()));
   if (tname == "") return;
-  loadFile(QString::fromStdString(tname));
+  // Check for one of the editors that might be editing this file already
+  for (int i=0;i<tab->count();i++) {
+    QWidget *w = tab->widget(i);
+    FMEditPane *te = qobject_cast<FMEditPane*>(w);
+    if (te) {
+      if (te->getFileName() == tname) {
+	tab->setCurrentIndex(i);
+	update();
+	return;
+      }
+    }
+  }
+  if (currentEditor()->document()->isModified() ||
+      (tab->tabText(tab->currentIndex()) != "untitled.m")) {
+    tab->addTab(new FMEditPane(m_eval),"untitled.m");
+    tab->setCurrentIndex(tab->count()-1);
+  }
+  loadFile(tname);
   update();
 }
 

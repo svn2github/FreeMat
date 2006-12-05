@@ -23,7 +23,7 @@
 #include "IEEEFP.hpp"
 #if HAVE_UMFPACK
 extern "C" {
-#include "umfpack.h"
+#include "ufsparse/umfpack.h"
 }
 #endif
 #include "LAPACK.hpp"

@@ -39,9 +39,9 @@ if test "x$cross_compiling" = "xno"; then
       AC_CHECK_FILE([$EXTRA_QT_INCLUDE_DIR/QWidget],
       QT_CFLAGS="$QT_CFLAGS -I$EXTRA_QT_INCLUDE_DIR",
       AC_MSG_WARN([QWidget not found])))
-      AC_CHECK_PROGS(QT_MOC, [moc moc4 moc-qt4], [])
-      AC_CHECK_PROGS(QT_RCC, [rcc rcc4 rcc-qt4], [])
-      AC_CHECK_PROGS(QT_UIC, [uic rcc4 rcc-qt4], [])
+      AC_CHECK_PROGS(QT_MOC, [moc4 moc-qt4 moc], [])
+      AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
+      AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
    fi
 
 help_target="help-unix"
@@ -116,9 +116,9 @@ fi
 else
 
 AC_MSG_NOTICE([Setting up for Qt cross-compile... must have moc, rcc, and uic tools on the path, qt4dir points to cross build])
-AC_CHECK_PROG(QT_MOC, [moc], [moc])
-AC_CHECK_PROG(QT_RCC, [rcc], [rcc])
-AC_CHECK_PROG(QT_UIC, [uic], [uic])
+AC_CHECK_PROGS(QT_MOC, [moc4 moc-qt4 moc], [])
+AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
+AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
 QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
 QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
 LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-subsystem,windows"

@@ -67,7 +67,8 @@
 bool InterruptPending = false;
 static int steptrap = 0;
 static int stepcurrentline = 0;
-static bool tracetrap = false;
+static int tracetrap = 0;
+static int tracecurrentline = 0;
 static string stepname;
 
 Array *endRef = NULL;
@@ -1781,6 +1782,12 @@ void Interpreter::doDebugCycle() {
   } catch (InterpreterReturnException& e) {
   }
   depth--;
+  if (depth == 0) {
+    steptrap = 0; 
+    stepcurrentline = 0;
+    tracetrap = 0;
+    tracecurrentline = 0;
+  }
 }
 
 void Interpreter::displayArray(Array b) {
@@ -2028,6 +2035,18 @@ void Interpreter::processBreakpoints(const tree &t) {
     qDebug() << "Resuming this statement...\r\n";
     t.print();
   }
+  if (tracetrap > 0) {
+    qDebug() << "Trace trap active...\r\n";
+    qDebug() << "  Line number " << 
+      ((ip_context) & 0xffff) << "  " << tracecurrentline 
+	     << " trap " << tracetrap << "\r\n";
+    if (((ip_context) & 0xffff) != tracecurrentline) {
+      qDebug() << "Current line changed...\r\n";
+      tracetrap--;
+      if (tracetrap == 0)
+	doDebugCycle();
+    }
+  }
   if (steptrap > 0) {
     qDebug() << "Step trap active...\r\n";
     qDebug() << "  Line number " << 
@@ -2091,8 +2110,8 @@ void Interpreter::statementType(const tree &t, bool printIt) {
     throw InterpreterReturnException();
     break;
   case TOK_DBTRACE:
-    dbstepStatement(t);
-    tracetrap = true;
+    qDebug() << "**********************DBTrace\r\n";
+    dbtraceStatement(t);
     emit RefreshBPLists();
     throw InterpreterReturnException();
     break;
@@ -3693,12 +3712,30 @@ void Interpreter::dbstepStatement(const tree &t) {
   }
   cstack[cstack.size()-1].steptrap = lines;
   cstack[cstack.size()-1].stepcurrentline = bp.tokid & 0xffff;
-  //   steptrap = lines;
-  //   stepcurrentline = bp.tokid & 0xffff;
-  //  stepname = bp.detail;
   qDebug() << "setting dbstep trap to current line " << 
     cstack[cstack.size()-1].stepcurrentline << 
     " with wait of " << lines << " lines\r\n";
+}
+
+void Interpreter::dbtraceStatement(const tree &t) {
+  int lines = 1;
+  if (t.haschildren()) {
+    Array lval(expression(t.first()));
+    lines = lval.getContentsAsIntegerScalar();
+  }
+  // Get the current function
+  if (cstack.size() < 1) throw Exception("cannot dbtrace unless inside an M-function");
+  stackentry bp(cstack[cstack.size()-1]);
+  FuncPtr val;
+  if (bp.detail == "base") return;
+  if (!lookupFunction(bp.detail,val)) {
+    warningMessage(string("unable to find function ") + bp.detail + " to single step");
+    return;
+  }
+  tracetrap = lines;
+  tracecurrentline = bp.tokid & 0xffff;
+  qDebug() << "setting dbtrace trap to current line " << 
+    tracecurrentline << " with wait of " << lines << " lines\r\n";
 }
 
 static string EvalPrep(string line) {
@@ -3803,9 +3840,9 @@ string Interpreter::getLine(string prompt) {
 void Interpreter::evalCLI() {
   char prompt[150];
 
-  if ((depth == 0) || (cstack.size() == 0))
+  if ((depth == 0) || (cstack.size() == 0)) {
     sprintf(prompt,"--> ");
-  else 
+  } else 
     sprintf(prompt,"[%s,%d]--> ",ip_detailname.c_str(),
 	    ip_context & 0xffff);
   while(1) {

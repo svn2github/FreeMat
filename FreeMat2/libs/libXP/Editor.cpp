@@ -611,8 +611,10 @@ void FMEditor::createActions() {
   connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
   replaceAct = new QAction("Find and Replace",this);
   connect(replaceAct,SIGNAL(triggered()),this,SLOT(replace()));
-  dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"Single &Step",this);
+  dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
   connect(dbStepAct,SIGNAL(triggered()),this,SLOT(dbstep()));
+  dbTraceAct = new QAction(QIcon(":/images/dbgstep.png"),"&Step Into",this);
+  connect(dbTraceAct,SIGNAL(triggered()),this,SLOT(dbtrace()));
   dbContinueAct = new QAction(QIcon(":/images/dbgrun.png"),"&Continue",this);
   connect(dbContinueAct,SIGNAL(triggered()),this,SLOT(dbcontinue()));
   dbSetClearBPAct = new QAction(QIcon(":/images/stop.png"),"Set/Clear Breakpoint",this);
@@ -659,6 +661,7 @@ void FMEditor::createMenus() {
   toolsMenu->addAction(uncommentAct);
   debugMenu = menuBar()->addMenu("&Debug");
   debugMenu->addAction(dbStepAct);
+  debugMenu->addAction(dbTraceAct);
   debugMenu->addAction(dbContinueAct);
   debugMenu->addAction(dbSetClearBPAct);
   debugMenu->addAction(dbStopAct);
@@ -674,6 +677,7 @@ void FMEditor::createMenus() {
   m_popup->addAction(uncommentAct);
   m_popup->addSeparator();
   m_popup->addAction(dbStepAct);
+  m_popup->addAction(dbTraceAct);
   m_popup->addAction(dbContinueAct);
   m_popup->addAction(dbSetClearBPAct);
   m_popup->addAction(dbStopAct);
@@ -695,6 +699,7 @@ void FMEditor::createToolBars() {
   editToolBar->addAction(pasteAct);
   debugToolBar = addToolBar("Debug");
   debugToolBar->addAction(dbStepAct);
+  debugToolBar->addAction(dbTraceAct);
   debugToolBar->addAction(dbContinueAct);
   debugToolBar->addAction(dbSetClearBPAct);
   debugToolBar->addAction(dbStopAct);
@@ -703,6 +708,10 @@ void FMEditor::createToolBars() {
 
 void FMEditor::dbstep() {
   m_eval->ExecuteLine("dbstep\n");  
+}
+
+void FMEditor::dbtrace() {
+  m_eval->ExecuteLine("dbtrace\n");  
 }
 
 void FMEditor::dbcontinue() {

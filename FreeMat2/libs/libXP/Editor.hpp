@@ -145,7 +145,8 @@ class FMEditor : public QMainWindow {
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
-  QAction *dbStepAct, *dbContinueAct, *dbSetClearBPAct, *dbStopAct;
+  QAction *dbStepAct, *dbTraceAct, *dbContinueAct;
+  QAction *dbSetClearBPAct, *dbStopAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
@@ -197,6 +198,7 @@ private slots:
   void RefreshBPLists();
   void ShowActiveLine();
   void dbstep();
+  void dbtrace();
   void dbcontinue();
   void dbsetclearbp();
   void dbstop();

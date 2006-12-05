@@ -24,6 +24,7 @@
 	<file>../images/rotate.png</file>
 	<file>../images/cam_rotate.png</file>
 	<file>../images/dbgnext.png</file>
+	<file>../images/dbgstep.png</file>
 	<file>../images/dbgrun.png</file>
     </qresource>
 </RCC>

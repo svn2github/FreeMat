@@ -331,6 +331,7 @@ public:
    * Step the given number of lines
    */
   void dbstepStatement(const tree &t);
+  void dbtraceStatement(const tree &t);
   /**
    * Set the autostop flag - this flag determines what happens when
    * an exception occurs

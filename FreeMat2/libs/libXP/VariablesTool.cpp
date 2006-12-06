@@ -32,10 +32,13 @@ VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
 }
 
 void VariablesTool::refresh() {
+  //   qDebug() << "**********Variables refresh called...";
   if (!context) return;
-  if (!context->getMutex()->tryLock()) return;
-  QMutexLocker lock(context->getMutex());
-  context->getMutex()->unlock();
+  //   qDebug() << "**********Variables refresh legit...";
+  //   if (!context->getMutex()->tryLock()) return;
+  //   qDebug() << "**********Variables refresh...";
+  //   QMutexLocker lock(context->getMutex());
+  //   context->getMutex()->unlock();
   m_flist->clear();
   stringVector varnames(context->getCurrentScope()->listAllVariables());
   std::sort(varnames.begin(),varnames.end());

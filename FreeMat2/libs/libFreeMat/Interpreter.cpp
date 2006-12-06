@@ -313,7 +313,7 @@ void Interpreter::warningMessage(std::string msg) {
 
 
 void Interpreter::SetContext(int a) {
-  qDebug() << "setting context to line " << (a & 0xffff) << "\r\n";
+  qDebug() << "setting context to line " << (a & 0xffff);
   ip_context = a;
 }
 
@@ -643,6 +643,7 @@ Array Interpreter::ShortCutAnd(const tree &t) {
 
 void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
   if (t.is(TOK_VARIABLE)) {
+    QMutexLocker lock(context->getMutex());
     Array *ptr = context->lookupVariable(t.first().text());
     if (!ptr) {
       functionExpression(t,lhsCount,false,q);
@@ -1782,12 +1783,6 @@ void Interpreter::doDebugCycle() {
   } catch (InterpreterReturnException& e) {
   }
   depth--;
-  if (depth == 0) {
-    steptrap = 0; 
-    stepcurrentline = 0;
-    tracetrap = 0;
-    tracecurrentline = 0;
-  }
 }
 
 void Interpreter::displayArray(Array b) {
@@ -2024,42 +2019,42 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
 }
 
 void Interpreter::processBreakpoints(const tree &t) {
-  qDebug() << "Executing statement:\r\n";
+  qDebug() << "Executing statement:";
   t.print();
   if (t.getBPflag()) {
-    qDebug() << "Debug trap: \r\n";
+    qDebug() << "Debug trap:";
     t.print();
     doDebugCycle();
-    qDebug() << "Debug cycle complete...\r\n";
+    qDebug() << "Debug cycle complete...";
     SetContext(t.context());
-    qDebug() << "Resuming this statement...\r\n";
+    qDebug() << "Resuming this statement...";
     t.print();
   }
   if (tracetrap > 0) {
-    qDebug() << "Trace trap active...\r\n";
+    qDebug() << "Trace trap active...";
     qDebug() << "  Line number " << 
       ((ip_context) & 0xffff) << "  " << tracecurrentline 
-	     << " trap " << tracetrap << "\r\n";
+	     << " trap " << tracetrap << "";
     if (((ip_context) & 0xffff) != tracecurrentline) {
-      qDebug() << "Current line changed...\r\n";
+      qDebug() << "Current line changed...";
       tracetrap--;
       if (tracetrap == 0)
 	doDebugCycle();
     }
   }
   if (steptrap > 0) {
-    qDebug() << "Step trap active...\r\n";
+    qDebug() << "Step trap active...";
     qDebug() << "  Line number " << 
       ((ip_context) & 0xffff) << "  " << stepcurrentline 
-	     << " trap " << steptrap << "\r\n";
+	     << " trap " << steptrap << "";
     if (((ip_context) & 0xffff) != stepcurrentline) {
-      qDebug() << "Current line changed...\r\n";
+      qDebug() << "Current line changed...";
       steptrap--;
       if (steptrap == 0)
 	doDebugCycle();
     }
     // 	if ((steptrap == 1) && ((ip_detailname == stepname) || tracetrap) ) {
-    // 	  qDebug() << "Step trap hit...\r\n";
+    // 	  qDebug() << "Step trap hit...";
     // 	  i->print();
     // 	  steptrap--;
     // 	  SetContext(i->context());
@@ -2104,13 +2099,13 @@ void Interpreter::statementType(const tree &t, bool printIt) {
       throw InterpreterContinueException();
     break;
   case TOK_DBSTEP:
-    qDebug() << "**********************DBStep\r\n";
+    qDebug() << "**********************DBStep";
     dbstepStatement(t);
     emit RefreshBPLists();
     throw InterpreterReturnException();
     break;
   case TOK_DBTRACE:
-    qDebug() << "**********************DBTrace\r\n";
+    qDebug() << "**********************DBTrace";
     dbtraceStatement(t);
     emit RefreshBPLists();
     throw InterpreterReturnException();
@@ -3120,7 +3115,7 @@ void Interpreter::toggleBP(QString fname, int lineNumber) {
     for (int i=0;i<bpStack.size();i++) 
       if ((bpStack[i].cname == fname_string) &&
 	  ((bpStack[i].tokid & 0xffff) == lineNumber)) {
-	qDebug() << "Deleting bp " << i << " w/number " << bpStack[i].number << "\r\n";
+	qDebug() << "Deleting bp " << i << " w/number " << bpStack[i].number << "";
 	deleteBreakpoint(bpStack[i].number);
 	return;
       }
@@ -3145,7 +3140,7 @@ MFunctionDef* Interpreter::lookupFullPath(string fname) {
 
 static int bpList = 1;
 void Interpreter::addBreakpoint(string name, int line) {
-  qDebug() << "Add bp " << QString::fromStdString(name) << " : " << line << "\r\n";
+  qDebug() << "Add bp " << QString::fromStdString(name) << " : " << line << "";
   FuncPtr val;
   MFunctionDef *mptr;
   if (context->lookupFunction(name,val) && (val->type() == FM_M_FUNCTION))
@@ -3225,7 +3220,7 @@ void Interpreter::pushDebug(std::string fname, std::string detail) {
 			      ip_context,0,steptrap,
 			      stepcurrentline));
   qDebug() << "Push Debug: " << QString::fromStdString(fname) << ",";
-  qDebug() << QString::fromStdString(detail) << "\r\n";
+  qDebug() << QString::fromStdString(detail) << "";
   ip_funcname = fname;
   ip_detailname = detail;
   ip_context = 0;
@@ -3235,7 +3230,7 @@ void Interpreter::pushDebug(std::string fname, std::string detail) {
 
 void Interpreter::popDebug() {
   if (!cstack.empty()) {
-    qDebug() << "Pop Debug\r\n";
+    qDebug() << "Pop Debug";
     ip_funcname = cstack.back().cname;
     ip_detailname = cstack.back().detail;
     ip_context = cstack.back().tokid;
@@ -3714,7 +3709,7 @@ void Interpreter::dbstepStatement(const tree &t) {
   cstack[cstack.size()-1].stepcurrentline = bp.tokid & 0xffff;
   qDebug() << "setting dbstep trap to current line " << 
     cstack[cstack.size()-1].stepcurrentline << 
-    " with wait of " << lines << " lines\r\n";
+    " with wait of " << lines << " lines";
 }
 
 void Interpreter::dbtraceStatement(const tree &t) {
@@ -3735,7 +3730,7 @@ void Interpreter::dbtraceStatement(const tree &t) {
   tracetrap = lines;
   tracecurrentline = bp.tokid & 0xffff;
   qDebug() << "setting dbtrace trap to current line " << 
-    tracecurrentline << " with wait of " << lines << " lines\r\n";
+    tracecurrentline << " with wait of " << lines << " lines";
 }
 
 static string EvalPrep(string line) {
@@ -3759,7 +3754,6 @@ void Interpreter::ExecuteLine(std::string txt) {
 //PORT
 void Interpreter::evaluateString(string line, bool propogateExceptions) {
   tree t;
-  QMutexLocker lock(context->getMutex());
   InterruptPending = false;
   Scanner S(line,"");
   Parser P(S);
@@ -3839,15 +3833,23 @@ string Interpreter::getLine(string prompt) {
 
 void Interpreter::evalCLI() {
   char prompt[150];
+  bool rootCLI;
 
   if ((depth == 0) || (cstack.size() == 0)) {
     sprintf(prompt,"--> ");
-  } else 
+    rootCLI = true;
+  } else {
     sprintf(prompt,"[%s,%d]--> ",ip_detailname.c_str(),
 	    ip_context & 0xffff);
+    rootCLI = false;
+  }
   while(1) {
+    if (rootCLI) {
+      tracetrap = 0;
+      steptrap = 0;
+    }
     emit SetPrompt(prompt);
-    qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "\r\n";
+    qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "";
     emit ShowActiveLine();
     string cmdset;
     std::string cmdline;

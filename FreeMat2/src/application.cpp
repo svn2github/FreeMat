@@ -95,7 +95,10 @@ void ApplicationWindow::createActions() {
   pauseAct = new QAction(QIcon(":/images/player_pause.png"),"&Pause",this);
   continueAct = new QAction(QIcon(":/images/player_play.png"),"&Continue",this);
   stopAct = new QAction(QIcon(":/images/player_stop.png"),"&Stop",this);
+  dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
+  dbTraceAct = new QAction(QIcon(":/images/dbgstep.png"),"&Step Into",this);
 }
+
 
 void ApplicationWindow::createMenus() {
   fileMenu = menuBar()->addMenu("&File");
@@ -109,6 +112,8 @@ void ApplicationWindow::createMenus() {
   debugMenu->addAction(pauseAct);
   debugMenu->addAction(continueAct);
   debugMenu->addAction(stopAct);
+  debugMenu->addAction(dbStepAct);
+  debugMenu->addAction(dbTraceAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(editorAct);
   toolsMenu->addAction(pathAct);
@@ -131,6 +136,8 @@ void ApplicationWindow::createToolBars() {
   debugToolBar->addAction(pauseAct);
   debugToolBar->addAction(continueAct);
   debugToolBar->addAction(stopAct);
+  debugToolBar->addAction(dbStepAct);
+  debugToolBar->addAction(dbTraceAct);
   debugToolBar->setObjectName("debugtoolbar");
 }
 
@@ -216,6 +223,8 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
   connect(pauseAct,SIGNAL(triggered()),m_keys,SLOT(RegisterInterrupt()));
   connect(continueAct,SIGNAL(triggered()),m_keys,SLOT(ContinueAction()));
   connect(stopAct,SIGNAL(triggered()),m_keys,SLOT(StopAction()));
+  connect(dbStepAct,SIGNAL(triggered()),m_keys,SLOT(DbStepAction()));
+  connect(dbTraceAct,SIGNAL(triggered()),m_keys,SLOT(DbTraceAction()));
 }
 
 void ApplicationWindow::save() {

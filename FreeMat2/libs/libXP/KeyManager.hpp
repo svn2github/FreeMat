@@ -166,6 +166,8 @@ public slots:
   void RegisterInterrupt();
   void ContinueAction();
   void StopAction();
+  void DbStepAction();
+  void DbTraceAction();
   void SetPrompt(string);
 signals:
   void UpdateTermWidth(int);

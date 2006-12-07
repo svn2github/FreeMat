@@ -34,15 +34,17 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   m_popup->addAction("Execute");
   m_popup->addAction("Clear All");
   m_flist->setCurrentItem(p);
+  m_flist->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
 void HistoryWidget::contextMenuEvent(QContextMenuEvent *e) {
   QAction *p = m_popup->exec(e->globalPos());
   if (!p) return;
   if (p->text() == "Execute") {
-    QListWidgetItem *item = m_flist->currentItem();
-    if (item)
-      emit sendCommand(item->text());
+    QList<QListWidgetItem *>items = m_flist->selectedItems();
+    if (items.size() > 0)
+      for (int i=0;i<items.size();i++)
+	emit sendCommand(items[i]->text());
   } else if (p->text() == "Clear All")
     clear();
   

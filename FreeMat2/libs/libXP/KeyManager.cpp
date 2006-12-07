@@ -1078,6 +1078,14 @@ void KeyManager::StopAction() {
   emit ExecuteLine("retall\n");  
 }
 
+void KeyManager::DbStepAction() {
+  emit ExecuteLine("dbstep\n");
+}
+
+void KeyManager::DbTraceAction() {
+  emit ExecuteLine("dbtrace\n");
+}
+
 void KeyManager::SetPrompt(string txt) {
   ReplacePrompt(txt);
   Redisplay();

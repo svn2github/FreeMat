@@ -33,8 +33,8 @@ public:
   BaseFigureQt(QWidget *parent, HandleFigure *fig);
   void paintEvent(QPaintEvent *e);
   void resizeEvent(QResizeEvent *e);
-//   QSize sizeHint() const;
-//   QSizePolicy sizePolicy() const;
+  //   QSize sizeHint() const;
+  //   QSizePolicy sizePolicy() const;
 };
 
 // QSize BaseFigureQt::sizeHint() const {
@@ -175,6 +175,7 @@ HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
   setCentralWidget(qtchild);
   resize(600,400);
   initialized = true;
+  mode = normal_mode;
 }
 
 
@@ -310,11 +311,13 @@ void HandleWindow::GetClick(int &x, int &y) {
 HandleAxis* GetContainingAxis(HandleFigure *fig, int x, int y) {
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
   std::vector<unsigned> children(cp->Data());
+  qDebug() << "Click " << x << "," << y;
   for (int i=0;i<children.size();i++) {
     HandleObject* hp = LookupHandleObject(children[i]);
     if (hp->IsType("axes")) {
       // Get the axis extents
       std::vector<double> position(((HandleAxis*) hp)->GetPropertyVectorAsPixels("position"));
+      qDebug() << "Axis " << position[0] << "," << position[1] << "," << position[2] << "," << position[3];
       if ((x >= position[0]) && (x < (position[0]+position[2])) &&
 	  (y >= position[1]) && (y < (position[1]+position[3])))
 	return (HandleAxis*)hp;
@@ -324,247 +327,257 @@ HandleAxis* GetContainingAxis(HandleFigure *fig, int x, int y) {
 }
 
 void HandleWindow::mousePressEvent(QMouseEvent* e) {
-  if (mode == click_mode) {
-    click_x = e->x();
-    click_y = e->y();
-    m_loop.exit();
-  }
-  if ((mode == zoom_mode) && (e->button() == Qt::LeftButton))  {
-    origin = e->pos();
-    if (!band)
-      band = new QRubberBand(QRubberBand::Rectangle, this);
-    band->setGeometry(QRect(origin,QSize()));
-    band->show();
-    zoom_active = true;
-  } else
-    zoom_active = false;
-  if (mode == pan_mode) {
-    origin = e->pos();
-    QRect plot_region(qtchild->geometry());
-    HandleAxis *h = GetContainingAxis(hfig,e->x() - plot_region.x(),
-				      e->y() - plot_region.y());
-    if (h) {
-      HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
-      pan_xrange = (hp->Data()[1] - hp->Data()[0]);
-      pan_xmean = (hp->Data()[1] + hp->Data()[0])/2;
-      hp = (HPTwoVector*) h->LookupProperty("ylim");
-      pan_yrange = (hp->Data()[1] - hp->Data()[0]);
-      pan_ymean = (hp->Data()[1] + hp->Data()[0])/2;
-      pan_active = true;
-    } else {
-      pan_active = false;
+  try {
+    if (mode == click_mode) {
+      click_x = e->x();
+      click_y = e->y();
+      m_loop.exit();
     }
-  }
-  if ((mode == rotate_mode) || (mode == cam_rotate_mode)) {
-    origin = e->pos();
-    QRect plot_region(qtchild->geometry());
-    HandleAxis *h = GetContainingAxis(hfig,e->x() - plot_region.x(),
-				      e->y() - plot_region.y());
-    if (h) {
-      rotate_active = true;
-      rotate_camera = ((HPThreeVector*) h->LookupProperty("cameraposition"))->Data();
-      rotate_up = ((HPThreeVector*) h->LookupProperty("cameraupvector"))->Data();
-      rotate_target = ((HPThreeVector*) h->LookupProperty("cameratarget"))->Data();
-      rotate_forward = rotate_target;
-      rotate_forward[0] -= rotate_camera[0];
-      rotate_forward[1] -= rotate_camera[1];
-      rotate_forward[2] -= rotate_camera[2];
-      rotate_source_cam_dist = sqrt(rotate_forward[0]*rotate_forward[0] + 
-				    rotate_forward[1]*rotate_forward[1] + 
-				    rotate_forward[2]*rotate_forward[2]);
-      rotate_forward[0] /= rotate_source_cam_dist;
-      rotate_forward[1] /= rotate_source_cam_dist;
-      rotate_forward[2] /= rotate_source_cam_dist;
-      rotate_right = rotate_up;
-      rotate_right[0] = (rotate_forward[1] * rotate_up[2]) - (rotate_forward[2] * rotate_up[1]);
-      rotate_right[1] = (rotate_forward[2] * rotate_up[0]) - (rotate_forward[0] * rotate_up[2]);
-      rotate_right[2] = (rotate_forward[0] * rotate_up[1]) - (rotate_forward[1] * rotate_up[0]);
+    if ((mode == zoom_mode) && (e->button() == Qt::LeftButton))  {
+      origin = e->pos();
+      if (!band)
+	band = new QRubberBand(QRubberBand::Rectangle, this);
+      band->setGeometry(QRect(origin,QSize()));
+      band->show();
+      zoom_active = true;
+    } else
+      zoom_active = false;
+    if (mode == pan_mode) {
+      origin = e->pos();
+      QRect plot_region(qtchild->geometry());
+      HandleAxis *h = GetContainingAxis(hfig,remapX(e->x()),remapY(e->y()));
+      if (h) {
+	HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
+	pan_xrange = (hp->Data()[1] - hp->Data()[0]);
+	pan_xmean = (hp->Data()[1] + hp->Data()[0])/2;
+	hp = (HPTwoVector*) h->LookupProperty("ylim");
+	pan_yrange = (hp->Data()[1] - hp->Data()[0]);
+	pan_ymean = (hp->Data()[1] + hp->Data()[0])/2;
+	pan_active = true;
+      } else {
+	pan_active = false;
+      }
     }
+    if ((mode == rotate_mode) || (mode == cam_rotate_mode)) {
+      origin = e->pos();
+      QRect plot_region(qtchild->geometry());
+      HandleAxis *h = GetContainingAxis(hfig,remapX(e->x()),remapY(e->y()));
+      if (h) {
+	rotate_active = true;
+	rotate_camera = ((HPThreeVector*) h->LookupProperty("cameraposition"))->Data();
+	rotate_up = ((HPThreeVector*) h->LookupProperty("cameraupvector"))->Data();
+	rotate_target = ((HPThreeVector*) h->LookupProperty("cameratarget"))->Data();
+	rotate_forward = rotate_target;
+	rotate_forward[0] -= rotate_camera[0];
+	rotate_forward[1] -= rotate_camera[1];
+	rotate_forward[2] -= rotate_camera[2];
+	rotate_source_cam_dist = sqrt(rotate_forward[0]*rotate_forward[0] + 
+				      rotate_forward[1]*rotate_forward[1] + 
+				      rotate_forward[2]*rotate_forward[2]);
+	rotate_forward[0] /= rotate_source_cam_dist;
+	rotate_forward[1] /= rotate_source_cam_dist;
+	rotate_forward[2] /= rotate_source_cam_dist;
+	rotate_right = rotate_up;
+	rotate_right[0] = (rotate_forward[1] * rotate_up[2]) - (rotate_forward[2] * rotate_up[1]);
+	rotate_right[1] = (rotate_forward[2] * rotate_up[0]) - (rotate_forward[0] * rotate_up[2]);
+	rotate_right[2] = (rotate_forward[0] * rotate_up[1]) - (rotate_forward[1] * rotate_up[0]);
+      }
+    }
+  } catch (Exception &e) {
   }
 }
 
 void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
-  if ((mode == zoom_mode) && zoom_active)
-    band->setGeometry(QRect(origin, e->pos()).normalized());
-  if ((mode == pan_mode) && pan_active) {
-    QPoint dest(e->pos());
-    QRect plot_region(qtchild->geometry());
-    HandleAxis *h = GetContainingAxis(hfig, origin.x() - plot_region.x(), 
-				      origin.y() - plot_region.y());
-    if (h) {
-      std::vector<double> position(h->GetPropertyVectorAsPixels("position"));
-      double delx, dely;
-      if (h->StringCheck("xdir","reverse"))
-	delx = (e->x() - origin.x())/position[2];
-      else
-	delx = -(e->x() - origin.x())/position[2];
-      if (h->StringCheck("ydir","reverse"))
-	dely = -(e->y() - origin.y())/position[3];
-      else
-	dely = (e->y() - origin.y())/position[3];
-      h->SetTwoVectorDefault("xlim",pan_xmean+pan_xrange*delx-pan_xrange/2,
-			     pan_xmean+pan_xrange*delx+pan_xrange/2);
-      h->SetConstrainedStringDefault("xlimmode","manual");
-      h->SetTwoVectorDefault("ylim",pan_ymean+pan_yrange*dely-pan_yrange/2,
-			     pan_ymean+pan_yrange*dely+pan_yrange/2);
-      h->SetConstrainedStringDefault("ylimmode","manual");
-      h->UpdateState();
-      hfig->Repaint();
+  try {
+    if ((mode == zoom_mode) && zoom_active)
+      band->setGeometry(QRect(origin, e->pos()).normalized());
+    if ((mode == pan_mode) && pan_active) {
+      QPoint dest(e->pos());
+      QRect plot_region(qtchild->geometry());
+      HandleAxis *h = GetContainingAxis(hfig,remapX(origin.x()),remapY(origin.y()));
+      if (h) {
+	std::vector<double> position(h->GetPropertyVectorAsPixels("position"));
+	double delx, dely;
+	if (h->StringCheck("xdir","reverse"))
+	  delx = (e->x() - origin.x())/position[2];
+	else
+	  delx = -(e->x() - origin.x())/position[2];
+	if (h->StringCheck("ydir","reverse"))
+	  dely = -(e->y() - origin.y())/position[3];
+	else
+	  dely = (e->y() - origin.y())/position[3];
+	h->SetTwoVectorDefault("xlim",pan_xmean+pan_xrange*delx-pan_xrange/2,
+			       pan_xmean+pan_xrange*delx+pan_xrange/2);
+	h->SetConstrainedStringDefault("xlimmode","manual");
+	h->SetTwoVectorDefault("ylim",pan_ymean+pan_yrange*dely-pan_yrange/2,
+			       pan_ymean+pan_yrange*dely+pan_yrange/2);
+	h->SetConstrainedStringDefault("ylimmode","manual");
+	h->UpdateState();
+	hfig->Repaint();
+      }
     }
-  }
-  if ((mode == rotate_mode) && rotate_active) {
-    QPoint dest(e->pos());
-    QRect plot_region(qtchild->geometry());
-    HandleAxis *h = GetContainingAxis(hfig, origin.x() - plot_region.x(), 
-				      origin.y() - plot_region.y());
-    if (h) {
-      double az = (e->x() - origin.x())/180.0*M_PI;
-      double el = (e->y() - origin.y())/180.0*M_PI;
-      // The delx means we rotate the camera 
-      vector<double> camera_position(rotate_target);
-      camera_position[0] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[0] + 
-						    -cos(el)*cos(az)*rotate_forward[0] + 
-						    sin(el)*rotate_up[0]);
-      camera_position[1] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[1] + 
-						    -cos(el)*cos(az)*rotate_forward[1] + 
-						    sin(el)*rotate_up[1]);
-      camera_position[2] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[2] + 
-						    -cos(el)*cos(az)*rotate_forward[2] + 
-						    sin(el)*rotate_up[2]);
-      vector<double> camera_up(rotate_target);
-      camera_up[0] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[0] + 
-		      -cos(el+M_PI/2.0)*cos(az)*rotate_forward[0] + 
-		      sin(el+M_PI/2.0)*rotate_up[0]);
-      camera_up[1] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[1] + 
-		      -cos(el+M_PI/2.0)*cos(az)*rotate_forward[1] + 
-		      sin(el+M_PI/2.0)*rotate_up[1]);
-      camera_up[2] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[2] + 
-		      -cos(el+M_PI/2.0)*cos(az)*rotate_forward[2] + 
-		      sin(el+M_PI/2.0)*rotate_up[2]);
-      h->SetThreeVectorDefault("cameraposition",camera_position[0],
-			       camera_position[1],camera_position[2]);
-      h->SetConstrainedStringDefault("camerapositionmode","manual");
-      h->SetThreeVectorDefault("cameraupvector",camera_up[0],
-			       camera_up[1],camera_up[2]);
-      h->SetConstrainedStringDefault("cameraupvectormode","manual");
-      h->UpdateState();
-      hfig->Repaint();
+    if ((mode == rotate_mode) && rotate_active) {
+      QPoint dest(e->pos());
+      QRect plot_region(qtchild->geometry());
+      HandleAxis *h = GetContainingAxis(hfig,remapX(origin.x()),remapY(origin.y()));
+      if (h) {
+	double az = (e->x() - origin.x())/180.0*M_PI;
+	double el = (e->y() - origin.y())/180.0*M_PI;
+	// The delx means we rotate the camera 
+	vector<double> camera_position(rotate_target);
+	camera_position[0] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[0] + 
+						      -cos(el)*cos(az)*rotate_forward[0] + 
+						      sin(el)*rotate_up[0]);
+	camera_position[1] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[1] + 
+						      -cos(el)*cos(az)*rotate_forward[1] + 
+						      sin(el)*rotate_up[1]);
+	camera_position[2] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[2] + 
+						      -cos(el)*cos(az)*rotate_forward[2] + 
+						      sin(el)*rotate_up[2]);
+	vector<double> camera_up(rotate_target);
+	camera_up[0] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[0] + 
+			-cos(el+M_PI/2.0)*cos(az)*rotate_forward[0] + 
+			sin(el+M_PI/2.0)*rotate_up[0]);
+	camera_up[1] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[1] + 
+			-cos(el+M_PI/2.0)*cos(az)*rotate_forward[1] + 
+			sin(el+M_PI/2.0)*rotate_up[1]);
+	camera_up[2] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[2] + 
+			-cos(el+M_PI/2.0)*cos(az)*rotate_forward[2] + 
+			sin(el+M_PI/2.0)*rotate_up[2]);
+	h->SetThreeVectorDefault("cameraposition",camera_position[0],
+				 camera_position[1],camera_position[2]);
+	h->SetConstrainedStringDefault("camerapositionmode","manual");
+	h->SetThreeVectorDefault("cameraupvector",camera_up[0],
+				 camera_up[1],camera_up[2]);
+	h->SetConstrainedStringDefault("cameraupvectormode","manual");
+	h->UpdateState();
+	hfig->Repaint();
+      }
     }
-  }
-  if ((mode == cam_rotate_mode) && rotate_active) {
-    QPoint dest(e->pos());
-    QRect plot_region(qtchild->geometry());
-    HandleAxis *h = GetContainingAxis(hfig, origin.x() - plot_region.x(), 
-				      origin.y() - plot_region.y());
-    if (h) {
-      double el = (e->y() - origin.y())/180.0*M_PI;
-      vector<double> camera_up(rotate_target);
-      camera_up[0] = cos(el)*rotate_up[0] - sin(el)*rotate_right[0];
-      camera_up[1] = cos(el)*rotate_up[1] - sin(el)*rotate_right[1];
-      camera_up[2] = cos(el)*rotate_up[2] - sin(el)*rotate_right[2];
-      h->SetThreeVectorDefault("cameraupvector",camera_up[0],
-			       camera_up[1],camera_up[2]);
-      h->SetConstrainedStringDefault("cameraupvectormode","manual");
-      h->UpdateState();
-      hfig->Repaint();
+    if ((mode == cam_rotate_mode) && rotate_active) {
+      QPoint dest(e->pos());
+      QRect plot_region(qtchild->geometry());
+      HandleAxis *h = GetContainingAxis(hfig,remapX(origin.x()),remapY(origin.y()));
+      if (h) {
+	double el = (e->y() - origin.y())/180.0*M_PI;
+	vector<double> camera_up(rotate_target);
+	camera_up[0] = cos(el)*rotate_up[0] - sin(el)*rotate_right[0];
+	camera_up[1] = cos(el)*rotate_up[1] - sin(el)*rotate_right[1];
+	camera_up[2] = cos(el)*rotate_up[2] - sin(el)*rotate_right[2];
+	h->SetThreeVectorDefault("cameraupvector",camera_up[0],
+				 camera_up[1],camera_up[2]);
+	h->SetConstrainedStringDefault("cameraupvectormode","manual");
+	h->UpdateState();
+	hfig->Repaint();
+      }
     }
+  } catch (Exception &e) {
   }
 }
 
+int HandleWindow::remapX(int x) {
+  QRect plot_region(qtchild->geometry());
+  return x - plot_region.x();
+}
+
+int HandleWindow::remapY(int y) {
+  QRect plot_region(qtchild->geometry());
+  return (plot_region.height()-y+plot_region.y());
+}
+
 void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
-  if (mode == pan_mode)
-    pan_active = false;
-  if (mode == zoom_mode) {
-    if (zoom_active) {
-      band->hide();
-      QRect rect(band->geometry().normalized());
-      if ((rect.width()*rect.height()) < 20) {
+  try {
+    if (mode == pan_mode)
+      pan_active = false;
+    if (mode == zoom_mode) {
+      if (zoom_active) {
+	band->hide();
+	QRect rect(band->geometry().normalized());
+	if ((rect.width()*rect.height()) < 20) {
+	  // Treat as a click
+	  int click_x, click_y;
+	  click_x = e->x();
+	  click_y = e->y();
+	  HandleAxis *h = GetContainingAxis(hfig,remapX(click_x),remapY(click_y));
+	  if (h) {
+	    HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
+	    double range = (hp->Data()[1] - hp->Data()[0])/2;
+	    double mean = (hp->Data()[1] + hp->Data()[0])/2;
+	    h->SetTwoVectorDefault("xlim",mean-range/2,mean+range/2);
+	    h->SetConstrainedStringDefault("xlimmode","manual");
+	    hp = (HPTwoVector*) h->LookupProperty("ylim");
+	    range = (hp->Data()[1] - hp->Data()[0])/2;
+	    mean = (hp->Data()[1] + hp->Data()[0])/2;
+	    h->SetTwoVectorDefault("ylim",mean-range/2,mean+range/2);
+	    h->SetConstrainedStringDefault("ylimmode","manual");
+	    h->UpdateState();
+	    hfig->Repaint();
+	  }
+	} else {       
+	  QRect plot_region(qtchild->geometry());
+	  HandleAxis *h = GetContainingAxis(hfig,remapX(rect.x()),remapY(rect.y()));
+	  if (h) {
+	    std::vector<double> position(h->GetPropertyVectorAsPixels("position"));
+	    double xminfrac = (remapX(rect.x()) - position[0])/position[2];
+	    double xmaxfrac = (remapX(rect.x()+rect.width()) - position[0])/position[2];
+	    double yminfrac = (remapY(rect.y()+rect.height()) - position[1])/position[3];
+	    double ymaxfrac = (remapY(rect.y()) - position[1])/position[3];
+	    qDebug() << "xrange " << xminfrac << "," << xmaxfrac;
+	    qDebug() << "yrange " << yminfrac << "," << ymaxfrac;
+	    xminfrac = qMax(0.,qMin(1.,xminfrac));
+	    xmaxfrac = qMax(0.,qMin(1.,xmaxfrac));
+	    yminfrac = qMax(0.,qMin(1.,yminfrac));
+	    ymaxfrac = qMax(0.,qMin(1.,ymaxfrac));
+	    if (h->StringCheck("ydir","reverse")) {
+	      double y1 = 1-yminfrac;
+	      double y2 = 1-ymaxfrac;
+	      yminfrac = y2;
+	      ymaxfrac = y1;
+	    }
+	    if (h->StringCheck("xdir","reverse")) {
+	      double x1 = 1-xminfrac;
+	      double x2 = 1-xmaxfrac;
+	      xminfrac = x2;
+	      xmaxfrac = x1;
+	    }
+	    HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
+	    double range = (hp->Data()[1] - hp->Data()[0]);
+	    double mean = (hp->Data()[1] + hp->Data()[0])/2;
+	    h->SetTwoVectorDefault("xlim",mean-range/2+xminfrac*range,mean-range/2+xmaxfrac*range);
+	    h->SetConstrainedStringDefault("xlimmode","manual");
+	    hp = (HPTwoVector*) h->LookupProperty("ylim");
+	    range = (hp->Data()[1] - hp->Data()[0]);
+	    mean = (hp->Data()[1] + hp->Data()[0])/2;
+	    h->SetTwoVectorDefault("ylim",mean-range/2+yminfrac*range,mean-range/2+ymaxfrac*range);
+	    h->SetConstrainedStringDefault("ylimmode","manual");
+	    h->UpdateState();
+	    hfig->Repaint();
+	  }
+	}
+      } else {
 	// Treat as a click
 	int click_x, click_y;
 	click_x = e->x();
 	click_y = e->y();
 	QRect plot_region(qtchild->geometry());
-	HandleAxis *h = GetContainingAxis(hfig, click_x - plot_region.x(), 
-					  click_y - plot_region.y());
+	HandleAxis *h = GetContainingAxis(hfig,remapX(click_x),remapY(click_y));
 	if (h) {
 	  HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
-	  double range = (hp->Data()[1] - hp->Data()[0])/2;
+	  double range = (hp->Data()[1] - hp->Data()[0])*2;
 	  double mean = (hp->Data()[1] + hp->Data()[0])/2;
 	  h->SetTwoVectorDefault("xlim",mean-range/2,mean+range/2);
 	  h->SetConstrainedStringDefault("xlimmode","manual");
 	  hp = (HPTwoVector*) h->LookupProperty("ylim");
-	  range = (hp->Data()[1] - hp->Data()[0])/2;
+	  range = (hp->Data()[1] - hp->Data()[0])*2;
 	  mean = (hp->Data()[1] + hp->Data()[0])/2;
 	  h->SetTwoVectorDefault("ylim",mean-range/2,mean+range/2);
 	  h->SetConstrainedStringDefault("ylimmode","manual");
 	  h->UpdateState();
 	  hfig->Repaint();
 	}
-      } else {       
-	QRect plot_region(qtchild->geometry());
-	HandleAxis *h = GetContainingAxis(hfig, rect.x() - plot_region.x(), 
-					  rect.y() - plot_region.y());
-	if (h) {
-	  std::vector<double> position(h->GetPropertyVectorAsPixels("position"));
-	  double xminfrac = (rect.x() - plot_region.x() - position[0])/position[2];
-	  double xmaxfrac = (rect.x() - plot_region.x() + rect.width() - position[0])/position[2];
-	  double yminfrac = (rect.y() - plot_region.y() - position[1])/position[3];
-	  double ymaxfrac = (rect.y() - plot_region.y() + rect.height() - position[1])/position[3];
-	  xminfrac = qMax(0.,qMin(1.,xminfrac));
-	  xmaxfrac = qMax(0.,qMin(1.,xmaxfrac));
-	  yminfrac = qMax(0.,qMin(1.,yminfrac));
-	  ymaxfrac = qMax(0.,qMin(1.,ymaxfrac));
-	  qDebug() << "xrange: " << xminfrac << " " << xmaxfrac << "\n";
-	  qDebug() << "yrange: " << yminfrac << " " << ymaxfrac << "\n";
-	  if (h->StringCheck("ydir","normal")) {
-	    double y1 = 1-yminfrac;
-	    double y2 = 1-ymaxfrac;
-	    yminfrac = y2;
-	    ymaxfrac = y1;
-	  }
-	  if (h->StringCheck("xdir","reverse")) {
-	    double x1 = 1-xminfrac;
-	    double x2 = 1-xmaxfrac;
-	    xminfrac = x2;
-	    xmaxfrac = x1;
-	  }
-	  HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
-	  double range = (hp->Data()[1] - hp->Data()[0]);
-	  double mean = (hp->Data()[1] + hp->Data()[0])/2;
-	  h->SetTwoVectorDefault("xlim",mean-range/2+xminfrac*range,mean-range/2+xmaxfrac*range);
-	  h->SetConstrainedStringDefault("xlimmode","manual");
-	  hp = (HPTwoVector*) h->LookupProperty("ylim");
-	  range = (hp->Data()[1] - hp->Data()[0]);
-	  mean = (hp->Data()[1] + hp->Data()[0])/2;
-	  h->SetTwoVectorDefault("ylim",mean-range/2+yminfrac*range,mean-range/2+ymaxfrac*range);
-	  h->SetConstrainedStringDefault("ylimmode","manual");
-	  h->UpdateState();
-	  hfig->Repaint();
-	}
-      }
-    } else {
-      // Treat as a click
-      int click_x, click_y;
-      click_x = e->x();
-      click_y = e->y();
-      QRect plot_region(qtchild->geometry());
-      HandleAxis *h = GetContainingAxis(hfig, click_x - plot_region.x(), 
-					click_y - plot_region.y());
-      if (h) {
-	HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
-	double range = (hp->Data()[1] - hp->Data()[0])*2;
-	double mean = (hp->Data()[1] + hp->Data()[0])/2;
-	h->SetTwoVectorDefault("xlim",mean-range/2,mean+range/2);
-	h->SetConstrainedStringDefault("xlimmode","manual");
-	hp = (HPTwoVector*) h->LookupProperty("ylim");
-	range = (hp->Data()[1] - hp->Data()[0])*2;
-	mean = (hp->Data()[1] + hp->Data()[0])/2;
-	h->SetTwoVectorDefault("ylim",mean-range/2,mean+range/2);
-	h->SetConstrainedStringDefault("ylimmode","manual");
-	h->UpdateState();
-	hfig->Repaint();
       }
     }
+  } catch (Exception &e) {
   }
 }
 
@@ -593,5 +606,5 @@ void HandleWindow::UpdateState() {
   //  layout->setCurrentWidget(qtchild);
   //     }
   update();
-//   }
+  //   }
 }

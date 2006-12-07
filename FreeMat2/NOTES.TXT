@@ -468,6 +468,7 @@ bugs
 - variables created during dbstep do not show up in variable tool
 - dbstep does not step into function calls
 - after "return", IP should go away
+
 - should have code to zoom editor window to current IP line
 - need controls "step", etc on editor and main window.
 
@@ -498,3 +499,6 @@ in a function call, the dbstep state will need to be saved and restored.
 
 
 - OK dbstep works correctly now...  dbtrace still needs work.
+
+- Selections in the editor
+- Ensure the current line is in the window.

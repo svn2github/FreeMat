@@ -68,6 +68,9 @@ protected:
   bool rotate_active;
   vector<double> rotate_up, rotate_target, rotate_camera, rotate_forward, rotate_right;
   double rotate_source_cam_dist;
+
+  int remapX(int x);
+  int remapY(int y);
 public:
   QWidget *GetQtWidget() {return qtchild;}
   HandleWindow(unsigned ahandle);

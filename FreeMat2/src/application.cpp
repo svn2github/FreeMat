@@ -127,6 +127,14 @@ void ApplicationWindow::createMenus() {
   helpMenu->addAction(aboutQt);
 }
 
+bool ApplicationWindow::event(QEvent* e) {
+  if (e->type() == QEvent::WindowActivate) {
+    if (m_term)
+      m_term->setFocus(Qt::MouseFocusReason);
+  }
+  return QMainWindow::event(e);
+}
+
 void ApplicationWindow::createToolBars() {
   editToolBar = addToolBar("Edit");
   editToolBar->addAction(copyAct);

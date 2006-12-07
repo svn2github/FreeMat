@@ -72,6 +72,7 @@ public:
   void SetGUITerminal(QTTerm* term);
   void SetKeyManager(KeyManager* keys);
   void readSettings();
+  bool event(QEvent* e);
 private:
   void createActions();
   void createMenus();

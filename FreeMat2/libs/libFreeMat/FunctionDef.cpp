@@ -443,7 +443,7 @@ void MFunctionDef::SetBreakpoint(int bpline, bool enable) {
   if (!SetTreeBreakPoint(allCode,bpline,enable)) 
     throw Exception(string("Unable to modify a breakpoint at line ") + 
 		    bpline + string(" of routine ") + name);
-  allCode.print();
+  //  allCode.print();
 }
 
 void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {

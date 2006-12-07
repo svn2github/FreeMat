@@ -14,7 +14,7 @@ using namespace FreeMat;
 using namespace std;
 
 void InterpreterThread::run() {
-  qDebug("interpreter thread on standby...\n");
+  //  qDebug("interpreter thread on standby...\n");
   eval->sendGreeting();
   emit Ready();
   forever {

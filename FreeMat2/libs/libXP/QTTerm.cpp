@@ -41,10 +41,10 @@ tagChar* tagArray::buffer() {
 }
 
 tagChar& tagArray::operator[](int pos) {
-  if (pos < 0)
-    qDebug("Negative array access\n");
-  if (pos >= m_length)
-    qDebug("Exceed array index\n");
+  //   if (pos < 0)
+  //     qDebug("Negative array access\n");
+  //   if (pos >= m_length)
+  //     qDebug("Exceed array index\n");
   return m_buffer[pos];
 }
 

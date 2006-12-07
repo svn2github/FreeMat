@@ -391,18 +391,18 @@ void QTRenderEngine::debug() {
 //   qDebug("Projection diagonal: %f %f %f %f",
 // 	 proj[0],proj[5],proj[10],proj[15]);
   return;
-  qDebug("QT Modelview matrix (before setupdirect)");
-  qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
-  qDebug("%f %f %f %f",model[1],model[5],model[9],model[13]);
-  qDebug("%f %f %f %f",model[2],model[6],model[10],model[14]);
-  qDebug("%f %f %f %f",model[3],model[7],model[11],model[15]);
-  qDebug("QT Projection matrix (before setupdirect)");
-  qDebug("%f %f %f %f",proj[0],proj[4],proj[8],proj[12]);
-  qDebug("%f %f %f %f",proj[1],proj[5],proj[9],proj[13]);
-  qDebug("%f %f %f %f",proj[2],proj[6],proj[10],proj[14]);
-  qDebug("%f %f %f %f",proj[3],proj[7],proj[11],proj[15]);
-  qDebug("QT Viewport (before setupdirect)");
-  qDebug("%d %d %d %d",viewp[0],viewp[1],viewp[2],viewp[3]);  
+//   qDebug("QT Modelview matrix (before setupdirect)");
+//   qDebug("%f %f %f %f",model[0],model[4],model[8],model[12]);
+//   qDebug("%f %f %f %f",model[1],model[5],model[9],model[13]);
+//   qDebug("%f %f %f %f",model[2],model[6],model[10],model[14]);
+//   qDebug("%f %f %f %f",model[3],model[7],model[11],model[15]);
+//   qDebug("QT Projection matrix (before setupdirect)");
+//   qDebug("%f %f %f %f",proj[0],proj[4],proj[8],proj[12]);
+//   qDebug("%f %f %f %f",proj[1],proj[5],proj[9],proj[13]);
+//   qDebug("%f %f %f %f",proj[2],proj[6],proj[10],proj[14]);
+//   qDebug("%f %f %f %f",proj[3],proj[7],proj[11],proj[15]);
+//   qDebug("QT Viewport (before setupdirect)");
+//   qDebug("%d %d %d %d",viewp[0],viewp[1],viewp[2],viewp[3]);  
 }
 
 void QTRenderEngine::setupDirectDraw() {

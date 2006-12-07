@@ -46,7 +46,7 @@ public:
 
 void BaseFigureQt::resizeEvent(QResizeEvent *e) {
   QWidget::resizeEvent(e);
-  qDebug() << "resize " << width() << " " << height() << "\r\n";
+  //  qDebug() << "resize " << width() << " " << height() << "\r\n";
   hfig->resizeGL(qMax(8,width()),
   		 qMax(8,height()));
 }
@@ -140,7 +140,7 @@ void HandleWindow::closeEvent(QCloseEvent* e) {
 bool HandleWindow::event(QEvent* e) {
   if (e->type() == QEvent::WindowActivate) {
     NotifyFigureActive(handle);
-    qDebug() << "focus event " << handle << "\n";
+    //    qDebug() << "focus event " << handle << "\n";
   }
   return QWidget::event(e);
 }
@@ -309,15 +309,16 @@ void HandleWindow::GetClick(int &x, int &y) {
 
 
 HandleAxis* GetContainingAxis(HandleFigure *fig, int x, int y) {
+  //  qDebug() << "Click " << x << "," << y;
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
   std::vector<unsigned> children(cp->Data());
-  qDebug() << "Click " << x << "," << y;
+  //  qDebug() << "Click " << x << "," << y;
   for (int i=0;i<children.size();i++) {
     HandleObject* hp = LookupHandleObject(children[i]);
     if (hp->IsType("axes")) {
       // Get the axis extents
       std::vector<double> position(((HandleAxis*) hp)->GetPropertyVectorAsPixels("position"));
-      qDebug() << "Axis " << position[0] << "," << position[1] << "," << position[2] << "," << position[3];
+      //      qDebug() << "Axis: " << position[0] << "," << position[1] << "," << position[2] << "," << position[3];
       if ((x >= position[0]) && (x < (position[0]+position[2])) &&
 	  (y >= position[1]) && (y < (position[1]+position[3])))
 	return (HandleAxis*)hp;
@@ -522,8 +523,8 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
 	    double xmaxfrac = (remapX(rect.x()+rect.width()) - position[0])/position[2];
 	    double yminfrac = (remapY(rect.y()+rect.height()) - position[1])/position[3];
 	    double ymaxfrac = (remapY(rect.y()) - position[1])/position[3];
-	    qDebug() << "xrange " << xminfrac << "," << xmaxfrac;
-	    qDebug() << "yrange " << yminfrac << "," << ymaxfrac;
+// 	    qDebug() << "xrange " << xminfrac << "," << xmaxfrac;
+// 	    qDebug() << "yrange " << yminfrac << "," << ymaxfrac;
 	    xminfrac = qMax(0.,qMin(1.,xminfrac));
 	    xmaxfrac = qMax(0.,qMin(1.,xmaxfrac));
 	    yminfrac = qMax(0.,qMin(1.,yminfrac));

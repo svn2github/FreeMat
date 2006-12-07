@@ -721,6 +721,18 @@ void FMEditor::dbcontinue() {
 void FMEditor::dbsetclearbp() {
   QWidget *p = tab->currentWidget();
   FMEditPane *te = qobject_cast<FMEditPane*>(p);
+//   // DEMO
+//   QList<QTextEdit::ExtraSelection> selections;
+//   QTextCursor cursor(te->getEditor()->textCursor());
+//   cursor.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+//   cursor.movePosition(QTextCursor::Down,QTextCursor::KeepAnchor);
+//   QTextCharFormat format(te->getEditor()->currentCharFormat());
+//   format.setBackground(QBrush(Qt::red));
+//   QTextEdit::ExtraSelection sel;
+//   sel.format = format;
+//   sel.cursor = cursor;
+//   selections.push_back(sel);
+//   te->getEditor()->dsetExtraSelections(selections);
   m_eval->toggleBP(te->getFileName(),te->getLineNumber());
 }
 

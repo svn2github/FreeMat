@@ -2,6 +2,7 @@
 #define __RefVec_hpp__
 
 #include <vector>
+#include <iostream>
 #include "Exception.hpp"
 using namespace std;
 
@@ -23,6 +24,9 @@ class RefVec {
   inline void Release() {
     if (p) {
       p->count--;
+      if (p->count == -1) {
+	cout << "ERROR\n";
+      }	
       if (p->count <=0) 
 	delete p;
     }

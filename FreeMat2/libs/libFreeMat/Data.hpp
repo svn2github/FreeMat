@@ -31,6 +31,9 @@
  * counting).  The Array class is declared a friend, as all the
  * methods (including the constructors) are private.
  */
+class FunctionDef;
+class Array;
+
 class Data {
   friend class Array;
 private:
@@ -68,14 +71,20 @@ private:
    * Construct a Data object with the given arguments.
    * the owner count is initialized to 1.
    */
-  Data(Class aClass, const Dimensions& dims, void *s, 
-       bool sparseflag = false, 
-       rvstring fields = rvstring(), 
-       rvstring classname = rvstring());
+  inline Data(Class aClass, const Dimensions& dims, void *s, 
+	      bool sparseflag = false, 
+	      rvstring fields = rvstring(), 
+	      rvstring classname = rvstring()) : 
+    cp(s), owners(1), dimensions(dims), dataClass(aClass) {
+    sparse = sparseflag;
+    fieldNames = fields;
+    sparse = sparseflag;
+    className = classname;
+  } 
   /**
    * The destructor.  Calls freeDataBlock member function.
    */
-  ~Data() {
+  inline ~Data() {
     freeDataBlock();
   }
 
@@ -83,7 +92,7 @@ private:
    * Get a copy to us - increments the data counter by one, and
    * returns the "this" pointer.
    */
-  Data* getCopy() {
+  inline Data* getCopy() {
     owners++;
     return this;
   }
@@ -99,10 +108,25 @@ private:
    *     is decreased by one, and a new Data object is returned
    *     with the given contents.
    */
-  Data* putData(Class aClass, const Dimensions& dims, void *s, 
-		bool sparseflag = false, 
-		rvstring fields = rvstring(),
-		rvstring classname = rvstring());
+  inline Data* putData(Class aClass, const Dimensions& dims, void *s, 
+		       bool sparseflag = false, 
+		       rvstring fields = rvstring(),
+		       rvstring classname = rvstring()) {
+    if ((owners <= 1)) {
+      freeDataBlock();
+      cp = s;
+      dataClass = aClass;
+      dimensions = dims;
+      fieldNames = fields;
+      sparse = sparseflag;
+      className = classname;
+      owners = 1;
+      return this;
+    } else {
+      owners--;
+      return new Data(aClass,dims,s,sparseflag,fields,classname);
+    }
+  }
   /**
    * Decrement the reference count (owners) by one.
    */

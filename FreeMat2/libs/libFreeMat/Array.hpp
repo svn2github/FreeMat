@@ -32,7 +32,9 @@ class Array;
 class Interpreter;
 
 //typedef std::vector<Array> ArrayVector;
+
 typedef RefVec<Array> ArrayVector;
+//class ArrayVector;
 
 ArrayVector singleArrayVector(Array);
 
@@ -99,16 +101,9 @@ private:
    */
   int32 getFieldIndex(std::string fieldName);
   /**
-   * Copy us from the source object.
-   */
-  void copyObject(const Array& copy);
-  /**
    * Delete our contents.
    */
   void deleteContents(void);
-  Data* GetDataInstance(Class type, const Dimensions& dims, void* data, bool sparse, 
-			rvstring fnames, rvstring classname);
-  void ReleaseDataInstance(Data *dp);
 public:
   /** Compute the maximum index.
    * This computes the maximum value of the array as an index (meaning
@@ -146,37 +141,78 @@ public:
   /**
    * Default constructor.
    */
-  Array();
+  inline Array() {
+    dp = NULL;
+  }
   /**
    * Copy constructor.
    */
-  Array(const Array &copy);
+  inline Array(const Array &copy) {
+    if (copy.dp) 
+      dp = copy.dp->getCopy();
+    else
+      dp = NULL;
+  }
   /**
    * Create an empty Array of the specified type.
    */
-  Array(Class type);
+  inline Array(Class type) {
+    dp = new Data(type,Dimensions(),NULL,false,rvstring(),rvstring());
+  }
   /**
    * Create an Array with the specified contents.
    */
-  Array(Class,const Dimensions& ,void*,bool sparse = false, 
-	rvstring fieldNames = rvstring(), rvstring classname = rvstring());
+  inline Array(Class type, const Dimensions& dims, void* data, bool sparse = false, 
+	       rvstring fieldNames = rvstring(), rvstring classname = rvstring()) {
+    dp = new Data(type, dims, data, sparse, fieldNames, classname);
+  }
   /**
    * Create an Array with a default allocation of space - only useful for P.O.D. arrays
    */
-  Array(Class,const Dimensions&);
+  inline Array(Class type, const Dimensions& dims) {
+    dp = new Data(type, dims, 
+		  allocateArray(type,dims.getElementCountConst()), 
+		  false, rvstring(), rvstring());
+  }
   /**
    * Destructor - free the data object.
    */
-  ~Array();
+  inline ~Array() {
+    if (dp) {
+      int m;
+      m = dp->deleteCopy();
+      if (m <= 1) 
+	delete dp;
+      dp = NULL;
+    }   
+  }
   /**
    * Assignment operator.
    */
-  void operator=(const Array &copy);
+  inline void operator=(const Array &copy) {
+    if (this == &copy) return;
+    if (dp) {
+      int m;
+      m = dp->deleteCopy();
+      if (m <= 1)
+	delete dp;
+      dp = NULL;
+    }   
+    if (copy.dp) 
+      dp = copy.dp->getCopy();
+    else
+      dp = NULL;
+  }
   /**
    * Get the reference count to our data object - useful for 
    * debug purposes.
    */
-  int getReferenceCount() const;
+  inline int getReferenceCount() const {
+    if (dp)
+      return dp->numberOfOwners();
+    else
+      return 0;
+  }
   /**
    * Get the length of the array as a vector.  This is equivalent
    * to computing length(this(:)).

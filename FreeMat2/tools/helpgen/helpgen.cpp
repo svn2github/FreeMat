@@ -632,7 +632,7 @@ void TextWriter::EndModule() {
 }
 
 void TextWriter::BeginModule(QString modname, QString moddesc, QString secname) {
-  qDebug() << "Module " << modname << " " << moddesc << " " << secname;
+  //  qDebug() << "Module " << modname << " " << moddesc << " " << secname;
   moduledepth++;
   myfile = new QFile(sourcepath+"/help/text/" + modname.toLower() + ".mdc");
   if (!myfile->open(QFile::Append)) {
@@ -835,7 +835,7 @@ QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename
 
   QString cpath(QDir::currentPath());
 
-  qDebug() << "Evaluating:\n" << cmds;
+  //  qDebug() << "Evaluating:\n" << cmds;
   Interpreter* twalk = GetInterpreter(cmds);
   twalk->start();  
   //   for (int i=0;i<cmds.size();i++)

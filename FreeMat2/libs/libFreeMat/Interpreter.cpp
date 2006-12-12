@@ -262,18 +262,25 @@ void Interpreter::RegisterGfxError(string msg) {
 }
 
 ArrayVector Interpreter::doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_out) {
+  //  qDebug() << "Start graphics call\r";
+  if (!gfx_buffer.empty())
+    qDebug() << "Warning! graphics return buffer not empty on start\r";
   gfxErrorOccured = false;
+  QMutexLocker lock(&mutex);
   emit doGraphicsCall(f,m,narg_out);
-  mutex.lock();
-  if (!gfxErrorOccured && gfx_buffer.empty())
+  if (!gfxErrorOccured && gfx_buffer.empty()) {
     gfxBufferNotEmpty.wait(&mutex);
+  } else {
+    qDebug() << "Wha??\r";
+  }
   if (gfxErrorOccured) {
-    mutex.unlock();
+    qDebug() << "Exception\r";
     throw Exception(gfxError);
   }
+  if (gfx_buffer.empty())
+    qDebug() << "Warning! graphics empty on return\r";
   ArrayVector ret(gfx_buffer.front());
   gfx_buffer.erase(gfx_buffer.begin());
-  mutex.unlock();
   return ret;
 }
 

@@ -139,12 +139,6 @@ void outputSinglePrecisionFloat(char *buf, float num) {
   buf[17] = 0;
 }
 
-inline void Array::copyObject(const Array& copy) {
-  if (copy.dp) 
-    dp = copy.dp->getCopy();
-  else
-    dp = NULL;
-}
 
 inline void Array::deleteContents(void) {
   if (dp) {
@@ -524,96 +518,6 @@ int32 Array::getFieldIndex(std::string fName) {
   return getFieldIndexFromList(fName,dp->fieldNames);
 }
 
-static int prev_Data_count = 0;
-static const int prev_Data_cache = 20;
-static Data *prev_Data[prev_Data_cache];
-
-Data* Array::GetDataInstance(Class type, const Dimensions& dims, void* data, bool sparse, 
-			     rvstring fnames, rvstring classname) {
-  if (!prev_Data_count) 
-    return new Data(type, dims, data, sparse, fnames, classname);
-  else {
-    Data *dp = prev_Data[prev_Data_count-1];
-    dp->dataClass = type;
-    dp->sparse = sparse;
-    dp->dimensions = dims;
-    dp->owners = 1;
-    dp->cp = data;
-    dp->fieldNames = fnames;
-    dp->className = classname;
-    prev_Data[prev_Data_count-1] = NULL;
-    prev_Data_count--;
-    return dp;
-  }
-  return NULL;
-}
-
-void Array::ReleaseDataInstance(Data *dp) {
-  if (prev_Data_count >= (prev_Data_cache-1))
-    delete dp;
-  else {
-    dp->freeDataBlock();
-    prev_Data[prev_Data_count] = dp;
-    prev_Data_count++;
-  }
-}
-
-Array::Array() {
-  dp = NULL;
-}
-
-/**
- * Create a variable with the specified contents.
- */
-Array::Array(Class type, const Dimensions& dims, void* data, bool sparse, 
-	     rvstring fnames, rvstring classname) {
-  dp = GetDataInstance(type, dims, data, sparse, fnames, classname);
-}
-
-Array::Array(Class type, const Dimensions& dims) {
-  dp = GetDataInstance(type, dims, 
-		       allocateArray(type,dims.getElementCountConst()), 
-		       false, rvstring(), rvstring());
-}
-
-Array::Array(Class type) {
-  dp = GetDataInstance(type,Dimensions(),NULL,false,rvstring(),rvstring());
-}
-
-/**
- * Destructor - free the data object.
- */
-Array::~Array() {
-  if (dp) {
-    int m;
-    m = dp->deleteCopy();
-    if (m <= 1) 
-      ReleaseDataInstance(dp);
-    dp = NULL;
-  }   
-}
-
-void Array::operator=(const Array &copy) {
-  if (this == &copy) return;
-  if (dp) {
-    int m;
-    m = dp->deleteCopy();
-    if (m <= 1)
-      delete dp;
-    dp = NULL;
-  }   
-  if (copy.dp) 
-    dp = copy.dp->getCopy();
-  else
-    dp = NULL;
-}
-
-int Array::getReferenceCount() const {
-  if (dp)
-    return dp->numberOfOwners();
-  else
-    return 0;
-}
 
 void Array::ensureSingleOwner() {
   if (dp->numberOfOwners() > 1) {
@@ -1594,9 +1498,6 @@ void Array::promoteType(Class dstClass) {
  * Constructors                                                                 *
  ********************************************************************************/
 
-Array::Array(const Array &copy) {
-  copyObject(copy);
-}
 
 Array Array::diagonalConstructor(Array src, int diagonalOrder)  {
   Array retval;
@@ -2878,7 +2779,8 @@ ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
 
 void Array::setValue(const Array &x) {
   if (dp && (dp->deleteCopy() <= 1))
-    ReleaseDataInstance(dp);
+    delete dp;
+  //   ReleaseDataInstance(dp);
   dp = x.dp->getCopy();
 }
 

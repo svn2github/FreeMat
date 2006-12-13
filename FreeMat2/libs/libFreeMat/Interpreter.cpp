@@ -658,7 +658,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
     }
     if (ptr->getDataClass() == FM_FUNCPTR_ARRAY &&
 	ptr->isScalar()) {
-      q.append(FunctionPointerDispatch(*ptr,t.second(),1));
+      q += FunctionPointerDispatch(*ptr,t.second(),1);
       return;
     }
     if (t.numchildren() == 1) {
@@ -699,11 +699,11 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       }
       subsindex(m);
       if (m.size() == 1)
-	q.append(r.getVectorContentsAsList(m.front()));
+	q += r.getVectorContentsAsList(m.front());
       else
-	q.append(r.getNDimContentsAsList(m));
+	q += r.getNDimContentsAsList(m);
     } else if (s.is('.')) {
-      q.append(r.getFieldAsList(s.first().text()));
+      q += r.getFieldAsList(s.first().text());
     } else if (s.is(TOK_DYN)) {
       const char *field;
       try {
@@ -712,7 +712,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       } catch (Exception &e) {
 	throw Exception("dynamic field reference to structure requires a string argument");
       }
-      q.append(r.getFieldAsList(field));
+      q += r.getFieldAsList(field);
     }
     endRef = oldEndRef;
     endCount = oldEndCount;
@@ -3107,7 +3107,7 @@ void Interpreter::functionExpression(const tree &t,
     if (outputOptional) narg_out = (narg_out == 0) ? 1 : narg_out;
     while (n.size() > narg_out)
       n.pop_back();
-    output.append(n);
+    output += n;
   } catch (Exception& e) {
     InCLI = CLIFlagsave;
     throw;

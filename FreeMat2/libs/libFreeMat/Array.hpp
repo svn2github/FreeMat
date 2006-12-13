@@ -27,18 +27,22 @@
 #include "Types.hpp"
 #include "Data.hpp"
 #include "RefVec.hpp"
+#include <QVector>
 
 class Array;
 class Interpreter;
 
 //typedef std::vector<Array> ArrayVector;
+//typedef RefVec<Array> ArrayVector;
 
-typedef RefVec<Array> ArrayVector;
+typedef QVector<Array> ArrayVector;
+typedef QVector<ArrayVector> ArrayMatrix;
+
 //class ArrayVector;
 
 ArrayVector singleArrayVector(Array);
 
-typedef std::vector<ArrayVector> ArrayMatrix;
+//typedef std::vector<ArrayVector> ArrayMatrix;
 
 class FunctionDef;
 

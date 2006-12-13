@@ -23,7 +23,7 @@
 #include "IEEEFP.hpp"
 #if HAVE_UMFPACK
 extern "C" {
-#include "ufsparse/umfpack.h"
+#include "umfpack.h"
 }
 #endif
 #include "LAPACK.hpp"
@@ -1725,7 +1725,7 @@ void TrimEmpties(ArrayMatrix &m) {
       int j=0;
       while (j<i->size()) {
 	if (i->at(j).isEmpty()) {
-	  i->erase(j);
+	  i->erase(i->begin() + j);
 	  emptiesFound = true;
 	  break;
 	} else
@@ -1808,8 +1808,8 @@ void* SparseMatrixConstructor(Class dclass, int cols,
   // the output type
   for (ArrayMatrix::iterator i=m.begin();i != m.end();i++) {
     for (int j=0;j<i->size();j++) {
-      i->at(j).promoteType(dclass);
-      i->at(j).makeSparse();
+      (*i)[j].promoteType(dclass);
+      (*i)[j].makeSparse();
     }
   }
   // Now, we can construct the output array

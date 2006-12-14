@@ -139,16 +139,6 @@ void outputSinglePrecisionFloat(char *buf, float num) {
   buf[17] = 0;
 }
 
-
-inline void Array::deleteContents(void) {
-  if (dp) {
-    int m;
-    m = dp->deleteCopy();
-    if (m <= 1)
-      delete dp;
-    dp = NULL;
-  }   
-}
   
 void* Array::allocateArray(Class type, uint32 length, rvstring names) {
   switch(type) {
@@ -236,7 +226,7 @@ void Array::toOrdinalType()  {
   if (isSparse() && dp->dataClass == FM_LOGICAL) {
     int outcount;
     uint32 *sp = SparseLogicalToOrdinal(dp->dimensions.get(0),dp->dimensions.get(1),dp->getData(),outcount);
-    dp = dp->putData(FM_UINT32,Dimensions(outcount,1),sp);
+    dp->putData(FM_UINT32,Dimensions(outcount,1),sp);
     return;
   }
   if (isSparse())
@@ -262,7 +252,7 @@ void Array::toOrdinalType()  {
       dimensions.set(1,1);
       dimensions.set(0,indexCount);
       // Change the class to an FM_UINT32.
-      dp = dp->putData(FM_UINT32,dimensions,lp);
+      dp->putData(FM_UINT32,dimensions,lp);
     }
     break;
   case FM_STRING:
@@ -290,7 +280,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_COMPLEX:
@@ -313,7 +303,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_DOUBLE:
@@ -334,7 +324,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_FLOAT:
@@ -355,7 +345,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_INT64:
@@ -371,7 +361,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT64,dp->getDimensions(),lp);
+      dp->putData(FM_UINT64,dp->getDimensions(),lp);
     }
     break;
   case FM_UINT64:
@@ -397,7 +387,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_UINT32:
@@ -423,7 +413,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_UINT16:
@@ -439,7 +429,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_INT8:
@@ -455,7 +445,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_UINT8:
@@ -471,7 +461,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp = dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->getDimensions(),lp);
     }
     break;
   case FM_CELL_ARRAY:
@@ -519,37 +509,6 @@ int32 Array::getFieldIndex(std::string fName) {
 }
 
 
-void Array::ensureSingleOwner() {
-  if (dp->numberOfOwners() > 1) {
-    if (!dp->sparse) {
-      void *np = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
-      copyElements(0,np,0,getLength());
-      dp = dp->putData(dp->dataClass,dp->dimensions,np,
-		       dp->sparse,dp->fieldNames,dp->className);
-    } else {
-      dp = dp->putData(dp->dataClass,dp->dimensions,
-		       CopySparseMatrix(dp->dataClass,
-					dp->dimensions.get(1),
-					dp->getData()),
-		       dp->sparse,dp->fieldNames,dp->className);	
-    }
-  }
-}
-
-void* Array::getReadWriteDataPointer() {
-  if (isSparse()) {
-    m_eval->warningMessage("Warning: sparse matrix converted to full for operation.");
-    makeDense();
-  }
-  ensureSingleOwner();
-  return dp->getWriteableData();
-}
-
-void Array::setDataPointer(void* rp) {
-  dp = dp->putData(dp->dataClass,dp->dimensions,rp,
-		   dp->sparse,dp->fieldNames,dp->className);
-}
-
 void Array::resize(Dimensions& a) {
   Dimensions newSize;
   // Make a copy of the current dimension vector, and
@@ -564,13 +523,13 @@ void Array::resize(Dimensions& a) {
     return;
   }
   if (isSparse()) {
-    dp = dp->putData(dp->dataClass,newSize,
-		     CopyResizeSparseMatrix(dp->dataClass,
-					    dp->dimensions.get(0),
-					    dp->dimensions.get(1),
-					    dp->getData(),
-					    newSize.get(0),
-					    newSize.get(1)),true);
+    dp->putData(dp->dataClass,newSize,
+		CopyResizeSparseMatrix(dp->dataClass,
+				       dp->dimensions.get(0),
+				       dp->dimensions.get(1),
+				       dp->getData(),
+				       newSize.get(0),
+				       newSize.get(1)),true);
     return;
   } 
   // Allocate space for our new size.
@@ -600,8 +559,8 @@ void Array::resize(Dimensions& a) {
       srcIndex += rowCount;
     }
   } 
-  dp = dp->putData(dp->dataClass,newSize,dst_data,
-		   dp->sparse,dp->fieldNames,dp->className);
+  dp->putData(dp->dataClass,newSize,dst_data,
+	      dp->sparse,dp->fieldNames,dp->className);
 }
 
 void Array::vectorResize(int max_index) {
@@ -637,15 +596,14 @@ void Array::reshape(Dimensions& a)  {
     a.simplify();
     if (a.getLength() > 2)
       throw Exception("Cannot reshape sparse matrix to an N-dimensional array - FreeMat does not support N-dimensional sparse arrays");
-    dp = dp->putData(dp->dataClass,a,
-		     ReshapeSparseMatrix(dp->dataClass,
-					 dp->dimensions.get(0),
-					 dp->dimensions.get(1),
-					 dp->getData(),
-					 a.get(0),
-					 a.get(1)),true);
+    dp->putData(dp->dataClass,a,
+		ReshapeSparseMatrix(dp->dataClass,
+				    dp->dimensions.get(0),
+				    dp->dimensions.get(1),
+				    dp->getData(),
+				    a.get(0),
+				    a.get(1)),true);
   } else {
-    ensureSingleOwner();
     dp->dimensions = a;
   }
 }
@@ -667,7 +625,7 @@ void Array::hermitian()  {
       int rows = getDimensionLength(0);
       int cols = getDimensionLength(1);
       void *qp = SparseArrayHermitian(dp->dataClass, rows, cols, dp->getData());
-      dp = dp->putData(dp->dataClass,Dimensions(cols,rows),qp,true);
+      dp->putData(dp->dataClass,Dimensions(cols,rows),qp,true);
       return;	
     }
     if (dp->dataClass == FM_COMPLEX) {
@@ -690,7 +648,7 @@ void Array::hermitian()  {
 	  qp[2*ptr+1] = -sp[2*(i + j*rowCount) + 1];
 	  ptr++;
 	}
-      dp = dp->putData(FM_COMPLEX,Dimensions(colCount,rowCount),dstPtr);
+      dp->putData(FM_COMPLEX,Dimensions(colCount,rowCount),dstPtr);
     } else {
       // Allocate space for our transposed array
       void *dstPtr = allocateArray(dp->dataClass,getLength());
@@ -711,7 +669,7 @@ void Array::hermitian()  {
 	  qp[2*ptr+1] = -sp[2*(i + j*rowCount) + 1];
 	  ptr++;
 	}
-      dp = dp->putData(FM_DCOMPLEX,Dimensions(colCount,rowCount),dstPtr);
+      dp->putData(FM_DCOMPLEX,Dimensions(colCount,rowCount),dstPtr);
     }
   }
 }
@@ -728,7 +686,7 @@ void Array::transpose()  {
     int rows = getDimensionLength(0);
     int cols = getDimensionLength(1);
     void *qp = SparseArrayTranspose(dp->dataClass, rows, cols, dp->getData());
-    dp = dp->putData(dp->dataClass,Dimensions(cols,rows),qp,true);
+    dp->putData(dp->dataClass,Dimensions(cols,rows),qp,true);
     return;
   }
   // Allocate space for our transposed array
@@ -746,7 +704,7 @@ void Array::transpose()  {
       copyElements(i+j*rowCount,dstPtr,ptr,1);
       ptr++;
     }
-  dp = dp->putData(dp->dataClass,Dimensions(colCount,rowCount),dstPtr,
+  dp->putData(dp->dataClass,Dimensions(colCount,rowCount),dstPtr,
 		   dp->sparse,dp->fieldNames,dp->className);
 }
 
@@ -1117,7 +1075,7 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
 
   if (!dp) return;
   if (isEmpty()) {
-    dp = dp->putData(dstClass,dp->dimensions,NULL,false,fNames);
+    dp->putData(dstClass,dp->dimensions,NULL,false,fNames);
     return;
   }
   // Handle the reference types.
@@ -1170,7 +1128,7 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
 	for (int j=0;j<elCount;j++)
 	  dst_rp[j*newFieldCount + newNdx] = src_rp[j*fieldCount + i];
       }
-      dp = dp->putData(dp->dataClass,dp->dimensions,dstPtr,false,fNames);
+      dp->putData(dp->dataClass,dp->dimensions,dstPtr,false,fNames);
       return;
     }
     else
@@ -1182,7 +1140,7 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
   // Do nothing for promoting to same class (no-op).
   if (dstClass == dp->dataClass) return;
   if (isSparse()) {
-    dp = dp->putData(dstClass,dp->dimensions,
+    dp->putData(dstClass,dp->dimensions,
 		     TypeConvertSparse(dp->dataClass,
 				       dp->dimensions.get(0),
 				       dp->dimensions.get(1),
@@ -1485,7 +1443,7 @@ break;
     }
     break;
   }
-  dp = dp->putData(dstClass,dp->dimensions,dstPtr);
+  dp->putData(dstClass,dp->dimensions,dstPtr);
 }
 
 #undef caseMacro
@@ -2778,10 +2736,7 @@ ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
  ********************************************************************************/
 
 void Array::setValue(const Array &x) {
-  if (dp && (dp->deleteCopy() <= 1))
-    delete dp;
-  //   ReleaseDataInstance(dp);
-  dp = x.dp->getCopy();
+  dp = x.dp;
 }
 
 /**
@@ -2812,7 +2767,7 @@ void Array::setVectorSubset(Array& index, Array& data) {
 	myDims = data.getDimensions();
       if (myDims.getElementCount() != data.getLength())
 	throw Exception("assignment A(:) = B requires A and B to be the same size");
-      dp = data.dp->getCopy();
+      dp = data.dp;
       reshape(myDims);
       return;
     }
@@ -2870,7 +2825,7 @@ void Array::setVectorSubset(Array& index, Array& data) {
 				      index.getDimensionLength(1),
 				      data.getDataPointer(),
 				      advance);
-    dp = dp->putData(dp->dataClass,Dimensions(rows,cols),qp,true);
+    dp->putData(dp->dataClass,Dimensions(rows,cols),qp,true);
     return;
   }
   vectorResize(max_index);
@@ -3248,7 +3203,7 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
     promoteType(FM_STRUCT_ARRAY,names);
     Dimensions a(1,1);
     resize(a);
-    //       dp = dp->putData(FM_STRUCT_ARRAY,dp->getDimensions(),NULL,names);
+    //       dp->putData(FM_STRUCT_ARRAY,dp->getDimensions(),NULL,names);
     //       return;
   }
   if (dp->dataClass != FM_STRUCT_ARRAY)
@@ -3281,7 +3236,7 @@ int Array::insertFieldName(std::string fieldName) {
   int fN = names.size();
   for (int i=0;i<fN-1;i++)
     rp[i] = qp[i];
-  dp = dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,
+  dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,
 		   dp->className);
   return (fN-1);
 }
@@ -3299,7 +3254,7 @@ void Array::deleteVectorSubset(Array& arg) {
   try {
     // First convert arg to an ordinal type.
     if (isColonOperator(arg)) {
-      dp = dp->putData(dp->dataClass,Dimensions(0,0),NULL,false,dp->fieldNames,dp->className);
+      dp->putData(dp->dataClass,Dimensions(0,0),NULL,false,dp->fieldNames,dp->className);
       return;
     }
     arg.toOrdinalType();
@@ -3311,7 +3266,7 @@ void Array::deleteVectorSubset(Array& arg) {
 						(const indexType *)
 						arg.getDataPointer(),
 						arg.getLength());
-      dp = dp->putData(dp->dataClass,Dimensions(rows,cols),cp,true);
+      dp->putData(dp->dataClass,Dimensions(rows,cols),cp,true);
       return;
     }
     // Next, build a deletion map.
@@ -3347,7 +3302,7 @@ void Array::deleteVectorSubset(Array& arg) {
     } else {
       newDim = Dimensions(1,newSize);
     }
-    dp = dp->putData(dp->dataClass,newDim,qp,dp->sparse,
+    dp->putData(dp->dataClass,newDim,qp,dp->sparse,
 		     dp->fieldNames,dp->className);
   } catch (Exception &e) {
     Free(qp);
@@ -3366,8 +3321,7 @@ void Array::makeSparse() {
   if (isSparse()) return;
   if ((dp->dataClass != FM_LOGICAL) && (dp->dataClass < FM_INT32))
     promoteType(FM_INT32);
-  ensureSingleOwner();
-  dp = dp->putData(dp->dataClass,dp->dimensions,
+  dp->putData(dp->dataClass,dp->dimensions,
 		   makeSparseArray(dp->dataClass,
 				   dp->dimensions.get(0),
 				   dp->dimensions.get(1),
@@ -3395,8 +3349,7 @@ void Array::makeDense() {
     dp->sparse = false;
     return;
   }
-  ensureSingleOwner();
-  dp = dp->putData(dp->dataClass,dp->dimensions,
+  dp->putData(dp->dataClass,dp->dimensions,
 		   makeDenseArray(dp->dataClass,
 				  dp->dimensions.get(0),
 				  dp->dimensions.get(1),
@@ -3504,11 +3457,11 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
 	int rows = getDimensionLength(0);
 	int cols = getDimensionLength(1);
 	if (singletonDimension == 0)
-	  dp = dp->putData(dp->dataClass,retDims,
+	  dp->putData(dp->dataClass,retDims,
 			   DeleteSparseMatrixRows(dp->dataClass,rows,cols,
 						  dp->getData(),deletionMap),true);
 	else if (singletonDimension == 1)
-	  dp = dp->putData(dp->dataClass,retDims,
+	  dp->putData(dp->dataClass,retDims,
 			   DeleteSparseMatrixCols(dp->dataClass,cols,
 						  dp->getData(),deletionMap),true);
 	else
@@ -3544,11 +3497,11 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
       }
       Free(deletionMap);
       retDims.simplify();
-      dp = dp->putData(dp->dataClass,retDims,cp,dp->sparse,
+      dp->putData(dp->dataClass,retDims,cp,dp->sparse,
 		       dp->fieldNames,dp->className);
     } else {
       Dimensions newDims;
-      dp = dp->putData(dp->dataClass,newDims,NULL,false,dp->fieldNames,
+      dp->putData(dp->dataClass,newDims,NULL,false,dp->fieldNames,
 		       dp->className);
     }
   } catch (Exception &e) {

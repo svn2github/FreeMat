@@ -60,4 +60,41 @@ typedef enum {
 typedef std::vector<std::string> stringVector;
 typedef RefVec<std::string> rvstring;
 
+inline size_t ByteSize(Class t) {
+  switch(t) {
+  case FM_CELL_ARRAY:
+    return sizeof(void*);
+  case FM_STRUCT_ARRAY:
+    return sizeof(void*);
+  case FM_LOGICAL:
+    return sizeof(logical);
+  case   FM_UINT8:
+    return sizeof(uint8);
+  case   FM_INT8:
+    return sizeof(int8);
+  case   FM_UINT16:
+    return sizeof(uint16);
+  case   FM_INT16:
+    return sizeof(int16);
+  case   FM_UINT32:
+    return sizeof(uint32);
+  case   FM_INT32:
+    return sizeof(int32);
+  case   FM_UINT64:
+    return sizeof(uint64);
+  case   FM_INT64:
+    return sizeof(int64);
+  case   FM_FLOAT:
+    return sizeof(float);
+  case   FM_DOUBLE:
+    return sizeof(double);
+  case   FM_COMPLEX:
+    return sizeof(float)*2;
+  case   FM_DCOMPLEX:
+    return sizeof(double)*2;
+  case   FM_STRING:
+    return sizeof(char);
+  }
+}
+
 #endif

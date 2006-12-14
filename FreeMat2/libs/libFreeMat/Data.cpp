@@ -20,18 +20,42 @@
 #include "Data.hpp"
 #include "Malloc.hpp"
 #include "Sparse.hpp"
+#include <QDebug>
 
-void Data::freeDataBlock() {
+void * Data::copyDataBlock(void *dp) {
+  qDebug() << "Copy!\n";
+  if (dataClass == FM_FUNCPTR_ARRAY) {
+    FunctionDef **cp = new FunctionDef*[dimensions.getElementCount()];
+    for (int i=0;i<dimensions.getElementCount();i++)
+      cp[i] = ((FunctionDef**) dp)[i];
+    return (void*)cp;
+  } else if (dataClass == FM_CELL_ARRAY) {
+    Array *cp = new Array[dimensions.getElementCount()];
+    for (int i=0;i<dimensions.getElementCount();i++)
+      cp[i] = ((Array*)dp)[i];
+    return (void*)cp;
+  } else if (dataClass == FM_STRUCT_ARRAY) {
+    Array *cp = new Array[dimensions.getElementCount()];
+    for (int i=0;i<dimensions.getElementCount()*fieldNames.size();i++)
+      cp[i] = ((Array*)dp)[i];
+    return (void*)cp;
+  } else {
+    void *cp = Malloc(dimensions.getElementCount()*ByteSize(dataClass));
+    memcpy(cp,dp,dimensions.getElementCount()*ByteSize(dataClass));
+    return cp;
+  }
+}
+
+void Data::FreeData() {
   if (cp) {
-    if (dataClass == FM_FUNCPTR_ARRAY) {
-      FunctionDef **dp = (FunctionDef**) cp;
-      delete[] dp;
-    } else if (Array::isDataClassReferenceType(dataClass)) {
-      Array* rp = (Array*) cp;
-      delete[] rp;
-    } else if (sparse) {
+    if (dataClass == FM_FUNCPTR_ARRAY)
+      delete[] ((FunctionDef**) cp);
+    else if ((dataClass == FM_CELL_ARRAY) ||
+	     (dataClass == FM_STRUCT_ARRAY))
+      delete[] ((Array*) cp);
+    else if (sparse)
       DeleteSparseMatrix(dataClass,dimensions.get(1),cp);
-    } else 
+    else
       Free(cp);
   }
 }

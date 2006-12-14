@@ -41,38 +41,6 @@ static char msgBuffer[MSGBUFLEN];
 //quantities from Data to Dimensions.  And to have Dimensions be
 //responsible for cacheing the quantities of interest.
 
-Dimensions::Dimensions() {
-  length = 0;
-  m_cache_getElementCount = 0;
-  m_cache_isScalar = false;
-  m_cache_getRows = 0;
-  m_cache_getColumns = 0;
-  m_cache_is2D = true;
-  m_cache_isVector = true;
-  m_cache_valid = true;
-}
-
-Dimensions::Dimensions(int rows, int cols) {
-  data[0] = rows;
-  data[1] = cols;
-  length = 2;
-  m_cache_getElementCount = rows*cols;
-  m_cache_isScalar = ((rows==1)&&(cols==1));
-  m_cache_getRows = rows;
-  m_cache_getColumns = cols;
-  m_cache_is2D = true;
-  m_cache_isVector = ((rows==1)||(cols==1));
-  m_cache_valid = true;
-}
-
-Dimensions::Dimensions(int dimCount) {
-  if (dimCount < 0) 
-    throw Exception("Illegal argument to Dimensions constructor");
-  memset(data, 0, sizeof(int)*dimCount);
-  length = dimCount;
-  m_cache_valid = false;
-}
-
 int Dimensions::getMax() {
   int maxL;
   maxL = 0;
@@ -105,22 +73,7 @@ void Dimensions::updateCacheVariables() {
   
   m_cache_isVector = (m_cache_getRows==m_cache_getElementCount) ||
     (m_cache_getColumns == m_cache_getElementCount);
-  m_cache_valid = true;
 }
-
-
-int Dimensions::getElementCountConst() const {
-  int retval = 0;
-  if (length == 0) 
-    retval = 0;
-  else {
-    retval = 1;
-    for (int i=0;i<length;i++)
-      retval *= data[i];
-  }
-  return retval;
-}
-
 
 void Dimensions::setDimensionLength(int dim, int len) {
   if (dim >= maxDims )
@@ -132,10 +85,10 @@ void Dimensions::setDimensionLength(int dim, int len) {
     length = new_length;
   }
   data[dim] = len;
-  m_cache_valid = false;
+  updateCacheVariables();
 }
 
-int Dimensions::mapPoint(const Dimensions& point) {
+int Dimensions::mapPoint(const Dimensions& point) const {
   int retval;
   int nextCoeff;
   int testableDims;
@@ -206,11 +159,7 @@ void Dimensions::incrementModulo(const Dimensions& limit, int ordinal) {
       data[n] = 0;
       data[n+1]++;
     }
-  m_cache_valid = false;
-}
-
-bool Dimensions::inside(const Dimensions& limit) {
-  return (data[length-1] < limit.data[length-1]);
+  updateCacheVariables();
 }
 
 void Dimensions::simplify() {
@@ -219,10 +168,10 @@ void Dimensions::simplify() {
   int i = length-1;
   while (i>1 && data[i] == 1) i--;
   length = i+1;
-  m_cache_valid = false;
+  updateCacheVariables();
 }
 
-bool Dimensions::equals(const Dimensions &alt) {
+bool Dimensions::equals(const Dimensions &alt) const {
   bool retval;
   retval = (length == alt.length);
   for (int i=0;i<length;i++)
@@ -262,13 +211,13 @@ void Dimensions::printMe(Interpreter* eval) const {
 void Dimensions::reset() {
   length = 0;
   memset(data, 0, sizeof(int)*maxDims);
-  m_cache_valid = false;
+  updateCacheVariables();
 }
 
 void Dimensions::zeroOut() {
   for (int i=0;i<length;i++)
     data[i] = 0;
-  m_cache_valid = false;
+  updateCacheVariables();
 }
 
 void Dimensions::makeScalar() {
@@ -276,20 +225,6 @@ void Dimensions::makeScalar() {
   length = 2;
   data[0] = 1;
   data[1] = 1;
-  m_cache_valid = false;
+  updateCacheVariables();
 }
 
-bool Dimensions::isScalar() {
-  if (!m_cache_valid) updateCacheVariables();
-  return m_cache_isScalar;
-}
-
-bool Dimensions::isVector() {
-  if (!m_cache_valid) updateCacheVariables();
-  return m_cache_isVector;
-}
-
-bool Dimensions::is2D() {
-  if (!m_cache_valid) updateCacheVariables();
-  return m_cache_is2D;
-}

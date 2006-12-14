@@ -51,7 +51,6 @@ private:
   /**
    * Cache values for frequently called functions.
    */
-  bool m_cache_valid;
   int m_cache_getElementCount;
   bool m_cache_isScalar;
   int m_cache_getRows;
@@ -62,18 +61,42 @@ public:
   /**
    * The default constructor - length is set to zero.
    */
-  Dimensions();
+  inline Dimensions() {
+    length = 0;
+    m_cache_getElementCount = 0;
+    m_cache_isScalar = false;
+    m_cache_getRows = 0;
+    m_cache_getColumns = 0;
+    m_cache_is2D = true;
+    m_cache_isVector = true;
+  }
   /**
    * Initialize the object with the given number of dimensions 
    * and all contents set to zero.
    * Throws an Exception if the dimension count is negative.
    */
-  Dimensions(int dimCount);
+  inline Dimensions(int dimCount) {
+    if (dimCount < 0) 
+      throw Exception("Illegal argument to Dimensions constructor");
+    memset(data, 0, sizeof(int)*dimCount);
+    length = dimCount;
+    updateCacheVariables();
+  }
   /**
    * Return a 2-D dimension object with the specified number of
    * rows and columns.
    */
-  Dimensions(int nrows, int ncols);
+  inline Dimensions(int rows, int cols) {
+    data[0] = rows;
+    data[1] = cols;
+    length = 2;
+    m_cache_getElementCount = rows*cols;
+    m_cache_isScalar = ((rows==1)&&(cols==1));
+    m_cache_getRows = rows;
+    m_cache_getColumns = cols;
+    m_cache_is2D = true;
+    m_cache_isVector = ((rows==1)||(cols==1));
+  }
   /**
    * Return a reference to the ith dimension.  This member function
    * will adjust the number of dimensions present if the argument
@@ -104,12 +127,9 @@ public:
    * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
    * of length, and $$a_i$$ is equivalent to data[i].
    */
-  inline int getElementCount() {
-    if (!m_cache_valid) updateCacheVariables();
+  inline int getElementCount() const {
     return m_cache_getElementCount;
   }
-
-  int getElementCountConst() const;
   /**
    * Map the given point using the current Dimensions.  If the argument
    * values are denoted as $$b_i$$, and our dimensions are $$a_i$$, then
@@ -119,21 +139,19 @@ public:
    *   - any of the arguments are outside the valid range, i.e., 
    *     $$b_i < 0$$ or $$b_i >= a_i$$.
    */
-  int mapPoint(const Dimensions& point);
+  int mapPoint(const Dimensions& point) const;
   /**
    * Returns the first dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  inline int getRows() {
-    if (!m_cache_valid) updateCacheVariables();
+  inline int getRows() const {
     return m_cache_getRows;    
   }
   /**
    * Returns the second dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  inline int getColumns() {
-    if (!m_cache_valid) updateCacheVariables();
+  inline int getColumns() const {
     return m_cache_getColumns;
   }
   /**
@@ -188,11 +206,13 @@ public:
    * Returns comparison of $$a_n < b_n$$, where $$n$$ is the maximum defined
    * dimension in $$a$$ (this object), and $$b$$ is the given argument.
    */
-  bool inside(const Dimensions& limit);
+  inline bool inside(const Dimensions& limit) const {
+    return (data[length-1] < limit.data[length-1]);
+  }
   /**
    * Returns true if we match the argument (exactly).
    */
-  bool equals(const Dimensions& alt);
+  bool equals(const Dimensions& alt) const;
   /**
    * This member function trims any excess singleton (length 1) dimensions
    * from our data array after the second dimension.  Thus, the dimension
@@ -229,16 +249,22 @@ public:
   /**
    * Returns true if and only if we are equal to $$[1,1]$$.
    */
-  bool isScalar();
+  inline bool isScalar() const {
+    return m_cache_isScalar;
+  }
   /**
    * Returns true if and only if we are equal to $$[1,n]$$ or $$[n,1]$$ for
    * some value of $$n$$.
    */
-  bool isVector();
+  inline bool isVector() const {
+    return m_cache_isVector;
+  }
   /**
    * Returns true if we have exactly 2 dimensions allocated.
    */
-  bool is2D();
+  inline bool is2D() const {
+    return m_cache_is2D;
+  }
 };
 
 #endif

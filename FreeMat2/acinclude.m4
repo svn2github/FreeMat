@@ -288,15 +288,23 @@ need_extern="no"
 LIBS="$LIBS $FLIBS"
 
 AC_CHECK_LIB(avcall,__structcpy,found_avcall="yes",found_avcall="no")
+AC_CHECK_HEADER(avcall.h,found_avcall="yes",found_avcall="no")
+
 if test x"$found_avcall" == xyes; then
-	LIBS="-lavcall $LIBS"
-	AC_DEFINE(HAVE_AVCALL, 1, [Set to 1 if you have libavcall])
+  LIBS="-lavcall $LIBS"
+  AC_DEFINE(HAVE_AVCALL, 1, [Set to 1 if you have libavcall])
 fi    
+
 AC_CHECK_LIB(amd,amd_postorder,found_amd="yes",found_amd="no")
+AC_CHECK_HEADER(amd.h,[],found_amd="no")
+
 if test x"$found_amd" == xyes; then
   LIBS="-lamd $LIBS"
 fi
+
 AC_CHECK_LIB(umfpack,umfpack_zl_solve,found_umfpack="yes",found_umfpack="no")
+AC_CHECK_HEADER(umfpack.h,[],found_umfpack="no")
+
 if test x"$found_umfpack" == xyes; then
   LIBS="-lumfpack $LIBS"
 fi
@@ -307,15 +315,19 @@ if test x"$found_amd" == xyes; then
 fi
 
 AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
+AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
+AC_CHECK_HEADER(fftw3.h,[],[found_fftw3="no";found_fftw3f="no"])
+
 if test x"$found_fftw3f" == xyes; then
 	LIBS="-lfftw3f $LIBS"
 	AC_DEFINE(HAVE_FFTWF, 1, [Set to 1 if you have the single precision version of FFTW installed])
 fi
-AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
+
 if test x"$found_fftw3" == xyes; then
 	LIBS="-lfftw3 $LIBS"
   	AC_DEFINE(HAVE_FFTW, 1, [Set to 1 if you have the double precision version of FFTW installed])
 fi
+
 if test x"$is_osx" == xyes; then
    LIBS="$LIBS -framework vecLib"
    found_blas="yes"

@@ -28,6 +28,7 @@
 #include "Data.hpp"
 #include "RefVec.hpp"
 #include <QVector>
+#include <QSharedDataPointer>
 
 class Array;
 class Interpreter;
@@ -83,7 +84,7 @@ private:
    * different Array objects.  It is essentially the memory block
    * directly associated with this data object.
    */
-  Data* dp;
+  QSharedDataPointer<Data> dp;
   /**
    * Add another fieldname to our structure array.
    */
@@ -104,10 +105,6 @@ private:
    * argument is not found, a value of -1 is returned.
    */
   int32 getFieldIndex(std::string fieldName);
-  /**
-   * Delete our contents.
-   */
-  void deleteContents(void);
 public:
   /** Compute the maximum index.
    * This computes the maximum value of the array as an index (meaning
@@ -138,24 +135,10 @@ public:
    */
   void toOrdinalType();
   /**
-   * Ensure we have at most one owner for our data - allows us to modify the
-   * data without affecting other arrays.
-   */
-  void ensureSingleOwner();
-  /**
    * Default constructor.
    */
   inline Array() {
     dp = NULL;
-  }
-  /**
-   * Copy constructor.
-   */
-  inline Array(const Array &copy) {
-    if (copy.dp) 
-      dp = copy.dp->getCopy();
-    else
-      dp = NULL;
   }
   /**
    * Create an empty Array of the specified type.
@@ -175,47 +158,8 @@ public:
    */
   inline Array(Class type, const Dimensions& dims) {
     dp = new Data(type, dims, 
-		  allocateArray(type,dims.getElementCountConst()), 
+		  allocateArray(type,dims.getElementCount()), 
 		  false, rvstring(), rvstring());
-  }
-  /**
-   * Destructor - free the data object.
-   */
-  inline ~Array() {
-    if (dp) {
-      int m;
-      m = dp->deleteCopy();
-      if (m <= 1) 
-	delete dp;
-      dp = NULL;
-    }   
-  }
-  /**
-   * Assignment operator.
-   */
-  inline void operator=(const Array &copy) {
-    if (this == &copy) return;
-    if (dp) {
-      int m;
-      m = dp->deleteCopy();
-      if (m <= 1)
-	delete dp;
-      dp = NULL;
-    }   
-    if (copy.dp) 
-      dp = copy.dp->getCopy();
-    else
-      dp = NULL;
-  }
-  /**
-   * Get the reference count to our data object - useful for 
-   * debug purposes.
-   */
-  inline int getReferenceCount() const {
-    if (dp)
-      return dp->numberOfOwners();
-    else
-      return 0;
   }
   /**
    * Get the length of the array as a vector.  This is equivalent
@@ -251,7 +195,6 @@ public:
   inline void setClassName(rvstring cname) {
     if (getDataClass() != FM_STRUCT_ARRAY)
       throw Exception("cannot set class name for non-struct array");
-    ensureSingleOwner();
     dp->className = cname;
   }
   /**
@@ -318,7 +261,12 @@ public:
    *      a non-const pointer to the data
    *   - If there is more than one owner, copy our data.
    */
-  void* getReadWriteDataPointer();
+  inline void* getReadWriteDataPointer() {
+    if (isSparse()) {
+      makeDense();
+    }
+    return dp->getWriteableData();
+  }
   /** Set the contents of our data block to the supplied pointer.
    * Set the contents of our data block to the supplied pointer.
    * Ownership of the data block is passed to the array, i.e., the
@@ -329,7 +277,10 @@ public:
    * That means that the caller is _not_ responsible for freeing
    * the memory block.
    */
-  void setDataPointer(void*);
+  inline void setDataPointer(void* rp) {
+    dp->putData(dp->dataClass,dp->dimensions,rp,
+		dp->sparse,dp->fieldNames,dp->className);
+  }
   /** Resize an array.
    * Resize the array to a new set of dimensions.  This resize operation
    * puts the contents of the array at the (0,...,0) corner of the new

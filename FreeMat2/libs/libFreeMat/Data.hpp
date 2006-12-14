@@ -22,6 +22,7 @@
 
 #include "Types.hpp"
 #include "Dimensions.hpp"
+#include <QSharedData>
 
 /**
  * This is a helper class that is used by the Array class to 
@@ -34,9 +35,8 @@
 class FunctionDef;
 class Array;
 
-class Data {
-  friend class Array;
-private:
+class Data : public QSharedData {
+public:
   /**
    * The Class of the data block.  Useful for determining how the data
    * block must be treated.
@@ -50,10 +50,6 @@ private:
    * Pointer to the data block.
    */
   void *cp;
-  /**
-   * Number of owners for the data block.
-   */
-  int owners;
   /**
    * The dimensions of the data block.
    */
@@ -75,26 +71,27 @@ private:
 	      bool sparseflag = false, 
 	      rvstring fields = rvstring(), 
 	      rvstring classname = rvstring()) : 
-    cp(s), owners(1), dimensions(dims), dataClass(aClass) {
+    cp(s), dimensions(dims), dataClass(aClass) {
     sparse = sparseflag;
     fieldNames = fields;
     sparse = sparseflag;
     className = classname;
   } 
+  inline Data(const Data& copy) :
+    dataClass(copy.dataClass),
+    dimensions(copy.dimensions),
+    sparse(copy.sparse),
+    fieldNames(copy.fieldNames),
+    className(copy.className) {
+    cp = copyDataBlock(copy.cp);
+  }
+  void* copyDataBlock(void *dp);
+  void FreeData();
   /**
    * The destructor.  Calls freeDataBlock member function.
    */
   inline ~Data() {
-    freeDataBlock();
-  }
-
-  /**
-   * Get a copy to us - increments the data counter by one, and
-   * returns the "this" pointer.
-   */
-  inline Data* getCopy() {
-    owners++;
-    return this;
+    FreeData();
   }
   /**
    * Change the contents of the Data object.  The data pointer,
@@ -108,29 +105,18 @@ private:
    *     is decreased by one, and a new Data object is returned
    *     with the given contents.
    */
-  inline Data* putData(Class aClass, const Dimensions& dims, void *s, 
-		       bool sparseflag = false, 
-		       rvstring fields = rvstring(),
-		       rvstring classname = rvstring()) {
-    if ((owners <= 1)) {
-      freeDataBlock();
-      cp = s;
-      dataClass = aClass;
-      dimensions = dims;
-      fieldNames = fields;
-      sparse = sparseflag;
-      className = classname;
-      owners = 1;
-      return this;
-    } else {
-      owners--;
-      return new Data(aClass,dims,s,sparseflag,fields,classname);
-    }
+  inline void putData(Class aClass, const Dimensions& dims, void *s, 
+		      bool sparseflag = false, 
+		      rvstring fields = rvstring(),
+		      rvstring classname = rvstring()) {
+    FreeData();
+    cp = s;
+    dataClass = aClass;
+    dimensions = dims;
+    fieldNames = fields;
+    sparse = sparseflag;
+    className = classname;
   }
-  /**
-   * Decrement the reference count (owners) by one.
-   */
-  inline int deleteCopy() {return owners--;}
   /**
    * Get a read-only pointer to the data.
    */
@@ -163,18 +149,6 @@ private:
    * Get a read-write pointer to the data. 
    */
   inline void* getWriteableData() {return cp;}
-  /**
-   * Get the number of owners.
-   */
-  inline int numberOfOwners() const {return owners;}
-  /**
-   * If the data pointer is non-null, we take one of
-   * the following options:
-   *   - For reference types, a deep delete is performed
-   *   - For non-reference types, the data block is 
-   *     simply freed.
-   */
-  void freeDataBlock();
   /**
    * Check sparsity.
    */

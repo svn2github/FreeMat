@@ -278,7 +278,6 @@ ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("Need one argument to full function");
   Array r(arg[0]);
-  r.ensureSingleOwner();
   r.makeDense();
   return singleArrayVector(r);
 }

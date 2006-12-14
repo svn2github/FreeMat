@@ -661,7 +661,7 @@ ArrayVector RandMultiFunction(int nargout, const ArrayVector& arg) {
   arg2.promoteType(FM_FLOAT);
   // Verify the correctness of the probability argument
   float *dp;
-  dp = (float*) arg2.getDataPointer();
+  dp = (float*) arg2.getReadWriteDataPointer();
   float Psum = 0.0;
   int i;
   for (i=0;i<arg2.getLength();i++) {
@@ -669,8 +669,9 @@ ArrayVector RandMultiFunction(int nargout, const ArrayVector& arg) {
       throw Exception("probabiliy vector argument to randmulti must have all elements between 0 and 1");
     Psum += dp[i];
   }
-  if (Psum > 1.00000F)
-    throw Exception("sum of probabilities (effectively) greater than 1");
+  for (i=0;i<arg2.getLength();i++) {
+    dp[i] /= Psum;
+  }
   Dimensions outDims;
   outDims = arg2.getDimensions();
   int32 *ip = (int32*) Malloc(sizeof(int32)*arg2.getLength());

@@ -23,7 +23,7 @@
 #include <QDebug>
 
 void * Data::copyDataBlock(void *dp) {
-  qDebug() << "Copy!\n";
+  //  qDebug() << "Copy!\n";
   if (dataClass == FM_FUNCPTR_ARRAY) {
     FunctionDef **cp = new FunctionDef*[dimensions.getElementCount()];
     for (int i=0;i<dimensions.getElementCount();i++)
@@ -35,14 +35,19 @@ void * Data::copyDataBlock(void *dp) {
       cp[i] = ((Array*)dp)[i];
     return (void*)cp;
   } else if (dataClass == FM_STRUCT_ARRAY) {
-    Array *cp = new Array[dimensions.getElementCount()];
-    for (int i=0;i<dimensions.getElementCount()*fieldNames.size();i++)
+    int count = dimensions.getElementCount()*fieldNames.size();
+    Array *cp = new Array[count];
+    for (int i=0;i<count;i++)
       cp[i] = ((Array*)dp)[i];
     return (void*)cp;
   } else {
-    void *cp = Malloc(dimensions.getElementCount()*ByteSize(dataClass));
-    memcpy(cp,dp,dimensions.getElementCount()*ByteSize(dataClass));
-    return cp;
+    if (sparse) {
+      return CopySparseMatrix(dataClass,dimensions.get(1),dp);
+    } else {
+      void *cp = Malloc(dimensions.getElementCount()*ByteSize(dataClass));
+      memcpy(cp,dp,dimensions.getElementCount()*ByteSize(dataClass));
+      return cp;
+    }
   }
 }
 

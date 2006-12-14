@@ -167,7 +167,7 @@ public:
    */
   inline int getLength() const {
     if (dp)
-      return dp->dimensions.getElementCount();
+      return dp->getDimensions().getElementCount();
     else
       return 0;
   }

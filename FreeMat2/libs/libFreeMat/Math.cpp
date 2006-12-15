@@ -709,8 +709,8 @@ inline void CheckNumeric(Array &A, Array &B, std::string opname) throw(Exception
 void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
   Class Aclass, Bclass, Cclass;
 
-  Aclass = A.getDataClass();
-  Bclass = B.getDataClass();
+  Aclass = A.dataClass();
+  Bclass = B.dataClass();
   
   if (Aclass == FM_STRING) Aclass = FM_INT32;
   if (Bclass == FM_STRING) Bclass = FM_INT32;
@@ -792,7 +792,7 @@ inline void VectorCheck(Array& A, Array& B, bool promote, std::string opname) th
   // Check for numeric types
   CheckNumeric(A,B,opname);
   
-  if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
+  if (!(SameSizeCheck(A.dimensions(),B.dimensions()) || A.isScalar() || B.isScalar()))
     throw Exception(std::string("Size mismatch on arguments to arithmetic operator ") + opname);
   
   // Test the types.
@@ -810,7 +810,7 @@ inline void BoolVectorCheck(Array& A, Array& B,std::string opname) throw(Excepti
   A.promoteType(FM_LOGICAL);
   B.promoteType(FM_LOGICAL);
 
-  if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
+  if (!(SameSizeCheck(A.dimensions(),B.dimensions()) || A.isScalar() || B.isScalar()))
     throw Exception(std::string("Size mismatch on arguments to ") + opname);
 }
 
@@ -827,26 +827,26 @@ inline Array doPowerAssist(Array A, Class AClass,
 
   // S^F, F^S, S^S are all done via full intermediate products
   // Only S^scalar is done using a sparse algorithm
-  if (B.isScalar() && A.isSparse())
+  if (B.isScalar() && A.sparse())
     return SparsePowerFunc(A,B);
   A.makeDense();
   B.makeDense();
 
   if (A.isScalar()) {
     int Blen(B.getLength());
-    C = Array(CClass,B.getDimensions(),NULL);
+    C = Array(CClass,B.dimensions(),NULL);
     void *Cp = Malloc(Blen*C.getElementSize());
     exec(Blen,Cp,A.getDataPointer(),0,B.getDataPointer(),1);
     C.setDataPointer(Cp);
   } else if (B.isScalar()) {
     int Alen(A.getLength());
-    C = Array(CClass,A.getDimensions(),NULL);
+    C = Array(CClass,A.dimensions(),NULL);
     void *Cp = Malloc(Alen*C.getElementSize());
     exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),0);
     C.setDataPointer(Cp);
   } else {
     int Alen(A.getLength());
-    C = Array(CClass,A.getDimensions(),NULL);
+    C = Array(CClass,A.dimensions(),NULL);
     void *Cp = Malloc(Alen*C.getElementSize());
     exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),1);
     C.setDataPointer(Cp);
@@ -864,12 +864,12 @@ Array InvertMatrix(Array a) {
   if (a.isScalar())
     return DotPower(a,Array::floatConstructor(-1));
   int N(a.getDimensionLength(0));
-  if (a.isSparse()) {
+  if (a.sparse()) {
     uint32 *I = (uint32*) Malloc(sizeof(uint32)*N);
     for (int k=0;k<N;k++)
       I[k] = k+1;
     float v = 1.0f;
-    Array B(FM_FLOAT,a.getDimensions(),
+    Array B(FM_FLOAT,a.dimensions(),
 	    makeSparseFromIJV(FM_FLOAT,N,N,N,I,1,I,1,&v,0),true);
     Free(I);
     Array c(LeftDivide(a,B));
@@ -907,10 +907,10 @@ Array MatrixPowerSparse(Array a, Array b) {
     power = -power;
   }
   if (power == 0) {
-    Array r(FM_FLOAT,a.getDimensions(),
-	    SparseOnesFunc(a.getDataClass(),a.getDimensionLength(0),a.getDimensionLength(1),
+    Array r(FM_FLOAT,a.dimensions(),
+	    SparseOnesFunc(a.dataClass(),a.getDimensionLength(0),a.getDimensionLength(1),
 			   a.getSparseDataPointer()),true);
-    r.promoteType(a.getDataClass());
+    r.promoteType(a.dataClass());
     return r;
   }
   Array c(a);
@@ -991,11 +991,11 @@ inline Array DoPowerTwoArgFunction(Array A, Array B) throw(Exception){
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
   CheckNumeric(A,B,"^");
-  if (!(SameSizeCheck(A.getDimensions(),B.getDimensions()) || A.isScalar() || B.isScalar()))
+  if (!(SameSizeCheck(A.dimensions(),B.dimensions()) || A.isScalar() || B.isScalar()))
     throw Exception("Size mismatch on arguments to power (^) operator.");
   // If A is not at least a float type, promote it to double
-  AClass = A.getDataClass();
-  BClass = B.getDataClass();
+  AClass = A.dataClass();
+  BClass = B.dataClass();
   if (AClass < FM_FLOAT) AClass = FM_DOUBLE;
   if (BClass < FM_INT32) BClass = FM_INT32;
   // Get a read on if A is positive
@@ -1082,19 +1082,19 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
   BoolVectorCheck(A,B,opname);
   if (A.isScalar()) {
     int Blen(B.getLength());
-    C = Array(FM_LOGICAL,B.getDimensions(),NULL);
+    C = Array(FM_LOGICAL,B.dimensions(),NULL);
     void *Cp = Malloc(Blen*C.getElementSize());
     exec(Blen,Cp,A.getDataPointer(),0,B.getDataPointer(),1);
     C.setDataPointer(Cp);
   } else if (B.isScalar()) {
     int Alen(A.getLength());
-    C = Array(FM_LOGICAL,A.getDimensions(),NULL);
+    C = Array(FM_LOGICAL,A.dimensions(),NULL);
     void *Cp = Malloc(Alen*C.getElementSize());
     exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),0);
     C.setDataPointer(Cp);
   } else {
     int Alen(A.getLength());
-    C = Array(FM_LOGICAL,A.getDimensions(),NULL);
+    C = Array(FM_LOGICAL,A.dimensions(),NULL);
     void *Cp = Malloc(Alen*C.getElementSize());
     exec(Alen,Cp,A.getDataPointer(),1,B.getDataPointer(),1);
     C.setDataPointer(Cp);
@@ -1207,30 +1207,30 @@ Array Add(Array A, Array B) {
   } else if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
     Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   }
   if (!Astride || !Bstride) {
     A.makeDense();
     B.makeDense();
   }
-  if (A.isSparse() && !B.isSparse()) 
+  if (A.sparse() && !B.sparse()) 
     A.makeDense();
-  if (!A.isSparse() && B.isSparse()) 
+  if (!A.sparse() && B.sparse()) 
     B.makeDense();
-  if (A.isSparse()) {
+  if (A.sparse()) {
     sparse = true;
-    Cp = SparseSparseAdd(A.getDataClass(),
+    Cp = SparseSparseAdd(A.dataClass(),
 			 A.getSparseDataPointer(),
 			 A.getDimensionLength(0),
 			 A.getDimensionLength(1),
@@ -1238,7 +1238,7 @@ Array Add(Array A, Array B) {
   } else {
     sparse = false;
     Cp = Malloc(Clen*B.getElementSize());
-    switch(B.getDataClass()) {
+    switch(B.dataClass()) {
     case FM_INT32:
       addfullreal<int32>(Clen,(int32*) Cp, 
 			 (int32*) A.getDataPointer(), Astride,
@@ -1271,7 +1271,7 @@ Array Add(Array A, Array B) {
       break;			 
     }
   }
-  return Array(B.getDataClass(),Cdim,Cp,sparse);
+  return Array(B.dataClass(),Cdim,Cp,sparse);
 }
 
 /**
@@ -1375,30 +1375,30 @@ Array Subtract(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
     Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   }
   if (!Astride || !Bstride) {
     A.makeDense();
     B.makeDense();
   }
-  if (A.isSparse() && !B.isSparse()) 
+  if (A.sparse() && !B.sparse()) 
     A.makeDense();
-  if (!A.isSparse() && B.isSparse()) 
+  if (!A.sparse() && B.sparse()) 
     B.makeDense();
-  if (A.isSparse()) {
+  if (A.sparse()) {
     sparse = true;
-    Cp = SparseSparseSubtract(A.getDataClass(),
+    Cp = SparseSparseSubtract(A.dataClass(),
 			      A.getSparseDataPointer(),
 			      A.getDimensionLength(0),
 			      A.getDimensionLength(1),
@@ -1406,7 +1406,7 @@ Array Subtract(Array A, Array B) {
   } else {
     sparse = false;
     Cp = Malloc(Clen*B.getElementSize());
-    switch(B.getDataClass()) {
+    switch(B.dataClass()) {
     case FM_INT32:
       subtractfullreal<int32>(Clen,(int32*) Cp, 
 			      (int32*) A.getDataPointer(), Astride,
@@ -1439,7 +1439,7 @@ Array Subtract(Array A, Array B) {
       break;			 
     }
   }
-  return Array(B.getDataClass(),Cdim,Cp,sparse);
+  return Array(B.dataClass(),Cdim,Cp,sparse);
 }
 
 /**
@@ -1536,44 +1536,44 @@ Array DotMultiply(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
     Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   }
   //FIXME - these rules don't apply for multiplication!!
-  if (A.isSparse() && B.isScalar()) {
+  if (A.sparse() && B.isScalar()) {
     sparse = true;
     B.makeDense();
-    Cp = SparseScalarMultiply(A.getDataClass(),
+    Cp = SparseScalarMultiply(A.dataClass(),
 			      A.getSparseDataPointer(),
 			      A.getDimensionLength(0),
 			      A.getDimensionLength(1),
 			      B.getDataPointer());
-  } else if (B.isSparse() && A.isScalar()) {
+  } else if (B.sparse() && A.isScalar()) {
     sparse = true;
     A.makeDense();
-    Cp = SparseScalarMultiply(B.getDataClass(),
+    Cp = SparseScalarMultiply(B.dataClass(),
 			      B.getSparseDataPointer(),
 			      B.getDimensionLength(0),
 			      B.getDimensionLength(1),
 			      A.getDataPointer());
   } else {
-    if (A.isSparse() && !B.isSparse()) 
+    if (A.sparse() && !B.sparse()) 
       A.makeDense();
-    if (!A.isSparse() && B.isSparse()) 
+    if (!A.sparse() && B.sparse()) 
       B.makeDense();
-    if (A.isSparse()) {
+    if (A.sparse()) {
       sparse = true;
-      Cp = SparseSparseMultiply(A.getDataClass(),
+      Cp = SparseSparseMultiply(A.dataClass(),
 				A.getSparseDataPointer(),
 				A.getDimensionLength(0),
 				A.getDimensionLength(1),
@@ -1581,7 +1581,7 @@ Array DotMultiply(Array A, Array B) {
     } else {
       sparse = false;
       Cp = Malloc(Clen*B.getElementSize());
-      switch(B.getDataClass()) {
+      switch(B.dataClass()) {
       case FM_INT32:
 	multiplyfullreal<int32>(Clen,(int32*) Cp, 
 				(int32*) A.getDataPointer(), Astride,
@@ -1615,7 +1615,7 @@ Array DotMultiply(Array A, Array B) {
       }
     }
   }
-  return Array(B.getDataClass(),Cdim,Cp,sparse);
+  return Array(B.dataClass(),Cdim,Cp,sparse);
 }
  
 /**
@@ -1701,21 +1701,21 @@ Array DotRightDivide(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
     Clen = B.getLength();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
     Clen = A.getLength();
   }
   Cp = Malloc(Clen*B.getElementSize());
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     dividefullreal<int32>(Clen,(int32*) Cp, 
 			  (int32*) A.getDataPointer(), Astride,
@@ -1747,7 +1747,7 @@ Array DotRightDivide(Array A, Array B) {
 			      (double*) B.getDataPointer(), Bstride);
     break;			 
   }
-  return Array(B.getDataClass(),Cdim,Cp);
+  return Array(B.dataClass(),Cdim,Cp);
 }
 
 /**
@@ -1879,7 +1879,7 @@ Array DotLeftDivide(Array A, Array B) {
 //!
 Array DotPower(Array A, Array B) {
   Array C(DoPowerTwoArgFunction(A,B));
-  if (A.isSparse())
+  if (A.sparse())
     C.makeSparse();
   return(C);
 }
@@ -1931,40 +1931,40 @@ Array LessThan(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
 
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_LT),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_LT),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -1977,7 +1977,7 @@ Array LessThan(Array A, Array B) {
 
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     lessthanfuncreal<int32>(Clen,(logical*) Cp, 
 			    (int32*) A.getDataPointer(), Astride,
@@ -2026,39 +2026,39 @@ Array LessEquals(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_LE),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_LE),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2071,7 +2071,7 @@ Array LessEquals(Array A, Array B) {
 
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     lessequalsfuncreal<int32>(Clen,(logical*) Cp, 
 			      (int32*) A.getDataPointer(), Astride,
@@ -2120,39 +2120,39 @@ Array GreaterThan(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_GT),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_GT),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2165,7 +2165,7 @@ Array GreaterThan(Array A, Array B) {
 
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     greaterthanfuncreal<int32>(Clen,(logical*) Cp, 
 			       (int32*) A.getDataPointer(), Astride,
@@ -2214,39 +2214,39 @@ Array GreaterEquals(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_GE),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_GE),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2259,7 +2259,7 @@ Array GreaterEquals(Array A, Array B) {
 
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     greaterequalsfuncreal<int32>(Clen,(logical*) Cp, 
 				 (int32*) A.getDataPointer(), Astride,
@@ -2308,39 +2308,39 @@ Array Equals(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_EQ),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_EQ),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2353,7 +2353,7 @@ Array Equals(Array A, Array B) {
 
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     equalsfuncreal<int32>(Clen,(logical*) Cp, 
 			  (int32*) A.getDataPointer(), Astride,
@@ -2402,39 +2402,39 @@ Array NotEquals(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_NE),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_NE),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2447,7 +2447,7 @@ Array NotEquals(Array A, Array B) {
 
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
-  switch(B.getDataClass()) {
+  switch(B.dataClass()) {
   case FM_INT32:
     notequalsfuncreal<int32>(Clen,(logical*) Cp, 
 			     (int32*) A.getDataPointer(), Astride,
@@ -2556,42 +2556,42 @@ Array And(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
 
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_AND),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     B.promoteType(FM_UINT32);
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_AND),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     A.promoteType(FM_UINT32);
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2623,41 +2623,41 @@ Array Or(Array A, Array B) {
   if (A.isScalar()) {
     Astride = 0;
     Bstride = 1;
-    Cdim = B.getDimensions();
+    Cdim = B.dimensions();
   } else if (B.isScalar()) {
     Astride = 1;
     Bstride = 0;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   } else {
     Astride = 1;
     Bstride = 1;
-    Cdim = A.getDimensions();
+    Cdim = A.dimensions();
   }
   // Check for sparse arguments
-  if (Astride && Bstride && A.isSparse() && B.isSparse()) {
+  if (Astride && Bstride && A.sparse() && B.sparse()) {
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseSparseLogicalOp(A.getDataClass(),
+		 SparseSparseLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getSparseDataPointer(),
 				       SLO_OR),true);
-  } else if (Astride && !Bstride && A.isSparse()) {
+  } else if (Astride && !Bstride && A.sparse()) {
     B.promoteType(FM_UINT32);
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(A.getDataClass(),
+		 SparseScalarLogicalOp(A.dataClass(),
 				       A.getDimensionLength(0),
 				       A.getDimensionLength(1),
 				       A.getSparseDataPointer(),
 				       B.getDataPointer(),
 				       SLO_OR),true);
-  } else if (!Astride && Bstride && B.isSparse()) {
+  } else if (!Astride && Bstride && B.sparse()) {
     A.promoteType(FM_UINT32);
     return Array(FM_LOGICAL,
 		 Cdim,
-		 SparseScalarLogicalOp(B.getDataClass(),
+		 SparseScalarLogicalOp(B.dataClass(),
 				       B.getDimensionLength(0),
 				       B.getDimensionLength(1),
 				       B.getSparseDataPointer(),
@@ -2682,7 +2682,7 @@ Array Not(Array A) {
   Array C;
 
   A.promoteType(FM_LOGICAL);
-  C = Array(FM_LOGICAL,A.getDimensions(),NULL);
+  C = Array(FM_LOGICAL,A.dimensions(),NULL);
   void *Cp = Malloc(A.getLength()*C.getElementSize());
   boolean_not(A.getLength(),(logical*)Cp,(const logical*) A.getDataPointer());
   C.setDataPointer(Cp);
@@ -2703,7 +2703,7 @@ Array Negate(Array A){
 
   if (A.isReferenceType())
     throw Exception("Cannot negate non-numeric types.");
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   
   if (Aclass == FM_STRING)
     Aclass = FM_INT32;
@@ -2712,7 +2712,7 @@ Array Negate(Array A){
 
   A.promoteType(Aclass);
 
-  C = Array(Aclass,A.getDimensions(),NULL);
+  C = Array(Aclass,A.dimensions(),NULL);
   void *Cp = Malloc(A.getLength()*C.getElementSize());
   switch (Aclass) {
   case FM_INT32:
@@ -2812,26 +2812,26 @@ Array Multiply(Array A, Array B) throw(Exception){
   Dimensions outDim(Arows,Bcols);
   
   // Check for sparse multiply case
-  if (A.isSparse() && !B.isSparse())
-    return Array(A.getDataClass(),
+  if (A.sparse() && !B.sparse())
+    return Array(A.dataClass(),
 		 outDim,
-		 SparseDenseMatrixMultiply(A.getDataClass(),
+		 SparseDenseMatrixMultiply(A.dataClass(),
 					   Arows,Acols,Bcols,
 					   A.getSparseDataPointer(),
 					   B.getDataPointer()),
 		 false);
-  if (!A.isSparse() && B.isSparse())
-    return Array(A.getDataClass(),
+  if (!A.sparse() && B.sparse())
+    return Array(A.dataClass(),
 		 outDim,
-		 DenseSparseMatrixMultiply(A.getDataClass(),
+		 DenseSparseMatrixMultiply(A.dataClass(),
 					   Arows,Acols,Bcols,
 					   A.getDataPointer(),
 					   B.getSparseDataPointer()),
 		 false);
-  if (A.isSparse() && B.isSparse())
-    return Array(A.getDataClass(),
+  if (A.sparse() && B.sparse())
+    return Array(A.dataClass(),
 		 outDim,
-		 SparseSparseMatrixMultiply(A.getDataClass(),
+		 SparseSparseMatrixMultiply(A.dataClass(),
 					    Arows,Acols,Bcols,
 					    A.getSparseDataPointer(),
 					    B.getSparseDataPointer()),
@@ -2841,23 +2841,23 @@ Array Multiply(Array A, Array B) throw(Exception){
   // satisfactory.  Check for the type.
   void *Cp = Malloc(Arows*Bcols*A.getElementSize());
   
-  if (A.getDataClass() == FM_FLOAT)
+  if (A.dataClass() == FM_FLOAT)
     floatMatrixMatrixMultiply(Arows,Bcols,Acols,(float*)Cp,
 			      (const float*)A.getDataPointer(),
 			      (const float*)B.getDataPointer());
-  else if (A.getDataClass() == FM_DOUBLE)
+  else if (A.dataClass() == FM_DOUBLE)
     doubleMatrixMatrixMultiply(Arows,Bcols,Acols,(double*)Cp,
 			       (const double*)A.getDataPointer(),
 			       (const double*)B.getDataPointer());
-  else if (A.getDataClass() == FM_COMPLEX)
+  else if (A.dataClass() == FM_COMPLEX)
     complexMatrixMatrixMultiply(Arows,Bcols,Acols,(float*)Cp,
 				(const float*)A.getDataPointer(),
 				(const float*)B.getDataPointer());
-  else if (A.getDataClass() == FM_DCOMPLEX)
+  else if (A.dataClass() == FM_DCOMPLEX)
     dcomplexMatrixMatrixMultiply(Arows,Bcols,Acols,(double*)Cp,
 				 (const double*)A.getDataPointer(),
 				 (const double*)B.getDataPointer());
-  return Array(A.getDataClass(),outDim,Cp);
+  return Array(A.dataClass(),outDim,Cp);
 }
     
 /**
@@ -2968,18 +2968,18 @@ Array LeftDivide(Array A, Array B) throw(Exception) {
   Bcols = B.getDimensionLength(1);
 
   // Check for sparse case...
-  if (A.isSparse()) {
+  if (A.sparse()) {
     // Make sure B is _not_ sparse
     B.makeDense();
     // Make sure A is square
     if (Arows != Acols)
       throw Exception("FreeMat currently only supports A\\b for square matrices A");
     // Make sure A is either double or dcomplex
-    if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
+    if ((A.dataClass() == FM_FLOAT) || (A.dataClass() == FM_COMPLEX))
       throw Exception("FreeMat currently only supports A\\b for double and dcomplex matrices A");
     Dimensions outDim(Arows,Bcols);
-    return Array(A.getDataClass(),outDim,
-		 SparseSolveLinEq(A.getDataClass(),Arows,Acols,A.getSparseDataPointer(),
+    return Array(A.dataClass(),outDim,
+		 SparseSolveLinEq(A.dataClass(),Arows,Acols,A.getSparseDataPointer(),
 				  Brows,Bcols,B.getDataPointer()),false);
   }
   
@@ -2991,22 +2991,22 @@ Array LeftDivide(Array A, Array B) throw(Exception) {
     // Square matrix case - A is N x N, B is N x K - use 
     // linear equation solver.  Output is N x K.
     Cp = Malloc(Arows*Bcols*A.getElementSize());
-    if (A.getDataClass() == FM_FLOAT)
+    if (A.dataClass() == FM_FLOAT)
       floatSolveLinEq(Array::getArrayInterpreter(),
 		      Arows,Bcols,(float*)Cp,
 		      (float*)A.getReadWriteDataPointer(),
 		      (float*)B.getReadWriteDataPointer());
-    else if (A.getDataClass() == FM_COMPLEX)
+    else if (A.dataClass() == FM_COMPLEX)
       complexSolveLinEq(Array::getArrayInterpreter(),
 			Arows,Bcols,(float*)Cp,
 			(float*)A.getReadWriteDataPointer(),
 			(float*)B.getReadWriteDataPointer());
-    else if (A.getDataClass() == FM_DOUBLE)
+    else if (A.dataClass() == FM_DOUBLE)
       doubleSolveLinEq(Array::getArrayInterpreter(),
 		       Arows,Bcols,(double*)Cp,
 		       (double*)A.getReadWriteDataPointer(),
 		       (double*)B.getReadWriteDataPointer());
-    else if (A.getDataClass() == FM_DCOMPLEX)
+    else if (A.dataClass() == FM_DCOMPLEX)
       dcomplexSolveLinEq(Array::getArrayInterpreter(),
 			 Arows,Bcols,(double*)Cp,
 			 (double*)A.getReadWriteDataPointer(),
@@ -3016,29 +3016,29 @@ Array LeftDivide(Array A, Array B) throw(Exception) {
     // Rectangular matrix case - A is M x N, B must be M x K - use
     // lease squares equation solver.  Output is N x K.
     Cp = Malloc(Acols*Bcols*A.getElementSize());
-    if (A.getDataClass() == FM_FLOAT)
+    if (A.dataClass() == FM_FLOAT)
       floatSolveLeastSq(Array::getArrayInterpreter(),
 			Arows,Acols,Bcols,(float*)Cp,
 			(float*)A.getReadWriteDataPointer(),
 			(float*)B.getReadWriteDataPointer());
-    else if (A.getDataClass() == FM_COMPLEX)
+    else if (A.dataClass() == FM_COMPLEX)
       complexSolveLeastSq(Array::getArrayInterpreter(),
 			  Arows,Acols,Bcols,(float*)Cp,
 			  (float*)A.getReadWriteDataPointer(),
 			  (float*)B.getReadWriteDataPointer());
-    else if (A.getDataClass() == FM_DOUBLE)
+    else if (A.dataClass() == FM_DOUBLE)
       doubleSolveLeastSq(Array::getArrayInterpreter(),
 			 Arows,Acols,Bcols,(double*)Cp,
 			 (double*)A.getReadWriteDataPointer(),
 			 (double*)B.getReadWriteDataPointer());
-    else if (A.getDataClass() == FM_DCOMPLEX)
+    else if (A.dataClass() == FM_DCOMPLEX)
       dcomplexSolveLeastSq(Array::getArrayInterpreter(),
 			   Arows,Acols,Bcols,(double*)Cp,
 			   (double*)A.getReadWriteDataPointer(),
 			   (double*)B.getReadWriteDataPointer());
     outDim = Dimensions(Acols,Bcols);
   }
-  return Array(A.getDataClass(),outDim,Cp);
+  return Array(A.dataClass(),outDim,Cp);
 }
     
 /**
@@ -3126,7 +3126,7 @@ void EigenDecomposeCompactSymmetric(Array A, Array& D) {
   Dimensions Vdims(N,1);
 
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -3203,7 +3203,7 @@ void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D) {
   Dimensions Vdims(N,N);
 
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -3304,7 +3304,7 @@ void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag) {
   Dimensions Vdims(N,N);
 
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -3501,7 +3501,7 @@ void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag) {
   Dimensions Vdims(N,1);
 
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -3614,12 +3614,12 @@ bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D) {
   Dimensions Vdims(N,1);
 
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
   }
-  Bclass = B.getDataClass();
+  Bclass = B.dataClass();
   if (Bclass < Aclass) {
     B.promoteType(Aclass);
     Bclass = Aclass;
@@ -3718,12 +3718,12 @@ bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D
   Dimensions Vdims(N,N);
 
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
   }
-  Bclass = B.getDataClass();
+  Bclass = B.dataClass();
   if (Bclass < Aclass) {
     B.promoteType(Aclass);
     Bclass = Aclass;
@@ -3844,12 +3844,12 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) 
   // Create one square matrix to store the eigenvectors
   Dimensions Vdims(N,N);
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
   }
-  Bclass = B.getDataClass();
+  Bclass = B.dataClass();
   if (Bclass < Aclass) {
     B.promoteType(Aclass);
     Bclass = Aclass;
@@ -4043,12 +4043,12 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
   // Create one square matrix to store the eigenvectors
   Dimensions Vdims(N,1);
   // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.getDataClass();
+  Aclass = A.dataClass();
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
   }
-  Bclass = B.getDataClass();
+  Bclass = B.dataClass();
   if (Bclass < Aclass) {
     B.promoteType(Aclass);
     Bclass = Aclass;
@@ -4364,7 +4364,7 @@ Array Power(Array A, Array B) throw(Exception){
       (B.getDimensionLength(0) != B.getDimensionLength(1)))
     throw Exception("Power (^) operator can only be applied to scalar and square arguments.");
 
-  if (A.isSparse() || B.isSparse())
+  if (A.sparse() || B.sparse())
     return MatrixPowerSparse(A,B);
 
   // OK - check for A a scalar - if so, do a decomposition of B
@@ -4385,8 +4385,8 @@ Array UnitColon(Array A, Array B) throw(Exception) {
     throw Exception("Both arguments to (:) operator must be real.");
   // Make sure A and B are the same type - at least INT32
   Class Aclass, Bclass, Cclass;
-  Aclass = A.getDataClass();
-  Bclass = B.getDataClass();
+  Aclass = A.dataClass();
+  Bclass = B.dataClass();
   Cclass = (Aclass > Bclass) ? Aclass : Bclass;
   Cclass = (FM_INT32 > Cclass) ? FM_INT32 : Cclass;
   A.promoteType(Cclass);
@@ -4428,9 +4428,9 @@ Array DoubleColon(Array A, Array B, Array C) throw(Exception){
     throw Exception("All arguments to (:) operator must be real.");
   // Make sure A and B are the same type - at least INT32
   Class Aclass, Bclass, Cclass, Dclass;
-  Aclass = A.getDataClass();
-  Bclass = B.getDataClass();
-  Cclass = C.getDataClass();
+  Aclass = A.dataClass();
+  Bclass = B.dataClass();
+  Cclass = C.dataClass();
   Dclass = (Aclass > Bclass) ? Aclass : Bclass;
   Dclass = (Dclass > Cclass) ? Dclass : Cclass;
   Dclass = (FM_INT32 > Dclass) ? FM_INT32 : Dclass;

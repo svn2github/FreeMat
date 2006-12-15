@@ -752,7 +752,7 @@ ArrayVector TypeOfFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("typeof function requires exactly one argument");
   Array retval;
-  Class t = arg[0].getDataClass();
+  Class t = arg[0].dataClass();
   switch(t) {
   case FM_CELL_ARRAY:
     retval = Array::stringConstructor(std::string("cell"));

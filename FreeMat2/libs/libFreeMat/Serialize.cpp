@@ -409,9 +409,9 @@ Dimensions Serialize::getDimensions() {
 
 void Serialize::putArray(const Array& dat) {
   sendSignature('A',1);
-  Class dclass(dat.getDataClass());
-  putDataClass(dclass,dat.isSparse());
-  putDimensions(dat.getDimensions());
+  Class dclass(dat.dataClass());
+  putDataClass(dclass,dat.sparse());
+  putDimensions(dat.dimensions());
   int elCount(dat.getLength());
   if (dat.isEmpty()) return;
   switch(dclass) {
@@ -422,7 +422,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    rvstring fnames(dat.getFieldNames());
+    rvstring fnames(dat.fieldNames());
     int ncount(fnames.size());
     putInt(ncount);
     int i;
@@ -465,7 +465,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_INT32: {
-    if (!dat.isSparse()) {
+    if (!dat.sparse()) {
       const int32 *dp=((const int32 *)dat.getDataPointer());
       putInts((const int*) dp,elCount);
     } else {
@@ -478,7 +478,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_FLOAT: {      
-    if (!dat.isSparse()) {
+    if (!dat.sparse()) {
       const float *dp=((const float *)dat.getDataPointer());
       putFloats(dp,elCount);
     } else {
@@ -491,7 +491,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_DOUBLE: {
-    if (!dat.isSparse()) {
+    if (!dat.sparse()) {
       const double *dp=((const double *)dat.getDataPointer());
       putDoubles(dp,elCount);
     } else {
@@ -504,7 +504,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_COMPLEX: {
-    if (!dat.isSparse()) {
+    if (!dat.sparse()) {
       const float *dp=((const float *)dat.getDataPointer());
       putFloats(dp,elCount*2);
     } else {
@@ -517,7 +517,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_DCOMPLEX: {
-    if (!dat.isSparse()) {
+    if (!dat.sparse()) {
       const double *dp=((const double *)dat.getDataPointer());
       putDoubles(dp,elCount*2);
     } else {

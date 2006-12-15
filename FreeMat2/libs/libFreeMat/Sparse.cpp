@@ -4101,9 +4101,9 @@ ArrayVector SparseLUDecomposeComplex(int Arows, int Acols, const void *Ap) {
 
   
 ArrayVector SparseLUDecompose(int nargout, Array A) {
-  if ((A.getDataClass() == FM_FLOAT) || (A.getDataClass() == FM_COMPLEX))
+  if ((A.dataClass() == FM_FLOAT) || (A.dataClass() == FM_COMPLEX))
     throw Exception("FreeMat currently only supports the LU decomposition for double and dcomplex matrices");
-  if (A.getDataClass() < FM_FLOAT)
+  if (A.dataClass() < FM_FLOAT)
     A.promoteType(FM_DOUBLE);
   int Arows;
   int Acols;
@@ -4111,7 +4111,7 @@ ArrayVector SparseLUDecompose(int nargout, Array A) {
   Acols = A.getDimensionLength(1);
   if (Arows != Acols)
     throw Exception("FreeMat currently only supports LU decompositions for square matrices");
-  if (A.getDataClass() == FM_DOUBLE)
+  if (A.dataClass() == FM_DOUBLE)
     return SparseLUDecomposeReal(Arows, Acols, A.getSparseDataPointer());
   else
     return SparseLUDecomposeComplex(Arows, Acols, A.getSparseDataPointer());
@@ -5077,8 +5077,8 @@ Array SparsePowerFuncRealInteger(Array A, Array B) {
 //
 Array SparsePowerFunc(Array A, Array B) {
   Class Aclass, Bclass;
-  Aclass = A.getDataClass();
-  Bclass = B.getDataClass();
+  Aclass = A.dataClass();
+  Bclass = B.dataClass();
   Array C;
   if (A.isReal())
     if (Bclass == FM_INT32)
@@ -5090,7 +5090,7 @@ Array SparsePowerFunc(Array A, Array B) {
       C = SparsePowerFuncComplexInteger(A,B);
     else
       C = SparsePowerFuncComplexComplex(A,B);
-  C.promoteType(A.getDataClass());
+  C.promoteType(A.dataClass());
   return C;
 }
 

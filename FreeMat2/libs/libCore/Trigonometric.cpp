@@ -70,7 +70,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -84,7 +84,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = cos(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -93,7 +93,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = cos(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -104,7 +104,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
       op[i] = cos(dp[i])*cosh(dp[i+1]);
       op[i+1] = -sin(dp[i])*sinh(dp[i+1]);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -115,7 +115,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
       op[i] = cos(dp[i])*cosh(dp[i+1]);
       op[i+1] = -sin(dp[i])*sinh(dp[i+1]);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -169,7 +169,7 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -183,7 +183,7 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = sin(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -192,7 +192,7 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = sin(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -203,7 +203,7 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
       op[i] = sin(dp[i])*cosh(dp[i+1]);
       op[i+1] = cos(dp[i])*sinh(dp[i+1]);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -214,7 +214,7 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
       op[i] = sin(dp[i])*cosh(dp[i+1]);
       op[i+1] = cos(dp[i])*sinh(dp[i+1]);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -272,7 +272,7 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -286,7 +286,7 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = tan(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -295,7 +295,7 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = tan(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -308,7 +308,7 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
       op[i] = sin(2*dp[i])/den;
       op[i+1] = sinh(2*dp[i+1])/den;
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -321,7 +321,7 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
       op[i] = sin(2*dp[i])/den;
       op[i+1] = sinh(2*dp[i+1])/den;
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -371,7 +371,7 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -385,7 +385,7 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = 1.0f/sin(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -394,7 +394,7 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = 1.0/sin(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -408,7 +408,7 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
       op[i] = re/(re*re + im*im);
       op[i+1] = -im/(re*re + im*im);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -422,7 +422,7 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
       op[i] = re/(re*re + im*im);
       op[i+1] = -im/(re*re + im*im);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -472,7 +472,7 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -486,7 +486,7 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = 1.0f/cos(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -495,7 +495,7 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = 1.0/cos(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -509,7 +509,7 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
       op[i] = re/(re*re + im*im);
       op[i+1] = -im/(re*re + im*im);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -523,7 +523,7 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
       op[i] = re/(re*re + im*im);
       op[i+1] = -im/(re*re + im*im);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -577,7 +577,7 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -591,7 +591,7 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = 1.0/tan(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -600,7 +600,7 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = 1.0/tan(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -613,7 +613,7 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
       op[i] = sin(2*dp[i])/den;
       op[i+1] = -sinh(2*dp[i+1])/den;
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -626,7 +626,7 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
       op[i] = sin(2*dp[i])/den;
       op[i+1] = -sinh(2*dp[i+1])/den;
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -682,7 +682,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -752,7 +752,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = acos(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -761,7 +761,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = acos(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -791,7 +791,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
       op[i] = 2.0*atan(1.0f) - xlg_imag;
       op[i+1] = xlg_real;
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -821,7 +821,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
       op[i] = 2.0*atan(1.0f) - xlg_imag;
       op[i+1] = xlg_real;
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -878,7 +878,7 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -948,7 +948,7 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = asin(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -957,7 +957,7 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = asin(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -986,7 +986,7 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
       op[i] = xlg_imag;
       op[i+1] = - xlg_real;
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -1016,7 +1016,7 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
       op[i] = xlg_imag;
       op[i+1] = - xlg_real;
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -1073,7 +1073,7 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -1092,7 +1092,7 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = atan(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -1101,7 +1101,7 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = atan(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -1125,7 +1125,7 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
       op[i] = -0.5*(a_imag-b_imag);
       op[i+1] = 0.5*(a_real-b_real);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -1149,7 +1149,7 @@ ArrayVector ArctanFunction(int nargout, const ArrayVector& arg) {
       op[i] = -0.5*(a_imag-b_imag);
       op[i+1] = 0.5*(a_real-b_real);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -1214,8 +1214,8 @@ ArrayVector Arctan2Function(int nargout, const ArrayVector& arg) {
     return retval;
   }
   Array output;
-  Class argTypex(x.getDataClass());
-  Class argTypey(y.getDataClass());
+  Class argTypex(x.dataClass());
+  Class argTypey(y.dataClass());
   if (argTypex < FM_FLOAT) {
     x.promoteType(FM_DOUBLE);
     argTypex = FM_DOUBLE;
@@ -1247,11 +1247,11 @@ ArrayVector Arctan2Function(int nargout, const ArrayVector& arg) {
     x.promoteType(FM_DOUBLE);      
     y.promoteType(FM_DOUBLE);
   }
-  Class argType(x.getDataClass());
+  Class argType(x.dataClass());
   // Next check the sizes.
   Dimensions outputSize;
-  Dimensions xDim(x.getDimensions());
-  Dimensions yDim(y.getDimensions());
+  Dimensions xDim(x.dimensions());
+  Dimensions yDim(y.dimensions());
   int xStride, yStride;
   if (xDim.isScalar()) {
     outputSize = yDim;

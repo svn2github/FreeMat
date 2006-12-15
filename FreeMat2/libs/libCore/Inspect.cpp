@@ -180,7 +180,7 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 ArrayVector EndFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 3)
     throw Exception("End function requires 3 arguments, the array, the end index, and the number of subindexes");
-  Dimensions t(arg[0].getDimensions());
+  Dimensions t(arg[0].dimensions());
   int enddim(ArrayToInt32(arg[1]));
   int totalndxs(ArrayToInt32(arg[2]));
   if (totalndxs == 1)
@@ -457,14 +457,14 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
       eval->outputMessage("   <undefined>");
     else {
       lookup = *ptr;
-      Class t = lookup.getDataClass();
+      Class t = lookup.dataClass();
       switch(t) {
       case FM_CELL_ARRAY:
 	sprintf(buffer,"% 10s","cell");
 	break;
       case FM_STRUCT_ARRAY:
 	if (lookup.isUserClass())
-	  sprintf(buffer,"% 10s",lookup.getClassName().back().c_str());
+	  sprintf(buffer,"% 10s",lookup.className().back().c_str());
 	else
 	  sprintf(buffer,"% 10s","struct");
 	break;
@@ -515,7 +515,7 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
 	break;
       }
       eval->outputMessage(buffer);
-      if (lookup.isSparse())
+      if (lookup.sparse())
 	eval->outputMessage("   sparse");
       else
 	eval->outputMessage("         ");	  
@@ -530,7 +530,7 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
 	eval->outputMessage(buffer);
       }
       eval->outputMessage("  ");
-      lookup.getDimensions().printMe(eval);
+      lookup.dimensions().printMe(eval);
     }
     eval->outputMessage("\n");
   }
@@ -560,12 +560,12 @@ ArrayVector FieldNamesFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("fieldnames function requires at least one argument");
   Array a(arg[0]);
-  if (a.getDataClass() != FM_STRUCT_ARRAY) {
+  if (a.dataClass() != FM_STRUCT_ARRAY) {
     Array ret(Array::emptyConstructor());
     ret.promoteType(FM_CELL_ARRAY);
     return singleArrayVector(ret);
   }
-  rvstring names(a.getFieldNames());
+  rvstring names(a.fieldNames());
   ArrayMatrix m;
   for (int i=0;i<names.size();i++)
     m.push_back(singleArrayVector(Array::stringConstructor(names.at(i))));
@@ -606,12 +606,12 @@ ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
   if (arg[0].isEmpty()) {
     sze = Dimensions(0,0);
   } else
-    sze = arg[0].getDimensions();
+    sze = arg[0].dimensions();
   if (arg.size() == 1) {
     if (nargout > 1) {
-      ArrayVector retval(nargout);
+      ArrayVector retval;
       for (int i=0;i<nargout;i++)
-	retval[i] = Array::uint32Constructor(sze.get(i));
+	retval.push_back(Array::uint32Constructor(sze.get(i)));
       return retval;
     } else {
       uint32 *dims = (uint32 *) Malloc(sizeof(uint32)*sze.getLength());
@@ -633,7 +633,7 @@ ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
 }
 
 //   ArrayVector LengthFunction(int nargout, const ArrayVector& arg) {
-//     Array A(Array::int32Constructor(arg[0].getDimensions().getMax()));
+//     Array A(Array::int32Constructor(arg[0].dimensions().getMax()));
 //     ArrayVector retval;
 //     retval.push_back(A);
 //     return retval;
@@ -878,7 +878,7 @@ ArrayVector IsSparseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("issparse function takes one argument - the array to test");
   Array tmp(arg[0]);
-  return singleArrayVector(Array::logicalConstructor(tmp.isSparse()));
+  return singleArrayVector(Array::logicalConstructor(tmp.sparse()));
 }
 
 //!
@@ -912,7 +912,7 @@ ArrayVector IsNaNFunction(int nargout, const ArrayVector& arg) {
   ArrayVector retval;
   int len(tmp.getLength());
   logical *op = (logical *) Malloc(len*sizeof(logical));
-  switch (tmp.getDataClass()) {
+  switch (tmp.dataClass()) {
   case FM_STRING:
   case FM_LOGICAL:
   case FM_UINT8:
@@ -949,7 +949,7 @@ ArrayVector IsNaNFunction(int nargout, const ArrayVector& arg) {
     break;
   }
   }
-  retval.push_back(Array(FM_LOGICAL,tmp.getDimensions(),op));
+  retval.push_back(Array(FM_LOGICAL,tmp.dimensions(),op));
   return(retval);
 }
 
@@ -985,7 +985,7 @@ ArrayVector IsInfFunction(int nargout, const ArrayVector& arg) {
   ArrayVector retval;
   int len(tmp.getLength());
   logical *op = (logical *) Malloc(len*sizeof(logical));
-  switch (tmp.getDataClass()) {
+  switch (tmp.dataClass()) {
   case FM_STRING:
   case FM_LOGICAL:
   case FM_UINT8:
@@ -1022,7 +1022,7 @@ ArrayVector IsInfFunction(int nargout, const ArrayVector& arg) {
     break;
   }
   }
-  retval.push_back(Array(FM_LOGICAL,tmp.getDimensions(),op));
+  retval.push_back(Array(FM_LOGICAL,tmp.dimensions(),op));
   return(retval);
 }
 
@@ -1271,7 +1271,7 @@ ArrayVector RCVFindModeFullReal(Array x) {
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
   retval.push_back(Array(FM_UINT32,retDim,op_col));
-  retval.push_back(Array(x.getDataClass(),retDim,op_val));
+  retval.push_back(Array(x.dataClass(),retDim,op_val));
   return retval;
 }
 
@@ -1317,12 +1317,12 @@ ArrayVector RCVFindModeFullComplex(Array x) {
   ArrayVector retval;
   retval.push_back(Array(FM_UINT32,retDim,op_row));
   retval.push_back(Array(FM_UINT32,retDim,op_col));
-  retval.push_back(Array(x.getDataClass(),retDim,op_val));
+  retval.push_back(Array(x.dataClass(),retDim,op_val));
   return retval;
 }
 
 ArrayVector RCVFindModeFull(Array x) {
-  switch (x.getDataClass()) {
+  switch (x.dataClass()) {
   case FM_LOGICAL:
     return RCVFindModeFullReal<logical>(x);
   case FM_UINT8:
@@ -1360,7 +1360,7 @@ ArrayVector FindModeSparse(Array x, int nargout) {
   uint32 *rows;
   uint32 *cols;
   int nnz;
-  dp = SparseToIJV(x.getDataClass(), x.getDimensionLength(0),
+  dp = SparseToIJV(x.dataClass(), x.getDimensionLength(0),
 		   x.getDimensionLength(1), x.getSparseDataPointer(),
 		   rows, cols, nnz);
   Dimensions retDim(2);
@@ -1376,7 +1376,7 @@ ArrayVector FindModeSparse(Array x, int nargout) {
   if (nargout == 3) {
     retval.push_back(Array(FM_UINT32,retDim,rows));
     retval.push_back(Array(FM_UINT32,retDim,cols));
-    retval.push_back(Array(x.getDataClass(),retDim,dp));
+    retval.push_back(Array(x.dataClass(),retDim,dp));
   } else if (nargout == 2) {
     retval.push_back(Array(FM_UINT32,retDim,rows));
     retval.push_back(Array(FM_UINT32,retDim,cols));
@@ -1502,11 +1502,11 @@ ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
   }
   if (tmp.isReferenceType())
     throw Exception("find does not work on reference types (cell-arrays or structure arrays)");
-  if ((nargout <= 1) && !tmp.isSparse())
+  if ((nargout <= 1) && !tmp.sparse())
     return FindTrim(SingleFindModeFull(tmp),k,first_flag);
-  if ((nargout == 2) && !tmp.isSparse())
+  if ((nargout == 2) && !tmp.sparse())
     return FindTrim(RCFindModeFull(tmp),k,first_flag);
-  if ((nargout == 3) && !tmp.isSparse())
+  if ((nargout == 3) && !tmp.sparse())
     return FindTrim(RCVFindModeFull(tmp),k,first_flag);
   if (nargout > 3)
     throw Exception("Do not understand syntax of find call (too many output arguments).");

@@ -41,7 +41,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Log1p function takes exactly one argument");
   Array input(arg[0]);
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -56,7 +56,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
 	op[i] = log1p(dp[i]);
-      output = Array(FM_FLOAT,input.getDimensions(),op);
+      output = Array(FM_FLOAT,input.dimensions(),op);
     } else {
       const float *dp=((const float *)input.getDataPointer());
       int len(input.getLength());
@@ -68,7 +68,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
 	  op[2*i] = log1p(fabs(dp[i]));
 	  op[2*i+1] = M_PI;
 	}
-      output = Array(FM_COMPLEX,input.getDimensions(),op);
+      output = Array(FM_COMPLEX,input.dimensions(),op);
     }
     break;
   }
@@ -79,7 +79,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
 	op[i] = log1p(dp[i]);
-      output = Array(FM_DOUBLE,input.getDimensions(),op);
+      output = Array(FM_DOUBLE,input.dimensions(),op);
     } else {
       const double *dp=((const double *)input.getDataPointer());
       int len(input.getLength());
@@ -91,7 +91,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
 	  op[2*i] = log1p(fabs(dp[i]));
 	  op[2*i+1] = M_PI;
 	}
-      output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+      output = Array(FM_DCOMPLEX,input.dimensions(),op);
     }
     break;
   }
@@ -103,7 +103,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
       op[i] = log1p(complex_abs(dp[i],dp[i+1]));
       op[i+1] = atan2(dp[i+1],dp[i]);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -114,7 +114,7 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
       op[i] = log1p(complex_abs(dp[i],dp[i+1]));
       op[i+1] = atan2(dp[i+1],dp[i]);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -167,7 +167,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Log function takes exactly one argument");
   Array input(arg[0]);
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -182,7 +182,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
       float *op = (float *)Malloc(len*sizeof(float));
       for (int i=0;i<len;i++)
 	op[i] = log(dp[i]);
-      output = Array(FM_FLOAT,input.getDimensions(),op);
+      output = Array(FM_FLOAT,input.dimensions(),op);
     } else {
       const float *dp=((const float *)input.getDataPointer());
       int len(input.getLength());
@@ -194,7 +194,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
 	  op[2*i] = log(fabs(dp[i]));
 	  op[2*i+1] = M_PI;
 	}
-      output = Array(FM_COMPLEX,input.getDimensions(),op);
+      output = Array(FM_COMPLEX,input.dimensions(),op);
     }
     break;
   }
@@ -205,7 +205,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
       double *op = (double *)Malloc(len*sizeof(double));
       for (int i=0;i<len;i++)
 	op[i] = log(dp[i]);
-      output = Array(FM_DOUBLE,input.getDimensions(),op);
+      output = Array(FM_DOUBLE,input.dimensions(),op);
     } else {
       const double *dp=((const double *)input.getDataPointer());
       int len(input.getLength());
@@ -217,7 +217,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
 	  op[2*i] = log(fabs(dp[i]));
 	  op[2*i+1] = M_PI;
 	}
-      output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+      output = Array(FM_DCOMPLEX,input.dimensions(),op);
     }
     break;
   }
@@ -229,7 +229,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
       op[i] = log(complex_abs(dp[i],dp[i+1]));
       op[i+1] = atan2(dp[i+1],dp[i]);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -240,7 +240,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
       op[i] = log(complex_abs(dp[i],dp[i+1]));
       op[i+1] = atan2(dp[i+1],dp[i]);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -303,7 +303,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Exp function takes exactly one argument");
   Array input(arg[0]);
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -317,7 +317,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = exp(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -326,7 +326,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = exp(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -338,7 +338,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
       op[i] = t*cos(dp[i+1]);
       op[i+1] = t*sin(dp[i+1]);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -350,7 +350,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
       op[i] = t*cos(dp[i+1]);
       op[i+1] = t*sin(dp[i+1]);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }
@@ -376,7 +376,7 @@ ArrayVector ExpM1Function(int nargout, const ArrayVector& arg) {
     throw Exception("ExpM1 function takes exactly one argument");
   Array input(arg[0]);
   Array output;
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType < FM_FLOAT) {
     input.promoteType(FM_DOUBLE);
     argType = FM_DOUBLE;
@@ -390,7 +390,7 @@ ArrayVector ExpM1Function(int nargout, const ArrayVector& arg) {
     float *op = (float *)Malloc(len*sizeof(float));
     for (int i=0;i<len;i++)
       op[i] = expm1(dp[i]);
-    output = Array(FM_FLOAT,input.getDimensions(),op);
+    output = Array(FM_FLOAT,input.dimensions(),op);
     break;
   }
   case FM_DOUBLE: {
@@ -399,7 +399,7 @@ ArrayVector ExpM1Function(int nargout, const ArrayVector& arg) {
     double *op = (double *)Malloc(len*sizeof(double));
     for (int i=0;i<len;i++)
       op[i] = expm1(dp[i]);
-    output = Array(FM_DOUBLE,input.getDimensions(),op);
+    output = Array(FM_DOUBLE,input.dimensions(),op);
     break;
   }
   case FM_COMPLEX: {
@@ -411,7 +411,7 @@ ArrayVector ExpM1Function(int nargout, const ArrayVector& arg) {
       op[i] = t*cos(dp[i+1]);
       op[i+1] = t*sin(dp[i+1]);
     }
-    output = Array(FM_COMPLEX,input.getDimensions(),op);
+    output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
   }
   case FM_DCOMPLEX: {
@@ -423,7 +423,7 @@ ArrayVector ExpM1Function(int nargout, const ArrayVector& arg) {
       op[i] = t*cos(dp[i+1]);
       op[i+1] = t*sin(dp[i+1]);
     }
-    output = Array(FM_DCOMPLEX,input.getDimensions(),op);
+    output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      
   }
   }

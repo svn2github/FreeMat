@@ -261,7 +261,7 @@ void DoLinearInterpolationReal(const T* x1, const T* y1,
 }
 
 bool TestForMonotonic(Array x) {
-  switch (x.getDataClass()) {
+  switch (x.dataClass()) {
   case FM_FLOAT:
     return TestForMonotonicReal<float>((const float*) x.getDataPointer(),
 				       x.getLength());
@@ -340,16 +340,16 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
     throw Exception("arguments to interplin1 must be numerical arrays");
   if (x1.isComplex() || xi.isComplex())
     throw Exception("x-coordinates cannot be complex in interplin1");
-  if (x1.getDataClass() < y1.getDataClass())
-    x1.promoteType(y1.getDataClass());
+  if (x1.dataClass() < y1.dataClass())
+    x1.promoteType(y1.dataClass());
   else
-    y1.promoteType(x1.getDataClass());
-  if (x1.getDataClass() < FM_FLOAT)
+    y1.promoteType(x1.dataClass());
+  if (x1.dataClass() < FM_FLOAT)
     x1.promoteType(FM_FLOAT);
-  if (xi.getDataClass() > x1.getDataClass())
-    x1.promoteType(xi.getDataClass());
-  if (x1.getDataClass() > xi.getDataClass())
-    xi.promoteType(x1.getDataClass());
+  if (xi.dataClass() > x1.dataClass())
+    x1.promoteType(xi.dataClass());
+  if (x1.dataClass() > xi.dataClass())
+    xi.promoteType(x1.dataClass());
   // Make sure x1 and y1 are the same length
   if (x1.getLength() != y1.getLength())
     throw Exception("vectors x1 and y1 must be the same length");
@@ -375,7 +375,7 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
   }
   Array retval;
   char *dp;
-  switch(y1.getDataClass()) {
+  switch(y1.dataClass()) {
   case FM_FLOAT: {
     dp = (char*) Malloc(sizeof(float)*xi.getLength());
     DoLinearInterpolationReal<float>((const float*) x1.getDataPointer(),
@@ -414,8 +414,8 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
     break;
   }
   }
-  return singleArrayVector(Array(y1.getDataClass(),
-				 xi.getDimensions(),
+  return singleArrayVector(Array(y1.dataClass(),
+				 xi.dimensions(),
 				 dp));
       
 }

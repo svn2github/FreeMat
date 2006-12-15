@@ -24,9 +24,9 @@ extern void SwapBuffer(char* cp, int count, int elsize);
 // version of the file matfile_format.pdf from the Mathworks web site.
 
 void ComplexSplit(const Array &x, Array &real, Array &imag) {
-  if (x.getDataClass() == FM_COMPLEX) {
-    real = Array(FM_FLOAT,x.getDimensions());
-    imag = Array(FM_FLOAT,x.getDimensions());
+  if (x.dataClass() == FM_COMPLEX) {
+    real = Array(FM_FLOAT,x.dimensions());
+    imag = Array(FM_FLOAT,x.dimensions());
     const float *dp = (const float *) x.getDataPointer();
     float *rp = (float *) real.getReadWriteDataPointer();
     float *ip = (float *) imag.getReadWriteDataPointer();
@@ -35,8 +35,8 @@ void ComplexSplit(const Array &x, Array &real, Array &imag) {
       ip[i] = dp[2*i+1];
     }      
   } else {
-    real = Array(FM_DOUBLE,x.getDimensions());
-    imag = Array(FM_DOUBLE,x.getDimensions());
+    real = Array(FM_DOUBLE,x.dimensions());
+    imag = Array(FM_DOUBLE,x.dimensions());
     const double *dp = (const double *) x.getDataPointer();
     double *rp = (double *) real.getReadWriteDataPointer();
     double *ip = (double *) imag.getReadWriteDataPointer();
@@ -230,15 +230,15 @@ Dimensions ToDimensions(Array dims) {
 void MatIO::putSparseArray(const Array &x) {
   uint32 *I, *J;
   int nnz;
-  void *dp = SparseToIJV2(x.getDataClass(),x.rows(),x.columns(),
+  void *dp = SparseToIJV2(x.dataClass(),x.rows(),x.columns(),
 			  x.getSparseDataPointer(),I,J,nnz);
   // Wrap I and J into arrays
   putDataElement(Array(FM_UINT32,Dimensions(nnz,1),I));
   putDataElement(Array(FM_UINT32,Dimensions(x.columns()+1,1),J));
   if (!x.isComplex())
-    putDataElement(Array(x.getDataClass(),Dimensions(nnz,1),dp));
+    putDataElement(Array(x.dataClass(),Dimensions(nnz,1),dp));
   else {
-    Array vset(x.getDataClass(),Dimensions(nnz,1),dp);
+    Array vset(x.dataClass(),Dimensions(nnz,1),dp);
     Array vset_real, vset_imag;
     ComplexSplit(vset,vset_real,vset_imag);
     putDataElement(vset_real);
@@ -258,11 +258,11 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
     ir_data[i]++;
   jc.promoteType(FM_UINT32);
   if (complexFlag) pi = getDataElement();
-  if (pr.getDataClass() < FM_INT32) {
+  if (pr.dataClass() < FM_INT32) {
     pr.promoteType(FM_INT32);
     pi.promoteType(FM_INT32);
   }
-  Class outType(pr.getDataClass());
+  Class outType(pr.dataClass());
   if (complexFlag)
     outType = (outType == FM_FLOAT) ? FM_COMPLEX : FM_DCOMPLEX;
   // Convert jc into jr, the col
@@ -389,7 +389,7 @@ Array MatIO::getNumericArray(mxArrayTypes arrayType, Dimensions dm, bool complex
 Array MatIO::getClassArray(Dimensions dm) {
   char buffer[100];
   Array className(getDataElement());
-  if (className.getDataClass() != FM_INT8)
+  if (className.dataClass() != FM_INT8)
     throw Exception("Corrupted MAT file - invalid class name");
   rvstring classname;
   classname.push_back(ArrayToString(className));
@@ -485,7 +485,7 @@ Array MatIO::getDataElement() {
 }
 
 void MatIO::putDataElement(const Array &x) {
-  Class fmClass(x.getDataClass());
+  Class fmClass(x.dataClass());
   MatTypes DataType(ToMatType(fmClass));
   uint32 ByteCount(x.getLength()*ElementSize(fmClass));
   putUint32((uint32)DataType);
@@ -650,7 +650,7 @@ void MatIO::Align64Bit() {
 
 void MatIO::putStructArray(const Array &x) {
   // Calculate the maximum field name length
-  rvstring fnames(x.getFieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
+  rvstring fnames(x.fieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
   int fieldNameCount = fnames.size();
   size_t maxlen = 0;
   for (int i=0;i<fieldNameCount;i++)
@@ -673,7 +673,7 @@ void MatIO::putStructArray(const Array &x) {
 }
 
 void MatIO::putClassArray(const Array &x) {
-  string className = x.getClassName().back();
+  string className = x.className().back();
   Array classNameArray(FM_INT8,Dimensions(1,className.size()));
   int8* dp = (int8*) classNameArray.getDataPointer();
   for (int i=0;i<className.size();i++)
@@ -724,9 +724,9 @@ void MatIO::putArray(const Array &x, string name, bool isGlobal) {
   Array aFlags(FM_UINT32,Dimensions(1,2));
   uint32 *dp = (uint32 *) aFlags.getReadWriteDataPointer();
   bool isComplex = x.isComplex();
-  bool isLogical = (x.getDataClass() == FM_LOGICAL);
-  mxArrayTypes arrayType = GetArrayType(x.getDataClass());
-  if (x.isSparse())  arrayType = mxSPARSE_CLASS;
+  bool isLogical = (x.dataClass() == FM_LOGICAL);
+  mxArrayTypes arrayType = GetArrayType(x.dataClass());
+  if (x.sparse())  arrayType = mxSPARSE_CLASS;
   dp[0] = arrayType;
   if (isGlobal)   dp[0] = dp[0] | (bglobalFlag << 8);
   if (isLogical)  dp[0] = dp[0] | (blogicalFlag << 8);
@@ -751,7 +751,7 @@ void MatIO::putArray(const Array &x, string name, bool isGlobal) {
 void MatIO::putArraySpecific(const Array &x, Array aFlags, 
 			     string name, mxArrayTypes arrayType) {
   putDataElement(aFlags);
-  putDataElement(FromDimensions(x.getDimensions()));
+  putDataElement(FromDimensions(x.dimensions()));
   putDataElement(Array::stringConstructor(name));
   if (isNormalClass(arrayType))
     putNumericArray(x);
@@ -808,7 +808,7 @@ Array MatIO::getArray(bool &atEof, string &name, bool &match, bool &isGlobal) {
     throw Exception("Unexpected data tag when looking for an array");
   uint32 fp(ftell(m_fp));
   Array aFlags(getDataElement());
-  if ((aFlags.getDataClass() != FM_UINT32) || (aFlags.getLength() != 2))
+  if ((aFlags.dataClass() != FM_UINT32) || (aFlags.getLength() != 2))
     throw Exception("Corrupted MAT file - array flags");
   const uint32 *dp = (const uint32 *) aFlags.getDataPointer();
   mxArrayTypes arrayType = (mxArrayTypes) (ByteOne(dp[0]));
@@ -817,11 +817,11 @@ Array MatIO::getArray(bool &atEof, string &name, bool &match, bool &isGlobal) {
   isGlobal = (arrayFlags & bglobalFlag) != 0;
   bool isLogical = (arrayFlags & blogicalFlag) != 0;
   Array dims(getDataElement());
-  if (dims.getDataClass() != FM_INT32)
+  if (dims.dataClass() != FM_INT32)
     throw Exception("Corrupted MAT file - dimensions array");
   Dimensions dm(ToDimensions(dims));
   Array namearray(getDataElement());
-  if (namearray.getDataClass() != FM_INT8)
+  if (namearray.dataClass() != FM_INT8)
     throw Exception("Corrupted MAT file - array name");
   namearray.promoteType(FM_STRING);
   string tname = ArrayToString(namearray);

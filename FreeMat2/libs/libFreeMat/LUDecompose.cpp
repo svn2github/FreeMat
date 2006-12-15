@@ -279,22 +279,22 @@ ArrayVector LUDecompose(int nargout, Array A) {
   if (A.isIntegerClass())
     A.promoteType(FM_DOUBLE);
   ArrayVector retval;
-  switch (A.getDataClass()) {
+  switch (A.dataClass()) {
   case FM_FLOAT: {
     float *l = (float*) Malloc(sizeof(float)*nrows*p);
     float *u = (float*) Malloc(sizeof(float)*p*ncols);
     if (nargout <= 2) {
       RealLU<float>(nrows,ncols,l,u,
 		     (float*) A.getReadWriteDataPointer(),sgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       float *piv = (float*) Malloc(sizeof(float)*nrows*nrows);
       RealLUP<float>(nrows,ncols,l,u,piv,
 		     (float*) A.getReadWriteDataPointer(),sgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,nrows),piv));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,nrows),piv));
     }
     return retval;
   }
@@ -304,15 +304,15 @@ ArrayVector LUDecompose(int nargout, Array A) {
     if (nargout <= 2) {
       RealLU<double>(nrows,ncols,l,u,
 		     (double*) A.getReadWriteDataPointer(),dgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       double *piv = (double*) Malloc(sizeof(double)*nrows*nrows);
       RealLUP<double>(nrows,ncols,l,u,piv,
 		      (double*) A.getReadWriteDataPointer(),dgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,nrows),piv));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,nrows),piv));
     }
     return retval;
   }
@@ -322,14 +322,14 @@ ArrayVector LUDecompose(int nargout, Array A) {
     if (nargout <= 2) {
       ComplexLU<float>(nrows,ncols,l,u,
 		       (float*) A.getReadWriteDataPointer(),cgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       float *piv = (float*) Malloc(sizeof(float)*nrows*nrows);
       ComplexLUP<float>(nrows,ncols,l,u,piv,
 			(float*) A.getReadWriteDataPointer(),cgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
       retval.push_back(Array(FM_FLOAT,Dimensions(nrows,nrows),piv));
     }
     return retval;
@@ -340,14 +340,14 @@ ArrayVector LUDecompose(int nargout, Array A) {
     if (nargout <= 2) {
       ComplexLU<double>(nrows,ncols,l,u,
 			(double*) A.getReadWriteDataPointer(),zgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
     } else if (nargout == 3) {
       double *piv = (double*) Malloc(sizeof(double)*nrows*nrows);
       ComplexLUP<double>(nrows,ncols,l,u,piv,
 			 (double*) A.getReadWriteDataPointer(),zgetrf_);
-      retval.push_back(Array(A.getDataClass(),Dimensions(nrows,p),l));
-      retval.push_back(Array(A.getDataClass(),Dimensions(p,ncols),u));
+      retval.push_back(Array(A.dataClass(),Dimensions(nrows,p),l));
+      retval.push_back(Array(A.dataClass(),Dimensions(p,ncols),u));
       retval.push_back(Array(FM_DOUBLE,Dimensions(nrows,nrows),piv));
     }
     return retval;

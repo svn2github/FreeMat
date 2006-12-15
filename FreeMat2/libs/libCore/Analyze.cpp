@@ -58,7 +58,7 @@ double getcurrenttime() {
 
 ArrayVector HandleEmpty(Array arg) {
   ArrayVector retArray;
-  switch (arg.getDataClass()) {
+  switch (arg.dataClass()) {
   case FM_LOGICAL:
     retArray.push_back(Array::logicalConstructor(false));
     break;
@@ -586,8 +586,8 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
     return retvec;
   }
   // Calculate the stride & output size
-  Dimensions xSize(x.getDimensions());
-  Dimensions ySize(y.getDimensions());
+  Dimensions xSize(x.dimensions());
+  Dimensions ySize(y.dimensions());
   Dimensions outDim;
   xSize.simplify();
   ySize.simplify();
@@ -611,12 +611,12 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
     throw Exception("either both array arguments to min must be the same size, or one must be a scalar.");
   // Determine the type of the output
   Class outType;
-  if (x.getDataClass() > y.getDataClass()) {
-    outType = x.getDataClass();
-    y.promoteType(x.getDataClass());
+  if (x.dataClass() > y.dataClass()) {
+    outType = x.dataClass();
+    y.promoteType(x.dataClass());
   } else {
-    outType = y.getDataClass();
-    x.promoteType(y.getDataClass());
+    outType = y.dataClass();
+    x.promoteType(y.dataClass());
   }
   // Based on the type of the output... call the associated helper function
   Array retval;
@@ -842,7 +842,7 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 2)
     return LessThan(nargout,arg);
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("min only defined for numeric types");
   // Get the dimension argument (if supplied)
@@ -864,7 +864,7 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   if (input.isEmpty())
     return HandleEmpty(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -1005,8 +1005,8 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
     return retvec;
   }
   // Calculate the stride & output size
-  Dimensions xSize(x.getDimensions());
-  Dimensions ySize(y.getDimensions());
+  Dimensions xSize(x.dimensions());
+  Dimensions ySize(y.dimensions());
   Dimensions outDim;
   xSize.simplify();
   ySize.simplify();
@@ -1030,12 +1030,12 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
     throw Exception("either both array arguments to max must be the same size, or one must be a scalar.");
   // Determine the type of the output
   Class outType;
-  if (x.getDataClass() > y.getDataClass()) {
-    outType = x.getDataClass();
-    y.promoteType(x.getDataClass());
+  if (x.dataClass() > y.dataClass()) {
+    outType = x.dataClass();
+    y.promoteType(x.dataClass());
   } else {
-    outType = y.getDataClass();
-    x.promoteType(y.getDataClass());
+    outType = y.dataClass();
+    x.promoteType(y.dataClass());
   }
   // Based on the type of the output... call the associated helper function
   Array retval;
@@ -1259,7 +1259,7 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 2)
     return GreaterThan(nargout,arg);
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("max only defined for numeric types");
   // Get the dimension argument (if supplied)
@@ -1281,7 +1281,7 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   if (input.isEmpty())
     return HandleEmpty(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -1447,7 +1447,7 @@ ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("ceil requires one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("ceil only defined for numeric types");
   Array retval;
@@ -1470,7 +1470,7 @@ ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
     cnt = input.getLength();
     for (int i = 0;i<cnt;i++)
       dp[i] = ceilf(sp[i]);
-    retval = Array(FM_FLOAT,input.getDimensions(),dp);
+    retval = Array(FM_FLOAT,input.dimensions(),dp);
     break;
   }
   case FM_DOUBLE: {
@@ -1480,7 +1480,7 @@ ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
     cnt = input.getLength();
     for (int i = 0;i<cnt;i++)
       dp[i] = ceil(sp[i]);
-    retval = Array(FM_DOUBLE,input.getDimensions(),dp);
+    retval = Array(FM_DOUBLE,input.dimensions(),dp);
     break;
   }
   case FM_COMPLEX:
@@ -1532,7 +1532,7 @@ ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("floor requires one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("floor only defined for numeric types");
   Array retval;
@@ -1555,7 +1555,7 @@ ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
     cnt = input.getLength();
     for (int i = 0;i<cnt;i++)
       dp[i] = floorf(sp[i]);
-    retval = Array(FM_FLOAT,input.getDimensions(),dp);
+    retval = Array(FM_FLOAT,input.dimensions(),dp);
     break;
   }
   case FM_DOUBLE: {
@@ -1565,7 +1565,7 @@ ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
     cnt = input.getLength();
     for (int i = 0;i<cnt;i++)
       dp[i] = floor(sp[i]);
-    retval = Array(FM_DOUBLE,input.getDimensions(),dp);
+    retval = Array(FM_DOUBLE,input.dimensions(),dp);
     break;
   }
   case FM_COMPLEX:
@@ -1615,7 +1615,7 @@ ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("round requires one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("round only defined for numeric types");
   Array retval;
@@ -1638,7 +1638,7 @@ ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
     cnt = input.getLength();
     for (int i = 0;i<cnt;i++)
       dp[i] = rint(sp[i]);
-    retval = Array(FM_FLOAT,input.getDimensions(),dp);
+    retval = Array(FM_FLOAT,input.dimensions(),dp);
     break;
   }
   case FM_DOUBLE: {
@@ -1648,7 +1648,7 @@ ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
     cnt = input.getLength();
     for (int i = 0;i<cnt;i++)
       dp[i] = rint(sp[i]);
-    retval = Array(FM_DOUBLE,input.getDimensions(),dp);
+    retval = Array(FM_DOUBLE,input.dimensions(),dp);
     break;
   }
   case FM_COMPLEX:
@@ -1703,7 +1703,7 @@ ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("cumsum requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("sum only defined for numeric types");
   if ((argType >= FM_LOGICAL) && (argType < FM_INT32)) {
@@ -1723,7 +1723,7 @@ ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   if (input.isScalar())
     return singleArrayVector(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -1834,7 +1834,7 @@ ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("sum requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("sum only defined for numeric types");
   if ((argType >= FM_LOGICAL) && (argType < FM_INT32)) {
@@ -1854,7 +1854,7 @@ ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
   if (input.isScalar())
     return singleArrayVector(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -1878,19 +1878,19 @@ ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   // Special case Sparse Matrices
-  if (input.isSparse()) {
+  if (input.sparse()) {
     if (workDim == 0)
-      return singleArrayVector(Array(input.getDataClass(),
+      return singleArrayVector(Array(input.dataClass(),
 				     outDim,
-				     SparseMatrixSumColumns(input.getDataClass(),
+				     SparseMatrixSumColumns(input.dataClass(),
 							    input.getDimensionLength(0),
 							    input.getDimensionLength(1),
 							    input.getSparseDataPointer()),
 				     true));
     else if (workDim == 1)
-      return singleArrayVector(Array(input.getDataClass(),
+      return singleArrayVector(Array(input.dataClass(),
 				     outDim,
-				     SparseMatrixSumRows(input.getDataClass(),
+				     SparseMatrixSumRows(input.dataClass(),
 							 input.getDimensionLength(0),
 							 input.getDimensionLength(1),
 							 input.getSparseDataPointer()),
@@ -1987,7 +1987,7 @@ ArrayVector MeanFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("mean requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("mean only defined for numeric types");
   if ((argType >= FM_LOGICAL) && (argType <= FM_INT32)) {
@@ -2007,7 +2007,7 @@ ArrayVector MeanFunction(int nargout, const ArrayVector& arg) {
   if (input.isScalar())
     return singleArrayVector(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -2118,7 +2118,7 @@ ArrayVector VarFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("var requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("var only defined for numeric types");
   if ((argType >= FM_LOGICAL) && (argType <= FM_INT32)) {
@@ -2136,7 +2136,7 @@ ArrayVector VarFunction(int nargout, const ArrayVector& arg) {
   if (input.isScalar() || input.isEmpty()) 
     return HandleEmpty(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -2227,7 +2227,7 @@ ArrayVector ConjFunction(int nargout, const ArrayVector& arg) {
   Array tmp(arg[0]);
   if (tmp.isReferenceType())
     throw Exception("argument to conjugate function must be numeric");
-  Class argType(tmp.getDataClass());
+  Class argType(tmp.dataClass());
   Array retval;
   int i;
   if (argType == FM_COMPLEX) {
@@ -2239,7 +2239,7 @@ ArrayVector ConjFunction(int nargout, const ArrayVector& arg) {
       ptr[2*i] = dp[2*i];
       ptr[2*i+1] = -dp[2*i+1];
     }
-    retval = Array(FM_COMPLEX,tmp.getDimensions(),ptr);
+    retval = Array(FM_COMPLEX,tmp.dimensions(),ptr);
   } else if (argType == FM_DCOMPLEX) {
     int len;
     len = tmp.getLength();
@@ -2249,7 +2249,7 @@ ArrayVector ConjFunction(int nargout, const ArrayVector& arg) {
       ptr[2*i] = dp[2*i];
       ptr[2*i+1] = -dp[2*i+1];
     }
-    retval = Array(FM_DCOMPLEX,tmp.getDimensions(),ptr);
+    retval = Array(FM_DCOMPLEX,tmp.dimensions(),ptr);
   } else
     retval = tmp;
   ArrayVector out;
@@ -2293,7 +2293,7 @@ ArrayVector RealFunction(int nargout, const ArrayVector& arg) {
   Array tmp(arg[0]);
   if (tmp.isReferenceType())
     throw Exception("argument to real function must be numeric");
-  Class argType(tmp.getDataClass());
+  Class argType(tmp.dataClass());
   Array retval;
   int i;
   if (argType == FM_COMPLEX) {
@@ -2303,7 +2303,7 @@ ArrayVector RealFunction(int nargout, const ArrayVector& arg) {
     float *ptr = (float*) Malloc(sizeof(float)*tmp.getLength());
     for (i=0;i<len;i++)
       ptr[i] = dp[2*i];
-    retval = Array(FM_FLOAT,tmp.getDimensions(),ptr);
+    retval = Array(FM_FLOAT,tmp.dimensions(),ptr);
   } else if (argType == FM_DCOMPLEX) {
     int len;
     len = tmp.getLength();
@@ -2311,7 +2311,7 @@ ArrayVector RealFunction(int nargout, const ArrayVector& arg) {
     double *ptr = (double*) Malloc(sizeof(double)*tmp.getLength());
     for (i=0;i<len;i++)
       ptr[i] = dp[2*i];
-    retval = Array(FM_DOUBLE,tmp.getDimensions(),ptr);    } else
+    retval = Array(FM_DOUBLE,tmp.dimensions(),ptr);    } else
       retval = tmp;
   ArrayVector out;
   out.push_back(retval);
@@ -2355,7 +2355,7 @@ ArrayVector ImagFunction(int nargout, const ArrayVector& arg) {
   Array tmp(arg[0]);
   if (tmp.isReferenceType())
     throw Exception("argument to imag function must be numeric");
-  Class argType(tmp.getDataClass());
+  Class argType(tmp.dataClass());
   Array retval;
   int i;
   if (argType == FM_COMPLEX) {
@@ -2365,7 +2365,7 @@ ArrayVector ImagFunction(int nargout, const ArrayVector& arg) {
     float *ptr = (float*) Malloc(sizeof(float)*tmp.getLength());
     for (i=0;i<len;i++)
       ptr[i] = dp[2*i+1];
-    retval = Array(FM_FLOAT,tmp.getDimensions(),ptr);
+    retval = Array(FM_FLOAT,tmp.dimensions(),ptr);
   } else if (argType == FM_DCOMPLEX) {
     int len;
     len = tmp.getLength();
@@ -2373,7 +2373,7 @@ ArrayVector ImagFunction(int nargout, const ArrayVector& arg) {
     double *ptr = (double*) Malloc(sizeof(double)*tmp.getLength());
     for (i=0;i<len;i++)
       ptr[i] = dp[2*i+1];
-    retval = Array(FM_DOUBLE,tmp.getDimensions(),ptr);
+    retval = Array(FM_DOUBLE,tmp.dimensions(),ptr);
   } else {
     retval = tmp;
     int cnt;
@@ -2421,20 +2421,20 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
   Array tmp(arg[0]);
   if (tmp.isReferenceType())
     throw Exception("argument to abs function must be numeric");
-  if (tmp.isSparse()) {
+  if (tmp.sparse()) {
     Class rettype;
-    if (tmp.getDataClass() == FM_LOGICAL) return singleArrayVector(tmp);
-    rettype = tmp.getDataClass();
-    if (tmp.getDataClass() == FM_COMPLEX) rettype = FM_FLOAT;
-    if (tmp.getDataClass() == FM_DCOMPLEX) rettype = FM_DOUBLE;
-    Array retval(rettype,tmp.getDimensions(),
-		 SparseAbsFunction(tmp.getDataClass(),
+    if (tmp.dataClass() == FM_LOGICAL) return singleArrayVector(tmp);
+    rettype = tmp.dataClass();
+    if (tmp.dataClass() == FM_COMPLEX) rettype = FM_FLOAT;
+    if (tmp.dataClass() == FM_DCOMPLEX) rettype = FM_DOUBLE;
+    Array retval(rettype,tmp.dimensions(),
+		 SparseAbsFunction(tmp.dataClass(),
 				   tmp.getDimensionLength(0),
 				   tmp.getDimensionLength(1),
 				   tmp.getSparseDataPointer()),true);
     return singleArrayVector(retval);
   }
-  Class argType(tmp.getDataClass());
+  Class argType(tmp.dataClass());
   Array retval;
   int i;
   switch (argType) {
@@ -2452,7 +2452,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       int8 *op = (int8*) Malloc(sizeof(int8)*len);
       for (i=0;i<len;i++)
 	op[i] = abs(sp[i]);
-      retval = Array(FM_INT8,tmp.getDimensions(),op);
+      retval = Array(FM_INT8,tmp.dimensions(),op);
     }
     break;
   case FM_INT16:
@@ -2462,7 +2462,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       int16 *op = (int16*) Malloc(sizeof(int16)*len);
       for (i=0;i<len;i++)
 	op[i] = abs(sp[i]);
-      retval = Array(FM_INT16,tmp.getDimensions(),op);
+      retval = Array(FM_INT16,tmp.dimensions(),op);
     }
     break;
   case FM_INT32:
@@ -2472,7 +2472,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       int32 *op = (int32*) Malloc(sizeof(int32)*len);
       for (i=0;i<len;i++)
 	op[i] = abs(sp[i]);
-      retval = Array(FM_INT32,tmp.getDimensions(),op);
+      retval = Array(FM_INT32,tmp.dimensions(),op);
     }
     break;
   case FM_INT64:
@@ -2482,7 +2482,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       int64 *op = (int64*) Malloc(sizeof(int64)*len);
       for (i=0;i<len;i++)
 	op[i] = abs(sp[i]);
-      retval = Array(FM_INT64,tmp.getDimensions(),op);
+      retval = Array(FM_INT64,tmp.dimensions(),op);
     }
     break;
   case FM_FLOAT:
@@ -2492,7 +2492,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       float *op = (float*) Malloc(sizeof(float)*len);
       for (i=0;i<len;i++)
 	op[i] = fabs(sp[i]);
-      retval = Array(FM_FLOAT,tmp.getDimensions(),op);
+      retval = Array(FM_FLOAT,tmp.dimensions(),op);
     }
     break;
   case FM_DOUBLE:
@@ -2502,7 +2502,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       double *op = (double*) Malloc(sizeof(double)*len);
       for (i=0;i<len;i++)
 	op[i] = fabs(sp[i]);
-      retval = Array(FM_DOUBLE,tmp.getDimensions(),op);
+      retval = Array(FM_DOUBLE,tmp.dimensions(),op);
     }
     break;
   case FM_COMPLEX:
@@ -2512,7 +2512,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       float *op = (float*) Malloc(sizeof(float)*len);
       for (i=0;i<len;i++)
 	op[i] = complex_abs(sp[2*i],sp[2*i+1]);
-      retval = Array(FM_FLOAT,tmp.getDimensions(),op);
+      retval = Array(FM_FLOAT,tmp.dimensions(),op);
     }
     break;
   case FM_DCOMPLEX:
@@ -2522,7 +2522,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       double *op = (double*) Malloc(sizeof(double)*len);
       for (i=0;i<len;i++)
 	op[i] = complex_abs(sp[2*i],sp[2*i+1]);
-      retval = Array(FM_DOUBLE,tmp.getDimensions(),op);
+      retval = Array(FM_DOUBLE,tmp.dimensions(),op);
     }
     break;
   }
@@ -2572,7 +2572,7 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("prod requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("prod only defined for numeric types");
   if ((argType >= FM_LOGICAL) && (argType < FM_INT32)) {
@@ -2592,7 +2592,7 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   if (input.isScalar())
     return singleArrayVector(input);
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -2690,7 +2690,7 @@ ArrayVector Int2BinFunction(int nargout, const ArrayVector& arg) {
   numbits = n.getContentsAsIntegerScalar();
   if (numbits<1)
     numbits = 1;
-  Dimensions xdim(x.getDimensions());
+  Dimensions xdim(x.dimensions());
   int slicesize;
   slicesize = xdim.getElementCount();
   xdim.simplify();
@@ -2755,7 +2755,7 @@ ArrayVector Bin2IntFunction(int nargout, const ArrayVector& arg) {
     if (strcmp(flag_value,"signed") == 0)
       signflag = true;
   }
-  Dimensions xdim(x.getDimensions());
+  Dimensions xdim(x.dimensions());
   int numbits;
   numbits = xdim.get(xdim.getLength()-1);
   int slicesize;
@@ -3117,7 +3117,7 @@ ArrayVector UniqueFunctionRowModeComplex(int nargout, Array& input) {
   int rows = input.getDimensionLength(0);
   int cols = input.getDimensionLength(1); 
   int len = rows;
-  Class cls(input.getDataClass());
+  Class cls(input.dataClass());
   int i, j;
   int cnt;
   UniqueEntryComplex<T> *sp = new UniqueEntryComplex<T>[len];
@@ -3195,7 +3195,7 @@ ArrayVector UniqueFunctionRowModeReal(int nargout, Array& input) {
   int rows = input.getDimensionLength(0);
   int cols = input.getDimensionLength(1); 
   int len = rows;
-  Class cls(input.getDataClass());
+  Class cls(input.dataClass());
   int i, j;
   int cnt;
   UniqueEntryReal<T> *sp = new UniqueEntryReal<T>[len];
@@ -3322,11 +3322,11 @@ ArrayVector UniqueFunctionString(int nargout, Array& input) {
 }
   
 ArrayVector UniqueFunctionAux(int nargout, Array input, bool rowmode) {
-  if ((input.getDataClass() == FM_CELL_ARRAY) || (!rowmode)) {
+  if ((input.dataClass() == FM_CELL_ARRAY) || (!rowmode)) {
     Dimensions newdim(input.getLength(),1);
     input.reshape(newdim);
   }
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   switch (argType) {
   case FM_INT8: 
     return UniqueFunctionRowModeReal<int8>(nargout, input);
@@ -3387,7 +3387,7 @@ ArrayVector UniqueFunction(int nargout, const ArrayVector& arg) {
       throw Exception("second argument to unique must be 'rows'");
   }
   // Get the input dimensions
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (rowmode && (inDim.getLength() != 2))
     throw Exception("'rows' mode only works for matrix (2D) arguments");
   return UniqueFunctionAux(nargout, input, rowmode);
@@ -3542,12 +3542,12 @@ ArrayVector XNrm2Function(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("xnrm2 requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (input.isReferenceType())
     throw Exception("xnrm2 does not apply to reference types");
   if ((argType < FM_FLOAT) || (argType == FM_STRING)) {
     input.promoteType(FM_DOUBLE);
-    argType = input.getDataClass();
+    argType = input.dataClass();
   }
   switch (argType) {
   case FM_FLOAT: {
@@ -3645,7 +3645,7 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
     ret.push_back(Array::int32Constructor(1));
     return ret;
   }
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   // Get the dimension argument (if supplied)
   int workDim = -1;
   if (arg.size() > 1) {
@@ -3678,7 +3678,7 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
     return ret;
   }
   // No dimension supplied, look for a non-singular dimension
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   if (workDim == -1) {
     int d = 0;
     while (inDim.get(d) == 1) 
@@ -3991,7 +3991,7 @@ ArrayVector RcondFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Recip-condition number only defined for matrices with finite entries.");
   int nrows = A.getDimensionLength(0);
   int ncols = A.getDimensionLength(1);
-  Class Aclass(A.getDataClass());
+  Class Aclass(A.dataClass());
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;

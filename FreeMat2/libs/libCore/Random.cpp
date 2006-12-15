@@ -113,7 +113,7 @@ ArrayVector RandBetaFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randbeta requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -122,9 +122,9 @@ ArrayVector RandBetaFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_FLOAT);
   arg2.promoteType(FM_FLOAT);
@@ -168,7 +168,7 @@ ArrayVector RandIFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randbeta requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -177,9 +177,9 @@ ArrayVector RandIFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_INT32);
   arg2.promoteType(FM_INT32);
@@ -242,7 +242,7 @@ ArrayVector RandChiFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::emptyConstructor());
   arg1.promoteType(FM_FLOAT);
   // Output dimension is the larger of the two
-  Dimensions outDims(arg1.getDimensions());
+  Dimensions outDims(arg1.dimensions());
   float *dp;
   dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
   float *p1;
@@ -289,7 +289,7 @@ ArrayVector RandExpFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::emptyConstructor());
   arg1.promoteType(FM_FLOAT);
   // Output dimension is the larger of the two
-  Dimensions outDims(arg1.getDimensions());
+  Dimensions outDims(arg1.dimensions());
   float *dp;
   dp = (float *) Malloc(sizeof(float)*outDims.getElementCount());
   float *p1;
@@ -337,7 +337,7 @@ ArrayVector RandPoissonFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::emptyConstructor());
   arg1.promoteType(FM_FLOAT);
   // Output dimension is the larger of the two
-  Dimensions outDims(arg1.getDimensions());
+  Dimensions outDims(arg1.dimensions());
   int32 *dp;
   dp = (int32 *) Malloc(sizeof(int32)*outDims.getElementCount());
   float *p1;
@@ -385,7 +385,7 @@ ArrayVector RandBinFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randbin requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -394,9 +394,9 @@ ArrayVector RandBinFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_UINT32);
   arg2.promoteType(FM_FLOAT);
@@ -446,7 +446,7 @@ ArrayVector RandNBinFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randnbin requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -455,9 +455,9 @@ ArrayVector RandNBinFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_UINT32);
   arg2.promoteType(FM_FLOAT);
@@ -513,7 +513,7 @@ ArrayVector RandFFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randf requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -522,9 +522,9 @@ ArrayVector RandFFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_FLOAT);
   arg2.promoteType(FM_FLOAT);
@@ -585,7 +585,7 @@ ArrayVector RandGammaFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randgamma requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -594,9 +594,9 @@ ArrayVector RandGammaFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_FLOAT);
   arg2.promoteType(FM_FLOAT);
@@ -673,7 +673,7 @@ ArrayVector RandMultiFunction(int nargout, const ArrayVector& arg) {
     dp[i] /= Psum;
   }
   Dimensions outDims;
-  outDims = arg2.getDimensions();
+  outDims = arg2.dimensions();
   int32 *ip = (int32*) Malloc(sizeof(int32)*arg2.getLength());
   genmul(N,dp,arg2.getLength(),(long int*) ip);
   return singleArrayVector(Array(FM_INT32,outDims,ip));
@@ -710,7 +710,7 @@ ArrayVector RandNChiFunction(int nargout, const ArrayVector& arg) {
   if (arg1.isEmpty() || arg2.isEmpty()) 
     return singleArrayVector(Array::emptyConstructor());
   // Check the logic to see if one or both are scalar values
-  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.getDimensions().equals(arg2.getDimensions()))))
+  if (!(arg1.isScalar() || arg2.isScalar() || (arg1.dimensions().equals(arg2.dimensions()))))
     throw Exception("randnchi requires either one of the two arguments to be a scalar, or both arguments to be the same size");
   int arg1_advance;
   int arg2_advance;
@@ -719,9 +719,9 @@ ArrayVector RandNChiFunction(int nargout, const ArrayVector& arg) {
   // Output dimension is the larger of the two
   Dimensions outDims;
   if (arg1.getLength() > arg2.getLength()) {
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   } else {
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   }
   arg1.promoteType(FM_FLOAT);
   arg2.promoteType(FM_FLOAT);
@@ -782,20 +782,20 @@ ArrayVector RandNFFunction(int nargout, const ArrayVector& arg) {
   arg1_advance = (arg1.isScalar()) ? 0 : 1;
   arg2_advance = (arg2.isScalar()) ? 0 : 1;
   arg3_advance = (arg3.isScalar()) ? 0 : 1;
-  if (arg1_advance && arg2_advance && (!arg1.getDimensions().equals(arg2.getDimensions())))
+  if (arg1_advance && arg2_advance && (!arg1.dimensions().equals(arg2.dimensions())))
     throw Exception("vector arguments to randnf must be the same size");
-  if (arg1_advance && arg3_advance && (!arg1.getDimensions().equals(arg3.getDimensions())))
+  if (arg1_advance && arg3_advance && (!arg1.dimensions().equals(arg3.dimensions())))
     throw Exception("vector arguments to randnf must be the same size");
-  if (arg2_advance && arg3_advance && (!arg2.getDimensions().equals(arg3.getDimensions())))
+  if (arg2_advance && arg3_advance && (!arg2.dimensions().equals(arg3.dimensions())))
     throw Exception("vector arguments to randnf must be the same size");
   // Output dimension is the larger of the two
   Dimensions outDims;
   if ((arg1.getLength() > arg2.getLength()) && (arg1.getLength() > arg3.getLength()))
-    outDims = arg1.getDimensions();
+    outDims = arg1.dimensions();
   else if ((arg2.getLength() > arg1.getLength()) && (arg2.getLength() > arg3.getLength()))
-    outDims = arg2.getDimensions();
+    outDims = arg2.dimensions();
   else if ((arg3.getLength() > arg1.getLength()) && (arg3.getLength() > arg2.getLength()))
-    outDims = arg3.getDimensions();
+    outDims = arg3.dimensions();
   arg1.promoteType(FM_FLOAT);
   arg2.promoteType(FM_FLOAT);
   arg3.promoteType(FM_FLOAT);

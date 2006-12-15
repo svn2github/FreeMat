@@ -499,7 +499,7 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
 ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 1) {
     Array t(arg[0]);
-    if (!t.isUserClass() && t.getDataClass() == FM_STRUCT_ARRAY)
+    if (!t.isUserClass() && t.dataClass() == FM_STRUCT_ARRAY)
       return singleArrayVector(t);
     if (!t.isUserClass())
       throw Exception("can only convert objects (user-defined types) into structs");
@@ -510,7 +510,8 @@ ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
     throw Exception("struct function requires pairs of field names and values");
   int pairCount = arg.size() / 2;
   rvstring names;
-  ArrayVector values(pairCount);
+  ArrayVector values;
+  for (int i=0;i<pairCount;i++) values.push_back(Array());
   for (int i=0;i<pairCount*2;i+=2) {
     if (!(arg[i].isString()))
       throw Exception("struct function requires pairs of field names and values");

@@ -76,22 +76,22 @@ ArrayVector ExpeiFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("expei requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("expei does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("expei function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = expei_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -133,22 +133,22 @@ ArrayVector EoneFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("eone requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("eone does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("eone function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = eone_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -190,22 +190,22 @@ ArrayVector EiFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("ei requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("ei does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("ei function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = ei_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -248,22 +248,22 @@ ArrayVector ErfcxFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("erfcx requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("erfcx does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("erfcx function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erfcx_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -306,22 +306,22 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("erfc requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("erfc does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("erfc function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erfc_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -364,22 +364,22 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("erf requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("erf does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("erf function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erf_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -421,22 +421,22 @@ ArrayVector DawsonFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("dawson requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("dawson does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("dawson function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = daw_(sp+i);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -479,14 +479,14 @@ ArrayVector PsiFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("psi requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("psi does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("psi function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
@@ -498,8 +498,8 @@ ArrayVector PsiFunction(int nargout, const ArrayVector& arg) {
       dp[i] = t;
     }
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -552,14 +552,14 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("gamma requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("gamma does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("gamma function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
@@ -571,8 +571,8 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
       dp[i] = t;
     }
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
@@ -614,14 +614,14 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("gammaln requires at least one argument");
   Array tmp(arg[0]);
-  if (tmp.getDataClass() < FM_FLOAT)
+  if (tmp.dataClass() < FM_FLOAT)
     tmp.promoteType(FM_DOUBLE);
   if (tmp.isComplex())
     throw Exception("gammaln does not work with complex arguments");
   if (tmp.isReferenceType() || tmp.isString())
     throw Exception("gammaln function requires numerical arguments");
-  if (tmp.getDataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.getDimensions());
+  if (tmp.dataClass() == FM_FLOAT) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
@@ -633,8 +633,8 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
       dp[i] = t;
     }
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.getDataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.getDimensions());
+  } else if (tmp.dataClass() == FM_DOUBLE) {
+    Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);

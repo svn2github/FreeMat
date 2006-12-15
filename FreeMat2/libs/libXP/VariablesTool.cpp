@@ -57,14 +57,14 @@ void VariablesTool::refresh() {
       type = "undefined";
     } else {
       lookup = *ptr;
-      Class t = lookup.getDataClass();
+      Class t = lookup.dataClass();
       switch(t) {
       case FM_CELL_ARRAY:
 	type = "cell";
 	break;
       case FM_STRUCT_ARRAY:
 	if (lookup.isUserClass())
-	  type = QString::fromStdString(lookup.getClassName().back());
+	  type = QString::fromStdString(lookup.className().back());
 	else
 	  type = "struct";
 	break;
@@ -114,14 +114,14 @@ void VariablesTool::refresh() {
 	type = "func ptr";
 	break;
       }
-      if (lookup.isSparse())
+      if (lookup.sparse())
 	flags = "Sparse ";
       if (context->isVariableGlobal(varnames[i])) {
 	flags += "Global ";
       } else if (context->isVariablePersistent(varnames[i])) {
 	flags += "Persistent ";
       }
-      size = QString::fromStdString(lookup.getDimensions().asString());
+      size = QString::fromStdString(lookup.dimensions().asString());
       value = QString::fromStdString(ArrayToPrintableString(lookup));
     }
     m_flist->setItem(i,0,new QTableWidgetItem(varname));

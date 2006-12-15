@@ -191,10 +191,10 @@ Array ArrayFromMexArray(mxArray *array_ptr) {
 template <class mxType, class fmType>
 mxArray* MexArrayFromRealArray(Array array, mxClassID classID) {
   // Convert array dimensions into a simple integer array
-  int num_dim = array.getDimensions().getLength();
+  int num_dim = array.dimensions().getLength();
   int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
   for (int i=0;i<num_dim;i++)
-    dim_vec[i] = array.getDimensions().get(i);
+    dim_vec[i] = array.dimensions().get(i);
   mxArray *ret = mxCreateNumericArray(num_dim,dim_vec,classID,mxREAL);
   fmType *sp = (fmType*) array.getDataPointer();
   mxType *dp = (mxType*) ret->realdata;
@@ -208,10 +208,10 @@ mxArray* MexArrayFromRealArray(Array array, mxClassID classID) {
 template <class mxType, class fmType>
 mxArray* MexArrayFromComplexArray(Array array, mxClassID classID) {
   // Convert array dimensions into a simple integer array
-  int num_dim = array.getDimensions().getLength();
+  int num_dim = array.dimensions().getLength();
   int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
   for (int i=0;i<num_dim;i++)
-    dim_vec[i] = array.getDimensions().get(i);
+    dim_vec[i] = array.dimensions().get(i);
   mxArray *ret = mxCreateNumericArray(num_dim,dim_vec,classID,mxCOMPLEX);
   fmType *sp = (fmType*) array.getDataPointer();
   mxType *dp_r = (mxType*) ret->realdata;
@@ -227,10 +227,10 @@ mxArray* MexArrayFromComplexArray(Array array, mxClassID classID) {
 
 mxArray* MexArrayFromCellArray(Array array) {
   // Convert array dimensions into a simple integer array
-  int num_dim = array.getDimensions().getLength();
+  int num_dim = array.dimensions().getLength();
   int *dim_vec = (int*) malloc(sizeof(int)*num_dim);
   for (int i=0;i<num_dim;i++)
-    dim_vec[i] = array.getDimensions().get(i);
+    dim_vec[i] = array.dimensions().get(i);
   mxArray *ret = mxCreateCellArray(num_dim,dim_vec);
   Array *sp = (Array*) array.getDataPointer();
   mxArray **dp = (mxArray **) ret->realdata;
@@ -242,7 +242,7 @@ mxArray* MexArrayFromCellArray(Array array) {
 }
 
 mxArray* MexArrayFromArray(Array array) {
-  switch(array.getDataClass()) {
+  switch(array.dataClass()) {
   case FM_FUNCPTR_ARRAY:
     return NULL;
   case FM_CELL_ARRAY:

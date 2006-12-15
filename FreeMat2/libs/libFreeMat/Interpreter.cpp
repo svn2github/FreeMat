@@ -656,7 +656,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       functionExpression(t,lhsCount,false,q);
       return;
     }
-    if (ptr->getDataClass() == FM_FUNCPTR_ARRAY &&
+    if (ptr->dataClass() == FM_FUNCPTR_ARRAY &&
 	ptr->isScalar()) {
       q += FunctionPointerDispatch(*ptr,t.second(),1);
       return;
@@ -665,7 +665,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       q.push_back(*ptr);
       return;
     }
-    //    if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->getClassName().back())) {
+    //    if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
     //      treeVector indexExpr(t.children());
     //      indexExpr.erase(indexExpr.begin());
     //      return ClassRHSExpression(*ptr,indexExpr,this);
@@ -722,19 +722,16 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
 }
 
 Array Interpreter::expression(const tree &t) {
-  Array retval;
   switch(t.token()) {
   case TOK_VARIABLE: 
-    retval = rhs(t);
-    break;
+    return rhs(t);
   case TOK_INTEGER:
   case TOK_FLOAT:
   case TOK_DOUBLE:
   case TOK_COMPLEX:
   case TOK_DCOMPLEX:
   case TOK_STRING:
-    retval = t.array();
-    break;
+    return t.array();
   case TOK_END:
     if (!endRef) 
       throw Exception("END keyword illegal (internal error - please file a bug report with the code that produced this message)!");
@@ -744,89 +741,89 @@ Array Interpreter::expression(const tree &t) {
       return Array::int32Constructor(endRef->getDimensionLength(endCount));
   case ':':
     if (t.numchildren() == 0) {
-      retval = Array::stringConstructor(":");
+      return Array::stringConstructor(":");
     } else if (t.first().is(':')) {
-      retval = doubleColon(t);
+      return doubleColon(t);
     } else {
-      retval = unitColon(t);
+      return unitColon(t);
     }
     break;
   case TOK_MATDEF: 
-    retval = matrixDefinition(t); 
+    return matrixDefinition(t); 
     break;
   case TOK_CELLDEF: 
-    retval = cellDefinition(t); 
+    return cellDefinition(t); 
     break;
   case '+': 
-    retval = DoBinaryOperator(t,Add,"plus"); 
+    return DoBinaryOperator(t,Add,"plus"); 
     break;
   case '-': 
-    retval = DoBinaryOperator(t,Subtract,"minus"); 
+    return DoBinaryOperator(t,Subtract,"minus"); 
     break;
   case '*': 
-    retval = DoBinaryOperator(t,Multiply,"mtimes"); 
+    return DoBinaryOperator(t,Multiply,"mtimes"); 
     break;
   case '/': 
-    retval = DoBinaryOperator(t,RightDivide,"mrdivide");
+    return DoBinaryOperator(t,RightDivide,"mrdivide");
     break;
   case '\\': 
-    retval = DoBinaryOperator(t,LeftDivide,"mldivide"); 
+    return DoBinaryOperator(t,LeftDivide,"mldivide"); 
     break;
   case TOK_SOR: 
   case '|': 
-    retval = ShortCutOr(t); 
+    return ShortCutOr(t); 
     break;
   case TOK_SAND: 
   case '&': 
-    retval = ShortCutAnd(t); 
+    return ShortCutAnd(t); 
     break;
   case '<': 
-    retval = DoBinaryOperator(t,LessThan,"lt"); 
+    return DoBinaryOperator(t,LessThan,"lt"); 
     break;
   case TOK_LE: 
-    retval = DoBinaryOperator(t,LessEquals,"le"); 
+    return DoBinaryOperator(t,LessEquals,"le"); 
     break;
   case '>': 
-    retval = DoBinaryOperator(t,GreaterThan,"gt"); 
+    return DoBinaryOperator(t,GreaterThan,"gt"); 
     break;
   case TOK_GE: 
-    retval = DoBinaryOperator(t,GreaterEquals,"ge"); 
+    return DoBinaryOperator(t,GreaterEquals,"ge"); 
     break;
   case TOK_EQ: 
-    retval = DoBinaryOperator(t,Equals,"eq"); 
+    return DoBinaryOperator(t,Equals,"eq"); 
     break;
   case TOK_NE: 
-    retval = DoBinaryOperator(t,NotEquals,"ne"); 
+    return DoBinaryOperator(t,NotEquals,"ne"); 
     break;
   case TOK_DOTTIMES: 
-    retval = DoBinaryOperator(t,DotMultiply,"times"); 
+    return DoBinaryOperator(t,DotMultiply,"times"); 
     break;
   case TOK_DOTRDIV: 
-    retval = DoBinaryOperator(t,DotRightDivide,"rdivide"); 
+    return DoBinaryOperator(t,DotRightDivide,"rdivide"); 
     break;
   case TOK_DOTLDIV: 
-    retval = DoBinaryOperator(t,DotLeftDivide,"ldivide"); 
+    return DoBinaryOperator(t,DotLeftDivide,"ldivide"); 
     break;
   case TOK_UNARY_MINUS: 
-    retval = DoUnaryOperator(t,Negate,"uminus"); 
+    return DoUnaryOperator(t,Negate,"uminus"); 
     break;
   case TOK_UNARY_PLUS: 
-    retval = DoUnaryOperator(t,Plus,"uplus"); 
+    return DoUnaryOperator(t,Plus,"uplus"); 
     break;
   case '~': 
-    retval = DoUnaryOperator(t,Not,"not"); 
+    return DoUnaryOperator(t,Not,"not"); 
     break;
   case '^': 
-    retval = DoBinaryOperator(t,Power,"mpower"); 
+    return DoBinaryOperator(t,Power,"mpower"); 
     break;
   case TOK_DOTPOWER: 
-    retval = DoBinaryOperator(t,DotPower,"power"); 
+    return DoBinaryOperator(t,DotPower,"power"); 
     break;
   case '\'': 
-    retval = DoUnaryOperator(t,Transpose,"ctranspose"); 
+    return DoUnaryOperator(t,Transpose,"ctranspose"); 
     break;
   case TOK_DOTTRANSPOSE: 
-    retval = DoUnaryOperator(t,DotTranspose,"transpose"); 
+    return DoUnaryOperator(t,DotTranspose,"transpose"); 
     break;
   case '@':
     {
@@ -834,13 +831,12 @@ Array Interpreter::expression(const tree &t) {
       if (!lookupFunction(t.first().text(),val))
 	throw Exception("unable to resolve " + t.first().text() + 
 			" to a function call");
-      retval = Array::funcPtrConstructor(val);
+      return Array::funcPtrConstructor(val);
       break;
     }
   default:
     throw Exception("Unrecognized expression!");
   }
-  return retval;
 }
 
 //!
@@ -1278,7 +1274,7 @@ void ForLoopHelper(const tree &codeBlock, Class indexClass, const T *indexSet,
   Scope *scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
     Array *vp = scope->lookupVariable(indexName);
-    if ((!vp) || (vp->getDataClass() != indexClass) || (!vp->isScalar())) {
+    if ((!vp) || (vp->dataClass() != indexClass) || (!vp->isScalar())) {
       scope->insertVariable(indexName,Array(indexClass,Dimensions(1,1)));
       vp = scope->lookupVariable(indexName);
     }
@@ -1299,7 +1295,7 @@ void ForLoopHelperComplex(const tree &codeBlock, Class indexClass,
   Scope *scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
     Array *vp = scope->lookupVariable(indexName);
-    if ((!vp) || (vp->getDataClass() != indexClass) || (!vp->isScalar())) {
+    if ((!vp) || (vp->dataClass() != indexClass) || (!vp->isScalar())) {
       scope->insertVariable(indexName,Array(indexClass,Dimensions(1,1)));
       vp = scope->lookupVariable(indexName);
     }
@@ -1385,7 +1381,7 @@ void Interpreter::forStatement(const tree &t) {
   tree codeBlock(t.second());
   int elementCount = indexSet.getLength();
 
-  Class loopType(indexSet.getDataClass());
+  Class loopType(indexSet.dataClass());
   ContextLoopLocker lock(context);
   switch(loopType) {
   case FM_FUNCPTR_ARRAY:
@@ -1984,7 +1980,7 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   if (var.numchildren() == 1) {
     ptr->setValue(b);
   } else if (ptr->isUserClass() && 
-	     !inMethodCall(ptr->getClassName().back()) && 
+	     !inMethodCall(ptr->className().back()) && 
 	     !stopoverload) {
     ClassAssignExpression(ptr,var,b,this);
   } else if (var.numchildren() == 2)
@@ -2376,7 +2372,7 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
       ptr = context->lookupVariable(name);
     }
     if (ptr->isUserClass() && 
-	!inMethodCall(ptr->getClassName().back()) && 
+	!inMethodCall(ptr->className().back()) && 
 	!stopoverload) {
       ClassAssignExpression(ptr,t,m.front(),this);
       m.pop_front();
@@ -2920,7 +2916,10 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
   else
     totalCount = maxndx+1+(m.size() - holes);
   // Next, we allocate a vector to hold the values
-  ArrayVector toFill(totalCount);
+  ArrayVector toFill;
+  for (int i=0;i<totalCount;i++)
+    toFill.push_back(Array());
+  //  ArrayVector toFill(totalCount);
   bool *filled = new bool[totalCount];
   int *argTypeMap = new int[totalCount];
   for (int i=0;i<totalCount;i++) {
@@ -3637,7 +3636,7 @@ void Interpreter::deref(Array &r, const tree &s) {
     else
       return Array::emptyConstructor();
   }
-  if (ptr->getDataClass() == FM_FUNCPTR_ARRAY &&
+  if (ptr->dataClass() == FM_FUNCPTR_ARRAY &&
       ptr->isScalar()) {
     ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
     if (m.size() >= 1)
@@ -3647,7 +3646,7 @@ void Interpreter::deref(Array &r, const tree &s) {
   }
   if (t.numchildren() == 1)
     return *ptr;
-  if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->getClassName().back())) {
+  if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
     ArrayVector m(ClassRHSExpression(*ptr,t,this));
     if (m.size() >= 1)
       return m[0];

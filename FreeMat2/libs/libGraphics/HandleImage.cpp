@@ -240,13 +240,13 @@ void HandleImage::UpdateCAlphaData() {
   std::vector<double> alphas(GetAlphaMap(cdata.getDimensionLength(0),
 					 cdata.getDimensionLength(1)));
   // Check for the indexed or non-indexed case
-  if ((cdata.getDimensions().getLength() == 3) &&
+  if ((cdata.dimensions().getLength() == 3) &&
       (cdata.getDimensionLength(2) == 3)) {
     PrepImageRGBNoAlphaMap((const double*)cdata.getDataPointer(),
 			   cdata.getDimensionLength(0),
 			   cdata.getDimensionLength(1),
 			   alphas);
-  } else if (cdata.getDimensions().getLength() == 2) {
+  } else if (cdata.dimensions().getLength() == 2) {
     double *dp = RGBExpandImage((const double*)cdata.getDataPointer(),
 				cdata.getDimensionLength(0),
 				cdata.getDimensionLength(1));

@@ -105,7 +105,7 @@ ArrayVector DispFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() == 1) {
     Array r(arg[0]);
-    if ((r.getDataClass() != FM_LOGICAL) && (r.getDataClass() < FM_INT32))
+    if ((r.dataClass() != FM_LOGICAL) && (r.dataClass() < FM_INT32))
       r.promoteType(FM_INT32);
     r.makeSparse();
     return singleArrayVector(r);
@@ -123,7 +123,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     Array v_arg(arg[2]);
     i_arg.promoteType(FM_UINT32);
     j_arg.promoteType(FM_UINT32);
-    if (v_arg.getDataClass() != FM_LOGICAL && v_arg.getDataClass() < FM_INT32)
+    if (v_arg.dataClass() != FM_LOGICAL && v_arg.dataClass() < FM_INT32)
       v_arg.promoteType(FM_INT32);
     int ilen, jlen, vlen;
     ilen = i_arg.getLength();
@@ -163,8 +163,8 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     for (int j=0;j<jlen;j++)
       cols = (jp[j] > cols) ? jp[j] : cols;
     Dimensions dim(rows,cols);
-    return singleArrayVector(Array(v_arg.getDataClass(),dim,
-				   makeSparseFromIJV(v_arg.getDataClass(),
+    return singleArrayVector(Array(v_arg.dataClass(),dim,
+				   makeSparseFromIJV(v_arg.dataClass(),
 						     rows,cols,olen,
 						     ip,istride,jp,jstride,
 						     v_arg.getDataPointer(),
@@ -178,7 +178,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     Array v_arg(arg[2]);
     i_arg.promoteType(FM_UINT32);
     j_arg.promoteType(FM_UINT32);
-    if (v_arg.getDataClass() != FM_LOGICAL && v_arg.getDataClass() < FM_INT32)
+    if (v_arg.dataClass() != FM_LOGICAL && v_arg.dataClass() < FM_INT32)
       v_arg.promoteType(FM_INT32);
     int ilen, jlen, vlen;
     ilen = i_arg.getLength();
@@ -215,8 +215,8 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     Dimensions dim(rows,cols);
     uint32 *ip = (uint32*) i_arg.getDataPointer();
     uint32 *jp = (uint32*) j_arg.getDataPointer();
-    return singleArrayVector(Array(v_arg.getDataClass(),dim,
-				   makeSparseFromIJV(v_arg.getDataClass(),
+    return singleArrayVector(Array(v_arg.dataClass(),dim,
+				   makeSparseFromIJV(v_arg.dataClass(),
 						     rows,cols,olen,
 						     ip,istride,jp,jstride,
 						     v_arg.getDataPointer(),
@@ -335,7 +335,7 @@ ArrayVector LUFunction(int nargout, const ArrayVector& arg) {
     throw Exception("cannot apply lu decomposition to reference types.");
   if (!A.is2D())
     throw Exception("cannot apply matrix operations to N-dimensional arrays");
-  if (!A.isSparse()) {
+  if (!A.sparse()) {
     if (A.anyNotFinite())
       throw Exception("lu decomposition only defined for matrices with finite entries.");
     return LUDecompose(nargout,A);
@@ -384,7 +384,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
   Array B(arg[1]);
   if (!A.is2D() || !B.is2D())
     throw Exception("cannot apply matrix operations to N-dimensional arrays.");
-  if (A.isSparse() || B.isSparse())
+  if (A.sparse() || B.sparse())
     throw Exception("eig only defined for full matrices.");
 
   if (A.anyNotFinite() || B.anyNotFinite())
@@ -652,7 +652,7 @@ ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("eigs function requires at least one argument");
   Array A(arg[0]);
-  if (!A.isSparse())
+  if (!A.sparse())
     throw Exception("eigs only applies to sparse matrix arguments");
   int k;
   if (A.getDimensionLength(0) != A.getDimensionLength(1))
@@ -752,7 +752,7 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
     ncols = nrows;
   } else 
     compactDec = true;
-  Class Aclass(A.getDataClass());
+  Class Aclass(A.dataClass());
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -875,7 +875,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
     ncols = nrows;
   } else 
     compactDec = true;
-  Class Aclass(A.getDataClass());
+  Class Aclass(A.dataClass());
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -1195,7 +1195,7 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
     throw Exception("SVD only defined for matrices with finite entries.");
   int nrows = A.getDimensionLength(0);
   int ncols = A.getDimensionLength(1);
-  Class Aclass(A.getDataClass());
+  Class Aclass(A.dataClass());
   if (Aclass < FM_FLOAT) {
     A.promoteType(FM_DOUBLE);
     Aclass = FM_DOUBLE;
@@ -1633,9 +1633,9 @@ ArrayVector SponesFunction(int nargout, const ArrayVector& arg) {
   if(tmp.isReferenceType())
     throw Exception("spones function requires a numeric sparse matrix argument");
   tmp.makeSparse();
-  if (!tmp.isSparse())
+  if (!tmp.sparse())
     throw Exception("spones function requires a sparse matrix template argument");
-  return singleArrayVector(Array::Array(FM_FLOAT,Dimensions(tmp.getDimensionLength(0),tmp.getDimensionLength(1)),SparseOnesFunc(tmp.getDataClass(),tmp.getDimensionLength(0),tmp.getDimensionLength(1),tmp.getSparseDataPointer()),true));
+  return singleArrayVector(Array::Array(FM_FLOAT,Dimensions(tmp.getDimensionLength(0),tmp.getDimensionLength(1)),SparseOnesFunc(tmp.dataClass(),tmp.getDimensionLength(0),tmp.getDimensionLength(1),tmp.getSparseDataPointer()),true));
 }
 
 //!
@@ -2179,7 +2179,7 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
 ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   if (arg.size() == 0)
     throw Exception("feval function requires at least one argument");
-  if (!(arg[0].isString()) && (arg[0].getDataClass() != FM_FUNCPTR_ARRAY))
+  if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY))
     throw Exception("first argument to feval must be the name of a function (i.e., a string) or a function handle");
   FunctionDef *funcDef;
   if (arg[0].isString()) {
@@ -2279,16 +2279,16 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
   for (i=0;i<repcount.getLength();i++)
     if (repcount.get(i) < 0) throw Exception("negative replication counts not allowed in argument to repmat function");
   // All is peachy.  Allocate an output array of sufficient size.
-  Dimensions originalSize(x.getDimensions());
+  Dimensions originalSize(x.dimensions());
   Dimensions outdims;
   int outdim;
   outdim = MAX(repcount.getLength(),originalSize.getLength());
   for (i=0;i<outdim;i++)
     outdims.set(i,originalSize.get(i)*repcount.get(i));
   outdims.simplify();
-  void *dp = Array::allocateArray(x.getDataClass(),
+  void *dp = Array::allocateArray(x.dataClass(),
 				  outdims.getElementCount(),
-				  x.getFieldNames());
+				  x.fieldNames());
   // Copy can work by pushing or by pulling.  I have opted for
   // pushing, because we can push a column at a time, which might
   // be slightly more efficient.
@@ -2324,7 +2324,7 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
     copySelect.incrementModulo(repcount,0);
   }
   ArrayVector retval;
-  retval.push_back(Array(x.getDataClass(),outdims,dp,false,x.getFieldNames()));
+  retval.push_back(Array(x.dataClass(),outdims,dp,false,x.fieldNames()));
   return retval;
 }
 
@@ -2490,7 +2490,7 @@ static void Conv2MainComplex(T* C, const T* A, const T*B,
 
 Array Conv2FunctionDispatch(Array X,Array Y,int Cm,int Cn,
 			    int Cm_offset, int Cn_offset) {
-  switch (X.getDataClass()) {
+  switch (X.dataClass()) {
   case FM_FLOAT: {
     float *cp = (float*) Array::allocateArray(FM_FLOAT,Cm*Cn);
     Conv2MainReal<float>(cp,

@@ -130,8 +130,8 @@ rvstring UserClass::getParentClasses() {
 
 Array ClassAux(Array s, std::string classname, rvstring parentNames, 
 	       ArrayVector parents, Interpreter* eval) {
-  UserClass newclass(s.getFieldNames(),parentNames);
-  if (s.getDataClass() != FM_STRUCT_ARRAY) 
+  UserClass newclass(s.fieldNames(),parentNames);
+  if (s.dataClass() != FM_STRUCT_ARRAY) 
     throw Exception("first argument to 'class' function must be a structure");
   // Check to see if this class has already been registered
   if (!eval->isUserClassDefined(classname)) {
@@ -146,20 +146,20 @@ Array ClassAux(Array s, std::string classname, rvstring parentNames,
   // Set up the new structure array.  We do this by constructing a set of fieldnames
   // that includes fields for the parent classes...  To resolve - what happens
   // if the parent arrays are different sizes than the current class.
-  rvstring newfields(s.getFieldNames());
+  rvstring newfields(s.fieldNames());
   // We should check for duplicates!
   for (int i=0;i<parentNames.size();i++)
     newfields.push_back(parentNames.at(i));
   // Now check to make sure all of the parent objects are the same size
   // as the source object
   for (int i=0;i<parents.size();i++) 
-    if (!s.getDimensions().equals(parents[i].getDimensions()))
+    if (!s.dimensions().equals(parents[i].dimensions()))
       throw Exception("parent object much match dimensions of the structure used to make the object");
   // Finally, we can construct the new structure object.
   Array* dp = (Array *) Array::allocateArray(FM_STRUCT_ARRAY,s.getLength(),newfields);
   const Array* sp = (const Array*) s.getDataPointer();
   // Now we copy in the data from the original structure
-  int oldFieldCount(s.getFieldNames().size());
+  int oldFieldCount(s.fieldNames().size());
   int newFieldCount(newfields.size());
   int arrayLength(s.getLength());
   for (int i=0;i<arrayLength;i++)
@@ -173,7 +173,7 @@ Array ClassAux(Array s, std::string classname, rvstring parentNames,
       dp[i*newFieldCount+oldFieldCount+j] = parents[j].getVectorSubset(ndx);
     }
   // return a new object with the specified properties
-  Array retval(FM_STRUCT_ARRAY,s.getDimensions(),dp,false,newfields);
+  Array retval(FM_STRUCT_ARRAY,s.dimensions(),dp,false,newfields);
   rvstring cp;
   cp.push_back(classname);
   retval.setClassName(cp);
@@ -182,10 +182,10 @@ Array ClassAux(Array s, std::string classname, rvstring parentNames,
 
 Array ClassOneArgFunction(Array x) {
   if (x.isUserClass()) {
-    std::string p(x.getClassName().back());
-    return Array::stringConstructor(x.getClassName().back());
+    std::string p(x.className().back());
+    return Array::stringConstructor(x.className().back());
   } else {
-    switch (x.getDataClass()) {
+    switch (x.dataClass()) {
     case FM_CELL_ARRAY:
       return Array::stringConstructor("cell");
     case FM_STRUCT_ARRAY:
@@ -799,7 +799,7 @@ ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
     if (!parent.isUserClass())
       throw Exception("parent objects must be user defined classes");
     parents.push_back(parent);
-    parentNames.push_back(parent.getClassName().back());
+    parentNames.push_back(parent.className().back());
   }
   Array sval(arg[0]);
   Array classname(arg[1]);
@@ -829,7 +829,7 @@ bool ClassSearchOverload(Interpreter* eval, ArrayVector t,
   bool overload = false;
   int k = 0;
   while (k<userset.size() && !overload) {
-    overload = eval->getContext()->lookupFunction(ClassMangleName(t[userset[k]].getClassName().back(),name),val);
+    overload = eval->getContext()->lookupFunction(ClassMangleName(t[userset[k]].className().back(),name),val);
     if (!overload) k++;
   }
   if (!overload)
@@ -901,7 +901,7 @@ Array ClassUnaryOperator(Array a, std::string funcname,
 			 Interpreter* eval) {
   FuncPtr val;
   ArrayVector m, n;
-  if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) {
+  if (eval->getContext()->lookupFunction(ClassMangleName(a.className().back(),funcname),val)) {
     val->updateCode();
     m.push_back(a);
     n = val->evaluateFunction(eval,m,1);
@@ -910,21 +910,21 @@ Array ClassUnaryOperator(Array a, std::string funcname,
     else
       return Array::emptyConstructor();
   }
-  throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
+  throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.className().back());
 }
 
 bool ClassResolveFunction(Interpreter* eval, Array& args, std::string funcName, FuncPtr& val) {
   Context *context = eval->getContext();
   // First try to resolve to a method of the base class
-  if (context->lookupFunction(ClassMangleName(args.getClassName().back(),funcName),val)) {
+  if (context->lookupFunction(ClassMangleName(args.className().back(),funcName),val)) {
     return true;
   } 
-  UserClass eclass(eval->lookupUserClass(args.getClassName().back()));
+  UserClass eclass(eval->lookupUserClass(args.className().back()));
   rvstring parentClasses(eclass.getParentClasses());
   // Now check the parent classes
   for (int i=0;i<parentClasses.size();i++) {
     if (context->lookupFunction(ClassMangleName(parentClasses.at(i),funcName),val)) {
-      rvstring argClass(args.getClassName());
+      rvstring argClass(args.className());
       argClass.push_back(parentClasses.at(i));
       args.setClassName(argClass);
       return true;
@@ -935,7 +935,7 @@ bool ClassResolveFunction(Interpreter* eval, Array& args, std::string funcName, 
 }
 
 void printClassNames(Array a) {
-  rvstring classname(a.getClassName());
+  rvstring classname(a.className());
   for (int i=0;i<classname.size();i++)
     std::cout << "class " << classname.at(i) << "\r\n";
 }
@@ -969,17 +969,17 @@ Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname,
 			   Interpreter* eval) {
   FuncPtr val;
   if (a.isUserClass()) {
-    if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) 
+    if (eval->getContext()->lookupFunction(ClassMangleName(a.className().back(),funcname),val)) 
       return ClassTriOp(a,b,c,val,eval);
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.className().back());
   } else if (b.isUserClass()) {
-    if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) 
+    if (eval->getContext()->lookupFunction(ClassMangleName(b.className().back(),funcname),val)) 
       return ClassTriOp(a,b,c,val,eval);
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.className().back());
   } else if (c.isUserClass()) {
-    if (eval->getContext()->lookupFunction(ClassMangleName(c.getClassName().back(),funcname),val)) 
+    if (eval->getContext()->lookupFunction(ClassMangleName(c.className().back(),funcname),val)) 
       return ClassTriOp(a,b,c,val,eval);
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.className().back());
   }
 }
 
@@ -987,13 +987,13 @@ Array ClassBinaryOperator(Array a, Array b, std::string funcname,
 			  Interpreter* eval) {
   FuncPtr val;
   if (a.isUserClass()) {
-    if (eval->getContext()->lookupFunction(ClassMangleName(a.getClassName().back(),funcname),val)) 
+    if (eval->getContext()->lookupFunction(ClassMangleName(a.className().back(),funcname),val)) 
       return ClassBiOp(a,b,val,eval);
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.getClassName().back());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + a.className().back());
   } else if (b.isUserClass()) {
-    if (eval->getContext()->lookupFunction(ClassMangleName(b.getClassName().back(),funcname),val)) 
+    if (eval->getContext()->lookupFunction(ClassMangleName(b.className().back(),funcname),val)) 
       return ClassBiOp(a,b,val,eval);
-    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.getClassName().back());
+    throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.className().back());
   }
 }
 
@@ -1079,7 +1079,7 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
     
  // Try and look up subsref, _unless_ we are already in a method 
  // of this class
- if (!eval->inMethodCall(r.getClassName().back()))
+ if (!eval->inMethodCall(r.className().back()))
    if (ClassResolveFunction(eval,r,"subsref",val)) {
      // Overloaded subsref case
      return ClassSubsrefCall(eval,t,r,val);
@@ -1128,7 +1128,7 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
    }
    if (t.child(index).is('.')) {
      // This is where the classname chain comes into being.
-     rvstring className(r.getClassName());
+     rvstring className(r.className());
      for (int i=1;i<className.size();i++) {
 	rv = r.getFieldAsList(className.at(i));
 	r = rv[0];
@@ -1163,7 +1163,7 @@ void ClassAssignExpression(Array *dst, const tree &t, const Array& value, Interp
   FuncPtr val;
   if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
     throw Exception("The method 'subsasgn' is not defined for objects of class " + 
-		    dst->getClassName().back());
+		    dst->className().back());
   ArrayVector p;
   p.push_back(*dst);
   p.push_back(IndexExpressionToStruct(eval,t, *dst));
@@ -1176,7 +1176,7 @@ void ClassAssignExpression(Array *dst, const tree &t, const Array& value, Interp
   if (!n.empty())
     *dst = n[0];
   else
-    eval->warningMessage(std::string("'subsasgn' for class ") + dst->getClassName().back() + std::string(" did not return a value... operation has no effect."));
+    eval->warningMessage(std::string("'subsasgn' for class ") + dst->className().back() + std::string(" did not return a value... operation has no effect."));
 }
 
 // Ideally, this would be the only place where the class name is mangled.

@@ -22,8 +22,11 @@
 #include "Sparse.hpp"
 #include <QDebug>
 
+int DataMakeCount = 0;
+
 void * Data::copyDataBlock(void *dp) {
   //  qDebug() << "Copy!\n";
+  DataMakeCount++;
   if (m_dataClass == FM_FUNCPTR_ARRAY) {
     FunctionDef **cp = new FunctionDef*[m_dimensions.getElementCount()];
     for (int i=0;i<m_dimensions.getElementCount();i++)

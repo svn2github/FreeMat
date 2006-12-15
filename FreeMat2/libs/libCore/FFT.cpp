@@ -128,7 +128,7 @@ void dcomplex_fft_backward(int Narg, double *dp) {
 
 Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
 			 bool inverse) {
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   // Allocate the output vector...
   Dimensions outDim(inDim);
   outDim.set(FFTDim,FFTLen);
@@ -189,7 +189,7 @@ Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
 
 Array dcomplexFFTFunction(const Array& input, int FFTLen, int FFTDim,
 			  bool inverse) {
-  Dimensions inDim(input.getDimensions());
+  Dimensions inDim(input.dimensions());
   // Allocate the output vector...
   Dimensions outDim(inDim);
   outDim.set(FFTDim,FFTLen);
@@ -344,7 +344,7 @@ ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("FFT requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType <= FM_COMPLEX && argType != FM_DOUBLE)
     input.promoteType(FM_COMPLEX);
   else
@@ -372,7 +372,7 @@ ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {
   }
   // Was the dimension specified?  If not, search for it...
   if (FFTDim == -1) {
-    Dimensions inDim(input.getDimensions());
+    Dimensions inDim(input.dimensions());
     int d = 0;
     while (inDim.get(d) == 1) 
       d++;
@@ -382,7 +382,7 @@ ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {
     FFTLength = input.getDimensionLength(FFTDim);
   // Handle the fft based on the case...
   ArrayVector retval;
-  if (input.getDataClass() == FM_COMPLEX)
+  if (input.dataClass() == FM_COMPLEX)
     retval.push_back(complexFFTFunction(input,FFTLength,FFTDim,false));
   else
     retval.push_back(dcomplexFFTFunction(input,FFTLength,FFTDim,false));
@@ -394,7 +394,7 @@ ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("IFFT requires at least one argument");
   Array input(arg[0]);
-  Class argType(input.getDataClass());
+  Class argType(input.dataClass());
   if (argType <= FM_COMPLEX  && argType != FM_DOUBLE)
     input.promoteType(FM_COMPLEX);
   else
@@ -422,7 +422,7 @@ ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
   }
   // Was the dimension specified?  If not, search for it...
   if (FFTDim == -1) {
-    Dimensions inDim(input.getDimensions());
+    Dimensions inDim(input.dimensions());
     int d = 0;
     while (inDim.get(d) == 1) 
       d++;
@@ -432,7 +432,7 @@ ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
     FFTLength = input.getDimensionLength(FFTDim);
   // Handle the fft based on the case...
   ArrayVector retval;
-  if (input.getDataClass() == FM_COMPLEX)
+  if (input.dataClass() == FM_COMPLEX)
     retval.push_back(complexFFTFunction(input,FFTLength,FFTDim,true));
   else
     retval.push_back(dcomplexFFTFunction(input,FFTLength,FFTDim,true));

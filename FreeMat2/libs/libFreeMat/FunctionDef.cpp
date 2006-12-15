@@ -184,7 +184,9 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
       }
       if ((nargout > 0) || 
 	  ((nargout == 0) && (!nonpredefed))) {
-	outputs = ArrayVector(returnVals.size());
+	outputs = ArrayVector();
+	for (int i=0;i<returnVals.size();i++) outputs.push_back(Array());
+	//	outputs = ArrayVector(returnVals.size());
 	for (int i=0;i<returnVals.size();i++) {
 	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
 	  if (!ptr)
@@ -199,7 +201,8 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
 	}
       }
     } else {
-      outputs = ArrayVector(nargout);
+      outputs = ArrayVector();
+      for (int i=0;i<nargout;i++) outputs.push_back(Array());
       int explicitCount = returnVals.size() - 1;
       // For each explicit argument (that we have), insert it
       // into the scope.
@@ -223,7 +226,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
 	if (!ptr)
 	  throw Exception("The special variable 'varargout' was not defined as expected");
 	varargout = *ptr;
-	if (varargout.getDataClass() != FM_CELL_ARRAY)
+	if (varargout.dataClass() != FM_CELL_ARRAY)
 	  throw Exception("The special variable 'varargout' was not defined as a cell-array");
 	// Get the data pointer
 	const Array *dp = ((const Array*) varargout.getDataPointer());

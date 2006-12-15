@@ -864,7 +864,7 @@ ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
 }
 
 int refcount = 0;
-//extern int DataMakeCount;
+extern int DataMakeCount;
 // If the argument vector is numeric, we can
 ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) return ArrayVector();
@@ -1065,7 +1065,7 @@ ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval
       ((int32*) vp->getReadWriteDataPointer())[0] = m+1;
     }
   } else if (runtype == 16) {
-    //    B = Array::int32Constructor(DataMakeCount);
+    B = Array::int32Constructor(DataMakeCount);
   } else if (runtype == 17) {
     Context *context = eval->getContext();
     Array I(Array::int32Constructor(0));

@@ -265,7 +265,7 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
 
 // Print the class type and size information for the array
 void PrintArrayClassAndSize(Array A, Interpreter* io) {
-  switch(A.getDataClass()) {
+  switch(A.dataClass()) {
   case FM_UINT8:
     io->outputMessage("  <uint8>  ");
     break;
@@ -314,7 +314,7 @@ void PrintArrayClassAndSize(Array A, Interpreter* io) {
   case FM_STRUCT_ARRAY:
     if (A.isUserClass()) {
       io->outputMessage(" ");
-      io->outputMessage(A.getClassName().back().c_str());
+      io->outputMessage(A.className().back().c_str());
       io->outputMessage(" object");
     } else
       io->outputMessage("  <structure array> ");
@@ -323,7 +323,7 @@ void PrintArrayClassAndSize(Array A, Interpreter* io) {
     io->outputMessage("  <function ptr array>  ");
   }
   io->outputMessage("- size: ");
-  A.getDimensions().printMe(io);
+  A.dimensions().printMe(io);
   io->outputMessage("\n");
 }
 
@@ -463,15 +463,15 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
   int termWidth = io->getTerminalWidth();
   if (showClassSize)
     PrintArrayClassAndSize(A,io);
-  Class Aclass(A.getDataClass());
-  Dimensions Adims(A.getDimensions());
+  Class Aclass(A.dataClass());
+  Dimensions Adims(A.dimensions());
   if (A.isUserClass())
     return;
   if (A.isEmpty()) {
     io->outputMessage("  []\n");
     return;
   }
-  if (A.isSparse()) {
+  if (A.sparse()) {
     sprintf(msgBuffer,"\tMatrix is sparse with %d nonzeros\n",
 	    A.getNonzeros());
     io->outputMessage(msgBuffer);
@@ -481,18 +481,18 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
     if (Adims.isScalar()) {
       Array *ap;
       ap = (Array *) A.getDataPointer();
-      for (int n=0;n<A.getFieldNames().size();n++) {
+      for (int n=0;n<A.fieldNames().size();n++) {
 	io->outputMessage("    ");
-	io->outputMessage(A.getFieldNames().at(n).c_str());
+	io->outputMessage(A.fieldNames().at(n).c_str());
 	io->outputMessage(": ");
 	ap[n].summarizeCellEntry();
 	io->outputMessage("\n");
       }
     } else {
       io->outputMessage("  Fields\n");
-      for (int n=0;n<A.getFieldNames().size();n++) {
+      for (int n=0;n<A.fieldNames().size();n++) {
 	io->outputMessage("    ");
-	io->outputMessage(A.getFieldNames().at(n).c_str());
+	io->outputMessage(A.fieldNames().at(n).c_str());
 	io->outputMessage("\n");
       }
     }
@@ -542,9 +542,9 @@ string ArrayToPrintableString(const Array& a) {
   if (!a.isScalar() && !a.isString())
     return string("");
   ArrayFormat format = ScanFormatArray(a.getDataPointer(),
-				       a.getDataClass(),1);
+				       a.dataClass(),1);
   const void *dp = a.getDataPointer();
-  switch (a.getDataClass()) {
+  switch (a.dataClass()) {
   case FM_INT8: {
     const int8 *ap;
     ap = (const int8*) dp;

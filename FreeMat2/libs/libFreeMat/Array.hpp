@@ -28,6 +28,7 @@
 #include "Data.hpp"
 #include "RefVec.hpp"
 #include <QVector>
+#include <QList>
 #include <QSharedDataPointer>
 
 class Array;
@@ -36,7 +37,8 @@ class Interpreter;
 //typedef std::vector<Array> ArrayVector;
 //typedef RefVec<Array> ArrayVector;
 
-typedef QVector<Array> ArrayVector;
+//typedef QVector<Array> ArrayVector;
+typedef QList<Array> ArrayVector;
 typedef QVector<ArrayVector> ArrayMatrix;
 
 //class ArrayVector;
@@ -46,6 +48,8 @@ ArrayVector singleArrayVector(Array);
 //typedef std::vector<ArrayVector> ArrayMatrix;
 
 class FunctionDef;
+
+static Dimensions zeroDim(0,0);
 
 /** Ordered data array, the base FreeMat data type.
  * The Array class is the base class of all data types.  It represents
@@ -106,6 +110,7 @@ private:
    */
   int32 getFieldIndex(std::string fieldName);
 public:
+  Array::Array(const Array &copy);
   /** Compute the maximum index.
    * This computes the maximum value of the array as an index (meaning
    * that it must be greater than 0.  Because this is an internal function, it
@@ -183,7 +188,7 @@ public:
   /**
    * Return name of user-defined class
    */
-  inline rvstring getClassName() const {
+  inline rvstring className() const {
     if (dp)
       return dp->className();
     else
@@ -193,23 +198,23 @@ public:
    * Set classname tag - implies this is a structure array.
    */
   inline void setClassName(rvstring cname) {
-    if (getDataClass() != FM_STRUCT_ARRAY)
+    if (dataClass() != FM_STRUCT_ARRAY)
       throw Exception("cannot set class name for non-struct array");
     dp->setClassName(cname);
   }
   /**
    * Get a copy of our dimensions vector.
    */
-  inline Dimensions getDimensions() const {
+  inline const Dimensions& dimensions() const {
     if (dp)
       return dp->dimensions();
     else
-      return Dimensions(0,0);
+      return zeroDim;
   }
   /**
    * Get the fieldnames.
    */
-  inline rvstring getFieldNames() const {
+  inline rvstring fieldNames() const {
     if (dp)
       return dp->fieldNames();
     else
@@ -236,7 +241,7 @@ public:
    * pointer that is free of object aliases.
    */
   inline const void* getDataPointer() const {
-    if (isSparse())
+    if (sparse())
       throw Exception("operation does not support sparse matrix arguments.");
     if (dp)
       return dp->getData();
@@ -250,6 +255,22 @@ public:
     else
       return NULL;
   }
+
+  inline const void* data() const {
+    if (dp)
+      return dp->getData();
+    else
+      return NULL;
+  }
+
+  inline void setData(Class aClass, const Dimensions& dims, void *s, 
+		      bool sparseflag = false, 
+		      rvstring fields = rvstring(),
+		      rvstring classname = rvstring()) {
+    dp->putData(aClass,dims,s,sparseflag,fields,classname);
+  }
+
+
   /** Get the contents of our data block as a read-write void* pointer.
    * Get the contents of our data block as a read-write void*
    * pointer.  It ensures that our data block is not aliased (meaning
@@ -262,7 +283,7 @@ public:
    *   - If there is more than one owner, copy our data.
    */
   inline void* getReadWriteDataPointer() {
-    if (isSparse()) {
+    if (sparse()) {
       makeDense();
     }
     return dp->getWriteableData();
@@ -318,7 +339,12 @@ public:
   /**
    * Get our data class (of type Class).
    */
-  Class getDataClass() const;
+  Class dataClass() const {
+    if (dp)
+      return dp->dataClass();
+    else
+      return FM_DOUBLE;
+  }
   /**
    * Calculate the size of each element in this array.
    */
@@ -344,7 +370,7 @@ public:
    * Throws an exception if we are a string, cell-array or struct-array type.
    */
   const bool isRealAllZeros() const;
-  inline const bool isSparse() const {
+  inline const bool sparse() const {
     return (dp->sparse());
   }
   void makeSparse();
@@ -429,7 +455,7 @@ public:
    * to the destination address starting at index dstIndex.   The addresses
    * are in terms of indices, not bytes.
    */
-  void copyElements(int srcIndex, void* dstPtr, int dstIndex, int count);
+  void copyElements(int srcIndex, void* dstPtr, int dstIndex, int count) const;
   /**
    * Promote our array to a new type.  For empty arrays, this type
    * promotion always succeeds.  For cell arrays, this does nothing (except
@@ -691,6 +717,7 @@ public:
    * Throws an exception if there is a size mismatch between the index and the data.
    */
   void setNDimSubset(ArrayVector& index, Array& data);
+  void setNDimSubsetScalars(ArrayVector& index, const Array& data);
   /**
    * Set a subset of an Array using contents-indexing, meaning that the
    * argument is assumed to refer to the elements in their order as a vector.

@@ -71,6 +71,9 @@ public:
     if (!p) return 0;
     return p->data.size();
   }
+  inline int begin() {
+    return 0;
+  }
   inline void push_front(const T& x) {
     if (!p) Allocate();
     if (p->count > 1) Duplicate();
@@ -79,6 +82,9 @@ public:
   inline void append(const RefVec<T>& x) {
     for (unsigned p=0;p<x.size();p++)
       push_back(x[p]);
+  }
+  inline void operator+=(const RefVec<T>& x) {
+    append(x);
   }
   inline void push_back(const T& x) {
     if (!p) Allocate();

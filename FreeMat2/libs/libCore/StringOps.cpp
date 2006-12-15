@@ -32,7 +32,7 @@ ArrayVector StrCmpFunction(int nargout, const ArrayVector& arg) {
     return singleArrayVector(Array::logicalConstructor(false));
   if (!(arg2.isString()))
     return singleArrayVector(Array::logicalConstructor(false));
-  if (!(arg1.getDimensions().equals(arg2.getDimensions())))
+  if (!(arg1.dimensions().equals(arg2.dimensions())))
     retval = Array::logicalConstructor(false);
   else {
     char *s1 = arg1.getContentsAsCString();

@@ -835,7 +835,7 @@ QString EvaluateCommands(QStringList cmds, int expectedCount, QString modulename
 
   QString cpath(QDir::currentPath());
 
-  qDebug() << "Evaluating:\n" << cmds;
+  //  qDebug() << "Evaluating:\n" << cmds;
   Interpreter* twalk = GetInterpreter(cmds);
   twalk->start();  
   //   for (int i=0;i<cmds.size();i++)

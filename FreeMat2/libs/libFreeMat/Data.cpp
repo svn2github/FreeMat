@@ -24,28 +24,28 @@
 
 void * Data::copyDataBlock(void *dp) {
   //  qDebug() << "Copy!\n";
-  if (dataClass == FM_FUNCPTR_ARRAY) {
-    FunctionDef **cp = new FunctionDef*[dimensions.getElementCount()];
-    for (int i=0;i<dimensions.getElementCount();i++)
+  if (m_dataClass == FM_FUNCPTR_ARRAY) {
+    FunctionDef **cp = new FunctionDef*[m_dimensions.getElementCount()];
+    for (int i=0;i<m_dimensions.getElementCount();i++)
       cp[i] = ((FunctionDef**) dp)[i];
     return (void*)cp;
-  } else if (dataClass == FM_CELL_ARRAY) {
-    Array *cp = new Array[dimensions.getElementCount()];
-    for (int i=0;i<dimensions.getElementCount();i++)
+  } else if (m_dataClass == FM_CELL_ARRAY) {
+    Array *cp = new Array[m_dimensions.getElementCount()];
+    for (int i=0;i<m_dimensions.getElementCount();i++)
       cp[i] = ((Array*)dp)[i];
     return (void*)cp;
-  } else if (dataClass == FM_STRUCT_ARRAY) {
-    int count = dimensions.getElementCount()*fieldNames.size();
+  } else if (m_dataClass == FM_STRUCT_ARRAY) {
+    int count = m_dimensions.getElementCount()*m_fieldNames.size();
     Array *cp = new Array[count];
     for (int i=0;i<count;i++)
       cp[i] = ((Array*)dp)[i];
     return (void*)cp;
   } else {
-    if (sparse) {
-      return CopySparseMatrix(dataClass,dimensions.get(1),dp);
+    if (m_sparse) {
+      return CopySparseMatrix(m_dataClass,m_dimensions.get(1),dp);
     } else {
-      void *cp = Malloc(dimensions.getElementCount()*ByteSize(dataClass));
-      memcpy(cp,dp,dimensions.getElementCount()*ByteSize(dataClass));
+      void *cp = Malloc(m_dimensions.getElementCount()*ByteSize(m_dataClass));
+      memcpy(cp,dp,m_dimensions.getElementCount()*ByteSize(m_dataClass));
       return cp;
     }
   }
@@ -53,13 +53,13 @@ void * Data::copyDataBlock(void *dp) {
 
 void Data::FreeData() {
   if (cp) {
-    if (dataClass == FM_FUNCPTR_ARRAY)
+    if (m_dataClass == FM_FUNCPTR_ARRAY)
       delete[] ((FunctionDef**) cp);
-    else if ((dataClass == FM_CELL_ARRAY) ||
-	     (dataClass == FM_STRUCT_ARRAY))
+    else if ((m_dataClass == FM_CELL_ARRAY) ||
+	     (m_dataClass == FM_STRUCT_ARRAY))
       delete[] ((Array*) cp);
-    else if (sparse)
-      DeleteSparseMatrix(dataClass,dimensions.get(1),cp);
+    else if (m_sparse)
+      DeleteSparseMatrix(m_dataClass,m_dimensions.get(1),cp);
     else
       Free(cp);
   }

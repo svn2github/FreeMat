@@ -36,16 +36,16 @@ class FunctionDef;
 class Array;
 
 class Data : public QSharedData {
-public:
+private:
   /**
    * The Class of the data block.  Useful for determining how the data
    * block must be treated.
    */
-  Class dataClass;
+  Class m_dataClass;
   /**
    * Sparsity flag - true if we are a sparse array.
    */
-  bool sparse;
+  bool m_sparse;
   /**
    * Pointer to the data block.
    */
@@ -53,16 +53,17 @@ public:
   /**
    * The dimensions of the data block.
    */
-  Dimensions dimensions;
+  Dimensions m_dimensions;
   /**
    * The field names of the array - used only for structure array types.
    */
-  rvstring fieldNames;
+  rvstring m_fieldNames;
   /**
    * The class name - only used for user-defined classes
    */
-  rvstring className;
+  rvstring m_className;
 
+public:
   /**
    * Construct a Data object with the given arguments.
    * the owner count is initialized to 1.
@@ -71,18 +72,18 @@ public:
 	      bool sparseflag = false, 
 	      rvstring fields = rvstring(), 
 	      rvstring classname = rvstring()) : 
-    cp(s), dimensions(dims), dataClass(aClass) {
-    sparse = sparseflag;
-    fieldNames = fields;
-    sparse = sparseflag;
-    className = classname;
+    cp(s), m_dimensions(dims), m_dataClass(aClass) {
+    m_sparse = sparseflag;
+    m_fieldNames = fields;
+    m_sparse = sparseflag;
+    m_className = classname;
   } 
   inline Data(const Data& copy) :
-    dataClass(copy.dataClass),
-    dimensions(copy.dimensions),
-    sparse(copy.sparse),
-    fieldNames(copy.fieldNames),
-    className(copy.className) {
+    m_dataClass(copy.m_dataClass),
+    m_dimensions(copy.m_dimensions),
+    m_sparse(copy.m_sparse),
+    m_fieldNames(copy.m_fieldNames),
+    m_className(copy.m_className) {
     cp = copyDataBlock(copy.cp);
   }
   void* copyDataBlock(void *dp);
@@ -111,48 +112,35 @@ public:
 		      rvstring classname = rvstring()) {
     FreeData();
     cp = s;
-    dataClass = aClass;
-    dimensions = dims;
-    fieldNames = fields;
-    sparse = sparseflag;
-    className = classname;
+    m_dataClass = aClass;
+    m_dimensions = dims;
+    m_fieldNames = fields;
+    m_sparse = sparseflag;
+    m_className = classname;
   }
   /**
    * Get a read-only pointer to the data.
    */
   inline const void* getData() const {return cp;}
+  inline void* getWriteableData() {return cp;}
+  inline void setData(void * p) {FreeData(); cp = p;}
   /**
-   * Get the dimensions for the data block.
+   * Set and Get methods for members
    */
-  inline const Dimensions& getDimensions() const {return dimensions;}
-  /**
-   * Get the field names for the data block
-   */
-  inline rvstring getFieldNames() const {return fieldNames;}
+  inline Class dataClass() const {return m_dataClass;}
+  inline void setDataClass(Class p) {m_dataClass = p;}
+  inline bool sparse() const {return m_sparse;}
+  inline void setSparse(bool p) {m_sparse = p;}
+  inline const Dimensions& dimensions() const {return m_dimensions;}
+  inline void setDimensions(const Dimensions& p) {m_dimensions = p;}
+  inline const rvstring& fieldNames() const {return m_fieldNames;}
+  inline void setFieldNames(const rvstring& p) {m_fieldNames = p;}
+  inline const rvstring& className() const {return m_className;}
+  inline void setClassName(const rvstring& p) {m_className = p;}
   /**
    * Return true if this is a user-defined class
    */
-  inline bool isUserClass() const {return (!className.empty());}
-  /**
-   * Return name of user-defined class
-   */
-  inline rvstring getClassName() const {return className;}
-  /**
-   * Set the dimensions for the data block.
-   */
-  inline void setDimensions(const Dimensions& dim) {dimensions = dim;}
-  /**
-   * Set the field names for the data block.
-   */
-  inline void setFieldNames(rvstring fields) {fieldNames = fields;}
-  /**
-   * Get a read-write pointer to the data. 
-   */
-  inline void* getWriteableData() {return cp;}
-  /**
-   * Check sparsity.
-   */
-  inline bool isSparse() const {return sparse;}
+  inline bool isUserClass() const {return (!m_className.empty());}
 };
 
 #endif

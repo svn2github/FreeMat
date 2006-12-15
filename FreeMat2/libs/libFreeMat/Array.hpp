@@ -167,7 +167,7 @@ public:
    */
   inline int getLength() const {
     if (dp)
-      return dp->getDimensions().getElementCount();
+      return dp->dimensions().getElementCount();
     else
       return 0;
   }
@@ -185,7 +185,7 @@ public:
    */
   inline rvstring getClassName() const {
     if (dp)
-      return dp->getClassName();
+      return dp->className();
     else
       return rvstring();
   }
@@ -195,14 +195,14 @@ public:
   inline void setClassName(rvstring cname) {
     if (getDataClass() != FM_STRUCT_ARRAY)
       throw Exception("cannot set class name for non-struct array");
-    dp->className = cname;
+    dp->setClassName(cname);
   }
   /**
    * Get a copy of our dimensions vector.
    */
   inline Dimensions getDimensions() const {
     if (dp)
-      return dp->dimensions;
+      return dp->dimensions();
     else
       return Dimensions(0,0);
   }
@@ -211,7 +211,7 @@ public:
    */
   inline rvstring getFieldNames() const {
     if (dp)
-      return dp->fieldNames;
+      return dp->fieldNames();
     else
       return rvstring();
   }
@@ -220,7 +220,7 @@ public:
    */
   inline int getDimensionLength(int t) const {
     if (dp)
-      return dp->dimensions.get(t);
+      return dp->dimensions().get(t);
     else
       return 0;
   }
@@ -278,8 +278,7 @@ public:
    * the memory block.
    */
   inline void setDataPointer(void* rp) {
-    dp->putData(dp->dataClass,dp->dimensions,rp,
-		dp->sparse,dp->fieldNames,dp->className);
+    dp->setData(rp);
   }
   /** Resize an array.
    * Resize the array to a new set of dimensions.  This resize operation
@@ -346,7 +345,7 @@ public:
    */
   const bool isRealAllZeros() const;
   inline const bool isSparse() const {
-    return (dp->sparse);
+    return (dp->sparse());
   }
   void makeSparse();
   void makeDense();
@@ -378,19 +377,19 @@ public:
    */
   inline const bool isScalar() const {
     if (isEmpty()) return false;
-    return dp->dimensions.isScalar();
+    return dp->dimensions().isScalar();
   }
   /**
    * Returns TRUE if we are 2-Dimensional.
    */
   inline const bool is2D() const {
-    return dp->dimensions.is2D();
+    return dp->dimensions().is2D();
   }
   /**
    * Returns TRUE if we are a vector.
    */
   inline const bool isVector() const {
-    return dp->dimensions.isVector();
+    return dp->dimensions().isVector();
   }
   /**
    * Returns TRUE if we are a reference type (cell array or
@@ -401,7 +400,7 @@ public:
    * Returns TRUE if we are a complex data type.
    */
   inline const bool isComplex() const {
-    return (dp->dataClass == FM_DCOMPLEX || dp->dataClass == FM_COMPLEX);
+    return (dp->dataClass() == FM_DCOMPLEX || dp->dataClass() == FM_COMPLEX);
   }
   /**
    * Returns TRUE if we are a real data type.
@@ -413,13 +412,13 @@ public:
    * Returns TRUE if we are a string.
    */
   inline const bool isString() const {
-    return (dp && (dp->dataClass == FM_STRING));
+    return (dp && (dp->dataClass() == FM_STRING));
   }
   /**
    * Returns TRUE if we are an integer class.
    */
   inline const bool isIntegerClass() const {
-    return (dp->dataClass < FM_FLOAT);
+    return (dp->dataClass() < FM_FLOAT);
   }
   bool isColumnVector() const;
   bool isRowVector() const;

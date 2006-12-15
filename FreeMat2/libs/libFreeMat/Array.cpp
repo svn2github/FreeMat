@@ -223,15 +223,15 @@ uint32 Array::getMaxAsIndex()  {
 void Array::toOrdinalType()  {
   // Special case : sparse matrices with logical type can be efficiently
   // converted to ordinal types
-  if (isSparse() && dp->dataClass == FM_LOGICAL) {
+  if (isSparse() && dp->dataClass() == FM_LOGICAL) {
     int outcount;
-    uint32 *sp = SparseLogicalToOrdinal(dp->dimensions.get(0),dp->dimensions.get(1),dp->getData(),outcount);
+    uint32 *sp = SparseLogicalToOrdinal(dp->dimensions().get(0),dp->dimensions().get(1),dp->getData(),outcount);
     dp->putData(FM_UINT32,Dimensions(outcount,1),sp);
     return;
   }
   if (isSparse())
     makeDense();
-  switch(dp->dataClass) {
+  switch(dp->dataClass()) {
   case FM_LOGICAL:
     {
       // We make a first pass through the array, and count the number of
@@ -280,7 +280,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_COMPLEX:
@@ -303,7 +303,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_DOUBLE:
@@ -324,7 +324,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_FLOAT:
@@ -345,7 +345,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_INT64:
@@ -361,7 +361,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT64,dp->getDimensions(),lp);
+      dp->putData(FM_UINT64,dp->dimensions(),lp);
     }
     break;
   case FM_UINT64:
@@ -387,7 +387,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_UINT32:
@@ -413,7 +413,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_UINT16:
@@ -429,7 +429,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_INT8:
@@ -445,7 +445,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_UINT8:
@@ -461,7 +461,7 @@ void Array::toOrdinalType()  {
 	  throw Exception("Zero or negative index encountered.");
 	lp[i] = ndx;
       }
-      dp->putData(FM_UINT32,dp->getDimensions(),lp);
+      dp->putData(FM_UINT32,dp->dimensions(),lp);
     }
     break;
   case FM_CELL_ARRAY:
@@ -505,7 +505,7 @@ int32 getFieldIndexFromList(std::string fName,rvstring fieldNames) {
  * structure using the current set of field names.
  */
 int32 Array::getFieldIndex(std::string fName) {
-  return getFieldIndexFromList(fName,dp->fieldNames);
+  return getFieldIndexFromList(fName,dp->fieldNames());
 }
 
 
@@ -513,38 +513,39 @@ void Array::resize(Dimensions& a) {
   Dimensions newSize;
   // Make a copy of the current dimension vector, and
   // compute the new dimension size.
-  newSize = dp->dimensions;
+  newSize = dp->dimensions();
   newSize.expandToCover(a);
   // Check to see if the dimensions are unchanged.
-  if (newSize.equals(dp->dimensions)) return;
+  if (newSize.equals(dp->dimensions())) return;
   // Check to see if the total number of elements is unchanged.
   if (newSize.getElementCount() == getLength()) {
     reshape(newSize);
     return;
   }
   if (isSparse()) {
-    dp->putData(dp->dataClass,newSize,
-		CopyResizeSparseMatrix(dp->dataClass,
-				       dp->dimensions.get(0),
-				       dp->dimensions.get(1),
+    dp->putData(dp->dataClass(),newSize,
+		CopyResizeSparseMatrix(dp->dataClass(),
+				       dp->dimensions().get(0),
+				       dp->dimensions().get(1),
 				       dp->getData(),
 				       newSize.get(0),
 				       newSize.get(1)),true);
     return;
   } 
   // Allocate space for our new size.
-  void *dst_data = allocateArray(dp->dataClass,newSize.getElementCount(),dp->fieldNames);
+  void *dst_data = allocateArray(dp->dataClass(),newSize.getElementCount(),
+				 dp->fieldNames());
   if (!isEmpty()) {
     // Initialize a pointer to zero.
-    Dimensions curPos(dp->dimensions.getLength());
+    Dimensions curPos(dp->dimensions().getLength());
     // Because we copy & convert data a column at a time, we retrieve
     // the number of rows in each column.
-    int rowCount = dp->dimensions.get(0);
+    int rowCount = dp->dimensions().get(0);
     // Track our offset into the original data.
     int srcIndex = 0;
     // Loop until we have exhausted the original data.
     int dstIndex;
-    while (curPos.inside(dp->dimensions)) {
+    while (curPos.inside(dp->dimensions())) {
       // Get the destination index for the current source position.
       dstIndex = newSize.mapPoint(curPos);
       // Copy the data from our original data structure to the
@@ -553,25 +554,25 @@ void Array::resize(Dimensions& a) {
       copyElements(srcIndex,dst_data,dstIndex,rowCount);
       // Update the column number (as we have just copied an
       // entire column).
-      curPos.incrementModulo(dp->dimensions,1);
+      curPos.incrementModulo(dp->dimensions(),1);
       // Advance the source data pointer so that it points to the
       // start of the next column.
       srcIndex += rowCount;
     }
   } 
-  dp->putData(dp->dataClass,newSize,dst_data,
-	      dp->sparse,dp->fieldNames,dp->className);
+  dp->putData(dp->dataClass(),newSize,dst_data,
+	      dp->sparse(),dp->fieldNames(),dp->className());
 }
 
 void Array::vectorResize(int max_index) {
   if (max_index > getLength()) {
     Dimensions newDim;
-    if (isEmpty() || dp->dimensions.isScalar()) {
+    if (isEmpty() || dp->dimensions().isScalar()) {
       newDim.reset();
       newDim = Dimensions(1,max_index);
-    } else if (dp->dimensions.isVector()) {
-      newDim = dp->dimensions;
-      if (dp->dimensions.get(0) != 1)
+    } else if (dp->dimensions().isVector()) {
+      newDim = dp->dimensions();
+      if (dp->dimensions().get(0) != 1)
 	newDim.set(0,max_index);
       else
 	newDim.set(1,max_index);
@@ -596,15 +597,15 @@ void Array::reshape(Dimensions& a)  {
     a.simplify();
     if (a.getLength() > 2)
       throw Exception("Cannot reshape sparse matrix to an N-dimensional array - FreeMat does not support N-dimensional sparse arrays");
-    dp->putData(dp->dataClass,a,
-		ReshapeSparseMatrix(dp->dataClass,
-				    dp->dimensions.get(0),
-				    dp->dimensions.get(1),
+    dp->putData(dp->dataClass(),a,
+		ReshapeSparseMatrix(dp->dataClass(),
+				    dp->dimensions().get(0),
+				    dp->dimensions().get(1),
 				    dp->getData(),
 				    a.get(0),
 				    a.get(1)),true);
   } else {
-    dp->dimensions = a;
+    dp->setDimensions(a);
   }
 }
 
@@ -624,20 +625,20 @@ void Array::hermitian()  {
     if (isSparse()) {
       int rows = getDimensionLength(0);
       int cols = getDimensionLength(1);
-      void *qp = SparseArrayHermitian(dp->dataClass, rows, cols, dp->getData());
-      dp->putData(dp->dataClass,Dimensions(cols,rows),qp,true);
+      void *qp = SparseArrayHermitian(dp->dataClass(), rows, cols, dp->getData());
+      dp->putData(dp->dataClass(),Dimensions(cols,rows),qp,true);
       return;	
     }
-    if (dp->dataClass == FM_COMPLEX) {
+    if (dp->dataClass() == FM_COMPLEX) {
       // Allocate space for our transposed array
-      void *dstPtr = allocateArray(dp->dataClass,getLength());
+      void *dstPtr = allocateArray(dp->dataClass(),getLength());
       float *qp, *sp;
       int i, j;
       int rowCount;
       int colCount;
       
-      rowCount = dp->dimensions.get(0);
-      colCount = dp->dimensions.get(1);
+      rowCount = dp->dimensions().get(0);
+      colCount = dp->dimensions().get(1);
       int ptr;
       qp = (float*) dstPtr;
       sp = (float*) dp->getData();
@@ -651,14 +652,14 @@ void Array::hermitian()  {
       dp->putData(FM_COMPLEX,Dimensions(colCount,rowCount),dstPtr);
     } else {
       // Allocate space for our transposed array
-      void *dstPtr = allocateArray(dp->dataClass,getLength());
+      void *dstPtr = allocateArray(dp->dataClass(),getLength());
       double *qp, *sp;
       int i, j;
       int rowCount;
       int colCount;
       
-      rowCount = dp->dimensions.get(0);
-      colCount = dp->dimensions.get(1);
+      rowCount = dp->dimensions().get(0);
+      colCount = dp->dimensions().get(1);
       int ptr;
       qp = (double*) dstPtr;
       sp = (double*) dp->getData();
@@ -685,18 +686,18 @@ void Array::transpose()  {
   if (isSparse()) {
     int rows = getDimensionLength(0);
     int cols = getDimensionLength(1);
-    void *qp = SparseArrayTranspose(dp->dataClass, rows, cols, dp->getData());
-    dp->putData(dp->dataClass,Dimensions(cols,rows),qp,true);
+    void *qp = SparseArrayTranspose(dp->dataClass(), rows, cols, dp->getData());
+    dp->putData(dp->dataClass(),Dimensions(cols,rows),qp,true);
     return;
   }
   // Allocate space for our transposed array
-  void *dstPtr = allocateArray(dp->dataClass,getLength(),dp->fieldNames);
+  void *dstPtr = allocateArray(dp->dataClass(),getLength(),dp->fieldNames());
   int i, j;
   int rowCount;
   int colCount;
   
-  rowCount = dp->dimensions.get(0);
-  colCount = dp->dimensions.get(1);
+  rowCount = dp->dimensions().get(0);
+  colCount = dp->dimensions().get(1);
   int ptr;
   ptr = 0;
   for (i=0;i<rowCount;i++)
@@ -704,8 +705,8 @@ void Array::transpose()  {
       copyElements(i+j*rowCount,dstPtr,ptr,1);
       ptr++;
     }
-  dp->putData(dp->dataClass,Dimensions(colCount,rowCount),dstPtr,
-		   dp->sparse,dp->fieldNames,dp->className);
+  dp->putData(dp->dataClass(),Dimensions(colCount,rowCount),dstPtr,
+	      dp->sparse(),dp->fieldNames(),dp->className());
 }
 
 /**
@@ -713,7 +714,7 @@ void Array::transpose()  {
  */
 Class Array::getDataClass() const {
   if (dp)
-    return dp->dataClass;
+    return dp->dataClass();
   else
     return FM_DOUBLE;
 }
@@ -722,13 +723,13 @@ Class Array::getDataClass() const {
  * Calculate the size of each element in this array.
  */
 int Array::getElementSize() const {
-  switch(dp->dataClass) {
+  switch(dp->dataClass()) {
   case FM_FUNCPTR_ARRAY:
     return sizeof(FunctionDef*);
   case FM_CELL_ARRAY:
     return sizeof(Array);
   case FM_STRUCT_ARRAY:
-    return (sizeof(Array)*dp->fieldNames.size());
+    return (sizeof(Array)*dp->fieldNames().size());
   case FM_LOGICAL:
     return sizeof(logical);
   case FM_UINT8:
@@ -775,7 +776,7 @@ int Array::getByteSize() const {
   {\
     const dpType* qp = (const dpType*) dp->getData();\
     bool allPositive = true;\
-    int N = dp->dimensions.get(0);\
+    int N = dp->dimensions().get(0);		\
     int i, j;\
     for (i=0;i<N;i++)\
       for (j=i+1;j<N;j++)\
@@ -789,7 +790,7 @@ int Array::getByteSize() const {
   {\
     const dpType* qp = (const dpType*) dp->getData();\
     bool allPositive = true;\
-    int N = dp->dimensions.get(0);\
+    int N = dp->dimensions().get(0);		\
     int i, j;\
     for (i=0;i<N;i++)\
       for (j=i+1;j<N;j++) {\
@@ -805,7 +806,7 @@ const bool Array::isSymmetric() const {
   if (isReferenceType()) return false;
   if (isSparse())
     throw Exception("Cannot determine symmetry of sparse arrays");
-  switch(dp->dataClass) {
+  switch(dp->dataClass()) {
     caseReal(FM_INT8,int8);
     caseReal(FM_INT16,int16);
     caseReal(FM_INT32,int32);
@@ -842,16 +843,20 @@ const bool Array::isSymmetric() const {
    }
 
 const bool Array::isPositive() const {
-  if (dp->dataClass == FM_UINT8 || dp->dataClass == FM_UINT16 || dp->dataClass == FM_UINT32 || dp->dataClass == FM_UINT64)
+  if (dp->dataClass() == FM_UINT8 || 
+      dp->dataClass() == FM_UINT16 || 
+      dp->dataClass() == FM_UINT32 || 
+      dp->dataClass() == FM_UINT64)
     return true;
-  if (dp->dataClass == FM_COMPLEX || dp->dataClass == FM_DCOMPLEX)
+  if (dp->dataClass() == FM_COMPLEX || 
+      dp->dataClass() == FM_DCOMPLEX)
     return false;
   if (isSparse()) 
-    return SparseIsPositive(dp->dataClass,
+    return SparseIsPositive(dp->dataClass(),
 			    getDimensionLength(0),
 			    getDimensionLength(1),
 			    getSparseDataPointer());
-  switch (dp->dataClass) {
+  switch (dp->dataClass()) {
     caseMacro(FM_FLOAT,float);
     caseMacro(FM_DOUBLE,double);
     caseMacro(FM_INT8,int8);
@@ -883,7 +888,7 @@ const bool Array::isRealAllZeros() const  {
   i = 0;
   if (isSparse())
     throw Exception("isPositive not supported for sparse arrays.");
-  switch (dp->dataClass) {
+  switch (dp->dataClass()) {
     caseMacro(FM_LOGICAL,logical,qp[i]==0);
     caseMacro(FM_UINT8,uint8,qp[i]==0);
     caseMacro(FM_INT8,int8,qp[i]==0);
@@ -945,7 +950,7 @@ const bool Array::testCaseMatchScalar(Array x) const {
   const void *x_dp = x.dp->getData();
   const void *y_dp = y.dp->getData();
   bool retval;
-  switch(x.dp->dataClass) {
+  switch(x.dp->dataClass()) {
     caseMacroReal(FM_LOGICAL,logical);
     caseMacroReal(FM_UINT8,uint8);
     caseMacroReal(FM_INT8,int8);
@@ -975,9 +980,9 @@ const bool Array::testForCaseMatch(Array x) const  {
   if (isReferenceType())
     throw Exception("Switch argument cannot be a reference type (struct or cell array)");
   // If x is a scalar, we just need to call the scalar version
-  if (((x.dp->dataClass != FM_CELL_ARRAY) && x.isScalar()) || x.isString())
+  if (((x.dp->dataClass() != FM_CELL_ARRAY) && x.isScalar()) || x.isString())
     return testCaseMatchScalar(x);
-  if (x.dp->dataClass != FM_CELL_ARRAY)
+  if (x.dp->dataClass() != FM_CELL_ARRAY)
     throw Exception("Case arguments must either be a scalar or a cell array");
   const Array* qp = (const Array*) x.dp->getData();
   int len;
@@ -999,9 +1004,9 @@ const bool Array::testForCaseMatch(Array x) const  {
 const bool Array::isReferenceType() const {
   if (isEmpty())
     return false;
-  return ((dp->dataClass == FM_CELL_ARRAY) ||
-	  (dp->dataClass == FM_STRUCT_ARRAY) ||
-	  (dp->dataClass == FM_FUNCPTR_ARRAY));
+  return ((dp->dataClass() == FM_CELL_ARRAY) ||
+	  (dp->dataClass() == FM_STRUCT_ARRAY) ||
+	  (dp->dataClass() == FM_FUNCPTR_ARRAY));
 }
 
 void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex, 
@@ -1009,7 +1014,7 @@ void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex,
   int elSize(getElementSize());
   if (isSparse())
     throw Exception("copyElements not supported for sparse arrays.");
-  switch(dp->dataClass) {
+  switch(dp->dataClass()) {
   case FM_CELL_ARRAY:
     {
       const Array* sp = (const Array*) dp->getData();
@@ -1022,7 +1027,7 @@ void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex,
     {
       const Array* sp = (const Array*) dp->getData();
       Array* qp = (Array*) dstPtr;
-      int fieldCount(dp->fieldNames.size());
+      int fieldCount(dp->fieldNames().size());
       for (int i=0;i<count;i++)
 	for (int j=0;j<fieldCount;j++) 
 	  qp[(dstIndex+i)*fieldCount+j] = sp[(srcIndex+i)*fieldCount+j];
@@ -1073,30 +1078,34 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
   int elSize;
   void *dstPtr;
 
+  Dimensions q(((const Data*)dp)->dimensions());
+  Class p(((const Data*)dp)->dataClass());
+  bool sparse(((const Data*)dp)->sparse());
+
   if (!dp) return;
   if (isEmpty()) {
-    dp->putData(dstClass,dp->dimensions,NULL,false,fNames);
+    dp->putData(dstClass,dp->dimensions(),NULL,false,fNames);
     return;
   }
   // Handle the reference types.
   // Cell arrays can be promoted with no effort to cell arrays.
-  if (dp->dataClass == FM_FUNCPTR_ARRAY)
+  if (dp->dataClass() == FM_FUNCPTR_ARRAY)
     if (dstClass == FM_FUNCPTR_ARRAY)
       return;
     else
       throw Exception("Cannot convert function pointer arrays to any other type.");
-  if (dp->dataClass == FM_CELL_ARRAY) 
+  if (dp->dataClass() == FM_CELL_ARRAY) 
     if (dstClass == FM_CELL_ARRAY)
       return;
     else
       throw Exception("Cannot convert cell-arrays to any other type.");
   // Structure arrays can be promoted to structure arrays with different
   // field structures, but have to be rearranged.
-  if (dp->dataClass == FM_STRUCT_ARRAY)
+  if (dp->dataClass() == FM_STRUCT_ARRAY)
     if (dstClass == FM_STRUCT_ARRAY) {
       // TODO: Generalize this code to allow for one more field in destination
       // than in source...
-      if (dp->fieldNames.size() >  fNames.size())
+      if (dp->fieldNames().size() >  fNames.size())
 	throw Exception("Cannot combine structures with different fields if the combination requires fields to be deleted from one of the structures.");
       // We are promoting a struct array to a struct array.
       // To do so, we have to make sure that the field names work out.
@@ -1114,21 +1123,21 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
 	  matchCount++;
       }
       // Now, matchCount should be equal to the size of fieldNames
-      if (matchCount != dp->fieldNames.size())
+      if (matchCount != dp->fieldNames().size())
 	throw Exception("Cannot combine structures with different fields if the combination requires fields to be deleted from one of the structures.");
-      void *dstPtr = allocateArray(dp->dataClass,getLength(),fNames);
+      void *dstPtr = allocateArray(dp->dataClass(),getLength(),fNames);
       const Array *src_rp = (const Array*) dp->getData();
       Array * dst_rp = (Array*) dstPtr;
       int elCount(getLength());
-      int fieldCount(dp->fieldNames.size());
+      int fieldCount(dp->fieldNames().size());
       int newFieldCount(fNames.size());;
       // Now we have to copy our existing fields into the new order...
       for (i=0;i<fieldCount;i++) {
-	int newNdx = getFieldIndexFromList(dp->fieldNames.at(i),fNames);
+	int newNdx = getFieldIndexFromList(dp->fieldNames().at(i),fNames);
 	for (int j=0;j<elCount;j++)
 	  dst_rp[j*newFieldCount + newNdx] = src_rp[j*fieldCount + i];
       }
-      dp->putData(dp->dataClass,dp->dimensions,dstPtr,false,fNames);
+      dp->putData(dp->dataClass(),dp->dimensions(),dstPtr,false,fNames);
       return;
     }
     else
@@ -1138,12 +1147,12 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
       || (dstClass == FM_FUNCPTR_ARRAY)) 
     throw Exception("Cannot convert base types to reference types.");
   // Do nothing for promoting to same class (no-op).
-  if (dstClass == dp->dataClass) return;
+  if (dstClass == dp->dataClass()) return;
   if (isSparse()) {
-    dp->putData(dstClass,dp->dimensions,
-		     TypeConvertSparse(dp->dataClass,
-				       dp->dimensions.get(0),
-				       dp->dimensions.get(1),
+    dp->putData(dstClass,dp->dimensions(),
+		TypeConvertSparse(dp->dataClass(),
+				  dp->dimensions().get(0),
+				  dp->dimensions().get(1),
 				       dp->getData(),
 				       dstClass),
 		     true);
@@ -1153,7 +1162,7 @@ void Array::promoteType(Class dstClass, rvstring fNames) {
   // We have to promote...
   dstPtr = allocateArray(dstClass,elCount);
   int count = elCount;
-  switch (dp->dataClass) {
+  switch (dp->dataClass()) {
 
 #define caseMacro(caseLabel,dpType,convCode) \
 case caseLabel: \
@@ -1443,7 +1452,7 @@ break;
     }
     break;
   }
-  dp->putData(dstClass,dp->dimensions,dstPtr);
+  dp->putData(dstClass,dp->dimensions(),dstPtr);
 }
 
 #undef caseMacro
@@ -1468,7 +1477,7 @@ Array Array::diagonalConstructor(Array src, int diagonalOrder)  {
   M = length + abs(diagonalOrder);
   Dimensions dims(M,M);
   // Allocate space for the output
-  void *rp = allocateArray(src.dp->dataClass,dims.getElementCount(),src.dp->fieldNames);
+  void *rp = allocateArray(src.dp->dataClass(),dims.getElementCount(),src.dp->fieldNames());
   int i;
   int dstIndex;
   if (diagonalOrder < 0) {
@@ -1482,8 +1491,8 @@ Array Array::diagonalConstructor(Array src, int diagonalOrder)  {
       src.copyElements(i,rp,dstIndex,1);
     }
   }
-  return Array(src.dp->dataClass,dims,rp,false,src.dp->fieldNames,
-	       src.dp->className);
+  return Array(src.dp->dataClass(),dims,rp,false,src.dp->fieldNames(),
+	       src.dp->className());
 }
 
 Array Array::logicalConstructor(bool aval) {
@@ -1871,15 +1880,15 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
 	const Array& d = ptr[j];
 	if (d.isSparse())
 	  sparseArg = true;
-	if (maxType < d.dp->dataClass) maxType = d.dp->dataClass;
-	if (minType > d.dp->dataClass) minType = d.dp->dataClass;
+	if (maxType < d.dp->dataClass()) maxType = d.dp->dataClass();
+	if (minType > d.dp->dataClass()) minType = d.dp->dataClass();
 	if (!d.isEmpty()) {
 	  if (firstNonzeroColumn) {
 	    /**
 	     * For the first element in the row, we copy
 	     * the dimensions into the row buffer.
 	     */
-	    row_dims = d.dp->dimensions;
+	    row_dims = d.dp->dimensions();
 	    /**
 	     * Because we are concatenating in columns,
 	     * we must have at least 1 column in the data.
@@ -1896,15 +1905,15 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
 	     * buffer, and update the second dimension (column
 	     * count).
 	     */
-	    if ((d.dp->dimensions.getLength() != row_dims.getLength()) && 
-		(d.dp->dimensions.getLength()>1))
+	    if ((d.dp->dimensions().getLength() != row_dims.getLength()) && 
+		(d.dp->dimensions().getLength()>1))
 	      throw Exception("Number of dimensions must match for each element in a row definition");
-	    if (d.dp->dimensions.get(0) != row_dims.get(0))
+	    if (d.dp->dimensions().get(0) != row_dims.get(0))
 	      throw Exception("Mismatch in first dimension for elements in row definition");
 	    for (int k=2;k<row_dims.getLength();k++)
-	      if (d.dp->dimensions.get(k) != row_dims.get(k)) 
+	      if (d.dp->dimensions().get(k) != row_dims.get(k)) 
 		throw Exception("Mismatch in dimension for elements in row definition");
-	    row_dims.set(1,row_dims.get(1)+d.dp->dimensions.get(1));
+	    row_dims.set(1,row_dims.get(1)+d.dp->dimensions().get(1));
 	  }
 	}
       }
@@ -1948,7 +1957,7 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
       ArrayMatrix::iterator i = m.begin();
       ArrayVector ptr = *i;
       const Array& d = ptr.front();
-      retNames = d.dp->fieldNames;
+      retNames = d.dp->fieldNames();
     }
 
     /**
@@ -2010,8 +2019,8 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
 	   */
 	  int dstIndex;
 	  int srcIndex;
-	  bptr = d.dp->dimensions;
-	  row_count = d.dp->dimensions.get(0);
+	  bptr = d.dp->dimensions();
+	  row_count = d.dp->dimensions().get(0);
 	  // Promote d to our ultimate type
 	  d.promoteType(retType,retNames);
 	  srcIndex = 0;
@@ -2142,16 +2151,16 @@ Array Array::structConstructor(rvstring fNames, ArrayVector& values)  {
        * Check the type of the entry.  If its a non-cell array, then
        * then ignore this entry.
        */
-      if (values[i].dp->dataClass == FM_CELL_ARRAY) {
+      if (values[i].dp->dataClass() == FM_CELL_ARRAY) {
 	/**
 	 * This is a cell-array, so look for non-scalar cell-arrays.
 	 */
 	if (!values[i].isScalar()) {
 	  if (!nonSingularFound) {
 	    nonSingularFound = true;
-	    dims = values[i].dp->dimensions;
+	    dims = values[i].dp->dimensions();
 	  } else
-	    if (!dims.equals(values[i].dp->dimensions))
+	    if (!dims.equals(values[i].dp->dimensions()))
 	      throw Exception("Array dimensions of non-scalar entries must agree in structure construction.");
 	}
       }
@@ -2183,7 +2192,7 @@ Array Array::structConstructor(rvstring fNames, ArrayVector& values)  {
 	if (rval.isSparse())
 	  throw Exception("sparse arrays not supported for struct constructor.");
 	rptr = (const Array*) rval.dp->getData();
-	if (rval.dp->dataClass == FM_CELL_ARRAY) {
+	if (rval.dp->dataClass() == FM_CELL_ARRAY) {
 	  if (rval.isScalar())
 	    qp[offset] = rptr[0];
 	  else
@@ -2212,8 +2221,8 @@ Array Array::getVectorSubset(Array& index)  {
   void *qp = NULL;
   try {
     if (index.isEmpty()) {
-      return Array(dp->dataClass,index.dp->dimensions,
-		   NULL,false,dp->fieldNames,dp->className);
+      return Array(dp->dataClass(),index.dp->dimensions(),
+		   NULL,false,dp->fieldNames(),dp->className());
     }
     if (isColonOperator(index) && isEmpty())
       return Array::emptyConstructor();
@@ -2231,7 +2240,7 @@ Array Array::getVectorSubset(Array& index)  {
     if (isColumnVector() && index.isRowVector())
       retdims = Dimensions(index.getLength(),1);
     else
-      retdims = index.dp->dimensions;
+      retdims = index.dp->dimensions();
     retdims.simplify();
     if (isSparse()) {
       if (index.getLength() == 1) {
@@ -2239,16 +2248,16 @@ Array Array::getVectorSubset(Array& index)  {
 	indx = index.getContentsAsIntegerScalar()-1;
 	int row = indx % getDimensionLength(0);
 	int col = indx / getDimensionLength(0);
-	return Array(dp->dataClass,retdims,
-		     GetSparseScalarElement(dp->dataClass,
+	return Array(dp->dataClass(),retdims,
+		     GetSparseScalarElement(dp->dataClass(),
 					    getDimensionLength(0),
 					    getDimensionLength(1),
 					    dp->getData(),
 					    row+1, col+1),
 		     false);
       } else
-	return Array(dp->dataClass,retdims,
-		     GetSparseVectorSubsets(dp->dataClass,
+	return Array(dp->dataClass(),retdims,
+		     GetSparseVectorSubsets(dp->dataClass(),
 					    getDimensionLength(0),
 					    getDimensionLength(1),
 					    dp->getData(),
@@ -2269,7 +2278,7 @@ Array Array::getVectorSubset(Array& index)  {
     // inconsistency in M that we will reproduce here.
     //
     int length = index.getLength();
-    qp = allocateArray(dp->dataClass,index.getLength(),dp->fieldNames);
+    qp = allocateArray(dp->dataClass(),index.getLength(),dp->fieldNames());
     // Get a pointer to the index data set
     const indexType *index_p = (const indexType *) index.dp->getData();
     int bound = getLength();
@@ -2280,8 +2289,8 @@ Array Array::getVectorSubset(Array& index)  {
 	throw Exception("Index exceeds variable dimensions");
       copyElements(ndx,qp,i,1);
     }
-    return Array(dp->dataClass,retdims,qp,dp->sparse,dp->fieldNames,
-		 dp->className);
+    return Array(dp->dataClass(),retdims,qp,dp->sparse(),dp->fieldNames(),
+		 dp->className());
   } catch (Exception &e) {
     throw;
   }
@@ -2352,9 +2361,9 @@ Array Array::getNDimSubsetScalars(ArrayVector& index) {
     ndx += pagesize*(dp[0]-1);
     pagesize *= getDimensionLength(i);
   }
-  void *qp = allocateArray(dp->dataClass,1,dp->fieldNames);
+  void *qp = allocateArray(dp->dataClass(),1,dp->fieldNames());
   copyElements(ndx,qp,0,1);
-  return Array(dp->dataClass,Dimensions(1,1),qp,dp->sparse,dp->fieldNames,dp->className);
+  return Array(dp->dataClass(),Dimensions(1,1),qp,dp->sparse(),dp->fieldNames(),dp->className());
 }
 
 /**
@@ -2368,7 +2377,7 @@ Array Array::getNDimSubset(ArrayVector& index)  {
   int i;
   bool anyEmpty;
   int colonIndex;
-  Dimensions myDims(dp->dimensions);
+  Dimensions myDims(dp->dimensions());
 
   if (!isSparse() && allScalars(index)) 
     return getNDimSubsetScalars(index);
@@ -2389,8 +2398,8 @@ Array Array::getNDimSubset(ArrayVector& index)  {
       if (L > 2)
 	throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays");
       if ((outDims.get(0) == 1) && (outDims.get(1) == 1))
-	return Array(dp->dataClass,outDims,
-		     GetSparseScalarElement(dp->dataClass,
+	return Array(dp->dataClass(),outDims,
+		     GetSparseScalarElement(dp->dataClass(),
 					    getDimensionLength(0),
 					    getDimensionLength(1),
 					    dp->getData(),
@@ -2398,8 +2407,8 @@ Array Array::getNDimSubset(ArrayVector& index)  {
 					    *((const indexType*) indx[1])),
 		     false);
       else
-	return Array(dp->dataClass,outDims,
-		     GetSparseNDimSubsets(dp->dataClass,
+	return Array(dp->dataClass(),outDims,
+		     GetSparseNDimSubsets(dp->dataClass(),
 					  getDimensionLength(0),
 					  getDimensionLength(1),
 					  dp->getData(),
@@ -2409,7 +2418,7 @@ Array Array::getNDimSubset(ArrayVector& index)  {
 					  outDims.get(1)),
 		     true);
     }
-    qp = allocateArray(dp->dataClass,outDims.getElementCount(),dp->fieldNames);
+    qp = allocateArray(dp->dataClass(),outDims.getElementCount(),dp->fieldNames());
     int outDimsInt[maxDims];
     int srcDimsInt[maxDims];
     for (int i=0;i<L;i++) {
@@ -2417,7 +2426,7 @@ Array Array::getNDimSubset(ArrayVector& index)  {
       srcDimsInt[i] = myDims.get(i);
     }
     outDims.simplify();
-    switch (dp->dataClass) {
+    switch (dp->dataClass()) {
     case FM_COMPLEX: 
       getNDimSubsetNumericDispatchBurst<float>(colonIndex,(const float*) getDataPointer(),
 					       (float*) qp,outDimsInt,srcDimsInt,
@@ -2502,13 +2511,13 @@ Array Array::getNDimSubset(ArrayVector& index)  {
     case FM_STRUCT_ARRAY: 
       getNDimSubsetNumericDispatchBurst<Array>(colonIndex,(const Array*) getDataPointer(),
 					       (Array*) qp,outDimsInt,srcDimsInt,
-					       indx, L, dp->fieldNames.size());
+					       indx, L, dp->fieldNames().size());
       break;
     }
     Free(indx);
     outDims.simplify();
-    return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
-		 dp->className);
+    return Array(dp->dataClass(),outDims,qp,dp->sparse(),dp->fieldNames(),
+		 dp->className());
   } catch (Exception &e) {
     Free(indx);
     Free(qp);
@@ -2519,8 +2528,8 @@ Array Array::getNDimSubset(ArrayVector& index)  {
 Array Array::getDiagonal(int diagonalOrder)  {
   if (!is2D()) 
     throw Exception("Cannot take diagonal of N-dimensional array.");
-  int rows = dp->dimensions.getRows();
-  int cols = dp->dimensions.getColumns();
+  int rows = dp->dimensions().getRows();
+  int cols = dp->dimensions().getColumns();
   int outLen;
   Dimensions outDims;
   int i;
@@ -2533,16 +2542,16 @@ Array Array::getDiagonal(int diagonalOrder)  {
     outDims = Dimensions(outLen,1);
     void *qp;
     if (isSparse()) {
-      qp = GetSparseDiagonal(dp->dataClass, rows, cols, dp->getData(), diagonalOrder);
-      return Array(dp->dataClass,outDims,qp,true);
+      qp = GetSparseDiagonal(dp->dataClass(), rows, cols, dp->getData(), diagonalOrder);
+      return Array(dp->dataClass(),outDims,qp,true);
     } else {
-      qp = allocateArray(dp->dataClass,outLen,dp->fieldNames);
+      qp = allocateArray(dp->dataClass(),outLen,dp->fieldNames());
       for (i=0;i<outLen;i++) {
 	srcIndex = -diagonalOrder + i*(rows+1);
 	copyElements(srcIndex,qp,i,1);
       }
-      return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
-		   dp->className);
+      return Array(dp->dataClass(),outDims,qp,dp->sparse(),dp->fieldNames(),
+		   dp->className());
     }
   } else {
     outLen = rows < (cols-diagonalOrder) ? rows : (cols-diagonalOrder);
@@ -2552,22 +2561,22 @@ Array Array::getDiagonal(int diagonalOrder)  {
     outDims = Dimensions(outLen,1);
     void *qp;
     if (isSparse()) {
-      qp = GetSparseDiagonal(dp->dataClass, rows, cols, dp->getData(), diagonalOrder);
-      return Array(dp->dataClass,outDims,qp,true);
+      qp = GetSparseDiagonal(dp->dataClass(), rows, cols, dp->getData(), diagonalOrder);
+      return Array(dp->dataClass(),outDims,qp,true);
     } else {
-      qp = allocateArray(dp->dataClass,outLen,dp->fieldNames);
+      qp = allocateArray(dp->dataClass(),outLen,dp->fieldNames());
       for (i=0;i<outLen;i++) {
 	srcIndex = diagonalOrder*rows + i*(rows+1);
 	copyElements(srcIndex,qp,i,1);
       }
     }
-    return Array(dp->dataClass,outDims,qp,dp->sparse,dp->fieldNames,
-		 dp->className);
+    return Array(dp->dataClass(),outDims,qp,dp->sparse(),dp->fieldNames(),
+		 dp->className());
   }
 }
 
 Array Array::getField(std::string fieldName) {
-  if (dp->dataClass != FM_STRUCT_ARRAY)
+  if (dp->dataClass() != FM_STRUCT_ARRAY)
     throw Exception("Attempt to apply field-indexing to non structure-array object.");
   if (isSparse())
     throw Exception("getField not supported for sparse arrays.");
@@ -2576,7 +2585,7 @@ Array Array::getField(std::string fieldName) {
     throw Exception("Cannot apply structure indexing to arrays in this context.");
   const Array *qp = (const Array*) dp->getData();
   int N = getLength();
-  int fieldCount = dp->fieldNames.size();
+  int fieldCount = dp->fieldNames().size();
   int ndx = getFieldIndex(fieldName);
   if (ndx < 0)
     throw Exception(std::string("Reference to non-existent field ") + fieldName);
@@ -2584,7 +2593,7 @@ Array Array::getField(std::string fieldName) {
 }
 
 ArrayVector Array::getFieldAsList(std::string fieldName)  {
-  if (dp->dataClass != FM_STRUCT_ARRAY)
+  if (dp->dataClass() != FM_STRUCT_ARRAY)
     throw Exception("Attempt to apply field-indexing to non structure-array object.");
   if (isSparse())
     throw Exception("getFieldAsList not supported for sparse arrays.");
@@ -2592,7 +2601,7 @@ ArrayVector Array::getFieldAsList(std::string fieldName)  {
   ArrayVector m;
   const Array *qp = (const Array*) dp->getData();
   int N = getLength();
-  int fieldCount = dp->fieldNames.size();
+  int fieldCount = dp->fieldNames().size();
   int ndx = getFieldIndex(fieldName);
   if (ndx < 0)
     throw Exception(std::string("Reference to non-existent field ") + fieldName);
@@ -2603,7 +2612,7 @@ ArrayVector Array::getFieldAsList(std::string fieldName)  {
 }
 
 Array Array::getVectorContents(Array& index)  {
-  if (dp->dataClass != FM_CELL_ARRAY)
+  if (dp->dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (isSparse())
     throw Exception("getVectorContents not supported for sparse arrays.");
@@ -2631,7 +2640,7 @@ Array Array::getVectorContents(Array& index)  {
  */
 ArrayVector Array::getVectorContentsAsList(Array& index)  {
   ArrayVector m;
-  if (dp->dataClass != FM_CELL_ARRAY)
+  if (dp->dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (isSparse())
     throw Exception("getVectorContentsAsList not supported for sparse arrays.");
@@ -2667,7 +2676,7 @@ ArrayVector Array::getVectorContentsAsList(Array& index)  {
  * Return the contents of an cell array as a list.
  */
 Array Array::getNDimContents(ArrayVector& index)  {
-  if (dp->dataClass != FM_CELL_ARRAY)
+  if (dp->dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (isSparse())
     throw Exception("getNDimContentsAsList not supported for sparse arrays.");
@@ -2675,7 +2684,7 @@ Array Array::getNDimContents(ArrayVector& index)  {
   ArrayVector m;
   // Get the number of indexing dimensions
   int L = index.size();
-  Dimensions myDims(dp->dimensions);
+  Dimensions myDims(dp->dimensions());
   bool anyEmpty;
   int colonIndex;
   Dimensions outDims(L);
@@ -2691,7 +2700,7 @@ Array Array::getNDimContents(ArrayVector& index)  {
   for (int i=0;i<L;i++)
     currentIndex.set(i,(int) indx[i][0] - 1);
   Free(indx);
-  return qp[dp->dimensions.mapPoint(currentIndex)];
+  return qp[dp->dimensions().mapPoint(currentIndex)];
 }
 
 
@@ -2699,7 +2708,7 @@ Array Array::getNDimContents(ArrayVector& index)  {
  * Return the contents of an cell array as a list.
  */
 ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
-  if (dp->dataClass != FM_CELL_ARRAY)
+  if (dp->dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (isSparse())
     throw Exception("getNDimContentsAsList not supported for sparse arrays.");
@@ -2707,7 +2716,7 @@ ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
   ArrayVector m;
   // Get the number of indexing dimensions
   int L = index.size();
-  Dimensions myDims(dp->dimensions);
+  Dimensions myDims(dp->dimensions());
   bool anyEmpty;
   int colonIndex;
   Dimensions outDims(L);
@@ -2723,7 +2732,7 @@ ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
   while (argPointer.inside(outDims)) {
     for (int i=0;i<L;i++)
       currentIndex.set(i,(int) indx[i][argPointer.get(i)] - 1);
-    srcindex = dp->dimensions.mapPoint(currentIndex);
+    srcindex = dp->dimensions().mapPoint(currentIndex);
     m.push_back(qp[srcindex]);
     argPointer.incrementModulo(outDims,0);
   }
@@ -2762,7 +2771,7 @@ void Array::setVectorSubset(Array& index, Array& data) {
     } else {
       Dimensions myDims;
       if (!isEmpty())
-	myDims = dp->dimensions;
+	myDims = dp->dimensions();
       else
 	myDims = data.getDimensions();
       if (myDims.getElementCount() != data.getLength())
@@ -2799,33 +2808,33 @@ void Array::setVectorSubset(Array& index, Array& data) {
   if (!isEmpty() &&
       (data.getDataClass() == FM_STRUCT_ARRAY) &&
       (getDataClass() == FM_STRUCT_ARRAY)) {
-    if (data.dp->fieldNames.size() > dp->fieldNames.size())
-      promoteType(FM_STRUCT_ARRAY,data.dp->fieldNames);
+    if (data.dp->fieldNames().size() > dp->fieldNames().size())
+      promoteType(FM_STRUCT_ARRAY,data.dp->fieldNames());
     else
-      data.promoteType(FM_STRUCT_ARRAY,dp->fieldNames);
+      data.promoteType(FM_STRUCT_ARRAY,dp->fieldNames());
   } else {
     if (isEmpty() || data.getDataClass() > getDataClass())
-      promoteType(data.getDataClass(),data.dp->fieldNames);
+      promoteType(data.getDataClass(),data.dp->fieldNames());
     // If our type is superior to the RHS, we convert
     // the RHS to our type
-    else if (data.getDataClass() <= dp->dataClass)
-      data.promoteType(dp->dataClass,dp->fieldNames);
+    else if (data.getDataClass() <= dp->dataClass())
+      data.promoteType(dp->dataClass(),dp->fieldNames());
   }
   // If the max index is larger than our current length, then
   // we have to resize ourselves - but this is only legal if we are
   // a vector.
   if (isSparse()) {
-    if (dp->dataClass == FM_LOGICAL)
+    if (dp->dataClass() == FM_LOGICAL)
       data.promoteType(FM_UINT32);
     int rows = getDimensionLength(0);
     int cols = getDimensionLength(1);
-    void *qp = SetSparseVectorSubsets(dp->dataClass,rows,cols,dp->getData(),
+    void *qp = SetSparseVectorSubsets(dp->dataClass(),rows,cols,dp->getData(),
 				      (const indexType*) index.dp->getData(),
 				      index.getDimensionLength(0),
 				      index.getDimensionLength(1),
 				      data.getDataPointer(),
 				      advance);
-    dp->putData(dp->dataClass,Dimensions(rows,cols),qp,true);
+    dp->putData(dp->dataClass(),Dimensions(rows,cols),qp,true);
     return;
   }
   vectorResize(max_index);
@@ -2888,7 +2897,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
   }
   try {
     int L = index.size();
-    Dimensions myDims(dp->dimensions);
+    Dimensions myDims(dp->dimensions());
     Dimensions outDims;
     bool anyEmpty;
     int colonIndex;
@@ -2926,26 +2935,26 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
     if (!isEmpty() &&
 	(data.getDataClass() == FM_STRUCT_ARRAY) &&
 	(getDataClass() == FM_STRUCT_ARRAY)) {
-      if (data.dp->fieldNames.size() > dp->fieldNames.size())
-	promoteType(FM_STRUCT_ARRAY,data.dp->fieldNames);
+      if (data.dp->fieldNames().size() > dp->fieldNames().size())
+	promoteType(FM_STRUCT_ARRAY,data.dp->fieldNames());
       else
-	data.promoteType(FM_STRUCT_ARRAY,dp->fieldNames);
+	data.promoteType(FM_STRUCT_ARRAY,dp->fieldNames());
     } else {
       if (isEmpty() || data.getDataClass() > getDataClass())
-	promoteType(data.dp->dataClass,data.dp->fieldNames);
+	promoteType(data.dp->dataClass(),data.dp->fieldNames());
       // If our type is superior to the RHS, we convert
       // the RHS to our type
-      else if (data.dp->dataClass <= dp->dataClass)
-	data.promoteType(dp->dataClass,dp->fieldNames);
+      else if (data.dp->dataClass() <= dp->dataClass())
+	data.promoteType(dp->dataClass(),dp->fieldNames());
     }
     // Now, resize us to fit this data
     resize(a);
     if (isSparse()) {
-      if (dp->dataClass == FM_LOGICAL)
+      if (dp->dataClass() == FM_LOGICAL)
 	data.promoteType(FM_UINT32);
       if (L > 2)
 	throw Exception("multidimensional indexing (more than 2 dimensions) not legal for sparse arrays in assignment A(I1,I2,...,IN) = B");
-      SetSparseNDimSubsets(dp->dataClass, 
+      SetSparseNDimSubsets(dp->dataClass(), 
 			   getDimensionLength(0), 
 			   dp->getWriteableData(), 
 			   (const indexType*) indx[0], 
@@ -2955,7 +2964,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
 			   data.getDataPointer(),advance);
       return;
     }
-    myDims = dp->dimensions;
+    myDims = dp->dimensions();
     // Get a writable data pointer
     void *qp = getReadWriteDataPointer();
     int outDimsInt[maxDims];
@@ -2965,7 +2974,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
       srcDimsInt[i] = myDims.get(i);
     }
     outDims.simplify();
-    switch (dp->dataClass) {
+    switch (dp->dataClass()) {
     case FM_COMPLEX: 
       setNDimSubsetNumericDispatchBurst<float>(colonIndex,(float*) qp,
 					       (const float*) data.getDataPointer(),
@@ -3067,11 +3076,11 @@ void Array::setNDimSubset(ArrayVector& index, Array& data) {
       setNDimSubsetNumericDispatchBurst<Array>(colonIndex,(Array*) qp,
 					       (const Array*) data.getDataPointer(),
 					       outDimsInt,srcDimsInt,
-					       indx, L, dp->fieldNames.size(),advance);
+					       indx, L, dp->fieldNames().size(),advance);
       break;
     }
     Free(indx);
-    dp->dimensions.simplify();
+    Dimensions q(dp->dimensions()); q.simplify(); dp->setDimensions(q);
   } catch (Exception &e) {
     Free(indx);
     throw e;
@@ -3100,7 +3109,7 @@ void Array::setVectorContentsAsList(Array& index, ArrayVector& data) {
       qp[i] = data.front();
       data.pop_front();
     }
-    dp->dimensions.simplify();
+    Dimensions q(dp->dimensions()); q.simplify(); dp->setDimensions(q);
     return;
   }
   index.toOrdinalType();
@@ -3122,7 +3131,7 @@ void Array::setVectorContentsAsList(Array& index, ArrayVector& data) {
     qp[ndx] = data.front();
     data.pop_front();
   }
-  dp->dimensions.simplify();
+  Dimensions q(dp->dimensions()); q.simplify(); dp->setDimensions(q);
 }
 
 /**
@@ -3133,7 +3142,7 @@ void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& data) {
   if (isSparse())
     throw Exception("setNDimContentsAsList not supported for sparse arrays.");
   promoteType(FM_CELL_ARRAY);
-  Dimensions myDims(dp->dimensions);
+  Dimensions myDims(dp->dimensions());
   Dimensions outDims;
   bool anyEmpty;
   int colonIndex;
@@ -3171,19 +3180,19 @@ void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& data) {
     Array *qp = (Array*) getReadWriteDataPointer();
     // Now, we copy data from dp to our real part,
     // computing indices along the way.
-    Dimensions currentIndex(dp->dimensions.getLength());
+    Dimensions currentIndex(dp->dimensions().getLength());
     indexType j;
     while (argPointer.inside(argLengths)) {
       for (i=0;i<L;i++) 
 	currentIndex.set(i,(indexType) indx[i][argPointer.get(i)] - 1);
-      j = dp->dimensions.mapPoint(currentIndex);
+      j = dp->dimensions().mapPoint(currentIndex);
       qp[j] = data.front();
       data.pop_front();
       argPointer.incrementModulo(argLengths,0);
     }
     Free(indx);
     indx = NULL;
-    dp->dimensions.simplify();
+    Dimensions q(dp->dimensions()); q.simplify(); dp->setDimensions(q);
   } catch (Exception &e) {
     Free(indx);
     throw e;
@@ -3198,15 +3207,15 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
     throw Exception("setFieldAsList not supported for sparse arrays.");
   Array *rp = NULL;
   if (isEmpty()) {
-    rvstring names(dp->fieldNames);
+    rvstring names(dp->fieldNames());
     names.push_back(fieldName);
     promoteType(FM_STRUCT_ARRAY,names);
     Dimensions a(1,1);
     resize(a);
-    //       dp->putData(FM_STRUCT_ARRAY,dp->getDimensions(),NULL,names);
+    //       dp->putData(FM_STRUCT_ARRAY,dp->dimensions(),NULL,names);
     //       return;
   }
-  if (dp->dataClass != FM_STRUCT_ARRAY)
+  if (dp->dataClass() != FM_STRUCT_ARRAY)
     throw Exception("Cannot apply A.field_name = B to non struct-array object A.");
   if (data.size() < getLength())
     throw Exception("Not enough right hand values to satisfy left hand side expression.");
@@ -3214,13 +3223,13 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
   int field_ndx = getFieldIndex(fieldName);
   if (field_ndx == -1)
     field_ndx = insertFieldName(fieldName);
-  int fieldCount = dp->fieldNames.size();
+  int fieldCount = dp->fieldNames().size();
   Array *qp = (Array*) getReadWriteDataPointer();
   for (int i=0;i<indexLength;i++) {
     qp[i*fieldCount+field_ndx] = data.front();
     data.pop_front();
   }
-  dp->dimensions.simplify();
+  Dimensions q(dp->dimensions()); q.simplify(); dp->setDimensions(q);
 }
 
 /**
@@ -3229,15 +3238,15 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& data)  {
 int Array::insertFieldName(std::string fieldName) {
   if (isSparse())
     throw Exception("insertFieldName not supported for sparse arrays.");
-  rvstring names(dp->fieldNames);
+  rvstring names(dp->fieldNames());
   names.push_back(fieldName);
   const Array* qp = (const Array*) dp->getData();
-  Array *rp = (Array*) allocateArray(dp->dataClass,getLength(),names);
+  Array *rp = (Array*) allocateArray(dp->dataClass(),getLength(),names);
   int fN = names.size();
   for (int i=0;i<fN-1;i++)
     rp[i] = qp[i];
-  dp->putData(FM_STRUCT_ARRAY,dp->dimensions,rp,false,names,
-		   dp->className);
+  dp->putData(FM_STRUCT_ARRAY,dp->dimensions(),rp,false,names,
+	      dp->className());
   return (fN-1);
 }
 
@@ -3254,19 +3263,19 @@ void Array::deleteVectorSubset(Array& arg) {
   try {
     // First convert arg to an ordinal type.
     if (isColonOperator(arg)) {
-      dp->putData(dp->dataClass,Dimensions(0,0),NULL,false,dp->fieldNames,dp->className);
+      dp->putData(dp->dataClass(),Dimensions(0,0),NULL,false,dp->fieldNames(),dp->className());
       return;
     }
     arg.toOrdinalType();
     if (isSparse()) {
       int rows = getDimensionLength(0);
       int cols = getDimensionLength(1);
-      void *cp = DeleteSparseMatrixVectorSubset(dp->dataClass,rows,cols,
+      void *cp = DeleteSparseMatrixVectorSubset(dp->dataClass(),rows,cols,
 						dp->getData(),
 						(const indexType *)
 						arg.getDataPointer(),
 						arg.getLength());
-      dp->putData(dp->dataClass,Dimensions(rows,cols),cp,true);
+      dp->putData(dp->dataClass(),Dimensions(rows,cols),cp,true);
       return;
     }
     // Next, build a deletion map.
@@ -3280,7 +3289,7 @@ void Array::deleteVectorSubset(Array& arg) {
     // Special case - if newSize==getLength, the delete is a no-op
     if (newSize == getLength()) return;
     // Allocate a new space to hold the data.
-    qp = allocateArray(dp->dataClass,newSize,dp->fieldNames);
+    qp = allocateArray(dp->dataClass(),newSize,dp->fieldNames());
     // Loop through the indices - copy elements in that 
     // have not been deleted.
     int dstIndex = 0;
@@ -3290,20 +3299,20 @@ void Array::deleteVectorSubset(Array& arg) {
     Free(deletionMap);
     deletionMap = NULL;
     Dimensions newDim;
-    if (dp->dimensions.isScalar()) {
+    if (dp->dimensions().isScalar()) {
       newDim.reset();
       newDim = Dimensions(1,newSize);
-    } else if (dp->dimensions.isVector()) {
-      newDim = dp->dimensions;
-      if (dp->dimensions.get(0) != 1)
+    } else if (dp->dimensions().isVector()) {
+      newDim = dp->dimensions();
+      if (dp->dimensions().get(0) != 1)
 	newDim.set(0,newSize);
       else
 	newDim.set(1,newSize);
     } else {
       newDim = Dimensions(1,newSize);
     }
-    dp->putData(dp->dataClass,newDim,qp,dp->sparse,
-		     dp->fieldNames,dp->className);
+    dp->putData(dp->dataClass(),newDim,qp,dp->sparse(),
+		dp->fieldNames(),dp->className());
   } catch (Exception &e) {
     Free(qp);
     Free(deletionMap);
@@ -3319,26 +3328,26 @@ void Array::makeSparse() {
   if (isReferenceType() || isString())
     throw Exception("Cannot make strings or reference types sparse.");
   if (isSparse()) return;
-  if ((dp->dataClass != FM_LOGICAL) && (dp->dataClass < FM_INT32))
+  if ((dp->dataClass() != FM_LOGICAL) && (dp->dataClass() < FM_INT32))
     promoteType(FM_INT32);
-  dp->putData(dp->dataClass,dp->dimensions,
-		   makeSparseArray(dp->dataClass,
-				   dp->dimensions.get(0),
-				   dp->dimensions.get(1),
+  dp->putData(dp->dataClass(),dp->dimensions(),
+	      makeSparseArray(dp->dataClass(),
+			      dp->dimensions().get(0),
+			      dp->dimensions().get(1),
 				   dp->getData()),
 		   true,
-		   dp->fieldNames,
-		   dp->className);
+	      dp->fieldNames(),
+	      dp->className());
 }
 
 int Array::getNonzeros() const {
   if (!isSparse())
-    return (dp->dimensions.getElementCount());
+    return (dp->dimensions().getElementCount());
   if (isEmpty())
     return 0;
-  return CountNonzeros(dp->dataClass,
-		       dp->dimensions.get(0),
-		       dp->dimensions.get(1),
+  return CountNonzeros(dp->dataClass(),
+		       dp->dimensions().get(0),
+		       dp->dimensions().get(1),
 		       dp->getData());
 }
 
@@ -3346,17 +3355,17 @@ void Array::makeDense() {
   if (!isSparse())
     return;
   if (isEmpty()) {
-    dp->sparse = false;
+    dp->setSparse(false);
     return;
   }
-  dp->putData(dp->dataClass,dp->dimensions,
-		   makeDenseArray(dp->dataClass,
-				  dp->dimensions.get(0),
-				  dp->dimensions.get(1),
-				  dp->getData()),
+  dp->putData(dp->dataClass(),dp->dimensions(),
+	      makeDenseArray(dp->dataClass(),
+			     dp->dimensions().get(0),
+			     dp->dimensions().get(1),
+			     dp->getData()),
 		   false,
-		   dp->fieldNames,
-		   dp->className);
+	      dp->fieldNames(),
+	      dp->className());
 }
 
 /**
@@ -3384,13 +3393,13 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
     // more indices than our dimension set.
     for (i=0;i<args.size();i++) {
       if (isColonOperator(args[i]))
-	args[i] = Array::int32RangeConstructor(1,1,dp->dimensions.get(i),true);
+	args[i] = Array::int32RangeConstructor(1,1,dp->dimensions().get(i),true);
       args[i].toOrdinalType();
     }
     // First, add enough "1" singleton references to pad the
     // index set out to the size of our variable.
-    if (args.size() < dp->dimensions.getLength())
-      for (i = args.size();i<dp->dimensions.getLength();i++)
+    if (args.size() < dp->dimensions().getLength())
+      for (i = args.size();i<dp->dimensions().getLength();i++)
 	args.push_back(Array::uint32Constructor(1));
     // Now cycle through indices one at a time.  Count
     // the number of non-covering indices.  Also track the
@@ -3398,12 +3407,12 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
     for (i=0;i<args.size();i++) {
       qp = args[i];
       // Get a binary representation of each index over the range [0,dimensions[i]-1]
-      indxCovered = qp.getBinaryMap(dp->dimensions.get(i));
+      indxCovered = qp.getBinaryMap(dp->dimensions().get(i));
       // Scan the array, and make sure all elements are true.  If not,
       // then this is the "singleton" dimension.  Kick the singleton
       // reference counter, and record the current dimension.
       bool allCovered = true; 
-      for (int k=0;allCovered && (k<dp->dimensions.get(i));k++)
+      for (int k=0;allCovered && (k<dp->dimensions().get(i));k++)
 	allCovered = allCovered && indxCovered[k];
       Free(indxCovered);
       indxCovered = NULL;
@@ -3439,17 +3448,17 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
       // dimension to build a deletion map.  The map is
       // marked true for each plane we wish to delete.
       // The map is the size of the _data_'s dimension.
-      int M = dp->dimensions.get(singletonDimension);
+      int M = dp->dimensions().get(singletonDimension);
       deletionMap = args[singletonDimension].getBinaryMap(M);
       // We can now calculate the new size of the variable in the singletonDimension
       // by counting the number of "false" entries in deletionMap.
       int newSize = 0;
       for (i=0;i<M;i++)
 	if (!deletionMap[i]) newSize++;
-      int rowCount = dp->dimensions.get(0);
+      int rowCount = dp->dimensions().get(0);
       Dimensions retDims;
       // Copy our current dimensions to the output dimensions.
-      retDims = dp->dimensions;
+      retDims = dp->dimensions();
       // Update the singleton dimension to the new size.
       retDims.set(singletonDimension,newSize);
       // For sparse matrices, we branch here to call the sparse matrix deletion code
@@ -3457,12 +3466,12 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
 	int rows = getDimensionLength(0);
 	int cols = getDimensionLength(1);
 	if (singletonDimension == 0)
-	  dp->putData(dp->dataClass,retDims,
-			   DeleteSparseMatrixRows(dp->dataClass,rows,cols,
+	  dp->putData(dp->dataClass(),retDims,
+		      DeleteSparseMatrixRows(dp->dataClass(),rows,cols,
 						  dp->getData(),deletionMap),true);
 	else if (singletonDimension == 1)
-	  dp->putData(dp->dataClass,retDims,
-			   DeleteSparseMatrixCols(dp->dataClass,cols,
+	  dp->putData(dp->dataClass(),retDims,
+		      DeleteSparseMatrixCols(dp->dataClass(),cols,
 						  dp->getData(),deletionMap),true);
 	else
 	  throw Exception("sparse matrices do not support deleting n-dimensional planes - they are only 2-D");
@@ -3471,17 +3480,17 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
 	return;
       }
       // Allocate space for the return objects data
-      cp = allocateArray(dp->dataClass,retDims.getElementCount(),dp->fieldNames);
+      cp = allocateArray(dp->dataClass(),retDims.getElementCount(),dp->fieldNames());
       // Track our offset into the original data & our offset into
       // the truncated data.
       int srcIndex = 0;
       int dstIndex = 0;
       // Inintialize an ND pointer to the first element in the
       // current data structure.
-      int L = dp->dimensions.getLength();
+      int L = dp->dimensions().getLength();
       Dimensions curPos(L);
       // Loop until we have exhausted the original data.
-      while (curPos.inside(dp->dimensions)) {
+      while (curPos.inside(dp->dimensions())) {
 	// Check to see if this column is to be skipped
 	if (!deletionMap[curPos.get(singletonDimension)]) {
 	  // Copy the data from our original data structure to the
@@ -3493,16 +3502,16 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
 	}
 	// Advance the source pointer - we always do this
 	srcIndex ++;
-	curPos.incrementModulo(dp->dimensions,0);
+	curPos.incrementModulo(dp->dimensions(),0);
       }
       Free(deletionMap);
       retDims.simplify();
-      dp->putData(dp->dataClass,retDims,cp,dp->sparse,
-		       dp->fieldNames,dp->className);
+      dp->putData(dp->dataClass(),retDims,cp,dp->sparse(),
+		  dp->fieldNames(),dp->className());
     } else {
       Dimensions newDims;
-      dp->putData(dp->dataClass,newDims,NULL,false,dp->fieldNames,
-		       dp->className);
+      dp->putData(dp->dataClass(),newDims,NULL,false,dp->fieldNames(),
+		  dp->className());
     }
   } catch (Exception &e) {
     Free(deletionMap);
@@ -3524,20 +3533,20 @@ void Array::summarizeCellEntry() const {
   if (isEmpty()) 
     m_eval->outputMessage("[]");
   else {
-    switch(dp->dataClass) {
+    switch(dp->dataClass()) {
     case FM_FUNCPTR_ARRAY:
       m_eval->outputMessage("{");
-      dp->dimensions.printMe(m_eval);
+      dp->dimensions().printMe(m_eval);
       m_eval->outputMessage(" function pointer array }");
       break;
     case FM_CELL_ARRAY:
       m_eval->outputMessage("{");
-      dp->dimensions.printMe(m_eval);
+      dp->dimensions().printMe(m_eval);
       m_eval->outputMessage(" cell }");
       break;
     case FM_STRUCT_ARRAY:
       m_eval->outputMessage(" ");
-      dp->dimensions.printMe(m_eval);
+      dp->dimensions().printMe(m_eval);
       if (isUserClass()) {
 	m_eval->outputMessage(" ");
 	m_eval->outputMessage(getClassName().back().c_str());
@@ -3548,157 +3557,157 @@ void Array::summarizeCellEntry() const {
     case FM_STRING:
       {
 	const char *ap =(const char*) dp->getData();
-	if (dp->dimensions.getRows() == 1) {
-	  int columns(dp->dimensions.getColumns());
+	if (dp->dimensions().getRows() == 1) {
+	  int columns(dp->dimensions().getColumns());
 	  memcpy(msgBuffer,ap,columns);
 	  msgBuffer[columns] = 0;
 	  m_eval->outputMessage(msgBuffer);
 	} else {
 	  m_eval->outputMessage("[");
-	  dp->dimensions.printMe(m_eval);
+	  dp->dimensions().printMe(m_eval);
 	  m_eval->outputMessage(" string ]");
 	}
       }
       break;
     case FM_LOGICAL:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const logical*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" logical]");	  
       }
       break;
     case FM_UINT8:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint8*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" uint8]");
       }
       break;
     case FM_INT8:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int8*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" int8]");
       }
       break;
     case FM_UINT16:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint16*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" uint16]");
       }
       break;
     case FM_INT16:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int16*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" int16]");
       }
       break;
     case FM_UINT32:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint32*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" uint32]");
       }
       break;
     case FM_INT32:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int32*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	if (isSparse())
 	  m_eval->outputMessage(" sparse");
 	m_eval->outputMessage(" int32]");
       }
       break;
     case FM_UINT64:
-      if (dp->dimensions.isScalar()) {
+      if (dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const uint64*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	m_eval->outputMessage(" uint64]");
       }
       break;
     case FM_INT64:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%d]",*((const int64*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	if (isSparse())
 	  m_eval->outputMessage(" sparse");
 	m_eval->outputMessage(" int64]");
       }
       break;
     case FM_DOUBLE:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%lf]",*((const double*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	if (isSparse())
 	  m_eval->outputMessage(" sparse");
 	m_eval->outputMessage(" double]");
       }
       break;
     case FM_DCOMPLEX:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->dimensions().isScalar()) {
 	const double *ap = (const double*) dp->getData();
 	snprintf(msgBuffer,MSGBUFLEN,"[%lf+%lfi]",ap[0],ap[1]);
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	if (isSparse())
 	  m_eval->outputMessage(" sparse");
 	m_eval->outputMessage(" dcomplex]");
       }
       break;
     case FM_FLOAT:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->dimensions().isScalar()) {
 	snprintf(msgBuffer,MSGBUFLEN,"[%f]",*((const float*) dp->getData()));
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	if (isSparse())
 	  m_eval->outputMessage(" sparse");
 	m_eval->outputMessage(" float]");
       }
       break;
     case FM_COMPLEX:
-      if (!isSparse() && dp->dimensions.isScalar()) {
+      if (!isSparse() && dp->dimensions().isScalar()) {
 	const float *ap = (const float*) dp->getData();
 	snprintf(msgBuffer,MSGBUFLEN,"[%f+%fi]",ap[0],ap[1]);
 	m_eval->outputMessage(msgBuffer);
       } else {
 	m_eval->outputMessage("[");
-	dp->dimensions.printMe(m_eval);
+	dp->dimensions().printMe(m_eval);
 	if (isSparse())
 	  m_eval->outputMessage(" sparse");
 	m_eval->outputMessage(" complex]");
@@ -3712,7 +3721,7 @@ void Array::summarizeCellEntry() const {
 char* Array::getContentsAsCString() const  {
   char *buffer;
   const char*qp;
-  if (dp->dataClass != FM_STRING)
+  if (dp->dataClass() != FM_STRING)
     throw Exception("Unable to convert supplied object to a string!\n");
   int M = getLength();
   buffer = (char*)Malloc((M+1)*sizeof(char));
@@ -3723,7 +3732,7 @@ char* Array::getContentsAsCString() const  {
 }
 
 int32 Array::getContentsAsIntegerScalar()  {
-  if (dp->dataClass == FM_STRING) {
+  if (dp->dataClass() == FM_STRING) {
     return atoi((const char*) dp->getData());
   }
   int32 *qp;
@@ -3735,7 +3744,7 @@ int32 Array::getContentsAsIntegerScalar()  {
 }
 
 double Array::getContentsAsDoubleScalar()  {
-  if (dp->dataClass == FM_STRING) {
+  if (dp->dataClass() == FM_STRING) {
     return atof((const char*) dp->getData());
   }
   double *qp;
@@ -3772,12 +3781,12 @@ int32 DoCountNNZComplex(const void* dp, int len) {
 int32 Array::nnz() const {
   if (isEmpty()) return 0;
   if (isSparse())
-    return CountNonzeros(dp->dataClass,
+    return CountNonzeros(dp->dataClass(),
 			 getDimensionLength(0),
 			 getDimensionLength(1),
 			 dp->getData());
   // OK - its not sparse... now what?
-  switch (dp->dataClass) {
+  switch (dp->dataClass()) {
   case FM_LOGICAL:
     return DoCountNNZReal<logical>(dp->getData(),getLength());
   case FM_INT8:
@@ -3808,7 +3817,7 @@ int32 Array::nnz() const {
   case FM_CELL_ARRAY:
     return DoCountNNZReal<void*>(dp->getData(),getLength());
   case FM_STRUCT_ARRAY:
-    return DoCountNNZReal<void*>(dp->getData(),getLength()*dp->fieldNames.size());
+    return DoCountNNZReal<void*>(dp->getData(),getLength()*dp->fieldNames().size());
   case FM_FUNCPTR_ARRAY:
     return DoCountNNZReal<void*>(dp->getData(),getLength());
   }
@@ -3816,10 +3825,10 @@ int32 Array::nnz() const {
 
 bool Array::anyNotFinite() {
   if (isSparse())
-    return SparseAnyNotFinite(dp->dataClass,
+    return SparseAnyNotFinite(dp->dataClass(),
 			      getDimensionLength(1),
 			      dp->getData());
-  switch(dp->dataClass) {
+  switch(dp->dataClass()) {
   case FM_FLOAT: 
     {
       const float *sp = (const float *) dp->getData();

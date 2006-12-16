@@ -44,21 +44,6 @@ static Interpreter *m_eval;
 typedef std::set<uint32, std::less<uint32> > intSet;
 intSet addresses;
 
-
-int ArrayCopyCount = 0;
-
-Array::Array(const Array &copy) : dp(copy.dp) {
-  ArrayCopyCount++;
-}
-
-bool Array::isColumnVector() const {
-  return (is2D() && columns() == 1);
-}
-
-bool Array::isRowVector() const {
-  return (is2D() && rows() == 1);
-}
-
 bool isColonOperator(Array& a) {
   return ((a.dataClass() == FM_STRING) && 
 	  (a.getLength() == 1) &&
@@ -758,15 +743,6 @@ int Array::getElementSize() const {
   return 0;
 }
 
-/**
- * Calculate the total number of bytes required to store this array.
- */
-int Array::getByteSize() const {
-  if (sparse())
-    throw Exception("Byte size calculation not supported for sparse arrays.");
-  return getElementSize()*getLength();
-}
-
 #define caseReal(caseLabel,dpType) \
   case caseLabel:\
   {\
@@ -992,18 +968,6 @@ const bool Array::testForCaseMatch(Array x) const  {
   return foundMatch;
 }
 
-
-/**
- * Returns TRUE if we are a reference type (cell array or
- * struct array).
- */
-const bool Array::isReferenceType() const {
-  if (isEmpty())
-    return false;
-  return ((dataClass() == FM_CELL_ARRAY) ||
-	  (dataClass() == FM_STRUCT_ARRAY) ||
-	  (dataClass() == FM_FUNCPTR_ARRAY));
-}
 
 void Array::copyElements(int srcIndex, void* dstPtr, int dstIndex, 
 			 int count) const {
@@ -2334,7 +2298,7 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
   return outndx;
 }
 
-bool allScalars(ArrayVector& index) {
+bool allScalars(const ArrayVector& index) {
   for (int i=0;i<index.size();i++) 
     if (!(index[i].isScalar() && (!index[i].isReferenceType()) &&
 	  (!index[i].isString())))
@@ -4005,14 +3969,6 @@ int32 ArrayToInt32(const Array& a) {
   return b.getContentsAsIntegerScalar();
 }
 
-int32 Array::rows() const {
-  return getDimensionLength(0);
-}
-
-int32 Array::columns() const {
-  return getDimensionLength(1);
-}
-  
 Array  Array::doubleMatrixConstructor(int rows, int cols) {
   Dimensions dim(rows,cols);
   double *data = (double*) allocateArray(FM_DOUBLE,rows*cols);

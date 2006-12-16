@@ -125,6 +125,10 @@ void Scanner::FetchOther() {
     m_bracketDepth++;
   if (m_text[m_ptr] == ']')
     m_bracketDepth = min(0,m_bracketDepth-1);
+  if (m_text[m_ptr] == '{')
+    m_bracketDepth++;
+  if (m_text[m_ptr] == '}')
+    m_bracketDepth = min(0,m_bracketDepth-1);
   m_ptr++;
 }
 

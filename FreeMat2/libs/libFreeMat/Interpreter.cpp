@@ -65,15 +65,17 @@
  * Pending control-C
  */
 bool InterruptPending = false;
-static int steptrap = 0;
-static int stepcurrentline = 0;
-static int tracetrap = 0;
-static int tracecurrentline = 0;
-static string stepname;
 
-Array *endRef = NULL;
-int endTotal;
-int endCount;
+#define SaveEndInfo  \
+  Array *oldEndRef = endRef; \
+  int oldEndCount = endCount; \
+  int oldEndTotal = endTotal; 
+
+#define RestoreEndInfo \
+  endRef = oldEndRef; \
+  endCount = oldEndCount; \
+  endTotal = oldEndTotal;  \
+
 
 
 char* TildeExpand(char* path) {
@@ -673,9 +675,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
     Array r(*ptr);
     for (unsigned index = 1;index < t.numchildren()-1;index++) 
       deref(r,t.child(index));
-    Array *oldEndRef = endRef;
-    int oldEndCount = endCount;
-    int oldEndTotal = endTotal;
+    SaveEndInfo;
     endRef = &r;
     const tree &s(t.last());
     if (s.is(TOK_PARENS)) {
@@ -714,9 +714,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       }
       q += r.getFieldAsList(field);
     }
-    endRef = oldEndRef;
-    endCount = oldEndCount;
-    endTotal = oldEndTotal;
+    RestoreEndInfo;
   } else if (!t.is(TOK_KEYWORD))
     q.push_back(expression(t));
 }
@@ -734,7 +732,7 @@ Array Interpreter::expression(const tree &t) {
     return t.array();
   case TOK_END:
     if (!endRef) 
-      throw Exception("END keyword illegal (internal error - please file a bug report with the code that produced this message)!");
+      throw Exception("END keyword not allowed for undefined variables");
     if (endTotal == 1)
       return Array::int32Constructor(endRef->getLength());
     else
@@ -1076,7 +1074,7 @@ void Interpreter::AutoStop(bool a) {
 //      statements
 //    case test_expression_2
 //      statements
-//    otherwise:
+//    otherwise
 //      statements
 //  end
 //@]
@@ -1852,9 +1850,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
 }
 
 void Interpreter::multiassign(Array *r, const tree &s, ArrayVector &data) {
-  Array *oldEndRef = endRef;
-  int oldEndCount = endCount;
-  int oldEndTotal = endTotal;
+  SaveEndInfo;
   endRef = r;
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
@@ -1893,15 +1889,11 @@ void Interpreter::multiassign(Array *r, const tree &s, ArrayVector &data) {
     }
     r->setFieldAsList(field,data);
   }
-  endRef = oldEndRef;
-  endCount = oldEndCount;
-  endTotal = oldEndTotal;  
+  RestoreEndInfo;
 }
 
 void Interpreter::assign(Array *r, const tree &s, Array &data) {
-  Array *oldEndRef = endRef;
-  int oldEndCount = endCount;
-  int oldEndTotal = endTotal;
+  SaveEndInfo;
   endRef = r;  
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
@@ -1942,9 +1934,7 @@ void Interpreter::assign(Array *r, const tree &s, Array &data) {
     ArrayVector datav(singleArrayVector(data));
     r->setFieldAsList(field,datav);
   }
-  endRef = oldEndRef;
-  endCount = oldEndCount;
-  endTotal = oldEndTotal;  
+  RestoreEndInfo;
 }
 
 //Works
@@ -3581,9 +3571,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 //
 // 
 void Interpreter::deref(Array &r, const tree &s) {
-  Array *oldEndRef = endRef;
-  int oldEndCount = endCount;
-  int oldEndTotal = endTotal;
+  SaveEndInfo;
   endRef = &r;
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
@@ -3621,9 +3609,7 @@ void Interpreter::deref(Array &r, const tree &s) {
     }
     r = r.getField(field);
   }
-  endRef = oldEndRef;
-  endCount = oldEndCount;
-  endTotal = oldEndTotal;
+  RestoreEndInfo;
 }
  
  Array Interpreter::rhs(const tree &t) {
@@ -3674,11 +3660,17 @@ Interpreter::Interpreter(Context* aContext) {
   Array::setArrayInterpreter(this);
   signal(SIGINT,sigInterrupt);
   printLimit = 1000;
-  autostop = true;
+  //  autostop = true;
+  autostop = false;
   InCLI = false;
   stopoverload = false;
   m_skipflag = false;
   clearStacks();
+  steptrap = 0;
+  stepcurrentline = 0;
+  tracetrap = 0;
+  tracecurrentline = 0;
+  endRef = NULL;
 }
 
 Interpreter::~Interpreter() {
@@ -3814,15 +3806,27 @@ void Interpreter::setGreetingFlag(bool skip) {
   m_skipflag = skip;
 }
 
-bool NeedsMoreInput(string txt) {
+bool NeedsMoreInput(Interpreter *eval, string txt) {
+  // Check for ... or an open []
   try {
     Scanner S(txt,"");
     while (!S.Next().Is(TOK_EOF))
       S.Consume();
-    return (S.InContinuationState() || S.InBracket());
+    if (S.InContinuationState() || S.InBracket()) return true;
   } catch (Exception &e) {
-    return false;
   }
+  try {
+    Scanner S(txt,"");
+    Parser P(S);
+    tree root = P.Process();
+    return false;
+  } catch (Exception &e) {
+    if (e.getMessageCopy().substr(0,13) == "Expecting end") {
+      eval->outputMessage("ENDMATCH\r\n");
+      return true;
+    }
+  }
+  return false;
 }
 
 string Interpreter::getLine(string prompt) {
@@ -3861,7 +3865,7 @@ void Interpreter::evalCLI() {
     std::string cmdline;
     mutex.lock();
     while ((cmdset.empty() || 
-	    NeedsMoreInput(cmdset)) && !InterruptPending) {
+	    NeedsMoreInput(this,cmdset)) && !InterruptPending) {
       if (cmd_buffer.empty())
 	bufferNotEmpty.wait(&mutex);
       cmdline = cmd_buffer.front();

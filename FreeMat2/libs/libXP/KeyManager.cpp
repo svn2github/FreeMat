@@ -969,7 +969,7 @@ void KeyManager::OnChar( int c ) {
   case KM_CTRLA:
     BeginningOfLine();
     break;
-  case KM_CTRLC:
+  case KM_CTRLZ:
     RegisterInterrupt();
     break;
   case KM_CTRLE:

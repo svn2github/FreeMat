@@ -504,8 +504,7 @@ const Token & Parser::Expect(byte a) {
   const Token & ret(Next());
   if (!m_lex.Next().Is(a)) {
     if (a != TOK_EOF)
-      serror(string("Expecting "));
-    //      serror(string("Expecting ") + TokenToString(Token(a,0)));
+      serror(string("Expecting ") + TokenToString(Token(a,0)));
     else
       serror(string("Unexpected input"));
   }  else {

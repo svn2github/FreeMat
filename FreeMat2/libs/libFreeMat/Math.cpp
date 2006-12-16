@@ -431,8 +431,13 @@ void power_zi(double *p, const double *a, int b) 	/* p = a**b  */
 void power_zz(double *c, const double *a, const double *b) 
 {
   double logr, logi, x, y;
-
-  logr = log(complex_abs<double>(a[0], a[1]) );
+  double mag = complex_abs<double>(a[0], a[1]);
+  if (mag == 0) {
+    c[0] = 0;
+    c[1] = 0;
+    return;
+  }
+  logr = log(mag);
   logi = atan2(a[1], a[0]);
     
   x = exp( logr * b[0] - logi * b[1] );

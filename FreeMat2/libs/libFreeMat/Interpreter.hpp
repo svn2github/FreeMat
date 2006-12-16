@@ -76,6 +76,22 @@ class Interpreter : public QThread {
    ******************************************/
 
   /**
+   * Members related to "end" references.
+   */
+  Array *endRef;
+  int endTotal;
+  int endCount;
+
+  /**
+   * Debugger related values
+   */
+  int steptrap;
+  int stepcurrentline;
+  int tracetrap;
+  int tracecurrentline;
+  string stepname;
+
+  /**
    * Tracks the number of errors that have occured (used by the documentation
    * compiler helpgen)
    */

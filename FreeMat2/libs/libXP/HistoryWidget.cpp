@@ -33,8 +33,8 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   m_popup = new QMenu;
   m_popup->addAction("Execute");
   m_popup->addAction("Clear All");
-  m_flist->setCurrentItem(p);
   m_flist->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  m_flist->scrollToBottom();
 }
 
 void HistoryWidget::contextMenuEvent(QContextMenuEvent *e) {
@@ -68,7 +68,7 @@ void HistoryWidget::addCommand(QString t) {
       delete p;
     }
     QListWidgetItem *d = new QListWidgetItem(t,m_flist);
-    m_flist->setCurrentItem(d);
+    m_flist->scrollToBottom();
   }
 }
 

@@ -110,7 +110,6 @@ private:
    */
   int32 getFieldIndex(std::string fieldName);
 public:
-  Array::Array(const Array &copy);
   /** Compute the maximum index.
    * This computes the maximum value of the array as an index (meaning
    * that it must be greater than 0.  Because this is an internal function, it
@@ -352,7 +351,11 @@ public:
   /**
    * Calculate the bytes required to hold this array (element size * length)
    */
-  int getByteSize() const;
+  inline int getByteSize() const {
+    if (sparse())
+      throw Exception("Byte size calculation not supported for sparse arrays.");
+    return getElementSize()*getLength();
+  }
   /**
    * Returns true if we are (meaningfully) positive.  For the unsigned integer types,
    * this is always true.  For complex types, this is false.  For the signed integer
@@ -421,7 +424,13 @@ public:
    * Returns TRUE if we are a reference type (cell array or
    * struct array).
    */
-  const bool isReferenceType() const;
+  inline const bool isReferenceType() const {
+    if (isEmpty())
+      return false;
+    return ((dataClass() == FM_CELL_ARRAY) ||
+	    (dataClass() == FM_STRUCT_ARRAY) ||
+	    (dataClass() == FM_FUNCPTR_ARRAY));
+  }
   /**
    * Returns TRUE if we are a complex data type.
    */
@@ -446,8 +455,12 @@ public:
   inline const bool isIntegerClass() const {
     return (dp->dataClass() < FM_FLOAT);
   }
-  bool isColumnVector() const;
-  bool isRowVector() const;
+  inline bool isColumnVector() const {
+    return (is2D() && columns() == 1);
+  }
+  inline bool isRowVector() const {
+    return (is2D() && rows() == 1);
+  }
   /**
    * Copy data from our data array to the specified array.  This is a 
    * deep copy, in the sense that pointers are copied by creating 
@@ -777,11 +790,15 @@ public:
   /**
    * Return the number of rows.
    */
-  int rows() const;
+  inline int rows() const {
+    return getDimensionLength(0);
+  }
   /**
    * Return the number of columns.
    */
-  int columns() const;
+  inline int columns() const {
+    return getDimensionLength(1);
+  }
   /**
    * Get our contents as a C-string.  Only works for _STRING types.
    * Throws an exception for non-string types.

@@ -294,8 +294,13 @@ double Serialize::getDouble() {
 Class Serialize::getDataClass(bool& sparseflag) {
   checkSignature('a',1);
   char a = getByte();
-  sparseflag = (a & 32) > 0;
-  a = a & 31;
+  sparseflag = (a & 16) > 0;
+  // For compatibility reasons, the sparse flag is stuck at
+  // 16.  Which is binary:
+  //   0001 0000
+  // To mask out this bit, we need the following number:
+  //   1110 1111 = 255 - 16 = 239
+  a = a & 239;
   switch (a) {
   case 1:
     return FM_CELL_ARRAY;
@@ -315,9 +320,9 @@ Class Serialize::getDataClass(bool& sparseflag) {
     return FM_UINT32;
   case 9:
     return FM_INT32;
-  case 15:
+  case 32:
     return FM_UINT64;
-  case 16:
+  case 33:
     return FM_INT64;
   case 10:
     return FM_FLOAT;
@@ -336,7 +341,7 @@ Class Serialize::getDataClass(bool& sparseflag) {
 
 void Serialize::putDataClass(Class cls, bool issparse) {
   char sparseval;
-  sparseval = issparse ? 32 : 0;
+  sparseval = issparse ? 16 : 0;
   sendSignature('a',1);
   switch (cls) {
   case FM_CELL_ARRAY:
@@ -367,10 +372,10 @@ void Serialize::putDataClass(Class cls, bool issparse) {
     putByte(9 | sparseval);
     return;
   case FM_UINT64:
-    putByte(15);
+    putByte(32);
     return;
   case FM_INT64:
-    putByte(16 | sparseval);
+    putByte(33 | sparseval);
     return;
   case FM_FLOAT:
     putByte(10 | sparseval);

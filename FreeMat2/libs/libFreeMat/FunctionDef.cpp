@@ -35,7 +35,6 @@
 #include "SymbolTable.hpp"
 #include "Types.hpp"
 #include "MexInterface.hpp"
-#include "Transform.hpp"
 #include <QDebug>
 
 #ifdef WIN32

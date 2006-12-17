@@ -308,7 +308,7 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
   if (keycode == Qt::Key_Left)
     emit OnChar(KM_LEFT);
   CTRLKEY('Z')
-    emit OnChar(KM_CTRLC);
+    emit OnChar(KM_CTRLK);
   CTRLKEY('A')
     emit OnChar(KM_CTRLA);
   CTRLKEY('D')

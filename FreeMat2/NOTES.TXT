@@ -509,5 +509,5 @@ in a function call, the dbstep state will need to be saved and restored.
 The performance differences may have something to do with GCC also.  
 
 For the 3.0 release:
-  - backwards compatibility for native-format data files and 64 bit types
+  - backwards compatibility for native-format data files and 64 bit types - done
   - gui documentation

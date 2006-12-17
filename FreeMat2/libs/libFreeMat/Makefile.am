@@ -41,8 +41,7 @@ Token.hpp \
 Parser.hpp \
 Scanner.hpp \
 Tree.hpp \
-RefVec.hpp \
-Transform.hpp
+RefVec.hpp 
 
 libFreeMat_a_SOURCES = Array.cpp \
 Interpreter.cpp \
@@ -74,7 +73,6 @@ Parser.cpp \
 Scanner.cpp \
 Tree.cpp \
 FunctionDef.cpp \
-Transform.cpp \
 $(libFreeMat_a_HFILES) 
 
 nodist_libFreeMat_a_SOURCES = $(libFreeMat_a_MOC)

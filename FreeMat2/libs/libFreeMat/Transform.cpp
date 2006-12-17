@@ -159,14 +159,11 @@ bool IsAncestor(tree root, tree node) {
 void TestParent(tree root) {
   tree endRef(FindEndReference(root));
   if (!endRef.valid()) return;
-  cout << ">>*********************************************\r\n";
   endRef.print();
   tree varRef(Parent(root,endRef));
   while (varRef.valid() && !varRef.is(TOK_VARIABLE))
     varRef = Parent(root,varRef);
-  cout << "<<*********************************************\r\n";
   varRef.print();  
-  cout << "]]*********************************************\r\n";
   // Find the child of varRef that has our end Ref
   int childNum = 0;
   bool foundEndRef = false;
@@ -205,10 +202,8 @@ tree RemoveEndReferences(tree s) {
     if ((s.child(i).is(TOK_STATEMENT) || 
 	 s.child(i).is(TOK_QSTATEMENT)) && HasEndReference(s.child(i))) {
       tree ref = FindVariableReferences(s.child(i));
-      //      cout << "####################\r\n";
       //      ref.print();
       ref = EndFunctionRewrite2(ref,tmpnum);
-      //      cout << "**************************************\r\n";
       //      ref.print();
       //      addChild(ret,ref);
       //      bool replace = true;
@@ -223,7 +218,6 @@ tree RemoveEndReferences(tree s) {
 
 tree TransformEndReferences(tree s) {
   return s;
-  cout << "Input tree:\r\n";
   TestParent(s);
   while (HasEndReference(s))
     s = RemoveEndReferences(s);

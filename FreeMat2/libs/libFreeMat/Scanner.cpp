@@ -293,8 +293,8 @@ void Scanner::FetchBlob() {
 const Token& Scanner::Next() {
   while (!m_tokValid) {
     Fetch();
-    if (m_tokValid && m_debugFlag)
-      cout << m_tok;
+//     if (m_tokValid && m_debugFlag)
+//       cout << m_tok;
     if ((m_ptr < m_strlen) && (current() == '\n'))
       m_linenumber++;
   }

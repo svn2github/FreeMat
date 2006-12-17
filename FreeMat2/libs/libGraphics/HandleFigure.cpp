@@ -168,7 +168,7 @@ void HandleFigure::PaintMe(RenderEngine &gc) {
     }
     resized = false;
   } catch (Exception& e) {
-    cout << "Warning: Graphics subsystem reports: " << e.getMessageCopy() << "\n";
+    //    cout << "Warning: Graphics subsystem reports: " << e.getMessageCopy() << "\n";
   }
 }
 

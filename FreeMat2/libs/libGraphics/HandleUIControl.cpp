@@ -262,7 +262,6 @@ void HandleUIControl::ConstructWidget(HandleWindow *f) {
 }
 
 void HandleUIControl::clicked() {
-  std::cout << "CLICKED\n";
   if (StringCheck("style","slider") && widget) {
     double min(ScalarPropertyLookup("min"));
     double max(ScalarPropertyLookup("max"));

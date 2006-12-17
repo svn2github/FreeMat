@@ -204,7 +204,7 @@ void KeyManager::Redisplay() {
 }
 
 void KeyManager::setTerminalWidth(int w) {
-  cout << "Set terminal width " << w << "\n";
+  //  cout << "Set terminal width " << w << "\n";
   ncolumn = w; 
 }
 

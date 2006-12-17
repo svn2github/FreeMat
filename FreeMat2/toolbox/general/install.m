@@ -62,79 +62,23 @@
 %The source code build is a little more complicated than previous versions of FreeMat.  Here
 %are the current build instructions for all platforms.
 %\begin{enumerate}
-%\item Build and install Qt 4.1 or later - @|http://www.trolltech.com/download/opensource.html|
+%\item Build and install Qt 4.2 or later - @|http://www.trolltech.com/download/opensource.html|
 %\item Install g77 or gfortran (use fink for Mac OS X, use @|gcc-g77| package for MinGW)
 %\item Download the source code @|FreeMat-<VERSION_NUMBER>-src.tar.gz|.
 %\item Unpack the source code: @|tar xvfz FreeMat-<VERSION_NUMBER>-src.tar.gz|.
 %\item For Windows, you will need to install MSYS as well as MINGW to
 %build FreeMat.  You will also need unzip to unpack the enclosed
-%matio.zip archive
+%matio.zip archive.  Alternately, you can cross-build the WIndows version
+%of FreeMat under Linux (this is how I build it now).
 %\item If you are extraordinarily lucky (or prepared), you can issue the
 %usual @|configure && make && make install|.  This is not likely to work
 %because of the somewhat esoteric dependencies of FreeMat.  The configure
 %step will probably fail and indicate what external dependencies are
-%still needed.  It will also create a script that you can run to build
-%the missing dependencies.  
+%still needed. 
+%\item I assume that you are familiar with the process of installing 
+%dependencies if you are trying to build FreeMat from source.
 %\end{enumerate}
-%For example, on my machine, a @|configure|
-%step yields the following result:
-%@[
-%checking for amd_postorder in -lamd... no
-%checking for umfpack_zl_solve in -lumfpack... no
-%checking for fftwf_malloc in -lfftw3f... no
-%checking for fftw_malloc in -lfftw3... no
-%checking for sgemm_... no
-%checking for ATL_xerbla in -latlas... no
-%checking for sgemm_ in -lblas... no
-%checking for sgemm_ in -lcxml... no
-%checking for sgemm_ in -ldxml... no
-%checking for sgemm_ in -lscs... no
-%checking for sgemm_ in -lcomplib.sgimath... no
-%checking for sgemm_ in -lblas... (cached) no
-%checking for sgemm_ in -lm... no
-%checking for sgemm_ in -lblas... (cached) no
-%checking for znaupd_ in -larpack... no
-%checking for inflate in -lz... yes
-%checking for Mat_Open in -lmatio... no
-%configure: creating ./config.status
-%config.status: creating tools/disttool/builddeps
-%config.status: executing depfiles commands
-%configure: error:
-%**********************************************************************
-%One or more of the following external dependencies was not
-%found:
-%
-%  AMD                       no
-%  UMFPACK                   no
-%  FFTW3 (Single Precision)  no
-%  FFTW3 (Double Precision)  no
-%  BLAS                      no
-%  LAPACK                    no
-%  ARPACK                    no
-%  ZLIB                      yes
-%  MATIO                     no
-%**********************************************************************
-%A script to build these external dependencies has been created
-%in the current directory.  To build the missing dependencies,
-%run the script via:
-%
-%./builddeps  --with-ffcall --with-umfpack --with-umfpack --with-fftw --with-fftw   --with-blas --with-lapack --with-arpack --with-matio
-%
-%Note that this will attempt to build and install the libraries
-%and header files in extern/Root/lib and extern/Root/include
-%(respectively).  Once the required libraries have been successfully
-%built, rerun configure.
-%@]
-%After you run the @|builddeps| script, the configure succeeds, and the
-%usual @|configure && make && make install| should work.
-%Note that for Linux, the location of Qt4 is highly system dependent.  For
-% @|configure| to find the whereabouts of Qt4, you need to make sure
-%that @|pkg-config| can find Qt4.  For example, if you installed Qt4
-%yourself, you would set
-%@[
-%declare -x PKG_CONFIG_PATH=/usr/local/Trolltech/Qt-4.1.0/lib
-%@]
-%Also, to build a binary distributable (app bundle on the Mac, setup
+%To build a binary distributable (app bundle on the Mac, setup
 %installer on win32, and a binary distribution on Linux), you will
 %need to run @|make package| instead of @|make install|.
 %!

@@ -312,8 +312,8 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
   CTRLKEY('A')
     emit OnChar(KM_CTRLA);
   CTRLKEY('D')
-    emit OnChar(KM_CTRLD);
-  CTRLKEY('E')
+    emit OnChar(KM_CTRLD); 
+ CTRLKEY('E')
     emit OnChar(KM_CTRLE);
   CTRLKEY('K')
     emit OnChar(KM_CTRLK);

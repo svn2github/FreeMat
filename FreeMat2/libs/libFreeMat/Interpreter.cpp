@@ -382,7 +382,7 @@ void Interpreter::run() {
 }
 
 void Interpreter::sendGreeting() {
-  outputMessage(" " + getVersionString() + " (build 2233)\n");
+  outputMessage(" " + getVersionString() + " (build 2257)\n");
   outputMessage(" Copyright (c) 2002-2006 by Samit Basu\n");
   outputMessage(" Licensed under the GNU Public License (GPL)\n");
   outputMessage(" Type <help license> to find out more\n");

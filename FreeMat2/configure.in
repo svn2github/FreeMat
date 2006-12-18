@@ -57,7 +57,6 @@ case "$host_os" in
       ;;
 esac     
 
-AC_SUBST(platform)
 
 if test "x$HAVE_QT4" = "xno"; then
    AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
@@ -121,7 +120,8 @@ AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
 AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
 QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
 QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
-LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-subsystem,windows"
+LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-subsystem,windows"
+platform="--xwin"
 AC_SUBST(QT4DIR)
 
 fi
@@ -137,6 +137,7 @@ AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MOC)
 AC_SUBST(QT_RCC)
 AC_SUBST(QT_UIC)
+AC_SUBST(platform)
 
 AC_PROG_F77
 

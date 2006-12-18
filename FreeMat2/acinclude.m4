@@ -353,6 +353,12 @@ if test x"$found_arpack" == xyes; then
 	AC_DEFINE(HAVE_ARPACK, 1, [Set to 1 if you have ARPACK installed])
 fi
 
+if test x"$found_arpack" == xno; then
+   AC_CHECK_LIB(ARPACK,$znaupd,found_arpack="yes",found_arpack="no",[$FLIBS])
+   LIBS="-lARPACK $LIBS"
+   AC_DEFINE(HAVE_ARPACK, 1, [Set to 1 if you have ARPACK installed])
+fi
+
 AC_CHECK_LIB(z,inflate,found_z="yes",found_z="no")
 if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"

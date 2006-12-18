@@ -67,4 +67,13 @@ cp UFconfig/UFconfig.h /usr/local/include/.
 To build FreeMat...
 
 1.  Configure and make
-2.  make dist
+2.  make distcheck
+
+--> This is the source distro... (unless one of the following steps fails)
+
+3.  Unpack the new source tree
+4.  mkdir cbuild
+5.  cd cbuild
+6.  ../configure --host=i686-mingw32 --build=i686-pc-linux CPPFLAGS=-I/home/basu/dev/trunk/cross/include LDFLAGS=-L/home/basu/dev/trunk/cross/lib                                                                            
+7. make
+8. make package

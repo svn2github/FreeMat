@@ -20,7 +20,7 @@ helpgen_LDFLAGS = $(QT_CXXFLAGS)
 
 AUTOMAKE_OPTIONS 	= foreign
 
-CLEANFILES = $(FreeMat_MOC)
+CLEANFILES = $(helpgen_MOC)
 
 AM_CPPFLAGS = $(QT_CFLAGS) 
 

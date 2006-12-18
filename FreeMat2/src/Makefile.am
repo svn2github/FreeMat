@@ -18,7 +18,7 @@ MainApp.moc.cpp \
 Terminal.moc.cpp \
 DumbTerminal.moc.cpp 
 
-FreeMat_QRC = FreeMat.qrc.cpp
+FreeMat_QRC = FreeMat_qrc.cpp
 
 BUILT_SOURCES = $(FreeMat_MOC) $(FreeMat_QRC)
 
@@ -33,10 +33,10 @@ MainApp.cpp \
 main.cpp \
 DumbTerminal.cpp \
 Terminal.cpp \
-$(FreeMat_HFILES)
+$(FreeMat_HFILES) \
+FreeMat.qrc
 
-nodist_FreeMat_SOURCES = $(FreeMat_MOC) \
-$(FreeMat_QRC) 
+nodist_FreeMat_SOURCES = $(FreeMat_MOC) $(FreeMat_QRC) 
 
 if WIN32
 FreeMat_SOURCES += freemat.rc
@@ -47,14 +47,13 @@ FreeMat_LDFLAGS = $(QT_CXXFLAGS)
 
 AUTOMAKE_OPTIONS 	= foreign
 
-CLEANFILES = $(FreeMat_MOC)
+CLEANFILES = $(FreeMat_MOC) $(FreeMat_QRC)
 
 AM_CPPFLAGS = $(QT_CFLAGS) 
 
 %.moc.cpp: %.hpp
 	$(QT_MOC) -o $@ $<
 
-%.qrc.cpp: %.qrc
+%_qrc.cpp: %.qrc
 	$(QT_RCC) -o $@ $<
-
 

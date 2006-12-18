@@ -2437,6 +2437,7 @@ void Array::setNDimSubsetScalars(ArrayVector& index, const Array &rdata) {
   if (dataClass() != rdata.dataClass()) throw Exception("type mismatch not allowed for scalar set!");
   if (!rdata.isScalar()) throw Exception("rhs must be scalar for scalar set!");
   if (sparse() || rdata.sparse()) throw Exception("sparse case not allowed for scalar set!");
+  if (dataClass() == FM_STRUCT_ARRAY) throw Exception("structure arrays not allowed for scalar set!");
   int ndx = 0;
   int pagesize = 1;
   for (int i=0;i<index.size();i++) {

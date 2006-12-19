@@ -50,6 +50,8 @@
 %the colorfield is the same as the height
 %@<
 %surf(x,y,z)
+%axis equal
+%view(3)
 %mprint surf2
 %@>
 %@figure surf2
@@ -57,7 +59,7 @@
 
 % Copyright (c) 2002-2006 Samit Basu
 
-function h = surf(varargin)
+function ohandle = surf(varargin)
    % Check for an axes handle
    if (nargin>=2)
       if (isnumeric(varargin{1}) & (length(varargin{1})==1) & ...
@@ -102,4 +104,7 @@ end
     error('Unrecognized arguments to surf command');
   end
 axes(saveca);
+if (nargout > 0)
+    ohandle = h;
+end
 

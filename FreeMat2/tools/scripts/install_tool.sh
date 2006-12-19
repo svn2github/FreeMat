@@ -27,10 +27,11 @@ MINGW_ATLAS_FILE="atlas3.6.0_WinNT_P2.zip"
 ARPACK_FILE="arpack96.tar.Z"
 ARPACK_URL="http://www.caam.rice.edu/software/ARPACK/SRC"
 ARPACK="ARPACK"
-FREEMAT="FreeMat-3.0"
+VERSION="3.0"
+FREEMAT="FreeMat-$VERSION"
 FREEMAT_FILE="$FREEMAT.tar.gz"
-XWIN_ZLIB_FILE="zlib-1.2.3.tar.gz"
-XWIN_ZLIB="zlib-1.2.3"
+ZLIB_FILE="zlib-1.2.3.tar.gz"
+ZLIB="zlib-1.2.3"
 XWIN_NSIS="nsis-2.22-setup.exe"
 
 MakeDirectory()
@@ -40,6 +41,19 @@ MakeDirectory()
 	echo "Making directory $1..."
 	mkdir -p $1
     fi
+}
+
+CopyFile()
+{
+  echo "Copying file $1 to $2"
+  cp $1 $2
+}
+
+CopyDirectory()
+{
+  echo "Copying directory $1 to $2"
+  test -d $2 && rm -rf $2
+  cp -R $1 $2
 }
 
 DownloadFile()
@@ -55,9 +69,9 @@ DownloadFile()
 
 UnpackTarBall()
 {
-    MakeDirectory $BASE/Root
-    cd $BASE/Root
-    if [ ! -d $BASE/Root/$1 ]
+    MakeDirectory $BASE/$3
+    cd $BASE/$3
+    if [ ! -d $BASE/$3/$1 ]
 	then
 	echo "Unpacking $1 from $2..."
 	tar xfz $BASE/Files/$2
@@ -68,13 +82,13 @@ UnpackTarBall()
 DownloadAndUnpackTarBall()
 {
     DownloadFile $1 "$2/"
-    UnpackTarBall $3 $1
+    UnpackTarBall $3 $1 $4
 }
 
 CrossConfigureAndBuildBinUtils()
 {
     MakeDirectory $BASE/Cross
-    cd $BASE/Root/$1
+    cd $BASE/XRoot/$1
     ./configure --target=$MINGW_TARGET --prefix=$BASE/Cross
     make && make install
 }
@@ -87,7 +101,7 @@ Link()
 ConfigureMakeInstall()
 {
     echo "Configuring package $1..."
-    cd $BASE/Root/$1
+    cd $BASE/$4/$1
     $3/configure $2
     make
     make install
@@ -96,7 +110,7 @@ ConfigureMakeInstall()
 MakeOverride()
 {
     echo "Making package $1..."
-    cd $BASE/Root/$1
+    cd $BASE/XRoot/$1
     make CC=$2-gcc AR="$2-ar cr" RANLIB=$2-ranlib 
 }
 
@@ -109,103 +123,111 @@ SetupXWinCommon()
     MakeDirectory $PREFIX/include
 }
 
+SetupCommon()
+{
+    PATH=$PATH:$BASE/Build/bin
+    PREFIX=$BASE/Build
+    MakeDirectory $PREFIX
+    MakeDirectory $PREFIX/include
+}
+
 SetupXWinBinUtils()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall $XWIN_BINUTILS_FILE http://downloads.sf.net/mingw $XWIN_BINUTILS
-    ConfigureMakeInstall $XWIN_BINUTILS "--target=$MINGW_TARGET --prefix=$PREFIX" .
+    DownloadAndUnpackTarBall $XWIN_BINUTILS_FILE http://downloads.sf.net/mingw $XWIN_BINUTILS XRoot
+    ConfigureMakeInstall $XWIN_BINUTILS "--target=$MINGW_TARGET --prefix=$PREFIX" . XRoot
 }
 
 SetupXWinGCCFirst()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall $XWIN_GCC_FILE http://downloads.sf.net/mingw $XWIN_GCC
-    DownloadAndUnpackTarBall $XWIN_GPP_FILE http://downloads.sf.net/mingw foo
-    DownloadAndUnpackTarBall $XWIN_G77_FILE http://downloads.sf.net/mingw foo
-    DownloadAndUnpackTarBall $XWIN_MINGW_RUNTIME_FILE http://downloads.sf.net/mingw $XWIN_MINGW_RUNTIME
-    DownloadAndUnpackTarBall $XWIN_WIN32API_FILE http://downloads.sf.net/mingw $XWIN_WIN32API
+    DownloadAndUnpackTarBall $XWIN_GCC_FILE http://downloads.sf.net/mingw $XWIN_GCC XRoot
+    DownloadAndUnpackTarBall $XWIN_GPP_FILE http://downloads.sf.net/mingw foo XRoot
+    DownloadAndUnpackTarBall $XWIN_G77_FILE http://downloads.sf.net/mingw foo XRoot
+    DownloadAndUnpackTarBall $XWIN_MINGW_RUNTIME_FILE http://downloads.sf.net/mingw $XWIN_MINGW_RUNTIME XRoot
+    DownloadAndUnpackTarBall $XWIN_WIN32API_FILE http://downloads.sf.net/mingw $XWIN_WIN32API XRoot
     Link $PREFIX/include $PREFIX/$MINGW_TARGET/include
-    cp -r $BASE/Root/$XWIN_MINGW_RUNTIME/include/* $PREFIX/include
-    cp -r $BASE/Root/$XWIN_WIN32API/include/* $PREFIX/include
-    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c" .
+    cp -r $BASE/XRoot/$XWIN_MINGW_RUNTIME/include/* $PREFIX/include
+    cp -r $BASE/XRoot/$XWIN_WIN32API/include/* $PREFIX/include
+    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c" . XRoot
 }
 
 SetupXWinWin32API()
 {
     SetupXWinCommon
-    ConfigureMakeInstall $XWIN_WIN32API "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" .
+    ConfigureMakeInstall $XWIN_WIN32API "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" . XRoot
 }
 
 SetupXWinMingwRuntime()
 {
     SetupXWinCommon
-    Link $BASE/Root/$XWIN_WIN32API $BASE/Root/w32api
+    Link $BASE/XRoot/$XWIN_WIN32API $BASE/XRoot/w32api
     mv $PREFIX/$MINGW_TARGET/lib/* $PREFIX/lib
     rmdir $PREFIX/$MINGW_TARGET/lib
     Link $PREFIX/lib $PREFIX/$MINGW_TARGET/lib
-    cd $BASE/Root/$XWIN_MINGW_RUNTIME 
+    cd $BASE/XRoot/$XWIN_MINGW_RUNTIME 
     find . -name configure -exec dos2unix \{\} \;
     dos2unix config.guess config.sub mkinstalldirs
-    cp $PREFIX/lib/*.a $BASE/Root/$XWIN_MINGW_RUNTIME/mingwex/.
-    ConfigureMakeInstall $XWIN_MINGW_RUNTIME "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" .
+    cp $PREFIX/lib/*.a $BASE/XRoot/$XWIN_MINGW_RUNTIME/mingwex/.
+    ConfigureMakeInstall $XWIN_MINGW_RUNTIME "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" . XRoot
 }
 
 SetupXWinGCC()
 {
     SetupXWinCommon
-    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c,c++,f77" .
+    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c,c++,f77" . XRoot
 }
 
 SetupXWinFFTW()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW
-    MakeDirectory $BASE/Root/$FFTW/single
-    MakeDirectory $BASE/Root/$FFTW/double
-    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFTW/config.guess) --enable-single" ..
-    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFTW/config.guess)" ..
+    DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW XRoot
+    MakeDirectory $BASE/XRoot/$FFTW/single
+    MakeDirectory $BASE/XRoot/$FFTW/double
+    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$FFTW/config.guess) --enable-single" .. XRoot
+    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$FFTW/config.guess)" .. XRoot
 }
 
 SetupXWinFFCALL()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall  $FFCALL_FILE ftp://ftp.santafe.edu/pub/gnu $FFCALL
-    ConfigureMakeInstall $FFCALL "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFCALL/autoconf/config.guess)" .
+    DownloadAndUnpackTarBall  $FFCALL_FILE ftp://ftp.santafe.edu/pub/gnu $FFCALL XRoot
+    ConfigureMakeInstall $FFCALL "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$FFCALL/autoconf/config.guess)" . XRoot
     $MINGW_TARGET-ranlib $PREFIX/lib/libavcall.a
 }
 
 SetupXWinSparse()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE
+    DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE XRoot
     MakeOverride $SUITESPARSE/AMD/Source $MINGW_TARGET
-    cp $BASE/Root/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
-    cp $BASE/Root/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
+    cp $BASE/XRoot/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
+    cp $BASE/XRoot/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
     MakeOverride $SUITESPARSE/UMFPACK/Source $MINGW_TARGET
-    cp $BASE/Root/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
-    cp $BASE/Root/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
-    cp $BASE/Root/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include
+    cp $BASE/XRoot/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
+    cp $BASE/XRoot/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
+    cp $BASE/XRoot/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include
 }
 
 SetupXWinLAPACK()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall  $LAPACK_FILE http://www.netlib.org/lapack $LAPACK
-    cd $BASE/Root/$LAPACK
+    DownloadAndUnpackTarBall  $LAPACK_FILE http://www.netlib.org/lapack $LAPACK XRoot
+    cd $BASE/XRoot/$LAPACK
     touch make.inc
-    cd $BASE/Root/$LAPACK/INSTALL
+    cd $BASE/XRoot/$LAPACK/INSTALL
     make FORTRAN="$MINGW_TARGET-g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="$MINGW_TARGET-ranlib" ARCH="$MINGW_TARGET-ar" ARCHFLAGS="cr" LOADER="$MINGW_TARGET-g77"
-    cd $BASE/Root/$LAPACK/SRC
+    cd $BASE/XRoot/$LAPACK/SRC
     make FORTRAN="$MINGW_TARGET-g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="$MINGW_TARGET-ranlib" ARCH="$MINGW_TARGET-ar" ARCHFLAGS="cr"
-    cp $BASE/Root/$LAPACK/liblapack.a $PREFIX/lib
+    cp $BASE/XRoot/$LAPACK/liblapack.a $PREFIX/lib
 }
 
 SetupXWinATLAS()
 {
     SetupXWinCommon
     DownloadFile $MINGW_ATLAS_FILE "http://www.scipy.org/Installing_SciPy/Windows?action=AttachFile&do=get&target="
-    MakeDirectory $BASE/Root/ATLAS
-    cd $BASE/Root/ATLAS
+    MakeDirectory $BASE/XRoot/ATLAS
+    cd $BASE/XRoot/ATLAS
     unzip $BASE/Files/$MINGW_ATLAS_FILE
     cp libatlas.a $PREFIX/lib/.
     cp libf77blas.a $PREFIX/lib/.
@@ -215,19 +237,19 @@ SetupXWinATLAS()
 SetupXWinARPACK()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK
-    cd $BASE/Root/$ARPACK/SRC
+    DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK XRoot
+    cd $BASE/XRoot/$ARPACK/SRC
     make FC="$MINGW_TARGET-g77" FFLAGS="-O2" AR="$MINGW_TARGET-ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="$MINGW_TARGET-ranlib" all
-    cd $BASE/Root/$ARPACK/UTIL
+    cd $BASE/XRoot/$ARPACK/UTIL
     make FC="$MINGW_TARGET-g77" FFLAGS="-O2" AR="$MINGW_TARGET-ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="$MINGW_TARGET-ranlib" all
-    cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
+    cp $BASE/XRoot/$ARPACK/libarpack.a $PREFIX/lib
 }
 
 SetupXWinZlib()
 {
     SetupXWinCommon
-    DownloadAndUnpackTarBall $XWIN_ZLIB_FILE http://downloads.sourceforge.net/libpng $XWIN_ZLIB
-    cd $BASE/Root/$XWIN_ZLIB
+    DownloadAndUnpackTarBall $ZLIB_FILE http://downloads.sourceforge.net/libpng $ZLIB XRoot
+    cd $BASE/XRoot/$ZLIB
     make CC="$MINGW_TARGET-gcc" AR="$MINGW_TARGET-ar rc" RANLIB="$MINGW_TARGET-ranlib"
     cp zlib.h zconf.h $PREFIX/include/.
     cp libz.a $PREFIX/lib/.
@@ -246,20 +268,157 @@ SetupXWinQt()
 SetupXWinNSIS()
 {
     SetupXWinCommon
-    DownloadFile $XWIN_NSIS http://downloads.sourceforge.net/nsis 
+    DownloadFile $XWIN_NSIS http://downloads.sourceforge.net/nsis/
     cd $BASE/Files
     wine $XWIN_NSIS
+}
+
+
+MakeCrossWinBundle()
+{
+    SetupXWinCommon
+    baseDir="$BASE/XRoot/$FREEMAT/build/$FREEMAT-Win32"
+    buildDir="$BASE/XRoot/$FREEMAT/build"
+    srcDir="$BASE/XRoot/$FREEMAT"
+    MakeDirectory "$baseDir"
+    MakeDirectory "$baseDir/Contents"
+    MakeDirectory "$baseDir/Contents/bin"
+    MakeDirectory "$baseDir/Contents/Resources"
+    MakeDirectory "$baseDir/Contents/Resources/help"
+    MakeDirectory "$baseDir/Contents/Resources/help/html"
+    MakeDirectory "$baseDir/Contents/Resources/help/text"
+    MakeDirectory "$baseDir/Contents/Resources/help/pdf"
+    MakeDirectory "$baseDir/Contents/Resources/toolbox"
+    MakeDirectory "$baseDir/Contents/Plugins/imageformats"
+    CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/plugins/imageformats/*.dll" "$baseDir/Contents/Plugins/imageformats/"
+    CopyFile "$buildDir/src/FreeMat.exe" "$baseDir/Contents/bin/FreeMat.exe"
+    CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtCore4.dll" "$baseDir/Contents/bin/QtCore4.dll"
+    CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtGui4.dll" "$baseDir/Contents/bin/QtGui4.dll"
+    CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtOpenGL4.dll" "$baseDir/Contents/bin/QtOpenGL4.dll"
+    CopyFile "$BASE/Cross/bin/mingwm10.dll" "$baseDir/Contents/bin/mingwm10.dll"
+    CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
+    echo "Generating NSI file..."
+    cdir=`pwd`
+    cd $baseDir
+    find -type f -printf "  SetOutPath \"\$INSTDIR/%h\"\n  FILE \"%p\"\n" | sed -e 's@/@\\@g' > /tmp/blist
+    find -type f -printf "  Delete \"\$INSTDIR/%p\"\n" | sed -e 's@/@\\@g' > /tmp/elist
+    cd $cdir
+    repcmd="s/<VERSION_NUMBER>/$VERSION/g"
+    sed -e '/<BUNDLE FILES>/r /tmp/blist' -e '/<DELLIST>/r /tmp/elist' -e $repcmd -e 's/<BUNDLE FILES>//g' -e 's/<DELLIST>//g' < $srcDir/tools/disttool/freemat_nsi.in > $baseDir/freemat.nsi
+    cd $baseDir
+    wine ~/.wine/drive_c/Program\ Files/NSIS/makensis.exe freemat.nsi
 }
 
 SetupXWinFreeMat()
 {
     SetupXWinCommon
+    cd $BASE/XRoot
+    tar xfz $BASE/Files/$FREEMAT_FILE
+    MakeDirectory $BASE/XRoot/$FREEMAT/build
+    cd $BASE/XRoot/$FREEMAT/build
+    ../configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$(../config.guess) --with-qt4dir=$PREFIX/Qt/$XWIN_QT_VER CPPFLAGS=-I$PREFIX/include LDFLAGS=-L$PREFIX/lib WINDRES="$MINGW_TARGET-windres"
+    make
+    MakeCrossWinBundle
+}
+
+SetupXWinAll()
+{
+    SetupXWinBinUtils
+    SetupXWinGCCFirst
+    SetupXWinWin32API
+    SetupXWinMingwRuntime
+    SetupXWinGCC
+    SetupXWinFFTW
+    SetupXWinFFCALL
+    SetupXWinSparse
+    SetupXWinLAPACK
+    SetupXWinATLAS
+    SetupXWinARPACK
+    SetupXWinQt
+    SetupXWinNSIS
+    SetupXWinZlib
+    SetupXWinFreeMat
+}
+
+SetupFFTW()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW Root
+    MakeDirectory $BASE/Root/$FFTW/single
+    MakeDirectory $BASE/Root/$FFTW/double
+    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFTW/config.guess) --enable-single" .. Root 
+    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFTW/config.guess)" .. Root 
+}
+
+SetupZlib()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $ZLIB_FILE http://downloads.sourceforge.net/libpng $ZLIB Root
+    cd $BASE/Root/$ZLIB
+    make 
+    cp zlib.h zconf.h $PREFIX/include/.
+    cp libz.a $PREFIX/lib/.
+}
+
+SetupSparse()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE Root
+    cd $BASE/Root/$SUITESPARSE/AMD/Source
+    make
+    cp $BASE/Root/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
+    cp $BASE/Root/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
+    cd $BASE/Root/$SUITESPARSE/UMFPACK/Source
+    make
+    cp $BASE/Root/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
+    cp $BASE/Root/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
+    cp $BASE/Root/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include
+}
+
+SetupARPACK()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK Root
+    cd $BASE/Root/$ARPACK/SRC
+    make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+    cd $BASE/Root/$ARPACK/UTIL
+    make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+    cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
+}
+
+SetupFreeMat()
+{
+    SetupCommon
+    MakeDirectory $BASE/Root
     cd $BASE/Root
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/Root/$FREEMAT/build
     cd $BASE/Root/$FREEMAT/build
-    ../configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$(../config.guess) --with-qt4dir=$PREFIX/Qt/$XWIN_QT_VER CPPFLAGS=-I$PREFIX/include LDFLAGS=-L$PREFIX/lib
+    ../configure --prefix=$PREFIX CPPFLAGS=-I$PREFIX/include LDFLAGS=-L$PREFIX/lib
     make
+}
+
+SetupFFCALL()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall  $FFCALL_FILE ftp://ftp.santafe.edu/pub/gnu $FFCALL Root
+    ConfigureMakeInstall $FFCALL "--prefix=$PREFIX" . Root
+}
+
+SetupLAPACK()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall  $LAPACK_FILE http://www.netlib.org/lapack $LAPACK Root
+    cd $BASE/Root/$LAPACK
+    touch make.inc
+    cd $BASE/Root/$LAPACK/INSTALL
+    make FORTRAN="g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="ranlib" ARCH="ar" ARCHFLAGS="cr" LOADER="g77"
+    cd $BASE/Root/$LAPACK/SRC
+    make FORTRAN="g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="ranlib" ARCH="ar" ARCHFLAGS="cr"
+    cp $BASE/Root/$LAPACK/liblapack.a $PREFIX/lib
 }
 
 Usage() 
@@ -289,110 +448,50 @@ subdirectory.  Here are the tasks manages by this script.
       --xwin-zlib        Setup the Win32 cross of zlib
       --xwin-freemat     Build the Win32 cross of FreeMat
       --xwin-all         Setup the Win32 cross compilation (all steps)
+
+      --fftw             Setup FFTW
+      --ffcall           Setup ffcall
+      --sparse           Setup SuiteSparse
+      --lapack           Setup LAPACK
+      --atlas            Setup ATLAS/BLAS
+      --arpack           Setup ARPACK
+      --qt               Setup Qt
+      --zlib             Setup zlib
+      --freemat          Setup FreeMat
+      --all
 "
     exit
 }
 
-# Parse the input arguments
-build_xwin_binutils="no"
-build_xwin_gccfirst="no"
-build_xwin_win32api="no"
-build_xwin_mingw="no"
-build_xwin_gcc="no"
-build_xwin_fftw="no"
-build_xwin_ffcall="no"
-build_xwin_sparse="no"
-build_xwin_lapack="no"
-build_xwin_atlas="no"
-build_xwin_arpack="no"
-build_xwin_qt="no"
-build_xwin_nsis="no"
-build_xwin_zlib="no"
-build_xwin_freemat="no"
-build_xwin_all="no"
-
 for arg
   do
   case $arg in 
-      --xwin-binutils) build_xwin_binutils="yes" ;;
-      --xwin-gccfirst) build_xwin_gccfirst="yes" ;;
-      --xwin-win32api) build_xwin_win32api="yes" ;;
-      --xwin-mingw)    build_xwin_mingw="yes" ;;
-      --xwin-gcc)      build_xwin_gcc="yes" ;;
-      --xwin-fftw)     build_xwin_fftw="yes" ;;
-      --xwin-ffcall)   build_xwin_ffcall="yes" ;;
-      --xwin-sparse)   build_xwin_sparse="yes" ;;
-      --xwin-lapack)   build_xwin_lapack="yes" ;;
-      --xwin-atlas)    build_xwin_atlas="yes" ;;
-      --xwin-arpack)   build_xwin_arpack="yes" ;;
-      --xwin-qt)       build_xwin_qt="yes" ;;
-      --xwin-nsis)     build_xwin_nsis="yes" ;;
-      --xwin-zlib)     build_xwin_zlib="yes" ;;
-      --xwin-freemat)  build_xwin_freemat="yes" ;;
-      --xwin-all)      build_xwin_all="yes" ;;
+      --xwin-binutils) SetupXWinBinUtils ;;
+      --xwin-gccfirst) SetupXWinGCCFirst ;;
+      --xwin-win32api) SetupXWinWin32API ;;
+      --xwin-mingw)    SetupXWinMingwRuntime ;;
+      --xwin-gcc)      SetupXWinGCC ;;
+      --xwin-fftw)     SetupXWinFFTW ;;
+      --xwin-ffcall)   SetupXWinFFCALL ;;
+      --xwin-sparse)   SetupXWinSparse ;;
+      --xwin-lapack)   SetupXWinLAPACK ;;
+      --xwin-atlas)    SetupXWinATLAS ;;
+      --xwin-arpack)   SetupXWinARPACK ;;
+      --xwin-qt)       SetupXWinQt ;;
+      --xwin-nsis)     SetupXWinNSIS ;;
+      --xwin-zlib)     SetupXWinZlib ;;
+      --xwin-freemat)  SetupXWinFreeMat ;;
+      --xwin-all)      SetupXWinAll ;;
+      --fftw)          SetupFFTW ;;
+      --ffcall)        SetupFFCALL ;;
+      --sparse)        SetupSparse ;;
+      --lapack)        SetupLAPACK ;;
+      --atlas)         SetupATLAS ;;
+      --arpack)        SetupARPACK ;;
+      --qt)            SetupQt ;;
+      --zlib)          SetupZlib ;;
+      --freemat)       SetupFreeMat ;;
+      --all)           SetupAll ;;
       *)               Usage;
   esac
 done
-
-if test "$build_xwin_binutils" == "yes"; then
-    SetupXWinBinUtils
-fi
-if test "$build_xwin_gccfirst" == "yes"; then
-    SetupXWinGCCFirst
-fi
-if test "$build_xwin_win32api" == "yes"; then
-    SetupXWinWin32API
-fi
-if test "$build_xwin_mingw" == "yes"; then
-    SetupXWinMingwRuntime
-fi
-if test "$build_xwin_gcc" == "yes"; then
-    SetupXWinGCC
-fi
-if test "$build_xwin_fftw" == "yes"; then
-    SetupXWinFFTW
-fi
-if test "$build_xwin_ffcall" == "yes"; then
-    SetupXWinFFCALL
-fi
-if test "$build_xwin_sparse" == "yes"; then
-    SetupXWinSparse
-fi
-if test "$build_xwin_lapack" == "yes"; then
-    SetupXWinLAPACK
-fi
-if test "$build_xwin_atlas" == "yes"; then
-    SetupXWinATLAS
-fi
-if test "$build_xwin_arpack" == "yes"; then
-    SetupXWinARPACK
-fi
-if test "$build_xwin_qt" == "yes"; then
-    SetupXWinQt
-fi
-if test "$build_xwin_nsis" == "yes"; then
-    SetupXWinNSIS
-fi
-if test "$build_xwin_zlib" == "yes"; then
-    SetupXWinZlib
-fi
-if test "$build_xwin_freemat" == "yes"; then
-    SetupXWinFreeMat
-fi
-if test "$build_xwin_all" == "yes"; then
-    SetupXWinBinUtils
-    SetupXWinGCCFirst
-    SetupXWinWin32API
-    SetupXWinMingwRuntime
-    SetupXWinGCC
-    SetupXWinFFTW
-    SetupXWinFFCALL
-    SetupXWinSparse
-    SetupXWinLAPACK
-    SetupXWinATLAS
-    SetupXWinARPACK
-    SetupXWinQt
-    SetupXWinNSIS
-    SetupXWinZlib
-    SetupXWinFreeMat
-fi

@@ -123,7 +123,8 @@ QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -l
 LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-subsystem,windows"
 platform="--xwin"
 AC_SUBST(QT4DIR)
-
+is_win32="true"
+AC_CHECK_PROG(WINDRES, [windres], [windres], [])
 fi
 
 AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])

@@ -31,6 +31,7 @@ FREEMAT="FreeMat-3.0"
 FREEMAT_FILE="$FREEMAT.tar.gz"
 XWIN_ZLIB_FILE="zlib-1.2.3.tar.gz"
 XWIN_ZLIB="zlib-1.2.3"
+XWIN_NSIS="nsis-2.22-setup.exe"
 
 MakeDirectory()
 {
@@ -242,6 +243,14 @@ SetupXWinQt()
     cp -R ~/.wine/drive_c/Qt $PREFIX/.
 }
 
+SetupXWinNSIS()
+{
+    SetupXWinCommon
+    DownloadFile $XWIN_NSIS http://downloads.sourceforge.net/nsis 
+    cd $BASE/Files
+    wine $XWIN_NSIS
+}
+
 SetupXWinFreeMat()
 {
     SetupXWinCommon
@@ -276,6 +285,7 @@ subdirectory.  Here are the tasks manages by this script.
       --xwin-atlas       Setup the Win32 cross of ATLAS
       --xwin-arpack      Setup the Win32 cross of ARPACK
       --xwin-qt          Setup the Win32 cross of QT
+      --xwin-nsis        Setup the Win32 cross of NSIS
       --xwin-zlib        Setup the Win32 cross of zlib
       --xwin-freemat     Build the Win32 cross of FreeMat
       --xwin-all         Setup the Win32 cross compilation (all steps)
@@ -296,6 +306,7 @@ build_xwin_lapack="no"
 build_xwin_atlas="no"
 build_xwin_arpack="no"
 build_xwin_qt="no"
+build_xwin_nsis="no"
 build_xwin_zlib="no"
 build_xwin_freemat="no"
 build_xwin_all="no"
@@ -315,6 +326,7 @@ for arg
       --xwin-atlas)    build_xwin_atlas="yes" ;;
       --xwin-arpack)   build_xwin_arpack="yes" ;;
       --xwin-qt)       build_xwin_qt="yes" ;;
+      --xwin-nsis)     build_xwin_nsis="yes" ;;
       --xwin-zlib)     build_xwin_zlib="yes" ;;
       --xwin-freemat)  build_xwin_freemat="yes" ;;
       --xwin-all)      build_xwin_all="yes" ;;
@@ -358,6 +370,9 @@ fi
 if test "$build_xwin_qt" == "yes"; then
     SetupXWinQt
 fi
+if test "$build_xwin_nsis" == "yes"; then
+    SetupXWinNSIS
+fi
 if test "$build_xwin_zlib" == "yes"; then
     SetupXWinZlib
 fi
@@ -377,6 +392,7 @@ if test "$build_xwin_all" == "yes"; then
     SetupXWinATLAS
     SetupXWinARPACK
     SetupXWinQt
+    SetupXWinNSIS
     SetupXWinZlib
     SetupXWinFreeMat
 fi

@@ -159,9 +159,6 @@ if test x"${QT_LIBS}" = x; then
 fi
 cdir=`pwd`
 
-adl_COMPUTE_RELATIVE_PATHS([bindir:datadir:bin_to_data])
-
-CPPFLAGS="$CPPFLAGS -DBASEPATH=\\\"$bin_to_data/FreeMat-$VERSION\\\""
 FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g' | sed -e 's/-l\w*//g'`
 AC_MSG_NOTICE([Extra lib flags added $FOO])
 LDFLAGS="$LDFLAGS $FOO"

@@ -262,14 +262,13 @@ int MainApp::Run() {
       basePath += GetRecursiveDirList(path2);
     }
   } else {
-    QDir dir1(QApplication::applicationDirPath()+"/"+
-	      QString(BASEPATH)+"/toolbox");   
+    QSettings settings("FreeMat","FreeMat");
+    QDir dir1(QString(settings.value("root").toString())+"/toolbox");   
     if (dir1.exists()) {
       QString path1(dir1.canonicalPath());
       basePath += GetRecursiveDirList(path1);
     }
-    QDir dir2(QApplication::applicationDirPath()+"/"+
-	      QString(BASEPATH) + "/help/text");
+    QDir dir2(QString(settings.value("root").toString())+"/help/text");
     if (dir2.exists()) {
       QString path2(dir2.canonicalPath());
       basePath += GetRecursiveDirList(path2);

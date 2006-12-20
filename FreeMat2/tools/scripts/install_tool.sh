@@ -120,6 +120,8 @@ SetupXWinCommon()
     PATH=$PATH:$BASE/Cross/bin
     PREFIX=$BASE/Cross
     MakeDirectory $PREFIX
+    MakeDirectory $PREFIX/bin
+    MakeDirectory $PREFIX/lib
     MakeDirectory $PREFIX/include
 }
 
@@ -128,6 +130,8 @@ SetupCommon()
     PATH=$PATH:$BASE/Build/bin
     PREFIX=$BASE/Build
     MakeDirectory $PREFIX
+    MakeDirectory $PREFIX/bin
+    MakeDirectory $PREFIX/lib
     MakeDirectory $PREFIX/include
 }
 
@@ -383,10 +387,18 @@ SetupARPACK()
     SetupCommon
     DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK Root
     cd $BASE/Root/$ARPACK/SRC
-    make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
-    cd $BASE/Root/$ARPACK/UTIL
-    make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
-    cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
+    if  [ ! -f /usr/bin/g77 ] 
+	then
+	make FC="f95" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	cd $BASE/Root/$ARPACK/UTIL
+	make FC="f95" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
+    else
+	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	cd $BASE/Root/$ARPACK/UTIL
+	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
+    fi
 }
 
 SetupFreeMat()
@@ -397,7 +409,7 @@ SetupFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/Root/$FREEMAT/build
     cd $BASE/Root/$FREEMAT/build
-    ../configure --prefix=$PREFIX CPPFLAGS=-I$PREFIX/include LDFLAGS=-L$PREFIX/lib
+    ../configure --prefix=$PREFIX LDFLAGS=-L$PREFIX/lib CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
     make
 }
 

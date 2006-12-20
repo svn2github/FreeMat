@@ -49,6 +49,15 @@ void usage() {
   printf("                   This flag is primarily used when \n");
   printf("                   you want to capture input/output\n");
   printf("                   to FreeMat from another application.\n");
+  printf("     -i <path>     Install FreeMat - provide the path to the\n");
+  printf("                   FreeMat data directory (containing the\n");
+  printf("                   scripts, help and other files.).  Normally\n");
+  printf("                   these are installed in /usr/local/share/\n");
+  printf("                   but regardless, you must run FreeMat -i once\n");
+  printf("                   to indicate the location of this directory.\n");
+  printf("                   Note that in this mode, FreeMat will only \n");
+  printf("                   update its internal configuration and then\n");
+  printf("                   exit.\n");
   printf("     -help         Get this help text\n");
   exit(0);
 }
@@ -86,7 +95,15 @@ int main(int argc, char *argv[]) {
   int funcMode = parseFlagArg(argc,argv,"-f",true);
   int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
   int noplastique = parseFlagArg(argc,argv,"-noplastique",false);
+  int installMode = parseFlagArg(argc,argv,"-i",true);
   
+  if (installMode) {
+    app = new QCoreApplication(argc, argv);
+    QSettings settings("FreeMat","FreeMat");
+    settings.setValue("root",argv[installMode+1]);
+    std::cout << "FreeMat root path set to '" << argv[installMode+1] << "'\n";
+    return 0;
+  }
 
   if (help || help2) usage();
   if (!noX) {

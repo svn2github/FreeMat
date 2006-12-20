@@ -511,3 +511,8 @@ The performance differences may have something to do with GCC also.
 For the 3.0 release:
   - backwards compatibility for native-format data files and 64 bit types - done
   - gui documentation
+
+
+- Win32 build works
+- Linux source build works
+- Linux binary package

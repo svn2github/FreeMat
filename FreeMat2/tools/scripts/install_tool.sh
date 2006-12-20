@@ -33,6 +33,7 @@ FREEMAT_FILE="$FREEMAT.tar.gz"
 ZLIB_FILE="zlib-1.2.3.tar.gz"
 ZLIB="zlib-1.2.3"
 XWIN_NSIS="nsis-2.22-setup.exe"
+QT_PLUGIN_DIR="/usr/lib/qt4/plugins/imageformats"
 
 MakeDirectory()
 {
@@ -401,6 +402,70 @@ SetupARPACK()
     fi
 }
 
+ImportLibs()
+{
+    libset=`ldd $1 | awk '{print $3}'`
+    for lib in $libset
+      do
+      isXlib=`expr match $lib ".*libc\|.*libm\|.*libdl\|.*libpthread\|.*libX\|.*libSM\|.*libICE\|.*libGL\|.*linux"`
+      if [ $isXlib == 0 ]
+	  then
+	  if [ -f $lib ]
+	      then
+	      CopyFile $lib $2
+	  fi
+      else
+	  echo "Ignored $lib"
+      fi
+    done
+}
+
+MakeLinuxBundle()
+{
+    SetupCommon
+    baseDir="$BASE/Root/$FREEMAT/build/$FREEMAT-Binary"
+    buildDir="$BASE/Root/$FREEMAT/build"
+    srcDir="$BASE/Root/$FREEMAT"
+    rm -rf "$baseDir"
+    MakeDirectory "$baseDir"
+    MakeDirectory "$baseDir/Contents"
+    MakeDirectory "$baseDir/Contents/bin"
+    MakeDirectory "$baseDir/Contents/Resources"
+    MakeDirectory "$baseDir/Contents/Resources/help"
+    MakeDirectory "$baseDir/Contents/Resources/help/html"
+    MakeDirectory "$baseDir/Contents/Resources/help/text"
+    MakeDirectory "$baseDir/Contents/Resources/help/pdf"
+    MakeDirectory "$baseDir/Contents/Resources/toolbox"
+    MakeDirectory "$baseDir/Contents/Plugins/imageformats"
+    CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/bin/FreeMatMain"
+    MakeDirectory "$baseDir/Contents/lib"
+    ImportLibs "$baseDir/Contents/bin/FreeMatMain" "$baseDir/Contents/lib"
+    echo    "Making run script"
+    cat > "$baseDir/Contents/bin/FreeMat" <<EOF
+#!/bin/bash
+mypath=\`which \$0\`
+mypath=\${mypath%/*}
+declare -x LD_LIBRARY_PATH=\$mypath/../lib
+\$mypath/FreeMatMain \$*
+EOF
+    chmod +x "$baseDir/Contents/bin/FreeMat"
+    CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
+    CopyFile "$QT_PLUGIN_DIR/libqjpeg.so" "$baseDir/Contents/Plugins/imageformats/libqjpeg.so"
+    CopyFile "$QT_PLUGIN_DIR/libqmng.so" "$baseDir/Contents/Plugins/imageformats/libqmng.so"
+    CopyFile "$QT_PLUGIN_DIR/libqsvg.so" "$baseDir/Contents/Plugins/imageformats/libqsvg.so"
+    CopyFile "$QT_PLUGIN_DIR/libqgif.so" "$baseDir/Contents/Plugins/imageformats/libqgif.so"
+    ImportLibs "$baseDir/Contents/Plugins/imageformats/libqjpeg.so" "$baseDir/Contents/lib"
+    ImportLibs "$baseDir/Contents/Plugins/imageformats/libqmng.so" "$baseDir/Contents/lib"
+    ImportLibs "$baseDir/Contents/Plugins/imageformats/libqsvg.so" "$baseDir/Contents/lib"
+    ImportLibs "$baseDir/Contents/Plugins/imageformats/libqgif.so" "$baseDir/Contents/lib"
+    echo "Making tar file"
+    rm -rf $FREEMAT-Binary-Linux.tar.gz
+    tar cfz $FREEMAT-Binary-Linux.tar.gz $FREEMAT-Binary
+}
+
 SetupFreeMat()
 {
     SetupCommon
@@ -409,8 +474,9 @@ SetupFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/Root/$FREEMAT/build
     cd $BASE/Root/$FREEMAT/build
-    ../configure --prefix=$PREFIX LDFLAGS=-L$PREFIX/lib CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
+    ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
     make
+    MakeLinuxBundle
 }
 
 SetupFFCALL()

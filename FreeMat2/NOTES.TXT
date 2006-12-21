@@ -516,3 +516,11 @@ For the 3.0 release:
 - Win32 build works
 - Linux source build works
 - Linux binary package
+
+
+RPMS for ffcall:
+http://dries.ulyssis.org/apt/packages/ffcall/info.html
+
+RPMS for ARPACK:
+http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
+

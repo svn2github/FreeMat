@@ -17,7 +17,7 @@ help: all check
 
 
 install-data-hook:
-	cd $(DESTDIR)$(resourcedir); rm -f toolbox; $(LN_S) $(DESTDIR)/help/toolbox
+	cd $(DESTDIR)$(resourcedir); rm -f toolbox; $(LN_S) help/toolbox
 
 install-exec-hook:
 	$(DESTDIR)$(bindir)/FreeMat -i $(DESTDIR)$(resourcedir)

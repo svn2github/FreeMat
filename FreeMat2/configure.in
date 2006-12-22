@@ -13,23 +13,30 @@ AC_EXEEXT
 dnl Check for AWT related Qt4
 HAVE_QT4="no"
 
+dnl There are three configurations we really need to 
+dnl worry about.
+dnl
+dnl  1.  Linux build - use package config to setup Qt
+dnl  2.  Mingw-cross - specify $QT4DIR
+dnl  3.  Mac build   - standard locations for files
+dnl
 AC_ARG_WITH([qt4dir],
 	     [AC_HELP_STRING([--with-qt4dir=DIR],
-	     [Qt4 installation directory used for OS-X or Win32.
+	     [Qt4 installation directory used for Win32 builds.
 	      For other systems use pkg-config.])],
 	      [QT4DIR=$withval]
 	      )
 
-dnl I have no idea what the "right" way to do this is
-dnl
-dnl 
-dnl 
-if test "x$cross_compiling" = "xno"; then
+is_mac="no"
+case "$host_os" in
+   darwin*)
+     is_mac="yes";;
+esac     
 
-   PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
-
+if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
+   AC_MSG_NOTICE([Configuring for non-cross unix build])
+   PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
    foo=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g'`
-
    if test "x$HAVE_QT4" = "xyes"; then
       dnl Check needed because in some cases the QtGui includedir
       dnl doesn't contain the subsystem dir.
@@ -44,88 +51,31 @@ if test "x$cross_compiling" = "xno"; then
       AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
       AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
    fi
-
-help_target="help-unix"
-is_win32="false"
-platform="--linux"
-case "$host_os" in
-     mingw*)
-      is_win32="true"
-      platform="--win"
-      ;;
-     darwin*)
-      platform="--mac"
-      ;;
-esac     
-
-
-if test "x$HAVE_QT4" = "xno"; then
-   AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
-   if test x"$QT4DIR" = x ; then
-      AC_MSG_ERROR([*** Qt4 not found. Rerun configure with the --with-qt4dir option])
-   fi
-   AC_MSG_NOTICE([Checking for MOC in in $QT4DIR/bin/moc])
-   AC_CHECK_PROG(QT_MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
-   if test x"$QT_MOC" = x; then
-      AC_MSG_ERROR([*** This is not the right Qt installation - also, make sure you use the right notation for a path to --with-qt4dir, e.g. --with-qt4dir=/c/Qt/4.1])
-   fi
-   AC_CHECK_PROG(QT_RCC, [rcc], [$QT4DIR/bin/rcc], [], $QT4DIR/bin)
-   if test x"$QT_RCC" = x; then
-      AC_MSG_ERROR([*** This is not the right Qt installation])
-   fi
-   AC_CHECK_PROG(QT_UIC, [uic], [$QT4DIR/bin/uic], [], $QT4DIR/bin)
-   if test x"$QT_UIC" = x; then
-      AC_MSG_ERROR([*** This is not the right Qt installation])
-   fi
-   case "$host_os" in
-    mingw*)
-      QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
-      QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
-      LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-s -Wl,-subsystem,windows"
-      AC_SUBST(QT4DIR)
-      help_target="help-mingw"
-      AC_CHECK_PROG(QT_RCC, [rcc], [$QT4DIR/bin/rcc], [], $QT4DIR/bin)
-      if test x"$QT_RCC" = x; then
-	 AC_MSG_ERROR([*** This is not the right Qt installation, or you specified the --with-qt4dir with a pathspec that is not right (it should be something like /c/Qt/4.1.4)])
-      fi
-      AC_CHECK_PROG(QT_UIC, [uic], [$QT4DIR/bin/uic], [], $QT4DIR/bin)
-      if test x"$QT_RCC" = x; then
-	 AC_MSG_ERROR([*** This is not the right Qt installation, or you specified the --with-qt4dir with a pathspec that is not right (it should be something like /c/Qt/4.1.4)])
-      fi
-      AC_CHECK_PROG(WINDRES, [windres], [windres], [])
-      if test x"$WINDRES" = x; then
-	 AC_MSG_ERROR([*** Unable to find windres - please try reinstalling msys and mingw])
-      fi
-      ;;
-    darwin*)
-      QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
-      QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtGui.framework/Headers"
-      QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtOpenGL.framework/Headers"
-      QT_LIBS="-Xlinker -F$QT4DIR/lib -Xlinker -framework -Xlinker QtCore"
-      QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtGui"
-      QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtOpenGL"
-      QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker OpenGL"
-      ;;
-    *)
-      AC_MSG_ERROR([*** Please check PKG_CONFIG_PATH or the version
-      of your Qt4 installation.])
-      ;;
-  esac
+   is_win32="false"
+   platform="--linux"
 fi
 
-else
+if (test "$cross_compiling" = "yes"); then
+   AC_MSG_NOTICE([Configuring for mingw32-cross build])
+   AC_MSG_NOTICE([Setting up for Qt cross-compile... must have moc, rcc, and uic tools on the path, qt4dir points to cross build])
+   AC_CHECK_PROGS(QT_MOC, [moc4 moc-qt4 moc], [])
+   AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
+   AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
+   QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
+   QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
+   LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-subsystem,windows"
+   platform="--xwin"
+   AC_SUBST(QT4DIR)
+   is_win32="true"
+   AC_CHECK_PROG(WINDRES, [windres], [windres], [])
+fi
 
-AC_MSG_NOTICE([Setting up for Qt cross-compile... must have moc, rcc, and uic tools on the path, qt4dir points to cross build])
-AC_CHECK_PROGS(QT_MOC, [moc4 moc-qt4 moc], [])
-AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
-AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
-QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtOpenGL"
-QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
-LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-subsystem,windows"
-platform="--xwin"
-AC_SUBST(QT4DIR)
-is_win32="true"
-AC_CHECK_PROG(WINDRES, [windres], [windres], [])
+if (test "$cross_compiling" = "no") && (test "$is_mac" = "yes"); then
+   AC_MSG_NOTICE([Configuring for Mac OS X build])
+   platform="--mac"
+   QT_CFLAGS=" -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -pipe -Os -Wall -W -F/Library/Frameworks"
+   QT_LIBS="-F/Library/Frameworks -L/Library/Frameworks -framework QtOpenGL -framework QtGui -framework Carbon -framework QuickTime -framework AppKit -framework QtCore -lz -lm -liconv -framework ApplicationServices -framework OpenGL -framework AGL"
+   is_win32="false"
 fi
 
 AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
@@ -133,7 +83,6 @@ AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
 AC_MSG_NOTICE([Win32 flag is $is_win32])
 AM_CONDITIONAL(WIN32, test x"$is_win32" = x"true")
 
-AC_SUBST(help_target)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MOC)
@@ -142,16 +91,7 @@ AC_SUBST(QT_UIC)
 AC_SUBST(platform)
 
 AC_PROG_F77
-
-case "$host_os" in
-     darwin*)
-	LDFLAGS="$LDFLAGS -L/sw/lib"
-	FLIBS="-lg2c"
-        ;;
-     *)
-        AC_F77_LIBRARY_LDFLAGS
-        ;;
-esac
+AC_F77_LIBRARY_LDFLAGS
 
 if test x"${QT_LIBS}" = x; then
    echo ""

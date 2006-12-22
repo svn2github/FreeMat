@@ -53,6 +53,9 @@ if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
    fi
    is_win32="false"
    platform="--linux"
+   FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g' | sed -e 's/-l\w*//g'`
+   AC_MSG_NOTICE([Extra lib flags added $FOO])
+   LDFLAGS="$LDFLAGS $FOO"
 fi
 
 if (test "$cross_compiling" = "yes"); then
@@ -100,9 +103,6 @@ if test x"${QT_LIBS}" = x; then
 fi
 cdir=`pwd`
 
-FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g' | sed -e 's/-l\w*//g'`
-AC_MSG_NOTICE([Extra lib flags added $FOO])
-LDFLAGS="$LDFLAGS $FOO"
 
 dnl Check external dependencies
 dnl   Fail?

@@ -13,7 +13,7 @@ bool isalnumus(byte a) {
   return (isalnum(a) || (a=='_'));
 }
 
-bool isblank(byte a) {
+bool isablank(byte a) {
   return (a==' ' || a=='\t' || a=='\r');
 }
 
@@ -69,7 +69,7 @@ void Scanner::Fetch() {
 	     (ahead(2) == '.')) {
     FetchContinuation();
     return;
-  } else if (m_blobFlag && !isblank(current()) && 
+  } else if (m_blobFlag && !isablank(current()) && 
 	     (current() != '\n') && (current() != ';') &&
 	     (current() != ',') && (current() != '\'') &&
 	     (current() != '%')) 
@@ -78,7 +78,7 @@ void Scanner::Fetch() {
     FetchIdentifier();
   else if (isdigit(current()) || ((current() == '.') && isdigit(ahead(1))))
     FetchNumber();
-  else if (isblank(current())) {
+  else if (isablank(current())) {
     FetchWhitespace();
     if (m_ignorews.top()) return;
   } else if ((current() == '\'') && !((previous() == '\'') ||
@@ -158,7 +158,7 @@ void Scanner::FetchString() {
 
 void Scanner::FetchWhitespace() {
   int len = 0;
-  while (isblank(ahead(len))) len++;
+  while (isablank(ahead(len))) len++;
   SetToken(TOK_SPACE);
   m_ptr += len;
 }
@@ -279,7 +279,7 @@ void Scanner::FetchBlob() {
     m_tokValid = true;
   } else {
     int len = 0;
-    while ((ahead(len) != '\n') && (!isblank(ahead(len))) && 
+    while ((ahead(len) != '\n') && (!isablank(ahead(len))) && 
 	   (ahead(len) != '%') && (ahead(len) != ',') &&
 	   (ahead(len) != ';')) len++;
     if (len > 0) {

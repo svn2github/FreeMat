@@ -13,6 +13,8 @@ XWIN_BINUTILS_FILE="binutils-2.16.91-20060119-1-src.tar.gz"
 XWIN_BINUTILS="binutils-2.16.91-20060119-1"
 XWIN_QT_VER="4.2.2"
 XWIN_QT="qt-win-opensource-$XWIN_QT_VER-mingw.exe"
+QT_MAC_FILE="qt-mac-opensource-src-4.2.2.tar.gz"
+QT_MAC="qt-mac-opensource-src-4.2.2"
 MINGW_TARGET="i686-mingw32"
 FFTW_FILE="fftw-3.1.2.tar.gz"
 FFTW="fftw-3.1.2"
@@ -499,6 +501,140 @@ SetupLAPACK()
     cp $BASE/Root/$LAPACK/liblapack.a $PREFIX/lib
 }
 
+SetupMacQt()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $QT_MAC_FILE ftp://ftp.trolltech.com/qt/source $QT_MAC Root
+    ConfigureMakeInstall $QT_MAC "-no-qt3support -prefix $PREFIX -universal" . Root
+}
+
+SetupMacFFCALL()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall  $FFCALL_FILE ftp://ftp.santafe.edu/pub/gnu $FFCALL Root
+    ConfigureMakeInstall $FFCALL "--prefix=$PREFIX" . Root
+}
+
+SetupMacSparse()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE Root
+    cd $BASE/Root/$SUITESPARSE/AMD/Source
+    make CFLAGS="-arch i386 -arch ppc"
+    cp $BASE/Root/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
+    cp $BASE/Root/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
+    cd $BASE/Root/$SUITESPARSE/UMFPACK/Source
+    make CFLAGS="-arch i386 -arch ppc"
+    cp $BASE/Root/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
+    cp $BASE/Root/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
+    cp $BASE/Root/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include
+}
+
+
+Relink()
+{
+    SetupCommon
+    echo "Relinking $1 --> $2"
+    install_name_tool -change "$PREFIX/lib/$1.framework/Versions/4.0/$1" "@executable_path/../Frameworks/$1.framework/Versions/4.0/$1" "$2"
+}
+
+InstallFramework()
+{
+    SetupCommon
+    echo "Installing framework $1"
+    cp -R "$PREFIX/lib/$1.framework" "$baseDir/Contents/Frameworks/$1.framework"
+    install_name_tool -id "@executable_path../Frameworks/$1.framework/Versions/4.0/$1" "$baseDir/Contents/Frameworks/$1.framework/Versions/4.0/$1"
+    Relink $1 "$baseDir/Contents/MacOS/FreeMat"
+}
+
+CrossLinkFramework()
+{
+    SetupCommon
+    echo "Cross Linking $2 -> $1"
+    Relink "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/4.0/$1"
+}
+
+RelinkPlugin() {
+    SetupCommon
+    echo "Relinking plugin $1 to framework $2"
+    Relink $2 "$baseDir/Contents/Plugins/imageformats/$1"
+}
+
+RelinkPlugins() {
+    SetupCommon
+    list=`ls $baseDir/Contents/Plugins/imageformats`
+    for plugin in $list
+    do
+	RelinkPlugin $plugin "QtGui"
+	RelinkPlugin $plugin "QtCore"
+	RelinkPlugin $plugin "QtOpenGL"
+    done
+}
+
+MakeMacBundle()
+{
+    SetupCommon
+    baseDir="$BASE/Root/$FREEMAT/build/$FREEMAT.app"
+    MakeDirectory "$baseDir"
+    MakeDirectory "$baseDir/Contents"
+    MakeDirectory "$baseDir/Contents/MacOS"
+    MakeDirectory "$baseDir/Contents/Resources"
+    MakeDirectory "$baseDir/Contents/Resources/help"
+    MakeDirectory "$baseDir/Contents/Resources/help/html"
+    MakeDirectory "$baseDir/Contents/Resources/help/text"
+    MakeDirectory "$baseDir/Contents/Resources/help/pdf"
+    MakeDirectory "$baseDir/Contents/Resources/toolbox"
+    MakeDirectory "$baseDir/Contents/Frameworks"
+    CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
+    ln -s "$baseDir/Contents/MacOS/FreeMat" "$baseDir/FreeMat"
+    CopyFile "$srcDir/src/appIcon.icns" "$baseDir/Contents/Resources/appIcon.icns"
+    echo "APPL????" > "$baseDir/Contents/PkgInfo"
+    cat > "$baseDir/Contents/Info.plist" <<EOF
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+ <plist version="0.9">
+ <dict>
+ <key>CFBundleIconFile</key>
+ <string>appIcon.icns</string>
+ <key>CFBundlePackageType</key>
+ <string>APPL</string>
+ <key>CFBundleExecutable</key>
+ <string>FreeMat</string>
+ </dict>
+ </plist>
+EOF
+    InstallFramework "QtGui"
+    InstallFramework "QtCore"
+    InstallFramework "QtOpenGL"
+    CrossLinkFramework "QtGui" "QtCore"
+    CrossLinkFramework "QtOpenGL" "QtGui"
+    CrossLinkFramework "QtOpenGL" "QtCore"
+    CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/FreeMat-@VERSION@.pdf"
+    MakeDirectory "$baseDir/Contents/Plugins/imageformats"
+    CopyDirectory "$QTDIR/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
+    RelinkPlugins
+    rm -rf `find $baseDir/Contents/Frameworks -name '*debug*'`
+    rm -rf `find $baseDir/Contents/Plugins -name '*debug*'`
+    hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/FreeMat-@VERSION@.dmg"
+}
+
+
+SetupMacFreeMat()
+{
+    SetupCommon
+    MakeDirectory $BASE/Root
+    cd $BASE/Root
+    tar xfz $BASE/Files/$FREEMAT_FILE
+    MakeDirectory $BASE/Root/$FREEMAT/build
+    cd $BASE/Root/$FREEMAT/build
+    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL"
+    make
+    MakeMacBundle
+}
+
 Usage() 
 {
     echo \
@@ -537,6 +673,10 @@ subdirectory.  Here are the tasks manages by this script.
       --zlib             Setup zlib
       --freemat          Setup FreeMat
       --all
+
+      --mac-qt           Setup Mac Qt
+      --mac-sparse       Setup Mac SuiteSparse
+      --mac-freemat      Build the Mac FreeMat
 "
     exit
 }
@@ -570,6 +710,10 @@ for arg
       --zlib)          SetupZlib ;;
       --freemat)       SetupFreeMat ;;
       --all)           SetupAll ;;
+      --mac-qt)        SetupMacQt ;;
+      --mac-ffcall)    SetupMacFFCALL ;;
+      --mac-sparse)    SetupMacSparse ;;
+      --mac-freemat)   SetupMacFreeMat ;;
       *)               Usage;
   esac
 done

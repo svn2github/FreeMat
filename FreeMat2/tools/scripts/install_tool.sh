@@ -356,8 +356,8 @@ SetupFFTW()
     DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW Root
     MakeDirectory $BASE/Root/$FFTW/single
     MakeDirectory $BASE/Root/$FFTW/double
-    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFTW/config.guess) --enable-single" .. Root 
-    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/Root/$FFTW/config.guess)" .. Root 
+    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --enable-single" .. Root 
+    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX" .. Root 
 }
 
 SetupZlib()
@@ -389,12 +389,18 @@ SetupARPACK()
 {
     SetupCommon
     DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK Root
+    cd $BASE/Root/$ARPACK/UTIL
+    if  [ ! -f second_orig.f ]
+	then
+	mv second.f second_orig.f
+	touch second.f
+    fi
     cd $BASE/Root/$ARPACK/SRC
     if  [ ! -f /usr/bin/g77 ] 
 	then
-	make FC="f95" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	make FC="gfortran" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
 	cd $BASE/Root/$ARPACK/UTIL
-	make FC="f95" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	make FC="gfortran" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
 	cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
     else
 	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
@@ -505,29 +511,7 @@ SetupMacQt()
 {
     SetupCommon
     DownloadAndUnpackTarBall $QT_MAC_FILE ftp://ftp.trolltech.com/qt/source $QT_MAC Root
-    ConfigureMakeInstall $QT_MAC "-no-qt3support -prefix $PREFIX -universal" . Root
-}
-
-SetupMacFFCALL()
-{
-    SetupCommon
-    DownloadAndUnpackTarBall  $FFCALL_FILE ftp://ftp.santafe.edu/pub/gnu $FFCALL Root
-    ConfigureMakeInstall $FFCALL "--prefix=$PREFIX" . Root
-}
-
-SetupMacSparse()
-{
-    SetupCommon
-    DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE Root
-    cd $BASE/Root/$SUITESPARSE/AMD/Source
-    make CFLAGS="-arch i386 -arch ppc"
-    cp $BASE/Root/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
-    cp $BASE/Root/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
-    cd $BASE/Root/$SUITESPARSE/UMFPACK/Source
-    make CFLAGS="-arch i386 -arch ppc"
-    cp $BASE/Root/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
-    cp $BASE/Root/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
-    cp $BASE/Root/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include
+    ConfigureMakeInstall $QT_MAC "-no-qt3support -prefix $PREFIX" . Root
 }
 
 
@@ -535,7 +519,7 @@ Relink()
 {
     SetupCommon
     echo "Relinking $1 --> $2"
-    install_name_tool -change "$PREFIX/lib/$1.framework/Versions/4.0/$1" "@executable_path/../Frameworks/$1.framework/Versions/4.0/$1" "$2"
+    install_name_tool -change "$PREFIX/lib/$1.framework/Versions/Current/$1" "@executable_path/../Frameworks/$1.framework/Versions/Current/$1" "$2"
 }
 
 InstallFramework()
@@ -543,7 +527,7 @@ InstallFramework()
     SetupCommon
     echo "Installing framework $1"
     cp -R "$PREFIX/lib/$1.framework" "$baseDir/Contents/Frameworks/$1.framework"
-    install_name_tool -id "@executable_path../Frameworks/$1.framework/Versions/4.0/$1" "$baseDir/Contents/Frameworks/$1.framework/Versions/4.0/$1"
+    install_name_tool -id "@executable_path../Frameworks/$1.framework/Versions/Current/$1" "$baseDir/Contents/Frameworks/$1.framework/Versions/Current/$1"
     Relink $1 "$baseDir/Contents/MacOS/FreeMat"
 }
 
@@ -551,7 +535,7 @@ CrossLinkFramework()
 {
     SetupCommon
     echo "Cross Linking $2 -> $1"
-    Relink "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/4.0/$1"
+    Relink "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/Current/$1"
 }
 
 RelinkPlugin() {
@@ -575,6 +559,8 @@ MakeMacBundle()
 {
     SetupCommon
     baseDir="$BASE/Root/$FREEMAT/build/$FREEMAT.app"
+    buildDir="$BASE/Root/$FREEMAT/build"
+    srcDir="$BASE/Root/$FREEMAT"
     MakeDirectory "$baseDir"
     MakeDirectory "$baseDir/Contents"
     MakeDirectory "$baseDir/Contents/MacOS"
@@ -612,27 +598,28 @@ EOF
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
-    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/FreeMat-@VERSION@.pdf"
+    CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
     MakeDirectory "$baseDir/Contents/Plugins/imageformats"
-    CopyDirectory "$QTDIR/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
+    CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
     RelinkPlugins
     rm -rf `find $baseDir/Contents/Frameworks -name '*debug*'`
     rm -rf `find $baseDir/Contents/Plugins -name '*debug*'`
-    hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/FreeMat-@VERSION@.dmg"
+    rm -rf "$buildDir/$FREEMAT.dmg"
+    hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/$FREEMAT.dmg"
 }
 
 
 SetupMacFreeMat()
 {
-    SetupCommon
-    MakeDirectory $BASE/Root
-    cd $BASE/Root
-    tar xfz $BASE/Files/$FREEMAT_FILE
-    MakeDirectory $BASE/Root/$FREEMAT/build
-    cd $BASE/Root/$FREEMAT/build
-    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL"
-    make
-    MakeMacBundle
+   SetupCommon
+   MakeDirectory $BASE/Root
+   cd $BASE/Root
+   tar xfz $BASE/Files/$FREEMAT_FILE
+   MakeDirectory $BASE/Root/$FREEMAT/build
+   cd $BASE/Root/$FREEMAT/build
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL"
+   make
+   MakeMacBundle
 }
 
 Usage() 
@@ -675,7 +662,6 @@ subdirectory.  Here are the tasks manages by this script.
       --all
 
       --mac-qt           Setup Mac Qt
-      --mac-sparse       Setup Mac SuiteSparse
       --mac-freemat      Build the Mac FreeMat
 "
     exit
@@ -711,8 +697,6 @@ for arg
       --freemat)       SetupFreeMat ;;
       --all)           SetupAll ;;
       --mac-qt)        SetupMacQt ;;
-      --mac-ffcall)    SetupMacFFCALL ;;
-      --mac-sparse)    SetupMacSparse ;;
       --mac-freemat)   SetupMacFreeMat ;;
       *)               Usage;
   esac

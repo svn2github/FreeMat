@@ -122,7 +122,10 @@ void VariablesTool::refresh() {
 	flags += "Persistent ";
       }
       size = QString::fromStdString(lookup.dimensions().asString());
-      value = QString::fromStdString(ArrayToPrintableString(lookup));
+      try {
+	value = QString::fromStdString(ArrayToPrintableString(lookup));
+      } catch (Exception& e) {
+      }
     }
     m_flist->setItem(i,0,new QTableWidgetItem(varname));
     m_flist->setItem(i,1,new QTableWidgetItem(type));

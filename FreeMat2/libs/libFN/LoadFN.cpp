@@ -19,16 +19,16 @@
 #include "FN.hpp"
 
 void LoadFNFunctions(Context* context) {
-  context->addSpecialFunction("fitfun",FitFunFunction,-1,2);
-  context->addFunction("interplin1",Interplin1Function,4,1,"x1","y1","xi","extrap");
-  context->addFunction("expei",ExpeiFunction,1,1,"x");
-  context->addFunction("eone",EoneFunction,1,1,"x");
-  context->addFunction("ei",EiFunction,1,1,"x");
-  context->addFunction("erfcx",ErfcxFunction,1,1,"x");
-  context->addFunction("erfc",ErfcFunction,1,1,"x");
-  context->addFunction("erf",ErfFunction,1,1,"x");
-  context->addFunction("dawson",DawsonFunction,1,1,"x");
-  context->addFunction("psi",PsiFunction,1,1,"x");
-  context->addFunction("gamma",GammaFunction,1,1,"x");
-  context->addFunction("gammaln",GammaLnFunction,1,1,"x");
+  context->addSpecialFunction("fitfun",FitFunFunction,-1,2,NULL);
+  context->addFunction("interplin1",Interplin1Function,4,1,"x1","y1","xi","extrap",NULL);
+  context->addFunction("expei",ExpeiFunction,1,1,"x",NULL);
+  context->addFunction("eone",EoneFunction,1,1,"x",NULL);
+  context->addFunction("ei",EiFunction,1,1,"x",NULL);
+  context->addFunction("erfcx",ErfcxFunction,1,1,"x",NULL);
+  context->addFunction("erfc",ErfcFunction,1,1,"x",NULL);
+  context->addFunction("erf",ErfFunction,1,1,"x",NULL);
+  context->addFunction("dawson",DawsonFunction,1,1,"x",NULL);
+  context->addFunction("psi",PsiFunction,1,1,"x",NULL);
+  context->addFunction("gamma",GammaFunction,1,1,"x",NULL);
+  context->addFunction("gammaln",GammaLnFunction,1,1,"x",NULL);
 }

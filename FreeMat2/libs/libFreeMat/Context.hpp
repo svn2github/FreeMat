@@ -239,6 +239,10 @@ public:
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++)
 	args.push_back(va_arg(argp,const char *));
+      if (va_arg(argp,const char *) != NULL) {
+	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	exit(1);
+      }
       va_end(argp);
     }
     BuiltInFunctionDef *f2def;
@@ -260,6 +264,10 @@ public:
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++)
 	args.push_back(va_arg(argp,const char *));
+      if (va_arg(argp,const char *) != NULL) {
+	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	exit(1);
+      }
       va_end(argp);
     }
     SpecialFunctionDef *f2def;
@@ -282,6 +290,10 @@ public:
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++)
 	args.push_back(va_arg(argp,const char *));
+      if (va_arg(argp,const char *) != NULL) {
+	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	exit(1);
+      }
       va_end(argp);
     }
     BuiltInFunctionDef *f2def;

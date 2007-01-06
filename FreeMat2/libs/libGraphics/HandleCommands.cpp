@@ -1224,23 +1224,23 @@ ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
 }
 
 void LoadHandleGraphicsFunctions(Context* context) {
-  context->addGfxFunction("is2dview",HIs2DViewFunction,1,1);
-  context->addGfxFunction("axes",HAxesFunction,-1,1);
-  context->addGfxFunction("line",HLineFunction,-1,1);
-  context->addGfxFunction("htext",HTextFunction,-1,1);
-  context->addGfxFunction("himage",HImageFunction,-1,1);
-  context->addGfxFunction("surface",HSurfaceFunction,-1,1);
-  context->addGfxFunction("set",HSetFunction,-1,0);
-  context->addGfxFunction("get",HGetFunction,2,1,"handle","propname");
-  context->addGfxFunction("figure",HFigureFunction,1,1,"number");
-  context->addGfxSpecialFunction("uicontrol",HUIControlFunction,-1,1);
-  context->addGfxFunction("gca",HGCAFunction,0,1);
-  context->addGfxFunction("gcf",HGCFFunction,0,1);
-  context->addGfxFunction("pvalid",HPropertyValidateFunction,2,1,"type","property");
-  context->addGfxFunction("print",HPrintFunction,-1,0);
-  context->addGfxFunction("close",HCloseFunction,1,0,"handle");
-  context->addGfxFunction("copy",HCopyFunction,0,0);
-  context->addGfxFunction("hpoint",HPointFunction,0,1);
-  context->addSpecialFunction("demo",HDemoFunction,1,1);
+  context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,NULL);
+  context->addGfxFunction("axes",HAxesFunction,-1,1,NULL);
+  context->addGfxFunction("line",HLineFunction,-1,1,NULL);
+  context->addGfxFunction("htext",HTextFunction,-1,1,NULL);
+  context->addGfxFunction("himage",HImageFunction,-1,1,NULL);
+  context->addGfxFunction("surface",HSurfaceFunction,-1,1,NULL);
+  context->addGfxFunction("set",HSetFunction,-1,0,NULL);
+  context->addGfxFunction("get",HGetFunction,2,1,"handle","propname",NULL);
+  context->addGfxFunction("figure",HFigureFunction,1,1,"number",NULL);
+  context->addGfxSpecialFunction("uicontrol",HUIControlFunction,-1,1,NULL);
+  context->addGfxFunction("gca",HGCAFunction,0,1,NULL);
+  context->addGfxFunction("gcf",HGCFFunction,0,1,NULL);
+  context->addGfxFunction("pvalid",HPropertyValidateFunction,2,1,"type","property",NULL);
+  context->addGfxFunction("print",HPrintFunction,-1,0,NULL);
+  context->addGfxFunction("close",HCloseFunction,1,0,"handle",NULL);
+  context->addGfxFunction("copy",HCopyFunction,0,0,NULL);
+  context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
+  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
   InitializeHandleGraphics();
 };

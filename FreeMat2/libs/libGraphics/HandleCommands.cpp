@@ -863,342 +863,342 @@ ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(retval);
 }
 
-int refcount = 0;
-extern int DataMakeCount;
-// If the argument vector is numeric, we can
-ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
-  if (arg.size() == 0) return ArrayVector();
-  int runtype = ArrayToInt32(arg[0]);
-  Array B(FM_FLOAT,Dimensions(500,500));
-  if (runtype == 0) {
-    // Fastest possible run time 
-    float *dp = (float *) B.getReadWriteDataPointer();
-    for (int j=1;j<500;j++) {
-      for (int k=1;k<500;k++) {
-	dp[j+500*(k-1)] = fabs(j-k)+1;
-      }
-    }
-  } else if (runtype == 1) {
-    // Current operational mode
-    float *dp = (float *) B.getReadWriteDataPointer();
-    Array K(FM_INT32,Dimensions(1,1));
-    Array J(FM_INT32,Dimensions(1,1));
-    for (int j=1;j<500;j++) {
-      ((int32 *) J.getReadWriteDataPointer())[0] = j;
-      for (int k=1;k<500;k++) {
-	((int32 *) K.getReadWriteDataPointer())[0] = k;
-	ArrayVector p;
-	p.push_back(J);
-	p.push_back(K);
-	Array c(Array::floatConstructor(fabs(j-k)+1));
-	B.setNDimSubset(p,c);
-      } 
-    } 
-  } else if (runtype == 2) {
-    // Reasonable operational mode
-    float *dp = (float *) B.getReadWriteDataPointer();
-    Array K(FM_INT32,Dimensions(1,1));
-    Array J(FM_INT32,Dimensions(1,1));
-    for (int j=1;j<500;j++) {
-      ((int32 *) J.getReadWriteDataPointer())[0] = j;
-      for (int k=1;k<500;k++) {
-	((int32 *) K.getReadWriteDataPointer())[0] = k;
-	int jval = ArrayToInt32(J);
-	int kval = ArrayToInt32(K);
-	((float *) B.getReadWriteDataPointer())[jval+500*(kval-1)] = fabs(jval-kval)+1;
-      }
-    }
-  } else if (runtype == 3) {
-    // Reasonable operational mode
-    float *dp = (float *) B.getReadWriteDataPointer();
-    Array K(FM_INT32,Dimensions(1,1));
-    Array J(FM_INT32,Dimensions(1,1));
-    for (int j=1;j<500;j++) {
-      ((int32 *) J.getReadWriteDataPointer())[0] = j;
-      for (int k=1;k<500;k++) {
-	((int32 *) K.getReadWriteDataPointer())[0] = k;
-	((float *) B.getReadWriteDataPointer())[j+500*(k-1)] = fabs(j-k)+1;
-      }
-    }
-  } else if (runtype == 4) {
-    // Reasonable operational mode
-    float *dp = (float *) B.getReadWriteDataPointer();
-    Array K(FM_INT32,Dimensions(1,1));
-    Array J(FM_INT32,Dimensions(1,1));
-    for (int j=1;j<500;j++) {
-      ((int32 *) J.getReadWriteDataPointer())[0] = j;
-      int jval = ArrayToInt32(J);
-      for (int k=1;k<500;k++) {
-	((int32 *) K.getReadWriteDataPointer())[0] = k;
-	int kval = ArrayToInt32(K);
-	((float *) B.getReadWriteDataPointer())[jval+500*(kval-1)] = fabs(jval-kval)+1;
-      }
-    }
-  } else if (runtype == 5) {
-    // Try to create a large vector, and page through it using getVectorSubset
-    Array I(Array::int32RangeConstructor(1,1,100000,false));
-    for (int m=0;m<100000;m++) {
-      Array M(Array::int32Constructor(m+1));
-      Array G(I.getVectorSubset(M));
-    }
-  } else if (runtype == 6) {
-    // Try to create a large vector, simulate page through it bypassing getVectorSubset
-    // The time in this loop is spent as follows:
-    //8343     13.5247  FreeMat                  Data::Data(Class, Dimensions const&, void*, bool, std::vector<std::string, std::allocator<std::string> > const&, std::vector<std::string, std::allocator<std::string> >)
-    //7434     12.0512  FreeMat                  Dimensions::getElementCount() const
-    //7238     11.7334  FreeMat                  std::vector<std::string, std::allocator<std::string> >::~vector()
-    //6621     10.7332  FreeMat                  Array::Array(Class, Dimensions const&, void*, bool, std::vector<std::string, std::allocator<std::string> > const&, std::vector<std::string, std::allocator<std::string> > const&)
-    //4924      7.9822  FreeMat                  Array::int32Constructor(int)
-    //4145      6.7194  FreeMat                  Data::~Data()
-    //3324      5.3885  FreeMat                  Data::refreshDimensionCache()
-    //2529      4.0997  FreeMat                  Array::~Array()
-    //2052      3.3265  FreeMat                  Malloc(int)
-    //2036      3.3005  FreeMat                  .plt
-    //1906      3.0898  FreeMat                  HDemoFunction(int, std::vector<Array, std::allocator<Array> > const&, Interpreter*)
-    //1563      2.5338  FreeMat                  Array::allocateArray(Class, unsigned int, std::vector<std::string, std::allocator<std::string> > const&)
-    //
-    Array I(Array::int32RangeConstructor(1,1,100000,false));
-    for (int m=0;m<1000000;m++) {
-      Array M(Array::int32Constructor(m+1));
-    }
-  } else if (runtype == 7) {
-    // Create a large vector, simulate page through it, without int32Constructor
-    Array I(Array::int32RangeConstructor(1,1,100000,false));
-    Array M(Array::int32Constructor(0));
-    for (int m=0;m<100000;m++) {
-      int32 *M_p = (int32*) M.getReadWriteDataPointer();
-      M_p[0] = m+1;
-      Array G(I.getVectorSubset(M));
-    }
-  } else if (runtype == 8) {
-    // Try to create a large vector, simulate page through it bypassing getVectorSubset
-    Array I(Array::int32RangeConstructor(1,1,100000,false));
-    for (int m=0;m<100000;m++) {
-      int32 *mp = (int32*) malloc(sizeof(int32));
-      int32 *gp = (int32*) malloc(sizeof(int32));
-      *mp = m+1;
-      *gp = m+1;
-      Array M(FM_INT32,Dimensions(1,1),mp);
-      Array G(FM_INT32,Dimensions(1,1),gp);
-    }
-  } else if (runtype == 9) {
-    // Create a large vector, simulate page through it, without int32Constructor
-    Array I(Array::int32RangeConstructor(1,1,100000,false));
-    Array M(Array::int32Constructor(0));
-    for (int m=0;m<100000;m++) {
-      int32 *M_p = (int32*) M.getReadWriteDataPointer();
-      M_p[0] = m+1;
-    }
-  } else if (runtype == 10) {
-    // This simulates an empty for loop without the penalty of getVectorSubset
-    // It is still quite slow, and note because of getRWDP call (demo(9) requires
-    // 5 ms to run, this one takes 237 ms.
-    Scope *scope = eval->getContext()->getCurrentScope();
-    Array I(Array::int32Constructor(0));
-    for (int m=0;m<100000;m++) {
-      int32 *I_p = (int32*) I.getReadWriteDataPointer();
-      I_p[0] = m+1;
-      scope->insertVariable("i",I);
-    }
-  } else if (runtype == 11) {
-    // This simulates an empty for loop without the penalty of getVectorSubset
-    // It is still quite slowly, and not because of getRWDP call (demo(9) requires
-    // 5 ms to run, demo(10) takes 237 ms.  This version uses the interface 
-    // provided by Context, instead of Scope.  It requires 253 ms.  So the time
-    // is still dominated by the scope interface.  Clearly I need to revisit
-    // the symbol table code.
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    for (int m=0;m<100000;m++) {
-      int32 *I_p = (int32*) I.getReadWriteDataPointer();
-      I_p[0] = m+1;
-      context->insertVariable("i",I);
-    }
-  } else if (runtype == 12) {
-    //
-    // The symbol table code is not the problem.  The problem is that the
-    // value semantics of assignment are the problem... So consider the
-    // following: it executes in about 62 ms.  
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    for (int m=0;m<100000;m++) {
-      Array *vp = context->lookupVariableLocally("i");
-      int32 *I_p = (int32*) vp->getReadWriteDataPointer();
-      I_p[0] = m+1;
-    }
-  } else if (runtype == 13) {
-    //
-    // The symbol table code is not the problem.  The problem is that the
-    // value semantics of assignment are the problem... So consider the
-    // following: it executes in about 30 ms (just the variable lookup time).
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<100000;m++) {
-      Array *vp = context->lookupVariableLocally(name);
-    }
-  } else if (runtype == 14) {    
-    //
-    // In this version, we bypass the context again..  This gets run time
-    // down to 7 ms.  
-    //
-    Context *context = eval->getContext();
-    Scope *scope = context->getCurrentScope();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<100000;m++) {
-      Array *vp = scope->lookupVariable(name);
-    }
-  } else if (runtype == 15) {
-    // In this version, we bypass the context, but call RWDP - we are at the
-    // target of 10 ms.
-    Context *context = eval->getContext();
-    Scope *scope = context->getCurrentScope();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<100000;m++) {
-      Array *vp = scope->lookupVariable(name);
-      ((int32*) vp->getReadWriteDataPointer())[0] = m+1;
-    }
-  } else if (runtype == 16) {
-    B = Array::int32Constructor(DataMakeCount);
-  } else if (runtype == 17) {
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<100000;m++) {
-      Array *vp = context->lookupVariable(name);
-    }
-  } else if (runtype == 18) {
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<10000000;m++) {
-      Array *vp = context->lookupVariable(name);
-      context->insertVariable("j",*vp);
-    }
-  } else if (runtype == 19) {
-    Context *context = eval->getContext();
-    Scope *scope = context->getCurrentScope();
-    Array I(Array::int32Constructor(0));
-    scope->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<10000000;m++) {
-      Array *vp = scope->lookupVariable(name);
-      scope->insertVariable("j",*vp);
-    }
-  } else if (runtype == 20) {
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<10000000;m++) {
-      Array *vp = context->lookupVariable(name);
-      ArrayVector p(singleArrayVector(*vp));
-      context->insertVariable("j",p[0]);
-    }
-  } else if (runtype == 21) {
-    Context *context = eval->getContext();
-    Array I(Array::int32Constructor(0));
-    context->insertVariable("i",I);
-    string name("i");
-    for (int m=0;m<100000;m++) {
-      Array J(I);
-      Array K(I);
-    }
-  } else if (runtype == 22) {
-    Array a(Array::int32Constructor(0));
-    for (int m=0;m<10000000;m++) {
-      Array b(a);
-    }
-  } else if (runtype == 23) {
-    struct {
-      int data[10];
-    } a, b;
-    for (int m=0;m<10000000;m++) {
-      b = a;
-    }
-  } else if (runtype == 24) {
-    class foo {
-      int data[10];
-    public:
-      foo() {data[0] = 0; refcount++;}
-      ~foo() {refcount--;}
-    };
+// int refcount = 0;
+// extern int DataMakeCount;
+// // If the argument vector is numeric, we can
+// ArrayVector HDemoFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+//   if (arg.size() == 0) return ArrayVector();
+//   int runtype = ArrayToInt32(arg[0]);
+//   Array B(FM_FLOAT,Dimensions(500,500));
+//   if (runtype == 0) {
+//     // Fastest possible run time 
+//     float *dp = (float *) B.getReadWriteDataPointer();
+//     for (int j=1;j<500;j++) {
+//       for (int k=1;k<500;k++) {
+// 	dp[j+500*(k-1)] = fabs(j-k)+1;
+//       }
+//     }
+//   } else if (runtype == 1) {
+//     // Current operational mode
+//     float *dp = (float *) B.getReadWriteDataPointer();
+//     Array K(FM_INT32,Dimensions(1,1));
+//     Array J(FM_INT32,Dimensions(1,1));
+//     for (int j=1;j<500;j++) {
+//       ((int32 *) J.getReadWriteDataPointer())[0] = j;
+//       for (int k=1;k<500;k++) {
+// 	((int32 *) K.getReadWriteDataPointer())[0] = k;
+// 	ArrayVector p;
+// 	p.push_back(J);
+// 	p.push_back(K);
+// 	Array c(Array::floatConstructor(fabs(j-k)+1));
+// 	B.setNDimSubset(p,c);
+//       } 
+//     } 
+//   } else if (runtype == 2) {
+//     // Reasonable operational mode
+//     float *dp = (float *) B.getReadWriteDataPointer();
+//     Array K(FM_INT32,Dimensions(1,1));
+//     Array J(FM_INT32,Dimensions(1,1));
+//     for (int j=1;j<500;j++) {
+//       ((int32 *) J.getReadWriteDataPointer())[0] = j;
+//       for (int k=1;k<500;k++) {
+// 	((int32 *) K.getReadWriteDataPointer())[0] = k;
+// 	int jval = ArrayToInt32(J);
+// 	int kval = ArrayToInt32(K);
+// 	((float *) B.getReadWriteDataPointer())[jval+500*(kval-1)] = fabs(jval-kval)+1;
+//       }
+//     }
+//   } else if (runtype == 3) {
+//     // Reasonable operational mode
+//     float *dp = (float *) B.getReadWriteDataPointer();
+//     Array K(FM_INT32,Dimensions(1,1));
+//     Array J(FM_INT32,Dimensions(1,1));
+//     for (int j=1;j<500;j++) {
+//       ((int32 *) J.getReadWriteDataPointer())[0] = j;
+//       for (int k=1;k<500;k++) {
+// 	((int32 *) K.getReadWriteDataPointer())[0] = k;
+// 	((float *) B.getReadWriteDataPointer())[j+500*(k-1)] = fabs(j-k)+1;
+//       }
+//     }
+//   } else if (runtype == 4) {
+//     // Reasonable operational mode
+//     float *dp = (float *) B.getReadWriteDataPointer();
+//     Array K(FM_INT32,Dimensions(1,1));
+//     Array J(FM_INT32,Dimensions(1,1));
+//     for (int j=1;j<500;j++) {
+//       ((int32 *) J.getReadWriteDataPointer())[0] = j;
+//       int jval = ArrayToInt32(J);
+//       for (int k=1;k<500;k++) {
+// 	((int32 *) K.getReadWriteDataPointer())[0] = k;
+// 	int kval = ArrayToInt32(K);
+// 	((float *) B.getReadWriteDataPointer())[jval+500*(kval-1)] = fabs(jval-kval)+1;
+//       }
+//     }
+//   } else if (runtype == 5) {
+//     // Try to create a large vector, and page through it using getVectorSubset
+//     Array I(Array::int32RangeConstructor(1,1,100000,false));
+//     for (int m=0;m<100000;m++) {
+//       Array M(Array::int32Constructor(m+1));
+//       Array G(I.getVectorSubset(M));
+//     }
+//   } else if (runtype == 6) {
+//     // Try to create a large vector, simulate page through it bypassing getVectorSubset
+//     // The time in this loop is spent as follows:
+//     //8343     13.5247  FreeMat                  Data::Data(Class, Dimensions const&, void*, bool, std::vector<std::string, std::allocator<std::string> > const&, std::vector<std::string, std::allocator<std::string> >)
+//     //7434     12.0512  FreeMat                  Dimensions::getElementCount() const
+//     //7238     11.7334  FreeMat                  std::vector<std::string, std::allocator<std::string> >::~vector()
+//     //6621     10.7332  FreeMat                  Array::Array(Class, Dimensions const&, void*, bool, std::vector<std::string, std::allocator<std::string> > const&, std::vector<std::string, std::allocator<std::string> > const&)
+//     //4924      7.9822  FreeMat                  Array::int32Constructor(int)
+//     //4145      6.7194  FreeMat                  Data::~Data()
+//     //3324      5.3885  FreeMat                  Data::refreshDimensionCache()
+//     //2529      4.0997  FreeMat                  Array::~Array()
+//     //2052      3.3265  FreeMat                  Malloc(int)
+//     //2036      3.3005  FreeMat                  .plt
+//     //1906      3.0898  FreeMat                  HDemoFunction(int, std::vector<Array, std::allocator<Array> > const&, Interpreter*)
+//     //1563      2.5338  FreeMat                  Array::allocateArray(Class, unsigned int, std::vector<std::string, std::allocator<std::string> > const&)
+//     //
+//     Array I(Array::int32RangeConstructor(1,1,100000,false));
+//     for (int m=0;m<1000000;m++) {
+//       Array M(Array::int32Constructor(m+1));
+//     }
+//   } else if (runtype == 7) {
+//     // Create a large vector, simulate page through it, without int32Constructor
+//     Array I(Array::int32RangeConstructor(1,1,100000,false));
+//     Array M(Array::int32Constructor(0));
+//     for (int m=0;m<100000;m++) {
+//       int32 *M_p = (int32*) M.getReadWriteDataPointer();
+//       M_p[0] = m+1;
+//       Array G(I.getVectorSubset(M));
+//     }
+//   } else if (runtype == 8) {
+//     // Try to create a large vector, simulate page through it bypassing getVectorSubset
+//     Array I(Array::int32RangeConstructor(1,1,100000,false));
+//     for (int m=0;m<100000;m++) {
+//       int32 *mp = (int32*) malloc(sizeof(int32));
+//       int32 *gp = (int32*) malloc(sizeof(int32));
+//       *mp = m+1;
+//       *gp = m+1;
+//       Array M(FM_INT32,Dimensions(1,1),mp);
+//       Array G(FM_INT32,Dimensions(1,1),gp);
+//     }
+//   } else if (runtype == 9) {
+//     // Create a large vector, simulate page through it, without int32Constructor
+//     Array I(Array::int32RangeConstructor(1,1,100000,false));
+//     Array M(Array::int32Constructor(0));
+//     for (int m=0;m<100000;m++) {
+//       int32 *M_p = (int32*) M.getReadWriteDataPointer();
+//       M_p[0] = m+1;
+//     }
+//   } else if (runtype == 10) {
+//     // This simulates an empty for loop without the penalty of getVectorSubset
+//     // It is still quite slow, and note because of getRWDP call (demo(9) requires
+//     // 5 ms to run, this one takes 237 ms.
+//     Scope *scope = eval->getContext()->getCurrentScope();
+//     Array I(Array::int32Constructor(0));
+//     for (int m=0;m<100000;m++) {
+//       int32 *I_p = (int32*) I.getReadWriteDataPointer();
+//       I_p[0] = m+1;
+//       scope->insertVariable("i",I);
+//     }
+//   } else if (runtype == 11) {
+//     // This simulates an empty for loop without the penalty of getVectorSubset
+//     // It is still quite slowly, and not because of getRWDP call (demo(9) requires
+//     // 5 ms to run, demo(10) takes 237 ms.  This version uses the interface 
+//     // provided by Context, instead of Scope.  It requires 253 ms.  So the time
+//     // is still dominated by the scope interface.  Clearly I need to revisit
+//     // the symbol table code.
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     for (int m=0;m<100000;m++) {
+//       int32 *I_p = (int32*) I.getReadWriteDataPointer();
+//       I_p[0] = m+1;
+//       context->insertVariable("i",I);
+//     }
+//   } else if (runtype == 12) {
+//     //
+//     // The symbol table code is not the problem.  The problem is that the
+//     // value semantics of assignment are the problem... So consider the
+//     // following: it executes in about 62 ms.  
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     for (int m=0;m<100000;m++) {
+//       Array *vp = context->lookupVariableLocally("i");
+//       int32 *I_p = (int32*) vp->getReadWriteDataPointer();
+//       I_p[0] = m+1;
+//     }
+//   } else if (runtype == 13) {
+//     //
+//     // The symbol table code is not the problem.  The problem is that the
+//     // value semantics of assignment are the problem... So consider the
+//     // following: it executes in about 30 ms (just the variable lookup time).
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<100000;m++) {
+//       Array *vp = context->lookupVariableLocally(name);
+//     }
+//   } else if (runtype == 14) {    
+//     //
+//     // In this version, we bypass the context again..  This gets run time
+//     // down to 7 ms.  
+//     //
+//     Context *context = eval->getContext();
+//     Scope *scope = context->getCurrentScope();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<100000;m++) {
+//       Array *vp = scope->lookupVariable(name);
+//     }
+//   } else if (runtype == 15) {
+//     // In this version, we bypass the context, but call RWDP - we are at the
+//     // target of 10 ms.
+//     Context *context = eval->getContext();
+//     Scope *scope = context->getCurrentScope();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<100000;m++) {
+//       Array *vp = scope->lookupVariable(name);
+//       ((int32*) vp->getReadWriteDataPointer())[0] = m+1;
+//     }
+//   } else if (runtype == 16) {
+//     B = Array::int32Constructor(DataMakeCount);
+//   } else if (runtype == 17) {
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<100000;m++) {
+//       Array *vp = context->lookupVariable(name);
+//     }
+//   } else if (runtype == 18) {
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<10000000;m++) {
+//       Array *vp = context->lookupVariable(name);
+//       context->insertVariable("j",*vp);
+//     }
+//   } else if (runtype == 19) {
+//     Context *context = eval->getContext();
+//     Scope *scope = context->getCurrentScope();
+//     Array I(Array::int32Constructor(0));
+//     scope->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<10000000;m++) {
+//       Array *vp = scope->lookupVariable(name);
+//       scope->insertVariable("j",*vp);
+//     }
+//   } else if (runtype == 20) {
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<10000000;m++) {
+//       Array *vp = context->lookupVariable(name);
+//       ArrayVector p(singleArrayVector(*vp));
+//       context->insertVariable("j",p[0]);
+//     }
+//   } else if (runtype == 21) {
+//     Context *context = eval->getContext();
+//     Array I(Array::int32Constructor(0));
+//     context->insertVariable("i",I);
+//     string name("i");
+//     for (int m=0;m<100000;m++) {
+//       Array J(I);
+//       Array K(I);
+//     }
+//   } else if (runtype == 22) {
+//     Array a(Array::int32Constructor(0));
+//     for (int m=0;m<10000000;m++) {
+//       Array b(a);
+//     }
+//   } else if (runtype == 23) {
+//     struct {
+//       int data[10];
+//     } a, b;
+//     for (int m=0;m<10000000;m++) {
+//       b = a;
+//     }
+//   } else if (runtype == 24) {
+//     class foo {
+//       int data[10];
+//     public:
+//       foo() {data[0] = 0; refcount++;}
+//       ~foo() {refcount--;}
+//     };
     
-    foo a;
-    for (int m=0;m<10000000;m++) {
-      foo b(a);
-    }
-  } else if (runtype == 25) {
-    class foo {
-      int data[10];
-    public:
-      foo() {data[0] = 0; refcount++;}
-      ~foo() {refcount--;}
-    };
+//     foo a;
+//     for (int m=0;m<10000000;m++) {
+//       foo b(a);
+//     }
+//   } else if (runtype == 25) {
+//     class foo {
+//       int data[10];
+//     public:
+//       foo() {data[0] = 0; refcount++;}
+//       ~foo() {refcount--;}
+//     };
     
-    foo *a; 
-    for (int m=0;m<10000000;m++) {
-      a = new foo;
-      delete a;
-    }
-  } else if (runtype == 26) {
-    Array A(FM_FLOAT,Dimensions(512,512));
-    Array B(FM_FLOAT,Dimensions(512,512));
-    Array I(Array::uint32Constructor(0));
-    Array J(Array::uint32Constructor(0));
-    for (int i=0;i<512;i++)
-      for (int j=0;j<512;j++) {
-	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
-	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
-	ArrayVector T;
-	T.push_back(I);
-	T.push_back(J);
-	Array C(A.getNDimSubset(T));
-	B.setNDimSubset(T,C);
-      }
-  } else if (runtype == 27) {
-    Array A(FM_FLOAT,Dimensions(512,512));
-    Array B(FM_FLOAT,Dimensions(512,512));
-    Array I(Array::uint32Constructor(0));
-    Array J(Array::uint32Constructor(0));
-    for (int i=0;i<512;i++)
-      for (int j=0;j<512;j++) {
-	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
-	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
-	ArrayVector T;
-	T.push_back(I);
-	T.push_back(J);
-	Array C(A.getNDimSubset(T));
-	ArrayVector R;
-	R.push_back(J);
-	R.push_back(I);
-	B.setNDimSubset(R,C);
-      }
-  } else if (runtype == 28) {
-    Array A(FM_FLOAT,Dimensions(512,512));
-    Array B(FM_FLOAT,Dimensions(512,512));
-    Array I(Array::uint32Constructor(0));
-    Array J(Array::uint32Constructor(0));
-    for (int i=0;i<512;i++)
-      for (int j=0;j<512;j++) {
-	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
-	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
-	ArrayVector T;
-	T.push_back(I);
-	T.push_back(J);
-	Array C(A.getNDimSubset(T));
-      }
-  }
-  return singleArrayVector(B);
-}
+//     foo *a; 
+//     for (int m=0;m<10000000;m++) {
+//       a = new foo;
+//       delete a;
+//     }
+//   } else if (runtype == 26) {
+//     Array A(FM_FLOAT,Dimensions(512,512));
+//     Array B(FM_FLOAT,Dimensions(512,512));
+//     Array I(Array::uint32Constructor(0));
+//     Array J(Array::uint32Constructor(0));
+//     for (int i=0;i<512;i++)
+//       for (int j=0;j<512;j++) {
+// 	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
+// 	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
+// 	ArrayVector T;
+// 	T.push_back(I);
+// 	T.push_back(J);
+// 	Array C(A.getNDimSubset(T));
+// 	B.setNDimSubset(T,C);
+//       }
+//   } else if (runtype == 27) {
+//     Array A(FM_FLOAT,Dimensions(512,512));
+//     Array B(FM_FLOAT,Dimensions(512,512));
+//     Array I(Array::uint32Constructor(0));
+//     Array J(Array::uint32Constructor(0));
+//     for (int i=0;i<512;i++)
+//       for (int j=0;j<512;j++) {
+// 	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
+// 	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
+// 	ArrayVector T;
+// 	T.push_back(I);
+// 	T.push_back(J);
+// 	Array C(A.getNDimSubset(T));
+// 	ArrayVector R;
+// 	R.push_back(J);
+// 	R.push_back(I);
+// 	B.setNDimSubset(R,C);
+//       }
+//   } else if (runtype == 28) {
+//     Array A(FM_FLOAT,Dimensions(512,512));
+//     Array B(FM_FLOAT,Dimensions(512,512));
+//     Array I(Array::uint32Constructor(0));
+//     Array J(Array::uint32Constructor(0));
+//     for (int i=0;i<512;i++)
+//       for (int j=0;j<512;j++) {
+// 	((uint32*) I.getReadWriteDataPointer())[0] = i+1;
+// 	((uint32*) J.getReadWriteDataPointer())[0] = j+1;
+// 	ArrayVector T;
+// 	T.push_back(I);
+// 	T.push_back(J);
+// 	Array C(A.getNDimSubset(T));
+//       }
+//   }
+//   return singleArrayVector(B);
+// }
 
 
 //!
@@ -1224,7 +1224,7 @@ ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
 }
 
 void LoadHandleGraphicsFunctions(Context* context) {
-  context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,NULL);
+  context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,"x",NULL);
   context->addGfxFunction("axes",HAxesFunction,-1,1,NULL);
   context->addGfxFunction("line",HLineFunction,-1,1,NULL);
   context->addGfxFunction("htext",HTextFunction,-1,1,NULL);
@@ -1241,6 +1241,6 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("close",HCloseFunction,1,0,"handle",NULL);
   context->addGfxFunction("copy",HCopyFunction,0,0,NULL);
   context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
-  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
+  //  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
   InitializeHandleGraphics();
 };

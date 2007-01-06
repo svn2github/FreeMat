@@ -27,6 +27,7 @@
 #include "Exception.hpp"
 #include "Types.hpp"
 #include <vector>
+#include <QDebug>
 #include <QMutex>
 #include <stdarg.h>
 
@@ -237,10 +238,16 @@ public:
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
-      for (int i=0;i<argc_in;i++)
-	args.push_back(va_arg(argp,const char *));
+      for (int i=0;i<argc_in;i++) {
+	const char *t = va_arg(argp, const char *);
+	if (!t) {
+	  qDebug() << "addFunction for function " << name << " is wrong!\n";
+	  exit(1);
+	}
+	args.push_back(t);
+      }
       if (va_arg(argp,const char *) != NULL) {
-	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	qDebug() << "addFunction for function " << name << " is wrong!\n";
 	exit(1);
       }
       va_end(argp);
@@ -262,8 +269,14 @@ public:
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
-      for (int i=0;i<argc_in;i++)
-	args.push_back(va_arg(argp,const char *));
+      for (int i=0;i<argc_in;i++) {
+	const char *t = va_arg(argp, const char *);
+	if (!t) {
+	  qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	  exit(1);
+	}
+	args.push_back(t);
+      }
       if (va_arg(argp,const char *) != NULL) {
 	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
 	exit(1);
@@ -288,10 +301,16 @@ public:
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
-      for (int i=0;i<argc_in;i++)
-	args.push_back(va_arg(argp,const char *));
+      for (int i=0;i<argc_in;i++) {
+	const char *t = va_arg(argp, const char *);
+	if (!t) {
+	  qDebug() << "addGfxFunction for function " << name << " is wrong!\n";
+	  exit(1);
+	}
+	args.push_back(t);
+      }
       if (va_arg(argp,const char *) != NULL) {
-	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	qDebug() << "addGfxFunction for function " << name << " is wrong!\n";
 	exit(1);
       }
       va_end(argp);
@@ -315,8 +334,18 @@ public:
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
-      for (int i=0;i<argc_in;i++)
-	args.push_back(va_arg(argp,const char *));
+      for (int i=0;i<argc_in;i++) {
+	const char *t = va_arg(argp, const char *);
+	if (!t) {
+	  qDebug() << "addGfxSpecialFunction for function " << name << " is wrong!\n";
+	  exit(1);
+	}
+	args.push_back(t);
+      }
+      if (va_arg(argp,const char *) != NULL) {
+	qDebug() << "addGfxSpecialFunction for function " << name << " is wrong!\n";
+	exit(1);
+      }
       va_end(argp);
     }
     SpecialFunctionDef *f2def;

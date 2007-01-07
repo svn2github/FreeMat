@@ -25,7 +25,8 @@
 #include "ToolDock.hpp"
 #include "KeyManager.hpp"
 #include <QLabel>
-
+#include <QHttp>
+#include <QBuffer>
 
 class AboutWidget : public QWidget {
   Q_OBJECT
@@ -63,9 +64,12 @@ class ApplicationWindow : public QMainWindow {
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
   QAction *pathAct, *filetoolAct, *historyAct, *cleanHistoryAct;
   QAction *pauseAct, *continueAct, *stopAct;
-  QAction *dbStepAct, *dbTraceAct;
+  QAction *dbStepAct, *dbTraceAct, *checkUpdates;
   ToolDock *m_tool;
   AboutWindow *Aboutwin;
+  QHttp *m_http;
+  QBuffer m_buffer;
+  int httpGetId;
 public:
   ApplicationWindow();
   ~ApplicationWindow();
@@ -89,6 +93,8 @@ signals:
 public slots:
   void writeSettings();
 private slots:
+  void httpRequestFinished(int requestId, bool error);
+  void checkForUpdates();
   void save();
   void copy();
   void paste();

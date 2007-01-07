@@ -99,6 +99,7 @@ void ApplicationWindow::createActions() {
   stopAct = new QAction(QIcon(":/images/player_stop.png"),"&Stop",this);
   dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
   dbTraceAct = new QAction(QIcon(":/images/dbgstep.png"),"&Step Into",this);
+  checkUpdates = new QAction("Check for Updated Software",this);
 }
 
 
@@ -127,6 +128,7 @@ void ApplicationWindow::createMenus() {
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(manualAct);
   helpMenu->addAction(aboutQt);
+  helpMenu->addAction(checkUpdates);
 }
 
 bool ApplicationWindow::event(QEvent* e) {
@@ -237,6 +239,7 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
   connect(stopAct,SIGNAL(triggered()),m_keys,SLOT(StopAction()));
   connect(dbStepAct,SIGNAL(triggered()),m_keys,SLOT(DbStepAction()));
   connect(dbTraceAct,SIGNAL(triggered()),m_keys,SLOT(DbTraceAction()));
+  connect(checkUpdates,SIGNAL(triggered()),this,SLOT(checkForUpdates()));
 }
 
 void ApplicationWindow::save() {
@@ -405,5 +408,34 @@ void ApplicationWindow::init() {
   m_tool->getVariablesTool()->setContext(m_keys->GetCompletionContext());
   // Check for the latest version?
   QSettings settings("FreeMat","FreeMat");
-  
+  QDate lastCheck = settings.value("lastcheckdate").toDate();
+  if (QDate::currentDate().daysTo(lastCheck) > 7) {
+    checkForUpdates();
+  }
+}
+
+void ApplicationWindow::checkForUpdates() {
+  m_http = new QHttp(this);
+  connect(m_http, SIGNAL(requestFinished(int, bool)),
+	  this, SLOT(httpRequestFinished(int, bool)));
+  QUrl url("http://freemat.sourceforge.net/version.txt");
+  m_buffer.open(QBuffer::ReadWrite);
+  m_http->setHost(url.host(), url.port() != -1 ? url.port() : 80);
+  httpGetId = m_http->get(url.path(), &m_buffer);
+  QSettings settings("FreeMat","FreeMat");
+  settings.setValue("lastcheckdate",QDate::currentDate());
+}
+
+void ApplicationWindow::httpRequestFinished(int requestId, bool error) {
+  char buffer[1000];
+  if (error)
+    statusBar()->showMessage("Unable to check for updates...");
+  if (requestId != httpGetId) return;
+  const char *qp = m_buffer.data();
+  if (atof(VERSION) < atof(m_buffer.data())) {
+    sprintf(buffer,"A newer version of FreeMat appears to available. \n Please update by downloading version %s at http://freemat.sourceforge.net.",qp);
+    QMessageBox::information(this,"Update Available",
+			     buffer,QMessageBox::Ok);
+  } else 
+    statusBar()->showMessage("You are running the latest version of FreeMat");
 }

@@ -71,6 +71,10 @@ KeyManager::KeyManager()  {
   lineData = new char[LINELEN];
   ResetLineBuffer();
   context = NULL;
+  QSettings settings("FreeMat", "FreeMat");
+  QStringList historyList = settings.value("interpreter/history").toStringList();
+  for (int i=0;i<historyList.size();i++) 
+    history.push_back(historyList[i].toStdString());
 }
 
 Context* KeyManager::GetCompletionContext() {

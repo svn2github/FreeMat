@@ -34,7 +34,7 @@
 #include "PathTool.hpp"
 #include "ToolDock.hpp"
 
-const int about_linecount = 23;
+const int about_linecount = 21;
 const char *about_strings[] = {"Julie Maya & Neil - My Fan Club",
 			       "Bruno De Man - New icon, general suggestions, support and FreeMat advocate",
 			       "Thomas Beutlich - MAT file support",
@@ -51,8 +51,6 @@ const char *about_strings[] = {"Julie Maya & Neil - My Fan Club",
 			       "FFTW - Fast Fourier Transforms",
 			       "ffcall - Foreign Function interface",
 			       "Qt4 - Cross platform GUI and API",
-			       "qconf - Configure script generator",
-			       "libmatio - MAT file interface library",
 			       "libtecla - Inspiration for console interface code",
 			       "wxbasic - Inspiration for interpreter layout",
 			       "kde/konsole - Inspiration for QTTerm (GUI Console)",
@@ -189,6 +187,8 @@ void ApplicationWindow::readSettings() {
   QSettings settings("FreeMat", "FreeMat");
   QPoint pos = settings.value("mainwindow/pos", QPoint(200, 200)).toPoint();
   QSize size = settings.value("mainwindow/size", QSize(600, 400)).toSize();
+  if ((pos.x() < 0) || (pos.y() < 0))
+    pos = QPoint(200,200);
   resize(size);
   move(pos);
   QByteArray state = settings.value("mainwindow/state").toByteArray();
@@ -403,4 +403,7 @@ void ApplicationWindow::about() {
 
 void ApplicationWindow::init() {
   m_tool->getVariablesTool()->setContext(m_keys->GetCompletionContext());
+  // Check for the latest version?
+  QSettings settings("FreeMat","FreeMat");
+  
 }

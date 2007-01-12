@@ -302,6 +302,7 @@ MakeCrossWinBundle()
     CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtCore4.dll" "$baseDir/Contents/bin/QtCore4.dll"
     CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtGui4.dll" "$baseDir/Contents/bin/QtGui4.dll"
     CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtOpenGL4.dll" "$baseDir/Contents/bin/QtOpenGL4.dll"
+    CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtNetwork4.dll" "$baseDir/Contents/bin/QtNetwork4.dll"
     CopyFile "$BASE/Cross/bin/mingwm10.dll" "$baseDir/Contents/bin/mingwm10.dll"
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
@@ -622,6 +623,12 @@ SetupMacFreeMat()
    MakeMacBundle
 }
 
+SetupInplaceBuild() 
+{
+  SetupCommon
+  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
+}
+
 Usage() 
 {
     echo \
@@ -663,6 +670,8 @@ subdirectory.  Here are the tasks manages by this script.
 
       --mac-qt           Setup Mac Qt
       --mac-freemat      Build the Mac FreeMat
+
+      --inplace          Build FreeMat in place (off the subversion tree)
 "
     exit
 }
@@ -698,6 +707,7 @@ for arg
       --all)           SetupAll ;;
       --mac-qt)        SetupMacQt ;;
       --mac-freemat)   SetupMacFreeMat ;;
+      --inplace)       SetupInplaceBuild ;;
       *)               Usage;
   esac
 done

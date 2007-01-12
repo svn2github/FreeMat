@@ -35,7 +35,7 @@ esac
 
 if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
    AC_MSG_NOTICE([Configuring for non-cross unix build])
-   PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
+   PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL QtNetwork >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
    foo=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g'`
    if test "x$HAVE_QT4" = "xyes"; then
       dnl Check needed because in some cases the QtGui includedir

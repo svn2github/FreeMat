@@ -520,7 +520,7 @@ Relink()
 {
     SetupCommon
     echo "Relinking $1 --> $2"
-    install_name_tool -change "$PREFIX/lib/$1.framework/Versions/Current/$1" "@executable_path/../Frameworks/$1.framework/Versions/Current/$1" "$2"
+    install_name_tool -change "$PREFIX/lib/$1.framework/Versions/4/$1" "@executable_path/../Frameworks/$1.framework/Versions/4/$1" "$2"
 }
 
 InstallFramework()
@@ -528,7 +528,7 @@ InstallFramework()
     SetupCommon
     echo "Installing framework $1"
     cp -R "$PREFIX/lib/$1.framework" "$baseDir/Contents/Frameworks/$1.framework"
-    install_name_tool -id "@executable_path../Frameworks/$1.framework/Versions/Current/$1" "$baseDir/Contents/Frameworks/$1.framework/Versions/Current/$1"
+    install_name_tool -id "@executable_path../Frameworks/$1.framework/Versions/4/$1" "$baseDir/Contents/Frameworks/$1.framework/Versions/4/$1"
     Relink $1 "$baseDir/Contents/MacOS/FreeMat"
 }
 
@@ -536,7 +536,7 @@ CrossLinkFramework()
 {
     SetupCommon
     echo "Cross Linking $2 -> $1"
-    Relink "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/Current/$1"
+    Relink "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/4/$1"
 }
 
 RelinkPlugin() {
@@ -593,6 +593,7 @@ EOF
     InstallFramework "QtGui"
     InstallFramework "QtCore"
     InstallFramework "QtOpenGL"
+    InstallFramework "QtNetwork"
     CrossLinkFramework "QtGui" "QtCore"
     CrossLinkFramework "QtOpenGL" "QtGui"
     CrossLinkFramework "QtOpenGL" "QtCore"

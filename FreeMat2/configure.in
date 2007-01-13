@@ -94,7 +94,7 @@ fi
 if (test "$cross_compiling" = "no") && (test "$is_mac" = "yes"); then
    AC_MSG_NOTICE([Configuring for Mac OS X build])
    platform="--mac"
-   QT_CFLAGS=" -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -Os -pipe"
+   QT_CFLAGS=" -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SHARED -Os -pipe"
    QT_LIBS="-F/Library/Frameworks -L/Library/Frameworks -framework QtOpenGL -framework QtGui -framework Carbon -framework QuickTime -framework AppKit -framework QtCore -framework QtNetwork -lz -lm -liconv -framework ApplicationServices -framework OpenGL -framework AGL"
    AC_CHECK_PROGS(QT_MOC, [moc4 moc-qt4 moc], [])
    AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])

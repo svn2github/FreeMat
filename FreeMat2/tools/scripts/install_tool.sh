@@ -553,13 +553,26 @@ RelinkPlugins() {
 	RelinkPlugin $plugin "QtGui"
 	RelinkPlugin $plugin "QtCore"
 	RelinkPlugin $plugin "QtOpenGL"
+	RelinkPlugin $plugin "QtNetwork"
+	RelinkPlugin $plugin "QtXml"
+	RelinkPlugin $plugin "QtSvg"
     done
+}
+
+CrossLinkFrameworkAll() {
+    CrossLinkFramework $1 "QtCore"
+    CrossLinkFramework $1 "QtGui"
+    CrossLinkFramework $1 "QtOpenGL"
+    CrossLinkFramework $1 "QtNetwork"
+    CrossLinkFramework $1 "QtXml"
+    CrossLinkFramework $1 "QtSvg"
 }
 
 MakeMacBundle()
 {
     SetupCommon
     baseDir="$BASE/Root/$FREEMAT/build/$FREEMAT.app"
+    rm -rf $baseDir
     buildDir="$BASE/Root/$FREEMAT/build"
     srcDir="$BASE/Root/$FREEMAT"
     MakeDirectory "$baseDir"
@@ -573,6 +586,7 @@ MakeMacBundle()
     MakeDirectory "$baseDir/Contents/Resources/toolbox"
     MakeDirectory "$baseDir/Contents/Frameworks"
     CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
+    strip "$baseDir/Contents/MacOS/FreeMat"
     ln -s "$baseDir/Contents/MacOS/FreeMat" "$baseDir/FreeMat"
     CopyFile "$srcDir/src/appIcon.icns" "$baseDir/Contents/Resources/appIcon.icns"
     echo "APPL????" > "$baseDir/Contents/PkgInfo"
@@ -594,9 +608,14 @@ EOF
     InstallFramework "QtCore"
     InstallFramework "QtOpenGL"
     InstallFramework "QtNetwork"
-    CrossLinkFramework "QtGui" "QtCore"
-    CrossLinkFramework "QtOpenGL" "QtGui"
-    CrossLinkFramework "QtOpenGL" "QtCore"
+    InstallFramework "QtXml"
+    InstallFramework "QtSvg"
+    CrossLinkFrameworkAll "QtGui" 
+    CrossLinkFrameworkAll "QtCore"
+    CrossLinkFrameworkAll "QtOpenGL"
+    CrosslinkFrameworkAll "QtNetwork"
+    CrosslinkFrameworkAll "QtXml"
+    CrosslinkFrameworkAll "QtSvg"
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"

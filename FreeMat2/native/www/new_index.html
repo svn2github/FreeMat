@@ -12,20 +12,11 @@
 --></style>
 </head>
 <body>
-<table id="titlebar" width="100%" bgcolor="#E5E5E5" cellpadding="0" cellspacing="0" border="0" summary="FreeMat">
-<tbody>
-<tr valign="top">
-<td align="left"><a href="http://freemat.sf.net/"><img id="titlebarleft" src="big_logo.png" alt="[FreeMat]" border="0" /></a></td>
-<td width="99%"><br /></td>
-<td align="right"><a href="http://freemat.sf.net/"><img id="titlebarright" src="phi_logo_mini.png" alt="" border="0" /></a></td>
-</tr>
-</tbody>
-</table>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" summary="">
 <tbody>
 <tr valign="top" style="height: 100%;">
 <td id="menu" height="100%">
-  <a href="#news">News</a><span> | </span>
+  <a href="#news">News</a> <span> | </span>
   <a href="#download">Downloads</a><span> | </span>
   <a href="#help">Getting Help</a><span> | </span>
   <a href="#screenshots">Screenshots</a><span> | </span>
@@ -33,19 +24,23 @@
 <a  href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=91526&amp;type=1"  width="88" height="31" border="0" alt="SourceForge.net Logo"  /></a>
 </td>
 <td id="main" width="100%">
-<center><a href="#download"><img src="download.png"></a></center>
-<table>
+
+<table width="70%">
 <tbody>
 <tr>
-<td align="left"><a href="#screenshots"><img src="screencap_composite_small.png"></a></td>
+<td align="left"><img src="FreeMat3.png"></td>
+</tr>
+<tr>
 <td>
 FreeMat is a free environment for rapid engineering and scientific
 prototyping and data processing.  It is similar to commercial systems
 such as MATLAB from Mathworks, and IDL from Research Systems, but is
-Open Source.  FreeMat includes several novel features such as a
-codeless interface to external C/C++/FORTRAN code,
-parallel/distributed algorithm development (via MPI), and plotting and
-visualization capabilities.  FreeMat is available under the GPL license.  Supported platforms include Linux, Windows and Mac OS X.
+Open Source. FreeMat is available under the GPL license. 
+</td>
+
+</tr>
+<td align="left"><a href="#screenshots"><img src="screencap_composite_small.png"></a>
+<a href="#download"><img src="download.png"></a>
 </td>
 </tr>
 </tbody>
@@ -56,71 +51,45 @@ visualization capabilities.  FreeMat is available under the GPL license.  Suppor
 <span class="newtitle">FreeMat 3.0 Release</span>
 </a>
 </h1>
-<img src="news.gif"></img>
 
+<table>
+<tbody>
+<tr>
+<td align="left"> <img src="news.gif"></img> </td>
+<td>
 <p>
-The current release of FreeMat is 3.0.  Here is a list of some of the changes since the prior release (2.0).
+The current release of FreeMat is 3.0.  It represents a significant improvement over the prior release (2.0).  Here is a partial list of the changes:
 <ul>
-<li> I have reverted to the autotools build system.
-<li> Many new MATLAB-compatibility functions and scripts (special thanks to M. Vogel for the help).
-<li> Fixed bugs in the range operator
-<li> Rewrote the output format code
-<li> Added the noplastique flag
-<li> Fixed text help on all platforms
-<li> Added support for traditional Linux install (non package based)
+<li> MATLAB-style GUIs and Widgets 
+<li> Speed improvements (loops and indexing operations are 10 to 100 times faster)
+<li> A new parser that recognizes more of the MATLAB syntax
+<li> A debugger that is integrated with the editor
+<li> Support for 64-bit integers
+<li> Improved MAT-file support
+<li> Universal binary support for Mac OS X
+<li> New graph/plot tools to rotate, zoom and pan plots.
+<li> Builds are now based on ATLAS.
+<li> Various bug fixes.
 </ul>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 
 <h1>
 <a name="download">
 <span class="newtitle">Download FreeMat</span>
 </a>
 </h1>
-<table style="width: 100%">
-<tbody>
 
-<tr>
-<td align="left">Source Code</td>
-<td align="left"> 
-<a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0.tar.gz">FreeMat-3.0.tar.gz</a>
-</td>
-<td> <img src="linux.gif"></img> <img src="freebsd.gif"></img> </td>
-</tr>
-
-<tr>
-<td align="left">Windows Installer</td>
-<td align="left"> 
-<a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0_Setup.exe">FreeMat-3.0_Setup.exe</a>
-</td>
-<td> <img src="windows.gif"></img> </td>
-</tr>
-
-
-<tr>
-<td align="left">Universal Mac OS X Bundle</td>
-<td align="left"> 
-<a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0.dmg">FreeMat-3.0.dmg</a> 
-</td>
-<td> <img src="macosx.gif"></img> </td>
-</tr>
-
-<tr>
-<td align="left">Fedora Core 6 RPM</td>
-<td align="left"> 
-<a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0-1.i386.rpm">FreeMat-3.0-1.i386.rpm</a> 
-</td>
-<td> <img src="linux.gif"></img> </td>
-</tr>
-
-<tr>
-<td align="left">PDF of the Manual</td>
-<td align="left">
-<a href="FreeMat-3.0.pdf">FreeMat-3.0.pdf</a>
-</td>
-<td> <img src="pdf.gif"></img> </td>
-</tr>
-
-</tbody>
-</table>
+<ul>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0_Setup.exe"> Click to download FreeMat for Windows <img src="ico-win.png"> </a> </li>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0.dmg"> Click to download FreeMat for Mac OS X (Universal) <img src="ico-osx-uni.png"> </a> </li>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0-1.fc6.i686.rpm"> Click to download FreeMat for Fedora Core 6 Linux (RPM) <img src="ico-tux.png"> </a> </li>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0.tar.gz"> Click to download FreeMat Source Code (All platforms) </a> </li>
+<li> <a href="FreeMat-3.0.pdf"> Click to download FreeMat Manual in PDF form <img src="ico-pdf.gif"> </a> </li>
+</ul>
 
 <h1>
 <a name="help">
@@ -128,6 +97,13 @@ The current release of FreeMat is 3.0.  Here is a list of some of the changes si
 </a>
 </h1>
 
+There are three sources of help (beyond the user manual, of course).  
+
+<ul>
+<li> A Google Group has been set up for support.  It is open to anyone to join and read, but you must be a member to post, and posts are moderated (necessary after the spam-bots took over the old sourceforge mailing list).  The website for the URL is <a href="http://groups.google.com/group/freemat">http://groups.google.com/group/freemat</a>.  The e-mail address for the group is <a href="mailto:freemat@googlegroups.com">freemat@googlegroups.com</a>.  I am new to the Google group thing, but it looks promising.
+<li> Bug reports should be filed here: <a href="http://sourceforge.net/tracker/?group_id=91526&atid=597446"> Report a Bug</a>
+<li> Feature requests should be filed here: <a href="http://sourceforge.net/tracker/?group_id=91526&atid=597449"> Request a Feature</a> 
+</ul>
 
 <h1>
 <a name="screenshots">
@@ -139,25 +115,21 @@ The current release of FreeMat is 3.0.  Here is a list of some of the changes si
 
 <tr>
 <td align="left">Windows</td>
+<td align="left">Mac OS X</td>
+<td align="left">Linux</td>
+</tr>
+
+<tr>
 <td align="left">   
 <a href="screencap_win32.png" style="margin-right: 1cm;">
 <img src="screencap_win32_small.png" /> 
 </a>
 </td>
-</tr>
-
-
-<tr>
-<td align="left">Mac OS X</td>
 <td align="left"> 
 <a href="screencap_osx.png" style="margin-right: 1cm;">
 <img src="screencap_osx_small.png" /> 
 </a>
 </td>
-</tr>
-
-<tr>
-<td align="left">Linux</td>
 <td align="left"> 
 <a href="screencap_linux.png" style="margin-right: 1cm;">
 <img src="screencap_linux_small.png" /> 
@@ -167,8 +139,6 @@ The current release of FreeMat is 3.0.  Here is a list of some of the changes si
 
 </tbody>
 </table>
-
-
 
 <h1>
 <a name="faq">
@@ -228,7 +198,7 @@ If you feel very strongly that one or more MATLAB features are missing that woul
 <p>Currently, Windows 2000/XP, Linux and Mac OS X are supported platforms.  Other UNIX environments (such as IRIX/SOLARIS) may work.  FreeMat essentially requires GNU gcc/g++ and gfortran to build.  The Win32 build requires MINGW32.  I don't know if FreeMat will work with Windows 98/95/ME or NT4 as I don't have access to any of these platforms.  A native port to Mac OS X is now available. </p>
 
 <h3> Q. How do I get it? </h3>
-<p>Click on the Downloads link <a href="#download">here</a> (or on the navigation bar on the left).  Installers are available for Windows and (soon) Mac OS X, and source and binary packages are available for Linux. </p>
+<p>Click on the Downloads link <a href="#download">here</a> (or on the navigation bar on the left).  Installers are available for Windows and Mac OS X, and source and binary packages are available for Linux. </p>
 
 <h3> Q. I found a bug!  What now? </h3>
 <p>Congratulations!  Please file a bug report <a href="#help">here</a>.  FreeMat is a fairly complicated program.  Simply saying "it crashed" is not particularly helpful.  If possible, please provide a short function or script that reproduces the problem.  That will go a long way towards helping us figure out the problem. Also, the bug tracking feature of SourceForge will allow you to put in bugs anonymously, but please don't!  Anonymous bug reports are difficult to follow up on.</p>

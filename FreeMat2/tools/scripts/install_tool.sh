@@ -618,9 +618,15 @@ SetupMacFreeMat()
    tar xfz $BASE/Files/$FREEMAT_FILE
    MakeDirectory $BASE/Root/$FREEMAT/build
    cd $BASE/Root/$FREEMAT/build
-   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL"
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork"
    make
    MakeMacBundle
+}
+
+SetupMacInplaceBuild()
+{
+   SetupCommon
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork"
 }
 
 SetupInplaceBuild() 
@@ -670,6 +676,7 @@ subdirectory.  Here are the tasks manages by this script.
 
       --mac-qt           Setup Mac Qt
       --mac-freemat      Build the Mac FreeMat
+      --mac-inplace      Build the Mac FreeMat in place
 
       --inplace          Build FreeMat in place (off the subversion tree)
 "
@@ -707,6 +714,7 @@ for arg
       --all)           SetupAll ;;
       --mac-qt)        SetupMacQt ;;
       --mac-freemat)   SetupMacFreeMat ;;
+      --mac-inplace)   SetupMacInplaceBuild ;;
       --inplace)       SetupInplaceBuild ;;
       *)               Usage;
   esac

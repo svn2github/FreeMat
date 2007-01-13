@@ -524,3 +524,7 @@ http://dries.ulyssis.org/apt/packages/ffcall/info.html
 RPMS for ARPACK:
 http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
 
+
+- Win32 build -->
+- Linux build --> done
+- Mac build

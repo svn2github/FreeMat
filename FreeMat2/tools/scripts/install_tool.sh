@@ -627,6 +627,7 @@ SetupMacInplaceBuild()
 {
    SetupCommon
    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork"
+   make
 }
 
 SetupInplaceBuild() 

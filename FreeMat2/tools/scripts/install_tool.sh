@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 # These may evolve with time
 XWIN_GCC_FILE="gcc-core-3.4.5-20060117-1-src.tar.gz"
@@ -626,6 +626,7 @@ EOF
     rm -rf `find $baseDir/Contents/Frameworks -name '*debug*'`
     rm -rf `find $baseDir/Contents/Plugins -name '*debug*'`
     rm -rf "$buildDir/$FREEMAT.dmg"
+    rm -rf `find $baseDir/Contents -name 'Headers'`
     hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/$FREEMAT.dmg"
 }
 
@@ -654,6 +655,17 @@ SetupInplaceBuild()
 {
   SetupCommon
   ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
+}
+
+SetupRelease()
+{
+  SetupInplaceBuild
+  make
+  make help
+  make distcheck
+  SetupFreeMat
+  SetupXWinFreeMat
+  rpmbuild -ba ../tools/scripts/freemat.spec
 }
 
 Usage() 
@@ -694,10 +706,12 @@ subdirectory.  Here are the tasks manages by this script.
       --zlib             Setup zlib
       --freemat          Setup FreeMat
       --all
+      --release          Do a sequence of build-steps (maintainer stuff)
 
       --mac-qt           Setup Mac Qt
       --mac-freemat      Build the Mac FreeMat
       --mac-inplace      Build the Mac FreeMat in place
+      --mac-lipo         Stitch a PPC and Intel build together
 
       --inplace          Build FreeMat in place (off the subversion tree)
 "
@@ -733,9 +747,11 @@ for arg
       --zlib)          SetupZlib ;;
       --freemat)       SetupFreeMat ;;
       --all)           SetupAll ;;
+      --release)       SetupRelease ;;
       --mac-qt)        SetupMacQt ;;
       --mac-freemat)   SetupMacFreeMat ;;
       --mac-inplace)   SetupMacInplaceBuild ;;
+      --mac-lipo)      SetupMacLipo ;;
       --inplace)       SetupInplaceBuild ;;
       *)               Usage;
   esac

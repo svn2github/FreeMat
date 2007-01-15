@@ -528,3 +528,27 @@ http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
 - Win32 build -->
 - Linux build --> done
 - Mac build
+
+
+
+Linux
+- make                        - ok
+- make help                   - ok
+- make dist                   - ok
+- make distcheck              - ok
+- install-tool --freemat      - ok
+- install-tool --xwin-freemat - ok
+- rpmbuild -ba                - ok
+
+Mac PPC
+- install-tool --mac-freemat  - ok
+
+Mac Intel
+- install-tool --mac-freemat  - ok
+- Merge bundles 
+
+Window
+- test install --             - ok 
+
+
+All of this could be put inside a single script and run from one machine.

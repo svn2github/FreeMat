@@ -12,302 +12,207 @@
 --></style>
 </head>
 <body>
-<table id="titlebar" width="100%" bgcolor="#E5E5E5" cellpadding="0" cellspacing="0" border="0" summary="FreeMat">
-<tbody>
-<tr valign="top">
-<td align="left"><a href="http://freemat.sf.net/"><img id="titlebarleft" src="big_logo.png" alt="[FreeMat]" border="0" /></a></td>
-<td width="99%"><br /></td>
-<td align="right"><a href="http://freemat.sf.net/"><img id="titlebarright" src="phi_logo_mini.png" alt="" border="0" /></a></td>
-</tr>
-</tbody>
-</table>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" summary="">
 <tbody>
 <tr valign="top" style="height: 100%;">
 <td id="menu" height="100%">
-  <a href="http://sourceforge.net/donate/index.php?group_id=91526"> <img src="http://images.sourceforge.net/images/project-support.jpg" /> </a>
-  <a href="index.html">News</a><span> | </span>
-  <a href="screenshots.html">Screenshots</a><span> | </span>
-  <a href="downloads.html">Downloads</a><span> | </span>
-  <a href="documentation.html">Documentation</a><span> | </span> 
-  <a href="mail_lists.html">Getting Help</a><span> | </span>
-  <a href="developers.html">Developers</a><span> | </span>
-  <a href="bugs.html">Bugs</a>
-  <a href="links.html">Links</a>
+  <a href="#news">News</a> <span> | </span>
+  <a href="#download">Downloads</a><span> | </span>
+  <a href="#help">Getting Help</a><span> | </span>
+  <a href="#screenshots">Screenshots</a><span> | </span>
+  <a href="#faq">FAQ</a><span> | </span> 
 <a  href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=91526&amp;type=1"  width="88" height="31" border="0" alt="SourceForge.net Logo"  /></a>
 </td>
 <td id="main" width="100%">
 
-<h1>
-<span> Introduction </span>
-</h1>
-<p>
+<table width="70%">
+<tbody>
+<tr>
+<td align="left"><img src="FreeMat3.png"></td>
+</tr>
+<tr>
+<td>
 FreeMat is a free environment for rapid engineering and scientific
 prototyping and data processing.  It is similar to commercial systems
 such as MATLAB from Mathworks, and IDL from Research Systems, but is
-Open Source.  FreeMat includes several novel features such as a
-codeless interface to external C/C++/FORTRAN code,
-parallel/distributed algorithm development (via MPI), and plotting and
-visualization capabilities.  FreeMat is available under the GPL license.  Supported platforms include Linux, Windows and Mac OS X.
+Open Source. FreeMat is available under the GPL license. 
+</td>
 
-</p>
+</tr>
+<td align="left"><a href="#screenshots"><img src="screencap_composite_small.png"></a>
+<a href="#download"><img src="download.png"></a>
+</td>
+</tr>
+</tbody>
+</table>
 
 <h1 class="newsheading">
-<span class="newtitle">FreeMat 2.0</span>
-<span class="newsdate">6-5-2006</span>&nbsp;
+<a name="news">
+<span class="newtitle">FreeMat 3.0 Release</span>
+</a>
 </h1>
+
+<table>
+<tbody>
+<tr>
+<td align="left"> <img src="news.gif"></img> </td>
+<td>
 <p>
-I have elected to release FreeMat 2.0.  Here is a list of some of the changes
+The current release of FreeMat is 3.0.  It represents a significant improvement over the prior release (2.0).  Here is a partial list of the changes:
 <ul>
-<li> I have reverted to the autotools build system.
-<li> Many new MATLAB-compatibility functions and scripts (special thanks to M. Vogel for the help).
-<li> Fixed bugs in the range operator
-<li> Rewrote the output format code
-<li> Added the noplastique flag
-<li> Fixed text help on all platforms
-<li> Added support for traditional Linux install (non package based)
+<li> MATLAB-style GUIs and Widgets 
+<li> Speed improvements (loops and indexing operations are 10 to 100 times faster)
+<li> A new parser that recognizes more of the MATLAB syntax
+<li> A debugger that is integrated with the editor
+<li> Support for 64-bit integers
+<li> Improved MAT-file support
+<li> Universal binary support for Mac OS X
+<li> New graph/plot tools to rotate, zoom and pan plots.
+<li> Builds are now based on ATLAS.
+<li> Various bug fixes.
 </ul>
-The new release is available in the downloads section as always.  Some
-comments on the Mac release.  I have switched to Mac OS X Tiger (10.4)
-as the build platform. However, I have yet to have success building
-FreeMat as a Universal Binary.  I will continue to work on a Universal
-Binary for a future release (any help is greatly appreciated).  
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 
-There are also some new screenshots of 2.0 on the various platforms in the
-screenshots area.
-
-
-<h1 class="newsheading">
-<span class="newtitle">FreeMat 2.0 Release Candidate</span>
-<span class="newsdate">3-12-2006</span>&nbsp;
+<h1>
+<a name="download">
+<span class="newtitle">Download FreeMat</span>
+</a>
 </h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-Its been nearly a year (!) since the last release of FreeMat.  A new version is now ready for testing.  I have elected to release it as a Release Candidate instead of a full release because of the significant changes that have been made since version 1.10.  Here is just a short list of the new features.
+
 <ul>
-<li> Handle-based Graphics including 3D surface plots, multiple plots per figure, and full customization of axes properties.  Preliminary support for OpenGL rendering.  
-<li> Support for MATLAB-style classes and object oriented programming, including operator overloading.
-<li> New GUI interface based on Qt4.  FreeMat now sports a new terminal interface, a highlighting editor, and some new tools.
-<li> Speed improvements and optimizations (some loops are 10-100 times faster).
-<li> Preliminary support for reading and writing MATLAB .MAT files.
-<li> PDF output on all platforms.
-<li> New build system based on qmake.
-<li> Many new MATLAB-compatibility functions and scripts.
-<li> Native Aqua application on Mac OS X.
-<li> Linux distribution now includes a binary release that should run on several distributions.
-<li> Over 200 new pages of documentation, and an improved built in help browser.
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0_Setup.exe"> Click to download FreeMat for Windows <img src="ico-win.png"> </a> </li>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0.dmg"> Click to download FreeMat for Mac OS X (Universal) <img src="ico-osx-uni.png"> </a> </li>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0-1.fc6.i686.rpm"> Click to download FreeMat for Fedora Core 6 Linux (RPM) <img src="ico-tux.png"> </a> </li>
+<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-3.0.tar.gz"> Click to download FreeMat Source Code (All platforms) </a> </li>
+<li> <a href="FreeMat-3.0.pdf"> Click to download FreeMat Manual in PDF form <img src="ico-pdf.gif"> </a> </li>
 </ul>
-The new release of FreeMat is under the GNU Public License.  The following features are no longer supported or are not supported in this Release Candidate.
+
+<h1>
+<a name="help">
+<span class="newtitle">Getting Help</span>
+</a>
+</h1>
+
+There are three sources of help (beyond the user manual, of course).  
+
 <ul>
-<li> The copy function has changed for figures.  It is now based on bitmaps, even on Win32 (where it used to copy a vector drawing).
-<li> The MPI interface does not build in this RC1.  I will fix this for the 2.0 release.
+<li> A Google Group has been set up for support.  It is open to anyone to join and read, but you must be a member to post, and posts are moderated (necessary after the spam-bots took over the old sourceforge mailing list).  The website for the URL is <a href="http://groups.google.com/group/freemat">http://groups.google.com/group/freemat</a>.  The e-mail address for the group is <a href="mailto:freemat@googlegroups.com">freemat@googlegroups.com</a>.  I am new to the Google group thing, but it looks promising.
+<li> Bug reports should be filed here: <a href="http://sourceforge.net/tracker/?group_id=91526&atid=597446"> Report a Bug</a>
+<li> Feature requests should be filed here: <a href="http://sourceforge.net/tracker/?group_id=91526&atid=597449"> Request a Feature</a> 
 </ul>
-Thanks to everyone who contributed to this release (see the About FreeMat dialog for a list).
-</p>
 
-
-<h1 class="newsheading">
-<span class="newtitle">Source Code Update for FreeMat 1.10</span>
-<span class="newsdate">3-16-2005</span>&nbsp;
+<h1>
+<a name="screenshots">
+<span class="newtitle">Screenshots</span>
+</a>
 </h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A problem compiling FreeMat under RedHat 9, and  other distros was reported (thanks to Kevin Somervill for the patch).  An updated source code tarball has been posted to the downloads page.  This change only affects people building FreeMat from source (and for whom the original 1.10 package failed to build).
-</p>
+<table style="width: 100%">
+<tbody>
 
+<tr>
+<td align="left">Windows</td>
+<td align="left">Mac OS X</td>
+<td align="left">Linux</td>
+</tr>
 
-<h1 class="newsheading">
-<span class="newtitle">New release of FreeMat</span>
-<span class="newsdate">3-14-2005</span>&nbsp;
+<tr>
+<td align="left">   
+<a href="screencap_win32.png" style="margin-right: 1cm;">
+<img src="screencap_win32_small.png" /> 
+</a>
+</td>
+<td align="left"> 
+<a href="screencap_osx.png" style="margin-right: 1cm;">
+<img src="screencap_osx_small.png" /> 
+</a>
+</td>
+<td align="left"> 
+<a href="screencap_linux.png" style="margin-right: 1cm;">
+<img src="screencap_linux_small.png" /> 
+</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h1>
+<a name="faq">
+<span class="newtitle">FreeMat FAQ</span>
+</a>
 </h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.10).  Please consider making a   <a href="http://sourceforge.net/donate/index.php?group_id=91526"> donation </a> to the project - it would help offset the costs of developing and maintaining FreeMat for multiple platforms (particularly the non-Linux ones).  This version features significant improvements over version 1.09.  The major changes are listed below. 
+
+<h2> Frequently Asked Questions </h2>
+<h3> Q. What is FreeMat? </h3>
+<p> FreeMat is an environment for rapid engineering and scientific processing.  It is similar to commercial systems such as MATLAB from Mathworks and IDL from Research Systems, but is Open Source. It is free as in speech and free as in beer. Nonetheless <a href="http://sourceforge.net/donate/index.php?group_id=91526"> donations </a> to offset the development cost (I need to maintain multiple platforms to test FreeMat properly) are welcome.  </p>
+
+<h3> Q. Why GPL? </h3>
+<p>Previous versions of FreeMat were released under MIT licenses.  The current version is released under GPL.  There are a number of great tools that are available to GPL-ed code (e.g., Qt, FFTW, FFCALL), and FreeMat is now one of them. </p>
+
+<h3> Q. Why another MATLAB clone?  Have you heard of Octave, Scilab, etc.? </h3>
+<p>Yes!  FreeMat is chartered to go beyond MATLAB to include features such as a codeless interface to external C/C++/FORTRAN code, parallel/distributed algorithm development (via MPI), and advanced volume and 3D visualization capabilities.  As for the open source alternatives, try them out and decide for yourself.  Who said choice was a bad thing? </p>
+
+<h3> Q. Is FreeMat 100% compatible with MATLAB?  What about IDL? </h3>
+<p> No.  FreeMat supports roughly 95% (a made up statistic) of the features in MATLAB.  The following table summarizes how FreeMat stacks up against MATLAB and IDL.  Because we like to lead with the positive, here are the features in that are supported:
 <ul>
-<li> Sparse matrix support - Thanks to Al Danial for help with this one.  FreeMat now supports most of the sparse matrix functionality of Matlab, including the creation and manipulation of sparse matrices, the solution of sparse linear problems (via UMFPACK), and sparse eigenproblems (via ARPACK).
-<li> More linear algebra - Including LU factorizations for full and sparse (square) matrices.
-<li> Debug support - You can now debug FreeMat routines efficiently using the dbstep, dbstop, dbauto, dblist and other debug related routines.  See the chapter on Debug functions in the manual for more information.  A debug tutorial may appear in a future version.
-<li> Improved compatibility - A number of support functions (e.g., mod, unique, sort, etc.) are now available in FreeMat
-<li> Boolean shortcut evaluation - FreeMat now implements boolean shortcut expressions
-<li> GUI Enhancements - The GUI has some usability enhancements (partial command recall, font size preference, etc).
-<li> Many, many bug fixes - Thanks to Jeff Fessler, Bruno De Man, Brian Yanoff and others for the bug reports and scripts.
+<li> N-dimensional array manipulation (by default, N is limited to 6) </li>
+<li> Support for 8,16, and 32 bit integer types (signed and unsigned), 32 and 64 bit floating point types, and 64 and 128 bit complex types. </li>
+<li> Built in arithmetic for manipulation of all supported data types. </li>
+<li> Support for solving linear systems of equations via the divide operators. </li>
+<li> Eigenvalue and singular value decompositions </li>
+<li> Full control structure support (including, for, while, break, continue, etc.) </li>
+<li> 2D plotting and image display </li>
+<li> Heterogeneous array types (called "cell arrays" in MATLAB-speak) fully supported </li>
+<li> Full support for dynamic structure arrays </li>
+<li> Split-radix based FFT support </li>
+<li> Pass-by-reference support (an IDL feature) </li>
+<li> Keyword support (an IDL feature) </li>
+<li> Codeless interface to external C/C++/FORTRAN code </li>
+<li> Native Windows support </li>
+<li> Native sparse matrix support </li>
+<li> Native support for Mac OS X (no X11 server required).
+<li> Function pointers (eval and feval are fully supported) </li>
+<li> Classes, operator overloading </li>
+<li> 3D Plotting and visualization via OpenGL </li>
+<li> Parallel processing with MPI  (in the FreeMat development versions) </li>
+<li> Handle-based graphics
 </ul>
-</p>
-
-<h1 class="newsheading">
-<span class="newtitle">Update on FreeMat</span>
-<span class="newsdate">3-2-2005</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-I should have known better.  A week or two have come and gone, and a new version of FreeMat is still not ready.  I have run into problems building it on Fedora Core 3, and until I get the build process working on all platforms again, I will have to wait.  It should be soon (see?  I'm a quick learner.)
-</p>
-
-<h1 class="newsheading">
-<span class="newtitle">Update on FreeMat</span>
-<span class="newsdate">1-27-2005</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-Its been quite a while since the last release of FreeMat.  Just though I'd post a quick note to let everyone know what is happening.  I have been working on version 1.10 for some time now.  It features some significant feature enhancements (the most notable one being support for sparse matrices) as well as a number of bug fixes.  I will likely release 1.10 in the next week or two.
-</p>
-
-<h1 class="newsheading">
-<span class="newtitle">New release of FreeMat</span>
-<span class="newsdate">10-27-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.09).  This release fixes a few bugs in FreeMat that were severe enough to warrant a quick release:
+Here are the list of major MATLAB features not currently supported:
 <ul>
-<li> The GUI window can now be closed without causing FreeMat to hang.
-<li> On start up of the GUI version of FreeMat, the CPU usage is no longer pegged at 100%.
-<li> Using the down arrow in command line recall for the Linux version (non-GUI) caused a core dump if the line had been modified.  This is now fixed.
+<li> GUI/Widgets
 </ul>
-</p>
-
-<h1 class="newsheading">
-<span class="newtitle">Compatibility Warning!</span>
-<span class="newsdate">10-12-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-Just to reemphasize a couple of issues that have come up since the 1.08 release.
+Finally the list of features that are in progress (meaning they are in the development version or are planned for the near future):
 <ul>
-<li>  There was a bug in 1.07's save command that makes the files not load correctly in 1.08 (and not even in 1.07 under certan circumstances).  I do not have a conversion utility available, but if there is demand for one, I can provide one.
-<li>  The documentation for the image command stated that the default zoom for an image was 0, when in fact it was 1.  In 1.08, the default zoom is 0, as was claimed in the documentation.  This may cause some problems if you wrote routines that assumed it was 1.
-<li>  The functions newplot,useplot,newimage,useimage,printplot,printimage have all been replaced with figure and print.  While no backwards compatibility scripts were provided (and indeed, the exact behavior of the original functions is difficult to reproduce), I can make such scripts available if required.
-<li>  Do not close the GUI window to quit FreeMat.  Use the quit command.  This bug will be fixed in the next release.
+<li> Widgets/GUI building </li>
+<li> 3D volume rendering capability (in the FreeMat development versions) </li>
+<li> FreeMat-to-MEX interface for porting MATLAB MEX files.
 </ul>
-</p>
 
-<h1 class="newsheading">
-<span class="newtitle">New release of FreeMat</span>
-<span class="newsdate">10-10-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.08).  There are significant changes under the hood, but from a user's perspective, this is primarily a bug fix and feature release.  There are a few changes that are noticeable, however, and they are listed here.
-<ul>
-<li> The functions newplot,useplot,newimage,and useimage have all been replaced with the figure command (similar to Matlab).
-<li> A new cross-platform GUI is now available on all supported platforms.  For Linux/Unix variants, try starting FreeMat with a "-gui" option to access the new GUI.
-<li> Online help is now available on OS X.
-<li> The X11 server is no longer used on OS X.
-<li> Figure windows on Win32 no longer have "save" and "copy" options.  This functionality is achieved using the "print" and "copy" commands, respectively.
-<li> FreeMat now uses the excellent FLTK (http://www.fltk.org) toolkit to provide graphical services.
-<li> A number of bug fixes and feature enhancements.
-</ul>
-Special thanks to Bruno DeMan for extensive testing, suggestions, bug reports, and an improved README!
-</p>
+If you feel very strongly that one or more MATLAB features are missing that would be useful to have in FreeMat, you can either add it yourself or try and convince someone else (e.g., me) to add it for you.  As for IDL, FreeMat is not compatible at all with IDL (the syntax is MATLAB-based), but a few critical concepts from IDL are implemented, including pass by reference and keywords. </p>
 
-<h1 class="newsheading">
-<span class="newtitle">New release of FreeMat</span>
-<span class="newsdate">08-26-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.07).  This version features a number of significant enhancements over 1.06.  Among the improvements:
-<ul>
-<li> Support for singular value decompositions (SVD) both compact and full size.
-<li> QR decompositions (compact and full size) for all matrix types.
-<li> Eigendecompositions and generalized eigendecompositions for symmetric and non-symmetric matrices.  
-<li> Enhanced plot functions, including a legend command.
-<li> Special functions added, such as the gamma function, error function, dawson's function, among others.
-<li> A set of new random number generators for chi-square, Poisson, multinomial, and other distributions.
-<li> A p-code mechanism to byte-compile FreeMat scripts to binary form (only works with Linux currently).
-<li> Build stand-alone binaries out of FreeMat scripts (only on Linux currently).
-<li> Routines to convert numerical arrays into binary and reverse.
-<li> Better error reporting.
-<li> A number of additional bug fixes.
-</ul>
-</p>
+<h3> Q. What platforms are supported? </h3>
+<p>Currently, Windows 2000/XP, Linux and Mac OS X are supported platforms.  Other UNIX environments (such as IRIX/SOLARIS) may work.  FreeMat essentially requires GNU gcc/g++ and gfortran to build.  The Win32 build requires MINGW32.  I don't know if FreeMat will work with Windows 98/95/ME or NT4 as I don't have access to any of these platforms.  A native port to Mac OS X is now available. </p>
 
-<h1 class="newsheading">
-<span class="newtitle">Red Hat RPM Available</span>
-<span class="newsdate">07-19-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-Jeremy Gill has been kind enough to provide an RPM for FreeMat 1.06 (it is a Red Hat 8.0 RPM - I do not know what other systems it may or may not install on).  An RPM for Fedora Core 2 should be available when FreeMat 1.07 is released.  Jeremy's RPM is available in the download section.  Also, special thanks to Brian Yanoff for the many excellent bug reports and feature requests!
-</p>
+<h3> Q. How do I get it? </h3>
+<p>Click on the Downloads link <a href="#download">here</a> (or on the navigation bar on the left).  Installers are available for Windows and Mac OS X, and source and binary packages are available for Linux. </p>
 
-<h1 class="newsheading">
-<span class="newtitle">Update release of FreeMat</span>
-<span class="newsdate">06-29-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-I found a few critical bugs in FreeMat 1.05 that warranted a quick new release to fix them.  The documentation has not changed (only one function, mpiallreduce has been added, and I do not have any significant documentation for it yet).  Note also that MPI capability is currently only available for source builds.  
-</p>
+<h3> Q. I found a bug!  What now? </h3>
+<p>Congratulations!  Please file a bug report <a href="#help">here</a>.  FreeMat is a fairly complicated program.  Simply saying "it crashed" is not particularly helpful.  If possible, please provide a short function or script that reproduces the problem.  That will go a long way towards helping us figure out the problem. Also, the bug tracking feature of SourceForge will allow you to put in bugs anonymously, but please don't!  Anonymous bug reports are difficult to follow up on.</p>
 
+<h3> Q. Where is function xyz? </h3>
+<p>There are a number of basic functions that are missing from FreeMat's repetoire.  They will be added as time goes on.  If there is a particular function you would like to see, either write it yourself or put in an RFE (Request For Enhancement) <a href="#help">here</a>. </p>
 
-<h1 class="newsheading">
-<span class="newtitle">Update release of FreeMat</span>
-<span class="newsdate">06-28-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.05).  This is a combination of a bug-fix release as well as the first release to support the Message Passing Interface (MPI) for parallel computing.  This version also sports significantly enhanced error reporting and a variety of additional features.  Last, but not least, FreeMat is now available as a Mac OS X bundle for easy installation.
-</p>
+<h3> Q. Who wrote FreeMat and why? </h3>
+<p>FreeMat has been in development by myself (Samit Basu) over a
+period of four years with help from a number of contributers
+distributed throughout the globe.  Why not?  Seriously, my main reason
+is to provide a free implementation of a reasonable part of the Matlab
+API, and add some extensions along the way.</p>
 
-
-<h1 class="newsheading">
-<span class="newtitle">FreeMat News Update</span>
-<span class="newsdate">05-24-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-Just to update everyone on where things stand.  I have uploaded an update of FreeMat (1.04) that
-was intended to bring the MPI parallel programming capability of FreeMat into the stable version
-(it has been present in the developer version for some time).  However, I ran into some problems
-in the final testing, and so the web site download page still points to 1.03.  The remaining issues
-have been subsequently fixed (along with a host of other minor bug fixes), and the 1.05 release
-will be released soon. 
-</p>
-
-
-<h1 class="newsheading">
-<span class="newtitle">Update release of FreeMat</span>
-<span class="newsdate">04-08-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.03).  This is a minor bug fix only. 
-</p>
-
-<h1 class="newsheading">
-<span class="newtitle">Update release of FreeMat</span>
-<span class="newsdate">04-07-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-A new release of FreeMat is available for download (version 1.02).  This is a minor bug fix only. 
-</p>
-
-<h1 class="newsheading">
-<span class="newtitle">Initial release of FreeMat</span>
-<span class="newsdate">03-31-2004</span>&nbsp;
-</h1>
-<div class="news">
-<img src="news.gif"></img>
-<p>
-The first version of FreeMat has been released!  FreeMat is an interactive matrix-driven environment for engineering and scientific data analysis (similar to programs like MATLAB, IDL and Octave).  FreeMat features a high degree of MATLAB compatibility, along with features from IDL such as pass-by-reference, along with unique features such as codeless interfaces to C, C++ and FORTRAN.  FreeMat includes online help and a large array of useful built in functions. An installer is available for Windows.  Source code is available for Unix/Linux/MacOSX.  An installer for Mac OS X will be released soon.  
-</p>
 
 <div style="clear: both; margin: 0; width: 100%; "></div>
 </body>

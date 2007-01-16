@@ -512,7 +512,7 @@ SetupMacQt()
 {
     SetupCommon
     DownloadAndUnpackTarBall $QT_MAC_FILE ftp://ftp.trolltech.com/qt/source $QT_MAC Root
-    ConfigureMakeInstall $QT_MAC "-no-qt3support -prefix $PREFIX" . Root
+    ConfigureMakeInstall $QT_MAC "-fast -no-qt3support -universal -prefix $PREFIX" . Root
 }
 
 
@@ -644,6 +644,83 @@ SetupMacFreeMat()
    MakeMacBundle
 }
 
+RelinkSpecial()
+{
+   install_name_tool -change "/Users/sbasu/Dev/trunk/FreeMat2/build/Build/lib/$1.framework/Versions/4/$1" "@executable_path/../Frameworks/$1.framework/Versions/4/$1" "$2"
+ }
+
+RelinkPluginSpecial() {
+    SetupCommon
+    echo "Relinking plugin $1 to framework $2"
+    RelinkSpecial $2 "$baseDir/Contents/Plugins/imageformats/$1"
+}
+
+RelinkPluginsSpecial() {
+    SetupCommon
+    list=`ls $baseDir/Contents/Plugins/imageformats`
+    for plugin in $list
+    do
+	RelinkPluginSpecial $plugin "QtGui"
+	RelinkPluginSpecial $plugin "QtCore"
+	RelinkPluginSpecial $plugin "QtOpenGL"
+	RelinkPluginSpecial $plugin "QtNetwork"
+	RelinkPluginSpecial $plugin "QtXml"
+	RelinkPluginSpecial $plugin "QtSvg"
+    done
+}
+
+CrossLinkFrameworkSpecial()
+{
+    SetupCommon
+    echo "Cross Linking $2 -> $1"
+    RelinkSpecial "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/4/$1"
+}
+
+CrossLinkFrameworkAllSpecial() {
+    CrossLinkFrameworkSpecial $1 "QtCore"
+    CrossLinkFrameworkSpecial $1 "QtGui"
+    CrossLinkFrameworkSpecial $1 "QtOpenGL"
+    CrossLinkFrameworkSpecial $1 "QtNetwork"
+    CrossLinkFrameworkSpecial $1 "QtXml"
+    CrossLinkFrameworkSpecial $1 "QtSvg"
+}
+
+SetupMacRelink()
+{
+    SetupCommon
+    baseDir="FreeMat-3.0-Universal.app"
+    CrossLinkFrameworkAllSpecial "QtGui" 
+    CrossLinkFrameworkAllSpecial "QtCore"
+    CrossLinkFrameworkAllSpecial "QtOpenGL"
+    CrossLinkFrameworkAllSpecial "QtNetwork"
+    CrossLinkFrameworkAllSpecial "QtXml"
+    CrossLinkFrameworkAllSpecial "QtSvg"
+    RelinkSpecial "QtGui" "$baseDir/Contents/MacOS/FreeMat"
+    RelinkSpecial "QtCore" "$baseDir/Contents/MacOS/FreeMat"
+    RelinkSpecial "QtOpenGL" "$baseDir/Contents/MacOS/FreeMat"
+    RelinkSpecial "QtNetwork" "$baseDir/Contents/MacOS/FreeMat"
+    RelinkSpecial "QtXml" "$baseDir/Contents/MacOS/FreeMat"
+    RelinkSpecial "QtSvg" "$baseDir/Contents/MacOS/FreeMat"
+    cp /usr/local/lib/libgfortran.2.dylib "$baseDir/Contents/Frameworks/."
+    cp /usr/local/lib/libgcc_s.1.dylib "$baseDir/Contents/Frameworks/."
+    install_name_tool -id "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/Frameworks/libgfortran.2.dylib"
+    install_name_tool -id "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/Frameworks/libgcc_s.1.dylib"
+    install_name_tool -change "@executable_path../Frameworks/libgfortran.2.dylib" "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/MacOS/FreeMat"
+    install_name_tool -change "@executable_path../Frameworks/libgcc_s.1.dylib" "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/MacOS/FreeMat"
+    scp samitbasu@192.168.0.200:/usr/local/lib/libgfortran.2.dylib libgfortran.ppc
+    scp samitbasu@192.168.0.200:/usr/local/lib/libgcc_s.1.dylib libgcc.ppc
+    lipo -create libgfortran.ppc $baseDir/Contents/Frameworks/libgfortran.2.dylib -output $baseDir/Contents/Frameworks/libgfortran.2.dylib
+    lipo -create libgcc.ppc $baseDir/Contents/Frameworks/libgcc_s.1.dylib -output $baseDir/Contents/Frameworks/libgcc_s.1.dylib
+    RelinkPluginsSpecial
+    fileset=`find $FREEMAT-Universal.app -type f`
+    for file in $fileset
+    do
+	otool -L $file | grep sbasu
+	otool -L $file | grep local
+    done
+#    hdiutil create -fs HFS+ -srcfolder $baseDir "$FREEMAT-Universal.dmg"
+}
+
 SetupMacInplaceBuild()
 {
    SetupCommon
@@ -666,6 +743,16 @@ SetupRelease()
   SetupFreeMat
   SetupXWinFreeMat
   rpmbuild -ba ../tools/scripts/freemat.spec
+}
+
+SetupXMacFFTW()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW Root
+    MakeDirectory $BASE/Root/$FFTW/single
+    MakeDirectory $BASE/Root/$FFTW/double
+    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --enable-single CPPFLAGS=\"-arch i386 -arch ppc\"" .. Root 
+    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX CPPFLAGS=\"-arch i386 -arch ppc\"" .. Root 
 }
 
 Usage() 
@@ -712,6 +799,9 @@ subdirectory.  Here are the tasks manages by this script.
       --mac-freemat      Build the Mac FreeMat
       --mac-inplace      Build the Mac FreeMat in place
       --mac-lipo         Stitch a PPC and Intel build together
+      --mac-relink       Relink a bundle
+
+      --xmac-fftw        Setup the PPC cross of FFTW
 
       --inplace          Build FreeMat in place (off the subversion tree)
 "
@@ -752,6 +842,8 @@ for arg
       --mac-freemat)   SetupMacFreeMat ;;
       --mac-inplace)   SetupMacInplaceBuild ;;
       --mac-lipo)      SetupMacLipo ;;
+      --mac-relink)    SetupMacRelink ;;
+      --xmac-fftw)     SetupXMacFFTW ;;
       --inplace)       SetupInplaceBuild ;;
       *)               Usage;
   esac

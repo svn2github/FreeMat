@@ -198,7 +198,22 @@ class Interpreter : public QThread {
    * This flag controls the greeting
    */
   bool m_skipflag;
-
+  /**
+   * Our thread ID
+   */
+  int m_threadID;
+  /**
+   * The thread function we are executing
+   */
+  FunctionDef *m_threadFunc;
+  /**
+   * The arguments to the thread function we are executing
+   */
+  ArrayVector m_threadFuncArgs;
+  /**
+   * The return value of the thread function
+   */
+  ArrayVector m_threadFuncRets;
   /******************************************
    *  Public Methods for the Interpreter    *
    ******************************************/
@@ -212,6 +227,13 @@ public:
    * Destruct the Interpreter object.
    */
   ~Interpreter();
+  inline void setThreadID(int threadID) {m_threadID = threadID;}
+  inline int getThreadID() const {return m_threadID;}
+  inline void setThreadFunc(FunctionDef *threadFunc, 
+			    ArrayVector threadFuncArgs) { 
+    m_threadFunc = threadFunc; m_threadFuncArgs = threadFuncArgs; }
+  inline ArrayVector getThreadFuncReturn() {return m_threadFuncRets;}
+  void doCLI();
   /**
    * Queue a command for execution
    */

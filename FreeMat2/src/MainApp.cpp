@@ -32,6 +32,7 @@
 #include "LoadFN.hpp"
 #include "HandleCommands.hpp"
 #include "Core.hpp"
+#include "HandleList.hpp"
 
 #ifdef Q_WS_X11 
 #include "FuncTerminal.hpp"
@@ -47,6 +48,8 @@ sig_t signal_suspend_default;
 sig_t signal_resume_default;
 
 Terminal* gterm;
+
+HandleList<Interpreter*> threadHandles;
 
 void signal_suspend(int a) {
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);
@@ -81,6 +84,7 @@ MainApp::MainApp() {
   GUIHack = false;
   skipGreeting = false;
   m_keys = new KeyManager;
+  m_global = new Scope("global");
 }
 
 MainApp::~MainApp() {
@@ -234,8 +238,60 @@ void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) {
   }
 }
 
-int MainApp::Run() {
-  Context *context = new Context;
+//!
+//@Module THREADID Get Current Thread Handle
+//@@Section THREAD
+//@@Usage
+//The @|threadid| function in FreeMat tells you which thread
+//is executing the context you are in.  Normally, this is thread
+//1, the main thread.  However, if you start a new thread using
+//@|newthread|, you will be operating in a new thread, and functions
+//that call @|threadid| from the new thread will return their 
+//handles.
+//@@Example
+//From the main thread, we have
+//@<
+//threadid
+//@>
+//But from a launched auxilliary thread, we have
+//@<
+//t_id = newthread('threadid'); waitthread(t_id);
+//@>
+//!
+ArrayVector ThreadIDFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  return ArrayVector() << Array::uint32Constructor(eval->getThreadID());
+}
+
+extern MainApp *m_app;
+
+ArrayVector NewThreadFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 1) throw Exception("newthread requires at least one argument (the function to spawn in a thread)");
+  const char *fnc = ArrayToString(arg[0]);
+  // Lookup this function in base interpreter to see if it is defined
+  FuncPtr val;
+  if (!eval->lookupFunction(fnc, val))
+    throw Exception(string("Unable to map ") + fnc + " to a defined function ");
+  val->updateCode();
+  if (val->scriptFlag)
+    throw Exception(string("Cannot use a script as the main function in a thread."));
+  // Create a new thread
+  int threadID = m_app->StartNewInterpreterThread();
+  // Set the thread function
+  Interpreter *p_eval = threadHandles.lookupHandle(threadID);
+  ArrayVector args(arg);
+  args.pop_front();
+  p_eval->setThreadFunc(val,args);
+  p_eval->start();
+  return ArrayVector() << Array::uint32Constructor(threadID);
+}
+
+void LoadThreadFunctions(Context *context) {
+  context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
+  context->addSpecialFunction("newthread",NewThreadFunction,-1,1,NULL);
+}
+			 
+Context *MainApp::NewContext() {
+  Context *context = new Context(m_global);
   LoadModuleFunctions(context);
   LoadClassFunction(context);
   LoadCoreFunctions(context);
@@ -244,57 +300,83 @@ int MainApp::Run() {
     LoadGUICoreFunctions(context);
     LoadHandleGraphicsFunctions(context);  
   }
-  QStringList basePath;
-  if (inBundleMode()) {
-    QDir dir(QApplication::applicationDirPath());
-    dir.cdUp();
-    dir.cd("Plugins");
-    QString dummy(dir.absolutePath());
-    QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-    QDir dir1(qApp->applicationDirPath() + "/../Resources/toolbox");
-    if (dir1.exists()) {
-      QString path1(dir1.canonicalPath());
-      basePath += GetRecursiveDirList(path1);
+  LoadThreadFunctions(context);
+  return context;
+}
+
+void MainApp::UpdatePaths() {
+  static bool paths_set = false;
+  if (!paths_set) {
+    if (inBundleMode()) {
+      QDir dir(QApplication::applicationDirPath());
+      dir.cdUp();
+      dir.cd("Plugins");
+      QString dummy(dir.absolutePath());
+      QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+      QDir dir1(qApp->applicationDirPath() + "/../Resources/toolbox");
+      if (dir1.exists()) {
+	QString path1(dir1.canonicalPath());
+	basePath += GetRecursiveDirList(path1);
+      }
+      QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
+      if (dir2.exists()) {
+	QString path2(dir2.canonicalPath());
+	basePath += GetRecursiveDirList(path2);
+      }
+    } else {
+      QSettings settings("FreeMat","FreeMat");
+      QDir dir1(QString(settings.value("root").toString())+"/toolbox");   
+      if (dir1.exists()) {
+	QString path1(dir1.canonicalPath());
+	basePath += GetRecursiveDirList(path1);
+      }
+      QDir dir2(QString(settings.value("root").toString())+"/help/text");
+      if (dir2.exists()) {
+	QString path2(dir2.canonicalPath());
+	basePath += GetRecursiveDirList(path2);
+      }
     }
-    QDir dir2(qApp->applicationDirPath() + "/../Resources/help/text");
-    if (dir2.exists()) {
-      QString path2(dir2.canonicalPath());
-      basePath += GetRecursiveDirList(path2);
-    }
-  } else {
     QSettings settings("FreeMat","FreeMat");
-    QDir dir1(QString(settings.value("root").toString())+"/toolbox");   
-    if (dir1.exists()) {
-      QString path1(dir1.canonicalPath());
-      basePath += GetRecursiveDirList(path1);
-    }
-    QDir dir2(QString(settings.value("root").toString())+"/help/text");
-    if (dir2.exists()) {
-      QString path2(dir2.canonicalPath());
-      basePath += GetRecursiveDirList(path2);
-    }
+    userPath = settings.value("interpreter/path").toStringList();
+    paths_set = true;
   }
-  QSettings settings("FreeMat","FreeMat");
-  QStringList userPath = settings.value("interpreter/path").toStringList();
-  m_eval = new Interpreter(context);
-  m_eval->setBasePath(basePath);
-  m_eval->setUserPath(userPath);
-  m_eval->rescanPath();
+}
+
+int MainApp::StartNewInterpreterThread() {
+  Interpreter *p_eval = new Interpreter(NewContext());
+  p_eval->setBasePath(basePath);
+  p_eval->setUserPath(userPath);
+  p_eval->rescanPath();
+  connect(p_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
+  connect(p_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
+  connect(p_eval,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
+	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
+  connect(p_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));
+  connect(p_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
+  connect(p_eval,SIGNAL(CrashedSignal()),this,SLOT(Crashed()));
+  p_eval->setTerminalWidth(m_keys->getTerminalWidth());
+  p_eval->setGreetingFlag(skipGreeting);
+  int threadID = threadHandles.assignHandle(p_eval);
+  p_eval->setThreadID(threadID);
+  return threadID;
+}
+
+int MainApp::Run() {
+  UpdatePaths();
   qRegisterMetaType<string>("string");
   qRegisterMetaType<FuncPtr>("FuncPtr");
   qRegisterMetaType<ArrayVector>("ArrayVector");
   connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
   connect(m_keys,SIGNAL(UpdateTermWidth(int)),this,SLOT(UpdateTermWidth(int)));
-  connect(m_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
-  connect(m_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
-  connect(m_eval,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
-	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
-  connect(m_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));
-  connect(m_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
-  connect(m_eval,SIGNAL(CrashedSignal()),this,SLOT(Crashed()));
-  m_keys->SetCompletionContext(context);
-  m_eval->setTerminalWidth(m_keys->getTerminalWidth());
-  m_eval->setGreetingFlag(skipGreeting);
+  // Get a new thread
+  int m_mainID = StartNewInterpreterThread();
+  // Assign this to the main thread
+  m_eval = threadHandles.lookupHandle(m_mainID);
+  m_keys->SetCompletionContext(m_eval->getContext());
+  FunctionDef *doCLI;
+  if (!m_eval->lookupFunction("docli",doCLI))
+    return 0;
+  m_eval->setThreadFunc(doCLI,ArrayVector());
   m_eval->start();
   emit Initialize();
   return 0;

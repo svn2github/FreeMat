@@ -69,8 +69,8 @@ public:
    * Create a context and initialize it with a global scope and a 
    * base scope.
    */
-  Context() : mutex(QMutex::Recursive) {
-    pushScope("global");
+  Context(Scope *global) : mutex(QMutex::Recursive) {
+    scopestack.push_back(global);
     pushScope("base");
     topScope = scopestack.front();
     bottomScope = scopestack.back();

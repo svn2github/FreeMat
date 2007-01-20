@@ -182,6 +182,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("eps",EpsFunction,0,1,NULL);
   context->addFunction("feps",FepsFunction,0,1,NULL);
   context->addFunction("repmat",RepMatFunction,3,1,"x","rows","cols",NULL);
+  context->addSpecialFunction("docli",DoCLIFunction,0,0,NULL);
   context->addFunction("tic",TicFunction,0,0,NULL);
   context->addFunction("toc",TocFunction,0,1,NULL);
   context->addFunction("xnrm2",XNrm2Function,1,1,"x",NULL);

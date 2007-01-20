@@ -359,7 +359,13 @@ std::string Interpreter::getVersionString() {
   return std::string("FreeMat v" VERSION);
 }
 
+// Run the thread function
 void Interpreter::run() {
+  if (m_threadFunc)
+    m_threadFuncRets = m_threadFunc->evaluateFunction(this,m_threadFuncArgs,0);
+}
+
+void Interpreter::doCLI() {
   emit CWDChanged();
   if (!m_skipflag)
     sendGreeting();
@@ -3841,6 +3847,9 @@ string Interpreter::getLine(string prompt) {
   return retstring;
 }
 
+
+// This is a "generic" CLI routine.  The user interface (non-debug)
+// version of this is "docli"
 void Interpreter::evalCLI() {
   char prompt[150];
   bool rootCLI;

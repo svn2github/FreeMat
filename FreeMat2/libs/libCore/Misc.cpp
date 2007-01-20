@@ -2203,6 +2203,20 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
 }
 
 //!
+//@Module DOCLI Start a Command Line Interface
+//@@Section FREEMAT
+//@@Usage
+//The @|docli| function is the main function that you interact with 
+//when you run FreeMat.  I am not sure why you would want to use
+//it, but hey - its there if you want to use it.
+//!
+ArrayVector DoCLIFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  eval->doCLI();
+  return ArrayVector();
+}
+
+
+//!
 //@Module REPMAT Array Replication Function
 //@@Section ARRAY
 //@@Usage

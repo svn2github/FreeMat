@@ -552,3 +552,68 @@ Window
 
 
 All of this could be put inside a single script and run from one machine.
+
+
+Threading in FreeMat:
+How is threading going to work?  A function like:
+
+"id = threadstart(function,args)"
+
+Likewise, the function 
+
+"id = threadid"
+
+will return the thread id of the current thread.
+
+Would launch a new thread that executes the given function.
+
+"threadstop(id)"
+
+Stops execution of the given thread.
+
+"threadpause(id)"
+
+Suspends execution of the given thread.
+
+"threadresume(id)"
+
+Resume execution of the given thread
+
+Check to see if the thread returned
+
+"isthreadfinished(id)"
+
+We can retrieve the value of the function with
+
+"[a,b,c,d] = threadreturn(id)"
+
+We can wait for the thread to finish with
+
+"threadwait(id)"
+
+We can free up a thread by calling
+
+"threadfree(id)"
+
+This will require the use of thread local storage to hold the resulting variables.
+
+Some simple rules for thread programming:
+
+1.  Global variables are protected with mutexes
+2.  Most FreeMat functions are re-entrant.  Need to look for those that are not.  Msgbuffer-related code is generally static.  Also some concern about the RN generation routines.  Can use Mutex to protect those.
+3.  To provide support for wait conditions, we need a function like this:
+
+"wait(global variable)"
+
+and
+
+"wakeone(global variable)"
+
+and
+
+"wakeall(global variable)"
+
+4.  Sleep functions:
+"sleep, msleep, usleep"
+
+Dispatching of things like graphics calls and the like will need to be thread matched (in MainApp).  

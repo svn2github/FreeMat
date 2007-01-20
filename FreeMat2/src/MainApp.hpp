@@ -36,6 +36,9 @@ class MainApp : public QObject
   Interpreter *m_eval;
   bool GUIHack;
   void CheckNonClosable();
+  Scope *m_global;
+  QStringList basePath, userPath;
+
 public:
   MainApp();
   ~MainApp();
@@ -47,6 +50,9 @@ public:
   KeyManager* GetKeyManager();
   void SetGUIMode(bool mode);
   void TerminalReset();
+  Context *NewContext();
+  int  StartNewInterpreterThread();
+  void UpdatePaths();
 public slots:
   int Run();
   void HelpWin();

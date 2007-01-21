@@ -104,6 +104,7 @@ Link()
 ConfigureMakeInstall()
 {
     echo "Configuring package $1..."
+    echo "Command line configure $2"
     cd $BASE/$4/$1
     $3/configure $2
     make
@@ -516,6 +517,31 @@ SetupMacQt()
 }
 
 
+SetupMacFortran()
+{
+    SetupXWinCommon
+    DownloadFile gfortran-bin.tar.gz http://downloads.sourceforge.net/hpc/
+    DownloadFile gfortran-intel-bin.tar.gz http://downloads.sourceforge.net/hpc/
+    cd XRoot
+    tar xvfz $BASE/Files/gfortran-bin.tar.gz
+    mv usr usr_ppc
+    tar xvfz $BASE/Files/gfortran-intel-bin.tar.gz
+    mv usr_ppc/local/bin/gfortran usr_ppc/local/bin/gfortran-ppc
+    mv usr/local/bin/gfortran usr/local/bin/gfortran-intel
+    cd usr
+    fileset=`find local -type f`
+    cd ..
+    for file in $fileset
+    do
+	echo "Stitching $file"
+	lipo -create usr_ppc/$file usr/$file -output usr/$file
+    done
+    sudo cp -R usr_ppc/local /usr
+    sudo cp -R usr/local /usr
+    cd /usr/local/bin
+    sudo ln -s gfortran-intel gfortran
+}
+
 Relink()
 {
     SetupCommon
@@ -747,13 +773,52 @@ SetupRelease()
 
 SetupXMacFFTW()
 {
-    SetupCommon
-    DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW Root
-    MakeDirectory $BASE/Root/$FFTW/single
-    MakeDirectory $BASE/Root/$FFTW/double
-    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --enable-single CPPFLAGS=\"-arch i386 -arch ppc\"" .. Root 
-    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX CPPFLAGS=\"-arch i386 -arch ppc\"" .. Root 
+    SetupXWinCommon
+    DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW XRoot
+    MakeDirectory $BASE/XRoot/$FFTW/xsingle
+    MakeDirectory $BASE/XRoot/$FFTW/xdouble
+    ConfigureMakeInstall $FFTW/xsingle "--prefix=$PREFIX --enable-single CC=powerpc-apple-darwin8-gcc-4.0.1" .. Root 
+    ConfigureMakeInstall $FFTW/xdouble "--prefix=$PREFIX CC=powerpc-apple-darwin8-gcc-4.0.1" .. Root 
 }
+
+SetupXMacSparse()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE XRoot
+    cd $BASE/XRoot/$SUITESPARSE/AMD/Source
+    make CC=powerpc-apple-darwin8-gcc-4.0.1
+    cp $BASE/XRoot/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
+    cp $BASE/XRoot/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
+    cd $BASE/XRoot/$SUITESPARSE/UMFPACK/Source
+    make  CC=powerpc-apple-darwin8-gcc-4.0.1
+    cp $BASE/XRoot/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
+    cp $BASE/XRoot/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
+    cp $BASE/XRoot/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include    
+}
+
+SetupXMacARPACK()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK XRoot
+    cd $BASE/XRoot/$ARPACK/SRC
+    make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" all
+    cd $BASE/XRoot/$ARPACK/UTIL
+    make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" all
+    cp $BASE/XRoot/$ARPACK/libarpack.a $PREFIX/lib
+}
+
+SetupXMacFreeMat()
+{
+    SetupXWinCommon
+    PATH=$PATH:$BASE/Build/bin
+    cd $BASE/XRoot
+    tar xfz $BASE/Files/$FREEMAT_FILE
+    MakeDirectory $BASE/XRoot/$FREEMAT/build
+    cd $BASE/XRoot/$FREEMAT/build
+    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc
+    make
+}
+
 
 Usage() 
 {
@@ -793,6 +858,7 @@ subdirectory.  Here are the tasks manages by this script.
       --zlib             Setup zlib
       --freemat          Setup FreeMat
       --all
+
       --release          Do a sequence of build-steps (maintainer stuff)
 
       --mac-qt           Setup Mac Qt
@@ -800,8 +866,13 @@ subdirectory.  Here are the tasks manages by this script.
       --mac-inplace      Build the Mac FreeMat in place
       --mac-lipo         Stitch a PPC and Intel build together
       --mac-relink       Relink a bundle
+      --mac-fortran      Setup the Mac fortrans
 
       --xmac-fftw        Setup the PPC cross of FFTW
+      --xmac-sparse      Setup the PPC cross of SuiteSparse
+      --xmac-arpack      Setup the PPC cross of ARPACK
+      --xmac-freemat     Setup the PPC cross of FreeMat
+      --xmac-ffcall      Setup the PPC cross of FFCALL
 
       --inplace          Build FreeMat in place (off the subversion tree)
 "
@@ -843,7 +914,13 @@ for arg
       --mac-inplace)   SetupMacInplaceBuild ;;
       --mac-lipo)      SetupMacLipo ;;
       --mac-relink)    SetupMacRelink ;;
+      --mac-fortran)   SetupMacFortran ;;
       --xmac-fftw)     SetupXMacFFTW ;;
+      --xmac-sparse)   SetupXMacSparse ;;
+      --xmac-ffcall)   SetupXMacFFCALL ;;
+      --xmac-arpack)   SetupXMacARPACK ;;
+      --xmac-freemat)  SetupXMacFreeMat ;;
+
       --inplace)       SetupInplaceBuild ;;
       *)               Usage;
   esac

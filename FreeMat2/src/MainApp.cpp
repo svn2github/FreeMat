@@ -286,9 +286,29 @@ ArrayVector NewThreadFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector() << Array::uint32Constructor(threadID);
 }
 
+ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 1) throw Exception("threadvalue requires at least one argument (thread id to retrieve value from)");
+  int32 handle = ArrayToInt32(arg[0]);
+  Interpreter* thread = m_threadHandles.lookupHandle(handle);
+  if (!thread) throw Exception("invalid thread handle");
+  if (!thread->wait()) throw Exception("error waiting for thread to complete");
+  return thread->getThreadFuncReturn();
+}
+
+ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 1) throw Exception("threadwait requires at least one argument (thread id to wait on)");
+#error FINISHME
+  int32 handle = ArrayToInt32(arg[0]);
+  Interpreter* thread = m_threadHandles.lookupHandle(handle);
+  if (!thread) throw Exception("invalid thread handle");
+  if (!thread->wait()) throw Exception("error waiting for thread to complete");
+  return thread->getThreadFuncReturn();
+}
+
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
   context->addSpecialFunction("newthread",NewThreadFunction,-1,1,NULL);
+  context->addSpecialFunction("threadvalue",ThreadValueFunction,1,-1,"id",NULL);
 }
 			 
 Context *MainApp::NewContext() {

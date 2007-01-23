@@ -1,2 +1,2 @@
-SUBDIRS = helpgen disttool scripts patches
+SUBDIRS = helpgen disttool scripts 
 

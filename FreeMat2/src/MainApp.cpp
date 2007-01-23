@@ -33,6 +33,9 @@
 #include "HandleCommands.hpp"
 #include "Core.hpp"
 #include "HandleList.hpp"
+#include "Interpreter.hpp"
+
+HandleList<Interpreter*> m_threadHandles;
 
 #ifdef Q_WS_X11 
 #include "FuncTerminal.hpp"
@@ -48,8 +51,6 @@ sig_t signal_suspend_default;
 sig_t signal_resume_default;
 
 Terminal* gterm;
-
-HandleList<Interpreter*> threadHandles;
 
 void signal_suspend(int a) {
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);
@@ -277,7 +278,7 @@ ArrayVector NewThreadFunction(int nargout, const ArrayVector& arg, Interpreter* 
   // Create a new thread
   int threadID = m_app->StartNewInterpreterThread();
   // Set the thread function
-  Interpreter *p_eval = threadHandles.lookupHandle(threadID);
+  Interpreter *p_eval = m_threadHandles.lookupHandle(threadID);
   ArrayVector args(arg);
   args.pop_front();
   p_eval->setThreadFunc(val,args);
@@ -356,7 +357,7 @@ int MainApp::StartNewInterpreterThread() {
   connect(p_eval,SIGNAL(CrashedSignal()),this,SLOT(Crashed()));
   p_eval->setTerminalWidth(m_keys->getTerminalWidth());
   p_eval->setGreetingFlag(skipGreeting);
-  int threadID = threadHandles.assignHandle(p_eval);
+  int threadID = m_threadHandles.assignHandle(p_eval);
   p_eval->setThreadID(threadID);
   return threadID;
 }
@@ -371,7 +372,7 @@ int MainApp::Run() {
   // Get a new thread
   int m_mainID = StartNewInterpreterThread();
   // Assign this to the main thread
-  m_eval = threadHandles.lookupHandle(m_mainID);
+  m_eval = m_threadHandles.lookupHandle(m_mainID);
   m_keys->SetCompletionContext(m_eval->getContext());
   FunctionDef *doCLI;
   if (!m_eval->lookupFunction("docli",doCLI))

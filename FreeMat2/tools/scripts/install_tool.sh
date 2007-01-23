@@ -29,7 +29,7 @@ MINGW_ATLAS_FILE="atlas3.6.0_WinNT_P2.zip"
 ARPACK_FILE="arpack96.tar.Z"
 ARPACK_URL="http://www.caam.rice.edu/software/ARPACK/SRC"
 ARPACK="ARPACK"
-VERSION="3.0"
+VERSION="3.1"
 FREEMAT="FreeMat-$VERSION"
 FREEMAT_FILE="$FREEMAT.tar.gz"
 ZLIB_FILE="zlib-1.2.3.tar.gz"
@@ -123,6 +123,7 @@ SetupXWinCommon()
 {
     PATH=$PATH:$BASE/Cross/bin
     PREFIX=$BASE/Cross
+    MakeDirectory $BASE/XRoot
     MakeDirectory $PREFIX
     MakeDirectory $PREFIX/bin
     MakeDirectory $PREFIX/lib
@@ -600,6 +601,7 @@ MakeMacBundle()
     baseDir="$BASE/Root/$FREEMAT/build/$FREEMAT.app"
     rm -rf $baseDir
     buildDir="$BASE/Root/$FREEMAT/build"
+    xbuildDir="$BASE/XRoot/$FREEMAT/build"
     srcDir="$BASE/Root/$FREEMAT"
     MakeDirectory "$baseDir"
     MakeDirectory "$baseDir/Contents"
@@ -611,7 +613,7 @@ MakeMacBundle()
     MakeDirectory "$baseDir/Contents/Resources/help/pdf"
     MakeDirectory "$baseDir/Contents/Resources/toolbox"
     MakeDirectory "$baseDir/Contents/Frameworks"
-    CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
+    lipo -create "$buildDir/src/FreeMat" "$xbuildDir/src/FreeMat" -output "$baseDir/Contents/MacOS/FreeMat" 
     strip "$baseDir/Contents/MacOS/FreeMat"
     ln -s "$baseDir/Contents/MacOS/FreeMat" "$baseDir/FreeMat"
     CopyFile "$srcDir/src/appIcon.icns" "$baseDir/Contents/Resources/appIcon.icns"
@@ -649,11 +651,25 @@ EOF
     MakeDirectory "$baseDir/Contents/Plugins/imageformats"
     CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
     RelinkPlugins
+    cp /usr/local/lib/libgfortran.2.dylib "$baseDir/Contents/Frameworks/."
+    cp /usr/local/lib/libgcc_s.1.dylib "$baseDir/Contents/Frameworks/."
+    install_name_tool -id "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/Frameworks/libgfortran.2.dylib"
+    install_name_tool -id "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/Frameworks/libgcc_s.1.dylib"
+    install_name_tool -change "/usr/local/lib/libgfortran.2.dylib" "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/MacOS/FreeMat"
+    install_name_tool -change "/usr/local/lib/libgcc_s.1.dylib" "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/MacOS/FreeMat"
     rm -rf `find $baseDir/Contents/Frameworks -name '*debug*'`
     rm -rf `find $baseDir/Contents/Plugins -name '*debug*'`
     rm -rf "$buildDir/$FREEMAT.dmg"
     rm -rf `find $baseDir/Contents -name 'Headers'`
+    echo "Checking for local dependencies..."
+    files=`find $baseDir -type f`
+    for file in $files
+    do
+	otool -L $file | grep local
+	otool -L $file | grep trunk
+    done
     hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/$FREEMAT.dmg"
+    cp "$buildDir/$FREEMAT.dmg" "$BASE/$FREEMAT.dmg"
 }
 
 
@@ -667,84 +683,6 @@ SetupMacFreeMat()
    cd $BASE/Root/$FREEMAT/build
    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork"
    make
-   MakeMacBundle
-}
-
-RelinkSpecial()
-{
-   install_name_tool -change "/Users/sbasu/Dev/trunk/FreeMat2/build/Build/lib/$1.framework/Versions/4/$1" "@executable_path/../Frameworks/$1.framework/Versions/4/$1" "$2"
- }
-
-RelinkPluginSpecial() {
-    SetupCommon
-    echo "Relinking plugin $1 to framework $2"
-    RelinkSpecial $2 "$baseDir/Contents/Plugins/imageformats/$1"
-}
-
-RelinkPluginsSpecial() {
-    SetupCommon
-    list=`ls $baseDir/Contents/Plugins/imageformats`
-    for plugin in $list
-    do
-	RelinkPluginSpecial $plugin "QtGui"
-	RelinkPluginSpecial $plugin "QtCore"
-	RelinkPluginSpecial $plugin "QtOpenGL"
-	RelinkPluginSpecial $plugin "QtNetwork"
-	RelinkPluginSpecial $plugin "QtXml"
-	RelinkPluginSpecial $plugin "QtSvg"
-    done
-}
-
-CrossLinkFrameworkSpecial()
-{
-    SetupCommon
-    echo "Cross Linking $2 -> $1"
-    RelinkSpecial "$2" "$baseDir/Contents/Frameworks/$1.framework/Versions/4/$1"
-}
-
-CrossLinkFrameworkAllSpecial() {
-    CrossLinkFrameworkSpecial $1 "QtCore"
-    CrossLinkFrameworkSpecial $1 "QtGui"
-    CrossLinkFrameworkSpecial $1 "QtOpenGL"
-    CrossLinkFrameworkSpecial $1 "QtNetwork"
-    CrossLinkFrameworkSpecial $1 "QtXml"
-    CrossLinkFrameworkSpecial $1 "QtSvg"
-}
-
-SetupMacRelink()
-{
-    SetupCommon
-    baseDir="FreeMat-3.0-Universal.app"
-    CrossLinkFrameworkAllSpecial "QtGui" 
-    CrossLinkFrameworkAllSpecial "QtCore"
-    CrossLinkFrameworkAllSpecial "QtOpenGL"
-    CrossLinkFrameworkAllSpecial "QtNetwork"
-    CrossLinkFrameworkAllSpecial "QtXml"
-    CrossLinkFrameworkAllSpecial "QtSvg"
-    RelinkSpecial "QtGui" "$baseDir/Contents/MacOS/FreeMat"
-    RelinkSpecial "QtCore" "$baseDir/Contents/MacOS/FreeMat"
-    RelinkSpecial "QtOpenGL" "$baseDir/Contents/MacOS/FreeMat"
-    RelinkSpecial "QtNetwork" "$baseDir/Contents/MacOS/FreeMat"
-    RelinkSpecial "QtXml" "$baseDir/Contents/MacOS/FreeMat"
-    RelinkSpecial "QtSvg" "$baseDir/Contents/MacOS/FreeMat"
-    cp /usr/local/lib/libgfortran.2.dylib "$baseDir/Contents/Frameworks/."
-    cp /usr/local/lib/libgcc_s.1.dylib "$baseDir/Contents/Frameworks/."
-    install_name_tool -id "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/Frameworks/libgfortran.2.dylib"
-    install_name_tool -id "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/Frameworks/libgcc_s.1.dylib"
-    install_name_tool -change "@executable_path../Frameworks/libgfortran.2.dylib" "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/MacOS/FreeMat"
-    install_name_tool -change "@executable_path../Frameworks/libgcc_s.1.dylib" "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/MacOS/FreeMat"
-    scp samitbasu@192.168.0.200:/usr/local/lib/libgfortran.2.dylib libgfortran.ppc
-    scp samitbasu@192.168.0.200:/usr/local/lib/libgcc_s.1.dylib libgcc.ppc
-    lipo -create libgfortran.ppc $baseDir/Contents/Frameworks/libgfortran.2.dylib -output $baseDir/Contents/Frameworks/libgfortran.2.dylib
-    lipo -create libgcc.ppc $baseDir/Contents/Frameworks/libgcc_s.1.dylib -output $baseDir/Contents/Frameworks/libgcc_s.1.dylib
-    RelinkPluginsSpecial
-    fileset=`find $FREEMAT-Universal.app -type f`
-    for file in $fileset
-    do
-	otool -L $file | grep sbasu
-	otool -L $file | grep local
-    done
-#    hdiutil create -fs HFS+ -srcfolder $baseDir "$FREEMAT-Universal.dmg"
 }
 
 SetupMacInplaceBuild()
@@ -766,9 +704,17 @@ SetupRelease()
   make
   make help
   make distcheck
+  cp $FREEMAT_FILE Files/$FREEMAT_FILE
   SetupFreeMat
   SetupXWinFreeMat
   rpmbuild -ba ../tools/scripts/freemat.spec
+}
+
+SetupMacRelease()
+{
+  SetupMacFreeMat
+  SetupXMacFreeMat
+  MakeMacBundle
 }
 
 SetupXMacFFTW()
@@ -796,6 +742,20 @@ SetupXMacSparse()
     cp $BASE/XRoot/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include    
 }
 
+SetupXMacFFCALL()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall  $FFCALL_FILE ftp://ftp.santafe.edu/pub/gnu $FFCALL XRoot
+    cd $BASE/XRoot/$FFCALL/avcall
+    sed -e 's/#undef __rs6000__/#define __rs6000__ 1/g' < avcall.h.in | sed -e 's/#undef HAVE_LONGLONG/#define HAVE_LONGLONG/g' > avcall.h
+    powerpc-apple-darwin8-gcc-4.0.1 -c avcall-rs6000-macos.s -o avcall.o
+    powerpc-apple-darwin8-gcc-4.0.1 -g -O2 -c structcpy.c -o structcpy.o
+    ar crv libavcall.a avcall.o structcpy.o
+    cp libavcall.a $PREFIX/lib/.
+    cp avcall.h $PREFIX/include/.
+    ranlib $PREFIX/lib/libavcall.a
+}
+
 SetupXMacARPACK()
 {
     SetupXWinCommon
@@ -803,6 +763,11 @@ SetupXMacARPACK()
     cd $BASE/XRoot/$ARPACK/SRC
     make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" all
     cd $BASE/XRoot/$ARPACK/UTIL
+    if  [ ! -f second_orig.f ]
+	then
+	mv second.f second_orig.f
+	touch second.f
+    fi
     make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" all
     cp $BASE/XRoot/$ARPACK/libarpack.a $PREFIX/lib
 }
@@ -815,7 +780,7 @@ SetupXMacFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/XRoot/$FREEMAT/build
     cd $BASE/XRoot/$FREEMAT/build
-    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc
+    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$BASE/Build/include/QtCore -I$BASE/Build/include/QtGui -I$BASE/Build/include/QtOpenGL -I$BASE/Build/include/QtNetwork" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib -L$BASE/Build/lib -F$BASE/Build/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc
     make
 }
 
@@ -864,15 +829,14 @@ subdirectory.  Here are the tasks manages by this script.
       --mac-qt           Setup Mac Qt
       --mac-freemat      Build the Mac FreeMat
       --mac-inplace      Build the Mac FreeMat in place
-      --mac-lipo         Stitch a PPC and Intel build together
-      --mac-relink       Relink a bundle
       --mac-fortran      Setup the Mac fortrans
-
       --xmac-fftw        Setup the PPC cross of FFTW
       --xmac-sparse      Setup the PPC cross of SuiteSparse
       --xmac-arpack      Setup the PPC cross of ARPACK
       --xmac-freemat     Setup the PPC cross of FreeMat
       --xmac-ffcall      Setup the PPC cross of FFCALL
+      --mac-bundle       Setup the Mac (universal) bundle
+      --mac-release      Do a sequence of build-steps
 
       --inplace          Build FreeMat in place (off the subversion tree)
 "
@@ -912,15 +876,14 @@ for arg
       --mac-qt)        SetupMacQt ;;
       --mac-freemat)   SetupMacFreeMat ;;
       --mac-inplace)   SetupMacInplaceBuild ;;
-      --mac-lipo)      SetupMacLipo ;;
-      --mac-relink)    SetupMacRelink ;;
       --mac-fortran)   SetupMacFortran ;;
       --xmac-fftw)     SetupXMacFFTW ;;
       --xmac-sparse)   SetupXMacSparse ;;
       --xmac-ffcall)   SetupXMacFFCALL ;;
       --xmac-arpack)   SetupXMacARPACK ;;
       --xmac-freemat)  SetupXMacFreeMat ;;
-
+      --mac-bundle)    MakeMacBundle ;;
+      --mac-release)   SetupMacRelease ;;
       --inplace)       SetupInplaceBuild ;;
       *)               Usage;
   esac

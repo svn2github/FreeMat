@@ -288,7 +288,7 @@ need_extern="no"
 LIBS="$LIBS $FLIBS"
 
 AC_CHECK_LIB(avcall,__structcpy,found_avcall="yes",found_avcall="no")
-AC_CHECK_HEADER(avcall.h,found_avcall="yes",found_avcall="no")
+AC_CHECK_HEADER(avcall.h,[],found_avcall="no")
 
 if test x"$found_avcall" == xyes; then
   LIBS="-lavcall $LIBS"

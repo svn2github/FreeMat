@@ -17,9 +17,6 @@
  *
  */
 
-#if HAVE_AVCALL
-#include "avcall.h"
-#endif
 #include "FunctionDef.hpp"
 #include "Interpreter.hpp"
 #include "Parser.hpp"
@@ -41,6 +38,9 @@
 #define snprintf _snprintf
 #endif
 
+#if HAVE_AVCALL
+#include "avcall.h"
+#endif
 
 #define MSGBUFLEN 2048
 static char msgBuffer[MSGBUFLEN];

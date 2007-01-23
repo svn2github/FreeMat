@@ -2,7 +2,7 @@ AC_INIT(src/main.cpp)
 
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 3.0)
+AM_INIT_AUTOMAKE(FreeMat, 3.1)
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -65,6 +65,8 @@ if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
    FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/' | sed -e 's/-L.*//'`
    AC_MSG_NOTICE([Extra lib flags added $FOO])
    LDFLAGS="$LDFLAGS $FOO"
+   MP_WITH_CURSES
+   LIBS="$LIBS $CURSES_LIB $FLIBS"
 fi
 
 if (test "$cross_compiling" = "yes"); then
@@ -247,16 +249,14 @@ fi
 
 AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 
-MP_WITH_CURSES
-
-LIBS="$LIBS $CURSES_LIB $FLIBS"
 
 AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 
 		    libs/libGraphics/Makefile images/Makefile
 		    tools/Makefile tools/helpgen/Makefile 
-		    tools/disttool/makepkg])
+		    tools/disttool/Makefile tools/scripts/Makefile
+		    tools/patches/Makefile tools/disttool/makepkg])
 
 chmod +x tools/disttool/makepkg
 

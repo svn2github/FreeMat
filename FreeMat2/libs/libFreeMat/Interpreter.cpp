@@ -3828,7 +3828,6 @@ bool NeedsMoreInput(Interpreter *eval, string txt) {
     return false;
   } catch (Exception &e) {
     if (e.getMessageCopy().substr(0,13) == "Expecting end") {
-      eval->outputMessage("ENDMATCH\r\n");
       return true;
     }
   }

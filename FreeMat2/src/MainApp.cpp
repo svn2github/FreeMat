@@ -297,18 +297,20 @@ ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg, Interpreter
 
 ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 1) throw Exception("threadwait requires at least one argument (thread id to wait on)");
-#error FINISHME
   int32 handle = ArrayToInt32(arg[0]);
+  unsigned long timeout = ULONG_MAX;
   Interpreter* thread = m_threadHandles.lookupHandle(handle);
   if (!thread) throw Exception("invalid thread handle");
-  if (!thread->wait()) throw Exception("error waiting for thread to complete");
-  return thread->getThreadFuncReturn();
+  if (arg.size() > 1)
+    timeout = (unsigned long) ArrayToInt32(arg[1]);
+  return ArrayVector() << Array::logicalConstructor(thread->wait(timeout));
 }
 
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
   context->addSpecialFunction("newthread",NewThreadFunction,-1,1,NULL);
   context->addSpecialFunction("threadvalue",ThreadValueFunction,1,-1,"id",NULL);
+  context->addSpecialFunction("threadwait",ThreadWaitFunction,-1,1,NULL);
 }
 			 
 Context *MainApp::NewContext() {

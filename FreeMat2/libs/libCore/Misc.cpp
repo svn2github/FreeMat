@@ -1548,6 +1548,8 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
   int diagonalOrder;
   // First, get the diagonal order, and synthesize it if it was
   // not supplied
+  if (arg.size() == 0)
+    throw Exception("diag requires at least one argument.\n");
   if (arg.size() == 1) 
     diagonalOrder = 0;
   else {

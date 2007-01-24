@@ -199,6 +199,9 @@ ArrayVector Conv2Function(int nargout, const ArrayVector& arg);
 ArrayVector InvFunction(int nargout, const ArrayVector& arg);
 ArrayVector RcondFunction(int nargout, const ArrayVector& arg);
 ArrayVector EndFunction(int nargout, const  ArrayVector& arg);
+ArrayVector XMLReadFunction(int nargout, const ArrayVector& arg);
+ArrayVector HTMLReadFunction(int nargout, const ArrayVector& arg);
+ArrayVector URLWriteFunction(int nargout, const ArrayVector& arg);
 void Tokenize(const std::string& str, std::vector<std::string>& tokens,
 	      const std::string& delimiters = " \n");
 bool inBundleMode();

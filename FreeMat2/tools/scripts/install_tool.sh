@@ -35,7 +35,6 @@ FREEMAT_FILE="$FREEMAT.tar.gz"
 ZLIB_FILE="zlib-1.2.3.tar.gz"
 ZLIB="zlib-1.2.3"
 XWIN_NSIS="nsis-2.22-setup.exe"
-QT_PLUGIN_DIR="/usr/lib/qt4/plugins/imageformats"
 
 MakeDirectory()
 {

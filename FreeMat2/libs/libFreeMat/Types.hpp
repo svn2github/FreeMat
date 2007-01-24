@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <QtGlobal>
+#include <QList>
 #include "RefVec.hpp"
 
 typedef quint8    logical;
@@ -58,7 +59,7 @@ typedef enum {
 } Class;
 
 typedef std::vector<std::string> stringVector;
-typedef RefVec<std::string> rvstring;
+typedef QList<std::string> rvstring;
 
 inline size_t ByteSize(Class t) {
   switch(t) {

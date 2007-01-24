@@ -205,6 +205,9 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("inv",InvFunction,1,1,"A",NULL);
   context->addFunction("rcond",RcondFunction,1,1,"A",NULL);
   context->addFunction("end",EndFunction,3,1,"x","n","dims",NULL);
+  context->addFunction("xmlread",XMLReadFunction,1,1,"filename",NULL);
+  context->addFunction("htmlread",HTMLReadFunction,1,1,"filename",NULL);
+  context->addFunction("urlwrite",URLWriteFunction,3,1,"url","filename","timeout",NULL);
   context->addFunction("p_end",EndFunction,3,1,"x","n","dims",NULL);
   context->addSpecialFunction("matload",MatLoadFunction,-1,0,NULL);
   context->addSpecialFunction("matsave",MatSaveFunction,-1,0,NULL);

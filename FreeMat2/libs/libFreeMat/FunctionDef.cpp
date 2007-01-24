@@ -441,7 +441,7 @@ unsigned MFunctionDef::ClosestLine(unsigned line) {
 }
 
 void MFunctionDef::SetBreakpoint(int bpline, bool enable) {
-  qDebug() << "Set bp called for line " << bpline << " enable is " << enable << " for function :" << QString::fromStdString(name) << "\r\n";
+  //  qDebug() << "Set bp called for line " << bpline << " enable is " << enable << " for function :" << QString::fromStdString(name) << "\r\n";
   if (!SetTreeBreakPoint(allCode,bpline,enable)) 
     throw Exception(string("Unable to modify a breakpoint at line ") + 
 		    bpline + string(" of routine ") + name);

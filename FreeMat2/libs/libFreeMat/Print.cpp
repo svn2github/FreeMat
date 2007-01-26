@@ -535,6 +535,8 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
 
 
 string ArrayToPrintableString(const Array& a) {
+  if (a.isEmpty())
+    return string("[]");
   if (a.sparse())
     return string("");
   if (a.isString())

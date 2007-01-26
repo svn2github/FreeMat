@@ -2,7 +2,7 @@ noinst_LIBRARIES = libCore.a
 
 INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_builddir@/libs/libXP
 
-libCore_a_MOC = helpwidget.moc.cpp XML.moc.cpp
+libCore_a_MOC = helpwidget.moc.cpp XML.moc.cpp RPC.moc.cpp
 
 BUILT_SOURCES = $(libCore_a_MOC)
 
@@ -13,7 +13,8 @@ MPIWrap.hpp \
 RanLib.hpp \
 Utils.hpp \
 MatIO.hpp \
-XML.hpp
+XML.hpp \
+RPC.hpp
 
 libCore_a_SOURCES = Analyze.cpp \
 Cast.cpp \
@@ -35,6 +36,7 @@ Trigonometric.cpp \
 Utils.cpp \
 MatIO.cpp \
 XML.cpp \
+RPC.cpp \
 $(libCore_a_HFILES)
 
 nodist_libCore_a_SOURCES = $(libCore_a_MOC) 

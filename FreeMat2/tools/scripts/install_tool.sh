@@ -304,6 +304,7 @@ MakeCrossWinBundle()
     CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtGui4.dll" "$baseDir/Contents/bin/QtGui4.dll"
     CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtOpenGL4.dll" "$baseDir/Contents/bin/QtOpenGL4.dll"
     CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtNetwork4.dll" "$baseDir/Contents/bin/QtNetwork4.dll"
+    CopyFile "$BASE/Cross/Qt/$XWIN_QT_VER/bin/QtXml4.dll" "$baseDir/Contents/bin/QtXml4.dll"
     CopyFile "$BASE/Cross/bin/mingwm10.dll" "$baseDir/Contents/bin/mingwm10.dll"
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
@@ -680,14 +681,14 @@ SetupMacFreeMat()
    tar xfz $BASE/Files/$FREEMAT_FILE
    MakeDirectory $BASE/Root/$FREEMAT/build
    cd $BASE/Root/$FREEMAT/build
-   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork"
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml"
    make
 }
 
 SetupMacInplaceBuild()
 {
    SetupCommon
-   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork"
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml"
    make
 }
 
@@ -779,7 +780,7 @@ SetupXMacFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/XRoot/$FREEMAT/build
     cd $BASE/XRoot/$FREEMAT/build
-    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$BASE/Build/include/QtCore -I$BASE/Build/include/QtGui -I$BASE/Build/include/QtOpenGL -I$BASE/Build/include/QtNetwork" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib -L$BASE/Build/lib -F$BASE/Build/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc
+    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$BASE/Build/include/QtCore -I$BASE/Build/include/QtGui -I$BASE/Build/include/QtOpenGL -I$BASE/Build/include/QtNetwork -I$BASE/Build/include/QtXml" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib -L$BASE/Build/lib -F$BASE/Build/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc
     make
 }
 

@@ -35,6 +35,10 @@ void LoadGUICoreFunctions(Context* context) {
   context->addGfxSpecialFunction("helpwin",HelpWinFunction,0,0,NULL);
   context->addGfxSpecialFunction("editor",EditorFunction,0,0,NULL);
   context->addGfxSpecialFunction("pathtool",PathToolFunction,0,0,NULL);
+  context->addGfxFunction("rpcinit",RPCInitFunction,1,1,"port",NULL);
+  context->addGfxFunction("rpcid",RPCIdFunction,1,1,"handle",NULL);
+  context->addGfxFunction("rpcput",RPCPutFunction,2,1,"handle","x",NULL);
+  context->addGfxFunction("rpcreg",RPCRegFunction,3,1,"host","port","timeout",NULL);
 }
 
 void LoadCoreFunctions(Context* context) {

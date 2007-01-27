@@ -56,6 +56,23 @@ ArrayVector singleArrayVector(Array a) {
   return retval;
 }
 
+ArrayVector operator+(Array a, Array b) {
+  ArrayVector retval;
+  retval.push_back(a);
+  retval.push_back(b);
+  return retval;
+}
+
+ArrayVector operator+(ArrayVector a, Array b) {
+  a.push_back(b);
+  return a;
+}
+
+ArrayVector operator+(Array a, ArrayVector b) {
+  b.push_front(a);
+  return b;
+}
+
 void Array::setArrayInterpreter(Interpreter *eval) {
   m_eval = eval;
 }
@@ -3979,6 +3996,13 @@ Array  Array::doubleMatrixConstructor(int rows, int cols) {
 const char* ArrayToString(const Array& a) {
   Array b(a);
   return b.getContentsAsCString();
+}
+
+Array ToSingleArray(const ArrayVector& a) {
+  if (a.size()>0)
+    return a.front();
+  else
+    return Array::emptyConstructor();
 }
 
 double ArrayToDouble(const Array& a) {

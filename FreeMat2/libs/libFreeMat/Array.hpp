@@ -37,15 +37,25 @@ class Interpreter;
 //typedef std::vector<Array> ArrayVector;
 //typedef RefVec<Array> ArrayVector;
 
-//typedef QVector<Array> ArrayVector;
 typedef QList<Array> ArrayVector;
-typedef QVector<ArrayVector> ArrayMatrix;
+
+// ArrayVector operator+(Array a, Array b);
+// ArrayVector operator+(ArrayVector a, Array b);
+// ArrayVector operator+(Array a, Array b);
 
 //class ArrayVector;
-
 ArrayVector singleArrayVector(Array);
 
 //typedef std::vector<ArrayVector> ArrayMatrix;
+
+// class ArrayVector : public QList<Array> {
+// public:
+//   ArrayVector(Array a) {push_back(a);}
+//   ArrayVector(Array a, Array b) {push_back(a); push_back(b);}
+//   ArrayVector(Array a, Array b, Array c) {push_back(a); push_back(b); push_back(c);}
+// };
+
+typedef QVector<ArrayVector> ArrayMatrix;
 
 class FunctionDef;
 
@@ -844,6 +854,7 @@ bool isColonOperator(Array& a);
 int32 ArrayToInt32(const Array& a);
 double ArrayToDouble(const Array& a);
 const char* ArrayToString(const Array& a);
+Array ToSingleArray(const ArrayVector& a);
 
 void printObjectBalance();
 void dumpAllArrays();

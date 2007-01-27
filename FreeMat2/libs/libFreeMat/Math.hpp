@@ -108,7 +108,7 @@ Array DotPower(Array A, Array B);
  *   - either of the arguments is more than 2-dimensional
  *   - any of the arguments are rectangular.
  */
-Array Power(Array A, Array B) throw(Exception);
+Array Power(Array A, Array B);
 /**
  * Transposes the argument (actually does a Hermitian transpose).
  * The output is $$C_{i,j} = \conj{A_{j,i}}$$.
@@ -124,7 +124,7 @@ Array DotTranspose(Array);
  * size $$m \times k$$, defined by  $$C_{i,j} = \sum_{p=1}^{n} A_{i,p} B_{p,j}$$.
  * Throws an exception if the sizes are not conformant.
  */
-Array Multiply(Array A, Array B) throw(Exception);
+Array Multiply(Array A, Array B);
 /**
  * The right divide operation is related to the left divide operation
  * via: B/A = (A'\B')'.
@@ -137,7 +137,7 @@ Array RightDivide(Array A, Array B);
  * Uses the linear equation solver from LAPACK to solve these equations.
  * They are effectively solved independently for each column of $$B$$.
  */
-Array LeftDivide(Array A, Array B) throw(Exception);
+Array LeftDivide(Array A, Array B);
 /**
  * Compute the eigendecomposition of the matrix $$A$$, the two matrices
  * $$V$$ and $$D$$, where $$D$$ is diagonal, and $$V$$ has unit norm
@@ -157,13 +157,13 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D);
  * $$[A,A+1,\ldots,A+n]$$, where $$n$$ is the largest integer
  * such that $$A+n < B$$.
  */
-Array UnitColon(Array A, Array B) throw(Exception);
+Array UnitColon(Array A, Array B);
 /**
  * For scalars $$A$$, $$B$$ and $$C$$, the output is the row vector
  * $$[A,A+B,\ldots,A+nB]$$, where $$n$$ is the largest integer
  * such that $$A+nB < C$$.
  */
-Array DoubleColon(Array A, Array B, Array C) throw(Exception);
+Array DoubleColon(Array A, Array B, Array C);
 
 void TypeCheck(Array &A, Array &B, bool isDivOrMatrix);
 

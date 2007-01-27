@@ -73,7 +73,7 @@ void ClearLibs(Interpreter* eval) {
 //set the corresponding argument to @|-1|.
 //!
 ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
-			    Interpreter* eval) throw(Exception){
+			    Interpreter* eval) {
   char *libfile;
   char *symbolName;
   char *funcName;
@@ -361,7 +361,7 @@ char* parseBoundsCheck(char* &cp) {
 //@>
 //!
 ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
-			   Interpreter* eval) throw(Exception) {
+			   Interpreter* eval)  {
 #ifdef HAVE_AVCALL
   char *libfile;
   char *symbolname;

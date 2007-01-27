@@ -1965,7 +1965,6 @@ void Interpreter::assign(Array *r, const tree &s, Array &data) {
     //   a3{3} = rhs   data{3} = rhs
     //   a2.foo = a3   
     //   id(etc) = a2;
-
 void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   string name(var.first().text());
   Array *ptr = context->lookupVariable(name);

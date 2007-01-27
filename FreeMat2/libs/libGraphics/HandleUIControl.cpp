@@ -87,7 +87,7 @@ void HandleUIControl::UpdateState() {
   }
   if (HasChanged("position") || newwidget) {
     std::vector<double> sizevec(VectorPropertyLookup("position"));
-    widget->setGeometry(sizevec[0],sizevec[1],sizevec[2],sizevec[3]);
+    widget->setGeometry((int)sizevec[0],(int)sizevec[1],(int)sizevec[2],(int)sizevec[3]);
     ClearChanged("position");
   }
   if (HasChanged("string") || newwidget) {
@@ -140,9 +140,9 @@ void HandleUIControl::UpdateState() {
     double max(ScalarPropertyLookup("max"));
     std::vector<double> steps(VectorPropertyLookup("sliderstep"));
     ((QSlider*)widget)->setMinimum(0);
-    ((QSlider*)widget)->setMaximum((max-min)/steps[0]);
+    ((QSlider*)widget)->setMaximum((int)((max-min)/steps[0]));
     ((QSlider*)widget)->setSingleStep(1);
-    ((QSlider*)widget)->setPageStep(steps[1]);
+    ((QSlider*)widget)->setPageStep((int)(steps[1]));
     ((HPVector*) LookupProperty("value"))->Data(min+steps[0]*((QSlider*)widget)->value());
     ClearChanged("min");
     ClearChanged("max");
@@ -226,17 +226,17 @@ void HandleUIControl::UpdateState() {
       std::vector<double> steps(VectorPropertyLookup("sliderstep"));
       std::vector<double> value(VectorPropertyLookup("value"));
       if (value.size() > 0)
-	((QSlider*)widget)->setValue((value[0]-min)/steps[0]);
+	((QSlider*)widget)->setValue((int)((value[0]-min)/steps[0]));
     }
     if (StringCheck("style","popupmenu")) {
       std::vector<double> value(VectorPropertyLookup("value"));
-      ((QComboBox*)widget)->setCurrentIndex(value[0]-1);
+      ((QComboBox*)widget)->setCurrentIndex((int)(value[0]-1));
     }
     if (StringCheck("style","listbox")) {
       std::vector<double> value(VectorPropertyLookup("value"));
       ((QListWidget*)widget)->clearSelection();
       for (int i=0;i<value.size();i++) 
-	((QListWidget*)widget)->setItemSelected(((QListWidget*)widget)->item(value[i]-1),true);
+	((QListWidget*)widget)->setItemSelected(((QListWidget*)widget)->item((int)(value[i]-1)),true);
     }
     ClearChanged("value");
   }

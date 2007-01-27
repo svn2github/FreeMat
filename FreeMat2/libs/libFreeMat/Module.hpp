@@ -29,13 +29,11 @@ class Context;
  * if the file could not be found, or if the requested
  * symbol is not present.
  */
-ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg,
-			    Interpreter* eval) throw(Exception);
+ArrayVector LoadLibFunction(int nargout,const ArrayVector& arg, Interpreter* eval);
 /**
  * import a C function 
  */
-ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
-			   Interpreter* eval) throw(Exception);
+ArrayVector ImportFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 /**
  *  Add the loadlib and import functions to the given context.
  */

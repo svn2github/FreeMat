@@ -39,6 +39,7 @@
  * values and accepting modifications to them.  A context also keeps
  * track of loop depth.
  */
+
 class Context {
   /**
    * The normal stack of scopes.
@@ -79,7 +80,7 @@ public:
   /**
    * Delete the context
    */
-  ~Context() {
+  inline ~Context() {
     while (!scopestack.empty()) {
       delete scopestack.back();
       scopestack.pop_back();
@@ -151,7 +152,7 @@ public:
   inline void insertVariable(const std::string& varName, const Array& var) {
     Scope* active;
     std::string mapName;
-    
+
     if (bottomScope->isVariablePersistent(varName)) {
       mapName = bottomScope->getMangledName(varName);
       active = topScope;
@@ -188,7 +189,6 @@ public:
   inline Array* lookupVariable(const std::string& varName) {
     Scope* active;
     std::string mapName;
-    
     if (bottomScope->isVariablePersistent(varName)) {
       mapName = bottomScope->getMangledName(varName);
       active = topScope;

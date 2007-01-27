@@ -677,7 +677,7 @@ typedef struct {
 /**
  * Check that both of the argument objects are numeric.
  */
-inline void CheckNumeric(Array &A, Array &B, std::string opname) throw(Exception){
+inline void CheckNumeric(Array &A, Array &B, std::string opname){
   bool Anumeric, Bnumeric;
 
   Anumeric = !A.isReferenceType();
@@ -756,7 +756,7 @@ void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
  *  5. A & B must be conformant, i.e. the number of columns in A must
  *     match the number of rows in B.
  */
-inline bool MatrixCheck(Array &A, Array &B, std::string opname) throw(Exception){
+inline bool MatrixCheck(Array &A, Array &B, std::string opname){
   // Test for either a scalar (test 1)
   if (A.isScalar() || B.isScalar())
     return false;
@@ -791,7 +791,7 @@ bool SameSizeCheck(Dimensions Adim, Dimensions Bdim) {
  *  2. Either A & B are the same size or
  *      A is a scalar or B is a scalar.
  */
-inline void VectorCheck(Array& A, Array& B, bool promote, std::string opname) throw(Exception){
+inline void VectorCheck(Array& A, Array& B, bool promote, std::string opname){
   stringVector dummySV;
 
   // Check for numeric types
@@ -811,7 +811,7 @@ inline void VectorCheck(Array& A, Array& B, bool promote, std::string opname) th
  *  2. Either A & B must be the same size, or A is a
  *     scalar or B is a scalar.
  */
-inline void BoolVectorCheck(Array& A, Array& B,std::string opname) throw(Exception){
+inline void BoolVectorCheck(Array& A, Array& B,std::string opname){
   A.promoteType(FM_LOGICAL);
   B.promoteType(FM_LOGICAL);
 
@@ -983,7 +983,7 @@ Array MatrixPowerSparse(Array a, Array b) {
 
 #define OPCASE(t,o) case t: opType = o; break;
 #define MAPOP(o,a,b,c,f) case o: return doPowerAssist(A,a,B,b,c,f);
-inline Array DoPowerTwoArgFunction(Array A, Array B) throw(Exception){
+inline Array DoPowerTwoArgFunction(Array A, Array B){
   Array C;
   double *Cp;
   bool Anegative;
@@ -2795,7 +2795,7 @@ Array Negate(Array A){
 //@>
 //Note that the output is double precision.
 //!
-Array Multiply(Array A, Array B) throw(Exception){
+Array Multiply(Array A, Array B){
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
   // Process our arguments
@@ -2951,7 +2951,7 @@ Array Multiply(Array A, Array B) throw(Exception){
 //@>
 //which is the same solution.
 //!
-Array LeftDivide(Array A, Array B) throw(Exception) {
+Array LeftDivide(Array A, Array B) {
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
   stringVector dummySV;
@@ -4339,7 +4339,7 @@ inline Array PowerMatrixScalar(Array A, Array B) {
 //C = A^B
 //@>
 //!
-Array Power(Array A, Array B) throw(Exception){
+Array Power(Array A, Array B){
 
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
@@ -4382,7 +4382,7 @@ Array Power(Array A, Array B) throw(Exception){
     throw Exception("One of the arguments to (^) must be a scalar.");
 }
 
-Array UnitColon(Array A, Array B) throw(Exception) {
+Array UnitColon(Array A, Array B) {
   Array C;
   if (!A.isScalar() || !B.isScalar())
     throw Exception("Both arguments to (:) operator must be scalars.");
@@ -4425,7 +4425,7 @@ Array UnitColon(Array A, Array B) throw(Exception) {
   return C;
 }
 
-Array DoubleColon(Array A, Array B, Array C) throw(Exception){
+Array DoubleColon(Array A, Array B, Array C){
   Array D;
   if (!A.isScalar() || !B.isScalar() || !C.isScalar())
     throw Exception("All three arguments to (:) operator must be scalars.");

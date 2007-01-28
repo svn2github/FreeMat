@@ -299,15 +299,12 @@ zoom
 .m file help
 
 
-=======
 1.  Finish properties for surface plots - markers & texture mapping?
-=======
 ACTIVE
 
 IDEAS - auto tick calculation --> paint code
 wierdness with plots drawing
 
->>>>>>> 1.13
 4.  Rewrite legend function to use multiple axes
 6.  Fix axis limits so that objects aren't truncated...
 7.  view - command doesn't work right (also, camera target mode/etc.)
@@ -339,7 +336,6 @@ CLOSED
 28. Spacing aroung figure
 
 
->>>>>>> 1.12
 A few notes on what needs to still be fixed:
 
 Replace XERBLA
@@ -524,6 +520,19 @@ http://dries.ulyssis.org/apt/packages/ffcall/info.html
 RPMS for ARPACK:
 http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
 
+<<<<<<< .mine
+
+- Only 2 ways to increase the speed of mmtran further:
+
+1.  Cache lookups into Context
+2.  Special case 
+
+Status:
+
+Win32 Cross Build
+Linux Straight Build
+Linux distcheck Build
+Linux RPM Build
 
 - Win32 build -->
 - Linux build --> done

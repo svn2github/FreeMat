@@ -32,6 +32,62 @@
 #include <stdarg.h>
 
 /**
+ * This class represents a reference to an array in a scope
+ */
+class ArrayReference {
+  Array *m_ptr;
+  bool m_global;
+  Scope *m_scope;
+public:
+  inline ArrayReference() : m_ptr(NULL), m_global(false), m_scope(NULL) {
+  }
+  inline ArrayReference(Array *ptr) :  m_ptr(ptr), m_global(false), m_scope(NULL) {
+  }
+  inline ArrayReference(Array *ptr, bool global, Scope *scope) :
+    m_ptr(ptr), m_global(global), m_scope(scope) {
+    if (m_global)
+      m_scope->lock();
+  }
+  inline ~ArrayReference() {
+    if (m_global)
+      m_scope->unlock();
+  }
+  inline ArrayReference(const ArrayReference& copy) {
+    m_ptr = copy.m_ptr;
+    m_global = copy.m_global;
+    m_scope = copy.m_scope;
+    if (m_global)
+      m_scope->lock();
+  }
+  inline ArrayReference& operator=(Array* ptr) {
+    if (m_global)
+      m_scope->unlock();
+    m_ptr = ptr;
+    m_global = false;
+    m_scope = NULL;
+  }
+  inline ArrayReference& operator=(const ArrayReference& copy) {
+    if (m_global)
+      m_scope->unlock();
+    m_ptr = copy.m_ptr;
+    m_global = copy.m_global;
+    m_scope = copy.m_scope;
+    if (m_global)
+       m_scope->lock();
+    return *this;
+  }
+  inline Array& operator*() {
+    return *m_ptr;
+  }
+  inline Array* operator->() {
+    return m_ptr;
+  }
+  inline bool valid() {
+    return (m_ptr != NULL);
+  }
+};
+
+/**
  * A Context is a stack of scopes with the (peculiar) property that
  * the top and bottom of the stack (global and local scopes respectively)
  * are searched regularly.  The context is responsible for determining
@@ -186,19 +242,21 @@ public:
    * with the given name, and inserted into the scope that was
    * searched.  A pointer to this newly created variable is returned.
    */
-  inline Array* lookupVariable(const std::string& varName) {
+  inline ArrayReference lookupVariable(const std::string& varName) {
     Scope* active;
     std::string mapName;
+    bool global = false;
     if (bottomScope->isVariablePersistent(varName)) {
       mapName = bottomScope->getMangledName(varName);
       active = topScope;
     } else if (bottomScope->isVariableGlobal(varName)) {
       mapName = varName;
       active = topScope;
-    } else {
-      return (bottomScope->lookupVariable(varName));
+      global = true;
+     } else {
+      return (ArrayReference(bottomScope->lookupVariable(varName),global,bottomScope));
     }
-    return (active->lookupVariable(mapName));
+    return (ArrayReference(active->lookupVariable(mapName),global,active));
   }
   /**
    * Look for a variable, but only locally.

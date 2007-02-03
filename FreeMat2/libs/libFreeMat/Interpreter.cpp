@@ -67,7 +67,7 @@
 bool InterruptPending = false;
 
 #define SaveEndInfo  \
-  Array *oldEndRef = endRef; \
+  ArrayReference oldEndRef = endRef; \
   int oldEndCount = endCount; \
   int oldEndTotal = endTotal; 
 
@@ -75,8 +75,6 @@ bool InterruptPending = false;
   endRef = oldEndRef; \
   endCount = oldEndCount; \
   endTotal = oldEndTotal;  \
-
-
 
 char* TildeExpand(char* path) {
 #ifdef WIN32
@@ -361,8 +359,23 @@ std::string Interpreter::getVersionString() {
 
 // Run the thread function
 void Interpreter::run() {
-  if (m_threadFunc)
-    m_threadFuncRets = m_threadFunc->evaluateFunction(this,m_threadFuncArgs,0);
+  if (m_threadFunc) {
+    try {
+      m_threadFuncRets = m_threadFunc->evaluateFunction(this,m_threadFuncArgs,0);
+    } catch (Exception &e) {
+      m_threadErrorState = true;      
+      lasterr = e.getMessageCopy();
+    } catch (InterpreterQuitException &e) {
+      m_threadErrorState = true;      
+      lasterr = "'quit' called in non-main thread";
+    } catch (exception& e) {
+      m_threadErrorState = true;      
+      lasterr = "thread crashed!! - you have encountered a bug in FreeMat - please file bug report describing what happened";
+    } catch (...) {
+      m_threadErrorState = true;      
+      lasterr = "thread crashed!! - you have encountered a bug in FreeMat - please file bug report describing what happened";
+    }
+  }
 }
 
 void Interpreter::doCLI() {
@@ -658,9 +671,8 @@ Array Interpreter::ShortCutAnd(const tree &t) {
 
 void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
   if (t.is(TOK_VARIABLE)) {
-    QMutexLocker lock(context->getMutex());
-    Array *ptr = context->lookupVariable(t.first().text());
-    if (!ptr) {
+    ArrayReference ptr(context->lookupVariable(t.first().text()));
+    if (!ptr.valid()) {
       functionExpression(t,lhsCount,false,q);
       return;
     }
@@ -737,7 +749,7 @@ Array Interpreter::expression(const tree &t) {
   case TOK_STRING:
     return t.array();
   case TOK_END:
-    if (!endRef) 
+    if (!endRef.valid()) 
       throw Exception("END keyword not allowed for undefined variables");
     if (endTotal == 1)
       return Array::int32Constructor(endRef->getLength());
@@ -1377,8 +1389,8 @@ void Interpreter::forStatement(const tree &t) {
     indexSet = expression(t.first().second());
   } else {
     indexVarName = t.first().text();
-    Array *ptr = context->lookupVariable(indexVarName);
-    if (!ptr) throw Exception("index variable " + indexVarName + " used in for statement must be defined");
+    ArrayReference ptr(context->lookupVariable(indexVarName));
+    if (!ptr.valid()) throw Exception("index variable " + indexVarName + " used in for statement must be defined");
     indexSet = *ptr;
   }
   /* Get the code block */
@@ -1811,10 +1823,11 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
   // There is a special case to consider here - when a 
   // function call is made as a statement, we do not require
   // that the function have an output.
-  Array b, *ptr;
+  Array b;
+  ArrayReference ptr;
   if (t.is(TOK_VARIABLE)) {
     ptr = context->lookupVariable(t.first().text());
-    if (ptr == NULL) {
+    if (!ptr.valid()) {
       functionExpression(t,0,true,m);
       bool emptyOutput = false;
       if (m.size() == 0) {
@@ -1855,7 +1868,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
   context->insertVariable("ans",b);
 }
 
-void Interpreter::multiassign(Array *r, const tree &s, ArrayVector &data) {
+void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data) {
   SaveEndInfo;
   endRef = r;
   if (s.is(TOK_PARENS)) {
@@ -1898,7 +1911,7 @@ void Interpreter::multiassign(Array *r, const tree &s, ArrayVector &data) {
   RestoreEndInfo;
 }
 
-void Interpreter::assign(Array *r, const tree &s, Array &data) {
+void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
   SaveEndInfo;
   endRef = r;  
   if (s.is(TOK_PARENS)) {
@@ -1967,8 +1980,8 @@ void Interpreter::assign(Array *r, const tree &s, Array &data) {
     //   id(etc) = a2;
 void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   string name(var.first().text());
-  Array *ptr = context->lookupVariable(name);
-  if (!ptr) {
+  ArrayReference ptr(context->lookupVariable(name));
+  if (!ptr.valid()) {
     context->insertVariable(name,Array::emptyConstructor());
     ptr = context->lookupVariable(name);
   }
@@ -2185,6 +2198,8 @@ void Interpreter::block(const tree &t) {
     treeVector &statements(t.children());
     for (treeVector::iterator i=statements.begin();
 	 i!=statements.end();i++) {
+      if (m_interrupt)
+	throw InterpreterQuitException();
       if (InterruptPending) {
 	outputMessage("Interrupt (ctrl-c) encountered\n");
 	stackTrace(true);
@@ -2206,9 +2221,9 @@ Context* Interpreter::getContext() {
 // I think this is too complicated.... there should be an easier way
 // Works
 int Interpreter::countLeftHandSides(const tree &t) {
-  Array lhs, *ptr;
-  ptr = context->lookupVariable(t.first().text());
-  if (ptr == NULL)
+  Array lhs;
+  ArrayReference ptr(context->lookupVariable(t.first().text()));
+  if (!ptr.valid())
     lhs = Array::emptyConstructor();
   else
     lhs = *ptr;
@@ -2361,8 +2376,8 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
   for (index=0;(index<s.size()) && (m.size() > 0);index++) {
     const tree &var(s[index]);
     string name(var.first().text());
-    Array *ptr = context->lookupVariable(name);
-    if (!ptr) {
+    ArrayReference ptr(context->lookupVariable(name));
+    if (!ptr.valid()) {
       context->insertVariable(name,Array::emptyConstructor());
       ptr = context->lookupVariable(name);
     }
@@ -3618,18 +3633,18 @@ void Interpreter::deref(Array &r, const tree &s) {
 }
  
  Array Interpreter::rhs(const tree &t) {
-  Array *ptr = context->lookupVariable(t.first().text());
-  if (!ptr) {
-    ArrayVector m;
-    functionExpression(t,1,false,m);
-    if (m.size() >= 1)
-      return m[0];
-    else
-      return Array::emptyConstructor();
-  }
-  if (ptr->dataClass() == FM_FUNCPTR_ARRAY &&
-      ptr->isScalar()) {
-    ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
+   ArrayReference ptr(context->lookupVariable(t.first().text()));
+   if (!ptr.valid()) {
+     ArrayVector m;
+     functionExpression(t,1,false,m);
+     if (m.size() >= 1)
+       return m[0];
+     else
+       return Array::emptyConstructor();
+   }
+   if (ptr->dataClass() == FM_FUNCPTR_ARRAY &&
+       ptr->isScalar()) {
+     ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
     if (m.size() >= 1)
       return m[0];
     else
@@ -3665,7 +3680,6 @@ Interpreter::Interpreter(Context* aContext) {
   Array::setArrayInterpreter(this);
   signal(SIGINT,sigInterrupt);
   printLimit = 1000;
-  //  autostop = true;
   autostop = false;
   InCLI = false;
   stopoverload = false;
@@ -3676,6 +3690,8 @@ Interpreter::Interpreter(Context* aContext) {
   tracetrap = 0;
   tracecurrentline = 0;
   endRef = NULL;
+  m_threadErrorState = false;
+  m_interrupt = false;
 }
 
 Interpreter::~Interpreter() {
@@ -3872,7 +3888,7 @@ void Interpreter::evalCLI() {
     std::string cmdline;
     mutex.lock();
     while ((cmdset.empty() || 
-	    NeedsMoreInput(this,cmdset)) && !InterruptPending) {
+	    NeedsMoreInput(this,cmdset)) && (!InterruptPending)) {
       if (cmd_buffer.empty())
 	bufferNotEmpty.wait(&mutex);
       cmdline = cmd_buffer.front();

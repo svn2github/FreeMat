@@ -1159,7 +1159,7 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
  return rv;
 }
 
-void ClassAssignExpression(Array *dst, const tree &t, const Array& value, Interpreter* eval) {
+void ClassAssignExpression(ArrayReference dst, const tree &t, const Array& value, Interpreter* eval) {
   FuncPtr val;
   if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
     throw Exception("The method 'subsasgn' is not defined for objects of class " + 

@@ -33,8 +33,6 @@
 #include <QWaitCondition>
 #include <QThread>
 
-extern "C" char* lasterr;
-
 using namespace std;
 
 class InterpreterContinueException : public exception {};
@@ -78,7 +76,7 @@ class Interpreter : public QThread {
   /**
    * Members related to "end" references.
    */
-  Array *endRef;
+  ArrayReference endRef;
   int endTotal;
   int endCount;
 
@@ -214,6 +212,15 @@ class Interpreter : public QThread {
    * The return value of the thread function
    */
   ArrayVector m_threadFuncRets;
+  /**
+   * The error state of the thread function (true if an exception
+   * occured).
+   */
+  bool m_threadErrorState;
+  /**
+   * Interrupt the current thread at the next opportunity
+   */
+  bool m_interrupt;
   /******************************************
    *  Public Methods for the Interpreter    *
    ******************************************/
@@ -227,12 +234,37 @@ public:
    * Destruct the Interpreter object.
    */
   ~Interpreter();
+  /**
+   * Set the thread ID to the given number...
+   */
   inline void setThreadID(int threadID) {m_threadID = threadID;}
+  /**
+   * Return the thread ID
+   */
   inline int getThreadID() const {return m_threadID;}
+  /**
+   * Set the thread function and the arguments
+   */
   inline void setThreadFunc(FunctionDef *threadFunc, 
 			    ArrayVector threadFuncArgs) { 
-    m_threadFunc = threadFunc; m_threadFuncArgs = threadFuncArgs; }
+    m_threadFunc = threadFunc;  m_threadFuncArgs = threadFuncArgs; 
+  }
+  /**
+   * Get the result of the thread function evaluation
+   */
   inline ArrayVector getThreadFuncReturn() {return m_threadFuncRets;}
+  /**
+   * Get the error state - is true if the thread function throws
+   * an exception.
+   */
+  inline bool getLastErrorState() {return m_threadErrorState;}
+  /**
+   * Activate the interrupt for the thread - so that it stops.
+   */
+  inline void setInterrupt() {m_interrupt = true;}
+  /**
+   * Run a command-line-interface interface from this thread.
+   */
   void doCLI();
   /**
    * Queue a command for execution
@@ -614,9 +646,9 @@ private:
    */
   ArrayVector rhsExpression(const tree &t, int lhsCount = 1);
 
-  void assign(Array *r, const tree &s, Array &data);
+  void assign(ArrayReference r, const tree &s, Array &data);
 
-  void multiassign(Array *r, const tree &s, ArrayVector& m);
+  void multiassign(ArrayReference r, const tree &s, ArrayVector& m);
 
   void deref(Array &r, const tree &s);
 

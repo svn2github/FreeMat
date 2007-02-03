@@ -2162,16 +2162,20 @@ Array Array::structConstructor(rvstring fNames, ArrayVector& values)  {
     for (j=0;j<length;j++)
       for (i=0;i<fNames.size();i++) {
 	Array rval = values[i];
-	if (rval.sparse())
+	if (!rval.isEmpty() && rval.sparse())
 	  throw Exception("sparse arrays not supported for struct constructor.");
 	rptr = (const Array*) rval.data();
-	if (rval.dataClass() == FM_CELL_ARRAY) {
-	  if (rval.isScalar())
-	    qp[offset] = rptr[0];
-	  else
-	    qp[offset] = rptr[j];
-	} else 
+	if (rval.isEmpty()) 
 	  qp[offset] = rval;
+	else {
+	  if (rval.dataClass() == FM_CELL_ARRAY) {
+	    if (rval.isScalar())
+	      qp[offset] = rptr[0];
+	    else
+	      qp[offset] = rptr[j];
+	  } else 
+	    qp[offset] = rval;
+	}
 	offset++;
       }
     return Array(FM_STRUCT_ARRAY,dims,qp,false,fNames);

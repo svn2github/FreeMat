@@ -24,6 +24,7 @@
  * A Scope is a combination of a variable hashtable and a function hashtable.
  */
 #include <string>
+#include <QMutex>
 
 #include "Array.hpp"
 #include "FunctionDef.hpp"
@@ -39,6 +40,12 @@ typedef SymbolTable<FuncPtr> CodeTable;
  * relevant to the current scope.
  */
 class Scope {
+  /**
+   * This is a mutex to protect the scope when multiple threads
+   * have access to the scope.  For all scopes (except the global
+   * one, this mutex is unused.
+   */
+  QMutex *mutex;
   /**
    * This is the hash-table of Array pointers that forms the
    * symbol table.  Each variable has a name associated with
@@ -93,7 +100,29 @@ public:
    * Construct a scope with the given name.
    */
   Scope(std::string scopeName) : name(scopeName), loopLevel(0), 
-    anyPersistents(false), anyGlobals(false) {}
+				 anyPersistents(false), anyGlobals(false),
+				 mutex(NULL)  {}
+  /**
+   * Lock the scope's mutex
+   */
+  inline void lock() {
+    if (mutex) mutex->lock();
+  }
+  /**
+   * Unlock the scope's mutex
+   */
+  inline void unlock() {
+    if (mutex) mutex->unlock();
+  }
+  /**
+   * Initialize the scope's mutex - only needed in Global
+   * scope.
+   */
+  inline void mutexSetup() {
+    if (mutex) 
+      delete mutex;
+    mutex = new QMutex(QMutex::Recursive);
+  }
   /**
    * Insert a variable with the given name.  If the variable
    * already exists in the Scope, then the previous definition

@@ -51,9 +51,10 @@ void VariablesTool::refresh() {
     QString flags;
     QString size;
     QString value;
-    Array lookup, *ptr;
+    Array lookup;
+    ArrayReference ptr;
     ptr = context->lookupVariable(varnames[i]);
-    if (!ptr) {
+    if (!ptr.valid()) {
       type = "undefined";
     } else {
       lookup = *ptr;

@@ -20,6 +20,8 @@
 #ifndef __HandleList_hpp__
 #define __HandleList_hpp__
 #include <map>
+#include <QMutex>
+#include <QMutexLocker>
 #include "Exception.hpp"
 
 template<class T>
@@ -27,6 +29,7 @@ class HandleList {
   typedef T value_type;
   std::map<unsigned int, T, std::less<unsigned int> > handles;
   unsigned int max_handle;
+  QMutex mutex;
 public:
   HandleList() : max_handle(0) {
   }
@@ -38,6 +41,7 @@ public:
   }
 
   unsigned int assignHandle(T val) {
+    QMutexLocker locker(&mutex);
     int nxt = 0;
     bool freeHandleFound = false;
     while ((nxt < max_handle) && !freeHandleFound) {
@@ -50,12 +54,14 @@ public:
   }
 
   T lookupHandle(unsigned int handle) {
+    QMutexLocker locker(&mutex);
     if (handles.count(handle-1) == 0)
       throw Exception("Invalid handle!");
     return handles[handle-1];
   }
 
   void deleteHandle(unsigned int handle) {
+    QMutexLocker locker(&mutex);
     if ((handle-1) == max_handle) 
       max_handle--;
     handles.erase(handle-1);

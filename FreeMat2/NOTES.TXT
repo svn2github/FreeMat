@@ -627,3 +627,22 @@ and
 
 Dispatching of things like graphics calls and the like will need to be thread matched (in MainApp).  
 
+
+Goals:
+
+1. Threads          - DONE
+2. Searching help
+3. RPC              - DONE
+4. Regression testing
+5. Eliminate C-style strings.
+6. Better treatment of the system call.
+7. Contour plots
+
+#3 is almost done.  I'll start with that one.  
+For the threads - we need a mechanism to protect 
+shared variables (which will be all global variables). 
+Also need to support exceptions for when the thread 
+   function causes an exception to occur.
+
+#4 For this one, I want to have each of the tests run by
+the help system generate a black blox test.  

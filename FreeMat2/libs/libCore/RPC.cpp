@@ -36,7 +36,7 @@ void getSparseArray(int cols, T** c, QDataStream &in) {
     T len;
     in >> len;
     c[i] = new T[(uint32)len];
-    getArray(len,c[i],in);
+    getArray((int)len,c[i],in);
   }
 }
 
@@ -315,201 +315,504 @@ void putArrayToQDS(QDataStream &out, const Array& dat) {
 // cnt = rpcpeek(recon)                    % how many messages are available from recon?
 // A = rpcget(recon)                       % retrieve next message from recon
 //
-
-class RemoteAddress {
-public:
-  QString hostname;
-  unsigned short port;
-  QUuid uid;
-  RemoteAddress(const char *name, unsigned int portnum, QUuid id) : 
-    hostname(name), port(portnum), uid(id) {}
-};
-
+// With these commands, a simple RPC server looks like this:
+// id = rpcinit(5237);                     % Open an RPC server on port 5237
+// [A,id] = rpcget(0)                      % Get the next message (from anyone)
+// [var{:}] = feval(A.funcname,A.data);    % Evaluate the function (whatever it is)
+// A.data = var;                           % replace the arguments with the reply
+// rpcput(id,A);                           % Send it back.
+//
 // A slot is a place to store a received array, or the fact than an error occured 
 // trying to receive/decode it
+//
+// The current design has flaws... In particular... Suppose we issue 2 gets to 
+// a remote client in sequence:
+//   rpcput(id,var1)
+//   rpcput(id,var2)
+//
+// Because of the lack of a queue structure, there is no guarantee that var1 will complete
+// (and thus free up the server) before we attempt to put var2.  
+//
+// The right way to handle this is to have a send and receive queue associated with each
+// rpc server.  Also, how will a server return a message?  The current "push" model assumes
+// that a uni-directional push is adequate to implement all desired features.  
+//
+// One option is to have two global queues "out" and "in". We could also have a thread
+// for each RPC server.  For some reason, I don't like that idea.  
+//
+// OK - so what is the problem with the current model?  It will push data to as many different
+// slots as possible concurrently.  Actually - that shouls be fine - the example I listed
+// above is wrong.  If we attempt to push var1 and var2 to the same server, they will
+// succeed and show up in that server's queue as successive entries - precisely because
+// that server will spawn RPCClients to manage the connections
+// 
+// Then in principle it is fine... If you want to call an RPC server, you have to start your
+// own RPC service first.  It would be nice if you could start multiple services on different
+// ports.  That can be done easily enough.  The problem with the current system, then, is that
+// the "get-s" are not working.
+//
+// OK - as originally envisioned - the put/get mechanism appears to work... But it leaves
+// somethings to be desired.  First of all, it means we have to have our own rpc server running
+// (and get the remote server to register us) before the remote server can push an answer to us.
+// That means publishing an address where the remote server can reach us.  Something like this:
+//
+// a = rpcdial(remoteaddress,portnum)
+//   -- rpcinit(portnum)
+//   -- a = rpcreg(remoteaddress,portnum)
+//      cmd.type = 'register'
+//      cmd.address = <our ip address>
+//      cmd.portnum = portnum
+//   -- rpcput(a,cmd)
+//
+// To make an rpc call, we could then do
+//
+// vars = rpcfeval(a,'cos',pi)
+//   -- cmd.type = 'call'
+//   -- cmd.name = 'cos'
+//   -- cmd.args = {pi}
+// reply = rpcget(a)
+//   if (~reply.success) error('')
+//
+// It could work.  The missing piece would be detecting errors on the rpcput side,
+// since these errors do not appear anywhere right now.
+//
+//
+// It would be far easier (and simpler) to start with a synchronous RPC mechanism
+// instead of an asynchronous one.  This would be something like:
+//
+// a = rpcreg(remoteIP, remote port)
+// G = rpcfeval(a,'cos',pi)
+// 
+// The way this would work is to block the calling socket until the function completes.
+// 
+// I could expose the socket interface at the FreeMat level with functions like:
+//
+//   a = tcpserver(5890);
+//   while (1)
+//     try
+//       g = tcpaccept(a);
+//       cmd = tcpget(g);
+//       try
+//         cmd.type = 'reply'
+//         cmd.args = feval(cmd.name,cmd.args);
+//       catch
+//         cmd.type = 'error';
+//         cmd.error = lasterror;
+//       end
+//       tcpput(g,cmd);
+//       tcpclose(g);
+//     catch
+//     end
+//   end
 
-HandleList<RemoteAddress*> raHandles;
-QList<Slot*> m_slots;
-QUuid m_uuid;
 
-ArrayVector RPCInitFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("rpcinit requires at least one argument - the port to setup");
-  if (m_uuid.isNull()) 
-    m_uuid = QUuid::createUuid();
-  unsigned int port = ArrayToInt32(arg[0]);
-  RPCMgr *p = new RPCMgr;
-  if (!p->open(port))
-    throw Exception(string("rpc init failed with port ") + port);
-  return ArrayVector() << Array::stringConstructor(m_uuid.toString().toStdString());
-}
+HandleList<QTcpServer*> m_servers;
+HandleList<QTcpSocket*> m_sockets;
 
-ArrayVector RPCIdFunction(int nargout, const ArrayVector& arg) {
+//!
+//@Module TCPSERVER Start a TCP Server on a designated port
+//@@Section IO
+//@@Usage
+//Sets up a TCP server on a specified port.  The syntax for its
+//use is:
+//@[
+//   handle = tcpserver(portnum)
+//@]
+//where @|portnum| is the port number to set up the tcp server on.
+//It returns a @|handle| to the tcpserver.  To actually accept
+//a connection on the server requires a call to @|tcpaccept|.  To
+//close the server down, you need to call @|tcpserverclose|.  It is
+//perfectly acceptable to have multiple @|tcpserver| open simultaneously,
+//but they must be on different portnumbers.
+//@@Example
+//See @|rpcserver| for an example of how to use @|tcpserver|.  To 
+//close the server down, you must call @|tcpserverclose|.  
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPServerFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
-    throw Exception("rpcid requires one argument - the handle of the remote connection");
-  unsigned int handle = ArrayToInt32(arg[0]);
-  RemoteAddress* ra = raHandles.lookupHandle(handle);
+    throw Exception("tcpserver requires one address - the port to set up the server on");
+  unsigned int port = ArrayToInt32(arg[0]);
+  QTcpServer *server = new QTcpServer;
+  if (!server->listen(QHostAddress::Any,port))
+    throw Exception("unable to create a tcp server to listen to the given address");
   return ArrayVector() <<
-    Array::structConstructor(rvstring() << "hostname" << "port" << "id",
-			     ArrayVector() 
-			     << Array::stringConstructor(ra->hostname.toStdString())
-			     << Array::uint16Constructor(ra->port)
-			     << Array::stringConstructor(ra->uid.toString().toStdString()));
+    Array::uint32Constructor(m_servers.assignHandle(server));
 }
 
-ArrayVector RPCPutFunction(int nargout, const ArrayVector& arg) {
+//!
+//@Module TCPACCEPT Accept a connection on a TCP server
+//@@Section IO
+//@@Usage
+//Accepts a connection on the given @|tcpserver|, and returns a
+//handle to the connected @|tcpsocket|.  This function requires
+//a timeout (in milliseconds), and will block until either a
+//connection arrives or the timeout elapses.  The syntax for the
+//command is 
+//@[
+//   handle = tcpaccept(server_handle)
+//@]
+//where @|server_handle| is the handle returned by @|tcpserver|.
+//The output of @|tcpaccept| can be used with the socket functions
+//@|tcpsend| and @|tcprecv| to send data between FreeMat instances.
+//Optionally, you can specify the timeout in milliseconds for the 
+//command to fail
+//@[
+//   handle = tcpaccept(server_handle, timeout)
+//@]
+//The default timeout is set to 30 seconds.  To
+//close the socket returned by @|tcpaccept| you must call @|tcpclose|.
+//The resulting handle is identical to one returned by @|tcpconnect|.
+//@@Example
+//See @|rpcserver| for an example of how to use @|tcpaccept|.  
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1)
+    throw Exception("tcpaccept requires one argument - the handle of the server to read, and an optional timeout to wait before failure (in milliseconds)");
+  unsigned int server_handle = ArrayToInt32(arg[0]);
+  unsigned int timeout = 30000;
+  if (arg.size() == 2)
+    timeout = ArrayToInt32(arg[1]);
+  QTcpServer *server = m_servers.lookupHandle(server_handle);
+  if (!server->waitForNewConnection(timeout))
+    throw Exception("Wait for connection in tcpaccept timed out");
+  QTcpSocket *sock = server->nextPendingConnection();
+  return ArrayVector() <<
+    Array::uint32Constructor(m_sockets.assignHandle(sock));
+}
+
+//!
+//@Module TCPCONNECT Connect to a remote TCP server
+//@@Section IO
+//@@Usage
+//Attempts to open a tcp socket to a remote ip address and portnumber
+//within a given timeout.  The general syntax for its use is
+//@[
+//   handle = tcpconnect(remote_address,remote_port,timeout)
+//@]
+//where @|timeout| is in milliseconds.  The @|remote_address|
+//must be a string containing either an IP address (e.g., @|'192.168.0.1'|),
+//or a name (e.g., @|'foo.goo.com'|).  The resulting socket can 
+//be closed using @|tcpclose|.  If you do not specify a 
+//@|timeout|, then a default of 30 seconds is used.
+//@@Example
+//See @|rpceval| for an example of how to use @|tcpconnect|.
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
-    throw Exception("rpcput requires two arguments - the handle for the remote RPC server and the array to send");
-  unsigned int handle = ArrayToInt32(arg[0]);
-  RemoteAddress* ra = raHandles.lookupHandle(handle);
-  QTcpSocket a_sock;
-  a_sock.connectToHost(ra->hostname,ra->port);
-  QByteArray block;
-  QDataStream out(&block, QIODevice::WriteOnly);
-  out.setVersion(QDataStream::Qt_4_2);
-  out << (quint64)0;
-  out << (quint32) 0xFEEDADAD;
-  out << m_uuid;
-  out << (quint8) 0;
-  putArrayToQDS(out,arg[1]);
-  out.device()->seek(0);
-  out << (quint64)(block.size() - sizeof(quint64));
-  a_sock.write(block);
-#error FINISHME - a_sock is deleted before write completes.
+    throw Exception("tcpconnect requires two arguments - the remote address of the server to connect to and the port number - an optional timeout can be specified also");
+  const char *host = ArrayToString(arg[0]);
+  unsigned int port = ArrayToInt32(arg[1]);
+  int timeout = 30000;
+  if (arg.size() == 3)
+    timeout = ArrayToInt32(arg[2]);
+  QTcpSocket *a_sock = new QTcpSocket;
+  a_sock->connectToHost(host,port);
+  if (!a_sock->waitForConnected(timeout))
+    throw Exception(string("tcpconnect failed to connect to ") + host + " on port " + port);
+  return ArrayVector() <<
+    Array::uint32Constructor(m_sockets.assignHandle(a_sock));
+}
+
+//!
+//@Module TCPCLOSE Close a TCP socket
+//@@Section IO
+//@@Usage
+//Closes a tcp socket that is returned either from @|tcpconnect|
+//or from @|tcpaccept|.  The general syntax for its use is either
+//@[
+//   tcpclose(handle)
+//@]
+//which closes a specific @|handle| or 
+//@[
+//   tcpclose all
+//@]
+//to close all open sockets.
+//@@Example
+//See @|rpceval| for an example of how to use @|tcpclose|.
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("tcpclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
+  if (arg[0].isString()) {
+    const char *txtval = ArrayToString(arg[0]);
+    if ((strcmp(txtval,"all")!=0) &&
+	(strcmp(txtval,"ALL")!=0))
+      throw Exception(string("Unrecognized argument to tcpclose ") + txtval);
+    // Close all sockets
+    for (int i=0;i<=m_sockets.maxHandle();i++) {
+      try {
+	QTcpSocket *sock = m_sockets.lookupHandle(i);
+	if (sock)
+	  sock->disconnectFromHost();
+      } catch (Exception &e) {
+      }
+    }
+    return ArrayVector();
+  }
+  int handle = ArrayToInt32(arg[0]);
+  QTcpSocket *sock = m_sockets.lookupHandle(handle);
+  sock->disconnectFromHost();
   return ArrayVector();
 }
 
-ArrayVector RPCRegFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size()  <  2) 
-    throw Exception("rpcreg requires two arguments - the ip address and port to connect to");
-  const char *host = ArrayToString(arg[0]);
-  unsigned int port = ArrayToInt32(arg[1]);
-  int timeout = 1000;
+//!
+//@Module TCPSERVERCLOSE Close a TCP server socket
+//@@Section IO
+//@@Usage
+//Closes a @|tcpserver| socket.  The general syntax
+//for its use is either
+//@[
+//   tcpserverclose(handle)
+//@]
+//which closes a specific @|handle| or
+//@[
+//   tcpserverclose all
+//@]
+//to close all open servers.
+//@@Example
+//See @|rpcserver| for an example of how to use @|tcpserverclose|.
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("tcpserverclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
+  if (arg[0].isString()) {
+    const char *txtval = ArrayToString(arg[0]);
+    if ((strcmp(txtval,"all")!=0) &&
+	(strcmp(txtval,"ALL")!=0))
+      throw Exception(string("Unrecognized argument to tcpserverclose ") + txtval);
+    // Close all sockets
+    for (int i=0;i<=m_servers.maxHandle();i++) {
+      try {
+	QTcpServer *sock = m_servers.lookupHandle(i);
+	if (sock)
+	  sock->close();
+      } catch (Exception &e) {
+      }
+    }
+    return ArrayVector();
+  }
+  int handle = ArrayToInt32(arg[0]);
+  QTcpServer *sock = m_servers.lookupHandle(handle);
+  sock->close();
+  return ArrayVector();
+}
+
+//!
+//@Module TCPSEND Send an array over a TCP socket
+//@@Section IO
+//@@Usage
+//Sends an array over a TCP socket.  The encoding of the
+//array is done in a manner such that arrays can be 
+//transparently sent between different machine types
+//(endianness, word size, etc.).  The general syntax for its 
+//use is
+//@[
+//  tcpsend(handle,array)
+//@]
+//where @|handle| is a connected socket returned from a 
+//successful @|tcpconnect| or @|tcpaccept| call.  By 
+//default the @|tcpsend| operation has a 30 second timeout.
+//You can specify the timeout using the following syntax for it
+//@[
+//  tcpsend(handle,array,timeout)
+//@]
+//where @|timeout| is in milliseconds.
+//@@Example
+//See @|rpcserver| and @|rpceval| for examples of how to use
+//@|tcpsend|.  
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2)
+    throw Exception("tcpsend requires two arguments - the handle of the connection to use, and the array to send - an optional timeout can be specified also");
+  unsigned int handle = ArrayToInt32(arg[0]);
+  QTcpSocket *sock = m_sockets.lookupHandle(handle);
+  int timeout = 30000;
   if (arg.size() == 3)
     timeout = ArrayToInt32(arg[2]);
-  // Try to connect to the given host and port.
-  QTcpSocket a_sock;
-  a_sock.connectToHost(host,port);
-  if (!a_sock.waitForConnected(timeout))
-    throw Exception(string("rpcreg failed to connect to ") + host + " on port " + port);
-  // Send a request for id packet
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
   out.setVersion(QDataStream::Qt_4_2);
   out << (quint64)0;
   out << (quint32) 0xFEEDADAD;
-  out << m_uuid;
-  out << (quint8) 1;
+  putArrayToQDS(out,arg[1]);
   out.device()->seek(0);
   out << (quint64)(block.size() - sizeof(quint64));
-  a_sock.write(block);
-  // Wait for the reply packet
-  while (a_sock.bytesAvailable() < (int)sizeof(quint64)) {
-    if (!a_sock.waitForReadyRead(timeout))
-      throw Exception(string("rpcreg failed to get ID (blocksize) from ") + host + " on port " + port);
+  sock->write(block);
+  if (!sock->waitForBytesWritten(timeout))
+    throw Exception("timout on tcpsend function");
+  return ArrayVector();
+}
+
+//!
+//@Module TCPRECV Receive an array over a TCP socket
+//@@Section IO
+//@@Usage
+//Receives an array over from a TCP socket.  The encoding of the
+//array is done in a manner such that arrays can be 
+//transparently sent between different machine types
+//(endianness, word size, etc.).  There must be a matching
+//@|tcpsend| call for it to work.  The general syntax for its 
+//use is
+//@[
+//  array = tcprecv(handle)
+//@]
+//where @|handle| is a connected socket returned from a 
+//successful @|tcpconnect| or @|tcpaccept| call.  By 
+//default the @|tcprecv| operation has a 30 second timeout.
+//You can specify the timeout using the following syntax for it
+//@[
+//  array = tcprecv(handle,timeout)
+//@]
+//where @|timeout| is in milliseconds.
+//@@Example
+//See @|rpcserver| and @|rpceval| for examples of how to use
+//@|tcprecv|.  
+//The following example works on a single machine, only because of
+//buffering in the TCP implementation.  In practice, the 
+//server and send sockets would be on different machines
+//@<
+//server = tcpserver(6010);             % Start up the server
+//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
+//                                      % Will succeed because the server is running
+//recv = tcpaccept(server);             % Accept the connection we just tried to make
+//                                      % Will succeed because of the tcpconnect call
+//msg = 'Hello';                        % Create a message to send through the loop
+//tcpsend(send,msg);                    % Push the message through the socket
+//tcprecv(recv)                         % Out it comes through the other side
+//tcpsend(recv,msg);                    % Sockets are bi-directional
+//tcprecv(send)
+//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
+//tcpserverclose(server);               % Close the server socket
+//@>
+//!
+ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1)
+    throw Exception("tcprecv requires one argument - the handle of the connection to use - an optional timeout can be specified also.");
+  unsigned int handle = ArrayToInt32(arg[0]);
+  int timeout = 30000;
+  if (arg.size() == 2)
+    timeout = ArrayToInt32(arg[1]);
+  QTcpSocket *a_sock = m_sockets.lookupHandle(handle);
+  while (a_sock->bytesAvailable() < (int)sizeof(quint64)) {
+    if (!a_sock->waitForReadyRead(timeout))
+      throw Exception(string("tcprecv failed to get blocksize prior to timeout"));
   }
-  QDataStream in(&a_sock);
+  QDataStream in(a_sock);
   quint64 blockSize;
   in >> blockSize;
-  while (a_sock.bytesAvailable() < blockSize) {
-    if (!a_sock.waitForReadyRead(timeout))
-      throw Exception(string("rpcreg failed to get ID (blockdata) from ") + host + " on port " + port);
+  while (a_sock->bytesAvailable() < blockSize) {
+    if (!a_sock->waitForReadyRead(timeout))
+      throw Exception(string("tcprecv failed to get data block prior to timeout"));
   }
   quint32 magic;
   in >> magic;
   if (magic != 0xFEEDADAD) 
-    throw Exception(string("rpcreg failed to get ID (magic mismatch) from ") + host + " on port " + port);
-  QUuid remote_id;
-  in >> remote_id;
-  quint8 packet_type;
-  in >> packet_type;
-  a_sock.disconnectFromHost();
-  // Get a socket to test out 
-  return ArrayVector() << 
-    Array::uint32Constructor(raHandles.assignHandle(new RemoteAddress(host,port,remote_id)));
+    throw Exception(string("tcprecv failed to get proper magic number"));
+  Array ret;
+  getArrayFromQDS(in,ret);
+  return ArrayVector() << ret;
 }
 
-bool RPCMgr::open(uint16 portnum) {
-  tcpServer = new QTcpServer(this);
-  if (!tcpServer->listen(QHostAddress::Any,portnum)) {
-    delete tcpServer;
-    return false;
-  }
-  connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnection()));
-}
-
-void RPCMgr::newConnection() {
-  Slot *dest = new Slot;
-  m_slots.push_back(dest);
-  new RPCClient(tcpServer->nextPendingConnection(),dest);
-}
-
-RPCClient::RPCClient(QTcpSocket *sock, Slot *dst) {
-  m_sock = sock;
-  connect(m_sock, SIGNAL(disconnected()), m_sock, SLOT(deleteLater()));
-  connect(m_sock, SIGNAL(disconnected()), this, SLOT(deleteLater()));
-  connect(m_sock, SIGNAL(error(QAbstractSocket::SocketError)),
-	  this, SLOT(error(QAbstractSocket::SocketError)));
-  connect(m_sock, SIGNAL(readyRead()), this, SLOT(readData()));
-  blockSize = 0;
-  m_dest = dst;
-}
-
-void RPCClient::failMsg(QString errMsg) {
-  m_dest->slotFilled = true;
-  m_dest->success = false;
-  m_dest->errMsg = errMsg;
-}
-
-void RPCClient::error(QAbstractSocket::SocketError err) {
-  failMsg(m_sock->errorString());
-}
-
-
-void RPCClient::readData() {
-  QDataStream in(m_sock);
-  in.setVersion(QDataStream::Qt_4_2);
-  if (blockSize == 0) {
-    if (m_sock->bytesAvailable() < (int) sizeof(quint64))
-      return;
-    in >> blockSize;
-  }
-  if (m_sock->bytesAvailable() < blockSize)
-    return;
-  // Read the magic number
-  quint32 magic;
-  in >> magic;
-  if (magic != 0xFEEDADAD) {
-    failMsg("Invalid data received from sender - magic number mismatch");
-    return;
-  }
-  // Read the UUID of the sender
-  in >> m_dest->senderID;
-  // Read the packet type
-  quint8 packet_type;
-  in >> packet_type;
-  // The following packet types are recognized.
-  //   0 - data packet         - payload is an array of data
-  //   1 - id-request packet   - payload is empty.  Please reply with an id packet.
-  //   2 - id-reply packet     - payload is empty.  Don't reply.
-  //  if (packet_type == RPC_DATA_PACKET) 
-  if (packet_type == 0)  {
-    getArrayFromQDS(in,m_dest->value);
-    qDebug() << "Slot filled: ";
-    qDebug() << QString::fromStdString(ArrayToPrintableString(m_dest->value));
-  } else if (packet_type == 1) {
-    QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_4_2);
-    out << (quint64) 0;
-    out << (quint32) 0xFEEDADAD;
-    out << m_uuid;
-    out << (quint8) 2;
-    out.device()->seek(0);
-    out << (quint64)(block.size() - sizeof(quint64));
-    m_sock->write(block);
-  }
-  m_dest->slotFilled = true;
-  m_dest->success = true;
-}
 

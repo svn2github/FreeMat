@@ -21,6 +21,7 @@
 #include "Exception.hpp"
 #include "Array.hpp"
 #include "Malloc.hpp"
+#include "RPC.hpp"
 #include <math.h>
 
 //FIXME
@@ -35,13 +36,16 @@ void LoadGUICoreFunctions(Context* context) {
   context->addGfxSpecialFunction("helpwin",HelpWinFunction,0,0,NULL);
   context->addGfxSpecialFunction("editor",EditorFunction,0,0,NULL);
   context->addGfxSpecialFunction("pathtool",PathToolFunction,0,0,NULL);
-  context->addGfxFunction("rpcinit",RPCInitFunction,1,1,"port",NULL);
-  context->addGfxFunction("rpcid",RPCIdFunction,1,1,"handle",NULL);
-  context->addGfxFunction("rpcput",RPCPutFunction,2,1,"handle","x",NULL);
-  context->addGfxFunction("rpcreg",RPCRegFunction,3,1,"host","port","timeout",NULL);
 }
 
 void LoadCoreFunctions(Context* context) {
+  context->addFunction("tcpserver",TCPServerFunction,1,1,"port",NULL);
+  context->addFunction("tcpaccept",TCPAcceptFunction,2,1,"handle","timeout",NULL);
+  context->addFunction("tcpconnect",TCPConnectFunction,3,1,"remoteip","port","timeout",NULL);
+  context->addFunction("tcpsend",TCPSendFunction,3,1,"handle","data","timeout",NULL);
+  context->addFunction("tcprecv",TCPRecvFunction,2,1,"handle","timeout",NULL);
+  context->addFunction("tcpclose",TCPCloseFunction,1,0,"handle",NULL);
+  context->addFunction("tcpserverclose",TCPServerCloseFunction,1,0,"handle",NULL);
   context->addFunction("cos",CosFunction,1,1,"x",NULL);
   context->addFunction("acos",ArccosFunction,1,1,"x",NULL);
   context->addFunction("csc",CscFunction,1,1,"x",NULL);

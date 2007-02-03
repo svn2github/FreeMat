@@ -86,6 +86,8 @@ MainApp::MainApp() {
   skipGreeting = false;
   m_keys = new KeyManager;
   m_global = new Scope("global");
+  // The global scope is special
+  m_global->mutexSetup();
 }
 
 MainApp::~MainApp() {
@@ -246,7 +248,7 @@ void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) {
 //The @|threadid| function in FreeMat tells you which thread
 //is executing the context you are in.  Normally, this is thread
 //1, the main thread.  However, if you start a new thread using
-//@|newthread|, you will be operating in a new thread, and functions
+//@|threadnew|, you will be operating in a new thread, and functions
 //that call @|threadid| from the new thread will return their 
 //handles.
 //@@Example
@@ -256,7 +258,8 @@ void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) {
 //@>
 //But from a launched auxilliary thread, we have
 //@<
-//t_id = newthread('threadid'); waitthread(t_id);
+//t_id = threadnew('threadid'); threadwait(t_id); threadvalue(t_id)
+//threadfree(t_id);
 //@>
 //!
 ArrayVector ThreadIDFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
@@ -265,8 +268,108 @@ ArrayVector ThreadIDFunction(int nargout, const ArrayVector& arg, Interpreter* e
 
 extern MainApp *m_app;
 
-ArrayVector NewThreadFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  if (arg.size() < 1) throw Exception("newthread requires at least one argument (the function to spawn in a thread)");
+//!
+//@Module THREADNEW Create a New Thread
+//@@Section THREAD
+//@@Usage
+//The @|threadnew| function creates a new FreeMat thread, and
+//returns a handle to the resulting thread.  You must provide
+//a function (no scripts are allowed) to run inside the new
+//thread, and also pass any parameters that the thread function
+//requires.  The general syntax for the @|threadnew| function is
+//@[
+//   handle = threadnew(function,arg1,arg2,...)
+//@]
+//where @|function| is a valid function name (it can be a built-in
+//imported or M-function), and @|arg1| is the first argument that
+//is passed to the function.  Because the function runs in its 
+//own thread, the return values of the function are not available
+//imediately.  Instead, execution of that function will continue
+//in parallel with the current thread.  To retrieve the output
+//of the thread function, you must wait for the thread to complete
+//using the @|threadwait| function, and then call @|threadvalue|
+// to retrieve the result.  You can also stop the running thread
+//prematurely by using the @|threadkill| function.  It is important
+//to call @|threadfree| on the handle you get from @|threadnew|
+//when you are finished with the thread to ensure that the resoures
+//are properly freed.  
+//
+//Some additional important information.  Thread functions operate
+//in their own context or workspace, which means that data cannot
+//be shared between threads.  The exception is @|global| variables,
+//which provide a thread-safe way for multiple threads to share data.
+//Accesses to global variables are serialized so that they can 
+//be used to share data.  Threads and FreeMat are a new feature, so
+//there is room for improvement in the API and behavior.  The best
+//way to improve threads is to experiment with them, and send feedback.
+//
+//One (annoying) limitation of the thread API is that the @|nargout|
+//mechanism does not work correctly.  In FreeMat the number of output
+//arguments that the function is called with are used to calculate the
+//@|nargout| quantity that is then passed to the function.  With 
+//threads, this does not work well, as the number of output arguments
+//are not known to FreeMat until you call @|threadvalue|.  The way
+//around this is to utilize a thread function that can artificially
+//call the function for you with the correct arguments.  See the examples
+//section for more details.
+//@@Example
+//Here we do something very simple.  We want to obtain a listing of
+//all files on the system, but do not want the results to stop our
+//computation.  So we run the @|system| call in a thread.
+//@<
+//a = threadnew('system','ls -lrt /');  % Start the thread
+//b = rand(100)\rand(100,1);            % Solve some equations simultaneously
+//c = threadvalue(a);                   % Retrieve the file list
+//size(c)                               % It is large!
+//@>
+//The possibilities for threads are significant.  For example,
+//we can solve equations in parallel, or take Fast Fourier Transforms
+//on multiple threads.  On multi-processor machines or multicore CPUs,
+//these threaded calculations will execute in parallel.  Neat.
+//
+//To get around the @|nargout| problem, suppose we want to compute
+//the Singular Value Decomposition @|svd| of a matrix @|A| in a 
+//thread.  The documentation for the @|svd| function tells us that
+//the behavior depends on the number of output arguments we request.
+//For example, if we want a full decomposition, including the left 
+//and right singular vectors, and a diagonal singular matrix, we
+//need to use the three-output syntax, instead of the single output
+//syntax (which returns only the singular values in a column vector):
+//@<
+//A = float(rand(4))
+//[u,s,v] = svd(A)    % Compute the full decomposition
+//sigmas = svd(A)     % Only want the singular values
+//@>
+//Unfortunately, if we attempt to call @|svd| in a thread, the number
+//of output arguments is not known at the time the function is invoked.
+//When we try to do the calculation in a thread, we get only the 
+//singular values in the first argument (just as if we had called
+//@|svd| with a single argument), and a warning that our remaining
+//outputs are not assigned:
+//@<
+//a = threadnew('svd',A);
+//[u1,s1,v1] = threadvalue(a)
+//threadfree(a);
+//@>
+//The solution is to use an intermediate function that can supply 
+//a place for the outputs, and that effectively helps FreeMat
+//disambiguate the syntax you want to use.  For example, 
+//@{ svd_full.m
+//function [u,s,v] = svd_full(varargin)
+//   [u,s,v] = svd(varargin{:})
+//@}
+//This new function @|svd_full| forces a full decomposition of the
+//argument matrix.  If we call this function in a thread, we get
+//the right result (as it does not use @|nargout| to determine its
+//behavior).
+//@<
+//a = threadnew('svd_full',A);
+//[u2,s2,v2] = threadvalue(a)
+//threadfree(a);
+//@>
+//!
+ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 1) throw Exception("threadnew requires at least one argument (the function to spawn in a thread)");
   const char *fnc = ArrayToString(arg[0]);
   // Lookup this function in base interpreter to see if it is defined
   FuncPtr val;
@@ -286,16 +389,114 @@ ArrayVector NewThreadFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector() << Array::uint32Constructor(threadID);
 }
 
-ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+
+//!
+//@Module THREADVALUE Retrieve the return values from a thread
+//@@Section THREAD
+//@@Usage
+//The @|threadvalue| function retrieves the values returned
+//by the function specified in the @|threadnew| call.  The
+//syntax for its use is
+//@[
+//   [arg1,arg2,...,argN] = threadvalue(handle)
+//@]
+//where @|handle| is the value returned by a @|threadnew| call.
+//Note that there are issues with @|nargout|.  See the examples
+//section of @|threadnew| for details on how to work around this
+//limitation.  Because the function you have spawned with @|threadnew|
+//may still be executing, @|threadvalue| must first @|threadwait|
+//for the function to complete before retrieving the output values.
+//This wait may take an arbitrarily long time if the thread function
+//is caught in an infinite loop.  Hence, you can also specify
+//a timeout parameter to @|threadvalue| as
+//@[
+//   [arg1,arg2,...,argN] = threadvalue(handle,timeout)
+//@]
+//where the @|timeout| is specified in milliseconds.  If the
+//wait times out, an error is raised (that can be caught with a
+//@|try| and @|catch| block.  
+//
+//In either case, if the thread function itself caused an error
+//and ceased execution abruptly, then calling @|threadvalue| will
+//cause that function to raise an error, allowing you to retrieve
+//the error that was caused and correct it.  See the examples section
+//for more information.
+//@@Example
+//Here we do something very simple.  We want to obtain a listing of
+//all files on the system, but do not want the results to stop our
+//computation.  So we run the @|system| call in a thread.
+//@<
+//a = threadnew('system','ls -lrt /');  % Start the thread
+//b = rand(100)\rand(100,1);            % Solve some equations simultaneously
+//c = threadvalue(a);                   % Retrieve the file list
+//size(c)                               % It is large!
+//threadfree(a)
+//@>
+//In this example, we force the threaded function to cause an
+//exception (by calling the @|error| function as the thread 
+//function).  When we call @|threadvalue|, we get an error, instead
+//of the return value of the function
+//@<
+//a = threadnew('error','Hello world!'); % Will immediately stop due to error
+//c = threadvalue(a)                     % The error comes to us
+//threadfree(a)
+//@>
+//Note that the error has the text @|Thread:| prepended to the message
+//to help you identify that this was an error in a different thread.
+//!
+ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadvalue requires at least one argument (thread id to retrieve value from)");
   int32 handle = ArrayToInt32(arg[0]);
   Interpreter* thread = m_threadHandles.lookupHandle(handle);
   if (!thread) throw Exception("invalid thread handle");
+  unsigned long timeout = ULONG_MAX;
+  if (arg.size() > 1)
+    timeout = (unsigned long) ArrayToInt32(arg[1]);
   if (!thread->wait()) throw Exception("error waiting for thread to complete");
+  if (thread->getLastErrorState())
+    throw Exception("Thread: " + thread->getLastErrorString());
   return thread->getThreadFuncReturn();
 }
 
-ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+//!
+//@Module THREADWAIT Wait on a thread to complete execution
+//@@Section THREAD
+//@@Usage
+//The @|threadwait| function waits for the given thread to complete
+//execution, and stops execution of the current thread (the one calling
+//@|threadwait|) until the given thread completes.  The syntax for its
+//use is 
+//@[
+//   success = threadwait(handle)
+//@]
+//where @|handle| is the value returned by @|threadnew| and @|success|
+//is a @|logical| vaariable that will be @|1| if the wait was successful
+//or @|0| if the wait times out.  By default, the wait is indefinite.  It
+//is better to use the following form of the function
+//@[
+//   success = threadwait(handle,timeout)
+//@]
+//where @|timeout| is the amount of time (in milliseconds) for 
+//the @|threadwait| function to wait before a timeout occurs.  
+//If the @|threadwait| function succeeds, then the return 
+//value is a logical @|1|, and if it fails, the return value 
+//is a logical @|0|.  Note that you can call @|threadwait| multiple
+//times on a thread, and if the thread is completed, each one
+//will succeed.
+//@@Example
+//Here we lauch the @|sleep| function in a thread with a time delay of 
+//10 seconds.  This means that the thread function will not complete
+//until 10 seconds have elapsed.  When we call @|threadwait| on this
+//thread with a short timeout, it fails, but not when the timeout
+//is long enough to capture the end of the function call.
+//@<
+//a = threadnew('sleep',10);    % start a thread that will sleep for 10
+//threadwait(a,2000)            % 2 second wait is not long enough
+//threadwait(a,10000)           % 10 second wait is long enough
+//threadfree(a)
+//@>
+//!
+ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadwait requires at least one argument (thread id to wait on)");
   int32 handle = ArrayToInt32(arg[0]);
   unsigned long timeout = ULONG_MAX;
@@ -303,14 +504,112 @@ ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg, Interpreter*
   if (!thread) throw Exception("invalid thread handle");
   if (arg.size() > 1)
     timeout = (unsigned long) ArrayToInt32(arg[1]);
-  return ArrayVector() << Array::logicalConstructor(thread->wait(timeout));
+  bool retval = thread->wait(timeout);
+  if (retval && thread->getLastErrorState())
+    throw Exception("Thread: " + thread->getLastErrorString());
+  return ArrayVector() << Array::logicalConstructor(retval);
+}
+
+//!
+//@Module THREADKILL Halt execution of a thread
+//@@Section THREAD
+//@@Usage
+//The @|threadkill| function stops (or attempts to stop) execution
+//of the given thread.  It works only for functions defined in M-files
+//(i.e., not for built in or imported functions), and it works by 
+//setting a flag that causes the thread to stop execution at the next
+//available statement.  The syntax for this function is 
+//@[
+//  threadkill(handle)
+//@]
+//where @|handle| is the value returned by a @|threadnew| call.  
+//Note that the @|threadkill| function returns immediately.  It 
+//is still your responsibility to call @|threadfree| to free
+//the thread you have halted.
+//
+//You cannot kill the main thread (thread id @|1|).
+//@@Example
+//Here is an example of stopping a runaway thread using @|threadkill|.
+//Note that the thread function in this case is an M-file function.
+//We start by setting up a free running counter, where we can access 
+//the counter from the global variables.  
+//@{ freecount.m
+//function freecount
+//  global count
+//  if (~exist('count')) count = 0; end  % Initialize the counter
+//  while (1)
+//    count = count + 1;                 % Update the counter
+//  end
+//@}
+//We now lauch this function in a thread, and use @|threadkill| to
+//stop it:
+//@<
+//a = threadnew('freecount')     % start the thread
+//global count                   % register the global variable count
+//count                          % it is counting
+//sleep(1)                       % Wait a bit
+//count                          % it is still counting
+//threadkill(a)                  % kill the counter
+//threadwait(a,1000)             % wait for it to finish
+//count                          % The count will no longer increase
+//sleep(1)
+//count
+//@>
+//!
+ArrayVector ThreadKillFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1) throw Exception("threadkill requires at least one argument (thread id to kill)");
+  int32 handle = ArrayToInt32(arg[0]);
+  if (handle == 1) throw Exception("threadkill cannot be used on the main thread");
+  Interpreter* thread = m_threadHandles.lookupHandle(handle);
+  thread->setInterrupt();
+  return ArrayVector();
+}
+
+
+//!
+//@Module THREADFREE Free thread resources
+//@@Section THREAD
+//@@Usage
+//The @|threadfree| is a function to free the resources claimed
+//by a thread that has finished.  The syntax for its use is
+//@[
+//   threadfree(handle)
+//@]
+//where @|handle| is the handle returned by the call to @|threadnew|.
+//The @|threadfree| function requires that the thread be completed.  
+//Otherwise it will wait for the thread to complete, potentially 
+//for an arbitrarily long period of time.  To fix this, you can
+//either call @|threadfree| only on threads that are known to have
+//completed, or you can call it using the syntax
+//@[
+//   threadfree(handle,timeout)
+//@]
+//where @|timeout| is a time to wait in milliseconds.  If the thread
+//fails to complete before the timeout expires, an error occurs.
+//
+//!
+ArrayVector ThreadFreeFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1) throw Exception("threadfree requires at least one argument (thread id to wait on) - the optional second argument is the timeout to wait for the thread to finish");
+  int32 handle = ArrayToInt32(arg[0]);
+  Interpreter* thread = m_threadHandles.lookupHandle(handle);
+  thread->setInterrupt();
+  unsigned long timeout = ULONG_MAX;
+  if (arg.size() > 1)
+    timeout = (unsigned long) ArrayToInt32(arg[1]);
+  if (!thread->wait(timeout))
+    throw Exception("Cannot free thread... it is still running");
+  delete thread;
+  m_threadHandles.deleteHandle(handle);
+  return ArrayVector();
 }
 
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
-  context->addSpecialFunction("newthread",NewThreadFunction,-1,1,NULL);
-  context->addSpecialFunction("threadvalue",ThreadValueFunction,1,-1,"id",NULL);
-  context->addSpecialFunction("threadwait",ThreadWaitFunction,-1,1,NULL);
+  context->addSpecialFunction("threadnew",ThreadNewFunction,-1,1,NULL);
+  context->addFunction("threadvalue",ThreadValueFunction,2,-1,"handle","timeout",NULL);
+  context->addFunction("threadwait",ThreadWaitFunction,2,1,"handle","timeout",NULL);
+  context->addFunction("threadkill",ThreadKillFunction,1,0,"handle",NULL);
+  context->addFunction("threadfree",ThreadFreeFunction,2,0,"handle","timeout",NULL);
 }
 			 
 Context *MainApp::NewContext() {

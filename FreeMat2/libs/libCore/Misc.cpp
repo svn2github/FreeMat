@@ -1794,8 +1794,8 @@ ArrayVector RetrieveCallVars(Interpreter *eval, int nargout) {
     char tname[4096];
     Array tval;
     sprintf(tname,"t___%d",i);
-    Array *ptr = eval->getContext()->lookupVariable(tname);
-    if (!ptr)
+    ArrayReference ptr = eval->getContext()->lookupVariable(tname);
+    if (!ptr.valid())
       tval = Array::emptyConstructor();
     else
       tval = *ptr;

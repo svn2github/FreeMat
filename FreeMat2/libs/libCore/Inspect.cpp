@@ -450,11 +450,12 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
   sprintf(buffer,"  Variable Name      Type   Flags             Size\n");
   eval->outputMessage(buffer);
   for (i=0;i<names.size();i++) {
-    Array lookup, *ptr;
+    Array lookup;
+    ArrayReference ptr;
     sprintf(buffer,"% 15s",names[i].c_str());
     eval->outputMessage(buffer);
     ptr = eval->getContext()->lookupVariable(names[i]);
-    if (!ptr)
+    if (!ptr.valid())
       eval->outputMessage("   <undefined>");
     else {
       lookup = *ptr;
@@ -679,7 +680,7 @@ int ExistFileFunction(char* fname, Interpreter* eval) {
 }
 
 int ExistVariableFunction(char* fname, Interpreter* eval) {
-  bool isDefed = (eval->getContext()->lookupVariable(fname) != NULL);
+  bool isDefed = (eval->getContext()->lookupVariable(fname).valid());
   if (isDefed)
     return 1;
   else
@@ -734,8 +735,8 @@ ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   char *fname;
   fname = tmp.getContentsAsCString();
   bool isDefed;
-  Array *d = eval->getContext()->lookupVariable(fname);
-  isDefed = (d != NULL);
+  ArrayReference d = eval->getContext()->lookupVariable(fname);
+  isDefed = (d.valid());
   if (isDefed && !d->isEmpty())
     return singleArrayVector(Array::logicalConstructor(1));
   else

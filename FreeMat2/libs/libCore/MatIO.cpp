@@ -939,8 +939,8 @@ ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter *ev
 	   ctime(&t), Interpreter::getVersionString().c_str());
   m.putHeader(header);
   for (int i=0;i<names.size();i++) {
-    Array *toWrite = cntxt->lookupVariable(names[i]);
-    if (toWrite)
+    ArrayReference toWrite = cntxt->lookupVariable(names[i]);
+    if (toWrite.valid())
       m.putArray(*toWrite,names[i],cntxt->isVariableGlobal(names[i]));
     else
       eval->warningMessage(string("variable ") + names[i] + " does not exist to save");

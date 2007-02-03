@@ -1522,11 +1522,11 @@ ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg,
     }
   }
   for (i=0;i<names.size();i++) {
-    Array *toWrite;
+    ArrayReference toWrite;
     char flags;
     if (!(names[i].compare("ans") == 0)) {
       toWrite = cntxt->lookupVariable(names[i]);
-      if (!toWrite)
+      if (!toWrite.valid())
 	throw Exception(std::string("unable to find variable ")+
 			names[i]+" to save to file "+fname);
       flags = 'n';

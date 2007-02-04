@@ -676,8 +676,8 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       functionExpression(t,lhsCount,false,q);
       return;
     }
-    if (ptr->dataClass() == FM_FUNCPTR_ARRAY &&
-	ptr->isScalar()) {
+    if ((ptr->dataClass() == FM_FUNCPTR_ARRAY &&
+	 ptr->isScalar()) && (t.numchildren() > 1)) {
       q += FunctionPointerDispatch(*ptr,t.second(),1);
       return;
     }
@@ -3642,28 +3642,28 @@ void Interpreter::deref(Array &r, const tree &s) {
      else
        return Array::emptyConstructor();
    }
-   if (ptr->dataClass() == FM_FUNCPTR_ARRAY &&
-       ptr->isScalar()) {
+   if ((ptr->dataClass() == FM_FUNCPTR_ARRAY &&
+	ptr->isScalar()) && (t.numchildren() > 1)) {
      ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
-    if (m.size() >= 1)
-      return m[0];
-    else
-      return Array::emptyConstructor();
-  }
-  if (t.numchildren() == 1)
-    return *ptr;
-  if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
-    ArrayVector m(ClassRHSExpression(*ptr,t,this));
-    if (m.size() >= 1)
-      return m[0];
-    else
-      return Array::emptyConstructor();
-  }
-  Array r(*ptr);
-  for (unsigned index = 1;index < t.numchildren();index++) 
-    deref(r,t.child(index));
-  return r;
-}
+     if (m.size() >= 1)
+       return m[0];
+     else
+       return Array::emptyConstructor();
+   }
+   if (t.numchildren() == 1)
+     return *ptr;
+   if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
+     ArrayVector m(ClassRHSExpression(*ptr,t,this));
+     if (m.size() >= 1)
+       return m[0];
+     else
+       return Array::emptyConstructor();
+   }
+   Array r(*ptr);
+   for (unsigned index = 1;index < t.numchildren();index++) 
+     deref(r,t.child(index));
+   return r;
+ }
 
   
 int Interpreter::getErrorCount() {

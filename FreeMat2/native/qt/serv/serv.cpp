@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
     else {
       qDebug() << "Connecting";
       QTcpSocket *sock = server.nextPendingConnection();
+      qDebug() << "State: " << sock->state();
       while (sock->bytesAvailable() < (int)sizeof(quint64)) {
 	if (!sock->waitForReadyRead(1000)) {
 	  qDebug() << "TIMEOUT: " << sock->errorString();

@@ -1,10 +1,10 @@
 #include <QtNetwork>
 
 int main(int argc, char *argv[]) {
-  for (int i=0;i<100;i++) {
+  for (int i=0;i<500;i++) {
     QTcpSocket sock;
     sock.connectToHost("127.0.0.1",6003);
-    qDebug() << "Connect";
+    qDebug() << "Connect " << i;
     if (!sock.waitForConnected(1000)) {
       qDebug() << "Timeout on connect: " << sock.errorString();
       exit(1);

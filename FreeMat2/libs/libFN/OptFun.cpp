@@ -89,6 +89,15 @@ void lmdif1_(fcnptr, int*m, int*n, double*x, double*fvec, double*tol,
 //\]
 //Note that both @|x| and @|y| (and the output of the function) must all
 //be real variables.  Complex variables are not handled yet.
+//@@Tests
+//@{ test_fitfun1.m
+//% Test the fitfun bug (bug 1514605)
+//function test_val = test_fitfun1
+//O = 3/4*pi;
+//y0 = cos(O);
+//[x y] = fitfun('cos',3.5/4*pi,y0,1,0.01);
+//test_val = abs((x-O)/O*100)<.1;
+//@}
 //!
 ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size()<4) 

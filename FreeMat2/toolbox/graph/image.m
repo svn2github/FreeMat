@@ -64,6 +64,20 @@
 %@>
 %The resulting image looks like:
 %@figure image2
+%@@Tests
+%@{ test_image1.m
+%    % test image of an empty argument
+%function test_val = test_image1
+%a = [];
+%try
+%  % If this causes a segfault, it won't be caught.
+%  image(a);
+%catch
+%end
+%closeimage all;
+%test_val = 1;
+%
+%@}
 %!
 
 % Copyright (c) 2002-2006 Samit Basu

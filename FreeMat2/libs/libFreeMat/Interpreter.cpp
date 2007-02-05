@@ -1192,7 +1192,42 @@ void Interpreter::switchStatement(const tree &t) {
 //if_test(3)
 //if_test(pi)
 //@>
-//!
+//@@Tests
+//@{ test_if1.m
+//% Test the if statement
+//function test_val = test_if1
+//a = 1;
+//test_val = 0;
+//if (a == 1)
+//  test_val = 1;
+//end
+//@}
+//@{ test_if2.m
+//% Test the if-else statement
+//function test_val = test_if2
+//a = 1;
+//test_val = 0;
+//if (a == 0)
+//  test_val = 0;
+//else
+//  test_val = 1;
+//end
+//@}
+//@{ test_if3.m
+//% Test the if-elseif-else statement
+//function test_val = test_if3
+//a = 1;
+//test_val = 0;
+//if (a == 0)
+//  test_val = 0;
+//elseif (a == 3);
+//  test_val = 0;
+//elseif (a == 1);
+//  test_val = 1;
+//else
+//  test_val = 0;
+//end
+//@}//!
 //Works
 void Interpreter::ifStatement(const tree &t) {
   bool elseifMatched;
@@ -1375,6 +1410,50 @@ void ForLoopHelperComplex(const tree &codeBlock, Class indexClass,
 //with the values it is to take
 //@<
 //@>
+//@@Tests
+//@{ test_for1.m
+//% Test a simple 'for' statement
+//function test_val = test_for1
+//sum = 0;
+//for i = 1:10;
+// sum = sum + i;
+//end
+//test_val = test(sum == 55);
+//@}
+//@{ test_for2.m
+//% Test a simple 'for' statement with a continue clause
+//function test_val = test_for2
+//sum = 0;
+//for i = 1:10;
+// sum = sum + i;
+// if (i==5), continue; end
+// sum = sum - 1;
+//end
+//test_val = test(sum == 46);
+//@}
+//@{ test_for3.m
+//% Test a simple 'for' statement with a continue clause
+//function test_val = test_for3
+//sum = 0;
+//for i = 1:10;
+// sum = sum + i;
+// if (i==5), break; end;
+//end
+//test_val = test(sum == 15);
+//@}
+//@{ test_for4.m
+//% Test a simple 'for' statement with a return clause
+//function test_val = test_for4
+//tval = test_for4_assist;
+//test_val = test(tval == 15);
+//
+//function sum = test_for4_assist
+//sum = 0;
+//for i = 1:10;
+// sum = sum + i;
+// if (i==5), return; end;
+//end
+//@}
 //!
 //Works
 void Interpreter::forStatement(const tree &t) {
@@ -2803,6 +2882,34 @@ int getArgumentIndex(stringVector list, std::string t) {
 //
 //function test_call4_assist(&x)
 //x = 1;
+//@}
+//@{ test_fcall1.m
+//% Check to RHS function calls with multiple return values (b989865)
+//function test_val = test_fcall1
+//try 
+//b = 1:10;
+//B = addthem(min(b),max(b));
+//test_val = test(B == 11);
+//catch
+//test_val = 0;
+//end
+//
+//function c = addthem(a,b)
+//c = a + b;
+//@}
+//@{ test_fcall2.m
+//% Check function declaration with two return args
+//function test_val = test_fcall2
+//try
+//   [a,b] = fc2fuc(1,3,2);
+//   test_val = test(a == 4);
+//catch
+//   test_val = 0;
+//end
+//
+//function [a b] = fc2fuc(w,x,y)
+//  a = w+x;
+//  b = y;
 //@}
 //!
 

@@ -326,6 +326,55 @@ ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
 //b = r*a
 //full(b(p,q))
 //@>
+//@@Tests
+//@{ test_lu1.m
+//% Test the LU decomposition with 2 argument return for full matrices
+//function x = test_lu1
+//A = float(randn(20));
+//[L,U] = lu(A);
+//x = testeq(20,L*U,A);
+//A = double(randn(20));
+//[L,U] = lu(A);
+//x = x & testeq(20,L*U,A);
+//A = complex(randn(20)+i*randn(20));
+//[L,U] = lu(A);
+//x = x & testeq(20,L*U,A);
+//A = dcomplex(randn(20)+i*randn(20));
+//[L,U] = lu(A);
+//x = x & testeq(20,L*U,A);
+//
+//function x = testeq(tmag,a,b)
+//  d = full(a)-full(b);
+//  if (strcmp(typeof(d),'double') | strcmp(typeof(d),'dcomplex'))
+//    x = isempty(find(abs(d)>tmag*eps));
+//  else
+//    x = isempty(find(abs(d)>tmag*feps));
+//  end
+//@}
+//@{ test_lu2.m
+//% Test the LU decomposition with 3 argument return for full matrices
+//function x = test_lu2
+//A = float(randn(20));
+//[L,U,P] = lu(A);
+//x = testeq(20,L*U,P*A);
+//A = double(randn(20));
+//[L,U,P] = lu(A);
+//x = x & testeq(20,L*U,P*A);
+//A = complex(randn(20)+i*randn(20));
+//[L,U,P] = lu(A);
+//x = x & testeq(20,L*U,P*A);
+//A = dcomplex(randn(20)+i*randn(20));
+//[L,U,P] = lu(A);
+//x = x & testeq(20,L*U,P*A);
+//
+//function x = testeq(tmag,a,b)
+//  d = full(a)-full(b);
+//  if (strcmp(typeof(d),'double') | strcmp(typeof(d),'dcomplex'))
+//    x = isempty(find(abs(d)>tmag*eps));
+//  else
+//    x = isempty(find(abs(d)>tmag*feps));
+//  end
+//@}
 //!
 ArrayVector LUFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)

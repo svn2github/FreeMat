@@ -46,6 +46,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("tcprecv",TCPRecvFunction,2,1,"handle","timeout",NULL);
   context->addFunction("tcpclose",TCPCloseFunction,1,0,"handle",NULL);
   context->addFunction("tcpserverclose",TCPServerCloseFunction,1,0,"handle",NULL);
+  context->addFunction("tcpstate",TCPStateFunction,1,1,"handle",NULL);
   context->addFunction("cos",CosFunction,1,1,"x",NULL);
   context->addFunction("acos",ArccosFunction,1,1,"x",NULL);
   context->addFunction("csc",CscFunction,1,1,"x",NULL);

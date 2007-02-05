@@ -577,7 +577,21 @@ ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
 //@[
 //   tcpclose all
 //@]
-//to close all open sockets.
+//to close all open sockets.  Each close operation has a timeout
+//associated with it.  You can modify the timeout using the following
+//forms of the command:
+//@[
+//   tcpclose(handle,timeout)
+//@]
+//where @|timeout| is in milliseconds, and
+//@[
+//   tcpclose all timeout
+//@]
+//or
+//@[
+//   tcpclose('all',timeout)
+//@]
+//which are equivalent, and will close all sockets, each with the given timeout.
 //@@Example
 //See @|rpceval| for an example of how to use @|tcpclose|.
 //The following example works on a single machine, only because of
@@ -601,6 +615,10 @@ ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
 ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("tcpclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
+  int timeout = 30000;
+  qDebug() << "Closing socket";
+  if (arg.size() >= 2)
+    timeout = ArrayToInt32(arg[1]);
   if (arg[0].isString()) {
     const char *txtval = ArrayToString(arg[0]);
     if ((strcmp(txtval,"all")!=0) &&
@@ -610,8 +628,14 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
     for (int i=0;i<=m_sockets.maxHandle();i++) {
       try {
 	QTcpSocket *sock = m_sockets.lookupHandle(i);
-	if (sock)
+	if (sock) {
 	  sock->disconnectFromHost();
+	  if (sock->state() != QAbstractSocket::UnconnectedState)
+	    if (!sock->waitForDisconnected(timeout))
+	      throw Exception(string("Failed to disconnect socket: ") + sock->errorString().toStdString());
+	  delete sock;
+	}
+	m_sockets.deleteHandle(i);
       } catch (Exception &e) {
       }
     }
@@ -620,6 +644,11 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
   int handle = ArrayToInt32(arg[0]);
   QTcpSocket *sock = m_sockets.lookupHandle(handle);
   sock->disconnectFromHost();
+  if (sock->state() != QAbstractSocket::UnconnectedState)
+    if (!sock->waitForDisconnected(timeout))
+      throw Exception(string("Failed to disconnect socket: ") + sock->errorString().toStdString());
+  delete sock;
+  m_sockets.deleteHandle(handle);
   return ArrayVector();
 }
 
@@ -660,6 +689,7 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
 ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("tcpserverclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
+  qDebug() << "Closing server";
   if (arg[0].isString()) {
     const char *txtval = ArrayToString(arg[0]);
     if ((strcmp(txtval,"all")!=0) &&
@@ -671,6 +701,7 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
 	QTcpServer *sock = m_servers.lookupHandle(i);
 	if (sock)
 	  sock->close();
+	m_servers.deleteHandle(i);
       } catch (Exception &e) {
       }
     }
@@ -678,6 +709,7 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
   }
   int handle = ArrayToInt32(arg[0]);
   QTcpServer *sock = m_servers.lookupHandle(handle);
+  m_servers.deleteHandle(handle);
   sock->close();
   return ArrayVector();
 }
@@ -726,8 +758,11 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
 ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("tcpsend requires two arguments - the handle of the connection to use, and the array to send - an optional timeout can be specified also");
+  qDebug() << "Start send";
   unsigned int handle = ArrayToInt32(arg[0]);
   QTcpSocket *sock = m_sockets.lookupHandle(handle);
+  if (sock->state() != QAbstractSocket::ConnectedState)
+    throw Exception("tcpsend only works on connected sockets");
   int timeout = 30000;
   if (arg.size() == 3)
     timeout = ArrayToInt32(arg[2]);
@@ -739,9 +774,14 @@ ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
   putArrayToQDS(out,arg[1]);
   out.device()->seek(0);
   out << (quint64)(block.size() - sizeof(quint64));
+  qDebug() << "block size -> " << (quint64)(block.size() - sizeof(quint64));
   sock->write(block);
+  //  sock->flush();
+  qDebug() << "send: bytes to write: " << sock->bytesToWrite();
   if (!sock->waitForBytesWritten(timeout))
-    throw Exception("timout on tcpsend function");
+    throw Exception("timeout on tcpsend function:" + sock->errorString().toStdString());
+  qDebug() << "(after) send: bytes to write: " << sock->bytesToWrite();
+  qDebug() << "Done send";
   return ArrayVector();
 }
 
@@ -790,18 +830,27 @@ ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
 ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("tcprecv requires one argument - the handle of the connection to use - an optional timeout can be specified also.");
+  qDebug() << "Start recv";
   unsigned int handle = ArrayToInt32(arg[0]);
   int timeout = 30000;
   if (arg.size() == 2)
     timeout = ArrayToInt32(arg[1]);
   QTcpSocket *a_sock = m_sockets.lookupHandle(handle);
+  qDebug() << "receive socket state: " << a_sock->state() << " " << a_sock->isValid();
   while (a_sock->bytesAvailable() < (int)sizeof(quint64)) {
-    if (!a_sock->waitForReadyRead(timeout))
-      throw Exception(string("tcprecv failed to get blocksize prior to timeout"));
+    qDebug() << "bytes available = " << a_sock->bytesAvailable();
+     if (!a_sock->waitForReadyRead(timeout)) {
+       qDebug() << "TIMEOUT: bytes available = " << a_sock->bytesAvailable();
+       qDebug() << "TIMEOUT: receive socket state: " << a_sock->state() << " " << a_sock->isValid();
+       throw Exception(string("tcprecv failed to get blocksize:") + a_sock->errorString().toStdString() + " with " + a_sock->bytesAvailable() + " bytes available");
+     }
+//    sleep(1);
   }
   QDataStream in(a_sock);
+  in.setVersion(QDataStream::Qt_4_2);
   quint64 blockSize;
   in >> blockSize;
+  qDebug() << "block size = " << blockSize;
   while (a_sock->bytesAvailable() < blockSize) {
     if (!a_sock->waitForReadyRead(timeout))
       throw Exception(string("tcprecv failed to get data block prior to timeout"));
@@ -812,7 +861,50 @@ ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
     throw Exception(string("tcprecv failed to get proper magic number"));
   Array ret;
   getArrayFromQDS(in,ret);
+  qDebug() << "bytes left after get operation: " << a_sock->bytesAvailable();
+  qDebug() << "Done recv";
   return ArrayVector() << ret;
 }
 
-
+//!
+//@Module TCPSTATE State of a TCP socket
+//@@Section IO
+//@@Usage
+//Returns the state of a TCP socket given the handle (returned
+//either by @|tcpaccept| or @|tcpconnect|.  The general syntax
+//for its use is 
+//@[
+//   state = tcpstate(handle)
+//@]
+//where @|state| is a string that is either:
+//\begin{itemize}
+//   \item @|'unconnected'| if the socket is unconnected
+//   \item @|'hostlookup'| if the socket is performing a host name lookup
+//   \item @|'connecting'| if the socket has started establishing a connection
+//   \item @|'connected'| if the socket is connected
+//   \item @|'closing'| if the socket is about to close.
+//\end{itemize}
+//!
+ArrayVector TCPStateFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1)
+    throw Exception("tcpstate requires one argument - the handle of the socket to examine");
+  unsigned int handle = ArrayToInt32(arg[0]);
+  QTcpSocket *a_sock = m_sockets.lookupHandle(handle);
+  switch (a_sock->state()) {
+  case QAbstractSocket::UnconnectedState:
+    return ArrayVector() << Array::stringConstructor("unconnected");
+  case QAbstractSocket::HostLookupState:
+    return ArrayVector() << Array::stringConstructor("hostlookup");
+  case QAbstractSocket::ConnectingState:
+    return ArrayVector() << Array::stringConstructor("connecting");
+  case QAbstractSocket::ConnectedState:
+    return ArrayVector() << Array::stringConstructor("connected");
+  case QAbstractSocket::BoundState:
+    return ArrayVector() << Array::stringConstructor("bound");
+  case QAbstractSocket::ClosingState:
+    return ArrayVector() << Array::stringConstructor("closing");
+  case QAbstractSocket::ListeningState:
+    return ArrayVector() << Array::stringConstructor("listening");
+  }
+  return ArrayVector() << Array::stringConstructor("unknown");
+}

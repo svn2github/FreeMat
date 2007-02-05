@@ -55,7 +55,7 @@ void BaseFigureQt::paintEvent(QPaintEvent *e) {
   QPainter pnt(this);
   QTRenderEngine gc(&pnt,0,0,width(),height());
   hfig->PaintMe(gc);
-  QWidget::paintEvent(e);
+  //  QWidget::paintEvent(e);
 }
 
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 

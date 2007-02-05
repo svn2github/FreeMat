@@ -630,7 +630,7 @@ Dispatching of things like graphics calls and the like will need to be thread ma
 
 Goals:
 
-1. Threads          - DONE
+1. Threads          - DONE - still need to eliminate msgbuffers...
 2. Searching help
 3. RPC              - DONE
 4. Regression testing

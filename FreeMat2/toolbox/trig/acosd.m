@@ -18,10 +18,10 @@
 %acosd(0.5)
 %@>
 %@@Tests
-%@{"y=acosd(0.342)","70.00122819209012","close"}
-%@{"y=acosd(2)","75.45612929021689i","close"}
-%@{"y=acosd(0.523f)","58.4662971f","close"}
-%@{"y=acosd(0.5)","60","close"}
+%@$"y=acosd(0.342)","70.00122819209012","close"
+%@$"y=acosd(2)","75.45612929021689i","close"
+%@$"y=acosd(0.523f)","58.4662971f","close"
+%@$"y=acosd(0.5)","60","close"
 %!
 function y = acosd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))

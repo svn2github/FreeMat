@@ -516,7 +516,112 @@ int32 Array::getFieldIndex(std::string fName) {
   return getFieldIndexFromList(fName,fieldNames());
 }
 
-
+//!
+//@Module RESIZE Resizing an Array
+//@@Section Array
+//@@Usage
+//Arrays in FreeMat will resize themselves automatically
+//as required in order to accomodate assignments.  The rules
+//for resizing are as follows.  If an assignment is made to
+//an n-dimensional array (where n >= 2) that is outside the
+//current dimension bounds of the array, then the array is
+//zero padded until the it is large enough for the assignment
+//to work.  If the array is a scalar, and an assignment is 
+//made to the non-unity element, such as:
+//@[
+//a = 1;
+//a(3) = 4;
+//@]
+//then the result will be a row vector (in this case, of size 3).
+//Row and column vectors will be resized so as to preserve their
+//orientation.  And if an n-dimensional array is forced to resize
+//using the vector notation, then the result is a row vector.
+//@@Tests
+//@{ test_resize1.m
+//function test_val = test_resize1
+//% Check a normal resize in 2D
+//a = [];
+//a = [1,2;3,4];
+//a(3,3) = 1;
+//test_val = all(a == [1,2,0;3,4,0;0,0,1]);
+//@}
+//@{ test_resize2.m
+//function test_val = test_resize2
+//% Check a scalar -> vector resize
+//a = 1;
+//a(3) = 1;
+//test_val = all(a == [1,0,1]);
+//@}
+//@{ test_resize3.m
+//function test_val = test_resize3
+//% Check a row-vector -> vector resize
+//a = [1 2];
+//a(3) = 1;
+//test_val = all(a == [1,2,1]);
+//@}
+//@{ test_resize4.m
+//function test_val = test_resize4
+//% Check a column-vector -> vector resize
+//a = [1;2];
+//a(3) = 1;
+//test_val = all(a == [1;2;1]);
+//@}
+//@{ test_resize5.m
+//function test_val = test_resize5
+//a = 0;
+//a(2,1,2) = 0;
+//a(5) = 1;
+//test_val = all(a == [0,0,0,0,1]);
+//@}
+//@{ test_delete1.m
+//% Check the delete functionality in a vector setting
+//function test_val = test_delete1
+//a = [1,2,3,4,5];
+//a([2,3,4]) = [];
+//test_val = test(a == [1,5]);
+//@}
+//@{ test_delete2.m
+//% Check the delete functionality in an ndim setting
+//function test_val = test_delete2
+//a = [1,2,3;4,5,6];
+//a(:,2) = [];
+//test_val = test(a == [1,3;4,6]);
+//@}
+//@{ test_delete3.m
+//% Check the delete functionality in an ndim setting
+//function test_val = test_delete3
+//a = [1,2;3,4];
+//a(2,2,2) = 7;
+//a(:,:,2) = [];
+//test_val = test(a == [1,2;3,4]);
+//@}
+//@{ test_delete4.m
+//% Check the delete-all functionality in an ndim setting
+//function test_val = test_delete4
+//a = [1,2,3;4,5,6];
+//a(:,:) = [];
+//test_val = test(isempty(a));
+//@}
+//@{ test_delete5.m
+//% Check the delete-all functionality in a vector setting
+//function test_val = test_delete5
+//a = [1,2,3;4,5,6];
+//a(:) = [];
+//test_val = test(isempty(a));
+//@}
+//@{ test_delete6.m
+//% Check the multi-dim delete function with an invalid argument
+//function test_val = test_delete6
+//a = [1,2,3;4,5,6;7,8,9];
+//a(3,3,2) = 10;
+//test_val = 0;
+//try
+//  a(1,:,2) = [];
+//catch
+//  test_val = 1;
+//end
+////@}
+//!
 void Array::resize(Dimensions& a) {
   Dimensions newSize;
   // Make a copy of the current dimension vector, and

@@ -39,8 +39,8 @@
 %cast([1 0 3 0],'logical')
 %@>
 %@@Tests
-%@{"y=cast(pi,'uint8')","3","exact"}
-%@{"y=cast([1,0,3,0],'logical')","logical([1,0,1,0])","exact"}
+%@$"y=cast(pi,'uint8')","3","exact"
+%@$"y=cast([1,0,3,0],'logical')","logical([1,0,1,0])","exact"
 %!
 function y = cast(a,toclass)
     switch(toclass)

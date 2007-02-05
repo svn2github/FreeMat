@@ -18,8 +18,8 @@
 %cosd(60)
 %@>
 %@@Tests
-%@{"y=cosd(45)","0.70710678118655","close"}
-%@{"y=cosd(60)","0.5","close"}
+%@$"y=cosd(45)","0.70710678118655","close"
+%@$"y=cosd(60)","0.5","close"
 %!
 function y = cosd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))

@@ -17,9 +17,9 @@
 %rad2deg(2*pi) % Note that this is 360 not 0 degrees
 %@>
 %@@Tests
-%@{"y=rad2deg(1)","57.29577951308232","close"}
-%@{"y=rad2deg(pi/4)","45","close"}
-%@{"y=rad2deg(2*pi)","360","close"}
+%@$"y=rad2deg(1)","57.29577951308232","close"
+%@$"y=rad2deg(pi/4)","45","close"
+%@$"y=rad2deg(2*pi)","360","close"
 %!
 function y = rad2deg(x)
   if (isa(x,'float') || isa(x,'complex'))

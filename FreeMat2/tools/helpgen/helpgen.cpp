@@ -618,7 +618,7 @@ void TestWriter::OutputText(QString text) {
   myStream << "\n";
   myStream << test_pattern.cap(1) << ";\n";
   myStream << "q=" << test_pattern.cap(2) << ";\n";
-  myStream << "success = test_" << test_pattern.cap(3) << "(q,y);\n";
+  myStream << "success = match_" << test_pattern.cap(3) << "(q,y);\n";
   myStream << "\n";
   num++;
 }
@@ -1327,7 +1327,7 @@ void WriteMainTestRoutine() {
   o += "   end\n";
   WriteFile(sourcepath+"/help/test/run_tests.m",o);
   QString q;
-  q += "function result = test_exact(a,b)\n";
+  q += "function result = match_exact(a,b)\n";
   q += "  if (~iscell(a))\n";
   q += "   result = all(a == b);\n";
   q += "  else\n";
@@ -1336,15 +1336,15 @@ void WriteMainTestRoutine() {
   q += "      return;\n";
   q += "    end\n";
   q += "    for i = 1:numel(a)\n";
-  q += "      result = test_exact(a{i},b{i});\n";
+  q += "      result = match_exact(a{i},b{i});\n";
   q += "      if (~result) return; end;\n";
   q += "    end;\n";
   q += "  end\n";
-  WriteFile(sourcepath+"/help/test/test_exact.m",q);
+  WriteFile(sourcepath+"/help/test/match_exact.m",q);
   QString p;
-  p += "function result = test_close(a,b)\n";
+  p += "function result = match_close(a,b)\n";
   p += "  result = max(abs(a-b)./abs(a)) < 10*eps;\n";
-  WriteFile(sourcepath+"/help/test/test_close.m",p);
+  WriteFile(sourcepath+"/help/test/match_close.m",p);
 }
 
 void ConsoleWidget::Run() {

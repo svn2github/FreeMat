@@ -9,8 +9,8 @@
 %   y = secd(x)
 %@]
 %@@Tests
-%@{"y=secd(45)","sqrt(2)","close"}
-%@{"y=secd(60)","2","close"}
+%@$"y=secd(45)","sqrt(2)","close"
+%@$"y=secd(60)","2","close"
 %!
 function y = secd(x)
   if (nargin == 0 || ~isnumeric(x))

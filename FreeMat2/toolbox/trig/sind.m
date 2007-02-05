@@ -18,8 +18,8 @@
 %sind(30)
 %@>
 %@@Tests
-%@{"y=sind(45)","0.70710678118655","close"}
-%@{"y=sind(30)","0.5","close"}
+%@$"y=sind(45)","0.70710678118655","close"
+%@$"y=sind(30)","0.5","close"
 %!
 function y = sind(x)
   if (nargin == 0 || ~isnumeric(x))

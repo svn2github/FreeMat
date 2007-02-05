@@ -32,8 +32,8 @@
 %bitcmp(3,4)
 %@>
 %@@Tests
-%@{"y=bitcmp(uint8(55))","200","exact"}
-%@{"y=bitcmp(uint16(55))","65480","exact"}
+%@$"y=bitcmp(uint8(55))","200","exact"
+%@$"y=bitcmp(uint16(55))","65480","exact"
 %!
 function y = bitcmp(a,n)
     if (nargin == 1)

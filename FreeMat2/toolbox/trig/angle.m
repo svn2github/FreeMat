@@ -29,8 +29,8 @@
 %@>
 %   M version contributor: M.W. Vogel 01-30-06
 %@@Tests
-%@{"y=angle(3+4*i)","0.92729521800161","close"}
-%@{"y=angle(4)","0","exact"}
+%@$"y=angle(3+4*i)","0.92729521800161","close"
+%@$"y=angle(4)","0","exact"
 %!
 function p = angle(c)
 

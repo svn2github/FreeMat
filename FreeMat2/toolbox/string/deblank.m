@@ -24,8 +24,8 @@
 %deblank({'hello  ','there ','  is  ','  sign  '})
 %@>
 %@@Tests
-%@{"y=deblank(' hello   ')","' hello'","exact"}
-%@{"y=deblank({'hello  ','there ','  is  ','  sign  '})","{'hello','there','  is','  sign'}","exact"}
+%@$"y=deblank(' hello   ')","' hello'","exact"
+%@$"y=deblank({'hello  ','there ','  is  ','  sign  '})","{'hello','there','  is','  sign'}","exact"
 %!
 function y = deblank(x)
   if (isstr(x))

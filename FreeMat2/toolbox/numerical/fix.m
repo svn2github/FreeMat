@@ -17,9 +17,9 @@
 %fix(a)
 %@>
 %@@Tests
-%@{"y=fix(pi)","3","exact"}
-%@{"y=fix(-e)","-2","exact"}
-%@{"y=fix(3.1-2.3i)","3-2i","exact"}
+%@$"y=fix(pi)","3","exact"
+%@$"y=fix(-e)","-2","exact"
+%@$"y=fix(3.1-2.3i)","3-2i","exact"
 %!
 function y = fix(x)
   if (isreal(x))

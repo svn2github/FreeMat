@@ -21,7 +21,7 @@
 %bitand([3 4 2 3 10 12],1)
 %@>
 %@@Tests
-%@{"y=bitand(13,27)","9","exact"}
+%@$"y=bitand(13,27)","9","exact"
 %!
 
 function y = bitand(a,b)

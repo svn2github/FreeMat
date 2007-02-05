@@ -39,6 +39,14 @@
 %B = A([2,1,3,4,5],:);
 %det(B)
 %@>
+%@@Tests
+%@{  test_det1.m
+%% Test the determinant calculation (bug 1584651)
+%function test_val = test_det1
+%A = [1 2
+%       3 4];
+%test_val = (det(A) == -2)
+%@}
 %!
 function y = det(A)
     if (~isnumeric(A))

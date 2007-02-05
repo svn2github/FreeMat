@@ -9,8 +9,8 @@
 %   y = cscd(x)
 %@]
 %@@Tests
-%@{"y=cscd(45)","1.41421356237309","close"}
-%@{"y=cscd(60)","1.15470053837925","close"}
+%@$"y=cscd(45)","1.41421356237309","close"
+%@$"y=cscd(60)","1.15470053837925","close"
 %!
 function y = cscd(x)
   if (nargin == 0 || ~isnumeric(x))

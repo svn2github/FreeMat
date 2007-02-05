@@ -538,6 +538,301 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //[VN,DN] = eig(B,'nobalance')
 //B*VN - VN*DN
 //@>
+//@@Tests
+//@{ test_eig1.m
+//% Test eigenvalue function - general matrices
+//function t = test_eig1
+//% First the float version
+//t1all = 1;
+//for i=2:4:100
+//  a = float(randn(i)); 
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('full: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t1all = t1all & t1 & tb;
+//end
+//% Now the double version
+//t2all = 1;
+//for i=2:4:100
+//  a = double(randn(i)); 
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('double: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t2all = t2all & t1 & tb;
+//end
+//% Now the complex version
+//t3all = 1;
+//for i=2:4:100
+//  a = complex(randn(i)+j*randn(i)); 
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('complex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t3all = t3all & t1 & tb;
+//end
+//% Now the double version
+//t4all = 1;
+//for i=2:4:100
+//  a = dcomplex(randn(i)+j*randn(i)); 
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('dcomplex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t4all = t4all & t1 & tb;
+//end
+//t = t1all & t2all & t3all & t4all;
+//@}
+//@{ test_eig2.m
+//% Test eigenvalue function - symmetric matrices
+//function t = test_eig2
+//% First the float version
+//t1all = 1;
+//for i=2:4:100
+//  a = float(randn(i)); a = a + a';
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t1all = t1all & t1 & tb;
+//end
+//% Now the double version
+//t2all = 1;
+//for i=2:4:100
+//  a = double(randn(i)); a = a + a';
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t2all = t2all & t1 & tb;
+//end
+//% Now the complex version
+//t3all = 1;
+//for i=2:4:100
+//  a = complex(randn(i)+j*randn(i)); a = a + a';
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t3all = t3all & t1 & tb;
+//end
+//% Now the double version
+//t4all = 1;
+//for i=2:4:100
+//  a = dcomplex(randn(i)+j*randn(i)); a = a + a';
+//  [v,d] = eig(a);
+//  emat = a*v - v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t4all = t4all & t1 & tb;
+//end
+//t = t1all & t2all & t3all & t4all;
+//@}
+//@{ test_eig3.m
+//% Test the 'nobalance' option for eig
+//function t = test_eig3
+//B = [3,-2,-.9,2*eps;-2,4,1,-eps;-eps/4,eps/2,-1,0;-.5,-.5,.1,1];
+//[VN,DN] = eig(B,'nobalance');
+//er = B*VN - VN*DN;
+//er = max(abs(er(:)));
+//bnd = 1.2*max(diag(DN))*eps*8;
+//t = (er < bnd);
+//@}
+//@{ test_eig4.m
+//% Test generalized eigenvalue function - general matrices 
+//function t = test_eig4
+//% First the float version
+//t1all = 1;
+//for i=2:4:100
+//  a = float(randn(i)); 
+//  b = float(randn(i)); 
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 8*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('float: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t1all = t1all & t1 & tb;
+//end
+//% Now the double version
+//t2all = 1;
+//for i=2:4:100
+//  a = double(randn(i)); 
+//  b = double(randn(i)); 
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 8*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('double: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t2all = t2all & t1 & tb;
+//end
+//% Now the complex version
+//t3all = 1;
+//for i=2:4:100
+//  a = complex(randn(i)+j*randn(i)); 
+//  b = complex(randn(i)+j*randn(i)); 
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 8*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('complex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t3all = t3all & t1 & tb;
+//end
+//% Now the double version
+//t4all = 1;
+//for i=2:4:100
+//  a = dcomplex(randn(i)+j*randn(i)); 
+//  b = dcomplex(randn(i)+j*randn(i)); 
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 8*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('dcomplex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t4all = t4all & t1 & tb;
+//end
+//t = t1all & t2all & t3all & t4all;
+//@}
+//@{ test_eig5.m
+//% Test generalized eigenvalue function - symmetric matrices
+//function t = test_eig5
+//% First the float version
+//t1all = 1;
+//for i=2:4:100
+//  a = float(randn(i)); a = a + a'; 
+//  b = float(randn(i)); b = b*b';
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t1all = t1all & t1 & tb;
+//end
+//% Now the double version
+//t2all = 1;
+//for i=2:4:100
+//  a = double(randn(i)); a = a + a';
+//  b = double(randn(i)); b = b*b';
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t2all = t2all & t1 & tb;
+//end
+//% Now the complex version
+//t3all = 1;
+//for i=2:4:100
+//  a = complex(randn(i)+j*randn(i)); a = a + a';
+//  b = complex(randn(i)+j*randn(i)); b = b*b';
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*feps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t3all = t3all & t1 & tb;
+//end
+//% Now the double version
+//t4all = 1;
+//for i=2:4:100
+//  a = dcomplex(randn(i)+j*randn(i)); a = a + a';
+//  b = dcomplex(randn(i)+j*randn(i)); b = b*b';
+//  [v,d] = eig(a,b);
+//  emat = a*v - b*v*d;
+//  er = max(abs(emat(:)));
+//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*eps*i;
+//  t1 = (er < bnd);
+//  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
+//  g = eig(a,b);
+//  e2 = max(abs(g-diag(d)));
+//  tb = e2<bnd;
+//  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
+//  t4all = t4all & t1 & tb;
+//end
+//t = t1all & t2all & t3all & t4all;
+//@}
 //!
 ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
   bool balance;
@@ -1538,7 +1833,47 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg) {
 //diag(x)
 //diag(x,-1)
 //@>
+//@@Tests
+//@{ test_diag1.m
+//% Test the diagonal extraction function
+//function test_val = test_diag1
+//a = [1,2,3,4;5,6,7,8;9,10,11,12];
+//b = diag(a);
+//test_val = test(b == [1;6;11]);
+//@}
+//@{ test_diag2.m
+//% Test the diagonal extraction function with a non-zero diagonal
+//function test_val = test_diag2
+//a = [1,2,3,4;5,6,7,8;9,10,11,12];
+//b = diag(a,1);
+//test_val = test(b == [2;7;12]);
+//@}
+//@{ test_diag3.m
+//% Test the diagonal creation function
+//function test_val = test_diag3
+//a = [2,3];
+//b = diag(a);
+//test_val = test(b == [2,0;0,3]);
+//@}
+//@{ test_diag4.m
+//% Test the diagonal creation function with a non-zero diagonal
+//function test_val = test_diag4
+//a = [2,3];
+//b = diag(a,-1);
+//test_val = test(b == [0,0,0;2,0,0;0,3,0]);
+//@}
+//@{ test_diag5.m
+//% Test the diagonal creation function with no arguments (bug 1620051)
+//function test_val = test_diag5
+//test_val = 1;
+//try
+//  b = diag;
+//catch
+//  test_val = 1;
+//end
+//@}
 //!
+
 ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
   Array a;
   Array b;
@@ -1597,6 +1932,26 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
 //@<
 //isempty(x)
 //@>
+//@@Tests
+//@{ test_empty.m
+//% Test the arithmetic operators with empty arguments
+//function test_val = test_empty
+//test_val = isempty([]+[]);
+//test_val = test_val & isempty([]-[]);
+//test_val = test_val & isempty(-[]);
+//test_val = test_val & isempty([]*[]);
+//test_val = test_val & isempty([]/[]);
+//test_val = test_val & isempty([]\[]);
+//test_val = test_val & isempty([].*[]);
+//test_val = test_val & isempty([]./[]);
+//test_val = test_val & isempty([].\[]);
+//test_val = test_val & isempty([]^[]);
+//test_val = test_val & isempty([].^[]);
+//test_val = test_val & isempty([]>[]);
+//test_val = test_val & isempty([]>=[]);
+//test_val = test_val & isempty([]<[]);
+//test_val = test_val & isempty([]<=[]);
+//@}
 //!
 ArrayVector IsEmptyFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)

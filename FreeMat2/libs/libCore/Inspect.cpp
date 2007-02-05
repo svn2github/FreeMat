@@ -800,6 +800,28 @@ ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //exist('b')
 //exist('c')
 //@>
+//@@Tests
+//@{ test_exist1.m
+//function x = test_exist1
+//x = test_exist1_assist;
+//x = test_exist1_assist;
+//
+//function y = test_exist1_assist
+//persistent x
+//if (exist('x'))
+//  y = 1;
+//else
+//  y = 0;
+//  x = 1;
+//end
+//@}
+//@{ test_exist2.m
+//function x = test_exist2
+//persistent y
+//if (exist('y'))
+//  return 1;
+//end
+//@}
 //!
 ArrayVector ExistFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 1)

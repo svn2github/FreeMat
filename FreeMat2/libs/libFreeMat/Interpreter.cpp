@@ -1574,6 +1574,14 @@ void Interpreter::persistentStatement(const tree &t) {
 //continue_ex
 //sum([1:4,6:10])
 //@>
+//@@Tests
+//@{ test_continue1.m
+//% Test the continuation character with white space after it (bug 1642992)
+//function test_val = test_continue1
+//test_val = ...    % This should be ignored
+//   ...            % So should this
+//   1;
+//@}
 //!
 
 //!
@@ -1978,6 +1986,154 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
     //   a3{3} = rhs   data{3} = rhs
     //   a2.foo = a3   
     //   id(etc) = a2;
+
+//!
+//@Module ASSIGN Making assignments
+//@@Section ARRAY
+//@@Usage
+//FreeMat assignments take a number of different forms, depending 
+//on the type of the variable you want to make an assignment to.
+//For numerical arrays and strings, the form of an assignment
+//is either
+//@[
+//  a(ndx) = val
+//@]
+//where @|ndx| is a set of vector indexing coordinates.  This means
+//that the values @|ndx| takes reference the elements of @|a| in column
+//order.  So, if, for example @|a| is an @|N x M| matrix, the first column
+//has vector indices @|1,2,...,N|, and the second column has indices
+//@|N+1,N+2,...,2N|, and so on.  Alternately, you can use multi-dimensional
+//indexing to make an assignment:
+//@[
+//  a(ndx_1,ndx_2,..,ndx_m) = val
+//@]
+//where each indexing expression @|ndx_i| corresponds to the @|i-th| dimension
+//of @|a|.  In both cases, (vector or multi-dimensional indexing), the
+//right hand side @|val| must either be a scalar, an empty matrix, or of the
+//same size as the indices.  If @|val| is an empty matrix, the assignment acts
+//like a delete.  Note that the type of @|a| may be modified by the assignment.
+//So, for example, assigning a @|double| value to an element of a @|float| 
+//array @|a| will cause the array @|a| to become @|double|.  
+//
+//For cell arrays, the above forms of assignment will still work, but only
+//if @|val| is also a cell array.  If you want to assign the contents of
+//a cell in a cell array, you must use one of the two following forms, either
+//@[
+//  a{ndx} = val
+//@]
+//or
+//@[
+//  a{ndx_1,ndx_2,...,ndx_m} = val
+//@]
+//which will modify the contents of the cell.
+//@@Tests
+//@{ test_assign1.m
+//% Test the assignment of a value to a cell array as a vector-contents
+//function test_val = test_assign1
+//a = {1,2,3,4,5};
+//a{5} = -1;
+//test_val = test(a{5} == -1);
+//@}
+//@{ test_assign2.m
+//% Test the assignment of a value to a cell array as a vector-contents.
+//function test_val = test_assign2
+//a = {1,2,3,4,5};
+//test_val = 0;
+//try
+//a{5:6} = -1;
+//catch
+//test_val = 1;
+//end
+//@}
+//@{ test_assign3.m
+//% Test the assignment of a value to a cell-array using content-based n-dim indexing
+//function test_val = test_assign3
+//a = {1,2;4,5};
+//test_val = 0;
+//try
+//a{2,1:2} = -1;
+//catch
+//test_val = 1;
+//end
+//@}
+//@{ test_assign4.m
+//% Test the assignment of a value to a cell array as an n-dim indexing
+//function test_val = test_assign4
+//a = {1,2,3;4,5,6};
+//a{2,3} = -1;
+//test_val = test(a{6} == -1);
+//@}
+//@{ test_assign5.m
+//% Test the field assignment with a scalar struct
+//function test_val = test_assign5
+//a = struct('foo',5);
+//a.foo = -1;
+//test_val = test(a.foo == -1);
+//@}
+//@{ test_assign6.m
+//% Test the field assignment with a vector struct (should cause an error)
+//function test_val = test_assign6
+//a = struct('foo',{5,7});
+//test_val = 0;
+//try
+//a.foo = -1;
+//catch
+//test_val = 1;
+//end
+//@}
+//@{ test_assign7.m
+//% Test the empty assignment for the empty cell array
+//function test_val = test_assign7
+//a = {};
+//test_val = isempty(a);
+//@}
+//@{ test_assign8.m
+//% Test the empty assignment for the empty array
+//function test_val = test_assign8
+//a = [];
+//test_val = isempty(a);
+//@}
+//@{ test_assign9.m
+//% Test for reassign bug in repmat
+//function t = test_assign9
+//a = {1,2,3};
+//b = repmat(a,2);
+//b = 'good';
+//t = 1;
+//@}
+//@{ test_assign10.m
+//% Test for multiple assign with structures
+//function test_val = test_assign10
+//a = zeros(3,4);
+//[m.x m.y] = size(a);
+//test_val = (m.x == 3) & (m.y == 4);
+//@}
+//@{ test_assign11.m
+//% Test for multiple assign with arrays
+//function test_val = test_assign11
+//a = zeros(3,4);
+//[b(1), b(2)] = size(a);
+//test_val = (b(1) == 3) & (b(2) == 4);
+//@}
+//@{ test_assign12.m
+//% Test for column assignment bug with complex arrays
+//function test_val = test_assign12
+//    A = [1+i 3-i 5+3i
+//         7-i 8+9i 6+i
+//         9   8-i   5i];
+//    B = A;
+//    A(:,2) = 0;
+//    B(1:3,2) = 0;
+//    test_val = all(A==B);
+//@}
+//@{ test_assign13.m
+//% Test for assignment of empties to an empty
+//function test_val = test_assign13
+//    A = [];
+//    A([],[],[]) = [];
+//    test_val = 1;
+//@}
+//!
 void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   string name(var.first().text());
   ArrayReference ptr(context->lookupVariable(name));
@@ -2602,6 +2758,52 @@ int getArgumentIndex(stringVector list, std::string t) {
 //euclidlength(3,4)
 //euclidlength(2,0)
 //@>
+//@@Tests
+//@{ test_call1.m
+//% test the multiple left-hand side call with a pre-existing cell-array
+//function test_val = test_call1
+//d1 = {1,2};
+//d2 = {5};
+//d3 = {6};
+//[d1,d2,d3] = test_call1_assist;
+//test_val = test(d1 == 1) & test(d2 == 4) & test(d3 == 3);
+//
+//function [a,b,c] = test_call1_assist
+//a = 1;
+//b = 4;
+//c = 3;
+//@}
+//@{ test_call2.m
+//% test the multiple left-hand side call with a pre-existing cell-array
+//function test_val = test_call2
+//[d1{1:3}] = test_call2_assist;
+//test_val = test(d1{1} == 1) & test(d1{2} == 4) & test(d1{3} == 3);
+//
+//function [a,b,c] = test_call2_assist
+//a = 1;
+//b = 4;
+//c = 3;
+//@}
+//@{ test_call3.m
+//% test calls with pass-by-reference
+//function test_val = test_call3
+//d1 = 3;
+//test_call3_assist(d1);
+//test_val = test(d1 == 1);
+//
+//function test_call3_assist(&x)
+//x = 1;
+//@}
+//@{ test_call4.m
+//% test calls with pass-by-reference
+//function test_val = test_call4
+//d1.foo = 3;
+//test_call4_assist(d1.foo);
+//test_val = test(d1.foo == 1);
+//
+//function test_call4_assist(&x)
+//x = 1;
+//@}
 //!
 
 //!

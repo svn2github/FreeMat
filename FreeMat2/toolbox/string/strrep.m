@@ -22,8 +22,8 @@
 %strrep({'time is money';'A stitch in time';'No time for games'},'time','money')
 %@>
 %@@Tests
-%@{"y=strrep('Matlab is great','Matlab','FreeMat')","'FreeMat is great'","exact"}
-%@{"y=strrep({'time is money';'A stitch in time';'No time for games'},'time','money')","{'money is money';'A stitch in money';'No money for games'}","exact"}
+%@$"y=strrep('Matlab is great','Matlab','FreeMat')","'FreeMat is great'","exact"
+%@$"y=strrep({'time is money';'A stitch in time';'No time for games'},'time','money')","{'money is money';'A stitch in money';'No money for games'}","exact"
 %!
 
 function y = strrep(source,pattern,replace)

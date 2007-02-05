@@ -15,9 +15,8 @@
 %deg2rad(360) - 2*pi
 %@>
 %@@Tests
-%@{"y=deg2rad(45)","pi/4","close"}
+%@$"y=deg2rad(45)","pi/4","close"
 %!
-% Copyright (c) 2002-2006 Samit Basu
 
 function y = deg2rad(x)
   if (isa(x,'float') || isa(x,'complex'))

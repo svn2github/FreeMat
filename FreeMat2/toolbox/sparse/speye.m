@@ -23,7 +23,7 @@
 %full(I(1:10,1:10))
 %@>
 %@@Tests
-%@{"I=speye(5000);y=full(I(1:10,1:10))","eye(10)","exact"}
+%@$"I=speye(5000);y=full(I(1:10,1:10))","eye(10)","exact"
 %!
 
 % Copyright (c) 2002-2006 Samit Basu

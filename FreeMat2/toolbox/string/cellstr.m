@@ -17,7 +17,7 @@
 %cellstr(a)
 %@>
 %@@Tests
-%@{"y=cellstr(['quick';'brown';'fox  ';'is   '])","{'quick';'brown';'fox';'is'}","exact"}
+%@$"y=cellstr(['quick';'brown';'fox  ';'is   '])","{'quick';'brown';'fox';'is'}","exact"
 %!
 function A = cellstr(x)
   if (iscell(x))

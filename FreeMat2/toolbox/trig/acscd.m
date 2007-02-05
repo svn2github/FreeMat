@@ -18,10 +18,10 @@
 %acscd(0.5)
 %@>
 %@@Tests
-%@{"y=acscd(0.342)","90.0-99.43555562312426i","close"}
-%@{"y=acscd(2)","30","close"}
-%@{"y=acscd(0.523f)","90.0f-72.4573669fi","close"}
-%@{"y=acscd(0.5)","90.0-75.45612929021689i","close"}
+%@$"y=acscd(0.342)","90.0-99.43555562312426i","close"
+%@$"y=acscd(2)","30","close"
+%@$"y=acscd(0.523f)","90.0f-72.4573669fi","close"
+%@$"y=acscd(0.5)","90.0-75.45612929021689i","close"
 %!
 function y = acscd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))

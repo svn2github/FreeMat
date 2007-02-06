@@ -479,25 +479,6 @@ ArrayVector TCPServerFunction(int nargout, const ArrayVector& arg) {
 //The default timeout is set to 30 seconds.  To
 //close the socket returned by @|tcpaccept| you must call @|tcpclose|.
 //The resulting handle is identical to one returned by @|tcpconnect|.
-//@@Example
-//See @|rpcserver| for an example of how to use @|tcpaccept|.  
-//The following example works on a single machine, only because of
-//buffering in the TCP implementation.  In practice, the 
-//server and send sockets would be on different machines
-//@<
-//server = tcpserver(6010);             % Start up the server
-//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
-//                                      % Will succeed because the server is running
-//recv = tcpaccept(server);             % Accept the connection we just tried to make
-//                                      % Will succeed because of the tcpconnect call
-//msg = 'Hello';                        % Create a message to send through the loop
-//tcpsend(send,msg);                    % Push the message through the socket
-//tcprecv(recv)                         % Out it comes through the other side
-//tcpsend(recv,msg);                    % Sockets are bi-directional
-//tcprecv(send)
-//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
-//tcpserverclose(server);               % Close the server socket
-//@>
 //!
 ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
@@ -533,20 +514,6 @@ ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
 //The following example works on a single machine, only because of
 //buffering in the TCP implementation.  In practice, the 
 //server and send sockets would be on different machines
-//@<
-//server = tcpserver(6010);             % Start up the server
-//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
-//                                      % Will succeed because the server is running
-//recv = tcpaccept(server);             % Accept the connection we just tried to make
-//                                      % Will succeed because of the tcpconnect call
-//msg = 'Hello';                        % Create a message to send through the loop
-//tcpsend(send,msg);                    % Push the message through the socket
-//tcprecv(recv)                         % Out it comes through the other side
-//tcpsend(recv,msg);                    % Sockets are bi-directional
-//tcprecv(send)
-//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
-//tcpserverclose(server);               % Close the server socket
-//@>
 //!
 ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
@@ -592,25 +559,6 @@ ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
 //   tcpclose('all',timeout)
 //@]
 //which are equivalent, and will close all sockets, each with the given timeout.
-//@@Example
-//See @|rpceval| for an example of how to use @|tcpclose|.
-//The following example works on a single machine, only because of
-//buffering in the TCP implementation.  In practice, the 
-//server and send sockets would be on different machines
-//@<
-//server = tcpserver(6010);             % Start up the server
-//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
-//                                      % Will succeed because the server is running
-//recv = tcpaccept(server);             % Accept the connection we just tried to make
-//                                      % Will succeed because of the tcpconnect call
-//msg = 'Hello';                        % Create a message to send through the loop
-//tcpsend(send,msg);                    % Push the message through the socket
-//tcprecv(recv)                         % Out it comes through the other side
-//tcpsend(recv,msg);                    % Sockets are bi-directional
-//tcprecv(send)
-//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
-//tcpserverclose(server);               % Close the server socket
-//@>
 //!
 ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
@@ -666,25 +614,6 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
 //   tcpserverclose all
 //@]
 //to close all open servers.
-//@@Example
-//See @|rpcserver| for an example of how to use @|tcpserverclose|.
-//The following example works on a single machine, only because of
-//buffering in the TCP implementation.  In practice, the 
-//server and send sockets would be on different machines
-//@<
-//server = tcpserver(6010);             % Start up the server
-//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
-//                                      % Will succeed because the server is running
-//recv = tcpaccept(server);             % Accept the connection we just tried to make
-//                                      % Will succeed because of the tcpconnect call
-//msg = 'Hello';                        % Create a message to send through the loop
-//tcpsend(send,msg);                    % Push the message through the socket
-//tcprecv(recv)                         % Out it comes through the other side
-//tcpsend(recv,msg);                    % Sockets are bi-directional
-//tcprecv(send)
-//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
-//tcpserverclose(server);               % Close the server socket
-//@>
 //!
 ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
@@ -734,26 +663,6 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
 //  tcpsend(handle,array,timeout)
 //@]
 //where @|timeout| is in milliseconds.
-//@@Example
-//See @|rpcserver| and @|rpceval| for examples of how to use
-//@|tcpsend|.  
-//The following example works on a single machine, only because of
-//buffering in the TCP implementation.  In practice, the 
-//server and send sockets would be on different machines
-//@<
-//server = tcpserver(6010);             % Start up the server
-//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
-//                                      % Will succeed because the server is running
-//recv = tcpaccept(server);             % Accept the connection we just tried to make
-//                                      % Will succeed because of the tcpconnect call
-//msg = 'Hello';                        % Create a message to send through the loop
-//tcpsend(send,msg);                    % Push the message through the socket
-//tcprecv(recv)                         % Out it comes through the other side
-//tcpsend(recv,msg);                    % Sockets are bi-directional
-//tcprecv(send)
-//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
-//tcpserverclose(server);               % Close the server socket
-//@>
 //!
 ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
@@ -806,26 +715,6 @@ ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
 //  array = tcprecv(handle,timeout)
 //@]
 //where @|timeout| is in milliseconds.
-//@@Example
-//See @|rpcserver| and @|rpceval| for examples of how to use
-//@|tcprecv|.  
-//The following example works on a single machine, only because of
-//buffering in the TCP implementation.  In practice, the 
-//server and send sockets would be on different machines
-//@<
-//server = tcpserver(6010);             % Start up the server
-//send = tcpconnect('127.0.0.1',6010);  % Connect to the server just started
-//                                      % Will succeed because the server is running
-//recv = tcpaccept(server);             % Accept the connection we just tried to make
-//                                      % Will succeed because of the tcpconnect call
-//msg = 'Hello';                        % Create a message to send through the loop
-//tcpsend(send,msg);                    % Push the message through the socket
-//tcprecv(recv)                         % Out it comes through the other side
-//tcpsend(recv,msg);                    % Sockets are bi-directional
-//tcprecv(send)
-//tcpclose(recv); tcpclose(send);       % Close the tcp sockets
-//tcpserverclose(server);               % Close the server socket
-//@>
 //!
 ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)

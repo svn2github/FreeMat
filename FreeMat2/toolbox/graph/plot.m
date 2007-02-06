@@ -143,10 +143,20 @@
 %mprint plot6
 %@>
 %@figure plot6
+%@@Tests
+%@{ test_plot1.m
+%% test plot of an empty argument
+%function test_val = test_plot1
+%a = [];
+%try
+%  % If this causes a segfault, it won't be caught.
+%  plot(a,a);
+%catch
+%end
+%closeplot all;
+%test_val = 1;
+%@}
 %!
-
-% Copyright (c) 2002-2006 Samit Basu
-
 function ohandle = plot(varargin)
    % Check for an axes handle
    if (nargin>=2)

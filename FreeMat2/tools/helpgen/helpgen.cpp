@@ -50,7 +50,6 @@ QStringList sectionOrdered;
 int moduledepth = 0;
 QString sourcepath;
 
-
 HelpHandler::HelpHandler(Interpreter *interp, 
 			 QStringList cmds) {
   m_interp = interp;
@@ -124,6 +123,15 @@ void Halt(QString emsg) {
   m_loop.exec();  
   exit(0);
 }
+
+void WriteFile(QString filename, QString data) {
+  QFile file(filename);
+  if (!file.open(QFile::WriteOnly))
+    Halt("Unable to open "+filename+" for output");
+  QTextStream o(&file);
+  o << data;
+}
+
 
 // Base class for all Help output formats (text, html, latex)
 class HelpWriter {
@@ -525,7 +533,10 @@ class BBTestWriter : public HelpWriter {
 };
 
 void BBTestWriter::DoComputeBlock(QStringList cmdList, int errorsExpected) {
-  if (module.toLower() != "retall") {
+  if ((module.toLower() != "retall")  &&
+      (module.toLower() != "keyboard") &&
+      (module.toLower() != "return")
+      (module.toLower() != "warning")) {
     // First, try to wrap each line in a try/catch
     *stream << "NumErrors = 0;\n";
     for (int i=0;i<cmdList.size();i++) {
@@ -604,7 +615,7 @@ void TestWriter::BeginGroup(QString groupname) {
 
 void TestWriter::OutputText(QString text) {
   if (ignore) return;
-  QRegExp test_pattern("@\\{\"([^\"]*)\",\"([^\"]*)\",\"([^\"]*)\"\\}");
+  QRegExp test_pattern("@\\$\"([^\"]*)\",\"([^\"]*)\",\"([^\"]*)\"");
   if (test_pattern.indexIn(text) < 0)
     Halt("Bad line: " + text);
   QString filename(sourcepath+QString("/help/test/test_%1.m").arg(num));
@@ -1109,18 +1120,8 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
 		  fn += MustMatch(ccomment_pattern,line)+"\n";
 		  line = GetLine(fstr);
 		}
-		QFile *myfile = new QFile(fname);
-		if (!myfile->open(QFile::WriteOnly))
-		  Halt("Unable to open "+fname+" for output");
-		QTextStream *t = new QTextStream(myfile);
-		*t << fn;
-		delete t;
-		delete myfile;
-		myfile = new QFile(sourcepath+"/help/test/"+fname);
-		t = new QTextStream(myfile);
-		*t << fn;
-		delete t;
-		delete myfile;
+		WriteFile(fname,fn);
+		WriteFile(sourcepath+"/help/test/"+fname,fn);
 		generatedFileList << fname;
 		out->DoFile(fname,fn);
 		line = GetLine(fstr);
@@ -1285,13 +1286,6 @@ void DeleteDirectory(QString dirname) {
   dir.rmdir(dirname);
 }
 
-void WriteFile(QString filename, QString data) {
-  QFile file(filename);
-  if (!file.open(QFile::WriteOnly))
-    Halt("Unable to open "+filename+" for output");
-  QTextStream o(&file);
-  o << data;
-}
 
 void WriteMainTestRoutine() {
   QString o;

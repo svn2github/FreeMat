@@ -544,6 +544,44 @@ ArrayVector Int64Function(int nargout, const ArrayVector& arg) {
 //@<1
 //float({4})
 //@>
+//@@Tests
+//@{ test_sparse58.m
+//% Test type conversion functions
+//function x = test_sparse58
+//[yi,zi] = test_sparse_mat('int32',400);
+//[yf,zf] = test_sparse_mat('float',400);
+//[yd,zd] = test_sparse_mat('double',400);
+//[yc,zc] = test_sparse_mat('complex',400);
+//[yz,zz] = test_sparse_mat('dcomplex',400);
+//
+//xi = testeq(int32(yi),sparse(int32(zi))) & ...
+//    testeq(float(yi),sparse(float(zi))) & ...
+//    testeq(double(yi),sparse(double(zi))) & ...
+//    testeq(complex(yi),sparse(complex(zi))) & ...
+//    testeq(dcomplex(yi),sparse(dcomplex(zi)));
+//xf = testeq(int32(yf),sparse(int32(zf))) & ...
+//    testeq(float(yf),sparse(float(zf))) & ...
+//    testeq(double(yf),sparse(double(zf))) & ...
+//    testeq(complex(yf),sparse(complex(zf))) & ...
+//    testeq(dcomplex(yf),sparse(dcomplex(zf)));
+//xd = testeq(int32(yd),sparse(int32(zd))) & ...
+//    testeq(float(yd),sparse(float(zd))) & ...
+//    testeq(double(yd),sparse(double(zd))) & ...
+//    testeq(complex(yd),sparse(complex(zd))) & ...
+//    testeq(dcomplex(yd),sparse(dcomplex(zd)));
+//xc = testeq(int32(yc),sparse(int32(zc))) & ...
+//    testeq(float(yc),sparse(float(zc))) & ...
+//    testeq(double(yc),sparse(double(zc))) & ...
+//    testeq(complex(yc),sparse(complex(zc))) & ...
+//    testeq(dcomplex(yc),sparse(dcomplex(zc)));
+//xz = testeq(int32(yz),sparse(int32(zz))) & ...
+//    testeq(float(yz),sparse(float(zz))) & ...
+//    testeq(double(yz),sparse(double(zz))) & ...
+//    testeq(complex(yz),sparse(complex(zz))) & ...
+//    testeq(dcomplex(yz),sparse(dcomplex(zz)));
+//
+//x = xz & xc & xd & xf & xi;
+//@}
 //!
 ArrayVector FloatFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1) 
@@ -747,6 +785,37 @@ ArrayVector DcomplexFunction(int nargout, const ArrayVector& arg) {
 //typeof(1.0f+i)
 //typeof(1.0D+2.0D*i)
 //@>
+//@@Tests
+//@{ test_typeof1.m
+//% Check the typeof function for integer types
+//function test_val = test_typeof1
+//a = 2;
+//test_val = test(strcmp(typeof(a),'int32'));
+//@}
+//@{ test_typeof2.m
+//% Check the typeof function for double types
+//function test_val = test_typeof2
+//a = 2.0;
+//test_val = test(strcmp(typeof(a),'double'));
+//@}
+//@{ test_typeof3.m
+//% Check the typeof function for float types
+//function test_val = test_typeof3
+//a = 2.0f;
+//test_val = test(strcmp(typeof(a),'float'));
+//@}
+//@{ test_typeof4.m
+//% Check the typeof function for complex types
+//function test_val = test_typeof4
+//a = 2.0f + i;
+//test_val = test(strcmp(typeof(a),'complex'));
+//@}
+//@{ test_typeof5.m
+//% Check the typeof function for dcomplex types
+//function test_val = test_typeof5
+//a = 2.0 + i;
+//test_val = test(strcmp(typeof(a),'dcomplex'));
+//@}
 //!
 ArrayVector TypeOfFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)

@@ -179,6 +179,22 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
 //@<
 //zeros(3,'int16')
 //@>
+//@@Tests
+//@{ test_sparse69.m
+//% Test the zeros function
+//function x = test_sparse69
+//xi = int32(sparse(100,200));
+//yi = int32(zeros(100,200));
+//xf = float(sparse(100,200));
+//yf = float(zeros(100,200));
+//xd = double(sparse(100,200));
+//yd = double(zeros(100,200));
+//xc = complex(sparse(100,200));
+//yc = complex(zeros(100,200));
+//xz = dcomplex(sparse(100,200));
+//yz = dcomplex(zeros(100,200));
+//x = testeq(xi,yi) & testeq(xf,yf) & testeq(xd,yd) & testeq(xc,yc) & testeq(xz,yz);
+//@}
 //!
 ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
   Array t, s;
@@ -495,6 +511,93 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
 //Test(2,3)
 //Test(1,1)
 //@>
+//@@Tests
+//@{ test_struct1.m
+//% Test the ability to combine structures with different ordering in their elements.
+//function test_val = test_struct1
+//a.foo = 1;
+//a.goo = 2;
+//b.goo = 5;
+//b.foo = 4;
+//c = [a,b];
+//test_val = (c(1).foo == 1) & (c(2).foo == 4) & (c(1).goo == 2) & (c(2).foo == 4);
+//@}
+//@{ test_struct2.m
+//% Test the ability to combine structues with different fields - when valid
+//function test_val = test_struct2
+//a.foo = 1;
+//a.goo = 2;
+//b.goo = 5;
+//c = [a,b];
+//test_val = (c(1).foo == 1) & (c(1).goo == 2) & (c(2).goo == 5);
+//@}
+//@{ test_struct3.m
+//% Test the ability to add a new field name to a structure
+//function test_val = test_struct3
+//a.foo = 1;
+//a.goo = 2;
+//c(1) = a;
+//c(2) = a;
+//c(1).hoo = 6;
+//test_val = (c(1).foo == 1) & (c(2).foo == 1) & (c(1).goo == 2) & (c(2).goo == 2) & (c(1).hoo == 6);
+//@}
+//@{ test_struct4.m
+//% Test the structure constructor
+//function test_val = test_struct4
+//a = struct('foo',4,'goo',{5},'hoo',{'time',8});
+//test_val = test(a(1).foo == 4) & test(a(2).foo == 4) ...
+//    & test(a(1).goo == 5) & test(a(2).goo == 5) ...
+//    & test(strcmp(a(1).hoo,'time')) & test(a(2).hoo == 8);
+//@}
+//@{ test_struct5.m
+//% Test the field dereference as an expression list
+//function test_val = test_struct5
+//  a = struct('foo',{5,8,10});
+//  sm = test_struct5_assist(a.foo);
+//  test_val = test(sm == 23);
+//
+//function a = test_struct5_assist(b,c,d)
+//  a = b + c + d;
+//@}
+//@{ test_struct6.m
+//% Test the field set function with a scalar argument
+//function test_val = test_struct6
+//  a = struct('foo',5,'color','blue');
+//  a.color = 'red';
+//  test_val = test(strcmp(a.color,'red'));
+//@}
+//@{ test_struct7.m
+//% Test the field set function with a vector argument
+//function test_val = test_struct7
+//  a = struct('foo',{6,5,3},'color','blue');
+//  test_val = 0;
+//  try
+//    a.foo = 7;
+//  catch
+//    test_val = 1;
+//  end
+//@}
+//@{ test_struct8.m
+//% Test the structure field-based multiple assign in a function call
+//function test_val = test_struct8
+//a = struct('foo',{0,0,0,0});
+//[a.foo] = test_struct8_assist;
+//test_val = test(a(1).foo == 1) & test(a(2).foo == 2) & ...
+//    test(a(3).foo == 3) & test(a(4).foo == 4);
+//
+//function [a,b,c,d] = test_struct8_assist
+//  a = 1;
+//  b = 2;
+//  c = 3;
+//  d = 4;
+//@}
+//@{ test_struct9.m
+//% Test the ability to assign a single element in a structure array
+//function test_val = test_struct9
+//d = struct('foo',3,'goo','hello','shoo',1:5);
+//d(3).shoo = 3;
+//test_val = test(d(3).shoo == 3);
+//@}
 //!
 ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 1) {

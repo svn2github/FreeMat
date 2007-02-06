@@ -1194,6 +1194,70 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
 //c = a + 1
 //c = 1 + b
 //@>
+//@@Tests
+//@{ test_sparse37.m
+//function x = test_sparse37
+//a = [0 0 2 0 3 0
+//     1 0 2 0 0 3
+//     1 0 4 5 0 3
+//     0 0 0 2 0 0];
+//b = [1 0 0 0 0 0
+//     0 1 0 0 0 0 
+//     0 0 1 0 0 0 
+//     0 0 0 1 0 0];
+//A = sparse(a);
+//B = sparse(b);
+//C = A + B;
+//c = a + b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse38.m
+//function x = test_sparse38
+//ar = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//ai = [1 0 1 2 0 0
+//      1 0 0 3 0 0
+//      0 0 2 0 0 4
+//      0 0 0 3 0 0];
+//
+//br = [1 0 0 0 0 0
+//      0 1 0 0 0 0 
+//      0 0 1 0 0 0 
+//      0 0 0 1 0 0];
+//
+//bi = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//a = ar+i*ai;
+//b = br+i*bi;
+//
+//A = sparse(a);
+//B = sparse(b);
+//
+//C = A + B;
+//c = a + b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse78.m
+//% Test sparse-sparse matrix array add
+//function x = test_sparse78
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi2,zi2] = test_sparse_mat('int32',300,400);
+//[yf2,zf2] = test_sparse_mat('float',300,400);
+//[yd2,zd2] = test_sparse_mat('double',300,400);
+//[yc2,zc2] = test_sparse_mat('complex',300,400);
+//[yz2,zz2] = test_sparse_mat('dcomplex',300,400);
+//x = testeq(yi1+yi2,zi1+zi2) & testeq(yf1+yf2,zf1+zf2) & testeq(yd1+yd2,zd1+zd2) & testeq(yc1+yc2,zc1+zc2) & testeq(yz1+yz2,zz1+zz2);
+//@}
 //!
 Array Add(Array A, Array B) { 
   // Process the two arguments through the type check and dimension checks...
@@ -1366,6 +1430,73 @@ Array Add(Array A, Array B) {
 //c = a - 1
 //c = 1 - b
 //@>
+//@@Tests
+//@{ test_sparse39.m
+//function x = test_sparse39
+//a = [0 0 2 0 3 0
+//     1 0 2 0 0 3
+//     1 0 4 5 0 3
+//     0 0 0 2 0 0];
+//
+//b = [1 0 0 0 0 0
+//     0 1 0 0 0 0 
+//     0 0 1 0 0 0 
+//       0 0 0 1 0 0];
+//
+//A = sparse(a);
+//B = sparse(b);
+//
+//C = A - B;
+//c = a - b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse40.m
+//function x = test_sparse40
+//ar = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//ai = [1 0 1 2 0 0
+//      1 0 0 3 0 0
+//      0 0 2 0 0 4
+//      0 0 0 3 0 0];
+//
+//br = [1 0 0 0 0 0
+//      0 1 0 0 0 0 
+//      0 0 1 0 0 0 
+//      0 0 0 1 0 0];
+//
+//bi = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//a = ar+i*ai;
+//b = br+i*bi;
+//
+//A = sparse(a);
+//B = sparse(b);
+//
+//C = A - B;
+//c = a - b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse79.m
+//% Test sparse-sparse matrix array subtract
+//function x = test_sparse79
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi2,zi2] = test_sparse_mat('int32',300,400);
+//[yf2,zf2] = test_sparse_mat('float',300,400);
+//[yd2,zd2] = test_sparse_mat('double',300,400);
+//[yc2,zc2] = test_sparse_mat('complex',300,400);
+//[yz2,zz2] = test_sparse_mat('dcomplex',300,400);
+//x = testeq(yi1-yi2,zi1-zi2) & testeq(yf1-yf2,zf1-zf2) & testeq(yd1-yd2,zd1-zd2) & testeq(yc1-yc2,zc1-zc2) & testeq(yz1-yz2,zz1-zz2);
+//@}
 //!
 Array Subtract(Array A, Array B) {
   // Process the two arguments through the type check and dimension checks...
@@ -1528,6 +1659,94 @@ Array Subtract(Array A, Array B) {
 //c = a .* 3
 //c = 3 .* a
 //@>
+//@@Tests
+//@{ test_sparse41.m
+//function x = test_sparse41
+//a = [0 0 2 0 3 0
+//     1 0 2 0 0 3
+//     1 0 4 5 0 3
+//     0 0 0 2 0 0];
+//
+//b = [1 0 0 0 0 0
+//     0 1 0 0 0 0 
+//     0 0 1 0 0 0 
+//       0 0 0 1 0 0];
+//
+//A = sparse(a);
+//B = sparse(b);
+//
+//C = A .* B;
+//c = a .* b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse42.m
+//function x = test_sparse42
+//ar = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//ai = [1 0 1 2 0 0
+//      1 0 0 3 0 0
+//      0 0 2 0 0 4
+//      0 0 0 3 0 0];
+//
+//br = [1 0 0 0 0 0
+//      0 1 0 0 0 0 
+//      0 0 1 0 0 0 
+//      0 0 0 1 0 0];
+//
+//bi = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//a = ar+i*ai;
+//b = br+i*bi;
+//
+//A = sparse(a);
+//B = sparse(b);
+//
+//C = A .* B;
+//c = a .* b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse43.m
+//function x = test_sparse43
+//a = [0 0 2 0 3 0
+//     1 0 2 0 0 3
+//     1 0 4 5 0 3
+//     0 0 0 2 0 0];
+//
+//b = pi;
+//
+//A = sparse(a);
+//
+//C = A .* b;
+//c = a .* b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse44.m
+//function x = test_sparse44
+//ar = [0 0 2 0 3 0
+//      1 0 2 0 0 3
+//      1 0 4 5 0 3
+//      0 0 0 2 0 0];
+//
+//ai = [1 0 1 2 0 0
+//      1 0 0 3 0 0
+//      0 0 2 0 0 4
+//      0 0 0 3 0 0];
+//
+//a = ar + i * ai;
+//b = 3 + 4*i;
+//
+//A = sparse(a);
+//
+//C = A .* b;
+//c = a .* b;
+//x = testeq(c,C);
+//@}
 //!
 Array DotMultiply(Array A, Array B) {
   // Process the two arguments through the type check and dimension checks...
@@ -1924,6 +2143,427 @@ Array DotPower(Array A, Array B) {
 //b = [2,2,5,9,4]
 //c = a == b
 //@>
+//@@Tests
+//@{ test_sparse84.m
+//function x = test_sparse84
+//A = int32(10*sprandn(10,10,0.3));
+//B = int32(10*sprandn(10,10,0.3));
+//C = A < B;
+//c = full(A) < full(B);
+//x = testeq(c,C);
+//C = A < -2;
+//c = full(A) < -2;
+//x = x & testeq(c,C);
+//C = 2 < A;
+//c = 2 < full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse85.m
+//function x = test_sparse85
+//A = int32(10*sprandn(10,10,0.3));
+//B = int32(10*sprandn(10,10,0.3));
+//C = A > B;
+//c = full(A) > full(B);
+//x = testeq(c,C);
+//C = A > -2;
+//c = full(A) > -2;
+//x = x & testeq(c,C);
+//C = 2 > A;
+//c = 2 > full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse86.m
+//function x = test_sparse86
+//A = int32(10*sprandn(10,10,0.3));
+//B = int32(10*sprandn(10,10,0.3));
+//C = A <= B;
+//c = full(A) <= full(B);
+//x = testeq(c,C);
+//C = A <= -2;
+//c = full(A) <= -2;
+//x = x & testeq(c,C);
+//C = 2 <= A;
+//c = 2 <= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse87.m
+//function x = test_sparse87
+//A = int32(10*sprandn(10,10,0.3));
+//B = int32(10*sprandn(10,10,0.3));
+//C = A >= B;
+//c = full(A) >= full(B);
+//x = testeq(c,C);
+//C = A >= -2;
+//c = full(A) >= -2;
+//x = x & testeq(c,C);
+//C = 2 >= A;
+//c = 2 >= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse88.m
+//function x = test_sparse88
+//A = int32(10*sprandn(10,10,0.3));
+//B = int32(10*sprandn(10,10,0.3));
+//C = A ~= B;
+//c = full(A) ~= full(B);
+//x = testeq(c,C);
+//C = A ~= -2;
+//c = full(A) ~= -2;
+//x = x & testeq(c,C);
+//C = 2 ~= A;
+//c = 2 ~= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse89.m
+//function x = test_sparse89
+//A = int32(10*sprandn(10,10,0.3));
+//B = int32(10*sprandn(10,10,0.3));
+//C = A == B;
+//c = full(A) == full(B);
+//x = testeq(c,C);
+//C = A == -2;
+//c = full(A) == -2;
+//x = x & testeq(c,C);
+//C = 2 == A;
+//c = 2 == full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse90.m
+//function x = test_sparse90
+//A = float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)));
+//C = A < B;
+//c = full(A) < full(B);
+//x = testeq(c,C);
+//C = A < -2;
+//c = full(A) < -2;
+//x = x & testeq(c,C);
+//C = 2 < A;
+//c = 2 < full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse91.m
+//function x = test_sparse91
+//A = float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)));
+//C = A > B;
+//c = full(A) > full(B);
+//x = testeq(c,C);
+//C = A > -2;
+//c = full(A) > -2;
+//x = x & testeq(c,C);
+//C = 2 > A;
+//c = 2 > full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse92.m
+//function x = test_sparse92
+//A = float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)));
+//C = A <= B;
+//c = full(A) <= full(B);
+//x = testeq(c,C);
+//C = A <= -2;
+//c = full(A) <= -2;
+//x = x & testeq(c,C);
+//C = 2 <= A;
+//c = 2 <= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse93.m
+//function x = test_sparse93
+//A = float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)));
+//C = A >= B;
+//c = full(A) >= full(B);
+//x = testeq(c,C);
+//C = A >= -2;
+//c = full(A) >= -2;
+//x = x & testeq(c,C);
+//C = 2 >= A;
+//c = 2 >= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse94.m
+//function x = test_sparse94
+//A = float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)));
+//C = A ~= B;
+//c = full(A) ~= full(B);
+//x = testeq(c,C);
+//C = A ~= -2;
+//c = full(A) ~= -2;
+//x = x & testeq(c,C);
+//C = 2 ~= A;
+//c = 2 ~= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse95.m
+//function x = test_sparse95
+//A = float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)));
+//C = A == B;
+//c = full(A) == full(B);
+//x = testeq(c,C);
+//C = A == -2;
+//c = full(A) == -2;
+//x = x & testeq(c,C);
+//C = 2 == A;
+//c = 2 == full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse96.m
+//function x = test_sparse96
+//A = double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)));
+//C = A < B;
+//c = full(A) < full(B);
+//x = testeq(c,C);
+//C = A < -2;
+//c = full(A) < -2;
+//x = x & testeq(c,C);
+//C = 2 < A;
+//c = 2 < full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse97.m
+//function x = test_sparse97
+//A = double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)));
+//C = A > B;
+//c = full(A) > full(B);
+//x = testeq(c,C);
+//C = A > -2;
+//c = full(A) > -2;
+//x = x & testeq(c,C);
+//C = 2 > A;
+//c = 2 > full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse98.m
+//function x = test_sparse98
+//A = double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)));
+//C = A >= B;
+//c = full(A) >= full(B);
+//x = testeq(c,C);
+//C = A >= -2;
+//c = full(A) >= -2;
+//x = x & testeq(c,C);
+//C = 2 >= A;
+//c = 2 >= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse99.m
+//function x = test_sparse99
+//A = double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)));
+//C = A <= B;
+//c = full(A) <= full(B);
+//x = testeq(c,C);
+//C = A <= -2;
+//c = full(A) <= -2;
+//x = x & testeq(c,C);
+//C = 2 <= A;
+//c = 2 <= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse100.m
+//function x = test_sparse100
+//A = double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)));
+//C = A == B;
+//c = full(A) == full(B);
+//x = testeq(c,C);
+//C = A == -2;
+//c = full(A) == -2;
+//x = x & testeq(c,C);
+//C = 2 == A;
+//c = 2 == full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse101.m
+//function x = test_sparse101
+//A = double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)));
+//C = A ~= B;
+//c = full(A) ~= full(B);
+//x = testeq(c,C);
+//C = A ~= -2;
+//c = full(A) ~= -2;
+//x = x & testeq(c,C);
+//C = 2 ~= A;
+//c = 2 ~= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse102.m
+//function x = test_sparse102
+//A = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//C = A ~= B;
+//c = full(A) ~= full(B);
+//x = testeq(c,C);
+//C = A ~= -2;
+//c = full(A) ~= -2;
+//x = x & testeq(c,C);
+//C = 2 ~= A;
+//c = 2 ~= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse103.m
+//function x = test_sparse103
+//A = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//C = A == B;
+//c = full(A) == full(B);
+//x = testeq(c,C);
+//C = A == -2;
+//c = full(A) == -2;
+//x = x & testeq(c,C);
+//C = 2 == A;
+//c = 2 == full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse104.m
+//function x = test_sparse104
+//A = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//C = A <= B;
+//c = full(A) <= full(B);
+//x = testeq(c,C);
+//C = A <= -2;
+//c = full(A) <= -2;
+//x = x & testeq(c,C);
+//C = 2 <= A;
+//c = 2 <= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse105.m
+//function x = test_sparse105
+//A = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//C = A >= B;
+//c = full(A) >= full(B);
+//x = testeq(c,C);
+//C = A >= -2;
+//c = full(A) >= -2;
+//x = x & testeq(c,C);
+//C = 2 >= A;
+//c = 2 >= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse106.m
+//function x = test_sparse106
+//A = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//C = A < B;
+//c = full(A) < full(B);
+//x = testeq(c,C);
+//C = A < -2;
+//c = full(A) < -2;
+//x = x & testeq(c,C);
+//C = 2 < A;
+//c = 2 < full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse107.m
+//function x = test_sparse107
+//A = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//B = double(int32(10*sprandn(10,10,0.3)))+i*double(int32(10*sprandn(10,10,0.3)));
+//C = A > B;
+//c = full(A) > full(B);
+//x = testeq(c,C);
+//C = A > -2;
+//c = full(A) > -2;
+//x = x & testeq(c,C);
+//C = 2 > A;
+//c = 2 > full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse108.m
+//function x = test_sparse108
+//A = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//C = A > B;
+//c = full(A) > full(B);
+//x = testeq(c,C);
+//C = A > -2;
+//c = full(A) > -2;
+//x = x & testeq(c,C);
+//C = 2 > A;
+//c = 2 > full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse109.m
+//function x = test_sparse109
+//A = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//C = A < B;
+//c = full(A) < full(B);
+//x = testeq(c,C);
+//C = A < -2;
+//c = full(A) < -2;
+//x = x & testeq(c,C);
+//C = 2 < A;
+//c = 2 < full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse110.m
+//function x = test_sparse110
+//A = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//C = A >= B;
+//c = full(A) >= full(B);
+//x = testeq(c,C);
+//C = A >= -2;
+//c = full(A) >= -2;
+//x = x & testeq(c,C);
+//C = 2 >= A;
+//c = 2 >= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse111.m
+//function x = test_sparse111
+//A = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//C = A <= B;
+//c = full(A) <= full(B);
+//x = testeq(c,C);
+//C = A <= -2;
+//c = full(A) <= -2;
+//x = x & testeq(c,C);
+//C = 2 <= A;
+//c = 2 <= full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse112.m
+//function x = test_sparse112
+//A = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//C = A == B;
+//c = full(A) == full(B);
+//x = testeq(c,C);
+//C = A == -2;
+//c = full(A) == -2;
+//x = x & testeq(c,C);
+//C = 2 == A;
+//c = 2 == full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse113.m
+//function x = test_sparse113
+//A = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//B = float(int32(10*sprandn(10,10,0.3)))+i*float(int32(10*sprandn(10,10,0.3)));
+//C = A ~= B;
+//c = full(A) ~= full(B);
+//x = testeq(c,C);
+//C = A ~= -2;
+//c = full(A) ~= -2;
+//x = x & testeq(c,C);
+//C = 2 ~= A;
+//c = 2 ~= full(A);
+//x = x & testeq(c,C);
+//@}
 //!
 Array LessThan(Array A, Array B) {
   // Process the two arguments through the type check and dimension checks...
@@ -2549,6 +3189,35 @@ Array NotEquals(Array A, Array B) {
 //@<
 //c(d) = 0
 //@>
+//@@Tests
+//@{ test_sparse114.m
+//function x = test_sparse114
+//A = sprandn(10,10,0.3)>0;
+//B = sprandn(10,10,0.3)>0;
+//C = A & B;
+//c = full(A) & full(B);
+//x = testeq(c,C);
+//C = A & 0;
+//c = full(A) & 0;
+//x = x & testeq(c,C);
+//C = 1 & A;
+//c = 1 & full(A);
+//x = x & testeq(c,C);
+//@}
+//@{ test_sparse115.m
+//function x = test_sparse115
+//A = sprandn(10,10,0.3)>0;
+//B = sprandn(10,10,0.3)>0;
+//C = A | B;
+//c = full(A) | full(B);
+//x = testeq(c,C);
+//C = A | 0;
+//c = full(A) | 0;
+//x = x | testeq(c,C);
+//C = 1 | A;
+//c = 1 | full(A);
+//x = x | testeq(c,C);
+//@}
 //!
 Array And(Array A, Array B) {
   int Astride, Bstride;
@@ -2794,6 +3463,163 @@ Array Negate(Array A){
 //c = a*b
 //@>
 //Note that the output is double precision.
+//@@Tests
+//@{ test_sparse50.m
+//function x = test_sparse50
+//a = rand(200,100);
+//b = rand(100,300);
+//a(a>0.1) = 0;
+//b(b>0.1) = 0;
+//c = a*b;
+//A = sparse(a);
+//B = sparse(b);
+//C = A*B;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse51.m
+//function x = test_sparse51
+//a = rand(200,100);
+//b = rand(100,300);
+//c = rand(200,100);
+//d = rand(100,300);
+//a(a>0.1) = 0;
+//b(b>0.1) = 0;
+//c(c>0.1) = 0;
+//d(d>0.1) = 0;
+//f = a + i*c;
+//g = b + i*d;
+//h = f*g;
+//F = sparse(f);
+//G = sparse(g);
+//H = F*G;
+//x = testeq(h,H);
+//@}
+//@{ test_sparse52.m
+//function x = test_sparse52
+//a = rand(200,100);
+//b = rand(100,300);
+//a(a>0.1) = 0;
+//c = a*b;
+//A = sparse(a);
+//C = A*b;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse53.m
+//function x = test_sparse53
+//a = rand(200,100);
+//b = rand(100,300);
+//c = rand(200,100);
+//d = rand(100,300);
+//a(a>0.1) = 0;
+//b(b>0.1) = 0;
+//c(c>0.1) = 0;
+//d(d>0.1) = 0;
+//f = a + i*c;
+//g = b + i*d;
+//h = f*g;
+//F = sparse(f);
+//H = F*g;
+//x = testeq(h,H);
+//@}
+//@{ test_sparse54.m
+//function x = test_sparse54
+//a = rand(200,100);
+//b = rand(100,300);
+//b(b>0.1) = 0;
+//c = a*b;
+//B = sparse(b);
+//C = a*B;
+//x = testeq(c,C);
+//@}
+//@{ test_sparse55.m
+//function x = test_sparse55
+//a = randn(200,100);
+//b = randn(100,300);
+//c = randn(200,100);
+//d = randn(100,300);
+//c(c>0.1) = 0;
+//d(d>0.1) = 0;
+//f = a + i*c;
+//g = b + i*d;
+//h = f*g;
+//G = sparse(g);
+//H = f*G;
+//e = h - H;
+//t = max(abs(e(:)));
+//x = (t < eps*300);
+//@}
+//@{ test_sparse59.m
+//% Test sparse-dense matrix multiplication
+//function x = test_sparse59
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi2,zi2] = test_sparse_mat('int32',400,450);
+//[yf2,zf2] = test_sparse_mat('float',400,450);
+//[yd2,zd2] = test_sparse_mat('double',400,450);
+//[yc2,zc2] = test_sparse_mat('complex',400,450);
+//[yz2,zz2] = test_sparse_mat('dcomplex',400,450);
+//x = testeq(yi1*zi2,zi1*zi2) & ...
+//    testeq(yf1*zf2,zf1*zf2) & ...
+//    testeq(yd1*zd2,zd1*zd2) & ...
+//    testeq(yc1*zc2,zc1*zc2) & ...
+//    testeq(yz1*zz2,zz1*zz2);
+//@}
+//@{ test_sparse60.m
+//% Test dense-sparse matrix multiplication
+//function x = test_sparse60
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi2,zi2] = test_sparse_mat('int32',400,450);
+//[yf2,zf2] = test_sparse_mat('float',400,450);
+//[yd2,zd2] = test_sparse_mat('double',400,450);
+//[yc2,zc2] = test_sparse_mat('complex',400,450);
+//[yz2,zz2] = test_sparse_mat('dcomplex',400,450);
+//x = testeq(zi1*yi2,zi1*zi2) & ...
+//    testeq(zf1*yf2,zf1*zf2) & ...
+//    testeq(zd1*yd2,zd1*zd2) & ...
+//    testeq(zc1*yc2,zc1*zc2) & ...
+//    testeq(zz1*yz2,zz1*zz2);
+//@}
+//@{ test_sparse61.m
+//% Test sparse-sparse matrix multiplication
+//function x = test_sparse61
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi2,zi2] = test_sparse_mat('int32',400,450);
+//[yf2,zf2] = test_sparse_mat('float',400,450);
+//[yd2,zd2] = test_sparse_mat('double',400,450);
+//[yc2,zc2] = test_sparse_mat('complex',400,450);
+//[yz2,zz2] = test_sparse_mat('dcomplex',400,450);
+//x = testeq(yi1*yi2,zi1*zi2) & ...
+//    testeq(yf1*yf2,zf1*zf2) & ...
+//    testeq(yd1*yd2,zd1*zd2) & ...
+//    testeq(yc1*yc2,zc1*zc2) & ...
+//    testeq(yz1*yz2,zz1*zz2);
+//@}
+//@{ test_sparse80.m
+//% Test sparse-sparse matrix array multiply
+//function x = test_sparse80
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi2,zi2] = test_sparse_mat('int32',400,600);
+//[yf2,zf2] = test_sparse_mat('float',400,600);
+//[yd2,zd2] = test_sparse_mat('double',400,600);
+//[yc2,zc2] = test_sparse_mat('complex',400,600);
+//[yz2,zz2] = test_sparse_mat('dcomplex',400,600);
+//x = testeq(yi1*yi2,zi1*zi2) & testeq(yf1*yf2,zf1*zf2) & testeq(yd1*yd2,zd1*zd2) & testeq(yc1*yc2,zc1*zc2) & testeq(yz1*yz2,zz1*zz2);
+//@}
 //!
 Array Multiply(Array A, Array B){
   if (A.isEmpty() || B.isEmpty())
@@ -3089,6 +3915,20 @@ Array LeftDivide(Array A, Array B) {
 //A = [4,5]
 //A/B
 //@>
+//@@Tests
+//@{ test_sparse82.m
+//% Test sparse-sparse matrix array solution
+//function x = test_sparse82
+//[yd1,zd1] = test_sparse_mat('double',100,100);
+//[yz1,zz1] = test_sparse_mat('dcomplex',100,100);
+//[yd2,zd2] = test_sparse_mat('double',100,60);
+//[yz2,zz2] = test_sparse_mat('dcomplex',100,60);
+//x = testeq3(yd1\yd2,zd1\zd2) & testeq3(yz1\yz2,zz1\zz2);
+//
+//function x = testeq3(a,b)
+//  k = abs(a-b);
+//  x = max(k(:)) < (size(a,2)*size(a,1)*eps*4);
+//@}
 //!
 Array RightDivide(Array A, Array B) {
   Array C;
@@ -4181,6 +5021,17 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
 //A = [1+i,2-i]
 //A.'
 //@>
+//@@Tests
+//@{ test_sparse76.m
+//% Test sparse matrix array hermitian 
+//function x = test_sparse76
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//x = testeq(yi1',zi1') & testeq(yf1',zf1') & testeq(yd1',zd1') & testeq(yc1',zc1') & testeq(yz1',zz1');
+//@}
 //!
 Array Transpose(Array A) {
   A.hermitian();
@@ -4215,6 +5066,17 @@ Array Transpose(Array A) {
 //A = [1+i,2-i]
 //A.'
 //@>
+//@@Tests
+//@{ test_sparse77.m
+//% Test sparse matrix array transpose
+//function x = test_sparse77
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//x = testeq(yi1.',zi1.') & testeq(yf1.',zf1.') & testeq(yd1.',zd1.') & testeq(yc1.',zc1.') & testeq(yz1.',zz1.');
+//@}
 //!
 Array DotTranspose(Array A) {
   A.transpose();

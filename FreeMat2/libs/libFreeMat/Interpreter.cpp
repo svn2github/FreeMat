@@ -548,6 +548,109 @@ void Interpreter::clearStacks() {
 //@<
 //F = ['hello';'there']
 //@>
+//@@Tests
+//@{ test_matcat1.m
+//% Check the matcat function
+//function test_val = test_matcat1
+//a = [1;2];
+//b = 3;
+//d = 4;
+//c = [a,[b;d]];
+//test_val = test(c==[1,3;2,4]);
+//@}
+//@{ test_matcat2.m
+//% Check the matcat function with n-dimensional arrays
+//function test_val = test_matcat2
+//a = 1;
+//a(1,1,1) = 1;
+//a(1,2,1) = 2;
+//a(1,1,2) = 5;
+//a(1,2,2) = 6;
+//c = [a;a];
+//c1 = c(:,:,1);
+//c2 = c(:,:,2);
+//test_val = test(c1==[1,2;1,2]) & test(c2==[5,6;5,6]);
+//@}
+//@{ test_matcat3.m
+//% Check the matcat function with n-dimensional arrays
+//function test_val = test_matcat3
+//a = 1;
+//a(1,1,1,1,1) = 1;
+//a(1,2,1,1,1) = 2;
+//a(1,1,1,1,2) = 5;
+//a(1,2,1,1,2) = 6;
+//c = [a;a];
+//c1 = c(:,:,1,1,1);
+//c2 = c(:,:,1,1,2);
+//test_val = test(c1==[1,2;1,2]) & test(c2==[5,6;5,6]);
+//@}
+//@{ test_matcat4.m
+//% Check the type promotion for the matrix cat function
+//function test_val = test_matcat4
+//a = [1,2;3.0f,4+i];
+//test_val = test(strcmp(typeof(a),'complex'));
+//@}
+//@{ test_matcat5.m
+//% Check the type promotion for the matrix cat function
+//function test_val = test_matcat5
+//a = [1,2;3.0f,4.0+i];
+//test_val = test(strcmp(typeof(a),'dcomplex'));
+//@}
+//@{ test_matcat6.m
+//% Check the type promotion for the matrix cat function
+//function test_val = test_matcat6
+//a = [1,2;3.0f,4.0f+i];
+//test_val = test(strcmp(typeof(a),'complex'));
+//@}
+//@{ test_newind1.m
+//function x = test_newind1
+//a = uint8(10*rand(10,40,5));
+//x = 1;
+//x = x & test_newind_help(a);
+//a = int8(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = uint16(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = int16(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = uint32(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = int32(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = float(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = double(10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = complex(10*rand(10,40,5)+i*10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//a = dcomplex(10*rand(10,40,5)+i*10*rand(10,40,5));
+//x = x & test_newind_help(a);
+//
+//function x = test_newind_help(a)
+//  x = 1;
+//  x = x & testvol(a,a(1:10,1:40,1:5));
+//  x = x & testvol(a,a(:,1:40,1:5));
+//  x = x & testvol(a,a(1:10,:,1:5));
+//  x = x & testvol(a,a(1:10,1:40,:));
+//  x = x & testvol(a,a(1:10,:,:));
+//  x = x & testvol(a,a(:,1:40,:));
+//  x = x & testvol(a,a(:,:,1:5));
+//  x = x & testvol(a,a(:,:,:));
+//  x = x & testvol(a,a(:,:,:,:));
+//@}
+//@{ test_newind2.m
+//function x = test_newind2
+//  a(10,40,5).foo = 'green';
+//  p = a(:,:,5).foo;
+//  q = p(10,40);
+//@}
+//@{ test_vec1.m
+//% Check the case of continuation with vectors
+//function test_val = test_vec1
+//a = [1 2 3 4...
+//       5 6 7 8];
+//test_val = 1;
+//@}
 //!
 //Works
 Array Interpreter::matrixDefinition(const tree &t) {
@@ -964,6 +1067,69 @@ Array Interpreter::expression(const tree &t) {
 //@<
 //y = 5:4
 //@>
+//@@Tests
+//@{ test_range1.m
+//% Check the range function for integer types positive with 3 args & horizontal concatenation
+//function test_val = test_range1
+//range = 0:1:3;
+//range2 = [0,1,2,3];
+//test_val = test(range == range2);
+//@}
+//@{ test_range2.m
+//% Check the range function for integer types positive with 3 args & horizontal concatenation
+//function test_val = test_range2
+//range = (0:1:3)';
+//range2 = [0;1;2;3];
+//test_val = test(range == range2);
+//@}
+//@{ test_range3.m
+//% Check the range function for float types with 2 args & horizontal concatenation
+//function test_val = test_range3
+//range = 0.2f:2.2f;
+//range2 = [0.2f,1.2f,2.2f];
+//test_val = test(range == range2);
+//@}
+//@{ test_range4.m
+//% Check the range function for double types with 3 args & vertical concatenation
+//function test_val = test_range4
+//range = 0.45:3.45;
+//range2 = [0.45,1.45,2.45,3.45];
+//test_val = test(range == range2);
+//@}
+//@{ test_range5.m
+//% Check the range function with negative integer
+//function test_val = test_range5
+//range = -2:2;
+//range2 = [-2,-1,0,1,2];
+//test_val = test(range == range2);
+//@}
+//@{ test_range6.m
+//% Check the range function with a negative float
+//function test_val = test_range6
+//range = -2.f:3.f;
+//range2 = [-2.f,-1.f,0.f,1.f,2.f,3.f];
+//test_val = test(range == range2);
+//@}
+//@{ test_range7.m
+//% Check the range function with a negative step size
+//function test_val = test_range7
+//range = 3:-1:-2;
+//range2 = [3,2,1,0,-1,-2];
+//test_val = test(range == range2);
+//@}
+//@{ test_range8.m
+//% Check the range function with a negative step size
+//function test_val = test_range8
+//range = 3f:-1f:-2f;
+//range2 = [3f,2f,1f,0f,-1f,-2f];
+//test_val = test(range == range2);
+//@}
+//@{ test_range9.m
+//% Check the range function with an empty range
+//function test_val = test_range9
+//range = 3:2;
+//test_val = isempty(range);
+//@}
 //!
 //Works
 Array Interpreter::unitColon(const tree &t) {
@@ -1126,6 +1292,136 @@ void Interpreter::AutoStop(bool a) {
 //switch_test('red')
 //switch_test('carpet')
 //@>
+//@@Tests
+//@{ test_switch1.m
+//% Test the switch statement with a string argument
+//function test_val = test_switch1
+//      
+//test_val = 0;
+//x = 'astring';
+//
+//switch x
+//case 'bstring'
+//test_val = 0;
+//case 'astring';
+//test_val = 1;
+//case 'cstring';
+//test_val = 0;
+//otherwise
+//test_val = 0;
+//end
+//@}
+//@{ test_switch2.m
+//% Test the switch statement with a string argument and one integer case
+//% The type mismatch should not present a problem.
+//function test_val = test_switch2
+//      
+//test_val = 0;
+//x = 'astring';
+//
+//switch x
+//case 30
+//test_val = 0;
+//case 'astring';
+//test_val = 1;
+//case 'cstring';
+//test_val = 0;
+//otherwise
+//test_val = 0;
+//end
+//@}
+//@{ test_switch3.m
+//% Test the switch statement with a scalar argument
+//function test_val = test_switch3
+//
+//test_val = 0;
+//x = 1.0f + i;
+//z = 1.0 + i;
+//switch x
+//case 1
+//test_val = 0;
+//case i
+//test_val = 0;
+//case z
+//test_val = 1;
+//case 'astring'
+//test_val = 0;
+//otherwise
+//test_val = 0;
+//end
+//@}
+//@{ test_switch4.m
+//% Test the switch statement with a vector argument (should be an error)
+//function test_val = test_switch4
+//
+//x = [1 1];
+//test_val = 0;
+//try
+//switch x
+//case 1
+//test_val = 0;
+//otherwise
+//test_val = 0;
+//end
+//catch
+//test_val = 1;
+//end
+//@}
+//@{ test_switch5.m
+//% Test the switch statement with a numerical argument
+//function test_val = test_switch5
+//
+//x = 1.2f;
+//test_val = 0;
+//switch x
+//case 1
+//test_val = 0;
+//case 1.1f
+//test_val = 0;
+//case 1.2+i;
+//test_val = 0;
+//case 1.2;
+//test_val = 0;
+//case 1.2f;
+//test_val = 1;
+//end
+//@}
+//@{ test_switch6.m
+//% Test the switch statement with a string argument and a cell array
+//function test_val = test_switch6
+//      
+//test_val = 0;
+//x = 'astring';
+//
+//switch x
+//case 'bstring'
+//test_val = 0;
+//case {'dstring',5,'astring'};
+//test_val = 1;
+//case 'cstring';
+//test_val = 0;
+//otherwise
+//test_val = 0;
+//end
+//@}
+//@{ test_switch7.m
+//% Test the switch statement with a numerical argument and a cell array
+//function test_val = test_switch7
+//      
+//test_val = 0;
+//x = 5;
+//
+//switch x
+//case 'bstring'
+//test_val = 0;
+//case {'dstring',5.0,'astring'};
+//test_val = 1;
+//case 'cstring';
+//test_val = 0;
+//otherwise
+//test_val = 0;
+//end
+//@}
 //!
 //Works
 void Interpreter::switchStatement(const tree &t) {
@@ -1227,7 +1523,8 @@ void Interpreter::switchStatement(const tree &t) {
 //else
 //  test_val = 0;
 //end
-//@}//!
+//@}
+//!
 //Works
 void Interpreter::ifStatement(const tree &t) {
   bool elseifMatched;
@@ -1276,6 +1573,56 @@ void Interpreter::ifStatement(const tree &t) {
 //while (k<100), accum = accum + k; k = k + 1; end
 //accum
 //@>
+//@@Tests
+//@{ test_while1.m
+//% Test the while statement for normal operation
+//function test_val = test_while1
+//sum = 0;
+//i = 1;
+//while (i<=10)
+//  sum = sum + i;
+//  i = i + 1;
+//end
+//test_val = test(sum == 55);
+//@}
+//@{ test_while2.m
+//% Test a simple 'while' statement with a continue clause
+//function test_val = test_while2
+//sum = 0;
+//i = 0;
+//while (i < 10)
+//  i = i + 1;
+//  sum = sum + i;
+//  if (i==5), continue; end
+//  sum = sum - 1;
+//end
+//test_val = test(sum == 46);
+//@}
+//@{ test_while3.m
+//% Test a simple 'while' statement with a continue clause
+//function test_val = test_while3
+//sum = 0;
+//i = 1;
+//while (i < 10)
+//  sum = sum + i;
+//  if (i==5), break; end
+//  i = i + 1;
+//end
+//test_val = test(sum == 15);
+//@}
+//@{ testeq.m
+//function x = testeq(a,b)
+//  if (size(a,1) ~= size(b,1) || size(a,2) ~= size(b,2))
+//    x = 0;
+//    return;
+//  end
+//  d = full(a)-full(b);
+//  if (strcmp(typeof(d),'double') | strcmp(typeof(d),'dcomplex'))
+//    x = isempty(find(abs(d)>eps));
+//  else
+//    x = isempty(find(abs(d)>feps));
+//  end
+//@}
 //!
 //Works
 void Interpreter::whileStatement(const tree &t) {
@@ -1612,6 +1959,26 @@ void Interpreter::globalStatement(const tree &t) {
 //@<
 //for i=1:10; count_calls; end
 //@>
+//@@Tests
+//@{ test_persistent1.m
+//% Test the persistent variable declaration
+//function test_val = test_persistent1
+//accum = 0;
+//for (i=1:10)
+//  accum = accum + i;
+//end
+//test_val = test(accum == 55);
+//
+//function tick = test_persistent1_assist
+//persistent count;
+//count = count + 1;
+//tick = count;
+//@}
+//@{ test_persistent2.m
+//function y = test_persistent2
+//persistent a b c d e
+//global a1 b1 c1 d1 e1
+  //@}
 //!
 void Interpreter::persistentStatement(const tree &t) {
   for (unsigned i=0;i<t.numchildren();i++)
@@ -2211,6 +2578,218 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //    A = [];
 //    A([],[],[]) = [];
 //    test_val = 1;
+//@}
+//@{ test_sparse56.m
+//% Test DeleteSparseMatrix function
+//function x = test_sparse56
+//xi = test_sparse_mat('int32',100);
+//xf = test_sparse_mat('float',100);
+//xd = test_sparse_mat('double',100);
+//xc = test_sparse_mat('complex',100);
+//xz = test_sparse_mat('dcomplex',100);
+//xi = [];
+//xf = [];
+//xd = [];
+//xc = [];
+//xz = [];
+//x = isempty(xi) & isempty(xf) & isempty(xd) & isempty(xc) & isempty(xz);
+//@}
+//@{ test_sparse63.m
+//% Test sparse matrix array vector-subset extraction
+//function x = test_sparse63
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//ndx = randi(ones(1500,1),300*400*ones(1500,1));
+//a1 = yi1(ndx); b1 = zi1(ndx);
+//a2 = yf1(ndx); b2 = zf1(ndx);
+//a3 = yd1(ndx); b3 = zd1(ndx);
+//a4 = yc1(ndx); b4 = zc1(ndx);
+//a5 = yz1(ndx); b5 = zz1(ndx);
+//x = testeq(a1,b1) & testeq(a2,b2) & testeq(a3,b3) & testeq(a4,b4) & testeq(a5,b5);
+//ndx = [];
+//a1 = yi1(ndx); b1 = zi1(ndx);
+//a2 = yf1(ndx); b2 = zf1(ndx);
+//a3 = yd1(ndx); b3 = zd1(ndx);
+//a4 = yc1(ndx); b4 = zc1(ndx);
+//a5 = yz1(ndx); b5 = zz1(ndx);
+//x = x & testeq(a1,b1) & testeq(a2,b2) & testeq(a3,b3) & testeq(a4,b4) & testeq(a5,b5);
+//@}
+//@{ test_sparse64.m
+//% Test sparse matrix array ndim-subset extraction
+//function x = test_sparse64
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//row_ndx = randi(ones(150,1),300*ones(150,1));
+//col_ndx = randi(ones(150,1),400*ones(150,1));
+//a1 = yi1(row_ndx,col_ndx); b1 = zi1(row_ndx,col_ndx);
+//a2 = yf1(row_ndx,col_ndx); b2 = zf1(row_ndx,col_ndx);
+//a3 = yd1(row_ndx,col_ndx); b3 = zd1(row_ndx,col_ndx);
+//a4 = yc1(row_ndx,col_ndx); b4 = zc1(row_ndx,col_ndx);
+//a5 = yz1(row_ndx,col_ndx); b5 = zz1(row_ndx,col_ndx);
+//x = testeq(a1,b1) & testeq(a2,b2) & testeq(a3,b3) & testeq(a4,b4) & testeq(a5,b5);
+//row_ndx = [];
+//a1 = yi1(row_ndx,col_ndx); b1 = zi1(row_ndx,col_ndx);
+//a2 = yf1(row_ndx,col_ndx); b2 = zf1(row_ndx,col_ndx);
+//a3 = yd1(row_ndx,col_ndx); b3 = zd1(row_ndx,col_ndx);
+//a4 = yc1(row_ndx,col_ndx); b4 = zc1(row_ndx,col_ndx);
+//a5 = yz1(row_ndx,col_ndx); b5 = zz1(row_ndx,col_ndx);
+//x = x & testeq(a1,b1) & testeq(a2,b2) & testeq(a3,b3) & testeq(a4,b4) & testeq(a5,b5);
+//col_ndx = [];
+//a1 = yi1(row_ndx,col_ndx); b1 = zi1(row_ndx,col_ndx);
+//a2 = yf1(row_ndx,col_ndx); b2 = zf1(row_ndx,col_ndx);
+//a3 = yd1(row_ndx,col_ndx); b3 = zd1(row_ndx,col_ndx);
+//a4 = yc1(row_ndx,col_ndx); b4 = zc1(row_ndx,col_ndx);
+//a5 = yz1(row_ndx,col_ndx); b5 = zz1(row_ndx,col_ndx);
+//x = x & testeq(a1,b1) & testeq(a2,b2) & testeq(a3,b3) & testeq(a4,b4) & testeq(a5,b5);
+//@}
+//@{ test_sparse65.m
+//% Test sparse matrix array vector-subset assignment
+//function x = test_sparse65
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//ndx = randi(ones(1500,1),300*400*ones(1500,1));
+//gi = int32(100*randn(1500,1));
+//gf = float(randn(1500,1));
+//gd = randn(1500,1);
+//gc = complex(randn(1500,1)+i*randn(1500,1));
+//gz = dcomplex(randn(1500,1)+i*randn(1500,1));
+//yi1(ndx) = gi; zi1(ndx) = gi;
+//yf1(ndx) = gf; zf1(ndx) = gf;
+//yd1(ndx) = gd; zd1(ndx) = gd;
+//yc1(ndx) = gc; zc1(ndx) = gc;
+//yz1(ndx) = gz; zz1(ndx) = gz;
+//% Cannot use testeq because if we set the same element to two
+//% different values, the result is different for full versus sparse
+//% matrices
+//x = testeq2(yi1,zi1,ndx) & testeq2(yf1,zf1,ndx) & testeq2(yd1,zd1,ndx) & testeq2(yc1,zc1,ndx) & testeq2(yz1,zz1,ndx);
+//
+//function n = length(x)
+//n = prod(size(x));
+//
+//function x = testeq2(a,b,ndx)
+//k = find(a-b);
+//x = 1;
+//for i = 1:length(k)
+//  x = x & length(find(ndx == k(i)));
+//end
+//@}
+//@{ test_sparse66.m
+//% Test sparse matrix array ndim-subset assignment
+//function x = test_sparse66
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//ndxr = randi(ones(100,1),300*ones(100,1));
+//ndxc = randi(ones(100,1),400*ones(100,1));
+//gi = int32(100*randn(100,100));
+//gf = float(randn(100,100));
+//gd = randn(100,100);
+//gc = complex(randn(100,100)+i*randn(100,100));
+//gz = dcomplex(randn(100,100)+i*randn(100,100));
+//yi1(ndxr,ndxc) = gi; zi1(ndxr,ndxc) = gi;
+//yf1(ndxr,ndxc) = gf; zf1(ndxr,ndxc) = gf;
+//yd1(ndxr,ndxc) = gd; zd1(ndxr,ndxc) = gd;
+//yc1(ndxr,ndxc) = gc; zc1(ndxr,ndxc) = gc;
+//yz1(ndxr,ndxc) = gz; zz1(ndxr,ndxc) = gz;
+//x = testeq(yi1,zi1) & testeq(yf1,zf1) & testeq(yd1,zd1) & testeq(yc1,zc1) & testeq(yz1,zz1);
+//@}
+//@{ test_sparse67.m
+//% Test sparse matrix individual element retrieval
+//function x = test_sparse67
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//x = testeq(yi1(150,200),zi1(150,200)) & testeq(yf1(150,200),zf1(150,200)) & testeq(yd1(150,200),zd1(150,200)) & testeq(yc1(150,200),zc1(150,200)) & testeq(yz1(150,200),zz1(150,200));
+//@}
+//@{ test_sparse71.m
+//% Test sparse matrix array column deletion
+//function x = test_sparse71
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//ndxc = randi(ones(100,1),400*ones(100,1));
+//yi1(:,ndxc) = [];
+//yf1(:,ndxc) = [];
+//yd1(:,ndxc) = [];
+//yc1(:,ndxc) = [];
+//yz1(:,ndxc) = [];
+//zi1(:,ndxc) = [];
+//zf1(:,ndxc) = [];
+//zd1(:,ndxc) = [];
+//zc1(:,ndxc) = [];
+//zz1(:,ndxc) = [];
+//x = testeq(yi1,zi1) & testeq(yf1,zf1) & testeq(yd1,zd1) & testeq(yc1,zc1) & testeq(yz1,zz1);
+//@}
+//@{ test_sparse72.m
+//% Test sparse matrix array row deletion
+//function x = test_sparse72
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//ndxr = randi(ones(100,1),300*ones(100,1));
+//yi1(ndxr,:) = [];
+//yf1(ndxr,:) = [];
+//yd1(ndxr,:) = [];
+//yc1(ndxr,:) = [];
+//yz1(ndxr,:) = [];
+//zi1(ndxr,:) = [];
+//zf1(ndxr,:) = [];
+//zd1(ndxr,:) = [];
+//zc1(ndxr,:) = [];
+//zz1(ndxr,:) = [];
+//x = testeq(yi1,zi1) & testeq(yf1,zf1) & testeq(yd1,zd1) & testeq(yc1,zc1) & testeq(yz1,zz1);
+//@}
+//@{ test_sparse73.m
+//% Test sparse matrix array vector deletion
+//function x = test_sparse73
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//ndxr = randi(ones(200,1),400*300*ones(200,1));
+//yi1(ndxr) = [];
+//yf1(ndxr) = [];
+//yd1(ndxr) = [];
+//yc1(ndxr) = [];
+//yz1(ndxr) = [];
+//zi1(ndxr) = [];
+//zf1(ndxr) = [];
+//zd1(ndxr) = [];
+//zc1(ndxr) = [];
+//zz1(ndxr) = [];
+//x = testeq(yi1,zi1.') & testeq(yf1,zf1.') & testeq(yd1,zd1.') & testeq(yc1,zc1.') & testeq(yz1,zz1.');
+//@}
+//@{ test_sparse81.m
+//function x = test_sparse81
+//A = sparse(rand(10));
+//C = [];
+//D = [C,A];
+//x = testeq(D,A);
+//@}
+//@{ test_sparse83.m
+//function x = test_sparse83
+//  A = sparse(rand(10));
+//  B = sparse([]);
+//  C = [B,B,B;B,B,B,A,B];
+//  x = testeq(C,A);
 //@}
 //!
 void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
@@ -3866,6 +4445,197 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
 //element), and that this structure array contains a field named
 //'foo' with two double elements, the second of which is assigned
 //a value of pi.
+//@@Tests
+//@{ test_subset1.m
+//% Test the vector subset operator
+//function test_val = test_subset1
+//a = [1,2,3,4;5,6,7,8];
+//b = [3;4;5];
+//c = a(b);
+//test_val = test(c==[2;6;3]);
+//@}
+//@{ test_subset2.m
+//% Test the vector subset operator in an error condition
+//function test_val = test_subset2
+//a = [1,2,3,4];
+//b = [4,5,6];
+//test_val = 0;
+//try
+//c = a(b);
+//catch
+//test_val = 1;
+//end
+//@}
+//@{ test_subset3.m
+//% Test the vector subset with a cell array
+//function test_val = test_subset3
+//a = {1,2,3,4;5,6,7,8};
+//b = [3;4];
+//c = a(b);
+//test_val = test((c{1} == 2) & (c{2} == 6));
+//@}
+//@{ test_subset4.m
+//% Test the vector subset with a struct array
+//function test_val = test_subset4
+//a = struct('foo',4,'goo',{1,2,3,4});
+//c = a(3);
+//test_val = test((c.foo == 4) & (c.goo == 3));
+//@}
+//@{ test_subset5.m
+//% Test the vector subset with cell array without contents-based addressing
+//function test_val = test_subset5
+//a = {1,2,3,4;5,6,7,8};
+//b = a(2);
+//test_val = test(strcmp(typeof(b),'cell')) & test(b{1} == 5);
+//@}
+//@{ test_subset6.m
+//% Test the ndim subset with a regular vector
+//function test_val = test_subset6
+//a = [1,2,3;4,5,6;7,8,9];
+//b = a(1:2,2:3);
+//c = [2,3;5,6];
+//test_val = test(b == c);
+//@}
+//@{ test_subset7.m
+//% Test the ndim subset with a cell-array vector
+//function test_val = test_subset7
+//a = {1,2,3;4,5,6;7,8,9};
+//b = a(2,2:3);
+//test_val = test(strcmp(typeof(b),'cell')) & test((b{1} == 5) & (b{2} == 6));
+//@}
+//@{ test_subset8.m
+//% Test the ndim subset with a cell-array vector
+//function test_val = test_subset8
+//a = {1,2,3;4,5,6;7,8,9};
+//c = struct('foo',a);
+//b = c(2,2:3);
+//test_val = test(strcmp(typeof(b),'struct')) & ...
+//               test((b(1).foo == 5) & (b(2).foo == 6));
+//@}
+//@{ test_subset9.m
+//% Test the cell vector subset with contents-based addressing
+//function test_val = test_subset9
+//  a = {5,8;10,3};
+//  sm = test_subset9_assist(a{1:3});
+//  test_val = test(sm == 23);
+//
+//function a = test_subset9_assist(b,c,d)
+//  a = b + c + d;
+//@}
+//@{ test_subset10.m
+//% Test the cell vector subset with contents-based addressing
+//function test_val = test_subset10
+//  a = {5,8;10,3};
+//  sm = test_subset10_assist(a{2,1:2});
+//  test_val = test(sm == 13);
+//
+//function a = test_subset10_assist(b,c)
+//  a = b + c;
+//@}
+//@{ test_subset11.m
+//% Test the vector subset assign function
+//function test_val = test_subset11
+//a = [1,2,3;4,5,6];
+//a(3:4) = [8,9];
+//test_val = test(a == [1,8,3;4,9,6]);
+//@}
+//@{ test_subset12.m
+//% Test the ndim subset assign function
+//function test_val = test_subset12
+//a = [1,2,3;4,5,6];
+//a(:,2) = [8,9];
+//test_val = test(a == [1,8,3;4,9,6]);
+//@}
+//@{ test_subset13.m
+//% Test the ndim subset contents-based assign function
+//function test_val = test_subset13
+//a = {1,2,3;4,5,6};
+//a{4} = 'goo';
+//test_val = test(strcmp(a{2,2},'goo'));
+//@}
+//@{ test_subset14.m
+//% Test the vector contents-based assign for multiple values
+//function test_val = test_subset14
+//a = {0,0,0,0};
+//[a{1:4}] = test_subset14_assist;
+//test_val = test(strcmp(typeof(a),'cell')) & ...
+//    (a{1} == 1) & (a{2} == 2) & (a{3} == 3) & (a{4} == 4);
+//
+//function [a,b,c,d] = test_subset14_assist
+//  a = 1;
+//  b = 2;
+//  c = 3;
+//  d = 4;
+//@}
+//@{ test_subset15.m
+//% Test the ndim contents-based assign for multiple values
+//function test_val = test_subset15
+//a = {0,0;0,0};
+//[a{1:2,1:2}] = test_subset15_assist;
+//test_val = test(strcmp(typeof(a),'cell')) & ...
+//    (a{1} == 1) & (a{2} == 2) & (a{3} == 3) & (a{4} == 4);
+//
+//function [a,b,c,d] = test_subset15_assist
+//  a = 1;
+//  b = 2;
+//  c = 3;
+//  d = 4;
+//@}
+//@{ test_subset16.m
+//% Test the ndim contents-based assign for multiple values - with
+//% too many outputs
+//function test_val = test_subset16
+//a = {0,0;0,0};
+//test_val = 0;
+//try
+//  [a{1:2,1:2}] = test_subset16_assist
+//catch
+//  test_val = 1;
+//end
+//
+//function [a,b,c] = test_subset16_assist
+//  a = 1;
+//  b = 2;
+//  c = 3;
+//@}
+//@{ test_subset17.m
+//% Test the subset assign with an empty variable
+//function test_val = test_subset17
+//a = [];
+//a(:) = [];
+//test_val = 1;
+//@}
+//@{ test_subset18.m
+//% Test the subset assign with an empty variable
+//function test_val = test_subset18
+//a = [];
+//b = 1:4;
+//a(:) = b;
+//test_val = (a(1) == 1) & (a(2) == 2) & (a(3) == 3) & (a(4) == 4);
+//@}
+//@{ test_subset19.m
+//% Torture test for subset indexing
+//function test_val = test_subset19
+//a1 = 5;
+//A{3}(2).foo(2) = a1;
+//test_val = test(strcmp(typeof(A),'cell')) & ...
+//    test(strcmp(typeof(A{3}),'struct')) & ...
+//    test(strcmp(typeof(A{3}(2).foo),'int32'));
+//@}
+//@{ test_subset20.m
+//function x = test_subset20
+//  a = [];
+//  b = rand(14,1);
+//  a(:,1) = b;
+//  x = testeq(a,b);
+//@}
+//@{ test_subset21.m
+//function x = test_subset21
+//  a = zeros(4,4,5);
+//  p = randn(4,4,1);
+//  a(:,:,end) = p;
+//  x = 1;
+//@}
 //!
 
 

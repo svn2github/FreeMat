@@ -620,7 +620,7 @@ int32 Array::getFieldIndex(std::string fName) {
 //catch
 //  test_val = 1;
 //end
-////@}
+//@}
 //!
 void Array::resize(Dimensions& a) {
   Dimensions newSize;

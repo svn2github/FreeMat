@@ -599,6 +599,37 @@ ArrayVector FieldNamesFunction(int nargout, const ArrayVector& arg) {
 //@<
 //size(a,2)
 //@>
+//@@Tests
+//@{ test_size1.m
+//% Check the size function with an n-dim argument & one output
+//function test_val = test_size1
+//a = [];
+//a(3,7,2) = 1.0;
+//c = size(a);
+//test_val = test(c(1) == 3) & test(c(2) == 7) & test(c(3) == 2);
+//@}
+//@{ test_size2.m
+//% Check the size function with an n-dim argument & multiple outputs
+//function test_val = test_size2
+//a = [1,2,3;4,5,6];
+//[c1,c2,c3] = size(a);
+//test_val = test(c1 == 2) & test(c2 == 3) & test(c3 == 1);
+//@}
+//@{ test_size3.m
+//% Check the size function with two arguments and one output
+//function test_val = test_size3
+//a = [1,2,3;4,5,6];
+//n = size(a,2);
+//test_val = test(n == 3);
+//@}
+//@{ test_size4.m
+//% Check the size function with two arguments and two outputs
+//function test_val = test_size4
+//a = [1,2,3;4,5,6];
+//test_val = 0;
+//[c,d] = size(a,2);
+//test_val = (c == 3);
+//@}
 //!
 ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
   ArrayVector retval;
@@ -1487,6 +1518,66 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 //@<
 //[r,c,v] = find(A)
 //@>
+//@@Tests
+//@{ test_sparse20.m
+//function x = test_sparse20
+//a = [0,0,3,1,3;1,0,0,0,2;4,3,0,2,0];
+//[i,j,v] = find(a);
+//B = sparse(i,j,v);
+//x = testeq(a,B);
+//@}
+//@{ test_sparse21.m
+//function x = test_sparse21
+//ai = [0,2,6,0,1;3,0,3,0,2;0,0,3,0,2];
+//ar = [1,2,0,0,4;3,2,0,0,5;0,0,3,0,2];
+//a = complex(ar+i*ai);
+//[i,j,v] = find(a);
+//B = sparse(i,j,v);
+//x = testeq(a,B);
+//@}
+//@{ test_sparse68.m
+//% Test sparse to IJV conversion
+//function x = test_sparse68
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[iyi1,jyi1,vyi1] = find(yi1);
+//[izi1,jzi1,vzi1] = find(zi1);
+//[iyf1,jyf1,vyf1] = find(yf1);
+//[izf1,jzf1,vzf1] = find(zf1);
+//[iyd1,jyd1,vyd1] = find(yd1);
+//[izd1,jzd1,vzd1] = find(zd1);
+//[iyc1,jyc1,vyc1] = find(yc1);
+//[izc1,jzc1,vzc1] = find(zc1);
+//[iyz1,jyz1,vyz1] = find(yz1);
+//[izz1,jzz1,vzz1] = find(zz1);
+//x = testeq(iyi1,izi1) & testeq(jyi1,jzi1) & testeq(vyi1,vzi1);
+//x = x & testeq(iyf1,izf1) & testeq(jyf1,jzf1) & testeq(vyf1,vzf1);
+//x = x & testeq(iyd1,izd1) & testeq(jyd1,jzd1) & testeq(vyd1,vzd1);
+//x = x & testeq(iyc1,izc1) & testeq(jyc1,jzc1) & testeq(vyc1,vzc1);
+//x = x & testeq(iyz1,izz1) & testeq(jyz1,jzz1) & testeq(vyz1,vzz1);
+//@}
+//@{ test_sparse70.m
+//% Test sparse to IJV to sparse conversion
+//function x = test_sparse70
+//[yi1,zi1] = test_sparse_mat('int32',300,400);
+//[yf1,zf1] = test_sparse_mat('float',300,400);
+//[yd1,zd1] = test_sparse_mat('double',300,400);
+//[yc1,zc1] = test_sparse_mat('complex',300,400);
+//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[iyi1,jyi1,vyi1] = find(yi1);
+//[iyf1,jyf1,vyf1] = find(yf1);
+//[iyd1,jyd1,vyd1] = find(yd1);
+//[iyc1,jyc1,vyc1] = find(yc1);
+//[iyz1,jyz1,vyz1] = find(yz1);
+//x = testeq(sparse(iyi1,jyi1,vyi1),zi1);
+//x = x & testeq(sparse(iyf1,jyf1,vyf1),zf1);
+//x = x & testeq(sparse(iyd1,jyd1,vyd1),zd1);
+//x = x & testeq(sparse(iyc1,jyc1,vyc1),zc1);
+//x = x & testeq(sparse(iyz1,jyz1,vyz1),zz1);
+//@}
 //!  
 
 ArrayVector FindTrim(ArrayVector a, int cnt, bool first_flag) {

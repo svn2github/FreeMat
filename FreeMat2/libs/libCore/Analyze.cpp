@@ -3633,6 +3633,11 @@ ArrayVector XNrm2Function(int nargout, const ArrayVector& arg) {
 //a = {'hello','abba','goodbye','jockey','cake'}
 //b = sort(a)
 //@>
+//@@Tests
+//@{ test_sort.m
+//function x = test_sort
+//  x = sort(1);
+//@}
 //!
 ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
   // Get the data argument

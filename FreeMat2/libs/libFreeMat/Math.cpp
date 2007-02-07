@@ -712,7 +712,13 @@ inline void CheckNumeric(Array &A, Array &B, std::string opname){
  *
  */
 void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
+#error FIXME - this is horribly broken.
   Class Aclass, Bclass, Cclass;
+
+  if (isDivOrMatrix && (A.dataClass() < FM_FLOAT))
+    A.promoteType(FM_DOUBLE);  
+  if (isDivOrMatrix && (B.dataClass() < FM_FLOAT))
+    B.promoteType(FM_DOUBLE);
 
   Aclass = A.dataClass();
   Bclass = B.dataClass();
@@ -725,7 +731,6 @@ void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
     Cclass = FM_DCOMPLEX;
   else
     Cclass = (Aclass > Bclass) ? Aclass : Bclass;
-
   if (Cclass >= FM_FLOAT) {
     A.promoteType(Cclass);
     B.promoteType(Cclass);

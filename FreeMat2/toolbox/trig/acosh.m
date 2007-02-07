@@ -27,7 +27,7 @@
 %@$"y=acosh(0.342+0.532i)","0.5320006009890188+1.2674443056299265i","close"
 %@$"y=acosh(1)","0","close"
 %@$"y=acosh(-1)","pi*i","close"
-%@$"y=acosh(0.543f)","0.99679077i","close"
+%@$"y=acosh(0.543f)","0.99679077fi","close"
 %!
 
 function y = acosh(x)

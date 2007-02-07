@@ -1297,12 +1297,12 @@ void WriteMainTestRoutine() {
   o += "%  Any changes will be lost!\n";
   o += "function failed = run_tests\n";
   o += "   testlist = system('ls bbtest_*.m');\n";
-  o += "   testlist = [testlist;system('ls test_[0-9]*.m')];\n";
+  o += "   testlist = [testlist;system('ls test_*.m')];\n";
   o += "   cdir = pwd;\n";
   o += "   failed = {};\n";
   o += "   for i=1:numel(testlist);\n";
   o += "     cd(cdir);\n";
-  o += "     save run_tests.dat\n";
+  o += "     save run_tests.dat cdir testlist failed\n";
   o += "     success = eval(testlist{i}(1:end-2));\n";
   o += "     cd(cdir);\n";
   o += "     load run_tests.dat\n";

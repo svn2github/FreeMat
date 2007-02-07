@@ -18,7 +18,7 @@
 %@$"y=cotd(2.1324)","26.85674495465909","close"
 %@$"y=cotd(-3)","-19.08113668772821","close"
 %@$"y=cotd(2.12f)","27.0139790f","close"
-%@$"y=cotd(45)","1","exact"
+%@$"y=cotd(45)","1","close"
 %!
 function y = cotd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))

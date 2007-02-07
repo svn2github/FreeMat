@@ -788,7 +788,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
       float xlg_real, xlg_imag;
       c_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       // Answer = pi/2
-      op[i] = 2.0*atan(1.0f) - xlg_imag;
+      op[i] = 2.0f*atan(1.0f) - xlg_imag;
       op[i+1] = xlg_real;
     }
     output = Array(FM_COMPLEX,input.dimensions(),op);
@@ -818,7 +818,7 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
       double xlg_real, xlg_imag;
       z_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       // Answer = pi/2
-      op[i] = 2.0*atan(1.0f) - xlg_imag;
+      op[i] = 2.0*atan(1.0) - xlg_imag;
       op[i+1] = xlg_real;
     }
     output = Array(FM_DCOMPLEX,input.dimensions(),op);
@@ -983,8 +983,9 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
       // Take the complex log
       float xlg_real, xlg_imag;
       c_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
+      // -i*(a+bi) = -i*a-b*i^2 = b - i*a
       op[i] = xlg_imag;
-      op[i+1] = - xlg_real;
+      op[i+1] = -xlg_real;
     }
     output = Array(FM_COMPLEX,input.dimensions(),op);
     break;      
@@ -1014,7 +1015,7 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
       z_log(xrt_real,xrt_imag,&xlg_real,&xlg_imag);
       // Answer = pi/2
       op[i] = xlg_imag;
-      op[i+1] = - xlg_real;
+      op[i+1] = -xlg_real;
     }
     output = Array(FM_DCOMPLEX,input.dimensions(),op);
     break;      

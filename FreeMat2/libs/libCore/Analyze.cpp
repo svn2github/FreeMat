@@ -404,6 +404,22 @@ void TRealSum(const T* sp, T* dp, int planes, int planesize, int linesize) {
 }
 
 template <class T>
+void TRealCumprod(const T* sp, T* dp, int planes, int planesize, int linesize) {
+  T accum;
+  int i, j, k;
+
+  for (i=0;i<planes;i++) {
+    for (j=0;j<planesize;j++) {
+      accum = 1;
+      for (k=0;k<linesize;k++) {
+	accum *= sp[i*planesize*linesize + j + k*planesize];
+	dp[i*planesize*linesize + j + k*planesize] = accum;
+      }
+    }
+  }    
+}
+
+template <class T>
 void TComplexCumsum(const T* sp, T* dp, int planes, int planesize, int linesize) {
   T accum_r;
   T accum_i;
@@ -423,6 +439,29 @@ void TComplexCumsum(const T* sp, T* dp, int planes, int planesize, int linesize)
   }    
 }
 
+template <class T>
+void TComplexCumprod(const T* sp, T* dp, int planes, int planesize, int linesize) {
+  T accum_r, el_r, tmp_r;
+  T accum_i, el_i, tmp_i;
+  int i, j, k;
+
+  for (i=0;i<planes;i++) {
+    for (j=0;j<planesize;j++) {
+      accum_r = 1;
+      accum_i = 0;
+      for (k=0;k<linesize;k++) {
+	el_r = sp[2*(i*planesize*linesize + j + k*planesize)];
+	el_i = sp[2*(i*planesize*linesize + j + k*planesize)+1];
+	tmp_r = accum_r*el_r - accum_i*el_i;
+	tmp_i = accum_r*el_i + accum_i*el_r;
+	dp[2*(i*planesize*linesize + j + k*planesize)] = tmp_r;
+	dp[2*(i*planesize*linesize + j + k*planesize)+1] = tmp_i;
+	accum_r = tmp_r;
+	accum_i = tmp_i;
+      }
+    }
+  }    
+}
 template <class T>
 void TComplexSum(const T* sp, T* dp, int planes, int planesize, int linesize) {
   T accum_r;
@@ -1787,6 +1826,138 @@ ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   retArray.push_back(retval);
   return retArray;
 }
+
+//!
+//@Module CUMPROD Cumulative Product Function
+//@@Section ELEMENTARY
+//@@Usage
+//Computes the cumulative product of an n-dimensional array along a given
+//dimension.  The general syntax for its use is
+//@[
+//  y = cumprod(x,d)
+//@]
+//where @|x| is a multidimensional array of numerical type, and @|d|
+//is the dimension along which to perform the cumulative product.  The
+//output @|y| is the same size of @|x|.  Integer types are promoted
+//to @|int32|. If the dimension @|d| is not specified, then the
+//cumulative sum is applied along the first non-singular dimension.
+//@@Function Internals
+//The output is computed via
+//\[
+//  y(m_1,\ldots,m_{d-1},j,m_{d+1},\ldots,m_{p}) = 
+//  \prod_{k=1}^{j} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}).
+//\]
+//@@Example
+//The default action is to perform the cumulative product along the
+//first non-singular dimension.
+//@<
+//A = [5,1,3;3,2,1;0,3,1]
+//cumprod(A)
+//@>
+//To compute the cumulative product along the columns:
+//@<
+//cumprod(A,2)
+//@>
+//The cumulative product also works along arbitrary dimensions
+//@<
+//B(:,:,1) = [5,2;8,9];
+//B(:,:,2) = [1,0;3,0]
+//cumprod(B,3)
+//@>
+//@@Tests
+//@$"y=cumprod([1,2,3,4])","[1,2,6,24]","exact"
+//@$"y=cumprod([1,2,3,4]+i*[4,3,2,1])","[1+4i,-10+11i,-52+13i,-221]","exact"
+//!  
+ArrayVector CumprodFunction(int nargout, const ArrayVector& arg) {
+  // Get the data argument
+  if (arg.size() < 1)
+    throw Exception("cumprod requires at least one argument");
+  Array input(arg[0]);
+  Class argType(input.dataClass());
+  if (input.isReferenceType() || input.isString())
+    throw Exception("sum only defined for numeric types");
+  if ((argType >= FM_LOGICAL) && (argType < FM_INT32)) {
+    input.promoteType(FM_INT32);
+    argType = FM_INT32;
+  }    
+  // Get the dimension argument (if supplied)
+  int workDim = -1;
+  if (arg.size() > 1) {
+    Array WDim(arg[1]);
+    workDim = WDim.getContentsAsIntegerScalar() - 1;
+    if (workDim < 0)
+      throw Exception("Dimension argument to cumprod should be positive");
+  }
+  if (input.isEmpty()) 
+    return HandleEmpty(input);
+  if (input.isScalar())
+    return singleArrayVector(input);
+  // No dimension supplied, look for a non-singular dimension
+  Dimensions inDim(input.dimensions());
+  if (workDim == -1) {
+    int d = 0;
+    while (inDim.get(d) == 1) 
+      d++;
+    workDim = d;      
+  }
+  // Calculate the output size
+  Dimensions outDim(inDim);
+  // Calculate the stride...
+  int d;
+  int planecount;
+  int planesize;
+  int linesize;
+  linesize = inDim.get(workDim);
+  planesize = 1;
+  for (d=0;d<workDim;d++)
+    planesize *= inDim.get(d);
+  planecount = 1;
+  for (d=workDim+1;d<inDim.getLength();d++)
+    planecount *= inDim.get(d);
+  // Allocate the values output, and call the appropriate helper func.
+  Array retval;
+  switch (argType) {
+  case FM_INT32: {
+    char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
+    TRealCumprod<int32>((const int32 *) input.getDataPointer(),
+		       (int32 *) ptr, planecount, planesize, linesize);
+    retval = Array(FM_INT32,outDim,ptr);
+    break;
+  }
+  case FM_FLOAT: {
+    char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
+    TRealCumprod<float>((const float *) input.getDataPointer(),
+		       (float *) ptr, planecount, planesize, linesize);
+    retval = Array(FM_FLOAT,outDim,ptr);
+    break;
+  }
+  case FM_DOUBLE: {
+    char* ptr = (char *) Malloc(sizeof(double)*outDim.getElementCount());
+    TRealCumprod<double>((const double *) input.getDataPointer(),
+			(double *) ptr, planecount, planesize, linesize);
+    retval = Array(FM_DOUBLE,outDim,ptr);
+    break;
+  }
+  case FM_COMPLEX: {
+    char* ptr = (char *) Malloc(2*sizeof(float)*outDim.getElementCount());
+    TComplexCumprod<float>((const float *) input.getDataPointer(),
+			  (float *) ptr, planecount, planesize, linesize);
+    retval = Array(FM_COMPLEX,outDim,ptr);
+    break;
+  }
+  case FM_DCOMPLEX: {
+    char* ptr = (char *) Malloc(2*sizeof(double)*outDim.getElementCount());
+    TComplexCumprod<double>((const double *) input.getDataPointer(),
+			   (double *) ptr, planecount, planesize, linesize);
+    retval = Array(FM_DCOMPLEX,outDim,ptr);
+    break;
+  }
+  }
+  ArrayVector retArray;
+  retArray.push_back(retval);
+  return retArray;
+}
+
 
 //!
 //@Module SUM Sum Function

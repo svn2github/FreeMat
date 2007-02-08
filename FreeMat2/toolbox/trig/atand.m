@@ -16,7 +16,7 @@
 %@@Tests
 %@$"y=atand(0.342)","18.88068796535143","close"
 %@$"y=atand(2)","63.43494882292201","close"
-%@$"y=atand(0.523f)","27.6095676","close"
+%@$"y=atand(0.523f)","27.6095676f","close"
 %@$"y=atand(1)","45","close"
 %!
 function y = atand(x)

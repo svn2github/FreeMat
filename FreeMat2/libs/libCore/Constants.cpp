@@ -30,7 +30,7 @@
 //@[
 //   y = inf
 //@]
-//The returned type is a 32-bit float, but promotion to
+//The returned type is a 64-bit float, but demotion to
 //64 bits preserves the infinity.
 //@@Function Internals
 //The infinity constant has
@@ -67,7 +67,7 @@ ArrayVector InfFunction(int nargout, const ArrayVector& arg) {
     unsigned int i;
   } u;
   u.i = 0x7f800000;
-  Array A(Array::floatConstructor(u.f));
+  Array A(Array::doubleConstructor(u.f));
   ArrayVector retval;
   retval.push_back(A);
   return retval;
@@ -84,7 +84,7 @@ ArrayVector InfFunction(int nargout, const ArrayVector& arg) {
 //@[
 //   y = nan
 //@]
-//The returned type is a 32-bit float, but promotion to 64 bits preserves the not-a-number.  The not-a-number constant has one simple property.  In particular, any arithmetic operation with a @|NaN| results in a @|NaN|. These calculations run significantly slower than calculations involving finite quantities!  Make sure that you use @|NaN|s in extreme circumstances only.  Note that @|NaN| is not preserved under type conversion to integer types (see the examples below).
+//The returned type is a 64-bit float, but demotion to 32 bits preserves the not-a-number.  The not-a-number constant has one simple property.  In particular, any arithmetic operation with a @|NaN| results in a @|NaN|. These calculations run significantly slower than calculations involving finite quantities!  Make sure that you use @|NaN|s in extreme circumstances only.  Note that @|NaN| is not preserved under type conversion to integer types (see the examples below).
 //@@Example
 //The following examples demonstrate a few calculations with the not-a-number constant.
 //@<
@@ -103,7 +103,7 @@ ArrayVector NaNFunction(int nargout, const ArrayVector& arg) {
     unsigned int i;
   } u;
   u.i = 0x7fC00000;
-  Array A(Array::floatConstructor(u.f));
+  Array A(Array::doubleConstructor(u.f));
   ArrayVector retval;
   retval.push_back(A);
   return retval;
@@ -249,4 +249,36 @@ ArrayVector FepsFunction(int nargout, const ArrayVector& arg) {
   ArrayVector retval;
   retval.push_back(A);
   return retval;
+}
+
+//!
+//@Module TRUE Logical TRUE
+//@@Section CONSTANTS
+//@@Usage
+//Returns a logical 1.  The syntax for its use is
+//@[
+//   y = true
+//@]
+//@@Tests
+//@$"y=logical(1)","true","exact"
+//@$"y=logical(0)","~true","exact"
+//!
+ArrayVector TrueFunction(int nargout, const ArrayVector& arg) {
+  return ArrayVector() << Array::logicalConstructor(1);
+}
+
+//!
+//@Module FALSE Logical False
+//@@Section CONSTANTS
+//@@Usage
+//Returns a logical 0.  The syntax for its use is
+//@[
+//   y = false
+//@]
+//@@Tests
+//@$"y=logical(0)","false","exact"
+//@$"y=logical(1)","~false","exact"
+//!
+ArrayVector FalseFunction(int nargout, const ArrayVector& arg) {
+  return ArrayVector() << Array::logicalConstructor(0);
 }

@@ -27,12 +27,13 @@
 %@$"y=asinh(0.342+0.532i)","0.38409830421438+0.51787212574567i","close"
 %@$"y=asinh(1)","0.88137358701954","close"
 %@$"y=asinh(-1)","-0.88137358701954","close"
-%@$"y=asinh(0.543f)","0.5193379","close"
+%@$"y=asinh(0.543f)","0.5193379f","close"
 %!
 
 function y = asinh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('asinh expects a single, numeric input');
   end
+  if (isinttype(x)) x = double(x); end
   y = log(x+(x.*x+1.0f).^(0.5f));
   

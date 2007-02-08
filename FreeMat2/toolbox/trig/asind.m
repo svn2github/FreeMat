@@ -21,7 +21,7 @@
 %@$"y=asind(sqrt(2)/2)","45","close"
 %@$"y=asind(0.5)","30","close"
 %@$"y=asind(2.0)","90.0-75.45612929021689i","close"
-%@$"y=asind(-0.9f)","-64.1580658","close"
+%@$"y=asind(-0.9f)","-64.1580658f","close"
 %!
 function y = asind(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))

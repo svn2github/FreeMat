@@ -522,6 +522,7 @@ class BBTestWriter : public HelpWriter {
   int num;
   QFile *file;
   QTextStream *stream;
+  bool empty;
  public:
   BBTestWriter();
   virtual ~BBTestWriter() {}
@@ -535,8 +536,8 @@ class BBTestWriter : public HelpWriter {
 void BBTestWriter::DoComputeBlock(QStringList cmdList, int errorsExpected) {
   if ((module.toLower() != "retall")  &&
       (module.toLower() != "keyboard") &&
-      (module.toLower() != "return")
-      (module.toLower() != "warning")) {
+      (module.toLower() != "return") &&
+      (module.toLower() != "where")) {
     // First, try to wrap each line in a try/catch
     *stream << "NumErrors = 0;\n";
     for (int i=0;i<cmdList.size();i++) {
@@ -547,6 +548,7 @@ void BBTestWriter::DoComputeBlock(QStringList cmdList, int errorsExpected) {
       *stream << "end\n";
     }
     *stream << QString("if (NumErrors ~= %1) bbtest_success = 0; return; end\n").arg(errorsExpected);
+    empty = false;
   }
 }
 
@@ -554,6 +556,7 @@ void BBTestWriter::BeginModule(QString modname, QString moddesc, QString secname
   module = modname;
   QString filename(sourcepath+QString("/help/test/bbtest_%1.m").arg(modname.toLower()));
   file = new QFile(filename);
+  empty = true;
   if (!file->open(QFile::WriteOnly))
     Halt("Unable to open " + filename + " for writing ");
   stream = new QTextStream(file);
@@ -576,6 +579,7 @@ void BBTestWriter::OutputText(QString text) {
 }
 
 void BBTestWriter::EndModule() {
+  if (empty && file) file->remove();
   if (file) delete file;
   if (stream) delete stream;
   file = NULL;
@@ -1322,6 +1326,10 @@ void WriteMainTestRoutine() {
   WriteFile(sourcepath+"/help/test/run_tests.m",o);
   QString q;
   q += "function result = match_exact(a,b)\n";
+  q += "  if (isempty(a) & isempty(b))\n";
+  q += "    result = 1;\n";
+  q += "    return;\n";
+  q += "  end\n";
   q += "  if (~iscell(a))\n";
   q += "   result = all(a == b);\n";
   q += "  else\n";
@@ -1337,7 +1345,11 @@ void WriteMainTestRoutine() {
   WriteFile(sourcepath+"/help/test/match_exact.m",q);
   QString p;
   p += "function result = match_close(a,b)\n";
-  p += "  result = max(abs(a-b)./abs(a)) < 10*eps;\n";
+  p += "  if (isa(a,'double') || isa(a,'dcomplex'))\n";
+  p += "    result = max(abs(a-b)/max(1,abs(a))) < 1e-14;\n";
+  p += "  else\n";
+  p += "    result = max(abs(a-b)/max(1,abs(a))) < 1e-6;\n";
+  p += "  end\n";
   WriteFile(sourcepath+"/help/test/match_close.m",p);
 }
 

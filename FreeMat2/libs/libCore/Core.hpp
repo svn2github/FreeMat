@@ -207,6 +207,8 @@ ArrayVector RPCIdFunction(int nargout, const ArrayVector& arg);
 ArrayVector RPCRegFunction(int nargout, const ArrayVector& arg);
 ArrayVector RPCPutFunction(int nargout, const ArrayVector& arg);
 ArrayVector RPCGetFunction(int nargout, const ArrayVector& arg);
+ArrayVector TrueFunction(int nargout, const ArrayVector& arg);
+ArrayVector FalseFunction(int nargout, const ArrayVector& arg);
 void Tokenize(const std::string& str, std::vector<std::string>& tokens,
 	      const std::string& delimiters = " \n");
 bool inBundleMode();

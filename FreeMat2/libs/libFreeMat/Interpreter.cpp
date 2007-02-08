@@ -587,7 +587,7 @@ void Interpreter::clearStacks() {
 //@{ test_matcat4.m
 //% Check the type promotion for the matrix cat function
 //function test_val = test_matcat4
-//a = [1,2;3.0f,4+i];
+//a = [1,2;3.0f,4f+i];
 //test_val = test(strcmp(typeof(a),'complex'));
 //@}
 //@{ test_matcat5.m
@@ -1618,9 +1618,9 @@ void Interpreter::ifStatement(const tree &t) {
 //  end
 //  d = full(a)-full(b);
 //  if (strcmp(typeof(d),'double') | strcmp(typeof(d),'dcomplex'))
-//    x = isempty(find(abs(d)>eps));
+//    x = isempty(find(abs(d)>10*eps));
 //  else
-//    x = isempty(find(abs(d)>feps));
+//    x = isempty(find(abs(d)>10*feps));
 //  end
 //@}
 //!

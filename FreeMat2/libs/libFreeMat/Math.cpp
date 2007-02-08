@@ -711,41 +711,57 @@ inline void CheckNumeric(Array &A, Array &B, std::string opname){
  *    objects to an FM_DOUBLE64!
  *
  */
+
+//!
+//@Module TYPERULES Type Rules
+//@@Section FreeMat
+//@@Usage
+//FreeMat follows an extended form of C's type rules (the extension
+//is to handle complex data types.  The general rules are as follows:
+//\begin{itemize}
+//  \item Integer types are promoted to @|int32| types, except
+//        for matrix operations and division operations.
+//  \item Mixtures of @|float| and @|complex| types produce @|complex|
+//        outputs.
+//  \item Mixtures of @|double| or @|int32| types and @|dcomplex|
+//        types produce @|dcomplex| outputs.
+//  \item Arguments to operators are promoted to the largest type
+//        present among the operands.
+//  \item Type promotion is not allowed to reduce the information
+//        content of the variable.  The only exception to this is
+//        64-bit integers, which can loose information when they
+//        are promoted to 64-bit @|double| values.  
+//\end{itemize}
+//These rules look tricky, but in reality, they are designed so that
+//you do not actively have to worry about the types when performing
+//mathematical operations in FreeMat.  The flip side of this, of course
+//is that unlike C, the output of numerical operations is not automatically
+//typecast to the type of the variable you assign the value to. 
+//@@Tests
+//@$"y=1+2","3","exact"
+//@$"y=1f*i","i","exact"
+//@$"y=pi+i","dcomplex(pi+i)","close"
+//@$"y=1/2","0.5","exact"
+//!
 void TypeCheck(Array &A, Array &B, bool isDivOrMatrix) {
-#error FIXME - this is horribly broken.
-  Class Aclass, Bclass, Cclass;
-
-  if (isDivOrMatrix && (A.dataClass() < FM_FLOAT))
-    A.promoteType(FM_DOUBLE);  
-  if (isDivOrMatrix && (B.dataClass() < FM_FLOAT))
-    B.promoteType(FM_DOUBLE);
-
-  Aclass = A.dataClass();
-  Bclass = B.dataClass();
-  
-  if (Aclass == FM_STRING) Aclass = FM_INT32;
-  if (Bclass == FM_STRING) Bclass = FM_INT32;
-
-  if ((Aclass == FM_COMPLEX && Bclass == FM_DOUBLE) ||
-      (Bclass == FM_COMPLEX && Aclass == FM_DOUBLE))
-    Cclass = FM_DCOMPLEX;
-  else
-    Cclass = (Aclass > Bclass) ? Aclass : Bclass;
-  if (Cclass >= FM_FLOAT) {
-    A.promoteType(Cclass);
-    B.promoteType(Cclass);
-  } else if (!isDivOrMatrix) {
-    if (Cclass == FM_INT64) {
-      A.promoteType(FM_INT64);
-      B.promoteType(FM_INT64);
-    } else {
-      A.promoteType(FM_INT32);
-      B.promoteType(FM_INT32);
-    }
-  } else {
-    A.promoteType(FM_DOUBLE);
-    B.promoteType(FM_DOUBLE);
-  }
+  Class Aclass(A.dataClass());
+  Class Bclass(B.dataClass());
+  Class Cclass;
+  // First, anything less than an int32 is promoted to an int32
+  // Strings are treates as int32.
+  if ((Aclass < FM_INT32) || (Aclass == FM_STRING)) Aclass = FM_INT32;
+  if ((Bclass < FM_INT32) || (Bclass == FM_STRING)) Bclass = FM_INT32;
+  // Division or matrix operations do no allow integer
+  // data types.  These must be promoted to doubles.
+  if (isDivOrMatrix && (Aclass < FM_FLOAT)) Aclass = FM_DOUBLE;
+  if (isDivOrMatrix && (Bclass < FM_FLOAT)) Bclass = FM_DOUBLE;
+  // An integer or double mixed with a complex is promoted to a dcomplex type
+  if ((Aclass == FM_COMPLEX) && ((Bclass == FM_DOUBLE) || (Bclass < FM_FLOAT))) Bclass = FM_DCOMPLEX;
+  if ((Bclass == FM_COMPLEX) && ((Aclass == FM_DOUBLE) || (Aclass < FM_FLOAT))) Aclass = FM_DCOMPLEX;
+  // The output class is now the dominant class remaining:
+  Cclass = (Aclass > Bclass) ? Aclass : Bclass;
+  A.promoteType(Cclass);
+  B.promoteType(Cclass);
 }
 
 /**

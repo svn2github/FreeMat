@@ -790,16 +790,16 @@ ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
 //function x = test_lu1
 //A = float(randn(20));
 //[L,U] = lu(A);
-//x = testeq(20,L*U,A);
+//x = testeq(100,L*U,A);
 //A = double(randn(20));
 //[L,U] = lu(A);
-//x = x & testeq(20,L*U,A);
+//x = x & testeq(100,L*U,A);
 //A = complex(randn(20)+i*randn(20));
 //[L,U] = lu(A);
-//x = x & testeq(20,L*U,A);
+//x = x & testeq(100,L*U,A);
 //A = dcomplex(randn(20)+i*randn(20));
 //[L,U] = lu(A);
-//x = x & testeq(20,L*U,A);
+//x = x & testeq(100,L*U,A);
 //
 //function x = testeq(tmag,a,b)
 //  d = full(a)-full(b);
@@ -814,16 +814,16 @@ ArrayVector FullFunction(int nargout, const ArrayVector& arg) {
 //function x = test_lu2
 //A = float(randn(20));
 //[L,U,P] = lu(A);
-//x = testeq(20,L*U,P*A);
+//x = testeq(100,L*U,P*A);
 //A = double(randn(20));
 //[L,U,P] = lu(A);
-//x = x & testeq(20,L*U,P*A);
+//x = x & testeq(100,L*U,P*A);
 //A = complex(randn(20)+i*randn(20));
 //[L,U,P] = lu(A);
-//x = x & testeq(20,L*U,P*A);
+//x = x & testeq(100,L*U,P*A);
 //A = dcomplex(randn(20)+i*randn(20));
 //[L,U,P] = lu(A);
-//x = x & testeq(20,L*U,P*A);
+//x = x & testeq(100,L*U,P*A);
 //
 //function x = testeq(tmag,a,b)
 //  d = full(a)-full(b);
@@ -1097,7 +1097,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  bnd = 10*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1113,7 +1113,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  bnd = 10*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1129,7 +1129,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  bnd = 10*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1145,7 +1145,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  bnd = 10*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1166,7 +1166,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  bnd = 10*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1182,7 +1182,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  bnd = 10*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1198,7 +1198,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*feps*i;
+//  bnd = 10*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1214,7 +1214,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(diag(abs(d)))*eps*i;
+//  bnd = 10*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1319,7 +1319,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a,b);
 //  emat = a*v - b*v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*feps*i;
+//  bnd = 10*max(abs(eig(b)))*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
@@ -1336,7 +1336,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a,b);
 //  emat = a*v - b*v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*eps*i;
+//  bnd = 10*max(abs(eig(b)))*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
@@ -1353,7 +1353,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a,b);
 //  emat = a*v - b*v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*feps*i;
+//  bnd = 10*max(abs(eig(b)))*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
@@ -1370,7 +1370,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //  [v,d] = eig(a,b);
 //  emat = a*v - b*v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 4*max(abs(eig(b)))*max(diag(abs(d)))*eps*i;
+//  bnd = 10*max(abs(eig(b)))*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
@@ -2145,7 +2145,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r] = qr(a,0);
 //    err = abs(a-q*r);
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*feps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*feps*(n^(0.5));
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;
@@ -2156,7 +2156,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r] = qr(a,0);
 //    err = abs(a-q*r);
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*eps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*eps*(n^(0.5));
 //    t2 = (err < bnd);
 //    if (~t2) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t2all = t2all & t2;
@@ -2167,7 +2167,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r] = qr(a,0);
 //    err = abs(a-q*r);
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*feps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*feps*(n^(0.5));
 //    t3 = (err < bnd);
 //    if (~t3) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t3all = t3all & t3;
@@ -2178,7 +2178,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r] = qr(a,0);
 //    err = abs(a-q*r);
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*eps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*eps*(n^(0.5));
 //    t4 = (err < bnd);
 //    if (~t4) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t4all = t4all & t4;
@@ -2198,7 +2198,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    e(mdx) = 1;
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*feps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*feps*(n^(0.5));
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;
@@ -2213,7 +2213,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    e(mdx) = 1;
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*eps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*eps*(n^(0.5));
 //    t2 = (err < bnd);
 //    if (~t2) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t2all = t2all & t2;
@@ -2228,7 +2228,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    e(mdx) = 1;
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*feps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*feps*(n^(0.5));
 //    t3 = (err < bnd);
 //    if (~t3) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t3all = t3all & t3;
@@ -2243,7 +2243,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    e(mdx) = 1;
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 4*max(abs(diag(r)))*eps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*eps*(n^(0.5));
 //    t4 = (err < bnd);
 //    if (~t4) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t4all = t4all & t4;
@@ -2259,7 +2259,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r,e] = qr(a);
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 2*max(abs(diag(r)))*feps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*feps*(n^(0.5));
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;
@@ -2270,7 +2270,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r,e] = qr(a);
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 2*max(abs(diag(r)))*eps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*eps*(n^(0.5));
 //    t2 = (err < bnd);
 //    if (~t2) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t2all = t2all & t2;
@@ -2281,7 +2281,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r,e] = qr(a);
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 2*max(abs(diag(r)))*feps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*feps*(n^(0.5));
 //    t3 = (err < bnd);
 //    if (~t3) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t3all = t3all & t3;
@@ -2292,7 +2292,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //    [q,r,e] = qr(a);
 //    err = abs(a-q*r*e');
 //    err = max(err(:));
-//    bnd = 2*max(abs(diag(r)))*eps*(n^(0.5));
+//    bnd = 10*max(abs(diag(r)))*eps*(n^(0.5));
 //    t4 = (err < bnd);
 //    if (~t4) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t4all = t4all & t4;
@@ -2518,7 +2518,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2528,7 +2528,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2538,7 +2538,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2556,7 +2556,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2566,7 +2566,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2576,7 +2576,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2594,7 +2594,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 4*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2604,7 +2604,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 4*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2614,7 +2614,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 4*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2632,7 +2632,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 2*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2642,7 +2642,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2652,7 +2652,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2670,7 +2670,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2680,7 +2680,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2690,7 +2690,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2708,7 +2708,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 4*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2718,7 +2718,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 4*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2728,7 +2728,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 4*max(abs(diag(s)))*feps*n;
+//    bnd = 10*max(abs(diag(s)))*feps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2746,7 +2746,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 2*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2756,7 +2756,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2766,7 +2766,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 2*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2784,7 +2784,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
 //    p(n) = err;
-//    bnd = 4*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2794,7 +2794,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 4*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -2804,7 +2804,7 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
 //    [u,s,v] = svd(a,0);
 //    emat = abs(a-u*s*v');
 //    err = max(emat(:));
-//    bnd = 4*max(abs(diag(s)))*eps*n;
+//    bnd = 10*max(abs(diag(s)))*eps*n;
 //    t1 = (err < bnd);
 //    if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',err,bnd,n); end;
 //    t1all = t1all & t1;    
@@ -3283,7 +3283,8 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
 //@>
 //Note that if the variable is not defined, @|isempty| 
 //does not return true.
-//@<
+//@<1
+//clear(x);
 //isempty(x)
 //@>
 //@@Tests

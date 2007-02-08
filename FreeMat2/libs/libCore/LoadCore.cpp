@@ -67,6 +67,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("max",MaxFunction,3,2,"x","z","n",NULL);
   context->addFunction("sum",SumFunction,2,1,"x","d",NULL);
   context->addFunction("cumsum",CumsumFunction,2,1,"x","d",NULL);
+  context->addFunction("cumprod",CumprodFunction,2,1,"x","d",NULL);
   context->addFunction("mean",MeanFunction,2,1,"x","d",NULL);
   context->addFunction("var",VarFunction,2,1,"x","d",NULL);
   context->addFunction("prod",ProdFunction,2,1,"x","d",NULL);
@@ -213,6 +214,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("strstr",StrStrFunction,2,1,"x","y",NULL);
   context->addFunction("strrep_string",StrRepStringFunction,3,1,"source","pattern","replace",NULL);
   context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep",NULL);
+  context->addFunction("permute",PermuteFunction,2,1,"A","permutation",NULL);
   context->addFunction("inv",InvFunction,1,1,"A",NULL);
   context->addFunction("rcond",RcondFunction,1,1,"A",NULL);
   context->addFunction("end",EndFunction,3,1,"x","n","dims",NULL);

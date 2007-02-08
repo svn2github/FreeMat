@@ -35,7 +35,9 @@
 #include "System.hpp"
 #include "Sparse.hpp"
 #include "LUDecompose.hpp"
+#include "Class.hpp"
 #include "Print.hpp"
+#include "MemPtr.hpp"
 
 #include <algorithm>
 #undef max
@@ -3887,6 +3889,10 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
 //
 //Alternately, @|f| can be a function handle to a function
 //(see the section on @|function handles| for more information).
+//
+//Finally, FreeMat also supports @|f| being a user defined class
+//in which case it will atttempt to invoke the @|subsref| method
+//of the class.
 //@@Example
 //Here is an example of using @|feval| to call the @|cos| 
 //function indirectly.
@@ -3898,12 +3904,43 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
 //c = @cos
 //feval(c,pi/4)
 //@>
+//Here we construct an inline object (which is a user-defined class)
+//and use @|feval| to call it
+//@<
+//afunc = inline('cos(t)+sin(t)','t')
+//feval(afunc,pi)
+//afunc(pi)
+//@>
+//In both cases, (the @|feval| call and the direct invokation), FreeMat
+//calls the @|subsref| method of the class, which computes the requested 
+//function.
 //!
+
+ArrayVector FevalClassHelper(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  FuncPtr val;
+  Array userClass(arg[0]);
+  if (!ClassResolveFunction(eval,userClass,"subsref",val))
+    throw Exception("Cannot call feval on a user-defined class that does not overload subsref");
+  // Build a custom index expression structure
+  rvstring fnames;
+  fnames << "type" << "subs";
+  ArrayVector structArgs;
+  structArgs << Array::stringConstructor("()");
+  ArrayVector copyArgs(arg);
+  copyArgs.pop_front();
+  structArgs << Array::cellConstructor(Array::cellConstructor(copyArgs));
+  Array subsrefArg(Array::structConstructor(fnames,structArgs));
+  val->updateCode();
+  return val->evaluateFunction(eval,ArrayVector() << userClass << subsrefArg,nargout);
+}
+
 ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   if (arg.size() == 0)
     throw Exception("feval function requires at least one argument");
-  if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY))
-    throw Exception("first argument to feval must be the name of a function (i.e., a string) or a function handle");
+  if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY) && (!arg[0].isUserClass()))
+    throw Exception("first argument to feval must be the name of a function (i.e., a string) a function handle, or a user defined class");
+  if (arg[0].isUserClass())
+    return FevalClassHelper(nargout,arg,eval);
   FunctionDef *funcDef;
   if (arg[0].isString()) {
     char *fname = arg[0].getContentsAsCString();
@@ -4101,6 +4138,75 @@ ArrayVector SystemFunction(int nargout, const ArrayVector& arg) {
   Array ret(FM_CELL_ARRAY,dim,np);
   retval.push_back(ret);
   return retval;
+}
+
+
+
+//!
+//@Module PERMUTE Array Permutation Function
+//@@Section ARRAY
+//@@Usage
+//The @|permute| function rearranges the contents of an array according
+//to the specified permutation vector.  The syntax for its use is
+//@[
+//    y = permute(x,p)
+//@]
+//where @|p| is a permutation vector - i.e., a vector containing the 
+//integers @|1...ndims(x)| each occuring exactly once.  The resulting
+//array @|y| contains the same data as the array @|x|, but ordered
+//according to the permutation.  This function is a generalization of
+//the matrix transpose operation.
+//@@Example
+//Here we use @|permute| to transpose a simple matrix (note that permute
+//also works for sparse matrices):
+//@<
+//A = [1,2;4,5]
+//permute(A,[2,1])
+//A'
+//@>
+//Now we permute a larger n-dimensional array:
+//@<
+//A = randn(13,5,7,2);
+//size(A)
+//B = permute(A,[3,4,2,1]);
+//size(B)
+//@>
+//@@Tests
+//@$"y=permute([1,2;3,4],[2,1])","[1,3;2,4]","exact"
+//@$"y=size(permute(randn(13,5,7,2),[3,4,2,1]))","[7,2,5,13]","exact"
+//@{ test_permute1.m
+//function test_val = test_permute1
+//z = rand(3,5,2,4,7);
+//perm = [3,5,1,4,2];
+//sizez = size(z);
+//y = permute(z,perm);
+//sizey = size(y);
+//test_val = all(sizey == sizez(perm));
+//@}
+//!
+ArrayVector PermuteFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2) throw Exception("permute requires 2 inputs, the array to permute, and the permutation vector");
+  Array A(arg[0]);
+  Array permutation(arg[1]);
+  permutation.promoteType(FM_INT32);
+  int Adims = A.dimensions().getLength();
+  if (permutation.getLength() != A.dimensions().getLength())
+    throw Exception("permutation vector must contain as many elements as the array to permute has dimensions");
+  // Check that it is, in fact a permutation
+  MemBlock<bool> p(Adims);
+  bool *d = &p;
+  for (int i=0;i<Adims;i++) d[i] = false;
+  const int32* dp = (const int32*) permutation.getDataPointer();
+  for (int i=0;i<Adims;i++) {
+    if ((dp[i] < 1) || (dp[i] > Adims))
+      throw Exception("permutation vector elements are limited to 1..ndims(A), where A is the array to permute");
+    d[dp[i]-1] = true;
+  }
+  // Check that all are covered
+  for (int i=0;i<Adims;i++)
+    if (!d[i]) throw Exception("second argument to permute function is not a permutation (no duplicates allowed)");
+  A.permute(dp);
+  return ArrayVector() << A;
 }
 
 //!

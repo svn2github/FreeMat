@@ -551,11 +551,15 @@ tree Parser::MatDef(byte basetok, byte closebracket) {
     tree rowdef(mkLeaf(TOK_ROWDEF,m_lex.ContextNum()));
     while (!Match(';') && !Match('\n') && !Match(closebracket)) {
       addChild(rowdef,Expression());
-      if (Match(',') || Match(TOK_SPACE))
+      if (Match(',')) {
+	Consume();
+	while (Match(TOK_SPACE)) Consume();
+      } else if (Match(TOK_SPACE))
 	Consume();
     }
     if (Match(';') || Match('\n'))
       Consume();
+    if (Match(TOK_SPACE)) Consume();
     addChild(matdef,rowdef);
   }
   m_lex.PopWSFlag();

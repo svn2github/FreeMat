@@ -1226,7 +1226,7 @@ ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
 void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,"x",NULL);
   context->addGfxFunction("axes",HAxesFunction,-1,1,NULL);
-  context->addGfxFunction("line",HLineFunction,-1,1,NULL);
+  context->addGfxFunction("hline",HLineFunction,-1,1,NULL);
   context->addGfxFunction("htext",HTextFunction,-1,1,NULL);
   context->addGfxFunction("himage",HImageFunction,-1,1,NULL);
   context->addGfxFunction("surface",HSurfaceFunction,-1,1,NULL);

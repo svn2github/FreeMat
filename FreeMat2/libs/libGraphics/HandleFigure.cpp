@@ -58,6 +58,7 @@ void HandleFigure::ConstructProperties() {
   // of this figure.  These should be axis objects.
   //  \item @|currentaxes| - @|handle| - the handle for the current axes.  Also returned
   // by @|gca|.
+  //  \item @|doublebuffer| - Not used.
   //  \item @|parent| -  Not used.
   //  \item @|position| - Not used.
   //  \item @|type| - @|string| - returns the string @|'figure'|.
@@ -80,6 +81,7 @@ void HandleFigure::ConstructProperties() {
   AddProperty(new HPColorVector,"colormap");
   AddProperty(new HPHandles,"children");
   AddProperty(new HPHandles,"currentaxes");
+  AddProperty(new HPOnOff,"doublebuffer");
   AddProperty(new HPHandles,"parent");
   AddProperty(new HPFourVector,"position");
   AddProperty(new HPString,"type");

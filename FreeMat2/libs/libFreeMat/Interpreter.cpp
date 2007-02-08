@@ -602,6 +602,16 @@ void Interpreter::clearStacks() {
 //a = [1,2;3.0f,4.0f+i];
 //test_val = test(strcmp(typeof(a),'complex'));
 //@}
+//@{ test_matcat7.m
+//% Check that matrix cat works properly with spaces before the continuation
+//function test_val = test_matcat7
+//a = [1;2;...   
+//     3;4; ...
+//     5;6];
+//b = [1, 2, 3, ...
+//     4, 5, 6 ];
+//test_val = 1;
+//@}
 //@{ test_newind1.m
 //function x = test_newind1
 //a = uint8(10*rand(10,40,5));
@@ -788,11 +798,10 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       q.push_back(*ptr);
       return;
     }
-    //    if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
-    //      treeVector indexExpr(t.children());
-    //      indexExpr.erase(indexExpr.begin());
-    //      return ClassRHSExpression(*ptr,indexExpr,this);
-    //    }
+    if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
+      q += ClassRHSExpression(*ptr,t,this);
+      return;
+    }
     Array r(*ptr);
     for (unsigned index = 1;index < t.numchildren()-1;index++) 
       deref(r,t.child(index));
@@ -2578,6 +2587,26 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //    A = [];
 //    A([],[],[]) = [];
 //    test_val = 1;
+//@}
+//@{ test_assign14.m
+//% Test for auto sizing of assignment to undefined variables
+//function test_val = test_assign14
+//   r = [2,3;3,4];
+//   a(2,:,:) = r;
+//   b = zeros(2,2,2);
+//   b(2,:,:) = r;
+//   test_val = all(a(:) == b(:)) && all(size(a) == size(b));
+//@}
+//@{ test_assign15.m
+//% Test for error on illegal (incomplete) assign to empty variables
+//function test_val = test_assign15
+//   a = [2,3;4,5];
+//   test_val = 0;
+//   try
+//     c(2,:) = a;
+//   catch
+//     test_val = 1;
+//   end
 //@}
 //@{ test_sparse56.m
 //% Test DeleteSparseMatrix function

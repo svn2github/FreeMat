@@ -19,6 +19,7 @@
 %!
 % Copyright (c) 2005 Samit Basu
 function x = flipdim(y,n)
+  if (isempty(y)), x = y; return; end
   szey = size(y);
   ndim = prod(size(szey));
   n = int32(n);

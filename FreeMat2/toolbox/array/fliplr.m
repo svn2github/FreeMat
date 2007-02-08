@@ -19,6 +19,10 @@
 %x = int32(rand(4,4,3)*10)
 %fliplr(x)
 %@>
+%@@Tests
+%@$"y=fliplr([1,2,3])","[3,2,1]","exact"
+%@$"y=fliplr([1;2;3])","[1;2;3]","exact"
+%@$"y=fliplr([])","[]","exact"
 %!
 % Copyright (c) 2002, 2003 Samit Basu
 function x = fliplr(y)

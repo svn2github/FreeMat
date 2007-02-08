@@ -504,7 +504,12 @@ public:
    * FM_STRUCT_ARRAY, so that the fieldNames argument is not needed.
    */
   void promoteType(Class new_type);
-
+  /**
+   * Permute our array according to the given permutation vector.  Note that
+   * we assume that the permutation vector is of the correct size and is a
+   * valid permutation.
+   */
+  void permute(const int32* permutation);
   /**
    * Diagonal constructor - construct an array from a given vector, with
    * the contents of the vector stored into the specified diagonal of the
@@ -659,6 +664,8 @@ public:
    * Throws an exception if the geometry of the argumens is incompatible.
    */
   static Array cellConstructor(ArrayMatrix& m);
+  static Array cellConstructor(ArrayVector& m);
+  static Array cellConstructor(Array m);
   /**
    * Structure constructor - this is equivalent to the built in struct command.
    * First, we have to make sure that each entry of "values" have 

@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include "Exception.hpp"
+#include "Types.hpp"
 
 class Interpreter;
 const unsigned int maxDims = 6;
@@ -265,6 +266,10 @@ public:
   inline bool is2D() const {
     return m_cache_is2D;
   }
+  /**
+   * Applies a permutation (assumed legal) to this dimension vector, and returns the permuted vector
+   */
+  Dimensions permute(const int32* permutation) const;
 };
 
 #endif

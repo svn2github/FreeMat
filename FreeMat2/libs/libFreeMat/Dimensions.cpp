@@ -228,3 +228,9 @@ void Dimensions::makeScalar() {
   updateCacheVariables();
 }
 
+Dimensions Dimensions::permute(const int32* permutation) const {
+  Dimensions out(length);
+  for (int i=0;i<length;i++)
+    out.data[i] = data[permutation[i]-1];
+  return out;
+}

@@ -677,6 +677,42 @@ void Array::resize(Dimensions& a) {
 	      sparse(),fieldNames(),className());
 }
 
+void Array::permute(const int32 *permutation) {
+  // Check for an identity permutation
+  int Adims = dimensions().getLength();
+  bool id_perm = true;
+  for (int i=0;i<Adims;i++)
+    if ((permutation[i]-1) != i) id_perm = false;
+  // It is an identity permutation - do nothing
+  if (id_perm) return;
+  // In 2D, the only non-identity permutation is a transpose
+  if ((dimensions().getLength() == 2) && (is2D())) {
+    transpose();
+    return;
+  }
+  if (isEmpty()) return;
+  // Allocate a space to store the permuted data
+  void *dst_data = allocateArray(dataClass(),getLength(),fieldNames());
+  // Initialize a pointer to zero.
+  Dimensions curPos(dimensions().getLength());
+  // Create a permuted dimensions vector
+  Dimensions newdims(dimensions().permute(permutation));
+  newdims.updateCacheVariables();
+  int dstIndex = 0;
+  // Loop over all points
+  for (int srcIndex=0;srcIndex < getLength();srcIndex++) {
+    // Permute the current point into the new array
+    // and then map it to a linear index
+    dstIndex = newdims.mapPoint(curPos.permute(permutation));
+    // Copy this one element
+    copyElements(srcIndex,dst_data,dstIndex,1);
+    // Move to the next point in the source array
+    curPos.incrementModulo(dimensions(),0);
+  }
+  // Replace our data with the new array.
+  setData(dataClass(),newdims,dst_data,sparse(),fieldNames(),className());
+}
+
 void Array::vectorResize(int max_index) {
   if (max_index > getLength()) {
     Dimensions newDim;
@@ -2148,6 +2184,14 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
   }
 }
 
+Array Array::cellConstructor(Array m) {
+  return cellConstructor(ArrayVector() << m);
+}
+
+Array Array::cellConstructor(ArrayVector& m) {
+  return cellConstructor(ArrayMatrix() << m);
+}
+
 Array Array::cellConstructor(ArrayMatrix& m) {
   int columnCount, rowCount;
   Array* qp = NULL;
@@ -2592,8 +2636,8 @@ Array Array::getNDimSubset(ArrayVector& index)  {
   if (!sparse() && allScalars(index)) 
     return getNDimSubsetScalars(index);
 
-  if (isEmpty())
-    throw Exception("Cannot index into empty variable.");
+  //  if (isEmpty())
+  //    throw Exception("Cannot index into empty variable.");
   try {
     int L = index.size();
     Dimensions outDims(L);
@@ -3111,9 +3155,17 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata) {
 	  } else
 	    index[i] = Array::int32RangeConstructor(1,1,1,true);
     } else {
+      // Correction - 
+      // In the assignment of the form:
+      //  g(2,:,4,:) = fs;
+      // we fill in the colons with the first and second dimensional sizes of fs
+      int colonDim = 0;
       for (int i=0;i<index.size();i++)
 	if (isColonOperator(index[i]))
-	  index[i] = Array::int32RangeConstructor(1,1,rdata.getDimensionLength(i),true);
+	  index[i] = Array::int32RangeConstructor(1,1,rdata.getDimensionLength(colonDim++),true);
+       if ((colonDim > 0) && (colonDim < rdata.dimensions().getLength()))
+ 	throw Exception("Assignment A(...) = b is not legal");
+      // Test for colonDim < rdata.get
     }
   }
   try {

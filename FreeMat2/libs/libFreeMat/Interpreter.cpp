@@ -2611,11 +2611,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse56.m
 //% Test DeleteSparseMatrix function
 //function x = test_sparse56
-//xi = test_sparse_mat('int32',100);
-//xf = test_sparse_mat('float',100);
-//xd = test_sparse_mat('double',100);
-//xc = test_sparse_mat('complex',100);
-//xz = test_sparse_mat('dcomplex',100);
+//xi = sparse_test_mat('int32',100);
+//xf = sparse_test_mat('float',100);
+//xd = sparse_test_mat('double',100);
+//xc = sparse_test_mat('complex',100);
+//xz = sparse_test_mat('dcomplex',100);
 //xi = [];
 //xf = [];
 //xd = [];
@@ -2626,11 +2626,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse63.m
 //% Test sparse matrix array vector-subset extraction
 //function x = test_sparse63
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //ndx = randi(ones(1500,1),300*400*ones(1500,1));
 //a1 = yi1(ndx); b1 = zi1(ndx);
 //a2 = yf1(ndx); b2 = zf1(ndx);
@@ -2649,11 +2649,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse64.m
 //% Test sparse matrix array ndim-subset extraction
 //function x = test_sparse64
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //row_ndx = randi(ones(150,1),300*ones(150,1));
 //col_ndx = randi(ones(150,1),400*ones(150,1));
 //a1 = yi1(row_ndx,col_ndx); b1 = zi1(row_ndx,col_ndx);
@@ -2680,11 +2680,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse65.m
 //% Test sparse matrix array vector-subset assignment
 //function x = test_sparse65
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //ndx = randi(ones(1500,1),300*400*ones(1500,1));
 //gi = int32(100*randn(1500,1));
 //gf = float(randn(1500,1));
@@ -2714,11 +2714,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse66.m
 //% Test sparse matrix array ndim-subset assignment
 //function x = test_sparse66
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //ndxr = randi(ones(100,1),300*ones(100,1));
 //ndxc = randi(ones(100,1),400*ones(100,1));
 //gi = int32(100*randn(100,100));
@@ -2736,21 +2736,21 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse67.m
 //% Test sparse matrix individual element retrieval
 //function x = test_sparse67
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1(150,200),zi1(150,200)) & testeq(yf1(150,200),zf1(150,200)) & testeq(yd1(150,200),zd1(150,200)) & testeq(yc1(150,200),zc1(150,200)) & testeq(yz1(150,200),zz1(150,200));
 //@}
 //@{ test_sparse71.m
 //% Test sparse matrix array column deletion
 //function x = test_sparse71
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //ndxc = randi(ones(100,1),400*ones(100,1));
 //yi1(:,ndxc) = [];
 //yf1(:,ndxc) = [];
@@ -2767,11 +2767,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse72.m
 //% Test sparse matrix array row deletion
 //function x = test_sparse72
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //ndxr = randi(ones(100,1),300*ones(100,1));
 //yi1(ndxr,:) = [];
 //yf1(ndxr,:) = [];
@@ -2788,11 +2788,11 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 //@{ test_sparse73.m
 //% Test sparse matrix array vector deletion
 //function x = test_sparse73
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //ndxr = randi(ones(200,1),400*300*ones(200,1));
 //yi1(ndxr) = [];
 //yf1(ndxr) = [];

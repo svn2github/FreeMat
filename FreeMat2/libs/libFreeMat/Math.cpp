@@ -1267,16 +1267,16 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
 //@{ test_sparse78.m
 //% Test sparse-sparse matrix array add
 //function x = test_sparse78
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
-//[yi2,zi2] = test_sparse_mat('int32',300,400);
-//[yf2,zf2] = test_sparse_mat('float',300,400);
-//[yd2,zd2] = test_sparse_mat('double',300,400);
-//[yc2,zc2] = test_sparse_mat('complex',300,400);
-//[yz2,zz2] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
+//[yi2,zi2] = sparse_test_mat('int32',300,400);
+//[yf2,zf2] = sparse_test_mat('float',300,400);
+//[yd2,zd2] = sparse_test_mat('double',300,400);
+//[yc2,zc2] = sparse_test_mat('complex',300,400);
+//[yz2,zz2] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1+yi2,zi1+zi2) & testeq(yf1+yf2,zf1+zf2) & testeq(yd1+yd2,zd1+zd2) & testeq(yc1+yc2,zc1+zc2) & testeq(yz1+yz2,zz1+zz2);
 //@}
 //!
@@ -1506,16 +1506,16 @@ Array Add(Array A, Array B) {
 //@{ test_sparse79.m
 //% Test sparse-sparse matrix array subtract
 //function x = test_sparse79
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
-//[yi2,zi2] = test_sparse_mat('int32',300,400);
-//[yf2,zf2] = test_sparse_mat('float',300,400);
-//[yd2,zd2] = test_sparse_mat('double',300,400);
-//[yc2,zc2] = test_sparse_mat('complex',300,400);
-//[yz2,zz2] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
+//[yi2,zi2] = sparse_test_mat('int32',300,400);
+//[yf2,zf2] = sparse_test_mat('float',300,400);
+//[yd2,zd2] = sparse_test_mat('double',300,400);
+//[yc2,zc2] = sparse_test_mat('complex',300,400);
+//[yz2,zz2] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1-yi2,zi1-zi2) & testeq(yf1-yf2,zf1-zf2) & testeq(yd1-yd2,zd1-zd2) & testeq(yc1-yc2,zc1-zc2) & testeq(yz1-yz2,zz1-zz2);
 //@}
 //!
@@ -3572,16 +3572,16 @@ Array Negate(Array A){
 //@{ test_sparse59.m
 //% Test sparse-dense matrix multiplication
 //function x = test_sparse59
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
-//[yi2,zi2] = test_sparse_mat('int32',400,450);
-//[yf2,zf2] = test_sparse_mat('float',400,450);
-//[yd2,zd2] = test_sparse_mat('double',400,450);
-//[yc2,zc2] = test_sparse_mat('complex',400,450);
-//[yz2,zz2] = test_sparse_mat('dcomplex',400,450);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
+//[yi2,zi2] = sparse_test_mat('int32',400,450);
+//[yf2,zf2] = sparse_test_mat('float',400,450);
+//[yd2,zd2] = sparse_test_mat('double',400,450);
+//[yc2,zc2] = sparse_test_mat('complex',400,450);
+//[yz2,zz2] = sparse_test_mat('dcomplex',400,450);
 //x = testeq(yi1*zi2,zi1*zi2) & ...
 //    testeq(yf1*zf2,zf1*zf2) & ...
 //    testeq(yd1*zd2,zd1*zd2) & ...
@@ -3591,16 +3591,16 @@ Array Negate(Array A){
 //@{ test_sparse60.m
 //% Test dense-sparse matrix multiplication
 //function x = test_sparse60
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
-//[yi2,zi2] = test_sparse_mat('int32',400,450);
-//[yf2,zf2] = test_sparse_mat('float',400,450);
-//[yd2,zd2] = test_sparse_mat('double',400,450);
-//[yc2,zc2] = test_sparse_mat('complex',400,450);
-//[yz2,zz2] = test_sparse_mat('dcomplex',400,450);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
+//[yi2,zi2] = sparse_test_mat('int32',400,450);
+//[yf2,zf2] = sparse_test_mat('float',400,450);
+//[yd2,zd2] = sparse_test_mat('double',400,450);
+//[yc2,zc2] = sparse_test_mat('complex',400,450);
+//[yz2,zz2] = sparse_test_mat('dcomplex',400,450);
 //x = testeq(zi1*yi2,zi1*zi2) & ...
 //    testeq(zf1*yf2,zf1*zf2) & ...
 //    testeq(zd1*yd2,zd1*zd2) & ...
@@ -3610,16 +3610,16 @@ Array Negate(Array A){
 //@{ test_sparse61.m
 //% Test sparse-sparse matrix multiplication
 //function x = test_sparse61
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
-//[yi2,zi2] = test_sparse_mat('int32',400,450);
-//[yf2,zf2] = test_sparse_mat('float',400,450);
-//[yd2,zd2] = test_sparse_mat('double',400,450);
-//[yc2,zc2] = test_sparse_mat('complex',400,450);
-//[yz2,zz2] = test_sparse_mat('dcomplex',400,450);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
+//[yi2,zi2] = sparse_test_mat('int32',400,450);
+//[yf2,zf2] = sparse_test_mat('float',400,450);
+//[yd2,zd2] = sparse_test_mat('double',400,450);
+//[yc2,zc2] = sparse_test_mat('complex',400,450);
+//[yz2,zz2] = sparse_test_mat('dcomplex',400,450);
 //x = testeq(yi1*yi2,zi1*zi2) & ...
 //    testeq(yf1*yf2,zf1*zf2) & ...
 //    testeq(yd1*yd2,zd1*zd2) & ...
@@ -3629,16 +3629,16 @@ Array Negate(Array A){
 //@{ test_sparse80.m
 //% Test sparse-sparse matrix array multiply
 //function x = test_sparse80
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
-//[yi2,zi2] = test_sparse_mat('int32',400,600);
-//[yf2,zf2] = test_sparse_mat('float',400,600);
-//[yd2,zd2] = test_sparse_mat('double',400,600);
-//[yc2,zc2] = test_sparse_mat('complex',400,600);
-//[yz2,zz2] = test_sparse_mat('dcomplex',400,600);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
+//[yi2,zi2] = sparse_test_mat('int32',400,600);
+//[yf2,zf2] = sparse_test_mat('float',400,600);
+//[yd2,zd2] = sparse_test_mat('double',400,600);
+//[yc2,zc2] = sparse_test_mat('complex',400,600);
+//[yz2,zz2] = sparse_test_mat('dcomplex',400,600);
 //x = testeq(yi1*yi2,zi1*zi2) & testeq(yf1*yf2,zf1*zf2) & testeq(yd1*yd2,zd1*zd2) & testeq(yc1*yc2,zc1*zc2) & testeq(yz1*yz2,zz1*zz2);
 //@}
 //!
@@ -3940,10 +3940,10 @@ Array LeftDivide(Array A, Array B) {
 //@{ test_sparse82.m
 //% Test sparse-sparse matrix array solution
 //function x = test_sparse82
-//[yd1,zd1] = test_sparse_mat('double',100,100);
-//[yz1,zz1] = test_sparse_mat('dcomplex',100,100);
-//[yd2,zd2] = test_sparse_mat('double',100,60);
-//[yz2,zz2] = test_sparse_mat('dcomplex',100,60);
+//[yd1,zd1] = sparse_test_mat('double',100,100);
+//[yz1,zz1] = sparse_test_mat('dcomplex',100,100);
+//[yd2,zd2] = sparse_test_mat('double',100,60);
+//[yz2,zz2] = sparse_test_mat('dcomplex',100,60);
 //x = testeq3(yd1\yd2,zd1\zd2) & testeq3(yz1\yz2,zz1\zz2);
 //
 //function x = testeq3(a,b)
@@ -5046,11 +5046,11 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
 //@{ test_sparse76.m
 //% Test sparse matrix array hermitian 
 //function x = test_sparse76
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1',zi1') & testeq(yf1',zf1') & testeq(yd1',zd1') & testeq(yc1',zc1') & testeq(yz1',zz1');
 //@}
 //!
@@ -5091,11 +5091,11 @@ Array Transpose(Array A) {
 //@{ test_sparse77.m
 //% Test sparse matrix array transpose
 //function x = test_sparse77
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1.',zi1.') & testeq(yf1.',zf1.') & testeq(yd1.',zd1.') & testeq(yc1.',zc1.') & testeq(yz1.',zz1.');
 //@}
 //!

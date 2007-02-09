@@ -548,11 +548,11 @@ ArrayVector Int64Function(int nargout, const ArrayVector& arg) {
 //@{ test_sparse58.m
 //% Test type conversion functions
 //function x = test_sparse58
-//[yi,zi] = test_sparse_mat('int32',400);
-//[yf,zf] = test_sparse_mat('float',400);
-//[yd,zd] = test_sparse_mat('double',400);
-//[yc,zc] = test_sparse_mat('complex',400);
-//[yz,zz] = test_sparse_mat('dcomplex',400);
+//[yi,zi] = sparse_test_mat('int32',400);
+//[yf,zf] = sparse_test_mat('float',400);
+//[yd,zd] = sparse_test_mat('double',400);
+//[yc,zc] = sparse_test_mat('complex',400);
+//[yz,zz] = sparse_test_mat('dcomplex',400);
 //
 //xi = testeq(int32(yi),sparse(int32(zi))) & ...
 //    testeq(float(yi),sparse(float(zi))) & ...

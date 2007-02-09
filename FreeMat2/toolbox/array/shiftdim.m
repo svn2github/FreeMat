@@ -36,7 +36,7 @@
 %do not actually cause data to be resorted, only the size of the arrays change.
 %This is not true for the following example, which triggers a call to @|permute|:
 %@<
-%z = shifdim(x,4);
+%z = shiftdim(x,4);
 %@>
 % Note that @|z| is now the transpose of @|x|
 %@<

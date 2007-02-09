@@ -1538,11 +1538,11 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 //@{ test_sparse68.m
 //% Test sparse to IJV conversion
 //function x = test_sparse68
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //[iyi1,jyi1,vyi1] = find(yi1);
 //[izi1,jzi1,vzi1] = find(zi1);
 //[iyf1,jyf1,vyf1] = find(yf1);
@@ -1562,11 +1562,11 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 //@{ test_sparse70.m
 //% Test sparse to IJV to sparse conversion
 //function x = test_sparse70
-//[yi1,zi1] = test_sparse_mat('int32',300,400);
-//[yf1,zf1] = test_sparse_mat('float',300,400);
-//[yd1,zd1] = test_sparse_mat('double',300,400);
-//[yc1,zc1] = test_sparse_mat('complex',300,400);
-//[yz1,zz1] = test_sparse_mat('dcomplex',300,400);
+//[yi1,zi1] = sparse_test_mat('int32',300,400);
+//[yf1,zf1] = sparse_test_mat('float',300,400);
+//[yd1,zd1] = sparse_test_mat('double',300,400);
+//[yc1,zc1] = sparse_test_mat('complex',300,400);
+//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //[iyi1,jyi1,vyi1] = find(yi1);
 //[iyf1,jyf1,vyf1] = find(yf1);
 //[iyd1,jyd1,vyd1] = find(yd1);

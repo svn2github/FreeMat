@@ -268,7 +268,7 @@ function k = tplotvector(handle,x,y,lineprops)
    if (~any(strcmp(lineprops,'color')))
      lineprops = [lineprops,{'markeredgecolor',colororder(ndxmod,:),'markerfacecolor',colororder(ndxmod,:)}];
    end
-   k = line('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
+   k = hline('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
    
 function b = islinespec(t,&colorspec,&markerspec,&linespec)
    % try to parse a string out as a linespec

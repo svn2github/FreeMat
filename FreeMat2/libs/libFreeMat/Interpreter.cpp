@@ -612,48 +612,6 @@ void Interpreter::clearStacks() {
 //     4, 5, 6 ];
 //test_val = 1;
 //@}
-//@{ test_newind1.m
-//function x = test_newind1
-//a = uint8(10*rand(10,40,5));
-//x = 1;
-//x = x & test_newind_help(a);
-//a = int8(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = uint16(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = int16(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = uint32(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = int32(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = float(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = double(10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = complex(10*rand(10,40,5)+i*10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//a = dcomplex(10*rand(10,40,5)+i*10*rand(10,40,5));
-//x = x & test_newind_help(a);
-//
-//function x = test_newind_help(a)
-//  x = 1;
-//  x = x & testvol(a,a(1:10,1:40,1:5));
-//  x = x & testvol(a,a(:,1:40,1:5));
-//  x = x & testvol(a,a(1:10,:,1:5));
-//  x = x & testvol(a,a(1:10,1:40,:));
-//  x = x & testvol(a,a(1:10,:,:));
-//  x = x & testvol(a,a(:,1:40,:));
-//  x = x & testvol(a,a(:,:,1:5));
-//  x = x & testvol(a,a(:,:,:));
-//  x = x & testvol(a,a(:,:,:,:));
-//@}
-//@{ test_newind2.m
-//function x = test_newind2
-//  a(10,40,5).foo = 'green';
-//  p = a(:,:,5).foo;
-//  q = p(10,40);
-//@}
 //@{ test_vec1.m
 //% Check the case of continuation with vectors
 //function test_val = test_vec1
@@ -1987,7 +1945,8 @@ void Interpreter::globalStatement(const tree &t) {
 //function y = test_persistent2
 //persistent a b c d e
 //global a1 b1 c1 d1 e1
-  //@}
+//y = 1;
+//@}
 //!
 void Interpreter::persistentStatement(const tree &t) {
   for (unsigned i=0;i<t.numchildren();i++)
@@ -4957,6 +4916,14 @@ bool NeedsMoreInput(Interpreter *eval, string txt) {
   return false;
 }
 
+void Interpreter::sleepMilliseconds(unsigned long msecs) {
+  QThread::msleep(msecs);
+}
+
+void Interpreter::getKeyPress() {
+  #error FINISHME
+}
+
 string Interpreter::getLine(string prompt) {
   emit SetPrompt(prompt);
   string retstring;
@@ -4968,7 +4935,6 @@ string Interpreter::getLine(string prompt) {
   mutex.unlock();
   return retstring;
 }
-
 
 // This is a "generic" CLI routine.  The user interface (non-debug)
 // version of this is "docli"

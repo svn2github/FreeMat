@@ -146,6 +146,7 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("evalin",EvalInFunction,-1,-1,NULL);
   context->addSpecialFunction("assignin",AssignInFunction,3,0,"workspace","name","value",NULL);
   context->addSpecialFunction("source",SourceFunction,1,0,"filename",NULL);
+  context->addSpecialFunction("pause",PauseFunction,1,0,"x",NULL);
   context->addSpecialFunction("who",WhoFunction,-1,0,NULL);
   context->addSpecialFunction("exist",ExistFunction,2,1,"name","type",NULL);
   context->addSpecialFunction("isset",IsSetFunction,1,1,"name",NULL);

@@ -850,7 +850,7 @@ ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //function x = test_exist2
 //persistent y
 //if (exist('y'))
-//  return 1;
+//  return 0;
 //end
 //@}
 //!

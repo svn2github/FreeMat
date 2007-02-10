@@ -451,6 +451,14 @@ public:
    */
   string getLine(string prompt);
   /**
+   * Wait for the user to press a key.
+   */
+  void getKeyPress();
+  /**
+   * Go to sleep for the specified number of milliseconds
+   */
+  void sleepMilliseconds(unsigned long msecs);
+  /**
    * Executes a sequence of statements, trapping exceptions
    * as necessary.  The AST looks like
    *   <ignored>

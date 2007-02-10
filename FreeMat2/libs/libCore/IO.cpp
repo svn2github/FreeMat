@@ -30,6 +30,7 @@
 #include "IEEEFP.hpp"
 #include "Sparse.hpp"
 #include "Core.hpp"
+#include <QThread>
 
 class FilePtr {
 public:
@@ -52,6 +53,57 @@ void InitializeFileSubsystem() {
   fptr->fp = stderr;
   fptr->swapflag = false;
   fileHandles.assignHandle(fptr);
+}
+
+//!
+//@Module PAUSE Pause Script Execution
+//@@Section IO
+//@@Usage
+//The @|pause| function can be used to pause execution of FreeMat
+//scripts.  There are several syntaxes for its use.  The first form
+//is
+//@[
+//   pause
+//@]
+//This form of the @|pause| function pauses FreeMat until you press
+//any key.  The second form of the @|pause| function takes an argument
+//@[
+//   pause(p)
+//@]
+//where @|p| is the number of seconds to pause FreeMat for.  The pause
+//argument should be accurate to a millisecond on all supported platforms.
+//Alternately, you can control all @|pause| statements using:
+//@[
+//   pause on
+//@]
+//which enables pauses and
+//@[
+//   pause off
+//@]
+//which disables all @|pause| statements, both with and without arguments.
+//!
+static bool pause_active = true;
+
+ArrayVector PauseFunction(int nargout, const ArrayVector& arg, Interpreter*eval) {
+  if (arg.size() == 1) {
+    // Check for the first argument being a string
+    if (arg[0].isString()) {
+      if ((strcmp(ArrayToString(arg[0]),"on") == 0) ||
+	  (strcmp(ArrayToString(arg[0]),"ON") == 0)) {
+	pause_active = true;
+      } else if ((strcmp(ArrayToString(arg[0]),"off") == 0) ||
+		 (strcmp(ArrayToString(arg[0]),"OFF") == 0)) {
+	pause_active = false;
+      } else
+	throw Exception("Unrecognized argument to pause function - must be either 'on' or 'off'");
+    }
+    if (pause_active)
+      eval->sleepMilliseconds((unsigned long)(ArrayToDouble(arg[0])*1000));
+  } else {
+    // Do something...
+    eval->getKeyPress();
+  }
+  return ArrayVector();
 }
 
 //!

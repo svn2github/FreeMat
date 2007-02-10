@@ -3690,28 +3690,27 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
 //@@Example
 //First, we write some commands to a file (note that it does
 //not end in the usual @|.m| extension):
-//@<
-//fp = fopen('source_test','w');
-//fprintf(fp,'a = 32;\n');
-//fprintf(fp,'b = a;\n');
-//fclose(fp);
-//@>
+//@{ source_test
+//a = 32;
+//b = a;
+//@}
 //Now we source the resulting file.
 //@<
-//clear all
+//clear a b
 //source source_test
-//who
+//a
+//b
 //@>
 //@@Tests
+//@{ source_test_script.m
+//n = 1;
+//n = n + 1;
+//@}
 //@{ test_source.m
 //% Check that the source function does not double-execute the last line of the script
 //function test_val = test_source
 //source('source_test_script.m')
 //test_val = test(n == 2);
-//@}
-//@{ source_test_script.m
-//n = 1;
-//n = n + 1;
 //@}
 //!
 ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {

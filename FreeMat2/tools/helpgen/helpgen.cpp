@@ -1347,9 +1347,9 @@ void WriteMainTestRoutine() {
   QString p;
   p += "function result = match_close(a,b)\n";
   p += "  if (isa(a,'double') || isa(a,'dcomplex'))\n";
-  p += "    result = max(abs(a-b)/max(1,abs(a))) < 1e-14;\n";
+  p += "    result = max(abs(a-b)./max(1,abs(a))) < 1e-14;\n";
   p += "  else\n";
-  p += "    result = max(abs(a-b)/max(1,abs(a))) < 1e-6;\n";
+  p += "    result = max(abs(a-b)./max(1,abs(a))) < 1e-6;\n";
   p += "  end\n";
   WriteFile(sourcepath+"/help/test/match_close.m",p);
 }

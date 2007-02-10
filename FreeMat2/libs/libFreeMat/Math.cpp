@@ -3567,7 +3567,7 @@ Array Negate(Array A){
 //H = f*G;
 //e = h - H;
 //t = max(abs(e(:)));
-//x = (t < eps*300);
+//x = (t < eps*600);
 //@}
 //@{ test_sparse59.m
 //% Test sparse-dense matrix multiplication

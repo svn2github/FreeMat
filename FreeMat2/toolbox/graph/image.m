@@ -74,7 +74,7 @@
 %  image(a);
 %catch
 %end
-%closeimage all;
+%close all;
 %test_val = 1;
 %
 %@}

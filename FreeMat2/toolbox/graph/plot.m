@@ -153,7 +153,7 @@
 %  plot(a,a);
 %catch
 %end
-%closeplot all;
+%close all;
 %test_val = 1;
 %@}
 %!

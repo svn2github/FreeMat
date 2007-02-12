@@ -939,7 +939,17 @@ void KeyManager::CompleteWord() {
   return;
 }
 
+void KeyManager::getKeyPress() {
+  keypresswait = true;
+  while (keypresswait) 
+    qApp->processEvents();
+}
+
 void KeyManager::OnChar( int c ) {
+  if (keypresswait) {
+    keypresswait = false;
+    return;
+  }
   keyseq_count++;
   switch(c) {
   case KM_BACKSPACE:

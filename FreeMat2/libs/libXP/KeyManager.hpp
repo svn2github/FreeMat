@@ -74,6 +74,7 @@ public:
   void RegisterTerm(QObject* term);
   void SetCompletionContext(Context* ctxt);
   Context* GetCompletionContext();
+  void getKeyPress();
  private:
   Context *context;
   vector<string> GetCompletions(string line, int word_end, 
@@ -140,6 +141,8 @@ public:
   int prompt_len;
   // Are we waiting for input?
   int loopactive;
+  // Are we waiting for a key press
+  bool keypresswait;
 signals:
   void CWDChanged();
   void UpdateCWD();

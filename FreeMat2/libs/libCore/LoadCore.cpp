@@ -24,12 +24,8 @@
 #include "RPC.hpp"
 #include <math.h>
 
-//FIXME
-#ifndef WIN32
-//#include "config.h"
 #ifdef USE_MPI
 #include "MPIWrap.hpp"
-#endif
 #endif
 
 void LoadGUICoreFunctions(Context* context) {
@@ -146,7 +142,6 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("evalin",EvalInFunction,-1,-1,NULL);
   context->addSpecialFunction("assignin",AssignInFunction,3,0,"workspace","name","value",NULL);
   context->addSpecialFunction("source",SourceFunction,1,0,"filename",NULL);
-  context->addSpecialFunction("pause",PauseFunction,1,0,"x",NULL);
   context->addSpecialFunction("who",WhoFunction,-1,0,NULL);
   context->addSpecialFunction("exist",ExistFunction,2,1,"name","type",NULL);
   context->addSpecialFunction("isset",IsSetFunction,1,1,"name",NULL);
@@ -191,7 +186,6 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("clear",ClearFunction,-1,0,NULL);
   context->addSpecialFunction("setprintlimit",SetPrintLimitFunction,1,0,"n",NULL);
   context->addSpecialFunction("getprintlimit",GetPrintLimitFunction,0,1,NULL);
-  context->addFunction("sleep",SleepFunction,1,0,"n",NULL);
   context->addFunction("eps",EpsFunction,0,1,NULL);
   context->addFunction("feps",FepsFunction,0,1,NULL);
   context->addFunction("repmat",RepMatFunction,3,1,"x","rows","cols",NULL);

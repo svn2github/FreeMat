@@ -24,27 +24,10 @@
 #include "IEEEFP.hpp"
 #include "Sparse.hpp"
 #include "helpwidget.hpp"
-#include <stdio.h>
-#include <iostream>
 #include <algorithm>
 #include "Editor.hpp"
 #include "PathTool.hpp"
 #include <QtCore>
-#include <sys/types.h>
-#include <sys/stat.h>
-#ifndef WIN32
-#include <unistd.h>
-#endif
-#include <qapplication.h>
-#include <QDir>
-#ifdef WIN32
-#include <direct.h>
-#define getcwd _getcwd
-//#define S_ISDIR(x) (x & _S_IFDIR)
-#define P_DELIM ";"
-#else
-#define P_DELIM ":"
-#endif
 #include <QtGui>
 #include "Module.hpp"
 
@@ -685,13 +668,13 @@ int ExistBuiltinFunction(char* fname, Interpreter* eval) {
 }
 
 int ExistDirFunction(char* fname, Interpreter* eval) {
-  struct stat filestat;
   // Check for extra termination
   if ((fname[strlen(fname)-1] == '/') ||
       (fname[strlen(fname)-1] == '\\'))
     fname[strlen(fname)-1] = 0;
-  if (stat(fname,&filestat)==-1) return 0;
-  if (S_ISDIR(filestat.st_mode)) return 7;
+  QFileInfo filestat(fname);
+  if (!filestat.exists()) return 0;
+  if (filestat.isDir()) return 7;
   return 0;
 }
 

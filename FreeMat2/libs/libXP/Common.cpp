@@ -18,14 +18,6 @@
  */
 #include "Common.hpp"
 #include <QtCore>
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <glob.h>
-#endif
 using namespace std;
 
 QStringList GetRecursiveDirList(QString basedir) {
@@ -47,36 +39,11 @@ QStringList GetRecursiveDirList(QString basedir) {
 
 stringVector GetCompletionList(string pattern) {
   stringVector completions;
-#ifdef WIN32
-  HANDLE hSearch;
-  WIN32_FIND_DATA FileData;
-  pattern.append("*");
-  hSearch = FindFirstFile(pattern.c_str(),&FileData);
-  if (hSearch != INVALID_HANDLE_VALUE) {
-    // Windows does not return any part of the path in the completion,
-    // So we need to find the base part of the pattern.
-    int lastslash;
-    std::string prefix;
-    lastslash = pattern.find_last_of("/");
-    if (lastslash == -1) {
-      lastslash = pattern.find_last_of("\\");
-    }
-    if (lastslash != -1)
-      prefix = pattern.substr(0,lastslash+1);
-    completions.push_back(prefix + FileData.cFileName);
-    while (FindNextFile(hSearch, &FileData))
-      completions.push_back(prefix + FileData.cFileName);
+  QDir dir(QDir::current());
+  QFileInfoList list = dir.entryInfoList(QStringList() << (QString::fromStdString(pattern) + "*"));
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    completions.push_back(fileInfo.fileName().toStdString());
   }
-  FindClose(hSearch);
   return completions;
-#else
-  glob_t names;
-  pattern.append("*");
-  glob(pattern.c_str(), GLOB_MARK, NULL, &names);
-  int i;
-  for (i=0;i<names.gl_pathc;i++) 
-    completions.push_back(names.gl_pathv[i]);
-  globfree(&names);
-  return completions;
-#endif
 }

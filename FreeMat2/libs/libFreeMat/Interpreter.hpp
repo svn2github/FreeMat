@@ -446,14 +446,10 @@ public:
    * Simplified interface for function lookup.
    */
   bool lookupFunction(string funcName, FuncPtr& val);
-  /**
+   /**
    * Prompt the user for input, and return the answer.
    */
   string getLine(string prompt);
-  /**
-   * Wait for the user to press a key.
-   */
-  void getKeyPress();
   /**
    * Go to sleep for the specified number of milliseconds
    */

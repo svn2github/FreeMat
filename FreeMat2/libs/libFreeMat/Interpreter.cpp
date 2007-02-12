@@ -4920,10 +4920,6 @@ void Interpreter::sleepMilliseconds(unsigned long msecs) {
   QThread::msleep(msecs);
 }
 
-void Interpreter::getKeyPress() {
-  #error FINISHME
-}
-
 string Interpreter::getLine(string prompt) {
   emit SetPrompt(prompt);
   string retstring;

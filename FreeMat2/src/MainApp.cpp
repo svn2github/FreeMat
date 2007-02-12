@@ -34,6 +34,7 @@
 #include "Core.hpp"
 #include "HandleList.hpp"
 #include "Interpreter.hpp"
+#include "HandleWindow.hpp"
 
 HandleList<Interpreter*> m_threadHandles;
 
@@ -267,6 +268,96 @@ ArrayVector ThreadIDFunction(int nargout, const ArrayVector& arg, Interpreter* e
 }
 
 extern MainApp *m_app;
+//!
+//@Module PAUSE Pause Script Execution
+//@@Section IO
+//@@Usage
+//The @|pause| function can be used to pause execution of FreeMat
+//scripts.  There are several syntaxes for its use.  The first form
+//is
+//@[
+//   pause
+//@]
+//This form of the @|pause| function pauses FreeMat until you press
+//any key.  The second form of the @|pause| function takes an argument
+//@[
+//   pause(p)
+//@]
+//where @|p| is the number of seconds to pause FreeMat for.  The pause
+//argument should be accurate to a millisecond on all supported platforms.
+//Alternately, you can control all @|pause| statements using:
+//@[
+//   pause on
+//@]
+//which enables pauses and
+//@[
+//   pause off
+//@]
+//which disables all @|pause| statements, both with and without arguments.
+//!
+static bool pause_active = true;
+
+ArrayVector PauseFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() == 1) {
+    // Check for the first argument being a string
+    if (arg[0].isString()) {
+      if ((strcmp(ArrayToString(arg[0]),"on") == 0) ||
+	  (strcmp(ArrayToString(arg[0]),"ON") == 0)) {
+	pause_active = true;
+      } else if ((strcmp(ArrayToString(arg[0]),"off") == 0) ||
+		 (strcmp(ArrayToString(arg[0]),"OFF") == 0)) {
+	pause_active = false;
+      } else
+	throw Exception("Unrecognized argument to pause function - must be either 'on' or 'off'");
+    }
+    if (pause_active)
+      eval->sleepMilliseconds((unsigned long)(ArrayToDouble(arg[0])*1000));
+  } else {
+    // Do something...
+    if (pause_active)
+      m_app->GetKeyManager()->getKeyPress();
+  }
+  return ArrayVector();
+}
+
+//!
+//@Module SLEEP Sleep For Specified Number of Seconds
+//@@Section FREEMAT
+//@@Usage
+//Suspends execution of FreeMat for the specified number
+//of seconds.  The general syntax for its use is
+//@[
+//  sleep(n),
+//@]
+//where @|n| is the number of seconds to wait.
+//!
+ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() != 1)
+    throw Exception("sleep function requires 1 argument");
+  int sleeptime;
+  Array a(arg[0]);
+  sleeptime = a.getContentsAsIntegerScalar();
+  eval->sleepMilliseconds(1000*sleeptime);
+  return ArrayVector();
+}
+
+//!
+//@Module DRAWNOW Flush the Event Queue
+//@@Section HANDLE
+//@@Usage
+//The @|drawnow| function can be used to process the events in the
+//event queue of the FreeMat application.  The syntax for its use
+//is
+//@[
+//   drawnow
+//@]
+//Now that FreeMat is threaded, you do not generally need to call this
+//function, but it is provided for compatibility.
+//!
+ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {
+  qApp->processEvents();
+  return ArrayVector();
+}
 
 //!
 //@Module THREADNEW Create a New Thread
@@ -610,6 +701,9 @@ void LoadThreadFunctions(Context *context) {
   context->addFunction("threadwait",ThreadWaitFunction,2,1,"handle","timeout",NULL);
   context->addFunction("threadkill",ThreadKillFunction,1,0,"handle",NULL);
   context->addFunction("threadfree",ThreadFreeFunction,2,0,"handle","timeout",NULL);
+  context->addGfxSpecialFunction("pause",PauseFunction,1,0,"x",NULL);
+  context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"x",NULL);
+  context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
 }
 			 
 Context *MainApp::NewContext() {

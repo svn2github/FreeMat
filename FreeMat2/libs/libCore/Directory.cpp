@@ -20,17 +20,9 @@
 #include "Array.hpp"
 #include "Interpreter.hpp"
 #include "Utils.hpp"
-#ifndef WIN32
-#include <unistd.h>
-#endif
 #include <stdio.h>
 #include "System.hpp"
-
-#ifdef WIN32
-#include <direct.h>
-#define getcwd _getcwd
-#define chdir _chdir
-#endif
+#include <QtCore>
 
 //!
 //@Module CD Change Working Directory Function
@@ -80,7 +72,7 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
   if (arg.size() != 1)
     throw Exception("cd function requires exactly one argument");
   char* cdir = TildeExpand(arg[0].getContentsAsCString());
-  if (chdir(cdir) != 0)
+  if (!QDir::setCurrent(cdir) != 0)
     throw Exception(std::string("Unable to change to specified directory:") + 
 		    cdir);
   eval->rescanPath();
@@ -249,11 +241,7 @@ ArrayVector DirSepFunction(int nargout, const ArrayVector& arg) {
 //@>
 //!
 ArrayVector PrintWorkingDirectoryFunction(int nargout, const ArrayVector& arg) {
-  char buffer[1000];
-  getcwd(buffer,sizeof(buffer));
-  ArrayVector retval;
-  retval.push_back(Array::stringConstructor(buffer));
-  return retval;
+  return ArrayVector() << Array::stringConstructor(QDir::currentPath().toStdString());
 }
 
 //!

@@ -16,19 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifndef WIN32
-#include <unistd.h>
-#else
-#include <windows.h>
-#endif
 #include <math.h>
+#include <QtCore>
 #include "Core.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"
 #include "Math.hpp"
-#include <stdlib.h>
-#include <stdio.h>
 #include "Malloc.hpp"
 #include "SingularValueDecompose.hpp"
 #include "QRDecompose.hpp"
@@ -3125,31 +3118,6 @@ ArrayVector LasterrFunction(int nargout, const ArrayVector& arg,
 }
 
 //!
-//@Module SLEEP Sleep For Specified Number of Seconds
-//@@Section FREEMAT
-//@@Usage
-//Suspends execution of FreeMat for the specified number
-//of seconds.  The general syntax for its use is
-//@[
-//  sleep(n),
-//@]
-//where @|n| is the number of seconds to wait.
-//!
-ArrayVector SleepFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() != 1)
-    throw Exception("sleep function requires 1 argument");
-  int sleeptime;
-  Array a(arg[0]);
-  sleeptime = a.getContentsAsIntegerScalar();
-#ifndef WIN32
-  sleep(sleeptime);
-#else
-  Sleep(1000*sleeptime);
-#endif
-  return ArrayVector();
-}
-
-//!
 //@Module DIAG Diagonal Matrix Construction/Extraction
 //@@Section ARRAY
 //@@Usage
@@ -3717,17 +3685,14 @@ ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   if (arg.size() != 1)
     throw Exception("source function takes exactly one argument - the filename of the script to execute");
   char *line = arg[0].getContentsAsCString();
-  FILE *fp;
-  fp = fopen(line,"r");
-  if (!fp)
+  QFile fp(line);
+  if (!fp.open(QFile::ReadOnly))
     throw Exception(std::string("unable to open file ") + line + " for reading");
-  while (!feof(fp)) {
-    char buffer[4096];
-    fgets(buffer,sizeof(buffer),fp);
-    if (!feof(fp))
-      eval->evaluateString(buffer);
+  QTextStream fstr(&fp);
+  while (!fstr.atEnd()) {
+    QString txt(fstr.readLine(0) + "\n");
+    eval->ExecuteLine(txt.toStdString());
   }
-  fclose(fp);
   return ArrayVector();
 }
 

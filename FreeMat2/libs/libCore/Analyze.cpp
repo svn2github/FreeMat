@@ -17,28 +17,6 @@
  *
  */
 
-#ifdef WIN32
-#include <sys/timeb.h>
-#include <time.h>
-#include <windows.h>
-
-double getcurrenttime() {
-  struct _timeb currSysTime;
-  _ftime(&currSysTime);
-  return currSysTime.time*1e6 + currSysTime.millitm*1000;
-}
-#else
-#include <sys/time.h>
-
-double getcurrenttime() {
-  struct timeval tv;
-  struct timezone tz;
-  gettimeofday(&tv, &tz);
-  return tv.tv_sec*1e6 + tv.tv_usec;
-}
-
-#endif // WIN32
-
 #include "Core.hpp"
 #include "Exception.hpp"
 #include "Array.hpp"
@@ -54,6 +32,7 @@ double getcurrenttime() {
 #include "Math.hpp"
 #include "LAPACK.hpp"
 #include "MemPtr.hpp"
+#include <QtCore>
 
 
 ArrayVector HandleEmpty(Array arg) {
@@ -3583,10 +3562,10 @@ ArrayVector UniqueFunction(int nargout, const ArrayVector& arg) {
 //@>
 //!
   
-static double ticvalue = 0;
+static QTime ticvalue;
 
 ArrayVector TicFunction(int nargout, const ArrayVector& arg) {
-  ticvalue = getcurrenttime();
+  ticvalue.start();
   return ArrayVector();
 }
 
@@ -3609,19 +3588,15 @@ ArrayVector TicFunction(int nargout, const ArrayVector& arg) {
 //@>
 //!
 ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
-  struct tm *breakdown;
-  time_t timeval;
-  double curtime = getcurrenttime();
-  timeval = (time_t) (curtime/1e6);
-  breakdown = localtime(&timeval);
+  QDateTime ctime(QDateTime::currentDateTime());
   Array retvec(Array::doubleVectorConstructor(6));
   double *dp = (double*) retvec.getReadWriteDataPointer();
-  dp[0] = breakdown->tm_year+1900;
-  dp[1] = breakdown->tm_mon+1;
-  dp[2] = breakdown->tm_mday+1;
-  dp[3] = breakdown->tm_hour;
-  dp[4] = breakdown->tm_min;
-  dp[5] = breakdown->tm_sec + curtime/1e6 - timeval;
+  dp[0] = ctime.date().year();
+  dp[1] = ctime.date().month();
+  dp[2] = ctime.date().day();
+  dp[3] = ctime.time().hour();
+  dp[4] = ctime.time().minute();
+  dp[5] = ctime.time().second() + ctime.time().msec()/1.0e3;
   return singleArrayVector(retvec);
 }
 
@@ -3693,8 +3668,7 @@ ArrayVector ClockToTimeFunction(int nargout, const ArrayVector& arg) {
 //!
   
 ArrayVector TocFunction(int nargout, const ArrayVector& arg) {
-  double outtime = (getcurrenttime() - ticvalue)/1e6;
-  return singleArrayVector(Array::doubleConstructor(outtime));
+  return singleArrayVector(Array::doubleConstructor(ticvalue.elapsed()/1.0e3));
 }
 
 //!

@@ -51,11 +51,20 @@ void BaseFigureQt::resizeEvent(QResizeEvent *e) {
   		 qMax(8,height()));
 }
 
+static bool enableRepaint = false;
+
+void EnableRepaint() {
+  enableRepaint = true;
+}
+
+void DisableRepaint() {
+  enableRepaint = false;
+}
+
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
   QPainter pnt(this);
   QTRenderEngine gc(&pnt,0,0,width(),height());
   hfig->PaintMe(gc);
-  //  QWidget::paintEvent(e);
 }
 
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 

@@ -96,5 +96,8 @@ public slots:
   void copy();
 };
 
+void EnableRepaint();
+
+void DisableRepaint();
 
 #endif

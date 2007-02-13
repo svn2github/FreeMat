@@ -24,12 +24,7 @@
 #include <iostream>
 #include "Malloc.hpp"
 
-#ifdef WIN32
-#define snprintf _snprintf
-#endif
-
 #define MSGBUFLEN 2048
-static char msgBuffer[MSGBUFLEN];
 
 /***************************************************************************
  * Linear equation solver for real matrices
@@ -37,6 +32,7 @@ static char msgBuffer[MSGBUFLEN];
 
 // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
 void doubleSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b) {
+  char msgBuffer[MSGBUFLEN];
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE DGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
   //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -355,6 +351,7 @@ void doubleSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, dou
 
 // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
 void dcomplexSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, double *b) {
+  char msgBuffer[MSGBUFLEN];
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE ZGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
   //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -677,6 +674,7 @@ void dcomplexSolveLinEq(Interpreter* eval, int m, int n, double *c, double* a, d
 
 // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
 void floatSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b) {
+  char msgBuffer[MSGBUFLEN];
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE SGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
   //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,
@@ -993,6 +991,7 @@ void floatSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float 
 
 // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
 void complexSolveLinEq(Interpreter* eval, int m, int n, float *c, float* a, float *b) {
+  char msgBuffer[MSGBUFLEN];
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE CGESVX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV,
   //$                   EQUED, R, C, B, LDB, X, LDX, RCOND, FERR, BERR,

@@ -25,12 +25,7 @@
 #include "Malloc.hpp"
 #include "Interpreter.hpp"
 
-#ifdef WIN32
-#define snprintf _snprintf
-#endif
-
 #define MSGBUFLEN 2048
-static char msgBuffer[MSGBUFLEN];
 
 //Slimming down Dimensions...  In demo(6), the Dimension related
 //codes occupy 14+6.5+4+3.5+3+2.65+2.45+2.35 = 37% of the time!
@@ -180,6 +175,7 @@ bool Dimensions::equals(const Dimensions &alt) const {
 }
 
 std::string Dimensions::asString() const {
+  char msgBuffer[MSGBUFLEN];
   std::string output;
   output.append("[");
   for (int i=0;i<length-1;i++) {
@@ -195,6 +191,7 @@ std::string Dimensions::asString() const {
 }
 
 void Dimensions::printMe(Interpreter* eval) const {
+  char msgBuffer[MSGBUFLEN];
   snprintf(msgBuffer,MSGBUFLEN,"[");
   eval->outputMessage(msgBuffer);
   for (int i=0;i<length-1;i++) {

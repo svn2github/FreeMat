@@ -217,13 +217,9 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //way to do this.
 //!
 ArrayVector DirSepFunction(int nargout, const ArrayVector& arg) {
-#ifdef WIN32
-  return singleArrayVector(Array::stringConstructor("\\"));
-#else
-  return singleArrayVector(Array::stringConstructor("/"));
-#endif
+  QString psep(QDir::separator());
+  return singleArrayVector(Array::stringConstructor(psep.toStdString()));
 }
-
 
 //!
 //@Module PWD Print Working Directory Function

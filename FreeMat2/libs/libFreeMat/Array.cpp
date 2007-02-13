@@ -28,17 +28,12 @@
 #include <stdio.h>
 #include <set>
 
-#ifdef WIN32
-#define snprintf _snprintf
-#endif
-
 #include "FunctionDef.hpp"
 #include "NumericArray.hpp"
 #include "LAPACK.hpp"
 
 static int objectBalance;
 #define MSGBUFLEN 2048
-static char msgBuffer[MSGBUFLEN];
 static Interpreter *m_eval;
 
 typedef std::set<uint32, std::less<uint32> > intSet;
@@ -3803,6 +3798,7 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
  * generally a shorthand summary of the description of the object.
  */
 void Array::summarizeCellEntry() const {
+  char msgBuffer[MSGBUFLEN];
   if (isEmpty()) 
     m_eval->outputMessage("[]");
   else {

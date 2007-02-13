@@ -21,12 +21,6 @@
 #include "Interpreter.hpp"
 #include "Parser.hpp"
 #include "Exception.hpp"
-#include <stdio.h>
-#include <sys/stat.h>
-#ifndef WIN32
-#include <unistd.h>
-#endif
-#include <sys/types.h>
 #include <iostream>
 #include <signal.h>
 #include "SymbolTable.hpp"
@@ -34,16 +28,11 @@
 #include "MexInterface.hpp"
 #include <QDebug>
 
-#ifdef WIN32
-#define snprintf _snprintf
-#endif
-
 #if HAVE_AVCALL
 #include "avcall.h"
 #endif
 
 #define MSGBUFLEN 2048
-static char msgBuffer[MSGBUFLEN];
 
 MFunctionDef::MFunctionDef() {
   functionCompiled = false;
@@ -78,6 +67,7 @@ int MFunctionDef::outputArgCount() {
 
 void MFunctionDef::printMe(Interpreter*eval) {
   stringVector tmp;
+  char msgBuffer[MSGBUFLEN];
   snprintf(msgBuffer,MSGBUFLEN,"Function name:%s\n",name.c_str());
   eval->outputMessage(msgBuffer);
   eval->outputMessage("Function class: Compiled M function\n");
@@ -507,6 +497,7 @@ int BuiltInFunctionDef::outputArgCount() {
 
 void BuiltInFunctionDef::printMe(Interpreter *eval) {
   stringVector tmp;
+  char msgBuffer[MSGBUFLEN];
   snprintf(msgBuffer,MSGBUFLEN," Function name:%s\n",name.c_str());
   eval->outputMessage(msgBuffer);
   eval->outputMessage(" Function class: Built in\n");

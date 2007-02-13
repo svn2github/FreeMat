@@ -23,13 +23,7 @@
 #include <stdio.h>
 #include "Malloc.hpp"
 
-#ifdef WIN32
-#define snprintf _snprintf
-#endif
-
-
 #define MSGBUFLEN 2048
-static char msgBuffer[MSGBUFLEN];
 
 /***************************************************************************
  * Least-squares solver for double matrices
@@ -41,6 +35,7 @@ static char msgBuffer[MSGBUFLEN];
  */
 void doubleSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
 			double *a, double *b) {
+  char msgBuffer[MSGBUFLEN];
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE DGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //                   WORK, LWORK, INFO )
@@ -245,6 +240,7 @@ void doubleSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
  */
 void dcomplexSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
 			  double *a, double *b) {
+  char msgBuffer[MSGBUFLEN];
   //	SUBROUTINE ZGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //     $                   WORK, LWORK, RWORK, INFO )
   //*
@@ -453,6 +449,7 @@ void dcomplexSolveLeastSq(Interpreter* eval,int m, int n, int k, double *c,
  */
 void floatSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
 		       float *a, float *b) {
+  char msgBuffer[MSGBUFLEN];
   // Here are the comments from the LAPACK routine used:
   //SUBROUTINE SGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //                   WORK, LWORK, INFO )
@@ -657,6 +654,7 @@ void floatSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
  */
 void complexSolveLeastSq(Interpreter* eval,int m, int n, int k, float *c,
 			 float *a, float *b) {
+  char msgBuffer[MSGBUFLEN];
   //	SUBROUTINE CGELSY( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
   //     $                   WORK, LWORK, RWORK, INFO )
   //*

@@ -20,12 +20,13 @@
 #ifndef __PathSearch_hpp__
 #define __PathSearch_hpp__
 
+#include <QString>
+#include <QStringList>
 #include <string>
-#include <vector>
 
 class PathSearcher{
-  std::string path;
-  std::vector<std::string> pathList;
+  QString path;
+  QStringList pathList;
 public:
   PathSearcher(std::string mpath);
   std::string ResolvePath(std::string fname);

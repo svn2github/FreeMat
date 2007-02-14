@@ -18,7 +18,6 @@
  */
 
 #include "Interpreter.hpp"
-#include <stack>
 #include <math.h>
 #include <stdio.h>
 #include "Exception.hpp"
@@ -35,31 +34,14 @@
 #include "Class.hpp"
 #include "Print.hpp"
 #include <qapplication.h>
-#include <sys/types.h>
 #include <qeventloop.h>
 #include <QtCore>
 
 #ifdef WIN32
-#define DELIM "\\"
-#include <direct.h>
-#define getcwd _getcwd
+#define PATHSEP ";"
 #else
-#include <pwd.h>
-#define DELIM "/"
-#include <glob.h>
+#define PATHSEP ":"
 #endif
-
-#ifdef WIN32
-#define DELIM "\\"
-//#define S_ISREG(x) (x & _S_IFREG)
-#include <direct.h>
-#define PATH_DELIM ";"
-#else
-#define DELIM "/"
-#define PATH_DELIM ":"
-#endif
-
-#define MAXSTRING 65535
 
 /**
  * Pending control-C
@@ -76,52 +58,24 @@ bool InterruptPending = false;
   endCount = oldEndCount; \
   endTotal = oldEndTotal;  \
 
-char* TildeExpand(char* path) {
-#ifdef WIN32
-  return path;
-#else
-  char *newpath = path;
-  if (path[0] == '~' && (path[1] == '/') || (path[1] == 0)) {
-    char *home;
-    home = getenv("HOME");
-    if (home) {
-      newpath = (char*) malloc(strlen(path) + strlen(home));
-      strcpy(newpath,home);
-      strcat(newpath,path+1);
-    }
-  } else if (path[0] == '~' && isalpha(path[1])) {
-    char username[4096];
-    char *cp, *dp;
-    // Extract the user name
-    cp = username;
-    dp = path+1;
-    while (*dp != '/')
-      *cp++ = *dp++;
-    *cp = 0;
-    // Call getpwnam...
-    struct passwd *dat = getpwnam(cp);
-    if (dat) {
-      newpath = (char*) malloc(strlen(path) + strlen(dat->pw_dir));
-      strcpy(newpath,dat->pw_dir);
-      strcat(newpath,dp);
-    }
+QString TildeExpand(string path) {
+  if ((path.size() > 0) && (path[0] == '~')) {
+    path.erase(path.begin());
+    return QDir::homePath() + QString::fromStdString(path);
   }
-  return newpath;
-#endif
+  return QString::fromStdString(path);
 }
 
 void Interpreter::setPath(std::string path) {
-  char* pathdata = strdup(path.c_str());
-  // Search through the path
-  char *saveptr = (char*) malloc(sizeof(char)*1024);
-  char* token;
-  token = strtok(pathdata,PATH_DELIM);
+  QString pathdata(QString::fromStdString(path));
+  QStringList pathset(pathdata.split(PATHSEP,QString::SkipEmptyParts));
   m_userPath.clear();
-  while (token != NULL) {
-    if (strcmp(token,".") != 0)
-      m_userPath << QString(TildeExpand(token));
-    token = strtok(NULL,PATH_DELIM);
-  }
+  for (int i=0;i<pathset.size();i++) 
+    if (pathset[i] != ".") {
+      QDir tpath(TildeExpand(pathset[i].toStdString()));
+      m_userPath << tpath.absolutePath();
+      qDebug() << pathset[i];
+    }
   rescanPath();
 }
 
@@ -129,7 +83,7 @@ std::string Interpreter::getTotalPath() {
   std::string retpath;
   QStringList totalPath(QStringList() << m_basePath << m_userPath);
   for (int i=0;i<totalPath.size()-1;i++) 
-    retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
+    retpath = retpath + totalPath[i].toStdString() + PATHSEP;
   if (totalPath.size() > 0) 
     retpath = retpath + totalPath[totalPath.size()-1].toStdString();
   return retpath;
@@ -139,7 +93,7 @@ std::string Interpreter::getPath() {
   std::string retpath;
   QStringList totalPath(m_userPath);
   for (int i=0;i<totalPath.size()-1;i++) 
-    retpath = retpath + totalPath[i].toStdString() + PATH_DELIM;
+    retpath = retpath + totalPath[i].toStdString() + PATHSEP;
   if (totalPath.size() > 0) 
     retpath = retpath + totalPath[totalPath.size()-1].toStdString();
   return retpath;
@@ -153,9 +107,7 @@ void Interpreter::rescanPath() {
   for (int i=0;i<m_userPath.size();i++)
     scanDirectory(m_userPath[i].toStdString(),false,"");
   // Scan the current working directory.
-  char cwd[1024];
-  getcwd(cwd,1024);
-  scanDirectory(std::string(cwd),true,"");
+  scanDirectory(QDir::currentPath().toStdString(),true,"");
   emit CWDChanged();
 }
   
@@ -274,7 +226,6 @@ ArrayVector Interpreter::doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_o
     qDebug() << "Wha??\r";
   }
   if (gfxErrorOccured) {
-    qDebug() << "Exception\r";
     throw Exception(gfxError);
   }
   if (gfx_buffer.empty())
@@ -332,7 +283,7 @@ static bool isMFile(std::string arg) {
 }
 
 std::string TrimFilename(std::string arg) {
-  int ndx = arg.rfind(DELIM);
+  int ndx = arg.rfind(QString(QDir::separator()).toStdString());
   if (ndx>=0)
     arg.erase(0,ndx+1);
   return arg;
@@ -347,7 +298,7 @@ std::string TrimExtension(std::string arg) {
 static std::string PrivateMangleName(std::string cfunc, std::string fname) {
   if (cfunc.empty()) return "";
   int ndx;
-  ndx = cfunc.rfind(DELIM);
+  ndx = cfunc.rfind(QString(QDir::separator()).toStdString());
   if (ndx>=0)
     cfunc.erase(ndx+1,cfunc.size());
   return cfunc + "private:" + fname;
@@ -411,12 +362,12 @@ void Interpreter::sendGreeting() {
 
 std::string Interpreter::getPrivateMangledName(std::string fname) {
   std::string ret;
-  char buff[4096];
   if (isMFile(ip_funcname)) 
     ret = PrivateMangleName(ip_funcname,fname);
   else {
-    getcwd(buff,4096);
-    ret = std::string(buff) + DELIM + std::string("private:" + fname);
+    ret = QDir::currentPath().toStdString() + 
+      QString(QDir::separator()).toStdString() + 
+      std::string("private:" + fname);
   }
   return ret; 
 }
@@ -3894,7 +3845,6 @@ void Interpreter::functionExpression(const tree &t,
   ArrayVector keyvals;
   treeVector keyexpr;
   int i;
-  char buffer[2048];
   FuncPtr funcDef;
   int* argTypeMap;
   bool CLIFlagsave;
@@ -4066,8 +4016,8 @@ void Interpreter::listBreakpoints() {
   for (int i=0;i<bpStack.size();i++) {
     //    if (bpStack[i].number > 0) {
     char buffer[2048];
-    sprintf(buffer,"%d   %s line %d\n",bpStack[i].number,
-	    bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
+    snprintf(buffer,2048,"%d   %s line %d\n",bpStack[i].number,
+	     bpStack[i].cname.c_str(),bpStack[i].tokid & 0xffff);
     outputMessage(buffer);
     //    }
   }
@@ -4939,11 +4889,11 @@ void Interpreter::evalCLI() {
   bool rootCLI;
 
   if ((depth == 0) || (cstack.size() == 0)) {
-    sprintf(prompt,"--> ");
+    snprintf(prompt,150,"--> ");
     rootCLI = true;
   } else {
-    sprintf(prompt,"[%s,%d]--> ",ip_detailname.c_str(),
-	    ip_context & 0xffff);
+    snprintf(prompt,150,"[%s,%d]--> ",ip_detailname.c_str(),
+	     ip_context & 0xffff);
     rootCLI = false;
   }
   while(1) {

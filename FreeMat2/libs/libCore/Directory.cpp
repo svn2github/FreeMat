@@ -71,10 +71,9 @@
 ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("cd function requires exactly one argument");
-  char* cdir = TildeExpand(arg[0].getContentsAsCString());
-  if (!QDir::setCurrent(cdir) != 0)
+  if (!QDir::setCurrent(TildeExpand(ArrayToString(arg[0]))))
     throw Exception(std::string("Unable to change to specified directory:") + 
-		    cdir);
+		    ArrayToString(arg[0]));
   eval->rescanPath();
   return ArrayVector();
 }
@@ -165,13 +164,17 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
     eval->outputMessage("\n");
   }
 #else
+#warning Needs work
   sprintf(buffer,"ls ");
   bp = buffer + strlen(buffer);
   for (i=0;i<arg.size();i++) {
-    char *target = TildeExpand(arg[i].getContentsAsCString());
+    QString fipath(TildeExpand(ArrayToString(arg[i])));
+    const char *target = fipath.toStdString().c_str();
+    qDebug() << " -- " << target;
     sprintf(bp,"%s ",target);
     bp = buffer + strlen(buffer);
   }
+  qDebug() << buffer;
   sysresult = DoSystemCallCaptured(buffer);
   int maxlen = 0;
   // Find the maximal length

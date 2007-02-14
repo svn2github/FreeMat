@@ -637,6 +637,8 @@ Goals:
 5. Eliminate C-style strings.
 6. Better treatment of the system call.
 7. Contour plots
+8. static threading
+9. TCP rework
 
 #3 is almost done.  I'll start with that one.  
 For the threads - we need a mechanism to protect 
@@ -648,12 +650,26 @@ Also need to support exceptions for when the thread
 the help system generate a black blox test.  
 
 
-Failed tests:
+****************************************
+*  Test Summary                        *
+****************************************
+ 
+Number of tests: 742
+Failed tests: 17
+   Test wbtest_acosd_2.m failed
+   Test wbtest_acsc_1.m failed
+   Test wbtest_acsc_4.m failed
+   Test wbtest_acscd_1.m failed
+   Test wbtest_acscd_3.m failed
+   Test wbtest_acscd_4.m failed
+   Test wbtest_asecd_1.m failed
+   Test wbtest_asind_3.m failed
+   Test wbtest_atanh_3.m failed
 
-- There 
 
-Number of tests: 861
-Failed tests: 19
-   Test test_sparse52.m failed
-   Test test_sparse54.m failed
-   Test test_sparse55.m failed
+
+ToDo:
+
+1. Fix remaining wbtests
+2. Remove Win32 defines from various places - replace with Qt code
+3. Refresh on drawnow only

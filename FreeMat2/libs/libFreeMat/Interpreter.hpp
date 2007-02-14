@@ -965,6 +965,5 @@ private:
 
 void sigInterrupt(int arg);
 string TrimFilename(string);
-char* TildeExpand(char* path);
-
+QString TildeExpand(string);
 #endif

@@ -57,12 +57,10 @@ static bool enableRepaint = false;
 
 void EnableRepaint() {
   enableRepaint = true;
-  qDebug() << "Enable repaint";
 }
 
 void DisableRepaint() {
   enableRepaint = false;
-  qDebug() << "Disable repaint";
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {

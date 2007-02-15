@@ -34,7 +34,7 @@ PathSearcher::PathSearcher(std::string mpath) {
 
 std::string PathSearcher::ResolvePath(std::string fname) {
   QString qfname(QString::fromStdString(fname));
-  if (QDir::current().exists(qfname));
+  if (QDir::current().exists(qfname))
     return fname;
   for (int i=0;i<pathList.size();i++) {
     QDir pdir(pathList[i]);

@@ -170,11 +170,9 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
   for (i=0;i<arg.size();i++) {
     QString fipath(TildeExpand(ArrayToString(arg[i])));
     const char *target = fipath.toStdString().c_str();
-    qDebug() << " -- " << target;
     sprintf(bp,"%s ",target);
     bp = buffer + strlen(buffer);
   }
-  qDebug() << buffer;
   sysresult = DoSystemCallCaptured(buffer);
   int maxlen = 0;
   // Find the maximal length

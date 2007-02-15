@@ -140,6 +140,40 @@ static void SelectFig(int fignum) {
   HcurrentFig = fignum;
 }
 
+//!
+//@Module DRAWNOW Flush the Event Queue
+//@@Section HANDLE
+//@@Usage
+//The @|drawnow| function can be used to process the events in the
+//event queue of the FreeMat application.  The syntax for its use
+//is
+//@[
+//   drawnow
+//@]
+//Now that FreeMat is threaded, you do not generally need to call this
+//function, but it is provided for compatibility.
+//!
+
+bool AnyDirty() {
+  bool retval = false;
+  for (int i=0;i<MAX_FIGS;i++) {
+    if (Hfigs[i] && (Hfigs[i]->isDirty()))  {
+      retval = true;
+      Hfigs[i]->update();
+      qDebug() << "Figure " << i << " is dirty - issuing update";
+    }
+  }
+  return retval;
+}
+
+ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {
+  EnableRepaint();
+  while (AnyDirty()) 
+    qApp->processEvents();
+  DisableRepaint();
+  return ArrayVector();
+}
+
 HandleObject* LookupHandleObject(unsigned handle) {
   return (objectset.lookupHandle(handle-HANDLE_OFFSET_OBJECT));
 }
@@ -1241,6 +1275,7 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("close",HCloseFunction,1,0,"handle",NULL);
   context->addGfxFunction("copy",HCopyFunction,0,0,NULL);
   context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
+  context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
   //  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
   InitializeHandleGraphics();
 };

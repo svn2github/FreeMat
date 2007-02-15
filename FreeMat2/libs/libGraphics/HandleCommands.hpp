@@ -47,5 +47,6 @@ void IndirectWindowClose(int handle);
 
 ArrayVector HCopyFunction(int nargout, const ArrayVector& arg);
 ArrayVector HPrintFunction(int nargout, const ArrayVector& arg);
+ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg);
 
 #endif

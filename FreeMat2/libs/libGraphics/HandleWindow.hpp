@@ -44,6 +44,7 @@ class HandleWindow : public QMainWindow {
   Q_OBJECT
 protected:
   bool initialized;
+  bool dirty;
   unsigned handle;
   bool glActive;
   //  QGLWidget *glchild;
@@ -75,6 +76,8 @@ public:
   QWidget *GetQtWidget() {return qtchild;}
   HandleWindow(unsigned ahandle);
   ~HandleWindow() {delete hfig;}
+  bool isDirty() {return dirty;}
+  void markClean() {dirty = false;}
   unsigned Handle();
   HandleFigure *HFig();
   void UpdateState();

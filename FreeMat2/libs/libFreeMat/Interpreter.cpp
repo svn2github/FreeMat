@@ -37,6 +37,10 @@
 #include <qeventloop.h>
 #include <QtCore>
 
+#warning Ick
+extern void EnableRepaint();
+extern void DisableRepaint();
+
 #ifdef WIN32
 #define PATHSEP ";"
 #else
@@ -4873,12 +4877,14 @@ void Interpreter::sleepMilliseconds(unsigned long msecs) {
 string Interpreter::getLine(string prompt) {
   emit SetPrompt(prompt);
   string retstring;
+  EnableRepaint();
   mutex.lock();
   if (cmd_buffer.empty())
     bufferNotEmpty.wait(&mutex);
   retstring = cmd_buffer.front();
   cmd_buffer.erase(cmd_buffer.begin());
   mutex.unlock();
+  DisableRepaint();
   return retstring;
 }
 
@@ -4906,6 +4912,7 @@ void Interpreter::evalCLI() {
     emit ShowActiveLine();
     string cmdset;
     std::string cmdline;
+    EnableRepaint();
     mutex.lock();
     while ((cmdset.empty() || 
 	    NeedsMoreInput(this,cmdset)) && (!InterruptPending)) {
@@ -4916,6 +4923,7 @@ void Interpreter::evalCLI() {
       cmdset += cmdline;
     }
     mutex.unlock();
+    DisableRepaint();
     if (InterruptPending) {
       InterruptPending = false;
       continue;

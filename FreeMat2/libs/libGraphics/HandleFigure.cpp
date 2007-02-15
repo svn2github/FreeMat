@@ -23,6 +23,7 @@
 #include <math.h>
 #include <qgl.h>
 #include <math.h>
+#include <QApplication>
 
 HandleFigure::HandleFigure(HandleWindow *win) {
   m_width = 640;
@@ -33,7 +34,7 @@ HandleFigure::HandleFigure(HandleWindow *win) {
 }
 
 void HandleFigure::Repaint() {
-  m_win->update();
+  m_win->UpdateState();
 }
   
 void HandleFigure::ConstructProperties() {
@@ -147,7 +148,9 @@ void HandleFigure::LoadDefaultColorMap() {
 void HandleFigure::SetupDefaults() {
   SetStringDefault("renderer","painters");
   SetStringDefault("type","figure");
-  SetThreeVectorDefault("color",-1,0,0);
+  SetThreeVectorDefault("color",0.7,0.7,0.7);
+  //  QColor bg(qApp->palette().color(QPalette::Window));
+  //  SetThreeVectorDefault("color",bg.redF(),bg.greenF(),bg.blueF());
   SetStringDefault("nextplot","replace");
   SetTwoVectorDefault("figsize",500,300);
   // Set a default colormap to hsv(64) - this matches

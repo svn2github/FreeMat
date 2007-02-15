@@ -673,3 +673,6 @@ ToDo:
 1. Fix remaining wbtests
 2. Remove Win32 defines from various places - replace with Qt code
 3. Refresh on drawnow only
+     - The problem with this is that when a repaint shows up,
+       we need to show the _old_ plot, not the _new_ plot.
+     - Added backing store to do explicit double-buffering.

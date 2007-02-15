@@ -341,23 +341,6 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   return ArrayVector();
 }
 
-//!
-//@Module DRAWNOW Flush the Event Queue
-//@@Section HANDLE
-//@@Usage
-//The @|drawnow| function can be used to process the events in the
-//event queue of the FreeMat application.  The syntax for its use
-//is
-//@[
-//   drawnow
-//@]
-//Now that FreeMat is threaded, you do not generally need to call this
-//function, but it is provided for compatibility.
-//!
-ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {
-  qApp->processEvents();
-  return ArrayVector();
-}
 
 //!
 //@Module THREADNEW Create a New Thread
@@ -703,7 +686,6 @@ void LoadThreadFunctions(Context *context) {
   context->addFunction("threadfree",ThreadFreeFunction,2,0,"handle","timeout",NULL);
   context->addGfxSpecialFunction("pause",PauseFunction,1,0,"x",NULL);
   context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"x",NULL);
-  context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
 }
 			 
 Context *MainApp::NewContext() {

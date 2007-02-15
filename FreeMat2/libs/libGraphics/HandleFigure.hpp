@@ -48,6 +48,7 @@ public:
   void SetupDefaults();
   void SetSize();
   void Repaint();
+  HandleWindow* ParentWindow() {return m_win;}
 };
 
 #endif

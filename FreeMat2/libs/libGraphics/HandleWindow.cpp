@@ -29,6 +29,7 @@
 
 class BaseFigureQt : public QWidget {
   HandleFigure *hfig;
+  QImage backStore;
 public:
   BaseFigureQt(QWidget *parent, HandleFigure *fig);
   void paintEvent(QPaintEvent *e);
@@ -49,22 +50,32 @@ void BaseFigureQt::resizeEvent(QResizeEvent *e) {
   //  qDebug() << "resize " << width() << " " << height() << "\r\n";
   hfig->resizeGL(qMax(8,width()),
   		 qMax(8,height()));
+  backStore = QImage(width(),height(),QImage::Format_RGB32);
 }
 
 static bool enableRepaint = false;
 
 void EnableRepaint() {
   enableRepaint = true;
+  qDebug() << "Enable repaint";
 }
 
 void DisableRepaint() {
   enableRepaint = false;
+  qDebug() << "Disable repaint";
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
+  if (enableRepaint && hfig->ParentWindow()->isDirty()) {
+    // enableRepaint is true, and the background is dirty - update
+    // the backing store, and then redraw it.
+    QPainter pnt(&backStore);
+    QTRenderEngine gc(&pnt,0,0,width(),height());
+    hfig->PaintMe(gc);
+    hfig->ParentWindow()->markClean();
+  }
   QPainter pnt(this);
-  QTRenderEngine gc(&pnt,0,0,width(),height());
-  hfig->PaintMe(gc);
+  pnt.drawImage(0,0,backStore);
 }
 
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 
@@ -593,6 +604,7 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
 
 void HandleWindow::UpdateState() {
   if (!initialized) return;
+    dirty = true;
   //  HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
   //  qtchild->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
   //  qtchild->updateGeometry();
@@ -615,6 +627,6 @@ void HandleWindow::UpdateState() {
   // 	glchild->setGeometry(0,0,1,1);
   //  layout->setCurrentWidget(qtchild);
   //     }
-  update();
+    update();
   //   }
 }

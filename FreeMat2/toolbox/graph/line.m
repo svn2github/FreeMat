@@ -9,7 +9,7 @@
 %where...
 %!
 function ohandle = line(varargin)
-  ax = newplot;
+  ax = gca;
   if (length(varargin) == 0), return; end
   % check for formal syntax
   if (isstr(varargin{1}))

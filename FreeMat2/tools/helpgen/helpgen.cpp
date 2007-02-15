@@ -1383,6 +1383,7 @@ void ConsoleWidget::Run() {
   out.RegisterWriter(&bbout);
   ProcessDir(QDir(sourcepath+"/toolbox"),&out,true); 
   ProcessDir(QDir(sourcepath+"/libs"),&out,true); 
+  ProcessDir(QDir(sourcepath+"/src"),&out,true); 
   ProcessDir(QDir(sourcepath+"/help"),&out,false); 
   MergeMFiles(QDir(sourcepath+"/toolbox"));
   out.WriteIndex();

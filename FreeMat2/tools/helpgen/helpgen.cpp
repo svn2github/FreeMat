@@ -1039,6 +1039,7 @@ void ProcessFile(QFileInfo fileinfo, HelpWriter *out) {
   LoadCoreFunctions(context);
   LoadFNFunctions(context);
   LoadHandleGraphicsFunctions(context);  
+  LoadThreadFunctions(context);
   modulename_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   moduledesc_pattern.setCaseSensitivity(Qt::CaseInsensitive);
   sectioname_pattern.setCaseSensitivity(Qt::CaseInsensitive);

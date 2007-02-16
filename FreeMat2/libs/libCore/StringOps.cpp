@@ -144,3 +144,69 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
   free(cp);
   return retval;
 }
+
+//!
+//@Module REGEXP Regular Expression Matching Function
+//@@Section STRING
+//@@Usage
+//Matches regular expressions in the provided string.  This function is
+//complicated, and compatibility with MATLABs syntax is not perfect.  The
+//syntax for its use is
+//@[
+//  regexp('str','expr')
+//@]
+//which returns a row vector containing the starting index of each substring
+//of @|str| that matches the regular expression described by @|expr|.  The
+//second form of @|regexp| returns six outputs in the following order:
+//@[
+//  [start end tokenExtents match tokens names] = regexp('str','expr')
+//@]
+//where the meaning of each of the outputs is defined below.
+//\begin{itemize}
+//\item @|start| is a row vector containing the starting index of each 
+//substring that matches the regular expression.
+//\item @|end| is a row vector containing the ending index of each 
+//substring that matches the regular expression.
+//\item @|tokenExtents| is a cell array containing the starting and ending
+//indices of each substring that matches the @|tokens| in the regular
+//expression.  A token is a captured part of the regular expression.
+//If the @|'once'| mode is used, then this output is a @|double| array.
+//\item @|match| is a cell array containing the text for each substring
+//that matches the regular expression.  In @|'once'| mode, this is a 
+//string.
+//\item @|tokens| is a cell array containing the strings that correspond
+//to the tokens in the regular expression.  In @|'once'| mode, this is a
+//string.
+//\item @|names| is empty - FreeMat does not currently support the named
+//tokens used by MATLAB.
+//\end{itemize}
+//If you want only some of the the outputs,  you can use the 
+//following variant of @|regexp|:
+//@[
+//  [o1 o2 ...] = regexp('str','expr', 'p1', 'p2', ...)
+//@]
+//where @|p1| etc. are the names of the outputs (and the order we want
+//the outputs in).  As a final variant, you can supply some mode 
+//flags to @|regexp|
+//@[
+//  [o1 o2 ...] = regexp('str','expr', p1, p2, ..., 'mode1', 'mode2')
+//@]
+//where acceptable @|mode| flags are:
+//\begin{itemize}
+//\item @|'once'| - only the first match is returned.
+//\item @|'matchcase'| - letter case must match (selected by default for @|regexp|)
+//\item @|'ignorecase'| - letter case is ignored (selected by default for @|regexpi|)
+//\end{itemize}
+//At this time, the remaining mode flags used by @|MATLAB| are not supportd
+//in FreeMat.
+//!
+
+//the driver function called by the various regexp driver routines.
+//it requires - a string to match and a regular expression, and 
+//returns the five outputs.
+ArrayVector RegExpBasicFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() != 2 || !arg[0].isString() || !arg[1].isString())
+    throw Exception("illegal use of regexpbasic function!");
+  QRegExp pattern(ArrayToString(arg[1]));
+  #error finish me
+}

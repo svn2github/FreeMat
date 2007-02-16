@@ -134,6 +134,7 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("getpath",GetPathFunction,0,1,NULL);
   context->addSpecialFunction("ls",ListFilesFunction,-1,0,NULL);
   context->addSpecialFunction("dir",ListFilesFunction,-1,0,NULL);
+  context->addFunction("rmdir",RMDirFunction,2,0,"dirname","flag",NULL);
   context->addFunction("system",SystemFunction,1,1,"command",NULL);
   context->addSpecialFunction("feval",FevalFunction,-1,-1,NULL);
   context->addSpecialFunction("builtin",BuiltinFunction,-1,-1,NULL);

@@ -295,3 +295,55 @@ ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* ev
   return ArrayVector();
 }
 
+//!
+//@Module RMDIR Remove Directory
+//@@Section OS
+//@@Usage
+//Deletes a directory.  The general syntax for its use is
+//@[
+//  rmdir('dirname')
+//@]
+//which removes the directory @|dirname| if it is empty.  If you
+//want to delete the directory and all subdirectories and files
+//in it, use the syntax
+//@[
+//  rmdir('dirname','s')
+//@]
+//!
+void RemoveDirectory(QString dirname) {
+  if (!QDir::current().rmdir(dirname))
+    throw Exception(string("unable to delete directory ") + 
+		    dirname.toStdString());
+}
+
+void RemoveDirectoryRecursive(QString dirname) {
+  QDir dir(dirname);
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir())
+      RemoveDirectoryRecursive(fileInfo.absoluteFilePath());
+    else
+      dir.remove(fileInfo.absoluteFilePath());
+  }
+  if (!QDir::current().rmdir(dirname))
+    throw Exception(string("unable to delete directory ") + 
+		    dirname.toStdString());
+}
+
+ArrayVector RMDirFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("rmdir requires at least one argument (the directory to remove)");
+  if (arg.size() == 1)
+    RemoveDirectory(ArrayToString(arg[0]));
+  else if (arg.size() == 2) {
+    const char *arg1 = ArrayToString(arg[1]);
+    if ((strcmp(arg1,"s") == 0) ||
+	(strcmp(arg1,"S") == 0))
+      RemoveDirectoryRecursive(ArrayToString(arg[0]));
+    else
+      throw Exception("rmdir second argment must be a 's' to do a recursive delete");
+  }
+  return ArrayVector();
+}

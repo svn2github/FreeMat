@@ -910,14 +910,14 @@ ArrayVector LUFunction(int nargout, const ArrayVector& arg) {
 //the FreeMat console in the final application).
 //!
 ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  char *prompt;
+  string prompt;
   if (arg.size() < 1)
     prompt = "";
   else {
     Array A(arg[0]);
     if (!A.isString())
       throw Exception("getline requires a string prompt");
-    prompt = A.getContentsAsCString();
+    prompt = A.getContentsAsString();
   }
   return singleArrayVector(Array::stringConstructor(eval->getLine(prompt)));
 }
@@ -1386,10 +1386,8 @@ ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
   else {
     Array b(arg[1]);
     if (b.isString()) {
-      char *b2 = b.getContentsAsCString();
-      if ((strcmp(b2,"nobalance") == 0) ||
-	  (strcmp(b2,"NoBalance") == 0) ||
-	  (strcmp(b2,"NOBALANCE") == 0))
+      string b2 = b.getContentsAsStringUpper();
+      if (b2=="NOBALANCE")
 	balance = false;
     }
     else
@@ -1518,7 +1516,7 @@ ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
   else
     A.promoteType(FM_DOUBLE);
   bool shiftFlag;
-  char *whichflag;
+  const char *whichflag;
   double sigma[2];
   if (arg.size() < 3) {
     shiftFlag = false;
@@ -1527,43 +1525,11 @@ ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
     Array S(arg[2]);
     if (S.isString()) {
       shiftFlag = false;
-      char *stxt = S.getContentsAsCString();
-      if ((strcmp(stxt,"LM")==0) ||
-	  (strcmp(stxt,"lm")==0) ||
-	  (strcmp(stxt,"Lm")==0) ||
-	  (strcmp(stxt,"lM")==0)) whichflag = "LM";
-      else if ((strcmp(stxt,"SM")==0) ||
-	       (strcmp(stxt,"sm")==0) ||
-	       (strcmp(stxt,"Sm")==0) ||
-	       (strcmp(stxt,"sm")==0)) whichflag = "SM";
-      else if ((strcmp(stxt,"LA")==0) ||
-	       (strcmp(stxt,"la")==0) ||
-	       (strcmp(stxt,"La")==0) ||
-	       (strcmp(stxt,"la")==0)) whichflag = "LA";
-      else if ((strcmp(stxt,"SA")==0) ||
-	       (strcmp(stxt,"sa")==0) ||
-	       (strcmp(stxt,"Sa")==0) ||
-	       (strcmp(stxt,"sa")==0)) whichflag = "SA";
-      else if ((strcmp(stxt,"BE")==0) ||
-	       (strcmp(stxt,"be")==0) ||
-	       (strcmp(stxt,"Be")==0) ||
-	       (strcmp(stxt,"be")==0)) whichflag = "BE";
-      else if ((strcmp(stxt,"LR")==0) ||
-	       (strcmp(stxt,"lr")==0) ||
-	       (strcmp(stxt,"Lr")==0) ||
-	       (strcmp(stxt,"lr")==0)) whichflag = "LR";
-      else if ((strcmp(stxt,"SR")==0) ||
-	       (strcmp(stxt,"sr")==0) ||
-	       (strcmp(stxt,"Sr")==0) ||
-	       (strcmp(stxt,"sr")==0)) whichflag = "SR";
-      else if ((strcmp(stxt,"LI")==0) ||
-	       (strcmp(stxt,"li")==0) ||
-	       (strcmp(stxt,"Li")==0) ||
-	       (strcmp(stxt,"li")==0)) whichflag = "LI";
-      else if ((strcmp(stxt,"SI")==0) ||
-	       (strcmp(stxt,"si")==0) ||
-	       (strcmp(stxt,"Si")==0) ||
-	       (strcmp(stxt,"si")==0)) whichflag = "SI";
+      string stxt = S.getContentsAsStringUpper();
+      if ((stxt == "LM") || (stxt == "SM") || (stxt == "LA") || (stxt == "SA") ||
+	  (stxt == "BE") || (stxt == "LR") || (stxt == "SR") || (stxt == "LI") ||
+	  (stxt == "SI"))
+	whichflag = stxt.c_str();
       else
 	throw Exception("Unrecognized option for sigma - it must be either 'lm', 'sm', 'la', 'sa', 'be', 'lr', 'sr', 'li', or 'si'");
     } else {
@@ -3112,7 +3078,7 @@ ArrayVector LasterrFunction(int nargout, const ArrayVector& arg,
     retval.push_back(A);
   } else {
     Array tmp(arg[0]);
-    eval->setLastErrorString(tmp.getContentsAsCString());
+    eval->setLastErrorString(tmp.getContentsAsString());
   }
   return retval;
 }
@@ -3336,7 +3302,7 @@ ArrayVector WarningFunction(int nargout, const ArrayVector& arg, Interpreter* ev
     throw Exception("Not enough inputs to warning function");
   if (!(arg[0].isString()))
     throw Exception("Input to error function must be a string");
-  eval->warningMessage(arg[0].getContentsAsCString());
+  eval->warningMessage(arg[0].getContentsAsString());
   return ArrayVector();
 }
 
@@ -3382,7 +3348,7 @@ ArrayVector ErrorFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Not enough inputs to error function");
   if (!(arg[0].isString()))
     throw Exception("Input to error function must be a string");
-  throw Exception(arg[0].getContentsAsCString());
+  throw Exception(arg[0].getContentsAsString());
 }
 
 //!
@@ -3447,8 +3413,8 @@ ArrayVector ErrorFunction(int nargout, const ArrayVector& arg) {
 //that the evaluation of the first expression failed (because @|z| is
 //not defined).
 //!
-static  char* PrePendCallVars(char *line, int nargout) {
-  char *buf = (char*) malloc(strlen(line)+4096);
+static string PrePendCallVars(string line, int nargout) {
+  char buf[4096];
   char *gp = buf;
   if (nargout > 1)
     *gp++ = '[';
@@ -3459,9 +3425,9 @@ static  char* PrePendCallVars(char *line, int nargout) {
   sprintf(gp,"t___%d",nargout-1);
   gp += strlen(gp);
   if (nargout > 1)
-    sprintf(gp,"] = %s;\n",line);
+    sprintf(gp,"] = %s;\n",line.c_str());
   else
-    sprintf(gp," = %s;\n",line);
+    sprintf(gp," = %s;\n",line.c_str());
   return buf;
 }
 
@@ -3487,10 +3453,10 @@ ArrayVector RetrieveCallVars(Interpreter *eval, int nargout) {
 
 ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* eval, int popSpec) {
   if (nargout > 0) {
-    char *try_line = arg[0].getContentsAsCString();
-    char *try_buf = PrePendCallVars(try_line,nargout);
-    char *catch_line = arg[1].getContentsAsCString();
-    char *catch_buf = PrePendCallVars(catch_line,nargout);
+    string try_line = arg[0].getContentsAsString();
+    string try_buf = PrePendCallVars(try_line,nargout);
+    string catch_line = arg[1].getContentsAsString();
+    string catch_buf = PrePendCallVars(catch_line,nargout);
     ArrayVector retval;
     bool autostop;
     autostop = eval->AutoStop();
@@ -3506,16 +3472,12 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       retval = RetrieveCallVars(eval,nargout);
     }
     eval->AutoStop(true);
-    free(try_buf);
-    free(catch_buf);
     return retval;
   } else {
-    char *try_line = arg[0].getContentsAsCString();
-    char *catch_line = arg[1].getContentsAsCString();
-    char *try_buf = (char*) malloc(strlen(try_line)+2);
-    char *catch_buf = (char*) malloc(strlen(catch_line)+2);
-    sprintf(try_buf,"%s\n",try_line);
-    sprintf(catch_buf,"%s\n",catch_line);
+    string try_line = arg[0].getContentsAsString();
+    string catch_line = arg[1].getContentsAsString();
+    string try_buf = try_line + "\n";
+    string catch_buf = catch_line + "\n";
     bool autostop;
     autostop = eval->AutoStop();
     eval->AutoStop(false);
@@ -3528,30 +3490,25 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       eval->evaluateString(catch_buf,false);
     }
     eval->AutoStop(true);
-    free(try_buf);
-    free(catch_buf);
     return ArrayVector();
   }
 }
 
 ArrayVector EvalNoTryFunction(int nargout, const ArrayVector& arg, Interpreter* eval, int popSpec) {
   if (nargout > 0) {
-    char *line = arg[0].getContentsAsCString();
-    char *buf = PrePendCallVars(line,nargout);
+    string line = arg[0].getContentsAsString();
+    string buf = PrePendCallVars(line,nargout);
     eval->getContext()->bypassScope(popSpec);
     eval->evaluateString(buf);
     ArrayVector retval(RetrieveCallVars(eval,nargout));
     eval->getContext()->restoreBypassedScopes();
-    free(buf);
     return retval;
   } else {
-    char *line = arg[0].getContentsAsCString();
-    char *buf = (char*) malloc(strlen(line)+2);
-    sprintf(buf,"%s\n",line);
+    string line = arg[0].getContentsAsString();
+    string buf = line + "\n";
     eval->getContext()->bypassScope(popSpec);
     eval->evaluateString(buf);
     eval->getContext()->restoreBypassedScopes();
-    free(buf);
     return ArrayVector();
   }
 }
@@ -3590,11 +3547,11 @@ ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   if (arg.size() < 2)
     throw Exception("evalin function requires a workspace (scope) specifier (either 'caller' or 'base') and an expression to evaluate");
   Array spec(arg[0]);
-  char *spec_str = spec.getContentsAsCString();
+  string spec_str = spec.getContentsAsString();
   int popspec = 0;
-  if (strcmp(spec_str,"base")==0) 
+  if (spec_str=="base")
     popspec = -1;
-  else if (strcmp(spec_str,"caller")==0) 
+  else if (spec_str=="caller")
     popspec = 1;
   else
     throw Exception("evalin function requires the first argument to be either 'caller' or 'base'");
@@ -3627,15 +3584,15 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
   if (arg.size() < 3)
     throw Exception("assignin function requires a workspace (scope) specifier (either 'caller' or 'base') a variable name and a value to assign");
   Array spec(arg[0]);
-  char *spec_str = spec.getContentsAsCString();
+  string spec_str = spec.getContentsAsString();
   int popspec = 0;
-  if (strcmp(spec_str,"base")==0) 
+  if (spec_str=="base")
     popspec = -1;
-  else if (strcmp(spec_str,"caller")==0) 
+  else if (spec_str=="caller") 
     popspec = 1;
   else
     throw Exception("evalin function requires the first argument to be either 'caller' or 'base'");
-  const char *varname = ArrayToString(arg[1]);
+  string varname = ArrayToString(arg[1]);
   Array varvalue = arg[2];
   eval->getContext()->bypassScope(popspec);
   eval->getContext()->insertVariable(varname,varvalue);
@@ -3684,8 +3641,8 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
 ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("source function takes exactly one argument - the filename of the script to execute");
-  char *line = arg[0].getContentsAsCString();
-  QFile fp(line);
+  string line = arg[0].getContentsAsString();
+  QFile fp(QString::fromStdString(line));
   if (!fp.open(QFile::ReadOnly))
     throw Exception(std::string("unable to open file ") + line + " for reading");
   QTextStream fstr(&fp);
@@ -3776,7 +3733,7 @@ ArrayVector DbStopFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     throw Exception("dbstop function requires at least two arguments");
   if (!(arg[0].isString()))
     throw Exception("first argument to dbstop must be the name of routine where to stop");
-  const char *cname = ArrayToString(arg[0]);
+  string cname = ArrayToString(arg[0]);
   int line = ArrayToInt32(arg[1]);
   eval->addBreakpoint(cname,line);
   return ArrayVector();
@@ -3787,7 +3744,7 @@ ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
     throw Exception("fdump function requires at least one argument");
   if (!(arg[0].isString()))
     throw Exception("first argument to fdump must be the name of a function (i.e., a string)");
-  char *fname = arg[0].getContentsAsCString();
+  string fname = arg[0].getContentsAsString();
   Context *context = eval->getContext();
   FunctionDef *funcDef;
   if (!context->lookupFunction(fname,funcDef))
@@ -3821,7 +3778,7 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
   if (!(arg[0].isString()))
     throw Exception("first argument to builtin must be the name of a function (i.e., a string)");
   FunctionDef *funcDef;
-  char *fname = arg[0].getContentsAsCString();
+  string fname = arg[0].getContentsAsString();
   Context *context = eval->getContext();
   if (!context->lookupFunction(fname,funcDef))
     throw Exception(std::string("function ") + fname + " undefined!");
@@ -3907,7 +3864,7 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
     return FevalClassHelper(nargout,arg,eval);
   FunctionDef *funcDef;
   if (arg[0].isString()) {
-    char *fname = arg[0].getContentsAsCString();
+    string fname = arg[0].getContentsAsString();
     Context *context = eval->getContext();
     if (!context->lookupFunction(fname,funcDef))
       throw Exception(std::string("function ") + fname + " undefined!");
@@ -4090,9 +4047,9 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
 ArrayVector SystemFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1) 
     throw Exception("System function takes one string argument");
-  char *systemArg = arg[0].getContentsAsCString();
+  string systemArg = arg[0].getContentsAsString();
   ArrayVector retval;
-  if (strlen(systemArg) == 0) 
+  if (systemArg.size() == 0) 
     return retval;
   stringVector cp(DoSystemCallCaptured(systemArg));
   Array* np = new Array[cp.size()];
@@ -4402,23 +4359,23 @@ static ArrayVector Conv2FunctionValidXY(Array X, Array Y) {
   return singleArrayVector(Conv2FunctionDispatch(X,Y,Cm,Cn,Cm_offset,Cn_offset));    
 }
 
-ArrayVector Conv2FunctionXY(Array X, Array Y, char* type) {
+ArrayVector Conv2FunctionXY(Array X, Array Y, string type) {
   // Check the arguments
   if (X.isReferenceType() || Y.isReferenceType())
     throw Exception("cannot apply conv2 to reference types.");
   if (!X.is2D() || !Y.is2D())
     throw Exception("arguments must be matrices, not n-dimensional arrays.");
   TypeCheck(X,Y,false);
-  if ((strcmp(type,"full") == 0) || (strcmp(type,"FULL") == 0))
+  if (type == "FULL")
     return Conv2FunctionFullXY(X,Y);
-  if ((strcmp(type,"same") == 0) || (strcmp(type,"SAME") == 0))
+  if (type == "SAME")
     return Conv2FunctionSameXY(X,Y);
-  if ((strcmp(type,"valid") == 0) || (strcmp(type,"VALID") == 0))
+  if (type == "VALID")
     return Conv2FunctionValidXY(X,Y);
   throw Exception("count not recognize the arguments to conv2");
 }
 
-ArrayVector Conv2FunctionRCX(Array hcol, Array hrow, Array X, char *type) {
+ArrayVector Conv2FunctionRCX(Array hcol, Array hrow, Array X, string type) {
   if (hcol.isReferenceType() || hrow.isReferenceType() ||
       X.isReferenceType())
     throw Exception("cannot apply conv2 to reference types.");
@@ -4441,12 +4398,12 @@ ArrayVector Conv2Function(int nargout, const ArrayVector& arg) {
   if (arg.size() == 2)
     return Conv2FunctionXY(arg[0],arg[1],"full");
   if ((arg.size() == 3) && (arg[2].isString()))
-    return Conv2FunctionXY(arg[0],arg[1],arg[2].getContentsAsCString());
+    return Conv2FunctionXY(arg[0],arg[1],arg[2].getContentsAsStringUpper());
   if (arg.size() == 3)
-    return Conv2FunctionRCX(arg[0],arg[1],arg[2],"full");
+    return Conv2FunctionRCX(arg[0],arg[1],arg[2],"FULL");
   if ((arg.size() == 4) && (arg[3].isString()))
     return Conv2FunctionRCX(arg[0],arg[1],arg[2],
-			    arg[3].getContentsAsCString());
+			    arg[3].getContentsAsStringUpper());
   throw Exception("could not recognize which form of conv2 was requested - check help conv2 for details");
 }
 

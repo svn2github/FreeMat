@@ -238,6 +238,15 @@ else
 echo \
 "    AVCALL          Imported functions                    Not Found"
 fi
+
+if (test x"$found_pcre" == xyes); then
+echo \
+"    PCRE            Regular Expressions                   Found"
+else
+echo \
+"    PCRE            Regular Expressions                   Not Found"
+fi
+
 echo \
 "********************************************************************"
 

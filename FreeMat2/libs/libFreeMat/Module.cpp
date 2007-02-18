@@ -74,17 +74,17 @@ void ClearLibs(Interpreter* eval) {
 //!
 ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
 			    Interpreter* eval) {
-  char *libfile;
-  char *symbolName;
-  char *funcName;
+  string libfile;
+  string symbolName;
+  string funcName;
   int nargin;
   int nargout;
   ArrayVector arg(narg);
 
   if (arg.size() < 2) 
     throw Exception("Must supply at least the library file and symbol name");
-  libfile = arg[0].getContentsAsCString();
-  symbolName = arg[1].getContentsAsCString();
+  libfile = arg[0].getContentsAsString();
+  symbolName = arg[1].getContentsAsString();
   if (arg.size() < 5)
     nargout = 0;
   else
@@ -96,26 +96,26 @@ ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
   if (arg.size() < 3)
     funcName = symbolName;
   else
-    funcName = arg[2].getContentsAsCString();
+    funcName = arg[2].getContentsAsString();
   void *func;
   DynLib *lib = new DynLib(libfile);
-  func = lib->GetSymbol(symbolName);
+  func = lib->GetSymbol(symbolName.c_str());
   BuiltInFunctionDef *fdef = new BuiltInFunctionDef;
   fdef->retCount = nargout;
   fdef->argCount = nargin;
-  fdef->name = strdup((const char*) funcName);
+  fdef->name = funcName;
   fdef->fptr = (BuiltInFuncPtr) func;
   eval->getContext()->insertFunctionGlobally(fdef,false);
   DynamicFunctions.push_back(fdef->name);
   return ArrayVector();
 }
   
-void skipWS(char* &cp) {
+void skipWS(const char* &cp) {
   while (*cp == ' ' || *cp == '\t' || *cp == '\n')
     cp++;
 }
   
-const char* matchTest(char* &cp, const char* tmplate) {
+const char* matchTest(const char* &cp, const char* tmplate) {
   if (strncmp(cp,tmplate,strlen(tmplate)) == 0) {
     cp += strlen(tmplate);
     return tmplate;
@@ -123,7 +123,7 @@ const char* matchTest(char* &cp, const char* tmplate) {
     return NULL;
 }
 
-const char* parseTypeName(char* &cp) {
+const char* parseTypeName(const char* &cp) {
   const char* rp;
   skipWS(cp);
   if (rp = matchTest(cp,"int8"))
@@ -151,9 +151,10 @@ const char* parseTypeName(char* &cp) {
   return NULL;
 }
 
-char* parseArgumentName(char* &cp) {
+char* parseArgumentName(const char* &cp) {
   bool byRef;
-  char *rp, *op;
+  const char *rp;
+  char *op;
   int identLength;
   skipWS(cp);
   byRef = false;
@@ -183,12 +184,12 @@ char* parseArgumentName(char* &cp) {
   return op;
 }
 
-char* parseBoundsCheck(char* &cp) {
+char* parseBoundsCheck(const char* &cp) {
   int bracketDepth;
   if (*cp != '[') return NULL;
   cp++;
   bracketDepth = 1;
-  char *rp;
+  const char *rp;
   rp = cp;
   while ((bracketDepth > 0) && (*cp != 0)) {
     if (*cp == '[') bracketDepth++;
@@ -363,11 +364,11 @@ char* parseBoundsCheck(char* &cp) {
 ArrayVector ImportFunction(int nargout, const ArrayVector& arg, 
 			   Interpreter* eval)  {
 #ifdef HAVE_AVCALL
-  char *libfile;
-  char *symbolname;
-  char *funcname;
-  char *rettype;
-  char *arglist;
+  string libfile;
+  string symbolname;
+  string funcname;
+  string rettype;
+  string arglist;
 
   PathSearcher psearch(eval->getPath());
 
@@ -377,7 +378,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
     throw Exception(std::string("import requires 5 arguments:") + 
 		    "library name, symbol name, imported function name" +
 		    "return type, argument list");
-  libfile = arg[0].getContentsAsCString();
+  libfile = arg[0].getContentsAsString();
   libfullpath = psearch.ResolvePath(libfile);
   char buffer[1000];
   // Prepend the current working directory... ugly, but necessary
@@ -391,10 +392,10 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
   if (libfullpath[0] != '/')
     libfullpath = std::string(buffer) + "/" + libfullpath;
 #endif
-  symbolname = arg[1].getContentsAsCString();
-  funcname = arg[2].getContentsAsCString();
-  rettype = arg[3].getContentsAsCString();
-  arglist = arg[4].getContentsAsCString();
+  symbolname = arg[1].getContentsAsString();
+  funcname = arg[2].getContentsAsString();
+  rettype = arg[3].getContentsAsString();
+  arglist = arg[4].getContentsAsString();
   void *func;
   DynLib *lib, **ptr;
   ptr = libPointers.findSymbol(libfullpath);
@@ -403,15 +404,15 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
     libPointers.insertSymbol(libfullpath,lib);
   } else
     lib = *ptr;
-  func = lib->GetSymbol(symbolname);
+  func = lib->GetSymbol(symbolname.c_str());
   stringVector types;
   stringVector arguments;
   treeVector checks;
   /**
    * Parse the arglist...
    */
-  char *cp;
-  cp = arglist;
+  const char *cp;
+  cp = arglist.c_str();
 
   while (*cp != 0) {
     /**
@@ -424,7 +425,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 		      std::string(" prototype (argument list) - ") + 
 		      std::string("expecting a valid type name"));
     types.push_back(tn);
-    char *bc = parseBoundsCheck(cp);
+    const char *bc = parseBoundsCheck(cp);
     if (bc != NULL) {
       checks.push_back(ParseExpressionString(bc));
     } else

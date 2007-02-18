@@ -128,8 +128,8 @@ void SwapBuffer(char* cp, int count, int elsize) {
     }    
 }
 
-#define MATCH(x) (strcmp(prec,x)==0)
-void processPrecisionString(char *prec, Class &dataClass, int& elementSize, int& swapSize) {
+#define MATCH(x) (prec==x)
+void processPrecisionString(string prec, Class &dataClass, int& elementSize, int& swapSize) {
   if (MATCH("uint8") || MATCH("uchar") || MATCH("unsigned char")) {
     dataClass = FM_UINT8;
     elementSize = 1;
@@ -309,34 +309,34 @@ ArrayVector FopenFunction(int nargout, const ArrayVector& arg) {
     throw Exception("fopen requires at least one argument (a filename)");
   if (!(arg[0].isString()))
     throw Exception("First argument to fopen must be a filename");
-  char *fname = arg[0].getContentsAsCString();
-  char *mode = "rb";
+  string fname = arg[0].getContentsAsString();
+  string mode = "rb";
   if (arg.size() > 1) {
     if (!arg[1].isString())
       throw Exception("Access mode to fopen must be a string");
-    mode = arg[1].getContentsAsCString();
+    mode = arg[1].getContentsAsString();
   }
   bool swapendian = false;
   if (arg.size() > 2) {
-    char *swapflag = arg[2].getContentsAsCString();
-    if (strcmp(swapflag,"swap") == 0) {
+    string swapflag = arg[2].getContentsAsString();
+    if (swapflag=="swap") {
       swapendian = true;
-    } else if ((strcmp(swapflag,"le") == 0) ||
-	       (strcmp(swapflag,"ieee-le") == 0) ||
-	       (strcmp(swapflag,"little-endian") == 0) ||
-	       (strcmp(swapflag,"littleEndian") == 0) ||
-	       (strcmp(swapflag,"little") == 0)) {
+    } else if ((swapflag=="le") ||
+	       (swapflag=="ieee-le") ||
+	       (swapflag=="little-endian") ||
+	       (swapflag=="littleEndian") ||
+	       (swapflag=="little")) {
       swapendian = bigEndian;
-    } else if ((strcmp(swapflag,"be") == 0) ||
-	       (strcmp(swapflag,"ieee-be") == 0) ||
-	       (strcmp(swapflag,"big-endian") == 0) ||
-	       (strcmp(swapflag,"bigEndian") == 0) ||
-	       (strcmp(swapflag,"big") == 0)) {
+    } else if ((swapflag=="be") ||
+	       (swapflag=="ieee-be") ||
+	       (swapflag=="big-endian") ||
+	       (swapflag=="bigEndian") ||
+	       (swapflag=="big")) {
       swapendian = !bigEndian;
     } else if (!arg[2].isEmpty())
       throw Exception("swap flag must be 'swap' or an endian spec ('le','ieee-le','little-endian','littleEndian','little','be','ieee-be','big-endian','bigEndian','big')");
   }
-  FILE *fp = fopen(fname,mode);
+  FILE *fp = fopen(fname.c_str(),mode.c_str());
   if (!fp)
     throw Exception(strerror(errno));
   FilePtr *fptr = new FilePtr();
@@ -378,8 +378,8 @@ ArrayVector FcloseFunction(int nargout, const ArrayVector& arg) {
   bool closingAll = false;
   int retval = 0;
   if (arg[0].isString()) {
-    char *allflag = arg[0].getContentsAsCString();
-    if (strcmp(allflag,"all") == 0) {
+    string allflag = arg[0].getContentsAsString();
+    if (allflag == "all") {
       closingAll = true;
       int maxHandle(fileHandles.maxHandle());
       for (int i=3;i<maxHandle;i++) {
@@ -468,7 +468,7 @@ ArrayVector FreadFunction(int nargout, const ArrayVector& arg) {
   FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
   if (!arg[2].isString())
     throw Exception("second argument to fread must be a precision");
-  char *prec = arg[2].getContentsAsCString();
+  string prec = arg[2].getContentsAsString();
   // Get the size argument
   Array sze(arg[1]);
   // Promote sze to a float argument
@@ -720,15 +720,12 @@ ArrayVector FseekFunction(int nargout, const ArrayVector& arg) {
   Array tmp3(arg[2]);
   int style;
   if (tmp3.isString()) {
-    char *styleflag = arg[2].getContentsAsCString();
-    if ((strcmp(styleflag,"bof") == 0) ||
-	(strcmp(styleflag,"BOF") == 0))
+    string styleflag = arg[2].getContentsAsString();
+    if (styleflag=="bof" || styleflag=="BOF")
       style = -1;
-    else if ((strcmp(styleflag,"cof") == 0) ||
-	     (strcmp(styleflag,"COF") == 0))
+    else if (styleflag=="cof" || styleflag=="COF")
       style = 0;
-    else if ((strcmp(styleflag,"eof") == 0) ||
-	     (strcmp(styleflag,"EOF") == 0))
+    else if (styleflag=="eof" || styleflag=="EOF")
       style = 1;
     else
       throw Exception("unrecognized style format for fseek");
@@ -839,9 +836,8 @@ void convertEscapeSequences(char *dst, char* src) {
 //subroutine.
 char* xprintfFunction(int nargout, const ArrayVector& arg) {
   Array format(arg[0]);
-  char *frmt = format.getContentsAsCString();
-  char *buff = (char*) malloc(strlen(frmt)+1);
-  strcpy(buff,frmt);
+  string frmt = format.getContentsAsString();
+  char *buff = strdup(frmt.c_str());
   // Search for the start of a format subspec
   char *dp = buff;
   char *np;
@@ -911,7 +907,7 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
 	      strcat(op,nbuff);
 	      break;
 	    case 's':
-	      snprintf(nbuff,BUFSIZE,dp,nextVal.getContentsAsCString());
+	      snprintf(nbuff,BUFSIZE,dp,nextVal.getContentsAsString().c_str());
 	      op = (char*) realloc(op,strlen(op)+strlen(nbuff)+1);
 	      strcat(op,nbuff);
 	    }
@@ -1125,10 +1121,7 @@ ArrayVector Str2NumFunction(int nargout, const ArrayVector& arg) {
   Array data(arg[0]);
   if (!data.isString())
     throw Exception("the first argument to str2num must be a string");
-  double num = atof(data.getContentsAsCString());
-  ArrayVector retval;
-  retval.push_back(Array::doubleConstructor(num));
-  return retval;
+  return ArrayVector() << Array::doubleConstructor(ArrayToDouble(data));
 }
 
 // How does sscanf work...
@@ -1165,18 +1158,17 @@ ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
     throw Exception("sscanf takes two arguments, the text and the format string");
   Array text(arg[0]);
   Array format(arg[1]);
-  char *txt = text.getContentsAsCString();
+  string txt = text.getContentsAsString();
   FILE *fp = tmpfile();
   AutoFileCloser afc(fp);
   if (!fp)
     throw Exception("sscanf was unable to open a temp file (and so it won't work)");
-  fprintf(fp,"%s",txt);
+  fprintf(fp,"%s",txt.c_str());
   rewind(fp);
   if (feof(fp))
     return singleArrayVector(Array::emptyConstructor());
-  char *frmt = format.getContentsAsCString();
-  char *buff = (char*) malloc(strlen(frmt)+1);
-  strcpy(buff,frmt);
+  string frmt = format.getContentsAsString();
+  char *buff = strdup(frmt.c_str());
   // Search for the start of a format subspec
   char *dp = buff;
   char *np;
@@ -1331,9 +1323,8 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
     throw Exception("fscanf format argument must be a string");
   if (feof(fptr->fp))
     return singleArrayVector(Array::emptyConstructor());
-  char *frmt = format.getContentsAsCString();
-  char *buff = (char*) malloc(strlen(frmt)+1);
-  strcpy(buff,frmt);
+  string frmt = format.getContentsAsString();
+  char *buff = strdup(frmt.c_str());
   // Search for the start of a format subspec
   char *dp = buff;
   char *np;
@@ -1508,7 +1499,7 @@ ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg,
   if (arg.size() == 0)
     throw Exception("save requires at least one argument (the filename)");
   Array filename(arg[0]);
-  char *fname = filename.getContentsAsCString();
+  string fname = filename.getContentsAsString();
   File ofile(fname,"wb");
   Serialize output(&ofile);
   output.handshakeServer();
@@ -1521,7 +1512,7 @@ ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg,
   else {
     for (i=1;i<arg.size();i++) {
       Array varName(arg[i]);
-      names.push_back(varName.getContentsAsCString());
+      names.push_back(varName.getContentsAsString());
     }
   }
   for (i=0;i<names.size();i++) {
@@ -1620,8 +1611,8 @@ ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   if (arg.size() == 0)
     throw Exception("save requires at least one argument (the filename)");
   Array filename(arg[0]);
-  char *fname = filename.getContentsAsCString();
-  int len = strlen(fname);
+  string fname = filename.getContentsAsString();
+  int len = fname.size();
   if ((len >= 4) && (fname[len-4] == '.') &&
       ((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
       ((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
@@ -1634,7 +1625,7 @@ ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, Interpreter*
   if (arg.size() != 1)
     throw Exception("load requires exactly one argument (the filename)");
   Array filename(arg[0]);
-  char *fname = filename.getContentsAsCString();
+  string fname = filename.getContentsAsString();
   File ofile(fname,"rb");
   Serialize input(&ofile);
   input.handshakeClient();
@@ -1702,8 +1693,8 @@ ArrayVector LoadFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   if (arg.size() != 1)
     throw Exception("load requires exactly one argument (the filename)");
   Array filename(arg[0]);
-  char *fname = filename.getContentsAsCString();
-  int len = strlen(fname);
+  string fname = filename.getContentsAsString();
+  int len = fname.size();
   if ((len >= 4) && (fname[len-4] == '.') &&
       ((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
       ((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&

@@ -217,32 +217,32 @@ Array HPColorVector::Get() {
 //!
 bool ParseColorSpec(Array arg, std::vector<double> &data) {
   if (arg.isString()) {
-    char *cp = arg.getContentsAsCString();
-    if (strcmp(cp,"none")==0) {
+    string cp = arg.getContentsAsString();
+    if (cp=="none") {
       data.clear(); data.push_back(-1); 
       data.push_back(-1); data.push_back(-1);
-    } else if ((strcmp(cp,"y") == 0) || (strcmp(cp,"yellow")==0)) {
+    } else if ((cp=="y") || (cp=="yellow")) {
       data.clear(); data.push_back(1); 
       data.push_back(1); data.push_back(0);
-    } else if ((strcmp(cp,"m") == 0) || (strcmp(cp,"magenta")==0)) {
+    } else if ((cp=="m") || (cp=="magenta")) {
       data.clear(); data.push_back(1); 
       data.push_back(0); data.push_back(1);
-    } else if ((strcmp(cp,"c") == 0) || (strcmp(cp,"cyan")==0)) {
+    } else if ((cp=="c") || (cp=="cyan")) {
       data.clear(); data.push_back(0); 
       data.push_back(1); data.push_back(1);
-    } else if ((strcmp(cp,"r") == 0) || (strcmp(cp,"red")==0)) {
+    } else if ((cp=="r") || (cp=="red")) {
       data.clear(); data.push_back(1); 
       data.push_back(0); data.push_back(0);
-    } else if ((strcmp(cp,"g") == 0) || (strcmp(cp,"green")==0)) {
+    } else if ((cp=="g") || (cp=="green")) {
       data.clear(); data.push_back(0); 
       data.push_back(1); data.push_back(0);
-    } else if ((strcmp(cp,"b") == 0) || (strcmp(cp,"blue")==0)) {
+    } else if ((cp=="b") || (cp=="blue")) {
       data.clear(); data.push_back(0); 
       data.push_back(0); data.push_back(1);
-    } else if ((strcmp(cp,"w") == 0) || (strcmp(cp,"white")==0)) {
+    } else if ((cp=="w") || (cp=="white")) {
       data.clear(); data.push_back(1); 
       data.push_back(1); data.push_back(1);
-    } else if ((strcmp(cp,"k") == 0) || (strcmp(cp,"black")==0)) {
+    } else if ((cp=="k") || (cp=="black")) {
       data.clear(); data.push_back(0); 
       data.push_back(0); data.push_back(0);
     } else

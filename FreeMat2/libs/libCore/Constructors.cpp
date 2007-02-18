@@ -208,36 +208,33 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
     // Check for the classname
     if (trim_arg.back().isString()) {
       // Get the classname as a string
-      char *cp = strdup(ArrayToString(trim_arg.back()));
+      string cp = ArrayToString(trim_arg.back());
       // Convert to lowercase
-      char *dp = cp;
-      while (*dp) {
-	*dp = tolower(*dp);
-	dp++;
-      }
-      if (strcmp(cp,"double")==0)
+      string dp(cp);
+      std::transform(dp.begin(),dp.end(),dp.begin(),(int(*)(int))tolower);
+      if (cp=="double")
 	cls = FM_DOUBLE;
-      else if (strcmp(cp,"single")==0)
+      else if (cp=="single")
 	cls = FM_FLOAT;
-      else if (strcmp(cp,"float")==0)
+      else if (cp=="float")
 	cls = FM_FLOAT;
-      else if (strcmp(cp,"int8")==0)
+      else if (cp=="int8")
 	cls = FM_INT8;
-      else if (strcmp(cp,"uint8")==0)
+      else if (cp=="uint8")
 	cls = FM_UINT8;
-      else if (strcmp(cp,"int16")==0)
+      else if (cp=="int16")
 	cls = FM_INT16;
-      else if (strcmp(cp,"uint16")==0)
+      else if (cp=="uint16")
 	cls = FM_UINT16;
-      else if (strcmp(cp,"int32")==0)
+      else if (cp=="int32")
 	cls = FM_INT32;
-      else if (strcmp(cp,"uint32")==0)
+      else if (cp=="uint32")
 	cls = FM_UINT32;
-      else if (strcmp(cp,"int64")==0)
+      else if (cp=="int64")
 	cls = FM_INT64;
-      else if (strcmp(cp,"uint64")==0)
+      else if (cp=="uint64")
 	cls = FM_UINT64;
-      else if (strcmp(cp,"logical")==0)
+      else if (cp=="logical")
 	cls = FM_LOGICAL;
       else
 	throw Exception(std::string("Unsupported type ") + cp + std::string(" as classname argument to zeros function"));
@@ -618,9 +615,7 @@ ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
   for (int i=0;i<pairCount*2;i+=2) {
     if (!(arg[i].isString()))
       throw Exception("struct function requires pairs of field names and values");
-    char *c = (arg[i].getContentsAsCString());
-    names.push_back(c);
-    Free(c);
+    names.push_back(arg[i].getContentsAsString());
     values[i/2] = arg[i+1];
   }
   ArrayVector retval;

@@ -154,8 +154,8 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
   sprintf(buffer,"dir ");
   bp = buffer + strlen(buffer);
   for (i=0;i<arg.size();i++) {
-    char *target = arg[i].getContentsAsCString();
-    sprintf(bp,"%s ",target);
+    string target = arg[i].getContentsAsString();
+    sprintf(bp,"%s ",target.c_str());
     bp = buffer + strlen(buffer);
   }
   sysresult = DoSystemCallCaptured(buffer);
@@ -290,8 +290,7 @@ ArrayVector GetPathFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("setpath function requires exactly one string argument");
-  char *cdir = arg[0].getContentsAsCString();
-  eval->setPath(cdir);
+  eval->setPath(arg[0].getContentsAsString());
   return ArrayVector();
 }
 
@@ -310,26 +309,24 @@ ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 //  rmdir('dirname','s')
 //@]
 //!
-void RemoveDirectory(QString dirname) {
-  if (!QDir::current().rmdir(dirname))
-    throw Exception(string("unable to delete directory ") + 
-		    dirname.toStdString());
+void RemoveDirectory(string dirname) {
+  if (!QDir::current().rmdir(QString::fromStdString(dirname)))
+    throw Exception(string("unable to delete directory ") + dirname);
 }
 
-void RemoveDirectoryRecursive(QString dirname) {
-  QDir dir(dirname);
+void RemoveDirectoryRecursive(string dirname) {
+  QDir dir(QString::fromStdString(dirname));
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
   for (unsigned i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     if (fileInfo.isDir())
-      RemoveDirectoryRecursive(fileInfo.absoluteFilePath());
+      RemoveDirectoryRecursive(fileInfo.absoluteFilePath().toStdString());
     else
       dir.remove(fileInfo.absoluteFilePath());
   }
-  if (!QDir::current().rmdir(dirname))
-    throw Exception(string("unable to delete directory ") + 
-		    dirname.toStdString());
+  if (!QDir::current().rmdir(QString::fromStdString(dirname)))
+    throw Exception(string("unable to delete directory ") + dirname);
 }
 
 ArrayVector RMDirFunction(int nargout, const ArrayVector& arg) {
@@ -338,9 +335,8 @@ ArrayVector RMDirFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 1)
     RemoveDirectory(ArrayToString(arg[0]));
   else if (arg.size() == 2) {
-    const char *arg1 = ArrayToString(arg[1]);
-    if ((strcmp(arg1,"s") == 0) ||
-	(strcmp(arg1,"S") == 0))
+    string arg1 = ArrayToString(arg[1]);
+    if ((arg1 == "s") || (arg1 == "S"))
       RemoveDirectoryRecursive(ArrayToString(arg[0]));
     else
       throw Exception("rmdir second argment must be a 's' to do a recursive delete");

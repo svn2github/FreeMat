@@ -21,13 +21,16 @@
 #define __File_hpp__
 #include <stdio.h>
 #include "Stream.hpp"
+#include <string>
+
+using namespace std;
 
 class File : public Stream{
   bool autoclose;
   FILE *fp;
 public:
   // Create a file with the given access code
-  File(const char *filename, const char *accessmode);
+  File(string filename, string accessmode);
   File(FILE*afp);
   // Close the file
   virtual ~File();

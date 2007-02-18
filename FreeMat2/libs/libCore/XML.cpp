@@ -119,8 +119,8 @@ ArrayVector XMLReadFunction(int nargout, const ArrayVector& arg) {
     throw Exception("xmlread requires at least one argument (the filename)");
   // Parse the thing
   QDomDocument doc("fmdoc");
-  const char *filename(ArrayToString(arg[0]));
-  QFile file(filename);
+  string filename(ArrayToString(arg[0]));
+  QFile file(QString::fromStdString(filename));
   if (!file.open(QIODevice::ReadOnly))
     return ArrayVector();
   QString errMsg;
@@ -139,8 +139,8 @@ ArrayVector HTMLReadFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) 
     throw Exception("htmlread requires at least one argument (the filename)");
   // Read the proposed filename
-  const char *filename(ArrayToString(arg[0]));
-  QFile file(filename);
+  string filename(ArrayToString(arg[0]));
+  QFile file(QString::fromStdString(filename));
   if (!file.open(QIODevice::ReadOnly))
     return ArrayVector();
   QString fileData;
@@ -203,10 +203,10 @@ void URLRetriever::run()
 
 ArrayVector URLWriteFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 3) throw Exception("urlwrite requires 3 arguments: url, filename, timeout");
-  QUrl url(ArrayToString(arg[0]));
+  QUrl url(QString::fromStdString(ArrayToString(arg[0])));
   if (!url.isValid()) throw Exception(string("url is not valid:") + ArrayToString(arg[0]));
-  const char* filename(ArrayToString(arg[1]));
-  QFile file(filename);
+  string filename(ArrayToString(arg[1]));
+  QFile file(QString::fromStdString(filename));
   if (!file.open(QIODevice::WriteOnly))
     throw Exception(string("unable to open output file ") + filename + " for writing");
   double timeout(ArrayToDouble(arg[2]));

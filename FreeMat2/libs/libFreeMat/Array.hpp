@@ -29,6 +29,7 @@
 #include "RefVec.hpp"
 #include <QVector>
 #include <QList>
+#include <QStringList>
 #include <QSharedDataPointer>
 
 class Array;
@@ -820,7 +821,8 @@ public:
    * Get our contents as a C-string.  Only works for _STRING types.
    * Throws an exception for non-string types.
    */
-  char* getContentsAsCString() const;
+  string getContentsAsString() const;
+  string getContentsAsStringUpper() const;
   /**
    * Get our contents as an integer scalar.
    * Throws an exception if we are not a scalar integer type.
@@ -860,8 +862,10 @@ public:
 bool isColonOperator(Array& a);
 int32 ArrayToInt32(const Array& a);
 double ArrayToDouble(const Array& a);
-const char* ArrayToString(const Array& a);
+string ArrayToString(const Array& a);
 Array ToSingleArray(const ArrayVector& a);
+Array CellArrayFromQStringList(QStringList t);
+Array Uint32VectorFromQList(QList<uint32> p);
 
 void printObjectBalance();
 void dumpAllArrays();

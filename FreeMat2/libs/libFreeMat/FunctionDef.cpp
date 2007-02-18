@@ -699,7 +699,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
 	values[i] = inputs[i].getReadWriteDataPointer();
       }
     } else {
-      refPointers[ptr] = inputs[i].getContentsAsCString();
+      refPointers[ptr] = strdup(inputs[i].getContentsAsString().c_str());
       values[i] = &refPointers[ptr];
       ptr++;
     }

@@ -1055,11 +1055,9 @@ const bool Array::testCaseMatchScalar(Array x) const {
     if (!x.isString())
       return false;
     // if x is a string do a string, string compare.
-    char *s1 = getContentsAsCString();
-    char *s2 = x.getContentsAsCString();
-    bool retval = strcmp(s1,s2) == 0;
-    Free(s1);
-    Free(s2);
+    string s1 = getContentsAsString();
+    string s2 = x.getContentsAsString();
+    bool retval = (s1 == s2);
     return retval;
   }
   if (!x.isScalar())
@@ -3986,18 +3984,17 @@ void Array::summarizeCellEntry() const {
   }
 }
 
-
-char* Array::getContentsAsCString() const  {
-  char *buffer;
-  const char*qp;
+string Array::getContentsAsString() const  {
   if (dataClass() != FM_STRING)
     throw Exception("Unable to convert supplied object to a string!\n");
   int M = getLength();
-  buffer = (char*)Malloc((M+1)*sizeof(char));
-  qp = (const char*)data();
-  memcpy(buffer,qp,M);
-  buffer[M] = 0;
-  return buffer;
+  return string((const char*) data(),M);
+}
+
+string Array::getContentsAsStringUpper() const {
+  string ret(getContentsAsString());
+  std::transform(ret.begin(),ret.end(),ret.begin(),(int(*)(int))toupper);
+  return ret;
 }
 
 int32 Array::getContentsAsIntegerScalar()  {
@@ -4014,7 +4011,7 @@ int32 Array::getContentsAsIntegerScalar()  {
 
 double Array::getContentsAsDoubleScalar()  {
   if (dataClass() == FM_STRING) {
-    return atof((const char*) data());
+    return atof(getContentsAsString().c_str());
   }
   double *qp;
   if (isComplex() || isReferenceType() || isString())
@@ -4150,9 +4147,9 @@ Array  Array::doubleMatrixConstructor(int rows, int cols) {
   return Array(FM_DOUBLE,dim,data,false);
 }
 
-const char* ArrayToString(const Array& a) {
+string ArrayToString(const Array& a) {
   Array b(a);
-  return b.getContentsAsCString();
+  return b.getContentsAsString();
 }
 
 Array ToSingleArray(const ArrayVector& a) {
@@ -4365,4 +4362,18 @@ string operator+(int d, string a) {
   char buf[256];
   sprintf(buf,"%d",d);
   return a+string(buf);
+}
+
+Array CellArrayFromQStringList(QStringList t) {
+  ArrayVector tVec;
+  for (int i=0;i<t.size();i++)
+    tVec << Array::stringConstructor(t[i].toStdString());
+  return Array::cellConstructor(tVec);
+}
+
+Array Uint32VectorFromQList(QList<uint32> p) {
+  Array ret(Array::uint32VectorConstructor(p.size()));
+  for (int i=0;i<p.size();i++)
+    ((uint32*) ret.getDataPointer())[i] = p[i];
+  return ret;
 }

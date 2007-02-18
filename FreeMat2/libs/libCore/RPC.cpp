@@ -518,13 +518,13 @@ ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
 ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("tcpconnect requires two arguments - the remote address of the server to connect to and the port number - an optional timeout can be specified also");
-  const char *host = ArrayToString(arg[0]);
+  string host = ArrayToString(arg[0]);
   unsigned int port = ArrayToInt32(arg[1]);
   int timeout = 30000;
   if (arg.size() == 3)
     timeout = ArrayToInt32(arg[2]);
   QTcpSocket *a_sock = new QTcpSocket;
-  a_sock->connectToHost(host,port);
+  a_sock->connectToHost(QString::fromStdString(host),port);
   if (!a_sock->waitForConnected(timeout))
     throw Exception(string("tcpconnect failed to connect to ") + host + " on port " + port);
   return ArrayVector() <<
@@ -568,9 +568,8 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() >= 2)
     timeout = ArrayToInt32(arg[1]);
   if (arg[0].isString()) {
-    const char *txtval = ArrayToString(arg[0]);
-    if ((strcmp(txtval,"all")!=0) &&
-	(strcmp(txtval,"ALL")!=0))
+    string txtval = arg[0].getContentsAsStringUpper();
+    if (txtval != "ALL")
       throw Exception(string("Unrecognized argument to tcpclose ") + txtval);
     // Close all sockets
     for (int i=0;i<=m_sockets.maxHandle();i++) {
@@ -620,9 +619,8 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
     throw Exception("tcpserverclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
   qDebug() << "Closing server";
   if (arg[0].isString()) {
-    const char *txtval = ArrayToString(arg[0]);
-    if ((strcmp(txtval,"all")!=0) &&
-	(strcmp(txtval,"ALL")!=0))
+    string txtval = arg[0].getContentsAsStringUpper();
+    if (txtval != "ALL")
       throw Exception(string("Unrecognized argument to tcpserverclose ") + txtval);
     // Close all sockets
     for (int i=0;i<=m_servers.maxHandle();i++) {

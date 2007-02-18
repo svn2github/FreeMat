@@ -42,7 +42,7 @@ extern "C" {
 
 #if HAVE_ARPACK
 extern "C" {
-  int znaupd_(int *ido, char *bmat, int *n, char*
+  int znaupd_(int *ido, char *bmat, int *n, const char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
 	      double *v, int *ldv, int *iparam, int *ipntr, 
 	      double *workd, double *workl, int *lworkl, double *rwork, 
@@ -50,28 +50,28 @@ extern "C" {
   int zneupd_(int *rvec, char *howmny, int *select, 
 	      double *d, double *z, int *ldz, 
 	      double *sigma, double *workev, char *bmat, 
-	      int *n, char *which, int *nev, double *tol, 
+	      int *n, const char *which, int *nev, double *tol, 
 	      double *resid, int *ncv, double *v, int *ldv, int 
 	      *iparam, int *ipntr, double *workd, double *workl, 
 	      int *lworkl, double *rwork, int *info);
-  int dnaupd_(int *ido, char *bmat, int *n, char*
+  int dnaupd_(int *ido, char *bmat, int *n, const char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
 	      double *v, int *ldv, int *iparam, int *ipntr, 
 	      double *workd, double *workl, int *lworkl, int *info, int len1, int len2);
   int dneupd_(int *rvec, char *howmny, int *select, 
 	      double *dr, double *di, double *z__, int *ldz, 
 	      double *sigmar, double *sigmai, double *workev, char *
-	      bmat, int *n, char *which, int *nev, double *tol, 
+	      bmat, int *n, const char *which, int *nev, double *tol, 
 	      double *resid, int *ncv, double *v, int *ldv, int 
 	      *iparam, int *ipntr, double *workd, double *workl, 
 	      int *lworkl, int *info);
-  int dsaupd_(int *ido, char *bmat, int *n, char*
+  int dsaupd_(int *ido, char *bmat, int *n, const char*
 	      which, int *nev, double *tol, double *resid, int *ncv,
 	      double *v, int *ldv, int *iparam, int *ipntr, 
 	      double *workd, double *workl, int *lworkl, int *info);
   int dseupd_(int *rvec, char *howmny, int *select, 
 	      double *d, double *z__, int *ldz, 
-	      double *sigma, char *bmat, int *n, char *which, int *nev, double *tol, 
+	      double *sigma, char *bmat, int *n, const char *which, int *nev, double *tol, 
 	      double *resid, int *ncv, double *v, int *ldv, int 
 	      *iparam, int *ipntr, double *workd, double *workl, 
 	      int *lworkl, int *info);
@@ -4209,7 +4209,7 @@ void DNAUPARPACKError(int info) {
 #define swap(a,b) {double tmp; tmp = a; a = b; b = tmp;}
 
 ArrayVector SparseEigDecomposeNonsymmetricReal(double **ap, int rows, int cols, 
-					       int nev, int nargout, char* which) {
+					       int nev, int nargout, const char* which) {
 #if HAVE_ARPACK
   // Initialization call
   int ido = 0;
@@ -4356,7 +4356,7 @@ ArrayVector SparseEigDecomposeNonsymmetricReal(double **ap, int rows, int cols,
 } 
 
 ArrayVector SparseEigDecomposeSymmetricReal(double **ap, int rows, int cols, 
-					    int nev, int nargout, char *which) {
+					    int nev, int nargout, const char *which) {
 #if HAVE_ARPACK
   // Initialization call
   int ido = 0;
@@ -4453,7 +4453,7 @@ ArrayVector SparseEigDecomposeSymmetricReal(double **ap, int rows, int cols,
 } 
 
 ArrayVector SparseEigDecomposeNonsymmetricComplex(double **ap, int rows, int cols, 
-						  int nev, int nargout, char *which) {
+						  int nev, int nargout, const char *which) {
 #if HAVE_ARPACK
   // Initialization call
   int ido = 0;
@@ -4592,7 +4592,7 @@ ArrayVector SparseEigDecomposeNonsymmetricRealShifted(double **ap, int rows, int
   int ido = 0;
   char bmat = 'I';
   int n = rows;
-  char *which = "LM";
+  const char *which = "LM";
   // How many eigenvalues to compute
   char cmach = 'E';
   double tol = dlamch_(&cmach);
@@ -4777,7 +4777,7 @@ ArrayVector SparseEigDecomposeNonsymmetricComplexShifted(double **ap, int rows, 
   int ido = 0;
   char bmat = 'I';
   int n = rows;
-  char *which = "LM";
+  const char *which = "LM";
   // How many eigenvalues to compute
   char cmach = 'E';
   double tol = dlamch_(&cmach);
@@ -4906,7 +4906,7 @@ ArrayVector SparseEigDecomposeNonsymmetricComplexShifted(double **ap, int rows, 
 #endif
 } 
 
-ArrayVector SparseEigDecompose(int nargout, Array A, int k, char* whichFlag) {
+ArrayVector SparseEigDecompose(int nargout, Array A, int k, const char* whichFlag) {
   if (A.isComplex()) {
     return SparseEigDecomposeNonsymmetricComplex((double**) A.getSparseDataPointer(),
 						 A.getDimensionLength(0),

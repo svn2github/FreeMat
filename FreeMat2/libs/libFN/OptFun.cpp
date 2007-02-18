@@ -104,7 +104,7 @@ ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     throw Exception("fitfun requires at least four arguments");
   if (!(arg[0].isString()))
     throw Exception("first argument to fitfun must be the name of a function (i.e., a string)");
-  char *fname = arg[0].getContentsAsCString();
+  string fname = arg[0].getContentsAsString();
   eval->rescanPath();
   Context *context = eval->getContext();
   FunctionDef *funcDef;

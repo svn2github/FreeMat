@@ -361,14 +361,14 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
     Array xtrapFlag(arg[3]);
     if (!xtrapFlag.isString())
       throw Exception("extrapolation flag must be a string");
-    char *xtrap_c = xtrapFlag.getContentsAsCString();
-    if (strcmp(xtrap_c,"nan")==0)
+    string xtrap_c = xtrapFlag.getContentsAsString();
+    if (xtrap_c=="nan")
       xtrap = 0;
-    else if (strcmp(xtrap_c,"zero")==0)
+    else if (xtrap_c=="zero")
       xtrap = 1;
-    else if (strcmp(xtrap_c,"endpoint")==0)
+    else if (xtrap_c=="endpoint")
       xtrap = 2;
-    else if (strcmp(xtrap_c,"extrap")==0)
+    else if (xtrap_c=="extrap")
       xtrap = 3;
     else
       throw Exception("unrecognized extrapolation type flag to routine interplin1");

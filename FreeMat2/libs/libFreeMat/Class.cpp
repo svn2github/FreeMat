@@ -803,7 +803,7 @@ ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
   }
   Array sval(arg[0]);
   Array classname(arg[1]);
-  return singleArrayVector(ClassAux(sval,classname.getContentsAsCString(),
+  return singleArrayVector(ClassAux(sval,classname.getContentsAsString(),
 				    parentNames,parents,eval));
 }
 
@@ -1140,10 +1140,10 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
      }
    }
    if (t.child(index).is(TOK_DYN)) {
-     char *field;
+     string field;
      try {
 	Array fname(eval->expression(t.child(index).first()));
-	field = fname.getContentsAsCString();
+	field = fname.getContentsAsString();
      } catch (Exception &e) {
 	throw Exception("dynamic field reference to structure requires a string argument");
      }

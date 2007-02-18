@@ -930,7 +930,7 @@ ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter *ev
   else {
     for (int i=1;i<arg.size();i++) {
       Array varName(arg[i]);
-      names.push_back(varName.getContentsAsCString());
+      names.push_back(varName.getContentsAsString());
     }
   }
   char header[116];

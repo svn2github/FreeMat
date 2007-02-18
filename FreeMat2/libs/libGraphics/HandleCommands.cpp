@@ -730,8 +730,8 @@ ArrayVector HCloseFunction(int nargout, const ArrayVector& arg) {
   else {
     Array t(arg[0]);
     if (t.isString()) {
-      char *allflag = t.getContentsAsCString();
-      if (strcmp(allflag,"all") == 0) 
+      string allflag = t.getContentsAsString();
+      if (allflag == "all") 
 	action = -1;
       else
 	throw Exception("string argument to close function must be 'all'");
@@ -853,7 +853,7 @@ ArrayVector HPrintFunction(int nargout, const ArrayVector& arg) {
   if (HcurrentFig == -1)
     return ArrayVector();
   HandleWindow *f = Hfigs[HcurrentFig];
-  std::string outname(t.getContentsAsCString());
+  std::string outname(t.getContentsAsString());
   int pos = outname.rfind(".");
   if (pos < 0)
     throw Exception("print function argument must contain an extension - which is used to determine the format for the output");

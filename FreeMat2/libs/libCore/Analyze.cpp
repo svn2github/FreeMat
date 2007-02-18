@@ -2901,8 +2901,8 @@ ArrayVector Bin2IntFunction(int nargout, const ArrayVector& arg) {
   signflag = false;
   if (arg.size() > 1) {
     Array flag(arg[1]);
-    char *flag_value = flag.getContentsAsCString();
-    if (strcmp(flag_value,"signed") == 0)
+    string flag_value = flag.getContentsAsString();
+    if (flag_value=="signed")
       signflag = true;
   }
   Dimensions xdim(x.dimensions());
@@ -2949,14 +2949,14 @@ ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval
     Array func(arg[i]);
     if (!func.isString())
       throw Exception("arguments to pcode must be function names");
-    char *fname = func.getContentsAsCString();
+    string fname = func.getContentsAsString();
     FunctionDef *funcDef;
     ArrayVector m;
     bool isFun;
     char buffer[1024];
     char buffer2[1024];
     int n;
-    n = strlen(fname);
+    n = fname.size();
     isFun = eval->lookupFunction(fname,funcDef,m);
     if ((n>3) && (fname[n-1] == 'm' || fname[n-1] == 'M')
 	&& (fname[n-2] == '.')) {
@@ -2964,17 +2964,17 @@ ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval
       isFun = eval->lookupFunction(fname,funcDef,m);
     }
     if (!isFun) {
-      sprintf(buffer,"could not find definition for %s",fname);
+      sprintf(buffer,"could not find definition for %s",fname.c_str());
       eval->warningMessage(buffer);
     } else {
-      sprintf(buffer,"Translating %s to P-Code\n",fname);
+      sprintf(buffer,"Translating %s to P-Code\n",fname.c_str());
       eval->outputMessage(buffer);
       funcDef->updateCode();
       if (funcDef->type() != FM_M_FUNCTION) {
-	sprintf(buffer,"function %s is not an M-file",fname);
+	sprintf(buffer,"function %s is not an M-file",fname.c_str());
 	eval->warningMessage(buffer);
       }
-      sprintf(buffer2,"%s.p",fname);
+      sprintf(buffer2,"%s.p",fname.c_str());
       File *stream = new File(buffer2,"wb");
       Serialize *s = new Serialize(stream);
       s->handshakeServer();
@@ -3100,18 +3100,18 @@ bool VerifyAllStrings(Array *ptr, int count) {
 class XSEntry {
 public:
   uint32 n;
-  char* x;
+  string x;
 };
   
 bool operator<(const XSEntry& a, const XSEntry& b) {
   if (!sortreverse) 
-    return (strcmp(a.x,b.x) < 0);
+    return (a.x < b.x);
   else
-    return (strcmp(b.x,a.x) < 0);
+    return (b.x < a.x);
 }
 
 bool operator==(const XSEntry& a, const XSEntry& b) {
-  return (strcmp(a.x,b.x) == 0);
+  return (a.x == b.x);
 }
 
 void StringSort(const Array* sp, Array* dp, int32 *ip, 
@@ -3122,7 +3122,7 @@ void StringSort(const Array* sp, Array* dp, int32 *ip,
   for (i=0;i<planes;i++) {
     for (j=0;j<planesize;j++) {
       for (k=0;k<linesize;k++) {
-	buf[k].x = sp[i*planesize*linesize + j + k*planesize].getContentsAsCString();
+	buf[k].x = sp[i*planesize*linesize + j + k*planesize].getContentsAsString();
 	buf[k].n = k+1;
       }
       std::sort(buf,buf+linesize);
@@ -3130,7 +3130,6 @@ void StringSort(const Array* sp, Array* dp, int32 *ip,
 	dp[i*planesize*linesize + j + k*planesize] = 
 	  sp[i*planesize*linesize + j + (buf[k].n-1)*planesize];
 	ip[i*planesize*linesize + j + k*planesize] = buf[k].n;
-	Free(buf[k].x);
       }
     }    
   }
@@ -3417,7 +3416,7 @@ ArrayVector UniqueFunctionString(int nargout, Array& input) {
   Array *sp = (Array*) input.getDataPointer();
   int i;
   for (i=0;i<len;i++) {
-    buf[i].x = sp[i].getContentsAsCString();
+    buf[i].x = sp[i].getContentsAsString();
     buf[i].n = i;
   }
   sortreverse = false;

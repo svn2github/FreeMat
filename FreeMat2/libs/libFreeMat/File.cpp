@@ -20,8 +20,8 @@
 #include "File.hpp"
 #include "Exception.hpp"
 
-File::File(const char *filename, const char *accessmode) {
-  fp = fopen(filename,accessmode);
+File::File(string filename, string accessmode) {
+  fp = fopen(filename.c_str(),accessmode.c_str());
   if (fp == NULL)
     throw Exception(std::string("unable to open file ") + filename + 
 		    std::string(" with file mode ") + accessmode);

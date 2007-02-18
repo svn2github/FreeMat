@@ -301,13 +301,12 @@ ArrayVector PauseFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   if (arg.size() == 1) {
     // Check for the first argument being a string
     if (arg[0].isString()) {
-      if ((strcmp(ArrayToString(arg[0]),"on") == 0) ||
-	  (strcmp(ArrayToString(arg[0]),"ON") == 0)) {
+      string parg(arg[0].getContentsAsStringUpper());
+      if (parg == "ON")
 	pause_active = true;
-      } else if ((strcmp(ArrayToString(arg[0]),"off") == 0) ||
-		 (strcmp(ArrayToString(arg[0]),"OFF") == 0)) {
+      else if (parg == "OFF")
 	pause_active = false;
-      } else
+      else
 	throw Exception("Unrecognized argument to pause function - must be either 'on' or 'off'");
     }
     if (pause_active)
@@ -444,7 +443,7 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //!
 ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 1) throw Exception("threadnew requires at least one argument (the function to spawn in a thread)");
-  const char *fnc = ArrayToString(arg[0]);
+  string fnc = ArrayToString(arg[0]);
   // Lookup this function in base interpreter to see if it is defined
   FuncPtr val;
   if (!eval->lookupFunction(fnc, val))

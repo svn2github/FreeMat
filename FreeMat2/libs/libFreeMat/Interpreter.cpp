@@ -748,10 +748,10 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
     } else if (s.is('.')) {
       q += r.getFieldAsList(s.first().text());
     } else if (s.is(TOK_DYN)) {
-      const char *field;
+      string field;
       try {
 	Array fname(expression(s.first()));
-	field = fname.getContentsAsCString();
+	field = fname.getContentsAsString();
       } catch (Exception &e) {
 	throw Exception("dynamic field reference to structure requires a string argument");
       }
@@ -2276,10 +2276,10 @@ void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data
   } else if (s.is('.')) {
     r->setFieldAsList(s.first().text(),data);
   } else if (s.is(TOK_DYN)) {
-    const char *field;
+    string field;
     try {
       Array fname(expression(s.first()));
-      field = fname.getContentsAsCString();
+      field = fname.getContentsAsString();
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
     }
@@ -2320,10 +2320,10 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
     ArrayVector datav(singleArrayVector(data));
     r->setFieldAsList(s.first().text(),datav);
   } else if (s.is(TOK_DYN)) {
-    const char *field;
+    string field;
     try {
       Array fname(expression(s.first()));
-      field = fname.getContentsAsCString();
+      field = fname.getContentsAsString();
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
     }
@@ -4641,10 +4641,10 @@ void Interpreter::deref(Array &r, const tree &s) {
   } else if (s.is('.')) {
     r = r.getField(s.first().text());
   } else if (s.is(TOK_DYN)) {
-    const char *field;
+    string field;
     try {
       Array fname(expression(s.first()));
-      field = fname.getContentsAsCString();
+      field = fname.getContentsAsString();
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
     }

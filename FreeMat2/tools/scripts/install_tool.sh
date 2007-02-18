@@ -35,6 +35,8 @@ FREEMAT_FILE="$FREEMAT.tar.gz"
 ZLIB_FILE="zlib-1.2.3.tar.gz"
 ZLIB="zlib-1.2.3"
 XWIN_NSIS="nsis-2.22-setup.exe"
+PCRE_FILE="pcre-7.0.tar.gz"
+PCRE="pcre-7.0"
 
 MakeDirectory()
 {
@@ -351,6 +353,13 @@ SetupXWinAll()
     SetupXWinNSIS
     SetupXWinZlib
     SetupXWinFreeMat
+}
+
+SetupPCRE()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $PCRE_FILE ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre $PCRE Root
+    ConfigureMakeInstall $PCRE "--prefix=$PREFIX" . Root
 }
 
 SetupFFTW()
@@ -695,7 +704,7 @@ SetupMacInplaceBuild()
 SetupInplaceBuild() 
 {
   SetupCommon
-  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
+  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse"
 }
 
 SetupRelease()
@@ -814,6 +823,7 @@ subdirectory.  Here are the tasks manages by this script.
       --xwin-all         Setup the Win32 cross compilation (all steps)
 
       --fftw             Setup FFTW
+      --pcre             Setup PCRE
       --ffcall           Setup ffcall
       --sparse           Setup SuiteSparse
       --lapack           Setup LAPACK
@@ -863,6 +873,7 @@ for arg
       --xwin-freemat)  SetupXWinFreeMat ;;
       --xwin-all)      SetupXWinAll ;;
       --fftw)          SetupFFTW ;;
+      --pcre)          SetupPCRE ;;
       --ffcall)        SetupFFCALL ;;
       --sparse)        SetupSparse ;;
       --lapack)        SetupLAPACK ;;

@@ -98,11 +98,10 @@ ArrayVector DbAutoFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   } else {
     if (!arg[0].isString())
       throw Exception("dbauto function takes only a single, string argument");
-    char *txt;
-    txt = arg[0].getContentsAsCString();
-    if (strcmp(txt,"on") == 0)
+    string txt = arg[0].getContentsAsString();
+    if (txt == "on")
       eval->AutoStop(true);
-    else if (strcmp(txt,"off") == 0)
+    else if (txt == "off")
       eval->AutoStop(false);
     else
       throw Exception("dbauto function argument needs to be 'on/off'");
@@ -213,8 +212,7 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   if (arg.size() != 1)
     throw Exception("help function requires a single argument (the function or script name)");
   Array singleArg(arg[0]);
-  char *fname;
-  fname = singleArg.getContentsAsCString();
+  string fname = singleArg.getContentsAsString();
   bool isFun;
   FuncPtr val;
   isFun = eval->getContext()->lookupFunction(fname,val);
@@ -228,11 +226,11 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   } else {
     // Check for a mdc file with the given name
     std::string mdcname;
-    mdcname = std::string(fname) + ".mdc";
+    mdcname = fname + ".mdc";
     try {
       mdcname = psearch.ResolvePath(mdcname);
     } catch (Exception& e) {
-      throw Exception(std::string("no help available on ") + fname);
+      throw Exception("no help available on " + fname);
     }
     FILE *fp;
     fp = fopen(mdcname.c_str(),"r");
@@ -426,7 +424,7 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
   } else {
     for (i=0;i<arg.size();i++) {
       Array varName(arg[i]);
-      names.push_back(varName.getContentsAsCString());
+      names.push_back(varName.getContentsAsString());
     }
   }
   std::sort(names.begin(),names.end());
@@ -655,7 +653,7 @@ ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
 //     return retval;
 //   }
 
-int ExistBuiltinFunction(char* fname, Interpreter* eval) {    
+int ExistBuiltinFunction(string fname, Interpreter* eval) {    
   bool isDefed;
   FuncPtr d;
   isDefed = eval->getContext()->lookupFunction(fname,d);
@@ -667,18 +665,19 @@ int ExistBuiltinFunction(char* fname, Interpreter* eval) {
   return 0;
 }
 
-int ExistDirFunction(char* fname, Interpreter* eval) {
+int ExistDirFunction(string fname, Interpreter* eval) {
   // Check for extra termination
-  if ((fname[strlen(fname)-1] == '/') ||
-      (fname[strlen(fname)-1] == '\\'))
-    fname[strlen(fname)-1] = 0;
-  QFileInfo filestat(fname);
+  int flen = fname.size();
+  if ((fname[flen-1] == '/') ||
+      (fname[flen-1] == '\\'))
+    fname[flen-1] = 0;
+  QFileInfo filestat(QString::fromStdString(fname));
   if (!filestat.exists()) return 0;
   if (filestat.isDir()) return 7;
   return 0;
 }
 
-int ExistFileFunction(char* fname, Interpreter* eval) {
+int ExistFileFunction(string fname, Interpreter* eval) {
   PathSearcher src(eval->getPath());
   try {
     src.ResolvePath(fname);
@@ -693,7 +692,7 @@ int ExistFileFunction(char* fname, Interpreter* eval) {
   return 0;
 }
 
-int ExistVariableFunction(char* fname, Interpreter* eval) {
+int ExistVariableFunction(string fname, Interpreter* eval) {
   bool isDefed = (eval->getContext()->lookupVariable(fname).valid());
   if (isDefed)
     return 1;
@@ -701,7 +700,7 @@ int ExistVariableFunction(char* fname, Interpreter* eval) {
     return 0;
 }
 
-int ExistAllFunction(char* fname, Interpreter* eval) {
+int ExistAllFunction(string fname, Interpreter* eval) {
   int ret;
   ret = ExistVariableFunction(fname,eval);
   if (ret) return ret;
@@ -746,8 +745,7 @@ ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   if (arg.size() < 1)
     throw Exception("isset function takes at least one argument - the name of the variable to check for");
   Array tmp(arg[0]);
-  char *fname;
-  fname = tmp.getContentsAsCString();
+  string fname = tmp.getContentsAsString();
   bool isDefed;
   ArrayReference d = eval->getContext()->lookupVariable(fname);
   isDefed = (d.valid());
@@ -841,25 +839,24 @@ ArrayVector ExistFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   if (arg.size() < 1)
     throw Exception("exist function takes at least one argument - the name of the object to check for");
   Array tmp(arg[0]);
-  char *fname;
-  fname = tmp.getContentsAsCString();
-  char *stype;
+  string fname = tmp.getContentsAsString();
+  string stype;
   if (arg.size() > 1) {
     Array tmp2(arg[1]);
-    stype = tmp2.getContentsAsCString();
+    stype = tmp2.getContentsAsString();
   } else {
     stype = "all";
   }
   int retval;
-  if (strcmp(stype,"all")==0)
+  if (stype=="all")
     retval = ExistAllFunction(fname,eval);
-  else if (strcmp(stype,"builtin")==0)
+  else if (stype=="builtin")
     retval = ExistBuiltinFunction(fname,eval);
-  else if (strcmp(stype,"dir")==0)
+  else if (stype=="dir")
     retval = ExistDirFunction(fname,eval);
-  else if (strcmp(stype,"file")==0)
+  else if (stype=="file")
     retval = ExistFileFunction(fname,eval);
-  else if (strcmp(stype,"var")==0)
+  else if (stype=="var")
     retval = ExistVariableFunction(fname,eval);
   else throw Exception("Unrecognized search type for function 'exist'");
   return singleArrayVector(Array::int32Constructor(retval));
@@ -1136,8 +1133,7 @@ ArrayVector WhereFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("which function takes one string argument (the name of the function to look up)");
-  char *fname;
-  fname = arg[0].getContentsAsCString();
+  string fname = arg[0].getContentsAsString();
   bool isFun;
   FuncPtr val;
   isFun = eval->getContext()->lookupFunction(fname,val);
@@ -1151,25 +1147,27 @@ ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval
       if (mptr->pcodeFunction) {
 	if (mptr->scriptFlag) {
 	  if (nargout == 0) {
-	    sprintf(buffer,"Function %s, P-code script\n",fname);
+	    sprintf(buffer,"Function %s, P-code script\n",fname.c_str());
 	    eval->outputMessage(buffer);
 	  }
 	} else {
 	  if (nargout == 0) {
-	    sprintf(buffer,"Function %s, P-code function\n",fname);
+	    sprintf(buffer,"Function %s, P-code function\n",fname.c_str());
 	    eval->outputMessage(buffer);
 	  }
 	}
       } else {
 	if (mptr->scriptFlag) {
 	  if (nargout == 0) {
-	    sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname,mptr->fileName.c_str());
+	    sprintf(buffer,"Function %s, M-File script in file '%s'\n",fname.c_str(),
+		    mptr->fileName.c_str());
 	    eval->outputMessage(buffer);
 	  } else 
 	    ret = Array::stringConstructor(mptr->fileName.c_str());
 	} else {
 	  if (nargout == 0) {
-	    sprintf(buffer,"Function %s, M-File function in file '%s'\n",fname,mptr->fileName.c_str());
+	    sprintf(buffer,"Function %s, M-File function in file '%s'\n",
+		    fname.c_str(),mptr->fileName.c_str());
 	    eval->outputMessage(buffer);
 	  } else
 	    ret = Array::stringConstructor(mptr->fileName.c_str());
@@ -1177,18 +1175,18 @@ ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval
       }
     } else if ((val->type() == FM_BUILT_IN_FUNCTION) || (val->type() == FM_SPECIAL_FUNCTION) ) {
       if (nargout == 0) {
-	sprintf(buffer,"Function %s is a built in function\n",fname);
+	sprintf(buffer,"Function %s is a built in function\n",fname.c_str());
 	eval->outputMessage(buffer);
       }
     } else {
       if (nargout == 0) {
-	sprintf(buffer,"Function %s is an imported function\n",fname);
+	sprintf(buffer,"Function %s is an imported function\n",fname.c_str());
 	eval->outputMessage(buffer);
       }
     }
   } else {
     if (nargout == 0) {
-      sprintf(buffer,"Function %s is unknown!\n",fname);
+      sprintf(buffer,"Function %s is unknown!\n",fname.c_str());
       eval->outputMessage(buffer);
     }
   }
@@ -1590,10 +1588,10 @@ ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() > 1)
     k  = ArrayToInt32(arg[1]);
   if (arg.size() == 3) {
-    const char *flag = ArrayToString(arg[2]);
-    if (strcmp(flag,"first") == 0)
+    string flag = ArrayToString(arg[2]);
+    if (flag=="first")
       first_flag = true;
-    else if (strcmp(flag,"last") == 0)
+    else if (flag=="last")
       first_flag = false;
     else
       throw Exception("third option to find must be either 'first' or 'last'");

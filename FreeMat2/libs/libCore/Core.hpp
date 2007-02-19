@@ -72,6 +72,8 @@ ArrayVector ChangeDirFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ListFilesFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DoCLIFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector RMDirFunction(int, const ArrayVector& arg);
+ArrayVector MKDirCoreFunction(int, const ArrayVector& arg);
+ArrayVector FilePartsFunction(int, const ArrayVector& arg);
 ArrayVector SystemFunction(int, const ArrayVector& arg);
 ArrayVector PrintWorkingDirectoryFunction(int, const ArrayVector& arg);
 ArrayVector DirSepFunction(int, const ArrayVector& arg);

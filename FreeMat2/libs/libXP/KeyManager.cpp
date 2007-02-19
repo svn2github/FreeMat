@@ -54,6 +54,7 @@
 // ----------------------------------------------------------------------------
 
 KeyManager::KeyManager()  {
+  keypresswait = false;
   cutbuf = "";
   linelen = 1000;
   ntotal = 0;

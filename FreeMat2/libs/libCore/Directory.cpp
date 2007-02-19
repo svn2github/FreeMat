@@ -343,3 +343,35 @@ ArrayVector RMDirFunction(int nargout, const ArrayVector& arg) {
   }
   return ArrayVector();
 }
+
+// See mkdir.m for documentation
+ArrayVector MKDirCoreFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("mkdir requires at least one argument (the directory to create)");
+  if (QDir::current().mkpath(QString::fromStdString(ArrayToString(arg[0]))))
+    return ArrayVector() << Array::logicalConstructor(1);
+  else
+    return ArrayVector() << Array::logicalConstructor(0);
+}
+
+//!
+//@Module FILEPARTS Extract Filename Parts
+//@@Section OS
+//@@Usage
+//The @|fileparts| takes a filename, and returns the path, filename, extension, and
+//(for MATLAB-compatibility) an empty version number of the file.  The syntax for its use is
+//@[
+//    [path,name,extension,version] = fileparts(filename)
+//@]
+//where @|filename| is a string containing the description of the file, and @|path|
+//is the @|path| to the file, 
+//!
+ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("fileparts requires a filename");
+  QFileInfo fi(QString::fromStdString(ArrayToString(arg[0])));
+  return ArrayVector() << Array::stringConstructor(fi.path().toStdString()) 
+		       << Array::stringConstructor(fi.completeBaseName().toStdString())
+		       << Array::stringConstructor("." + fi.suffix().toStdString())
+		       << Array::stringConstructor("");
+}

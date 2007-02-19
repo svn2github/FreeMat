@@ -3999,7 +3999,7 @@ string Array::getContentsAsStringUpper() const {
 
 int32 Array::getContentsAsIntegerScalar()  {
   if (dataClass() == FM_STRING) {
-    return atoi((const char*) data());
+    return atoi(getContentsAsString().c_str());
   }
   int32 *qp;
   if (getLength() != 1)

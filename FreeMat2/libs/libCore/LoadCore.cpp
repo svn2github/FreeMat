@@ -46,7 +46,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("true",TrueFunction,0,1,NULL);
   context->addFunction("false",FalseFunction,0,1,NULL);
   context->addFunction("regexp",RegExpFunction,-1,6,NULL);
-  context->addFunction("regexprep",RegExpRepFunction,-1,1,NULL);
+  context->addFunction("regexprepdriver",RegExpRepDriverFunction,-1,1,NULL);
   context->addFunction("regexpi",RegExpIFunction,-1,6,NULL);
   context->addFunction("cos",CosFunction,1,1,"x",NULL);
   context->addFunction("acos",ArccosFunction,1,1,"x",NULL);

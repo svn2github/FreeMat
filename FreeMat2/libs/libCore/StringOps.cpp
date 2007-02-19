@@ -222,24 +222,12 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
 //times.  The workaround is to assign different names to each token, and then collapse
 //the results later.
 //\end{itemize}
+//@@Example
+//Some examples of using the @|regexp| function
+//@<
+//[start,end,tokenExtents,match,tokens,named] = regexp('quick down town zoo','(.)own')
+//@>
 //!
-
-//the driver function called by the various regexp driver routines.
-//it requires - a string to match and a regular expression, and 
-//returns the six outputs.
-//\item @|'once'| - only the first match is returned.
-//\item @|'matchcase'| - letter case must match (selected by default for @|regexp|)
-//\item @|'ignorecase'| - letter case is ignored (selected by default for @|regexpi|)
-//\item @|'dotall'| - the @|'.'| operator matches any character (default).
-//\item @|'dotexceptnewline'| - the @|'.'| operator does not match the newline character
-//\item @|'stringanchors'| - the @|^| and @|$| operators match at the beginning and 
-//end (respectively) of a string (default).
-//\item @|'lineanchors'| - the @|^| and @|$| operators match at the beginning and
-//end (respectively) of a line.
-//\item @|'literalspacing'| - the space characters and comment characters @|#| are matched
-//as literals, just like any other ordinary character (default).
-//\item @|'freespacing'| - all spaces and comments are ignored in the regular expression.
-
 static bool isSlotSpec(string t) {
   return ((t == "start") ||
 	  (t == "end") ||
@@ -719,10 +707,10 @@ ArrayVector RegExpIFunction(int nargout, const ArrayVector& arg) {
 }
 
 // Perform a replace 
-QString RegExpRepCoreFunction(string subject,
-			      string pattern,
-			      rvstring modes,
-			      rvstring replacements) {
+string RegExpRepCoreFunction(string subject,
+			     string pattern,
+			     rvstring modes,
+			     rvstring replacements) {
 #if HAVE_PCRE
   // These are the default options
   bool globalMatch = true;
@@ -813,16 +801,50 @@ QString RegExpRepCoreFunction(string subject,
   
   if (rc < 0) {
     pcre_free(re);     /* Release memory used for the compiled pattern */
-    return QString::fromStdString(subject);
+    return subject;
   }
   
-  QString outputString;
+  string outputString;
+  string tokenSelect;
   int nextReplacement = 0;
   int inputPointer = 0;
+  int outputPtr = 0;
+  int digitFinder = 0;
+  int replacementLength = replacements[nextReplacement].size();
+  int tokenNumber;
   /* Match succeeded... start building up the output string */
   while (inputPointer < ovector[0]) outputString += subject[inputPointer++];
   /* Now insert the replacement string */
-  outputString += QString::fromStdString(replacements[nextReplacement]);
+  while (outputPtr < replacementLength) {
+    if (replacements[nextReplacement][outputPtr] != '$')
+      outputString += replacements[nextReplacement][outputPtr++];
+    else
+      if ((outputPtr < (replacementLength-1)) &&
+	  isdigit(replacements[nextReplacement][outputPtr+1])) {
+	// Try to collect a token name
+	digitFinder = outputPtr+1;
+	while ((digitFinder < replacementLength) && 
+	       isdigit(replacements[nextReplacement][digitFinder])) {
+	  // Add this digit to the token name
+	  tokenSelect += replacements[nextReplacement][digitFinder];
+	  digitFinder++;
+	}
+	// try to map this to a token number
+	tokenNumber = atoi(tokenSelect.c_str());
+	// Is this a valid tokenNumber?
+	if (tokenNumber <= captureCount) {
+	  // Yes - skip
+	  outputPtr = digitFinder;
+	  // Push the capturecount...
+	  for (int p=ovector[2*tokenNumber];p<ovector[2*tokenNumber+1];p++)
+	    outputString += subject[p];
+	} else {
+	  // No - just push the '$' to the output, and bump outputPtr
+	  outputString += '$';
+	  outputPtr++;
+	}
+      }
+  }
   /* advance the input pointer */
   inputPointer = ovector[1];
   
@@ -891,13 +913,45 @@ QString RegExpRepCoreFunction(string subject,
 	inputPointer = ovector[1];
 
 	/* output the replacement string */
-	outputString += QString::fromStdString(replacements[nextReplacement]);
+	replacementLength = replacements[nextReplacement].size();
+	outputPtr = 0;
+	tokenSelect = "";
+	/* Now insert the replacement string */
+	while (outputPtr < replacementLength) {
+	  if (replacements[nextReplacement][outputPtr] != '$')
+	    outputString += replacements[nextReplacement][outputPtr++];
+	  else
+	    if ((outputPtr < (replacementLength-1)) &&
+		isdigit(replacements[nextReplacement][outputPtr+1])) {
+	      // Try to collect a token name
+	      digitFinder = outputPtr+1;
+	      while ((digitFinder < replacementLength) && 
+		     isdigit(replacements[nextReplacement][digitFinder])) {
+		// Add this digit to the token name
+		tokenSelect += replacements[nextReplacement][digitFinder];
+		digitFinder++;
+	      }
+	      // try to map this to a token number
+	      tokenNumber = atoi(tokenSelect.c_str());
+	      // Is this a valid tokenNumber?
+	      if (tokenNumber <= captureCount) {
+		// Yes - skip
+		outputPtr = digitFinder;
+		// Push the capturecount...
+		for (int p=ovector[2*tokenNumber];p<ovector[2*tokenNumber+1];p++)
+		  outputString += subject[p];
+	      } else {
+		// No - just push the '$' to the output, and bump outputPtr
+		outputString += '$';
+		outputPtr++;
+	      }
+	    }
+	}
 	if (replacements.size() > 1) {
 	  nextReplacement++;
 	  if (nextReplacement >= replacements.size())
 	    break; // No more replacments to make
 	}
-
       }      /* End of loop to find second and subsequent matches */
   }
 
@@ -911,7 +965,7 @@ QString RegExpRepCoreFunction(string subject,
 #endif
 }
 
-ArrayVector RegExpRepFunction(int nargout, const ArrayVector& arg) {
+ArrayVector RegExpRepDriverFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 3) throw Exception("regexprep requires at least three arguments to function");
   for (int i=3;i<arg.size();i++) 
     if (!arg[i].isString())
@@ -921,11 +975,16 @@ ArrayVector RegExpRepFunction(int nargout, const ArrayVector& arg) {
     modes << ArrayToString(arg[i]);
   string subject = ArrayToString(arg[0]);
   string pattern = ArrayToString(arg[1]);
-  string replace = ArrayToString(arg[2]);
   rvstring replist;
-  replist << replace;
+  if (arg[2].isString())
+    replist << ArrayToString(arg[2]);
+  else if (IsCellStrings(arg[2])) {
+    const Array *dp = (const Array *) arg[2].getDataPointer();
+    for (int i=0;i<arg[2].getLength();i++)
+      replist << ArrayToString(dp[i]);
+  }
   return ArrayVector() << Array::stringConstructor(RegExpRepCoreFunction(subject,
 									 pattern,
 									 modes,
-									 replist).toStdString());
+									 replist));
 }				  

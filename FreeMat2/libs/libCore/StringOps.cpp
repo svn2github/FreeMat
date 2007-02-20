@@ -488,7 +488,7 @@ ArrayVector RegExpCoreFunction(rvstring stringed_args, bool defaultMatchCase) {
 
   /* Loop for second and subsequent matches */
   
-  if (globalMatch) {
+  if (globalMatch && (ovector[1] < subject_length)) {
     for (;;)
       {
 	int options = 0;                 /* Normally no options */
@@ -851,7 +851,7 @@ string RegExpRepCoreFunction(string subject,
   if (replacements.size() > 1)
     nextReplacement++;
   
-  if (globalMatch) {
+  if (globalMatch && (ovector[1] < subject.size())) {
     for (;;)
       {
 	int options = 0;                 /* Normally no options */

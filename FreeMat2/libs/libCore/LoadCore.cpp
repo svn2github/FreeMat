@@ -162,6 +162,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("fgetline",FgetlineFunction,1,1,"handle",NULL);
   context->addFunction("feof",FeofFunction,1,1,"handle",NULL);
   context->addSpecialFunction("printf",PrintfFunction,-1,0,NULL);
+  context->addSpecialFunction("verstring",VerStringFunction,0,1,NULL);
   context->addFunction("sprintf",SprintfFunction,-1,1,NULL);
   context->addFunction("fprintf",FprintfFunction,-1,0,NULL);
   context->addFunction("fscanf",FscanfFunction,2,-1,"handle","format",NULL);

@@ -105,6 +105,7 @@ ArrayVector VarFunction(int, const ArrayVector& arg);
 ArrayVector ProdFunction(int, const ArrayVector& arg);
 ArrayVector ReshapeFunction(int, const ArrayVector& arg);
 ArrayVector PrintfFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector VerStringFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SprintfFunction(int, const ArrayVector& arg);
 ArrayVector FprintfFunction(int, const ArrayVector& arg);
 ArrayVector FscanfFunction(int, const ArrayVector& arg);

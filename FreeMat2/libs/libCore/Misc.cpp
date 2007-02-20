@@ -3307,6 +3307,25 @@ ArrayVector WarningFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 }
 
 //!
+//@Module VERSTRING The Current Version String
+//@@Section FREEMAT
+//@@Usage
+//The @|verstring| function returns the current version string for
+//FreeMat.  The general syntax for its use is
+//@[
+//    version = verstring
+//@]
+//@@Example
+//The current version of FreeMat is
+//@<
+//verstring
+//@>
+//!
+ArrayVector VerStringFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  return ArrayVector() << Array::stringConstructor(Interpreter::getVersionString());
+}
+
+//!
 //@Module ERROR Causes an Error Condition Raised
 //@@Section FLOW
 //@@Usage

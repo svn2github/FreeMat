@@ -336,6 +336,8 @@ tree Parser::VariableDereference() {
 	  addChild(sub,Expression());
 	if (Match(',')) Consume();
       }
+      if (sub.numchildren() == 0)
+	serror("The expression A() is not allowed.");
       Expect(')');
       addChild(root,sub);
     } else if (Match('{')) {
@@ -348,6 +350,8 @@ tree Parser::VariableDereference() {
 	  addChild(sub,Expression());
 	if (Match(',')) Consume();
       }
+      if (sub.numchildren() == 0)
+	serror("The expression A{} is not allowed.");
       Expect('}');
       addChild(root,sub);
     } else if (Match('.')) {

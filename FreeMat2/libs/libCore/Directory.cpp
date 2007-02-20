@@ -82,31 +82,42 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //@Module DIR List Files Function
 //@@Section OS
 //@@Usage
-//An alias for the @|ls| function.  The general syntax for its use is
+//In some versions of FreeMat (pre 3.1), the @|dir| function was aliased
+//to the @|ls| function.  Starting with version @|3.1|, the @|dir| function
+//has been rewritten to provide compatibility with MATLAB.  The general syntax
+//for its use is
 //@[
-//  dir('dirname1','dirname2',...,'dirnameN')
+//  dir
 //@]
-//but this can also be expressed as
+//in which case, a listing of the files in the current directory are output to the
+//console.  Alternately, you can specify a target via
 //@[
-//  dir 'dirname1' 'dirname2' ... 'dirnameN'
+//  dir('name')
 //@]
-//or 
+//or using the string syntax
 //@[
-//  dir dirname1 dirname2 ... dirnameN
+//  dir name
 //@]
-//For compatibility with some environments, the function @|ls| can also be used 
-//instead of @|dir|.  Generally speaking, @|dirname| is any string that would be 
-//accepted by the underlying OS as a valid directory name.  For example, on 
-//most systems, @|'.'| refers to the current directory, and @|'..'| refers to 
-//the parent directory.  Two points worth mentioning about the @|dir| function:
+//If you want to capture the output of the @|dir| command, you can assign the output
+//to an array
+//@[
+//  result = dir('name')
+//@]
+//(or you can omit @|'name'| to get a directory listing of the current directory.  The
+//resulting array @|result| is a structure array containing the fields:
 //\begin{itemize}
-//  \item To get file-name completion to work at this time, you must use 
-//one of the first two forms of the command.
-//  \item If you want to capture the output of the @|ls| command, use 
-//the @|system| function instead.
+//   \item @|name| the filename as a string
+//   \item @|date| the modification date and time stamp as a string
+//   \item @|bytes| the size of the file in bytes as a double
+//   \item @|isdir| a logical that is @|1| if the file corresponds to a directory.
 //\end{itemize}
-//For examples, see the @|ls| function.
+//Note that @|'name'| can also contain wildcards (e.g., @|dir *.m| to get a listing of
+//all FreeMat scripts in the current directory.
 //!
+ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  
+}
+
 
 //!
 //@Module LS List Files Function

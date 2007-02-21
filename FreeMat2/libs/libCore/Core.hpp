@@ -70,6 +70,7 @@ ArrayVector SaveFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector LoadFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ChangeDirFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ListFilesFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector DirFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DoCLIFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector RMDirFunction(int, const ArrayVector& arg);
 ArrayVector MKDirCoreFunction(int, const ArrayVector& arg);

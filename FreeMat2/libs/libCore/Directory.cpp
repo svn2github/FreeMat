@@ -78,6 +78,36 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector();
 }
 
+static void TabledOutput(std::vector<std::string> sysresult, Interpreter* eval) {
+  int maxlen = 0;
+  // Find the maximal length
+  for (int i=0;i<sysresult.size();i++) {
+    int ellen(sysresult[i].size());
+    maxlen = (maxlen < ellen) ? ellen : maxlen;
+  }
+  // Calculate the number of columns that fit..
+  int outcolumns;
+  int termwidth = eval->getTerminalWidth()-1;
+  outcolumns = termwidth/(maxlen+1);
+  if (outcolumns < 1) outcolumns = 1;
+  int colwidth = termwidth/outcolumns;
+  int entryCount = 0;
+  while (entryCount < sysresult.size()) {
+    char buffer[4096];
+    sprintf(buffer,"%s",sysresult[entryCount].c_str());
+    int wlen;
+    wlen = strlen(buffer);
+    for (int j=wlen;j<colwidth;j++)
+      buffer[j] = ' ';
+    buffer[colwidth] = 0;
+    eval->outputMessage(buffer);
+    entryCount++;
+    if (entryCount % outcolumns == 0)
+      eval->outputMessage("\n");
+  }
+  eval->outputMessage("\n");
+}
+
 //!
 //@Module DIR List Files Function
 //@@Section OS
@@ -108,14 +138,64 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //\begin{itemize}
 //   \item @|name| the filename as a string
 //   \item @|date| the modification date and time stamp as a string
-//   \item @|bytes| the size of the file in bytes as a double
+//   \item @|bytes| the size of the file in bytes as a @|uint64|
 //   \item @|isdir| a logical that is @|1| if the file corresponds to a directory.
 //\end{itemize}
 //Note that @|'name'| can also contain wildcards (e.g., @|dir *.m| to get a listing of
 //all FreeMat scripts in the current directory.
 //!
 ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  
+  // Check for the case that the given name 
+  QString dirarg;
+  if (arg.size() > 0)
+    dirarg = QString::fromStdString(ArrayToString(arg[0]));
+  QDir pdir(QDir::current());
+  QFileInfoList foo;
+  if (pdir.cd(dirarg))
+    foo = pdir.entryInfoList();
+  else {
+    if (dirarg.lastIndexOf(QDir::separator()) == -1)
+      // it must be a pattern
+      foo = pdir.entryInfoList(QStringList() << dirarg);
+    else {
+      // its not a pattern - its a mixed directory and pattern
+      // combination.
+      int path_length(dirarg.lastIndexOf(QDir::separator()));
+      if (pdir.cd(dirarg.left(path_length+1)))
+	foo = pdir.entryInfoList(QStringList() << dirarg.right(dirarg.size()-path_length-1));
+    }
+  }
+  if (nargout == 0) {
+    std::vector<std::string> filelist;
+    for (int i=0;i<foo.size();i++)
+      filelist.push_back(foo[i].fileName().toStdString());
+    TabledOutput(filelist,eval);
+  } else {
+    // Output is a structure array
+    QStringList fileNames;
+    QStringList dates;
+    ArrayVector bytes;
+    ArrayVector isdirs;
+    for (int i=0;i<foo.size();i++) {
+      fileNames << foo[i].fileName();
+      dates << foo[i].lastModified().toString();
+      bytes << Array::uint64Constructor(foo[i].size());
+      isdirs << Array::logicalConstructor(foo[i].isDir());
+    }
+    return ArrayVector() << Array::structConstructor(rvstring() 
+						     << "name"
+						     << "date"
+						     << "bytes"
+						     << "isdir",
+						     ArrayVector() 
+						     << CellArrayFromQStringList(fileNames)
+						     << CellArrayFromQStringList(dates)
+						     << Array::cellConstructor(bytes)
+						     << Array::cellConstructor(isdirs));
+  }
+  //  for (int i=0;i<foo.size();i++)
+  //    qDebug() << foo[i];
+  return ArrayVector();
 }
 
 
@@ -157,61 +237,27 @@ ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
 //!
 ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   stringVector sysresult;
-  char buffer[4096];
-  char *bp;
+  string buffer;
   int i;
 
 #ifdef WIN32
-  sprintf(buffer,"dir ");
-  bp = buffer + strlen(buffer);
-  for (i=0;i<arg.size();i++) {
-    string target = arg[i].getContentsAsString();
-    sprintf(bp,"%s ",target.c_str());
-    bp = buffer + strlen(buffer);
-  }
+  buffer = "dir ";
+  for (i=0;i<arg.size();i++)
+    buffer += arg[i].getContentsAsString();
   sysresult = DoSystemCallCaptured(buffer);
   for (i=0;i<sysresult.size();i++) {
-    eval->outputMessage(sysresult[i].c_str());
+    eval->outputMessage(sysresult[i]);
     eval->outputMessage("\n");
   }
 #else
-#warning Needs work
-  sprintf(buffer,"ls ");
-  bp = buffer + strlen(buffer);
+  buffer = "ls ";
   for (i=0;i<arg.size();i++) {
     QString fipath(TildeExpand(ArrayToString(arg[i])));
-    const char *target = fipath.toStdString().c_str();
-    sprintf(bp,"%s ",target);
-    bp = buffer + strlen(buffer);
+    buffer += fipath.toStdString();
   }
+  qDebug() << "Command: " << QString::fromStdString(buffer);
   sysresult = DoSystemCallCaptured(buffer);
-  int maxlen = 0;
-  // Find the maximal length
-  for (i=0;i<sysresult.size();i++) {
-    int ellen(sysresult[i].size());
-    maxlen = (maxlen < ellen) ? ellen : maxlen;
-  }
-  // Calculate the number of columns that fit..
-  int outcolumns;
-  int termwidth = eval->getTerminalWidth()-1;
-  outcolumns = termwidth/(maxlen+1);
-  if (outcolumns < 1) outcolumns = 1;
-  int colwidth = termwidth/outcolumns;
-  int entryCount = 0;
-  while (entryCount < sysresult.size()) {
-    char buffer[4096];
-    sprintf(buffer,"%s",sysresult[entryCount].c_str());
-    int wlen;
-    wlen = strlen(buffer);
-    for (int j=wlen;j<colwidth;j++)
-      buffer[j] = ' ';
-    buffer[colwidth] = 0;
-    eval->outputMessage(buffer);
-    entryCount++;
-    if (entryCount % outcolumns == 0)
-      eval->outputMessage("\n");
-  }
-  eval->outputMessage("\n");
+  TabledOutput(sysresult,eval);
 #endif
   return ArrayVector();
 }
@@ -381,8 +427,15 @@ ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("fileparts requires a filename");
   QFileInfo fi(QString::fromStdString(ArrayToString(arg[0])));
-  return ArrayVector() << Array::stringConstructor(fi.path().toStdString()) 
-		       << Array::stringConstructor(fi.completeBaseName().toStdString())
-		       << Array::stringConstructor("." + fi.suffix().toStdString())
+  Array path(Array::stringConstructor(fi.path().toStdString()));
+  Array name(Array::stringConstructor(fi.completeBaseName().toStdString()));
+  Array suffix;
+  if (fi.suffix().size() > 0)
+    suffix = Array::stringConstructor("." + fi.suffix().toStdString());
+  else
+    suffix = Array::stringConstructor("");
+  return ArrayVector() << path
+		       << name
+		       << suffix
 		       << Array::stringConstructor("");
 }

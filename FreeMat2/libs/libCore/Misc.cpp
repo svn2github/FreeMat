@@ -3582,6 +3582,25 @@ ArrayVector EvalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
 //a diary, and a logical @|0| if not.
 //!
 ArrayVector DiaryFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (nargout == 1) {
+    if (arg.size() > 0)
+      throw Exception("diary function with an assigned return value (i.e, 'x=diary') does not support any arguments");
+    return ArrayVector() << Array::logicalConstructor(eval->getDiaryState());
+  }
+  if (arg.size() == 0) {
+    eval->setDiaryState(!eval->getDiaryState());
+    return ArrayVector();
+  }
+  string diaryString(ArrayToString(arg[0]));
+  if (diaryString == "on")
+    eval->setDiaryState(true);
+  else if (diaryString == "off")
+    eval->setDiaryState(false);
+  else {
+    eval->setDiaryFilename(diaryString);
+    eval->setDiaryState(true);
+  }
+  return ArrayVector();
 }
 
 //!

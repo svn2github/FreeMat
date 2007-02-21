@@ -64,6 +64,7 @@ ArrayVector SVDFunction(int, const ArrayVector& arg);
 ArrayVector DiagFunction(int, const ArrayVector& arg);
 ArrayVector IsEmptyFunction(int, const ArrayVector& arg);
 ArrayVector ErrorFunction(int, const ArrayVector& arg);
+ArrayVector DiaryFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector WarningFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector LasterrFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SaveFunction(int, const ArrayVector& arg, Interpreter* eval);

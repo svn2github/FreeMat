@@ -36,6 +36,7 @@
 #include <qapplication.h>
 #include <qeventloop.h>
 #include <QtCore>
+#include <fstream>
 
 #warning Ick
 extern void EnableRepaint();
@@ -261,18 +262,29 @@ std::string TranslateString(std::string x) {
   return y;
 }
 
+void Interpreter::diaryMessage(std::string msg) {
+  ofstream diaryFile(m_diaryFilename.c_str(), ios::app);
+  diaryFile << msg;
+}
+
+
 void Interpreter::outputMessage(std::string msg) {
+  if (m_diaryState) 
+    diaryMessage(msg);
   emit outputRawText(TranslateString(msg));
 }
 
 void Interpreter::errorMessage(std::string msg) {
+  if (m_diaryState) 
+    diaryMessage("Error: " + msg + "\n");
   emit outputRawText(TranslateString("Error: " + msg + "\r\n"));
 }
 
 void Interpreter::warningMessage(std::string msg) {
+  if (m_diaryState)
+    diaryMessage("Warning: " + msg + "\n");
   emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
 }
-
 
 void Interpreter::SetContext(int a) {
 //   qDebug() << "setting context to line " << (a & 0xffff);
@@ -4713,6 +4725,8 @@ Interpreter::Interpreter(Context* aContext) {
   endRef = NULL;
   m_threadErrorState = false;
   m_interrupt = false;
+  m_diaryState = false;
+  m_diaryFilename = "diary";
 }
 
 Interpreter::~Interpreter() {
@@ -4789,6 +4803,8 @@ void Interpreter::ExecuteLine(std::string txt) {
   cmd_buffer.push_back(txt);
   bufferNotEmpty.wakeAll();
   mutex.unlock();
+  if (m_diaryState)
+    diaryMessage(txt);
 }
 
 //PORT
@@ -4876,6 +4892,8 @@ void Interpreter::sleepMilliseconds(unsigned long msecs) {
 
 string Interpreter::getLine(string prompt) {
   emit SetPrompt(prompt);
+  if (m_diaryState)
+    diaryMessage(prompt);
   string retstring;
   EnableRepaint();
   mutex.lock();
@@ -4908,6 +4926,8 @@ void Interpreter::evalCLI() {
       steptrap = 0;
     }
     emit SetPrompt(prompt);
+    if (m_diaryState)
+      diaryMessage(prompt);
 //     qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "";
     emit ShowActiveLine();
     string cmdset;

@@ -221,6 +221,14 @@ class Interpreter : public QThread {
    * Interrupt the current thread at the next opportunity
    */
   bool m_interrupt;
+  /**
+   * The current state of diary output
+   */
+  bool m_diaryState;
+  /**
+   * The filename for the diary
+   */
+  string m_diaryFilename;
   /******************************************
    *  Public Methods for the Interpreter    *
    ******************************************/
@@ -249,6 +257,13 @@ public:
 			    ArrayVector threadFuncArgs) { 
     m_threadFunc = threadFunc;  m_threadFuncArgs = threadFuncArgs; 
   }
+  /**
+   * Manipulate the diary state
+   */
+  inline bool getDiaryState() {return m_diaryState;}
+  inline void setDiaryState(bool t) {m_diaryState = t;}
+  inline void setDiaryFilename(string name) {m_diaryFilename = name;}
+  void diaryMessage(string msg);
   /**
    * Get the result of the thread function evaluation
    */

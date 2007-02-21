@@ -13,14 +13,32 @@ function helpgen(source_path)
 %  mkdir([source_path,'/help/test']);
 %  mkdir([source_path,'/help/toolbox']);
 
-%  helpgen_processfile([source_path,'/toolbox/array/all.m']);
-  helpgen_processfile([source_path,'/toolbox/general/install.m']);
+helpgen_processfile([source_path,'/toolbox/array/all.m']);
+%  helpgen_processfile([source_path,'/toolbox/general/install.m']);
 %  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp']);
 
 %  helpgen_processdir([source_path,'/toolbox']);
 %  helpgen_processdir([source_path,'/libs']);
 %  helpgen_processdir([source_path,'/src']);
-  
+ 
+%files = helpgen_rdir([source_path,'/toolbox'])
+keyboard
+ 
+function file_list = helpgen_rdir(basedir)
+  file_list = {};
+  avec = dir(basedir);
+  for (i=1:numel(avec))
+    if (~(strcmp(avec(i).name,'.')  || (strcmp(avec(i).name,'..'))))
+      cpath = [basedir dirsep avec(i).name];
+      if (avec(i).isdir)
+        subdir_list = helpgen_rdir(cpath);
+        file_list = [file_list;subdir_list];
+      else
+        file_list = [file_list;{cpath}];
+      end
+    end
+  end
+
 function helpgen_processfile(filename)
   [path,name,suffix] = fileparts(filename);
   if (strcmp(suffix,'.cpp'))
@@ -110,7 +128,10 @@ function line = getline(fp)
     b = regexp(verstring,'v(.*)','tokens');
     version = b{:}{1};
   end;
-  line = strrep(fgetline(fp),'<VERSION_NUMBER>',version);
+  line = fgetline(fp);
+  if (~feof(fp))
+    line = strrep(line,'<VERSION_NUMBER>',version);
+  end
 
 function tok = mustmatch(line,pattern)
   toks = regexpi(line,pattern,'tokens');

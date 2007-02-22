@@ -120,6 +120,7 @@ ArrayVector Arctan2Function(int, const ArrayVector& arg);
 ArrayVector CscFunction(int, const ArrayVector& arg);  
 ArrayVector SecFunction(int, const ArrayVector& arg);  
 ArrayVector WhoFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector SimKeysFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ExistFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector IsSetFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ClearFunction(int, const ArrayVector& arg, Interpreter* eval);

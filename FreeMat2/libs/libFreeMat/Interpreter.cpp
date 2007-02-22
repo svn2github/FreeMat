@@ -4803,8 +4803,6 @@ void Interpreter::ExecuteLine(std::string txt) {
   cmd_buffer.push_back(txt);
   bufferNotEmpty.wakeAll();
   mutex.unlock();
-  if (m_diaryState)
-    diaryMessage(txt);
 }
 
 //PORT
@@ -4892,8 +4890,6 @@ void Interpreter::sleepMilliseconds(unsigned long msecs) {
 
 string Interpreter::getLine(string prompt) {
   emit SetPrompt(prompt);
-  if (m_diaryState)
-    diaryMessage(prompt);
   string retstring;
   EnableRepaint();
   mutex.lock();
@@ -4926,8 +4922,6 @@ void Interpreter::evalCLI() {
       steptrap = 0;
     }
     emit SetPrompt(prompt);
-    if (m_diaryState)
-      diaryMessage(prompt);
 //     qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "";
     emit ShowActiveLine();
     string cmdset;
@@ -4944,6 +4938,10 @@ void Interpreter::evalCLI() {
     }
     mutex.unlock();
     DisableRepaint();
+    if (m_diaryState) {
+      if (!((cmdset.substr(0,5) == "diary") || (cmdset.substr(0,9) == "diary off")))
+	diaryMessage(prompt + cmdset);
+    }
     if (InterruptPending) {
       InterruptPending = false;
       continue;

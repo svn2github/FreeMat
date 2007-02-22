@@ -3084,6 +3084,26 @@ ArrayVector LasterrFunction(int nargout, const ArrayVector& arg,
 }
 
 //!
+//@Module SIMKEYS Simulate Keypresses from the User
+//@@Section FREEMAT
+//@@Usage
+//This routine simulates keystrokes from the user on FreeMat.
+//The general syntax for its use is either
+//@[
+//   simkeys(text)
+//@]
+//where @|text| is a string to simulate as input to the console.
+//This is primarily used by the testing infrastructure.
+//!
+ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
+			    Interpreter* eval) {
+  if (arg.size() == 0)
+    throw Exception("simkeys requires at least one argument (the string to simulate)");
+  eval->ExecuteLine(ArrayToString(arg[0]) + "\n");
+  return ArrayVector();
+}
+
+//!
 //@Module DIAG Diagonal Matrix Construction/Extraction
 //@@Section ARRAY
 //@@Usage

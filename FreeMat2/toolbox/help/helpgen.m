@@ -8,15 +8,17 @@ function helpgen(source_path)
 %  rmdir([source_path,'/help/toolbox'],'s');
   
   mkdir([source_path,'/help2/html']);
-%  mkdir([source_path,'/help/tmp']);
+  mkdir([source_path,'/help2/tmp']);
 %  mkdir([source_path,'/help/latex']);
 %  mkdir([source_path,'/help/text']);
 %  mkdir([source_path,'/help/test']);
 %  mkdir([source_path,'/help/toolbox']);
   sourcepath = source_path;
-  helpgen_processfile([source_path,'/toolbox/array/all.m']);
+  h = htmlwriter;
+  p = groupwriter({h});
+  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
 %  helpgen_processfile([source_path,'/toolbox/general/install.m']);
-%  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp']);
+%  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp'],p);
 
 %  helpgen_processdir([source_path,'/toolbox']);
 %  helpgen_processdir([source_path,'/libs']);
@@ -40,7 +42,8 @@ function file_list = helpgen_rdir(basedir)
     end
   end
 
-function helpgen_processfile(filename)
+function helpgen_processfile(filename,writers)
+  global sourcepath
   [path,name,suffix] = fileparts(filename);
   if (strcmp(suffix,'.cpp'))
     comment = '//';
@@ -69,37 +72,37 @@ function helpgen_processfile(filename)
       moddesc = mustmatch(line,pset.moduledesc);
       line = getline(fp);
       secname = mustmatch(line,pset.sectionname);
-      htmlwriter('beginmodule',modname,moddesc,secname);
+      beginmodule(writers,sourcepath,modname,moddesc,secname);
       line = getline(fp);
       while (~feof(fp) && ~testmatch(line,pset.docblock))
          groupname = mustmatch(line,pset.groupname);
-	 htmlwriter('begingroup',groupname);	 
+	 begingroup(writers,groupname);	 
          line = getline(fp);
 	 while (~feof(fp) && ~testmatch(line,pset.groupname) ...
 	       		  && ~testmatch(line,pset.docblock))
            if (testmatch(line,pset.execin))
-	     handle_exec(line,fp,pset);
+	     handle_exec(line,fp,pset,writers);
            elseif (testmatch(line,pset.verbatimin)) 
-	     handle_verbatim(line,fp,pset);
+	     handle_verbatim(line,fp,pset,writers);
            elseif (testmatch(line,pset.figure))
-	     handle_figure(line,fp,pset);
+	     handle_figure(line,fp,pset,writers);
            elseif (testmatch(line,pset.eqnin))
-	     handle_equation(line,fp,pset);
+	     handle_equation(line,fp,pset,writers);
 	   elseif (testmatch(line,pset.fnin))
-             handle_filedump(line,fp,pset);
+             handle_filedump(line,fp,pset,writers);
 	   elseif (testmatch(line,pset.enumeratein))
-	     handle_enumerate(line,fp,pset);
+	     handle_enumerate(line,fp,pset,writers);
 	   elseif (testmatch(line,pset.itemizein))
-	     handle_itemize(line,fp,pset);
+	     handle_itemize(line,fp,pset,writers);
 	   elseif (testmatch(line,pset.ccomment))
-	     handle_output(line,fp,pset);
+	     handle_output(line,fp,pset,writers);
            else
 	     error('Unprocessed line:%s',line);
            end
          end
-      end;
+      end
+      endmodule(writers);
     end
-    htmlwriter('endmodule');
   end
 
 function pset = get_pattern_set(prefix)
@@ -143,7 +146,7 @@ function tok = mustmatch(line,pattern)
 function res = testmatch(line,pattern)
   res = ~isempty(regexp(line,pattern));
 
-function handle_filedump(&line,fp,pset)
+function handle_filedump(&line,fp,pset,&writers)
   fname = mustmatch(line,pset.fnin);
   line = getline(fp);
   fn = '';
@@ -151,37 +154,37 @@ function handle_filedump(&line,fp,pset)
     fn = [fn mustmatch(line,pset.ccomment)];
     line = getline(fp);
   end
-  htmlwriter('dofile',fname,fn);
+  dofile(writers,fname,fn);
   line = getline(fp);
 
-function handle_equation(&line,fp,pset)
+function handle_equation(&line,fp,pset,&writers)
   line = getline(fp);
   eqn = '';
   while (~feof(fp) && ~testmatch(line,pset.eqnout))
      eqn = [eqn,mustmatch(line,pset.ccomment),'\n'];
 	line = getline(fp);
   end
-  printf('eqn: %s\n',eqn);
+  doequation(writers,eqn);
   line = getline(fp);
 
-function handle_figure(&line,fp,pset)
-  htmlwriter('dofigure',mustmatch(line,pset.figure));
+function handle_figure(&line,fp,pset,&writers)
+  dofigure(writers,mustmatch(line,pset.figure));
   line = getline(fp);
 
-function handle_verbatim(&line,fp,pset)
+function handle_verbatim(&line,fp,pset,&writers)
   line = getline(fp);
-  htmlwriter('beginverbatim');
+  beginverbatim(writers);
   while (~feof(fp) && ~testmatch(line,pset.verbatimout))
-    htmlwriter('outputtext',mustmatch(line,pset.ccomment));
+    outputtext(writers,mustmatch(line,pset.ccomment));
     line = getline(fp);
   end
-  htmlwriter('endverbatim');
+  endverbatim(writers);
   if (feof(fp))
      error('unmatched verbatim block detected!');
   end
   line = getline(fp);
 
-function handle_enumerate(&line,fp,pset)
+function handle_enumerate(&line,fp,pset,&writers)
   line = getline(fp);
   itemlist = {};
   while (~feof(fp) && ~testmatch(line,pset.enumerateout))
@@ -197,9 +200,9 @@ function handle_enumerate(&line,fp,pset)
   end
   if (feof(fp)), error('unmatched enumeration block'); end
   line = getline(fp);
-  htmlwriter('enumerate',itemlist);
+  enumerate(writers,itemlist);
  
-function handle_itemize(&line,fp,pset)
+function handle_itemize(&line,fp,pset,&writers)
   line = getline(fp);
   itemlist = {};
   while (~feof(fp) && ~testmatch(line,pset.itemizeout))
@@ -215,118 +218,40 @@ function handle_itemize(&line,fp,pset)
   end
   if (feof(fp)), error('unmatched enumeration block'); end
   line = getline(fp);
-  htmlwriter('itemize',itemlist);
+  itemize(writers,itemlist);
 
-function handle_output(&line,fp,pset)
+function handle_output(&line,fp,pset,&writers)
   line = mustmatch(line,pset.ccomment);
-  htmlwriter('outputtext',line);
+  outputtext(writers,line);
   line = getline(fp);
 
-function handle_exec(&line,fp,pset)
+function handle_exec(&line,fp,pset,&writers)
+  global sourcepath
   line = mustmatch(line,pset.execin);
   errors_expected = str2num(line);
   printf('errors_expected %d\n',errors_expected);
-  cmdlist = {};
+  cmdlist = '';
   line = getline(fp);
   while (~feof(fp) && ~testmatch(line,pset.execout))
     if (testmatch(line,pset.ccomment))
-      cmdlist = [cmdlist,[mustmatch(line,pset.ccomment)]];
+      cmdlist = [cmdlist,[mustmatch(line,pset.ccomment)],13];
     end
     line = getline(fp);
   end
-  printf('Command\n');
-  disp(cmdlist);
+  cd([sourcepath,'/help2/tmp']);
+  save helpgen.dat
+  delete diary.txt
+  diary([sourcepath,'/help2/tmp/diary.txt'])
+  simkeys(cmdlist);
+  diary off
+  load helpgen.dat
+  qp = fopen([sourcepath,'/help2/tmp/diary.txt'],'r');
+  line = fgetline(qp);
+  beginverbatim(writers);
+  while (~feof(qp))
+    outputtext(writers,line);
+    line = fgetline(qp);
+  end
+  fclose(qp);
   line = getline(fp);
 
-function otext = latin_filter(text)
-  otext = strrep(text,'&','&amp;');
-  otext = strrep(otext,'<','&lt;');
-  otext = strrep(otext,'>','&gt;');
-
-function text = expand_codes(text)
-  text = regexprep(text,'\@\|([^\|]*)\|','<code>$1</code>');
-  if (strcmp(text,'\n')) 
-     text = '<P>\n';
-  end
-
-function htmlwriter(cmd,varargin)  
-persistent myfile modulename verbatim ignore
-global sourcepath
-switch (cmd)
-  case 'beginmodule'
-    modname = varargin{1};
-    moddesc = varargin{2};
-    secname = varargin{3};
-    modulename = lower(modname);
-    filename = [sourcepath '/help/html/' secname '_' modulename '.html'];
-    myfile = fopen(filename,'w');
-    if (myfile < 0) 
-      error(sprintf('unable to open %s for output',filename)); 
-    end	
-    fprintf(myfile,'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n');
-    fprintf(myfile,'\n');
-    fprintf(myfile,'<HTML>\n');
-    fprintf(myfile,'<HEAD>\n');
-    fprintf(myfile,'<TITLE>%s</TITLE>\n',moddesc);
-    fprintf(myfile,'</HEAD>\n');
-    fprintf(myfile,'<BODY>\n');
-    fprintf(myfile,'<H2>%s</H2>\n',moddesc);
-%  sectables.insert(secname,QStringList() << modname << moddesc);
-    fprintf(myfile,'<P>\n');
-    fprintf(myfile,'Section: <A HREF=sec_%s.html> %s </A>\n',lower(secname),'foo');
-  case 'begingroup'
-    groupname = varargin{1};
-    if (strcmp(lower(groupname),'tests'))
-      ignore = 1;
-    else
-      fprintf(myfile,'<H3>%s</H3>\n',groupname);
-      ignore = 0;
-    end
-  case 'beginverbatim'
-    fprintf(myfile,'<PRE>\n');
-    verbatim = 1;
-  case 'endverbatim'
-    fprintf(myfile,'</PRE>\n<P>\n');
-    verbatim = 0;
-  case 'endmodule'
-    fprintf(myfile,'</BODY>\n');
-    fprintf(myfile,'</HTML>\n');
-    fclose(myfile);
-  case 'itemize'
-    itemlist = varargin{1};
-    fprintf(myfile,'<UL>\n');
-    for i=1:numel(itemlist)
-      fprintf(myfile,'<LI> %s </LI>\n',expand_codes(latin_filter(itemlist{i})));
-    end
-    fprintf(myfile,'</UL>\n');
-  case 'enumerate'
-    itemlist = varargin{1};
-    fprintf(myfile,'<OL>\n');
-    for i=1:numel(itemlist)
-      fprintf(myfile,'<LI> %s </LI>\n',expand_codes(latin_filter(itemlist{i})));
-    end
-    fprintf(myfile,'</OL>\n');
-  case 'dofigure'
-    name = varargin{1};
-    fprintf(myfile,'<P>\n');
-    fprintf(myfile,'<DIV ALIGN="CENTER">\n');
-    fprintf(myfile,'<IMG SRC="%s.png">\n',name);
-    fprintf(myfile,'</DIV>\n');
-    fprintf(myfile,'<P>\n');
-  case 'dofile'
-    name = varargin{1};
-    ftxt = varargin{2};
-    fprintf(myfile,'<P>\n<PRE>\n');
-    fprintf(myfile,'     %s\n',name);
-    fprintf(myfile,'%s\n',latin_filter(ftxt));
-    fprintf(myfile,'</PRE>\n');
-    fprintf(myfile,'<P>\n');
-  case 'outputtext'
-    if (ignore) return; end;
-    text = latin_filter(varargin{1});
-    if (verbatim)
-      fprintf(myfile,'%s',text);
-    else
-      fprintf(myfile,'%s',expand_codes(text));
-    end
-end

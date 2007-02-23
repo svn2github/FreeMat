@@ -255,7 +255,6 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
     QString fipath(TildeExpand(ArrayToString(arg[i])));
     buffer += fipath.toStdString();
   }
-  qDebug() << "Command: " << QString::fromStdString(buffer);
   sysresult = DoSystemCallCaptured(buffer);
   TabledOutput(sysresult,eval);
 #endif

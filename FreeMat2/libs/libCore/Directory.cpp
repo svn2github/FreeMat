@@ -439,3 +439,33 @@ ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
 		       << suffix
 		       << Array::stringConstructor("");
 }
+
+//!
+//@Module DELETE Delete a File
+//@@Section OS
+//@@Usafe
+//Deletes a file.  The general syntax for its use is
+//@[
+//  delete('filename')
+//@]
+//or alternately
+//@[
+//  delete filename
+//@]
+//which removes the file described by @|filename) which must
+//be relative to the current path.
+//!
+ArrayVector DeleteFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("delete requires at least one argument");
+  QString filename(QString::fromStdString(ArrayToString(arg[0])));
+  QFileInfo fname(filename);
+  if (fname.exists())
+    fname.dir().remove(fname.fileName());
+  else {
+    QFileInfoList foo(QDir::current().entryInfoList(QStringList() << filename));
+    for (int i=0;i<foo.size();i++)
+      foo[i].dir().remove(foo[i].fileName());
+  }
+  return ArrayVector();
+}

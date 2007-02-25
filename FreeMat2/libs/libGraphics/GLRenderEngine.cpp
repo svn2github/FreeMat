@@ -19,6 +19,7 @@
 #include "GLRenderEngine.hpp"
 #include <qimage.h>
 #include <qpainter.h>
+#include <QtOpenGL>
 #include <math.h>
 
 GLRenderEngine::GLRenderEngine(QGLWidget *widget, double x1, double y1,

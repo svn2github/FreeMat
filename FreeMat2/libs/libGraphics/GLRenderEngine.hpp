@@ -20,7 +20,7 @@
 #define __GLRenderEngine_hpp__
 
 #include "RenderEngine.hpp"
-#include <qgl.h>
+#include <QtOpenGL>
 
 class GLRenderEngine : public RenderEngine {
   double model[16];

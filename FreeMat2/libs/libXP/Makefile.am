@@ -53,12 +53,42 @@ $(libXP_a_HFILES)
 
 AUTOMAKE_OPTIONS 	= foreign
 
-CLEANFILES = $(libXP_a_MOC)
+CLEANFILES = $(libXP_a_MOC) $(libXP_a_UI)
 
 AM_CPPFLAGS = $(QT_CFLAGS) 
 
-%.moc.cpp: %.hpp
-	$(QT_MOC) -o $@ $<
+KeyManager.moc.cpp : KeyManager.hpp
+	$(QT_MOC) -o KeyManager.moc.cpp KeyManager.hpp
 
-%.ui.h: %.ui
-	$(QT_UIC) -o $@ $<
+QTTerm.moc.cpp : QTTerm.hpp
+	$(QT_MOC) -o QTTerm.moc.cpp QTTerm.hpp
+
+Editor.moc.cpp : Editor.hpp
+	$(QT_MOC) -o Editor.moc.cpp Editor.hpp
+
+PathTool.moc.cpp : PathTool.hpp
+	$(QT_MOC) -o PathTool.moc.cpp PathTool.hpp
+
+highlighter.moc.cpp : highlighter.hpp
+	$(QT_MOC) -o highlighter.moc.cpp highlighter.hpp
+
+VariablesTool.moc.cpp : VariablesTool.hpp
+	$(QT_MOC) -o VariablesTool.moc.cpp VariablesTool.hpp
+
+FileTool.moc.cpp : FileTool.hpp
+	$(QT_MOC) -o FileTool.moc.cpp FileTool.hpp
+
+HistoryWidget.moc.cpp : HistoryWidget.hpp
+	$(QT_MOC) -o HistoryWidget.moc.cpp HistoryWidget.hpp
+
+ToolDock.moc.cpp : ToolDock.hpp
+	$(QT_MOC) -o ToolDock.moc.cpp ToolDock.hpp
+
+VariablesTool.moc.cpp : VariablesTool.hpp
+	$(QT_MOC) -o VariablesTool.moc.cpp VariablesTool.hpp
+
+findform.ui.h : findform.ui
+	$(QT_UIC) -o findform.ui.h findform.ui
+
+replaceform.ui.h : replaceform.ui
+	$(QT_UIC) -o replaceform.ui.h replaceform.ui

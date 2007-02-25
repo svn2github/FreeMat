@@ -36,7 +36,7 @@ esac
 if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
    AC_MSG_NOTICE([Configuring for non-cross unix build])
    PKG_CHECK_MODULES(QT, QtCore QtGui QtOpenGL QtNetwork QtXml >= 4.2.0, HAVE_QT4="yes", HAVE_QT4="no")
-   foo=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/g'`
+   AC_PATH_XTRA
    if test "x$HAVE_QT4" = "xyes"; then
       dnl Check needed because in some cases the QtGui includedir
       dnl doesn't contain the subsystem dir.
@@ -62,9 +62,6 @@ if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
    fi
    is_win32="false"
    platform="--linux"
-   FOO=`echo $QT_LIBS | sed -e 's/-L/-Wl,-rpath,/' | sed -e 's/-L.*//'`
-   AC_MSG_NOTICE([Extra lib flags added $FOO])
-   LDFLAGS="$LDFLAGS $FOO"
    MP_WITH_CURSES
    LIBS="$LIBS $CURSES_LIB $FLIBS"
 fi

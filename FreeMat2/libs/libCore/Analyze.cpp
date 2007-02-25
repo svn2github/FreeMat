@@ -2630,8 +2630,8 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
       int len = tmp.getLength();
       int64 *sp = (int64*) tmp.getDataPointer();
       int64 *op = (int64*) Malloc(sizeof(int64)*len);
-      for (i=0;i<len;i++)
-	op[i] = abs(sp[i]);
+      for (i=0;i<len;i++) 
+	op[i] = (sp[i] >= 0) ? sp[i] : -sp[i];
       retval = Array(FM_INT64,tmp.dimensions(),op);
     }
     break;

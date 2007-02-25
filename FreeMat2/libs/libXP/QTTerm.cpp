@@ -207,11 +207,11 @@ void QTTerm::PaintRectangle(QPainter *paint, QRect rect) {
   paint->eraseRect(rect);
   int col_start, col_stop;
   int row_start, row_stop;
-  col_start = (int)floor(rect.left()/m_char_w);
-  col_stop = (int)ceil(rect.right()/m_char_w);
+  col_start = (int)floor(rect.left()/((float)m_char_w));
+  col_stop = (int)ceil(rect.right()/((float)m_char_w));
   col_stop = qMin(col_stop,m_width-1);
-  row_start = (int)ceil(rect.top()/m_char_h);
-  row_stop = (int)floor(rect.bottom()/m_char_h);
+  row_start = (int)ceil(rect.top()/((float)m_char_h));
+  row_stop = (int)floor(rect.bottom()/((float)m_char_h));
   row_stop = qMin(row_stop,m_height-1);
 
 

@@ -50,6 +50,12 @@ AM_CPPFLAGS = $(QT_CFLAGS)
 
 CLEANFILES = $(libGraphics_a_MOC)
 
-%.moc.cpp: %.hpp
-	$(QT_MOC) -o $@ $<
+HandleUIControl.moc.cpp: HandleUIControl.hpp
+	$(QT_MOC) -o HandleUIControl.moc.cpp HandleUIControl.hpp
+
+HandleMultiEdit.moc.cpp: HandleMultiEdit.hpp
+	$(QT_MOC) -o HandleMultiEdit.moc.cpp HandleMultiEdit.hpp
+
+HandleWindow.moc.cpp: HandleWindow.hpp
+	$(QT_MOC) -o HandleWindow.moc.cpp HandleWindow.hpp
 

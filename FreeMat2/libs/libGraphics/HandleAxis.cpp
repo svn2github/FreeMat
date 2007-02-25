@@ -225,7 +225,7 @@ void FormatAxisManual(double t1, double t2, int tickcount,
   double delt = (t2-t1)/tickcount;
   int n = (int) ceil(log10(delt));
   double rdelt = delt/pow(10.0,(double)n);
-  int p = (int) floor(log2(rdelt));
+  int p = (int) floor(log(rdelt)/M_LN2);
   double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
   if (isLogarithmic)
     tDelt = ceil(tDelt);
@@ -260,7 +260,7 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
   double delt = (tMax-tMin)/(tickcount);
   int n = (int) ceil(log10(delt));
   double rdelt = delt/pow(10.0,(double)n);
-  int p = (int) floor(log2(rdelt));
+  int p = (int) floor(log(rdelt)/M_LN2);
   double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
   if (isLogarithmic) 
     tDelt = ceil(tDelt);

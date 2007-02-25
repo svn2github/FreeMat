@@ -47,5 +47,8 @@ CLEANFILES = $(libCore_a_MOC)
 
 AM_CPPFLAGS = $(QT_CFLAGS) 
 
-%.moc.cpp: %.hpp
-	$(QT_MOC) -o $@ $<
+XML.moc.cpp: XML.hpp
+	$(QT_MOC) -o XML.moc.cpp XML.hpp
+
+helpwidget.moc.cpp: helpwidget.hpp
+	$(QT_MOC) -o helpwidget.moc.cpp helpwidget.hpp

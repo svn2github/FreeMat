@@ -291,7 +291,7 @@ double Serialize::getDouble() {
   return t;
 }
 
-Class Serialize::getDataClass(bool& sparseflag) {
+Class Serialize::getDataClass(bool& sparseflag, rvstring& className) {
   checkSignature('a',1);
   char a = getByte();
   sparseflag = (a & 16) > 0;
@@ -334,12 +334,19 @@ Class Serialize::getDataClass(bool& sparseflag) {
     return FM_DCOMPLEX;
   case 14:
     return FM_STRING;
+  case 128: {
+    int cnt(getInt());
+    for (int i=0;i<cnt;i++)
+      className.push_back(getString());
+    return FM_STRUCT_ARRAY;
+  }    
   default:
     throw Exception("Unrecognized array type received!");
   }
 }
 
-void Serialize::putDataClass(Class cls, bool issparse) {
+void Serialize::putDataClass(Class cls, bool issparse, 
+			     bool isuserclass, rvstring className) {
   char sparseval;
   sparseval = issparse ? 16 : 0;
   sendSignature('a',1);
@@ -348,7 +355,14 @@ void Serialize::putDataClass(Class cls, bool issparse) {
     putByte(1);
     return;
   case FM_STRUCT_ARRAY:
-    putByte(2);
+    if (!isuserclass)
+      putByte(2);
+    else {
+      putByte(128);
+      putInt(className.size());
+      for (int i=0;i<className.size();i++)
+	putString(className.at(i).c_str());
+    }
     return;
   case FM_LOGICAL:
     putByte(3);
@@ -415,7 +429,7 @@ Dimensions Serialize::getDimensions() {
 void Serialize::putArray(const Array& dat) {
   sendSignature('A',1);
   Class dclass(dat.dataClass());
-  putDataClass(dclass,dat.sparse());
+  putDataClass(dclass,dat.sparse(),dat.isUserClass(),dat.className());
   putDimensions(dat.dimensions());
   int elCount(dat.getLength());
   if (dat.isEmpty()) return;
@@ -540,7 +554,8 @@ void Serialize::putArray(const Array& dat) {
 void Serialize::getArray(Array& dat) {
   checkSignature('A',1);
   bool sparseflag;
-  Class dclass(getDataClass(sparseflag));
+  rvstring className;
+  Class dclass(getDataClass(sparseflag,className));
   Dimensions dims(getDimensions());
   int elCount(dims.getElementCount());
   if (elCount == 0) {
@@ -567,7 +582,7 @@ void Serialize::getArray(Array& dat) {
     Array *dp = new Array[elCount*ncount];
     for (i=0;i<elCount*ncount;i++)
       getArray(dp[i]);
-    dat = Array(dclass,dims,dp,false,fnames);
+    dat = Array(dclass,dims,dp,false,fnames,className);
     return;
   }
   case FM_LOGICAL: {

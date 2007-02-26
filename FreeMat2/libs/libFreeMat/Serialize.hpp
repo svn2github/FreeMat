@@ -69,11 +69,12 @@ public:
   bool   getBool();
   stringVector getStringVector();
   // Put an array
-  void putDataClass(Class cls, bool sparseflag);
+  void putDataClass(Class cls, bool sparseflag, 
+		    bool isuserclass, rvstring className);
   void putArray(const Array& dat);
   void putDimensions(const Dimensions& dim);
   // Get an array
-  Class getDataClass(bool& sparseflag);
+  Class getDataClass(bool& sparseflag, rvstring& className);
   void getArray(Array& dat);
   Dimensions getDimensions();
 };

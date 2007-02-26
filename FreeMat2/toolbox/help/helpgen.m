@@ -242,7 +242,7 @@ function handle_exec(&line,fp,pset,&writers)
   save helpgen.dat
   delete diary.txt
   diary([sourcepath,'/help2/tmp/diary.txt'])
-  simkeys(cmdlist);
+  evalin('base',cmdlist);
   diary off
   load helpgen.dat
   qp = fopen([sourcepath,'/help2/tmp/diary.txt'],'r');
@@ -253,5 +253,6 @@ function handle_exec(&line,fp,pset,&writers)
     line = fgetline(qp);
   end
   fclose(qp);
+  endverbatim(writers);
   line = getline(fp);
 

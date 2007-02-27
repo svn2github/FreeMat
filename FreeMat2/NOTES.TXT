@@ -676,3 +676,35 @@ ToDo:
      - The problem with this is that when a repaint shows up,
        we need to show the _old_ plot, not the _new_ plot.
      - Added backing store to do explicit double-buffering.
+
+
+Number of tests: 742
+Failed tests: 21
+   Test bbtest_eigs.m failed
+   Test bbtest_rand.m failed
+   Test bbtest_randn.m failed
+   Test bbtest_source.m failed
+   Test wbtest_acosd_2.m failed
+   Test wbtest_acsc_1.m failed
+   Test wbtest_acsc_4.m failed
+   Test wbtest_acscd_1.m failed
+   Test wbtest_acscd_3.m failed
+   Test wbtest_acscd_4.m failed
+   Test wbtest_asecd_1.m failed
+   Test wbtest_asind_3.m failed
+   Test wbtest_atanh_3.m failed
+   Test wbtest_conv_1.m failed
+   Test wbtest_conv_2.m failed
+   Test test_exist2.m failed
+   Test test_image1.m failed
+   Test test_newind1.m failed
+   Test test_newind2.m failed
+   Test test_persistent2.m failed
+   Test test_source.m failed
+
+
+if (~strcomp(typeof(type),'string'))
+  error('type argument to isa must be a string');
+end
+y = strcomp(class(x),type);
+  

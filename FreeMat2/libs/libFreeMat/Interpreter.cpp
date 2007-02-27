@@ -224,7 +224,7 @@ ArrayVector Interpreter::doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_o
     qDebug() << "Warning! graphics return buffer not empty on start\r";
   gfxErrorOccured = false;
   QMutexLocker lock(&mutex);
-  emit doGraphicsCall(f,m,narg_out);
+  emit doGraphicsCall(this,f,m,narg_out);
   if (!gfxErrorOccured && gfx_buffer.empty()) {
     gfxBufferNotEmpty.wait(&mutex);
   } else {
@@ -269,21 +269,27 @@ void Interpreter::diaryMessage(std::string msg) {
 
 
 void Interpreter::outputMessage(std::string msg) {
-  if (m_diaryState) 
-    diaryMessage(msg);
-  emit outputRawText(TranslateString(msg));
+  if (m_diaryState) diaryMessage(msg);
+  if (m_captureState) 
+    m_capture += msg;
+  else
+    emit outputRawText(TranslateString(msg));
 }
 
 void Interpreter::errorMessage(std::string msg) {
-  if (m_diaryState) 
-    diaryMessage("Error: " + msg + "\n");
-  emit outputRawText(TranslateString("Error: " + msg + "\r\n"));
+  if (m_diaryState) diaryMessage("Error: " + msg + "\n");
+  if (m_captureState) 
+    m_capture += "Error: " + msg + "\n";
+  else
+    emit outputRawText(TranslateString("Error: " + msg + "\r\n"));
 }
 
 void Interpreter::warningMessage(std::string msg) {
-  if (m_diaryState)
-    diaryMessage("Warning: " + msg + "\n");
-  emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
+  if (m_diaryState) diaryMessage("Warning: " + msg + "\n");
+  if (m_captureState) 
+    m_capture += "Warning: " + msg + "\n";
+  else
+    emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
 }
 
 void Interpreter::SetContext(int a) {
@@ -328,7 +334,7 @@ std::string Interpreter::getVersionString() {
 void Interpreter::run() {
   if (m_threadFunc) {
     try {
-      m_threadFuncRets = m_threadFunc->evaluateFunction(this,m_threadFuncArgs,0);
+      m_threadFuncRets = m_threadFunc->evaluateFunction(this,m_threadFuncArgs,m_threadNargout);
     } catch (Exception &e) {
       m_threadErrorState = true;      
       lasterr = e.getMessageCopy();
@@ -4723,7 +4729,6 @@ Interpreter::Interpreter(Context* aContext) {
   tracetrap = 0;
   tracecurrentline = 0;
   endRef = NULL;
-  m_threadErrorState = false;
   m_interrupt = false;
   m_diaryState = false;
   m_diaryFilename = "diary";
@@ -4921,8 +4926,11 @@ void Interpreter::evalCLI() {
       tracetrap = 0;
       steptrap = 0;
     }
-    emit SetPrompt(prompt);
-//     qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "";
+    if (m_captureState) 
+      m_capture += prompt;
+    else
+      emit SetPrompt(prompt);
+    //     qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "";
     emit ShowActiveLine();
     string cmdset;
     std::string cmdline;
@@ -4938,10 +4946,6 @@ void Interpreter::evalCLI() {
     }
     mutex.unlock();
     DisableRepaint();
-    if (m_diaryState) {
-      if (!((cmdset.substr(0,5) == "diary") || (cmdset.substr(0,9) == "diary off")))
-	diaryMessage(prompt + cmdset);
-    }
     if (InterruptPending) {
       InterruptPending = false;
       continue;

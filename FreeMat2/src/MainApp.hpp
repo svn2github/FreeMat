@@ -60,7 +60,7 @@ public slots:
   void Editor();
   void ExecuteLine(string txt);
   void UpdateTermWidth(int);
-  void DoGraphicsCall(FuncPtr f, ArrayVector m, int narg);
+  void DoGraphicsCall(Interpreter*, FuncPtr f, ArrayVector m, int narg);
   void Quit();
   void Crashed();
 signals:

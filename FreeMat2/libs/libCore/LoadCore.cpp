@@ -151,7 +151,7 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("assignin",AssignInFunction,3,0,"workspace","name","value",NULL);
   context->addSpecialFunction("source",SourceFunction,1,0,"filename",NULL);
   context->addSpecialFunction("who",WhoFunction,-1,0,NULL);
-  context->addSpecialFunction("simkeys",SimKeysFunction,1,0,"text",NULL);
+  context->addSpecialFunction("simkeys",SimKeysFunction,1,1,"text",NULL);
   context->addSpecialFunction("exist",ExistFunction,2,1,"name","type",NULL);
   context->addSpecialFunction("isset",IsSetFunction,1,1,"name",NULL);
   context->addSpecialFunction("which",WhichFunction,1,1,"fname",NULL);

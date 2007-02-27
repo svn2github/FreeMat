@@ -209,6 +209,10 @@ class Interpreter : public QThread {
    */
   ArrayVector m_threadFuncArgs;
   /**
+   * The number of return arguments expected
+   */
+  int m_threadNargout;
+  /**
    * The return value of the thread function
    */
   ArrayVector m_threadFuncRets;
@@ -229,6 +233,14 @@ class Interpreter : public QThread {
    * The filename for the diary
    */
   string m_diaryFilename;
+  /**
+   * The capture string
+   */
+  string m_capture;
+  /**
+   * The capture state
+   */
+  bool m_captureState;
   /******************************************
    *  Public Methods for the Interpreter    *
    ******************************************/
@@ -254,8 +266,12 @@ public:
    * Set the thread function and the arguments
    */
   inline void setThreadFunc(FunctionDef *threadFunc, 
+			    int nargout,
 			    ArrayVector threadFuncArgs) { 
-    m_threadFunc = threadFunc;  m_threadFuncArgs = threadFuncArgs; 
+    m_threadFunc = threadFunc;  
+    m_threadFuncArgs = threadFuncArgs; 
+    m_threadNargout = nargout;
+    m_threadErrorState = false;
   }
   /**
    * Manipulate the diary state
@@ -264,6 +280,12 @@ public:
   inline void setDiaryState(bool t) {m_diaryState = t;}
   inline void setDiaryFilename(string name) {m_diaryFilename = name;}
   void diaryMessage(string msg);
+  /**
+   * Manipulate the capture state
+   */
+  inline void clearCaptureString() {m_capture = "";}
+  inline void setCaptureState(bool t) {m_captureState = t;}
+  inline string getCaptureString() {return m_capture;}
   /**
    * Get the result of the thread function evaluation
    */
@@ -480,6 +502,12 @@ public:
    *
    */
   void block(const tree &t);
+  /**
+   * Start a command line interface.  Statements are retrieved
+   * from the console, and executed sequentially until a "return"
+   * statement is executed or the user presses 'CTRL-D'.
+   */
+  void evalCLI();
 
   bool isBPSet(QString fname, int lineNumber);
   bool isInstructionPointer(QString fname, int lineNumber);
@@ -504,7 +532,7 @@ signals:
   /**
    * Dispatch a graphics call
    */
-  void doGraphicsCall(FuncPtr, ArrayVector, int);
+  void doGraphicsCall(Interpreter*, FuncPtr, ArrayVector, int);
   /**
    * All done.
    */
@@ -920,12 +948,6 @@ private:
    * line number and filename if necessary).
    */
   void statement(const tree &t);
-  /**
-   * Start a command line interface.  Statements are retrieved
-   * from the console, and executed sequentially until a "return"
-   * statement is executed or the user presses 'CTRL-D'.
-   */
-  void evalCLI();
   /**
    * Handles the logistics of shortcut evaluation
    */

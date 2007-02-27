@@ -3099,8 +3099,20 @@ ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
 			    Interpreter* eval) {
   if (arg.size() == 0)
     throw Exception("simkeys requires at least one argument (the string to simulate)");
-  eval->ExecuteLine(ArrayToString(arg[0]) + "\n");
-  return ArrayVector();
+  eval->clearCaptureString();
+  eval->setCaptureState(true);
+  eval->ExecuteLine(ArrayToString(arg[0])+"\n");
+  eval->ExecuteLine("quit\n");
+  try {
+    while(1) 
+      eval->evalCLI();
+  } catch (InterpreterContinueException& e) {
+  } catch (InterpreterBreakException& e) {
+  } catch (InterpreterReturnException& e) {
+  } catch (InterpreterQuitException& e) {
+  }
+  eval->setCaptureState(false);
+  return ArrayVector() << Array::stringConstructor(eval->getCaptureString());
 }
 
 //!

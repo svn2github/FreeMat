@@ -52,20 +52,20 @@ CLEANFILES = $(FreeMat_MOC) $(FreeMat_QRC)
 AM_CPPFLAGS = $(QT_CFLAGS) 
 
 application.moc.cpp : application.hpp
-	$(QT_MOC) -o application.moc.cpp application.hpp
+	$(QT_MOC) -o $@ $<
 
 FuncMode.moc.cpp : FuncMode.hpp
-	$(QT_MOC) -o FuncMode.moc.cpp FuncMode.hpp
+	$(QT_MOC) -o $@ $<
 
 MainApp.moc.cpp : MainApp.hpp
-	$(QT_MOC) -o MainApp.moc.cpp MainApp.hpp
+	$(QT_MOC) -o $@ $<
 
 Terminal.moc.cpp : Terminal.hpp
-	$(QT_MOC) -o Terminal.moc.cpp Terminal.hpp
+	$(QT_MOC) -o $@ $<
 
 DumbTerminal.moc.cpp : DumbTerminal.hpp
-	$(QT_MOC) -o DumbTerminal.moc.cpp DumbTerminal.hpp
+	$(QT_MOC) -o $@ $<
 
 FreeMat_qrc.cpp : FreeMat.qrc
-	$(QT_RCC) -o FreeMat_qrc.cpp FreeMat.qrc
+	$(QT_RCC) -o $@ $<
 

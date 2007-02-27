@@ -232,13 +232,13 @@ void MainApp::CheckNonClosable() {
   }
 }
 
-void MainApp::DoGraphicsCall(FuncPtr f, ArrayVector m, int narg) { 
+void MainApp::DoGraphicsCall(Interpreter* interp, FuncPtr f, ArrayVector m, int narg) { 
   CheckNonClosable();
   try {
-    ArrayVector n(f->evaluateFunction(m_eval,m,narg));
-    m_eval->RegisterGfxResults(n);
+    ArrayVector n(f->evaluateFunction(interp,m,narg));
+    interp->RegisterGfxResults(n);
   } catch (Exception& e) {
-    m_eval->RegisterGfxError(e.getMessageCopy());
+    interp->RegisterGfxError(e.getMessageCopy());
   }
 }
 
@@ -346,15 +346,51 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //@@Section THREAD
 //@@Usage
 //The @|threadnew| function creates a new FreeMat thread, and
-//returns a handle to the resulting thread.  You must provide
-//a function (no scripts are allowed) to run inside the new
-//thread, and also pass any parameters that the thread function
-//requires.  The general syntax for the @|threadnew| function is
+//returns a handle to the resulting thread.   The @|threadnew|
+//function takes no arguments.  They general syntax for the
+//@|threadnew| function is
 //@[
-//   handle = threadnew(function,arg1,arg2,...)
+//   handle = threadnew
 //@]
+//Once you have a handle to a thread, you can start the thread
+//on a computation using the @|threadstart| function.  The
+//threads returned by @|threadnew| are in a dormant state (i.e.,
+//not running).  Once you are finished with the thread you
+//must call @|threadfree| to free the resources associated with
+//that thread.
+//
+//Some additional important information.  Thread functions operate
+//in their own context or workspace, which means that data cannot
+//be shared between threads.  The exception is @|global| variables,
+//which provide a thread-safe way for multiple threads to share data.
+//Accesses to global variables are serialized so that they can 
+//be used to share data.  Threads and FreeMat are a new feature, so
+//there is room for improvement in the API and behavior.  The best
+//way to improve threads is to experiment with them, and send feedback.
+//!
+ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  // Create a new thread
+  int threadID = m_app->StartNewInterpreterThread();
+  return ArrayVector() << Array::uint32Constructor(threadID);
+}
+
+//!
+//@Module THREADSTART Start a New Thread Computation
+//@@Section THREAD
+//@@Usage
+//The @|threadstart| function starts a new computation on a
+//FreeMat thread, and you must provide a function (no scripts 
+//are allowed) to run inside the thread, pass any parameters that
+//the thread function requires, as well as the number of output
+//arguments expected.  The general syntax for the 
+//@|threadstart| function is
+//@[
+//   threadstart(threadid,function,nargout,arg1,arg2,...)
+//@]
+//where @|threadid| is a thread handle (returned by @|threadnew|),
 //where @|function| is a valid function name (it can be a built-in
-//imported or M-function), and @|arg1| is the first argument that
+//imported or M-function), @|nargout| is the number of output arguments
+//expected from the function, and @|arg1| is the first argument that
 //is passed to the function.  Because the function runs in its 
 //own thread, the return values of the function are not available
 //imediately.  Instead, execution of that function will continue
@@ -367,6 +403,13 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //when you are finished with the thread to ensure that the resoures
 //are properly freed.  
 //
+//It is also perfectly reasonable to use a single thread multiple
+//times, calling @|threadstart| and @|threadreturn| multiple times
+//on a single thread.  The context is preserved between threads.
+//When calling @|threadstart| on a pre-existing thread, FreeMat
+//will attempt to wait on the thread.  If the wait fails, then
+//an error will occur.
+//
 //Some additional important information.  Thread functions operate
 //in their own context or workspace, which means that data cannot
 //be shared between threads.  The exception is @|global| variables,
@@ -376,33 +419,26 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //there is room for improvement in the API and behavior.  The best
 //way to improve threads is to experiment with them, and send feedback.
 //
-//One (annoying) limitation of the thread API is that the @|nargout|
-//mechanism does not work correctly.  In FreeMat the number of output
-//arguments that the function is called with are used to calculate the
-//@|nargout| quantity that is then passed to the function.  With 
-//threads, this does not work well, as the number of output arguments
-//are not known to FreeMat until you call @|threadvalue|.  The way
-//around this is to utilize a thread function that can artificially
-//call the function for you with the correct arguments.  See the examples
-//section for more details.
 //@@Example
 //Here we do something very simple.  We want to obtain a listing of
 //all files on the system, but do not want the results to stop our
 //computation.  So we run the @|system| call in a thread.
 //@<
-//a = threadnew('system','ls -lrt /');  % Start the thread
-//b = rand(100)\rand(100,1);            % Solve some equations simultaneously
-//c = threadvalue(a);                   % Retrieve the file list
-//size(c)                               % It is large!
+//a = threadnew;                         % Create the thread
+//threadstart(a,'system',1,'ls -lrt /'); % Start the thread
+//b = rand(100)\rand(100,1);             % Solve some equations simultaneously
+//c = threadvalue(a);                    % Retrieve the file list
+//size(c)                                % It is large!
 //@>
 //The possibilities for threads are significant.  For example,
 //we can solve equations in parallel, or take Fast Fourier Transforms
 //on multiple threads.  On multi-processor machines or multicore CPUs,
 //these threaded calculations will execute in parallel.  Neat.
 //
-//To get around the @|nargout| problem, suppose we want to compute
-//the Singular Value Decomposition @|svd| of a matrix @|A| in a 
-//thread.  The documentation for the @|svd| function tells us that
+//The reason for the  @|nargout| argument is best illustrated with
+//an example.  Suppose we want to compute the Singular Value 
+//Decomposition @|svd| of a matrix @|A| in a thread.  
+//The documentation for the @|svd| function tells us that
 //the behavior depends on the number of output arguments we request.
 //For example, if we want a full decomposition, including the left 
 //and right singular vectors, and a diagonal singular matrix, we
@@ -413,55 +449,53 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //[u,s,v] = svd(A)    % Compute the full decomposition
 //sigmas = svd(A)     % Only want the singular values
 //@>
-//Unfortunately, if we attempt to call @|svd| in a thread, the number
-//of output arguments is not known at the time the function is invoked.
-//When we try to do the calculation in a thread, we get only the 
-//singular values in the first argument (just as if we had called
-//@|svd| with a single argument), and a warning that our remaining
-//outputs are not assigned:
+//
+//Normally, FreeMat uses the left hand side of an assignment to calculate
+//the number of outputs for the function.  When running a function in a
+//thread, we separate the assignment of the output from the invokation
+//of the function.  Hence, we have to provide the number of arguments at the
+//time we invoke the function.  For example, to compute a full decomposition
+//in a thread, we specify that we want 3 output arguments:
 //@<
-//a = threadnew('svd',A);
-//[u1,s1,v1] = threadvalue(a)
+//a = threadnew;               % Create the thread
+//threadstart(a,'svd',3,A);    % Start a full decomposition 
+//[u1,s1,v1] = threadvalue(a); % Retrieve the function values
 //threadfree(a);
 //@>
-//The solution is to use an intermediate function that can supply 
-//a place for the outputs, and that effectively helps FreeMat
-//disambiguate the syntax you want to use.  For example, 
-//@{ svd_full.m
-//function [u,s,v] = svd_full(varargin)
-//   [u,s,v] = svd(varargin{:})
-//@}
-//This new function @|svd_full| forces a full decomposition of the
-//argument matrix.  If we call this function in a thread, we get
-//the right result (as it does not use @|nargout| to determine its
-//behavior).
+//If we want to compute just the singular values, we start the thread
+//function with only one output argument:
 //@<
-//a = threadnew('svd_full',A);
-//[u2,s2,v2] = threadvalue(a)
-//threadfree(a);
+//a = threadnew;
+//threadstart(a,'svd',1,A);
+//sigmas = threadvalue(a);
+//threadfree(a)
 //@>
+//
 //!
-ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  if (arg.size() < 1) throw Exception("threadnew requires at least one argument (the function to spawn in a thread)");
-  string fnc = ArrayToString(arg[0]);
+ArrayVector ThreadStartFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 3) throw Exception("threadstart requires at least three arguments (the thread id, the function to spawn, and the number of output arguments)");
+  int32 handle = ArrayToInt32(arg[0]);
+  unsigned long timeout = ULONG_MAX;
+  Interpreter* thread = m_threadHandles.lookupHandle(handle);
+  if (!thread) throw Exception("invalid thread handle");
+  string fnc = ArrayToString(arg[1]);
   // Lookup this function in base interpreter to see if it is defined
   FuncPtr val;
   if (!eval->lookupFunction(fnc, val))
     throw Exception(string("Unable to map ") + fnc + " to a defined function ");
   val->updateCode();
-  if (val->scriptFlag)
-    throw Exception(string("Cannot use a script as the main function in a thread."));
-  // Create a new thread
-  int threadID = m_app->StartNewInterpreterThread();
-  // Set the thread function
-  Interpreter *p_eval = m_threadHandles.lookupHandle(threadID);
+  // if (val->scriptFlag)
+  //   throw Exception(string("Cannot use a script as the main function in a thread."));
+  int tnargout = ArrayToInt32(arg[2]);
+  if (!thread->wait(1))  throw Exception("thread was busy");
   ArrayVector args(arg);
   args.pop_front();
-  p_eval->setThreadFunc(val,args);
-  p_eval->start();
-  return ArrayVector() << Array::uint32Constructor(threadID);
+  args.pop_front();
+  args.pop_front();
+  thread->setThreadFunc(val,tnargout,args);
+  thread->start();
+  return ArrayVector();
 }
-
 
 //!
 //@Module THREADVALUE Retrieve the return values from a thread
@@ -678,7 +712,8 @@ ArrayVector ThreadFreeFunction(int nargout, const ArrayVector& arg) {
 
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
-  context->addSpecialFunction("threadnew",ThreadNewFunction,-1,1,NULL);
+  context->addSpecialFunction("threadnew",ThreadNewFunction,0,1,NULL);
+  context->addSpecialFunction("threadstart",ThreadStartFunction,-1,0,NULL);
   context->addFunction("threadvalue",ThreadValueFunction,2,-1,"handle","timeout",NULL);
   context->addFunction("threadwait",ThreadWaitFunction,2,1,"handle","timeout",NULL);
   context->addFunction("threadkill",ThreadKillFunction,1,0,"handle",NULL);
@@ -746,8 +781,8 @@ int MainApp::StartNewInterpreterThread() {
   p_eval->rescanPath();
   connect(p_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
   connect(p_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
-  connect(p_eval,SIGNAL(doGraphicsCall(FuncPtr,ArrayVector,int)),
-	  this,SLOT(DoGraphicsCall(FuncPtr,ArrayVector,int)));
+  connect(p_eval,SIGNAL(doGraphicsCall(Interpreter*,FuncPtr,ArrayVector,int)),
+	  this,SLOT(DoGraphicsCall(Interpreter*,FuncPtr,ArrayVector,int)));
   connect(p_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));
   connect(p_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
   connect(p_eval,SIGNAL(CrashedSignal()),this,SLOT(Crashed()));
@@ -763,6 +798,7 @@ int MainApp::Run() {
   qRegisterMetaType<string>("string");
   qRegisterMetaType<FuncPtr>("FuncPtr");
   qRegisterMetaType<ArrayVector>("ArrayVector");
+  qRegisterMetaType<Interpreter*>("Interpreter*");
   connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
   connect(m_keys,SIGNAL(UpdateTermWidth(int)),this,SLOT(UpdateTermWidth(int)));
   // Get a new thread
@@ -773,7 +809,7 @@ int MainApp::Run() {
   FunctionDef *doCLI;
   if (!m_eval->lookupFunction("docli",doCLI))
     return 0;
-  m_eval->setThreadFunc(doCLI,ArrayVector());
+  m_eval->setThreadFunc(doCLI,0,ArrayVector());
   m_eval->start();
   emit Initialize();
   return 0;

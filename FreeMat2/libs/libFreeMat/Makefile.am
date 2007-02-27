@@ -86,4 +86,4 @@ AUTOMAKE_OPTIONS 	= foreign
 AM_CPPFLAGS = $(QT_CFLAGS) 
 
 Interpreter.moc.cpp: Interpreter.hpp
-	$(QT_MOC) -o Interpreter.moc.cpp Interpreter.hpp
+	$(QT_MOC) -o $@ $<

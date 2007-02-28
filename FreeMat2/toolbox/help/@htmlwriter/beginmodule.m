@@ -1,8 +1,8 @@
-function beginmodule(&p,sourcepath,modname,moddesc,secname)
+function beginmodule(&p,sourcepath,modname,moddesc,secname,section_descriptors)
     p.moddesc = moddesc;
-    p.secname = secname;
+    p.secname = lower(secname);
     p.modulename = lower(modname);
-    filename = [sourcepath '/help2/html/' secname '_' p.modulename '.html'];
+    filename = [sourcepath '/help2/html/' p.secname '_' p.modulename '.html'];
     p.myfile = fopen(filename,'w');
     if (p.myfile < 0) 
       error(sprintf('unable to open %s for output',filename)); 
@@ -17,6 +17,6 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname)
     fprintf(p.myfile,'<H2>%s</H2>\n',moddesc);
 %  sectablesp..insert(secname,QStringList() << modname << moddesc);
     fprintf(p.myfile,'<P>\n');
-    fprintf(p.myfile,'Section: <A HREF=sec_%s.html> %s </A>\n',lower(secname),'foo');
+    fprintf(p.myfile,'Section: <A HREF=sec_%s.html> %s </A>\n',lower(secname),section_descriptors.(lower(secname)));
     p.verbatim = 0;
     p.ignore = 0;

@@ -1,7 +1,7 @@
 function helpgen(source_path)
-  global sourcepath
-%  rmdir([source_path,'/help2/html'],'s');
-%  rmdir([source_path,'/help/tmp'],'s');
+  global sourcepath section_descriptors
+  rmdir([source_path,'/help2/html'],'s');
+  rmdir([source_path,'/help2/tmp'],'s');
 %  rmdir([source_path,'/help/latex'],'s');
 %  rmdir([source_path,'/help/text'],'s');
 %  rmdir([source_path,'/help/test'],'s');
@@ -14,10 +14,15 @@ function helpgen(source_path)
 %  mkdir([source_path,'/help/test']);
 %  mkdir([source_path,'/help/toolbox']);
   sourcepath = source_path;
+  read_section_descriptors;
   h = htmlwriter;
   p = groupwriter({h});
-  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
-%  helpgen_processfile([source_path,'/toolbox/general/install.m']);
+%  file_list = helpgen_rdir([source_path,'/toolbox']);
+%  for i=1:numel(file_list)
+%    helpgen_processfile(file_list{i},p);
+%  end
+%  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
+helpgen_processfile([source_path,'/toolbox/graph/image.m'],p);
 %  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp'],p);
 
 %  helpgen_processdir([source_path,'/toolbox']);
@@ -27,6 +32,17 @@ function helpgen(source_path)
 %files = helpgen_rdir([source_path,'/toolbox'])
 keyboard
  
+function read_section_descriptors
+  global sourcepath section_descriptors
+  fp = fopen([sourcepath,'/tools/helpgen/section_descriptors.txt'],'r');
+  line = fgetline(fp);
+  while (~feof(fp))
+    p = regexp(line,'(\w*)\s*([^\n]*)','tokens');
+    section_descriptors.(p{1}{1}) = p{1}{2};
+    line = fgetline(fp);
+  end
+  fclose(fp);
+  
 function file_list = helpgen_rdir(basedir)
   file_list = {};
   avec = dir(basedir);
@@ -43,7 +59,7 @@ function file_list = helpgen_rdir(basedir)
   end
 
 function helpgen_processfile(filename,writers)
-  global sourcepath
+  global sourcepath section_descriptors
   [path,name,suffix] = fileparts(filename);
   if (strcmp(suffix,'.cpp'))
     comment = '//';
@@ -72,8 +88,9 @@ function helpgen_processfile(filename,writers)
       moddesc = mustmatch(line,pset.moduledesc);
       line = getline(fp);
       secname = mustmatch(line,pset.sectionname);
-      beginmodule(writers,sourcepath,modname,moddesc,secname);
+      beginmodule(writers,sourcepath,modname,moddesc,secname,section_descriptors);
       line = getline(fp);
+      exec_id = threadnew;
       while (~feof(fp) && ~testmatch(line,pset.docblock))
          groupname = mustmatch(line,pset.groupname);
 	 begingroup(writers,groupname);	 
@@ -81,7 +98,7 @@ function helpgen_processfile(filename,writers)
 	 while (~feof(fp) && ~testmatch(line,pset.groupname) ...
 	       		  && ~testmatch(line,pset.docblock))
            if (testmatch(line,pset.execin))
-	     handle_exec(line,fp,pset,writers);
+	     handle_exec(line,fp,pset,writers,exec_id);
            elseif (testmatch(line,pset.verbatimin)) 
 	     handle_verbatim(line,fp,pset,writers);
            elseif (testmatch(line,pset.figure))
@@ -101,6 +118,8 @@ function helpgen_processfile(filename,writers)
            end
          end
       end
+      threadfree(exec_id);
+      close all;
       endmodule(writers);
     end
   end
@@ -196,11 +215,11 @@ function handle_enumerate(&line,fp,pset,&writers)
       item = [item, mustmatch(line,pset.ccomment)];
       line = getline(fp);
     end
-    itemlist = [itemlist,item];
+    itemlist = [itemlist,{item}];
   end
   if (feof(fp)), error('unmatched enumeration block'); end
   line = getline(fp);
-  enumerate(writers,itemlist);
+  doenumerate(writers,itemlist);
  
 function handle_itemize(&line,fp,pset,&writers)
   line = getline(fp);
@@ -214,45 +233,48 @@ function handle_itemize(&line,fp,pset,&writers)
       item = [item, mustmatch(line,pset.ccomment)];
       line = getline(fp);
     end
-    itemlist = [itemlist,item];
+    itemlist = [itemlist,{item}];
   end
   if (feof(fp)), error('unmatched enumeration block'); end
   line = getline(fp);
-  itemize(writers,itemlist);
+  doitemize(writers,itemlist);
 
 function handle_output(&line,fp,pset,&writers)
   line = mustmatch(line,pset.ccomment);
   outputtext(writers,line);
   line = getline(fp);
 
-function handle_exec(&line,fp,pset,&writers)
+function handle_exec(&line,fp,pset,&writers,exec_id)
   global sourcepath
   line = mustmatch(line,pset.execin);
   errors_expected = str2num(line);
-  printf('errors_expected %d\n',errors_expected);
-  cmdlist = '';
+  cmdlist = {};
   line = getline(fp);
   while (~feof(fp) && ~testmatch(line,pset.execout))
     if (testmatch(line,pset.ccomment))
-      cmdlist = [cmdlist,[mustmatch(line,pset.ccomment)],13];
+      cmdlist = [cmdlist,{mustmatch(line,pset.ccomment)}];
     end
     line = getline(fp);
   end
+  cmdlist = [cmdlist,{'quit'}];
   cd([sourcepath,'/help2/tmp']);
-  save helpgen.dat
-  delete diary.txt
-  diary([sourcepath,'/help2/tmp/diary.txt'])
-  evalin('base',cmdlist);
-  diary off
-  load helpgen.dat
-  qp = fopen([sourcepath,'/help2/tmp/diary.txt'],'r');
-  line = fgetline(qp);
+  keyboard
+  threadstart(exec_id,'simkeys',1,cmdlist);
   beginverbatim(writers);
-  while (~feof(qp))
-    outputtext(writers,line);
-    line = fgetline(qp);
+  if (~threadwait(exec_id,10000))
+    error(sprintf('Timeout on exec block: %s\n',cmdlist));
   end
-  fclose(qp);
+  etext = threadvalue(exec_id);
+  keyboard
+  etext = strrep(etext,'--> quit','');
+  outputtext(writers,etext);
   endverbatim(writers);
+  if (threadcall(exec_id,10000,'errorcount') ~= errors_expected)
+    printf('Error count mismatch on block\n');
+    for (i=1:numel(cmdlist))
+      printf('%s\n',cmdlist{i});
+    end
+    error('Failed!');
+  end
   line = getline(fp);
 

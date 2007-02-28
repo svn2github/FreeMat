@@ -3088,20 +3088,26 @@ ArrayVector LasterrFunction(int nargout, const ArrayVector& arg,
 //@@Section FREEMAT
 //@@Usage
 //This routine simulates keystrokes from the user on FreeMat.
-//The general syntax for its use is either
+//The general syntax for its use is
 //@[
-//   simkeys(text)
+//   otext = simkeys(text)
 //@]
 //where @|text| is a string to simulate as input to the console.
-//This is primarily used by the testing infrastructure.
+//The output of the commands are captured and returned in the 
+//string @|otext|.  This is primarily used by the testing 
+//infrastructure.
 //!
 ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
 			    Interpreter* eval) {
   if (arg.size() == 0)
-    throw Exception("simkeys requires at least one argument (the string to simulate)");
+    throw Exception("simkeys requires at least one argument (the cell array of strings to simulate)");
   eval->clearCaptureString();
   eval->setCaptureState(true);
-  eval->ExecuteLine(ArrayToString(arg[0])+"\n");
+  if (arg[0].dataClass() != FM_CELL_ARRAY)
+    throw Exception("simkeys requires a cell array of strings");
+  const Array *dp = (const Array *) arg[0].getDataPointer();
+  for (int i=0;i<arg[0].getLength();i++)
+    eval->ExecuteLine(ArrayToString(dp[i])+"\n");
   eval->ExecuteLine("quit\n");
   try {
     while(1) 
@@ -3113,6 +3119,21 @@ ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
   }
   eval->setCaptureState(false);
   return ArrayVector() << Array::stringConstructor(eval->getCaptureString());
+}
+
+//!
+//@Module ERRORCOUNT Retrieve the Error Counter for the Interpreter
+//@@Section FREEMAT
+//@@Usage
+//This routine retrieves the internal counter for the interpreter,
+//and resets it to zero.  The general syntax for its use is
+//@[
+//   count = errorcount
+//@]
+//!
+ArrayVector ErrorCountFunction(int nargout, const ArrayVector& arg,
+			       Interpreter* eval) {
+  return ArrayVector() << Array::int32Constructor(eval->getErrorCount());
 }
 
 //!

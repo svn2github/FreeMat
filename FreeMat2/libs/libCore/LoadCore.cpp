@@ -116,6 +116,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("error",ErrorFunction,1,0,"x",NULL);
   context->addSpecialFunction("warning",WarningFunction,1,0,"x",NULL);
   context->addSpecialFunction("lasterr",LasterrFunction,1,1,"x",NULL);
+  context->addSpecialFunction("errorcount",ErrorCountFunction,0,1,NULL);
   context->addFunction("typeof",TypeOfFunction,1,1,"x",NULL);
   context->addFunction("strcomp",StrCmpFunction,2,1,"x","y",NULL);
   context->addFunction("struct",StructFunction,-1,1,NULL);

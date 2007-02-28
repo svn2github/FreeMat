@@ -4706,7 +4706,9 @@ void Interpreter::deref(Array &r, const tree &s) {
 
   
 int Interpreter::getErrorCount() {
-  return errorCount;
+  int retval = errorCount;
+  errorCount = 0;
+  return retval;
 }
 
 Interpreter::Interpreter(Context* aContext) {
@@ -4732,6 +4734,8 @@ Interpreter::Interpreter(Context* aContext) {
   m_interrupt = false;
   m_diaryState = false;
   m_diaryFilename = "diary";
+  m_captureState = false;
+  m_capture = "";
 }
 
 Interpreter::~Interpreter() {
@@ -4943,6 +4947,8 @@ void Interpreter::evalCLI() {
       cmdline = cmd_buffer.front();
       cmd_buffer.erase(cmd_buffer.begin());
       cmdset += cmdline;
+      if (m_captureState) 
+	m_capture += cmdline;
     }
     mutex.unlock();
     DisableRepaint();

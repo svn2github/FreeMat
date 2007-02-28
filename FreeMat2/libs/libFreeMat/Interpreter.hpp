@@ -372,7 +372,8 @@ public:
    */
   static string getVersionString();
   /**
-   * Retrieve the number of errors that occured
+   * Retrieve the number of errors that occured.  The
+   * side effect is that the error count is set to zero.
    */
   int getErrorCount();
   /**

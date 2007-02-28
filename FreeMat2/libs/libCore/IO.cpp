@@ -953,8 +953,11 @@ ArrayVector SprintfFunction(int nargout, const ArrayVector& arg) {
   if (!format.isString())
     throw Exception("sprintf format argument must be a string");
   char *op = xprintfFunction(nargout,arg);
-  Array outString(Array::stringConstructor(op));
+  char *buff = (char*) malloc(strlen(op)+1);
+  convertEscapeSequences(buff,op);
+  Array outString(Array::stringConstructor(buff));
   free(op);
+  free(buff);
   return singleArrayVector(outString);
 }
   

@@ -366,8 +366,7 @@ ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 //@]
 //!
 void RemoveDirectory(string dirname) {
-  if (!QDir::current().rmdir(QString::fromStdString(dirname)))
-    throw Exception(string("unable to delete directory ") + dirname);
+  QDir::current().rmdir(QString::fromStdString(dirname));
 }
 
 void RemoveDirectoryRecursive(string dirname) {
@@ -381,8 +380,7 @@ void RemoveDirectoryRecursive(string dirname) {
     else
       dir.remove(fileInfo.absoluteFilePath());
   }
-  if (!QDir::current().rmdir(QString::fromStdString(dirname)))
-    throw Exception(string("unable to delete directory ") + dirname);
+  QDir::current().rmdir(QString::fromStdString(dirname));
 }
 
 ArrayVector RMDirFunction(int nargout, const ArrayVector& arg) {

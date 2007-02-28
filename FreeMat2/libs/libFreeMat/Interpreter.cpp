@@ -79,7 +79,6 @@ void Interpreter::setPath(std::string path) {
     if (pathset[i] != ".") {
       QDir tpath(TildeExpand(pathset[i].toStdString()));
       m_userPath << tpath.absolutePath();
-      qDebug() << pathset[i];
     }
   rescanPath();
 }
@@ -219,9 +218,6 @@ void Interpreter::RegisterGfxError(string msg) {
 }
 
 ArrayVector Interpreter::doGraphicsFunction(FuncPtr f, ArrayVector m, int narg_out) {
-  //  qDebug() << "Start graphics call\r";
-  if (!gfx_buffer.empty())
-    qDebug() << "Warning! graphics return buffer not empty on start\r";
   gfxErrorOccured = false;
   QMutexLocker lock(&mutex);
   emit doGraphicsCall(this,f,m,narg_out);

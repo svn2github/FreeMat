@@ -17,12 +17,12 @@ function helpgen(source_path)
   read_section_descriptors;
   h = htmlwriter;
   p = groupwriter({h});
-%  file_list = helpgen_rdir([source_path,'/toolbox']);
-%  for i=1:numel(file_list)
-%    helpgen_processfile(file_list{i},p);
-%  end
+  file_list = helpgen_rdir([source_path,'/toolbox']);
+  for i=1:numel(file_list)
+    helpgen_processfile(file_list{i},p);
+  end
 %  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
-helpgen_processfile([source_path,'/toolbox/graph/image.m'],p);
+%helpgen_processfile([source_path,'/toolbox/graph/image.m'],p);
 %  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp'],p);
 
 %  helpgen_processdir([source_path,'/toolbox']);
@@ -173,6 +173,9 @@ function handle_filedump(&line,fp,pset,&writers)
     fn = [fn mustmatch(line,pset.ccomment)];
     line = getline(fp);
   end
+  zp = fopen(fname,'w');
+  fprintf(zp,'%s',fn);
+  fclose(zp);
   dofile(writers,fname,fn);
   line = getline(fp);
 
@@ -256,16 +259,9 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
     end
     line = getline(fp);
   end
-  cmdlist = [cmdlist,{'quit'}];
   cd([sourcepath,'/help2/tmp']);
-  keyboard
-  threadstart(exec_id,'simkeys',1,cmdlist);
   beginverbatim(writers);
-  if (~threadwait(exec_id,10000))
-    error(sprintf('Timeout on exec block: %s\n',cmdlist));
-  end
-  etext = threadvalue(exec_id);
-  keyboard
+  etext = threadcall(exec_id,10000,'simkeys',cmdlist);
   etext = strrep(etext,'--> quit','');
   outputtext(writers,etext);
   endverbatim(writers);

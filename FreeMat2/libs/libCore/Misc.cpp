@@ -3107,7 +3107,7 @@ ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
     throw Exception("simkeys requires a cell array of strings");
   const Array *dp = (const Array *) arg[0].getDataPointer();
   for (int i=0;i<arg[0].getLength();i++)
-    eval->ExecuteLine(ArrayToString(dp[i])+"\n");
+    eval->ExecuteLine(ArrayToString(dp[i]));
   eval->ExecuteLine("quit\n");
   try {
     while(1) 

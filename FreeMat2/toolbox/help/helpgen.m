@@ -183,7 +183,7 @@ function handle_equation(&line,fp,pset,&writers)
   line = getline(fp);
   eqn = '';
   while (~feof(fp) && ~testmatch(line,pset.eqnout))
-     eqn = [eqn,mustmatch(line,pset.ccomment),'\n'];
+     eqn = [eqn,mustmatch(line,pset.ccomment)];
 	line = getline(fp);
   end
   doequation(writers,eqn);
@@ -261,11 +261,11 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
   end
   cd([sourcepath,'/help2/tmp']);
   beginverbatim(writers);
-  etext = threadcall(exec_id,10000,'simkeys',cmdlist);
+  etext = threadcall(exec_id,100000,'simkeys',cmdlist);
   etext = strrep(etext,'--> quit','');
   outputtext(writers,etext);
   endverbatim(writers);
-  if (threadcall(exec_id,10000,'errorcount') ~= errors_expected)
+  if (threadcall(exec_id,100000,'errorcount') ~= errors_expected)
     printf('Error count mismatch on block\n');
     for (i=1:numel(cmdlist))
       printf('%s\n',cmdlist{i});

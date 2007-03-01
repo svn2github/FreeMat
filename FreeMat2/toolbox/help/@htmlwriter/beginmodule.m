@@ -15,7 +15,11 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname,section_descriptors)
     fprintf(p.myfile,'</HEAD>\n');
     fprintf(p.myfile,'<BODY>\n');
     fprintf(p.myfile,'<H2>%s</H2>\n',moddesc);
-%  sectablesp..insert(secname,QStringList() << modname << moddesc);
+    if (~isfield(p.sectables,p.secname))
+      p.sectables.(p.secname) = {};
+    end
+    p.sectables.(p.secname) = [p.sectables.(p.secname);{p.modulename, ...
+                        p.moddesc}];
     fprintf(p.myfile,'<P>\n');
     fprintf(p.myfile,'Section: <A HREF=sec_%s.html> %s </A>\n',lower(secname),section_descriptors.(lower(secname)));
     p.verbatim = 0;

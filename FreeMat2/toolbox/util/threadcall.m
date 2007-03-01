@@ -15,14 +15,14 @@
 %Here is an example of executing a simple function in a different thread.
 %@<
 %id = threadnew
-%threadcall(id,1000,'cos',1.02343)
+%d = threadcall(id,1000,'cos',1.02343)
 %threadfree(id)
 %@>
 %!
 function varargout = threadcall(id,timeout,funcname,varargin)
   threadstart(id,funcname,numel(nargout),varargin{:});
   if (~threadwait(id,timeout))
-    error('Timeout on call to %s',funcname);
+    error(sprintf('Timeout on call to %s',funcname));
   end
   varargout = cell(1,nargout);
   varargout{:} = threadvalue(id);

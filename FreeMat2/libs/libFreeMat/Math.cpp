@@ -882,13 +882,13 @@ inline Array doPowerAssist(Array A, Class AClass,
 
 // Invert a square matrix - Should check for diagonal matrices
 // as a special case
-Array InvertMatrix(Array a) {
+Array InvertMatrix(Array a, Interpreter* m_eval) {
   if (!a.is2D())
     throw Exception("Cannot invert N-dimensional arrays.");
   if (a.isReferenceType())
     throw Exception("Cannot invert reference-type arrays.");
   if (a.isScalar())
-    return DotPower(a,Array::floatConstructor(-1));
+    return DotPower(a,Array::floatConstructor(-1),m_eval);
   int N(a.getDimensionLength(0));
   if (a.sparse()) {
     uint32 *I = (uint32*) Malloc(sizeof(uint32)*N);
@@ -898,7 +898,7 @@ Array InvertMatrix(Array a) {
     Array B(FM_FLOAT,a.dimensions(),
 	    makeSparseFromIJV(FM_FLOAT,N,N,N,I,1,I,1,&v,0),true);
     Free(I);
-    Array c(LeftDivide(a,B));
+    Array c(LeftDivide(a,B,m_eval));
     c.makeSparse();
     return c;
   } else {
@@ -906,12 +906,12 @@ Array InvertMatrix(Array a) {
     float *dp = (float*) ones.getReadWriteDataPointer();
     for (int i=0;i<N;i++) dp[i] = 1.0f;
     Array B(Array::diagonalConstructor(ones,0));
-    return LeftDivide(a,B);
+    return LeftDivide(a,B,m_eval);
   }
 }
   
 // Handle matrix powers for sparse matrices
-Array MatrixPowerSparse(Array a, Array b) {
+Array MatrixPowerSparse(Array a, Array b, Interpreter* m_eval) {
   // The expression a^B where a is a scalar, and B is sparse is not handled
   if (a.isScalar() && !b.isScalar())
     throw Exception("expression a^B, where a is a scalar and B is a sparse matrix is not supported (use full to convert B to non-sparse matrix");
@@ -929,7 +929,7 @@ Array MatrixPowerSparse(Array a, Array b) {
     throw Exception("expression A^b requires A to be square.");
   int power = (int) *dp;
   if (power < 0) {
-    a = InvertMatrix(a);
+    a = InvertMatrix(a,m_eval);
     power = -power;
   }
   if (power == 0) {
@@ -941,7 +941,7 @@ Array MatrixPowerSparse(Array a, Array b) {
   }
   Array c(a);
   for (int i=1;i<power;i++)
-    c = Multiply(c,a);
+    c = Multiply(c,a,m_eval);
   return c;
 }
 
@@ -1280,7 +1280,7 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
 //x = testeq(yi1+yi2,zi1+zi2) & testeq(yf1+yf2,zf1+zf2) & testeq(yd1+yd2,zd1+zd2) & testeq(yc1+yc2,zc1+zc2) & testeq(yz1+yz2,zz1+zz2);
 //@}
 //!
-Array Add(Array A, Array B) { 
+Array Add(Array A, Array B, Interpreter* m_eval) { 
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"+");
   // Get a pointer to the function we ultimately need to execute
@@ -1519,7 +1519,7 @@ Array Add(Array A, Array B) {
 //x = testeq(yi1-yi2,zi1-zi2) & testeq(yf1-yf2,zf1-zf2) & testeq(yd1-yd2,zd1-zd2) & testeq(yc1-yc2,zc1-zc2) & testeq(yz1-yz2,zz1-zz2);
 //@}
 //!
-Array Subtract(Array A, Array B) {
+Array Subtract(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"-");
   // Get a pointer to the function we ultimately need to execute
@@ -1769,7 +1769,7 @@ Array Subtract(Array A, Array B) {
 //x = testeq(c,C);
 //@}
 //!
-Array DotMultiply(Array A, Array B) {
+Array DotMultiply(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,".*");
   // Get a pointer to the function we ultimately need to execute
@@ -1934,7 +1934,7 @@ Array DotMultiply(Array A, Array B) {
 //c = 3 ./ a
 //@>
 //!
-Array DotRightDivide(Array A, Array B) {
+Array DotRightDivide(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,true,"./");
   // Get a pointer to the function we ultimately need to execute
@@ -2067,10 +2067,10 @@ Array DotRightDivide(Array A, Array B) {
 //c = 3 .\ a
 //@>
 //!
-Array DotLeftDivide(Array A, Array B) {
+Array DotLeftDivide(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,true,".\\");
-  return DotRightDivide(B,A);
+  return DotRightDivide(B,A,m_eval);
 }
 
 /**
@@ -2122,7 +2122,7 @@ Array DotLeftDivide(Array A, Array B) {
 //C = A.^B
 //@>
 //!
-Array DotPower(Array A, Array B) {
+Array DotPower(Array A, Array B, Interpreter* m_eval) {
   Array C(DoPowerTwoArgFunction(A,B));
   if (A.sparse())
     C.makeSparse();
@@ -2586,7 +2586,7 @@ Array DotPower(Array A, Array B) {
 //x = x & testeq(c,C);
 //@}
 //!
-Array LessThan(Array A, Array B) {
+Array LessThan(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"<");
   int Astride, Bstride;
@@ -2681,7 +2681,7 @@ Array LessThan(Array A, Array B) {
 /**
  * Element-wise less equals.
  */
-Array LessEquals(Array A, Array B) {
+Array LessEquals(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"<=");
   int Astride, Bstride;
@@ -2775,7 +2775,7 @@ Array LessEquals(Array A, Array B) {
 /**
  * Element-wise greater than.
  */
-Array GreaterThan(Array A, Array B) {
+Array GreaterThan(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,">");
   int Astride, Bstride;
@@ -2869,7 +2869,7 @@ Array GreaterThan(Array A, Array B) {
 /**
  * Element-wise greater equals.
  */
-Array GreaterEquals(Array A, Array B) {
+Array GreaterEquals(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,">=");
   int Astride, Bstride;
@@ -2963,7 +2963,7 @@ Array GreaterEquals(Array A, Array B) {
 /**
  * Element-wise equals.
  */
-Array Equals(Array A, Array B) {
+Array Equals(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"==");
   int Astride, Bstride;
@@ -3057,7 +3057,7 @@ Array Equals(Array A, Array B) {
 /**
  * Element-wise notEquals.
  */
-Array NotEquals(Array A, Array B) {
+Array NotEquals(Array A, Array B, Interpreter* m_eval) {
   // Process the two arguments through the type check and dimension checks...
   VectorCheck(A,B,false,"~=");
   int Astride, Bstride;
@@ -3240,7 +3240,7 @@ Array NotEquals(Array A, Array B) {
 //x = x | testeq(c,C);
 //@}
 //!
-Array And(Array A, Array B) {
+Array And(Array A, Array B, Interpreter* m_eval) {
   int Astride, Bstride;
   void *Cp = NULL;
   int Clen;
@@ -3307,7 +3307,7 @@ Array And(Array A, Array B) {
 /**
  * Element-wise or
  */
-Array Or(Array A, Array B) {
+Array Or(Array A, Array B, Interpreter* m_eval) {
   int Astride, Bstride;
   void *Cp = NULL;
   int Clen;
@@ -3373,7 +3373,7 @@ Array Or(Array A, Array B) {
 /**
  * Element-wise not
  */
-Array Not(Array A) {
+Array Not(Array A, Interpreter* m_eval) {
   Array C;
 
   A.promoteType(FM_LOGICAL);
@@ -3384,7 +3384,7 @@ Array Not(Array A) {
   return C;
 }
 
-Array Plus(Array A) {
+Array Plus(Array A, Interpreter* m_eval) {
   return A;
 }
 
@@ -3392,7 +3392,7 @@ Array Plus(Array A) {
  * Element-wise negate - this one is a custom job, so to speak.
  * 
  */
-Array Negate(Array A){
+Array Negate(Array A, Interpreter* m_eval){
   Array C;
   Class Aclass;
 
@@ -3642,13 +3642,13 @@ Array Negate(Array A){
 //x = testeq(yi1*yi2,zi1*zi2) & testeq(yf1*yf2,zf1*zf2) & testeq(yd1*yd2,zd1*zd2) & testeq(yc1*yc2,zc1*zc2) & testeq(yz1*yz2,zz1*zz2);
 //@}
 //!
-Array Multiply(Array A, Array B){
+Array Multiply(Array A, Array B, Interpreter* m_eval){
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
   // Process our arguments
   if (!MatrixCheck(A,B,"*"))
     // Its really a vector product, pass...
-    return DotMultiply(A,B);
+    return DotMultiply(A,B,m_eval);
   
   // Test for conformancy
   if (A.getDimensionLength(1) != B.getDimensionLength(0)) 
@@ -3798,14 +3798,14 @@ Array Multiply(Array A, Array B){
 //@>
 //which is the same solution.
 //!
-Array LeftDivide(Array A, Array B) {
+Array LeftDivide(Array A, Array B, Interpreter* m_eval) {
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
   stringVector dummySV;
   // Process our arguments
   if (!MatrixCheck(A,B,"\\"))
     // Its really a vector product, pass...
-    return DotLeftDivide(A,B);
+    return DotLeftDivide(A,B,m_eval);
   
   // Test for conformancy
   if (A.getDimensionLength(0) != B.getDimensionLength(0)) 
@@ -3844,22 +3844,22 @@ Array LeftDivide(Array A, Array B) {
     // linear equation solver.  Output is N x K.
     Cp = Malloc(Arows*Bcols*A.getElementSize());
     if (A.dataClass() == FM_FLOAT)
-      floatSolveLinEq(Array::getArrayInterpreter(),
+      floatSolveLinEq(m_eval,
 		      Arows,Bcols,(float*)Cp,
 		      (float*)A.getReadWriteDataPointer(),
 		      (float*)B.getReadWriteDataPointer());
     else if (A.dataClass() == FM_COMPLEX)
-      complexSolveLinEq(Array::getArrayInterpreter(),
+      complexSolveLinEq(m_eval,
 			Arows,Bcols,(float*)Cp,
 			(float*)A.getReadWriteDataPointer(),
 			(float*)B.getReadWriteDataPointer());
     else if (A.dataClass() == FM_DOUBLE)
-      doubleSolveLinEq(Array::getArrayInterpreter(),
+      doubleSolveLinEq(m_eval,
 		       Arows,Bcols,(double*)Cp,
 		       (double*)A.getReadWriteDataPointer(),
 		       (double*)B.getReadWriteDataPointer());
     else if (A.dataClass() == FM_DCOMPLEX)
-      dcomplexSolveLinEq(Array::getArrayInterpreter(),
+      dcomplexSolveLinEq(m_eval,
 			 Arows,Bcols,(double*)Cp,
 			 (double*)A.getReadWriteDataPointer(),
 			 (double*)B.getReadWriteDataPointer());
@@ -3869,22 +3869,22 @@ Array LeftDivide(Array A, Array B) {
     // lease squares equation solver.  Output is N x K.
     Cp = Malloc(Acols*Bcols*A.getElementSize());
     if (A.dataClass() == FM_FLOAT)
-      floatSolveLeastSq(Array::getArrayInterpreter(),
+      floatSolveLeastSq(m_eval,
 			Arows,Acols,Bcols,(float*)Cp,
 			(float*)A.getReadWriteDataPointer(),
 			(float*)B.getReadWriteDataPointer());
     else if (A.dataClass() == FM_COMPLEX)
-      complexSolveLeastSq(Array::getArrayInterpreter(),
+      complexSolveLeastSq(m_eval,
 			  Arows,Acols,Bcols,(float*)Cp,
 			  (float*)A.getReadWriteDataPointer(),
 			  (float*)B.getReadWriteDataPointer());
     else if (A.dataClass() == FM_DOUBLE)
-      doubleSolveLeastSq(Array::getArrayInterpreter(),
+      doubleSolveLeastSq(m_eval,
 			 Arows,Acols,Bcols,(double*)Cp,
 			 (double*)A.getReadWriteDataPointer(),
 			 (double*)B.getReadWriteDataPointer());
     else if (A.dataClass() == FM_DCOMPLEX)
-      dcomplexSolveLeastSq(Array::getArrayInterpreter(),
+      dcomplexSolveLeastSq(m_eval,
 			   Arows,Acols,Bcols,(double*)Cp,
 			   (double*)A.getReadWriteDataPointer(),
 			   (double*)B.getReadWriteDataPointer());
@@ -3951,7 +3951,7 @@ Array LeftDivide(Array A, Array B) {
 //  x = max(k(:)) < (size(a,2)*size(a,1)*eps*4);
 //@}
 //!
-Array RightDivide(Array A, Array B) {
+Array RightDivide(Array A, Array B, Interpreter* m_eval) {
   Array C;
 
   if (A.isEmpty() || B.isEmpty())
@@ -3959,12 +3959,12 @@ Array RightDivide(Array A, Array B) {
   // Process our arguments
   if (!MatrixCheck(A,B,"/"))
     // Its really a vector product, pass...
-    return DotRightDivide(A,B);
+    return DotRightDivide(A,B,m_eval);
 
   A.transpose();
   B.transpose();
 
-  C = LeftDivide(B,A);
+  C = LeftDivide(B,A,m_eval);
   C.transpose();
 
   return C;
@@ -3973,7 +3973,7 @@ Array RightDivide(Array A, Array B) {
 /**
  * Eigen decomposition, symmetric matrix, compact decomposition case
  */
-void EigenDecomposeCompactSymmetric(Array A, Array& D) {
+void EigenDecomposeCompactSymmetric(Array A, Array& D, Interpreter* m_eval) {
   Class Aclass;
 
   // Test for numeric
@@ -4049,7 +4049,7 @@ void EigenDecomposeCompactSymmetric(Array A, Array& D) {
 /**
  * Eigen decomposition, symmetric matrix, full decomposition case
  */
-void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D) {
+void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D, Interpreter* m_eval) {
   int i;
   Class Aclass;
 
@@ -4150,7 +4150,7 @@ void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D) {
  * Perform an eigen decomposition of the matrix A - This version computes the 
  * eigenvectors, and returns the eigenvalues in a diagonal matrix
  */
-void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag) {
+void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag, Interpreter* m_eval) {
   int i, j;
   Class Aclass;
 
@@ -4347,7 +4347,7 @@ void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag) {
  * Perform an eigen decomposition of the matrix A - This version computes the 
  * eigenvalues only in a vector
  */
-void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag) {
+void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag, Interpreter* m_eval) {
   int i, j;
   Class Aclass;
 
@@ -4460,7 +4460,7 @@ void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag) {
   }
 }
 
-bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D) {
+bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D, Interpreter* m_eval) {
   Class Aclass, Bclass;
 
   // Test for numeric
@@ -4563,7 +4563,7 @@ bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D) {
 /**
  * Eigen decomposition, symmetric matrix, full decomposition case
  */
-bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D) {
+bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D, Interpreter* m_eval) {
   int i;
   Class Aclass, Bclass;
 
@@ -4695,7 +4695,7 @@ bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D
  * Perform an eigen decomposition of the matrix A - This version computes the 
  * eigenvectors, and returns the eigenvalues in a diagonal matrix
  */
-void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) {
+void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D, Interpreter* m_eval) {
   int i, j;
   Class Aclass, Bclass;
 
@@ -4894,7 +4894,7 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D) 
  * Perform an eigen decomposition of the matrix A - This version computes the 
  * eigenvalues only in a vector
  */
-void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
+void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D, Interpreter* m_eval) {
   int i, j;
   Class Aclass, Bclass;
 
@@ -5054,7 +5054,7 @@ void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D) {
 //x = testeq(yi1',zi1') & testeq(yf1',zf1') & testeq(yd1',zd1') & testeq(yc1',zc1') & testeq(yz1',zz1');
 //@}
 //!
-Array Transpose(Array A) {
+Array Transpose(Array A, Interpreter* m_eval) {
   A.hermitian();
   return A;
 }
@@ -5099,19 +5099,19 @@ Array Transpose(Array A) {
 //x = testeq(yi1.',zi1.') & testeq(yf1.',zf1.') & testeq(yd1.',zd1.') & testeq(yc1.',zc1.') & testeq(yz1.',zz1.');
 //@}
 //!
-Array DotTranspose(Array A) {
+Array DotTranspose(Array A, Interpreter* m_eval) {
   A.transpose();
   return A;
 }
 
 
-inline Array PowerScalarMatrix(Array A, Array B) {
+inline Array PowerScalarMatrix(Array A, Array B, Interpreter* m_eval) {
   // Do an eigendecomposition of B
   Array V, D;
   if (B.isSymmetric())
-    EigenDecomposeFullSymmetric(B,V,D);
+    EigenDecomposeFullSymmetric(B,V,D,m_eval);
   else
-    EigenDecomposeFullGeneral(B,V,D,false);
+    EigenDecomposeFullGeneral(B,V,D,false,m_eval);
   // Get the diagonal part of D
   Array E = D.getDiagonal(0);
   // Call the vector version of the exponential
@@ -5119,17 +5119,17 @@ inline Array PowerScalarMatrix(Array A, Array B) {
   // Construct a diagonal matrix from F
   Array G = Array::diagonalConstructor(F,0); // B, V, D, G, E, F
   // The output is (V*G)/V
-  E = Multiply(V,G); // B, V, D, E, F
-  return RightDivide(E,V); // B, D, F
+  E = Multiply(V,G,m_eval); // B, V, D, E, F
+  return RightDivide(E,V,m_eval); // B, D, F
 }
 
-inline Array PowerMatrixScalar(Array A, Array B) {
+inline Array PowerMatrixScalar(Array A, Array B, Interpreter* m_eval) {
   // Do an eigendecomposition of A
   Array V, D;
   if (A.isSymmetric())
-    EigenDecomposeFullSymmetric(A,V,D); //A, B, V, D
+    EigenDecomposeFullSymmetric(A,V,D,m_eval); //A, B, V, D
   else
-    EigenDecomposeFullGeneral(A,V,D,false);
+    EigenDecomposeFullGeneral(A,V,D,false,m_eval);
   // Get the diagonal part of D
   Array E = D.getDiagonal(0); // A, B, V, D, E
   // Call the vector version of the exponential
@@ -5137,8 +5137,8 @@ inline Array PowerMatrixScalar(Array A, Array B) {
   // Construct a diagonal matrix from F
   Array G = Array::diagonalConstructor(F,0); // G, A, V, D, F
   // The output is (V*G)/V
-  E = Multiply(V,G); // A, V, D, E, F
-  return RightDivide(E,V); // C, A, D, F
+  E = Multiply(V,G,m_eval); // A, V, D, E, F
+  return RightDivide(E,V,m_eval); // C, A, D, F
 }
 
 /**
@@ -5222,12 +5222,12 @@ inline Array PowerMatrixScalar(Array A, Array B) {
 //C = A^B
 //@>
 //!
-Array Power(Array A, Array B){
+Array Power(Array A, Array B, Interpreter* m_eval){
 
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
 
-  if (A.isScalar() && B.isScalar()) return DotPower(A,B);
+  if (A.isScalar() && B.isScalar()) return DotPower(A,B,m_eval);
 
   // Check for A & B numeric
   CheckNumeric(A,B,"^");
@@ -5241,7 +5241,7 @@ Array Power(Array A, Array B){
     C.promoteType(FM_DOUBLE);
     const double*dp = (const double*) C.getDataPointer();
     if (*dp == rint(*dp) && (*dp == -1))
-      return InvertMatrix(A);
+      return InvertMatrix(A,m_eval);
   }
 
   // Test the types
@@ -5253,14 +5253,14 @@ Array Power(Array A, Array B){
     throw Exception("Power (^) operator can only be applied to scalar and square arguments.");
 
   if (A.sparse() || B.sparse())
-    return MatrixPowerSparse(A,B);
+    return MatrixPowerSparse(A,B,m_eval);
 
   // OK - check for A a scalar - if so, do a decomposition of B
   int i;
   if (A.isScalar())
-    return PowerScalarMatrix(A,B);
+    return PowerScalarMatrix(A,B,m_eval);
   else if (B.isScalar())
-    return PowerMatrixScalar(A,B);
+    return PowerMatrixScalar(A,B,m_eval);
   else 
     throw Exception("One of the arguments to (^) must be a scalar.");
 }

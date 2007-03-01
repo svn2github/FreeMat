@@ -244,7 +244,7 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
     if (ap == NULL)
       io->outputMessage("[]");
     else
-      ap[num].summarizeCellEntry();
+      ap[num].summarizeCellEntry(io);
     io->outputMessage("  ");
     break;
   }
@@ -485,7 +485,7 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
 	io->outputMessage("    ");
 	io->outputMessage(A.fieldNames().at(n).c_str());
 	io->outputMessage(": ");
-	ap[n].summarizeCellEntry();
+	ap[n].summarizeCellEntry(io);
 	io->outputMessage("\n");
       }
     } else {

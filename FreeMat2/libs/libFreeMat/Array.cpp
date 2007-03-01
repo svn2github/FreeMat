@@ -34,7 +34,6 @@
 
 static int objectBalance;
 #define MSGBUFLEN 2048
-static Interpreter *m_eval;
 
 typedef std::set<uint32, std::less<uint32> > intSet;
 intSet addresses;
@@ -66,14 +65,6 @@ ArrayVector operator+(ArrayVector a, Array b) {
 ArrayVector operator+(Array a, ArrayVector b) {
   b.push_front(a);
   return b;
-}
-
-void Array::setArrayInterpreter(Interpreter *eval) {
-  m_eval = eval;
-}
-
-Interpreter* Array::getArrayInterpreter() {
-  return m_eval;
 }
 
 void outputDoublePrecisionFloat(char *buf, double num) {
@@ -223,7 +214,7 @@ uint32 Array::getMaxAsIndex()  {
   return maxval;
 }
 
-void Array::toOrdinalType()  {
+void Array::toOrdinalType(Interpreter *m_eval)  {
   // Special case : sparse matrices with logical type can be efficiently
   // converted to ordinal types
   if (sparse() && dataClass() == FM_LOGICAL) {
@@ -2336,7 +2327,7 @@ Array Array::structConstructor(rvstring fNames, ArrayVector& values)  {
  * the elements in source indexed by the index argument.  Indexing
  * is done using vector ordinals.
  */
-Array Array::getVectorSubset(Array& index)  {
+Array Array::getVectorSubset(Array& index, Interpreter* m_eval)  {
   void *qp = NULL;
   try {
     if (index.isEmpty()) {
@@ -2354,7 +2345,7 @@ Array Array::getVectorSubset(Array& index)  {
       ret.reshape(retDims);
       return ret;
     }
-    index.toOrdinalType();
+    index.toOrdinalType(m_eval);
     Dimensions retdims;
     if (isColumnVector() && index.isRowVector())
       retdims = Dimensions(index.getLength(),1);
@@ -2427,7 +2418,8 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
 				  bool& anyEmpty,
 				  int& colonIndex,
 				  Dimensions& outDims,
-				  bool argCheck) {
+				  bool argCheck,
+				  Interpreter* m_eval) {
   int L = index.size();
   constIndexPtr* outndx = (constIndexPtr *) Malloc(sizeof(constIndexPtr*)*L);
   bool colonFound = false;
@@ -2451,7 +2443,7 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
       outndx[i] = NULL;
       outDims.set(i,0);
     } else {
-      index[i].toOrdinalType();
+      index[i].toOrdinalType(m_eval);
       if (argCheck && (index[i].getMaxAsIndex() > dims.get(i)))
 	throw Exception("index exceeds array bounds");
       outndx[i] = (constIndexPtr) index[i].getDataPointer();
@@ -2469,7 +2461,7 @@ bool allScalars(const ArrayVector& index) {
   return true;
 }
 
-static indexType scalarIndex(const Array& a) {
+static indexType scalarIndex(const Array& a, Interpreter* m_eval) {
   switch(a.dataClass()) {
   case FM_LOGICAL:
     {
@@ -2580,12 +2572,11 @@ static indexType scalarIndex(const Array& a) {
   }
 }
 
-
-Array Array::getNDimSubsetScalars(ArrayVector& index) {
+Array Array::getNDimSubsetScalars(ArrayVector& index, Interpreter* m_eval) {
   int ndx = 0;
   int pagesize = 1;
   for (int i=0;i<index.size();i++) {
-    indexType q(scalarIndex(index[i]));
+    indexType q(scalarIndex(index[i],m_eval));
     if ((q < 1) || (q > getDimensionLength(i)))
       throw Exception("index exceeds array bounds");
     ndx += pagesize*(q-1);
@@ -2596,7 +2587,7 @@ Array Array::getNDimSubsetScalars(ArrayVector& index) {
   return Array(dataClass(),Dimensions(1,1),qp,sparse(),fieldNames(),className());
 }
 
-void Array::setNDimSubsetScalars(ArrayVector& index, const Array &rdata) {
+void Array::setNDimSubsetScalars(ArrayVector& index, const Array &rdata, Interpreter* m_eval) {
   if (dataClass() != rdata.dataClass()) throw Exception("type mismatch not allowed for scalar set!");
   if (!rdata.isScalar()) throw Exception("rhs must be scalar for scalar set!");
   if (sparse() || rdata.sparse()) throw Exception("sparse case not allowed for scalar set!");
@@ -2604,7 +2595,7 @@ void Array::setNDimSubsetScalars(ArrayVector& index, const Array &rdata) {
   int ndx = 0;
   int pagesize = 1;
   for (int i=0;i<index.size();i++) {
-    indexType q(scalarIndex(index[i]));
+    indexType q(scalarIndex(index[i],m_eval));
     if ((q < 1) || (q > getDimensionLength(i)))
       throw Exception("index exceeds array bounds");
     ndx += pagesize*(q-1);
@@ -2618,7 +2609,7 @@ void Array::setNDimSubsetScalars(ArrayVector& index, const Array &rdata) {
  * the elements in source indexed by the index argument.  Indexing
  * is done using ndimensional indices.
  */
-Array Array::getNDimSubset(ArrayVector& index)  {
+Array Array::getNDimSubset(ArrayVector& index, Interpreter* m_eval)  {
   constIndexPtr* indx = NULL;  
   void *qp = NULL;
   int i;
@@ -2627,7 +2618,7 @@ Array Array::getNDimSubset(ArrayVector& index)  {
   Dimensions myDims(dimensions());
 
   if (!sparse() && allScalars(index)) 
-    return getNDimSubsetScalars(index);
+    return getNDimSubsetScalars(index, m_eval);
 
   //  if (isEmpty())
   //    throw Exception("Cannot index into empty variable.");
@@ -2636,7 +2627,8 @@ Array Array::getNDimSubset(ArrayVector& index)  {
     Dimensions outDims(L);
     indx = ProcessNDimIndexes(true,myDims,
 			      index, anyEmpty, 
-			      colonIndex, outDims, true);
+			      colonIndex, outDims, 
+			      true, m_eval);
     if (anyEmpty) {
       Free(indx);
       return Array::emptyConstructor();
@@ -2858,7 +2850,7 @@ ArrayVector Array::getFieldAsList(std::string fieldName)  {
   return m;
 }
 
-Array Array::getVectorContents(Array& index)  {
+Array Array::getVectorContents(Array& index, Interpreter* m_eval)  {
   if (dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (sparse())
@@ -2872,7 +2864,7 @@ Array Array::getVectorContents(Array& index)  {
     return qp[0];
   }
   if (!index.isScalar()) throw Exception("Cannot use A{ndx} when ndx is not a scalar in this context (too many right hand sides)");
-  index.toOrdinalType();
+  index.toOrdinalType(m_eval);
   // Get a pointer to the index data set
   constIndexPtr index_p = (constIndexPtr) index.data();
   if (index_p[0] > getLength())
@@ -2885,7 +2877,7 @@ Array Array::getVectorContents(Array& index)  {
 /**
  * Return a subset of a cell array as a list.
  */
-ArrayVector Array::getVectorContentsAsList(Array& index)  {
+ArrayVector Array::getVectorContentsAsList(Array& index, Interpreter* m_eval)  {
   ArrayVector m;
   if (dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
@@ -2901,7 +2893,7 @@ ArrayVector Array::getVectorContentsAsList(Array& index)  {
       m.push_back(qp[i]);
     return m;
   }
-  index.toOrdinalType();
+  index.toOrdinalType(m_eval);
   // Get the maximum index
   indexType max_index = index.getMaxAsIndex();
   // Get our length
@@ -2922,7 +2914,7 @@ ArrayVector Array::getVectorContentsAsList(Array& index)  {
 /**
  * Return the contents of an cell array as a list.
  */
-Array Array::getNDimContents(ArrayVector& index)  {
+Array Array::getNDimContents(ArrayVector& index, Interpreter* m_eval)  {
   if (dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (sparse())
@@ -2935,7 +2927,7 @@ Array Array::getNDimContents(ArrayVector& index)  {
   bool anyEmpty;
   int colonIndex;
   Dimensions outDims(L);
-  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,true);
+  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,true,m_eval);
   if (anyEmpty) {
     Free(indx);
     return Array::emptyConstructor();
@@ -2954,7 +2946,7 @@ Array Array::getNDimContents(ArrayVector& index)  {
 /**
  * Return the contents of an cell array as a list.
  */
-ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
+ArrayVector Array::getNDimContentsAsList(ArrayVector& index, Interpreter* m_eval)  {
   if (dataClass() != FM_CELL_ARRAY)
     throw Exception("Attempt to apply contents-indexing to non cell-array object.");
   if (sparse())
@@ -2967,7 +2959,7 @@ ArrayVector Array::getNDimContentsAsList(ArrayVector& index)  {
   bool anyEmpty;
   int colonIndex;
   Dimensions outDims(L);
-  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,true);
+  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,true,m_eval);
   if (anyEmpty) {
     Free(indx);
     return singleArrayVector(Array::emptyConstructor());
@@ -3003,13 +2995,13 @@ void Array::setValue(const Array &x) {
  *  1. Compute the maximum along each dimension
  *  2. Check that data is either scalar or the right size.
  */
-void Array::setVectorSubset(Array& index, Array& rdata) {
+void Array::setVectorSubset(Array& index, Array& rdata, Interpreter* m_eval) {
   if (index.isEmpty())
     return;
   // Check the right-hand-side - if it is empty, then
   // we have a delete command in disguise.
   if (rdata.isEmpty()) {
-    deleteVectorSubset(index);
+    deleteVectorSubset(index,m_eval);
     return;
   }
   if (isColonOperator(index)) {
@@ -3029,7 +3021,7 @@ void Array::setVectorSubset(Array& index, Array& rdata) {
     }
   }      
   // Make sure the index is an ordinal type
-  index.toOrdinalType();
+  index.toOrdinalType(m_eval);
   int index_length = index.getLength();
   if (index_length == 0) return;
   // Get a pointer to the index data set
@@ -3112,23 +3104,22 @@ void Array::setVectorSubset(Array& index, Array& rdata) {
  * Logical indices need to be converted into integer lists
  * before they can be used.
  */
-void Array::setNDimSubset(ArrayVector& index, Array& rdata) {
+void Array::setNDimSubset(ArrayVector& index, Array& rdata, Interpreter* m_eval) {
   constIndexPtr* indx = NULL;
   // If the RHS is empty, then we really want to do a delete...
   if (rdata.isEmpty()) {
-    deleteNDimSubset(index);
+    deleteNDimSubset(index,m_eval);
     return;
   }
 
   // Check for all-scalar version
   if (allScalars(index)) {
     try {
-      setNDimSubsetScalars(index,rdata);
+      setNDimSubsetScalars(index,rdata,m_eval);
       return;
     } catch (Exception &e) {
     }
   }
-
 
   // If we are empty, then fill in the colon dimensions with the corresponding
   // sizes of data - the problem is that which dimension to take isn't obvious.
@@ -3167,7 +3158,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata) {
     Dimensions outDims;
     bool anyEmpty;
     int colonIndex;
-    indx = ProcessNDimIndexes(true,myDims,index,anyEmpty,colonIndex,outDims,false);
+    indx = ProcessNDimIndexes(true,myDims,index,anyEmpty,colonIndex,outDims,false,m_eval);
     if (anyEmpty) {
       Free(indx);
       return;
@@ -3363,7 +3354,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata) {
  *   2. Deletions do not occur.
  */
 
-void Array::setVectorContentsAsList(Array& index, ArrayVector& rdata) {
+void Array::setVectorContentsAsList(Array& index, ArrayVector& rdata, Interpreter* m_eval) {
   if (sparse())
     throw Exception("setVectorContentsAsList not supported for sparse arrays.");
   promoteType(FM_CELL_ARRAY);
@@ -3378,7 +3369,7 @@ void Array::setVectorContentsAsList(Array& index, ArrayVector& rdata) {
     Dimensions q(dimensions()); q.simplify(); dp->setDimensions(q);
     return;
   }
-  index.toOrdinalType();
+  index.toOrdinalType(m_eval);
   if (rdata.size() < index.getLength())
     throw Exception("Not enough right hand side values to satisy left hand side expression.");
   // Get the maximum index
@@ -3404,7 +3395,7 @@ void Array::setVectorContentsAsList(Array& index, ArrayVector& rdata) {
  * This is the multidimensional cell-replacement function.
  * This is for content-based indexing (curly brackets).
  */
-void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& rdata) {
+void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& rdata, Interpreter* m_eval) {
   if (sparse())
     throw Exception("setNDimContentsAsList not supported for sparse arrays.");
   promoteType(FM_CELL_ARRAY);
@@ -3413,7 +3404,7 @@ void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& rdata) {
   bool anyEmpty;
   int colonIndex;
   // Convert the indexing variables into an ordinal type.
-  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,false);
+  constIndexPtr* indx = ProcessNDimIndexes(false,myDims,index,anyEmpty,colonIndex,outDims,false,m_eval);
   int L = index.size();
   try {
     Dimensions a(L);
@@ -3523,7 +3514,7 @@ int Array::insertFieldName(std::string fieldName) {
 /**
  * Delete a vector subset of a variable.
  */
-void Array::deleteVectorSubset(Array& arg) {
+void Array::deleteVectorSubset(Array& arg, Interpreter* m_eval) {
   void *qp = NULL;
   bool *deletionMap = NULL;
   try {
@@ -3532,7 +3523,7 @@ void Array::deleteVectorSubset(Array& arg) {
       setData(dataClass(),Dimensions(0,0),NULL,false,fieldNames(),className());
       return;
     }
-    arg.toOrdinalType();
+    arg.toOrdinalType(m_eval);
     if (sparse()) {
       int rows = getDimensionLength(0);
       int cols = getDimensionLength(1);
@@ -3637,7 +3628,7 @@ void Array::makeDense() {
 /**
  * Delete a subset of a variable.  
  */
-void Array::deleteNDimSubset(ArrayVector& args)  {
+void Array::deleteNDimSubset(ArrayVector& args, Interpreter* m_eval)  {
   int singletonReferences = 0;
   int singletonDimension = 0;
   int i;
@@ -3660,7 +3651,7 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
     for (i=0;i<args.size();i++) {
       if (isColonOperator(args[i]))
 	args[i] = Array::int32RangeConstructor(1,1,dimensions().get(i),true);
-      args[i].toOrdinalType();
+      args[i].toOrdinalType(m_eval);
     }
     // First, add enough "1" singleton references to pad the
     // index set out to the size of our variable.
@@ -3795,7 +3786,7 @@ void Array::deleteNDimSubset(ArrayVector& args)  {
  * Print this object when it is an element of a cell array.  This is
  * generally a shorthand summary of the description of the object.
  */
-void Array::summarizeCellEntry() const {
+void Array::summarizeCellEntry(Interpreter* m_eval) const {
   char msgBuffer[MSGBUFLEN];
   if (isEmpty()) 
     m_eval->outputMessage("[]");
@@ -4189,7 +4180,7 @@ uint32 TypeSize(Class cls) {
 }
 
   
-void emitElement(char *msgBuffer, const void *dp, int num, Class dcls) {
+void emitElement(Interpreter* m_eval, char *msgBuffer, const void *dp, int num, Class dcls) {
   switch (dcls) {
   case FM_INT8: {
     const int8 *ap;
@@ -4333,7 +4324,7 @@ void emitElement(char *msgBuffer, const void *dp, int num, Class dcls) {
     if (ap == NULL)
       m_eval->outputMessage("[]");
     else
-      ap[num].summarizeCellEntry();
+      ap[num].summarizeCellEntry(m_eval);
     m_eval->outputMessage("  ");
     break;
   }

@@ -326,6 +326,7 @@ bool MFunctionDef::updateCode() {
     helpText.clear();
     char buffer[1000];
     while (!feof(fp) && commentsOnly) {
+      buffer[0] = 0;
       fgets(buffer,1000,fp);
       char *cp;
       cp = buffer;
@@ -335,16 +336,16 @@ bool MFunctionDef::updateCode() {
 	continue;
       if (*cp != '%') 
 	commentsOnly = false;
-      else
-	helpText.push_back(++cp);
+      else {
+	string htext(++cp);
+	if ((htext.size() > 1) && (htext[htext.size()-1] != '\n'))
+	  helpText.push_back(htext + "\n");
+	else
+	  helpText.push_back(htext);
+      }
     }
     if (helpText.size() == 0)
       helpText.push_back(buffer);
-    if (feof(fp)) {
-      functionCompiled = true;
-      code = NULL;
-      return true;
-    }
     rewind(fp);
     try {
       // Read the file into a string

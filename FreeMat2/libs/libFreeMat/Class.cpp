@@ -170,7 +170,7 @@ Array ClassAux(Array s, std::string classname, rvstring parentNames,
   for (int j=0;j<parents.size();j++) 
     for (int i=0;i<arrayLength;i++) {
       Array ndx(Array::int32Constructor(i+1));
-      dp[i*newFieldCount+oldFieldCount+j] = parents[j].getVectorSubset(ndx);
+      dp[i*newFieldCount+oldFieldCount+j] = parents[j].getVectorSubset(ndx,eval);
     }
   // return a new object with the specified properties
   Array retval(FM_STRUCT_ARRAY,s.dimensions(),dp,false,newfields);
@@ -1098,10 +1098,10 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
      if (m.size() == 0) 
 	throw Exception("Expected indexing expression!");
      else if (m.size() == 1) {
-	q = r.getVectorSubset(m[0]);
-	r = q;
+       q = r.getVectorSubset(m[0],eval);
+       r = q;
      } else {
-	q = r.getNDimSubset(m);
+       q = r.getNDimSubset(m,eval);
 	r = q;
      }
    }
@@ -1115,9 +1115,9 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
      if (m.size() == 0) 
 	throw Exception("Expected indexing expression!");
      else if (m.size() == 1)
-	rv = r.getVectorContentsAsList(m[0]);
+	rv = r.getVectorContentsAsList(m[0],eval);
      else
-	rv = r.getNDimContentsAsList(m);
+	rv = r.getNDimContentsAsList(m,eval);
      if (rv.size() == 1) {
 	r = rv[0];
 	rv = ArrayVector();

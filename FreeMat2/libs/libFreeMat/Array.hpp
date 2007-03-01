@@ -35,27 +35,8 @@
 class Array;
 class Interpreter;
 
-//typedef std::vector<Array> ArrayVector;
-//typedef RefVec<Array> ArrayVector;
-
 typedef QList<Array> ArrayVector;
-
-// ArrayVector operator+(Array a, Array b);
-// ArrayVector operator+(ArrayVector a, Array b);
-// ArrayVector operator+(Array a, Array b);
-
-//class ArrayVector;
 ArrayVector singleArrayVector(Array);
-
-//typedef std::vector<ArrayVector> ArrayMatrix;
-
-// class ArrayVector : public QList<Array> {
-// public:
-//   ArrayVector(Array a) {push_back(a);}
-//   ArrayVector(Array a, Array b) {push_back(a); push_back(b);}
-//   ArrayVector(Array a, Array b, Array c) {push_back(a); push_back(b); push_back(c);}
-// };
-
 typedef QVector<ArrayVector> ArrayMatrix;
 
 class FunctionDef;
@@ -148,7 +129,7 @@ public:
    * Throws an exception for string, cell, structure types, or if a zero or 
    * negative index is encountered.
    */
-  void toOrdinalType();
+  void toOrdinalType(Interpreter *m_eval);
   /**
    * Default constructor.
    */
@@ -691,14 +672,14 @@ public:
    *  - the variable is empty
    *  - the argument subset exceeds our valid domain
    */
-  Array getVectorSubset(Array& index);
+  Array getVectorSubset(Array& index, Interpreter* m_eval);
   /**
    * Get a subset of an Array.  This if for n-Dimensional-indexing, meaning
    * that x(10) is really x(10,1).
    * Throws an exception if the variable is empty.
    */
-  Array getNDimSubset(ArrayVector& index);
-  Array getNDimSubsetScalars(ArrayVector& index);
+  Array getNDimSubset(ArrayVector& index, Interpreter* m_eval);
+  Array getNDimSubsetScalars(ArrayVector& index, Interpreter* m_eval);
   /**
    * Get the diagonal elements of an array.  Only applicable to 2-dimensional arrays.
    * The diagonal part of a rectangular matrix
@@ -725,15 +706,15 @@ public:
    *   - we are not a cell-array
    *   - the indices exceed the array bounds
    */
-  Array getVectorContents(Array& index);
-  ArrayVector getVectorContentsAsList(Array& index);
+  Array getVectorContents(Array& index, Interpreter* m_eval);
+  ArrayVector getVectorContentsAsList(Array& index, Interpreter* m_eval);
   /**
    * Get a subset of an Array using contents-addressing.  This is used when a cell array
    * is used to supply a list of expressions.
    * Throws an exception if we are not a cell-array.
    */  
-  Array getNDimContents(ArrayVector& index);
-  ArrayVector getNDimContentsAsList(ArrayVector& index);
+  Array getNDimContents(ArrayVector& index, Interpreter* m_eval);
+  ArrayVector getNDimContentsAsList(ArrayVector& index, Interpreter* m_eval);
   void setValue(const Array &x);
   /**
    * Set a subset of an Array.  Uses vector-indexing, meaning that the
@@ -741,14 +722,14 @@ public:
    * So, x(10) is equivalent to x(:)(10), even if, say, x is 3 x 4.
    * Throws an exception if there is a size mismatch between the index and the data.
    */
-  void setVectorSubset(Array& index, Array& data);
+  void setVectorSubset(Array& index, Array& data, Interpreter* m_eval);
   /**
    * Set a subset of an Array.   This if for n-Dimensional-indexing, meaning
    * that x(10) is really x(10,1).
    * Throws an exception if there is a size mismatch between the index and the data.
    */
-  void setNDimSubset(ArrayVector& index, Array& data);
-  void setNDimSubsetScalars(ArrayVector& index, const Array& data);
+  void setNDimSubset(ArrayVector& index, Array& data, Interpreter* m_eval);
+  void setNDimSubsetScalars(ArrayVector& index, const Array& data, Interpreter* m_eval);
   /**
    * Set a subset of an Array using contents-indexing, meaning that the
    * argument is assumed to refer to the elements in their order as a vector.
@@ -758,7 +739,7 @@ public:
    * Throws an exception if the number of elements in data do not match
    * the number of indices in index.
    */
-  void setVectorContentsAsList(Array& index, ArrayVector& data);
+  void setVectorContentsAsList(Array& index, ArrayVector& data, Interpreter* m_eval);
   /**
    * Set a subset of an Array.   This if for n-Dimensional-indexing, meaning
    * that x{10} is really x{10,1}.  This is used when a cell-array is used
@@ -767,7 +748,7 @@ public:
    * the number of indices covered by index (which is the product of the
    * number of elements in each dimension of index).
    */
-  void setNDimContentsAsList(ArrayVector& index, ArrayVector& data);
+  void setNDimContentsAsList(ArrayVector& index, ArrayVector& data, Interpreter* m_eval);
   /**
    * Replace the contents of a field with the supplied array.  This is used
    * when a structure array is used to hold the return of a multi-function
@@ -787,7 +768,7 @@ public:
    *   -  Copy (and skip) as necessary.
    * The result is then resized using the same rules as in vectorResize.
    */ 
-  void deleteVectorSubset(Array& ndx);
+  void deleteVectorSubset(Array& ndx, Interpreter* m_eval);
   /**
    * Delete a subset of this array using the arguments for n-Dimensional
    * indexing.  This method is the "planar" delete, meaning that its 
@@ -795,11 +776,11 @@ public:
    * It cannot be used to create "holes" in an array.
    * Throws an exception if the argument contains more than one non-colon index
    */
-  void deleteNDimSubset(ArrayVector& args);
+  void deleteNDimSubset(ArrayVector& args, Interpreter* m_eval);
   /**
    * Summarize this array when it appears in a Cell array.
    */
-  void summarizeCellEntry() const;
+  void summarizeCellEntry(Interpreter* eval) const;
   /**
    * Print some reasonable representation of this array to the
    * the supplied stream.
@@ -839,14 +820,6 @@ public:
    * FM_STRUCT_ARRAY.
    */
   static bool isDataClassReferenceType(Class);
-  /**
-   * Sets the IO interface used by instances of the Array class.
-   */
-  static void setArrayInterpreter(Interpreter* eval);
-  /**
-   * Returns the IO interface being used by instances of the Array class.
-   */
-  static Interpreter* getArrayInterpreter();
   /**
    * Returns true if any of the entries in the array are not finite
    * (always false for reference and integer types)

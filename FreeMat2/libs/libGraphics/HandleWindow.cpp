@@ -29,7 +29,7 @@
 
 class BaseFigureQt : public QWidget {
   HandleFigure *hfig;
-  QImage backStore;
+  QPixmap backStore;
 public:
   BaseFigureQt(QWidget *parent, HandleFigure *fig);
   void paintEvent(QPaintEvent *e);
@@ -50,7 +50,7 @@ void BaseFigureQt::resizeEvent(QResizeEvent *e) {
   //  qDebug() << "resize " << width() << " " << height() << "\r\n";
   hfig->resizeGL(qMax(8,width()),
   		 qMax(8,height()));
-  backStore = QImage(width(),height(),QImage::Format_RGB32);
+  backStore = QPixmap(width(),height());
 }
 
 static bool enableRepaint = false;
@@ -65,15 +65,20 @@ void DisableRepaint() {
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
   if (enableRepaint && hfig->ParentWindow()->isDirty()) {
-    // enableRepaint is true, and the background is dirty - update
-    // the backing store, and then redraw it.
-    QPainter pnt(&backStore);
-    QTRenderEngine gc(&pnt,0,0,width(),height());
-    hfig->PaintMe(gc);
-    hfig->ParentWindow()->markClean();
+    {
+      // enableRepaint is true, and the background is dirty - update
+      // the backing store, and then redraw it.
+      QPainter pnt(&backStore);
+      QTRenderEngine gc(&pnt,0,0,width(),height());
+      hfig->PaintMe(gc);
+      hfig->ParentWindow()->markClean();
+    }
+    QPainter pnt2(this);
+    pnt2.drawPixmap(0,0,backStore);
+  } else {
+    QPainter pnt(this);
+    pnt.drawPixmap(e->rect(),backStore);
   }
-  QPainter pnt(this);
-  pnt.drawImage(0,0,backStore);
 }
 
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 

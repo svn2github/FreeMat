@@ -430,7 +430,7 @@ Array Interpreter::DoBinaryOperator(const tree& t, BinaryFunc fnc,
   Array a(expression(t.first()));
   Array b(expression(t.second()));
   if (!(a.isUserClass() || b.isUserClass())) 
-    return fnc(a,b);
+    return fnc(a,b,this);
   return ClassBinaryOperator(a,b,funcname,this);
 }
 
@@ -438,7 +438,7 @@ Array Interpreter::DoUnaryOperator(const tree &t, UnaryFunc fnc,
 				   std::string funcname) {
   Array a(expression(t.first()));
   if (!a.isUserClass())
-    return fnc(a);
+    return fnc(a,this);
   return ClassUnaryOperator(a,funcname,this);
 }
 
@@ -744,9 +744,9 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       }
       subsindex(m);
       if (m.size() == 1)
-	q.push_back(r.getVectorSubset(m.front()));
+	q.push_back(r.getVectorSubset(m.front(),this));
       else
-	q.push_back(r.getNDimSubset(m));
+	q.push_back(r.getNDimSubset(m,this));
     } else if (s.is(TOK_BRACES)) {
       ArrayVector m;
       endTotal = s.numchildren();
@@ -756,9 +756,9 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       }
       subsindex(m);
       if (m.size() == 1)
-	q += r.getVectorContentsAsList(m.front());
+	q += r.getVectorContentsAsList(m.front(),this);
       else
-	q += r.getNDimContentsAsList(m);
+	q += r.getNDimContentsAsList(m,this);
     } else if (s.is('.')) {
       q += r.getFieldAsList(s.first().text());
     } else if (s.is(TOK_DYN)) {
@@ -2271,9 +2271,9 @@ void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data
     }
     subsindex(m);
     if (m.size() == 1)
-      r->setVectorSubset(m[0],data[0]);
+      r->setVectorSubset(m[0],data[0],this);
     else
-      r->setNDimSubset(m,data[0]);
+      r->setNDimSubset(m,data[0],this);
     data.pop_front();
   } else if (s.is(TOK_BRACES)) {
     ArrayVector m;
@@ -2284,9 +2284,9 @@ void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data
     }
     subsindex(m);
     if (m.size() == 1)
-      r->setVectorContentsAsList(m[0],data);
+      r->setVectorContentsAsList(m[0],data,this);
     else
-      r->setNDimContentsAsList(m,data);
+      r->setNDimContentsAsList(m,data,this);
   } else if (s.is('.')) {
     r->setFieldAsList(s.first().text(),data);
   } else if (s.is(TOK_DYN)) {
@@ -2314,9 +2314,9 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
     }
     subsindex(m);
     if (m.size() == 1)
-      r->setVectorSubset(m[0],data);
+      r->setVectorSubset(m[0],data,this);
     else
-      r->setNDimSubset(m,data);
+      r->setNDimSubset(m,data,this);
   } else if (s.is(TOK_BRACES)) {
     ArrayVector datav(singleArrayVector(data));
     ArrayVector m;
@@ -2327,9 +2327,9 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
     }
     subsindex(m);
     if (m.size() == 1)
-      r->setVectorContentsAsList(m[0],datav);
+      r->setVectorContentsAsList(m[0],datav,this);
     else
-      r->setNDimContentsAsList(m,datav);
+      r->setNDimContentsAsList(m,datav,this);
   } else if (s.is('.')) {
     ArrayVector datav(singleArrayVector(data));
     r->setFieldAsList(s.first().text(),datav);
@@ -3019,7 +3019,7 @@ int Interpreter::countLeftHandSides(const tree &t) {
       // m[0] should have only one element...
       if (isColonOperator(m[0]))
 	return (lhs.getLength());
-      m[0].toOrdinalType();
+      m[0].toOrdinalType(this);
       return (m[0].getLength());
     } else {
       int i=0;
@@ -3028,7 +3028,7 @@ int Interpreter::countLeftHandSides(const tree &t) {
 	if (isColonOperator(m[i])) 
 	  outputCount *= lhs.getDimensionLength(i);
 	else {
-	  m[i].toOrdinalType();
+	  m[i].toOrdinalType(this);
 	  outputCount *= m[i].getLength();
 	}
 	i++;
@@ -4637,9 +4637,9 @@ void Interpreter::deref(Array &r, const tree &s) {
     }
     subsindex(m);
     if (m.size() == 1)
-      r = r.getVectorSubset(m[0]);
+      r = r.getVectorSubset(m[0],this);
     else
-      r = r.getNDimSubset(m);
+      r = r.getNDimSubset(m,this);
   } else if (s.is(TOK_BRACES)) {
     ArrayVector m;
     endTotal = s.numchildren();
@@ -4649,9 +4649,9 @@ void Interpreter::deref(Array &r, const tree &s) {
     }
     subsindex(m);
     if (m.size() == 1)
-      r = r.getVectorContents(m[0]);
+      r = r.getVectorContents(m[0],this);
     else
-      r = r.getNDimContents(m);
+      r = r.getNDimContents(m,this);
   } else if (s.is('.')) {
     r = r.getField(s.first().text());
   } else if (s.is(TOK_DYN)) {
@@ -4714,7 +4714,6 @@ Interpreter::Interpreter(Context* aContext) {
   depth = 0;
   InterruptPending = false;
   myInterp = this;
-  Array::setArrayInterpreter(this);
   signal(SIGINT,sigInterrupt);
   printLimit = 1000;
   autostop = false;
@@ -4968,7 +4967,7 @@ Array Interpreter::subsindex(const Array &m) {
   if (m.isUserClass() && !stopoverload) {
     Array t(ClassUnaryOperator(m,"subsindex",this));
     t.promoteType(FM_UINT32);
-    return Add(t,Array::uint32Constructor(1));
+    return Add(t,Array::uint32Constructor(1),this);
   }
   return m;
 }

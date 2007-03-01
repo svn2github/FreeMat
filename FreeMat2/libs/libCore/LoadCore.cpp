@@ -104,7 +104,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("qr",QRDFunction,2,-1,"x","n",NULL);
   context->addFunction("int2bin",Int2BinFunction,2,1,"x","n",NULL);
   context->addFunction("bin2int",Bin2IntFunction,2,1,"x","flags",NULL);
-  context->addFunction("eig",EigFunction,2,2,"A","balanceflag",NULL);
+  context->addSpecialFunction("eig",EigFunction,2,2,"A","balanceflag",NULL);
   context->addFunction("eigs",EigsFunction,-1,-1,"A",NULL);
   context->addFunction("isempty",IsEmptyFunction,1,1,"x",NULL);
   context->addFunction("zeros",ZerosFunction,-1,1,NULL);
@@ -187,7 +187,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("randchi",RandChiFunction,1,1,"dof",NULL);
   context->addFunction("randexp",RandExpFunction,1,1,"means",NULL);
   context->addFunction("randp",RandPoissonFunction,1,1,"means",NULL);
-  context->addFunction("find",FindFunction,3,-1,"x","k","flags",NULL);
+  context->addSpecialFunction("find",FindFunction,3,-1,"x","k","flags",NULL);
   context->addFunction("conj",ConjFunction,1,1,"x",NULL);
   context->addFunction("real",RealFunction,1,1,"x",NULL);
   context->addFunction("imag",ImagFunction,1,1,"x",NULL);
@@ -221,7 +221,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("strrep_string",StrRepStringFunction,3,1,"source","pattern","replace",NULL);
   context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep",NULL);
   context->addFunction("permute",PermuteFunction,2,1,"A","permutation",NULL);
-  context->addFunction("inv",InvFunction,1,1,"A",NULL);
+  context->addSpecialFunction("inv",InvFunction,1,1,"A",NULL);
   context->addFunction("rcond",RcondFunction,1,1,"A",NULL);
   context->addFunction("end",EndFunction,3,1,"x","n","dims",NULL);
   context->addFunction("xmlread",XMLReadFunction,1,1,"filename",NULL);

@@ -160,7 +160,6 @@ bool AnyDirty() {
     if (Hfigs[i] && (Hfigs[i]->isDirty()))  {
       retval = true;
       Hfigs[i]->update();
-      qDebug() << "Figure " << i << " is dirty - issuing update";
     }
   }
   return retval;
@@ -670,6 +669,10 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
   double cr, cg, cb;
   cr = color->At(0); cg = color->At(1); cb = color->At(2);
   g->HFig()->SetThreeVectorDefault("color",1,1,1);
+  g->UpdateState();
+  EnableRepaint();
+  while (g->isDirty())
+    qApp->processEvents();
   if ((type == "PDF") || (type == "PS") || (type == "EPS")){
     QPrinter prnt;
     if (type == "PDF")
@@ -686,6 +689,10 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
     retval = img.save(filename.c_str(),type.c_str());
   }
   g->HFig()->SetThreeVectorDefault("color",cr,cg,cb);
+  g->UpdateState();
+  while (g->isDirty())
+    qApp->processEvents();
+  DisableRepaint();
   return retval;
 }
   

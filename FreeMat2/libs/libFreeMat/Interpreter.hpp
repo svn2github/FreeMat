@@ -57,10 +57,11 @@ public:
   ~stackentry();
 };
 
-typedef Array (*BinaryFunc)(Array, Array);
-typedef Array (*UnaryFunc)(Array);
-
+class Interpreter;
 class UserClass;
+
+typedef Array (*BinaryFunc)(Array, Array, Interpreter*);
+typedef Array (*UnaryFunc)(Array, Interpreter*);
 
 /**
  * This is the class that implements the interpreter - it generally

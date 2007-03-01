@@ -1561,7 +1561,7 @@ ArrayVector FindModeSparse(Array x, int nargout) {
 //@}
 //!  
 
-ArrayVector FindTrim(ArrayVector a, int cnt, bool first_flag) {
+ArrayVector FindTrim(ArrayVector a, int cnt, bool first_flag, Interpreter* m_eval) {
   if (cnt < 0) return a;
   if (a.size() == 0) return a;
   int N = a[0].getLength();
@@ -1574,11 +1574,11 @@ ArrayVector FindTrim(ArrayVector a, int cnt, bool first_flag) {
   else
     ndx = Array::int32RangeConstructor((N-cnt)+1,1,N,vertflag);
   for (int i=0;i<a.size();i++) 
-    ret.push_back(a[i].getVectorSubset(ndx));
+    ret.push_back(a[i].getVectorSubset(ndx,m_eval));
   return ret;
 }
 
-ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
+ArrayVector FindFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {
   // Detect the Find mode...
   if (arg.size() < 1)
     throw Exception("find function takes at least one argument");
@@ -1599,14 +1599,14 @@ ArrayVector FindFunction(int nargout, const ArrayVector& arg) {
   if (tmp.isReferenceType())
     throw Exception("find does not work on reference types (cell-arrays or structure arrays)");
   if ((nargout <= 1) && !tmp.sparse())
-    return FindTrim(SingleFindModeFull(tmp),k,first_flag);
+    return FindTrim(SingleFindModeFull(tmp),k,first_flag,m_eval);
   if ((nargout == 2) && !tmp.sparse())
-    return FindTrim(RCFindModeFull(tmp),k,first_flag);
+    return FindTrim(RCFindModeFull(tmp),k,first_flag,m_eval);
   if ((nargout == 3) && !tmp.sparse())
-    return FindTrim(RCVFindModeFull(tmp),k,first_flag);
+    return FindTrim(RCVFindModeFull(tmp),k,first_flag,m_eval);
   if (nargout > 3)
     throw Exception("Do not understand syntax of find call (too many output arguments).");
-  return FindTrim(FindModeSparse(tmp,nargout),k,first_flag);
+  return FindTrim(FindModeSparse(tmp,nargout),k,first_flag,m_eval);
 }
 
 //!

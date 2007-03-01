@@ -688,11 +688,11 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //b*a
 //@>
 //!
-ArrayVector InvFunction(int nargout, const ArrayVector& arg) {
+ArrayVector InvFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("inv function needs at least one argument");
   Array r(arg[0]);
-  return singleArrayVector(InvertMatrix(r));
+  return singleArrayVector(InvertMatrix(r,eval));
 }
 
 //!
@@ -922,7 +922,7 @@ ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, Interpreter* ev
   return singleArrayVector(Array::stringConstructor(eval->getLine(prompt)));
 }
 
-ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
+ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_eval) {
   Array A(arg[0]);
   Array B(arg[1]);
   if (!A.is2D() || !B.is2D())
@@ -938,18 +938,18 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 
   if (nargout > 1) {
     if (A.isSymmetric() && B.isSymmetric()) {
-      if (!GeneralizedEigenDecomposeFullSymmetric(A,B,V,D))
-	GeneralizedEigenDecomposeFullGeneral(A,B,V,D);
+      if (!GeneralizedEigenDecomposeFullSymmetric(A,B,V,D,m_eval))
+	GeneralizedEigenDecomposeFullGeneral(A,B,V,D,m_eval);
     } else
-      GeneralizedEigenDecomposeFullGeneral(A,B,V,D);
+      GeneralizedEigenDecomposeFullGeneral(A,B,V,D,m_eval);
     retval.push_back(V);
     retval.push_back(D);
   } else {
     if (A.isSymmetric() && B.isSymmetric()) {
-      if (!GeneralizedEigenDecomposeCompactSymmetric(A,B,D))
-	GeneralizedEigenDecomposeCompactGeneral(A,B,D);
+      if (!GeneralizedEigenDecomposeCompactSymmetric(A,B,D,m_eval))
+	GeneralizedEigenDecomposeCompactGeneral(A,B,D,m_eval);
     } else
-      GeneralizedEigenDecomposeCompactGeneral(A,B,D);
+      GeneralizedEigenDecomposeCompactGeneral(A,B,D,m_eval);
     retval.push_back(D);
   }
   return retval;
@@ -1377,7 +1377,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg) {
 //t = t1all & t2all & t3all & t4all;
 //@}
 //!
-ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
+ArrayVector EigFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {
   bool balance;
   if (arg.size() == 0)
     throw Exception("eig function requires at least one argument");
@@ -1391,7 +1391,7 @@ ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
 	balance = false;
     }
     else
-      return GenEigFunction(nargout, arg);
+      return GenEigFunction(nargout, arg, m_eval);
   }
   Array A(arg[0]);
   if (!A.is2D())
@@ -1402,16 +1402,16 @@ ArrayVector EigFunction(int nargout, const ArrayVector& arg) {
   Array V, D;
   if (nargout > 1) {
     if (A.isSymmetric())
-      EigenDecomposeFullSymmetric(A,V,D);
+      EigenDecomposeFullSymmetric(A,V,D, m_eval);
     else
-      EigenDecomposeFullGeneral(A,V,D,balance);
+      EigenDecomposeFullGeneral(A,V,D,balance, m_eval);
     retval.push_back(V);
     retval.push_back(D);
   } else {
     if (A.isSymmetric())
-      EigenDecomposeCompactSymmetric(A,D);
+      EigenDecomposeCompactSymmetric(A,D, m_eval);
     else
-      EigenDecomposeCompactGeneral(A,D,balance);
+      EigenDecomposeCompactGeneral(A,D,balance, m_eval);
     retval.push_back(D);
   }
   return retval;

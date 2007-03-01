@@ -25,71 +25,71 @@
 /**
  * Add the two argument arrays together: $$C_n = A_n + B_n$$.
  */
-Array Add(Array A, Array B);
+Array Add(Array A, Array B, Interpreter* m_eval);
 /**
  * Subtract the second array from the first: $$C_n = A_n - B_n$$.
  */
-Array Subtract(Array A, Array B);
+Array Subtract(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise multiply of two arrays: $$C_n = A_n B_n$$.
  */
-Array DotMultiply(Array A, Array B);
+Array DotMultiply(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise divide of two arrays: $$C_n = \frac{A_n}{B_n}$$.
  */
-Array DotRightDivide(Array A, Array B);
+Array DotRightDivide(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise divide of two arrays: $$C_n = \frac{B_n}{A_n}$$.
  */
-Array DotLeftDivide(Array A, Array B);
+Array DotLeftDivide(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise compare (lt) of two arrays: $$C_n = A_n < B_n$$.
  */ 
-Array LessThan(Array A, Array B);
+Array LessThan(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise compare (le) of two arrays: $$C_n = A_n \leq B_n$$.
  */   
-Array LessEquals(Array A, Array B);
+Array LessEquals(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise compare (gt) of two arrays: $$C_n = A_n > B_n$$.
  */ 
-Array GreaterThan(Array A, Array B);
+Array GreaterThan(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise compare (ge) of two arrays: $$C_n = A_n \geq B_n$$.
  */ 
-Array GreaterEquals(Array A, Array B);
+Array GreaterEquals(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise compare (eq) of two arrays: $$C_n = A_n == B_n$$.
  */ 
-Array Equals(Array A, Array B);
+Array Equals(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise compare (ne) of two arrays: $$C_n = A_n \neq B_n$$.
  */ 
-Array NotEquals(Array A, Array B);
+Array NotEquals(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise or of two arrays: $$C_n = A_n \or B_n$$.
  */
-Array Or(Array A, Array B);
+Array Or(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise and of two arrays: $$C_n = A_n \and B_n$$.
  */
-Array And(Array A, Array B);
+Array And(Array A, Array B, Interpreter* m_eval);
 /**
  * Element-wise not of argument: $$C_n = \not A_n$$.
  */
-Array Not(Array A);
+Array Not(Array A, Interpreter* m_eval);
 /**
  * Element-wise plus of argument: $$C_n = + A_n$$.
  */
-Array Plus(Array A);
+Array Plus(Array A, Interpreter* m_eval);
 /**
  * Element-wise negate of argument: $$C_n = - A_n$$.
  */
-Array Negate(Array A);
+Array Negate(Array A, Interpreter* m_eval);
 /**
  * Element-wise power: $$C_n = A_n ^ {B_n}$$.
  */
-Array DotPower(Array A, Array B);
+Array DotPower(Array A, Array B, Interpreter* m_eval);
 /**
  * Matrix to matrix power.  The calculation performed
  * depends on the sizes of the arguments.
@@ -108,28 +108,28 @@ Array DotPower(Array A, Array B);
  *   - either of the arguments is more than 2-dimensional
  *   - any of the arguments are rectangular.
  */
-Array Power(Array A, Array B);
+Array Power(Array A, Array B, Interpreter* m_eval);
 /**
  * Transposes the argument (actually does a Hermitian transpose).
  * The output is $$C_{i,j} = \conj{A_{j,i}}$$.
  */
-Array Transpose(Array A);
+Array Transpose(Array A, Interpreter* m_eval);
 /**
  * Dot-transpose the argument, equivalent to $$C_{i,j} = A_{j,i}$$.
  */
-Array DotTranspose(Array);
+Array DotTranspose(Array, Interpreter* m_eval);
 /**
  * Matrix multiply of the arguments.  For $$m \times n$$ matrix $$A$$,
  * and $$n \times k$$ matrix $$B$$, the output matrix $$C$$ is of 
  * size $$m \times k$$, defined by  $$C_{i,j} = \sum_{p=1}^{n} A_{i,p} B_{p,j}$$.
  * Throws an exception if the sizes are not conformant.
  */
-Array Multiply(Array A, Array B);
+Array Multiply(Array A, Array B, Interpreter* m_eval);
 /**
  * The right divide operation is related to the left divide operation
  * via: B/A = (A'\B')'.
  */
-Array RightDivide(Array A, Array B);
+Array RightDivide(Array A, Array B, Interpreter* m_eval);
 /**
  * The left divide operation is equivalent to solving the system of equations
  * $$A C = B$$ for the matrix $$C$$, where $$A$$ is of size $$m \times n$$,
@@ -137,21 +137,21 @@ Array RightDivide(Array A, Array B);
  * Uses the linear equation solver from LAPACK to solve these equations.
  * They are effectively solved independently for each column of $$B$$.
  */
-Array LeftDivide(Array A, Array B);
+Array LeftDivide(Array A, Array B, Interpreter* m_eval);
 /**
  * Compute the eigendecomposition of the matrix $$A$$, the two matrices
  * $$V$$ and $$D$$, where $$D$$ is diagonal, and $$V$$ has unit norm
  * columns.  If $$A$$ is real, the eigenvectors $$V$$ are real, and 
  * the eigenvalues come in conjugate pairs.  
  */
-void EigenDecomposeCompactSymmetric(Array A, Array& D);
-void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D);
-void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag);
-void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag);
-bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D);
-bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D);
-void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D);
-void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D);
+void EigenDecomposeCompactSymmetric(Array A, Array& D, Interpreter* m_eval);
+void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D, Interpreter* m_eval);
+void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag, Interpreter* m_eval);
+void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag, Interpreter* m_eval);
+bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D, Interpreter* m_eval);
+bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D, Interpreter* m_eval);
+void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D, Interpreter* m_eval);
+void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D, Interpreter* m_eval);
 /**
  * For scalars $$A$$ and $$B$$, the output is the row vector
  * $$[A,A+1,\ldots,A+n]$$, where $$n$$ is the largest integer
@@ -167,7 +167,7 @@ Array DoubleColon(Array A, Array B, Array C);
 
 void TypeCheck(Array &A, Array &B, bool isDivOrMatrix);
 
-Array InvertMatrix(Array A);
+Array InvertMatrix(Array A, Interpreter* m_eval);
 
 void power_zi(double *p, const double *a, int b);
 void power_zz(double *c, const double *a, const double *b);

@@ -17,20 +17,21 @@ function helpgen(source_path)
   read_section_descriptors;
   h = htmlwriter;
   p = groupwriter({h});
-  file_list = helpgen_rdir([source_path,'/toolbox']);
+  file_list = helpgen_rdir([source_path,'/toolbox/array']);
   for i=1:numel(file_list)
     helpgen_processfile(file_list{i},p);
   end
-%  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
-%helpgen_processfile([source_path,'/toolbox/graph/image.m'],p);
-%  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp'],p);
-
-%  helpgen_processdir([source_path,'/toolbox']);
-%  helpgen_processdir([source_path,'/libs']);
-%  helpgen_processdir([source_path,'/src']);
- 
-%files = helpgen_rdir([source_path,'/toolbox'])
-keyboard
+  writeindex(p);
+  %  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
+  %helpgen_processfile([source_path,'/toolbox/graph/image.m'],p);
+  %  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp'],p);
+  
+  %  helpgen_processdir([source_path,'/toolbox']);
+  %  helpgen_processdir([source_path,'/libs']);
+  %  helpgen_processdir([source_path,'/src']);
+  
+  %files = helpgen_rdir([source_path,'/toolbox'])
+  keyboard
  
 function read_section_descriptors
   global sourcepath section_descriptors
@@ -58,7 +59,7 @@ function file_list = helpgen_rdir(basedir)
     end
   end
 
-function helpgen_processfile(filename,writers)
+function helpgen_processfile(filename,&writers)
   global sourcepath section_descriptors
   [path,name,suffix] = fileparts(filename);
   if (strcmp(suffix,'.cpp'))

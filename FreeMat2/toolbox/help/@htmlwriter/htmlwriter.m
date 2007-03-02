@@ -7,6 +7,8 @@ function p = htmlwriter(a)
     p.modulename = '';
     p.groupname = '';
     p.ignore = false;
+    p.section_descriptors = [];
+    p.sourcepath = '';
     p = class(p,'htmlwriter');
   elseif isa(a,'htmlwriter');
     p = a;

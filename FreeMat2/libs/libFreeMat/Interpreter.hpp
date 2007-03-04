@@ -630,6 +630,8 @@ private:
    */
   Array expression(const tree &t);
 
+  ArrayVector handleReindexing(const tree &t, const ArrayVector &p);
+  
   /**
    * Evaluate the expression into a variable-array
    */

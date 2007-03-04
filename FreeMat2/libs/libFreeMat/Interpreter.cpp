@@ -709,39 +709,37 @@ Array Interpreter::ShortCutAnd(const tree &t) {
 //Works
 // Need to take care
 
+ArrayVector Interpreter::handleReindexing(const tree &t, const ArrayVector &p) {
+  if (t.numchildren() > 2)
+    if (p.size() > 1)
+      throw Exception("reindexing of function expressions not allowed when multiple values are returned by the function");
+    else {
+      Array r;
+      if (p.size() == 1)
+	r = p[0];
+      else
+	r = Array::emptyConstructor();
+      for (unsigned index = 2;index < t.numchildren();index++) 
+	deref(r,t.child(index));
+      return ArrayVector() << r;
+    }
+  else
+    return p;
+}
+
 void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
   if (t.is(TOK_VARIABLE)) {
     ArrayReference ptr(context->lookupVariable(t.first().text()));
     if (!ptr.valid()) {
       ArrayVector p;
       functionExpression(t,lhsCount,false,p);
-      if (t.numchildren() > 2)
-	if (p.size() > 1)
-	  throw Exception("reindexing of function expressions not allowed when multiple values are returned by the function");
-	else {
-	  Array r(p[0]);
-	  for (unsigned index = 2;index < t.numchildren();index++) 
-	    deref(r,t.child(index));
-	  q += r;
-	}
-      else
-	q += p;
+      q += handleReindexing(t,p);
       return;
     }
     if ((ptr->dataClass() == FM_FUNCPTR_ARRAY &&
 	 ptr->isScalar()) && (t.numchildren() > 1)) {
       ArrayVector p = FunctionPointerDispatch(*ptr,t.second(),1);
-      if (t.numchildren() > 2)
-	if (p.size() > 1)
-	  throw Exception("reindexing of function expressions not allowed when multiple values are returned by the function");
-	else {
-	  Array r(p[0]);
-	  for (unsigned index = 2;index < t.numchildren();index++) 
-	    deref(r,t.child(index));
-	  q += r;
-	}
-      else
-	q += p;
+      q += handleReindexing(t,p);
       return;
     }
     if (t.numchildren() == 1) {
@@ -749,7 +747,8 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       return;
     }
     if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
-      q += ClassRHSExpression(*ptr,t,this);
+      ArrayVector p = ClassRHSExpression(*ptr,t,this);
+      q += handleReindexing(t,p);
       return;
     }
     Array r(*ptr);
@@ -4695,45 +4694,26 @@ void Interpreter::deref(Array &r, const tree &s) {
    if (!ptr.valid()) {
      ArrayVector m;
      functionExpression(t,1,false,m);
-     if (t.numchildren() <= 2) {
-       if (m.size() >= 1)
-	 return m[0];
-       else
-	 return Array::emptyConstructor();
-     } else {
-       Array r;
-       if (m.size() >= 1)
-	 r = m[0];
-       else
-	 r = Array::emptyConstructor();
-       for (unsigned index = 2;index < t.numchildren();index++) 
-	 deref(r,t.child(index));
-       return r;
-     }
+     m = handleReindexing(t,m);
+     if (m.size() >= 1)
+       return m[0];
+     else
+       return Array::emptyConstructor();
    }
    if ((ptr->dataClass() == FM_FUNCPTR_ARRAY &&
 	ptr->isScalar()) && (t.numchildren() > 1)) {
      ArrayVector m(FunctionPointerDispatch(*ptr,t.second(),1));
-     if (t.numchildren() <= 2) {
-       if (m.size() >= 1)
-	 return m[0];
-       else
-	 return Array::emptyConstructor();
-     } else {
-       Array r;
-       if (m.size() >= 1)
-	 r = m[0];
-       else
-	 r = Array::emptyConstructor();
-       for (unsigned index = 2;index < t.numchildren();index++) 
-	 deref(r,t.child(index));
-       return r;
-     }
+     m = handleReindexing(t,m);
+     if (m.size() >= 1)
+       return m[0];
+     else
+       return Array::emptyConstructor();
    }
    if (t.numchildren() == 1)
      return *ptr;
    if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
      ArrayVector m(ClassRHSExpression(*ptr,t,this));
+     m = handleReindexing(t,m);
      if (m.size() >= 1)
        return m[0];
      else

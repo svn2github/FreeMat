@@ -69,7 +69,7 @@ KeyManager::KeyManager()  {
   enteredLinesEmpty = true;
   ReplacePrompt("");
   loopactive = 0;
-  lineData = new char[LINELEN];
+  lineData = "";
   ResetLineBuffer();
   context = NULL;
   QSettings settings("FreeMat", "FreeMat");
@@ -152,27 +152,25 @@ int KeyManager::DisplayedStringWidth(string s, int nc, int aterm_curpos) {
 }
 
 void KeyManager::InsertString(int pos, string s) {
-  int len = s.size();
-  for (int i=4096-len;i>pos;i--)
-    lineData[i] = lineData[i-len];
-  const char* sptr = s.c_str();
-  for (int i=0;i<len;i++)
-    lineData[pos+i] = sptr[i];
+  lineData.insert(pos,s);
 }
 
 void KeyManager::InsertCharacter(int pos, char c) {
-  for (int i=4095;i>pos;i--)
-    lineData[i] = lineData[i-1];
-  lineData[pos] = c;
+  lineData.insert(pos,1,c);
 }
 
 void KeyManager::EraseCharacters(int pos, int cnt) {
-  for (int i=pos+cnt;i<4096;i++)
-    lineData[i-cnt] = lineData[i];
+  lineData.erase(pos,cnt);
 }
 
 void KeyManager::SetCharacter(int pos, char c) {
-  lineData[pos] = c;
+  if (pos < lineData.size())
+    lineData[pos] = c;
+  else {
+    int topad = (pos-lineData.size()+1);
+    lineData.append(topad,' ');
+    lineData[pos] = c;
+  }
 }
 
 int KeyManager::BuffCurposToTermCurpos(int n) {
@@ -348,7 +346,7 @@ void KeyManager::AddCharToLine(char c) {
      * Redraw the line from the cursor position to the end of the line,
      * and move the cursor to just after the added character.
      */
-    OutputString(string(lineData+sbuff_curpos), '\0');
+    OutputString(string(lineData,sbuff_curpos), '\0');
     SetTermCurpos(sterm_curpos + width);
     /*
      * Are we overwriting an existing character?
@@ -371,7 +369,7 @@ void KeyManager::AddCharToLine(char c) {
      * with spaces.
      */
     if(old_width > width) {
-      OutputString(string(lineData+sbuff_curpos), '\0');
+      OutputString(string(lineData,sbuff_curpos), '\0');
       /*
        * Clear to the end of the terminal.
        */
@@ -390,7 +388,7 @@ void KeyManager::AddCharToLine(char c) {
        * Redraw the line from the cursor position to the end of the line,
        * and move the cursor to just after the added character.
        */
-      OutputString(string(lineData+sbuff_curpos), '\0');
+      OutputString(string(lineData,sbuff_curpos), '\0');
       SetTermCurpos(sterm_curpos + width);
       buff_curpos++;
       /*
@@ -520,14 +518,14 @@ void KeyManager::ResetLineBuffer() {
   term_curpos = 0;
   term_len = 0;
   insert_curpos = 0;
-  memset(lineData,0,4096);
+  lineData = "";
 }
 
 void KeyManager::NewLine() {
   AddHistory(lineData);
   PlaceCursor(ntotal);
   emit OutputRawString("\r\n");
-  emit ExecuteLine(string(lineData) + "\n");
+  emit ExecuteLine(lineData + "\n");
   ReplacePrompt("");
   ResetLineBuffer();
   DisplayPrompt();
@@ -595,7 +593,7 @@ void KeyManager::DeleteChars(int nc, int cut) {
   /*
    * Redraw the remaining characters following the cursor.
    */
-  OutputString(string(lineData+buff_curpos), '\0');
+  OutputString(string(lineData,buff_curpos), '\0');
   /*
    * Clear to the end of the terminal.
    */
@@ -611,9 +609,9 @@ void KeyManager::EndOfLine() {
 }
 
 void KeyManager::KillLine() {
-  cutbuf = string(lineData+buff_curpos);
+  cutbuf = string(lineData,buff_curpos);
   ntotal = buff_curpos;
-  memset(lineData+ntotal,0,4096-ntotal);
+  lineData.erase(ntotal);
   TruncateDisplay();
   PlaceCursor(buff_curpos);
 }
@@ -623,7 +621,7 @@ void KeyManager::HistorySearchBackward() {
     SearchPrefix(string(lineData),buff_curpos);
   last_search = keyseq_count;
   HistoryFindBackwards();
-  ntotal = strlen(lineData);
+  ntotal = lineData.size();
   buff_curpos = ntotal;
   Redisplay();
 }
@@ -633,7 +631,7 @@ void KeyManager::HistorySearchForward() {
     SearchPrefix(string(lineData),buff_curpos);
   last_search = keyseq_count;
   HistoryFindForwards();
-  ntotal = strlen(lineData);
+  ntotal = lineData.size();
   buff_curpos = ntotal;
   Redisplay();
 }
@@ -667,8 +665,7 @@ void KeyManager::HistoryFindForwards() {
     ResetLineBuffer();
     return;
   }
-  memset(lineData,0,LINELEN);
-  strcpy(lineData,history[i].c_str());
+  lineData = history[i];
   startsearch = i;
 }
 
@@ -683,8 +680,7 @@ void KeyManager::HistoryFindBackwards() {
     if (!found) i--;
   }
   if (!found) return;
-  memset(lineData,0,LINELEN);
-  strcpy(lineData,history[i].c_str());
+  lineData = history[i];
   startsearch = i;
 }
 
@@ -740,7 +736,7 @@ void KeyManager::AddStringToLine(string s) {
    * Write the modified part of the line to the terminal, then move
    * the terminal cursor to the end of the displayed input string.
    */
-  OutputString(string(lineData+sbuff_curpos), '\0');
+  OutputString(string(lineData,sbuff_curpos), '\0');
   SetTermCurpos(sterm_curpos + term_slen);
 }
 
@@ -920,7 +916,7 @@ void KeyManager::CompleteWord() {
 	 */
 	if(!redisplay) {
 	  TruncateDisplay();
-	  OutputString(string(lineData+buff_pos), '\0');
+	  OutputString(string(lineData,buff_pos), '\0');
 	  PlaceCursor(buff_curpos);
 	  return;
 	};
@@ -1047,7 +1043,7 @@ void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   AddHistory(t.toStdString());
   emit OutputRawString("\r\n");
-  emit ExecuteLine(string(lineData)+"\n");
+  emit ExecuteLine(lineData+"\n");
   ResetLineBuffer();
   DisplayPrompt();
 }

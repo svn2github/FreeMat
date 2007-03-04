@@ -111,7 +111,7 @@ public:
   // the text
   vector<string> history;
   // The new line buffer
-  char *lineData;
+  string lineData;
   // The maximum allowed line length
   int linelen;
   // The cut buffer

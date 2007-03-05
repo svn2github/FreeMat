@@ -1,3 +1,4 @@
 function beginverbatim(&p,text)
-  fprintf(p.myfile,'<PRE>\n');
+  fprintf(p.myfile,'\\begin{verbatim}\n');
   p.verbatim = true;
+  

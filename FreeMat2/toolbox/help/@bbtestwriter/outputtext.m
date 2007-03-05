@@ -1,0 +1,1 @@
+function outputtext(&p,text)

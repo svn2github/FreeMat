@@ -2,21 +2,20 @@ function helpgen(source_path)
   global sourcepath section_descriptors
   rmdir([source_path,'/help2/html'],'s');
   rmdir([source_path,'/help2/tmp'],'s');
-%  rmdir([source_path,'/help/latex'],'s');
-%  rmdir([source_path,'/help/text'],'s');
-%  rmdir([source_path,'/help/test'],'s');
-%  rmdir([source_path,'/help/toolbox'],'s');
+  rmdir([source_path,'/help2/latex'],'s');
+  rmdir([source_path,'/help2/text'],'s');
+  rmdir([source_path,'/help2/test'],'s');
+  %  rmdir([source_path,'/help/toolbox'],'s');
   
   mkdir([source_path,'/help2/html']);
   mkdir([source_path,'/help2/tmp']);
-%  mkdir([source_path,'/help/latex']);
-%  mkdir([source_path,'/help/text']);
-%  mkdir([source_path,'/help/test']);
-%  mkdir([source_path,'/help/toolbox']);
+  mkdir([source_path,'/help2/latex']);
+  mkdir([source_path,'/help2/text']);
+  mkdir([source_path,'/help2/test']);
+  %  mkdir([source_path,'/help/toolbox']);
   sourcepath = source_path;
   read_section_descriptors;
-  h = htmlwriter;
-  p = groupwriter({h});
+  p = groupwriter({htmlwriter,latexwriter,bbtestwriter,textwriter,testwriter});
   file_list = helpgen_rdir([source_path,'/toolbox/array']);
   for i=1:numel(file_list)
     helpgen_processfile(file_list{i},p);
@@ -260,6 +259,7 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
     end
     line = getline(fp);
   end
+  docomputeblock(writers,cmdlist,errors_expected);
   cd([sourcepath,'/help2/tmp']);
   beginverbatim(writers);
   etext = threadcall(exec_id,100000,'simkeys',cmdlist);

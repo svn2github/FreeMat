@@ -1,0 +1,1 @@
+function doequation(&p,eqn)

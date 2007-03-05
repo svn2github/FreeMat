@@ -747,8 +747,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       return;
     }
     if (ptr->isUserClass() && !stopoverload && !inMethodCall(ptr->className().back())) {
-      ArrayVector p = ClassRHSExpression(*ptr,t,this);
-      q += handleReindexing(t,p);
+      q += ClassRHSExpression(*ptr,t,this);
       return;
     }
     Array r(*ptr);

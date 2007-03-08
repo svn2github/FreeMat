@@ -4,7 +4,7 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname,section_descriptors)
     p.modulename = lower(modname);
     p.section_descriptors = section_descriptors;
     p.sourcepath = sourcepath;
-    filename = [sourcepath '/help2/html/' p.secname '_' p.modulename '.html'];
+    filename = [sourcepath '/help/html/' p.secname '_' p.modulename '.html'];
     p.myfile = fopen(filename,'w');
     if (p.myfile < 0) 
       error(sprintf('unable to open %s for output',filename)); 

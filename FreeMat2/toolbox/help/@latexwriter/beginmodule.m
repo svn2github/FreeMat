@@ -5,7 +5,7 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname, ...
     p.modulename = lower(modname);
     p.section_descriptors = section_descriptors;
     p.sourcepath = sourcepath;
-    filename = [sourcepath '/help2/latex/' p.secname '_' p.modulename '.tex'];
+    filename = [sourcepath '/help/latex/' p.secname '_' p.modulename '.tex'];
     p.myfile = fopen(filename,'w');
     if (p.myfile < 0) 
       error(sprintf('unable to open %s for output',filename)); 

@@ -3,7 +3,7 @@ function writeindex(&p)
   for n=1:numel(secnames)
     writesectiontable(secnames{n},p.sectables.(secnames{n}),p);
   end
-  fp = fopen(sprintf('%s/help2/html/index.html',p.sourcepath),'w');
+  fp = fopen(sprintf('%s/help/html/index.html',p.sourcepath),'w');
   fprintf(fp,['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n']);
   fprintf(fp,'\n');
   fprintf(fp,'<HTML>\n');
@@ -24,7 +24,7 @@ function writeindex(&p)
   fprintf(fp,'</HTML>\n');
   fclose(fp);
   
-  fp = fopen(sprintf('%s/help2/html/modules.txt',p.sourcepath),'w');
+  fp = fopen(sprintf('%s/help/html/modules.txt',p.sourcepath),'w');
   modulenames = {};
   for n=1:numel(secnames)
     section = secnames{n};
@@ -39,7 +39,7 @@ function writeindex(&p)
   end
   fclose(fp);
 
-  fp = fopen(sprintf('%s/help2/html/sectable.txt',p.sourcepath),'w');
+  fp = fopen(sprintf('%s/help/html/sectable.txt',p.sourcepath),'w');
   for n=1:numel(secnames)
     section = secnames{n};
     fprintf(fp,'%s\n',p.section_descriptors.(section));
@@ -51,7 +51,7 @@ function writeindex(&p)
   fclose(fp);
   
 function writesectiontable(secname,modules,&p)
-  fp = fopen(sprintf('%s/help2/html/sec_%s.html',p.sourcepath,secname), ...
+  fp = fopen(sprintf('%s/help/html/sec_%s.html',p.sourcepath,secname), ...
              'w');
   fprintf(fp,['<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\' ...
               'n']);

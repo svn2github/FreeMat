@@ -4,7 +4,7 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname,section_descriptors)
     p.modulename = lower(modname);
     p.section_descriptors = section_descriptors;
     p.sourcepath = sourcepath;
-    filename = [sourcepath '/help2/text/' p.modulename '.mdc'];
+    filename = [sourcepath '/help/text/' p.modulename '.mdc'];
     p.myfile = fopen(filename,'a');
     if (p.myfile < 0) 
       error(sprintf('unable to open %s for output',filename)); 

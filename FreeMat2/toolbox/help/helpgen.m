@@ -1,17 +1,17 @@
 function helpgen(source_path)
   global sourcepath section_descriptors
-  rmdir([source_path,'/help2/html'],'s');
-  rmdir([source_path,'/help2/tmp'],'s');
-  rmdir([source_path,'/help2/latex'],'s');
-  rmdir([source_path,'/help2/text'],'s');
-  rmdir([source_path,'/help2/test'],'s');
+  rmdir([source_path,'/help/html'],'s');
+  rmdir([source_path,'/help/tmp'],'s');
+  rmdir([source_path,'/help/latex'],'s');
+  rmdir([source_path,'/help/text'],'s');
+  rmdir([source_path,'/help/test'],'s');
   %  rmdir([source_path,'/help/toolbox'],'s');
   
-  mkdir([source_path,'/help2/html']);
-  mkdir([source_path,'/help2/tmp']);
-  mkdir([source_path,'/help2/latex']);
-  mkdir([source_path,'/help2/text']);
-  mkdir([source_path,'/help2/test']);
+  mkdir([source_path,'/help/html']);
+  mkdir([source_path,'/help/tmp']);
+  mkdir([source_path,'/help/latex']);
+  mkdir([source_path,'/help/text']);
+  mkdir([source_path,'/help/test']);
   %  mkdir([source_path,'/help/toolbox']);
   sourcepath = source_path;
   read_section_descriptors;
@@ -28,16 +28,6 @@ function helpgen(source_path)
     end
   end
   writeindex(p);
-  %  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
-  %helpgen_processfile([source_path,'/toolbox/graph/image.m'],p);
-  %  helpgen_processfile([source_path,'/libs/libCore/Misc.cpp'],p);
-  
-  %  helpgen_processdir([source_path,'/toolbox']);
-  %  helpgen_processdir([source_path,'/libs']);
-  %  helpgen_processdir([source_path,'/src']);
-  
-  %files = helpgen_rdir([source_path,'/toolbox'])
-  keyboard
  
 function read_section_descriptors
   global sourcepath section_descriptors
@@ -271,9 +261,10 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
 %  cmdlist = strrep(cmdlist,'\r','\\r');
 %  cmdlist = strrep(cmdlist,'\n','\\n');
   docomputeblock(writers,cmdlist,errors_expected);
-  cd([sourcepath,'/help2/tmp']);
+  cd([sourcepath,'/help/tmp']);
   beginverbatim(writers);
   etext = threadcall(exec_id,100000,'simkeys',cmdlist);
+  etext = regexprep(etext,'(--> mprint[^\n]*\n)','');
   etext = strrep(etext,'--> quit','');
   outputtext(writers,etext);
   endverbatim(writers);
@@ -284,6 +275,6 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
     end
     error('Failed!');
   end
-  cd([sourcepath,'/help2/tmp']);
+  cd([sourcepath,'/help/tmp']);
   line = getline(fp);
 

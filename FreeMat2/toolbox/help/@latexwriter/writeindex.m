@@ -1,6 +1,6 @@
 function writeindex(&p)
   secnames = fieldnames(p.sectables);
-  fp = fopen(sprintf('%s/help2/latex/main.tex',p.sourcepath),'w');
+  fp = fopen(sprintf('%s/help/latex/main.tex',p.sourcepath),'w');
   fprintf(fp,'\\documentclass{book}\n');
   fprintf(fp,'\\usepackage{graphicx}\n');
   fprintf(fp,'\\usepackage{amsmath}\n');

@@ -208,6 +208,8 @@ static std::string TrimPrint(double val, bool scientificNotation) {
   }
 }
 
+const int MAX_TICK_COUNT = 1000;
+
 double tlog(double x) {
   if (x>0) 
     return log10(x);
@@ -242,12 +244,20 @@ void FormatAxisManual(double t1, double t2, int tickcount,
   const double *dp = (const double *) trange.getDataPointer();
   for (int i=0;i<tCount;i++) {
     double tloc = dp[i];
-    tickLocations.push_back(tloc);
+    if (!isLogarithmic)
+      tickLocations.push_back(tloc);
+    else
+      tickLocations.push_back(pow(10.0,tloc));
     if (tloc != 0.0)
       exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
   }
-  for (int i=0;i<tCount;i++) 
-    tlabels.push_back(TrimPrint(tBegin+i*tDelt,exponentialForm));
+  for (int i=0;i<tCount;i++) {
+    double tloc = tBegin+i*tDelt;
+    if (!isLogarithmic)
+      tlabels.push_back(TrimPrint(tloc,exponentialForm));
+    else
+      tlabels.push_back(TrimPrint(pow(10.0,tloc),true));
+  }
 }
   
 void FormatAxisAuto(double tMin, double tMax, int tickcount,
@@ -2095,7 +2105,7 @@ void HandleAxis::DrawTickMarks(RenderEngine &gc) {
 	double t1 = xticks[i];
 	double t2 = xticks[i+1];
 	int n = 2;
-	while ((t1*n) < t2) {
+	while (((t1*n) < t2) && (n < MAX_TICK_COUNT)) {
 	  minorticks.push_back(MapX(n*t1));
 	  n++;
 	}
@@ -2121,7 +2131,7 @@ void HandleAxis::DrawTickMarks(RenderEngine &gc) {
 	double t1 = yticks[i];
 	double t2 = yticks[i+1];
 	int n = 2;
-	while ((t1*n) < t2) {
+	while (((t1*n) < t2) && (n < MAX_TICK_COUNT)) {
 	  minorticks.push_back(MapY(n*t1));
 	  n++;
 	}
@@ -2147,7 +2157,7 @@ void HandleAxis::DrawTickMarks(RenderEngine &gc) {
 	double t1 = zticks[i];
 	double t2 = zticks[i+1];
 	int n = 2;
-	while ((t1*n) < t2) {
+	while (((t1*n) < t2) && (n < MAX_TICK_COUNT)) {
 	  minorticks.push_back(MapZ(n*t1));
 	  n++;
 	}

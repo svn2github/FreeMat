@@ -93,6 +93,7 @@ public:
   void adjustScrollbarPosition();
 
   char *getSelectionText();
+  void clearSelection();
   char *getTextSurface(int &count, int &width);
 
   // The QT interface goes here

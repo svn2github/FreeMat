@@ -69,6 +69,12 @@ QTTerm::QTTerm(QWidget *parent) :
 QTTerm::~QTTerm() {
 }
 
+void QTTerm::clearSelection() {
+  selectionStart = selectionStop = 0;
+  for (int i=0;i<m_width*m_scrollback;i++)
+    m_history[i].clearSelection();
+}
+
 char* QTTerm::getSelectionText() {
   int start;
   int stop;

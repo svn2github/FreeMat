@@ -294,8 +294,10 @@ void ApplicationWindow::paste() {
   if (text.isNull())
     text = cb->text(QClipboard::Clipboard);
   text.replace('\r',"");
-  if (!text.isNull())
+  if (!text.isNull()) {
     m_keys->QueueMultiString(text);
+    m_term->clearSelection();
+  }
 }
 
 void ApplicationWindow::font() {

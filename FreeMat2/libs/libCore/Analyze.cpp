@@ -2716,6 +2716,8 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
 //@<
 //prod(A,2)
 //@>
+//@@Tests
+//@$"y=prod(1:18)","prod(1.0:18.0)","exact"
 //!
 ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   // Get the data argument
@@ -2725,9 +2727,9 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("prod only defined for numeric types");
-  if ((argType >= FM_LOGICAL) && (argType < FM_INT32)) {
-    input.promoteType(FM_INT32);
-    argType = FM_INT32;
+  if ((argType >= FM_LOGICAL) && (argType <= FM_INT32)) {
+    input.promoteType(FM_DOUBLE);
+    argType = FM_DOUBLE;
   }    
   // Get the dimension argument (if supplied)
   int workDim = -1;

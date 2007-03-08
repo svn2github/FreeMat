@@ -828,7 +828,7 @@ void InitializeRandGen() {
 
 ArrayVector RandStateControl(const ArrayVector& arg) {
   string key = arg[0].getContentsAsStringUpper();
-  if (!(key=="state"))
+  if (!(key=="STATE"))
     throw Exception("expecting string 'state' as first argument");
   if (arg.size() == 1) {
     uint32 *mt = (uint32*) Malloc(sizeof(uint32)*625);

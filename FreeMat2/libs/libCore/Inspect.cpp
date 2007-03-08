@@ -221,7 +221,7 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
     mptr = (MFunctionDef *) val;
     mptr->updateCode();
     for (int i=0;i<mptr->helpText.size();i++)
-      eval->outputMessage(mptr->helpText[i].c_str());
+      eval->outputMessage(mptr->helpText[i]);
     return ArrayVector();
   } else {
     // Check for a mdc file with the given name
@@ -261,7 +261,7 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 	  tsize = tokens[tokencount].size();
 	  if ((outlen == 0) || ((outlen + tsize) < outputWidth)) {
 	    // Yes... send it and move on
-	    eval->outputMessage(tokens[tokencount].c_str());
+	    eval->outputMessage(tokens[tokencount]);
 	    eval->outputMessage(" ");
 	    outlen += tokens[tokencount++].size()+1;
 	  } else {
@@ -1163,14 +1163,14 @@ ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 		    mptr->fileName.c_str());
 	    eval->outputMessage(buffer);
 	  } else 
-	    ret = Array::stringConstructor(mptr->fileName.c_str());
+	    ret = Array::stringConstructor(mptr->fileName);
 	} else {
 	  if (nargout == 0) {
 	    sprintf(buffer,"Function %s, M-File function in file '%s'\n",
 		    fname.c_str(),mptr->fileName.c_str());
 	    eval->outputMessage(buffer);
 	  } else
-	    ret = Array::stringConstructor(mptr->fileName.c_str());
+	    ret = Array::stringConstructor(mptr->fileName);
 	}
       }
     } else if ((val->type() == FM_BUILT_IN_FUNCTION) || (val->type() == FM_SPECIAL_FUNCTION) ) {

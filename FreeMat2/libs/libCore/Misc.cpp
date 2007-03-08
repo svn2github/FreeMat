@@ -1516,7 +1516,7 @@ ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
   else
     A.promoteType(FM_DOUBLE);
   bool shiftFlag;
-  const char *whichflag;
+  string whichflag;
   double sigma[2];
   if (arg.size() < 3) {
     shiftFlag = false;
@@ -1529,7 +1529,7 @@ ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
       if ((stxt == "LM") || (stxt == "SM") || (stxt == "LA") || (stxt == "SA") ||
 	  (stxt == "BE") || (stxt == "LR") || (stxt == "SR") || (stxt == "LI") ||
 	  (stxt == "SI"))
-	whichflag = stxt.c_str();
+	whichflag = stxt;
       else
 	throw Exception("Unrecognized option for sigma - it must be either 'lm', 'sm', 'la', 'sa', 'be', 'lr', 'sr', 'li', or 'si'");
     } else {
@@ -3115,6 +3115,7 @@ ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
   } catch (InterpreterContinueException& e) {
   } catch (InterpreterBreakException& e) {
   } catch (InterpreterReturnException& e) {
+  } catch (InterpreterRetallException& e) {
   } catch (InterpreterQuitException& e) {
   }
   eval->setCaptureState(false);
@@ -3753,13 +3754,12 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
 //@{ source_test
 //a = 32;
 //b = a;
+//printf('a is %d and b is %d\n',a,b);
 //@}
 //Now we source the resulting file.
 //@<
 //clear a b
 //source source_test
-//a
-//b
 //@>
 //@@Tests
 //@{ source_test_script.m

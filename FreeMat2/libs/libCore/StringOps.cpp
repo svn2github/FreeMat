@@ -161,13 +161,13 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
 //of @|str| that matches the regular expression described by @|expr|.  The
 //second form of @|regexp| returns six outputs in the following order:
 //@[
-//  [start end tokenExtents match tokens names] = regexp('str','expr')
+//  [start stop tokenExtents match tokens names] = regexp('str','expr')
 //@]
 //where the meaning of each of the outputs is defined below.
 //\begin{itemize}
 //\item @|start| is a row vector containing the starting index of each 
 //substring that matches the regular expression.
-//\item @|end| is a row vector containing the ending index of each 
+//\item @|stop| is a row vector containing the ending index of each 
 //substring that matches the regular expression.
 //\item @|tokenExtents| is a cell array containing the starting and ending
 //indices of each substring that matches the @|tokens| in the regular
@@ -225,7 +225,7 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
 //@@Example
 //Some examples of using the @|regexp| function
 //@<
-//[start,end,tokenExtents,match,tokens,named] = regexp('quick down town zoo','(.)own')
+//[start,stop,tokenExtents,match,tokens,named] = regexp('quick down town zoo','(.)own')
 //@>
 //!
 static bool isSlotSpec(string t) {

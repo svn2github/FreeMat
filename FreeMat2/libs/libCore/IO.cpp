@@ -338,7 +338,7 @@ ArrayVector FopenFunction(int nargout, const ArrayVector& arg) {
   }
   FILE *fp = fopen(fname.c_str(),mode.c_str());
   if (!fp)
-    throw Exception(strerror(errno));
+    throw Exception(strerror(errno) + string(" for fopen argument ") + fname);
   FilePtr *fptr = new FilePtr();
   fptr->fp = fp;
   fptr->swapflag = swapendian;
@@ -1298,6 +1298,7 @@ ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
       }
     }
   }
+  free(buff);
   return values;
 }
 
@@ -1454,6 +1455,7 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
       }
     }
   }
+  free(buff);
   return values;
 }
 

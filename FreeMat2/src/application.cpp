@@ -229,7 +229,7 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
   connect(m_tool->getHistoryWidget(),SIGNAL(sendCommand(QString)),
  	  keys,SLOT(QueueCommand(QString)));
   connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),
- 	  keys,SLOT(QueueString(QString)));
+ 	  keys,SLOT(QueueMultiString(QString)));
   connect(keys,SIGNAL(UpdateCWD()),
 	  m_tool->getFileTool(),SLOT(updateCWD()));
   connect(keys,SIGNAL(UpdateVariables()),

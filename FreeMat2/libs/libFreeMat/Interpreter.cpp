@@ -337,6 +337,9 @@ void Interpreter::run() {
     } catch (InterpreterQuitException &e) {
       m_threadErrorState = true;      
       lasterr = "'quit' called in non-main thread";
+    } catch (InterpreterKillException &e) {
+      m_interrupt = false;
+    } catch (InterpreterRetallException &e) {
     } catch (exception& e) {
       m_threadErrorState = true;      
       lasterr = "thread crashed!! - you have encountered a bug in FreeMat - please file bug report describing what happened";
@@ -579,6 +582,8 @@ void Interpreter::clearStacks() {
 //     5;6];
 //b = [1, 2, 3, ...
 //     4, 5, 6 ];
+//c=[1, 2, ...
+//              3];
 //test_val = 1;
 //@}
 //@{ test_vec1.m
@@ -2991,7 +2996,7 @@ void Interpreter::block(const tree &t) {
     for (treeVector::iterator i=statements.begin();
 	 i!=statements.end();i++) {
       if (m_interrupt)
-	throw InterpreterQuitException();
+	throw InterpreterKillException();
       if (InterruptPending) {
 	outputMessage("Interrupt (ctrl-c) encountered\n");
 	stackTrace(true);

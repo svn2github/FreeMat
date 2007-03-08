@@ -40,6 +40,7 @@ class InterpreterBreakException : public exception {};
 class InterpreterReturnException : public exception {};
 class InterpreterRetallException : public exception {};
 class InterpreterQuitException : public exception {};
+class InterpreterKillException : public exception {};
 
 class stackentry {
 public:

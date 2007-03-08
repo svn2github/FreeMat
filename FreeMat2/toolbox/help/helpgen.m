@@ -15,10 +15,17 @@ function helpgen(source_path)
   %  mkdir([source_path,'/help/toolbox']);
   sourcepath = source_path;
   read_section_descriptors;
-  p = groupwriter({htmlwriter,latexwriter,bbtestwriter,textwriter,testwriter});
-  file_list = helpgen_rdir([source_path,'/toolbox/array']);
+  p = groupwriter({htmlwriter,latexwriter,bbtestwriter,textwriter, ...
+                   testwriter});
+  file_list = {};
+  file_list = [file_list;helpgen_rdir([source_path,'/libs'])];
+  file_list = [file_list;helpgen_rdir([source_path,'/src'])];
+  file_list = [file_list;helpgen_rdir([source_path,'/toolbox'])];
   for i=1:numel(file_list)
-    helpgen_processfile(file_list{i},p);
+    [path,name,suffix] = fileparts(file_list{i});
+    if (~strcmp(name,'MPIWrap'))
+      helpgen_processfile(file_list{i},p);
+    end
   end
   writeindex(p);
   %  helpgen_processfile([source_path,'/toolbox/array/all.m'],p);
@@ -85,6 +92,7 @@ function helpgen_processfile(filename,&writers)
     if (testmatch(line,pset.docblock))
       line = getline(fp);
       modname = mustmatch(line,pset.modulename);
+      printf('    Module %s...\n',lower(modname));
       moddesc = mustmatch(line,pset.moduledesc);
       line = getline(fp);
       secname = mustmatch(line,pset.sectionname);
@@ -173,6 +181,7 @@ function handle_filedump(&line,fp,pset,&writers)
     fn = [fn mustmatch(line,pset.ccomment)];
     line = getline(fp);
   end
+  fn = strrep(strrep(fn,'\n','\\n'),'\r','\\r');
   zp = fopen(fname,'w');
   fprintf(zp,'%s',fn);
   fclose(zp);
@@ -259,6 +268,8 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
     end
     line = getline(fp);
   end
+%  cmdlist = strrep(cmdlist,'\r','\\r');
+%  cmdlist = strrep(cmdlist,'\n','\\n');
   docomputeblock(writers,cmdlist,errors_expected);
   cd([sourcepath,'/help2/tmp']);
   beginverbatim(writers);

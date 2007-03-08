@@ -707,4 +707,12 @@ if (~strcomp(typeof(type),'string'))
   error('type argument to isa must be a string');
 end
 y = strcomp(class(x),type);
-  
+
+
+To Do for 3.1 release:
+
+0.  Merge Martynas' changes
+1.  Finish helpgen (need Merge code)
+2.  Contour plots
+3.  Clear screen
+4.  Help search?

@@ -284,5 +284,6 @@ function handle_exec(&line,fp,pset,&writers,exec_id)
     end
     error('Failed!');
   end
+  cd([sourcepath,'/help2/tmp']);
   line = getline(fp);
 

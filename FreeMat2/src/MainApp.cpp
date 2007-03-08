@@ -259,7 +259,8 @@ void MainApp::DoGraphicsCall(Interpreter* interp, FuncPtr f, ArrayVector m, int 
 //@>
 //But from a launched auxilliary thread, we have
 //@<
-//t_id = threadnew('threadid'); threadwait(t_id); threadvalue(t_id)
+//t_id = threadnew
+//id = threadcall(t_id,1000,'threadid')
 //threadfree(t_id);
 //@>
 //!
@@ -429,6 +430,7 @@ ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //b = rand(100)\rand(100,1);             % Solve some equations simultaneously
 //c = threadvalue(a);                    % Retrieve the file list
 //size(c)                                % It is large!
+//threadfree(a);
 //@>
 //The possibilities for threads are significant.  For example,
 //we can solve equations in parallel, or take Fast Fourier Transforms
@@ -533,18 +535,20 @@ ArrayVector ThreadStartFunction(int nargout, const ArrayVector& arg, Interpreter
 //all files on the system, but do not want the results to stop our
 //computation.  So we run the @|system| call in a thread.
 //@<
-//a = threadnew('system','ls -lrt /');  % Start the thread
-//b = rand(100)\rand(100,1);            % Solve some equations simultaneously
-//c = threadvalue(a);                   % Retrieve the file list
-//size(c)                               % It is large!
-//threadfree(a)
+//a = threadnew;                         % Create the thread
+//threadstart(a,'system',1,'ls -lrt /'); % Start the thread
+//b = rand(100)\rand(100,1);             % Solve some equations simultaneously
+//c = threadvalue(a);                    % Retrieve the file list
+//size(c)                                % It is large!
+//threadfree(a);
 //@>
 //In this example, we force the threaded function to cause an
 //exception (by calling the @|error| function as the thread 
 //function).  When we call @|threadvalue|, we get an error, instead
 //of the return value of the function
-//@<
-//a = threadnew('error','Hello world!'); % Will immediately stop due to error
+//@<1
+//a = threadnew
+//threadstart(a,'error',0,'Hello world!'); % Will immediately stop due to error
 //c = threadvalue(a)                     % The error comes to us
 //threadfree(a)
 //@>
@@ -597,7 +601,8 @@ ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg) {
 //thread with a short timeout, it fails, but not when the timeout
 //is long enough to capture the end of the function call.
 //@<
-//a = threadnew('sleep',10);    % start a thread that will sleep for 10
+//a = threadnew;
+//threadstart(a,'sleep',0,10);  % start a thread that will sleep for 10
 //threadwait(a,2000)            % 2 second wait is not long enough
 //threadwait(a,10000)           % 10 second wait is long enough
 //threadfree(a)
@@ -651,8 +656,10 @@ ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg) {
 //We now lauch this function in a thread, and use @|threadkill| to
 //stop it:
 //@<
-//a = threadnew('freecount')     % start the thread
+//a = threadnew;
 //global count                   % register the global variable count
+//count = 0;
+//threadstart(a,'freecount',0)   % start the thread
 //count                          % it is counting
 //sleep(1)                       % Wait a bit
 //count                          % it is still counting
@@ -661,6 +668,7 @@ ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg) {
 //count                          % The count will no longer increase
 //sleep(1)
 //count
+//threadfree(a)
 //@>
 //!
 ArrayVector ThreadKillFunction(int nargout, const ArrayVector& arg) {

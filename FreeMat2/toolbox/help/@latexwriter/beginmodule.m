@@ -10,7 +10,7 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname, ...
     if (p.myfile < 0) 
       error(sprintf('unable to open %s for output',filename)); 
     end	
-    fprintf(p.myfile,'\\section{%s}\n\n',moddesc);
+    fprintf(p.myfile,'\\section{%s}\n\n',moddesc(1:(end-1)));
     if (~isfield(p.sectables,p.secname))
       p.sectables.(p.secname) = {};
     end

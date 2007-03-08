@@ -36,5 +36,12 @@ void FileTool::updateCWD() {
 }
 
 void FileTool::doubleClicked(const QModelIndex& index) {
-  emit sendCommand("'"+model->filePath(index)+"'");
+  QString filePath(model->filePath(index));
+  QFileInfo fileInfo(filePath);
+  if ((fileInfo.suffix() == "dat") || (fileInfo.suffix() == "mat"))
+    emit sendCommand("load " + filePath + "\n");
+  else if (fileInfo.suffix() == "m")
+    emit sendCommand("cd " + fileInfo.path() + "; " + fileInfo.baseName() + "\n");
+  else
+    emit sendCommand("'" + filePath + "'");
 }

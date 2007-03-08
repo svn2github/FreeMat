@@ -555,8 +555,9 @@ void FMEditor::updateTitles() {
 
 
 void FMEditor::tabChanged(int newslot) {
+  disconnect(cutAct,SIGNAL(triggered()),0,0);
   disconnect(copyAct,SIGNAL(triggered()),0,0);
-  disconnect(copyAct,SIGNAL(triggered()),0,0);
+  disconnect(pasteAct,SIGNAL(triggered()),0,0);
   connect(cutAct,SIGNAL(triggered()),currentEditor(),SLOT(cut()));
   connect(copyAct,SIGNAL(triggered()),currentEditor(),SLOT(copy()));
   connect(pasteAct,SIGNAL(triggered()),currentEditor(),SLOT(paste()));
@@ -784,6 +785,7 @@ void FMEditor::open() {
       (tab->tabText(tab->currentIndex()) != "untitled.m")) {
     tab->addTab(new FMEditPane(m_eval),"untitled.m");
     tab->setCurrentIndex(tab->count()-1);
+    updateFont();
   }
   QString fileName = GetOpenFileName(this);
   if (!fileName.isEmpty()) {
@@ -843,6 +845,7 @@ void FMEditor::ShowActiveLine() {
       (tab->tabText(tab->currentIndex()) != "untitled.m")) {
     tab->addTab(new FMEditPane(m_eval),"untitled.m");
     tab->setCurrentIndex(tab->count()-1);
+    updateFont();
   }
   loadFile(tname);
   update();

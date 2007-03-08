@@ -1535,7 +1535,7 @@ int HandleAxis::GetTickCount(RenderEngine &gc,
 }
 
 void HandleAxis::RecalculateTicks() {
-  QImage img(1,1,QImage::Format_RGB32);
+  QPixmap img(1,1);
   QPainter pnt(&img);
   HandleFigure *fig = GetParentFigure();
   unsigned width = fig->GetWidth();
@@ -2359,6 +2359,10 @@ void HandleAxis::DrawAxisLabels(RenderEngine& gc) {
   std::string ydir(StringPropertyLookup("ydir"));
   SetStringDefault("xdir","normal");
   SetStringDefault("ydir","normal");
+  std::string xscale(StringPropertyLookup("xscale"));
+  std::string yscale(StringPropertyLookup("yscale"));
+  SetStringDefault("xscale","linear");
+  SetStringDefault("yscale","linear");
   if (xvisible) {
     lbl = (HPHandles*) LookupProperty("xlabel");
     if (!lbl->Data().empty()) {
@@ -2387,8 +2391,9 @@ void HandleAxis::DrawAxisLabels(RenderEngine& gc) {
   }      
   SetupProjection(gc);
   SetStringDefault("xdir",xdir);
-
   SetStringDefault("ydir",ydir);
+  SetStringDefault("xscale",xscale);
+  SetStringDefault("yscale",yscale);
 }
 
 void HandleAxis::DrawChildren(RenderEngine& gc) {

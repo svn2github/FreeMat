@@ -425,14 +425,16 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 		      std::string(" prototype (argument list) - ") + 
 		      std::string("expecting a valid type name"));
     types.push_back(tn);
-    const char *bc = parseBoundsCheck(cp);
+    char *bc = parseBoundsCheck(cp);
     if (bc != NULL) {
       checks.push_back(ParseExpressionString(bc));
+      free(bc);
     } else
       checks.push_back(tree(NULL));
     char *ar;
     ar = parseArgumentName(cp);
     arguments.push_back(ar);
+    free(ar);
     if (*cp != 0) {
       if (*cp != ',') throw Exception("expecting a ',' between arugments");
       cp++;

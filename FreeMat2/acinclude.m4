@@ -303,6 +303,21 @@ if test x"$found_avcall" == xyes; then
   AC_DEFINE(HAVE_AVCALL, 1, [Set to 1 if you have libavcall])
 fi    
 
+if test x"$is_osx" == xyes; then
+   LIBS="$LIBS -framework vecLib"
+   found_blas="yes"
+   found_lapack="yes"
+else
+   ACX_BLAS(found_blas="yes",found_blas="no")
+   if test x"$found_blas" == xyes; then
+	LIBS="$BLAS_LIBS $LIBS"
+   fi
+   ACX_LAPACK(found_lapack="yes",found_lapack="no")
+   if test x"$found_lapack" == xyes; then
+      LIBS="$LAPACK_LIBS $LIBS"
+   fi
+fi
+
 AC_CHECK_LIB(amd,amd_postorder,found_amd="yes",found_amd="no")
 AC_CHECK_HEADER(amd.h,[],found_amd="no")
 
@@ -336,20 +351,6 @@ if test x"$found_fftw3" == xyes; then
   	AC_DEFINE(HAVE_FFTW, 1, [Set to 1 if you have the double precision version of FFTW installed])
 fi
 
-if test x"$is_osx" == xyes; then
-   LIBS="$LIBS -framework vecLib"
-   found_blas="yes"
-   found_lapack="yes"
-else
-   ACX_BLAS(found_blas="yes",found_blas="no")
-   if test x"$found_blas" == xyes; then
-	LIBS="$BLAS_LIBS $LIBS"
-   fi
-   ACX_LAPACK(found_lapack="yes",found_lapack="no")
-   if test x"$found_lapack" == xyes; then
-      LIBS="$LAPACK_LIBS $LIBS"
-   fi
-fi
 AC_F77_FUNC(znaupd)
 if test x"$znaupd" == x"unknown"; then
   znaupd="znaupd_"

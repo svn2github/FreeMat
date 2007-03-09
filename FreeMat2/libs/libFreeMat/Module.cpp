@@ -26,15 +26,8 @@
 #include "Parser.hpp"
 #include "PathSearch.hpp"
 
-#ifdef WIN32
-#include <direct.h>
-#else
-#include <unistd.h>
-#endif
-
 SymbolTable<DynLib*> libPointers;
 stringVector DynamicFunctions;
-
 
 void ClearLibs(Interpreter* eval) {
   stringVector libnames(libPointers.getCompletions(""));
@@ -380,17 +373,15 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 		    "return type, argument list");
   libfile = arg[0].getContentsAsString();
   libfullpath = psearch.ResolvePath(libfile);
-  char buffer[1000];
+  string current(QDir::currentPath().toStdString());
   // Prepend the current working directory... ugly, but necessary
 #ifdef WIN32
-  _getcwd(buffer,sizeof(buffer));
   if (!((libfullpath[0] == '\\') || ((libfullpath[1] == ':') && 
 				     (libfullpath[2] == '\\'))))
-    libfullpath = std::string(buffer) + "\\" + libfullpath;
+    libfullpath = current + "\\" + libfullpath;
 #else
-  getcwd(buffer,sizeof(buffer));
   if (libfullpath[0] != '/')
-    libfullpath = std::string(buffer) + "/" + libfullpath;
+    libfullpath = current + "/" + libfullpath;
 #endif
   symbolname = arg[1].getContentsAsString();
   funcname = arg[2].getContentsAsString();

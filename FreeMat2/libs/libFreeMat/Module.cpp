@@ -25,6 +25,7 @@
 #include "Context.hpp"
 #include "Parser.hpp"
 #include "PathSearch.hpp"
+#include <QDir>
 
 SymbolTable<DynLib*> libPointers;
 stringVector DynamicFunctions;

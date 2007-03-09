@@ -798,6 +798,10 @@ int MainApp::StartNewInterpreterThread() {
   p_eval->setGreetingFlag(skipGreeting);
   int threadID = m_threadHandles.assignHandle(p_eval);
   p_eval->setThreadID(threadID);
+#ifdef __OpenBSD__
+  /* 64 frames / calls deep */
+  p_eval->setStackSize(262144);
+#endif
   return threadID;
 }
 

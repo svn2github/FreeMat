@@ -49,7 +49,7 @@ AUTOMAKE_OPTIONS 	= foreign
 
 CLEANFILES = $(FreeMat_MOC) $(FreeMat_QRC)
 
-AM_CPPFLAGS = $(QT_CFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) -DRESOURCEDIR=\"$(resourcedir)\"
 
 application.moc.cpp : application.hpp
 	$(QT_MOC) -o $@ $<

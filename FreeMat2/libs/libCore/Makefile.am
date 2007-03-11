@@ -45,7 +45,7 @@ AUTOMAKE_OPTIONS 	= foreign
 
 CLEANFILES = $(libCore_a_MOC)
 
-AM_CPPFLAGS = $(QT_CFLAGS) 
+AM_CPPFLAGS = $(QT_CFLAGS) -DRESOURCEDIR=\"$(resourcedir)\"
 
 XML.moc.cpp: XML.hpp
 	$(QT_MOC) -o $@ $<

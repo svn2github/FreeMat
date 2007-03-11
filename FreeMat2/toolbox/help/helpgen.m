@@ -5,14 +5,15 @@ function helpgen(source_path)
   rmdir([source_path,'/help/latex'],'s');
   rmdir([source_path,'/help/text'],'s');
   rmdir([source_path,'/help/test'],'s');
-  %  rmdir([source_path,'/help/toolbox'],'s');
+  rmdir([source_path,'/help/toolbox'],'s');
   
   mkdir([source_path,'/help/html']);
   mkdir([source_path,'/help/tmp']);
   mkdir([source_path,'/help/latex']);
   mkdir([source_path,'/help/text']);
   mkdir([source_path,'/help/test']);
-  %  mkdir([source_path,'/help/toolbox']);
+  mkdir([source_path,'/help/toolbox']);
+
   sourcepath = source_path;
   read_section_descriptors;
   p = groupwriter({htmlwriter,latexwriter,bbtestwriter,textwriter, ...
@@ -27,8 +28,50 @@ function helpgen(source_path)
       helpgen_processfile(file_list{i},p);
     end
   end
+
+  file_list = helpgen_rdir([source_path,'/toolbox']);
+  for i=1:numel(file_list)
+    merge_mfile(file_list{i});
+  end
   writeindex(p);
- 
+
+function merge_mfile(filename)
+  global sourcepath
+  [path,name,suffix] = fileparts(filename);
+  if (~strcmp(suffix,'.m')) return; end
+  printf('Merging comments with file %s\n',filename);
+  headertext = [];
+  try 
+    fp = fopen([sourcepath,'/help/text/',name,'.mdc'],'r');
+    text = getline(fp);
+    while (~feof(fp))
+      headertext = [headertext,'% ',text];
+      text = getline(fp);
+    end
+    fclose(fp);
+  catch
+  end
+  h = fopen(filename,'r');
+  newname = strrep(filename,'toolbox','help/toolbox');
+  [path,name,suffix] = fileparts(newname);
+  mkdir(path);
+  g = fopen(newname,'w');
+  text = getline(h);
+  while (~feof(h))
+    if (~isempty(regexp(text,'^\s*%!')))
+      text = getline(h);
+      while (isempty(regexp(text,'^\s*%!')))
+        text = getline(h);
+      end
+      fprintf(g,'%s',headertext);
+    else
+      fprintf(g,'%s',text);
+    end
+    text = getline(h);
+  end
+  fclose(h);
+  fclose(g);
+  
 function read_section_descriptors
   global sourcepath section_descriptors
   fp = fopen([sourcepath,'/tools/helpgen/section_descriptors.txt'],'r');

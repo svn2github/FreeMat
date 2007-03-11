@@ -711,7 +711,6 @@ y = strcomp(class(x),type);
 
 To Do for 3.1 release:
 
-0.  Merge Martynas' changes
 1.  Finish helpgen (need Merge code)
 2.  Contour plots
 3.  Clear screen

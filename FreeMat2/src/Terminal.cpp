@@ -312,5 +312,9 @@ void Terminal::DoRead() {
 }
 
 void Terminal::ClearDisplay() {
-  
+#ifdef Q_WS_X11
+  tputs(home,1,putchar);
+  tputs(clear_eod,nline,putchar);
+  fflush(stdout);
+#endif
 }

@@ -1077,8 +1077,13 @@ void KeyManager::RegisterTerm(QObject* term) {
   connect(this,SIGNAL(ClearEOD()),term,SLOT(ClearEOD()));
   connect(this,SIGNAL(MoveBOL()),term,SLOT(MoveBOL()));
   connect(this,SIGNAL(OutputRawString(string)),term,SLOT(OutputRawString(string)));
+  connect(this,SIGNAL(ClearDisplay()),term,SLOT(ClearDisplay()));
   connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
   connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  
+}
+
+void KeyManager::ClearDisplayCommand() {
+  emit ClearDisplay();
 }
 
 void KeyManager::ContinueAction() {

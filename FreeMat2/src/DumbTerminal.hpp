@@ -39,6 +39,7 @@ public slots:
   void MoveBOL();
   void OutputRawString(string txt);
   void DoRead();
+  void ClearDisplay();
 signals:
   void OnChar(int c);
   void SetTextWidth(int);

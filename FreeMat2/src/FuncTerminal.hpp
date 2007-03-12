@@ -39,6 +39,7 @@ public:
   virtual void ClearEOL();
   virtual void ClearEOD();
   virtual void MoveBOL();
+  virtual void ClearDisplay();
   virtual int getTerminalWidth();
 };
 

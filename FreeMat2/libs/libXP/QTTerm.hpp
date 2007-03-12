@@ -122,6 +122,7 @@ protected:
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
+  void ClearDisplay();
   void OutputRawString(string txt);
 signals:
  void OnChar(int c);

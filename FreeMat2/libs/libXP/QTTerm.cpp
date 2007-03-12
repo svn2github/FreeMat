@@ -463,6 +463,15 @@ void QTTerm::MoveBOL() {
   SetCursor(0,m_cursor_y);
 }
 
+void QTTerm::ClearDisplay() {
+  for (int i=0;i<m_width*m_scrollback;i++)
+    m_history[i] = tagChar(' ');
+  for (int i=0;i<m_width*m_height;i++)
+    m_surface[i] = tagChar(' ');
+  SetCursor(0,0);
+  m_history_lines = 0;
+  SetupScrollBar(0,0,1,m_height,0);
+}
 
 void QTTerm::ClearEOL() {
   for (int i=m_cursor_x;i<m_width;i++)

@@ -311,3 +311,6 @@ void Terminal::DoRead() {
 #endif
 }
 
+void Terminal::ClearDisplay() {
+  
+}

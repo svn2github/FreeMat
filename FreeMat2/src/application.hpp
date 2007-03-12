@@ -63,7 +63,7 @@ class ApplicationWindow : public QMainWindow {
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
   QAction *pathAct, *filetoolAct, *historyAct, *cleanHistoryAct;
-  QAction *pauseAct, *continueAct, *stopAct;
+  QAction *pauseAct, *continueAct, *stopAct, *clearAct;
   QAction *dbStepAct, *dbTraceAct, *checkUpdates;
   ToolDock *m_tool;
   AboutWindow *Aboutwin;
@@ -108,6 +108,7 @@ private slots:
   void history();
   void cleanhistory();
   void init();
+  void clearconsole();
 }; 
 
 #endif

@@ -67,6 +67,9 @@
     fflush(stdout);
   }
 
+void FuncTerminal::ClearDisplay() {
+}
+
   void FuncTerminal::OutputRawString(string txt) {
     printf("%s",txt.c_str());
     fflush(stdout);

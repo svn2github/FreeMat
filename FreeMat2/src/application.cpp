@@ -77,6 +77,8 @@ void ApplicationWindow::createActions() {
   saveAct = new QAction(QIcon(":/images/save.png"),"&Save Transcript",this);
   saveAct->setShortcut(Qt::Key_S | Qt::CTRL);
   connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
+  clearAct = new QAction("&Clear Console",this);
+  connect(clearAct,SIGNAL(triggered()),this,SLOT(clearconsole()));
   quitAct = new QAction(QIcon(":/images/quit.png"),"&Quit",this);
   connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
   copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
@@ -106,6 +108,7 @@ void ApplicationWindow::createActions() {
 void ApplicationWindow::createMenus() {
   fileMenu = menuBar()->addMenu("&File");
   fileMenu->addAction(saveAct);
+  fileMenu->addAction(clearAct);
   fileMenu->addAction(quitAct);
   editMenu = menuBar()->addMenu("&Edit");
   editMenu->addAction(copyAct);
@@ -220,6 +223,10 @@ void ApplicationWindow::SetGUITerminal(QTTerm* term) {
     m_term->setFont(new_font);
   }
   term->show();
+}
+
+void ApplicationWindow::clearconsole() {
+  m_keys->ClearDisplayCommand();
 }
 
 void ApplicationWindow::SetKeyManager(KeyManager *keys) {

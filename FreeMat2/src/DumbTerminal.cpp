@@ -49,6 +49,9 @@ void DumbTerminal::ClearEOL() {
 void DumbTerminal::ClearEOD() {
 }
 
+void DumbTerminal::ClearDisplay() {
+}
+
 void DumbTerminal::MoveBOL() {
   putchar('\r');
   fflush(stdout);

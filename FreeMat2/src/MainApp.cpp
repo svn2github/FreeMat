@@ -718,6 +718,21 @@ ArrayVector ThreadFreeFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
+//!
+//@Module CLC Clear Dislplay
+//@@Section FREEMAT
+//@@Usage
+//The @|clc| function clears the current display.  The syntax for
+//its use is
+//@[
+//   clc
+//@]
+//!
+ArrayVector ClcFunction(int nargout, const ArrayVector& arg) {
+  m_app->GetKeyManager()->ClearDisplayCommand();
+  return ArrayVector();
+}
+
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
   context->addSpecialFunction("threadnew",ThreadNewFunction,0,1,NULL);
@@ -728,6 +743,7 @@ void LoadThreadFunctions(Context *context) {
   context->addFunction("threadfree",ThreadFreeFunction,2,0,"handle","timeout",NULL);
   context->addGfxSpecialFunction("pause",PauseFunction,1,0,"x",NULL);
   context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"x",NULL);
+  context->addGfxFunction("clc",ClcFunction,0,0,NULL);
 }
 			 
 Context *MainApp::NewContext() {

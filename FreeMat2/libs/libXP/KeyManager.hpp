@@ -153,6 +153,7 @@ signals:
   void ClearEOL();
   void ClearEOD();
   void MoveBOL();
+  void ClearDisplay();
   void OutputRawString(string txt);
   void SendCommand(QString);
   void Interrupt();
@@ -172,6 +173,7 @@ public slots:
   void DbStepAction();
   void DbTraceAction();
   void SetPrompt(string);
+  void ClearDisplayCommand();
 signals:
   void UpdateTermWidth(int);
 };

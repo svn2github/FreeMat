@@ -19,8 +19,8 @@ function helpgen(source_path)
   p = groupwriter({htmlwriter,latexwriter,bbtestwriter,textwriter, ...
                    testwriter});
   file_list = {};
-%  file_list = [file_list;helpgen_rdir([source_path,'/libs'])];
-%  file_list = [file_list;helpgen_rdir([source_path,'/src'])];
+  file_list = [file_list;helpgen_rdir([source_path,'/libs'])];
+  file_list = [file_list;helpgen_rdir([source_path,'/src'])];
   file_list = [file_list;helpgen_rdir([source_path,'/toolbox'])];
   for i=1:numel(file_list)
     [path,name,suffix] = fileparts(file_list{i});

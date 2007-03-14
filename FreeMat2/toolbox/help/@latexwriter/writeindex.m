@@ -19,7 +19,7 @@ function writeindex(&p)
     fprintf(fp,'\\chapter{%s}\n',p.section_descriptors.(section));
     modulelist = sort(p.sectables.(section)(:,1));
     for k=1:numel(modulelist)
-      fprintf(fp,'\\input{%s_%s}\n',section,lower(modulelist{k}(1:(end-1))));
+      fprintf(fp,'\\input{%s_%s}\n',section,lower(modulelist{k}));
     end
   end
   fprintf(fp,'\\end{document}\n');

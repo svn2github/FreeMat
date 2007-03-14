@@ -701,6 +701,46 @@ SetupMacInplaceBuild()
    make
 }
 
+SetupMacInplaceBundle()
+{
+    SetupCommon
+    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml"
+    make
+    baseDir="$PWD/$FREEMAT.app"
+    rm -rf $baseDir
+    buildDir="$PWD"
+    srcDir="$PWD/.."
+    MakeDirectory "$baseDir"
+    MakeDirectory "$baseDir/Contents"
+    MakeDirectory "$baseDir/Contents/MacOS"
+    MakeDirectory "$baseDir/Contents/Resources"
+    MakeDirectory "$baseDir/Contents/Resources/help"
+    MakeDirectory "$baseDir/Contents/Resources/help/html"
+    MakeDirectory "$baseDir/Contents/Resources/help/text"
+    MakeDirectory "$baseDir/Contents/Resources/help/pdf"
+    MakeDirectory "$baseDir/Contents/Resources/toolbox"
+    MakeDirectory "$baseDir/Contents/Frameworks"
+    CopyFile "$buildDir/src/FreeMat" "$baseDir/Contents/MacOS/FreeMat"
+    echo "APPL????" > "$baseDir/Contents/PkgInfo"
+    cat > "$baseDir/Contents/Info.plist" <<EOF
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+ <plist version="0.9">
+ <dict>
+ <key>CFBundleIconFile</key>
+ <string>appIcon.icns</string>
+ <key>CFBundlePackageType</key>
+ <string>APPL</string>
+ <key>CFBundleExecutable</key>
+ <string>FreeMat</string>
+ </dict>
+ </plist>
+EOF
+    CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
+    CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
+    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+}
+
 SetupInplaceBuild() 
 {
   SetupCommon
@@ -839,6 +879,7 @@ subdirectory.  Here are the tasks manages by this script.
       --mac-qt           Setup Mac Qt
       --mac-freemat      Build the Mac FreeMat
       --mac-inplace      Build the Mac FreeMat in place
+      --mac-inplace-bundle Build the Mac bundle in place
       --mac-fortran      Setup the Mac fortrans
       --xmac-fftw        Setup the PPC cross of FFTW
       --xmac-sparse      Setup the PPC cross of SuiteSparse
@@ -887,6 +928,7 @@ for arg
       --mac-qt)        SetupMacQt ;;
       --mac-freemat)   SetupMacFreeMat ;;
       --mac-inplace)   SetupMacInplaceBuild ;;
+      --mac-inplace-bundle) SetupMacInplaceBundle ;;
       --mac-fortran)   SetupMacFortran ;;
       --xmac-fftw)     SetupXMacFFTW ;;
       --xmac-sparse)   SetupXMacSparse ;;

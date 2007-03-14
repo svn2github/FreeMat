@@ -29,8 +29,21 @@
 #include <QTabWidget>
 #include <QListWidget>
 #include <QTreeWidget>
+#include <QLineEdit>
 
 class HelpWindow;
+
+class HelpSearcher : public QWidget {
+  Q_OBJECT
+  public:
+  HelpSearcher(QWidget *parent, QString basepath, HelpWindow *mgr);
+private:
+  QListWidget *m_results_list;
+  QLineEdit *m_search_word;
+  QString m_basepath;
+private slots:
+  void updateSearch();
+};
 
 class HelpWidget : public QDockWidget {
   Q_OBJECT

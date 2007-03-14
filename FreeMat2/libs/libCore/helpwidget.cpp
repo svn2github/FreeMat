@@ -22,6 +22,49 @@
 #include <QtGui>
 #include <QDebug>
 
+HelpSearcher::HelpSearcher(QWidget *parent, QString basepath, HelpWindow *mgr) : QWidget(parent) {
+  QVBoxLayout *vlayout = new QVBoxLayout;
+  QWidget *pane = new QWidget;
+  QHBoxLayout *hlayout = new QHBoxLayout;
+  hlayout->addWidget(new QLabel("Search Text:"));
+  m_search_word = new QLineEdit;
+  hlayout->addWidget(m_search_word);
+  pane->setLayout(hlayout);
+  vlayout->addWidget(pane);
+  m_results_list = new QListWidget;
+  vlayout->addWidget(m_results_list);
+  setLayout(vlayout);
+  connect(m_search_word,SIGNAL(returnPressed()),this,SLOT(updateSearch()));
+  connect(m_results_list,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+	  mgr,SLOT(activateModule(QListWidgetItem*)));
+  m_basepath = basepath;
+}
+
+void HelpSearcher::updateSearch() {
+  m_results_list->clear();
+  QRegExp search_pattern(m_search_word->text());
+  // Get a list of all .html files
+  QDir dir(m_basepath);
+  dir.setNameFilters(QStringList() << "*.html");
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    QFile f(fileInfo.absoluteFilePath());
+    if (f.open(QIODevice::ReadOnly)) {
+      QTextStream str(&f);
+      QString helpText(str.readAll());
+      if (helpText.count(search_pattern) > 0)  {
+	QString entry(fileInfo.fileName());
+	QRegExp reg("(\\w*)_(\\w*)");
+	if (reg.indexIn(entry) > -1) {
+	  if (reg.cap(1) != "sec")
+	    new QListWidgetItem(reg.cap(2) + " (" + reg.cap(1) + ")",m_results_list);
+	}
+      }
+    }
+  }
+}
+
 void HelpWindow::activateModule(QListWidgetItem* item) {
   QString name_and_section(item->text());
   QRegExp modname_pattern("^\\s*(\\b\\w+\\b)\\s*\\((\\b\\w+\\b)\\)");
@@ -84,6 +127,7 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
   }
   delete file;
   m_browser->addTab(m_tindex,"Index");
+  m_browser->addTab(new HelpSearcher(m_browser,url,mgr),"Search");
 }
 
 HelpWindow::HelpWindow(QString url) {

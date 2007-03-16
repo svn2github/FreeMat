@@ -536,10 +536,6 @@ void KeyManager::Ready() {
   Redisplay();
 }
 
-void KeyManager::RegisterInterrupt() {
-  sigInterrupt(0);
-}
-
 void KeyManager::CursorLeft() {
   PlaceCursor(buff_curpos-1);
 }
@@ -980,8 +976,8 @@ void KeyManager::OnChar( int c ) {
   case KM_CTRLA:
     BeginningOfLine();
     break;
-  case KM_CTRLZ:
-    RegisterInterrupt();
+  case KM_CTRLB:
+    emit RegisterInterrupt();
     break;
   case KM_CTRLE:
     EndOfLine();

@@ -28,6 +28,7 @@
 #include "Context.hpp"
 
 #define KM_CTRLA     0x01
+#define KM_CTRLA     0x02
 #define KM_CTRLZ     0x1A
 #define KM_CTRLD     0x04
 #define KM_CTRLE     0x05
@@ -167,7 +168,6 @@ public slots:
   void QueueMultiString(QString);
   void QueueCommand(QString);
   void QueueSilent(QString);
-  void RegisterInterrupt();
   void ContinueAction();
   void StopAction();
   void DbStepAction();
@@ -176,6 +176,7 @@ public slots:
   void ClearDisplayCommand();
 signals:
   void UpdateTermWidth(int);
+  void RegisterInterrupt();
 };
 
 #endif

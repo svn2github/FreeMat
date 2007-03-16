@@ -48,11 +48,6 @@ extern void DisableRepaint();
 #define PATHSEP ":"
 #endif
 
-/**
- * Pending control-C
- */
-bool InterruptPending = false;
-
 #define SaveEndInfo  \
   ArrayReference oldEndRef = endRef; \
   int oldEndCount = endCount; \
@@ -338,7 +333,7 @@ void Interpreter::run() {
       m_threadErrorState = true;      
       lasterr = "'quit' called in non-main thread";
     } catch (InterpreterKillException &e) {
-      m_interrupt = false;
+      m_kill = false;
     } catch (InterpreterRetallException &e) {
     } catch (exception& e) {
       m_threadErrorState = true;      
@@ -419,13 +414,6 @@ stackentry::stackentry() {
 }
 
 stackentry::~stackentry() {
-}
-
-static Interpreter* myInterp;
-
-void sigInterrupt(int arg) {
-  InterruptPending = true;
-  myInterp->ExecuteLine("");
 }
 
 Array Interpreter::DoBinaryOperator(const tree& t, BinaryFunc fnc, 
@@ -2995,12 +2983,12 @@ void Interpreter::block(const tree &t) {
     treeVector &statements(t.children());
     for (treeVector::iterator i=statements.begin();
 	 i!=statements.end();i++) {
-      if (m_interrupt)
+      if (m_kill)
 	throw InterpreterKillException();
-      if (InterruptPending) {
-	outputMessage("Interrupt (ctrl-c) encountered\n");
+      if (m_interrupt) {
+	outputMessage("Interrupt (ctrl-b) encountered\n");
 	stackTrace(true);
-	InterruptPending = false;
+	m_interrupt = false;
 	doDebugCycle();
       } else 
 	statement(*i);
@@ -4741,9 +4729,6 @@ Interpreter::Interpreter(Context* aContext) {
   lasterr = string("");
   context = aContext;
   depth = 0;
-  InterruptPending = false;
-  myInterp = this;
-  signal(SIGINT,sigInterrupt);
   printLimit = 1000;
   autostop = false;
   InCLI = false;
@@ -4756,6 +4741,7 @@ Interpreter::Interpreter(Context* aContext) {
   tracecurrentline = 0;
   endRef = NULL;
   m_interrupt = false;
+  m_kill = false;
   m_diaryState = false;
   m_diaryFilename = "diary";
   m_captureState = false;
@@ -4841,7 +4827,7 @@ void Interpreter::ExecuteLine(std::string txt) {
 //PORT
 void Interpreter::evaluateString(string line, bool propogateExceptions) {
   tree t;
-  InterruptPending = false;
+  m_interrupt = false;
   Scanner S(line,"");
   Parser P(S);
   try{
@@ -4965,7 +4951,7 @@ void Interpreter::evalCLI() {
     EnableRepaint();
     mutex.lock();
     while ((cmdset.empty() || 
-	    NeedsMoreInput(this,cmdset)) && (!InterruptPending)) {
+	    NeedsMoreInput(this,cmdset)) && (!m_interrupt)) {
       if (cmd_buffer.empty())
 	bufferNotEmpty.wait(&mutex);
       cmdline = cmd_buffer.front();
@@ -4976,8 +4962,8 @@ void Interpreter::evalCLI() {
     }
     mutex.unlock();
     DisableRepaint();
-    if (InterruptPending) {
-      InterruptPending = false;
+    if (m_interrupt) {
+      m_interrupt = false;
       continue;
     }
     int stackdepth = cstack.size();

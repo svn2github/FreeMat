@@ -39,13 +39,6 @@
 
 #define KM_ESC       0x1b
 
-#ifdef WIN32
-#define DELIM "\\"
-#else
-#define DELIM "/"
-#endif
-
-
 // Automake on OS X does not support conditionals in sources... so we
 // have the braindead solution of ifdef-ing out all the stuff that
 // will choke. Sigh.

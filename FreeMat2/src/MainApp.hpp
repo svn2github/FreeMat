@@ -63,6 +63,7 @@ public slots:
   void DoGraphicsCall(Interpreter*, FuncPtr f, ArrayVector m, int narg);
   void Quit();
   void Crashed();
+  void RegisterInterrupt();
 signals:
   void Shutdown();
   void Initialize();

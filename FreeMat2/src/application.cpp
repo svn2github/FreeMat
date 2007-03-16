@@ -241,7 +241,7 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
 	  m_tool->getFileTool(),SLOT(updateCWD()));
   connect(keys,SIGNAL(UpdateVariables()),
 	  m_tool->getVariablesTool(),SLOT(refresh()));
-  connect(pauseAct,SIGNAL(triggered()),m_keys,SLOT(RegisterInterrupt()));
+  connect(pauseAct,SIGNAL(triggered()),m_keys,SIGNAL(RegisterInterrupt()));
   connect(continueAct,SIGNAL(triggered()),m_keys,SLOT(ContinueAction()));
   connect(stopAct,SIGNAL(triggered()),m_keys,SLOT(StopAction()));
   connect(dbStepAct,SIGNAL(triggered()),m_keys,SLOT(DbStepAction()));

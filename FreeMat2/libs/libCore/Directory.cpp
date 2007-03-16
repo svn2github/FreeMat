@@ -440,7 +440,7 @@ ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
 //!
 //@Module DELETE Delete a File
 //@@Section OS
-//@@Usafe
+//@@Usage
 //Deletes a file.  The general syntax for its use is
 //@[
 //  delete('filename')
@@ -449,7 +449,7 @@ ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
 //@[
 //  delete filename
 //@]
-//which removes the file described by @|filename) which must
+//which removes the file described by @|filename| which must
 //be relative to the current path.
 //!
 ArrayVector DeleteFunction(int nargout, const ArrayVector& arg) {
@@ -464,5 +464,111 @@ ArrayVector DeleteFunction(int nargout, const ArrayVector& arg) {
     for (int i=0;i<foo.size();i++)
       foo[i].dir().remove(foo[i].fileName());
   }
+  return ArrayVector();
+}
+
+
+//!
+//@Module COPYFILE Copy Files
+//@@Section OS
+//@@Usage
+//Copies a file or files from one location to another.  There are 
+//several syntaxes for this function that are acceptable:
+//@[
+//   copyfile(file_in,file_out)
+//@]
+//copies the file from @|file_in| to @|file_out|.  Also, the second
+//argument can be a directory name:
+//@[
+//   copyfile(file_in,directory_out)
+//@]
+//in which case @|file_in| is copied into the directory specified by
+//@|directory_out|.  You can also use @|copyfile| to copy entire directories
+//as in
+//@[
+//   copyfile(dir_in,dir_out)
+//@]
+//in which case the directory contents are copied to the destination directory
+//(which is created if necessary).  Finally, the first argument to @|copyfile| can
+//contain wildcards
+//@[
+//   copyfile(pattern,directory_out)
+//@]
+//in which case all files that match the given pattern are copied to the output
+//directory.   Note that to remain compatible with the MATLAB API, this function
+//will delete/replace destination files that already exist, unless they are marked
+//as read-only.  If you want to force the copy to succeed, you can append a @|'f'|
+//argument to the @|copyfile| function:
+//@[
+//   copyfile(arg1,arg2,'f')
+//@]
+//or equivalently
+//@[
+//   copyfile arg1 arg2 f
+//@]
+//!
+static void CopyFile(QString source, QString dest, bool override) {
+  QFileInfo destInfo(dest);
+  if (destInfo.exists() && (override || destInfo.isWritable()))
+    QFile::remove(dest);
+  QFile::copy(source,dest);
+}
+
+static void CopyDirectoryRecursive(QString srcdir, QString destdir, bool override) {
+  QDir dir(srcdir);
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (unsigned i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir())
+      CopyDirectoryRecursive(fileInfo.absoluteFilePath(),
+			     destdir+QDir::separator()+fileInfo.fileName(),
+			     override);
+    else 
+      if (QDir::current().mkpath(destdir))
+	CopyFile(fileInfo.absoluteFilePath(),
+		 destdir+QDir::separator()+fileInfo.fileName(),override);
+  }
+}
+
+ArrayVector CopyFileFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2)
+    throw Exception("copyfile requires two arguments - source and destination");
+  bool override = ((arg.size() == 3) && (arg[2].getContentsAsStringUpper() == "F"));
+  QString source(QString::fromStdString(ArrayToString(arg[0])));
+  QString dest(QString::fromStdString(ArrayToString(arg[1])));
+  QFileInfo source_info(source);
+  QFileInfo dest_info(dest);
+  // Case 1 - source is a file, and dest is a file
+  if (source_info.isFile() && !dest_info.isDir()) {
+    // Simple copy of files
+    CopyFile(source,dest,override);
+  } else if (source_info.isFile() && dest_info.isDir()) {
+    CopyFile(source,dest + QDir::separator() + source_info.fileName(),override);
+  } else if (source_info.isDir() && dest_info.isFile()) {
+    throw Exception("cannot copy a directory to a file");
+  } else if (source_info.isDir() && (dest_info.isDir() || !dest_info.exists())) {
+    // Copy the contents of a directory 
+    CopyDirectoryRecursive(source,dest,override);
+  } else if ((source.count("*") > 0) && (dest_info.isDir() || !dest_info.exists())) {
+    // Try and get to the directory
+    QDir sourcedir(source_info.path());
+    if (!sourcedir.exists()) 
+      return ArrayVector();
+    sourcedir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    sourcedir.setNameFilters(QStringList() << source_info.fileName());
+    QFileInfoList list = sourcedir.entryInfoList();
+    for (unsigned i=0;i<list.size();i++) {
+      QFileInfo fileInfo = list.at(i);
+      if (fileInfo.isDir())
+	CopyDirectoryRecursive(fileInfo.absoluteFilePath(),
+			       dest+QDir::separator()+fileInfo.fileName(),
+			       override);
+      else 
+	if (QDir::current().mkpath(dest))
+	  CopyFile(fileInfo.absoluteFilePath(),dest+QDir::separator()+fileInfo.fileName(),override);
+    }
+  } else
+    throw Exception("unhandled case of copyfile function");
   return ArrayVector();
 }

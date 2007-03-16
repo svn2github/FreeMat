@@ -20,6 +20,7 @@
 #include <QtGui>
 #include <QDebug>
 #include <unistd.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "MainApp.hpp"
@@ -85,6 +86,9 @@ int parseFlagArg(int argc, char *argv[], const char* flagstring, bool flagarg) {
   return ndx;
 }
 
+void sigDoNothing(int arg) {
+}
+
 int main(int argc, char *argv[]) {  
   QCoreApplication *app;
   int nogui = parseFlagArg(argc,argv,"-nogui",false);
@@ -96,6 +100,8 @@ int main(int argc, char *argv[]) {
   int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
   int noplastique = parseFlagArg(argc,argv,"-noplastique",false);
   int installMode = parseFlagArg(argc,argv,"-i",true);
+
+  signal(SIGINT,sigDoNothing);
   
   if (installMode) {
     app = new QCoreApplication(argc, argv);

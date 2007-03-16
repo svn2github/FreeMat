@@ -653,7 +653,7 @@ ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg) {
 //    count = count + 1;                 % Update the counter
 //  end
 //@}
-//We now lauch this function in a thread, and use @|threadkill| to
+//We now launch this function in a thread, and use @|threadkill| to
 //stop it:
 //@<
 //a = threadnew;
@@ -676,7 +676,7 @@ ArrayVector ThreadKillFunction(int nargout, const ArrayVector& arg) {
   int32 handle = ArrayToInt32(arg[0]);
   if (handle == 1) throw Exception("threadkill cannot be used on the main thread");
   Interpreter* thread = m_threadHandles.lookupHandle(handle);
-  thread->setInterrupt();
+  thread->setKill();
   return ArrayVector();
 }
 
@@ -707,7 +707,7 @@ ArrayVector ThreadFreeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadfree requires at least one argument (thread id to wait on) - the optional second argument is the timeout to wait for the thread to finish");
   int32 handle = ArrayToInt32(arg[0]);
   Interpreter* thread = m_threadHandles.lookupHandle(handle);
-  thread->setInterrupt();
+  thread->setKill();
   unsigned long timeout = ULONG_MAX;
   if (arg.size() > 1)
     timeout = (unsigned long) ArrayToInt32(arg[1]);
@@ -821,6 +821,15 @@ int MainApp::StartNewInterpreterThread() {
   return threadID;
 }
 
+static int m_mainID;
+
+void MainApp::RegisterInterrupt() {
+  // Get the main interpreter thread
+  m_eval = m_threadHandles.lookupHandle(m_mainID);
+  if (m_eval)
+    m_eval->setInterrupt();
+}
+
 int MainApp::Run() {
   UpdatePaths();
   qRegisterMetaType<string>("string");
@@ -829,8 +838,9 @@ int MainApp::Run() {
   qRegisterMetaType<Interpreter*>("Interpreter*");
   connect(m_keys,SIGNAL(ExecuteLine(string)),this,SLOT(ExecuteLine(string)));
   connect(m_keys,SIGNAL(UpdateTermWidth(int)),this,SLOT(UpdateTermWidth(int)));
+  connect(m_keys,SIGNAL(RegisterInterrupt()),this,SLOT(RegisterInterrupt()));
   // Get a new thread
-  int m_mainID = StartNewInterpreterThread();
+  m_mainID = StartNewInterpreterThread();
   // Assign this to the main thread
   m_eval = m_threadHandles.lookupHandle(m_mainID);
   m_keys->SetCompletionContext(m_eval->getContext());

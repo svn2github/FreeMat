@@ -141,6 +141,7 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("diary",DiaryFunction,1,1,"flag",NULL);
   context->addFunction("rmdir",RMDirFunction,2,0,"dirname","flag",NULL);
   context->addFunction("delete",DeleteFunction,1,0,"filename",NULL);
+  context->addFunction("copyfile",CopyFileFunction,2,0,"source","dest",NULL);
   context->addFunction("mkdir_core",MKDirCoreFunction,1,1,"dirname",NULL);
   context->addFunction("fileparts",FilePartsFunction,1,4,"filename",NULL);
   context->addFunction("system",SystemFunction,1,1,"command",NULL);

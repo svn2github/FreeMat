@@ -227,6 +227,10 @@ class Interpreter : public QThread {
    * Interrupt the current thread at the next opportunity
    */
   bool m_interrupt;
+   /**
+   * Kill the thread at the next opportunity
+   */
+  bool m_kill;
   /**
    * The current state of diary output
    */
@@ -301,6 +305,10 @@ public:
    * Activate the interrupt for the thread - so that it stops.
    */
   inline void setInterrupt() {m_interrupt = true;}
+   /**
+   * Activate the kill for the thread - so that it dies.
+   */
+  inline void setKill() {m_kill = true;}
   /**
    * Run a command-line-interface interface from this thread.
    */

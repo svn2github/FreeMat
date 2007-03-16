@@ -39,11 +39,29 @@ QStringList GetRecursiveDirList(QString basedir) {
 
 stringVector GetCompletionList(string pattern) {
   stringVector completions;
+  QString Pattern(QString::fromStdString(pattern));
   QDir dir(QDir::current());
-  QFileInfoList list = dir.entryInfoList(QStringList() << (QString::fromStdString(pattern) + "*"));
-  for (unsigned i=0;i<list.size();i++) {
-    QFileInfo fileInfo = list.at(i);
-    completions.push_back(fileInfo.fileName().toStdString());
+  if (Pattern.count(QDir::separator()) > 0) {
+    // Completion includes a directory name...  Have to split it out
+    QFileInfo t(Pattern);
+    if (!dir.cd(t.path())) return stringVector();
+    QFileInfoList list = dir.entryInfoList(QStringList() << (t.fileName() + "*"));
+    for (unsigned i=0;i<list.size();i++) {
+      QFileInfo fileInfo = list.at(i);
+      if (fileInfo.isDir())
+	completions.push_back((t.path() + QDir::separator() + fileInfo.fileName() + QDir::separator()).toStdString());
+      else
+	completions.push_back((t.path() + QDir::separator() + fileInfo.fileName()).toStdString());
+    }
+  } else {
+    QFileInfoList list = dir.entryInfoList(QStringList() << (QString::fromStdString(pattern) + "*"));
+    for (unsigned i=0;i<list.size();i++) {
+      QFileInfo fileInfo = list.at(i);
+      if (fileInfo.isDir())
+	completions.push_back((fileInfo.fileName() + QDir::separator()).toStdString());
+      else
+	completions.push_back(fileInfo.fileName().toStdString());
+    }
   }
   return completions;
 }

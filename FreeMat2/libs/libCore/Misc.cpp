@@ -3971,32 +3971,11 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
 //calls the @|subsref| method of the class, which computes the requested 
 //function.
 //!
-
-ArrayVector FevalClassHelper(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  FuncPtr val;
-  Array userClass(arg[0]);
-  if (!ClassResolveFunction(eval,userClass,"subsref",val))
-    throw Exception("Cannot call feval on a user-defined class that does not overload subsref");
-  // Build a custom index expression structure
-  rvstring fnames;
-  fnames << "type" << "subs";
-  ArrayVector structArgs;
-  structArgs << Array::stringConstructor("()");
-  ArrayVector copyArgs(arg);
-  copyArgs.pop_front();
-  structArgs << Array::cellConstructor(Array::cellConstructor(copyArgs));
-  Array subsrefArg(Array::structConstructor(fnames,structArgs));
-  val->updateCode();
-  return val->evaluateFunction(eval,ArrayVector() << userClass << subsrefArg,nargout);
-}
-
 ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   if (arg.size() == 0)
     throw Exception("feval function requires at least one argument");
   if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY) && (!arg[0].isUserClass()))
     throw Exception("first argument to feval must be the name of a function (i.e., a string) a function handle, or a user defined class");
-  if (arg[0].isUserClass())
-    return FevalClassHelper(nargout,arg,eval);
   FunctionDef *funcDef;
   if (arg[0].isString()) {
     string fname = arg[0].getContentsAsString();

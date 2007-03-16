@@ -71,7 +71,11 @@
 %matio.zip archive.  Alternately, you can cross-build the WIndows version
 %of FreeMat under Linux (this is how I build it now).
 %\item If you are extraordinarily lucky (or prepared), you can issue the
-%usual @|configure && make && make install|.  This is not likely to work
+%usual
+%@[
+% ./configure && make && make install
+%@]
+%This is not likely to work
 %because of the somewhat esoteric dependencies of FreeMat.  The configure
 %step will probably fail and indicate what external dependencies are
 %still needed. 

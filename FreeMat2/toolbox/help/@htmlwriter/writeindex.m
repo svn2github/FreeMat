@@ -1,5 +1,5 @@
 function writeindex(&p)
-  secnames = fieldnames(p.sectables);
+  secnames = fieldnames(p.section_descriptors);
   for n=1:numel(secnames)
     writesectiontable(secnames{n},p.sectables.(secnames{n}),p);
   end

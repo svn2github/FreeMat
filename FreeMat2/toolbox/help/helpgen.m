@@ -34,6 +34,8 @@ function helpgen(source_path)
     merge_mfile(file_list{i});
   end
   writeindex(p);
+  copyfile([source_path,'/help/tmp/*.jpg'],[source_path,'/help/latex'])
+  copyfile([source_path,'/help/tmp/*.png'],[source_path,'/help/html'])
 
 function merge_mfile(filename)
   global sourcepath
@@ -218,7 +220,9 @@ function handle_filedump(&line,fp,pset,&writers)
   zp = fopen(fname,'w');
   fprintf(zp,'%s',fn);
   fclose(zp);
-  dofile(writers,fname,fn);
+  if (isempty(regexp(fname,'test_\w+')))
+    dofile(writers,fname,fn);
+  end
   line = getline(fp);
 
 function handle_equation(&line,fp,pset,&writers)

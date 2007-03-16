@@ -28,7 +28,7 @@
 #include "Context.hpp"
 
 #define KM_CTRLA     0x01
-#define KM_CTRLA     0x02
+#define KM_CTRLB     0x02
 #define KM_CTRLZ     0x1A
 #define KM_CTRLD     0x04
 #define KM_CTRLE     0x05

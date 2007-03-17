@@ -745,6 +745,14 @@ void LoadThreadFunctions(Context *context) {
   context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"x",NULL);
   context->addGfxFunction("clc",ClcFunction,0,0,NULL);
 }
+
+void MainApp::EnableRepaint() {
+  GfxEnableRepaint();
+}
+
+void MainApp::DisableRepaint() {
+  GfxDisableRepaint();
+}
 			 
 Context *MainApp::NewContext() {
   Context *context = new Context(m_global);
@@ -810,6 +818,8 @@ int MainApp::StartNewInterpreterThread() {
   connect(p_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));
   connect(p_eval,SIGNAL(QuitSignal()),this,SLOT(Quit()));
   connect(p_eval,SIGNAL(CrashedSignal()),this,SLOT(Crashed()));
+  connect(p_eval,SIGNAL(EnableRepaint()),this,SLOT(EnableRepaint()));
+  connect(p_eval,SIGNAL(DisableRepaint()),this,SLOT(DisableRepaint()));
   p_eval->setTerminalWidth(m_keys->getTerminalWidth());
   p_eval->setGreetingFlag(skipGreeting);
   int threadID = m_threadHandles.assignHandle(p_eval);
@@ -840,6 +850,7 @@ int MainApp::Run() {
   connect(m_keys,SIGNAL(UpdateTermWidth(int)),this,SLOT(UpdateTermWidth(int)));
   connect(m_keys,SIGNAL(RegisterInterrupt()),this,SLOT(RegisterInterrupt()));
   // Get a new thread
+  GfxEnableRepaint();
   m_mainID = StartNewInterpreterThread();
   // Assign this to the main thread
   m_eval = m_threadHandles.lookupHandle(m_mainID);

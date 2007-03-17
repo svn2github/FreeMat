@@ -55,11 +55,11 @@ void BaseFigureQt::resizeEvent(QResizeEvent *e) {
 
 static bool enableRepaint = false;
 
-void EnableRepaint() {
+void GfxEnableRepaint() {
   enableRepaint = true;
 }
 
-void DisableRepaint() {
+void GfxDisableRepaint() {
   enableRepaint = false;
 }
 

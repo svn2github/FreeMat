@@ -99,8 +99,8 @@ public slots:
   void copy();
 };
 
-void EnableRepaint();
+void GfxEnableRepaint();
 
-void DisableRepaint();
+void GfxDisableRepaint();
 
 #endif

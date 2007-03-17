@@ -64,6 +64,8 @@ public slots:
   void Quit();
   void Crashed();
   void RegisterInterrupt();
+  void EnableRepaint();
+  void DisableRepaint();
 signals:
   void Shutdown();
   void Initialize();

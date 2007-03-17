@@ -166,10 +166,10 @@ bool AnyDirty() {
 }
 
 ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {
-  EnableRepaint();
+  GfxEnableRepaint();
   while (AnyDirty()) 
     qApp->processEvents();
-  DisableRepaint();
+  GfxDisableRepaint();
   return ArrayVector();
 }
 
@@ -670,7 +670,7 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
   cr = color->At(0); cg = color->At(1); cb = color->At(2);
   g->HFig()->SetThreeVectorDefault("color",1,1,1);
   g->UpdateState();
-  EnableRepaint();
+  GfxEnableRepaint();
   while (g->isDirty())
     qApp->processEvents();
   if ((type == "PDF") || (type == "PS") || (type == "EPS")){
@@ -692,7 +692,7 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
   g->UpdateState();
   while (g->isDirty())
     qApp->processEvents();
-  DisableRepaint();
+  GfxDisableRepaint();
   return retval;
 }
   

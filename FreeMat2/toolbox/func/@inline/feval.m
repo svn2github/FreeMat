@@ -4,6 +4,5 @@ function varargout = feval(varargin)
   else
     t = varargin{1};
     varargout = {inline_evaluate(t.expr,t.assign_args,varargin(2:end))};
-    keyboard
   end
   

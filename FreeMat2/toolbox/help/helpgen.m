@@ -1,5 +1,6 @@
 function helpgen(source_path)
   global sourcepath section_descriptors genfiles
+  if (0)
   genfiles = {};
   rmdir([source_path,'/help/html'],'s');
   rmdir([source_path,'/help/tmp'],'s');
@@ -43,6 +44,52 @@ function helpgen(source_path)
   for i=1:numel(genfiles)
     copyfile([source_path,'/help/tmp/',genfiles{i}],[source_path,'/help/test']);
   end
+  end
+  printf('Latexing...\n');
+  cd([source_path,'/help/latex']);
+  printf('Pass 1\n');
+  system('pdflatex main.tex');
+  printf('Pass 2\n');
+  system('pdflatex main.tex');
+  printf('Pass 3\n');
+  system('pdflatex main.tex');
+  printf('Writing manifest...\n');
+  cd(source_path);
+  htmlfiles = helpgen_rdir('help/html');
+  textfiles = helpgen_rdir('help/text');
+  helpmfiles = helpgen_rdir('help/toolbox');
+  testfiles = helpgen_rdir('help/test');
+  delete('manifest.am');
+  fp = fopen('manifest.am','w');
+  fprintf(fp,'EXTRA_DIST = ');
+  for i = 1:numel(htmlfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',htmlfiles{i});
+  end
+  for i = 1:numel(textfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',textfiles{i});
+  end
+  for i = 1:numel(helpmfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',helpmfiles{i});
+  end
+  for i = 1:numel(testfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',testfiles{i});
+  end
+  fprintf(fp,'\n');
+  fprintf(fp,'nobase_resource_DATA = ');
+  for i = 1:numel(htmlfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',htmlfiles{i});
+  end
+  for i = 1:numel(textfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',textfiles{i});
+  end
+  for i = 1:numel(helpmfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',helpmfiles{i});
+  end
+  for i = 1:numel(testfiles)
+    fprintf(fp,'$(top_srcdir)/%s ',testfiles{i});
+  end
+  fprintf(fp,'\n');
+  fclose(fp);
 
 function merge_mfile(filename)
   global sourcepath
@@ -99,8 +146,10 @@ function file_list = helpgen_rdir(basedir)
     if (~(strcmp(avec(i).name,'.')  || (strcmp(avec(i).name,'..'))))
       cpath = [basedir dirsep avec(i).name];
       if (avec(i).isdir)
-        subdir_list = helpgen_rdir(cpath);
-        file_list = [file_list;subdir_list];
+        if (~strcmp(avec(i).name,'.svn'))
+          subdir_list = helpgen_rdir(cpath);
+          file_list = [file_list;subdir_list];
+        end
       else
         file_list = [file_list;{cpath}];
       end
@@ -225,6 +274,7 @@ function handle_filedump(&line,fp,pset,&writers)
     line = getline(fp);
   end
   fn = strrep(strrep(fn,'\n','\\n'),'\r','\\r');
+  genfiles = [genfiles,{fname}];
   zp = fopen(fname,'w');
   fprintf(zp,'%s',fn);
   fclose(zp);

@@ -1,11 +1,7 @@
 function helpgen(source_path)
   global sourcepath section_descriptors genfiles
   genfiles = {};
-  rmdir([source_path,'/help/html'],'s');
-  rmdir([source_path,'/help/tmp'],'s');
-  rmdir([source_path,'/help/latex'],'s');
-  rmdir([source_path,'/help/text'],'s');
-  rmdir([source_path,'/help/test'],'s');
+  rmdir([source_path,'/help'],'s');
   rmdir([source_path,'/toolbox'],'s');
   
   mkdir([source_path,'/help/html']);
@@ -50,7 +46,8 @@ function helpgen(source_path)
   system('pdflatex main.tex');
   printf('Pass 3\n');
   system('pdflatex main.tex');
-
+  rmdir([source_path,'/help/tmp'],'s');
+  
 function merge_mfile(filename)
   global sourcepath
   [path,name,suffix] = fileparts(filename);

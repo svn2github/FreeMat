@@ -4,7 +4,9 @@ DISTCHECK_CONFIGURE_FLAGS = LDFLAGS=-L/usr/lib/atlas CPPFLAGS=-I/usr/include/ufs
 
 resourcedir = $(datadir)/$(PACKAGE)-$(VERSION)
 
-include $(top_srcdir)/manifest.am
+EXTRA_DIST = $(top_srcdir)/help
+
+nobase_resource_DATA = $(top_srcdir)/help
 
 clean-manifest:
 	rm -rf $(top_srcdir)/manifest.am
@@ -13,10 +15,6 @@ clean-manifest:
 package: all
 	chmod +x tools/disttool/makepkg
 	tools/disttool/makepkg @platform@ $(top_builddir) $(top_srcdir) $(QT4DIR)
-
-help: all check
-	$(top_srcdir)/tools/disttool/makehelp $(top_builddir) $(top_srcdir)
-
 
 install-data-hook:
 	cd $(DESTDIR)$(resourcedir); rm -f toolbox; $(LN_S) help/toolbox

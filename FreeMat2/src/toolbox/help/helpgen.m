@@ -1,20 +1,19 @@
 function helpgen(source_path)
   global sourcepath section_descriptors genfiles
-  if (0)
   genfiles = {};
   rmdir([source_path,'/help/html'],'s');
   rmdir([source_path,'/help/tmp'],'s');
   rmdir([source_path,'/help/latex'],'s');
   rmdir([source_path,'/help/text'],'s');
   rmdir([source_path,'/help/test'],'s');
-  rmdir([source_path,'/help/toolbox'],'s');
+  rmdir([source_path,'/toolbox'],'s');
   
   mkdir([source_path,'/help/html']);
   mkdir([source_path,'/help/tmp']);
   mkdir([source_path,'/help/latex']);
   mkdir([source_path,'/help/text']);
   mkdir([source_path,'/help/test']);
-  mkdir([source_path,'/help/toolbox']);
+  mkdir([source_path,'/toolbox']);
 
   sourcepath = source_path;
   read_section_descriptors;
@@ -23,7 +22,6 @@ function helpgen(source_path)
   file_list = {};
   file_list = [file_list;helpgen_rdir([source_path,'/libs'])];
   file_list = [file_list;helpgen_rdir([source_path,'/src'])];
-  file_list = [file_list;helpgen_rdir([source_path,'/toolbox'])];
   for i=1:numel(file_list)
     [path,name,suffix] = fileparts(file_list{i});
     if (~strcmp(name,'MPIWrap'))
@@ -38,12 +36,11 @@ function helpgen(source_path)
   writeindex(p);
   copyfile([source_path,'/help/tmp/*.jpg'],[source_path,'/help/latex'])
   copyfile([source_path,'/help/tmp/*.png'],[source_path,'/help/html'])
-  copyfile([source_path,'/toolbox/help/match_close.m'],[source_path,'/help/test'])
-  copyfile([source_path,'/toolbox/help/match_exact.m'],[source_path,'/help/test'])
-  copyfile([source_path,'/toolbox/help/run_tests.m'],[source_path,'/help/test'])
+  copyfile([source_path,'/src/toolbox/help/match_close.m'],[source_path,'/help/test'])
+  copyfile([source_path,'/src/toolbox/help/match_exact.m'],[source_path,'/help/test'])
+  copyfile([source_path,'/src/toolbox/help/run_tests.m'],[source_path,'/help/test'])
   for i=1:numel(genfiles)
     copyfile([source_path,'/help/tmp/',genfiles{i}],[source_path,'/help/test']);
-  end
   end
   printf('Latexing...\n');
   cd([source_path,'/help/latex']);
@@ -53,43 +50,6 @@ function helpgen(source_path)
   system('pdflatex main.tex');
   printf('Pass 3\n');
   system('pdflatex main.tex');
-  printf('Writing manifest...\n');
-  cd(source_path);
-  htmlfiles = helpgen_rdir('help/html');
-  textfiles = helpgen_rdir('help/text');
-  helpmfiles = helpgen_rdir('help/toolbox');
-  testfiles = helpgen_rdir('help/test');
-  delete('manifest.am');
-  fp = fopen('manifest.am','w');
-  fprintf(fp,'EXTRA_DIST = ');
-  for i = 1:numel(htmlfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',htmlfiles{i});
-  end
-  for i = 1:numel(textfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',textfiles{i});
-  end
-  for i = 1:numel(helpmfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',helpmfiles{i});
-  end
-  for i = 1:numel(testfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',testfiles{i});
-  end
-  fprintf(fp,'\n');
-  fprintf(fp,'nobase_resource_DATA = ');
-  for i = 1:numel(htmlfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',htmlfiles{i});
-  end
-  for i = 1:numel(textfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',textfiles{i});
-  end
-  for i = 1:numel(helpmfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',helpmfiles{i});
-  end
-  for i = 1:numel(testfiles)
-    fprintf(fp,'$(top_srcdir)/%s ',testfiles{i});
-  end
-  fprintf(fp,'\n');
-  fclose(fp);
 
 function merge_mfile(filename)
   global sourcepath
@@ -108,7 +68,7 @@ function merge_mfile(filename)
   catch
   end
   h = fopen(filename,'r');
-  newname = strrep(filename,'toolbox','help/toolbox');
+  newname = strrep(filename,'src/toolbox','toolbox');
   [path,name,suffix] = fileparts(newname);
   mkdir(path);
   g = fopen(newname,'w');
@@ -130,7 +90,7 @@ function merge_mfile(filename)
   
 function read_section_descriptors
   global sourcepath section_descriptors
-  fp = fopen([sourcepath,'/tools/helpgen/section_descriptors.txt'],'r');
+  fp = fopen([sourcepath,'/src/toolbox/help/section_descriptors.txt'],'r');
   line = fgetline(fp);
   while (~feof(fp))
     p = regexp(line,'(\w*)\s*([^\n]*)','tokens');

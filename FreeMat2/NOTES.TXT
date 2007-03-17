@@ -711,10 +711,10 @@ y = strcomp(class(x),type);
 
 To Do for 3.1 release:
 
-2.  Contour plots
-5.  Pause button...
-6.  PNG/JPG --> correct place
-7.  Verify latex build
-8.  Verify test suite generation
+2. Contour plots
+
+Why doesn't  regexp('Time is a True Test','(\bT\w*\b)','tokens'){:} Work?
+The following is roughly equivalent to symvar
+b = regexp(a,'(\b[a-zA-Z]\w*\b)(?!\s*\()','tokens'); b{:}
 
 

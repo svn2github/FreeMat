@@ -31,6 +31,7 @@
 #include "Class.hpp"
 #include "Print.hpp"
 #include "MemPtr.hpp"
+#include "Parser.hpp"
 
 #include <algorithm>
 #undef max
@@ -3776,15 +3777,19 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
 ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("source function takes exactly one argument - the filename of the script to execute");
-  string line = arg[0].getContentsAsString();
-  QFile fp(QString::fromStdString(line));
-  if (!fp.open(QFile::ReadOnly))
-    throw Exception(std::string("unable to open file ") + line + " for reading");
-  QTextStream fstr(&fp);
-  while (!fstr.atEnd()) {
-    QString txt(fstr.readLine(0) + "\n");
-    eval->ExecuteLine(txt.toStdString());
-  }
+  string filename = arg[0].getContentsAsString();
+  QFile fp(QString::fromStdString(filename));
+   if (!fp.open(QFile::ReadOnly))
+    throw Exception(std::string("unable to open file ") + filename + " for reading");
+   QTextStream fstr(&fp);
+  QString scriptText(fstr.readAll());
+  Scanner S(scriptText.toStdString(),filename);
+  Parser P(S);
+  tree pcode = P.Process();
+  if (pcode.is(TOK_FUNCTION_DEFS))
+    throw Exception("only scripts can be source-ed, not functions");
+  tree code = pcode.first();
+  eval->block(code);
   return ArrayVector();
 }
 
@@ -4486,7 +4491,7 @@ ArrayVector Conv2FunctionXY(Array X, Array Y, string type) {
     return Conv2FunctionSameXY(X,Y);
   if (type == "VALID")
     return Conv2FunctionValidXY(X,Y);
-  throw Exception("count not recognize the arguments to conv2");
+  throw Exception("could not recognize the arguments to conv2");
 }
 
 ArrayVector Conv2FunctionRCX(Array hcol, Array hrow, Array X, string type) {
@@ -4510,7 +4515,7 @@ ArrayVector Conv2Function(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) 
     throw Exception("conv2 requires at least 2 arguments");
   if (arg.size() == 2)
-    return Conv2FunctionXY(arg[0],arg[1],"full");
+    return Conv2FunctionXY(arg[0],arg[1],"FULL");
   if ((arg.size() == 3) && (arg[2].isString()))
     return Conv2FunctionXY(arg[0],arg[1],arg[2].getContentsAsStringUpper());
   if (arg.size() == 3)

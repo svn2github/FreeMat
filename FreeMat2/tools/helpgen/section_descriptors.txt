@@ -24,3 +24,4 @@ handle Handle-Based Graphics
 class Object Oriented Programming
 binary Bitwise Operations
 thread FreeMat Threads
+function Function Related Functions

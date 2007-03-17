@@ -564,6 +564,14 @@ signals:
    * Show the current active line
    */
   void ShowActiveLine();
+  /**
+   * Enable repainting
+   */
+  void EnableRepaint();
+  /**
+   * Disable repainting
+   */
+  void DisableRepaint();
 
   /******************************************
    *  Private Methods for the Interpreter   *

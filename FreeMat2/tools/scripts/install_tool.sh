@@ -310,7 +310,7 @@ MakeCrossWinBundle()
     CopyFile "$BASE/Cross/bin/mingwm10.dll" "$baseDir/Contents/bin/mingwm10.dll"
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
-    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyDirectory "$srcDir/toolbox" "$baseDir/Contents/Resources/toolbox"
     CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
     echo "Generating NSI file..."
     cdir=`pwd`
@@ -471,7 +471,7 @@ EOF
     chmod +x "$baseDir/Contents/bin/FreeMat"
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
-    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyDirectory "$srcDir/toolbox" "$baseDir/Contents/Resources/toolbox"
     CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
     CopyFile "$QT_PLUGIN_DIR/libqjpeg.so" "$baseDir/Contents/Plugins/imageformats/libqjpeg.so"
     CopyFile "$QT_PLUGIN_DIR/libqmng.so" "$baseDir/Contents/Plugins/imageformats/libqmng.so"
@@ -655,7 +655,7 @@ EOF
     CrossLinkFrameworkAll "QtSvg"
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
-    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyDirectory "$srcDir/toolbox" "$baseDir/Contents/Resources/toolbox"
     CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
     MakeDirectory "$baseDir/Contents/Plugins/imageformats"
     CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
@@ -738,7 +738,7 @@ SetupMacInplaceBundle()
 EOF
     CopyDirectory "$srcDir/help/html" "$baseDir/Contents/Resources/help/html"
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
-    CopyDirectory "$srcDir/help/toolbox" "$baseDir/Contents/Resources/toolbox"
+    CopyDirectory "$srcDir/toolbox" "$baseDir/Contents/Resources/toolbox"
 }
 
 SetupInplaceBuild() 

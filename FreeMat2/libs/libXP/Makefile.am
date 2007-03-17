@@ -48,7 +48,9 @@ Common.cpp \
 ToolDock.cpp \
 VariablesTool.cpp \
 HistoryWidget.cpp \
-$(libXP_a_HFILES)
+$(libXP_a_HFILES) \
+findform.ui \
+replaceform.ui
 
 
 AUTOMAKE_OPTIONS 	= foreign

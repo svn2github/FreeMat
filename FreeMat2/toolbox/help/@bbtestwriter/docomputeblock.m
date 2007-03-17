@@ -6,7 +6,7 @@ function docomputeblock(&p,cmds,errorsexpected)
     fprintf(p.myfile,'NumErrors = 0;\n');
     for i=1:numel(cmds)
       fprintf(p.myfile,'try\n');
-      fprintf(p.myfile,'  %s\n',cmds{i});
+      fprintf(p.myfile,'  %s\n',strrep(cmds{i},'\','\\'));
       fprintf(p.myfile,'catch\n');
       fprintf(p.myfile,'  NumErrors = NumErrors + 1;\n');
       fprintf(p.myfile,'end\n');

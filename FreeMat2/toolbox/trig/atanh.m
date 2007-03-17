@@ -25,7 +25,7 @@
 %@@Tests
 %@$"y=atanh(0.342)","0.35635569310316","close"
 %@$"y=atanh(0.342+0.532i)","0.26709380941391+0.52866401400154i","close"
-%@$"y=atanh(inf)","1.5707963267490i","close"
+%@$"y=atanh(inf)","1.5707963267949i","close"
 %@$"y=atanh(0.523f)","0.5804604f","close"
 %!
 
@@ -33,5 +33,10 @@ function y = atanh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('atanh expects a single, numeric input');
   end
-  y = 0.5*log((1+x)./(1-x));
+  if (isinf(x))
+    y = pi/2*i;
+  else
+    y = 0.5*log((1+x)./(1-x));
+  end
+
   

@@ -25,9 +25,9 @@
 %upper({'This','Is','Strange','CAPitalizaTion'})
 %@>
 %@@Tests
-%@$"y=upper('hello')","'hello'","exact"
-%@$"y=upper('HELLO')","'hello'","exact"
-%@$"y=upper({'Ab','cD','EF'})","{'ab','cd','ef'}","exact"
+%@$"y=upper('hello')","'HELLO'","exact"
+%@$"y=upper('HELLO')","'HELLO'","exact"
+%@$"y=upper({'Ab','cD','EF'})","{'AB','CD','EF'}","exact"
 %!
 function y = upper(x)
   if (isstr(x))

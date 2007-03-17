@@ -1,5 +1,6 @@
 function helpgen(source_path)
-  global sourcepath section_descriptors
+  global sourcepath section_descriptors genfiles
+  genfiles = {};
   rmdir([source_path,'/help/html'],'s');
   rmdir([source_path,'/help/tmp'],'s');
   rmdir([source_path,'/help/latex'],'s');
@@ -36,6 +37,12 @@ function helpgen(source_path)
   writeindex(p);
   copyfile([source_path,'/help/tmp/*.jpg'],[source_path,'/help/latex'])
   copyfile([source_path,'/help/tmp/*.png'],[source_path,'/help/html'])
+  copyfile([source_path,'/toolbox/help/match_close.m'],[source_path,'/help/test'])
+  copyfile([source_path,'/toolbox/help/match_exact.m'],[source_path,'/help/test'])
+  copyfile([source_path,'/toolbox/help/run_tests.m'],[source_path,'/help/test'])
+  for i=1:numel(genfiles)
+    copyfile([source_path,'/help/tmp/',genfiles{i}],[source_path,'/help/test']);
+  end
 
 function merge_mfile(filename)
   global sourcepath
@@ -209,6 +216,7 @@ function res = testmatch(line,pattern)
   res = ~isempty(regexp(line,pattern));
 
 function handle_filedump(&line,fp,pset,&writers)
+  global genfiles
   fname = mustmatch(line,pset.fnin);
   line = getline(fp);
   fn = '';

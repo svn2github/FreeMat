@@ -4,6 +4,7 @@ function beginmodule(&p,sourcepath,modname,moddesc,secname,section_descriptors)
     p.modulename = lower(modname);
     p.section_descriptors = section_descriptors;
     p.sourcepath = sourcepath;
+    p.eqnlist = {};
     filename = [sourcepath '/help/html/' p.secname '_' p.modulename '.html'];
     p.myfile = fopen(filename,'w');
     if (p.myfile < 0) 

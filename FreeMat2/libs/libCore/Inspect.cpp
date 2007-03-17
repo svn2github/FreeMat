@@ -307,6 +307,11 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 //@[
 //   clear 'global'
 //@]
+//You can use
+//@[
+//   clear 'classes'
+//@]
+//to clear all definitions of user-defined classes.
 //With no arguments, @|clear| defaults to clearing @|'all'|.
 //@@Example
 //Here is a simple example of using @|clear| to delete a variable.  First, we create a variable called @|a|:
@@ -368,6 +373,8 @@ ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval
       ClearPersistent(eval);
     else if (names[i] == "global")
       ClearGlobal(eval);
+    else if (names[i] == "classes")
+      eval->clearUserClasses();
     else 
       ClearVariable(eval,names[i]);
   }

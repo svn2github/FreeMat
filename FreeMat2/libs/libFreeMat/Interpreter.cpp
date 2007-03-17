@@ -2234,6 +2234,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
     ptr = context->lookupVariable(t.first().text());
     if (!ptr.valid()) {
       functionExpression(t,0,true,m);
+      m = handleReindexing(t,m);
       bool emptyOutput = false;
       if (m.size() == 0) {
 	b = Array::emptyConstructor();
@@ -4128,6 +4129,9 @@ void Interpreter::registerUserClass(std::string classname, UserClass cdata) {
   classTable.insertSymbol(classname,cdata);
 }
 
+void Interpreter::clearUserClasses() {
+  classTable = SymbolTable<UserClass>();
+}
 
 bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val) {
   ArrayVector dummy;

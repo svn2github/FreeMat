@@ -438,6 +438,10 @@ public:
    */
   void registerUserClass(string classname, UserClass cdata);
   /**
+   * Clear the registered class table
+   */
+  void clearUserClasses();
+  /**
    * Push a function name and detail onto the debug stack
    */
   void pushDebug(string fname, string detail);

@@ -227,6 +227,21 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
 	for (int i=0;i<toFill;i++)
 	  outputs[explicitCount+i] = dp[i];
       }
+      // Special case - nargout = 0, only variable outputs from function
+      if ((nargout == 0) && (explicitCount == 0)) {
+	Array varargout, *ptr;
+	// Yes, get a pointer to the "vargout" variable that should be defined
+	ptr = context->lookupVariableLocally("varargout");
+	if (ptr) {
+	  varargout = *ptr;
+	  if (varargout.dataClass() != FM_CELL_ARRAY)
+	    throw Exception("The special variable 'varargout' was not defined as a cell-array");
+	  // Get the data pointer
+	  const Array *dp = ((const Array*) varargout.getDataPointer());
+	  if (varargout.getLength() > 0)
+	    outputs << dp[0];
+	}	
+      }
     }
     // Check for arguments that were passed by reference, and 
     // update their values.

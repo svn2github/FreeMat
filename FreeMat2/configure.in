@@ -260,8 +260,5 @@ AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 
 		    libs/libGraphics/Makefile images/Makefile
-		    tools/Makefile tools/helpgen/Makefile tools/scripts/Makefile
-		    tools/disttool/Makefile tools/disttool/makepkg])
-
-chmod +x tools/disttool/makepkg
+		    tools/Makefile tools/scripts/Makefile])
 

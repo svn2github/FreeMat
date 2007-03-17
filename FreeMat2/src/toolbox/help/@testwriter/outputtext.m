@@ -4,7 +4,7 @@ function outputtext(&p,text)
   if (isempty(v))
     error(sprintf('bad line: %s',text));
   end
-  filename = sprintf('%s/help/test/wbtest_%s_%d.m',p.sourcepath,p.modulename,p.num);
+  filename = sprintf('%s/toolbox/test/wbtest_%s_%d.m',p.sourcepath,p.modulename,p.num);
   fp = fopen(filename,'w');
   if (fp < 0)
     error(sprintf('Unable to open %s for writing',filename));

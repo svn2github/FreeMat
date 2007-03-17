@@ -12,7 +12,7 @@ function helpgen(source_path)
   mkdir([source_path,'/help/tmp']);
   mkdir([source_path,'/help/latex']);
   mkdir([source_path,'/help/text']);
-  mkdir([source_path,'/help/test']);
+  mkdir([source_path,'/toolbox/test']);
   mkdir([source_path,'/toolbox']);
 
   sourcepath = source_path;
@@ -29,18 +29,18 @@ function helpgen(source_path)
     end
   end
 
-  file_list = helpgen_rdir([source_path,'/toolbox']);
+  file_list = helpgen_rdir([source_path,'/src/toolbox']);
   for i=1:numel(file_list)
     merge_mfile(file_list{i});
   end
   writeindex(p);
   copyfile([source_path,'/help/tmp/*.jpg'],[source_path,'/help/latex'])
   copyfile([source_path,'/help/tmp/*.png'],[source_path,'/help/html'])
-  copyfile([source_path,'/src/toolbox/help/match_close.m'],[source_path,'/help/test'])
-  copyfile([source_path,'/src/toolbox/help/match_exact.m'],[source_path,'/help/test'])
-  copyfile([source_path,'/src/toolbox/help/run_tests.m'],[source_path,'/help/test'])
+  copyfile([source_path,'/src/toolbox/help/match_close.m'],[source_path,'/toolbox/test'])
+  copyfile([source_path,'/src/toolbox/help/match_exact.m'],[source_path,'/toolbox/test'])
+  copyfile([source_path,'/src/toolbox/help/run_tests.m'],[source_path,'/toolbox/test'])
   for i=1:numel(genfiles)
-    copyfile([source_path,'/help/tmp/',genfiles{i}],[source_path,'/help/test']);
+    copyfile([source_path,'/help/tmp/',genfiles{i}],[source_path,'/toolbox/test']);
   end
   printf('Latexing...\n');
   cd([source_path,'/help/latex']);

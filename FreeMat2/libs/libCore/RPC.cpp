@@ -409,7 +409,6 @@ void putArrayToQDS(QDataStream &out, const Array& dat) {
 HandleList<QTcpServer*> m_servers;
 HandleList<QTcpSocket*> m_sockets;
 
-//!
 //@Module TCPSERVER Start a TCP Server on a designated port
 //@@Section IO
 //@@Usage
@@ -444,7 +443,6 @@ HandleList<QTcpSocket*> m_sockets;
 //tcpclose(recv); tcpclose(send);       % Close the tcp sockets
 //tcpserverclose(server);               % Close the server socket
 //@>
-//!
 ArrayVector TCPServerFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("tcpserver requires one address - the port to set up the server on");
@@ -456,7 +454,6 @@ ArrayVector TCPServerFunction(int nargout, const ArrayVector& arg) {
     Array::uint32Constructor(m_servers.assignHandle(server));
 }
 
-//!
 //@Module TCPACCEPT Accept a connection on a TCP server
 //@@Section IO
 //@@Usage
@@ -479,7 +476,6 @@ ArrayVector TCPServerFunction(int nargout, const ArrayVector& arg) {
 //The default timeout is set to 30 seconds.  To
 //close the socket returned by @|tcpaccept| you must call @|tcpclose|.
 //The resulting handle is identical to one returned by @|tcpconnect|.
-//!
 ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("tcpaccept requires one argument - the handle of the server to read, and an optional timeout to wait before failure (in milliseconds)");
@@ -495,7 +491,6 @@ ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
     Array::uint32Constructor(m_sockets.assignHandle(sock));
 }
 
-//!
 //@Module TCPCONNECT Connect to a remote TCP server
 //@@Section IO
 //@@Usage
@@ -514,7 +509,6 @@ ArrayVector TCPAcceptFunction(int nargout, const ArrayVector& arg) {
 //The following example works on a single machine, only because of
 //buffering in the TCP implementation.  In practice, the 
 //server and send sockets would be on different machines
-//!
 ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("tcpconnect requires two arguments - the remote address of the server to connect to and the port number - an optional timeout can be specified also");
@@ -531,7 +525,6 @@ ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
     Array::uint32Constructor(m_sockets.assignHandle(a_sock));
 }
 
-//!
 //@Module TCPCLOSE Close a TCP socket
 //@@Section IO
 //@@Usage
@@ -559,7 +552,6 @@ ArrayVector TCPConnectFunction(int nargout, const ArrayVector& arg) {
 //   tcpclose('all',timeout)
 //@]
 //which are equivalent, and will close all sockets, each with the given timeout.
-//!
 ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("tcpclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
@@ -599,7 +591,6 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
 //@Module TCPSERVERCLOSE Close a TCP server socket
 //@@Section IO
 //@@Usage
@@ -613,7 +604,6 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
 //   tcpserverclose all
 //@]
 //to close all open servers.
-//!
 ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("tcpserverclose requires at least one argument - the handle to close, or the string 'all' to close all tcp socket handles");
@@ -641,7 +631,6 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
 //@Module TCPSEND Send an array over a TCP socket
 //@@Section IO
 //@@Usage
@@ -661,7 +650,6 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
 //  tcpsend(handle,array,timeout)
 //@]
 //where @|timeout| is in milliseconds.
-//!
 ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("tcpsend requires two arguments - the handle of the connection to use, and the array to send - an optional timeout can be specified also");
@@ -692,7 +680,6 @@ ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
 //@Module TCPRECV Receive an array over a TCP socket
 //@@Section IO
 //@@Usage
@@ -713,7 +700,6 @@ ArrayVector TCPSendFunction(int nargout, const ArrayVector& arg) {
 //  array = tcprecv(handle,timeout)
 //@]
 //where @|timeout| is in milliseconds.
-//!
 ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("tcprecv requires one argument - the handle of the connection to use - an optional timeout can be specified also.");
@@ -753,7 +739,6 @@ ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector() << ret;
 }
 
-//!
 //@Module TCPSTATE State of a TCP socket
 //@@Section IO
 //@@Usage
@@ -771,7 +756,6 @@ ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
 //   \item @|'connected'| if the socket is connected
 //   \item @|'closing'| if the socket is about to close.
 //\end{itemize}
-//!
 ArrayVector TCPStateFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("tcpstate requires one argument - the handle of the socket to examine");

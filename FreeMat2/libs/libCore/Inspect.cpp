@@ -98,10 +98,10 @@ ArrayVector DbAutoFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   } else {
     if (!arg[0].isString())
       throw Exception("dbauto function takes only a single, string argument");
-    string txt = arg[0].getContentsAsString();
-    if (txt == "on")
+    string txt = arg[0].getContentsAsStringUpper();
+    if (txt == "ON")
       eval->AutoStop(true);
-    else if (txt == "off")
+    else if (txt == "OFF")
       eval->AutoStop(false);
     else
       throw Exception("dbauto function argument needs to be 'on/off'");
@@ -830,8 +830,9 @@ ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //@{ test_exist2.m
 //function x = test_exist2
 //persistent y
+//x = 1;
 //if (exist('y'))
-//  return 0;
+//  x = 0;
 //end
 //@}
 //!

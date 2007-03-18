@@ -770,10 +770,17 @@ SetupXMacFFTW()
 {
     SetupXWinCommon
     DownloadAndUnpackTarBall $FFTW_FILE http://www.fftw.org $FFTW XRoot
-    MakeDirectory $BASE/XRoot/$FFTW/xsingle
-    MakeDirectory $BASE/XRoot/$FFTW/xdouble
-    ConfigureMakeInstall $FFTW/xsingle "--prefix=$PREFIX --enable-single CC=powerpc-apple-darwin8-gcc-4.0.1" .. Root 
-    ConfigureMakeInstall $FFTW/xdouble "--prefix=$PREFIX CC=powerpc-apple-darwin8-gcc-4.0.1" .. Root 
+    MakeDirectory $BASE/XRoot/$FFTW/single
+    MakeDirectory $BASE/XRoot/$FFTW/double
+    ConfigureMakeInstall $FFTW/single "--prefix=$PREFIX --enable-single CC=powerpc-apple-darwin8-gcc-4.0.1" .. XRoot 
+    ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX CC=powerpc-apple-darwin8-gcc-4.0.1" .. XRoot 
+}
+
+SetupXMacPCRE()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall $PCRE_FILE ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre $PCRE XRoot
+    ConfigureMakeInstall $PCRE "--prefix=$PREFIX CC=powerpc-apple-darwin8-gcc-4.0.1" . XRoot
 }
 
 SetupXMacSparse()
@@ -886,6 +893,7 @@ subdirectory.  Here are the tasks manages by this script.
       --xmac-arpack      Setup the PPC cross of ARPACK
       --xmac-freemat     Setup the PPC cross of FreeMat
       --xmac-ffcall      Setup the PPC cross of FFCALL
+      --xmac-pcre        Setup the PPC cross of PCRE
       --mac-bundle       Setup the Mac (universal) bundle
       --mac-release      Do a sequence of build-steps
 
@@ -935,6 +943,7 @@ for arg
       --xmac-ffcall)   SetupXMacFFCALL ;;
       --xmac-arpack)   SetupXMacARPACK ;;
       --xmac-freemat)  SetupXMacFreeMat ;;
+      --xmac-pcre)     SetupXMacPCRE ;;
       --mac-bundle)    MakeMacBundle ;;
       --mac-release)   SetupMacRelease ;;
       --inplace)       SetupInplaceBuild ;;

@@ -22,7 +22,7 @@
 %@@Tests
 %@$"y=symvar('x^2+sqrt(x)')","{'x'}","exact"
 %@$"y=symvar('pi+3')","{}","exact"
-%@$"y=symvar('x+t*alpha-cos(pi)')","{'x','t','alpha'}","exact"
+%@$"y=symvar('x+t*alpha-cos(pi)')","{'alpha','t','x'}","exact"
 %!
 function syms = symvar(expr)
   ignore = {'pi','inf','nan','eps','i','j'};

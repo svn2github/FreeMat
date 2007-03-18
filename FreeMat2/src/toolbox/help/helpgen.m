@@ -35,9 +35,9 @@ function helpgen(source_path)
   copyfile([source_path,'/src/toolbox/help/match_close.m'],[source_path,'/toolbox/test'])
   copyfile([source_path,'/src/toolbox/help/match_exact.m'],[source_path,'/toolbox/test'])
   copyfile([source_path,'/src/toolbox/help/run_tests.m'],[source_path,'/toolbox/test'])
-  delete([source_path,'/src/toolbox/help/match_close.m']);
-  delete([source_path,'/src/toolbox/help/match_exact.m']);
-  delete([source_path,'/src/toolbox/help/run_tests.m']);
+  delete([source_path,'/toolbox/help/match_close.m']);
+  delete([source_path,'/toolbox/help/match_exact.m']);
+  delete([source_path,'/toolbox/help/run_tests.m']);
   for i=1:numel(genfiles)
     copyfile([source_path,'/help/tmp/',genfiles{i}],[source_path,'/toolbox/test']);
   end

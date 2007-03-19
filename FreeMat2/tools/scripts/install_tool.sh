@@ -578,12 +578,12 @@ CrossLinkFramework()
 RelinkPlugin() {
     SetupCommon
     echo "Relinking plugin $1 to framework $2"
-    Relink $2 "$baseDir/Contents/Plugins/imageformats/$1"
+    Relink $2 "$baseDir/Contents/MacOS/imageformats/$1"
 }
 
 RelinkPlugins() {
     SetupCommon
-    list=`ls $baseDir/Contents/Plugins/imageformats`
+    list=`ls $baseDir/Contents/MacOS/imageformats`
     for plugin in $list
     do
 	RelinkPlugin $plugin "QtGui"
@@ -657,8 +657,7 @@ EOF
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$srcDir/toolbox" "$baseDir/Contents/Resources/toolbox"
     CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
-    MakeDirectory "$baseDir/Contents/Plugins/imageformats"
-    CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/Plugins/imageformats"
+    CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/MacOS/imageformats"
     RelinkPlugins
     cp /usr/local/lib/libgfortran.2.dylib "$baseDir/Contents/Frameworks/."
     cp /usr/local/lib/libgcc_s.1.dylib "$baseDir/Contents/Frameworks/."
@@ -667,16 +666,16 @@ EOF
     install_name_tool -change "/usr/local/lib/libgfortran.2.dylib" "@executable_path/../Frameworks/libgfortran.2.dylib" "$baseDir/Contents/MacOS/FreeMat"
     install_name_tool -change "/usr/local/lib/libgcc_s.1.dylib" "@executable_path/../Frameworks/libgcc_s.1.dylib" "$baseDir/Contents/MacOS/FreeMat"
     rm -rf `find $baseDir/Contents/Frameworks -name '*debug*'`
-    rm -rf `find $baseDir/Contents/Plugins -name '*debug*'`
+    rm -rf `find $baseDir/Contents/MacOS -name '*debug*'`
     rm -rf "$buildDir/$FREEMAT.dmg"
     rm -rf `find $baseDir/Contents -name 'Headers'`
-    echo "Checking for local dependencies..."
-    files=`find $baseDir -type f`
-    for file in $files
-    do
-	otool -L $file | grep local
-	otool -L $file | grep trunk
-    done
+#    echo "Checking for local dependencies..."
+#    files=`find $baseDir -type f`
+#    for file in $files
+#    do
+#	otool -L $file | grep local
+#	otool -L $file | grep trunk
+#    done
     hdiutil create -fs HFS+ -srcfolder $baseDir "$buildDir/$FREEMAT.dmg"
     cp "$buildDir/$FREEMAT.dmg" "$BASE/$FREEMAT.dmg"
 }

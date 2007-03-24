@@ -417,12 +417,12 @@ void PrintSheet(ArrayFormat format, Interpreter*io, int rows, int columns,
   // the terminal width
   int colsPerPage;
   if (aclass != FM_STRING)
-    colsPerPage = (int) floor((termWidth-1)/((float) format.width + 3));
+    colsPerPage = (int) floor((termWidth-1)/((double) format.width + 3));
   else
     colsPerPage = termWidth;
   colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
   int pageCount;
-  pageCount = (int) ceil(columns/((float)colsPerPage));
+  pageCount = (int) ceil(columns/((double)colsPerPage));
   for (int k=0;k<pageCount;k++) {
     int colsInThisPage;
     colsInThisPage = columns - colsPerPage*k;

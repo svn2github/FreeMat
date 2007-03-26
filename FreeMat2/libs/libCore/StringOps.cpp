@@ -23,6 +23,9 @@
 #include "Malloc.hpp"
 #include "MemPtr.hpp"
 #if HAVE_PCRE
+#ifdef WIN32
+#define PCRE_STATIC
+#endif
 #include <pcre.h>
 #endif
 

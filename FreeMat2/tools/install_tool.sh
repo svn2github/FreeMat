@@ -332,7 +332,7 @@ MakeCrossWinBundle()
     find -type f -printf "  Delete \"\$INSTDIR/%p\"\n" | sed -e 's@/@\\@g' > /tmp/elist
     cd $cdir
     repcmd="s/<VERSION_NUMBER>/$VERSION/g"
-    sed -e '/<BUNDLE FILES>/r /tmp/blist' -e '/<DELLIST>/r /tmp/elist' -e $repcmd -e 's/<BUNDLE FILES>//g' -e 's/<DELLIST>//g' < $srcDir/tools/disttool/freemat_nsi.in > $baseDir/freemat.nsi
+    sed -e '/<BUNDLE FILES>/r /tmp/blist' -e '/<DELLIST>/r /tmp/elist' -e $repcmd -e 's/<BUNDLE FILES>//g' -e 's/<DELLIST>//g' < $srcDir/tools/freemat_nsi.in > $baseDir/freemat.nsi
     cd $baseDir
     wine ~/.wine/drive_c/Program\ Files/NSIS/makensis.exe freemat.nsi
 }
@@ -508,7 +508,7 @@ SetupRPM()
     mkdir -p $BASE/rpm/SOURCES
     mkdir -p $BASE/rpm/SPECS
     mkdir -p $BASE/rpm/SRPMS
-    cp $BASE/Root/$FREEMAT/tools/scripts/freemat.spec $BASE/rpm/SPECS/.
+    cp $BASE/Root/$FREEMAT/tools/freemat.spec $BASE/rpm/SPECS/.
     cp $BASE/Files/$FREEMAT_FILE $BASE/rpm/SOURCES/.
     rpmbuild -ba --define '_topdir $BASE/rpm' $BASE/rpm/SPECS/freemat.spec
 }
@@ -780,7 +780,7 @@ SetupRelease()
   cp $FREEMAT_FILE Files/$FREEMAT_FILE
   SetupFreeMat
   SetupXWinFreeMat
-  rpmbuild -ba ../tools/scripts/freemat.spec
+  rpmbuild -ba ../tools/freemat.spec
 }
 
 SetupMacRelease()

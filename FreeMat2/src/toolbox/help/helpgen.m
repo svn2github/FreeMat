@@ -1,5 +1,6 @@
 function helpgen(source_path)
   global sourcepath section_descriptors genfiles
+
   genfiles = {};
   rmdir([source_path,'/help'],'s');
   rmdir([source_path,'/toolbox'],'s');
@@ -50,6 +51,19 @@ function helpgen(source_path)
   printf('Pass 3\n');
   system('pdflatex main.tex');
   rmdir([source_path,'/help/tmp'],'s');
+
+  printf('Writing installation manifest...\n');
+  install_list = helpgen_rdir([source_path,'/help']);
+  install_list = [install_list;helpgen_rdir([source_path,'/toolbox'])];
+  qlen = numel(source_path)+2;
+  delete([source_path,'/manifest.am']);
+  fp = fopen([source_path,'/manifest.am'],'w');
+  fprintf(fp,'nobase_resource_DATA = ');
+  for i=1:numel(install_list)
+     fprintf(fp,'%s ',install_list{i}(qlen:end));
+  end
+  fprintf(fp,'\n');
+  fclose(fp);
   
 function merge_mfile(filename)
   global sourcepath

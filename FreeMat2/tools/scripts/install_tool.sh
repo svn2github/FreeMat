@@ -266,6 +266,19 @@ SetupXWinZlib()
 }
 
 
+SetupXWinPcre()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall $PCRE_FILE ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre $PCRE XRoot
+    echo "Configuring package $PCRE..."
+    echo "Command line configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$PCRE/config.guess) --disable-shared"
+    cd $BASE/XRoot/$PCRE
+    ./configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$PCRE/config.guess) --disable-shared
+    make libpcre.la
+    cp $BASE/XRoot/$PCRE/.libs/libpcre.a $BASE/Cross/lib/.
+    cp $BASE/XRoot/$PCRE/pcre.h $BASE/Cross/include/.
+}
+
 SetupXWinQt()
 {
     SetupXWinCommon
@@ -486,6 +499,20 @@ EOF
     tar cfz $FREEMAT-Binary-Linux.tar.gz $FREEMAT-Binary
 }
 
+SetupRPM()
+{
+    SetupCommon
+    rm -rf $BASE/rpm
+    mkdir -p $BASE/rpm/BUILD
+    mkdir -p $BASE/rpm/RPMS
+    mkdir -p $BASE/rpm/SOURCES
+    mkdir -p $BASE/rpm/SPECS
+    mkdir -p $BASE/rpm/SRPMS
+    cp $BASE/Root/$FREEMAT/tools/scripts/freemat.spec $BASE/rpm/SPECS/.
+    cp $BASE/Files/$FREEMAT_FILE $BASE/rpm/SOURCES/.
+    rpmbuild -ba --define '_topdir $BASE/rpm' $BASE/rpm/SPECS/freemat.spec
+}
+
 SetupFreeMat()
 {
     SetupCommon
@@ -496,7 +523,6 @@ SetupFreeMat()
     cd $BASE/Root/$FREEMAT/build
     ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
     make
-    MakeLinuxBundle
 }
 
 SetupFFCALL()
@@ -750,7 +776,6 @@ SetupRelease()
 {
   SetupInplaceBuild
   make
-  make help
   make distcheck
   cp $FREEMAT_FILE Files/$FREEMAT_FILE
   SetupFreeMat
@@ -865,6 +890,7 @@ subdirectory.  Here are the tasks manages by this script.
       --xwin-qt          Setup the Win32 cross of QT
       --xwin-nsis        Setup the Win32 cross of NSIS
       --xwin-zlib        Setup the Win32 cross of zlib
+      --xwin-pcre        Setup the Win32 cross of PCRE
       --xwin-freemat     Build the Win32 cross of FreeMat
       --xwin-all         Setup the Win32 cross compilation (all steps)
 
@@ -878,6 +904,7 @@ subdirectory.  Here are the tasks manages by this script.
       --qt               Setup Qt
       --zlib             Setup zlib
       --freemat          Setup FreeMat
+      --rpm              Setup FreeMat RPM
       --all
 
       --release          Do a sequence of build-steps (maintainer stuff)
@@ -918,6 +945,7 @@ for arg
       --xwin-qt)       SetupXWinQt ;;
       --xwin-nsis)     SetupXWinNSIS ;;
       --xwin-zlib)     SetupXWinZlib ;;
+      --xwin-pcre)     SetupXWinPcre ;;
       --xwin-freemat)  SetupXWinFreeMat ;;
       --xwin-all)      SetupXWinAll ;;
       --fftw)          SetupFFTW ;;
@@ -930,6 +958,8 @@ for arg
       --qt)            SetupQt ;;
       --zlib)          SetupZlib ;;
       --freemat)       SetupFreeMat ;;
+      --rpm)           SetupRPM ;;
+
       --all)           SetupAll ;;
       --release)       SetupRelease ;;
       --mac-qt)        SetupMacQt ;;

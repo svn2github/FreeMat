@@ -1,1 +1,0 @@
-EXTRA_DIST = builddeps.in freemat_nsi.in makehelp makepkg.in

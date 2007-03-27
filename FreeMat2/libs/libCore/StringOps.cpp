@@ -220,7 +220,7 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
 //older @|<?P<name>| syntax, instead of the new @|<?<name>| syntax.  
 //\item The @|pcre| library is pickier about named tokens and their appearance in 
 //expressions.  So, for example, the regexp from the MATLAB 
-//manual @|(?<first>\\w+)\\s+(?<last>\\w+)|(?<last>\\w+),\\s+(?<first>\\w+)'|
+//manual @|'(?<first>\\w+)\\s+(?<last>\\w+)|(?<last>\\w+),\\s+(?<first>\\w+)'|
 //does not work correctly (as of this writing) because the same named 
 //tokens appear multiple
 //times.  The workaround is to assign different names to each token, and then collapse

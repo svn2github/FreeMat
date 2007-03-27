@@ -8,9 +8,9 @@ function run_tests
    myloc = which('run_tests');
    [pth,name,sfx] = fileparts(myloc);
    cd(pth);
-   testlist = system('ls bbtest_*.m');
-   testlist = [testlist;system('ls wbtest_*.m')];
-   testlist = [testlist;system('ls test_*.m')];
+   testlist = filelist('bbtest_*.m');
+   testlist = [testlist;filelist('wbtest_*.m')];
+   testlist = [testlist;filelist('test_*.m')];
    cdir = pwd;
    failed = {};
    for i=1:numel(testlist);
@@ -32,3 +32,13 @@ function run_tests
    for i=1:numel(failed)
       printf('   Test %s failed\n',failed{i});
    end
+
+function list = filelist(pattern)
+   q = dir(pattern);
+   list = {};
+   for i=1:numel(q)
+      if (~q(i).isdir)
+         list = [list;{q(i).name}];
+      end
+   end
+      

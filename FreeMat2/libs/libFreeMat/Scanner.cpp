@@ -228,10 +228,16 @@ void Scanner::FetchNumber() {
     numclass = (numclass == float_class) ? complex_class : dcomplex_class;
   }
   // Back off if we aggregated a "." from "..." into the number
-  if ((ahead(lookahead-1) == '.') &&
-      (ahead(lookahead) == '.') &&
-      (ahead(lookahead+1) == '.') &&
-      (ahead(lookahead+2) != '.')) lookahead--;
+  if (((ahead(lookahead-1) == '.') &&
+       (ahead(lookahead) == '.') &&
+       (ahead(lookahead+1) == '.') &&
+       (ahead(lookahead+2) != '.')) ||
+      ((ahead(lookahead-1) == '.') &&
+       ((ahead(lookahead) == '*') ||
+	(ahead(lookahead) == '/') ||
+	(ahead(lookahead) == '\\') ||
+	(ahead(lookahead) == '^') ||
+	(ahead(lookahead) == '\'')))) lookahead--;
   string numtext(string(m_text,m_ptr,lookahead));
   m_ptr += lookahead;
   if ((numclass == complex_class) ||

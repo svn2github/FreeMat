@@ -2564,6 +2564,9 @@ ArrayVector ImagFunction(int nargout, const ArrayVector& arg) {
 //@<
 //abs([2.0+3.0*i,i])
 //@>
+//@@Tests
+//@$"y=abs('hello')","[104,101,108,108,111]","exact"
+//@$"y=abs(3+4i)","5","exact"
 //!
 ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
@@ -2588,6 +2591,10 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
   Array retval;
   int i;
   switch (argType) {
+  case FM_STRING:
+    retval = tmp;
+    retval.promoteType(FM_UINT32);
+    break;
   case FM_LOGICAL:
   case FM_UINT8:
   case FM_UINT16:

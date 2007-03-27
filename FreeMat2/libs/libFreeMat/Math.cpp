@@ -2121,6 +2121,9 @@ Array DotLeftDivide(Array A, Array B, Interpreter* m_eval) {
 //B = [2,1.5;0.5,0.6]
 //C = A.^B
 //@>
+//@@Tests
+//@$"y=2.^[1:5]","[2,4,8,16,32]","exact"
+//@$"y=2..^[1:5]","[2,4,8,16,32]","exact"
 //!
 Array DotPower(Array A, Array B, Interpreter* m_eval) {
   Array C(DoPowerTwoArgFunction(A,B));

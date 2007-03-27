@@ -39,6 +39,8 @@
 %@<
 %any(A,2)
 %@>
+%@@Tests
+%@$"y=any([1,0,0;1,0,0;0,0,1],2)","[1;1;1]","exact"
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
@@ -50,5 +52,5 @@ function y = any(A,dim)
   if (nargin == 1)
     y = max(logical(A(:)));
   else
-    y = max(logical(A),dim);
+    y = max(logical(A),[],dim);
   end

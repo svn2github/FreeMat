@@ -27,7 +27,7 @@ int GetNominalWidthInteger(const T*array, int count) {
   int maxdigit = 0;
   for (int i=0;i<count;i++) {
     memset(buffer,0,MSGBUFLEN);
-    sprintf(buffer,"%lld",array[i]);
+    sprintf(buffer,"%lld",(int64)array[i]);
     int j = maxdigit;
     while (buffer[j] && j>=maxdigit)
       j++;
@@ -39,7 +39,7 @@ int GetNominalWidthInteger(const T*array, int count) {
 template <class T>
 void PrintIntegers(const T*array, int count, int width) {
   for (int i=0;i<count;i++)
-    printf("%*lld\n",width,array[i]);
+    printf("%*lld\n",width,(int64)array[i]);
 }
   
 template <class T>

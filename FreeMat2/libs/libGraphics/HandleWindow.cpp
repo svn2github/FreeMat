@@ -256,11 +256,19 @@ void HandleWindow::camRotate(bool active) {
 
 void HandleWindow::save() {
   QString fn = QFileDialog::getSaveFileName();
-  HPrintFunction(0,singleArrayVector(Array::stringConstructor(fn.toStdString())));
+  try {
+    HPrintFunction(0,singleArrayVector(Array::stringConstructor(fn.toStdString())));
+  } catch(Exception &e) {
+    QMessageBox::critical(0,"Critical Error in Save",QString::fromStdString(e.getMessageCopy()));
+  }
 }
 
 void HandleWindow::copy() {
-  HCopyFunction(0,ArrayVector());
+  try {
+    HCopyFunction(0,ArrayVector());
+  } catch(Exception &e) {
+    QMessageBox::critical(0,"Critical Error in Copy",QString::fromStdString(e.getMessageCopy()));
+  }
 }
 
 void HandleWindow::createActions() {

@@ -776,7 +776,7 @@ void MainApp::UpdatePaths() {
       dir.cdUp();
       dir.cd("Plugins");
       QString dummy(dir.absolutePath());
-      QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+      QApplication::addLibraryPaths(dir.absolutePath());
       QDir dir1(qApp->applicationDirPath() + "/../Resources/toolbox");
       if (dir1.exists()) {
 	QString path1(dir1.canonicalPath());

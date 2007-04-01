@@ -89,7 +89,12 @@ HandleObject::~HandleObject() {
       }
     }
   }
-    
+  // Delete our properties also
+  stringVector propSet(m_properties.getCompletions(""));
+  for (int i=0;i<propSet.size();i++) {
+    HandleProperty** hp = m_properties.findSymbol(propSet[i]);
+    if (hp) delete (*hp);
+  }
 }
 
 HandleProperty* HandleObject::LookupProperty(std::string name) {

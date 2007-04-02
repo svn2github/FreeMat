@@ -25,7 +25,7 @@
 #include "DynLib.hpp"
 #include "Serialize.hpp"
 #include "mex.h"
-#include <sys/stat.h>
+#include <QSharedData>
 
 typedef enum {
   FM_M_FUNCTION,
@@ -56,7 +56,7 @@ typedef ArrayVector (*SpecialFuncPtr) (int,const ArrayVector&,Interpreter*);
  * a well defined number of output arguments, and some means of 
  * being evaluated.
  */
-class FunctionDef {
+class FunctionDef : public QSharedData {
 public:
   /**
    * The name of the function - must follow identifier rules.
@@ -115,7 +115,7 @@ public:
   virtual bool updateCode() {return false;}
 };
 
-typedef FunctionDef* FunctionDefPtr;
+typedef FunctionDef* FuncPtr;
 
 class MFunctionDef;
 
@@ -284,8 +284,6 @@ public:
    */
   virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector &, int);
 };
-
-typedef FunctionDef* FuncPtr;
 
 class SpecialFunctionDef : public FunctionDef {
 public:

@@ -2737,9 +2737,9 @@ Array Array::getNDimSubset(ArrayVector& index, Interpreter* m_eval)  {
 					     indx, L);
       break;
     case FM_FUNCPTR_ARRAY:
-      getNDimSubsetNumericDispatchReal<FunctionDefPtr>(colonIndex,
-						       (const FunctionDefPtr*) getDataPointer(),
-						       (FunctionDefPtr*) qp,outDimsInt,srcDimsInt,
+      getNDimSubsetNumericDispatchReal<FuncPtr>(colonIndex,
+						       (const FuncPtr*) getDataPointer(),
+						       (FuncPtr*) qp,outDimsInt,srcDimsInt,
 						       indx, L);
       break;
     case FM_CELL_ARRAY: 
@@ -3317,9 +3317,9 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata, Interpreter* m_eval)
 					     indx, L,advance);
       break;
     case FM_FUNCPTR_ARRAY:
-      setNDimSubsetNumericDispatchReal<FunctionDefPtr>(colonIndex,
-						       (FunctionDefPtr*) qp,
-						       (const FunctionDefPtr*) rdata.getDataPointer(),
+      setNDimSubsetNumericDispatchReal<FuncPtr>(colonIndex,
+						       (FuncPtr*) qp,
+						       (const FuncPtr*) rdata.getDataPointer(),
 						       outDimsInt,srcDimsInt,
 						       indx, L,advance);
       break;

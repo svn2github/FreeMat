@@ -27,6 +27,7 @@
 #include "Types.hpp"
 #include "MexInterface.hpp"
 #include <QDebug>
+#include <sys/stat.h>
 
 #if HAVE_AVCALL
 #include "avcall.h"

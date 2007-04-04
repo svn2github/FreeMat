@@ -39,7 +39,7 @@ typedef QList<Array> ArrayVector;
 ArrayVector singleArrayVector(Array);
 typedef QVector<ArrayVector> ArrayMatrix;
 
-class FunctionDef;
+class FuncPtr;
 
 static Dimensions zeroDim(0,0);
 
@@ -504,7 +504,7 @@ public:
    * Empty constructor
    */
   static Array emptyConstructor();
-  static Array funcPtrConstructor(FunctionDef *fptr);
+  static Array funcPtrConstructor(FuncPtr fptr);
   /**
    * Scalar constructor - Construct an FM_LOGICAL object with a scalar
    * value.

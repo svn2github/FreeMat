@@ -137,7 +137,7 @@ void outputSinglePrecisionFloat(char *buf, float num) {
 void* Array::allocateArray(Class type, uint32 length, rvstring names) {
   switch(type) {
   case FM_FUNCPTR_ARRAY: {
-    FunctionDef **dp = new FunctionDef*[length];
+    FuncPtr *dp = new FuncPtr[length];
     for (int i=0;i<length;i++)
       dp[i] = NULL;
     return dp;
@@ -850,7 +850,7 @@ void Array::transpose()  {
 int Array::getElementSize() const {
   switch(dataClass()) {
   case FM_FUNCPTR_ARRAY:
-    return sizeof(FunctionDef*);
+    return sizeof(FuncPtr);
   case FM_CELL_ARRAY:
     return sizeof(Array);
   case FM_STRUCT_ARRAY:
@@ -1692,8 +1692,8 @@ Array Array::emptyConstructor() {
   return Array(FM_DOUBLE,Dimensions(0,0),NULL);
 }
 
-Array Array::funcPtrConstructor(FunctionDef *fptr) {
-  FunctionDef **data = (FunctionDef**) allocateArray(FM_FUNCPTR_ARRAY,1);
+Array Array::funcPtrConstructor(FuncPtr fptr) {
+  FuncPtr *data = (FuncPtr*) allocateArray(FM_FUNCPTR_ARRAY,1);
   data[0] = fptr;
   return Array(FM_FUNCPTR_ARRAY, Dimensions(1,1), data);
 }
@@ -4329,8 +4329,8 @@ void emitElement(Interpreter* m_eval, char *msgBuffer, const void *dp, int num, 
     break;
   }
   case FM_FUNCPTR_ARRAY: {
-    const FunctionDef** ap;
-    ap = (const FunctionDef**) dp;
+    const FuncPtr* ap;
+    ap = (const FuncPtr*) dp;
     if (!ap[num]) {
       m_eval->outputMessage("[]  ");
     } else {

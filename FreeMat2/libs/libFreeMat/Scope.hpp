@@ -136,9 +136,6 @@ public:
    * of the function is encoded in the FuncPtr.
    */
   inline void insertFunction(FuncPtr a) {
-    FuncPtr *ret = codeTab.findSymbol(a->name);
-    if (ret)
-      delete ret;
     codeTab.insertSymbol(a->name,a);
   }
   /**

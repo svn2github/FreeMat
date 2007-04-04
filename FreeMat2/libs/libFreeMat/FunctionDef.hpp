@@ -135,52 +135,6 @@ public:
   virtual bool updateCode() {return false;}
 };
 
-// This used to be a simple typedef to a pointer of a functiondef
-// Now, it is a reference counted class.
-class FuncPtr {
-private:
-  FunctionDef* d;
-public:
-  FuncPtr() : d(NULL) {}
-  ~FuncPtr() {
-    if (d) {
-      d->unlock();
-      if (!d->referenced()) delete d;
-    }
-  }
-  FuncPtr(FunctionDef* ptr) {
-    d = ptr;
-    if (d)
-      d->lock();
-  }
-  FuncPtr(const FuncPtr &copy) {
-    d = copy.d;
-    if (d)
-      d->lock();
-  }
-  FuncPtr& operator=(const FuncPtr &copy) {
-    if (copy.d == d)
-      return *this;
-    if (d) {
-      d->unlock();
-      if (!d->referenced()) delete d;
-    }
-    d = copy.d;
-    if (d)
-      d->lock();
-    return *this;
-  }
-  FunctionDef* operator->() const {
-    return d;
-  }
-  FunctionDef& operator*() const {
-    return *d;
-  }
-  bool operator!() const {
-    return (d != NULL);
-  }
-};
-
 class MFunctionDef;
 
 /**
@@ -502,4 +456,54 @@ public:
    */
   virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector& , int);    
 };
+
+// This used to be a simple typedef to a pointer of a functiondef
+// Now, it is a reference counted class.
+class FuncPtr {
+private:
+  FunctionDef* d;
+public:
+  FuncPtr() : d(NULL) {}
+  ~FuncPtr() {
+    if (d) {
+      d->unlock();
+      if (!d->referenced()) delete d;
+    }
+  }
+  FuncPtr(FunctionDef* ptr) {
+    d = ptr;
+    if (d)
+      d->lock();
+  }
+  FuncPtr(const FuncPtr &copy) {
+    d = copy.d;
+    if (d)
+      d->lock();
+  }
+  FuncPtr& operator=(const FuncPtr &copy) {
+    if (copy.d == d)
+      return *this;
+    if (d) {
+      d->unlock();
+      if (!d->referenced()) delete d;
+    }
+    d = copy.d;
+    if (d)
+      d->lock();
+    return *this;
+  }
+  FunctionDef* operator->() const {
+    return d;
+  }
+  FunctionDef& operator*() const {
+    return *d;
+  }
+  bool operator!() const {
+    return (d != NULL);
+  }
+  operator FunctionDef* () const {return d;}
+  operator MFunctionDef* () const {return ((MFunctionDef*)d);}
+};
+
+
 #endif

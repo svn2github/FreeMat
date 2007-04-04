@@ -591,7 +591,7 @@ void FunctionDef::unlock() {
 
 bool FunctionDef::referenced() {
   QMutexLocker lockit(&functiondefmutex);
-  return (refcount>0);d
+  return (refcount>0);
 }
 
 FunctionDef::~FunctionDef() {

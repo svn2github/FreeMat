@@ -35,6 +35,8 @@
 
 #define MSGBUFLEN 2048
 
+QMutex functiondefmutex;
+
 MFunctionDef::MFunctionDef() {
   functionCompiled = false;
   timeStamp = 0;
@@ -574,6 +576,22 @@ void SpecialFunctionDef::printMe(Interpreter *eval) {
 FunctionDef::FunctionDef() {
   scriptFlag = false;
   graphicsFunction = false;
+  refcount = 0;
+}
+
+void FunctionDef::lock() {
+  QMutexLocker lockit(&functiondefmutex);
+  refcount++;
+}
+
+void FunctionDef::unlock() {
+  QMutexLocker lockit(&functiondefmutex);
+  refcount--;
+}
+
+bool FunctionDef::referenced() {
+  QMutexLocker lockit(&functiondefmutex);
+  return (refcount>0);d
 }
 
 FunctionDef::~FunctionDef() {

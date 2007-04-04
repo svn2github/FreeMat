@@ -26,6 +26,9 @@
 #include "Serialize.hpp"
 #include "mex.h"
 #include <QSharedData>
+#include <string>
+
+using namespace std;
 
 typedef enum {
   FM_M_FUNCTION,
@@ -56,12 +59,17 @@ typedef ArrayVector (*SpecialFuncPtr) (int,const ArrayVector&,Interpreter*);
  * a well defined number of output arguments, and some means of 
  * being evaluated.
  */
-class FunctionDef : public QSharedData {
+
+class FunctionDef {
 public:
   /**
    * The name of the function - must follow identifier rules.
    */
   std::string name;
+  /**
+   * The reference count for this functiondef
+   */
+  int refcount;
   /**
    * Is this a script?
    */
@@ -86,6 +94,18 @@ public:
    * The virtual destructor
    */
   virtual ~FunctionDef();
+  /**
+   * Increment the reference count
+   */
+  void lock();
+  /**
+   * Decrement the reference count
+   */
+  void unlock();
+  /**
+   * Returns true if the current function has references
+   */
+  bool referenced();
   /**
    * The type of the function (FM_M_FUNCTION, FM_BUILT_IN_FUNCTION,
    * FM_SPECIAL_FUNCTION, FM_IMPORTED_FUNCTION).
@@ -115,7 +135,51 @@ public:
   virtual bool updateCode() {return false;}
 };
 
-typedef FunctionDef* FuncPtr;
+// This used to be a simple typedef to a pointer of a functiondef
+// Now, it is a reference counted class.
+class FuncPtr {
+private:
+  FunctionDef* d;
+public:
+  FuncPtr() : d(NULL) {}
+  ~FuncPtr() {
+    if (d) {
+      d->unlock();
+      if (!d->referenced()) delete d;
+    }
+  }
+  FuncPtr(FunctionDef* ptr) {
+    d = ptr;
+    if (d)
+      d->lock();
+  }
+  FuncPtr(const FuncPtr &copy) {
+    d = copy.d;
+    if (d)
+      d->lock();
+  }
+  FuncPtr& operator=(const FuncPtr &copy) {
+    if (copy.d == d)
+      return *this;
+    if (d) {
+      d->unlock();
+      if (!d->referenced()) delete d;
+    }
+    d = copy.d;
+    if (d)
+      d->lock();
+    return *this;
+  }
+  FunctionDef* operator->() const {
+    return d;
+  }
+  FunctionDef& operator*() const {
+    return *d;
+  }
+  bool operator!() const {
+    return (d != NULL);
+  }
+};
 
 class MFunctionDef;
 

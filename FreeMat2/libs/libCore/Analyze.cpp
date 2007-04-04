@@ -2959,7 +2959,7 @@ ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval
     if (!func.isString())
       throw Exception("arguments to pcode must be function names");
     string fname = func.getContentsAsString();
-    FunctionDef *funcDef;
+    FuncPtr funcDef;
     ArrayVector m;
     bool isFun;
     char buffer[1024];

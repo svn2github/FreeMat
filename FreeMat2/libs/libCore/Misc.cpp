@@ -3886,7 +3886,7 @@ ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
     throw Exception("first argument to fdump must be the name of a function (i.e., a string)");
   string fname = arg[0].getContentsAsString();
   Context *context = eval->getContext();
-  FunctionDef *funcDef;
+  FuncPtr funcDef;
   if (!context->lookupFunction(fname,funcDef))
     throw Exception(std::string("function ") + fname + " undefined!");
   funcDef->updateCode();
@@ -3917,7 +3917,7 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
     throw Exception("builtin function requires at least one argument");
   if (!(arg[0].isString()))
     throw Exception("first argument to builtin must be the name of a function (i.e., a string)");
-  FunctionDef *funcDef;
+  FuncPtr funcDef;
   string fname = arg[0].getContentsAsString();
   Context *context = eval->getContext();
   if (!context->lookupFunction(fname,funcDef))
@@ -3981,7 +3981,7 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
     throw Exception("feval function requires at least one argument");
   if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY) && (!arg[0].isUserClass()))
     throw Exception("first argument to feval must be the name of a function (i.e., a string) a function handle, or a user defined class");
-  FunctionDef *funcDef;
+  FuncPtr funcDef;
   if (arg[0].isString()) {
     string fname = arg[0].getContentsAsString();
     Context *context = eval->getContext();
@@ -3990,8 +3990,8 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
   } else {
     if (!arg[0].isScalar())
       throw Exception("function handle argument to feval must be a scalar");
-    const FunctionDef **fp = (const FunctionDef **) arg[0].getDataPointer();
-    funcDef = (FunctionDef*) fp[0];
+    const FuncPtr *fp = (const FuncPtr *) arg[0].getDataPointer();
+    funcDef = (FuncPtr) fp[0];
     if (!funcDef) return ArrayVector();
   }
   funcDef->updateCode();

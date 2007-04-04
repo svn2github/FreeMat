@@ -855,7 +855,7 @@ int MainApp::Run() {
   // Assign this to the main thread
   m_eval = m_threadHandles.lookupHandle(m_mainID);
   m_keys->SetCompletionContext(m_eval->getContext());
-  FunctionDef *doCLI;
+  FuncPtr doCLI;
   if (!m_eval->lookupFunction("docli",doCLI))
     return 0;
   m_eval->setThreadFunc(doCLI,0,ArrayVector());

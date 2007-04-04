@@ -107,7 +107,7 @@ ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   string fname = arg[0].getContentsAsString();
   eval->rescanPath();
   Context *context = eval->getContext();
-  FunctionDef *funcDef;
+  FuncPtr funcDef;
   if (!context->lookupFunction(fname,funcDef))
     throw Exception(std::string("function ") + fname + " undefined!");
   funcDef->updateCode();

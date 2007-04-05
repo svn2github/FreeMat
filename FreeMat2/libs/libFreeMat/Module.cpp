@@ -38,7 +38,7 @@ void ClearLibs(Interpreter* eval) {
     delete *ptr;
   }
   for (int i=0;i<DynamicFunctions.size();i++) {
-    eval->getContext()->deleteFunctionGlobally(DynamicFunctions[i]);
+    eval->getContext()->deleteFunction(DynamicFunctions[i]);
   }
   DynamicFunctions.clear();
 }
@@ -99,7 +99,7 @@ ArrayVector LoadLibFunction(int c_nargout,const ArrayVector& narg,
   fdef->argCount = nargin;
   fdef->name = funcName;
   fdef->fptr = (BuiltInFuncPtr) func;
-  eval->getContext()->insertFunctionGlobally(fdef,false);
+  eval->getContext()->insertFunction(fdef,false);
   DynamicFunctions.push_back(fdef->name);
   return ArrayVector();
 }
@@ -438,7 +438,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 						      checks,
 						      rettype);
   fptr->name = funcname;
-  eval->getContext()->insertFunctionGlobally(fptr,false);
+  eval->getContext()->insertFunction(fptr,false);
   DynamicFunctions.push_back(fptr->name);
   return ArrayVector();
 #else
@@ -452,12 +452,12 @@ void LoadModuleFunctions(Context* context) {
   sfdef->argCount = 5;
   sfdef->name = "loadlib";
   sfdef->fptr = LoadLibFunction;
-  context->insertFunctionGlobally(sfdef,false);
+  context->insertFunction(sfdef,false);
     
   sfdef = new SpecialFunctionDef;
   sfdef->retCount = 0;
   sfdef->argCount = 5;
   sfdef->name = "import";
   sfdef->fptr = ImportFunction;
-  context->insertFunctionGlobally(sfdef,false);
+  context->insertFunction(sfdef,false);
 }

@@ -813,7 +813,7 @@ void LoadClassFunction(Context* context) {
   sfdef->argCount = -1;
   sfdef->name = "class";
   sfdef->fptr = ClassFunction;
-  context->insertFunctionGlobally(sfdef,false);
+  context->insertFunction(sfdef,false);
 }
 
 std::vector<int> MarkUserClasses(ArrayVector t) {

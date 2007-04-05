@@ -27,11 +27,9 @@
 #include <QMutex>
 
 #include "Array.hpp"
-#include "FunctionDef.hpp"
 #include "SymbolTable.hpp"
 
 typedef SymbolTable<Array> VariableTable;
-typedef SymbolTable<FuncPtr> CodeTable;
 
 /**
  * A Scope is a collection of functions and variables all visible
@@ -54,12 +52,6 @@ class Scope {
    * destructing them when destroyed.
    */
   VariableTable symTab;
-  /**
-   * This is a hash-table of function pointers.  The Scope does
-   * _not_ own the function pointers, and it must not destroy
-   * them when destructed.
-   */
-  CodeTable codeTab;
   /**
    * The name of the scope.
    */
@@ -130,31 +122,6 @@ public:
    */
   inline void insertVariable(const std::string& varName, const Array& val) {
     symTab.insertSymbol(varName,val);
-  }
-  /**
-   * Insert a function pointer into the current scope.  The name of
-   * of the function is encoded in the FuncPtr.
-   */
-  inline void insertFunction(FuncPtr a) {
-    codeTab.insertSymbol(a->name,a);
-  }
-  /**
-   * Delete a function from the current scope.
-   */
-  inline void deleteFunction(const std::string& funcName) {
-    codeTab.deleteSymbol(funcName);
-  }
-  /**
-   * Lookup a function.  Return true if the function is defined, and
-   * assigns the value of the function pointer to the second argument.
-   */
-  inline bool lookupFunction(std::string funcName, FuncPtr& val) {
-    FuncPtr* ret = codeTab.findSymbol(funcName);
-    if (ret) {
-      val = *ret;
-      return true;
-    }
-    return false;
   }
   /**
    * Lookup a variable.  Return a pointer to the variable in the symbol 
@@ -271,24 +238,9 @@ public:
    * Get a list of all possible completions of the given
    * string.
    */
-  inline stringVector getCompletions(const std::string& prefix) {
-    stringVector codecompletions;
-    stringVector varcompletions;
-    codecompletions = codeTab.getCompletions(prefix);
-    varcompletions = symTab.getCompletions(prefix);
-    codecompletions.insert(codecompletions.end(),
-			   varcompletions.begin(),
-			   varcompletions.end());
-    return codecompletions;
+   inline stringVector getCompletions(const std::string& prefix) {
+     return symTab.getCompletions(prefix);
   }
-  /**
-   * Returns a list of all functions
-   *
-   */
-  inline stringVector listAllFunctions() {
-    return codeTab.getCompletions("");
-  }
-
   /**
    * Returns a list of all currently defined variables
    * in the active scope.

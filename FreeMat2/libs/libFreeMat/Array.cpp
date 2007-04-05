@@ -139,7 +139,7 @@ void* Array::allocateArray(Class type, uint32 length, rvstring names) {
   case FM_FUNCPTR_ARRAY: {
     FuncPtr *dp = new FuncPtr[length];
     for (int i=0;i<length;i++)
-      dp[i] = NULL;
+      dp[i] = (FunctionDef*) NULL;
     return dp;
   }
   case FM_CELL_ARRAY: {
@@ -4353,6 +4353,12 @@ string operator+(int d, string a) {
   char buf[256];
   sprintf(buf,"%d",d);
   return a+string(buf);
+}
+
+stringVector operator+(stringVector a, stringVector b) {
+  for (int i=0;i<b.size();i++)
+    a.push_back(b[i]);
+  return a;
 }
 
 Array CellArrayFromQStringList(QStringList t) {

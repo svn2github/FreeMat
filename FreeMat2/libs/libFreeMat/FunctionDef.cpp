@@ -104,16 +104,6 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   context = walker->getContext();
   context->pushScope(name);
   walker->pushDebug(fileName,name);
-  // Push our local functions onto the function scope
-  MFunctionDef *cp;
-  // Walk up until we get to the head of the list
-  cp = this;
-  while (cp->prevFunction != NULL) cp = cp->prevFunction;
-  cp = cp->nextFunction;
-  while (cp != NULL) {
-    context->insertFunctionLocally((FuncPtr) cp);
-    cp = cp->nextFunction;
-  }
   // When the function is called, the number of inputs is
   // at sometimes less than the number of arguments requested.
   // Check the argument count.  If this is a non-varargin

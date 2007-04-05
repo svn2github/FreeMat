@@ -164,7 +164,7 @@ void Interpreter::procFileM(std::string fname, std::string fullname, bool tempfu
   adef = new MFunctionDef();
   adef->name = fname;
   adef->fileName = fullname;
-  context->insertFunctionGlobally(adef, tempfunc);
+  context->insertFunction(adef, tempfunc);
 }
   
 void Interpreter::procFileP(std::string fname, std::string fullname, bool tempfunc) {
@@ -178,7 +178,7 @@ void Interpreter::procFileP(std::string fname, std::string fullname, bool tempfu
     adef = ThawMFunction(s);
     adef->pcodeFunction = true;
     delete f;
-    context->insertFunctionGlobally(adef, tempfunc);
+    context->insertFunction(adef, tempfunc);
   } catch (Exception &e) {
   }
 }
@@ -188,7 +188,7 @@ void Interpreter::procFileMex(std::string fname, std::string fullname, bool temp
   adef = new MexFunctionDef(fullname);
   adef->name = fname;
   if (adef->LoadSuccessful())
-    context->insertFunctionGlobally((MFunctionDef*)adef,tempfunc);
+    context->insertFunction((MFunctionDef*)adef,tempfunc);
   else
     delete adef;
 }
@@ -313,6 +313,15 @@ static std::string PrivateMangleName(std::string cfunc, std::string fname) {
   return cfunc + "private:" + fname;
 }
 
+static std::string LocalMangleName(std::string cfunc, std::string fname) {
+  if (cfunc.empty()) return "";
+  int ndx;
+  ndx = cfunc.rfind(QString(QDir::separator()).toStdString());
+  if (ndx>=0)
+    cfunc.erase(ndx+1,cfunc.size());
+  return cfunc + "local:" + fname;
+}
+
 std::string Interpreter::getVersionString() {
   return std::string("FreeMat v" VERSION);
 }
@@ -370,6 +379,15 @@ void Interpreter::sendGreeting() {
   outputMessage(" Type <help license> to find out more\n");
   outputMessage("      <helpwin> for online help\n");
   outputMessage("      <pathtool> to set or change your path\n");
+}
+
+std::string Interpreter::getLocalMangledName(std::string fname) {
+  std::string ret;
+  if (isMFile(ip_funcname))
+    ret = LocalMangleName(ip_funcname,fname);
+  else
+    ret = fname;
+  return ret;
 }
 
 std::string Interpreter::getPrivateMangledName(std::string fname) {
@@ -4142,15 +4160,15 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
   while(passcount < 2) {
     // This is the order for function dispatch according to the Matlab manual
     // Subfunctions
-    if (context->lookupFunctionLocally(funcName,val))
+    if (context->lookupFunction(getLocalMangledName(funcName),val))
       return true;
     // Private functions
     // Not sure if you have to be an M-file in the current directory
     // to access a private function...
-    if (context->lookupFunctionGlobally(getPrivateMangledName(funcName),val))
+    if (context->lookupFunction(getPrivateMangledName(funcName),val))
       return true;
     // Class constructor functions
-    if (context->lookupFunctionGlobally(ClassMangleName(funcName,funcName),val))
+    if (context->lookupFunction(ClassMangleName(funcName,funcName),val))
       return true;
     if (!(disableOverload || stopoverload)) {
       // Look for a class method

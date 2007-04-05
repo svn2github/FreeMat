@@ -93,8 +93,13 @@ public:
  * are searched regularly.  The context is responsible for determining
  * if variables and functions exist, and if so, for returning their
  * values and accepting modifications to them.  A context also keeps
- * track of loop depth.
+ * track of loop depth.  Furthermore, the context (starting with 3.1)
+ * now "owns" all of the functions that are defined.  These used to be
+ * tracked with the scopes, but that lead to a memory leak of FunctionDef
+ * objects.
  */
+
+typedef SymbolTable<FuncPtr> CodeTable;
 
 class Context {
   /**
@@ -105,6 +110,10 @@ class Context {
    * The stack of scopes that have been "bypassed"
    */
   std::vector<Scope*> bypassstack;
+  /**
+   * The table of functions
+   */
+  CodeTable codeTab;
   /**
    * List of functions that are "temporary" and should be flushed
    */
@@ -265,27 +274,25 @@ public:
     return bottomScope->lookupVariable(varName);
   }
   /**
-   * Insert a function definition into the local scope (bottom of
-   * the scope stack).
+   * Insert a function definition into the code table.
    */
-  inline void insertFunctionLocally(FuncPtr f) {
-    bottomScope->insertFunction(f);
-  }
-  /**
-   * Insert a function definition into the global scope (top of the
-   * scope stack).
-   */
-  inline void insertFunctionGlobally(FuncPtr f, bool temporary) {
-    topScope->insertFunction(f);
+  inline void insertFunction(FuncPtr f, bool temporary) {
+    codeTab.insertSymbol(f->name,f);
     if (temporary)
       tempFunctions.push_back(f->name);
+  }
+  /**
+   * Remove a function definition from the code table.
+   */
+  inline void deleteFunction(const std::string& funcName) {
+    codeTab.deleteSymbol(funcName);
   }
   /**
    * Flush temporary function definitions from the global context
    */
   inline void flushTemporaryGlobalFunctions() {
     for (int i=0;i<tempFunctions.size();i++)
-      topScope->deleteFunction(tempFunctions[i]);
+      deleteFunction(tempFunctions[i]);
     tempFunctions.clear();
   }
   /**
@@ -317,7 +324,7 @@ public:
     f2def->name = strdup(name);
     f2def->fptr = fptr;
     f2def->arguments = args;
-    topScope->insertFunction(f2def);  
+    insertFunction(f2def,false);  
   }
   /**
    * Add a special function to the global scope with the given name.
@@ -348,7 +355,7 @@ public:
     f2def->name = strdup(name);
     f2def->fptr = fptr;
     f2def->arguments = args;
-    topScope->insertFunction(f2def);
+    insertFunction(f2def,false);
   }
   /**
    * Add a built in function to the global scope with the given name
@@ -381,7 +388,7 @@ public:
     f2def->fptr = fptr;
     f2def->arguments = args;
     f2def->graphicsFunction = true;
-    topScope->insertFunction(f2def);  
+    insertFunction(f2def,false);  
   }
   /**
    * Add a special function to the global scope with the given name, and
@@ -414,35 +421,29 @@ public:
     f2def->fptr = fptr;
     f2def->arguments = args;
     f2def->graphicsFunction = true;
-    topScope->insertFunction(f2def);
+    insertFunction(f2def,false);
   }
   
   inline stringVector listAllFunctions() {
-    stringVector retval(topScope->listAllFunctions());
-    stringVector bottomFunctions(bottomScope->listAllFunctions());
-    for (int i=0;i<bottomFunctions.size();i++)
-      retval.push_back(bottomFunctions[i]);
-    return retval;
+    return codeTab.getCompletions("");
+  }
+
+  inline stringVector getCompletions(const std::string& prefix) {
+    stringVector local_completions = bottomScope->getCompletions(prefix);
+    stringVector global_completions = topScope->getCompletions(prefix);
+    stringVector code_completions = codeTab.getCompletions(prefix);
+    return local_completions + global_completions + code_completions;
   }
 
   inline bool lookupFunction(std::string funcName, FuncPtr& val) {
-    bool localFunction;
-    if (bottomScope->lookupFunction(funcName,val))
+    FuncPtr* ret = codeTab.findSymbol(funcName);
+    if (ret) {
+      val = *ret;
       return true;
-    return topScope->lookupFunction(funcName,val);
+    }
+    return false;
   }
     
-  inline bool lookupFunctionLocally(std::string funcName, FuncPtr& val) {
-    return bottomScope->lookupFunction(funcName,val);
-  }
-
-  inline bool lookupFunctionGlobally(std::string funcName, FuncPtr& val) {
-    return topScope->lookupFunction(funcName,val);
-  }
-    
-  inline void deleteFunctionGlobally(std::string funcName) {
-    topScope->deleteFunction(funcName);
-  }
   /**
    * Add a persistent variable to the local stack.  This involves
    * two steps:

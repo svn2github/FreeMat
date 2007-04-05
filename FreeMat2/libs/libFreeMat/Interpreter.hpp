@@ -986,6 +986,7 @@ private:
    * Mangle a function name to get the private version (if it exists)
    */
   string getPrivateMangledName(string fname);
+  string getLocalMangledName(string fname);
   /**
    * Convert variables into indexes, calls "subsindex" for user classes.
    */

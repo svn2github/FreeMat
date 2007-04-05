@@ -847,5 +847,5 @@ uint32 TypeSize(Class cls);
 
 string operator+(string a, int d);
 string operator+(int d, string a);
-
+stringVector operator+(stringVector a, stringVector b);
 #endif

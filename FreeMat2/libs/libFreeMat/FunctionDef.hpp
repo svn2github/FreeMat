@@ -470,6 +470,16 @@ public:
       if (!d->referenced()) delete d;
     }
   }
+  FuncPtr(SpecialFunctionDef* ptr) {
+    d = ptr;
+    if (d)
+      d->lock();
+  }
+  FuncPtr(BuiltInFunctionDef* ptr) {
+    d = ptr;
+    if (d)
+      d->lock();
+  }
   FuncPtr(FunctionDef* ptr) {
     d = ptr;
     if (d)

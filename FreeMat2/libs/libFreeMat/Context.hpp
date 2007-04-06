@@ -277,6 +277,7 @@ public:
    * Insert a function definition into the code table.
    */
   inline void insertFunction(FuncPtr f, bool temporary) {
+    //    qDebug() << "inserting function " << QString::fromStdString(f->name) << "\r";
     codeTab.insertSymbol(f->name,f);
     if (temporary)
       tempFunctions.push_back(f->name);

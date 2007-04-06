@@ -214,6 +214,7 @@ function ohandle = plot(varargin)
    end
    
 function h = plot_single(Y,handle,lineprops)
+  keyboard
    h = [];
    if (isvec(Y)) Y = Y(:); end;
    if (isreal(Y))

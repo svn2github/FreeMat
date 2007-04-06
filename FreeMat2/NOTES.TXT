@@ -711,10 +711,21 @@ y = strcomp(class(x),type);
 
 To Do for 3.1 release:
 
+<<<<<<< .mine
+2.  Contour plots
+3.  inline - automagic
+=======
 2. Contour plots
+>>>>>>> .r2495
 
 Why doesn't  regexp('Time is a True Test','(\bT\w*\b)','tokens'){:} Work?
 The following is roughly equivalent to symvar
 b = regexp(a,'(\b[a-zA-Z]\w*\b)(?!\s*\()','tokens'); b{:}
 
+<<<<<<< .mine
+Why doesn't  regexp('Time is a True Test','(\bT\w*\b)','tokens'){:} work?
+The following is roughly equivalent to symvar
+b = regexp(a,'(\b[a-zA-Z]\w*\b)(?!\s*\()','tokens'); b{:}
+=======
 
+>>>>>>> .r2495

@@ -42,14 +42,10 @@ MFunctionDef::MFunctionDef() {
   timeStamp = 0;
   allCode = NULL;
   localFunction = false;
-  nextFunction = NULL;
-  prevFunction = NULL;
   pcodeFunction = false;
 }
 
 MFunctionDef::~MFunctionDef() {
-  if (nextFunction != NULL)
-    delete nextFunction;
 }
 
 int MFunctionDef::inputArgCount() {
@@ -287,35 +283,35 @@ stringVector IdentifierList(tree t) {
   return retval;
 }
 
-MFunctionDef* ConvertParseTreeToMFunctionDef(tree t, string fileName) {
-  MFunctionDef *fp = new MFunctionDef;
-  fp->returnVals = IdentifierList(t.first());
-  fp->name = t.second().text();
-  fp->arguments = IdentifierList(t.child(2));
-  fp->code = t.child(3);
-  fp->fileName = fileName;
-  return fp;
-}
+//MFunctionDef* ConvertParseTreeToMFunctionDef(tree t, string fileName) {
+//  MFunctionDef *fp = new MFunctionDef;
+//  fp->returnVals = IdentifierList(t.first());
+//  fp->name = t.second().text();
+//  fp->arguments = IdentifierList(t.child(2));
+//  fp->code = t.child(3);
+//  fp->fileName = fileName;
+//  return fp;
+//}
+//
+//MFunctionDef* ConvertParseTreeToMFunctionDefs(treeVector t, 
+//					      string fileName) {
+//  MFunctionDef* last = NULL;
+//  for (int index = t.size()-1;index>=0;index--) {
+//    MFunctionDef* rp = ConvertParseTreeToMFunctionDef(t[index],fileName);
+//    if (index>0)
+//      rp->localFunction = true;
+//    else
+//      rp->localFunction = false;
+//    rp->nextFunction = last;
+//    if (last)
+//      last->prevFunction = rp;
+//    last = rp;
+//  }
+//  return last;
+//}
 
-MFunctionDef* ConvertParseTreeToMFunctionDefs(treeVector t, 
-					      string fileName) {
-  MFunctionDef* last = NULL;
-  for (int index = t.size()-1;index>=0;index--) {
-    MFunctionDef* rp = ConvertParseTreeToMFunctionDef(t[index],fileName);
-    if (index>0)
-      rp->localFunction = true;
-    else
-      rp->localFunction = false;
-    rp->nextFunction = last;
-    if (last)
-      last->prevFunction = rp;
-    last = rp;
-  }
-  return last;
-}
-  
 // Compile the function...
-bool MFunctionDef::updateCode() {
+bool MFunctionDef::updateCode(Interpreter *m_eval) {
   if (localFunction) return false;
   if (pcodeFunction) return false;
   // First, stat the file to get its time stamp
@@ -365,16 +361,27 @@ bool MFunctionDef::updateCode() {
       allCode = pcode;
       if (pcode.is(TOK_FUNCTION_DEFS)) {
 	scriptFlag = false;
-	MFunctionDef *fp = ConvertParseTreeToMFunctionDefs(pcode.children(),
-							   fileName);
-	returnVals = fp->returnVals;
-	code = fp->code;
-	nextFunction = fp->nextFunction;
-	if (nextFunction)
-	  fp->nextFunction->prevFunction = this;
-	prevFunction = false;
+	// Get the main function..
+	tree MainFuncCode = pcode.first();
+	returnVals = IdentifierList(MainFuncCode.first());
+	// The name is mangled by the interpreter...  We ignore the
+	// name as parsed in the function.
+	//	name = MainFuncCode.second().text();
+	arguments = IdentifierList(MainFuncCode.child(2));
+	code = MainFuncCode.child(3);
 	localFunction = false;
-	arguments = fp->arguments;
+	// Process the local functions
+	for (int index = 1;index < pcode.numchildren();index++) {
+	  tree LocalFuncCode = pcode.child(index);
+	  MFunctionDef *fp = new MFunctionDef;
+	  fp->localFunction = true;
+	  fp->returnVals = IdentifierList(LocalFuncCode.first());
+	  fp->name = fileName + ":Local:" + LocalFuncCode.second().text();
+	  fp->arguments = IdentifierList(LocalFuncCode.child(2));
+	  fp->code = LocalFuncCode.child(3);
+	  fp->fileName = fileName;
+	  m_eval->getContext()->insertFunction(fp,temporaryFlag);
+	}
 	functionCompiled = true;
       } else {
 	scriptFlag = true;
@@ -471,17 +478,8 @@ MFunctionDef* ThawMFunction(Serialize *s) {
   t->helpText = s->getStringVector();
   t->allCode = ThawTree(s);
   if (t->allCode.is(TOK_FUNCTION_DEFS)) {
-    MFunctionDef *fp = ConvertParseTreeToMFunctionDefs(t->allCode.children(),
-						       t->fileName);
-    t->returnVals = fp->returnVals;
-    t->code = fp->code;
-    t->nextFunction = fp->nextFunction;
-    if (t->nextFunction)
-      fp->nextFunction->prevFunction = t;
-    t->prevFunction = false;
-    t->localFunction = false;
-    t->arguments = fp->arguments;
-    t->functionCompiled = true;
+    tree MainFuncCode = t->allCode.first();
+    t->code = MainFuncCode.child(3);
   } else {
     t->scriptFlag = true;
     t->functionCompiled = true;
@@ -566,6 +564,7 @@ void SpecialFunctionDef::printMe(Interpreter *eval) {
 FunctionDef::FunctionDef() {
   scriptFlag = false;
   graphicsFunction = false;
+  temporaryFlag = false;
   refcount = 0;
 }
 

@@ -110,7 +110,7 @@ ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   FuncPtr funcDef;
   if (!context->lookupFunction(fname,funcDef))
     throw Exception(std::string("function ") + fname + " undefined!");
-  funcDef->updateCode();
+  funcDef->updateCode(eval);
   if (funcDef->scriptFlag)
     throw Exception("cannot use feval on a script");
   a_funcDef = funcDef;

@@ -540,7 +540,7 @@ void EmitBlock(const tree &code) {
 }
 
 void ProtoCompile(Interpreter *m_eval, MFunctionDef *m_def, string filename) {
-  m_def->updateCode();
+  m_def->updateCode(m_eval);
   fp = new QFile(QString::fromStdString(filename));
   eval = m_eval;
   if (!fp->open(QIODevice::WriteOnly))

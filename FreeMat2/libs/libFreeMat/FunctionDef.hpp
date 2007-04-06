@@ -75,6 +75,10 @@ public:
    */
   bool scriptFlag;
   /**
+   * Is this a temporary function?
+   */
+  bool temporaryFlag;
+  /**
    * If a function requires access to the graphics subsystem,
    * it must declare itself as such.  Such functions are executed
    * through the main thread.
@@ -132,10 +136,8 @@ public:
    * function will be called at least once before evaluateFunction is called.
    * Return true if the updateCode call did anything.
    */
-  virtual bool updateCode() {return false;}
+  virtual bool updateCode(Interpreter *) {return false;}
 };
-
-class MFunctionDef;
 
 /**
  * An MFunctionDef is a FunctionDef for an interpreted function.  The
@@ -161,9 +163,6 @@ public:
    * function is contained in this AST, not the function declaration itself).
    */
   tree code;
-  /**
-   * The AST for all of the code in the file.
-   */
   tree allCode;
   /**
    * Flag to indicate if the function has been compiled.
@@ -178,19 +177,7 @@ public:
    */
   time_t timeStamp;
   /**
-   * For some function files, there are multiple functions defined in
-   * a single file.  The subsequent functions are local to the function
-   * scope of the main function, and override global functions inside
-   * the body of the current function (they are essentially hidden inside
-   * the scope of the current function).  These functions are parsed
-   * and form a linked list of function definitions, with the main function
-   * at the head of the list.
-   */
-  MFunctionDef *nextFunction;
-  MFunctionDef *prevFunction;
-  /**
-   * Set to true for all of the localFunctions.  False for the head of the
-   * linked list.
+   * Set to true for all of the localFunctions.  
    */
   bool localFunction;
   bool pcodeFunction;
@@ -240,7 +227,7 @@ public:
    * parsing of the file (i.e., it cannot be classified as either a
    * script or a function definition).
    */
-  virtual bool updateCode();
+  virtual bool updateCode(Interpreter *m_eval);
   /**
    * Activate/Deactivate a breakpoint
    */

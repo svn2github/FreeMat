@@ -164,6 +164,7 @@ void Interpreter::procFileM(std::string fname, std::string fullname, bool tempfu
   adef = new MFunctionDef();
   adef->name = fname;
   adef->fileName = fullname;
+  adef->temporaryFlag = tempfunc;
   context->insertFunction(adef, tempfunc);
 }
   
@@ -314,12 +315,7 @@ static std::string PrivateMangleName(std::string cfunc, std::string fname) {
 }
 
 static std::string LocalMangleName(std::string cfunc, std::string fname) {
-  if (cfunc.empty()) return "";
-  int ndx;
-  ndx = cfunc.rfind(QString(QDir::separator()).toStdString());
-  if (ndx>=0)
-    cfunc.erase(ndx+1,cfunc.size());
-  return cfunc + "local:" + fname;
+  return cfunc + ":Local:" + fname;
 }
 
 std::string Interpreter::getVersionString() {
@@ -2227,7 +2223,7 @@ void Interpreter::displayArray(Array b) {
   // Check for a user defined class
   FuncPtr val;
   if (b.isUserClass() && ClassResolveFunction(this,b,"display",val)) {
-    if (val->updateCode()) refreshBreakpoints();
+    if (val->updateCode(this)) refreshBreakpoints();
     ArrayVector args(singleArrayVector(b));
     ArrayVector retvec(val->evaluateFunction(this,args,1));
   } else
@@ -3089,7 +3085,7 @@ void Interpreter::specialFunctionCall(const tree &t, bool printIt) {
   FuncPtr val;
   if (!lookupFunction(args[0],val,n))
     throw Exception("unable to resolve " + args[0] + " to a function call");
-  if (val->updateCode()) refreshBreakpoints();
+  if (val->updateCode(this)) refreshBreakpoints();
   bool CLIFlagsave = InCLI;
   InCLI = false;
   try {
@@ -3927,7 +3923,7 @@ void Interpreter::functionExpression(const tree &t,
     if (!lookupFunction(t.first().text(),funcDef,m))
       throw Exception("Undefined function or variable " + 
 		      t.first().text());
-    if (funcDef->updateCode()) refreshBreakpoints();
+    if (funcDef->updateCode(this)) refreshBreakpoints();
     if (funcDef->scriptFlag) {
       if (t.numchildren()>=2)
 	throw Exception(std::string("Cannot use arguments in a call to a script."));
@@ -4040,7 +4036,7 @@ void Interpreter::addBreakpoint(string name, int line) {
     warningMessage(std::string("Cannot resolve ")+name+std::string(" to a function or script "));
     return;
   }
-  mptr->updateCode();
+  mptr->updateCode(this);
   int dline = mptr->ClosestLine(line);
   if (dline != line)
     warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
@@ -4229,7 +4225,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
   for (unsigned p = 0; p< args.numchildren(); p++)
     multiexpr(args.child(p),m);
   ArrayVector n;
-  if (fun->updateCode()) refreshBreakpoints();
+  if (fun->updateCode(this)) refreshBreakpoints();
   if (fun->scriptFlag) {
     if (!m.empty())
       throw Exception(std::string("Cannot use arguments in a call to a script."));
@@ -4767,6 +4763,7 @@ Interpreter::Interpreter(Context* aContext) {
 }
 
 Interpreter::~Interpreter() {
+  delete context;
 }
 
 

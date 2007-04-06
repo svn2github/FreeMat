@@ -219,7 +219,7 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   if (isFun && (val->type() == FM_M_FUNCTION)) {
     MFunctionDef *mptr;
     mptr = (MFunctionDef *) val;
-    mptr->updateCode();
+    mptr->updateCode(eval);
     for (int i=0;i<mptr->helpText.size();i++)
       eval->outputMessage(mptr->helpText[i]);
     return ArrayVector();
@@ -1151,7 +1151,7 @@ ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr;
       mptr = (MFunctionDef *) val;
-      mptr->updateCode();
+      mptr->updateCode(eval);
       if (mptr->pcodeFunction) {
 	if (mptr->scriptFlag) {
 	  if (nargout == 0) {

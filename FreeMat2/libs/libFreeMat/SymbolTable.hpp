@@ -30,7 +30,8 @@ typedef std::string key_type;
 template<class T>
 class SymbolTable {
   typedef T value_type;
-  struct Entry {
+  class Entry {
+  public:
     key_type key;
     value_type val;
     Entry* next;

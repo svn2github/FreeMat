@@ -2978,7 +2978,7 @@ ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval
     } else {
       sprintf(buffer,"Translating %s to P-Code\n",fname.c_str());
       eval->outputMessage(buffer);
-      funcDef->updateCode();
+      funcDef->updateCode(eval);
       if (funcDef->type() != FM_M_FUNCTION) {
 	sprintf(buffer,"function %s is not an M-file",fname.c_str());
 	eval->warningMessage(buffer);

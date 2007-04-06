@@ -3889,7 +3889,7 @@ ArrayVector FdumpFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
   FuncPtr funcDef;
   if (!context->lookupFunction(fname,funcDef))
     throw Exception(std::string("function ") + fname + " undefined!");
-  funcDef->updateCode();
+  funcDef->updateCode(eval);
   funcDef->printMe(eval);
   return ArrayVector();
 }
@@ -3922,7 +3922,7 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
   Context *context = eval->getContext();
   if (!context->lookupFunction(fname,funcDef))
     throw Exception(std::string("function ") + fname + " undefined!");
-  funcDef->updateCode();
+  funcDef->updateCode(eval);
   if (funcDef->scriptFlag)
     throw Exception("cannot use feval on a script");
   ArrayVector newarg(arg);
@@ -3994,7 +3994,7 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
     funcDef = (FuncPtr) fp[0];
     if (!funcDef) return ArrayVector();
   }
-  funcDef->updateCode();
+  funcDef->updateCode(eval);
   if (funcDef->scriptFlag)
     throw Exception("cannot use feval on a script");
   ArrayVector newarg(arg);

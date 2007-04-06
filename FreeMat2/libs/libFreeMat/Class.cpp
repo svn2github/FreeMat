@@ -855,7 +855,7 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
 						  val,"horzcat");
       // scan through the list of user defined classes - look
       // for one that has "horzcat" overloaded
-      val->updateCode();
+      val->updateCode(eval);
       ArrayVector p;
       p = val->evaluateFunction(eval,m[i],1);
       if (!p.empty())
@@ -886,7 +886,7 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
     FuncPtr val;
     bool vertcat_overload = ClassSearchOverload(eval,rows,userset,
 						val,"vertcat");
-    val->updateCode();
+    val->updateCode(eval);
     ArrayVector p;
     p = val->evaluateFunction(eval,rows,1);
     if (!p.empty())
@@ -902,7 +902,7 @@ Array ClassUnaryOperator(Array a, std::string funcname,
   FuncPtr val;
   ArrayVector m, n;
   if (eval->getContext()->lookupFunction(ClassMangleName(a.className().back(),funcname),val)) {
-    val->updateCode();
+    val->updateCode(eval);
     m.push_back(a);
     n = val->evaluateFunction(eval,m,1);
     if (!n.empty())
@@ -944,7 +944,7 @@ void printClassNames(Array a) {
 // TODO - add "inferiorto", etc and class precedence
 
 Array ClassBiOp(Array a, Array b, FuncPtr val, Interpreter *eval) {
-  val->updateCode();
+  val->updateCode(eval);
   ArrayVector m, n;
   m.push_back(a); m.push_back(b);
   n = val->evaluateFunction(eval,m,1);
@@ -955,7 +955,7 @@ Array ClassBiOp(Array a, Array b, FuncPtr val, Interpreter *eval) {
 }
 
 Array ClassTriOp(Array a, Array b, Array c, FuncPtr val, Interpreter *eval) {
-  val->updateCode();
+  val->updateCode(eval);
   ArrayVector m, n;
   m.push_back(a); m.push_back(b); m.push_back(c);
   n = val->evaluateFunction(eval,m,1);
@@ -1060,7 +1060,7 @@ ArrayVector ClassSubsrefCall(Interpreter* eval, const tree &t, Array r, FuncPtr 
   ArrayVector p;
   p.push_back(r);
   p.push_back(IndexExpressionToStruct(eval,t, r));
-  val->updateCode();
+  val->updateCode(eval);
   ArrayVector n = val->evaluateFunction(eval,p,1);
   return n;
 }
@@ -1168,7 +1168,7 @@ void ClassAssignExpression(ArrayReference dst, const tree &t, const Array& value
   p.push_back(*dst);
   p.push_back(IndexExpressionToStruct(eval,t, *dst));
   p.push_back(value);
-  val->updateCode();
+  val->updateCode(eval);
   bool overload(eval->getStopOverload());
   eval->setStopOverload(true);
   ArrayVector n = val->evaluateFunction(eval,p,1);

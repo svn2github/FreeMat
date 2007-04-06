@@ -372,6 +372,9 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   // Create a new thread
   int threadID = m_app->StartNewInterpreterThread();
+  // Translate the path from the starter thread to the new thread
+  Interpreter* thread = m_threadHandles.lookupHandle(threadID);
+  thread->setPath(eval->getPath());
   return ArrayVector() << Array::uint32Constructor(threadID);
 }
 
@@ -485,7 +488,7 @@ ArrayVector ThreadStartFunction(int nargout, const ArrayVector& arg, Interpreter
   FuncPtr val;
   if (!eval->lookupFunction(fnc, val))
     throw Exception(string("Unable to map ") + fnc + " to a defined function ");
-  val->updateCode();
+  val->updateCode(eval);
   // if (val->scriptFlag)
   //   throw Exception(string("Cannot use a script as the main function in a thread."));
   int tnargout = ArrayToInt32(arg[2]);

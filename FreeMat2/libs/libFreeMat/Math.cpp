@@ -729,7 +729,7 @@ inline void CheckNumeric(Array &A, Array &B, std::string opname){
 //        present among the operands.
 //  \item Type promotion is not allowed to reduce the information
 //        content of the variable.  The only exception to this is
-//        64-bit integers, which can loose information when they
+//        64-bit integers, which can lose information when they
 //        are promoted to 64-bit @|double| values.  
 //\end{itemize}
 //These rules look tricky, but in reality, they are designed so that

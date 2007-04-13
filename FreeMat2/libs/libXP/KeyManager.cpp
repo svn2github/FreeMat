@@ -1178,15 +1178,9 @@ vector<string> KeyManager::GetCompletions(string line,
    */
   if (!context) return completions;
   if (start[-1] != '\'') {
-    vector<string> local_completions;
-    vector<string> global_completions;
-    int i;
-    local_completions = context->getCurrentScope()->getCompletions(string(start));
-    global_completions = context->getGlobalScope()->getCompletions(string(start));
-    for (i=0;i<local_completions.size();i++)
+    vector<string> local_completions(context->getCompletions(string(start)));
+    for (int i=0;i<local_completions.size();i++)
       completions.push_back(local_completions[i]);
-    for (i=0;i<global_completions.size();i++)
-      completions.push_back(global_completions[i]);
   }
   stringVector comp(GetCompletionList(tmp));
   for (int i=0;i<comp.size();i++)

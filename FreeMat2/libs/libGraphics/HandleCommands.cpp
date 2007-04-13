@@ -1264,6 +1264,161 @@ ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(Array::logicalConstructor(axis->Is2DView()));
 }
 
+class contour_point {
+public:
+  double x;
+  double y;
+  inline contour_point(double a, double b) : x(a), y(b) {};
+};
+
+inline bool operator==(const contour_point& p1, const contour_point& p2) {
+  return ((p1.x == p2.x) && (p1.y == p2.y));
+}
+
+typedef QList<contour_point> cline;
+typedef QList<cline> lineset;
+
+inline cline Reverse(const cline& src) {
+  cline ret;
+  for (int i=src.size()-1;i>=0;i--)
+    ret << src.at(i);
+  return ret;
+}
+
+inline bool Connected(const cline& current, const cline& test) {
+  return ((current.front() == test.front()) || 
+	  (current.front() == test.back()) ||
+	  (current.back() == test.front()) ||
+	  (current.back() == test.back()));
+}
+
+inline void Join(cline& current, const cline& toadd) {
+  if (current.front() == toadd.front())
+    current = Reverse(toadd) + current;
+  else if (current.front() == toadd.back())
+    current = toadd + current;
+  else if (current.back() == toadd.front())
+    current += toadd;
+  else if (current.back() == toadd.back())
+    current += Reverse(toadd);
+}
+
+#define FOLD(x) MAP((x),row-1)
+#define FNEW(x) MAP((x),row)
+#define MAP(x,y) func[(y)+(x)*numy]
+#define AINTER(a,b) ((val-(a))/((b)-(a)))
+#define ALEFT(i,j) (((j)-1)+AINTER(FOLD((i)-1),FNEW((i)-1)))
+#define TOP(i) (((i)-1)+AINTER(FNEW((i)-1),FNEW((i))))
+#define BOT(i) (((i)-1)+AINTER(FOLD((i)-1),FOLD((i))))
+#define RIGHT(i,j) (((j)-1)+AINTER(FOLD((i)),FNEW((i))))
+#define DRAW(a,b,c,d) {allLines << (cline() << contour_point((double)a,(double)b) << contour_point((double)c,(double)d));}
+
+ArrayVector ContourCFunction(int nargout, const ArrayVector& arg) {
+  lineset allLines;
+  lineset bundledLines;
+  if (arg.size() < 2) throw Exception("contourc expects two arguments");
+  double val = ArrayToDouble(arg[1]);
+  if (!arg[0].is2D())
+    throw Exception("First argument to contourc must be a 2D matrix");
+  Array m(arg[0]);
+  m.promoteType(FM_DOUBLE);
+  const double *func = (const double *) m.getDataPointer();
+  int outcnt = 0;
+  int numy = m.rows();
+  int numx = m.columns();
+  for (int row=1;row<numy;row++)
+    for (int col=1;col<numx;col++) {
+      int l = 0;
+      if (FOLD(col) >= val) l  = l + 1;
+      if (FOLD(col-1) >= val) l = l + 2;
+      if (FNEW(col) >= val) l = l + 4;
+      if (FNEW(col-1) >= val) l = l + 8;
+      switch (l) {
+      case 1:
+      case 14:
+	DRAW(BOT(col),row-1,col,RIGHT(col,row));
+	break;
+      case 2:
+      case 13:
+	DRAW(col-1,ALEFT(col,row),BOT(col),row-1);
+	break;
+      case 3:
+      case 12:
+	DRAW(col-1,ALEFT(col,row),col,RIGHT(col,row));
+	break;
+      case 4:
+      case 11:
+	DRAW(TOP(col),row,col,RIGHT(col,row));
+	break;
+      case 5:
+      case 10:
+	DRAW(BOT(col),row-1,TOP(col),row);
+	break;
+      case 6:
+      case 9:
+	{
+	  double x0 = AINTER(FOLD(col-1),FOLD(col));
+	  double x1 = AINTER(FNEW(col-1),FNEW(col));
+	  double y0 = AINTER(FOLD(col-1),FNEW(col-1));
+	  double y1 = AINTER(FOLD(col),FNEW(col));
+	  double y = (x0*(y1-y0)+y0)/(1.0-(x1-x0)*(y1-y0));
+	  double x = y*(x1-x0) + x0;
+	  double fx1 = MAP(col-1,row-1)+x*(MAP(col,row-1)-MAP(col-1,row-1));
+	  double fx2 = MAP(col-1,row)+x*(MAP(col,row)-MAP(col-1,row));
+	  double f = fx1 + y*(fx2-fx1);
+	  if (f==val) {
+	    DRAW(BOT(col),row-1,TOP(col),row);
+	    DRAW(col-1,ALEFT(col,row),col,RIGHT(col,row));
+	  } else if (((f > val) && (FNEW(col) > val)) || 
+		     ((f < val) && (FNEW(col) < val))) {
+	    DRAW(col-1,ALEFT(col,row),TOP(col),row);
+	    DRAW(BOT(col),row-1,col,RIGHT(col,row));
+	  } else {
+	    DRAW(col-1,ALEFT(col,row),BOT(col),row-1);
+	    DRAW(TOP(col),row,col,RIGHT(col,row));
+	  }
+	}
+	break;
+      case 7:
+      case 8:
+	DRAW(col-1,ALEFT(col,row),TOP(col),row);
+	break;
+      }
+    }
+  // Now we link the line segments into longer lines.
+  int allcount = allLines.size();
+  while (!allLines.empty()) {
+    // Start a new line segment
+    cline current(allLines.takeAt(0));
+    bool lineGrown = true;
+    while (lineGrown) {
+      lineGrown = false;
+      int i = 0;
+      while (i<allLines.size()) {
+	if (Connected(current,allLines.at(i))) {
+	  Join(current,allLines.takeAt(i));
+	  lineGrown = true;
+	} else
+	  i++;
+      }
+    }
+    bundledLines << current;
+  }
+  int outcount = bundledLines.size() + 2*allcount + 1;
+  Array out(Array::doubleMatrixConstructor(2,outcount));
+  double *output = (double *) out.getReadWriteDataPointer();
+  for (int i=0;i<bundledLines.size();i++) {
+    *output++ = val;
+    *output++ = bundledLines[i].size();
+    cline bline(bundledLines[i]);
+    for (int j=0;j<bline.size();j++) {
+      *output++ = bline[j].x;
+      *output++ = bline[j].y;
+    }
+  }
+  return ArrayVector() << out;
+}
+
 void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,"x",NULL);
   context->addGfxFunction("axes",HAxesFunction,-1,1,NULL);
@@ -1283,6 +1438,7 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("copy",HCopyFunction,0,0,NULL);
   context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
   context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
+  context->addFunction("contourc",ContourCFunction,2,1,"z","v",NULL);
   //  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
   InitializeHandleGraphics();
 };

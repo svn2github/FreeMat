@@ -6,18 +6,15 @@
 #include "Serialize.hpp"
 
 tree_node::tree_node() {
-  owners = 0;
 }
 
-tree_node* tree_node::getCopy() {
-  owners++;
-  return this;
+tree::tree() : tptr(new tree_node()) {
 }
 
-tree::tree(const tree& copy) : tptr(copy.tptr) {
-}
-
-tree::tree() : tptr(NULL) {
+tree::tree(const Token& tok) {
+  tree_node* dp = new tree_node;
+  dp->node = tok;
+  tptr = dp;
 }
 
 void tree_node::Rename(byte a) {
@@ -36,7 +33,7 @@ bool tree::operator==(const tree &copy) {
 //}
 
 void tree::print() const {
-  if (tptr)
+  if (valid())
     tptr->print();
   cout.flush();
 }
@@ -53,17 +50,12 @@ void tree_node::print() const {
 }
 
 tree mkLeaf(const Token& tok) {
-  tree_node *ret = new tree_node;
-  ret->node = tok;
-  ret->owners = 1;
-  return tree(ret);
+  return tree(tok);
 }
 
 tree mkLeafWithLiterals(const Token& tok) {
-  tree_node *ret = new tree_node;
-  ret->node = tok;
-  ret->node.FillArray();
-  ret->owners = 1;
+  tree ret(tok);
+  ret.node().FillArray();
   return tree(ret);
 }
 
@@ -71,7 +63,6 @@ tree mkLeaf(byte a, unsigned position) {
   Token p(a,position);
   return mkLeaf(p);
 }
-
 
 tree mkNode(const Token& tok, tree arg1, tree arg2) {
   tree ret(mkLeaf(tok));
@@ -86,11 +77,11 @@ tree mkNode(const Token& tok, tree arg1) {
 }
 
 void addChild(tree &root, tree child) {
-  if (!root.ptr()) {
+  if (!root.valid()) {
     cout << "Error: cannot add children to null trees\n";
     exit(1);
   }    
-  root.ptr()->children.push_back(child);
+  root.addChild(child);
 }
 
 void addChild(tree &root, tree child1, tree child2) {
@@ -105,7 +96,7 @@ void FreezeTree(tree root, Serialize *s) {
   } else {
     s->putBool(true);
   }
-  FreezeToken(root.ptr()->node,s);
+  FreezeToken(root.node(),s);
   s->putInt(root.numchildren());
   for (int i=0;i<root.numchildren();i++)
     FreezeTree(root.child(i),s);

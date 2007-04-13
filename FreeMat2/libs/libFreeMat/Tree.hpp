@@ -2,58 +2,60 @@
 #define __Tree_hpp__
 
 #include <string>
-#include <stack>
-#include <vector>
-#include <iostream>
 #include "Token.hpp"
 #include "Array.hpp"
+#include <QSharedData>
+#include <QSharedDataPointer>
 
 using namespace std;
+
 
 class tree;
 class Serialize;
 
-typedef vector<tree> treeVector;
+typedef QList<tree> treeVector;
 
-class tree_node {
+class tree_node : public QSharedData {
 public:
   Token node;
-  int owners;
   treeVector children;
   void print() const;
   void Rename(byte newtok);
-  tree_node* getCopy();
   unsigned context() const {return node.Position();}
   tree_node();
 };
-
 class tree {
-  tree_node* tptr;
+private:
+  QSharedDataPointer<tree_node> tptr;
 public:
   tree();
-  tree(tree_node* ptr) : tptr(ptr) {}
-  tree(const tree& copy);
+  tree(const Token& tok);
+  //  tree(tree_node* ptr) : tptr(ptr) {}
+  //  tree(const tree& copy);
   //   ~tree();
-  tree_node* ptr() {return tptr;}
+  //  tree_node* ptr() {return tptr;}
   void print() const;
-  void Rename(byte newtok) {if (tptr) tptr->Rename(newtok);}
-  bool valid() const {return (tptr != NULL);}
+  void Rename(byte newtok) {tptr->Rename(newtok);}
+  bool valid() const {return !(tptr->node.Is(TOK_INVALID));}
   //  void operator=(const tree &copy);
   bool operator==(const tree &copy);
-  unsigned context() const {if (tptr) return tptr->context(); else return 0;}
-  tree first() const {if (tptr) return tptr->children.front(); else return tree();}
+  unsigned context() const {if (valid()) return tptr->context(); else return 0;}
+  tree first() const {if (valid()) return tptr->children.front(); else return tree();}
   tree second() const {return child(1);}
   bool is(byte tok) const {return (token()==tok);}
-  void setBPflag(bool enable) {if (tptr) (tptr->node.SetBPFlag(enable));}
-  bool getBPflag() const {if (tptr) return tptr->node.BPFlag(); return false;}
-  byte token() const {if (tptr) return tptr->node.Value(); else return 0;}
-  unsigned numchildren() const {if (tptr) return tptr->children.size(); else return 0;}
+  void setBPflag(bool enable) {if (valid()) (tptr->node.SetBPFlag(enable));}
+  bool getBPflag() const {if (valid()) return tptr->node.BPFlag(); return false;}
+  byte token() const {if (valid()) return tptr->node.Value(); else return 0;}
+  unsigned numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
   bool haschildren() const {return numchildren() > 0;}
-  string text() const {if (tptr) return tptr->node.Text(); else return std::string();}
-  Array array() const {if (tptr) return tptr->node.GetArray(); else return Array();}
-  treeVector& children() const {return tptr->children;}
-  tree last() const {if (tptr) return tptr->children.back(); else return tree();}
-  tree child(unsigned n) const {if (tptr) return tptr->children.at(n); else return tree();}
+  string text() const {if (valid()) return tptr->node.Text(); else return std::string();}
+  Array array() const {if (valid()) return tptr->node.GetArray(); else return Array();}
+  const treeVector& children() const {return tptr->children;}
+  tree last() const {if (valid()) return tptr->children.back(); else return tree();}
+  tree child(unsigned n) const {if (valid()) return tptr->children.at(n); else return tree();}
+  Token& node() {return tptr->node;}
+  const Token& node() const {return tptr->node;}
+  void addChild(const tree &child) {tptr->children.push_back(child);}
 };
 
 tree mkLeaf(const Token& tok);

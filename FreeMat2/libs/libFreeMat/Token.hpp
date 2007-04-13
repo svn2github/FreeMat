@@ -7,7 +7,7 @@
 using namespace std;
 
 typedef unsigned char byte;
-
+const byte TOK_INVALID = 0;
 const byte TOK_IDENT = 130;
 const byte TOK_NUMBER = 131;
 const byte TOK_SPACE = 132;

@@ -36,6 +36,7 @@ Token::Token(byte tok, unsigned pos, string text) :
 }
 
 Token::Token() {
+  m_tok = TOK_INVALID;
 }
 
 bool Token::IsBinaryOperator() const {

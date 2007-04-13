@@ -4010,7 +4010,31 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
 //when you run FreeMat.  I am not sure why you would want to use
 //it, but hey - its there if you want to use it.
 //!
+
+//!
+//@Module STARTUP Startup Script
+//@@Section FREEMAT
+//@@Usage
+//Upon starting, FreeMat searches for a script names @|startup.m|, and
+//if it finds it, it executes it.  This script can be in the current
+//directory, or on the FreeMat path (set using @|setpath|).  The contents
+//of startup.m must be a valid script (not a function).  
+//!
 ArrayVector DoCLIFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  Context *context = eval->getContext();
+  FuncPtr funcDef;
+  if (context->lookupFunction("startup",funcDef)) {
+    funcDef->updateCode(eval);
+    if (funcDef->scriptFlag) {
+      try {
+	eval->block(((MFunctionDef*)funcDef)->code);
+      } catch (Exception& e) {
+	eval->errorMessage("Startup script error:\n" + e.getMessageCopy());
+      }
+    } else {
+      eval->outputMessage(string("startup.m must be a script"));
+    }
+  }
   eval->doCLI();
   return ArrayVector();
 }

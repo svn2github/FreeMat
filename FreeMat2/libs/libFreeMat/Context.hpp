@@ -146,10 +146,9 @@ public:
    * Delete the context
    */
   inline ~Context() {
-    while (!scopestack.empty()) {
-      delete scopestack.back();
-      scopestack.pop_back();
-    }
+    // Don't delete the base scope
+    for (int i=2;i<scopestack.size();i++)
+      delete scopestack[i];
   }
 
   /**
@@ -322,7 +321,7 @@ public:
     f2def = new BuiltInFunctionDef;
     f2def->retCount = argc_out;
     f2def->argCount = argc_in;
-    f2def->name = strdup(name);
+    f2def->name = name;
     f2def->fptr = fptr;
     f2def->arguments = args;
     insertFunction(f2def,false);  
@@ -353,7 +352,7 @@ public:
     f2def = new SpecialFunctionDef;
     f2def->retCount = argc_out;
     f2def->argCount = argc_in;
-    f2def->name = strdup(name);
+    f2def->name = name;
     f2def->fptr = fptr;
     f2def->arguments = args;
     insertFunction(f2def,false);
@@ -385,7 +384,7 @@ public:
     f2def = new BuiltInFunctionDef;
     f2def->retCount = argc_out;
     f2def->argCount = argc_in;
-    f2def->name = strdup(name);
+    f2def->name = name;
     f2def->fptr = fptr;
     f2def->arguments = args;
     f2def->graphicsFunction = true;
@@ -418,7 +417,7 @@ public:
     f2def = new SpecialFunctionDef;
     f2def->retCount = argc_out;
     f2def->argCount = argc_in;
-    f2def->name = strdup(name);
+    f2def->name = name;
     f2def->fptr = fptr;
     f2def->arguments = args;
     f2def->graphicsFunction = true;
@@ -433,7 +432,12 @@ public:
     stringVector local_completions = bottomScope->getCompletions(prefix);
     stringVector global_completions = topScope->getCompletions(prefix);
     stringVector code_completions = codeTab.getCompletions(prefix);
-    return local_completions + global_completions + code_completions;
+    stringVector completions(local_completions);
+    for (int i=0;i<global_completions.size();i++)
+      completions.push_back(global_completions[i]);
+    for (int i=0;i<code_completions.size();i++)
+      completions.push_back(code_completions[i]);
+    return completions;
   }
 
   inline bool lookupFunction(std::string funcName, FuncPtr& val) {

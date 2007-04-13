@@ -2991,8 +2991,8 @@ void Interpreter::statement(const tree &t) {
 //Works
 void Interpreter::block(const tree &t) {
   try {
-    treeVector &statements(t.children());
-    for (treeVector::iterator i=statements.begin();
+    const treeVector &statements(t.children());
+    for (treeVector::const_iterator i=statements.begin();
 	 i!=statements.end();i++) {
       if (m_kill)
 	throw InterpreterKillException();

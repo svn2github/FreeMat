@@ -40,19 +40,24 @@ public:
   
 HandleList<FilePtr*> fileHandles;
 
+static bool init = false;
+
 void InitializeFileSubsystem() {
+  if (init) 
+    return;
   FilePtr *fptr = new FilePtr();
-  fptr->fp = stdin;
-  fptr->swapflag = false;
-  fileHandles.assignHandle(fptr);
-  fptr = new FilePtr();
-  fptr->fp = stdout;
-  fptr->swapflag = false;
-  fileHandles.assignHandle(fptr);
-  fptr = new FilePtr();
-  fptr->fp = stderr;
-  fptr->swapflag = false;
-  fileHandles.assignHandle(fptr);
+    fptr->fp = stdin;
+    fptr->swapflag = false;
+    fileHandles.assignHandle(fptr);
+    fptr = new FilePtr();
+    fptr->fp = stdout;
+    fptr->swapflag = false;
+    fileHandles.assignHandle(fptr);
+    fptr = new FilePtr();
+    fptr->fp = stderr;
+    fptr->swapflag = false;
+    fileHandles.assignHandle(fptr);
+    init = true;
 }
 
 

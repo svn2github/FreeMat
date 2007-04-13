@@ -40,7 +40,7 @@ QMutex functiondefmutex;
 MFunctionDef::MFunctionDef() {
   functionCompiled = false;
   timeStamp = 0;
-  allCode = NULL;
+  //  allCode = NULL;
   localFunction = false;
   pcodeFunction = false;
 }

@@ -409,9 +409,9 @@ tree Parser::SwitchStatement() {
 
 tree Parser::Statement() {
   if (Match(TOK_EOF))
-    return NULL;
+    return tree();
   if (Match(TOK_END))
-    return NULL;
+    return tree();
   if (Match(TOK_FOR))
     return ForStatement();
   if (Match(TOK_BREAK))
@@ -466,7 +466,7 @@ tree Parser::Statement() {
   } catch (ParseException &e) {
     m_lex = save;
   }
-  return NULL;
+  return tree();
 }
 
 tree Parser::StatementList() {
@@ -694,6 +694,6 @@ tree ParseExpressionString(string arg) {
   try {
     return P.Expression();
   } catch(ParseException &e) {
-    return tree(NULL);
+    return tree();
   }
 }

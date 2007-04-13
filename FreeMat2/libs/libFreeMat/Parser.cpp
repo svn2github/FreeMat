@@ -190,6 +190,7 @@ tree Parser::SpecialFunctionCall() {
     Scanner t_lex(m_lex);
     if (t_lex.Next().Is(';') ||
 	t_lex.Next().Is('\n') ||
+	t_lex.Next().Is('(') ||
 	t_lex.Next().Is(','))
       serror("Not special call");
     if (t_lex.Next().IsBinaryOperator() || 

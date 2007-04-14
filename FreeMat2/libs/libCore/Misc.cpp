@@ -3975,11 +3975,15 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
 //In both cases, (the @|feval| call and the direct invokation), FreeMat
 //calls the @|subsref| method of the class, which computes the requested 
 //function.
+//@@Tests
+//@$"y = feval(@cos,pi)","-1","close"
+//@$"y = feval('cos',pi)","-1","close"
+//@$"y = feval(inline('cos(t)'),pi)","-1","close"
 //!
 ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   if (arg.size() == 0)
     throw Exception("feval function requires at least one argument");
-  if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY) && (!arg[0].isUserClass()))
+  if (!(arg[0].isString()) && (arg[0].dataClass() != FM_FUNCPTR_ARRAY))
     throw Exception("first argument to feval must be the name of a function (i.e., a string) a function handle, or a user defined class");
   FuncPtr funcDef;
   if (arg[0].isString()) {

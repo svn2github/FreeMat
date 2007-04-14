@@ -4156,7 +4156,8 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
   while(passcount < 2) {
     // This is the order for function dispatch according to the Matlab manual
     // Subfunctions
-    if (context->lookupFunction(getLocalMangledName(funcName),val))
+    if (isMFile(ip_funcname) && 
+	(context->lookupFunction(getLocalMangledName(funcName),val)))
       return true;
     // Private functions
     // Not sure if you have to be an M-file in the current directory

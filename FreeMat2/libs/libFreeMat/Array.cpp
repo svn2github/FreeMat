@@ -139,7 +139,7 @@ void* Array::allocateArray(Class type, uint32 length, rvstring names) {
   case FM_FUNCPTR_ARRAY: {
     FuncPtr *dp = new FuncPtr[length];
     for (int i=0;i<length;i++)
-      dp[i] = (FunctionDef*) NULL;
+      dp[i] = FuncPtr((FunctionDef*) NULL);
     return dp;
   }
   case FM_CELL_ARRAY: {
@@ -2587,11 +2587,12 @@ Array Array::getNDimSubsetScalars(ArrayVector& index, Interpreter* m_eval) {
   return Array(dataClass(),Dimensions(1,1),qp,sparse(),fieldNames(),className());
 }
 
-void Array::setNDimSubsetScalars(ArrayVector& index, const Array &rdata, Interpreter* m_eval) {
-  if (dataClass() != rdata.dataClass()) throw Exception("type mismatch not allowed for scalar set!");
+void Array::setNDimSubsetScalars(ArrayVector& index, Array &rdata, Interpreter* m_eval) {
   if (!rdata.isScalar()) throw Exception("rhs must be scalar for scalar set!");
   if (sparse() || rdata.sparse()) throw Exception("sparse case not allowed for scalar set!");
   if (dataClass() == FM_STRUCT_ARRAY) throw Exception("structure arrays not allowed for scalar set!");
+  if (dataClass() < rdata.dataClass()) throw Exception("type mismatch not allowed for scalar set!");
+  rdata.promoteType(dataClass());
   int ndx = 0;
   int pagesize = 1;
   for (int i=0;i<index.size();i++) {

@@ -20,6 +20,7 @@
 #include "Data.hpp"
 #include "Malloc.hpp"
 #include "Sparse.hpp"
+#include "FunctionDef.hpp"
 #include <QDebug>
 
 int DataMakeCount = 0;
@@ -57,7 +58,7 @@ void * Data::copyDataBlock(void *dp) {
 void Data::FreeData() {
   if (cp) {
     if (m_dataClass == FM_FUNCPTR_ARRAY)
-      delete[] ((FunctionDef**) cp);
+      delete[] ((FuncPtr*) cp);
     else if ((m_dataClass == FM_CELL_ARRAY) ||
 	     (m_dataClass == FM_STRUCT_ARRAY))
       delete[] ((Array*) cp);

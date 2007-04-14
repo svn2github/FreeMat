@@ -147,7 +147,7 @@ public:
    */
   inline ~Context() {
     // Don't delete the base scope
-    for (int i=2;i<scopestack.size();i++)
+    for (int i=1;i<scopestack.size();i++)
       delete scopestack[i];
   }
 

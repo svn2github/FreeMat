@@ -57,6 +57,7 @@ static bool enableRepaint = false;
 
 void GfxEnableRepaint() {
   enableRepaint = true;
+  DoDrawNow();
 }
 
 void GfxDisableRepaint() {
@@ -199,6 +200,7 @@ HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
   resize(600,400);
   initialized = true;
   mode = normal_mode;
+  dirty = false;
 }
 
 

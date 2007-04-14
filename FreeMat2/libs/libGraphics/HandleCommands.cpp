@@ -60,11 +60,14 @@ void RestoreFocus() {
 
 HandleWindow* Hfigs[MAX_FIGS];
 int HcurrentFig = -1;
-  
+
+static bool HGInitialized = false;
 
 void InitializeHandleGraphics() {
+  if (HGInitialized) return;
   for (int i=0;i<MAX_FIGS;i++) Hfigs[i] = NULL;
   HcurrentFig = -1;
+  HGInitialized = true;
 }
 
 void ShutdownHandleGraphics() {
@@ -154,21 +157,28 @@ static void SelectFig(int fignum) {
 //function, but it is provided for compatibility.
 //!
 
-bool AnyDirty() {
+bool AnyDirty(bool issueUpdates) {
   bool retval = false;
+  if (!HGInitialized) return false;
   for (int i=0;i<MAX_FIGS;i++) {
     if (Hfigs[i] && (Hfigs[i]->isDirty()))  {
       retval = true;
-      Hfigs[i]->update();
+      if (issueUpdates)
+	Hfigs[i]->repaint();
     }
   }
   return retval;
 }
 
+void DoDrawNow() {
+  if (AnyDirty(true))
+    while (AnyDirty(false))
+      qApp->processEvents();
+}
+
 ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {
   GfxEnableRepaint();
-  while (AnyDirty()) 
-    qApp->processEvents();
+  DoDrawNow();
   GfxDisableRepaint();
   return ArrayVector();
 }
@@ -669,8 +679,8 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
   double cr, cg, cb;
   cr = color->At(0); cg = color->At(1); cb = color->At(2);
   g->HFig()->SetThreeVectorDefault("color",1,1,1);
-  g->UpdateState();
   GfxEnableRepaint();
+  g->UpdateState();
   while (g->isDirty())
     qApp->processEvents();
   if ((type == "PDF") || (type == "PS") || (type == "EPS")){

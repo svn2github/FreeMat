@@ -496,7 +496,7 @@ public:
     return *d;
   }
   bool operator!() const {
-    return (d != NULL);
+    return (d == NULL);
   }
   operator FunctionDef* () const {return d;}
   operator MFunctionDef* () const {return ((MFunctionDef*)d);}

@@ -510,7 +510,7 @@ SetupRPM()
     mkdir -p $BASE/rpm/SRPMS
     cp $BASE/Root/$FREEMAT/tools/freemat.spec $BASE/rpm/SPECS/.
     cp $BASE/Files/$FREEMAT_FILE $BASE/rpm/SOURCES/.
-    rpmbuild -ba --define '_topdir $BASE/rpm' $BASE/rpm/SPECS/freemat.spec
+    rpmbuild -ba --define "_topdir $BASE/rpm" $BASE/rpm/SPECS/freemat.spec
 }
 
 SetupFreeMat()

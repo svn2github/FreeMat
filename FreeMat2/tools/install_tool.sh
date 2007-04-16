@@ -373,6 +373,7 @@ SetupPCRE()
     SetupCommon
     DownloadAndUnpackTarBall $PCRE_FILE ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre $PCRE Root
     ConfigureMakeInstall $PCRE "--prefix=$PREFIX" . Root
+    rm -rf $BASE/Build/lib/lib*.dylib
 }
 
 SetupFFTW()
@@ -805,6 +806,7 @@ SetupXMacPCRE()
     SetupXWinCommon
     DownloadAndUnpackTarBall $PCRE_FILE ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre $PCRE XRoot
     ConfigureMakeInstall $PCRE "--prefix=$PREFIX CC=powerpc-apple-darwin8-gcc-4.0.1" . XRoot
+    rm -rf $BASE/Cross/lib/lib*.dylib
 }
 
 SetupXMacSparse()

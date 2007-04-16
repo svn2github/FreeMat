@@ -49,6 +49,8 @@ AUTOMAKE_OPTIONS 	= foreign
 
 CLEANFILES = $(FreeMat_MOC) $(FreeMat_QRC)
 
+resourcedir=$(datadir)/$(PACKAGE)-$(VERSION)
+
 AM_CPPFLAGS = $(QT_CFLAGS) -DRESOURCEDIR=\"$(resourcedir)\"
 
 application.moc.cpp : application.hpp

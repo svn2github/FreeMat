@@ -170,7 +170,6 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
   initializeTools();
   createToolBox();
   setObjectName("appwindow");
-  Aboutwin = new AboutWindow;
 }
 
 void ApplicationWindow::createToolBox() {
@@ -344,73 +343,15 @@ void ApplicationWindow::cleanhistory() {
   m_tool->getHistoryWidget()->clear();
 }
 
-AboutWidget::AboutWidget() : QWidget() {
-  linenumber = 0;
-  phase = 0;
-  setMinimumSize(150,100);
-}
-
-void AboutWidget::Refresh() {
-  if ((phase+3) > 255)
-    linenumber = (linenumber + 1) % about_linecount;
-  phase = (phase+3) % 256;
-  update();
-}
-
-void AboutWidget::paintEvent(QPaintEvent *e) {
-  QWidget::paintEvent(e);
-  QPainter painter(this);
-  QFont fnt("Helvetica",16);
-  painter.setFont(fnt);
-  int phaseA;
-  if (phase < 128)
-    phaseA = qMin(255,qMax(0,phase*2));
-  else
-    phaseA = qMin(255,qMax(0,2*(256-phase)+5));
-  painter.setPen(QColor(0,0,0,phaseA));
-  painter.drawText(0,0,width(),height(),Qt::TextWordWrap | Qt::AlignCenter,about_strings[linenumber]);
-}
-
-void AboutWindow::showEvent(QShowEvent* event) {
-  refresh->start(100);
-  QWidget::showEvent(event);
-}
-
-void AboutWindow::hideEvent(QHideEvent* event) {
-  refresh->stop();
-  QWidget::hideEvent(event);
-}
-
-AboutWindow::AboutWindow() : QWidget() {
-  refresh = new QTimer;
-  QVBoxLayout *layout = new QVBoxLayout;
-  QLabel *txt = new QLabel("FreeMat is licensed under the GNU Public License"
-			   " version 2.  The source code for FreeMat is available"
-			   " at http://freemat.sf.net.  FreeMat is primarily written and"
-			   " maintained by Samit Basu, but relies heavily on the following people and"
-			   " projects for their contributions to FreeMat:");
-  txt->setAlignment(Qt::AlignHCenter);
-  QFont def(txt->font());
-  def.setPointSize(12);
-  txt->setFont(def);
-  txt->setWordWrap(true);
-  layout->addWidget(txt);
-  thanks = new AboutWidget;
-  layout->addWidget(thanks);
-  QObject::connect(refresh,SIGNAL(timeout()),thanks,SLOT(Refresh()));
-  QWidget *click = new QWidget;
-  QHBoxLayout *layout2 = new QHBoxLayout;
-  QPushButton *ok = new QPushButton("OK");
-  layout2->addWidget(ok);
-  click->setLayout(layout2);
-  layout->addWidget(click);
-  setLayout(layout);
-  connect(ok,SIGNAL(clicked()),this,SLOT(close()));
-  setWindowIcon(QPixmap(":/images/freemat_small_mod_64.png"));
-}
-
 void ApplicationWindow::about() {
-  Aboutwin->show();
+  QString text;
+  text += "FreeMat Version ";
+  text += VERSION;
+  text += "\n\n";
+  text += "Licensed under the GNU Public License Ver 2\n";
+  text += "Web: http://freemat.sf.net\n";
+  text += "Email: freemat@googlegroup.com\n";
+  QMessageBox::about(this,"About FreeMat",text);
 }
 
 void ApplicationWindow::init() {

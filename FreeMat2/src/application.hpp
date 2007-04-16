@@ -28,31 +28,6 @@
 #include <QHttp>
 #include <QBuffer>
 
-class AboutWidget : public QWidget {
-  Q_OBJECT
-private:
-  int linenumber;
-  int phase;
-public:
-  AboutWidget();
-  void paintEvent(QPaintEvent *e);
-public slots:
-  void Refresh();
-};
-
-class AboutWindow : public QWidget {
-  Q_OBJECT
-private:
-  int linenumber;
-  int phase;
-  QTimer* refresh;
-  AboutWidget* thanks;
-public:
-  AboutWindow();
-  void showEvent(QShowEvent* event);
-  void hideEvent(QHideEvent* event);
-};
-
 class ApplicationWindow : public QMainWindow {
   Q_OBJECT
     
@@ -66,7 +41,6 @@ class ApplicationWindow : public QMainWindow {
   QAction *pauseAct, *continueAct, *stopAct, *clearAct;
   QAction *dbStepAct, *dbTraceAct, *checkUpdates;
   ToolDock *m_tool;
-  AboutWindow *Aboutwin;
   QHttp *m_http;
   QBuffer m_buffer;
   int httpGetId;

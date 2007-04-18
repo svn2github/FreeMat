@@ -299,8 +299,8 @@ void Scanner::FetchBlob() {
 const Token& Scanner::Next() {
   while (!m_tokValid) {
     Fetch();
-//     if (m_tokValid && m_debugFlag)
-//       cout << m_tok;
+    if (m_tokValid && m_debugFlag)
+      cout << m_tok;
     if ((m_ptr < m_strlen) && (current() == '\n'))
       m_linenumber++;
   }
@@ -358,6 +358,12 @@ string stringFromNumber(unsigned line) {
   char buffer[1000];
   sprintf(buffer,"%d",line);
   return string(buffer);
+}
+
+string Scanner::Snippet(unsigned pos1, unsigned pos2) {
+  unsigned ptr1 = pos1 >> 16;
+  unsigned ptr2 = pos2 >> 16;
+  return string(m_text,ptr1,ptr2-ptr1+1);
 }
 
 string Scanner::Context(unsigned pos) {

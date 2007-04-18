@@ -56,6 +56,7 @@ public:
   unsigned ContextNum();
   string Context(unsigned pos);
   string Context();
+  string Snippet(unsigned pos1, unsigned pos2);
   bool InContinuationState();
   bool InBracket();
 };

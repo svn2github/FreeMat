@@ -610,6 +610,10 @@ private:
    */
   Array DoUnaryOperator(const tree &t, UnaryFunc fnc, string fname);
   /**
+   * Handle the construction of a function pointer
+   */
+  Array FunctionPointer(const tree &args);
+  /**
    * Dispatch a function pointer
    */
   ArrayVector FunctionPointerDispatch(Array r, const tree &args, int narg_out);
@@ -1024,6 +1028,7 @@ private:
   friend ArrayVector PCodeFunction(int, const ArrayVector&, Interpreter*);
   friend class MFunctionDef;
   friend class ImportedFunctionDef;
+  friend class AnonymousFunctionDef;
 };
 
 void sigInterrupt(int arg);

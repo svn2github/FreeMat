@@ -762,15 +762,19 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
     if (s.is(TOK_PARENS)) {
       ArrayVector m;
       endTotal = s.numchildren();
-      for (unsigned p = 0;p < s.numchildren(); p++) {
-	endCount = m.size();
-	multiexpr(s.child(p),m);
+      if (s.numchildren() == 0)
+	q.push_back(r);
+      else {
+	for (unsigned p = 0;p < s.numchildren(); p++) {
+	  endCount = m.size();
+	  multiexpr(s.child(p),m);
+	}
+	subsindex(m);
+	if (m.size() == 1)
+	  q.push_back(r.getVectorSubset(m.front(),this));
+	else
+	  q.push_back(r.getNDimSubset(m,this));
       }
-      subsindex(m);
-      if (m.size() == 1)
-	q.push_back(r.getVectorSubset(m.front(),this));
-      else
-	q.push_back(r.getNDimSubset(m,this));
     } else if (s.is(TOK_BRACES)) {
       ArrayVector m;
       endTotal = s.numchildren();
@@ -905,16 +909,23 @@ Array Interpreter::expression(const tree &t) {
     return DoUnaryOperator(t,DotTranspose,"transpose"); 
     break;
   case '@':
-    {
-      FuncPtr val;
-      if (!lookupFunction(t.first().text(),val))
-	throw Exception("unable to resolve " + t.first().text() + 
-			" to a function call");
-      return Array::funcPtrConstructor(val);
-      break;
-    }
+    return FunctionPointer(t);
   default:
     throw Exception("Unrecognized expression!");
+  }
+}
+
+Array Interpreter::FunctionPointer(const tree &t) {
+  if (t.first().is(TOK_ANONYMOUS_FUNC)) {
+    AnonymousFunctionDef *q = new AnonymousFunctionDef;
+    q->initialize(t.first(),this);
+    return Array::funcPtrConstructor(FuncPtr(q));
+  } else {
+    FuncPtr val;
+    if (!lookupFunction(t.first().text(),val))
+      throw Exception("unable to resolve " + t.first().text() + 
+		      " to a function call");
+    return Array::funcPtrConstructor(val);
   }
 }
 
@@ -2290,6 +2301,8 @@ void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
     endTotal = s.numchildren();
+    if (s.numchildren() == 0) 
+      throw Exception("The expression A() is not legal unless A is a function");
     for (unsigned p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
@@ -2333,6 +2346,8 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
     endTotal = s.numchildren();
+    if (s.numchildren() == 0)
+      throw Exception("The expression A() is not legal unless A is a function");
     for (unsigned p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
@@ -4660,15 +4675,19 @@ void Interpreter::deref(Array &r, const tree &s) {
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
     endTotal = s.numchildren();
-    for (unsigned p = 0; p < s.numchildren(); p++) {
-      endCount = m.size();
-      multiexpr(s.child(p),m);
+    if (s.numchildren() == 0) {
+      r = r;
+    } else {
+      for (unsigned p = 0; p < s.numchildren(); p++) {
+	endCount = m.size();
+	multiexpr(s.child(p),m);
+      }
+      subsindex(m);
+      if (m.size() == 1)
+	r = r.getVectorSubset(m[0],this);
+      else
+	r = r.getNDimSubset(m,this);
     }
-    subsindex(m);
-    if (m.size() == 1)
-      r = r.getVectorSubset(m[0],this);
-    else
-      r = r.getNDimSubset(m,this);
   } else if (s.is(TOK_BRACES)) {
     ArrayVector m;
     endTotal = s.numchildren();
@@ -4848,6 +4867,7 @@ void Interpreter::evaluateString(string line, bool propogateExceptions) {
   Parser P(S);
   try{
     t = P.Process();
+    t.print();
     if (!t.is(TOK_SCRIPT))
       throw Exception("Function definition unexpected!");
     t = t.first();

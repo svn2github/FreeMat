@@ -37,6 +37,89 @@
 
 QMutex functiondefmutex;
 
+stringVector IdentifierList(tree t) {
+  stringVector retval;
+  for (unsigned index=0;index<t.numchildren();index++) {
+    if (t.child(index).is('&'))
+      retval.push_back("&" + t.child(index).first().text());
+    else
+      retval.push_back(t.child(index).text());
+  }
+  return retval;
+}
+
+void VariableReferencesList(const tree & t, stringVector& idents) {
+  if (t.is(TOK_VARIABLE))
+    idents.push_back(t.first().text());
+  for (int i=0;i<t.numchildren();i++)
+    VariableReferencesList(t.child(i),idents);
+}
+
+AnonymousFunctionDef::AnonymousFunctionDef() {
+}
+
+AnonymousFunctionDef::~AnonymousFunctionDef() {
+}
+
+int AnonymousFunctionDef::inputArgCount() {
+  return arguments.size();
+}
+
+int AnonymousFunctionDef::outputArgCount() {
+  return -1;
+}
+
+ArrayVector AnonymousFunctionDef::evaluateFunction(Interpreter *eval, ArrayVector& inputs, int nargout) {
+  ArrayVector outputs;
+  if (!code.valid()) return outputs;
+  Context * context = eval->getContext();
+  context->pushScope("anonymous");
+  eval->pushDebug("anonymous","anonymous");
+  stringVector workspaceVars(workspace.getCompletions(""));
+  for (int i=0;i<workspaceVars.size();i++)
+    context->insertVariableLocally(workspaceVars[i],*workspace.findSymbol(workspaceVars[i]));
+  int minCount = (inputs.size() < arguments.size()) ? inputs.size() : arguments.size();
+  for (int i=0;i<minCount;i++)
+    context->insertVariableLocally(arguments[i],inputs[i]);
+  try {
+    try {
+      eval->multiexpr(code,outputs);
+    } catch (InterpreterBreakException& e) {
+    } catch (InterpreterContinueException& e) {
+    } catch (InterpreterReturnException& e) {
+    }
+    context->popScope();
+    eval->popDebug();
+  } catch (Exception& e) {
+    context->popScope();
+    eval->popDebug();
+    throw;
+  } catch (InterpreterRetallException& e) {
+    context->popScope();
+    eval->popDebug();
+    throw;    
+  }
+  return outputs;
+}
+
+void AnonymousFunctionDef::initialize(const tree &t, Interpreter *eval) {
+  name = t.text();
+  arguments = IdentifierList(t.first());
+  code = t.second();
+  scriptFlag = false;
+  temporaryFlag = false;
+  graphicsFunction = false;
+  stringVector vars;
+  VariableReferencesList(t.second(),vars);
+  for (int i=0;i<vars.size();i++) {
+    ArrayReference ptr(eval->getContext()->lookupVariable(vars[i]));
+    if (ptr.valid()) {
+      cout << "Captured VAR: " << vars[i] << "\r\n";
+      workspace.insertSymbol(vars[i],*ptr);
+    }
+  }
+}
+
 MFunctionDef::MFunctionDef() {
   functionCompiled = false;
   timeStamp = 0;
@@ -272,16 +355,6 @@ static string ReadFileIntoString(FILE *fp) {
   return retval;
 }
 
-stringVector IdentifierList(tree t) {
-  stringVector retval;
-  for (unsigned index=0;index<t.numchildren();index++) {
-    if (t.child(index).is('&'))
-      retval.push_back("&" + t.child(index).first().text());
-    else
-      retval.push_back(t.child(index).text());
-  }
-  return retval;
-}
 
 //MFunctionDef* ConvertParseTreeToMFunctionDef(tree t, string fileName) {
 //  MFunctionDef *fp = new MFunctionDef;

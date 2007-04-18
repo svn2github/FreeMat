@@ -70,6 +70,13 @@
 //
 // The only one missing case is the one described above.  
 //
+bool HasNestedFunctions(const tree &root) {
+  if (root.is(TOK_NEST_FUNC)) return true;
+  for (int i=0;i<root.numchildren();i++)
+    if (HasNestedFunctions(root.child(i))) return true;
+  return false;
+}
+
 unsigned AdjustContextOne(unsigned m) {
   return (((m & 0xffff) - 1) | (m & 0xffff0000));
 }
@@ -170,6 +177,8 @@ tree Parser::FunctionDefinition() {
   }
   StatementSeperator();
   addChild(root,StatementList());
+  if (HasNestedFunctions(root))
+    Expect(TOK_END);
   return root;
 }
 
@@ -319,7 +328,7 @@ tree Parser::Keyword() {
 }
 
 // Parse A(foo).goo{1:3}... etc
-tree Parser::VariableDereference() {
+tree Parser::VariableDereference(bool blankRefOK) {
   tree ident = Identifier();
   tree root = mkLeaf(TOK_VARIABLE,m_lex.ContextNum());
   addChild(root,ident);
@@ -337,7 +346,7 @@ tree Parser::VariableDereference() {
 	  addChild(sub,Expression());
 	if (Match(',')) Consume();
       }
-      if (sub.numchildren() == 0)
+      if ((sub.numchildren() == 0) && (!blankRefOK))
 	serror("The expression A() is not allowed.");
       Expect(')');
       addChild(root,sub);
@@ -375,7 +384,7 @@ tree Parser::VariableDereference() {
 }
 
 tree Parser::AssignmentStatement() {
-  tree ident = VariableDereference();
+  tree ident = VariableDereference(false);
   tree root(mkLeaf(Expect('=')));
   tree expr = Expression();
   addChild(root,ident,expr);
@@ -459,6 +468,16 @@ tree Parser::Statement() {
     } catch (ParseException &e) {
       m_lex = save;
     } 
+  }
+  if (Match(TOK_FUNCTION)) {
+    try {
+      tree retval = FunctionDefinition();
+      retval.Rename(TOK_NEST_FUNC);
+      Expect(TOK_END);
+      return retval;
+    } catch (ParseException &e) {
+      m_lex = save;
+    }
   }
   try {
     tree retval(mkLeaf(TOK_EXPR,m_lex.ContextNum()));
@@ -582,6 +601,24 @@ tree Parser::TransposeFixup(tree base) {
   return base;
 }
 
+tree Parser::AnonymousFunction() {
+  unsigned pos1, pos2;
+  pos1 = m_lex.ContextNum();
+  tree root(mkLeaf(TOK_ANONYMOUS_FUNC,m_lex.ContextNum()));
+  Expect('(');
+  tree args = mkLeaf(TOK_PARENS,m_lex.ContextNum());
+  while (!Match(')')) {
+    addChild(args,Identifier());
+    if (!Match(')')) Expect(',');
+  }
+  Expect(')');
+  addChild(root,args);
+  addChild(root,Expression());
+  pos2 = m_lex.ContextNum();
+  root.node().SetText("(" + m_lex.Snippet(pos1,pos2));
+  return root;
+}
+
 tree Parser::PrimaryExpression() {
   if (Next().IsUnaryOperator()) {
     Token opr(Next());
@@ -603,7 +640,10 @@ tree Parser::PrimaryExpression() {
   } else if (Match('@')) {
     tree root(mkLeaf(Next()));
     Consume();
-    addChild(root,Identifier());
+    if (Match('('))
+      addChild(root,AnonymousFunction());
+    else
+      addChild(root,Identifier());
     return TransposeFixup(root);
   } else if (MatchNumber() || Match(TOK_STRING)) {
     tree t = mkLeafWithLiterals(Next());
@@ -665,8 +705,13 @@ tree Parser::Process() {
   try {
     if (Match(TOK_FUNCTION)) {
       root = mkLeaf(TOK_FUNCTION_DEFS,m_lex.ContextNum());
-      while (Match(TOK_FUNCTION))
-	addChild(root,FunctionDefinition());
+      while (Match(TOK_FUNCTION)) {
+	tree child(FunctionDefinition());
+	addChild(root,child);
+	if (!HasNestedFunctions(child) && Match(TOK_END))
+	  Consume();
+	while (Match('\n')) Consume();
+      }
     } else {
       root = mkLeaf(TOK_SCRIPT,m_lex.ContextNum());
       addChild(root,StatementList());

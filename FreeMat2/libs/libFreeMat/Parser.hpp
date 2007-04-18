@@ -35,7 +35,7 @@ private:
   tree StatementSeperator();
   tree Identifier();
   tree AssignmentStatement();
-  tree VariableDereference();
+  tree VariableDereference(bool blankRefOK = true);
   tree MultiFunctionCall();
   tree MatDef(byte basetok, byte closebracket);
   tree MatrixDefinition();
@@ -44,6 +44,7 @@ private:
   tree Keyword();
   tree Exp(unsigned p);
   tree PrimaryExpression();
+  tree AnonymousFunction();
 public:
   Parser(Scanner& lex);
   tree Process(); 

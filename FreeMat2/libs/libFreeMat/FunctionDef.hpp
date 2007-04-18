@@ -26,6 +26,7 @@
 #include "Serialize.hpp"
 #include "mex.h"
 #include <QSharedData>
+#include "Scope.hpp"
 #include <string>
 
 using namespace std;
@@ -35,7 +36,8 @@ typedef enum {
   FM_BUILT_IN_FUNCTION,
   FM_SPECIAL_FUNCTION,
   FM_IMPORTED_FUNCTION,
-  FM_MEX_FUNCTION
+  FM_MEX_FUNCTION,
+  FM_ANONYMOUS_FUNCTION
 } FunctionType;
 
 class Interpreter;
@@ -137,6 +139,28 @@ public:
    * Return true if the updateCode call did anything.
    */
   virtual bool updateCode(Interpreter *) {return false;}
+};
+
+//!
+//@Module ANONYMOUS Anonymous Functions
+//@Section Functions
+//@@Usage
+//Anonymous functions are a means of quickly defining small functions dynamically.
+//The general syntax for an anonymous function is
+//@
+//!
+class AnonymousFunctionDef : public FunctionDef {
+  VariableTable workspace;
+public:
+  tree code;
+  AnonymousFunctionDef();
+  ~AnonymousFunctionDef();
+  virtual const FunctionType type() {return FM_ANONYMOUS_FUNCTION;}
+  void printMe(Interpreter* io) {}
+  virtual int inputArgCount();
+  virtual int outputArgCount();
+  virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector&, int);
+  void initialize(const tree &t, Interpreter *);
 };
 
 /**
@@ -456,6 +480,11 @@ public:
       d->unlock();
       if (!d->referenced()) delete d;
     }
+  }
+  FuncPtr(AnonymousFunctionDef* ptr) {
+    d = ptr;
+    if (d)
+      d->lock();
   }
   FuncPtr(SpecialFunctionDef* ptr) {
     d = ptr;

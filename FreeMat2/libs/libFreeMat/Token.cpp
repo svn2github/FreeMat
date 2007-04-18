@@ -139,6 +139,8 @@ string TokenToString(const Token& b) {
   case TOK_FUNCTION_DEFS: return "functions:";
   case TOK_SCRIPT: return "script:";
   case TOK_DBTRACE: return "dbtrace";
+  case TOK_ANONYMOUS_FUNC: return "anon func";
+  case TOK_NEST_FUNC: return "nest func";
   }
   return string(1,(char) b.Value());
 }

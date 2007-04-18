@@ -71,6 +71,8 @@ const byte TOK_COMPLEX = 188;
 const byte TOK_DCOMPLEX = 189;
 const byte TOK_FUNCTION_DEFS = 190;
 const byte TOK_SCRIPT = 191;
+const byte TOK_ANONYMOUS_FUNC = 192;
+const byte TOK_NEST_FUNC = 193;
 typedef byte tok;
 class Serialize;
 
@@ -101,6 +103,7 @@ public:
   void SetValue(byte a) {m_tok = a;}
   unsigned Position()  const {return m_pos;}
   string Text()  const {return m_text;}
+  void SetText(string txt) {m_text = txt;}
   Array GetArray() const {return m_array;}
   void FillArray();
   void SetBPFlag(bool flags) {m_bpflag = flags;}

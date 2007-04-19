@@ -29,6 +29,7 @@ VariablesTool::VariablesTool(QWidget *parent) : QWidget(parent) {
   setLayout(layout);
   setObjectName("variables");
   context = NULL;
+  setMinimumSize(50,50);
 }
 
 void VariablesTool::refresh() {

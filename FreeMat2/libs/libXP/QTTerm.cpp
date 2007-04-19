@@ -64,6 +64,7 @@ QTTerm::QTTerm(QWidget *parent) :
   setFocusPolicy(Qt::ClickFocus);  
   InstallEventTimers();
   setFont(12);
+  setMinimumSize(100,100);
 }
 
 QTTerm::~QTTerm() {

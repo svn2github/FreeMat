@@ -29,6 +29,7 @@ FileTool::FileTool(QWidget *parent) : QWidget(parent) {
   connect(tree,SIGNAL(doubleClicked(const QModelIndex&)), 
 	  this,SLOT(doubleClicked(const QModelIndex&)));
   setObjectName("filetool");
+  setMinimumSize(50,50);
 }
 
 void FileTool::updateCWD() {

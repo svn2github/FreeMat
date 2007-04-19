@@ -87,13 +87,17 @@ class Scope {
    */
   bool anyPersistents;
   bool anyGlobals;
+  bool isNested;
 public:
   /**
    * Construct a scope with the given name.
    */
-  Scope(std::string scopeName) : name(scopeName), loopLevel(0), 
-				 anyPersistents(false), anyGlobals(false),
-				 mutex(NULL)  {}
+  Scope(std::string scopeName, bool nested) : name(scopeName), loopLevel(0), 
+					      anyPersistents(false), anyGlobals(false),
+					      isNested(nested), mutex(NULL)  {}
+  bool isnested() {
+    return isNested; 
+  }
   /**
    * Lock the scope's mutex
    */

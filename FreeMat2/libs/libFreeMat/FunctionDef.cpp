@@ -126,6 +126,8 @@ MFunctionDef::MFunctionDef() {
   //  allCode = NULL;
   localFunction = false;
   pcodeFunction = false;
+#warning - check pcode
+  nestedFunction = false;
 }
 
 MFunctionDef::~MFunctionDef() {
@@ -181,7 +183,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     
   if (!code.valid()) return outputs;
   context = walker->getContext();
-  context->pushScope(name);
+  context->pushScope(name,nestedFunction);
   walker->pushDebug(fileName,name);
   // When the function is called, the number of inputs is
   // at sometimes less than the number of arguments requested.
@@ -383,10 +385,32 @@ static string ReadFileIntoString(FILE *fp) {
 //  return last;
 //}
 
+void RegisterNested(const tree &t, Interpreter *m_eval, MFunctionDef *parent) {
+  if (t.is(TOK_NEST_FUNC)) {
+    MFunctionDef *fp = new MFunctionDef;
+    fp->localFunction = parent->localFunction;
+    fp->nestedFunction = true;
+    fp->returnVals = IdentifierList(t.first());
+    fp->name = parent->name + "/" + t.second().text();
+    cout << "Registering: " << fp->name << "\r\n";
+    fp->arguments = IdentifierList(t.child(2));
+    fp->code = t.child(3);
+    fp->code.print();
+    cout << "Done Registering: " << fp->name << "\r\n";
+    fp->fileName = parent->fileName;
+    // Register any nested functions for the local functions
+    m_eval->getContext()->insertFunction(fp,parent->temporaryFlag);
+    RegisterNested(fp->code,m_eval,fp);
+  } else
+    for (int i=0;i<t.numchildren();i++)
+      RegisterNested(t.child(i),m_eval,parent);
+}
+
 // Compile the function...
 bool MFunctionDef::updateCode(Interpreter *m_eval) {
   if (localFunction) return false;
   if (pcodeFunction) return false;
+  if (nestedFunction) return false;
   // First, stat the file to get its time stamp
   struct stat filestat;
   stat(fileName.c_str(),&filestat);
@@ -442,6 +466,11 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	//	name = MainFuncCode.second().text();
 	arguments = IdentifierList(MainFuncCode.child(2));
 	code = MainFuncCode.child(3);
+	// Register any nested functions
+	cout << "Name: " << name << " Code:\r\n";
+	code.print();
+	RegisterNested(code,m_eval,this);
+	cout << "Registration complete...\r\n";
 	localFunction = false;
 	// Process the local functions
 	for (int index = 1;index < pcode.numchildren();index++) {
@@ -453,7 +482,9 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	  fp->arguments = IdentifierList(LocalFuncCode.child(2));
 	  fp->code = LocalFuncCode.child(3);
 	  fp->fileName = fileName;
+	  // Register any nested functions for the local functions
 	  m_eval->getContext()->insertFunction(fp,temporaryFlag);
+	  RegisterNested(fp->code,m_eval,this);
 	}
 	functionCompiled = true;
       } else {

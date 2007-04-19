@@ -205,10 +205,16 @@ public:
    */
   bool localFunction;
   bool pcodeFunction;
+  bool nestedFunction;
   /**
    * The help text.
    */
   stringVector helpText;
+  /**
+   * The variable access list - used as a hinting mechanism to try and
+   * resolve scope rules for nested functions.
+   */
+  stringVector variablesAccessed;
   /**
    * The constructor.
    */

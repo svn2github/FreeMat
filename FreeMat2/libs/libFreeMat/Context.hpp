@@ -190,10 +190,10 @@ public:
   /**
    * Push the given scope onto the bottom of the scope stack.
    */
-  inline void pushScope(std::string name) {
+  inline void pushScope(std::string name, bool nestflag = false) {
     if (scopestack.size() > 100)
       throw Exception("Allowable stack depth exceeded...");
-    scopestack.push_back(new Scope(name));
+    scopestack.push_back(new Scope(name,nestflag));
     bottomScope = scopestack.back();
   }
   /**
@@ -261,8 +261,20 @@ public:
       mapName = varName;
       active = topScope;
       global = true;
-     } else {
-      return (ArrayReference(bottomScope->lookupVariable(varName),global,bottomScope));
+    } else {
+      Array *dp = bottomScope->lookupVariable(varName);
+      if (!dp) {
+	int i=scopestack.size()-2;
+	while ((!dp) && (i>=0) && scopestack[i+1]->isnested()) {
+	  dp = scopestack[i]->lookupVariable(varName);
+	  if (!dp) i--;
+	}
+	if (dp) 
+	  return (ArrayReference(dp,false,scopestack[i]));
+	else
+	  return (ArrayReference(dp,false,bottomScope));
+      } else 
+	return (ArrayReference(dp,false,bottomScope));
     }
     return (ArrayReference(active->lookupVariable(mapName),global,active));
   }

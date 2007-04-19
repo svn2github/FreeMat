@@ -318,6 +318,11 @@ static std::string LocalMangleName(std::string cfunc, std::string fname) {
   return cfunc + ":Local:" + fname;
 }
 
+static std::string NestedMangleName(std::string cfunc, std::string fname) {
+  cout << "Nested mangle name = " << cfunc + "/" + fname << "\r\n";
+  return cfunc + "/" + fname;
+}
+
 std::string Interpreter::getVersionString() {
   return std::string("FreeMat v" VERSION);
 }
@@ -2959,6 +2964,8 @@ void Interpreter::statementType(const tree &t, bool printIt) {
   case TOK_EXPR:
     expressionStatement(t,printIt);
     break;
+  case TOK_NEST_FUNC:
+    break;
   default:
     throw Exception("Unrecognized statement type");
   }
@@ -4170,6 +4177,11 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
   int passcount = 0;
   while(passcount < 2) {
     // This is the order for function dispatch according to the Matlab manual
+    // Nested functions - not explicitly listed in the Matlab manual, but 
+    // I figure they have the highest priority in the current scope.
+    if (isMFile(ip_funcname) &&
+	(context->lookupFunction(NestedMangleName(ip_detailname,funcName),val)))
+      return true;
     // Subfunctions
     if (isMFile(ip_funcname) && 
 	(context->lookupFunction(getLocalMangledName(funcName),val)))

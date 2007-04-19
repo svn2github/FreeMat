@@ -86,7 +86,7 @@ MainApp::MainApp() {
   GUIHack = false;
   skipGreeting = false;
   m_keys = new KeyManager;
-  m_global = new Scope("global");
+  m_global = new Scope("global",false);
   // The global scope is special
   m_global->mutexSetup();
 }

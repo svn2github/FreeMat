@@ -81,6 +81,11 @@ class Scope {
    */
   std::vector<int> IDstack;
   /**
+   * This string vector contains the names of variables accessed (potentially)
+   * in this scope.
+   */
+  stringVector variablesAccessed;
+  /**
    * On every call to modify the scope, we have to check the global/persistent
    * variable table.  This is generally expensive, so we cache information
    * about these tables being empty (the usual case).
@@ -95,8 +100,19 @@ public:
   Scope(std::string scopeName, bool nested) : name(scopeName), loopLevel(0), 
 					      anyPersistents(false), anyGlobals(false),
 					      isNested(nested), mutex(NULL)  {}
-  bool isnested() {
+  inline void setVariablesAccessed(stringVector varList) {
+    variablesAccessed = varList;
+  }
+  inline bool variableAccessed(string varName) {
+    for (int i=0;i<variablesAccessed.size();i++)
+      if (variablesAccessed[i] == varName) return true;
+    return false;
+  }
+  inline bool isnested() {
     return isNested; 
+  }
+  inline bool nests(Scope* peer) {
+    return (string(peer->name,0,name.size()) == name);
   }
   /**
    * Lock the scope's mutex

@@ -2418,7 +2418,7 @@ ArrayReference Interpreter::createVariable(string name) {
   } 
   ArrayReference np(context->lookupVariable(name));
   if (!np.valid()) throw Exception("error creating variable name " + name + " with scope " + context->getCurrentScope()->getName());
-  return ArrayReference(np);
+  return np;
 }
 
 //Works

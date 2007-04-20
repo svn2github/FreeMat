@@ -422,7 +422,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
       checks.push_back(ParseExpressionString(bc));
       free(bc);
     } else
-      checks.push_back(tree(NULL));
+      checks.push_back(tree());
     char *ar;
     ar = parseArgumentName(cp);
     arguments.push_back(ar);

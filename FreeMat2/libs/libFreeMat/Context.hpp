@@ -28,6 +28,7 @@
 #include "Types.hpp"
 #include <vector>
 #include <QDebug>
+#include <QList>
 #include <QMutex>
 #include <stdarg.h>
 
@@ -109,7 +110,7 @@ class Context {
   /**
    * The stack of scopes that have been "bypassed"
    */
-  std::vector<Scope*> bypassstack;
+  QList<Scope*> bypassstack;
   /**
    * The table of functions
    */
@@ -177,13 +178,20 @@ public:
     }
     bottomScope = scopestack.back();
   }
+  inline void restoreScope(int count) {
+    for (int i=0;i<count;i++) {
+      scopestack.push_back(bypassstack.back());
+      bypassstack.pop_back();
+    }
+    bottomScope = scopestack.back();
+  }
   /**
    * Every call to bypassScope should be matched by a call to 
    * restoreBypassedScopes, or memory leaks will occur.
    */
   inline void restoreBypassedScopes() {
     for (int i=0;i<bypassstack.size();i++)
-      scopestack.push_back(bypassstack[i]);
+      scopestack.push_back(bypassstack[bypassstack.size()-1-i]);
     bypassstack.clear();
     bottomScope = scopestack.back();
   }
@@ -264,14 +272,17 @@ public:
     } else {
       Array *dp = bottomScope->lookupVariable(varName);
       if (!dp) {
+	// If the variable is not defined in the current scope,
+	// loop up through the scope stack, checking for nested
+	// scopes that may have the variable defined.
 	int i=scopestack.size()-2;
-	while ((!dp) && (i>=0) && scopestack[i+1]->isnested()) {
+	while ((!dp) && (i>=0) && scopestack[i]->nests(scopestack[i+1])) {
 	  dp = scopestack[i]->lookupVariable(varName);
 	  if (!dp) i--;
 	}
 	if (dp) 
 	  return (ArrayReference(dp,false,scopestack[i]));
-	else
+	else 
 	  return (ArrayReference(dp,false,bottomScope));
       } else 
 	return (ArrayReference(dp,false,bottomScope));

@@ -177,8 +177,8 @@ tree Parser::FunctionDefinition() {
   }
   StatementSeperator();
   addChild(root,StatementList());
-  if (HasNestedFunctions(root))
-    Expect(TOK_END);
+  //  if (HasNestedFunctions(root))
+  //    Expect(TOK_END);
   return root;
 }
 
@@ -697,6 +697,20 @@ void Parser::Consume() {
   m_lex.Consume();
 }
 
+// NOTES - 
+//   There are still some issues here...  
+//    We need to introduce another tentative parse for functions
+//    Consider the case:
+//     function foo
+//       statements
+//       function hoo
+//           function sub
+//           end
+//       end
+//     end
+//  The current code will parse foo into a function,
+//   
+
 tree Parser::Process() {
   lastpos = 0;
   tree root;
@@ -708,10 +722,11 @@ tree Parser::Process() {
       while (Match(TOK_FUNCTION)) {
 	tree child(FunctionDefinition());
 	addChild(root,child);
-	if (!HasNestedFunctions(child) && Match(TOK_END))
-	  Consume();
 	while (Match('\n')) Consume();
       }
+      if (HasNestedFunctions(root) || Match(TOK_END))
+	Expect(TOK_END);
+      while (Match('\n')) Consume();
     } else {
       root = mkLeaf(TOK_SCRIPT,m_lex.ContextNum());
       addChild(root,StatementList());
@@ -722,9 +737,9 @@ tree Parser::Process() {
   try {
     Expect(TOK_EOF);
   } catch (ParseException &e) {
+    root.print();    
     throw Exception("Unexpected input" + m_lex.Context());
   }
-  //  root.print();
   return root;
 }
 

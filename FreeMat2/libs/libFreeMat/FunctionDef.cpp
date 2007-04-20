@@ -184,6 +184,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   if (!code.valid()) return outputs;
   context = walker->getContext();
   context->pushScope(name,nestedFunction);
+  context->getCurrentScope()->setVariablesAccessed(variablesAccessed);
   walker->pushDebug(fileName,name);
   // When the function is called, the number of inputs is
   // at sometimes less than the number of arguments requested.
@@ -395,6 +396,7 @@ void RegisterNested(const tree &t, Interpreter *m_eval, MFunctionDef *parent) {
     cout << "Registering: " << fp->name << "\r\n";
     fp->arguments = IdentifierList(t.child(2));
     fp->code = t.child(3);
+    VariableReferencesList(fp->code,fp->variablesAccessed);
     fp->code.print();
     cout << "Done Registering: " << fp->name << "\r\n";
     fp->fileName = parent->fileName;
@@ -466,6 +468,7 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	//	name = MainFuncCode.second().text();
 	arguments = IdentifierList(MainFuncCode.child(2));
 	code = MainFuncCode.child(3);
+	VariableReferencesList(code,variablesAccessed);
 	// Register any nested functions
 	cout << "Name: " << name << " Code:\r\n";
 	code.print();
@@ -481,6 +484,7 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	  fp->name = fileName + ":Local:" + LocalFuncCode.second().text();
 	  fp->arguments = IdentifierList(LocalFuncCode.child(2));
 	  fp->code = LocalFuncCode.child(3);
+	  VariableReferencesList(fp->code,fp->variablesAccessed);
 	  fp->fileName = fileName;
 	  // Register any nested functions for the local functions
 	  m_eval->getContext()->insertFunction(fp,temporaryFlag);
@@ -584,10 +588,12 @@ MFunctionDef* ThawMFunction(Serialize *s) {
   if (t->allCode.is(TOK_FUNCTION_DEFS)) {
     tree MainFuncCode = t->allCode.first();
     t->code = MainFuncCode.child(3);
+    VariableReferencesList(t->code,t->variablesAccessed);
   } else {
     t->scriptFlag = true;
     t->functionCompiled = true;
     t->code = t->allCode.first();
+    VariableReferencesList(t->code,t->variablesAccessed);
   }
   return t;
 }

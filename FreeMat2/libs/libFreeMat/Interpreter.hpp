@@ -602,6 +602,10 @@ private:
 			     ArrayVector m,stringVector keywords,
 			     treeVector keyexpr, int* argTypeMap);
   /**
+   * Create a variable in the correct scope, and return a reference to it
+   */
+  ArrayReference createVariable(string name);
+  /**
    * Perform a binary operator with the given name
    */
   Array DoBinaryOperator(const tree &t, BinaryFunc fnc, string fname);

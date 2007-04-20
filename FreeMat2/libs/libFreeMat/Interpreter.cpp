@@ -2392,6 +2392,35 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
   RestoreEndInfo;
 }
 
+ArrayReference Interpreter::createVariable(string name) {
+  // Are we in a nested scope?
+  if (!context->getCurrentScope()->isnested()) {
+    // if not, just create a local variable in the current scope, and move on.
+    context->insertVariable(name,Array::emptyConstructor());
+  } else {
+    // if so - walk up the scope chain until we are no longer nested
+    Scope *localScope = context->getCurrentScope();
+    context->bypassScope(1);
+    while (context->getCurrentScope()->nests(localScope)) 
+      context->bypassScope(1);
+    context->restoreScope(1);
+    // We wre now pointing to the highest scope that contains the present
+    // (nested) scope.  Now, we start walking down the chain looking for
+    // someone who accesses this variable
+    while (!context->getCurrentScope()->variableAccessed(name) &&
+	   context->getCurrentScope() != localScope) 
+      context->restoreScope(1);
+    // Either we are back in the local scope, or we are pointing to
+    // a scope that (at least theoretically) accesses a variable with 
+    // the given name.
+    context->insertVariable(name,Array::emptyConstructor());
+    context->restoreBypassedScopes();
+  } 
+  ArrayReference np(context->lookupVariable(name));
+  if (!np.valid()) throw Exception("error creating variable name " + name + " with scope " + context->getCurrentScope()->getName());
+  return ArrayReference(np);
+}
+
 //Works
     // The case of a(1,2).foo.goo{3} = rhs
     // The tree looks like this:
@@ -2797,10 +2826,8 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
   string name(var.first().text());
   ArrayReference ptr(context->lookupVariable(name));
-  if (!ptr.valid()) {
-    context->insertVariable(name,Array::emptyConstructor());
-    ptr = context->lookupVariable(name);
-  }
+  if (!ptr.valid()) 
+    ptr = createVariable(name);
   if (var.numchildren() == 1) {
     ptr->setValue(b);
   } else if (ptr->isUserClass() && 
@@ -3195,10 +3222,8 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
     const tree &var(s[index]);
     string name(var.first().text());
     ArrayReference ptr(context->lookupVariable(name));
-    if (!ptr.valid()) {
-      context->insertVariable(name,Array::emptyConstructor());
-      ptr = context->lookupVariable(name);
-    }
+    if (!ptr.valid()) 
+      ptr = createVariable(name);
     if (ptr->isUserClass() && 
 	!inMethodCall(ptr->className().back()) && 
 	!stopoverload) {

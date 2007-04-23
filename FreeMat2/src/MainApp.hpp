@@ -36,7 +36,7 @@ class MainApp : public QObject
   Interpreter *m_eval;
   bool GUIHack;
   void CheckNonClosable();
-  Scope *m_global;
+  ScopePtr m_global;
   QStringList basePath, userPath;
 
 public:

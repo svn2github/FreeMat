@@ -135,6 +135,7 @@ void outputSinglePrecisionFloat(char *buf, float num) {
 
   
 void* Array::allocateArray(Class type, uint32 length, rvstring names) {
+  if (length == 0) return NULL;
   switch(type) {
   case FM_FUNCPTR_ARRAY: {
     FuncPtr *dp = new FuncPtr[length];
@@ -752,8 +753,12 @@ void Array::reshape(Dimensions& a)  {
 void Array::hermitian()  {
   if (!is2D())
     throw Exception("Cannot apply Hermitian transpose operation to multi-dimensional array.");
-  if (isEmpty())
+  if (isEmpty()) {
+    int rows = getDimensionLength(0);
+    int cols = getDimensionLength(1);
+    dp->setDimensions(Dimensions(cols,rows));
     return;
+  }
   if (!isComplex())
     transpose();
   else {
@@ -816,8 +821,12 @@ void Array::hermitian()  {
 void Array::transpose()  {
   if (!is2D())
     throw Exception("Cannot apply transpose operation to multi-dimensional array.");
-  if (isEmpty())
-    return; 
+  if (isEmpty()) {
+    int rows = getDimensionLength(0);
+    int cols = getDimensionLength(1);
+    dp->setDimensions(Dimensions(cols,rows));
+    return;
+  }
   if (sparse()) {
     int rows = getDimensionLength(0);
     int cols = getDimensionLength(1);
@@ -1804,18 +1813,14 @@ Array Array::int32RangeConstructor(int32 minval, int32 stepsize,
       scount++;
     }
   }
-  if (scount <= 0)
-    dim.reset();
-  else {
-    if (vert) {
-      dim = Dimensions(scount,1);
-    } else {
-      dim = Dimensions(1,scount);
-    }
-    rp = (int32 *) allocateArray(FM_INT32,scount);
-    for (int i=0;i<scount;i++)
-      rp[i] = minval + i*stepsize;
+  if (vert) {
+    dim = Dimensions(scount,1);
+  } else {
+    dim = Dimensions(1,scount);
   }
+  rp = (int32 *) allocateArray(FM_INT32,scount);
+  for (int i=0;i<scount;i++)
+    rp[i] = minval + i*stepsize;
   return Array(FM_INT32,dim,rp);
 }
 
@@ -1837,18 +1842,14 @@ Array Array::int64RangeConstructor(int64 minval, int64 stepsize,
       scount++;
     }
   }
-  if (scount <= 0)
-    dim.reset();
-  else {
-    if (vert) {
-      dim = Dimensions(scount,1);
-    } else {
-      dim = Dimensions(1,scount);
-    }
-    rp = (int64 *) allocateArray(FM_INT64,scount);
-    for (int i=0;i<scount;i++)
-      rp[i] = minval + i*stepsize;
+  if (vert) {
+    dim = Dimensions(scount,1);
+  } else {
+    dim = Dimensions(1,scount);
   }
+  rp = (int64 *) allocateArray(FM_INT64,scount);
+  for (int i=0;i<scount;i++)
+    rp[i] = minval + i*stepsize;
   return Array(FM_INT64,dim,rp);
 }
 
@@ -1887,20 +1888,17 @@ Array Array::floatRangeConstructor(float minval, float stepsize,
   int npts = (int) floor(ntest_max);
   bool use_double_sided = (ntest_min <= npts) && (npts <= ntest_max);
   npts++;
-  if (npts <= 0)
-    dim.reset();
-  else {
-    if (vert) {
-      dim = Dimensions(npts,1);
-    } else {
-      dim = Dimensions(1,npts);
-    }
-    rp = (float *) allocateArray(FM_FLOAT,npts);
-    if (use_double_sided)
-      do_double_sided_algo_float(minval,stepsize,maxval,rp,1,npts);
-    else
-      do_single_sided_algo_float(minval,stepsize,rp,1,npts);
+  if (npts < 0) npts = 0;
+  if (vert) {
+    dim = Dimensions(npts,1);
+  } else {
+    dim = Dimensions(1,npts);
   }
+  rp = (float *) allocateArray(FM_FLOAT,npts);
+  if (use_double_sided)
+    do_double_sided_algo_float(minval,stepsize,maxval,rp,1,npts);
+  else
+    do_single_sided_algo_float(minval,stepsize,rp,1,npts);
   return Array(FM_FLOAT,dim,rp);
 }
 
@@ -1939,20 +1937,17 @@ Array Array::doubleRangeConstructor(double minval, double stepsize,
   int npts = (int) floor(ntest_max);
   bool use_double_sided = (ntest_min <= npts) && (npts <= ntest_max);
   npts++;
-  if (npts <= 0)
-    dim.reset();
-  else {
-    if (vert) {
-      dim = Dimensions(npts,1);
-    } else {
-      dim = Dimensions(1,npts);
-    }
-    rp = (double *) allocateArray(FM_DOUBLE,npts);
-    if (use_double_sided)
-      do_double_sided_algo_double(minval,stepsize,maxval,rp,1,npts);
-    else
-      do_single_sided_algo_double(minval,stepsize,rp,1,npts);
+  if (npts < 0) npts = 0;
+  if (vert) {
+    dim = Dimensions(npts,1);
+  } else {
+    dim = Dimensions(1,npts);
   }
+  rp = (double *) allocateArray(FM_DOUBLE,npts);
+  if (use_double_sided)
+    do_double_sided_algo_double(minval,stepsize,maxval,rp,1,npts);
+  else
+    do_single_sided_algo_double(minval,stepsize,rp,1,npts);
   return Array(FM_DOUBLE,dim,rp);
 }
 

@@ -624,10 +624,7 @@ ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("size function requires either one or two arguments");
   Dimensions sze;
-  if (arg[0].isEmpty()) {
-    sze = Dimensions(0,0);
-  } else
-    sze = arg[0].dimensions();
+  sze = arg[0].dimensions();
   if (arg.size() == 1) {
     if (nargout > 1) {
       ArrayVector retval;

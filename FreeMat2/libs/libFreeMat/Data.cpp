@@ -29,9 +29,9 @@ void * Data::copyDataBlock(void *dp) {
   //  qDebug() << "Copy!\n";
   DataMakeCount++;
   if (m_dataClass == FM_FUNCPTR_ARRAY) {
-    FunctionDef **cp = new FunctionDef*[m_dimensions.getElementCount()];
+    FuncPtr *cp = new FuncPtr[m_dimensions.getElementCount()];
     for (int i=0;i<m_dimensions.getElementCount();i++)
-      cp[i] = ((FunctionDef**) dp)[i];
+      cp[i] = ((FuncPtr*) dp)[i];
     return (void*)cp;
   } else if (m_dataClass == FM_CELL_ARRAY) {
     Array *cp = new Array[m_dimensions.getElementCount()];

@@ -249,8 +249,8 @@ void emitFormattedElement(Interpreter* io, char *msgBuffer, ArrayFormat format, 
     break;
   }
   case FM_FUNCPTR_ARRAY: {
-    const FunctionDef** ap;
-    ap = (const FunctionDef**) dp;
+    const FuncPtr* ap;
+    ap = (const FuncPtr*) dp;
     if (!ap[num]) {
       io->outputMessage("[]  ");
     } else {
@@ -461,14 +461,20 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
 		       bool showClassSize) {
   if (printlimit == 0) return;
   int termWidth = io->getTerminalWidth();
-  if (showClassSize)
+  if (!A.isEmpty() && showClassSize)
     PrintArrayClassAndSize(A,io);
   Class Aclass(A.dataClass());
   Dimensions Adims(A.dimensions());
   if (A.isUserClass())
     return;
   if (A.isEmpty()) {
-    io->outputMessage("  []\n");
+    if (A.dimensions().equals(zeroDim))
+      io->outputMessage("  []\n");
+    else {
+      io->outputMessage("  Empty array ");
+      A.dimensions().printMe(io);
+      io->outputMessage("\n");
+    }
     return;
   }
   if (A.sparse()) {

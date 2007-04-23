@@ -45,6 +45,10 @@ class Scope {
    */
   QMutex *mutex;
   /**
+   * The reference count for this Scope
+   */
+  int refcount;
+  /**
    * This is the hash-table of Array pointers that forms the
    * symbol table.  Each variable has a name associated with
    * it that must be unique to the Scope.  The Scope owns the
@@ -86,6 +90,11 @@ class Scope {
    */
   stringVector variablesAccessed;
   /**
+   * This string vector contains the names of variables that must be local to this
+   * scope.
+   */
+  stringVector localVariables;
+  /**
    * On every call to modify the scope, we have to check the global/persistent
    * variable table.  This is generally expensive, so we cache information
    * about these tables being empty (the usual case).
@@ -97,15 +106,31 @@ public:
   /**
    * Construct a scope with the given name.
    */
-  Scope(std::string scopeName, bool nested) : name(scopeName), loopLevel(0), 
-					      anyPersistents(false), anyGlobals(false),
-					      isNested(nested), mutex(NULL)  {}
+  Scope(std::string scopeName, bool nested) : name(scopeName), 
+					      loopLevel(0), 
+					      anyPersistents(false), 
+					      anyGlobals(false),
+					      isNested(nested), 
+					      mutex(NULL),
+					      refcount(0)  {}
+
+  void countlock();
+  void countunlock();
+  bool referenced();
   inline void setVariablesAccessed(stringVector varList) {
     variablesAccessed = varList;
   }
   inline bool variableAccessed(string varName) {
     for (int i=0;i<variablesAccessed.size();i++)
       if (variablesAccessed[i] == varName) return true;
+    return false;
+  }
+  inline void setLocalVariables(stringVector varList) {
+    localVariables = varList;
+  }
+  inline bool variableLocal(string varName) {
+    for (int i=0;i<localVariables.size();i++) 
+      if (localVariables[i] == varName) return true;
     return false;
   }
   inline bool isnested() {
@@ -297,4 +322,51 @@ public:
     anyPersistents = false;
   }
 };
+
+class ScopePtr {
+private:
+  Scope* d;
+public:
+  ScopePtr() : d(NULL) {}
+  ~ScopePtr() {
+    if (d) {
+      d->countunlock();
+      if (!d->referenced())
+	delete d;
+    }
+  }
+  ScopePtr(Scope* ptr) {
+    d = ptr;
+    if (d)
+      d->countlock();
+  }
+  ScopePtr(const ScopePtr &copy) {
+    d = copy.d;
+    if (d)
+      d->countlock();
+  }
+  ScopePtr& operator=(const ScopePtr &copy) {
+    if (copy.d == d)
+      return *this;
+    if (d) {
+      d->countunlock();
+      if (!d->referenced()) delete d;
+    }
+    d = copy.d;
+    if (d)
+      d->countlock();
+    return *this;
+  }
+  Scope* operator->() const {
+    return d;
+  }
+  Scope& operator*() const {
+    return *d;
+  }
+  bool operator!() const {
+    return (d == NULL);
+  }
+  operator Scope* () const {return d;}
+};
+
 #endif

@@ -18,10 +18,24 @@
  */
 
 #include "Scope.hpp"
-#include "Array.hpp"
-#include <stdio.h>
-#include <algorithm>
+#include <QMutexLocker>
+#include <QMutex>
 
+QMutex scopemutex;
 
+void Scope::countlock() {
+  QMutexLocker lockit(&scopemutex);
+  refcount++;
+}
+
+void Scope::countunlock() {
+  QMutexLocker lockit(&scopemutex);
+  refcount--;
+}
   
+bool Scope::referenced() {
+  QMutexLocker lockit(&scopemutex);
+  return (refcount>0);
+}
+
 

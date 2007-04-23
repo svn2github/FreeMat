@@ -1279,6 +1279,8 @@ inline Array DoBoolTwoArgFunction(Array A, Array B, vvfun exec, std::string opna
 //[yz2,zz2] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1+yi2,zi1+zi2) & testeq(yf1+yf2,zf1+zf2) & testeq(yd1+yd2,zd1+zd2) & testeq(yc1+yc2,zc1+zc2) & testeq(yz1+yz2,zz1+zz2);
 //@}
+//@@Tests
+//@$"y=zeros(3,0,4)+zeros(3,0,4)","zeros(3,0,4)","exact"
 //!
 Array Add(Array A, Array B, Interpreter* m_eval) { 
   // Process the two arguments through the type check and dimension checks...
@@ -3646,8 +3648,6 @@ Array Negate(Array A, Interpreter* m_eval){
 //@}
 //!
 Array Multiply(Array A, Array B, Interpreter* m_eval){
-  if (A.isEmpty() || B.isEmpty())
-    return Array::emptyConstructor();
   // Process our arguments
   if (!MatrixCheck(A,B,"*"))
     // Its really a vector product, pass...
@@ -3802,8 +3802,8 @@ Array Multiply(Array A, Array B, Interpreter* m_eval){
 //which is the same solution.
 //!
 Array LeftDivide(Array A, Array B, Interpreter* m_eval) {
-  if (A.isEmpty() || B.isEmpty())
-    return Array::emptyConstructor();
+//   if (A.isEmpty() || B.isEmpty())
+//     return Array::emptyConstructor();
   stringVector dummySV;
   // Process our arguments
   if (!MatrixCheck(A,B,"\\"))
@@ -3957,8 +3957,6 @@ Array LeftDivide(Array A, Array B, Interpreter* m_eval) {
 Array RightDivide(Array A, Array B, Interpreter* m_eval) {
   Array C;
 
-  if (A.isEmpty() || B.isEmpty())
-    return Array::emptyConstructor();
   // Process our arguments
   if (!MatrixCheck(A,B,"/"))
     // Its really a vector product, pass...

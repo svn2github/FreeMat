@@ -1645,7 +1645,7 @@ public:
 template <class T>
 void ForLoopHelper(const tree &codeBlock, Class indexClass, const T *indexSet, 
 		   int count, string indexName, Interpreter *eval) {
-  Scope *scope = eval->getContext()->getCurrentScope();
+  ScopePtr scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
     Array *vp = scope->lookupVariable(indexName);
     if ((!vp) || (vp->dataClass() != indexClass) || (!vp->isScalar())) {
@@ -1666,7 +1666,7 @@ template <class T>
 void ForLoopHelperComplex(const tree &codeBlock, Class indexClass, 
 			  const T *indexSet, int count, 
 			  string indexName, Interpreter *eval) {
-  Scope *scope = eval->getContext()->getCurrentScope();
+  ScopePtr scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
     Array *vp = scope->lookupVariable(indexName);
     if ((!vp) || (vp->dataClass() != indexClass) || (!vp->isScalar())) {
@@ -2392,14 +2392,15 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
   RestoreEndInfo;
 }
 
+
 ArrayReference Interpreter::createVariable(string name) {
   // Are we in a nested scope?
-  if (!context->getCurrentScope()->isnested()) {
+  if (!context->getCurrentScope()->isnested() || context->getCurrentScope()->variableLocal(name)) {
     // if not, just create a local variable in the current scope, and move on.
     context->insertVariable(name,Array::emptyConstructor());
   } else {
     // if so - walk up the scope chain until we are no longer nested
-    Scope *localScope = context->getCurrentScope();
+    ScopePtr localScope = context->getCurrentScope();
     context->bypassScope(1);
     while (context->getCurrentScope()->nests(localScope)) 
       context->bypassScope(1);
@@ -3521,6 +3522,54 @@ int getArgumentIndex(stringVector list, std::string t) {
 //@}
 //!
 
+
+//!
+//@Module ANONYMOUS Anonymous Functions
+//@@Section FUNCTIONS
+//@@Usage
+//Anonymous functions are simple, nameless functions that can be defined
+//anywhere (in a script, function, or at the prompt).  They are intended
+//to supplant @|inline| functions.  The syntax for an anonymous function
+//is simple:
+//@[
+//   y = @(arg1,arg2,...,argn) expression
+//@]
+//where @|arg1,arg2,...,argn| is a list of valid identifiers that define
+//the arguments to the function, and @|expression| is the expression to
+//compute in the function.  The returned value @|y| is a function handle
+//for the anonymous function that can then be used to evaluate the expression.
+//Note that @|y| will capture the value of variables that are not indicated
+//in the argument list from the current scope or workspace at the time
+//it is defined.  So, for example, consider the simple anonymous function
+//definition
+//@[
+//   y = @(x) a*(x+b)
+//@]
+//In order for this definition to work, the variables @|a| and @|b| need to
+//be defined in the current workspace.  Whatever value they have is captured
+//in the function handle @|y|.  To change the values of @|a| and @|b| in the
+//anonymous function, you must recreate the handle using another call.  See
+//the examples section for more information.  In order to use the anonymous
+//function, you can use it just like any other function handle.  For example,
+//@[
+//   p = y(3)
+//   p = y()
+//   p = feval(y,3)
+//@]
+//are all examples of using the @|y| anonymous function to perform a calculation.
+//@@Examples
+//Here are some examples of using an anonymous function
+//@<
+//a = 2; b = 4;    % define a and b (slope and intercept)
+//y = @(x) a*x+b   % create the anonymous function
+//y(2)             % evaluate it for x = 2
+//a = 5; b = 7;    % change a and b
+//y(2)             % the value did not change!  because a=2,b=4 are captured in y
+//y = @(x) a*x+b   % recreate the function
+//y(2)             % now the new values are used
+//@>
+//!
+
 //!
 //@Module KEYWORDS Function Keywords
 //@@Section FUNCTIONS
@@ -4195,6 +4244,19 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val) {
   return(lookupFunction(funcName,val,dummy));
 }
 
+bool IsNestedName(std::string basename) {
+  return (basename.rfind("/") >= 0);
+}
+
+std::string StripNestLevel(std::string basename) {
+  int ndx = basename.rfind("/");
+  if (ndx >= 0)
+    basename.erase(ndx,basename.size());
+  else
+    basename = "";
+  return basename;
+}
+
 // Look up a function by name.  Use the arguments (if available) to assist
 // in resolving method calls for objects
 bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val, 
@@ -4207,6 +4269,16 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
     if (isMFile(ip_funcname) &&
 	(context->lookupFunction(NestedMangleName(ip_detailname,funcName),val)))
       return true;
+    // Not a nested function of the current scope.  We have to look for nested
+    // functions of all parent scopes. Sigh.
+    if (context->getCurrentScope()->isnested()) {
+      std::string basename = ip_detailname;
+      while (!basename.empty()) {
+	if (context->lookupFunction(NestedMangleName(basename,funcName),val))
+	  return true;
+	basename = StripNestLevel(basename);
+      }
+    }
     // Subfunctions
     if (isMFile(ip_funcname) && 
 	(context->lookupFunction(getLocalMangledName(funcName),val)))

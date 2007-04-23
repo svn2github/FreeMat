@@ -38,13 +38,13 @@
 class ArrayReference {
   Array *m_ptr;
   bool m_global;
-  Scope *m_scope;
+  ScopePtr m_scope;
 public:
   inline ArrayReference() : m_ptr(NULL), m_global(false), m_scope(NULL) {
   }
   inline ArrayReference(Array *ptr) :  m_ptr(ptr), m_global(false), m_scope(NULL) {
   }
-  inline ArrayReference(Array *ptr, bool global, Scope *scope) :
+  inline ArrayReference(Array *ptr, bool global, ScopePtr scope) :
     m_ptr(ptr), m_global(global), m_scope(scope) {
     if (m_global)
       m_scope->lock();
@@ -106,11 +106,11 @@ class Context {
   /**
    * The normal stack of scopes.
    */
-  std::vector<Scope*> scopestack;
+  std::vector<ScopePtr> scopestack;
   /**
    * The stack of scopes that have been "bypassed"
    */
-  QList<Scope*> bypassstack;
+  QList<ScopePtr> bypassstack;
   /**
    * The table of functions
    */
@@ -126,30 +126,21 @@ class Context {
   /**
    * Pointer to current scope
    */
-  Scope *bottomScope;
+  ScopePtr bottomScope;
   /**
    * Pointer to global scope
    */
-  Scope *topScope;
+  ScopePtr topScope;
 public:
   /**
    * Create a context and initialize it with a global scope and a 
    * base scope.
    */
-  Context(Scope *global) : mutex(QMutex::Recursive) {
+  Context(ScopePtr global) : mutex(QMutex::Recursive) {
     scopestack.push_back(global);
     pushScope("base");
     topScope = scopestack.front();
     bottomScope = scopestack.back();
-  }
-
-  /**
-   * Delete the context
-   */
-  inline ~Context() {
-    // Don't delete the base scope
-    for (int i=1;i<scopestack.size();i++)
-      delete scopestack[i];
   }
 
   /**
@@ -212,7 +203,6 @@ public:
   inline void popScope() {
     if (scopestack.size() == 1)
       throw Exception("Attempt to pop global scope off of context stack!");
-    delete scopestack.back();
     scopestack.pop_back();
     bottomScope = scopestack.back();
   }
@@ -222,7 +212,7 @@ public:
    * global list if it is persistent.  
    */
   inline void insertVariable(const std::string& varName, const Array& var) {
-    Scope* active;
+    ScopePtr active;
     std::string mapName;
 
     if (bottomScope->isVariablePersistent(varName)) {
@@ -237,6 +227,7 @@ public:
     }
     active->insertVariable(mapName,var);
   }
+
   /**
    * Insert a variable into the local scope - do not check the
    * global list.
@@ -259,7 +250,7 @@ public:
    * searched.  A pointer to this newly created variable is returned.
    */
   inline ArrayReference lookupVariable(const std::string& varName) {
-    Scope* active;
+    ScopePtr active;
     std::string mapName;
     bool global = false;
     if (bottomScope->isVariablePersistent(varName)) {
@@ -521,13 +512,13 @@ public:
   /**
    * Get the global scope off the top of the scope stack.
    */
-  inline Scope *getGlobalScope() {
+  inline ScopePtr getGlobalScope() {
     return topScope;
   }
   /**
    * Get the current (active) scope
    */
-  inline Scope *getCurrentScope() {
+  inline ScopePtr getCurrentScope() {
     return bottomScope;
   }
   /**

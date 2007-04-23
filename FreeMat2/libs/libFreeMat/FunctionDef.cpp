@@ -49,8 +49,16 @@ stringVector IdentifierList(tree t) {
 }
 
 void VariableReferencesList(const tree & t, stringVector& idents) {
-  if (t.is(TOK_VARIABLE))
-    idents.push_back(t.first().text());
+  if (t.is(TOK_NEST_FUNC)) return;
+  if (t.is(TOK_VARIABLE)) {
+    bool exists = false;
+    for (int i=0;(i<idents.size());i++) {
+      exists = (idents[i] == t.first().text());
+      if (exists) break;
+    }
+    if (!exists)
+      idents.push_back(t.first().text());
+  }
   for (int i=0;i<t.numchildren();i++)
     VariableReferencesList(t.child(i),idents);
 }
@@ -128,6 +136,7 @@ MFunctionDef::MFunctionDef() {
   pcodeFunction = false;
 #warning - check pcode
   nestedFunction = false;
+  capturedFunction = false;
 }
 
 MFunctionDef::~MFunctionDef() {
@@ -173,6 +182,51 @@ void MFunctionDef::printMe(Interpreter*eval) {
   code.print();
 }
 
+
+#warning - This design causes an unneccesary copy - should use readonly pass first
+void CaptureFunctionPointer(FuncPtr val, Interpreter *walker, 
+			    MFunctionDef *parent, ScopePtr workspace) {
+  if (val->type() == FM_M_FUNCTION) {
+    MFunctionDef* mptr = (MFunctionDef*) val;
+    if (mptr->nestedFunction && !mptr->capturedFunction) {
+      Context* context = walker->getContext();
+      ScopePtr myScope = context->getCurrentScope();
+      context->bypassScope(1);
+      ScopePtr parentScope = context->getCurrentScope();
+      context->restoreScope(1);
+      cout << "Capture: " << myScope->getName() << "   ...  " << parentScope->getName() << "\r\n";
+      if (!parentScope->nests(myScope)) {
+	cout << "need to capture " << mptr->name << "\r\n";
+	cout << "Parent scope is " << parentScope->getName() << "\r\n";
+	cout << "my scope is " << myScope->getName() << "\r\n";
+	// Now capture the variables in our current scope
+	for (int i=0;i<mptr->variablesAccessed.size();i++) {
+	  ArrayReference ptr(context->lookupVariable(mptr->variablesAccessed[i]));
+	  if (ptr.valid()) {
+	    cout << "Captured VAR: " << mptr->variablesAccessed[i] << "\r\n";
+	    workspace->insertVariable(mptr->variablesAccessed[i],*ptr);
+	  }
+	}
+	mptr->workspace = workspace;
+	mptr->capturedFunction = true;
+      }
+    }
+  }
+}
+
+void CaptureFunctionPointers(ArrayVector& outputs, Interpreter *walker, 
+			     MFunctionDef *parent) {
+  ScopePtr workspace = new Scope("captured",false);
+  // First check for any 
+  for (int i=0;i<outputs.size();i++) {
+    if (outputs[i].dataClass() == FM_FUNCPTR_ARRAY) {
+      FuncPtr *dp = (FuncPtr*) outputs[i].getReadWriteDataPointer();
+      for (int j=0;j<outputs[i].getLength();j++)
+	CaptureFunctionPointer(dp[j],walker,parent,workspace);
+    }
+  }
+}
+
 ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker, 
 					   ArrayVector& inputs, 
 					   int nargout) {
@@ -185,6 +239,12 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   context = walker->getContext();
   context->pushScope(name,nestedFunction);
   context->getCurrentScope()->setVariablesAccessed(variablesAccessed);
+  context->getCurrentScope()->setLocalVariables(returnVals);
+  if (capturedFunction) {
+    stringVector workspaceVars(workspace->getCompletions(""));
+    for (int i=0;i<workspaceVars.size();i++)
+      context->insertVariableLocally(workspaceVars[i],*workspace->lookupVariable(workspaceVars[i]));
+  }
   walker->pushDebug(fileName,name);
   // When the function is called, the number of inputs is
   // at sometimes less than the number of arguments requested.
@@ -328,15 +388,38 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
       if (ptr)
 	inputs[i] = *ptr;
     }
+    // Check the outputs for function pointers
+    CaptureFunctionPointers(outputs,walker,this);
+    if (capturedFunction) {
+      stringVector workspaceVars(workspace->getCompletions(""));
+      for (int i=0;i<workspaceVars.size();i++) {
+	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
+	workspace->insertVariable(workspaceVars[i],*ptr);
+      }
+    }
     context->popScope();
     walker->popDebug();
     return outputs;
   } catch (Exception& e) {
+    if (capturedFunction) {
+      stringVector workspaceVars(workspace->getCompletions(""));
+      for (int i=0;i<workspaceVars.size();i++) {
+	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
+	workspace->insertVariable(workspaceVars[i],*ptr);
+      }
+    }
     context->popScope();
     walker->popDebug();
     throw;
   }
   catch (InterpreterRetallException& e) {
+    if (capturedFunction) {
+      stringVector workspaceVars(workspace->getCompletions(""));
+      for (int i=0;i<workspaceVars.size();i++) {
+	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
+	workspace->insertVariable(workspaceVars[i],*ptr);
+      }
+    }
     context->popScope();
     walker->popDebug();
     throw;

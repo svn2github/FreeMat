@@ -206,6 +206,7 @@ public:
   bool localFunction;
   bool pcodeFunction;
   bool nestedFunction;
+  bool capturedFunction;
   /**
    * The help text.
    */
@@ -215,6 +216,11 @@ public:
    * resolve scope rules for nested functions.
    */
   stringVector variablesAccessed;
+  /**
+   * The workspace for this function - used for capturing variables
+   * when functions are used out of scope.
+   */
+  ScopePtr workspace;
   /**
    * The constructor.
    */

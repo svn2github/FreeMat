@@ -848,7 +848,9 @@ Array MatIO::getArray(bool &atEof, string &name, bool &match, bool &isGlobal) {
     toret = getClassArray(dm);
   else if (arrayType == mxSPARSE_CLASS)
     toret = getSparseArray(dm,isComplex);
-  else 
+  else if (arrayType == mxFUNCTION_CLASS)
+    toret = getClassArray(dm);
+  else
     throw Exception(string("Unable to do this one :") + arrayType);
   if (isLogical)
     toret.promoteType(FM_LOGICAL);

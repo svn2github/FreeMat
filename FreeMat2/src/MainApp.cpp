@@ -103,8 +103,6 @@ void MainApp::SetupGUICase() {
   m_win = new ApplicationWindow;
   QTTerm *gui = new QTTerm(NULL);
   m_keys->RegisterTerm(gui);
-  gui->resizeTextSurface();
-  //  gui->show();
   m_win->SetGUITerminal(gui);
   m_win->SetKeyManager(m_keys);
   m_win->readSettings();

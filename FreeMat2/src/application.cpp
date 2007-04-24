@@ -261,35 +261,15 @@ void ApplicationWindow::save() {
 			       QMessageBox::Ok);
       return;
     }
-    int history_count;
-    int width;
-    char *textbuffer;
-    textbuffer = m_term->getTextSurface(history_count, width);
-    char *linebuf = new char[width+1];
-    for (int i=0;i<history_count;i++) {
-      // scan backwards for last non ' ' char
-      int j=width-1;
-      while ((j>0) && (textbuffer[i*width+j] == ' '))
-	j--;
-      j++;
-      memcpy(linebuf,textbuffer+i*width,j*sizeof(char));
-      linebuf[j] = 0;
-#ifdef WIN32
-      fprintf(fp,"%s\r\n",linebuf);
-#else
-      fprintf(fp,"%s\n",linebuf);
-#endif
-    }
+    fprintf(fp,"%s",m_term->getAllText().toStdString().c_str());
     fclose(fp);
   }
 }
 
 void ApplicationWindow::copy() {
-  char *copytextbuf = m_term->getSelectionText();
-  if (!copytextbuf) return;
+  QString copytextbuf = m_term->getSelectionText();
   QClipboard *cb = QApplication::clipboard();
   cb->setText(copytextbuf, QClipboard::Clipboard);
-  free(copytextbuf);
 }
 
 void ApplicationWindow::paste() {

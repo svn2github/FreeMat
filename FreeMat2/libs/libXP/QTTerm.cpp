@@ -62,6 +62,7 @@ void QTTerm::setFont(QFont font) {
   QTextCharFormat cfrmt(cur.charFormat());
   cfrmt.setFont(font);
   cur.setCharFormat(cfrmt);
+  destCursor.setCharFormat(cfrmt);
   setCurrentFont(fnt);
 }
 

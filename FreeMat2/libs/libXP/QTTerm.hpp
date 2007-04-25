@@ -32,6 +32,8 @@ class QTTerm :  public QTextEdit {
   QTimer *autoFlush;
   QTextCursor destCursor;
   QFont fnt;
+  int m_char_w;
+  int m_twidth;
 public:
   QTTerm(QWidget *parent);
 
@@ -44,7 +46,9 @@ public:
   void adjustScrollback();
 protected:
   void keyPressEvent( QKeyEvent *e );
+  void resizeEvent( QResizeEvent *e );
   void Output(QString frag);
+  void UpdateTextWidth();
  public slots:
   void MoveDown();
   void MoveUp();

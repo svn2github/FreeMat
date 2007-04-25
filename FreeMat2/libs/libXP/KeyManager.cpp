@@ -346,6 +346,7 @@ void KeyManager::AddCharToLine(char c) {
      * Redraw the line from the cursor position to the end of the line,
      * and move the cursor to just after the added character.
      */
+      TruncateDisplay();
     OutputString(string(lineData,sbuff_curpos), '\0');
     SetTermCurpos(sterm_curpos + width);
     /*
@@ -495,7 +496,8 @@ void KeyManager::OutputChar(char c, char pad) {
    */
   if(term_curpos % ncolumn == 0) {
     int sterm_curpos = term_curpos;
-    OutputChar(pad ? pad : ' ', ' ');
+    //    OutputChar(pad ? pad : ' ', ' ');
+    OutputRawString("\n");
     SetTermCurpos(sterm_curpos);
   };
 }
@@ -586,6 +588,7 @@ void KeyManager::DeleteChars(int nc, int cut) {
 
   ntotal -= nc;
 
+  emit ClearEOD();
   /*
    * Redraw the remaining characters following the cursor.
    */

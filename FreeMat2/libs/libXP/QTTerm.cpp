@@ -29,12 +29,12 @@
 QTTerm::QTTerm(QWidget *parent) : QTextEdit(parent) {
   setObjectName("qtterm");
   setMinimumSize(100,100);
-  setLineWrapMode(QTextEdit::NoWrap);
+  setLineWrapMode(QTextEdit::WidgetWidth);
   setCursorWidth(10);
   setOverwriteMode(true);
+  setWordWrapMode(QTextOption::NoWrap);
   autoFlush = new QTimer(this);
   connect(autoFlush,SIGNAL(timeout()),this,SLOT(Flush()));
-  autoFlush->start(50);
   destCursor = textCursor();
 
 #ifdef __APPLE__
@@ -45,6 +45,22 @@ QTTerm::QTTerm(QWidget *parent) : QTextEdit(parent) {
   QFont afont("Monospace",10);
 #endif
   setFont(afont);
+  autoFlush->start(50);
+}
+
+void QTTerm::resizeEvent(QResizeEvent *e) {
+  QTextEdit::resizeEvent(e);
+  UpdateTextWidth();  
+}
+
+void QTTerm::UpdateTextWidth() {
+  m_twidth = width()/m_char_w-1;
+  m_twidth = 30;
+  qDebug() << "Width set to " << m_twidth;
+  //  setLineWrapMode(QTextEdit::FixedColumnWidth);
+  //  setLineWrapColumnOrWidth(t_width);
+  setWordWrapMode(QTextOption::NoWrap);
+  emit SetTextWidth(m_twidth);
 }
 
 #ifndef __APPLE__
@@ -64,6 +80,9 @@ void QTTerm::setFont(QFont font) {
   cur.setCharFormat(cfrmt);
   destCursor.setCharFormat(cfrmt);
   setCurrentFont(fnt);
+  QFontMetrics fmi(fnt);
+  m_char_w = fmi.width("w");
+  UpdateTextWidth();
 }
 
 QFont QTTerm::getFont() {
@@ -210,26 +229,62 @@ void QTTerm::ClearEOD() {
 
 void QTTerm::OutputRawString(string txt) {
   QString emitText(QString::fromStdString(txt));
-  putbuf += emitText;
+//   putbuf += emitText;
+//   qDebug() << "ORS: " << emitText;
+//   if (putbuf.endsWith('\r') || (putbuf.size() == 1)) Flush();
+  emitText.replace(QRegExp("[\r]+\n"),"\n");
+  qDebug() << "Output: " << emitText;
+  for (int i=0;i<txt.size();i++)
+    qDebug() << "code " << (int32)(txt.c_str()[i]);
+  //  destCursor.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,
+  //			  emitText.size());
+  //  destCursor.removeSelectedText();
+  destCursor.insertText(emitText);
 }
 
 void QTTerm::Output(QString fragment) {
-  if (destCursor.atEnd())
+  qDebug() << "Frag: <" << fragment << ">";
+  if (fragment == "\n") {
+    destCursor.movePosition(QTextCursor::EndOfLine);
+    destCursor.insertText("\r\n");
+  } else {
     destCursor.insertText(fragment);
-  else {
-    for (int i=0;i<fragment.size();i++)
-      destCursor.deleteChar();
+  }
+  setTextCursor(destCursor);
+  return;
+#if 0
+  QTextCursor mark(destCursor);
+  mark.movePosition(QTextCursor::StartOfLine);
+  qDebug() << "col is now " << (destCursor.position() - mark.position());
+  if ((destCursor.position() - mark.position()) >= m_twidth) {
+    qDebug() << "Force wrap";
+    destCursor.movePosition(QTextCursor::EndOfLine);
+    destCursor.insertText("\n");
+  }
+  if (destCursor.atEnd()) {
     destCursor.insertText(fragment);
+  } else {
+      setTextCursor(destCursor);
+      return;
+    } else {
+      //      for (int i=0;i<fragment.size();i++)
+      //	destCursor.deleteChar();
+      destCursor.insertText(fragment);
+    }
   }    
   setTextCursor(destCursor);
+#endif
 }
 
 void QTTerm::Flush() {
   if (putbuf.isEmpty()) return;
-  putbuf.replace("\r\n","\n");
+  qDebug() << "flush";
+  string yoo(putbuf.toStdString());
+  putbuf.replace(QRegExp("[\r]+\n"),"\n");
   if (!putbuf.contains('\r')) 
     Output(putbuf);
   else {
+    string foo(putbuf.toStdString());
     QStringList pbuft(putbuf.split('\r'));
     for (int i=0;i<pbuft.size();i++) {
       qDebug() << "Fragment: " << pbuft[i];

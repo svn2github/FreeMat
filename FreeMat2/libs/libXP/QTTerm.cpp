@@ -239,7 +239,9 @@ void QTTerm::OutputRawString(string txt) {
   //  destCursor.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,
   //			  emitText.size());
   //  destCursor.removeSelectedText();
-  destCursor.insertText(emitText);
+  if (destCursor.atBlockEnd()) {
+    destCursor.insertText(emitText);
+  }
 }
 
 void QTTerm::Output(QString fragment) {

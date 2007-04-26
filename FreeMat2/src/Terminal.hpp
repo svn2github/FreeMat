@@ -78,6 +78,8 @@ public slots:
   void ClearEOD();
   void MoveBOL();
   void OutputRawString(string txt);
+  void OutputRawStringImmediate(string txt);
+  void Flush();
   void DoRead();
   void ClearDisplay();
 signals:

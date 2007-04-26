@@ -156,7 +156,9 @@ signals:
   void MoveBOL();
   void ClearDisplay();
   void OutputRawString(string txt);
+  void OutputRawStringImmediate(string txt);
   void SendCommand(QString);
+  void Flush();
   void Interrupt();
   void UpdateVariables();
   void ExecuteLine(string txt);

@@ -214,13 +214,6 @@ void ApplicationWindow::tclose() {
 void ApplicationWindow::SetGUITerminal(QTTerm* term) {
   m_term = term;
   setCentralWidget(term);
-  QSettings settings("FreeMat","FreeMat");
-  QString font = settings.value("terminal/font").toString();
-  if (!font.isNull()) {
-    QFont new_font;
-    new_font.fromString(font);
-    m_term->setFont(new_font);
-  }
   term->show();
 }
 
@@ -341,6 +334,12 @@ void ApplicationWindow::init() {
   QDate lastCheck = settings.value("lastcheckdate").toDate();
   if (QDate::currentDate().daysTo(lastCheck) > 7) {
     checkForUpdates();
+  }
+  QString font = settings.value("terminal/font").toString();
+  if (!font.isNull()) {
+    QFont new_font;
+    new_font.fromString(font);
+    m_term->setFont(new_font);
   }
 }
 

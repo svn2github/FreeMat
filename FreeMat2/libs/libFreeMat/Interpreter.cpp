@@ -264,6 +264,10 @@ void Interpreter::outputMessage(std::string msg) {
     emit outputRawText(TranslateString(msg));
 }
 
+void Interpreter::flushOutput() {
+  emit Flush();
+}
+
 void Interpreter::errorMessage(std::string msg) {
   if (m_diaryState) diaryMessage("Error: " + msg + "\n");
   if (m_captureState) 

@@ -25,7 +25,6 @@
 #include <QDebug>
 #include <iostream>
 
-
 QTTerm::QTTerm(QWidget *parent) : QTextEdit(parent) {
   setObjectName("qtterm");
   setMinimumSize(100,100);
@@ -54,9 +53,8 @@ void QTTerm::resizeEvent(QResizeEvent *e) {
 }
 
 void QTTerm::UpdateTextWidth() {
-  m_twidth = width()/m_char_w-1;
-  m_twidth = 30;
-  qDebug() << "Width set to " << m_twidth;
+  m_twidth = width()/m_char_w-5;
+  //  m_twidth = 50;
   //  setLineWrapMode(QTextEdit::FixedColumnWidth);
   //  setLineWrapColumnOrWidth(t_width);
   setWordWrapMode(QTextOption::NoWrap);
@@ -71,7 +69,6 @@ void QTTerm::UpdateTextWidth() {
 
 void QTTerm::setFont(QFont font) {
   fnt = font;
-  qDebug() << "Font set to " << font.toString();
   QTextCursor cur(textCursor());
   cur.movePosition(QTextCursor::Start);
   cur.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
@@ -79,9 +76,12 @@ void QTTerm::setFont(QFont font) {
   cfrmt.setFont(font);
   cur.setCharFormat(cfrmt);
   destCursor.setCharFormat(cfrmt);
+  destCursor.setBlockCharFormat(cfrmt);
+  setTextCursor(cur);
   setCurrentFont(fnt);
   QFontMetrics fmi(fnt);
   m_char_w = fmi.width("w");
+  setCursorWidth(m_char_w);
   UpdateTextWidth();
 }
 
@@ -144,7 +144,6 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
 void QTTerm::adjustScrollback() {
   QTextCursor cur(textCursor());
   if (cur.position() > 100000) {
-    qDebug() << "Adjusting scrollback";
     // Moved beyond the scroll back limit
     int toDel = cur.position() - 90000;
     QTextCursor del(textCursor());
@@ -157,43 +156,41 @@ void QTTerm::adjustScrollback() {
 }
 
 void QTTerm::MoveDown() {
-  Flush();
-  qDebug() << "Down";
+  QTextCursor mark(destCursor);
   destCursor.movePosition(QTextCursor::Down);
+  if (destCursor.position() == mark.position()) {
+    // Couldn't move down (out of text).  Have to 
+    // add a new line
+    QTextCursor q(mark);
+    q.movePosition(QTextCursor::StartOfLine);
+    destCursor.movePosition(QTextCursor::EndOfLine);
+    destCursor.insertText("\n");
+    destCursor.insertText(QString(mark.position()-q.position(),' '));
+  }
   setTextCursor(destCursor);
 }
 
 void QTTerm::MoveUp() {
-  Flush();
-  qDebug() << "Up";
   destCursor.movePosition(QTextCursor::Up);
   setTextCursor(destCursor);
 }
 
 void QTTerm::MoveLeft() {
-  Flush();
-  qDebug() << "Left";
   destCursor.movePosition(QTextCursor::Left);
   setTextCursor(destCursor);
 }
 
 void QTTerm::MoveRight() {
-  Flush();
-  qDebug() << "Right";
   destCursor.movePosition(QTextCursor::Right);
   setTextCursor(destCursor);
 }
 
 void QTTerm::MoveBOL() {
-  Flush();
-  qDebug() << "Bol";
   destCursor.movePosition(QTextCursor::StartOfLine);
   setTextCursor(destCursor);
 }
 
 void QTTerm::ClearDisplay() {
-  Flush();
-  qDebug() << "CLD";
   destCursor.movePosition(QTextCursor::Start);
   destCursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
   destCursor.removeSelectedText();
@@ -212,91 +209,75 @@ QString QTTerm::getSelectionText() {
 }
 
 void QTTerm::ClearEOL() {
-  Flush();
-  qDebug() << "CEOL";
   destCursor.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor);
   destCursor.removeSelectedText();
   setTextCursor(destCursor);
 }
 
 void QTTerm::ClearEOD() {
-  Flush();
-  qDebug() << "CEOD";
   destCursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
   destCursor.removeSelectedText();
   setTextCursor(destCursor);
 }
 
-void QTTerm::OutputRawString(string txt) {
+void QTTerm::OutputRawStringImmediate(string txt) {
+  Flush();
   QString emitText(QString::fromStdString(txt));
-//   putbuf += emitText;
-//   qDebug() << "ORS: " << emitText;
-//   if (putbuf.endsWith('\r') || (putbuf.size() == 1)) Flush();
   emitText.replace(QRegExp("[\r]+\n"),"\n");
-  qDebug() << "Output: " << emitText;
-  for (int i=0;i<txt.size();i++)
-    qDebug() << "code " << (int32)(txt.c_str()[i]);
-  //  destCursor.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,
-  //			  emitText.size());
-  //  destCursor.removeSelectedText();
-  if (destCursor.atBlockEnd()) {
-    destCursor.insertText(emitText);
+  QStringList frags(emitText.split('\n'));
+  if (!emitText.contains('\n'))
+    Output(emitText);
+  else {
+    int fragCount = frags.size();
+    for (int i=0;i<fragCount;i++) {
+      Output(frags[i]);
+      if (i < fragCount-1) Output("\n");
+    }
   }
 }
 
+void QTTerm::OutputRawString(string txt) {
+  QString emitText(QString::fromStdString(txt));
+  emitText.replace(QRegExp("[\r]+\n"),"\n");
+  putbuf += emitText;
+}
+
 void QTTerm::Output(QString fragment) {
-  qDebug() << "Frag: <" << fragment << ">";
+  if (fragment.isEmpty()) return;
+  QTextCursor mark;
   if (fragment == "\n") {
     destCursor.movePosition(QTextCursor::EndOfLine);
-    destCursor.insertText("\r\n");
+    destCursor.insertText("\n");
   } else {
+    mark = destCursor;
+    mark.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,fragment.size());
+    mark.removeSelectedText();
     destCursor.insertText(fragment);
+  }
+  mark = destCursor;
+  mark.movePosition(QTextCursor::StartOfLine);
+  int ccol = destCursor.position() - mark.position();
+  if (ccol >= m_twidth) {
+    MoveBOL();
+    MoveDown();
   }
   setTextCursor(destCursor);
   return;
-#if 0
-  QTextCursor mark(destCursor);
-  mark.movePosition(QTextCursor::StartOfLine);
-  qDebug() << "col is now " << (destCursor.position() - mark.position());
-  if ((destCursor.position() - mark.position()) >= m_twidth) {
-    qDebug() << "Force wrap";
-    destCursor.movePosition(QTextCursor::EndOfLine);
-    destCursor.insertText("\n");
-  }
-  if (destCursor.atEnd()) {
-    destCursor.insertText(fragment);
-  } else {
-      setTextCursor(destCursor);
-      return;
-    } else {
-      //      for (int i=0;i<fragment.size();i++)
-      //	destCursor.deleteChar();
-      destCursor.insertText(fragment);
-    }
-  }    
-  setTextCursor(destCursor);
-#endif
 }
 
 void QTTerm::Flush() {
   if (putbuf.isEmpty()) return;
-  qDebug() << "flush";
-  string yoo(putbuf.toStdString());
-  putbuf.replace(QRegExp("[\r]+\n"),"\n");
-  if (!putbuf.contains('\r')) 
-    Output(putbuf);
-  else {
-    string foo(putbuf.toStdString());
-    QStringList pbuft(putbuf.split('\r'));
-    for (int i=0;i<pbuft.size();i++) {
-      qDebug() << "Fragment: " << pbuft[i];
-      Output(pbuft[i]);
-      destCursor.movePosition(QTextCursor::StartOfLine);
-      setTextCursor(destCursor);
+  if (putbuf.contains('\r')) {
+    QStringList tfrags(putbuf.split('\r'));
+    for (int i=0;i<tfrags.size();i++) {
+      Output(tfrags[i]);
+      if (i < (tfrags.size()-1)) 
+	MoveBOL();
     }
-  }
-  ensureCursorVisible();
+  } else 
+    destCursor.insertText(putbuf);
   putbuf.clear();
+  ensureCursorVisible();
 }
 
 void QTTerm::clearSelection() {

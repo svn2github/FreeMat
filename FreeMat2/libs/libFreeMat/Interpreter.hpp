@@ -361,6 +361,10 @@ public:
    */
   void outputMessage(string msg);
   /**
+   * Flush the output buffers
+   */
+  void flushOutput();
+  /**
    * Output the following error message.
    */
   void errorMessage(string msg);
@@ -536,6 +540,10 @@ signals:
    * Send a string of text to a terminal somewhere
    */
   void outputRawText(string);
+  /**
+   * Flush the I/O buffers
+   */ 
+  void Flush();
   /**
    * User has changed the current working directory
    */

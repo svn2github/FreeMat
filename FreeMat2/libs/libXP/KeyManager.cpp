@@ -475,7 +475,7 @@ void KeyManager::OutputChar(char c, char pad) {
   /*
    * Write the string to the terminal.
    */
-  emit OutputRawString(string);
+  emit OutputRawStringImmediate(string);
   /*
    * Except for one exception to be described in a moment, the cursor should
    * now have been positioned after the character that was just output.
@@ -524,7 +524,7 @@ void KeyManager::ResetLineBuffer() {
 void KeyManager::NewLine() {
   AddHistory(lineData);
   PlaceCursor(ntotal);
-  emit OutputRawString("\r\n");
+  emit OutputRawStringImmediate("\r\n");
   emit ExecuteLine(lineData + "\n");
   ReplacePrompt("");
   ResetLineBuffer();
@@ -1072,7 +1072,11 @@ void KeyManager::RegisterTerm(QObject* term) {
   connect(this,SIGNAL(ClearEOL()),term,SLOT(ClearEOL()));
   connect(this,SIGNAL(ClearEOD()),term,SLOT(ClearEOD()));
   connect(this,SIGNAL(MoveBOL()),term,SLOT(MoveBOL()));
-  connect(this,SIGNAL(OutputRawString(string)),term,SLOT(OutputRawString(string)));
+  connect(this,SIGNAL(OutputRawString(string)),term,
+	  SLOT(OutputRawString(string)));
+  connect(this,SIGNAL(OutputRawStringImmediate(string)),term,
+	  SLOT(OutputRawStringImmediate(string)));
+  connect(this,SIGNAL(Flush()),term,SLOT(Flush()));
   connect(this,SIGNAL(ClearDisplay()),term,SLOT(ClearDisplay()));
   connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
   connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  

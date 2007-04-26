@@ -70,10 +70,18 @@
 void FuncTerminal::ClearDisplay() {
 }
 
-  void FuncTerminal::OutputRawString(string txt) {
-    printf("%s",txt.c_str());
-    fflush(stdout);
-  }
+void FuncTerminal::OutputRawString(string txt) {
+  printf("%s",txt.c_str());
+}
+  
+void FuncTerminal::OutputRawStringImmediate(string txt) {
+  printf("%s",txt.c_str());
+  fflush(stdout);
+}
+  
+void FuncTerminal::Flush() {
+  fflush(stdout);
+}
   
   char* FuncTerminal::getLine(string prompt) {
     if (!line_sent) {

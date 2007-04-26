@@ -59,6 +59,7 @@ protected:
   void MoveBOL();
   void ClearDisplay();
   void OutputRawString(string txt);
+  void OutputRawStringImmediate(string txt);
   void Flush();
 signals:
  void OnChar(int c);

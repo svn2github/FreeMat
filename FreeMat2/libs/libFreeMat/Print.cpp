@@ -419,7 +419,7 @@ void PrintSheet(ArrayFormat format, Interpreter*io, int rows, int columns,
   if (aclass != FM_STRING)
     colsPerPage = (int) floor((termWidth-1)/((double) format.width + 3));
   else
-    colsPerPage = termWidth;
+    colsPerPage = (termWidth-1);
   colsPerPage = (colsPerPage < 1) ? 1 : colsPerPage;
   int pageCount;
   pageCount = (int) ceil(columns/((double)colsPerPage));

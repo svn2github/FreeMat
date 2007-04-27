@@ -11,6 +11,7 @@ BUILT_SOURCES = $(libGraphics_a_MOC)
 libGraphics_a_HFILES = GLRenderEngine.hpp \
 HandleAxis.hpp \
 HandleCommands.hpp \
+HandleContour.hpp \
 HandleFigure.hpp \
 HandleImage.hpp \
 HandleLineSeries.hpp \
@@ -27,6 +28,7 @@ HandleMultiEdit.hpp
 libGraphics_a_SOURCES = GLRenderEngine.cpp \
 HandleAxis.cpp \
 HandleCommands.cpp \
+HandleContour.cpp \
 HandleFigure.cpp \
 HandleImage.cpp \
 HandleLineSeries.cpp \

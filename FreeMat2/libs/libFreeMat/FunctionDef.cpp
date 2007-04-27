@@ -184,32 +184,30 @@ void MFunctionDef::printMe(Interpreter*eval) {
 
 
 #warning - This design causes an unneccesary copy - should use readonly pass first
-void CaptureFunctionPointer(FuncPtr val, Interpreter *walker, 
+void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker, 
 			    MFunctionDef *parent, ScopePtr workspace) {
   if (val->type() == FM_M_FUNCTION) {
     MFunctionDef* mptr = (MFunctionDef*) val;
     if (mptr->nestedFunction && !mptr->capturedFunction) {
+      MFunctionDef* optr = new MFunctionDef;
+      (*optr) = (*mptr);
       Context* context = walker->getContext();
       ScopePtr myScope = context->getCurrentScope();
       context->bypassScope(1);
       ScopePtr parentScope = context->getCurrentScope();
       context->restoreScope(1);
-      cout << "Capture: " << myScope->getName() << "   ...  " << parentScope->getName() << "\r\n";
       if (!parentScope->nests(myScope)) {
-	cout << "need to capture " << mptr->name << "\r\n";
-	cout << "Parent scope is " << parentScope->getName() << "\r\n";
-	cout << "my scope is " << myScope->getName() << "\r\n";
 	// Now capture the variables in our current scope
-	for (int i=0;i<mptr->variablesAccessed.size();i++) {
-	  ArrayReference ptr(context->lookupVariable(mptr->variablesAccessed[i]));
+	for (int i=0;i<optr->variablesAccessed.size();i++) {
+	  ArrayReference ptr(context->lookupVariable(optr->variablesAccessed[i]));
 	  if (ptr.valid()) {
-	    cout << "Captured VAR: " << mptr->variablesAccessed[i] << "\r\n";
-	    workspace->insertVariable(mptr->variablesAccessed[i],*ptr);
+	    workspace->insertVariable(optr->variablesAccessed[i],*ptr);
 	  }
 	}
-	mptr->workspace = workspace;
-	mptr->capturedFunction = true;
+	optr->workspace = workspace;
+	optr->capturedFunction = true;
       }
+      val = optr;
     }
   }
 }
@@ -476,12 +474,9 @@ void RegisterNested(const tree &t, Interpreter *m_eval, MFunctionDef *parent) {
     fp->nestedFunction = true;
     fp->returnVals = IdentifierList(t.first());
     fp->name = parent->name + "/" + t.second().text();
-    cout << "Registering: " << fp->name << "\r\n";
     fp->arguments = IdentifierList(t.child(2));
     fp->code = t.child(3);
     VariableReferencesList(fp->code,fp->variablesAccessed);
-    fp->code.print();
-    cout << "Done Registering: " << fp->name << "\r\n";
     fp->fileName = parent->fileName;
     // Register any nested functions for the local functions
     m_eval->getContext()->insertFunction(fp,parent->temporaryFlag);
@@ -553,10 +548,7 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	code = MainFuncCode.child(3);
 	VariableReferencesList(code,variablesAccessed);
 	// Register any nested functions
-	cout << "Name: " << name << " Code:\r\n";
-	code.print();
 	RegisterNested(code,m_eval,this);
-	cout << "Registration complete...\r\n";
 	localFunction = false;
 	// Process the local functions
 	for (int index = 1;index < pcode.numchildren();index++) {

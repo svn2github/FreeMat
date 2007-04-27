@@ -34,6 +34,7 @@ class QTTerm :  public QTextEdit {
   QFont fnt;
   int m_char_w;
   int m_twidth;
+  bool flushing;
 public:
   QTTerm(QWidget *parent);
 

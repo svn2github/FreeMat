@@ -1020,13 +1020,13 @@ void KeyManager::QueueMultiString(QString t) {
   QStringList tlist(t.split("\n"));
   for (int i=0;i<tlist.size()-1;i++) {
     string t(tlist[i].toStdString());
-    emit OutputRawString(t+"\r\n");
+    emit OutputRawStringImmediate(t+"\r\n");
     emit ExecuteLine(t+"\n");
     AddHistory(t);
   }
   if (t.endsWith('\n')) {
     string t(tlist.back().toStdString());
-    emit OutputRawString(t+"\r\n");
+    emit OutputRawStringImmediate(t+"\r\n");
     emit ExecuteLine(t+"\n");
     AddHistory(t);
   }  else {
@@ -1038,7 +1038,7 @@ void KeyManager::QueueMultiString(QString t) {
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   AddHistory(t.toStdString());
-  emit OutputRawString("\r\n");
+  emit OutputRawStringImmediate("\r\n");
   emit ExecuteLine(lineData+"\n");
   ResetLineBuffer();
   DisplayPrompt();

@@ -37,6 +37,7 @@
 #include "HandleList.hpp"
 #include "HandleSurface.hpp"
 #include "HandleWindow.hpp"
+#include "HandleContour.hpp"
 #include "HandleUIControl.hpp"
 #include "QTRenderEngine.hpp"
 #include "Interpreter.hpp"
@@ -503,7 +504,11 @@ unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
 ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleLineSeries,arg)));
 }
-  
+
+ArrayVector HContourFunction(int nargout, const ArrayVector& arg) {
+  return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleContour,arg)));
+}
+
 //!
 //@Module UICONTROL Create a UI Control object
 //@@Section HANDLE
@@ -1274,6 +1279,7 @@ ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(Array::logicalConstructor(axis->Is2DView()));
 }
 
+#if 0
 class contour_point {
 public:
   double x;
@@ -1428,6 +1434,7 @@ ArrayVector ContourCFunction(int nargout, const ArrayVector& arg) {
   }
   return ArrayVector() << out;
 }
+#endif 
 
 void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,"x",NULL);
@@ -1435,6 +1442,7 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("hline",HLineFunction,-1,1,NULL);
   context->addGfxFunction("htext",HTextFunction,-1,1,NULL);
   context->addGfxFunction("himage",HImageFunction,-1,1,NULL);
+  context->addGfxFunction("hcontour",HContourFunction,-1,1,NULL);
   context->addGfxFunction("surface",HSurfaceFunction,-1,1,NULL);
   context->addGfxFunction("set",HSetFunction,-1,0,NULL);
   context->addGfxFunction("get",HGetFunction,2,1,"handle","propname",NULL);
@@ -1448,7 +1456,7 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("copy",HCopyFunction,0,0,NULL);
   context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
   context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
-  context->addFunction("contourc",ContourCFunction,2,1,"z","v",NULL);
+  //  context->addFunction("contourc",ContourCFunction,2,1,"z","v",NULL);
   //  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
   InitializeHandleGraphics();
 };

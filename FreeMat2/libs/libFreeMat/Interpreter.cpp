@@ -323,7 +323,6 @@ static std::string LocalMangleName(std::string cfunc, std::string fname) {
 }
 
 static std::string NestedMangleName(std::string cfunc, std::string fname) {
-  cout << "Nested mangle name = " << cfunc + "/" + fname << "\r\n";
   return cfunc + "/" + fname;
 }
 
@@ -4980,7 +4979,6 @@ void Interpreter::evaluateString(string line, bool propogateExceptions) {
   Parser P(S);
   try{
     t = P.Process();
-    t.print();
     if (!t.is(TOK_SCRIPT))
       throw Exception("Function definition unexpected!");
     t = t.first();

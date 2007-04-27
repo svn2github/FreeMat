@@ -35,6 +35,7 @@ QTTerm::QTTerm(QWidget *parent) : QTextEdit(parent) {
   autoFlush = new QTimer(this);
   connect(autoFlush,SIGNAL(timeout()),this,SLOT(Flush()));
   destCursor = textCursor();
+  setUndoRedoEnabled(false);
 
 #ifdef __APPLE__
   QFont afont("Monaco",10);
@@ -45,6 +46,7 @@ QTTerm::QTTerm(QWidget *parent) : QTextEdit(parent) {
 #endif
   setFont(afont);
   autoFlush->start(50);
+  flushing = false;
 }
 
 void QTTerm::resizeEvent(QResizeEvent *e) {
@@ -267,6 +269,8 @@ void QTTerm::Output(QString fragment) {
 
 void QTTerm::Flush() {
   if (putbuf.isEmpty()) return;
+  if (flushing) return;
+  flushing = true;
   if (putbuf.contains('\r')) {
     QStringList tfrags(putbuf.split('\r'));
     for (int i=0;i<tfrags.size();i++) {
@@ -274,10 +278,12 @@ void QTTerm::Flush() {
       if (i < (tfrags.size()-1)) 
 	MoveBOL();
     }
-  } else 
+  } else {
     destCursor.insertText(putbuf);
+  }
   putbuf.clear();
   ensureCursorVisible();
+  flushing = false;
 }
 
 void QTTerm::clearSelection() {

@@ -37,6 +37,8 @@ ZLIB="zlib-1.2.3"
 XWIN_NSIS="nsis-2.22-setup.exe"
 PCRE_FILE="pcre-7.0.tar.gz"
 PCRE="pcre-7.0"
+PORTAUDIO_FILE="pa_stable_v19_061121.tar.gz"
+PORTAUDIO="portaudio"
 
 MakeDirectory()
 {
@@ -374,6 +376,13 @@ SetupPCRE()
     DownloadAndUnpackTarBall $PCRE_FILE ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre $PCRE Root
     ConfigureMakeInstall $PCRE "--prefix=$PREFIX" . Root
     rm -rf $BASE/Build/lib/lib*.dylib
+}
+
+SetupPortAudio()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $PORTAUDIO_FILE http://www.portaudio.com/archives $PORTAUDIO Root
+    ConfigureMakeInstall $PORTAUDIO "--prefix=$PREFIX" . Root
 }
 
 SetupFFTW()
@@ -907,6 +916,7 @@ subdirectory.  Here are the tasks manages by this script.
       --zlib             Setup zlib
       --freemat          Setup FreeMat
       --rpm              Setup FreeMat RPM
+      --portaudio        Setup PortAudio
       --all
 
       --release          Do a sequence of build-steps (maintainer stuff)
@@ -961,7 +971,7 @@ for arg
       --zlib)          SetupZlib ;;
       --freemat)       SetupFreeMat ;;
       --rpm)           SetupRPM ;;
-
+      --portaudio)     SetupPortAudio ;;
       --all)           SetupAll ;;
       --release)       SetupRelease ;;
       --mac-qt)        SetupMacQt ;;

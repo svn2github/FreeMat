@@ -26,10 +26,14 @@ class tagChar
   bool operator == (const tagChar& b) {return (v==b.v) && (flags==b.flags);};
 };
 
+typedef QList<tagChar> tagLine;
+typedef QList<tagLine> tagBuffer;
+
 class TermWidget : public QFrame
 {
   Q_OBJECT
 
+    t
   tagChar* m_surface;  // width x height
   int m_height;        // height of terminal in characters
   int m_width;         // width of terminal in characters

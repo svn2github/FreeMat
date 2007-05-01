@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'term2.hpp'
 **
-** Created: Sun Apr 29 23:20:12 2007
+** Created: Mon Apr 30 22:12:37 2007
 **      by: The Qt Meta Object Compiler version 59 (Qt 4.2.3)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -34,7 +34,7 @@ static const char qt_meta_stringdata_QScreen[] = {
 };
 
 const QMetaObject QScreen::staticMetaObject = {
-    { &QWidget::staticMetaObject, qt_meta_stringdata_QScreen,
+    { &QAbstractScrollArea::staticMetaObject, qt_meta_stringdata_QScreen,
       qt_meta_data_QScreen, 0 }
 };
 
@@ -48,12 +48,12 @@ void *QScreen::qt_metacast(const char *_clname)
     if (!_clname) return 0;
     if (!strcmp(_clname, qt_meta_stringdata_QScreen))
 	return static_cast<void*>(const_cast< QScreen*>(this));
-    return QWidget::qt_metacast(_clname);
+    return QAbstractScrollArea::qt_metacast(_clname);
 }
 
 int QScreen::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QAbstractScrollArea::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     return _id;

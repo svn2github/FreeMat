@@ -30,8 +30,6 @@ public:
   virtual void Initialize();
   virtual void RestoreOriginalMode();
   virtual void OutputRawString(string txt); 
-  virtual void OutputRawStringImmediate(string txt); 
-  virtual void Flush();
   virtual char* getLine(string prompt);
   virtual void ResizeEvent();
   virtual void MoveDown();

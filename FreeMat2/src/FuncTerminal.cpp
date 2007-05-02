@@ -20,77 +20,69 @@
 #include <qapplication.h>
 #include <qeventloop.h>
 
-  FuncTerminal::FuncTerminal(char *myargv[], int myargc, int funcMode) {
-    sprintf(m_buffer,"%s",myargv[funcMode+1]);
-    for (int i=funcMode+2;i<myargc;i++) {
-      strcat(m_buffer," ");
-      strcat(m_buffer,myargv[i]);
-    }
-    strcat(m_buffer,"\n");
-    line_sent = false;
+FuncTerminal::FuncTerminal(char *myargv[], int myargc, int funcMode) {
+  sprintf(m_buffer,"%s",myargv[funcMode+1]);
+  for (int i=funcMode+2;i<myargc;i++) {
+    strcat(m_buffer," ");
+    strcat(m_buffer,myargv[i]);
   }
+  strcat(m_buffer,"\n");
+  line_sent = false;
+}
 
-  void FuncTerminal::Initialize() {
-  }
+void FuncTerminal::Initialize() {
+}
 
-  void FuncTerminal::RestoreOriginalMode() {
-  }
+void FuncTerminal::RestoreOriginalMode() {
+}
 
-  FuncTerminal::~FuncTerminal() {
-  }
+FuncTerminal::~FuncTerminal() {
+}
   
-  void FuncTerminal::ResizeEvent() {
-  }
+void FuncTerminal::ResizeEvent() {
+}
 
-  void FuncTerminal::MoveDown() {
-    printf("\n");
-    fflush(stdout);
-  }
+void FuncTerminal::MoveDown() {
+  printf("\n");
+  fflush(stdout);
+}
 
-  void FuncTerminal::MoveUp() {
-  }
+void FuncTerminal::MoveUp() {
+}
 
-  void FuncTerminal::MoveRight() {
-  }
+void FuncTerminal::MoveRight() {
+}
 
-  void FuncTerminal::MoveLeft() {
-  }
+void FuncTerminal::MoveLeft() {
+}
 
-  void FuncTerminal::ClearEOL() {
-  }
+void FuncTerminal::ClearEOL() {
+}
 
-  void FuncTerminal::ClearEOD() {
-  }
+void FuncTerminal::ClearEOD() {
+}
 
-  void FuncTerminal::MoveBOL() {
-    putchar('\r');
-    fflush(stdout);
-  }
+void FuncTerminal::MoveBOL() {
+  putchar('\r');
+  fflush(stdout);
+}
 
 void FuncTerminal::ClearDisplay() {
 }
 
 void FuncTerminal::OutputRawString(string txt) {
   printf("%s",txt.c_str());
-}
-  
-void FuncTerminal::OutputRawStringImmediate(string txt) {
-  printf("%s",txt.c_str());
   fflush(stdout);
 }
   
-void FuncTerminal::Flush() {
-  fflush(stdout);
+char* FuncTerminal::getLine(string prompt) {
+  if (!line_sent) {
+    line_sent = true;
+    return strdup(m_buffer);
+  } else
+    return strdup("quit;\n");
 }
-  
-  char* FuncTerminal::getLine(string prompt) {
-    if (!line_sent) {
-      line_sent = true;
-      return strdup(m_buffer);
-    } else
-      return strdup("quit;\n");
-  }
 
-  int FuncTerminal::getTerminalWidth() {
-    return 80;
-  }
+int FuncTerminal::getTerminalWidth() {
+  return 80;
+}

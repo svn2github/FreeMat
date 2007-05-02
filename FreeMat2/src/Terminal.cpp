@@ -272,13 +272,6 @@ void Terminal::MoveBOL() {
 #endif
 }
 
-void Terminal::Flush() {
-}
-
-void Terminal::OutputRawStringImmediate(string txt) {
-  OutputRawString(txt);
-}
-
 void Terminal::OutputRawString(string txt) {
 #ifdef Q_WS_X11
   int ndone = 0;   /* The number of characters written so far */

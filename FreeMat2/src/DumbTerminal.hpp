@@ -38,9 +38,7 @@ public slots:
   void ClearEOD();
   void MoveBOL();
   void OutputRawString(string txt);
-  void OutputRawStringImmediate(string txt);
   void DoRead();
-  void Flush();
   void ClearDisplay();
 signals:
   void OnChar(int c);

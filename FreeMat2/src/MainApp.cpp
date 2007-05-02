@@ -101,7 +101,7 @@ void MainApp::HelpWin() {
 
 void MainApp::SetupGUICase() {
   m_win = new ApplicationWindow;
-  QTTerm *gui = new QTTerm(NULL);
+  QTTerm *gui = new QTTerm;
   m_keys->RegisterTerm(gui);
   m_win->SetGUITerminal(gui);
   m_win->SetKeyManager(m_keys);

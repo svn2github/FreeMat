@@ -21,46 +21,296 @@
 #include <qapplication.h>
 #include <qclipboard.h>
 #include <math.h>
-#include <QKeyEvent>
-#include <QDebug>
-#include <iostream>
+#include <QtGui>
 
-QTTerm::QTTerm(QWidget *parent) : QTextEdit(parent) {
-  setObjectName("qtterm");
-  setMinimumSize(100,100);
-  setLineWrapMode(QTextEdit::WidgetWidth);
-  setCursorWidth(10);
-  setOverwriteMode(true);
-  setWordWrapMode(QTextOption::NoWrap);
-  autoFlush = new QTimer(this);
-  connect(autoFlush,SIGNAL(timeout()),this,SLOT(Flush()));
-  destCursor = textCursor();
-  setUndoRedoEnabled(false);
-
-#ifdef __APPLE__
-  QFont afont("Monaco",10);
-#elif WIN32
-  QFont afont("Lucida Console",10);
-#else
-  QFont afont("Monospace",10);
-#endif
-  setFont(afont);
-  autoFlush->start(50);
-  flushing = false;
+QTTerm::QTTerm() {
+  setMinimumSize(50,50);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  buffer << tagLine();
+  cursor_x = 0;
+  cursor_y = 0;
+  blinkEnable = true;
+  m_blink_skip = false;
+  m_timer_blink = new QTimer;
+  QObject::connect(m_timer_blink, SIGNAL(timeout()), this, SLOT(blink()));
+  QSettings settings("FreeMat", "FreeMat");
+  scrollback = settings.value("console/scrollback",5000).toInt();
+  m_timer_blink->start(settings.value("console/blinkspeed",1000).toInt());
+  fnt = QFont("Courier",10);
 }
 
-void QTTerm::resizeEvent(QResizeEvent *e) {
-  QTextEdit::resizeEvent(e);
-  UpdateTextWidth();  
+void QTTerm::blink() {
+  if (!blinkEnable) return;
+  if (m_blink_skip) {
+    m_blink_skip = false;
+    return;
+  }
+  buffer[cursor_y].data[cursor_x].toggleCursor();
+  viewport()->update();
 }
 
-void QTTerm::UpdateTextWidth() {
-  m_twidth = width()/m_char_w-5;
-  //  m_twidth = 50;
-  //  setLineWrapMode(QTextEdit::FixedColumnWidth);
-  //  setLineWrapColumnOrWidth(t_width);
-  setWordWrapMode(QTextOption::NoWrap);
-  emit SetTextWidth(m_twidth);
+void QTTerm::ensureCursorVisible() {
+  // For the cursor to be visible
+  // the scroll bar must be at 
+  // cursor_y - m_term_height + 1
+  int cscroll = verticalScrollBar()->value();
+  if ((cscroll < cursor_y) && 
+      (cursor_y < (cscroll+m_term_height-1))) return;
+  int minval = cursor_y-m_term_height+1;
+  verticalScrollBar()->setValue(minval);
+}
+
+void QTTerm::focusOutEvent(QFocusEvent *e) {
+  QWidget::focusOutEvent(e);
+  blinkEnable = false;
+  buffer[cursor_y].data[cursor_x].clearCursor();  
+  viewport()->update();
+}
+
+void QTTerm::focusInEvent(QFocusEvent *e) {
+  QWidget::focusInEvent(e);
+  buffer[cursor_y].data[cursor_x].setCursor();
+  viewport()->update();
+  blinkEnable = true;
+}
+
+void QTTerm::setChar(char t) {
+  if (t == '\r') {
+    MoveBOL();
+    return;
+  }
+  if (t == '\n') {
+    nextLine();
+    return;
+  }
+  blinkEnable = false;
+  buffer[cursor_y].data[cursor_x].clearCursor();
+  buffer[cursor_y].data[cursor_x++].v = t;
+  buffer[cursor_y].data[cursor_x].setCursor();
+  if (cursor_x >= m_term_width) {
+    nextLine(); 
+  } else {
+    ensureCursorVisible();
+    viewport()->update();
+  }
+  blinkEnable = true;
+  m_blink_skip = true;
+}
+
+void QTTerm::setFont(QFont font) {
+  fnt = font;
+  calcGeometry();
+}
+
+QFont QTTerm::getFont() {
+  return fnt;
+}
+
+void QTTerm::clearCursor() {
+  blinkEnable = false;
+  buffer[cursor_y].data[cursor_x].clearCursor();
+}
+
+void QTTerm::setCursor() {
+  buffer[cursor_y].data[cursor_x].setCursor();
+  ensureCursorVisible();
+  viewport()->update();
+  blinkEnable = true;
+  m_blink_skip = true;    
+}
+
+void QTTerm::MoveDown() {
+  clearCursor();
+  cursor_y++;
+  if (cursor_y >= buffer.size())
+    buffer << tagLine();
+  if (buffer.size() > scrollback) {
+    buffer.pop_front();
+    cursor_y--;
+  } else {
+    int cval = verticalScrollBar()->value();
+    verticalScrollBar()->setRange(0,qMax(0,qMax(verticalScrollBar()->maximum(),buffer.size()-m_term_height)));
+    verticalScrollBar()->setValue(cval);
+  }
+  setCursor();
+}
+
+void QTTerm::MoveBOL() {
+  clearCursor();
+  cursor_x = 0;
+  setCursor();
+}
+
+void QTTerm::MoveUp() {
+  clearCursor();
+  cursor_y = qMax(0,cursor_y-1);
+  setCursor();  
+}
+
+void QTTerm::MoveLeft() {
+  clearCursor();
+  cursor_x = qMax(0,cursor_x-1);
+  setCursor();
+}
+
+void QTTerm::MoveRight() {
+  clearCursor();
+  cursor_x = qMin(m_term_width-1,cursor_x+1);
+  setCursor();
+}
+
+void QTTerm::ClearEOL() {
+  for (int j=cursor_x;j<m_term_width-1;j++) {
+    buffer[cursor_y].data[j].v = ' ';
+    buffer[cursor_y].data[j].flags = 0;
+  }
+  viewport()->update();
+}
+
+void QTTerm::ClearEOD() {
+  ClearEOL();
+  for (int i=cursor_y+1;i<buffer.size();i++) {
+    for (int j=0;j<m_term_width-1;j++) {
+      buffer[i].data[j].v = ' ';
+      buffer[i].data[j].flags = 0;
+    }
+  }
+  viewport()->update();
+}
+
+void QTTerm::ClearDisplay() {
+  blinkEnable = false;
+  buffer.clear();
+  buffer << tagLine();
+  cursor_y = 0;
+  cursor_x = 0;
+  verticalScrollBar()->setRange(0,buffer.size()-m_term_height);
+  verticalScrollBar()->setValue(0);
+  viewport()->update();
+  setCursor();
+}
+
+void QTTerm::nextLine() {
+  MoveBOL();
+  MoveDown();
+  cursor_x = 0;
+  viewport()->update();
+}
+
+void QTTerm::drawLine(int linenum, QPainter *e, int yval) {
+  QString outd;
+  tagLine todraw(buffer[linenum]);
+  char gflags = 0;
+  int frag_start = 0;
+  for (int col=0;col<m_term_width;col++) {
+    tagChar g(todraw.data[col]);
+    if (g.mflags() != gflags) {
+      drawFragment(e,outd,gflags,yval,frag_start);
+      gflags = g.mflags();
+      frag_start = col;
+      outd.clear();
+      outd.append(g.v);
+    } else
+      outd.append(g.v);
+  }
+  drawFragment(e,outd,gflags,yval,frag_start);
+}
+
+void QTTerm::mousePressEvent( QMouseEvent *e ) {
+  // Get the x and y coordinates of the mouse click - map that
+  // to a row and column
+  int clickcol = e->x()/m_char_w;
+  int clickrow = e->y()/m_char_h;
+  selectionStart = verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width;
+  selectionStart = qMax(0,selectionStart);
+  selectionStop = selectionStart;
+}
+
+void QTTerm::clearSelection() {
+  // clear the selection bits
+  for (int i=0;i<buffer.size();i++) {
+    for (int j=0;j<maxlen;j++) {
+      buffer[i].data[j].clearSelection();
+    }
+  }
+}
+
+void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
+  if (!e->buttons())
+    return;
+  int x = e->x();
+  int y = e->y();
+  if (y < 0) 
+     verticalScrollBar()->setValue(verticalScrollBar()->value()-1);
+   if (y > height())
+     verticalScrollBar()->setValue(verticalScrollBar()->value()+1);
+  // Get the position of the click
+  // to a row and column
+  int clickcol = x/m_char_w;
+  int clickrow = y/m_char_h;
+  selectionStop = verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width;
+  selectionStop = qMax(0,selectionStop);
+
+  clearSelection();
+
+  int lSelectionStart = selectionStart;
+  int lSelectionStop = selectionStop;
+  if (lSelectionStart > lSelectionStop) 
+    qSwap(lSelectionStop,lSelectionStart);
+
+  int sel_row_start = lSelectionStart/m_term_width;
+  int sel_col_start = lSelectionStart % m_term_width;
+  int sel_row_stop = lSelectionStop/m_term_width;
+  int sel_col_stop = lSelectionStop % m_term_width;
+
+  sel_row_start = qMin(sel_row_start,buffer.size()-1);
+  sel_row_stop = qMin(sel_row_stop,buffer.size()-1);
+
+  if (sel_row_stop == sel_row_start) {
+    for (int j=sel_col_start;j<sel_col_stop;j++)
+      buffer[sel_row_start].data[j].setSelection();
+  } else {
+    for (int j=sel_col_start;j<m_term_width;j++) {
+      buffer[sel_row_start].data[j].setSelection();
+    }
+    for (int i=sel_row_start+1;i<sel_row_stop;i++) 
+      for (int j=0;j<m_term_width;j++) {
+	buffer[i].data[j].setSelection();
+      }
+    for (int j=0;j<sel_col_stop;j++)
+      buffer[sel_row_stop].data[j].setSelection();
+  }
+  viewport()->update();
+}
+
+void QTTerm::mouseReleaseEvent( QMouseEvent *e ) {
+  QClipboard *cb = QApplication::clipboard();
+  if (!cb->supportsSelection())
+    return;
+  cb->setText(getSelectionText(), QClipboard::Selection);
+}
+
+void QTTerm::drawFragment(QPainter *paint, QString todraw, char flags, int row, int col) {
+  if (todraw.size() == 0) return;
+  QRect txtrect(col*m_char_w,row*m_char_h,(col+todraw.size())*m_char_w,m_char_h);
+  QPalette qp(qApp->palette());
+  if (flags == 0) {
+    paint->setPen(qp.color(QPalette::WindowText));
+    paint->setBackground(qp.brush(QPalette::Base));
+    paint->eraseRect(txtrect);
+    paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+  } else if (flags & CURSORBIT) {
+    paint->setPen(qp.color(QPalette::Base));
+    paint->setBackground(Qt::black);
+    paint->eraseRect(txtrect);
+    paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+  } else {
+    paint->setPen(qp.color(QPalette::HighlightedText));
+    paint->setBackground(qp.brush(QPalette::Highlight));
+    paint->eraseRect(txtrect);
+    paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+  }
 }
 
 #ifndef __APPLE__
@@ -69,27 +319,6 @@ void QTTerm::UpdateTextWidth() {
 #define CTRLKEY(x)  else if ((keycode == x) && (e->modifiers() & Qt::MetaModifier))
 #endif
 
-void QTTerm::setFont(QFont font) {
-  fnt = font;
-  QTextCursor cur(textCursor());
-  cur.movePosition(QTextCursor::Start);
-  cur.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
-  QTextCharFormat cfrmt(cur.charFormat());
-  cfrmt.setFont(font);
-  cur.setCharFormat(cfrmt);
-  destCursor.setCharFormat(cfrmt);
-  destCursor.setBlockCharFormat(cfrmt);
-  setTextCursor(cur);
-  setCurrentFont(fnt);
-  QFontMetrics fmi(fnt);
-  m_char_w = fmi.width("w");
-  setCursorWidth(m_char_w);
-  UpdateTextWidth();
-}
-
-QFont QTTerm::getFont() {
-  return fnt;
-}
 
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   int keycode = e->key(); 
@@ -102,7 +331,7 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
     emit OnChar(KM_CTRLA);
   CTRLKEY('D')
     emit OnChar(KM_CTRLD); 
- CTRLKEY('E')
+  CTRLKEY('E')
     emit OnChar(KM_CTRLE);
   CTRLKEY('K')
     emit OnChar(KM_CTRLK);
@@ -122,10 +351,8 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
     emit OnChar(KM_HOME);
   else if (keycode == Qt::Key_End)
     emit OnChar(KM_END);
-  else if (keycode == Qt::Key_Return) {
+  else if (keycode == Qt::Key_Return)
     emit OnChar(KM_NEWLINE);
-    adjustScrollback();
-  }
   else if (keycode == Qt::Key_Backspace)
     emit OnChar(KM_BACKSPACE);
   else {
@@ -143,151 +370,73 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
   }
 }
 
-void QTTerm::adjustScrollback() {
-  QTextCursor cur(textCursor());
-  if (cur.position() > 100000) {
-    // Moved beyond the scroll back limit
-    int toDel = cur.position() - 90000;
-    QTextCursor del(textCursor());
-    del.movePosition(QTextCursor::Start);
-    while (del.position() < toDel) {
-      del.movePosition(QTextCursor::Down,QTextCursor::KeepAnchor);
-    }
-    del.removeSelectedText();
+void QTTerm::OutputRawString(string txt) {
+  for (int i=0;i<txt.size();i++)
+    setChar(txt[i]);
+}
+
+void QTTerm::calcGeometry() {
+  QFontMetrics fmi(fnt);
+  m_char_w = fmi.width("w");
+  m_char_h = fmi.height();
+  m_term_width = viewport()->width()/m_char_w - 1;
+  m_term_height = viewport()->height()/m_char_h;
+  emit SetTextWidth(m_term_width);
+}
+
+void QTTerm::resizeEvent(QResizeEvent *e) {
+  QAbstractScrollArea::resizeEvent(e);
+  calcGeometry();
+  clearSelection();
+  ensureCursorVisible();
+  // If we are in a full buffer situation, put the scroller in the right spot
+  if (buffer.size() >= scrollback) {
+    verticalScrollBar()->setRange(0,buffer.size()-m_term_height);
+    verticalScrollBar()->setValue(cursor_y-m_term_height+1);
+  } else {
+    int cval = verticalScrollBar()->value();
+    verticalScrollBar()->setRange(0,qMax(cval,buffer.size()-m_term_height));
+    verticalScrollBar()->setValue(cval);
   }
 }
 
-void QTTerm::MoveDown() {
-  QTextCursor mark(destCursor);
-  destCursor.movePosition(QTextCursor::Down);
-  if (destCursor.position() == mark.position()) {
-    // Couldn't move down (out of text).  Have to 
-    // add a new line
-    QTextCursor q(mark);
-    q.movePosition(QTextCursor::StartOfLine);
-    destCursor.movePosition(QTextCursor::EndOfLine);
-    destCursor.insertText("\n");
-    destCursor.insertText(QString(mark.position()-q.position(),' '));
-  }
-  setTextCursor(destCursor);
-}
-
-void QTTerm::MoveUp() {
-  destCursor.movePosition(QTextCursor::Up);
-  setTextCursor(destCursor);
-}
-
-void QTTerm::MoveLeft() {
-  destCursor.movePosition(QTextCursor::Left);
-  setTextCursor(destCursor);
-}
-
-void QTTerm::MoveRight() {
-  destCursor.movePosition(QTextCursor::Right);
-  setTextCursor(destCursor);
-}
-
-void QTTerm::MoveBOL() {
-  destCursor.movePosition(QTextCursor::StartOfLine);
-  setTextCursor(destCursor);
-}
-
-void QTTerm::ClearDisplay() {
-  destCursor.movePosition(QTextCursor::Start);
-  destCursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
-  destCursor.removeSelectedText();
-  setTextCursor(destCursor);
+void QTTerm::paintEvent(QPaintEvent *e) {
+  QPainter p(viewport());
+  p.setFont(fnt);
+  //  qDebug() << "Current font: " << p.font().toString();
+//   p.setBackground(qApp->palette().brush(QPalette::Highlight));
+//   p.setPen(qApp->palette().color(QPalette::HighlightedText));
+  int offset = verticalScrollBar()->value();
+  //  qDebug() << "offset = " << offset;
+  for (int i=0;i<m_term_height;i++) 
+    if ((i+offset) < buffer.size())
+      drawLine(i+offset,&p,i);
 }
 
 QString QTTerm::getAllText() {
-  QTextCursor cur(textCursor());
-  cur.movePosition(QTextCursor::Start);
-  cur.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
-  return cur.selectedText();
+  QString ret;
+  for (int i=0;i<buffer.size();i++) {
+    for (int j=0;j<maxlen;j++)
+      ret += buffer[i].data[j].v;
+    ret += '\n';
+  }
+  ret.replace(QRegExp(" +\\n"),"\n");
+  return ret;
 }
 
 QString QTTerm::getSelectionText() {
-  return textCursor().selectedText();
-}
-
-void QTTerm::ClearEOL() {
-  destCursor.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor);
-  destCursor.removeSelectedText();
-  setTextCursor(destCursor);
-}
-
-void QTTerm::ClearEOD() {
-  destCursor.movePosition(QTextCursor::End,QTextCursor::KeepAnchor);
-  destCursor.removeSelectedText();
-  setTextCursor(destCursor);
-}
-
-void QTTerm::OutputRawStringImmediate(string txt) {
-  Flush();
-  QString emitText(QString::fromStdString(txt));
-  emitText.replace(QRegExp("[\r]+\n"),"\n");
-  QStringList frags(emitText.split('\n'));
-  if (!emitText.contains('\n'))
-    Output(emitText);
-  else {
-    int fragCount = frags.size();
-    for (int i=0;i<fragCount;i++) {
-      Output(frags[i]);
-      if (i < fragCount-1) Output("\n");
-    }
+  QString ret;
+  for (int i=0;i<buffer.size();i++) {
+    bool lineHasSelectedText = false;
+    for (int j=0;j<maxlen;j++)
+      if (buffer[i].data[j].selected()) {
+	ret += buffer[i].data[j].v;
+	lineHasSelectedText = true;
+      }
+    if (lineHasSelectedText)
+      ret += '\n';
   }
+  ret.replace(QRegExp(" +\\n"),"\n");
+  return ret;
 }
 
-void QTTerm::OutputRawString(string txt) {
-  QString emitText(QString::fromStdString(txt));
-  emitText.replace(QRegExp("[\r]+\n"),"\n");
-  putbuf += emitText;
-}
-
-void QTTerm::Output(QString fragment) {
-  if (fragment.isEmpty()) return;
-  QTextCursor mark;
-  if (fragment == "\n") {
-    destCursor.movePosition(QTextCursor::EndOfLine);
-    destCursor.insertText("\n");
-  } else {
-    mark = destCursor;
-    mark.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,fragment.size());
-    mark.removeSelectedText();
-    destCursor.insertText(fragment);
-  }
-  mark = destCursor;
-  mark.movePosition(QTextCursor::StartOfLine);
-  int ccol = destCursor.position() - mark.position();
-  if (ccol >= m_twidth) {
-    MoveBOL();
-    MoveDown();
-  }
-  setTextCursor(destCursor);
-  return;
-}
-
-void QTTerm::Flush() {
-  if (putbuf.isEmpty()) return;
-  if (flushing) return;
-  flushing = true;
-  if (putbuf.contains('\r')) {
-    QStringList tfrags(putbuf.split('\r'));
-    for (int i=0;i<tfrags.size();i++) {
-      Output(tfrags[i]);
-      if (i < (tfrags.size()-1)) 
-	MoveBOL();
-    }
-  } else {
-    destCursor.insertText(putbuf);
-  }
-  putbuf.clear();
-  ensureCursorVisible();
-  flushing = false;
-}
-
-void QTTerm::clearSelection() {
-  QTextCursor cur(textCursor());
-  cur.clearSelection();
-  setTextCursor(cur);
-}

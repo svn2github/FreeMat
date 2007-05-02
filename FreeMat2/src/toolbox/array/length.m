@@ -22,4 +22,9 @@
 % Copyright (c) 2002-2006 Samit Basu
 
 function len = length(x)
-len = max(size(x));
+if (isempty(x))
+  len = 0;
+else
+  len = max(size(x));
+end
+  

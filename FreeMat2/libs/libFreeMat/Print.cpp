@@ -507,7 +507,7 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io,
 				       std::min(printlimit,A.getLength())));
     if (Adims.getLength() == 2) {
       int rows = Adims.getRows();
-      int columns = Adims.getColumns();
+      int columns = Adims.getColumns(); 
       PrintSheet(format,io,rows,columns,0,A.getDataPointer(),Aclass,termWidth,printlimit);
     } else if (Adims.getLength() > 2) {
       /**

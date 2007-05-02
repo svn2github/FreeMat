@@ -361,10 +361,6 @@ public:
    */
   void outputMessage(string msg);
   /**
-   * Flush the output buffers
-   */
-  void flushOutput();
-  /**
    * Output the following error message.
    */
   void errorMessage(string msg);

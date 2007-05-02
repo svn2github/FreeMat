@@ -34,16 +34,51 @@ HandleContour::~HandleContour() {
 // form...
 // [xmin, xmax, ymin, ymax, zmin, zmax, cmin, cmax, amin, amax]
 std::vector<double> HandleContour::GetLimits() {
-  std::vector<double> xs(VectorPropertyLookup("xdata"));
-  std::vector<double> ys(VectorPropertyLookup("ydata"));
-  std::vector<double> zs(VectorPropertyLookup("zdata"));
+//   std::vector<double> xs(VectorPropertyLookup("xdata"));
+//   std::vector<double> ys(VectorPropertyLookup("ydata"));
+//  std::vector<double> zs(VectorPropertyLookup("zdata"));
   std::vector<double> limits;
-  limits.push_back(VecMin(xs));
-  limits.push_back(VecMax(xs));
-  limits.push_back(VecMin(ys));
-  limits.push_back(VecMax(ys));
-  limits.push_back(VecMin(zs));
-  limits.push_back(VecMax(zs));
+  bool initialized = false;
+  double xmin;
+  double xmax;
+  double ymin;
+  double ymax;
+  double zmin;
+  double zmax;
+  for (int i=0;i<pset.size();i++) {
+    // For each level.
+    lineset cset(pset[i]);
+    for (int j=0;j<cset.size();j++) {
+      cline aline(cset[j]);
+      for (int k=0;k<aline.size();k++) {
+	if (!initialized) {
+	  xmin = xmax = aline[k].x;
+	  ymin = ymax = aline[k].y;
+	  zmin = zmax = 0;
+	  initialized = true;
+	} else {
+	  xmin = qMin(xmin,aline[k].x);
+	  ymin = qMin(ymin,aline[k].y);
+	  xmax = qMax(xmax,aline[k].x);
+	  ymax = qMax(ymax,aline[k].y);
+	}
+      }
+    }
+  }
+  if (!initialized) {
+    xmin = -1;
+    xmax = 1;
+    ymin = -1;
+    ymax = 1;
+    zmin = 0;
+    zmax = 0;
+  }
+  limits.push_back(xmin);
+  limits.push_back(xmax);
+  limits.push_back(ymin);
+  limits.push_back(ymax);
+  limits.push_back(zmin);
+  limits.push_back(zmax);
   limits.push_back(0);
   limits.push_back(0);
   limits.push_back(0);
@@ -196,38 +231,45 @@ void HandleContour::PaintMe(RenderEngine& gc) {
     return;
   // Draw the line...
   double width(ScalarPropertyLookup("linewidth"));
-  gc.lineWidth(width);
-  HandleAxis *parent = (HandleAxis*) GetParentAxis();
-  for (int i=0;i<pset.size();i++) {
-    // For each level.
-    lineset cset(pset[i]);
-    for (int j=0;j<cset.size();j++) {
-      cline aline(cset[j]);
-      std::vector<double> xs;
-      std::vector<double> ys;
-      std::vector<double> zs;
-      for (int k=0;k<aline.size();k++) {
-	xs.push_back(aline[k].x);
-	ys.push_back(aline[k].y);
-	zs.push_back(0);
+  HPColor *lc = (HPColor*) LookupProperty("linecolor");
+  if (!lc->IsNone()) {
+    gc.color(lc->Data());
+    gc.setLineStyle(StringPropertyLookup("linestyle"));
+    gc.lineWidth(width);
+    HandleAxis *parent = (HandleAxis*) GetParentAxis();
+    for (int i=0;i<pset.size();i++) {
+      // For each level.
+      lineset cset(pset[i]);
+      for (int j=0;j<cset.size();j++) {
+	cline aline(cset[j]);
+	std::vector<double> xs;
+	std::vector<double> ys;
+	std::vector<double> zs;
+	for (int k=0;k<aline.size();k++) {
+	  xs.push_back(aline[k].x);
+	  ys.push_back(aline[k].y);
+	  zs.push_back(0);
+	}
+	std::vector<double> mxs, mys, mzs;
+	parent->ReMap(xs,ys,zs,mxs,mys,mzs);
+	gc.lineSeries(mxs,mys,mzs);
       }
-      std::vector<double> mxs, mys, mzs;
-      parent->ReMap(xs,ys,zs,mxs,mys,mzs);
-      gc.lineSeries(mxs,mys,mzs);
     }
   }
 }
 
 void HandleContour::SetupDefaults() {
-//   SetThreeVectorDefault("color",0,0,0);
-//   SetConstrainedStringDefault("linestyle","-");
-//   SetScalarDefault("linewidth",1.0);
+  SetThreeVectorDefault("linecolor",0,0,0);
+  SetConstrainedStringDefault("linestyle","-");
+  SetScalarDefault("linewidth",1.0);
+  SetConstrainedStringDefault("fill","off");
+  SetConstrainedStringDefault("floating","off");
 //   SetConstrainedStringDefault("marker","none");
 //   SetThreeVectorDefault("markeredgecolor",0,0,0);
 //   SetThreeVectorDefault("markerfacecolor",0,0,0);
 //   SetScalarDefault("markersize",6);
-//   SetStringDefault("type","line");
-//   SetConstrainedStringDefault("visible","on");
+  SetStringDefault("type","contour");
+  SetConstrainedStringDefault("visible","on");
 //   SetConstrainedStringDefault("xdatamode","manual");
 }
   
@@ -243,6 +285,7 @@ void HandleContour::ConstructProperties() {
   //  \item @|displayname| - @|string| - The name of this line series as it
   //    appears in a legend.
   //  \item @|fill| - @|{'on','off'}| - set to on to fill the contours.
+  //  \item @|floating| - @|{'on','off'}| - set to on to have floating (3D) contours
   //  \item @|labelspacing| - @|scalar| - distance in points between labels.
   //  \item @|levellist| - @|vector| - a vector of Z-values for the contours
   //  \item @|levellistmode| - @|{'auto','manual'}| - set to auto for 
@@ -284,6 +327,7 @@ void HandleContour::ConstructProperties() {
   AddProperty(new HPHandles,"children");
   AddProperty(new HPString,"displayname");
   AddProperty(new HPOnOff,"fill");
+  AddProperty(new HPOnOff,"floating");
   AddProperty(new HPScalar,"labelspacing");
   AddProperty(new HPVector,"levellist");
   AddProperty(new HPAutoManual,"levellistmode");
@@ -306,5 +350,5 @@ void HandleContour::ConstructProperties() {
   AddProperty(new HPAutoManual,"xdatamode");
   AddProperty(new HPVector,"ydata");
   AddProperty(new HPAutoManual,"ydatamode");
-  AddProperty(new HPVector,"zdata");
+  AddProperty(new HPArray,"zdata");
 }

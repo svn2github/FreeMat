@@ -814,7 +814,6 @@ int MainApp::StartNewInterpreterThread() {
   p_eval->rescanPath();
   connect(p_eval,SIGNAL(outputRawText(string)),m_term,SLOT(OutputRawString(string)));
   connect(p_eval,SIGNAL(SetPrompt(string)),m_keys,SLOT(SetPrompt(string)));
-  connect(p_eval,SIGNAL(Flush()),m_term,SLOT(Flush()));
   connect(p_eval,SIGNAL(doGraphicsCall(Interpreter*,FuncPtr,ArrayVector,int)),
 	  this,SLOT(DoGraphicsCall(Interpreter*,FuncPtr,ArrayVector,int)));
   connect(p_eval,SIGNAL(CWDChanged()),m_keys,SIGNAL(UpdateCWD()));

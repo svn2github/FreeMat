@@ -475,7 +475,7 @@ void KeyManager::OutputChar(char c, char pad) {
   /*
    * Write the string to the terminal.
    */
-  emit OutputRawStringImmediate(string);
+  emit OutputRawString(string);
   /*
    * Except for one exception to be described in a moment, the cursor should
    * now have been positioned after the character that was just output.
@@ -524,7 +524,7 @@ void KeyManager::ResetLineBuffer() {
 void KeyManager::NewLine() {
   AddHistory(lineData);
   PlaceCursor(ntotal);
-  emit OutputRawStringImmediate("\r\n");
+  emit OutputRawString("\r\n");
   emit ExecuteLine(lineData + "\n");
   ReplacePrompt("");
   ResetLineBuffer();
@@ -1020,13 +1020,13 @@ void KeyManager::QueueMultiString(QString t) {
   QStringList tlist(t.split("\n"));
   for (int i=0;i<tlist.size()-1;i++) {
     string t(tlist[i].toStdString());
-    emit OutputRawStringImmediate(t+"\r\n");
+    emit OutputRawString(t+"\r\n");
     emit ExecuteLine(t+"\n");
     AddHistory(t);
   }
   if (t.endsWith('\n')) {
     string t(tlist.back().toStdString());
-    emit OutputRawStringImmediate(t+"\r\n");
+    emit OutputRawString(t+"\r\n");
     emit ExecuteLine(t+"\n");
     AddHistory(t);
   }  else {
@@ -1038,7 +1038,7 @@ void KeyManager::QueueMultiString(QString t) {
 void KeyManager::QueueCommand(QString t) {
   QueueString(t);
   AddHistory(t.toStdString());
-  emit OutputRawStringImmediate("\r\n");
+  emit OutputRawString("\r\n");
   emit ExecuteLine(lineData+"\n");
   ResetLineBuffer();
   DisplayPrompt();
@@ -1074,9 +1074,6 @@ void KeyManager::RegisterTerm(QObject* term) {
   connect(this,SIGNAL(MoveBOL()),term,SLOT(MoveBOL()));
   connect(this,SIGNAL(OutputRawString(string)),term,
 	  SLOT(OutputRawString(string)));
-  connect(this,SIGNAL(OutputRawStringImmediate(string)),term,
-	  SLOT(OutputRawStringImmediate(string)));
-  connect(this,SIGNAL(Flush()),term,SLOT(Flush()));
   connect(this,SIGNAL(ClearDisplay()),term,SLOT(ClearDisplay()));
   connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
   connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  

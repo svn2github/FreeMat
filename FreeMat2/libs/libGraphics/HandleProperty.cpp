@@ -222,20 +222,20 @@ bool ParseColorSpec(Array arg, std::vector<double> &data) {
       data.clear(); data.push_back(-1); 
       data.push_back(-1); data.push_back(-1);
     } else if ((cp=="y") || (cp=="yellow")) {
-      data.clear(); data.push_back(1); 
-      data.push_back(1); data.push_back(0);
+      data.clear(); data.push_back(.75); 
+      data.push_back(.75); data.push_back(0);
     } else if ((cp=="m") || (cp=="magenta")) {
-      data.clear(); data.push_back(1); 
-      data.push_back(0); data.push_back(1);
+      data.clear(); data.push_back(.75); 
+      data.push_back(0); data.push_back(.75);
     } else if ((cp=="c") || (cp=="cyan")) {
       data.clear(); data.push_back(0); 
-      data.push_back(1); data.push_back(1);
+      data.push_back(.75); data.push_back(.75);
     } else if ((cp=="r") || (cp=="red")) {
       data.clear(); data.push_back(1); 
       data.push_back(0); data.push_back(0);
     } else if ((cp=="g") || (cp=="green")) {
       data.clear(); data.push_back(0); 
-      data.push_back(1); data.push_back(0);
+      data.push_back(.5); data.push_back(0);
     } else if ((cp=="b") || (cp=="blue")) {
       data.clear(); data.push_back(0); 
       data.push_back(0); data.push_back(1);

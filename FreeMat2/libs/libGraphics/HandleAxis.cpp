@@ -28,6 +28,21 @@
 #include "HandleCommands.hpp"
 #include <qgl.h>
 
+std::vector<double> GetTicks(double amin, double amax) {
+  double arange = amax - amin;
+  double astep = pow(10.0,floor(log10(arange)));
+  double nsteps = arange/astep;
+  if (nsteps < 1)
+    astep /= 10.0;
+  else if (nsteps < 2)
+    astep /= 5.0;
+  else if (nsteps < 5)
+    astep /= 2.0;
+  if ((amin < 0) && (amax > 0)) {
+    
+  }
+}
+
 // Property list & status
 //    activepositionproperty
 //    alim
@@ -267,11 +282,23 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
 		    std::vector<std::string> &tlabels) {
   //  bool integerMode = false;
   double tBegin, tEnd;
-  double delt = (tMax-tMin)/(tickcount);
-  int n = (int) ceil(log10(delt));
-  double rdelt = delt/pow(10.0,(double)n);
-  int p = (int) floor(log(rdelt)/M_LN2);
-  double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+  double tRange = tMax - tMin;
+  int n = (int) floor(log10(tRange));
+  double tDelt = pow(10.0,(double) n);
+  double tSteps = tRange/tDelt;
+  if (tSteps < 1)
+    tDelt /= 10;
+  else if (tSteps < 2)
+    tDelt /= 5;
+  else if (tSteps < 5)
+    tDelt /= 2;
+
+//   double delt = (tMax-tMin)/(tickcount);
+//   int n = (int) ceil(log10(delt));
+//   double rdelt = delt/pow(10.0,(double)n);
+//   int p = (int) floor(log(rdelt)/M_LN2);
+//   double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
+
   if (isLogarithmic) 
     tDelt = ceil(tDelt);
   tStart = floor(tMin/tDelt)*tDelt;
@@ -389,7 +416,7 @@ void HandleAxis::ConstructProperties() {
   // for the axes.  Defaults to white.
   //  \item @|colororder| - @|color vector| - A vector of color specs (in 
   // RGB) that are cycled between when drawing line plots into this axis.
-  // The default is order red, green, blue, yellow, magenta, cyan, black.
+  // The default is order blue,green,red,cyan,magenta,yellow,black.
   //  \item @|datalimits| - @|six vector| - A vector that contains the x, y and z
   // limits of the data for children of the current axis.  Changes to this
   // property are ignored - it is calculated by FreeMat based on the datasets.
@@ -681,13 +708,13 @@ void HandleAxis::SetupDefaults() {
   SetThreeVectorDefault("color",1,1,1);
   // Set up the default color order
   std::vector<double> colors;
-  colors.push_back(1.0); colors.push_back(0.0); colors.push_back(0.0); 
-  colors.push_back(0.0); colors.push_back(1.0); colors.push_back(0.0); 
-  colors.push_back(0.0); colors.push_back(0.0); colors.push_back(1.0);
-  colors.push_back(1.0); colors.push_back(1.0); colors.push_back(0.0);
-  colors.push_back(1.0); colors.push_back(0.0); colors.push_back(1.0);
-  colors.push_back(0.0); colors.push_back(1.0); colors.push_back(1.0);
-  colors.push_back(0.0); colors.push_back(0.0); colors.push_back(0.0);
+  colors.push_back(0.0); colors.push_back(0.0); colors.push_back(1.0); 
+  colors.push_back(0.0); colors.push_back(0.5); colors.push_back(0.0); 
+  colors.push_back(1.0); colors.push_back(0.0); colors.push_back(0.0);
+  colors.push_back(0.0); colors.push_back(.75); colors.push_back(.75);
+  colors.push_back(.75); colors.push_back(0.0); colors.push_back(.75);
+  colors.push_back(.75); colors.push_back(.75); colors.push_back(0.0);
+  colors.push_back(.25); colors.push_back(.25); colors.push_back(.25);
   HPVector *hp = (HPVector*) LookupProperty("colororder");
   hp->Data(colors);
   SetThreeVectorDefault("dataaspectratio",1,1,1);

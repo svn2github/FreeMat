@@ -30,6 +30,13 @@
 #include "RenderEngine.hpp"
 #include "Context.hpp"
 
+/**
+ * This utility function returns a 
+ * "reasonable" set of points that bracket
+ * and divide an interval
+ */
+std::vector<double> GetTicks(double amin, double amax);
+
 //The HandleAxis class encapsulates a 3D axis object, and is
 //manipulated through the Set/Get interface.
 class HandleAxis : public HandleObject {

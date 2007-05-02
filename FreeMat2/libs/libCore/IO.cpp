@@ -1060,7 +1060,6 @@ ArrayVector PrintfFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   char *buff = (char*) malloc(strlen(op)+1);
   convertEscapeSequences(buff,op);
   eval->outputMessage(buff);
-  eval->flushOutput();
   free(buff);
   free(op);
   return ArrayVector();

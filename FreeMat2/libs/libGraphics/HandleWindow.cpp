@@ -203,7 +203,6 @@ HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
   dirty = false;
 }
 
-
 // Useful tools:
 //
 // Zoom in - fix for images

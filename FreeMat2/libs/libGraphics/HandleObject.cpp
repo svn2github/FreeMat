@@ -147,6 +147,12 @@ HandleFigure* HandleObject::GetParentFigure() {
   return LookupHandleFigure(parent_handle);
 }
 
+void HandleObject::MarkDirty() {
+  HandleFigure *fp = GetParentFigure();
+  if (fp)
+    fp->UpdateState();
+}
+
 std::string HandleObject::StringPropertyLookup(std::string name) {
   HPString* sp = (HPString*) LookupProperty(name);
   return (sp->Data());

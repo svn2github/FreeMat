@@ -35,7 +35,8 @@
  * "reasonable" set of points that bracket
  * and divide an interval
  */
-std::vector<double> GetTicks(double amin, double amax);
+QList<double> GetTicksOuter(double amin, double amax, bool isLog);
+QList<double> GetTicksInner(double amin, double amax, bool isLog);
 
 //The HandleAxis class encapsulates a 3D axis object, and is
 //manipulated through the Set/Get interface.

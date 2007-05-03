@@ -75,6 +75,7 @@ public:
   virtual void PaintMe(RenderEngine &gc) = 0;
   HandleAxis* GetParentAxis();
   HandleFigure* GetParentFigure();
+  void MarkDirty();
 };
 
 #endif

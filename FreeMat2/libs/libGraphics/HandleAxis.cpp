@@ -27,21 +27,80 @@
 #include "QTRenderEngine.hpp"
 #include "HandleCommands.hpp"
 #include <qgl.h>
+#include <QList>
 
-std::vector<double> GetTicks(double amin, double amax) {
+QList<double> GetTicksOuter(double amin, double amax, bool isLog) {
   double arange = amax - amin;
   double astep = pow(10.0,floor(log10(arange)));
   double nsteps = arange/astep;
-  if (nsteps < 1)
+  double aval;
+  QList<double> retvec;
+  if (nsteps <= 1)
     astep /= 10.0;
-  else if (nsteps < 2)
+  else if (nsteps <= 2)
     astep /= 5.0;
-  else if (nsteps < 5)
+  else if (nsteps <= 5)
     astep /= 2.0;
+  if (isLog)
+    astep = ceil(astep);
   if ((amin < 0) && (amax > 0)) {
-    
+    aval = 0;
+    while (aval < amax) {
+      retvec.push_back(aval);
+      aval += astep;
+    }
+    retvec.push_back(aval);
+    aval = -astep;
+    while (aval > amin) {
+      retvec.push_front(aval);
+      aval -= astep;
+    }
+    retvec.push_front(aval);
+  } else {
+    aval = floor(amin/astep)*astep;
+    while (aval < amax) {
+      retvec.push_back(aval);
+      aval += astep;
+    }
+    retvec.push_back(aval);
   }
+  return retvec;
 }
+
+QList<double> GetTicksInner(double amin, double amax, bool isLog) {
+  double arange = amax - amin;
+  double astep = pow(10.0,floor(log10(arange)));
+  double nsteps = arange/astep;
+  double aval;
+  QList<double> retvec;
+  if (nsteps <= 1)
+    astep /= 10.0;
+  else if (nsteps <= 2)
+    astep /= 5.0;
+  else if (nsteps <= 5)
+    astep /= 2.0;
+  if (isLog) astep = ceil(astep);
+  if ((amin < 0) && (amax > 0)) {
+    aval = 0;
+    while (aval <= amax) {
+      retvec.push_back(aval);
+      aval += astep;
+    }
+    aval = -astep;
+    while (aval >= amin) {
+      retvec.push_front(aval);
+      aval -= astep;
+    }
+  } else {
+    aval = ceil(amin/astep)*astep;
+    while (aval <= amax) {
+      retvec.push_back(aval);
+      aval += astep;
+    }
+  }
+  return retvec;
+}
+
 
 // Property list & status
 //    activepositionproperty
@@ -238,27 +297,17 @@ void FormatAxisManual(double t1, double t2, int tickcount,
 		      double& tStart, double &tStop,
 		      std::vector<double> &tickLocations,
 		      std::vector<std::string> &tlabels) {
-  double tBegin, tEnd;
-  double delt = (t2-t1)/tickcount;
-  int n = (int) ceil(log10(delt));
-  double rdelt = delt/pow(10.0,(double)n);
-  int p = (int) floor(log(rdelt)/M_LN2);
-  double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
-  if (isLogarithmic)
-    tDelt = ceil(tDelt);
-  tStart = t1;
-  tStop = t2;
-  tBegin = tDelt*ceil(t1/tDelt);
-  tEnd = floor(t2/tDelt)*tDelt;
-  Array trange(Array::doubleRangeConstructor(tBegin,tDelt,tEnd,false));
-  int tCount = trange.getLength();
+  int tCount;
   tickLocations.clear();
   tlabels.clear();
   bool exponentialForm;
   exponentialForm = false;
-  const double *dp = (const double *) trange.getDataPointer();
+  QList<double> tick_locations(GetTicksInner(t1,t2,isLogarithmic));
+  tStart = tick_locations.front();
+  tStop = tick_locations.back();
+  tCount = tick_locations.size();
   for (int i=0;i<tCount;i++) {
-    double tloc = dp[i];
+    double tloc = tick_locations[i];
     if (!isLogarithmic)
       tickLocations.push_back(tloc);
     else
@@ -267,7 +316,7 @@ void FormatAxisManual(double t1, double t2, int tickcount,
       exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
   }
   for (int i=0;i<tCount;i++) {
-    double tloc = tBegin+i*tDelt;
+    double tloc = tick_locations[i];
     if (!isLogarithmic)
       tlabels.push_back(TrimPrint(tloc,exponentialForm));
     else
@@ -280,52 +329,18 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
 		    double& tStart, double &tStop,
 		    std::vector<double> &tickLocations,
 		    std::vector<std::string> &tlabels) {
-  //  bool integerMode = false;
-  double tBegin, tEnd;
-  double tRange = tMax - tMin;
-  int n = (int) floor(log10(tRange));
-  double tDelt = pow(10.0,(double) n);
-  double tSteps = tRange/tDelt;
-  if (tSteps < 1)
-    tDelt /= 10;
-  else if (tSteps < 2)
-    tDelt /= 5;
-  else if (tSteps < 5)
-    tDelt /= 2;
-
-//   double delt = (tMax-tMin)/(tickcount);
-//   int n = (int) ceil(log10(delt));
-//   double rdelt = delt/pow(10.0,(double)n);
-//   int p = (int) floor(log(rdelt)/M_LN2);
-//   double tDelt = pow(10.0,(double) n)*pow(2.0,(double) p);
-
-  if (isLogarithmic) 
-    tDelt = ceil(tDelt);
-  tStart = floor(tMin/tDelt)*tDelt;
-  tStop = ceil(tMax/tDelt)*tDelt;
-  // Recheck for integer limits...
-  //   qDebug("tickcount = %d",tickcount);
-  //   if ((tMin == rint(tMin)) && (tMax == rint(tMax)) && (!isLogarithmic)) {
-  //     tStart = tMin;
-  //     tStop = tMax;
-  //     if ((tickcount % 2) == 1)
-  //       tickcount++;
-  //     tDelt = (tStop - tStart)/(tickcount);
-  //     if ((tMax-tMin) > 1) integerMode = true;
-  //   }
-  tBegin = tStart;
-  tEnd = tStop;
-  Array trange(Array::doubleRangeConstructor(tBegin,tDelt,tEnd,false));
-  int tCount = trange.getLength();
+  int tCount;
   tickLocations.clear();
   tlabels.clear();
   bool exponentialForm;
   exponentialForm = false;
-  const double *dp = (const double *) trange.getDataPointer();
-  //    qDebug("Format %f %f %d %d",tMin,tMax,tickcount,tCount);
+  //  const double *dp = (const double *) trange.getDataPointer();
+  QList<double> tick_locations(GetTicksOuter(tMin,tMax,isLogarithmic));
+  tStart = tick_locations.front();
+  tStop = tick_locations.back();
+  tCount = tick_locations.size();
   for (int i=0;i<tCount;i++) {
-    double tloc = dp[i];
-    //      qDebug("  Point %f",tloc);
+    double tloc = tick_locations[i];
     if (!isLogarithmic)
       tickLocations.push_back(tloc);
     else
@@ -334,7 +349,7 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
       exponentialForm |= (fabs(log10(fabs(tloc))) >= 4.0);
   }
   for (int i=0;i<tCount;i++) {
-    double tloc = tBegin+i*tDelt;
+    double tloc = tick_locations[i];
     if (!isLogarithmic)
       tlabels.push_back(TrimPrint(tloc,exponentialForm));
     else

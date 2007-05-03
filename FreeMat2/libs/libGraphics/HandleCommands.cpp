@@ -410,6 +410,7 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
   fp->UpdateState();
   if (!fp->IsType("figure") && !fp->IsType("uicontrol")) {
     HandleFigure *fig = fp->GetParentFigure();
+    fig->UpdateState();
     fig->Repaint();
   }
   return ArrayVector();

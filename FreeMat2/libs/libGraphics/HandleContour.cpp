@@ -215,15 +215,33 @@ lineset ContourCDriver(Array m, double val) {
 }
 
 void HandleContour::UpdateState() {
+  if (HasChanged("levellist")) ToManual("levellistmode");
   Array zdata(ArrayPropertyLookup("zdata"));
   double zmin = ArrayMin(zdata);
   double zmax = ArrayMax(zdata);
-  pset.clear();
-  for (int i=1;i<9;i++) {
-    double zlevel = zmin + i*(zmax - zmin)/(9.0);
-    pset << ContourCDriver(zdata,zlevel);
-    zvals << zlevel;
+  QList<double> levels;
+  if (StringCheck("levellistmode","auto")) {
+    levels = GetTicksInner(zmin,zmax,false);
+    if (levels.front() == zmin) levels.pop_front();
+    if (levels.back() == zmax) levels.pop_back();
+    std::vector<double> ulevels;
+    for (int i=0;i<levels.size();i++)
+      ulevels.push_back(levels[i]);
+    HPVector *hp = (HPVector*) LookupProperty("levellist");
+    hp->Data(ulevels);
+    hp->ClearModified();
+  } else {
+    std::vector<double> ulevels(VectorPropertyLookup("levellist"));
+    for (int i=0;i<ulevels.size();i++)
+      levels.push_back(ulevels[i]);
   }
+  pset.clear();
+  zvals.clear();
+  for (int i=0;i<levels.size();i++) { 
+    pset << ContourCDriver(zdata,levels[i]);
+    zvals << levels[i];
+  }
+  MarkDirty();
 }
 
 void HandleContour::PaintMe(RenderEngine& gc) {
@@ -260,6 +278,7 @@ void HandleContour::PaintMe(RenderEngine& gc) {
 
 void HandleContour::SetupDefaults() {
   SetThreeVectorDefault("linecolor",0,0,0);
+  SetConstrainedStringDefault("levellistmode","auto");
   SetConstrainedStringDefault("linestyle","-");
   SetScalarDefault("linewidth",1.0);
   SetConstrainedStringDefault("fill","off");
@@ -280,8 +299,6 @@ void HandleContour::ConstructProperties() {
   //@@Usage
   //Below is a summary of the properties for a line series.
   //\begin{itemize}
-  //  \item @|contourmatrix| - @|matrix| - the matrix returned from the contourc
-  //   command. 
   //  \item @|displayname| - @|string| - The name of this line series as it
   //    appears in a legend.
   //  \item @|fill| - @|{'on','off'}| - set to on to fill the contours.
@@ -290,9 +307,6 @@ void HandleContour::ConstructProperties() {
   //  \item @|levellist| - @|vector| - a vector of Z-values for the contours
   //  \item @|levellistmode| - @|{'auto','manual'}| - set to auto for 
   //    automatic selection  of Z-values of the contours.
-  //  \item @|levelstep| - @|scalar| -  the spacing of the contour lines.
-  //  \item @|levelstepmode| -  @|{'auto','manual'}| - set to auto for 
-  //    automatic selection of Z-spacing.
   //  \item @|linecolor| - color of the contour lines.
   //  \item @|linestyle| - @|{'-','--',':','-.','none'}| - the line style to draw the contour in.
   //  \item @|linewidth| - @|scalar| - the width of the lines
@@ -323,7 +337,6 @@ void HandleContour::ConstructProperties() {
   // the same size as the @|xdata| and @|ydata| vectors.
   //\end{itemize}
   //!
-  AddProperty(new HPArray,"contourmatrix");
   AddProperty(new HPHandles,"children");
   AddProperty(new HPString,"displayname");
   AddProperty(new HPOnOff,"fill");
@@ -331,8 +344,6 @@ void HandleContour::ConstructProperties() {
   AddProperty(new HPScalar,"labelspacing");
   AddProperty(new HPVector,"levellist");
   AddProperty(new HPAutoManual,"levellistmode");
-  AddProperty(new HPScalar,"levelstep");
-  AddProperty(new HPAutoManual,"levelstepmode");
   AddProperty(new HPColor,"linecolor");
   AddProperty(new HPLineStyle,"linestyle");
   AddProperty(new HPScalar,"linewidth");

@@ -226,6 +226,7 @@ void MainApp::CheckNonClosable() {
     wid = new NonClosable;
     wid->setGeometry(0,0,1,1);
     wid->setWindowIcon(QIcon(":/images/freemat_small_mod_64.png"));
+    wid->setWindowTitle("FreeMat v" VERSION);
     wid->show();
   }
 }

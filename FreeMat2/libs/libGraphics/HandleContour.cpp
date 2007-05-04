@@ -21,6 +21,7 @@
 #include "HandleObject.hpp"
 #include "HandleAxis.hpp"
 #include "IEEEFP.hpp"
+#include <math.h>
 
 HandleContour::HandleContour() {
   ConstructProperties();
@@ -241,23 +242,51 @@ void HandleContour::UpdateState() {
     pset << ContourCDriver(zdata,levels[i]);
     zvals << levels[i];
   }
-  MarkDirty();
+}
+
+void HandleContour::SelectColor(RenderEngine& gc, double zval) {
+  // Need to select a color for the contour
+  // Retrieve the colormap
+  std::vector<double> cmap(((HandleObject*)GetParentFigure())->VectorPropertyLookup("colormap"));
+  HandleAxis* ap(GetParentAxis());
+  std::vector<double> clim(((HandleObject*)ap)->VectorPropertyLookup("clim"));
+  double clim_min(qMin(clim[0],clim[1]));
+  double clim_max(qMax(clim[0],clim[1]));
+  // Calculate the colormap length
+  int cmaplen(cmap.size()/3);
+  int ndx = (int) ((zval-clim_min)/(clim_max-clim_min)*(cmaplen-1));
+  ndx = qMin(cmaplen-1,qMax(0,ndx));
+  std::vector<double> color;
+  color.push_back(cmap[3*ndx]);
+  color.push_back(cmap[3*ndx+1]);
+  color.push_back(cmap[3*ndx+2]);
+  gc.color(color);
 }
 
 void HandleContour::PaintMe(RenderEngine& gc) {
   if (StringCheck("visible","off"))
     return;
+  qDebug() << "contour - paint";
+  qDebug() << "zvals - " << zvals.size();
   // Draw the line...
   double width(ScalarPropertyLookup("linewidth"));
-  HPColor *lc = (HPColor*) LookupProperty("linecolor");
-  if (!lc->IsNone()) {
-    gc.color(lc->Data());
+  HPAutoColor *lc = (HPAutoColor*) LookupProperty("linecolor");
+  QFont fnt("Courier",10);
+  std::vector<double> black;
+  black.push_back(0);
+  black.push_back(0);
+  black.push_back(0);
+  if (!StringCheck("linecolor","none")) {
     gc.setLineStyle(StringPropertyLookup("linestyle"));
     gc.lineWidth(width);
     HandleAxis *parent = (HandleAxis*) GetParentAxis();
     for (int i=0;i<pset.size();i++) {
       // For each level.
       lineset cset(pset[i]);
+      if (StringCheck("linecolor","auto"))
+	SelectColor(gc,zvals[i]);
+      else 
+	gc.color(lc->ColorSpec());
       for (int j=0;j<cset.size();j++) {
 	cline aline(cset[j]);
 	std::vector<double> xs;
@@ -271,13 +300,43 @@ void HandleContour::PaintMe(RenderEngine& gc) {
 	std::vector<double> mxs, mys, mzs;
 	parent->ReMap(xs,ys,zs,mxs,mys,mzs);
 	gc.lineSeries(mxs,mys,mzs);
+	// Label this line series
+	if (mxs.size() > 0) {
+	  float lasts = 0;
+	  float currents = 0;
+	  for (int i=1;i<mxs.size();i++) {
+	    float currentx = mxs[i];
+	    float currenty = mys[i];
+	    float lastx = mxs[i-1];
+	    float lasty = mys[i-1];
+	    // Update the curve length
+	    currents += sqrt((currentx-lastx)*(currentx-lastx) + 
+			     (currenty-lasty)*(currenty-lasty));
+	    if ((currents-lasts) > 10) {
+	      if ((i>5) && (i < (mxs.size()-5))) {
+		lasts = currents;
+		// put a label at this spot
+		// To get the rotation, we take the tangent of the contour
+		float deltx = mxs[i+1] - mxs[i-1];
+		float delty = mys[i+1] - mys[i-1];
+		float rotation = atan2(delty,deltx)*180.0/M_PI;
+		//		rotation = 0;
+		//		qDebug() << "Text at " << lastx << "," << lasty << " ang " << rotation << "\r";
+		DrawSymbol(gc,RenderEngine::Plus,currentx,currenty,0,.5,black,black,1);
+		//		rotation = 0;
+		//		gc.putText(currentx,currenty,"val",black,RenderEngine::Mean,RenderEngine::Mean,fnt,rotation);
+	      }
+	    }
+	  }
+	}
       }
     }
   }
+  MarkDirty();
 }
 
 void HandleContour::SetupDefaults() {
-  SetThreeVectorDefault("linecolor",0,0,0);
+  SetConstrainedStringDefault("linecolor","auto");
   SetConstrainedStringDefault("levellistmode","auto");
   SetConstrainedStringDefault("linestyle","-");
   SetScalarDefault("linewidth",1.0);
@@ -316,9 +375,6 @@ void HandleContour::ConstructProperties() {
   //  \item @|textlist| - @|vector| - contour values to label.
   //  \item @|textlistmode| - @|{'auto','manual'}| - controls the setting of
   //  the @|textlist| property.
-  //  \item @|textstep| - @|scalar| - Determines which contour lines have 
-  //  numeric labels.
-  //  \item @|textstepmode| - @|{'auto','manual'}| - Set to manual for 
   //  \item @|type| - @|string| - Returns the string @|'contour'|.
   //  \item @|userdata| - @|array| - Available to store any variable you
   // want in the handle object.
@@ -337,29 +393,27 @@ void HandleContour::ConstructProperties() {
   // the same size as the @|xdata| and @|ydata| vectors.
   //\end{itemize}
   //!
-  AddProperty(new HPHandles,"children");
-  AddProperty(new HPString,"displayname");
+  AddProperty(new HPHandles,"children");         //done
+  AddProperty(new HPString,"displayname");       //done
   AddProperty(new HPOnOff,"fill");
   AddProperty(new HPOnOff,"floating");
   AddProperty(new HPScalar,"labelspacing");
-  AddProperty(new HPVector,"levellist");
-  AddProperty(new HPAutoManual,"levellistmode");
-  AddProperty(new HPColor,"linecolor");
-  AddProperty(new HPLineStyle,"linestyle");
-  AddProperty(new HPScalar,"linewidth");
-  AddProperty(new HPHandles,"parent");
-  AddProperty(new HPOnOff,"showtext");
-  AddProperty(new HPString,"tag");
+  AddProperty(new HPVector,"levellist");         //done
+  AddProperty(new HPAutoManual,"levellistmode"); //done
+  AddProperty(new HPAutoColor,"linecolor");      //done
+  AddProperty(new HPLineStyle,"linestyle");      //done
+  AddProperty(new HPScalar,"linewidth");         //done
+  AddProperty(new HPHandles,"parent");           //done
+  AddProperty(new HPOnOff,"showtext");    
+  AddProperty(new HPString,"tag");               //done
   AddProperty(new HPVector,"textlist");
   AddProperty(new HPAutoManual,"textlistmode");
-  AddProperty(new HPScalar,"textstep");
-  AddProperty(new HPAutoManual,"textstepmode");
-  AddProperty(new HPString,"type");
-  AddProperty(new HPArray,"userdata");
-  AddProperty(new HPOnOff,"visible");
+  AddProperty(new HPString,"type");              //done
+  AddProperty(new HPArray,"userdata");           //done
+  AddProperty(new HPOnOff,"visible");            //done
   AddProperty(new HPVector,"xdata");
   AddProperty(new HPAutoManual,"xdatamode");
   AddProperty(new HPVector,"ydata");
   AddProperty(new HPAutoManual,"ydatamode");
-  AddProperty(new HPArray,"zdata");
+  AddProperty(new HPArray,"zdata");              //done
 }

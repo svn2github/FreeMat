@@ -55,6 +55,7 @@ static const char *edgealpha_dict[4] = {"flat","interp","scalar",0};
 static const char *render_dict[3] = {"painters","opengl",0};
 static const char *widget_dict[11] = {"pushbutton","toggle","radiobutton","checkbox",
 				      "edit","text","slider","frame","listbox","popupmenu",0};
+static const char *autocolor_dict[4] = {"none","auto","colorspec",0};
   
 HPAutoManual::HPAutoManual() : HPConstrainedString(auto_manual_dict) {}
 HPOnOff::HPOnOff() : HPConstrainedString(on_off_dict) {}
@@ -81,6 +82,7 @@ HPLineStyleOrder::HPLineStyleOrder() : HPConstrainedStringSet(line_style_dict) {
 HPRowColumns::HPRowColumns() : HPConstrainedString(rowcols_dict) {}
 HPLightingMode::HPLightingMode() : HPConstrainedString(lightingmode_dict) {}
 HPAutoFlatColor::HPAutoFlatColor() : HPConstrainedStringColor(autoflat_dict) {}
+HPAutoColor::HPAutoColor() : HPConstrainedStringColor(autocolor_dict) {}
 HPColorInterp::HPColorInterp() : HPConstrainedStringColor(interpmode_dict) {}
 HPFaceAlpha::HPFaceAlpha() : HPConstrainedStringScalar(facealpha_dict) {}
 HPBackFaceLighting::HPBackFaceLighting() : HPConstrainedString(backface_dict) {}

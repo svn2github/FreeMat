@@ -77,7 +77,7 @@ public:
   HandleWindow(unsigned ahandle);
   ~HandleWindow() {delete hfig;}
   bool isDirty() {return dirty;}
-  void markClean() {dirty = false;}
+  void markClean();
   unsigned Handle();
   HandleFigure *HFig();
   void UpdateState();

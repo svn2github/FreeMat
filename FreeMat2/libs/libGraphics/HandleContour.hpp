@@ -36,6 +36,7 @@ typedef QList<lineset> linecollection;
 class HandleContour : public HandleObject {
   linecollection pset;
   QList<double> zvals;
+  void SelectColor(RenderEngine& gc, double zval);
 public:
   HandleContour();
   virtual ~HandleContour();

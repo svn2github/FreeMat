@@ -65,15 +65,19 @@ void GfxDisableRepaint() {
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
+      qDebug() << "paint event";
   if (enableRepaint && hfig->ParentWindow()->isDirty()) {
     {
+      qDebug() << "figure dirty - repainting";
       // enableRepaint is true, and the background is dirty - update
       // the backing store, and then redraw it.
+      
       QPainter pnt(&backStore);
       QTRenderEngine gc(&pnt,0,0,width(),height());
       hfig->PaintMe(gc);
       hfig->ParentWindow()->markClean();
     }
+    qDebug() << "writing from backstore";
     QPainter pnt2(this);
     pnt2.drawPixmap(0,0,backStore);
   } else {
@@ -614,9 +618,15 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
   }
 }
 
+void HandleWindow::markClean() {
+  dirty = false;
+  qDebug() << "clean marked";
+}
+
 void HandleWindow::UpdateState() {
   if (!initialized) return;
-    dirty = true;
+  qDebug() << "dirty marked";
+  dirty = true;
   //  HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
   //  qtchild->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
   //  qtchild->updateGeometry();
@@ -639,6 +649,6 @@ void HandleWindow::UpdateState() {
   // 	glchild->setGeometry(0,0,1,1);
   //  layout->setCurrentWidget(qtchild);
   //     }
-    update();
+    repaint();
   //   }
 }

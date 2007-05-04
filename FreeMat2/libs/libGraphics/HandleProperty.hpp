@@ -383,6 +383,12 @@ public:
   void ColorSpec(double r, double g, double b);
 };
 
+class HPAutoColor : public HPConstrainedStringColor {
+public:
+  HPAutoColor();
+  virtual ~HPAutoColor() {}
+};
+
 class HPAutoFlatColor : public HPConstrainedStringColor {
 public:
   HPAutoFlatColor();

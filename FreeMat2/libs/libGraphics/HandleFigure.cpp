@@ -124,6 +124,7 @@ void HSVRAMP(double h, double &r, double &g, double &b) {
 }
 
 void HandleFigure::UpdateState() {
+  qDebug() << "figure update state";
   m_win->UpdateState();
 }
 
@@ -159,6 +160,7 @@ void HandleFigure::SetupDefaults() {
 }
 
 void HandleFigure::PaintMe(RenderEngine &gc) {
+  qDebug() << "figure - paint";
   try {
     //    qDebug("size = %d %d",m_width,m_height);
     // draw the children...

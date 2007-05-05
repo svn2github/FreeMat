@@ -506,6 +506,19 @@ ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleLineSeries,arg)));
 }
 
+//!
+//@Module HCONTOUR Create a contour object
+//@@Section HANDLE
+//@@Usage
+//Creates a contour object and parents it to the current axis.  The
+//syntax for its use is 
+//@[
+//  handle = hcontour(property,value,property,value,...)
+//@]
+//where @|property| and @|value| are set.  The handle ID for the
+//resulting object is returned.  It is automatically added to
+//the children of the current axis.
+//!
 ArrayVector HContourFunction(int nargout, const ArrayVector& arg) {
   return singleArrayVector(Array::uint32Constructor(GenericConstructor(new HandleContour,arg)));
 }

@@ -40,7 +40,7 @@
 
 % Copyright (c) 2002-2006 Samit Basu
 
-function text(varargin)
+function handles = text(varargin)
 if (nargin < 3)
   error 'text requires at least three arguments, the x and y location vectors and the strings'
 end
@@ -63,7 +63,14 @@ else
   error 'labels must be either a single string or a cell array of strings.'
 end
 
+if (nargout > 0)
+  handles = [];
+end
+
 for (i=1:numel(xvec))
-  htext('position',[xvec(i),yvec(i)],'string',labelarray{i},varargin{:});
+  h = htext('position',[xvec(i),yvec(i)],'string',labelarray{i},varargin{:});
+  if (nargout > 0)
+    handles = [handles,h];
+  end
 end
 

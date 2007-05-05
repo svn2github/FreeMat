@@ -38,6 +38,7 @@ std::vector<double> HandleContour::GetLimits() {
 //   std::vector<double> xs(VectorPropertyLookup("xdata"));
 //   std::vector<double> ys(VectorPropertyLookup("ydata"));
 //  std::vector<double> zs(VectorPropertyLookup("zdata"));
+  UpdateState();
   std::vector<double> limits;
   bool initialized = false;
   double xmin;
@@ -55,13 +56,15 @@ std::vector<double> HandleContour::GetLimits() {
 	if (!initialized) {
 	  xmin = xmax = aline[k].x;
 	  ymin = ymax = aline[k].y;
-	  zmin = zmax = 0;
+	  zmin = zmax = zvals[0];
 	  initialized = true;
 	} else {
 	  xmin = qMin(xmin,aline[k].x);
 	  ymin = qMin(ymin,aline[k].y);
+	  zmin = qMin(zmin,zvals[i]);
 	  xmax = qMax(xmax,aline[k].x);
 	  ymax = qMax(ymax,aline[k].y);
+	  zmax = qMax(zmax,zvals[i]);
 	}
       }
     }
@@ -80,8 +83,8 @@ std::vector<double> HandleContour::GetLimits() {
   limits.push_back(ymax);
   limits.push_back(zmin);
   limits.push_back(zmax);
-  limits.push_back(0);
-  limits.push_back(0);
+  limits.push_back(zmin);
+  limits.push_back(zmax);
   limits.push_back(0);
   limits.push_back(0);    
   return limits;
@@ -126,7 +129,7 @@ inline void Join(cline& current, const cline& toadd) {
 #define RIGHT(i,j) (((j)-1)+AINTER(FOLD((i)),FNEW((i))))
 #define DRAW(a,b,c,d) {allLines << (cline() << contour_point((double)a,(double)b) << contour_point((double)c,(double)d));}
 
-lineset ContourCDriver(Array m, double val) {
+lineset HandleContour::ContourCDriver(Array m, double val, Array x, Array y) {
   lineset allLines;
   lineset bundledLines;
   m.promoteType(FM_DOUBLE);
@@ -212,14 +215,119 @@ lineset ContourCDriver(Array m, double val) {
     }
     bundledLines << current;
   }
+  // Final step is to transform the lines into the
+  // given coordinates
+  const double *xp = (const double *) x.getDataPointer();
+  const double *yp = (const double *) y.getDataPointer();
+#define X(a,b) xp[(b)+(a)*numy]
+#define Y(a,b) yp[(b)+(a)*numy]
+  for (int i=0;i<bundledLines.size();i++)
+    for (int j=0;j<bundledLines[i].size();j++) {
+      double ndx_x = bundledLines[i][j].x;
+      double ndx_y = bundledLines[i][j].y;
+      // Compute a new x and y using these coordinates as
+      // bilinear interpolators into xp and yp
+      int indx_x = (int) ndx_x;
+      int indx_y = (int) ndx_y;
+      double eps_x = ndx_x - indx_x;
+      double eps_y = ndx_y - indx_y;
+      double xp_out_1 = X(indx_x,indx_y) + 
+	eps_x*(X(indx_x+1,indx_y) - X(indx_x,indx_y));
+      double xp_out_2 = X(indx_x,indx_y+1) + 
+	eps_x*(X(indx_x+1,indx_y+1) - X(indx_x,indx_y+1));
+      double xp_out = xp_out_1 + eps_y*(xp_out_2-xp_out_1);
+      double yp_out_1 = Y(indx_x,indx_y) + 
+	eps_x*(Y(indx_x+1,indx_y) - Y(indx_x,indx_y));
+      double yp_out_2 = Y(indx_x,indx_y+1) + 
+	eps_x*(Y(indx_x+1,indx_y+1) - Y(indx_x,indx_y+1));
+      double yp_out = yp_out_1 + eps_y*(yp_out_2-yp_out_1);
+      bundledLines[i][j].x = xp_out;
+      bundledLines[i][j].y = yp_out;
+    }
   return bundledLines;
+}
+
+void HandleContour::RebuildContourMatrix() {
+  // Count how many total points there are
+  int pointcount = 0;
+  int linecount = 0;
+  for (int i=0;i<pset.size();i++) {
+    for (int j=0;j<pset[i].size();j++) {
+      linecount++;
+      pointcount += pset[i][j].size();
+    }
+  }
+  // Create the contour matrix
+  int outcount = pointcount+linecount;
+  Array out(Array::doubleMatrixConstructor(2,outcount));
+  double *output = (double *) out.getReadWriteDataPointer();
+  for (int i=0;i<pset.size();i++) {
+    for (int j=0;j<pset[i].size();j++) {
+      *output++ = zvals[i];
+      *output++ = pset[i][j].size();
+      cline bline(pset[i][j]);
+      for (int k=0;k<bline.size();k++) {
+	*output++ = bline[k].x;
+	*output++ = bline[k].y;
+      }
+    }
+  }
+  HPArray *hp = (HPArray*) LookupProperty("contourmatrix");
+  hp->Data(out);
+}
+
+Array HandleContour::GetCoordinateMatrix(std::string name, bool isXcoord) {
+  // Get the elevation data from the object
+  Array zdata(ArrayPropertyLookup("zdata"));
+  int zrows(zdata.rows());
+  int zcols(zdata.columns());
+  if (StringCheck(name+"mode","manual")) {
+    // not auto mode...
+    Array cdata(ArrayPropertyLookup(name));
+    if (cdata.isVector() && 
+	((isXcoord && (cdata.getLength() == zcols)) ||
+	 (!isXcoord && (cdata.getLength() == zrows)))) {
+      cdata.promoteType(FM_DOUBLE);
+      const double *qp = (const double*) cdata.getDataPointer();
+      Array mat(Array::doubleMatrixConstructor(zrows,zcols));
+      double *dp = (double*) mat.getReadWriteDataPointer();
+      for (int i=0;i<zcols;i++)
+	for (int j=0;j<zrows;j++) {
+	  if (isXcoord)
+	    *dp = qp[i];
+	  else
+	    *dp = qp[j];
+	  dp++;
+	}
+      return mat;
+    } else if (cdata.is2D() && (cdata.rows() == zrows) &&
+	       (cdata.columns() == zcols)) {
+      return cdata;
+    } 
+  }
+  // In auto mode, or the given data is bogus...
+  Array mat(Array::doubleMatrixConstructor(zrows,zcols));
+  double *dp = (double*) mat.getReadWriteDataPointer();
+  for (int i=0;i<zcols;i++)
+    for (int j=0;j<zrows;j++) {
+      if (isXcoord)
+	*dp = i+1;
+      else
+	*dp = j+1;
+      dp++;
+    }
+  return mat;
 }
 
 void HandleContour::UpdateState() {
   if (HasChanged("levellist")) ToManual("levellistmode");
+  if (HasChanged("xdata")) ToManual("xdatamode");
+  if (HasChanged("ydata")) ToManual("ydatamode");
   Array zdata(ArrayPropertyLookup("zdata"));
   double zmin = ArrayMin(zdata);
   double zmax = ArrayMax(zdata);
+  Array xdata(GetCoordinateMatrix("xdata",true));
+  Array ydata(GetCoordinateMatrix("ydata",false));
   QList<double> levels;
   if (StringCheck("levellistmode","auto")) {
     levels = GetTicksInner(zmin,zmax,false);
@@ -239,9 +347,10 @@ void HandleContour::UpdateState() {
   pset.clear();
   zvals.clear();
   for (int i=0;i<levels.size();i++) { 
-    pset << ContourCDriver(zdata,levels[i]);
+    pset << ContourCDriver(zdata,levels[i],xdata,ydata);
     zvals << levels[i];
   }
+  RebuildContourMatrix();
 }
 
 void HandleContour::SelectColor(RenderEngine& gc, double zval) {
@@ -266,16 +375,10 @@ void HandleContour::SelectColor(RenderEngine& gc, double zval) {
 void HandleContour::PaintMe(RenderEngine& gc) {
   if (StringCheck("visible","off"))
     return;
-  qDebug() << "contour - paint";
-  qDebug() << "zvals - " << zvals.size();
   // Draw the line...
   double width(ScalarPropertyLookup("linewidth"));
   HPAutoColor *lc = (HPAutoColor*) LookupProperty("linecolor");
-  QFont fnt("Courier",10);
-  std::vector<double> black;
-  black.push_back(0);
-  black.push_back(0);
-  black.push_back(0);
+  bool floatflag = StringCheck("floating","on");
   if (!StringCheck("linecolor","none")) {
     gc.setLineStyle(StringPropertyLookup("linestyle"));
     gc.lineWidth(width);
@@ -295,44 +398,17 @@ void HandleContour::PaintMe(RenderEngine& gc) {
 	for (int k=0;k<aline.size();k++) {
 	  xs.push_back(aline[k].x);
 	  ys.push_back(aline[k].y);
-	  zs.push_back(0);
+	  if (floatflag)
+	    zs.push_back(zvals[i]);
+	  else
+	    zs.push_back(0);
 	}
 	std::vector<double> mxs, mys, mzs;
 	parent->ReMap(xs,ys,zs,mxs,mys,mzs);
 	gc.lineSeries(mxs,mys,mzs);
-	// Label this line series
-	if (mxs.size() > 0) {
-	  float lasts = 0;
-	  float currents = 0;
-	  for (int i=1;i<mxs.size();i++) {
-	    float currentx = mxs[i];
-	    float currenty = mys[i];
-	    float lastx = mxs[i-1];
-	    float lasty = mys[i-1];
-	    // Update the curve length
-	    currents += sqrt((currentx-lastx)*(currentx-lastx) + 
-			     (currenty-lasty)*(currenty-lasty));
-	    if ((currents-lasts) > 10) {
-	      if ((i>5) && (i < (mxs.size()-5))) {
-		lasts = currents;
-		// put a label at this spot
-		// To get the rotation, we take the tangent of the contour
-		float deltx = mxs[i+1] - mxs[i-1];
-		float delty = mys[i+1] - mys[i-1];
-		float rotation = atan2(delty,deltx)*180.0/M_PI;
-		//		rotation = 0;
-		//		qDebug() << "Text at " << lastx << "," << lasty << " ang " << rotation << "\r";
-		DrawSymbol(gc,RenderEngine::Plus,currentx,currenty,0,.5,black,black,1);
-		//		rotation = 0;
-		//		gc.putText(currentx,currenty,"val",black,RenderEngine::Mean,RenderEngine::Mean,fnt,rotation);
-	      }
-	    }
-	  }
-	}
       }
     }
   }
-  MarkDirty();
 }
 
 void HandleContour::SetupDefaults() {
@@ -340,15 +416,11 @@ void HandleContour::SetupDefaults() {
   SetConstrainedStringDefault("levellistmode","auto");
   SetConstrainedStringDefault("linestyle","-");
   SetScalarDefault("linewidth",1.0);
-  SetConstrainedStringDefault("fill","off");
   SetConstrainedStringDefault("floating","off");
-//   SetConstrainedStringDefault("marker","none");
-//   SetThreeVectorDefault("markeredgecolor",0,0,0);
-//   SetThreeVectorDefault("markerfacecolor",0,0,0);
-//   SetScalarDefault("markersize",6);
   SetStringDefault("type","contour");
   SetConstrainedStringDefault("visible","on");
-//   SetConstrainedStringDefault("xdatamode","manual");
+  SetConstrainedStringDefault("xdatamode","auto");
+  SetConstrainedStringDefault("ydatamode","auto");
 }
   
 void HandleContour::ConstructProperties() {
@@ -358,11 +430,13 @@ void HandleContour::ConstructProperties() {
   //@@Usage
   //Below is a summary of the properties for a line series.
   //\begin{itemize}
+  //  \item @|contourmatrix| - @|array| - the matrix containing contour data
+  // for the plot.  This is a @|2 x N| matrix containing x and y coordinates
+  // for points on the contours.  In addition, each contour line starts with
+  // a column containing the number of points and the contour value.
   //  \item @|displayname| - @|string| - The name of this line series as it
   //    appears in a legend.
-  //  \item @|fill| - @|{'on','off'}| - set to on to fill the contours.
   //  \item @|floating| - @|{'on','off'}| - set to on to have floating (3D) contours
-  //  \item @|labelspacing| - @|scalar| - distance in points between labels.
   //  \item @|levellist| - @|vector| - a vector of Z-values for the contours
   //  \item @|levellistmode| - @|{'auto','manual'}| - set to auto for 
   //    automatic selection  of Z-values of the contours.
@@ -370,50 +444,46 @@ void HandleContour::ConstructProperties() {
   //  \item @|linestyle| - @|{'-','--',':','-.','none'}| - the line style to draw the contour in.
   //  \item @|linewidth| - @|scalar| - the width of the lines
   //  \item @|parent| - @|handle| - The axis that contains this object
-  //  \item @|showtext| - @|{'on','off'}| - set to on to show labels on the contours.
   //  \item @|tag| - @|string| - A string that can be used to tag the object.
-  //  \item @|textlist| - @|vector| - contour values to label.
-  //  \item @|textlistmode| - @|{'auto','manual'}| - controls the setting of
-  //  the @|textlist| property.
   //  \item @|type| - @|string| - Returns the string @|'contour'|.
   //  \item @|userdata| - @|array| - Available to store any variable you
   // want in the handle object.
   //  \item @|visible| - @|{'on','off'}| - Controls visibility of the the line.
-  //  \item @|xdata| - @|vector| - Vector of x coordinates of points on the line.  Must be
-  // the same size as the @|ydata| and @|zdata| vectors.
-  //  \item @|xdatamode| - @|{'auto','manual'}| - When set to @|'auto'| FreeMat will autogenerate
-  // the x coordinates for the points on the line.  These values will be @|1,..,N| where
-  // @|N| is the number of points in the line.
-  //  \item @|ydata| - @|vector| - Vector of y coordinates of points on the line.  Must be
-  // the same size as the @|xdata| and @|zdata| vectors.
-  //  \item @|ydatamode| - @|{'auto','manual'}| - When set to @|'auto'| FreeMat will autogenerate
-  // the x coordinates for the points on the line.  These values will be @|1,..,N| where
-  // @|N| is the number of points in the line.
-  //  \item @|zdata| - @|vector| - Vector of z coordinates of points on the line.  Must be
-  // the same size as the @|xdata| and @|ydata| vectors.
+  //  \item @|xdata| - @|matrix| - Contains the x coordinates of the 
+  // surface on which the zdata is defined.  This can either be a monotonic
+  // vector of the same number of columns as @|zdata|, or a 2D matrix
+  // that is the same size as @|zdata|.
+  //  \item @|xdatamode| - @|{'auto','manual'}| - When set to @|'auto'| 
+  //FreeMat will autogenerate the x coordinates for the contours.  
+  //These values will be @|1,..,N| where @|N| is the number of columns
+  //of @|zdata|.
+  //  \item @|ydata| - @|matrix| - Contains the y coordinates of the
+  // surface on which the zdata is defined.  This can either be a monotonic
+  // vector of the same number of rows as @|zdata| or a 2D matrix that is
+  // the same size as @|zdata|.
+  //  \item @|ydatamode| - @|{'auto','manual'}| - When set to @|'auto'| 
+  //FreeMat will autogenerate the y coordinates for the contour data.
+  //  \item @|zdata| - @|matrix| - The matrix of z values that are to
+  // be contoured.
   //\end{itemize}
   //!
+  AddProperty(new HPArray,"contourmatrix");      //done
   AddProperty(new HPHandles,"children");         //done
   AddProperty(new HPString,"displayname");       //done
-  AddProperty(new HPOnOff,"fill");
-  AddProperty(new HPOnOff,"floating");
-  AddProperty(new HPScalar,"labelspacing");
+  AddProperty(new HPOnOff,"floating");           //done
   AddProperty(new HPVector,"levellist");         //done
   AddProperty(new HPAutoManual,"levellistmode"); //done
   AddProperty(new HPAutoColor,"linecolor");      //done
   AddProperty(new HPLineStyle,"linestyle");      //done
   AddProperty(new HPScalar,"linewidth");         //done
   AddProperty(new HPHandles,"parent");           //done
-  AddProperty(new HPOnOff,"showtext");    
   AddProperty(new HPString,"tag");               //done
-  AddProperty(new HPVector,"textlist");
-  AddProperty(new HPAutoManual,"textlistmode");
   AddProperty(new HPString,"type");              //done
   AddProperty(new HPArray,"userdata");           //done
   AddProperty(new HPOnOff,"visible");            //done
-  AddProperty(new HPVector,"xdata");
-  AddProperty(new HPAutoManual,"xdatamode");
-  AddProperty(new HPVector,"ydata");
-  AddProperty(new HPAutoManual,"ydatamode");
+  AddProperty(new HPArray,"xdata");              //done
+  AddProperty(new HPAutoManual,"xdatamode");     //done
+  AddProperty(new HPArray,"ydata");              //done
+  AddProperty(new HPAutoManual,"ydatamode");     //done
   AddProperty(new HPArray,"zdata");              //done
 }

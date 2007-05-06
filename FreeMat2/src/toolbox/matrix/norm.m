@@ -41,6 +41,9 @@
 %norm(A,inf)
 %norm(A,-inf)
 %@>
+%@@Tests
+%@$"y=norm([1,0])","1","exact"
+%@$"y=norm([4,3])","5","close"
 %!
 % Copyright (c) 2005 Samit Basu
 function y = norm(A,p)

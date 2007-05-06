@@ -4462,41 +4462,10 @@ void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag, Interpret
 }
 
 bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D, Interpreter* m_eval) {
-  Class Aclass, Bclass;
-
-  // Test for numeric
-  if (A.isReferenceType() || B.isReferenceType())
-    throw Exception("Cannot apply eigendecomposition to reference types.");
-  if (!A.is2D() || !B.is2D())
-    throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
-  if (A.getDimensionLength(0) != A.getDimensionLength(1))
-    throw Exception("Cannot eigendecompose a non-square matrix.");
-  if (B.getDimensionLength(0) != B.getDimensionLength(1))
-    throw Exception("Cannot eigendecompose a non-square matrix.");
-  if (A.getDimensionLength(0) != B.getDimensionLength(0))
-    throw Exception("B and A must be the same size when computing a generalized eigendecomposition");
+  Class Aclass(A.dataClass());
   int N = A.getDimensionLength(0);
-
-  // Create one square matrix to store the eigenvectors
-  Dimensions Vdims(N,1);
-
-  // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.dataClass();
-  if (Aclass < FM_FLOAT) {
-    A.promoteType(FM_DOUBLE);
-    Aclass = FM_DOUBLE;
-  }
-  Bclass = B.dataClass();
-  if (Bclass < Aclass) {
-    B.promoteType(Aclass);
-    Bclass = Aclass;
-  } else {
-    A.promoteType(Bclass);
-    Aclass = Bclass;
-  }
-
   // Select the eigenvector decomposition routine based on A's type
-  Dimensions VDims(N,1);
+  Dimensions Vdims(N,1);
   switch (Aclass) {
   case FM_FLOAT: 
     {
@@ -4566,38 +4535,11 @@ bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D, Inter
  */
 bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D, Interpreter* m_eval) {
   int i;
-  Class Aclass, Bclass;
-
-  // Test for numeric
-  if (A.isReferenceType() || B.isReferenceType())
-    throw Exception("Cannot apply eigendecomposition to reference types.");
-  if (!A.is2D() || !B.is2D())
-    throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
-  if (A.getDimensionLength(0) != A.getDimensionLength(1))
-    throw Exception("Cannot eigendecompose a non-square matrix.");
-  if (B.getDimensionLength(0) != B.getDimensionLength(1))
-    throw Exception("Cannot eigendecompose a non-square matrix.");
-  if (A.getDimensionLength(0) != B.getDimensionLength(0))
-    throw Exception("B and A must be the same size when computing a generalized eigendecomposition");
+  Class Aclass(A.dataClass());
   int N = A.getDimensionLength(0);
 
   // Create one square matrix to store the eigenvectors
   Dimensions Vdims(N,N);
-
-  // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.dataClass();
-  if (Aclass < FM_FLOAT) {
-    A.promoteType(FM_DOUBLE);
-    Aclass = FM_DOUBLE;
-  }
-  Bclass = B.dataClass();
-  if (Bclass < Aclass) {
-    B.promoteType(Aclass);
-    Bclass = Aclass;
-  } else {
-    A.promoteType(Bclass);
-    Aclass = Bclass;
-  }
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
   case FM_FLOAT: 
@@ -4698,32 +4640,10 @@ bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D
  */
 void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D, Interpreter* m_eval) {
   int i, j;
-  Class Aclass, Bclass;
-
-  // Test for numeric
-  if (A.isReferenceType())
-    throw Exception("Cannot apply eigendecomposition to reference types.");
-  if (!A.is2D())
-    throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
-  if (A.getDimensionLength(0) != A.getDimensionLength(1))
-    throw Exception("Cannot eigendecompose a non-square matrix.");
-  int N = A.getDimensionLength(0);
+  Class Aclass(A.dataClass());
   // Create one square matrix to store the eigenvectors
+  int N = A.getDimensionLength(0);  
   Dimensions Vdims(N,N);
-  // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.dataClass();
-  if (Aclass < FM_FLOAT) {
-    A.promoteType(FM_DOUBLE);
-    Aclass = FM_DOUBLE;
-  }
-  Bclass = B.dataClass();
-  if (Bclass < Aclass) {
-    B.promoteType(Aclass);
-    Bclass = Aclass;
-  } else {
-    A.promoteType(Bclass);
-    Aclass = Bclass;
-  }
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
   case FM_FLOAT: 
@@ -4897,32 +4817,10 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D, 
  */
 void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D, Interpreter* m_eval) {
   int i, j;
-  Class Aclass, Bclass;
-
-  // Test for numeric
-  if (A.isReferenceType())
-    throw Exception("Cannot apply eigendecomposition to reference types.");
-  if (!A.is2D())
-    throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
-  if (A.getDimensionLength(0) != A.getDimensionLength(1))
-    throw Exception("Cannot eigendecompose a non-square matrix.");
+  Class Aclass(A.dataClass());
   int N = A.getDimensionLength(0);
   // Create one square matrix to store the eigenvectors
   Dimensions Vdims(N,1);
-  // Handle the type of A - if it is an integer type, then promote to double
-  Aclass = A.dataClass();
-  if (Aclass < FM_FLOAT) {
-    A.promoteType(FM_DOUBLE);
-    Aclass = FM_DOUBLE;
-  }
-  Bclass = B.dataClass();
-  if (Bclass < Aclass) {
-    B.promoteType(Aclass);
-    Bclass = Aclass;
-  } else {
-    A.promoteType(Bclass);
-    Aclass = Bclass;
-  }
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
   case FM_FLOAT: 

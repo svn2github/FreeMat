@@ -926,13 +926,35 @@ ArrayVector GetLineFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_eval) {
   Array A(arg[0]);
   Array B(arg[1]);
-  if (!A.is2D() || !B.is2D())
-    throw Exception("cannot apply matrix operations to N-dimensional arrays.");
   if (A.sparse() || B.sparse())
-    throw Exception("eig only defined for full matrices.");
-
+    throw Exception("eig only defined for full matrices.");  
   if (A.anyNotFinite() || B.anyNotFinite())
     throw Exception("eig only defined for matrices with finite entries.");
+  if (A.isReferenceType() || B.isReferenceType())
+    throw Exception("Cannot apply eigendecomposition to reference types.");
+  if (!A.is2D() || !B.is2D())
+    throw Exception("Cannot apply eigendecomposition to N-Dimensional arrays.");
+  if (A.getDimensionLength(0) != A.getDimensionLength(1))
+    throw Exception("Cannot eigendecompose a non-square matrix.");
+  if (B.getDimensionLength(0) != B.getDimensionLength(1))
+    throw Exception("Cannot eigendecompose a non-square matrix.");
+  if (A.getDimensionLength(0) != B.getDimensionLength(0))
+    throw Exception("B and A must be the same size when computing a generalized eigendecomposition");
+
+  // Handle the type of A - if it is an integer type, then promote to double
+  Class Aclass = A.dataClass();
+  if (Aclass < FM_FLOAT) {
+    A.promoteType(FM_DOUBLE);
+    Aclass = FM_DOUBLE;
+  }
+  Class Bclass = B.dataClass();
+  if (Bclass < Aclass) {
+    B.promoteType(Aclass);
+    Bclass = Aclass;
+  } else {
+    A.promoteType(Bclass);
+    Aclass = Bclass;
+  }
 
   ArrayVector retval;
   Array V, D;
@@ -1376,6 +1398,14 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t4all = t4all & t1 & tb;
 //end
 //t = t1all & t2all & t3all & t4all;
+//@}
+//@{ test_eig6.m
+//function t = test_eig6
+//  try
+//    eig([1,2;3,4],eye(1));
+//  catch
+//  end
+//  t = true;
 //@}
 //!
 ArrayVector EigFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {

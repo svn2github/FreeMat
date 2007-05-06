@@ -706,6 +706,8 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
     QPrinter prnt;
     if (type == "PDF")
       prnt.setOutputFormat(QPrinter::PdfFormat);
+    else
+      prnt.setOutputFormat(QPrinter::PostScriptFormat);
     prnt.setOutputFileName(filename.c_str());
     QPainter pnt(&prnt);
     QTRenderEngine gc(&pnt,0,0,g->width(),g->height());

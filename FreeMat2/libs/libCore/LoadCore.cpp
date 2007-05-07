@@ -193,6 +193,10 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("real",RealFunction,1,1,"x",NULL);
   context->addFunction("imag",ImagFunction,1,1,"x",NULL);
   context->addFunction("abs",AbsFunction,1,1,"x",NULL);
+  context->addFunction("wavplay",WavPlayFunction,3,0,"y","fs","mode",NULL);
+  context->addFunction("num2hex",Num2HexFunction,1,1,"x",NULL);
+  context->addFunction("hex2dec",Hex2DecFunction,1,1,"x",NULL);
+  context->addFunction("dec2hex",Dec2HexFunction,2,1,"x","n",NULL);
   context->addSpecialFunction("save",SaveFunction,-1,0,NULL);
   context->addSpecialFunction("load",LoadFunction,1,0,"filename",NULL);
   context->addSpecialFunction("clear",ClearFunction,-1,0,NULL);

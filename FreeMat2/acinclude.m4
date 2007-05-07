@@ -287,6 +287,14 @@ extern_flags=""
 need_extern="no"
 LIBS="$LIBS $FLIBS"
 
+AC_CHECK_LIB(portaudio,Pa_OpenStream,found_portaudio="yes",found_portaudio="no")
+AC_CHECK_HEADER(portaudio.h,[],found_portaudio="no")
+
+if test x"$found_portaudio" == xyes; then
+  LIBS="-lportaudio $LIBS"
+  AC_DEFINE(HAVE_PORTAUDIO, 1, [Set to 1 if you have libportaudio])
+fi
+
 AC_CHECK_LIB(pcre,pcre_compile,found_pcre="yes",found_pcre="no")
 AC_CHECK_HEADER(pcre.h,[],found_pcre="no")
 

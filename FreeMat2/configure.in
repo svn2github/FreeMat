@@ -82,7 +82,7 @@ if (test "$cross_compiling" = "yes"); then
      AC_MSG_ERROR([QT4 uic is required.])
    fi
    QT_CFLAGS="-I$QT4DIR/include -I$QT4DIR/include/QtCore -I$QT4DIR/include/QtGui -I$QT4DIR/include/QtNetwork -I$QT4DIR/include/QtXml -I$QT4DIR/include/QtOpenGL"
-   QT_LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtXml4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32"
+   LIBS="-L$QT4DIR/lib -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtXml4 -lQtOpenGL4 -lopengl32 -lglu32 -lgdi32 -luser32 -lqtmain -lwsock32 $LIBS"
    LDFLAGS="$LDFLAGS -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-subsystem,windows"
    platform="--xwin"
    AC_SUBST(QT4DIR)
@@ -94,7 +94,7 @@ if (test "$cross_compiling" = "no") && (test "$is_mac" = "yes"); then
    AC_MSG_NOTICE([Configuring for Mac OS X build])
    platform="--mac"
    QT_CFLAGS=" -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SHARED"
-   QT_LIBS="-F/Library/Frameworks -L/Library/Frameworks -framework QtOpenGL -framework QtGui -framework Carbon -framework QuickTime -framework AppKit -framework QtCore -framework QtNetwork -framework QtXml -lz -lm -liconv -framework ApplicationServices -framework OpenGL -framework AGL"
+   LIBS="-F/Library/Frameworks -L/Library/Frameworks -framework QtOpenGL -framework QtGui -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon -framework QuickTime -framework AppKit -framework QtCore -framework QtNetwork -framework QtXml -lz -lm -liconv -framework ApplicationServices -framework OpenGL -framework AGL $LIBS"
    AC_CHECK_PROGS(QT_MOC, [moc4 moc-qt4 moc], [])
    AC_CHECK_PROGS(QT_RCC, [rcc4 rcc-qt4 rcc], [])
    AC_CHECK_PROGS(QT_UIC, [uic4 uic-qt4 uic], [])
@@ -116,7 +116,7 @@ AC_MSG_NOTICE([Win32 flag is $is_win32])
 AM_CONDITIONAL(WIN32, test x"$is_win32" = x"true")
 
 AC_SUBST(QT_CFLAGS)
-AC_SUBST(QT_LIBS)
+dnl AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MOC)
 AC_SUBST(QT_RCC)
 AC_SUBST(QT_UIC)
@@ -125,11 +125,12 @@ AC_SUBST(platform)
 AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
 
-if test x"${QT_LIBS}" = x; then
-   echo ""
-   AC_MSG_ERROR([Qt4 is required.  If you have Qt installed see --help for more options])
-   echo ""
+if test x"${QT_CFLAGS}" = x; then
+  echo ""
+  AC_MSG_ERROR([Qt4 is required.  If you have Qt installed see --help for more options])
+  echo ""
 fi
+
 cdir=`pwd`
 
 
@@ -242,6 +243,14 @@ echo \
 else
 echo \
 "    PCRE            Regular Expressions                   Not Found"
+fi
+
+if (test x"$found_portaudio" == xyes); then
+echo \
+"    PORTAUDIO       Audio I/O                             Found"
+else
+echo \
+"    PORTAUDIO       Audio I/O                             Not Found"
 fi
 
 echo \

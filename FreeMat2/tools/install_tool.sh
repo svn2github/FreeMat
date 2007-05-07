@@ -563,6 +563,17 @@ SetupMacQt()
 }
 
 
+SetupMacPortAudio()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $PORTAUDIO_FILE http://www.portaudio.com/archives $PORTAUDIO Root
+    cd $BASE/Root/$PORTAUDIO
+    make -f Makefile.darwin
+    cp lib/libportaudio.a $BASE/Build/lib/.
+    ranlib $BASE/Build/lib/libportaudio.a
+    cp include/*.h $BASE/Build/include/.
+}
+
 SetupMacFortran()
 {
     SetupXWinCommon
@@ -926,6 +937,7 @@ subdirectory.  Here are the tasks manages by this script.
       --mac-inplace      Build the Mac FreeMat in place
       --mac-inplace-bundle Build the Mac bundle in place
       --mac-fortran      Setup the Mac fortrans
+      --mac-portaudio    Setup the Mac PortAudio 
       --xmac-fftw        Setup the PPC cross of FFTW
       --xmac-sparse      Setup the PPC cross of SuiteSparse
       --xmac-arpack      Setup the PPC cross of ARPACK
@@ -979,6 +991,7 @@ for arg
       --mac-inplace)   SetupMacInplaceBuild ;;
       --mac-inplace-bundle) SetupMacInplaceBundle ;;
       --mac-fortran)   SetupMacFortran ;;
+      --mac-portaudio) SetupMacPortAudio;;
       --xmac-fftw)     SetupXMacFFTW ;;
       --xmac-sparse)   SetupXMacSparse ;;
       --xmac-ffcall)   SetupXMacFFCALL ;;

@@ -30,6 +30,8 @@ bool IsNaN(uint64 t);
 bool IsNaN(double t);
 bool IsFinite(float t);
 bool IsFinite(double t);
+void ToHexString(float t, char *ptr);
+void ToHexString(double t, char *ptr);
 #ifndef M_PI
 #define M_PI 3.141592653589793
 #endif

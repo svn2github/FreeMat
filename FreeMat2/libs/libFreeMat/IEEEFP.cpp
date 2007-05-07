@@ -37,7 +37,7 @@ bool IsInfinite(float t) {
   union {
     float f;
     unsigned int i;
-  } u;
+  } u;             
   u.f = t;
   if (((u.i & 0x7f800000) == 0x7f800000) && ((u.i & 0x007fffff) == 0))
     return true;
@@ -121,4 +121,27 @@ bool IsFinite(float t) {
 
 bool IsFinite(double t) {
   return (!(IsNaN(t) || IsInfinite(t)));
+}
+
+void ToHexString(float t, char *ptr) {
+  union {
+    float f;
+    unsigned int i;
+  } u;
+  u.f = t;
+  sprintf(ptr,"%08x",u.i);
+}
+
+void ToHexString(double t, char *ptr) {
+  union {
+    double f;
+    unsigned int i[2];
+  } u;
+  u.f = t;
+  if (!endianDetected) 
+    CheckBigEndian();
+  if (!bigEndian) 
+    sprintf(ptr,"%08x%08x",u.i[1],u.i[0]);
+  else
+    sprintf(ptr,"%08x%08x",u.i[0],u.i[1]);
 }

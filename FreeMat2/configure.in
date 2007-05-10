@@ -63,7 +63,7 @@ if (test "$cross_compiling" = "no") && (test "$is_mac" = "no"); then
    is_win32="false"
    platform="--linux"
    MP_WITH_CURSES
-   LIBS="$LIBS $CURSES_LIB $FLIBS"
+   LIBS="$LIBS $CURSES_LIB $FLIBS $QT_LIBS"
 fi
 
 if (test "$cross_compiling" = "yes"); then

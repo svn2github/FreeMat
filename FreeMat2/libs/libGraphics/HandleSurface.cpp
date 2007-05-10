@@ -30,6 +30,7 @@ HandleSurface::~HandleSurface() {
 
 std::vector<double> HandleSurface::GetLimits() {
   std::vector<double> limits;
+  UpdateState();
   Array xdata(ArrayPropertyLookup("xdata"));
   Array ydata(ArrayPropertyLookup("ydata"));
   Array zdata(ArrayPropertyLookup("zdata"));

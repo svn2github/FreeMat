@@ -790,7 +790,7 @@ EOF
 SetupInplaceBuild() 
 {
   SetupCommon
-  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse"
+  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse" PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$BASE/Build/lib/pkgconfig"
 }
 
 SetupRelease()

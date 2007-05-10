@@ -720,6 +720,17 @@ Why doesn't  regexp('Time is a True Test','(\bT\w*\b)','tokens'){:} work?
 The following is roughly equivalent to symvar
 b = regexp(a,'(\b[a-zA-Z]\w*\b)(?!\s*\()','tokens'); b{:}
 help<tab> doesn't show
+<<<<<<< .mine
+
+color order:
+0,0,1
+0,.5,0
+1,0,0
+0,0.75,0.75
+0.75,0,0.75
+0.75,0.75,0
+0.25,0.25,0.25
+=======
 
 
 To Do:
@@ -728,3 +739,4 @@ Contour plots - finish
 Fix range calculation for plots
 Add format command
 Revert and fix QTTerm.
+>>>>>>> .r2593

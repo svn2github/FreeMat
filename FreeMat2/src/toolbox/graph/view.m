@@ -84,4 +84,9 @@ function view(varargin)
   z = sin(el)*r + zmean;
   y = -cos(el)*cos(az)*r + ymean;
   x = cos(el)*sin(az)*r + xmean;
-  set(gca,'cameraposition',[x,y,z],'cameraupvector',[0,0,1]);
+  set(gca,'cameraposition',[x,y,z]);
+  if (abs(el-pi/2) < .001)
+    set(gca,'cameraupvector',[0,1,0]);
+  else
+    set(gca,'cameraupvector',[0,0,1]);
+  end

@@ -292,6 +292,7 @@ AC_CHECK_HEADER(portaudio.h,[],found_portaudio="no")
 
 if test x"$found_portaudio" == xyes; then
   LIBS="-lportaudio $LIBS"
+  CFLAGS="$CFLAGS"
   AC_DEFINE(HAVE_PORTAUDIO, 1, [Set to 1 if you have libportaudio])
 fi
 
@@ -345,17 +346,22 @@ if test x"$found_amd" == xyes; then
 	fi
 fi
 
-AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
-AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
-AC_CHECK_HEADER(fftw3.h,[],[found_fftw3="no";found_fftw3f="no"])
+PKG_CHECK_MODULES(fftw3, fftw3 >= 3.1.0, found_fftw3="yes", found_fftw3="no")
+PKG_CHECK_MODULES(fftw3f, fftw3f >= 3.1.0, found_fftw3f="yes", found_fftw3f="no")
+
+dnl AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
+dnl AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
+dnl AC_CHECK_HEADER(fftw3.h,[],[found_fftw3="no";found_fftw3f="no"])
 
 if test x"$found_fftw3f" == xyes; then
-	LIBS="-lfftw3f $LIBS"
+	LIBS="$fftw3f_LIBS $LIBS"
+	CFLAGS="$CFLAGS $fftw3f_CFLAGS"
 	AC_DEFINE(HAVE_FFTWF, 1, [Set to 1 if you have the single precision version of FFTW installed])
 fi
 
 if test x"$found_fftw3" == xyes; then
-	LIBS="-lfftw3 $LIBS"
+	LIBS="$fftw3_LIBS $LIBS"
+	CFLAGS="$CFLAGS $fftw3_CFLAGS"
   	AC_DEFINE(HAVE_FFTW, 1, [Set to 1 if you have the double precision version of FFTW installed])
 fi
 

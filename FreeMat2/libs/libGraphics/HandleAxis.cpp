@@ -29,18 +29,34 @@
 #include <qgl.h>
 #include <QList>
 
-QList<double> GetTicksOuter(double amin, double amax, bool isLog) {
+QList<double> GetTicksOuter(double amin, double amax, bool isLog, int requestedCounts) {
   double arange = amax - amin;
   double astep = pow(10.0,floor(log10(arange)));
   double nsteps = arange/astep;
   double aval;
   QList<double> retvec;
-  if (nsteps <= 1)
-    astep /= 10.0;
-  else if (nsteps <= 2)
-    astep /= 5.0;
-  else if (nsteps <= 5)
-    astep /= 2.0;
+  if (requestedCounts >= 10) {
+    if (nsteps <= 1)
+      astep /= 10.0;
+    else if (nsteps <= 2)
+      astep /= 5.0;
+    else if (nsteps <= 5)
+      astep /= 2.0;
+  } else if (requestedCounts >= 5) {
+    if (nsteps > 5) {
+      astep *= 2.0;
+      nsteps = arange/astep;
+    }
+    if (nsteps <= 1)
+      astep /= 5.0;
+  } else if (requestedCounts >= 2) {
+    if (nsteps > 2) {
+      astep *= 5.0;
+      nsteps = arange/astep;
+    }
+    if (nsteps <= 1)
+      astep /= 2.0;
+  }
   if (isLog)
     astep = ceil(astep);
   if ((amin < 0) && (amax > 0)) {
@@ -67,18 +83,34 @@ QList<double> GetTicksOuter(double amin, double amax, bool isLog) {
   return retvec;
 }
 
-QList<double> GetTicksInner(double amin, double amax, bool isLog) {
+QList<double> GetTicksInner(double amin, double amax, bool isLog, int requestedCounts) {
   double arange = amax - amin;
   double astep = pow(10.0,floor(log10(arange)));
   double nsteps = arange/astep;
   double aval;
   QList<double> retvec;
-  if (nsteps <= 1)
-    astep /= 10.0;
-  else if (nsteps <= 2)
-    astep /= 5.0;
-  else if (nsteps <= 5)
-    astep /= 2.0;
+  if (requestedCounts >= 10) {
+    if (nsteps <= 1)
+      astep /= 10.0;
+    else if (nsteps <= 2)
+      astep /= 5.0;
+    else if (nsteps <= 5)
+      astep /= 2.0;
+  } else if (requestedCounts >= 5) {
+    if (nsteps > 5) {
+      astep *= 2.0;
+      nsteps = arange/astep;
+    }
+    if (nsteps <= 1)
+      astep /= 5.0;
+  } else if (requestedCounts >= 2) {
+    if (nsteps > 2) {
+      astep *= 5.0;
+      nsteps = arange/astep;
+    }
+    if (nsteps <= 1)
+      astep /= 2.0;
+  }
   if (isLog) astep = ceil(astep);
   if ((amin < 0) && (amax > 0)) {
     aval = 0;
@@ -302,7 +334,7 @@ void FormatAxisManual(double t1, double t2, int tickcount,
   tlabels.clear();
   bool exponentialForm;
   exponentialForm = false;
-  QList<double> tick_locations(GetTicksInner(t1,t2,isLogarithmic));
+  QList<double> tick_locations(GetTicksInner(t1,t2,isLogarithmic,tickcount));
   tStart = tick_locations.front();
   tStop = tick_locations.back();
   tCount = tick_locations.size();
@@ -335,7 +367,7 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
   bool exponentialForm;
   exponentialForm = false;
   //  const double *dp = (const double *) trange.getDataPointer();
-  QList<double> tick_locations(GetTicksOuter(tMin,tMax,isLogarithmic));
+  QList<double> tick_locations(GetTicksOuter(tMin,tMax,isLogarithmic,tickcount));
   tStart = tick_locations.front();
   tStop = tick_locations.back();
   tCount = tick_locations.size();
@@ -1582,7 +1614,7 @@ int HandleAxis::GetTickCount(RenderEngine &gc,
   gc.toPixels(x2,y2,z2,u2,v2);
   double axlen;
   axlen = sqrt((u2-u1)*(u2-u1) + (v2-v1)*(v2-v1));
-  int numtics = (int)(qMax(2.0,axlen/100.0));
+  int numtics = (int)(qMax(2.0,axlen/25.0));
   return numtics;
 }
 

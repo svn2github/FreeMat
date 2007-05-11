@@ -570,8 +570,8 @@ void QTRenderEngine::drawImage(double x1, double y1, double x2, double y2,
 
 void QTRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
 				std::vector<std::vector<cpoint> > edges, bool flatedges) {
-  qDebug() << "Faces " << faces.size();
-  qDebug() << "Edges " << edges.size();
+  //  qDebug() << "Faces " << faces.size();
+  //  qDebug() << "Edges " << edges.size();
   std::vector<quad3d> mapqds(MapQuads(faces,edges));
   std::sort(mapqds.begin(),mapqds.end());
   for (int i=0;i<mapqds.size();i++) {
@@ -581,18 +581,18 @@ void QTRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool fl
     poly.push_back(QPointF(mapqds[i].pts[3].x,mapqds[i].pts[3].y));
     poly.push_back(QPointF(mapqds[i].pts[2].x,mapqds[i].pts[2].y));
     
-    qDebug() << "Brush " << (int)(mapqds[i].r*255) << "," 
-	     << (int)(mapqds[i].g*255)
-	     << (int)(mapqds[i].b*255)
-	     << (int)(mapqds[i].a*255);
-    qDebug() << "Pen " << (int)(mapqds[i].er*255) << "," 
-	     << (int)(mapqds[i].eg*255)
-	     << (int)(mapqds[i].eb*255)
-	     << (int)(mapqds[i].ea*255);
-    qDebug() << "Point " << mapqds[i].pts[0].x << "," << mapqds[i].pts[0].y;
-    qDebug() << "Point " << mapqds[i].pts[1].x << "," << mapqds[i].pts[1].y;
-    qDebug() << "Point " << mapqds[i].pts[2].x << "," << mapqds[i].pts[2].y;
-    qDebug() << "Point " << mapqds[i].pts[3].x << "," << mapqds[i].pts[3].y;
+//     qDebug() << "Brush " << (int)(mapqds[i].r*255) << "," 
+// 	     << (int)(mapqds[i].g*255)
+// 	     << (int)(mapqds[i].b*255)
+// 	     << (int)(mapqds[i].a*255);
+//     qDebug() << "Pen " << (int)(mapqds[i].er*255) << "," 
+// 	     << (int)(mapqds[i].eg*255)
+// 	     << (int)(mapqds[i].eb*255)
+// 	     << (int)(mapqds[i].ea*255);
+//     qDebug() << "Point " << mapqds[i].pts[0].x << "," << mapqds[i].pts[0].y;
+//     qDebug() << "Point " << mapqds[i].pts[1].x << "," << mapqds[i].pts[1].y;
+//     qDebug() << "Point " << mapqds[i].pts[2].x << "," << mapqds[i].pts[2].y;
+//     qDebug() << "Point " << mapqds[i].pts[3].x << "," << mapqds[i].pts[3].y;
 
     pnt->setBrush(QColor((int)(mapqds[i].r*255),
 			 (int)(mapqds[i].g*255),

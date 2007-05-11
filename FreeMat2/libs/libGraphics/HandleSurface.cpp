@@ -133,12 +133,14 @@ void HandleSurface::ConstructProperties() {
   //  \item @|vertexnormals| - Not used.
   //  \item @|xdata| - @|array| - Must be a numeric array of size @|M x N| which contains
   // the x location of each point in the defined surface. Must be the same size as @|ydata|
-  // and @|zdata|.
+  // and @|zdata|.  Alternately, you can specify an array of size @|1 x N| in which case
+  // FreeMat replicates the vector to fill out an @|M x N| matrix.
   //  \item @|xdatamode| - @|{'auto','manual'}| - When set to @|auto| then FreeMat will
   // automatically generate the x coordinates.
   //  \item @|ydata| - @|array| - Must be a numeric array of size @|M x N| which contains
   // the y location of each point in the defined surface. Must be the same size as @|xdata|
-  // and @|zdata|.
+  // and @|zdata|.   Alternately, you can specify an array of size @|M x 1| in which case
+  // FreeMat replicates the vector to fill out an @|M x N| matrix.
   //  \item @|ydatamode| - @|{'auto','manual'}| - When set to @|auto| then FreeMat will
   // automatically generate the y coordinates.
   //  \item @|zdata| - @|array| - Must be a numeric array of size @|M x N| which contains
@@ -278,13 +280,57 @@ void HandleSurface::UpdateState() {
   2
 */
 
+Array HandleSurface::GetCoordinateMatrix(std::string name, bool isXcoord) {
+  // Get the elevation data from the object
+  Array zdata(ArrayPropertyLookup("zdata"));
+  int zrows(zdata.rows());
+  int zcols(zdata.columns());
+  if (StringCheck(name+"mode","manual")) {
+    // not auto mode...
+    Array cdata(ArrayPropertyLookup(name));
+    if (cdata.isVector() && 
+	((isXcoord && (cdata.getLength() == zcols)) ||
+	 (!isXcoord && (cdata.getLength() == zrows)))) {
+      cdata.promoteType(FM_DOUBLE);
+      const double *qp = (const double*) cdata.getDataPointer();
+      Array mat(Array::doubleMatrixConstructor(zrows,zcols));
+      double *dp = (double*) mat.getReadWriteDataPointer();
+      for (int i=0;i<zcols;i++)
+	for (int j=0;j<zrows;j++) {
+	  if (isXcoord)
+	    *dp = qp[i];
+	  else
+	    *dp = qp[j];
+	  dp++;
+	}
+      return mat;
+    } else if (cdata.is2D() && (cdata.rows() == zrows) &&
+	       (cdata.columns() == zcols)) {
+      return cdata;
+    } 
+  }
+  // In auto mode, or the given data is bogus...
+  Array mat(Array::doubleMatrixConstructor(zrows,zcols));
+  double *dp = (double*) mat.getReadWriteDataPointer();
+  for (int i=0;i<zcols;i++)
+    for (int j=0;j<zrows;j++) {
+      if (isXcoord)
+	*dp = i+1;
+      else
+	*dp = j+1;
+      dp++;
+    }
+  return mat;
+}
+
+
 std::vector<std::vector<cpoint> > HandleSurface::BuildQuadsNoTexMap(HPConstrainedStringColor* cp,
 								    HPConstrainedStringScalar* ap) {
   // Get the x,y,z & color data points
   std::vector<std::vector<cpoint> > retval;
-  Array xdata(ArrayPropertyLookup("xdata"));
+  Array xdata(GetCoordinateMatrix("xdata",true));
   xdata.promoteType(FM_DOUBLE);
-  Array ydata(ArrayPropertyLookup("ydata"));
+  Array ydata(GetCoordinateMatrix("ydata",false));
   ydata.promoteType(FM_DOUBLE);
   Array zdata(ArrayPropertyLookup("zdata"));
   zdata.promoteType(FM_DOUBLE);

@@ -77,6 +77,8 @@ std::vector<double> HandleContour::GetLimits() {
     zmin = 0;
     zmax = 0;
   }
+  if (StringCheck("floating","off"))
+    zmin = zmax = 0;
   limits.push_back(xmin);
   limits.push_back(xmax);
   limits.push_back(ymin);
@@ -330,7 +332,7 @@ void HandleContour::UpdateState() {
   Array ydata(GetCoordinateMatrix("ydata",false));
   QList<double> levels;
   if (StringCheck("levellistmode","auto")) {
-    levels = GetTicksInner(zmin,zmax,false);
+    levels = GetTicksInner(zmin,zmax,false,10);
     if (levels.front() == zmin) levels.pop_front();
     if (levels.back() == zmax) levels.pop_back();
     std::vector<double> ulevels;

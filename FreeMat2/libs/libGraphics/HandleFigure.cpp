@@ -162,10 +162,10 @@ void HandleFigure::PaintMe(RenderEngine &gc) {
   try {
     //    qDebug("size = %d %d",m_width,m_height);
     // draw the children...
-    qDebug() << "paint!\r";
+    //    qDebug() << "paint!\r";
     HPColor *color = (HPColor*) LookupProperty("color");
     if (color->Data()[0] >= 0) {
-      qDebug() << "clear!\r";
+      //      qDebug() << "clear!\r";
       gc.clear(color->Data());
     }
     HPHandles *children = (HPHandles*) LookupProperty("children");

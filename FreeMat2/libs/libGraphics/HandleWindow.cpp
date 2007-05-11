@@ -66,12 +66,12 @@ void GfxDisableRepaint() {
 }
 
 void BaseFigureQt::paintEvent(QPaintEvent *e) {
-  qDebug() << "Paint\r";
+  //  qDebug() << "Paint\r";
   if (enableRepaint && hfig->ParentWindow()->isDirty()) {
     {
       // enableRepaint is true, and the background is dirty - update
       // the backing store, and then redraw it.
-      qDebug() << "Redraw\r";
+      //      qDebug() << "Redraw\r";
       QPainter pnt(&backStore);
       QTRenderEngine gc(&pnt,0,0,width(),height());
       hfig->PaintMe(gc);
@@ -80,7 +80,7 @@ void BaseFigureQt::paintEvent(QPaintEvent *e) {
     QPainter pnt2(this);
     pnt2.drawPixmap(0,0,backStore);
   } else {
-    qDebug() << "Refresh\r";
+    //    qDebug() << "Refresh\r";
     QPainter pnt(this);
     pnt.drawPixmap(e->rect(),backStore);
   }
@@ -451,6 +451,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
 	h->SetConstrainedStringDefault("ylimmode","manual");
 	h->UpdateState();
 	hfig->Repaint();
+	UpdateState();
       }
     }
     if ((mode == rotate_mode) && rotate_active) {
@@ -489,6 +490,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
 	h->SetConstrainedStringDefault("cameraupvectormode","manual");
 	h->UpdateState();
 	hfig->Repaint();
+	UpdateState();
       }
     }
     if ((mode == cam_rotate_mode) && rotate_active) {
@@ -506,6 +508,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
 	h->SetConstrainedStringDefault("cameraupvectormode","manual");
 	h->UpdateState();
 	hfig->Repaint();
+	UpdateState();
       }
     }
   } catch (Exception &e) {

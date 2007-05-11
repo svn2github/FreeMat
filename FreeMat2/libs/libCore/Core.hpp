@@ -172,6 +172,7 @@ ArrayVector EditorFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector PathToolFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SleepFunction(int, const ArrayVector& arg);
 ArrayVector WavPlayFunction(int, const ArrayVector& arg);
+ArrayVector WavRecordFunction(int, const ArrayVector& arg);
 ArrayVector SetPrintLimitFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector GetPrintLimitFunction(int, const ArrayVector& arg, Interpreter* eval);
 void InitializeFileSubsystem();

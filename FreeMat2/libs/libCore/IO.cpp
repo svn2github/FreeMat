@@ -69,7 +69,7 @@ const int FRAMES_PER_BUFFER = 64;
 
 class PlayBack {
 public:
-  const char *data;
+  char *data;
   int length;
   int channels;
   int framesToGo;
@@ -131,6 +131,46 @@ static int DoPlayBackCallback(const void *, void *output,
   return finished;
 }
 
+static int DoRecordCallback(const void *input, void *,
+			    unsigned long framesPerBuffer,
+			    const PaStreamCallbackTimeInfo*,
+			    PaStreamCallbackFlags,
+			    void *userData) {
+  PlayBack *pb = (PlayBack*) userData;
+  char *in = (char*) input;
+  char *dp = pb->data;
+  int framesToCalc;
+  int finished = 0;
+  int i;
+  if( pb->framesToGo < framesPerBuffer )
+    {
+      framesToCalc = pb->framesToGo;
+      pb->framesToGo = 0;
+      finished = 1;
+    }
+  else
+    {
+      framesToCalc = framesPerBuffer;
+      pb->framesToGo -= framesPerBuffer;
+    }
+  
+  for( i=0; i<framesToCalc; i++ )
+    {
+      if (pb->channels == 1) {
+	for (int j=0;j<pb->elementSize;j++)
+	  dp[pb->ptr*pb->elementSize + j] = *in++;
+	pb->ptr++;
+      } else {
+	for (int j=0;j<pb->elementSize;j++) 
+	  dp[pb->ptr*pb->elementSize + j] = *in++;
+	for (int j=0;j<pb->elementSize;j++)
+	  dp[(pb->ptr+pb->length)*pb->elementSize + j] = *in++;
+	pb->ptr++;
+      }
+    }
+  return finished;
+}
+
 static PaError err;
 static bool Initialized = false;
 static bool RunningStream = false;
@@ -168,7 +208,7 @@ void DoPlayBack(const void *data, int count, int channels,
   outputParameters.hostApiSpecificStreamInfo = NULL;
   pb_obj = new PlayBack;
   pb_obj->x = x;
-  pb_obj->data = (const char *)data;
+  pb_obj->data = (char *)data;
   pb_obj->length = count;
   pb_obj->channels = channels;
   pb_obj->ptr = 0;
@@ -192,6 +232,42 @@ void DoPlayBack(const void *data, int count, int channels,
   else
     RunningStream = true;
 }
+
+void DoRecord(void *data, int count, int channels, 
+	      int elementSize, unsigned long SampleFormat,
+	      int Rate) {
+  if (RunningStream) 
+    PAShutdown();
+  PAInit();
+  PaStreamParameters inputParameters;
+  inputParameters.device = Pa_GetDefaultInputDevice();
+  inputParameters.channelCount = channels;
+  inputParameters.sampleFormat = SampleFormat;
+  inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
+  inputParameters.hostApiSpecificStreamInfo = NULL;
+  pb_obj = new PlayBack;
+  pb_obj->data = (char *)data;
+  pb_obj->length = count;
+  pb_obj->channels = channels;
+  pb_obj->ptr = 0;
+  pb_obj->framesToGo = count;
+  pb_obj->elementSize = elementSize;
+  err = Pa_OpenStream(&stream,
+		      &inputParameters,
+		      NULL,
+		      Rate,
+		      FRAMES_PER_BUFFER,
+		      paNoFlag,
+		      DoRecordCallback,
+		      pb_obj);
+  if (err != paNoError) 
+    throw Exception(string("An error occured while using the portaudio stream: ") + Pa_GetErrorText(err));
+  err = Pa_StartStream(stream);
+  if (err != paNoError) 
+    throw Exception(string("An error occured while using the portaudio stream: ") + Pa_GetErrorText(err));
+  PAShutdown();
+}
+
 #endif
 
 //!
@@ -293,6 +369,68 @@ ArrayVector WavPlayFunction(int nargout, const ArrayVector& argv) {
 //!
 ArrayVector WavRecordFunction(int nargout, const ArrayVector& argv) {
 #if HAVE_PORTAUDIO
+  if (argv.size() < 1)
+    throw Exception("wavrecord requires at least 1 argument (the number of samples to record)");
+  int samples = ArrayToInt32(argv[0]);
+  int rate = 11025;
+  int channels = 1;
+  Class datatype = FM_DOUBLE;
+  ArrayVector argvCopy(argv);
+  if ((argvCopy.size() > 1) && (argvCopy.back().isString())) {
+    string typestring = argvCopy.back().getContentsAsStringUpper();
+    if ((typestring == "FLOAT") || (typestring == "SINGLE"))
+      datatype = FM_FLOAT;
+    else if (typestring == "DOUBLE")
+      datatype = FM_DOUBLE;
+    else if (typestring == "INT32")
+      datatype = FM_INT32;
+    else if (typestring == "INT16")
+      datatype == FM_INT16;
+    else if (typestring == "INT8")
+      datatype == FM_INT8;
+    else if (typestring == "UINT8")
+      datatype == FM_UINT8;
+    else
+      throw Exception("unrecognized data type - expecting one of: double, float, single, int32, int16, int8, uint8");
+    argvCopy.pop_back();
+  }
+  // Check for a channel spec and a sampling rate
+  while (argvCopy.size() > 1) {
+    int ival = ArrayToInt32(argvCopy.back());
+    if (ival > 2)
+      rate = ival;
+    else
+      channels = ival;
+    argvCopy.pop_back();
+  }
+  Class rdatatype(datatype);
+  Array retvec;
+  if (rdatatype == FM_DOUBLE) rdatatype = FM_FLOAT;
+  void *dp = Array::allocateArray(rdatatype,samples*channels);
+  switch(rdatatype) {
+  case FM_FLOAT:
+    DoRecord(dp,samples,channels,sizeof(float),paFloat32,rate);
+    retvec = Array(FM_FLOAT,Dimensions(samples,channels),dp);
+    break;
+  case FM_INT32:
+    DoRecord(dp,samples,channels,sizeof(int32),paInt32,rate);
+    retvec = Array(FM_INT32,Dimensions(samples,channels),dp);
+    break;
+  case FM_INT16:
+    DoRecord(dp,samples,channels,sizeof(int16),paInt16,rate);
+    retvec = Array(FM_INT16,Dimensions(samples,channels),dp);
+    break;
+  case FM_INT8:
+    DoRecord(dp,samples,channels,sizeof(int8),paInt8,rate);
+    retvec = Array(FM_INT8,Dimensions(samples,channels),dp);
+    break;
+  case FM_UINT8:
+    DoRecord(dp,samples,channels,sizeof(uint8),paUInt8,rate);
+    retvec = Array(FM_UINT8,Dimensions(samples,channels),dp);
+    break;
+  }
+  retvec.promoteType(datatype);
+  return ArrayVector() << retvec;
 #else
   throw Exception("Audio read/write support not available.  Please build the PortAudio library and rebuild FreeMat to enable this functionality.");
 #endif

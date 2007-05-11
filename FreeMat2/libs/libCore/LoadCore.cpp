@@ -194,6 +194,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("imag",ImagFunction,1,1,"x",NULL);
   context->addFunction("abs",AbsFunction,1,1,"x",NULL);
   context->addFunction("wavplay",WavPlayFunction,3,0,"y","fs","mode",NULL);
+  context->addFunction("wavrecord",WavRecordFunction,-1,1,NULL);
   context->addFunction("num2hex",Num2HexFunction,1,1,"x",NULL);
   context->addFunction("hex2dec",Hex2DecFunction,1,1,"x",NULL);
   context->addFunction("dec2hex",Dec2HexFunction,2,1,"x","n",NULL);

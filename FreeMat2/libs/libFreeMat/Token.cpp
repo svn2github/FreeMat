@@ -166,14 +166,14 @@ void Token::FillArray() {
   Array retval;
   switch(m_tok) {
   case TOK_INTEGER:
-    int iv;
+    long iv;
     double fv;
     iv = strtol(m_text.c_str(),NULL,10);
     if ((errno == ERANGE) && ((iv == LONG_MAX) || (iv == LONG_MIN))) {
       fv = strtod(m_text.c_str(),NULL);
       retval = Array::doubleConstructor(fv);
     } else {
-      retval = Array::int32Constructor(iv);
+      retval = Array::int32Constructor((int32)iv);
     }
     break;
   case TOK_FLOAT:

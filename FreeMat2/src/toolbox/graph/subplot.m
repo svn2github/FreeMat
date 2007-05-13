@@ -26,7 +26,12 @@
 %   subplot mnp
 %@]
 %where @|m| is the number of rows, @|n| is the number of columns
-%and @|p| is the index.
+%and @|p| is the index.  You can also specify the location of the
+%subplot explicitly using the syntax
+%@[
+%   subplot('position',[left bottom width height])
+%@]
+%
 %@@Example
 %Here is the use of @|subplot| to set up a @|2 x 2| grid of plots
 %@<
@@ -79,8 +84,15 @@
 
 % Copyright (c) 2002-2006 Samit Basu
 
-function h = subplot(varargin)
+function hout = subplot(varargin)
   m = 1; n = 1; p = 1;
+  if ((nargin == 2) && (isa(varargin{1},'string')))
+    if (strcmp(lower(varargin{1}),'position'))
+        h = axes('outerposition',varargin{2});
+        if (nargout > 0), hout = h; end;
+        return;
+    end
+  end
   if (nargin == 1)
     if (isa(varargin{1},'string'))
       str = varargin{1};
@@ -131,6 +143,7 @@ function h = subplot(varargin)
     h = axes('outerposition',position);
   end
   set(fig,'nextplot','add');
+  if (nargout > 0) hout = h; end;
 
 function b = intersects(rect1,rect2)
   nleft = max(rect1(1),rect2(1));

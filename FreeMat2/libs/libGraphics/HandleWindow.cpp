@@ -183,6 +183,7 @@ HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
   setWindowTitle(buffer);
   qtchild = new BaseFigureQt(this,hfig);
   band = NULL;
+  setMinimumSize(50,50);
   //   if (QGLFormat::hasOpenGL())
   //     glchild = new BaseFigureGL(NULL,hfig);
   //  layout = new QStackedWidget(this);

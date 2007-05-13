@@ -768,6 +768,7 @@ ArrayVector FcloseFunction(int nargout, const ArrayVector& arg) {
 	  FilePtr* fptr = fileHandles.lookupHandle(i+1);
 	  fclose(fptr->fp);
 	  fileHandles.deleteHandle(i+1);
+	  delete fptr;
 	} catch (Exception & e) {
 	}
       }

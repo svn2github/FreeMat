@@ -1208,6 +1208,7 @@ void convertEscapeSequences(char *dst, char* src) {
   // Null terminate
   *dp = 0;
 }
+
   
 //Common routine used by sprintf,printf,fprintf.  They all
 //take the same inputs, and output either to a string, the
@@ -1302,6 +1303,188 @@ char* xprintfFunction(int nargout, const ArrayVector& arg) {
   }
   free(buff);
   return op;
+}
+
+//!
+//@Module NUM2STR Convert Numbers To Strings
+//@@Section ARRAY
+//@@Usage
+//Converts an array into its string representation.  The general syntax
+//for this function is
+//@[
+//   s = num2str(X)
+//@]
+//where @|s| is a string (or string matrix) and @|X| is an array.  By
+//default, the @|num2str| function uses 4 digits of precision and an 
+//exponent if required.  If you want more digits of precision, you can 
+//specify the precition via the form
+//@[
+//   s = num2str(X, precision)
+//@]
+//where @|precision| is the number of digits to include in the string
+//representation.  For more control over the format of the output, you 
+//can also specify a format specifier (see @|printf| for more details).
+//@[
+//   s = num2str(X, format)
+//@]
+//where @|format| is the specifier string.
+//!
+template <class T>
+Array Num2StrHelperReal(const T*dp, Dimensions Xdims, const char *formatspec) {
+  int rows(Xdims.getRows());
+  int cols(Xdims.getColumns());
+  stringVector row_string;
+  if (Xdims.getLength() == 2)
+    Xdims.set(3,1);
+  Dimensions Wdims(Xdims.getLength());
+  int offset = 0;
+  while (Wdims.inside(Xdims)) {
+    for (int i=0;i<rows;i++) {
+      string colbuffer;
+      for (int j=0;j<cols;j++) {
+	char elbuffer[1024];
+	sprintf(elbuffer,formatspec,dp[i+j*rows+offset]);
+	char elbuffer2[1024];
+	convertEscapeSequences(elbuffer2,elbuffer);
+	colbuffer += string(elbuffer2) + " ";
+      }
+      row_string.push_back(colbuffer);
+    }
+    offset += rows*cols;
+    Wdims.incrementModulo(Xdims,2);
+  }
+  // Next we compute the length of the largest string
+  int maxlen = 0;
+  for (int n=0;n<row_string.size();n++)
+    if (row_string[n].size() > maxlen)
+      maxlen = row_string[n].size();
+  // Next we allocate a character array large enough to
+  // hold the string array.
+  char *sp = (char*) Array::allocateArray(FM_STRING,maxlen*row_string.size());
+  // Now we copy 
+  int slices = row_string.size() / rows;
+  for (int i=0;i<slices;i++)
+    for (int j=0;j<rows;j++) {
+      string line(row_string[j+i*rows]);
+      for (int k=0;k<line.size();k++)
+	sp[j+i*rows*maxlen+k*rows] = line[k];
+    }
+  Dimensions odims(Xdims);
+  odims.set(1,maxlen);
+  odims.simplify();
+  return Array(FM_STRING,odims,sp);
+}
+
+template <class T>
+Array Num2StrHelperComplex(const T*dp, Dimensions Xdims, const char *formatspec) {
+  int rows(Xdims.getRows());
+  int cols(Xdims.getColumns());
+  stringVector row_string;
+  if (Xdims.getLength() == 2)
+    Xdims.set(3,1);
+  Dimensions Wdims(Xdims.getLength());
+  int offset = 0;
+  while (Wdims.inside(Xdims)) {
+    for (int i=0;i<rows;i++) {
+      string colbuffer;
+      for (int j=0;j<cols;j++) {
+	char elbuffer[1024];
+	char elbuffer2[1024];
+	sprintf(elbuffer,formatspec,dp[2*(i+j*rows+offset)]);
+	convertEscapeSequences(elbuffer2,elbuffer);
+	colbuffer += string(elbuffer2) + " ";
+	sprintf(elbuffer,formatspec,dp[2*(i+j*rows+offset)+1]);
+	convertEscapeSequences(elbuffer2,elbuffer);
+	if (dp[2*(i+j*rows+offset)+1]>=0) 
+	  colbuffer += "+";
+	colbuffer += string(elbuffer2) + "i ";
+      }
+      row_string.push_back(colbuffer);
+    }
+    offset += rows*cols;
+    Wdims.incrementModulo(Xdims,2);
+  }
+  // Next we compute the length of the largest string
+  int maxlen = 0;
+  for (int n=0;n<row_string.size();n++)
+    if (row_string[n].size() > maxlen)
+      maxlen = row_string[n].size();
+  // Next we allocate a character array large enough to
+  // hold the string array.
+  char *sp = (char*) Array::allocateArray(FM_STRING,maxlen*row_string.size());
+  // Now we copy 
+  int slices = row_string.size() / rows;
+  for (int i=0;i<slices;i++)
+    for (int j=0;j<rows;j++) {
+      string line(row_string[j+i*rows]);
+      for (int k=0;k<line.size();k++)
+	sp[j+i*rows*maxlen+k*rows] = line[k];
+    }
+  Dimensions odims(Xdims);
+  odims.set(1,maxlen);
+  odims.simplify();
+  return Array(FM_STRING,odims,sp);
+}
+
+
+ArrayVector Num2StrFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    throw Exception("num2str function requires at least one argument");
+  Array X(arg[0]);
+  if (X.isReferenceType())
+    throw Exception("num2str function requires a numeric input");
+  char formatspec[1024];
+  if (X.isIntegerClass())
+    sprintf(formatspec,"%%d");
+  else
+    sprintf(formatspec,"%%11.4g");
+  if (arg.size() > 1) {
+    Array format(arg[1]);
+    if (format.isString())
+      strcpy(formatspec,ArrayToString(format).c_str());
+  }
+  switch (X.dataClass()) 
+    {
+    case FM_UINT8:
+      return ArrayVector() << Num2StrHelperReal((const uint8*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_INT8:
+      return ArrayVector() << Num2StrHelperReal((const int8*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_UINT16:
+      return ArrayVector() << Num2StrHelperReal((const uint16*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_INT16:
+      return ArrayVector() << Num2StrHelperReal((const int16*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_UINT32:
+      return ArrayVector() << Num2StrHelperReal((const uint32*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_INT32:
+      return ArrayVector() << Num2StrHelperReal((const int32*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_UINT64:
+      return ArrayVector() << Num2StrHelperReal((const uint64*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_INT64:
+      return ArrayVector() << Num2StrHelperReal((const int64*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_FLOAT:
+      return ArrayVector() << Num2StrHelperReal((const float*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_DOUBLE:
+      return ArrayVector() << Num2StrHelperReal((const double*) X.getDataPointer(),
+						X.dimensions(),formatspec);
+    case FM_COMPLEX:
+      return ArrayVector() << Num2StrHelperComplex((const float*) X.getDataPointer(),
+						   X.dimensions(),formatspec);
+    case FM_DCOMPLEX:
+      return ArrayVector() << Num2StrHelperComplex((const double*) X.getDataPointer(),
+						   X.dimensions(),formatspec);
+    case FM_STRING:
+      throw Exception("argument to num2str must be numeric type");
+    }
+  return ArrayVector();
 }
 
 //!

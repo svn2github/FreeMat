@@ -49,6 +49,7 @@ ArrayVector PiFunction(int, const ArrayVector& arg);
 ArrayVector SinFunction(int, const ArrayVector& arg);
 ArrayVector ArcsinFunction(int, const ArrayVector& arg);
 ArrayVector StrCmpFunction(int, const ArrayVector& arg);
+ArrayVector Num2StrFunction(int, const ArrayVector& arg);
 ArrayVector UInt16Function(int, const ArrayVector& arg);
 ArrayVector UInt32Function(int, const ArrayVector& arg);
 ArrayVector UInt64Function(int, const ArrayVector& arg);

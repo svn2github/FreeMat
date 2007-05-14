@@ -119,6 +119,7 @@ void LoadCoreFunctions(Context* context) {
   context->addSpecialFunction("errorcount",ErrorCountFunction,0,1,NULL);
   context->addFunction("typeof",TypeOfFunction,1,1,"x",NULL);
   context->addFunction("strcomp",StrCmpFunction,2,1,"x","y",NULL);
+  context->addFunction("num2str",Num2StrFunction,2,1,"X","format",NULL);
   context->addFunction("struct",StructFunction,-1,1,NULL);
   context->addFunction("size",SizeFunction,-1,-1,NULL);
   context->addFunction("nan",NaNFunction,0,1,NULL);

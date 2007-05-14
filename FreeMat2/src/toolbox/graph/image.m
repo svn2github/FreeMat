@@ -90,13 +90,16 @@ function ohandle = image(varargin)
     handle = himage(varargin{:});
   elseif ((length(varargin) == 1) | ((length(varargin) > 1) & (isstr(varargin{2}))))
     C = varargin{1}; varargin(1) = [];
-    handle = himage('cdata',C,'xdata',[1,size(C,2)],'ydata',...
-                    [1,size(C,1)],varargin{:});
+    cols = max(2,size(C,2));
+    rows = max(2,size(C,1));
+    handle = himage('cdata',C,'xdata',[1,cols],'ydata',[1,rows],varargin{:});
     axis(ax,'image');
   elseif (numel(varargin) == 2)
     C = varargin{1};
     axis maximal;
-    handle = himage('cdata',C,'xdata',[1,size(C,2)],'ydata',[1,size(C,1)]);
+    cols = max(2,size(C,2));
+    rows = max(2,size(C,1));
+    handle = himage('cdata',C,'xdata',[1,cols],'ydata',[1,rows]);
     zoom(varargin{2});
   elseif (length(varargin) >= 3)
     x = varargin{1};

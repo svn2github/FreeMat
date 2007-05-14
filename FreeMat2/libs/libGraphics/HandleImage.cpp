@@ -29,9 +29,10 @@ HandleImage::~HandleImage() {
 }
   
 std::vector<double> HandleImage::GetLimits() {
+  UpdateState();
+
   HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
   HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
-
   std::vector<double> limits;
   limits.push_back(xp->Data()[0]);
   limits.push_back(xp->Data()[1]);
@@ -262,11 +263,19 @@ void HandleImage::UpdateState() {
   UpdateCAlphaData();
   Array cdata(ArrayPropertyLookup("cdata"));
   HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
-  if (xp->Data().empty())
-    SetTwoVectorDefault("xdata",1,cdata.getDimensionLength(1));
+  if (xp->Data().empty()) {
+    if (cdata.getDimensionLength(1) > 1)
+      SetTwoVectorDefault("xdata",1,cdata.getDimensionLength(1));
+    else
+      SetTwoVectorDefault("xdata",1,2);
+  }
   HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
-  if (yp->Data().empty())
-    SetTwoVectorDefault("ydata",1,cdata.getDimensionLength(0));
+  if (yp->Data().empty()) {
+    if (cdata.getDimensionLength(0) > 1)
+      SetTwoVectorDefault("ydata",1,cdata.getDimensionLength(0));
+    else
+      SetTwoVectorDefault("ydata",1,2);
+  }
   // Need to check reverse flags for x and y axis... and flip the image appropriately
   HandleAxis *ax = GetParentAxis();
   bool xflip = false;

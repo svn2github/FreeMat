@@ -1838,9 +1838,11 @@ void HandleAxis::RePackFigure() {
   posheight = posheight/height;
   posx0 = (posx0+outerpos[0])/width;
   posy0 = (posy0+outerpos[1])/height;
+  poswidth = qMax(0.0,poswidth);
+  posheight = qMax(0.0,posheight);
   HPFourVector *hp = (HPFourVector*) LookupProperty("position");
   hp->Value(posx0,posy0,poswidth,posheight);
-  //    qDebug("Pack %f %f %f %f",posx0,posy0,poswidth,posheight);
+  qDebug("Pack %f %f %f %f",posx0,posy0,poswidth,posheight);
 }
 
 void HandleAxis::UpdateLimits(bool x, bool y, bool z, bool a, bool c) {

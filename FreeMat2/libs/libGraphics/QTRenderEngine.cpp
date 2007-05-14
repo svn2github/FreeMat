@@ -293,6 +293,7 @@ void QTRenderEngine::project(double left, double right,
 void QTRenderEngine::viewport(double x0, double y0, double width, double height) {
   viewp[0] = (int)x0; viewp[1] = (int)y0; viewp[2] = (int)width; viewp[3] = (int)height;
   pnt->setClipRect((int)x0,(int)(m_height-(y0+height)),(int)width,(int)height);
+  qDebug() << "clip " << x0 << "," << (int)(m_height-(y0+height)) << "," << (int)width << "," << (int)height;
 }
 
 void QTRenderEngine::quad(double x1, double y1, double z1,
@@ -564,9 +565,9 @@ void QTRenderEngine::drawImage(double x1, double y1, double x2, double y2,
 			       QImage pic) {
   QPointF pt(Map(x1,y1,0));
   pt.setY(pt.y()-pic.height());
+  qDebug() << "image draw at " << pt << "," << pic.size();
   pnt->drawImage(pt,pic);
 }
-  
 
 void QTRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
 				std::vector<std::vector<cpoint> > edges, bool flatedges) {

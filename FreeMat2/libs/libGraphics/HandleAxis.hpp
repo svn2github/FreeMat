@@ -29,6 +29,7 @@
 #include "HandleFigure.hpp"
 #include "RenderEngine.hpp"
 #include "Context.hpp"
+#include <QPainterPath>
 
 /**
  * This utility function returns a 

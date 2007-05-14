@@ -124,5 +124,10 @@ public:
 			 QImage pic);
   virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
 			  std::vector<std::vector<cpoint> > edges, bool flatedges);
+  QPainterPath quadToPoly(double x1, double y1, double z1,
+			  double x2, double y2, double z2,
+			  double x3, double y3, double z3,
+			  double x4, double y4, double z4);
+  virtual void setClipBox(std::vector<double> limits);
 };
 #endif

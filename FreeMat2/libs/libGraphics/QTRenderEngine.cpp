@@ -293,7 +293,7 @@ void QTRenderEngine::project(double left, double right,
 void QTRenderEngine::viewport(double x0, double y0, double width, double height) {
   viewp[0] = (int)x0; viewp[1] = (int)y0; viewp[2] = (int)width; viewp[3] = (int)height;
   pnt->setClipRect((int)x0,(int)(m_height-(y0+height)),(int)width,(int)height);
-  qDebug() << "clip " << x0 << "," << (int)(m_height-(y0+height)) << "," << (int)width << "," << (int)height;
+  //  qDebug() << "clip " << x0 << "," << (int)(m_height-(y0+height)) << "," << (int)width << "," << (int)height;
 }
 
 void QTRenderEngine::quad(double x1, double y1, double z1,
@@ -565,8 +565,55 @@ void QTRenderEngine::drawImage(double x1, double y1, double x2, double y2,
 			       QImage pic) {
   QPointF pt(Map(x1,y1,0));
   pt.setY(pt.y()-pic.height());
-  qDebug() << "image draw at " << pt << "," << pic.size();
+  //  qDebug() << "image draw at " << pt << "," << pic.size();
   pnt->drawImage(pt,pic);
+}
+
+QPainterPath QTRenderEngine::quadToPoly(double x1, double y1, double z1,
+					double x2, double y2, double z2,
+					double x3, double y3, double z3,
+					double x4, double y4, double z4) {
+  QPainterPath path;
+  path.moveTo(Map(x1,y1,z1));
+  path.lineTo(Map(x2,y2,z2));
+  path.lineTo(Map(x3,y3,z3));
+  path.lineTo(Map(x4,y4,z4));
+  path.closeSubpath();
+  return path;
+}
+
+void QTRenderEngine::setClipBox(std::vector<double> limits) {
+  pnt->setClipPath(quadToPoly( limits[0], limits[2], limits[4],
+			       limits[1], limits[2], limits[4],
+			       limits[1], limits[3], limits[4],
+			       limits[0], limits[3], limits[4]), 
+		   Qt::ReplaceClip);
+  pnt->setClipPath(quadToPoly( limits[0], limits[2], limits[5],
+			       limits[0], limits[3], limits[5],
+			       limits[1], limits[3], limits[5],
+			       limits[1], limits[2], limits[5]),
+		   Qt::UniteClip);
+  pnt->setClipPath(quadToPoly( limits[0], limits[2], limits[4],
+			       limits[0], limits[3], limits[4],
+			       limits[0], limits[3], limits[5],
+			       limits[0], limits[2], limits[5]),
+		   Qt::UniteClip);
+  pnt->setClipPath(quadToPoly( limits[1], limits[2], limits[4],
+			       limits[1], limits[2], limits[5],
+			       limits[1], limits[3], limits[5],
+			       limits[1], limits[3], limits[4]),
+		   Qt::UniteClip);
+  pnt->setClipPath(quadToPoly( limits[0], limits[2], limits[4],
+			       limits[0], limits[2], limits[5],
+			       limits[1], limits[2], limits[5],
+			       limits[1], limits[2], limits[4]),
+		   Qt::UniteClip);
+  pnt->setClipPath(quadToPoly( limits[0], limits[3], limits[4],
+			       limits[1], limits[3], limits[4],
+			       limits[1], limits[3], limits[5],
+			       limits[0], limits[3], limits[5]),
+		   Qt::UniteClip);
+  //  pnt->setClipPath(path);
 }
 
 void QTRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,

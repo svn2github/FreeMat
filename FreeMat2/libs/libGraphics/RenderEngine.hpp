@@ -22,6 +22,7 @@
 #include <vector>
 #include <string>
 #include <qfont.h>
+#include <QPainterPath>
 
 class cpoint {
 public:
@@ -103,6 +104,7 @@ public:
 			 QImage pic) = 0;
   virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
 			  std::vector<std::vector<cpoint> > edges, bool flatedges) = 0;
+  virtual void setClipBox(std::vector<double> limits) {};
 };
   
 void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,

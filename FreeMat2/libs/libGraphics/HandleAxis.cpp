@@ -1106,6 +1106,7 @@ void HandleAxis::DrawBox(RenderEngine &gc) {
 	   limits[1], limits[3], limits[4],
 	   limits[1], limits[3], limits[5],
 	   limits[0], limits[3], limits[5]);
+  
   gc.depth(true);
 }
 
@@ -1842,7 +1843,7 @@ void HandleAxis::RePackFigure() {
   posheight = qMax(0.0,posheight);
   HPFourVector *hp = (HPFourVector*) LookupProperty("position");
   hp->Value(posx0,posy0,poswidth,posheight);
-  qDebug("Pack %f %f %f %f",posx0,posy0,poswidth,posheight);
+  //  qDebug("Pack %f %f %f %f",posx0,posy0,poswidth,posheight);
 }
 
 void HandleAxis::UpdateLimits(bool x, bool y, bool z, bool a, bool c) {
@@ -2500,6 +2501,8 @@ void HandleAxis::PaintMe(RenderEngine& gc) {
     DrawGridLines(gc);
     DrawMinorGridLines(gc);
   }
+  std::vector<double> limits(GetAxisLimits());
+  gc.setClipBox(limits);
   DrawChildren(gc);
   if (StringCheck("visible","on")) {
     DrawAxisLines(gc);

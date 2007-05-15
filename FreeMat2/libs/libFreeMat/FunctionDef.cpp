@@ -857,8 +857,15 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
     context->pushScope("temp");
     walker->pushDebug(name,"bounds check");
     try {
-      for (i=0;i<inputs.size();i++)
-	context->insertVariableLocally(arguments[i],inputs[i]);
+      for (i=0;i<inputs.size();i++) {
+	if (arguments[i][0] != '&') {
+	  context->insertVariableLocally(arguments[i],inputs[i]);
+	} else {
+	  string nme(arguments[i]);
+	  nme.erase(nme.begin());
+	  context->insertVariableLocally(nme,inputs[i]);
+	}
+      }
       /*
        * Next, evaluate each size check expression
        */

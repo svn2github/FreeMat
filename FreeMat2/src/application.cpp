@@ -272,7 +272,8 @@ void ApplicationWindow::paste() {
     text = cb->text(QClipboard::Selection);
   if (text.isNull())
     text = cb->text(QClipboard::Clipboard);
-  text.replace('\r',"");
+  text.replace("\r\n","\n");
+  text.replace("\r","\n");
   if (!text.isNull()) {
     m_keys->QueueMultiString(text);
     m_term->clearSelection();

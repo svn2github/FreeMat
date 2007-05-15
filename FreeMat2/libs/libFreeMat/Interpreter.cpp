@@ -261,7 +261,8 @@ void Interpreter::outputMessage(std::string msg) {
   if (m_captureState) 
     m_capture += msg;
   else
-    emit outputRawText(TranslateString(msg));
+    if (m_quietlevel < 2)
+      emit outputRawText(TranslateString(msg));
 }
 
 void Interpreter::errorMessage(std::string msg) {
@@ -269,7 +270,8 @@ void Interpreter::errorMessage(std::string msg) {
   if (m_captureState) 
     m_capture += "Error: " + msg + "\n";
   else
-    emit outputRawText(TranslateString("Error: " + msg + "\r\n"));
+    if (m_quietlevel < 2)
+      emit outputRawText(TranslateString("Error: " + msg + "\r\n"));
 }
 
 void Interpreter::warningMessage(std::string msg) {
@@ -277,7 +279,8 @@ void Interpreter::warningMessage(std::string msg) {
   if (m_captureState) 
     m_capture += "Warning: " + msg + "\n";
   else
-    emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
+    if (m_quietlevel < 2)
+      emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
 }
 
 void Interpreter::SetContext(int a) {
@@ -3021,7 +3024,7 @@ void Interpreter::statement(const tree &t) {
     if (t.is(TOK_QSTATEMENT))
       statementType(t.first(),false);
     else if (t.is(TOK_STATEMENT))
-      statementType(t.first(),true);
+      statementType(t.first(),m_quietlevel == 0);
     else
       throw Exception("Unexpected statement type!\n");
   } catch (Exception& e) {
@@ -4888,6 +4891,7 @@ Interpreter::Interpreter(Context* aContext) {
   m_diaryFilename = "diary";
   m_captureState = false;
   m_capture = "";
+  m_quietlevel = 0;
 }
 
 Interpreter::~Interpreter() {

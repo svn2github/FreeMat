@@ -3768,6 +3768,47 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
 }
 
 //!
+//@Module QUIET Control the Verbosity of the Interpreter
+//@@Section FREEMAT
+//@@Usage
+//The @|quiet| function controls how verbose the interpreter
+//is when executing code.  The syntax for the function is
+//@[
+//   quiet flag
+//@]
+//where @|flag| is one of
+//\begin{itemize}
+//\item @|'normal'| - normal output from the interpreter
+//\item @|'quiet'| - only intentional output (e.g. @|printf| calls and
+//@|disp| calls) is printed.  The output of expressions that are not
+//terminated in semicolons are not printed.
+//\item @|'silent'| - nothing is printed to the output.
+//\end{itemize}
+//The @|quiet| command also returns the current quiet flag.
+//!
+ArrayVector QuietFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() > 0) {
+    string qtype(arg[0].getContentsAsStringUpper());
+    if (qtype == "NORMAL")
+      eval->setQuietLevel(0);
+    else if (qtype == "QUIET")
+      eval->setQuietLevel(1);
+    else if (qtype == "SILENT")
+      eval->setQuietLevel(2);
+    else
+      throw Exception("quiet function takes one argument - the quiet level (normal, quiet, or silent) as a string");
+  }
+  string rtype;
+  if (eval->getQuietLevel() == 0)
+    rtype = "normal";
+  else if (eval->getQuietLevel() == 1)
+    rtype = "quiet";
+  else if (eval->getQuietLevel() == 2)
+    rtype = "silent";
+  return ArrayVector() << Array::stringConstructor(rtype);
+}
+
+//!
 //@Module SOURCE Execute an Arbitrary File
 //@@Section FREEMAT
 //@@Usage
@@ -3778,7 +3819,7 @@ ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* e
 //  source(filename)
 //@]
 //where @|filename| is a @|string| containing the name of
-//the file to process.
+//the file to process. 
 //@@Example
 //First, we write some commands to a file (note that it does
 //not end in the usual @|.m| extension):

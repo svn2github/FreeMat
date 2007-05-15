@@ -247,6 +247,10 @@ class Interpreter : public QThread {
    * The capture state
    */
   bool m_captureState;
+  /**
+   * The quiet level
+   */
+  int m_quietlevel;
   /******************************************
    *  Public Methods for the Interpreter    *
    ******************************************/
@@ -279,6 +283,11 @@ public:
     m_threadNargout = nargout;
     m_threadErrorState = false;
   }
+  /**
+   * Manipulate the quiet level
+   */
+  inline int getQuietLevel() {return m_quietlevel;}
+  inline void setQuietLevel(int t) {m_quietlevel = t;}
   /**
    * Manipulate the diary state
    */

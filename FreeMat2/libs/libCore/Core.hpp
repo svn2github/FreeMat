@@ -134,6 +134,7 @@ ArrayVector EvalFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector EvalInFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector AssignInFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SourceFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector QuietFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector PauseFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ErrorCountFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ConnectFunction(int, const ArrayVector& arg);  

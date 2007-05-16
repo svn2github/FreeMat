@@ -99,6 +99,22 @@ public:
     m_cache_isVector = ((rows==1)||(cols==1));
   }
   /**
+   * Return a 3-D dimension object with the specified number of 
+   * rows and columns and slices.
+   */
+  inline Dimensions(int rows, int cols, int slices) {
+    data[0] = rows;
+    data[1] = cols;
+    data[2] = slices;
+    length = 3;
+    m_cache_getElementCount = rows*cols*slices;
+    m_cache_isScalar = ((rows==1)&&(cols==1)&&(slices==1));
+    m_cache_getRows = rows;
+    m_cache_getColumns = cols;
+    m_cache_is2D = (slices == 1);
+    m_cache_isVector = (((rows==1)||(cols==1))&&(slices==1));
+  }
+  /**
    * Return a reference to the ith dimension.  This member function
    * will adjust the number of dimensions present if the argument
    * exceeds the current number allocated.  The extra dimensions are

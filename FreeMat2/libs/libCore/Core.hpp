@@ -237,5 +237,6 @@ void Tokenize(const std::string& str, std::vector<std::string>& tokens,
 bool inBundleMode();
 ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
+ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 void SwapBuffer(char* cp, int count, int elsize);
 #endif

@@ -31,6 +31,9 @@
 #include "Sparse.hpp"
 #include "Core.hpp"
 #include <QThread>
+#include <QImage>
+#include <QColor>
+#include "PathSearch.hpp"
 #if HAVE_PORTAUDIO
 #include "portaudio.h"
 #endif
@@ -434,6 +437,119 @@ ArrayVector WavRecordFunction(int nargout, const ArrayVector& argv) {
 #else
   throw Exception("Audio read/write support not available.  Please build the PortAudio library and rebuild FreeMat to enable this functionality.");
 #endif
+  return ArrayVector();
+}
+
+//!
+//@Module IMREAD Read Image File To Matrix
+//@Section IO
+//@@Usage
+//Reads the image data from the given file into a matrix.  Note that
+//FreeMat's support for @|imread| is not complete.  Only some of the
+//formats specified in the MATLAB API are implemented.  The syntax
+//for its use is
+//@[
+//  A = imread(filename)
+//@]
+//where @|filename| is the name of the file to read from.
+//!
+
+static ArrayVector imreadHelperIndexed(QImage img) {
+  QVector<QRgb> colorTable(img.colorTable());
+  double *ctable_dp = (double*) 
+    Array::allocateArray(FM_DOUBLE,colorTable.size()*3);
+  int numcol = colorTable.size();
+  for (int i=0;i<numcol;i++) {
+    QColor c(colorTable[i]);
+    ctable_dp[i] = (double) c.redF();
+    ctable_dp[i+numcol] = (double) c.greenF();
+    ctable_dp[i+2*numcol] = (double) c.blueF();
+  }
+  Array ctable(FM_DOUBLE,Dimensions(numcol,3),ctable_dp);
+  uint8 *img_data_dp = (uint8*) 
+    Array::allocateArray(FM_UINT8,img.width()*img.height());
+  for (int row=0;row<img.height();row++) {
+    uchar *p = img.scanLine(row);
+    for (int col=0;col<img.width();col++) 
+      img_data_dp[row+col*img.height()] = p[col];
+  }
+  Array A(FM_UINT8,Dimensions(img.height(),img.width()),img_data_dp);
+  QImage alpha(img.alphaChannel());
+  uint8 *img_alpha_dp = (uint8*)
+    Array::allocateArray(FM_UINT8,img.width()*img.height());
+  for (int row=0;row<alpha.height();row++) {
+    uchar *p = alpha.scanLine(row);
+    for (int col=0;col<alpha.width();col++)
+      img_alpha_dp[row+col*img.height()] = p[col];
+  }
+  Array trans(FM_UINT8,Dimensions(img.height(),img.width()),img_alpha_dp);
+  return ArrayVector() << A << ctable << trans;
+}
+
+static ArrayVector imreadHelperRGB32(QImage img) {
+  uint8 *img_data_dp = (uint8*) 
+    Array::allocateArray(FM_UINT8,img.width()*img.height()*3);
+  int imgcnt = img.height()*img.width();
+  for (int row=0;row<img.height();row++) {
+    QRgb *p = (QRgb*) img.scanLine(row);
+    for (int col=0;col<img.width();col++) {
+      int ndx = row+col*img.height();
+      img_data_dp[ndx] = qRed(p[col]);
+      img_data_dp[ndx+1*imgcnt] = qGreen(p[col]);
+      img_data_dp[ndx+2*imgcnt] = qBlue(p[col]);
+    }
+  }
+  return ArrayVector() << 
+    Array(FM_UINT8,Dimensions(img.height(),img.width(),3),img_data_dp)
+		       << Array::emptyConstructor() 
+		       << Array::emptyConstructor();
+}
+
+static ArrayVector imreadHelperARGB32(QImage img) {
+  uint8 *img_alpha_dp = (uint8*) 
+    Array::allocateArray(FM_UINT8,img.width()*img.height());
+  uint8 *img_data_dp = (uint8*) 
+    Array::allocateArray(FM_UINT8,img.width()*img.height()*3);
+  int imgcnt = img.height()*img.width();
+  for (int row=0;row<img.height();row++) {
+    QRgb *p = (QRgb*) img.scanLine(row);
+    for (int col=0;col<img.width();col++) {
+      int ndx = row+col*img.height();
+      img_data_dp[ndx] = qRed(p[col]);
+      img_data_dp[ndx+1*imgcnt] = qGreen(p[col]);
+      img_data_dp[ndx+2*imgcnt] = qBlue(p[col]);
+      img_alpha_dp[ndx] = qAlpha(p[col]);
+    }
+  }
+  return ArrayVector() << 
+    Array(FM_UINT8,Dimensions(img.height(),img.width(),3),img_data_dp)
+		       << Array::emptyConstructor() 
+		       << 
+    Array(FM_UINT8,Dimensions(img.height(),img.width()),img_alpha_dp);
+}
+
+ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, 
+			   Interpreter* eval) {
+  PathSearcher psearch(eval->getTotalPath());
+  if (arg.size() == 0)
+    throw Exception("imread requires a filename to read.");
+  string filename(ArrayToString(arg[0]));
+  string completename;
+  try {
+    completename = psearch.ResolvePath(filename);
+  } catch (Exception& e) {
+    throw Exception("unable to find file " + completename);
+  }
+  // Construct the QImage object
+  QImage img(QString::fromStdString(completename));
+  if (img.isNull())
+    throw Exception("unable to read file " + completename);
+  if (img.format() == QImage::Format_Invalid)
+    throw Exception("file " + completename + " is invalid");
+  if (img.format() == QImage::Format_Indexed8) return imreadHelperIndexed(img);
+  if (img.format() == QImage::Format_RGB32) return imreadHelperRGB32(img);
+  if (img.format() == QImage::Format_ARGB32) return imreadHelperARGB32(img);
+  throw Exception("unsupported image format - only 8 bit indexed and 24 bit RGB and 32 bit ARGB images are supported");
   return ArrayVector();
 }
 
@@ -886,7 +1002,7 @@ ArrayVector FreadFunction(int nargout, const ArrayVector& arg) {
     fseek(fptr->fp,0L,SEEK_END);
     fsize = ftell(fptr->fp) - fcpos;
     fseek(fptr->fp,fcpos,SEEK_SET);
-    dp[infiniteDim] = ceil((float)(fsize/elementSize/elementCount));
+    dp[infiniteDim] = ceil((double)(fsize/elementSize/elementCount));
     elementCount *= (int) dp[infiniteDim];
   }
   // Next, we allocate space for the result

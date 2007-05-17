@@ -88,7 +88,8 @@ void HandleImage::ConstructProperties() {
   // default), the pixel values are scaled using the @|clim| vector for the
   // figure prior to looking up in the colormap.  For @|direct| mode, the
   // pixel values must be in the range @|[0,N-1| where @|N| is the number of
-  // colors in the colormap.
+  // colors in the colormap if the data is integer type.  For floating point
+  // data types, values must be in the range @|[1,N]|.
   //  \item @|children| - Not used.
   //  \item @|parent| - @|handle| - The axis containing the image.
   //  \item @|tag| - @|string| - You can set this to any string you want.
@@ -143,7 +144,8 @@ void HandleImage::SetupDefaults() {
 //    where rescale(x) = (x-min(clim))/(max(clim)-min(clim))*(colormap_count-1)
 //
 double* HandleImage::RGBExpandImage(const double *dp, 
-				    int rows, int cols) {
+				    int rows, int cols,
+				    bool floatData) {
   //    qDebug("RGBExpand");
   // Allocate an output array of the right size
   double *ret = new double[rows*cols*3];
@@ -158,7 +160,10 @@ double* HandleImage::RGBExpandImage(const double *dp,
   if (StringCheck("cdatamapping","direct")) {
     for (int i=0;i<rows*cols;i++) {
       int ndx;
-      ndx = (int) dp[i] - 1;
+      if (floatData)
+	ndx = (int) dp[i] - 1;
+      else
+	ndx = (int) dp[i];
       ndx = qMin(cmaplen-1,qMax(0,ndx));
       ret[i] = cmap[3*ndx];
       ret[i+rows*cols] = cmap[3*ndx+1];
@@ -236,6 +241,7 @@ void HandleImage::UpdateCAlphaData() {
   // Calculate the QImage
   Array cdata(ArrayPropertyLookup("cdata"));
   if (cdata.isEmpty()) return;
+  bool cdata_is_integer = cdata.isIntegerClass();
   cdata.promoteType(FM_DOUBLE);
   // Retrieve alpha map
   std::vector<double> alphas(GetAlphaMap(cdata.getDimensionLength(0),
@@ -250,7 +256,8 @@ void HandleImage::UpdateCAlphaData() {
   } else if (cdata.dimensions().getLength() == 2) {
     double *dp = RGBExpandImage((const double*)cdata.getDataPointer(),
 				cdata.getDimensionLength(0),
-				cdata.getDimensionLength(1));
+				cdata.getDimensionLength(1),
+				!cdata_is_integer);
     PrepImageRGBNoAlphaMap(dp,
 			   cdata.getDimensionLength(0),
 			   cdata.getDimensionLength(1),

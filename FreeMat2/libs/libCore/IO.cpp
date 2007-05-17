@@ -442,18 +442,21 @@ ArrayVector WavRecordFunction(int nargout, const ArrayVector& argv) {
 
 //!
 //@Module IMREAD Read Image File To Matrix
-//@Section IO
+//@@Section IO
 //@@Usage
 //Reads the image data from the given file into a matrix.  Note that
 //FreeMat's support for @|imread| is not complete.  Only some of the
 //formats specified in the MATLAB API are implemented.  The syntax
 //for its use is
 //@[
-//  A = imread(filename)
+//  [A,map,alpha] = imread(filename)
 //@]
-//where @|filename| is the name of the file to read from.
+//where @|filename| is the name of the file to read from.  The returned
+//arrays @|A| contain the image data, @|map| contains the colormap information
+//(for indexed images), and @|alpha| contains the alphamap (transparency).
+//The returned values will depend on the type of the original image.  Generally
+//you can read images in the @|jpg,png,xpm,ppm| and some other formats.
 //!
-
 static ArrayVector imreadHelperIndexed(QImage img) {
   QVector<QRgb> colorTable(img.colorTable());
   double *ctable_dp = (double*) 

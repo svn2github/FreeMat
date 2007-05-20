@@ -14,7 +14,9 @@ ToolDock.moc.cpp \
 VariablesTool.moc.cpp
 
 libXP_a_UI = findform.ui.h \
-replaceform.ui.h
+replaceform.ui.h \
+synlightconf.ui.h \
+indentconf.ui.h
 
 BUILT_SOURCES = $(libXP_a_MOC) $(libXP_a_UI)
 
@@ -50,7 +52,9 @@ VariablesTool.cpp \
 HistoryWidget.cpp \
 $(libXP_a_HFILES) \
 findform.ui \
-replaceform.ui
+replaceform.ui \
+synlightconf.ui \
+indentconf.ui
 
 
 AUTOMAKE_OPTIONS 	= foreign
@@ -90,4 +94,10 @@ findform.ui.h : findform.ui
 	$(QT_UIC) -o $@ $<
 
 replaceform.ui.h : replaceform.ui
+	$(QT_UIC) -o $@ $<
+
+synlightconf.ui.h : synlightconf.ui
+	$(QT_UIC) -o $@ $<
+
+indentconf.ui.h : indentconf.ui
 	$(QT_UIC) -o $@ $<

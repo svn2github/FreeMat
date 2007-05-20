@@ -37,6 +37,12 @@ private:
   QTextCharFormat multiLineCommentFormat;
   QTextCharFormat untermStringFormat;
   QTextCharFormat stringFormat;
+
+  QColor keywordColor;
+  QColor commentColor;
+  QColor stringColor;
+  QColor untermStringColor;
+  bool highlightingEnabled;
 };
 
 #endif

@@ -22,8 +22,16 @@
 Highlighter::Highlighter(QTextDocument *parent)
   : QSyntaxHighlighter(parent)
 {
+  QSettings settings("FreeMat","FreeMat");
+
+  keywordColor = settings.value("editor/syntax_colors/keyword",Qt::darkBlue).value<QColor>();
+  commentColor = settings.value("editor/syntax_colors/comments",Qt::darkRed).value<QColor>();
+  stringColor = settings.value("editor/syntax_colors/strings",Qt::darkGreen).value<QColor>();
+  untermStringColor = settings.value("editor/syntax_colors/untermstrings",Qt::darkRed).value<QColor>();
+
+
   QTextCharFormat keywordFormat;
-  keywordFormat.setForeground(Qt::darkBlue);
+  keywordFormat.setForeground(keywordColor);
   keywordFormat.setFontWeight(QFont::Bold);
   QStringList keywordPatterns;
   keywordPatterns << "\\bbreak\\b" <<
@@ -50,18 +58,20 @@ Highlighter::Highlighter(QTextDocument *parent)
     mappings[pattern] = keywordFormat;
 
   QTextCharFormat singleLineCommentFormat;
-  singleLineCommentFormat.setForeground(Qt::red);
+  singleLineCommentFormat.setForeground(commentColor);
   mappings["\\%[^\n]*"] = singleLineCommentFormat;
 
-  stringFormat.setForeground(Qt::green);
-  untermStringFormat.setForeground(Qt::red);
+  stringFormat.setForeground(stringColor);
+  untermStringFormat.setForeground(untermStringColor);
+
+  highlightingEnabled = settings.value("editor/syntax_enable",true).toBool();
 
   //  mappings["[^'\\]\\)\\}A-Za-z0-9]'[^']*'"] = stringFormat;
 }
 
 void Highlighter::highlightBlock(const QString &text)
 {
-  if (text.isEmpty()) return;
+  if (text.isEmpty() || (!highlightingEnabled)) return;
   foreach (QString pattern, mappings.keys()) {
     QRegExp expression(pattern);
     int index = text.indexOf(expression);
@@ -108,7 +118,7 @@ void Highlighter::highlightBlock(const QString &text)
 
 
   QTextCharFormat singleLineCommentFormat;
-  singleLineCommentFormat.setForeground(Qt::red);
+  singleLineCommentFormat.setForeground(commentColor);
   QRegExp comment("\\%[^\n]*");
   index = text.indexOf(comment);
   while (index >= 0) {

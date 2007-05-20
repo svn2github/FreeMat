@@ -1013,6 +1013,9 @@ void KeyManager::QueueString(QString t) {
 }
 
 void KeyManager::QueueMultiString(QString t) {
+  t.replace(QChar(8233),"\n");
+  t.replace("\r\n","\n");
+  t.replace("\r","\n"); 
   if (t.indexOf("\n") < 0) {
     QueueString(t);
     return;

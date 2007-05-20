@@ -167,6 +167,34 @@ void MainApp::PathTool() {
   PathToolFunction(0,dummy,m_eval);
 }
 
+extern MainApp *m_app;
+
+
+//!
+//@Module EDITOR Open Editor Window
+//@@Section FREEMAT
+//@@Usage
+//Brings up the editor window.  The @|editor| function takes no
+//arguments:
+//@[
+//  editor
+//@]
+//!
+ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  static FMEditor *edit = NULL;
+  if (edit == NULL) {
+    edit = new FMEditor(eval);
+    QObject::connect(eval,SIGNAL(RefreshBPLists()),edit,SLOT(RefreshBPLists()));
+    QObject::connect(eval,SIGNAL(ShowActiveLine()),edit,SLOT(ShowActiveLine()));
+    // Because of the threading setup, we need the keymanager to relay commands
+    // from the editor to the interpreter.  
+    QObject::connect(edit,SIGNAL(EvaluateText(QString)),m_app->GetKeyManager(),SLOT(QueueMultiString(QString)));
+  }
+  edit->showNormal();
+  edit->raise();
+  return ArrayVector();
+}
+
 void MainApp::Editor() {
   ArrayVector dummy;
   EditorFunction(0,dummy,m_eval);
@@ -267,7 +295,6 @@ ArrayVector ThreadIDFunction(int nargout, const ArrayVector& arg, Interpreter* e
   return ArrayVector() << Array::uint32Constructor(eval->getThreadID());
 }
 
-extern MainApp *m_app;
 //!
 //@Module PAUSE Pause Script Execution
 //@@Section IO
@@ -735,6 +762,7 @@ ArrayVector ClcFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
+
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
   context->addSpecialFunction("threadnew",ThreadNewFunction,0,1,NULL);
@@ -746,6 +774,7 @@ void LoadThreadFunctions(Context *context) {
   context->addGfxSpecialFunction("pause",PauseFunction,1,0,"x",NULL);
   context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"x",NULL);
   context->addGfxFunction("clc",ClcFunction,0,0,NULL);
+  context->addGfxSpecialFunction("editor",EditorFunction,0,0,NULL);
 }
 
 void MainApp::EnableRepaint() {

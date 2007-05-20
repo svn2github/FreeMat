@@ -102,6 +102,9 @@ void FMReplaceDialog::showrepcount(int cnt) {
 }
 
 FMTextEdit::FMTextEdit() : QTextEdit() {
+  QSettings settings("FreeMat","FreeMat");
+  indentSize = settings.value("editor/tab_size",3).toInt();
+  indentActive = settings.value("editor/indent_enable",true).toBool();
   setLineWrapMode(QTextEdit::NoWrap);
 }
 
@@ -191,23 +194,36 @@ void FMTextEdit::keyPressEvent(QKeyEvent*e) {
       key = 0;
     if (key == 0x09) {
       tab = true;
-      emit indent();
+      if (indentActive)
+	emit indent();
     }
     if (key == 13) {
       delayedIndent = true;
-      emit indent();
+      if (indentActive)
+	emit indent();
     }
   }
-  if (!tab)
+  if (!tab || !indentActive)
     QTextEdit::keyPressEvent(e);
   else
     e->accept();
-  if (delayedIndent) 
-    emit indent();
+  if (indentActive)
+    if (delayedIndent) 
+      emit indent();
 }
 
+void FMTextEdit::contextMenuEvent(QContextMenuEvent* e) {
+  e->ignore();
+}
+
+void FMTextEdit::fontUpdate() {
+  QFontMetrics fm(font());
+  setTabStopWidth(fm.width(' ')*indentSize);
+}
 
 FMIndent::FMIndent() {
+  QSettings settings("FreeMat","FreeMat");
+  indentSize = settings.value("editor/tab_size",3).toInt();
 }
 
 FMIndent::~FMIndent() {
@@ -289,7 +305,7 @@ int computeIndexIncrement(QString a) {
   return indent_increment;
 }
 
-QString indentLine(QString toIndent, QStringList priorText) {
+QString indentLine(QString toIndent, QStringList priorText, int indentSize) {
   // Two observations:
   //   1.  If the _current_ line contains contains 'end' in excess of 'for', etc., then
   //       the indentation for the current line should be 1 less.
@@ -325,7 +341,7 @@ QString indentLine(QString toIndent, QStringList priorText) {
   int k = 0;
   if ((k = a.indexOf(whitespace,0)) != -1)
     leading_space = whitespace.matchedLength();
-  leading_space += indent_increment*3;
+  leading_space += indent_increment*indentSize;
   leading_space = qMax(leading_space,0);
   // Indenting is simpler for us than for QSA or for C++.  We simply
   // apply the following rules:
@@ -348,7 +364,7 @@ void FMIndent::update() {
   cursor.movePosition(QTextCursor::StartOfLine);
   cursor.movePosition(QTextCursor::Start,QTextCursor::KeepAnchor);
   QStringList priorlines(cursor.selection().toPlainText().split("\n"));
-  QString indented(indentLine(toIndent,priorlines));
+  QString indented(indentLine(toIndent,priorlines,indentSize));
   save.movePosition(QTextCursor::StartOfLine);
   save.movePosition(QTextCursor::EndOfLine,QTextCursor::KeepAnchor);
   save.insertText(indented);
@@ -420,6 +436,7 @@ FMEditor::FMEditor(Interpreter* eval) : QMainWindow() {
   readSettings();
   connect(tab,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
   addTab();
+  tabChanged(0);
   m_find = new FMFindDialog;
   connect(m_find,SIGNAL(doFind(QString,bool,bool)),
  	  this,SLOT(doFind(QString,bool,bool)));
@@ -485,6 +502,7 @@ void FMEditor::updateFont() {
     QWidget *p = tab->widget(i);
     FMEditPane *te = qobject_cast<FMEditPane*>(p);
     te->setFont(m_font);
+    te->getEditor()->fontUpdate();
   }
 }
 
@@ -610,6 +628,12 @@ void FMEditor::createActions() {
   connect(commentAct,SIGNAL(triggered()),this,SLOT(comment()));
   uncommentAct = new QAction("Uncomment Region",this);
   connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
+  undoAct = new QAction("Undo Edits",this);
+  undoAct->setShortcut(Qt::Key_Z | Qt::CTRL);
+  connect(undoAct,SIGNAL(triggered()),this,SLOT(undo()));
+  redoAct = new QAction("Redo Edits",this);
+  redoAct->setShortcut(Qt::Key_Y | Qt::CTRL);
+  connect(redoAct,SIGNAL(triggered()),this,SLOT(redo()));
   replaceAct = new QAction("Find and Replace",this);
   connect(replaceAct,SIGNAL(triggered()),this,SLOT(replace()));
   dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
@@ -622,6 +646,36 @@ void FMEditor::createActions() {
   connect(dbSetClearBPAct,SIGNAL(triggered()),this,SLOT(dbsetclearbp()));
   dbStopAct = new QAction(QIcon(":/images/player_stop.png"),"Stop Debugging",this);
   connect(dbStopAct,SIGNAL(triggered()),this,SLOT(dbstop()));
+  colorConfigAct = new QAction("Text Highlighting",this);
+  connect(colorConfigAct,SIGNAL(triggered()),this,SLOT(configcolors()));
+  indentConfigAct = new QAction("Indenting",this);
+  connect(indentConfigAct,SIGNAL(triggered()),this,SLOT(configindent()));
+  executeSelectedAct = new QAction("Execute Selected Text",this);
+  connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
+  executeCurrentAct = new QAction("Execute Current Buffer",this);
+  connect(executeCurrentAct,SIGNAL(triggered()),this,SLOT(execCurrent()));
+}
+
+void FMEditor::execSelected() {
+  emit EvaluateText(currentEditor()->textCursor().selectedText());
+}
+
+void FMEditor::execCurrent() {
+  if (currentFilename().isEmpty())
+    QMessageBox::information(this,"Cannot execute unnamed buffer","You must save the current buffer into a file before it can be executed.");
+  else {
+    if (!maybeSave())
+      return;
+    emit EvaluateText("source " + currentFilename() + "\n");
+  }
+}
+
+void FMEditor::undo() {
+  currentEditor()->undo();
+}
+
+void FMEditor::redo() {
+  currentEditor()->redo();
 }
 
 void FMEditor::comment() {
@@ -651,16 +705,24 @@ void FMEditor::createMenus() {
   fileMenu->addAction(closeAct);
   fileMenu->addAction(quitAct);
   editMenu = menuBar()->addMenu("&Edit");
+  editMenu->addAction(undoAct);
+  editMenu->addAction(redoAct);
   editMenu->addAction(copyAct);
   editMenu->addAction(cutAct);
   editMenu->addAction(pasteAct);
-  editMenu->addAction(fontAct);
+  QMenu* configMenu = editMenu->addMenu("&Preferences");
+  configMenu->addAction(fontAct);
+  configMenu->addAction(colorConfigAct);
+  configMenu->addAction(indentConfigAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(findAct);
   toolsMenu->addAction(replaceAct);
   toolsMenu->addAction(commentAct);
   toolsMenu->addAction(uncommentAct);
   debugMenu = menuBar()->addMenu("&Debug");
+  debugMenu->addAction(executeCurrentAct);
+  debugMenu->addAction(executeSelectedAct);
+  debugMenu->addSeparator();
   debugMenu->addAction(dbStepAct);
   debugMenu->addAction(dbTraceAct);
   debugMenu->addAction(dbContinueAct);
@@ -671,11 +733,17 @@ void FMEditor::createMenus() {
   m_popup->addAction(cutAct);
   m_popup->addAction(pasteAct);
   m_popup->addSeparator();
+  m_popup->addAction(undoAct);
+  m_popup->addAction(redoAct);
+  m_popup->addSeparator();
   m_popup->addAction(findAct);
   m_popup->addAction(replaceAct);
   m_popup->addSeparator();
   m_popup->addAction(commentAct);
   m_popup->addAction(uncommentAct);
+  m_popup->addSeparator();
+  m_popup->addAction(executeCurrentAct);
+  m_popup->addAction(executeSelectedAct);
   m_popup->addSeparator();
   m_popup->addAction(dbStepAct);
   m_popup->addAction(dbTraceAct);
@@ -706,6 +774,15 @@ void FMEditor::createToolBars() {
   debugToolBar->addAction(dbStopAct);
 }
 
+void FMEditor::configcolors() {
+  FMSynLightConf t(this);
+  t.exec();
+}
+
+void FMEditor::configindent() {
+  FMIndentConf t(this);
+  t.exec();
+}
 
 void FMEditor::dbstep() {
   m_eval->ExecuteLine("dbstep\n");  
@@ -1061,4 +1138,85 @@ void LineNumber::paintEvent(QPaintEvent *)
     p.drawText(width() - fm.width(txt), qRound(position.y()) - contentsY + ascent, txt);
   }
 }
+
+FMSynLightConf::FMSynLightConf(QWidget *parent) : QDialog(parent) {
+  ui.setupUi(this);
+  QSettings settings("FreeMat","FreeMat");
+  connect(ui.enableCB,SIGNAL(toggled(bool)),ui.keywordButton,SLOT(setEnabled(bool)));
+  connect(ui.enableCB,SIGNAL(toggled(bool)),ui.commentsButton,SLOT(setEnabled(bool)));
+  connect(ui.enableCB,SIGNAL(toggled(bool)),ui.stringsButton,SLOT(setEnabled(bool)));
+  connect(ui.enableCB,SIGNAL(toggled(bool)),ui.untermStringButton,SLOT(setEnabled(bool)));
+  ui.enableCB->setChecked(settings.value("editor/syntax_enable",true).toBool());
+  setLabelColor(ui.keywordLabel,
+		settings.value("editor/syntax_colors/keyword",Qt::darkBlue).value<QColor>());
+  setLabelColor(ui.commentsLabel,
+		settings.value("editor/syntax_colors/comments",Qt::darkRed).value<QColor>());
+  setLabelColor(ui.stringsLabel,
+		settings.value("editor/syntax_colors/strings",Qt::darkGreen).value<QColor>());
+  setLabelColor(ui.untermStringsLabel,
+		settings.value("editor/syntax_colors/untermstrings",Qt::darkRed).value<QColor>());
+  connect(ui.keywordButton,SIGNAL(clicked()),this,SLOT(setKeywordColor()));
+  connect(ui.commentsButton,SIGNAL(clicked()),this,SLOT(setCommentColor()));
+  connect(ui.stringsButton,SIGNAL(clicked()),this,SLOT(setStringColor()));
+  connect(ui.untermStringButton,SIGNAL(clicked()),this,SLOT(setUntermStringColor()));
+  connect(this,SIGNAL(accepted()),this,SLOT(save()));
+}
+
+void FMSynLightConf::save() {
+  QSettings settings("FreeMat", "FreeMat");
+  settings.setValue("editor/syntax_enable",ui.enableCB->isChecked());
+  settings.setValue("editor/syntax_colors/keyword",getColor(ui.keywordLabel));
+  settings.setValue("editor/syntax_colors/comments",getColor(ui.commentsLabel));
+  settings.setValue("editor/syntax_colors/strings",getColor(ui.stringsLabel));
+  settings.setValue("editor/syntax_colors/untermstrings",getColor(ui.untermStringsLabel));
+  QMessageBox::information(this,"Updated settings","The settings will apply to new files you open in the editor.");
+}
+
+QColor FMSynLightConf::getColor(QLabel *l) {
+  return (l->palette().color(QPalette::WindowText));
+}
+
+void FMSynLightConf::setLabelColor(QLabel *l, QColor c) {
+  if (c.isValid()) {
+    QPalette palette(l->palette());
+    palette.setColor(QPalette::WindowText, c);
+    l->setPalette(palette);
+  }
+}
+
+void FMSynLightConf::querySetLabelColor(QLabel *l) {
+  setLabelColor(l,QColorDialog::getColor(l->palette().color(QPalette::WindowText), this));
+}
+
+void FMSynLightConf::setKeywordColor() {
+  querySetLabelColor(ui.keywordLabel);
+}
+
+void FMSynLightConf::setCommentColor() {
+  querySetLabelColor(ui.commentsLabel);
+}
+
+void FMSynLightConf::setStringColor() {
+  querySetLabelColor(ui.stringsLabel);
+}
+
+void FMSynLightConf::setUntermStringColor() {
+  querySetLabelColor(ui.untermStringsLabel);
+}
+
+FMIndentConf::FMIndentConf(QWidget *parent) : QDialog(parent) {
+  ui.setupUi(this);
+  QSettings settings("FreeMat","FreeMat");
+  ui.indentEnable->setChecked(settings.value("editor/indent_enable",true).toBool());
+  ui.tabsize->setText(settings.value("editor/tab_size",3).toString());
+  connect(this,SIGNAL(accepted()),this,SLOT(save()));
+}
+
+void FMIndentConf::save() {
+  QSettings settings("FreeMat","FreeMat");
+  settings.setValue("editor/indent_enable",ui.indentEnable->isChecked());
+  settings.setValue("editor/tab_size",ui.tabsize->text().toInt());
+  QMessageBox::information(this,"Updated settings","The settings will apply to new files you open in the editor.");
+}
+
 

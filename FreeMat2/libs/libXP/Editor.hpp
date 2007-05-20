@@ -32,6 +32,8 @@
 #include "findform.ui.h"
 #include "replaceform.ui.h"
 #include "Interpreter.hpp"
+#include "synlightconf.ui.h"
+#include "indentconf.ui.h"
 
 class FMFindDialog : public QDialog {
   Q_OBJECT
@@ -75,14 +77,18 @@ private:
 
 class FMTextEdit : public QTextEdit {
   Q_OBJECT
+  int indentSize;
+  bool indentActive;
 public:
   FMTextEdit();
   virtual ~FMTextEdit();
   void keyPressEvent(QKeyEvent*e);
+  void contextMenuEvent(QContextMenuEvent*e);
   void comment();
   void uncomment();
   bool replace(QString text, QString replace, QTextDocument::FindFlags flags);
   int replaceAll(QString text, QString replace, QTextDocument::FindFlags flags);
+  void fontUpdate();
 signals:
   void indent();
 };
@@ -90,6 +96,7 @@ signals:
 class FMIndent : public QObject {
   Q_OBJECT
   FMTextEdit *m_te;
+  int indentSize;
 public:
   FMIndent();
   virtual ~FMIndent();
@@ -138,6 +145,35 @@ public:
   Interpreter* getInterpreter();
 };
 
+class FMIndentConf : public QDialog {
+  Q_OBJECT
+public:
+  FMIndentConf(QWidget *parent = 0);
+private slots:
+  void save();
+private:
+  Ui::FMIndentConf ui;
+};
+
+class FMSynLightConf : public QDialog {
+  Q_OBJECT
+
+public:
+  FMSynLightConf(QWidget *parent = 0);
+
+private slots:
+  void setKeywordColor();
+  void setCommentColor();
+  void setStringColor();
+  void setUntermStringColor();
+  void save();
+private:
+  void setLabelColor(QLabel *l, QColor c);
+  QColor getColor(QLabel *l);
+  void querySetLabelColor(QLabel *l);
+  Ui::FMSynLightConf ui;
+};
+
 class FMEditor : public QMainWindow {
   Q_OBJECT
   QMenu *fileMenu, *editMenu, *toolsMenu, *debugMenu;
@@ -147,6 +183,8 @@ class FMEditor : public QMainWindow {
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
   QAction *dbStepAct, *dbTraceAct, *dbContinueAct;
   QAction *dbSetClearBPAct, *dbStopAct;
+  QAction *redoAct, *undoAct, *colorConfigAct, *indentConfigAct;
+  QAction *executeSelectedAct, *executeCurrentAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
@@ -175,6 +213,8 @@ private:
   void readSettings();
   void writeSettings();
   void updateFont();
+signals:
+  void EvaluateText(QString);
 protected:
   void contextMenuEvent(QContextMenuEvent *e);
 private slots:
@@ -195,6 +235,8 @@ private slots:
 		    bool backwards, bool sensitive);
   void comment();
   void uncomment();
+  void undo();
+  void redo();
   void RefreshBPLists();
   void ShowActiveLine();
   void dbstep();
@@ -202,6 +244,10 @@ private slots:
   void dbcontinue();
   void dbsetclearbp();
   void dbstop();
+  void configcolors();
+  void configindent();
+  void execSelected();
+  void execCurrent();
 public:
   void closeEvent(QCloseEvent *event);
 };

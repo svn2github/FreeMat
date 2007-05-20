@@ -170,7 +170,6 @@ ArrayVector Num2HexFunction(int, const ArrayVector& arg);
 ArrayVector FindFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector HelpFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector HelpWinFunction(int, const ArrayVector& arg, Interpreter* eval);
-ArrayVector EditorFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector PathToolFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SleepFunction(int, const ArrayVector& arg);
 ArrayVector WavPlayFunction(int, const ArrayVector& arg);

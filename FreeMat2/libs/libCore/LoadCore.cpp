@@ -30,7 +30,6 @@
 
 void LoadGUICoreFunctions(Context* context) {
   context->addGfxSpecialFunction("helpwin",HelpWinFunction,0,0,NULL);
-  context->addGfxSpecialFunction("editor",EditorFunction,0,0,NULL);
   context->addGfxSpecialFunction("pathtool",PathToolFunction,0,0,NULL);
   context->addGfxSpecialFunction("imread",ImReadFunction,1,3,"filename",NULL);
 }

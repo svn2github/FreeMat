@@ -139,27 +139,6 @@ ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* ev
   return ArrayVector();
 }
 
-//!
-//@Module EDITOR Open Editor Window
-//@@Section FREEMAT
-//@@Usage
-//Brings up the editor window.  The @|editor| function takes no
-//arguments:
-//@[
-//  editor
-//@]
-//!
-ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  static FMEditor *edit = NULL;
-  if (edit == NULL) {
-    edit = new FMEditor(eval);
-    QObject::connect(eval,SIGNAL(RefreshBPLists()),edit,SLOT(RefreshBPLists()));
-    QObject::connect(eval,SIGNAL(ShowActiveLine()),edit,SLOT(ShowActiveLine()));
-  }
-  edit->showNormal();
-  edit->raise();
-  return ArrayVector();
-}
 
 ArrayVector EndFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 3)

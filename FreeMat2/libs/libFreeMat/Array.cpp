@@ -1973,9 +1973,9 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
 	const Array& d = ptr[j];
 	if (d.sparse())
 	  sparseArg = true;
-	if (maxType < d.dataClass()) maxType = d.dataClass();
-	if (minType > d.dataClass()) minType = d.dataClass();
 	if (!d.isEmpty()) {
+	  if (maxType < d.dataClass()) maxType = d.dataClass();
+	  if (minType > d.dataClass()) minType = d.dataClass();
 	  if (firstNonzeroColumn) {
 	    /**
 	     * For the first element in the row, we copy

@@ -126,6 +126,7 @@ SetupXWinCommon()
 {
     PATH=$PATH:$BASE/Cross/bin
     PREFIX=$BASE/Cross
+    PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$BASE/Cross/lib/pkgconfig"
     MakeDirectory $BASE/XRoot
     MakeDirectory $PREFIX
     MakeDirectory $PREFIX/bin
@@ -137,6 +138,7 @@ SetupCommon()
 {
     PATH=$PATH:$BASE/Build/bin
     PREFIX=$BASE/Build
+    PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$BASE/Build/lib/pkgconfig"
     MakeDirectory $PREFIX
     MakeDirectory $PREFIX/bin
     MakeDirectory $PREFIX/lib
@@ -346,7 +348,7 @@ SetupXWinFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/XRoot/$FREEMAT/build
     cd $BASE/XRoot/$FREEMAT/build
-    ../configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$(../config.guess) --with-qt4dir=$PREFIX/Qt/$XWIN_QT_VER CPPFLAGS=-I$PREFIX/include LDFLAGS=-L$PREFIX/lib WINDRES="$MINGW_TARGET-windres"
+    ../configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$(../config.guess) --with-qt4dir=$PREFIX/Qt/$XWIN_QT_VER CPPFLAGS=-I$PREFIX/include LDFLAGS=-L$PREFIX/lib WINDRES="$MINGW_TARGET-windres" 
     make
     MakeCrossWinBundle
 }
@@ -531,7 +533,7 @@ SetupFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/Root/$FREEMAT/build
     cd $BASE/Root/$FREEMAT/build
-    ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse"
+    ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/ufsparse" 
     make
 }
 
@@ -736,21 +738,21 @@ SetupMacFreeMat()
    tar xfz $BASE/Files/$FREEMAT_FILE
    MakeDirectory $BASE/Root/$FREEMAT/build
    cd $BASE/Root/$FREEMAT/build
-   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml"
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml" 
    make
 }
 
 SetupMacInplaceBuild()
 {
    SetupCommon
-   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml"
+   ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml" 
    make
 }
 
 SetupMacInplaceBundle()
 {
     SetupCommon
-    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml"
+    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml" 
     make
     baseDir="$PWD/$FREEMAT.app"
     rm -rf $baseDir
@@ -790,7 +792,7 @@ EOF
 SetupInplaceBuild() 
 {
   SetupCommon
-  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse" PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$BASE/Build/lib/pkgconfig"
+  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse" 
 }
 
 SetupRelease()
@@ -882,7 +884,7 @@ SetupXMacFreeMat()
     tar xfz $BASE/Files/$FREEMAT_FILE
     MakeDirectory $BASE/XRoot/$FREEMAT/build
     cd $BASE/XRoot/$FREEMAT/build
-    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$BASE/Build/include/QtCore -I$BASE/Build/include/QtGui -I$BASE/Build/include/QtOpenGL -I$BASE/Build/include/QtNetwork -I$BASE/Build/include/QtXml" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib -L$BASE/Build/lib -F$BASE/Build/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc
+    ../configure --prefix=$PREFIX CPPFLAGS="-I$BASE/Build/include -I$PREFIX/include  -I$BASE/Build/include/QtCore -I$BASE/Build/include/QtGui -I$BASE/Build/include/QtOpenGL -I$BASE/Build/include/QtNetwork -I$BASE/Build/include/QtXml" LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib -L$BASE/Build/lib -F$BASE/Build/lib" CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc 
     make
 }
 

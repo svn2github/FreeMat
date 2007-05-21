@@ -346,12 +346,12 @@ if test x"$found_amd" == xyes; then
 	fi
 fi
 
-PKG_CHECK_MODULES(fftw3, fftw3 >= 3.1.0, found_fftw3="yes", found_fftw3="no")
-PKG_CHECK_MODULES(fftw3f, fftw3f >= 3.1.0, found_fftw3f="yes", found_fftw3f="no")
+dnl PKG_CHECK_MODULES(fftw3, fftw3 >= 3.1.0, found_fftw3="yes", found_fftw3="no")
+dnl PKG_CHECK_MODULES(fftw3f, fftw3f >= 3.1.0, found_fftw3f="yes", found_fftw3f="no")
 
-dnl AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
-dnl AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
-dnl AC_CHECK_HEADER(fftw3.h,[],[found_fftw3="no";found_fftw3f="no"])
+AC_CHECK_LIB(fftw3f,fftwf_malloc,found_fftw3f="yes",found_fftw3f="no")
+AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
+AC_CHECK_HEADER(fftw3.h,[],[found_fftw3="no";found_fftw3f="no"])
 
 if test x"$found_fftw3f" == xyes; then
 	LIBS="$fftw3f_LIBS $LIBS"

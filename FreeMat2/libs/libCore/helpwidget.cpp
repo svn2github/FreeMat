@@ -37,6 +37,8 @@ HelpSearcher::HelpSearcher(QWidget *parent, QString basepath, HelpWindow *mgr) :
   connect(m_search_word,SIGNAL(returnPressed()),this,SLOT(updateSearch()));
   connect(m_results_list,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 	  mgr,SLOT(activateModule(QListWidgetItem*)));
+  connect(m_results_list,SIGNAL(itemActivated(QListWidgetItem*)),
+	  mgr,SLOT(activateModule(QListWidgetItem*)));
   m_basepath = basepath;
 }
 
@@ -104,10 +106,19 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
   delete file;
   connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 	  mgr,SLOT(activateModule(QListWidgetItem*)));
+  connect(m_flist,SIGNAL(itemActivated(QListWidgetItem*)),
+	  mgr,SLOT(activateModule(QListWidgetItem*)));
+  
   m_browser->addTab(m_flist,"Topic List");
+
+
   QTreeWidget *m_tindex = new QTreeWidget;
+
   connect(m_tindex,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
 	  mgr,SLOT(activateModule(QTreeWidgetItem*,int)));
+  connect(m_tindex,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
+	  mgr,SLOT(activateModule(QTreeWidgetItem*,int)));
+
   m_tindex->setColumnCount(1);
   m_tindex->setHeaderLabels(QStringList() << Interpreter::getVersionString().c_str());
   file = new QFile(url + "/sectable.txt");

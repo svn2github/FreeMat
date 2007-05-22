@@ -354,14 +354,12 @@ AC_CHECK_LIB(fftw3,fftw_malloc,found_fftw3="yes",found_fftw3="no")
 AC_CHECK_HEADER(fftw3.h,[],[found_fftw3="no";found_fftw3f="no"])
 
 if test x"$found_fftw3f" == xyes; then
-	LIBS="$fftw3f_LIBS $LIBS"
-	CFLAGS="$CFLAGS $fftw3f_CFLAGS"
+	LIBS="-lfftw3f $LIBS"
 	AC_DEFINE(HAVE_FFTWF, 1, [Set to 1 if you have the single precision version of FFTW installed])
 fi
 
 if test x"$found_fftw3" == xyes; then
-	LIBS="$fftw3_LIBS $LIBS"
-	CFLAGS="$CFLAGS $fftw3_CFLAGS"
+	LIBS="-lfftw3 $LIBS"
   	AC_DEFINE(HAVE_FFTW, 1, [Set to 1 if you have the double precision version of FFTW installed])
 fi
 

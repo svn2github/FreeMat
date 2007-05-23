@@ -262,7 +262,7 @@ public:
       global = true;
     } else {
       Array *dp = bottomScope->lookupVariable(varName);
-      if (!dp) {
+      if (!dp && bottomScope->isnested()) {
 	// If the variable is not defined in the current scope,
 	// loop up through the scope stack, checking for nested
 	// scopes that may have the variable defined.

@@ -137,7 +137,11 @@ public:
     return isNested; 
   }
   inline bool nests(Scope* peer) {
-    return (string(peer->name,0,name.size()) == name);
+    // Nesting requires that our peer have a strictly more 
+    // qualified (longer) name, and that our name is a prefix
+    // of that name.
+    return ((name.size() < peer->name.size()) && 
+	    (string(peer->name,0,name.size()) == name));
   }
   /**
    * Lock the scope's mutex

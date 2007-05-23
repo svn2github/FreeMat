@@ -4135,10 +4135,14 @@ void Interpreter::addBreakpoint(string name, int line) {
     return;
   }
   mptr->updateCode(this);
-  int dline = mptr->ClosestLine(line);
-  if (dline != line)
-    warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
-  addBreakpoint(stackentry(mptr->fileName,mptr->name,dline,bpList++));
+  try {
+    int dline = mptr->ClosestLine(line);
+    if (dline != line)
+      warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
+    addBreakpoint(stackentry(mptr->fileName,mptr->name,dline,bpList++));
+  } catch (Exception& e) {
+    warningMessage(e.getMessageCopy());
+  }
 }
 
 bool Interpreter::isBPSet(QString fname, int lineNumber) {

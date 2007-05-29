@@ -186,7 +186,7 @@ static double hex2dec_helper (string t) {
 //   y = hex2dec(x)
 //@]
 //where @|x| is a character matrix where each row represents an integer
-//in hexadecimal form.  The output is of type FM_DOUBLE.
+//in hexadecimal form.  The output is of type @|FM_DOUBLE|.
 //@@Examples
 //@<
 //hex2dec('3ff')

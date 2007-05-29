@@ -1,0 +1,307 @@
+#!/usr/bin/perl -w
+use File::Path;
+use Cwd;
+use warnings;
+use strict;
+
+# Make a directory
+sub make_directory {
+    my $dir = shift;
+    if (! -d $dir) {
+	print "Making directory $dir...\n";
+	eval {mkpath($dir)};
+	if ($@) {
+	    die "Unable to create directory $dir\n";
+	}
+    }
+}
+
+# Copy a file
+sub copy_file {
+    my $source = shift;
+    my $dest = shift;
+    print "Copying $source to $dest\n";
+    copy($source,$dest) or die "copy failed: $!\n";
+}
+
+# Delete a file
+sub delete_file {
+    my $file = shift;
+    unlink($file);
+}
+
+# Delete a directory
+sub delete_directory {
+    my $dir = shift;
+    rmtree($dir);
+}
+
+sub change_directory {
+    my $destdir = shift;
+    chdir $destdir or die "Unable to change to directory $destdir\n";
+}
+
+# unpack a tar ball
+sub unpack_tar_ball {
+    my $tarball = shift;
+    my $destdir = shift;
+    my $cwd = Cwd::cwd();
+    make_directory $destdir;
+    change_directory $destdir;
+    if (system("gunzip < $cwd/$tarball | tar xvf -") != 0) {
+	die "Unable to unpack tarball $tarball in directory $destdir\n";
+    }
+    change_directory $cwd;
+}
+
+sub md5_check {
+    my $filename = shift;
+    my $md5sum = shift;
+    return (`md5 < $filename` =~ $md5sum);
+}
+
+# Fetch a url via curl
+sub fetch_curl_url {
+    # Get the URL
+    my $raw_url = shift;
+    # Get the output filename
+    my $filename = shift;
+    # Get the expected md5sum
+    my $md5sum = shift;
+    my @pargs = ("curl","$raw_url","-o$filename","--disable-epsv");
+    if (system(@pargs) != 0) {
+	print  "Attempt to download file $filename using curl failed: $?\n";
+	return 0;
+    } 
+    if (md5_check($filename,$md5sum)) {
+	return 1;
+    }
+    print "Downloaded file failed MD5sum test.\n";
+    return 0;
+}
+
+# Fetch a url via wget
+sub fetch_wget_url {
+    # Get the URL
+    my $raw_url = shift;
+    # Get the output filename
+    my $filename = shift;
+    # Get the expected md5sum
+    my $md5sum = shift;
+    my @pargs = ("wget","$raw_url","-O$filename");
+    if (system(@pargs) != 0) {
+	print  "Attempt to download file $filename using curl failed: $?\n";
+	return 0;
+    } 
+    if (md5_check($filename,$md5sum)) {
+	return 1;
+    }
+    print "Downloaded file failed MD5sum test.\n";
+    return 0;
+}
+
+sub fetch_url {
+    my $raw_url = shift;
+    my $filename = shift;
+    my $md5sum = shift;
+    if (md5_check($filename,$md5sum)) {
+	return 1;
+    }
+    print "Deleting file $filename\n";
+    delete_file($filename);
+    print "Attempting to download $filename from $raw_url\n";
+    if (-f $filename and md5_check($filename,$md5sum)) {
+	print "...skipped - file already downloaded and passes md5 checksum\n";
+	return 1;
+    }
+    if (fetch_curl_url($raw_url,$filename,$md5sum)) {
+	print "Successfully retrieved file $filename from url $raw_url using curl\n";
+	return 1;
+    }
+    print "\n\nUnable to retrieve file using curl.  Will try using wget.\n";
+    if (fetch_wget_url($raw_url,$filename,$md5sum)) {
+	print "Successfully retrieved file $filename from url $raw_url using wget\n";
+	return 1;
+    }
+    print "\n\nUnable to retrieve file using wget!\n";
+    print "You will have to download the file manually\n";
+    print "From this url          $raw_url\n";
+    print "Save the file as       $filename\n";
+    print "The MD5 sum should be  $md5sum\n";
+    return 0;
+}
+
+sub setup_common {
+    my $base = shift;
+    $ENV{'PATH'} = "$base/bin:" . $ENV{'PATH'};
+    make_directory($base);
+    make_directory($base . "/bin");
+    make_directory($base . "/lib");
+    make_directory($base . "/include");
+    make_directory("files");
+    make_directory("build");
+}
+
+sub configure_make_install {
+    my $dir = shift;
+    my $prefix = shift;
+    my $buildsub = shift;
+    my $platform_opts = shift;
+    my $copts = $platform_opts->{'configure opts'};
+    my $mopts = $platform_opts->{'make opts'};
+    print "Configuring package in $dir...\n";
+    my $cwd = Cwd::cwd();
+    change_directory $dir;
+    delete_directory $buildsub;
+    make_directory $buildsub;
+    change_directory $buildsub;
+    my $cmdc = "../configure --prefix=$prefix $copts";
+    print "Configure command is $cmdc\n";
+    (system($cmdc) == 0) or die "configure in $dir failed: $?\n";
+    my $cmdm = "make $mopts";
+    print "Make command is $cmdm\n";
+    (system($cmdm) == 0) or die "make in $dir failed: $?\n";
+    print "Installing...\n";
+    (system("make install") == 0) or die "make install in $dir failed: $?\n";
+    print "Installation complete...\n";
+}
+
+sub test_include_file {
+    my $prefix = shift;
+    my $testname = shift;
+    my $header = shift;
+    my $platform_opts = shift;
+    print "Checking for include file $header...\n";
+    my $cwd = Cwd::cwd();
+    make_directory("tests");
+    change_directory("tests");
+    open(TESTHANDLE, ">$testname" . "_header.c") || die "Unable to create test file $testname.c\n";
+    print TESTHANDLE "#include <$header>\n";
+    close (TESTHANDLE) || die "Unable to close test file..\n";
+    my $cc = $platform_opts->{'compiler'};
+    my $ldflags = $platform_opts->{'ldflags'};
+    my $cflags = $platform_opts->{'cflags'};
+    my $ret = (system("$cc -c $testname" . "_header.c $cflags $ldflags") == 0);
+    if (!$ret) {
+	print "Failed to find $header: $?\n";
+    } else {
+	print "Found header file $header\n";
+    }
+    change_directory($cwd);
+    return $ret;
+}
+
+# Test for a function named funcname in library named libname
+#includes the current prefix in the search path
+sub test_function {
+    my $prefix = shift;
+    my $testname = shift;
+    my $libname = shift;
+    my $funcname = shift;
+    my $platform_opts = shift;
+    print "Checking for package $prefix...\n";
+    my $cwd = Cwd::cwd();
+    make_directory("tests");
+    change_directory("tests");
+    open(TESTHANDLE, ">$testname.c") || die "Unable to create test file $testname.c\n";
+    print TESTHANDLE "#ifdef __cplusplus\n";
+    print TESTHANDLE "extern \"C\"\n";
+    print TESTHANDLE "#endif\n";
+    print TESTHANDLE "char $funcname ();\n";
+    print TESTHANDLE "int main() {\n";
+    print TESTHANDLE "   return $funcname ();\n";
+    print TESTHANDLE "   return 0;\n";
+    print TESTHANDLE "}\n";
+    close (TESTHANDLE) || die "Unable to close test file..\n";
+    my $cc = $platform_opts->{'compiler'};
+    my $ldflags = $platform_opts->{'ldflags'};
+    my $cflags = $platform_opts->{'cflags'};
+    my $ret = (system("$cc -o $testname $testname.c $cflags $ldflags -l$libname") == 0);
+    if (!$ret) {
+	print "Failed to find $testname: $?\n";
+    } else {
+	print "Found library for $testname\n";
+    }
+    change_directory($cwd);
+    return $ret;
+}
+
+sub autopackage_check {
+    my $prefix = shift;
+    my $packagename = shift;
+    my $libname = shift;
+    my $testfunc = shift;
+    my $include = shift;
+    my $platform_opts = shift;
+    my $url = shift;
+    my $destfile = shift;
+    my $md5sum = shift;
+    my $builddir = shift;
+    my $packagedir = shift;
+    
+    if (!test_function($prefix,$packagename,$libname,$testfunc,$platform_opts) ||
+	!test_include_file($prefix,$packagename,$include,$platform_opts)) {
+	fetch_url($url,$destfile,$md5sum);
+	unpack_tar_ball($destfile,'build');
+	configure_make_install("build/$packagedir",$prefix,$builddir,$platform_opts);
+	test_function($prefix,$packagename,$libname,$testfunc,$platform_opts) &&
+	    test_include_file($prefix,$packagename,$include,$platform_opts) or
+	    die "Installation of package $packagename failed!\n";
+    }
+}
+
+#fetch_url(@ARGV);
+#make_directory('foo/goo/hoo');
+#fetch_url('http://www.google.com/index.html','foo.dat','8b65c95c7aa57859ec015059a93344b8')
+my $prefix = shift;
+my $platform_opts;
+
+$platform_opts->{'configure opts'} = '';
+$platform_opts->{'make opts'} = '';
+$platform_opts->{'compiler'} = 'gcc';
+$platform_opts->{'ldflags'} = "-L$prefix/lib";
+$platform_opts->{'cflags'} = "-I$prefix/include";
+
+setup_common($prefix);
+
+
+autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
+		  $platform_opts,
+		  'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.0.tar.gz',
+		  'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
+		  'build','pcre-7.0');
+
+#autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+#		  $platform_opts,
+#		  'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
+#		  'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
+#		  'build','portaudio');
+
+my $save_platform_opts = $platform_opts->{'configure opts'};
+$platform_opts->{'configure opts'} .= " --enable-single";
+autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+		  $platform_opts,
+		  'http://www.fftw.org/fftw-3.1.2.tar.gz',
+		  'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
+		  'build_single','fftw-3.1.2');
+$platform_opts->{'configure opts'} = $save_platform_opts;
+
+autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+		  $platform_opts,
+		  'http://www.fftw.org/fftw-3.1.2.tar.gz',
+		  'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
+		  'build_double','fftw-3.1.2');
+
+autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
+		  $platform_opts,
+		  'ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz',
+		  'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
+		  'build','ffcall-1.10');
+
+simplemake_check($prefix,'arpack','arpack','znaupd_',$platform_opts,
+		 'http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
+		 'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
+
+		 
+
+

@@ -556,13 +556,14 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	  MFunctionDef *fp = new MFunctionDef;
 	  fp->localFunction = true;
 	  fp->returnVals = IdentifierList(LocalFuncCode.first());
-	  fp->name = fileName + ":Local:" + LocalFuncCode.second().text();
+	  fp->name = name + "/" + LocalFuncCode.second().text();
 	  fp->arguments = IdentifierList(LocalFuncCode.child(2));
 	  fp->code = LocalFuncCode.child(3);
 	  VariableReferencesList(fp->code,fp->variablesAccessed);
 	  fp->fileName = fileName;
 	  // Register any nested functions for the local functions
 	  m_eval->getContext()->insertFunction(fp,temporaryFlag);
+	  //	  qDebug() << "Registering " << QString::fromStdString(fp->name);
 	  RegisterNested(fp->code,m_eval,this);
 	}
 	functionCompiled = true;

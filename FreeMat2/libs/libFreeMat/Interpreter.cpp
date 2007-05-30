@@ -318,7 +318,11 @@ static std::string PrivateMangleName(std::string cfunc, std::string fname) {
 }
 
 static std::string LocalMangleName(std::string cfunc, std::string fname) {
-  return cfunc + ":Local:" + fname;
+  int ndx = cfunc.rfind("/");
+  if (ndx >= 0)
+    cfunc.erase(ndx,cfunc.size());
+  std::string tmp = cfunc + "/" + fname;
+  return cfunc + "/" + fname;
 }
 
 static std::string NestedMangleName(std::string cfunc, std::string fname) {
@@ -387,7 +391,7 @@ void Interpreter::sendGreeting() {
 std::string Interpreter::getLocalMangledName(std::string fname) {
   std::string ret;
   if (isMFile(ip_funcname))
-    ret = LocalMangleName(ip_funcname,fname);
+    ret = LocalMangleName(ip_detailname,fname);
   else
     ret = fname;
   return ret;
@@ -4310,8 +4314,10 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
       if (anyClasses && ClassResolveFunction(this,args[i],funcName,val))
 	return true;
     }
-    if (context->lookupFunction(funcName,val))
+    if (context->lookupFunction(funcName,val)) {
+      //      qDebug() << "Lookup " << QString::fromStdString(funcName);
       return true;
+    }
     if (passcount == 0)
       rescanPath();
     passcount++;

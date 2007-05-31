@@ -251,7 +251,7 @@ ArrayVector Hex2DecFunction(int nargout, const ArrayVector& arg) {
 //@>
 //@@Tests
 //@$"y=dec2hex(1023)","'3ff'","exact"
-//@$"y=dec2hex(16,4)","'000f'","exact"
+//@$"y=dec2hex(16,4)","'0010'","exact"
 //!
 ArrayVector Dec2HexFunction(int nargout, const ArrayVector& arg) {
   char buffer[1000];
@@ -302,7 +302,7 @@ ArrayVector Dec2HexFunction(int nargout, const ArrayVector& arg) {
 //num2hex(float([1 0 0.1 -pi inf nan]))
 //@>
 //@@Tests
-//@$"y=num2hex(-pi)","'c00921fb544442d18'","exact"
+//@$"y=num2hex(-pi)","'c00921fb54442d18'","exact"
 //@$"y=num2hex(.1f)","'3dcccccd'","exact"
 //!
 ArrayVector Num2HexFunction(int nargout, const ArrayVector& arg) {

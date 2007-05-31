@@ -32,7 +32,7 @@
 function y = upper(x)
   if (isstr(x))
     y = upper_string(x);
-  elseif (iscellstr(x))
+  elseif (iscell(x))
     y = cell(size(x));
     for i=1:numel(x)
       y{i} = upper_string(x{i});
@@ -42,4 +42,8 @@ function y = upper(x)
   end
 
 function y = upper_string(x)
-  y = string(x + ('A'-'a')*(x>='a' && x<='z'));
+  if (isstr(x))
+    y = string(x + ('A'-'a')*(x>='a' && x<='z'));
+  else
+    y = x;
+  end;

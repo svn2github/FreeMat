@@ -479,7 +479,7 @@ void RegisterNested(const tree &t, Interpreter *m_eval, MFunctionDef *parent) {
     VariableReferencesList(fp->code,fp->variablesAccessed);
     fp->fileName = parent->fileName;
     // Register any nested functions for the local functions
-    m_eval->getContext()->insertFunction(fp,parent->temporaryFlag);
+    m_eval->getContext()->insertFunction(fp,false);
     RegisterNested(fp->code,m_eval,fp);
   } else
     for (int i=0;i<t.numchildren();i++)
@@ -562,7 +562,10 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	  VariableReferencesList(fp->code,fp->variablesAccessed);
 	  fp->fileName = fileName;
 	  // Register any nested functions for the local functions
-	  m_eval->getContext()->insertFunction(fp,temporaryFlag);
+	  // local functions are not marked as temporary.  This yields
+	  // clutter in the name space, but solves the troublesome
+	  // issue of local functions being flushed by the CD command.
+	  m_eval->getContext()->insertFunction(fp,false);
 	  //	  qDebug() << "Registering " << QString::fromStdString(fp->name);
 	  RegisterNested(fp->code,m_eval,this);
 	}

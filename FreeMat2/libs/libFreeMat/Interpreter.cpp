@@ -322,6 +322,7 @@ static std::string LocalMangleName(std::string cfunc, std::string fname) {
   if (ndx >= 0)
     cfunc.erase(ndx,cfunc.size());
   std::string tmp = cfunc + "/" + fname;
+  //  qDebug() << "Lookup " << QString::fromStdString(tmp);
   return cfunc + "/" + fname;
 }
 

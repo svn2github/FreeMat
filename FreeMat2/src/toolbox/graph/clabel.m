@@ -79,3 +79,4 @@ function handles = clabel(contourhandle,varargin)
 
 function u = close_enough(d)
   u = abs(d) < 100*eps;
+  

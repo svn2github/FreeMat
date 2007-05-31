@@ -25,7 +25,7 @@
 
 typedef std::string key_type;
 
-#define SYMTAB 128
+#define SYMTAB 512
 
 template<class T>
 class SymbolTable {

@@ -43,6 +43,7 @@ extern "C" {
 
 void floatMatrixMatrixMultiply(int m, int n, int k,
 			       float* c, const float* a, const float *b) {
+  if ((m == 0) || (n == 0) || (k == 0)) return;
   // Use gemm, which computes
   // C = alpha*A*B + beta*C
   //      SUBROUTINE SGEMM ( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB,
@@ -210,6 +211,7 @@ void floatMatrixMatrixMultiply(int m, int n, int k,
 
 void complexMatrixMatrixMultiply(int m, int n, int k,
 				 float* c, const float* a, const float*b) {
+  if ((m == 0) || (n == 0) || (k == 0)) return;
   // Use gemm, which computes
   // C = alpha*A*B + beta*C
 
@@ -384,6 +386,7 @@ void complexMatrixMatrixMultiply(int m, int n, int k,
 
 void doubleMatrixMatrixMultiply(int m, int n, int k,
 				double* c, const double* a, const double *b) {
+  if ((m == 0) || (n == 0) || (k == 0)) return;
   // Use gemm, which computes
   // C = alpha*A*B + beta*C
   //      SUBROUTINE SGEMM ( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB,
@@ -553,6 +556,7 @@ void doubleMatrixMatrixMultiply(int m, int n, int k,
 
 void dcomplexMatrixMatrixMultiply(int m, int n, int k,
 				  double* c, const double* a, const double *b) {
+  if ((m == 0) || (n == 0) || (k == 0)) return;
   // Use gemm, which computes
   // C = alpha*A*B + beta*C
   //      SUBROUTINE CGEMM ( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB,

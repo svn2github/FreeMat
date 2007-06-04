@@ -30,6 +30,7 @@
 #include "SymbolTable.hpp"
 
 typedef SymbolTable<Array> VariableTable;
+class Serialize;
 
 /**
  * A Scope is a collection of functions and variables all visible
@@ -80,11 +81,6 @@ class Scope {
    */
   stringVector persistentVars;
   /**
-   * The location ID stack - stores information on where in the source
-   * file the current token resides.
-   */
-  std::vector<int> IDstack;
-  /**
    * This string vector contains the names of variables accessed (potentially)
    * in this scope.
    */
@@ -125,8 +121,14 @@ public:
       if (variablesAccessed[i] == varName) return true;
     return false;
   }
+  inline stringVector getVariablesAccessedList() {
+    return variablesAccessed;
+  }
   inline void setLocalVariables(stringVector varList) {
     localVariables = varList;
+  }
+  inline stringVector getLocalVariablesList() {
+    return localVariables;
   }
   inline bool variableLocal(string varName) {
     for (int i=0;i<localVariables.size();i++) 
@@ -190,6 +192,9 @@ public:
       anyGlobals = true;
     }
   }
+  inline stringVector getGlobalVariablesList() {
+    return globalVars;
+  }
   /**
    * Delete a variable name from the global variables list.
    */
@@ -224,6 +229,9 @@ public:
       persistentVars.push_back(varName);
       anyPersistents = true;
     }
+  }
+  inline stringVector getPersistentVariablesList() {
+    return persistentVars;
   }
   /**
    * Delete a variable name from the persistent variables list.
@@ -372,5 +380,8 @@ public:
   }
   operator Scope* () const {return d;}
 };
+
+void FreezeScope(ScopePtr scope, Serialize *s);
+ScopePtr ThawScope(Serialize *s);
 
 #endif

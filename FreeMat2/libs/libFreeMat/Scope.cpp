@@ -20,6 +20,7 @@
 #include "Scope.hpp"
 #include <QMutexLocker>
 #include <QMutex>
+#include "Serialize.hpp"
 
 QMutex scopemutex;
 
@@ -38,4 +39,48 @@ bool Scope::referenced() {
   return (refcount>0);
 }
 
+ScopePtr ThawScope(Serialize *s) {
+  string name(s->getString());
+  stringVector globalVars(s->getStringVector());
+  stringVector persistentVars(s->getStringVector());
+  stringVector variablesAccessed(s->getStringVector());
+  stringVector localVariables(s->getStringVector());
+  bool isNested(s->getBool());
+  Scope *q = new Scope(name,isNested);
+  q->setVariablesAccessed(variablesAccessed);
+  q->setLocalVariables(localVariables);
+  for (int i=0;i<persistentVars.size();i++)
+    q->addPersistentVariablePointer(persistentVars[i]);
+  for (int i=0;i<globalVars.size();i++)
+    q->addGlobalVariablePointer(globalVars[i]);
+  stringVector names(s->getStringVector());
+  for (int i=0;i<names.size();i++) {
+    bool arrayDefed = s->getBool();
+    if (arrayDefed) {
+      Array t;
+      s->getArray(t);
+      q->insertVariable(names[i],t);
+    }
+  }
+  return ScopePtr(q);
+}
 
+void FreezeScope(ScopePtr scope, Serialize *s) {
+  s->putString(scope->getName().c_str());
+  s->putStringVector(scope->getGlobalVariablesList());
+  s->putStringVector(scope->getPersistentVariablesList());
+  s->putStringVector(scope->getVariablesAccessedList());
+  s->putStringVector(scope->getLocalVariablesList());
+  s->putBool(scope->isnested());
+  stringVector names(scope->getCompletions(""));
+  s->putStringVector(names);
+  for (int i=0;i<names.size();i++) {
+    Array* p = scope->lookupVariable(names[i]);
+    if (p) {
+      s->putBool(true);
+      s->putArray(*p);
+    } else {
+      s->putBool(false);
+    }
+  }
+}

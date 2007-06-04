@@ -180,7 +180,10 @@ ArrayVector HTMLReadFunction(int nargout, const ArrayVector& arg) {
 //@[
 //   f = urlwrite(url,filename,timeout)
 //@]
-//The @|timeout| is in milliseconds.  
+//The @|timeout| is in milliseconds.  Note that the URL must be a complete
+//spec (i.e., including the name of the resource you wish to retrieve).  So
+//for example, you cannot use @|http://www.google.com| as a URL, but must 
+//instead use @|http://www.google.com/index.html|.
 //!
 
 void URLRetriever::requestFinished(int id, bool err) {

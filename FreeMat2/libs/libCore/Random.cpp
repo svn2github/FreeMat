@@ -36,7 +36,8 @@ static bool initialized = false;
 //@[
 //  seed(s,t)
 //@]
-//where @|s| and @|t| are the seed values.
+//where @|s| and @|t| are the seed values.  Note that due to limitations
+//in @|ranlib|, the values of @|s,t| must be between @|0 <= s,t <= 2^30|.
 //@@Example
 //Here's an example of how the seed value can be used to reproduce
 //a specific random number sequence.

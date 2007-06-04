@@ -214,8 +214,8 @@ void HelpWindow::createMenus() {
 void HelpWindow::createToolBars() {
   goToolBar = addToolBar("Go");
   goToolBar->setObjectName("GoToolBar");
-  goToolBar->addAction(forwardAct);
   goToolBar->addAction(backAct);
+  goToolBar->addAction(forwardAct);
   goToolBar->addAction(homeAct); 
   editToolBar = addToolBar("Edit");
   editToolBar->setObjectName("EditToolBar");

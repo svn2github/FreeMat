@@ -99,6 +99,10 @@ void QTTerm::setChar(char t) {
 }
 
 void QTTerm::setFont(QFont font) {
+  QFontInfo fi(font);
+  if (!fi.fixedPitch()) 
+    QMessageBox::warning(this,"FreeMat",
+			 "You have selected a font that is not a fixed pitch.\nThe terminal widget really requires a fixed pitch font to work.");
   fnt = font;
   calcGeometry();
 }

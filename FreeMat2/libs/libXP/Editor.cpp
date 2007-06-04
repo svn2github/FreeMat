@@ -218,6 +218,10 @@ void FMTextEdit::contextMenuEvent(QContextMenuEvent* e) {
 
 void FMTextEdit::fontUpdate() {
   QFontMetrics fm(font());
+  QFontInfo fi(font());
+  if (!fi.fixedPitch()) 
+    QMessageBox::warning(this,"FreeMat",
+			 "You have selected a font that is not a fixed pitch.\nThe editor really requires a fixed pitch font to work.");
   setTabStopWidth(fm.width(' ')*indentSize);
 }
 

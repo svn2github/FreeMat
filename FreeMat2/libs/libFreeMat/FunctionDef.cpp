@@ -122,7 +122,7 @@ void AnonymousFunctionDef::initialize(const tree &t, Interpreter *eval) {
   for (int i=0;i<vars.size();i++) {
     ArrayReference ptr(eval->getContext()->lookupVariable(vars[i]));
     if (ptr.valid()) {
-      cout << "Captured VAR: " << vars[i] << "\r\n";
+      //      cout << "Captured VAR: " << vars[i] << "\r\n";
       workspace.insertSymbol(vars[i],*ptr);
     }
   }
@@ -649,8 +649,13 @@ void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {
   s->putStringVector(fptr->returnVals);
   s->putBool(fptr->functionCompiled);
   s->putBool(fptr->localFunction);
+  s->putBool(fptr->nestedFunction);
+  s->putBool(fptr->capturedFunction);
   s->putStringVector(fptr->helpText);
+  s->putStringVector(fptr->variablesAccessed);
+  FreezeScope(fptr->workspace,s);
   FreezeTree(fptr->allCode,s);
+  FreezeTree(fptr->code,s);
 }
 
 MFunctionDef* ThawMFunction(Serialize *s) {
@@ -662,18 +667,13 @@ MFunctionDef* ThawMFunction(Serialize *s) {
   t->returnVals = s->getStringVector();
   t->functionCompiled = s->getBool();
   t->localFunction = s->getBool();
+  t->nestedFunction = s->getBool();
+  t->capturedFunction = s->getBool();
   t->helpText = s->getStringVector();
+  t->variablesAccessed = s->getStringVector();
+  t->workspace = ThawScope(s);
   t->allCode = ThawTree(s);
-  if (t->allCode.is(TOK_FUNCTION_DEFS)) {
-    tree MainFuncCode = t->allCode.first();
-    t->code = MainFuncCode.child(3);
-    VariableReferencesList(t->code,t->variablesAccessed);
-  } else {
-    t->scriptFlag = true;
-    t->functionCompiled = true;
-    t->code = t->allCode.first();
-    VariableReferencesList(t->code,t->variablesAccessed);
-  }
+  t->code = ThawTree(s);
   return t;
 }
 

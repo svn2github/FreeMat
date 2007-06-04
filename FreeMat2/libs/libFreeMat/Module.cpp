@@ -377,9 +377,9 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
   string current(QDir::currentPath().toStdString());
   // Prepend the current working directory... ugly, but necessary
 #ifdef WIN32
-  if (!((libfullpath[0] == '\\') || ((libfullpath[1] == ':') && 
-				     (libfullpath[2] == '\\'))))
-    libfullpath = current + "\\" + libfullpath;
+  if (!((libfullpath[0] == '/') || ((libfullpath[1] == ':') && 
+				     (libfullpath[2] == '/'))))
+    libfullpath = current + "/" + libfullpath;
 #else
   if (libfullpath[0] != '/')
     libfullpath = current + "/" + libfullpath;

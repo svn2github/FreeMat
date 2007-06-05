@@ -48,10 +48,16 @@ stringVector GetCompletionList(string pattern) {
     QFileInfoList list = dir.entryInfoList(QStringList() << (t.fileName() + "*"));
     for (unsigned i=0;i<list.size();i++) {
       QFileInfo fileInfo = list.at(i);
-      if (fileInfo.isDir())
-	completions.push_back((t.path() + QDir::separator() + fileInfo.fileName() + QDir::separator()).toStdString());
+      if (fileInfo.isDir()) 
+	if (!t.path().endsWith(QDir::separator())) 
+	  completions.push_back((t.path() + QDir::separator() + fileInfo.fileName() + QDir::separator()).toStdString());
+	else
+	  completions.push_back((t.path() + fileInfo.fileName() + QDir::separator()).toStdString());
       else
-	completions.push_back((t.path() + QDir::separator() + fileInfo.fileName()).toStdString());
+	if (!t.path().endsWith(QDir::separator())) 
+	  completions.push_back((t.path() + QDir::separator() + fileInfo.fileName()).toStdString());
+	else	
+	  completions.push_back((t.path() + fileInfo.fileName()).toStdString());
     }
   } else {
     QFileInfoList list = dir.entryInfoList(QStringList() << (QString::fromStdString(pattern) + "*"));

@@ -337,9 +337,8 @@ fi
 AC_CHECK_LIB(umfpack,umfpack_zl_solve,found_umfpack="yes",found_umfpack="no")
 AC_CHECK_HEADER(umfpack.h,[],found_umfpack="no")
 if test x"$found_umfpack" == xno; then
-  AC_CHECK_HEADERS(umfpack/umfpack.h)
-  if $HAVE_UMFPACK_UMFPACK_H; then
-    found_umfpack="yes"
+  AC_CHECK_HEADER(umfpack/umfpack.h,[],found_umfpack="no")
+  if test x"$found_umfpack" == xyes; then
     CFLAGS="$CFLAGS -I/usr/include/umfpack"
     CXXFLAGS="$CXXFLAGS -I/usr/include/umfpack"
   fi

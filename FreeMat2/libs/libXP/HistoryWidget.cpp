@@ -55,7 +55,7 @@ void HistoryWidget::doubleClicked(QListWidgetItem* item) {
 }
 
 void HistoryWidget::closeEvent(QCloseEvent *ce) {
-  writeSettings();
+  //  writeSettings();
   ce->accept();
 }
 
@@ -82,15 +82,7 @@ void HistoryWidget::readSettings() {
 void HistoryWidget::clear() {
   if (QMessageBox::warning(this,"Clear History","Are you sure you want to clear the history?  There is no undo operation",QMessageBox::Yes,QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
     m_flist->clear();
+  emit clearHistory();
 }
 
-void HistoryWidget::writeSettings() {
-  QSettings settings("FreeMat","FreeMat");
-  QStringList historyList;
-  for (int i=0;i<m_flist->count();i++) {
-    QListWidgetItem *item = m_flist->item(i);
-    historyList << item->text();
-  }
-  settings.setValue("interpreter/history",historyList);
-}
 

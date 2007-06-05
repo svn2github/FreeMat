@@ -30,7 +30,6 @@ private:
   QListWidget *m_flist;
   QMenu *m_popup;
   void readSettings();
-  void writeSettings();
 protected:
   void contextMenuEvent(QContextMenuEvent *e);
   void closeEvent(QCloseEvent*);
@@ -39,6 +38,7 @@ protected slots:
   void doubleClicked(QListWidgetItem* item);
 signals:
   void sendCommand(QString t);
+  void clearHistory();
 };
 
 #endif

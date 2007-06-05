@@ -65,7 +65,7 @@ KeyManager::KeyManager()  {
   ncolumn = 80;
   nline = 24;
   insert = true;
-  history.push_back("");
+  //  history.push_back("");
   enteredLinesEmpty = true;
   ReplacePrompt("");
   loopactive = 0;
@@ -88,6 +88,10 @@ void KeyManager::SetCompletionContext(Context* ctxt) {
 
 int KeyManager::getTerminalWidth() {
   return ncolumn;
+}
+
+void KeyManager::ClearHistory() {
+  history.clear();
 }
 
 void KeyManager::SetTermWidth(int w) {
@@ -641,7 +645,15 @@ void KeyManager::SearchPrefix(string aline, int aprefix_len) {
 void KeyManager::AddHistory(string mline) {
   prefix = "";
   prefix_len = 0;
-  history.push_back(mline);
+  if (mline.size() > 0) {
+    bool match_found = false;
+    for (int i=0;i<history.size() && !match_found;i++) 
+      match_found = history[i] == mline;
+    if (!match_found)
+      history.push_back(mline);
+    while (history.size() > 1000)
+      history.pop_front();
+  }
   emit SendCommand(QString::fromStdString(mline));
   return;
 }
@@ -649,7 +661,12 @@ void KeyManager::AddHistory(string mline) {
 void KeyManager::HistoryFindForwards() {
   unsigned int i;
   bool found;
-  if (startsearch == 0) return;
+  if (startsearch >= (history.size()-1)) {
+    ResetLineBuffer();
+    AddStringToLine(prefix);
+    startsearch = history.size();
+    return;
+  }
   i = startsearch+1;
   found = false;
   while (i<history.size() && !found) {
@@ -658,7 +675,9 @@ void KeyManager::HistoryFindForwards() {
     if (!found) i++;
   }
   if (!found && (i >= history.size())) {
+    startsearch = history.size();
     ResetLineBuffer();
+    AddStringToLine(prefix);
     return;
   }
   lineData = history[i];
@@ -1183,12 +1202,22 @@ vector<string> KeyManager::GetCompletions(string line,
   if (!context) return completions;
   if (start[-1] != '\'') {
     vector<string> local_completions(context->getCompletions(string(start)));
-    for (int i=0;i<local_completions.size();i++)
-      completions.push_back(local_completions[i]);
+    for (int i=0;i<local_completions.size();i++) 
+      if (local_completions[i].find("private:") == local_completions[i].npos)
+	completions.push_back(local_completions[i]);
   }
   stringVector comp(GetCompletionList(tmp));
-  for (int i=0;i<comp.size();i++)
-    completions.push_back(comp[i]);
+  for (int i=0;i<comp.size();i++) 
+    if (comp[i].find("private:") == comp[i].npos)
+      completions.push_back(comp[i]);
   sort(completions.begin(),completions.end());
   return completions;
+}
+
+void KeyManager::WriteHistory() {
+  QSettings settings("FreeMat","FreeMat");
+  QStringList historyList;
+  for (int i=0;i<history.size();i++) 
+    historyList << QString::fromStdString(history[i]);
+  settings.setValue("interpreter/history",historyList);
 }

@@ -76,6 +76,7 @@ public:
   void SetCompletionContext(Context* ctxt);
   Context* GetCompletionContext();
   void getKeyPress();
+  void WriteHistory();
  private:
   Context *context;
   vector<string> GetCompletions(string line, int word_end, 
@@ -110,7 +111,7 @@ public:
   int nline;
   int ncolumn;
   // the text
-  vector<string> history;
+  QList<string> history;
   // The new line buffer
   string lineData;
   // The maximum allowed line length
@@ -162,6 +163,7 @@ signals:
   void ExecuteLine(string txt);
 public slots:
   void Ready();
+  void ClearHistory();
   void OnChar( int c );
   void SetTermWidth(int w);
   void QueueString(QString);

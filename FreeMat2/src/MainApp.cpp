@@ -219,6 +219,7 @@ void MainApp::Crashed() {
 
 void MainApp::Quit() {
   TerminalReset();
+  m_keys->WriteHistory();
   qApp->closeAllWindows();
   qApp->quit();
 }

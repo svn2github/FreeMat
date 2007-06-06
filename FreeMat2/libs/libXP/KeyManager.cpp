@@ -617,8 +617,10 @@ void KeyManager::KillLine() {
 }
 
 void KeyManager::HistorySearchBackward() {
-  if (last_search != keyseq_count-1)
+  if (last_search != keyseq_count-1) {
     SearchPrefix(string(lineData),buff_curpos);
+    startsearch = history.size();
+  }
   last_search = keyseq_count;
   HistoryFindBackwards();
   ntotal = lineData.size();
@@ -646,10 +648,7 @@ void KeyManager::AddHistory(string mline) {
   prefix = "";
   prefix_len = 0;
   if (mline.size() > 0) {
-    bool match_found = false;
-    for (int i=0;i<history.size() && !match_found;i++) 
-      match_found = history[i] == mline;
-    if (!match_found)
+    if (history.back() != mline)
       history.push_back(mline);
     while (history.size() > 1000)
       history.pop_front();

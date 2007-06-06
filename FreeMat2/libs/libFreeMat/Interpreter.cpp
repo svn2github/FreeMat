@@ -2881,48 +2881,26 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
 }
 
 void Interpreter::processBreakpoints(const tree &t) {
-//   qDebug() << "Executing statement:";
-//  t.print();
-  if (t.getBPflag()) {
-    //    qDebug() << "Debug trap:";
-    //    t.print();
-    doDebugCycle();
-    //    qDebug() << "Debug cycle complete...";
-    SetContext(t.context());
-    //    qDebug() << "Resuming this statement...";
-    //    t.print();
+  for (int i=0;i<bpStack.size();i++) {
+    if ((bpStack[i].cname == ip_funcname) && 
+	((ip_context & 0xffff) == bpStack[i].tokid)) {
+      doDebugCycle();
+      SetContext(t.context());
+    }
   }
   if (tracetrap > 0) {
-    //     qDebug() << "Trace trap active...";
-    //     qDebug() << "  Line number " << 
-    //       ((ip_context) & 0xffff) << "  " << tracecurrentline 
-    // 	     << " trap " << tracetrap << "";
     if (((ip_context) & 0xffff) != tracecurrentline) {
-      //      qDebug() << "Current line changed...";
       tracetrap--;
       if (tracetrap == 0)
 	doDebugCycle();
     }
   }
   if (steptrap > 0) {
-    //     qDebug() << "Step trap active...";
-    //     qDebug() << "  Line number " << 
-    //        ((ip_context) & 0xffff) << "  " << stepcurrentline 
-    // 	     << " trap " << steptrap << "";
     if (((ip_context) & 0xffff) != stepcurrentline) {
-      //      qDebug() << "Current line changed...";
       steptrap--;
       if (steptrap == 0)
 	doDebugCycle();
     }
-    // 	if ((steptrap == 1) && ((ip_detailname == stepname) || tracetrap) ) {
-    // 	  qDebug() << "Step trap hit...";
-    // 	  i->print();
-    // 	  steptrap--;
-    // 	  SetContext(i->context());
-    // 	  doDebugCycle();
-    // 	} else if ((steptrap > 1) && ((ip_detailname == stepname)||tracetrap))
-    // 	  steptrap--;
   }
 }
 
@@ -3170,11 +3148,11 @@ void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
 		   " is not an m-file, and does not support breakpoints");
     return;
   }
-  try {
-    ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,enableFlag);
-  } catch (Exception &e) {
-    e.printMe(this);
-  }
+  //  try {
+  //     //    ((MFunctionDef*)val)->SetBreakpoint(bp.tokid,enableFlag);
+  //   } catch (Exception &e) {
+  //     e.printMe(this);
+  //   }
 }
  
 void Interpreter::addBreakpoint(stackentry bp) {
@@ -4127,27 +4105,61 @@ MFunctionDef* Interpreter::lookupFullPath(string fname) {
 }
 
 static int bpList = 1;
+// Add a breakpoint - name is used to track to a full filename
 void Interpreter::addBreakpoint(string name, int line) {
   //  qDebug() << "Add bp " << QString::fromStdString(name) << " : " << line << "";
   FuncPtr val;
   MFunctionDef *mptr;
+  // Map the name argument to a full file name.
+  string fullFileName;
   if (context->lookupFunction(name,val) && (val->type() == FM_M_FUNCTION))
-    mptr = (MFunctionDef*) val;
+    fullFileName = ((MFunctionDef*) val)->fileName;
   else
-    mptr = lookupFullPath(name);
-  if (!mptr || (mptr->type() != FM_M_FUNCTION)) {
-    warningMessage(std::string("Cannot resolve ")+name+std::string(" to a function or script "));
-    return;
+    fullFileName = name;
+  // Get a list of all functions
+  stringVector allFuncs(context->listAllFunctions());
+  // We make one pass through the functions, and update 
+  // those functions that belong to the given filename
+  for (int i=0;i<allFuncs.size();i++) {
+    bool isFun = context->lookupFunction(allFuncs[i],val);
+    if (val->type() == FM_M_FUNCTION) {
+      MFunctionDef *mptr = (MFunctionDef *) val;
+      if (mptr->fileName == fullFileName)
+	mptr->updateCode(this);
+    }
   }
-  mptr->updateCode(this);
-  try {
-    int dline = mptr->ClosestLine(line);
-    if (dline != line)
-      warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
-    addBreakpoint(stackentry(mptr->fileName,mptr->name,dline,bpList++));
-  } catch (Exception& e) {
-    warningMessage(e.getMessageCopy());
+  // Refresh the list of all functions
+  allFuncs = context->listAllFunctions();
+  // Search through the list for any function defined
+  for (int i=0;i<allFuncs.size();i++) {
+    bool isFun = context->lookupFunction(allFuncs[i],val);
+    if (val->type() == FM_M_FUNCTION) {
+      MFunctionDef *mptr = (MFunctionDef *) val;
+      if (mptr->fileName == fullFileName) {
+	cout << "Looking at " << mptr->name << "\r\n";
+	try {
+	  int dline = mptr->ClosestLine(line);
+#warning Setting breakpoints is currently broken.
+	  cout << "Set " << val->name << " at line " << dline << "\r\n";
+	} catch (Exception& e) {
+	}
+      }
+    }
   }
+//     mptr = lookupFullPath(name);
+//   if (!mptr || (mptr->type() != FM_M_FUNCTION)) {
+//     warningMessage(std::string("Cannot resolve ")+name+std::string(" to a function or script"));
+//     return;
+//   }
+//   mptr->updateCode(this);
+//   try {
+//     int dline = mptr->ClosestLine(line);
+//     if (dline != line)
+//       warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
+//     addBreakpoint(stackentry(mptr->fileName,mptr->name,dline,bpList++));
+//   } catch (Exception& e) {
+//     warningMessage(e.getMessageCopy());
+//   }
 }
 
 bool Interpreter::isBPSet(QString fname, int lineNumber) {
@@ -4176,7 +4188,7 @@ void Interpreter::listBreakpoints() {
 void Interpreter::deleteBreakpoint(int number) {
   for (int i=0;i<bpStack.size();i++) 
     if (bpStack[i].number == number) {
-      setBreakpoint(bpStack[i],false);
+      //      setBreakpoint(bpStack[i],false);
       bpStack.erase(bpStack.begin()+i);
       emit RefreshBPLists();
       return;

@@ -32,7 +32,7 @@ string fm_reserved[22] = {
 int fm_reserved_count = sizeof(fm_reserved)/sizeof(fm_reserved[0]);
 
 Token::Token(byte tok, unsigned pos, string text) :
-  m_tok(tok), m_pos(pos), m_text(text), m_bpflag(false) {
+  m_tok(tok), m_pos(pos), m_text(text) {
 }
 
 Token::Token() {
@@ -66,11 +66,7 @@ bool Token::IsRightAssociative() const {
 
 ostream& operator<<(ostream& o, const Token& b) {
   o << TokenToString(b) << " (" << (b.Position() >> 16)
-    << "," << (b.Position() & 0xffff);
-  if (b.BPFlag())
-    o << "," << "BP)\r\n";
-  else
-    o << ")\r\n";
+    << "," << (b.Position() & 0xffff) << ")\r\n";
   return o;
 }
 
@@ -149,7 +145,6 @@ void FreezeToken(const Token& a, Serialize *s) {
   s->putByte(a.m_tok);
   s->putInt(a.m_pos);
   s->putString(a.m_text.c_str());
-  s->putBool(a.m_bpflag);
 }
 
 Token ThawToken(Serialize *s) {
@@ -157,7 +152,6 @@ Token ThawToken(Serialize *s) {
   a.m_tok = s->getByte();
   a.m_pos = s->getInt();
   a.m_text = s->getString();
-  a.m_bpflag = s->getBool();
   a.FillArray();
   return a;
 }

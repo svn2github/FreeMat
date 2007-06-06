@@ -30,10 +30,6 @@ private:
 public:
   tree();
   tree(const Token& tok);
-  //  tree(tree_node* ptr) : tptr(ptr) {}
-  //  tree(const tree& copy);
-  //   ~tree();
-  //  tree_node* ptr() {return tptr;}
   void print() const;
   void Rename(byte newtok) {tptr->Rename(newtok);}
   bool valid() const {return !(tptr->node.Is(TOK_INVALID));}
@@ -43,8 +39,6 @@ public:
   tree first() const {if (valid()) return tptr->children.front(); else return tree();}
   tree second() const {return child(1);}
   bool is(byte tok) const {return (token()==tok);}
-  void setBPflag(bool enable) {if (valid()) (tptr->node.SetBPFlag(enable));}
-  bool getBPflag() const {if (valid()) return tptr->node.BPFlag(); return false;}
   byte token() const {if (valid()) return tptr->node.Value(); else return 0;}
   unsigned numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
   bool haschildren() const {return numchildren() > 0;}

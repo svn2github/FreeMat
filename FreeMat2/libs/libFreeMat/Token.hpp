@@ -89,7 +89,6 @@ class Token {
   byte m_tok;
   unsigned m_pos;
   string m_text;
-  bool m_bpflag;
   Array m_array;
 public:
   Token();
@@ -106,8 +105,6 @@ public:
   void SetText(string txt) {m_text = txt;}
   Array GetArray() const {return m_array;}
   void FillArray();
-  void SetBPFlag(bool flags) {m_bpflag = flags;}
-  bool BPFlag() const {return m_bpflag;}
   void Print(ostream& o) const;
 
   friend void FreezeToken(const Token& a, Serialize *s);

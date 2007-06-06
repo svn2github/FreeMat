@@ -131,7 +131,6 @@ void AnonymousFunctionDef::initialize(const tree &t, Interpreter *eval) {
 MFunctionDef::MFunctionDef() {
   functionCompiled = false;
   timeStamp = 0;
-  //  allCode = NULL;
   localFunction = false;
   pcodeFunction = false;
 #warning - check pcode
@@ -535,7 +534,6 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
       Parser P(S);
       tree pcode = P.Process();
       fclose(fp);
-      allCode = pcode;
       if (pcode.is(TOK_FUNCTION_DEFS)) {
 	scriptFlag = false;
 	// Get the main function..
@@ -608,37 +606,15 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
     TreeLine(t.child(i),bestLine,lineTarget);
 }
 
-bool SetTreeBreakPoint(tree t, int lineNumber, bool enable) {
-  if (!t.valid()) return false;
-  if (StatementTypeNode(t)) {
-    if ((t.context() & 0xffff) == lineNumber) {
-      t.setBPflag(enable);
-      return true;
-    }
-  }
-  for (int i=0;i<t.numchildren();i++)
-    if (SetTreeBreakPoint(t.child(i),lineNumber,enable)) return true;
-  return false;
-}
-
-
 // Find the closest line number to the requested 
 unsigned MFunctionDef::ClosestLine(unsigned line) {
   unsigned bestline;
   bestline = 1000000000;
-  TreeLine(allCode,bestline,line);
+  TreeLine(code,bestline,line);
   if (bestline == 1000000000)
     throw Exception(string("Unable to find a line close to ") + 
 		    line + string(" in routine ") + name);
   return bestline;
-}
-
-void MFunctionDef::SetBreakpoint(int bpline, bool enable) {
-  //  qDebug() << "Set bp called for line " << bpline << " enable is " << enable << " for function :" << QString::fromStdString(name) << "\r\n";
-  if (!SetTreeBreakPoint(allCode,bpline,enable)) 
-    throw Exception(string("Unable to modify a breakpoint at line ") + 
-		    bpline + string(" of routine ") + name);
-  //  allCode.print();
 }
 
 void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {
@@ -654,7 +630,6 @@ void FreezeMFunction(MFunctionDef *fptr, Serialize *s) {
   s->putStringVector(fptr->helpText);
   s->putStringVector(fptr->variablesAccessed);
   FreezeScope(fptr->workspace,s);
-  FreezeTree(fptr->allCode,s);
   FreezeTree(fptr->code,s);
 }
 
@@ -672,7 +647,6 @@ MFunctionDef* ThawMFunction(Serialize *s) {
   t->helpText = s->getStringVector();
   t->variablesAccessed = s->getStringVector();
   t->workspace = ThawScope(s);
-  t->allCode = ThawTree(s);
   t->code = ThawTree(s);
   return t;
 }

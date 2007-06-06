@@ -187,7 +187,6 @@ public:
    * function is contained in this AST, not the function declaration itself).
    */
   tree code;
-  tree allCode;
   /**
    * Flag to indicate if the function has been compiled.
    */
@@ -264,10 +263,6 @@ public:
    * script or a function definition).
    */
   virtual bool updateCode(Interpreter *m_eval);
-  /**
-   * Activate/Deactivate a breakpoint
-   */
-  void SetBreakpoint(int bpline, bool enable);  
   /**
    * Find the line number closest to the requested one
    */

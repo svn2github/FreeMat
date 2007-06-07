@@ -727,6 +727,12 @@ tree Parser::Process() {
       if (HasNestedFunctions(root) || Match(TOK_END))
 	Expect(TOK_END);
       while (Match('\n')) Consume();
+      while (Match(TOK_FUNCTION)) {
+	addChild(root,FunctionDefinition());
+	if (HasNestedFunctions(root) || Match(TOK_END))
+	  Expect(TOK_END);
+	while (Match('\n')) Consume();
+      }
     } else {
       root = mkLeaf(TOK_SCRIPT,m_lex.ContextNum());
       addChild(root,StatementList());

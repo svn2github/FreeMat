@@ -597,6 +597,9 @@ bool StatementTypeNode(tree t) {
 // 
 void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
   if (!t.valid()) return;
+  // Nested functions are tracked separately - so that we do not
+  // check them for line numbers
+  if (t.is(TOK_NEST_FUNC)) return;
   if (StatementTypeNode(t)) {
     unsigned myLine = (t.context() & 0xffff);
     if ((myLine >= lineTarget) && (myLine < bestLine))

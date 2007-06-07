@@ -211,6 +211,7 @@ function HandleImageMode(ax)
   set(ax,'dataaspectratio',[1,1,1],'plotboxaspectratiomode','auto');
   lims = get(ax,'datalimits');
   set(ax,'xlim',lims(1:2),'ylim',lims(3:4),'zlim',lims(5:6));
+  set(ax,'ydir','reverse');
 
 function HandleEqualMode(ax)
   set(ax,'dataaspectratio',[1,1,1]);

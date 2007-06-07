@@ -620,6 +620,7 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
     }
   } catch (Exception &e) {
   }
+  dirty = true;
 }
 
 void HandleWindow::markClean() {

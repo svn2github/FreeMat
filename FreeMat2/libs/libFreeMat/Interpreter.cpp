@@ -4112,7 +4112,6 @@ static int bpList = 1;
 void Interpreter::addBreakpoint(string name, int line) {
   //  qDebug() << "Add bp " << QString::fromStdString(name) << " : " << line << "";
   FuncPtr val;
-  MFunctionDef *mptr;
   // Map the name argument to a full file name.
   string fullFileName;
   if (context->lookupFunction(name,val) && (val->type() == FM_M_FUNCTION))
@@ -4164,7 +4163,7 @@ void Interpreter::addBreakpoint(string name, int line) {
   if (best_dist > max_line_count)
     warningMessage(std::string("Cannot set breakpoint at line ")+line+" of file "+name + ".  \r\nThis can be caused by an illegal line number, or a function that is not on the path or in the current directory.");
   else {
-    addBreakpoint(stackentry(mptr->fileName,allFuncs[best_func],best_dist+line,bpList++));
+    addBreakpoint(stackentry(fullFileName,allFuncs[best_func],best_dist+line,bpList++));
   }
 }
 

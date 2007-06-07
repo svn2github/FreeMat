@@ -185,7 +185,8 @@ function ohandle = plot(varargin)
    end
    propset = {};
    if ((propstart > 0) & (propstart < nargin))
-      propset = varargin(propstart:end);
+	propset = varargin(propstart:end);
+	varargin(propstart:end) = [];
    end
    h = [];
    while (~isempty(varargin))

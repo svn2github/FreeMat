@@ -32,7 +32,7 @@
 
 % Copyright (c) 2002-2006 Samit Basu
 
-function h = plot3(varargin)
+function hout = plot3(varargin)
   % Check for an axes handle
   if (nargin>=2)
     if (isnumeric(varargin{1}) & (length(varargin{1})==1) & ...
@@ -59,6 +59,7 @@ function h = plot3(varargin)
   propset = {};
   if ((propstart > 0) & (propstart < nargin))
      propset = varargin(propstart:end);
+	varargin(propstart:end) = [];
   end
   h = [];
   while (~isempty(varargin))
@@ -75,6 +76,9 @@ function h = plot3(varargin)
     end;
   end
 axes(saveca);
+if (nargout > 0)
+   hout = h;
+end
     
 function h = plot_triplet(X,Y,Z,handle,lineprops)
     h = [];

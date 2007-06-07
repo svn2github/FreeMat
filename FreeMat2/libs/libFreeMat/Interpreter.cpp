@@ -33,6 +33,7 @@
 #include <signal.h>
 #include "Class.hpp"
 #include "Print.hpp"
+#include "MemPtr.hpp"
 #include <qapplication.h>
 #include <qeventloop.h>
 #include <QtCore>
@@ -43,6 +44,8 @@
 #else
 #define PATHSEP ":"
 #endif
+
+const int max_line_count = 1000000;
 
 #define SaveEndInfo  \
   ArrayReference oldEndRef = endRef; \
@@ -4130,36 +4133,39 @@ void Interpreter::addBreakpoint(string name, int line) {
   }
   // Refresh the list of all functions
   allFuncs = context->listAllFunctions();
-  // Search through the list for any function defined
+  // Search through the list for any function defined  - for each function,
+  // record the line number closest to it
+  MemBlock<int> line_dist_block(allFuncs.size());
+  int *line_dist = &line_dist_block;
+  for (int i=0;i<allFuncs.size();i++) line_dist[i] = 2*max_line_count;
   for (int i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr = (MFunctionDef *) val;
       if (mptr->fileName == fullFileName) {
-	cout << "Looking at " << mptr->name << "\r\n";
 	try {
 	  int dline = mptr->ClosestLine(line);
-#warning Setting breakpoints is currently broken.
-	  cout << "Set " << val->name << " at line " << dline << "\r\n";
+	  line_dist[i] = dline;
 	} catch (Exception& e) {
 	}
       }
     }
   }
-//     mptr = lookupFullPath(name);
-//   if (!mptr || (mptr->type() != FM_M_FUNCTION)) {
-//     warningMessage(std::string("Cannot resolve ")+name+std::string(" to a function or script"));
-//     return;
-//   }
-//   mptr->updateCode(this);
-//   try {
-//     int dline = mptr->ClosestLine(line);
-//     if (dline != line)
-//       warningMessage(string("Breakpoint moved to line ") + dline + " of " + name);
-//     addBreakpoint(stackentry(mptr->fileName,mptr->name,dline,bpList++));
-//   } catch (Exception& e) {
-//     warningMessage(e.getMessageCopy());
-//   }
+  // Second pass through it - find the function with a line number closest to the
+  // desired one, but not less than it
+  int best_func = -1;
+  int best_dist = 2*max_line_count;
+  for (int i=0;i<allFuncs.size();i++) {
+    if ((line_dist[i] >= line) && ((line_dist[i]-line) < best_dist)) {
+      best_func = i;
+      best_dist = line_dist[i]-line;
+    }
+  }
+  if (best_dist > max_line_count)
+    warningMessage(std::string("Cannot set breakpoint at line ")+line+" of file "+name + ".  \r\nThis can be caused by an illegal line number, or a function that is not on the path or in the current directory.");
+  else {
+    addBreakpoint(stackentry(mptr->fileName,allFuncs[best_func],best_dist+line,bpList++));
+  }
 }
 
 bool Interpreter::isBPSet(QString fname, int lineNumber) {

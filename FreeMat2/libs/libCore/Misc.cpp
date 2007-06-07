@@ -3421,7 +3421,8 @@ ArrayVector VerStringFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //@]
 //where @|s| is the string message describing the error.  The
 //@|error| function is usually used in conjunction with @|try|
-//and @|catch| to provide error handling.
+//and @|catch| to provide error handling.  If the string @|s|,
+//then (to conform to the MATLAB API), @|error| does nothing.
 //@@Example
 //Here is a simple example of an @|error| being issued by a function
 //@|evenoddtest|:
@@ -3449,10 +3450,11 @@ ArrayVector VerStringFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //!
 ArrayVector ErrorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
-    throw Exception("Not enough inputs to error function");
-  if (!(arg[0].isString()))
-    throw Exception("Input to error function must be a string");
-  throw Exception(arg[0].getContentsAsString());
+    return ArrayVector();
+  string etxt(ArrayToString(arg[0]));
+  if (!etxt.empty()) 
+    throw Exception(etxt);
+  return ArrayVector();
 }
 
 //!

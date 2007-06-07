@@ -34,15 +34,16 @@ function ohandle = pcolor(varargin)
    if (nargin == 1)
      C = varargin{1};
      h = surf(1:size(C,2),1:size(C,1),zeros(size(C)),C);
+     axis tight;
    elseif (nargin == 3)
      X = varargin{1};
      Y = varargin{2};
      C = varargin{3};
      h = surf(X,Y,zeros(size(C)),C);
+     axis tight;
    else
      error('pcolor requires either X,Y,C, or C arguments');
    end
-   
    axes(saveca);
    if (nargout > 0)
      ohandle = h;

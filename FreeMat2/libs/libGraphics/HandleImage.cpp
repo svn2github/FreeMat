@@ -288,7 +288,8 @@ void HandleImage::UpdateState() {
   bool xflip = false;
   bool yflip = false;
   xflip = (ax->StringCheck("xdir","reverse"));
-  yflip = (ax->StringCheck("ydir","reverse"));
+  // Reverse the yflip bit - so that images naturally have the first row at the top
+  yflip = !(ax->StringCheck("ydir","reverse"));
   if (xflip || yflip) {
     double m11, m22;
     if (xflip)

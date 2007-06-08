@@ -311,22 +311,31 @@ std::string TrimExtension(std::string arg) {
   return arg;
 }
 
-static std::string PrivateMangleName(std::string cfunc, std::string fname) {
-  if (cfunc.empty()) return "";
+static std::string PrivateMangleName(std::string currentFunctionPath, std::string fname) {
+  if (currentFunctionPath.empty()) return "";
+  // First look to see if we are already a private function
+  string separator(QString(QDir::separator()).toStdString());
+  int ndx1 = currentFunctionPath.rfind(separator + "private" + separator);
+  if (ndx1>=0) {
+    // The current function is already in a private directory
+    // In that case, try to find a private function in the same directory
+    currentFunctionPath.erase(ndx1+1,currentFunctionPath.size());
+    return currentFunctionPath + "private:" + fname;
+  }
   int ndx;
-  ndx = cfunc.rfind(QString(QDir::separator()).toStdString());
+  ndx = currentFunctionPath.rfind(separator);
   if (ndx>=0)
-    cfunc.erase(ndx+1,cfunc.size());
-  return cfunc + "private:" + fname;
+    currentFunctionPath.erase(ndx+1,currentFunctionPath.size());
+  return currentFunctionPath + "private:" + fname;
 }
 
-static std::string LocalMangleName(std::string cfunc, std::string fname) {
-  int ndx = cfunc.rfind("/");
+static std::string LocalMangleName(std::string currentFunctionPath, std::string fname) {
+  int ndx = currentFunctionPath.rfind("/");
   if (ndx >= 0)
-    cfunc.erase(ndx,cfunc.size());
-  std::string tmp = cfunc + "/" + fname;
+    currentFunctionPath.erase(ndx,currentFunctionPath.size());
+  std::string tmp = currentFunctionPath + "/" + fname;
   //  qDebug() << "Lookup " << QString::fromStdString(tmp);
-  return cfunc + "/" + fname;
+  return currentFunctionPath + "/" + fname;
 }
 
 static std::string NestedMangleName(std::string cfunc, std::string fname) {

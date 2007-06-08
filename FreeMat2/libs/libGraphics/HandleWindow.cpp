@@ -34,16 +34,16 @@ public:
   BaseFigureQt(QWidget *parent, HandleFigure *fig);
   void paintEvent(QPaintEvent *e);
   void resizeEvent(QResizeEvent *e);
-  //   QSize sizeHint() const;
+  QSize sizeHint() const;
   //   QSizePolicy sizePolicy() const;
 };
 
-// QSize BaseFigureQt::sizeHint() const {
-//   HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
-//   qDebug() << "Size hint " << (htv->Data()[0]) << "," << (htv->Data()[1]) << "\r\n";
-//   return QSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+ QSize BaseFigureQt::sizeHint() const {
+   HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
+   qDebug() << "Size hint " << (htv->Data()[0]) << "," << (htv->Data()[1]) << "\r\n";
+   return QSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
 //   //  return QSize(10000,10000);
-// }
+ }
 
 void BaseFigureQt::resizeEvent(QResizeEvent *e) {
   QWidget::resizeEvent(e);
@@ -201,7 +201,11 @@ HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
   createActions();
   createMenus();
   createToolBars();
-  setCentralWidget(qtchild);
+  QWidget *center = new QWidget(this);
+  QVBoxLayout *layout = new QVBoxLayout(center);
+  setCentralWidget(center);
+  layout->addWidget(qtchild);
+  //  setCentralWidget(qtchild);
   resize(600,400);
   initialized = true;
   mode = normal_mode;

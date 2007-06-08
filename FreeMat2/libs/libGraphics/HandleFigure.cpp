@@ -201,10 +201,13 @@ bool HandleFigure::Resized() {
 }
 
 void HandleFigure::SetSize() {
-   HPTwoVector *htv = (HPTwoVector*) LookupProperty("figsize");
-//   qDebug() << "Size hint " << (htv->Data()[0]) << "," << (htv->Data()[1]) << "\r\n";
-//   return QSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
-   m_win->GetQtWidget()->setMinimumSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
-   m_win->GetQtWidget()->setMaximumSize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+  //   HPTwoVector *htv = (HPTwoVector*) LookupProperty("figsize");
+  //   m_win->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+  //   m_win->centralWidget()->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+  //   m_win->centralWidget()->updateGeometry();
+  //   m_win->GetQtWidget()->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+  //   m_win->GetQtWidget()->updateGeometry();
+  //   m_win->updateGeometry();
+  //   resizeGL((int)(htv->Data()[0]),(int)(htv->Data()[1]));
 }
 

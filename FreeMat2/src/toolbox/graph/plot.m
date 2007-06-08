@@ -195,14 +195,14 @@ function ohandle = plot(varargin)
          h = [h,plot_single(varargin{1},handle,propset)];
          varargin(1) = [];
       elseif (islinespec(varargin{2},cs,ms,ps))
-         h = [h,plot_single(varargin{1},handle,CompleteProps(cs,ms,ps,propset))];
+         h = [h,plot_single(varargin{1},handle,completeprops(cs,ms,ps,propset))];
          varargin(1:2) = [];
       elseif (length(varargin) ==2)
          h = [h,plot_double(varargin{1},varargin{2},handle,propset)];
          varargin(1:2) = [];
       elseif (islinespec(varargin{3},cs,ms,ps))
          h = [h,plot_double(varargin{1},varargin{2},handle,...
-         CompleteProps(cs,ms,ps,propset))];
+         completeprops(cs,ms,ps,propset))];
          varargin(1:3) = [];
       else
          h = [h,plot_double(varargin{1},varargin{2},handle,propset)];
@@ -216,7 +216,7 @@ function ohandle = plot(varargin)
    
 function h = plot_single(Y,handle,lineprops)
    h = [];
-   if (isvec(Y)) Y = Y(:); end;
+   if (isvector(Y)) Y = Y(:); end;
    if (isreal(Y))
       n = 1:size(Y,1);
       for i=1:size(Y,2)
@@ -230,13 +230,13 @@ function h = plot_single(Y,handle,lineprops)
    
 function h = plot_double(X,Y,handle,lineprops)
    h = [];
-   if (isvec(X) & ~isvec(Y))
+   if (isvector(X) & ~isvector(Y))
       X = matchmat(Y,X);
-   elseif (~isvec(X) & isvec(Y))
+   elseif (~isvector(X) & isvector(Y))
       Y = matchmat(X,Y);
    end
-   if (isvec(X)), X = X(:); end;
-   if (isvec(Y)), Y = Y(:); end;
+   if (isvector(X)), X = X(:); end;
+   if (isvector(Y)), Y = Y(:); end;
    for i=1:size(Y,2)
       h = [h,tplotvector(handle,X(:,i),Y(:,i),lineprops)];
    end
@@ -250,15 +250,6 @@ function x = matchmat(a,b)
       error('plot(X,Y) where one argument is a vector requires the other argument to have a matching dimension');
    end
    
-function q = CompleteProps(cs,ms,ps,p)
-   if (strcmp(cs,'none'))
-     q = {'marker',ms,'linestyle',ps,p{:}};
-   else
-     q = {'color',cs,'marker',ms,'linestyle',ps,'markeredgecolor',cs,'markerfacecolor',cs,p{:}};
-   end
-   
-function p = isvec(x)
-   p = (ndims(x) == 2) & ((size(x,1) == numel(x)) | (size(x,2) == numel(x)));
    
 function k = tplotvector(handle,x,y,lineprops)
    ndx = length(get(handle,'children'))+1;
@@ -270,63 +261,4 @@ function k = tplotvector(handle,x,y,lineprops)
      lineprops = [lineprops,{'markeredgecolor',colororder(ndxmod,:),'markerfacecolor',colororder(ndxmod,:)}];
    end
    k = hline('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
-   
-function b = islinespec(t,&colorspec,&markerspec,&linespec)
-   % try to parse a string out as a linespec
-   % a linespec consists of three parts:
-   %   a colorspec - y,m,c,r,g,b,w,k
-   %   a markerspec - +o*.xs,square,s,diamond,d,^v><
-   %   a linespec - -,--,:,-.
-   if (~isa(t,'string'))
-      b = 0;
-      return;
-   end
-   giveup = 0;
-   colorspec = 'none';
-   markerspec = 'none';
-   linespec = 'none';
-   orig_t = t;
-   while (~giveup & length(t)>0)
-      giveup = 1;
-      if (matchit(t,colorset))
-         colorspec = parseit(t,colorset);
-         giveup = 0;
-      end;
-      if (matchit(t,markerset))
-         markerspec = parseit(t,markerset);
-         giveup = 0;
-      end
-      if (matchit(t,styleset))
-         linespec = parseit(t,styleset);
-         giveup = 0;
-      end
-   end
-   if (giveup)
-      b = 0;
-   else
-      b = 1;
-   end
-   
-function b = matchit(t,dictionary)
-   b = any(stcmp(dictionary,t));
-   
-function b = parseit(&t,dictionary)
-   n = stcmp(dictionary,t);
-   b = dictionary{min(find(n))};
-   t(1:length(b)) = [];
-   
-function c = colorset
-   c = {'y','m','c','r','g','b','w','k'};
-   
-function c = styleset
-   c = {'--',':','-.','-'};
-   
-function c = markerset
-   c = {'+','o','*','.','x','square','s','diamond','d','^','v','>','<'};
-   
-function b = stcmp(source,pattern)
-   b = zeros(size(source),'logical');
-   for i=1:numel(source)
-      b(i) = strncmp(source{i},pattern,length(source{i}));
-   end
    

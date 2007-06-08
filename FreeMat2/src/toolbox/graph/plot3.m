@@ -71,7 +71,7 @@ function hout = plot3(varargin)
       h = [h,plot_triplet(varargin{1},varargin{2},varargin{3},handle,propset)];
       varargin(1:3) = [];
     elseif ((length(varargin) >= 4) & islinespec(varargin{4},cs,ms,ps))
-      h = [h,plot_triplet(varargin{1},varargin{2},varargin{3},handle,propset)];
+      h = [h,plot_triplet(varargin{1},varargin{2},varargin{3},handle,completeprops(cs,ms,ps,propset))];
       varargin(1:4) = [];
     end;
   end
@@ -82,16 +82,16 @@ end
     
 function h = plot_triplet(X,Y,Z,handle,lineprops)
     h = [];
-    if ((isvec(X) | isvec(Y) | isvec(Z)) & (~isvec(X) | ~isvec(Y) | ~isvec(Z)))
+    if ((isvector(X) | isvector(Y) | isvector(Z)) & (~isvector(X) | ~isvector(Y) | ~isvector(Z)))
       rows = max([size(X,1),size(Y,1),size(Z,1)]);
       cols = max([size(X,2),size(Y,2),size(Z,2)]);
       X = expandmat(X,rows,cols);
       Y = expandmat(Y,rows,cols);
       Z = expandmat(Z,rows,cols);
     end
-    if (isvec(X)), X = X(:); end;
-    if (isvec(Y)), Y = Y(:); end;
-    if (isvec(Z)), Z = Z(:); end;
+    if (isvector(X)), X = X(:); end;
+    if (isvector(Y)), Y = Y(:); end;
+    if (isvector(Z)), Z = Z(:); end;
     for i=1:size(Z,2)
       h = [h,tplotvector(handle,X(:,i),Y(:,i),Z(:,i),lineprops)];
     end
@@ -105,12 +105,6 @@ else
   error('plot3(X,Y,Z) where one or more arguments are vectors requires the other arguments to have a matching dimension');
 end
 
-function q = CompleteProps(cs,ms,ps,p)
-q = {'color',cs,'marker',ms,'linestyle',ps,'markeredgecolor',cs,'markerfacecolor',cs,p{:}};
-
-function p = isvec(x)
-p = (ndims(x) == 2) & ((size(x,1) == numel(x)) | (size(x,2) == numel(x)));
-
 function k = tplotvector(handle,x,y,z,lineprops)
   set(handle,'color','w');
   ndx = length(get(handle,'children'))+1;
@@ -120,61 +114,3 @@ function k = tplotvector(handle,x,y,z,lineprops)
   ndxmod = uint32(mod(ndx-1,size(colororder,1))+1);
   k = hline('xdata',x,'ydata',y,'zdata',z,'color',colororder(ndxmod,:),lineprops{:});
 
-function b = islinespec(t,&colorspec,&markerspec,&linespec)
-% try to parse a string out as a linespec
-% a linespec consists of three parts:
-%   a colorspec - y,m,c,r,g,b,w,k
-%   a markerspec - +o*.xs,square,s,diamond,d,^v><
-%   a linespec - -,--,:,-.
-if (~isa(t,'string'))
-  b = 0;
-  return;
-end
-giveup = 0;
-colorspec = '';
-markerspec = '';
-linespec = '';
-orig_t = t;
-while (~giveup & length(t)>0)
-  giveup = 1;
-  if (matchit(t,colorset))
-    colorspec = parseit(t,colorset);
-    giveup = 0;
-  end;
-  if (matchit(t,markerset))
-    markerspec = parseit(t,markerset);
-    giveup = 0;
-  end
-  if (matchit(t,styleset))
-    linespec = parseit(t,styleset);
-    giveup = 0;
-  end
-end
-if (giveup)
-  b = 0;
-else
-  b = 1;
-end
-
-function b = matchit(t,dictionary)
-  b = any(stcmp(dictionary,t));
-
-function b = parseit(&t,dictionary)
-  n = stcmp(dictionary,t);
-  b = dictionary{min(find(n))};
-  t(1:length(b)) = [];
-
-function c = colorset
-c = {'y','m','c','r','g','b','w','k'};
-
-function c = styleset
-c = {'--',':','-.','-'};
-
-function c = markerset
-c = {'+','o','*','.','x','square','s','diamond','d','^','v','>','<'};
-
-function b = stcmp(source,pattern)
-b = zeros(size(source),'logical');
-for i=1:numel(source)
-  b(i) = strncmp(source{i},pattern,length(source{i}));
-end

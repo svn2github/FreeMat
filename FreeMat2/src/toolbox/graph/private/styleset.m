@@ -1,0 +1,2 @@
+function c = styleset
+c = {'--',':','-.','-'};

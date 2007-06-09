@@ -201,8 +201,13 @@ bool HandleFigure::Resized() {
 }
 
 void HandleFigure::SetSize() {
-  //   HPTwoVector *htv = (HPTwoVector*) LookupProperty("figsize");
-  //   m_win->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
+  HPTwoVector *htv = (HPTwoVector*) LookupProperty("figsize");
+  // First get the size of the main window
+  QSize main_window_size = m_win->size();
+  // Now get the size of the central widget
+  QSize central_widget_size = m_win->centralWidget()->size();
+  m_win->resize((int)(htv->Data()[0]) + main_window_size.width() - central_widget_size.width(),
+		(int)(htv->Data()[1]) + main_window_size.height() - central_widget_size.height());
   //   m_win->centralWidget()->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));
   //   m_win->centralWidget()->updateGeometry();
   //   m_win->GetQtWidget()->resize((int)(htv->Data()[0]),(int)(htv->Data()[1]));

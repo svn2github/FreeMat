@@ -335,6 +335,7 @@ void FormatAxisManual(double t1, double t2, int tickcount,
   bool exponentialForm;
   exponentialForm = false;
   QList<double> tick_locations(GetTicksInner(t1,t2,isLogarithmic,tickcount));
+  if (tick_locations.empty()) return;
   tStart = tick_locations.front();
   tStop = tick_locations.back();
   tCount = tick_locations.size();
@@ -368,6 +369,7 @@ void FormatAxisAuto(double tMin, double tMax, int tickcount,
   exponentialForm = false;
   //  const double *dp = (const double *) trange.getDataPointer();
   QList<double> tick_locations(GetTicksOuter(tMin,tMax,isLogarithmic,tickcount));
+  if (tick_locations.empty()) return;
   tStart = tick_locations.front();
   tStop = tick_locations.back();
   tCount = tick_locations.size();

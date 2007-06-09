@@ -96,10 +96,11 @@ function ohandle = image(varargin)
     axis(ax,'image');
   elseif (numel(varargin) == 2)
     C = varargin{1};
-    axis maximal;
     cols = max(2,size(C,2));
     rows = max(2,size(C,1));
     handle = himage('cdata',C,'xdata',[1,cols],'ydata',[1,rows]);
+    axis maximal;
+    axis tight;
     zoom(varargin{2});
   elseif (length(varargin) >= 3)
     x = varargin{1};

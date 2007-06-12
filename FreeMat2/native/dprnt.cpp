@@ -126,7 +126,7 @@ void PrintComplexArray(T* t, int len, int width, int decimals) {
 
 template <class T>
 void fixEprint(int width, int decimals, T val) {
-  if (abs(ilogb(val))) decimals--;
+  if (abs(ilogb(val))>99) decimals--;
   printf("%*.*e",width,decimals,val);
 }
 
@@ -149,12 +149,14 @@ void PrintComplexArrayENotation(T* t, int len, int width, int decimals) {
     int mydec = decimals;
     if ((t[2*i] != 0) || (t[2*i+1] != 0)) {
       fixEprint(width,decimals,t[2*i]);
-      if (t[2*i+1] > 0)
+      if (t[2*i+1] > 0) {
+	printf(" +");
 	fixEprint(width-1,decimals,t[2*i+1]);
-      else {
+      } else {
 	printf(" -");
 	fixEprint(width-1,decimals,-t[2*i+1]);
       }
+      printf("i");
     } else 
       printf("%*d%*c",width,0,width+2,' ');
   }
@@ -185,7 +187,7 @@ int main(int argc, char *argv[]) {
     b[5] = 22.18423480948502345;
     b[6] = 0;
     b[7] = 0;
-    b[8] = -4.334534512645734e+190;
+    b[8] = -4.334534512645734;
     b[9] = 10.34253472455386983;
     b[10] = 6.575408097983;
     b[11] = 22.18423480948502345;
@@ -224,6 +226,7 @@ int main(int argc, char *argv[]) {
     PrintComplexArray(b+4,3,18,14);
     printf("dcomplex long e:\n");
     PrintComplexArrayENotation(b,3,21,14);
+    b[8] = -4.334534512645734e+190;
     PrintComplexArrayENotation(b+6,3,21,14);
     return 1;
   }

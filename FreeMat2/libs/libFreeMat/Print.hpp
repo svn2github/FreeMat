@@ -28,7 +28,17 @@
 #include "Array.hpp"
 
 class Interpreter;
-void PrintArrayClassic(Array A, int printLimit, Interpreter *eval, bool showClassSize);
+void PrintArrayClassic(Array A, int printLimit, Interpreter *eval);
 string ArrayToPrintableString(const Array& a);
 
+typedef enum {
+  format_native,
+  format_short,
+  format_long,
+  format_short_e,
+  format_long_e,
+} FMFormatMode;
+
+void SetPrintFormatMode(FMFormatMode);
+FMFormatMode GetPrintFormatMode();
 #endif

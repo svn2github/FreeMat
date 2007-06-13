@@ -2262,7 +2262,7 @@ void Interpreter::displayArray(Array b) {
     ArrayVector args(singleArrayVector(b));
     ArrayVector retvec(val->evaluateFunction(this,args,1));
   } else
-    PrintArrayClassic(b,printLimit,this,true);
+    PrintArrayClassic(b,printLimit,this);
 }
 
 //Works

@@ -65,7 +65,7 @@ ArrayVector DispFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   length = arg.size();
   for (int i=0;i<length;i++) {
     C = arg[i];
-    PrintArrayClassic(C,eval->getPrintLimit(),eval,false);
+    PrintArrayClassic(C,eval->getPrintLimit(),eval);
   }
   //    retval.push_back(C);
   return retval;

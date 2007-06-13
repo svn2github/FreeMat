@@ -84,6 +84,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("j",IFunction,0,1,NULL);
   context->addFunction("pi",PiFunction,0,1,NULL);
   context->addFunction("e",EFunction,0,1,NULL);
+  context->addFunction("format",FormatFunction,2,1,"lenth","fmt",NULL);
   context->addFunction("float",FloatFunction,1,1,"x",NULL);
   context->addFunction("single",FloatFunction,1,1,"x",NULL);
   context->addFunction("double",DoubleFunction,1,1,"x",NULL);

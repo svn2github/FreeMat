@@ -33,6 +33,7 @@ ArrayVector ExpFunction(int, const ArrayVector& arg);
 ArrayVector ExpM1Function(int, const ArrayVector& arg);
 ArrayVector FFTFunction(int, const ArrayVector& arg);
 ArrayVector FloatFunction(int, const ArrayVector& arg);
+ArrayVector FormatFunction(int, const ArrayVector& arg);
 ArrayVector IFFTFunction(int, const ArrayVector& arg);
 ArrayVector IFunction(int, const ArrayVector& arg);
 ArrayVector InfFunction(int, const ArrayVector& arg);

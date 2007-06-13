@@ -37,6 +37,7 @@
 #if HAVE_PORTAUDIO
 #include "portaudio.h"
 #endif
+#include "Print.hpp"
 
 class FilePtr {
 public:
@@ -437,6 +438,52 @@ ArrayVector WavRecordFunction(int nargout, const ArrayVector& argv) {
 #else
   throw Exception("Audio read/write support not available.  Please build the PortAudio library and rebuild FreeMat to enable this functionality.");
 #endif
+  return ArrayVector();
+}
+
+//!
+//@Module FORMAT Control the Format of Matrix Display
+//@@Section IO
+//@@Usage
+//FreeMat supports several modes for displaying matrices (either through the
+//@|disp| function or simply by entering expressions on the command line.  
+//There are several options for the format command.  The default mode is equivalent
+//to
+//@[
+//   format short
+//@]
+//which generally displays matrices with 4 decimals (and switches to exponential
+//format for matrices which have entries of magnitude larger than @|1e3|).
+//You can also use the @|format| command to retrieve the current format:
+//@[
+//   s = format
+//@]
+//where @|s| is a string describing the current format.
+//!
+ArrayVector FormatFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() > 0) {
+    string argtxt;
+    for (int i=0;i<arg.size();i++) argtxt += arg[i].getContentsAsStringUpper();
+    if (argtxt == "NATIVE") SetPrintFormatMode(format_native);
+    else if (argtxt == "SHORT") SetPrintFormatMode(format_short);
+    else if (argtxt == "LONG") SetPrintFormatMode(format_long);
+    else throw Exception("unrecognized argument to the format command");
+  }
+  if (nargout > 0) {
+    switch(GetPrintFormatMode()) {
+    case format_native:
+      return ArrayVector() << Array::stringConstructor("native");
+    case format_short:
+      return ArrayVector() << Array::stringConstructor("short");
+    case format_long:
+      return ArrayVector() << Array::stringConstructor("long");
+    case format_short_e:
+      return ArrayVector() << Array::stringConstructor("short e");
+    case format_long_e:
+      return ArrayVector() << Array::stringConstructor("long e");
+    }
+    return ArrayVector() << Array::stringConstructor("unknown?");
+  }
   return ArrayVector();
 }
 

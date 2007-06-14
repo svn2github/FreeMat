@@ -271,7 +271,6 @@ void DoRecord(void *data, int count, int channels,
     throw Exception(string("An error occured while using the portaudio stream: ") + Pa_GetErrorText(err));
   PAShutdown();
 }
-
 #endif
 
 //!
@@ -452,13 +451,66 @@ ArrayVector WavRecordFunction(int nargout, const ArrayVector& argv) {
 //@[
 //   format short
 //@]
-//which generally displays matrices with 4 decimals (and switches to exponential
-//format for matrices which have entries of magnitude larger than @|1e3|).
+//which generally displays matrices with 4 decimals, and scales matrices if the entries
+//have magnitudes larger than roughly @|1e2| or smaller than @|1e-2|.   For more 
+//information you can use 
+//@[
+//   format long
+//@]
+//which displays roughly 7 decimals for @|float| and @|complex| arrays, and 14 decimals
+//for @|double| and @|dcomplex|.  You can also use
+//@[
+//   format short e
+//@]
+//to get exponential format with 4 decimals.  Matrices are not scaled for exponential 
+//formats.  Similarly, you can use
+//@[
+//   format long e
+//@]
+//which displays the same decimals as @|format long|, but in exponential format.
 //You can also use the @|format| command to retrieve the current format:
 //@[
 //   s = format
 //@]
 //where @|s| is a string describing the current format.
+//@@Example
+//We start with the short format, and two matrices, one of double precision, and the
+//other of single precision.
+//@<
+//format short
+//a = randn(4)
+//b = float(randn(4))
+//@>
+//Note that in the short format, these two matrices are displayed with the same format.
+//In @|long| format, however, they display differently
+//@<
+//format long
+//a
+//b
+//@>
+//Note also that we we scale the contents of the matrices, FreeMat rescales the entries
+//with a scale premultiplier.
+//@<
+//format short
+//a*1e4
+//a*1e-4
+//b*1e4
+//b*1e-4
+//@>
+//Next, we use the exponential formats:
+//@<
+//format short e
+//a*1e4
+//a*1e-4
+//b*1e4
+//b*1e-4
+//@>
+//Finally, if we assign the @|format| function to a variable, we can retrieve the 
+//current format:
+//@<
+//format short
+//t = format
+//@>
 //!
 ArrayVector FormatFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() > 0) {
@@ -467,6 +519,8 @@ ArrayVector FormatFunction(int nargout, const ArrayVector& arg) {
     if (argtxt == "NATIVE") SetPrintFormatMode(format_native);
     else if (argtxt == "SHORT") SetPrintFormatMode(format_short);
     else if (argtxt == "LONG") SetPrintFormatMode(format_long);
+    else if (argtxt == "SHORTE") SetPrintFormatMode(format_short_e);
+    else if (argtxt == "LONGE") SetPrintFormatMode(format_long_e);
     else throw Exception("unrecognized argument to the format command");
   }
   if (nargout > 0) {

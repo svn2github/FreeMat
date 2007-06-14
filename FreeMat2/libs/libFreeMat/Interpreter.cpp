@@ -38,6 +38,7 @@
 #include <qeventloop.h>
 #include <QtCore>
 #include <fstream>
+#include <stdarg.h>
 
 #ifdef WIN32
 #define PATHSEP ";"
@@ -266,6 +267,15 @@ void Interpreter::outputMessage(std::string msg) {
   else
     if (m_quietlevel < 2)
       emit outputRawText(TranslateString(msg));
+}
+
+void Interpreter::outputMessage(const char* format,...) {
+  char buffer[4096];
+  va_list ap;
+  va_start(ap,format);
+  vsnprintf(buffer,4096,format,ap);
+  va_end(ap);
+  outputMessage(string(buffer));
 }
 
 void Interpreter::errorMessage(std::string msg) {
@@ -2287,7 +2297,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
       } else 
 	b = m[0];
       if (printIt && (!emptyOutput)) {
-	outputMessage(std::string("ans = \n"));
+	outputMessage(std::string("\nans = \n"));
 	displayArray(b);
       }
     } else {
@@ -2297,7 +2307,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
       else {
 	b = m[0];
 	if (printIt) {
-	  outputMessage(std::string("ans = \n"));
+	  outputMessage(std::string("\nans = \n"));
 	  for (int j=0;j<m.size();j++) {
 	    char buffer[1000];
 	    if (m.size() > 1) {
@@ -2312,7 +2322,7 @@ void Interpreter::expressionStatement(const tree &s, bool printIt) {
   } else {
     b = expression(t);
     if (printIt) {
-      outputMessage(std::string("ans = \n"));
+      outputMessage(std::string("\nans = \n"));
       displayArray(b);
     } 
   }
@@ -2886,6 +2896,7 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
     assign(ptr,var.child(1),rhs);
   }
   if (printIt) {
+    outputMessage("\n");
     outputMessage(name);
     outputMessage(" = \n");
     displayArray(*ptr);

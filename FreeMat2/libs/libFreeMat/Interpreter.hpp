@@ -369,6 +369,7 @@ public:
    * Output the following text message.
    */
   void outputMessage(string msg);
+  void outputMessage(const char* format,...);
   /**
    * Output the following error message.
    */

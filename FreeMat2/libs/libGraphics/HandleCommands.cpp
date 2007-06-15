@@ -218,15 +218,25 @@ void FreeHandleObject(unsigned handle) {
 //@Module FIGURE Figure Window Select and Create Function
 //@@Section HANDLE
 //@@Usage
-//Changes the active figure window to the specified handle 
-//(or figure number).  The general syntax for its use is 
+//Changes the active figure window to the specified figure
+//number.  The general syntax for its use is 
 //@[
-//  figure(handle)
+//  figure(number)
 //@]
-//where @|handle| is the handle to use. If the figure window 
-//corresponding to @|handle| does not already exist, a new 
-//window with this handle number is created.  If it does exist
+//where @|number| is the figure number to use. If the figure window 
+//corresponding to @|number| does not already exist, a new 
+//window with this number is created.  If it does exist
 //then it is brought to the forefront and made active.
+//You can use @|gcf| to obtain the number of the current figure.
+//
+//Note that the figure number is also the handle for the figure.
+//While for most graphical objects (e.g., axes, lines, images), the
+//handles are large integers, for figures, the handle is the same
+//as the figure number.  This means that the figure number can be
+//passed to @|set| and @|get| to modify the properties of the
+//current figure, (e.g., the colormap).  So, for figure @|3|, for 
+//example, you can use @|get(3,'colormap')| to retrieve the colormap
+//for the current figure.
 //!
 ArrayVector HFigureFunction(int nargout,const ArrayVector& arg) {
   if (arg.size() == 0) {
@@ -602,21 +612,99 @@ ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg) {
 }
 
 //!
+//@Module FIGRAISE Raise a Figure Window
+//@@Section HANDLE
+//@@Usage
+//Raises a figure window indicated by the figure number.  The syntax for
+//its use is
+//@[
+//  figraise(fignum)
+//@]
+//where @|fignum| is the number of the figure to raise.  The figure will
+//be raised to the top of the GUI stack (meaning that it we be visible).
+//Note that this function does not cause @|fignum| to become the current
+//figure, you must use the @|figure| command for that.
+//!
+ArrayVector FigRaiseFunction(int nargout, const ArrayVector& args) {
+  if (args.size() == 0)
+    CurrentWindow()->raise();
+  else {
+    int fignum = ArrayToInt32(args[0]);
+    if ((fignum >= 1) && (fignum < MAX_FIGS+1)) {
+      if (Hfigs[fignum-1])
+	Hfigs[fignum-1]->raise();
+      else {
+	Hfigs[fignum-1] = new HandleWindow(fignum-1);
+	Hfigs[fignum-1]->show();
+	Hfigs[fignum-1]->raise();
+      }
+    }
+  }
+  return ArrayVector();
+}
+
+//!
+//@Module FIGLOWER Lower a Figure Window
+//@@Section HANDLE
+//@@Usage
+//Lowers a figure window indicated by the figure number.  The syntax for
+//its use is
+//@[
+//  figlower(fignum)
+//@]
+//where @|fignum| is the number of the figure to lower.  The figure will
+//be lowerd to the bottom of the GUI stack (meaning that it we be behind other
+//windows).  Note that this function does not cause @|fignum| to 
+//become the current  figure, you must use the @|figure| command for that.
+//Similarly, if @|fignum| is the current figure, it will remain the current
+//figure (even though the figure is now behind others).
+//!
+ArrayVector FigLowerFunction(int nargout, const ArrayVector& args) {
+  if (args.size() == 0)
+    CurrentWindow()->lower();
+  else {
+    int fignum = ArrayToInt32(args[0]);
+    if ((fignum >= 1) && (fignum < MAX_FIGS+1)) {
+      if (Hfigs[fignum-1])
+	Hfigs[fignum-1]->lower();
+      else {
+	Hfigs[fignum-1] = new HandleWindow(fignum-1);
+	Hfigs[fignum-1]->show();
+	Hfigs[fignum-1]->lower();
+      }
+    }
+  }
+  return ArrayVector();
+}
+
+//!
 //@Module GCF Get Current Figure
 //@@Section HANDLE
 //@@Usage
-//Returns the handle for the current figure.  The syntax for its use
+//Returns the figure number for the current figure (which is also its handle,
+//and can be used to set properties of the current figure using @|set|).  
+//The syntax for its use
 //is
 //@[
-//  handle = gcf
+//  figure_number = gcf
 //@]
-//where @|handle| is the number of the active figure (also its handle).
+//where @|figure_number| is the number of the active figure (also the handle of
+//the figure).
+//
+//Note that figures have handles, just like axes, images, plots, etc.  However
+//the handles for figures match the figure number (while handles for other 
+//graphics objects tend to be large, somewhat arbitrary integers).  So, to 
+//retrieve the colormap of the current figure, you could 
+//use @|get(gcf,'colormap')|, or to obtain the colormap for figure 3, 
+//use @|get(3,'colormap')|.
 //!
 ArrayVector HGCFFunction(int nargout, const ArrayVector& arg) {
   if (HcurrentFig == -1)
     NewFig();      
   return singleArrayVector(Array::uint32Constructor(HcurrentFig+1));
 }
+
+
 
 //!
 //@Module GCA Get Current Axis
@@ -1472,6 +1560,8 @@ void LoadHandleGraphicsFunctions(Context* context) {
   context->addGfxFunction("copy",HCopyFunction,0,0,NULL);
   context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
   context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
+  context->addGfxFunction("figraise",FigRaiseFunction,1,0,"handle",NULL);
+  context->addGfxFunction("figlower",FigLowerFunction,1,0,"handle",NULL);
   //  context->addFunction("contourc",ContourCFunction,2,1,"z","v",NULL);
   //  context->addSpecialFunction("demo",HDemoFunction,1,1,NULL);
   InitializeHandleGraphics();

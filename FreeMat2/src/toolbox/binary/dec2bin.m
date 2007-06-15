@@ -1,6 +1,6 @@
 %!
 %@Module DEC2BIN Convert Decimal to Binary String
-%@@Section ARRAY
+%@@Section TYPECAST
 %@@USAGE
 %Converts an integer to a binary string.  The syntax for its
 %use is

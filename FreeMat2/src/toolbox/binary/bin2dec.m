@@ -1,6 +1,6 @@
 %!
 %@Module BIN2DEC Convert Binary String to Decimal
-%@@Section ARRAY
+%@@Section TYPECAST
 %@@USAGE
 %Converts a binary string to an integer.  The syntax for its
 %use is

@@ -1,6 +1,6 @@
 %!
 %@Module CHAR Convert to character array or string
-%@@Section Array
+%@@Section TYPECAST
 %@@Usage
 %The @|char| function can be used to convert an array
 %into a string.  It has several forms.  The first form

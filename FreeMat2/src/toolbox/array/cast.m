@@ -1,6 +1,6 @@
 %!
 %@Module CAST Typecast Variable to Specified Type
-%@@Section Array
+%@@Section TYPECAST
 %@@Usage
 %The @|cast| function allows you to typecast a variable from one
 %type to another.  The syntax for its use is 

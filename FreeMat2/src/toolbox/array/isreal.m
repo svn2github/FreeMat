@@ -1,6 +1,6 @@
 %!
 %@Module ISREAL Test For Real Array
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|isreal| is 
 %@[

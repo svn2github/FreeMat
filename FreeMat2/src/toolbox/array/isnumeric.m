@@ -1,6 +1,6 @@
 %!
 %@Module ISNUMERIC Test for Numeric Array
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|isnumeric| is
 %@[

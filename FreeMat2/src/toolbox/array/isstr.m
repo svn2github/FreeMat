@@ -1,6 +1,6 @@
 %!
 %@Module ISSTR Test For Character Array (string)
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|isstr| is 
 %@[

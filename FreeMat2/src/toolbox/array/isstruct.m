@@ -1,6 +1,6 @@
 %!
 %@Module ISSTRUCT Test For Structure Array
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|isstruct| is
 %@[

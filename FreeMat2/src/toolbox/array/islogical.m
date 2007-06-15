@@ -1,6 +1,6 @@
 %!
 %@Module ISLOGICAL Test for Logical Array
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|islogical| is 
 %@[

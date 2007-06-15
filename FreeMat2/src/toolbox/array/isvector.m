@@ -1,6 +1,6 @@
 %!
 %@Module ISVECTOR Test For a Vector
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %This function tests to see if the argument is a vector.  The 
 %syntax for @|isvector| is

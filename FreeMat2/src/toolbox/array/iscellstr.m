@@ -1,6 +1,6 @@
 %!
 %@Module ISCELLSTR Test For Cell Array of Strings
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|iscellstr| is 
 %@[

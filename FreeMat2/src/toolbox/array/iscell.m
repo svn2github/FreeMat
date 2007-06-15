@@ -1,6 +1,6 @@
 %!
 %@Module ISCELL Test For Cell Array
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|iscell| is 
 %@[

@@ -1,6 +1,6 @@
 %!
 %@Module ISCHAR Test For Character Array (string)
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|ischar| is 
 %@[

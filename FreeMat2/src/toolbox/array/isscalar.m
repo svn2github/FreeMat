@@ -1,6 +1,6 @@
 %!
 %@Module ISSCALAR Test For Scalar
-%@@Section Array
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|isscalar| is
 %@[

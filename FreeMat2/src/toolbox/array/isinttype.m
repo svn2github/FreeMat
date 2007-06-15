@@ -1,6 +1,6 @@
 %!
 %@Module ISINTTYPE Test For Integer-type Array
-%@@Section ARRAY
+%@@Section INSPECTION
 %@@Usage
 %The syntax for @|isinttype| is 
 %@[

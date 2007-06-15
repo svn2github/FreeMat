@@ -729,7 +729,7 @@ ArrayVector DcomplexFunction(int nargout, const ArrayVector& arg) {
 
 //!
 //@Module TYPEOF Determine the Type of an Argument
-//@@Section TYPECAST
+//@@Section INSPECTION
 //@@Usage
 //Returns a string describing the type of an array.  The syntax for its use is
 //@[

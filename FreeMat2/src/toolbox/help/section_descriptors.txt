@@ -10,7 +10,7 @@ mathfunctions Mathematical Functions
 constants Base Constants
 elementary Elementary Functions
 inspection Inspection Functions
-typecast Type Cast Functions
+typecast Type Conversion Functions
 array Array Generation and Manipulations
 random Random Number Generation
 io Input/Ouput Functions

@@ -1,6 +1,6 @@
 %!
 %@Module NDIMS Number of Dimensions in Array
-%@@Section Array
+%@@Section INSPECTION
 %@@Usage
 %The @|ndims| function returns the number of dimensions
 %allocated in an array.  The general syntax for its

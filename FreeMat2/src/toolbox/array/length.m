@@ -1,6 +1,6 @@
 %!
 %@Module LENGTH Length of an Array
-%@@Section Array
+%@@Section INSPECTION
 %@@Usage
 %Returns the length of an array @|x|.  The syntax for its use
 %is 

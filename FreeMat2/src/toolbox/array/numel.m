@@ -1,6 +1,6 @@
 %!
 %@Module NUMEL Number of Elements in an Array
-%@@Section Array
+%@@Section INSPECTION
 %@@Usage
 %Returns the number of elements in an array @|x|, or in a subindex
 %expression.  The syntax for its use is either

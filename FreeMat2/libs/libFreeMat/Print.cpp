@@ -492,8 +492,10 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io) {
     }
   } else {
     ArrayFormatInfo format(ComputeArrayFormatInfo(A.getDataPointer(),A.getLength(),Aclass));
-    if (format.scalefact != 1) 
+    if (!A.isScalar() && (format.scalefact != 1))
       io->outputMessage("\n   %.1e * \n",format.scalefact);
+    if (A.isScalar() && (format.scalefact != 1) && !format.floatasint)
+      format.expformat = true;
     if (Adims.getLength() == 2) {
       int rows = Adims.getRows();
       int columns = Adims.getColumns(); 

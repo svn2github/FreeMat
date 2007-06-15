@@ -2819,7 +2819,7 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
 
 //!
 //@Module INT2BIN Convert Integer Arrays to Binary
-//@@Section ARRAY
+//@@Section TYPECAST
 //@@Usage
 //Computes the binary decomposition of an integer array to the specified
 //number of bits.  The general syntax for its use is
@@ -2877,7 +2877,7 @@ ArrayVector Int2BinFunction(int nargout, const ArrayVector& arg) {
 
 //!
 //@Module BIN2INT Convert Binary Arrays to Integer
-//@@Section ARRAY
+//@@Section TYPECAST
 //@@Usage
 //Converts the binary decomposition of an integer array back
 //to an integer array.  The general syntax for its use is

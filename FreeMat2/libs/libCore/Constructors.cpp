@@ -120,6 +120,7 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
     allPositive &= (dims.get(i) >= 0);
   if (!allPositive)
     throw Exception("reshape function requires positive arguments");
+  dims.simplify();
   x.reshape(dims);
   ArrayVector retval;
   retval.push_back(x);

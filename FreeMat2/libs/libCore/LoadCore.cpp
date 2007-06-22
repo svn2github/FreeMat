@@ -164,13 +164,15 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("fopen",FopenFunction,3,1,"fname","mode","byteorder",NULL);
   context->addFunction("fclose",FcloseFunction,1,1,"handle",NULL);
   context->addFunction("fwrite",FwriteFunction,2,1,"handle","A",NULL);
-  context->addFunction("fread",FreadFunction,3,1,"handle","size","precision",NULL);
+  context->addFunction("fread",FreadFunction,3,2,"handle","size","precision",NULL);
   context->addFunction("fseek",FseekFunction,3,0,"handle","offset","style",NULL);
   context->addFunction("ftell",FtellFunction,1,1,"handle",NULL);
   context->addFunction("fgetline",FgetlineFunction,1,1,"handle",NULL);
   context->addFunction("feof",FeofFunction,1,1,"handle",NULL);
   context->addSpecialFunction("printf",PrintfFunction,-1,0,NULL);
   context->addSpecialFunction("verstring",VerStringFunction,0,1,NULL);
+  context->addFunction("version",VersionFunction,0,1,NULL);
+  context->addFunction("dlmread",DlmReadFunction,4,1,"filename","delimiter","startrow","startcol",NULL);
   context->addFunction("sprintf",SprintfFunction,-1,1,NULL);
   context->addFunction("fprintf",FprintfFunction,-1,0,NULL);
   context->addFunction("fscanf",FscanfFunction,2,-1,"handle","format",NULL);
@@ -202,7 +204,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("hex2dec",Hex2DecFunction,1,1,"x",NULL);
   context->addFunction("dec2hex",Dec2HexFunction,2,1,"x","n",NULL);
   context->addSpecialFunction("save",SaveFunction,-1,0,NULL);
-  context->addSpecialFunction("load",LoadFunction,1,0,"filename",NULL);
+  context->addSpecialFunction("load",LoadFunction,-1,1,NULL);
   context->addSpecialFunction("clear",ClearFunction,-1,0,NULL);
   context->addSpecialFunction("setprintlimit",SetPrintLimitFunction,1,0,"n",NULL);
   context->addSpecialFunction("getprintlimit",GetPrintLimitFunction,0,1,NULL);
@@ -237,8 +239,6 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("htmlread",HTMLReadFunction,1,1,"filename",NULL);
   context->addFunction("urlwrite",URLWriteFunction,3,1,"url","filename","timeout",NULL);
   context->addFunction("p_end",EndFunction,3,1,"x","n","dims",NULL);
-  context->addSpecialFunction("matload",MatLoadFunction,-1,0,NULL);
-  context->addSpecialFunction("matsave",MatSaveFunction,-1,0,NULL);
   InitializeFileSubsystem();
 #ifdef USE_MPI
   LoadMPIFunctions(context);

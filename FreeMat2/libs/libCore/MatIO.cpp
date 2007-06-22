@@ -6,6 +6,7 @@
 #include "MemPtr.hpp"
 #include "Array.hpp"
 #include "Interpreter.hpp"
+#include "Utils.hpp"
 #include <zlib.h>
 
 // Things to still look at:
@@ -903,9 +904,11 @@ MatIO::~MatIO() {
   fclose(m_fp);
 }
 
-ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
-  if (arg.size() == 0) throw Exception("Need filename");
-  MatIO m(ArrayToString(arg[0]),MatIO::readMode);
+ArrayVector MatLoadFunction(int nargout, string filename, 
+			    rvstring varnames, bool regexpmode, Interpreter *eval) {
+  rvstring fieldnames;
+  ArrayVector fieldvalues;
+  MatIO m(filename,MatIO::readMode);
   m.getHeader();
   bool ateof = false;
   while(!ateof) {
@@ -914,27 +917,29 @@ ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter *ev
     bool match = false;
     Array a(m.getArray(ateof,name,match,globalFlag));
     if (!ateof) {
-      if (globalFlag)
-	eval->getContext()->addGlobalVariable(name);
-      eval->getContext()->insertVariable(name,a);
+      if (contains(varnames,name,regexpmode)) {
+	if (nargout == 0) {
+	  if (globalFlag)
+	    eval->getContext()->addGlobalVariable(name);
+	  eval->getContext()->insertVariable(name,a);
+	} else {
+	  fieldnames << name;
+	  fieldvalues << a;
+	}
+      }
     }
   }
-  return ArrayVector();
+  if (nargout == 0)
+    return ArrayVector();
+  else
+    return ArrayVector() <<
+      Array::structConstructor(fieldnames,fieldvalues);
 }
 
-ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
-  if (arg.size() == 0) throw Exception("Need filename");
-  MatIO m(ArrayToString(arg[0]),MatIO::writeMode);
+ArrayVector MatSaveFunction(string filename, rvstring names, 
+			    Interpreter *eval) {
+  MatIO m(filename,MatIO::writeMode);
   Context *cntxt = eval->getContext();
-  stringVector names;
-  if (arg.size() == 1)
-    names = cntxt->getCurrentScope()->listAllVariables();
-  else {
-    for (int i=1;i<arg.size();i++) {
-      Array varName(arg[i]);
-      names.push_back(varName.getContentsAsString());
-    }
-  }
   char header[116];
   time_t t = time(NULL);
   snprintf(header, 116, "MATLAB 5.0 MAT-file, Created on: %s by %s",

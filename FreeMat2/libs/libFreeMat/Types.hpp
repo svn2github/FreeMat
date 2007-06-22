@@ -24,6 +24,7 @@
 #include <vector>
 #include <QtGlobal>
 #include <QList>
+#include <QRegExp>
 #include "RefVec.hpp"
 
 typedef quint8    logical;

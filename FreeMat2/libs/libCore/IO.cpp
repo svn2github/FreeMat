@@ -33,6 +33,10 @@
 #include <QThread>
 #include <QImage>
 #include <QColor>
+#include <QFile>
+#include <QTextStream>
+#include <QFileInfo>
+#include "Utils.hpp"
 #include "PathSearch.hpp"
 #if HAVE_PORTAUDIO
 #include "portaudio.h"
@@ -272,6 +276,7 @@ void DoRecord(void *data, int count, int channels,
   PAShutdown();
 }
 #endif
+
 
 //!
 //@Module WAVPLAY
@@ -1027,6 +1032,13 @@ ArrayVector FcloseFunction(int nargout, const ArrayVector& arg) {
 //more details).  The data is stored as columns in the file, not 
 //rows.
 //    
+//Alternately, you can specify two return values to the @|fread| function,
+//in which case the second value contains the number of elements read
+//@[
+//   [A,count] = fread(...)
+//@]
+//where @|count| is the number of elements in @|A|.
+//
 //The third argument determines the type of the data.  Legal values for this
 //argument are listed below:
 //\begin{itemize}
@@ -1127,6 +1139,8 @@ ArrayVector FreadFunction(int nargout, const ArrayVector& arg) {
     dims.set(1,1);
   ArrayVector retval;
   retval.push_back(Array::Array(dataClass,dims,qp));
+  if (nargout == 2)
+    retval.push_back(Array::uint32Constructor(retval[0].getLength()));
   return retval;
 }
 
@@ -2284,35 +2298,19 @@ ArrayVector FprintfFunction(int nargout, const ArrayVector& arg) {
 }
 
   
-ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg, 
-			       Interpreter* eval) {
-  if (arg.size() == 0)
-    throw Exception("save requires at least one argument (the filename)");
-  Array filename(arg[0]);
-  string fname = filename.getContentsAsString();
-  File ofile(fname,"wb");
+ArrayVector SaveNativeFunction(string filename, rvstring names, Interpreter* eval) {
+  File ofile(filename,"wb");
   Serialize output(&ofile);
   output.handshakeServer();
-  Context *cntxt;
-  cntxt = eval->getContext();
-  stringVector names;
-  int i;
-  if (arg.size() == 1)
-    names = cntxt->getCurrentScope()->listAllVariables();
-  else {
-    for (i=1;i<arg.size();i++) {
-      Array varName(arg[i]);
-      names.push_back(varName.getContentsAsString());
-    }
-  }
-  for (i=0;i<names.size();i++) {
+  Context *cntxt = eval->getContext();
+  for (int i=0;i<names.size();i++) {
     ArrayReference toWrite;
     char flags;
     if (!(names[i].compare("ans") == 0)) {
       toWrite = cntxt->lookupVariable(names[i]);
       if (!toWrite.valid())
 	throw Exception(std::string("unable to find variable ")+
-			names[i]+" to save to file "+fname);
+			names[i]+" to save to file "+filename);
       flags = 'n';
       if (cntxt->isVariableGlobal(names[i]))
 	flags = 'g';
@@ -2327,6 +2325,50 @@ ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg,
   return ArrayVector();
 }
   
+ArrayVector SaveASCIIFunction(string filename, rvstring names, bool tabsMode,
+			      bool doubleMode, Interpreter* eval) {
+  FILE *fp = fopen(filename.c_str(),"w");
+  if (!fp) throw Exception("unable to open file " + filename + " for writing.");
+  Context *cntxt = eval->getContext();
+  for (int i=0;i<names.size();i++) {
+    if (!(names[i] == "ans")) {
+      ArrayReference toWrite = cntxt->lookupVariable(names[i]);
+      if (!toWrite.valid())
+	throw Exception("unable to find variable " + names[i] + 
+			" to save to file "+filename);
+      if (toWrite->isReferenceType()) {
+	eval->warningMessage("variable " + names[i] + " is not numeric - cannot write it to an ASCII file");
+	continue;
+      }
+      if (!toWrite->is2D()) {
+	eval->warningMessage("variable " + names[i] + " is not 2D - cannot write it to an ASCII file");
+	continue;
+      }
+      if (toWrite->isComplex()) 
+	eval->warningMessage("variable " + names[i] + " is complex valued - only real part will be written to ASCII file");
+      Array A(*toWrite);
+      A.promoteType(FM_DOUBLE);
+      int rows = A.rows();
+      int cols = A.columns();
+      double *dp = (double*) A.getDataPointer();
+      for (int i=0;i<rows;i++) {
+	for (int j=0;j<cols;j++) {
+	  if (doubleMode)
+	    fprintf(fp,"%.15e",dp[j*rows+i]);
+	  else
+	    fprintf(fp,"%.7e",dp[j*rows+i]);
+	  if (tabsMode && (j < (cols-1)))
+	    fprintf(fp,"\t");
+	  else
+	    fprintf(fp," ");
+	}
+	fprintf(fp,"\n");
+      }
+    }
+  }
+  fclose(fp);
+  return ArrayVector();
+}
 
 //!
 //@Module SAVE Save Variables To A File
@@ -2369,8 +2411,38 @@ ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg,
 //data.  The file format is triggered
 //by the extension.  To save files with a MAT format, simply
 //use a filename with a ".mat" ending.
+//
+//The @|save| function also supports ASCII output.  This is a very limited
+//form of the save command - it can only save numeric arrays that are
+//2-dimensional.  This form of the @|save| command is triggered using
+//@[
+//   save -ascii filename var1 var 2
+//@]
+//although where @|-ascii| appears on the command line is arbitrary (provided
+//it comes after the @|save| command, of course).  Be default, the @|save|
+//command uses an 8-digit exponential format notation to save the values to
+//the file.  You can specify that you want 16-digits using the
+//@[
+//   save -ascii -double filename var1 var2
+//@]
+//form of the command.  Also, by default, @|save| uses spaces as the 
+//delimiters between the entries in the matrix.  If you want tabs instead,
+//you can use
+//@[
+//   save -ascii -tabs filename var1 var2
+//@]
+//(you can also use both the @|-tabs| and @|-double| flags simultaneously).
+//
+//Finally, you can specify that @|save| should only save variables that
+//match a particular regular expression.  Any of the above forms can be
+//combined with the @|-regexp| flag:
+//@[
+//   save filename -regexp pattern1 pattern2
+//@]
+//in which case variables that match any of the patterns will be saved.
 //@@Example
-//Here is a simple example of @|save|/@|load|.  First, we save some variables to a file.
+//Here is a simple example of @|save|/@|load|.  First, we save some 
+//variables to a file.
 //@< 
 //D = {1,5,'hello'};
 //s = 'test string';
@@ -2398,51 +2470,395 @@ ArrayVector SaveNativeFunction(int nargout, const ArrayVector& arg,
 //@}
 //!
 ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  if (arg.size() == 0)
-    throw Exception("save requires at least one argument (the filename)");
-  Array filename(arg[0]);
-  string fname = filename.getContentsAsString();
-  int len = fname.size();
-  if ((len >= 4) && (fname[len-4] == '.') &&
-      ((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
-      ((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
-      ((fname[len-1] == 'T') || (fname[len-1] == 't')))
-    return MatSaveFunction(nargout,arg,eval);
-  return SaveNativeFunction(nargout,arg,eval);
+  ArrayVector argCopy;
+  if (arg.size() == 0) return ArrayVector();
+  bool asciiMode = false;
+  bool tabsMode = false;
+  bool doubleMode = false;
+  bool matMode = false;
+  bool regexpMode = false;
+  for (int i=0;i<arg.size();i++) {
+    if (arg[i].isString()) {
+      if (arg[i].getContentsAsStringUpper() == "-MAT")
+	matMode = true;
+      else if (arg[i].getContentsAsStringUpper() == "-ASCII")
+	asciiMode = true;
+      else if (arg[i].getContentsAsStringUpper() == "-REGEXP")
+	regexpMode = true;
+      else if (arg[i].getContentsAsStringUpper() == "-DOUBLE")
+	doubleMode = true;
+      else if (arg[i].getContentsAsStringUpper() == "-TABS")
+	tabsMode = true;
+      else
+	argCopy << arg[i];
+    } else
+      argCopy << arg[i];
+  }
+  if (argCopy.size() < 1) throw Exception("save requires a filename argument");
+  string fname(ArrayToString(argCopy[0]));
+  if (!asciiMode && !matMode) {
+    int len = fname.size();
+    if ((len >= 4) && (fname[len-4] == '.') &&
+	((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
+	((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
+	((fname[len-1] == 'T') || (fname[len-1] == 't'))) 
+      matMode = true;
+    if ((len >= 4) && (fname[len-4] == '.') &&
+	((fname[len-3] == 'T') || (fname[len-3] == 't')) &&
+	((fname[len-2] == 'X') || (fname[len-2] == 'x')) &&
+	((fname[len-1] == 'T') || (fname[len-1] == 't'))) 
+      matMode = true;    
+  }
+  rvstring names;
+  for (int i=1;i<argCopy.size();i++) {
+    if (!arg[i].isString())
+      throw Exception("unexpected non-string argument to save command");
+    names << ArrayToString(argCopy[i]);
+  }
+  Context *cntxt = eval->getContext();
+  rvstring toSave;
+  if (regexpMode) {
+    stringVector allNames = cntxt->getCurrentScope()->listAllVariables();
+    for (int i=0;i<allNames.size();i++)
+      if (contains(names,allNames[i],regexpMode))
+	toSave << allNames[i];
+  } else 
+    toSave = names;
+  if (matMode)
+    return MatSaveFunction(fname,toSave,eval);
+  else if (asciiMode)
+    return SaveASCIIFunction(fname,toSave,tabsMode,doubleMode,eval);
+  else
+    return SaveNativeFunction(fname,toSave,eval);
 }
 
-ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  if (arg.size() != 1)
-    throw Exception("load requires exactly one argument (the filename)");
-  Array filename(arg[0]);
-  string fname = filename.getContentsAsString();
-  File ofile(fname,"rb");
+//!
+//@Module DLMREAD Read ASCII-delimited File
+//@@Section IO
+//@@Usage
+//Loads a matrix from an ASCII-formatted text file with a delimiter
+//between the entries.  This function is similar to the @|load -ascii|
+//command, except that it can handle complex data, and it allows you
+//to specify the delimiter.  Also, you can read only a subset of the
+//data from the file.  The general syntax for the @|dlmread| function
+//is
+//@[
+//    y = dlmread(filename)
+//@]
+//where @|filename| is a string containing the name of the file to read.
+//In this form, FreeMat will guess at the type of the delimiter in the 
+//file.  The guess is made by examining the input for common delimiter
+//characters, which are @|,;:| or a whitespace (e.g., tab).  The text
+//in the file is preprocessed to replace these characters with whitespace
+//and the file is then read in using a whitespace for the delimiter.
+//
+//If you know the delimiter in the file, you can specify it using
+//this form of the function:
+//@[
+//    y = dlmread(filename, delimiter)
+//@]
+//where @|delimiter| is a string containing the delimiter.  If @|delimiter|
+//is the empty string, then the delimiter is guessed from the file.
+//
+//You can also read only a portion of the file by specifying a start row
+//and start column:
+//@[
+//    y = dlmread(filename, delimiter, startrow, startcol)
+//@]
+//where @|startrow| and @|startcol| are zero-based.  You can also specify
+//the data to read using a range argument:
+//@[
+//    y = dlmread(filename, delimiter, range)
+//@]
+//where @|range| is either a vector @|[startrow,startcol,stoprow,stopcol]|
+//or is specified in spreadsheet notation as @|B4..ZA5|.
+//
+//Note that complex numbers can be present in the file if they are encoded
+//without whitespaces inside the number, and use either @|i| or @|j| as 
+//the indicator.  Note also that when the delimiter is given, each incidence
+//of the delimiter counts as a separator.  Multiple separators generate
+//zeros in the matrix.
+//!
+static int ParseNumber(QString tx) {
+  int lookahead = 0;
+  int len = 0;
+  if ((tx[len] == '+') || (tx[len] == '-'))
+    len++;
+  lookahead = len;
+  while (tx[len].isDigit()) len++;
+  lookahead = len;
+  if (tx[lookahead] == '.') {
+    lookahead++;
+    len = 0;
+    while (tx[len+lookahead].isDigit()) len++;
+    lookahead+=len;
+  }
+  if ((tx[lookahead] == 'E') || (tx[lookahead] == 'e')) {
+    lookahead++;
+    if ((tx[lookahead] == '+') || (tx[lookahead] == '-')) {
+      lookahead++;
+    }
+    len = 0;
+    while (tx[len+lookahead].isDigit()) len++;
+    lookahead+=len;
+  }
+  return lookahead;
+}
+
+static void ParseComplexValue(QString tx, double &real, double &imag) {
+  int lnum = ParseNumber(tx);
+  int rnum = ParseNumber(tx.mid(lnum));
+  QString num1 = tx.left(lnum);
+  QString num2 = tx.mid(lnum,rnum);
+  if (num1.isEmpty() && num2.isEmpty()) {
+    real = 0; imag = 1;
+    return;
+  }
+  if (num1 == "+") num1 = "+1";
+  if (num2 == "+") num2 = "+1";
+  if (num1 == "-") num1 = "-1";
+  if (num2 == "-") num2 = "-1";
+  if (num2.isEmpty()) {
+    real = 0;
+    imag = num1.toDouble();
+  } else {
+    real = num1.toDouble();
+    imag = num2.toDouble();
+  }
+}
+
+int DecodeSpreadsheetColumn(QString tx) {
+  tx.toUpper();
+  QByteArray txb(tx.toLatin1());
+  for (int i=0;i<txb.count();i++) 
+    txb[i] = txb[i] - 'A';
+  int ret = 0;
+  for (int i=0;i<txb.count();i++) 
+    ret += txb.at(i)*pow(26.0,txb.count()-1-i);
+  return ret;
+}
+
+void DecodeSpreadsheetRange(QString tx, int &startrow, int &startcol,
+			    int &stoprow, int &stopcol) {
+  QString colstart;
+  QString rowstart;
+  QString colstop;
+  QString rowstop;
+  while (tx.at(0).isLetter()) {
+    colstart += tx.left(1);
+    tx = tx.mid(1);
+  }
+  while (tx.at(0).isDigit()) {
+    rowstart += tx.left(1);
+    tx = tx.mid(1);
+  }
+  tx = tx.mid(1);
+  tx = tx.mid(1);
+  while (tx.at(0).isLetter()) {
+    colstop += tx.left(1);
+    tx = tx.mid(1);
+  }
+  while (tx.at(0).isDigit()) {
+    rowstop += tx.left(1);
+    tx = tx.mid(1);
+  }
+  startrow = rowstart.toInt()-1;
+  stoprow = rowstop.toInt()-1;
+  startcol = DecodeSpreadsheetColumn(colstart);
+  stopcol = DecodeSpreadsheetColumn(colstop);
+}
+
+ArrayVector DlmReadFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0) 
+    throw Exception("dlmread expects a filename");
+  string filename(ArrayToString(arg[0]));
+  QFile ifile(QString::fromStdString(filename));
+  if (!ifile.open(QFile::ReadOnly))
+    throw Exception("filename " + filename + " could not be opened");
+  bool no_delimiter = true;
+  string delimiter;
+  if (arg.size() >= 2) {
+    delimiter = ArrayToString(arg[1]);
+    no_delimiter = (delimiter.size() == 0);
+  }
+  int col_count = 0;
+  int row_count = 0;
+  QList<QList<double> > data_real;
+  QList<QList<double> > data_imag;
+  QTextStream str(&ifile);
+  while (!str.atEnd()) {
+    QString line = str.readLine(0);
+    QStringList elements;
+    if (no_delimiter) {
+      if (line.contains(QRegExp("[,;:]")))
+	elements = line.split(QRegExp("[,;:]"));
+      else {
+	line = line.simplified();
+	elements = line.split(' ');
+      }
+    } else {
+      elements = line.split(QString::fromStdString(delimiter)[0]);
+      qDebug() << "Line: " << line;
+      qDebug() << elements;
+    }
+    QList<double> row_data_real;
+    QList<double> row_data_imag;
+    row_count++;
+    for (int i=0;i<elements.size();i++) {
+      QString element(elements[i]);
+      element.replace(" ","");
+      if (element.contains('i') || element.contains('I') ||
+	  element.contains('j') || element.contains('J')) {
+	double real, imag;
+	ParseComplexValue(element,real,imag);
+	row_data_real << real;
+	row_data_imag << imag;
+      } else {
+	row_data_real << element.toDouble();
+	row_data_imag << 0;
+      }
+    }
+    col_count = qMax(col_count,elements.size());
+    data_real << row_data_real;
+    data_imag << row_data_imag;
+  }
+  int startrow = 0;
+  int startcol = 0;
+  int stoprow = row_count-1;
+  int stopcol = col_count-1;
+  if (arg.size() == 4) {
+    startrow = ArrayToInt32(arg[2]);
+    startcol = ArrayToInt32(arg[3]);
+  } else if (arg.size() == 3) {
+    if (arg[2].isVector() && (arg[2].getLength() == 4)) {
+      Array range(arg[2]);
+      range.promoteType(FM_INT32);
+      const int32*dp = (const int32*) range.getDataPointer();
+      startrow = dp[0];
+      startcol = dp[1];
+      stoprow = dp[2];
+      stopcol = dp[3];
+    } else if (arg[2].isString()) 
+      DecodeSpreadsheetRange(QString::fromStdString(ArrayToString(arg[2])),
+			     startrow,startcol,stoprow,stopcol);
+    else
+      throw Exception("Unable to decode the range arguments to the dlmread function");
+  }
+  startrow = qMax(0,qMin(row_count-1,startrow));
+  startcol = qMax(0,qMin(col_count-1,startcol));
+  stoprow = qMax(0,qMin(row_count-1,stoprow));
+  stopcol = qMax(0,qMin(col_count-1,stopcol));
+  int numrows = stoprow-startrow+1;
+  int numcols = stopcol-startcol+1;
+  bool anyNonzeroImaginary = false;
+  for (int i=startrow;i<=stoprow;i++) 
+    for (int j=0;j<=qMin(data_real[i].size()-1,stopcol);j++) 
+      if (data_imag[i][j] != 0) anyNonzeroImaginary = true;
+  Array A;
+  if (!anyNonzeroImaginary) {
+    A = Array::doubleMatrixConstructor(numrows,numcols);
+    double *dp = (double*) A.getReadWriteDataPointer();
+    for (int i=startrow;i<=stoprow;i++)
+      for (int j=startcol;j<=stopcol;j++)
+	if (j <= (data_real[i].size()-1))
+	  dp[i-startrow+(j-startcol)*numrows] = data_real[i][j];
+  } else {
+    A = Array::dcomplexMatrixConstructor(numrows,numcols);
+    double *dp = (double*) A.getReadWriteDataPointer();
+    for (int i=startrow;i<=stoprow;i++)
+      for (int j=startcol;j<=stopcol;j++)
+	if (j <= (data_real[i].size()-1)) {
+	  dp[2*(i-startrow+(j-startcol)*numrows)] = data_real[i][j];
+	  dp[2*(i-startrow+(j-startcol)*numrows)+1] = data_imag[i][j];
+	}
+  }
+  return ArrayVector() << A;
+}
+
+ArrayVector LoadASCIIFunction(int nargout, string filename, Interpreter* eval) {
+  // Hmmm...
+  QFile ifile(QString::fromStdString(filename));
+  if (!ifile.open(QFile::ReadOnly))
+    throw Exception("filename " + filename + " could not be opened");
+  QTextStream str(&ifile);
+  int i=0;
+  int col_count = 0;
+  int row_count = 0;
+  QList<double> data;
+  bool evenData = true;
+  while (!str.atEnd() && evenData) {
+    QString line = str.readLine(0);
+    line = line.simplified();
+    QStringList elements(line.split(' '));
+    if (row_count == 0) 
+      col_count = elements.size();
+    else if (elements.size() != col_count)
+      evenData = false;
+    if (evenData) {
+      row_count++;
+      for (i=0;i<elements.size();i++) 
+	data << elements[i].toDouble();
+    }
+  }
+  if (!evenData)
+    eval->warningMessage("data in ASCII file does not have a uniform number of entries per row");
+  // Now construct the matrix
+  Array A;
+  if ((row_count > 0) && (col_count > 0)) {
+    A = Array::doubleMatrixConstructor(row_count,col_count);
+    double *dp = (double *) A.getDataPointer();
+    for (int r=0;r<row_count;r++) 
+      for (int c=0;c<col_count;c++) 
+	dp[r+c*row_count] = data.at(r*col_count+c);
+  }
+  if (nargout == 1)
+    return ArrayVector() << A;
+  else {
+    QFileInfo fi(QString::fromStdString(filename));
+    eval->getContext()->insertVariable(fi.baseName().toStdString(),A);
+  }
+  return ArrayVector();
+}
+
+ArrayVector LoadNativeFunction(int nargout, string filename,
+			       rvstring names, bool regexpmode, Interpreter* eval) {
+  File ofile(filename,"rb");
   Serialize input(&ofile);
   input.handshakeClient();
-  char *arrayName;
-  arrayName = input.getString();
-  while (strcmp(arrayName,"__eof") != 0) {
+  string arrayName = input.getString();
+  rvstring fieldnames;
+  ArrayVector fieldvalues;
+  while (arrayName != "__eof") {
     Array toRead;
     char flag;
     flag = input.getByte();
     input.getArray(toRead);
-    switch (flag) {
-    case 'n':
-      break;
-    case 'g':
-      eval->getContext()->addGlobalVariable(arrayName);
-      break;
-    case 'p':
-      eval->getContext()->addPersistentVariable(arrayName);
-      break;
-    default:
-      throw Exception(std::string("unrecognized variable flag ") + flag + 
-		      std::string(" on variable ") + arrayName);
+    if (contains(names,arrayName,regexpmode) && (nargout == 0)) {
+      switch (flag) {
+      case 'n':
+	break;
+      case 'g':
+	eval->getContext()->addGlobalVariable(arrayName);
+	break;
+      case 'p':
+	eval->getContext()->addPersistentVariable(arrayName);
+	break;
+      default:
+	throw Exception(std::string("unrecognized variable flag ") + flag + 
+			std::string(" on variable ") + arrayName);
+      }
+      eval->getContext()->insertVariable(arrayName,toRead);
+    } else {
+      fieldnames << arrayName;
+      fieldvalues << toRead;
     }
-    eval->getContext()->insertVariable(arrayName,toRead);
     arrayName = input.getString();
   }
-  return ArrayVector();
+  if (nargout == 0)
+    return ArrayVector();
+  else
+    return ArrayVector() <<
+      Array::structConstructor(fieldnames,fieldvalues);
 }
 
 //!
@@ -2460,7 +2876,58 @@ ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, Interpreter*
 //@]
 //This command is the companion to @|save|.  It loads the contents of the
 //file generated by @|save| back into the current context.  Global and 
-//persistent variables are also loaded and flagged appropriately.
+//persistent variables are also loaded and flagged appropriately.  By
+//default, FreeMat assumes that files that end in a @|.mat| or @|.MAT|
+//extension are MATLAB-formatted files.  Also, FreeMat assumes that 
+//files that end in @|.txt| or @|.TXT| are ASCII files. 
+//For other filenames, FreeMat first tries to open the file as a 
+//FreeMat binary format file (as created by the @|save| function).  
+//If the file fails to open as a FreeMat binary file, then FreeMat 
+//attempts to read it as an ASCII file.  
+//
+//You can force FreeMat to assume a particular format for the file
+//by using alternate forms of the @|load| command.  In particular,
+//@[
+//  load -ascii filename
+//@]
+//will load the data in file @|filename| as an ASCII file (space delimited
+//numeric text) loaded into a single variable in the current workspace
+//with the name @|filename| (without the extension).
+//
+//For MATLAB-formatted data files, you can use
+//@[
+//  load -mat filename
+//@]
+//which forces FreeMat to assume that @|filename| is a MAT-file, regardless
+//of the extension on the filename.
+//
+//You can also specify which variables to load from a file (not from 
+//an ASCII file - only single 2-D variables can be successfully saved and
+//retrieved from ASCII files) using the additional syntaxes of the @|load|
+//command.  In particular, you can specify a set of variables to load by name
+//@[
+//  load filename Var_1 Var_2 Var_3 ...
+//@]
+//where @|Var_n| is the name of a variable to load from the file.  
+//Alternately, you can use the regular expression syntax
+//@[
+//  load filename -regexp expr_1 expr_2 expr_3 ...
+//@]
+//where @|expr_n| is a regular expression (roughly as expected by @|regexp|).
+//Note that a simpler regular expression mechanism is used for this syntax
+//than the full mechanism used by the @|regexp| command.
+//
+//Finally, you can use @|load| to create a variable containing the 
+//contents of the file, instead of automatically inserting the variables
+//into the curent workspace.  For this form of @|load| you must use the
+//function syntax, and capture the output:
+//@[
+//  V = load('arg1','arg2',...)
+//@]
+//which returns a structure @|V| with one field for each variable
+//retrieved from the file.  For ASCII files, @|V| is a double precision
+//matrix.
+//
 //@@Example
 //Here is a simple example of @|save|/@|load|.  First, we save some variables to a file.
 //@<
@@ -2479,16 +2946,71 @@ ArrayVector LoadNativeFunction(int nargout, const ArrayVector& arg, Interpreter*
 //who
 //@>
 //!
-ArrayVector LoadFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  if (arg.size() != 1)
-    throw Exception("load requires exactly one argument (the filename)");
-  Array filename(arg[0]);
-  string fname = filename.getContentsAsString();
-  int len = fname.size();
-  if ((len >= 4) && (fname[len-4] == '.') &&
-      ((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
-      ((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
-      ((fname[len-1] == 'T') || (fname[len-1] == 't')))
-    return MatLoadFunction(nargout,arg,eval);
-  return LoadNativeFunction(nargout,arg,eval);
+ArrayVector LoadFunction(int nargout, const ArrayVector& arg, 
+			 Interpreter* eval) {
+  // Process the arguments to extract the "-mat", "-ascii" and "-regexp" 
+  // flags.
+  ArrayVector argCopy;
+  if (arg.size() == 0) return ArrayVector();
+  bool asciiMode = false;
+  bool matMode = false;
+  bool regexpMode = false;
+  for (int i=0;i<arg.size();i++) {
+    if (arg[i].isString()) {
+      if (arg[i].getContentsAsStringUpper() == "-MAT")
+	matMode = true;
+      else if (arg[i].getContentsAsStringUpper() == "-ASCII")
+	asciiMode = true;
+      else if (arg[i].getContentsAsStringUpper() == "-REGEXP")
+	regexpMode = true;
+      else
+	argCopy << arg[i];
+    } else
+      argCopy << arg[i];
+  }
+  if (argCopy.size() < 1)  throw Exception("load requries a filename argument");
+  string fname(ArrayToString(argCopy[0]));
+  // If one of the filemode flags has not been specified, try to 
+  // guess if it is an ASCII file or a MAT file
+  if (!matMode && !asciiMode) {
+    int len = fname.size();
+    if ((len >= 4) && (fname[len-4] == '.') &&
+	((fname[len-3] == 'M') || (fname[len-3] == 'm')) &&
+	((fname[len-2] == 'A') || (fname[len-2] == 'a')) &&
+	((fname[len-1] == 'T') || (fname[len-1] == 't'))) {
+      matMode = true;
+    } else  if ((len >= 4) && (fname[len-4] == '.') &&
+		((fname[len-3] == 'T') || (fname[len-3] == 't')) &&
+		((fname[len-2] == 'X') || (fname[len-2] == 'x')) &&
+		((fname[len-1] == 'T') || (fname[len-1] == 't'))) {
+      asciiMode = true;
+    } else {
+      // Could be an ASCII file - try to open it native
+      try {
+	File of(fname,"rb");
+	Serialize input(&of);
+	input.handshakeClient();
+      } catch(Exception& e) {
+	asciiMode = true;
+      }
+    }
+  }
+  rvstring names;
+  for (int i=1;i<argCopy.size();i++) {
+    if (!arg[i].isString())
+      throw Exception("unexpected non-string argument to load command");
+    names << ArrayToString(argCopy[i]);
+  }
+  // Read the data file using the appropriate handler
+  try {
+    if (matMode)
+      return MatLoadFunction(nargout,fname,names,regexpMode,eval);
+    else if (asciiMode)
+      return LoadASCIIFunction(nargout,fname,eval);
+    else
+      return LoadNativeFunction(nargout,fname,names,regexpMode,eval);
+  } catch (Exception& e) {
+    throw Exception("unable to read data from file " + fname + " - it may be corrupt, or FreeMat may not understand the format.  See help load for more information.  The specific error was: " + e.getMessageCopy());
+  }
+  return ArrayVector();
 }

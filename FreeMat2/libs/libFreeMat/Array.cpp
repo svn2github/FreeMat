@@ -3931,10 +3931,16 @@ int32 ArrayToInt32(const Array& a) {
   return b.getContentsAsIntegerScalar();
 }
 
-Array  Array::doubleMatrixConstructor(int rows, int cols) {
+Array Array::doubleMatrixConstructor(int rows, int cols) {
   Dimensions dim(rows,cols);
   double *data = (double*) allocateArray(FM_DOUBLE,rows*cols);
   return Array(FM_DOUBLE,dim,data,false);
+}
+
+Array Array::dcomplexMatrixConstructor(int rows, int cols) {
+  Dimensions dim(rows,cols);
+  double *data = (double*) allocateArray(FM_DCOMPLEX,rows*cols);
+  return Array(FM_DCOMPLEX,dim,data,false);
 }
 
 string ArrayToString(const Array& a) {

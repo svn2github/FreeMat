@@ -566,6 +566,11 @@ public:
    */
   static Array doubleMatrixConstructor(int rows, int cols);
   /**
+   * Double complex matrix constructor - Construct an FM_DCOMPLEX object 
+   * with the specified dimenstions.
+   */  
+  static Array dcomplexMatrixConstructor(int rows, int cols);
+  /**
    * Complex constructor - Construct an FM_COMPLEX object with a 
    * complex scalar value.
    */

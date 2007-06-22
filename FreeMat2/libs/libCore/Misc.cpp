@@ -3392,6 +3392,26 @@ ArrayVector WarningFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 }
 
 //!
+//@Module VERSION The Current Version Number
+//@@Section FREEMAT
+//@@Usage
+//The @|version| function returns the current version number for
+//FreeMat (as a string).  The general syntax for its use is
+//@[
+//    v = version
+//@]
+//@@Example
+//The current version of FreeMat is
+//@<
+//version
+//@>
+//!
+ArrayVector VersionFunction(int nargout, const ArrayVector& arg) {
+  return ArrayVector() << Array::stringConstructor(VERSION);
+}
+
+
+//!
 //@Module VERSTRING The Current Version String
 //@@Section FREEMAT
 //@@Usage

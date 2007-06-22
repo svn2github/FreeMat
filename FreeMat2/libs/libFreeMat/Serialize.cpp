@@ -129,17 +129,12 @@ void Serialize::putDoubles(const double *ptr, int count) {
   s->writeBytes(ptr,count*sizeof(double));
 }
 
-void Serialize::putString(const char *ptr) {
+void Serialize::putString(string p) {
   unsigned int len;
   sendSignature('x',0);
-  if ((ptr == NULL)) {
-    len = 0;
-    putInts((int*)&len,1);
-  } else {
-    len = strlen(ptr)+1;
-    putInts((int*)&len,1);
-    putBytes(ptr,len);
-  }
+  len = p.size()+1;
+  putInts((int*)&len,1);
+  putBytes(p.c_str(),len);
 }
 
 void Serialize::putBool(bool b) {
@@ -251,14 +246,16 @@ void Serialize::getDoubles(double *ptr, int count) {
   }
 }
 
-char* Serialize::getString() {
+string Serialize::getString() {
   checkSignature('x',0);
   unsigned int len;
   getInts((int*) &len,1);
-  if (len == 0) return NULL;
+  if (len == 0) return string();
   char *cp = (char*) malloc(len*sizeof(char));
   getBytes(cp,len);
-  return cp;
+  string ret(cp);
+  free(cp);
+  return ret;
 }
 
 char Serialize::getByte() {
@@ -574,11 +571,8 @@ void Serialize::getArray(Array& dat) {
     rvstring fnames;
     int ncount(getInt());
     int i;
-    for (i=0;i<ncount;i++) {
-      char *dp = getString();
-      fnames.push_back(dp);
-      free(dp);
-    }
+    for (i=0;i<ncount;i++) 
+      fnames.push_back(getString());
     Array *dp = new Array[elCount*ncount];
     for (i=0;i<elCount*ncount;i++)
       getArray(dp[i]);

@@ -112,6 +112,7 @@ ArrayVector ProdFunction(int, const ArrayVector& arg);
 ArrayVector ReshapeFunction(int, const ArrayVector& arg);
 ArrayVector PrintfFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector VerStringFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector VersionFunction(int, const ArrayVector& arg);
 ArrayVector SprintfFunction(int, const ArrayVector& arg);
 ArrayVector FprintfFunction(int, const ArrayVector& arg);
 ArrayVector FscanfFunction(int, const ArrayVector& arg);
@@ -222,6 +223,7 @@ ArrayVector EndFunction(int nargout, const  ArrayVector& arg);
 ArrayVector XMLReadFunction(int nargout, const ArrayVector& arg);
 ArrayVector HTMLReadFunction(int nargout, const ArrayVector& arg);
 ArrayVector URLWriteFunction(int nargout, const ArrayVector& arg);
+ArrayVector DlmReadFunction(int nargout, const ArrayVector& arg);
 ArrayVector RPCInitFunction(int nargout, const ArrayVector& arg);
 ArrayVector RPCIdFunction(int nargout, const ArrayVector& arg);
 ArrayVector RPCRegFunction(int nargout, const ArrayVector& arg);
@@ -235,8 +237,10 @@ ArrayVector RegExpIFunction(int nargout, const ArrayVector& arg);
 void Tokenize(const std::string& str, std::vector<std::string>& tokens,
 	      const std::string& delimiters = " \n");
 bool inBundleMode();
-ArrayVector MatLoadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
-ArrayVector MatSaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
+ArrayVector MatLoadFunction(int nargout, string filename, rvstring varnames, 
+			    bool regexp, Interpreter *eval);
+ArrayVector MatSaveFunction(string filename, rvstring varnames,
+			    Interpreter *eval);
 ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 void SwapBuffer(char* cp, int count, int elsize);
 #endif

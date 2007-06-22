@@ -114,3 +114,18 @@ void z_sqr(double real, double imag, double *re, double *im) {
   *re = real*real - imag*imag;
   *im = 2.0*real*imag;
 }
+
+bool contains(rvstring& list, std::string s, bool regexpmode) {
+  QRegExp t;
+  for (int i=0;i<list.size();i++) {
+    if (regexpmode) {
+      t = QRegExp(QString::fromStdString(list[i]));
+      if (t.exactMatch(QString::fromStdString(s)) &&
+	  t.matchedLength() == s.size()) return true;
+    } else {
+      if (list[i] == s) return true;
+    }
+  }
+  return false;
+};
+

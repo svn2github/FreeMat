@@ -6184,7 +6184,7 @@ void* SparseGreaterThanReal(int rows, int cols, const T** Amat, const T** Bmat) 
   T* buffer = &bufferBlock;
   for (int i=0;i<cols;i++) {
     RLEDecoder<T> A(Amat[i],rows);
-    RLEDecoder<T> B(Amat[i],rows);
+    RLEDecoder<T> B(Bmat[i],rows);
     RLEEncoder<T> C(buffer,rows);
     A.update();
     B.update();
@@ -6222,7 +6222,7 @@ void* SparseGreaterThanComplex(int rows, int cols, const T** Amat, const T** Bma
   T* buffer = &bufferBlock;
   for (int i=0;i<cols;i++) {
     RLEDecoderComplex<T> A(Amat[i],rows);
-    RLEDecoderComplex<T> B(Amat[i],rows);
+    RLEDecoderComplex<T> B(Bmat[i],rows);
     RLEEncoderComplex<T> C(buffer,rows);
     A.update();
     B.update();
@@ -6260,7 +6260,7 @@ void* SparseLessThanReal(int rows, int cols, const T** Amat, const T** Bmat) {
   T* buffer = &bufferBlock;
   for (int i=0;i<cols;i++) {
     RLEDecoder<T> A(Amat[i],rows);
-    RLEDecoder<T> B(Amat[i],rows);
+    RLEDecoder<T> B(Bmat[i],rows);
     RLEEncoder<T> C(buffer,rows);
     A.update();
     B.update();
@@ -6298,7 +6298,7 @@ void* SparseLessThanComplex(int rows, int cols, const T** Amat, const T** Bmat) 
   T* buffer = &bufferBlock;
   for (int i=0;i<cols;i++) {
     RLEDecoderComplex<T> A(Amat[i],rows);
-    RLEDecoderComplex<T> B(Amat[i],rows);
+    RLEDecoderComplex<T> B(Bmat[i],rows);
     RLEEncoderComplex<T> C(buffer,rows);
     A.update();
     B.update();

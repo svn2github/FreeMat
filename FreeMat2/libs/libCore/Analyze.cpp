@@ -645,7 +645,8 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
 						  outDim.getDimensionLength(0),
 						  outDim.getDimensionLength(1),
 						  x.getSparseDataPointer(),
-						  y.getSparseDataPointer())));
+						  y.getSparseDataPointer()),
+				   true));
   }
   // Based on the type of the output... call the associated helper function
   Array retval;
@@ -1095,7 +1096,8 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
 						     outDim.getDimensionLength(0),
 						     outDim.getDimensionLength(1),
 						     x.getSparseDataPointer(),
-						     y.getSparseDataPointer())));
+						     y.getSparseDataPointer()),
+				   true));
   }
   // Based on the type of the output... call the associated helper function
   Array retval;

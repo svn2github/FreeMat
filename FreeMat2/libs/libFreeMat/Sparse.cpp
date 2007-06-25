@@ -2745,7 +2745,7 @@ void SetSparseColumnSubsetComplex(int rows, T** dp,
 				  const T* data, int advance) {
   MemBlock<T> AcolBlock(2*rows);
   T* Acol = &AcolBlock;
-  MemBlock<T> bufferBlock(4*rows);
+  MemBlock<T> bufferBlock(4*rows+1);
   T* buffer = &bufferBlock;
   for (int i=0;i<icols;i++) {
     memset(Acol,0,2*rows*sizeof(T));
@@ -5824,12 +5824,535 @@ T** SparseAbsFunctionComplex(int rows, int cols, const T**src) {
 
 void* SparseAbsFunction(Class dclass, int rows, int cols, const void *Ap) {
   switch(dclass) {
-  case FM_INT32:  return SparseAbsFunctionReal<int32>(rows,cols,(const int32**)Ap);
-  case FM_FLOAT:  return SparseAbsFunctionReal<float>(rows,cols,(const float**)Ap);
-  case FM_DOUBLE:  return SparseAbsFunctionReal<double>(rows,cols,(const double**)Ap);
-  case FM_COMPLEX:  return SparseAbsFunctionComplex<float>(rows,cols,(const float**)Ap);
-  case FM_DCOMPLEX:  return SparseAbsFunctionComplex<double>(rows,cols,(const double**)Ap);
+  case FM_INT32:  
+    return SparseAbsFunctionReal<int32>(rows,cols,(const int32**)Ap);
+  case FM_FLOAT:  
+    return SparseAbsFunctionReal<float>(rows,cols,(const float**)Ap);
+  case FM_DOUBLE:  
+    return SparseAbsFunctionReal<double>(rows,cols,(const double**)Ap);
+  case FM_COMPLEX:  
+    return SparseAbsFunctionComplex<float>(rows,cols,(const float**)Ap);
+  case FM_DCOMPLEX:  
+    return SparseAbsFunctionComplex<double>(rows,cols,(const double**)Ap);
   default:
     throw Exception("unsupported sparse matrix type in argument to abs");
+  }
+}
+
+template <class T>
+void* SparseMatrixMaxColumnsReal(int rows, int cols, const T** A) {
+  T **out = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(3);
+  T* buffer = &bufferBlock;
+  for (int col=0;col<cols;col++) {
+    T maxval;
+    bool max_inited = false;
+    RLEDecoder<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value())) {
+	if (max_inited)
+	  maxval = (Acmp.value() > maxval) ? Acmp.value() : maxval;
+	else {
+	  maxval = Acmp.value();
+	  max_inited = true;
+	}
+      }
+      Acmp.advance();
+    }
+    RLEEncoder<T> Bcmp(buffer,1);
+    if (!max_inited)
+      Bcmp.push(0);
+    else
+      Bcmp.push(maxval);
+    Bcmp.end();
+    out[col] = Bcmp.copyout();
+  }
+  return out;
+}
+
+template <class T>
+void* SparseMatrixMaxColumnsComplex(int rows, int cols, const T** A) {
+  T **out = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(5);
+  T* buffer = &bufferBlock;
+  for (int col=0;col<cols;col++) {
+    T maxval_abs = 0;
+    T maxval_real = 0;
+    T maxval_imag = 0;
+    bool max_inited = false;
+    RLEDecoderComplex<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value_real()) && !IsNaN(Acmp.value_imag())) {
+	T tstval = complex_abs(Acmp.value_real(),Acmp.value_imag());
+	if (max_inited) {
+	  if (tstval > maxval_abs) {
+	    maxval_abs = tstval;
+	    maxval_real = Acmp.value_real();
+	    maxval_imag = Acmp.value_imag();
+	  } 
+	} else {
+	  max_inited = true;
+	  maxval_abs = tstval;
+	  maxval_real = Acmp.value_real();
+	  maxval_imag = Acmp.value_imag();
+	}
+      }
+      Acmp.advance();
+    }
+    RLEEncoderComplex<T> Bcmp(buffer,1);
+    Bcmp.push(maxval_real,maxval_imag);
+    Bcmp.end();
+    out[col] = Bcmp.copyout();
+  }
+  return out;
+}
+
+template <class T>
+void* SparseMatrixMaxRowsReal(int rows, int cols, const T** A) {
+  T** out = (T**) new T*[1];
+  MemBlock<T> bufferBlock(rows);
+  T* buffer = &bufferBlock;
+  MemBlock<bool> initBlock(rows);
+  bool* inited = &initBlock;
+  for (int col=0;col<cols;col++) {
+    RLEDecoder<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value())) {
+	if (inited[Acmp.row()]) {
+	  buffer[Acmp.row()] = (buffer[Acmp.row()] > Acmp.value()) ? buffer[Acmp.row()] : Acmp.value();
+	} else {
+	  buffer[Acmp.row()] = Acmp.value();
+	  inited[Acmp.row()] = true;
+	}
+      }
+      Acmp.advance();
+    }
+  }
+  MemBlock<T> cbufBlock(rows*2);
+  T* cbuf = &cbufBlock;
+  out[0] = CompressRealVector<T>(cbuf, buffer, rows);
+  return out;
+}
+
+template <class T>
+void* SparseMatrixMaxRowsComplex(int rows, int cols, const T** A) {
+  T** out = (T**) new T*[1];
+  MemBlock<T> bufferBlock(2*rows);
+  T* buffer = &bufferBlock;
+  MemBlock<T> bufferBlockMag(2*rows);
+  T* bufferMag = &bufferBlockMag;
+  MemBlock<bool> initBlock(rows);
+  bool *inited = &initBlock;
+  for (int col=0;col<cols;col++) {
+    RLEDecoderComplex<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value_real()) && !IsNaN(Acmp.value_imag())) {
+	T tstval = complex_abs(Acmp.value_real(),Acmp.value_imag());
+	if (inited[Acmp.row()]) {
+	  if (tstval > bufferMag[Acmp.row()]) {
+	    bufferMag[Acmp.row()] = tstval;
+	    buffer[Acmp.row()*2] = Acmp.value_real();
+	    buffer[Acmp.row()*2+1] = Acmp.value_imag();
+	  } 
+	} else {
+	  inited[Acmp.row()] = true;
+	  bufferMag[Acmp.row()] = tstval;
+	  buffer[Acmp.row()*2] = Acmp.value_real();
+	  buffer[Acmp.row()*2+1] = Acmp.value_imag();
+	}
+      }
+      Acmp.advance();
+    }
+  }
+  MemBlock<T> cbufBlock(rows*4);
+  T* cbuf = &cbufBlock;
+  out[0] = CompressComplexVector(cbuf, buffer, rows);
+  return out;
+}
+
+void* SparseMatrixMaxRows(Class dclass, int Arows, int Acols, const void *Ap) {
+  switch(dclass) {
+  case FM_INT32:
+    return SparseMatrixMaxRowsReal<int32>(Arows, Acols, (const int32**) Ap);
+  case FM_FLOAT:
+    return SparseMatrixMaxRowsReal<float>(Arows, Acols, (const float**) Ap);
+  case FM_DOUBLE:
+    return SparseMatrixMaxRowsReal<double>(Arows, Acols, (const double**) Ap);
+  case FM_COMPLEX:
+    return SparseMatrixMaxRowsComplex<float>(Arows, Acols, (const float**) Ap);
+  case FM_DCOMPLEX:
+    return SparseMatrixMaxRowsComplex<double>(Arows, Acols, (const double**) Ap);
+  default:
+    throw Exception("unexpected type in sparse matrix max rows");
+  }
+}
+
+void* SparseMatrixMaxColumns(Class dclass, int Arows, int Acols, const void *Ap) {
+  switch(dclass) {
+  case FM_INT32:
+    return SparseMatrixMaxColumnsReal<int32>(Arows, Acols, (const int32**) Ap);
+  case FM_FLOAT:
+    return SparseMatrixMaxColumnsReal<float>(Arows, Acols, (const float**) Ap);
+  case FM_DOUBLE:
+    return SparseMatrixMaxColumnsReal<double>(Arows, Acols, (const double**) Ap);
+  case FM_COMPLEX:
+    return SparseMatrixMaxColumnsComplex<float>(Arows, Acols, (const float**) Ap);
+  case FM_DCOMPLEX:
+    return SparseMatrixMaxColumnsComplex<double>(Arows, Acols, (const double**) Ap);
+  default:
+    throw Exception("unexpected type in sparse matrix max cols");
+  }
+}
+
+template <class T>
+void* SparseMatrixMinColumnsReal(int rows, int cols, const T** A) {
+  T **out = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(3);
+  T* buffer = &bufferBlock;
+  for (int col=0;col<cols;col++) {
+    T minval;
+    bool min_inited = false;
+    RLEDecoder<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value())) {
+	if (min_inited)
+	  minval = (Acmp.value() < minval) ? Acmp.value() : minval;
+	else {
+	  minval = Acmp.value();
+	  min_inited = true;
+	}
+      }
+      Acmp.advance();
+    }
+    RLEEncoder<T> Bcmp(buffer,1);
+    if (!min_inited)
+      Bcmp.push(0);
+    else
+      Bcmp.push(minval);
+    Bcmp.end();
+    out[col] = Bcmp.copyout();
+  }
+  return out;
+}
+
+template <class T>
+void* SparseMatrixMinColumnsComplex(int rows, int cols, const T** A) {
+  T **out = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(5);
+  T* buffer = &bufferBlock;
+  for (int col=0;col<cols;col++) {
+    T minval_abs = 0;
+    T minval_real = 0;
+    T minval_imag = 0;
+    bool min_inited = false;
+    RLEDecoderComplex<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value_real()) && !IsNaN(Acmp.value_imag())) {
+	T tstval = complex_abs(Acmp.value_real(),Acmp.value_imag());
+	if (min_inited) {
+	  if (tstval < minval_abs) {
+	    minval_abs = tstval;
+	    minval_real = Acmp.value_real();
+	    minval_imag = Acmp.value_imag();
+	  } 
+	} else {
+	  min_inited = true;
+	  minval_abs = tstval;
+	  minval_real = Acmp.value_real();
+	  minval_imag = Acmp.value_imag();
+	}
+      }
+      Acmp.advance();
+    }
+    RLEEncoderComplex<T> Bcmp(buffer,1);
+    Bcmp.push(minval_real,minval_imag);
+    Bcmp.end();
+    out[col] = Bcmp.copyout();
+  }
+  return out;
+}
+
+template <class T>
+void* SparseMatrixMinRowsReal(int rows, int cols, const T** A) {
+  T** out = (T**) new T*[1];
+  MemBlock<T> bufferBlock(rows);
+  T* buffer = &bufferBlock;
+  MemBlock<bool> initBlock(rows);
+  bool* inited = &initBlock;
+  for (int col=0;col<cols;col++) {
+    RLEDecoder<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value())) {
+	if (inited[Acmp.row()]) {
+	  buffer[Acmp.row()] = (buffer[Acmp.row()] < Acmp.value()) ? buffer[Acmp.row()] : Acmp.value();
+	} else {
+	  buffer[Acmp.row()] = Acmp.value();
+	  inited[Acmp.row()] = true;
+	}
+      }
+      Acmp.advance();
+    }
+  }
+  MemBlock<T> cbufBlock(rows*2);
+  T* cbuf = &cbufBlock;
+  out[0] = CompressRealVector<T>(cbuf, buffer, rows);
+  return out;
+}
+
+template <class T>
+void* SparseMatrixMinRowsComplex(int rows, int cols, const T** A) {
+  T** out = (T**) new T*[1];
+  MemBlock<T> bufferBlock(2*rows);
+  T* buffer = &bufferBlock;
+  MemBlock<T> bufferBlockMag(2*rows);
+  T* bufferMag = &bufferBlockMag;
+  MemBlock<bool> initBlock(rows);
+  bool *inited = &initBlock;
+  for (int col=0;col<cols;col++) {
+    RLEDecoderComplex<T> Acmp(A[col], rows);
+    Acmp.update();
+    while (Acmp.more()) {
+      if (!IsNaN(Acmp.value_real()) && !IsNaN(Acmp.value_imag())) {
+	T tstval = complex_abs(Acmp.value_real(),Acmp.value_imag());
+	if (inited[Acmp.row()]) {
+	  if (tstval < bufferMag[Acmp.row()]) {
+	    bufferMag[Acmp.row()] = tstval;
+	    buffer[Acmp.row()*2] = Acmp.value_real();
+	    buffer[Acmp.row()*2+1] = Acmp.value_imag();
+	  } 
+	} else {
+	  inited[Acmp.row()] = true;
+	  bufferMag[Acmp.row()] = tstval;
+	  buffer[Acmp.row()*2] = Acmp.value_real();
+	  buffer[Acmp.row()*2+1] = Acmp.value_imag();
+	}
+      }
+      Acmp.advance();
+    }
+  }
+  MemBlock<T> cbufBlock(rows*4);
+  T* cbuf = &cbufBlock;
+  out[0] = CompressComplexVector(cbuf, buffer, rows);
+  return out;
+}
+
+void* SparseMatrixMinRows(Class dclass, int Arows, int Acols, const void *Ap) {
+  switch(dclass) {
+  case FM_INT32:
+    return SparseMatrixMinRowsReal<int32>(Arows, Acols, (const int32**) Ap);
+  case FM_FLOAT:
+    return SparseMatrixMinRowsReal<float>(Arows, Acols, (const float**) Ap);
+  case FM_DOUBLE:
+    return SparseMatrixMinRowsReal<double>(Arows, Acols, (const double**) Ap);
+  case FM_COMPLEX:
+    return SparseMatrixMinRowsComplex<float>(Arows, Acols, (const float**) Ap);
+  case FM_DCOMPLEX:
+    return SparseMatrixMinRowsComplex<double>(Arows, Acols, (const double**) Ap);
+  default:
+    throw Exception("unexpected type in sparse matrix min rows");
+  }
+}
+
+void* SparseMatrixMinColumns(Class dclass, int Arows, int Acols, const void *Ap) {
+  switch(dclass) {
+  case FM_INT32:
+    return SparseMatrixMinColumnsReal<int32>(Arows, Acols, (const int32**) Ap);
+  case FM_FLOAT:
+    return SparseMatrixMinColumnsReal<float>(Arows, Acols, (const float**) Ap);
+  case FM_DOUBLE:
+    return SparseMatrixMinColumnsReal<double>(Arows, Acols, (const double**) Ap);
+  case FM_COMPLEX:
+    return SparseMatrixMinColumnsComplex<float>(Arows, Acols, (const float**) Ap);
+  case FM_DCOMPLEX:
+    return SparseMatrixMinColumnsComplex<double>(Arows, Acols, (const double**) Ap);
+  default:
+    throw Exception("unexpected type in sparse matrix min cols");
+  }
+}
+
+template <class T>
+void* SparseGreaterThanReal(int rows, int cols, const T** Amat, const T** Bmat) {
+  T** Cmat = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(rows*2);
+  T* buffer = &bufferBlock;
+  for (int i=0;i<cols;i++) {
+    RLEDecoder<T> A(Amat[i],rows);
+    RLEDecoder<T> B(Amat[i],rows);
+    RLEEncoder<T> C(buffer,rows);
+    A.update();
+    B.update();
+    while (A.more() || B.more()) {
+      if (A.row() == B.row()) {
+	C.set(A.row());
+	if (A.value() > B.value())
+	  C.push(A.value());
+	else
+	  C.push(B.value());
+	A.advance();
+	B.advance();
+      } else if (A.row() < B.row()) {
+	C.set(A.row());
+	if (A.value() > 0)
+	  C.push(A.value());
+	A.advance();
+      } else {
+	C.set(B.row());
+	if (B.value() > 0)
+	  C.push(B.value());
+	B.advance();
+      }
+    }
+    C.end();
+    Cmat[i] = C.copyout();
+  }
+  return Cmat;
+}
+
+template <class T>
+void* SparseGreaterThanComplex(int rows, int cols, const T** Amat, const T** Bmat) {
+  T** Cmat = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(rows*4);
+  T* buffer = &bufferBlock;
+  for (int i=0;i<cols;i++) {
+    RLEDecoderComplex<T> A(Amat[i],rows);
+    RLEDecoderComplex<T> B(Amat[i],rows);
+    RLEEncoderComplex<T> C(buffer,rows);
+    A.update();
+    B.update();
+    while (A.more() || B.more()) {
+      if (A.row() == B.row()) {
+	C.set(A.row());
+	if (complex_abs(A.value_real(),A.value_imag()) > 
+	    complex_abs(B.value_real(),B.value_imag()))
+	  C.push(A.value_real(),A.value_imag());
+	else
+	  C.push(B.value_real(),B.value_imag());
+	A.advance();
+	B.advance();
+      } else if (A.row() < B.row()) {
+	C.set(A.row());
+	C.push(A.value_real(),A.value_imag());
+	A.advance();
+      } else {
+	C.set(B.row());
+	C.push(B.value_real(),B.value_imag());
+	B.advance();
+      }
+    }
+    C.end();
+    Cmat[i] = C.copyout();
+  }
+  return Cmat;
+}
+
+
+template <class T>
+void* SparseLessThanReal(int rows, int cols, const T** Amat, const T** Bmat) {
+  T** Cmat = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(rows*2);
+  T* buffer = &bufferBlock;
+  for (int i=0;i<cols;i++) {
+    RLEDecoder<T> A(Amat[i],rows);
+    RLEDecoder<T> B(Amat[i],rows);
+    RLEEncoder<T> C(buffer,rows);
+    A.update();
+    B.update();
+    while (A.more() || B.more()) {
+      if (A.row() == B.row()) {
+	C.set(A.row());
+	if (A.value() < B.value())
+	  C.push(A.value());
+	else
+	  C.push(B.value());
+	A.advance();
+	B.advance();
+      } else if (A.row() < B.row()) {
+	C.set(A.row());
+	if (A.value() < 0)
+	  C.push(A.value());
+	A.advance();
+      } else {
+	C.set(B.row());
+	if (B.value() < 0)
+	  C.push(B.value());
+	B.advance();
+      }
+    }
+    C.end();
+    Cmat[i] = C.copyout();
+  }
+  return Cmat;
+}
+
+template <class T>
+void* SparseLessThanComplex(int rows, int cols, const T** Amat, const T** Bmat) {
+  T** Cmat = (T**) new T*[cols];
+  MemBlock<T> bufferBlock(rows*4);
+  T* buffer = &bufferBlock;
+  for (int i=0;i<cols;i++) {
+    RLEDecoderComplex<T> A(Amat[i],rows);
+    RLEDecoderComplex<T> B(Amat[i],rows);
+    RLEEncoderComplex<T> C(buffer,rows);
+    A.update();
+    B.update();
+    while (A.more() || B.more()) {
+      if (A.row() == B.row()) {
+	C.set(A.row());
+	if (complex_abs(A.value_real(),A.value_imag()) <
+	    complex_abs(B.value_real(),B.value_imag()))
+	  C.push(A.value_real(),A.value_imag());
+	else
+	  C.push(B.value_real(),B.value_imag());
+	A.advance();
+	B.advance();
+      } else if (A.row() < B.row()) 
+	A.advance();
+      else 
+	B.advance();
+    }
+    C.end();
+    Cmat[i] = C.copyout();
+  }
+  return Cmat;
+}
+
+void* SparseGreaterThan(Class dclass, int rows, int cols, const void *Ap, const void *Bp) {
+  switch(dclass) {
+  case FM_INT32:
+    return SparseGreaterThanReal<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp);
+  case FM_FLOAT:
+    return SparseGreaterThanReal<float>(rows,cols,(const float**)Ap,(const float**)Bp);
+  case FM_DOUBLE:
+    return SparseGreaterThanReal<double>(rows,cols,(const double**)Ap,(const double**)Bp);
+  case FM_COMPLEX:
+    return SparseGreaterThanComplex<float>(rows,cols,(const float**)Ap,(const float**)Bp);
+  case FM_DCOMPLEX:
+    return SparseGreaterThanComplex<double>(rows,cols,(const double**)Ap,(const double**)Bp);
+  default:
+    throw Exception("unexpected type in sparse matrix max");
+  }
+}
+
+void* SparseLessThan(Class dclass, int rows, int cols, const void *Ap, const void *Bp) {
+  switch(dclass) {
+  case FM_INT32:
+    return SparseLessThanReal<int32>(rows,cols,(const int32**)Ap,(const int32**)Bp);
+  case FM_FLOAT:
+    return SparseLessThanReal<float>(rows,cols,(const float**)Ap,(const float**)Bp);
+  case FM_DOUBLE:
+    return SparseLessThanReal<double>(rows,cols,(const double**)Ap,(const double**)Bp);
+  case FM_COMPLEX:
+    return SparseLessThanComplex<float>(rows,cols,(const float**)Ap,(const float**)Bp);
+  case FM_DCOMPLEX:
+    return SparseLessThanComplex<double>(rows,cols,(const double**)Ap,(const double**)Bp);
+  default:
+    throw Exception("unexpected type in sparse matrix min");
   }
 }

@@ -139,6 +139,12 @@ void* SparseSparseLogicalOp(Class dclass, int rows, int cols, const void *Ap, co
 void* SparseScalarLogicalOp(Class dclass, int rows, int cols, const void *Ap, const void *Bp, SparseLogOpID opselect);
 void* ReshapeSparseMatrix(Class dclass, int rows, int cols, const void *Ap, int newrows, int newcols);
 void* SparseAbsFunction(Class dclass, int rows, int cols, const void *Ap);
+void* SparseMatrixMaxRows(Class dclass, int rows, int cols, const void *Ap);
+void* SparseMatrixMaxColumns(Class dclass, int rows, int cols, const void *Ap);
+void* SparseMatrixMinRows(Class dclass, int rows, int cols, const void *Ap);
+void* SparseMatrixMinColumns(Class dclass, int rows, int cols, const void *Ap);
+void* SparseGreaterThan(Class dclass, int rows, int cols, const void *Ap, const void *Bp);
+void* SparseLessThan(Class dclass, int rows, int cols, const void *Ap, const void *Bp);
 void* CopyResizeSparseMatrix(Class dclass, int rows, int cols, 
 			     const void *Ap, int newrows, int newcols);
 #endif

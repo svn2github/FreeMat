@@ -636,6 +636,17 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
     outType = y.dataClass();
     x.promoteType(y.dataClass());
   }
+  if (x.sparse() || y.sparse()) {
+    if (!(x.sparse() && y.sparse()))
+      throw Exception("Cannot perform max operation with mixed sparse and full types");
+    return singleArrayVector(Array(outType,
+				   outDim,
+				   SparseLessThan(outType,
+						  outDim.getDimensionLength(0),
+						  outDim.getDimensionLength(1),
+						  x.getSparseDataPointer(),
+						  y.getSparseDataPointer())));
+  }
   // Based on the type of the output... call the associated helper function
   Array retval;
   switch(outType) {
@@ -904,6 +915,26 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
     planecount *= inDim.get(d);
+  if (input.sparse()) {
+    if (workDim == 0)
+      return singleArrayVector(Array(input.dataClass(),
+				     outDim,
+				     SparseMatrixMinColumns(input.dataClass(),
+							    input.getDimensionLength(0),
+							    input.getDimensionLength(1),
+							    input.getSparseDataPointer()),
+				     true));
+    else if (workDim == 1)
+      return singleArrayVector(Array(input.dataClass(),
+				     outDim,
+				     SparseMatrixMinRows(input.dataClass(),
+							 input.getDimensionLength(0),
+							 input.getDimensionLength(1),
+							 input.getSparseDataPointer()),
+				     true));
+    else
+      return singleArrayVector(input);
+  }
   // Allocate the output that contains the indices
   uint32* iptr = (uint32 *) Malloc(sizeof(uint32)*outDim.getElementCount());
   // Allocate the values output, and call the appropriate helper func.
@@ -1054,6 +1085,17 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
   } else {
     outType = y.dataClass();
     x.promoteType(y.dataClass());
+  }
+  if (x.sparse() || y.sparse()) {
+    if (!(x.sparse() && y.sparse()))
+      throw Exception("Cannot perform max operation with mixed sparse and full types");
+    return singleArrayVector(Array(outType,
+				   outDim,
+				   SparseGreaterThan(outType,
+						     outDim.getDimensionLength(0),
+						     outDim.getDimensionLength(1),
+						     x.getSparseDataPointer(),
+						     y.getSparseDataPointer())));
   }
   // Based on the type of the output... call the associated helper function
   Array retval;
@@ -1321,6 +1363,26 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   planecount = 1;
   for (d=workDim+1;d<inDim.getLength();d++)
     planecount *= inDim.get(d);
+  if (input.sparse()) {
+    if (workDim == 0)
+      return singleArrayVector(Array(input.dataClass(),
+				     outDim,
+				     SparseMatrixMaxColumns(input.dataClass(),
+							    input.getDimensionLength(0),
+							    input.getDimensionLength(1),
+							    input.getSparseDataPointer()),
+				     true));
+    else if (workDim == 1)
+      return singleArrayVector(Array(input.dataClass(),
+				     outDim,
+				     SparseMatrixMaxRows(input.dataClass(),
+							 input.getDimensionLength(0),
+							 input.getDimensionLength(1),
+							 input.getSparseDataPointer()),
+				     true));
+    else
+      return singleArrayVector(input);
+  }
   // Allocate the output that contains the indices
   uint32* iptr = (uint32 *) Malloc(sizeof(uint32)*outDim.getElementCount());
   // Allocate the values output, and call the appropriate helper func.

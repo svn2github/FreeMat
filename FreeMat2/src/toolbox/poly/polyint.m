@@ -30,4 +30,4 @@ function pint = polyint(p,k)
    elseif nargin < 2
       k = 0;
    end
-   pint = [p./(length(p):-1:1),k];
+   pint = [(p(:).')./(length(p):-1:1),k];

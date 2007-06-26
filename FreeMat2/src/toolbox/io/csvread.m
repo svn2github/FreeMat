@@ -31,8 +31,7 @@
 %a spreadsheet range @|B12..C34|, in which case the index for the
 %range is 1-based (as in a typical spreadsheet), so that @|A1| is the
 %first cell in the upper left corner. Note also that @|csvread| is
-%somewhat limited.  The number of columns in the file cannot exceed
-%65535.  If it does, bad things will happen.
+%somewhat limited. 
 %@@Example
 %Here is an example of a CSV file that we wish to read in
 %@{  sample_data.csv
@@ -62,6 +61,6 @@ function x = csvread(filename,firstrow,firstcol,range)
     elseif (nargin == 3)
         x = dlmread(filename,',',firstrow,firstcol);
     elseif (nargin == 4)
-        x = dlmread(filename,',',firstrow,firstcol,range);
+        x = dlmread(filename,',',range);
     end
         

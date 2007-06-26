@@ -2698,8 +2698,6 @@ ArrayVector DlmReadFunction(int nargout, const ArrayVector& arg) {
       }
     } else {
       elements = line.split(QString::fromStdString(delimiter)[0]);
-      qDebug() << "Line: " << line;
-      qDebug() << elements;
     }
     QList<double> row_data_real;
     QList<double> row_data_imag;

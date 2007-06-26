@@ -44,6 +44,7 @@ string NumericCellEntry(const T* data, Dimensions dims, string name,
     if (isSparse)
       ret += " sparse";
     ret += name + "]";
+    return ret;
   }
 }
 
@@ -59,6 +60,7 @@ string ComplexNumericCellEntry(const T* data, Dimensions dims, string name,
     if (isSparse)
       ret += " sparse";
     ret += name + "]";
+    return ret;
   }
 }
 

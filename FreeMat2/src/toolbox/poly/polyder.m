@@ -1,10 +1,9 @@
 %!
 %@Module POLYDER Polynomial Coefficient Differentiation
-%
-% Usage
-%
-% The @|polyder| function returns the polynomial coefficients resulting
-% from differentiation of polynomial @|p|. The syntax for its use is either
+%@@Section CURVEFIT
+%@@Usage
+%The @|polyder| function returns the polynomial coefficients resulting
+%from differentiation of polynomial @|p|. The syntax for its use is either
 %@[
 % pder = polyder(p)
 %@]

@@ -740,3 +740,28 @@ Fix range calculation for plots
 Add format command
 Revert and fix QTTerm.
 >>>>>>> .r2593
+
+The next problem is the following:
+
+Suppose we have a local function foo/func, and the main function foo decides
+to change directories (with the cd command), and suppose further that foo is
+not on the FreeMat PATH.  Then we have a problem with the new definition of
+local functions that we did not have before.  Namely, that the cd command
+causes the local funcion to be flushed.  
+
+This is fixed - (just made local functions non-temporary).  
+
+To Do:
+
+Fread should return the number of items read - Done
+load/save need ascii forms - Done
+dlmread - Done
+sum, max, min functions for sparse matrices - Done
+
+figure position
+Symbols in Plots
+invert for diagonal matrices
+! syntax
+system calls should be interactive.
+generalized eigenvalues for sparse
+bwdist function

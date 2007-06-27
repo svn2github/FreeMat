@@ -171,10 +171,15 @@ bool AnyDirty(bool issueUpdates) {
   return retval;
 }
 
+static bool in_DoDrawNow = false;
+
 void DoDrawNow() {
+  if (in_DoDrawNow) return;
+  in_DoDrawNow = true;
   if (AnyDirty(true))
     while (AnyDirty(false))
       qApp->processEvents();
+  in_DoDrawNow = false;
 }
 
 ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {

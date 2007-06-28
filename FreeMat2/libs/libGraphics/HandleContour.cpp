@@ -40,7 +40,9 @@ std::vector<double> HandleContour::GetLimits() {
 //  std::vector<double> zs(VectorPropertyLookup("zdata"));
   UpdateState();
   std::vector<double> limits;
-  bool initialized = false;
+  bool x_initialized = false;
+  bool y_initialized = false;
+  bool z_initialized = false;
   double xmin;
   double xmax;
   double ymin;
@@ -53,27 +55,42 @@ std::vector<double> HandleContour::GetLimits() {
     for (int j=0;j<cset.size();j++) {
       cline aline(cset[j]);
       for (int k=0;k<aline.size();k++) {
-	if (!initialized) {
+	if (!x_initialized && IsFinite(aline[k].x)) {
 	  xmin = xmax = aline[k].x;
+	  x_initialized = true;
+	}
+	if (!y_initialized && IsFinite(aline[k].y)) {
 	  ymin = ymax = aline[k].y;
+	  y_initialized = true;
+	}
+	if (!z_initialized) {
 	  zmin = zmax = zvals[0];
-	  initialized = true;
-	} else {
+	  z_initialized = true;
+	} 
+	if (x_initialized && IsFinite(aline[k].x)) {
 	  xmin = qMin(xmin,aline[k].x);
-	  ymin = qMin(ymin,aline[k].y);
-	  zmin = qMin(zmin,zvals[i]);
 	  xmax = qMax(xmax,aline[k].x);
+	}
+	if (y_initialized && IsFinite(aline[k].y)) {
+	  ymin = qMin(ymin,aline[k].y);
 	  ymax = qMax(ymax,aline[k].y);
+	}
+	if (z_initialized) {
+	  zmin = qMin(zmin,zvals[i]);
 	  zmax = qMax(zmax,zvals[i]);
 	}
       }
     }
   }
-  if (!initialized) {
+  if (!x_initialized) {
     xmin = -1;
     xmax = 1;
+  }
+  if (!y_initialized) {
     ymin = -1;
     ymax = 1;
+  }
+  if (!z_initialized) {
     zmin = 0;
     zmax = 0;
   }
@@ -88,7 +105,7 @@ std::vector<double> HandleContour::GetLimits() {
   limits.push_back(zmin);
   limits.push_back(zmax);
   limits.push_back(0);
-  limits.push_back(0);    
+  limits.push_back(0); 
   return limits;
 }
 

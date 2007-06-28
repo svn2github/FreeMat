@@ -72,6 +72,20 @@ QList<double> GetTicksOuter(double amin, double amax, bool isLog, int requestedC
       aval -= astep;
     }
     retvec.push_front(aval);
+  } else if ((amin == 0) && (amax > 0)) {
+    aval = 0;
+    while (aval < amax) {
+      retvec.push_back(aval);
+      aval += astep;
+    }
+    retvec.push_back(aval);
+  } else if ((amin < 0) && (amax == 0)) {
+    aval = 0;
+    while (aval > amin) {
+      retvec.push_front(aval);
+      aval -= astep;
+    }
+    retvec.push_front(aval);
   } else {
     aval = floor(amin/astep)*astep;
     while (aval < amax) {
@@ -119,6 +133,18 @@ QList<double> GetTicksInner(double amin, double amax, bool isLog, int requestedC
       aval += astep;
     }
     aval = -astep;
+    while (aval >= amin) {
+      retvec.push_front(aval);
+      aval -= astep;
+    }
+  } else if ((amin == 0) && (amax > 0)) {
+    aval = 0;
+    while (aval <= amax) {
+      retvec.push_back(aval);
+      aval += astep;
+    }
+  } else if ((amin < 0) && (amax == 0)) {
+    aval = 0;
     while (aval >= amin) {
       retvec.push_front(aval);
       aval -= astep;

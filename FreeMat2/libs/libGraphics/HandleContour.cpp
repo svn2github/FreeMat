@@ -49,6 +49,8 @@ std::vector<double> HandleContour::GetLimits() {
   double ymax;
   double zmin;
   double zmax;
+  double cmin;
+  double cmax;
   for (int i=0;i<pset.size();i++) {
     // For each level.
     lineset cset(pset[i]);
@@ -94,6 +96,8 @@ std::vector<double> HandleContour::GetLimits() {
     zmin = 0;
     zmax = 0;
   }
+  cmin = zmin;
+  cmax = zmax;
   if (StringCheck("floating","off"))
     zmin = zmax = 0;
   limits.push_back(xmin);
@@ -102,8 +106,8 @@ std::vector<double> HandleContour::GetLimits() {
   limits.push_back(ymax);
   limits.push_back(zmin);
   limits.push_back(zmax);
-  limits.push_back(zmin);
-  limits.push_back(zmax);
+  limits.push_back(cmin);
+  limits.push_back(cmax);
   limits.push_back(0);
   limits.push_back(0); 
   return limits;

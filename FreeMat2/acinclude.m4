@@ -83,6 +83,23 @@ if test $acx_blas_ok = no; then
 			[], [-latlas])])
 fi
 
+if test $acx_blas_ok = no; then
+	unset ac_cv_lib_atlas_ATL_xerbla
+	save_LIBS="$LIBS";
+	LIBS="-L/usr/lib/atlas $LIBS"
+	AC_CHECK_LIB(atlas, ATL_xerbla,
+		[AC_CHECK_LIB(f77blas, $sgemm,
+		[AC_CHECK_LIB(cblas, cblas_dgemm,
+			[acx_blas_ok=yes
+			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
+			[], [-lf77blas -latlas])],
+			[], [-latlas])])
+	LIBS="$save_LIBS";
+	if test $acx_blas_ok = yes; then
+	  BLAS_LIBS="-L/usr/lib/atlas $BLAS_LIBS"
+	fi	
+fi
+
 # BLAS in PhiPACK libraries? (requires generic BLAS lib, too)
 if test $acx_blas_ok = no; then
 	AC_CHECK_LIB(blas, $sgemm,
@@ -328,29 +345,47 @@ else
 fi
 
 AC_CHECK_LIB(amd,amd_postorder,found_amd="yes",found_amd="no")
-AC_CHECK_HEADER(amd.h,[],found_amd="no")
+AC_CHECK_HEADER(amd.h,found_amdh="yes",found_amdh="no")
+if test x"$found_amdh" == xno; then
+  AC_CHECK_HEADER(amd/amd.h,found_amdh="yes",found_amdh="no")
+  if test x"$found_amdh" == xyes; then
+    CFLAGS="$CFLAGS -I/usr/include/amd"
+    CXXFLAGS="$CXXFLAGS -I/usr/include/amd"
+  fi
+fi
+if test x"$found_amdh" == xno; then
+  AC_CHECK_HEADER(ufsparse/amd.h,found_amdh="yes",found_amdh="no")
+  if test x"$found_amdh" == xyes; then
+   CFLAGS="$CFLAGS -I/usr/include/ufsparse"
+   CXXFLAGS="$CXXFLAGS -I/usr/include/ufsparse"
+ fi
+fi
 
-if test x"$found_amd" == xyes; then
-  LIBS="-lamd $LIBS"
+if (test x"$found_amdh" == xyes) && (test x"$found_amd" == xyes); then
+    LIBS="-lamd $LIBS"
 fi
 
 AC_CHECK_LIB(umfpack,umfpack_zl_solve,found_umfpack="yes",found_umfpack="no")
-AC_CHECK_HEADER(umfpack.h,[],found_umfpack="no")
-if test x"$found_umfpack" == xno; then
-  AC_CHECK_HEADER(umfpack/umfpack.h,[],found_umfpack="no")
-  if test x"$found_umfpack" == xyes; then
+AC_CHECK_HEADER(umfpack.h,found_umfpackh="yes",found_umfpackh="no")
+if test x"$found_umfpackh" == xno; then
+  AC_CHECK_HEADER(umfpack/umfpack.h,found_umfpackh="yes",found_umfpackh="no")
+  if test x"$found_umfpackh" == xyes; then
     CFLAGS="$CFLAGS -I/usr/include/umfpack"
     CXXFLAGS="$CXXFLAGS -I/usr/include/umfpack"
   fi
 fi
-
-if test x"$found_umfpack" == xyes; then
-  LIBS="-lumfpack $LIBS"
+if test x"$found_umfpackh" == xno; then
+  AC_CHECK_HEADER(ufsparse/umfpack.h,found_umfpackh="yes",found_umfpackh="no")
+  if test x"$found_umfpackh" == xyes; then
+    CFLAGS="$CFLAGS -I/usr/include/ufsparse"
+    CXXFLAGS="$CXXFLAGS -I/usr/include/ufsparse"
+  fi
 fi
-if test x"$found_amd" == xyes; then
-	if test x"$found_umfpack" == xyes; then
-		AC_DEFINE(HAVE_UMFPACK, 1, [Set to 1 if you have UMFPACK])
-	fi
+if (test x"$found_umfpackh" == xyes) && (test x"$found_umfpack" == xyes); then
+    LIBS="-lumfpack $LIBS"
+fi
+if (test x"$found_amdh" == xyes) && (test x"$found_amd" == xyes) && (test x"$found_umfpackh" == xyes) && (test x"$found_umfpack" == xyes); then
+    AC_DEFINE(HAVE_UMFPACK, 1, [Set to 1 if you have UMFPACK])
 fi
 
 dnl PKG_CHECK_MODULES(fftw3, fftw3 >= 3.1.0, found_fftw3="yes", found_fftw3="no")

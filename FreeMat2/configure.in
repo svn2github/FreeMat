@@ -221,7 +221,7 @@ echo \
 "    ARPACK          Eigenvalues for Sparse Matrices       Not Found"
 fi
 
-if (test x"$found_umfpack" == xyes) && (test x"$found_amd" == xyes); then
+if (test x"$found_umfpack" == xyes) && (test x"$found_amd" == xyes) && (test x"$found_umfpackh" == xyes) && (test x"$found_amdh" == xyes); then
 echo \
 "    UMFPACK         Solutions of Sparse Linear Equations  Found"
 else

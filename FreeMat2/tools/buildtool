@@ -1,8 +1,29 @@
 #!/usr/bin/perl -w
 use File::Path;
+use File::Copy;
 use Cwd;
 use warnings;
 use strict;
+
+my $md5program;
+
+# Find a MD5 Sum program
+sub find_program {
+    my $title = shift;
+    my $prog;
+    print "************************************************************\n";
+    print "  Searching for $title\n";
+    print "************************************************************\n";
+    while ($prog = shift) {
+	print "Looking for program $prog\n";
+	my $retcode = system("$prog < /dev/null > /dev/null 2> /dev/null");
+	if ($retcode <= 256) {
+	    print "    Found program $prog\n";
+	    return $prog;
+	}
+    }
+    die "Unable to resolve $title\n";
+}
 
 # Make a directory
 sub make_directory {
@@ -22,6 +43,17 @@ sub copy_file {
     my $dest = shift;
     print "Copying $source to $dest\n";
     copy($source,$dest) or die "copy failed: $!\n";
+}
+
+# Copy a set of files 
+sub copy_files {
+    my $source_pattern = shift;
+    my @sources = glob $source_pattern;
+    my $dest = shift;
+    for my $file (@sources) {
+	print "Copying $file to $dest\n";
+	copy($file,$dest) or die "Cannot copy $file: $!\n";
+    }
 }
 
 # Delete a file
@@ -46,9 +78,10 @@ sub unpack_tar_ball {
     my $tarball = shift;
     my $destdir = shift;
     my $cwd = Cwd::cwd();
+    print "Unpacking $tarball\n";
     make_directory $destdir;
     change_directory $destdir;
-    if (system("gunzip < $cwd/$tarball | tar xvf -") != 0) {
+    if (system("gunzip < $cwd/$tarball | tar xf -") != 0) {
 	die "Unable to unpack tarball $tarball in directory $destdir\n";
     }
     change_directory $cwd;
@@ -57,7 +90,7 @@ sub unpack_tar_ball {
 sub md5_check {
     my $filename = shift;
     my $md5sum = shift;
-    return (`md5 < $filename` =~ $md5sum);
+    return (`$md5program < $filename` =~ $md5sum);
 }
 
 # Fetch a url via curl
@@ -91,8 +124,8 @@ sub fetch_wget_url {
     my @pargs = ("wget","$raw_url","-O$filename");
     if (system(@pargs) != 0) {
 	print  "Attempt to download file $filename using curl failed: $?\n";
-	return 0;
-    } 
+	return 0; 
+   } 
     if (md5_check($filename,$md5sum)) {
 	return 1;
     }
@@ -128,6 +161,7 @@ sub fetch_url {
     print "From this url          $raw_url\n";
     print "Save the file as       $filename\n";
     print "The MD5 sum should be  $md5sum\n";
+    die "stopped";
     return 0;
 }
 
@@ -140,6 +174,30 @@ sub setup_common {
     make_directory($base . "/include");
     make_directory("files");
     make_directory("build");
+    $md5program = find_program('MD5 Checksum Program','md5','openssl dgst -md5','md5sum');
+}
+
+sub make_package {
+    my $dir = shift;
+    my $prefix = shift;
+    my $platform_opts = shift;
+    my $target = shift;
+    my $cc = $platform_opts->{'compiler'};
+    my $ar = $platform_opts->{'archiver'};
+    my $ranlib = $platform_opts->{'ranlib'};
+    my $opts = $platform_opts->{'opts'};
+    my $fc = $platform_opts->{'fc'};
+    my $arflags = $platform_opts->{'arflags'};
+    my $mopts = $platform_opts->{'make opts'};
+    print "Configuring package in $dir...\n";
+    my $cwd = Cwd::cwd();
+    change_directory $dir;
+#   my $cmdm = "make CC=$cc AR='$ar $arflags' ARCH=$ar RANLIB=$ranlib FFLAGS=$opts OPTS=$opts FC=$fc FORTRAN=$fc LOADER=$fc ARCHFLAGS=$arflags ARFLAGS=$arflags $mopts $target";
+    my $cmdm = "make CC=$cc AR='$ar $arflags' ARCH=$ar RANLIB=$ranlib FFLAGS=$opts OPTS=$opts FC=$fc FORTRAN=$fc LOADER=$fc ARCHFLAGS=$arflags ARFLAGS='' $mopts $target";
+    print "Make command is $cmdm\n";
+    (system($cmdm) == 0) or die "make in $dir failed: $?\n";
+    change_directory $cwd;
+    print "Make complete\n";
 }
 
 sub configure_make_install {
@@ -152,10 +210,16 @@ sub configure_make_install {
     print "Configuring package in $dir...\n";
     my $cwd = Cwd::cwd();
     change_directory $dir;
-    delete_directory $buildsub;
-    make_directory $buildsub;
-    change_directory $buildsub;
-    my $cmdc = "../configure --prefix=$prefix $copts";
+    my $cmdc;
+    if ($buildsub) {
+	delete_directory $buildsub;
+	make_directory $buildsub;
+	change_directory $buildsub;
+	$cmdc = "../configure --prefix=$prefix $copts";
+    } else {
+	$cmdc = "./configure --prefix=$prefix $copts";
+    }
+    $cmdc = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  " . $cmdc;
     print "Configure command is $cmdc\n";
     (system($cmdc) == 0) or die "configure in $dir failed: $?\n";
     my $cmdm = "make $mopts";
@@ -164,6 +228,7 @@ sub configure_make_install {
     print "Installing...\n";
     (system("make install") == 0) or die "make install in $dir failed: $?\n";
     print "Installation complete...\n";
+    change_directory $cwd;
 }
 
 sub test_include_file {
@@ -179,13 +244,12 @@ sub test_include_file {
     print TESTHANDLE "#include <$header>\n";
     close (TESTHANDLE) || die "Unable to close test file..\n";
     my $cc = $platform_opts->{'compiler'};
-    my $ldflags = $platform_opts->{'ldflags'};
     my $cflags = $platform_opts->{'cflags'};
-    my $ret = (system("$cc -c $testname" . "_header.c $cflags $ldflags") == 0);
+    my $ret = (system("$cc -c $testname" . "_header.c $cflags") == 0);
     if (!$ret) {
 	print "Failed to find $header: $?\n";
     } else {
-	print "Found header file $header\n";
+	print "    Found header file $header\n";
     }
     change_directory($cwd);
     return $ret;
@@ -199,7 +263,7 @@ sub test_function {
     my $libname = shift;
     my $funcname = shift;
     my $platform_opts = shift;
-    print "Checking for package $prefix...\n";
+    print "Checking for package $testname...\n";
     my $cwd = Cwd::cwd();
     make_directory("tests");
     change_directory("tests");
@@ -215,12 +279,13 @@ sub test_function {
     close (TESTHANDLE) || die "Unable to close test file..\n";
     my $cc = $platform_opts->{'compiler'};
     my $ldflags = $platform_opts->{'ldflags'};
+    my $libs = $platform_opts->{'libs'};
     my $cflags = $platform_opts->{'cflags'};
-    my $ret = (system("$cc -o $testname $testname.c $cflags $ldflags -l$libname") == 0);
+    my $ret = (system("$cc -o $testname $testname.c $cflags $ldflags -l$libname $libs") == 0);
     if (!$ret) {
 	print "Failed to find $testname: $?\n";
     } else {
-	print "Found library for $testname\n";
+	print "    Found library for $testname\n";
     }
     change_directory($cwd);
     return $ret;
@@ -238,7 +303,10 @@ sub autopackage_check {
     my $md5sum = shift;
     my $builddir = shift;
     my $packagedir = shift;
-    
+
+    print "************************************************************\n";
+    print "    Handling package $packagename\n";
+    print "************************************************************\n";
     if (!test_function($prefix,$packagename,$libname,$testfunc,$platform_opts) ||
 	!test_include_file($prefix,$packagename,$include,$platform_opts)) {
 	fetch_url($url,$destfile,$md5sum);
@@ -250,20 +318,66 @@ sub autopackage_check {
     }
 }
 
-#fetch_url(@ARGV);
-#make_directory('foo/goo/hoo');
-#fetch_url('http://www.google.com/index.html','foo.dat','8b65c95c7aa57859ec015059a93344b8')
 my $prefix = shift;
 my $platform_opts;
 
-$platform_opts->{'configure opts'} = '';
+$platform_opts->{'configure opts'} = '--host=i386-mingw32 --build=i686-linux --disable-shared';
 $platform_opts->{'make opts'} = '';
 $platform_opts->{'compiler'} = 'gcc';
+$platform_opts->{'libs'} = "-llapack -lblas";
 $platform_opts->{'ldflags'} = "-L$prefix/lib";
 $platform_opts->{'cflags'} = "-I$prefix/include";
+$platform_opts->{'archiver'} = 'ar';
+$platform_opts->{'ranlib'} = 'ranlib';
+$platform_opts->{'opts'} = '-O2';
+$platform_opts->{'arflags'} = 'crv';
+$platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
+
+
+# TODO: LAPACK, ZLIB
 
 setup_common($prefix);
 
+my $need_qt4 = 0;
+my $rcc;
+my $moc;
+my $uic;
+eval {
+    $rcc = find_program('RCC','rcc4','rcc-qt4','rcc');
+    $moc = find_program('MOC','moc4','moc-qt4','moc');
+    $uic = find_program('UIC','uic4','uic-qt4','uic');
+};
+
+if ($@) {
+    print "One or more of rcc, moc, or uic was not found - will need to build Qt4.\n";
+    print "rcc - $rcc, moc - $moc, uic - $uic\n";
+    $need_qt4 = 1;
+}
+
+if (!$need_qt4) {
+    my $version_test = `$moc -v 2>&1`;
+    if ($version_test =~ /\(Qt (.*)\)/) {
+	my $version_number = $1;
+	$version_number =~ s|\.||g;
+	if ($version_number < 420) {
+	    print "Qt Version $version_number is not sufficient\n";
+	    $need_qt4 = 1;
+	}
+    } else {
+	print "Qt Version $version_test is not sufficient\n";
+	$need_qt4 = 1;
+    }
+}
+
+if ($need_qt4) {
+    fetch_url('ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.2.3.tar.gz',
+	      'files/qt-x11-opensource-src-4.2.3.tar.gz','13f12bf58a32ebf15837fcd605cb3c99');
+    unpack_tar_ball('files/qt-x11-opensource-src-4.2.3.tar.gz','build');
+    my $save_config_opts = $platform_opts->{'configure opts'};
+    $platform_opts->{'configure opts'} .= " -fast -no-qt3support";
+    configure_make_install("build/qt-x11-opensource-src-4.2.3",$prefix,"",$platform_opts);
+    $platform_opts->{'configure opts'} = $save_config_opts;
+}
 
 autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
 		  $platform_opts,
@@ -271,11 +385,11 @@ autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
 		  'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
 		  'build','pcre-7.0');
 
-#autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
-#		  $platform_opts,
-#		  'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
-#		  'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
-#		  'build','portaudio');
+autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+		  $platform_opts,
+		  'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
+		  'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
+		  'build','portaudio');
 
 my $save_platform_opts = $platform_opts->{'configure opts'};
 $platform_opts->{'configure opts'} .= " --enable-single";
@@ -298,10 +412,56 @@ autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
 		  'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
 		  'build','ffcall-1.10');
 
-simplemake_check($prefix,'arpack','arpack','znaupd_',$platform_opts,
-		 'http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
-		 'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
+print "************************************************************\n";
+print "    Handling package ARPACK\n";
+print "************************************************************\n";
 
-		 
+if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
+    fetch_url('http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
+	      'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
+    unpack_tar_ball('files/arpack96.tar.Z','build');
+    my $cwd = Cwd::cwd();    
+    make_package('build/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/build/ARPACK/libarpack.a all");
+    copy_file('build/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
+    test_function($prefix,'arpack','arpack','znaupd_',$platform_opts) or
+	die "Installation of ARPACK failed";
+}
 
+print "************************************************************\n";
+print "    Handling package SparseSuite\n";
+print "************************************************************\n";
 
+my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
+if ($amd_found) {
+    $platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+}
+my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
+				  'umfpack_zl_solve',$platform_opts);
+if (!$amd_found || !$umfpack_found) {
+    fetch_url('http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-2.3.1.tar.gz',
+	      'files/SuiteSparse-2.3.1.tar.gz','52d5088aaae7231b8c540657ccaf3625');
+    unpack_tar_ball('files/SuiteSparse-2.3.1.tar.gz','build');
+    make_package('build/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
+    make_package('build/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
+    copy_file('build/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
+    copy_file('build/SuiteSparse/UMFPACK/Lib/libumfpack.a',"$prefix/lib/libumfpack.a");
+    copy_file('build/SuiteSparse/AMD/Include/amd.h',"$prefix/include/amd.h");
+    copy_files('build/SuiteSparse/UMFPACK/Include/*.h',"$prefix/include");
+    copy_file('build/SuiteSparse/UFconfig/UFconfig.h',"$prefix/include/UFconfig.h");
+    test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts) or
+	die "Installation of AMD package from sparse suite failed!\n";
+    $platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+    test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
+	die "Installation of UMFPACK package from sparse suite package failed!\n";
+}
+
+print "************************************************************\n";
+print "    Starting FreeMat Installation\n";
+print "************************************************************\n";
+
+fetch_url('http://downloads.sf.net/freemat/FreeMat-3.2.tar.gz',
+	  'files/FreeMat-3.2.tar.gz','61c99ce56fcc244a4108b26b3ecb6d9b');
+$platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
+    " CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
+unpack_tar_ball('files/FreeMat-3.2.tar.gz','build');
+configure_make_install('build/FreeMat-3.2',$prefix,'build',$platform_opts);

@@ -218,7 +218,7 @@ void PAShutdown() {
     Pa_Sleep(100);
 #endif
 
-#ifdef HAVE_PORTAUDIO19
+#ifdef HAVE_PORTAUDIO18
   while ( ( err = Pa_StreamActive( stream ) ) == 1 )
     Pa_Sleep(100);
 #endif
@@ -263,9 +263,9 @@ void DoPlayBack(const void *data, int count, int channels,
 #endif
 #ifdef HAVE_PORTAUDIO18
   err = Pa_OpenStream(&stream,
-		      paNoDevice,
-		      0,
-		      0,
+		      paNoDevice, // No input device
+		      0,          // No input
+		      SampleFormat,
 		      NULL,
 		      Pa_GetDefaultOutputDeviceID(),
 		      channels,
@@ -273,8 +273,8 @@ void DoPlayBack(const void *data, int count, int channels,
 		      NULL,
 		      Rate,
 		      FRAMES_PER_BUFFER,
-		      count,
-		      paNoFlag,
+		      0,
+		      paClipOff,
 		      DoPlayBackCallback,
 		      pb_obj);
 #endif
@@ -326,12 +326,12 @@ void DoRecord(void *data, int count, int channels,
 		      NULL,
 		      paNoDevice,
 		      0,
-		      0,
+		      SampleFormat,
 		      NULL,
 		      Rate,
 		      FRAMES_PER_BUFFER,
 		      0,
-		      paNoFlag,
+		      0,
 		      DoRecordCallback,
 		      pb_obj);
 #endif

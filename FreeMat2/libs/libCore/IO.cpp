@@ -38,7 +38,7 @@
 #include <QFileInfo>
 #include "Utils.hpp"
 #include "PathSearch.hpp"
-#if HAVE_PORTAUDIO
+#if HAVE_PORTAUDIO19 || HAVE_PORTAUDIO18
 #include "portaudio.h"
 #endif
 #include "Print.hpp"
@@ -71,7 +71,6 @@ void InitializeFileSubsystem() {
   init = true;
 }
 
-#if HAVE_PORTAUDIO
 
 const int FRAMES_PER_BUFFER = 64;
 
@@ -86,11 +85,23 @@ public:
   Array x;
 };
 
+#if HAVE_PORTAUDIO19 || HAVE_PORTAUDIO18
+
+#if HAVE_PORTAUDIO19
 static int DoPlayBackCallback(const void *, void *output,
 			      unsigned long framesPerBuffer,
 			      const PaStreamCallbackTimeInfo*,
 			      PaStreamCallbackFlags,
 			      void *userData) {
+#endif
+
+#if HAVE_PORTAUDIO18
+static int DoPlayBackCallback(void *, void *output,
+			      unsigned long framesPerBuffer,
+			      PaTimestamp,
+			      void *userData) {
+#endif
+
   PlayBack *pb = (PlayBack*) userData;
   char *out = (char*) output;
   const char *dp = pb->data;
@@ -139,11 +150,21 @@ static int DoPlayBackCallback(const void *, void *output,
   return finished;
 }
 
+#if HAVE_PORTAUDIO19
 static int DoRecordCallback(const void *input, void *,
 			    unsigned long framesPerBuffer,
 			    const PaStreamCallbackTimeInfo*,
 			    PaStreamCallbackFlags,
 			    void *userData) {
+#endif
+
+#if HAVE_PORTAUDIO18
+static int DoRecordCallback(void *input, void *,
+			    unsigned long framesPerBuffer,
+			    PaTimestamp,
+			    void *userData) {
+#endif
+
   PlayBack *pb = (PlayBack*) userData;
   char *in = (char*) input;
   char *dp = pb->data;
@@ -192,8 +213,16 @@ void PAInit() {
 }
 
 void PAShutdown() {
+#ifdef HAVE_PORTAUDIO19
   while ( ( err = Pa_IsStreamActive( stream ) ) == 1 )
     Pa_Sleep(100);
+#endif
+
+#ifdef HAVE_PORTAUDIO19
+  while ( ( err = Pa_StreamActive( stream ) ) == 1 )
+    Pa_Sleep(100);
+#endif
+
   err = Pa_CloseStream(stream);
   if (err != paNoError) 
     throw Exception(string("An error occured while using the portaudio stream: ") + Pa_GetErrorText(err));
@@ -208,12 +237,6 @@ void DoPlayBack(const void *data, int count, int channels,
   if (RunningStream) 
     PAShutdown();
   PAInit();
-  PaStreamParameters outputParameters;
-  outputParameters.device = Pa_GetDefaultOutputDevice();
-  outputParameters.channelCount = channels;
-  outputParameters.sampleFormat = SampleFormat;
-  outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
-  outputParameters.hostApiSpecificStreamInfo = NULL;
   pb_obj = new PlayBack;
   pb_obj->x = x;
   pb_obj->data = (char *)data;
@@ -222,6 +245,13 @@ void DoPlayBack(const void *data, int count, int channels,
   pb_obj->ptr = 0;
   pb_obj->framesToGo = count;
   pb_obj->elementSize = elementSize;
+#ifdef HAVE_PORTAUDIO19
+  PaStreamParameters outputParameters;
+  outputParameters.device = Pa_GetDefaultOutputDevice();
+  outputParameters.channelCount = channels;
+  outputParameters.sampleFormat = SampleFormat;
+  outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
+  outputParameters.hostApiSpecificStreamInfo = NULL;
   err = Pa_OpenStream(&stream,
 		      NULL, /* no input */
 		      &outputParameters,
@@ -230,6 +260,24 @@ void DoPlayBack(const void *data, int count, int channels,
 		      paNoFlag,
 		      DoPlayBackCallback,
 		      pb_obj);
+#endif
+#ifdef HAVE_PORTAUDIO18
+  err = Pa_OpenStream(&stream,
+		      paNoDevice,
+		      0,
+		      0,
+		      NULL,
+		      Pa_GetDefaultOutputDeviceID(),
+		      channels,
+		      SampleFormat,
+		      NULL,
+		      Rate,
+		      FRAMES_PER_BUFFER,
+		      count,
+		      paNoFlag,
+		      DoPlayBackCallback,
+		      pb_obj);
+#endif
   if (err != paNoError) 
     throw Exception(string("An error occured while using the portaudio stream: ") + Pa_GetErrorText(err));
   err = Pa_StartStream(stream);
@@ -247,12 +295,6 @@ void DoRecord(void *data, int count, int channels,
   if (RunningStream) 
     PAShutdown();
   PAInit();
-  PaStreamParameters inputParameters;
-  inputParameters.device = Pa_GetDefaultInputDevice();
-  inputParameters.channelCount = channels;
-  inputParameters.sampleFormat = SampleFormat;
-  inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
-  inputParameters.hostApiSpecificStreamInfo = NULL;
   pb_obj = new PlayBack;
   pb_obj->data = (char *)data;
   pb_obj->length = count;
@@ -260,6 +302,13 @@ void DoRecord(void *data, int count, int channels,
   pb_obj->ptr = 0;
   pb_obj->framesToGo = count;
   pb_obj->elementSize = elementSize;
+#if HAVE_PORTAUDIO19
+  PaStreamParameters inputParameters;
+  inputParameters.device = Pa_GetDefaultInputDevice();
+  inputParameters.channelCount = channels;
+  inputParameters.sampleFormat = SampleFormat;
+  inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
+  inputParameters.hostApiSpecificStreamInfo = NULL;
   err = Pa_OpenStream(&stream,
 		      &inputParameters,
 		      NULL,
@@ -268,6 +317,24 @@ void DoRecord(void *data, int count, int channels,
 		      paNoFlag,
 		      DoRecordCallback,
 		      pb_obj);
+#endif
+#if HAVE_PORTAUDIO18
+  err = Pa_OpenStream(&stream,
+		      Pa_GetDefaultInputDeviceID(),
+		      channels,
+		      SampleFormat,
+		      NULL,
+		      paNoDevice,
+		      0,
+		      0,
+		      NULL,
+		      Rate,
+		      FRAMES_PER_BUFFER,
+		      0,
+		      paNoFlag,
+		      DoRecordCallback,
+		      pb_obj);
+#endif
   if (err != paNoError) 
     throw Exception(string("An error occured while using the portaudio stream: ") + Pa_GetErrorText(err));
   err = Pa_StartStream(stream);
@@ -303,7 +370,7 @@ void DoRecord(void *data, int count, int channels,
 //a former playback is still issuing).
 //!
 ArrayVector WavPlayFunction(int nargout, const ArrayVector& argv) {
-#if HAVE_PORTAUDIO
+#if HAVE_PORTAUDIO18 || HAVE_PORTAUDIO19
   if(argv.size() == 0)
     throw Exception("wavplay requires at least one argument (the audio data to playback)");
   Array y(argv[0]);
@@ -376,7 +443,7 @@ ArrayVector WavPlayFunction(int nargout, const ArrayVector& argv) {
 //Valid choices are @|float, double, int32, int16, int8, uint8|.
 //!
 ArrayVector WavRecordFunction(int nargout, const ArrayVector& argv) {
-#if HAVE_PORTAUDIO
+#if HAVE_PORTAUDIO18 || HAVE_PORTAUDIO19
   if (argv.size() < 1)
     throw Exception("wavrecord requires at least 1 argument (the number of samples to record)");
   int samples = ArrayToInt32(argv[0]);

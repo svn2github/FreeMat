@@ -304,13 +304,31 @@ extern_flags=""
 need_extern="no"
 LIBS="$LIBS $FLIBS"
 
-AC_CHECK_LIB(portaudio,Pa_OpenStream,found_portaudio="yes",found_portaudio="no")
-AC_CHECK_HEADER(portaudio.h,[],found_portaudio="no")
+AC_CHECK_LIB(portaudio,Pa_GetDefaultInputDevice,found_portaudio19="yes",found_portaudio19="no")
+AC_CHECK_HEADER(portaudio.h,[],found_portaudio19="no")
 
-if test x"$found_portaudio" == xyes; then
+if test x"$found_portaudio19" == xyes; then
   LIBS="-lportaudio $LIBS"
   CFLAGS="$CFLAGS"
-  AC_DEFINE(HAVE_PORTAUDIO, 1, [Set to 1 if you have libportaudio])
+  AC_DEFINE(HAVE_PORTAUDIO19, 1, [Set to 1 if you have libportaudio (v19 API)])
+fi
+
+if test x"$found_portaudio19" != xyes; then
+AC_CHECK_LIB(portaudio,Pa_OpenStream,found_portaudio18="yes",found_portaudio18="no")
+AC_CHECK_HEADER(portaudio.h,[],found_portaudio18="no")
+
+if test x"$found_portaudio18" == xyes; then
+  LIBS="-lportaudio $LIBS"
+  CFLAGS="$CFLAGS"
+  AC_DEFINE(HAVE_PORTAUDIO18, 1, [Set to 1 if you have libportaudio (v18 API)])
+fi
+
+fi
+
+if (test x"$found_portaudio19" == xyes) || (test x"$found_portaudio18" == xyes); then
+  found_portaudio="yes";
+else
+  found_portaudio="no";
 fi
 
 AC_CHECK_LIB(pcre,pcre_compile,found_pcre="yes",found_pcre="no")

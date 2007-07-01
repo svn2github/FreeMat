@@ -1,7 +1,5 @@
 SUBDIRS = libs src images tools
 
-DISTCHECK_CONFIGURE_FLAGS = LDFLAGS=-L/usr/lib/atlas CPPFLAGS=-I/usr/include/ufsparse
-
 resourcedir = $(datadir)/$(PACKAGE)-$(VERSION)
 
 EXTRA_DIST = help toolbox

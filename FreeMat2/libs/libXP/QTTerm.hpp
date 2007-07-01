@@ -77,9 +77,10 @@ public:
   void clearSelection();
 protected:
   void ensureCursorVisible();
-  void setChar(char t);
+  void setChar(char t, bool flush);
   void nextLine();
   void keyPressEvent(QKeyEvent *e);
+  bool event(QEvent *e);
   void paintEvent(QPaintEvent *e);
   void resizeEvent(QResizeEvent *e);
   void focusOutEvent(QFocusEvent *e);

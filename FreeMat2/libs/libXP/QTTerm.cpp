@@ -22,6 +22,7 @@
 #include <qclipboard.h>
 #include <math.h>
 #include <QtGui>
+#include <QEvent>
 
 QTTerm::QTTerm() {
   setMinimumSize(50,50);
@@ -75,7 +76,7 @@ void QTTerm::focusInEvent(QFocusEvent *e) {
   blinkEnable = true;
 }
 
-void QTTerm::setChar(char t) {
+void QTTerm::setChar(char t, bool flush) {
   if (t == '\r') {
     MoveBOL();
     return;
@@ -91,8 +92,12 @@ void QTTerm::setChar(char t) {
   if (cursor_x >= m_term_width) {
     nextLine(); 
   } else {
-    ensureCursorVisible();
-    viewport()->update();
+    if (flush) {
+      ensureCursorVisible();
+      viewport()->update(QRect(((cursor_x)-1)*m_char_w,
+			       (cursor_y-verticalScrollBar()->value())*m_char_h,
+			       m_char_w,m_char_h));
+    }
   }
   blinkEnable = true;
   m_blink_skip = true;
@@ -324,6 +329,17 @@ void QTTerm::drawFragment(QPainter *paint, QString todraw, char flags, int row, 
 #endif
 
 
+bool QTTerm::event(QEvent *e) {
+  if (e->type() == QEvent::KeyPress) {
+    QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+    if (ke->key() == Qt::Key_Tab) {
+      emit OnChar(KM_TAB);
+      return true;
+    }
+  }
+  return QAbstractScrollArea::event(e);
+}
+
 void QTTerm::keyPressEvent(QKeyEvent *e) {
   int keycode = e->key(); 
   if (!keycode) return;
@@ -376,7 +392,7 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
 
 void QTTerm::OutputRawString(string txt) {
   for (int i=0;i<txt.size();i++)
-    setChar(txt[i]);
+    setChar(txt[i],true);
 }
 
 void QTTerm::calcGeometry() {

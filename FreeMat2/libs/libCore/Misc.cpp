@@ -1115,7 +1115,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 10*max(diag(abs(d)))*feps*i;
+//  bnd = 100*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1131,7 +1131,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 10*max(diag(abs(d)))*eps*i;
+//  bnd = 100*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1147,7 +1147,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 10*max(diag(abs(d)))*feps*i;
+//  bnd = 100*max(diag(abs(d)))*feps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
@@ -1163,7 +1163,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  [v,d] = eig(a);
 //  emat = a*v - v*d;
 //  er = max(abs(emat(:)));
-//  bnd = 10*max(diag(abs(d)))*eps*i;
+//  bnd = 100*max(diag(abs(d)))*eps*i;
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);

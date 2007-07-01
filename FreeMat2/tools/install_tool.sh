@@ -380,6 +380,13 @@ SetupPCRE()
     rm -rf $BASE/Build/lib/lib*.dylib
 }
 
+SetupXWinPortAudio()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall $PORTAUDIO_FILE http://www.portaudio.com/archives $PORTAUDIO Root
+    ConfigureMakeInstall $PORTAUDIO/build "--prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$PORTAUDIO/config.guess)" .. XRoot
+}
+
 SetupPortAudio()
 {
     SetupCommon
@@ -915,6 +922,7 @@ subdirectory.  Here are the tasks manages by this script.
       --xwin-nsis        Setup the Win32 cross of NSIS
       --xwin-zlib        Setup the Win32 cross of zlib
       --xwin-pcre        Setup the Win32 cross of PCRE
+      --xwin-portaudio   Setup the Win32 cross of Portaudio
       --xwin-freemat     Build the Win32 cross of FreeMat
       --xwin-all         Setup the Win32 cross compilation (all steps)
 
@@ -972,6 +980,7 @@ for arg
       --xwin-nsis)     SetupXWinNSIS ;;
       --xwin-zlib)     SetupXWinZlib ;;
       --xwin-pcre)     SetupXWinPcre ;;
+      --xwin-portaudio)SetupXWinPortAudio ;;
       --xwin-freemat)  SetupXWinFreeMat ;;
       --xwin-all)      SetupXWinAll ;;
       --fftw)          SetupFFTW ;;

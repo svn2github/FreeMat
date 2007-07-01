@@ -2518,9 +2518,9 @@ ArrayVector SaveASCIIFunction(string filename, rvstring names, bool tabsMode,
 //who
 //save loadsave.dat
 //@>
-//Next, we clear all of the variables, and then load them back from the file.
+//Next, we clear the variables, and then load them back from the file.
 //@<
-//clear all
+//clear D s x z
 //who
 //load loadsave.dat
 //who
@@ -3003,9 +3003,9 @@ ArrayVector LoadNativeFunction(int nargout, string filename,
 //who
 //save loadsave.dat
 //@>
-//Next, we clear all of the variables, and then load them back from the file.
+//Next, we clear the variables, and then load them back from the file.
 //@<
-//clear all
+//clear D s x z
 //who
 //load loadsave.dat
 //who

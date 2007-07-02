@@ -830,6 +830,18 @@ SetupXMacFFTW()
     ConfigureMakeInstall $FFTW/double "--prefix=$PREFIX CC=powerpc-apple-darwin8-gcc-4.0.1" .. XRoot 
 }
 
+
+SetupXMacPortAudio()
+{
+    SetupXWinCommon
+    DownloadAndUnpackTarBall $PORTAUDIO_FILE http://www.portaudio.com/archives $PORTAUDIO XRoot
+    cd $BASE/XRoot/$PORTAUDIO
+    make -f Makefile.darwin CC=powerpc-apple-darwin8-gcc-4.0.1
+    cp lib/libportaudio.a $BASE/Cross/lib/.
+    ranlib $BASE/Cross/lib/libportaudio.a
+    cp include/*.h $BASE/Cross/include/.
+}
+
 SetupXMacPCRE()
 {
     SetupXWinCommon
@@ -1009,6 +1021,7 @@ for arg
       --xmac-arpack)   SetupXMacARPACK ;;
       --xmac-freemat)  SetupXMacFreeMat ;;
       --xmac-pcre)     SetupXMacPCRE ;;
+      --xmac-portaudio)     SetupXMacPortAudio ;;
       --mac-bundle)    MakeMacBundle ;;
       --mac-release)   SetupMacRelease ;;
       --inplace)       SetupInplaceBuild ;;

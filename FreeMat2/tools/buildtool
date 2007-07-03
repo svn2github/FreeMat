@@ -37,6 +37,14 @@ sub make_directory {
     }
 }
 
+# Symbolic link
+sub sym_link {
+    my $first = shift;
+    my $second = shift;
+    print "Linking $first and $second\n";
+    symlink($first,$second) or die "symlink failed: $!\n";
+}
+
 # Copy a file
 sub copy_file {
     my $source = shift;
@@ -125,7 +133,7 @@ sub fetch_wget_url {
     if (system(@pargs) != 0) {
 	print  "Attempt to download file $filename using curl failed: $?\n";
 	return 0; 
-   } 
+    } 
     if (md5_check($filename,$md5sum)) {
 	return 1;
     }
@@ -318,150 +326,222 @@ sub autopackage_check {
     }
 }
 
-my $prefix = shift;
-my $platform_opts;
 
-$platform_opts->{'configure opts'} = '--host=i386-mingw32 --build=i686-linux --disable-shared';
-$platform_opts->{'make opts'} = '';
-$platform_opts->{'compiler'} = 'gcc';
-$platform_opts->{'libs'} = "-llapack -lblas";
-$platform_opts->{'ldflags'} = "-L$prefix/lib";
-$platform_opts->{'cflags'} = "-I$prefix/include";
-$platform_opts->{'archiver'} = 'ar';
-$platform_opts->{'ranlib'} = 'ranlib';
-$platform_opts->{'opts'} = '-O2';
-$platform_opts->{'arflags'} = 'crv';
-$platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
+sub job_setup_mingw_cross {
+    my $prefix = shift;
+    my $platform_opts;
+
+    $platform_opts->{'configure opts'} = '--disable-shared';
+    $platform_opts->{'make opts'} = '';
+    $platform_opts->{'compiler'} = 'gcc';
+    $platform_opts->{'libs'} = "-llapack -lblas";
+    $platform_opts->{'ldflags'} = "-L$prefix/lib";
+    $platform_opts->{'cflags'} = "-I$prefix/include";
+    $platform_opts->{'archiver'} = 'ar';
+    $platform_opts->{'ranlib'} = 'ranlib';
+    $platform_opts->{'opts'} = '-O2';
+    $platform_opts->{'arflags'} = 'crv';
+    $platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
+
+    setup_common($prefix);
+    my $ming = "i686-mingw32";
+    my $ming_target = "--target=$ming";
+    fetch_url('http://downloads.sf.net/mingw/binutils-2.16.91-20060119-1-src.tar.gz',
+	      'files/binutils-2.16.91-20060119-1-src.tar.gz','42e3a665111121075480244cafc27ce7');
+    unpack_tar_ball('files/binutils-2.16.91-20060119-1-src.tar.gz','cross');
+    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . ' ' . $ming_target;
+    configure_make_install("cross/binutils-2.16.91-20060119-1",$prefix,"cross",$platform_opts);
+    fetch_url('http://downloads.sf.net/mingw/gcc-core-3.4.5-20060117-1-src.tar.gz',
+	      'files/gcc-core-3.4.5-20060117-1-src.tar.gz','b72bffc6e7d5c7d1de099ad76ef0d45d');
+    unpack_tar_ball('files/gcc-core-3.4.5-20060117-1-src.tar.gz','cross');
+    fetch_url('http://downloads.sf.net/mingw/gcc-g++-3.4.5-20060117-1-src.tar.gz',
+	      'files/gcc-g++-3.4.5-20060117-1-src.tar.gz','42c92b923adfe4c8943f05c326af1736');
+    unpack_tar_ball('files/gcc-g++-3.4.5-20060117-1-src.tar.gz','cross');
+    fetch_url('http://downloads.sf.net/mingw/gcc-g77-3.4.5-20060117-1-src.tar.gz',
+	      'files/gcc-g77-3.4.5-20060117-1-src.tar.gz','37e2558839f70ff2dd8c16c359e5e327');
+    unpack_tar_ball('files/gcc-g77-3.4.5-20060117-1-src.tar.gz','cross');
+    fetch_url('http://downloads.sf.net/mingw/mingw-runtime-3.9-src.tar.gz',
+	      'files/mingw-runtime-3.9-src.tar.gz','9111435bbc9b78b5a5f08ac8d6310a5a');
+    unpack_tar_ball('files/mingw-runtime-3.9-src.tar.gz','cross');
+    fetch_url('http://downloads.sf.net/mingw/w32api-3.6-src.tar.gz',
+	      'files/w32api-3.6-src.tar.gz','32ad56bd7605c876357823470e3e2667');
+    unpack_tar_ball('files/w32api-3.6-src.tar.gz','cross');
+    symlink("$prefix/include","$prefix/$ming/include");
+    copy_files("cross/mingw-runtime-3.9/include/*","$prefix/include");
+    copy_files("cross/win32-api-3.6/include/*","$prefix/include");
+    
+    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . ' ' . $ming_target;
+#    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c" . XRoot
+#    ConfigureMakeInstall $XWIN_WIN32API "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" . XRoot
+#    Link $BASE/XRoot/$XWIN_WIN32API $BASE/XRoot/w32api
+#    mv $PREFIX/$MINGW_TARGET/lib/* $PREFIX/lib
+#    rmdir $PREFIX/$MINGW_TARGET/lib
+#    Link $PREFIX/lib $PREFIX/$MINGW_TARGET/lib
+#    cd $BASE/XRoot/$XWIN_MINGW_RUNTIME 
+#    find . -name configure -exec dos2unix \{\} \;
+#    dos2unix config.guess config.sub mkinstalldirs
+#    cp $PREFIX/lib/*.a $BASE/XRoot/$XWIN_MINGW_RUNTIME/mingwex/.
+#    ConfigureMakeInstall $XWIN_MINGW_RUNTIME "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" . XRoot
+#    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c,c++,f77" . XRoot
+}
+
+sub job_native_freemat {
+    my $prefix = shift;
+    my $platform_opts;
+
+    $platform_opts->{'configure opts'} = '--disable-shared';
+    $platform_opts->{'make opts'} = '';
+    $platform_opts->{'compiler'} = 'gcc';
+    $platform_opts->{'libs'} = "-llapack -lblas";
+    $platform_opts->{'ldflags'} = "-L$prefix/lib";
+    $platform_opts->{'cflags'} = "-I$prefix/include";
+    $platform_opts->{'archiver'} = 'ar';
+    $platform_opts->{'ranlib'} = 'ranlib';
+    $platform_opts->{'opts'} = '-O2';
+    $platform_opts->{'arflags'} = 'crv';
+    $platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
 
 
 # TODO: LAPACK, ZLIB
 
-setup_common($prefix);
+    setup_common($prefix);
 
-my $need_qt4 = 0;
-my $rcc;
-my $moc;
-my $uic;
-eval {
-    $rcc = find_program('RCC','rcc4','rcc-qt4','rcc');
-    $moc = find_program('MOC','moc4','moc-qt4','moc');
-    $uic = find_program('UIC','uic4','uic-qt4','uic');
-};
+    my $need_qt4 = 0;
+    my $rcc;
+    my $moc;
+    my $uic;
+    eval {
+	$rcc = find_program('RCC','rcc4','rcc-qt4','rcc');
+	$moc = find_program('MOC','moc4','moc-qt4','moc');
+	$uic = find_program('UIC','uic4','uic-qt4','uic');
+    };
 
-if ($@) {
-    print "One or more of rcc, moc, or uic was not found - will need to build Qt4.\n";
-    print "rcc - $rcc, moc - $moc, uic - $uic\n";
-    $need_qt4 = 1;
-}
-
-if (!$need_qt4) {
-    my $version_test = `$moc -v 2>&1`;
-    if ($version_test =~ /\(Qt (.*)\)/) {
-	my $version_number = $1;
-	$version_number =~ s|\.||g;
-	if ($version_number < 420) {
-	    print "Qt Version $version_number is not sufficient\n";
-	    $need_qt4 = 1;
-	}
-    } else {
-	print "Qt Version $version_test is not sufficient\n";
+    if ($@) {
+	print "One or more of rcc, moc, or uic was not found - will need to build Qt4.\n";
+	print "rcc - $rcc, moc - $moc, uic - $uic\n";
 	$need_qt4 = 1;
     }
+
+    if (!$need_qt4) {
+	my $version_test = `$moc -v 2>&1`;
+	if ($version_test =~ /\(Qt (.*)\)/) {
+	    my $version_number = $1;
+	    $version_number =~ s|\.||g;
+	    if ($version_number < 420) {
+		print "Qt Version $version_number is not sufficient\n";
+		$need_qt4 = 1;
+	    }
+	} else {
+	    print "Qt Version $version_test is not sufficient\n";
+	    $need_qt4 = 1;
+	}
+    }
+
+    if ($need_qt4) {
+	fetch_url('ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.2.3.tar.gz',
+		  'files/qt-x11-opensource-src-4.2.3.tar.gz','13f12bf58a32ebf15837fcd605cb3c99');
+	unpack_tar_ball('files/qt-x11-opensource-src-4.2.3.tar.gz','build');
+	my $save_config_opts = $platform_opts->{'configure opts'};
+	$platform_opts->{'configure opts'} .= " -fast -no-qt3support";
+	configure_make_install("build/qt-x11-opensource-src-4.2.3",$prefix,"",$platform_opts);
+	$platform_opts->{'configure opts'} = $save_config_opts;
+    }
+
+    autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
+		      $platform_opts,
+		      'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.0.tar.gz',
+		      'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
+		      'build','pcre-7.0');
+
+    autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+		      $platform_opts,
+		      'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
+		      'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
+		      'build','portaudio');
+
+    my $save_platform_opts = $platform_opts->{'configure opts'};
+    $platform_opts->{'configure opts'} .= " --enable-single";
+    autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+		      $platform_opts,
+		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
+		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
+		      'build_single','fftw-3.1.2');
+    $platform_opts->{'configure opts'} = $save_platform_opts;
+
+    autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+		      $platform_opts,
+		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
+		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
+		      'build_double','fftw-3.1.2');
+
+    autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
+		      $platform_opts,
+		      'ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz',
+		      'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
+		      'build','ffcall-1.10');
+
+    print "************************************************************\n";
+    print "    Handling package ARPACK\n";
+    print "************************************************************\n";
+
+    if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
+	fetch_url('http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
+		  'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
+	unpack_tar_ball('files/arpack96.tar.Z','build');
+	my $cwd = Cwd::cwd();    
+	make_package('build/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/build/ARPACK/libarpack.a all");
+	copy_file('build/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
+	test_function($prefix,'arpack','arpack','znaupd_',$platform_opts) or
+	    die "Installation of ARPACK failed";
+    }
+
+    print "************************************************************\n";
+    print "    Handling package SparseSuite\n";
+    print "************************************************************\n";
+
+    my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
+    if ($amd_found) {
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+    }
+    my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
+				      'umfpack_zl_solve',$platform_opts);
+    if (!$amd_found || !$umfpack_found) {
+	fetch_url('http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-2.3.1.tar.gz',
+		  'files/SuiteSparse-2.3.1.tar.gz','52d5088aaae7231b8c540657ccaf3625');
+	unpack_tar_ball('files/SuiteSparse-2.3.1.tar.gz','build');
+	make_package('build/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
+	make_package('build/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
+	copy_file('build/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
+	copy_file('build/SuiteSparse/UMFPACK/Lib/libumfpack.a',"$prefix/lib/libumfpack.a");
+	copy_file('build/SuiteSparse/AMD/Include/amd.h',"$prefix/include/amd.h");
+	copy_files('build/SuiteSparse/UMFPACK/Include/*.h',"$prefix/include");
+	copy_file('build/SuiteSparse/UFconfig/UFconfig.h',"$prefix/include/UFconfig.h");
+	test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts) or
+	    die "Installation of AMD package from sparse suite failed!\n";
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
+	    die "Installation of UMFPACK package from sparse suite package failed!\n";
+    }
+
+    print "************************************************************\n";
+    print "    Starting FreeMat Installation\n";
+    print "************************************************************\n";
+
+    fetch_url('http://downloads.sf.net/freemat/FreeMat-3.2.tar.gz',
+	      'files/FreeMat-3.2.tar.gz','61c99ce56fcc244a4108b26b3ecb6d9b');
+    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
+	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
+    unpack_tar_ball('files/FreeMat-3.2.tar.gz','build');
+    configure_make_install('build/FreeMat-3.2',$prefix,'build',$platform_opts);
 }
 
-if ($need_qt4) {
-    fetch_url('ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.2.3.tar.gz',
-	      'files/qt-x11-opensource-src-4.2.3.tar.gz','13f12bf58a32ebf15837fcd605cb3c99');
-    unpack_tar_ball('files/qt-x11-opensource-src-4.2.3.tar.gz','build');
-    my $save_config_opts = $platform_opts->{'configure opts'};
-    $platform_opts->{'configure opts'} .= " -fast -no-qt3support";
-    configure_make_install("build/qt-x11-opensource-src-4.2.3",$prefix,"",$platform_opts);
-    $platform_opts->{'configure opts'} = $save_config_opts;
+my $prefix = shift;
+my $job = shift;
+
+if ($job =~ "native-freemat") {
+    job_native_freemat($prefix);
 }
 
-autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
-		  $platform_opts,
-		  'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.0.tar.gz',
-		  'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
-		  'build','pcre-7.0');
-
-autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
-		  $platform_opts,
-		  'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
-		  'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
-		  'build','portaudio');
-
-my $save_platform_opts = $platform_opts->{'configure opts'};
-$platform_opts->{'configure opts'} .= " --enable-single";
-autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
-		  $platform_opts,
-		  'http://www.fftw.org/fftw-3.1.2.tar.gz',
-		  'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		  'build_single','fftw-3.1.2');
-$platform_opts->{'configure opts'} = $save_platform_opts;
-
-autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
-		  $platform_opts,
-		  'http://www.fftw.org/fftw-3.1.2.tar.gz',
-		  'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		  'build_double','fftw-3.1.2');
-
-autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
-		  $platform_opts,
-		  'ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz',
-		  'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
-		  'build','ffcall-1.10');
-
-print "************************************************************\n";
-print "    Handling package ARPACK\n";
-print "************************************************************\n";
-
-if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
-    fetch_url('http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
-	      'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
-    unpack_tar_ball('files/arpack96.tar.Z','build');
-    my $cwd = Cwd::cwd();    
-    make_package('build/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/build/ARPACK/libarpack.a all");
-    copy_file('build/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
-    test_function($prefix,'arpack','arpack','znaupd_',$platform_opts) or
-	die "Installation of ARPACK failed";
+if ($job =~ "setup-mingw-cross") {
+    job_setup_mingw_cross($prefix);
 }
-
-print "************************************************************\n";
-print "    Handling package SparseSuite\n";
-print "************************************************************\n";
-
-my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
-if ($amd_found) {
-    $platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
-}
-my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
-				  'umfpack_zl_solve',$platform_opts);
-if (!$amd_found || !$umfpack_found) {
-    fetch_url('http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-2.3.1.tar.gz',
-	      'files/SuiteSparse-2.3.1.tar.gz','52d5088aaae7231b8c540657ccaf3625');
-    unpack_tar_ball('files/SuiteSparse-2.3.1.tar.gz','build');
-    make_package('build/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
-    make_package('build/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
-    copy_file('build/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
-    copy_file('build/SuiteSparse/UMFPACK/Lib/libumfpack.a',"$prefix/lib/libumfpack.a");
-    copy_file('build/SuiteSparse/AMD/Include/amd.h',"$prefix/include/amd.h");
-    copy_files('build/SuiteSparse/UMFPACK/Include/*.h',"$prefix/include");
-    copy_file('build/SuiteSparse/UFconfig/UFconfig.h',"$prefix/include/UFconfig.h");
-    test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts) or
-	die "Installation of AMD package from sparse suite failed!\n";
-    $platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
-    test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
-	die "Installation of UMFPACK package from sparse suite package failed!\n";
-}
-
-print "************************************************************\n";
-print "    Starting FreeMat Installation\n";
-print "************************************************************\n";
-
-fetch_url('http://downloads.sf.net/freemat/FreeMat-3.2.tar.gz',
-	  'files/FreeMat-3.2.tar.gz','61c99ce56fcc244a4108b26b3ecb6d9b');
-$platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
-    " CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
-unpack_tar_ball('files/FreeMat-3.2.tar.gz','build');
-configure_make_install('build/FreeMat-3.2',$prefix,'build',$platform_opts);

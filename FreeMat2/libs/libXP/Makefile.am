@@ -32,8 +32,7 @@ highlighter.hpp \
 HistoryWidget.hpp \
 ToolDock.hpp \
 VariablesTool.hpp \
-Common.hpp \
-$(libXP_a_UI)
+Common.hpp 
 
 nodist_libXP_a_SOURCES = $(libXP_a_MOC) $(libXP_a_UI)
 

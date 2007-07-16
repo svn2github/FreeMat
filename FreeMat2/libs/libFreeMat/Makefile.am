@@ -42,7 +42,8 @@ Parser.hpp \
 Scanner.hpp \
 Tree.hpp \
 RefVec.hpp \
-Compiler.hpp
+Compiler.hpp \
+List.hpp
 
 libFreeMat_a_SOURCES = Array.cpp \
 Interpreter.cpp \

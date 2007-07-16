@@ -1,11 +1,45 @@
 #ifndef __VM_hpp__
 #define __VM_hpp__
 
-#include "Array.hpp"
-#include "Tree.hpp"
-#include <map>
-
 using namespace std;
+
+typedef enum {
+  boolean,
+  unsigned_integer,
+  integer,
+  single_float,
+  double_float
+} opcodeClass,
+
+typedef enum {
+  add,
+  sub,
+  mov,
+  mul,
+  or,
+  and,
+  xor,
+  lt,
+  le,
+  eq,
+  ge,
+  gt,
+  jmp,
+  jit
+} opcodeType;
+
+typedef union {
+  bool b;
+  unsigned u;
+  int i;
+  float f;
+  double d;
+} operandType;
+
+class VMInstruction {
+  opcodeType opcode;
+  opcodeClass opclass;
+};
 
 typedef uint32 tindex;
 

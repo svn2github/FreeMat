@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 #include <QtGlobal>
-#include <QList>
+#include "List.hpp"
 #include <QRegExp>
 #include "RefVec.hpp"
 
@@ -60,7 +60,7 @@ typedef enum {
 } Class;
 
 typedef std::vector<std::string> stringVector;
-typedef QList<std::string> rvstring;
+typedef FMList<std::string> rvstring;
 
 inline size_t ByteSize(Class t) {
   switch(t) {

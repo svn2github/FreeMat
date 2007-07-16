@@ -28,14 +28,14 @@
 #include "Data.hpp"
 #include "RefVec.hpp"
 #include <QVector>
-#include <QList>
+#include "List.hpp"
 #include <QStringList>
 #include <QSharedDataPointer>
 
 class Array;
 class Interpreter;
 
-typedef QList<Array> ArrayVector;
+typedef FMList<Array> ArrayVector;
 ArrayVector singleArrayVector(Array);
 typedef QVector<ArrayVector> ArrayMatrix;
 

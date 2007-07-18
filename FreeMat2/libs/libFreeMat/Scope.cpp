@@ -22,6 +22,7 @@
 #include <QMutex>
 #include "Serialize.hpp"
 
+#if 0
 QMutex scopemutex;
 
 void Scope::countlock() {
@@ -38,6 +39,7 @@ bool Scope::referenced() {
   QMutexLocker lockit(&scopemutex);
   return (refcount>0);
 }
+#endif
 
 ScopePtr ThawScope(Serialize *s) {
   string name(s->getString());

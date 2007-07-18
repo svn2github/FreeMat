@@ -110,9 +110,6 @@ public:
 					      mutex(NULL),
 					      refcount(0)  {}
 
-  void countlock();
-  void countunlock();
-  bool referenced();
   inline void setVariablesAccessed(stringVector varList) {
     variablesAccessed = varList;
   }
@@ -138,12 +135,19 @@ public:
   inline bool isnested() {
     return isNested; 
   }
-  inline bool nests(Scope* peer) {
+  inline bool nests(string peerName) {
     // Nesting requires that our peer have a strictly more 
     // qualified (longer) name, and that our name is a prefix
     // of that name.
-    return ((name.size() < peer->name.size()) && 
-	    (string(peer->name,0,name.size()) == name));
+    return ((name.size() < peerName.size()) && 
+	    (string(peerName,0,name.size()) == name));
+  }
+  static bool nests(string name, string peerName) {
+    // Nesting requires that our peer have a strictly more 
+    // qualified (longer) name, and that our name is a prefix
+    // of that name.
+    return ((name.size() < peerName.size()) && 
+	    (string(peerName,0,name.size()) == name));
   }
   /**
    * Lock the scope's mutex
@@ -335,6 +339,9 @@ public:
   }
 };
 
+typedef Scope* ScopePtr;
+
+#if 0
 class ScopePtr {
 private:
   Scope* d;
@@ -380,6 +387,7 @@ public:
   }
   operator Scope* () const {return d;}
 };
+#endif
 
 void FreezeScope(ScopePtr scope, Serialize *s);
 ScopePtr ThawScope(Serialize *s);

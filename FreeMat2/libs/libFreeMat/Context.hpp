@@ -204,6 +204,7 @@ public:
     if (scopestack.size() == 1)
       throw Exception("Attempt to pop global scope off of context stack!");
     scopestack.pop_back();
+    delete bottomScope;
     bottomScope = scopestack.back();
   }
   /**
@@ -267,7 +268,7 @@ public:
 	// loop up through the scope stack, checking for nested
 	// scopes that may have the variable defined.
 	int i=scopestack.size()-2;
-	while ((!dp) && (i>=0) && scopestack[i]->nests(scopestack[i+1])) {
+	while ((!dp) && (i>=0) && scopestack[i]->nests(scopestack[i+1]->getName())) {
 	  dp = scopestack[i]->lookupVariable(varName);
 	  if (!dp) i--;
 	}
@@ -279,6 +280,15 @@ public:
 	return (ArrayReference(dp,false,bottomScope));
     }
     return (ArrayReference(active->lookupVariable(mapName),global,active));
+  }
+  inline bool variableLocalToCurrentScope(string varName) {
+    return bottomScope->variableLocal(varName);
+  }
+  inline void setVariablesAccessed(stringVector va) {
+    bottomScope->setVariablesAccessed(va);
+  }
+  inline void setLocalVariablesList(stringVector rv) {
+    bottomScope->setLocalVariables(rv);
   }
   /**
    * Look for a variable, but only locally.
@@ -441,6 +451,24 @@ public:
     return codeTab.getCompletions("");
   }
 
+  inline stringVector listGlobalVariables() {
+    return topScope->listAllVariables();
+  }
+
+  inline stringVector listAllVariables() {
+    return bottomScope->listAllVariables();
+  }
+
+  inline void clearGlobalVariableList() {
+    topScope->clearGlobalVariableList();
+    bottomScope->clearGlobalVariableList();
+  }
+
+  inline void clearPersistentVariableList() {
+    topScope->clearPersistentVariableList();
+    bottomScope->clearPersistentVariableList();
+  }
+
   inline stringVector getCompletions(const std::string& prefix) {
     stringVector local_completions = bottomScope->getCompletions(prefix);
     stringVector global_completions = topScope->getCompletions(prefix);
@@ -491,6 +519,9 @@ public:
     // Add a point in the local scope to the global variable
     bottomScope->addGlobalVariablePointer(var);
   }
+  inline void deleteGlobalVariable(std::string var) {
+    topScope->deleteVariable(var);
+  }
   /**
    * Delete a variable if its defined.  Handles global and persistent
    * variables also.
@@ -509,18 +540,6 @@ public:
     bottomScope->deleteVariable(var);
   }
   /**
-   * Get the global scope off the top of the scope stack.
-   */
-  inline ScopePtr getGlobalScope() {
-    return topScope;
-  }
-  /**
-   * Get the current (active) scope
-   */
-  inline ScopePtr getCurrentScope() {
-    return bottomScope;
-  }
-  /**
    * Increment the loop depth counter in the local scope.
    */
   inline void enterLoop() {
@@ -531,6 +550,18 @@ public:
    */
   inline void exitLoop() {
     bottomScope->exitLoop();
+  }
+  inline bool isCurrentScopeNested() {
+    return bottomScope->isnested();
+  }
+  inline string scopeName() {
+    return bottomScope->getName();
+  }
+  inline bool currentScopeNests(string name) {
+    return bottomScope->nests(name);
+  }
+  inline bool currentScopeVariableAccessed(string name) {
+    return bottomScope->variableAccessed(name);
   }
   /**
    * Returns true if the current (local) scope indicates a

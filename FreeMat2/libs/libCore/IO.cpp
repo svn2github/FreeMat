@@ -2585,7 +2585,7 @@ ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   Context *cntxt = eval->getContext();
   rvstring toSave;
   if (regexpMode) {
-    stringVector allNames = cntxt->getCurrentScope()->listAllVariables();
+    stringVector allNames = cntxt->listAllVariables();
     for (int i=0;i<allNames.size();i++)
       if (contains(names,allNames[i],regexpMode))
 	toSave << allNames[i];

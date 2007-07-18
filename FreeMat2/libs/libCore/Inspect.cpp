@@ -476,30 +476,28 @@ void ClearVariable(Interpreter* eval, string name) {
 
 void ClearAllFunction(Interpreter* eval) {
   ClearLibs(eval);
-  stringVector names = eval->getContext()->getCurrentScope()->listAllVariables();
+  stringVector names = eval->getContext()->listAllVariables();
   for (int i=0;i<names.size();i++)
     ClearVariable(eval,names[i]);
 }
 
 void ClearPersistent(Interpreter* eval) {
-  stringVector names = eval->getContext()->getGlobalScope()->listAllVariables();
+  stringVector names = eval->getContext()->listGlobalVariables();
   for (int i=0;i<names.size();i++) {
     if ((names[i].size() >= 1) && (names[i][0] == '_'))
-      eval->getContext()->getGlobalScope()->deleteVariable(names[i]);
+      eval->getContext()->deleteGlobalVariable(names[i]);
   }
-  eval->getContext()->getGlobalScope()->clearPersistentVariableList();
-  eval->getContext()->getCurrentScope()->clearPersistentVariableList();
+  eval->getContext()->clearPersistentVariableList();
 }
 
 void ClearGlobal(Interpreter* eval) {
-  stringVector names = eval->getContext()->getGlobalScope()->listAllVariables();
+  stringVector names = eval->getContext()->listGlobalVariables();
   for (int i=0;i<names.size();i++) {
     if ((names[i].size() >= 1) && (names[i][0] != '_')) {
-      eval->getContext()->getGlobalScope()->deleteVariable(names[i]);
+      eval->getContext()->deleteGlobalVariable(names[i]);
     }
   }
-  eval->getContext()->getGlobalScope()->clearGlobalVariableList();
-  eval->getContext()->getCurrentScope()->clearGlobalVariableList();
+  eval->getContext()->clearGlobalVariableList();
 }
 
 ArrayVector ClearFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
@@ -572,7 +570,7 @@ ArrayVector WhoFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
   stringVector names;
   char buffer[1000];
   if (arg.size() == 0) {
-    names = eval->getContext()->getCurrentScope()->listAllVariables();
+    names = eval->getContext()->listAllVariables();
   } else {
     for (i=0;i<arg.size();i++) {
       Array varName(arg[i]);

@@ -35,7 +35,7 @@
 class Array;
 class Interpreter;
 
-typedef FMList<Array> ArrayVector;
+typedef QList<Array> ArrayVector;
 ArrayVector singleArrayVector(Array);
 typedef QVector<ArrayVector> ArrayMatrix;
 

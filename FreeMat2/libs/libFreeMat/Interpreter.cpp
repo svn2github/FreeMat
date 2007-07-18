@@ -1674,12 +1674,11 @@ public:
 template <class T>
 void ForLoopHelper(const tree &codeBlock, Class indexClass, const T *indexSet, 
 		   int count, string indexName, Interpreter *eval) {
-  ScopePtr scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
-    Array *vp = scope->lookupVariable(indexName);
+    Array *vp = eval->getContext()->lookupVariableLocally(indexName);
     if ((!vp) || (vp->dataClass() != indexClass) || (!vp->isScalar())) {
-      scope->insertVariable(indexName,Array(indexClass,Dimensions(1,1)));
-      vp = scope->lookupVariable(indexName);
+      eval->getContext()->insertVariableLocally(indexName,Array(indexClass,Dimensions(1,1)));
+      vp = eval->getContext()->lookupVariableLocally(indexName);
     }
     ((T*) vp->getReadWriteDataPointer())[0] = indexSet[m];
     try {
@@ -1695,12 +1694,11 @@ template <class T>
 void ForLoopHelperComplex(const tree &codeBlock, Class indexClass, 
 			  const T *indexSet, int count, 
 			  string indexName, Interpreter *eval) {
-  ScopePtr scope = eval->getContext()->getCurrentScope();
   for (int m=0;m<count;m++) {
-    Array *vp = scope->lookupVariable(indexName);
+    Array *vp = eval->getContext()->lookupVariableLocally(indexName);
     if ((!vp) || (vp->dataClass() != indexClass) || (!vp->isScalar())) {
-      scope->insertVariable(indexName,Array(indexClass,Dimensions(1,1)));
-      vp = scope->lookupVariable(indexName);
+      eval->getContext()->insertVariableLocally(indexName,Array(indexClass,Dimensions(1,1)));
+      vp = eval->getContext()->lookupVariableLocally(indexName);
     }
     ((T*) vp->getReadWriteDataPointer())[0] = indexSet[2*m];
     ((T*) vp->getReadWriteDataPointer())[1] = indexSet[2*m+1];
@@ -2424,21 +2422,21 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
 
 ArrayReference Interpreter::createVariable(string name) {
   // Are we in a nested scope?
-  if (!context->getCurrentScope()->isnested() || context->getCurrentScope()->variableLocal(name)) {
+  if (!context->isCurrentScopeNested() || context->variableLocalToCurrentScope(name)) {
     // if not, just create a local variable in the current scope, and move on.
     context->insertVariable(name,Array::emptyConstructor());
   } else {
     // if so - walk up the scope chain until we are no longer nested
-    ScopePtr localScope = context->getCurrentScope();
+    string localScopeName = context->scopeName();
     context->bypassScope(1);
-    while (context->getCurrentScope()->nests(localScope)) 
+    while (context->currentScopeNests(localScopeName))
       context->bypassScope(1);
     context->restoreScope(1);
     // We wre now pointing to the highest scope that contains the present
     // (nested) scope.  Now, we start walking down the chain looking for
     // someone who accesses this variable
-    while (!context->getCurrentScope()->variableAccessed(name) &&
-	   context->getCurrentScope() != localScope) 
+    while (!context->currentScopeVariableAccessed(name) &&
+	   context->scopeName() != localScopeName) 
       context->restoreScope(1);
     // Either we are back in the local scope, or we are pointing to
     // a scope that (at least theoretically) accesses a variable with 
@@ -2447,7 +2445,9 @@ ArrayReference Interpreter::createVariable(string name) {
     context->restoreBypassedScopes();
   } 
   ArrayReference np(context->lookupVariable(name));
-  if (!np.valid()) throw Exception("error creating variable name " + name + " with scope " + context->getCurrentScope()->getName());
+  if (!np.valid()) 
+    throw Exception("error creating variable name " + name + 
+		    " with scope " + context->scopeName());
   return np;
 }
 
@@ -3066,10 +3066,6 @@ void Interpreter::block(const tree &t) {
     lasterr = e.getMessageCopy();
     throw;
   }
-}
-
-Context* Interpreter::getContext() {
-  return context;
 }
 
 // I think this is too complicated.... there should be an easier way
@@ -4319,7 +4315,7 @@ bool Interpreter::lookupFunction(std::string funcName, FuncPtr& val,
       return true;
     // Not a nested function of the current scope.  We have to look for nested
     // functions of all parent scopes. Sigh.
-    if (context->getCurrentScope()->isnested()) {
+    if (context->isCurrentScopeNested()) {
       std::string basename = ip_detailname;
       while (!basename.empty()) {
 	if (context->lookupFunction(NestedMangleName(basename,funcName),val))

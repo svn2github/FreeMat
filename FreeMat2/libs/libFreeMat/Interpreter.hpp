@@ -403,7 +403,7 @@ public:
   /**
    * Get the context for the interface.
    */
-  Context* getContext();
+  inline Context* getContext() {return context;}
   /**
    * Refresh the breakpoints in the code.  Call this after updating
    * code for functions, or breakpoints will not work.

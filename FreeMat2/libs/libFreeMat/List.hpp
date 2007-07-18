@@ -13,6 +13,23 @@ public:
   ~FMList() {
     if (d) delete d;
   }
+  FMList(const FMList<T>& other) {
+    if (!other.d) {
+      d = NULL;
+      return;
+    } else {
+      d = new QList<T>(*(other.d));
+    }
+  }
+  FMList<T>& operator=(const FMList<T>& other) {
+    if (d) delete d;
+    if (other.d) {
+      d = new QList<T>(*(other.d));
+    } else {
+      d = NULL;
+    }
+    return *this;
+  }
   inline int size() const {
     if (d) 
       return d->size(); 
@@ -114,6 +131,14 @@ public:
       }
     }
     return *this;
+  }
+  inline bool operator==(const FMList<T>& other) {
+    if (d && other.d) {
+      return ((*d) == (*other.d));
+    } else if (!d && !other.d)
+      return true;
+    else
+      return false;
   }
 };
 

@@ -191,11 +191,11 @@ void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker,
       MFunctionDef* optr = new MFunctionDef;
       (*optr) = (*mptr);
       Context* context = walker->getContext();
-      ScopePtr myScope = context->getCurrentScope();
+      string myScope = context->scopeName();
       context->bypassScope(1);
-      ScopePtr parentScope = context->getCurrentScope();
+      string parentScope = context->scopeName();
       context->restoreScope(1);
-      if (!parentScope->nests(myScope)) {
+      if (!Scope::nests(parentScope,myScope)) {
 	// Now capture the variables in our current scope
 	for (int i=0;i<optr->variablesAccessed.size();i++) {
 	  ArrayReference ptr(context->lookupVariable(optr->variablesAccessed[i]));
@@ -235,8 +235,8 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   if (!code.valid()) return outputs;
   context = walker->getContext();
   context->pushScope(name,nestedFunction);
-  context->getCurrentScope()->setVariablesAccessed(variablesAccessed);
-  context->getCurrentScope()->setLocalVariables(returnVals);
+  context->setVariablesAccessed(variablesAccessed);
+  context->setLocalVariablesList(returnVals);
   if (capturedFunction) {
     stringVector workspaceVars(workspace->getCompletions(""));
     for (int i=0;i<workspaceVars.size();i++)

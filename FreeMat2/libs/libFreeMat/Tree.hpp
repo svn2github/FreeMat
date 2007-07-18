@@ -24,6 +24,7 @@ public:
   unsigned context() const {return node.Position();}
   tree_node();
 };
+
 class tree {
 private:
   QSharedDataPointer<tree_node> tptr;
@@ -31,25 +32,25 @@ public:
   tree();
   tree(const Token& tok);
   void print() const;
-  void Rename(byte newtok) {tptr->Rename(newtok);}
-  bool valid() const {return !(tptr->node.Is(TOK_INVALID));}
+  inline void Rename(byte newtok) {tptr->Rename(newtok);}
+  inline bool valid() const {return !(tptr->node.Is(TOK_INVALID));}
   //  void operator=(const tree &copy);
   bool operator==(const tree &copy);
-  unsigned context() const {if (valid()) return tptr->context(); else return 0;}
-  tree first() const {if (valid()) return tptr->children.front(); else return tree();}
-  tree second() const {return child(1);}
-  bool is(byte tok) const {return (token()==tok);}
-  byte token() const {if (valid()) return tptr->node.Value(); else return 0;}
-  unsigned numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
-  bool haschildren() const {return numchildren() > 0;}
-  string text() const {if (valid()) return tptr->node.Text(); else return std::string();}
-  Array array() const {if (valid()) return tptr->node.GetArray(); else return Array();}
-  const treeVector& children() const {return tptr->children;}
-  tree last() const {if (valid()) return tptr->children.back(); else return tree();}
-  tree child(unsigned n) const {if (valid()) return tptr->children.at(n); else return tree();}
-  Token& node() {return tptr->node;}
-  const Token& node() const {return tptr->node;}
-  void addChild(const tree &child) {tptr->children.push_back(child);}
+  inline unsigned context() const {if (valid()) return tptr->context(); else return 0;}
+  inline tree first() const {if (valid()) return tptr->children.front(); else return tree();}
+  inline tree second() const {return child(1);}
+  inline bool is(byte tok) const {return (token()==tok);}
+  inline byte token() const {if (valid()) return tptr->node.Value(); else return 0;}
+  inline unsigned numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
+  inline bool haschildren() const {return numchildren() > 0;}
+  inline string text() const {if (valid()) return tptr->node.Text(); else return std::string();}
+  inline Array array() const {if (valid()) return tptr->node.GetArray(); else return Array();}
+  inline const treeVector& children() const {return tptr->children;}
+  inline tree last() const {if (valid()) return tptr->children.back(); else return tree();}
+  inline tree child(unsigned n) const {if (valid()) return tptr->children.at(n); else return tree();}
+  inline Token& node() {return tptr->node;}
+  inline const Token& node() const {return tptr->node;}
+  inline void addChild(const tree &child) {tptr->children.push_back(child);}
 };
 
 tree mkLeaf(const Token& tok);

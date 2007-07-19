@@ -184,7 +184,7 @@ void MFunctionDef::printMe(Interpreter*eval) {
 
 #warning - This design causes an unneccesary copy - should use readonly pass first
 void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker, 
-			    MFunctionDef *parent, ScopePtr workspace) {
+			    MFunctionDef *parent, ScopePtr &workspace) {
   if (val->type() == FM_M_FUNCTION) {
     MFunctionDef* mptr = (MFunctionDef*) val;
     if (mptr->nestedFunction && !mptr->capturedFunction) {
@@ -200,6 +200,8 @@ void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker,
 	for (int i=0;i<optr->variablesAccessed.size();i++) {
 	  ArrayReference ptr(context->lookupVariable(optr->variablesAccessed[i]));
 	  if (ptr.valid()) {
+	    if (!workspace)
+	      workspace = new Scope("captured",false);
 	    workspace->insertVariable(optr->variablesAccessed[i],*ptr);
 	  }
 	}
@@ -213,7 +215,7 @@ void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker,
 
 void CaptureFunctionPointers(ArrayVector& outputs, Interpreter *walker, 
 			     MFunctionDef *parent) {
-  ScopePtr workspace = new Scope("captured",false);
+  ScopePtr workspace = NULL;
   // First check for any 
   for (int i=0;i<outputs.size();i++) {
     if (outputs[i].dataClass() == FM_FUNCPTR_ARRAY) {
@@ -237,7 +239,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   context->pushScope(name,nestedFunction);
   context->setVariablesAccessed(variablesAccessed);
   context->setLocalVariablesList(returnVals);
-  if (capturedFunction) {
+  if (capturedFunction && workspace) {
     stringVector workspaceVars(workspace->getCompletions(""));
     for (int i=0;i<workspaceVars.size();i++)
       context->insertVariableLocally(workspaceVars[i],*workspace->lookupVariable(workspaceVars[i]));
@@ -387,7 +389,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     }
     // Check the outputs for function pointers
     CaptureFunctionPointers(outputs,walker,this);
-    if (capturedFunction) {
+    if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
       for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
@@ -398,7 +400,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     walker->popDebug();
     return outputs;
   } catch (Exception& e) {
-    if (capturedFunction) {
+    if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
       for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
@@ -410,7 +412,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     throw;
   }
   catch (InterpreterRetallException& e) {
-    if (capturedFunction) {
+    if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
       for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);

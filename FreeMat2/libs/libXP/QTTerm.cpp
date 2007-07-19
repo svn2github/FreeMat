@@ -96,7 +96,7 @@ void QTTerm::setChar(char t, bool flush) {
       ensureCursorVisible();
       viewport()->update(QRect(((cursor_x)-1)*m_char_w,
 			       (cursor_y-verticalScrollBar()->value())*m_char_h,
-			       m_char_w,m_char_h));
+			       m_char_w*2,m_char_h));
     }
   }
   blinkEnable = true;

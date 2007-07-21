@@ -594,6 +594,12 @@ class LoopSignature {
   std::set<string> scalars;
   std::set<string> matrices;
 public:
+  std::set<string> get_scalars() {
+    return scalars;
+  }
+  std::set<string> get_matrices() {
+    return matrices;
+  }
   void add_scalar(string scalar) {
     scalars.insert(scalar);
   }
@@ -1353,6 +1359,7 @@ class RegisterReference {
   opcodeClass m_type;
 public:
   RegisterReference(unsigned t, opcodeClass s) : m_index(t), m_type(s) {}
+  RegisterReference() {}
   inline unsigned index() {return m_index;}
   inline opcodeClass type() {return m_type;}
 };
@@ -1362,7 +1369,19 @@ static unsigned GetReg() {
   return reglist++;
 }
 
-SymbolTable<RegisterReference> symbols;
+class SymbolInformation {
+public:
+  RegisterReference m_rows;
+  RegisterReference m_cols;
+  opcodeClass m_type;
+  RegisterReference m_base;
+  bool m_scalar;
+  SymbolInformation(opcodeClass type, unsigned index) :
+    m_type(type), m_base(index,type), m_scalar(true) {}
+  bool isScalar() {return m_scalar;}
+};
+
+SymbolTable<SymbolInformation> symbols;
 
 void JITBlock(VMStream& o, tree t);
 RegisterReference JITExpression(VMStream& o, tree t);
@@ -1560,12 +1579,48 @@ RegisterReference JITBinaryOperator(VMStream& o, tree t, opcodeType op) {
   return c;
 }
 
-RegisterReference JITRHS(VMStream& o, tree t) {
+RegisterReference JITRHS(VMStream& o, tree t) { 
+  SymbolInformation *v = symbols.findSymbol(t.first().text());
+  if (!v) 
+    throw Exception("Undefined variable reference:" + t.first().text());
   if (t.numchildren() == 1) {
-    RegisterReference *v = symbols.findSymbol(t.first().text());
-    if (!v) throw 
-      Exception("Undefined variable reference:" + t.first().text());
-    return *v;
+    if (!v->isScalar()) 
+      throw Exception("Non-scalar reference returned in scalar context!");
+    return v->m_base;
+  }
+  if (t.numchildren() > 2)
+    throw Exception("multiple levels of dereference not handled yet...");
+  if (v->isScalar())
+    throw Exception("array indexing of scalar values...");
+  tree s(t.second());
+  if (!s.is(TOK_PARENS))
+    throw Exception("non parenthetical dereferences not handled yet...");
+  if (s.numchildren() == 0)
+    throw Exception("Expecting at least 1 array reference for dereference...");
+  if (s.numchildren() > 2)
+    throw Exception("Expecting at most 2 array references for dereference...");
+  if (s.numchildren() == 1) {
+    RegisterReference offset_n(JITExpression(o,s.first()));
+    RegisterReference offset_u(GetReg(),unsigned_integer);
+    o << new VMInstruction(CASTU,offset_n.type(),offset_u.index(),offset_n.index());
+    RegisterReference val(GetReg(),v->m_type);
+    o << new VMInstruction(LOAD,v->m_type,val.index(),v->m_base.index(),offset_u.index());
+    return val;
+  } else if (s.numchildren() == 2) {
+    RegisterReference row_offset_n(JITExpression(o,s.first()));
+    RegisterReference row_offset_u(GetReg(),unsigned_integer);
+    o << new VMInstruction(CASTU,row_offset_n.type(),row_offset_u.index(),row_offset_n.index());
+    RegisterReference col_offset_n(JITExpression(o,s.second()));
+    RegisterReference col_offset_u(GetReg(),unsigned_integer);
+    o << new VMInstruction(CASTU,col_offset_n.type(),col_offset_u.index(),col_offset_n.index());
+    RegisterReference ndx_offset_u(GetReg(),unsigned_integer);
+    o << new VMInstruction(MUL,unsigned_integer,ndx_offset_u.index(),
+			   col_offset_u.index(),v->m_rows.index());
+    o << new VMInstruction(ADD,unsigned_integer,ndx_offset_u.index(),
+			   ndx_offset_u.index(),row_offset_u.index());
+    RegisterReference val(GetReg(),v->m_type);
+    o << new VMInstruction(LOAD,v->m_type,val.index(),v->m_base.index(),ndx_offset_u.index());
+    return val;
   }
   throw Exception("dereference not handled yet...");
 }
@@ -1788,7 +1843,7 @@ void JITLoop(tree t) {
   t.print();
   unsigned loop_index_register = GetReg();
   symbols.insertSymbol(loop_index,
-		       RegisterReference(loop_index_register,integer));
+		       SymbolInformation(integer,loop_index_register));
   loopjit << new VMInstruction(SET,integer,loop_index_register,
 			       RTInteger(loop_start));
   unsigned loop_max_register = GetReg();
@@ -1871,6 +1926,8 @@ void EvaluateForStatement(tree t) {
   LoopSignature sig;
   if (!ScalarRequirements(t,sig)) return;
   sig.remove_scalar(t.first().first().text());
+  //  InstanatiateScalars(sig.get_scalars());
+  //  InstantiateMatrices(sig.get_matrices());
   JITLoop(t);
 }
 

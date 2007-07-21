@@ -3597,7 +3597,7 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       eval->evaluateString(catch_buf,false);
       retval = RetrieveCallVars(eval,nargout);
     }
-    eval->AutoStop(true);
+    eval->AutoStop(autostop);
     return retval;
   } else {
     string try_line = arg[0].getContentsAsString();
@@ -3615,7 +3615,7 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       eval->getContext()->restoreBypassedScopes();
       eval->evaluateString(catch_buf,false);
     }
-    eval->AutoStop(true);
+    eval->AutoStop(autostop);
     return ArrayVector();
   }
 }
@@ -3863,7 +3863,9 @@ ArrayVector QuietFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //@{ test_source.m
 //% Check that the source function does not double-execute the last line of the script
 //function test_val = test_source
-//source('source_test_script.m')
+//myloc = which('test_source');
+//[path,name,sfx] = fileparts(myloc);
+//source([path '/source_test_script.m'])
 //test_val = test(n == 2);
 //@}
 //!

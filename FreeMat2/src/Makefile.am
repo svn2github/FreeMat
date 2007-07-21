@@ -2,7 +2,7 @@ bin_PROGRAMS = FreeMat
 
 INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libFN -I@top_srcdir@/src -I@top_builddir@/libs/libXP
 
-EXTRA_DIST = appIcon.icns freemat.ico freematv2.ico
+EXTRA_DIST = appIcon.icns freemat.ico freematv2.ico run-test
 
 FreeMat_HFILES = \
 FuncMode.hpp \
@@ -70,4 +70,7 @@ DumbTerminal.moc.cpp : DumbTerminal.hpp
 
 FreeMat_qrc.cpp : FreeMat.qrc
 	$(QT_RCC) -o $@ $<
+
+TESTS = FreeMat
+TESTS_ENVIRONMENT=$(srcdir)/run-test
 

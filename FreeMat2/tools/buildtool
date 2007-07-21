@@ -42,7 +42,9 @@ sub sym_link {
     my $first = shift;
     my $second = shift;
     print "Linking $first and $second\n";
-    symlink($first,$second) or die "symlink failed: $!\n";
+    if (! -l $second) {
+	symlink($first,$second) or die "symlink failed: $!\n";
+    }
 }
 
 # Copy a file
@@ -50,17 +52,15 @@ sub copy_file {
     my $source = shift;
     my $dest = shift;
     print "Copying $source to $dest\n";
-    copy($source,$dest) or die "copy failed: $!\n";
 }
 
 # Copy a set of files 
 sub copy_files {
     my $source_pattern = shift;
-    my @sources = glob $source_pattern;
     my $dest = shift;
-    for my $file (@sources) {
-	print "Copying $file to $dest\n";
-	copy($file,$dest) or die "Cannot copy $file: $!\n";
+    my $retcode = system("cp -R $source_pattern $dest");
+    if ($retcode != 0) {
+	die "Error on copy of $source_pattern and $dest\n";
     }
 }
 
@@ -213,8 +213,10 @@ sub configure_make_install {
     my $prefix = shift;
     my $buildsub = shift;
     my $platform_opts = shift;
+    my $extra_configure_opts = shift;
     my $copts = $platform_opts->{'configure opts'};
     my $mopts = $platform_opts->{'make opts'};
+    my $pcopts = $platform_opts->{'preconfigure opts'};
     print "Configuring package in $dir...\n";
     my $cwd = Cwd::cwd();
     change_directory $dir;
@@ -223,11 +225,11 @@ sub configure_make_install {
 	delete_directory $buildsub;
 	make_directory $buildsub;
 	change_directory $buildsub;
-	$cmdc = "../configure --prefix=$prefix $copts";
+	$cmdc = "../configure --prefix=$prefix $copts $extra_configure_opts";
     } else {
-	$cmdc = "./configure --prefix=$prefix $copts";
+	$cmdc = "./configure --prefix=$prefix $copts $extra_configure_opts";
     }
-    $cmdc = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  " . $cmdc;
+    $cmdc =  $pcopts . ' ' . $cmdc;
     print "Configure command is $cmdc\n";
     (system($cmdc) == 0) or die "configure in $dir failed: $?\n";
     my $cmdm = "make $mopts";
@@ -311,6 +313,12 @@ sub autopackage_check {
     my $md5sum = shift;
     my $builddir = shift;
     my $packagedir = shift;
+    my $configure_extras = shift;
+    my $unpack_dir = shift;
+
+    if (not defined $unpack_dir) {
+	$unpack_dir = "build";
+    }
 
     print "************************************************************\n";
     print "    Handling package $packagename\n";
@@ -318,8 +326,8 @@ sub autopackage_check {
     if (!test_function($prefix,$packagename,$libname,$testfunc,$platform_opts) ||
 	!test_include_file($prefix,$packagename,$include,$platform_opts)) {
 	fetch_url($url,$destfile,$md5sum);
-	unpack_tar_ball($destfile,'build');
-	configure_make_install("build/$packagedir",$prefix,$builddir,$platform_opts);
+	unpack_tar_ball($destfile,$unpack_dir);
+	configure_make_install("$unpack_dir/$packagedir",$prefix,$builddir,$platform_opts,$configure_extras);
 	test_function($prefix,$packagename,$libname,$testfunc,$platform_opts) &&
 	    test_include_file($prefix,$packagename,$include,$platform_opts) or
 	    die "Installation of package $packagename failed!\n";
@@ -331,7 +339,7 @@ sub job_setup_mingw_cross {
     my $prefix = shift;
     my $platform_opts;
 
-    $platform_opts->{'configure opts'} = '--disable-shared';
+    $platform_opts->{'configure opts'} = '';
     $platform_opts->{'make opts'} = '';
     $platform_opts->{'compiler'} = 'gcc';
     $platform_opts->{'libs'} = "-llapack -lblas";
@@ -342,15 +350,15 @@ sub job_setup_mingw_cross {
     $platform_opts->{'opts'} = '-O2';
     $platform_opts->{'arflags'} = 'crv';
     $platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
+    $platform_opts->{'preconfigure opts'} = '';
 
     setup_common($prefix);
     my $ming = "i686-mingw32";
-    my $ming_target = "--target=$ming";
+
     fetch_url('http://downloads.sf.net/mingw/binutils-2.16.91-20060119-1-src.tar.gz',
 	      'files/binutils-2.16.91-20060119-1-src.tar.gz','42e3a665111121075480244cafc27ce7');
     unpack_tar_ball('files/binutils-2.16.91-20060119-1-src.tar.gz','cross');
-    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . ' ' . $ming_target;
-    configure_make_install("cross/binutils-2.16.91-20060119-1",$prefix,"cross",$platform_opts);
+    configure_make_install("cross/binutils-2.16.91-20060119-1",$prefix,"",$platform_opts,"--target=$ming");
     fetch_url('http://downloads.sf.net/mingw/gcc-core-3.4.5-20060117-1-src.tar.gz',
 	      'files/gcc-core-3.4.5-20060117-1-src.tar.gz','b72bffc6e7d5c7d1de099ad76ef0d45d');
     unpack_tar_ball('files/gcc-core-3.4.5-20060117-1-src.tar.gz','cross');
@@ -360,29 +368,29 @@ sub job_setup_mingw_cross {
     fetch_url('http://downloads.sf.net/mingw/gcc-g77-3.4.5-20060117-1-src.tar.gz',
 	      'files/gcc-g77-3.4.5-20060117-1-src.tar.gz','37e2558839f70ff2dd8c16c359e5e327');
     unpack_tar_ball('files/gcc-g77-3.4.5-20060117-1-src.tar.gz','cross');
-    fetch_url('http://downloads.sf.net/mingw/mingw-runtime-3.9-src.tar.gz',
-	      'files/mingw-runtime-3.9-src.tar.gz','9111435bbc9b78b5a5f08ac8d6310a5a');
-    unpack_tar_ball('files/mingw-runtime-3.9-src.tar.gz','cross');
-    fetch_url('http://downloads.sf.net/mingw/w32api-3.6-src.tar.gz',
-	      'files/w32api-3.6-src.tar.gz','32ad56bd7605c876357823470e3e2667');
-    unpack_tar_ball('files/w32api-3.6-src.tar.gz','cross');
-    symlink("$prefix/include","$prefix/$ming/include");
-    copy_files("cross/mingw-runtime-3.9/include/*","$prefix/include");
-    copy_files("cross/win32-api-3.6/include/*","$prefix/include");
-    
-    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . ' ' . $ming_target;
-#    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c" . XRoot
-#    ConfigureMakeInstall $XWIN_WIN32API "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" . XRoot
-#    Link $BASE/XRoot/$XWIN_WIN32API $BASE/XRoot/w32api
-#    mv $PREFIX/$MINGW_TARGET/lib/* $PREFIX/lib
-#    rmdir $PREFIX/$MINGW_TARGET/lib
-#    Link $PREFIX/lib $PREFIX/$MINGW_TARGET/lib
-#    cd $BASE/XRoot/$XWIN_MINGW_RUNTIME 
-#    find . -name configure -exec dos2unix \{\} \;
-#    dos2unix config.guess config.sub mkinstalldirs
-#    cp $PREFIX/lib/*.a $BASE/XRoot/$XWIN_MINGW_RUNTIME/mingwex/.
-#    ConfigureMakeInstall $XWIN_MINGW_RUNTIME "--prefix=$PREFIX --target=$MINGW_TARGET --host=$MINGW_TARGET --build=$(./config.guess)" . XRoot
-#    ConfigureMakeInstall $XWIN_GCC "--prefix=$PREFIX --target=$MINGW_TARGET --enable-threads --enable-languages=c,c++,f77" . XRoot
+    fetch_url('http://downloads.sf.net/mingw/mingw-runtime-3.12-src.tar.gz',
+	      'files/mingw-runtime-3.12-src.tar.gz','a9fdbd5162aa1ae0171c47f929adf938');
+    unpack_tar_ball('files/mingw-runtime-3.12-src.tar.gz','cross');
+    fetch_url('http://downloads.sf.net/mingw/w32api-3.9-src.tar.gz',
+	      'files/w32api-3.9-src.tar.gz','be0b0219645a4ee0f3495c2abf90b5ad');
+    unpack_tar_ball('files/w32api-3.9-src.tar.gz','cross');
+    sym_link("$prefix/include","$prefix/$ming/include");
+    copy_files("cross/mingw-runtime-3.12/include/*","$prefix/include");
+    copy_files("cross/w32api-3.9/include/*","$prefix/include");
+    configure_make_install("cross/gcc-3.4.5-20060117-1",$prefix,"",$platform_opts,"--target=$ming --enable-threads --enable-languages=c");
+    configure_make_install("cross/w32api-3.9",$prefix,"",$platform_opts,"--target=$ming --host=$ming --build=i686-pc-linux-gnu");
+    my $cwd = Cwd::cwd();
+    sym_link("$cwd/cross/w32api-3.9","$cwd/cross/w32api");
+    copy_files("$prefix/$ming/lib/*","$prefix/lib");
+    delete_directory("$prefix/$ming/lib");
+    sym_link("$prefix/lib","$prefix/$ming/lib");
+    copy_files("$prefix/lib/*.a","cross/mingw-runtime-3.12/mingwex/");
+    configure_make_install("cross/mingw-runtime-3.12",$prefix,"",$platform_opts,"--target=$ming --host=$ming --build=i686-pc-linux-gnu");
+    configure_make_install("cross/gcc-3.4.5-20060117-1",$prefix,"",$platform_opts,"--target=$ming --enable-threads --enable-languages=c,c++,f77");
+    fetch_url('ftp://ftp.trolltech.com/qt/source/qt-win-opensource-4.3.0-mingw.exe','files/qt-win-opensource-4.3.0-mingw.exe',
+	      '43e4930c1c97997fe3ecb12c9c384eda');
+    system("wine files/qt-win-opensource-4.3.0-mingw.exe");
+    copy_files("~/.wine/drive_c/Qt","$prefix"); 
 }
 
 sub job_native_freemat {
@@ -400,6 +408,7 @@ sub job_native_freemat {
     $platform_opts->{'opts'} = '-O2';
     $platform_opts->{'arflags'} = 'crv';
     $platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
+    $platform_opts->{'preconfigure opts'} = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  ";
 
 
 # TODO: LAPACK, ZLIB
@@ -459,14 +468,11 @@ sub job_native_freemat {
 		      'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
 		      'build','portaudio');
 
-    my $save_platform_opts = $platform_opts->{'configure opts'};
-    $platform_opts->{'configure opts'} .= " --enable-single";
     autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
 		      $platform_opts,
 		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
 		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		      'build_single','fftw-3.1.2');
-    $platform_opts->{'configure opts'} = $save_platform_opts;
+		      'build_single','fftw-3.1.2','--enable-single');
 
     autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
 		      $platform_opts,
@@ -535,8 +541,97 @@ sub job_native_freemat {
     configure_make_install('build/FreeMat-3.2',$prefix,'build',$platform_opts);
 }
 
+sub job_win_freemat {
+    my $prefix = shift;
+    my $platform_opts;
+
+    $platform_opts->{'configure opts'} = '';
+    $platform_opts->{'make opts'} = '';
+    $platform_opts->{'compiler'} = 'i686-mingw32-gcc';
+    $platform_opts->{'libs'} = "-lopengl32 -lglu32 -lgdi32 -luser32 -lwsock32 -lwinmm";
+    $platform_opts->{'ldflags'} = "-L$prefix/lib";
+    $platform_opts->{'cflags'} = "-I$prefix/include";
+    $platform_opts->{'archiver'} = 'i686-mingw32-ar';
+    $platform_opts->{'ranlib'} = 'i686-mingw32-ranlib';
+    $platform_opts->{'opts'} = '-O2';
+    $platform_opts->{'arflags'} = 'crv';
+    $platform_opts->{'fc'} = 'i686-mingw32-g77';
+    $platform_opts->{'preconfigure opts'} = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  ";
+
+
+# TODO: LAPACK, ZLIB
+
+    setup_common($prefix);
+
+    my $need_qt4 = 0;
+    my $rcc;
+    my $moc;
+    my $uic;
+    eval {
+	$rcc = find_program('RCC','rcc4','rcc-qt4','rcc');
+	$moc = find_program('MOC','moc4','moc-qt4','moc');
+	$uic = find_program('UIC','uic4','uic-qt4','uic');
+    };
+
+    if ($@) {
+	print "One or more of rcc, moc, or uic was not found - will need to build Qt4.\n";
+	print "rcc - $rcc, moc - $moc, uic - $uic\n";
+	$need_qt4 = 1;
+    }
+
+    if ($need_qt4) {
+	die "Win version of QT cannot be installed in the win_freemat job - use the setup-mingw-cross job.";
+    }
+    
+    autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
+		      $platform_opts,
+		      'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.0.tar.gz',
+		      'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
+		      'build','pcre-7.0','--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
+
+    autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+		      $platform_opts,
+		      'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
+		      'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
+		      'build','portaudio','--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
+
+    autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+		      $platform_opts,
+		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
+		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
+		      'build_single','fftw-3.1.2','--host=i686-mingw32 --build=i686-pc-linux-gnu --enable-single','cross');
+
+    autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+		      $platform_opts,
+		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
+		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
+		      'build_double','fftw-3.1.2','--host=i686-mingw32 --build=i686-pc-linux-gnu','cross');
+
+    autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
+		      $platform_opts,
+		      'ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz',
+		      'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
+		      'build','ffcall-1.10','--host=i686-mingw32 --build=i686-pc-linux-gnu RANLIB=i686-mingw32-ranlib','cross');
+
+    
+
+    print "************************************************************\n";
+    print "    Handling package ARPACK\n";
+    print "************************************************************\n";
+
+
+}
+
+
 my $prefix = shift;
 my $job = shift;
+
+if (not defined $job or not defined $prefix) {
+  die "Usage: buildtool <prefix> <task>\n" . " where <task> is one of: \n" . 
+      "    native-freemat    - build freemat for this platform\n" . 
+      "    setup-mingw-cross - setup the win32 cross compiler\n" .
+      "    win-freemat       - build win32 freemat\n";     
+}
 
 if ($job =~ "native-freemat") {
     job_native_freemat($prefix);
@@ -544,4 +639,8 @@ if ($job =~ "native-freemat") {
 
 if ($job =~ "setup-mingw-cross") {
     job_setup_mingw_cross($prefix);
+}
+
+if ($job =~ "win-freemat") {
+    job_win_freemat($prefix);
 }

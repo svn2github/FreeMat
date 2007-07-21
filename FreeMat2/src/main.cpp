@@ -59,6 +59,7 @@ void usage() {
   printf("                   Note that in this mode, FreeMat will only \n");
   printf("                   update its internal configuration and then\n");
   printf("                   exit.\n");
+  printf("     -p <path>     Set the FreeMat path to the given pathspec.\n");
   printf("     -help         Get this help text\n");
   exit(0);
 }
@@ -100,6 +101,7 @@ int main(int argc, char *argv[]) {
   int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
   int noplastique = parseFlagArg(argc,argv,"-noplastique",false);
   int installMode = parseFlagArg(argc,argv,"-i",true);
+  int pathMode = parseFlagArg(argc,argv,"-p",true);
 
   signal(SIGINT,sigDoNothing);
   
@@ -123,6 +125,11 @@ int main(int argc, char *argv[]) {
     nogui = true;
   }
   
+  if (pathMode) {
+    QSettings settings("FreeMat","FreeMat");
+    settings.setValue("interpreter/path",QString::fromStdString(argv[pathMode+1]).split(":"));
+  }
+
   if (scriptMode) nogui = 1;
   m_app = new MainApp;
   if (!nogui)

@@ -53,7 +53,9 @@ function helpgen(source_path)
   rmdir([source_path,'/help/tmp'],'s');
 
   printf('Writing installation manifest...\n');
-  install_list = helpgen_rdir([source_path,'/help']);
+  install_list = helpgen_rdir([source_path,'/help/html']);
+  install_list = [install_list;helpgen_rdir([source_path,'/help/text'])];
+  install_list = [install_list;{[source_path,'/help/latex/main.pdf']}];
   install_list = [install_list;helpgen_rdir([source_path,'/toolbox'])];
   qlen = numel(source_path)+2;
   delete([source_path,'/manifest.am']);

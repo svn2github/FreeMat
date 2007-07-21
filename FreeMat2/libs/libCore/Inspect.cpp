@@ -1284,7 +1284,7 @@ ArrayVector WhichFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   string fname = arg[0].getContentsAsString();
   bool isFun;
   FuncPtr val;
-  isFun = eval->getContext()->lookupFunction(fname,val);
+  isFun = eval->lookupFunction(fname,val);
   char buffer[1000];
   Array ret(Array::emptyConstructor());
   if (isFun) {

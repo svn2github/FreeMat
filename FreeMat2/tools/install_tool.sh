@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # These may evolve with time
+MAKE_OPTS="-j8"
 XWIN_GCC_FILE="gcc-core-3.4.5-20060117-1-src.tar.gz"
 XWIN_GPP_FILE="gcc-g++-3.4.5-20060117-1-src.tar.gz"
 XWIN_G77_FILE="gcc-g77-3.4.5-20060117-1-src.tar.gz"
@@ -15,6 +16,8 @@ XWIN_QT_VER="4.3.0"
 XWIN_QT="qt-win-opensource-$XWIN_QT_VER-mingw.exe"
 QT_MAC="qt-mac-opensource-src-$XWIN_QT_VER"
 QT_MAC_FILE="$QT_MAC.tar.gz"
+QT_X11="qt-x11-opensource-src-$XWIN_QT_VER"
+QT_X11_FILE="$QT_X11.tar.gz"
 MINGW_TARGET="i686-mingw32"
 FFTW="fftw-3.1.2"
 FFTW_FILE="$FFTW.tar.gz"
@@ -96,7 +99,7 @@ CrossConfigureAndBuildBinUtils()
     MakeDirectory $BASE/Cross
     cd $BASE/XRoot/$1
     ./configure --target=$MINGW_TARGET --prefix=$BASE/Cross
-    make && make install
+    make $MAKE_OPTS && make install
 }
 
 Link()
@@ -110,7 +113,7 @@ ConfigureMakeInstall()
     echo "Command line configure $2"
     cd $BASE/$4/$1
     $3/configure $2
-    make
+    make $MAKE_OPTS
     make install
 }
 
@@ -118,7 +121,7 @@ MakeOverride()
 {
     echo "Making package $1..."
     cd $BASE/XRoot/$1
-    make CC=$2-gcc AR="$2-ar cr" RANLIB=$2-ranlib 
+    make CC=$2-gcc AR="$2-ar cr" RANLIB=$2-ranlib $MAKE_OPTS
 }
 
 
@@ -136,7 +139,7 @@ SetupXWinCommon()
 
 SetupCommon()
 {
-    PATH=$PATH:$BASE/Build/bin
+    PATH=$BASE/Build/bin:$PATH
     PREFIX=$BASE/Build
     PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$BASE/Build/lib/pkgconfig"
     MakeDirectory $PREFIX
@@ -230,9 +233,9 @@ SetupXWinLAPACK()
     cd $BASE/XRoot/$LAPACK
     touch make.inc
     cd $BASE/XRoot/$LAPACK/INSTALL
-    make FORTRAN="$MINGW_TARGET-g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="$MINGW_TARGET-ranlib" ARCH="$MINGW_TARGET-ar" ARCHFLAGS="cr" LOADER="$MINGW_TARGET-g77"
+    make FORTRAN="$MINGW_TARGET-g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="$MINGW_TARGET-ranlib" ARCH="$MINGW_TARGET-ar" ARCHFLAGS="cr" LOADER="$MINGW_TARGET-g77" $MAKE_OPTS
     cd $BASE/XRoot/$LAPACK/SRC
-    make FORTRAN="$MINGW_TARGET-g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="$MINGW_TARGET-ranlib" ARCH="$MINGW_TARGET-ar" ARCHFLAGS="cr"
+    make FORTRAN="$MINGW_TARGET-g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="$MINGW_TARGET-ranlib" ARCH="$MINGW_TARGET-ar" ARCHFLAGS="cr" $MAKE_OPTS
     cp $BASE/XRoot/$LAPACK/liblapack.a $PREFIX/lib
 }
 
@@ -253,9 +256,9 @@ SetupXWinARPACK()
     SetupXWinCommon
     DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK XRoot
     cd $BASE/XRoot/$ARPACK/SRC
-    make FC="$MINGW_TARGET-g77" FFLAGS="-O2" AR="$MINGW_TARGET-ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="$MINGW_TARGET-ranlib" all
+    make FC="$MINGW_TARGET-g77" FFLAGS="-O2" AR="$MINGW_TARGET-ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="$MINGW_TARGET-ranlib" $MAKE_OPTS all 
     cd $BASE/XRoot/$ARPACK/UTIL
-    make FC="$MINGW_TARGET-g77" FFLAGS="-O2" AR="$MINGW_TARGET-ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="$MINGW_TARGET-ranlib" all
+    make FC="$MINGW_TARGET-g77" FFLAGS="-O2" AR="$MINGW_TARGET-ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="$MINGW_TARGET-ranlib" $MAKE_OPTS all
     cp $BASE/XRoot/$ARPACK/libarpack.a $PREFIX/lib
 }
 
@@ -264,7 +267,7 @@ SetupXWinZlib()
     SetupXWinCommon
     DownloadAndUnpackTarBall $ZLIB_FILE http://downloads.sourceforge.net/libpng $ZLIB XRoot
     cd $BASE/XRoot/$ZLIB
-    make CC="$MINGW_TARGET-gcc" AR="$MINGW_TARGET-ar rc" RANLIB="$MINGW_TARGET-ranlib"
+    make CC="$MINGW_TARGET-gcc" AR="$MINGW_TARGET-ar rc" RANLIB="$MINGW_TARGET-ranlib" $MAKE_OPTS
     cp zlib.h zconf.h $PREFIX/include/.
     cp libz.a $PREFIX/lib/.
 }
@@ -278,7 +281,7 @@ SetupXWinPcre()
     echo "Command line configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$PCRE/config.guess) --disable-shared"
     cd $BASE/XRoot/$PCRE
     ./configure --prefix=$PREFIX --host=$MINGW_TARGET --build=$($BASE/XRoot/$PCRE/config.guess) --disable-shared
-    make libpcre.la
+    make $MAKE_OPTS libpcre.la
     cp $BASE/XRoot/$PCRE/.libs/libpcre.a $BASE/Cross/lib/.
     cp $BASE/XRoot/$PCRE/pcre.h $BASE/Cross/include/.
 }
@@ -409,7 +412,7 @@ SetupZlib()
     SetupCommon
     DownloadAndUnpackTarBall $ZLIB_FILE http://downloads.sourceforge.net/libpng $ZLIB Root
     cd $BASE/Root/$ZLIB
-    make 
+    make $MAKE_OPTS
     cp zlib.h zconf.h $PREFIX/include/.
     cp libz.a $PREFIX/lib/.
 }
@@ -442,14 +445,14 @@ SetupARPACK()
     cd $BASE/Root/$ARPACK/SRC
     if  [ ! -f /usr/bin/g77 ] 
 	then
-	make FC="gfortran" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	make FC="gfortran" FFLAGS="-O2" ARPACKLIB="../libarpack.a" $MAKE_OPTS all
 	cd $BASE/Root/$ARPACK/UTIL
-	make FC="gfortran" FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	make FC="gfortran" FFLAGS="-O2" ARPACKLIB="../libarpack.a" $MAKE_OPTS all
 	cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
     else
-	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" $MAKE_OPTS all
 	cd $BASE/Root/$ARPACK/UTIL
-	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" all
+	make FFLAGS="-O2" ARPACKLIB="../libarpack.a" $MAKE_OPTS all
 	cp $BASE/Root/$ARPACK/libarpack.a $PREFIX/lib
     fi
 }
@@ -558,9 +561,9 @@ SetupLAPACK()
     cd $BASE/Root/$LAPACK
     touch make.inc
     cd $BASE/Root/$LAPACK/INSTALL
-    make FORTRAN="g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="ranlib" ARCH="ar" ARCHFLAGS="cr" LOADER="g77"
+    make FORTRAN="g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="ranlib" ARCH="ar" ARCHFLAGS="cr" LOADER="g77" $MAKE_OPTS
     cd $BASE/Root/$LAPACK/SRC
-    make FORTRAN="g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="ranlib" ARCH="ar" ARCHFLAGS="cr"
+    make FORTRAN="g77" OPTS="-O2" LAPACKLIB="liblapack.a" RANLIB="ranlib" ARCH="ar" ARCHFLAGS="cr" $MAKE_OPTS
     cp $BASE/Root/$LAPACK/liblapack.a $PREFIX/lib
 }
 
@@ -571,13 +574,19 @@ SetupMacQt()
     ConfigureMakeInstall $QT_MAC "-fast -no-qt3support -universal -prefix $PREFIX" . Root
 }
 
+SetupQt()
+{
+    SetupCommon
+    DownloadAndUnpackTarBall $QT_X11_FILE ftp://ftp.trolltech.com/qt/source $QT_X11 Root
+    ConfigureMakeInstall $QT_X11 "-fast -no-qt3support -prefix $PREFIX" . Root
+}
 
 SetupMacPortAudio()
 {
     SetupCommon
     DownloadAndUnpackTarBall $PORTAUDIO_FILE http://www.portaudio.com/archives $PORTAUDIO Root
     cd $BASE/Root/$PORTAUDIO
-    make -f Makefile.darwin
+    make -f Makefile.darwin $MAKE_OPTS
     cp lib/libportaudio.a $BASE/Build/lib/.
     ranlib $BASE/Build/lib/libportaudio.a
     cp include/*.h $BASE/Build/include/.
@@ -634,12 +643,12 @@ CrossLinkFramework()
 RelinkPlugin() {
     SetupCommon
     echo "Relinking plugin $1 to framework $2"
-    Relink $2 "$baseDir/Contents/MacOS/imageformats/$1"
+    Relink $2 "$baseDir/Contents/Resources/imageformats/$1"
 }
 
 RelinkPlugins() {
     SetupCommon
-    list=`ls $baseDir/Contents/MacOS/imageformats`
+    list=`ls $baseDir/Contents/Resources/imageformats`
     for plugin in $list
     do
 	RelinkPlugin $plugin "QtGui"
@@ -713,7 +722,7 @@ EOF
     CopyDirectory "$srcDir/help/text" "$baseDir/Contents/Resources/help/text"
     CopyDirectory "$srcDir/toolbox" "$baseDir/Contents/Resources/toolbox"
     CopyFile "$srcDir/help/latex/main.pdf" "$baseDir/Contents/Resources/help/pdf/$FREEMAT.pdf"
-    CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/MacOS/imageformats"
+    CopyDirectory "$PREFIX/plugins/imageformats"  "$baseDir/Contents/Resources/imageformats"
     RelinkPlugins
     cp /usr/local/lib/libgfortran.2.dylib "$baseDir/Contents/Frameworks/."
     cp /usr/local/lib/libgcc_s.1.dylib "$baseDir/Contents/Frameworks/."
@@ -746,14 +755,14 @@ SetupMacFreeMat()
    MakeDirectory $BASE/Root/$FREEMAT/build
    cd $BASE/Root/$FREEMAT/build
    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml" 
-   make
+   make $MAKE_OPTS
 }
 
 SetupMacInplaceBuild()
 {
    SetupCommon
    ../configure --prefix=$PREFIX LDFLAGS="-L$PREFIX/lib -F$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/QtCore -I$PREFIX/include/QtGui -I$PREFIX/include/QtOpenGL -I$PREFIX/include/QtNetwork -I$PREFIX/include/QtXml" 
-   make
+   make $MAKE_OPTS
 }
 
 SetupMacInplaceBundle()
@@ -799,13 +808,14 @@ EOF
 SetupInplaceBuild() 
 {
   SetupCommon
-  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse" 
+  ../configure --prefix=$PREFIX LDFLAGS="-L/usr/lib/atlas -L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include -I/usr/include/pcre -I/usr/include/ufsparse" PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$BASE/Build/lib/pkgconfig:$BASE/Build/lib"
+  make  $MAKE_OPTS
 }
 
 SetupRelease()
 {
   SetupInplaceBuild
-  make
+  make $MAKE_OPTS
   make distcheck
   cp $FREEMAT_FILE Files/$FREEMAT_FILE
   SetupFreeMat
@@ -855,11 +865,11 @@ SetupXMacSparse()
     SetupXWinCommon
     DownloadAndUnpackTarBall  $SUITESPARSE_FILE http://www.cise.ufl.edu/research/sparse/SuiteSparse $SUITESPARSE XRoot
     cd $BASE/XRoot/$SUITESPARSE/AMD/Source
-    make CC=powerpc-apple-darwin8-gcc-4.0.1
+    make CC=powerpc-apple-darwin8-gcc-4.0.1 $MAKE_OPTS
     cp $BASE/XRoot/$SUITESPARSE/AMD/Lib/libamd.a $PREFIX/lib
     cp $BASE/XRoot/$SUITESPARSE/AMD/Include/*.h $PREFIX/include
     cd $BASE/XRoot/$SUITESPARSE/UMFPACK/Source
-    make  CC=powerpc-apple-darwin8-gcc-4.0.1
+    make  CC=powerpc-apple-darwin8-gcc-4.0.1 $MAKE_OPTS
     cp $BASE/XRoot/$SUITESPARSE/UMFPACK/Lib/libumfpack.a $PREFIX/lib
     cp $BASE/XRoot/$SUITESPARSE/UMFPACK/Include/*.h $PREFIX/include
     cp $BASE/XRoot/$SUITESPARSE/UFconfig/UFconfig.h $PREFIX/include    
@@ -884,14 +894,14 @@ SetupXMacARPACK()
     SetupXWinCommon
     DownloadAndUnpackTarBall $ARPACK_FILE $ARPACK_URL $ARPACK XRoot
     cd $BASE/XRoot/$ARPACK/SRC
-    make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" all
+    make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" $MAKE_OPTS all
     cd $BASE/XRoot/$ARPACK/UTIL
     if  [ ! -f second_orig.f ]
 	then
 	mv second.f second_orig.f
 	touch second.f
     fi
-    make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" all
+    make FC="gfortran-ppc" FFLAGS="-O2" AR="ar" ARFLAGS="rv" ARPACKLIB="../libarpack.a" RANLIB="ranlib" $MAKE_OPTS all
     cp $BASE/XRoot/$ARPACK/libarpack.a $PREFIX/lib
 }
 

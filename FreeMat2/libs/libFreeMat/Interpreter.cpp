@@ -324,7 +324,7 @@ std::string TrimExtension(std::string arg) {
 static std::string PrivateMangleName(std::string currentFunctionPath, std::string fname) {
   if (currentFunctionPath.empty()) return "";
   // First look to see if we are already a private function
-  string separator(QString(QDir::separator()).toStdString());
+  string separator("/");
   int ndx1 = currentFunctionPath.rfind(separator + "private" + separator);
   if (ndx1>=0) {
     // The current function is already in a private directory

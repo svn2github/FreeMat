@@ -626,7 +626,7 @@ public:
 
 
 typedef enum {
-  boolean,
+  t_boolean,
   unsigned_integer,
   integer,
   single_float,
@@ -716,7 +716,7 @@ std::string RegisterName(opcodeClass t, registerType topval) {
   char buffer[512];
   sprintf(buffer,"unknown");
   switch(t) {
-  case boolean: 
+  case t_boolean: 
     sprintf(buffer,"%u",topval.b);
     break;
   case unsigned_integer:
@@ -774,7 +774,7 @@ std::string OpCodeName(opcodeType topcode) {
 
 std::string OpCodeClass(opcodeClass topclass) {
   switch(topclass) {
-  case boolean: return "BOL";
+  case t_boolean: return "BOL";
   case unsigned_integer: return "USN";
   case integer: return "INT";
   case single_float: return "FLT";
@@ -863,7 +863,7 @@ typedef std::vector<VMInstruction*> VMStream;
 
 static inline void SetOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].b = op->literal.b;
     break;
   case unsigned_integer:
@@ -1055,7 +1055,7 @@ static inline void GTOp(VMInstruction *op) {
 
 static inline void CastBOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].b = reg[op->arg1].b;
     break;
   case unsigned_integer:
@@ -1075,7 +1075,7 @@ static inline void CastBOp(VMInstruction *op) {
 
 static inline void CastUOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].u = reg[op->arg1].b ? 1 : 0;
     break;
   case unsigned_integer:
@@ -1095,7 +1095,7 @@ static inline void CastUOp(VMInstruction *op) {
 
 static inline void CastIOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].i = reg[op->arg1].b ? 1 : 0;
     break;
   case unsigned_integer:
@@ -1115,7 +1115,7 @@ static inline void CastIOp(VMInstruction *op) {
 
 static inline void CastFOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].f = reg[op->arg1].b ? 1 : 0;
     break;
   case unsigned_integer:
@@ -1135,7 +1135,7 @@ static inline void CastFOp(VMInstruction *op) {
 
 static inline void CastDOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].d = reg[op->arg1].b ? 1 : 0;
     break;
   case unsigned_integer:
@@ -1155,7 +1155,7 @@ static inline void CastDOp(VMInstruction *op) {
 
 static inline void NegOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     throw Exception("Neg not supported for boolean arguments");
     break;
   case unsigned_integer:
@@ -1175,7 +1175,7 @@ static inline void NegOp(VMInstruction *op) {
 
 static inline void NotOp(VMInstruction *op) {
   switch (op->opclass) {
-  case boolean:
+  case t_boolean:
     reg[op->dest].b = !reg[op->arg1].b;
     return;
   }
@@ -1388,27 +1388,27 @@ RegisterReference JITExpression(VMStream& o, tree t);
 
 RegisterReference JITPromote(VMStream& o, RegisterReference a, opcodeClass c) {
   RegisterReference out(GetReg(),c);
-  if (a.type() == boolean) {
+  if (a.type() == t_boolean) {
     switch(c) {
-    case boolean:
+    case t_boolean:
       return a;      
     case unsigned_integer:
-      o << new VMInstruction(CASTU,boolean,out.index(),a.index());
+      o << new VMInstruction(CASTU,t_boolean,out.index(),a.index());
       return out;
     case integer:
-      o << new VMInstruction(CASTI,boolean,out.index(),a.index());
+      o << new VMInstruction(CASTI,t_boolean,out.index(),a.index());
       return a;
     case single_float:
-      o << new VMInstruction(CASTF,boolean,out.index(),a.index());
+      o << new VMInstruction(CASTF,t_boolean,out.index(),a.index());
       return out;
     case double_float:
-      o << new VMInstruction(CASTD,boolean,out.index(),a.index());
+      o << new VMInstruction(CASTD,t_boolean,out.index(),a.index());
       return out;
     }
   }
   if (a.type() == integer) {
     switch(c) {
-    case boolean:
+    case t_boolean:
       o << new VMInstruction(CASTB,integer,out.index(),a.index());
       return out;      
     case unsigned_integer:
@@ -1425,7 +1425,7 @@ RegisterReference JITPromote(VMStream& o, RegisterReference a, opcodeClass c) {
     }
   } else if (a.type() == unsigned_integer) {
     switch(c) {
-    case boolean:
+    case t_boolean:
       o << new VMInstruction(CASTB,unsigned_integer,out.index(),a.index());
       return out;      
     case unsigned_integer:
@@ -1442,7 +1442,7 @@ RegisterReference JITPromote(VMStream& o, RegisterReference a, opcodeClass c) {
     }    
   } else if (a.type() == single_float) {
     switch(c) {
-    case boolean:
+    case t_boolean:
       o << new VMInstruction(CASTB,single_float,out.index(),a.index());
       return out;      
     case unsigned_integer:
@@ -1459,7 +1459,7 @@ RegisterReference JITPromote(VMStream& o, RegisterReference a, opcodeClass c) {
     }        
   } else if (a.type() == double_float) {
     switch(c) {
-    case boolean:
+    case t_boolean:
       o << new VMInstruction(CASTB,double_float,out.index(),a.index());
       return out;      
     case unsigned_integer:
@@ -1479,59 +1479,59 @@ RegisterReference JITPromote(VMStream& o, RegisterReference a, opcodeClass c) {
 }
 
 RegisterReference JITBooleanOrOperator(VMStream& o, tree t) {
-  RegisterReference result(GetReg(),boolean);
+  RegisterReference result(GetReg(),t_boolean);
   RegisterReference a(JITExpression(o,t.first()));
-  RegisterReference atest(JITPromote(o,a,boolean));
+  RegisterReference atest(JITPromote(o,a,t_boolean));
   VMInstruction *jump_a_true = new VMInstruction(JIT,unsigned_integer,
 						 atest.index(),
 						 RTUnsigned(0));
   o << jump_a_true;
   RegisterReference b(JITExpression(o,t.second()));
-  RegisterReference btest(JITPromote(o,b,boolean));
+  RegisterReference btest(JITPromote(o,b,t_boolean));
   VMInstruction *jump_b_true = new VMInstruction(JIT,unsigned_integer,
 						 btest.index(),
 						 RTUnsigned(0));
   o << jump_b_true;
-  o << new VMInstruction(SET,boolean,result.index(),RTBoolean(false));
+  o << new VMInstruction(SET,t_boolean,result.index(),RTBoolean(false));
   VMInstruction *jump_done = new VMInstruction(JMP,unsigned_integer,
 					       RTUnsigned(o.size()+2));
   o << jump_done;
   jump_a_true->literal = RTUnsigned(o.size());
   jump_b_true->literal = RTUnsigned(o.size());
-  o << new VMInstruction(SET,boolean,result.index(),RTBoolean(true));
+  o << new VMInstruction(SET,t_boolean,result.index(),RTBoolean(true));
   o << new VMInstruction(NOP);
   return result;
 }
 
 RegisterReference JITBooleanNotOperator(VMStream& o, tree t) {
-  RegisterReference result(GetReg(),boolean);
+  RegisterReference result(GetReg(),t_boolean);
   RegisterReference a(JITExpression(o,t.first()));
-  RegisterReference atest(JITPromote(o,a,boolean));
-  o << new VMInstruction(NOT,boolean,result.index(),atest.index());
+  RegisterReference atest(JITPromote(o,a,t_boolean));
+  o << new VMInstruction(NOT,t_boolean,result.index(),atest.index());
   return result;
 }
 
 RegisterReference JITBooleanAndOperator(VMStream& o, tree t) {
-  RegisterReference result(GetReg(),boolean);
+  RegisterReference result(GetReg(),t_boolean);
   RegisterReference a(JITExpression(o,t.first()));
-  RegisterReference atest(JITPromote(o,a,boolean));
+  RegisterReference atest(JITPromote(o,a,t_boolean));
   VMInstruction *jump_a_false = new VMInstruction(JIF,unsigned_integer,
 						  atest.index(),
 						  RTUnsigned(0));
   o << jump_a_false;
   RegisterReference b(JITExpression(o,t.second()));
-  RegisterReference btest(JITPromote(o,b,boolean));
+  RegisterReference btest(JITPromote(o,b,t_boolean));
   VMInstruction *jump_b_false = new VMInstruction(JIF,unsigned_integer,
 						  btest.index(),
 						  RTUnsigned(0));
   o << jump_b_false;
-  o << new VMInstruction(SET,boolean,result.index(),RTBoolean(true));
+  o << new VMInstruction(SET,t_boolean,result.index(),RTBoolean(true));
   VMInstruction *jump_done = new VMInstruction(JMP,unsigned_integer,
 					       RTUnsigned(o.size()+2));
   o << jump_done;
   jump_a_false->literal = RTUnsigned(o.size());
   jump_b_false->literal = RTUnsigned(o.size());
-  o << new VMInstruction(SET,boolean,result.index(),RTBoolean(false));
+  o << new VMInstruction(SET,t_boolean,result.index(),RTBoolean(false));
   o << new VMInstruction(NOP);
   return result;
 }
@@ -1548,8 +1548,8 @@ RegisterReference JITComparisonOperator(VMStream& o, tree t, opcodeType op) {
     a = JITPromote(o,a,outputClass);
   if (b.type() != outputClass)
     b = JITPromote(o,b,outputClass);
-  RegisterReference c(GetReg(),boolean);
-  o << new VMInstruction(op,boolean,c.index(),a.index(),b.index());
+  RegisterReference c(GetReg(),t_boolean);
+  o << new VMInstruction(op,t_boolean,c.index(),a.index(),b.index());
   return c;
 }
 
@@ -1853,7 +1853,7 @@ void JITLoop(tree t) {
   loopjit << new VMInstruction(SET,integer,loop_increment_register,
 			       RTInteger(1));
   unsigned loop_test_register = GetReg();
-  loopjit << new VMInstruction(SET,boolean,loop_test_register,RTBoolean(false));
+  loopjit << new VMInstruction(SET,t_boolean,loop_test_register,RTBoolean(false));
   unsigned loop_start_instruction = loopjit.size();
   JITBlock(loopjit,t.second());
   loopjit << new VMInstruction(ADD,integer,loop_index_register,

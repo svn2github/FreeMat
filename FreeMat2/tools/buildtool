@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use File::Path;
 use File::Copy;
+use File::Basename;
 use Cwd;
 use warnings;
 use strict;
@@ -52,12 +53,14 @@ sub copy_file {
     my $source = shift;
     my $dest = shift;
     print "Copying $source to $dest\n";
+    copy($source,$dest) or die "copy of $source to $dest failed: $!\n";
 }
 
 # Copy a set of files 
 sub copy_files {
     my $source_pattern = shift;
     my $dest = shift;
+    print "Copying $source_pattern to $dest\n";
     my $retcode = system("cp -R $source_pattern $dest");
     if ($retcode != 0) {
 	die "Error on copy of $source_pattern and $dest\n";
@@ -91,6 +94,20 @@ sub unpack_tar_ball {
     change_directory $destdir;
     if (system("gunzip < $cwd/$tarball | tar xf -") != 0) {
 	die "Unable to unpack tarball $tarball in directory $destdir\n";
+    }
+    change_directory $cwd;
+}
+
+# unzip a zip file
+sub unzip_file {
+    my $zipfile = shift;
+    my $destdir = shift;
+    my $cwd = Cwd::cwd();
+    print "Unzipping $zipfile\n";
+    make_directory $destdir;
+    change_directory $destdir;
+    if (system("unzip $cwd/$zipfile") != 0) {
+	die "Unable to unzip $zipfile in directory $destdir\n";
     }
     change_directory $cwd;
 }
@@ -391,6 +408,9 @@ sub job_setup_mingw_cross {
 	      '43e4930c1c97997fe3ecb12c9c384eda');
     system("wine files/qt-win-opensource-4.3.0-mingw.exe");
     copy_files("~/.wine/drive_c/Qt","$prefix"); 
+    fetch_url('http://downloads.sourceforge.net/nsis/nsis-2.22-setup.exe','files/nsis-2.22-setup.exe',
+	      '97c8034ca4bf0fd2751bc4aa9d6c2612');
+    system("wine files/nsis-2.22-setup.exe");
 }
 
 sub job_native_freemat {
@@ -585,9 +605,9 @@ sub job_win_freemat {
     
     autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
 		      $platform_opts,
-		      'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.0.tar.gz',
-		      'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
-		      'build','pcre-7.0','--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
+		      'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.2.tar.gz',
+		      'files/pcre-7.2.tar.gz','5ca11a81b753de24fb87ddc872ccaa67',
+		      'build','pcre-7.2','--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
 
     autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
 		      $platform_opts,
@@ -614,12 +634,178 @@ sub job_win_freemat {
 		      'build','ffcall-1.10','--host=i686-mingw32 --build=i686-pc-linux-gnu RANLIB=i686-mingw32-ranlib','cross');
 
     
+    print "************************************************************\n";
+    print "    Handling package ATLAS\n";
+    print "************************************************************\n";
+
+    if (!test_function($prefix,'atlas','atlas','ATL_sgemm',$platform_opts)) {
+	fetch_url('http://www.scipy.org/Installing_SciPy/Windows?action=AttachFile&do=get&target=atlas3.6.0_WinNT_P2.zip',
+		  'files/atlas3.6.0_WinNT_P2.zip',
+		  'be03a518bf5125dbc6cf50931ffa3638');
+	unzip_file('files/atlas3.6.0_WinNT_P2.zip','cross/atlas');
+	copy_file('cross/atlas/libatlas.a',"$prefix/lib");
+	copy_file('cross/atlas/libcblas.a',"$prefix/lib");
+	copy_file('cross/atlas/libf77blas.a',"$prefix/lib");
+	test_function($prefix,'atlas','atlas','ATL_sgemm',$platform_opts) or
+	    die "Installation of ATLAS failed";
+    }
+
+    $platform_opts->{'libs'} = '-lf77blas -latlas -lg2c '. $platform_opts->{'libs'};
+
+    print "************************************************************\n";
+    print "    Handling package LAPACK\n";
+    print "************************************************************\n";
+
+    if (!test_function($prefix,'lapack','lapack','cheev_',$platform_opts)) {
+	fetch_url('http://www.netlib.org/lapack/lapack-3.1.0.tgz',
+		  'files/lapack-3.1.0.tgz',
+		  'd75d849fd034cf49c188931a4ab42e87');
+	unpack_tar_ball('files/lapack-3.1.0.tgz','cross');
+	system("touch cross/lapack-3.1.0/make.inc");
+	make_package("cross/lapack-3.1.0/INSTALL","$prefix",$platform_opts,"all");
+	make_package("cross/lapack-3.1.0/SRC","$prefix",$platform_opts,
+		     'LAPACKLIB="liblapack.a"');
+	copy_file("cross/lapack-3.1.0/liblapack.a","$prefix/lib");
+	test_function($prefix,'lapack','lapack','cheev_',$platform_opts) or
+	    die "Installation of LAPACK failed";
+    }
+
+    $platform_opts->{'libs'} = '-llapack '. $platform_opts->{'libs'};
 
     print "************************************************************\n";
     print "    Handling package ARPACK\n";
     print "************************************************************\n";
 
+    if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
+	fetch_url('http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
+		  'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
+	unpack_tar_ball('files/arpack96.tar.Z','cross');
+	my $cwd = Cwd::cwd();    
+	make_package('cross/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/cross/ARPACK/libarpack.a all");
+	copy_file('cross/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
+	test_function($prefix,'arpack','arpack','znaupd_',$platform_opts) or
+	    die "Installation of ARPACK failed";
+    }
 
+    print "************************************************************\n";
+    print "    Handling package libZ\n";
+    print "************************************************************\n";
+    if (!test_function($prefix,'z','z','inflate',$platform_opts)) {
+	fetch_url('http://downloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz',
+		  'files/zlib-1.2.3.tar.gz','debc62758716a169df9f62e6ab2bc634');
+	unpack_tar_ball('files/zlib-1.2.3.tar.gz','cross');
+	my $cwd = Cwd::cwd();
+	make_package('cross/zlib-1.2.3',$prefix,$platform_opts);
+	copy_file('cross/zlib-1.2.3/zlib.h',"$prefix/include");
+	copy_file('cross/zlib-1.2.3/zconf.h',"$prefix/include");
+	copy_file('cross/zlib-1.2.3/libz.a',"$prefix/lib");
+	test_function($prefix,'z','z','inflate',$platform_opts) or
+	    die "Installation of libZ failed";
+    }
+
+    print "************************************************************\n";
+    print "    Handling package SparseSuite\n";
+    print "************************************************************\n";
+
+    my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
+    if ($amd_found) {
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+    }
+    my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
+				      'umfpack_zl_solve',$platform_opts);
+    if (!$amd_found || !$umfpack_found) {
+	fetch_url('http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-2.3.1.tar.gz',
+		  'files/SuiteSparse-2.3.1.tar.gz','52d5088aaae7231b8c540657ccaf3625');
+	unpack_tar_ball('files/SuiteSparse-2.3.1.tar.gz','cross');
+	make_package('cross/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
+	make_package('cross/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
+	copy_file('cross/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
+	copy_file('cross/SuiteSparse/UMFPACK/Lib/libumfpack.a',"$prefix/lib/libumfpack.a");
+	copy_file('cross/SuiteSparse/AMD/Include/amd.h',"$prefix/include/amd.h");
+	copy_files('cross/SuiteSparse/UMFPACK/Include/*.h',"$prefix/include");
+	copy_file('cross/SuiteSparse/UFconfig/UFconfig.h',"$prefix/include/UFconfig.h");
+	test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts) or
+	    die "Installation of AMD package from sparse suite failed!\n";
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
+	    die "Installation of UMFPACK package from sparse suite package failed!\n";
+    }
+
+    print "************************************************************\n";
+    print "    Starting FreeMat Installation\n";
+    print "************************************************************\n";
+
+    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
+	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
+#    unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
+#    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\"");
+    my $baseDir="cross/FreeMat-3.3-Win32";
+    my $buildDir="cross/FreeMat-3.3/build";
+    my $srcDir="cross/FreeMat-3.3";
+    make_directory("$baseDir");
+    make_directory("$baseDir/Contents");
+    make_directory("$baseDir/Contents/bin");
+    make_directory("$baseDir/Contents/Resources");
+    make_directory("$baseDir/Contents/Resources/help");
+    make_directory("$baseDir/Contents/Resources/help/html");
+    make_directory("$baseDir/Contents/Resources/help/text");
+    make_directory("$baseDir/Contents/Resources/help/pdf");
+    make_directory("$baseDir/Contents/Resources/toolbox");
+    make_directory("$baseDir/Contents/Plugins/imageformats");
+    copy_files("$prefix/Qt/4.3.0/plugins/imageformats/*.dll","$baseDir/Contents/Plugins/imageformats/");
+    copy_files("$prefix/bin/FreeMat.exe","$baseDir/Contents/bin/FreeMat.exe");
+    copy_files("$prefix/Qt/4.3.0/bin/QtCore4.dll","$baseDir/Contents/bin/QtCore4.dll");
+    copy_files("$prefix/Qt/4.3.0/bin/QtGui4.dll","$baseDir/Contents/bin/QtGui4.dll");
+    copy_files("$prefix/Qt/4.3.0/bin/QtOpenGL4.dll","$baseDir/Contents/bin/QtOpenGL4.dll");
+    copy_files("$prefix/Qt/4.3.0/bin/QtNetwork4.dll","$baseDir/Contents/bin/QtNetwork4.dll");
+    copy_files("$prefix/Qt/4.3.0/bin/QtXml4.dll","$baseDir/Contents/bin/QtXml4.dll");
+    copy_files("$prefix/bin/mingwm10.dll","$baseDir/Contents/bin/mingwm10.dll");
+    copy_files("$prefix/share/FreeMat-3.3/help/html","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/FreeMat-3.3/help/text","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/FreeMat-3.3/toolbox","$baseDir/Contents/Resources");
+    copy_files("$prefix/share/FreeMat-3.3/help/latex/main.pdf","$baseDir/Contents/Resources/help/pdf/FreeMat-3.3.pdf");
+    copy_files("$srcDir/COPYING","$baseDir");
+    print "Generating NSI file...\n";
+    my $cwd = Cwd::cwd();
+    change_directory($baseDir);
+    my $files = `find -type f`;
+    my @file_list = split('\n',$files);
+    my $prev_path = "";
+    my $installation_list = "";
+    foreach my $val (@file_list) {
+	my $name;
+	my $path;
+	my $suffix;
+	($name,$path,$suffix) = fileparse($val);
+	if (not $path =~ $prev_path) {
+	    my $print_path = $path;
+	    $print_path =~ s!/!\\!g;
+	    $installation_list = $installation_list . "SetOutPath \"\$INSTDIR\\$print_path\"\n";
+	    $prev_path = $path;
+	}
+	$val =~ s!/!\\!g;
+	$installation_list = $installation_list . "FILE \"$val\"\n";
+    };
+    my $delete_list = "";
+    foreach my $val (@file_list) {
+	$val =~ s!/!\\!g;
+	$delete_list = $delete_list . "Delete \"\$INSTDIR\\$val\"\n";
+    };
+    change_directory($cwd);
+    open(FREEMATNSI,"$srcDir/tools/freemat_nsi.in") or die "Unable to open NSI file: $!\n";
+    open(FREEMATNSIOUT,">$baseDir/freemat.nsi") or die "Unable to open output NSI file: $!\n";
+    while (my $line = <FREEMATNSI>) {
+	$line =~ s/<VERSION_NUMBER>/3.3/g;
+	$line =~ s/<BUNDLE FILES>/$installation_list/g;
+	$line =~ s/<DELLIST>/$delete_list/g;
+	print FREEMATNSIOUT "$line";
+    }
+    close(FREEMATNSI);
+    close(FREEMATNSIOUT);
+    change_directory($baseDir);
+    if (system("wine ~/.wine/drive_c/Program\\ Files/NSIS/makensis.exe freemat.nsi") != 0) {
+	die "Unable to build installer: $!\n";
+    }
 }
 
 

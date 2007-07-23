@@ -8,6 +8,13 @@ use strict;
 
 my $md5program;
 
+# Set up the information on the packages used by FreeMat
+my %sparse_suite_info = ('version' => '2.3.1',
+			 'url' => 'http://www.cise.ufl.edu/research/sparse/SuiteSparse/',
+			 'file' => 'SuiteSparse-2.3.1.tar.gz',
+			 'md5' => '52d5088aaae7231b8c540657ccaf3625',
+			 'root' => 'SuiteSparse');
+
 # Find a MD5 Sum program
 sub find_program {
     my $title = shift;
@@ -217,7 +224,6 @@ sub make_package {
     print "Configuring package in $dir...\n";
     my $cwd = Cwd::cwd();
     change_directory $dir;
-#   my $cmdm = "make CC=$cc AR='$ar $arflags' ARCH=$ar RANLIB=$ranlib FFLAGS=$opts OPTS=$opts FC=$fc FORTRAN=$fc LOADER=$fc ARCHFLAGS=$arflags ARFLAGS=$arflags $mopts $target";
     my $cmdm = "make CC=$cc AR='$ar $arflags' ARCH=$ar RANLIB=$ranlib FFLAGS=$opts OPTS=$opts FC=$fc FORTRAN=$fc LOADER=$fc ARCHFLAGS=$arflags ARFLAGS='' $mopts $target";
     print "Make command is $cmdm\n";
     (system($cmdm) == 0) or die "make in $dir failed: $?\n";
@@ -418,7 +424,7 @@ sub job_native_freemat {
     my $platform_opts;
 
     $platform_opts->{'configure opts'} = '--disable-shared';
-    $platform_opts->{'make opts'} = '';
+    $platform_opts->{'make opts'} = '-j8';
     $platform_opts->{'compiler'} = 'gcc';
     $platform_opts->{'libs'} = "-llapack -lblas";
     $platform_opts->{'ldflags'} = "-L$prefix/lib";
@@ -456,7 +462,7 @@ sub job_native_freemat {
 	if ($version_test =~ /\(Qt (.*)\)/) {
 	    my $version_number = $1;
 	    $version_number =~ s|\.||g;
-	    if ($version_number < 420) {
+	    if ($version_number < 423) {
 		print "Qt Version $version_number is not sufficient\n";
 		$need_qt4 = 1;
 	    }
@@ -467,9 +473,9 @@ sub job_native_freemat {
     }
 
     if ($need_qt4) {
-	fetch_url('ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.2.3.tar.gz',
-		  'files/qt-x11-opensource-src-4.2.3.tar.gz','13f12bf58a32ebf15837fcd605cb3c99');
-	unpack_tar_ball('files/qt-x11-opensource-src-4.2.3.tar.gz','build');
+	fetch_url('ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.3.0.tar.gz',
+		  'files/qt-x11-opensource-src-4.3.0.tar.gz','13f12bf58a32ebf15837fcd605cb3c99');
+	unpack_tar_ball('files/qt-x11-opensource-src-4.3.0.tar.gz','build');
 	my $save_config_opts = $platform_opts->{'configure opts'};
 	$platform_opts->{'configure opts'} .= " -fast -no-qt3support";
 	configure_make_install("build/qt-x11-opensource-src-4.2.3",$prefix,"",$platform_opts);
@@ -553,12 +559,12 @@ sub job_native_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
 
-    fetch_url('http://downloads.sf.net/freemat/FreeMat-3.2.tar.gz',
-	      'files/FreeMat-3.2.tar.gz','61c99ce56fcc244a4108b26b3ecb6d9b');
+    fetch_url('http://downloads.sf.net/freemat/FreeMat-3.3.tar.gz',
+	      'files/FreeMat-3.3.tar.gz','a11672f887f9132ca12a3d6e83ed2881');
     $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
 	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
-    unpack_tar_ball('files/FreeMat-3.2.tar.gz','build');
-    configure_make_install('build/FreeMat-3.2',$prefix,'build',$platform_opts);
+    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
+    configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts);
 }
 
 sub job_win_freemat {
@@ -566,7 +572,7 @@ sub job_win_freemat {
     my $platform_opts;
 
     $platform_opts->{'configure opts'} = '';
-    $platform_opts->{'make opts'} = '';
+    $platform_opts->{'make opts'} = '-j8';
     $platform_opts->{'compiler'} = 'i686-mingw32-gcc';
     $platform_opts->{'libs'} = "-lopengl32 -lglu32 -lgdi32 -luser32 -lwsock32 -lwinmm";
     $platform_opts->{'ldflags'} = "-L$prefix/lib";
@@ -737,8 +743,8 @@ sub job_win_freemat {
 
     $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
 	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
-#    unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
-#    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\"");
+    unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
+    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\"");
     my $baseDir="cross/FreeMat-3.3-Win32";
     my $buildDir="cross/FreeMat-3.3/build";
     my $srcDir="cross/FreeMat-3.3";
@@ -777,7 +783,7 @@ sub job_win_freemat {
 	my $path;
 	my $suffix;
 	($name,$path,$suffix) = fileparse($val);
-	if (not $path =~ $prev_path) {
+	if ($path ne $prev_path) {
 	    my $print_path = $path;
 	    $print_path =~ s!/!\\!g;
 	    $installation_list = $installation_list . "SetOutPath \"\$INSTDIR\\$print_path\"\n";
@@ -808,25 +814,53 @@ sub job_win_freemat {
     }
 }
 
+sub job_rpm_freemat  {
+    my $prefix = shift;
+    setup_common($prefix);
+    delete_directory("build/rpm");
+    make_directory("build/rpm");
+    make_directory("build/rpm/BUILD");
+    make_directory("build/rpm/RPMS");
+    make_directory("build/rpm/SOURCES");
+    make_directory("build/rpm/SPECS");
+    make_directory("build/rpm/SRPMS");
+    copy_file("files/FreeMat-3.3.tar.gz","build/rpm/SOURCES");
+    open(FREEMATSPECIN,"build/FreeMat-3.3/tools/freemat_spec.in") or die "Unable to open SPEC file: $!\n";
+    open(FREEMATSPECOUT,">build/rpm/SPECS/freemat.spec") or die "Unable to open output .SPEC file: $!\n";
+    while (my $line = <FREEMATSPECIN>) {
+	$line =~ s/<VERSION_NUMBER>/3.3/g;	
+	print FREEMATSPECOUT "$line";
+    }
+    close(FREEMATSPECIN);
+    close(FREEMATSPECOUT);
+    my $cwd = Cwd::cwd();
+    system("rpmbuild -ba --define \"_topdir $cwd/build/rpm\" build/rpm/SPECS/freemat.spec") == 0 or
+	die "RPM build failed.";
+}
 
 my $prefix = shift;
 my $job = shift;
 
 if (not defined $job or not defined $prefix) {
-  die "Usage: buildtool <prefix> <task>\n" . " where <task> is one of: \n" . 
-      "    native-freemat    - build freemat for this platform\n" . 
-      "    setup-mingw-cross - setup the win32 cross compiler\n" .
-      "    win-freemat       - build win32 freemat\n";     
+    die "Usage: buildtool <prefix> <task>\n" . " where <task> is one of: \n" . 
+	"    native-freemat    - build freemat for this platform\n" . 
+	"    setup-mingw-cross - setup the win32 cross compiler\n" .
+	"    win-freemat       - build win32 freemat\n" .
+	"    rpm-freemat       - build an RPM of freemat\n";
 }
 
-if ($job =~ "native-freemat") {
+if ($job eq "native-freemat") {
     job_native_freemat($prefix);
 }
 
-if ($job =~ "setup-mingw-cross") {
+if ($job eq "setup-mingw-cross") {
     job_setup_mingw_cross($prefix);
 }
 
-if ($job =~ "win-freemat") {
+if ($job eq "win-freemat") {
     job_win_freemat($prefix);
+}
+
+if ($job eq "rpm-freemat") {
+    job_rpm_freemat($prefix);
 }

@@ -17,6 +17,7 @@ a = [a, ':' pwd '/toolbox/signal'];
 a = [a, ':' pwd '/toolbox/sparse'];
 a = [a, ':' pwd '/toolbox/stat'];
 a = [a, ':' pwd '/toolbox/string'];
+a = [a, ':' pwd '/toolbox/test'];
 a = [a, ':' pwd '/toolbox/time'];
 a = [a, ':' pwd '/toolbox/trig'];
 a = [a, ':' pwd '/toolbox/util'];

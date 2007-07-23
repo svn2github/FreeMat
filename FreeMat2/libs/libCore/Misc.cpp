@@ -1119,7 +1119,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('full: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t1all = t1all & t1 & tb;
@@ -1135,7 +1135,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('double: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t2all = t2all & t1 & tb;
@@ -1151,7 +1151,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('complex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t3all = t3all & t1 & tb;
@@ -1167,7 +1167,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('dcomplex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t4all = t4all & t1 & tb;
@@ -1188,7 +1188,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t1all = t1all & t1 & tb;
@@ -1204,7 +1204,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t2all = t2all & t1 & tb;
@@ -1220,7 +1220,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t3all = t3all & t1 & tb;
@@ -1236,7 +1236,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t4all = t4all & t1 & tb;
@@ -1268,7 +1268,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('float: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t1all = t1all & t1 & tb;
@@ -1285,7 +1285,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('double: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t2all = t2all & t1 & tb;
@@ -1302,7 +1302,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('complex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t3all = t3all & t1 & tb;
@@ -1319,7 +1319,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('dcomplex: compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t4all = t4all & t1 & tb;
@@ -1341,7 +1341,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t1all = t1all & t1 & tb;
@@ -1358,7 +1358,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t2all = t2all & t1 & tb;
@@ -1375,7 +1375,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t3all = t3all & t1 & tb;
@@ -1392,7 +1392,7 @@ ArrayVector GenEigFunction(int nargout, const ArrayVector &arg, Interpreter* m_e
 //  t1 = (er < bnd);
 //  if (~t1) printf('test failed: er = %e bnd = %e (num %d)\n',er,bnd,i); end
 //  g = eig(a,b);
-//  e2 = max(abs(g-diag(d)));
+//  e2 = max(abs(sort(g)-sort(diag(d))));
 //  tb = e2<bnd;
 //  if (~tb) printf('compact/full decomp mismatch: er = %e (num = %d)\n',e2,i); end
 //  t4all = t4all & t1 & tb;

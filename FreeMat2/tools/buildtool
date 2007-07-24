@@ -9,12 +9,82 @@ use strict;
 my $md5program;
 
 # Set up the information on the packages used by FreeMat
-my %sparse_suite_info = ('version' => '2.3.1',
-			 'url' => 'http://www.cise.ufl.edu/research/sparse/SuiteSparse/',
-			 'file' => 'SuiteSparse-2.3.1.tar.gz',
-			 'md5' => '52d5088aaae7231b8c540657ccaf3625',
-			 'root' => 'SuiteSparse');
-
+my %sparse_suite_pkg = ('url' => 'http://www.cise.ufl.edu/research/sparse/SuiteSparse/',
+			'file' => 'SuiteSparse-2.3.1.tar.gz',
+			'md5' => '52d5088aaae7231b8c540657ccaf3625',
+			'root' => 'SuiteSparse');
+my %binutils_pkg = ('url' => 'http://downloads.sf.net/mingw/',
+		    'file' => 'binutils-2.16.91-20060119-1-src.tar.gz',
+		    'md5' => '42e3a665111121075480244cafc27ce7',
+		    'root' => 'binutils-2.16.91-20060119-1');
+my %gcc_core_pkg = ('url' => 'http://downloads.sf.net/mingw/',
+		    'file' => 'gcc-core-3.4.5-20060117-1-src.tar.gz',
+		    'md5' => 'b72bffc6e7d5c7d1de099ad76ef0d45d',
+		    'root' => 'gcc-3.4.5-20060117-1');
+my %gcc_gpp_pkg =  ('url' => 'http://downloads.sf.net/mingw/',
+		    'file' => 'gcc-g++-3.4.5-20060117-1-src.tar.gz',
+		    'md5' => '42c92b923adfe4c8943f05c326af1736',
+		    'root' => 'gcc-3.4.5-20060117-1');
+my %gcc_g77_pkg = ('url' => 'http://downloads.sf.net/mingw/',
+		   'file' => 'gcc-g77-3.4.5-20060117-1-src.tar.gz',
+		   'md5' => 'a9fdbd5162aa1ae0171c47f929adf938',
+		   'root' => 'gcc-3.4.5-20060117-1');
+my %mingw_pkg = ('url' => 'http://downloads.sf.net/mingw/',
+		 'file' => 'mingw-runtime-3.12-src.tar.gz',
+		 'md5' => 'be0b0219645a4ee0f3495c2abf90b5ad',
+		 'root' => 'mingw-runtime-3.12');
+my %w32api_pkg = ('url' => 'http://downloads.sf.net/mingw/',
+		  'file' => 'w32api-3.9-src.tar.gz',
+		  'md5' => 'be0b0219645a4ee0f3495c2abf90b5ad',
+		  'root' => 'w32api-3.9');
+my %qt_win_pkg = ('url' => 'ftp://ftp.trolltech.com/qt/source/',
+		  'file' => 'qt-win-opensource-4.3.0-mingw.exe',
+		  'md5' => '43e4930c1c97997fe3ecb12c9c384eda',
+		  'root' => '');
+my %qt_x11_pkg = ('url' => 'ftp://ftp.trolltech.com/qt/source/',
+		  'file' => 'qt-x11-opensource-src-4.3.0.tar.gz',
+		  'md5' => '13f12bf58a32ebf15837fcd605cb3c99',
+		  'root' => 'qt-x11-opensource-src-4.3.0');
+my %nsis_pkg = ('url' => 'http://downloads.sourceforge.net/nsis/',
+		'file' => 'nsis-2.22-setup.exe',
+		'md5' => '97c8034ca4bf0fd2751bc4aa9d6c2612',
+		'root' => '');
+my %arpack_pkg = ('url' => 'http://www.caam.rice.edu/software/ARPACK/SRC/',
+		  'file' => 'arpack96.tar.Z',
+		  'md5' => '7525bb511694c6735a45bb40fad88429',
+		  'root' => 'ARPACK');
+my %sparse_pkg = ('url' => 'http://www.cise.ufl.edu/research/sparse/SuiteSparse/',
+		  'file' => 'SuiteSparse-2.3.1.tar.gz',
+		  'md5' => '52d5088aaae7231b8c540657ccaf3625',
+		  'root' => 'SuiteSparse');
+my %pcre_pkg =  ('url' => 'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/',
+		 'file' => 'pcre-7.2.tar.gz',
+		 'md5' => '5ca11a81b753de24fb87ddc872ccaa67',
+		 'root' => 'pcre-7.2');
+my %portaudio_pkg = ('url' => 'http://www.portaudio.com/archives/',
+		     'file' => 'pa_stable_v19_061121.tar.gz',
+		     'md5' => 'f2ceca92b3bfc206abccfb439c169a3c',
+		     'root' => 'portaudio');
+my %fftw_pkg = ('url' => 'http://www.fftw.org/',
+	       'file' => 'fftw-3.1.2.tar.gz',
+	       'md5' => '08f2e21c9fd02f4be2bd53a62592afa4',
+	       'root' => 'fftw-3.1.2');
+my %ffcall_pkg = ('url' => 'ftp://ftp.santafe.edu/pub/gnu/',
+		  'file' => 'ffcall-1.10.tar.gz',
+		  'md5' => '2db95007e901f3bc2ae7e5a9fe9ebea4',
+		  'root' => 'ffcall-1.10');
+my %atlas_win_pkg = ('url' => 'http://www.scipy.org/Installing_SciPy/Windows?action=AttachFile&do=get&target=',
+		     'file' => 'atlas3.6.0_WinNT_P2.zip',
+		     'md5' => 'be03a518bf5125dbc6cf50931ffa3638',
+		     'root' => 'atlas');
+my %lapack_pkg = ('url' => 'http://www.netlib.org/lapack/',
+		  'file' => 'lapack-3.1.0.tar.gz',
+		  'md5' => 'd75d849fd034cf49c188931a4ab42e87',
+		  'root' => 'lapack-3.1.0');
+my %libz_pkg =  ('url' => 'http://downloads.sourceforge.net/libpng/',
+		  'file' => 'zlib-1.2.3.tar.gz',
+		  'md5' => 'debc62758716a169df9f62e6ab2bc634',
+		  'root' => 'zlib-1.2.3');
 # Find a MD5 Sum program
 sub find_program {
     my $title = shift;
@@ -357,6 +427,22 @@ sub autopackage_check {
     }
 }
 
+sub autopackage_check_pkg {
+    my $prefix = shift;
+    my $packagename = shift;
+    my $libname = shift;
+    my $testfunc = shift;
+    my $include = shift;
+    my $platform_opts = shift;
+    my $builddir = shift;
+    my $pkgset = shift;
+    my $configure_opts = shift;
+    my $unpack_dir = shift;
+    autopackage_check($prefix,$packagename,$libname,$testfunc,$include,$platform_opts,
+		      $pkgset->{'url'} . $pkgset->{'file'}, 'files/' . $pkgset->{'file'},
+		      $pkgset->{'md5'}, $builddir, $pkgset->{'root'},
+		      $configure_opts, $unpack_dir);
+}
 
 sub job_setup_mingw_cross {
     my $prefix = shift;
@@ -417,6 +503,42 @@ sub job_setup_mingw_cross {
     fetch_url('http://downloads.sourceforge.net/nsis/nsis-2.22-setup.exe','files/nsis-2.22-setup.exe',
 	      '97c8034ca4bf0fd2751bc4aa9d6c2612');
     system("wine files/nsis-2.22-setup.exe");
+}
+
+sub job_mac_freemat {
+    my $prefix = shift;
+    my $platform_opts;
+
+    $platform_opts->{'configure opts'} = '--disable-shared';
+    $platform_opts->{'make opts'} = '-j8';
+    $platform_opts->{'compiler'} = 'gcc';
+    $platform_opts->{'libs'} = "-llapack -lblas";
+    $platform_opts->{'ldflags'} = "-L$prefix/lib";
+    $platform_opts->{'cflags'} = "-I$prefix/include";
+    $platform_opts->{'archiver'} = 'ar';
+    $platform_opts->{'ranlib'} = 'ranlib';
+    $platform_opts->{'opts'} = '-O2';
+    $platform_opts->{'arflags'} = 'crv';
+    $platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
+    $platform_opts->{'preconfigure opts'} = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  ";
+
+
+# TODO: LAPACK, ZLIB
+
+    setup_common($prefix);
+
+    autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
+			  $platform_opts,'build',\%pcre_pkg);
+
+#    autopackage_check_pkg($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+#			  $platform_opts,'build',\%portaudio_pkg);
+
+    autopackage_check_pkg($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+			  $platform_opts,'build_single',\%fftw_pkg,'--enable-single');
+    autopackage_check_pkg($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+			  $platform_opts,'build_double',\%fftw_pkg);
+    autopackage_check_pkg($prefix,'ffcall','avcall','__structcpy','avcall.h',
+			  $platform_opts,'build',\%ffcall_pkg);
 }
 
 sub job_native_freemat {
@@ -482,35 +604,16 @@ sub job_native_freemat {
 	$platform_opts->{'configure opts'} = $save_config_opts;
     }
 
-    autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
-		      $platform_opts,
-		      'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.0.tar.gz',
-		      'files/pcre-7.0.tar.gz','a34681744d97d8eb41c576de71c97150',
-		      'build','pcre-7.0');
-
-    autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
-		      $platform_opts,
-		      'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
-		      'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
-		      'build','portaudio');
-
-    autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
-		      $platform_opts,
-		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
-		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		      'build_single','fftw-3.1.2','--enable-single');
-
-    autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
-		      $platform_opts,
-		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
-		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		      'build_double','fftw-3.1.2');
-
-    autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
-		      $platform_opts,
-		      'ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz',
-		      'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
-		      'build','ffcall-1.10');
+    autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
+			  $platform_opts,'build',\%pcre_pkg);
+    autopackage_check_pkg($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+			  $platform_opts,'build',\%portaudio_pkg);
+    autopackage_check_pkg($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+			  $platform_opts,'build_single',\%fftw_pkg,'--enable-single');
+    autopackage_check_pkg($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+			  $platform_opts,'build_double',\%fftw_pkg);
+    autopackage_check_pkg($prefix,'ffcall','avcall','__structcpy','avcall.h',
+			  $platform_opts,'build',\%ffcall_pkg);
 
     print "************************************************************\n";
     print "    Handling package ARPACK\n";
@@ -609,36 +712,21 @@ sub job_win_freemat {
 	die "Win version of QT cannot be installed in the win_freemat job - use the setup-mingw-cross job.";
     }
     
-    autopackage_check($prefix,'pcre','pcre','pcre_compile','pcre.h',
-		      $platform_opts,
-		      'ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.2.tar.gz',
-		      'files/pcre-7.2.tar.gz','5ca11a81b753de24fb87ddc872ccaa67',
-		      'build','pcre-7.2','--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
-
-    autopackage_check($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
-		      $platform_opts,
-		      'http://www.portaudio.com/archives/pa_stable_v19_061121.tar.gz',
-		      'files/pa_stable_v19_061121.tar.gz','f2ceca92b3bfc206abccfb439c169a3c',
-		      'build','portaudio','--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
-
-    autopackage_check($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
-		      $platform_opts,
-		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
-		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		      'build_single','fftw-3.1.2','--host=i686-mingw32 --build=i686-pc-linux-gnu --enable-single','cross');
-
-    autopackage_check($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
-		      $platform_opts,
-		      'http://www.fftw.org/fftw-3.1.2.tar.gz',
-		      'files/fftw-3.1.2.tar.gz','08f2e21c9fd02f4be2bd53a62592afa4',
-		      'build_double','fftw-3.1.2','--host=i686-mingw32 --build=i686-pc-linux-gnu','cross');
-
-    autopackage_check($prefix,'ffcall','avcall','__structcpy','avcall.h',
-		      $platform_opts,
-		      'ftp://ftp.santafe.edu/pub/gnu/ffcall-1.10.tar.gz',
-		      'files/ffcall-1.10.tar.gz','2db95007e901f3bc2ae7e5a9fe9ebea4',
-		      'build','ffcall-1.10','--host=i686-mingw32 --build=i686-pc-linux-gnu RANLIB=i686-mingw32-ranlib','cross');
-
+    autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
+			  $platform_opts,'build',\%pcre_pkg,
+			  '--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
+    autopackage_check_pkg($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
+			  $platform_opts,'build',\%portaudio_pkg,
+			  '--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
+    autopackage_check_pkg($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+			  $platform_opts,'build_single',\%fftw_pkg,
+			  '--host=i686-mingw32 --build=i686-pc-linux-gnu --enable-single','cross');
+    autopackage_check_pkg($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+			  $platform_opts,'build_double',\%fftw_pkg,
+			  '--host=i686-mingw32 --build=i686-pc-linux-gnu','cross');
+    autopackage_check_pkg($prefix,'ffcall','avcall','__structcpy','avcall.h',
+			  $platform_opts,'build',\%ffcall_pkg,
+			  '--host=i686-mingw32 --build=i686-pc-linux-gnu RANLIB=i686-mingw32-ranlib','cross');
     
     print "************************************************************\n";
     print "    Handling package ATLAS\n";
@@ -846,6 +934,7 @@ if (not defined $job or not defined $prefix) {
 	"    native-freemat    - build freemat for this platform\n" . 
 	"    setup-mingw-cross - setup the win32 cross compiler\n" .
 	"    win-freemat       - build win32 freemat\n" .
+	"    mac-freemat       - build the mac freemat\n" .
 	"    rpm-freemat       - build an RPM of freemat\n";
 }
 
@@ -863,4 +952,8 @@ if ($job eq "win-freemat") {
 
 if ($job eq "rpm-freemat") {
     job_rpm_freemat($prefix);
+}
+
+if ($job eq "mac-freemat") {
+    job_mac_freemat($prefix);
 }

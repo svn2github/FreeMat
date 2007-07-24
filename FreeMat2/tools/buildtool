@@ -45,6 +45,10 @@ my %qt_x11_pkg = ('url' => 'ftp://ftp.trolltech.com/qt/source/',
 		  'file' => 'qt-x11-opensource-src-4.3.0.tar.gz',
 		  'md5' => '13f12bf58a32ebf15837fcd605cb3c99',
 		  'root' => 'qt-x11-opensource-src-4.3.0');
+my %qt_mac_pkg = ('url' => 'ftp://ftp.trolltech.com/qt/source/',
+		  'file' => 'qt-mac-opensource-src-4.3.0.tar.gz',
+		  'md5' => '97f81a43d75569eb0d2e34a1da0ad68f',
+		  'root' => 'qt-mac-opensource-src-4.3.0');
 my %nsis_pkg = ('url' => 'http://downloads.sourceforge.net/nsis/',
 		'file' => 'nsis-2.22-setup.exe',
 		'md5' => '97c8034ca4bf0fd2751bc4aa9d6c2612',
@@ -525,10 +529,10 @@ sub job_mac_freemat {
     my $prefix = shift;
     my $platform_opts;
 
-    $platform_opts->{'configure opts'} = '--disable-shared';
-    $platform_opts->{'make opts'} = '-j8';
+    $platform_opts->{'configure opts'} = '';
+    $platform_opts->{'make opts'} = '';
     $platform_opts->{'compiler'} = 'gcc';
-    $platform_opts->{'libs'} = "-llapack -lblas";
+    $platform_opts->{'libs'} = "-llapack -framework vecLib -lgfortran -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon";
     $platform_opts->{'ldflags'} = "-L$prefix/lib";
     $platform_opts->{'cflags'} = "-I$prefix/include";
     $platform_opts->{'archiver'} = 'ar';
@@ -538,23 +542,107 @@ sub job_mac_freemat {
     $platform_opts->{'fc'} = find_program('FORTRAN Compiler','g77','gfortran','f90','f95');
     $platform_opts->{'preconfigure opts'} = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  ";
 
-
-# TODO: LAPACK, ZLIB
-
     setup_common($prefix);
+
+    my $need_qt4 = 0;
+    my $rcc;
+    my $moc;
+    my $uic;
+    eval {
+	$rcc = find_program('RCC','rcc4','rcc-qt4','rcc');
+	$moc = find_program('MOC','moc4','moc-qt4','moc');
+	$uic = find_program('UIC','uic4','uic-qt4','uic');
+    };
+
+    if ($@) {
+	print "One or more of rcc, moc, or uic was not found - will need to build Qt4.\n";
+	print "rcc - $rcc, moc - $moc, uic - $uic\n";
+	$need_qt4 = 1;
+    }
+
+    if (!$need_qt4) {
+	my $version_test = `$moc -v 2>&1`;
+	if ($version_test =~ /\(Qt (.*)\)/) {
+	    my $version_number = $1;
+	    $version_number =~ s|\.||g;
+	    if ($version_number < 423) {
+		print "Qt Version $version_number is not sufficient\n";
+		$need_qt4 = 1;
+	    }
+	} else {
+	    print "Qt Version $version_test is not sufficient\n";
+	    $need_qt4 = 1;
+	}
+    }
+
+    if ($need_qt4) {
+	fetch_unpack_pkg(\%qt_mac_pkg,'build');
+	my $save_config_opts = $platform_opts->{'configure opts'};
+	configure_make_install("build/$qt_mac_pkg{root}",$prefix,"",$platform_opts," -fast -universal -no-qt3support");
+    }
 
     autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
 			  $platform_opts,'build',\%pcre_pkg);
-
-#    autopackage_check_pkg($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
-#			  $platform_opts,'build',\%portaudio_pkg);
-
+    if (!test_function($prefix,'portaudio','portaudio','Pa_OpenStream',$platform_opts) ||
+	!test_include_file($prefix,'portaudio','portaudio.h',$platform_opts)) {
+	fetch_unpack_pkg(\%portaudio_pkg,'build');
+	make_package("build/$portaudio_pkg{'root'}",$prefix,$platform_opts,' -f Makefile.darwin AR=/usr/bin/ar');
+	copy_file("build/$portaudio_pkg{'root'}/lib/libportaudio.a","$prefix/lib");
+	system("ranlib $prefix/lib");
+	copy_files("build/$portaudio_pkg{'root'}/include/*.h","$prefix/include");
+	test_function($prefix,'portaudio','portaudio','Pa_OpenStream',$platform_opts) or
+	    die "installation of PortAudio failed!";
+    }
     autopackage_check_pkg($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
 			  $platform_opts,'build_single',\%fftw_pkg,'--enable-single');
     autopackage_check_pkg($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
 			  $platform_opts,'build_double',\%fftw_pkg);
     autopackage_check_pkg($prefix,'ffcall','avcall','__structcpy','avcall.h',
 			  $platform_opts,'build',\%ffcall_pkg);
+    
+    print "************************************************************\n";
+    print "    Handling package ARPACK\n";
+    print "************************************************************\n";
+
+    if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
+	fetch_unpack_pkg(\%arpack_pkg,'build');
+	my $cwd = Cwd::cwd();    
+	if (not -f 'build/ARPACK/UTIL/second_orig.f') {
+	    copy_file('build/ARPACK/UTIL/second.f','build/ARPACK/Util/second_orig.f');
+	    delete_file('build/ARPACK/UTIL/second.f');
+	    system('touch build/ARPACK/UTIL/second.f');
+	}
+	make_package('build/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/build/ARPACK/libarpack.a all");
+	copy_file('build/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
+	test_function($prefix,'arpack','arpack','znaupd_',$platform_opts) or
+	    die "Installation of ARPACK failed";
+    }
+
+    print "************************************************************\n";
+    print "    Handling package SparseSuite\n";
+    print "************************************************************\n";
+
+    my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
+    if ($amd_found) {
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+    }
+    my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
+				      'umfpack_zl_solve',$platform_opts);
+    if (!$amd_found || !$umfpack_found) {
+	fetch_unpack_pkg(\%sparse_suite_pkg,'build');
+	make_package('build/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
+	make_package('build/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
+	copy_file('build/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
+	copy_file('build/SuiteSparse/UMFPACK/Lib/libumfpack.a',"$prefix/lib/libumfpack.a");
+	copy_file('build/SuiteSparse/AMD/Include/amd.h',"$prefix/include/amd.h");
+	copy_files('build/SuiteSparse/UMFPACK/Include/*.h',"$prefix/include");
+	copy_file('build/SuiteSparse/UFconfig/UFconfig.h',"$prefix/include/UFconfig.h");
+	test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts) or
+	    die "Installation of AMD package from sparse suite failed!\n";
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
+	    die "Installation of UMFPACK package from sparse suite package failed!\n";
+    }
 }
 
 sub job_native_freemat {
@@ -613,9 +701,7 @@ sub job_native_freemat {
     if ($need_qt4) {
 	fetch_unpack_pkg(\%qt_x11_pkg,'build');
 	my $save_config_opts = $platform_opts->{'configure opts'};
-	$platform_opts->{'configure opts'} .= " -fast -no-qt3support";
-	configure_make_install("build/$qt_x11_pkg{root}",$prefix,"",$platform_opts);
-	$platform_opts->{'configure opts'} = $save_config_opts;
+	configure_make_install("build/$qt_x11_pkg{root}",$prefix,"",$platform_opts," -fast -no-qt3support");
     }
 
     autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',

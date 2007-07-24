@@ -444,6 +444,22 @@ sub autopackage_check_pkg {
 		      $configure_opts, $unpack_dir);
 }
 
+sub fetch_unpack_pkg {
+    my $pkgset = shift;
+    my $unpack_dir = shift;
+    fetch_url($pkgset->{'url'} . $pkgset->{'file'},
+	      'files/' . $pkgset->{'file'}, $pkgset->{'md5'});
+    unpack_tar_ball('files/' . $pkgset->{'file'},$unpack_dir);
+}
+
+sub fetch_unzip_pkg {
+    my $pkgset = shift;
+    my $unpack_dir = shift;
+    fetch_url($pkgset->{'url'} . $pkgset->{'file'},
+	      'files/' . $pkgset->{'file'}, $pkgset->{'md5'});
+    unzip_file('files/' . $pkgset->{'file'},$unpack_dir);
+}
+
 sub job_setup_mingw_cross {
     my $prefix = shift;
     my $platform_opts;
@@ -549,7 +565,7 @@ sub job_native_freemat {
     $platform_opts->{'make opts'} = '-j8';
     $platform_opts->{'compiler'} = 'gcc';
     $platform_opts->{'libs'} = "-llapack -lblas";
-    $platform_opts->{'ldflags'} = "-L$prefix/lib";
+    $platform_opts->{'ldflags'} = "-L$prefix/lib -L/usr/lib/atlas";
     $platform_opts->{'cflags'} = "-I$prefix/include";
     $platform_opts->{'archiver'} = 'ar';
     $platform_opts->{'ranlib'} = 'ranlib';
@@ -595,12 +611,10 @@ sub job_native_freemat {
     }
 
     if ($need_qt4) {
-	fetch_url('ftp://ftp.trolltech.com/qt/source/qt-x11-opensource-src-4.3.0.tar.gz',
-		  'files/qt-x11-opensource-src-4.3.0.tar.gz','13f12bf58a32ebf15837fcd605cb3c99');
-	unpack_tar_ball('files/qt-x11-opensource-src-4.3.0.tar.gz','build');
+	fetch_unpack_pkg(\%qt_x11_pkg,'build');
 	my $save_config_opts = $platform_opts->{'configure opts'};
 	$platform_opts->{'configure opts'} .= " -fast -no-qt3support";
-	configure_make_install("build/qt-x11-opensource-src-4.2.3",$prefix,"",$platform_opts);
+	configure_make_install("build/$qt_x11_pkg{root}",$prefix,"",$platform_opts);
 	$platform_opts->{'configure opts'} = $save_config_opts;
     }
 
@@ -620,9 +634,7 @@ sub job_native_freemat {
     print "************************************************************\n";
 
     if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
-	fetch_url('http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
-		  'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
-	unpack_tar_ball('files/arpack96.tar.Z','build');
+	fetch_unpack_pkg(\%arpack_pkg,'build');
 	my $cwd = Cwd::cwd();    
 	make_package('build/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/build/ARPACK/libarpack.a all");
 	copy_file('build/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
@@ -641,9 +653,7 @@ sub job_native_freemat {
     my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
 				      'umfpack_zl_solve',$platform_opts);
     if (!$amd_found || !$umfpack_found) {
-	fetch_url('http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-2.3.1.tar.gz',
-		  'files/SuiteSparse-2.3.1.tar.gz','52d5088aaae7231b8c540657ccaf3625');
-	unpack_tar_ball('files/SuiteSparse-2.3.1.tar.gz','build');
+	fetch_unpack_pkg(\%sparse_suite_pkg,'build');
 	make_package('build/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
 	make_package('build/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
 	copy_file('build/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
@@ -733,10 +743,7 @@ sub job_win_freemat {
     print "************************************************************\n";
 
     if (!test_function($prefix,'atlas','atlas','ATL_sgemm',$platform_opts)) {
-	fetch_url('http://www.scipy.org/Installing_SciPy/Windows?action=AttachFile&do=get&target=atlas3.6.0_WinNT_P2.zip',
-		  'files/atlas3.6.0_WinNT_P2.zip',
-		  'be03a518bf5125dbc6cf50931ffa3638');
-	unzip_file('files/atlas3.6.0_WinNT_P2.zip','cross/atlas');
+	fetch_unzip_pkg(\%atlas_win_pkg,'cross/atlas');
 	copy_file('cross/atlas/libatlas.a',"$prefix/lib");
 	copy_file('cross/atlas/libcblas.a',"$prefix/lib");
 	copy_file('cross/atlas/libf77blas.a',"$prefix/lib");
@@ -751,10 +758,7 @@ sub job_win_freemat {
     print "************************************************************\n";
 
     if (!test_function($prefix,'lapack','lapack','cheev_',$platform_opts)) {
-	fetch_url('http://www.netlib.org/lapack/lapack-3.1.0.tgz',
-		  'files/lapack-3.1.0.tgz',
-		  'd75d849fd034cf49c188931a4ab42e87');
-	unpack_tar_ball('files/lapack-3.1.0.tgz','cross');
+	fetch_unpack_pkg(\%lapack_pkg,'cross');
 	system("touch cross/lapack-3.1.0/make.inc");
 	make_package("cross/lapack-3.1.0/INSTALL","$prefix",$platform_opts,"all");
 	make_package("cross/lapack-3.1.0/SRC","$prefix",$platform_opts,
@@ -771,9 +775,7 @@ sub job_win_freemat {
     print "************************************************************\n";
 
     if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
-	fetch_url('http://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.Z',
-		  'files/arpack96.tar.Z','7525bb511694c6735a45bb40fad88429');
-	unpack_tar_ball('files/arpack96.tar.Z','cross');
+	fetch_unpack_pkg(\%arpack_pkg,'cross');
 	my $cwd = Cwd::cwd();    
 	make_package('cross/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/cross/ARPACK/libarpack.a all");
 	copy_file('cross/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
@@ -785,9 +787,7 @@ sub job_win_freemat {
     print "    Handling package libZ\n";
     print "************************************************************\n";
     if (!test_function($prefix,'z','z','inflate',$platform_opts)) {
-	fetch_url('http://downloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz',
-		  'files/zlib-1.2.3.tar.gz','debc62758716a169df9f62e6ab2bc634');
-	unpack_tar_ball('files/zlib-1.2.3.tar.gz','cross');
+	fetch_unpack_pkg(\%libz_pkg,'cross');
 	my $cwd = Cwd::cwd();
 	make_package('cross/zlib-1.2.3',$prefix,$platform_opts);
 	copy_file('cross/zlib-1.2.3/zlib.h',"$prefix/include");
@@ -808,9 +808,7 @@ sub job_win_freemat {
     my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
 				      'umfpack_zl_solve',$platform_opts);
     if (!$amd_found || !$umfpack_found) {
-	fetch_url('http://www.cise.ufl.edu/research/sparse/SuiteSparse/SuiteSparse-2.3.1.tar.gz',
-		  'files/SuiteSparse-2.3.1.tar.gz','52d5088aaae7231b8c540657ccaf3625');
-	unpack_tar_ball('files/SuiteSparse-2.3.1.tar.gz','cross');
+	fetch_unpack_pkg(\%sparse_suite_pkg,'cross');
 	make_package('cross/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
 	make_package('cross/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
 	copy_file('cross/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");

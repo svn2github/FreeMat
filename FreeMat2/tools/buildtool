@@ -564,7 +564,7 @@ sub job_native_freemat {
     $platform_opts->{'configure opts'} = '--disable-shared';
     $platform_opts->{'make opts'} = '-j8';
     $platform_opts->{'compiler'} = 'gcc';
-    $platform_opts->{'libs'} = "-llapack -lblas";
+    $platform_opts->{'libs'} = "-llapack -lblas -lpthread";
     $platform_opts->{'ldflags'} = "-L$prefix/lib -L/usr/lib/atlas";
     $platform_opts->{'cflags'} = "-I$prefix/include";
     $platform_opts->{'archiver'} = 'ar';

@@ -542,7 +542,7 @@ sub job_mac_freemat {
     $platform_opts->{'configure opts'} = '';
     $platform_opts->{'make opts'} = '';
     $platform_opts->{'compiler'} = 'gcc';
-    $platform_opts->{'libs'} = "-llapack -framework vecLib -lgfortran -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon";
+    $platform_opts->{'libs'} = "-framework vecLib -lgfortran -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon";
     $platform_opts->{'ldflags'} = "-L$prefix/lib";
     $platform_opts->{'cflags'} = "-I$prefix/include";
     $platform_opts->{'archiver'} = 'ar';
@@ -653,7 +653,122 @@ sub job_mac_freemat {
 	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
 	    die "Installation of UMFPACK package from sparse suite package failed!\n";
     }
+
+    print "************************************************************\n";
+    print "    Starting FreeMat Installation\n";
+    print "************************************************************\n";
+
+    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
+    configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
 }
+
+sub job_macppc_freemat {
+    my $prefix = shift;
+    my $platform_opts;
+
+    $platform_opts->{'configure opts'} = 'CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1';
+    $platform_opts->{'make opts'} = '';
+    $platform_opts->{'compiler'} = 'powerpc-apple-darwin8-gcc-4.0.1';
+    $platform_opts->{'libs'} = "-framework vecLib -lgfortran -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon";
+    $platform_opts->{'ldflags'} = "-L$prefix/lib";
+    $platform_opts->{'cflags'} = "-I$prefix/include";
+    $platform_opts->{'archiver'} = 'ar';
+    $platform_opts->{'ranlib'} = 'ranlib';
+    $platform_opts->{'opts'} = '-O2';
+    $platform_opts->{'arflags'} = 'crv';
+    $platform_opts->{'fc'} = 'gfortran-ppc';
+    $platform_opts->{'preconfigure opts'} = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  ";
+
+    setup_common($prefix);
+    autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
+			  $platform_opts,'cross',\%pcre_pkg);
+    if (!test_function($prefix,'portaudio','portaudio','Pa_OpenStream',$platform_opts) ||
+	!test_include_file($prefix,'portaudio','portaudio.h',$platform_opts)) {
+	fetch_unpack_pkg(\%portaudio_pkg,'cross');
+	make_package("cross/$portaudio_pkg{'root'}",$prefix,$platform_opts,' -f Makefile.darwin AR=/usr/bin/ar');
+	copy_file("cross/$portaudio_pkg{'root'}/lib/libportaudio.a","$prefix/lib");
+	system("ranlib $prefix/lib");
+	copy_files("cross/$portaudio_pkg{'root'}/include/*.h","$prefix/include");
+	test_function($prefix,'portaudio','portaudio','Pa_OpenStream',$platform_opts) or
+	    die "installation of PortAudio failed!";
+    }
+    autopackage_check_pkg($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
+			  $platform_opts,'cross_single',\%fftw_pkg,'--enable-single');
+    autopackage_check_pkg($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
+			  $platform_opts,'cross_double',\%fftw_pkg);
+    if (!test_function($prefix,'ffcall','avcall','__structcpy',$platform_opts) ||
+	!test_include_file($prefix,'ffcall','avcall.h',$platform_opts)) {
+	fetch_unpack_pkg(\%ffcall_pkg,'cross');
+	my $cwd = Cwd::cwd();
+	change_directory("cross/$ffcall_pkg{root}/avcall");
+	if (system("sed -e 's/#undef __rs6000__/#define __rs6000__ 1/g' < avcall.h.in" .
+		   " | sed -e 's/#undef HAVE_LONGLONG/#define HAVE_LONGLONG/g' > avcall.h") != 0)  {
+	    die "Unable to generate avcall.h: $!\n";
+	}
+	if (system("powerpc-apple-darwin8-gcc-4.0.1 -c avcall-rs6000-macos.s -o avcall.o") != 0) {
+	    die "Unable to compile the avcall-rs6000-macos.s: $!\n";
+	}
+	if (system("powerpc-apple-darwin8-gcc-4.0.1 -g -O2 -c structcpy.c -o structcpy.o") != 0) {
+	    die "Unable to compile the structcpy file: $!\n";
+	}
+	if (system("ar crv libavcall.a avcall.o structcpy.o") != 0) {
+	    die "Unable to archive to libavcall.a: $!\n";
+	}
+	copy_file("libavcall.a","$prefix/lib");
+	copy_file("avcall.h","$prefix/include");
+	if (system("ranlib $prefix/lib/libavcall.a") != 0) {
+	    die "Unable to ranlib libavcall.a: $!\n";
+	}
+	test_function($prefix,'ffcall','avcall','__structcpy',$platform_opts) or
+	    die "Installation of ffcall failed";
+    }
+    
+    print "************************************************************\n";
+    print "    Handling package ARPACK\n";
+    print "************************************************************\n";
+
+    if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
+	fetch_unpack_pkg(\%arpack_pkg,'cross');
+	my $cwd = Cwd::cwd();    
+	if (not -f 'cross/ARPACK/UTIL/second_orig.f') {
+	    copy_file('cross/ARPACK/UTIL/second.f','cross/ARPACK/Util/second_orig.f');
+	    delete_file('cross/ARPACK/UTIL/second.f');
+	    system('touch cross/ARPACK/UTIL/second.f');
+	}
+	make_package('cross/ARPACK',$prefix,$platform_opts,'MAKE=make DIRS="SRC UTIL" ' . "ARPACKLIB=$cwd/cross/ARPACK/libarpack.a all");
+	copy_file('cross/ARPACK/libarpack.a',"$prefix/lib/libarpack.a");
+	test_function($prefix,'arpack','arpack','znaupd_',$platform_opts) or
+	    die "Installation of ARPACK failed";
+    }
+
+    print "************************************************************\n";
+    print "    Handling package SparseSuite\n";
+    print "************************************************************\n";
+
+    my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
+    if ($amd_found) {
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+    }
+    my $umfpack_found = test_function($prefix,'SparseSuiteUMFPACK','umfpack',
+				      'umfpack_zl_solve',$platform_opts);
+    if (!$amd_found || !$umfpack_found) {
+	fetch_unpack_pkg(\%sparse_suite_pkg,'cross');
+	make_package('cross/SuiteSparse/AMD/Source',$prefix,$platform_opts,'');
+	make_package('cross/SuiteSparse/UMFPACK/Source',$prefix,$platform_opts,'');
+	copy_file('cross/SuiteSparse/AMD/Lib/libamd.a',"$prefix/lib/libamd.a");
+	copy_file('cross/SuiteSparse/UMFPACK/Lib/libumfpack.a',"$prefix/lib/libumfpack.a");
+	copy_file('cross/SuiteSparse/AMD/Include/amd.h',"$prefix/include/amd.h");
+	copy_files('cross/SuiteSparse/UMFPACK/Include/*.h',"$prefix/include");
+	copy_file('cross/SuiteSparse/UFconfig/UFconfig.h',"$prefix/include/UFconfig.h");
+	test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts) or
+	    die "Installation of AMD package from sparse suite failed!\n";
+	$platform_opts->{'libs'} = "-lamd $platform_opts->{'libs'}";
+	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
+	    die "Installation of UMFPACK package from sparse suite package failed!\n";
+    }
+
+}
+
 
 sub job_native_freemat {
     my $prefix = shift;
@@ -1029,6 +1144,7 @@ if (not defined $job or not defined $prefix) {
 	"    setup-mingw-cross - setup the win32 cross compiler\n" .
 	"    win-freemat       - build win32 freemat\n" .
 	"    mac-freemat       - build the mac freemat\n" .
+	"    ppc-freemat       - build the mac-ppc freemat\n" .
 	"    rpm-freemat       - build an RPM of freemat\n";
 }
 
@@ -1050,4 +1166,8 @@ if ($job eq "rpm-freemat") {
 
 if ($job eq "mac-freemat") {
     job_mac_freemat($prefix);
+}
+
+if ($job eq "ppc-freemat") {
+    job_macppc_freemat($prefix);
 }

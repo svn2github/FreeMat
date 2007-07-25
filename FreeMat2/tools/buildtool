@@ -1,4 +1,14 @@
 #!/usr/bin/perl -w
+
+#
+# On a new system
+# yum install qt4 qt4devel portaudio lapack-devel lapack atlas atlas-devel ufsparse ufsparse-devel
+#  203  rpm -ivh http://ftp.belnet.be/packages/dries.ulyssis.org/fedora/fc6/i386/RPMS.dries/ffcall-1.10-1.2.fc6.rf.i386.rpm
+#  204  rpm -ivh http://ftp.belnet.be/packages/dries.ulyssis.org/fedora/fc6/i386/RPMS.dries/ffcall-devel-1.10-1.2.fc6.rf.i386.rpm
+#  205  rpm -ivh http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
+#  206  rpm -ivh http://dl.atrpms.net/all/arpack-2.1-5.fc6.at.i386.rpm
+#  207  rpm -ivh http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
+
 use File::Path;
 use File::Copy;
 use File::Basename;

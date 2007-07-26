@@ -74,6 +74,8 @@ KeyManager::KeyManager()  {
   context = NULL;
   QSettings settings("FreeMat", "FreeMat");
   QStringList historyList = settings.value("interpreter/history").toStringList();
+  if (!historyList.size())
+    history.push_back("");
   for (int i=0;i<historyList.size();i++) 
     history.push_back(historyList[i].toStdString());
 }

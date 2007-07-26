@@ -24,9 +24,9 @@ my %sparse_suite_pkg = ('url' => 'http://www.cise.ufl.edu/research/sparse/SuiteS
 			'md5' => '52d5088aaae7231b8c540657ccaf3625',
 			'root' => 'SuiteSparse');
 my %binutils_pkg = ('url' => 'http://downloads.sf.net/mingw/',
-		    'file' => 'binutils-2.16.91-20060119-1-src.tar.gz',
-		    'md5' => '42e3a665111121075480244cafc27ce7',
-		    'root' => 'binutils-2.16.91-20060119-1');
+		    'file' => 'binutils-2.17.50-20060824-1-src.tar.gz',
+		    'md5' => '1f460788226614419bc41ab4adde6576',
+		    'root' => 'binutils-2.17.50-20060824-1-src');
 my %gcc_core_pkg = ('url' => 'http://downloads.sf.net/mingw/',
 		    'file' => 'gcc-core-3.4.5-20060117-1-src.tar.gz',
 		    'md5' => 'b72bffc6e7d5c7d1de099ad76ef0d45d',
@@ -37,11 +37,11 @@ my %gcc_gpp_pkg =  ('url' => 'http://downloads.sf.net/mingw/',
 		    'root' => 'gcc-3.4.5-20060117-1');
 my %gcc_g77_pkg = ('url' => 'http://downloads.sf.net/mingw/',
 		   'file' => 'gcc-g77-3.4.5-20060117-1-src.tar.gz',
-		   'md5' => 'a9fdbd5162aa1ae0171c47f929adf938',
+		   'md5' => '37e2558839f70ff2dd8c16c359e5e327',
 		   'root' => 'gcc-3.4.5-20060117-1');
 my %mingw_pkg = ('url' => 'http://downloads.sf.net/mingw/',
 		 'file' => 'mingw-runtime-3.12-src.tar.gz',
-		 'md5' => 'be0b0219645a4ee0f3495c2abf90b5ad',
+		 'md5' => 'a9fdbd5162aa1ae0171c47f929adf938',
 		 'root' => 'mingw-runtime-3.12');
 my %w32api_pkg = ('url' => 'http://downloads.sf.net/mingw/',
 		  'file' => 'w32api-3.9-src.tar.gz',
@@ -92,9 +92,9 @@ my %atlas_win_pkg = ('url' => 'http://www.scipy.org/Installing_SciPy/Windows?act
 		     'md5' => 'be03a518bf5125dbc6cf50931ffa3638',
 		     'root' => 'atlas');
 my %lapack_pkg = ('url' => 'http://www.netlib.org/lapack/',
-		  'file' => 'lapack-3.1.0.tar.gz',
-		  'md5' => 'd75d849fd034cf49c188931a4ab42e87',
-		  'root' => 'lapack-3.1.0');
+		  'file' => 'lapack-3.1.1.tgz',
+		  'md5' => '00b21551a899bcfbaa7b8443e1faeef9',
+		  'root' => 'lapack-3.1.1');
 my %libz_pkg =  ('url' => 'http://downloads.sourceforge.net/libpng/',
 		  'file' => 'zlib-1.2.3.tar.gz',
 		  'md5' => 'debc62758716a169df9f62e6ab2bc634',
@@ -458,11 +458,16 @@ sub autopackage_check_pkg {
 		      $configure_opts, $unpack_dir);
 }
 
+sub fetch_pkg {
+    my $pkgset = shift;
+    fetch_url($pkgset->{'url'} . $pkgset->{'file'},
+	      'files/' . $pkgset->{'file'}, $pkgset->{'md5'});
+}
+
 sub fetch_unpack_pkg {
     my $pkgset = shift;
     my $unpack_dir = shift;
-    fetch_url($pkgset->{'url'} . $pkgset->{'file'},
-	      'files/' . $pkgset->{'file'}, $pkgset->{'md5'});
+    fetch_pkg($pkgset);
     unpack_tar_ball('files/' . $pkgset->{'file'},$unpack_dir);
 }
 
@@ -494,44 +499,30 @@ sub job_setup_mingw_cross {
     setup_common($prefix);
     my $ming = "i686-mingw32";
 
-    fetch_url('http://downloads.sf.net/mingw/binutils-2.16.91-20060119-1-src.tar.gz',
-	      'files/binutils-2.16.91-20060119-1-src.tar.gz','42e3a665111121075480244cafc27ce7');
-    unpack_tar_ball('files/binutils-2.16.91-20060119-1-src.tar.gz','cross');
-    configure_make_install("cross/binutils-2.16.91-20060119-1",$prefix,"",$platform_opts,"--target=$ming");
-    fetch_url('http://downloads.sf.net/mingw/gcc-core-3.4.5-20060117-1-src.tar.gz',
-	      'files/gcc-core-3.4.5-20060117-1-src.tar.gz','b72bffc6e7d5c7d1de099ad76ef0d45d');
-    unpack_tar_ball('files/gcc-core-3.4.5-20060117-1-src.tar.gz','cross');
-    fetch_url('http://downloads.sf.net/mingw/gcc-g++-3.4.5-20060117-1-src.tar.gz',
-	      'files/gcc-g++-3.4.5-20060117-1-src.tar.gz','42c92b923adfe4c8943f05c326af1736');
-    unpack_tar_ball('files/gcc-g++-3.4.5-20060117-1-src.tar.gz','cross');
-    fetch_url('http://downloads.sf.net/mingw/gcc-g77-3.4.5-20060117-1-src.tar.gz',
-	      'files/gcc-g77-3.4.5-20060117-1-src.tar.gz','37e2558839f70ff2dd8c16c359e5e327');
-    unpack_tar_ball('files/gcc-g77-3.4.5-20060117-1-src.tar.gz','cross');
-    fetch_url('http://downloads.sf.net/mingw/mingw-runtime-3.12-src.tar.gz',
-	      'files/mingw-runtime-3.12-src.tar.gz','a9fdbd5162aa1ae0171c47f929adf938');
-    unpack_tar_ball('files/mingw-runtime-3.12-src.tar.gz','cross');
-    fetch_url('http://downloads.sf.net/mingw/w32api-3.9-src.tar.gz',
-	      'files/w32api-3.9-src.tar.gz','be0b0219645a4ee0f3495c2abf90b5ad');
-    unpack_tar_ball('files/w32api-3.9-src.tar.gz','cross');
+    fetch_unpack_pkg(\%binutils_pkg,'cross');
+    configure_make_install("cross/$binutils_pkg{'root'}",$prefix,"",$platform_opts,"--target=$ming");
+    fetch_unpack_pkg(\%gcc_core_pkg,'cross');
+    fetch_unpack_pkg(\%gcc_gpp_pkg,'cross');
+    fetch_unpack_pkg(\%gcc_g77_pkg,'cross');
+    fetch_unpack_pkg(\%mingw_pkg,'cross');
+    fetch_unpack_pkg(\%w32api_pkg,'cross');
     sym_link("$prefix/include","$prefix/$ming/include");
     copy_files("cross/mingw-runtime-3.12/include/*","$prefix/include");
     copy_files("cross/w32api-3.9/include/*","$prefix/include");
-    configure_make_install("cross/gcc-3.4.5-20060117-1",$prefix,"",$platform_opts,"--target=$ming --enable-threads --enable-languages=c");
-    configure_make_install("cross/w32api-3.9",$prefix,"",$platform_opts,"--target=$ming --host=$ming --build=i686-pc-linux-gnu");
+    configure_make_install("cross/$gcc_core_pkg{'root'}",$prefix,"",$platform_opts,"--target=$ming --enable-threads --enable-languages=c");
+    configure_make_install("cross/$w32api_pkg{'root'}",$prefix,"",$platform_opts,"--target=$ming --host=$ming --build=i686-pc-linux-gnu");
     my $cwd = Cwd::cwd();
-    sym_link("$cwd/cross/w32api-3.9","$cwd/cross/w32api");
+    sym_link("$cwd/cross/$w32api_pkg{'root'}","$cwd/cross/w32api");
     copy_files("$prefix/$ming/lib/*","$prefix/lib");
     delete_directory("$prefix/$ming/lib");
     sym_link("$prefix/lib","$prefix/$ming/lib");
     copy_files("$prefix/lib/*.a","cross/mingw-runtime-3.12/mingwex/");
-    configure_make_install("cross/mingw-runtime-3.12",$prefix,"",$platform_opts,"--target=$ming --host=$ming --build=i686-pc-linux-gnu");
-    configure_make_install("cross/gcc-3.4.5-20060117-1",$prefix,"",$platform_opts,"--target=$ming --enable-threads --enable-languages=c,c++,f77");
-    fetch_url('ftp://ftp.trolltech.com/qt/source/qt-win-opensource-4.3.0-mingw.exe','files/qt-win-opensource-4.3.0-mingw.exe',
-	      '43e4930c1c97997fe3ecb12c9c384eda');
+    configure_make_install("cross/$mingw_pkg{'root'}",$prefix,"",$platform_opts,"--target=$ming --host=$ming --build=i686-pc-linux-gnu");
+    configure_make_install("cross/$gcc_core_pkg{'root'}",$prefix,"",$platform_opts,"--target=$ming --enable-threads --enable-languages=c,c++,f77");
+    fetch_pkg(\%qt_win_pkg);
     system("wine files/qt-win-opensource-4.3.0-mingw.exe");
     copy_files("~/.wine/drive_c/Qt","$prefix"); 
-    fetch_url('http://downloads.sourceforge.net/nsis/nsis-2.22-setup.exe','files/nsis-2.22-setup.exe',
-	      '97c8034ca4bf0fd2751bc4aa9d6c2612');
+    fetch_pkg(\%nsis_pkg);
     system("wine files/nsis-2.22-setup.exe");
 }
 
@@ -774,8 +765,8 @@ sub job_native_freemat {
     my $prefix = shift;
     my $platform_opts;
 
-    $platform_opts->{'configure opts'} = '--disable-shared';
-    $platform_opts->{'make opts'} = '-j8';
+    $platform_opts->{'configure opts'} = '';
+    $platform_opts->{'make opts'} = '';
     $platform_opts->{'compiler'} = 'gcc';
     $platform_opts->{'libs'} = "-llapack -lblas -lpthread";
     $platform_opts->{'ldflags'} = "-L$prefix/lib -L/usr/lib/atlas";
@@ -832,7 +823,7 @@ sub job_native_freemat {
     autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
 			  $platform_opts,'build',\%pcre_pkg);
     autopackage_check_pkg($prefix,'portaudio','portaudio','Pa_OpenStream','portaudio.h',
-			  $platform_opts,'build',\%portaudio_pkg);
+			  $platform_opts,'build',\%portaudio_pkg,"--disable-static");
     autopackage_check_pkg($prefix,'fftw-float','fftw3f','fftwf_malloc','fftw3.h',
 			  $platform_opts,'build_single',\%fftw_pkg,'--enable-single');
     autopackage_check_pkg($prefix,'fftw-double','fftw3','fftw_malloc','fftw3.h',
@@ -896,7 +887,7 @@ sub job_win_freemat {
     my $platform_opts;
 
     $platform_opts->{'configure opts'} = '';
-    $platform_opts->{'make opts'} = '-j8';
+    $platform_opts->{'make opts'} = '';
     $platform_opts->{'compiler'} = 'i686-mingw32-gcc';
     $platform_opts->{'libs'} = "-lopengl32 -lglu32 -lgdi32 -luser32 -lwsock32 -lwinmm";
     $platform_opts->{'ldflags'} = "-L$prefix/lib";
@@ -933,6 +924,38 @@ sub job_win_freemat {
 	die "Win version of QT cannot be installed in the win_freemat job - use the setup-mingw-cross job.";
     }
     
+
+    if (!test_function($prefix,'pcre','pcre','pcre_compile',$platform_opts) ||
+	!test_include_file($prefix,'pcre','pcre.h',$platform_opts)) {
+	fetch_unpack_pkg(\%pcre_pkg,'cross');
+	open(PATCH,">cross/$pcre_pkg{'root'}/dllexport_patch") or die "Unable to write patch file: $!\n";
+	my $patch =<<END;
+--- pcreposix.h
++++ pcreposix.h
+@@ -112,7 +112,7 @@
+ #ifdef _WIN32
+ #  ifndef PCREPOSIX_STATIC
+ #    define PCREPOSIX_EXP_DECL extern __declspec(dllimport)
+-#    define PCREPOSIX_EXP_DEFN  __declspec(dllimport)
++#    define PCREPOSIX_EXP_DEFN  __declspec(dllexport)
+ #  endif
+ #endif
+END
+        print PATCH $patch;
+	close(PATCH);
+	my $cwd = Cwd::cwd();
+	change_directory("cross/$pcre_pkg{'root'}");
+	(system("patch -p0 <dllexport_patch") == 0) || die "Patch failed!\n";
+	change_directory($cwd);
+	configure_make_install("cross/$pcre_pkg{'root'}",$prefix,"build",$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu");
+	delete_file("$prefix/lib/libpcrecpp.dll.a");
+	delete_file("$prefix/lib/libpcre.dll.a");
+	delete_file("$prefix/lib/libpcreposix.dll.a");
+	test_function($prefix,'pcre','pcre','pcre_compile',$platform_opts) &&
+	    test_include_file($prefix,'pcre','pcre.h',$platform_opts)     or
+	    die "Installation of PCRE failed!\n";
+    }
+
     autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
 			  $platform_opts,'build',\%pcre_pkg,
 			  '--host=i686-mingw32 --build=i686-pc-linux-gnu --disable-shared','cross');
@@ -970,11 +993,14 @@ sub job_win_freemat {
 
     if (!test_function($prefix,'lapack','lapack','cheev_',$platform_opts)) {
 	fetch_unpack_pkg(\%lapack_pkg,'cross');
-	system("touch cross/lapack-3.1.0/make.inc");
-	make_package("cross/lapack-3.1.0/INSTALL","$prefix",$platform_opts,"all");
-	make_package("cross/lapack-3.1.0/SRC","$prefix",$platform_opts,
+	system("touch cross/$lapack_pkg{'root'}/make.inc");
+	open(MAKEINC,">cross/$lapack_pkg{'root'}/make.inc") || die "Unable to open make.inc file:$!\n";
+	print MAKEINC "TIMER=INT_ETIME\n";
+	close(MAKEINC);
+	make_package("cross/$lapack_pkg{'root'}/INSTALL","$prefix",$platform_opts,"all");
+	make_package("cross/$lapack_pkg{'root'}/SRC","$prefix",$platform_opts,
 		     'LAPACKLIB="liblapack.a"');
-	copy_file("cross/lapack-3.1.0/liblapack.a","$prefix/lib");
+	copy_file("cross/$lapack_pkg{'root'}/liblapack.a","$prefix/lib");
 	test_function($prefix,'lapack','lapack','cheev_',$platform_opts) or
 	    die "Installation of LAPACK failed";
     }
@@ -1038,10 +1064,8 @@ sub job_win_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
 
-    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
-	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
     unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
-    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\"");
+    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib");
     my $baseDir="cross/FreeMat-3.3-Win32";
     my $buildDir="cross/FreeMat-3.3/build";
     my $srcDir="cross/FreeMat-3.3";

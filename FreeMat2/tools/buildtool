@@ -229,6 +229,13 @@ sub fetch_curl_url {
     return 0;
 }
 
+sub system_check {
+    my $command = shift;
+    if (system($command) != 0) {
+	die "Failed to execute $command: $!\n";
+    }
+}
+
 # Fetch a url via wget
 sub fetch_wget_url {
     # Get the URL
@@ -655,9 +662,10 @@ sub job_mac_freemat {
 
 sub job_macppc_freemat {
     my $prefix = shift;
+    my $crossprefix = shift;
     my $platform_opts;
 
-    $platform_opts->{'configure opts'} = 'CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1';
+    $platform_opts->{'configure opts'} = 'CC=powerpc-apple-darwin8-gcc-4.0.1 CXX=powerpc-apple-darwin8-g++-4.0.1 F77=gfortran-ppc';
     $platform_opts->{'make opts'} = '';
     $platform_opts->{'compiler'} = 'powerpc-apple-darwin8-gcc-4.0.1';
     $platform_opts->{'libs'} = "-framework vecLib -lgfortran -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework Carbon";
@@ -671,6 +679,7 @@ sub job_macppc_freemat {
     $platform_opts->{'preconfigure opts'} = 'PKG_CONFIG_PATH=$PKG_CONFIG_PATH'. ":$prefix/lib:$prefix/lib/pkgconfig  ";
 
     setup_common($prefix);
+    setup_common($crossprefix);
     autopackage_check_pkg($prefix,'pcre','pcre','pcre_compile','pcre.h',
 			  $platform_opts,'cross',\%pcre_pkg);
     if (!test_function($prefix,'portaudio','portaudio','Pa_OpenStream',$platform_opts) ||
@@ -757,6 +766,13 @@ sub job_macppc_freemat {
 	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
 	    die "Installation of UMFPACK package from sparse suite package failed!\n";
     }
+
+    print "************************************************************\n";
+    print "    Starting FreeMat Installation\n";
+    print "************************************************************\n";
+
+    unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
+    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$crossprefix/include -I$crossprefix/include/QtCore -I$crossprefix/include/QtGui -I$crossprefix/include/QtOpenGL -I$crossprefix/include/QtNetwork -I$crossprefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$crossprefix/lib\"");
 
 }
 
@@ -880,6 +896,108 @@ sub job_native_freemat {
 	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
     unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
     configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts);
+}
+
+sub relink {
+    my $prefix = shift;
+    my $baseDir = shift;
+    my $source = shift;
+    my $dest = shift;
+    print "Relinking $source --> $dest";
+    system_check("install_name_tool -change $prefix/lib/$source.framework/Versions/4/$source \@executable_path/../Frameworks/$source.framework/Versions/4/$source $dest");
+}
+
+sub cross_link_framework {
+    my $prefix = shift;
+    my $baseDir = shift;
+    my $src = shift;
+    my $dest = shift;
+    print "Cross linking $dest -> $src";
+    relink($prefix,$baseDir,$dest,"$baseDir/Contents/Frameworks/$src.framework/Versions/4/$src");
+}
+
+sub cross_link_framework_all {
+    my $prefix = shift;
+    my $baseDir = shift;
+    my $target = shift;
+    cross_link_framework($prefix,$baseDir,$target,"QtCore");
+    cross_link_framework($prefix,$baseDir,$target,"QtGui");
+    cross_link_framework($prefix,$baseDir,$target,"QtOpenGL");
+    cross_link_framework($prefix,$baseDir,$target,"QtNetwork");
+    cross_link_framework($prefix,$baseDir,$target,"QtXML");
+    cross_link_framework($prefix,$baseDir,$target,"QtSvg");
+}
+
+sub install_framework {
+    my $prefix = shift;
+    my $baseDir = shift;
+    my $name = shift;
+    copy_files("$prefix/lib/$name.framework","$baseDir/Contents/Frameworks/$name.framework");
+    system_check("install_name_tool -id \@executable_path../Frameworks/$name.framework/Verions/4/$name $baseDir/Contents/Frameworks/$name.framework/Versions/4/$name");
+    relink($prefix,$baseDir,$name,"$baseDir/Contents/MacOS/FreeMat");
+}
+
+sub job_mac_bundle {
+    my $prefix = shift;
+    my $crossprefix = shift;
+    my $baseDir = "build/FreeMat-3.3.app";
+    delete_directory("$baseDir");
+    make_directory("$baseDir");
+    make_directory("$baseDir/Contents");
+    make_directory("$baseDir/Contents/MacOS");
+    make_directory("$baseDir/Contents/Resources");
+    make_directory("$baseDir/Contents/Resources/help");
+    make_directory("$baseDir/Contents/Resources/help/html");
+    make_directory("$baseDir/Contents/Resources/help/text");
+    make_directory("$baseDir/Contents/Resources/help/pdf");
+    make_directory("$baseDir/Contents/Resources/toolbox");
+    make_directory("$baseDir/Contents/Frameworks");
+    make_directory("$baseDir/Contents/Plugins");
+    system_check("lipo -create $prefix/bin/FreeMat $crossprefix/bin/FreeMat -output $baseDir/Contents/MacOS/FreeMat");
+    system("strip $baseDir/Contents/MacOS/FreeMat");
+    sym_link("$baseDir/Contents/MacOS/FreeMat","$baseDir/FreeMat");
+    copy_file("build/FreeMat-3.3/src/appIcon.icns","$baseDir/Contents/Resources/appIcon.icns");
+    open(TMP,">$baseDir/Contents/PkgInfo") or die("unable to create pkgInfo file");
+    print TMP "APPL????";
+    close(TMP);
+    open(TMP,">$baseDir/Contents/Info.plist") or die("unable to create info.plist file");
+    my $info = <<EOF;
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+ <plist version="0.9">
+ <dict>
+ <key>CFBundleIconFile</key>
+ <string>appIcon.icns</string>
+ <key>CFBundlePackageType</key>
+ <string>APPL</string>
+ <key>CFBundleExecutable</key>
+ <string>FreeMat</string>
+ </dict>
+ </plist>
+EOF
+    print TMP $info;
+    close(TMP);
+    install_framework($prefix,$baseDir,"QtGui");
+    install_framework($prefix,$baseDir,"QtCore");
+    install_framework($prefix,$baseDir,"QtOpenGL");
+    install_framework($prefix,$baseDir,"QtNetwork");
+    install_framework($prefix,$baseDir,"QtXml");
+    install_framework($prefix,$baseDir,"QtSvg");
+    cross_link_framework_all($prefix,$baseDir,"QtGui");
+    cross_link_framework_all($prefix,$baseDir,"QtCore");
+    cross_link_framework_all($prefix,$baseDir,"QtOpenGL");
+    cross_link_framework_all($prefix,$baseDir,"QtNetwork");
+    cross_link_framework_all($prefix,$baseDir,"QtXml");
+    cross_link_framework_all($prefix,$baseDir,"QtSvg");
+    copy_files("$prefix/share/FreeMat-3.3/help/html","$baseDir/Contents/Resources/help/html");
+    copy_files("$prefix/share/FreeMat-3.3/help/text","$baseDir/Contents/Resources/help/text");
+    copy_files("$prefix/share/FreeMat-3.3/toolbox","$baseDir/Contents/Resources/toolbox");
+    copy_file("$prefix/share/FreeMat-3.3/help/latex/main.pdf",
+	      "$baseDir/Contents/Resources/help/pdf/FreeMat-3.3.pdf");
+    copy_files("$prefix/plugins/imageformats","$baseDir/Contents/Plugins");
+#    relink_plugins($baseDir);
+    copy_file("/usr/local/lib/libgfortran.2.dylib","$baseDir/Contents/Frameworks/.");
+    copy_file("/usr/local/lib/libgcc_s.1.dylib","$baseDir/Contents/Frameworks/.");
 }
 
 sub job_win_freemat {
@@ -1163,13 +1281,14 @@ my $prefix = shift;
 my $job = shift;
 
 if (not defined $job or not defined $prefix) {
-    die "Usage: buildtool <prefix> <task>\n" . " where <task> is one of: \n" . 
+    die "Usage: buildtool <prefix> <task> <cross_prefix>\n" . " where <task> is one of: \n" . 
 	"    native-freemat    - build freemat for this platform\n" . 
 	"    setup-mingw-cross - setup the win32 cross compiler\n" .
 	"    win-freemat       - build win32 freemat\n" .
 	"    mac-freemat       - build the mac freemat\n" .
-	"    ppc-freemat       - build the mac-ppc freemat\n" .
-	"    rpm-freemat       - build an RPM of freemat\n";
+	"    ppc-freemat       - build the mac-ppc freemat (uses cross_prefix --> intel build dir)\n" .
+	"    rpm-freemat       - build an RPM of freemat\n" .
+	"    mac-bundle        - build the bundle (mac) of freemat\n";
 }
 
 if ($job eq "native-freemat") {
@@ -1193,5 +1312,9 @@ if ($job eq "mac-freemat") {
 }
 
 if ($job eq "ppc-freemat") {
-    job_macppc_freemat($prefix);
+    job_macppc_freemat($prefix,shift);
+}
+
+if ($job eq "mac-bundle") {
+    job_mac_bundle($prefix,shift);
 }

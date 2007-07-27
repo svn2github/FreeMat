@@ -100,6 +100,13 @@ void MainApp::HelpWin() {
 }
 
 void MainApp::SetupGUICase() {
+  if (inBundleMode()) {
+    QDir dir(QApplication::applicationDirPath());
+    dir.cdUp();
+    dir.cd("Plugins");
+    QString dummy(dir.absolutePath());
+    QApplication::setLibraryPaths(QStringList() << dir.absolutePath());
+  }
   m_win = new ApplicationWindow;
   QTTerm *gui = new QTTerm;
   m_keys->RegisterTerm(gui);
@@ -807,11 +814,6 @@ void MainApp::UpdatePaths() {
   static bool paths_set = false;
   if (!paths_set) {
     if (inBundleMode()) {
-      QDir dir(QApplication::applicationDirPath());
-      dir.cdUp();
-      dir.cd("Plugins");
-      QString dummy(dir.absolutePath());
-      QApplication::addLibraryPath(dir.absolutePath());
       QDir dir1(qApp->applicationDirPath() + "/../Resources/toolbox");
       if (dir1.exists()) {
 	QString path1(dir1.canonicalPath());

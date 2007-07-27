@@ -656,7 +656,7 @@ sub job_mac_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
 
-    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
+#    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
     configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
 }
 
@@ -903,9 +903,22 @@ sub relink {
     my $baseDir = shift;
     my $source = shift;
     my $dest = shift;
-    print "Relinking $source --> $dest";
+    print "Relinking $source --> $dest\n";
     system_check("install_name_tool -change $prefix/lib/$source.framework/Versions/4/$source \@executable_path/../Frameworks/$source.framework/Versions/4/$source $dest");
 }
+
+sub relink_plugin {
+    my $prefix = shift;
+    my $baseDir = shift;
+    my $plugin = shift;
+    relink($prefix,$baseDir,"QtCore",$plugin);
+    relink($prefix,$baseDir,"QtGui",$plugin);
+    relink($prefix,$baseDir,"QtOpenGL",$plugin);
+    relink($prefix,$baseDir,"QtNetwork",$plugin);
+    relink($prefix,$baseDir,"QtXML",$plugin);
+    relink($prefix,$baseDir,"QtSvg",$plugin);
+}
+
 
 sub cross_link_framework {
     my $prefix = shift;
@@ -989,15 +1002,25 @@ EOF
     cross_link_framework_all($prefix,$baseDir,"QtNetwork");
     cross_link_framework_all($prefix,$baseDir,"QtXml");
     cross_link_framework_all($prefix,$baseDir,"QtSvg");
-    copy_files("$prefix/share/FreeMat-3.3/help/html","$baseDir/Contents/Resources/help/html");
-    copy_files("$prefix/share/FreeMat-3.3/help/text","$baseDir/Contents/Resources/help/text");
-    copy_files("$prefix/share/FreeMat-3.3/toolbox","$baseDir/Contents/Resources/toolbox");
+    copy_files("$prefix/share/FreeMat-3.3/help/html","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/FreeMat-3.3/help/text","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/FreeMat-3.3/toolbox","$baseDir/Contents/Resources");
     copy_file("$prefix/share/FreeMat-3.3/help/latex/main.pdf",
 	      "$baseDir/Contents/Resources/help/pdf/FreeMat-3.3.pdf");
     copy_files("$prefix/plugins/imageformats","$baseDir/Contents/Plugins");
-#    relink_plugins($baseDir);
+    relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqgif.dylib");
+    relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqjpeg.dylib");
+    relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqmng.dylib");
+    relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqsvg.dylib");
+    relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqtiff.dylib");
     copy_file("/usr/local/lib/libgfortran.2.dylib","$baseDir/Contents/Frameworks/.");
     copy_file("/usr/local/lib/libgcc_s.1.dylib","$baseDir/Contents/Frameworks/.");
+    system_check("install_name_tool -id \"\@executable_path/../Frameworks/libgfortran.2.dylib\" $baseDir/Contents/Frameworks/libgfortran.2.dylib");
+    system_check("install_name_tool -id \"\@executable_path/../Frameworks/libgcc_s.1.dylib\" $baseDir/Contents/Frameworks/libgcc_s.1.dylib");
+    system_check("install_name_tool -change \"/usr/local/lib/libgfortran.2.dylib\" \"\@executable_path/../Frameworks/libgfortran.2.dylib\" $baseDir/Contents/MacOS/FreeMat");
+    system_check("install_name_tool -change \"/usr/local/lib/libgcc_s.1.dylib\" \"\@executable_path/../Frameworks/libgcc_s.1.dylib\" $baseDir/Contents/MacOS/FreeMat");
+    system_check("find $baseDir -name '*_debug' -exec rm \\{\\} \\;");
+    system_check("find $baseDir -name '*_debug.dylib' -exec rm \\{\\} \\;");
 }
 
 sub job_win_freemat {

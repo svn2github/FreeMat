@@ -39,6 +39,7 @@
 #include <QtCore>
 #include <fstream>
 #include <stdarg.h>
+#include "Compiler.hpp"
 
 #ifdef WIN32
 #define PATHSEP ";"
@@ -1811,6 +1812,16 @@ void Interpreter::forStatement(const tree &t) {
   string indexVarName;
   int ctxt = t.context();
 
+  // Try to compile this for statement to an instruction stream
+  try {
+    VMStream jit(CompileForBlock(t,this));
+    //    std::cout << jit;
+    jit.Run(this);
+    return;
+  } catch (Exception &e) {
+    std::cout << e.getMessageCopy() << "\r\n";
+  }
+
   /* Get the name of the indexing variable */
   if (t.first().is('=')) {
     indexVarName = t.first().first().text();
@@ -1825,7 +1836,6 @@ void Interpreter::forStatement(const tree &t) {
   /* Get the code block */
   tree codeBlock(t.second());
   int elementCount = indexSet.getLength();
-
   Class loopType(indexSet.dataClass());
   ContextLoopLocker lock(context);
   switch(loopType) {

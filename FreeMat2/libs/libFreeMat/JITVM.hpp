@@ -9,120 +9,301 @@ using namespace std;
 
 typedef union {
   bool b;
-  unsigned u;
-  int i;
-  float f;
-  double d;
-  void* p;
-} registerType;
+  int32   i32;
+  float   f;
+  double  d;
+  void*   p;
+  uint32  reg;
+} scalarValue;
 
 typedef enum {
-  t_boolean,
-  unsigned_integer,
-  integer,
-  single_float,
-  double_float,
-  pointer
-} opcodeClass;
+  c_bool,
+  c_int32,
+  c_float,
+  c_double,
+  c_pointer,
+  c_register
+} scalarClass;
+
+class JITScalar {
+  scalarClass type;
+  scalarValue value;
+public:
+  inline JITScalar(scalarClass t, scalarValue v) type(t), value(v) {};
+  inline JITScalar(bool v) type(c_bool), value.b(v) {};
+  inline JITScalar(int32 v) type(c_int32), value.i32(v) {};
+  inline JITScalar(int64 v) type(c_int64), value.i64(v) {};
+  inline JITScalar(float v) type(c_float), value.f(v) {};
+  inline JITScalar(double v) type(c_double), value.d(v) {};
+  inline JITScalar(void* v) type(c_pointer), value.p(v) {};
+  inline JITScalar(uint32 v) type(c_register), value.reg(v) {};
+  inline JITScalar() {};
+  inline scalarClass type() {return type;}
+  inline void setType(scalarClass t) {type = t;}
+  inline scalarValue value() {return value;}
+  inline void set(scalarValue v) {value = v;}
+  inline void set(bool v) {value.b = v; type = c_bool;}
+  inline void set(int32 v) {value.i32 = v; type = c_int32;}
+  inline void set(int64 v) {value.i64 = v; type = c_int64;}
+  inline void set(float v) {value.f = v; type = c_float;}
+  inline void set(double v) {value.d = v; type = c_double;}
+  inline void set(void* v) {value.p = v; type = c_pointer;}
+  inline void set(uint32 v) {value.p = v; type = c_register;}
+  inline bool   b()   {JITAssert(type == c_bool); return value.b;}
+  inline int32  i32() {JITAssert(type == c_int32); return value.i32;}
+  inline int64  i64() {JITAssert(type == c_int64); return value.i64;}
+  inline float  f()   {JITAssert(type == c_float); return value.f;}
+  inline double d()   {JITAssert(type == c_double); return value.d;}
+  inline void*  p()   {JITAssert(type == c_pointer); return value.p;}
+  inline int32  reg() {JITAssert(type == c_register); return value.reg;}
+};
 
 typedef enum {
-  ADD,
-  SUB,
-  SET,
-  NOP,
-  LOAD,
-  STORE,
-  MUL,
-  LDIV,
-  RDIV,
-  OR,
-  AND,
-  XOR,
-  LT,
-  LE,
-  EQ,
-  NEQ,
-  GE,
-  GT,
-  JIT,
-  JIF,
-  JMP,
-  CASTI,
-  CASTU,
-  CASTF,
-  CASTD,
-  CASTB,
-  COPY,
-  NEG,
-  POS,
-  NOT,
-  DEC,
-  RET
+    // 32 bit integer add
+  add_i32_rr,
+  add_i32_ri,
+  add_i32_ir,
+  add_i32_ii,
+    // 32 bit float add
+  add_f_rr,
+  add_f_ri,
+  add_f_ir,
+  add_f_ii,
+    // 64 bit float add
+  add_d_rr,
+  add_d_ri,
+  add_d_ir,
+  add_d_ii,
+    // 32 bit integer subtract
+  sub_i32_rr,
+  sub_i32_ri,
+  sub_i32_ir,
+  sub_i32_ii,
+    // 32 bit float subtract
+  sub_f_rr,
+  sub_f_ri,
+  sub_f_ir,
+  sub_f_ii,
+    // 64 bit float subtract
+  sub_d_rr,
+  sub_d_ri,
+  sub_d_ir,
+  sub_d_ii,
+    // 32 bit integer multiply
+  mul_i32_rr,
+  mul_i32_ri,
+  mul_i32_ir,
+  mul_i32_ii,
+    // 32 bit float multiply
+  mul_f_rr,
+  mul_f_ri,
+  mul_f_ir,
+  mul_f_ii,
+    // 64 bit float multiply
+  mul_d_rr,
+  mul_d_ri,
+  mul_d_ir,
+  mul_d_ii,
+    // 32 bit float divide
+  div_f_rr,
+  div_f_ri,
+  div_f_ir,
+  div_f_ii,
+    // 64 bit float divide
+  div_d_rr,
+  div_d_ri,
+  div_d_ir,
+  div_d_ii,
+    // boolean ops
+  or_b_rr,
+  or_b_ri,
+  or_b_ir,
+  or_b_ii,
+  and_b_rr,
+  and_b_ri,
+  and_b_ir,
+  and_b_ii,
+  not_b_r,
+  not_b_i,
+    // 32 bit integer less than
+  lt_i32_rr,
+  lt_i32_ri,
+  lt_i32_ir,
+  lt_i32_ii,
+    // 32 bit float less than
+  lt_f_rr,
+  lt_f_ri,
+  lt_f_ir,
+  lt_f_ii,
+    // 64 bit float less than
+  lt_d_rr,
+  lt_d_ri,
+  lt_d_ir,
+  lt_d_ii,
+    // 32 bit integer less equals
+  le_i32_rr,
+  le_i32_ri,
+  le_i32_ir,
+  le_i32_ii,
+    // 32 bit float less equals
+  le_f_rr,
+  le_f_ri,
+  le_f_ir,
+  le_f_ii,
+    // 64 bit float less equals
+  le_d_rr,
+  le_d_ri,
+  le_d_ir,
+  le_d_ii,
+    // 32 bit integer greater than
+  gt_i32_rr,
+  gt_i32_ri,
+  gt_i32_ir,
+  gt_i32_ii,
+    // 32 bit float greater than
+  gt_f_rr,
+  gt_f_ri,
+  gt_f_ir,
+  gt_f_ii,
+    // 64 bit float greater than
+  gt_d_rr,
+  gt_d_ri,
+  gt_d_ir,
+  gt_d_ii,
+    // 32 bit integer greater equals
+  ge_i32_rr,
+  ge_i32_ri,
+  ge_i32_ir,
+  ge_i32_ii,
+    // 32 bit float greater equals
+  ge_f_rr,
+  ge_f_ri,
+  ge_f_ir,
+  ge_f_ii,
+    // 64 bit float greater equals
+  ge_d_rr,
+  ge_d_ri,
+  ge_d_ir,
+  ge_d_ii,
+    // 32 bit integer not equals
+  ne_i32_rr,
+  ne_i32_ri,
+  ne_i32_ir,
+  ne_i32_ii,
+    // 32 bit float not equals
+  ne_f_rr,
+  ne_f_ri,
+  ne_f_ir,
+  ne_f_ii,
+    // 64 bit float not equals
+  ne_d_rr,
+  ne_d_ri,
+  ne_d_ir,
+  ne_d_ii,
+    // 32 bit integer equals
+  eq_i32_rr,
+  eq_i32_ri,
+  eq_i32_ir,
+  eq_i32_ii,
+    // 32 bit float equals
+  eq_f_rr,
+  eq_f_ri,
+  eq_f_ir,
+  eq_f_ii,
+    // 64 bit float equals
+  eq_d_rr,
+  eq_d_ri,
+  eq_d_ir,
+  eq_d_ii,
+    // 32 bit integer neg
+  neg_i32_r,
+  neg_i32_i,
+    // 32 bit float neg
+  neg_f_r,
+  neg_f_ir,
+    // 64 bit float neg
+  neg_d_r,
+  neg_d_i,
+    // 32 bit integer set
+  set_i32_r,
+  set_i32_i,
+    // 32 bit float set
+  set_f_r,
+  set_f_ir,
+    // 64 bit float set
+  set_d_r,
+  set_d_i,
+    // 32 bit integer cast
+  casti32_f_r,
+  casti32_f_i,
+  casti32_d_r,
+  casti32_d_i,
+    // 32 bit float cast
+  castf_i32_r,
+  castf_i32_i,
+  castf_d_r,
+  castf_d_i,
+    // 64 bit float cast
+  castd_i32_r,
+  castd_i32_i,
+  castd_f_r,
+  castd_f_i,
+    // boolean cast
+  castb_i32_r,
+  castb_i32_i,
+  castb_f_r,
+  castb_f_i,
+  castb_d_r,
+  castb_d_i,
+    // NO-OP
+  nop,
+    // Jump if true
+  jit_b_r,
+  jit_b_i,
+    // Jump if false
+  jif_b_r,
+  jif_b_i
 } opcodeType;
 
-class VMInstruction {
-public:
-  opcodeType opcode;
-  opcodeClass opclass;
-  unsigned arg1;
-  unsigned arg2;
-  unsigned dest;
-  registerType literal;
-  VMInstruction(opcodeType topcode,
-		opcodeClass topclass,
-		unsigned tdest,
-		unsigned targ1,
-		unsigned targ2,
-		registerType tlit) : opcode(topcode), opclass(topclass),
-				     arg1(targ1), arg2(targ2), dest(tdest),
-				     literal(tlit)
-  {}
-  VMInstruction(opcodeType topcode,
-		opcodeClass topclass,
-		unsigned tdest,
-		unsigned targ1,
-		unsigned targ2) : opcode(topcode), opclass(topclass),
-				  arg1(targ1), arg2(targ2), dest(tdest)
-  {}
-  VMInstruction(opcodeType topcode,
-		opcodeClass topclass,
-		unsigned tdest,
-		unsigned targ1) : opcode(topcode), opclass(topclass),
-				  arg1(targ1), dest(tdest)
-  {}
-  VMInstruction(opcodeType topcode,
-		opcodeClass topclass,
-		unsigned tdest,
-		registerType tlit) : opcode(topcode), opclass(topclass),
-				     dest(tdest), literal(tlit)
-  {}
-  VMInstruction(opcodeType topcode,
-		opcodeClass topclass,
-		unsigned tdest) : opcode(topcode), opclass(topclass),
-				     dest(tdest)
-  {}
-  VMInstruction(opcodeType topcode,
-		registerType tlit) : opcode(topcode), literal(tlit)
-  {}
-  VMInstruction(opcodeType topcode,
-		opcodeClass topclass,
-		registerType tlit) : opcode(topcode), opclass(topclass),
-				     literal(tlit)
-  {}
-  VMInstruction(opcodeType topcode) : opcode(topcode)
-  {}
-  void print(std::ostream& o);
+class JITInstruction {
+  opcodeType op;
+  JITScalar dest;
+  JITScalar arg1;
+  JITScalar arg2;
 };
 
-class RegisterReference {
-  unsigned m_index;
-  opcodeClass m_type;
+class JITInstructionStream {
+  std::vector<JITInstruction> data;
 public:
-  RegisterReference(unsigned t, opcodeClass s) : m_index(t), m_type(s) {}
-  RegisterReference() {}
-  inline unsigned index() {return m_index;}
-  inline opcodeClass type() {return m_type;}
+  void push_add(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_sub(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_mul(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_div(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_or(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_and(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_not(JITScalar dest, JITScalar arg1);
+  void push_lt(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_le(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_gt(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_ge(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_eq(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_ne(JITScalar dest, JITScalar arg1, JITScalar arg2);
+  void push_neg(JITScalar dest, JITScalar arg1);
+  void push_set(JITScalar dest, JITScalar arg1);
+  void push_casti32(JITScalar dest, JITScalar arg1);
+  void push_castf(JITScalar dest, JITScalar arg1);
+  void push_castd(JITScalar dest, JITScalar arg1);
+  void push_castb(JITScalar dest, JITScalar arg1);
+  void push_nop();
+  void push_jit(JITScalar comp, JITScalar disp);
+  void push_jif(JITScalar comp, JITScalar disp);
 };
+
+class JITVM {
+public:
+  void dispatch(opcodeType op);
+};
+
 
 class SymbolInformation {
 public:

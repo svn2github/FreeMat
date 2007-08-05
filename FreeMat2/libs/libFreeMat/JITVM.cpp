@@ -29,611 +29,398 @@
 // Just for fun, mind you....
 //
 
-#include "Compiler.hpp"
-#include "Tree.hpp"
-#include <QString>
-#include <QTextStream>
-#include <QFile>
-#include <set>
+#include "JITVM.hpp"
 
-static int indent_level = 0;
-static QFile *fp;
-static QTextStream *ts;
-static Interpreter *eval;
-stringVector localIdents;
-stringVector returnVals;
-int forDepth;
-
-bool IsVariableDefined(string varname) {
-  for (int i=0;i<localIdents.size();i++)
-    if (localIdents[i] == varname)
-      return true;
-  return false;
-}
-
-void EmitIndent() {
-  for (int i=0;i<indent_level;i++)
-    (*ts) << "   ";
-}
-
-void Emit(QString t) {
-  (*ts) << t;
-}
-
-void EmitExpression(const tree &t);
-
-void EmitMultiExpression(const tree &t);
-
-void EmitSingleDeref(const tree &t) {
-  if (t.is(TOK_PARENS)) {
-    Emit(".getNDimSubset(");
-    Emit("ArrayVector()");
-    for (int p=0;p<t.numchildren();p++) {
-      Emit(" << ");
-      EmitMultiExpression(t.child(p));
+void JITVM::dispatch(opcodeType op) {
+  switch (op) {
+    // 32 bit integer add
+  case add_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() + reg[arg2.reg()].i32()); break;
+  case add_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() + arg2.i32()); break;
+  case add_i32_ir:
+    reg[dest.reg()].set(arg1.i32() + reg[arg2.reg()].i32()); break;
+  case add_i32_ii:
+    reg[dest.reg()].set(arg1.i32() + arg2.i32()); break;
+    // 32 bit float add
+  case add_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() + reg[arg2.reg()].f()); break;
+  case add_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() + arg2.f()); break;
+  case add_f_ir:
+    reg[dest.reg()].set(arg1.f() + reg[arg2.reg()].f()); break;
+  case add_f_ii:
+    reg[dest.reg()].set(arg1.f() + arg2.f()); break;
+    // 64 bit float add
+  case add_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() + reg[arg2.reg()].d()); break;
+  case add_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() + arg2.d()); break;
+  case add_d_ir:
+    reg[dest.reg()].set(arg1.d() + reg[arg2.reg()].d()); break;
+  case add_d_ii:
+    reg[dest.reg()].set(arg1.d() + arg2.d()); break;
+    // 32 bit integer subtract
+  case sub_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() - reg[arg2.reg()].i32()); break;
+  case sub_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() - arg2.i32()); break;
+  case sub_i32_ir:
+    reg[dest.reg()].set(arg1.i32() - reg[arg2.reg()].i32()); break;
+  case sub_i32_ii:
+    reg[dest.reg()].set(arg1.i32() - arg2.i32()); break;
+    // 32 bit float subtract
+  case sub_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() - reg[arg2.reg()].f()); break;
+  case sub_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() - arg2.f()); break;
+  case sub_f_ir:
+    reg[dest.reg()].set(arg1.f() - reg[arg2.reg()].f()); break;
+  case sub_f_ii:
+    reg[dest.reg()].set(arg1.f() - arg2.f()); break;
+    // 64 bit float subtract
+  case sub_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() - reg[arg2.reg()].d()); break;
+  case sub_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() - arg2.d()); break;
+  case sub_d_ir:
+    reg[dest.reg()].set(arg1.d() - reg[arg2.reg()].d()); break;
+  case sub_d_ii:
+    reg[dest.reg()].set(arg1.d() - arg2.d()); break;
+    // 32 bit integer multiply
+  case mul_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() * reg[arg2.reg()].i32()); break;
+  case mul_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() * arg2.i32()); break;
+  case mul_i32_ir:
+    reg[dest.reg()].set(arg1.i32() * reg[arg2.reg()].i32()); break;
+  case mul_i32_ii:
+    reg[dest.reg()].set(arg1.i32() * arg2.i32()); break;
+    // 32 bit float multiply
+  case mul_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() * reg[arg2.reg()].f()); break;
+  case mul_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() * arg2.f()); break;
+  case mul_f_ir:
+    reg[dest.reg()].set(arg1.f() * reg[arg2.reg()].f()); break;
+  case mul_f_ii:
+    reg[dest.reg()].set(arg1.f() * arg2.f()); break;
+    // 64 bit float multiply
+  case mul_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() * reg[arg2.reg()].d()); break;
+  case mul_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() * arg2.d()); break;
+  case mul_d_ir:
+    reg[dest.reg()].set(arg1.d() * reg[arg2.reg()].d()); break;
+  case mul_d_ii:
+    reg[dest.reg()].set(arg1.d() * arg2.d()); break;
+    // 32 bit float divide
+  case div_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() / reg[arg2.reg()].f()); break;
+  case div_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() / arg2.f()); break;
+  case div_f_ir:
+    reg[dest.reg()].set(arg1.f() / reg[arg2.reg()].f()); break;
+  case div_f_ii:
+    reg[dest.reg()].set(arg1.f() / arg2.f()); break;
+    // 64 bit float divide
+  case div_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() / reg[arg2.reg()].d()); break;
+  case div_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() / arg2.d()); break;
+  case div_d_ir:
+    reg[dest.reg()].set(arg1.d() / reg[arg2.reg()].d()); break;
+  case div_d_ii:
+    reg[dest.reg()].set(arg1.d() / arg2.d()); break;
+    // boolean ops
+  case or_b_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].b() || reg[arg2.reg()].b()); break;
+  case or_b_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].b() || arg2.b()); break;
+  case or_b_ir:
+    reg[dest.reg()].set(arg1.b() || reg[arg2.reg()].b()); break;
+  case or_b_ii:
+    reg[dest.reg()].set(arg1.b() || arg2.b()); break;
+  case and_b_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].b() && reg[arg2.reg()].b()); break;
+  case and_b_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].b() && arg2.b()); break;
+  case and_b_ir:
+    reg[dest.reg()].set(arg1.b() && reg[arg2.reg()].b()); break;
+  case and_b_ii:
+    reg[dest.reg()].set(arg1.b() && arg2.b()); break;
+  case not_b_r:
+    reg[dest.reg()].set(!reg[arg1.reg()].b()); break;
+  case not_b_i:
+    reg[dest.reg()].set(!arg1.b()); break;
+    // 32 bit integer less than
+  case lt_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() < reg[arg2.reg()].i32()); break;
+  case lt_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() < arg2.i32()); break;
+  case lt_i32_ir:
+    reg[dest.reg()].set(arg1.i32() < reg[arg2.reg()].i32()); break;
+  case lt_i32_ii:
+    reg[dest.reg()].set(arg1.i32() < arg2.i32()); break;
+    // 32 bit float less than
+  case lt_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() < reg[arg2.reg()].f()); break;
+  case lt_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() < arg2.f()); break;
+  case lt_f_ir:
+    reg[dest.reg()].set(arg1.f() < reg[arg2.reg()].f()); break;
+  case lt_f_ii:
+    reg[dest.reg()].set(arg1.f() < arg2.f()); break;
+    // 64 bit float less than
+  case lt_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() < reg[arg2.reg()].d()); break;
+  case lt_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() < arg2.d()); break;
+  case lt_d_ir:
+    reg[dest.reg()].set(arg1.d() < reg[arg2.reg()].d()); break;
+  case lt_d_ii:
+    reg[dest.reg()].set(arg1.d() < arg2.d()); break;
+    // 32 bit integer less equals
+  case le_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() <= reg[arg2.reg()].i32()); break;
+  case le_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() <= arg2.i32()); break;
+  case le_i32_ir:
+    reg[dest.reg()].set(arg1.i32() <= reg[arg2.reg()].i32()); break;
+  case le_i32_ii:
+    reg[dest.reg()].set(arg1.i32() <= arg2.i32()); break;
+    // 32 bit float less equals
+  case le_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() <= reg[arg2.reg()].f()); break;
+  case le_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() <= arg2.f()); break;
+  case le_f_ir:
+    reg[dest.reg()].set(arg1.f() <= reg[arg2.reg()].f()); break;
+  case le_f_ii:
+    reg[dest.reg()].set(arg1.f() <= arg2.f()); break;
+    // 64 bit float less equals
+  case le_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() <= reg[arg2.reg()].d()); break;
+  case le_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() <= arg2.d()); break;
+  case le_d_ir:
+    reg[dest.reg()].set(arg1.d() <= reg[arg2.reg()].d()); break;
+  case le_d_ii:
+    reg[dest.reg()].set(arg1.d() <= arg2.d()); break;
+    // 32 bit integer greater than
+  case gt_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() > reg[arg2.reg()].i32()); break;
+  case gt_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() > arg2.i32()); break;
+  case gt_i32_ir:
+    reg[dest.reg()].set(arg1.i32() > reg[arg2.reg()].i32()); break;
+  case gt_i32_ii:
+    reg[dest.reg()].set(arg1.i32() > arg2.i32()); break;
+    // 32 bit float greater than
+  case gt_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() > reg[arg2.reg()].f()); break;
+  case gt_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() > arg2.f()); break;
+  case gt_f_ir:
+    reg[dest.reg()].set(arg1.f() > reg[arg2.reg()].f()); break;
+  case gt_f_ii:
+    reg[dest.reg()].set(arg1.f() > arg2.f()); break;
+    // 64 bit float greater than
+  case gt_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() > reg[arg2.reg()].d()); break;
+  case gt_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() > arg2.d()); break;
+  case gt_d_ir:
+    reg[dest.reg()].set(arg1.d() > reg[arg2.reg()].d()); break;
+  case gt_d_ii:
+    reg[dest.reg()].set(arg1.d() > arg2.d()); break;
+    // 32 bit integer greater equals
+  case ge_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() >= reg[arg2.reg()].i32()); break;
+  case ge_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() >= arg2.i32()); break;
+  case ge_i32_ir:
+    reg[dest.reg()].set(arg1.i32() >= reg[arg2.reg()].i32()); break;
+  case ge_i32_ii:
+    reg[dest.reg()].set(arg1.i32() >= arg2.i32()); break;
+    // 32 bit float greater equals
+  case ge_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() >= reg[arg2.reg()].f()); break;
+  case ge_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() >= arg2.f()); break;
+  case ge_f_ir:
+    reg[dest.reg()].set(arg1.f() >= reg[arg2.reg()].f()); break;
+  case ge_f_ii:
+    reg[dest.reg()].set(arg1.f() >= arg2.f()); break;
+    // 64 bit float greater equals
+  case ge_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() >= reg[arg2.reg()].d()); break;
+  case ge_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() >= arg2.d()); break;
+  case ge_d_ir:
+    reg[dest.reg()].set(arg1.d() >= reg[arg2.reg()].d()); break;
+  case ge_d_ii:
+    reg[dest.reg()].set(arg1.d() >= arg2.d()); break;
+    // 32 bit integer not equals
+  case ne_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() != reg[arg2.reg()].i32()); break;
+  case ne_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() != arg2.i32()); break;
+  case ne_i32_ir:
+    reg[dest.reg()].set(arg1.i32() != reg[arg2.reg()].i32()); break;
+  case ne_i32_ii:
+    reg[dest.reg()].set(arg1.i32() != arg2.i32()); break;
+    // 32 bit float not equals
+  case ne_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() != reg[arg2.reg()].f()); break;
+  case ne_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() != arg2.f()); break;
+  case ne_f_ir:
+    reg[dest.reg()].set(arg1.f() != reg[arg2.reg()].f()); break;
+  case ne_f_ii:
+    reg[dest.reg()].set(arg1.f() != arg2.f()); break;
+    // 64 bit float not equals
+  case ne_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() != reg[arg2.reg()].d()); break;
+  case ne_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() != arg2.d()); break;
+  case ne_d_ir:
+    reg[dest.reg()].set(arg1.d() != reg[arg2.reg()].d()); break;
+  case ne_d_ii:
+    reg[dest.reg()].set(arg1.d() != arg2.d()); break;
+    // 32 bit integer equals
+  case eq_i32_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() == reg[arg2.reg()].i32()); break;
+  case eq_i32_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() == arg2.i32()); break;
+  case eq_i32_ir:
+    reg[dest.reg()].set(arg1.i32() == reg[arg2.reg()].i32()); break;
+  case eq_i32_ii:
+    reg[dest.reg()].set(arg1.i32() == arg2.i32()); break;
+    // 32 bit float equals
+  case eq_f_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].f() == reg[arg2.reg()].f()); break;
+  case eq_f_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].f() == arg2.f()); break;
+  case eq_f_ir:
+    reg[dest.reg()].set(arg1.f() == reg[arg2.reg()].f()); break;
+  case eq_f_ii:
+    reg[dest.reg()].set(arg1.f() == arg2.f()); break;
+    // 64 bit float equals
+  case eq_d_rr:
+    reg[dest.reg()].set(reg[arg1.reg()].d() == reg[arg2.reg()].d()); break;
+  case eq_d_ri:
+    reg[dest.reg()].set(reg[arg1.reg()].d() == arg2.d()); break;
+  case eq_d_ir:
+    reg[dest.reg()].set(arg1.d() == reg[arg2.reg()].d()); break;
+  case eq_d_ii:
+    reg[dest.reg()].set(arg1.d() == arg2.d()); break;
+    // 32 bit integer neg
+  case neg_i32_r:
+    reg[dest.reg()].set(-reg[arg1.reg()].i32()); break;
+  case neg_i32_i:
+    reg[dest.reg()].set(-arg1.i32()); break;
+    // 32 bit float neg
+  case neg_f_r:
+    reg[dest.reg()].set(-reg[arg1.reg()].f()); break;
+  case neg_f_ir:
+    reg[dest.reg()].set(-arg1.f()); break;
+    // 64 bit float neg
+  case neg_d_r:
+    reg[dest.reg()].set(-reg[arg1.reg()].d()); break;
+  case neg_d_i:
+    reg[dest.reg()].set(-arg2.d()); break;
+    // 32 bit integer set
+  case set_i32_r:
+    reg[dest.reg()].set(reg[arg1.reg()].i32()); break;
+  case set_i32_i:
+    reg[dest.reg()].set(arg1.i32()); break;
+    // 32 bit float set
+  case set_f_r:
+    reg[dest.reg()].set(reg[arg1.reg()].f()); break;
+  case set_f_ir:
+    reg[dest.reg()].set(arg1.f()); break;
+    // 64 bit float set
+  case set_d_r:
+    reg[dest.reg()].set(reg[arg1.reg()].d()); break;
+  case set_d_i:
+    reg[dest.reg()].set(arg2.d()); break;
+    // 32 bit integer cast
+  case casti32_f_r:
+    reg[dest.reg()].set((int32)(reg[arg1.reg()].f())); break;
+  case casti32_f_i:
+    reg[dest.reg()].set((int32)(arg1.f())); break;
+  case casti32_d_r:
+    reg[dest.reg()].set((int32)(reg[arg1.reg()].d())); break;
+  case casti32_d_i:
+    reg[dest.reg()].set((int32)(arg1.d())); break;
+    // 32 bit float cast
+  case castf_i32_r:
+    reg[dest.reg()].set((float)(reg[arg1.reg()].i32())); break;
+  case castf_i32_i:
+    reg[dest.reg()].set((float)(arg1.i32())); break;
+  case castf_d_r:
+    reg[dest.reg()].set((float)(reg[arg1.reg()].d())); break;
+  case castf_d_i:
+    reg[dest.reg()].set((float)(arg1.d())); break;
+    // 64 bit float cast
+  case castd_i32_r:
+    reg[dest.reg()].set((double)(reg[arg1.reg()].i32())); break;
+  case castd_i32_i:
+    reg[dest.reg()].set((double)(arg1.i32())); break;
+  case castd_f_r:
+    reg[dest.reg()].set((double)(reg[arg1.reg()].f())); break;
+  case castd_f_i:
+    reg[dest.reg()].set((double)(arg1.f())); break;
+    // boolean cast
+  case castb_i32_r:
+    reg[dest.reg()].set(reg[arg1.reg()].i32() != 0); break;
+  case castb_i32_i:
+    reg[dest.reg()].set(arg1.i32() != 0); break;
+  case castb_f_r:
+    reg[dest.reg()].set(reg[arg1.reg()].f() != 0); break;
+  case castb_f_i:
+    reg[dest.reg()].set(arg1.f() != 0); break;
+  case castb_d_r:
+    reg[dest.reg()].set(reg[arg1.reg()].d() != 0); break;
+  case castb_d_i:
+    reg[dest.reg()].set(arg1.d() != 0); break;
+    // NO-OP
+  case nop:
+    break;
+    // Jump if true
+  case jit_b_r:
+    if (reg[arg1.reg()].b()) ip += arg2.i32(); break;
+  case jit_b_i:
+    if (arg1.b()) ip += arg2.i32(); break;
+    // Jump if false
+  case jif_b_r:
+    if (!reg[arg1.reg()].b()) ip += arg2.i32(); break;
+  case jif_b_i:
+    if (!arg1.b()) ip += arg2.i32(); break;
+    
+  load_b_rr,
+  load_b_ri,
+  load_i32_rr,
+  load_i32_ri,
+  load_i64_rr,
+  load_i64_ri,
+  load_f_rr,
+  load_f_ri,
+  load_d_rr,
+  load_d_ri,
+  store_b_rr,
+  store_b_ri,
+  store_i32_rr,
+  store_i32_ri,
+  store_i64_rr,
+  store_i64_ri,
+  store_f_rr,
+  store_f_ri,
+  store_d_rr,
+  store_d_ri,
     }
-    Emit(")");
-  } else if (t.is(TOK_BRACES)) {
-    Emit(".getNDimContents(");
-    Emit("ArrayVector()");
-    for (int p=0;p<t.numchildren();p++) {
-      Emit(" << ");
-      EmitMultiExpression(t.child(p));
-    }
-    Emit(")");
-  } else if (t.is('.')) {
-    Emit(QString(".getField(") + QString::fromStdString(t.first().text()) + ")");
-  } else if (t.is(TOK_DYN)) {
-    Emit(".getField(ArrayToString(");
-    EmitExpression(t.first());
-    Emit("))");
-  }
 }
-
-void EmitMultiDeref(const tree &t) {
-  if (t.is(TOK_PARENS)) {
-    Emit(".getNDimSubset(");
-    Emit("ArrayVector()");
-    for (int p=0;p<t.numchildren();p++) {
-      Emit(" << ");
-      EmitMultiExpression(t.child(p));
-    }
-    Emit(")");
-  } else if (t.is(TOK_BRACES)) {
-    Emit(".getNDimContentsAsList(");
-    Emit("ArrayVector()");
-    for (int p=0;p<t.numchildren();p++) {
-      Emit(" << ");
-      EmitMultiExpression(t.child(p));
-    }
-    Emit(")");
-  } else if (t.is('.')) {
-    Emit(QString(".getFieldAsList(") + QString::fromStdString(t.first().text()) + ")");
-  } else if (t.is(TOK_DYN)) {
-    Emit(".getFieldAsList(ArrayToString(");
-    EmitExpression(t.first());
-    Emit("))");
-  }
-}
-
-void EmitMultiExpressionVariable(const tree &t) {
-  Emit(QString::fromStdString(t.first().text()));
-  for (int index=1;index<t.numchildren()-1;index++)
-    EmitSingleDeref(t.child(index));
-  if (t.numchildren() > 1)
-    EmitMultiDeref(t.last());
-}
-
-void EmitMultiExpression(const tree &t) {
-  if (t.is(TOK_VARIABLE)) {
-    if (IsVariableDefined(t.first().text()))
-      EmitMultiExpressionVariable(t);
-//     else
-//       EmitMultiExpressionFunction(t);
-  } else if (!t.is(TOK_KEYWORD))
-    EmitExpression(t);
-}
-
-void EmitBinaryOperator(const tree &t, QString opname) {
-  Emit(QString("%1").arg(opname));
-  Emit("(");
-  EmitExpression(t.first());
-  Emit(",");
-  EmitExpression(t.second());
-  Emit(")");
-}
-
-void EmitUnaryOperator(const tree &t, QString opname) {
-  Emit(QString("%1").arg(opname));
-  Emit("(");
-  EmitExpression(t.first());
-  Emit(")");
-}
-
-void EmitRHS(const tree &t) {
-  // Check our list of defined variables
-  if (IsVariableDefined(t.first().text())) {
-    Emit(QString::fromStdString(t.first().text()));
-    for (int index=1;index<t.numchildren();index++)
-      EmitSingleDeref(t.child(index));
-  } else {
-    Emit("ToSingleArray(");
-    Emit(QString("%1Function(").arg(QString::fromStdString(t.first().text())));
-    Emit("1,");
-    Emit("ArrayVector()");
-    for (int i=0;i<t.second().numchildren();i++) {
-      Emit(" << ");
-      EmitMultiExpression(t.second().child(i));
-    }
-    Emit("))");
-  }
-}
-
-void EmitExpression(const tree &t) {
-  switch(t.token()) {
-  case TOK_VARIABLE: 
-    EmitRHS(t);
-    return;
-  case TOK_INTEGER:
-    Emit("Array::int32Constructor(");
-    Emit(QString::fromStdString(t.text()));
-    Emit(")");
-    return;
-  case TOK_FLOAT:
-    Emit("Array::floatConstructor(");
-    Emit(QString::fromStdString(t.text()));
-    Emit(")");
-    return;
-  case TOK_DOUBLE:
-    Emit("Array::doubleConstructor(");
-    Emit(QString::fromStdString(t.text()));
-    Emit(")");
-    return;
-  case TOK_COMPLEX:
-  case TOK_DCOMPLEX:
-    throw Exception("Unimplemented");
-  case TOK_STRING:
-    Emit(QString("\"%1\"").arg(QString::fromStdString(t.text())));
-    return;
-  case TOK_END:
-    throw Exception("Unimplemented");
-  case ':':
-    if (t.numchildren() == 0) {
-      Emit(QString("Array::stringConstructor(\":\")"));
-    } else if (t.first().is(':')) {
-      Emit("DoubleColon(");
-      EmitExpression(t.first().first());
-      Emit(",");
-      EmitExpression(t.first().second());
-      Emit(",");
-      EmitExpression(t.second());
-      Emit(")");
-    } else {
-      Emit("UnitColon(");
-      EmitExpression(t.first());
-      Emit(",");
-      EmitExpression(t.second());
-      Emit(")");
-    }
-    break;
-  case TOK_MATDEF: 
-    //    return matrixDefinition(t); 
-    break;
-  case TOK_CELLDEF: 
-    //    return cellDefinition(t); 
-    break;
-  case '+': 
-    EmitBinaryOperator(t,"Add");
-    break;
-  case '-': 
-    EmitBinaryOperator(t,"Subtract");
-    break;
-  case '*': 
-    EmitBinaryOperator(t,"Multiply");
-    break;
-  case '/': 
-    EmitBinaryOperator(t,"RightDivide");
-    break;
-  case '\\': 
-    EmitBinaryOperator(t,"LeftDivide");
-    break;
-  case TOK_SOR: 
-  case '|': 
-    throw Exception("Unimplemented");    
-    break;
-  case TOK_SAND: 
-  case '&':  
-    throw Exception("Unimplemented");    
-    break;
-  case '<': 
-    EmitBinaryOperator(t,"LessThan");
-    break;
-  case TOK_LE: 
-    EmitBinaryOperator(t,"LessEquals");
-    break;
-  case '>': 
-    EmitBinaryOperator(t,"GreaterThan");
-    break;
-  case TOK_GE: 
-    EmitBinaryOperator(t,"GreaterEquals");
-    break;
-  case TOK_EQ: 
-    EmitBinaryOperator(t,"Equals");
-    break;
-  case TOK_NE: 
-    EmitBinaryOperator(t,"NotEquals");
-    break;
-  case TOK_DOTTIMES: 
-    EmitBinaryOperator(t,"DotMultiply");
-    break;
-  case TOK_DOTRDIV: 
-    EmitBinaryOperator(t,"DotRightDivide");
-    break;
-  case TOK_DOTLDIV: 
-    EmitBinaryOperator(t,"DotLeftDivide");
-    break;
-  case TOK_UNARY_MINUS: 
-    EmitUnaryOperator(t,"Negate");
-    break;
-  case TOK_UNARY_PLUS: 
-    EmitUnaryOperator(t,"Plus");
-    break;
-  case '~': 
-    EmitUnaryOperator(t,"Not");
-    break;
-  case '^': 
-    EmitBinaryOperator(t,"Power");
-    break;
-  case TOK_DOTPOWER: 
-    EmitBinaryOperator(t,"DotPower");
-    break;
-  case '\'': 
-    EmitUnaryOperator(t,"Transpose");
-    break;
-  case TOK_DOTTRANSPOSE: 
-    EmitUnaryOperator(t,"DotTranspose");
-    break;
-  case '@':
-    throw Exception("Unimplemented");    
-  default:
-    throw Exception("Unrecognized expression!");
-  }
-}
-
-void EmitArgumentAliases(MFunctionDef *m_def) {
-  localIdents.clear();
-  EmitIndent();
-  Emit("Array ");
-  for (int i=0;i<m_def->arguments.size();i++) {
-    Emit(QString::fromStdString(m_def->arguments[i]));
-    if (i < m_def->arguments.size()-1)
-      Emit(",");
-  }
-  Emit(";\n");
-  for (int i=0;i<m_def->arguments.size();i++) {
-    EmitIndent();
-    Emit(QString("if (args.size() >= %1) %2 = args[%1];\n").arg(i).arg(QString::fromStdString(m_def->arguments[i])));
-    localIdents.push_back(m_def->arguments[i]);
-  }
-  returnVals = m_def->returnVals;
-}
-
-// a(1,2).foo.goo{3} = rhs
-//
-// t1_ = a(1,2)
-// t2_ = t1_.foo
-// t3_ = t2_.goo
-// t3_{3} = rhs
-// 
-//
-//  t_ = a(1,2).foo.goo
-//  t_{3} = rhs;
-//  a(1,2).foo.goo = t_;
-//
-//
-
-void EmitAssign(string name, const tree &s) {
-  if (s.is(TOK_PARENS)) {
-    Emit(QString("%1.setNDimSubset(").arg(QString::fromStdString(name)));
-    Emit("ArrayVector()");
-    for (int p=0;p<s.numchildren();p++) {
-      Emit(" << ");
-      EmitMultiExpression(s.child(p));
-    }
-    Emit(",_rhs)");
-  } else if (s.is(TOK_BRACES)) {
-    Emit(QString("%1.setNDimContentsAsList(").arg(QString::fromStdString(name)));
-    Emit("ArrayVector()");
-    for (int p=0;p<s.numchildren();p++) {
-      Emit(" << ");
-      EmitMultiExpression(s.child(p));
-    }
-    Emit(",_rhs)");
-  } else if (s.is('.')) {
-    Emit(QString("%1.setFieldAsList(").arg(QString::fromStdString(name)));
-    Emit(QString("%2,_rhs)").arg(QString::fromStdString(s.first().text())));
-  } else if (s.is(TOK_DYN)) {
-  }
-}
-
-void EmitAssignment(const tree &t, bool printIt) {
-  const tree &var(t.first());
-  const tree &rhs(t.second());
-  string name(var.first().text());
-  if (!IsVariableDefined(name)) {
-    Emit(QString("Array %1;\n").arg(QString::fromStdString(name)));
-    localIdents.push_back(name);
-    EmitIndent();
-  }
-  if (var.numchildren() == 1) {
-    Emit(QString("%1 = ").arg(QString::fromStdString(name)));
-    EmitExpression(rhs);
-    Emit(";\n");
-    return;
-  }
-  if (var.numchildren() == 2) {
-    Emit("{\n");
-    indent_level++;
-    EmitIndent();
-    Emit(QString("Array _rhs("));
-    EmitExpression(rhs);
-    Emit(");\n");
-    EmitIndent();
-    EmitAssign(name,var.second());
-    Emit(";\n");
-    indent_level--;
-    EmitIndent();
-    Emit("}\n");
-    return;
-  }
-}
-
-void EmitBlock(const tree &code);
-
-void EmitReturn() {
-  Emit("return ArrayVector()");
-  for (int i=0;i<returnVals.size();i++) {
-    Emit(" << ");
-    if (IsVariableDefined(returnVals[i]))
-      Emit(QString::fromStdString(returnVals[i]));
-    else
-      Emit("Array::emptyConstructor()");
-  }
-  Emit(";\n");
-}
-
-void EmitForStatement(const tree &t) {
-  QString loopvar = QString("_loop%1").arg(forDepth);
-  QString indexvar = QString("_index%1").arg(forDepth);
-  forDepth++;
-  QString myloopvar = QString::fromStdString(t.first().first().text());
-  Emit(QString("Array %1 = ").arg(indexvar));
-  EmitExpression(t.first().second());
-  Emit(";\n");
-  EmitIndent();
-  Emit(QString("for (int %1=1;%1<=%2.getLength();%1++) {\n").arg(loopvar).arg(indexvar));
-  indent_level++;
-  EmitIndent();
-  Emit(QString("Array %1(%2.getVectorSubset(Array::int32Constructor(%3)));\n").arg(myloopvar).arg(indexvar).arg(loopvar));
-  localIdents.push_back(t.first().first().text());
-  EmitBlock(t.second());
-  indent_level--;
-  EmitIndent();
-  Emit("}\n");
-  forDepth--;
-}
-
-void EmitWhileStatement(const tree &t) {
-  Emit("while (!(");
-  EmitExpression(t.first());
-  Emit(").isRealAllZeros())\n");
-  EmitIndent();
-  Emit("{\n");
-  indent_level++;
-  EmitBlock(t.second());
-  indent_level--;
-  EmitIndent();
-  Emit("}\n");
-}
-
-void EmitIfStatement(const tree &t) {
-  Emit("if (!(");
-  EmitExpression(t.first());
-  Emit(").isRealAllZeros())\n");
-  EmitIndent();
-  Emit("{\n");
-  indent_level++;
-  EmitBlock(t.second());
-  indent_level--;
-  unsigned n=2;
-  while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
-    EmitIndent();
-    Emit("}\n");
-    EmitIndent();
-    Emit("else if (!(");
-    EmitExpression(t.child(n).first());
-    Emit(").isRealAllZeros()))\n");
-    EmitIndent();
-    Emit("{\n");
-    indent_level++;
-    EmitBlock(t.child(n).second());
-    indent_level--;
-    n++;
-  }
-  if (t.last().is(TOK_ELSE)) {
-    EmitIndent();
-    Emit("}\n");
-    EmitIndent();
-    Emit("else\n");
-    EmitIndent();
-    Emit("{\n");
-    EmitIndent();
-    EmitBlock(t.last().first());
-    EmitIndent();
-    Emit("}\n");
-  } else {
-    EmitIndent();
-    Emit("}\n");
-  }
-}
-
-void EmitStatementType(const tree &t, bool printIt) {
-  switch(t.token()) {
-  case '=': 
-    EmitAssignment(t,printIt);
-    break;
-  case TOK_MULTI:
-    //     multiFunctionCall(t,printIt);
-    break;
-  case TOK_SPECIAL:
-    //     specialFunctionCall(t,printIt);
-    break;
-  case TOK_FOR:
-    EmitForStatement(t);
-    break;
-  case TOK_WHILE:
-    EmitWhileStatement(t);
-    break;
-  case TOK_IF:
-    EmitIfStatement(t);
-    break;
-  case TOK_BREAK:
-    Emit("break;\n");
-    break;
-  case TOK_CONTINUE:
-    Emit("continue;\n");
-    break;
-  case TOK_DBSTEP:
-    break;
-  case TOK_DBTRACE:
-    break;
-  case TOK_RETURN:
-    EmitReturn();
-    break;
-  case TOK_SWITCH:
-    //    switchStatement(t);
-    break;
-  case TOK_TRY:
-    //    tryStatement(t);
-    break;
-  case TOK_QUIT:
-    break;
-  case TOK_RETALL:
-    break;
-  case TOK_KEYBOARD:
-    break;
-  case TOK_GLOBAL:
-    //    globalStatement(t);
-    break;
-  case TOK_PERSISTENT:
-    //    persistentStatement(t);
-    break;
-  case TOK_EXPR:
-    //    expressionStatement(t,printIt);
-    break;
-  default:
-    throw Exception("Unrecognized statement type");
-  }
-}
-
-void EmitStatement(const tree &t) {
-  if (t.is(TOK_QSTATEMENT))
-    EmitStatementType(t.first(),false);
-  else if (t.is(TOK_STATEMENT))
-    EmitStatementType(t.first(),true);
-  Emit(";\n");
-}
-
-void EmitBlock(const tree &code) {
-  for (int i=0;i<code.numchildren();i++) {
-    EmitIndent();
-    EmitStatement(code.child(i));
-  }
-}
-
-void ProtoCompile(Interpreter *m_eval, MFunctionDef *m_def, string filename) {
-  m_def->updateCode(m_eval);
-  fp = new QFile(QString::fromStdString(filename));
-  eval = m_eval;
-  if (!fp->open(QIODevice::WriteOnly))
-    throw Exception("Unable to open file " + filename + " for writing.");
-  ts = new QTextStream(fp);
-  EmitIndent();
-  Emit(QString("ArrayVector %1Function(int nargout, const ArrayVector& args) {\n").arg(QString::fromStdString(m_def->name)));
-  forDepth = 0;
-  indent_level++;
-  // Emit aliases for the arguments
-  EmitArgumentAliases(m_def);
-  EmitBlock(m_def->code);
-  EmitIndent();
-  EmitReturn();
-  indent_level--;
-  EmitIndent();
-  Emit(QString("}\n"));
-  fp->close();
-  delete fp;
-}
-
-ArrayVector fccFunction(int nargout, const ArrayVector& args, Interpreter* m_eval) {
-  for (int i=0;i<args.size();i++) {
-    FuncPtr val;
-    string name(ArrayToString(args[i]));
-    if (!m_eval->lookupFunction(name,val))
-      throw Exception("Unable to resolve " + name + " to a function");
-    if (!(val->type() == FM_M_FUNCTION))
-      throw Exception("Function " + name + " is not an M file (and cannot be compiled");
-    ProtoCompile(m_eval,(MFunctionDef*) val,name+".cpp");
-  }
-  return ArrayVector();
-}
-
-static void VariableReferencesList(const tree & t, stringVector& idents) {
-  if (t.is(TOK_VARIABLE)) {
-    bool exists = false;
-    for (int i=0;(i<idents.size());i++) {
-      exists = (idents[i] == t.first().text());
-      if (exists) break;
-    }
-    if (!exists)
-      idents.push_back(t.first().text());
-  }
-  for (int i=0;i<t.numchildren();i++)
-    VariableReferencesList(t.child(i),idents);
-}
-
-class LoopSignature {
-  std::set<string> scalars;
-  std::set<string> matrices;
-public:
-  std::set<string> get_scalars() {
-    return scalars;
-  }
-  std::set<string> get_matrices() {
-    return matrices;
-  }
-  void add_scalar(string scalar) {
-    scalars.insert(scalar);
-  }
-  void add_matrix(string matrix) {
-    matrices.insert(matrix);
-  }
-  void remove_scalar(string scalar) {
-    scalars.erase(scalar);
-  }
-  void remove_matrix(string matrix) {
-    matrices.erase(matrix);
-  }
-  void print() {
-    for (std::set<string>::const_iterator i = scalars.begin();
-	 i!=scalars.end();i++) {
-      std::cout << "scalar " << *i << "\r\n";
-    }
-    for (std::set<string>::const_iterator i = matrices.begin();
-	 i!=matrices.end();i++) {
-      std::cout << "matrix " << *i << "\r\n";
-    }
-  }
-};
 
 
 static inline registerType RTUnsigned(unsigned x) {
@@ -1266,6 +1053,7 @@ RegisterReference JITRHS(VMStream& o, tree t, Interpreter* m_eval) {
   throw Exception("dereference not handled yet...");
 }
 
+
 RegisterReference JITExpression(VMStream& o, tree t, Interpreter* m_eval) {
   switch(t.token()) {
   case TOK_VARIABLE: 
@@ -1541,20 +1329,13 @@ void JITForLoop(VMStream& o, tree t, Interpreter* m_eval) {
   unsigned loop_index_register = o.GetReg();
   o.add_symbol(loop_index,
 		     SymbolInformation(integer,loop_index_register));
-  o << new VMInstruction(SET,integer,loop_index_register,
-			       RTInteger(loop_start));
-  unsigned loop_max_register = o.GetReg();
-  o << new VMInstruction(SET,integer,loop_max_register,
-			       RTInteger(loop_stop));
-  unsigned loop_increment_register = o.GetReg();
-  o << new VMInstruction(SET,integer,loop_increment_register,
-			       RTInteger(1));
-  unsigned loop_test_register = o.GetReg();
-  o << new VMInstruction(SET,t_boolean,loop_test_register,RTBoolean(false));
+  o.push_set(loop_index_register,JITScalar(loop_start));
   unsigned loop_start_instruction = o.size();
   JITBlock(o,t.second(),m_eval);
-  o << new VMInstruction(ADD,integer,loop_index_register,
-			       loop_index_register,loop_increment_register);
+  o.push_add(loop_index_register,loop_index_register,JITScalar(1));
+  o.push_le(loop_test_register,loop_index_register,JITScalar(loop_stop));
+  o.push_jit(loop_test_register,JITScalar(-o.size()+loop_start_instruction));
+
   o << new VMInstruction(LE,integer,loop_test_register,
 			       loop_index_register,loop_max_register);
   o << new VMInstruction(JIT,unsigned_integer,

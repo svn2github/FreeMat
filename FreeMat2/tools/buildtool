@@ -656,7 +656,7 @@ sub job_mac_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
 
-#    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
+    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
     configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
 }
 

@@ -42,7 +42,7 @@ Parser.hpp \
 Scanner.hpp \
 Tree.hpp \
 RefVec.hpp \
-Compiler.hpp \
+JITVM.hpp \
 List.hpp
 
 libFreeMat_a_SOURCES = Array.cpp \
@@ -75,7 +75,7 @@ Parser.cpp \
 Scanner.cpp \
 Tree.cpp \
 FunctionDef.cpp \
-Compiler.cpp \
+JITVM.cpp \
 $(libFreeMat_a_HFILES) 
 
 nodist_libFreeMat_a_SOURCES = $(libFreeMat_a_MOC)

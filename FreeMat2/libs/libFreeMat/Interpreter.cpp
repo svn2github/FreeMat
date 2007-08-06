@@ -39,7 +39,7 @@
 #include <QtCore>
 #include <fstream>
 #include <stdarg.h>
-#include "Compiler.hpp"
+#include "JITVM.hpp"
 
 #ifdef WIN32
 #define PATHSEP ";"
@@ -1814,9 +1814,9 @@ void Interpreter::forStatement(const tree &t) {
 
   // Try to compile this for statement to an instruction stream
   try {
-    VMStream jit(CompileForBlock(t,this));
-    //    std::cout << jit;
-    jit.Run(this);
+    JITVM jit;
+    jit.compile_for_block(t,this);
+    jit.run(this);
     return;
   } catch (Exception &e) {
     std::cout << e.getMessageCopy() << "\r\n";

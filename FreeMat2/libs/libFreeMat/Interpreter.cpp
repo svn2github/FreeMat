@@ -1816,6 +1816,7 @@ void Interpreter::forStatement(const tree &t) {
   try {
     JITVM jit;
     jit.compile_for_block(t,this);
+    jit.dump(std::cout);
     jit.run(this);
     return;
   } catch (Exception &e) {

@@ -771,8 +771,6 @@ ArrayVector ClcFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-void LoadCompileFunction(Context* context);
-
 void LoadThreadFunctions(Context *context) {
   context->addSpecialFunction("threadid",ThreadIDFunction,0,1,NULL);
   context->addSpecialFunction("threadnew",ThreadNewFunction,0,1,NULL);
@@ -806,7 +804,6 @@ Context *MainApp::NewContext() {
     LoadHandleGraphicsFunctions(context);  
   }
   LoadThreadFunctions(context);
-  LoadCompileFunction(context);
   return context;
 }
 

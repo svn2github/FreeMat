@@ -7,7 +7,8 @@
 
 using namespace std;
 
-#define JITAssert(x) if (!(x)) throw Exception("JIT Assert failed");
+//#define JITAssert(x) if (!(x)) throw Exception("JIT Assert failed");
+#define JITAssert(x)
 
 typedef union {
   bool b;
@@ -16,7 +17,7 @@ typedef union {
   double  d;
   void*   p;
   uint32  reg;
-} scalarValue;
+} scalar_value;
 
 typedef enum {
   c_bool,
@@ -26,13 +27,13 @@ typedef enum {
   c_pointer,
   c_register,
   c_unknown
-} scalarClass;
+} scalar_class;
 
 class JITScalar {
-  scalarClass m_type;
-  scalarValue m_value;
+  scalar_class m_type;
+  scalar_value m_value;
 public:
-  inline JITScalar(scalarClass t, scalarValue v) : m_type(t), m_value(v) {}
+  inline JITScalar(scalar_class t, scalar_value v) : m_type(t), m_value(v) {}
   inline JITScalar(bool v) : m_type(c_bool) {m_value.b = v;}
   inline JITScalar(int32 v) : m_type(c_int32) {m_value.i = v;}
   inline JITScalar(float v) : m_type(c_float) {m_value.f = v;}
@@ -40,10 +41,10 @@ public:
   inline JITScalar(void* v) : m_type(c_pointer) {m_value.p = v;}
   inline JITScalar(uint32 v) : m_type(c_register) {m_value.reg = v;}
   inline JITScalar() : m_type(c_unknown) {};
-  inline scalarClass type()  const {return m_type;}
-  inline void setType(scalarClass t) {m_type = t;}
-  inline scalarValue value() const {return m_value;}
-  inline void set(scalarValue v) {m_value = v;}
+  inline scalar_class type()  const {return m_type;}
+  inline void setType(scalar_class t) {m_type = t;}
+  inline scalar_value value() const {return m_value;}
+  inline void set(scalar_value v) {m_value = v;}
   inline void set(bool v) {m_value.b = v; m_type = c_bool;}
   inline void set(int32 v) {m_value.i = v; m_type = c_int32;}
   inline void set(float v) {m_value.f = v; m_type = c_float;}
@@ -56,6 +57,8 @@ public:
   inline double d()   const {JITAssert(m_type == c_double); return m_value.d;}
   inline void*  p()   const {JITAssert(m_type == c_pointer); return m_value.p;}
   inline int32  reg() const {JITAssert(m_type == c_register); return m_value.reg;}
+  inline bool   isp() const {return (m_type == c_pointer);}
+  inline bool   isscalar() const {return (m_type <= c_double);}
 };
 
 typedef enum {
@@ -109,47 +112,58 @@ public:
   JITScalar   arg1;
   JITScalar   arg2;
   JITScalar   arg3;
+  JITInstruction(opcode p, op_type t, JITScalar d, op_ri r, JITScalar a1) :
+    op(p), type(t), ri(r), dest(d), arg1(a1) {}
+  JITInstruction(opcode p, op_type t, JITScalar d, op_ri r, JITScalar a1, JITScalar a2) :
+    op(p), type(t), ri(r), dest(d), arg1(a1), arg2(a2) {}
+  JITInstruction(opcode p, op_type t, JITScalar d, op_ri r, JITScalar a1, 
+		 JITScalar a2, JITScalar a3) :
+    op(p), type(t), ri(r), dest(d), arg1(a1), arg2(a2), arg3(a3) {}
+  void dump(ostream& o);
 };
 
 class JITVM {
+private:
   JITScalar reg[1024];
   std::vector<JITInstruction> data;
   unsigned ip;
-  void dispatch_mloadb(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_mloadi(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_mloadf(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_mloadd(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_vloadb(JITScalar dest, void *p, int32 row);
-  void dispatch_vloadi(JITScalar dest, void *p, int32 row);
-  void dispatch_vloadf(JITScalar dest, void *p, int32 row);
-  void dispatch_vloadd(JITScalar dest, void *p, int32 row);
-  void dispatch_mstoreb(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_mstorei(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_mstoref(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_mstored(JITScalar dest, void *p, int32 row, int32 col);
-  void dispatch_vstoreb(JITScalar dest, void *p, int32 row);
-  void dispatch_vstorei(JITScalar dest, void *p, int32 row);
-  void dispatch_vstoref(JITScalar dest, void *p, int32 row);
-  void dispatch_vstored(JITScalar dest, void *p, int32 row);
+  unsigned next_reg;
+  SymbolTable<JITScalar> symbols;
+  inline JITScalar* find_symbol(string name) {return symbols.findSymbol(name);}
+  void add_symbol(string name, JITScalar value) {symbols.insertSymbol(name,value);}
+  JITScalar* add_argument(string name, Interpreter* m_eval, bool scalar);
+  scalar_class map_array_type(void* ptr);
+  void dispatch_mload(op_type type, JITScalar dest, void *p, int32 row, int32 col);
+  void dispatch_vload(op_type type, JITScalar dest, void *p, int32 row);
+  void dispatch_mstore(op_type type, JITScalar dest, void *p, int32 row, int32 col);
+  void dispatch_vstore(op_type type, void *p, int32 row, JITScalar dest);
   void dispatch(const JITInstruction &inst);
-private:
-  op_type compute_oc_code(scalarClass outClass);
+  op_type compute_oc_code(scalar_class outClass);
   op_ri compute_ri_code(JITScalar arg1, JITScalar arg2);
-  scalarClass type_of(JITScalar arg1);
+  op_ri compute_ri_code(JITScalar arg1);
+  scalar_class type_of(JITScalar arg1);
   bool isi(JITScalar);
+  bool isp(JITScalar);
   bool isfd(JITScalar);
-  JITScalar new_register(scalarClass outClass);
-  JITScalar promote(JITScalar arg1, scalarClass outClass);
+  JITScalar new_register(scalar_class outClass);
+  JITScalar promote(JITScalar arg1, scalar_class outClass);
   JITScalar boolean_op(opcode op, JITScalar arg1, JITScalar arg2, string inst);
   JITScalar binary_op(opcode op, JITScalar arg1, JITScalar arg2, string inst);
   JITScalar comparison_op(opcode op, JITScalar arg1, JITScalar arg2, string inst);
-  JITScalar rhs(tree t, Interpreter* m_eval);
-  JITScalar expression(tree t, Interpreter* m_eval);
   void push_instruction(opcode,op_type,JITScalar result,op_ri,JITScalar arg1);
   void push_instruction(opcode,op_type,JITScalar result,op_ri,JITScalar arg1,JITScalar arg2);
   void push_instruction(opcode,op_type,JITScalar result,op_ri,JITScalar arg1,JITScalar arg2,JITScalar arg3);
 public:
+  JITVM() : next_reg(0) {}
+  void dump(ostream& o);
+  JITScalar compile_expression(tree t, Interpreter* m_eval);
+  JITScalar compile_rhs(tree t, Interpreter* m_eval);
+  void compile_if_statement(tree t, Interpreter* m_eval);
   void compile_for_block(tree t, Interpreter *m_eval);
+  void compile_assignment(tree t, Interpreter *m_eval);
+  void compile_statement(tree t, Interpreter *m_eval);
+  void compile_statement_type(tree t, Interpreter *m_eval);
+  void compile_block(tree t, Interpreter *m_eval);
   void run(Interpreter *m_eval);
 };
 

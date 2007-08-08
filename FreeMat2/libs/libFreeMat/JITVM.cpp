@@ -770,114 +770,152 @@ void JITVM::dispatch(const JITInstruction &inst) {
   case op_jit:
     switch (inst.ri) {
     case arg_rr:
-      if (reg[arg1.reg()].b()) ip += reg[arg2.reg()].i(); break;
     case arg_ri:
-      if (reg[arg1.reg()].b()) ip += arg2.i(); break;
+      if (reg[dest.reg()].b()) ip -= reg[arg1.reg()].i(); break;
     case arg_ir:
-      if (arg1.b()) ip += reg[arg2.reg()].i(); break;
     case arg_ii:
-      if (arg1.b()) ip += arg2.i(); break;
+      if (reg[dest.reg()].b()) ip -= arg1.i(); break;
     }
     break;
   case op_mload:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-	dispatch_mloadb(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
-      case arg_ri:
-	dispatch_mloadb(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),arg3.i()); break;
-      case arg_ir:
-	dispatch_mloadb(dest.reg(),reg[arg1.reg()].p(),arg2.i(),reg[arg3.reg()].i()); break;
-      case arg_ii:
-	dispatch_mloadb(dest.reg(),reg[arg1.reg()].p(),arg2.i(),arg3.i()); break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	dispatch_mloadi(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
-      case arg_ri:
-	dispatch_mloadi(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),arg3.i()); break;
-      case arg_ir:
-	dispatch_mloadi(dest.reg(),reg[arg1.reg()].p(),arg2.i(),reg[arg3.reg()].i()); break;
-      case arg_ii:
-	dispatch_mloadi(dest.reg(),reg[arg1.reg()].p(),arg2.i(),arg3.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	dispatch_mloadf(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
-      case arg_ri:
-	dispatch_mloadf(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),arg3.i()); break;
-      case arg_ir:
-	dispatch_mloadf(dest.reg(),reg[arg1.reg()].p(),arg2.i(),reg[arg3.reg()].i()); break;
-      case arg_ii:
-	dispatch_mloadf(dest.reg(),reg[arg1.reg()].p(),arg2.i(),arg3.i()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	dispatch_mloadd(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
-      case arg_ri:
-	dispatch_mloadd(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),arg3.i()); break;
-      case arg_ir:
-	dispatch_mloadd(dest.reg(),reg[arg1.reg()].p(),arg2.i(),reg[arg3.reg()].i()); break;
-      case arg_ii:
-	dispatch_mloadd(dest.reg(),reg[arg1.reg()].p(),arg2.i(),arg3.i()); break;
-      }
-      break;
+    switch (inst.ri) {
+    case arg_rr:
+      dispatch_mload(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
+    case arg_ri:
+      dispatch_mload(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),arg3.i()); break;
+    case arg_ir:
+      dispatch_mload(inst.type,dest,arg1.p(),arg2.i(),reg[arg3.reg()].i()); break;
+    case arg_ii:
+      dispatch_mload(inst.type,dest,arg1.p(),arg2.i(),arg3.i()); break;
     }
     break;
   case op_vload:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	dispatch_vloadb(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i()); break;
-      case arg_ir:
-      case arg_ii:
-	dispatch_vloadb(dest.reg(),reg[arg1.reg()].p(),arg2.i()); break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	dispatch_vloadi(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i()); break;
-      case arg_ir:
-      case arg_ii:
-	dispatch_vloadi(dest.reg(),reg[arg1.reg()].p(),arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	dispatch_vloadf(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i(),arg3); break;
-      case arg_ir:
-      case arg_ii:
-	dispatch_vloadf(dest.reg(),reg[arg1.reg()].p(),arg2.i()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	dispatch_vloadd(dest.reg(),reg[arg1.reg()].p(),reg[arg2.reg()].i()); break;
-      case arg_ir:
-      case arg_ii:
-	dispatch_vloadd(dest.reg(),reg[arg1.reg()].p(),arg2.i()); break;
-      }
-      break;
+    switch (inst.ri) {
+    case arg_ir:
+    case arg_rr:
+      dispatch_vload(inst.type,dest,arg1.p(),reg[arg2.reg()].i()); break;
+    case arg_ri:
+    case arg_ii:
+      dispatch_vload(inst.type,dest,arg1.p(),arg2.i()); break;
     }
     break;
+  case op_mstore:
+    switch (inst.ri) {
+    case arg_rr:
+      dispatch_mstore(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
+    case arg_ri:
+      dispatch_mstore(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),arg3.i()); break;
+    case arg_ir:
+      dispatch_mstore(inst.type,dest,arg1.p(),arg2.i(),reg[arg3.reg()].i()); break;
+    case arg_ii:
+      dispatch_mstore(inst.type,dest,arg1.p(),arg2.i(),arg3.i()); break;
+    }
+    break;
+  case op_vstore:
+    switch (inst.ri) {
+    case arg_ir:
+      dispatch_vstore(inst.type,dest.p(),arg1.i(),reg[arg2.reg()]); break;
+    case arg_rr:
+      dispatch_vstore(inst.type,dest.p(),reg[arg1.reg()].i(),reg[arg2.reg()]); break;
+    case arg_ri:
+      dispatch_vstore(inst.type,dest.p(),reg[arg1.reg()].i(),arg2); break;
+    case arg_ii:
+      dispatch_vstore(inst.type,dest.p(),arg1.i(),arg2); break;
+    }
+    break;
+  }
 }
 
-op_type JITVM::compute_oc_code(scalarClass outClass) {
+void JITVM::dispatch_mstore(op_type type, JITScalar dest, void *ptr, int32 row, int32 col) {
+  Array *a = (Array*) ptr;
+  if ((row <= a->rows()) && (row >= 1) && (col <= a->columns()) && (col >= 1)) {
+    switch (type) {
+    case type_b:
+      ((logical*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].b();
+      break;
+    case type_i:
+      ((int32*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].i();
+      break;
+    case type_f:
+      ((float*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].f();
+      break;
+    case type_d:
+      ((double*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].d();
+      break;
+    }
+  } else {
+    throw Exception("Out of range access");
+  }
+}
+
+void JITVM::dispatch_mload(op_type type, JITScalar dest, void *ptr, int32 row, int32 col) {
+  Array *a = (Array*) ptr;
+  if ((row <= a->rows()) && (row >= 1) && (col <= a->columns()) && (col >= 1)) {
+    switch (type) {
+    case type_b:
+      reg[dest.reg()].set((bool) ((logical*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      break;
+    case type_i:
+      reg[dest.reg()].set((int32) ((int32*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      break;
+    case type_f:
+      reg[dest.reg()].set((float) ((float*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      break;
+    case type_d:
+      reg[dest.reg()].set((double) ((double*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      break;
+    }
+  } else {
+    throw Exception("Out of range access");
+  }
+}
+
+void JITVM::dispatch_vload(op_type type, JITScalar dest, void *ptr, int row) {
+  Array *a = (Array*) ptr;
+  if ((row <= (a->rows()*a->columns())) && (row >= 1)) {
+    switch (type) {
+    case type_b:
+      reg[dest.reg()].set((bool) ((logical*) a->getDataPointer())[row-1]);
+      break;
+    case type_i:
+      reg[dest.reg()].set((int32) ((int32*) a->getDataPointer())[row-1]);
+      break;
+    case type_f:
+      reg[dest.reg()].set((float) ((float*) a->getDataPointer())[row-1]);
+      break;
+    case type_d:
+      reg[dest.reg()].set((double) ((double*) a->getDataPointer())[row-1]);
+      break;
+    }
+  } else {
+    throw Exception("Out of range access");
+  }
+}
+
+void JITVM::dispatch_vstore(op_type type, void *ptr, int32 row, JITScalar dest) {
+  Array *a = (Array*) ptr;
+  if ((row <= (a->rows()*a->columns())) && (row >= 1)) {
+    switch (type) {
+    case type_b:
+      ((logical*) a->getDataPointer())[row-1] = dest.b();
+      break;
+    case type_i:
+      ((int32*) a->getDataPointer())[row-1] = dest.i();
+      break;
+    case type_f:
+      ((float*) a->getDataPointer())[row-1] = dest.f();
+      break;
+    case type_d:
+      ((double*) a->getDataPointer())[row-1] = dest.d();
+      break;
+    }
+  } else {
+    throw Exception("Out of range access");
+  }
+}
+
+
+op_type JITVM::compute_oc_code(scalar_class outClass) {
   switch (outClass) {
   case c_bool:
     return type_b;
@@ -890,6 +928,10 @@ op_type JITVM::compute_oc_code(scalarClass outClass) {
   default:
     throw Exception("unable to compute output code");
   }
+}
+
+op_ri JITVM::compute_ri_code(JITScalar arg1) {
+  return compute_ri_code(arg1,arg1);
 }
 
 op_ri JITVM::compute_ri_code(JITScalar arg1, JITScalar arg2) {
@@ -905,13 +947,207 @@ op_ri JITVM::compute_ri_code(JITScalar arg1, JITScalar arg2) {
   throw Exception("computation for register/immediate code stalled");
 }
 
-scalarClass JITVM::type_of(JITScalar arg) {
+scalar_class JITVM::type_of(JITScalar arg) {
   if (arg.type() <= c_pointer) return arg.type();
   if (arg.type() == c_unknown) throw Exception("encountered uninitialized scalar in compilation!");
   if (arg.type() == c_register) return type_of(reg[arg.reg()]);
 }
  
-JITScalar JITVM::promote(JITScalar arg, scalarClass outClass) {
+JITScalar JITVM::new_register(scalar_class outClass) {
+  reg[next_reg].setType(outClass);
+  return JITScalar((uint32) next_reg++);
+}
+
+void JITVM::push_instruction(opcode op, op_type type, JITScalar result, 
+			     op_ri ri_code, JITScalar arg1) {
+  data.push_back(JITInstruction(op,type,result,ri_code,arg1));
+}
+
+void JITVM::push_instruction(opcode op, op_type type, JITScalar result, 
+			     op_ri ri_code, JITScalar arg1, JITScalar arg2) {
+  data.push_back(JITInstruction(op,type,result,ri_code,arg1,arg2));
+}
+
+void JITVM::push_instruction(opcode op, op_type type, JITScalar result, 
+			     op_ri ri_code, JITScalar arg1, JITScalar arg2, JITScalar arg3) {
+  data.push_back(JITInstruction(op,type,result,ri_code,arg1,arg2,arg3));
+}
+
+static string dump_literal(JITScalar t) {
+  char buffer[1024];
+  switch (t.type()) {
+  case c_bool: 
+    {
+      if (t.b()) 
+	return "true"; 
+      else 
+	return "false";
+    }
+  case c_int32: 
+    {
+      sprintf(buffer,"%i",t.i());
+      return buffer;
+    }
+  case c_float:
+    {
+      sprintf(buffer,"%f",t.f());
+      return buffer;
+    }
+  case c_double:
+    {
+      sprintf(buffer,"%f",t.d());
+      return buffer;
+    }
+  case c_register:
+    {
+      return "***";
+    }
+  case c_pointer:
+    {
+      sprintf(buffer,"%p",t.p());
+      return buffer;
+    }
+  }
+  return "unknown";
+}
+
+static bool binary_op(opcode op) {
+  switch(op) {
+  case op_add:   
+  case op_sub:   
+  case op_mul:   
+  case op_div:   
+  case op_or:    
+  case op_and:   
+  case op_lt:    
+  case op_le:    
+  case op_eq:    
+  case op_ge:    
+  case op_gt:    
+  case op_ne:    
+  case op_jit:   
+  case op_vload: 
+  case op_vstore:
+    return true;
+  case op_not:   
+  case op_neg:   
+  case op_set:   
+  case op_castb: 
+  case op_casti: 
+  case op_castf: 
+  case op_castd: 
+  case op_nop:   
+  case op_mload: 
+  case op_mstore:
+    return false;
+  }
+}
+
+static bool unary_op(opcode op) {
+  switch(op) {
+  case op_add:   
+  case op_sub:   
+  case op_mul:   
+  case op_div:   
+  case op_or:    
+  case op_and:   
+  case op_lt:    
+  case op_le:    
+  case op_eq:    
+  case op_ge:    
+  case op_gt:    
+  case op_ne:    
+  case op_jit:   
+  case op_vload: 
+  case op_vstore:
+    return false;
+  case op_not:   
+  case op_neg:   
+  case op_set:   
+  case op_castb: 
+  case op_casti: 
+  case op_castf: 
+  case op_castd: 
+  case op_nop:   
+  case op_mload: 
+  case op_mstore:
+    return true;
+  }
+}
+
+void JITInstruction::dump(ostream& o) {
+  switch(op) {
+  case op_add:    o << "add   "; break;
+  case op_sub:    o << "sub   "; break;
+  case op_mul:    o << "mul   "; break;
+  case op_div:    o << "div   "; break;
+  case op_or:     o << "or    "; break;
+  case op_and:    o << "and   "; break;
+  case op_not:    o << "not   "; break;
+  case op_lt:     o << "lt    "; break;
+  case op_le:     o << "le    "; break;
+  case op_eq:     o << "eq    "; break;
+  case op_ge:     o << "ge    "; break;
+  case op_gt:     o << "gt    "; break;
+  case op_ne:     o << "ne    "; break;
+  case op_neg:    o << "neg   "; break;
+  case op_set:    o << "set   "; break;
+  case op_castb:  o << "castb "; break;
+  case op_casti:  o << "casti "; break;
+  case op_castf:  o << "castf "; break;
+  case op_castd:  o << "castd "; break;
+  case op_nop:    o << "nop   "; break;
+  case op_jit:    o << "jit   "; break;
+  case op_mload:  o << "mload "; break;
+  case op_vload:  o << "vload "; break;
+  case op_mstore: o << "mstore"; break;
+  case op_vstore: o << "vstore"; break;
+  }
+  switch(type) {
+  case type_b:    o << "<b> "; break;
+  case type_i:    o << "<i> "; break;
+  case type_f:    o << "<f> "; break;
+  case type_d:    o << "<d> "; break;
+  }
+  
+  if (op == op_vstore) {
+    o << dump_literal(dest) << ",";
+    switch(ri) {
+    case arg_rr:
+      o << "r"<< arg1.reg() << ",r" << arg2.reg(); break;
+    case arg_ri:
+      o << "r"<< arg1.reg() << "," << dump_literal(arg2); break;
+    case arg_ir:
+      o << dump_literal(arg1) << ",r" << arg2.reg(); break;
+    case arg_ii:
+      o << dump_literal(arg1) << "," << dump_literal(arg2); break;
+    }
+  } else if (binary_op(op)) {
+    o << "r" << dest.reg() << ",";
+    switch(ri) {
+    case arg_rr:
+      o << "r"<< arg1.reg() << ",r" << arg2.reg(); break;
+    case arg_ri:
+      o << "r"<< arg1.reg() << "," << dump_literal(arg2); break;
+    case arg_ir:
+      o << dump_literal(arg1) << ",r" << arg2.reg(); break;
+    case arg_ii:
+      o << dump_literal(arg1) << "," << dump_literal(arg2); break;
+    }
+  } else if (unary_op(op)) {
+    o << "r" << dest.reg() << ",";
+    switch(ri) {
+    case arg_rr:
+    case arg_ri:
+      o << "r"<< arg1.reg(); break;
+    case arg_ir:
+    case arg_ii:
+      o << dump_literal(arg1); break;
+    }
+  }
+}
+
+JITScalar JITVM::promote(JITScalar arg, scalar_class outClass) {
   // For scalar types, just promote the thing
   if (arg.type() < c_pointer) {
     if (arg.type() == c_bool) {
@@ -979,19 +1215,21 @@ JITScalar JITVM::promote(JITScalar arg, scalarClass outClass) {
       throw Exception("unhandled case for promote called");
   }
   if (arg.type() == c_register) {
+    if (type_of(arg) == outClass) return arg;
     JITScalar result(new_register(outClass));
     switch (outClass) {
     case c_bool:
-      push_instruction(op_castb,compute_oc_code(reg[arg.reg()].type()),arg_rr,arg); break;
+      push_instruction(op_castb,compute_oc_code(reg[arg.reg()].type()),result,arg_rr,arg); break;
     case c_int32:
-      push_instruction(op_casti,compute_oc_code(reg[arg.reg()].type()),arg_rr,arg); break;
+      push_instruction(op_casti,compute_oc_code(reg[arg.reg()].type()),result,arg_rr,arg); break;
     case c_float:
-      push_instruction(op_castf,compute_oc_code(reg[arg.reg()].type()),arg_rr,arg); break;
+      push_instruction(op_castf,compute_oc_code(reg[arg.reg()].type()),result,arg_rr,arg); break;
     case c_double:
-      push_instruction(op_castd,compute_oc_code(reg[arg.reg()].type()),arg_rr,arg); break;
+      push_instruction(op_castd,compute_oc_code(reg[arg.reg()].type()),result,arg_rr,arg); break;
     default:
       throw Exception("unhandled case for promote called");
     }
+    return result;
   }
   throw Exception("unhandled case for promote called");
 }
@@ -1019,7 +1257,7 @@ bool JITVM::isfd(JITScalar x) {
 // add immediate to immediate - this instruction can be replaced by 
 // constant folding, but for now, leave it in.
 JITScalar JITVM::binary_op(opcode op, JITScalar arg1, JITScalar arg2, string inst) {
-  scalarClass outClass;
+  scalar_class outClass;
   outClass = type_of(arg1);
   if (type_of(arg2) > outClass) outClass = type_of(arg2);
   if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))  outClass = c_double;
@@ -1033,7 +1271,7 @@ JITScalar JITVM::binary_op(opcode op, JITScalar arg1, JITScalar arg2, string ins
 }
 
 JITScalar JITVM::comparison_op(opcode op, JITScalar arg1, JITScalar arg2, string inst) {
-  scalarClass outClass;
+  scalar_class outClass;
   outClass = type_of(arg1);
   if (type_of(arg2) > outClass) outClass = type_of(arg2);
   if (outClass == c_bool) outClass = c_int32;
@@ -1042,7 +1280,126 @@ JITScalar JITVM::comparison_op(opcode op, JITScalar arg1, JITScalar arg2, string
   return result;
 }
 
-JITScalar JITVM::rhs(tree t, Interpreter* m_eval) {
+void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
+  tree s(t.first());
+  string symname(s.first().text());
+  JITScalar *v = find_symbol(symname);
+  if (!v)
+    v = add_argument(symname,m_eval,s.numchildren() == 1);
+  JITScalar rhs(compile_expression(t.second(),m_eval));
+  if (s.numchildren() == 1) {
+    if (v->type() != type_of(rhs))
+      throw Exception("polymorphic assignment to scalar detected.");
+    if (!v->isscalar())
+      throw Exception("scalar assignment to array variable.");
+    push_instruction(op_set,compute_oc_code(v->type()),*v,compute_ri_code(rhs),rhs);
+    return;
+  }
+  if (s.numchildren() > 2)
+    throw Exception("multiple levels of dereference not handled yet...");
+  if (v->isscalar())
+    throw Exception("array indexing of scalar values...");
+  tree q(s.second());
+  if (!q.is(TOK_PARENS))
+    throw Exception("non parenthetical dereferences not handled yet...");
+  if (q.numchildren() == 0)
+    throw Exception("Expecting at least 1 array reference for dereference...");
+  if (q.numchildren() > 2)
+    throw Exception("Expecting at most 2 array references for dereference...");
+  if (q.numchildren() == 1) {
+    if (map_array_type(v->p()) != type_of(rhs))
+      throw Exception("polymorphic assignment to array detected");
+    JITScalar arg1 = promote(compile_expression(q.first(),m_eval),c_int32);
+    push_instruction(op_vstore,compute_oc_code(type_of(rhs)),*v,
+		     compute_ri_code(arg1,rhs),arg1,rhs);
+  } else if (s.numchildren() == 2) {
+    if (map_array_type(v->p()) != type_of(rhs))
+      throw Exception("polymorphic assignment to array detected");
+    JITScalar arg1 = promote(compile_expression(q.first(),m_eval),c_int32);
+    JITScalar arg2 = promote(compile_expression(q.second(),m_eval),c_int32);
+    push_instruction(op_mstore,compute_oc_code(type_of(rhs)),
+		     rhs,compute_ri_code(arg1,arg2),v,arg1,arg2);
+  }
+}
+
+scalar_class JITVM::map_array_type(void* ptr) {
+  Array *a = (Array *) ptr;
+  switch (a->dataClass()) {
+  case FM_FUNCPTR_ARRAY:
+  case FM_CELL_ARRAY:
+  case FM_STRUCT_ARRAY:
+  case FM_UINT8:
+  case FM_INT8:
+  case FM_UINT16:
+  case FM_INT16:
+  case FM_UINT32:
+  case FM_UINT64:
+  case FM_INT64:
+  case FM_COMPLEX:
+  case FM_DCOMPLEX:
+  case FM_STRING:
+    throw Exception("Unsupported array type");
+  case FM_LOGICAL:
+    return c_bool;
+  case FM_INT32:
+    return c_int32;
+  case FM_FLOAT:
+    return c_float;
+  case FM_DOUBLE:
+    return c_double;
+  }
+  throw Exception("Unsupported array type");
+}
+
+void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
+ 
+}
+
+JITScalar* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
+  ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
+  if (!ptr.valid())
+    throw Exception("Undefined variable reference:" + name);
+  if (!ptr->is2D())
+    throw Exception("Cannot JIT multi-dimensional array:" + name);
+  if (ptr->isString() || ptr->isReferenceType())
+    throw Exception("Cannot JIT strings or reference types:" + name);
+  if (ptr->isComplex())
+    throw Exception("Cannot JIT complex arrays:" + name);
+  if (!ptr->isScalar() && scalar)
+    throw Exception("JIT requires " + name + " be a scalar");
+  Array* a = &(*ptr);
+  scalar_class oclass = map_array_type((void*)a);
+  if (scalar) {
+    switch (oclass) {
+    case c_bool:
+      add_symbol(name,JITScalar((bool) ((const logical*)(a->getDataPointer()))[0]));
+      break;
+    case c_int32:
+      add_symbol(name,JITScalar((int32) ArrayToInt32(*a)));
+      break;      
+    case c_float:
+      add_symbol(name,JITScalar((float) ArrayToDouble(*a)));
+      break;
+    case c_double:
+      add_symbol(name,JITScalar((double) ArrayToDouble(*a)));
+      break;
+    }
+  } else 
+    add_symbol(name,JITScalar((void*) a));
+  return find_symbol(name);
+}
+
+void JITVM::dump(ostream& o) {
+  for (int i=0;i<data.size();i++) {
+    char buffer[1000];
+    sprintf(buffer,"%03u: ",i);
+    o << buffer;
+    data[i].dump(o);
+    o << "\r\n";
+  }
+}
+
+JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   string symname(t.first().text());
   JITScalar *v = find_symbol(symname);
   if (!v)
@@ -1064,79 +1421,28 @@ JITScalar JITVM::rhs(tree t, Interpreter* m_eval) {
   if (s.numchildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (s.numchildren() == 1) {
-    switch(map_array_type(v->p())) {
-    case type_b: 
-      {
-	JITScalar result(new_register(c_bool));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	push_instruction(op_vloadb,type_b,result,compute_ri_code(arg1,arg1),arg1);
-	return result;
-      }
-    case type_i:
-      {
-	JITScalar result(new_register(c_int32));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	push_instruction(op_vloadi,type_i,result,compute_ri_code(arg1,arg1),arg1);	
-	return result;
-      }
-    case type_f:
-      {
-	JITScalar result(new_register(c_float));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	push_instruction(op_vloadf,type_f,result,compute_ri_code(arg1,arg1),arg1);		
-	return result;
-      }
-    case type_d:
-      {
-	JITScalar result(new_register(c_double));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	push_instruction(op_vloadd,type_d,result,compute_ri_code(arg1,arg1),arg1);		
-	return result;
-      }
-    }
-    throw Exception("unhandled load case for JIT::rhs");
+    scalar_class output_type(map_array_type(v->p()));
+    JITScalar result(new_register(output_type));
+    JITScalar arg1 = promote(compile_expression(s.first(),m_eval),c_int32);
+    push_instruction(op_vload,compute_oc_code(output_type),
+		     result,compute_ri_code(arg1),v,arg1);
+    return result;
   } else if (s.numchildren() == 2) {
-    switch(map_array_type(v->p())) {
-    case type_b: 
-      {
-	JITScalar result(new_register(c_bool));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	JITScalar arg2 = promote(expression(s.second(),m_eval),c_int32);
-	push_instruction(op_mloadb,type_b,result,compute_ri_code(arg1,arg2),arg1,arg2);
-	return result;
-      }
-    case type_i:
-      {
-	JITScalar result(new_register(c_int32));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	JITScalar arg2 = promote(expression(s.second(),m_eval),c_int32);
-	push_instruction(op_mloadi,type_i,result,compute_ri_code(arg1,arg2),arg1,arg2);	
-	return result;
-      }
-    case type_f:
-      {
-	JITScalar result(new_register(c_float));
-	JITScalar arg1 = promote(expression(s.first(),m_eval),c_int32);
-	JITScalar arg2 = promote(expression(s.second(),m_eval),c_int32);
-	push_instruction(op_mloadf,type_f,result,compute_ri_code(arg1,arg2),arg1,arg2);
-	return result;
-      }
-    case type_d:
-      {
-	JITScalar result(new_register(c_double));
-	arg1 = promote(expression(),c_int32);
-	push_instruction(op_vloadd,type_d,result,compute_ri_code(arg1,arg1),arg1);		
-	return result;
-      }
-    }
+    scalar_class output_type(map_array_type(v->p()));
+    JITScalar result(new_register(output_type));
+    JITScalar arg1 = promote(compile_expression(s.first(),m_eval),c_int32);
+    JITScalar arg2 = promote(compile_expression(s.second(),m_eval),c_int32);
+    push_instruction(op_mload,compute_oc_code(output_type),
+		     result,compute_ri_code(arg1,arg2),arg1,arg2);
+    return result;
   }
   throw Exception("dereference not handled yet...");
 }
 
-JITScalar JITVM::expression(tree t, Interpreter* m_eval) {
+JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   switch(t.token()) {
   case TOK_VARIABLE: 
-    return rhs(t,m_eval);
+    return compile_rhs(t,m_eval);
   case TOK_INTEGER:
     return JITScalar(ArrayToInt32(t.array()));
   case TOK_FLOAT:
@@ -1152,15 +1458,15 @@ JITScalar JITVM::expression(tree t, Interpreter* m_eval) {
   case TOK_CELLDEF: 
     throw Exception("JIT compiler does not support complex, string, END, matrix or cell defs");
   case '+': 
-    return binary_op(add_i_rr,expression(t.first(),m_eval),
-		     expression(t.second(),m_eval),"add");
+    return binary_op(op_add,compile_expression(t.first(),m_eval),
+		     compile_expression(t.second(),m_eval),"add");
   case '-': 
-    return binary_op(sub_i_rr,expression(t.first(),m_eval),
-		     expression(t.second(),m_eval),"sub");
+    return binary_op(op_sub,compile_expression(t.first(),m_eval),
+		     compile_expression(t.second(),m_eval),"sub");
   case '*': 
   case TOK_DOTTIMES: 
-    return binary_op(mul_i_rr,expression(t.first(),m_eval),
-		     expression(t.second(),m_eval),"mul");
+    return binary_op(op_mul,compile_expression(t.first(),m_eval),
+		     compile_expression(t.second(),m_eval),"mul");
   case '/': 
   case TOK_DOTRDIV: 
 //     return binary_div(expression(t.first(),m_eval),
@@ -1173,34 +1479,34 @@ JITScalar JITVM::expression(tree t, Interpreter* m_eval) {
     throw Exception("Division is not supported yet.");
   case TOK_SOR: 
   case '|':
-    return boolean_op(or_b_rr,expression(t.first(),m_eval),
-		      expression(t.second(),m_eval),"or");
+    return boolean_op(op_or,compile_expression(t.first(),m_eval),
+		      compile_expression(t.second(),m_eval),"or");
   case TOK_SAND: 
   case '&': 
-    return boolean_op(and_b_rr,expression(t.first(),m_eval),
-		      expression(t.second(),m_eval),"and");
+    return boolean_op(op_and,compile_expression(t.first(),m_eval),
+		      compile_expression(t.second(),m_eval),"and");
   case '<': 
-    return comparison_op(lt_i_rr,expression(t.first(),m_eval),
-			 expression(t.second(),m_eval),"lt");
+    return comparison_op(op_lt,compile_expression(t.first(),m_eval),
+			 compile_expression(t.second(),m_eval),"lt");
   case TOK_LE: 
-    return comparison_op(le_i_rr,expression(t.first(),m_eval),
-			 expression(t.second(),m_eval),"le");
+    return comparison_op(op_le,compile_expression(t.first(),m_eval),
+			 compile_expression(t.second(),m_eval),"le");
   case '>': 
-    return comparison_op(gt_i_rr,expression(t.first(),m_eval),
-			 expression(t.second(),m_eval),"gt");
+    return comparison_op(op_gt,compile_expression(t.first(),m_eval),
+			 compile_expression(t.second(),m_eval),"gt");
   case TOK_GE: 
-    return comparison_op(ge_i_rr,expression(t.first(),m_eval),
-			 expression(t.second(),m_eval),"ge");
+    return comparison_op(op_ge,compile_expression(t.first(),m_eval),
+			 compile_expression(t.second(),m_eval),"ge");
   case TOK_EQ: 
-    return comparison_op(eq_i_rr,expression(t.first(),m_eval),
-			 expression(t.second(),m_eval),"eq");
+    return comparison_op(op_eq,compile_expression(t.first(),m_eval),
+			 compile_expression(t.second(),m_eval),"eq");
   case TOK_NE: 
-    return comparison_op(ne_i_rr,expression(t.first(),m_eval),
-			 expression(t.second(),m_eval),"ne");
+    return comparison_op(op_ne,compile_expression(t.first(),m_eval),
+			 compile_expression(t.second(),m_eval),"ne");
   case TOK_UNARY_MINUS: 
     throw Exception("unary minus not supported yet.");
   case TOK_UNARY_PLUS: 
-    return expression(t.first(),m_eval);
+    return compile_expression(t.first(),m_eval);
   case '~': 
     throw Exception("unary not is not supported yet.");
   case '^': 
@@ -1222,4 +1528,111 @@ JITScalar JITVM::expression(tree t, Interpreter* m_eval) {
     t.print();
     throw Exception("Unrecognized expression!");
   }
+}
+
+void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
+  switch(t.token()) {
+  case '=': 
+    compile_assignment(t,m_eval);
+    break;
+  case TOK_MULTI:
+    throw Exception("multi function calls do not JIT compile");
+  case TOK_SPECIAL:
+    throw Exception("special function calls do not JIT compile");
+  case TOK_FOR:
+    compile_for_block(t,m_eval);
+    break;
+  case TOK_WHILE:
+    throw Exception("nested while loops do not JIT compile");
+  case TOK_IF:
+    //    compile_if_statement(t,m_eval);
+    throw Exception("if statements do not JIT compile");
+    break;
+  case TOK_BREAK:
+    throw Exception("break is not currently handled by the JIT compiler");
+    break;
+  case TOK_CONTINUE:
+    throw Exception("continue is not currently handled by the JIT compiler");
+    break;
+  case TOK_DBSTEP:
+    throw Exception("dbstep is not currently handled by the JIT compiler");
+    break;
+  case TOK_DBTRACE:
+    throw Exception("dbtrace is not currently handled by the JIT compiler");
+    break;
+  case TOK_RETURN:
+    throw Exception("return is not currently handled by the JIT compiler");
+    break;
+  case TOK_SWITCH:
+    throw Exception("switch is not currently handled by the JIT compiler");
+    break;
+  case TOK_TRY:
+    throw Exception("try is not currently handled by the JIT compiler");
+    break;
+  case TOK_QUIT:
+    throw Exception("quit is not currently handled by the JIT compiler");
+    break;
+  case TOK_RETALL:
+    throw Exception("retall is not currently handled by the JIT compiler");
+    break;
+  case TOK_KEYBOARD:
+    throw Exception("keyboard is not currently handled by the JIT compiler");
+    break;
+  case TOK_GLOBAL:
+    throw Exception("global is not currently handled by the JIT compiler");
+    break;
+  case TOK_PERSISTENT:
+    throw Exception("persistent is not currently handled by the JIT compiler");
+    break;
+  case TOK_EXPR:
+    compile_expression(t.first(),m_eval);
+    break;
+  case TOK_NEST_FUNC:
+    break;
+  default:
+    throw Exception("Unrecognized statement type");
+  }
+}
+
+void JITVM::compile_statement(tree t, Interpreter *m_eval) {
+  if (t.is(TOK_STATEMENT))
+    throw Exception("JIT compiler doesn't work with verbose statements");
+  compile_statement_type(t.first(),m_eval);
+}
+
+void JITVM::compile_block(tree t, Interpreter *m_eval) {
+  const treeVector &statements(t.children());
+  for (treeVector::const_iterator i=statements.begin();
+       i!=statements.end();i++) 
+    compile_statement(*i,m_eval);
+}
+
+void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
+  if (!(t.first().is('=') && t.first().second().is(':') &&
+	t.first().second().first().is(TOK_INTEGER) &&
+	t.first().second().second().is(TOK_INTEGER))) 
+    throw Exception("For loop cannot be compiled - need integer bounds");
+  int loop_start(atoi(t.first().second().first().text().c_str()));
+  int loop_stop(atoi(t.first().second().second().text().c_str()));
+  string loop_index(t.first().first().text());
+  JITScalar loop_index_register(new_register(c_int32));
+  add_symbol(loop_index,loop_index_register);
+  push_instruction(op_set,type_i,loop_index_register,arg_ii,JITScalar(loop_start));
+  int32 loop_start_instruction(data.size());
+  compile_block(t.second(),m_eval);
+  push_instruction(op_add,type_i,loop_index_register,
+		   arg_ri,loop_index_register,JITScalar(1));
+  JITScalar loop_test_register(new_register(c_bool));
+  push_instruction(op_le,type_i,loop_test_register,
+		   arg_ri,loop_index_register,JITScalar(loop_stop));
+  int32 loop_end_instruction(data.size());
+  push_instruction(op_jit,type_b,loop_test_register,arg_ii,
+		   JITScalar((int32)(loop_end_instruction-loop_start_instruction+1)));
+}
+
+void JITVM::run(Interpreter *m_eval) {
+  ip = 0;
+  unsigned ops_max = data.size();
+  while (ip < ops_max)
+    dispatch(data[ip++]);
 }

@@ -16,6 +16,7 @@
 #include "llvm/DerivedTypes.h"
 #include "llvm/Instructions.h"
 #include "llvm/ModuleProvider.h"
+#include "llvm/CallingConv.h"
 #include "llvm/ExecutionEngine/JIT.h"
 #include "llvm/ExecutionEngine/Interpreter.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
@@ -1150,12 +1151,72 @@ static inline void add_local(JITScalar* dest, T op1, T op2) {
 //
 int JITtest() {
   Module *M = new Module("test");
-  Function *F = new Function(FuncTy_0,GlobalValuecast<Function>(M->getOrInsertFunction("f", Type::VoidTy,
-						      Pointer(Type::Int32Ty),
-						      Type::Int32Ty,
-						      (Type *)0));
-  BasicBlock *BB = new BasicBlock("EntryBlock", F);
+  std::vector<const Type*> FuncTy_0_args;
+  PointerType* Float_PointerTy = PointerType::get(Type::FloatTy);
+  FuncTy_0_args.push_back(Float_PointerTy);
+  llvm::FunctionType* FuncTy_0 = llvm::FunctionType::get(Type::VoidTy,FuncTy_0_args,false,(ParamAttrsList *)0);
+  Function *F = new Function(FuncTy_0,
+			     GlobalValue::ExternalLinkage,
+			     "initArray", M);
+  F->setCallingConv(CallingConv::C);
+  Constant* phi_left = Constant::getNullValue(IntegerType::get(32));
+  // Get the loop limits
+  ConstantInt* loop_start = ConstantInt::get(APInt(32, "0", 10));
+  ConstantInt* loop_increment = ConstantInt::get(APInt(32, "1", 10));
+  ConstantInt* loop_stop = ConstantInt::get(APInt(32, "1000000", 10));
+  // Add A as an argument to the function
+  Function::arg_iterator args = F->arg_begin();
+  Value* ptr_A = args++;
+  ptr_A->setName("A");
+  // Add a loop
+  BasicBlock* bb_loop_entry = new BasicBlock("",F,0);
+  BasicBlock* bb_loop_body = new BasicBlock("",F,0);
+  BasicBlock* bb_loop_exit = new BasicBlock("",F,0);
   
+  // Check for legal loop limits
+  ICmpInst* legal_loop_limits = new ICmpInst(ICmpInst::ICMP_SGT, loop_stop, loop_start, "", bb_loop_entry);
+  new BranchInst(bb_loop_body, bb_loop_exit, legal_loop_limits, bb_loop_entry);
+  
+  // Setup the PHINode
+  Argument* fwdref = new Argument(IntegerType::get(32));
+  PHINode*  loop_index = new PHINode(IntegerType::get(32), "", bb_loop_body);
+  loop_index->reserveOperandSpace(2);
+  loop_index->addIncoming(phi_left, bb_loop_entry);
+  loop_index->addIncoming(fwdref, bb_loop_body);
+  
+  // Cast the loop index to a float value
+  Value* float_tmp1 = new SIToFPInst(loop_index, Type::FloatTy, "", bb_loop_body);
+  Value* ptr_tmp4 = new GetElementPtrInst(ptr_A, loop_index, "",bb_loop_body);
+  Value* void_7 = new StoreInst(float_tmp1, ptr_tmp4, bb_loop_body);
+  
+  // Update the loop index
+  Value* loop_next = BinaryOperator::create(Instruction::Add, loop_index, loop_increment, "", bb_loop_body);
+  // Compare the loop index to the loop termination
+  Value* exit_test = new ICmpInst(ICmpInst::ICMP_EQ, loop_next, loop_stop, "", bb_loop_body);
+  new BranchInst(bb_loop_exit, bb_loop_body, exit_test, bb_loop_body);
+  
+  new ReturnInst(bb_loop_exit);
+  
+  fwdref->replaceAllUsesWith(loop_next); delete fwdref;
+
+  std::cout << *M;
+  
+  M->setTargetTriple("i686-pc-linux-gnu");
+
+  ExistingModuleProvider* MP = new ExistingModuleProvider(M);
+  ExecutionEngine* EE = ExecutionEngine::create(MP, false);
+
+  {
+    float *G = new float[1000000];
+    std::vector<GenericValue> args;
+    args.push_back(GenericValue(G));
+    std::cout << "\r\nSTART\r\n";
+    GenericValue gv = EE->runFunction(F,args);
+    
+    std::cout << "G[92932] = " << G[92932] << "\r\n";
+    delete G;
+  }
+  return 0;
 }
 
 int JITmain() {
@@ -1225,12 +1286,12 @@ int JITmain() {
 }
 
 void JITVM::run(Interpreter *m_eval) {
-  void (*tptr)(JITScalar*,int32,int32) = &add_local<int32>;
-  for (int i=0;i<1000*1000*10;i++) {
-    //    (this->*opcode_table_i[op_add])(0,50,50);
-    tptr(&reg[0],50,50);
-  } 
-  JITmain();
+//   void (*tptr)(JITScalar*,int32,int32) = &add_local<int32>;
+//   for (int i=0;i<1000*1000*10;i++) {
+//     //    (this->*opcode_table_i[op_add])(0,50,50);
+//     tptr(&reg[0],50,50);
+//   } 
+  JITtest();
   return;
   ip = 0;
   unsigned ops_max = data.size();

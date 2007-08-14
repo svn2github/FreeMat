@@ -53,6 +53,33 @@ void Tokenize(const std::string& str, std::vector<std::string>& tokens,
 }
 
 //!
+//@Module JITCONTROL Control the Just In Time Compiler
+//@@Section FREEMAT
+//@@Usage
+//The @|jitcontrol| functionality in FreeMat allows you to control
+//the use of the Just In Time (JIT) compiler.  
+//!
+ArrayVector JITControlFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 1) {
+    if (eval->JITControl())
+      return singleArrayVector(Array::stringConstructor("on"));
+    else
+      return singleArrayVector(Array::stringConstructor("off"));
+  } else {
+    if (!arg[0].isString())
+      throw Exception("jitcontrol function takes only a single, string argument");
+    string txt = arg[0].getContentsAsStringUpper();
+    if (txt == "ON")
+      eval->JITControl(true);
+    else if (txt == "OFF")
+      eval->JITControl(false);
+    else
+      throw Exception("jitcontrol function argument needs to be 'on/off'");
+  }
+  return ArrayVector();
+}
+
+//!
 //@Module DBAUTO Control Dbauto Functionality
 //@@Section DEBUG
 //@@Usage

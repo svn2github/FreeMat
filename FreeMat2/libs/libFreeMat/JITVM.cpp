@@ -9,838 +9,194 @@
 // Just for fun, mind you....
 //
 
+#define __STDC_LIMIT_MACROS
+
+#include "llvm/Module.h"
+#include "llvm/Constants.h"
+#include "llvm/DerivedTypes.h"
+#include "llvm/Instructions.h"
+#include "llvm/ModuleProvider.h"
+#include "llvm/ExecutionEngine/JIT.h"
+#include "llvm/ExecutionEngine/Interpreter.h"
+#include "llvm/ExecutionEngine/GenericValue.h"
+
 #include "JITVM.hpp"
 
+using namespace llvm;
+
+
+// Instruction rules:
+// All instructions are tri-ops:   instr type dest op1 op2
+//    the destination _must_ be a register
+
+JITVM::JITVM() {
+  next_reg = 0;
+  // Initialize the op table.
+  for (int i=0;i<op_end;i++) {
+    opcode_table_b[i] = &JITVM::illegal_op_bool;
+    opcode_table_i[i] = &JITVM::illegal_op_int32;
+    opcode_table_f[i] = &JITVM::illegal_op_float;
+    opcode_table_d[i] = &JITVM::illegal_op_double;
+  }
+  // Initialize ADD
+  opcode_table_i[op_add] = &JITVM::add_func<int32>;
+  opcode_table_f[op_add] = &JITVM::add_func<float>;
+  opcode_table_d[op_add] = &JITVM::add_func<double>;
+  // Initialize SUB
+  opcode_table_i[op_sub] = &JITVM::sub_func<int32>;
+  opcode_table_f[op_sub] = &JITVM::sub_func<float>;
+  opcode_table_d[op_sub] = &JITVM::sub_func<double>;
+  // Initialize MUL
+  opcode_table_i[op_mul] = &JITVM::mul_func<int32>;
+  opcode_table_f[op_mul] = &JITVM::mul_func<float>;
+  opcode_table_d[op_mul] = &JITVM::mul_func<double>;
+  // Initialize DIV
+  opcode_table_f[op_div] = &JITVM::div_func<float>;
+  opcode_table_d[op_div] = &JITVM::div_func<double>;
+  // Initialize BOOL
+  opcode_table_b[op_or] = &JITVM::or_func;
+  opcode_table_b[op_and] = &JITVM::and_func;
+  opcode_table_b[op_not] = &JITVM::not_func;
+  // Initialize COMPARISON OPS
+  opcode_table_i[op_lt] = &JITVM::lt_func<int32>;
+  opcode_table_f[op_lt] = &JITVM::lt_func<float>;
+  opcode_table_d[op_lt] = &JITVM::lt_func<double>;
+  opcode_table_i[op_le] = &JITVM::le_func<int32>;
+  opcode_table_f[op_le] = &JITVM::le_func<float>;
+  opcode_table_d[op_le] = &JITVM::le_func<double>;
+  opcode_table_i[op_gt] = &JITVM::gt_func<int32>;
+  opcode_table_f[op_gt] = &JITVM::gt_func<float>;
+  opcode_table_d[op_gt] = &JITVM::gt_func<double>;
+  opcode_table_i[op_ge] = &JITVM::ge_func<int32>;
+  opcode_table_f[op_ge] = &JITVM::ge_func<float>;
+  opcode_table_d[op_ge] = &JITVM::ge_func<double>;
+  opcode_table_i[op_ne] = &JITVM::ne_func<int32>;
+  opcode_table_f[op_ne] = &JITVM::ne_func<float>;
+  opcode_table_d[op_ne] = &JITVM::ne_func<double>;
+  opcode_table_i[op_eq] = &JITVM::eq_func<int32>;
+  opcode_table_f[op_eq] = &JITVM::eq_func<float>;
+  opcode_table_d[op_eq] = &JITVM::eq_func<double>;
+  // Set Ops
+  opcode_table_b[op_set] = &JITVM::set_func<bool>;
+  opcode_table_i[op_set] = &JITVM::set_func<int32>;
+  opcode_table_f[op_set] = &JITVM::set_func<float>;
+  opcode_table_d[op_set] = &JITVM::set_func<double>;
+  // Cast Ops - to Bool
+  opcode_table_i[op_castb] = &JITVM::castb_func<int32>;
+  opcode_table_f[op_castb] =  &JITVM::castb_func<float>;
+  opcode_table_d[op_castb] = &JITVM::castb_func<double>;
+  // Cast Ops - to Int
+  opcode_table_b[op_casti] = &JITVM::casti_b_func;
+  opcode_table_f[op_casti] = &JITVM::casti_func<float>;
+  opcode_table_d[op_casti] = &JITVM::casti_func<double>;
+  // Cast Ops - to Float
+  opcode_table_b[op_castf] = &JITVM::castf_b_func;
+  opcode_table_i[op_castf] = &JITVM::castf_func<int32>;
+  opcode_table_d[op_castf] = &JITVM::castf_func<double>;
+  // Cast Ops - to Double
+  opcode_table_b[op_castd] = &JITVM::castd_b_func;
+  opcode_table_i[op_castd] = &JITVM::castd_func<int32>;
+  opcode_table_f[op_castd] = &JITVM::castd_func<float>;
+  // NOP
+  opcode_table_b[op_nop] = &JITVM::nop_func<bool>;
+  opcode_table_i[op_nop] = &JITVM::nop_func<int32>;
+  opcode_table_f[op_nop] = &JITVM::nop_func<float>;
+  opcode_table_d[op_nop] = &JITVM::nop_func<double>;
+  // JIT
+  opcode_table_i[op_jit] = &JITVM::jit_func;
+  opcode_table_i[op_jif] = &JITVM::jif_func;
+  opcode_table_i[op_jmp] = &JITVM::jmp_func;
+ }
+
+void JITVM::illegal_op_bool(int32, bool, bool) {
+  throw Exception("illegal op encountered with boolean type");
+}
+
+void JITVM::illegal_op_int32(int32, int32, int32) {
+  throw Exception("illegal op encountered with integer  type");
+}
+
+void JITVM::illegal_op_float(int32, float, float) {
+  throw Exception("illegal op encountered with float type");
+}
+
+void JITVM::illegal_op_double(int32, double, double) {
+  throw Exception("illegal op encountered with double type");
+}
+
+void JITVM::set_matrix_arg(int32 row, int32 col) {
+  m_row = row;
+  m_col = col;
+}
+
 void JITVM::dispatch(const JITInstruction &inst) {
-  const JITScalar &dest = inst.dest;
-  const JITScalar &arg1 = inst.arg1;
-  const JITScalar &arg2 = inst.arg2;
-  const JITScalar &arg3 = inst.arg3;
-  switch (inst.op) {
-  case op_add:
+  JITScalar d_arg1, d_arg2;
+  switch (inst.ri) {
+  case arg_rr:
+    d_arg1 = reg[inst.arg1.reg()];
+    d_arg2 = reg[inst.arg2.reg()];
+    break;
+  case arg_ri:
+    d_arg1 = reg[inst.arg1.reg()];
+    d_arg2 = inst.arg2;
+    break;
+  case arg_ir:
+    d_arg1 = inst.arg1;
+    d_arg2 = reg[inst.arg2.reg()];
+    break;
+  case arg_ii:
+    d_arg1 = inst.arg1;
+    d_arg2 = inst.arg2;
+    break;
+  }
+  // Special case the load/store ops
+  if (inst.op == op_mset)
+    set_matrix_arg(d_arg1.i(),d_arg2.i());
+  else if (inst.op == op_vload)
+    dispatch_vload(inst.type,inst.dest,d_arg1.p(),d_arg2.i());
+  else if (inst.op == op_mload)
+    dispatch_mload(inst.type,inst.dest,d_arg1.p());
+  else if (inst.op == op_vstore)
+    dispatch_vstore(inst.type,inst.dest.p(),d_arg1.i(),d_arg2);
+  else if (inst.op == op_mstore)
+    dispatch_mstore(inst.type,inst.dest.p(),d_arg1);
+  else {
     switch (inst.type) {
     case type_b:
-      throw Exception("unhandled type boolean for add instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() + reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() + arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() + reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() + arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() + reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() + arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() + reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() + arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() + reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() + arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() + reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() + arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_sub:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for sub instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() - reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() - arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() - reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() - arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() - reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() - arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() - reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() - arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() - reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() - arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() - reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() - arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_mul:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for mul instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() * reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() * arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() * reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() * arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() * reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() * arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() * reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() * arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() * reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() * arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() * reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() * arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_div:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for div instruction");
-    case type_i:
-      throw Exception("unhandled type integer for div instruction");
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() / reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() / arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() / reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() / arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() / reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() / arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() / reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() / arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_or:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].b() || reg[arg2.reg()].b()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].b() || arg2.b()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.b() || reg[arg2.reg()].b()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.b() || arg2.b()); break;
-      }
+      (this->*opcode_table_b[inst.op])(inst.dest.reg(),d_arg1.b(),d_arg2.b());
       break;
     case type_i:
-    case type_f:
-    case type_d:
-      throw Exception("boolean operators required boolean output");
-    }
-    break;
-  case op_neg:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for neg instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(-reg[arg1.reg()].i()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(-arg1.i()); break;
-      }
+      (this->*opcode_table_i[inst.op])(inst.dest.reg(),d_arg1.i(),d_arg2.i());
       break;
     case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(-reg[arg1.reg()].f()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(-arg1.f()); break;
-      }
+      (this->*opcode_table_f[inst.op])(inst.dest.reg(),d_arg1.f(),d_arg2.f());
       break;
     case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(-reg[arg1.reg()].d()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(-arg1.d()); break;
-      }
+      (this->*opcode_table_d[inst.op])(inst.dest.reg(),d_arg1.d(),d_arg2.d());
       break;
     }
-    break;
-  case op_and:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].b() && reg[arg2.reg()].b()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].b() && arg2.b()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.b() && reg[arg2.reg()].b()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.b() && arg2.b()); break;
-      }
-      break;
-    case type_i:
-    case type_f:
-    case type_d:
-      throw Exception("boolean operators required boolean output");
-    }
-    break;
-  case op_not:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(!reg[arg1.reg()].b()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(!arg1.b()); break;
-      }
-      break;
-    case type_i:
-    case type_f:
-    case type_d:
-      throw Exception("boolean operators required boolean output");
-    }
-    break;
-  case op_lt:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for lt instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() < reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() < arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() < reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() < arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() < reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() < arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() < reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() < arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() < reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() < arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() < reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() < arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_le:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for le instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() <= reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() <= arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() <= reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() <= arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() <= reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() <= arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() <= reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() <= arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() <= reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() <= arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() <= reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() <= arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_ne:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for ne instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() != reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() != arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() != reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() != arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() != reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() != arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() != reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() != arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() != reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() != arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() != reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() != arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_eq:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for eq instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() == reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() == arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() == reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() == arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() == reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() == arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() == reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() == arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() == reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() == arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() == reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() == arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_gt:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for gt instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() > reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() > arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() > reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() > arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() > reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() > arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() > reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() > arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() > reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() > arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() > reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() > arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_ge:
-    switch (inst.type) {
-    case type_b:
-      throw Exception("unhandled type boolean for ge instruction");
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].i() >= reg[arg2.reg()].i()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() >= arg2.i()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.i() >= reg[arg2.reg()].i()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() >= arg2.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].f() >= reg[arg2.reg()].f()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() >= arg2.f()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.f() >= reg[arg2.reg()].f()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() >= arg2.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-	reg[dest.reg()].set(reg[arg1.reg()].d() >= reg[arg2.reg()].d()); break;
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() >= arg2.d()); break;
-      case arg_ir:
-	reg[dest.reg()].set(arg1.d() >= reg[arg2.reg()].d()); break;
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() >= arg2.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_set:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].b()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.b()); break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_castb:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].b()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.b()); break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i() != 0); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i() != 0); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f() != 0); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f() != 0); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d() != 0); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d() != 0); break;
-      }
-      break;
-    }
-    break;
-  case op_casti:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	if (reg[arg1.reg()].b())
-	  reg[dest.reg()].set(1); 
-	else
-	  reg[dest.reg()].set(0);
-	break;
-      case arg_ir:
-      case arg_ii:
-	if (arg1.b())
-	  reg[dest.reg()].set(1); 
-	else
-	  reg[dest.reg()].set(0);
-	break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].i()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.i()); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_castf:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	if (reg[arg1.reg()].b())
-	  reg[dest.reg()].set(1.0f); 
-	else
-	  reg[dest.reg()].set(0.0f);
-	break;
-      case arg_ir:
-      case arg_ii:
-	if (arg1.b())
-	  reg[dest.reg()].set(1.0f); 
-	else
-	  reg[dest.reg()].set(0.0f);
-	break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set((float)(reg[arg1.reg()].i())); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set((float)(arg1.i())); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].f()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.f()); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set((float)(reg[arg1.reg()].d())); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set((float)(arg1.d())); break;
-      }
-      break;
-    }
-    break;
-  case op_castd:
-    switch (inst.type) {
-    case type_b:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	if (reg[arg1.reg()].b())
-	  reg[dest.reg()].set(1.0); 
-	else
-	  reg[dest.reg()].set(0.0);
-	break;
-      case arg_ir:
-      case arg_ii:
-	if (arg1.b())
-	  reg[dest.reg()].set(1.0); 
-	else
-	  reg[dest.reg()].set(0.0);
-	break;
-      }
-      break;
-    case type_i:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set((double)(reg[arg1.reg()].i())); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set((double)(arg1.i())); break;
-      }
-      break;
-    case type_f:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set((double)(reg[arg1.reg()].f())); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set((double)(arg1.f())); break;
-      }
-      break;
-    case type_d:
-      switch (inst.ri) {
-      case arg_rr:
-      case arg_ri:
-	reg[dest.reg()].set(reg[arg1.reg()].d()); break;
-      case arg_ir:
-      case arg_ii:
-	reg[dest.reg()].set(arg1.d()); break;
-      }
-      break;
-    }
-    break;
-  case op_nop:
-    break;
-  case op_jit:
-    switch (inst.ri) {
-    case arg_rr:
-    case arg_ri:
-      if (reg[dest.reg()].b()) ip -= reg[arg1.reg()].i(); break;
-    case arg_ir:
-    case arg_ii:
-      if (reg[dest.reg()].b()) ip -= arg1.i(); break;
-    }
-    break;
-  case op_mload:
-    switch (inst.ri) {
-    case arg_rr:
-      dispatch_mload(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
-    case arg_ri:
-      dispatch_mload(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),arg3.i()); break;
-    case arg_ir:
-      dispatch_mload(inst.type,dest,arg1.p(),arg2.i(),reg[arg3.reg()].i()); break;
-    case arg_ii:
-      dispatch_mload(inst.type,dest,arg1.p(),arg2.i(),arg3.i()); break;
-    }
-    break;
-  case op_vload:
-    switch (inst.ri) {
-    case arg_ir:
-    case arg_rr:
-      dispatch_vload(inst.type,dest,arg1.p(),reg[arg2.reg()].i()); break;
-    case arg_ri:
-    case arg_ii:
-      dispatch_vload(inst.type,dest,arg1.p(),arg2.i()); break;
-    }
-    break;
-  case op_mstore:
-    switch (inst.ri) {
-    case arg_rr:
-      dispatch_mstore(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),reg[arg3.reg()].i()); break;
-    case arg_ri:
-      dispatch_mstore(inst.type,dest,arg1.p(),reg[arg2.reg()].i(),arg3.i()); break;
-    case arg_ir:
-      dispatch_mstore(inst.type,dest,arg1.p(),arg2.i(),reg[arg3.reg()].i()); break;
-    case arg_ii:
-      dispatch_mstore(inst.type,dest,arg1.p(),arg2.i(),arg3.i()); break;
-    }
-    break;
-  case op_vstore:
-    switch (inst.ri) {
-    case arg_ir:
-      dispatch_vstore(inst.type,dest.p(),arg1.i(),reg[arg2.reg()]); break;
-    case arg_rr:
-      dispatch_vstore(inst.type,dest.p(),reg[arg1.reg()].i(),reg[arg2.reg()]); break;
-    case arg_ri:
-      dispatch_vstore(inst.type,dest.p(),reg[arg1.reg()].i(),arg2); break;
-    case arg_ii:
-      dispatch_vstore(inst.type,dest.p(),arg1.i(),arg2); break;
-    }
-    break;
   }
 }
 
-void JITVM::dispatch_mstore(op_type type, JITScalar dest, void *ptr, int32 row, int32 col) {
+void JITVM::dispatch_mstore(op_type type, void *ptr, JITScalar dest) {
   Array *a = (Array*) ptr;
-  if ((row <= a->rows()) && (row >= 1) && (col <= a->columns()) && (col >= 1)) {
+  if ((m_row <= a->rows()) && (m_row >= 1) && (m_col <= a->columns()) && (m_col >= 1)) {
     switch (type) {
     case type_b:
-      ((logical*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].b();
+      ((logical*) a->getReadWriteDataPointer())[m_row-1+(m_col-1)*a->rows()] = 
+	dest.b();
       break;
     case type_i:
-      ((int32*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].i();
+      ((int32*) a->getReadWriteDataPointer())[m_row-1+(m_col-1)*a->rows()] = 
+	dest.i();
       break;
     case type_f:
-      ((float*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].f();
+      ((float*) a->getReadWriteDataPointer())[m_row-1+(m_col-1)*a->rows()] = 
+	dest.f();
       break;
     case type_d:
-      ((double*) a->getDataPointer())[row-1+(col-1)*a->rows()] = reg[dest.reg()].d();
+      ((double*) a->getReadWriteDataPointer())[m_row-1+(m_col-1)*a->rows()] = 
+	dest.d();
       break;
     }
   } else {
@@ -848,21 +204,43 @@ void JITVM::dispatch_mstore(op_type type, JITScalar dest, void *ptr, int32 row, 
   }
 }
 
-void JITVM::dispatch_mload(op_type type, JITScalar dest, void *ptr, int32 row, int32 col) {
+void JITVM::dispatch_vstore(op_type type, void *ptr, int32 row, JITScalar dest) {
   Array *a = (Array*) ptr;
-  if ((row <= a->rows()) && (row >= 1) && (col <= a->columns()) && (col >= 1)) {
+  if ((row <= (a->rows()*a->columns())) && (row >= 1)) {
     switch (type) {
     case type_b:
-      reg[dest.reg()].set((bool) ((logical*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      ((logical*) a->getReadWriteDataPointer())[row-1] = dest.b();
       break;
     case type_i:
-      reg[dest.reg()].set((int32) ((int32*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      ((int32*) a->getReadWriteDataPointer())[row-1] = dest.i();
       break;
     case type_f:
-      reg[dest.reg()].set((float) ((float*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      ((float*) a->getReadWriteDataPointer())[row-1] = dest.f();
       break;
     case type_d:
-      reg[dest.reg()].set((double) ((double*) a->getDataPointer())[row-1+(col-1)*a->rows()]);
+      ((double*) a->getReadWriteDataPointer())[row-1] = dest.d();
+      break;
+    }
+  } else {
+    throw Exception("Out of range access");
+  }
+}
+
+void JITVM::dispatch_mload(op_type type, JITScalar dest, void *ptr) {
+  Array *a = (Array*) ptr;
+  if ((m_row <= a->rows()) && (m_row >= 1) && (m_col <= a->columns()) && (m_col >= 1)) {
+    switch (type) {
+    case type_b:
+      reg[dest.reg()].set((bool) ((logical*) a->getDataPointer())[m_row-1+(m_col-1)*a->rows()]);
+      break;
+    case type_i:
+      reg[dest.reg()].set((int32) ((int32*) a->getDataPointer())[m_row-1+(m_col-1)*a->rows()]);
+      break;
+    case type_f:
+      reg[dest.reg()].set((float) ((float*) a->getDataPointer())[m_row-1+(m_col-1)*a->rows()]);
+      break;
+    case type_d:
+      reg[dest.reg()].set((double) ((double*) a->getDataPointer())[m_row-1+(m_col-1)*a->rows()]);
       break;
     }
   } else {
@@ -891,29 +269,6 @@ void JITVM::dispatch_vload(op_type type, JITScalar dest, void *ptr, int row) {
     throw Exception("Out of range access");
   }
 }
-
-void JITVM::dispatch_vstore(op_type type, void *ptr, int32 row, JITScalar dest) {
-  Array *a = (Array*) ptr;
-  if ((row <= (a->rows()*a->columns())) && (row >= 1)) {
-    switch (type) {
-    case type_b:
-      ((logical*) a->getDataPointer())[row-1] = dest.b();
-      break;
-    case type_i:
-      ((int32*) a->getDataPointer())[row-1] = dest.i();
-      break;
-    case type_f:
-      ((float*) a->getDataPointer())[row-1] = dest.f();
-      break;
-    case type_d:
-      ((double*) a->getDataPointer())[row-1] = dest.d();
-      break;
-    }
-  } else {
-    throw Exception("Out of range access");
-  }
-}
-
 
 op_type JITVM::compute_oc_code(scalar_class outClass) {
   switch (outClass) {
@@ -948,11 +303,18 @@ op_ri JITVM::compute_ri_code(JITScalar arg1, JITScalar arg2) {
 }
 
 scalar_class JITVM::type_of(JITScalar arg) {
-  if (arg.type() <= c_pointer) return arg.type();
-  if (arg.type() == c_unknown) throw Exception("encountered uninitialized scalar in compilation!");
-  if (arg.type() == c_register) return type_of(reg[arg.reg()]);
+  if (arg.type() <= c_pointer) 
+    return arg.type();
+  if (arg.type() == c_unknown) 
+    throw Exception("encountered uninitialized scalar in compilation!");
+  if (arg.type() == c_register) 
+    return type_of(reg[arg.reg()]);
 }
  
+bool JITVM::isscalar(JITScalar arg) {
+  return (type_of(arg) != c_pointer);
+}
+
 JITScalar JITVM::new_register(scalar_class outClass) {
   reg[next_reg].setType(outClass);
   return JITScalar((uint32) next_reg++);
@@ -969,7 +331,8 @@ void JITVM::push_instruction(opcode op, op_type type, JITScalar result,
 }
 
 void JITVM::push_instruction(opcode op, op_type type, JITScalar result, 
-			     op_ri ri_code, JITScalar arg1, JITScalar arg2, JITScalar arg3) {
+			     op_ri ri_code, JITScalar arg1, JITScalar arg2, 
+			     JITScalar arg3) {
   data.push_back(JITInstruction(op,type,result,ri_code,arg1,arg2,arg3));
 }
 
@@ -1025,7 +388,8 @@ static bool binary_op(opcode op) {
   case op_ge:    
   case op_gt:    
   case op_ne:    
-  case op_jit:   
+  case op_jit:
+  case op_jif:
   case op_vload: 
   case op_vstore:
     return true;
@@ -1060,6 +424,7 @@ static bool unary_op(opcode op) {
   case op_jit:   
   case op_vload: 
   case op_vstore:
+  case op_mset:
     return false;
   case op_not:   
   case op_neg:   
@@ -1098,10 +463,12 @@ void JITInstruction::dump(ostream& o) {
   case op_castd:  o << "castd "; break;
   case op_nop:    o << "nop   "; break;
   case op_jit:    o << "jit   "; break;
+  case op_jif:    o << "jif   "; break;
   case op_mload:  o << "mload "; break;
   case op_vload:  o << "vload "; break;
   case op_mstore: o << "mstore"; break;
   case op_vstore: o << "vstore"; break;
+  case op_mset:   o << "mset  "; break;
   }
   switch(type) {
   case type_b:    o << "<b> "; break;
@@ -1288,16 +655,16 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     v = add_argument(symname,m_eval,s.numchildren() == 1);
   JITScalar rhs(compile_expression(t.second(),m_eval));
   if (s.numchildren() == 1) {
-    if (v->type() != type_of(rhs))
+    if (type_of(*v) != type_of(rhs))
       throw Exception("polymorphic assignment to scalar detected.");
-    if (!v->isscalar())
+    if (!isscalar(*v))
       throw Exception("scalar assignment to array variable.");
-    push_instruction(op_set,compute_oc_code(v->type()),*v,compute_ri_code(rhs),rhs);
+    push_instruction(op_set,compute_oc_code(type_of(*v)),*v,compute_ri_code(rhs),rhs);
     return;
   }
   if (s.numchildren() > 2)
     throw Exception("multiple levels of dereference not handled yet...");
-  if (v->isscalar())
+  if (isscalar(*v))
     throw Exception("array indexing of scalar values...");
   tree q(s.second());
   if (!q.is(TOK_PARENS))
@@ -1317,8 +684,9 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
       throw Exception("polymorphic assignment to array detected");
     JITScalar arg1 = promote(compile_expression(q.first(),m_eval),c_int32);
     JITScalar arg2 = promote(compile_expression(q.second(),m_eval),c_int32);
-    push_instruction(op_mstore,compute_oc_code(type_of(rhs)),
-		     rhs,compute_ri_code(arg1,arg2),v,arg1,arg2);
+    push_instruction(op_mset,type_b,JITScalar(),compute_ri_code(arg1,arg2),arg1,arg2);
+    push_instruction(op_mstore,compute_oc_code(type_of(rhs)),*v,
+		     compute_ri_code(rhs,rhs),rhs);
   }
 }
 
@@ -1352,7 +720,32 @@ scalar_class JITVM::map_array_type(void* ptr) {
 }
 
 void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
- 
+  vector<JITInstruction*> endInstructions;
+  JITScalar cond(compile_expression(t.first(),m_eval));
+  push_instruction(op_jif,type_i,cond,arg_ii,JITScalar((int32)(0)));
+  JITInstruction *prev_fixup = &data.back();
+  compile_block(t.second(),m_eval);
+  push_instruction(op_jmp,type_i,JITScalar(0),arg_ii,JITScalar((int32)(0)));
+  endInstructions.push_back(&data.back());
+  unsigned n=2;
+  while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
+    prev_fixup->arg1 = JITScalar((int32)(data.size()));
+    JITScalar ttest(compile_expression(t.child(n).first(),m_eval));
+    push_instruction(op_jif,type_i,ttest,arg_ii,JITScalar((int32) 0));
+    prev_fixup = &data.back();
+    compile_block(t.child(n).second(),m_eval);
+    push_instruction(op_jmp,type_i,JITScalar(0),arg_ii,JITScalar((int32)(0)));
+    endInstructions.push_back(&data.back());
+    n++;
+  }
+  if (t.last().is(TOK_ELSE)) {
+    prev_fixup->arg1 = JITScalar(data.size());
+    compile_block(t.last().first(),m_eval);
+  }
+  int end_address = data.size();
+  for (int i=0;i<endInstructions.size();i++)
+    endInstructions[i]->arg1 = JITScalar((int32)(end_address));
+  push_instruction(op_nop,type_i,JITScalar(),arg_ii,JITScalar());
 }
 
 JITScalar* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
@@ -1370,20 +763,26 @@ JITScalar* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
   Array* a = &(*ptr);
   scalar_class oclass = map_array_type((void*)a);
   if (scalar) {
+    // We use a register to 
+    JITScalar result(new_register(oclass));
+    add_symbol(name,result);
+    JITScalar arg1;
     switch (oclass) {
     case c_bool:
-      add_symbol(name,JITScalar((bool) ((const logical*)(a->getDataPointer()))[0]));
+      arg1 = JITScalar((bool) ((const logical*)(a->getDataPointer()))[0]);
       break;
     case c_int32:
-      add_symbol(name,JITScalar((int32) ArrayToInt32(*a)));
+      arg1 = JITScalar((int32) ArrayToInt32(*a));
       break;      
     case c_float:
-      add_symbol(name,JITScalar((float) ArrayToDouble(*a)));
+      arg1 = JITScalar((float) ArrayToDouble(*a));
       break;
     case c_double:
-      add_symbol(name,JITScalar((double) ArrayToDouble(*a)));
+      arg1 = JITScalar((double) ArrayToDouble(*a));
       break;
     }
+    push_instruction(op_set,compute_oc_code(oclass),result,
+		     compute_ri_code(arg1,arg1),arg1,arg1);
   } else 
     add_symbol(name,JITScalar((void*) a));
   return find_symbol(name);
@@ -1425,15 +824,16 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     JITScalar result(new_register(output_type));
     JITScalar arg1 = promote(compile_expression(s.first(),m_eval),c_int32);
     push_instruction(op_vload,compute_oc_code(output_type),
-		     result,compute_ri_code(arg1),v,arg1);
+		     result,compute_ri_code(*v,arg1),*v,arg1);
     return result;
   } else if (s.numchildren() == 2) {
     scalar_class output_type(map_array_type(v->p()));
     JITScalar result(new_register(output_type));
     JITScalar arg1 = promote(compile_expression(s.first(),m_eval),c_int32);
     JITScalar arg2 = promote(compile_expression(s.second(),m_eval),c_int32);
+    push_instruction(op_mset,type_b,JITScalar(),compute_ri_code(arg1,arg2),arg1,arg2);
     push_instruction(op_mload,compute_oc_code(output_type),
-		     result,compute_ri_code(arg1,arg2),arg1,arg2);
+		     result,compute_ri_code(*v,*v),*v);
     return result;
   }
   throw Exception("dereference not handled yet...");
@@ -1545,8 +945,7 @@ void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
   case TOK_WHILE:
     throw Exception("nested while loops do not JIT compile");
   case TOK_IF:
-    //    compile_if_statement(t,m_eval);
-    throw Exception("if statements do not JIT compile");
+    compile_if_statement(t,m_eval);
     break;
   case TOK_BREAK:
     throw Exception("break is not currently handled by the JIT compiler");
@@ -1595,7 +994,9 @@ void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
 }
 
 void JITVM::compile_statement(tree t, Interpreter *m_eval) {
-  if (t.is(TOK_STATEMENT))
+  if (t.is(TOK_STATEMENT) && 
+      (t.first().is(TOK_EXPR) || t.first().is(TOK_SPECIAL) ||
+       t.first().is(TOK_MULTI) || t.first().is('=')))
     throw Exception("JIT compiler doesn't work with verbose statements");
   compile_statement_type(t.first(),m_eval);
 }
@@ -1626,13 +1027,214 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   push_instruction(op_le,type_i,loop_test_register,
 		   arg_ri,loop_index_register,JITScalar(loop_stop));
   int32 loop_end_instruction(data.size());
-  push_instruction(op_jit,type_b,loop_test_register,arg_ii,
-		   JITScalar((int32)(loop_end_instruction-loop_start_instruction+1)));
+  push_instruction(op_jit,type_i,loop_test_register,arg_ii,
+		   JITScalar((int32)loop_start_instruction));
+}
+
+template <class T> 
+static inline void add_local(JITScalar* dest, T op1, T op2) {
+  dest->set(op1+op2);
+}
+
+
+// This is just to do:
+//
+//  for (i=0;i<10000;i++) A[i] = i;
+//[basu@bluering test]$ more foo.o.ll
+//define void @initArray(float* %A, i32 %N) {
+//entry:
+//        %tmp1018 = icmp sgt i32 %N, 0           ; <i1> [#uses=1]
+//        br i1 %tmp1018, label %bb, label %return
+//
+//bb:             ; preds = %bb, %entry
+//        %i.013.0 = phi i32 [ 0, %entry ], [ %indvar.next, %bb ]         ; <i32> [#uses=3]
+//        %tmp1 = sitofp i32 %i.013.0 to float            ; <float> [#uses=1]
+//        %tmp4 = getelementptr float* %A, i32 %i.013.0           ; <float*> [#uses=1]
+//        store float %tmp1, float* %tmp4
+//        %indvar.next = add i32 %i.013.0, 1              ; <i32> [#uses=2]
+//        %exitcond = icmp eq i32 %indvar.next, %N                ; <i1> [#uses=1]
+//        br i1 %exitcond, label %return, label %bb
+//
+//return:         ; preds = %bb, %entry
+//        ret void
+//}
+//
+//
+// According to llvm2cpp:
+//
+//
+//Module* makeLLVMModule() {
+//  // Module Construction
+//  Module* mod = new Module("foo.o");
+//  mod->setDataLayout("e-p:32:32:32-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:32:64-f32:32:32-f64:32:64-v64:64
+//:64-v128:128:128-a0:0:64");
+//  mod->setTargetTriple("i686-pc-linux-gnu");
+//
+//  // Type Definitions
+//  std::vector<const Type*>FuncTy_0_args;
+//  PointerType* PointerTy_1 = PointerType::get(Type::FloatTy);
+//
+//  FuncTy_0_args.push_back(PointerTy_1);
+//  FuncTy_0_args.push_back(IntegerType::get(32));
+//  ParamAttrsList *FuncTy_0_PAL = 0;
+//  FunctionType* FuncTy_0 = FunctionType::get(
+//    /*Result=*/Type::VoidTy,
+//    /*Params=*/FuncTy_0_args,
+//    /*isVarArg=*/false,
+//    /*ParamAttrs=*/FuncTy_0_PAL);
+//
+//
+//  // Function Declarations
+//
+//  Function* func_initArray = new Function(
+//    /*Type=*/FuncTy_0,
+//    /*Linkage=*/GlobalValue::ExternalLinkage,
+//    /*Name=*/"initArray", mod);
+//  func_initArray->setCallingConv(CallingConv::C);
+//
+//  // Global Variable Declarations
+//
+//
+//  // Constant Definitions
+//  Constant* const_int32_2 = Constant::getNullValue(IntegerType::get(32));
+//  ConstantInt* const_int32_3 = ConstantInt::get(APInt(32,  "1", 10));
+//
+//  // Global Variable Definitions
+//
+//
+//  // Function Definitions
+//
+//  // Function: initArray (func_initArray)
+//  {
+//    Function::arg_iterator args = func_initArray->arg_begin();
+//    Value* ptr_A = args++;
+//    ptr_A->setName("A");
+//    Value* int32_N = args++;
+//    int32_N->setName("N");
+//
+//    BasicBlock* label_entry = new BasicBlock("entry",func_initArray,0);
+//    BasicBlock* label_bb = new BasicBlock("bb",func_initArray,0);
+//    BasicBlock* label_return = new BasicBlock("return",func_initArray,0);
+//
+//    // Block entry (label_entry)
+//    ICmpInst* int1_tmp1018 = new ICmpInst(ICmpInst::ICMP_SGT, int32_N, const_int32_2, "tmp1018", label_en
+//try);
+//    new BranchInst(label_bb, label_return, int1_tmp1018, label_entry);
+//
+//    // Block bb (label_bb)
+//    Argument* fwdref_5 = new Argument(IntegerType::get(32));
+//    PHINode* int32_i_013_0 = new PHINode(IntegerType::get(32), "i.013.0", label_bb);
+//    int32_i_013_0->reserveOperandSpace(2);
+//    int32_i_013_0->addIncoming(const_int32_2, label_entry);
+//    int32_i_013_0->addIncoming(fwdref_5, label_bb);
+//
+//    CastInst* float_tmp1 = new SIToFPInst(int32_i_013_0, Type::FloatTy, "tmp1", label_bb);
+//    GetElementPtrInst* ptr_tmp4 = new GetElementPtrInst(ptr_A, int32_i_013_0, "tmp4", label_bb);
+//    StoreInst* void_6 = new StoreInst(float_tmp1, ptr_tmp4, false, label_bb);
+//    BinaryOperator* int32_indvar_next = BinaryOperator::create(Instruction::Add, 
+//                 int32_i_013_0, const_int32_3, "indvar.next", label_bb);
+//    ICmpInst* int1_exitcond = new ICmpInst(ICmpInst::ICMP_EQ, int32_indvar_next, 
+//                 int32_N, "exitcond", label_bb);
+//    new BranchInst(label_return, label_bb, int1_exitcond, label_bb);
+//
+//    // Block return (label_return)
+//    new ReturnInst(label_return);
+//
+//    // Resolve Forward References
+//    fwdref_5->replaceAllUsesWith(int32_indvar_next); delete fwdref_5;
+//
+//  }
+//
+//  return mod;
+//}
+//
+int JITtest() {
+  Module *M = new Module("test");
+  Function *F = new Function(FuncTy_0,GlobalValuecast<Function>(M->getOrInsertFunction("f", Type::VoidTy,
+						      Pointer(Type::Int32Ty),
+						      Type::Int32Ty,
+						      (Type *)0));
+  BasicBlock *BB = new BasicBlock("EntryBlock", F);
+  
+}
+
+int JITmain() {
+  // Create some module to put our function into it.
+  Module *M = new Module("test");
+
+  // Create the add1 function entry and insert this entry into module M.  The
+  // function will have a return type of "int" and take an argument of "int".
+  // The '0' terminates the list of argument types.
+  Function *Add1F =
+    cast<Function>(M->getOrInsertFunction("add1", Type::Int32Ty, Type::Int32Ty,
+                                          (Type *)0));
+
+  // Add a basic block to the function. As before, it automatically inserts
+  // because of the last argument.
+  BasicBlock *BB = new BasicBlock("EntryBlock", Add1F);
+
+  // Get pointers to the constant `1'.
+  Value *One = ConstantInt::get(Type::Int32Ty, 1);
+
+  // Get pointers to the integer argument of the add1 function...
+  assert(Add1F->arg_begin() != Add1F->arg_end()); // Make sure there's an arg
+  Argument *ArgX = Add1F->arg_begin();  // Get the arg
+  ArgX->setName("AnArg");            // Give it a nice symbolic name for fun.
+
+  // Create the add instruction, inserting it into the end of BB.
+  Instruction *Add = BinaryOperator::createAdd(One, ArgX, "addresult", BB);
+
+  // Create the return instruction and add it to the basic block
+  new ReturnInst(Add, BB);
+
+  // Now, function add1 is ready.
+
+
+  // Now we going to create function `foo', which returns an int and takes no
+  // arguments.
+  Function *FooF =
+    cast<Function>(M->getOrInsertFunction("foo", Type::Int32Ty, (Type *)0));
+
+  // Add a basic block to the FooF function.
+  BB = new BasicBlock("EntryBlock", FooF);
+
+  // Get pointers to the constant `10'.
+  Value *Ten = ConstantInt::get(Type::Int32Ty, 10);
+
+  // Pass Ten to the call call:
+  CallInst *Add1CallRes = new CallInst(Add1F, Ten, "add1", BB);
+  Add1CallRes->setTailCall(true);
+
+  // Create the return instruction and add it to the basic block.
+  new ReturnInst(Add1CallRes, BB);
+
+  // Now we create the JIT.
+  ExistingModuleProvider* MP = new ExistingModuleProvider(M);
+  ExecutionEngine* EE = ExecutionEngine::create(MP, false);
+
+  std::cout << "We just constructed this LLVM module:\n\n" << *M;
+  std::cout << "\n\nRunning foo: " << std::flush;
+
+  // Call the `foo' function with no arguments:
+  std::vector<GenericValue> noargs;
+  GenericValue gv = EE->runFunction(FooF, noargs);
+
+  // Import result of execution:
+  std::cout << "Result: " << gv.IntVal.toString(10) << "\n";
+  return 0;
 }
 
 void JITVM::run(Interpreter *m_eval) {
+  void (*tptr)(JITScalar*,int32,int32) = &add_local<int32>;
+  for (int i=0;i<1000*1000*10;i++) {
+    //    (this->*opcode_table_i[op_add])(0,50,50);
+    tptr(&reg[0],50,50);
+  } 
+  JITmain();
+  return;
   ip = 0;
   unsigned ops_max = data.size();
   while (ip < ops_max)
     dispatch(data[ip++]);
 }
+

@@ -226,6 +226,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("sort",SortFunction,3,2,"A","dim","mode",NULL);
   context->addFunction("unique",UniqueFunction,2,3,"x","mode",NULL);
   context->addSpecialFunction("dbauto",DbAutoFunction,1,1,"x",NULL);
+  context->addSpecialFunction("jitcontrol",JITControlFunction,1,1,"x",NULL);
   context->addSpecialFunction("mfilename",MFilenameFunction,-1,1,NULL);
   context->addFunction("computer",ComputerFunction,0,1,NULL);
   context->addFunction("strstr",StrStrFunction,2,1,"x","y",NULL);

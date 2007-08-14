@@ -42,7 +42,7 @@ if WIN32
 FreeMat_SOURCES += freemat.rc
 endif
 
-FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libMex/libMex.a
+FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libMex/libMex.a /home/basu/lib/LLVMExecutionEngine.o  /home/basu/lib/LLVMInterpreter.o /home/basu/lib/LLVMJIT.o -L/home/basu/lib -lLLVMCore -lLLVMSupport -lLLVMSystem -lLLVMCodeGen -lLLVMTarget -lLLVMSelectionDAG
 
 FreeMat_LDFLAGS = $(QT_CXXFLAGS)
 

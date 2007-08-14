@@ -196,6 +196,7 @@ ArrayVector Bin2IntFunction(int, const ArrayVector& arg);
 ArrayVector PCodeFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector GetLineFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DbAutoFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector JITControlFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DbStopFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DbDeleteFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DbListFunction(int, const ArrayVector& arg, Interpreter* eval);

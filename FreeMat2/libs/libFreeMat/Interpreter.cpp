@@ -1242,15 +1242,6 @@ void Interpreter::tryStatement(const tree &t) {
 }
 
 
-bool Interpreter::AutoStop() {
-  return autostop;
-}
-  
-
-void Interpreter::AutoStop(bool a) {
-  autostop = a;
-}
-
 //!
 //@Module SWITCH Switch statement
 //@@Section FLOW
@@ -1813,14 +1804,17 @@ void Interpreter::forStatement(const tree &t) {
   int ctxt = t.context();
 
   // Try to compile this for statement to an instruction stream
-  try {
-    JITVM jit;
-    jit.compile_for_block(t,this);
-    jit.dump(std::cout);
-    jit.run(this);
-    return;
-  } catch (Exception &e) {
-    std::cout << e.getMessageCopy() << "\r\n";
+  if (jitcontrol) {
+    try {
+      JITVM jit;
+      jit.compile_for_block(t,this);
+      jit.dump(std::cout);
+      jit.run(this);
+      return;
+    } catch (Exception &e) {
+      t.print();
+      std::cout << e.getMessageCopy() << "\r\n";
+    }
   }
 
   /* Get the name of the indexing variable */
@@ -4931,6 +4925,7 @@ Interpreter::Interpreter(Context* aContext) {
   depth = 0;
   printLimit = 1000;
   autostop = false;
+  jitcontrol = false;
   InCLI = false;
   stopoverload = false;
   m_skipflag = false;

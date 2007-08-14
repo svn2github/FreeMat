@@ -119,6 +119,10 @@ class Interpreter : public QThread {
    */
   bool autostop;
   /**
+   * jit control flag
+   */
+  bool jitcontrol;
+  /**
    * When this flag is active, autostop does nothing.
    */
   bool InCLI;
@@ -468,8 +472,13 @@ public:
    * Set the autostop flag - this flag determines what happens when
    * an exception occurs
    */
-  bool AutoStop();
-  void AutoStop(bool a);
+  inline bool AutoStop() {return autostop;}
+  inline void AutoStop(bool a) {autostop = a;}
+  /**
+   * Set the JITControl flag
+   */
+  inline bool JITControl() {return jitcontrol;}
+  inline void JITControl(bool a) {jitcontrol = a;}
   /**
    * Set the print limit (number of element printed prior to truncation).
    */

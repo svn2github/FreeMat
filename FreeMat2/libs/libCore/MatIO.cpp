@@ -917,7 +917,7 @@ ArrayVector MatLoadFunction(int nargout, string filename,
     bool match = false;
     Array a(m.getArray(ateof,name,match,globalFlag));
     if (!ateof) {
-      if (contains(varnames,name,regexpmode)) {
+      if ((varnames.size() == 0) || (contains(varnames,name,regexpmode))) {
 	if (nargout == 0) {
 	  if (globalFlag)
 	    eval->getContext()->addGlobalVariable(name);

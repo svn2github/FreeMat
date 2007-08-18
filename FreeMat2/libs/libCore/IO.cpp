@@ -2584,10 +2584,10 @@ ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   }
   Context *cntxt = eval->getContext();
   rvstring toSave;
-  if (regexpMode) {
+  if (regexpMode || (names.size() == 0)) {
     stringVector allNames = cntxt->listAllVariables();
     for (int i=0;i<allNames.size();i++)
-      if (contains(names,allNames[i],regexpMode))
+      if ((names.size() == 0) || contains(names,allNames[i],regexpMode))
 	toSave << allNames[i];
   } else 
     toSave = names;
@@ -2898,7 +2898,8 @@ ArrayVector LoadNativeFunction(int nargout, string filename,
     char flag;
     flag = input.getByte();
     input.getArray(toRead);
-    if (contains(names,arrayName,regexpmode) && (nargout == 0)) {
+    if ((names.size() == 0) || 
+	(contains(names,arrayName,regexpmode) && (nargout == 0))) {
       switch (flag) {
       case 'n':
 	break;

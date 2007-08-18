@@ -2,12 +2,13 @@
 
 #
 # On a new system
-# yum install qt4 qt4devel portaudio lapack-devel lapack atlas atlas-devel ufsparse ufsparse-devel
-#  203  rpm -ivh http://ftp.belnet.be/packages/dries.ulyssis.org/fedora/fc6/i386/RPMS.dries/ffcall-1.10-1.2.fc6.rf.i386.rpm
-#  204  rpm -ivh http://ftp.belnet.be/packages/dries.ulyssis.org/fedora/fc6/i386/RPMS.dries/ffcall-devel-1.10-1.2.fc6.rf.i386.rpm
-#  205  rpm -ivh http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
-#  206  rpm -ivh http://dl.atrpms.net/all/arpack-2.1-5.fc6.at.i386.rpm
-#  207  rpm -ivh http://dl.atrpms.net/all/arpack-devel-2.1-5.fc6.at.i386.rpm
+# yum install qt4 qt4-devel portaudio lapack-devel lapack atlas atlas-devel ufsparse ufsparse-devel fftw fftw-devel
+
+#  rpm -ivh http://dl.atrpms.net/all/arpack-2.1-6.fc7.i386.rpm
+#  rpm -ivh http://dl.atrpms.net/all/arpack-devel-2.1-6.fc7.i386.rpm
+#  203  rpm -ivh http://ftp.belnet.be/packages/dries.ulyssis.org/fedora/fc7/i386/RPMS.dries/ffcall-1.10-1.2.fc7.rf.i386.rpm
+#  203  rpm -ivh http://ftp.belnet.be/packages/dries.ulyssis.org/fedora/fc7/i386/RPMS.dries/ffcall-devel-1.10-1.2.fc7.rf.i386.rpm
+
 
 use File::Path;
 use File::Copy;
@@ -99,6 +100,12 @@ my %libz_pkg =  ('url' => 'http://downloads.sourceforge.net/libpng/',
 		  'file' => 'zlib-1.2.3.tar.gz',
 		  'md5' => 'debc62758716a169df9f62e6ab2bc634',
 		  'root' => 'zlib-1.2.3');
+my %freemat_pkg = ('url' => 'http://downloads.sourceforge.net/freemat/',
+		   'file' => 'FreeMat-3.4.tar.gz',
+		   'md5' => 'b3c7820bf07ba3fdda55e19ab377dbdb',
+		   'root' => 'FreeMat-3.4',
+		   'version' => '3.4');
+
 # Find a MD5 Sum program
 sub find_program {
     my $title = shift;
@@ -655,9 +662,8 @@ sub job_mac_freemat {
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
-
-    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
-    configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
+    fetch_unpack_pkg(\%freemat_pkg,'build');
+    configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
 }
 
 sub job_macppc_freemat {
@@ -770,9 +776,8 @@ sub job_macppc_freemat {
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
-
-    unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
-    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$crossprefix/include -I$crossprefix/include/QtCore -I$crossprefix/include/QtGui -I$crossprefix/include/QtOpenGL -I$crossprefix/include/QtNetwork -I$crossprefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$crossprefix/lib\"");
+    fetch_unpack_pkg(\%freemat_pkg,'cross');
+    configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$crossprefix/include -I$crossprefix/include/QtCore -I$crossprefix/include/QtGui -I$crossprefix/include/QtOpenGL -I$crossprefix/include/QtNetwork -I$crossprefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$crossprefix/lib\"");
 
 }
 
@@ -889,13 +894,8 @@ sub job_native_freemat {
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
-
-    fetch_url('http://downloads.sf.net/freemat/FreeMat-3.3.tar.gz',
-	      'files/FreeMat-3.3.tar.gz','a11672f887f9132ca12a3d6e83ed2881');
-    $platform_opts->{'configure opts'} = $platform_opts->{'configure opts'} . 
-	" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib";
-    unpack_tar_ball('files/FreeMat-3.3.tar.gz','build');
-    configure_make_install('build/FreeMat-3.3',$prefix,'build',$platform_opts);
+    fetch_unpack_pkg(\%freemat_pkg,'cross');
+    configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts);
 }
 
 sub relink {
@@ -1204,12 +1204,11 @@ END
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
-
-    unpack_tar_ball('files/FreeMat-3.3.tar.gz','cross');
-    configure_make_install('cross/FreeMat-3.3',$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib");
-    my $baseDir="cross/FreeMat-3.3-Win32";
-    my $buildDir="cross/FreeMat-3.3/build";
-    my $srcDir="cross/FreeMat-3.3";
+    fetch_unpack_pkg(\%freemat_pkg,'cross');
+    configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib");
+    my $baseDir="cross/$freemat_pkg{'root'}-Win32";
+    my $buildDir="cross/$freemat_pkg{'root'}/build";
+    my $srcDir="cross/$freemat_pkg{'root'}";
     make_directory("$baseDir");
     make_directory("$baseDir/Contents");
     make_directory("$baseDir/Contents/bin");
@@ -1228,10 +1227,10 @@ END
     copy_files("$prefix/Qt/4.3.0/bin/QtNetwork4.dll","$baseDir/Contents/bin/QtNetwork4.dll");
     copy_files("$prefix/Qt/4.3.0/bin/QtXml4.dll","$baseDir/Contents/bin/QtXml4.dll");
     copy_files("$prefix/bin/mingwm10.dll","$baseDir/Contents/bin/mingwm10.dll");
-    copy_files("$prefix/share/FreeMat-3.3/help/html","$baseDir/Contents/Resources/help");
-    copy_files("$prefix/share/FreeMat-3.3/help/text","$baseDir/Contents/Resources/help");
-    copy_files("$prefix/share/FreeMat-3.3/toolbox","$baseDir/Contents/Resources");
-    copy_files("$prefix/share/FreeMat-3.3/help/latex/main.pdf","$baseDir/Contents/Resources/help/pdf/FreeMat-3.3.pdf");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/help/html","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/help/text","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/toolbox","$baseDir/Contents/Resources");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/help/latex/main.pdf","$baseDir/Contents/Resources/help/pdf/$freemat_pkg{'root'}.pdf");
     copy_files("$srcDir/COPYING","$baseDir");
     print "Generating NSI file...\n";
     my $cwd = Cwd::cwd();
@@ -1286,11 +1285,12 @@ sub job_rpm_freemat  {
     make_directory("build/rpm/SOURCES");
     make_directory("build/rpm/SPECS");
     make_directory("build/rpm/SRPMS");
-    copy_file("files/FreeMat-3.3.tar.gz","build/rpm/SOURCES");
-    open(FREEMATSPECIN,"build/FreeMat-3.3/tools/freemat_spec.in") or die "Unable to open SPEC file: $!\n";
+    fetch_unpack_pkg(\%freemat_pkg);
+    copy_file("files/$freemat_pkg{'file'}","build/rpm/SOURCES");
+    open(FREEMATSPECIN,"build/$freemat_pkg{'root'}/tools/freemat_spec.in") or die "Unable to open SPEC file: $!\n";
     open(FREEMATSPECOUT,">build/rpm/SPECS/freemat.spec") or die "Unable to open output .SPEC file: $!\n";
     while (my $line = <FREEMATSPECIN>) {
-	$line =~ s/<VERSION_NUMBER>/3.3/g;	
+	$line =~ s/<VERSION_NUMBER>/"$freemat_pkg{'version'}"/g;	
 	print FREEMATSPECOUT "$line";
     }
     close(FREEMATSPECIN);

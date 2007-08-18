@@ -1422,6 +1422,18 @@ void Interpreter::tryStatement(const tree &t) {
 //test_val = 0;
 //end
 //@}
+//@{ test_switch8.m
+//% Test the switch statement with a blank line after the switch clause
+//function test_val = test_switch8
+//   v = '3';
+//
+//   switch(v)
+//
+//   case '3'
+//     vv = 111;
+//   end
+//   test_val = 1;
+//@}
 //!
 //Works
 void Interpreter::switchStatement(const tree &t) {

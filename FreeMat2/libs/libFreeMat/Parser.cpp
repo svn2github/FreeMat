@@ -395,7 +395,7 @@ tree Parser::SwitchStatement() {
   tree root(mkLeaf(Expect(TOK_SWITCH)));
   tree swexpr = Expression();
   addChild(root,swexpr);
-  StatementSeperator();
+  while (StatementSeperator().valid());
   while (Match(TOK_CASE)) {
     tree caseblock(mkLeaf(Next()));
     Consume();

@@ -39,7 +39,10 @@
 #include <QtCore>
 #include <fstream>
 #include <stdarg.h>
+
+#ifdef USE_JIT
 #include "JITVM.hpp"
+#endif
 
 #ifdef WIN32
 #define PATHSEP ";"
@@ -1805,6 +1808,7 @@ void Interpreter::forStatement(const tree &t) {
 
   // Try to compile this for statement to an instruction stream
   if (jitcontrol) {
+#ifdef USE_JIT
     try {
       JITVM jit;
       jit.compile_for_block(t,this);
@@ -1815,6 +1819,7 @@ void Interpreter::forStatement(const tree &t) {
       t.print();
       std::cout << e.getMessageCopy() << "\r\n";
     }
+#endif
   }
 
   /* Get the name of the indexing variable */

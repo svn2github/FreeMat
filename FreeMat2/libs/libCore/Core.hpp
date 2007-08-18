@@ -114,7 +114,7 @@ ArrayVector PrintfFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector VerStringFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector VersionFunction(int, const ArrayVector& arg);
 ArrayVector SprintfFunction(int, const ArrayVector& arg);
-ArrayVector FprintfFunction(int, const ArrayVector& arg);
+ArrayVector FprintfFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector FscanfFunction(int, const ArrayVector& arg);
 ArrayVector SscanfFunction(int, const ArrayVector& arg);
 ArrayVector Str2NumFunction(int, const ArrayVector& arg);

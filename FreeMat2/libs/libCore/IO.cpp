@@ -1911,7 +1911,8 @@ ArrayVector SprintfFunction(int nargout, const ArrayVector& arg) {
 //printf('float value is %+018.12f\n',pi);
 //@>
 //!
-ArrayVector PrintfFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+ArrayVector PrintfFunction(int nargout, const ArrayVector& arg, 
+			   Interpreter* eval) {
   if (arg.size() == 0)
     throw Exception("printf requires at least one (string) argument");
   Array format(arg[0]);
@@ -2344,11 +2345,17 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
 //@@Examples
 //A number of examples are present in the Examples section of the @|printf| command.
 //!
-ArrayVector FprintfFunction(int nargout, const ArrayVector& arg) {
+ ArrayVector FprintfFunction(int nargout, const ArrayVector& arg, 
+			     Interpreter* eval) {
   if (arg.size() < 2)
     throw Exception("fprintf requires at least two arguments, the file handle and theformat string");
   Array tmp(arg[0]);
   int handle = tmp.getContentsAsIntegerScalar();
+  if (handle == 1) {
+    ArrayVector argCopy(arg);
+    argCopy.pop_front();
+    return PrintfFunction(nargout,argCopy,eval);
+  }
   FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
   Array format(arg[1]);
   if (!format.isString())
@@ -2701,7 +2708,7 @@ int DecodeSpreadsheetColumn(QString tx) {
     txb[i] = txb[i] - 'A';
   int ret = 0;
   for (int i=0;i<txb.count();i++) 
-    ret += txb.at(i)*pow(26.0,txb.count()-1-i);
+    ret += (int) txb.at(i)*pow(26.0,txb.count()-1-i);
   return ret;
 }
 

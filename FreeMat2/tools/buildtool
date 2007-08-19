@@ -659,6 +659,8 @@ sub job_mac_freemat {
 	    die "Installation of UMFPACK package from sparse suite package failed!\n";
     }
 
+    system("rm $prefix/lib/*.dylib");
+
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
@@ -772,6 +774,8 @@ sub job_macppc_freemat {
 	test_function($prefix,'SparseSuiteUMFPACK','umfpack','umfpack_zl_solve',$platform_opts) or
 	    die "Installation of UMFPACK package from sparse suite package failed!\n";
     }
+
+    system("rm $prefix/lib/*.dylib");
 
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";

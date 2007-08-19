@@ -1,0 +1,5 @@
+#!/bin/sh
+cd build && make && cd ..
+build/src/FreeMat -nogui -f "source tools/svn_path.m; helpgen(pwd);"
+cd build && make distcheck
+

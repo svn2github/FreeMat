@@ -898,8 +898,8 @@ sub job_native_freemat {
     print "************************************************************\n";
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
-    fetch_unpack_pkg(\%freemat_pkg,'cross');
-    configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts);
+    fetch_unpack_pkg(\%freemat_pkg,'build');
+    configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts);
 }
 
 sub relink {
@@ -1304,6 +1304,32 @@ sub job_rpm_freemat  {
 	die "RPM build failed.";
 }
 
+sub job_linux_release {
+    my $prefix = shift;
+    my $cross_prefix = shift;
+    my $svn_path = shift;
+    my $buildtool_path = Cwd::cwd();
+    change_directory($svn_path . '/build');
+    system_check('make');
+    change_directory($svn_path);
+    system_check('build/src/FreeMat -nogui -f "source tools/svn_path.m; helpgen(pwd);"');
+    change_directory($svn_path . '/build');
+    system_check('make distcheck');
+    copy_file("$freemat_pkg{'file'}","$buildtool_path/files");
+    change_directory($buildtool_path);
+    job_native_freemat($prefix);
+    change_directory($buildtool_path);
+    job_win_freemat($cross_prefix);
+    change_directory($buildtool_path);
+    job_rpm_freemat($prefix);
+    change_directory($buildtool_path);
+    make_directory("release_files");
+    copy_file("build/rpm/RPMS/i386/FreeMat-$freemat_pkg{'version'}-1.i386.rpm","release_files/FreeMat-$freemat_pkg{'version'}.i386.fc7.rpm");
+    copy_file("files/$freemat_pkg{'file'}","release_files/.");
+    copy_file("cross/FreeMat-$freemat_pkg{'version'}_Setup.exe","release_files/.");
+    copy_file("build/FreeMat-$freemat_pkg{'version'}/help/latex/main.pdf","release_files/FreeMat-$freemat_pkg{'version'}.pdf");
+}
+
 my $prefix = shift;
 my $job = shift;
 
@@ -1315,7 +1341,9 @@ if (not defined $job or not defined $prefix) {
 	"    mac-freemat       - build the mac freemat\n" .
 	"    ppc-freemat       - build the mac-ppc freemat (uses cross_prefix --> intel build dir)\n" .
 	"    rpm-freemat       - build an RPM of freemat\n" .
-	"    mac-bundle        - build the bundle (mac) of freemat\n";
+	"    mac-bundle        - build the bundle (mac) of freemat\n" .
+	"    linux-release     - create a FreeMat release (linux & win) - buildtool\n" .
+	"                        takes a fourth argument (the path to the SVN tree).\n";
 }
 
 if ($job eq "native-freemat") {
@@ -1344,4 +1372,8 @@ if ($job eq "ppc-freemat") {
 
 if ($job eq "mac-bundle") {
     job_mac_bundle($prefix,shift);
+}
+
+if ($job eq "linux-release") {
+    job_linux_release($prefix,shift,shift);
 }

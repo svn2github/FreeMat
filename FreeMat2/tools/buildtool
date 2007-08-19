@@ -957,7 +957,7 @@ sub install_framework {
 sub job_mac_bundle {
     my $prefix = shift;
     my $crossprefix = shift;
-    my $baseDir = "build/FreeMat-3.3.app";
+    my $baseDir = "build/$freemat_pkg{'root'}.app";
     delete_directory("$baseDir");
     make_directory("$baseDir");
     make_directory("$baseDir/Contents");
@@ -973,7 +973,7 @@ sub job_mac_bundle {
     system_check("lipo -create $prefix/bin/FreeMat $crossprefix/bin/FreeMat -output $baseDir/Contents/MacOS/FreeMat");
     system("strip $baseDir/Contents/MacOS/FreeMat");
     sym_link("$baseDir/Contents/MacOS/FreeMat","$baseDir/FreeMat");
-    copy_file("build/FreeMat-3.3/src/appIcon.icns","$baseDir/Contents/Resources/appIcon.icns");
+    copy_file("build/$freemat_pkg{'root'}/src/appIcon.icns","$baseDir/Contents/Resources/appIcon.icns");
     open(TMP,">$baseDir/Contents/PkgInfo") or die("unable to create pkgInfo file");
     print TMP "APPL????";
     close(TMP);
@@ -1006,11 +1006,11 @@ EOF
     cross_link_framework_all($prefix,$baseDir,"QtNetwork");
     cross_link_framework_all($prefix,$baseDir,"QtXml");
     cross_link_framework_all($prefix,$baseDir,"QtSvg");
-    copy_files("$prefix/share/FreeMat-3.3/help/html","$baseDir/Contents/Resources/help");
-    copy_files("$prefix/share/FreeMat-3.3/help/text","$baseDir/Contents/Resources/help");
-    copy_files("$prefix/share/FreeMat-3.3/toolbox","$baseDir/Contents/Resources");
-    copy_file("$prefix/share/FreeMat-3.3/help/latex/main.pdf",
-	      "$baseDir/Contents/Resources/help/pdf/FreeMat-3.3.pdf");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/help/html","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/help/text","$baseDir/Contents/Resources/help");
+    copy_files("$prefix/share/$freemat_pkg{'root'}/toolbox","$baseDir/Contents/Resources");
+    copy_file("$prefix/share/$freemat_pkg{'root'}/help/latex/main.pdf",
+	      "$baseDir/Contents/Resources/help/pdf/$freemat_pkg{'root'}.pdf");
     copy_files("$prefix/plugins/imageformats","$baseDir/Contents/Plugins");
     relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqgif.dylib");
     relink_plugin($prefix,$baseDir,"$baseDir/Contents/Plugins/imageformats/libqjpeg.dylib");
@@ -1266,7 +1266,7 @@ END
     open(FREEMATNSI,"$srcDir/tools/freemat_nsi.in") or die "Unable to open NSI file: $!\n";
     open(FREEMATNSIOUT,">$baseDir/freemat.nsi") or die "Unable to open output NSI file: $!\n";
     while (my $line = <FREEMATNSI>) {
-	$line =~ s/<VERSION_NUMBER>/3.3/g;
+	$line =~ s/<VERSION_NUMBER>/"$freemat_pkg{'version'}"/g;
 	$line =~ s/<BUNDLE FILES>/$installation_list/g;
 	$line =~ s/<DELLIST>/$delete_list/g;
 	print FREEMATNSIOUT "$line";

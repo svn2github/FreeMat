@@ -1304,6 +1304,19 @@ sub job_rpm_freemat  {
 	die "RPM build failed.";
 }
 
+sub job_mac_release {
+    my $intel_prefix = shift;
+    my $ppc_prefix = shift;
+    my $buildtool_path = Cwd::cwd();
+    job_mac_freemat($intel_prefix);
+    job_macppc_freemat($ppc_prefix,$intel_prefix);
+    job_mac_bundle($intel_prefix,$ppc_prefix);
+    make_directory("release_files");
+    copy_files("build/FreeMat-$freemat_pkg{'version'}.app","release_files");
+    change_directory("release_files");
+    system_check("hdiutil create -fs HFS+ -srcfolder FreeMat-$freemat_pkg{'version'}.app FreeMat-$freemat_pkg{'version'}.dmg");
+}
+
 sub job_linux_release {
     my $prefix = shift;
     my $cross_prefix = shift;
@@ -1343,7 +1356,9 @@ if (not defined $job or not defined $prefix) {
 	"    rpm-freemat       - build an RPM of freemat\n" .
 	"    mac-bundle        - build the bundle (mac) of freemat\n" .
 	"    linux-release     - create a FreeMat release (linux & win) - buildtool\n" .
-	"                        takes a fourth argument (the path to the SVN tree).\n";
+	"                        takes a fourth argument (the path to the SVN tree).\n" .
+	"    mac-release       - create a FreeMat release (mac universal).  Assumes\n" .
+	"                        release source is in files directory.\n";
 }
 
 if ($job eq "native-freemat") {
@@ -1376,4 +1391,8 @@ if ($job eq "mac-bundle") {
 
 if ($job eq "linux-release") {
     job_linux_release($prefix,shift,shift);
+}
+
+if ($job eq "mac-release") {
+    job_mac_release($prefix,shift);
 }

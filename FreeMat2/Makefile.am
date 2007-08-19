@@ -1,4 +1,4 @@
-SUBDIRS = libs src images tools
+SUBDIRS = libs src images tools 
 
 resourcedir = $(datadir)/$(PACKAGE)-$(VERSION)
 

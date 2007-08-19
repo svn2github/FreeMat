@@ -407,7 +407,7 @@ void Interpreter::doCLI() {
 }
 
 void Interpreter::sendGreeting() {
-  outputMessage(" " + getVersionString() + " (build 2741)\n");
+  outputMessage(" " + getVersionString() + " (build 2820)\n");
   outputMessage(" Copyright (c) 2002-2007 by Samit Basu\n");
   outputMessage(" Licensed under the GNU Public License (GPL)\n");
   outputMessage(" Type <help license> to find out more\n");

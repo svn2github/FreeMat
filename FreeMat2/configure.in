@@ -133,7 +133,6 @@ fi
 
 cdir=`pwd`
 
-
 dnl Check external dependencies
 dnl   Fail?
 dnl     If any are missing, check for CURL

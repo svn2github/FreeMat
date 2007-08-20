@@ -446,4 +446,5 @@ AC_CHECK_LIB(z,inflate,found_z="yes",found_z="no")
 if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"
 fi
+
 ])

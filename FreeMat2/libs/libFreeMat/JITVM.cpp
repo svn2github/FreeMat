@@ -1149,6 +1149,7 @@ static inline void add_local(JITScalar* dest, T op1, T op2) {
 //  return mod;
 //}
 //
+
 int JITtest() {
   Module *M = new Module("test");
   std::vector<const Type*> FuncTy_0_args;

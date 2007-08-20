@@ -261,6 +261,19 @@ One or more of the required external dependencies was not found.  Please
 install the missing dependencies (as listed above) and rerun configure.])
 fi
 
+AC_ARG_WITH([llvm],
+	    [AC_HELP_STRING([--with-llvm],
+	    [support Just In Time compiler (requires llvm > 2.0)])],
+	    use_llvm="yes",
+	    use_llvm="no")
+
+
+if (test "$use_llvm" = "yes"); then
+   LIBS="/home/basu/lib/LLVMX86.o -lLLVMSelectionDAG /home/basu/lib/LLVMInterpreter.o -lLLVMCodeGen -lLLVMScalarOpts -lLLVMTransformUtils -lLLVMipa -lLLVMAnalysis /home/basu/lib/LLVMJIT.o /home/basu/lib/LLVMExecutionEngine.o -lLLVMTarget -lLLVMCore -lLLVMSupport -lLLVMSystem $LIBS";
+   AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
+fi
+
+
 AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 
 

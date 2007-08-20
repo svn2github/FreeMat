@@ -40,7 +40,7 @@
 #include <fstream>
 #include <stdarg.h>
 
-#ifdef USE_JIT
+#ifdef HAVE_LLVM
 #include "JITVM.hpp"
 #endif
 
@@ -1820,7 +1820,7 @@ void Interpreter::forStatement(const tree &t) {
 
   // Try to compile this for statement to an instruction stream
   if (jitcontrol) {
-#ifdef USE_JIT
+#ifdef HAVE_LLVM
     try {
       JITVM jit;
       jit.compile_for_block(t,this);

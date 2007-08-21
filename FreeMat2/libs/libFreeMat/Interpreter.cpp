@@ -1823,9 +1823,9 @@ void Interpreter::forStatement(const tree &t) {
 #ifdef HAVE_LLVM
     try {
       JITVM jit;
-      jit.compile_for_block(t,this);
-      jit.dump(std::cout);
-      jit.run(this);
+      //      jit.compile_for_block(t,this);
+      //      jit.dump(std::cout);
+      jit.compile(t,this);
       return;
     } catch (Exception &e) {
       t.print();

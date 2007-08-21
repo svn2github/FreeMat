@@ -502,9 +502,16 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   new StoreInst(ConstantInt::get(APInt(32, loop_start, 10)), loop_index_address, 
 		false, loopentry);
   new BranchInst(looptest, loopentry);
-  compile_block(loopbody,t.second(),m_eval);
+  ip = loopbody;
+  compile_block(t.second(),m_eval);
+  JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, loopbody);
+  JITScalar next_loop_value = BinaryOperator::create(Instruction::Add,
+						     loop_index_value,
+						     ConstantInt::get(APInt(32, "1", 10)),
+						     "", loopbody);
+  new StoreInst(next_loop_value, loop_index_address, false, loopbody);
   new BranchInst(looptest, loopbody);
-  JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, looptest);
+  loop_index_value = new LoadInst(loop_index_address, "", false, looptest);
   JITScalar loop_comparison = new ICmpInst(ICmpInst::ICMP_SLT, loop_index_value,
 					   ConstantInt::get(APInt(32, loop_stop, 10)), 
 					   "", looptest);

@@ -269,7 +269,9 @@ AC_ARG_WITH([llvm],
 
 
 if (test "$use_llvm" = "yes"); then
-   LIBS="/home/basu/lib/LLVMX86.o -lLLVMSelectionDAG /home/basu/lib/LLVMInterpreter.o -lLLVMCodeGen -lLLVMScalarOpts -lLLVMTransformUtils -lLLVMipa -lLLVMAnalysis /home/basu/lib/LLVMJIT.o /home/basu/lib/LLVMExecutionEngine.o -lLLVMTarget -lLLVMCore -lLLVMSupport -lLLVMSystem $LIBS";
+   CXXFLAGS="`llvm-config --cxxflags` $CXXFLAGS"
+   LIBS="`llvm-config --libs bitwriter jit engine interpreter` $LIBS";
+   LDFLAGS="`llvm-config --ldflags` $LDFLAGS";
    AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
 fi
 

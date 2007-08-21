@@ -14,6 +14,8 @@
 #include "llvm/Bitcode/ReaderWriter.h"
 #include <fstream>
 
+using namespace llvm;
+
 #if 0
 JITScalar JITVM::promote(JITScalar arg, scalar_class outClass) {
   // For scalar types, just promote the thing
@@ -101,74 +103,76 @@ JITScalar JITVM::promote(JITScalar arg, scalar_class outClass) {
   }
   throw Exception("unhandled case for promote called");
 }
+#endif
 
-JITScalar JITVM::boolean_op(opcode op, JITScalar arg1, JITScalar arg2, string inst) {
-  arg1 = promote(arg1,c_bool);
-  arg2 = promote(arg2,c_bool);
-  JITScalar result(new_register(c_bool));
-  push_instruction(op,type_b,result,compute_ri_code(arg1,arg2),arg1,arg2);
-  return result;
+JITScalar JITVM::compile_boolean_op(Instruction::BinaryOps op, JITScalar arg1, JITScalar arg2, string inst) {
+//   arg1 = promote(arg1,c_bool);
+//   arg2 = promote(arg2,c_bool);
+//   JITScalar result(new_register(c_bool));
+//   push_instruction(op,type_b,result,compute_ri_code(arg1,arg2),arg1,arg2);
+//   return result;
 }
 
-bool JITVM::isp(JITScalar x) {
-  return (type_of(x) == c_pointer);
-}
-  
-bool JITVM::isi(JITScalar x) {
-  return (type_of(x) == c_int32);
+static inline bool isi(JITScalar arg) {
+  return arg->getType()->isInteger();
 }
 
-bool JITVM::isfd(JITScalar x) {
-  return ((type_of(x) == c_float) || (type_of(x) == c_double));
+static inline bool isfd(JITScalar arg) {
+  return arg->getType()->isFloatingPoint();
+}
+
+static inline bool isf(JITScalar arg) {
+  return (arg->getType()->getTypeID() == Type::FloatTyID);
+}
+
+static inline bool isd(JITScalar arg) {
+  return (arg->getType()->getTypeID() == Type::DoubleTyID);
 }
 
 // add immediate to immediate - this instruction can be replaced by 
 // constant folding, but for now, leave it in.
-JITScalar JITVM::binary_op(opcode op, JITScalar arg1, JITScalar arg2, string inst) {
-  scalar_class outClass;
-  outClass = type_of(arg1);
-  if (type_of(arg2) > outClass) outClass = type_of(arg2);
-  if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))  outClass = c_double;
-  if (outClass == c_bool) outClass = c_int32;
-  if (outClass >= c_pointer) throw Exception("invalid type argument to " + inst + " instruction");
-  arg1 = promote(arg1,outClass);
-  arg2 = promote(arg2,outClass);
-  JITScalar result(new_register(outClass));
-  push_instruction(op,compute_oc_code(outClass),result,compute_ri_code(arg1,arg2),arg1,arg2);
-  return result;
+JITScalar JITVM::compile_binary_op(BinaryOperator::BinaryOps opcode, 
+				   JITScalar arg1, JITScalar arg2, string inst) {
+  const Type* outType;
+  if (arg1->getType() == arg2->getType()) 
+    outType = arg1->getType();
+  else if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))
+    outType = Type::DoubleTy;
+  else if ((isf(arg1) && isd(arg2)) || (isd(arg1) && isf(arg2)))
+    outType = Type::DoubleTy;
+  arg1 = cast(arg1,outType,true,ip);
+  arg2 = cast(arg2,outType,true,ip);
+  return BinaryOperator::create(opcode,arg1,arg2,"",ip);
 }
 
-JITScalar JITVM::comparison_op(opcode op, JITScalar arg1, JITScalar arg2, string inst) {
-  scalar_class outClass;
-  outClass = type_of(arg1);
-  if (type_of(arg2) > outClass) outClass = type_of(arg2);
-  if (outClass == c_bool) outClass = c_int32;
-  JITScalar result(new_register(c_bool));
-  push_instruction(op,compute_oc_code(outClass),result,compute_ri_code(arg1,arg2),arg1,arg2);
-  return result;
-
+JITScalar JITVM::compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst) {
+//   scalar_class outClass;
+//   outClass = type_of(arg1);
+//   if (type_of(arg2) > outClass) outClass = type_of(arg2);
+//   if (outClass == c_bool) outClass = c_int32;
+//   JITScalar result(new_register(c_bool));
+//   push_instruction(op,compute_oc_code(outClass),result,compute_ri_code(arg1,arg2),arg1,arg2);
+//   return result;
 }
-#endif
 
 void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
-#if 0
   tree s(t.first());
   string symname(s.first().text());
-  JITScalar *v = find_symbol(symname);
+  JITSymbolInfo *v = symbols.findSymbol(symname);
   if (!v)
     v = add_argument(symname,m_eval,s.numchildren() == 1);
   JITScalar rhs(compile_expression(t.second(),m_eval));
   if (s.numchildren() == 1) {
-    if (type_of(*v) != type_of(rhs))
+    if (v->data_value->getType() != PointerType::get(rhs->getType()))
       throw Exception("polymorphic assignment to scalar detected.");
-    if (!isscalar(*v))
+    if (!v->is_scalar)
       throw Exception("scalar assignment to array variable.");
-    push_instruction(op_set,compute_oc_code(type_of(*v)),*v,compute_ri_code(rhs),rhs);
+    new StoreInst(v->data_value,rhs, ip);
     return;
   }
   if (s.numchildren() > 2)
     throw Exception("multiple levels of dereference not handled yet...");
-  if (isscalar(*v))
+  if (v->is_scalar)
     throw Exception("array indexing of scalar values...");
   tree q(s.second());
   if (!q.is(TOK_PARENS))
@@ -178,21 +182,27 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
   if (q.numchildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (q.numchildren() == 1) {
-    if (map_array_type(v->p()) != type_of(rhs))
+    if (v->data_value->getType() != PointerType::get(rhs->getType()))
       throw Exception("polymorphic assignment to array detected");
-    JITScalar arg1 = promote(compile_expression(q.first(),m_eval),c_int32);
-    push_instruction(op_vstore,compute_oc_code(type_of(rhs)),*v,
-		     compute_ri_code(arg1,rhs),arg1,rhs);
-  } else if (s.numchildren() == 2) {
-    if (map_array_type(v->p()) != type_of(rhs))
+    JITScalar arg1 = compile_expression(q.first(),m_eval);
+    arg1 = cast(arg1,IntegerType::get(32),false,ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
+    new StoreInst(rhs, address, false, ip);
+  } else if (q.numchildren() == 2) {
+    if (v->data_value->getType() != PointerType::get(rhs->getType()))
       throw Exception("polymorphic assignment to array detected");
-    JITScalar arg1 = promote(compile_expression(q.first(),m_eval),c_int32);
-    JITScalar arg2 = promote(compile_expression(q.second(),m_eval),c_int32);
-    push_instruction(op_mset,type_b,JITScalar(),compute_ri_code(arg1,arg2),arg1,arg2);
-    push_instruction(op_mstore,compute_oc_code(type_of(rhs)),*v,
-		     compute_ri_code(rhs,rhs),rhs);
+    JITScalar arg1 = compile_expression(q.first(),m_eval);
+    JITScalar arg2 = compile_expression(q.second(),m_eval);
+    arg1 = cast(arg1,IntegerType::get(32),false,ip);
+    arg2 = cast(arg1,IntegerType::get(32),false,ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,ConstantInt::get(Type::Int32Ty,v->num_rows),"",ip);
+    lin = BinaryOperator::create(Instruction::Add,lin,arg2,"",ip);
+    JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
+    new StoreInst(rhs, address, false, ip);
   }
-#endif
 }
 
 void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
@@ -226,8 +236,12 @@ void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
 #endif
 }
 
-#if 0
-JITScalar* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
+JITScalar JITVM::cast(JITScalar value, const Type *type, bool sgnd, BasicBlock *where, string name) {
+  return CastInst::create(CastInst::getCastOpcode(value,sgnd,type,sgnd),
+			  value, type, name, where);
+}
+
+JITSymbolInfo* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
   if (!ptr.valid())
     throw Exception("Undefined variable reference:" + name);
@@ -240,48 +254,62 @@ JITScalar* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
   if (!ptr->isScalar() && scalar)
     throw Exception("JIT requires " + name + " be a scalar");
   Array* a = &(*ptr);
-  scalar_class oclass = map_array_type((void*)a);
-  if (scalar) {
-    // We use a register to 
-    JITScalar result(new_register(oclass));
-    add_symbol(name,result);
-    JITScalar arg1;
-    switch (oclass) {
-    case c_bool:
-      arg1 = JITScalar((bool) ((const logical*)(a->getDataPointer()))[0]);
-      break;
-    case c_int32:
-      arg1 = JITScalar((int32) ArrayToInt32(*a));
-      break;      
-    case c_float:
-      arg1 = JITScalar((float) ArrayToDouble(*a));
-      break;
-    case c_double:
-      arg1 = JITScalar((double) ArrayToDouble(*a));
-      break;
-    }
-    push_instruction(op_set,compute_oc_code(oclass),result,
-		     compute_ri_code(arg1,arg1),arg1,arg1);
-  } else 
-    add_symbol(name,JITScalar((void*) a));
-  return find_symbol(name);
+  Value* t, *s;
+  // Get a 
+  switch (a->dataClass()) {
+  case FM_FUNCPTR_ARRAY:
+  case FM_CELL_ARRAY:
+  case FM_STRUCT_ARRAY:
+  case FM_LOGICAL:
+  case FM_UINT8:
+  case FM_INT8:
+  case FM_UINT16:
+  case FM_INT16:
+  case FM_UINT32:
+  case FM_UINT64:
+  case FM_INT64:
+  case FM_COMPLEX:
+  case FM_DCOMPLEX:
+  case FM_STRING:
+    throw Exception("JIT does not support");
+  case FM_INT32:
+    s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,argument_count),
+			      "",func_prolog);
+    s = new LoadInst(s, "", false, func_prolog);
+    t = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name);
+    break;
+  case FM_FLOAT:
+    s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,argument_count),
+			      "",func_prolog);
+    s = new LoadInst(s, "", false, func_prolog);
+    t = cast(s,PointerType::get(Type::FloatTy),false,func_prolog,name);
+    break;
+  case FM_DOUBLE:
+    s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,argument_count),
+			      "",func_prolog);
+    s = new LoadInst(s, "", false, func_prolog);
+    t = cast(s,PointerType::get(Type::DoubleTy),false,func_prolog,name);
+    break;
+  }
+  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,scalar,true,
+					  a->rows(),a->columns(),t));
+  argument_count++;
+  return symbols.findSymbol(name);
 }
-#endif
 
 JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
-#if 0
   string symname(t.first().text());
-  JITScalar *v = find_symbol(symname);
+  JITSymbolInfo *v = symbols.findSymbol(symname);
   if (!v)
     v = add_argument(symname,m_eval,t.numchildren() == 1);
   if (t.numchildren() == 1) {
-    if (v->isp())
+    if (!v->is_scalar)
       throw Exception("non-scalar reference returned in scalar context!");
-    return *v;
+    return new LoadInst(v->data_value, "", false, ip);
   }
   if (t.numchildren() > 2)
     throw Exception("multiple levels of dereference not handled yet...");
-  if (!v->isp())
+  if (v->is_scalar)
     throw Exception("array indexing of scalar values...");
   tree s(t.second());
   if (!s.is(TOK_PARENS))
@@ -291,37 +319,36 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   if (s.numchildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (s.numchildren() == 1) {
-    scalar_class output_type(map_array_type(v->p()));
-    JITScalar result(new_register(output_type));
-    JITScalar arg1 = promote(compile_expression(s.first(),m_eval),c_int32);
-    push_instruction(op_vload,compute_oc_code(output_type),
-		     result,compute_ri_code(*v,arg1),*v,arg1);
-    return result;
+    JITScalar arg1 = compile_expression(s.first(),m_eval);
+    arg1 = cast(arg1,IntegerType::get(32),false,ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
+    return new LoadInst(address, "", false, ip);
   } else if (s.numchildren() == 2) {
-    scalar_class output_type(map_array_type(v->p()));
-    JITScalar result(new_register(output_type));
-    JITScalar arg1 = promote(compile_expression(s.first(),m_eval),c_int32);
-    JITScalar arg2 = promote(compile_expression(s.second(),m_eval),c_int32);
-    push_instruction(op_mset,type_b,JITScalar(),compute_ri_code(arg1,arg2),arg1,arg2);
-    push_instruction(op_mload,compute_oc_code(output_type),
-		     result,compute_ri_code(*v,*v),*v);
-    return result;
+    JITScalar arg1 = compile_expression(s.first(),m_eval);
+    JITScalar arg2 = compile_expression(s.second(),m_eval);
+    arg1 = cast(arg1,IntegerType::get(32),false,ip);
+    arg2 = cast(arg1,IntegerType::get(32),false,ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,ConstantInt::get(Type::Int32Ty,v->num_rows),"",ip);
+    lin = BinaryOperator::create(Instruction::Add,lin,arg2,"",ip);
+    JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
+    return new LoadInst(address, "", false, ip);
   }
   throw Exception("dereference not handled yet...");
-#endif
 }
 
 JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
-#if 0
   switch(t.token()) {
   case TOK_VARIABLE: 
     return compile_rhs(t,m_eval);
   case TOK_INTEGER:
-    return JITScalar(ArrayToInt32(t.array()));
-  case TOK_FLOAT:
-    return JITScalar((float) ArrayToDouble(t.array()));
+    return ConstantInt::get(Type::Int32Ty,ArrayToInt32(t.array()),true);
+  case TOK_FLOAT: 
+    return ConstantFP::get(Type::FloatTy,ArrayToDouble(t.array()));
   case TOK_DOUBLE:
-    return JITScalar((double) ArrayToDouble(t.array()));
+    return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t.array()));
   case TOK_COMPLEX:
   case TOK_DCOMPLEX:
   case TOK_STRING:
@@ -330,52 +357,64 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   case TOK_MATDEF: 
   case TOK_CELLDEF: 
     throw Exception("JIT compiler does not support complex, string, END, matrix or cell defs");
-  case '+': 
-    return binary_op(op_add,compile_expression(t.first(),m_eval),
-		     compile_expression(t.second(),m_eval),"add");
+  case '+':
+    return compile_binary_op(Instruction::Add,
+			     compile_expression(t.first(),m_eval),
+			     compile_expression(t.second(),m_eval),"add");
   case '-': 
-    return binary_op(op_sub,compile_expression(t.first(),m_eval),
-		     compile_expression(t.second(),m_eval),"sub");
+    return compile_binary_op(Instruction::Sub,
+			     compile_expression(t.first(),m_eval),
+			     compile_expression(t.second(),m_eval),"sub");
   case '*': 
   case TOK_DOTTIMES: 
-    return binary_op(op_mul,compile_expression(t.first(),m_eval),
-		     compile_expression(t.second(),m_eval),"mul");
+    return compile_binary_op(Instruction::Mul,
+			     compile_expression(t.first(),m_eval),
+			     compile_expression(t.second(),m_eval),"mul");
   case '/': 
   case TOK_DOTRDIV: 
-//     return binary_div(expression(t.first(),m_eval),
-// 		      expression(t.second(),m_eval));
+    //     return binary_div(expression(t.first(),m_eval),
+    // 		      expression(t.second(),m_eval));
     throw Exception("Division is not supported yet.");
   case '\\': 
   case TOK_DOTLDIV: 
-//     return binary_div(expression(t.second(),m_eval),
-// 		      expression(t.first(),m_eval));
+    //     return binary_div(expression(t.second(),m_eval),
+    // 		      expression(t.first(),m_eval));
     throw Exception("Division is not supported yet.");
+    // FIXME: Are shortcuts handled correctly here?
   case TOK_SOR: 
   case '|':
-    return boolean_op(op_or,compile_expression(t.first(),m_eval),
-		      compile_expression(t.second(),m_eval),"or");
+    return compile_boolean_op(Instruction::Or,
+ 			      compile_expression(t.first(),m_eval),
+ 			      compile_expression(t.second(),m_eval),"or");
   case TOK_SAND: 
   case '&': 
-    return boolean_op(op_and,compile_expression(t.first(),m_eval),
-		      compile_expression(t.second(),m_eval),"and");
+    return compile_boolean_op(Instruction::And,
+			      compile_expression(t.first(),m_eval),
+			      compile_expression(t.second(),m_eval),"and");
   case '<': 
-    return comparison_op(op_lt,compile_expression(t.first(),m_eval),
-			 compile_expression(t.second(),m_eval),"lt");
+    return compile_comparison_op(t.token(),
+				 compile_expression(t.first(),m_eval),
+				 compile_expression(t.second(),m_eval),"lt");
   case TOK_LE: 
-    return comparison_op(op_le,compile_expression(t.first(),m_eval),
-			 compile_expression(t.second(),m_eval),"le");
+    return compile_comparison_op(t.token(),
+				 compile_expression(t.first(),m_eval),
+				 compile_expression(t.second(),m_eval),"le");
   case '>': 
-    return comparison_op(op_gt,compile_expression(t.first(),m_eval),
-			 compile_expression(t.second(),m_eval),"gt");
+    return compile_comparison_op(t.token(),
+				 compile_expression(t.first(),m_eval),
+				 compile_expression(t.second(),m_eval),"gt");
   case TOK_GE: 
-    return comparison_op(op_ge,compile_expression(t.first(),m_eval),
-			 compile_expression(t.second(),m_eval),"ge");
+    return compile_comparison_op(t.token(),
+				 compile_expression(t.first(),m_eval),
+				 compile_expression(t.second(),m_eval),"ge");
   case TOK_EQ: 
-    return comparison_op(op_eq,compile_expression(t.first(),m_eval),
-			 compile_expression(t.second(),m_eval),"eq");
+    return compile_comparison_op(t.token(),
+				 compile_expression(t.first(),m_eval),
+				 compile_expression(t.second(),m_eval),"eq");
   case TOK_NE: 
-    return comparison_op(op_ne,compile_expression(t.first(),m_eval),
-			 compile_expression(t.second(),m_eval),"ne");
+    return compile_comparison_op(t.token(),
+				 compile_expression(t.first(),m_eval),
+				 compile_expression(t.second(),m_eval),"ne");
   case TOK_UNARY_MINUS: 
     throw Exception("unary minus not supported yet.");
   case TOK_UNARY_PLUS: 
@@ -401,7 +440,6 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
     t.print();
     throw Exception("Unrecognized expression!");
   }
-#endif
 }
 
 void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
@@ -490,18 +528,17 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   string loop_start(t.first().second().first().text());
   string loop_stop(t.first().second().second().text());
   string loop_index(t.first().first().text());
-  // Create 4 blocks
-  BasicBlock *loopentry = new BasicBlock("for_entry",func,ip);
-  BasicBlock *loopbody = new BasicBlock("for_body",func,ip);
-  BasicBlock *looptest = new BasicBlock("for_test",func,ip);
-  BasicBlock *loopexit = new BasicBlock("for_exit",func,ip);
   // Allocate a slot for the loop index register
   JITScalar loop_index_address = new AllocaInst(IntegerType::get(32), 
-						loop_index, loopentry);
-  symbols.insertSymbol(loop_index,loop_index_address);
+						loop_index, func_prolog);
+  symbols.insertSymbol(loop_index,JITSymbolInfo(loop_index_address));
   new StoreInst(ConstantInt::get(APInt(32, loop_start, 10)), loop_index_address, 
-		false, loopentry);
-  new BranchInst(looptest, loopentry);
+		false, ip);
+  BasicBlock *loopbody = new BasicBlock("for_body",func,0);
+  BasicBlock *looptest = new BasicBlock("for_test",func,0);
+  BasicBlock *loopexit = new BasicBlock("for_exit",func,0);
+  new BranchInst(looptest, ip);
+  // Create 3 blocks
   ip = loopbody;
   compile_block(t.second(),m_eval);
   JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, loopbody);
@@ -511,6 +548,7 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
 						     "", loopbody);
   new StoreInst(next_loop_value, loop_index_address, false, loopbody);
   new BranchInst(looptest, loopbody);
+
   loop_index_value = new LoadInst(loop_index_address, "", false, looptest);
   JITScalar loop_comparison = new ICmpInst(ICmpInst::ICMP_SLT, loop_index_value,
 					   ConstantInt::get(APInt(32, loop_stop, 10)), 
@@ -520,20 +558,33 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
 }
 
 void JITVM::compile(tree t, Interpreter *m_eval) {
-
+  // The signature for the compiled function should be:
+  // int func(void** inputs);
   Module *M = new Module("test");
   std::vector<const Type*> FuncTy_0_args;
-  PointerType* Float_PointerTy = PointerType::get(Type::FloatTy);
-  FuncTy_0_args.push_back(Float_PointerTy);
-  llvm::FunctionType* FuncTy_0 = llvm::FunctionType::get(Type::VoidTy,FuncTy_0_args,false,(ParamAttrsList *)0);
+  PointerType* void_pointer = PointerType::get(IntegerType::get(8));
+  PointerType* void_pointer_pointer = PointerType::get(void_pointer);
+  FuncTy_0_args.push_back(void_pointer_pointer);
+  llvm::FunctionType* FuncTy_0 = llvm::FunctionType::get(IntegerType::get(32),
+							 FuncTy_0_args,
+							 false,
+							 (ParamAttrsList *)0);
   func = new Function(FuncTy_0,
 		      GlobalValue::ExternalLinkage,
-		      "initArray", M);
-  
+		      "initArray", M);  
   func->setCallingConv(CallingConv::C);
+  ptr_inputs = func->arg_begin();
+  ptr_inputs->setName("inputs");
   ip = 0;
+  argument_count = 0;
+  func_prolog = new BasicBlock("func_prolog",func,0);
+  func_body = new BasicBlock("func_body",func,0);
+  ip = func_body;
   compile_for_block(t,m_eval);
-  new ReturnInst(ip);
+  func_epilog = new BasicBlock("func_epilog",func,0);
+  new BranchInst(func_body,func_prolog);
+  new BranchInst(func_epilog,ip);
+  new ReturnInst(ConstantInt::get(APInt(32, "0", 10)),func_epilog);
   verifyModule(*M, PrintMessageAction);
   std::cout << *M;
   std::ofstream p("tmp.bc", ofstream::binary);

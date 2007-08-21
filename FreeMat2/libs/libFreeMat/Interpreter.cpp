@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_LLVM
+#include "JITVM.hpp"
+#endif
+
 #include "Interpreter.hpp"
 #include <math.h>
 #include <stdio.h>
@@ -40,9 +44,6 @@
 #include <fstream>
 #include <stdarg.h>
 
-#ifdef HAVE_LLVM
-#include "JITVM.hpp"
-#endif
 
 #ifdef WIN32
 #define PATHSEP ";"

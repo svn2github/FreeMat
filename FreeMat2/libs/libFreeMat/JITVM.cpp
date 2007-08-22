@@ -105,14 +105,6 @@ JITScalar JITVM::promote(JITScalar arg, scalar_class outClass) {
 }
 #endif
 
-JITScalar JITVM::compile_boolean_op(Instruction::BinaryOps op, JITScalar arg1, JITScalar arg2, string inst) {
-//   arg1 = promote(arg1,c_bool);
-//   arg2 = promote(arg2,c_bool);
-//   JITScalar result(new_register(c_bool));
-//   push_instruction(op,type_b,result,compute_ri_code(arg1,arg2),arg1,arg2);
-//   return result;
-}
-
 static inline bool isi(JITScalar arg) {
   return arg->getType()->isInteger();
 }
@@ -127,6 +119,12 @@ static inline bool isf(JITScalar arg) {
 
 static inline bool isd(JITScalar arg) {
   return (arg->getType()->getTypeID() == Type::DoubleTyID);
+}
+
+JITScalar JITVM::compile_boolean_op(Instruction::BinaryOps op, JITScalar arg1, JITScalar arg2, string inst) {
+  arg1 = cast(arg1,IntegerType::get(1),false,ip,"");
+  arg2 = cast(arg2,IntegerType::get(1),false,ip,"");
+  return BinaryOperator::create(op, arg1,arg2,"",ip);
 }
 
 // add immediate to immediate - this instruction can be replaced by 
@@ -146,28 +144,65 @@ JITScalar JITVM::compile_binary_op(BinaryOperator::BinaryOps opcode,
 }
 
 JITScalar JITVM::compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst) {
-//   scalar_class outClass;
-//   outClass = type_of(arg1);
-//   if (type_of(arg2) > outClass) outClass = type_of(arg2);
-//   if (outClass == c_bool) outClass = c_int32;
-//   JITScalar result(new_register(c_bool));
-//   push_instruction(op,compute_oc_code(outClass),result,compute_ri_code(arg1,arg2),arg1,arg2);
-//   return result;
+  const Type* outType;
+  if (arg1->getType() == arg2->getType())
+    outType = arg1->getType();
+  else if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))
+    outType = Type::DoubleTy;
+  else if ((isf(arg1) && isd(arg2)) || (isd(arg1) && isf(arg2)))
+    outType = Type::DoubleTy;
+  arg1 = cast(arg1,outType,true,ip);
+  arg2 = cast(arg2,outType,true,ip);
+  if (outType->isInteger()) {
+    switch (op) {
+    default:
+      throw Exception("Unrecognized comparison op");
+    case '<':
+      return new ICmpInst(ICmpInst::ICMP_SLT,arg1,arg2,"",ip);
+    case TOK_LE:
+      return new ICmpInst(ICmpInst::ICMP_SLE,arg1,arg2,"",ip);
+    case TOK_EQ:
+      return new ICmpInst(ICmpInst::ICMP_EQ,arg1,arg2,"",ip);
+    case TOK_GE:
+      return new ICmpInst(ICmpInst::ICMP_SGE,arg1,arg2,"",ip);
+    case '>':
+      return new ICmpInst(ICmpInst::ICMP_SGT,arg1,arg2,"",ip);
+    case TOK_NE:
+      return new ICmpInst(ICmpInst::ICMP_NE,arg1,arg2,"",ip);
+    }
+  } else {
+    switch (op) {
+    default:
+      throw Exception("Unrecognized comparison op");
+    case '<':
+      return new FCmpInst(FCmpInst::FCMP_OLT,arg1,arg2,"",ip);
+    case TOK_LE:
+      return new FCmpInst(FCmpInst::FCMP_OLE,arg1,arg2,"",ip);
+    case TOK_EQ:
+      return new FCmpInst(FCmpInst::FCMP_OEQ,arg1,arg2,"",ip);
+    case TOK_GE:
+      return new FCmpInst(FCmpInst::FCMP_OGE,arg1,arg2,"",ip);
+    case '>':
+      return new FCmpInst(FCmpInst::FCMP_OGT,arg1,arg2,"",ip);
+    case TOK_NE:
+      return new FCmpInst(FCmpInst::FCMP_ONE,arg1,arg2,"",ip);
+    }    
+  }
 }
 
 void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
   tree s(t.first());
   string symname(s.first().text());
   JITSymbolInfo *v = symbols.findSymbol(symname);
-  if (!v)
-    v = add_argument(symname,m_eval,s.numchildren() == 1);
   JITScalar rhs(compile_expression(t.second(),m_eval));
+  if (!v)
+    v = add_argument(symname,m_eval,s.numchildren() == 1,rhs);
   if (s.numchildren() == 1) {
     if (v->data_value->getType() != PointerType::get(rhs->getType()))
       throw Exception("polymorphic assignment to scalar detected.");
     if (!v->is_scalar)
       throw Exception("scalar assignment to array variable.");
-    new StoreInst(v->data_value,rhs, ip);
+    new StoreInst(rhs, v->data_value, ip);
     return;
   }
   if (s.numchildren() > 2)
@@ -199,41 +234,43 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
     JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,ConstantInt::get(Type::Int32Ty,v->num_rows),"",ip);
-    lin = BinaryOperator::create(Instruction::Add,lin,arg2,"",ip);
+    lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
     JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
     new StoreInst(rhs, address, false, ip);
   }
 }
 
 void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
-#if 0
-  vector<JITInstruction*> endInstructions;
-  JITScalar cond(compile_expression(t.first(),m_eval));
-  push_instruction(op_jif,type_i,cond,arg_ii,JITScalar((int32)(0)));
-  JITInstruction *prev_fixup = &data.back();
+  JITScalar main_cond(cast(compile_expression(t.first(),m_eval),
+			   IntegerType::get(1),false,ip,""));
+  BasicBlock *if_true = new BasicBlock("if_true",func,0);
+  BasicBlock *if_continue = new BasicBlock("if_continue",func,0);
+  BasicBlock *if_exit = new BasicBlock("if_exit",func,0);
+  new BranchInst(if_true,if_continue,main_cond,ip);
+  ip = if_true;
   compile_block(t.second(),m_eval);
-  push_instruction(op_jmp,type_i,JITScalar(0),arg_ii,JITScalar((int32)(0)));
-  endInstructions.push_back(&data.back());
+  new BranchInst(if_exit,ip);
   unsigned n=2;
   while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
-    prev_fixup->arg1 = JITScalar((int32)(data.size()));
-    JITScalar ttest(compile_expression(t.child(n).first(),m_eval));
-    push_instruction(op_jif,type_i,ttest,arg_ii,JITScalar((int32) 0));
-    prev_fixup = &data.back();
+    ip = if_continue;
+    JITScalar ttest(cast(compile_expression(t.child(n).first(),m_eval),
+			 IntegerType::get(1),false,ip,""));
+    if_true = new BasicBlock("elseif_true",func,0);
+    if_continue = new BasicBlock("elseif_continue",func,0);
+    new BranchInst(if_true,if_continue,ttest,ip);
+    ip = if_true;
     compile_block(t.child(n).second(),m_eval);
-    push_instruction(op_jmp,type_i,JITScalar(0),arg_ii,JITScalar((int32)(0)));
-    endInstructions.push_back(&data.back());
+    new BranchInst(if_exit,ip);
     n++;
   }
   if (t.last().is(TOK_ELSE)) {
-    prev_fixup->arg1 = JITScalar(data.size());
+    ip = if_continue;
     compile_block(t.last().first(),m_eval);
+    new BranchInst(if_exit,ip);
+  } else {
+    new BranchInst(if_exit,if_continue);
   }
-  int end_address = data.size();
-  for (int i=0;i<endInstructions.size();i++)
-    endInstructions[i]->arg1 = JITScalar((int32)(end_address));
-  push_instruction(op_nop,type_i,JITScalar(),arg_ii,JITScalar());
-#endif
+  ip = if_exit;
 }
 
 JITScalar JITVM::cast(JITScalar value, const Type *type, bool sgnd, BasicBlock *where, string name) {
@@ -241,10 +278,15 @@ JITScalar JITVM::cast(JITScalar value, const Type *type, bool sgnd, BasicBlock *
 			  value, type, name, where);
 }
 
-JITSymbolInfo* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar) {
+JITSymbolInfo* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar, JITScalar val) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
-  if (!ptr.valid())
-    throw Exception("Undefined variable reference:" + name);
+  if (!ptr.valid()) {
+    if (!scalar)
+      throw Exception("Undefined variable reference:" + name);
+    JITScalar new_address = new AllocaInst(val->getType(),name,func_prolog);
+    symbols.insertSymbol(name,JITSymbolInfo(new_address));
+    return symbols.findSymbol(name);
+  }
   if (!ptr->is2D())
     throw Exception("Cannot JIT multi-dimensional array:" + name);
   if (ptr->isString() || ptr->isReferenceType())
@@ -332,7 +374,7 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
     JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,ConstantInt::get(Type::Int32Ty,v->num_rows),"",ip);
-    lin = BinaryOperator::create(Instruction::Add,lin,arg2,"",ip);
+    lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
     JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
     return new LoadInst(address, "", false, ip);
   }
@@ -416,11 +458,21 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
 				 compile_expression(t.first(),m_eval),
 				 compile_expression(t.second(),m_eval),"ne");
   case TOK_UNARY_MINUS: 
-    throw Exception("unary minus not supported yet.");
+    {
+      JITScalar val(compile_expression(t.first(),m_eval));
+      return BinaryOperator::create(Instruction::Sub,
+				    Constant::getNullValue(val->getType()),
+				    val,"",ip);
+    }
   case TOK_UNARY_PLUS: 
     return compile_expression(t.first(),m_eval);
   case '~': 
-    throw Exception("unary not is not supported yet.");
+    {
+      JITScalar val(compile_expression(t.first(),m_eval));
+      val = cast(val,IntegerType::get(1),false,ip);
+      return BinaryOperator::create(Instruction::Xor,
+				    val,ConstantInt::get(Type::Int1Ty,1),"",ip);
+    }
   case '^': 
     throw Exception("^ is not currently handled by the JIT compiler");
     break;
@@ -541,13 +593,13 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   // Create 3 blocks
   ip = loopbody;
   compile_block(t.second(),m_eval);
-  JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, loopbody);
+  JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, ip);
   JITScalar next_loop_value = BinaryOperator::create(Instruction::Add,
 						     loop_index_value,
 						     ConstantInt::get(APInt(32, "1", 10)),
-						     "", loopbody);
-  new StoreInst(next_loop_value, loop_index_address, false, loopbody);
-  new BranchInst(looptest, loopbody);
+						     "", ip);
+  new StoreInst(next_loop_value, loop_index_address, false, ip);
+  new BranchInst(looptest, ip);
 
   loop_index_value = new LoadInst(loop_index_address, "", false, looptest);
   JITScalar loop_comparison = new ICmpInst(ICmpInst::ICMP_SLT, loop_index_value,

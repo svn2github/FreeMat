@@ -51,7 +51,7 @@ class JITVM {
   llvm::Value *ptr_inputs;
   llvm::Function *func;
   llvm::BasicBlock *ip, *func_prolog, *func_body, *func_epilog;
-  JITSymbolInfo* add_argument(string name, Interpreter* m_eval, bool scalar);
+  JITSymbolInfo* add_argument(string name, Interpreter* m_eval, bool scalar, JITScalar val = NULL);
   JITScalar cast(JITScalar value, const llvm::Type *type, bool sgnd, 
 		 llvm::BasicBlock* wh, string name="");
 public:

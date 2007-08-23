@@ -126,7 +126,7 @@ void HandleImage::SetupDefaults() {
   gp.push_back(1.0);
   hp->Data(gp);
   SetConstrainedStringDefault("alphadatamapping","none");
-  SetConstrainedStringDefault("cdatamapping","scaled");
+  SetConstrainedStringDefault("cdatamapping","direct");
   SetStringDefault("type","image");
   SetTwoVectorDefault("xdata",0,1);
   SetTwoVectorDefault("ydata",0,1);

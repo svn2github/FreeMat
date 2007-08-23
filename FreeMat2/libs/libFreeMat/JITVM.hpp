@@ -30,18 +30,18 @@ class JITSymbolInfo {
   int argument_index;
   bool is_scalar;
   bool is_readonly;
-  int num_rows;
-  int num_cols;
+  llvm::Value *num_rows;
+  llvm::Value *num_cols;
   llvm::Value *data_value;
+  Class inferred_type;
+  bool  type_mutable;
   // Complete constructor
-  JITSymbolInfo(bool arg, int arg_index, bool scalar, bool readonly, int rows, int cols, 
-		llvm::Value* value) :
+  JITSymbolInfo(bool arg, int arg_index, bool scalar, bool readonly, 
+		llvm::Value* rows, llvm::Value* cols, llvm::Value* value,
+		Class i_type, bool t_mutable) :
     is_argument(arg), argument_index(arg_index), is_scalar(scalar), is_readonly(readonly), 
-    num_rows(rows), num_cols(cols), data_value(value) {}
-  // Local variable constructor
-  JITSymbolInfo(llvm::Value* value) :
-    is_argument(false), argument_index(-1), is_scalar(true), is_readonly(false), 
-    num_rows(1), num_cols(1), data_value(value) {}
+    num_rows(rows), num_cols(cols), data_value(value), inferred_type(i_type),
+    type_mutable(t_mutable) {}
   friend class JITVM;
 };
 
@@ -51,7 +51,8 @@ class JITVM {
   llvm::Value *ptr_inputs;
   llvm::Function *func;
   llvm::BasicBlock *ip, *func_prolog, *func_body, *func_epilog;
-  JITSymbolInfo* add_argument(string name, Interpreter* m_eval, bool scalar, JITScalar val = NULL);
+  JITSymbolInfo* add_argument_array(string name, Interpreter* m_eval);
+  JITSymbolInfo* add_argument_scalar(string name, Interpreter* m_eval, JITScalar val = NULL, bool override = false);
   JITScalar cast(JITScalar value, const llvm::Type *type, bool sgnd, 
 		 llvm::BasicBlock* wh, string name="");
 public:

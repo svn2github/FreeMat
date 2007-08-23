@@ -9,6 +9,12 @@
 // Just for fun, mind you....
 //
 
+// For symbols, we do not want to force the optimizer to not put values in 
+// registers during the loop execution, which is what happens to scalars if
+// we pass them in as array (generic) pointers.  So what we really want is
+// for _scalars_ to be allocated locally.
+
+
 #include "JITVM.hpp"
 #include "llvm/Analysis/Verifier.h"
 #include "llvm/Bitcode/ReaderWriter.h"
@@ -155,37 +161,23 @@ JITScalar JITVM::compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, 
   arg2 = cast(arg2,outType,true,ip);
   if (outType->isInteger()) {
     switch (op) {
-    default:
-      throw Exception("Unrecognized comparison op");
-    case '<':
-      return new ICmpInst(ICmpInst::ICMP_SLT,arg1,arg2,"",ip);
-    case TOK_LE:
-      return new ICmpInst(ICmpInst::ICMP_SLE,arg1,arg2,"",ip);
-    case TOK_EQ:
-      return new ICmpInst(ICmpInst::ICMP_EQ,arg1,arg2,"",ip);
-    case TOK_GE:
-      return new ICmpInst(ICmpInst::ICMP_SGE,arg1,arg2,"",ip);
-    case '>':
-      return new ICmpInst(ICmpInst::ICMP_SGT,arg1,arg2,"",ip);
-    case TOK_NE:
-      return new ICmpInst(ICmpInst::ICMP_NE,arg1,arg2,"",ip);
+    default:      throw Exception("Unrecognized comparison op");
+    case '<':     return new ICmpInst(ICmpInst::ICMP_SLT,arg1,arg2,"",ip);
+    case TOK_LE:  return new ICmpInst(ICmpInst::ICMP_SLE,arg1,arg2,"",ip);
+    case TOK_EQ:  return new ICmpInst(ICmpInst::ICMP_EQ,arg1,arg2,"",ip);
+    case TOK_GE:  return new ICmpInst(ICmpInst::ICMP_SGE,arg1,arg2,"",ip);
+    case '>':     return new ICmpInst(ICmpInst::ICMP_SGT,arg1,arg2,"",ip);
+    case TOK_NE:  return new ICmpInst(ICmpInst::ICMP_NE,arg1,arg2,"",ip);
     }
   } else {
     switch (op) {
-    default:
-      throw Exception("Unrecognized comparison op");
-    case '<':
-      return new FCmpInst(FCmpInst::FCMP_OLT,arg1,arg2,"",ip);
-    case TOK_LE:
-      return new FCmpInst(FCmpInst::FCMP_OLE,arg1,arg2,"",ip);
-    case TOK_EQ:
-      return new FCmpInst(FCmpInst::FCMP_OEQ,arg1,arg2,"",ip);
-    case TOK_GE:
-      return new FCmpInst(FCmpInst::FCMP_OGE,arg1,arg2,"",ip);
-    case '>':
-      return new FCmpInst(FCmpInst::FCMP_OGT,arg1,arg2,"",ip);
-    case TOK_NE:
-      return new FCmpInst(FCmpInst::FCMP_ONE,arg1,arg2,"",ip);
+    default:      throw Exception("Unrecognized comparison op");
+    case '<':     return new FCmpInst(FCmpInst::FCMP_OLT,arg1,arg2,"",ip);
+    case TOK_LE:  return new FCmpInst(FCmpInst::FCMP_OLE,arg1,arg2,"",ip);
+    case TOK_EQ:  return new FCmpInst(FCmpInst::FCMP_OEQ,arg1,arg2,"",ip);
+    case TOK_GE:  return new FCmpInst(FCmpInst::FCMP_OGE,arg1,arg2,"",ip);
+    case '>':     return new FCmpInst(FCmpInst::FCMP_OGT,arg1,arg2,"",ip);
+    case TOK_NE:  return new FCmpInst(FCmpInst::FCMP_ONE,arg1,arg2,"",ip);
     }    
   }
 }
@@ -195,8 +187,12 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
   string symname(s.first().text());
   JITSymbolInfo *v = symbols.findSymbol(symname);
   JITScalar rhs(compile_expression(t.second(),m_eval));
-  if (!v)
-    v = add_argument(symname,m_eval,s.numchildren() == 1,rhs);
+  if (!v) {
+    if (s.numchildren() == 1)
+      v = add_argument_scalar(symname,m_eval,rhs,false);
+    else
+      v = add_argument_array(symname,m_eval);
+  }
   if (s.numchildren() == 1) {
     if (v->data_value->getType() != PointerType::get(rhs->getType()))
       throw Exception("polymorphic assignment to scalar detected.");
@@ -230,10 +226,12 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     JITScalar arg1 = compile_expression(q.first(),m_eval);
     JITScalar arg2 = compile_expression(q.second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg2 = cast(arg1,IntegerType::get(32),false,ip);
+    arg2 = cast(arg2,IntegerType::get(32),false,ip);
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
-    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,ConstantInt::get(Type::Int32Ty,v->num_rows),"",ip);
+    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
+					   new LoadInst(v->num_rows,"",false,ip),
+					   "",ip);
     lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
     JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
     new StoreInst(rhs, address, false, ip);
@@ -278,27 +276,39 @@ JITScalar JITVM::cast(JITScalar value, const Type *type, bool sgnd, BasicBlock *
 			  value, type, name, where);
 }
 
-JITSymbolInfo* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar, JITScalar val) {
+JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
-  if (!ptr.valid()) {
-    if (!scalar)
-      throw Exception("Undefined variable reference:" + name);
-    JITScalar new_address = new AllocaInst(val->getType(),name,func_prolog);
-    symbols.insertSymbol(name,JITSymbolInfo(new_address));
-    return symbols.findSymbol(name);
-  }
+  Class aclass = FM_FUNCPTR_ARRAY;
+  if (!ptr.valid())
+      throw Exception("Undefined (array) variable reference:" + name);
   if (!ptr->is2D())
     throw Exception("Cannot JIT multi-dimensional array:" + name);
   if (ptr->isString() || ptr->isReferenceType())
     throw Exception("Cannot JIT strings or reference types:" + name);
   if (ptr->isComplex())
     throw Exception("Cannot JIT complex arrays:" + name);
-  if (!ptr->isScalar() && scalar)
-    throw Exception("JIT requires " + name + " be a scalar");
-  Array* a = &(*ptr);
+  aclass = ptr->dataClass();
   Value* t, *s;
-  // Get a 
-  switch (a->dataClass()) {
+  Value* r_in, *c_in;
+  Value* r, *c;
+  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+1),
+			    "",func_prolog);
+  s = new LoadInst(s, "", false, func_prolog);
+  r_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_rows_in");
+  r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
+  new StoreInst(new LoadInst(r_in, "", false, func_prolog), r, false, func_prolog);
+  new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_prolog);
+  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+2),
+			    "",func_prolog);
+  s = new LoadInst(s, "", false, func_prolog);
+  c_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
+  c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
+  new StoreInst(new LoadInst(c_in, "", false, func_prolog), c, false, func_prolog);
+  new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_prolog);
+  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count),
+			    "",func_prolog);
+  s = new LoadInst(s, "", false, func_prolog);
+  switch (aclass) {
   case FM_FUNCPTR_ARRAY:
   case FM_CELL_ARRAY:
   case FM_STRUCT_ARRAY:
@@ -315,26 +325,76 @@ JITSymbolInfo* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar
   case FM_STRING:
     throw Exception("JIT does not support");
   case FM_INT32:
-    s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,argument_count),
-			      "",func_prolog);
-    s = new LoadInst(s, "", false, func_prolog);
     t = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name);
     break;
   case FM_FLOAT:
-    s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,argument_count),
-			      "",func_prolog);
-    s = new LoadInst(s, "", false, func_prolog);
     t = cast(s,PointerType::get(Type::FloatTy),false,func_prolog,name);
     break;
   case FM_DOUBLE:
-    s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,argument_count),
-			      "",func_prolog);
-    s = new LoadInst(s, "", false, func_prolog);
     t = cast(s,PointerType::get(Type::DoubleTy),false,func_prolog,name);
     break;
   }
-  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,scalar,true,
-					  a->rows(),a->columns(),t));
+  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,r,c,t,aclass,false));
+  argument_count++;
+  return symbols.findSymbol(name);
+}
+
+JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITScalar val, bool override) {
+  ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
+  Class aclass = FM_FUNCPTR_ARRAY;
+  if (!ptr.valid() || override) {
+    if (isi(val))
+      aclass = FM_INT32;
+    else if (isf(val))
+      aclass = FM_FLOAT;
+    else if (isd(val))
+      aclass = FM_DOUBLE;
+  } else {
+    if (!ptr->isScalar())
+      throw Exception("Expect " + name + " to be a scalar");
+    if (ptr->isString() || ptr->isReferenceType())
+      throw Exception("Cannot JIT strings or reference types:" + name);
+    if (ptr->isComplex())
+      throw Exception("Cannot JIT complex arrays:" + name);
+    aclass = ptr->dataClass();
+  }
+  Value* t, *s;
+  Value* r, *c;
+  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count),
+			    "",func_prolog);
+  s = new LoadInst(s, "", false, func_prolog);
+  switch (aclass) {
+  case FM_FUNCPTR_ARRAY:
+  case FM_CELL_ARRAY:
+  case FM_STRUCT_ARRAY:
+  case FM_LOGICAL:
+  case FM_UINT8:
+  case FM_INT8:
+  case FM_UINT16:
+  case FM_INT16:
+  case FM_UINT32:
+  case FM_UINT64:
+  case FM_INT64:
+  case FM_COMPLEX:
+  case FM_DCOMPLEX:
+  case FM_STRING:
+    throw Exception("JIT does not support");
+  case FM_INT32:
+    r = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_in");
+    t = new AllocaInst(IntegerType::get(32),name,func_prolog);
+    break;
+  case FM_FLOAT:
+    r = cast(s,PointerType::get(Type::FloatTy),false,func_prolog,name);
+    t = new AllocaInst(Type::FloatTy,name,func_prolog);
+    break;
+  case FM_DOUBLE:
+    r = cast(s,PointerType::get(Type::DoubleTy),false,func_prolog,name);
+    t = new AllocaInst(Type::DoubleTy,name,func_prolog);
+    break;
+  }
+  new StoreInst(new LoadInst(r, "", false, func_prolog), t, false, func_prolog);
+  new StoreInst(new LoadInst(t, "", false, func_epilog), r, false, func_epilog);
+  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,NULL,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -342,8 +402,12 @@ JITSymbolInfo* JITVM::add_argument(string name, Interpreter* m_eval, bool scalar
 JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   string symname(t.first().text());
   JITSymbolInfo *v = symbols.findSymbol(symname);
-  if (!v)
-    v = add_argument(symname,m_eval,t.numchildren() == 1);
+  if (!v) {
+    if (t.numchildren() == 1)
+      v = add_argument_scalar(symname,m_eval);
+    else
+      v = add_argument_array(symname,m_eval);
+  }
   if (t.numchildren() == 1) {
     if (!v->is_scalar)
       throw Exception("non-scalar reference returned in scalar context!");
@@ -370,10 +434,12 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     JITScalar arg1 = compile_expression(s.first(),m_eval);
     JITScalar arg2 = compile_expression(s.second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg2 = cast(arg1,IntegerType::get(32),false,ip);
+    arg2 = cast(arg2,IntegerType::get(32),false,ip);
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
-    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,ConstantInt::get(Type::Int32Ty,v->num_rows),"",ip);
+    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
+					   new LoadInst(v->num_rows,"",false,ip),
+					   "",ip);
     lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
     JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
     return new LoadInst(address, "", false, ip);
@@ -383,22 +449,17 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
 
 JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   switch(t.token()) {
-  case TOK_VARIABLE: 
-    return compile_rhs(t,m_eval);
-  case TOK_INTEGER:
-    return ConstantInt::get(Type::Int32Ty,ArrayToInt32(t.array()),true);
-  case TOK_FLOAT: 
-    return ConstantFP::get(Type::FloatTy,ArrayToDouble(t.array()));
-  case TOK_DOUBLE:
-    return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t.array()));
+  case TOK_VARIABLE:     return compile_rhs(t,m_eval);
+  case TOK_INTEGER:      return ConstantInt::get(Type::Int32Ty,ArrayToInt32(t.array()),true);
+  case TOK_FLOAT:        return ConstantFP::get(Type::FloatTy,ArrayToDouble(t.array()));
+  case TOK_DOUBLE:       return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t.array()));
   case TOK_COMPLEX:
   case TOK_DCOMPLEX:
   case TOK_STRING:
   case TOK_END:
   case ':':
   case TOK_MATDEF: 
-  case TOK_CELLDEF: 
-    throw Exception("JIT compiler does not support complex, string, END, matrix or cell defs");
+  case TOK_CELLDEF:      throw Exception("JIT compiler does not support complex, string, END, matrix or cell defs");
   case '+':
     return compile_binary_op(Instruction::Add,
 			     compile_expression(t.first(),m_eval),
@@ -473,24 +534,12 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
       return BinaryOperator::create(Instruction::Xor,
 				    val,ConstantInt::get(Type::Int1Ty,1),"",ip);
     }
-  case '^': 
-    throw Exception("^ is not currently handled by the JIT compiler");
-    break;
-  case TOK_DOTPOWER: 
-    throw Exception(".^ is not currently handled by the JIT compiler");
-    break;
-  case '\'': 
-    throw Exception("' is not currently handled by the JIT compiler");
-    break;
-  case TOK_DOTTRANSPOSE: 
-    throw Exception(".' is not currently handled by the JIT compiler");
-    break;
-  case '@':
-    throw Exception("@ is not currently handled by the JIT compiler");
-  default:
-    std::cout << "******************************************************\r\n";
-    t.print();
-    throw Exception("Unrecognized expression!");
+  case '^':               throw Exception("^ is not currently handled by the JIT compiler");
+  case TOK_DOTPOWER:      throw Exception(".^ is not currently handled by the JIT compiler");
+  case '\'':              throw Exception("' is not currently handled by the JIT compiler");
+  case TOK_DOTTRANSPOSE:  throw Exception(".' is not currently handled by the JIT compiler");
+  case '@':               throw Exception("@ is not currently handled by the JIT compiler");
+  default:                throw Exception("Unrecognized expression!");
   }
 }
 
@@ -511,42 +560,18 @@ void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
   case TOK_IF:
     compile_if_statement(t,m_eval);
     break;
-  case TOK_BREAK:
-    throw Exception("break is not currently handled by the JIT compiler");
-    break;
-  case TOK_CONTINUE:
-    throw Exception("continue is not currently handled by the JIT compiler");
-    break;
-  case TOK_DBSTEP:
-    throw Exception("dbstep is not currently handled by the JIT compiler");
-    break;
-  case TOK_DBTRACE:
-    throw Exception("dbtrace is not currently handled by the JIT compiler");
-    break;
-  case TOK_RETURN:
-    throw Exception("return is not currently handled by the JIT compiler");
-    break;
-  case TOK_SWITCH:
-    throw Exception("switch is not currently handled by the JIT compiler");
-    break;
-  case TOK_TRY:
-    throw Exception("try is not currently handled by the JIT compiler");
-    break;
-  case TOK_QUIT:
-    throw Exception("quit is not currently handled by the JIT compiler");
-    break;
-  case TOK_RETALL:
-    throw Exception("retall is not currently handled by the JIT compiler");
-    break;
-  case TOK_KEYBOARD:
-    throw Exception("keyboard is not currently handled by the JIT compiler");
-    break;
-  case TOK_GLOBAL:
-    throw Exception("global is not currently handled by the JIT compiler");
-    break;
-  case TOK_PERSISTENT:
-    throw Exception("persistent is not currently handled by the JIT compiler");
-    break;
+  case TOK_BREAK:       throw Exception("break is not currently handled by the JIT compiler");
+  case TOK_CONTINUE:    throw Exception("continue is not currently handled by the JIT compiler");
+  case TOK_DBSTEP:      throw Exception("dbstep is not currently handled by the JIT compiler");
+  case TOK_DBTRACE:     throw Exception("dbtrace is not currently handled by the JIT compiler");
+  case TOK_RETURN:      throw Exception("return is not currently handled by the JIT compiler");
+  case TOK_SWITCH:      throw Exception("switch is not currently handled by the JIT compiler");
+  case TOK_TRY:         throw Exception("try is not currently handled by the JIT compiler");
+  case TOK_QUIT:        throw Exception("quit is not currently handled by the JIT compiler");
+  case TOK_RETALL:      throw Exception("retall is not currently handled by the JIT compiler");
+  case TOK_KEYBOARD:    throw Exception("keyboard is not currently handled by the JIT compiler");
+  case TOK_GLOBAL:      throw Exception("global is not currently handled by the JIT compiler");
+  case TOK_PERSISTENT:  throw Exception("persistent is not currently handled by the JIT compiler");
   case TOK_EXPR:
     compile_expression(t.first(),m_eval);
     break;
@@ -581,9 +606,8 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   string loop_stop(t.first().second().second().text());
   string loop_index(t.first().first().text());
   // Allocate a slot for the loop index register
-  JITScalar loop_index_address = new AllocaInst(IntegerType::get(32), 
-						loop_index, func_prolog);
-  symbols.insertSymbol(loop_index,JITSymbolInfo(loop_index_address));
+  JITSymbolInfo* v = add_argument_scalar(loop_index,m_eval,ConstantInt::get(APInt(32, loop_start, 10)),true);
+  JITScalar loop_index_address = v->data_value;
   new StoreInst(ConstantInt::get(APInt(32, loop_start, 10)), loop_index_address, 
 		false, ip);
   BasicBlock *loopbody = new BasicBlock("for_body",func,0);
@@ -602,7 +626,7 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   new BranchInst(looptest, ip);
 
   loop_index_value = new LoadInst(loop_index_address, "", false, looptest);
-  JITScalar loop_comparison = new ICmpInst(ICmpInst::ICMP_SLT, loop_index_value,
+  JITScalar loop_comparison = new ICmpInst(ICmpInst::ICMP_SLE, loop_index_value,
 					   ConstantInt::get(APInt(32, loop_stop, 10)), 
 					   "", looptest);
   new BranchInst(loopbody, loopexit, loop_comparison, looptest);
@@ -631,9 +655,9 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   argument_count = 0;
   func_prolog = new BasicBlock("func_prolog",func,0);
   func_body = new BasicBlock("func_body",func,0);
+  func_epilog = new BasicBlock("func_epilog",func,0);
   ip = func_body;
   compile_for_block(t,m_eval);
-  func_epilog = new BasicBlock("func_epilog",func,0);
   new BranchInst(func_body,func_prolog);
   new BranchInst(func_epilog,ip);
   new ReturnInst(ConstantInt::get(APInt(32, "0", 10)),func_epilog);
@@ -642,6 +666,18 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   std::ofstream p("tmp.bc", ofstream::binary);
   WriteBitcodeToFile(M,p);
   p.close();
+
+  stringVector argumentList(symbols.getCompletions(""));
+  for (int i=0;i<argumentList.size();i++) {
+    JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
+    if (v) {
+      std::cout << "Argument  " << argumentList[i];
+      std::cout << " Index " << v->argument_index;
+      std::cout << " Scalar " << v->is_scalar;
+      std::cout << " Inferred " << v->inferred_type;
+      std::cout << " Mutable " << v->type_mutable << "\r\n";
+    }
+  }
 }
 
 #if 0

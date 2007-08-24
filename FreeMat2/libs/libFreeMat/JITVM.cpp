@@ -1,10 +1,10 @@
 // Still need:
 
 //  Type promotion on loop entry.
-//  Range checking.
 //  Dynamic array resizing.
 //
-
+//  Range checking.
+//
 //
 // Just for fun, mind you....
 //
@@ -290,24 +290,31 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   aclass = ptr->dataClass();
   Value* t, *s;
   Value* r_in, *c_in;
-  Value* r, *c;
+  Value* r_val, *c_val;
+  Value* r, *c, *l;
   s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+1),
 			    "",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
-  r_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_rows_in");
+  r_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,
+	      name+"_rows_in");
+  r_val = new LoadInst(r_in, "", false, func_prolog);
   r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
-  new StoreInst(new LoadInst(r_in, "", false, func_prolog), r, false, func_prolog);
+  new StoreInst(r_val, r, false, func_prolog);
   new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_prolog);
   s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+2),
 			    "",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
   c_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
+  c_val = new LoadInst(c_in, "", false, func_prolog);
   c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
-  new StoreInst(new LoadInst(c_in, "", false, func_prolog), c, false, func_prolog);
+  new StoreInst(c_val, c, false, func_prolog);
   new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_prolog);
   s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count),
 			    "",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
+  l = new AllocaInst(IntegerType::get(32),name+"_count",func_prolog);
+  new StoreInst(BinaryOperator::create(Instruction::Mul,c_val,r_val,"",func_prolog),
+		l,false,func_prolog);
   switch (aclass) {
   case FM_FUNCPTR_ARRAY:
   case FM_CELL_ARRAY:
@@ -334,7 +341,8 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
     t = cast(s,PointerType::get(Type::DoubleTy),false,func_prolog,name);
     break;
   }
-  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,r,c,t,aclass,false));
+  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
+					  r,c,l,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -394,7 +402,8 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
   }
   new StoreInst(new LoadInst(r, "", false, func_prolog), t, false, func_prolog);
   new StoreInst(new LoadInst(t, "", false, func_epilog), r, false, func_epilog);
-  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,NULL,t,aclass,false));
+  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,
+					  NULL,NULL,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -427,7 +436,22 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   if (s.numchildren() == 1) {
     JITScalar arg1 = compile_expression(s.first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,
+				  ConstantInt::get(APInt(32,"1",10)),"",ip);
+    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,
+				      arg1,ConstantInt::get(Type::Int32Ty,0),"",ip);
+    Value* over_range = new ICmpInst(ICmpInst::ICMP_SGE,
+				     arg1,
+				     new LoadInst(v->num_length,"",false,ip),
+				     "",ip);
+    Value* out_range = BinaryOperator::create(Instruction::Or,
+ 					      under_range,over_range,"",ip);
+    BasicBlock *bb1 = new BasicBlock("",func,0);
+    BasicBlock *bb2 = new BasicBlock("",func,0);
+    new BranchInst(bb1, bb2, out_range, ip);
+    new StoreInst(ConstantInt::get(Type::Int32Ty,1),return_val,false,bb1);
+    new BranchInst(func_epilog,bb1);
+    ip = bb2;
     JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
     return new LoadInst(address, "", false, ip);
   } else if (s.numchildren() == 2) {
@@ -437,6 +461,32 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    Value* under_range_1 = new ICmpInst(ICmpInst::ICMP_SLT,
+					arg1,ConstantInt::get(Type::Int32Ty,0),"",ip);
+    Value* under_range_2 = new ICmpInst(ICmpInst::ICMP_SLT,
+					arg2,ConstantInt::get(Type::Int32Ty,0),"",ip);
+    Value* over_range_1 = new ICmpInst(ICmpInst::ICMP_SGE,
+				       arg1,
+				       new LoadInst(v->num_rows,"",false,ip),
+				       "",ip);
+    Value* over_range_2 = new ICmpInst(ICmpInst::ICMP_SGE,
+				       arg2,
+				       new LoadInst(v->num_cols,"",false,ip),
+				       "",ip);
+    Value* out_range = BinaryOperator::create(Instruction::Or,
+					      BinaryOperator::create(Instruction::Or,
+								     under_range_1,
+								     under_range_2,"",ip),
+					      BinaryOperator::create(Instruction::Or,
+								     over_range_1,
+								     over_range_2,"",ip),
+					      "",ip);
+    BasicBlock *bb1 = new BasicBlock("",func,0);
+    BasicBlock *bb2 = new BasicBlock("",func,0);
+    new BranchInst(bb1, bb2, out_range, ip);
+    new StoreInst(ConstantInt::get(Type::Int32Ty,1),return_val,false,bb1);
+    new BranchInst(func_epilog,bb1);
+    ip = bb2;
     JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
 					   new LoadInst(v->num_rows,"",false,ip),
 					   "",ip);
@@ -656,11 +706,13 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   func_prolog = new BasicBlock("func_prolog",func,0);
   func_body = new BasicBlock("func_body",func,0);
   func_epilog = new BasicBlock("func_epilog",func,0);
+  return_val = new AllocaInst(IntegerType::get(32),"return_code",func_prolog);
+  new StoreInst(ConstantInt::get(Type::Int32Ty,0),return_val,false,func_prolog);
   ip = func_body;
   compile_for_block(t,m_eval);
   new BranchInst(func_body,func_prolog);
   new BranchInst(func_epilog,ip);
-  new ReturnInst(ConstantInt::get(APInt(32, "0", 10)),func_epilog);
+  new ReturnInst(new LoadInst(return_val, "", false, func_epilog),func_epilog);
   verifyModule(*M, PrintMessageAction);
   std::cout << *M;
   std::ofstream p("tmp.bc", ofstream::binary);

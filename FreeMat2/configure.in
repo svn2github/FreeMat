@@ -270,7 +270,7 @@ AC_ARG_WITH([llvm],
 
 if (test "$use_llvm" = "yes"); then
    CXXFLAGS="`llvm-config --cxxflags` $CXXFLAGS"
-   LIBS="`llvm-config --libs bitwriter jit engine interpreter` $LIBS";
+   LIBS="`llvm-config --libs all bitwriter jit engine interpreter` $LIBS";
    LDFLAGS="`llvm-config --ldflags` $LDFLAGS";
    AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
 fi

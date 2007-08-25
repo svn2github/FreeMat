@@ -1822,15 +1822,19 @@ void Interpreter::forStatement(const tree &t) {
   // Try to compile this for statement to an instruction stream
   if (jitcontrol) {
 #ifdef HAVE_LLVM
+    JITVM jit;
+    bool success = false;
     try {
-      JITVM jit;
-      //      jit.compile_for_block(t,this);
-      //      jit.dump(std::cout);
       jit.compile(t,this);
-      return;
+      success = true;
     } catch (Exception &e) {
       t.print();
       std::cout << e.getMessageCopy() << "\r\n";
+      success = false;
+    }
+    if (success) {
+      jit.run(this);
+      return;
     }
 #endif
   }

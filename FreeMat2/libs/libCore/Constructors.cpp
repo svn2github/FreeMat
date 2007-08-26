@@ -138,7 +138,7 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
 //   y = zeros(d1,d2,...,dn).
 //@]
 //The resulting array has the given dimensions, and is filled with
-//all zeros.  The type of @|y| is @|float|, a 32-bit floating
+//all zeros.  The type of @|y| is @|double|, a 64-bit floating
 //point array.  To get arrays of other types, use the typecast 
 //functions (e.g., @|uint8|, @|int8|, etc.).  An alternative syntax
 //is to use the following notation:
@@ -202,7 +202,7 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
   Array t, s;
   Dimensions dims;
   int32 *dp;
-  Class cls = FM_FLOAT;
+  Class cls = FM_DOUBLE;
   int i;
   // Trim out the classname if it was specified
   ArrayVector trim_arg(arg);

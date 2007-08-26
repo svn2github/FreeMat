@@ -195,6 +195,7 @@ class FMEditor : public QMainWindow {
 public:
   FMEditor(Interpreter* eval);
   virtual ~FMEditor();
+  void loadFile(const QString& filename);
 private:
   void createActions();
   void createMenus();
@@ -202,7 +203,6 @@ private:
   void createStatusBar();
   bool maybeSave();
   bool saveFile(const QString& filename);
-  void loadFile(const QString& filename);
   void setCurrentFile(const QString& filename);
   QString strippedName(const QString& fullfilename);
   FMTextEdit *currentEditor();

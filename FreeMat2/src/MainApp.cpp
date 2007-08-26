@@ -35,6 +35,7 @@
 #include "HandleList.hpp"
 #include "Interpreter.hpp"
 #include "HandleWindow.hpp"
+#include "PathSearch.hpp"
 
 HandleList<Interpreter*> m_threadHandles;
 
@@ -201,6 +202,62 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   edit->raise();
   return ArrayVector();
 }
+
+//!
+//@Module EDIT Open Editor Window
+//@@Section FREEMAT
+//@@Usage
+//Brings up the editor window.  The arguments of @|edit| function  
+//are names of files for editing:
+//@[
+//  edit file1 file2 file3
+//@]
+//!
+ArrayVector EditFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  static FMEditor *edit= NULL;
+  //Open the editor
+  if (edit == NULL) {
+    edit = new FMEditor(eval);
+    QObject::connect(eval, SIGNAL(RefreshBPLists()), edit,
+        SLOT(RefreshBPLists()));
+    QObject::connect(eval, SIGNAL(ShowActiveLine()), edit,
+        SLOT(ShowActiveLine()));
+    // Because of the threading setup, we need the keymanager to relay commands
+    // from the editor to the interpreter.  
+    QObject::connect(edit, SIGNAL(EvaluateText(QString)),
+        m_app->GetKeyManager(), SLOT(QueueMultiString(QString)));
+  }
+  
+  if (edit ) {
+    //Load files listed in the command line
+    for (int i=0; i<arg.size(); ++i ) {
+      if (arg[i].isString()) {
+        string fname = arg[i].getContentsAsString();
+
+        FuncPtr val;
+        bool isFun = eval->getContext()->lookupFunction(fname,val);
+        if (isFun && (val->type() == FM_M_FUNCTION)) {
+          //if file is a matlab file get the file name from the interpreter
+          MFunctionDef* mfun = (MFunctionDef*)val;
+          if( mfun )
+            fname = mfun->fileName;
+        }
+        else {
+          //otherwise try to find it in the path
+          PathSearcher psearch(eval->getTotalPath());
+          fname = psearch.ResolvePath( fname );
+        }
+        edit->loadFile(QString::fromStdString(fname));
+      } else {
+        throw Exception("Illegal file name");
+      }
+    }
+  }
+  edit->showNormal();
+  edit->raise();
+  return ArrayVector();
+}
+
 
 void MainApp::Editor() {
   ArrayVector dummy;
@@ -783,6 +840,7 @@ void LoadThreadFunctions(Context *context) {
   context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"x",NULL);
   context->addGfxFunction("clc",ClcFunction,0,0,NULL);
   context->addGfxSpecialFunction("editor",EditorFunction,0,0,NULL);
+  context->addGfxSpecialFunction("edit",EditFunction,-1,0,NULL);
 }
 
 void MainApp::EnableRepaint() {

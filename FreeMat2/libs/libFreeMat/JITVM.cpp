@@ -16,6 +16,7 @@
 
 
 #include "JITVM.hpp"
+#ifdef HAVE_LLVM
 #include "llvm/Analysis/Verifier.h"
 #include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/Pass.h"
@@ -731,3 +732,4 @@ void JITVM::run(Interpreter *m_eval) {
     throw Exception("Index exceeds variable dimensions");
 }
 
+#endif

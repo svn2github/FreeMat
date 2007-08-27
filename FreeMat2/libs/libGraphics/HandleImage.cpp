@@ -126,7 +126,12 @@ void HandleImage::SetupDefaults() {
   gp.push_back(1.0);
   hp->Data(gp);
   SetConstrainedStringDefault("alphadatamapping","none");
-  SetConstrainedStringDefault("cdatamapping","direct");
+  SetConstrainedStringDefault("cdatamapping","scaled");
+  // Eugene pointed out that this should be "direct" to match
+  // MATLAB's behavior, but for images with range [1...N],
+  // where N is the number of entries in the colormap, "scaled"
+  // and "direct" should yield the same result.
+  //  SetConstrainedStringDefault("cdatamapping","direct");
   SetStringDefault("type","image");
   SetTwoVectorDefault("xdata",0,1);
   SetTwoVectorDefault("ydata",0,1);

@@ -1,18 +1,13 @@
 // Still need:
 
-//  Type promotion on loop entry (and scalar variables)
 //  Dynamic array resizing.
 //
 //  Range checking.
+//  Type promotion on loop entry (and scalar variables)
 //
 //
 // Just for fun, mind you....
 //
-
-// For symbols, we do not want to force the optimizer to not put values in 
-// registers during the loop execution, which is what happens to scalars if
-// we pass them in as array (generic) pointers.  So what we really want is
-// for _scalars_ to be allocated locally.
 
 
 #include "JITVM.hpp"
@@ -129,8 +124,18 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
   if (q.numchildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (q.numchildren() == 1) {
-    if (v->data_value->getType() != PointerType::get(rhs->getType()))
-      throw Exception("polymorphic assignment to array detected");
+    if (v->data_value->getType() != PointerType::get(rhs->getType())) {
+      // Handle type promotion.  The only case that I can think of 
+      // (with int, float and double) is if the destination array is
+      // double, in which case, we can promote the RHS to type double
+      const Type* array_type = v->data_value->getType();
+      const PointerType* p_array = dynamic_cast<const PointerType*>(array_type);
+      if (p_array && p_array->getElementType()->getTypeID() == 
+	  Type::DoubleTyID) {
+	rhs = cast(rhs,p_array->getElementType(),true,ip,"");
+      } else 
+	throw Exception("polymorphic assignment to array detected");
+    }
     JITScalar arg1 = compile_expression(q.first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);

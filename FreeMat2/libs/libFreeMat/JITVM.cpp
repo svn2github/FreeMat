@@ -1,6 +1,11 @@
 // Still need:
 
-//  Dynamic array resizing.
+//  Dynamic array resizing.  The current approach is not the best.  Since we no longer cache the
+//  addresses and sizes of the arrays in local variables, the best approach is to have the
+//  v_resize function use the actual Array class interface to resize the arrays.  This avoids
+//  the problems with memory references and leaks.  On the other hand, it does mean that the
+//  v_resize function will have to be a member of the JITVM class.  Or at least, it will have
+//  to proxy to such a function.
 //
 //  Range checking.
 //  Type promotion on loop entry (and scalar variables)
@@ -138,6 +143,30 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     }
     JITScalar arg1 = compile_expression(q.first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
+    // Add code to check the address against the bounds and resize if necessary
+    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,
+				      arg1,ConstantInt::get(Type::Int32Ty,1),"",ip);
+    BasicBlock *bb1 = new BasicBlock("under_range",func,0);
+    BasicBlock *bb2 = new BasicBlock("not_under_range",func,0);
+    new BranchInst(bb1,bb2,under_range,ip);
+    new StoreInst(ConstantInt::get(Type::Int32Ty,2),return_val,false,bb1);
+    new BranchInst(func_epilog,bb1);
+    Value* over_range = new ICmpInst(ICmpInst::ICMP_SGT,
+				     arg1,new LoadInst(v->num_length,"",false,bb2),"",bb2); 
+    BasicBlock *bb3 = new BasicBlock("need_resize",func,0);
+    BasicBlock *bb4 = new BasicBlock("valid_range",func,0);
+    new BranchInst(bb3,bb4,over_range,bb2);
+    // Need to resize 
+    // OK - First, get a pointer to the 
+    std::vector<Value*> resize_args;
+    resize_args.push_back(new GetElementPtrInst(ptr_inputs,
+						ConstantInt::get(Type::Int32Ty,3*v->argument_index),"",bb3));
+    resize_args.push_back(arg1);
+    // FIXME - typedef
+    resize_args.push_back(ConstantInt::get(Type::Int32Ty,8));
+    new CallInst(resize_func_ptr, &resize_args[0], 3, "", bb3);
+    new BranchInst(bb4,bb3);
+    ip = bb4;
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
     JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
     new StoreInst(rhs, address, false, ip);
@@ -219,17 +248,17 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   r_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,
 	      name+"_rows_in");
   r_val = new LoadInst(r_in, "", false, func_prolog);
-  r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
-  new StoreInst(r_val, r, false, func_prolog);
-  new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_epilog);
+//   r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
+//   new StoreInst(r_val, r, false, func_prolog);
+//   new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_epilog);
   s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+2),
 			    "",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
   c_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
   c_val = new LoadInst(c_in, "", false, func_prolog);
-  c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
-  new StoreInst(c_val, c, false, func_prolog);
-  new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_epilog);
+//   c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
+//   new StoreInst(c_val, c, false, func_prolog);
+//   new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_epilog);
   s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count),
 			    "",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
@@ -263,7 +292,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
     break;
   }
   symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
-					  r,c,l,t,aclass,false));
+					  r_in,c_in,l,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -604,25 +633,48 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   ip = loopexit;
 }
 
+// FIXME - Memory leak
+void v_resize(void** f, int r_new, int size) {
+  char* p = (char*) calloc(r_new,size);
+  int* r = (int*) f[1];
+  int* c = (int*) f[2];
+  memcpy(p,f[0],(*r)*(*c)*size);
+  *r = r_new;
+  *c = 1;
+  //  free(f[0]);
+  f[0] = p;
+}
 
 void JITVM::compile(tree t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
   M = new Module("test");
-  std::vector<const Type*> FuncTy_0_args;
+  std::vector<const Type*> DispatchFuncArgs;
   PointerType* void_pointer = PointerType::get(IntegerType::get(8));
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);
-  FuncTy_0_args.push_back(void_pointer_pointer);
-  llvm::FunctionType* FuncTy_0 = llvm::FunctionType::get(IntegerType::get(32),
-							 FuncTy_0_args,
-							 false,
-							 (ParamAttrsList *)0);
-  func = new Function(FuncTy_0,
+  PointerType* int32_pointer = PointerType::get(IntegerType::get(32));
+  std::vector<const Type*> ResizeFuncArgs;
+  ResizeFuncArgs.push_back(void_pointer_pointer);
+  ResizeFuncArgs.push_back(IntegerType::get(32));
+  ResizeFuncArgs.push_back(IntegerType::get(32));
+  ResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
+				   ResizeFuncArgs,false,
+				   (ParamAttrsList *) 0);
+  DispatchFuncArgs.push_back(void_pointer_pointer);
+  DispatchFuncArgs.push_back(PointerType::get(ResizeFuncTy));
+  llvm::FunctionType* DispatchFuncType = llvm::FunctionType::get(IntegerType::get(32),
+								 DispatchFuncArgs,
+								 false,
+								 (ParamAttrsList *)0);
+  func = new Function(DispatchFuncType,
 		      GlobalValue::ExternalLinkage,
 		      "initArray", M);  
   func->setCallingConv(CallingConv::C);
-  ptr_inputs = func->arg_begin();
+  Function::arg_iterator args = func->arg_begin();
+  ptr_inputs = args++;
   ptr_inputs->setName("inputs");
+  resize_func_ptr = args;
+  resize_func_ptr->setName("resize_func");
   ip = 0;
   argument_count = 0;
   func_prolog = new BasicBlock("func_prolog",func,0);
@@ -699,7 +751,7 @@ void JITVM::run(Interpreter *m_eval) {
   // Collect the list of arguments
   stringVector argumentList(symbols.getCompletions(""));
   // Allocate the argument array
-  void** args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
+  void **args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
   // For each argument in the array, retrieve it from the interpreter
   for (int i=0;i<argumentList.size();i++) {
     JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
@@ -730,8 +782,23 @@ void JITVM::run(Interpreter *m_eval) {
   ExecutionEngine* EE = ExecutionEngine::create(MP, false);
   std::vector<GenericValue> GVargs;
   GVargs.push_back(GenericValue(args));
+  GVargs.push_back(GenericValue((void*) &v_resize));
   GenericValue gv = EE->runFunction(func,GVargs);
   delete EE;
+
+  for (int i=0;i<argumentList.size();i++) {
+    JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
+    if (v) {
+      ArrayReference ptr(m_eval->getContext()->lookupVariable(argumentList[i]));
+      if (args[3*v->argument_index] != (void*) ptr->getReadWriteDataPointer()) {
+	m_eval->getContext()->insertVariable(argumentList[i],
+					     Array(v->inferred_type,
+						   Dimensions(*((int*)(args[3*v->argument_index+1])),
+							      *((int*)(args[3*v->argument_index+2]))),
+						   args[3*v->argument_index]));
+      }
+    }
+  }
 
   if (gv.IntVal == 1)
     throw Exception("Index exceeds variable dimensions");

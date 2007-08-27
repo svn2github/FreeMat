@@ -11,6 +11,7 @@
 #include "llvm/ModuleProvider.h"
 #include "llvm/CallingConv.h"
 #include "llvm/Value.h"
+#include "llvm/Function.h"
 #include "llvm/ExecutionEngine/JIT.h"
 #include "llvm/ExecutionEngine/Interpreter.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
@@ -50,10 +51,11 @@ class JITSymbolInfo {
 class JITVM {
   SymbolTable<JITSymbolInfo> symbols;
   int argument_count;
-  llvm::Value *ptr_inputs;
+  llvm::Value *ptr_inputs, *resize_func_ptr;
   llvm::Function *func;
   llvm::BasicBlock *ip, *func_prolog, *func_body, *func_epilog;
   llvm::Module *M;
+  llvm::FunctionType *ResizeFuncTy;
   JITScalar return_val;
   JITSymbolInfo* add_argument_array(string name, Interpreter* m_eval);
   JITSymbolInfo* add_argument_scalar(string name, Interpreter* m_eval, JITScalar val = NULL, bool override = false);

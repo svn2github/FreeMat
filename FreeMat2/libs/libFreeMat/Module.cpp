@@ -45,7 +45,7 @@ void ClearLibs(Interpreter* eval) {
 
 //!
 //@Module LOADLIB Load Library Function
-//@@Section FREEMAT
+//@@Section EXTERNAL
 //@@Usage
 //The @|loadlib| function allows a function in an external library
 //to be added to FreeMat dynamically.  This interface is generally
@@ -205,7 +205,7 @@ char* parseBoundsCheck(const char* &cp) {
 
 //!
 //@Module IMPORT Foreign Function Import
-//@@Section FREEMAT
+//@@Section EXTERNAL
 //@@Usage
 //The import function allows you to call functions that are compiled into
 //shared libraries, as if they were FreeMat functions. The usage is

@@ -51,6 +51,7 @@ class JITSymbolInfo {
 class JITVM {
   SymbolTable<JITSymbolInfo> symbols;
   int argument_count;
+  vector<ArrayReference> array_inputs;
   llvm::Value *ptr_inputs, *resize_func_ptr;
   llvm::Function *func;
   llvm::BasicBlock *ip, *func_prolog, *func_body, *func_epilog;
@@ -77,6 +78,7 @@ public:
   void compile_block(tree t, Interpreter *m_eval);
   void compile(tree t, Interpreter *m_eval);
   void run(Interpreter *m_eval);
+  static void v_resize_arg(int argnum, int new_rows);
 };
 
 #endif

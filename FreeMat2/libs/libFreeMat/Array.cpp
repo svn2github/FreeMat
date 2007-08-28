@@ -622,6 +622,12 @@ void Array::resize(Dimensions& a) {
     reshape(newSize);
     return;
   }
+  if (!dp) {
+    void *dst_data = allocateArray(dataClass(),newSize.getElementCount(),
+				   fieldNames());
+    setData(dataClass(),newSize,dst_data,sparse(),fieldNames(),className());
+    return;
+  }
   if (sparse()) {
     setData(dataClass(),newSize,
 		CopyResizeSparseMatrix(dataClass(),
@@ -3456,8 +3462,6 @@ void Array::setNDimContentsAsList(ArrayVector& index, ArrayVector& rdata, Interp
  * Set the contents of a field in a structure.
  */
 void Array::setFieldAsList(std::string fieldName, ArrayVector& rdata)  {
-  if (sparse())
-    throw Exception("setFieldAsList not supported for sparse arrays.");
   Array *rp = NULL;
   if (isEmpty()) {
     rvstring names(fieldNames());
@@ -3468,6 +3472,8 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& rdata)  {
     //       setData(FM_STRUCT_ARRAY,dimensions(),NULL,names);
     //       return;
   }
+  if (sparse())
+    throw Exception("setFieldAsList not supported for sparse arrays.");
   if (dataClass() != FM_STRUCT_ARRAY)
     throw Exception("Cannot apply A.field_name = B to non struct-array object A.");
   if (rdata.size() < getLength())

@@ -258,7 +258,10 @@ public:
 		      bool sparseflag = false, 
 		      rvstring fields = rvstring(),
 		      rvstring classname = rvstring()) {
-    dp->putData(aClass,dims,s,sparseflag,fields,classname);
+    if (dp)
+      dp->putData(aClass,dims,s,sparseflag,fields,classname);
+    else 
+      dp = new Data(aClass,dims,s,sparseflag,fields,classname);
   }
 
 
@@ -366,7 +369,7 @@ public:
    */
   const bool isRealAllZeros() const;
   inline const bool sparse() const {
-    return (dp->sparse());
+    return (dp && dp->sparse());
   }
   void makeSparse();
   void makeDense();
@@ -445,7 +448,7 @@ public:
    * Returns TRUE if we are an integer class.
    */
   inline const bool isIntegerClass() const {
-    return (dp->dataClass() < FM_FLOAT);
+    return ((dp->dataClass() < FM_FLOAT) && (dp->dataClass() >= FM_LOGICAL));
   }
   inline bool isColumnVector() const {
     return (is2D() && columns() == 1);

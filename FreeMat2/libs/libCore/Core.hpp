@@ -243,5 +243,11 @@ ArrayVector MatLoadFunction(int nargout, string filename, rvstring varnames,
 ArrayVector MatSaveFunction(string filename, rvstring varnames,
 			    Interpreter *eval);
 ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
+ArrayVector CstructDefineFunction(int nargout, const ArrayVector& arg);
+ArrayVector CstructDescribeFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
+ArrayVector CstructFreezeFunction(int nargout, const ArrayVector& arg);
+ArrayVector CstructThawFunction(int nargout, const ArrayVector& arg);
+ArrayVector CenumDefineFunction(int nargout, const ArrayVector& arg);
+ArrayVector CenumDescribeFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 void SwapBuffer(char* cp, int count, int elsize);
 #endif

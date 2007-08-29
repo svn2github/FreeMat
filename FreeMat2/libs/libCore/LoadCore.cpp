@@ -240,12 +240,11 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("htmlread",HTMLReadFunction,1,1,"filename",NULL);
   context->addFunction("urlwrite",URLWriteFunction,3,1,"url","filename","timeout",NULL);
   context->addFunction("p_end",EndFunction,3,1,"x","n","dims",NULL);
-  context->addFunction("cstructdefine",CstructDefineFunction,-1,0,NULL);
-  context->addFunction("cstructfreeze",CstructFreezeFunction,2,1,"s","type",NULL);
-  context->addFunction("cstructthaw",CstructThawFunction,2,1,"x","type",NULL);
-  context->addSpecialFunction("cstructdescribe",CstructDescribeFunction,1,0,"type",NULL);
-  context->addFunction("cenumdefine",CenumDefineFunction,-1,0,NULL);
-  context->addSpecialFunction("cenumdescribe",CenumDescribeFunction,1,0,"type",NULL);
+  context->addFunction("ctypedefine",CtypeDefineFunction,-1,0,NULL);
+  context->addFunction("ctypesize",CtypeSizeFunction,2,1,"type","count",NULL);
+  context->addSpecialFunction("ctypefreeze",CtypeFreezeFunction,2,1,"s","type",NULL);
+  context->addSpecialFunction("ctypethaw",CtypeThawFunction,3,2,"x","type","count",NULL);
+  context->addSpecialFunction("ctypeprint",CtypePrintFunction,1,0,"type",NULL);
   InitializeFileSubsystem();
 #ifdef USE_MPI
   LoadMPIFunctions(context);

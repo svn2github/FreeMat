@@ -75,34 +75,139 @@
 
 using namespace std;
 
-class CenumPair {
-  string name;
-  int value;
+// Base of the type system
+class Ctype {
+  // Nothing interesting here...
 public:
-  CenumPair(string i_name, int i_value) : name(i_name),
-						value(i_value) {}
-  CenumPair() {}
-  string getName() {return name;}
-  int getValue() {return value;}
+  virtual ~Ctype() {}
+  virtual void print(Interpreter *m_eval) = 0;
+  virtual void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) = 0;
+  virtual Array thaw(QByteArray& input, int length, Interpreter* m_eval) = 0;
+  virtual size_t size(int length) = 0;
 };
 
-class Cenum : public vector<CenumPair> {
-  public:
-  string lookup(int n) {
-    for (int i=0;i<size();i++)
-      if (at(i).getValue() == n) 
-	return at(i).getName();
-    return "unknown";
+// Type table
+class CTable : public map<string, Ctype*> {
+public:
+  bool contains(string name) {
+    return (count(name) > 0);
   }
-  
-  int rlookup(string v) {
-    for (int i=0;i<size();i++)
-      if (at(i).getName() == v)
-	return at(i).getValue();
-    return 0;
+  Ctype* lookup(string name) {
+    if (!contains(name)) throw Exception("Request for lookup of unknown type " + name);
+    return find(name)->second; 
+  }
+  void add(string name, Ctype* val) {
+    if (count(name) > 0) {
+      delete find(name)->second;
+    }
+    (*this)[name] = val;
+  }
+  CTable();
+};
+
+static CTable CtypeTable;
+
+
+// A builtin type
+class Cbuiltin : public Ctype {
+  Class dataClass;
+  size_t t_size;
+public:
+  Cbuiltin(Class i_Class, size_t i_size) : dataClass(i_Class), t_size(i_size) {}
+  Class getDataClass() { return dataClass; }
+  size_t getSize() { return t_size;}
+  void print(Interpreter *m_eval) {
+    m_eval->outputMessage("built in\n");
+  }
+  void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
+    s.promoteType(dataClass);
+    if (s.getLength() != length)
+      throw Exception("field length mismatch");
+    const char *cp = (const char*) s.getDataPointer();
+    for (int i=0;i<length*t_size;i++)
+      out.push_back(cp[i]);
+  }
+  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
+    char* dp = (char*) Array::allocateArray(dataClass,length);
+    int bytecount = length*t_size;
+    if (input.size() < bytecount)
+      throw Exception("source buffer is too short");
+    for (int i=0;i<bytecount;i++) 
+      dp[i] = input.at(i);
+    input.remove(0,bytecount);
+    return Array::Array(dataClass, Dimensions(1,length), dp);
+  }
+  size_t size(int length) {
+    return (length*t_size);
   }
 };
 
+// An enumerated type
+class Cenum : public Ctype {
+  map<int,string> elementsByInt;
+  map<string,int> elementsByName;
+public:
+  string lookupByNumber(int n) {
+    if (elementsByInt.count(n) == 0) return "unknown";
+    return elementsByInt.find(n)->second;
+  }
+  int lookupByName(string name) {
+    if (elementsByName.count(name) == 0) return 0;
+    return elementsByName.find(name)->second;
+  }
+  void addPair(string name, int value) {
+    elementsByInt[value] = name;
+    elementsByName[name] = value;
+  }
+  void print(Interpreter *m_eval) {
+    m_eval->outputMessage("enumeration\n");
+    for (map<int,string>::const_iterator i=elementsByInt.begin();
+	 i != elementsByInt.end(); i++) 
+      m_eval->outputMessage("  " + i->second + " : " + i->first + "\n");
+  }
+  void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
+    if (s.isIntegerClass() && !s.isString() && (s.getLength() == length)) {
+      CtypeTable.lookup("int32")->freeze(out,s,length,m_eval);
+      return;
+    }
+    if (length == 1) {
+      if (!s.isString()) throw Exception("Expected string for enumerated type");
+      CtypeTable.lookup("int32")->freeze(out,Array::int32Constructor(lookupByName(ArrayToString(s))),
+					 1,m_eval);
+    } else {
+      if (s.dataClass() != FM_CELL_ARRAY) 
+	throw Exception("Expected a cell array of strings for enumerated type");
+      if (s.getLength() != length)
+	throw Exception("Length mismatch between cell array of strings and requested enumerated type");
+      const Array *dp = (const Array *) s.getDataPointer();
+      for (int i=0;i<length;i++) {
+	if (dp[i].isIntegerClass() && !dp[i].isString()) 
+	  CtypeTable.lookup("int32")->freeze(out,s,length,m_eval);
+	else if (dp[i].isString()) 
+	  CtypeTable.lookup("int32")->freeze(out,
+					     Array::int32Constructor(lookupByName(ArrayToString(dp[i]))),
+					     1,m_eval);
+	else 
+	  throw Exception("Expected strings as elements of cell array for enumerated type");
+      }
+    }
+  }
+  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
+    Array values(CtypeTable.lookup("int32")->thaw(input,length,m_eval));
+    if (length == 1)
+      return Array::stringConstructor(lookupByNumber(ArrayToInt32(values)));
+    const int32* dp = (const int32*) values.getDataPointer();
+    ArrayVector vals;
+    for (int i=0;i<length;i++) 
+      vals << Array::stringConstructor(lookupByNumber(dp[i]));
+    return Array::cellConstructor(vals);
+  }
+  size_t size(int length) {
+    return CtypeTable.lookup("int32")->size(length);
+  }
+};
+
+// Field in a structure
 class CstructField {
   string name;
   string type;
@@ -117,409 +222,534 @@ public:
   int getLength() {return length;}
 };
 
-typedef vector<CstructField> CstructFields;
+// Structure type
+class Cstruct : public Ctype {
+  vector<CstructField*> fields;
+public:
+  int getFieldCount() {return fields.size();}
+  CstructField* getField(int num) {return fields[num];}
+  void addField(CstructField* fld) {fields.push_back(fld);}
+  void print(Interpreter *m_eval) {
+    m_eval->outputMessage("struct\n");
+    for (int i=0;i<fields.size();i++) 
+      m_eval->outputMessage("  " + fields[i]->getName() + "   " + 
+			    fields[i]->getType() + "[" + 
+			    fields[i]->getLength() + "]\n");
+  }
+  void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
+    int s_count = s.getLength();
+    if (s_count != length)
+      throw Exception("Length mismatch between expected structure array count and actual array count");
+    for (int m=0;m<s_count;m++) {
+      Array m_index(Array::int32Constructor(m+1));
+      Array s_el(s.getVectorSubset(m_index,m_eval));
+      for (int i=0;i<fields.size();i++) 
+	CtypeTable.lookup(fields[i]->getType())->freeze(out,s_el,1,m_eval);
+    }
+  }
+  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
+    Array t;
+    for (int m=0;m<length;m++) {
+      rvstring names;
+      ArrayVector values;
+      for (int i=0;i<fields.size();i++) {
+	names << fields[i]->getName();
+	values << CtypeTable.lookup(fields[i]->getType())->thaw(input,fields[i]->getLength(),m_eval);
+      }
+      Array s(Array::structConstructor(names,values));
+      if (t.isEmpty()) {
+	t = s;
+      } else {
+	Array m_index(Array::int32Constructor(m+1));
+	t.setVectorSubset(m_index,s,m_eval);
+      }
+    }
+    return t;
+  }
+  size_t size(int length) {
+    size_t accum = 0;
+    for (int i=0;i<fields.size();i++)
+      accum += CtypeTable.lookup(fields[i]->getType())->size(fields[i]->getLength());
+    return accum*length;
+  }
+};
 
-map<string, CstructFields> CstructTable;
-map<string, Cenum> CenumTable;
+// Alias type
+class Calias : public Ctype {
+  string alias;
+public:
+  Calias(string i_alias) : alias(i_alias) {}
+  string getAlias() {return alias;}
+  void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
+    CtypeTable.lookup(alias)->freeze(out,s,length,m_eval);
+  }
+  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
+    return CtypeTable.lookup(alias)->thaw(input,length,m_eval);
+  }
+  size_t size(int length) {
+    return CtypeTable.lookup(alias)->size(length);
+  }
+  void print(Interpreter *m_eval) {
+    m_eval->outputMessage("alias to " + alias + "\n");
+  }
+};
+
+CTable::CTable() {
+  add("uint8",new Cbuiltin(FM_UINT8,sizeof(uint8)));
+  add("uint16",new Cbuiltin(FM_UINT16,sizeof(uint16)));
+  add("uint32",new Cbuiltin(FM_UINT32,sizeof(uint32)));
+  add("uint64",new Cbuiltin(FM_UINT64,sizeof(uint64)));
+  add("int8",new Cbuiltin(FM_INT8,sizeof(int8)));
+  add("int16",new Cbuiltin(FM_INT16,sizeof(int16)));
+  add("int32",new Cbuiltin(FM_INT32,sizeof(int32)));
+  add("int64",new Cbuiltin(FM_INT64,sizeof(int64)));
+  add("float",new Cbuiltin(FM_FLOAT,sizeof(float)));
+  add("double",new Cbuiltin(FM_DOUBLE,sizeof(double)));
+}
+
 
 //!
-//@Module CENUMDEFINE Define C Enumeration
+//@Module CTYPEDEFINE Define C Type
 //@@Section EXTERNAL
 //@@Usage
-//The @|cstructenum| function allows you to work with C structs that
-//use enumerations as element members in a much cleaner way than 
-//having to hard code the various constants into your FreeMat scripts.
-//The usage for this function is 
+//The @|ctypedefine| function allows you to define C types for use
+//with FreeMat.  Three variants of C types can be used.  You can
+//use structures, enumerations, and aliases (typedefs).  All three are defined
+//through a single function @|ctypedefine|.  The general syntax for
+//its use is
 //@[
-//  cenumdefine(typename,name1,value1,name2,value2,...)
+//  ctypedefine(typeclass,typename,...)
+//@]
+//where @|typeclass| is the variant of the type (legal values are
+//@|'struct'|, @|'alias'|, @|'enum'|).  The second argument is the
+//name of the C type.  The remaining arguments depend on what the
+//class of the typedef is.  
+//
+//To define a C structure, use the @|'struct'| type class.  The usage
+//in this case is:
+//@[
+//  ctypedefine('struct',typename,field1,type1,field2,type2,...)
+//@]
+//The argument @|typename| must be a valid identifier string.  Each of
+//of the @|field| arguments is also a valid identifier string that 
+//describe in order, the elements of the C structure.  The @|type| arguments
+//are @|typespecs|.  They can be of three types:
+//\begin{itemize}
+//\item Built in types, e.g. @|'uint8'| or @|'double'| to name a couple of
+//      examples.
+//\item C types that have previously been defined with a call to 
+//      @|ctypedefine|, e.g. @|'mytype'| where @|'mytype'| has already been
+//      defined through a call to @|ctypedefine|.
+//\item Arrays of either built in types or previously defined C types
+//      with the length of the array coded as an integer in square brackets, 
+//      for example: @|'uint8[10]'| or @|'double[1000]'|.
+//\end{itemize}
+//
+//To define a C enumeration, use the @|'enum'| type class.  The usage
+//in this case is:
+//  ctypedefine('enum',typename,name1,value1,name2,value2,...)
 //@]
 //The argument @|typename| must be a valid identifier string.  Each of the
 //@|name| arguments must also be valid identifier strings that describe
 //the possible values that the enumeration can take an, and their corresponding
 //integer values.  Note that the names should be unique.  The behavior of
 //the various @|cenum| functions is undefined if the names are not unique.
+//
+//To define a C alias (or typedef), use the following form of @|ctypedefine|:
+//@[
+//  ctypedefine('alias',typename,aliased_typename)
+//@]
+//where @|aliased_typename| is the type that is being aliased to.
 //!
-ArrayVector CenumDefineFunction(int nargout, const ArrayVector& arg) {
+ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) return ArrayVector();
-  string tname = ArrayToString(arg[0]);
-  int cnt = 1;
-  Cenum enumDef;
-  while (cnt < arg.size()) {
-    string ftype = ArrayToString(arg[cnt]);
-    if (arg.size() < (cnt+1))
-      throw Exception("Expecting value for enum name " + ftype);
-    int fvalue = ArrayToInt32(arg[cnt+1]);
-    enumDef.push_back(CenumPair(ftype,fvalue));
-    cnt += 2;
+  if (arg.size() < 3) throw Exception("ctypedefine requires at least three arguments - the typeclass ('struct','alias','enum'), the typename, and some type definition information");
+  string tclass = ArrayToString(arg[0]);
+  if (tclass == "enum") {
+    string tname = ArrayToString(arg[1]);
+    int cnt = 2;
+    Cenum *enumDef = new Cenum;
+    while (cnt < arg.size()) {
+      string ftype = ArrayToString(arg[cnt]);
+      if (arg.size() < (cnt+1))
+	throw Exception("Expecting value for enum name " + ftype);
+      int fvalue = ArrayToInt32(arg[cnt+1]);
+      enumDef->addPair(ftype,fvalue);
+      cnt += 2;
+    }
+    CtypeTable.add(tname,enumDef);
+  } else if (tclass == "struct") {
+    string tname = ArrayToString(arg[1]);
+    int cnt = 2;
+    Cstruct *new_struct = new Cstruct;
+    while (cnt < arg.size()) {
+      string ftype = ArrayToString(arg[cnt]);
+      if (arg.size() < (cnt+1))
+	throw Exception("Expecting typespec for fieldname " + ftype);
+      string ttypespec = ArrayToString(arg[cnt+1]);
+      string ttype;
+      int tlength;
+      if (ttypespec.find('[') != ttypespec.npos) {
+	int left_brace = ttypespec.find('[');
+	int right_brace = ttypespec.find(']');
+	ttype = ttypespec.substr(0,left_brace);
+	tlength = atoi(ttypespec.substr(left_brace+1,right_brace-left_brace-1).c_str());
+      } else {
+	ttype = ttypespec;
+	tlength = 1;
+      }
+      if (!CtypeTable.contains(ttype)) 
+	throw Exception("type " + ttype + " is not defined");
+      new_struct->addField(new CstructField(ftype,ttype,tlength));
+      cnt += 2;
+    }
+    CtypeTable.add(tname,new_struct);
+  } else if (tclass == "alias") {
+    string tname = ArrayToString(arg[1]);
+    string aname = ArrayToString(arg[2]);
+    if (!CtypeTable.contains(aname))
+      throw Exception("type " + aname + " is not defined");
+    CtypeTable.add(tname,new Calias(aname));
   }
-  CenumTable[tname] = enumDef;
   return ArrayVector();
 }
 
 //!
-//@Module CENUMDESCRIBE Describe C Enumeration
+//@Module CTYPEPRINT Print C Type
 //@@Section EXTERNAL
 //@@Usage
-//The @|cenumdescribe| function dumps the current values for an enumeration
-//to the current console.  The enumeration must have been defined using the
-//@|cenumdefine| function.  The usage is 
+//The @|ctypeprint| function prints a C type on the console.  The 
+//usage is
 //@[
-//  cenumdescribe(typename)
+//  ctypeprint(typename)
 //@]
-//where @|typename| is a string containing the name of the C enumeration to
-//describe.
+//where @|typename| is a string containing the name of the C type to print.
+//Depending on the class of the C type (e.g., structure, alias or enumeration)
+//the @|ctypeprint| function will dump information about the type definition.
 //!
-ArrayVector CenumDescribeFunction(int nargout, const ArrayVector& arg, Interpreter *m_eval) {
+ArrayVector CtypePrintFunction(int nargout, const ArrayVector& arg, Interpreter *m_eval) {
   if (arg.size() < 1) return ArrayVector();
   string tname = ArrayToString(arg[0]);
-  if (CenumTable.count(tname) == 0) {
+  if (!CtypeTable.contains(tname)) {
     m_eval->outputMessage("cenum " + tname + " not in table");
     return ArrayVector();
   }
-  Cenum fields(CenumTable.find(tname)->second);
-  m_eval->outputMessage("cenum " + tname + "\n");
-  for (int i=0;i<fields.size();i++)
-    m_eval->outputMessage("  " + fields[i].getName() + " : " + fields[i].getValue() + "\n");
+  m_eval->outputMessage("ctype: " + tname + " ");
+  CtypeTable.lookup(tname)->print(m_eval);
   return ArrayVector();  
 }
 
+
+// // If the field is in INT32 form already, just store it
+// static void CstructFreezeEnum(QByteArray& output, Array s, Cenum& tenum, int length) {
+//   if (s.isIntegerClass() && !s.isString() && (s.getLength() == length)) {
+//     CstructFreezeElementalType(output,s,"int32",length);
+//     return;
+//   }
+//   if (length == 1) {
+//     if (!s.isString()) throw Exception("Expected string for enumerated type");
+//     int32 val(tenum.rlookup(ArrayToString(s)));
+//     WriteBytes(output,&val,sizeof(int32));
+//   } else {
+//     if (s.dataClass() != FM_CELL_ARRAY) 
+//       throw Exception("Expected a cell array of strings for enumerated type");
+//     if (s.getLength() != length)
+//       throw Exception("Length mismatch between cell array of strings and requested enumerated type");
+//     const Array *dp = (const Array *) s.getDataPointer();
+//     for (int i=0;i<length;i++) {
+//       if (dp[i].isIntegerClass() && !dp[i].isString()) {
+// 	CstructFreezeElementalType(output,dp[i],"int32",1);
+//       } else if (dp[i].isString()) {
+// 	int32 val(tenum.rlookup(ArrayToString(dp[i])));
+// 	WriteBytes(output,&val,sizeof(int32));
+//       } else 
+// 	throw Exception("Expected strings as elements of cell array for enumerated type");
+//     }
+//   }
+// }
+
+// static void CstructFreezeField(QByteArray& output, Array s, string ttype, int length,
+// 			       Interpreter* m_eval) {
+//   if (CstructElementalType(ttype))
+//     CstructFreezeElementalType(output,s,ttype,length);
+//   else if (CenumTable.count(ttype) != 0) {
+//     CstructFreezeEnum(output,s,CenumTable.find(ttype)->second,length);
+//   } else {
+//     // Lookup the type
+//     if (CstructTable.count(ttype) == 0)
+//       throw Exception("unable to find a C struct definition for type " + ttype);
+//     CstructFreezeStruct(output,s,CstructTable.find(ttype)->second,length,m_eval);
+//   }
+// }
+
+// static void CstructFreezeStruct(QByteArray& output, Array s, CstructFields& fields, 
+// 				int length, Interpreter* m_eval) {
+//   int s_count = s.getLength();
+//   if (s_count != length)
+//     throw Exception("Length mismatch between expected structure array count and actual array count");
+//   for (int m=0;m<s_count;m++) {
+//     Array m_index(Array::int32Constructor(m+1));
+//     Array s_el(s.getVectorSubset(m_index,m_eval));
+//     for (int i=0;i<fields.size();i++) 
+//       CstructFreezeField(output,s_el.getField(fields[i].getName()),
+// 			 fields[i].getType(),fields[i].getLength(),
+// 			 m_eval);
+//   }
+// }
+
+// static void CtypeFreeze(QByteArray& output, Array s, Ctype* v, int length, Interpreter* m_eval) {
+//   if (typeid(*v) == typeid(Cbuiltin))
+//     CtypeFreezeElemental(output,s,dynamic_cast<Cbuiltin*>(v),length,m_eval);
+//   else if (typeid(*v) == typeid(Cenum))
+//     CtypeFreezeEnum(output,s,dynamic_cast<Cenum*>(v),length,m_eval);
+// }
+
+// static Array ReadBytes(QByteArray& input, int len, int size, Class dclass) {
+//   char* dp = (char*) Array::allocateArray(dclass,len);
+//   int bytecount = len*size;
+//   if (input.size() < bytecount)
+//     throw Exception("source buffer is too short");
+//   for (int i=0;i<bytecount;i++) 
+//     dp[i] = input.at(i);
+//   input.remove(0,bytecount);
+//   return Array::Array(dclass, Dimensions(1,len), dp);
+// }
+
+// static Array CstructThawElementalType(QByteArray& input, string ttype, int length) {
+//   if (ttype == "int8")
+//     return ReadBytes(input, length, sizeof(int8), FM_INT8);
+//   else if (ttype == "uint8")
+//     return ReadBytes(input, length, sizeof(uint8), FM_UINT8);
+//   else if (ttype == "int16")
+//     return ReadBytes(input, length, sizeof(int16), FM_INT16);
+//   else if (ttype == "uint16")
+//     return ReadBytes(input, length, sizeof(uint16), FM_UINT16);
+//   else if (ttype == "int32")
+//     return ReadBytes(input, length, sizeof(int32), FM_INT32);
+//   else if (ttype == "uint32")
+//     return ReadBytes(input, length, sizeof(uint32), FM_UINT32);
+//   else if (ttype == "int64")
+//     return ReadBytes(input, length, sizeof(int64), FM_INT64);
+//   else if (ttype == "uint64")
+//     return ReadBytes(input, length, sizeof(uint64), FM_UINT64);
+//   else if (ttype == "float")
+//     return ReadBytes(input, length, sizeof(float), FM_FLOAT);
+//   else if (ttype == "double")
+//     return ReadBytes(input, length, sizeof(double), FM_DOUBLE);
+// }
+
+// static Array CstructThawEnum(QByteArray& input, Cenum& data, int length) {
+//   const int32* dp = (const int32*) values.getDataPointer();
+//   ArrayVector vals;
+//   for (int i=0;i<length;i++) {
+//     vals << Array::stringConstructor(data.lookup(dp[i]));
+//   }
+//   return Array::cellConstructor(vals);
+// }
+
+// static Array CstructThawStruct(QByteArray& input, CstructFields& fields, int length, 
+// 			       Interpreter *m_eval);
+
+// static Array CstructThawField(QByteArray& input, string ttype, int length, 
+// 			      Interpreter *m_eval) {
+//   if (CstructElementalType(ttype))
+//     return CstructThawElementalType(input,ttype,length);
+//   else if (CenumTable.count(ttype) != 0) {
+//     return CstructThawEnum(input,CenumTable.find(ttype)->second,length);
+//   } else {
+//     // Lookup the type
+//     if (CstructTable.count(ttype) == 0)
+//       throw Exception("unable to find a C struct definition for type " + ttype);
+//     return CstructThawStruct(input,CstructTable.find(ttype)->second,length,m_eval);
+//   }
+// }
+
+// static Array CstructThawStruct(QByteArray& input, CstructFields& fields, int length,
+// 			       Interpreter *m_eval) {
+//   Array t;
+//   for (int m=0;m<length;m++) {
+//     rvstring names;
+//     ArrayVector values;
+//     for (int i=0;i<fields.size();i++) {
+//       names << fields[i].getName();
+//       values << CstructThawField(input,fields[i].getType(),fields[i].getLength(),m_eval);
+//     }
+//     Array s(Array::structConstructor(names,values));
+//     if (t.isEmpty()) {
+//       t = s;
+//     } else {
+//       Array m_index(Array::int32Constructor(m+1));
+//       t.setVectorSubset(m_index,s,m_eval);
+//     }
+//   }
+//   return t;
+// }
+
+// static int CstructSizeElementalType(string ttype, int length) {
+//   if (ttype == "int8")
+//     return sizeof(int8)*length;
+//   else if (ttype == "uint8")
+//     return sizeof(uint8)*length;
+//   else if (ttype == "int16")
+//     return sizeof(int16)*length;
+//   else if (ttype == "uint16")
+//     return sizeof(uint16)*length;
+//   else if (ttype == "int32")
+//     return sizeof(int32)*length;
+//   else if (ttype == "uint32")
+//     return sizeof(uint32)*length;
+//   else if (ttype == "int64")
+//     return sizeof(int64)*length;
+//   else if (ttype == "uint64")
+//     return sizeof(uint64)*length;
+//   else if (ttype == "float")
+//     return sizeof(float)*length;
+//   else if (ttype == "double")
+//     return sizeof(double)*length;
+//   return 0;
+// }
+
+// static int CstructSizeEnum() {
+//   return sizeof(int);
+// }
+
+// static int CstructSize(CstructFields& fields, int length);
+
+// static int CstructSizeField(string ttype, int length) {
+//   if (CstructElementalType(ttype))
+//     return CstructSizeElementalType(ttype,length);
+//   else if (CenumTable.count(ttype) != 0) 
+//     return CstructSizeEnum()*length;
+//   else {
+//     if (CstructTable.count(ttype) == 0)
+//       throw Exception("unable to find a C struct definition for type " + ttype);
+//     return CstructSize(CstructTable.find(ttype)->second,length);
+//   }
+//   return 0;
+// }
+
+// static int CstructSize(CstructFields& fields, int length) {
+//   int bytecount = 0;
+//   for (int i=0;i<fields.size();i++) {
+//     bytecount += CstructSizeField(fields[i].getType(),fields[i].getLength());
+//   }
+//   return bytecount*length;
+// }
+
 //!
-//@Module CSTRUCTDEFINE Define a C Structure
+//@Module CTYPEFREEZE Convert FreeMat Structure to C Type
 //@@Section EXTERNAL
 //@@Usage
-//The @|cstructdefine| function is paired with two other functions,
-//@|cstructthaw| and @|cstructfreeze|.  These three functions together
-//provide a simple, but powerful way to pass data between FreeMat and
-//C libraries.  The usage is
-//@[
-//  cstructdefine(typename,field1,type1,field2,type2,...)
-//@]
-//The argument @|typename| must be a valid identifier string.  Each of
-//of the @|field| arguments is also a valid identifier string that 
-//describe in order, the elements of the C structure.  The @|type| arguments
-//are @|typespecs|.  They can be of four types:
-//\begin{itemize}
-//\item Built in types, e.g. @|'uint8'| or @|'double'| to name a couple of
-//      examples.
-//\item Cstruct types that have previously been or will be defined with a call to 
-//      @|cstructdefine|, e.g. @|'mytype'| where @|'mytype'| has already been
-//      defined through a call to @|cstructdefine|.
-//\item Arrays of either built in types or previously defined Cstruct types
-//      with the length of the array coded as an integer in square brackets, 
-//      for example: @|'uint8[10]'| or @|'double[1000]'|.
-//\item Arrays of variable length, with the length of the array coded as an 
-//      element of the structure itself, e.g. @|'uint8[length]'|.  Typically
-//      these dynamic arrays appear at the end of the C structure.
-//\item Enumerated types, as defined by @|cenumdefine|, or arrays of such types.
-//\end{itemize}
-//Note that if @|'typename'| is defined as both a struct and an enumeration
-//(not a good practice) then the exact behavior of the @|cstruct| functions
-//is not defined.  Current practice is to look for a structure definition first,
-//and then look for an enumeration definition, but this is subject to change.
-//!
-ArrayVector CstructDefineFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1) return ArrayVector();
-  string tname = ArrayToString(arg[0]);
-  int cnt = 1;
-  CstructFields fields;
-  while (cnt < arg.size()) {
-    string ftype = ArrayToString(arg[cnt]);
-    if (arg.size() < (cnt+1))
-      throw Exception("Expecting typespec for fieldname " + ftype);
-    string ttypespec = ArrayToString(arg[cnt+1]);
-    string ttype;
-    int tlength;
-    if (ttypespec.find('[') != ttypespec.npos) {
-      int left_brace = ttypespec.find('[');
-      int right_brace = ttypespec.find(']');
-      ttype = ttypespec.substr(0,left_brace);
-      tlength = atoi(ttypespec.substr(left_brace+1,right_brace-left_brace-1).c_str());
-    } else {
-      ttype = ttypespec;
-      tlength = 1;
-    }
-    fields.push_back(CstructField(ftype,ttype,tlength));
-    cnt += 2;
-  }
-  CstructTable[tname] = fields;
-  return ArrayVector();
-}
-
-//!
-//@Module CSTRUCTDESCRIBE Describe a C Structure
-//@@Section EXTERNAL
-//@@Usage
-//The @|cstructdescribe| function can describe the internal type information 
-//for a C struct as defined using the @|cstructdefine| function.  The usage
-//is
-//@[
-//  cstructdescribe(typename)
-//@]
-//where @|typename| is a string containing the name of the C struct to describe.
-//!
-ArrayVector CstructDescribeFunction(int nargout, const ArrayVector& arg, Interpreter *m_eval) {
-  if (arg.size() < 1) return ArrayVector();
-  string tname = ArrayToString(arg[0]);
-  if (CstructTable.count(tname) == 0) {
-    m_eval->outputMessage("cstruct " + tname + " not in table");
-    return ArrayVector();
-  }
-  CstructFields fields(CstructTable.find(tname)->second);
-  m_eval->outputMessage("cstruct " + tname + "\n");
-  for (int i=0;i<fields.size();i++)
-    m_eval->outputMessage("  " + fields[i].getName() + "     " + fields[i].getType() + "["
-			  + fields[i].getLength() + "]\n");
-  return ArrayVector();
-}
-
-static bool CstructElementalType(string ttype) {
-  return ((ttype == "int8") || (ttype == "uint8") || (ttype == "int16") || (ttype == "uint16") ||
-	  (ttype == "int32") || (ttype == "uint32") || (ttype == "int64") || (ttype == "uint64") ||
-	  (ttype == "double") || (ttype == "float"));
-}
-
-static void WriteBytes(QByteArray& output, const void *dp, int len) {
-  const char *cp = (const char*) dp;
-  for (int i=0;i<len;i++)
-    output.push_back(cp[i]);
-}
-
-
-static void CstructFreezeElementalType(QByteArray& output, Array s, string ttype, int length) {
-  if (ttype == "int8") {
-    s.promoteType(FM_INT8);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(int8));
-  } else if (ttype == "uint8") {
-    s.promoteType(FM_UINT8);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(uint8));
-  } else if (ttype == "int16") {
-    s.promoteType(FM_INT16);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(int16));
-  } else if (ttype == "uint16") {
-    s.promoteType(FM_UINT16);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(uint16));
-  } else if (ttype == "int32") {
-    s.promoteType(FM_INT32);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(int32));
-  } else if (ttype == "uint32") {
-    s.promoteType(FM_UINT32);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(uint32));
-  } else if (ttype == "int64") {
-    s.promoteType(FM_INT64);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(int64));
-  } else if (ttype == "uint64") {
-    s.promoteType(FM_UINT64);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(uint64));
-  } else if (ttype == "float") {
-    s.promoteType(FM_FLOAT);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(float));
-  } else if (ttype == "double") {
-    s.promoteType(FM_DOUBLE);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
-    WriteBytes(output,s.getDataPointer(),length*sizeof(double));
-  }
-}
-
-static void CstructFreezeStruct(QByteArray& output, Array s, CstructFields& fields);
-
-// If the field is in INT32 form already, just store it
-static void CstructFreezeEnum(QByteArray& output, Array s, Cenum& tenum, int length) {
-  if (s.isIntegerClass() && !s.isString() && (s.getLength() == length)) {
-    CstructFreezeElementalType(output,s,"int32",length);
-    return;
-  }
-  if (length == 1) {
-    if (!s.isString()) throw Exception("Expected string for enumerated type");
-    int32 val(tenum.rlookup(ArrayToString(s)));
-    WriteBytes(output,&val,sizeof(int32));
-  } else {
-    if (s.dataClass() != FM_CELL_ARRAY) 
-      throw Exception("Expected a cell array of strings for enumerated type");
-    if (s.getLength() != length)
-      throw Exception("Length mismatch between cell array of strings and requested enumerated type");
-    const Array *dp = (const Array *) s.getDataPointer();
-    for (int i=0;i<length;i++) {
-      if (dp[i].isIntegerClass() && !dp[i].isString()) {
-	CstructFreezeElementalType(output,dp[i],"int32",1);
-      } else if (dp[i].isString()) {
-	int32 val(tenum.rlookup(ArrayToString(dp[i])));
-	WriteBytes(output,&val,sizeof(int32));
-      } else 
-	throw Exception("Expected strings as elements of cell array for enumerated type");
-    }
-  }
-}
-
-static void CstructFreezeField(QByteArray& output, Array s, string ttype, int length) {
-  if (CstructElementalType(ttype))
-    CstructFreezeElementalType(output,s,ttype,length);
-  else if (CenumTable.count(ttype) != 0) {
-    CstructFreezeEnum(output,s,CenumTable.find(ttype)->second,length);
-  } else {
-    // Lookup the type
-    if (CstructTable.count(ttype) == 0)
-      throw Exception("unable to find a C struct definition for type " + ttype);
-    CstructFreezeStruct(output,s,CstructTable.find(ttype)->second);
-  }
-}
-
-static void CstructFreezeStruct(QByteArray& output, Array s, CstructFields& fields) {
-  for (int i=0;i<fields.size();i++) 
-    CstructFreezeField(output,s.getField(fields[i].getName()),
-			  fields[i].getType(),fields[i].getLength());
-}
-
-static Array ReadBytes(QByteArray& input, int len, int size, Class dclass) {
-  char* dp = (char*) Array::allocateArray(dclass,len);
-  int bytecount = len*size;
-  if (input.size() < bytecount)
-    throw Exception("source buffer is too short");
-  for (int i=0;i<bytecount;i++) 
-    dp[i] = input.at(i);
-  input.remove(0,bytecount);
-  return Array::Array(dclass, Dimensions(1,len), dp);
-}
-
-static Array CstructThawElementalType(QByteArray& input, string ttype, int length) {
-  if (ttype == "int8")
-    return ReadBytes(input, length, sizeof(int8), FM_INT8);
-  else if (ttype == "uint8")
-    return ReadBytes(input, length, sizeof(uint8), FM_UINT8);
-  else if (ttype == "int16")
-    return ReadBytes(input, length, sizeof(int16), FM_INT16);
-  else if (ttype == "uint16")
-    return ReadBytes(input, length, sizeof(uint16), FM_UINT16);
-  else if (ttype == "int32")
-    return ReadBytes(input, length, sizeof(int32), FM_INT32);
-  else if (ttype == "uint32")
-    return ReadBytes(input, length, sizeof(uint32), FM_UINT32);
-  else if (ttype == "int64")
-    return ReadBytes(input, length, sizeof(int64), FM_INT64);
-  else if (ttype == "uint64")
-    return ReadBytes(input, length, sizeof(uint64), FM_UINT64);
-  else if (ttype == "float")
-    return ReadBytes(input, length, sizeof(float), FM_FLOAT);
-  else if (ttype == "double")
-    return ReadBytes(input, length, sizeof(double), FM_DOUBLE);
-}
-
-static Array CstructThawEnum(QByteArray& input, Cenum& data, int length) {
-  Array values(ReadBytes(input,length,sizeof(int32),FM_INT32));
-  if (length == 1)
-    return Array::stringConstructor(data.lookup(ArrayToInt32(values)));
-  const int32* dp = (const int32*) values.getDataPointer();
-  ArrayVector vals;
-  for (int i=0;i<length;i++) {
-    vals << Array::stringConstructor(data.lookup(dp[i]));
-  }
-  return Array::cellConstructor(vals);
-}
-
-static Array CstructThawStruct(QByteArray& input, CstructFields& fields);
-
-static Array CstructThawField(QByteArray& input, string ttype, int length) {
-  if (CstructElementalType(ttype))
-    return CstructThawElementalType(input,ttype,length);
-  else if (CenumTable.count(ttype) != 0) {
-    return CstructThawEnum(input,CenumTable.find(ttype)->second,length);
-  } else {
-    // Lookup the type
-    if (CstructTable.count(ttype) == 0)
-      throw Exception("unable to find a C struct definition for type " + ttype);
-    return CstructThawStruct(input,CstructTable.find(ttype)->second);
-  }
-}
-
-static Array CstructThawStruct(QByteArray& input, CstructFields& fields) {
-  rvstring names;
-  ArrayVector values;
-  for (int i=0;i<fields.size();i++) {
-    names << fields[i].getName();
-    values << CstructThawField(input,fields[i].getType(),fields[i].getLength());
-  }
-  return Array::structConstructor(names,values);
-}
-
-//!
-//@Module CSTRUCTFREEZE Convert FreeMat Structure to C Struct
-//@@Section EXTERNAL
-//@@Usage
-//The @|cstructfreeze| function is used to convert a FreeMat structure into
+//The @|ctypefreeze| function is used to convert a FreeMat structure into
 //a C struct as defined by a C structure typedef.  To use the @|cstructfreeze|
 //function, you must first define the type of the C structure using the 
-//@|cstructdefine| function.  The @|cstructfreeze| function then serializes
+//@|ctypedefine| function.  The @|ctypefreeze| function then serializes
 //a FreeMat structure to a set of bytes, and returns it as an array.  The
-//usage for @|cstructfreeze| is
+//usage for @|ctypefreeze| is
 //@[
-//  byte_array = cstructfreeze(mystruct, 'typename')
+//  byte_array = ctypefreeze(mystruct, 'typename')
 //@]
-//where @|mystruct| is the structure we want to 'freeze' to a memory array,
-//and @|typename| is the name of the C Struct that we want the resulting
+//where @|mystruct| is the array we want to 'freeze' to a memory array,
+//and @|typename| is the name of the C type that we want the resulting
 //byte array to conform to.
 //!
-ArrayVector CstructFreezeFunction(int nargout, const ArrayVector& arg) {
+ArrayVector CtypeFreezeFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {
   if (arg.size() != 2) 
-    throw Exception("cstructfreeze requires two arguments - the structure to freeze and the typename to use");
+    throw Exception("ctypefreeze requires two arguments - the structure to freeze and the typename to use");
   Array s(arg[0]);
   string ttype(ArrayToString(arg[1]));
-  if (CstructTable.count(ttype) == 0)
-    throw Exception("unable to find a C struct definition for type " + ttype);
-  CstructFields fields(CstructTable.find(ttype)->second);
-  // Use a QByteArray because its convenient
-  if (s.dataClass() != FM_STRUCT_ARRAY)
-    throw Exception("first argument to cstructfreeze must be a structure or struct array");
+  if (!CtypeTable.contains(ttype))
+    throw Exception("unable to find a C type definition for " + ttype);
   QByteArray output;
-  CstructFreezeStruct(output,s,fields);
+  CtypeTable.lookup(ttype)->freeze(output,s,s.getLength(),m_eval);
   uint8* dp = (uint8*) Array::allocateArray(FM_UINT8, output.length());
   memcpy(dp,output.constData(),output.length());
   return ArrayVector() << Array::Array(FM_UINT8,Dimensions(1,output.length()),dp);
 }
 
 //!
-//@Module CSTRUCTTHAW Convert C Struct to FreeMat Structure
+//@Module CTYPESIZE Compute Size of C Struct
 //@@Section EXTERNAL
 //@@Usage
-//The @|cstructthaw| function is used to convert a C structure that is
-//encoded in a byte array into a FreeMat structure using a C structure
-//typedef.  To use the @|cstructthaw| function, you must first define
-//the type of the C structure using the @|cstructdefine| function.  The
-//usage of @|cstructthaw| is
+//The @|ctypesize| function is used to compute the size of a C structure
+//that is defined using the @|ctypedefine| function.  The usage of 
+//@|ctypesize| is 
 //@[
-//  mystruct = cstructthaw(byte_array, 'typename')
+//   size = ctypesize('typename')
+//@]
+//where @|typename| is the name of the C structure you want to compute
+//the size of.  The returned count is measured in bytes.  Note that as
+//indicated in the help for @|ctypedefine| that FreeMat does not 
+//automatically pad the entries of the structure to match the particulars
+//of your C compiler.  Instead, the assumption is that you have adequate
+//padding entries in your structure to align the FreeMat members with the
+//C ones.  See @|ctypedefine| for more details.  You can also specify
+//an optional count parameter if you want to determine how large multiple
+//structures are
+//@[
+//   size = ctypesize('typename',count)
+//@]
+//!
+ArrayVector CtypeSizeFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1)
+    throw Exception("ctypesize requires an argument - the structure name");
+  int count = 1;
+  if (arg.size() > 1)
+    count = ArrayToInt32(arg[1]);
+  string ttype(ArrayToString(arg[0]));
+  if (!CtypeTable.contains(ttype))
+    throw Exception("unable to find a C struct definition for type " + ttype);
+  return ArrayVector() << Array::int32Constructor(CtypeTable.lookup(ttype)->size(count));
+}
+
+//!
+//@Module CTYPETHAW Convert C Struct to FreeMat Structure
+//@@Section EXTERNAL
+//@@Usage
+//The @|ctypethaw| function is used to convert a C structure that is
+//encoded in a byte array into a FreeMat structure using a C structure
+//typedef.  To use the @|ctypethaw| function, you must first define
+//the type of the C structure using the @|ctypedefine| function.  The
+//usage of @|ctypethaw| is
+//@[
+//  mystruct = ctypethaw(byte_array, 'typename')
 //@]
 //where @|byte_array| is a @|uint8| array containing the bytes that encode
 //the C structure, and @|typename| is a string that contains the type
-//description as registered with @|cstructdefine|.
+//description as registered with @|ctypedefine|.  If you want to
+//retrieve multiple structures from a single byte array, you can specify
+//a count as
+//@[
+//  mystruct = ctypethaw(byte_array, 'typename', count)
+//@]
+//where @|count| is an integer containing the number of structures to 
+//retrieve.  Sometimes it is also useful to retrieve only part of the
+//structure from a byte array, and then (based on the contents of the
+//structure) retrieve more data.  In this case, you can retrieve the
+//residual byte array using the optional second output argument of
+//@|ctypethaw|:
+//@[
+//  [mystruct,byte_array_remaining] = ctypethaw(byte_array, 'typename',...)
+//@]
 //!
-ArrayVector CstructThawFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() != 2)
-    throw Exception("cstructthaw requires two arguments - the uint8 array to thaw the structure from, and the typename to use");
+ArrayVector CtypeThawFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {
+  if (arg.size() < 2)
+    throw Exception("ctypethaw requires two arguments - the uint8 array to thaw the structure from, and the typename to use");
   Array s(arg[0]);
   string ttype(ArrayToString(arg[1]));
-  if (CstructTable.count(ttype) == 0)
+  int count = 1;
+  if (arg.size() > 2) count = ArrayToInt32(arg[2]);
+  if (!CtypeTable.contains(ttype))
     throw Exception("unable to find a C struct definition for type " + ttype);
   if (s.dataClass() != FM_UINT8)
-    throw Exception("first argument to cstructthaw must be a uint8 array");
-  CstructFields fields(CstructTable.find(ttype)->second);
+    throw Exception("first argument to ctypethaw must be a uint8 array");
   QByteArray input((const char*) s.getDataPointer(),s.getLength());
-  return ArrayVector() << CstructThawStruct(input,fields);
+  ArrayVector outputs;
+  outputs << CtypeTable.lookup(ttype)->thaw(input,count,m_eval);
+  if (nargout > 1) {
+    uint8* dp = (uint8*) Array::allocateArray(FM_UINT8, input.length());
+    memcpy(dp,input.constData(),input.length());
+    outputs << Array::Array(FM_UINT8,Dimensions(1,input.length()),dp);
+  }
+  return outputs;
 }

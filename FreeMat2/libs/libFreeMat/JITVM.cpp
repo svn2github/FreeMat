@@ -244,6 +244,20 @@ void JITVM::copy_value(JITScalar source, JITScalar dest, BasicBlock* where) {
   new StoreInst(new LoadInst(source, "", false, where), dest, false, where);
 }
 
+const Type* JITVM::map_dataclass_type(Class aclass) {
+  switch (aclass) {
+  default:
+    throw Exception("JIT does not support");
+  case FM_INT32:
+    return IntegerType::get(32);
+  case FM_FLOAT:
+    return Type::FloatTy;
+  case FM_DOUBLE:
+    return Type::DoubleTy;
+  }
+  return NULL;
+}
+
 JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
   Class aclass = FM_FUNCPTR_ARRAY;
@@ -257,7 +271,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
     throw Exception("Cannot JIT complex arrays:" + name);
   aclass = ptr->dataClass();
   // Map the array class to an llvm type
-  Type* ctype(map_dataclass_type(aclass));
+  const Type* ctype(map_dataclass_type(aclass));
   // Allocate local variables for the row, column and pointer to data
   Value* r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
   Value* c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
@@ -267,14 +281,13 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
 		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_rows_in");
   Value* c_arg = cast(get_input_argument(3*argument_count+2,func_prolog),
 		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
-  Value* p_arg = cast(get_input_argument(3*arguement_count,func_prolog),
+  Value* p_arg = cast(get_input_argument(3*argument_count,func_prolog),
 		      PointerType::get(ctype),false,func_prolog,name+"_data_in");
   // Initialize the local variables from the argument array
   copy_value(r_arg,r,func_prolog);
   copy_value(c_arg,c,func_prolog);
   copy_value(p_arg,p,func_prolog);
-
-  
+#if 0
   Value* t, *s;
   Value* r_in, *c_in;
   Value* r_val, *c_val;
@@ -328,6 +341,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
 					  r_in,c_in,l,t,aclass,false,ctype));
   argument_count++;
   return symbols.findSymbol(name);
+#endif
 }
 
 JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITScalar val, bool override) {
@@ -707,7 +721,7 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   func_body = new BasicBlock("func_body",func,0);
   func_epilog = new BasicBlock("func_epilog",func,0);
   return_val = new AllocaInst(IntegerType::get(32),"return_code",func_prolog);
-  new StoreInst(const_int(0),return_val,false,func_prolog);
+  new StoreInst(int32_const(0),return_val,false,func_prolog);
   ip = func_body;
   compile_for_block(t,m_eval);
   new BranchInst(func_body,func_prolog);

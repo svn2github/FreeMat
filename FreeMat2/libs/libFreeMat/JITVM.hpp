@@ -65,8 +65,12 @@ class JITVM {
   JITSymbolInfo* add_argument_scalar(string name, Interpreter* m_eval, JITScalar val = NULL, bool override = false);
   JITScalar cast(JITScalar value, const llvm::Type *type, bool sgnd, 
 		 llvm::BasicBlock* wh, string name="");
-  JITScalar int32_const(int32 x);
+  JITScalar get_input_argument(int arg, llvm::BasicBlock* where);
+  const llvm::Type* map_dataclass_type(Class aclass);
 public:
+  static JITScalar int32_const(int32 x);
+  static JITScalar bool_const(int32 x);
+  static void copy_value(JITScalar source, JITScalar dest, llvm::BasicBlock* where);
   JITScalar compile_binary_op(llvm::Instruction::BinaryOps, JITScalar arg1, 
 			      JITScalar arg2, string inst);
   JITScalar compile_boolean_op(llvm::Instruction::BinaryOps, JITScalar arg1, 

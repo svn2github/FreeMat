@@ -82,7 +82,7 @@ public:
   virtual ~Ctype() {}
   virtual void print(Interpreter *m_eval) = 0;
   virtual void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) = 0;
-  virtual Array thaw(QByteArray& input, int length, Interpreter* m_eval) = 0;
+  virtual Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) = 0;
   virtual size_t size(int length) = 0;
 };
 
@@ -127,14 +127,14 @@ public:
     for (int i=0;i<length*t_size;i++)
       out.push_back(cp[i]);
   }
-  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
-    char* dp = (char*) Array::allocateArray(dataClass,length);
+  Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
     int bytecount = length*t_size;
-    if (input.size() < bytecount)
+    char* dp = (char*) Array::allocateArray(dataClass,length);
+    if (input.size() < (pos+bytecount))
       throw Exception("source buffer is too short");
     for (int i=0;i<bytecount;i++) 
-      dp[i] = input.at(i);
-    input.remove(0,bytecount);
+      dp[i] = input.at(pos+i);
+    pos += bytecount;
     return Array::Array(dataClass, Dimensions(1,length), dp);
   }
   size_t size(int length) {
@@ -192,8 +192,8 @@ public:
       }
     }
   }
-  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
-    Array values(CtypeTable.lookup("int32")->thaw(input,length,m_eval));
+  Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
+    Array values(CtypeTable.lookup("int32")->thaw(input,pos,length,m_eval));
     if (length == 1)
       return Array::stringConstructor(lookupByNumber(ArrayToInt32(values)));
     const int32* dp = (const int32*) values.getDataPointer();
@@ -226,6 +226,9 @@ public:
 class Cstruct : public Ctype {
   vector<CstructField*> fields;
 public:
+  ~Cstruct() {
+    for (int i=0;i<fields.size();i++) delete fields[i];
+  }
   int getFieldCount() {return fields.size();}
   CstructField* getField(int num) {return fields[num];}
   void addField(CstructField* fld) {fields.push_back(fld);}
@@ -248,24 +251,23 @@ public:
 							fields[i]->getLength(),m_eval);
     }
   }
-  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
-    Array t;
-    for (int m=0;m<length;m++) {
-      rvstring names;
-      ArrayVector values;
-      for (int i=0;i<fields.size();i++) {
-	names << fields[i]->getName();
-	values << CtypeTable.lookup(fields[i]->getType())->thaw(input,fields[i]->getLength(),m_eval);
-      }
-      Array s(Array::structConstructor(names,values));
-      if (t.isEmpty()) {
-	t = s;
-      } else {
-	Array m_index(Array::int32Constructor(m+1));
-	t.setVectorSubset(m_index,s,m_eval);
-      }
-    }
-    return t;
+  Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
+    // Set up a set of vectors
+    ArrayMatrix mat;
+    for (int i=0;i<fields.size();i++) 
+      mat.push_back(ArrayVector());
+    // collect the field names
+    rvstring names;
+    for (int i=0;i<fields.size();i++) 
+      names << fields[i]->getName();
+    // Populate the matrix
+    for (int m=0;m<length;m++) 
+      for (int i=0;i<fields.size();i++) 
+	mat[i] << CtypeTable.lookup(fields[i]->getType())->thaw(input,pos,fields[i]->getLength(),m_eval);
+    ArrayVector t;
+    for (int i=0;i<fields.size();i++)
+      t << Array::cellConstructor(mat[i]);
+    return Array::structConstructor(names,t);
   }
   size_t size(int length) {
     size_t accum = 0;
@@ -284,8 +286,8 @@ public:
   void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
     CtypeTable.lookup(alias)->freeze(out,s,length,m_eval);
   }
-  Array thaw(QByteArray& input, int length, Interpreter* m_eval) {
-    return CtypeTable.lookup(alias)->thaw(input,length,m_eval);
+  Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
+    return CtypeTable.lookup(alias)->thaw(input,pos,length,m_eval);
   }
   size_t size(int length) {
     return CtypeTable.lookup(alias)->size(length);
@@ -308,6 +310,41 @@ CTable::CTable() {
   add("double",new Cbuiltin(FM_DOUBLE,sizeof(double)));
 }
 
+
+//!
+//@Module CENUM Lookup Enumerated C Type
+//@@Section EXTERNAL
+//@@Usage
+//The @|cenum| function allows you to use the textual strings of C 
+//enumerated types (that have been defined using @|ctypedefine|) in
+//your FreeMat scripts isntead of the hardcoded numerical values.  The
+//general syntax for its use is
+//@[
+//  enum_int = cenum(enum_type,enum_string)
+//@]
+//which looks up the integer value of the enumerated type based on the
+//string.  You can also supply an integer argument, in which case
+//@|cenum| will find the matching string
+//@[
+//  enum_string = cenum(enum_type,enum_int)
+//@]
+//!
+ArrayVector CenumFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2) throw Exception("cenum requires at least two arguments");
+  string enumname = ArrayToString(arg[0]);
+  if (!CtypeTable.contains(enumname))
+    throw Exception("type " + enumname + " is not defined");
+  Ctype* p = CtypeTable.lookup(enumname);
+  Cenum* q = dynamic_cast<Cenum*>(p);
+  if (!q)
+    throw Exception("type " + enumname + " is not an enumerated type");
+  if (arg[1].isString()) {
+    return ArrayVector() << Array::int32Constructor(q->lookupByName(ArrayToString(arg[1])));
+  } else {
+    return ArrayVector() << Array::stringConstructor(q->lookupByNumber(ArrayToInt32(arg[1])));
+  }
+  return ArrayVector();
+}
 
 //!
 //@Module CTYPEDEFINE Define C Type
@@ -395,6 +432,8 @@ ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg) {
 	int right_brace = ttypespec.find(']');
 	ttype = ttypespec.substr(0,left_brace);
 	tlength = atoi(ttypespec.substr(left_brace+1,right_brace-left_brace-1).c_str());
+	if (tlength <= 0)
+	  throw Exception(string("illegal length of ") + tlength + " in defining type " + tname);
       } else {
 	ttype = ttypespec;
 	tlength = 1;
@@ -408,6 +447,8 @@ ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg) {
   } else if (tclass == "alias") {
     string tname = ArrayToString(arg[1]);
     string aname = ArrayToString(arg[2]);
+    if (tname == aname)
+      throw Exception("self-referencing aliases not allowed: " + tname);
     if (!CtypeTable.contains(aname))
       throw Exception("type " + aname + " is not defined");
     CtypeTable.add(tname,new Calias(aname));
@@ -432,7 +473,7 @@ ArrayVector CtypePrintFunction(int nargout, const ArrayVector& arg, Interpreter 
   if (arg.size() < 1) return ArrayVector();
   string tname = ArrayToString(arg[0]);
   if (!CtypeTable.contains(tname)) {
-    m_eval->outputMessage("cenum " + tname + " not in table");
+    m_eval->outputMessage("ctype " + tname + " not in table");
     return ArrayVector();
   }
   m_eval->outputMessage("ctype: " + tname + " ");
@@ -548,9 +589,11 @@ ArrayVector CtypeThawFunction(int nargout, const ArrayVector& arg, Interpreter* 
   if (s.dataClass() != FM_UINT8)
     throw Exception("first argument to ctypethaw must be a uint8 array");
   QByteArray input((const char*) s.getDataPointer(),s.getLength());
+  int pos = 0;
   ArrayVector outputs;
-  outputs << CtypeTable.lookup(ttype)->thaw(input,count,m_eval);
+  outputs << CtypeTable.lookup(ttype)->thaw(input,pos,count,m_eval);
   if (nargout > 1) {
+    input.remove(0,pos);
     uint8* dp = (uint8*) Array::allocateArray(FM_UINT8, input.length());
     memcpy(dp,input.constData(),input.length());
     outputs << Array::Array(FM_UINT8,Dimensions(1,input.length()),dp);

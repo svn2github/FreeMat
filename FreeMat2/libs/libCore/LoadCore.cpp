@@ -242,6 +242,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("p_end",EndFunction,3,1,"x","n","dims",NULL);
   context->addFunction("ctypedefine",CtypeDefineFunction,-1,0,NULL);
   context->addFunction("ctypesize",CtypeSizeFunction,2,1,"type","count",NULL);
+  context->addFunction("cenum",CenumFunction,2,1,"type","value",NULL);
   context->addSpecialFunction("ctypefreeze",CtypeFreezeFunction,2,1,"s","type",NULL);
   context->addSpecialFunction("ctypethaw",CtypeThawFunction,3,2,"x","type","count",NULL);
   context->addSpecialFunction("ctypeprint",CtypePrintFunction,1,0,"type",NULL);

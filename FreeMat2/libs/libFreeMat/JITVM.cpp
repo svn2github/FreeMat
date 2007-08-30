@@ -144,12 +144,11 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     JITScalar arg1 = compile_expression(q.first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     // Add code to check the address against the bounds and resize if necessary
-    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,
-				      arg1,ConstantInt::get(Type::Int32Ty,1),"",ip);
+    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(1),"",ip);
     BasicBlock *bb1 = new BasicBlock("under_range",func,0);
     BasicBlock *bb2 = new BasicBlock("not_under_range",func,0);
     new BranchInst(bb1,bb2,under_range,ip);
-    new StoreInst(ConstantInt::get(Type::Int32Ty,2),return_val,false,bb1);
+    new StoreInst(int32_const(2),return_val,false,bb1);
     new BranchInst(func_epilog,bb1);
     Value* over_range = new ICmpInst(ICmpInst::ICMP_SGT,
 				     arg1,new LoadInst(v->num_length,"",false,bb2),"",bb2); 
@@ -158,16 +157,17 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     new BranchInst(bb3,bb4,over_range,bb2);
     // Need to resize 
     // OK - First, get a pointer to the 
-    std::vector<Value*> resize_args;
-    resize_args.push_back(new GetElementPtrInst(ptr_inputs,
-						ConstantInt::get(Type::Int32Ty,3*v->argument_index),"",bb3));
-    resize_args.push_back(arg1);
-    // FIXME - typedef
-    resize_args.push_back(ConstantInt::get(Type::Int32Ty,8));
-    new CallInst(resize_func_ptr, &resize_args[0], 3, "", bb3);
+    std::vector<Value*> resize_params;
+    resize_params.push_back(this_ptr);
+    resize_params.push_back(int32_const(v->argument_index));
+    resize_params.push_back(arg1);
+    new CallInst(resize_func_ptr, &resize_params[0], 3, "", bb3);
+    Value *s = new GetElementPtrInst(ptr_inputs,int32_const(3*v->argument_index),"",bb3);
+    s = new LoadInst(s, "", false, bb3);
+    v->data_value = cast(s,v->data_value->getType(),false,bb3);
     new BranchInst(bb4,bb3);
     ip = bb4;
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
     JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
     new StoreInst(rhs, address, false, ip);
   } else if (q.numchildren() == 2) {
@@ -177,8 +177,8 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     JITScalar arg2 = compile_expression(q.second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
-    arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
+    arg2 = BinaryOperator::create(Instruction::Sub,arg2,int32_const(1),"",ip);
     JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
 					   new LoadInst(v->num_rows,"",false,ip),
 					   "",ip);
@@ -221,9 +221,27 @@ void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
   ip = if_exit;
 }
 
+JITScalar JITVM::bool_const(int32 x) {
+  return ConstantInt::get(Type::Int1Ty,x);
+}
+
+JITScalar JITVM::int32_const(int32 x) {
+  return ConstantInt::get(Type::Int32Ty,x);
+}
+
 JITScalar JITVM::cast(JITScalar value, const Type *type, bool sgnd, BasicBlock *where, string name) {
   return CastInst::create(CastInst::getCastOpcode(value,sgnd,type,sgnd),
 			  value, type, name, where);
+}
+
+JITScalar JITVM::get_input_argument(int arg, BasicBlock* where) {
+  Value *s = new GetElementPtrInst(ptr_inputs,int32_const(arg),"",where);
+  s = new LoadInst(s,"",false,where);
+  return s;
+}
+
+void JITVM::copy_value(JITScalar source, JITScalar dest, BasicBlock* where) {
+  new StoreInst(new LoadInst(source, "", false, where), dest, false, where);
 }
 
 JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
@@ -238,33 +256,51 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   if (ptr->isComplex())
     throw Exception("Cannot JIT complex arrays:" + name);
   aclass = ptr->dataClass();
+  // Map the array class to an llvm type
+  Type* ctype(map_dataclass_type(aclass));
+  // Allocate local variables for the row, column and pointer to data
+  Value* r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
+  Value* c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
+  Value* p = new AllocaInst(PointerType::get(ctype),name+"_data",func_prolog);
+  // Get pointers to the argument array elements
+  Value* r_arg = cast(get_input_argument(3*argument_count+1,func_prolog),
+		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_rows_in");
+  Value* c_arg = cast(get_input_argument(3*argument_count+2,func_prolog),
+		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
+  Value* p_arg = cast(get_input_argument(3*arguement_count,func_prolog),
+		      PointerType::get(ctype),false,func_prolog,name+"_data_in");
+  // Initialize the local variables from the argument array
+  copy_value(r_arg,r,func_prolog);
+  copy_value(c_arg,c,func_prolog);
+  copy_value(p_arg,p,func_prolog);
+
+  
   Value* t, *s;
   Value* r_in, *c_in;
   Value* r_val, *c_val;
   Value* r, *c, *l;
-  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+1),
-			    "",func_prolog);
+  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count+1),"",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
   r_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,
 	      name+"_rows_in");
   r_val = new LoadInst(r_in, "", false, func_prolog);
-//   r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
-//   new StoreInst(r_val, r, false, func_prolog);
-//   new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_epilog);
-  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count+2),
-			    "",func_prolog);
+  //   r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
+  //   new StoreInst(r_val, r, false, func_prolog);
+  //   new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_epilog);
+  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count+2),"",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
   c_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
   c_val = new LoadInst(c_in, "", false, func_prolog);
-//   c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
-//   new StoreInst(c_val, c, false, func_prolog);
-//   new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_epilog);
-  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count),
-			    "",func_prolog);
-  s = new LoadInst(s, "", false, func_prolog);
+  //   c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
+  //   new StoreInst(c_val, c, false, func_prolog);
+  //   new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_epilog);
   l = new AllocaInst(IntegerType::get(32),name+"_count",func_prolog);
   new StoreInst(BinaryOperator::create(Instruction::Mul,c_val,r_val,"",func_prolog),
 		l,false,func_prolog);
+  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count),"",func_prolog);
+  
+  s = new LoadInst(s, "", false, func_prolog);
+  Type* ctype;
   switch (aclass) {
   case FM_FUNCPTR_ARRAY:
   case FM_CELL_ARRAY:
@@ -282,17 +318,14 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   case FM_STRING:
     throw Exception("JIT does not support");
   case FM_INT32:
-    t = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name);
-    break;
+    ctype = PointerType::get(IntegerType::get(32)); break;
   case FM_FLOAT:
-    t = cast(s,PointerType::get(Type::FloatTy),false,func_prolog,name);
-    break;
+    ctype = PointerType::get(Type::FloatTy); break;
   case FM_DOUBLE:
-    t = cast(s,PointerType::get(Type::DoubleTy),false,func_prolog,name);
-    break;
+    ctype = PointerType::get(Type::DoubleTy); break;
   }
   symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
-					  r_in,c_in,l,t,aclass,false));
+					  r_in,c_in,l,t,aclass,false,ctype));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -318,9 +351,9 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
   }
   Value* t, *s;
   Value* r, *c;
-  s = new GetElementPtrInst(ptr_inputs,ConstantInt::get(Type::Int32Ty,3*argument_count),
-			    "",func_prolog);
+  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count),"",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
+  Type* ctype;
   switch (aclass) {
   case FM_FUNCPTR_ARRAY:
   case FM_CELL_ARRAY:
@@ -353,7 +386,7 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
   new StoreInst(new LoadInst(r, "", false, func_prolog), t, false, func_prolog);
   new StoreInst(new LoadInst(t, "", false, func_epilog), r, false, func_epilog);
   symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,
-					  NULL,NULL,t,aclass,false));
+					  NULL,NULL,t,aclass,false,ctype));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -386,10 +419,8 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   if (s.numchildren() == 1) {
     JITScalar arg1 = compile_expression(s.first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,
-				  ConstantInt::get(APInt(32,"1",10)),"",ip);
-    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,
-				      arg1,ConstantInt::get(Type::Int32Ty,0),"",ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
+    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(0),"",ip);
     Value* over_range = new ICmpInst(ICmpInst::ICMP_SGE,
 				     arg1,
 				     new LoadInst(v->num_length,"",false,ip),
@@ -399,7 +430,7 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     BasicBlock *bb1 = new BasicBlock("",func,0);
     BasicBlock *bb2 = new BasicBlock("",func,0);
     new BranchInst(bb1, bb2, out_range, ip);
-    new StoreInst(ConstantInt::get(Type::Int32Ty,1),return_val,false,bb1);
+    new StoreInst(int32_const(1),return_val,false,bb1);
     new BranchInst(func_epilog,bb1);
     ip = bb2;
     JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
@@ -409,12 +440,10 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     JITScalar arg2 = compile_expression(s.second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,ConstantInt::get(APInt(32,"1",10)),"",ip);
-    arg2 = BinaryOperator::create(Instruction::Sub,arg2,ConstantInt::get(APInt(32,"1",10)),"",ip);
-    Value* under_range_1 = new ICmpInst(ICmpInst::ICMP_SLT,
-					arg1,ConstantInt::get(Type::Int32Ty,0),"",ip);
-    Value* under_range_2 = new ICmpInst(ICmpInst::ICMP_SLT,
-					arg2,ConstantInt::get(Type::Int32Ty,0),"",ip);
+    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
+    arg2 = BinaryOperator::create(Instruction::Sub,arg2,int32_const(1),"",ip);
+    Value* under_range_1 = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(0),"",ip);
+    Value* under_range_2 = new ICmpInst(ICmpInst::ICMP_SLT,arg2,int32_const(0),"",ip);
     Value* over_range_1 = new ICmpInst(ICmpInst::ICMP_SGE,
 				       arg1,
 				       new LoadInst(v->num_rows,"",false,ip),
@@ -434,7 +463,7 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     BasicBlock *bb1 = new BasicBlock("",func,0);
     BasicBlock *bb2 = new BasicBlock("",func,0);
     new BranchInst(bb1, bb2, out_range, ip);
-    new StoreInst(ConstantInt::get(Type::Int32Ty,1),return_val,false,bb1);
+    new StoreInst(int32_const(1),return_val,false,bb1);
     new BranchInst(func_epilog,bb1);
     ip = bb2;
     JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
@@ -450,7 +479,7 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
 JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   switch(t.token()) {
   case TOK_VARIABLE:     return compile_rhs(t,m_eval);
-  case TOK_INTEGER:      return ConstantInt::get(Type::Int32Ty,ArrayToInt32(t.array()),true);
+  case TOK_INTEGER:      return int32_const(ArrayToInt32(t.array()));
   case TOK_FLOAT:        return ConstantFP::get(Type::FloatTy,ArrayToDouble(t.array()));
   case TOK_DOUBLE:       return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t.array()));
   case TOK_COMPLEX:
@@ -531,8 +560,7 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
     {
       JITScalar val(compile_expression(t.first(),m_eval));
       val = cast(val,IntegerType::get(1),false,ip);
-      return BinaryOperator::create(Instruction::Xor,
-				    val,ConstantInt::get(Type::Int1Ty,1),"",ip);
+      return BinaryOperator::create(Instruction::Xor,val,bool_const(1),"",ip);
     }
   case '^':               throw Exception("^ is not currently handled by the JIT compiler");
   case TOK_DOTPOWER:      throw Exception(".^ is not currently handled by the JIT compiler");
@@ -618,10 +646,7 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   ip = loopbody;
   compile_block(t.second(),m_eval);
   JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, ip);
-  JITScalar next_loop_value = BinaryOperator::create(Instruction::Add,
-						     loop_index_value,
-						     ConstantInt::get(APInt(32, "1", 10)),
-						     "", ip);
+  JITScalar next_loop_value = BinaryOperator::create(Instruction::Add,loop_index_value,int32_const(1),"",ip);
   new StoreInst(next_loop_value, loop_index_address, false, ip);
   new BranchInst(looptest, ip);
 
@@ -634,15 +659,13 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
 }
 
 // FIXME - Memory leak
-void v_resize(void** f, int r_new, int size) {
-  char* p = (char*) calloc(r_new,size);
-  int* r = (int*) f[1];
-  int* c = (int*) f[2];
-  memcpy(p,f[0],(*r)*(*c)*size);
-  *r = r_new;
-  *c = 1;
-  //  free(f[0]);
-  f[0] = p;
+void JITVM::v_resize(void* base, int argnum, int r_new) { 
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  if (!this_ptr) throw Exception("vector resize failed");
+  this_ptr->array_inputs[argnum]->vectorResize(r_new);
+  this_ptr->args[3*argnum] = (void*) this_ptr->array_inputs[argnum]->getReadWriteDataPointer();
+  *((int*)(this_ptr->args[3*argnum+1])) = this_ptr->array_inputs[argnum]->rows();
+  *((int*)(this_ptr->args[3*argnum+2])) = this_ptr->array_inputs[argnum]->columns();
 }
 
 void JITVM::compile(tree t, Interpreter *m_eval) {
@@ -654,14 +677,15 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);
   PointerType* int32_pointer = PointerType::get(IntegerType::get(32));
   std::vector<const Type*> ResizeFuncArgs;
-  ResizeFuncArgs.push_back(void_pointer_pointer);
+  ResizeFuncArgs.push_back(void_pointer);
   ResizeFuncArgs.push_back(IntegerType::get(32));
   ResizeFuncArgs.push_back(IntegerType::get(32));
   ResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
-				   ResizeFuncArgs,false,
-				   (ParamAttrsList *) 0);
+					 ResizeFuncArgs,false,
+					 (ParamAttrsList *) 0);
   DispatchFuncArgs.push_back(void_pointer_pointer);
   DispatchFuncArgs.push_back(PointerType::get(ResizeFuncTy));
+  DispatchFuncArgs.push_back(void_pointer);
   llvm::FunctionType* DispatchFuncType = llvm::FunctionType::get(IntegerType::get(32),
 								 DispatchFuncArgs,
 								 false,
@@ -673,20 +697,24 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   Function::arg_iterator args = func->arg_begin();
   ptr_inputs = args++;
   ptr_inputs->setName("inputs");
-  resize_func_ptr = args;
+  resize_func_ptr = args++;
   resize_func_ptr->setName("resize_func");
+  this_ptr = args++;
+  this_ptr->setName("this_ptr");
   ip = 0;
   argument_count = 0;
   func_prolog = new BasicBlock("func_prolog",func,0);
   func_body = new BasicBlock("func_body",func,0);
   func_epilog = new BasicBlock("func_epilog",func,0);
   return_val = new AllocaInst(IntegerType::get(32),"return_code",func_prolog);
-  new StoreInst(ConstantInt::get(Type::Int32Ty,0),return_val,false,func_prolog);
+  new StoreInst(const_int(0),return_val,false,func_prolog);
   ip = func_body;
   compile_for_block(t,m_eval);
   new BranchInst(func_body,func_prolog);
   new BranchInst(func_epilog,ip);
   new ReturnInst(new LoadInst(return_val, "", false, func_epilog),func_epilog);
+
+  std::cout << (*M);
 
   if (0) {
   PassManager PM;
@@ -751,8 +779,9 @@ void JITVM::run(Interpreter *m_eval) {
   // Collect the list of arguments
   stringVector argumentList(symbols.getCompletions(""));
   // Allocate the argument array
-  void **args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
+  args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
   // For each argument in the array, retrieve it from the interpreter
+  array_inputs.reserve(argumentList.size());
   for (int i=0;i<argumentList.size();i++) {
     JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
     if (v) {
@@ -771,6 +800,7 @@ void JITVM::run(Interpreter *m_eval) {
       *((int*)(args[3*v->argument_index+1])) = ptr->rows();
       args[3*v->argument_index+2] = (int*) malloc(sizeof(int));;
       *((int*)(args[3*v->argument_index+2])) = ptr->columns();
+      array_inputs[v->argument_index] = &(*ptr);
     }
   }
 
@@ -783,22 +813,9 @@ void JITVM::run(Interpreter *m_eval) {
   std::vector<GenericValue> GVargs;
   GVargs.push_back(GenericValue(args));
   GVargs.push_back(GenericValue((void*) &v_resize));
+  GVargs.push_back(GenericValue((void*) this));
   GenericValue gv = EE->runFunction(func,GVargs);
   delete EE;
-
-  for (int i=0;i<argumentList.size();i++) {
-    JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
-    if (v) {
-      ArrayReference ptr(m_eval->getContext()->lookupVariable(argumentList[i]));
-      if (args[3*v->argument_index] != (void*) ptr->getReadWriteDataPointer()) {
-	m_eval->getContext()->insertVariable(argumentList[i],
-					     Array(v->inferred_type,
-						   Dimensions(*((int*)(args[3*v->argument_index+1])),
-							      *((int*)(args[3*v->argument_index+2]))),
-						   args[3*v->argument_index]));
-      }
-    }
-  }
 
   if (gv.IntVal == 1)
     throw Exception("Index exceeds variable dimensions");

@@ -276,6 +276,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   Value* r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
   Value* c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
   Value* p = new AllocaInst(PointerType::get(ctype),name+"_data",func_prolog);
+  Value* l = new AllocaInst(IntegerType::get(32),name+"_len",func_prolog);
   // Get pointers to the argument array elements
   Value* r_arg = cast(get_input_argument(3*argument_count+1,func_prolog),
 		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_rows_in");
@@ -286,7 +287,16 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   // Initialize the local variables from the argument array
   copy_value(r_arg,r,func_prolog);
   copy_value(c_arg,c,func_prolog);
-  copy_value(p_arg,p,func_prolog);
+  new StoreInst(p_arg,p,func_prolog);
+  //  copy_value(p_arg,p,func_prolog);
+  new StoreInst(BinaryOperator::create(Instruction::Mul,
+				       new LoadInst(c, "", false, func_prolog),
+				       new LoadInst(r, "", false, func_prolog),
+				       "",func_prolog),l,false,func_prolog);
+  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
+					  r,c,l,p,aclass,false));  
+  argument_count++;
+  return symbols.findSymbol(name);
 #if 0
   Value* t, *s;
   Value* r_in, *c_in;
@@ -337,8 +347,9 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   case FM_DOUBLE:
     ctype = PointerType::get(Type::DoubleTy); break;
   }
+
   symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
-					  r_in,c_in,l,t,aclass,false,ctype));
+					  r_in,c_in,l,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
 #endif
@@ -400,7 +411,7 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
   new StoreInst(new LoadInst(r, "", false, func_prolog), t, false, func_prolog);
   new StoreInst(new LoadInst(t, "", false, func_epilog), r, false, func_epilog);
   symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,
-					  NULL,NULL,t,aclass,false,ctype));
+					  NULL,NULL,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -787,6 +798,7 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   PM.add((Pass*)createConstantMergePass());        // Merge dup global constants
   PM.run(*M);
   }
+  std::cout << *M;
 }
 
 void JITVM::run(Interpreter *m_eval) {
@@ -818,10 +830,12 @@ void JITVM::run(Interpreter *m_eval) {
     }
   }
 
-  //  std::ofstream p("jit.bc");
-  //  WriteBitcodeToFile(M,p);
-  //  p.close();
+  std::ofstream p("jit.bc");
+  WriteBitcodeToFile(M,p);
+  p.close();
   
+  return;
+
   ExistingModuleProvider* MP = new ExistingModuleProvider(M);
   ExecutionEngine* EE = ExecutionEngine::create(MP, false);
   std::vector<GenericValue> GVargs;

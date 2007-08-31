@@ -36,17 +36,15 @@ class JITSymbolInfo {
   llvm::Value *num_length;
   llvm::Value *data_value;
   Class inferred_type;
-  llvm::Type *data_type;
   bool  type_mutable;
   // Complete constructor
   JITSymbolInfo(bool arg, int arg_index, bool scalar, bool readonly, 
 		llvm::Value* rows, llvm::Value* cols, 
 		llvm::Value* length, llvm::Value* value,
-		Class i_type, bool t_mutable, llvm::Type* type) :
+		Class i_type, bool t_mutable) :
     is_argument(arg), argument_index(arg_index), is_scalar(scalar), 
     is_readonly(readonly), num_rows(rows), num_cols(cols), num_length(length),
-    data_value(value), inferred_type(i_type), type_mutable(t_mutable), 
-    data_type(type) {}
+    data_value(value), inferred_type(i_type), type_mutable(t_mutable) {}
   friend class JITVM;
 };
 

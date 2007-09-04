@@ -98,6 +98,12 @@ JITScalar JITVM::compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, 
   }
 }
 
+static const Type* array_dereference(const Type* t) {
+  const PointerType* p = dynamic_cast<const PointerType*>(t);
+  if (!p) throw Exception("Expected pointer type in argument to array_dereference");
+  return p->getElementType();
+}
+
 void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
   tree s(t.first());
   string symname(s.first().text());
@@ -128,19 +134,18 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     throw Exception("Expecting at least 1 array reference for dereference...");
   if (q.numchildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
+  if (v->data_value->getType() != PointerType::get(PointerType::get(rhs->getType()))) {
+    // Handle type promotion.  The only case that I can think of 
+    // (with int, float and double) is if the destination array is
+    // double, in which case, we can promote the RHS to type double
+    const Type* p_p_array_type = v->data_value->getType();
+    const Type* array_type = array_dereference(array_dereference(p_p_array_type));
+    if (array_type && array_type->getTypeID() == Type::DoubleTyID) {
+      rhs = cast(rhs,array_type,true,ip,"");
+    } else 
+      throw Exception("polymorphic assignment to array detected");
+  }
   if (q.numchildren() == 1) {
-    if (v->data_value->getType() != PointerType::get(rhs->getType())) {
-      // Handle type promotion.  The only case that I can think of 
-      // (with int, float and double) is if the destination array is
-      // double, in which case, we can promote the RHS to type double
-      const Type* array_type = v->data_value->getType();
-      const PointerType* p_array = dynamic_cast<const PointerType*>(array_type);
-      if (p_array && p_array->getElementType()->getTypeID() == 
-	  Type::DoubleTyID) {
-	rhs = cast(rhs,p_array->getElementType(),true,ip,"");
-      } else 
-	throw Exception("polymorphic assignment to array detected");
-    }
     JITScalar arg1 = compile_expression(q.first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     // Add code to check the address against the bounds and resize if necessary
@@ -151,39 +156,41 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     new StoreInst(int32_const(2),return_val,false,bb1);
     new BranchInst(func_epilog,bb1);
     Value* over_range = new ICmpInst(ICmpInst::ICMP_SGT,
-				     arg1,new LoadInst(v->num_length,"",false,bb2),"",bb2); 
+     				     arg1,new LoadInst(v->num_length,"",false,bb2),"",bb2); 
     BasicBlock *bb3 = new BasicBlock("need_resize",func,0);
     BasicBlock *bb4 = new BasicBlock("valid_range",func,0);
     new BranchInst(bb3,bb4,over_range,bb2);
     // Need to resize 
-    // OK - First, get a pointer to the 
     std::vector<Value*> resize_params;
     resize_params.push_back(this_ptr);
     resize_params.push_back(int32_const(v->argument_index));
     resize_params.push_back(arg1);
     new CallInst(resize_func_ptr, &resize_params[0], 3, "", bb3);
-    Value *s = new GetElementPtrInst(ptr_inputs,int32_const(3*v->argument_index),"",bb3);
-    s = new LoadInst(s, "", false, bb3);
-    v->data_value = cast(s,v->data_value->getType(),false,bb3);
+    int argnum = v->argument_index;
+    Value* p_arg = cast(get_input_argument(3*argnum,bb3),
+			PointerType::get(map_dataclass_type(v->inferred_type)),
+			false,bb3,"");
+    new StoreInst(p_arg,v->data_value,bb3);
     new BranchInst(bb4,bb3);
     ip = bb4;
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
-    JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
+    Value *g = new LoadInst(v->data_value,"",false,ip);
+    JITScalar address = new GetElementPtrInst(g, arg1, "", ip);
     new StoreInst(rhs, address, false, ip);
   } else if (q.numchildren() == 2) {
-    if (v->data_value->getType() != PointerType::get(rhs->getType()))
-      throw Exception("polymorphic assignment to array detected");
     JITScalar arg1 = compile_expression(q.first(),m_eval);
     JITScalar arg2 = compile_expression(q.second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
+    // Add code to check range
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,int32_const(1),"",ip);
     JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
 					   new LoadInst(v->num_rows,"",false,ip),
 					   "",ip);
     lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
-    JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
+    Value *g = new LoadInst(v->data_value, "", false, ip);
+    JITScalar address = new GetElementPtrInst(g, lin, "", ip);
     new StoreInst(rhs, address, false, ip);
   }
 }
@@ -458,7 +465,8 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     new StoreInst(int32_const(1),return_val,false,bb1);
     new BranchInst(func_epilog,bb1);
     ip = bb2;
-    JITScalar address = new GetElementPtrInst(v->data_value, arg1, "", ip);
+    Value *g = new LoadInst(v->data_value, "", false, ip);
+    JITScalar address = new GetElementPtrInst(g, arg1, "", ip);
     return new LoadInst(address, "", false, ip);
   } else if (s.numchildren() == 2) {
     JITScalar arg1 = compile_expression(s.first(),m_eval);
@@ -495,7 +503,8 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
 					   new LoadInst(v->num_rows,"",false,ip),
 					   "",ip);
     lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
-    JITScalar address = new GetElementPtrInst(v->data_value, lin, "", ip);
+    Value *g = new LoadInst(v->data_value, "", false, ip);
+    JITScalar address = new GetElementPtrInst(g, lin, "", ip);
     return new LoadInst(address, "", false, ip);
   }
   throw Exception("dereference not handled yet...");
@@ -693,6 +702,15 @@ void JITVM::v_resize(void* base, int argnum, int r_new) {
   *((int*)(this_ptr->args[3*argnum+2])) = this_ptr->array_inputs[argnum]->columns();
 }
 
+void JITVM::m_resize(void* base, int argnum, int r_new, int c_new) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  if (!this_ptr) throw Exception("matrix resize failed");
+  this_ptr->array_inputs[argnum]->resize(Dimensions(r_new,c_new));
+  this_ptr->args[3*argnum] = (void*) this_ptr->array_inputs[argnum]->getReadWriteDataPointer();
+  *((int*)(this_ptr->args[3*argnum+1])) = this_ptr->array_inputs[argnum]->rows();
+  *((int*)(this_ptr->args[3*argnum+2])) = this_ptr->array_inputs[argnum]->columns();
+}
+
 void JITVM::compile(tree t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
@@ -701,13 +719,14 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   PointerType* void_pointer = PointerType::get(IntegerType::get(8));
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);
   PointerType* int32_pointer = PointerType::get(IntegerType::get(32));
-  std::vector<const Type*> ResizeFuncArgs;
-  ResizeFuncArgs.push_back(void_pointer);
-  ResizeFuncArgs.push_back(IntegerType::get(32));
-  ResizeFuncArgs.push_back(IntegerType::get(32));
-  ResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
-					 ResizeFuncArgs,false,
+  std::vector<const Type*> vResizeFuncArgs;
+  vResizeFuncArgs.push_back(void_pointer);
+  vResizeFuncArgs.push_back(IntegerType::get(32));
+  vResizeFuncArgs.push_back(IntegerType::get(32));
+  vResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
+					  vResizeFuncArgs,false,
 					 (ParamAttrsList *) 0);
+  // FINISH mResize stuff...
   DispatchFuncArgs.push_back(void_pointer_pointer);
   DispatchFuncArgs.push_back(PointerType::get(ResizeFuncTy));
   DispatchFuncArgs.push_back(void_pointer);
@@ -830,17 +849,18 @@ void JITVM::run(Interpreter *m_eval) {
     }
   }
 
-  std::ofstream p("jit.bc");
-  WriteBitcodeToFile(M,p);
-  p.close();
+//    std::ofstream p("jit.bc");
+//    WriteBitcodeToFile(M,p);
+//    p.close();
   
-  return;
+//   return;
 
   ExistingModuleProvider* MP = new ExistingModuleProvider(M);
   ExecutionEngine* EE = ExecutionEngine::create(MP, false);
   std::vector<GenericValue> GVargs;
   GVargs.push_back(GenericValue(args));
   GVargs.push_back(GenericValue((void*) &v_resize));
+  GVargs.push_back(GenericValue((void*) &m_resize));
   GVargs.push_back(GenericValue((void*) this));
   GenericValue gv = EE->runFunction(func,GVargs);
   delete EE;

@@ -52,12 +52,12 @@ class JITVM {
   SymbolTable<JITSymbolInfo> symbols;
   int argument_count;
   vector<Array*> array_inputs;
-  llvm::Value *ptr_inputs, *resize_func_ptr, *this_ptr;
+  llvm::Value *ptr_inputs, *v_resize_func_ptr, *m_resize_func_ptr, *this_ptr;
   void **args;
   llvm::Function *func;
   llvm::BasicBlock *ip, *func_prolog, *func_body, *func_epilog;
   llvm::Module *M;
-  llvm::FunctionType *ResizeFuncTy;
+  llvm::FunctionType *vResizeFuncTy, *mResizeFuncTy;
   JITScalar return_val;
   JITSymbolInfo* add_argument_array(string name, Interpreter* m_eval);
   JITSymbolInfo* add_argument_scalar(string name, Interpreter* m_eval, JITScalar val = NULL, bool override = false);
@@ -85,6 +85,7 @@ public:
   void compile(tree t, Interpreter *m_eval);
   void run(Interpreter *m_eval);
   static void v_resize(void* this_ptr, int argnum, int new_rows);
+  static void m_resize(void* this_ptr, int argnum, int r_new, int c_new);
 };
 
 #endif

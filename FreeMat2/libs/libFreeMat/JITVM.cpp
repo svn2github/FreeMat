@@ -165,7 +165,8 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     resize_params.push_back(this_ptr);
     resize_params.push_back(int32_const(v->argument_index));
     resize_params.push_back(arg1);
-    new CallInst(resize_func_ptr, &resize_params[0], 3, "", bb3);
+    new CallInst(v_resize_func_ptr, &resize_params[0], 3, "", bb3);
+    new StoreInst(arg1,v->num_length,bb3);
     int argnum = v->argument_index;
     Value* p_arg = cast(get_input_argument(3*argnum,bb3),
 			PointerType::get(map_dataclass_type(v->inferred_type)),
@@ -182,6 +183,48 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     JITScalar arg2 = compile_expression(q.second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
+    Value* under_range1 = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(1),"",ip);
+    Value* under_range2 = new ICmpInst(ICmpInst::ICMP_SLT,arg2,int32_const(1),"",ip);
+    Value* under_range = BinaryOperator::create(Instruction::Or,
+						under_range1,under_range2,"",ip);
+    BasicBlock *bb1 = new BasicBlock("under_range",func,0);
+    BasicBlock *bb2 = new BasicBlock("not_under_range",func,0);
+    new BranchInst(bb1,bb2,under_range,ip);
+    new StoreInst(int32_const(2),return_val,false,bb1);
+    new BranchInst(func_epilog,bb1);
+    Value* over_range1 = new ICmpInst(ICmpInst::ICMP_SGT,
+				      arg1,new LoadInst(v->num_rows,"",false,bb2),"",bb2);
+    Value* over_range2 = new ICmpInst(ICmpInst::ICMP_SGT,
+				      arg2,new LoadInst(v->num_cols,"",false,bb2),"",bb2);
+    Value* over_range = BinaryOperator::create(Instruction::Or,
+					       over_range1,over_range2,"",bb2);
+    BasicBlock *bb3 = new BasicBlock("need_resize",func,0);
+    BasicBlock *bb4 = new BasicBlock("valid_range",func,0);
+    new BranchInst(bb3,bb4,over_range,bb2);
+    // Need to resize
+    std::vector<Value*> resize_params;
+    resize_params.push_back(this_ptr);
+    resize_params.push_back(int32_const(v->argument_index));
+    resize_params.push_back(arg1);
+    resize_params.push_back(arg2);
+    new CallInst(m_resize_func_ptr, &resize_params[0], 4, "", bb3);
+    int argnum = v->argument_index;
+    Value* p_arg = cast(get_input_argument(3*argnum,bb3),
+			PointerType::get(map_dataclass_type(v->inferred_type)),
+			false,bb3,"");
+    new StoreInst(p_arg,v->data_value,bb3);
+    Value* r_arg = cast(get_input_argument(3*argnum+1,bb3),
+			PointerType::get(IntegerType::get(32)),false,bb3);
+    Value* c_arg = cast(get_input_argument(3*argnum+2,bb3),
+			PointerType::get(IntegerType::get(32)),false,bb3);
+    copy_value(r_arg,v->num_rows,bb3);
+    copy_value(c_arg,v->num_cols,bb3);
+    new StoreInst(BinaryOperator::create(Instruction::Mul,
+					 new LoadInst(c_arg, "", false, bb3),
+					 new LoadInst(r_arg, "", false, bb3),
+				       "",bb3),v->num_length,false,bb3);
+    new BranchInst(bb4,bb3);
+    ip = bb4;
     // Add code to check range
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
     arg2 = BinaryOperator::create(Instruction::Sub,arg2,int32_const(1),"",ip);
@@ -692,7 +735,6 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   ip = loopexit;
 }
 
-// FIXME - Memory leak
 void JITVM::v_resize(void* base, int argnum, int r_new) { 
   JITVM *this_ptr = static_cast<JITVM*>(base);
   if (!this_ptr) throw Exception("vector resize failed");
@@ -705,7 +747,8 @@ void JITVM::v_resize(void* base, int argnum, int r_new) {
 void JITVM::m_resize(void* base, int argnum, int r_new, int c_new) {
   JITVM *this_ptr = static_cast<JITVM*>(base);
   if (!this_ptr) throw Exception("matrix resize failed");
-  this_ptr->array_inputs[argnum]->resize(Dimensions(r_new,c_new));
+  Dimensions newDim(r_new,c_new);
+  this_ptr->array_inputs[argnum]->resize(newDim);
   this_ptr->args[3*argnum] = (void*) this_ptr->array_inputs[argnum]->getReadWriteDataPointer();
   *((int*)(this_ptr->args[3*argnum+1])) = this_ptr->array_inputs[argnum]->rows();
   *((int*)(this_ptr->args[3*argnum+2])) = this_ptr->array_inputs[argnum]->columns();
@@ -720,16 +763,24 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);
   PointerType* int32_pointer = PointerType::get(IntegerType::get(32));
   std::vector<const Type*> vResizeFuncArgs;
-  vResizeFuncArgs.push_back(void_pointer);
-  vResizeFuncArgs.push_back(IntegerType::get(32));
-  vResizeFuncArgs.push_back(IntegerType::get(32));
+  vResizeFuncArgs.push_back(void_pointer);         //this pointer
+  vResizeFuncArgs.push_back(IntegerType::get(32)); //array index
+  vResizeFuncArgs.push_back(IntegerType::get(32)); //new row count
   vResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
 					  vResizeFuncArgs,false,
 					 (ParamAttrsList *) 0);
-  // FINISH mResize stuff...
-  DispatchFuncArgs.push_back(void_pointer_pointer);
-  DispatchFuncArgs.push_back(PointerType::get(ResizeFuncTy));
-  DispatchFuncArgs.push_back(void_pointer);
+  std::vector<const Type*> mResizeFuncArgs;
+  mResizeFuncArgs.push_back(void_pointer);         //this pointer
+  mResizeFuncArgs.push_back(IntegerType::get(32)); //array index
+  mResizeFuncArgs.push_back(IntegerType::get(32)); //new row count
+  mResizeFuncArgs.push_back(IntegerType::get(32)); //new col count
+  mResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
+					  mResizeFuncArgs,false,
+					  (ParamAttrsList *) 0);
+  DispatchFuncArgs.push_back(void_pointer_pointer);            //argument array
+  DispatchFuncArgs.push_back(PointerType::get(vResizeFuncTy)); //vector resize func
+  DispatchFuncArgs.push_back(PointerType::get(mResizeFuncTy)); //matrix resize func
+  DispatchFuncArgs.push_back(void_pointer);                    //this pointer
   llvm::FunctionType* DispatchFuncType = llvm::FunctionType::get(IntegerType::get(32),
 								 DispatchFuncArgs,
 								 false,
@@ -741,8 +792,10 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   Function::arg_iterator args = func->arg_begin();
   ptr_inputs = args++;
   ptr_inputs->setName("inputs");
-  resize_func_ptr = args++;
-  resize_func_ptr->setName("resize_func");
+  v_resize_func_ptr = args++;
+  v_resize_func_ptr->setName("v_resize_func");
+  m_resize_func_ptr = args++;
+  m_resize_func_ptr->setName("m_resize_func");
   this_ptr = args++;
   this_ptr->setName("this_ptr");
   ip = 0;

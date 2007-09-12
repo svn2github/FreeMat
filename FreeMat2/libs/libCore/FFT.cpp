@@ -51,8 +51,8 @@ void complex_fft_init(int Narg) {
   }
   inf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
   outf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
-  pf_forward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_MEASURE);
-  pf_backward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_MEASURE);
+  pf_forward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_ESTIMATE);
+  pf_backward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_ESTIMATE);
   cN = Narg;
 #else
   throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
@@ -94,8 +94,8 @@ void dcomplex_fft_init(int Narg) {
   }
   in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
   out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
-  p_forward = fftw_plan_dft_1d(Narg,in,out,FFTW_FORWARD,FFTW_MEASURE);
-  p_backward = fftw_plan_dft_1d(Narg,in,out,FFTW_BACKWARD,FFTW_MEASURE);
+  p_forward = fftw_plan_dft_1d(Narg,in,out,FFTW_FORWARD,FFTW_ESTIMATE);
+  p_backward = fftw_plan_dft_1d(Narg,in,out,FFTW_BACKWARD,FFTW_ESTIMATE);
   zN = Narg;
 #else
   throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");

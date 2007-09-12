@@ -27,6 +27,7 @@
 
 Exception::Exception(std::string msg_in) {
   msg = msg_in; 
+  handled = false;
 }
 
 void Exception::printMe(Interpreter *eval) {

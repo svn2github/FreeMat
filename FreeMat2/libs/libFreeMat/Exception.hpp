@@ -34,7 +34,9 @@ class Interpreter;
  */
 class Exception {
   string msg;
+  bool handled;
 public:
+  Exception() : handled(false), msg("") {}
   /**
    * Construct an exception object with a given STL-string.
    */
@@ -47,6 +49,8 @@ public:
    * Returns true if 
    */
   bool matches(string tst_msg);
+  inline bool wasHandled() {return handled;}
+  inline void markAsHandled() {handled = true;}
   /**
    * Get a copy of the message 
    */

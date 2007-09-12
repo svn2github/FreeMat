@@ -3068,6 +3068,10 @@ void Interpreter::statement(const tree &t) {
       stackTrace(true);
       doDebugCycle();
     } else  {
+      if (!e.wasHandled() && !InCLI) {
+	stackTrace(true);
+	e.markAsHandled();
+      }
       throw;
     }
   }

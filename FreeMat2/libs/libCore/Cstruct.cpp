@@ -121,11 +121,14 @@ public:
   }
   void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
     s.promoteType(dataClass);
-    if (s.getLength() != length)
-      throw Exception("field length mismatch");
+    if (s.getLength() > length)
+      throw Exception("field length overflow");
     const char *cp = (const char*) s.getDataPointer();
-    for (int i=0;i<length*t_size;i++)
+    int s_len = s.getLength();
+    for (int i=0;i<s_len*t_size;i++)
       out.push_back(cp[i]);
+    for (int i=s_len*t_size;i<length*t_size;i++)
+      out.push_back((char) 0);
   }
   Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
     int bytecount = length*t_size;
@@ -163,7 +166,7 @@ public:
     m_eval->outputMessage("enumeration\n");
     for (map<int,string>::const_iterator i=elementsByInt.begin();
 	 i != elementsByInt.end(); i++) 
-      m_eval->outputMessage("  " + i->second + " : " + i->first + "\n");
+      m_eval->outputMessage("  %-30s    : %d\n",i->second.c_str(),i->first);
   }
   void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
     if (s.isIntegerClass() && !s.isString() && (s.getLength() == length)) {
@@ -234,10 +237,13 @@ public:
   void addField(CstructField* fld) {fields.push_back(fld);}
   void print(Interpreter *m_eval) {
     m_eval->outputMessage("struct\n");
-    for (int i=0;i<fields.size();i++) 
-      m_eval->outputMessage("  " + fields[i]->getName() + "   " + 
-			    fields[i]->getType() + "[" + 
-			    fields[i]->getLength() + "]\n");
+    for (int i=0;i<fields.size();i++) {
+      m_eval->outputMessage("  %-30s    %s",fields[i]->getName().c_str(),
+			    fields[i]->getType().c_str());
+      if (fields[i]->getLength() > 1) 
+	m_eval->outputMessage("[%d]",fields[i]->getLength());
+      m_eval->outputMessage("\n");
+    }
   }
   void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
     int s_count = s.getLength();
@@ -247,8 +253,12 @@ public:
       Array m_index(Array::int32Constructor(m+1));
       Array s_el(s.getVectorSubset(m_index,m_eval));
       for (int i=0;i<fields.size();i++) 
-	CtypeTable.lookup(fields[i]->getType())->freeze(out,s_el.getField(fields[i]->getName()),
-							fields[i]->getLength(),m_eval);
+	try {
+	  CtypeTable.lookup(fields[i]->getType())->freeze(out,s_el.getField(fields[i]->getName()),
+							  fields[i]->getLength(),m_eval);
+	} catch (Exception& e) {
+	  throw Exception("Failed during freeze of struct field " + fields[i]->getName() + " reason: " + e.getMessageCopy());
+	}
     }
   }
   Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
